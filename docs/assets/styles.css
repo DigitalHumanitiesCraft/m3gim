@@ -1,0 +1,15 @@
+/* M³GIM Digital Archive - Custom Styles */
+
+/* This file is a placeholder for custom CSS styles.
+   The main catalog (index.html) has embedded styles for offline functionality.
+   Add additional custom styles here as needed. */
+
+:root {
+  --primary-color: #2c3e50;
+  --secondary-color: #3498db;
+  --accent-color: #e74c3c;
+  --text-color: #333333;
+  --bg-color: #ffffff;
+}
+
+/* Add your custom styles below */

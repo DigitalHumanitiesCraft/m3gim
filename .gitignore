@@ -1,0 +1,245 @@
+# M³GIM Project .gitignore
+
+# ==========================================
+# Python
+# ==========================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+.ENV/
+
+# PyCharm
+.idea/
+
+# VS Code
+.vscode/
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+*.ipynb
+
+# pytest
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# ==========================================
+# Data Files
+# ==========================================
+# Large data files (use Git LFS or external storage)
+*.xlsx
+*.xls
+*.csv
+!data/vocabularies/*.json  # Keep vocabulary files
+
+# PDF scans (too large for Git)
+*.pdf
+
+# Compressed archives
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# Temporary data files
+data/raw_sheets_export.json
+data/*_temp.json
+data/*_backup_*.json
+
+# ==========================================
+# Credentials & Secrets
+# ==========================================
+.env
+.env.local
+.env.*.local
+secrets.json
+credentials.json
+service_account.json
+*.key
+*.pem
+
+# Google OAuth tokens
+token.pickle
+token.json
+
+# ==========================================
+# Claude Code IDE
+# ==========================================
+.claude/
+
+# ==========================================
+# Operating Systems
+# ==========================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# ==========================================
+# Logs & Temporary Files
+# ==========================================
+*.log
+logs/
+*.tmp
+*.bak
+*.swp
+*.swo
+*~.nib
+*.orig
+*.rej
+
+# ==========================================
+# Knowledge Base (Optional)
+# ==========================================
+# Uncomment if knowledge/ contains sensitive research notes
+# knowledge/
+
+# ==========================================
+# IDE & Editor Files
+# ==========================================
+# Sublime Text
+*.sublime-workspace
+*.sublime-project
+
+# Atom
+.atom/
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# Vim
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+[._]s[a-rt-v][a-z]
+[._]ss[a-gi-z]
+[._]sw[a-p]
+Session.vim
+Sessionx.vim
+.netrwhist
+
+# ==========================================
+# Build & Distribution
+# ==========================================
+node_modules/
+package-lock.json
+yarn.lock
+
+# ==========================================
+# GitHub Actions
+# ==========================================
+# GitHub Actions artifacts (don't ignore workflows)
+!.github/workflows/
+
+# ==========================================
+# Project-Specific
+# ==========================================
+# Old prototype files (if moved out of archive_development/)
+# Uncomment if cleanup removes these from tracking
+# archive_development/
+
+# Testing outputs
+tests/outputs/
+tests/*.html
+
+# ==========================================
+# Comments & Notes
+# ==========================================
+# This .gitignore is designed for the M³GIM project
+#
+# What we DO track:
+# - All Python scripts (preprocessing/, scripts/)
+# - All documentation (docs/, *.md)
+# - Processed JSON data (data/*.json)
+# - HTML catalog (archive_catalog.html)
+# - Templates (templates/)
+# - Tests (tests/)
+# - GitHub Actions workflows (.github/workflows/)
+# - Controlled vocabularies (data/vocabularies/*.json)
+#
+# What we DON'T track:
+# - Large source files (*.xlsx, *.pdf)
+# - Generated files (__pycache__, *.pyc)
+# - Credentials (.env, secrets.json)
+# - IDE settings (.vscode/, .idea/)
+# - OS files (.DS_Store, Thumbs.db)
+# - Virtual environments (venv/)
+#
+# For sensitive data:
+# - Source Excel file should remain on Google Sheets
+# - PDF scans hosted externally (university server)
+# - Credentials stored in GitHub Secrets
+#
+# See STRUCTURE.md for full folder organization
