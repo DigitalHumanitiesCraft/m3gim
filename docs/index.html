@@ -777,32 +777,17 @@
             }
         });
         
-        // Load data
+        // Load data from embedded source
         async function loadData() {
-            try {
-                const response = await fetch('archive_data_enhanced.json');
-                const jsonData = await response.json();
-                
-                allData = jsonData.data || jsonData;
-                filteredData = [...allData];
-                
-                console.log(`Loaded ${allData.length} records`);
-                
-                updateStatistics();
-                populateFilters();
-                renderTable();
-                
-            } catch (error) {
-                console.log('Error loading enhanced data, trying original:', error);
-                // Fallback to original data
-                const response = await fetch('archive_data.json');
-                allData = await response.json();
-                filteredData = [...allData];
-                
-                updateStatistics();
-                populateFilters();
-                renderTable();
-            }
+            // Use embedded data (no network requests)
+            allData = EMBEDDED_DATA.data || EMBEDDED_DATA;
+            filteredData = [...allData];
+
+            console.log(`Loaded ${allData.length} records from embedded data`);
+
+            updateStatistics();
+            populateFilters();
+            renderTable();
         }
         
         // Update statistics
