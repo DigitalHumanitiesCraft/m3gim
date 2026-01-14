@@ -13,7 +13,7 @@ from typing import List
 
 # Pfade
 BASE_DIR = Path(__file__).parent.parent
-SHEETS_DIR = BASE_DIR / "data" / "google-spreadsheet"
+SHEETS_DIR = BASE_DIR / "data" / "processed"
 REPORTS_DIR = BASE_DIR / "data" / "reports"
 
 # Signatur-Patterns

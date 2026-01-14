@@ -11,7 +11,7 @@ from datetime import datetime
 
 # Pfade
 BASE_DIR = Path(__file__).parent.parent
-SHEETS_DIR = BASE_DIR / "data" / "google-spreadsheet"
+SHEETS_DIR = BASE_DIR / "data" / "processed"
 EXPORT_DIR = BASE_DIR / "data" / "export"
 
 # JSON-LD Context
