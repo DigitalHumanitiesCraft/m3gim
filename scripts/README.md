@@ -1,11 +1,28 @@
 # M³GIM Scripts
 
+## Workflow
+
+```
+1. migrate.py           Archiv-Export → Google Sheets Excel (einmalig)
+2. [Manuelle Erfassung in Google Sheets]
+3. [Export aus Google Drive als Excel]
+4. validate.py          Prüft Daten, erzeugt Report
+5. create-ric-json.py   Erzeugt JSON-LD (RiC-O)
+```
+
+## Abhängigkeiten
+
+```bash
+pip install pandas openpyxl
+```
+
+---
+
 ## migrate.py
 
 Transformiert Archiv-Export nach Google Sheets Excel-Format mit Dropdown-Validierung.
 
 ```bash
-pip install pandas openpyxl
 python scripts/migrate.py
 ```
 
@@ -35,3 +52,90 @@ python scripts/migrate.py
 - Header: fett, blau (#4472C4), eingefroren
 - Spaltenbreiten: automatisch (max 50)
 - Dropdowns: dokumenttyp, sprache, zugaenglichkeit, scan_status, fototyp, datierungsevidenz
+
+---
+
+## validate.py
+
+Prüft die Google Sheets Excel-Exporte und erzeugt einen Markdown-Report.
+
+```bash
+python scripts/validate.py
+```
+
+### Eingabe
+
+| Datei | Beschreibung |
+|-------|--------------|
+| `data/google-spreadsheet/M3GIM-Objekte.xlsx` | Hauptbestand, Plakate, Tonträger |
+| `data/google-spreadsheet/M3GIM-Fotos.xlsx` | Fotografien |
+| `data/google-spreadsheet/M3GIM-Verknüpfungen.xlsx` | Relationen |
+
+### Ausgabe
+
+`data/output/validation-report.md`
+
+### Prüfregeln
+
+| Code | Level | Beschreibung |
+|------|-------|--------------|
+| E001 | ERROR | Doppelte Signatur |
+| E002 | ERROR | Ungültiges Signaturformat |
+| E003 | ERROR | Pflichtfeld leer (archivsignatur) |
+| E004 | ERROR | Ungültiger Vokabularwert |
+| E005 | ERROR | Verknüpfung ohne existierendes Objekt |
+| W001 | WARNING | Pflichtfeld leer (titel) |
+| W002 | WARNING | Ungültiges Datumsformat |
+| W003 | WARNING | Unbekannte Rolle |
+
+### Exit-Code
+
+- `0` = Validierung erfolgreich (nur Warnungen)
+- `1` = Fehler gefunden (Export blockiert)
+
+---
+
+## create-ric-json.py
+
+Erzeugt JSON-LD im Records in Contexts (RiC-O) Format.
+
+```bash
+python scripts/create-ric-json.py
+```
+
+### Eingabe
+
+| Datei | Beschreibung |
+|-------|--------------|
+| `data/google-spreadsheet/M3GIM-Objekte.xlsx` | Objekte |
+| `data/google-spreadsheet/M3GIM-Fotos.xlsx` | Fotos |
+| `data/google-spreadsheet/M3GIM-Verknüpfungen.xlsx` | Relationen |
+| `data/google-spreadsheet/M3GIM-*index.xlsx` | Normdaten (Personen, Orte, Werke, Organisationen) |
+
+### Ausgabe
+
+`data/output/m3gim.jsonld`
+
+### RiC-O Mapping
+
+| M³GIM-Feld | RiC-O Property |
+|------------|----------------|
+| archivsignatur | `rico:identifier` |
+| titel | `rico:title` |
+| entstehungsdatum | `rico:date` |
+| dokumenttyp | `rico:hasDocumentaryFormType` |
+| umfang | `rico:hasExtent` |
+| beschreibung | `rico:scopeAndContent` |
+| person/institution | `rico:hasOrHadAgent` |
+| ort | `rico:hasOrHadLocation` |
+| werk/ereignis | `rico:hasOrHadSubject` |
+
+### JSON-LD Context
+
+```json
+{
+  "rico": "https://www.ica.org/standards/RiC/ontology#",
+  "m3gim": "https://dhcraft.org/m3gim/vocab#",
+  "wd": "http://www.wikidata.org/entity/"
+}
+```
