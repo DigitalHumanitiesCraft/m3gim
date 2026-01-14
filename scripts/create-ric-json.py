@@ -18,23 +18,25 @@ EXPORT_DIR = BASE_DIR / "data" / "export"
 CONTEXT = {
     "rico": "https://www.ica.org/standards/RiC/ontology#",
     "m3gim": "https://dhcraft.org/m3gim/vocab#",
+    "m3gim-dft": "https://dhcraft.org/m3gim/documentary-form-types#",
     "wd": "http://www.wikidata.org/entity/",
     "xsd": "http://www.w3.org/2001/XMLSchema#"
 }
 
-# Dokumenttyp-Mapping zu RiC DocumentaryFormType
-DOKUMENTTYP_TO_RIC = {
-    "korrespondenz": "rico:Letter",
-    "vertrag": "rico:Contract",
-    "presse": "rico:Article",
-    "programm": "rico:Program",
-    "plakat": "rico:Poster",
-    "tontraeger": "rico:AudioVisualRecord",
-    "autobiografie": "rico:Autobiography",
-    "identitaetsdokument": "rico:IdentityDocument",
-    "studienunterlagen": "rico:EducationalRecord",
-    "repertoire": "rico:List",
-    "sammlung": "rico:Collection"
+# Dokumenttyp-Mapping zu m3gim DocumentaryFormType (eigenes Vokabular)
+DOKUMENTTYP_TO_DFT = {
+    "korrespondenz": "m3gim-dft:Letter",
+    "vertrag": "m3gim-dft:Contract",
+    "presse": "m3gim-dft:Article",
+    "programm": "m3gim-dft:Program",
+    "plakat": "m3gim-dft:Poster",
+    "tontraeger": "m3gim-dft:AudioVisualRecord",
+    "autobiografie": "m3gim-dft:Autobiography",
+    "identitaetsdokument": "m3gim-dft:IdentityDocument",
+    "studienunterlagen": "m3gim-dft:EducationalRecord",
+    "repertoire": "m3gim-dft:List",
+    "sammlung": "m3gim-dft:Collection",
+    "foto": "m3gim-dft:Photograph"
 }
 
 
@@ -43,6 +45,20 @@ def create_record_id(signatur: str) -> str:
     # UAKUG/NIM_028 -> m3gim:NIM_028
     clean = signatur.replace("UAKUG/", "").replace("/", "_")
     return f"m3gim:{clean}"
+
+
+def simplify_date(date_str: str) -> str:
+    """Vereinfacht Datumsformat: 1958-01-01 -> 1958 wenn nur Jahr bekannt"""
+    if pd.isna(date_str):
+        return None
+    date_str = str(date_str).strip()
+    # Jahr-01-01 -> nur Jahr (wenn Tag/Monat unbekannt waren)
+    if date_str.endswith("-01-01") and len(date_str) == 10:
+        return date_str[:4]
+    # Jahr-MM-01 -> Jahr-MM (wenn nur Tag unbekannt)
+    if date_str.endswith("-01") and len(date_str) == 10:
+        return date_str[:7]
+    return date_str
 
 
 def convert_objekt(row: pd.Series) -> dict:
@@ -57,15 +73,17 @@ def convert_objekt(row: pd.Series) -> dict:
     if pd.notna(row.get('titel')):
         record["rico:title"] = str(row['titel'])
 
-    # Datum
-    if pd.notna(row.get('entstehungsdatum')):
-        record["rico:date"] = str(row['entstehungsdatum'])
+    # Datum (vereinfacht)
+    date_val = simplify_date(row.get('entstehungsdatum'))
+    if date_val:
+        record["rico:date"] = date_val
 
     # Dokumenttyp
     dokumenttyp = row.get('dokumenttyp')
     if pd.notna(dokumenttyp):
-        ric_type = DOKUMENTTYP_TO_RIC.get(str(dokumenttyp).lower(), "rico:Record")
-        record["rico:hasDocumentaryFormType"] = {"@id": ric_type}
+        dft_type = DOKUMENTTYP_TO_DFT.get(str(dokumenttyp).lower())
+        if dft_type:
+            record["rico:hasDocumentaryFormType"] = {"@id": dft_type}
 
     # Sprache
     if pd.notna(row.get('sprache')):
@@ -73,7 +91,7 @@ def convert_objekt(row: pd.Series) -> dict:
 
     # Umfang
     if pd.notna(row.get('umfang')):
-        record["rico:hasExtent"] = str(row['umfang'])
+        record["rico:physicalOrLogicalExtent"] = str(row['umfang'])
 
     # Zugänglichkeit
     if pd.notna(row.get('zugaenglichkeit')):
@@ -90,17 +108,19 @@ def convert_foto(row: pd.Series) -> dict:
     """Konvertiert ein Foto zu JSON-LD"""
     record = {
         "@id": create_record_id(row['archivsignatur']),
-        "@type": ["rico:Record", "rico:Photograph"],
-        "rico:identifier": row['archivsignatur']
+        "@type": "rico:Record",
+        "rico:identifier": row['archivsignatur'],
+        "rico:hasDocumentaryFormType": {"@id": "m3gim-dft:Photograph"}
     }
 
     # Titel
     if pd.notna(row.get('titel')):
         record["rico:title"] = str(row['titel'])
 
-    # Datum
-    if pd.notna(row.get('entstehungsdatum')):
-        record["rico:date"] = str(row['entstehungsdatum'])
+    # Datum (vereinfacht)
+    date_val = simplify_date(row.get('entstehungsdatum'))
+    if date_val:
+        record["rico:date"] = date_val
 
     # Beschreibung
     if pd.notna(row.get('beschreibung')):
@@ -108,11 +128,11 @@ def convert_foto(row: pd.Series) -> dict:
 
     # Fotograf
     if pd.notna(row.get('fotograf')):
-        record["rico:hasCreator"] = str(row['fotograf'])
+        record["m3gim:photographerName"] = str(row['fotograf'])
 
     # Format
     if pd.notna(row.get('format')):
-        record["rico:hasExtent"] = str(row['format'])
+        record["rico:physicalOrLogicalExtent"] = str(row['format'])
 
     # Fototyp
     if pd.notna(row.get('fototyp')):

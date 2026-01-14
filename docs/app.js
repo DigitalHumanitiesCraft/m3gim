@@ -20,8 +20,8 @@
 
     // Statistiken berechnen
     const records = data['@graph'] || [];
-    const objekte = records.filter(r => !r['@type']?.includes('rico:Photograph'));
-    const fotos = records.filter(r => r['@type']?.includes('rico:Photograph'));
+    const fotos = records.filter(r => r['rico:hasDocumentaryFormType']?.['@id'] === 'm3gim-dft:Photograph');
+    const objekte = records.filter(r => r['rico:hasDocumentaryFormType']?.['@id'] !== 'm3gim-dft:Photograph');
 
     // UI aktualisieren
     statusEl.className = 'status success';
