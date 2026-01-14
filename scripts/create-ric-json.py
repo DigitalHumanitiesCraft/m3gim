@@ -12,7 +12,7 @@ from datetime import datetime
 # Pfade
 BASE_DIR = Path(__file__).parent.parent
 SHEETS_DIR = BASE_DIR / "data" / "google-spreadsheet"
-OUTPUT_DIR = BASE_DIR / "data" / "output"
+EXPORT_DIR = BASE_DIR / "data" / "export"
 
 # JSON-LD Context
 CONTEXT = {
@@ -298,8 +298,8 @@ def main():
     }
 
     # Speichern
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    output_path = OUTPUT_DIR / "m3gim.jsonld"
+    EXPORT_DIR.mkdir(parents=True, exist_ok=True)
+    output_path = EXPORT_DIR / "m3gim.jsonld"
     with open(output_path, 'w', encoding='utf-8') as f:
         json.dump(jsonld, f, ensure_ascii=False, indent=2)
 

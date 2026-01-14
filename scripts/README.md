@@ -1,13 +1,24 @@
 # M³GIM Scripts
 
+## Ordnerstruktur
+
+```
+data/
+├── archive-export/          # Originale Archivexporte (Quelle)
+├── google-spreadsheet/      # Excel-Exporte aus Google Sheets (Erfassungsdaten)
+├── processed/               # Von migrate.py erzeugte Excel-Dateien
+├── export/                  # JSON-LD für Website/Archivierung
+└── reports/                 # Validierungsreports
+```
+
 ## Workflow
 
 ```
-1. migrate.py           Archiv-Export → Google Sheets Excel (einmalig)
+1. migrate.py           Archiv-Export → data/processed/ (einmalig)
 2. [Manuelle Erfassung in Google Sheets]
-3. [Export aus Google Drive als Excel]
-4. validate.py          Prüft Daten, erzeugt Report
-5. create-ric-json.py   Erzeugt JSON-LD (RiC-O)
+3. [Export aus Google Drive → data/google-spreadsheet/]
+4. validate.py          Prüft Daten → data/reports/
+5. create-ric-json.py   Erzeugt JSON-LD → data/export/
 ```
 
 ## Abhängigkeiten
@@ -30,10 +41,10 @@ python scripts/migrate.py
 
 | Quelle | Ziel |
 |--------|------|
-| `data/archive-export/Nachlass Malaniuk.xlsx` (182) | `data/output/M3GIM-Objekte.xlsx` (208) |
+| `data/archive-export/Nachlass Malaniuk.xlsx` (182) | `data/processed/M3GIM-Objekte.xlsx` (208) |
 | `data/archive-export/Nachlass Malaniuk Plakate.xlsx` (25) | ↑ integriert |
 | `data/archive-export/Nachlass Malaniuk Tonträger.xlsx` (1) | ↑ integriert |
-| `data/archive-export/Nachlass Malaniuk Fotos.xlsx` (228) | `data/output/M3GIM-Fotos.xlsx` (228) |
+| `data/archive-export/Nachlass Malaniuk Fotos.xlsx` (228) | `data/processed/M3GIM-Fotos.xlsx` (228) |
 
 ### Transformationen
 
@@ -73,7 +84,7 @@ python scripts/validate.py
 
 ### Ausgabe
 
-`data/output/validation-report.md`
+`data/reports/validation-report.md`
 
 ### Prüfregeln
 
@@ -114,7 +125,7 @@ python scripts/create-ric-json.py
 
 ### Ausgabe
 
-`data/output/m3gim.jsonld`
+`data/export/m3gim.jsonld`
 
 ### RiC-O Mapping
 

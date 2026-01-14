@@ -14,7 +14,7 @@ from typing import List
 # Pfade
 BASE_DIR = Path(__file__).parent.parent
 SHEETS_DIR = BASE_DIR / "data" / "google-spreadsheet"
-OUTPUT_DIR = BASE_DIR / "data" / "output"
+REPORTS_DIR = BASE_DIR / "data" / "reports"
 
 # Signatur-Patterns
 SIGNATUR_PATTERNS = {
@@ -350,8 +350,8 @@ def main():
     report = generate_report(all_issues, stats)
 
     # Report speichern
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    report_path = OUTPUT_DIR / "validation-report.md"
+    REPORTS_DIR.mkdir(parents=True, exist_ok=True)
+    report_path = REPORTS_DIR / "validation-report.md"
     report_path.write_text(report, encoding='utf-8')
 
     # Zusammenfassung

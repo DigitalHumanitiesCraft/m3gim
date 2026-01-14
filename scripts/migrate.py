@@ -16,7 +16,7 @@ from openpyxl.worksheet.datavalidation import DataValidation
 # Pfade
 BASE_DIR = Path(__file__).parent.parent
 ARCHIVE_DIR = BASE_DIR / "data" / "archive-export"
-OUTPUT_DIR = BASE_DIR / "data" / "output"
+PROCESSED_DIR = BASE_DIR / "data" / "processed"
 
 # Kontrollierte Vokabulare
 VOCAB = {
@@ -296,7 +296,7 @@ def migrate_objekte():
         "scan_status": VOCAB["scan_status"]
     })
 
-    output_path = OUTPUT_DIR / "M3GIM-Objekte.xlsx"
+    output_path = PROCESSED_DIR / "M3GIM-Objekte.xlsx"
     wb.save(output_path)
     print(f"  Gespeichert: {output_path} ({len(df_out)} Zeilen)")
 
@@ -348,7 +348,7 @@ def migrate_fotos():
         "fototyp": VOCAB["fototyp"]
     })
 
-    output_path = OUTPUT_DIR / "M3GIM-Fotos.xlsx"
+    output_path = PROCESSED_DIR / "M3GIM-Fotos.xlsx"
     wb.save(output_path)
     print(f"  Gespeichert: {output_path} ({len(df_out)} Zeilen)")
 
@@ -362,7 +362,7 @@ def main():
     print("=" * 60)
 
     # Output-Verzeichnis erstellen
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
 
     # Migration durchführen
     df_objekte = migrate_objekte()
@@ -373,7 +373,7 @@ def main():
     print("Migration abgeschlossen")
     print(f"  Objekte: {len(df_objekte)}")
     print(f"  Fotos: {len(df_fotos)}")
-    print(f"  Ausgabe: {OUTPUT_DIR}")
+    print(f"  Ausgabe: {PROCESSED_DIR}")
     print("=" * 60)
 
 

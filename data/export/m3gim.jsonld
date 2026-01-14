@@ -1,0 +1,229 @@
+{
+  "@context": {
+    "rico": "https://www.ica.org/standards/RiC/ontology#",
+    "m3gim": "https://dhcraft.org/m3gim/vocab#",
+    "wd": "http://www.wikidata.org/entity/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#"
+  },
+  "@graph": [
+    {
+      "@id": "m3gim:NIM_028",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_028",
+      "rico:title": "Gastvertrag Bayerische Staatsoper München, Münchner Sommerfestspiele 1958",
+      "rico:date": "1958-04-18",
+      "rico:hasDocumentaryFormType": {
+        "@id": "rico:Contract"
+      },
+      "rico:hasLanguage": "de",
+      "rico:hasExtent": "2 Blatt",
+      "m3gim:accessStatus": "eingeschraenkt",
+      "m3gim:digitizationStatus": "nicht_gescannt",
+      "rico:hasOrHadSubject": [
+        {
+          "name": "Münchner Sommerfestspiele 1958",
+          "type": "rahmenveranstaltung",
+          "date": "1958-08-10/1958-09-09"
+        },
+        {
+          "name": "Vorstellung Julius Cäsar",
+          "type": "auftritt",
+          "date": "1958-08-11"
+        },
+        {
+          "name": "Vorstellung Meistersinger",
+          "type": "auftritt",
+          "date": "1958-08-17"
+        },
+        {
+          "name": "Vorstellung Meistersinger",
+          "type": "auftritt",
+          "date": "1958-08-25"
+        },
+        {
+          "name": "Julius Cäsar",
+          "@id": "wd:Q729645"
+        },
+        {
+          "name": "Die Meistersinger von Nürnberg",
+          "@id": "wd:Q190891"
+        }
+      ],
+      "rico:hasOrHadLocation": [
+        {
+          "name": "München",
+          "role": "vertragsort",
+          "@id": "wd:Q1726"
+        },
+        {
+          "name": "Zürich",
+          "role": "wohnort",
+          "@id": "wd:Q72"
+        },
+        {
+          "name": "Wien",
+          "role": "erwähnt",
+          "@id": "wd:Q1741"
+        }
+      ],
+      "rico:hasOrHadAgent": [
+        {
+          "name": "Malaniuk, Ira",
+          "role": "vertragspartner",
+          "@id": "wd:Q94208"
+        },
+        {
+          "name": "Hartmann, Rudolf",
+          "role": "unterzeichner"
+        },
+        {
+          "name": "Bayerische Staatsoper",
+          "role": "vertragspartner",
+          "@id": "wd:Q681931"
+        },
+        {
+          "name": "Bayerischer Rundfunk",
+          "role": "erwähnt",
+          "@id": "wd:Q278637"
+        },
+        {
+          "name": "Agentur Taubman",
+          "role": "vermittler"
+        }
+      ]
+    },
+    {
+      "@id": "m3gim:NIM_021",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_021",
+      "rico:title": "Brief Ira Malaniuk an Hugo Zelzer, Österreichisches Kulturinstitut London",
+      "rico:hasDocumentaryFormType": {
+        "@id": "rico:Letter"
+      },
+      "rico:hasLanguage": "de",
+      "rico:hasExtent": "1 Blatt",
+      "m3gim:digitizationStatus": "gescannt",
+      "rico:hasOrHadSubject": [
+        {
+          "name": "Geplanter Auftritt London",
+          "type": "implizit"
+        },
+        {
+          "name": "Oh, ihr Felder"
+        },
+        {
+          "name": "Wenn ich in die Weite der Steppe schaue"
+        },
+        {
+          "name": "Regentropfen"
+        }
+      ],
+      "rico:hasOrHadLocation": [
+        {
+          "name": "Wien",
+          "role": "entstehungsort",
+          "@id": "wd:Q1741"
+        },
+        {
+          "name": "London",
+          "role": "zielort",
+          "@id": "wd:Q84"
+        }
+      ],
+      "rico:hasOrHadAgent": [
+        {
+          "name": "Malaniuk, Ira",
+          "role": "verfasser",
+          "@id": "wd:Q94208"
+        },
+        {
+          "name": "Zelzer, Hugo",
+          "role": "adressat"
+        },
+        {
+          "name": "Werba, Erik",
+          "role": "erwähnt",
+          "@id": "wd:Q215539"
+        },
+        {
+          "name": "Österreichisches Kulturinstitut London",
+          "role": "adressat"
+        }
+      ]
+    },
+    {
+      "@id": "m3gim:NIM_004",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_004",
+      "rico:title": "Kritik \"Wieland Wagner inszeniert Glucks Orpheus\", Münchner Merkur",
+      "rico:date": "1953-08-06",
+      "rico:hasDocumentaryFormType": {
+        "@id": "rico:Article"
+      },
+      "rico:hasLanguage": "de",
+      "rico:hasExtent": "1 Blatt",
+      "m3gim:digitizationStatus": "gescannt",
+      "rico:hasOrHadSubject": [
+        {
+          "name": "Premiere Orpheus",
+          "type": "premiere",
+          "date": "1953-08-05"
+        },
+        {
+          "name": "Orfeo ed Euridice",
+          "@id": "wd:Q309823"
+        }
+      ],
+      "rico:hasOrHadLocation": [
+        {
+          "name": "München",
+          "role": "auffuehrungsort",
+          "@id": "wd:Q1726"
+        }
+      ],
+      "rico:hasOrHadAgent": [
+        {
+          "name": "Malaniuk, Ira",
+          "role": "erwähnt",
+          "@id": "wd:Q94208"
+        },
+        {
+          "name": "Wagner, Wieland",
+          "role": "erwähnt",
+          "@id": "wd:Q76471"
+        },
+        {
+          "name": "Knappertsbusch, Hans",
+          "role": "erwähnt",
+          "@id": "wd:Q57357"
+        },
+        {
+          "name": "Kupper, Annelies",
+          "role": "erwähnt",
+          "@id": "wd:Q79116"
+        },
+        {
+          "name": "Fahberg, Antonie",
+          "role": "erwähnt",
+          "@id": "wd:Q592195"
+        },
+        {
+          "name": "Schmidt-Garre, Helmut",
+          "role": "verfasser",
+          "@id": "wd:Q1602816"
+        },
+        {
+          "name": "Erlenwein, Herbert",
+          "role": "erwähnt"
+        },
+        {
+          "name": "Bayerische Staatsoper",
+          "role": "veranstalter",
+          "@id": "wd:Q681931"
+        }
+      ]
+    }
+  ],
+  "m3gim:exportDate": "2026-01-14T17:04:08.647924",
+  "m3gim:recordCount": 3
+}
