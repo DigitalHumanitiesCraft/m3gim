@@ -425,7 +425,8 @@
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 
-  <!-- Application Script -->
+  <!-- Legacy Scripts (to be migrated) -->
+  <!-- Application Script - handles Archiv view -->
   <script src="js/app.js"></script>
 
   <!-- Color Schemes - centralized color definitions -->
@@ -434,7 +435,7 @@
   <!-- Data Extractor - transforms 436 real archive records for visualizations -->
   <script src="js/data-extractor.js"></script>
 
-  <!-- Visualization Module -->
+  <!-- Visualization Module - Partitur, Matrix, Kosmos, Sankey -->
   <script src="js/partitur.js"></script>
 
   <!-- Initialize Lucide Icons -->
@@ -443,6 +444,23 @@
       lucide.createIcons();
     });
   </script>
+
+  <!--
+    ES6 Modules (new architecture - Phase 3)
+    These modules will gradually replace the legacy scripts above.
+    Currently available for import in browser dev tools or future migration:
+    - js/modules/config.js
+    - js/modules/state.js
+    - js/modules/utils.js
+    - js/services/data-service.js
+    - js/services/filter-service.js
+    - js/components/modal.js
+    - js/components/view-switcher.js
+    - js/components/record-grid.js
+    - js/components/tektonik-nav.js
+    - js/components/filters.js
+    - js/main.js (entry point)
+  -->
 
 </body>
 </html>
