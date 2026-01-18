@@ -28,5 +28,8 @@
 @import 'visualizations/kosmos.css';
 @import 'visualizations/sankey.css';
 
+/* Premium visualization styles (toolbar, navigator, containers) */
+@import 'visualization-premium.css';
+
 /* Responsive overrides (must be last) */
 @import 'responsive.css';
