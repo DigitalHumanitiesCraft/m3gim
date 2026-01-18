@@ -1,0 +1,122 @@
+{
+  "zentrum": {
+    "name": "Ira Malaniuk",
+    "wikidata": "Q94208"
+  },
+  "komponisten": [
+    {
+      "name": "Wagner",
+      "farbe": "#6B2C2C",
+      "dokumente_gesamt": 18,
+      "werke": [
+        {
+          "name": "Tristan und Isolde",
+          "dokumente": 8,
+          "signaturen": [
+            "UAKUG/NIM/PL_16",
+            "UAKUG/NIM_119",
+            "UAKUG/NIM_FS_050",
+            "UAKUG/NIM_FS_058",
+            "UAKUG/NIM_FS_061",
+            "UAKUG/NIM_FS_203",
+            "UAKUG/NIM_FS_213",
+            "UAKUG/NIM_FS_217"
+          ]
+        },
+        {
+          "name": "Die Meistersinger",
+          "dokumente": 2,
+          "signaturen": [
+            "UAKUG/NIM_FS_002",
+            "UAKUG/NIM_FS_033"
+          ]
+        },
+        {
+          "name": "Der Ring des Nibelungen",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_051"
+          ]
+        },
+        {
+          "name": "Götterdämmerung",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_FS_036"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Verdi",
+      "farbe": "#2C5C3F",
+      "dokumente_gesamt": 13,
+      "werke": [
+        {
+          "name": "Aida",
+          "dokumente": 9,
+          "signaturen": [
+            "UAKUG/NIM/PL_05",
+            "UAKUG/NIM/PL_08",
+            "UAKUG/NIM/PL_09",
+            "UAKUG/NIM/PL_11",
+            "UAKUG/NIM_063",
+            "UAKUG/NIM_087",
+            "UAKUG/NIM_FS_032",
+            "UAKUG/NIM_FS_051",
+            "UAKUG/NIM_FS_204"
+          ]
+        },
+        {
+          "name": "Don Carlos",
+          "dokumente": 3,
+          "signaturen": [
+            "UAKUG/NIM_089",
+            "UAKUG/NIM_FS_099",
+            "UAKUG/NIM_FS_192"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Beethoven",
+      "farbe": "#4A5A7A",
+      "dokumente_gesamt": 5,
+      "werke": []
+    },
+    {
+      "name": "Gluck/Händel",
+      "farbe": "#8B7355",
+      "dokumente_gesamt": 4,
+      "werke": [
+        {
+          "name": "Orfeo ed Euridice",
+          "dokumente": 2,
+          "signaturen": [
+            "UAKUG/NIM_FS_015",
+            "UAKUG/NIM_FS_041"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Strauss",
+      "farbe": "#4A3A6B",
+      "dokumente_gesamt": 2,
+      "werke": [
+        {
+          "name": "Der Rosenkavalier",
+          "dokumente": 2,
+          "signaturen": [
+            "UAKUG/NIM_FS_197",
+            "UAKUG/NIM_FS_206"
+          ]
+        }
+      ]
+    }
+  ],
+  "_meta": {
+    "generated": "2026-01-18T21:42:37.213237",
+    "source_records": 436
+  }
+}

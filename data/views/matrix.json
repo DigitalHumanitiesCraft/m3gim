@@ -1,0 +1,111 @@
+{
+  "zeitraeume": [
+    "1940-1944",
+    "1945-1949",
+    "1950-1954",
+    "1955-1959",
+    "1960-1964",
+    "1965-1969",
+    "1970-1974"
+  ],
+  "kategorien": [
+    "Dirigent",
+    "Regisseur",
+    "Vermittler",
+    "Kollege"
+  ],
+  "personen": [
+    {
+      "name": "Furtwängler",
+      "kategorie": "Dirigent",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_FS_106",
+              "titel": "Wilhelm Furtwängler mit Orchester"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Karajan",
+      "kategorie": "Dirigent",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_FS_203",
+              "titel": "Gespräch mit [Herbert von] Karajan in einer Orchesterprobe von \"Tristan\""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Werba",
+      "kategorie": "Vermittler",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM/PL_02",
+              "titel": "SALZBURGER MOZART-WOCHE 1959 / Mittwoch, den 21. Jänner 1959 - Mozarteum, Großer"
+            }
+          ]
+        },
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM/PL_01",
+              "titel": "Liederabend / IRA / MALANIUK / Alt / (Staatsoper Wien und München) / am Flügel: "
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Ludwig",
+      "kategorie": "Kollege",
+      "begegnungen": [
+        {
+          "zeitraum": "1940-1944",
+          "intensitaet": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM/PL_04",
+              "titel": "SINFONISCHES ORCHESTER / in Stanislau / Konzertsaal Armenierstrasse 18. / Zum Ab"
+            }
+          ]
+        },
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 2,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_FS_026",
+              "titel": "Bayreuther Festspiele 1953 Ludwig van Beethoven - Symphonie IX"
+            },
+            {
+              "signatur": "UAKUG/NIM_FS_027",
+              "titel": "Teatro Comunale di Firenze Ludwig van Beethoven - Symphonie IX"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "_meta": {
+    "generated": "2026-01-18T21:42:37.212240",
+    "source_records": 436
+  }
+}

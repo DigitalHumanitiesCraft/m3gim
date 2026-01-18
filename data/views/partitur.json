@@ -1,0 +1,454 @@
+{
+  "lebensphasen": [
+    {
+      "id": "LP1",
+      "label": "Kindheit & Jugend",
+      "von": 1919,
+      "bis": 1937,
+      "ort": "Lemberg",
+      "beschreibung": "Aufgewachsen in der Ukraine (Lemberg/Lwiw)"
+    },
+    {
+      "id": "LP2",
+      "label": "Studium",
+      "von": 1937,
+      "bis": 1944,
+      "ort": "Lemberg",
+      "beschreibung": "Gesangsstudium am Konservatorium Lemberg"
+    },
+    {
+      "id": "LP3",
+      "label": "Flucht & Neuanfang",
+      "von": 1944,
+      "bis": 1945,
+      "ort": "Wien",
+      "beschreibung": "Flucht vor der Roten Armee, Ankunft in Österreich"
+    },
+    {
+      "id": "LP4",
+      "label": "Erste Engagements",
+      "von": 1945,
+      "bis": 1950,
+      "ort": "Graz",
+      "beschreibung": "Engagement an der Grazer Oper, erste Erfolge"
+    },
+    {
+      "id": "LP5",
+      "label": "Aufstieg",
+      "von": 1950,
+      "bis": 1955,
+      "ort": "Wien",
+      "beschreibung": "Wiener Staatsoper, erste internationale Auftritte"
+    },
+    {
+      "id": "LP6",
+      "label": "Internationale Karriere",
+      "von": 1955,
+      "bis": 1970,
+      "ort": "Wien/Bayreuth",
+      "beschreibung": "Bayreuther Festspiele, Salzburg, internationale Gastspiele"
+    },
+    {
+      "id": "LP7",
+      "label": "Spätphase & Ruhestand",
+      "von": 1970,
+      "bis": 2009,
+      "ort": "Zürich",
+      "beschreibung": "Rückzug aus dem Bühnenleben, Leben in Zürich"
+    }
+  ],
+  "orte": [
+    {
+      "ort": "Lemberg",
+      "typ": "wohnort",
+      "von": 1919,
+      "bis": 1944
+    },
+    {
+      "ort": "Wien",
+      "typ": "wohnort",
+      "von": 1944,
+      "bis": 1950
+    },
+    {
+      "ort": "Graz",
+      "typ": "wohnort",
+      "von": 1945,
+      "bis": 1950
+    },
+    {
+      "ort": "Wien",
+      "typ": "wohnort",
+      "von": 1950,
+      "bis": 1970
+    },
+    {
+      "ort": "Zürich",
+      "typ": "wohnort",
+      "von": 1970,
+      "bis": 2009
+    },
+    {
+      "ort": "Bayreuth",
+      "typ": "auffuehrungsort",
+      "von": 1952,
+      "bis": 1968
+    },
+    {
+      "ort": "München",
+      "typ": "auffuehrungsort",
+      "von": 1953,
+      "bis": 1968
+    },
+    {
+      "ort": "Salzburg",
+      "typ": "auffuehrungsort",
+      "von": 1955,
+      "bis": 1965
+    }
+  ],
+  "mobilitaet": [
+    {
+      "von": "Lemberg",
+      "nach": "Wien",
+      "jahr": 1944,
+      "form": "erzwungen",
+      "beschreibung": "Flucht vor der Roten Armee"
+    },
+    {
+      "von": "Wien",
+      "nach": "Graz",
+      "jahr": 1945,
+      "form": "geografisch",
+      "beschreibung": "Erstes Engagement"
+    },
+    {
+      "von": "Graz",
+      "nach": "Wien",
+      "jahr": 1950,
+      "form": "geografisch",
+      "beschreibung": "Wiener Staatsoper"
+    },
+    {
+      "von": "Wien",
+      "nach": "Bayreuth",
+      "jahr": 1952,
+      "form": "geografisch",
+      "beschreibung": "Bayreuther Festspiele Debüt"
+    },
+    {
+      "von": "Wien",
+      "nach": "Zürich",
+      "jahr": 1970,
+      "form": "lebensstil",
+      "beschreibung": "Übersiedlung (Ehemann)"
+    }
+  ],
+  "netzwerk": [
+    {
+      "periode": "1940-1944",
+      "intensitaet": 24
+    },
+    {
+      "periode": "1945-1949",
+      "intensitaet": 17
+    },
+    {
+      "periode": "1950-1954",
+      "intensitaet": 68
+    },
+    {
+      "periode": "1955-1959",
+      "intensitaet": 49
+    },
+    {
+      "periode": "1960-1964",
+      "intensitaet": 36
+    },
+    {
+      "periode": "1965-1969",
+      "intensitaet": 20
+    },
+    {
+      "periode": "1970-1974",
+      "intensitaet": 6
+    }
+  ],
+  "repertoire": [
+    {
+      "komponist": "Wagner",
+      "farbe": "#6B2C2C",
+      "von": 1949,
+      "bis": 1959,
+      "dokumente": 16,
+      "signaturen": [
+        "UAKUG/NIM/PL_16",
+        "UAKUG/NIM_051",
+        "UAKUG/NIM_119",
+        "UAKUG/NIM_120",
+        "UAKUG/NIM_FS_002",
+        "UAKUG/NIM_FS_033",
+        "UAKUG/NIM_FS_034",
+        "UAKUG/NIM_FS_036",
+        "UAKUG/NIM_FS_042",
+        "UAKUG/NIM_FS_050"
+      ]
+    },
+    {
+      "komponist": "Verdi",
+      "farbe": "#2C5C3F",
+      "von": 1941,
+      "bis": 1956,
+      "dokumente": 8,
+      "signaturen": [
+        "UAKUG/NIM/PL_05",
+        "UAKUG/NIM/PL_08",
+        "UAKUG/NIM/PL_11",
+        "UAKUG/NIM_063",
+        "UAKUG/NIM_087",
+        "UAKUG/NIM_089",
+        "UAKUG/NIM_FS_051",
+        "UAKUG/NIM_FS_099"
+      ]
+    },
+    {
+      "komponist": "Beethoven",
+      "farbe": "#4A5A7A",
+      "von": 1942,
+      "bis": 1960,
+      "dokumente": 5,
+      "signaturen": [
+        "UAKUG/NIM/PL_04",
+        "UAKUG/NIM/PL_22",
+        "UAKUG/NIM_FS_026",
+        "UAKUG/NIM_FS_027",
+        "UAKUG/NIM_FS_208"
+      ]
+    },
+    {
+      "komponist": "Gluck/Händel",
+      "farbe": "#8B7355",
+      "von": 1950,
+      "bis": 1959,
+      "dokumente": 2,
+      "signaturen": [
+        "UAKUG/NIM/PL_02",
+        "UAKUG/NIM_062"
+      ]
+    }
+  ],
+  "dokumente": [
+    {
+      "jahr": 1919,
+      "anzahl": 1
+    },
+    {
+      "jahr": 1924,
+      "anzahl": 1
+    },
+    {
+      "jahr": 1930,
+      "anzahl": 1
+    },
+    {
+      "jahr": 1934,
+      "anzahl": 1
+    },
+    {
+      "jahr": 1939,
+      "anzahl": 1
+    },
+    {
+      "jahr": 1940,
+      "anzahl": 4
+    },
+    {
+      "jahr": 1941,
+      "anzahl": 9
+    },
+    {
+      "jahr": 1942,
+      "anzahl": 2
+    },
+    {
+      "jahr": 1943,
+      "anzahl": 6
+    },
+    {
+      "jahr": 1944,
+      "anzahl": 3
+    },
+    {
+      "jahr": 1945,
+      "anzahl": 0
+    },
+    {
+      "jahr": 1946,
+      "anzahl": 1
+    },
+    {
+      "jahr": 1947,
+      "anzahl": 3
+    },
+    {
+      "jahr": 1948,
+      "anzahl": 3
+    },
+    {
+      "jahr": 1949,
+      "anzahl": 10
+    },
+    {
+      "jahr": 1950,
+      "anzahl": 6
+    },
+    {
+      "jahr": 1951,
+      "anzahl": 17
+    },
+    {
+      "jahr": 1952,
+      "anzahl": 19
+    },
+    {
+      "jahr": 1953,
+      "anzahl": 14
+    },
+    {
+      "jahr": 1954,
+      "anzahl": 12
+    },
+    {
+      "jahr": 1955,
+      "anzahl": 8
+    },
+    {
+      "jahr": 1956,
+      "anzahl": 13
+    },
+    {
+      "jahr": 1957,
+      "anzahl": 9
+    },
+    {
+      "jahr": 1958,
+      "anzahl": 8
+    },
+    {
+      "jahr": 1959,
+      "anzahl": 11
+    },
+    {
+      "jahr": 1960,
+      "anzahl": 14
+    },
+    {
+      "jahr": 1961,
+      "anzahl": 4
+    },
+    {
+      "jahr": 1962,
+      "anzahl": 9
+    },
+    {
+      "jahr": 1963,
+      "anzahl": 7
+    },
+    {
+      "jahr": 1964,
+      "anzahl": 2
+    },
+    {
+      "jahr": 1965,
+      "anzahl": 5
+    },
+    {
+      "jahr": 1966,
+      "anzahl": 6
+    },
+    {
+      "jahr": 1967,
+      "anzahl": 2
+    },
+    {
+      "jahr": 1968,
+      "anzahl": 2
+    },
+    {
+      "jahr": 1969,
+      "anzahl": 5
+    },
+    {
+      "jahr": 1970,
+      "anzahl": 3
+    },
+    {
+      "jahr": 1971,
+      "anzahl": 1
+    },
+    {
+      "jahr": 1972,
+      "anzahl": 1
+    },
+    {
+      "jahr": 1973,
+      "anzahl": 1
+    },
+    {
+      "jahr": 1974,
+      "anzahl": 0
+    },
+    {
+      "jahr": 1978,
+      "anzahl": 1
+    },
+    {
+      "jahr": 1985,
+      "anzahl": 1
+    },
+    {
+      "jahr": 1989,
+      "anzahl": 2
+    },
+    {
+      "jahr": 1990,
+      "anzahl": 2
+    },
+    {
+      "jahr": 1991,
+      "anzahl": 1
+    },
+    {
+      "jahr": 1994,
+      "anzahl": 7
+    },
+    {
+      "jahr": 1996,
+      "anzahl": 1
+    },
+    {
+      "jahr": 1998,
+      "anzahl": 7
+    },
+    {
+      "jahr": 1999,
+      "anzahl": 50
+    },
+    {
+      "jahr": 2000,
+      "anzahl": 7
+    },
+    {
+      "jahr": 2009,
+      "anzahl": 1
+    },
+    {
+      "jahr": 2010,
+      "anzahl": 10
+    }
+  ],
+  "_meta": {
+    "generated": "2026-01-18T21:42:37.211237",
+    "source_records": 436
+  }
+}

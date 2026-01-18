@@ -1,0 +1,168 @@
+{
+  "phasen": [
+    {
+      "id": "anfaenge",
+      "label": "Anfänge",
+      "von": 1940,
+      "bis": 1950
+    },
+    {
+      "id": "aufstieg",
+      "label": "Aufstieg",
+      "von": 1950,
+      "bis": 1955
+    },
+    {
+      "id": "hoehepunkt",
+      "label": "Höhepunkt",
+      "von": 1955,
+      "bis": 1968
+    },
+    {
+      "id": "spaetphase",
+      "label": "Spätphase",
+      "von": 1968,
+      "bis": 1975
+    }
+  ],
+  "repertoire": [
+    {
+      "id": "Wagner",
+      "label": "Wagner",
+      "farbe": "#6B2C2C"
+    },
+    {
+      "id": "Verdi",
+      "label": "Verdi",
+      "farbe": "#2C5C3F"
+    },
+    {
+      "id": "Strauss",
+      "label": "Strauss",
+      "farbe": "#4A3A6B"
+    },
+    {
+      "id": "Gluck/Händel",
+      "label": "Gluck/Händel",
+      "farbe": "#8B7355"
+    },
+    {
+      "id": "Beethoven",
+      "label": "Beethoven",
+      "farbe": "#4A5A7A"
+    }
+  ],
+  "orte": [
+    {
+      "id": "Wien",
+      "label": "Wien"
+    },
+    {
+      "id": "Bayreuth",
+      "label": "Bayreuth"
+    },
+    {
+      "id": "München",
+      "label": "München"
+    },
+    {
+      "id": "Salzburg",
+      "label": "Salzburg"
+    },
+    {
+      "id": "Graz",
+      "label": "Graz"
+    }
+  ],
+  "flows": [
+    {
+      "source": "hoehepunkt",
+      "target": "Gluck/Händel",
+      "value": 1
+    },
+    {
+      "source": "hoehepunkt",
+      "target": "Beethoven",
+      "value": 1
+    },
+    {
+      "source": "hoehepunkt",
+      "target": "Verdi",
+      "value": 3
+    },
+    {
+      "source": "hoehepunkt",
+      "target": "Wagner",
+      "value": 4
+    },
+    {
+      "source": "anfaenge",
+      "target": "Beethoven",
+      "value": 1
+    },
+    {
+      "source": "anfaenge",
+      "target": "Verdi",
+      "value": 3
+    },
+    {
+      "source": "anfaenge",
+      "target": "Gluck/Händel",
+      "value": 1
+    },
+    {
+      "source": "anfaenge",
+      "target": "Wagner",
+      "value": 2
+    },
+    {
+      "source": "aufstieg",
+      "target": "Wagner",
+      "value": 10
+    },
+    {
+      "source": "aufstieg",
+      "target": "Verdi",
+      "value": 2
+    },
+    {
+      "source": "aufstieg",
+      "target": "Beethoven",
+      "value": 3
+    },
+    {
+      "source": "Gluck/Händel",
+      "target": "Wien",
+      "value": 1
+    },
+    {
+      "source": "Verdi",
+      "target": "Wien",
+      "value": 2
+    },
+    {
+      "source": "Verdi",
+      "target": "München",
+      "value": 1
+    },
+    {
+      "source": "Wagner",
+      "target": "Wien",
+      "value": 2
+    },
+    {
+      "source": "Wagner",
+      "target": "Bayreuth",
+      "value": 2
+    },
+    {
+      "source": "Beethoven",
+      "target": "Bayreuth",
+      "value": 2
+    }
+  ],
+  "_meta": {
+    "generated": "2026-01-18T21:42:37.215239",
+    "source_records": 436
+  }
+}
