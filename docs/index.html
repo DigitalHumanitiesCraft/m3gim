@@ -4,7 +4,20 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Digitales Archiv des Nachlasses der Sängerin Ira Malaniuk (1919-2009) - Universitätsarchiv der Kunstuniversität Graz">
+  <meta name="keywords" content="Ira Malaniuk, Archiv, Oper, Sängerin, KUG, Graz, Digital Humanities, RiC-O">
+  <meta name="author" content="Kunstuniversität Graz - Universitätsarchiv">
+  <meta name="robots" content="index, follow">
+
+  <!-- Open Graph / Social Media -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="M³GIM - Digitales Archiv Ira Malaniuk">
+  <meta property="og:description" content="Digitales Archiv des Nachlasses der Sängerin Ira Malaniuk (1919-2009)">
+  <meta property="og:locale" content="de_AT">
+
   <title>M³GIM - Digitales Archiv Ira Malaniuk</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎭</text></svg>">
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -252,13 +265,13 @@
 
       <!-- FF Badges & Export -->
       <div class="toolbar-section toolbar-section--meta">
-        <div class="ff-badges-mini" id="ff-badges">
-          <span class="ff-badge-mini ff-badge-mini--active" title="Mobilität → Vernetzung">FF1</span>
-          <span class="ff-badge-mini ff-badge-mini--active" title="Migration → Ästhetik">FF2</span>
-          <span class="ff-badge-mini ff-badge-mini--active" title="Wissenstransfer">FF3</span>
-          <span class="ff-badge-mini ff-badge-mini--active" title="Mobilitätsformen">FF4</span>
+        <div class="ff-badges-mini" id="ff-badges" role="group" aria-label="Forschungsfragen">
+          <abbr class="ff-badge-mini ff-badge-mini--active" title="FF1: Mobilität → Vernetzung">FF1</abbr>
+          <abbr class="ff-badge-mini ff-badge-mini--active" title="FF2: Migration → Ästhetik">FF2</abbr>
+          <abbr class="ff-badge-mini ff-badge-mini--active" title="FF3: Wissenstransfer">FF3</abbr>
+          <abbr class="ff-badge-mini ff-badge-mini--active" title="FF4: Mobilitätsformen">FF4</abbr>
         </div>
-        <button class="toolbar-export-btn" id="export-svg-btn" title="SVG exportieren">
+        <button class="toolbar-export-btn" id="export-svg-btn" aria-label="Visualisierung als SVG exportieren">
           <i data-lucide="download" aria-hidden="true"></i>
           <span>SVG Export</span>
         </button>
@@ -406,16 +419,19 @@
   </div>
 
   <!-- Footer -->
-  <footer class="footer">
+  <footer class="footer" role="contentinfo">
     <div class="footer__content">
       <div>
-        Universitätsarchiv der Kunstuniversität Graz (UAKUG)<br>
+        <strong>Universitätsarchiv der Kunstuniversität Graz (UAKUG)</strong><br>
         Gefördert von der Mariann Steegmann Foundation
       </div>
-      <div>
-        Metadaten: <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a> |
-        <a href="data/m3gim.jsonld" download>JSON-LD Download</a>
-      </div>
+      <nav class="footer__links" aria-label="Footer-Navigation">
+        <span>Metadaten: <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a></span>
+        <span aria-hidden="true">|</span>
+        <a href="data/m3gim.jsonld" download aria-label="JSON-LD Daten herunterladen">JSON-LD Download</a>
+        <span aria-hidden="true">|</span>
+        <a href="https://github.com/DigitalHumanitiesCraft/m3gim" target="_blank" rel="noopener noreferrer" aria-label="GitHub Repository öffnen">GitHub</a>
+      </nav>
     </div>
   </footer>
 
