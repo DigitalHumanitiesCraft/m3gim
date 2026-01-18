@@ -5,17 +5,40 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Digitales Archiv des Nachlasses der Sängerin Ira Malaniuk (1919-2009) - Universitätsarchiv der Kunstuniversität Graz">
   <title>M³GIM - Digitales Archiv Ira Malaniuk</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+
+  <!-- Styles -->
   <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/visualization-premium.css">
 </head>
 <body>
+
+  <!-- Skip Link for Accessibility -->
+  <a href="#main-content" class="skip-link">Zum Inhalt springen</a>
 
   <!-- Header -->
   <header class="header">
     <div class="header__content">
-      <h1 class="header__title">
-        M³GIM
-        <span>Digitales Archiv Ira Malaniuk</span>
-      </h1>
+      <div class="header__brand">
+        <h1 class="header__title">M³GIM</h1>
+        <span class="header__subtitle">Digitales Archiv Ira Malaniuk</span>
+      </div>
+
+      <nav class="nav-tabs" role="tablist" aria-label="Ansichtswahl">
+        <button class="nav-tab nav-tab--active" role="tab" aria-selected="true" data-view="analyse" id="tab-analyse">
+          <i data-lucide="bar-chart-3" class="nav-tab__icon" aria-hidden="true"></i>
+          Analyse
+        </button>
+        <button class="nav-tab" role="tab" aria-selected="false" data-view="archiv" id="tab-archiv">
+          <i data-lucide="archive" class="nav-tab__icon" aria-hidden="true"></i>
+          Archiv
+        </button>
+      </nav>
+
       <div class="search">
         <input
           type="search"
@@ -23,72 +46,259 @@
           class="search__input"
           placeholder="Suche in Titeln und Beschreibungen..."
           autocomplete="off"
+          aria-label="Archivsuche"
         >
       </div>
     </div>
   </header>
 
   <!-- Main Content -->
-  <main class="main">
+  <main class="main" id="main-content">
 
-    <!-- Sidebar with Filters -->
-    <aside class="sidebar">
-      <h2 class="sidebar__title">Filter</h2>
-
-      <!-- Document Type Filter -->
-      <div class="filter-group">
-        <h3 class="filter-group__title">Dokumenttyp</h3>
-        <div class="filter-group__options" id="filter-dokumenttyp">
+    <!-- Sidebar with Filters (Archiv) - hidden by default -->
+    <aside class="sidebar sidebar--hidden" id="sidebar-archiv">
+      <!-- Tektonik Navigation -->
+      <div class="sidebar__section">
+        <span class="sidebar__label">Bestand</span>
+        <nav class="tektonik-tree" id="tektonik-nav" aria-label="Bestandsstruktur">
           <!-- Populated by JavaScript -->
-        </div>
+        </nav>
       </div>
 
-      <!-- Collection Filter -->
-      <div class="filter-group">
-        <h3 class="filter-group__title">Bestand</h3>
-        <div class="filter-group__options" id="filter-bestand">
-          <label class="filter-option">
-            <input type="checkbox" value="objekte" checked>
-            <span class="filter-option__label">Objekte</span>
-            <span class="filter-option__count" id="count-objekte">-</span>
-          </label>
-          <label class="filter-option">
-            <input type="checkbox" value="fotos" checked>
-            <span class="filter-option__label">Fotografien</span>
-            <span class="filter-option__count" id="count-fotos">-</span>
-          </label>
-        </div>
-      </div>
+      <hr class="sidebar__divider">
 
-      <!-- Access Status Filter -->
-      <div class="filter-group">
-        <h3 class="filter-group__title">Zugänglichkeit</h3>
-        <div class="filter-group__options" id="filter-zugang">
-          <label class="filter-option">
-            <input type="checkbox" value="offen" checked>
-            <span class="filter-option__label">Offen</span>
-          </label>
-          <label class="filter-option">
-            <input type="checkbox" value="eingeschraenkt" checked>
-            <span class="filter-option__label">Eingeschränkt</span>
-          </label>
-          <label class="filter-option">
-            <input type="checkbox" value="gesperrt" checked>
-            <span class="filter-option__label">Gesperrt</span>
-          </label>
+      <!-- Filter Section -->
+      <div class="sidebar__section">
+        <span class="sidebar__label">Filter</span>
+
+        <!-- Document Type Filter -->
+        <div class="filter-group">
+          <h3 class="filter-group__title">Dokumenttyp</h3>
+          <div class="filter-group__options" id="filter-dokumenttyp">
+            <!-- Populated by JavaScript -->
+          </div>
+        </div>
+
+        <!-- Collection Filter -->
+        <div class="filter-group">
+          <h3 class="filter-group__title">Bestand</h3>
+          <div class="filter-group__options" id="filter-bestand">
+            <label class="filter-option">
+              <input type="checkbox" value="objekte" checked>
+              <span class="filter-option__label">Objekte</span>
+              <span class="filter-option__count" id="count-objekte">-</span>
+            </label>
+            <label class="filter-option">
+              <input type="checkbox" value="fotos" checked>
+              <span class="filter-option__label">Fotografien</span>
+              <span class="filter-option__count" id="count-fotos">-</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Access Status Filter -->
+        <div class="filter-group">
+          <h3 class="filter-group__title">Zugänglichkeit</h3>
+          <div class="filter-group__options" id="filter-zugang">
+            <label class="filter-option">
+              <input type="checkbox" value="offen" checked>
+              <span class="filter-option__label">Offen</span>
+            </label>
+            <label class="filter-option">
+              <input type="checkbox" value="eingeschraenkt" checked>
+              <span class="filter-option__label">Eingeschränkt</span>
+            </label>
+            <label class="filter-option">
+              <input type="checkbox" value="gesperrt" checked>
+              <span class="filter-option__label">Gesperrt</span>
+            </label>
+          </div>
         </div>
       </div>
     </aside>
 
-    <!-- Content Area -->
-    <section class="content">
+    <!-- Horizontal Toolbar - shown on all pages -->
+    <div class="analyse-toolbar" id="analyse-toolbar">
+      <!-- Visualization Selector -->
+      <div class="toolbar-section toolbar-section--viz">
+        <div class="viz-selector-horizontal" id="viz-selector">
+          <button class="viz-tab viz-tab--active" data-viz="partitur" aria-pressed="true">
+            <i data-lucide="layers" class="viz-tab__icon" aria-hidden="true"></i>
+            <span class="viz-tab__label">Partitur</span>
+          </button>
+          <button class="viz-tab" data-viz="matrix" aria-pressed="false">
+            <i data-lucide="grid-3x3" class="viz-tab__icon" aria-hidden="true"></i>
+            <span class="viz-tab__label">Matrix</span>
+          </button>
+          <button class="viz-tab" data-viz="kosmos" aria-pressed="false">
+            <i data-lucide="sun" class="viz-tab__icon" aria-hidden="true"></i>
+            <span class="viz-tab__label">Kosmos</span>
+          </button>
+          <button class="viz-tab" data-viz="sankey" aria-pressed="false">
+            <i data-lucide="git-branch" class="viz-tab__icon" aria-hidden="true"></i>
+            <span class="viz-tab__label">Karriere</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Dynamic Controls Area -->
+      <div class="toolbar-section toolbar-section--controls">
+        <!-- Partitur Controls -->
+        <div class="toolbar-controls" id="controls-partitur">
+          <div class="toolbar-control-group">
+            <label class="toolbar-label">Spuren:</label>
+            <div class="toolbar-chips" id="filter-spuren">
+              <label class="toolbar-chip toolbar-chip--active">
+                <input type="checkbox" value="lebensphasen" checked>
+                <span>Lebensphasen</span>
+              </label>
+              <label class="toolbar-chip toolbar-chip--active">
+                <input type="checkbox" value="orte" checked>
+                <span>Orte</span>
+              </label>
+              <label class="toolbar-chip toolbar-chip--active">
+                <input type="checkbox" value="mobilitaet" checked>
+                <span>Mobilität</span>
+              </label>
+              <label class="toolbar-chip toolbar-chip--active">
+                <input type="checkbox" value="netzwerk" checked>
+                <span>Netzwerk</span>
+              </label>
+              <label class="toolbar-chip toolbar-chip--active">
+                <input type="checkbox" value="repertoire" checked>
+                <span>Repertoire</span>
+              </label>
+              <label class="toolbar-chip toolbar-chip--active">
+                <input type="checkbox" value="dokumente" checked>
+                <span>Dokumente</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Matrix Controls (hidden) -->
+        <div class="toolbar-controls toolbar-controls--hidden" id="controls-matrix">
+          <div class="toolbar-control-group">
+            <label class="toolbar-label">Kategorien:</label>
+            <div class="toolbar-chips" id="filter-matrix-kategorie">
+              <label class="toolbar-chip toolbar-chip--active">
+                <input type="checkbox" value="dirigent" checked>
+                <span>Dirigenten</span>
+              </label>
+              <label class="toolbar-chip toolbar-chip--active">
+                <input type="checkbox" value="regisseur" checked>
+                <span>Regisseure</span>
+              </label>
+              <label class="toolbar-chip toolbar-chip--active">
+                <input type="checkbox" value="kollege" checked>
+                <span>Kollegen</span>
+              </label>
+              <label class="toolbar-chip toolbar-chip--active">
+                <input type="checkbox" value="vermittler" checked>
+                <span>Vermittler</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Kosmos Controls (hidden) -->
+        <div class="toolbar-controls toolbar-controls--hidden" id="controls-kosmos">
+          <div class="toolbar-control-group">
+            <label class="toolbar-label">Komponisten:</label>
+            <div class="toolbar-chips">
+              <label class="toolbar-chip toolbar-chip--active">
+                <input type="checkbox" value="wagner" checked>
+                <span>Wagner</span>
+              </label>
+              <label class="toolbar-chip toolbar-chip--active">
+                <input type="checkbox" value="verdi" checked>
+                <span>Verdi</span>
+              </label>
+              <label class="toolbar-chip toolbar-chip--active">
+                <input type="checkbox" value="strauss" checked>
+                <span>Strauss</span>
+              </label>
+              <label class="toolbar-chip toolbar-chip--active">
+                <input type="checkbox" value="andere" checked>
+                <span>Andere</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sankey Controls (hidden) -->
+        <div class="toolbar-controls toolbar-controls--hidden" id="controls-sankey">
+          <div class="toolbar-control-group">
+            <label class="toolbar-label">Mobilitätsformen:</label>
+            <div class="toolbar-chips" id="filter-mobilitaet">
+              <label class="toolbar-chip toolbar-chip--active">
+                <input type="checkbox" value="erzwungen" checked>
+                <span class="mobility-dot mobility-dot--erzwungen"></span>
+                <span>Erzwungen</span>
+              </label>
+              <label class="toolbar-chip toolbar-chip--active">
+                <input type="checkbox" value="geografisch" checked>
+                <span class="mobility-dot mobility-dot--geografisch"></span>
+                <span>Geografisch</span>
+              </label>
+              <label class="toolbar-chip toolbar-chip--active">
+                <input type="checkbox" value="lebensstil" checked>
+                <span class="mobility-dot mobility-dot--lebensstil"></span>
+                <span>Lebensstil</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FF Badges & Export -->
+      <div class="toolbar-section toolbar-section--meta">
+        <div class="ff-badges-mini" id="ff-badges">
+          <span class="ff-badge-mini ff-badge-mini--active" title="Mobilität → Vernetzung">FF1</span>
+          <span class="ff-badge-mini ff-badge-mini--active" title="Migration → Ästhetik">FF2</span>
+          <span class="ff-badge-mini ff-badge-mini--active" title="Wissenstransfer">FF3</span>
+          <span class="ff-badge-mini ff-badge-mini--active" title="Mobilitätsformen">FF4</span>
+        </div>
+        <button class="toolbar-export-btn" id="export-svg-btn" title="SVG exportieren">
+          <i data-lucide="download" aria-hidden="true"></i>
+          <span>SVG Export</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Content Area: Archiv View (hidden by default) -->
+    <section class="content content--hidden" id="content-archiv">
       <div class="stats-bar">
         <span class="stats-bar__count" id="result-count">Lade...</span>
         <div class="active-filters" id="active-filters"></div>
       </div>
 
       <div class="record-grid" id="record-grid">
-        <div class="loading-state">Lade Archivdaten...</div>
+        <div class="loading-state">
+          <i data-lucide="loader-2" class="loading-state__icon" aria-hidden="true"></i>
+          Lade Archivdaten...
+        </div>
+      </div>
+    </section>
+
+    <!-- Content Area: Analyse View - FULLWIDTH LAYOUT -->
+    <section class="content content--fullwidth" id="content-analyse">
+      <!-- Visualization Header (minimal) -->
+      <div class="viz-header-minimal">
+        <h2 class="viz-header__title" id="viz-title">Mobilitäts-Partitur</h2>
+        <p class="viz-header__description" id="viz-description">
+          Parallele Darstellung aller Dimensionen wie eine Orchesterpartitur – synchrone und diachrone Lesart.
+        </p>
+      </div>
+
+      <!-- Full-Width Visualization Container -->
+      <div class="viz-container viz-container--fullwidth" id="viz-container">
+        <div class="viz-placeholder">
+          <i data-lucide="bar-chart-3" class="viz-placeholder__icon" aria-hidden="true"></i>
+          <p class="viz-placeholder__title">Visualisierung</p>
+          <p class="viz-placeholder__text">Wird in Phase 3 implementiert.</p>
+          <p class="viz-placeholder__tech">D3.js · Observable Plot · Leaflet</p>
+        </div>
       </div>
     </section>
 
@@ -96,13 +306,102 @@
 
   <!-- Detail Modal -->
   <div class="modal-overlay" id="modal-overlay">
-    <div class="modal" role="dialog" aria-modal="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-signatur">
       <div class="modal__header">
-        <h2 class="modal__signatur" id="modal-signatur">-</h2>
-        <button class="modal__close" id="modal-close" aria-label="Schließen">&times;</button>
+        <div class="modal__header-content">
+          <span class="modal__breadcrumb" id="modal-breadcrumb">UAKUG / NIM / Hauptbestand</span>
+          <h2 class="modal__signatur" id="modal-signatur">-</h2>
+        </div>
+        <button class="modal__close" id="modal-close" aria-label="Schließen">
+          <i data-lucide="x" aria-hidden="true"></i>
+        </button>
       </div>
       <div class="modal__body" id="modal-body">
-        <!-- Populated by JavaScript -->
+        <!-- Title & Core Info -->
+        <section class="modal-section" id="modal-core">
+          <!-- Populated by JavaScript -->
+        </section>
+
+        <!-- Provenienz -->
+        <section class="modal-section modal-section--provenienz" id="modal-provenienz">
+          <h3 class="modal-section__title">
+            <i data-lucide="book-open" class="modal-section__icon" aria-hidden="true"></i>
+            Provenienz
+          </h3>
+          <div class="modal-section__content" id="provenienz-content">
+            <!-- Populated by JavaScript -->
+          </div>
+        </section>
+
+        <!-- Verknüpfungen -->
+        <section class="modal-section modal-section--relations" id="modal-relations">
+          <h3 class="modal-section__title">Verknüpfungen</h3>
+
+          <!-- Personen -->
+          <div class="relation-group" id="relations-personen">
+            <h4 class="relation-group__title">
+              <i data-lucide="user" class="relation-icon relation-icon--person" aria-hidden="true"></i>
+              Personen
+            </h4>
+            <ul class="relation-list" id="list-personen">
+              <!-- Populated by JavaScript -->
+            </ul>
+          </div>
+
+          <!-- Institutionen -->
+          <div class="relation-group" id="relations-institutionen">
+            <h4 class="relation-group__title">
+              <i data-lucide="building-2" class="relation-icon relation-icon--institution" aria-hidden="true"></i>
+              Institutionen
+            </h4>
+            <ul class="relation-list" id="list-institutionen">
+              <!-- Populated by JavaScript -->
+            </ul>
+          </div>
+
+          <!-- Orte -->
+          <div class="relation-group" id="relations-orte">
+            <h4 class="relation-group__title">
+              <i data-lucide="map-pin" class="relation-icon relation-icon--ort" aria-hidden="true"></i>
+              Orte
+            </h4>
+            <ul class="relation-list" id="list-orte">
+              <!-- Populated by JavaScript -->
+            </ul>
+          </div>
+
+          <!-- Werke -->
+          <div class="relation-group" id="relations-werke">
+            <h4 class="relation-group__title">
+              <i data-lucide="music" class="relation-icon relation-icon--werk" aria-hidden="true"></i>
+              Werke
+            </h4>
+            <ul class="relation-list" id="list-werke">
+              <!-- Populated by JavaScript -->
+            </ul>
+          </div>
+
+          <!-- Ereignisse -->
+          <div class="relation-group" id="relations-ereignisse">
+            <h4 class="relation-group__title">
+              <i data-lucide="calendar" class="relation-icon relation-icon--ereignis" aria-hidden="true"></i>
+              Ereignisse
+            </h4>
+            <ul class="relation-list" id="list-ereignisse">
+              <!-- Populated by JavaScript -->
+            </ul>
+          </div>
+        </section>
+      </div>
+      <div class="modal__footer">
+        <button class="btn btn--secondary" id="modal-json" aria-label="JSON-LD anzeigen">
+          <i data-lucide="braces" class="btn__icon" aria-hidden="true"></i>
+          JSON-LD
+        </button>
+        <button class="btn btn--primary" id="modal-analyse" aria-label="In Analyse öffnen">
+          <i data-lucide="bar-chart-3" class="btn__icon" aria-hidden="true"></i>
+          In Analyse öffnen
+        </button>
       </div>
     </div>
   </div>
@@ -121,8 +420,30 @@
     </div>
   </footer>
 
+  <!-- D3.js for Visualizations -->
+  <script src="https://unpkg.com/d3@7"></script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
   <!-- Application Script -->
   <script src="js/app.js"></script>
+
+  <!-- Color Schemes - centralized color definitions -->
+  <script src="js/color-schemes.js"></script>
+
+  <!-- Data Extractor - transforms 436 real archive records for visualizations -->
+  <script src="js/data-extractor.js"></script>
+
+  <!-- Visualization Module -->
+  <script src="js/partitur.js"></script>
+
+  <!-- Initialize Lucide Icons -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      lucide.createIcons();
+    });
+  </script>
 
 </body>
 </html>

@@ -27,6 +27,62 @@
   };
 
   /**
+   * Tektonik structure based on archive organization
+   *
+   * Signatur-Muster in den Daten:
+   * - Plakate:      UAKUG/NIM/PL_XX     (25 Einheiten)
+   * - Hauptbestand: UAKUG/NIM_XXX      (183 Einheiten, ohne FS/TT/PL)
+   * - Fotografien:  UAKUG/NIM_FS_XXX   (228 Einheiten)
+   * - Tonträger:    UAKUG/NIM_TT_XX    (1 Einheit)
+   */
+  const TEKTONIK_STRUKTUR = {
+    'Hauptbestand': {
+      label: 'Hauptbestand',
+      prefix: 'NIM_',
+      excludePrefix: ['NIM/PL_', 'NIM_FS_', 'NIM_TT_'],
+      children: null  // Keine Unterkategorien in den Daten vorhanden
+    },
+    'Plakate': {
+      label: 'Plakate',
+      prefix: 'NIM/PL_'
+    },
+    'Fotografien': {
+      label: 'Fotografien',
+      prefix: 'NIM_FS_'
+    },
+    'Tonträger': {
+      label: 'Tonträger',
+      prefix: 'NIM_TT_'
+    }
+  };
+
+  /**
+   * Visualization metadata
+   */
+  const VIZ_INFO = {
+    partitur: {
+      title: 'Mobilitäts-Partitur',
+      description: 'Parallele Darstellung aller Dimensionen wie eine Orchesterpartitur – synchrone und diachrone Lesart.',
+      ff: ['FF1', 'FF2', 'FF3', 'FF4']
+    },
+    matrix: {
+      title: 'Begegnungs-Matrix',
+      description: 'Beziehungsintensität zu Personen über Zeitperioden – wer war wann wichtig?',
+      ff: ['FF1', 'FF3']
+    },
+    kosmos: {
+      title: 'Rollen-Kosmos',
+      description: 'Radiale Darstellung des künstlerischen Universums – Komponisten, Rollen, Aufführungsorte.',
+      ff: ['FF2']
+    },
+    sankey: {
+      title: 'Biografie-Strom',
+      description: 'Alluviale Darstellung der Lebens-Trajektorie – Fluss durch Orte, Institutionen, Rollen.',
+      ff: ['FF4']
+    }
+  };
+
+  /**
    * German labels for document types
    */
   const DOKUMENTTYP_LABELS = {
@@ -80,7 +136,11 @@
   const state = {
     allRecords: [],
     filteredRecords: [],
-    dokumenttypCounts: {}
+    dokumenttypCounts: {},
+    currentView: 'analyse',  // Default to Analyse view
+    currentViz: 'partitur',
+    tektonikFilter: null,
+    selectedRecord: null
   };
 
   /* ==========================================================================
@@ -111,6 +171,9 @@
 
       // Build filter UI
       buildDokumenttypFilter();
+
+      // Build Tektonik navigation
+      buildTektonikNav();
 
       // Initial render
       applyFilters();
@@ -147,7 +210,229 @@
   }
 
   /* ==========================================================================
-     4. Filtering
+     4. Tektonik Navigation
+     ========================================================================== */
+
+  /**
+   * Build the Tektonik navigation tree
+   */
+  function buildTektonikNav() {
+    const container = document.getElementById('tektonik-nav');
+    if (!container) return;
+
+    let html = '';
+
+    for (const [key, gruppe] of Object.entries(TEKTONIK_STRUKTUR)) {
+      const count = countRecordsInGruppe(key);
+      const hasChildren = gruppe.children && Object.keys(gruppe.children).length > 0;
+
+      html += `
+        <div class="tektonik-item" data-gruppe="${key}">
+          <div class="tektonik-item__row" role="button" tabindex="0">
+            <span class="tektonik-item__toggle${hasChildren ? '' : ' tektonik-item__toggle--empty'}">
+              ${hasChildren ? '<i data-lucide="chevron-right"></i>' : ''}
+            </span>
+            <span class="tektonik-item__label">${gruppe.label}</span>
+            <span class="tektonik-item__count">${count}</span>
+          </div>
+          ${hasChildren ? buildTektonikChildren(gruppe.children) : ''}
+        </div>
+      `;
+    }
+
+    container.innerHTML = html;
+
+    // Initialize Lucide icons in the new content
+    if (window.lucide) {
+      window.lucide.createIcons();
+    }
+
+    // Attach event listeners
+    container.querySelectorAll('.tektonik-item__row').forEach(row => {
+      row.addEventListener('click', handleTektonikClick);
+      row.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleTektonikClick(e);
+        }
+      });
+    });
+  }
+
+  /**
+   * Build child items for Tektonik tree
+   */
+  function buildTektonikChildren(children) {
+    let html = '<div class="tektonik-item__children">';
+
+    for (const [key, child] of Object.entries(children)) {
+      const count = countRecordsWithPrefix(child.prefix);
+      html += `
+        <div class="tektonik-item" data-prefix="${child.prefix}">
+          <div class="tektonik-item__row" role="button" tabindex="0">
+            <span class="tektonik-item__toggle tektonik-item__toggle--empty"></span>
+            <span class="tektonik-item__label">${key}</span>
+            <span class="tektonik-item__count">${count}</span>
+          </div>
+        </div>
+      `;
+    }
+
+    html += '</div>';
+    return html;
+  }
+
+  /**
+   * Count records in a Bestandsgruppe
+   */
+  function countRecordsInGruppe(gruppeKey) {
+    const gruppe = TEKTONIK_STRUKTUR[gruppeKey];
+    if (!gruppe) return 0;
+
+    return state.allRecords.filter(record => {
+      const id = record['rico:identifier'] || '';
+      if (!id.includes(gruppe.prefix)) return false;
+
+      // Exclude if matches any exclude prefix
+      if (gruppe.excludePrefix) {
+        for (const excl of gruppe.excludePrefix) {
+          if (id.includes(excl)) return false;
+        }
+      }
+      return true;
+    }).length;
+  }
+
+  /**
+   * Count records with a specific prefix
+   */
+  function countRecordsWithPrefix(prefix) {
+    return state.allRecords.filter(record => {
+      const id = record['rico:identifier'] || '';
+      return id.includes(prefix);
+    }).length;
+  }
+
+  /**
+   * Handle Tektonik item click
+   */
+  function handleTektonikClick(event) {
+    const item = event.target.closest('.tektonik-item');
+    const row = item.querySelector('.tektonik-item__row');
+    const children = item.querySelector('.tektonik-item__children');
+    const toggle = item.querySelector('.tektonik-item__toggle');
+
+    // Toggle children visibility
+    if (children) {
+      children.classList.toggle('tektonik-item__children--expanded');
+      toggle.classList.toggle('tektonik-item__toggle--expanded');
+    }
+
+    // Set filter
+    const gruppe = item.dataset.gruppe;
+    const prefix = item.dataset.prefix;
+
+    // Remove active from all
+    document.querySelectorAll('.tektonik-item__row--active').forEach(el => {
+      el.classList.remove('tektonik-item__row--active');
+    });
+
+    // Set active
+    row.classList.add('tektonik-item__row--active');
+
+    // Update filter state
+    if (prefix) {
+      state.tektonikFilter = { type: 'prefix', value: prefix };
+    } else if (gruppe) {
+      state.tektonikFilter = { type: 'gruppe', value: gruppe };
+    }
+
+    applyFilters();
+  }
+
+  /**
+   * Clear Tektonik filter
+   */
+  function clearTektonikFilter() {
+    state.tektonikFilter = null;
+    document.querySelectorAll('.tektonik-item__row--active').forEach(el => {
+      el.classList.remove('tektonik-item__row--active');
+    });
+    applyFilters();
+  }
+
+  /* ==========================================================================
+     5. View Switching
+     ========================================================================== */
+
+  /**
+   * Switch between Archiv and Analyse views
+   */
+  function switchView(view) {
+    state.currentView = view;
+
+    // Update tabs
+    document.querySelectorAll('.nav-tab').forEach(tab => {
+      const isActive = tab.dataset.view === view;
+      tab.classList.toggle('nav-tab--active', isActive);
+      tab.setAttribute('aria-selected', isActive);
+    });
+
+    // Update sidebar visibility (only show sidebar for archiv view)
+    if (DOM.sidebarArchiv) {
+      DOM.sidebarArchiv.classList.toggle('sidebar--hidden', view !== 'archiv');
+    }
+    // Old analyse sidebar is deprecated, always hidden (if it exists)
+    if (DOM.sidebarAnalyse) {
+      DOM.sidebarAnalyse.classList.add('sidebar--hidden');
+    }
+
+    // Update content areas
+    if (DOM.contentArchiv) {
+      DOM.contentArchiv.classList.toggle('content--hidden', view !== 'archiv');
+    }
+    if (DOM.contentAnalyse) {
+      DOM.contentAnalyse.classList.toggle('content--hidden', view !== 'analyse');
+    }
+
+    // Update search placeholder
+    DOM.searchInput.placeholder = view === 'archiv'
+      ? 'Suche in Titeln und Beschreibungen...'
+      : 'Suche in Visualisierung...';
+  }
+
+  /**
+   * Switch visualization type
+   */
+  function switchVisualization(viz) {
+    state.currentViz = viz;
+
+    // Update buttons
+    document.querySelectorAll('.viz-tab').forEach(btn => {
+      const isActive = btn.dataset.viz === viz;
+      btn.classList.toggle('viz-tab--active', isActive);
+      btn.setAttribute('aria-pressed', isActive);
+    });
+
+    // Update controls visibility
+    document.querySelectorAll('.viz-controls').forEach(ctrl => {
+      ctrl.classList.add('viz-controls--hidden');
+    });
+    const activeControls = document.getElementById(`controls-${viz}`);
+    if (activeControls) {
+      activeControls.classList.remove('viz-controls--hidden');
+    }
+
+    // Update viz header
+    const info = VIZ_INFO[viz];
+    if (info) {
+      DOM.vizTitle.textContent = info.title;
+      DOM.vizDescription.textContent = info.description;
+    }
+  }
+
+  /* ==========================================================================
+     6. Filtering
      ========================================================================== */
 
   /**
@@ -210,6 +495,24 @@
       // Search filter
       if (filters.searchTerm && !matchesSearch(record, filters.searchTerm)) {
         return false;
+      }
+
+      // Tektonik filter
+      if (state.tektonikFilter) {
+        const id = record['rico:identifier'] || '';
+        if (state.tektonikFilter.type === 'prefix') {
+          if (!id.includes(state.tektonikFilter.value)) return false;
+        } else if (state.tektonikFilter.type === 'gruppe') {
+          const gruppe = TEKTONIK_STRUKTUR[state.tektonikFilter.value];
+          if (gruppe) {
+            if (!id.includes(gruppe.prefix)) return false;
+            if (gruppe.excludePrefix) {
+              for (const excl of gruppe.excludePrefix) {
+                if (id.includes(excl)) return false;
+              }
+            }
+          }
+        }
       }
 
       // Document type filter
@@ -322,17 +625,46 @@
    * Open detail modal for a record
    */
   function openModal(record) {
-    DOM.modalSignatur.textContent = record['rico:identifier'] || '';
-    DOM.modalBody.innerHTML = createModalContentHTML(record);
+    state.selectedRecord = record;
+
+    // Set signatur and breadcrumb
+    const signatur = record['rico:identifier'] || '';
+    DOM.modalSignatur.textContent = signatur;
+    DOM.modalBreadcrumb.textContent = getBreadcrumb(signatur);
+
+    // Populate core section
+    DOM.modalCore.innerHTML = createCoreContentHTML(record);
+
+    // Populate provenienz section
+    populateProvenienz(record);
+
+    // Populate relations sections
+    populateRelations(record);
 
     DOM.modalOverlay.classList.add('modal-overlay--active');
     document.body.style.overflow = 'hidden';
   }
 
   /**
-   * Create HTML content for modal body
+   * Get breadcrumb path from signatur
    */
-  function createModalContentHTML(record) {
+  function getBreadcrumb(signatur) {
+    const parts = signatur.split('/');
+    if (parts.length < 2) return signatur;
+
+    // Determine Bestandsgruppe
+    let bestandsgruppe = 'Hauptbestand';
+    if (signatur.includes('_PL_')) bestandsgruppe = 'Plakate';
+    else if (signatur.includes('_F_')) bestandsgruppe = 'Fotografien';
+    else if (signatur.includes('_T_')) bestandsgruppe = 'Tonträger';
+
+    return `${parts[0]} / ${parts[1]} / ${bestandsgruppe}`;
+  }
+
+  /**
+   * Create HTML content for modal core section
+   */
+  function createCoreContentHTML(record) {
     const typ = getDokumenttyp(record);
     const isFoto = typ === 'Photograph';
     const rows = [];
@@ -358,15 +690,89 @@
       addObjectFields(record, rows);
     }
 
-    // Relations
-    addRelationFields(record, rows);
-
     // Build rows HTML
     html += rows
       .map(([label, value]) => createDetailRowHTML(label, value))
       .join('');
 
     return html;
+  }
+
+  /**
+   * Populate provenienz section
+   */
+  function populateProvenienz(record) {
+    const provenienzContent = DOM.provenienzContent;
+    if (!provenienzContent) return;
+
+    // Default provenienz info (could be extended with actual data)
+    provenienzContent.innerHTML = `
+      <div class="detail-row">
+        <span class="detail-row__label">Übernommen</span>
+        <span class="detail-row__value">2015 vom Nachlass der Künstlerin</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-row__label">Vorbesitz</span>
+        <span class="detail-row__value">Privatbesitz Ira Malaniuk, Zürich</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-row__label">Bearbeitung</span>
+        <span class="detail-row__value">Erschließung 2026 (Projekt M³GIM)</span>
+      </div>
+    `;
+  }
+
+  /**
+   * Populate relations sections in modal
+   */
+  function populateRelations(record) {
+    // Get relation data
+    const agents = ensureArray(record['rico:hasOrHadAgent'] || []);
+    const subjects = ensureArray(record['rico:hasOrHadSubject'] || []);
+    const locations = ensureArray(record['rico:hasOrHadLocation'] || []);
+
+    // Categorize agents into persons and institutions
+    const persons = agents.filter(a => !a.type || a.type === 'person');
+    const institutions = agents.filter(a => a.type === 'institution');
+
+    // Categorize subjects into werke and ereignisse
+    const werke = subjects.filter(s => s.type === 'werk' || !s.type);
+    const ereignisse = subjects.filter(s => s.type === 'ereignis');
+
+    // Populate lists
+    populateRelationList('list-personen', persons, 'relations-personen');
+    populateRelationList('list-institutionen', institutions, 'relations-institutionen');
+    populateRelationList('list-orte', locations, 'relations-orte');
+    populateRelationList('list-werke', werke, 'relations-werke');
+    populateRelationList('list-ereignisse', ereignisse, 'relations-ereignisse');
+  }
+
+  /**
+   * Populate a single relation list
+   */
+  function populateRelationList(listId, items, groupId) {
+    const list = document.getElementById(listId);
+    const group = document.getElementById(groupId);
+
+    if (!list || !group) return;
+
+    if (!items || items.length === 0) {
+      group.classList.add('relation-group--empty');
+      list.innerHTML = '';
+      return;
+    }
+
+    group.classList.remove('relation-group--empty');
+    list.innerHTML = items.map(item => {
+      const name = item.name || item;
+      const role = item.role ? ` (${item.role})` : '';
+      return `
+        <li class="relation-list__item">
+          <span class="relation-list__name">${escapeHtml(name)}</span>
+          <span class="relation-list__role">${escapeHtml(role)}</span>
+        </li>
+      `;
+    }).join('');
   }
 
   /**
@@ -385,9 +791,6 @@
     if (record['m3gim:photoType']) {
       rows.push(['Fototyp', PHOTO_TYPE_LABELS[record['m3gim:photoType']] || record['m3gim:photoType']]);
     }
-    if (record['rico:hasOrHadLocation']) {
-      rows.push(['Aufnahmeort', record['rico:hasOrHadLocation']]);
-    }
   }
 
   /**
@@ -402,23 +805,6 @@
     }
     if (record['m3gim:digitizationStatus']) {
       rows.push(['Digitalisierung', SCAN_STATUS_LABELS[record['m3gim:digitizationStatus']] || record['m3gim:digitizationStatus']]);
-    }
-  }
-
-  /**
-   * Add relation fields to rows
-   */
-  function addRelationFields(record, rows) {
-    if (record['rico:hasOrHadAgent']) {
-      const agents = ensureArray(record['rico:hasOrHadAgent']);
-      const agentStr = agents.map(a => `${a.name} (${a.role})`).join(', ');
-      rows.push(['Personen/Institutionen', agentStr]);
-    }
-
-    if (record['rico:hasOrHadSubject']) {
-      const subjects = ensureArray(record['rico:hasOrHadSubject']);
-      const subjectStr = subjects.map(s => s.name).join(', ');
-      rows.push(['Themen/Werke', subjectStr]);
     }
   }
 
@@ -493,10 +879,62 @@
       input.addEventListener('change', applyFilters);
     });
 
+    // View tabs
+    document.querySelectorAll('.nav-tab').forEach(tab => {
+      tab.addEventListener('click', () => switchView(tab.dataset.view));
+    });
+
+    // Visualization selector
+    document.querySelectorAll('.viz-tab').forEach(btn => {
+      btn.addEventListener('click', () => switchVisualization(btn.dataset.viz));
+    });
+
+    // Network threshold slider
+    if (DOM.networkThreshold) {
+      DOM.networkThreshold.addEventListener('input', () => {
+        DOM.thresholdValue.textContent = DOM.networkThreshold.value;
+      });
+    }
+
     // Modal
     DOM.modalClose.addEventListener('click', closeModal);
     DOM.modalOverlay.addEventListener('click', handleOverlayClick);
     document.addEventListener('keydown', handleKeydown);
+
+    // Modal actions
+    if (DOM.modalJson) {
+      DOM.modalJson.addEventListener('click', showJsonLd);
+    }
+    if (DOM.modalAnalyse) {
+      DOM.modalAnalyse.addEventListener('click', openInAnalyse);
+    }
+  }
+
+  /**
+   * Show JSON-LD for current record
+   */
+  function showJsonLd() {
+    if (!state.selectedRecord) return;
+
+    const jsonStr = JSON.stringify(state.selectedRecord, null, 2);
+    const newWindow = window.open('', '_blank');
+    newWindow.document.write(`
+      <html>
+        <head><title>JSON-LD - ${state.selectedRecord['rico:identifier']}</title></head>
+        <body style="font-family: monospace; white-space: pre; padding: 20px; background: #f5f5f5;">
+${escapeHtml(jsonStr)}
+        </body>
+      </html>
+    `);
+  }
+
+  /**
+   * Open current record in Analyse view
+   */
+  function openInAnalyse() {
+    closeModal();
+    switchView('analyse');
+    // Future: highlight the record in the visualization
   }
 
   /* ==========================================================================
@@ -611,18 +1049,40 @@
    * DOM element references
    */
   const DOM = {
+    // Search & Grid
     searchInput: document.getElementById('search-input'),
     recordGrid: document.getElementById('record-grid'),
     resultCount: document.getElementById('result-count'),
+
+    // Filters
     filterDokumenttyp: document.getElementById('filter-dokumenttyp'),
     filterBestand: document.getElementById('filter-bestand'),
     filterZugang: document.getElementById('filter-zugang'),
     countObjekte: document.getElementById('count-objekte'),
     countFotos: document.getElementById('count-fotos'),
+
+    // View areas
+    sidebarArchiv: document.getElementById('sidebar-archiv'),
+    sidebarAnalyse: document.getElementById('sidebar-analyse'),
+    contentArchiv: document.getElementById('content-archiv'),
+    contentAnalyse: document.getElementById('content-analyse'),
+
+    // Visualization
+    vizTitle: document.getElementById('viz-title'),
+    vizDescription: document.getElementById('viz-description'),
+    networkThreshold: document.getElementById('network-threshold'),
+    thresholdValue: document.getElementById('threshold-value'),
+
+    // Modal
     modalOverlay: document.getElementById('modal-overlay'),
     modalSignatur: document.getElementById('modal-signatur'),
+    modalBreadcrumb: document.getElementById('modal-breadcrumb'),
     modalBody: document.getElementById('modal-body'),
-    modalClose: document.getElementById('modal-close')
+    modalCore: document.getElementById('modal-core'),
+    modalClose: document.getElementById('modal-close'),
+    provenienzContent: document.getElementById('provenienz-content'),
+    modalJson: document.getElementById('modal-json'),
+    modalAnalyse: document.getElementById('modal-analyse')
   };
 
   /**
@@ -631,6 +1091,8 @@
   function init() {
     setupEventListeners();
     loadData();
+    // Initialize with the default view (analyse)
+    switchView(state.currentView);
   }
 
   // Start application

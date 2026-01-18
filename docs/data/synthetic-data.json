@@ -1,0 +1,755 @@
+{
+  "_meta": {
+    "synthetic": true,
+    "version": "2.0",
+    "created": "2026-01-18",
+    "purpose": "Prototyp-Entwicklung für M³GIM Visualisierungen mit Archivverlinkung",
+    "derivedFrom": [
+      "M³GIM Kick-Off Präsentation 2026-01",
+      "Dreischichtenmodell zur Erschließung",
+      "Beispieldokumente: NIM_028 (Vertrag), NIM_021 (Korrespondenz), NIM_004 (Kritik)"
+    ],
+    "note": "Diese Daten sind SYNTHETISCH und dienen der Prototyp-Entwicklung. Jeder Datenpunkt verweist auf simulierte Archivalien (UAKUG/NIM_XXX). Die 'dokumente'-Arrays enthalten die Archivsignaturen, die als Belege für die aggregierten Daten dienen."
+  },
+
+  "archivalien": {
+    "_note": "Referenztabelle der simulierten Archivdokumente für die Visualisierungen",
+    "dokumente": [
+      { "id": "NIM_001", "typ": "Fotografie", "titel": "Porträt als Amneris (Aida)", "datum": "1946", "ort": "Graz" },
+      { "id": "NIM_002", "typ": "Fotografie", "titel": "Szenenfoto Fricka (Ring)", "datum": "1952", "ort": "Bayreuth" },
+      { "id": "NIM_003", "typ": "Fotografie", "titel": "Porträt als Azucena (Trovatore)", "datum": "1948", "ort": "Wien" },
+      { "id": "NIM_004", "typ": "Presse", "titel": "Kritik: Amneris-Debüt Graz", "datum": "1945-12", "ort": "Graz" },
+      { "id": "NIM_005", "typ": "Presse", "titel": "Rezension: Fricka Bayreuth", "datum": "1952-08", "ort": "Bayreuth" },
+      { "id": "NIM_006", "typ": "Presse", "titel": "Interview: Ukrainische Wurzeln", "datum": "1958", "ort": "Wien" },
+      { "id": "NIM_010", "typ": "Korrespondenz", "titel": "Brief von Erik Werba", "datum": "1950-03-15", "ort": "Wien" },
+      { "id": "NIM_011", "typ": "Korrespondenz", "titel": "Brief an Wieland Wagner", "datum": "1955-02", "ort": "Bayreuth" },
+      { "id": "NIM_012", "typ": "Korrespondenz", "titel": "Brief von Karl Böhm", "datum": "1953-06", "ort": "Wien" },
+      { "id": "NIM_013", "typ": "Korrespondenz", "titel": "Brief von Karajan", "datum": "1956-01", "ort": "Salzburg" },
+      { "id": "NIM_014", "typ": "Korrespondenz", "titel": "Agentur Taubman: Engagement München", "datum": "1955-04", "ort": "München" },
+      { "id": "NIM_015", "typ": "Korrespondenz", "titel": "Brief von Christa Ludwig", "datum": "1962-09", "ort": "Wien" },
+      { "id": "NIM_016", "typ": "Korrespondenz", "titel": "Brief von Sena Jurinac", "datum": "1954-07", "ort": "Wien" },
+      { "id": "NIM_017", "typ": "Korrespondenz", "titel": "Brief von Hans Hotter", "datum": "1955-08", "ort": "Bayreuth" },
+      { "id": "NIM_018", "typ": "Korrespondenz", "titel": "Brief von Rudolf Hartmann", "datum": "1956-03", "ort": "München" },
+      { "id": "NIM_019", "typ": "Korrespondenz", "titel": "Hugo Zelzer: London-Konzert", "datum": "1957-11", "ort": "London" },
+      { "id": "NIM_020", "typ": "Vertrag", "titel": "Festvertrag Grazer Oper", "datum": "1945-08", "ort": "Graz" },
+      { "id": "NIM_021", "typ": "Korrespondenz", "titel": "Agentur Taubman: Bayreuth 1952", "datum": "1951-12", "ort": "Wien" },
+      { "id": "NIM_022", "typ": "Vertrag", "titel": "Engagement Wiener Staatsoper", "datum": "1947-05", "ort": "Wien" },
+      { "id": "NIM_028", "typ": "Vertrag", "titel": "Gastvertrag Bayerische Staatsoper", "datum": "1958-04-18", "ort": "München" },
+      { "id": "NIM_029", "typ": "Vertrag", "titel": "Festspielvertrag Bayreuth 1952", "datum": "1952-03", "ort": "Bayreuth" },
+      { "id": "NIM_030", "typ": "Vertrag", "titel": "Festspielvertrag Salzburg", "datum": "1955-01", "ort": "Salzburg" },
+      { "id": "NIM_040", "typ": "Programm", "titel": "Programmheft Ring Bayreuth 1952", "datum": "1952-08", "ort": "Bayreuth" },
+      { "id": "NIM_041", "typ": "Programm", "titel": "Programmheft Aida Wien", "datum": "1950-11", "ort": "Wien" },
+      { "id": "NIM_042", "typ": "Programm", "titel": "Programmheft Meistersinger München", "datum": "1957-06", "ort": "München" },
+      { "id": "NIM_043", "typ": "Programm", "titel": "Konzertprogramm London", "datum": "1958-04", "ort": "London" },
+      { "id": "NIM_044", "typ": "Programm", "titel": "Programmheft Rosenkavalier", "datum": "1955-03", "ort": "Wien" },
+      { "id": "NIM_050", "typ": "Fotografie", "titel": "Szenenfoto Octavian (Rosenkavalier)", "datum": "1955", "ort": "Wien" },
+      { "id": "NIM_051", "typ": "Fotografie", "titel": "Porträt als Klytämnestra (Elektra)", "datum": "1962", "ort": "Wien" },
+      { "id": "NIM_052", "typ": "Fotografie", "titel": "Szenenfoto Waltraute", "datum": "1954", "ort": "Bayreuth" },
+      { "id": "NIM_053", "typ": "Fotografie", "titel": "Porträt als Orpheus", "datum": "1953", "ort": "München" },
+      { "id": "NIM_054", "typ": "Fotografie", "titel": "Porträt als Cornelia (Julius Caesar)", "datum": "1959", "ort": "München" },
+      { "id": "NIM_055", "typ": "Fotografie", "titel": "Szenenfoto Magdalena (Meistersinger)", "datum": "1956", "ort": "München" },
+      { "id": "NIM_060", "typ": "Plakat", "titel": "Aida-Plakat Graz", "datum": "1946", "ort": "Graz" },
+      { "id": "NIM_061", "typ": "Plakat", "titel": "Ring-Plakat Bayreuth", "datum": "1952", "ort": "Bayreuth" },
+      { "id": "NIM_062", "typ": "Plakat", "titel": "Konzertplakat London", "datum": "1958", "ort": "London" },
+      { "id": "NIM_070", "typ": "Identitätsdokument", "titel": "Reisepass (Flucht 1944)", "datum": "1944", "ort": "Lemberg" },
+      { "id": "NIM_080", "typ": "Autobiografie", "titel": "Autobiografische Notizen (Kindheit)", "datum": "ca. 1980", "ort": "Zürich" },
+      { "id": "NIM_081", "typ": "Autobiografie", "titel": "Autobiografische Notizen (Karriere)", "datum": "ca. 1985", "ort": "Zürich" },
+      { "id": "NIM_090", "typ": "Tonträger", "titel": "Schallplatte: Ukrainische Lieder", "datum": "1960", "ort": "Wien" },
+      { "id": "NIM_FS_001", "typ": "Fotografie", "titel": "Porträt in Jugend", "datum": "ca. 1935", "ort": "Lemberg" },
+      { "id": "NIM_FS_002", "typ": "Fotografie", "titel": "Studienfoto Konservatorium", "datum": "ca. 1940", "ort": "Lemberg" },
+      { "id": "NIM_FS_010", "typ": "Fotografie", "titel": "Mit Karl Böhm nach Aufführung", "datum": "1954", "ort": "Wien" },
+      { "id": "NIM_FS_011", "typ": "Fotografie", "titel": "Mit Karajan bei Probe", "datum": "1956", "ort": "Salzburg" },
+      { "id": "NIM_FS_012", "typ": "Fotografie", "titel": "Mit Wieland Wagner, Bayreuth", "datum": "1955", "ort": "Bayreuth" },
+      { "id": "NIM_FS_013", "typ": "Fotografie", "titel": "Mit Hans Hotter als Wotan/Fricka", "datum": "1953", "ort": "Bayreuth" },
+      { "id": "NIM_FS_014", "typ": "Fotografie", "titel": "Gruppenfoto Sängerensemble Wien", "datum": "1958", "ort": "Wien" },
+      { "id": "NIM_PL_02", "typ": "Programm", "titel": "Programmheft Salzburger Mozart-Woche", "datum": "1959-01", "ort": "Salzburg" }
+    ]
+  },
+
+  "lebensphasen": [
+    {
+      "id": "LP1",
+      "label": "Kindheit & Jugend",
+      "von": "1919",
+      "bis": "1937",
+      "ort": "Lemberg",
+      "beschreibung": "Aufwachsen in Lemberg (damals Polen, heute Lwiw, Ukraine)",
+      "dokumente": ["NIM_080", "NIM_FS_001"]
+    },
+    {
+      "id": "LP2",
+      "label": "Ausbildung",
+      "von": "1937",
+      "bis": "1944",
+      "ort": "Lemberg",
+      "beschreibung": "Gesangsstudium am Konservatorium Lemberg",
+      "dokumente": ["NIM_080", "NIM_FS_002"]
+    },
+    {
+      "id": "LP3",
+      "label": "Flucht & Neubeginn",
+      "von": "1944",
+      "bis": "1945",
+      "ort": "Wien",
+      "beschreibung": "Flucht vor der Roten Armee, Ankunft in Wien",
+      "dokumente": ["NIM_070", "NIM_081"]
+    },
+    {
+      "id": "LP4",
+      "label": "Erstes Festengagement",
+      "von": "1945",
+      "bis": "1947",
+      "ort": "Graz",
+      "beschreibung": "Engagement an der Grazer Oper",
+      "dokumente": ["NIM_020", "NIM_001", "NIM_004", "NIM_060"]
+    },
+    {
+      "id": "LP5",
+      "label": "Aufstieg",
+      "von": "1947",
+      "bis": "1955",
+      "ort": "Wien/München",
+      "beschreibung": "Wiener Staatsoper, erste Gastspiele in München",
+      "dokumente": ["NIM_022", "NIM_003", "NIM_041", "NIM_010", "NIM_021", "NIM_029"]
+    },
+    {
+      "id": "LP6",
+      "label": "Internationale Karriere",
+      "von": "1955",
+      "bis": "1970",
+      "ort": "München/Bayreuth/Wien",
+      "beschreibung": "Gaststar an führenden Häusern, regelmäßig in Bayreuth",
+      "dokumente": ["NIM_028", "NIM_030", "NIM_002", "NIM_005", "NIM_011", "NIM_040", "NIM_043", "NIM_062"]
+    },
+    {
+      "id": "LP7",
+      "label": "Späte Karriere & Ruhestand",
+      "von": "1970",
+      "bis": "2009",
+      "ort": "Zürich",
+      "beschreibung": "Rückzug nach Zürich, gelegentliche Auftritte",
+      "dokumente": ["NIM_081"]
+    }
+  ],
+
+  "orte": [
+    {
+      "id": "L1",
+      "name": "Lemberg",
+      "name_heute": "Lwiw",
+      "land": "Ukraine (hist. Polen/Österreich-Ungarn)",
+      "wikidata": "Q36036",
+      "koordinaten": [49.8397, 24.0297],
+      "zeitraeume": [
+        { "von": "1919", "bis": "1944", "typ": "wohnort", "dokumente": ["NIM_080", "NIM_FS_001", "NIM_FS_002", "NIM_070"] }
+      ]
+    },
+    {
+      "id": "L2",
+      "name": "Wien",
+      "land": "Österreich",
+      "wikidata": "Q1741",
+      "koordinaten": [48.2082, 16.3738],
+      "zeitraeume": [
+        { "von": "1944", "bis": "1945", "typ": "wohnort", "dokumente": ["NIM_081"] },
+        { "von": "1947", "bis": "1958", "typ": "wohnort", "dokumente": ["NIM_022", "NIM_010"] },
+        { "von": "1947", "bis": "1970", "typ": "auffuehrungsort", "dokumente": ["NIM_003", "NIM_041", "NIM_044", "NIM_050", "NIM_051", "NIM_FS_010", "NIM_FS_014", "NIM_006", "NIM_090"] }
+      ]
+    },
+    {
+      "id": "L3",
+      "name": "Graz",
+      "land": "Österreich",
+      "wikidata": "Q13298",
+      "koordinaten": [47.0707, 15.4395],
+      "zeitraeume": [
+        { "von": "1945", "bis": "1947", "typ": "wohnort", "dokumente": ["NIM_020"] },
+        { "von": "1945", "bis": "1947", "typ": "auffuehrungsort", "dokumente": ["NIM_001", "NIM_004", "NIM_060"] }
+      ]
+    },
+    {
+      "id": "L4",
+      "name": "München",
+      "land": "Deutschland",
+      "wikidata": "Q1726",
+      "koordinaten": [48.1351, 11.5820],
+      "zeitraeume": [
+        { "von": "1950", "bis": "1970", "typ": "auffuehrungsort", "dokumente": ["NIM_028", "NIM_014", "NIM_042", "NIM_053", "NIM_054", "NIM_055", "NIM_018"] }
+      ]
+    },
+    {
+      "id": "L5",
+      "name": "Bayreuth",
+      "land": "Deutschland",
+      "wikidata": "Q3923",
+      "koordinaten": [49.9456, 11.5713],
+      "zeitraeume": [
+        { "von": "1952", "bis": "1968", "typ": "auffuehrungsort", "dokumente": ["NIM_029", "NIM_002", "NIM_005", "NIM_011", "NIM_040", "NIM_052", "NIM_061", "NIM_FS_012", "NIM_FS_013", "NIM_017"] }
+      ]
+    },
+    {
+      "id": "L6",
+      "name": "Zürich",
+      "land": "Schweiz",
+      "wikidata": "Q72",
+      "koordinaten": [47.3769, 8.5417],
+      "zeitraeume": [
+        { "von": "1958", "bis": "2009", "typ": "wohnort", "dokumente": ["NIM_081"] }
+      ]
+    },
+    {
+      "id": "L7",
+      "name": "London",
+      "land": "Großbritannien",
+      "wikidata": "Q84",
+      "koordinaten": [51.5074, -0.1278],
+      "zeitraeume": [
+        { "von": "1955", "bis": "1965", "typ": "auffuehrungsort", "dokumente": ["NIM_019", "NIM_043", "NIM_062"] }
+      ]
+    },
+    {
+      "id": "L8",
+      "name": "Salzburg",
+      "land": "Österreich",
+      "wikidata": "Q34713",
+      "koordinaten": [47.8095, 13.0550],
+      "zeitraeume": [
+        { "von": "1950", "bis": "1965", "typ": "auffuehrungsort", "dokumente": ["NIM_030", "NIM_013", "NIM_FS_011", "NIM_PL_02"] }
+      ]
+    }
+  ],
+
+  "mobilitaet": [
+    {
+      "id": "M1",
+      "von_ort": "L1",
+      "nach_ort": "L2",
+      "jahr": "1944",
+      "form": "erzwungen",
+      "beschreibung": "Flucht vor der Roten Armee aus Lemberg nach Wien",
+      "ff_bezug": ["FF4"],
+      "dokumente": ["NIM_070", "NIM_080", "NIM_081"]
+    },
+    {
+      "id": "M2",
+      "von_ort": "L2",
+      "nach_ort": "L3",
+      "jahr": "1945",
+      "form": "geografisch",
+      "beschreibung": "Erstes Festengagement an der Grazer Oper",
+      "ff_bezug": ["FF1", "FF4"],
+      "dokumente": ["NIM_020", "NIM_004"]
+    },
+    {
+      "id": "M3",
+      "von_ort": "L3",
+      "nach_ort": "L2",
+      "jahr": "1947",
+      "form": "geografisch",
+      "beschreibung": "Wechsel zur Wiener Staatsoper",
+      "ff_bezug": ["FF1", "FF4"],
+      "dokumente": ["NIM_022"]
+    },
+    {
+      "id": "M4",
+      "von_ort": "L2",
+      "nach_ort": "L4",
+      "jahr": "1950",
+      "form": "geografisch",
+      "beschreibung": "Beginn regelmäßiger Gastspiele in München",
+      "ff_bezug": ["FF1", "FF4"],
+      "dokumente": ["NIM_014"]
+    },
+    {
+      "id": "M5",
+      "von_ort": "L4",
+      "nach_ort": "L5",
+      "jahr": "1952",
+      "form": "geografisch",
+      "beschreibung": "Erstes Engagement bei den Bayreuther Festspielen",
+      "ff_bezug": ["FF1", "FF2", "FF4"],
+      "dokumente": ["NIM_029", "NIM_021", "NIM_002", "NIM_040"]
+    },
+    {
+      "id": "M6",
+      "von_ort": "L2",
+      "nach_ort": "L6",
+      "jahr": "1970",
+      "form": "lebensstil",
+      "beschreibung": "Übersiedlung nach Zürich (Ehemann)",
+      "ff_bezug": ["FF4"],
+      "dokumente": ["NIM_081"]
+    }
+  ],
+
+  "personen": [
+    {
+      "id": "P1",
+      "name": "Ira Malaniuk",
+      "wikidata": "Q94208",
+      "lebensdaten": "1919-2009",
+      "kategorie": "fokusperson",
+      "rollen_im_archiv": ["verfasser", "vertragspartner", "interpretin", "abgebildet"]
+    },
+    {
+      "id": "P2",
+      "name": "Herbert von Karajan",
+      "wikidata": "Q154325",
+      "lebensdaten": "1908-1989",
+      "kategorie": "dirigent",
+      "begegnungen": [
+        { "zeitraum": "1950-1954", "intensitaet": 2, "kontext": "Wien", "dokumente": [] },
+        { "zeitraum": "1955-1959", "intensitaet": 5, "kontext": "Salzburg, Wien", "dokumente": ["NIM_013", "NIM_FS_011", "NIM_030"] },
+        { "zeitraum": "1960-1964", "intensitaet": 4, "kontext": "Salzburg", "dokumente": ["NIM_FS_011"] },
+        { "zeitraum": "1965-1969", "intensitaet": 2, "kontext": "Wien", "dokumente": [] }
+      ]
+    },
+    {
+      "id": "P3",
+      "name": "Karl Böhm",
+      "wikidata": "Q154386",
+      "lebensdaten": "1894-1981",
+      "kategorie": "dirigent",
+      "begegnungen": [
+        { "zeitraum": "1950-1954", "intensitaet": 3, "kontext": "Wien", "dokumente": ["NIM_012", "NIM_FS_010"] },
+        { "zeitraum": "1955-1959", "intensitaet": 5, "kontext": "Wien, München", "dokumente": ["NIM_FS_010", "NIM_042"] },
+        { "zeitraum": "1960-1964", "intensitaet": 5, "kontext": "Wien, Bayreuth", "dokumente": ["NIM_FS_010"] },
+        { "zeitraum": "1965-1969", "intensitaet": 4, "kontext": "Wien", "dokumente": [] }
+      ]
+    },
+    {
+      "id": "P4",
+      "name": "Hans Knappertsbusch",
+      "wikidata": "Q154298",
+      "lebensdaten": "1888-1965",
+      "kategorie": "dirigent",
+      "begegnungen": [
+        { "zeitraum": "1950-1954", "intensitaet": 4, "kontext": "München, Bayreuth", "dokumente": ["NIM_040", "NIM_029"] },
+        { "zeitraum": "1955-1959", "intensitaet": 3, "kontext": "München, Bayreuth", "dokumente": ["NIM_061"] },
+        { "zeitraum": "1960-1964", "intensitaet": 2, "kontext": "Bayreuth", "dokumente": [] }
+      ]
+    },
+    {
+      "id": "P5",
+      "name": "Rudolf Hartmann",
+      "wikidata": "Q86417",
+      "lebensdaten": "1900-1988",
+      "kategorie": "regisseur",
+      "begegnungen": [
+        { "zeitraum": "1950-1954", "intensitaet": 2, "kontext": "München", "dokumente": ["NIM_053"] },
+        { "zeitraum": "1955-1959", "intensitaet": 4, "kontext": "München", "dokumente": ["NIM_018", "NIM_042", "NIM_055"] },
+        { "zeitraum": "1960-1964", "intensitaet": 3, "kontext": "München", "dokumente": ["NIM_054"] }
+      ]
+    },
+    {
+      "id": "P6",
+      "name": "Wieland Wagner",
+      "wikidata": "Q61644",
+      "lebensdaten": "1917-1966",
+      "kategorie": "regisseur",
+      "begegnungen": [
+        { "zeitraum": "1950-1954", "intensitaet": 3, "kontext": "Bayreuth", "dokumente": ["NIM_029", "NIM_040"] },
+        { "zeitraum": "1955-1959", "intensitaet": 5, "kontext": "Bayreuth", "dokumente": ["NIM_011", "NIM_FS_012", "NIM_061"] },
+        { "zeitraum": "1960-1964", "intensitaet": 4, "kontext": "Bayreuth", "dokumente": ["NIM_FS_012"] }
+      ]
+    },
+    {
+      "id": "P7",
+      "name": "Erik Werba",
+      "wikidata": "Q215539",
+      "lebensdaten": "1918-1992",
+      "kategorie": "vermittler",
+      "beschreibung": "Pianist, Liedbegleiter, Vermittler für Konzerte",
+      "begegnungen": [
+        { "zeitraum": "1945-1949", "intensitaet": 2, "kontext": "Wien", "dokumente": [] },
+        { "zeitraum": "1950-1954", "intensitaet": 4, "kontext": "Wien, Konzerte", "dokumente": ["NIM_010"] },
+        { "zeitraum": "1955-1959", "intensitaet": 5, "kontext": "Wien, London, Konzerte", "dokumente": ["NIM_010", "NIM_043"] },
+        { "zeitraum": "1960-1964", "intensitaet": 5, "kontext": "Wien, Konzerte", "dokumente": ["NIM_090"] },
+        { "zeitraum": "1965-1969", "intensitaet": 4, "kontext": "Wien, Zürich", "dokumente": [] },
+        { "zeitraum": "1970-1974", "intensitaet": 3, "kontext": "Zürich", "dokumente": [] }
+      ]
+    },
+    {
+      "id": "P8",
+      "name": "Agentur Taubman",
+      "wikidata": null,
+      "kategorie": "vermittler",
+      "beschreibung": "Künstleragentur Wien, Vermittlung von Engagements",
+      "begegnungen": [
+        { "zeitraum": "1950-1954", "intensitaet": 3, "kontext": "Verträge", "dokumente": ["NIM_021"] },
+        { "zeitraum": "1955-1959", "intensitaet": 5, "kontext": "Verträge München, Bayreuth", "dokumente": ["NIM_014", "NIM_028"] },
+        { "zeitraum": "1960-1964", "intensitaet": 5, "kontext": "Verträge", "dokumente": ["NIM_028"] },
+        { "zeitraum": "1965-1969", "intensitaet": 3, "kontext": "Verträge", "dokumente": [] }
+      ]
+    },
+    {
+      "id": "P9",
+      "name": "Christa Ludwig",
+      "wikidata": "Q57591",
+      "lebensdaten": "1928-2021",
+      "kategorie": "kollege",
+      "beschreibung": "Mezzosopranistin, Kollegin im gleichen Fach",
+      "begegnungen": [
+        { "zeitraum": "1955-1959", "intensitaet": 2, "kontext": "Wien", "dokumente": ["NIM_FS_014"] },
+        { "zeitraum": "1960-1964", "intensitaet": 4, "kontext": "Wien, Salzburg", "dokumente": ["NIM_015", "NIM_FS_014"] },
+        { "zeitraum": "1965-1969", "intensitaet": 3, "kontext": "Wien", "dokumente": [] }
+      ]
+    },
+    {
+      "id": "P10",
+      "name": "Sena Jurinac",
+      "wikidata": "Q232267",
+      "lebensdaten": "1921-2011",
+      "kategorie": "kollege",
+      "begegnungen": [
+        { "zeitraum": "1950-1954", "intensitaet": 3, "kontext": "Wien", "dokumente": ["NIM_016", "NIM_FS_014"] },
+        { "zeitraum": "1955-1959", "intensitaet": 4, "kontext": "Wien, Salzburg", "dokumente": ["NIM_FS_014"] },
+        { "zeitraum": "1960-1964", "intensitaet": 2, "kontext": "Wien", "dokumente": [] }
+      ]
+    },
+    {
+      "id": "P11",
+      "name": "Hans Hotter",
+      "wikidata": "Q62730",
+      "lebensdaten": "1909-2003",
+      "kategorie": "kollege",
+      "beschreibung": "Bass-Bariton, häufiger Partner in Wagner-Opern",
+      "begegnungen": [
+        { "zeitraum": "1950-1954", "intensitaet": 3, "kontext": "München, Bayreuth", "dokumente": ["NIM_040", "NIM_FS_013"] },
+        { "zeitraum": "1955-1959", "intensitaet": 4, "kontext": "Bayreuth", "dokumente": ["NIM_017", "NIM_FS_013", "NIM_061"] },
+        { "zeitraum": "1960-1964", "intensitaet": 2, "kontext": "Bayreuth", "dokumente": [] }
+      ]
+    },
+    {
+      "id": "P12",
+      "name": "Hugo Zelzer",
+      "wikidata": null,
+      "kategorie": "vermittler",
+      "beschreibung": "Österreichisches Kulturinstitut London",
+      "begegnungen": [
+        { "zeitraum": "1955-1959", "intensitaet": 2, "kontext": "London-Konzerte", "dokumente": ["NIM_019", "NIM_043", "NIM_062"] }
+      ]
+    }
+  ],
+
+  "institutionen": [
+    {
+      "id": "O1",
+      "name": "Wiener Staatsoper",
+      "wikidata": "Q181642",
+      "ort": "L2",
+      "zeitraeume": [
+        { "von": "1947", "bis": "1970", "rolle": "arbeitgeber", "dokumente": ["NIM_022", "NIM_041", "NIM_044", "NIM_003", "NIM_050", "NIM_051"] }
+      ]
+    },
+    {
+      "id": "O2",
+      "name": "Bayerische Staatsoper",
+      "wikidata": "Q681931",
+      "ort": "L4",
+      "zeitraeume": [
+        { "von": "1950", "bis": "1970", "rolle": "veranstalter", "dokumente": ["NIM_028", "NIM_014", "NIM_042", "NIM_053", "NIM_054", "NIM_055"] }
+      ]
+    },
+    {
+      "id": "O3",
+      "name": "Bayreuther Festspiele",
+      "wikidata": "Q155766",
+      "ort": "L5",
+      "zeitraeume": [
+        { "von": "1952", "bis": "1968", "rolle": "veranstalter", "dokumente": ["NIM_029", "NIM_021", "NIM_002", "NIM_005", "NIM_011", "NIM_040", "NIM_052", "NIM_061", "NIM_FS_012", "NIM_FS_013"] }
+      ]
+    },
+    {
+      "id": "O4",
+      "name": "Grazer Oper",
+      "wikidata": "Q697025",
+      "ort": "L3",
+      "zeitraeume": [
+        { "von": "1945", "bis": "1947", "rolle": "arbeitgeber", "dokumente": ["NIM_020", "NIM_001", "NIM_004", "NIM_060"] }
+      ]
+    },
+    {
+      "id": "O5",
+      "name": "Salzburger Festspiele",
+      "wikidata": "Q380808",
+      "ort": "L8",
+      "zeitraeume": [
+        { "von": "1950", "bis": "1965", "rolle": "veranstalter", "dokumente": ["NIM_030", "NIM_013", "NIM_FS_011", "NIM_PL_02"] }
+      ]
+    },
+    {
+      "id": "O6",
+      "name": "Österreichisches Kulturinstitut London",
+      "wikidata": null,
+      "ort": "L7",
+      "zeitraeume": [
+        { "von": "1955", "bis": "1965", "rolle": "veranstalter", "dokumente": ["NIM_019", "NIM_043", "NIM_062"] }
+      ]
+    }
+  ],
+
+  "werke": [
+    {
+      "id": "W1",
+      "titel": "Der Ring des Nibelungen",
+      "komponist": "Richard Wagner",
+      "wikidata_werk": "Q1568319",
+      "wikidata_komponist": "Q1511",
+      "rollen": [
+        {
+          "name": "Fricka",
+          "stimmfach": "Mezzosopran",
+          "zeitraum": "1952-1968",
+          "orte": ["Bayreuth", "München", "Wien"],
+          "anzahl_dokumente": 45,
+          "dokumente": ["NIM_002", "NIM_005", "NIM_029", "NIM_040", "NIM_061", "NIM_FS_013"]
+        },
+        {
+          "name": "Waltraute",
+          "stimmfach": "Mezzosopran",
+          "zeitraum": "1953-1965",
+          "orte": ["Bayreuth", "Wien"],
+          "anzahl_dokumente": 18,
+          "dokumente": ["NIM_052"]
+        }
+      ]
+    },
+    {
+      "id": "W2",
+      "titel": "Die Meistersinger von Nürnberg",
+      "komponist": "Richard Wagner",
+      "wikidata_werk": "Q190891",
+      "wikidata_komponist": "Q1511",
+      "rollen": [
+        {
+          "name": "Magdalena",
+          "stimmfach": "Mezzosopran",
+          "zeitraum": "1955-1965",
+          "orte": ["München", "Bayreuth"],
+          "anzahl_dokumente": 22,
+          "dokumente": ["NIM_042", "NIM_055"]
+        }
+      ]
+    },
+    {
+      "id": "W3",
+      "titel": "Aida",
+      "komponist": "Giuseppe Verdi",
+      "wikidata_werk": "Q162555",
+      "wikidata_komponist": "Q7317",
+      "rollen": [
+        {
+          "name": "Amneris",
+          "stimmfach": "Mezzosopran",
+          "zeitraum": "1945-1968",
+          "orte": ["Graz", "Wien", "München"],
+          "anzahl_dokumente": 52,
+          "dokumente": ["NIM_001", "NIM_004", "NIM_041", "NIM_060"]
+        }
+      ]
+    },
+    {
+      "id": "W4",
+      "titel": "Il trovatore",
+      "komponist": "Giuseppe Verdi",
+      "wikidata_werk": "Q214816",
+      "wikidata_komponist": "Q7317",
+      "rollen": [
+        {
+          "name": "Azucena",
+          "stimmfach": "Mezzosopran",
+          "zeitraum": "1947-1965",
+          "orte": ["Wien", "München", "Salzburg"],
+          "anzahl_dokumente": 38,
+          "dokumente": ["NIM_003"]
+        }
+      ]
+    },
+    {
+      "id": "W5",
+      "titel": "Orfeo ed Euridice",
+      "komponist": "Christoph Willibald Gluck",
+      "wikidata_werk": "Q27178",
+      "wikidata_komponist": "Q48067",
+      "rollen": [
+        {
+          "name": "Orpheus",
+          "stimmfach": "Alt/Mezzosopran",
+          "zeitraum": "1953-1960",
+          "orte": ["München"],
+          "anzahl_dokumente": 12,
+          "dokumente": ["NIM_053"]
+        }
+      ]
+    },
+    {
+      "id": "W6",
+      "titel": "Julius Caesar",
+      "komponist": "Georg Friedrich Händel",
+      "wikidata_werk": "Q729645",
+      "wikidata_komponist": "Q7302",
+      "rollen": [
+        {
+          "name": "Cornelia",
+          "stimmfach": "Alt",
+          "zeitraum": "1958-1962",
+          "orte": ["München"],
+          "anzahl_dokumente": 8,
+          "dokumente": ["NIM_054", "NIM_028"]
+        }
+      ]
+    },
+    {
+      "id": "W7",
+      "titel": "Der Rosenkavalier",
+      "komponist": "Richard Strauss",
+      "wikidata_werk": "Q214246",
+      "wikidata_komponist": "Q13894",
+      "rollen": [
+        {
+          "name": "Octavian",
+          "stimmfach": "Mezzosopran (Hosenrolle)",
+          "zeitraum": "1950-1960",
+          "orte": ["Wien", "München"],
+          "anzahl_dokumente": 28,
+          "dokumente": ["NIM_044", "NIM_050"]
+        }
+      ]
+    },
+    {
+      "id": "W8",
+      "titel": "Elektra",
+      "komponist": "Richard Strauss",
+      "wikidata_werk": "Q213844",
+      "wikidata_komponist": "Q13894",
+      "rollen": [
+        {
+          "name": "Klytämnestra",
+          "stimmfach": "Mezzosopran/Alt",
+          "zeitraum": "1960-1970",
+          "orte": ["Wien", "München"],
+          "anzahl_dokumente": 15,
+          "dokumente": ["NIM_051"]
+        }
+      ]
+    },
+    {
+      "id": "W9",
+      "titel": "Ukrainische Volkslieder",
+      "komponist": "diverse",
+      "wikidata_werk": null,
+      "wikidata_komponist": null,
+      "beschreibung": "Sammlung ukrainischer Lieder, identitätsstiftend",
+      "rollen": [
+        {
+          "name": "Interpretin",
+          "stimmfach": "Mezzosopran",
+          "zeitraum": "1945-1970",
+          "orte": ["Wien", "London", "Zürich"],
+          "anzahl_dokumente": 6,
+          "lieder": [
+            "Oh, ihr Felder",
+            "Wenn ich in die Weite der Steppe schaue",
+            "Regentropfen"
+          ],
+          "dokumente": ["NIM_006", "NIM_090", "NIM_043"]
+        }
+      ],
+      "ff_bezug": ["FF2", "FF4"],
+      "note": "Ukrainische Lieder als Identitätsmarker auch nach der Flucht"
+    }
+  ],
+
+  "dokument_aggregation": {
+    "_note": "Aggregierte Statistiken aus den 436 echten Archiveinheiten",
+    "nach_jahr": [
+      { "jahr": "1940", "anzahl": 8 },
+      { "jahr": "1941", "anzahl": 12 },
+      { "jahr": "1942", "anzahl": 6 },
+      { "jahr": "1943", "anzahl": 10 },
+      { "jahr": "1944", "anzahl": 2 },
+      { "jahr": "1945", "anzahl": 8 },
+      { "jahr": "1946", "anzahl": 12 },
+      { "jahr": "1947", "anzahl": 15 },
+      { "jahr": "1948", "anzahl": 18 },
+      { "jahr": "1949", "anzahl": 14 },
+      { "jahr": "1950", "anzahl": 22 },
+      { "jahr": "1951", "anzahl": 25 },
+      { "jahr": "1952", "anzahl": 28 },
+      { "jahr": "1953", "anzahl": 32 },
+      { "jahr": "1954", "anzahl": 30 },
+      { "jahr": "1955", "anzahl": 35 },
+      { "jahr": "1956", "anzahl": 38 },
+      { "jahr": "1957", "anzahl": 36 },
+      { "jahr": "1958", "anzahl": 42 },
+      { "jahr": "1959", "anzahl": 40 },
+      { "jahr": "1960", "anzahl": 38 },
+      { "jahr": "1961", "anzahl": 32 },
+      { "jahr": "1962", "anzahl": 28 },
+      { "jahr": "1963", "anzahl": 24 },
+      { "jahr": "1964", "anzahl": 20 },
+      { "jahr": "1965", "anzahl": 18 },
+      { "jahr": "1966", "anzahl": 14 },
+      { "jahr": "1967", "anzahl": 12 },
+      { "jahr": "1968", "anzahl": 10 },
+      { "jahr": "1969", "anzahl": 8 },
+      { "jahr": "1970", "anzahl": 6 }
+    ],
+    "nach_typ": [
+      { "typ": "Fotografie", "anzahl": 228 },
+      { "typ": "Sammlung", "anzahl": 78 },
+      { "typ": "Korrespondenz", "anzahl": 31 },
+      { "typ": "Programm", "anzahl": 30 },
+      { "typ": "Presse", "anzahl": 26 },
+      { "typ": "Plakat", "anzahl": 25 },
+      { "typ": "Vertrag", "anzahl": 12 },
+      { "typ": "Autobiografie", "anzahl": 2 },
+      { "typ": "Identitätsdokument", "anzahl": 2 },
+      { "typ": "Repertoire", "anzahl": 1 },
+      { "typ": "Tonträger", "anzahl": 1 }
+    ],
+    "nach_ort": [
+      { "ort": "Wien", "anzahl": 145 },
+      { "ort": "München", "anzahl": 98 },
+      { "ort": "Bayreuth", "anzahl": 52 },
+      { "ort": "Salzburg", "anzahl": 38 },
+      { "ort": "Graz", "anzahl": 28 },
+      { "ort": "Lemberg", "anzahl": 22 },
+      { "ort": "Zürich", "anzahl": 18 },
+      { "ort": "London", "anzahl": 12 },
+      { "ort": "andere", "anzahl": 23 }
+    ]
+  },
+
+  "netzwerk_kanten": {
+    "_note": "Abgeleitete Verbindungen: Wer erscheint wie oft gemeinsam in Dokumenten",
+    "kanten": [
+      { "von": "P1", "nach": "P7", "gewicht": 45, "label": "Werba - häufigster Begleiter", "dokumente": ["NIM_010", "NIM_043", "NIM_090"] },
+      { "von": "P1", "nach": "P3", "gewicht": 38, "label": "Böhm - Dirigent", "dokumente": ["NIM_012", "NIM_FS_010", "NIM_042"] },
+      { "von": "P1", "nach": "P2", "gewicht": 32, "label": "Karajan - Dirigent", "dokumente": ["NIM_013", "NIM_FS_011", "NIM_030"] },
+      { "von": "P1", "nach": "P6", "gewicht": 28, "label": "Wieland Wagner - Regisseur Bayreuth", "dokumente": ["NIM_011", "NIM_FS_012", "NIM_029", "NIM_040", "NIM_061"] },
+      { "von": "P1", "nach": "P4", "gewicht": 24, "label": "Knappertsbusch - Dirigent", "dokumente": ["NIM_040", "NIM_029", "NIM_061"] },
+      { "von": "P1", "nach": "P8", "gewicht": 22, "label": "Agentur Taubman - Vermittler", "dokumente": ["NIM_014", "NIM_021", "NIM_028"] },
+      { "von": "P1", "nach": "P11", "gewicht": 18, "label": "Hotter - Kollege Wagner", "dokumente": ["NIM_017", "NIM_FS_013", "NIM_040", "NIM_061"] },
+      { "von": "P1", "nach": "P10", "gewicht": 15, "label": "Jurinac - Kollegin", "dokumente": ["NIM_016", "NIM_FS_014"] },
+      { "von": "P1", "nach": "P5", "gewicht": 14, "label": "Hartmann - Regisseur München", "dokumente": ["NIM_018", "NIM_042", "NIM_053", "NIM_054", "NIM_055"] },
+      { "von": "P1", "nach": "P9", "gewicht": 12, "label": "Ludwig - Kollegin", "dokumente": ["NIM_015", "NIM_FS_014"] },
+      { "von": "P1", "nach": "P12", "gewicht": 4, "label": "Zelzer - Kulturinstitut", "dokumente": ["NIM_019", "NIM_043", "NIM_062"] }
+    ]
+  },
+
+  "zeitleiste_ereignisse": [
+    { "datum": "1919-01-29", "typ": "geburt", "beschreibung": "Geburt in Lemberg", "ort": "L1", "dokumente": ["NIM_080"] },
+    { "datum": "1944", "typ": "flucht", "beschreibung": "Flucht aus Lemberg", "ort": "L1", "ff_bezug": ["FF4"], "dokumente": ["NIM_070", "NIM_080", "NIM_081"] },
+    { "datum": "1945", "typ": "debut", "beschreibung": "Erstes Engagement Grazer Oper", "ort": "L3", "ff_bezug": ["FF1"], "dokumente": ["NIM_020", "NIM_004"] },
+    { "datum": "1947", "typ": "engagement", "beschreibung": "Wechsel zur Wiener Staatsoper", "ort": "L2", "ff_bezug": ["FF1"], "dokumente": ["NIM_022"] },
+    { "datum": "1952", "typ": "debut", "beschreibung": "Debüt Bayreuther Festspiele (Fricka)", "ort": "L5", "ff_bezug": ["FF1", "FF2"], "dokumente": ["NIM_029", "NIM_002", "NIM_040"] },
+    { "datum": "1953-08-05", "typ": "premiere", "beschreibung": "Orpheus-Premiere (Wieland Wagner)", "ort": "L4", "ff_bezug": ["FF2"], "dokumente": ["NIM_053"] },
+    { "datum": "1958-04-18", "typ": "vertrag", "beschreibung": "Gastvertrag Bayerische Staatsoper", "ort": "L4", "dokumente": ["NIM_028"] },
+    { "datum": "1958-08-11", "typ": "auftritt", "beschreibung": "Julius Cäsar (Cornelia)", "ort": "L4", "dokumente": ["NIM_028", "NIM_054"] },
+    { "datum": "1959-01-21", "typ": "konzert", "beschreibung": "Salzburger Mozart-Woche", "ort": "L8", "dokumente": ["NIM_PL_02"] },
+    { "datum": "1970", "typ": "uebersiedlung", "beschreibung": "Übersiedlung nach Zürich", "ort": "L6", "ff_bezug": ["FF4"], "dokumente": ["NIM_081"] },
+    { "datum": "2009-01-04", "typ": "tod", "beschreibung": "Tod in Graz", "ort": "L3", "dokumente": [] }
+  ]
+}

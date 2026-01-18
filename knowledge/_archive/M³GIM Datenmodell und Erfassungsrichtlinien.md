@@ -217,6 +217,10 @@ Schicht-3-Felder werden bei vertiefter Erschließung für Fallstudien erfasst. S
 
 `person` · `ort` · `institution` · `ereignis` · `werk` · `detail`
 
+### mobilitaetsform (optional, bei Orts-Verknüpfungen)
+
+`national` · `geografisch` · `erzwungen` · `bildung` · `lebensstil`
+
 ## 8. Rollen und Typen mit Definitionen
 
 ### Rollen für Personen
@@ -240,6 +244,30 @@ Schicht-3-Felder werden bei vertiefter Erschließung für Fallstudien erfasst. S
 | auffuehrungsort | wo eine dokumentierte Aufführung stattfand |
 | wohnort | Wohnsitz einer im Dokument genannten Person |
 | vertragsort | wo ein Vertrag geschlossen wurde |
+
+### Mobilitätsform für Orte (optional)
+
+Bei Orts-Verknüpfungen kann zusätzlich zur Rolle eine **Mobilitätsform** erfasst werden. Dieses Feld ist relevant für FF4 (Mobilitätsformen bei Malaniuk) und ermöglicht die differenzierte Visualisierung auf der Karte.
+
+| Mobilitätsform | Definition | Beispiel |
+|---|---|---|
+| national | Wechsel der Staatsangehörigkeit durch Heirat, Einbürgerung | Österreichische Staatsbürgerschaft |
+| geografisch | Regelmäßiges Pendeln zwischen Wirkungsorten | Gastspiele Wien ↔ München ↔ Bayreuth |
+| erzwungen | Flucht, Vertreibung, erzwungene Migration | 1944: Flucht aus Lemberg |
+| bildung | Ortswechsel zum Zweck der Ausbildung | Studium in Lemberg, Wien |
+| lebensstil | Übersiedlung aus persönlichen Gründen | Zürich (wegen Ehemann) |
+
+**Erfassung.** Das Feld `mobilitaetsform` wird in der Verknüpfungstabelle bei Orts-Verknüpfungen in der Spalte `anmerkung` mit Präfix `[mobilität:]` erfasst.
+
+**Beispiel:**
+
+| archivsignatur | typ | name | rolle | datum | anmerkung |
+|---|---|---|---|---|---|
+| UAKUG/NIM_042 | ort | Lemberg | wohnort | 1919/1944 | [mobilität:erzwungen] Flucht 1944 |
+| UAKUG/NIM_028 | ort | München | auffuehrungsort | | [mobilität:geografisch] |
+| UAKUG/NIM_099 | ort | Zürich | wohnort | 1970 | [mobilität:lebensstil] Übersiedlung wegen Ehemann |
+
+**Hinweis.** Die Mobilitätsform ist nicht bei jeder Orts-Verknüpfung sinnvoll. Sie wird nur erfasst, wenn der Ort im Kontext von Malaniuks biografischer Mobilität relevant ist (nicht bei reinen Erwähnungen oder Entstehungsorten von Dokumenten).
 
 ### Rollen für Institutionen
 
@@ -566,13 +594,15 @@ Dieses Beispiel zeigt die Verwendung einer Standortbezeichnung statt einer numer
 | Vokabular dokumenttyp | Erweiterung nach Sichtung im Workshop | gemeinsam |
 | Konvolut-Modellierung | Klärung im Erfassungsworkshop am 23.01. | gemeinsam |
 | Signatur NIM_021 | Doppelvergabe prüfen | KUG |
+| Mobilitätsform-Erfassung | Workflow im Erfassungsworkshop klären | gemeinsam |
 
 ---
 
-*Version 2.1 – 2026-01-14*
+*Version 2.2 – 2026-01-18*
 
 **Änderungsprotokoll**
 
+- v2.2: Feld `mobilitaetsform` für Orts-Verknüpfungen ergänzt (FF4), kontrolliertes Vokabular (national, geografisch, erzwungen, bildung, lebensstil), Erfassungsbeispiele mit Präfix-Notation in Anmerkung
 - v2.1: box_nr und fotobox_nr als Freitext dokumentiert (vorher Integer), Abschnitt Standortfelder in Validierungsregeln ergänzt, Datumsformat YYYY-MM-DD/YYYY-MM-DD explizit genannt, doppelten Google-Sheets-Link bereinigt, Beispiel 5 mit Sonderstandort ergänzt, offene Punkte aktualisiert (M3GIM-Fotos erledigt), Beispiele 1-3 um plausible box_nr ergänzt
 - v2.0: Schicht 1 für Fotografien als eigener Abschnitt, Fototabelle dokumentiert, Beispiel 4 (Fotografie) ergänzt, fototyp als Vokabular, Validierungsregeln für Fototabelle, Farbschema um Orange erweitert, offene Punkte auf erfassungsbezogene Themen fokussiert
 - v1.5: Verknüpfungstabelle als zentrales Erfassungsinstrument, Schicht 3 via typ "detail", Erfassungsworkflow
