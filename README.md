@@ -6,9 +6,14 @@ Digital Archive & Research Platform for Music Theater Mobility Studies
 
 ## Project Status
 
-**Current Phase:** Data Processing Pipeline Complete
+**Current Phase:** Frontend Refactoring Complete (MVP)
 
-The archive data has been migrated, validated, and exported as RiC-O conformant JSON-LD. A GitHub Pages frontend displays the data.
+✅ Archive data migrated, validated, and exported as RiC-O conformant JSON-LD
+✅ Modular CSS architecture with design tokens
+✅ ES6 module-based JavaScript architecture
+✅ Vite build system configured
+✅ ESLint code quality enforcement
+⏳ Awaiting real data to replace synthetic visualization data
 
 ---
 
@@ -61,15 +66,41 @@ m3gim/
 │   ├── export/            # JSON-LD export (create-ric-json.py output)
 │   └── reports/           # Validation reports
 ├── docs/                  # GitHub Pages frontend
-│   ├── index.html
-│   ├── app.js
-│   └── data/m3gim.jsonld
+│   ├── index.html         # Main HTML with accessibility enhancements
+│   ├── css/
+│   │   ├── main.css       # CSS orchestrator (imports all modules)
+│   │   ├── tokens.css     # Design tokens (colors, spacing, typography)
+│   │   ├── base.css       # Reset and base styles
+│   │   ├── components/    # UI component styles (8 modules)
+│   │   └── visualizations/ # D3.js visualization styles (4 modules)
+│   ├── js/
+│   │   ├── main.js        # ES6 module entry point
+│   │   ├── modules/       # Core modules (config, state, utils)
+│   │   ├── services/      # Data and filter services
+│   │   ├── components/    # UI components (modal, grid, filters, etc.)
+│   │   ├── app.js         # Legacy application code
+│   │   └── partitur.js    # Partitur visualization
+│   └── data/
+│       ├── m3gim.jsonld       # Archive data (436 records)
+│       └── synthetic-data.json # Prototype visualization data
 ├── scripts/
 │   ├── migrate.py         # Archive → Normalized Excel
 │   ├── validate.py        # Data validation
 │   └── create-ric-json.py # Excel → JSON-LD (RiC-O)
-├── knowledge/             # Project documentation
-│   └── PROTOTYPE_LEARNINGS.md
+├── knowledge/             # Project documentation (13 files)
+│   ├── 01-PROJEKT.md      # Project overview
+│   ├── 02-DATENMODELL.md  # RiC-O data model
+│   ├── 03-DESIGN-SYSTEM.md # UI/UX specifications
+│   ├── 04-VISUALISIERUNGEN.md # Visualization concepts
+│   ├── 05-ENTSCHEIDUNGEN.md # Architecture decisions
+│   ├── 06-ANFORDERUNGEN.md # Requirements
+│   ├── 07-PIPELINES.md    # Data pipelines
+│   ├── 08-IMPLEMENTIERUNGSPLAN.md # Implementation plan
+│   ├── 09-DATENANFORDERUNGEN.md # Real data requirements
+│   └── VIZ-*.md           # Individual visualization specs
+├── .eslintrc.cjs          # ESLint configuration
+├── vite.config.js         # Vite build configuration
+├── package.json           # Node.js dependencies
 └── README.md
 ```
 
@@ -80,7 +111,11 @@ m3gim/
 - **Data Model:** Records in Contexts (RiC-O) 1.1
 - **Serialization:** JSON-LD with custom DocumentaryFormTypes
 - **Processing:** Python (pandas, openpyxl)
-- **Frontend:** Vanilla JS, GitHub Pages
+- **Build System:** Vite 6.x (dev server, production bundling)
+- **Frontend:** ES6 Modules, CSS Design Tokens
+- **Visualizations:** D3.js v7 (Partitur, Matrix, Kosmos, Sankey)
+- **Code Quality:** ESLint with custom rules
+- **Icons:** Lucide Icons
 - **Authority Data:** Wikidata Q-IDs
 
 ### JSON-LD Namespaces
@@ -119,6 +154,43 @@ python scripts/create-ric-json.py
 
 ---
 
+## Development
+
+### Prerequisites
+
+- Node.js 18+
+- Python 3.10+ (for data processing)
+
+### Setup
+
+```bash
+npm install
+```
+
+### Development Server
+
+```bash
+npm run dev
+```
+
+Opens at http://localhost:5173
+
+### Production Build
+
+```bash
+npm run build
+npm run preview
+```
+
+### Linting
+
+```bash
+npm run lint      # Check for issues
+npm run lint:fix  # Auto-fix issues
+```
+
+---
+
 ## Source Materials
 
 **Archive:** Ira Malaniuk Estate (UAKUG/NIM)
@@ -143,4 +215,4 @@ python scripts/create-ric-json.py
 
 ---
 
-Last Updated: 2026-01-14
+Last Updated: 2026-01-18
