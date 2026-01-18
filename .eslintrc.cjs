@@ -28,7 +28,7 @@ module.exports = {
 
     // Stylistic
     'indent': ['error', 2, { SwitchCase: 1 }],
-    'quotes': ['error', 'single', { avoidEscape: true }],
+    'quotes': ['error', 'single', { avoidEscape: true, allowTemplateLiterals: true }],
     'semi': ['error', 'always'],
     'comma-dangle': ['error', 'never'],
     'no-trailing-spaces': 'error',

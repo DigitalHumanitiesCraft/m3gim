@@ -3583,8 +3583,8 @@
           const bis = parseInt(rolle.letzte_auffuehrung || rolle.bis || von + 5);
           if (bis >= vonYear && von <= bisYear) {
             const komp = werk.komponist?.includes('Wagner') ? 'Wagner' :
-                        werk.komponist?.includes('Verdi') ? 'Verdi' :
-                        werk.komponist?.includes('Strauss') ? 'Strauss' : 'Andere';
+              werk.komponist?.includes('Verdi') ? 'Verdi' :
+                werk.komponist?.includes('Strauss') ? 'Strauss' : 'Andere';
             phaseRepertoire.push({ rolle: rolle.name, werk: werk.werk, komponist: komp, dokumente: rolle.dokumente || [] });
           }
         });
@@ -3946,8 +3946,8 @@
       const docs = new Set();
       werke.forEach(werk => {
         const kompMatch = werk.komponist.includes('Wagner') ? 'wagner' :
-                         werk.komponist.includes('Verdi') ? 'verdi' :
-                         werk.komponist.includes('Strauss') ? 'strauss' : 'gluck';
+          werk.komponist.includes('Verdi') ? 'verdi' :
+            werk.komponist.includes('Strauss') ? 'strauss' : 'gluck';
         if (kompMatch === kompId) {
           (werk.rollen || []).forEach(rolle => {
             (rolle.dokumente || []).forEach(d => docs.add(d));
@@ -4014,8 +4014,8 @@
           // Check if role overlaps with phase
           if (rBis >= vonYear && rVon <= bisYear) {
             const komp = werk.komponist.includes('Wagner') ? 'wagner' :
-                        werk.komponist.includes('Verdi') ? 'verdi' :
-                        werk.komponist.includes('Strauss') ? 'strauss' : 'gluck';
+              werk.komponist.includes('Verdi') ? 'verdi' :
+                werk.komponist.includes('Strauss') ? 'strauss' : 'gluck';
             compCounts[komp] = (compCounts[komp] || 0) + (rolle.anzahl_dokumente || 1);
             if (!compDocs[komp]) compDocs[komp] = new Set();
             (rolle.dokumente || []).forEach(d => compDocs[komp].add(d));
@@ -4046,17 +4046,17 @@
       const geoDocs = {};
       werke.forEach(werk => {
         const kompMatch = werk.komponist.includes('Wagner') ? 'wagner' :
-                         werk.komponist.includes('Verdi') ? 'verdi' :
-                         werk.komponist.includes('Strauss') ? 'strauss' : 'gluck';
+          werk.komponist.includes('Verdi') ? 'verdi' :
+            werk.komponist.includes('Strauss') ? 'strauss' : 'gluck';
         if (kompMatch === rep.id) {
           // Get performance locations from orte data
           orte.forEach(ort => {
             const isAuffuehrung = (ort.zeitraeume || []).some(z => z.typ === 'auffuehrungsort');
             if (isAuffuehrung) {
               const geoId = ort.name === 'Wien' ? 'wien' :
-                           ort.name === 'Bayreuth' ? 'bayreuth' :
-                           ort.name === 'München' ? 'muenchen' :
-                           ort.name === 'Salzburg' ? 'salzburg' : 'andere';
+                ort.name === 'Bayreuth' ? 'bayreuth' :
+                  ort.name === 'München' ? 'muenchen' :
+                    ort.name === 'Salzburg' ? 'salzburg' : 'andere';
               // Weight by composer importance
               const weight = kompMatch === 'wagner' ? 3 : kompMatch === 'verdi' ? 2 : 1;
               geoCounts[geoId] = (geoCounts[geoId] || 0) + weight;
