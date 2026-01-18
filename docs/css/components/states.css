@@ -1,0 +1,41 @@
+/**
+ * M³GIM State Components
+ * Loading, empty, and error states
+ */
+
+/* ==========================================================================
+   Loading & Empty States
+   ========================================================================== */
+
+.loading-state,
+.empty-state {
+  text-align: center;
+  padding: var(--space-8);
+  color: var(--color-text-tertiary);
+  grid-column: 1 / -1;
+}
+
+.loading-state__icon {
+  width: 24px;
+  height: 24px;
+  margin-bottom: var(--space-2);
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ==========================================================================
+   Error State
+   ========================================================================== */
+
+.error-state {
+  text-align: center;
+  padding: var(--space-6);
+  color: var(--color-error);
+  background-color: #FFEBEE;
+  border-radius: var(--radius-md);
+  grid-column: 1 / -1;
+}

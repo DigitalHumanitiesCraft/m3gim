@@ -1,0 +1,90 @@
+/**
+ * M³GIM Design Tokens
+ * Digitales Archiv Ira Malaniuk
+ *
+ * Design Philosophy: "Scholarly Elegance"
+ * - Institutional credibility (KUG colors)
+ * - Cultural resonance (opera/classical music)
+ * - Functional clarity
+ */
+
+:root {
+  /* Primary: KUG Institutional */
+  --color-primary: #004A8F;
+  --color-primary-dark: #003366;
+  --color-primary-light: #1565C0;
+  --color-primary-tint: #E3EDF7;
+
+  /* Neutral: Archive Palette */
+  --color-paper: #FAFAFA;
+  --color-cream: #F5F3EF;
+  --color-parchment: #EDE8E0;
+  --color-shadow: #D4CFC5;
+
+  /* Text */
+  --color-text-primary: #1A1A1A;
+  --color-text-secondary: #4A4A4A;
+  --color-text-tertiary: #757575;
+
+  /* Accent: Mobility Types (muted, not garish) */
+  --color-mobility-erzwungen: #B71C1C;
+  --color-mobility-geografisch: #2E7D32;
+  --color-mobility-bildung: #E65100;
+  --color-mobility-lebensstil: #6A1B9A;
+  --color-mobility-national: #1565C0;
+
+  /* Status */
+  --color-success: #2E7D32;
+  --color-warning: #E65100;
+  --color-error: #B71C1C;
+  --color-info: #1565C0;
+
+  /* Spacing (8px base) */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+
+  /* Typography Scale */
+  --font-display: 2.5rem;
+  --font-h1: 2rem;
+  --font-h2: 1.5rem;
+  --font-h3: 1.125rem;
+  --font-body: 1rem;
+  --font-small: 0.875rem;
+  --font-caption: 0.75rem;
+
+  /* Font Families */
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-serif: 'Source Serif 4', Georgia, serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+
+  /* Border Radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-pill: 9999px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 8px 32px rgba(0, 0, 0, 0.12);
+
+  /* Transitions */
+  --ease-out: cubic-bezier(0.0, 0.0, 0.2, 1);
+  --ease-in: cubic-bezier(0.4, 0.0, 1, 1);
+  --ease-in-out: cubic-bezier(0.4, 0.0, 0.2, 1);
+  --duration-fast: 100ms;
+  --duration-normal: 200ms;
+  --duration-slow: 300ms;
+
+  /* Layout */
+  --header-height: 72px;
+  --sidebar-width: 280px;
+  --content-max-width: 1400px;
+}

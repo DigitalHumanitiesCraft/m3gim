@@ -1,0 +1,32 @@
+/**
+ * M³GIM Main Stylesheet
+ * Digitales Archiv Ira Malaniuk
+ *
+ * This file imports all modular CSS components.
+ * Import order matters for proper cascade.
+ */
+
+/* Design Tokens (CSS Custom Properties) */
+@import 'tokens.css';
+
+/* Base styles (Reset, Typography, Layout) */
+@import 'base.css';
+
+/* Components */
+@import 'components/header.css';
+@import 'components/sidebar.css';
+@import 'components/cards.css';
+@import 'components/modal.css';
+@import 'components/buttons.css';
+@import 'components/footer.css';
+@import 'components/states.css';
+@import 'components/analyse.css';
+
+/* Visualizations */
+@import 'visualizations/partitur.css';
+@import 'visualizations/matrix.css';
+@import 'visualizations/kosmos.css';
+@import 'visualizations/sankey.css';
+
+/* Responsive overrides (must be last) */
+@import 'responsive.css';

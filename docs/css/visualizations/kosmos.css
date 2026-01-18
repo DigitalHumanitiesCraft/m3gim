@@ -1,0 +1,17 @@
+/**
+ * M³GIM Rollen-Kosmos Visualization
+ * Force-directed role network
+ */
+
+.kosmos__svg {
+  font-family: var(--font-sans);
+}
+
+.kosmos__svg circle {
+  transition: transform var(--duration-fast), opacity var(--duration-fast);
+}
+
+.kosmos__svg circle:hover {
+  transform-origin: center;
+  opacity: 0.9;
+}

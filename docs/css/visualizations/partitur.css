@@ -1,0 +1,253 @@
+/**
+ * M³GIM Mobilitäts-Partitur Visualization
+ * Timeline-based biography visualization
+ */
+
+/* ==========================================================================
+   Partitur Container
+   ========================================================================== */
+
+.partitur {
+  width: 100%;
+  height: 100%;
+  min-height: 600px;
+  display: flex;
+  flex-direction: column;
+}
+
+.partitur__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--color-parchment);
+}
+
+.partitur__title {
+  font-size: var(--font-h3);
+  font-weight: 600;
+}
+
+.partitur__year-indicator {
+  font-family: var(--font-mono);
+  font-size: var(--font-h2);
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.partitur__tracks {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ==========================================================================
+   SVG Styles
+   ========================================================================== */
+
+.partitur svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Track Labels */
+.partitur__track-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  fill: var(--color-text-tertiary);
+}
+
+/* Timeline Axis */
+.partitur__axis text {
+  font-size: 11px;
+  fill: var(--color-text-tertiary);
+}
+
+.partitur__axis line,
+.partitur__axis path {
+  stroke: var(--color-shadow);
+}
+
+/* Track Separators */
+.partitur__track-separator {
+  stroke: var(--color-parchment);
+  stroke-width: 1;
+}
+
+/* ==========================================================================
+   Lebensphasen Track
+   ========================================================================== */
+
+.partitur__lebensphase {
+  fill: var(--color-cream);
+  stroke: var(--color-shadow);
+  stroke-width: 1;
+  cursor: pointer;
+  transition: fill var(--duration-fast);
+}
+
+.partitur__lebensphase:hover {
+  fill: var(--color-parchment);
+}
+
+.partitur__lebensphase-label {
+  font-size: 10px;
+  fill: var(--color-text-secondary);
+  pointer-events: none;
+}
+
+/* ==========================================================================
+   Orte Track
+   ========================================================================== */
+
+.partitur__ort-bar {
+  cursor: pointer;
+  transition: opacity var(--duration-fast);
+}
+
+.partitur__ort-bar:hover {
+  opacity: 0.8;
+}
+
+.partitur__ort-label {
+  font-size: 10px;
+  fill: var(--color-text-primary);
+  pointer-events: none;
+}
+
+/* ==========================================================================
+   Mobilität Track
+   ========================================================================== */
+
+.partitur__mobility-event {
+  cursor: pointer;
+}
+
+.partitur__mobility-marker {
+  transition: transform var(--duration-fast);
+}
+
+.partitur__mobility-event:hover .partitur__mobility-marker {
+  transform: scale(1.3);
+}
+
+.partitur__mobility-line {
+  stroke-width: 2;
+  stroke-dasharray: 4 2;
+  fill: none;
+}
+
+/* Mobility Colors */
+.mobility--erzwungen { fill: var(--color-mobility-erzwungen); stroke: var(--color-mobility-erzwungen); }
+.mobility--geografisch { fill: var(--color-mobility-geografisch); stroke: var(--color-mobility-geografisch); }
+.mobility--bildung { fill: var(--color-mobility-bildung); stroke: var(--color-mobility-bildung); }
+.mobility--lebensstil { fill: var(--color-mobility-lebensstil); stroke: var(--color-mobility-lebensstil); }
+.mobility--national { fill: var(--color-mobility-national); stroke: var(--color-mobility-national); }
+
+/* ==========================================================================
+   Netzwerk Track
+   ========================================================================== */
+
+.partitur__network-bar {
+  fill: var(--color-primary-tint);
+  stroke: var(--color-primary);
+  stroke-width: 1;
+  cursor: pointer;
+  transition: fill var(--duration-fast);
+}
+
+.partitur__network-bar:hover {
+  fill: var(--color-primary);
+  fill-opacity: 0.3;
+}
+
+/* ==========================================================================
+   Repertoire Track
+   ========================================================================== */
+
+.partitur__role-bar {
+  fill: var(--color-warning);
+  fill-opacity: 0.6;
+  stroke: var(--color-warning);
+  stroke-width: 1;
+  cursor: pointer;
+  transition: fill-opacity var(--duration-fast);
+}
+
+.partitur__role-bar:hover {
+  fill-opacity: 0.9;
+}
+
+.partitur__role-label {
+  font-size: 9px;
+  fill: var(--color-text-primary);
+  pointer-events: none;
+}
+
+/* ==========================================================================
+   Dokumente Track
+   ========================================================================== */
+
+.partitur__doc-marker {
+  fill: var(--color-text-tertiary);
+  cursor: pointer;
+  transition: fill var(--duration-fast), transform var(--duration-fast);
+}
+
+.partitur__doc-marker:hover {
+  fill: var(--color-primary);
+  transform: scale(1.5);
+}
+
+/* ==========================================================================
+   Focus Line
+   ========================================================================== */
+
+.partitur__focus-line {
+  stroke: var(--color-primary);
+  stroke-width: 2;
+  stroke-dasharray: 8 4;
+  pointer-events: none;
+}
+
+.partitur__focus-year {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  fill: var(--color-primary);
+}
+
+/* ==========================================================================
+   Tooltip
+   ========================================================================== */
+
+.partitur__tooltip {
+  position: absolute;
+  background: white;
+  border: 1px solid var(--color-shadow);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  box-shadow: var(--shadow-lg);
+  pointer-events: none;
+  z-index: 100;
+  max-width: 280px;
+  font-size: var(--font-small);
+  opacity: 0;
+  transition: opacity var(--duration-fast);
+}
+
+.partitur__tooltip--visible {
+  opacity: 1;
+}
+
+.partitur__tooltip-title {
+  font-weight: 600;
+  margin-bottom: var(--space-1);
+}
+
+.partitur__tooltip-meta {
+  color: var(--color-text-tertiary);
+  font-size: var(--font-caption);
+}

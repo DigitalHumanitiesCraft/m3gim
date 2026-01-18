@@ -1,0 +1,92 @@
+/**
+ * M³GIM Buttons Component
+ * Button styles and variants
+ */
+
+/* ==========================================================================
+   Base Button
+   ========================================================================== */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-small);
+  font-weight: 500;
+  transition: all var(--duration-fast);
+}
+
+.btn__icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* ==========================================================================
+   Button Variants
+   ========================================================================== */
+
+.btn--secondary {
+  background: white;
+  border: 1px solid var(--color-shadow);
+  color: var(--color-text-secondary);
+}
+
+.btn--secondary:hover {
+  border-color: var(--color-text-tertiary);
+  color: var(--color-text-primary);
+}
+
+.btn--primary {
+  background: var(--color-primary);
+  border: 1px solid var(--color-primary);
+  color: white;
+}
+
+.btn--primary:hover {
+  background: var(--color-primary-dark);
+  border-color: var(--color-primary-dark);
+}
+
+/* ==========================================================================
+   Visualization Buttons
+   ========================================================================== */
+
+.viz-selector {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.viz-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-shadow);
+  background-color: white;
+  border-radius: var(--radius-md);
+  font-size: var(--font-small);
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  transition: all var(--duration-fast);
+  text-align: left;
+}
+
+.viz-btn:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.viz-btn--active {
+  border-color: var(--color-primary);
+  background-color: var(--color-primary-tint);
+  color: var(--color-primary);
+}
+
+.viz-btn__icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}

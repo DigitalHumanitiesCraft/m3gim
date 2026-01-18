@@ -1,0 +1,25 @@
+/**
+ * M³GIM Biografie-Strom / Sankey Visualization
+ * Flow diagram for biographical phases
+ */
+
+.sankey__svg {
+  font-family: var(--font-sans);
+}
+
+.sankey__svg rect {
+  transition: opacity var(--duration-fast);
+}
+
+.sankey__svg rect:hover {
+  opacity: 0.85;
+}
+
+.sankey__svg circle {
+  transition: transform var(--duration-fast);
+}
+
+.sankey__svg circle:hover {
+  transform: scale(1.15);
+  transform-origin: center;
+}

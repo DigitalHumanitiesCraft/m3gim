@@ -1,0 +1,189 @@
+/**
+ * M³GIM Sidebar Component
+ * Filter sidebar with tektonik tree and filter groups
+ */
+
+/* ==========================================================================
+   Sidebar Container
+   ========================================================================== */
+
+.sidebar {
+  background-color: var(--color-paper);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  height: fit-content;
+  position: sticky;
+  top: calc(var(--header-height) + var(--space-6));
+}
+
+.sidebar--hidden {
+  display: none;
+}
+
+.sidebar__section {
+  margin-bottom: var(--space-5);
+}
+
+.sidebar__section:last-child {
+  margin-bottom: 0;
+}
+
+.sidebar__label,
+.sidebar__title {
+  font-size: var(--font-caption);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-tertiary);
+  margin-bottom: var(--space-3);
+  display: block;
+}
+
+.sidebar__divider {
+  border: none;
+  border-top: 1px solid var(--color-parchment);
+  margin: var(--space-5) 0;
+}
+
+/* ==========================================================================
+   Tektonik Tree
+   ========================================================================== */
+
+.tektonik-tree {
+  font-size: var(--font-small);
+}
+
+.tektonik-item {
+  margin-bottom: var(--space-1);
+}
+
+.tektonik-item__row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background-color var(--duration-fast);
+}
+
+.tektonik-item__row:hover {
+  background-color: var(--color-cream);
+}
+
+.tektonik-item__row--active {
+  background-color: var(--color-primary-tint);
+  color: var(--color-primary);
+}
+
+.tektonik-item__toggle {
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-tertiary);
+  transition: transform var(--duration-fast);
+}
+
+.tektonik-item__toggle--expanded {
+  transform: rotate(90deg);
+}
+
+.tektonik-item__toggle--empty {
+  width: 16px;
+}
+
+.tektonik-item__icon {
+  width: 16px;
+  height: 16px;
+  color: var(--color-text-tertiary);
+}
+
+.tektonik-item__label {
+  flex: 1;
+}
+
+.tektonik-item__count {
+  font-size: var(--font-caption);
+  color: var(--color-text-tertiary);
+  font-variant-numeric: tabular-nums;
+}
+
+.tektonik-item__children {
+  display: none;
+  margin-left: var(--space-5);
+  margin-top: var(--space-1);
+}
+
+.tektonik-item__children--expanded {
+  display: block;
+}
+
+/* ==========================================================================
+   Filter Groups
+   ========================================================================== */
+
+.filter-group {
+  margin-bottom: var(--space-4);
+}
+
+.filter-group:last-child {
+  margin-bottom: 0;
+}
+
+.filter-group__title {
+  font-size: var(--font-small);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.filter-group__options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.filter-option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) 0;
+  cursor: pointer;
+  font-size: var(--font-small);
+  transition: color var(--duration-fast);
+}
+
+.filter-option:hover {
+  color: var(--color-primary);
+}
+
+.filter-option input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--color-primary);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.filter-option__label {
+  flex: 1;
+}
+
+.filter-option__count {
+  font-size: var(--font-caption);
+  color: var(--color-text-tertiary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+
+@media (max-width: 900px) {
+  .sidebar {
+    position: static;
+    order: -1;
+  }
+}
