@@ -4,6 +4,7 @@
  */
 
 import { dataLoader } from '../modules/data-loader.js';
+import { setupExportHandlers } from '../utils/export.js';
 
 export async function renderSankey(container) {
   // Load sankey data
@@ -29,10 +30,23 @@ export async function renderSankey(container) {
   const header = document.createElement('div');
   header.className = 'viz-header';
   header.innerHTML = `
-    <h3>Karriere-Fluss</h3>
-    <p class="viz-description">Repertoire-Schwerpunkte und geografische Zentren über Karrierephasen</p>
+    <div>
+      <h3>Karriere-Fluss</h3>
+      <p class="viz-description">Repertoire-Schwerpunkte und geografische Zentren über Karrierephasen</p>
+    </div>
   `;
   wrapper.appendChild(header);
+
+  // Add export buttons to header
+  const exportToolbar = document.createElement('div');
+  exportToolbar.className = 'export-toolbar';
+  exportToolbar.innerHTML = `
+    <button class="export-btn" data-format="svg" title="Als SVG exportieren">SVG</button>
+    <button class="export-btn" data-format="png" title="Als PNG exportieren">PNG</button>
+  `;
+  header.appendChild(exportToolbar);
+
+  setupExportHandlers(wrapper, exportToolbar, 'sankey', sankeyData);
 
   // Build nodes
   const nodes = [];

@@ -4,6 +4,7 @@
  */
 
 import { dataLoader } from '../modules/data-loader.js';
+import { setupExportHandlers } from '../utils/export.js';
 
 export async function renderMatrix(container) {
   // Load matrix data
@@ -30,10 +31,24 @@ export async function renderMatrix(container) {
   const header = document.createElement('div');
   header.className = 'viz-header';
   header.innerHTML = `
-    <h3>Begegnungs-Matrix</h3>
-    <p class="viz-description">Beziehungsintensität zu Personen über Zeitperioden</p>
+    <div>
+      <h3>Begegnungs-Matrix</h3>
+      <p class="viz-description">Beziehungsintensität zu Personen über Zeitperioden</p>
+    </div>
   `;
   wrapper.appendChild(header);
+
+  // Add export buttons to header
+  const exportToolbar = document.createElement('div');
+  exportToolbar.className = 'export-toolbar';
+  exportToolbar.innerHTML = `
+    <button class="export-btn" data-format="svg" title="Als SVG exportieren">SVG</button>
+    <button class="export-btn" data-format="png" title="Als PNG exportieren">PNG</button>
+    <button class="export-btn" data-format="csv" title="Als CSV exportieren">CSV</button>
+  `;
+  header.appendChild(exportToolbar);
+
+  setupExportHandlers(wrapper, exportToolbar, 'matrix', matrixData);
 
   // Get data
   const { zeitraeume, personen } = matrixData;

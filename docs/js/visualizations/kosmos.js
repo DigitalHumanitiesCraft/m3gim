@@ -4,6 +4,7 @@
  */
 
 import { dataLoader } from '../modules/data-loader.js';
+import { setupExportHandlers } from '../utils/export.js';
 
 export async function renderKosmos(container) {
   // Load kosmos data
@@ -28,10 +29,24 @@ export async function renderKosmos(container) {
   const header = document.createElement('div');
   header.className = 'viz-header';
   header.innerHTML = `
-    <h3>Rollen-Kosmos</h3>
-    <p class="viz-description">Radiale Darstellung des künstlerischen Universums</p>
+    <div>
+      <h3>Rollen-Kosmos</h3>
+      <p class="viz-description">Radiale Darstellung des künstlerischen Universums</p>
+    </div>
   `;
   wrapper.appendChild(header);
+
+  // Add export buttons to header
+  const exportToolbar = document.createElement('div');
+  exportToolbar.className = 'export-toolbar';
+  exportToolbar.innerHTML = `
+    <button class="export-btn" data-format="svg" title="Als SVG exportieren">SVG</button>
+    <button class="export-btn" data-format="png" title="Als PNG exportieren">PNG</button>
+    <button class="export-btn" data-format="csv" title="Als CSV exportieren">CSV</button>
+  `;
+  header.appendChild(exportToolbar);
+
+  setupExportHandlers(wrapper, exportToolbar, 'kosmos', kosmosData);
 
   // Create SVG
   const svg = d3.select(wrapper)
