@@ -17,7 +17,13 @@
 
   // Configuration - improved aesthetics with more whitespace
   const CONFIG = {
-    syntheticDataUrl: 'data/synthetic-data.json',
+    syntheticDataUrl: 'data/synthetic-data.json', // DEPRECATED - fallback only
+    viewDataUrls: {
+      partitur: 'data/partitur.json',
+      matrix: 'data/matrix.json',
+      kosmos: 'data/kosmos.json',
+      sankey: 'data/sankey.json'
+    },
     margin: { top: 50, right: 40, bottom: 60, left: 110 },
     trackHeight: 55,
     trackPadding: 18,
@@ -578,13 +584,28 @@
         renderPartitur(container);
         break;
       case 'matrix':
-        renderMatrix(container);
+        // Use new ES6 module if available, otherwise fallback
+        if (window.M3GIM_VIZ && window.M3GIM_VIZ.renderMatrix) {
+          window.M3GIM_VIZ.renderMatrix(container);
+        } else {
+          renderMatrix(container);
+        }
         break;
       case 'kosmos':
-        renderKosmos(container);
+        // Use new ES6 module if available, otherwise fallback
+        if (window.M3GIM_VIZ && window.M3GIM_VIZ.renderKosmos) {
+          window.M3GIM_VIZ.renderKosmos(container);
+        } else {
+          renderKosmos(container);
+        }
         break;
       case 'sankey':
-        renderSankey(container);
+        // Use new ES6 module if available, otherwise fallback
+        if (window.M3GIM_VIZ && window.M3GIM_VIZ.renderSankey) {
+          window.M3GIM_VIZ.renderSankey(container);
+        } else {
+          renderSankey(container);
+        }
         break;
     }
 

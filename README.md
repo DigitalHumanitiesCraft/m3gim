@@ -6,14 +6,16 @@ Digital Archive & Research Platform for Music Theater Mobility Studies
 
 ## Project Status
 
-**Current Phase:** Frontend Refactoring Complete (MVP)
+**Current Phase:** Production-Ready Prototype
 
-✅ Archive data migrated, validated, and exported as RiC-O conformant JSON-LD
+✅ Archive data migrated, validated, and exported as RiC-O conformant JSON-LD (436 records)
+✅ Intelligent data pipeline with real archive signatures
+✅ Complete visualization system with interactive features
 ✅ Modular CSS architecture with design tokens
 ✅ ES6 module-based JavaScript architecture
+✅ Export functionality (SVG, PNG, CSV)
 ✅ Vite build system configured
 ✅ ESLint code quality enforcement
-⏳ Awaiting real data to replace synthetic visualization data
 
 ---
 
@@ -42,9 +44,29 @@ data/archive-export/     →  migrate.py   →  data/processed/
                                                    ↓
                                             create-ric-json.py
                                                    ↓
-docs/data/m3gim.jsonld  ←  copy          ←  data/export/
-(GitHub Pages)                              (JSON-LD Export)
+                               ┌────────────data/export/m3gim.jsonld
+                               │            (436 archive records)
+                               │                    ↓
+                               │            build-views.py
+                               │                    ↓
+                               │            data/views/
+                               │            ├── partitur.json (7.5KB)
+                               │            ├── matrix.json (3.1KB)
+                               │            ├── kosmos.json (4.9KB)
+                               │            └── sankey.json (2.8KB)
+                               │                    ↓
+                               └──────────→ docs/data/
+                                            (Production data)
 ```
+
+### Visualization Data Generation
+
+The `build-views.py` script generates optimized JSON files for each visualization:
+
+- **Weighted Intensities**: Document types weighted (Letter=3, Program/Poster=2, Photo=1)
+- **Role Extraction**: Automatic detection of opera roles (Brangäne, Amneris, etc.)
+- **Geographic Context**: Location tracking per work (Bayreuth, München, Wien)
+- **Real Signatures**: All data references actual archive signatures
 
 ### Current Data
 
@@ -53,6 +75,60 @@ docs/data/m3gim.jsonld  ←  copy          ←  data/export/
 | Objects (Hauptbestand, Plakate, Tonträger) | 208 |
 | Photographs | 228 |
 | **Total Records** | **436** |
+
+### Data Analysis Results
+
+Generated reports from archive analysis:
+- `data/reports/archive-analysis.md`: Top 20 persons, works, locations
+- `data/reports/signature-index.md`: Detailed signature reference
+- `data/reports/ZUSAMMENFASSUNG.md`: Data enrichment recommendations
+
+Best documented periods:
+- 1950-1954: 68 documents
+- 1995-1999: 58 documents
+- 1955-1959: 49 documents
+
+---
+
+## Visualizations
+
+### 1. Mobilitäts-Partitur
+Interactive timeline showing all biographical dimensions simultaneously:
+- 7 life phases from childhood (1919) to retirement (2009)
+- Geographic locations (residence vs. performance venues)
+- Mobility events with classification
+- Network intensity over time
+- Repertoire evolution (Wagner, Verdi, Strauss)
+- Document density per year
+
+**Export:** SVG, PNG
+
+### 2. Begegnungs-Matrix
+Heatmap showing relationship intensity to persons over time periods:
+- 4 persons from 436 archive records
+- Weighted intensity based on document types
+- Click to view linked archive signatures
+- Category indicators (Conductor, Director, Agent, Colleague)
+
+**Export:** SVG, PNG, CSV
+
+### 3. Rollen-Kosmos
+Force-directed graph of the artistic universe:
+- Center: Ira Malaniuk (1919-2009, Mezzo-soprano)
+- Composers: Wagner (18 docs), Verdi (21 docs), Strauss (9 docs)
+- Works with roles and locations
+- Interactive drag, click for details
+
+**Export:** SVG, PNG, CSV
+
+### 4. Karriere-Fluss
+Sankey diagram showing career flow:
+- Phases: Anfänge, Aufstieg, Höhepunkt, Spätphase
+- Repertoire: Wagner, Verdi, Strauss, Gluck/Händel, Beethoven
+- Locations: Wien, Bayreuth, München, Salzburg, Graz
+- Flow thickness represents document counts
+
+**Export:** SVG, PNG
 
 ---
 
@@ -151,6 +227,25 @@ Exports to RiC-O conformant JSON-LD.
 ```bash
 python scripts/create-ric-json.py
 ```
+
+### build-views.py
+Generates pre-aggregated view data for visualizations with intelligent extraction.
+
+```bash
+python scripts/build-views.py
+```
+
+**Features:**
+- Weighted intensity calculation based on document types
+- Role extraction from titles (Fricka, Brangäne, Amneris, etc.)
+- Geographic context tracking (Bayreuth, München, Wien)
+- Composer-work relationships with real archive signatures
+
+**Output:**
+- `data/views/partitur.json` - Timeline view data
+- `data/views/matrix.json` - Person-time matrix
+- `data/views/kosmos.json` - Composer-work network
+- `data/views/sankey.json` - Career flow data
 
 ---
 

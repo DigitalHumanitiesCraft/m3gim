@@ -97,21 +97,27 @@ Dieses Dokument beschreibt die Datenflüsse im M³GIM-Projekt: von der Erfassung
 
 ## 3. Build-Pipeline: View-Aggregationen
 
+**Status:** Implementiert (2026-01-19)
+
 ### Architektur
 
 ```
 data/
 ├── export/
 │   └── m3gim.jsonld          # Quelldaten (436 Records)
-├── views/
-│   ├── partitur.json         # Aggregiert für Partitur
-│   ├── matrix.json           # Aggregiert für Matrix
-│   ├── kosmos.json           # Aggregiert für Kosmos
-│   └── karrierefluss.json    # Aggregiert für Sankey
+├── views/                     # Generierte View-Daten
+│   ├── partitur.json         # 7.5KB - Timeline data
+│   ├── matrix.json           # 3.1KB - Person-time matrix
+│   ├── kosmos.json           # 4.9KB - Composer-work network
+│   └── sankey.json           # 2.8KB - Career flow
 └── archive-export/           # Original CSV-Exporte
 ```
 
-### Option A: Python Build-Script
+### Implementierung: Python Build-Script
+
+**Datei:** `scripts/build-views.py`
+**Ausführung:** `python scripts/build-views.py` oder `npm run build:views`
+**Output:** `data/views/*.json` (werden nach `docs/data/` kopiert)
 
 ```python
 #!/usr/bin/env python3

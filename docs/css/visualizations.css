@@ -1,0 +1,309 @@
+/**
+ * Visualization Components Styles
+ */
+
+/* Common visualization styles */
+.viz-fullwidth {
+  width: 100%;
+  position: relative;
+}
+
+.viz-header {
+  margin-bottom: 20px;
+  padding: 20px;
+  background: var(--background-secondary);
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.viz-header h3 {
+  margin: 0 0 8px 0;
+  color: var(--text-primary);
+  font-size: 1.5rem;
+}
+
+.viz-description {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+/* Export Toolbar */
+.export-toolbar {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.export-btn {
+  padding: 6px 12px;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.export-btn:hover {
+  background: var(--primary-color-dark, #4a5a7a);
+}
+
+.export-btn:active {
+  transform: translateY(1px);
+}
+
+.viz-placeholder {
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+/* Document Panel */
+.document-panel {
+  position: fixed;
+  right: -400px;
+  top: 0;
+  width: 400px;
+  height: 100vh;
+  background: var(--background-primary);
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.2);
+  transition: right 0.3s ease;
+  z-index: 1000;
+  overflow-y: auto;
+}
+
+.document-panel.visible {
+  right: 0;
+}
+
+.document-panel__header {
+  padding: 20px;
+  background: var(--primary-color);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.document-panel__header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.document-panel__close {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 2rem;
+  cursor: pointer;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  line-height: 1;
+}
+
+.document-panel__close:hover {
+  opacity: 0.8;
+}
+
+.document-panel__content {
+  padding: 20px;
+}
+
+.document-panel__content h4 {
+  margin: 20px 0 10px 0;
+  color: var(--text-primary);
+}
+
+.document-panel__content p {
+  margin: 8px 0;
+  line-height: 1.6;
+}
+
+.document-list,
+.signature-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.document-item {
+  padding: 12px;
+  margin: 8px 0;
+  background: var(--background-secondary);
+  border-radius: 4px;
+  border-left: 3px solid var(--primary-color);
+}
+
+.doc-type {
+  display: inline-block;
+  padding: 2px 8px;
+  background: var(--primary-color);
+  color: white;
+  border-radius: 3px;
+  font-size: 0.75rem;
+  margin-right: 8px;
+}
+
+.doc-signature {
+  font-family: monospace;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.doc-title {
+  margin: 8px 0 0 0;
+  font-size: 0.9rem;
+}
+
+.signature-list li {
+  padding: 6px 12px;
+  margin: 4px 0;
+  background: var(--background-secondary);
+  font-family: monospace;
+  font-size: 0.9rem;
+  border-radius: 3px;
+}
+
+/* Matrix Visualization */
+.matrix-viz {
+  padding: 20px 0;
+}
+
+.matrix-svg .period-label {
+  font-size: 11px;
+  fill: var(--text-secondary);
+}
+
+.matrix-svg .person-label {
+  font-size: 12px;
+  fill: var(--text-primary);
+}
+
+.matrix-svg .matrix-cell {
+  transition: opacity 0.2s;
+}
+
+.matrix-svg .matrix-cell:hover {
+  opacity: 0.8;
+  stroke: var(--primary-color);
+  stroke-width: 2;
+}
+
+.matrix-svg .category-dirigent {
+  fill: #6B2C2C;
+}
+
+.matrix-svg .category-regisseur {
+  fill: #2C5C3F;
+}
+
+.matrix-svg .category-vermittler {
+  fill: #4A3A6B;
+}
+
+.matrix-svg .category-kollege {
+  fill: #8B7355;
+}
+
+.matrix-svg .legend text {
+  font-size: 10px;
+  fill: var(--text-secondary);
+}
+
+/* Kosmos Visualization */
+.kosmos-viz {
+  padding: 20px 0;
+}
+
+.kosmos-svg .link {
+  transition: stroke-opacity 0.3s;
+}
+
+.kosmos-svg .node {
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.kosmos-svg .node:hover {
+  opacity: 0.8;
+}
+
+.kosmos-svg .node-zentrum circle {
+  stroke-width: 3;
+}
+
+.kosmos-svg .node-label {
+  fill: var(--text-primary);
+  pointer-events: none;
+}
+
+.kosmos-svg .legend text {
+  fill: var(--text-secondary);
+}
+
+/* Sankey Visualization */
+.sankey-viz {
+  padding: 20px 0;
+}
+
+.sankey-svg .sankey-link {
+  transition: opacity 0.3s;
+}
+
+.sankey-svg .sankey-link:hover {
+  opacity: 0.8;
+}
+
+.sankey-svg .sankey-node rect {
+  cursor: default;
+}
+
+.sankey-svg .sankey-label {
+  fill: var(--text-primary);
+}
+
+.sankey-svg .column-header {
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Dark mode adjustments */
+@media (prefers-color-scheme: dark) {
+  .document-panel {
+    background: #1e1e1e;
+    box-shadow: -2px 0 8px rgba(0, 0, 0, 0.5);
+  }
+
+  .document-item {
+    background: #2a2a2a;
+  }
+
+  .signature-list li {
+    background: #2a2a2a;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .document-panel {
+    width: 100%;
+    right: -100%;
+  }
+
+  .viz-header {
+    padding: 15px;
+  }
+
+  .viz-header h3 {
+    font-size: 1.2rem;
+  }
+}

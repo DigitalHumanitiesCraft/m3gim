@@ -5,7 +5,13 @@
 
 export const CONFIG = {
   dataUrl: 'data/m3gim.jsonld',
-  syntheticDataUrl: 'data/synthetic-data.json',
+  syntheticDataUrl: 'data/synthetic-data.json', // DEPRECATED - use viewDataUrls instead
+  viewDataUrls: {
+    partitur: 'data/partitur.json',
+    matrix: 'data/matrix.json',
+    kosmos: 'data/kosmos.json',
+    sankey: 'data/sankey.json'
+  },
   debounceDelay: 200,
   minYear: 1919,
   maxYear: 2009

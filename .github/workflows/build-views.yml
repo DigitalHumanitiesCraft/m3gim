@@ -1,0 +1,42 @@
+name: Build View Data
+
+on:
+  push:
+    paths:
+      - 'data/export/m3gim.jsonld'
+      - 'scripts/build-views.py'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Generate view data
+        run: python scripts/build-views.py
+
+      - name: Copy view data to docs
+        run: |
+          cp data/views/*.json docs/data/
+
+      - name: Check for changes
+        id: check_changes
+        run: |
+          git diff --quiet docs/data/*.json || echo "changes=true" >> $GITHUB_OUTPUT
+
+      - name: Commit and push if changes
+        if: steps.check_changes.outputs.changes == 'true'
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+          git add docs/data/*.json
+          git commit -m "chore: update view data from archive [skip ci]"
+          git push

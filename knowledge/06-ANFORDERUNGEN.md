@@ -4,7 +4,7 @@
 
 Dieses Dokument beschreibt den aktuellen Implementierungsstand, offene Anforderungen und den Implementierungsplan für das M³GIM-Projekt.
 
-**Stand:** 2026-01-18
+**Stand:** 2026-01-19 (Aktualisiert nach Implementierung aller kritischen Features)
 
 ---
 
@@ -24,18 +24,19 @@ Dieses Dokument beschreibt den aktuellen Implementierungsstand, offene Anforderu
 | Verknüpfungen im Modal | ✅ | app.js:728-776 |
 | JSON-LD Export-Ansicht | ✅ | app.js:916-929 |
 
-### 1.2 Analyse-Bereich (Prototyp)
+### 1.2 Analyse-Bereich (Produktionsbereit)
 
 | Feature | Status | Datei |
 |---------|--------|-------|
 | Toolbar mit Viz-Selector | ✅ | [index.html](../docs/index.html):121-200 |
 | Partitur: 6-Spur-Layout | ✅ | [partitur.js](../docs/js/partitur.js) |
-| Partitur: Fokus-Linie | ✅ | partitur.js |
+| Partitur: Zoom & Navigation | ✅ | partitur.js |
 | Partitur: Tooltips | ✅ | partitur.js |
-| Matrix: Placeholder | ⚠️ | partitur.js (renderMatrix) |
-| Kosmos: Placeholder | ⚠️ | partitur.js (renderKosmos) |
-| Karrierefluss: Placeholder | ⚠️ | partitur.js (renderSankey) |
-| Document Panel | ❌ | Nicht implementiert |
+| Matrix: Vollständig | ✅ | [matrix.js](../docs/js/visualizations/matrix.js) |
+| Kosmos: Vollständig | ✅ | [kosmos.js](../docs/js/visualizations/kosmos.js) |
+| Karrierefluss: Vollständig | ✅ | [sankey.js](../docs/js/visualizations/sankey.js) |
+| Document Panel | ✅ | Integriert in alle Visualisierungen |
+| Export (SVG/PNG/CSV) | ✅ | [export.js](../docs/js/utils/export.js) |
 
 ### 1.3 Daten
 
@@ -43,48 +44,55 @@ Dieses Dokument beschreibt den aktuellen Implementierungsstand, offene Anforderu
 |------------|--------|-------|
 | JSON-LD Export (436 Records) | ✅ | [m3gim.jsonld](../data/export/m3gim.jsonld) |
 | RiC-O 1.1 Konformität | ✅ | Validiert |
-| Synthetische Testdaten | ⚠️ | Veraltet, nicht mehr synchron |
-| View-spezifische Aggregationen | ❌ | Nicht vorhanden |
+| View-spezifische Aggregationen | ✅ | [data/views/](../data/views/) |
+| Partitur-Daten | ✅ | [partitur.json](../docs/data/partitur.json) (7.5KB) |
+| Matrix-Daten | ✅ | [matrix.json](../docs/data/matrix.json) (3.1KB) |
+| Kosmos-Daten | ✅ | [kosmos.json](../docs/data/kosmos.json) (4.9KB) |
+| Sankey-Daten | ✅ | [sankey.json](../docs/data/sankey.json) (2.8KB) |
 
 ---
 
-## 2. Offene Anforderungen
+## 2. Implementierte Anforderungen (2026-01-19)
 
-### 2.1 Kritisch (Blocker für Produktivbetrieb)
+### 2.1 Kritisch (Alle abgeschlossen)
 
-| ID | Anforderung | Begründung | Aufwand |
-|----|-------------|------------|---------|
-| **REQ-01** | Echte Daten in Visualisierungen | Aktuell synthetische Testdaten | Hoch |
-| **REQ-02** | Document Panel implementieren | Klick auf Viz-Element → Archivalien | Mittel |
-| **REQ-03** | Matrix vollständig implementieren | FF1/FF3 Kernvisualisierung | Hoch |
-| **REQ-04** | Kosmos vollständig implementieren | FF2 Kernvisualisierung | Hoch |
+| ID | Anforderung | Status | Implementiert in |
+|----|-------------|--------|------------------|
+| **REQ-01** | Echte Daten in Visualisierungen | ✅ | build-views.py, data/views/*.json |
+| **REQ-02** | Document Panel implementieren | ✅ | matrix.js, kosmos.js (showDocumentPanel) |
+| **REQ-03** | Matrix vollständig implementieren | ✅ | visualizations/matrix.js |
+| **REQ-04** | Kosmos vollständig implementieren | ✅ | visualizations/kosmos.js |
 
-### 2.2 Hoch (Wissenschaftlicher Mehrwert)
+### 2.2 Hoch (Teilweise implementiert)
 
-| ID | Anforderung | Begründung | Aufwand |
-|----|-------------|------------|---------|
-| **REQ-05** | Zeitfilter für Matrix | Phasenvergleiche ermöglichen | Mittel |
-| **REQ-06** | Kategoriefilter für Matrix aktivieren | HTML existiert, JS fehlt | Gering |
-| **REQ-07** | SVG/PNG Export | Für wissenschaftliche Publikationen | Mittel |
-| **REQ-08** | CSV Export für Matrix | Statistische Auswertung extern | Gering |
-| **REQ-09** | Karrierefluss vollständig | FF4 Visualisierung | Mittel |
+| ID | Anforderung | Status | Implementiert in |
+|----|-------------|--------|------------------|
+| **REQ-05** | Zeitfilter für Matrix | ⏸️ | Nicht implementiert (bewusst ausgelassen) |
+| **REQ-06** | Kategoriefilter für Matrix aktivieren | ⏸️ | Nicht implementiert (bewusst ausgelassen) |
+| **REQ-07** | SVG/PNG Export | ✅ | utils/export.js (exportSVG, exportSVGasPNG) |
+| **REQ-08** | CSV Export für Matrix | ✅ | utils/export.js (exportMatrixAsCSV) |
+| **REQ-09** | Karrierefluss vollständig | ✅ | visualizations/sankey.js |
 
-### 2.3 Mittel (Usability)
+### 2.3 Mittel (Usability) - Bewusst nicht implementiert
 
-| ID | Anforderung | Begründung | Aufwand |
-|----|-------------|------------|---------|
-| **REQ-10** | Legende in Partitur | Farben ohne Erklärung nicht verständlich | Gering |
-| **REQ-11** | Responsive Design | Mobile Nutzung | Mittel |
-| **REQ-12** | Keyboard Navigation | Accessibility | Mittel |
-| **REQ-13** | Cross-Visualization Linking | Von Matrix zu Kosmos springen | Mittel |
+Per Benutzeranforderung wurden folgende Features bewusst NICHT implementiert:
 
-### 2.4 Niedrig (Nice-to-have)
+| ID | Anforderung | Status | Begründung |
+|----|-------------|--------|------------|
+| **REQ-10** | Legende in Partitur | ⏸️ | Tooltips ausreichend |
+| **REQ-11** | Responsive Design | ✅ | Basis-Responsiveness vorhanden |
+| **REQ-12** | Keyboard Navigation | ⏸️ | Explizit ausgeschlossen |
+| **REQ-13** | Cross-Visualization Linking | ⏸️ | Für später vorgesehen |
 
-| ID | Anforderung | Begründung | Aufwand |
-|----|-------------|------------|---------|
-| **REQ-14** | Geografische Karte | Alternative zu Karrierefluss | Hoch |
-| **REQ-15** | Animierte Zeitreise | Didaktisch wertvoll | Hoch |
-| **REQ-16** | Annotation-System | Forscher-Notizen | Hoch |
+### 2.4 Niedrig (Nice-to-have) - Nicht implementiert
+
+Diese Features wurden bewusst NICHT implementiert:
+
+| ID | Anforderung | Status | Begründung |
+|----|-------------|--------|------------|
+| **REQ-14** | Geografische Karte | ⏸️ | Nicht im Scope |
+| **REQ-15** | Animierte Zeitreise | ⏸️ | Nicht im Scope |
+| **REQ-16** | Annotation-System | ⏸️ | Nicht im Scope |
 
 ---
 
