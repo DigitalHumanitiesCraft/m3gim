@@ -1,7 +1,9 @@
 {
   "zentrum": {
     "name": "Ira Malaniuk",
-    "wikidata": "Q94208"
+    "wikidata": "Q94208",
+    "lebensdaten": "1919-2009",
+    "fach": "Alt"
   },
   "komponisten": [
     {
@@ -21,7 +23,40 @@
             "UAKUG/NIM_FS_203",
             "UAKUG/NIM_FS_213",
             "UAKUG/NIM_FS_217"
+          ],
+          "orte": [
+            {
+              "name": "Wien",
+              "count": 1
+            }
+          ],
+          "rollen": [
+            {
+              "name": "Brangäne",
+              "count": 3
+            },
+            {
+              "name": "Erda",
+              "count": 1
+            }
           ]
+        },
+        {
+          "name": "Tannhäuser",
+          "dokumente": 4,
+          "signaturen": [
+            "UAKUG/NIM_120",
+            "UAKUG/NIM_FS_034",
+            "UAKUG/NIM_FS_201",
+            "UAKUG/NIM_FS_202"
+          ],
+          "orte": [
+            {
+              "name": "Wien",
+              "count": 1
+            }
+          ],
+          "rollen": []
         },
         {
           "name": "Die Meistersinger",
@@ -29,21 +64,47 @@
           "signaturen": [
             "UAKUG/NIM_FS_002",
             "UAKUG/NIM_FS_033"
-          ]
+          ],
+          "orte": [
+            {
+              "name": "Bayreuth",
+              "count": 2
+            }
+          ],
+          "rollen": []
+        },
+        {
+          "name": "Lohengrin",
+          "dokumente": 2,
+          "signaturen": [
+            "UAKUG/NIM_FS_042",
+            "UAKUG/NIM_FS_193"
+          ],
+          "orte": [
+            {
+              "name": "Zürich",
+              "count": 1
+            }
+          ],
+          "rollen": []
         },
         {
           "name": "Der Ring des Nibelungen",
           "dokumente": 1,
           "signaturen": [
             "UAKUG/NIM_051"
-          ]
+          ],
+          "orte": [],
+          "rollen": []
         },
         {
           "name": "Götterdämmerung",
           "dokumente": 1,
           "signaturen": [
             "UAKUG/NIM_FS_036"
-          ]
+          ],
+          "orte": [],
+          "rollen": []
         }
       ]
     },
@@ -65,6 +126,22 @@
             "UAKUG/NIM_FS_032",
             "UAKUG/NIM_FS_051",
             "UAKUG/NIM_FS_204"
+          ],
+          "orte": [
+            {
+              "name": "Wien",
+              "count": 1
+            },
+            {
+              "name": "München",
+              "count": 1
+            }
+          ],
+          "rollen": [
+            {
+              "name": "Amneris",
+              "count": 2
+            }
           ]
         },
         {
@@ -74,6 +151,18 @@
             "UAKUG/NIM_089",
             "UAKUG/NIM_FS_099",
             "UAKUG/NIM_FS_192"
+          ],
+          "orte": [
+            {
+              "name": "Wien",
+              "count": 1
+            }
+          ],
+          "rollen": [
+            {
+              "name": "Eboli",
+              "count": 2
+            }
           ]
         }
       ]
@@ -95,7 +184,14 @@
           "signaturen": [
             "UAKUG/NIM_FS_015",
             "UAKUG/NIM_FS_041"
-          ]
+          ],
+          "orte": [
+            {
+              "name": "München",
+              "count": 1
+            }
+          ],
+          "rollen": []
         }
       ]
     },
@@ -110,13 +206,26 @@
           "signaturen": [
             "UAKUG/NIM_FS_197",
             "UAKUG/NIM_FS_206"
+          ],
+          "orte": [
+            {
+              "name": "München",
+              "count": 1
+            }
+          ],
+          "rollen": [
+            {
+              "name": "Octavian",
+              "count": 1
+            }
           ]
         }
       ]
     }
   ],
   "_meta": {
-    "generated": "2026-01-19T06:49:24.349972",
-    "source_records": 436
+    "generated": "2026-01-19T07:37:49.090038",
+    "source_records": 436,
+    "note": "Includes geographic and role context extracted from titles"
   }
 }

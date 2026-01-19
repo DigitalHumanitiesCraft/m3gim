@@ -16,7 +16,7 @@
   ],
   "personen": [
     {
-      "name": "Furtwängler",
+      "name": "Wilhelm Furtwängler",
       "kategorie": "Dirigent",
       "begegnungen": [
         {
@@ -25,14 +25,16 @@
           "dokumente": [
             {
               "signatur": "UAKUG/NIM_FS_106",
-              "titel": "Wilhelm Furtwängler mit Orchester"
+              "titel": "Wilhelm Furtwängler mit Orchester",
+              "typ": "Photograph"
             }
           ]
         }
-      ]
+      ],
+      "gesamt_intensitaet": 1
     },
     {
-      "name": "Karajan",
+      "name": "Herbert von Karajan",
       "kategorie": "Dirigent",
       "begegnungen": [
         {
@@ -41,11 +43,13 @@
           "dokumente": [
             {
               "signatur": "UAKUG/NIM_FS_203",
-              "titel": "Gespräch mit [Herbert von] Karajan in einer Orchesterprobe von \"Tristan\""
+              "titel": "Gespräch mit [Herbert von] Karajan in einer Orchesterprobe von \"Tristan\"",
+              "typ": "Photograph"
             }
           ]
         }
-      ]
+      ],
+      "gesamt_intensitaet": 1
     },
     {
       "name": "Werba",
@@ -53,25 +57,28 @@
       "begegnungen": [
         {
           "zeitraum": "1955-1959",
-          "intensitaet": 1,
+          "intensitaet": 2,
           "dokumente": [
             {
               "signatur": "UAKUG/NIM/PL_02",
-              "titel": "SALZBURGER MOZART-WOCHE 1959 / Mittwoch, den 21. Jänner 1959 - Mozarteum, Großer"
+              "titel": "SALZBURGER MOZART-WOCHE 1959 / Mittwoch, den 21. Jänner 1959 - Mozarteum, Großer",
+              "typ": "Poster"
             }
           ]
         },
         {
           "zeitraum": "1960-1964",
-          "intensitaet": 1,
+          "intensitaet": 2,
           "dokumente": [
             {
               "signatur": "UAKUG/NIM/PL_01",
-              "titel": "Liederabend / IRA / MALANIUK / Alt / (Staatsoper Wien und München) / am Flügel: "
+              "titel": "Liederabend / IRA / MALANIUK / Alt / (Staatsoper Wien und München) / am Flügel: ",
+              "typ": "Poster"
             }
           ]
         }
-      ]
+      ],
+      "gesamt_intensitaet": 4
     },
     {
       "name": "Ludwig",
@@ -79,11 +86,12 @@
       "begegnungen": [
         {
           "zeitraum": "1940-1944",
-          "intensitaet": 1,
+          "intensitaet": 2,
           "dokumente": [
             {
               "signatur": "UAKUG/NIM/PL_04",
-              "titel": "SINFONISCHES ORCHESTER / in Stanislau / Konzertsaal Armenierstrasse 18. / Zum Ab"
+              "titel": "SINFONISCHES ORCHESTER / in Stanislau / Konzertsaal Armenierstrasse 18. / Zum Ab",
+              "typ": "Poster"
             }
           ]
         },
@@ -93,19 +101,23 @@
           "dokumente": [
             {
               "signatur": "UAKUG/NIM_FS_026",
-              "titel": "Bayreuther Festspiele 1953 Ludwig van Beethoven - Symphonie IX"
+              "titel": "Bayreuther Festspiele 1953 Ludwig van Beethoven - Symphonie IX",
+              "typ": "Photograph"
             },
             {
               "signatur": "UAKUG/NIM_FS_027",
-              "titel": "Teatro Comunale di Firenze Ludwig van Beethoven - Symphonie IX"
+              "titel": "Teatro Comunale di Firenze Ludwig van Beethoven - Symphonie IX",
+              "typ": "Photograph"
             }
           ]
         }
-      ]
+      ],
+      "gesamt_intensitaet": 4
     }
   ],
   "_meta": {
-    "generated": "2026-01-19T06:49:24.348569",
-    "source_records": 436
+    "generated": "2026-01-19T07:37:49.088225",
+    "source_records": 436,
+    "note": "Intensity weighted by document type: Letter=3, Program/Poster/Contract=2, Photo=1"
   }
 }

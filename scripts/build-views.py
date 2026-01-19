@@ -422,10 +422,12 @@ def build_matrix(records):
     - zeitraeume: List of 5-year periods
     - kategorien: Person categories
     - personen: List of persons with their encounters per period
+
+    IMPROVED: Weighted intensity based on document type
     """
     print('Building matrix.json...')
 
-    # Extract persons from titles (simplified - would need proper NER)
+    # Extract persons from titles with weighted intensity
     personen_begegnungen = defaultdict(lambda: defaultdict(list))
 
     # Known persons to look for in titles
@@ -435,9 +437,18 @@ def build_matrix(records):
         title = (record.get('rico:title') or '').lower()
         year = extract_year(record.get('rico:date'))
         period = get_5year_period(year)
+        doc_type = get_dokumenttyp(record)
 
         if not period:
             continue
+
+        # Calculate intensity based on document type
+        # Letter = high intensity (3), Program/Poster = medium (2), Photo = low (1)
+        intensity_weight = 1
+        if doc_type == 'Letter':
+            intensity_weight = 3
+        elif doc_type in ['Program', 'Poster', 'Contract']:
+            intensity_weight = 2
 
         for person_key in known_persons:
             if person_key in title:
@@ -447,10 +458,18 @@ def build_matrix(records):
                     person_name = 'Wieland Wagner'
                 elif person_key == 'wolfgang wagner':
                     person_name = 'Wolfgang Wagner'
+                elif person_key == 'karajan':
+                    person_name = 'Herbert von Karajan'
+                elif person_key == 'böhm':
+                    person_name = 'Karl Böhm'
+                elif person_key == 'furtwängler':
+                    person_name = 'Wilhelm Furtwängler'
 
                 personen_begegnungen[person_name][period].append({
                     'signatur': record.get('rico:identifier'),
-                    'titel': record.get('rico:title', '')[:80]
+                    'titel': record.get('rico:title', '')[:80],
+                    'typ': doc_type,
+                    'weight': intensity_weight
                 })
 
     # Convert to output format
@@ -464,24 +483,29 @@ def build_matrix(records):
         for z in zeitraeume:
             docs = perioden.get(z, [])
             if docs:
+                # Calculate weighted intensity (sum of weights, not just count)
+                total_weight = sum(d['weight'] for d in docs)
                 begegnungen.append({
                     'zeitraum': z,
-                    'intensitaet': len(docs),
-                    'dokumente': docs[:5]  # Limit
+                    'intensitaet': total_weight,  # Weighted intensity
+                    'dokumente': [
+                        {'signatur': d['signatur'], 'titel': d['titel'], 'typ': d['typ']}
+                        for d in docs[:5]  # Limit to 5 for JSON size
+                    ]
                 })
 
         if begegnungen:  # Only include if there are encounters
             personen.append({
                 'name': name,
                 'kategorie': kategorie,
-                'begegnungen': begegnungen
+                'begegnungen': begegnungen,
+                'gesamt_intensitaet': sum(b['intensitaet'] for b in begegnungen)
             })
 
     # Sort by category, then by total intensity
     def sort_key(p):
         cat_order = {'Dirigent': 0, 'Regisseur': 1, 'Vermittler': 2, 'Kollege': 3, 'Andere': 4}
-        total = sum(b['intensitaet'] for b in p['begegnungen'])
-        return (cat_order.get(p['kategorie'], 5), -total)
+        return (cat_order.get(p['kategorie'], 5), -p['gesamt_intensitaet'])
 
     personen.sort(key=sort_key)
 
@@ -491,7 +515,8 @@ def build_matrix(records):
         'personen': personen,
         '_meta': {
             'generated': datetime.now().isoformat(),
-            'source_records': len(records)
+            'source_records': len(records),
+            'note': 'Intensity weighted by document type: Letter=3, Program/Poster/Contract=2, Photo=1'
         }
     }
 
@@ -503,65 +528,127 @@ def build_kosmos(records):
     Structure:
     - zentrum: Ira Malaniuk
     - komponisten: Composers with their works and roles
+
+    IMPROVED: Better role extraction and geographic context
     """
     print('Building kosmos.json...')
 
-    # Aggregate by composer
+    # Aggregate by composer with location tracking
     komponisten_data = defaultdict(lambda: {
         'dokumente': 0,
-        'werke': defaultdict(lambda: {'dokumente': 0, 'signaturen': []})
+        'werke': defaultdict(lambda: {
+            'dokumente': 0,
+            'signaturen': [],
+            'orte': defaultdict(int),
+            'rollen': defaultdict(int)
+        })
     })
+
+    # Extended work patterns (from analysis)
+    werk_patterns = {
+        'ring': 'Der Ring des Nibelungen',
+        'walküre': 'Die Walküre',
+        'rheingold': 'Das Rheingold',
+        'götterdämmerung': 'Götterdämmerung',
+        'siegfried': 'Siegfried',
+        'meistersinger': 'Die Meistersinger',
+        'tristan': 'Tristan und Isolde',
+        'tannhäuser': 'Tannhäuser',
+        'lohengrin': 'Lohengrin',
+        'parsifal': 'Parsifal',
+        'aida': 'Aida',
+        'trovatore': 'Il Trovatore',
+        'maskenball': 'Ein Maskenball',
+        'don carlos': 'Don Carlos',
+        'macbeth': 'Macbeth',
+        'falstaff': 'Falstaff',
+        'traviata': 'La Traviata',
+        'rosenkavalier': 'Der Rosenkavalier',
+        'elektra': 'Elektra',
+        'salome': 'Salome',
+        'arabella': 'Arabella',
+        'capriccio': 'Capriccio',
+        'frau ohne schatten': 'Die Frau ohne Schatten',
+        'orpheus': 'Orfeo ed Euridice',
+        'orfeo': 'Orfeo ed Euridice',
+        'julius cäsar': 'Giulio Cesare',
+        'carmen': 'Carmen'
+    }
+
+    # Known roles (from analysis)
+    rollen_patterns = {
+        'fricka': 'Fricka',
+        'waltraute': 'Waltraute',
+        'erda': 'Erda',
+        'brangäne': 'Brangäne',
+        'amneris': 'Amneris',
+        'azucena': 'Azucena',
+        'ulrica': 'Ulrica',
+        'eboli': 'Eboli',
+        'octavian': 'Octavian',
+        'klytämnestra': 'Klytämnestra',
+        'herodias': 'Herodias',
+        'kabanicha': 'Kabanicha',
+        'orlofsky': 'Orlofsky'
+    }
+
+    # Location patterns
+    orte_patterns = {
+        'bayreuth': 'Bayreuth',
+        'münchen': 'München',
+        'wien': 'Wien',
+        'salzburg': 'Salzburg',
+        'zürich': 'Zürich',
+        'graz': 'Graz',
+        'buenos aires': 'Buenos Aires'
+    }
 
     for record in records:
         title = record.get('rico:title', '')
+        title_lower = title.lower()
         komponist = get_komponist_from_title(title)
 
         if komponist:
             komponisten_data[komponist]['dokumente'] += 1
 
-            # Try to extract work name (simplified)
-            title_lower = title.lower()
+            # Extract work name
             werk = None
-
-            # Match specific works
-            werk_patterns = {
-                'ring': 'Der Ring des Nibelungen',
-                'walküre': 'Die Walküre',
-                'rheingold': 'Das Rheingold',
-                'götterdämmerung': 'Götterdämmerung',
-                'meistersinger': 'Die Meistersinger',
-                'tristan': 'Tristan und Isolde',
-                'aida': 'Aida',
-                'trovatore': 'Il Trovatore',
-                'maskenball': 'Ein Maskenball',
-                'don carlos': 'Don Carlos',
-                'rosenkavalier': 'Der Rosenkavalier',
-                'elektra': 'Elektra',
-                'orpheus': 'Orfeo ed Euridice',
-                'orfeo': 'Orfeo ed Euridice',
-                'julius cäsar': 'Giulio Cesare'
-            }
-
             for pattern, werk_name in werk_patterns.items():
                 if pattern in title_lower:
                     werk = werk_name
                     break
 
             if werk:
-                komponisten_data[komponist]['werke'][werk]['dokumente'] += 1
-                komponisten_data[komponist]['werke'][werk]['signaturen'].append(
-                    record.get('rico:identifier')
-                )
+                werk_data = komponisten_data[komponist]['werke'][werk]
+                werk_data['dokumente'] += 1
+                werk_data['signaturen'].append(record.get('rico:identifier'))
+
+                # Extract location
+                for loc_pattern, loc_name in orte_patterns.items():
+                    if loc_pattern in title_lower:
+                        werk_data['orte'][loc_name] += 1
+                        break
+
+                # Extract role
+                for rolle_pattern, rolle_name in rollen_patterns.items():
+                    if rolle_pattern in title_lower:
+                        werk_data['rollen'][rolle_name] += 1
 
     # Convert to output format
     komponisten = []
     for name, data in komponisten_data.items():
         werke = []
         for werk_name, werk_data in data['werke'].items():
+            # Get top locations
+            top_orte = sorted(werk_data['orte'].items(), key=lambda x: -x[1])[:3]
+            top_rollen = sorted(werk_data['rollen'].items(), key=lambda x: -x[1])[:3]
+
             werke.append({
                 'name': werk_name,
                 'dokumente': werk_data['dokumente'],
-                'signaturen': werk_data['signaturen'][:10]
+                'signaturen': werk_data['signaturen'][:10],
+                'orte': [{'name': o[0], 'count': o[1]} for o in top_orte],
+                'rollen': [{'name': r[0], 'count': r[1]} for r in top_rollen]
             })
 
         komponisten.append({
@@ -577,12 +664,15 @@ def build_kosmos(records):
     return {
         'zentrum': {
             'name': 'Ira Malaniuk',
-            'wikidata': 'Q94208'
+            'wikidata': 'Q94208',
+            'lebensdaten': '1919-2009',
+            'fach': 'Alt'
         },
         'komponisten': komponisten,
         '_meta': {
             'generated': datetime.now().isoformat(),
-            'source_records': len(records)
+            'source_records': len(records),
+            'note': 'Includes geographic and role context extracted from titles'
         }
     }
 
