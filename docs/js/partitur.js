@@ -17,7 +17,13 @@
 
   // Configuration - improved aesthetics with more whitespace
   const CONFIG = {
-    syntheticDataUrl: 'data/synthetic-data.json',
+    syntheticDataUrl: 'data/synthetic-data.json', // DEPRECATED - fallback only
+    viewDataUrls: {
+      partitur: 'data/partitur.json',
+      matrix: 'data/matrix.json',
+      kosmos: 'data/kosmos.json',
+      sankey: 'data/sankey.json'
+    },
     margin: { top: 50, right: 40, bottom: 60, left: 110 },
     trackHeight: 55,
     trackPadding: 18,
