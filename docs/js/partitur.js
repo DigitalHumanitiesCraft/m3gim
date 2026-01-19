@@ -584,13 +584,28 @@
         renderPartitur(container);
         break;
       case 'matrix':
-        renderMatrix(container);
+        // Use new ES6 module if available, otherwise fallback
+        if (window.M3GIM_VIZ && window.M3GIM_VIZ.renderMatrix) {
+          window.M3GIM_VIZ.renderMatrix(container);
+        } else {
+          renderMatrix(container);
+        }
         break;
       case 'kosmos':
-        renderKosmos(container);
+        // Use new ES6 module if available, otherwise fallback
+        if (window.M3GIM_VIZ && window.M3GIM_VIZ.renderKosmos) {
+          window.M3GIM_VIZ.renderKosmos(container);
+        } else {
+          renderKosmos(container);
+        }
         break;
       case 'sankey':
-        renderSankey(container);
+        // Use new ES6 module if available, otherwise fallback
+        if (window.M3GIM_VIZ && window.M3GIM_VIZ.renderSankey) {
+          window.M3GIM_VIZ.renderSankey(container);
+        } else {
+          renderSankey(container);
+        }
         break;
     }
 
