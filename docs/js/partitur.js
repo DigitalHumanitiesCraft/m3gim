@@ -581,7 +581,12 @@
 
     switch (currentViz) {
       case 'partitur':
-        renderPartitur(container);
+        // Use new ES6 module if available, otherwise fallback
+        if (window.M3GIM_VIZ && window.M3GIM_VIZ.renderPartitur) {
+          window.M3GIM_VIZ.renderPartitur(container);
+        } else {
+          renderPartitur(container);
+        }
         break;
       case 'matrix':
         // Use new ES6 module if available, otherwise fallback

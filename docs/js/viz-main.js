@@ -6,12 +6,14 @@
 import { renderMatrix } from './visualizations/matrix.js';
 import { renderKosmos } from './visualizations/kosmos.js';
 import { renderSankey } from './visualizations/sankey.js';
+import { renderPartitur } from './visualizations/partitur.js';
 
 // Make visualization functions globally available
 window.M3GIM_VIZ = {
   renderMatrix,
   renderKosmos,
-  renderSankey
+  renderSankey,
+  renderPartitur
 };
 
 console.log('M3GIM Visualization modules loaded');

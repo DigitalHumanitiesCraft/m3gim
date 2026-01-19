@@ -11,10 +11,54 @@
   "kategorien": [
     "Dirigent",
     "Regisseur",
-    "Vermittler",
-    "Kollege"
+    "Korrepetitor",
+    "Kollege",
+    "Vermittler"
   ],
   "personen": [
+    {
+      "name": "Paul Hindemith",
+      "kategorie": "Dirigent",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 3,
+          "anzahl_dokumente": 2,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM/PL_17",
+              "titel": "Direttore / PAUL HINDEMITH / Mezzosoprano / IRA MALANIUK",
+              "typ": "Poster"
+            },
+            {
+              "signatur": "UAKUG/NIM_FS_025",
+              "titel": "Paul Hindemith: Ein Requiem \"Für die, die wir lieben\"",
+              "typ": "Photograph"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 3
+    },
+    {
+      "name": "Nikolaus Kolessa",
+      "kategorie": "Dirigent",
+      "begegnungen": [
+        {
+          "zeitraum": "1940-1944",
+          "intensitaet": 2,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM/PL_04",
+              "titel": "SINFONISCHES ORCHESTER / in Stanislau / Konzertsaal Armenierstrasse 18. / Zum Abschluss der Wintersaison / Sonntag den 26. April 1942 / BEETHOVEN / KONZERT / Leitung: / NIKOLAUS KOLESSA / Solistin: / IRENE MALANIUK / Mezzosopran / Programm: / Ludwig van Beethoven: Sinfonie Nr. 8 F-Dur / \" Ah! perfido, spergiuro, - Arie / \" Beethoven: Egmont, Ouvertüre / BEGINN / um 19:15 (7.15) / Eintrittskarten von 2-5 Zl[oty]. - Vorverkauf: Theaterkasse von 10-13 / und 15-18 Uhr. - Wehrmachtsangehörige 20% Ermässigung",
+              "typ": "Poster"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
     {
       "name": "Wilhelm Furtwängler",
       "kategorie": "Dirigent",
@@ -22,6 +66,7 @@
         {
           "zeitraum": "1950-1954",
           "intensitaet": 1,
+          "anzahl_dokumente": 1,
           "dokumente": [
             {
               "signatur": "UAKUG/NIM_FS_106",
@@ -40,6 +85,7 @@
         {
           "zeitraum": "1950-1954",
           "intensitaet": 1,
+          "anzahl_dokumente": 1,
           "dokumente": [
             {
               "signatur": "UAKUG/NIM_FS_203",
@@ -52,16 +98,36 @@
       "gesamt_intensitaet": 1
     },
     {
-      "name": "Werba",
-      "kategorie": "Vermittler",
+      "name": "Rudolf Hartmann",
+      "kategorie": "Regisseur",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 3,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_084",
+              "titel": "1 Glückwunschbillet zur Ernennung Ira Malaniuks zur bayrischen Kammersängerin von Prof. Rudolf Hartmann",
+              "typ": "Letter"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 3
+    },
+    {
+      "name": "Erik Werba",
+      "kategorie": "Korrepetitor",
       "begegnungen": [
         {
           "zeitraum": "1955-1959",
           "intensitaet": 2,
+          "anzahl_dokumente": 1,
           "dokumente": [
             {
               "signatur": "UAKUG/NIM/PL_02",
-              "titel": "SALZBURGER MOZART-WOCHE 1959 / Mittwoch, den 21. Jänner 1959 - Mozarteum, Großer",
+              "titel": "SALZBURGER MOZART-WOCHE 1959 / Mittwoch, den 21. Jänner 1959 - Mozarteum, Großer Saal, 19.30 / 3. Solistenkonzert im Abonnement / Ira Malaniuk Mezzosopran / Staatsoper Wien / Am Flügel: Eric Werba / Lieder von G. F. Händel, W. A. Mozart, J. Haydn, J. Brahms, F. Schubert, R. Strauss, W. Barwinskyj",
               "typ": "Poster"
             }
           ]
@@ -69,10 +135,11 @@
         {
           "zeitraum": "1960-1964",
           "intensitaet": 2,
+          "anzahl_dokumente": 1,
           "dokumente": [
             {
               "signatur": "UAKUG/NIM/PL_01",
-              "titel": "Liederabend / IRA / MALANIUK / Alt / (Staatsoper Wien und München) / am Flügel: ",
+              "titel": "Liederabend / IRA / MALANIUK / Alt / (Staatsoper Wien und München) / am Flügel: Prof. Erik Werba ",
               "typ": "Poster"
             }
           ]
@@ -81,16 +148,36 @@
       "gesamt_intensitaet": 4
     },
     {
-      "name": "Ludwig",
+      "name": "Paul Baumgartner",
+      "kategorie": "Korrepetitor",
+      "begegnungen": [
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_048",
+              "titel": "Programm- und Textheft zu einem Hugo-Wolf-Liederabend mit Ira Malaniuk (Alt), Heinz Rehfuss (Bariton) und Paul Baumgartner (Klavier) am 12.11.1961 in der Tonhalle Zürich",
+              "typ": "Collection"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Christa Ludwig",
       "kategorie": "Kollege",
       "begegnungen": [
         {
           "zeitraum": "1940-1944",
           "intensitaet": 2,
+          "anzahl_dokumente": 1,
           "dokumente": [
             {
               "signatur": "UAKUG/NIM/PL_04",
-              "titel": "SINFONISCHES ORCHESTER / in Stanislau / Konzertsaal Armenierstrasse 18. / Zum Ab",
+              "titel": "SINFONISCHES ORCHESTER / in Stanislau / Konzertsaal Armenierstrasse 18. / Zum Abschluss der Wintersaison / Sonntag den 26. April 1942 / BEETHOVEN / KONZERT / Leitung: / NIKOLAUS KOLESSA / Solistin: / IRENE MALANIUK / Mezzosopran / Programm: / Ludwig van Beethoven: Sinfonie Nr. 8 F-Dur / \" Ah! perfido, spergiuro, - Arie / \" Beethoven: Egmont, Ouvertüre / BEGINN / um 19:15 (7.15) / Eintrittskarten von 2-5 Zl[oty]. - Vorverkauf: Theaterkasse von 10-13 / und 15-18 Uhr. - Wehrmachtsangehörige 20% Ermässigung",
               "typ": "Poster"
             }
           ]
@@ -98,6 +185,7 @@
         {
           "zeitraum": "1950-1954",
           "intensitaet": 2,
+          "anzahl_dokumente": 2,
           "dokumente": [
             {
               "signatur": "UAKUG/NIM_FS_026",
@@ -113,10 +201,91 @@
         }
       ],
       "gesamt_intensitaet": 4
+    },
+    {
+      "name": "Heinz Rehfuss",
+      "kategorie": "Kollege",
+      "begegnungen": [
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_048",
+              "titel": "Programm- und Textheft zu einem Hugo-Wolf-Liederabend mit Ira Malaniuk (Alt), Heinz Rehfuss (Bariton) und Paul Baumgartner (Klavier) am 12.11.1961 in der Tonhalle Zürich",
+              "typ": "Collection"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Max Kojetinsky",
+      "kategorie": "Institution",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 4,
+          "anzahl_dokumente": 2,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_081",
+              "titel": "Brief von Prof. Max Kojetinsky (Opernhaus Graz) an Ira Malaniuk (Staatsoper Wien)",
+              "typ": "Letter"
+            },
+            {
+              "signatur": "UAKUG/NIM_FS_112",
+              "titel": "Ira Malaniuk mit Prof. Max Kojetinsky",
+              "typ": "Photograph"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 4
+    },
+    {
+      "name": "Dr. C. Gasser",
+      "kategorie": "Korrespondenz",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 3,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_059",
+              "titel": "Korrespondenz zw. Ira Malaniuk und Dr. C. Gasser",
+              "typ": "Letter"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 3
+    },
+    {
+      "name": "Dr. Eduard Speck",
+      "kategorie": "Korrespondenz",
+      "begegnungen": [
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 3,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_096",
+              "titel": "Brief von Dr. Eduard Speck an Ira Malaniuk",
+              "typ": "Letter"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 3
     }
   ],
   "_meta": {
-    "generated": "2026-01-19T09:34:59.939160",
+    "generated": "2026-01-19T11:34:32.478386",
     "source_records": 436,
     "note": "Intensity weighted by document type: Letter=3, Program/Poster/Contract=2, Photo=1"
   }

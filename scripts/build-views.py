@@ -158,7 +158,8 @@ KOMPONISTEN_FARBEN = {
     'Andere': '#757575'
 }
 
-# Personen-Kategorien (bekannte Persönlichkeiten)
+# Personen-Kategorien (bekannte Persönlichkeiten aus dem Archiv)
+# Erweiterte Liste basierend auf Archivanalyse
 PERSONEN_KATEGORIEN = {
     # Dirigenten
     'karajan': 'Dirigent',
@@ -168,15 +169,19 @@ PERSONEN_KATEGORIEN = {
     'krauss': 'Dirigent',
     'solti': 'Dirigent',
     'kempe': 'Dirigent',
+    'hindemith': 'Dirigent',  # Paul Hindemith (NIM_PL_17)
+    'kolessa': 'Dirigent',  # Nikolaus Kolessa (NIM_PL_04)
 
-    # Regisseure
+    # Regisseure/Intendanten
     'wieland wagner': 'Regisseur',
     'wolfgang wagner': 'Regisseur',
     'felsenstein': 'Regisseur',
+    'hartmann': 'Regisseur',  # Rudolf Hartmann (NIM_084, NIM_028)
 
-    # Vermittler
-    'werba': 'Vermittler',
-    'taubman': 'Vermittler',
+    # Vermittler/Korrepetitoren
+    'werba': 'Korrepetitor',  # Erik/Eric Werba (NIM_PL_01, NIM_PL_02)
+    'taubman': 'Vermittler',  # Agentur Taubman (NIM_028)
+    'baumgartner': 'Korrepetitor',  # Paul Baumgartner (NIM_048)
 
     # Kollegen (Sänger)
     'ludwig': 'Kollege',
@@ -185,7 +190,46 @@ PERSONEN_KATEGORIEN = {
     'nilsson': 'Kollege',
     'vickers': 'Kollege',
     'windgassen': 'Kollege',
-    'hotter': 'Kollege'
+    'hotter': 'Kollege',
+    'rehfuss': 'Kollege',  # Heinz Rehfuss (NIM_048)
+    'callas': 'Kollege',  # Maria Callas (NIM_080)
+
+    # Institutionen/Personen aus Korrespondenz
+    'kojetinsky': 'Institution',  # Max Kojetinsky, Opernhaus Graz (NIM_081)
+    'gasser': 'Korrespondenz',  # Dr. C. Gasser (NIM_059)
+    'speck': 'Korrespondenz',  # Dr. Eduard Speck (NIM_096)
+}
+
+# Vollständige Namen für bekannte Personen
+PERSONEN_VOLLNAMEN = {
+    'karajan': 'Herbert von Karajan',
+    'böhm': 'Karl Böhm',
+    'knappertsbusch': 'Hans Knappertsbusch',
+    'furtwängler': 'Wilhelm Furtwängler',
+    'krauss': 'Clemens Krauss',
+    'solti': 'Georg Solti',
+    'kempe': 'Rudolf Kempe',
+    'hindemith': 'Paul Hindemith',
+    'kolessa': 'Nikolaus Kolessa',
+    'wieland wagner': 'Wieland Wagner',
+    'wolfgang wagner': 'Wolfgang Wagner',
+    'felsenstein': 'Walter Felsenstein',
+    'hartmann': 'Rudolf Hartmann',
+    'werba': 'Erik Werba',
+    'taubman': 'Agentur Taubman',
+    'baumgartner': 'Paul Baumgartner',
+    'ludwig': 'Christa Ludwig',
+    'jurinac': 'Sena Jurinac',
+    'della casa': 'Lisa della Casa',
+    'nilsson': 'Birgit Nilsson',
+    'vickers': 'Jon Vickers',
+    'windgassen': 'Wolfgang Windgassen',
+    'hotter': 'Hans Hotter',
+    'rehfuss': 'Heinz Rehfuss',
+    'callas': 'Maria Callas',
+    'kojetinsky': 'Max Kojetinsky',
+    'gasser': 'Dr. C. Gasser',
+    'speck': 'Dr. Eduard Speck',
 }
 
 
@@ -312,17 +356,22 @@ def build_partitur(records):
                     'komponist': komponist,
                     'jahr': year,
                     'signatur': record.get('rico:identifier'),
-                    'titel': record.get('rico:title', '')[:100]
+                    'titel': record.get('rico:title', '')[:100],
+                    'typ': get_dokumenttyp(record)
                 })
 
     # Aggregate repertoire by composer and year range
-    komponist_jahre = defaultdict(lambda: {'min': 9999, 'max': 0, 'count': 0, 'signaturen': []})
+    komponist_jahre = defaultdict(lambda: {'min': 9999, 'max': 0, 'count': 0, 'dokumente': []})
     for item in repertoire:
         k = item['komponist']
         komponist_jahre[k]['min'] = min(komponist_jahre[k]['min'], item['jahr'])
         komponist_jahre[k]['max'] = max(komponist_jahre[k]['max'], item['jahr'])
         komponist_jahre[k]['count'] += 1
-        komponist_jahre[k]['signaturen'].append(item['signatur'])
+        komponist_jahre[k]['dokumente'].append({
+            'signatur': item['signatur'],
+            'titel': item['titel'],
+            'typ': item.get('typ', 'Unknown')
+        })
 
     repertoire_aggregated = [
         {
@@ -331,7 +380,7 @@ def build_partitur(records):
             'von': v['min'],
             'bis': v['max'],
             'dokumente': v['count'],
-            'signaturen': v['signaturen'][:10]  # Limit for JSON size
+            'dokumente_liste': v['dokumente'][:20]  # Full doc refs for click-through
         }
         for k, v in komponist_jahre.items()
         if v['min'] < 9999
@@ -423,7 +472,7 @@ def build_matrix(records):
     - kategorien: Person categories
     - personen: List of persons with their encounters per period
 
-    IMPROVED: Weighted intensity based on document type
+    IMPROVED: Weighted intensity based on document type, full names
     """
     print('Building matrix.json...')
 
@@ -452,22 +501,12 @@ def build_matrix(records):
 
         for person_key in known_persons:
             if person_key in title:
-                # Capitalize properly
-                person_name = person_key.title()
-                if person_key == 'wieland wagner':
-                    person_name = 'Wieland Wagner'
-                elif person_key == 'wolfgang wagner':
-                    person_name = 'Wolfgang Wagner'
-                elif person_key == 'karajan':
-                    person_name = 'Herbert von Karajan'
-                elif person_key == 'böhm':
-                    person_name = 'Karl Böhm'
-                elif person_key == 'furtwängler':
-                    person_name = 'Wilhelm Furtwängler'
+                # Use full name from lookup table
+                person_name = PERSONEN_VOLLNAMEN.get(person_key, person_key.title())
 
                 personen_begegnungen[person_name][period].append({
                     'signatur': record.get('rico:identifier'),
-                    'titel': record.get('rico:title', '')[:80],
+                    'titel': record.get('rico:title', ''),  # Full title for modal
                     'typ': doc_type,
                     'weight': intensity_weight
                 })
@@ -488,9 +527,10 @@ def build_matrix(records):
                 begegnungen.append({
                     'zeitraum': z,
                     'intensitaet': total_weight,  # Weighted intensity
+                    'anzahl_dokumente': len(docs),  # Actual document count
                     'dokumente': [
                         {'signatur': d['signatur'], 'titel': d['titel'], 'typ': d['typ']}
-                        for d in docs[:5]  # Limit to 5 for JSON size
+                        for d in docs  # Include all documents
                     ]
                 })
 
@@ -504,14 +544,14 @@ def build_matrix(records):
 
     # Sort by category, then by total intensity
     def sort_key(p):
-        cat_order = {'Dirigent': 0, 'Regisseur': 1, 'Vermittler': 2, 'Kollege': 3, 'Andere': 4}
-        return (cat_order.get(p['kategorie'], 5), -p['gesamt_intensitaet'])
+        cat_order = {'Dirigent': 0, 'Regisseur': 1, 'Korrepetitor': 2, 'Vermittler': 3, 'Kollege': 4, 'Institution': 5, 'Korrespondenz': 6, 'Andere': 7}
+        return (cat_order.get(p['kategorie'], 8), -p['gesamt_intensitaet'])
 
     personen.sort(key=sort_key)
 
     return {
         'zeitraeume': zeitraeume,
-        'kategorien': ['Dirigent', 'Regisseur', 'Vermittler', 'Kollege'],
+        'kategorien': ['Dirigent', 'Regisseur', 'Korrepetitor', 'Kollege', 'Vermittler'],
         'personen': personen,
         '_meta': {
             'generated': datetime.now().isoformat(),
@@ -685,13 +725,15 @@ def build_sankey(records):
     - phasen: Career phases
     - repertoire: Composer categories
     - orte: Geographic centers
-    - flows: Connections between nodes
+    - flows: Connections between nodes (with document references)
+
+    IMPROVED: Now includes document signaturen for click-through
     """
     print('Building sankey.json...')
 
-    # Count flows
-    phase_komponist = defaultdict(lambda: defaultdict(int))
-    komponist_ort = defaultdict(lambda: defaultdict(int))
+    # Track flows with document references
+    phase_komponist = defaultdict(lambda: defaultdict(list))
+    komponist_ort = defaultdict(lambda: defaultdict(list))
 
     # Known locations in titles
     orte_patterns = {
@@ -705,41 +747,51 @@ def build_sankey(records):
     }
 
     for record in records:
-        title = record.get('rico:title', '').lower()
+        title = record.get('rico:title', '')
+        title_lower = title.lower()
         year = extract_year(record.get('rico:date'))
         phase = get_karrierephase(year)
         komponist = get_komponist_from_title(title)
+        signatur = record.get('rico:identifier')
+        doc_type = get_dokumenttyp(record)
 
-        if phase and komponist:
-            phase_komponist[phase][komponist] += 1
+        if phase and komponist and signatur:
+            doc_info = {
+                'signatur': signatur,
+                'titel': title[:100],
+                'typ': doc_type
+            }
+            phase_komponist[phase][komponist].append(doc_info)
 
             # Try to find location
             for pattern, ort in orte_patterns.items():
-                if pattern in title:
-                    komponist_ort[komponist][ort] += 1
+                if pattern in title_lower:
+                    komponist_ort[komponist][ort].append(doc_info)
                     break
 
-    # Build flows
+    # Build flows with document references
     flows = []
 
     # Phase -> Komponist
     for phase, komponisten in phase_komponist.items():
-        for komponist, count in komponisten.items():
-            if count > 0:
+        for komponist, docs in komponisten.items():
+            if len(docs) > 0:
                 flows.append({
                     'source': phase,
                     'target': komponist,
-                    'value': count
+                    'value': len(docs),
+                    'dokumente': docs[:20]  # Limit for JSON size
                 })
 
     # Komponist -> Ort
     for komponist, orte in komponist_ort.items():
-        for ort, count in orte.items():
-            if count > 0:
+        for ort, docs in orte.items():
+            if len(docs) > 0:
                 flows.append({
                     'source': komponist,
                     'target': ort,
-                    'value': count
+                    'value': len(docs),
+                    'dokumente': docs[:20]
                 })
 
     return {

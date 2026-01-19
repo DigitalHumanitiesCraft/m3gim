@@ -78,91 +78,330 @@
     {
       "source": "hoehepunkt",
       "target": "Gluck/Händel",
-      "value": 1
+      "value": 1,
+      "dokumente": [
+        {
+          "signatur": "UAKUG/NIM/PL_02",
+          "titel": "SALZBURGER MOZART-WOCHE 1959 / Mittwoch, den 21. Jänner 1959 - Mozarteum, Großer Saal, 19.30 / 3. So",
+          "typ": "Poster"
+        }
+      ]
     },
     {
       "source": "hoehepunkt",
       "target": "Beethoven",
-      "value": 1
+      "value": 1,
+      "dokumente": [
+        {
+          "signatur": "UAKUG/NIM/PL_22",
+          "titel": "Ira Malaniuk / singt Lieder von HAYDN, MOZART, BEETHOVEN, / SCHUBERT, BRAHMS, R. STRAUSS / und ukrai",
+          "typ": "Poster"
+        }
+      ]
     },
     {
       "source": "hoehepunkt",
       "target": "Verdi",
-      "value": 3
+      "value": 3,
+      "dokumente": [
+        {
+          "signatur": "UAKUG/NIM_087",
+          "titel": "Programmheft zu einer Aufführung von \"Aida\" (Verdi) in der Wiener Staatsoper am 28.04.1956",
+          "typ": "Collection"
+        },
+        {
+          "signatur": "UAKUG/NIM_089",
+          "titel": "Programmheft zu einer Aufführung von \"Don Carlos\" (Verdi) in der Wiener Staatsoper am 11.09.1956",
+          "typ": "Collection"
+        },
+        {
+          "signatur": "UAKUG/NIM_FS_099",
+          "titel": "Ira Malaniuk als Eboli (Don Carlos, Giuseppe Verdi)",
+          "typ": "Photograph"
+        }
+      ]
     },
     {
       "source": "hoehepunkt",
       "target": "Wagner",
-      "value": 4
+      "value": 4,
+      "dokumente": [
+        {
+          "signatur": "UAKUG/NIM_119",
+          "titel": "Programmheft zu einer Aufführung von \"Tristan und Isolde\" (Wagner) an der Wiener Staatsoper",
+          "typ": "Program"
+        },
+        {
+          "signatur": "UAKUG/NIM_120",
+          "titel": "Programmheft zu einer Aufführung von \"Tannhäuser\" (Wagner) an der Wiener Staatsoper",
+          "typ": "Program"
+        },
+        {
+          "signatur": "UAKUG/NIM_FS_050",
+          "titel": "Nach der Probe zu \"Tristan\" in Mainz",
+          "typ": "Photograph"
+        },
+        {
+          "signatur": "UAKUG/NIM_FS_058",
+          "titel": "Brangäne in \"Tristan und Isolde\", Amsterdam",
+          "typ": "Photograph"
+        }
+      ]
     },
     {
       "source": "anfaenge",
       "target": "Beethoven",
-      "value": 1
+      "value": 1,
+      "dokumente": [
+        {
+          "signatur": "UAKUG/NIM/PL_04",
+          "titel": "SINFONISCHES ORCHESTER / in Stanislau / Konzertsaal Armenierstrasse 18. / Zum Abschluss der Wintersa",
+          "typ": "Poster"
+        }
+      ]
     },
     {
       "source": "anfaenge",
       "target": "Verdi",
-      "value": 3
+      "value": 3,
+      "dokumente": [
+        {
+          "signatur": "UAKUG/NIM/PL_05",
+          "titel": "\"BALLETTABEND\" / \"PAGANINI\" / \"AIDA\"",
+          "typ": "Poster"
+        },
+        {
+          "signatur": "UAKUG/NIM/PL_08",
+          "titel": "\"BALLETTABEND\" / \"PAGANINI\" / \"AIDA\" ",
+          "typ": "Poster"
+        },
+        {
+          "signatur": "UAKUG/NIM/PL_11",
+          "titel": "\"TRAVIATA\" / \"AIDA\" / \"BOHÈME\"",
+          "typ": "Poster"
+        }
+      ]
     },
     {
       "source": "anfaenge",
       "target": "Gluck/Händel",
-      "value": 1
+      "value": 1,
+      "dokumente": [
+        {
+          "signatur": "UAKUG/NIM_062",
+          "titel": "Programmheft zu einer Aufführung von \"Jephta\" (Georg Friedrich Händel) am 19.03.1950 in der Tonhalle",
+          "typ": "Collection"
+        }
+      ]
     },
     {
       "source": "anfaenge",
       "target": "Wagner",
-      "value": 2
+      "value": 2,
+      "dokumente": [
+        {
+          "signatur": "UAKUG/NIM_FS_042",
+          "titel": "Lohengrin in Zürich",
+          "typ": "Photograph"
+        },
+        {
+          "signatur": "UAKUG/NIM_FS_193",
+          "titel": "Plakat zu \"Lohengrin\" in Brüssel",
+          "typ": "Photograph"
+        }
+      ]
     },
     {
       "source": "aufstieg",
       "target": "Wagner",
-      "value": 10
+      "value": 10,
+      "dokumente": [
+        {
+          "signatur": "UAKUG/NIM/PL_16",
+          "titel": "TRISTANO / E / ISOTTA",
+          "typ": "Poster"
+        },
+        {
+          "signatur": "UAKUG/NIM_051",
+          "titel": "\"Paris Mai 55 (Ring)\"",
+          "typ": "Article"
+        },
+        {
+          "signatur": "UAKUG/NIM_FS_002",
+          "titel": "Meistersinger in Bayreuth ",
+          "typ": "Photograph"
+        },
+        {
+          "signatur": "UAKUG/NIM_FS_033",
+          "titel": "Bayreuth Festival, 1951 \"Die Meistersinger",
+          "typ": "Photograph"
+        },
+        {
+          "signatur": "UAKUG/NIM_FS_034",
+          "titel": "\"Tannhäuser\" in Rom",
+          "typ": "Photograph"
+        },
+        {
+          "signatur": "UAKUG/NIM_FS_036",
+          "titel": "\"Götterdämmerung\" in der Mailänder Scala",
+          "typ": "Photograph"
+        },
+        {
+          "signatur": "UAKUG/NIM_FS_061",
+          "titel": "\"Tristan und Isolde\", Teatro di S. Carlo, Italien",
+          "typ": "Photograph"
+        },
+        {
+          "signatur": "UAKUG/NIM_FS_203",
+          "titel": "Gespräch mit [Herbert von] Karajan in einer Orchesterprobe von \"Tristan\"",
+          "typ": "Photograph"
+        },
+        {
+          "signatur": "UAKUG/NIM_FS_213",
+          "titel": "Ira Malaniuk als Brangäne in \"Tristan und Isolde\" (Wagner)",
+          "typ": "Photograph"
+        },
+        {
+          "signatur": "UAKUG/NIM_FS_217",
+          "titel": "Ira Malaniuk als Brangäne in \"Tristan und Isolde\" (Wagner)",
+          "typ": "Photograph"
+        }
+      ]
     },
     {
       "source": "aufstieg",
       "target": "Verdi",
-      "value": 2
+      "value": 2,
+      "dokumente": [
+        {
+          "signatur": "UAKUG/NIM_063",
+          "titel": "Programmblatt zu einer Aufführung von \"Aida\" (Verdi) am 14. November 1953 in der Bayrischen Staatsop",
+          "typ": "Collection"
+        },
+        {
+          "signatur": "UAKUG/NIM_FS_051",
+          "titel": "Amneris in \"Aida\", München",
+          "typ": "Photograph"
+        }
+      ]
     },
     {
       "source": "aufstieg",
       "target": "Beethoven",
-      "value": 3
+      "value": 3,
+      "dokumente": [
+        {
+          "signatur": "UAKUG/NIM_FS_026",
+          "titel": "Bayreuther Festspiele 1953 Ludwig van Beethoven - Symphonie IX",
+          "typ": "Photograph"
+        },
+        {
+          "signatur": "UAKUG/NIM_FS_027",
+          "titel": "Teatro Comunale di Firenze Ludwig van Beethoven - Symphonie IX",
+          "typ": "Photograph"
+        },
+        {
+          "signatur": "UAKUG/NIM_FS_208",
+          "titel": "Aufführung der 9. Symphonie (Beethoven) bei den Bayreuther Festspielen 1954",
+          "typ": "Photograph"
+        }
+      ]
     },
     {
       "source": "Gluck/Händel",
       "target": "Wien",
-      "value": 1
+      "value": 1,
+      "dokumente": [
+        {
+          "signatur": "UAKUG/NIM/PL_02",
+          "titel": "SALZBURGER MOZART-WOCHE 1959 / Mittwoch, den 21. Jänner 1959 - Mozarteum, Großer Saal, 19.30 / 3. So",
+          "typ": "Poster"
+        }
+      ]
     },
     {
       "source": "Verdi",
       "target": "Wien",
-      "value": 2
+      "value": 2,
+      "dokumente": [
+        {
+          "signatur": "UAKUG/NIM_087",
+          "titel": "Programmheft zu einer Aufführung von \"Aida\" (Verdi) in der Wiener Staatsoper am 28.04.1956",
+          "typ": "Collection"
+        },
+        {
+          "signatur": "UAKUG/NIM_089",
+          "titel": "Programmheft zu einer Aufführung von \"Don Carlos\" (Verdi) in der Wiener Staatsoper am 11.09.1956",
+          "typ": "Collection"
+        }
+      ]
     },
     {
       "source": "Verdi",
       "target": "München",
-      "value": 1
+      "value": 1,
+      "dokumente": [
+        {
+          "signatur": "UAKUG/NIM_FS_051",
+          "titel": "Amneris in \"Aida\", München",
+          "typ": "Photograph"
+        }
+      ]
     },
     {
       "source": "Wagner",
       "target": "Wien",
-      "value": 2
+      "value": 2,
+      "dokumente": [
+        {
+          "signatur": "UAKUG/NIM_119",
+          "titel": "Programmheft zu einer Aufführung von \"Tristan und Isolde\" (Wagner) an der Wiener Staatsoper",
+          "typ": "Program"
+        },
+        {
+          "signatur": "UAKUG/NIM_120",
+          "titel": "Programmheft zu einer Aufführung von \"Tannhäuser\" (Wagner) an der Wiener Staatsoper",
+          "typ": "Program"
+        }
+      ]
     },
     {
       "source": "Wagner",
       "target": "Bayreuth",
-      "value": 2
+      "value": 2,
+      "dokumente": [
+        {
+          "signatur": "UAKUG/NIM_FS_002",
+          "titel": "Meistersinger in Bayreuth ",
+          "typ": "Photograph"
+        },
+        {
+          "signatur": "UAKUG/NIM_FS_033",
+          "titel": "Bayreuth Festival, 1951 \"Die Meistersinger",
+          "typ": "Photograph"
+        }
+      ]
     },
     {
       "source": "Beethoven",
       "target": "Bayreuth",
-      "value": 2
+      "value": 2,
+      "dokumente": [
+        {
+          "signatur": "UAKUG/NIM_FS_026",
+          "titel": "Bayreuther Festspiele 1953 Ludwig van Beethoven - Symphonie IX",
+          "typ": "Photograph"
+        },
+        {
+          "signatur": "UAKUG/NIM_FS_208",
+          "titel": "Aufführung der 9. Symphonie (Beethoven) bei den Bayreuther Festspielen 1954",
+          "typ": "Photograph"
+        }
+      ]
     }
   ],
   "_meta": {
-    "generated": "2026-01-19T09:34:59.942373",
+    "generated": "2026-01-19T13:22:19.916033",
     "source_records": 436
   }
 }
