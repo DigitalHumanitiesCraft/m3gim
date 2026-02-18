@@ -155,10 +155,10 @@ logs/
 *.rej
 
 # ==========================================
-# Knowledge Base (Optional)
+# Knowledge Base
 # ==========================================
-# Uncomment if knowledge/ contains sensitive research notes
-# knowledge/
+# Promptotyping documents managed in Obsidian vault
+knowledge/
 
 # ==========================================
 # IDE & Editor Files
