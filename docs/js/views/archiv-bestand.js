@@ -237,7 +237,9 @@ function renderRows(items) {
           ? el('span', { className: 'badge badge--konvolut-struct' }, `Konvolut (${childCount})`)
           : docLabel && docType !== 'konvolut'
             ? el('span', { className: `badge badge--${docType || ''}` }, docLabel)
-            : el('span')
+            : !item.isKonvolut
+              ? el('span', { className: 'badge badge--unclassified' }, 'Nicht klassifiziert')
+              : el('span')
       ),
       el('td', { className: 'archiv-col-datum' },
         el('span', { className: `archiv-datum ${isUndated ? 'archiv-datum--undated' : ''}` }, displayDate)

@@ -5,7 +5,7 @@
 import { el } from '../utils/dom.js';
 
 export function renderStatsBar(store, container) {
-  const years = [...store.byYear.keys()];
+  const years = [...store.byYear.keys()].filter(y => y >= 1800 && y <= 2030);
   const minYear = years.length ? Math.min(...years) : '?';
   const maxYear = years.length ? Math.max(...years) : '?';
 

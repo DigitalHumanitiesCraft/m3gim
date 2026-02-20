@@ -356,6 +356,34 @@
   font-style: italic;
 }
 
+/* Empty state for unlinked records */
+.inline-detail__empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  color: var(--color-text-tertiary);
+  font-style: italic;
+  text-align: center;
+}
+
+.inline-detail__empty-state p {
+  margin: 0;
+}
+
+.inline-detail__empty-hint {
+  font-size: var(--text-xs);
+  margin-top: var(--space-1) !important;
+  opacity: 0.7;
+}
+
+/* Unclassified type badge */
+.badge--unclassified {
+  opacity: 0.5;
+  font-style: italic;
+}
+
 /* Chips (used in inline detail and chronik) */
 .chip {
   display: inline-flex;

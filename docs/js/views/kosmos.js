@@ -238,8 +238,9 @@ function buildLegend(data) {
         `${k.name} (${k.dokumente_gesamt})`
       )
     );
-  const hint = el('span', { className: 'kosmos-legend__hint' }, 'Klick auf Komponist: filtern · Doppelklick: zurücksetzen');
-  return el('div', { className: 'kosmos-legend' }, ...items, hint);
+  const hint = el('span', { className: 'kosmos-legend__hint' }, 'Klick auf Komponist: filtern \u00b7 Doppelklick: zur\u00fccksetzen');
+  const sizeHint = el('span', { className: 'kosmos-legend__hint' }, 'Knotengr\u00f6\u00dfe = Dokumenth\u00e4ufigkeit');
+  return el('div', { className: 'kosmos-legend' }, ...items, hint, sizeHint);
 }
 
 export function resetKosmos() {

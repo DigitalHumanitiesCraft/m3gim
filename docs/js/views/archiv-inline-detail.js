@@ -102,6 +102,11 @@ export function buildInlineDetail(record, store, { onClose } = {}) {
   body.appendChild(leftCol);
   if (rightCol.childNodes.length > 0) {
     body.appendChild(rightCol);
+  } else {
+    body.appendChild(el('div', { className: 'inline-detail__col inline-detail__empty-state' },
+      el('p', {}, 'Noch nicht erschlossen'),
+      el('p', { className: 'inline-detail__empty-hint' }, 'Verkn\u00fcpfungen werden im Rahmen der Erschlie\u00dfung erg\u00e4nzt.')
+    ));
   }
   wrapper.appendChild(body);
 

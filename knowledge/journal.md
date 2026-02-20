@@ -222,6 +222,14 @@
 
 **Zusaetzlich:** `archiv-chronik.js` nutzt jetzt `formatChildSignatur()` fuer Konvolut-Kinder (Chronik-Signaturen waren nicht gekuerzt).
 
+### Milestone 2: Quick-Wins (QW-1 bis QW-5)
+
+1. **QW-1 Stats-Bar**: Jahresvalidierung (1800–2030 Filter) — verhindert implausible Zeitraeume
+2. **QW-2 Typ-Badges**: "Nicht klassifiziert" Badge fuer Records ohne Dokumenttyp (`badge--unclassified`)
+3. **QW-3 Empty-State**: "Noch nicht erschlossen" Hinweis bei leerer rechter Spalte in Inline-Detail
+4. **QW-4 Kosmos-Legende**: "Knotengroesse = Dokumenthaeufigkeit" als zweite Erklaerungszeile
+5. **QW-5 Malaniuk-Kategorie**: `'malaniuk': 'Archivsubjekt'` in PERSONEN_KATEGORIEN, KUG-Blau (#004A8F) als Farbe
+
 ---
 
 Siehe auch: [→ Projekt](01-projekt.md) · [→ Quellenbestand](02-quellenbestand.md) · [→ Architektur](04-architektur.md)

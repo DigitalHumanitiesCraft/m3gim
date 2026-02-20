@@ -81,6 +81,8 @@ export const PERSONEN_KATEGORIEN = {
   'felsenstein': 'Regisseur', 'hartmann': 'Regisseur',
   // Now Wagner/Strauss/Gluck/Händel as Komponist (after specific Wagner family members)
   'wagner': 'Komponist', 'strauss': 'Komponist', 'gluck': 'Komponist', 'händel': 'Komponist',
+  // Archivsubjekt
+  'malaniuk': 'Archivsubjekt',
   // Korrepetitoren
   'werba': 'Korrepetitor', 'baumgartner': 'Korrepetitor',
   // Vermittler
@@ -153,6 +155,7 @@ export const KOMPONISTEN_NAMEN = new Set([
 ]);
 
 export const PERSONEN_FARBEN = {
+  'Archivsubjekt': '#004A8F',
   'Komponist': '#6B2C2C',
   'Dirigent': '#4A6E96',
   'Regisseur': '#6B4E8C',
