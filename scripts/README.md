@@ -4,21 +4,21 @@
 
 ```
 data/
-├── archive-export/          # Originale Archivexporte (Quelle)
-├── google-spreadsheet/      # Excel-Exporte aus Google Sheets (Erfassungsdaten)
-├── processed/               # Von migrate.py erzeugte Excel-Dateien
-├── export/                  # JSON-LD für Website/Archivierung
-└── reports/                 # Validierungsreports
+├── input/               # Google Sheets XLSX-Exporte (ZIP entpackt)
+├── output/              # Generierte Dateien (JSON-LD, View-JSONs)
+├── reports/             # Exploration- und Validierungsreports
+└── archive-export/      # Originale AUGIAS-Exporte (Quelle, einmalig)
 ```
 
 ## Workflow
 
 ```
-1. migrate.py           Archiv-Export → data/processed/ (einmalig)
-2. [Manuelle Erfassung in Google Sheets]
-3. [Export aus Google Drive → data/google-spreadsheet/]
-4. validate.py          Prüft Daten → data/reports/
-5. create-ric-json.py   Erzeugt JSON-LD → data/export/
+Google Drive (6 Spreadsheets)
+    ↓ Download als ZIP → data/input/
+1. explore.py       Datenstruktur analysieren → data/reports/exploration-report.md
+2. validate.py      Qualitätsprüfung → data/reports/validation-report.md
+3. create-ric-json.py   XLSX → JSON-LD (RiC-O 1.1) → data/output/m3gim.jsonld
+4. build-views.py   JSON-LD → View-JSONs → data/output/views/
 ```
 
 ## Abhängigkeiten
@@ -29,9 +29,46 @@ pip install pandas openpyxl
 
 ---
 
+## explore.py
+
+Analysiert Google-Sheets-Exporte und erzeugt einen Exploration Report. Erster Schritt nach dem Download — zeigt Datenstruktur, Füllgrade, Vokabulare und Probleme.
+
+```bash
+python scripts/explore.py                       # data/input/ (default)
+python scripts/explore.py data/input/export.zip  # ZIP entpacken
+python scripts/explore.py data/input/            # Ordner direkt
+```
+
+### Erwartete Dateien
+
+| Datei | Inhalt |
+|-------|--------|
+| M3GIM-Objekte.xlsx | Hauptbestand (255), Plakate (26), Tonträger (1) |
+| M3GIM-Verknüpfungen.xlsx | Kontextuelle Verknüpfungen (1.292) |
+| Personenindex.xlsx | Personen-Normdaten (296) |
+| Organisationsindex.xlsx | Organisations-Normdaten (58) |
+| Ortsindex.xlsx | Orts-Normdaten (31) |
+| Werkindex.xlsx | Werk-Normdaten (95) |
+
+### Analyse-Umfang
+
+- Spaltenheader und -typen pro Tabelle
+- Füllgrade pro Spalte
+- Vokabular-Inventar (alle Werte für kontrollierte Felder)
+- Signatur-Analyse (Format, Duplikate, Bestandsgruppen)
+- Datums-Analyse (ISO, Bereiche, Artefakte, verdächtige Werte)
+- Cross-Table-Checks (referentielle Integrität)
+- Spaltennamen-Shift-Erkennung (bekannte Probleme aus Indizes)
+
+### Ausgabe
+
+`data/reports/exploration-report.md`
+
+---
+
 ## migrate.py
 
-Transformiert Archiv-Export nach Google Sheets Excel-Format mit Dropdown-Validierung.
+Transformiert Archiv-Export (AUGIAS) nach Google Sheets Excel-Format mit Dropdown-Validierung. Einmaliger Schritt, bereits abgeschlossen.
 
 ```bash
 python scripts/migrate.py
@@ -56,12 +93,6 @@ python scripts/migrate.py
 | `map_scan_status` | Filename vorhanden → gescannt/nicht_gescannt |
 | `split_protokoll` | `AV/UR/18.09.2015` → bearbeiter + erfassungsdatum |
 
-### Excel-Formatierung
-
-- Header: fett, blau (#4472C4), eingefroren
-- Spaltenbreiten: automatisch (max 50)
-- Dropdowns: dokumenttyp, sprache, zugaenglichkeit, scan_status, datierungsevidenz
-
 ---
 
 ## validate.py
@@ -76,9 +107,8 @@ python scripts/validate.py
 
 | Datei | Beschreibung |
 |-------|--------------|
-| `data/google-spreadsheet/M3GIM-Objekte.xlsx` | Hauptbestand, Plakate, Tonträger |
-
-| `data/google-spreadsheet/M3GIM-Verknüpfungen.xlsx` | Relationen |
+| `data/input/M3GIM-Objekte.xlsx` | Hauptbestand, Plakate, Tonträger |
+| `data/input/M3GIM-Verknüpfungen.xlsx` | Relationen |
 
 ### Ausgabe
 
@@ -116,14 +146,13 @@ python scripts/create-ric-json.py
 
 | Datei | Beschreibung |
 |-------|--------------|
-| `data/google-spreadsheet/M3GIM-Objekte.xlsx` | Objekte |
-
-| `data/google-spreadsheet/M3GIM-Verknüpfungen.xlsx` | Relationen |
-| `data/google-spreadsheet/M3GIM-*index.xlsx` | Normdaten (Personen, Orte, Werke, Organisationen) |
+| `data/input/M3GIM-Objekte.xlsx` | Objekte |
+| `data/input/M3GIM-Verknüpfungen.xlsx` | Relationen |
+| `data/input/*index.xlsx` | Normdaten (Personen, Orte, Werke, Organisationen) |
 
 ### Ausgabe
 
-`data/export/m3gim.jsonld`
+`data/output/m3gim.jsonld`
 
 ### RiC-O Mapping
 

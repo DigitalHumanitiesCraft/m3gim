@@ -1,21 +1,45 @@
 # Technische Architektur
 
-> Dreistufig: Erfassung (Google Sheets) → Verarbeitung (Python 3.11+) → Präsentation (Vite v5 + D3.js v7, GitHub Pages)
+> Dreistufig: Erfassung (Google Sheets) → Verarbeitung (Python 3.11+) → Präsentation (D3.js v7, GitHub Pages)
 
 ---
 
-## Pipeline (4 Python-Scripts)
+## Workflow
+
+```
+Google Drive (6 Spreadsheets als XLSX)
+    ↓ Download als ZIP → data/input/
+explore.py          → data/reports/exploration-report.md
+validate.py         → data/reports/validation-report.md
+create-ric-json.py  → data/output/m3gim.jsonld
+build-views.py      → data/output/views/*.json
+    ↓ CI/CD
+docs/data/*.json    → GitHub Pages Frontend
+```
+
+## Pipeline (5 Python-Scripts)
 
 | Script | Funktion | Input | Output |
 |---|---|---|---|
-| migrate.py | AUGIAS-Export → formatierte Excel mit Dropdowns | AUGIAS-XLSX | Excel mit Validierung |
-| validate.py | Datenqualitätsprüfung | Google Sheets XLSX | validation-report.md |
+| explore.py | Datenstruktur-Analyse | data/input/ (XLSX oder ZIP) | exploration-report.md |
+| migrate.py | AUGIAS-Export → formatierte Excel (einmalig) | AUGIAS-XLSX | Excel mit Validierung |
+| validate.py | Datenqualitätsprüfung | data/input/ XLSX | validation-report.md |
 | create-ric-json.py | Google Sheets → JSON-LD (RiC-O 1.1) | 6 XLSX | m3gim.jsonld |
 | build-views.py | JSON-LD → View-Aggregationen | m3gim.jsonld | 4 View-JSONs |
 
 View-JSONs: `partitur.json`, `matrix.json`, `kosmos.json`, `sankey.json`
 
 Details: siehe [`scripts/README.md`](../scripts/README.md)
+
+## Verzeichnisstruktur
+
+```
+data/
+├── input/              # Google Sheets XLSX-Exporte (ZIP entpackt)
+├── output/             # Generierte Dateien (JSON-LD, View-JSONs)
+├── reports/            # Exploration- und Validierungsreports
+└── archive-export/     # Originale AUGIAS-Exporte (einmalig)
+```
 
 ---
 
