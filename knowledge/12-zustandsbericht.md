@@ -54,7 +54,7 @@ m3gim/
 
 **Nicht vorhanden**: `reconcile.py` — in Dokumentation als geplant erwähnt, existiert nicht als Datei.
 
-### Frontend-Modulstruktur (20 Module, ~3500 Zeilen)
+### Frontend-Modulstruktur (19 Module, ~3500 Zeilen)
 
 ```
 docs/js/
@@ -266,7 +266,7 @@ store = {
 
 ## Dokumentation
 
-### Knowledge-Ordner (16 Dateien)
+### Knowledge-Ordner (14 Dateien)
 
 | Datei | Inhalt |
 |-------|--------|
@@ -280,7 +280,7 @@ store = {
 | `08-ric-o.md` | RiC-O 1.1 Referenz |
 | `09-m3gim-ontology.md` | m3gim-Erweiterungs-Ontologie |
 | `10-datenqualitaet.md` | Erfassungsprobleme, Pipeline-Fixes |
-| `11-aufgabenkatalog.md` | 33 Items, 23 DONE, 10 DEFERRED |
+| `11-aufgabenkatalog.md` | 31 Items, 23 DONE, 8 DEFERRED |
 | `12-zustandsbericht.md` | Dieser Bericht |
 | `journal.md` | Arbeitstagebuch (9 Sessions) |
 | `README.md` | Übersicht über Knowledge-Ordner |

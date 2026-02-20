@@ -108,7 +108,7 @@ Vanilla JS (ES6-Module, kein Framework), D3.js v7 (CDN) fuer Matrix + Kosmos, In
 | **Projekt** | Info-Seite | — | Schichten-Modell, Bestandsgruppen, Pipeline |
 | **Hilfe** | Info-Seite | — | Bedienung, Datumskonventionen, FAQ |
 
-### Modulstruktur (20 Module)
+### Modulstruktur (19 Module)
 
 ```
 docs/js/

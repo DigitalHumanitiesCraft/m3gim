@@ -1,6 +1,6 @@
 # Aufgabenkatalog — Session 9
 
-> 33 identifizierte Verbesserungen, priorisiert und statusverfolgt. Basiert auf dem Soll-Ist-Abgleich v5.0.
+> 31 identifizierte Verbesserungen, priorisiert und statusverfolgt. Basiert auf dem Soll-Ist-Abgleich v5.0.
 
 ---
 
@@ -9,7 +9,7 @@
 | Status | Anzahl |
 |--------|--------|
 | DONE | 23 |
-| DEFERRED | 10 |
+| DEFERRED | 8 |
 
 ---
 
@@ -93,17 +93,19 @@
 
 ---
 
-## Interaktion (IT)
+## Querverweise (IT)
 
-| ID | Beschreibung | Status | Milestone |
-|----|-------------|--------|-----------|
-| IT-1 | Matrix-Drilldown (= M-1) | DONE | M3 |
-| IT-3 | Chronik-Gruppierung (= C-1) | DONE | M4 |
-| IT-4 | Klickbare Tags in Detail → Index | DONE | M5 |
+> Diese Items sind Duplikate aus anderen Kategorien und werden nicht separat gezählt.
+
+| ID | Beschreibung | Entspricht |
+|----|-------------|------------|
+| IT-1 | Matrix-Drilldown | = M-1 |
+| IT-3 | Chronik-Gruppierung | = C-1 |
+| IT-4 | Klickbare Tags in Detail → Index | = K-2 |
 
 ---
 
-## Deferred (10 Items)
+## Deferred (8 Items)
 
 Bewusst zurückgestellt — wertvoll, aber komplex oder abhängig von mehr Daten:
 
