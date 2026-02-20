@@ -14,6 +14,7 @@ let currentSearch = '';
 let currentDocType = '';
 let currentSort = 'signatur';
 let currentGrouping = 'location'; // 'location' | 'person' | 'werk'
+let currentPerson = ''; // person name filter
 
 export function renderArchiv(storeRef, containerEl) {
   store = storeRef;
@@ -58,6 +59,20 @@ function buildToolbar() {
     ...docTypes.map(t => el('option', { value: t }, DOKUMENTTYP_LABELS[t] || t))
   );
 
+  // Person filter
+  const personEntries = [...store.persons.entries()]
+    .map(([name, data]) => ({ name, count: data.records.size }))
+    .sort((a, b) => b.count - a.count);
+
+  const personSelect = el('select', {
+    className: 'archiv-select',
+    id: 'archiv-person-select',
+    onChange: (e) => { currentPerson = e.target.value; applyFilters(); },
+  },
+    el('option', { value: '' }, `Alle Personen (${personEntries.length})`),
+    ...personEntries.map(p => el('option', { value: p.name }, `${p.name} (${p.count})`))
+  );
+
   // Sort (only for Bestand)
   const sortSelect = el('select', {
     className: 'archiv-select archiv-sort-select',
@@ -91,7 +106,7 @@ function buildToolbar() {
   countEl.id = 'archiv-count';
   countEl.textContent = `${store.allRecords.length} Objekte \u00b7 ${store.konvolute.size} Konvolute`;
 
-  return el('div', { className: 'archiv-toolbar' }, toggle, search, typeSelect, sortSelect, groupingToggle, countEl);
+  return el('div', { className: 'archiv-toolbar' }, toggle, search, typeSelect, personSelect, sortSelect, groupingToggle, countEl);
 }
 
 function buildToggleBtn(view, label, iconSvg) {
@@ -157,7 +172,7 @@ function renderActiveView() {
 
   updateToggleUI();
 
-  const filters = { search: currentSearch, docType: currentDocType, sort: currentSort };
+  const filters = { search: currentSearch, docType: currentDocType, sort: currentSort, person: currentPerson };
 
   if (activeView === 'bestand') {
     renderBestand(store, viewContainer, filters);
@@ -167,7 +182,7 @@ function renderActiveView() {
 }
 
 function applyFilters() {
-  const filters = { search: currentSearch, docType: currentDocType, sort: currentSort };
+  const filters = { search: currentSearch, docType: currentDocType, sort: currentSort, person: currentPerson };
   if (activeView === 'bestand') {
     updateBestandView(filters);
   } else {

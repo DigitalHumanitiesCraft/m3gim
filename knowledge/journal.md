@@ -242,6 +242,10 @@ Chronik-View kann jetzt nach drei Dimensionen gruppieren: Ort (Standard), Person
 
 Personen-, Ort-, Werk-Chips in der Detailansicht sind jetzt klickbar → wechselt zu Indizes-Tab und expandiert den Eintrag. Router: `navigateToIndex(gridType, entityName)`. Indizes: `expandEntry()` mit Scroll-to-Element. CSS: Hover-Effekt fuer klickbare Chips.
 
+### Milestone 6: Personen-Filter (I-2)
+
+Personen-Dropdown im Archiv-Tab: Filtert Bestand UND Chronik nach verknuepfter Person. Sortiert nach Dokumenthaeufigkeit. archiv.js (Dropdown + State), archiv-bestand.js (Filter-Logik), archiv-chronik.js (Filter-Logik). Nutzt `store.persons.get(name).records.has(id)`.
+
 ---
 
 Siehe auch: [→ Projekt](01-projekt.md) · [→ Quellenbestand](02-quellenbestand.md) · [→ Architektur](04-architektur.md)

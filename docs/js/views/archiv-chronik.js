@@ -51,7 +51,7 @@ export function renderChronik(storeRef, containerEl, filters) {
  */
 export function updateChronikView(filters) {
   currentFilters = filters || {};
-  const { search = '', docType = '' } = currentFilters;
+  const { search = '', docType = '', person = '' } = currentFilters;
   clear(container);
 
   let records = [...store.allRecords];
@@ -69,6 +69,14 @@ export function updateChronikView(filters) {
   // Doc type
   if (docType) {
     records = records.filter(r => getDocTypeId(r) === docType);
+  }
+
+  // Person filter
+  if (person) {
+    const personData = store.persons.get(person);
+    if (personData) {
+      records = records.filter(r => personData.records.has(r['@id']));
+    }
   }
 
   // Group by period → grouping dimension

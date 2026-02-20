@@ -41,8 +41,8 @@ export function renderBestand(storeRef, containerEl, filters) {
  * Re-render rows with updated filters (called from orchestrator).
  */
 export function updateBestandView(filters) {
-  const { search = '', docType = '', sort = 'signatur' } = filters || {};
-  const isFiltered = !!(search || docType);
+  const { search = '', docType = '', sort = 'signatur', person = '' } = filters || {};
+  const isFiltered = !!(search || docType || person);
   let items = getOrderedItems();
 
   // When filtering, flatten: remove Konvolut headers, show children as standalone
@@ -66,6 +66,14 @@ export function updateBestandView(filters) {
   // Doc type filter
   if (docType) {
     items = items.filter(item => getDocTypeId(item.record) === docType);
+  }
+
+  // Person filter
+  if (person) {
+    const personData = store.persons.get(person);
+    if (personData) {
+      items = items.filter(item => personData.records.has(item.record['@id']));
+    }
   }
 
   // Sort (only when not in structural grouping mode)
