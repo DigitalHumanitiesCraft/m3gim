@@ -1,42 +1,66 @@
-# Datenmodell (v2.4)
+# Datenmodell (v2.5)
 
-> Dreischichtenmodell für archivalische Erschließung mit Folio-Granularität
+> Dreischichtenmodell für archivalische Erschließung mit Folio-Granularität und Konvolut-Hierarchie
 
 ---
 
 ## Schichten
 
 - **Schicht 1 (obligatorisch):** Kernmetadaten — archivsignatur, titel, entstehungsdatum (ISO 8601), dokumenttyp, sprache, umfang. `zugaenglichkeit` und `scan_status` jetzt empfohlen statt obligatorisch.
-- **Schicht 2 (empfohlen):** Verknüpfungen mit Folio-Granularität — typ: person/ort/institution/ereignis/werk/detail/rolle/datum, jeweils mit Rolle und optionalem Folio.
+- **Schicht 2 (empfohlen):** Verknüpfungen mit Folio-Granularität — typ: person/ort/institution/ereignis/werk/rolle/datum/ensemble, jeweils mit Rolle und optionalem Folio.
 - **Schicht 3 (fakultativ):** Quellentyp-spezifische Details via typ `detail` in der Verknüpfungstabelle.
 
 ---
 
 ## Google Sheets (6 Tabellen)
 
-| Tabelle | Farbe | Records |
+| Tabelle | Farbe | Records | Spalten |
+|---|---|---|---|
+| M3GIM-Objekte | blau | 282 | 18 |
+| M3GIM-Verknüpfungen | grün | 1.264 | 6 (archivsignatur, Folio, typ, name, rolle, anmerkung) |
+| Personenindex | violett | 296 | 6 |
+| Organisationsindex | violett | 58 | 6 |
+| Ortsindex | violett | 31 | 3 |
+| Werkindex | violett | 95 | 6 |
+
+---
+
+## Konvolut-Hierarchie
+
+Objekte können Konvolute (Sammlungsobjekte) sein. Die vollständige Objekt-ID setzt sich zusammen aus zwei Spalten:
+
+- **archivsignatur** = Konvolut-ID (z.B. `UAKUG/NIM_003`)
+- **Folio** = Stelle im Konvolut (z.B. `1_1`)
+- **Objekt-ID** = `archivsignatur + " " + folio` → `UAKUG/NIM_003 1_1`
+
+Bei Nicht-Konvoluten ist Folio leer, die archivsignatur allein ist die ID.
+
+In der Objekte-Tabelle heißt die Folio-Spalte aktuell `Unnamed: 2` (fehlender Header). In der Verknüpfungstabelle heißt sie `Folio`.
+
+---
+
+## Verknüpfungs-Mechanismus
+
+Verknüpfungen referenzieren Entitäten über **String-Matching** in der `name`-Spalte. Die `typ`-Spalte bestimmt den Ziel-Index:
+
+| typ | name (Beispiel) | Ziel |
 |---|---|---|
-| M3GIM-Objekte | blau | 283 |
-| M3GIM-Verknüpfungen | grün | 1.292 |
-| Personenindex | violett | 296 |
-| Organisationsindex | violett | 58 |
-| Ortsindex | violett | 31 |
-| Werkindex | violett | 95 |
+| person | Strauss, Richard | Personenindex |
+| werk | Macbeth | Werkindex |
+| ort | New York | Ortsindex |
+| institution | Wiener Staatsoper | Organisationsindex |
+| rolle | Carmen | Opernrolle (kein Index) |
+| datum | 1958-04-18 | Kontextuell (kein Index) |
+| ereignis | Premiere | Kontextuell (kein Index) |
+| ensemble | | Ensemble (kein Index) |
+
+IDs in den Indizes (O1–O63, W1–W95 etc.) sind **Durchzählungen**, keine Verknüpfungs-Schlüssel.
 
 ---
 
-## Folio-Granularität (v2.3+)
+## Komposit-Typen
 
-Verknüpfungen referenzieren einzelne Seiten innerhalb von Sammlungsobjekten:
-- NIM_003: 35 Verknüpfungen
-- NIM_004: 795 Verknüpfungen auf 45 Folios
-- NIM_007: 426 Verknüpfungen
-
----
-
-## Komposit-Typen (v2.3+)
-
-Erfassungsteam nutzt zusammengesetzte Typen: `ort, datum` (48x), `ausgaben, waehrung` (11x), `einnahmen, waehrung` (8x), `ereignis, ort, datum` (1x). Pipeline decomponiert diese beim Import.
+Erfassungsteam nutzt zusammengesetzte Typen: `ort, datum` (48x), `ausgaben, waehrung` (11x), `einnahmen, waehrung` (8x), `summe, waehrung`, `ereignis, ort, datum` (1x). Pipeline decomponiert diese beim Import.
 
 ---
 
@@ -44,26 +68,47 @@ Erfassungsteam nutzt zusammengesetzte Typen: `ort, datum` (48x), `ausgaben, waeh
 
 ### Typ-Vokabular
 
-Basis: person, ort, institution, ereignis, werk, detail. Neu in v2.3: rolle (215x), datum (74x). Komposit: ort,datum · ausgaben,waehrung · einnahmen,waehrung · summe,waehrung · ereignis,ort,datum · ensemble.
+Basis: person, ort, institution, ereignis, werk, rolle, datum. Komposit: ort,datum · ausgaben,waehrung · einnahmen,waehrung · summe,waehrung · ereignis,ort,datum · ensemble.
 
 ### Rollen-Vokabular (58 Werte)
 
-Gender-inklusive `:in`-Form. Top-10: sänger:in (161), dirigent:in (36), pianist:in (7), komponist:in (5), regisseur:in (5).
+Gender-inklusive `:in`-Form. Top-10: sänger:in (161), dirigent:in (36), pianist:in (7), komponist:in (5), regisseur:in (5). Pipeline normalisiert Case (z.B. `Sänger:in` → `sänger:in`).
 
-### Dokumenttyp-Vokabular (19 Werte)
+### Dokumenttyp-Vokabular (25 Werte)
 
-korrespondenz · vertrag · presse · programm · plakat · tontraeger · autobiografie · identitaetsdokument · studienunterlagen · repertoire · sammlung · konzertprogramm · tagebuch · notizbuch · urkunde · zeugnis · lebenslauf · widmung.
+korrespondenz · vertrag · presse · programm · plakat · tontraeger · autobiografie · identitaetsdokument · studienunterlagen · repertoire · sammlung · konzertprogramm · tagebuch · notizbuch · urkunde · zeugnis · lebenslauf · widmung · biographie · notiz · photokopie · quittung · rezension · typoskript · visitenkarte.
+
+### Bearbeitungsstand (3 Werte)
+
+`vollständig` · `in bearbeitung` · `offen`. Pipeline normalisiert aus 9 Schreibvarianten (Case, Tippfehler, Whitespace).
 
 ---
 
 ## Entitätsindizes
 
-| Index | Records | Wikidata | Besonderheiten |
-|---|---|---|---|
-| Personenindex | 296 | 3 (1%) | anmerkung als de-facto-Kategorie (257/296 kategorisiert) |
-| Organisationsindex | 58 | 4 (7%) | Spaltennamen-Shift ("Graz" statt "name"), Doppel-IDs O43/O44 |
-| Ortsindex | 31 | 0 (0%) | Kein ID-Header, keine Koordinaten, 6 fehlende Orte |
-| Werkindex | 95 | 4 (4%) | Spaltennamen-Shift ("Rossini" statt "titel"), 10 ohne ID |
+| Index | Records | Besonderheiten |
+|---|---|---|
+| Personenindex | 296 | anmerkung als de-facto-Kategorie (257/296 kategorisiert, 80 Werte) |
+| Organisationsindex | 58 | Header-Shift ("Graz" statt "name"), IDs O1–O63 |
+| Ortsindex | 31 | Header-Shift ("Unnamed: 0" statt "m3gim_id"), keine wikidata_id-Spalte |
+| Werkindex | 95 | Header-Shift ("Rossini" statt "titel", "Barber" statt "komponist") |
+
+Wikidata-IDs werden nicht manuell erfasst, sondern via Reconciliation-Workflow (siehe [→ Quellenbestand](02-quellenbestand.md)).
+
+---
+
+## Pipeline-Normalisierung
+
+Die Pipeline korrigiert folgende Probleme automatisch beim Import:
+
+| Was | Wie |
+|---|---|
+| Header-Shifts in 3 Indizes | Spaltennamen-Mapping |
+| Case-Inkonsistenzen (typ, rolle, dokumenttyp, bearbeitungsstand) | `.lower().strip()` |
+| Excel-Datetime-Artefakte (`00:00:00`) | Zeitanteil abstreifen |
+| Leere Zeilen in Verknüpfungen | Überspringen |
+| Komposit-Typen | Decomposition in separate Verknüpfungen |
+| Template-Zeilen (archivsignatur="beispiel") | Filtern |
 
 ---
 

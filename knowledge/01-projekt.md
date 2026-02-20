@@ -47,9 +47,10 @@
 | Jan–Feb 2026 | Promptotyping Iteration 1 | done |
 | 18. Feb 2026 | Wissens-Destillation Iteration 1 → Vault | done |
 | 18. Feb 2026 | Google-Sheets-Analyse, Datenmodell v2.3 | done |
+| 20. Feb 2026 | Daten-Exploration (explore.py), Datenmodell v2.5 | done |
 | 21. Feb 2026 | Konvolut-Lieferung | pending |
 | 24. Feb 2026 | Meeting: Datenerfassung, Modellierung, Workflows | pending |
-| Mär–Apr 2026 | Pipeline-Anpassung, Datenmodell-Finalisierung, Start Erfassung | planned |
+| Mär–Apr 2026 | Pipeline-Anpassung (validate/transform/build-views), Start Erfassung | planned |
 | Mai–Jun 2026 | Promptotyping Iteration 2, Frontend-Entwicklung | planned |
 | Sep 2026 | Arbeitsgespräch mit externen Expert\*innen | planned |
 | Mär 2027 | Website-Veröffentlichung | planned |

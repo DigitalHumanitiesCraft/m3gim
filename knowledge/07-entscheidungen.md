@@ -91,10 +91,20 @@
 
 ### Positive Überraschungen aus der Datenanalyse
 
-- Erschließungstiefe bei 3 Sammlungsobjekten (1.256 Verknüpfungen) übertrifft Erwartungen
+- Erschließungstiefe bei 3 Konvoluten (1.264 Verknüpfungen) übertrifft Erwartungen
 - Gender-inklusives Rollen-Vokabular (58 Werte mit `:in`-Form) zeigt sorgfältige Erfassung
 - 257/296 Personen mit Kategorie — Begegnungs-Matrix bekommt direkt Daten
 - 134 Werk-Verknüpfungen ermöglichen substantiellen Rollen-Kosmos
+
+### Erkenntnisse aus Daten-Exploration (Feb 2026)
+
+- Konvolut-Hierarchie entdeckt: Objekt-ID = archivsignatur + folio (2 Spalten)
+- Verknüpfung über String-Matching (`name`-Spalte), nicht über IDs
+- Header-Shifts in 3 von 4 Indizes — Pipeline muss Spaltennamen mappen
+- Dokumenttyp-Vokabular gewachsen (18 → 25 Werte)
+- Case-Inkonsistenzen durchgängig — Pipeline normalisiert mit `.lower().strip()`
+- Wikidata wird via Reconciliation-Script befüllt, nicht manuell
+- Nur 3/282 Objekte bisher verknüpft — Verknüpfungsarbeit steht am Anfang
 
 ---
 
