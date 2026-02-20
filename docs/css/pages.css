@@ -119,19 +119,41 @@
   color: var(--color-text-primary);
 }
 
-/* Pipeline ordered list */
-.page__pipeline {
-  list-style: decimal;
-  padding-left: var(--space-6);
+/* Ordered lists in sections */
+.page__section ol {
+  list-style: none;
+  counter-reset: item;
+  padding-left: 0;
   margin-top: var(--space-3);
 }
 
-.page__pipeline li {
-  margin-bottom: var(--space-3);
+.page__section ol li {
+  counter-increment: item;
+  margin-bottom: var(--space-4);
+  padding-left: var(--space-8);
+  position: relative;
   color: var(--color-text-secondary);
 }
 
-.page__pipeline li strong {
+.page__section ol li::before {
+  content: counter(item);
+  position: absolute;
+  left: 0;
+  top: 0.1em;
+  width: 1.6em;
+  height: 1.6em;
+  background: var(--color-kug-blau);
+  color: var(--color-text-inverse);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.page__section ol li strong {
   color: var(--color-text-primary);
 }
 
