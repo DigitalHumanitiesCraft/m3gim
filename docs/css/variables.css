@@ -18,6 +18,11 @@
   --color-gold-medium: #C4A574;
   --color-gold-light: #E8DBC7;
 
+  /* Signal Colors */
+  --color-signal-green: #2E7D4F;
+  --color-signal-green-light: #e8f4ec;
+  --color-absent: var(--color-text-tertiary);
+
   /* Text */
   --color-text-primary: #2C2825;
   --color-text-secondary: #5C5651;

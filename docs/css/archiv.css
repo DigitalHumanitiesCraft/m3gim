@@ -148,10 +148,9 @@
   background: var(--color-gold-light);
 }
 
-/* Konvolut Rows */
+/* F-6: Konvolut Rows — hierarchy via typography, not background */
 .archiv-row--konvolut {
-  background: var(--color-parchment);
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-semibold);
 }
 
 .archiv-row--konvolut td:first-child {
@@ -163,8 +162,8 @@
   padding-left: var(--space-10);
 }
 
+/* F-10: Child rows — hierarchy via indentation only, no background */
 .archiv-row--child {
-  background: var(--color-cream);
   font-size: var(--text-sm);
 }
 
@@ -240,9 +239,10 @@
   color: var(--color-text-secondary);
 }
 
+/* Ü-3: Consistent absence pattern */
 .archiv-datum--undated {
   font-style: italic;
-  opacity: 0.5;
+  color: var(--color-absent);
 }
 
 .archiv-links {
@@ -252,13 +252,15 @@
   color: var(--color-text-tertiary);
 }
 
+/* F-3: Signal green for linked records */
 .archiv-links--has-links {
-  color: var(--color-kug-blau);
+  color: var(--color-signal-green);
   font-weight: var(--weight-medium);
 }
 
 .archiv-links--zero {
-  opacity: 0.3;
+  color: var(--color-absent);
+  opacity: 0.5;
 }
 
 /* =========================================================================
@@ -390,7 +392,7 @@
 
 /* Unclassified type badge */
 .badge--unclassified {
-  opacity: 0.5;
+  color: var(--color-absent);
   font-style: italic;
 }
 

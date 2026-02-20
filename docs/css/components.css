@@ -216,18 +216,14 @@
   color: var(--color-text-secondary);
 }
 
-.badge--brief { background: #e8f0f8; color: #1a4d7a; }
-.badge--programmheft { background: #e8f4ec; color: #1a5c3a; }
-.badge--plakat { background: #f4e8f8; color: #4a2a6b; }
-.badge--rezension { background: #f8f0e8; color: #7a5a2a; }
-.badge--vertrag { background: #f8e8e8; color: #7a2a2a; }
-.badge--zeitungsausschnitt { background: #f0f0e8; color: #5a5a2a; }
+/* F-1: Unified neutral badges — type indicated by text, not color */
 .badge--konvolut { background: var(--color-gold-light); color: var(--color-gold-rich); }
 .badge--konvolut-struct { background: var(--color-cream); color: var(--color-text-secondary); border: 1px solid var(--border-color); font-style: italic; }
-.badge--quittung { background: #e8f0f0; color: #2a5a5a; }
+
+/* F-3 + F-9: Signal green for link/data indicators */
 .badge--wikidata {
-  background: #e8f4ec;
-  color: #1a5c3a;
+  background: var(--color-signal-green-light);
+  color: var(--color-signal-green);
   font-family: var(--font-mono);
   font-size: 0.65rem;
   padding: 1px 4px;

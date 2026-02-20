@@ -262,10 +262,8 @@ function renderNameCell(entry) {
 }
 
 function renderKategorieCell(entry) {
-  const color = PERSONEN_FARBEN[entry.kategorie] || PERSONEN_FARBEN['Andere'];
   return el('span', {
     className: 'idx-kategorie',
-    style: `border-left: 3px solid ${color}; padding-left: 6px;`,
   }, entry.kategorie);
 }
 

@@ -246,6 +246,10 @@ Personen-, Ort-, Werk-Chips in der Detailansicht sind jetzt klickbar → wechsel
 
 Personen-Dropdown im Archiv-Tab: Filtert Bestand UND Chronik nach verknuepfter Person. Sortiert nach Dokumenthaeufigkeit. archiv.js (Dropdown + State), archiv-bestand.js (Filter-Logik), archiv-chronik.js (Filter-Logik). Nutzt `store.persons.get(name).records.has(id)`.
 
+### Milestone 7: Farbsystem (F-1, F-3, F-6, F-7, F-9, F-10, Ue-3)
+
+4 funktionale Farbkategorien etabliert: KUG-Blau (Interaktion), Signal-Gruen (Verknuepfung), Neutral-Grau (Abwesenheit), Warmer Hintergrund (Struktur). Konkret: `--color-signal-green` fuer VKN.-Zahlen und Wikidata-Badges. Per-Typ-Badge-Farben entfernt (alles neutral-grau). Konvolut- und Folio-Zeilen ohne Hintergrundfarbe (Hierarchie via Typografie). Kategorie-Farbstriche im Personen-Index entfernt. Konsistentes Abwesenheits-Pattern (`--color-absent`) fuer "o. D.", "Nicht klassifiziert", leere VKN.
+
 ---
 
 Siehe auch: [→ Projekt](01-projekt.md) · [→ Quellenbestand](02-quellenbestand.md) · [→ Architektur](04-architektur.md)
