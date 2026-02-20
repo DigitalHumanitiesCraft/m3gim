@@ -1,41 +1,37 @@
-# M³GIM Projektwissen
+﻿# M3GIM Knowledge Base
 
-> Destilliertes Projektwissen. Dient als Context-Engineering-Quelle fuer LLM-gestuetzte Entwicklung.
+> Kompakte, repository-nahe Wissensbasis mit formaler Rueckverfolgbarkeit.
+> Wahrheitsquelle: aktueller Working Tree.
 
-Stand: 2026-02-20 (nach Session 9)
+## Kanonische Kerndokumente
 
----
+1. [Projektkontext](projekt-kontext.md)
+2. [Systemarchitektur und Pipeline](system-architektur-pipeline.md)
+3. [Datenmodell und Ontologie](datenmodell-ontologie.md)
+4. [Produkt, UI und Visualisierungen](produkt-ui-visualisierungen.md)
+5. [Operativer Plan (Claude)](operativer-plan-claude.md)
 
-## Dokumente
+## Steuerdokumente
 
-| # | Dokument | Inhalt |
-|---|---|---|
-| 01 | [Projekt](01-projekt.md) | Projektkern, Forschungsfragen, Mobilitätstypen, Meilensteine |
-| 02 | [Quellenbestand](02-quellenbestand.md) | 282 Objekte, Konvolute, Verknüpfungen, Datenqualität |
-| 03 | [Datenmodell](03-datenmodell.md) | Dreischichtenmodell v2.5, Konvolut-Hierarchie, Vokabulare, String-Matching |
-| 04 | [Architektur](04-architektur.md) | Pipeline, Frontend (19 Module, 8 CSS), Navigation, CI/CD |
-| 05 | [Design-System](05-design-system.md) | 4 funktionale Farbkategorien, Typografie, Layout |
-| 06 | [Visualisierungen](06-visualisierungen.md) | 4 Views/Vis: Archiv, Indizes, Matrix, Kosmos |
-| 07 | [Entscheidungen](07-entscheidungen.md) | 30 finale + 2 offene Entscheidungen, Tech Schulden, Prozesswissen |
-| 08 | [RiC-O Referenz](08-ric-o.md) | RiC-O 1.1 Ontologie, Klassenhierarchie, Properties, M3GIM-Mapping |
-| 09 | [m3gim-Ontologie](09-m3gim-ontology.md) | Projekteigene RiC-O-Erweiterung, MusicalWork, Rollen, Dokumenttypen |
-| 10 | [Datenqualität](10-datenqualitaet.md) | Audit-Ergebnisse, Erfassungsprobleme, Handlungsbedarfe |
-| 11 | [Aufgabenkatalog](11-aufgabenkatalog.md) | 31 Items: 23 DONE, 8 DEFERRED |
-| 12 | [Zustandsbericht](12-zustandsbericht.md) | Repository-Analyse: Architektur, Daten, Frontend, offene Baustellen |
-| — | [Journal](journal.md) | Arbeitstagebuch (9 Sessions) |
+- [Traceability-Matrix](traceability-matrix.md)
+- [Quellenindex](quellenindex.md)
 
----
+## Anhaenge
 
-## Vault-Dokumentation
+- [Journal Volltext](appendices/journal-volltext.md)
+- [Meeting 2026-02-24 Volltext](appendices/meeting-2026-02-24.md)
 
-Die ausführliche, kanonische Projektdokumentation liegt im Obsidian-Vault unter `Projects/M³GIM/`:
+## Generierte Reports
 
-| Vault-Dokument | Version |
-|---|---|
-| Project Overview M³GIM | v3.2 |
-| M³GIM Datenmodell und Erfassungsrichtlinien | v2.4 |
-| M³GIM Technische Dokumentation | v2.1 |
-| M³GIM Design-System | v1.0 |
-| M³GIM Visualisierungen | v1.0 |
-| M³GIM Entscheidungen | v1.0 |
-| M³GIM Iteration 1 Learnings | v1.1 |
+- `data/reports/exploration-report.md` (durch `scripts/explore.py`)
+- `data/reports/validation-report.md` (durch `scripts/validate.py`)
+
+## Archiv (verlustfreie Sicherung)
+
+- Vollstaendige Vor-Refactor-Spiegelung unter:
+  - `knowledge/_archive/2026-02-20-pre-kb-refactor/`
+
+## Pflegehinweis
+
+- Alte nummerierte Knowledge-Dokumente wurden in das Archiv ueberfuehrt.
+- Neue Inhalte sollen direkt in den kanonischen Dateien gepflegt werden.

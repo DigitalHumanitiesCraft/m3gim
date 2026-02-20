@@ -19,7 +19,8 @@
 - Wissenskorb: Bookmark-Icons, Korb-Tab, sessionStorage-Prototyp
 - Navigation auf Seitenmodell mit Hash-Routing (5 Tabs + 3 Seiten)
 - Matrix/Kosmos-Verbesserungen (Drilldown, Labels, Zoom/Legende)
-- Knowledge-Refactor auf kanonische Struktur
+- Knowledge-Refactor: 12 nummerierte Docs → 5 kanonische + Traceability-Matrix + Quellenindex + Anhaenge
+- HTML/CSS-Cleanup: hidden-Attribut, aria-Labels, Zeichenbereinigung, Badge-Konsolidierung
 
 ### Deferred / offen
 

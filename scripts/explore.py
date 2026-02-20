@@ -1,8 +1,8 @@
-#!/usr/bin/env python3
-"""M³GIM Data Explorer — Step 1 der Pipeline.
+﻿#!/usr/bin/env python3
+"""MÂ³GIM Data Explorer â€” Step 1 der Pipeline.
 
 Analysiert Google-Sheets-Exporte (XLSX) und erzeugt einen Exploration Report.
-Zeigt Datenstruktur, Füllgrade, Vokabulare und Probleme BEVOR validiert wird.
+Zeigt Datenstruktur, FÃ¼llgrade, Vokabulare und Probleme BEVOR validiert wird.
 
 Verwendung:
     python scripts/explore.py                                    # data/google-spreadsheet/ (default)
@@ -32,15 +32,15 @@ ROOT = Path(__file__).resolve().parent.parent
 INPUT_DIR = ROOT / "data" / "google-spreadsheet"
 REPORT_DIR = ROOT / "data" / "reports"
 
-# Erwartete Tabellen (flexible Zuordnung: Schlüssel = kanonischer Name)
+# Erwartete Tabellen (flexible Zuordnung: SchlÃ¼ssel = kanonischer Name)
 EXPECTED_TABLES = {
     "objekte": {
         "patterns": ["objekte", "objects"],
-        "description": "Hauptbestand + Plakate + Tonträger",
+        "description": "Hauptbestand + Plakate + TontrÃ¤ger",
     },
     "verknuepfungen": {
-        "patterns": ["verknüpfungen", "verknuepfungen", "relations", "links"],
-        "description": "Kontextuelle Verknüpfungen",
+        "patterns": ["verknÃ¼pfungen", "verknuepfungen", "relations", "links"],
+        "description": "Kontextuelle VerknÃ¼pfungen",
     },
     "personenindex": {
         "patterns": ["personenindex", "personen", "persons"],
@@ -75,7 +75,7 @@ SIGNATUR_PATTERNS = {
 
 # Datumsformate
 DATE_ISO = re.compile(r"^\d{4}(-\d{2}(-\d{2})?)?$")
-DATE_RANGE = re.compile(r"^\d{4}.*[/–-].*\d{4}")
+DATE_RANGE = re.compile(r"^\d{4}.*[/â€“-].*\d{4}")
 DATE_QUALIFIER = re.compile(r"^(circa|vor|nach|um):")
 DATE_EXCEL_ARTIFACT = re.compile(r"^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$")
 
@@ -85,7 +85,7 @@ DATE_EXCEL_ARTIFACT = re.compile(r"^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$")
 # ---------------------------------------------------------------------------
 
 def extract_zip(zip_path: Path, target_dir: Path) -> list[Path]:
-    """Entpackt ZIP nach target_dir, gibt Liste der XLSX-Dateien zurück."""
+    """Entpackt ZIP nach target_dir, gibt Liste der XLSX-Dateien zurÃ¼ck."""
     target_dir.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(zip_path, "r") as zf:
         zf.extractall(target_dir)
@@ -98,15 +98,27 @@ def extract_zip(zip_path: Path, target_dir: Path) -> list[Path]:
 
 def match_tables(xlsx_files: list[Path]) -> dict[str, Path | None]:
     """Ordnet gefundene XLSX-Dateien den erwarteten Tabellen zu."""
+    def normalize_token(value: str) -> str:
+        return (
+            value.lower()
+            .replace("ä", "ae")
+            .replace("ö", "oe")
+            .replace("ü", "ue")
+            .replace("ß", "ss")
+            .replace("-", "")
+            .replace("_", "")
+            .replace(" ", "")
+        )
+
     matched = {name: None for name in EXPECTED_TABLES}
     unmatched = []
 
     for f in xlsx_files:
-        stem = f.stem.lower().replace("-", "").replace("_", "").replace(" ", "")
+        stem = normalize_token(f.stem)
         found = False
         for name, config in EXPECTED_TABLES.items():
             for pattern in config["patterns"]:
-                normalized = pattern.lower().replace("-", "").replace("_", "").replace(" ", "")
+                normalized = normalize_token(pattern)
                 if normalized in stem or stem in normalized:
                     matched[name] = f
                     found = True
@@ -158,6 +170,7 @@ def analyze_table(path: Path, name: str) -> dict:
 
         result["columns"] = list(df.columns)
         result["row_count"] = len(df)
+        result["column_count"] = len(df.columns)
 
         # Spaltenanalyse
         for col in df.columns:
@@ -221,7 +234,7 @@ def _detect_column_type(series: pd.Series) -> str:
 
 
 def _analyze_objekte(df: pd.DataFrame) -> dict:
-    """Spezifische Analyse für die Objekte-Tabelle."""
+    """Spezifische Analyse fÃ¼r die Objekte-Tabelle."""
     extra = {"signatur_analysis": {}, "date_analysis": {}}
 
     # Signatur-Analyse
@@ -266,7 +279,7 @@ def _analyze_objekte(df: pd.DataFrame) -> dict:
                 date_types["qualifiziert"] += 1
             elif DATE_ISO.match(d):
                 date_types["iso"] += 1
-                # Verdächtige Daten (Zukunft)
+                # VerdÃ¤chtige Daten (Zukunft)
                 try:
                     year = int(d[:4])
                     if year > 2010:
@@ -288,7 +301,7 @@ def _analyze_objekte(df: pd.DataFrame) -> dict:
 
 
 def _analyze_verknuepfungen(df: pd.DataFrame) -> dict:
-    """Spezifische Analyse für die Verknüpfungen-Tabelle."""
+    """Spezifische Analyse fÃ¼r die VerknÃ¼pfungen-Tabelle."""
     extra = {"link_analysis": {}}
 
     # Typ-Verteilung
@@ -307,7 +320,7 @@ def _analyze_verknuepfungen(df: pd.DataFrame) -> dict:
         folio_filled = df["folio"].notna().sum()
         extra["link_analysis"]["folio_usage"] = folio_filled
 
-    # Top-Objekte nach Verknüpfungsanzahl
+    # Top-Objekte nach VerknÃ¼pfungsanzahl
     if "archivsignatur" in df.columns:
         sig_counts = Counter(df["archivsignatur"].dropna().astype(str))
         extra["link_analysis"]["top_objects"] = dict(sig_counts.most_common(10))
@@ -316,10 +329,10 @@ def _analyze_verknuepfungen(df: pd.DataFrame) -> dict:
 
 
 def _analyze_index(df: pd.DataFrame, name: str) -> dict:
-    """Spezifische Analyse für Index-Tabellen."""
+    """Spezifische Analyse fÃ¼r Index-Tabellen."""
     extra = {"index_analysis": {}}
 
-    # Spaltenheader prüfen (bekannte Shifts)
+    # Spaltenheader prÃ¼fen (bekannte Shifts)
     expected_headers = {
         "personenindex": ["id", "name", "wikidata_id", "anmerkung"],
         "organisationsindex": ["id", "name", "wikidata_id", "ort"],
@@ -377,7 +390,7 @@ def _analyze_index(df: pd.DataFrame, name: str) -> dict:
 # ---------------------------------------------------------------------------
 
 def cross_table_analysis(tables: dict[str, dict]) -> list[dict]:
-    """Prüft referentielle Integrität zwischen Tabellen."""
+    """PrÃ¼ft referentielle IntegritÃ¤t zwischen Tabellen."""
     checks = []
 
     objekte = tables.get("objekte")
@@ -397,22 +410,22 @@ def cross_table_analysis(tables: dict[str, dict]) -> list[dict]:
         if "archivsignatur" in df_obj.columns:
             df_obj = df_obj[df_obj["archivsignatur"].astype(str).str.lower() != "beispiel"]
 
-        # Check 1: Verknüpfungen → Objekte
+        # Check 1: VerknÃ¼pfungen â†’ Objekte
         if "archivsignatur" in df_obj.columns and "archivsignatur" in df_verk.columns:
             obj_sigs = set(df_obj["archivsignatur"].dropna().astype(str).str.strip())
             verk_sigs = set(df_verk["archivsignatur"].dropna().astype(str).str.strip())
             orphan_sigs = verk_sigs - obj_sigs
 
             checks.append({
-                "name": "Verknüpfungen → Objekte",
-                "description": "Verknüpfungen referenzieren existierende Objekte",
+                "name": "VerknÃ¼pfungen â†’ Objekte",
+                "description": "VerknÃ¼pfungen referenzieren existierende Objekte",
                 "obj_count": len(obj_sigs),
                 "verk_count": len(verk_sigs),
                 "orphans": sorted(orphan_sigs),
                 "status": "OK" if not orphan_sigs else "WARNUNG",
             })
 
-        # Check 2: Verknüpfungen-Werte → Index-Tabellen
+        # Check 2: VerknÃ¼pfungen-Werte â†’ Index-Tabellen
         if "wert" in df_verk.columns and "typ" in df_verk.columns:
             for index_name in ("personenindex", "organisationsindex", "ortsindex", "werkindex"):
                 index_table = tables.get(index_name)
@@ -438,14 +451,14 @@ def cross_table_analysis(tables: dict[str, dict]) -> list[dict]:
                             idx_values.update(
                                 df_idx[col].dropna().astype(str).str.strip().str.lower()
                             )
-                    # Auch erste Spalte prüfen falls Header verschoben
+                    # Auch erste Spalte prÃ¼fen falls Header verschoben
                     if not idx_values and len(df_idx.columns) > 0:
                         first_col = df_idx.columns[0]
                         idx_values.update(
                             df_idx[first_col].dropna().astype(str).str.strip().str.lower()
                         )
 
-                    # Verknüpfungswerte für diesen Typ
+                    # VerknÃ¼pfungswerte fÃ¼r diesen Typ
                     mask = df_verk["typ"].astype(str).str.lower().str.strip().isin(relevant_types)
                     verk_values = set(
                         df_verk.loc[mask, "wert"].dropna().astype(str).str.strip().str.lower()
@@ -453,8 +466,8 @@ def cross_table_analysis(tables: dict[str, dict]) -> list[dict]:
                     not_in_index = verk_values - idx_values
 
                     checks.append({
-                        "name": f"Verknüpfungen ({', '.join(relevant_types)}) → {index_name}",
-                        "description": f"Werte in Verknüpfungen existieren im {index_name}",
+                        "name": f"VerknÃ¼pfungen ({', '.join(relevant_types)}) â†’ {index_name}",
+                        "description": f"Werte in VerknÃ¼pfungen existieren im {index_name}",
                         "verk_values": len(verk_values),
                         "index_values": len(idx_values),
                         "not_in_index": sorted(list(not_in_index)[:20]),
@@ -479,71 +492,85 @@ def cross_table_analysis(tables: dict[str, dict]) -> list[dict]:
 # ---------------------------------------------------------------------------
 
 def generate_report(
-    tables: dict[str, dict],
+    tables: dict,
     unmatched: list[Path],
     cross_checks: list[dict],
     input_source: str,
 ) -> str:
-    """Erzeugt den Markdown Exploration Report."""
-    lines = []
+    """Generiert den Exploration-Report im kompakten, aber vollstaendigen Format."""
     now = datetime.now().strftime("%Y-%m-%d %H:%M")
 
-    lines.append("# M³GIM Exploration Report")
+    all_warnings = []
+    for t in tables.values():
+        if t and t.get("warnings"):
+            all_warnings.extend(t["warnings"])
+
+    found = sum(1 for t in tables.values() if t is not None)
+    total_rows = sum(t["row_count"] for t in tables.values() if t)
+    critical_checks = [c for c in cross_checks if c.get("status") in {"FEHLER", "WARNUNG"}]
+
+    lines = []
+    lines.append("# M3GIM Exploration Report")
     lines.append("")
     lines.append(f"> Generiert: {now}")
     lines.append(f"> Quelle: `{input_source}`")
     lines.append("")
-
-    # --- Übersicht ---
-    lines.append("---")
+    lines.append("## Executive Summary")
     lines.append("")
-    lines.append("## Datei-Übersicht")
+    lines.append(f"- Tabellen erkannt: **{found}/{len(EXPECTED_TABLES)}**")
+    lines.append(f"- Gesamtzeilen: **{total_rows}**")
+    lines.append(f"- Warnungen: **{len(all_warnings)}**")
+    lines.append(f"- Kritische Cross-Checks: **{len(critical_checks)}**")
+    if unmatched:
+        lines.append(f"- Nicht zugeordnete Dateien: **{len(unmatched)}**")
     lines.append("")
-    lines.append("| Tabelle | Datei | Rows | Columns | Status |")
-    lines.append("|---|---|---|---|---|")
 
-    all_warnings = []
+    lines.append("## Tabellenuebersicht")
+    lines.append("")
+    lines.append("| Tabelle | Datei | Rows | Columns | Warnungen | Status |")
+    lines.append("|---|---|---|---|---|---|")
 
-    for name, config in EXPECTED_TABLES.items():
+    for name in EXPECTED_TABLES:
         table = tables.get(name)
         if table:
-            status = "OK"
-            if table.get("warnings"):
-                status = f"{len(table['warnings'])} Warnung(en)"
-                all_warnings.extend(
-                    (name, w) for w in table["warnings"]
-                )
+            w_count = len(table.get("warnings", []))
+            status = "OK" if w_count == 0 else "WARNUNG"
             lines.append(
                 f"| {name} | {table['path'].name} | {table['row_count']} | "
-                f"{len(table['columns'])} | {status} |"
+                f"{table['column_count']} | {w_count} | {status} |"
             )
         else:
-            lines.append(f"| {name} | — | — | — | FEHLT |")
+            lines.append(f"| {name} | - | - | - | - | FEHLT |")
 
     if unmatched:
         lines.append("")
-        lines.append(f"**Nicht zugeordnete Dateien:** {', '.join(f.name for f in unmatched)}")
+        lines.append("## Nicht zugeordnete Dateien")
+        lines.append("")
+        for f in unmatched:
+            lines.append(f"- `{f.name}`")
 
-    # --- Pro Tabelle ---
+    lines.append("")
+    lines.append("## Tabellen im Detail")
+
     for name in EXPECTED_TABLES:
         table = tables.get(name)
         if not table:
             continue
 
         lines.append("")
-        lines.append("---")
+        lines.append(f"### {name}")
         lines.append("")
-        lines.append(f"## {name}")
+        lines.append("#### Kontext")
         lines.append("")
-        lines.append(f"**Datei:** `{table['path'].name}` · "
-                      f"**Sheets:** {', '.join(table['sheets'])} · "
-                      f"**Zeilen:** {table['row_count']}")
-        lines.append("")
+        lines.append(f"- Datei: `{table['path'].name}`")
+        lines.append(f"- Sheets: {', '.join(table['sheets'])}")
+        lines.append(f"- Zeilen: {table['row_count']}")
+        lines.append(f"- Spalten: {table['column_count']}")
 
-        # Spaltenanalyse
-        lines.append("### Spalten")
         lines.append("")
-        lines.append("| Spalte | Typ | Füllgrad | Non-Null |")
+        lines.append("#### Spaltenanalyse")
+        lines.append("")
+        lines.append("| Spalte | Typ | Fuellgrad | Non-Null |")
         lines.append("|---|---|---|---|")
         for col in table["column_analysis"]:
             lines.append(
@@ -551,14 +578,13 @@ def generate_report(
                 f"{col['non_null']}/{col['total']} |"
             )
 
-        # Vokabular-Werte
         vocab_cols = [
             c for c in table["column_analysis"]
             if "unique_values" in c and c.get("unique_count", 0) > 0
         ]
         if vocab_cols:
             lines.append("")
-            lines.append("### Werte")
+            lines.append("#### Werteprofile")
             lines.append("")
             for col in vocab_cols:
                 vals = col["unique_values"]
@@ -566,130 +592,110 @@ def generate_report(
                     val_str = " · ".join(vals)
                 else:
                     val_str = " · ".join(vals[:30]) + f" · ... (+{len(vals) - 30})"
-                lines.append(f"**{col['name']}** ({col['unique_count']}): {val_str}")
-                lines.append("")
+                lines.append(f"- **{col['name']}** ({col['unique_count']}): {val_str}")
 
-        # Signatur-Analyse (Objekte)
         if "signatur_analysis" in table and table["signatur_analysis"]:
             sa = table["signatur_analysis"]
-            lines.append("### Signaturen")
+            lines.append("")
+            lines.append("#### Signaturanalyse")
             lines.append("")
             for typ, count in sa["counts"].items():
                 lines.append(f"- {typ}: {count}")
             if sa["duplicates"]:
-                lines.append(f"- **Duplikate:** {', '.join(sa['duplicates'])}")
-            lines.append("")
+                lines.append(f"- Duplikate: {', '.join(sa['duplicates'])}")
 
-        # Datums-Analyse (Objekte)
         if "date_analysis" in table and table["date_analysis"]:
             da = table["date_analysis"]
-            lines.append("### Datumsformate")
+            lines.append("")
+            lines.append("#### Datumsanalyse")
             lines.append("")
             for fmt, count in da["distribution"].items():
                 lines.append(f"- {fmt}: {count}")
             if da["suspicious"]:
-                lines.append(f"- **Verdächtig (Zukunft):** {', '.join(da['suspicious'])}")
-            lines.append("")
+                lines.append(f"- Verdaechtige Zukunftsdaten: {', '.join(da['suspicious'])}")
 
-        # Verknüpfungs-Analyse
         if "link_analysis" in table and table["link_analysis"]:
             la = table["link_analysis"]
+            lines.append("")
+            lines.append("#### Verknuepfungsanalyse")
+            lines.append("")
             if "typ_distribution" in la:
-                lines.append("### Typ-Verteilung")
-                lines.append("")
+                lines.append("- Typ-Verteilung:")
                 for typ, count in sorted(la["typ_distribution"].items(), key=lambda x: -x[1]):
-                    lines.append(f"- {typ}: {count}")
-                lines.append("")
+                    lines.append(f"  - {typ}: {count}")
             if la.get("composite_count"):
-                lines.append(f"**Komposit-Typen:** {la['composite_count']}")
+                lines.append(f"- Komposit-Typen gesamt: {la['composite_count']}")
                 for ct, count in la["composite_types"].items():
                     lines.append(f"  - `{ct}`: {count}")
-                lines.append("")
             if la.get("folio_usage"):
-                lines.append(f"**Folio-Feld genutzt:** {la['folio_usage']} Verknüpfungen")
-                lines.append("")
+                lines.append(f"- Folio-Feld genutzt: {la['folio_usage']}")
             if la.get("top_objects"):
-                lines.append("### Top-10 Objekte (nach Verknüpfungsanzahl)")
-                lines.append("")
+                lines.append("- Top-10 Objekte nach Verknuepfungsanzahl:")
                 for sig, count in la["top_objects"].items():
-                    lines.append(f"- {sig}: {count}")
-                lines.append("")
+                    lines.append(f"  - {sig}: {count}")
 
-        # Index-Analyse
         if "index_analysis" in table and table["index_analysis"]:
             ia = table["index_analysis"]
+            lines.append("")
+            lines.append("#### Indexanalyse")
+            lines.append("")
             if ia.get("missing_headers"):
-                lines.append(f"**Fehlende Header:** {', '.join(ia['missing_headers'])}")
-                lines.append(
-                    f"**Gefundene Header:** {', '.join(str(c) for c in ia['actual_headers'])}"
-                )
-                lines.append("")
+                lines.append(f"- Fehlende Header: {', '.join(ia['missing_headers'])}")
+                lines.append(f"- Gefundene Header: {', '.join(str(c) for c in ia['actual_headers'])}")
             if ia.get("duplicate_ids"):
-                lines.append(f"**Doppelte IDs:** {', '.join(ia['duplicate_ids'])}")
-                lines.append("")
+                lines.append(f"- Doppelte IDs: {', '.join(ia['duplicate_ids'])}")
             if ia.get("missing_id_rows"):
-                lines.append(f"**Zeilen ohne ID:** {ia['missing_id_rows']}")
-                lines.append("")
+                lines.append(f"- Zeilen ohne ID: {ia['missing_id_rows']}")
             if "wikidata_count" in ia:
                 lines.append(
-                    f"**Wikidata:** {ia['wikidata_count']}/{ia.get('total', '?')} "
+                    f"- Wikidata-Abdeckung: {ia['wikidata_count']}/{ia.get('total', '?')} "
                     f"({ia.get('wikidata_rate', 0)}%)"
                 )
-                lines.append("")
 
-        # Warnungen
         if table.get("warnings"):
-            lines.append("### Warnungen")
+            lines.append("")
+            lines.append("#### Warnungen")
             lines.append("")
             for w in table["warnings"]:
                 lines.append(f"- {w}")
-            lines.append("")
 
-    # --- Cross-Table-Checks ---
+    lines.append("")
+    lines.append("## Cross-Table-Checks")
+    lines.append("")
     if cross_checks:
-        lines.append("---")
-        lines.append("")
-        lines.append("## Cross-Table-Checks")
-        lines.append("")
         for check in cross_checks:
-            status_icon = {"OK": "OK", "WARNUNG": "WARNUNG", "INFO": "INFO", "FEHLER": "FEHLER"}
-            icon = status_icon.get(check["status"], check["status"])
-            lines.append(f"### {check['name']} [{icon}]")
+            status = check.get("status", "INFO")
+            lines.append(f"### {check['name']} [{status}]")
             lines.append("")
             lines.append(check["description"])
             lines.append("")
             if check.get("orphans"):
-                lines.append(f"Verwaiste Signaturen ({len(check['orphans'])}): "
-                             f"{', '.join(check['orphans'][:20])}")
+                lines.append(
+                    f"- Verwaiste Signaturen ({len(check['orphans'])}): "
+                    f"{', '.join(check['orphans'][:20])}"
+                )
+                if len(check["orphans"]) > 20:
+                    lines.append(f"  - ... und {len(check['orphans']) - 20} weitere")
                 lines.append("")
             if check.get("not_in_index_count"):
                 lines.append(
-                    f"Nicht im Index ({check['not_in_index_count']}): "
+                    f"- Nicht im Index ({check['not_in_index_count']}): "
                     f"{', '.join(check['not_in_index'][:20])}"
                 )
                 if check["not_in_index_count"] > 20:
-                    lines.append(f"  ... und {check['not_in_index_count'] - 20} weitere")
+                    lines.append(f"  - ... und {check['not_in_index_count'] - 20} weitere")
                 lines.append("")
+    else:
+        lines.append("- Keine Cross-Table-Checks vorhanden.")
 
-    # --- Zusammenfassung ---
-    lines.append("---")
+    lines.append("## Abschluss")
     lines.append("")
-    lines.append("## Zusammenfassung")
-    lines.append("")
-
-    found = sum(1 for t in tables.values() if t is not None)
-    total_rows = sum(t["row_count"] for t in tables.values() if t)
-    total_warnings = len(all_warnings)
-
-    lines.append(f"- **Tabellen:** {found}/{len(EXPECTED_TABLES)} erkannt")
-    lines.append(f"- **Gesamt-Zeilen:** {total_rows}")
-    lines.append(f"- **Warnungen:** {total_warnings}")
-    lines.append(f"- **Cross-Table-Checks:** {len(cross_checks)}")
-    lines.append("")
+    lines.append(f"- Tabellen erkannt: {found}/{len(EXPECTED_TABLES)}")
+    lines.append(f"- Gesamt-Zeilen: {total_rows}")
+    lines.append(f"- Warnungen: {len(all_warnings)}")
+    lines.append(f"- Cross-Table-Checks: {len(cross_checks)}")
 
     return "\n".join(lines)
-
-
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
@@ -730,7 +736,7 @@ def main():
     matched, unmatched = match_tables(xlsx_files)
     print(f"\nZugeordnet: {sum(1 for v in matched.values() if v)}/{len(EXPECTED_TABLES)}")
     for name, path in matched.items():
-        status = f"→ {path.name}" if path else "FEHLT"
+        status = f"â†’ {path.name}" if path else "FEHLT"
         print(f"  {name}: {status}")
 
     # Analyse
@@ -756,8 +762,9 @@ def main():
     # Zusammenfassung
     warning_count = sum(len(t.get("warnings", [])) for t in tables.values())
     if warning_count > 0:
-        print(f"\n{warning_count} Warnung(en) gefunden — siehe Report für Details.")
+        print(f"\n{warning_count} Warnung(en) gefunden â€” siehe Report fÃ¼r Details.")
 
 
 if __name__ == "__main__":
     main()
+

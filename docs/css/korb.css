@@ -1,4 +1,4 @@
-/* M³GIM Wissenskorb */
+﻿/* M3GIM Wissenskorb */
 
 .korb-page {
   padding: var(--space-4);
@@ -13,7 +13,7 @@
 }
 
 .korb-title {
-  font-family: var(--font-serif);
+  font-family: var(--font-title);
   font-size: var(--text-xl);
   font-weight: var(--weight-semibold);
   color: var(--color-text-primary);
@@ -26,7 +26,7 @@
   padding: var(--space-1) var(--space-2);
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
-  background: white;
+  background: var(--color-text-inverse);
   color: var(--color-text-secondary);
   cursor: pointer;
   transition: background var(--transition-fast), color var(--transition-fast);
@@ -156,21 +156,4 @@ tr:hover .bookmark-btn,
 
 .bookmark-btn:hover {
   color: var(--color-kug-blau);
-}
-
-/* Korb tab badge */
-.tab-bar__badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 16px;
-  height: 16px;
-  padding: 0 4px;
-  margin-left: 4px;
-  font-size: 10px;
-  font-family: var(--font-mono);
-  font-weight: var(--weight-semibold);
-  background: var(--color-kug-blau);
-  color: white;
-  border-radius: 8px;
 }

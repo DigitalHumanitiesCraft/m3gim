@@ -1,4 +1,4 @@
-/* M³GIM Pages — About, Projekt, Hilfe */
+﻿/* M3GIM Pages - About, Projekt, Hilfe */
 
 .page-content {
   max-width: 720px;
@@ -143,11 +143,4 @@
   color: var(--color-text-tertiary);
   font-style: italic;
   margin-top: var(--space-4);
-}
-
-/* Header nav link active state */
-.app-header__nav a.active {
-  opacity: 1;
-  border-bottom: 2px solid var(--color-text-inverse);
-  padding-bottom: 2px;
 }

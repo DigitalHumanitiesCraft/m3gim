@@ -1,4 +1,4 @@
-/* M³GIM Components — Tabs, Detail Panel, Badges, Spinner */
+﻿/* M3GIM Components - Tabs, Detail Panel, Badges, Spinner */
 
 /* Tab Bar */
 .tab-bar {
@@ -7,6 +7,8 @@
   border-bottom: 1px solid var(--border-color);
   height: var(--tab-bar-height);
   flex-shrink: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 
 .tab-bar__tab {
@@ -23,6 +25,7 @@
   border-bottom: 3px solid transparent;
   transition: color var(--transition-fast), border-color var(--transition-fast);
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .tab-bar__tab:hover {
@@ -37,6 +40,22 @@
 .tab-bar__tab svg {
   width: 18px;
   height: 18px;
+}
+
+.tab-bar__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  margin-left: 4px;
+  font-size: 10px;
+  font-family: var(--font-mono);
+  font-weight: var(--weight-semibold);
+  background: var(--color-kug-blau);
+  color: var(--color-text-inverse);
+  border-radius: 8px;
 }
 
 /* Detail Panel */
@@ -174,7 +193,7 @@
   color: var(--color-text-secondary);
 }
 
-/* F-1: Unified neutral badges — type indicated by text, not color */
+/* F-1: Unified neutral badges - type indicated by text, not color */
 .badge--konvolut { background: var(--color-gold-light); color: var(--color-gold-rich); }
 .badge--konvolut-struct { background: var(--color-cream); color: var(--color-text-secondary); border: 1px solid var(--border-color); font-style: italic; }
 
@@ -237,4 +256,3 @@
 .tooltip.visible {
   opacity: 1;
 }
-

@@ -1,0 +1,199 @@
+# M³GIM Validierungsreport
+
+**Datum:** 2026-02-20 08:18
+
+## Zusammenfassung
+
+- **Objekte:** 283 Zeilen, 1 Fehler, 3 Warnungen
+- **Verknuepfungen:** 1292 Zeilen, 0 Fehler, 174 Warnungen
+- **Indizes geladen:** Personenindex (296), Organisationsindex (59), Ortsindex (31), Werkindex (96)
+
+**Status:** 1 Fehler muessen behoben werden
+
+---
+
+## Fehler (blockieren Export)
+
+- **E001 Objekte Zeile 9:** archivsignatur = `UAKUG/NIM/PL_07` — Doppelte Objekt-ID: UAKUG/NIM/PL_07 (auch in Zeile 8)
+
+---
+
+## Warnungen (Export moeglich)
+
+- **W001 Objekte Zeile 9:** titel = `` — Pflichtfeld titel ist leer
+- **W001 Objekte Zeile 61:** titel = `` — Pflichtfeld titel ist leer
+- **W001 Objekte Zeile 62:** titel = `` — Pflichtfeld titel ist leer
+- **W004 Verknuepfungen Zeile 41:** name = `Zürich, Zürichbergstrasse 104` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 44:** name = `Verdi, Guiseppe` — Name nicht im personenindex gefunden
+- **W004 Verknuepfungen Zeile 57:** name = `Ranczak, Hildegard` — Name nicht im personenindex gefunden
+- **W004 Verknuepfungen Zeile 74:** name = `Bayerischen Staatsoper` — Name nicht im organisationsindex gefunden
+- **W004 Verknuepfungen Zeile 76:** name = `Verdi, Guiseppe` — Name nicht im personenindex gefunden
+- **W004 Verknuepfungen Zeile 84:** name = `München, 1952-12-17` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 86:** name = `Bayerischen Staatsoper` — Name nicht im organisationsindex gefunden
+- **W004 Verknuepfungen Zeile 92:** name = `Shakespeare, William` — Name nicht im personenindex gefunden
+- **W004 Verknuepfungen Zeile 96:** name = `Metternicz, Josef` — Name nicht im personenindex gefunden
+- **W004 Verknuepfungen Zeile 118:** name = `Kupper, Anneliese` — Name nicht im personenindex gefunden
+- **W004 Verknuepfungen Zeile 122:** name = `Ruppel, K. H.` — Name nicht im personenindex gefunden
+- **W004 Verknuepfungen Zeile 136:** name = `Prinzregententheater` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 147:** name = `Bergfeld, Dr. Joachim` — Name nicht im personenindex gefunden
+- **W004 Verknuepfungen Zeile 154:** name = `Wagner, Siegfied` — Name nicht im personenindex gefunden
+- **W004 Verknuepfungen Zeile 166:** name = `Schmidt-Gasse, Helmut` — Name nicht im personenindex gefunden
+- **W004 Verknuepfungen Zeile 179:** name = `München, 1953-03-06` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 203:** name = `Parente, A` — Name nicht im personenindex gefunden
+- **W004 Verknuepfungen Zeile 206:** name = `Italien` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 282:** name = `Berliner Philharmoniker` — Name nicht im organisationsindex gefunden
+- **W004 Verknuepfungen Zeile 285:** name = `Claudel-Kontate` — Name nicht im werkindex gefunden
+- **W004 Verknuepfungen Zeile 321:** name = `Stuttgart, 1954-07-06` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 324:** name = `Stuttgarter Stattsoper` — Name nicht im organisationsindex gefunden
+- **W004 Verknuepfungen Zeile 325:** name = `Zauberflöte` — Name nicht im werkindex gefunden
+- **W004 Verknuepfungen Zeile 327:** name = `Cosi fan tutte` — Name nicht im werkindex gefunden
+- **W004 Verknuepfungen Zeile 328:** name = `Figaro` — Name nicht im werkindex gefunden
+- **W004 Verknuepfungen Zeile 367:** name = `Strasbourg` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 409:** name = `1956-11-21 00:00:00` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 411:** name = `Tannhäuser` — Name nicht im werkindex gefunden
+- **W004 Verknuepfungen Zeile 426:** name = `Gostič, Josef` — Name nicht im personenindex gefunden
+- **W004 Verknuepfungen Zeile 427:** name = `Guthrie, Frederic` — Name nicht im personenindex gefunden
+- **W004 Verknuepfungen Zeile 430:** name = `Klobucar, Boruslav` — Name nicht im personenindex gefunden
+- **W004 Verknuepfungen Zeile 431:** name = `Verdi` — Name nicht im personenindex gefunden
+- **W004 Verknuepfungen Zeile 432:** name = `Ghislanzoni` — Name nicht im personenindex gefunden
+- **W004 Verknuepfungen Zeile 434:** name = `Grillparzer` — Name nicht im personenindex gefunden
+- **W004 Verknuepfungen Zeile 439:** name = `Landestheater Hannover` — Name nicht im organisationsindex gefunden
+- **W004 Verknuepfungen Zeile 449:** name = `Gostic, Josef` — Name nicht im personenindex gefunden
+- **W004 Verknuepfungen Zeile 495:** name = `Théâtre royal de la Monnaie` — Name nicht im organisationsindex gefunden
+- **W004 Verknuepfungen Zeile 515:** name = `René Dumesnil` — Name nicht im personenindex gefunden
+- **W004 Verknuepfungen Zeile 516:** name = `Paris, 1956` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 517:** name = `Paris, 1955` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 522:** name = `Der Ring des Niebelungen` — Name nicht im werkindex gefunden
+- **W004 Verknuepfungen Zeile 535:** name = `Cox, Warren` — Name nicht im personenindex gefunden
+- **W004 Verknuepfungen Zeile 536:** name = `Wien, 1957-09-07` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 544:** name = `Wien, 1957-11-26` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 575:** name = `Zürich, 1947-1952` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 576:** name = `München, 1952-1957` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 577:** name = `Wien, ab 1956` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 578:** name = `Bayreuth, 1951-1953` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 579:** name = `Salzburg, 1956` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 580:** name = `Philipps` — Name nicht im organisationsindex gefunden
+- **W004 Verknuepfungen Zeile 581:** name = `Decca` — Name nicht im organisationsindex gefunden
+- **W004 Verknuepfungen Zeile 617:** name = `New York, 1959-10-27` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 618:** name = `Zürich, Zurichbergstrasse 104` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 624:** name = `Vienna Opera compagny` — Name nicht im organisationsindex gefunden
+- **W004 Verknuepfungen Zeile 625:** name = `Munich Opera compagny` — Name nicht im organisationsindex gefunden
+- **W004 Verknuepfungen Zeile 626:** name = `Paris Opera compagny` — Name nicht im organisationsindex gefunden
+- **W004 Verknuepfungen Zeile 627:** name = `Convent Garden Opera compagny` — Name nicht im organisationsindex gefunden
+- **W004 Verknuepfungen Zeile 630:** name = `Opera News` — Name nicht im organisationsindex gefunden
+- **W004 Verknuepfungen Zeile 633:** name = `Bluebarts Castle` — Name nicht im werkindex gefunden
+- **W004 Verknuepfungen Zeile 670:** name = `Zürich, 1947-1952` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 671:** name = `München, 1952-1957` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 672:** name = `Wien, ab 1956` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 673:** name = `Bayreuth, 1951-1953` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 674:** name = `Salzburg, 1956` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 675:** name = `Philipps` — Name nicht im organisationsindex gefunden
+- **W004 Verknuepfungen Zeile 676:** name = `Decca` — Name nicht im organisationsindex gefunden
+- **W004 Verknuepfungen Zeile 684:** name = `Wiener Volksoper` — Name nicht im organisationsindex gefunden
+- **W004 Verknuepfungen Zeile 695:** name = `Baasch-Malaniuk, Ira` — Name nicht im personenindex gefunden
+- **W004 Verknuepfungen Zeile 696:** name = `Zürich, Zürichbergstrasse 104` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 712:** name = `Troubadour` — Name nicht im werkindex gefunden
+- **W004 Verknuepfungen Zeile 713:** name = `Ein Maskenball` — Name nicht im werkindex gefunden
+- **W004 Verknuepfungen Zeile 714:** name = `Fallstaff` — Name nicht im werkindex gefunden
+- **W004 Verknuepfungen Zeile 717:** name = `Madame Butterfly` — Name nicht im werkindex gefunden
+- **W004 Verknuepfungen Zeile 719:** name = `Figaro` — Name nicht im werkindex gefunden
+- **W004 Verknuepfungen Zeile 720:** name = `Cosi fan Tutte` — Name nicht im werkindex gefunden
+- **W004 Verknuepfungen Zeile 721:** name = `Zauberflöte` — Name nicht im werkindex gefunden
+- **W004 Verknuepfungen Zeile 722:** name = `Titus` — Name nicht im werkindex gefunden
+- **W004 Verknuepfungen Zeile 725:** name = `Tannhäuser` — Name nicht im werkindex gefunden
+- **W004 Verknuepfungen Zeile 726:** name = `Meistersinger` — Name nicht im werkindex gefunden
+- **W004 Verknuepfungen Zeile 727:** name = `Walküre` — Name nicht im werkindex gefunden
+- **W004 Verknuepfungen Zeile 730:** name = `Boris Godunow` — Name nicht im werkindex gefunden
+- **W004 Verknuepfungen Zeile 731:** name = `Howantschina` — Name nicht im werkindex gefunden
+- **W004 Verknuepfungen Zeile 732:** name = `Eugen Onegin` — Name nicht im werkindex gefunden
+- **W004 Verknuepfungen Zeile 733:** name = `Pique Dame` — Name nicht im werkindex gefunden
+- **W004 Verknuepfungen Zeile 734:** name = `Der Rosenkawalier` — Name nicht im werkindex gefunden
+- **W004 Verknuepfungen Zeile 736:** name = `Herzog Blaubarts Burg` — Name nicht im werkindex gefunden
+- **W004 Verknuepfungen Zeile 737:** name = `Die Spinnstube` — Name nicht im werkindex gefunden
+- **W004 Verknuepfungen Zeile 738:** name = `Katja Kabanova` — Name nicht im werkindex gefunden
+- **W004 Verknuepfungen Zeile 740:** name = `Les Noces` — Name nicht im werkindex gefunden
+- **W004 Verknuepfungen Zeile 833:** name = `Neue Zeit` — Name nicht im organisationsindex gefunden
+- **W004 Verknuepfungen Zeile 849:** name = `Fidelio` — Name nicht im werkindex gefunden
+- **W004 Verknuepfungen Zeile 859:** name = `2026-09-06 00:00:00` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 869:** name = `Zürich, Geibelstrasse 1/1` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 870:** name = `München, Martiusstrasse 3` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 871:** name = `Bayerische Staatsoper` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 881:** name = `Teatro Colon` — Name nicht im organisationsindex gefunden
+- **W004 Verknuepfungen Zeile 882:** name = `Zürich, Geibelstrasse 1/1` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 887:** name = `Bayreuth, 1952-08-26` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 888:** name = `Taubmann, Martin Hugo` — Name nicht im personenindex gefunden
+- **W004 Verknuepfungen Zeile 891:** name = `Dermota` — Name nicht im personenindex gefunden
+- **W004 Verknuepfungen Zeile 897:** name = `Taubmann, Frau` — Name nicht im personenindex gefunden
+- **W004 Verknuepfungen Zeile 902:** name = `Herzog Blaubarts Burg` — Name nicht im werkindex gefunden
+- **W004 Verknuepfungen Zeile 905:** name = `Bayreuth, 1953-07-06` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 915:** name = `SAS Scandinavian Airlines` — Name nicht im organisationsindex gefunden
+- **W004 Verknuepfungen Zeile 924:** name = `Lissabon, 1954` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 942:** name = `Köln, 1959-05-09` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 948:** name = `München, 1961-11-21` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 955:** name = `Palais Pallavicini` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 956:** name = `Palais Schwarzenberg` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 957:** name = `Palais Auersberg` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 958:** name = `Palais Palffy` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 959:** name = `Palais Lobkowitz` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 960:** name = `Hofburg` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 961:** name = `Palais Rasumofsky` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 964:** name = `Ott, Elfriede` — Name nicht im personenindex gefunden
+- **W004 Verknuepfungen Zeile 965:** name = `Patzak, Julian` — Name nicht im personenindex gefunden
+- **W004 Verknuepfungen Zeile 966:** name = `Durante, Francesco` — Name nicht im personenindex gefunden
+- **W004 Verknuepfungen Zeile 967:** name = `Busatti, Cherubino` — Name nicht im personenindex gefunden
+- **W004 Verknuepfungen Zeile 968:** name = `Monteverdi, Claudio` — Name nicht im personenindex gefunden
+- **W004 Verknuepfungen Zeile 969:** name = `Haydn, Joseph` — Name nicht im personenindex gefunden
+- **W004 Verknuepfungen Zeile 971:** name = `Schubert, Franz` — Name nicht im personenindex gefunden
+- **W004 Verknuepfungen Zeile 973:** name = `Barwinsky, Wolodymyr` — Name nicht im personenindex gefunden
+- **W004 Verknuepfungen Zeile 974:** name = `Woloszyn, Wolodymyr` — Name nicht im personenindex gefunden
+- **W004 Verknuepfungen Zeile 976:** name = `Müller` — Name nicht im personenindex gefunden
+- **W004 Verknuepfungen Zeile 977:** name = `Kreutzer` — Name nicht im personenindex gefunden
+- **W004 Verknuepfungen Zeile 978:** name = `Suppé` — Name nicht im personenindex gefunden
+- **W004 Verknuepfungen Zeile 979:** name = `Drechsler` — Name nicht im personenindex gefunden
+- **W004 Verknuepfungen Zeile 981:** name = `Pupillette` — Name nicht im werkindex gefunden
+- **W004 Verknuepfungen Zeile 983:** name = `Stets barg die Liebe sie` — Name nicht im werkindex gefunden
+- **W004 Verknuepfungen Zeile 996:** name = `Wenn ich in die Weite` — Name nicht im werkindex gefunden
+- **W004 Verknuepfungen Zeile 1004:** name = `Zürich, Zürichbergstrasse 104` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 1005:** name = `Zürich, 1963-03-08` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 1016:** name = `Zürich, Zürichbergstrasse 104` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 1017:** name = `München, 1964-08-18` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 1035:** name = `Sekretär der Tonhalle-Gesellschaft Zürich` — Name nicht im organisationsindex gefunden
+- **W004 Verknuepfungen Zeile 1037:** name = `Zürich, 1968-11-18` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 1064:** name = `Der Wildschütz` — Name nicht im werkindex gefunden
+- **W004 Verknuepfungen Zeile 1080:** name = `Dönch, Karl` — Name nicht im personenindex gefunden
+- **W004 Verknuepfungen Zeile 1089:** name = `Der Wildschütz` — Name nicht im werkindex gefunden
+- **W004 Verknuepfungen Zeile 1114:** name = `Der Wildschütz` — Name nicht im werkindex gefunden
+- **W004 Verknuepfungen Zeile 1127:** name = `Dönch, Karl` — Name nicht im personenindex gefunden
+- **W004 Verknuepfungen Zeile 1139:** name = `Der Wildschütz` — Name nicht im werkindex gefunden
+- **W004 Verknuepfungen Zeile 1164:** name = `Der Wildschütz` — Name nicht im werkindex gefunden
+- **W004 Verknuepfungen Zeile 1166:** name = `Volksblatt` — Name nicht im organisationsindex gefunden
+- **W004 Verknuepfungen Zeile 1169:** name = `Wien, 1968-09-25` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 1175:** name = `Dönch, Karl` — Name nicht im personenindex gefunden
+- **W004 Verknuepfungen Zeile 1181:** name = `Der Wildschütz` — Name nicht im werkindex gefunden
+- **W004 Verknuepfungen Zeile 1229:** name = `[Organi]` — Name nicht im personenindex gefunden
+- **W004 Verknuepfungen Zeile 1231:** name = `Walküre` — Name nicht im werkindex gefunden
+- **W004 Verknuepfungen Zeile 1235:** name = `Konzertdirektion` — Name nicht im organisationsindex gefunden
+- **W004 Verknuepfungen Zeile 1237:** name = `Wien, 1957-01-04` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 1238:** name = `Wien, 1957-04-20` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 1239:** name = `Wien, 1957-04-25` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 1240:** name = `Wien, 1957-05-01` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 1241:** name = `Stuttgart, 1957-04-28` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 1246:** name = `Konzertdirektion` — Name nicht im organisationsindex gefunden
+- **W004 Verknuepfungen Zeile 1248:** name = `Stuttgart, 1957-06-07` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 1253:** name = `Konzertdirektion` — Name nicht im organisationsindex gefunden
+- **W004 Verknuepfungen Zeile 1255:** name = `Wien, 1957-06-04` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 1256:** name = `Wien, 1957-06-12` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 1257:** name = `Wien, 1957-06-21` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 1258:** name = `Wien, 1957-06-23` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 1259:** name = `Wien, 1957-06-30` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 1265:** name = `Konzertdirektion` — Name nicht im organisationsindex gefunden
+- **W004 Verknuepfungen Zeile 1267:** name = `Wien, 1957-09` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 1268:** name = `Wien, 1957-10` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 1273:** name = `Konzertdirektion` — Name nicht im organisationsindex gefunden
+- **W004 Verknuepfungen Zeile 1276:** name = `Berlin, 1957-11-10` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 1277:** name = `Berlin, 1957-11-11` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 1282:** name = `Konzertdirektion` — Name nicht im organisationsindex gefunden
+- **W004 Verknuepfungen Zeile 1284:** name = `Wien, 1957-11` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 1285:** name = `Wien, 1957-12` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 1290:** name = `Zürich, 1957-05-15` — Name nicht im ortsindex gefunden
+- **W004 Verknuepfungen Zeile 1291:** name = `Zürich, 1957-05-14` — Name nicht im ortsindex gefunden

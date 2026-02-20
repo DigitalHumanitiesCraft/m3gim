@@ -103,8 +103,8 @@ function renderTab(tab) {
 function showLoading(show) {
   const spinner = document.getElementById('loading-spinner');
   const main = document.getElementById('main-content');
-  if (spinner) spinner.style.display = show ? 'flex' : 'none';
-  if (main) main.style.display = show ? 'none' : 'block';
+  if (spinner) spinner.hidden = !show;
+  if (main) main.hidden = show;
 }
 
 function showError(message) {
@@ -123,8 +123,13 @@ function updateKorbTabVisibility() {
   const count = getKorbCount();
   const btn = document.getElementById('korb-tab-btn');
   const badge = document.getElementById('korb-badge');
-  if (btn) btn.style.display = count > 0 ? '' : 'none';
+  if (btn) btn.hidden = count <= 0;
   if (badge) badge.textContent = String(count);
+
+  // Prevent hidden active tab when the last saved record is removed.
+  if (count === 0 && getState().activeTab === 'korb') {
+    window.location.hash = '#archiv';
+  }
 
   // Force re-render of Korb view if it's already rendered
   if (renderedTabs.has('korb')) {

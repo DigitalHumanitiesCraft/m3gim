@@ -1,6 +1,6 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """
-M³GIM Validierung — Step 2 der Pipeline.
+MÂ³GIM Validierung â€” Step 2 der Pipeline.
 
 Prueft die Google Sheets Excel-Exporte und erzeugt einen Markdown-Report.
 Normalisiert Werte vor der Validierung (.lower().strip(), Datetime-Artefakte).
@@ -39,7 +39,7 @@ SIGNATUR_PATTERNS = {
 }
 
 # ---------------------------------------------------------------------------
-# Kontrollierte Vokabulare (Iteration 2 — erweitert)
+# Kontrollierte Vokabulare (Iteration 2 â€” erweitert)
 # ---------------------------------------------------------------------------
 
 VOCAB = {
@@ -52,7 +52,7 @@ VOCAB = {
         "konvolut", "dokument", "noten", "sonstiges", "repertoireliste"
     ],
     "bearbeitungsstand": [
-        "vollständig", "vollstaendig", "in bearbeitung", "offen"
+        "vollstÃ¤ndig", "vollstaendig", "in bearbeitung", "offen"
     ],
     "datierungsevidenz": [
         "aus_dokument", "erschlossen", "extern", "unbekannt"
@@ -75,9 +75,9 @@ VOCAB = {
 # Komposit-Typen die als gueltig akzeptiert werden
 KOMPOSIT_TYPEN = [
     "ort,datum", "ort, datum",
-    "ausgaben,waehrung", "ausgaben, waehrung", "ausgaben, währung",
-    "einnahmen,waehrung", "einnahmen, waehrung", "einnahmen, währung",
-    "summe,waehrung", "summe, waehrung", "summe, währung",
+    "ausgaben,waehrung", "ausgaben, waehrung", "ausgaben, wÃ¤hrung",
+    "einnahmen,waehrung", "einnahmen, waehrung", "einnahmen, wÃ¤hrung",
+    "summe,waehrung", "summe, waehrung", "summe, wÃ¤hrung",
     "ereignis,ort,datum", "ereignis, ort, datum"
 ]
 
@@ -98,7 +98,7 @@ DATE_PATTERN = re.compile(
 
 HEADER_SHIFTS = {
     "organisationsindex": {
-        # "Graz" als Header der name-Spalte → korrigieren
+        # "Graz" als Header der name-Spalte â†’ korrigieren
         "expected_columns": ["m3gim_id", "name", "wikidata_id", "ort", "assoziierte_person", "anmerkung"],
     },
     "ortsindex": {
@@ -138,7 +138,7 @@ def clean_date(value) -> str | None:
     if pd.isna(value):
         return None
     s = str(value).strip()
-    # Excel-Datetime-Artefakt: "1958-04-18 00:00:00" → "1958-04-18"
+    # Excel-Datetime-Artefakt: "1958-04-18 00:00:00" â†’ "1958-04-18"
     s = re.sub(r'\s+00:00:00$', '', s)
     if s == "":
         return None
@@ -203,7 +203,7 @@ def load_index(name: str) -> pd.DataFrame | None:
             # Pruefen ob erste Zeile wie ein Datenwert aussieht (nicht wie ein Header)
             first_val = str(df.columns[1]) if len(df.columns) > 1 else ""
             if first_val and first_val not in ["name", "titel", "ort", "m3gim_id"]:
-                # Header ist verschoben — erste Zeile ist eigentlich Daten
+                # Header ist verschoben â€” erste Zeile ist eigentlich Daten
                 old_headers = list(df.columns)
                 df.columns = expected[:len(df.columns)]
                 # Alte Header als erste Datenzeile einfuegen
@@ -221,7 +221,7 @@ def validate_objekte(df: pd.DataFrame) -> list[ValidationIssue]:
     """Validiert die Objekttabelle"""
     issues = []
 
-    # Eindeutigkeit Signaturen — Konvolute duerfen gleiche archivsignatur haben
+    # Eindeutigkeit Signaturen â€” Konvolute duerfen gleiche archivsignatur haben
     # (unterschieden durch Folio-Spalte). Nur echte Duplikate (gleiche Signatur
     # UND gleiche Folio) sind Fehler.
     folio_col = None
@@ -410,44 +410,98 @@ def validate_verknuepfungen(df: pd.DataFrame, valid_signaturen: set,
 # ---------------------------------------------------------------------------
 
 def generate_report(issues: list[ValidationIssue], stats: dict) -> str:
-    """Erzeugt Markdown-Report"""
+    """Erzeugt den Validierungsreport im kompakten, vollstaendigen Format."""
     now = datetime.now().strftime("%Y-%m-%d %H:%M")
 
     errors = [i for i in issues if i.level == "ERROR"]
     warnings = [i for i in issues if i.level == "WARNING"]
 
+    by_code_warning = {}
+    for w in warnings:
+        key = (w.code, w.table)
+        by_code_warning[key] = by_code_warning.get(key, 0) + 1
+
     status = "Validierung erfolgreich" if len(errors) == 0 else f"{len(errors)} Fehler muessen behoben werden"
 
-    report = f"""# M³GIM Validierungsreport
+    lines = []
+    lines.append("# M3GIM Validierungsreport")
+    lines.append("")
+    lines.append(f"> Generiert: {now}")
+    lines.append("")
 
-**Datum:** {now}
+    lines.append("## Executive Summary")
+    lines.append("")
+    lines.append(f"- Status: **{status}**")
+    lines.append(f"- Fehler gesamt: **{len(errors)}**")
+    lines.append(f"- Warnungen gesamt: **{len(warnings)}**")
+    lines.append(f"- Objekte geprueft: **{stats.get('objekte', 0)}**")
+    lines.append(f"- Verknuepfungen geprueft: **{stats.get('verknuepfungen', 0)}**")
+    lines.append(f"- Geladene Indizes: **{', '.join(stats.get('indices_loaded', []))}**")
+    lines.append("")
 
-## Zusammenfassung
-
-- **Objekte:** {stats.get('objekte', 0)} Zeilen, {len([i for i in errors if i.table == 'Objekte'])} Fehler, {len([i for i in warnings if i.table == 'Objekte'])} Warnungen
-- **Verknuepfungen:** {stats.get('verknuepfungen', 0)} Zeilen, {len([i for i in errors if i.table == 'Verknuepfungen'])} Fehler, {len([i for i in warnings if i.table == 'Verknuepfungen'])} Warnungen
-- **Indizes geladen:** {', '.join(stats.get('indices_loaded', []))}
-
-**Status:** {status}
-
-"""
+    lines.append("## Kennzahlen")
+    lines.append("")
+    lines.append("| Bereich | Fehler | Warnungen |")
+    lines.append("|---|---|---|")
+    lines.append(
+        f"| Objekte | {len([i for i in errors if i.table == 'Objekte'])} | "
+        f"{len([i for i in warnings if i.table == 'Objekte'])} |"
+    )
+    lines.append(
+        f"| Verknuepfungen | {len([i for i in errors if i.table == 'Verknuepfungen'])} | "
+        f"{len([i for i in warnings if i.table == 'Verknuepfungen'])} |"
+    )
+    lines.append(
+        f"| Indizes/sonstige | {len([i for i in errors if i.table not in {'Objekte', 'Verknuepfungen'}])} | "
+        f"{len([i for i in warnings if i.table not in {'Objekte', 'Verknuepfungen'}])} |"
+    )
 
     if errors:
-        report += "---\n\n## Fehler (blockieren Export)\n\n"
+        lines.append("")
+        lines.append("## Blocker (Fehler)")
+        lines.append("")
         for issue in errors:
-            report += f"- **{issue.code} {issue.table} Zeile {issue.row}:** {issue.field} = `{issue.value}` — {issue.message}\n"
+            lines.append(
+                f"- **{issue.code} {issue.table} Zeile {issue.row}:** "
+                f"{issue.field} = `{issue.value}` -> {issue.message}"
+            )
 
+    lines.append("")
+    lines.append("## Warnungen nach Kategorie")
+    lines.append("")
+    if by_code_warning:
+        lines.append("| Code | Tabelle | Anzahl |")
+        lines.append("|---|---|---|")
+        for (code, table), count in sorted(by_code_warning.items(), key=lambda x: (-x[1], x[0][0], x[0][1])):
+            lines.append(f"| {code} | {table} | {count} |")
+    else:
+        lines.append("- Keine Warnungen vorhanden.")
+
+    lines.append("")
+    lines.append("## Vollstaendige Fehlerliste")
+    lines.append("")
+    if errors:
+        for issue in errors:
+            lines.append(
+                f"- **{issue.code} {issue.table} Zeile {issue.row}:** "
+                f"{issue.field} = `{issue.value}` -> {issue.message}"
+            )
+    else:
+        lines.append("- Keine Fehler.")
+
+    lines.append("")
+    lines.append("## Vollstaendige Warnungsliste")
+    lines.append("")
     if warnings:
-        report += "\n---\n\n## Warnungen (Export moeglich)\n\n"
         for issue in warnings:
-            report += f"- **{issue.code} {issue.table} Zeile {issue.row}:** {issue.field} = `{issue.value}` — {issue.message}\n"
+            lines.append(
+                f"- **{issue.code} {issue.table} Zeile {issue.row}:** "
+                f"{issue.field} = `{issue.value}` -> {issue.message}"
+            )
+    else:
+        lines.append("- Keine Warnungen.")
 
-    if not errors and not warnings:
-        report += "---\n\n**Keine Probleme gefunden.**\n"
-
-    return report
-
-
+    return "\n".join(lines)
 # ---------------------------------------------------------------------------
 # Hauptfunktion
 # ---------------------------------------------------------------------------
@@ -455,7 +509,7 @@ def generate_report(issues: list[ValidationIssue], stats: dict) -> str:
 def main():
     """Hauptfunktion"""
     print("=" * 60)
-    print("M³GIM Validierung (Iteration 2)")
+    print("MÂ³GIM Validierung (Iteration 2)")
     print("=" * 60)
 
     all_issues = []
@@ -496,9 +550,13 @@ def main():
 
     # Verknuepfungen laden und validieren
     # Versuche beide Schreibweisen (mit und ohne Umlaut)
-    verk_path = SHEETS_DIR / "M3GIM-Verknüpfungen.xlsx"
-    if not verk_path.exists():
-        verk_path = SHEETS_DIR / "M3GIM-Verknuepfungen.xlsx"
+    verk_candidates = sorted(
+        set(
+            list(SHEETS_DIR.glob("M3GIM-Verkn*pfungen.xlsx"))
+            + list(SHEETS_DIR.glob("M3GIM-*Verkn*pfungen*.xlsx"))
+        )
+    )
+    verk_path = verk_candidates[0] if verk_candidates else SHEETS_DIR / "M3GIM-Verknuepfungen.xlsx"
     if verk_path.exists():
         print(f"Validiere {verk_path.name}...")
         df_verk = pd.read_excel(verk_path)
@@ -534,3 +592,4 @@ def main():
 
 if __name__ == "__main__":
     exit(main())
+
