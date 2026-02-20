@@ -101,11 +101,20 @@ function buildToolbar() {
     ),
   );
 
+  // Reset all filters button (hidden when no filters active)
+  const resetBtn = el('button', {
+    className: 'archiv-reset',
+    id: 'archiv-reset-btn',
+    title: 'Alle Filter zur\u00fccksetzen',
+    onClick: () => resetAllFilters(),
+  }, '\u00d7 Zur\u00fccksetzen');
+  resetBtn.hidden = true;
+
   const countEl = el('span', { className: 'archiv-count' });
   countEl.id = 'archiv-count';
   countEl.textContent = `${store.allRecords.length} Objekte \u00b7 ${store.konvolute.size} Konvolute`;
 
-  return el('div', { className: 'archiv-toolbar' }, toggle, search, typeSelect, personCombobox, groupingToggle, countEl);
+  return el('div', { className: 'archiv-toolbar' }, toggle, search, typeSelect, personCombobox, groupingToggle, resetBtn, countEl);
 }
 
 function buildPersonCombobox(personEntries) {
@@ -276,6 +285,22 @@ function renderActiveView() {
   }
 }
 
+function resetAllFilters() {
+  currentSearch = '';
+  currentDocType = '';
+  currentPerson = '';
+  // Reset UI elements
+  const searchInput = container?.querySelector('.archiv-search');
+  const typeSelect = container?.querySelector('.archiv-select');
+  const personInput = container?.querySelector('.archiv-combobox__input');
+  const personClear = container?.querySelector('.archiv-combobox__clear');
+  if (searchInput) searchInput.value = '';
+  if (typeSelect) typeSelect.value = '';
+  if (personInput) personInput.value = '';
+  if (personClear) personClear.style.display = 'none';
+  applyFilters();
+}
+
 function applyFilters() {
   const filters = { search: currentSearch, docType: currentDocType, sort: currentSort, person: currentPerson };
   let filteredCount;
@@ -285,6 +310,12 @@ function applyFilters() {
     filteredCount = updateChronikView(filters);
   }
   updateCounter(filteredCount);
+
+  // Show/hide reset button
+  const resetBtn = document.getElementById('archiv-reset-btn');
+  if (resetBtn) {
+    resetBtn.hidden = !(currentSearch || currentDocType || currentPerson);
+  }
 }
 
 function updateCounter(filteredCount) {

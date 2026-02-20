@@ -108,6 +108,7 @@ code, .mono {
 #main-content {
   flex: 1;
   overflow: hidden;
+  position: relative;
 }
 
 .app-footer {
@@ -127,10 +128,11 @@ code, .mono {
   color: var(--color-text-secondary);
 }
 
-/* Tab Content Sections */
+/* Tab Content Sections — absolute fill so height: 100% resolves reliably */
 .tab-content {
   display: none;
-  height: 100%;
+  position: absolute;
+  inset: 0;
   overflow-y: auto;
   padding: var(--space-6);
 }
