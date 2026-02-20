@@ -11,12 +11,13 @@ Stand: 2026-02-20
 | # | Dokument | Inhalt |
 |---|---|---|
 | 01 | [Projekt](01-projekt.md) | Projektkern, Forschungsfragen, Mobilitätstypen, Meilensteine |
-| 02 | [Quellenbestand](02-quellenbestand.md) | 283 Objekte, 3 Bestandsgruppen, Datenqualität |
-| 03 | [Datenmodell](03-datenmodell.md) | Dreischichtenmodell v2.4, Google Sheets, Vokabulare, Entitätsindizes |
-| 04 | [Architektur](04-architektur.md) | Pipeline (4 Python-Scripts), JSON-LD/RiC-O, Frontend, CI/CD |
+| 02 | [Quellenbestand](02-quellenbestand.md) | 282 Objekte, Konvolute, Verknüpfungen, Datenqualität |
+| 03 | [Datenmodell](03-datenmodell.md) | Dreischichtenmodell v2.5, Konvolut-Hierarchie, Vokabulare, String-Matching |
+| 04 | [Architektur](04-architektur.md) | Pipeline (6 Python-Scripts), Normalisierung, JSON-LD/RiC-O, CI/CD |
 | 05 | [Design-System](05-design-system.md) | Scholarly Elegance, Farbsystem, Typografie, Layout |
 | 06 | [Visualisierungen](06-visualisierungen.md) | 4 D3.js-Vis, Forschungshypothesen, Evaluation |
 | 07 | [Entscheidungen](07-entscheidungen.md) | 25 finale + 3 offene Entscheidungen, Tech Schulden, Prozesswissen |
+| — | [Journal](journal.md) | Arbeitstagebuch, alle Sessions kompakt dokumentiert |
 
 ---
 
