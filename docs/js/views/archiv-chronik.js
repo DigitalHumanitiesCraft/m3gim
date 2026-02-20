@@ -4,7 +4,7 @@
  */
 
 import { el, clear } from '../utils/dom.js';
-import { formatSignatur, getDocTypeId, truncate, ensureArray } from '../utils/format.js';
+import { formatSignatur, formatChildSignatur, getDocTypeId, truncate, ensureArray } from '../utils/format.js';
 import { extractYear } from '../utils/date-parser.js';
 import { DOKUMENTTYP_LABELS } from '../data/constants.js';
 import { buildInlineDetail } from './archiv-inline-detail.js';
@@ -117,7 +117,11 @@ export function updateChronikView(filters) {
 
         // Record rows within this location
         for (const r of locRecords) {
-          const sig = formatSignatur(r['rico:identifier']);
+          const konvolutId = store.childToKonvolut?.get(r['@id']);
+          const parentSig = konvolutId ? store.konvolute.get(konvolutId)?.['rico:identifier'] : null;
+          const sig = parentSig
+            ? formatChildSignatur(r['rico:identifier'], parentSig)
+            : formatSignatur(r['rico:identifier']);
           const docType = getDocTypeId(r);
           const docLabel = DOKUMENTTYP_LABELS[docType] || '';
           const agents = ensureArray(r['rico:hasOrHadAgent']);

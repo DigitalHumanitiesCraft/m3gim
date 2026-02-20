@@ -307,6 +307,28 @@ def decompose_komposit_typ(typ: str) -> list[str]:
     return [p for p in parts if p not in ["waehrung", "währung"]]
 
 
+def decompose_komposit_value(name: str, typen: list[str]) -> dict[str, str]:
+    """Zerlegt einen Komposit-Wert in Einzelwerte fuer die Typen.
+
+    Bei 'ort,datum'-Kompositen wie 'München, 1952-12-17':
+    → {'ort': 'München', 'datum': '1952-12-17'}
+
+    Fallback: gleicher Wert fuer alle Typen.
+    """
+    result = {t: name for t in typen}
+    if not name or len(typen) < 2:
+        return result
+
+    # Pattern: "Ortsname, YYYY..." (Ort + Datum)
+    if 'ort' in typen and 'datum' in typen:
+        m = re.match(r'^(.+?),\s*(\d{4}.*)$', name)
+        if m:
+            result['ort'] = m.group(1).strip()
+            result['datum'] = clean_date(m.group(2).strip())
+
+    return result
+
+
 def process_verknuepfungen(df: pd.DataFrame, indices: dict) -> dict:
     """Verarbeitet Verknuepfungen und gruppiert nach Signatur.
 
@@ -337,7 +359,7 @@ def process_verknuepfungen(df: pd.DataFrame, indices: dict) -> dict:
 
         typ = normalize_lower(row.get('typ'))
         name = normalize_str(row.get('name'))
-        rolle = normalize_str(row.get('rolle'))
+        rolle = normalize_lower(row.get('rolle'))
         datum = clean_date(row.get('datum') if 'datum' in df.columns else None)
         anmerkung = normalize_str(row.get('anmerkung'))
 
@@ -346,13 +368,16 @@ def process_verknuepfungen(df: pd.DataFrame, indices: dict) -> dict:
 
         # Komposit-Typen decomponieren
         typen = decompose_komposit_typ(typ) if "," in typ else [typ]
+        # Komposit-Werte decomponieren (z.B. "München, 1952-12-17" → Ort + Datum)
+        decomposed = decompose_komposit_value(name, typen) if len(typen) > 1 else {}
 
         for t in typen:
+            rel_name = decomposed.get(t, name) if decomposed else name
             rel = {
                 "typ": t,
-                "name": name,
+                "name": rel_name,
                 "rolle": rolle,
-                "datum": datum,
+                "datum": decomposed.get('datum', datum) if t == 'datum' else datum,
                 "anmerkung": anmerkung
             }
 
@@ -440,7 +465,9 @@ def add_relations_to_records(records: list, relations: dict):
                 roles.append({"name": name, "role": rel.get("rolle")})
 
             elif t == "datum":
-                dates.append(name)
+                date_val = clean_date(rel.get("datum") or name)
+                if date_val:
+                    dates.append(date_val)
 
             elif t == "detail":
                 # Details als Key-Value-Paar

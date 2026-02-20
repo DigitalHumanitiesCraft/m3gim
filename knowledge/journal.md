@@ -209,4 +209,19 @@
 
 ---
 
+## 2026-02-20 — Session 9: Aufgabenkatalog — Pipeline-Fix + Quick-Wins + Features
+
+### Milestone 1: Pipeline-Normalisierung
+
+**3 Bugs in transform.py gefixt und verifiziert:**
+1. **Rollen-Normalisierung**: `normalize_str()` → `normalize_lower()` auf Zeile 340 — Rollen waren gemischt-case ("Dirigent" vs "dirigent"), jetzt konsistent lowercase
+2. **Datums-Bereinigung**: `dates.append(name)` → `dates.append(clean_date(rel.get("datum") or name))` — Timestamps ("1959-10-28 00:00:00") in `rico:isAssociatedWithDate` bereinigt
+3. **Ort/Datum-Decomposition**: Neue Funktion `decompose_komposit_value()` — Komposit-Werte ("Muenchen, 1952-12-17") werden in separate Ort- und Datum-Relationen zerlegt
+
+**Verifikation:** 0 Grossbuchstaben-Rollen, 0 Timestamps, 0 gemischte Ort/Datum-Strings. 282 Records, 3 Konvolute, 1280 Verknuepfungen.
+
+**Zusaetzlich:** `archiv-chronik.js` nutzt jetzt `formatChildSignatur()` fuer Konvolut-Kinder (Chronik-Signaturen waren nicht gekuerzt).
+
+---
+
 Siehe auch: [→ Projekt](01-projekt.md) · [→ Quellenbestand](02-quellenbestand.md) · [→ Architektur](04-architektur.md)
