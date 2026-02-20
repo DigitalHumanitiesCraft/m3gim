@@ -29,7 +29,7 @@
 
 ### Frontend-Module (Ist-Zustand)
 
-- 22 JS-Module unter `docs/js/`
+- 21 JS-Module unter `docs/js/`
 - 9 CSS-Dateien unter `docs/css/`
 - Einstieg: `docs/js/main.js`
 - Routing: `docs/js/ui/router.js` (5 Tabs: archiv, indizes, matrix, kosmos, korb)

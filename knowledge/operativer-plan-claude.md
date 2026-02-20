@@ -13,7 +13,7 @@
 
 - Pipeline Iteration 2 lauffaehig
 - Pipeline-Fix: Bearbeitungsstand-Spalte normalisiert, Werte gemappt (Session 10)
-- Frontend-Refactor auf modulare Struktur (22 Module, 9 CSS)
+- Frontend-Refactor auf modulare Struktur (21 Module, 9 CSS)
 - Archiv UX: Spalten-Sortierung, Autocomplete-Personenfilter, erweiterte Suche, Bearbeitungsstand-Markierung
 - Indizes Explorer: Facettensuche, Viewport-Fix, Detail-Begrenzung, Cross-Navigation
 - Wissenskorb: Bookmark-Icons, Korb-Tab, sessionStorage-Prototyp

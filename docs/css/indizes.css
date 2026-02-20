@@ -1,5 +1,11 @@
 /* M³GIM Indizes — 4-Grid Layout */
 
+/* Tab container override: disable outer scroll so inner grids control overflow */
+#tab-indizes.tab-content {
+  overflow: hidden;
+  padding: 0;
+}
+
 .idx-page {
   padding: var(--space-3) var(--space-4);
   height: 100%;
