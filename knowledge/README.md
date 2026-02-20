@@ -26,6 +26,8 @@
 ## Prozess
 
 - [Operativer Plan](Prozess/Operativer%20Plan.md) — Umsetzungsstand, Priorisierung, naechste Schritte
+- [Entscheidungen](Prozess/Entscheidungen.md) — 30 Architekturentscheidungen (E-01–E-30), Prozesswissen, Learnings
+- [Datenqualitaet-Baseline](Prozess/Datenqualitaet-Baseline.md) — Audit-Ergebnisse Feb 2026, Handlungsbedarfe
 
 ## Steuerung
 
@@ -37,10 +39,6 @@
 - [Projektkontext](projekt-kontext.md) — Kompakter Projektsteckbrief
 - [Journal Volltext](appendices/journal-volltext.md) — Arbeitsjournal Sessions 1–15
 - [Meeting 2026-02-24](appendices/meeting-2026-02-24.md) — Volltext Kick-off-Vorbereitung
-
-## Archiv
-
-- Vor-Refactor-Sicherung: `_archive/2026-02-20-pre-kb-refactor/`
 
 ## Pflegehinweis
 

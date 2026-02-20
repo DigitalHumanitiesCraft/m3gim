@@ -109,10 +109,52 @@ Feld in der Erfassungstabelle, das die Qualitaet der Datierung dokumentiert:
 
 ### m3gim-Erweiterung
 
-- **Klassen:** `m3gim:MusicalWork`, `m3gim:Performance`
-- **Properties:** `m3gim:hasPerformanceRole`, `m3gim:mentions`, `m3gim:hasProcessingStatus`, `m3gim:hasDocumentType`
-- **Vokabulare:** 11 Rollen (SKOS), 25 Dokumenttypen (SKOS)
-- Erweiterung dort, wo RiC-O fachlich nicht ausreicht (inhaltliche Rollen, Performanzbezug, Erwaehnungen)
+Namespace: `https://dhcraft.org/m3gim/vocab#` (Prefix: `m3gim`)
+
+RiC-O deckt archivalische Erschliessung ab, nicht aber: inhaltliche Rollen (wer wird im Dokument erwaehnt, wer hat dirigiert), Musikwerke (kein Typ fuer kuenstlerische Werke), Auffuehrungen (spezifische Events mit Rollen und Programm) und Bearbeitungsstand (Workflow-Status).
+
+**Klassen:**
+
+- `m3gim:MusicalWork` (Oberklasse: `rico:Thing`) — Musikalisches Werk (Oper, Lied, Konzert). Identifikation ueber `rico:identifier` (Wikidata-URI), Bezeichnung ueber `rico:title`.
+- `m3gim:Performance` (Oberklasse: `rico:Event`) — Auffuehrungsereignis. Verknuepft mit Werk (`m3gim:performanceOf`), Ort (`rico:hasOrHadLocation`), Datum (`rico:isAssociatedWithDate`), Mitwirkende (`m3gim:hasPerformer`).
+
+**Object Properties:**
+
+- `m3gim:mentionedIn` / `m3gim:mentions` — Person wird im Dokument inhaltlich erwaehnt (nicht als Erzeuger/Autor)
+- `m3gim:hasPerformer` — Person wirkt bei Auffuehrung mit
+- `m3gim:performanceOf` — Auffuehrung eines bestimmten Werks
+
+**Datatype Properties:**
+
+- `m3gim:bearbeitungsstand` — Projektinterner Bearbeitungsstand (xsd:string)
+
+**11 PerformanceRoles** (SKOS ConceptScheme, Namespace `m3gim-role`):
+
+| Kategorie | Rollen |
+|---|---|
+| Archivalisch-inhaltlich | erwaehnt, absender, empfaenger, widmungsempfaenger |
+| Kuenstlerisch | dirigent, solistin, regisseur, komponist, saenger |
+| Institutionell | intendant, mitglied |
+
+**25 DocumentaryFormTypes** (SKOS ConceptScheme, Namespace `m3gim-dft`):
+brief, vertrag, programmheft, plakat, kritik, fotografie, telegramm, postkarte, urkunde, zeitungsausschnitt, notiz, biographie, visitenkarte, quittung, typoskript, photokopie, rezension, tagebuch, lebenslauf, ausweis, noten, sonstiges, konvolut, tontraeger, dokument
+
+**JSON-LD Context (7 Prefixe):**
+
+| Prefix | Namespace |
+|---|---|
+| rico | `https://www.ica.org/standards/RiC/ontology#` |
+| m3gim | `https://dhcraft.org/m3gim/vocab#` |
+| m3gim-dft | `https://dhcraft.org/m3gim/documentaryFormTypes#` |
+| m3gim-role | `https://dhcraft.org/m3gim/roles#` |
+| wd | `http://www.wikidata.org/entity/` |
+| skos | `http://www.w3.org/2004/02/skos/core#` |
+| xsd | `http://www.w3.org/2001/XMLSchema#` |
+
+**Was kommt woher:**
+
+- RiC-O liefert: Bestand/Konvolut/Folio-Hierarchie, archivalische Beschreibung, Agenten-Rollen (Creator, Author, Accumulator), Orts-/Datumsverknuepfung, thematische Verknuepfung, Dokumenttyp-Zuordnung
+- m3gim ergaenzt: Inhaltliche Rollen, Musikwerke, Auffuehrungen, 25 Dokumenttypen, Bearbeitungsstand
 
 ### Noch nicht modelliert (Handreichung → Pipeline)
 

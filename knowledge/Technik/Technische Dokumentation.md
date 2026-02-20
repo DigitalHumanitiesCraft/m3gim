@@ -70,14 +70,52 @@
 - Bearbeitungsstand-Werte: `vollstaendig/Erledigt -> abgeschlossen`, `begonnen -> begonnen`, `zurueckgestellt -> zurueckgestellt`
 - Store: `unprocessedIds` (Set) — Records ohne Links UND ohne Bearbeitungsstand
 
+## Store-Struktur (aus loader.js)
+
+```
+store = {
+  fonds,                           // Fonds-Node (RecordSet mit type=Fonds)
+  konvolute: Map<id, RecordSet>,   // 3 Eintraege
+  records: Map<id, Record>,        // Alle 282 Records inkl. Folios
+  allRecords: Array<Record>,       // 279 (Folios gefiltert)
+  byYear: Map<year, Record[]>,
+  byDocType: Map<typeId, Record[]>,
+  bySignatur: Map<sig, Record>,
+  persons: Map<name, {records, roles, kategorie, wikidata}>,
+  organizations: Map<name, {records, roles, wikidata}>,
+  locations: Map<name, {records, roles}>,
+  works: Map<name, {records, komponist, wikidata}>,
+  konvolutChildren: Map<konvolutId, childIds[]>,
+  childToKonvolut: Map<childId, konvolutId>,
+  konvolutMeta: Map<konvolutId, {title, dateDisplay, childCount, ...}>,
+  folioIds: Set<folioId>,
+  recordCount, konvolutCount, exportDate
+}
+```
+
+Archiv und Indizes lesen direkt aus `m3gim.jsonld` (via Store), nicht aus separaten View-JSONs.
+
+## Dateien in docs/data/
+
+| Datei | Format | Status |
+|-------|--------|--------|
+| `m3gim.jsonld` | JSON-LD | Primaere Datenquelle fuer Archiv + Indizes |
+| `matrix.json` | JSON | Personen × Zeitraeume × Kategorien (Matrix-View) |
+| `kosmos.json` | JSON | Zentrum + Komponisten + Werke (Kosmos-View) |
+| `partitur.json` | JSON | Legacy — wird erzeugt, aber nicht konsumiert |
+| `sankey.json` | JSON | Legacy — wird erzeugt, aber nicht konsumiert |
+
 ## Dokumentation-vs-Code: verbindliche Klarstellungen
 
 - `reconcile.py` ist geplant, aber im Repository derzeit nicht vorhanden.
-- `partitur.json` und `sankey.json` werden erzeugt, im aktuellen Frontend jedoch nicht als aktive Hauptansichten genutzt.
+- `partitur.json` und `sankey.json` werden erzeugt, im aktuellen Frontend jedoch nicht konsumiert (Legacy).
 - Historische Vite-/package.json-Referenzen gelten nicht als kanonischer Laufzeitpfad.
+- `migrate.py` wurde in Session 15 entfernt (Legacy-Migration abgeschlossen).
 
 ## Schnittstellenvertrag
 
 - Kanonische Systemaussagen fuer Architekturentscheidungen stehen in dieser Datei.
-- Detailmapping fuer Ontologie und Datenvokabulare steht in `knowledge/datenmodell-ontologie.md`.
-- Operative Priorisierung und offene Arbeiten stehen in `knowledge/operativer-plan-claude.md`.
+- Detailmapping fuer Ontologie und Datenvokabulare steht in `knowledge/Daten/Datenmodell und Ontologie.md`.
+- Operative Priorisierung und offene Arbeiten stehen in `knowledge/Prozess/Operativer Plan.md`.
+- Architekturentscheidungen (E-01 bis E-30) stehen in `knowledge/Prozess/Entscheidungen.md`.
+- Datenqualitaets-Baseline steht in `knowledge/Prozess/Datenqualitaet-Baseline.md`.
