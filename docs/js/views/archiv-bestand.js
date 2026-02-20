@@ -299,11 +299,15 @@ function renderRows(items) {
       el('td', { className: 'archiv-col-typ' },
         item.isKonvolut
           ? el('span', { className: 'badge badge--konvolut-struct' }, `Konvolut (${childCount})`)
-          : docLabel && docType !== 'konvolut'
-            ? el('span', { className: `badge badge--${docType || ''}` }, docLabel)
-            : !item.isKonvolut
-              ? el('span', { className: 'badge badge--unclassified' }, 'Nicht klassifiziert')
-              : el('span')
+          : item.isChild
+            ? (docLabel && docType !== 'konvolut'
+              ? el('span', { className: `badge badge--${docType || ''}` }, docLabel)
+              : el('span', { className: 'badge badge--unclassified' }, 'Nicht klassifiziert'))
+            : isStandaloneKonvolut(r)
+              ? el('span', { className: 'badge badge--konvolut-struct' }, 'Konvolut')
+              : (docLabel
+                ? el('span', { className: `badge badge--${docType || ''}` }, docLabel)
+                : el('span', { className: 'badge badge--unclassified' }, 'Nicht klassifiziert'))
       ),
       el('td', { className: 'archiv-col-datum' },
         el('span', { className: `archiv-datum ${isUndated ? 'archiv-datum--undated' : ''}` }, displayDate)
@@ -344,6 +348,14 @@ function toggleKonvolut(konvolutId) {
 
 function naturalSort(a, b) {
   return a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });
+}
+
+/** Top-level Hauptbestand records are archival units (Konvolute), not single items.
+ *  Plakate (NIM/PL_) and Tonträger (NIM_TT_) are actual single items. */
+function isStandaloneKonvolut(record) {
+  const sig = record['rico:identifier'] || '';
+  if (sig.includes('/PL_') || sig.includes('_TT_')) return false;
+  return true;
 }
 
 /**
