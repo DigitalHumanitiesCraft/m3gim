@@ -28,7 +28,9 @@ docs/data/*.json    → GitHub Pages Frontend
 | reconcile.py | Wikidata-Reconciliation (noch nicht implementiert) | Indizes | Wikidata-IDs |
 | migrate.py | AUGIAS-Export → formatierte Excel (einmalig, abgeschlossen) | AUGIAS-XLSX | Excel |
 
-View-JSONs: `archiv.json`, `matrix.json`, `kosmos.json`, `indizes.json`
+View-JSONs: `matrix.json`, `kosmos.json` (+ Legacy: `partitur.json`, `sankey.json` — nicht im Frontend verwendet)
+
+**Hinweis**: Archiv und Indizes lesen direkt `m3gim.jsonld`, nicht separate View-JSONs.
 
 Details: siehe [`scripts/README.md`](../scripts/README.md)
 
@@ -86,43 +88,71 @@ Mapping: archivsignatur → `rico:identifier`, titel → `rico:title`, entstehun
 
 ## Frontend
 
-Vanilla JS (ES6-Module, kein Framework), D3.js v7 (CDN) fuer Matrix + Kosmos, Lucide Icons (CDN). Offline-first: alle Daten (~500KB) bei Startup geladen, kein Backend. Kein Build-Tool (Vite aus Iteration 1 entfernt) — direkt auf GitHub Pages.
+Vanilla JS (ES6-Module, kein Framework), D3.js v7 (CDN) fuer Matrix + Kosmos, Inline-SVG-Icons (kein Icon-CDN). Offline-first: alle Daten (~500KB) bei Startup geladen, kein Backend. Kein Build-Tool (Vite aus Iteration 1 entfernt) — direkt auf GitHub Pages.
 
-### 4 Tabs
+### Navigation
 
-| Tab | Typ | Datenquelle | Beschreibung |
+- **Header**: Titel + 3 Nav-Links (Über, Projekt, Hilfe)
+- **Tab-Bar**: 4 Daten-Tabs (Archiv, Indizes, Matrix, Kosmos)
+- **Hash-Routing**: `#archiv`, `#indizes`, `#matrix`, `#kosmos`, `#about`, `#projekt`, `#hilfe`
+
+### 4 Daten-Tabs + 3 Info-Seiten
+
+| Tab/Seite | Typ | Datenquelle | Beschreibung |
 |---|---|---|---|
-| **Archiv** | Datengetriebene View | archiv.json | Bestand (Tektonik-Hierarchie) + Chronik (zeitlich-geografisch), Toggle, Inline-Expansion statt Sidebar |
-| **Indizes** | Datengetriebene View | indizes.json | 4-Grid: Personen, Organisationen, Orte, Werke mit Detailansicht |
-| **Matrix** | D3.js Heatmap | matrix.json | Person x 5-Jahres-Periode, Begegnungsintensitaet |
-| **Kosmos** | D3.js Force-Graph | kosmos.json | Radiale Darstellung: Malaniuk → Komponisten → Rollen |
+| **Archiv** | Datengetriebene View | m3gim.jsonld | Bestand + Chronik (Ort/Person/Werk-Gruppierung), Filter, Inline-Expansion |
+| **Indizes** | Datengetriebene View | m3gim.jsonld | 4-Grid: Personen, Organisationen, Orte, Werke mit Detailansicht |
+| **Matrix** | D3.js Heatmap | matrix.json | Person x 5-Jahres-Periode, Kategorie-Filter, Drilldown-Panel |
+| **Kosmos** | D3.js Force-Graph | kosmos.json | Malaniuk → Komponisten → Rollen, Zoom/Pan, Graduated-Circle-Legende |
+| **Über** | Info-Seite | — | Projekttitel, Methodik, Datenstand |
+| **Projekt** | Info-Seite | — | Schichten-Modell, Bestandsgruppen, Pipeline |
+| **Hilfe** | Info-Seite | — | Bedienung, Datumskonventionen, FAQ |
 
-### Modulstruktur
+### Modulstruktur (20 Module)
 
 ```
 docs/js/
-├── main.js              # Einstiegspunkt, Store-Aufbau, Router
+├── main.js              # Einstiegspunkt, Store-Aufbau, Router, Page-Rendering
 ├── data/
-│   ├── loader.js        # Fetch + JSON-Parse
-│   ├── aggregator.js    # buildStore() — Maps, Indizes, Konvolute
-│   └── constants.js     # DOKUMENTTYP_LABELS, PERSONEN_NORMALISIERUNG
+│   ├── loader.js        # Fetch m3gim.jsonld → buildStore()
+│   ├── aggregator.js    # Client-seitige Aggregation für Matrix/Kosmos
+│   └── constants.js     # DOKUMENTTYP_LABELS, PERSONEN_KATEGORIEN, ZEITRAEUME
 ├── ui/
-│   ├── router.js        # Tab-Wechsel, URL-Hash-State
-│   ├── detail-panel.js  # Slide-in Sidebar (fuer Indizes/Matrix/Kosmos)
-│   ├── stats-bar.js     # Header-Statistik-Chips
-│   └── info-modal.js    # Datenstand-Dialog
+│   ├── router.js        # Hash-basierter Router, 4 Tabs + 3 Pages
+│   └── detail-panel.js  # Slide-in Sidebar (für Indizes/Matrix/Kosmos)
 ├── views/
-│   ├── archiv.js              # Orchestrator: Toggle, Filter, Sort
+│   ├── archiv.js              # Orchestrator: Toolbar, Toggle, Filter, Counter
 │   ├── archiv-bestand.js      # Tektonik: Fonds → Konvolute → Objekte
-│   ├── archiv-chronik.js      # Zeitlich-geografische Gruppierung
-│   ├── archiv-inline-detail.js # Shared Detail-Komponente
-│   ├── indizes.js             # 4-Grid mit Detailansicht
-│   ├── matrix.js              # D3.js Heatmap
-│   └── kosmos.js              # D3.js Force-Graph
+│   ├── archiv-chronik.js      # Perioden → Ort/Person/Werk Gruppierung
+│   ├── archiv-inline-detail.js # Shared Detail-Komponente (Metadaten + Chips)
+│   ├── indizes.js             # 4-Grid Index mit Suche und Sortierung
+│   ├── matrix.js              # D3 Heatmap + Drilldown-Panel
+│   ├── kosmos.js              # D3 Force-Graph + Zoom/Pan
+│   ├── about.js               # Über-Seite
+│   ├── projekt.js             # Projekt-Seite (Schichten-Modell)
+│   └── hilfe.js               # Hilfe-Seite (Bedienung, FAQ)
 └── utils/
     ├── dom.js           # el(), clear(), HTML-Helpers
-    └── format.js        # formatSignatur(), formatDate()
+    ├── date-parser.js   # extractYear(), formatDate()
+    └── format.js        # formatSignatur(), formatChildSignatur(), ensureArray()
 ```
+
+**Toter Code** (nicht importiert): `stats-bar.js` — kann entfernt werden.
+
+---
+
+### CSS (8 Dateien)
+
+| Datei | Zweck |
+|-------|-------|
+| `variables.css` | Design Tokens (Farben, Fonts, Spacing, Layout) |
+| `base.css` | Reset, App-Shell, Header-Nav, Footer |
+| `components.css` | Tab-Bar, Detail-Panel, Badges, Spinner, Tooltip |
+| `archiv.css` | Archiv-Tab: Toolbar, Tabelle, Inline-Detail, Chips, Chronik |
+| `indizes.css` | 4-Grid Index-Layout |
+| `matrix.css` | Heatmap + Drilldown |
+| `kosmos.css` | Force-Graph + Legende + Zoom-Reset |
+| `pages.css` | About/Projekt/Hilfe Seiten-Layout |
 
 ---
 

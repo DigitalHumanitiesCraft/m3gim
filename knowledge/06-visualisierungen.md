@@ -6,10 +6,10 @@
 
 ## Übersicht
 
-| Tab | Typ | View-JSON | Forschungsfragen |
+| Tab | Typ | Datenquelle | Forschungsfragen |
 |---|---|---|---|
-| Archiv (Bestand + Chronik) | Datengetriebene View | archiv.json | FF1, FF4 |
-| Indizes | Datengetriebene View | indizes.json | FF1, FF3 |
+| Archiv (Bestand + Chronik) | Datengetriebene View | m3gim.jsonld | FF1, FF4 |
+| Indizes | Datengetriebene View | m3gim.jsonld | FF1, FF3 |
 | Begegnungs-Matrix | D3.js Heatmap | matrix.json | FF1, FF3 |
 | Rollen-Kosmos | D3.js Force-Graph | kosmos.json | FF2 |
 
@@ -19,9 +19,9 @@
 
 Zwei umschaltbare Perspektiven auf denselben Datenbestand:
 
-**Bestand (Tektonik):** Hierarchische Darstellung Fonds → Konvolute → Objekte. Konvolute sind aufklappbar. Jeder Record kann inline expandiert werden (shared `buildInlineDetail()`-Komponente). Suchleiste, Dokumenttyp-Filter, Sortierung (Signatur/Datum/Titel).
+**Bestand (Tektonik):** Hierarchische Darstellung Fonds → Konvolute → Objekte. Konvolute aufklappbar. Inline-Expansion (shared `buildInlineDetail()`). Suchleiste, Dokumenttyp-Filter, Personen-Filter, Sortierung (Signatur/Datum/Titel). Folio-Differenzierung bei identischen Titeln. Dynamischer Counter.
 
-**Chronik (Mobilität):** Zeitlich-geografische Gruppierung nach 5-Jahres-Perioden → Orte. Karriere-Notizen pro Periode (z.B. "1945-1949: Graz / Nachkriegszeit"). Records inline expandierbar.
+**Chronik (Mobilität):** Gruppierung nach 5-Jahres-Perioden × Dimension (Ort/Person/Werk, umschaltbar). Karriere-Notizen pro Periode. Agenten-Tooltips. Schicht-2-Hinweise bei fehlenden Verknüpfungen.
 
 Ersetzt die ursprüngliche Mobilitäts-Partitur (6-Spuren-Zeitachse aus Iteration 1, zu komplex für den aktuellen Datenstand).
 
@@ -29,7 +29,7 @@ Ersetzt die ursprüngliche Mobilitäts-Partitur (6-Spuren-Zeitachse aus Iteratio
 
 ## Indizes (4-Grid)
 
-Vier durchsuchbare Index-Karten: Personen, Organisationen, Orte, Werke. Jeder Index mit Suchfeld und Kategorie-Filter. Detail-Panel (Sidebar) zeigt verknüpfte Archiv-Records.
+Vier durchsuchbare Index-Karten: Personen, Organisationen, Orte, Werke. Jeder Index mit Suchfeld und Sortierung. Detail-Panel (Sidebar) zeigt verknüpfte Archiv-Records. Klickbare Chips in Detailansicht navigieren zum entsprechenden Index-Eintrag.
 
 Ersetzt den Karrierefluss/Sankey aus Iteration 1.
 
@@ -37,15 +37,15 @@ Ersetzt den Karrierefluss/Sankey aus Iteration 1.
 
 ## Begegnungs-Matrix (Netzwerk)
 
-Heatmap Person × 5-Jahres-Periode. Intensität = (Briefe × 3) + (Programme/Plakate × 2) + (Sonstige × 1). 6-stufige Farbskala. Personen sortiert nach Kategorien.
+Heatmap Person × 5-Jahres-Periode. Intensität = (Briefe × 3) + (Programme/Plakate × 2) + (Sonstige × 1). 6-stufige Farbskala (Blau). Kategorie-Checkboxen (Dirigent, Regisseur, etc.). Y-Achse zeigt Kategorie-Kürzel: "[D]" Dirigent, "[R]" Regisseur, etc. Zellen-Klick → Drilldown-Panel mit Dokumentliste.
 
-**Kritische Lücke:** Zeitfilter für Phasenvergleiche fehlt.
+**Offene Lücke:** Zeitfilter/Zoom für Phasenvergleiche, Sortieroptionen.
 
 ---
 
 ## Rollen-Kosmos (Repertoire)
 
-Radiale Force-Graph. Zentrum: Malaniuk (50px). Mittlere Bahn: Komponisten. Äußere Bahn: Rollen. Click-to-Focus.
+Radiale Force-Graph. Zentrum: Malaniuk (50px). Mittlere Bahn: Komponisten. Äußere Bahn: Rollen. Click-to-Focus mit Highlight. Zoom/Pan (`d3.zoom()`, 0.3x–3x). Visuelle Legende mit Graduated Circles (Knotengröße = Dokumenthäufigkeit) und Farbkodierung.
 
 **Kritische Datenanforderung:** Rollenname im Anmerkungsfeld der Werk-Verknüpfung.
 

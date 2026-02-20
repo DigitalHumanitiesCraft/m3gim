@@ -1,7 +1,7 @@
 # M³GIM Repository-Zustandsbericht
 
-> Stand: 2026-02-20, Working Tree. Basiert auf Code-Analyse (`git`, `python`, `wc`), nicht auf Dokumentation.
-> Letzter Commit: `0f95b91`. Working Tree hat uncommittete Änderungen (M8 Navigation WIP).
+> Stand: 2026-02-20, nach Session 9 (M7–M11). Basiert auf Code-Analyse, nicht auf Dokumentation.
+> Letzter Commit: `5db70c7` (M10). Working Tree: Knowledge-Updates (M11).
 
 ---
 
@@ -24,11 +24,11 @@
 m3gim/
 ├── docs/                    # GitHub Pages Root = Frontend
 │   ├── index.html           # Single-Page-App (110 Zeilen, committed 127)
-│   ├── css/                 # 7 CSS-Dateien (1681 Zeilen, 36.858 Bytes)
-│   ├── js/                  # 19 ES6-Module in 4 Unterordnern (3103 Zeilen inkl. uncommitted)
+│   ├── css/                 # 8 CSS-Dateien (~1800 Zeilen)
+│   ├── js/                  # 20 ES6-Module in 4 Unterordnern (~3500 Zeilen)
 │   └── data/                # JSON-LD + 4 View-JSONs (505.913 Bytes)
 ├── scripts/                 # Python-Pipeline (5 Scripts + README)
-├── knowledge/               # 13 Markdown-Docs + Journal + README
+├── knowledge/               # 14 Markdown-Docs + Journal + README
 ├── data/                    # Rohdaten + Pipeline-Output
 │   ├── archive-export/      # AUGIAS-Originalexporte (4 XLSX)
 │   ├── google-spreadsheet/  # Google Sheets Exports (6 XLSX)
@@ -54,35 +54,36 @@ m3gim/
 
 **Nicht vorhanden**: `reconcile.py` — in Dokumentation als geplant erwähnt, existiert nicht als Datei.
 
-### Frontend-Modulstruktur (20 Module, ~3300 Zeilen inkl. uncommitted)
+### Frontend-Modulstruktur (20 Module, ~3500 Zeilen)
 
 ```
 docs/js/
-├── main.js                     139 Zeilen  # Einstiegspunkt, DOMContentLoaded → init()
+├── main.js                     ~120 Zeilen # Einstiegspunkt, Store-Aufbau, Page-Rendering
 ├── data/
 │   ├── loader.js               248 Zeilen  # Fetch m3gim.jsonld → buildStore()
 │   ├── aggregator.js           249 Zeilen  # Client-seitige Aggregation für Matrix/Kosmos
-│   └── constants.js            208 Zeilen  # Komponisten, Personen-Kategorien, Dokumenttypen
+│   └── constants.js            208 Zeilen  # Dokumenttypen, Personen-Kategorien, Zeiträume
 ├── ui/
-│   ├── router.js               122 Zeilen  # Hash-basierter Router, 4 Tabs + 3 Pages
-│   ├── stats-bar.js             27 Zeilen  # Header-Statistik-Chips
+│   ├── router.js               ~130 Zeilen # Hash-basierter Router, 4 Tabs + 3 Pages
 │   └── detail-panel.js          52 Zeilen  # Slide-in Sidebar rechts
 ├── utils/
 │   ├── dom.js                   37 Zeilen  # el(tag, attrs, ...children), clear()
 │   ├── date-parser.js           76 Zeilen  # extractYear(), formatDate()
-│   └── format.js                62 Zeilen  # formatSignatur(), formatDocType(), ensureArray()
+│   └── format.js                ~70 Zeilen # formatSignatur(), formatChildSignatur(), ensureArray()
 └── views/
-    ├── archiv.js               191 Zeilen  # Orchestrator: Toolbar, Bestand/Chronik-Toggle
-    ├── archiv-bestand.js       290 Zeilen  # Bestandsansicht (Tabelle mit Konvolut-Hierarchie)
-    ├── archiv-chronik.js       352 Zeilen  # Chronik (Perioden → Ort/Person/Werk)
+    ├── archiv.js               ~200 Zeilen # Orchestrator: Toolbar, Toggle, Filter, Counter
+    ├── archiv-bestand.js       ~310 Zeilen # Bestandsansicht + Folio-Differenzierung
+    ├── archiv-chronik.js       ~378 Zeilen # Chronik: Perioden → Ort/Person/Werk
     ├── archiv-inline-detail.js 279 Zeilen  # Shared Detail-Komponente (Metadaten + Chips)
     ├── indizes.js              297 Zeilen  # 4-Grid Index (Personen, Organisationen, Orte, Werke)
-    ├── matrix.js               252 Zeilen  # D3 Heatmap + Drilldown-Panel
-    ├── kosmos.js               248 Zeilen  # D3 Force-Graph (Komponisten-Netzwerk)
-    ├── about.js                 67 Zeilen  # Über-Seite (uncommitted)
-    ├── projekt.js              130 Zeilen  # Projekt-Seite (uncommitted)
-    └── hilfe.js                133 Zeilen  # Hilfe-Seite (uncommitted)
+    ├── matrix.js               ~261 Zeilen # D3 Heatmap + Drilldown + Kategorie-Kürzel
+    ├── kosmos.js               ~330 Zeilen # D3 Force-Graph + Zoom/Pan + Graduated-Circle-Legende
+    ├── about.js                 67 Zeilen  # Über-Seite
+    ├── projekt.js              130 Zeilen  # Projekt-Seite (Schichten-Modell)
+    └── hilfe.js                133 Zeilen  # Hilfe-Seite (Bedienung, FAQ)
 ```
+
+**Toter Code**: `stats-bar.js` (27 Zeilen) — nicht importiert, kann entfernt werden.
 
 ---
 
@@ -178,7 +179,7 @@ store = {
 
 ## Frontend
 
-### Navigationsstruktur (M8, uncommitted)
+### Navigationsstruktur (M8)
 
 - **Header**: `.app-header` — Titel + Untertitel + Spacer + Nav-Links (Über, Projekt, Hilfe)
 - **Tab-Bar**: 4 Daten-Tabs — Archiv, Indizes, Matrix, Kosmos
@@ -223,18 +224,18 @@ store = {
 | Archiv-Counter | archiv.js:107 | applyFilters | Dynamisch: zeigt "X von Y Objekten" bei aktivem Filter |
 | Page-Navigation | router.js | click | Über/Projekt/Hilfe als eigene Seiten (M8) |
 
-### CSS (8 Dateien, ~1700 Zeilen inkl. uncommitted)
+### CSS (8 Dateien, ~1800 Zeilen)
 
 | Datei | Zeilen | Zweck |
 |-------|--------|-------|
 | `variables.css` | 110 | Design Tokens (6 Farbgruppen, 3 Fonts, 8px-Raster) |
 | `base.css` | ~160 | Reset, App-Shell, Header-Nav, Layout, Scrollbar |
-| `components.css` | ~230 | Tab-Bar, Detail-Panel, Badges, Spinner, Tooltip (Stats/Info entfernt) |
-| `archiv.css` | 601 | Archiv-Tab: Toolbar, View-Toggle, Tabelle, Inline-Detail, Chips, Chronik |
+| `components.css` | ~230 | Tab-Bar, Detail-Panel, Badges, Spinner, Tooltip |
+| `archiv.css` | ~620 | Archiv-Tab: Toolbar, Tabelle, Inline-Detail, Chips, Chronik |
 | `indizes.css` | 243 | 4-Grid Index-Layout |
 | `matrix.css` | 167 | Heatmap + Drilldown |
-| `kosmos.css` | 83 | Force-Graph + Legende |
-| `pages.css` | ~130 | About/Projekt/Hilfe Seiten-Styling (neu, uncommitted) |
+| `kosmos.css` | ~119 | Force-Graph + Legende + Zoom-Reset |
+| `pages.css` | ~130 | About/Projekt/Hilfe Seiten-Styling |
 
 ### CSS-Variablen (aus variables.css)
 
@@ -265,101 +266,59 @@ store = {
 
 ## Dokumentation
 
-### Knowledge-Ordner (15 Dateien)
+### Knowledge-Ordner (16 Dateien)
 
-| Datei | Bytes | Inhalt |
-|-------|-------|--------|
-| `01-projekt.md` | 2.816 | Projektidentität, Scope |
-| `02-quellenbestand.md` | 3.137 | 3 Bestandsgruppen, Zahlen |
-| `03-datenmodell.md` | 4.652 | Datenmodell (Achtung: heißt nicht `03-methodik.md`) |
-| `04-architektur.md` | 5.817 | Tech-Stack, Modulstruktur |
-| `05-design-system.md` | 1.829 | Farben, Typografie |
-| `06-visualisierungen.md` | 3.279 | D3.js-Visualisierungen |
-| `07-entscheidungen.md` | 4.813 | Architekturentscheidungen (ADRs) |
-| `08-ric-o.md` | 7.303 | RiC-O 1.1 Referenz |
-| `09-m3gim-ontology.md` | 6.424 | m3gim-Erweiterungs-Ontologie |
-| `10-datenqualitaet.md` | 7.053 | Erfassungsprobleme, Pipeline-Fixes |
-| `12-zustandsbericht.md` | — | Dieser Bericht |
-| `journal.md` | 16.121 | Arbeitstagebuch (9+ Sessions) |
-| `README.md` | 1.861 | Übersicht über Knowledge-Ordner |
+| Datei | Inhalt |
+|-------|--------|
+| `01-projekt.md` | Projektidentität, Scope, Meilensteine |
+| `02-quellenbestand.md` | 3 Bestandsgruppen, Zahlen |
+| `03-datenmodell.md` | Datenmodell und Erfassungsrichtlinien |
+| `04-architektur.md` | Tech-Stack, Modulstruktur, CSS, Pipeline |
+| `05-design-system.md` | Farbsystem, Typografie, Layout |
+| `06-visualisierungen.md` | 4 Views/Visualisierungen |
+| `07-entscheidungen.md` | 30 Architekturentscheidungen (ADRs) |
+| `08-ric-o.md` | RiC-O 1.1 Referenz |
+| `09-m3gim-ontology.md` | m3gim-Erweiterungs-Ontologie |
+| `10-datenqualitaet.md` | Erfassungsprobleme, Pipeline-Fixes |
+| `11-aufgabenkatalog.md` | 33 Items, 23 DONE, 10 DEFERRED |
+| `12-zustandsbericht.md` | Dieser Bericht |
+| `journal.md` | Arbeitstagebuch (9 Sessions) |
+| `README.md` | Übersicht über Knowledge-Ordner |
 
-**Fehlend**: Es gibt keine `03-methodik.md` (alter Zustandsbericht listete sie). Die tatsächliche `03-datenmodell.md` existiert.
-**Fehlend**: Es gibt keine `11-*.md` (Lücke in der Nummerierung).
+### Bekannte Abweichungen Dokumentation ↔ Code
 
-### Abweichungen Dokumentation ↔ Code
-
-| Abweichung | Was die Doku sagt | Was der Code zeigt |
-|---|---|---|
-| `archiv.json` | Zustandsbericht v1 listet `archiv.json` als View-JSON | Existiert nicht. Archiv-Tab liest direkt `m3gim.jsonld` |
-| `reconcile.py` | Dokumentation als "nächster Schritt" | Existiert nicht als Datei im Repo |
-| Pipeline-Outputs | `build-views.py` erzeugt "4 View-JSONs (archiv, matrix, kosmos, sankey)" | Erzeugt tatsächlich: partitur.json, matrix.json, kosmos.json, sankey.json |
-| Frontend-Module | Alter Zustandsbericht sagt "17 ES6-Module" | Tatsächlich 18 (inkl. about.js, uncommitted) |
-| Verknüpfungen | Alter Bericht sagt "~1280 Verknüpfungen" | Tatsächlich 924 Link-Relationen (Zählung aus JSON-LD) |
-| Counter-Duplikat | Nicht dokumentiert | Bereinigt: Stats-Bar entfernt, archiv-count zeigt dynamische Filterzahl |
-| Info-Modal | `components.css` definiert `.info-modal` Styles | Entfernt (HTML, CSS, JS) — ersetzt durch About/Projekt/Hilfe-Seiten |
-| `03-methodik.md` | Alter Zustandsbericht und MEMORY.md listen diese Datei | Existiert nicht. Tatsächlich: `03-datenmodell.md` |
+| Abweichung | Details |
+|---|---|
+| `reconcile.py` | In Dokumentation als geplant, existiert nicht als Datei |
+| Pipeline-Outputs | `build-views.py` erzeugt `partitur.json` + `sankey.json`, die kein Frontend-Modul konsumiert |
 
 ---
 
 ## Offene Baustellen
 
-### Uncommittete Änderungen (M8 Navigation, komplett)
-
-```
-modified:   docs/index.html               Nav-Links statt Stats-Bar+Info, Page-Sections, Modal entfernt, pages.css
-modified:   docs/js/ui/router.js          PAGES Konstante, Page-Handler, applyState erweitert
-modified:   docs/js/main.js               Page-Imports, Page-Cases in renderTab, setupInfoModal/statsBar entfernt
-modified:   docs/js/views/archiv.js       Dynamischer Counter (updateCounter)
-modified:   docs/js/views/archiv-bestand.js  Return filteredCount
-modified:   docs/js/views/archiv-chronik.js  Return records.length
-modified:   docs/css/base.css             .app-header__nav Styles
-modified:   docs/css/components.css       Stats-Bar, Info-Button, Info-Modal CSS entfernt
-new file:   docs/css/pages.css            Page-Styling (About, Projekt, Hilfe)
-new file:   docs/js/views/about.js        Über-Seite (67 Zeilen)
-new file:   docs/js/views/projekt.js      Projekt-Seite (130 Zeilen)
-new file:   docs/js/views/hilfe.js        Hilfe-Seite (133 Zeilen)
-modified:   knowledge/12-zustandsbericht.md  Dieser Bericht
-```
-
 ### Bugs im Code
 
 1. **m3gim.jsonld** — `UAKUG/NIM/PL_07` ist doppelt im Fonds `rico:hasOrHadPart` (2× referenziert).
 
-**Korrigiert in M8:**
-- ~~kosmos.js:133~~ — Kein Bug. `store` aus Funktionsparameter `renderKosmos(store, container)` wird per Closure korrekt von den D3-Click-Handlern erfasst.
-- ~~archiv.js:107~~ — Counter jetzt dynamisch: `updateCounter()` zeigt "X von Y Objekten" bei aktivem Filter.
-- ~~main.js:107-136~~ — `setupInfoModal()` komplett entfernt, Info-Modal durch Seiten ersetzt.
-
 ### Toter Code
 
-- `stats-bar.js` — 27 Zeilen, nicht mehr importiert (nach M8). Modul existiert noch als Datei.
-- `build-views.py` erzeugt `partitur.json` und `sankey.json`, die kein Frontend-Modul konsumiert
-
-**Bereinigt in M8:**
-- ~~`components.css` `.info-modal`, `.info-btn`, `.stats-bar`~~ — Entfernt
-- ~~`main.js` `setupInfoModal()`, `renderStatsBar()`~~ — Entfernt
-
-### TODOs und FIXMEs im Code
-
-Kein einziger `TODO`, `FIXME`, `HACK` oder `XXX` Kommentar in `docs/js/` oder `docs/css/` oder `scripts/`.
-
-Einziger TODO-Hinweis im Repo:
-- `knowledge/journal.md:88` — "Wikidata-IDs tauchen als Komponisten-Namen in kosmos.json auf [...] — kosmetisch, TODO"
+- `stats-bar.js` — 27 Zeilen, nicht importiert. Kann entfernt werden.
+- `build-views.py` erzeugt `partitur.json` und `sankey.json` (Legacy, nicht konsumiert)
 
 ### Branch-Status
 
 - Branch: `main`
-- 9 Commits ahead of origin (alle unpushed)
+- 13 Commits ahead of origin (alle unpushed)
 - Kein Feature-Branch
-- 2 modified + 1 untracked file (M8 WIP)
 
 ### Nicht implementierte geplante Features
 
-- Wikidata-Reconciliation (`reconcile.py` existiert nicht)
-- ~~About/Projekt/Hilfe-Seiten~~ — Implementiert in M8 (uncommitted)
+Siehe [→ Aufgabenkatalog](11-aufgabenkatalog.md) für detaillierte Liste. Zusammenfassung:
+
+- Wikidata-Reconciliation (`reconcile.py`)
 - Merkliste mit CSV-Export
 - Orts-Hierarchie im Index
-- Matrix-Sortieroptionen
-- Kosmos Zoom/Pan
+- Matrix-Sortieroptionen + Zeitfilter
 - Kosmos Temporaler Slider
 - Erschließungsdashboard
+- Leaflet-Karte

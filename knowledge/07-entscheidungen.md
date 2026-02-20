@@ -1,6 +1,6 @@
 # Entscheidungen, Schulden & Prozesswissen
 
-> 25 finale + 3 offene Architekturentscheidungen. Technische Schulden und Learnings aus Iteration 1.
+> 30 finale + 2 offene Architekturentscheidungen. Technische Schulden und Learnings aus Iteration 1+2.
 
 ---
 
@@ -33,6 +33,11 @@
 | E-23 | Horizontale Toolbar für Visualisierungen |
 | E-24 | Export CSV > JSON-LD > GEXF > GeoJSON |
 | E-25 | Keine präemptive Performance-Optimierung |
+| E-26 | Seiten statt Modals — About/Projekt/Hilfe als bookmarkbare Hash-Routen statt Info-Modal |
+| E-27 | 4 funktionale Farbkategorien: KUG-Blau (Interaktion), Signal-Grün (Verknüpfung), Neutral-Grau (Abwesenheit), Warmer Hintergrund (Struktur) |
+| E-28 | Handreichung als UX-Quelle — Erfassungskonventionen (Schichten-Modell, Datumsformat, Abwesenheits-Semantik) direkt in Frontend-Texte |
+| E-29 | Dynamischer Counter: "X von Y Objekten" bei aktivem Filter, sonst "Y Objekte · Z Konvolute" |
+| E-30 | Stats-Bar entfernt — keine duplizierte Statistik im Header, Info nur kontextuell im Archiv-Tab |
 
 ---
 
@@ -43,6 +48,7 @@
 | ~~Karrierefluss vs. Karte~~ | erledigt | Beide ersetzt: Sankey → Indizes, Karte weiterhin verschoben |
 | Matrix Zeitfilter UI | hoch | Slider, Dropdown, oder Timeline-Brush |
 | ~~Deep Linking~~ | erledigt | Hash-basiert implementiert (router.js) |
+| ~~Navigation-Architektur~~ | erledigt | Seiten statt Modals (E-26) |
 | Wikidata-Reconciliation | hoch | reconcile.py implementieren, Kosmos-View anpassen |
 
 ---
@@ -62,14 +68,16 @@
 
 | Priorität | Feature | Status |
 |---|---|---|
-| Hoch | Matrix Zeitfilter | offen |
-| Hoch | Matrix Kategoriefilter aktivieren | offen |
 | Hoch | Wikidata-Reconciliation (reconcile.py) | offen |
 | Hoch | Export CSV/JSON-LD/GEXF | offen |
+| Hoch | ~~Matrix Kategoriefilter~~ | erledigt (Session 9, M3) |
+| Mittel | Matrix Zeitfilter/Zoom | offen |
 | Mittel | ~~Deep Linking~~ | erledigt (Hash-Router) |
 | Mittel | Cross-Visualization Linking | offen |
+| Mittel | Merkliste + CSV-Export | offen |
 | Niedrig | Leaflet Karte | offen |
 | Niedrig | ~~Kosmos Scroll-Morphing~~ | gestrichen (E-16) |
+| Niedrig | ~~Kosmos Zoom/Pan~~ | erledigt (Session 9, M10) |
 
 ---
 
