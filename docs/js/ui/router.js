@@ -11,10 +11,12 @@ const state = {
 
 let onTabChange = null;
 let onRecordSelect = null;
+let onIndexNavigate = null;
 
-export function initRouter({ onTab, onRecord } = {}) {
+export function initRouter({ onTab, onRecord, onIndex } = {}) {
   onTabChange = onTab;
   onRecordSelect = onRecord;
+  onIndexNavigate = onIndex;
 
   // Set up tab click handlers
   for (const tab of TABS) {
@@ -44,6 +46,14 @@ export function selectRecord(recordId) {
   state.selectedRecord = recordId;
   updateHash();
   if (onRecordSelect) onRecordSelect(recordId);
+}
+
+export function navigateToIndex(gridType, entityName) {
+  state.activeTab = 'indizes';
+  state.selectedRecord = null;
+  updateHash();
+  applyState();
+  if (onIndexNavigate) onIndexNavigate(gridType, entityName);
 }
 
 export function deselectRecord() {

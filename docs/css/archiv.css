@@ -395,6 +395,19 @@
 }
 
 /* Chips (used in inline detail and chronik) */
+.chip--clickable {
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.chip--clickable:hover {
+  background: rgba(0, 74, 143, 0.18);
+}
+
+.chip--werk.chip--clickable:hover {
+  background: rgba(139, 58, 58, 0.18);
+}
+
 .chip {
   display: inline-flex;
   align-items: center;

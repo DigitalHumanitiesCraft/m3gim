@@ -93,6 +93,25 @@ const GRID_CONFIG = {
   },
 };
 
+/**
+ * Expand a specific entry in a grid (called from router navigation).
+ */
+export function expandEntry(gridType, entityName) {
+  if (!gridState[gridType]) return;
+  gridState[gridType].expanded = entityName;
+  gridState[gridType].search = '';
+
+  // Re-render if grids are already in DOM
+  const wrapper = container?.querySelector('.idx-page');
+  if (wrapper) renderAllGrids(wrapper);
+
+  // Scroll to expanded entry after render
+  requestAnimationFrame(() => {
+    const expanded = document.querySelector('.idx-row--expanded');
+    if (expanded) expanded.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  });
+}
+
 export function renderIndizes(storeRef, containerEl) {
   store = storeRef;
   container = containerEl;

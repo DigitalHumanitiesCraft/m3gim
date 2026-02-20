@@ -8,7 +8,7 @@ import { initRouter, getState } from './ui/router.js';
 import { initDetailPanel, showRecord, closePanel } from './ui/detail-panel.js';
 import { renderStatsBar } from './ui/stats-bar.js';
 import { renderArchiv } from './views/archiv.js';
-import { renderIndizes } from './views/indizes.js';
+import { renderIndizes, expandEntry } from './views/indizes.js';
 import { renderMatrix } from './views/matrix.js';
 import { renderKosmos } from './views/kosmos.js';
 
@@ -42,6 +42,10 @@ async function init() {
         if (activeTab === 'archiv') return; // Archiv uses inline expansion
         if (recordId) showRecord(recordId);
         else closePanel();
+      },
+      onIndex: (gridType, entityName) => {
+        renderTab('indizes');
+        expandEntry(gridType, entityName);
       },
     });
 

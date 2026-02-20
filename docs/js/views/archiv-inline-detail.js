@@ -6,6 +6,7 @@
 import { el } from '../utils/dom.js';
 import { formatSignatur, formatDocType, ensureArray, countLinks } from '../utils/format.js';
 import { formatDate } from '../utils/date-parser.js';
+import { navigateToIndex } from '../ui/router.js';
 
 /**
  * Build an inline detail DOM element for a record.
@@ -76,12 +77,12 @@ export function buildInlineDetail(record, store, { onClose } = {}) {
 
   const agents = ensureArray(record['rico:hasOrHadAgent']);
   if (agents.length) {
-    rightCol.appendChild(renderSection(`Personen (${agents.length})`, renderEntityChips(agents)));
+    rightCol.appendChild(renderSection(`Personen (${agents.length})`, renderEntityChips(agents, 'personen')));
   }
 
   const locations = ensureArray(record['rico:hasOrHadLocation']);
   if (locations.length) {
-    rightCol.appendChild(renderSection(`Orte (${locations.length})`, renderEntityChips(locations)));
+    rightCol.appendChild(renderSection(`Orte (${locations.length})`, renderEntityChips(locations, 'orte')));
   }
 
   const subjects = ensureArray(record['rico:hasOrHadSubject']);
@@ -96,7 +97,7 @@ export function buildInlineDetail(record, store, { onClose } = {}) {
 
   const mentions = ensureArray(record['m3gim:mentions']);
   if (mentions.length) {
-    rightCol.appendChild(renderSection(`Erwähnt (${mentions.length})`, renderEntityChips(mentions)));
+    rightCol.appendChild(renderSection(`Erw\u00e4hnt (${mentions.length})`, renderEntityChips(mentions, 'personen')));
   }
 
   body.appendChild(leftCol);
@@ -141,7 +142,7 @@ function renderMetaGrid(pairs) {
   return grid;
 }
 
-function renderEntityChips(entities) {
+function renderEntityChips(entities, gridType) {
   const container = el('div', { className: 'inline-detail__chips' });
   for (const entity of entities) {
     const name = entity.name || entity['skos:prefLabel'] || entity['@id'] || '?';
@@ -149,7 +150,16 @@ function renderEntityChips(entities) {
     const wikidata = entity['@id'];
     const hasWd = wikidata && wikidata.startsWith('wd:');
 
-    const chip = el('span', { className: 'chip chip--entity' },
+    const chipProps = { className: `chip chip--entity${gridType ? ' chip--clickable' : ''}` };
+    if (gridType) {
+      chipProps.onClick = (e) => {
+        e.stopPropagation();
+        navigateToIndex(gridType, name);
+      };
+      chipProps.title = `Im Index \u00f6ffnen: ${name}`;
+    }
+
+    const chip = el('span', chipProps,
       name,
       role ? el('span', { className: 'chip__role' }, ` (${role})`) : null,
     );
@@ -175,7 +185,11 @@ function renderWorkChips(subjects) {
   for (const subj of subjects) {
     const name = subj.name || subj['skos:prefLabel'] || '?';
     const komponist = subj.komponist || '';
-    container.appendChild(el('span', { className: 'chip chip--werk' },
+    container.appendChild(el('span', {
+      className: 'chip chip--werk chip--clickable',
+      title: `Im Index \u00f6ffnen: ${name}`,
+      onClick: (e) => { e.stopPropagation(); navigateToIndex('werke', name); },
+    },
       komponist ? `${name} (${komponist})` : name
     ));
   }

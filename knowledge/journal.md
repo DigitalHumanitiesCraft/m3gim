@@ -238,6 +238,10 @@ Klick auf Heatmap-Zelle zeigt jetzt Drilldown-Panel unter der Matrix mit Person,
 
 Chronik-View kann jetzt nach drei Dimensionen gruppieren: Ort (Standard), Person, Werk. Toggle-Buttons in der Toolbar (nur sichtbar im Chronik-Modus). Generische Gruppierungsfunktion `groupByPeriodAndDimension()` extrahiert Dimension per Callback. Icons: Pin (Ort), User (Person), Music-Note (Werk). Placeholder: "— Ohne Ort/Person/Werk".
 
+### Milestone 5: Klickbare Tags (IT-4)
+
+Personen-, Ort-, Werk-Chips in der Detailansicht sind jetzt klickbar → wechselt zu Indizes-Tab und expandiert den Eintrag. Router: `navigateToIndex(gridType, entityName)`. Indizes: `expandEntry()` mit Scroll-to-Element. CSS: Hover-Effekt fuer klickbare Chips.
+
 ---
 
 Siehe auch: [→ Projekt](01-projekt.md) · [→ Quellenbestand](02-quellenbestand.md) · [→ Architektur](04-architektur.md)
