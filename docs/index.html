@@ -56,19 +56,20 @@
       </svg>
       Indizes
     </button>
-    <button class="tab-bar__tab" data-tab="matrix">
+    <!-- Matrix und Kosmos vorerst ausgeblendet (Iteration-2-Demo) -->
+    <button class="tab-bar__tab" data-tab="matrix" hidden>
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/><path d="M15 3v18"/>
       </svg>
       Matrix
     </button>
-    <button class="tab-bar__tab" data-tab="kosmos">
+    <button class="tab-bar__tab" data-tab="kosmos" hidden>
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="12" cy="12" r="1"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="9"/>
       </svg>
       Kosmos
     </button>
-    <button class="tab-bar__tab" data-tab="korb" id="korb-tab-btn" hidden>
+    <button class="tab-bar__tab" data-tab="korb" id="korb-tab-btn">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/>
       </svg>
@@ -97,8 +98,8 @@
     <section id="page-hilfe" class="tab-content page-content"></section>
   </main>
 
-  <!-- Detail Panel -->
-  <aside class="detail-panel" id="detail-panel">
+  <!-- Detail Panel (ausgeblendet fuer Demo — Klick navigiert zum Archiv) -->
+  <aside class="detail-panel" id="detail-panel" hidden>
     <div class="detail-panel__header">
       <div>
         <div class="detail-panel__signatur"></div>

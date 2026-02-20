@@ -21,13 +21,16 @@
 - Matrix/Kosmos-Verbesserungen (Drilldown, Labels, Zoom/Legende)
 - Knowledge-Refactor: 12 nummerierte Docs → 5 kanonische + Traceability-Matrix + Quellenindex + Anhaenge
 - HTML/CSS-Cleanup: hidden-Attribut, aria-Labels, Zeichenbereinigung, Badge-Konsolidierung
+- Bugfixes Session 11: Indizes-Viewport (absolute statt height:100%), Archiv Reset-Button, Passive-Listener-Fix
+- Demo-Modus Session 12: Matrix/Kosmos ausgeblendet, Korb mit Card-Details, Sidebar entfernt, Layout-Refactor
 
 ### Deferred / offen
 
 - Wikidata-Reconciliation-Skript (`reconcile.py`) fehlt weiterhin
-- Matrix-Zeitauflosung und Sortierausbau
+- Matrix-Zeitauflosung und Sortierausbau (Matrix aktuell ausgeblendet)
 - Erweiterte Indextiefe (z. B. Orts-Hierarchien)
 - Wissenskorb-Export (Download als Liste/BibTeX)
+- Matrix/Kosmos wieder einblenden nach erster Praesentation
 
 ## Priorisierte Korrekturpunkte (Doku vs Code)
 

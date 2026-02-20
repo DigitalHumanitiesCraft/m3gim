@@ -39,7 +39,7 @@
 
 ### Produktstand
 
-- 4 Daten-Tabs: Archiv, Indizes, Matrix, Kosmos
+- 5 Daten-Tabs: Archiv, Indizes, Matrix, Kosmos, Korb
 - 3 Info-Seiten: Ueber, Projekt, Hilfe
 - Hash-Routing und Deep-Linking im Frontend aktiv
 - Detail-Interaktion: Inline (Archiv) und Sidebar (Indizes/Matrix/Kosmos)

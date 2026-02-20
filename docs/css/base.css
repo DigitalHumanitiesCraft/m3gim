@@ -134,7 +134,6 @@ code, .mono {
   position: absolute;
   inset: 0;
   overflow-y: auto;
-  padding: var(--space-6);
 }
 
 .tab-content.active {

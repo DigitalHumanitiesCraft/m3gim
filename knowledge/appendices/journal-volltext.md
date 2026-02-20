@@ -336,6 +336,64 @@ Architektur, Produkt, Operativer Plan aktualisiert. Modulzahl auf 21 korrigiert.
 
 ---
 
+## 2026-02-20 — Session 11: Konsolidierung, Bugfixes, Knowledge-Sync
+
+### KB-Refactor und Commit
+
+Paralleles KB-Refactoring (extern) zusammengefuehrt: 12 nummerierte Docs → 5 kanonische + Traceability-Matrix + Quellenindex. HTML/CSS-Cleanup: `hidden`-Attribut statt `style="display:none"`, aria-Labels, Zeichenbereinigung, Badge-Konsolidierung. Journal-Volltext um Session 10 (M12-M16) ergaenzt. Commit `a565328`.
+
+### Bugfix: Indizes Viewport
+
+Indizes-Tab war komplett leer (nur Toolbar sichtbar, kein Grid-Inhalt). Ursache: `.tab-content { height: 100% }` konnte im Flex-Layout nicht aufgeloest werden, weil `#main-content` (flex-item mit `flex: 1`) keine explizite Hoehe hat. Fix: `.tab-content` auf `position: absolute; inset: 0` umgestellt, `#main-content` bekommt `position: relative` als Positionierungskontext.
+
+**Geaenderte Datei**: docs/css/base.css
+
+### Feature: Archiv Reset-Button
+
+Neuer "x Zuruecksetzen"-Button in der Archiv-Toolbar. Setzt alle 3 Filter (Suche, Dokumenttyp, Person) gleichzeitig zurueck. Button ist nur sichtbar, wenn mindestens ein Filter aktiv ist. `resetAllFilters()` in archiv.js, CSS `.archiv-reset` in archiv.css.
+
+**Geaenderte Dateien**: docs/js/views/archiv.js, docs/css/archiv.css
+
+### Bugfix: Passive Event Listener
+
+D3.js Zoom registriert non-passive wheel/touchstart Listener (Browser-Warnung in Konsole). Fix: `touch-action: none` auf `.kosmos-container svg` — Browser ignoriert Touch-Events fuer Scrolling, passive-Flag wird irrelevant.
+
+**Geaenderte Datei**: docs/css/kosmos.css
+
+### Knowledge-Sync
+
+Alle Wissensdokumente gegen Code-Stand verifiziert und korrigiert: Journal Session 11 ergaenzt, Produkt-Doku um Reset-Button erweitert, Projektkontext auf 5 Daten-Tabs korrigiert, Operativer Plan um Bugfix-Zeile ergaenzt. Commit `cd6e26a` (Bugfixes) + Folge-Commit (Knowledge-Sync).
+
+---
+
+## 2026-02-20 — Session 12: Demo-Modus
+
+### Was getan
+- Matrix und Kosmos aus Tab-Bar ausgeblendet (hidden-Attribut), Code erhalten
+- Router: TABS auf ['archiv', 'indizes', 'korb'] reduziert, HIDDEN_TABS dokumentiert
+- Wissenskorb komplett ueberarbeitet: Card-basierte Darstellung mit Metadaten (Datum, Sprache, Umfang, Status) und allen Verknuepfungen (Personen, Orte, Werke, Rollen, Erwaehnt) als klickbare Chips
+- Korb-Tab immer sichtbar (auch bei 0 Items), Empty-State mit Lesezeichen-Icon
+- Detail-Panel (Sidebar) deaktiviert — Klicks in Indizes/Korb navigieren zum Archiv-Tab mit Inline-Expansion
+- Cross-Navigation: selectArchivRecord() in archiv.js, expandRecord() in archiv-bestand.js
+- Layout-Refactor: Archiv-Toolbar direkt an Tab-Bar (kein Gap), Flex-Layout mit fixierter Toolbar und scrollbarem View-Container
+- Pages breiter (max-width 960px statt 720px), einheitliches Padding-System (jede View kontrolliert eigenes Padding)
+- Hilfe-Seite aktualisiert: Matrix/Kosmos/Sidebar entfernt, Wissenskorb beschrieben
+
+### Geaenderte Dateien
+- docs/index.html (hidden auf Matrix/Kosmos/Detail-Panel, Korb immer sichtbar)
+- docs/js/ui/router.js (TABS reduziert)
+- docs/js/main.js (Sidebar deaktiviert, Korb immer sichtbar, onRecord → Archiv)
+- docs/js/views/archiv.js (selectArchivRecord Export)
+- docs/js/views/archiv-bestand.js (expandRecord Export)
+- docs/js/views/korb.js (komplett neu: Card-Layout mit Details)
+- docs/js/views/hilfe.js (Matrix/Kosmos/Sidebar entfernt, Korb ergaenzt)
+- docs/css/base.css (Padding aus .tab-content entfernt)
+- docs/css/archiv.css (Flex-Layout, Toolbar-Padding)
+- docs/css/korb.css (Card-Styles statt Zeilen)
+- docs/css/pages.css (max-width 960px)
+
+---
+
 Siehe auch: [→ Projekt](../projekt-kontext.md) · [→ Quellenbestand](../datenmodell-ontologie.md) · [→ Architektur](../system-architektur-pipeline.md)
 
 

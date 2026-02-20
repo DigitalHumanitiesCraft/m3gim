@@ -7,7 +7,7 @@ import { loadArchive } from './data/loader.js';
 import { initRouter, getState } from './ui/router.js';
 import { initDetailPanel, showRecord, closePanel } from './ui/detail-panel.js';
 import { initKorb, onKorbChange, getKorbCount } from './ui/korb.js';
-import { renderArchiv } from './views/archiv.js';
+import { renderArchiv, selectArchivRecord } from './views/archiv.js';
 import { renderIndizes, expandEntry } from './views/indizes.js';
 import { renderMatrix } from './views/matrix.js';
 import { renderKosmos } from './views/kosmos.js';
@@ -36,17 +36,22 @@ async function init() {
     onKorbChange(() => updateKorbTabVisibility());
     updateKorbTabVisibility();
 
-    // Initialize detail panel
-    initDetailPanel(store);
+    // Detail panel deactivated (Demo mode — clicks navigate to Archiv instead)
+    // initDetailPanel(store);
 
     // Initialize router
     initRouter({
       onTab: (tab) => renderTab(tab),
       onRecord: (recordId) => {
+        if (!recordId) return;
         const { activeTab } = getState();
-        if (activeTab === 'archiv') return; // Archiv uses inline expansion
-        if (recordId) showRecord(recordId);
-        else closePanel();
+        if (activeTab === 'archiv') {
+          // Expand record inline in the Bestand view
+          selectArchivRecord(recordId);
+          return;
+        }
+        // Navigate to Archiv tab and show record inline
+        window.location.hash = '#archiv/' + encodeURIComponent(recordId);
       },
       onIndex: (gridType, entityName) => {
         renderTab('indizes');
@@ -123,12 +128,10 @@ function updateKorbTabVisibility() {
   const count = getKorbCount();
   const btn = document.getElementById('korb-tab-btn');
   const badge = document.getElementById('korb-badge');
-  if (btn) btn.hidden = count <= 0;
-  if (badge) badge.textContent = String(count);
-
-  // Prevent hidden active tab when the last saved record is removed.
-  if (count === 0 && getState().activeTab === 'korb') {
-    window.location.hash = '#archiv';
+  if (btn) btn.hidden = false; // Korb-Tab immer sichtbar
+  if (badge) {
+    badge.textContent = String(count);
+    badge.hidden = count <= 0;
   }
 
   // Force re-render of Korb view if it's already rendered

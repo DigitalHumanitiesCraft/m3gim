@@ -32,7 +32,7 @@
 - 21 JS-Module unter `docs/js/`
 - 9 CSS-Dateien unter `docs/css/`
 - Einstieg: `docs/js/main.js`
-- Routing: `docs/js/ui/router.js` (5 Tabs: archiv, indizes, matrix, kosmos, korb)
+- Routing: `docs/js/ui/router.js` (3 aktive Tabs: archiv, indizes, korb; 2 ausgeblendet: matrix, kosmos)
 - Dataloading/Store: `docs/js/data/loader.js`
 - Wissenskorb: `docs/js/ui/korb.js` (sessionStorage-Persistenz)
 

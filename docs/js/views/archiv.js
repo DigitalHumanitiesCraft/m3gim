@@ -4,7 +4,7 @@
 
 import { el, clear } from '../utils/dom.js';
 import { DOKUMENTTYP_LABELS } from '../data/constants.js';
-import { renderBestand, updateBestandView } from './archiv-bestand.js';
+import { renderBestand, updateBestandView, expandRecord } from './archiv-bestand.js';
 import { renderChronik, updateChronikView, setChronikGrouping } from './archiv-chronik.js';
 
 let store = null;
@@ -316,6 +316,18 @@ function applyFilters() {
   if (resetBtn) {
     resetBtn.hidden = !(currentSearch || currentDocType || currentPerson);
   }
+}
+
+/** Navigate to a record in the Bestand view (used by cross-navigation from Indizes/Korb). */
+export function selectArchivRecord(recordId) {
+  if (!recordId || !store) return;
+  // Ensure Bestand view is active
+  if (activeView !== 'bestand') {
+    activeView = 'bestand';
+    updateToggleUI();
+    renderActiveView();
+  }
+  expandRecord(recordId);
 }
 
 function updateCounter(filteredCount) {

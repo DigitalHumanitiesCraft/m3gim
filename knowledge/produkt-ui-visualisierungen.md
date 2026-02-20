@@ -8,8 +8,9 @@
 
 - Archiv
 - Indizes
-- Matrix
-- Kosmos
+- Wissenskorb
+- Matrix (ausgeblendet fuer Demo)
+- Kosmos (ausgeblendet fuer Demo)
 
 ### Kontextseiten
 
@@ -33,6 +34,7 @@
 - Unbearbeitete Objekte dezent markiert (opacity, Tooltip)
 - Inline-Detailflaechen mit "Zum Wissenskorb"-Button
 - Bookmark-Icons an jeder Zeile (Hover → sichtbar)
+- Reset-Button ("x Zuruecksetzen") setzt alle Filter gleichzeitig zurueck (nur sichtbar bei aktivem Filter)
 
 ### Indizes
 
@@ -65,13 +67,21 @@
 - Matrix: Netzwerk- und Zeitmuster
 - Kosmos: Repertoire- und Rollenprofil
 
-### Wissenskorb (Session 10)
+### Wissenskorb (Session 10 + 12)
 
 - Bookmark-Icons in Archiv (Bestand-Zeilen, Inline-Detail) und Indizes (Detail-Records)
-- Korb-Tab (5. Tab) mit Badge-Count, nur sichtbar bei >= 1 Item
-- Sortierte Record-Liste mit Signatur, Titel, Typ-Badge, Entfernen-Button
+- Korb-Tab immer sichtbar (auch bei 0 Items), Badge-Count bei >= 1
+- Card-basierte Darstellung pro Record:
+  - Header: Signatur (klickbar → Archiv), Titel, Typ-Badge, Entfernen-Button
+  - Meta-Zeile: Datum, Sprache, Umfang, Status (Midpoint-Separator)
+  - Verknuepfungen: Personen, Orte, Werke, Rollen, Erwaehnt als klickbare Chips
+  - Wikidata-Badges wo vorhanden
+  - Konvolut-Info (Teil von Konvolut X)
+  - Empty-State fuer unerschlossene Objekte
+- Cross-Navigation: Signatur-Klick → Archiv mit Inline-Expansion, Chip-Klick → Index
 - sessionStorage-Persistenz (kein Server)
-- Empty-State mit Anleitung
+- Empty-State mit Lesezeichen-Icon und Anleitung
+- Detail-Panel (Sidebar) deaktiviert — alle Klicks navigieren zum Archiv-Tab
 
 ## Offene Luecken und Constraints
 

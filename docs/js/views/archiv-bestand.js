@@ -396,3 +396,15 @@ function buildBookmarkBtn(recordId) {
     },
   });
 }
+
+/** Programmatically expand a record's inline detail (used by cross-navigation). */
+export function expandRecord(recordId) {
+  if (!recordId || !store) return;
+  expandedRecord = recordId;
+  renderRows(currentItems);
+  // Scroll to the expanded row
+  requestAnimationFrame(() => {
+    const row = document.querySelector('.archiv-row--detail');
+    if (row) row.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  });
+}

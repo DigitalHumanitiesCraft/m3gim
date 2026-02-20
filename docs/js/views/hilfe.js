@@ -12,13 +12,13 @@ export function renderHilfe(store, container) {
     el('header', { className: 'page__header' },
       el('h1', { className: 'page__title' }, 'Hilfe'),
       el('p', { className: 'page__lead' },
-        'Wie Sie die vier Ansichten nutzen und was die angezeigten Daten bedeuten.'
+        'Wie Sie die Ansichten nutzen und was die angezeigten Daten bedeuten.'
       ),
     ),
 
     // Tabs
     el('section', { className: 'page__section' },
-      el('h2', {}, 'Die vier Ansichten'),
+      el('h2', {}, 'Die Ansichten'),
       el('dl', { className: 'page__layers' },
         el('dt', {}, 'Archiv'),
         el('dd', {},
@@ -32,15 +32,11 @@ export function renderHilfe(store, container) {
           'Jeder Eintrag zeigt die Anzahl verknüpfter Objekte. ' +
           'Klick auf einen Eintrag zeigt die zugehörigen Archivalien.'
         ),
-        el('dt', {}, 'Matrix'),
+        el('dt', {}, 'Wissenskorb'),
         el('dd', {},
-          'Heatmap der Verbindungen zwischen Personen und Zeiträumen. ' +
-          'Zeilen = Personen, Spalten = Perioden. Klick auf eine Zelle zeigt die zugehörigen Objekte.'
-        ),
-        el('dt', {}, 'Kosmos'),
-        el('dd', {},
-          'Netzwerkgraph aller Entitäten und ihrer Verbindungen. ' +
-          'Knotengröße = Anzahl verknüpfter Objekte. Klick auf einen Knoten zeigt Details.'
+          'Mit dem Lesezeichen-Symbol können Sie Objekte sammeln. Der Korb-Tab zeigt ' +
+          'alle gesammelten Objekte mit ihren Metadaten und Verknüpfungen. ' +
+          'Der Korb wird für die aktuelle Sitzung gespeichert.'
         ),
       ),
     ),
@@ -52,7 +48,7 @@ export function renderHilfe(store, container) {
         el('dt', {}, 'Klick auf ein Objekt'),
         el('dd', {},
           'Im Archiv-Bestand öffnet sich eine Detailzeile direkt unter dem Eintrag. ' +
-          'In allen anderen Ansichten öffnet sich das Detail-Panel am rechten Rand.'
+          'In den Indizes navigiert ein Klick auf ein Objekt zum Archiv-Tab.'
         ),
         el('dt', {}, 'Farbige Tags'),
         el('dd', {},
@@ -65,10 +61,10 @@ export function renderHilfe(store, container) {
           'Zusätzlich lassen sich Dokumenttyp und Person filtern. ' +
           'Die Chronik unterstützt die gleichen Filter.'
         ),
-        el('dt', {}, 'Matrix-Drilldown'),
+        el('dt', {}, 'Wissenskorb'),
         el('dd', {},
-          'Klick auf eine farbige Zelle in der Matrix zeigt die konkreten Objekte, ' +
-          'die diese Person in diesem Zeitraum betreffen.'
+          'Klicken Sie das Lesezeichen-Symbol in einer Zeile, um ein Objekt im Korb zu speichern. ' +
+          'Im Korb-Tab sehen Sie alle gesammelten Objekte mit vollständigen Metadaten und Verknüpfungen.'
         ),
       ),
     ),
