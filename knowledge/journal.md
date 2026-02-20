@@ -265,6 +265,18 @@ Zustandsbericht (`12-zustandsbericht.md`) geschrieben und aktualisiert. Korrektu
 **Neue Dateien**: about.js (67), projekt.js (130), hilfe.js (133), pages.css (~130)
 **Geaenderte Dateien**: index.html, router.js, main.js, archiv.js, archiv-bestand.js, archiv-chronik.js, base.css, components.css, 12-zustandsbericht.md
 
+### Milestone 9: Bestand + Chronik Verbesserungen (B-1, C-2, C-3, C-4)
+
+**B-1 Folio-Differenzierung**: Kind-Records in Konvoluten mit identischen Titeln zeigen jetzt einen Hinweis aus der ersten Verknuepfung (Person, Mention, Ort). Relevant fuer NIM_003 (10 identische Programmheft-Titel). Neue `getFolioHint()` in archiv-bestand.js, CSS `.archiv-folio-hint`.
+
+**C-2 Ohne-Ort-Hinweis**: Placeholder-Gruppen ("— Ohne Ort/Person/Werk") zeigen kontextabhaengigen Hinweis "noch nicht erfasst (Schicht 2)". Dynamisch je nach Gruppierungsmodus.
+
+**C-3 Undatierte Objekte**: "Undatiert"-Periode zeigt erklaerenden Zusatz "ohne Datumsangabe in der Quelle" — unterscheidet bewusste Nicht-Datierung von fehlender Erfassung.
+
+**C-4 Agenten-Tooltip**: Bei mehr als 3 Agenten zeigt die Chronik "(+N)" und `title`-Attribut mit vollstaendiger Liste. Hover zeigt alle Namen.
+
+**Geaenderte Dateien**: archiv-bestand.js, archiv-chronik.js, archiv.css
+
 ---
 
 Siehe auch: [→ Projekt](01-projekt.md) · [→ Quellenbestand](02-quellenbestand.md) · [→ Architektur](04-architektur.md)

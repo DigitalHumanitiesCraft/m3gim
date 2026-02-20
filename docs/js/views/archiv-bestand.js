@@ -4,7 +4,7 @@
  */
 
 import { el, clear } from '../utils/dom.js';
-import { formatSignatur, formatChildSignatur, getDocTypeId, countLinks, truncate } from '../utils/format.js';
+import { formatSignatur, formatChildSignatur, getDocTypeId, countLinks, truncate, ensureArray } from '../utils/format.js';
 import { extractYear, formatDate } from '../utils/date-parser.js';
 import { DOKUMENTTYP_LABELS } from '../data/constants.js';
 import { buildInlineDetail } from './archiv-inline-detail.js';
@@ -242,7 +242,11 @@ function renderRows(items) {
         el('span', { className: 'archiv-signatur' }, displaySig)
       ),
       el('td', { className: 'archiv-col-titel' },
-        el('span', { className: 'archiv-titel' }, truncate(displayTitle, 80))
+        el('span', { className: 'archiv-titel' }, truncate(displayTitle, 80)),
+        item.isChild ? (() => {
+          const hint = getFolioHint(r, item.konvolutId);
+          return hint ? el('span', { className: 'archiv-folio-hint' }, hint) : null;
+        })() : null
       ),
       el('td', { className: 'archiv-col-typ' },
         item.isKonvolut
@@ -291,4 +295,38 @@ function toggleKonvolut(konvolutId) {
 
 function naturalSort(a, b) {
   return a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });
+}
+
+/**
+ * For child records with duplicate titles within a Konvolut,
+ * return a short distinguishing hint from the first verknüpfung.
+ */
+function getFolioHint(record, konvolutId) {
+  if (!konvolutId) return null;
+  const siblings = (store.konvolutChildren.get(konvolutId) || [])
+    .filter(cid => !store.folioIds.has(cid))
+    .map(cid => store.records.get(cid))
+    .filter(Boolean);
+
+  const title = record['rico:title'] || '';
+  const dupes = siblings.filter(s => (s['rico:title'] || '') === title);
+  if (dupes.length <= 1) return null;
+
+  // Try agents, then mentions, then locations
+  const agents = ensureArray(record['rico:hasOrHadAgent']);
+  if (agents.length > 0) {
+    const name = agents[0].name || agents[0]['skos:prefLabel'] || '';
+    if (name) return name;
+  }
+  const mentions = ensureArray(record['m3gim:mentions']);
+  if (mentions.length > 0) {
+    const name = mentions[0].name || mentions[0]['skos:prefLabel'] || '';
+    if (name) return name;
+  }
+  const locs = ensureArray(record['rico:hasOrHadLocation']);
+  if (locs.length > 0) {
+    const name = locs[0].name || locs[0]['skos:prefLabel'] || '';
+    if (name) return name;
+  }
+  return null;
 }

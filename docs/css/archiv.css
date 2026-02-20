@@ -233,6 +233,18 @@
   white-space: nowrap;
 }
 
+.archiv-folio-hint {
+  display: inline;
+  margin-left: var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--color-text-tertiary);
+  font-style: italic;
+}
+
+.archiv-folio-hint::before {
+  content: '— ';
+}
+
 .archiv-datum {
   font-family: var(--font-mono);
   font-size: var(--text-sm);
@@ -531,6 +543,13 @@
 .chronik-location__count {
   font-size: var(--text-xs);
   color: var(--color-text-tertiary);
+}
+
+.chronik-location__hint {
+  font-size: var(--text-xs);
+  color: var(--color-absent);
+  font-style: italic;
+  margin-left: var(--space-2);
 }
 
 /* Record rows within a location */

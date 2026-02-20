@@ -109,6 +109,9 @@ export function updateChronikView(filters) {
       }),
       el('span', { className: 'chronik-period__label' }, period),
       note ? el('span', { className: 'chronik-period__note' }, note) : null,
+      period === 'Undatiert'
+        ? el('span', { className: 'chronik-period__note' }, 'ohne Datumsangabe in der Quelle')
+        : null,
       el('span', { className: 'chronik-period__count' }, `${totalCount}`),
     );
     periodEl.appendChild(headerEl);
@@ -121,7 +124,7 @@ export function updateChronikView(filters) {
         const isPlaceholder = groupName.startsWith('\u2014 ');
 
         const locEl = el('div', { className: 'chronik-location' });
-        locEl.appendChild(el('div', { className: 'chronik-location__header' },
+        const headerChildren = [
           el('span', {
             className: 'chronik-location__icon',
             html: isPlaceholder
@@ -130,7 +133,18 @@ export function updateChronikView(filters) {
           }),
           el('span', { className: 'chronik-location__name' }, groupName),
           el('span', { className: 'chronik-location__count' }, `(${groupRecords.length})`),
-        ));
+        ];
+        if (isPlaceholder) {
+          const hintText = currentGrouping === 'location'
+            ? 'Ort noch nicht erfasst (Schicht\u00a02)'
+            : currentGrouping === 'person'
+              ? 'Person noch nicht verknüpft (Schicht\u00a02)'
+              : 'Werk noch nicht verknüpft (Schicht\u00a02)';
+          headerChildren.push(
+            el('span', { className: 'chronik-location__hint' }, hintText)
+          );
+        }
+        locEl.appendChild(el('div', { className: 'chronik-location__header' }, ...headerChildren));
 
         // Record rows within this group
         for (const r of groupRecords) {
@@ -142,8 +156,18 @@ export function updateChronikView(filters) {
           const docType = getDocTypeId(r);
           const docLabel = DOKUMENTTYP_LABELS[docType] || '';
           const agents = ensureArray(r['rico:hasOrHadAgent']);
-          const agentNames = agents.slice(0, 3).map(a => a.name || a['skos:prefLabel'] || '').filter(Boolean);
+          const allAgentNames = agents.map(a => a.name || a['skos:prefLabel'] || '').filter(Boolean);
+          const displayNames = allAgentNames.slice(0, 3);
           const recordId = r['@id'];
+
+          const agentEl = displayNames.length > 0
+            ? el('span', {
+                className: 'chronik-record__agents',
+                title: allAgentNames.length > 3
+                  ? allAgentNames.join(', ')
+                  : '',
+              }, displayNames.join(', ') + (allAgentNames.length > 3 ? ` (+${allAgentNames.length - 3})` : ''))
+            : null;
 
           const recordEl = el('div', {
             className: `chronik-record ${expandedRecord === recordId ? 'chronik-record--active' : ''}`,
@@ -155,9 +179,7 @@ export function updateChronikView(filters) {
             el('span', { className: 'chronik-record__sig' }, sig),
             el('span', { className: 'chronik-record__title' }, truncate(r['rico:title'] || '(ohne Titel)', 60)),
             docLabel ? el('span', { className: `badge badge--${docType || ''}` }, docLabel) : null,
-            agentNames.length > 0
-              ? el('span', { className: 'chronik-record__agents' }, agentNames.join(', '))
-              : null,
+            agentEl,
           );
           locEl.appendChild(recordEl);
 
