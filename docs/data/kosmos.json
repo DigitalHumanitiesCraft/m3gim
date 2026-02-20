@@ -29,15 +29,15 @@
           "orte": [
             {
               "name": "Bayreuth",
-              "count": 6
+              "count": 4
             },
             {
-              "name": "Zürich",
-              "count": 5
+              "name": "Stuttgart",
+              "count": 4
             },
             {
-              "name": "München",
-              "count": 5
+              "name": "Lissabon",
+              "count": 4
             }
           ],
           "rollen": [
@@ -102,15 +102,15 @@
           ],
           "orte": [
             {
-              "name": "Lissabon",
-              "count": 3
-            },
-            {
               "name": "München",
               "count": 2
             },
             {
               "name": "Stuttgart",
+              "count": 2
+            },
+            {
+              "name": "Lissabon",
               "count": 2
             }
           ],
@@ -308,16 +308,16 @@
           ],
           "orte": [
             {
-              "name": "Zürich",
-              "count": 4
+              "name": "Lemberg",
+              "count": 2
             },
             {
-              "name": "München",
-              "count": 4
+              "name": "Wien",
+              "count": 2
             },
             {
-              "name": "Bayreuth",
-              "count": 4
+              "name": "Graz",
+              "count": 2
             }
           ],
           "rollen": [
@@ -345,8 +345,12 @@
           ],
           "orte": [
             {
+              "name": "München, 1952-12-17",
+              "count": 1
+            },
+            {
               "name": "München",
-              "count": 2
+              "count": 1
             },
             {
               "name": "Zürich, Zürichbergstrasse 104",
@@ -403,7 +407,7 @@
           ],
           "orte": [
             {
-              "name": "Wien",
+              "name": "Wien, 1968-09-25",
               "count": 1
             }
           ],
@@ -479,11 +483,11 @@
           ],
           "orte": [
             {
-              "name": "Stuttgart",
-              "count": 2
+              "name": "Italien",
+              "count": 1
             },
             {
-              "name": "Italien",
+              "name": "Stuttgart, 1954-07-06",
               "count": 1
             },
             {
@@ -516,16 +520,16 @@
           ],
           "orte": [
             {
-              "name": "Zürich",
-              "count": 4
+              "name": "Lemberg",
+              "count": 2
             },
             {
-              "name": "München",
-              "count": 4
+              "name": "Wien",
+              "count": 2
             },
             {
-              "name": "Bayreuth",
-              "count": 4
+              "name": "Graz",
+              "count": 2
             }
           ],
           "rollen": [
@@ -551,11 +555,11 @@
           ],
           "orte": [
             {
-              "name": "Lissabon",
-              "count": 3
+              "name": "Stuttgart",
+              "count": 2
             },
             {
-              "name": "Stuttgart",
+              "name": "Lissabon",
               "count": 2
             },
             {
@@ -642,11 +646,11 @@
           ],
           "orte": [
             {
-              "name": "Lissabon",
-              "count": 3
+              "name": "Stuttgart",
+              "count": 2
             },
             {
-              "name": "Stuttgart",
+              "name": "Lissabon",
               "count": 2
             },
             {
@@ -754,16 +758,16 @@
           ],
           "orte": [
             {
-              "name": "München",
-              "count": 6
-            },
-            {
               "name": "Bayreuth",
-              "count": 5
+              "count": 3
             },
             {
-              "name": "Zürich",
-              "count": 4
+              "name": "München",
+              "count": 3
+            },
+            {
+              "name": "Lemberg",
+              "count": 2
             }
           ],
           "rollen": [
@@ -1173,16 +1177,16 @@
           ],
           "orte": [
             {
-              "name": "Zürich",
-              "count": 4
+              "name": "Lemberg",
+              "count": 2
             },
             {
-              "name": "München",
-              "count": 4
+              "name": "Wien",
+              "count": 2
             },
             {
-              "name": "Bayreuth",
-              "count": 4
+              "name": "Graz",
+              "count": 2
             }
           ],
           "rollen": [
@@ -1581,7 +1585,7 @@
           ],
           "orte": [
             {
-              "name": "Wien",
+              "name": "Wien, 1968-09-25",
               "count": 1
             }
           ],
@@ -1634,7 +1638,7 @@
     }
   ],
   "_meta": {
-    "generated": "2026-02-20T19:12:17.031628",
+    "generated": "2026-02-20T10:59:55.658773",
     "source_records": 286,
     "note": "Includes geographic and role context extracted from titles"
   }
