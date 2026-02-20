@@ -31,14 +31,15 @@
   border-color: var(--color-kug-blau);
 }
 
-/* Grid container: 2×2 layout */
+/* Grid container: 2×2 layout, fills remaining viewport */
 .idx-grids {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--space-4);
+  grid-template-rows: 1fr 1fr;
+  gap: var(--space-3);
   flex: 1;
-  overflow-y: auto;
   min-height: 0;
+  overflow: hidden;
 }
 
 /* Single grid card */
@@ -124,7 +125,6 @@
   overflow-y: auto;
   flex: 1;
   min-height: 0;
-  max-height: 380px;
 }
 
 /* Rows */
@@ -233,6 +233,92 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* Facet-active row (the entry driving cross-grid filter) */
+.idx-row--facet-active {
+  background: var(--color-cream);
+  border-left: 3px solid var(--color-kug-blau);
+  padding-left: calc(var(--space-3) - 3px);
+}
+
+/* Grid that is the source of a facet filter */
+.idx-grid--filter-source {
+  border-color: var(--color-kug-blau);
+}
+
+/* Facet chip bar */
+.idx-facet-chips {
+  flex-shrink: 0;
+}
+
+.idx-facet-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  margin-bottom: var(--space-2);
+  background: var(--color-cream);
+  border: 1px solid var(--color-kug-blau);
+  border-radius: var(--border-radius);
+  font-size: var(--text-xs);
+}
+
+.idx-facet-chip__label {
+  color: var(--color-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: var(--weight-semibold);
+}
+
+.idx-facet-chip__name {
+  font-weight: var(--weight-semibold);
+  color: var(--color-kug-blau);
+}
+
+.idx-facet-chip__count {
+  color: var(--color-text-tertiary);
+  font-family: var(--font-mono);
+}
+
+.idx-facet-chip__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  margin-left: var(--space-1);
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.idx-facet-chip__close:hover {
+  background: var(--color-kug-blau);
+  color: white;
+}
+
+/* "Show all in Archiv" link in detail panel */
+.idx-detail__show-all {
+  padding: var(--space-1) var(--space-1);
+  margin-top: var(--space-1);
+  border-top: 1px solid var(--border-color-light);
+}
+
+.idx-detail__show-all a {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  color: var(--color-kug-blau);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.idx-detail__show-all a:hover {
+  text-decoration: underline;
 }
 
 /* Responsive: stack on narrow screens */

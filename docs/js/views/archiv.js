@@ -28,6 +28,25 @@ export function renderArchiv(storeRef, containerEl) {
   container.appendChild(viewContainer);
 
   renderActiveView();
+
+  // Listen for cross-navigation from Indizes "Alle im Archiv anzeigen" link
+  window.addEventListener('m3gim:archiv-filter', (e) => {
+    const { type, name } = e.detail || {};
+    if (type === 'personen' && name) {
+      setPersonFilter(name);
+    }
+  });
+}
+
+/** Programmatically set the person filter (used by Indizes cross-nav) */
+function setPersonFilter(name) {
+  currentPerson = name;
+  // Update combobox input to reflect the filter
+  const input = container?.querySelector('.archiv-combobox__input');
+  const clearBtn = container?.querySelector('.archiv-combobox__clear');
+  if (input) input.value = name;
+  if (clearBtn) clearBtn.style.display = '';
+  applyFilters();
 }
 
 function buildToolbar() {

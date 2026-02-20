@@ -1,14 +1,19 @@
 /**
  * M³GIM Indizes View — 4 compact grids showing Personen, Organisationen, Orte, Werke.
+ * Supports cross-grid faceted filtering via activeFilter state.
  */
 
 import { el, clear } from '../utils/dom.js';
 import { formatSignatur, getDocTypeId, truncate } from '../utils/format.js';
 import { PERSONEN_FARBEN, DOKUMENTTYP_LABELS } from '../data/constants.js';
 import { selectRecord } from '../ui/router.js';
+import { toggleKorb, isInKorb } from '../ui/korb.js';
 
 let store = null;
 let container = null;
+
+/** Max records shown in expanded detail before "show all" link */
+const DETAIL_LIMIT = 10;
 
 // Per-grid state
 const gridState = {
@@ -17,6 +22,9 @@ const gridState = {
   orte:           { sort: 'count', dir: -1, search: '', expanded: null },
   werke:          { sort: 'count', dir: -1, search: '', expanded: null },
 };
+
+/** Cross-grid facet filter: { gridKey, name, recordIds: Set<string> } | null */
+let activeFilter = null;
 
 const GRID_CONFIG = {
   personen: {
@@ -101,6 +109,16 @@ export function expandEntry(gridType, entityName) {
   gridState[gridType].expanded = entityName;
   gridState[gridType].search = '';
 
+  // Also set facet filter for cross-grid filtering
+  const config = GRID_CONFIG[gridType];
+  if (config) {
+    const entries = config.getEntries(store);
+    const entry = entries.find(e => e.name === entityName);
+    if (entry) {
+      activeFilter = { gridKey: gridType, name: entityName, recordIds: entry.records };
+    }
+  }
+
   // Re-render if grids are already in DOM
   const wrapper = container?.querySelector('.idx-page');
   if (wrapper) renderAllGrids(wrapper);
@@ -131,11 +149,17 @@ export function renderIndizes(storeRef, containerEl) {
           gridState[key].search = q;
           gridState[key].expanded = null;
         }
+        activeFilter = null; // clear facet on global search
         renderAllGrids(wrapper);
       },
     })
   );
   wrapper.appendChild(searchBar);
+
+  // Facet chip container (between search and grids)
+  const chipContainer = el('div', { className: 'idx-facet-chips' });
+  chipContainer.id = 'idx-facet-chips';
+  wrapper.appendChild(chipContainer);
 
   const gridsContainer = el('div', { className: 'idx-grids' });
   wrapper.appendChild(gridsContainer);
@@ -149,14 +173,72 @@ function renderAllGrids(wrapper) {
   if (!gridsContainer) return;
   clear(gridsContainer);
 
+  // Render facet chip
+  renderFacetChip(wrapper);
+
   for (const [gridKey, config] of Object.entries(GRID_CONFIG)) {
     gridsContainer.appendChild(renderGrid(gridKey, config));
   }
 }
 
+/** Set or clear the cross-grid facet filter */
+function setFacetFilter(gridKey, name, recordIds) {
+  if (activeFilter && activeFilter.gridKey === gridKey && activeFilter.name === name) {
+    activeFilter = null; // toggle off
+  } else {
+    activeFilter = { gridKey, name, recordIds };
+  }
+  const wrapper = container?.querySelector('.idx-page');
+  if (wrapper) renderAllGrids(wrapper);
+}
+
+function clearFacetFilter() {
+  activeFilter = null;
+  const wrapper = container?.querySelector('.idx-page');
+  if (wrapper) renderAllGrids(wrapper);
+}
+
+function renderFacetChip(wrapper) {
+  const chipContainer = wrapper.querySelector('#idx-facet-chips');
+  if (!chipContainer) return;
+  clear(chipContainer);
+  if (!activeFilter) return;
+
+  const gridLabel = GRID_CONFIG[activeFilter.gridKey]?.label || activeFilter.gridKey;
+  const chip = el('div', { className: 'idx-facet-chip' },
+    el('span', { className: 'idx-facet-chip__label' }, `${gridLabel}: `),
+    el('span', { className: 'idx-facet-chip__name' }, activeFilter.name),
+    el('span', { className: 'idx-facet-chip__count' }, `${activeFilter.recordIds.size} Dok.`),
+    el('button', {
+      className: 'idx-facet-chip__close',
+      title: 'Filter entfernen',
+      onClick: (e) => { e.stopPropagation(); clearFacetFilter(); },
+      html: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
+    }),
+  );
+  chipContainer.appendChild(chip);
+}
+
+/**
+ * Apply facet filter: for grids OTHER than the active filter's grid,
+ * only show entries whose records overlap with the filter's recordIds.
+ */
+function applyFacetFilter(entries, gridKey) {
+  if (!activeFilter || activeFilter.gridKey === gridKey) return entries;
+  return entries.filter(e => {
+    for (const id of e.records) {
+      if (activeFilter.recordIds.has(id)) return true;
+    }
+    return false;
+  });
+}
+
 function renderGrid(gridKey, config) {
   const state = gridState[gridKey];
   let entries = config.getEntries(store);
+
+  // Apply cross-grid facet filter
+  entries = applyFacetFilter(entries, gridKey);
 
   // Filter
   if (state.search) {
@@ -172,13 +254,18 @@ function renderGrid(gridKey, config) {
     return va.localeCompare(vb) * state.dir;
   });
 
-  const grid = el('div', { className: 'idx-grid' });
+  const isFilterSource = activeFilter && activeFilter.gridKey === gridKey;
+  const grid = el('div', { className: `idx-grid ${isFilterSource ? 'idx-grid--filter-source' : ''}` });
 
   // Header
+  const totalCount = config.getEntries(store).length;
+  const isFiltered = entries.length < totalCount;
+  const countText = isFiltered ? `${entries.length} / ${totalCount}` : `${entries.length}`;
+
   const header = el('div', { className: 'idx-grid__header' },
     el('span', { className: 'idx-grid__icon', html: config.icon }),
     el('span', { className: 'idx-grid__title' }, config.label),
-    el('span', { className: 'idx-grid__count' }, `${entries.length}`),
+    el('span', { className: 'idx-grid__count' }, countText),
   );
   grid.appendChild(header);
 
@@ -210,13 +297,15 @@ function renderGrid(gridKey, config) {
   // Rows
   const body = el('div', { className: 'idx-grid__body' });
   for (const entry of entries) {
+    const isExpanded = state.expanded === entry.name;
+    const isFacetActive = activeFilter && activeFilter.gridKey === gridKey && activeFilter.name === entry.name;
     const row = el('div', {
-      className: `idx-row ${state.expanded === entry.name ? 'idx-row--expanded' : ''}`,
+      className: `idx-row ${isExpanded ? 'idx-row--expanded' : ''} ${isFacetActive ? 'idx-row--facet-active' : ''}`,
       onClick: () => {
+        // Toggle expand
         state.expanded = state.expanded === entry.name ? null : entry.name;
-        const parent = grid.parentElement;
-        const newGrid = renderGrid(gridKey, config);
-        parent.replaceChild(newGrid, grid);
+        // Toggle facet filter for cross-grid filtering
+        setFacetFilter(gridKey, entry.name, entry.records);
       },
     });
     for (const col of config.columns) {
@@ -230,8 +319,8 @@ function renderGrid(gridKey, config) {
     body.appendChild(row);
 
     // Expanded detail
-    if (state.expanded === entry.name) {
-      body.appendChild(renderExpandedRecords(entry));
+    if (isExpanded) {
+      body.appendChild(renderExpandedRecords(entry, gridKey));
     }
   }
   grid.appendChild(body);
@@ -267,31 +356,81 @@ function renderKategorieCell(entry) {
   }, entry.kategorie);
 }
 
-function renderExpandedRecords(entry) {
+function renderExpandedRecords(entry, gridKey) {
   const recordIds = [...entry.records];
   const records = recordIds
     .map(id => store.records.get(id))
     .filter(Boolean)
     .sort((a, b) => (a['rico:identifier'] || '').localeCompare(b['rico:identifier'] || '', undefined, { numeric: true }));
 
-  const rows = records.map(r => {
+  const total = records.length;
+  const limited = records.slice(0, DETAIL_LIMIT);
+
+  const rows = limited.map(r => {
     const docType = getDocTypeId(r) || '';
     const docLabel = DOKUMENTTYP_LABELS[docType] || docType || '';
+    const rid = r['@id'];
+    const inKorb = isInKorb(rid);
     return el('div', {
       className: 'idx-detail-record',
       onClick: (e) => {
         e.stopPropagation();
-        selectRecord(r['@id']);
+        selectRecord(rid);
       },
     },
       el('span', { className: 'idx-detail-sig' }, formatSignatur(r['rico:identifier'])),
       el('span', { className: 'idx-detail-title' }, truncate(r['rico:title'] || '(ohne Titel)', 50)),
       docLabel ? el('span', { className: `badge badge--${docType}` }, docLabel) : null,
+      el('button', {
+        className: `bookmark-btn ${inKorb ? 'bookmark-btn--active' : ''}`,
+        title: inKorb ? 'Aus Wissenskorb entfernen' : 'Zum Wissenskorb',
+        html: inKorb
+          ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>'
+          : '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>',
+        onClick: (e) => {
+          e.stopPropagation();
+          toggleKorb(rid);
+          // Re-render this grid to reflect bookmark state
+          const wrapper = container?.querySelector('.idx-page');
+          if (wrapper) renderAllGrids(wrapper);
+        },
+      }),
     );
   });
 
-  return el('div', { className: 'idx-detail' },
-    el('div', { className: 'idx-detail__header' }, `${records.length} verknüpfte Dokumente`),
+  const children = [
+    el('div', { className: 'idx-detail__header' }, `${total} verkn\u00fcpfte Dokumente`),
     ...rows,
-  );
+  ];
+
+  // "Show all in Archiv" link when truncated
+  if (total > DETAIL_LIMIT) {
+    children.push(el('div', { className: 'idx-detail__show-all' },
+      el('a', {
+        href: '#archiv',
+        onClick: (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          navigateToArchivFiltered(gridKey, entry.name);
+        },
+      }, `Alle ${total} im Archiv anzeigen \u2192`),
+    ));
+  }
+
+  return el('div', { className: 'idx-detail' }, ...children);
+}
+
+/**
+ * Navigate to Archiv tab with person filter pre-set.
+ * Uses a custom event that main.js / archiv.js can listen for.
+ * Delay slightly to ensure Archiv tab is rendered first (lazy rendering).
+ */
+function navigateToArchivFiltered(gridKey, name) {
+  window.location.hash = '#archiv';
+  // Small delay to ensure the Archiv tab is rendered before the event fires
+  requestAnimationFrame(() => {
+    window.dispatchEvent(new CustomEvent('m3gim:archiv-filter', {
+      detail: { type: gridKey, name },
+    }));
+  });
 }
