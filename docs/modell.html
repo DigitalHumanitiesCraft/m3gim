@@ -4,30 +4,29 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Datenmodell — M³GIM</title>
-  <meta name="description" content="Ontologie, Verknüpfungstypen und Identifikatoren des M³GIM-Datenmodells (RiC-O 1.1 + m3gim).">
+  <meta name="description" content="Ontologie, Verknüpfungstypen und Identifikatoren des M³GIM-Datenmodells — RiC-O 1.1 mit musikwissenschaftlichen Erweiterungen für Mobilitätsforschung.">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap">
 
   <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/pages.css">
 </head>
 <body class="info-page">
 
-  <header class="info-header">
-    <a href="index.html" class="info-header__brand">M³GIM</a>
-    <span class="info-header__subtitle">Teilnachlass Ira Malaniuk — UAKUG/NIM</span>
-    <div class="info-header__spacer"></div>
-    <a href="index.html" class="info-header__back">← Archiv</a>
+  <header class="app-header">
+    <a href="index.html" class="app-header__brand">M³GIM</a>
+    <div class="app-header__subtitle">Teilnachlass Ira Malaniuk — UAKUG/NIM</div>
+    <div class="app-header__spacer"></div>
+    <nav class="app-header__nav" aria-label="Informationsseiten">
+      <a href="about.html">Über</a>
+      <a href="projekt.html">Projekt</a>
+      <a href="modell.html" class="active">Modell</a>
+      <a href="hilfe.html">Hilfe</a>
+    </nav>
   </header>
-
-  <nav class="info-nav" aria-label="Informationsseiten">
-    <a href="about.html">Über</a>
-    <a href="projekt.html">Projekt</a>
-    <a href="modell.html" class="active">Modell</a>
-    <a href="hilfe.html">Hilfe</a>
-  </nav>
 
   <main class="info-main">
     <article class="page">
@@ -36,9 +35,30 @@
         <h1 class="page__title">Datenmodell</h1>
         <p class="page__lead">
           Wie die Archivalien im Teilnachlass Malaniuk modelliert, verknüpft und
-          mit externen Normdaten angereichert werden.
+          mit externen Normdaten angereichert werden — und warum diese Modellierung
+          für musikwissenschaftliche Mobilitätsforschung gewählt wurde.
         </p>
       </header>
+
+      <section class="page__section">
+        <h2>Modellierungsziel</h2>
+        <p>
+          Die Datenmodellierung dient nicht allein der archivischen Verzeichnung,
+          sondern soll forschungsrelevante Strukturen sichtbar machen: Wer war an
+          welchem Dokument beteiligt? In welcher Rolle? An welchem Ort? In Verbindung
+          mit welchen Werken und Ereignissen? Durch die explizite Erfassung dieser
+          Beziehungen entstehen Netzwerke, die konventionelle Verzeichnungen nicht
+          abbilden — und die für Fragen nach Mobilität, Vernetzung und Wissenstransfer
+          essentiell sind.
+        </p>
+        <p>
+          Das Modell orientiert sich an den vier
+          <a href="projekt.html" class="page__link">Forschungsfragen</a>
+          des Projekts und ist so konzipiert, dass es Karrierewege, Aufführungskontexte,
+          institutionelle Netzwerke und Mobilitätsmuster in maschinenlesbarer Form
+          abbildet.
+        </p>
+      </section>
 
       <section class="page__section">
         <h2>Ontologie</h2>
@@ -52,61 +72,73 @@
         <p>
           RiC-O liefert die Grundstruktur für Archivbeschreibung (Signaturen, Titel,
           Datierung, Umfang). Die m3gim-Erweiterung ergänzt Konzepte, die im
-          Archivstandard fehlen: Musikwerke, Aufführungsrollen und die Unterscheidung
+          Archivstandard fehlen: Musikwerke, Aufführungsrollen, Ereignisse (Festspiele,
+          Premieren), Detailinformationen (Honorare, Gagen) und die Unterscheidung
           zwischen aktiver Beteiligung und bloßer Erwähnung.
+        </p>
+        <p>
+          Die Wahl von RiC-O ermöglicht perspektivisch die Anbindung an internationale
+          Datenbanken zur Musikermobilität (musici.eu, MusMig) und die
+          Weiterverarbeitung in etablierten Archivformaten.
         </p>
       </section>
 
       <section class="page__section">
         <h2>Verknüpfungstypen</h2>
         <p>
-          Jedes Objekt kann mit Personen, Institutionen, Orten und Werken verknüpft sein.
-          Jede Verknüpfung trägt eine Rolle, die den Kontext beschreibt.
+          Jedes Objekt kann mit Personen, Institutionen, Orten, Werken und Ereignissen
+          verknüpft sein. Jede Verknüpfung trägt eine Rolle, die den Kontext beschreibt.
+          Diese Rollen sind die entscheidende Granularitätsstufe: Sie unterscheiden
+          z.&nbsp;B. ob eine Person einen Brief verfasst hat, in einer Aufführung
+          gesungen hat oder lediglich im Text erwähnt wird.
         </p>
         <table class="page__table">
           <thead>
             <tr>
               <th>Kategorie</th>
               <th>Eigenschaft</th>
-              <th>Beschreibung</th>
-              <th>Beispielrollen</th>
+              <th>Mögliche Rollen</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td>Personen</td>
               <td><code>rico:hasOrHadAgent</code></td>
-              <td>Aktiv beteiligte Personen mit spezifischer Funktion</td>
-              <td>sänger:in, dirigent:in, komponist:in, verfasser:in, herausgeber:in, regisseur:in</td>
+              <td>verfasser, adressat, erwähnt, vertragspartner, unterzeichner, abgebildet</td>
             </tr>
             <tr>
               <td>Institutionen</td>
               <td><code>rico:hasOrHadAgent</code></td>
-              <td>Beteiligte Organisationen, Ensembles, Verlage</td>
-              <td>herausgeber:in, veranstalter:in, rahmenveranstaltung, erwähnt</td>
+              <td>vertragspartner, arbeitgeber, veranstalter, vermittler, adressat, erwähnt</td>
             </tr>
             <tr>
               <td>Orte</td>
               <td><code>rico:hasOrHadLocation</code></td>
-              <td>Geographische Bezüge mit kontextspezifischer Rolle</td>
-              <td>auffuehrungsort, absendeort, entstehungsort, erwähnt</td>
+              <td>entstehungsort, zielort, erwähnt, auffuehrungsort, wohnort, vertragsort</td>
             </tr>
             <tr>
               <td>Werke</td>
               <td><code>rico:hasOrHadSubject</code></td>
-              <td>Musikwerke mit Komponist und Aufführungsbezug</td>
-              <td>aufführung, erwähnt</td>
+              <td>interpretin</td>
             </tr>
             <tr>
-              <td>Rollen</td>
+              <td>Ereignisse</td>
+              <td><code>m3gim:PerformanceEvent</code></td>
+              <td>rahmenveranstaltung, premiere, auftritt, probe, implizit</td>
+            </tr>
+            <tr>
+              <td>Details</td>
+              <td><code>m3gim:DetailAnnotation</code></td>
+              <td>honorar, nebenleistungen, einnahme, währung (frei wählbar)</td>
+            </tr>
+            <tr>
+              <td>Bühnenrollen</td>
               <td><code>m3gim:hasPerformanceRole</code></td>
-              <td>Konkrete Bühnenrollen aus Aufführungen</td>
               <td>Orpheus, Brünnhilde, Brangäne, Isolde, …</td>
             </tr>
             <tr>
-              <td>Erwähnt</td>
+              <td>Erwähnung</td>
               <td><code>m3gim:mentions</code></td>
-              <td>Personen, die im Dokument erwähnt, aber nicht aktiv beteiligt sind</td>
               <td>erwähnt (schwächere Verknüpfung als Agent)</td>
             </tr>
           </tbody>
@@ -122,7 +154,8 @@
             (z.&nbsp;B. als Sängerin, Dirigent oder Verfasserin). Eine Person als
             <code>m3gim:mentions</code> wird im Text erwähnt, ohne direkt beteiligt zu sein.
             Diese Unterscheidung ist zentral für Netzwerkanalysen: Ein Erwähnungsnetz hat
-            eine andere Qualität als ein Beteiligungsnetz.
+            eine andere Qualität als ein Beteiligungsnetz — ersteres bildet
+            Rezeptionswege ab, letzteres tatsächliche Zusammenarbeit.
           </dd>
           <dt>Person vs. Institution</dt>
           <dd>
@@ -131,19 +164,38 @@
             und <code>rico:Group</code> (Ensembles).
             Im Bestand: 383 Personen-Verknüpfungen, 101 Institutions-Verknüpfungen.
           </dd>
-          <dt>Ort-Rollen</dt>
+          <dt>Ort-Rollen und Mobilität</dt>
           <dd>
             Orte tragen kontextspezifische Rollen: Ein „Aufführungsort" ist ein Spielort,
-            ein „Absendeort" der Herkunftsort eines Briefs, ein „Entstehungsort" der
-            Publikationsort einer Rezension oder eines Programmhefts. Diese Granularität
-            ermöglicht differenzierte geographische Analysen.
+            ein „Entstehungsort" der Herkunftsort eines Dokuments, ein „Zielort" das
+            Reiseziel. Diese Granularität ermöglicht differenzierte geographische Analysen
+            und ist unmittelbar relevant für die Rekonstruktion von Mobilitätsmustern —
+            sie zeigt, wo Malaniuk auftrat, wohin sie reiste und welche Orte in ihrem
+            Netzwerk auftauchen.
+          </dd>
+          <dt>Ereignisse</dt>
+          <dd>
+            Festspiele, Premieren und Gastspiele werden als eigenständige Entitäten
+            (<code>m3gim:PerformanceEvent</code>) modelliert. Ein Ereignis hat ein Datum,
+            einen Ort und eine Rolle (z.&nbsp;B. Rahmenveranstaltung, Premiere). Diese
+            Modellierung erlaubt die Analyse von Karrierestationen und Aufführungszyklen
+            unabhängig von einzelnen Dokumenten.
           </dd>
           <dt>Werk mit Kontext</dt>
           <dd>
             Werke tragen neben dem Namen den Komponisten und eine Rolle (Aufführung vs.
             erwähnt). Ergänzend erfassen die Aufführungsrollen
             (<code>m3gim:hasPerformanceRole</code>) die konkreten Bühnenrollen —
-            z.&nbsp;B. „Orpheus" in „Orpheus und Eurydike".
+            z.&nbsp;B. „Orpheus" in „Orpheus und Eurydike" (Gluck).
+          </dd>
+          <dt>Datierungsevidenz</dt>
+          <dd>
+            Jede Datierung wird durch eine Evidenzstufe qualifiziert:
+            <em>aus_dokument</em> (Datum steht explizit im Dokument),
+            <em>erschlossen</em> (aus Kontext abgeleitet),
+            <em>extern</em> (aus anderer Quelle) oder
+            <em>unbekannt</em> (keine Datierung möglich). Diese Transparenz über
+            die Herkunft von Datierungen ist für die quellenbasierte Forschung essentiell.
           </dd>
         </dl>
       </section>
@@ -155,7 +207,8 @@
           Wo möglich, werden Entitäten mit Wikidata-Identifikatoren
           (<code>wd:QXXXXX</code>) verknüpft. Dies ermöglicht die Verbindung zu externen
           Wissensbasen und die eindeutige Identifikation von Personen, Institutionen und
-          Werken über Namensvarianten hinweg.
+          Werken über Namensvarianten hinweg. Die systematische Reconciliation gegen
+          Wikidata ist als separater Arbeitsschritt geplant.
         </p>
         <dl class="page__stats">
           <dt>Personen mit Wikidata</dt>
@@ -200,7 +253,7 @@
           <dt>rico:</dt>
           <dd>Records in Contexts Ontology 1.1 — Archivbeschreibung, Agenten, Orte, Datierung</dd>
           <dt>m3gim:</dt>
-          <dd>M³GIM-Erweiterung — Musikwerke, Aufführungsrollen, Bearbeitungsstand, Erwähnung</dd>
+          <dd>M³GIM-Erweiterung — Musikwerke, Aufführungsrollen, Ereignisse, Details, Erwähnung</dd>
           <dt>skos:</dt>
           <dd>Simple Knowledge Organization System — Vokabulareinträge und Bezeichnungen</dd>
           <dt>wd:</dt>
@@ -215,8 +268,10 @@
     </article>
   </main>
 
-  <footer class="info-footer">
+  <footer class="app-footer">
     <span>KUG Graz — Universitätsarchiv</span>
+    <span>·</span>
+    <a href="impressum.html">Impressum</a>
     <span>·</span>
     <a href="https://github.com/DigitalHumanitiesCraft/m3gim" target="_blank" rel="noopener">GitHub</a>
     <span>·</span>

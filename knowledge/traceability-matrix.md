@@ -96,6 +96,7 @@
 | `knowledge/11-aufgabenkatalog.md` | Uebersicht | `knowledge/operativer-plan-claude.md` -> Umsetzungsstand | direkt uebernommen |
 | `knowledge/11-aufgabenkatalog.md` | Farbsystem/Übergreifend/Bestand/Chronik/Indizes/Matrix/Kosmos/Querverweise | `knowledge/operativer-plan-claude.md` -> Erreichte Kernpunkte + Deferred | konsolidiert |
 | `knowledge/11-aufgabenkatalog.md` | Deferred | `knowledge/operativer-plan-claude.md` -> Deferred/offen | direkt uebernommen |
+| `knowledge/wissensarchitektur.md` | Epistemische Architektur | `knowledge/wissensarchitektur.md` | neu, Session 14 |
 | `knowledge/12-zustandsbericht.md` | Architektur | `knowledge/system-architektur-pipeline.md` | konsolidiert |
 | `knowledge/12-zustandsbericht.md` | Daten | `knowledge/projekt-kontext.md` + `knowledge/datenmodell-ontologie.md` | konsolidiert |
 | `knowledge/12-zustandsbericht.md` | Frontend | `knowledge/system-architektur-pipeline.md` + `knowledge/produkt-ui-visualisierungen.md` | konsolidiert |

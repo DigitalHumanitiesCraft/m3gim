@@ -11,23 +11,22 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap">
 
   <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/pages.css">
 </head>
 <body class="info-page">
 
-  <header class="info-header">
-    <a href="index.html" class="info-header__brand">M³GIM</a>
-    <span class="info-header__subtitle">Teilnachlass Ira Malaniuk — UAKUG/NIM</span>
-    <div class="info-header__spacer"></div>
-    <a href="index.html" class="info-header__back">← Archiv</a>
+  <header class="app-header">
+    <a href="index.html" class="app-header__brand">M³GIM</a>
+    <div class="app-header__subtitle">Teilnachlass Ira Malaniuk — UAKUG/NIM</div>
+    <div class="app-header__spacer"></div>
+    <nav class="app-header__nav" aria-label="Informationsseiten">
+      <a href="about.html">Über</a>
+      <a href="projekt.html">Projekt</a>
+      <a href="modell.html">Modell</a>
+      <a href="hilfe.html" class="active">Hilfe</a>
+    </nav>
   </header>
-
-  <nav class="info-nav" aria-label="Informationsseiten">
-    <a href="about.html">Über</a>
-    <a href="projekt.html">Projekt</a>
-    <a href="modell.html">Modell</a>
-    <a href="hilfe.html" class="active">Hilfe</a>
-  </nav>
 
   <main class="info-main">
     <article class="page">
@@ -166,8 +165,10 @@
     </article>
   </main>
 
-  <footer class="info-footer">
+  <footer class="app-footer">
     <span>KUG Graz — Universitätsarchiv</span>
+    <span>·</span>
+    <a href="impressum.html">Impressum</a>
     <span>·</span>
     <a href="https://github.com/DigitalHumanitiesCraft/m3gim" target="_blank" rel="noopener">GitHub</a>
     <span>·</span>

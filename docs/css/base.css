@@ -64,11 +64,22 @@ code, .mono {
   flex-shrink: 0;
 }
 
-.app-header__title {
+.app-header__title,
+.app-header__brand {
   font-family: var(--font-title);
   font-size: var(--text-xl);
   font-weight: var(--weight-semibold);
   white-space: nowrap;
+}
+
+.app-header__brand {
+  color: var(--color-text-inverse);
+  text-decoration: none;
+}
+
+.app-header__brand:hover {
+  text-decoration: none;
+  opacity: 0.9;
 }
 
 .app-header__subtitle {

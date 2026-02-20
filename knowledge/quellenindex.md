@@ -21,9 +21,11 @@
 | `knowledge/datenmodell-ontologie.md` | KB-Kern | Kanonisch | manuell | Modell- und Ontologiekern |
 | `knowledge/produkt-ui-visualisierungen.md` | KB-Kern | Kanonisch | manuell | Produkt- und Viewlogik |
 | `knowledge/operativer-plan-claude.md` | KB-Kern | Kanonisch | manuell | laufende Priorisierung |
+| `knowledge/wissensarchitektur.md` | KB-Kern | Kanonisch | manuell | Epistemische Architektur und Entitaeten-Modellierung |
 | `knowledge/traceability-matrix.md` | Steuerdokument | Kanonisch | manuell | Nachweis Informationsabdeckung |
 | `knowledge/appendices/journal-volltext.md` | Appendix | Anhang | manuell (lossless) | Volltext aus historischer Sessiondoku |
 | `knowledge/appendices/meeting-2026-02-24.md` | Appendix | Anhang | manuell (lossless) | Volltext der Meeting-Vorlage |
 | `data/reports/exploration-report.md` | Report | Generiert | `scripts/explore.py` | neues kompaktes Reportformat |
 | `data/reports/validation-report.md` | Report | Generiert | `scripts/validate.py` | neues kompaktes Reportformat |
+| `scripts/audit-data.py` | Audit-Skript | Kanonisch | manuell | Validiert XLSX → JSON-LD → View-Alignment |
 | `knowledge/_archive/2026-02-20-pre-kb-refactor/...` | Vollsicherung | Archiviert | automatisch erstellt | unveraenderte Vor-Refactor-Quelle |

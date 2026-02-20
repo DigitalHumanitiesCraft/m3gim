@@ -208,6 +208,11 @@ def convert_objekt(row: pd.Series, folio_col: str = None) -> dict:
     if date_val:
         record["rico:date"] = date_val
 
+    # Datierungsevidenz (Qualitaet der Datierung)
+    evidenz = normalize_lower(row.get('datierungsevidenz'))
+    if evidenz and evidenz in ('aus_dokument', 'erschlossen', 'extern', 'unbekannt'):
+        record["m3gim:dateEvidence"] = evidenz
+
     # Dokumenttyp → m3gim-dft
     dokumenttyp = normalize_lower(row.get('dokumenttyp'))
     if dokumenttyp:
@@ -465,8 +470,11 @@ def add_relations_to_records(records: list, relations: dict):
                 subjects.append(entry)
 
             elif t == "ereignis":
+                entry["@type"] = "m3gim:PerformanceEvent"
                 if rel.get("datum"):
                     entry["date"] = rel["datum"]
+                if not entry.get("role"):
+                    entry["role"] = "rahmenveranstaltung"
                 subjects.append(entry)
 
             elif t == "rolle":
@@ -478,16 +486,29 @@ def add_relations_to_records(records: list, relations: dict):
                     dates.append(date_val)
 
             elif t == "detail":
-                # Details als Key-Value-Paar
+                # Schicht-3-Detail als strukturiertes Objekt
+                detail_entry = {
+                    "@type": "m3gim:DetailAnnotation",
+                    "m3gim:detailField": name
+                }
                 if rel.get("rolle"):
-                    record[f"m3gim:{name}"] = rel["rolle"]
+                    detail_entry["m3gim:detailValue"] = rel["rolle"]
+                if rel.get("anmerkung"):
+                    detail_entry["rico:descriptiveNote"] = rel["anmerkung"]
+                if "m3gim:hasDetail" not in record:
+                    record["m3gim:hasDetail"] = []
+                record["m3gim:hasDetail"].append(detail_entry)
 
             elif t in ["ausgaben", "einnahmen", "summe"]:
-                # Finanz-Informationen
-                if rel.get("rolle"):
-                    record[f"m3gim:{t}"] = f"{name} {rel['rolle']}"
-                else:
-                    record[f"m3gim:{t}"] = name
+                # Finanz-Informationen als Detail-Objekt
+                detail_entry = {
+                    "@type": "m3gim:DetailAnnotation",
+                    "m3gim:detailField": t,
+                    "m3gim:detailValue": f"{name} {rel['rolle']}" if rel.get("rolle") else name
+                }
+                if "m3gim:hasDetail" not in record:
+                    record["m3gim:hasDetail"] = []
+                record["m3gim:hasDetail"].append(detail_entry)
 
         # Properties setzen (nur wenn nicht leer)
         if agents:
@@ -502,6 +523,12 @@ def add_relations_to_records(records: list, relations: dict):
             record["rico:isAssociatedWithDate"] = dates if len(dates) > 1 else dates[0]
         if roles:
             record["m3gim:hasPerformanceRole"] = roles if len(roles) > 1 else roles[0]
+
+        # Normalize detail arrays (single → unwrap)
+        if "m3gim:hasDetail" in record:
+            details = record["m3gim:hasDetail"]
+            if len(details) == 1:
+                record["m3gim:hasDetail"] = details[0]
 
 
 # ---------------------------------------------------------------------------

@@ -59,6 +59,16 @@ python scripts/build-views.py
 
 Output: `data/output/views/partitur.json`, `matrix.json`, `kosmos.json`, `sankey.json`
 
+### `audit-data.py`
+
+Validiert Alignment zwischen Quelldaten (XLSX), JSON-LD und Frontend-Views. Prueft Record-Vollstaendigkeit, Verknuepfungstypen, View-Konsistenz, Datenqualitaet und Handreichungs-Compliance.
+
+```bash
+python scripts/audit-data.py
+```
+
+Output: Konsolenreport mit Fehler/Warnungs-Zaehlung.
+
 ### `migrate.py` (Legacy)
 
 Einmalige Migration fuer fruehere AUGIAS-Exporte.

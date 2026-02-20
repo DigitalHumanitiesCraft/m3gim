@@ -1189,6 +1189,7 @@
       "@type": "rico:Record",
       "rico:identifier": "UAKUG/NIM_001",
       "rico:title": "Stefania Pawlyschyn: \"Geschichte einer Karriere\" Aus dem ukrainischen übertragen von Sofia Onufriv",
+      "m3gim:dateEvidence": "unbekannt",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:typoskript"
       },
@@ -1200,6 +1201,7 @@
       "@type": "rico:Record",
       "rico:identifier": "UAKUG/NIM_002",
       "rico:title": "Fotos für \"Ira Malaniuk - Stimme des Herzens\", Autobiographie einer Sängerin",
+      "m3gim:dateEvidence": "unbekannt",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:biographie"
       },
@@ -1212,6 +1214,7 @@
       "rico:identifier": "UAKUG/NIM_003 Folio",
       "rico:title": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
       "rico:date": "1944-01-01/1944-12-31",
+      "m3gim:dateEvidence": "aus_dokument",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:programmheft"
       },
@@ -1224,12 +1227,17 @@
       "rico:identifier": "UAKUG/NIM_003 1_1",
       "rico:title": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
       "rico:date": "1944-01-01/1944-12-31",
+      "m3gim:dateEvidence": "aus_dokument",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:programmheft"
       },
       "rico:hasOrHadLanguage": "de",
       "m3gim:bearbeitungsstand": "zurueckgestellt",
-      "m3gim:ausgaben": "15, RM erwähnt",
+      "m3gim:hasDetail": {
+        "@type": "m3gim:DetailAnnotation",
+        "m3gim:detailField": "ausgaben",
+        "m3gim:detailValue": "15, RM erwähnt"
+      },
       "rico:hasOrHadAgent": {
         "name": "Deutsches Musikinstitut für Ausländer",
         "role": "herausgeber:in",
@@ -1247,7 +1255,8 @@
       ],
       "rico:hasOrHadSubject": {
         "name": "Sommerkurse Deutsches Musikinstitut für Ausländer",
-        "role": "rahmenveranstaltung"
+        "role": "rahmenveranstaltung",
+        "@type": "m3gim:PerformanceEvent"
       },
       "rico:isAssociatedWithDate": "1944-05 bis 1944-09"
     },
@@ -1257,6 +1266,7 @@
       "rico:identifier": "UAKUG/NIM_003 1_2",
       "rico:title": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
       "rico:date": "1944-01-01/1944-12-31",
+      "m3gim:dateEvidence": "aus_dokument",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:programmheft"
       },
@@ -1379,6 +1389,7 @@
       "rico:identifier": "UAKUG/NIM_003 1_3",
       "rico:title": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
       "rico:date": "1944-01-01/1944-12-31",
+      "m3gim:dateEvidence": "aus_dokument",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:programmheft"
       },
@@ -1391,6 +1402,7 @@
       "rico:identifier": "UAKUG/NIM_003 1_4",
       "rico:title": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
       "rico:date": "1944-01-01/1944-12-31",
+      "m3gim:dateEvidence": "aus_dokument",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:programmheft"
       },
@@ -1403,6 +1415,7 @@
       "rico:identifier": "UAKUG/NIM_003 1_5",
       "rico:title": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
       "rico:date": "1944-01-01/1944-12-31",
+      "m3gim:dateEvidence": "aus_dokument",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:programmheft"
       },
@@ -1415,6 +1428,7 @@
       "rico:identifier": "UAKUG/NIM_003 1_6",
       "rico:title": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
       "rico:date": "1944-01-01/1944-12-31",
+      "m3gim:dateEvidence": "aus_dokument",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:programmheft"
       },
@@ -1427,6 +1441,7 @@
       "rico:identifier": "UAKUG/NIM_003 1_7",
       "rico:title": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
       "rico:date": "1944-01-01/1944-12-31",
+      "m3gim:dateEvidence": "aus_dokument",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:programmheft"
       },
@@ -1439,12 +1454,17 @@
       "rico:identifier": "UAKUG/NIM_003 1_8",
       "rico:title": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
       "rico:date": "1944-01-01/1944-12-31",
+      "m3gim:dateEvidence": "aus_dokument",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:programmheft"
       },
       "rico:hasOrHadLanguage": "de",
       "m3gim:bearbeitungsstand": "zurueckgestellt",
-      "m3gim:ausgaben": "150, RM erwähnt",
+      "m3gim:hasDetail": {
+        "@type": "m3gim:DetailAnnotation",
+        "m3gim:detailField": "ausgaben",
+        "m3gim:detailValue": "150, RM erwähnt"
+      },
       "rico:hasOrHadAgent": {
         "name": "Universität Mozarteum Salzburg",
         "role": "ausbildungsstätte",
@@ -1457,6 +1477,7 @@
       "rico:identifier": "UAKUG/NIM_003 1_9",
       "rico:title": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
       "rico:date": "1944-01-01/1944-12-31",
+      "m3gim:dateEvidence": "aus_dokument",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:programmheft"
       },
@@ -1469,6 +1490,7 @@
       "rico:identifier": "UAKUG/NIM_003 1_10",
       "rico:title": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
       "rico:date": "1944-01-01/1944-12-31",
+      "m3gim:dateEvidence": "aus_dokument",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:programmheft"
       },
@@ -1490,6 +1512,7 @@
       "rico:identifier": "UAKUG/NIM_004 1",
       "rico:title": "Kopie eines Briefumschlags adressiert an Malaniuk, Signatur und Poststempel aus New York",
       "rico:date": "1959-10-28",
+      "m3gim:dateEvidence": "aus_dokument",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:photokopie"
       },
@@ -1527,6 +1550,7 @@
       "rico:identifier": "UAKUG/NIM_004 2",
       "rico:title": "Rezension zu Lady Macbeth in der Verdi- Premiere der Staatsoper",
       "rico:date": "1952-12-16",
+      "m3gim:dateEvidence": "aus_dokument",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:rezension"
       },
@@ -1683,6 +1707,7 @@
       "rico:identifier": "UAKUG/NIM_004 3",
       "rico:title": "Rezension von Karl Schumann zu Macbeth",
       "rico:date": "1952-12-17",
+      "m3gim:dateEvidence": "aus_dokument",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:rezension"
       },
@@ -1779,6 +1804,7 @@
       "rico:identifier": "UAKUG/NIM_004 4",
       "rico:title": "Rezension von H. Schmidt-Garre zu Macbeth an der Bayerischen Staatsoper",
       "rico:date": "1952-12-18",
+      "m3gim:dateEvidence": "aus_dokument",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:rezension"
       },
@@ -1882,6 +1908,7 @@
       "rico:identifier": "UAKUG/NIM_004 5",
       "rico:title": "Rezension von K.H. Ruppel zu Orpheus und Eurydike in der Süddeutschen Zeitung",
       "rico:date": "1963-03-06",
+      "m3gim:dateEvidence": "aus_dokument",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:rezension"
       },
@@ -1994,6 +2021,7 @@
       "@type": "rico:Record",
       "rico:identifier": "UAKUG/NIM_004 6",
       "rico:title": "Rezension von Karl Schumann zur Premiere von Orpheus und Eurydike",
+      "m3gim:dateEvidence": "unbekannt",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:rezension"
       },
@@ -2061,6 +2089,7 @@
       "rico:identifier": "UAKUG/NIM_004 7",
       "rico:title": "Rezension von Dr. Joachim Bergfeld (Fränkische Presse) zur IX. Symphonie Beethovens",
       "rico:date": "1953-08-13",
+      "m3gim:dateEvidence": "aus_dokument",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:rezension"
       },
@@ -2186,6 +2215,7 @@
       "rico:identifier": "UAKUG/NIM_004 8",
       "rico:title": "Rezension von Helmut Schmidt-Garre",
       "rico:date": "1953-03-06",
+      "m3gim:dateEvidence": "aus_dokument",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:rezension"
       },
@@ -2301,6 +2331,7 @@
       "rico:identifier": "UAKUG/NIM_004 9",
       "rico:title": "Rezension von A. Parente zu Tristan und Isolde in Neapel",
       "rico:date": "1954-01-08",
+      "m3gim:dateEvidence": "aus_dokument",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:rezension"
       },
@@ -2454,6 +2485,7 @@
       "rico:identifier": "UAKUG/NIM_004 10",
       "rico:title": "Rezensionen aus der Fränkischen Presse zu \"Die Götterdämmerung\" und \"Tristan und Isolde\"",
       "rico:date": "1953-08-01",
+      "m3gim:dateEvidence": "aus_dokument",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:rezension"
       },
@@ -2721,6 +2753,7 @@
       "rico:identifier": "UAKUG/NIM_004 11",
       "rico:title": "Rezension zu Paul Hindemith in Köln",
       "rico:date": "1954-03-31",
+      "m3gim:dateEvidence": "aus_dokument",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:rezension"
       },
@@ -2816,6 +2849,7 @@
       "rico:identifier": "UAKUG/NIM_004 12",
       "rico:title": "Rezension von Dr. Kurt Honolka zu Titus",
       "rico:date": "1954-07-06",
+      "m3gim:dateEvidence": "aus_dokument",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:rezension"
       },
@@ -3028,6 +3062,7 @@
       "rico:identifier": "UAKUG/NIM_004 13",
       "rico:title": "Rezension zur Festvorstellung Meistersinger aus dem Münchner Merkur",
       "rico:date": "1954-08-14",
+      "m3gim:dateEvidence": "aus_dokument",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:rezension"
       },
@@ -3131,6 +3166,7 @@
       "rico:identifier": "UAKUG/NIM_004 14",
       "rico:title": "Rezension von ZED. zu Le Chant de la Terre in Straßburg unter Fritz Munch",
       "rico:date": "1954-10-28",
+      "m3gim:dateEvidence": "aus_dokument",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:rezension"
       },
@@ -3203,7 +3239,8 @@
         },
         {
           "name": "2e concert de l'abonnement",
-          "role": "aufführung"
+          "role": "aufführung",
+          "@type": "m3gim:PerformanceEvent"
         }
       ],
       "rico:isAssociatedWithDate": "1954-10-28"
@@ -3214,6 +3251,7 @@
       "rico:identifier": "UAKUG/NIM_004 15",
       "rico:title": "Rezension von Y. zu Tannhäuser",
       "rico:date": "1956-10-21",
+      "m3gim:dateEvidence": "aus_dokument",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:rezension"
       },
@@ -3432,6 +3470,7 @@
       "rico:identifier": "UAKUG/NIM_004 16",
       "rico:title": "Rezension von Y. zu Aida an der Wiener Staatsoper",
       "rico:date": "1956-05-01",
+      "m3gim:dateEvidence": "aus_dokument",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:rezension"
       },
@@ -3554,6 +3593,7 @@
       "rico:identifier": "UAKUG/NIM_004 17",
       "rico:title": "Rezension von ibe zu Aida an der Wiener Staatsoper",
       "rico:date": "1956-05-02",
+      "m3gim:dateEvidence": "aus_dokument",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:rezension"
       },
@@ -3650,6 +3690,7 @@
       "@type": "rico:Record",
       "rico:identifier": "UAKUG/NIM_004 18",
       "rico:title": "Rezension von Paul Tinel zu Tristan und Isolde am Teatre La Monnaie",
+      "m3gim:dateEvidence": "unbekannt",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:rezension"
       },
@@ -3856,6 +3897,7 @@
       "rico:identifier": "UAKUG/NIM_004 19",
       "rico:title": "Rezension von René Dumesnil zu Tristan und Isolde in Paris",
       "rico:date": "1956-05-13/1956-05-14",
+      "m3gim:dateEvidence": "aus_dokument",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:rezension"
       },
@@ -4016,6 +4058,7 @@
       "rico:identifier": "UAKUG/NIM_004 22",
       "rico:title": "Brief von Ira Malaniuk an Cox vom 07.09.1957",
       "rico:date": "1957-09-07",
+      "m3gim:dateEvidence": "aus_dokument",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:brief"
       },
@@ -4034,6 +4077,7 @@
       "rico:identifier": "UAKUG/NIM_004 23",
       "rico:title": "Brief von Ira Malaniuk an Cox vom 26.11.1957",
       "rico:date": "1957-11-26",
+      "m3gim:dateEvidence": "aus_dokument",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:brief"
       },
@@ -4075,6 +4119,7 @@
       "@type": "rico:Record",
       "rico:identifier": "UAKUG/NIM_004 24",
       "rico:title": "Kurzbiografie  von Ira Malaniuk als Typoscript (vermutlich als Anhang eines Briefes)",
+      "m3gim:dateEvidence": "unbekannt",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:biographie"
       },
@@ -4329,6 +4374,7 @@
       "rico:identifier": "UAKUG/NIM_004 25",
       "rico:title": "NCAC Newsletter über Künstler:innen (Ira Malaniuk - Hugh Thompson)",
       "rico:date": "1958-04-09",
+      "m3gim:dateEvidence": "aus_dokument",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:typoskript"
       },
@@ -4389,6 +4435,7 @@
       "rico:identifier": "UAKUG/NIM_004 26",
       "rico:title": "Rezension von Herbert Kupferberg zu Mozarts Requiem und Schuberts Messe in Es-Dur mit Ira Malaniuk",
       "rico:date": "1959-01-02",
+      "m3gim:dateEvidence": "aus_dokument",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:rezension"
       },
@@ -4402,6 +4449,7 @@
       "rico:identifier": "UAKUG/NIM_004 27",
       "rico:title": "Brief von Margaret Snider an Ira Malaniuk vom 27.10.1959",
       "rico:date": "1959-10-27",
+      "m3gim:dateEvidence": "aus_dokument",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:brief"
       },
@@ -4452,6 +4500,7 @@
       "@type": "rico:Record",
       "rico:identifier": "UAKUG/NIM_004 28",
       "rico:title": "NCAC Newsletter über Aktivitäten von div. Künstler:innen page 2 (Adele Addison-Ilona Kombrink)",
+      "m3gim:dateEvidence": "aus_dokument",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:typoskript"
       },
@@ -4507,11 +4556,13 @@
       "rico:hasOrHadSubject": [
         {
           "name": "Salzburg Festival",
-          "role": "aufführung"
+          "role": "aufführung",
+          "@type": "m3gim:PerformanceEvent"
         },
         {
           "name": "Bartok Festival",
-          "role": "aufführung"
+          "role": "aufführung",
+          "@type": "m3gim:PerformanceEvent"
         },
         {
           "name": "Bluebarts Castle",
@@ -4535,6 +4586,7 @@
       "@type": "rico:Record",
       "rico:identifier": "UAKUG/NIM_004 29",
       "rico:title": "Memorandum von Dr. Henry W. levinger (vermutlich eine Kopie von Malaniuk 004_24)",
+      "m3gim:dateEvidence": "unbekannt",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:biographie"
       },
@@ -4802,6 +4854,7 @@
       "@type": "rico:Record",
       "rico:identifier": "UAKUG/NIM_004 30",
       "rico:title": "Liste des Opernrepertoires von Ira Malaniuk mit persönlichem Stempel",
+      "m3gim:dateEvidence": "unbekannt",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:dokument"
       },
@@ -5178,6 +5231,7 @@
       "@type": "rico:Record",
       "rico:identifier": "UAKUG/NIM_004 31",
       "rico:title": "Rezension von Laurent Savelli zu Der Rosenkavalier in der Opéra de Monte-Carlo",
+      "m3gim:dateEvidence": "unbekannt",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:rezension"
       },
@@ -5374,6 +5428,7 @@
       "@type": "rico:Record",
       "rico:identifier": "UAKUG/NIM_004 32",
       "rico:title": "Rezension zu der Oper Capriccio",
+      "m3gim:dateEvidence": "unbekannt",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:rezension"
       },
@@ -5408,6 +5463,7 @@
       "@type": "rico:Record",
       "rico:identifier": "UAKUG/NIM_004 33",
       "rico:title": "Rezension von Harald Kaufmann über Orchesterkonzert unter Caridis in Graz",
+      "m3gim:dateEvidence": "unbekannt",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:rezension"
       },
@@ -5546,6 +5602,7 @@
       "rico:identifier": "UAKUG/NIM_004 34",
       "rico:title": "Rezension über Altistinnen der Wiener Opernbühne",
       "rico:date": "2026-09-06",
+      "m3gim:dateEvidence": "aus_dokument",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:zeitungsausschnitt"
       },
@@ -5636,6 +5693,7 @@
       "rico:identifier": "UAKUG/NIM_007 1",
       "rico:title": "Brief von Felix Ballhausen zu Dienstverträgen Staatsoper München",
       "rico:date": "1952-03-18",
+      "m3gim:dateEvidence": "aus_dokument",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:brief"
       },
@@ -5682,6 +5740,7 @@
       "rico:identifier": "UAKUG/NIM_007 2",
       "rico:title": "Brief von Martin H. Taubman zu Verträgen mit Buenos Aires, Neapel, Wien",
       "rico:date": "1952-05-27",
+      "m3gim:dateEvidence": "aus_dokument",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:brief"
       },
@@ -5811,6 +5870,7 @@
       "rico:identifier": "UAKUG/NIM_007 3",
       "rico:title": "Ausweis für Bayreuther Festspiele 1953",
       "rico:date": "1953-07-06",
+      "m3gim:dateEvidence": "aus_dokument",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:ausweis"
       },
@@ -5843,7 +5903,8 @@
       },
       "rico:hasOrHadSubject": {
         "name": "Bayreuther Festspiele",
-        "role": "rahmenveranstaltung"
+        "role": "rahmenveranstaltung",
+        "@type": "m3gim:PerformanceEvent"
       },
       "rico:isAssociatedWithDate": "1953-07-06"
     },
@@ -5853,13 +5914,35 @@
       "rico:identifier": "UAKUG/NIM_007 4",
       "rico:title": "Brief von Ernst Kühnly zu Gastspiel in Lissabon an Martin H. Taubman",
       "rico:date": "1953-09-29",
+      "m3gim:dateEvidence": "aus_dokument",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:brief"
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "m3gim:einnahmen": "6000, Esc abendgage",
+      "m3gim:hasDetail": [
+        {
+          "@type": "m3gim:DetailAnnotation",
+          "m3gim:detailField": "einnahmen",
+          "m3gim:detailValue": "4000, Esc abendgage"
+        },
+        {
+          "@type": "m3gim:DetailAnnotation",
+          "m3gim:detailField": "einnahmen",
+          "m3gim:detailValue": "2500, Esc abendgage"
+        },
+        {
+          "@type": "m3gim:DetailAnnotation",
+          "m3gim:detailField": "einnahmen",
+          "m3gim:detailValue": "1500, Esc abendgage"
+        },
+        {
+          "@type": "m3gim:DetailAnnotation",
+          "m3gim:detailField": "einnahmen",
+          "m3gim:detailValue": "6000, Esc abendgage"
+        }
+      ],
       "rico:hasOrHadAgent": [
         {
           "name": "SAS Scandinavian Airlines",
@@ -5988,6 +6071,7 @@
       "@type": "rico:Record",
       "rico:identifier": "UAKUG/NIM_007 5",
       "rico:title": "6 Kassa-Eingänge mit handschriftlicher Notiz",
+      "m3gim:dateEvidence": "aus_dokument",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:konvolut"
       },
@@ -6001,15 +6085,40 @@
       "rico:identifier": "UAKUG/NIM_007 5_1",
       "rico:title": "Handschriftliche Notiz",
       "rico:date": "1957",
+      "m3gim:dateEvidence": "aus_dokument",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:notiz"
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "m3gim:ausgaben": "18000 erwähnt",
-      "m3gim:einnahmen": "90000 erwähnt",
-      "m3gim:summe": "180000 erwähnt",
+      "m3gim:hasDetail": [
+        {
+          "@type": "m3gim:DetailAnnotation",
+          "m3gim:detailField": "ausgaben",
+          "m3gim:detailValue": "36000 erwähnt"
+        },
+        {
+          "@type": "m3gim:DetailAnnotation",
+          "m3gim:detailField": "ausgaben",
+          "m3gim:detailValue": "18000 erwähnt"
+        },
+        {
+          "@type": "m3gim:DetailAnnotation",
+          "m3gim:detailField": "einnahmen",
+          "m3gim:detailValue": "90000 erwähnt"
+        },
+        {
+          "@type": "m3gim:DetailAnnotation",
+          "m3gim:detailField": "einnahmen",
+          "m3gim:detailValue": "90000 erwähnt"
+        },
+        {
+          "@type": "m3gim:DetailAnnotation",
+          "m3gim:detailField": "summe",
+          "m3gim:detailValue": "180000 erwähnt"
+        }
+      ],
       "rico:hasOrHadLocation": {
         "name": "Paris",
         "role": "erwähnt"
@@ -6045,13 +6154,18 @@
       "rico:identifier": "UAKUG/NIM_007 5_2",
       "rico:title": "Kassa-Eingang, Einzahlungsnachweis der Konzertdirektion, 1957-05-01",
       "rico:date": "1957-05-01",
+      "m3gim:dateEvidence": "aus_dokument",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:quittung"
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "m3gim:ausgaben": "2600, S provision",
+      "m3gim:hasDetail": {
+        "@type": "m3gim:DetailAnnotation",
+        "m3gim:detailField": "ausgaben",
+        "m3gim:detailValue": "2600, S provision"
+      },
       "rico:hasOrHadAgent": [
         {
           "name": "Konzertdirektion",
@@ -6111,13 +6225,18 @@
       "rico:identifier": "UAKUG/NIM_007 5_3",
       "rico:title": "Kassa-Eingang, Einzahlungsnachweis der Konzertdirektion, 1957-06-24",
       "rico:date": "1957-06-24",
+      "m3gim:dateEvidence": "aus_dokument",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:quittung"
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "m3gim:ausgaben": "360, S provision",
+      "m3gim:hasDetail": {
+        "@type": "m3gim:DetailAnnotation",
+        "m3gim:detailField": "ausgaben",
+        "m3gim:detailValue": "360, S provision"
+      },
       "rico:hasOrHadAgent": [
         {
           "name": "Konzertdirektion",
@@ -6157,13 +6276,18 @@
       "rico:identifier": "UAKUG/NIM_007 5_4",
       "rico:title": "Kassa-Eingang, Einzahlungsnachweis der Konzertdirektion, 1957-06-30",
       "rico:date": "1957-06-30",
+      "m3gim:dateEvidence": "aus_dokument",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:quittung"
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "m3gim:ausgaben": "2500, S provision",
+      "m3gim:hasDetail": {
+        "@type": "m3gim:DetailAnnotation",
+        "m3gim:detailField": "ausgaben",
+        "m3gim:detailValue": "2500, S provision"
+      },
       "rico:hasOrHadAgent": [
         {
           "name": "Konzertdirektion",
@@ -6223,13 +6347,18 @@
       "rico:identifier": "UAKUG/NIM_007 5_5",
       "rico:title": "Kassa-Eingang, Einzahlungsnachweis der Konzertdirektion, 1957-10-31",
       "rico:date": "1957-10-31",
+      "m3gim:dateEvidence": "aus_dokument",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:quittung"
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "m3gim:ausgaben": "4000, S provision",
+      "m3gim:hasDetail": {
+        "@type": "m3gim:DetailAnnotation",
+        "m3gim:detailField": "ausgaben",
+        "m3gim:detailValue": "4000, S provision"
+      },
       "rico:hasOrHadAgent": [
         {
           "name": "Wiener Staatsoper",
@@ -6279,13 +6408,18 @@
       "rico:identifier": "UAKUG/NIM_007 5_6",
       "rico:title": "Kassa-Eingang, Einzahlungsnachweis der Konzertdirektion, 1957-12-05",
       "rico:date": "1957-12-05",
+      "m3gim:dateEvidence": "aus_dokument",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:quittung"
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "m3gim:ausgaben": "510, S provision",
+      "m3gim:hasDetail": {
+        "@type": "m3gim:DetailAnnotation",
+        "m3gim:detailField": "ausgaben",
+        "m3gim:detailValue": "510, S provision"
+      },
       "rico:hasOrHadAgent": [
         {
           "name": "Konzertdirektion",
@@ -6334,13 +6468,18 @@
       "rico:identifier": "UAKUG/NIM_007 5_7",
       "rico:title": "Kassa-Eingang, Einzahlungsnachweis der Konzertdirektion, 1957-03-13",
       "rico:date": "1958-03-13",
+      "m3gim:dateEvidence": "aus_dokument",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:quittung"
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "m3gim:ausgaben": "5500, S provision",
+      "m3gim:hasDetail": {
+        "@type": "m3gim:DetailAnnotation",
+        "m3gim:detailField": "ausgaben",
+        "m3gim:detailValue": "5500, S provision"
+      },
       "rico:hasOrHadAgent": [
         {
           "name": "Konzertdirektion",
@@ -6385,13 +6524,18 @@
       "rico:identifier": "UAKUG/NIM_007 5_8",
       "rico:title": "Einzahlungsbestätigung (?) Dr. Baasch an Martin Hugo Taubman, 1957-05-15",
       "rico:date": "1957-05-15",
+      "m3gim:dateEvidence": "aus_dokument",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:quittung"
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "m3gim:ausgaben": "631,50, Fr. erwähnt",
+      "m3gim:hasDetail": {
+        "@type": "m3gim:DetailAnnotation",
+        "m3gim:detailField": "ausgaben",
+        "m3gim:detailValue": "631,50, Fr. erwähnt"
+      },
       "rico:hasOrHadAgent": [
         {
           "name": "Aktiengesellschaft Leu & Co.",
@@ -6430,13 +6574,18 @@
       "rico:identifier": "UAKUG/NIM_007 6",
       "rico:title": "Mittelung über Honorar für Sendung Paradies und Peri 1959 von Nord- und Westdeutscher Rundfunkverband",
       "rico:date": "1959-05-09",
+      "m3gim:dateEvidence": "aus_dokument",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:quittung"
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "m3gim:einnahmen": "1360, DM erwähnt",
+      "m3gim:hasDetail": {
+        "@type": "m3gim:DetailAnnotation",
+        "m3gim:detailField": "einnahmen",
+        "m3gim:detailValue": "1360, DM erwähnt"
+      },
       "rico:hasOrHadAgent": [
         {
           "name": "Nord- und Westdeutscher Rundfunkverband",
@@ -6475,6 +6624,7 @@
       "rico:identifier": "UAKUG/NIM_007 7",
       "rico:title": "Brief von Intendanz der Bayerischen Staatsoper zu Gastspielvertrag und Schiedsvertrag 1961/62 an Ira Malaniuk",
       "rico:date": "1961-11-21",
+      "m3gim:dateEvidence": "aus_dokument",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:brief"
       },
@@ -6515,6 +6665,7 @@
       "rico:identifier": "UAKUG/NIM_007 8",
       "rico:title": "Konzertprogramm, Liederabend, Palais Pallavicini, 1963-08-28",
       "rico:date": "1963-08-28",
+      "m3gim:dateEvidence": "aus_dokument",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:programmheft"
       },
@@ -6616,7 +6767,8 @@
       "rico:hasOrHadSubject": [
         {
           "name": "Abendkonzerte in Wiener Palais",
-          "role": "veranstalter:in"
+          "role": "veranstalter:in",
+          "@type": "m3gim:PerformanceEvent"
         },
         {
           "name": "Vergin tutt' amor",
@@ -6774,13 +6926,18 @@
       "rico:identifier": "UAKUG/NIM_007 9",
       "rico:title": "Brief von Emil Jucker an Ira Malaniuk über ein Gastspiel in Zürich",
       "rico:date": "1963-03-08",
+      "m3gim:dateEvidence": "aus_dokument",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:brief"
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "m3gim:einnahmen": "1200, Fr abendgage",
+      "m3gim:hasDetail": {
+        "@type": "m3gim:DetailAnnotation",
+        "m3gim:detailField": "einnahmen",
+        "m3gim:detailValue": "1200, Fr abendgage"
+      },
       "rico:hasOrHadAgent": [
         {
           "name": "Malaniuk, Ira",
@@ -6842,6 +6999,7 @@
       "rico:identifier": "UAKUG/NIM_007 10",
       "rico:title": "(Dienst)brief von Intendanz der Bayerischen Staatoper zu den Festspielen an Ira Malaniuk, 1964-08-18",
       "rico:date": "1964-08-18",
+      "m3gim:dateEvidence": "aus_dokument",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:brief"
       },
@@ -6879,7 +7037,8 @@
       ],
       "rico:hasOrHadSubject": {
         "name": "Festspiele 1964",
-        "role": "erwähnt"
+        "role": "erwähnt",
+        "@type": "m3gim:PerformanceEvent"
       },
       "rico:isAssociatedWithDate": [
         "1964",
@@ -6892,6 +7051,7 @@
       "rico:identifier": "UAKUG/NIM_007 11",
       "rico:title": "Brief vom Sekretär der Tonhalle-Gesellschaft Zürich zu Bestätigung von Konzerten und Probezeiten",
       "rico:date": "1968-11-18",
+      "m3gim:dateEvidence": "aus_dokument",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:brief"
       },
@@ -6950,6 +7110,7 @@
       "rico:identifier": "UAKUG/NIM_007 12",
       "rico:title": "Rezension von Gerhard Bauer zu Der Wildschütz (Arbeiter Zeitung)",
       "rico:date": "1968-09-25",
+      "m3gim:dateEvidence": "aus_dokument",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:rezension"
       },
@@ -7081,6 +7242,7 @@
       "@type": "rico:Record",
       "rico:identifier": "UAKUG/NIM_007 13",
       "rico:title": "Rezension von Karl Löbl zu Der Wildschütz o.D.",
+      "m3gim:dateEvidence": "unbekannt",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:rezension"
       },
@@ -7212,6 +7374,7 @@
       "rico:identifier": "UAKUG/NIM_007 14",
       "rico:title": "Rezension von k-e-p zu Der Wildschütz (Wiener Zeitung)",
       "rico:date": "1968-09-25",
+      "m3gim:dateEvidence": "aus_dokument",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:rezension"
       },
@@ -7342,6 +7505,7 @@
       "@type": "rico:Record",
       "rico:identifier": "UAKUG/NIM_007 15",
       "rico:title": "Rezension von Rudolf Weishappel zu Der Wildschütz",
+      "m3gim:dateEvidence": "unbekannt",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:rezension"
       },
@@ -7475,6 +7639,7 @@
       "@type": "rico:Record",
       "rico:identifier": "UAKUG/NIM_007 16",
       "rico:title": "Rezension von Rudolf Weishappel zu Der Wildschütz",
+      "m3gim:dateEvidence": "unbekannt",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:rezension"
       },
@@ -7610,6 +7775,7 @@
       "rico:identifier": "UAKUG/NIM_007 17",
       "rico:title": "Rezension zu Der Wildschütz",
       "rico:date": "1968-09-25",
+      "m3gim:dateEvidence": "aus_dokument",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:rezension"
       },
@@ -7726,13 +7892,18 @@
       "@type": "rico:Record",
       "rico:identifier": "UAKUG/NIM_007 18",
       "rico:title": "Konzertprogramm, Liederabend, im Garten der Hugo-Wolf Gedenkstätte",
+      "m3gim:dateEvidence": "unbekannt",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:programmheft"
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "m3gim:summe": "2, S erwähnt",
+      "m3gim:hasDetail": {
+        "@type": "m3gim:DetailAnnotation",
+        "m3gim:detailField": "summe",
+        "m3gim:detailValue": "2, S erwähnt"
+      },
       "rico:hasOrHadAgent": [
         {
           "name": "Philharmoniaquartett",
@@ -7789,7 +7960,8 @@
       "rico:hasOrHadSubject": [
         {
           "name": "Serenade",
-          "role": "rahmenveranstaltung"
+          "role": "rahmenveranstaltung",
+          "@type": "m3gim:PerformanceEvent"
         },
         {
           "name": "Führ mich, Kind, nach Bethlehem",
@@ -7888,6 +8060,7 @@
       "@type": "rico:Record",
       "rico:identifier": "UAKUG/NIM_007 19",
       "rico:title": "Visitenkarte der Konzertgesellschaft Zürich",
+      "m3gim:dateEvidence": "unbekannt",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:visitenkarte"
       },
@@ -7909,6 +8082,7 @@
       "@type": "rico:Record",
       "rico:identifier": "UAKUG/NIM_007 20",
       "rico:title": "Briefummschlag von Ira Malaniuk an Deutsche Oper Berlin",
+      "m3gim:dateEvidence": "unbekannt",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:brief"
       },
@@ -7944,6 +8118,7 @@
       "@type": "rico:Record",
       "rico:identifier": "UAKUG/NIM_007 21",
       "rico:title": "Briefummschlag von Ira Malaniuk an Stadttheater Zürich",
+      "m3gim:dateEvidence": "unbekannt",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:brief"
       },
@@ -9721,7 +9896,7 @@
       "rico:hasExtent": "1 days 06:00:00"
     }
   ],
-  "m3gim:exportDate": "2026-02-20T18:08:53.931151",
+  "m3gim:exportDate": "2026-02-20T20:45:35.974642",
   "m3gim:recordCount": 282,
   "m3gim:konvolutCount": 3
 }

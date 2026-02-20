@@ -10,6 +10,7 @@
 3. [Datenmodell und Ontologie](datenmodell-ontologie.md)
 4. [Produkt, UI und Visualisierungen](produkt-ui-visualisierungen.md)
 5. [Operativer Plan (Claude)](operativer-plan-claude.md)
+6. [Wissensarchitektur](wissensarchitektur.md)
 
 ## Steuerdokumente
 

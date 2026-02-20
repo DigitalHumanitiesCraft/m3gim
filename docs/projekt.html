@@ -4,30 +4,29 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Projekt — M³GIM</title>
-  <meta name="description" content="Quellenbeschreibung, Tektonik und Erschließungsprozess des Teilnachlasses Ira Malaniuk (UAKUG/NIM).">
+  <meta name="description" content="Forschungsrahmen, Quellenbestand, Tektonik und Erschließungsprozess des Teilnachlasses Ira Malaniuk (UAKUG/NIM).">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap">
 
   <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/pages.css">
 </head>
 <body class="info-page">
 
-  <header class="info-header">
-    <a href="index.html" class="info-header__brand">M³GIM</a>
-    <span class="info-header__subtitle">Teilnachlass Ira Malaniuk — UAKUG/NIM</span>
-    <div class="info-header__spacer"></div>
-    <a href="index.html" class="info-header__back">← Archiv</a>
+  <header class="app-header">
+    <a href="index.html" class="app-header__brand">M³GIM</a>
+    <div class="app-header__subtitle">Teilnachlass Ira Malaniuk — UAKUG/NIM</div>
+    <div class="app-header__spacer"></div>
+    <nav class="app-header__nav" aria-label="Informationsseiten">
+      <a href="about.html">Über</a>
+      <a href="projekt.html" class="active">Projekt</a>
+      <a href="modell.html">Modell</a>
+      <a href="hilfe.html">Hilfe</a>
+    </nav>
   </header>
-
-  <nav class="info-nav" aria-label="Informationsseiten">
-    <a href="about.html">Über</a>
-    <a href="projekt.html" class="active">Projekt</a>
-    <a href="modell.html">Modell</a>
-    <a href="hilfe.html">Hilfe</a>
-  </nav>
 
   <main class="info-main">
     <article class="page">
@@ -35,24 +34,124 @@
       <header class="page__header">
         <h1 class="page__title">Projekt</h1>
         <p class="page__lead">
-          Der Teilnachlass der Mezzosopranistin Ira Malaniuk (1919–2009) an der
-          Kunstuniversität Graz — Quellen, Tektonik und Erschließungsprozess.
+          Mobilität und Musiktheaterwissen im Graz der Nachkriegszeit — Forschungsrahmen,
+          Quellenbestand und Erschließungsprozess.
         </p>
       </header>
+
+      <section class="page__section">
+        <h2>Forschungsfragen</h2>
+        <p>
+          M³GIM ist als Machbarkeitsstudie konzipiert und evaluiert, ob die Kombination
+          aus digitaler Quellenerschließung, datenbasierter Modellierung und Analyse
+          mobilitätshistorischer Indikatoren für eine gendersensible digitale
+          Mobilitätsforschung tragfähig ist. Die Pilotstudie liefert methodische
+          Validierung, technische Infrastruktur und erste empirische Ergebnisse als
+          Grundlage für ein geplantes FWF-Folgeprojekt.
+        </p>
+        <p>
+          Das Projekt untersucht vier Leitfragen:
+        </p>
+        <ol>
+          <li>
+            Wie prägten Sänger:innen die Musik- und Theaterkultur von Graz und welche
+            Rolle spielte ihre Mobilität für Professionalisierung und Vernetzung?
+          </li>
+          <li>
+            Welche narrativen und ästhetischen Strukturen wurden durch die Migration von
+            Künstler:innen beeinflusst, und wie trugen diese zur Transformation des
+            Operngenres nach dem Zweiten Weltkrieg bei?
+          </li>
+          <li>
+            Wie wurde Musiktheaterwissen durch Mobilität transferiert und in neuen
+            Kontexten adaptiert?
+          </li>
+          <li>
+            Welche spezifischen Mobilitätsformen lassen sich am Beispiel Malaniuks
+            identifizieren, und wie beeinflussten diese ihre Karriere sowie die
+            Wissensproduktion?
+          </li>
+        </ol>
+        <p>
+          Hypothese: Die Mobilität von Sänger:innen war nicht nur notwendige Voraussetzung
+          für ihre Karriere, sondern auch Katalysator für die Entstehung neuer
+          Wissenskulturen und ästhetischer Paradigmen im Musiktheater.
+        </p>
+      </section>
+
+      <section class="page__section">
+        <h2>Theoretischer Rahmen</h2>
+        <p>
+          Das Projekt verortet sich im Feld der Mobility Studies (Urry 2007,
+          Hannam/Sheller/Urry 2006) und erweitert diese um musikwissenschaftliche und
+          genderspezifische Perspektiven. Es baut auf den Ergebnissen der DH-Projekte
+          MUSICI (Goulet/zur Nieden, musici.eu) und MusMig (Katalinić, HERA) auf,
+          die auf die Frühe Neuzeit beschränkt blieben, und schließt die Lücke zum
+          20.&nbsp;Jahrhundert.
+        </p>
+        <dl class="page__layers">
+          <dt>Erweiterter Mobilitätsbegriff</dt>
+          <dd>
+            Nicole K. Strohmann fasst Mobilität über die rein geografische Dimension hinaus
+            als epistemologische Analysekategorie: Formen mentaler, kultureller,
+            intellektueller und künstlerischer Bewegung. Analytisch wird zwischen
+            Motilität (Bewegungsfähigkeit als Voraussetzung) und tatsächlich realisierter
+            Mobilität unterschieden.
+          </dd>
+          <dt>Musiktheaterwissen</dt>
+          <dd>
+            Flüchtiges, oft mündlich überliefertes Wissen, das durch Mobilität transferiert
+            und in neuen Kontexten adaptiert wird. Sänger:innen werden nicht nur als
+            Interpret:innen, sondern als aktive Produzent:innen und Vermittler:innen von
+            Theaterwissen betrachtet.
+          </dd>
+          <dt>Mobilitätstypen</dt>
+          <dd>
+            Das Projekt unterscheidet fünf Typen: nationale Mobilität (z.&nbsp;B. durch
+            Heirat), geografische Mobilität (Hin- und Hergerissensein zwischen Orten),
+            erzwungene Migration (Flucht und Vertreibung), Bildungsmobilität
+            (Ausbildung) und Lebensstil-Migration.
+          </dd>
+        </dl>
+      </section>
+
+      <section class="page__section">
+        <h2>Oper Graz als Forschungskontext</h2>
+        <p>
+          Das Grazer Opernhaus dient als exemplarischer Nukleus für die Analyse
+          von Mobilitätsprozessen. Der räumliche Fokus liegt auf der Nachkriegszeit
+          (1945–1969). Trotz der kulturhistorischen Bedeutung des Hauses sind
+          wesentliche Forschungslücken identifiziert: die NS-Zeit am Grazer Opernhaus,
+          das Haus als Karrierestation, die Mobilität von Opernsängerinnen mit
+          Graz-Bezug und die transnationalen Verflechtungen weiblicher Mobilität
+          in der Musiktheatergeschichte.
+        </p>
+        <p>
+          Malaniuk fungiert als zentrale Figur für das in Presseerzeugnissen und
+          mündlichen Überlieferungen verbreitete Narrativ von der „Stadt Graz als
+          Sprungbrett" für internationale Bühnenkarrieren. Ihr erstes Festengagement
+          als Altistin am Grazer Opernhaus (1945–1947) bildete den Ausgangspunkt
+          einer internationalen Karriere an Häusern wie der Bayerischen Staatsoper,
+          der Wiener Staatsoper, den Bayreuther und Salzburger Festspielen, dem
+          Teatro Colón Buenos Aires und dem Royal Opera House Covent Garden London.
+        </p>
+      </section>
 
       <section class="page__section">
         <h2>Der Teilnachlass</h2>
         <p>
           Das Universitätsarchiv der Kunstuniversität Graz (UAKUG) bewahrt einen
-          Teilnachlass der ukrainisch-österreichischen Mezzosopranistin Ira Malaniuk
-          unter der Signatur UAKUG/NIM. Die Materialien dokumentieren eine internationale
-          Opernkarriere, die von Lemberg über Zürich und München bis nach Wien, Bayreuth,
-          Buenos Aires und London führte.
+          Teilnachlass der Mezzosopranistin Ira Malaniuk unter der Signatur UAKUG/NIM.
+          Die Materialien dokumentieren Programme, Korrespondenzen, Verträge,
+          Rezensionen, Plakate, Urkunden und persönliche Dokumente aus dem Zeitraum
+          1934 bis 2009.
         </p>
         <p>
-          Der Bestand umfasst Programme, Korrespondenzen, Verträge, Rezensionen, Plakate,
-          Urkunden und persönliche Dokumente aus dem Zeitraum 1934 bis 2009. Er ist eine
-          zentrale Quelle für die Erforschung künstlerischer Mobilität im 20.&nbsp;Jahrhundert.
+          Der Bestand wurde im Rahmen des Seminars „Mobile Musicians: Geschlecht,
+          Mobilität und Musikpraxis im 19. und 20.&nbsp;Jahrhundert" (WS 2024/25,
+          Leitung Strohmann) vollständig gesichtet. Clara Nithack erstellte einen
+          tabellarischen Lebenslauf und eine annotierte Übersichtstabelle des
+          Quellenbestands als Vorarbeit.
         </p>
       </section>
 
@@ -121,24 +220,24 @@
           </dd>
           <dt>Schicht 2 — Verknüpfungen</dt>
           <dd>
-            Verbindung der Objekte mit Personen, Organisationen, Orten und Werken.
-            Jede Verknüpfung erhält eine Rolle (z.&nbsp;B. Absender, Aufführungsort,
-            erwähntes Werk). Aktuell haben 62 von 282 Objekten (22&thinsp;%) mindestens
-            eine Verknüpfung.
+            Verbindung der Objekte mit Personen, Organisationen, Orten, Werken und
+            Ereignissen. Jede Verknüpfung erhält eine Rolle (z.&nbsp;B. Verfasser,
+            Aufführungsort, Vertragspartner, Rahmenveranstaltung). Aktuell haben
+            62 von 282 Objekten (22&thinsp;%) mindestens eine Verknüpfung.
           </dd>
-          <dt>Schicht 3 — Interpretation</dt>
+          <dt>Schicht 3 — Vertiefte Erschließung</dt>
           <dd>
-            Kontextualisierung und wissenschaftliche Einordnung: Mobilitätskategorien,
-            biografische Zuordnung, Netzwerkanalyse. Diese Schicht wird in den
-            Visualisierungen sichtbar.
+            Detailinformationen wie Honorare, Nebenleistungen und Gagen. Kontextualisierung
+            und wissenschaftliche Einordnung: Mobilitätskategorien, biografische Zuordnung,
+            Netzwerkanalyse.
           </dd>
         </dl>
       </section>
 
       <section class="page__section">
-        <h2>Modellierung</h2>
+        <h2>Datenpipeline</h2>
         <p>
-          Die erfassten Daten werden über eine automatisierte Pipeline in ein
+          Die erfassten Daten werden über eine automatisierte Python-Pipeline in ein
           strukturiertes Format überführt:
         </p>
         <ol class="page__pipeline">
@@ -159,9 +258,9 @@
         </ol>
         <p>
           Das resultierende Datenmodell beschreibt Archiveinheiten, ihre Verknüpfungen zu
-          Personen, Orten, Institutionen und Werken sowie die semantischen Rollen dieser
-          Beziehungen. Eine detaillierte Beschreibung der Ontologie, Verknüpfungstypen
-          und Identifikatoren findet sich auf der Seite
+          Personen, Orten, Institutionen, Werken und Ereignissen sowie die semantischen
+          Rollen dieser Beziehungen. Eine detaillierte Beschreibung der Ontologie,
+          Verknüpfungstypen und Identifikatoren findet sich auf der Seite
           <a href="modell.html" class="page__link">Datenmodell</a>.
         </p>
       </section>
@@ -183,8 +282,10 @@
     </article>
   </main>
 
-  <footer class="info-footer">
+  <footer class="app-footer">
     <span>KUG Graz — Universitätsarchiv</span>
+    <span>·</span>
+    <a href="impressum.html">Impressum</a>
     <span>·</span>
     <a href="https://github.com/DigitalHumanitiesCraft/m3gim" target="_blank" rel="noopener">GitHub</a>
     <span>·</span>
