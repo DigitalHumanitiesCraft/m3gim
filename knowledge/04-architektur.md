@@ -8,7 +8,7 @@
 
 ```
 Google Drive (6 Spreadsheets als XLSX)
-    ↓ Download als ZIP → data/input/
+    ↓ Download als XLSX → data/google-spreadsheet/
 explore.py          → data/reports/exploration-report.md
 validate.py         → data/reports/validation-report.md
 create-ric-json.py  → data/output/m3gim.jsonld
@@ -21,9 +21,9 @@ docs/data/*.json    → GitHub Pages Frontend
 
 | Script | Funktion | Input | Output |
 |---|---|---|---|
-| explore.py | Datenstruktur-Analyse | data/input/ (XLSX oder ZIP) | exploration-report.md |
+| explore.py | Datenstruktur-Analyse | data/google-spreadsheet/ | exploration-report.md |
 | migrate.py | AUGIAS-Export → formatierte Excel (einmalig) | AUGIAS-XLSX | Excel mit Validierung |
-| validate.py | Datenqualitätsprüfung | data/input/ XLSX | validation-report.md |
+| validate.py | Datenqualitätsprüfung | data/google-spreadsheet/ XLSX | validation-report.md |
 | create-ric-json.py | Google Sheets → JSON-LD (RiC-O 1.1) | 6 XLSX | m3gim.jsonld |
 | build-views.py | JSON-LD → View-Aggregationen | m3gim.jsonld | 4 View-JSONs |
 
@@ -35,7 +35,7 @@ Details: siehe [`scripts/README.md`](../scripts/README.md)
 
 ```
 data/
-├── input/              # Google Sheets XLSX-Exporte (ZIP entpackt)
+├── google-spreadsheet/ # Google Sheets XLSX-Exporte
 ├── output/             # Generierte Dateien (JSON-LD, View-JSONs)
 ├── reports/            # Exploration- und Validierungsreports
 └── archive-export/     # Originale AUGIAS-Exporte (einmalig)

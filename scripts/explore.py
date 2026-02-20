@@ -5,17 +5,22 @@ Analysiert Google-Sheets-Exporte (XLSX) und erzeugt einen Exploration Report.
 Zeigt Datenstruktur, Füllgrade, Vokabulare und Probleme BEVOR validiert wird.
 
 Verwendung:
-    python scripts/explore.py                          # data/input/ (default)
-    python scripts/explore.py data/input/export.zip    # ZIP entpacken
-    python scripts/explore.py data/input/              # Ordner direkt
+    python scripts/explore.py                                    # data/google-spreadsheet/ (default)
+    python scripts/explore.py data/google-spreadsheet/export.zip # ZIP entpacken
+    python scripts/explore.py data/google-spreadsheet/           # Ordner direkt
 """
 
 import sys
+import os
 import zipfile
 import re
 from pathlib import Path
 from datetime import datetime
 from collections import Counter
+
+# Windows-Konsole: UTF-8 erzwingen
+if sys.stdout.encoding != "utf-8":
+    sys.stdout.reconfigure(encoding="utf-8")
 
 import pandas as pd
 
@@ -24,7 +29,7 @@ import pandas as pd
 # ---------------------------------------------------------------------------
 
 ROOT = Path(__file__).resolve().parent.parent
-INPUT_DIR = ROOT / "data" / "input"
+INPUT_DIR = ROOT / "data" / "google-spreadsheet"
 REPORT_DIR = ROOT / "data" / "reports"
 
 # Erwartete Tabellen (flexible Zuordnung: Schlüssel = kanonischer Name)
@@ -714,7 +719,7 @@ def main():
     if not xlsx_files:
         print(f"Keine XLSX-Dateien in {source} gefunden.")
         print(f"Erwarteter Pfad: {INPUT_DIR}")
-        print("Bitte Google Sheets als XLSX exportieren und in data/input/ ablegen.")
+        print("Bitte Google Sheets als XLSX exportieren und in data/google-spreadsheet/ ablegen.")
         sys.exit(1)
 
     print(f"Gefunden: {len(xlsx_files)} XLSX-Datei(en)")

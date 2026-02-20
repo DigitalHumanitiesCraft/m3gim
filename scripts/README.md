@@ -4,7 +4,7 @@
 
 ```
 data/
-├── input/               # Google Sheets XLSX-Exporte (ZIP entpackt)
+├── google-spreadsheet/  # Google Sheets XLSX-Exporte
 ├── output/              # Generierte Dateien (JSON-LD, View-JSONs)
 ├── reports/             # Exploration- und Validierungsreports
 └── archive-export/      # Originale AUGIAS-Exporte (Quelle, einmalig)
@@ -14,7 +14,7 @@ data/
 
 ```
 Google Drive (6 Spreadsheets)
-    ↓ Download als ZIP → data/input/
+    ↓ Download als XLSX → data/google-spreadsheet/
 1. explore.py       Datenstruktur analysieren → data/reports/exploration-report.md
 2. validate.py      Qualitätsprüfung → data/reports/validation-report.md
 3. create-ric-json.py   XLSX → JSON-LD (RiC-O 1.1) → data/output/m3gim.jsonld
@@ -34,9 +34,9 @@ pip install pandas openpyxl
 Analysiert Google-Sheets-Exporte und erzeugt einen Exploration Report. Erster Schritt nach dem Download — zeigt Datenstruktur, Füllgrade, Vokabulare und Probleme.
 
 ```bash
-python scripts/explore.py                       # data/input/ (default)
-python scripts/explore.py data/input/export.zip  # ZIP entpacken
-python scripts/explore.py data/input/            # Ordner direkt
+python scripts/explore.py                       # data/google-spreadsheet/ (default)
+python scripts/explore.py data/google-spreadsheet/export.zip  # ZIP entpacken
+python scripts/explore.py data/google-spreadsheet/            # Ordner direkt
 ```
 
 ### Erwartete Dateien
@@ -45,10 +45,10 @@ python scripts/explore.py data/input/            # Ordner direkt
 |-------|--------|
 | M3GIM-Objekte.xlsx | Hauptbestand (255), Plakate (26), Tonträger (1) |
 | M3GIM-Verknüpfungen.xlsx | Kontextuelle Verknüpfungen (1.292) |
-| Personenindex.xlsx | Personen-Normdaten (296) |
-| Organisationsindex.xlsx | Organisations-Normdaten (58) |
-| Ortsindex.xlsx | Orts-Normdaten (31) |
-| Werkindex.xlsx | Werk-Normdaten (95) |
+| M3GIM-Personenindex.xlsx | Personen-Normdaten (296) |
+| M3GIM-Organisationsindex.xlsx | Organisations-Normdaten (58) |
+| M3GIM-Ortsindex.xlsx | Orts-Normdaten (31) |
+| M3GIM-Werkindex.xlsx | Werk-Normdaten (95) |
 
 ### Analyse-Umfang
 
@@ -107,8 +107,8 @@ python scripts/validate.py
 
 | Datei | Beschreibung |
 |-------|--------------|
-| `data/input/M3GIM-Objekte.xlsx` | Hauptbestand, Plakate, Tonträger |
-| `data/input/M3GIM-Verknüpfungen.xlsx` | Relationen |
+| `data/google-spreadsheet/M3GIM-Objekte.xlsx` | Hauptbestand, Plakate, Tonträger |
+| `data/google-spreadsheet/M3GIM-Verknüpfungen.xlsx` | Relationen |
 
 ### Ausgabe
 
@@ -146,9 +146,9 @@ python scripts/create-ric-json.py
 
 | Datei | Beschreibung |
 |-------|--------------|
-| `data/input/M3GIM-Objekte.xlsx` | Objekte |
-| `data/input/M3GIM-Verknüpfungen.xlsx` | Relationen |
-| `data/input/*index.xlsx` | Normdaten (Personen, Orte, Werke, Organisationen) |
+| `data/google-spreadsheet/M3GIM-Objekte.xlsx` | Objekte |
+| `data/google-spreadsheet/M3GIM-Verknüpfungen.xlsx` | Relationen |
+| `data/google-spreadsheet/*index.xlsx` | Normdaten (Personen, Orte, Werke, Organisationen) |
 
 ### Ausgabe
 
