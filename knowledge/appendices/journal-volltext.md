@@ -421,6 +421,37 @@ Konvolute starten jetzt collapsed statt automatisch aufgeklappt (war: <=15 Kinde
 
 ---
 
-Siehe auch: [→ Projekt](../projekt-kontext.md) · [→ Quellenbestand](../datenmodell-ontologie.md) · [→ Architektur](../system-architektur-pipeline.md)
+## 2026-02-20 — Session 13: Info-Seiten als statisches HTML
 
+### Migration JS → HTML
+
+Vier Info-Seiten (Ueber, Projekt, Modell, Hilfe) von JS-gerenderten SPA-Views zu eigenstaendigen HTML-Dateien migriert. Motivation: Die "dynamischen" Zahlen aendern sich nur bei Pipeline-Laeufen, Prosa in `el()`-Ketten mit Unicode-Escapes war unleserlich und schwer pflegbar.
+
+**Neue Dateien**: docs/about.html, docs/projekt.html, docs/modell.html, docs/hilfe.html
+**Geloeschte Dateien**: docs/js/views/about.js, docs/js/views/projekt.js, docs/js/views/modell.js, docs/js/views/hilfe.js
+
+### Einheitliches Template
+
+Alle 4 Seiten teilen identisches Chrome: info-header (KUG-Blau, Brand-Link, "← Archiv"-Link), info-nav (horizontale Seitennavigation mit active-Markierung), info-main (720px Lesebreite), info-footer. Nur 2 CSS-Dateien (variables.css + pages.css), kein JS, kein D3. Print-Styles.
+
+### SPA aufraeumen
+
+Router: PAGES-Array und Page-Visibility-Toggle entfernt. Nav-Links in index.html von `href="#about" data-page="about"` zu `href="about.html"`. 4 Page-Sections (`#page-*`) aus index.html entfernt. 4 Imports und Switch-Cases aus main.js entfernt. 18 statt 22 JS-Module.
+
+### Inhaltliche Korrekturen
+
+- projekt.html: "Fotografien" entfernt (nicht im Projektscope)
+- projekt.html: Gebrochener Satz/Link repariert (Modell-Verweis in einem Element)
+- modell.html: "erscheinungsdatum" → "entstehungsort" als Ort-Rolle
+- modell.html + about.html: "X Objekte in 3 Konvoluten" → korrekte Formulierung ("255 Konvolute im Hauptbestand")
+- hilfe.html: Cross-Grid-Facettensuche und Konvolut-Expansion ergaenzt
+- hilfe.html: "Gruen"-FAQ praeziser formuliert
+
+### Statische Zahlen (aus JSON-LD, Stand 2026-02-20)
+
+282 Archiveinheiten, 62 verknuepft (22%), 217 Personen (2 WD), 64 Organisationen (2 WD), 43 Orte, 102 Werke (2 WD), 383 Personen-Links, 101 Institutions-Links, 3 erschlossene Konvolute (76 Einzelstuecke).
+
+---
+
+Siehe auch: [→ Projekt](../projekt-kontext.md) · [→ Quellenbestand](../datenmodell-ontologie.md) · [→ Architektur](../system-architektur-pipeline.md)
 

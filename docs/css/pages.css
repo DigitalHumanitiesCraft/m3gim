@@ -1,10 +1,8 @@
-﻿/* M3GIM Pages - About, Projekt, Hilfe */
+/* M³GIM Pages — Shared content styles + Info-Page chrome */
 
-.page-content {
-  max-width: 960px;
-  margin: 0 auto;
-  padding: var(--space-8) var(--space-6);
-}
+/* ===================================================================
+   Reusable content blocks (used by standalone HTML info pages)
+   =================================================================== */
 
 .page {
   font-size: var(--text-base);
@@ -155,4 +153,193 @@
   color: var(--color-text-tertiary);
   font-style: italic;
   margin-top: var(--space-4);
+}
+
+
+/* ===================================================================
+   Info-Page chrome (standalone HTML pages: about, projekt, modell, hilfe)
+   =================================================================== */
+
+/* Body reset */
+.info-page {
+  font-family: var(--font-ui);
+  font-size: var(--text-base);
+  font-weight: var(--weight-normal);
+  line-height: var(--leading-normal);
+  background: var(--color-paper);
+  color: var(--color-text-primary);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.info-page *, .info-page *::before, .info-page *::after {
+  box-sizing: border-box;
+}
+
+/* Header */
+.info-header {
+  background: var(--color-kug-blau);
+  color: var(--color-text-inverse);
+  height: var(--header-height);
+  display: flex;
+  align-items: center;
+  padding: 0 var(--space-6);
+  gap: var(--space-6);
+  flex-shrink: 0;
+}
+
+.info-header__brand {
+  font-family: var(--font-title);
+  font-size: var(--text-xl);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-inverse);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.info-header__brand:hover {
+  text-decoration: none;
+  opacity: 0.9;
+}
+
+.info-header__subtitle {
+  font-size: var(--text-sm);
+  opacity: 0.8;
+  white-space: nowrap;
+}
+
+.info-header__spacer {
+  flex: 1;
+}
+
+.info-header__back {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--color-text-inverse);
+  opacity: 0.75;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: opacity var(--transition-fast);
+}
+
+.info-header__back:hover {
+  opacity: 1;
+  text-decoration: none;
+}
+
+/* Page navigation */
+.info-nav {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-6);
+  padding: var(--space-3) var(--space-6);
+  background: var(--color-cream);
+  border-bottom: 1px solid var(--border-color);
+  flex-shrink: 0;
+}
+
+.info-nav a {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  padding-bottom: var(--space-1);
+  transition: color var(--transition-fast);
+}
+
+.info-nav a:hover {
+  color: var(--color-text-primary);
+  text-decoration: none;
+}
+
+.info-nav a.active {
+  color: var(--color-kug-blau);
+  border-bottom: 2px solid var(--color-kug-blau);
+}
+
+/* Main content area */
+.info-main {
+  flex: 1;
+  padding: var(--space-16) var(--space-6);
+}
+
+.info-main .page {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+/* Footer */
+.info-footer {
+  background: var(--color-cream);
+  border-top: 1px solid var(--border-color);
+  height: var(--footer-height);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  font-size: var(--text-sm);
+  color: var(--color-text-tertiary);
+  flex-shrink: 0;
+}
+
+.info-footer a {
+  color: var(--color-text-secondary);
+  text-decoration: none;
+}
+
+.info-footer a:hover {
+  text-decoration: underline;
+}
+
+/* Scrollbar (match SPA) */
+.info-page ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.info-page ::-webkit-scrollbar-track {
+  background: var(--color-cream);
+}
+
+.info-page ::-webkit-scrollbar-thumb {
+  background: var(--color-sand);
+  border-radius: 4px;
+}
+
+.info-page ::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-tertiary);
+}
+
+/* Selection */
+.info-page ::selection {
+  background: var(--color-gold-light);
+  color: var(--color-text-primary);
+}
+
+/* Inline code */
+.info-page code, .info-page .mono {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+/* Base link style */
+.info-page a {
+  color: var(--color-kug-blau);
+  text-decoration: none;
+}
+
+.info-page a:hover {
+  text-decoration: underline;
+}
+
+/* Print */
+@media print {
+  .info-header, .info-nav, .info-footer { display: none; }
+  .info-main { padding: 0; }
+  .info-main .page { max-width: 100%; }
 }

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Projekt — M³GIM</title>
+  <meta name="description" content="Quellenbeschreibung, Tektonik und Erschließungsprozess des Teilnachlasses Ira Malaniuk (UAKUG/NIM).">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap">
+
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/pages.css">
+</head>
+<body class="info-page">
+
+  <header class="info-header">
+    <a href="index.html" class="info-header__brand">M³GIM</a>
+    <span class="info-header__subtitle">Teilnachlass Ira Malaniuk — UAKUG/NIM</span>
+    <div class="info-header__spacer"></div>
+    <a href="index.html" class="info-header__back">← Archiv</a>
+  </header>
+
+  <nav class="info-nav" aria-label="Informationsseiten">
+    <a href="about.html">Über</a>
+    <a href="projekt.html" class="active">Projekt</a>
+    <a href="modell.html">Modell</a>
+    <a href="hilfe.html">Hilfe</a>
+  </nav>
+
+  <main class="info-main">
+    <article class="page">
+
+      <header class="page__header">
+        <h1 class="page__title">Projekt</h1>
+        <p class="page__lead">
+          Der Teilnachlass der Mezzosopranistin Ira Malaniuk (1919–2009) an der
+          Kunstuniversität Graz — Quellen, Tektonik und Erschließungsprozess.
+        </p>
+      </header>
+
+      <section class="page__section">
+        <h2>Der Teilnachlass</h2>
+        <p>
+          Das Universitätsarchiv der Kunstuniversität Graz (UAKUG) bewahrt einen
+          Teilnachlass der ukrainisch-österreichischen Mezzosopranistin Ira Malaniuk
+          unter der Signatur UAKUG/NIM. Die Materialien dokumentieren eine internationale
+          Opernkarriere, die von Lemberg über Zürich und München bis nach Wien, Bayreuth,
+          Buenos Aires und London führte.
+        </p>
+        <p>
+          Der Bestand umfasst Programme, Korrespondenzen, Verträge, Rezensionen, Plakate,
+          Urkunden und persönliche Dokumente aus dem Zeitraum 1934 bis 2009. Er ist eine
+          zentrale Quelle für die Erforschung künstlerischer Mobilität im 20.&nbsp;Jahrhundert.
+        </p>
+      </section>
+
+      <!-- Statistik: aktualisieren nach Pipeline-Lauf -->
+      <section class="page__section">
+        <h2>Tektonik</h2>
+        <p>
+          Der Teilnachlass gliedert sich in drei Bestandsgruppen mit insgesamt
+          282 Archiveinheiten:
+        </p>
+        <table class="page__table">
+          <thead>
+            <tr>
+              <th>Bestandsgruppe</th>
+              <th>Einheiten</th>
+              <th>Signaturschema</th>
+              <th>Materialien</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Hauptbestand</td>
+              <td>255</td>
+              <td><code>UAKUG/NIM_XXX</code></td>
+              <td>Programme, Korrespondenzen, Verträge, Rezensionen, Urkunden, Sammlungen</td>
+            </tr>
+            <tr>
+              <td>Plakate</td>
+              <td>26</td>
+              <td><code>UAKUG/NIM/PL_XX</code></td>
+              <td>Opern- und Konzertplakate (1940er–1960er Jahre)</td>
+            </tr>
+            <tr>
+              <td>Tonträger</td>
+              <td>1</td>
+              <td><code>UAKUG/NIM_TT_01</code></td>
+              <td>Audioaufnahmen</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>
+          Jede Archiveinheit im Hauptbestand ist ein Konvolut — ein physischer Umschlag
+          oder eine Mappe, die mehrere Einzeldokumente enthalten kann. Die Titel auf den
+          Konvoluten stammen häufig von handschriftlichen Aufschriften auf den Umschlägen selbst.
+        </p>
+        <p>
+          Bei 3 Konvoluten (NIM_003, NIM_004, NIM_007) wurden die 76 enthaltenen
+          Einzelstücke bereits detailliert erfasst. Die übrigen Konvolute sind bisher nur
+          auf der Ebene der Archiveinheit beschrieben — ihre interne Zusammensetzung wird
+          im Rahmen der laufenden Erschließung ergänzt.
+        </p>
+      </section>
+
+      <section class="page__section">
+        <h2>Erfassung</h2>
+        <p>
+          Die Erschließung erfolgt durch Studierende und Mitarbeiter:innen der KUG Graz
+          in einem kollaborativen Google-Spreadsheet. Die Erfassung folgt einem
+          dreistufigen Schichten-Modell:
+        </p>
+        <dl class="page__layers">
+          <dt>Schicht 1 — Metadaten</dt>
+          <dd>
+            Grundlegende Beschreibung jeder Archiveinheit: Signatur, Titel, Dokumenttyp,
+            Datierung, Sprache, Umfang. Dies entspricht der klassischen archivischen Verzeichnung.
+          </dd>
+          <dt>Schicht 2 — Verknüpfungen</dt>
+          <dd>
+            Verbindung der Objekte mit Personen, Organisationen, Orten und Werken.
+            Jede Verknüpfung erhält eine Rolle (z.&nbsp;B. Absender, Aufführungsort,
+            erwähntes Werk). Aktuell haben 62 von 282 Objekten (22&thinsp;%) mindestens
+            eine Verknüpfung.
+          </dd>
+          <dt>Schicht 3 — Interpretation</dt>
+          <dd>
+            Kontextualisierung und wissenschaftliche Einordnung: Mobilitätskategorien,
+            biografische Zuordnung, Netzwerkanalyse. Diese Schicht wird in den
+            Visualisierungen sichtbar.
+          </dd>
+        </dl>
+      </section>
+
+      <section class="page__section">
+        <h2>Modellierung</h2>
+        <p>
+          Die erfassten Daten werden über eine automatisierte Pipeline in ein
+          strukturiertes Format überführt:
+        </p>
+        <ol class="page__pipeline">
+          <li>
+            <strong>Exploration</strong> — Analyse der Rohdaten, Erkennung von Strukturproblemen
+          </li>
+          <li>
+            <strong>Validierung</strong> — Normalisierung, Pflichtfeld-Prüfung, Cross-Table-Checks
+          </li>
+          <li>
+            <strong>Transformation</strong> — Konvertierung zu JSON-LD nach dem internationalen
+            Archivstandard RiC-O 1.1 mit projektspezifischen m3gim-Erweiterungen
+          </li>
+          <li>
+            <strong>View-Generierung</strong> — Erzeugung optimierter Datenstrukturen für
+            jede Visualisierung
+          </li>
+        </ol>
+        <p>
+          Das resultierende Datenmodell beschreibt Archiveinheiten, ihre Verknüpfungen zu
+          Personen, Orten, Institutionen und Werken sowie die semantischen Rollen dieser
+          Beziehungen. Eine detaillierte Beschreibung der Ontologie, Verknüpfungstypen
+          und Identifikatoren findet sich auf der Seite
+          <a href="modell.html" class="page__link">Datenmodell</a>.
+        </p>
+      </section>
+
+      <section class="page__section">
+        <h2>Leere Felder und Abwesenheit</h2>
+        <p>
+          Ein leeres Feld bedeutet: „In dieser Quelle nicht ermittelbar."
+          Es ist keine Aussage darüber, ob die Information existiert — nur, dass sie
+          aus dem vorliegenden Material nicht abgeleitet werden kann.
+        </p>
+        <p>
+          Objekte ohne Datum werden als „o.&nbsp;D." (ohne Datum) angezeigt.
+          Objekte ohne Verknüpfungen befinden sich typischerweise noch in Schicht&nbsp;1
+          der Erschließung.
+        </p>
+      </section>
+
+    </article>
+  </main>
+
+  <footer class="info-footer">
+    <span>KUG Graz — Universitätsarchiv</span>
+    <span>·</span>
+    <a href="https://github.com/DigitalHumanitiesCraft/m3gim" target="_blank" rel="noopener">GitHub</a>
+    <span>·</span>
+    <span>Prototyp</span>
+  </footer>
+
+</body>
+</html>

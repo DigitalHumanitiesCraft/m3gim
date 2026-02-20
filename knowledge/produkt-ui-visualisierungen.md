@@ -12,16 +12,20 @@
 - Matrix (ausgeblendet fuer Demo)
 - Kosmos (ausgeblendet fuer Demo)
 
-### Kontextseiten
+### Kontextseiten (statisches HTML, kein JS)
 
-- Ueber
-- Projekt
-- Modell (Datenmodell-Erklaerung mit Live-Statistik)
-- Hilfe
+- Ueber (`about.html`) — Projektueberblick, Methodik, Datenstand
+- Projekt (`projekt.html`) — Quellenbeschreibung, Tektonik, Erfassung, Modellierung
+- Modell (`modell.html`) — Ontologie (RiC-O + m3gim), Verknuepfungstypen, Identifikatoren, Statistik
+- Hilfe (`hilfe.html`) — Bedienung, Interaktion, Datumskonventionen, FAQ
+- Einheitliches Template: info-header, info-nav, info-main, info-footer
+- Statische Zahlen (aktualisieren nach Pipeline-Lauf, kein JS-Store)
+- Optimale Lesebreite 720px, Source Serif 4 Titel, Print-Styles
 
 ### Routing
 
-- Hash-basiertes Routing in `router.js`
+- Hash-basiertes Routing in `router.js` (nur Tabs: archiv, indizes, korb)
+- Info-Seiten als eigenstaendige HTML-Dateien (normale Links, kein Hash-Routing)
 - Deep Links fuer Views und Datensatzkontext
 
 ## Ansichtslogik

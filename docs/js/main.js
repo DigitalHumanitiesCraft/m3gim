@@ -12,10 +12,6 @@ import { renderIndizes, expandEntry } from './views/indizes.js';
 import { renderMatrix } from './views/matrix.js';
 import { renderKosmos } from './views/kosmos.js';
 import { renderKorb } from './views/korb.js';
-import { renderAbout } from './views/about.js';
-import { renderProjekt } from './views/projekt.js';
-import { renderHilfe } from './views/hilfe.js';
-import { renderModell } from './views/modell.js';
 
 let store = null;
 const renderedTabs = new Set();
@@ -74,8 +70,7 @@ function renderTab(tab) {
   if (renderedTabs.has(tab)) return;
   renderedTabs.add(tab);
 
-  // Data tabs use tab-{name}, pages use page-{name}
-  const container = document.getElementById(`tab-${tab}`) || document.getElementById(`page-${tab}`);
+  const container = document.getElementById(`tab-${tab}`);
   if (!container) return;
 
   switch (tab) {
@@ -93,18 +88,6 @@ function renderTab(tab) {
       break;
     case 'korb':
       renderKorb(store, container);
-      break;
-    case 'about':
-      renderAbout(store, container);
-      break;
-    case 'projekt':
-      renderProjekt(store, container);
-      break;
-    case 'modell':
-      renderModell(store, container);
-      break;
-    case 'hilfe':
-      renderHilfe(store, container);
       break;
   }
 }

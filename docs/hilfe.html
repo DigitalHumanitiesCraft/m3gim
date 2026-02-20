@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hilfe — M³GIM</title>
+  <meta name="description" content="Bedienungsanleitung für die M³GIM-Anwendung — Ansichten, Interaktionen und Konventionen.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap">
+
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/pages.css">
+</head>
+<body class="info-page">
+
+  <header class="info-header">
+    <a href="index.html" class="info-header__brand">M³GIM</a>
+    <span class="info-header__subtitle">Teilnachlass Ira Malaniuk — UAKUG/NIM</span>
+    <div class="info-header__spacer"></div>
+    <a href="index.html" class="info-header__back">← Archiv</a>
+  </header>
+
+  <nav class="info-nav" aria-label="Informationsseiten">
+    <a href="about.html">Über</a>
+    <a href="projekt.html">Projekt</a>
+    <a href="modell.html">Modell</a>
+    <a href="hilfe.html" class="active">Hilfe</a>
+  </nav>
+
+  <main class="info-main">
+    <article class="page">
+
+      <header class="page__header">
+        <h1 class="page__title">Hilfe</h1>
+        <p class="page__lead">
+          Wie Sie die Ansichten nutzen und was die angezeigten Daten bedeuten.
+        </p>
+      </header>
+
+      <section class="page__section">
+        <h2>Die Ansichten</h2>
+        <dl class="page__layers">
+          <dt>Archiv</dt>
+          <dd>
+            Zwei Darstellungen des Bestands, umschaltbar über die Toggle-Buttons oberhalb
+            der Tabelle: Der <strong>Bestand</strong> zeigt alle Objekte in einer Tabelle
+            mit Signatur, Typ, Datum und Verknüpfungsanzahl. Konvolute mit erschlossenen
+            Einzelstücken zeigen ihre Kinder direkt darunter — aufklappbar über den Pfeil.
+            Die <strong>Chronik</strong> gruppiert die Objekte nach Ort, Person oder Werk
+            und ordnet sie zeitlich.
+          </dd>
+          <dt>Indizes</dt>
+          <dd>
+            Vier Register: Personen, Organisationen, Orte und Werke. Jeder Eintrag zeigt
+            die Anzahl verknüpfter Objekte. Klick auf einen Eintrag filtert die anderen
+            drei Register — so lassen sich Querverbindungen entdecken (z.&nbsp;B. welche
+            Personen an einem bestimmten Ort auftraten oder welche Werke mit einer
+            bestimmten Person verknüpft sind).
+          </dd>
+          <dt>Wissenskorb</dt>
+          <dd>
+            Mit dem Lesezeichen-Symbol können Sie Objekte sammeln. Der Korb-Tab zeigt
+            alle gesammelten Objekte mit ihren Metadaten und Verknüpfungen. Der Korb
+            wird für die aktuelle Sitzung gespeichert.
+          </dd>
+        </dl>
+      </section>
+
+      <section class="page__section">
+        <h2>Interaktion</h2>
+        <dl class="page__layers">
+          <dt>Klick auf ein Objekt</dt>
+          <dd>
+            Im Archiv-Bestand öffnet sich eine Detailzeile direkt unter dem Eintrag mit
+            allen Metadaten und Verknüpfungen. In den Indizes navigiert ein Klick auf ein
+            Objekt zum Archiv-Tab und öffnet dort die Detailzeile.
+          </dd>
+          <dt>Farbige Tags</dt>
+          <dd>
+            Tags in der Detailansicht sind klickbar. Ein Klick auf einen Personen-,
+            Institutions- oder Ortsnamen navigiert zum entsprechenden Index-Eintrag.
+          </dd>
+          <dt>Suche und Filter</dt>
+          <dd>
+            Im Archiv-Tab können Sie nach Signatur, Titel oder Inhalt suchen. Zusätzlich
+            lassen sich Dokumenttyp und Person filtern. Die Chronik unterstützt die
+            gleichen Filter. In den Indizes durchsucht das Suchfeld alle vier Register
+            gleichzeitig.
+          </dd>
+          <dt>Wissenskorb</dt>
+          <dd>
+            Klicken Sie das Lesezeichen-Symbol in einer Zeile, um ein Objekt im Korb zu
+            speichern. Im Korb-Tab sehen Sie alle gesammelten Objekte mit vollständigen
+            Metadaten und Verknüpfungen. Verknüpfungen unterscheiden zwischen Personen
+            und Institutionen und zeigen bei Werken die Aufführungsrolle.
+          </dd>
+        </dl>
+      </section>
+
+      <section class="page__section">
+        <h2>Datumsangaben</h2>
+        <p>
+          Datierungen werden so genau wie möglich aus den Quellen übernommen.
+          Folgende Konventionen gelten:
+        </p>
+        <dl class="page__layers">
+          <dt>o.&nbsp;D.</dt>
+          <dd>
+            „Ohne Datum" — Das Objekt enthält keinen datierbaren Hinweis. Dies ist
+            eine bewusste Aussage über die Quelle, keine Lücke in der Erfassung.
+          </dd>
+          <dt>Jahrzehnte</dt>
+          <dd>
+            Einige Objekte sind nur auf ein Jahrzehnt datierbar (z.&nbsp;B. „1950er").
+            In der Chronik werden sie der frühesten Periode dieses Jahrzehnts zugeordnet.
+          </dd>
+          <dt>Zeiträume</dt>
+          <dd>
+            Manche Objekte umfassen einen Zeitraum (z.&nbsp;B. „1945–1960"). Sie werden
+            in der Chronik unter der Startperiode angezeigt.
+          </dd>
+        </dl>
+      </section>
+
+      <section class="page__section">
+        <h2>Namenskonventionen</h2>
+        <p>
+          Personennamen werden in der Form „Nachname, Vorname" erfasst. Die Ansetzung
+          orientiert sich an der Gemeinsamen Normdatei (GND) und wird durch
+          Wikidata-Identifikatoren ergänzt, sobald eine Reconciliation durchgeführt wurde.
+        </p>
+        <p>
+          Ira Malaniuk selbst erscheint nicht als Verknüpfung — sie ist als
+          Bestandsbildnerin implizit in jedem Objekt präsent. Diese Designentscheidung
+          vermeidet redundante Verknüpfungen und betont, dass der gesamte Bestand
+          ihr Teilnachlass ist.
+        </p>
+      </section>
+
+      <section class="page__section">
+        <h2>Häufige Fragen</h2>
+        <dl class="page__layers">
+          <dt>Warum zeigen manche Objekte keine Verknüpfungen?</dt>
+          <dd>
+            Die Erschließung folgt einem Schichten-Modell. Objekte in Schicht 1
+            (Metadaten) haben noch keine Verknüpfungen zu Personen, Orten oder Werken.
+            Diese werden in Schicht 2 ergänzt.
+          </dd>
+          <dt>Was bedeuten die farbigen Markierungen?</dt>
+          <dd>
+            Die Zahl neben einem Objekt im Bestand zeigt die Anzahl der Verknüpfungen.
+            In den Indizes kennzeichnet ein grüner Punkt einen vorhandenen
+            Wikidata-Identifikator.
+          </dd>
+          <dt>Warum erscheint Malaniuk nicht im Personen-Index?</dt>
+          <dd>
+            Der gesamte Bestand ist ihr Teilnachlass. Sie ist als Bestandsbildnerin
+            implizit in jedem Objekt präsent und wird daher nicht als separate
+            Verknüpfung erfasst.
+          </dd>
+        </dl>
+      </section>
+
+    </article>
+  </main>
+
+  <footer class="info-footer">
+    <span>KUG Graz — Universitätsarchiv</span>
+    <span>·</span>
+    <a href="https://github.com/DigitalHumanitiesCraft/m3gim" target="_blank" rel="noopener">GitHub</a>
+    <span>·</span>
+    <span>Prototyp</span>
+  </footer>
+
+</body>
+</html>

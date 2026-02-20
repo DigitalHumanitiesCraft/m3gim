@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Über — M³GIM</title>
+  <meta name="description" content="Mapping Mobile Musicians — Digitale Erschließung des Teilnachlasses Ira Malaniuk (UAKUG/NIM) an der Kunstuniversität Graz.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap">
+
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/pages.css">
+</head>
+<body class="info-page">
+
+  <header class="info-header">
+    <a href="index.html" class="info-header__brand">M³GIM</a>
+    <span class="info-header__subtitle">Teilnachlass Ira Malaniuk — UAKUG/NIM</span>
+    <div class="info-header__spacer"></div>
+    <a href="index.html" class="info-header__back">← Archiv</a>
+  </header>
+
+  <nav class="info-nav" aria-label="Informationsseiten">
+    <a href="about.html" class="active">Über</a>
+    <a href="projekt.html">Projekt</a>
+    <a href="modell.html">Modell</a>
+    <a href="hilfe.html">Hilfe</a>
+  </nav>
+
+  <main class="info-main">
+    <article class="page">
+
+      <header class="page__header">
+        <h1 class="page__title">Über M³GIM</h1>
+        <p class="page__lead">
+          Mapping Mobile Musicians — Digitale Erschließung des Teilnachlasses
+          Ira Malaniuk am Universitätsarchiv der Kunstuniversität Graz.
+        </p>
+      </header>
+
+      <section class="page__section">
+        <h2>Ira Malaniuk (1919–2009)</h2>
+        <p>
+          Die ukrainisch-österreichische Mezzosopranistin Ira Malaniuk gehörte zu den
+          bedeutendsten Sängerinnen der Nachkriegszeit. Ihr Teilnachlass (UAKUG/NIM)
+          am Universitätsarchiv der KUG Graz umfasst 282 Archiveinheiten in drei
+          Bestandsgruppen: Hauptbestand (255 Konvolute), Plakate (26) und Tonträger (1).
+        </p>
+      </section>
+
+      <section class="page__section">
+        <h2>Methodik</h2>
+        <p>
+          M³GIM nutzt den Ansatz des Promptotyping: Dokumente und Erfassungsrichtlinien
+          bilden die verbindliche Grundlage (Documents as Source of Truth), während der
+          Code als austauschbares Artefakt gilt (Code as Disposable Artifact). Die Daten
+          werden in Google Sheets erfasst, über eine Python-Pipeline in JSON-LD
+          (RiC-O 1.1) transformiert und im Browser visualisiert.
+        </p>
+        <p>
+          Details zum Erfassungsprozess und zur Datenpipeline finden sich auf der
+          Seite <a href="projekt.html" class="page__link">Projekt</a>.
+        </p>
+      </section>
+
+      <!-- Statistik: aktualisieren nach Pipeline-Lauf -->
+      <section class="page__section">
+        <h2>Datenstand</h2>
+        <dl class="page__stats">
+          <dt>Export</dt>
+          <dd>20. Februar 2026</dd>
+          <dt>Archiveinheiten</dt>
+          <dd>282, davon 3 mit erschlossenen Einzelstücken (76 Dokumente)</dd>
+          <dt>Verknüpfungen</dt>
+          <dd>62 Objekte (22 %) mit mindestens einer Verknüpfung</dd>
+          <dt>Indizes</dt>
+          <dd>217 Personen, 64 Organisationen, 43 Orte, 102 Werke</dd>
+        </dl>
+      </section>
+
+      <section class="page__section">
+        <h2>Institution</h2>
+        <p>
+          Kunstuniversität Graz (KUG) — Universitätsarchiv.
+          Signaturschema: UAKUG/NIM.
+        </p>
+        <p class="page__note">
+          Prototyp — Entwickelt als Digital-Humanities-Projekt.
+        </p>
+      </section>
+
+    </article>
+  </main>
+
+  <footer class="info-footer">
+    <span>KUG Graz — Universitätsarchiv</span>
+    <span>·</span>
+    <a href="https://github.com/DigitalHumanitiesCraft/m3gim" target="_blank" rel="noopener">GitHub</a>
+    <span>·</span>
+    <span>Prototyp</span>
+  </footer>
+
+</body>
+</html>

@@ -1,11 +1,11 @@
 /**
- * M³GIM Router — Tab switching, page navigation, and URL hash state.
+ * M³GIM Router — Tab switching and URL hash state.
+ * Info pages (about, projekt, modell, hilfe) are standalone HTML files.
  */
 
 const TABS = ['archiv', 'indizes', 'korb'];
 const HIDDEN_TABS = ['matrix', 'kosmos']; // ausgeblendet fuer Demo, Code bleibt
-const PAGES = ['about', 'projekt', 'modell', 'hilfe'];
-const ALL_VIEWS = [...TABS, ...PAGES];
+const ALL_VIEWS = [...TABS];
 
 const state = {
   activeTab: 'archiv',
@@ -25,12 +25,6 @@ export function initRouter({ onTab, onRecord, onIndex } = {}) {
   for (const tab of TABS) {
     const btn = document.querySelector(`[data-tab="${tab}"]`);
     if (btn) btn.addEventListener('click', () => switchTab(tab));
-  }
-
-  // Set up page link handlers
-  for (const page of PAGES) {
-    const link = document.querySelector(`[data-page="${page}"]`);
-    if (link) link.addEventListener('click', (e) => { e.preventDefault(); switchTab(page); });
   }
 
   // Parse initial hash
@@ -100,22 +94,12 @@ function updateHash() {
 }
 
 function applyState() {
-  const isPage = PAGES.includes(state.activeTab);
-
   // Switch tab visibility
   for (const tab of TABS) {
     const section = document.getElementById(`tab-${tab}`);
     const btn = document.querySelector(`[data-tab="${tab}"]`);
-    if (section) section.classList.toggle('active', !isPage && tab === state.activeTab);
-    if (btn) btn.classList.toggle('active', !isPage && tab === state.activeTab);
-  }
-
-  // Switch page visibility
-  for (const page of PAGES) {
-    const section = document.getElementById(`page-${page}`);
-    const link = document.querySelector(`[data-page="${page}"]`);
-    if (section) section.classList.toggle('active', page === state.activeTab);
-    if (link) link.classList.toggle('active', page === state.activeTab);
+    if (section) section.classList.toggle('active', tab === state.activeTab);
+    if (btn) btn.classList.toggle('active', tab === state.activeTab);
   }
 
   if (onTabChange) onTabChange(state.activeTab);

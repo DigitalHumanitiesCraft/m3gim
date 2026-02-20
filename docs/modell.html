@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Datenmodell — M³GIM</title>
+  <meta name="description" content="Ontologie, Verknüpfungstypen und Identifikatoren des M³GIM-Datenmodells (RiC-O 1.1 + m3gim).">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap">
+
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/pages.css">
+</head>
+<body class="info-page">
+
+  <header class="info-header">
+    <a href="index.html" class="info-header__brand">M³GIM</a>
+    <span class="info-header__subtitle">Teilnachlass Ira Malaniuk — UAKUG/NIM</span>
+    <div class="info-header__spacer"></div>
+    <a href="index.html" class="info-header__back">← Archiv</a>
+  </header>
+
+  <nav class="info-nav" aria-label="Informationsseiten">
+    <a href="about.html">Über</a>
+    <a href="projekt.html">Projekt</a>
+    <a href="modell.html" class="active">Modell</a>
+    <a href="hilfe.html">Hilfe</a>
+  </nav>
+
+  <main class="info-main">
+    <article class="page">
+
+      <header class="page__header">
+        <h1 class="page__title">Datenmodell</h1>
+        <p class="page__lead">
+          Wie die Archivalien im Teilnachlass Malaniuk modelliert, verknüpft und
+          mit externen Normdaten angereichert werden.
+        </p>
+      </header>
+
+      <section class="page__section">
+        <h2>Ontologie</h2>
+        <p>
+          M³GIM modelliert den Teilnachlass nach dem internationalen Archivstandard
+          RiC-O 1.1 (Records in Contexts — Ontology) und erweitert diesen um
+          musikwissenschaftliche Konzepte im Namensraum <code>m3gim</code>. Jedes
+          Archivstück wird als <code>rico:Record</code> beschrieben, Konvolute als
+          <code>rico:RecordSet</code> mit Teil–Ganzes-Beziehungen.
+        </p>
+        <p>
+          RiC-O liefert die Grundstruktur für Archivbeschreibung (Signaturen, Titel,
+          Datierung, Umfang). Die m3gim-Erweiterung ergänzt Konzepte, die im
+          Archivstandard fehlen: Musikwerke, Aufführungsrollen und die Unterscheidung
+          zwischen aktiver Beteiligung und bloßer Erwähnung.
+        </p>
+      </section>
+
+      <section class="page__section">
+        <h2>Verknüpfungstypen</h2>
+        <p>
+          Jedes Objekt kann mit Personen, Institutionen, Orten und Werken verknüpft sein.
+          Jede Verknüpfung trägt eine Rolle, die den Kontext beschreibt.
+        </p>
+        <table class="page__table">
+          <thead>
+            <tr>
+              <th>Kategorie</th>
+              <th>Eigenschaft</th>
+              <th>Beschreibung</th>
+              <th>Beispielrollen</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Personen</td>
+              <td><code>rico:hasOrHadAgent</code></td>
+              <td>Aktiv beteiligte Personen mit spezifischer Funktion</td>
+              <td>sänger:in, dirigent:in, komponist:in, verfasser:in, herausgeber:in, regisseur:in</td>
+            </tr>
+            <tr>
+              <td>Institutionen</td>
+              <td><code>rico:hasOrHadAgent</code></td>
+              <td>Beteiligte Organisationen, Ensembles, Verlage</td>
+              <td>herausgeber:in, veranstalter:in, rahmenveranstaltung, erwähnt</td>
+            </tr>
+            <tr>
+              <td>Orte</td>
+              <td><code>rico:hasOrHadLocation</code></td>
+              <td>Geographische Bezüge mit kontextspezifischer Rolle</td>
+              <td>auffuehrungsort, absendeort, entstehungsort, erwähnt</td>
+            </tr>
+            <tr>
+              <td>Werke</td>
+              <td><code>rico:hasOrHadSubject</code></td>
+              <td>Musikwerke mit Komponist und Aufführungsbezug</td>
+              <td>aufführung, erwähnt</td>
+            </tr>
+            <tr>
+              <td>Rollen</td>
+              <td><code>m3gim:hasPerformanceRole</code></td>
+              <td>Konkrete Bühnenrollen aus Aufführungen</td>
+              <td>Orpheus, Brünnhilde, Brangäne, Isolde, …</td>
+            </tr>
+            <tr>
+              <td>Erwähnt</td>
+              <td><code>m3gim:mentions</code></td>
+              <td>Personen, die im Dokument erwähnt, aber nicht aktiv beteiligt sind</td>
+              <td>erwähnt (schwächere Verknüpfung als Agent)</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="page__section">
+        <h2>Semantische Unterscheidungen</h2>
+        <dl class="page__layers">
+          <dt>Agent vs. Erwähnung</dt>
+          <dd>
+            Eine Person als <code>rico:hasOrHadAgent</code> war aktiv am Dokument beteiligt
+            (z.&nbsp;B. als Sängerin, Dirigent oder Verfasserin). Eine Person als
+            <code>m3gim:mentions</code> wird im Text erwähnt, ohne direkt beteiligt zu sein.
+            Diese Unterscheidung ist zentral für Netzwerkanalysen: Ein Erwähnungsnetz hat
+            eine andere Qualität als ein Beteiligungsnetz.
+          </dd>
+          <dt>Person vs. Institution</dt>
+          <dd>
+            Agents werden nach Typ unterschieden: <code>rico:Person</code> (natürliche Personen),
+            <code>rico:CorporateBody</code> (Institutionen wie Opernhäuser, Verlage, Zeitungen)
+            und <code>rico:Group</code> (Ensembles).
+            Im Bestand: 383 Personen-Verknüpfungen, 101 Institutions-Verknüpfungen.
+          </dd>
+          <dt>Ort-Rollen</dt>
+          <dd>
+            Orte tragen kontextspezifische Rollen: Ein „Aufführungsort" ist ein Spielort,
+            ein „Absendeort" der Herkunftsort eines Briefs, ein „Entstehungsort" der
+            Publikationsort einer Rezension oder eines Programmhefts. Diese Granularität
+            ermöglicht differenzierte geographische Analysen.
+          </dd>
+          <dt>Werk mit Kontext</dt>
+          <dd>
+            Werke tragen neben dem Namen den Komponisten und eine Rolle (Aufführung vs.
+            erwähnt). Ergänzend erfassen die Aufführungsrollen
+            (<code>m3gim:hasPerformanceRole</code>) die konkreten Bühnenrollen —
+            z.&nbsp;B. „Orpheus" in „Orpheus und Eurydike".
+          </dd>
+        </dl>
+      </section>
+
+      <!-- Statistik: aktualisieren nach Pipeline-Lauf -->
+      <section class="page__section">
+        <h2>Identifikatoren und Normdaten</h2>
+        <p>
+          Wo möglich, werden Entitäten mit Wikidata-Identifikatoren
+          (<code>wd:QXXXXX</code>) verknüpft. Dies ermöglicht die Verbindung zu externen
+          Wissensbasen und die eindeutige Identifikation von Personen, Institutionen und
+          Werken über Namensvarianten hinweg.
+        </p>
+        <dl class="page__stats">
+          <dt>Personen mit Wikidata</dt>
+          <dd>2 von 217</dd>
+          <dt>Organisationen mit Wikidata</dt>
+          <dd>2 von 64</dd>
+          <dt>Werke mit Wikidata</dt>
+          <dd>2 von 102</dd>
+        </dl>
+        <p>
+          Die Archiv-Signaturen folgen dem Schema UAKUG/NIM und gliedern sich in drei
+          Bestandsgruppen: Hauptbestand (<code>UAKUG/NIM_XXX</code>), Plakate
+          (<code>UAKUG/NIM/PL_XX</code>) und Tonträger (<code>UAKUG/NIM_TT_XX</code>).
+        </p>
+      </section>
+
+      <section class="page__section">
+        <h2>Bestandsstatistik</h2>
+        <dl class="page__stats">
+          <dt>Archiveinheiten</dt>
+          <dd>282 (255 Konvolute im Hauptbestand, 26 Plakate, 1 Tonträger)</dd>
+          <dt>Personen</dt>
+          <dd>217 (davon 2 mit Wikidata-ID)</dd>
+          <dt>Organisationen</dt>
+          <dd>64 (davon 2 mit Wikidata-ID)</dd>
+          <dt>Orte</dt>
+          <dd>43</dd>
+          <dt>Werke</dt>
+          <dd>102 (davon 2 mit Wikidata-ID)</dd>
+          <dt>Verknüpfte Objekte</dt>
+          <dd>62 von 282 (22 %)</dd>
+        </dl>
+      </section>
+
+      <section class="page__section">
+        <h2>Technische Referenz</h2>
+        <p>
+          Die Daten werden als JSON-LD serialisiert. Der <code>@context</code> definiert
+          die Namensräume:
+        </p>
+        <dl class="page__layers">
+          <dt>rico:</dt>
+          <dd>Records in Contexts Ontology 1.1 — Archivbeschreibung, Agenten, Orte, Datierung</dd>
+          <dt>m3gim:</dt>
+          <dd>M³GIM-Erweiterung — Musikwerke, Aufführungsrollen, Bearbeitungsstand, Erwähnung</dd>
+          <dt>skos:</dt>
+          <dd>Simple Knowledge Organization System — Vokabulareinträge und Bezeichnungen</dd>
+          <dt>wd:</dt>
+          <dd>Wikidata-Entitäten (z.&nbsp;B. <code>wd:Q94208</code> für Ira Malaniuk)</dd>
+        </dl>
+        <p class="page__note">
+          Vollständige Ontologie-Dokumentation im GitHub-Repository unter
+          knowledge/datenmodell-ontologie.md.
+        </p>
+      </section>
+
+    </article>
+  </main>
+
+  <footer class="info-footer">
+    <span>KUG Graz — Universitätsarchiv</span>
+    <span>·</span>
+    <a href="https://github.com/DigitalHumanitiesCraft/m3gim" target="_blank" rel="noopener">GitHub</a>
+    <span>·</span>
+    <span>Prototyp</span>
+  </footer>
+
+</body>
+</html>

@@ -29,10 +29,12 @@
 
 ### Frontend-Module (Ist-Zustand)
 
-- 22 JS-Module unter `docs/js/`
+- 18 JS-Module unter `docs/js/`
 - 9 CSS-Dateien unter `docs/css/`
+- 4 statische HTML-Seiten: `docs/about.html`, `docs/projekt.html`, `docs/modell.html`, `docs/hilfe.html`
 - Einstieg: `docs/js/main.js`
-- Routing: `docs/js/ui/router.js` (3 aktive Tabs: archiv, indizes, korb; 2 ausgeblendet: matrix, kosmos; 4 Pages: about, projekt, modell, hilfe)
+- Routing: `docs/js/ui/router.js` (3 aktive Tabs: archiv, indizes, korb; 2 ausgeblendet: matrix, kosmos)
+- Info-Seiten: Eigenstaendige HTML-Dateien (kein JS, kein Store), verlinkt aus SPA-Header
 - Dataloading/Store: `docs/js/data/loader.js`
 - Wissenskorb: `docs/js/ui/korb.js` (sessionStorage-Persistenz)
 
