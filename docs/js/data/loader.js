@@ -75,6 +75,56 @@ function buildStore(jsonld) {
     indexWorks(store, record);
   }
 
+  // Pass 3: Derive Konvolut display metadata + filter Folio records
+  store.folioIds = new Set();
+  store.konvolutMeta = new Map();
+
+  for (const [kid, konvolut] of store.konvolute) {
+    const childIds = store.konvolutChildren.get(kid) || [];
+    const folioId = childIds.find(cid => cid.endsWith('_Folio'));
+    const folioRecord = folioId ? store.records.get(folioId) : null;
+    if (folioId) store.folioIds.add(folioId);
+
+    const realChildIds = childIds.filter(cid => !cid.endsWith('_Folio'));
+    let minYear = Infinity, maxYear = -Infinity;
+    let datedCount = 0;
+    let totalLinks = 0;
+
+    for (const cid of realChildIds) {
+      const child = store.records.get(cid);
+      if (!child) continue;
+      totalLinks += countLinks(child);
+      const year = extractYear(child['rico:date']);
+      if (year) {
+        datedCount++;
+        if (year < minYear) minYear = year;
+        if (year > maxYear) maxYear = year;
+      }
+    }
+
+    const title = folioRecord ? folioRecord['rico:title'] : null;
+    let dateDisplay = '';
+    if (minYear !== Infinity) {
+      dateDisplay = minYear === maxYear
+        ? String(minYear)
+        : `${minYear}\u2009\u2013\u2009${maxYear}`;
+    }
+
+    store.konvolutMeta.set(kid, {
+      title,
+      dateDisplay,
+      childCount: realChildIds.length,
+      folioId,
+      totalLinks,
+      datedCount,
+    });
+  }
+
+  // Remove Folio records from allRecords (they are metadata, not archival objects)
+  if (store.folioIds.size > 0) {
+    store.allRecords = store.allRecords.filter(r => !store.folioIds.has(r['@id']));
+  }
+
   return store;
 }
 

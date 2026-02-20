@@ -4,7 +4,7 @@
  */
 
 import { el } from '../utils/dom.js';
-import { formatSignatur, formatDocType, ensureArray } from '../utils/format.js';
+import { formatSignatur, formatDocType, ensureArray, countLinks } from '../utils/format.js';
 import { formatDate } from '../utils/date-parser.js';
 
 /**
@@ -16,6 +16,11 @@ import { formatDate } from '../utils/date-parser.js';
  * @returns {HTMLElement}
  */
 export function buildInlineDetail(record, store, { onClose } = {}) {
+  // Konvolut (RecordSet) gets a specialized aggregate detail view
+  if (record['@type'] === 'rico:RecordSet' && store.konvolutMeta) {
+    return buildKonvolutDetail(record, store, { onClose });
+  }
+
   const wrapper = el('div', { className: 'inline-detail' });
 
   // Header
@@ -170,4 +175,86 @@ function renderWorkChips(subjects) {
     ));
   }
   return container;
+}
+
+/** Build an aggregate detail view for a Konvolut (RecordSet). */
+function buildKonvolutDetail(record, store, { onClose } = {}) {
+  const wrapper = el('div', { className: 'inline-detail inline-detail--konvolut' });
+  const kid = record['@id'];
+  const meta = store.konvolutMeta.get(kid);
+
+  // Header
+  const header = el('div', { className: 'inline-detail__header' },
+    el('span', { className: 'inline-detail__signatur' }, formatSignatur(record['rico:identifier'])),
+    el('h4', { className: 'inline-detail__title' }, meta?.title || record['rico:identifier'] || ''),
+    el('button', {
+      className: 'inline-detail__close',
+      title: 'Schlie\u00dfen',
+      onClick: (e) => { e.stopPropagation(); if (onClose) onClose(); },
+      html: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>',
+    })
+  );
+  wrapper.appendChild(header);
+
+  // Body
+  const body = el('div', { className: 'inline-detail__body' });
+  const leftCol = el('div', { className: 'inline-detail__col' });
+
+  // Overview section
+  const metaPairs = [];
+  metaPairs.push(['Typ', 'Konvolut (Archiveinheit)']);
+  if (meta?.childCount) metaPairs.push(['Enth\u00e4lt', `${meta.childCount} Objekte`]);
+  if (meta?.dateDisplay) metaPairs.push(['Zeitraum', meta.dateDisplay]);
+  if (meta?.datedCount && meta?.childCount) {
+    const pct = Math.round(meta.datedCount / meta.childCount * 100);
+    metaPairs.push(['Datiert', `${meta.datedCount} von ${meta.childCount} (${pct}\u2009%)`]);
+  }
+  if (meta?.totalLinks) metaPairs.push(['Verkn\u00fcpfungen', `${meta.totalLinks} gesamt`]);
+  leftCol.appendChild(renderSection('\u00dcbersicht', renderMetaGrid(metaPairs)));
+
+  // Right column: aggregated top entities
+  const rightCol = el('div', { className: 'inline-detail__col' });
+  const childIds = (store.konvolutChildren.get(kid) || []).filter(cid => !store.folioIds.has(cid));
+
+  const agentCounts = new Map();
+  const locationCounts = new Map();
+
+  for (const cid of childIds) {
+    const child = store.records.get(cid);
+    if (!child) continue;
+    for (const agent of ensureArray(child['rico:hasOrHadAgent'])) {
+      const name = agent.name || agent['skos:prefLabel'] || '';
+      if (name) agentCounts.set(name, (agentCounts.get(name) || 0) + 1);
+    }
+    for (const loc of ensureArray(child['rico:hasOrHadLocation'])) {
+      const name = loc.name || loc['skos:prefLabel'] || '';
+      if (name && !/^\d{4}/.test(name)) locationCounts.set(name, (locationCounts.get(name) || 0) + 1);
+    }
+  }
+
+  if (agentCounts.size > 0) {
+    const topAgents = [...agentCounts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 10);
+    const chips = el('div', { className: 'inline-detail__chips' });
+    for (const [name, count] of topAgents) {
+      chips.appendChild(el('span', { className: 'chip chip--entity' },
+        name, el('span', { className: 'chip__role' }, ` (${count})`)));
+    }
+    rightCol.appendChild(renderSection(`Personen (Top\u200910)`, chips));
+  }
+
+  if (locationCounts.size > 0) {
+    const topLocs = [...locationCounts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5);
+    const chips = el('div', { className: 'inline-detail__chips' });
+    for (const [name, count] of topLocs) {
+      chips.appendChild(el('span', { className: 'chip chip--entity' },
+        name, el('span', { className: 'chip__role' }, ` (${count})`)));
+    }
+    rightCol.appendChild(renderSection(`Orte (Top\u20095)`, chips));
+  }
+
+  body.appendChild(leftCol);
+  if (rightCol.childNodes.length > 0) body.appendChild(rightCol);
+  wrapper.appendChild(body);
+
+  return wrapper;
 }

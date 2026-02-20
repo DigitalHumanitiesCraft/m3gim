@@ -63,6 +63,7 @@ function buildToolbar() {
     onChange: (e) => { currentSort = e.target.value; applyFilters(); },
   },
     el('option', { value: 'signatur' }, 'Signatur'),
+    el('option', { value: 'titel' }, 'Titel'),
     el('option', { value: 'datum' }, 'Datum'),
     el('option', { value: 'typ' }, 'Typ'),
     el('option', { value: 'links' }, 'Verkn\u00fcpfungen'),
@@ -71,7 +72,7 @@ function buildToolbar() {
 
   const countEl = el('span', { className: 'archiv-count' });
   countEl.id = 'archiv-count';
-  countEl.textContent = `${store.allRecords.length} Objekte`;
+  countEl.textContent = `${store.allRecords.length} Objekte \u00b7 ${store.konvolute.size} Konvolute`;
 
   return el('div', { className: 'archiv-toolbar' }, toggle, search, typeSelect, sortSelect, countEl);
 }

@@ -4,7 +4,7 @@
  */
 
 import { el, clear } from '../utils/dom.js';
-import { formatSignatur, getDocTypeId, countLinks, truncate } from '../utils/format.js';
+import { formatSignatur, formatChildSignatur, getDocTypeId, countLinks, truncate } from '../utils/format.js';
 import { extractYear, formatDate } from '../utils/date-parser.js';
 import { DOKUMENTTYP_LABELS } from '../data/constants.js';
 import { buildInlineDetail } from './archiv-inline-detail.js';
@@ -42,7 +42,15 @@ export function renderBestand(storeRef, containerEl, filters) {
  */
 export function updateBestandView(filters) {
   const { search = '', docType = '', sort = 'signatur' } = filters || {};
+  const isFiltered = !!(search || docType);
   let items = getOrderedItems();
+
+  // When filtering, flatten: remove Konvolut headers, show children as standalone
+  if (isFiltered) {
+    items = items
+      .filter(item => !item.isKonvolut)
+      .map(item => item.isChild ? { record: item.record, konvolutId: item.konvolutId } : item);
+  }
 
   // Search
   if (search) {
@@ -61,7 +69,7 @@ export function updateBestandView(filters) {
   }
 
   // Sort (only when not in structural grouping mode)
-  if (search || docType || sort !== 'signatur') {
+  if (isFiltered || sort !== 'signatur') {
     items.sort((a, b) => sortFn(a.record, b.record, sort));
   }
 
@@ -93,27 +101,33 @@ function getOrderedItems() {
     for (const cid of children) childIds.add(cid);
   }
 
-  const topLevel = store.allRecords.filter(r => !childIds.has(r['@id']));
-  topLevel.sort((a, b) => naturalSort(a['rico:identifier'] || '', b['rico:identifier'] || ''));
+  // Standalone records (not children of any Konvolut)
+  const standalone = store.allRecords.filter(r => !childIds.has(r['@id']));
 
-  for (const record of topLevel) {
-    const konvolutId = [...store.konvolute.keys()].find(kid => {
-      const sig = record['rico:identifier'] || '';
-      const konvSig = store.konvolute.get(kid)?.['rico:identifier'] || '';
-      return sig === konvSig || record['@id'] === kid;
-    });
+  // Merge standalone records + Konvolut RecordSets into one sorted list
+  const topEntries = [];
+  for (const record of standalone) {
+    topEntries.push({ sig: record['rico:identifier'] || '', record, type: 'record' });
+  }
+  for (const [kid, konvolut] of store.konvolute) {
+    topEntries.push({ sig: konvolut['rico:identifier'] || '', record: konvolut, type: 'konvolut', konvolutId: kid });
+  }
+  topEntries.sort((a, b) => naturalSort(a.sig, b.sig));
 
-    if (konvolutId && store.konvolutChildren.has(konvolutId)) {
-      items.push({ record, isKonvolut: true, konvolutId });
-      const children = store.konvolutChildren.get(konvolutId)
+  // Build flat list: Konvolute get their children injected after them
+  for (const entry of topEntries) {
+    if (entry.type === 'konvolut') {
+      items.push({ record: entry.record, isKonvolut: true, konvolutId: entry.konvolutId });
+      const children = (store.konvolutChildren.get(entry.konvolutId) || [])
+        .filter(cid => !store.folioIds.has(cid))
         .map(cid => store.records.get(cid))
         .filter(Boolean)
         .sort((a, b) => naturalSort(a['rico:identifier'] || '', b['rico:identifier'] || ''));
       for (const child of children) {
-        items.push({ record: child, isChild: true, konvolutId });
+        items.push({ record: child, isChild: true, konvolutId: entry.konvolutId });
       }
     } else {
-      items.push({ record });
+      items.push({ record: entry.record });
     }
   }
 
@@ -122,6 +136,11 @@ function getOrderedItems() {
 
 function sortFn(a, b, sort) {
   switch (sort) {
+    case 'titel': {
+      const ta = (a['rico:title'] || '').toLowerCase();
+      const tb = (b['rico:title'] || '').toLowerCase();
+      return ta.localeCompare(tb, 'de');
+    }
     case 'datum': {
       const ya = extractYear(a['rico:date']) || 9999;
       const yb = extractYear(b['rico:date']) || 9999;
@@ -177,17 +196,30 @@ function renderRows(items) {
       sigContent.push(toggle);
     }
 
-    const childCount = item.isKonvolut ? (store.konvolutChildren.get(item.konvolutId)?.length || 0) : 0;
-    let konvolutLinkCount = 0;
-    if (item.isKonvolut) {
-      for (const cid of store.konvolutChildren.get(item.konvolutId) || []) {
-        const child = store.records.get(cid);
-        if (child) konvolutLinkCount += countLinks(child);
-      }
-    }
+    const meta = item.isKonvolut ? store.konvolutMeta.get(item.konvolutId) : null;
+    const childCount = meta ? meta.childCount : 0;
+
+    // Signatur: children show only folio part
+    const displaySig = item.isChild
+      ? formatChildSignatur(r['rico:identifier'], store.konvolute.get(item.konvolutId)?.['rico:identifier'])
+      : sig;
+
+    // Title: Konvolute use derived title from Folio record
+    const displayTitle = item.isKonvolut
+      ? (meta?.title || r['rico:identifier'] || '')
+      : (r['rico:title'] || '(ohne Titel)');
+
+    // Date: Konvolute show date range from children, Records show formatted date
+    const displayDate = item.isKonvolut
+      ? (meta?.dateDisplay || '')
+      : (formatDate(r['rico:date']) || 'o.\u2009D.');
+    const isUndated = !item.isKonvolut && !r['rico:date'];
+
+    // Links: Konvolute use pre-computed total, Records show count or dash
     const linksDisplay = item.isKonvolut
-      ? `${childCount} Fol. \u00b7 ${konvolutLinkCount} Vkn.`
-      : String(links);
+      ? `${childCount} Fol.\u2009\u00b7\u2009${meta?.totalLinks || 0} Vkn.`
+      : (links > 0 ? String(links) : '\u2013');
+    const hasLinks = item.isKonvolut ? (meta?.totalLinks > 0) : (links > 0);
 
     const tr = el('tr', {
       className: rowClass,
@@ -195,10 +227,10 @@ function renderRows(items) {
     },
       el('td', { className: 'archiv-col-signatur' },
         ...sigContent,
-        el('span', { className: 'archiv-signatur' }, sig)
+        el('span', { className: 'archiv-signatur' }, displaySig)
       ),
       el('td', { className: 'archiv-col-titel' },
-        el('span', { className: 'archiv-titel' }, truncate(r['rico:title'] || '(ohne Titel)', 80))
+        el('span', { className: 'archiv-titel' }, truncate(displayTitle, 80))
       ),
       el('td', { className: 'archiv-col-typ' },
         item.isKonvolut
@@ -208,10 +240,10 @@ function renderRows(items) {
             : el('span')
       ),
       el('td', { className: 'archiv-col-datum' },
-        el('span', { className: `archiv-datum ${r['rico:date'] ? '' : 'archiv-datum--undated'}` }, formatDate(r['rico:date']) || 'o.\u2009D.')
+        el('span', { className: `archiv-datum ${isUndated ? 'archiv-datum--undated' : ''}` }, displayDate)
       ),
       el('td', { className: 'archiv-col-links' },
-        el('span', { className: `archiv-links ${(item.isKonvolut ? konvolutLinkCount : links) > 0 ? 'archiv-links--has-links' : ''}` }, String(linksDisplay))
+        el('span', { className: `archiv-links ${hasLinks ? 'archiv-links--has-links' : 'archiv-links--zero'}` }, linksDisplay)
       ),
     );
     tbody.appendChild(tr);

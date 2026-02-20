@@ -10,6 +10,17 @@ export function formatSignatur(identifier) {
   return identifier.replace('UAKUG/', '');
 }
 
+/** Format a child signatur showing only the folio part (e.g. "UAKUG/NIM_003 1_1" → "Fol. 1_1"). */
+export function formatChildSignatur(identifier, parentIdentifier) {
+  if (!identifier || !parentIdentifier) return formatSignatur(identifier);
+  const sig = formatSignatur(identifier);
+  const parentSig = formatSignatur(parentIdentifier);
+  if (sig.startsWith(parentSig + ' ')) {
+    return 'Fol.\u2009' + sig.slice(parentSig.length + 1);
+  }
+  return sig;
+}
+
 /** Get document type ID from a RiC-O documentaryFormType. */
 export function getDocTypeId(record) {
   const dft = record['rico:hasDocumentaryFormType'];

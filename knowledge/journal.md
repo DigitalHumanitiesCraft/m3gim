@@ -148,4 +148,65 @@
 
 ---
 
+## 2026-02-20 — Session 7: Konvolut-Darstellung und Sortierung
+
+### Was getan
+- **Kritischer Bug gefixt**: `getOrderedItems()` iterierte nur ueber `store.allRecords` (rico:Record), aber Konvolute sind `rico:RecordSet` und leben in `store.konvolute` → 76 Einzelobjekte innerhalb von Konvoluten waren im Bestand unsichtbar
+- **getOrderedItems() neu geschrieben**: Merged standalone Records + Konvolut RecordSets in eine sortierte Liste, injiziert Konvolut-Kinder nach dem jeweiligen Konvolut-Header
+- **Filter-Logik verbessert**: Bei aktivem Search/DocType-Filter werden Konvolut-Header entfernt und Kinder als eigenstaendige Zeilen angezeigt (kein Expand/Collapse noetig)
+- **Titel-Sortierung ergaenzt**: Neuer Sort-Option "Titel" im Dropdown (alphabetisch, `localeCompare('de')`)
+
+### Erkenntnisse
+- Konvolute (NIM_003, NIM_004, NIM_007) sind `rico:RecordSet` mit `rico:hasRecordSetType: rico:File`
+- Die alte `getOrderedItems()` suchte nach Records mit gleichem `rico:identifier` wie ein Konvolut — solche Records existieren aber nicht (Konvolute sind ausschliesslich RecordSets)
+- NIM_029 ist im JSON-LD aktuell ein `rico:Record` (kein Konvolut) — wird erst zum RecordSet, wenn Folios bearbeitet werden
+- 281 Records + 3 Konvolute + 1 Fonds = 285 Nodes im Graph, davon 205 standalone + 76 in Konvoluten
+
+### Entscheidungen
+- Konvolute als eigenstaendige Zeilen mit Toggle-Button (Aufklappen/Zuklappen der Kinder)
+- Bei Suche/Filter: Strukturelle Hierarchie wird aufgeloest, alle Einzelobjekte flach dargestellt
+- NIM_029 bleibt vorerst Record — wird automatisch Konvolut sobald Folios in der Pipeline ankommen
+
+---
+
+## 2026-02-20 — Session 8: Bestand-View Konvolut-Metadaten und Anforderungsanalyse
+
+### Was getan
+- **7 Bestand-View-Probleme behoben** (Plan genehmigt und implementiert):
+  1. `loader.js` Pass 3: `store.konvolutMeta` mit Titel (vom Folio-Kind), Datumsbereich (min/max aus Kindern), Link-Summe, Kind-Anzahl
+  2. `store.folioIds` + Filter: Folio-Meta-Records aus `allRecords` entfernt (282 → 279)
+  3. `formatChildSignatur()`: Kinder zeigen "Fol. 14" statt "NIM_007 14"
+  4. `buildKonvolutDetail()`: Aggregierte Uebersicht mit Top-10 Personen, Top-5 Orte
+  5. Counter: "279 Objekte · 3 Konvolute"
+  6. Gedankenstrich statt "0" bei unverknuepften Records (`.archiv-links--zero`)
+  7. Konvolut-Zeilen: Titel aus Folio-Kind, Zeitraum aus Kindern, kein "o. D."
+- **Anforderungsanalyse (Soll-Ist-Abgleich v5.0)** gegen Codebase verifiziert
+
+### Erkenntnisse aus der Anforderungsanalyse
+- **3 faktische Fehler im Analysedokument identifiziert**:
+  1. "1919–2826" ist kein Parsing-Bug in stats-bar.js (Math.min/max korrekt) — falls falsch, dann Datenquelle
+  2. Kosmos ist voll funktional (D3 Force-Graph), nicht "unklar"
+  3. NIM_005/NIM_006 haben `m3gim-dft:konvolut` als Typ — Badge wird absichtlich unterdrueckt (`docType !== 'konvolut'`)
+- **Korrekte Beobachtungen**:
+  - Detailansicht hat keinen "leeren Zustand" fuer unerschlossene Objekte
+  - Matrix-Drilldown oeffnet nur erstes Dokument, nicht gefilterte Liste
+  - Chronik "Ohne Ort" wird wie eine Ortskategorie behandelt, nicht als Erfassungsluecke
+  - Personen-Tags in Detailansicht sind nicht klickbar (kein Navigationskreis zu Indizes)
+- **Neues konzeptuelles Framework**: UC1–UC4 (4 Use Cases) und A1–A9/S1–S3/D1–D5 (Anforderungs-IDs) — existiert nicht in unserer Knowledge-Base
+- **Kritischer Pfad fuer Iteration 2**: Mustererkennung (Matrix/Kosmos) → Quellenbeleg (Detail) → persistente Sammlung (Merkliste) — dieser Pfad ist noch nicht geschlossen
+
+### Entscheidungen
+- Folio-Records sind Metadaten, keine Archivobjekte → aus allRecords entfernen
+- Konvolut-Titel wird vom Folio-Kind abgeleitet (nicht in Pipeline/JSON-LD)
+- Analysedokument-Fehler werden nicht ins Wissensdokument uebernommen, korrekte Beobachtungen schon
+
+### Offene Punkte fuer Iteration 2
+- Detailansicht: "Noch nicht erschlossen"-Hinweis bei leerer rechter Spalte
+- Matrix: Drilldown auf gefilterte Dokumentliste statt nur erstes Dokument
+- Personen-Tags klickbar machen (→ Index-Navigation)
+- Chronik "Ohne Ort" als Erfassungsluecke kennzeichnen
+- Merkliste (Session-basiert, CSV-Export) als Minimalversion
+
+---
+
 Siehe auch: [→ Projekt](01-projekt.md) · [→ Quellenbestand](02-quellenbestand.md) · [→ Architektur](04-architektur.md)
