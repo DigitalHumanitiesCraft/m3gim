@@ -97,9 +97,14 @@ export function buildInlineDetail(record, store, { onClose } = {}) {
   // Right column: Verknüpfungen
   const rightCol = el('div', { className: 'inline-detail__col' });
 
-  const agents = ensureArray(record['rico:hasOrHadAgent']);
-  if (agents.length) {
-    rightCol.appendChild(renderSection(`Personen (${agents.length})`, renderEntityChips(agents, 'personen')));
+  const allAgents = ensureArray(record['rico:hasOrHadAgent']);
+  const persons = allAgents.filter(a => a['@type'] !== 'rico:CorporateBody' && a['@type'] !== 'rico:Group');
+  const institutions = allAgents.filter(a => a['@type'] === 'rico:CorporateBody' || a['@type'] === 'rico:Group');
+  if (persons.length) {
+    rightCol.appendChild(renderSection(`Personen (${persons.length})`, renderEntityChips(persons, 'personen')));
+  }
+  if (institutions.length) {
+    rightCol.appendChild(renderSection(`Institutionen (${institutions.length})`, renderEntityChips(institutions, 'organisationen')));
   }
 
   const locations = ensureArray(record['rico:hasOrHadLocation']);
@@ -207,13 +212,16 @@ function renderWorkChips(subjects) {
   for (const subj of subjects) {
     const name = subj.name || subj['skos:prefLabel'] || '?';
     const komponist = subj.komponist || '';
-    container.appendChild(el('span', {
+    const role = subj.role || '';
+    const chip = el('span', {
       className: 'chip chip--werk chip--clickable',
       title: `Im Index \u00f6ffnen: ${name}`,
       onClick: (e) => { e.stopPropagation(); navigateToIndex('werke', name); },
     },
-      komponist ? `${name} (${komponist})` : name
-    ));
+      komponist ? `${name} (${komponist})` : name,
+      role ? el('span', { className: 'chip__role' }, ` \u2014 ${role}`) : null,
+    );
+    container.appendChild(chip);
   }
   return container;
 }

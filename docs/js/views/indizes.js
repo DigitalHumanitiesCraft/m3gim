@@ -137,8 +137,11 @@ export function renderIndizes(storeRef, containerEl) {
 
   const wrapper = el('div', { className: 'idx-page' });
 
-  // Search bar across all grids
-  const searchBar = el('div', { className: 'idx-global-search' },
+  // Toolbar: Search + Facet Chips on one line
+  const chipContainer = el('div', { className: 'idx-facet-chips' });
+  chipContainer.id = 'idx-facet-chips';
+
+  const toolbar = el('div', { className: 'idx-toolbar' },
     el('input', {
       className: 'idx-search-input',
       type: 'text',
@@ -152,14 +155,10 @@ export function renderIndizes(storeRef, containerEl) {
         activeFilter = null; // clear facet on global search
         renderAllGrids(wrapper);
       },
-    })
+    }),
+    chipContainer,
   );
-  wrapper.appendChild(searchBar);
-
-  // Facet chip container (between search and grids)
-  const chipContainer = el('div', { className: 'idx-facet-chips' });
-  chipContainer.id = 'idx-facet-chips';
-  wrapper.appendChild(chipContainer);
+  wrapper.appendChild(toolbar);
 
   const gridsContainer = el('div', { className: 'idx-grids' });
   wrapper.appendChild(gridsContainer);

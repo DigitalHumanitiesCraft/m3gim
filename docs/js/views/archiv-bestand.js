@@ -30,10 +30,10 @@ export function renderBestand(storeRef, containerEl, filters, onSortChange) {
   container = containerEl;
   onSortChangeCallback = onSortChange || null;
 
-  // Default: expand small Konvolute
+  // All Konvolute start expanded — they show their children by default
   if (expandedKonvolute.size === 0) {
-    for (const [kid, children] of store.konvolutChildren) {
-      if (children.length <= 15) expandedKonvolute.add(kid);
+    for (const [kid] of store.konvolutChildren) {
+      expandedKonvolute.add(kid);
     }
   }
 

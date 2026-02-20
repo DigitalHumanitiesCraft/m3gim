@@ -392,6 +392,33 @@ Alle Wissensdokumente gegen Code-Stand verifiziert und korrigiert: Journal Sessi
 - docs/css/korb.css (Card-Styles statt Zeilen)
 - docs/css/pages.css (max-width 960px)
 
+## 2026-02-20 — Session 12b: Indizes-Layout, Semantik, Modell-Seite
+
+### Indizes-Layout kompakter
+
+Suche und Facet-Chips auf eine Zeile zusammengefuehrt: `.idx-toolbar` als Flex-Container (war: `.idx-global-search` + `.idx-facet-chips` als zwei separate Kinder). Suche bekommt `flex: 1` (war: `max-width: 400px`). Spacing reduziert (space-3 → space-2 an mehreren Stellen). Spart ~35px vertikalen Raum.
+
+**Geaenderte Dateien**: docs/js/views/indizes.js, docs/css/indizes.css
+
+### Semantische Verknuepfungen in Korb + Inline-Detail
+
+Person/Institution-Trennung: `rico:hasOrHadAgent` wird nach `@type` gesplittet — Personen (rico:Person) und Institutionen (rico:CorporateBody + rico:Group) als separate Zeilen mit korrekter Index-Navigation. Werk-Rollen: `role`-Feld aus `rico:hasOrHadSubject` wird jetzt angezeigt (z.B. "— auffuehrung", "— erwaehnt").
+
+**Geaenderte Dateien**: docs/js/views/korb.js, docs/js/views/archiv-inline-detail.js
+
+### Neue Seite "Modell" (#modell)
+
+Eigene Info-Seite in der oberen Navigation. Erklaert das Datenmodell fuer Projektpartner: Ontologie (RiC-O 1.1 + m3gim), Verknuepfungstypen (6-zeilige Tabelle), semantische Unterscheidungen (Agent vs. Erwaehnung, Person vs. Institution, Ort-Rollen, Werk-Kontext), Identifikatoren/Normdaten (Wikidata-Statistik live aus Store), Bestandsstatistik (live), technische Referenz (Namensraeume).
+
+**Neue Datei**: docs/js/views/modell.js
+**Geaenderte Dateien**: docs/index.html, docs/js/ui/router.js, docs/js/main.js
+
+### Konvolut-Expansion-Fix
+
+Konvolute starten jetzt collapsed statt automatisch aufgeklappt (war: <=15 Kinder → auto-expand). Klick auf Konvolut-Zeile zeigt nur das Aggregat-Detail-Panel. Children-Rows erst per Chevron-Toggle.
+
+**Geaenderte Datei**: docs/js/views/archiv-bestand.js
+
 ---
 
 Siehe auch: [→ Projekt](../projekt-kontext.md) · [→ Quellenbestand](../datenmodell-ontologie.md) · [→ Architektur](../system-architektur-pipeline.md)

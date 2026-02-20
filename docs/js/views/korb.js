@@ -111,20 +111,25 @@ function renderCard(record) {
     card.appendChild(el('div', { className: 'korb-card__meta' }, metaParts.join(' \u00b7 ')));
   }
 
-  // Verknuepfungen
-  const agents = ensureArray(record['rico:hasOrHadAgent']);
+  // Verknuepfungen — split agents into persons and institutions
+  const allAgents = ensureArray(record['rico:hasOrHadAgent']);
+  const persons = allAgents.filter(a => a['@type'] !== 'rico:CorporateBody' && a['@type'] !== 'rico:Group');
+  const institutions = allAgents.filter(a => a['@type'] === 'rico:CorporateBody' || a['@type'] === 'rico:Group');
   const locations = ensureArray(record['rico:hasOrHadLocation']);
   const subjects = ensureArray(record['rico:hasOrHadSubject']);
   const roles = ensureArray(record['m3gim:hasPerformanceRole']);
   const mentions = ensureArray(record['m3gim:mentions']);
 
-  const hasLinks = agents.length || locations.length || subjects.length || roles.length || mentions.length;
+  const hasLinks = allAgents.length || locations.length || subjects.length || roles.length || mentions.length;
 
   if (hasLinks) {
     const linksEl = el('div', { className: 'korb-card__links' });
 
-    if (agents.length) {
-      linksEl.appendChild(renderLinkRow('Personen', agents, 'personen'));
+    if (persons.length) {
+      linksEl.appendChild(renderLinkRow('Personen', persons, 'personen'));
+    }
+    if (institutions.length) {
+      linksEl.appendChild(renderLinkRow('Institutionen', institutions, 'organisationen'));
     }
     if (locations.length) {
       linksEl.appendChild(renderLinkRow('Orte', locations, 'orte'));
@@ -205,13 +210,16 @@ function renderWorkRow(label, subjects) {
   for (const subj of subjects) {
     const name = subj.name || subj['skos:prefLabel'] || '?';
     const komponist = subj.komponist || '';
-    row.appendChild(el('span', {
+    const role = subj.role || '';
+    const chip = el('span', {
       className: 'chip chip--werk chip--clickable',
       title: `Im Index \u00f6ffnen: ${name}`,
       onClick: (e) => { e.stopPropagation(); navigateToIndex('werke', name); },
     },
-      komponist ? `${name} (${komponist})` : name
-    ));
+      komponist ? `${name} (${komponist})` : name,
+      role ? el('span', { className: 'chip__role' }, ` \u2014 ${role}`) : null,
+    );
+    row.appendChild(chip);
   }
   return row;
 }

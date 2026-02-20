@@ -4,7 +4,7 @@
 
 const TABS = ['archiv', 'indizes', 'korb'];
 const HIDDEN_TABS = ['matrix', 'kosmos']; // ausgeblendet fuer Demo, Code bleibt
-const PAGES = ['about', 'projekt', 'hilfe'];
+const PAGES = ['about', 'projekt', 'modell', 'hilfe'];
 const ALL_VIEWS = [...TABS, ...PAGES];
 
 const state = {

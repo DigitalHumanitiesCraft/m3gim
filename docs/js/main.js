@@ -15,6 +15,7 @@ import { renderKorb } from './views/korb.js';
 import { renderAbout } from './views/about.js';
 import { renderProjekt } from './views/projekt.js';
 import { renderHilfe } from './views/hilfe.js';
+import { renderModell } from './views/modell.js';
 
 let store = null;
 const renderedTabs = new Set();
@@ -98,6 +99,9 @@ function renderTab(tab) {
       break;
     case 'projekt':
       renderProjekt(store, container);
+      break;
+    case 'modell':
+      renderModell(store, container);
       break;
     case 'hilfe':
       renderHilfe(store, container);

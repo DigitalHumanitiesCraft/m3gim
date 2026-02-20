@@ -16,6 +16,7 @@
 
 - Ueber
 - Projekt
+- Modell (Datenmodell-Erklaerung mit Live-Statistik)
 - Hilfe
 
 ### Routing
@@ -40,7 +41,7 @@
 
 - Vier Grid-Bloecke: Personen, Organisationen, Orte, Werke
 - Cross-Grid-Facettensuche: Klick auf Index-Eintrag filtert die anderen 3 Grids
-- Facet-Chip mit Entfernen-Button ueber den Grids
+- Kompakte Toolbar: Suche (flex: 1) + Facet-Chips auf einer Zeile
 - Detail-Expansion auf 10 Records begrenzt + "Alle im Archiv anzeigen" Link
 - Grid-Count zeigt gefilterte/total bei aktivem Filter
 - Suche, Sortierung, Expansion und Seiteneinstieg in zugehoerige Records
@@ -74,7 +75,10 @@
 - Card-basierte Darstellung pro Record:
   - Header: Signatur (klickbar → Archiv), Titel, Typ-Badge, Entfernen-Button
   - Meta-Zeile: Datum, Sprache, Umfang, Status (Midpoint-Separator)
-  - Verknuepfungen: Personen, Orte, Werke, Rollen, Erwaehnt als klickbare Chips
+  - Verknuepfungen mit semantischer Trennung:
+    - Personen und Institutionen als separate Zeilen (nach @type gesplittet)
+    - Werke mit Rolle (auffuehrung, erwaehnt)
+    - Orte, Rollen, Erwaehnt als klickbare Chips
   - Wikidata-Badges wo vorhanden
   - Konvolut-Info (Teil von Konvolut X)
   - Empty-State fuer unerschlossene Objekte
