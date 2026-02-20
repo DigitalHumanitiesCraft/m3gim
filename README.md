@@ -1,22 +1,22 @@
 # M³GIM: Mapping Mobile Musicians
 
-Digitale Erschließung des Teilnachlasses Ira Malaniuk (UAKUG/NIM, 436 Archiveinheiten) am Universitätsarchiv der KUG Graz. Das Projekt untersucht Mobilität und Musiktheaterwissen im Graz der Nachkriegszeit.
+Digitale Erschließung des Teilnachlasses Ira Malaniuk (UAKUG/NIM, 283 Archiveinheiten) am Universitätsarchiv der KUG Graz. Das Projekt untersucht Mobilität und Musiktheaterwissen im Graz der Nachkriegszeit.
 
 **Live:** [dhcraft.org/m3gim](https://dhcraft.org/m3gim)
 
 ## Repository
 
-Dieses Repository enthält die Datenpipeline (Python) und das Frontend (Vite, D3.js v7). Die vollständige Projektdokumentation -- Datenmodell, Design-System, Visualisierungsspezifikationen, Architekturentscheidungen -- wird im Obsidian-Wissensvault geführt und ist nicht Teil dieses Repositories.
+Dieses Repository enthält die Datenpipeline (Python), das Frontend (Vite, D3.js v7) und das destillierte Projektwissen.
 
-Siehe [`scripts/README.md`](scripts/README.md) für die Pipeline-Dokumentation.
+Siehe [`knowledge/`](knowledge/) für das Projektwissen und [`scripts/README.md`](scripts/README.md) für die Pipeline-Dokumentation.
 
 ## Struktur
 
 ```
 m3gim/
+├── knowledge/             # Destilliertes Projektwissen (7 Dokumente)
 ├── data/
 │   ├── archive-export/    # Originale AUGIAS-Exporte (XLSX, nicht getrackt)
-│   └── sources/           # Primärquellen (PDFs, nicht getrackt)
 ├── scripts/
 │   ├── migrate.py         # AUGIAS-Export → formatierte Excel
 │   ├── validate.py        # Datenqualitätsprüfung

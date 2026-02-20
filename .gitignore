@@ -157,8 +157,7 @@ logs/
 # ==========================================
 # Knowledge Base
 # ==========================================
-# Promptotyping documents managed in Obsidian vault
-knowledge/
+# knowledge/ is tracked — contains destilled project knowledge
 
 # ==========================================
 # IDE & Editor Files

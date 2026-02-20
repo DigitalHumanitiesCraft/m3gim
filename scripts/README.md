@@ -44,7 +44,6 @@ python scripts/migrate.py
 | `data/archive-export/Nachlass Malaniuk.xlsx` (182) | `data/processed/M3GIM-Objekte.xlsx` (208) |
 | `data/archive-export/Nachlass Malaniuk Plakate.xlsx` (25) | ↑ integriert |
 | `data/archive-export/Nachlass Malaniuk Tonträger.xlsx` (1) | ↑ integriert |
-| `data/archive-export/Nachlass Malaniuk Fotos.xlsx` (228) | `data/processed/M3GIM-Fotos.xlsx` (228) |
 
 ### Transformationen
 
@@ -55,14 +54,13 @@ python scripts/migrate.py
 | `map_dokumenttyp` | Systematikgruppe + Keywords → dokumenttyp |
 | `map_zugaenglichkeit` | Sperrfrist/gesperrt_bis → offen/eingeschraenkt/gesperrt |
 | `map_scan_status` | Filename vorhanden → gescannt/nicht_gescannt |
-| `map_fototyp` | s/w→sw, Farbfoto→farbe, PDF→digital |
 | `split_protokoll` | `AV/UR/18.09.2015` → bearbeiter + erfassungsdatum |
 
 ### Excel-Formatierung
 
 - Header: fett, blau (#4472C4), eingefroren
 - Spaltenbreiten: automatisch (max 50)
-- Dropdowns: dokumenttyp, sprache, zugaenglichkeit, scan_status, fototyp, datierungsevidenz
+- Dropdowns: dokumenttyp, sprache, zugaenglichkeit, scan_status, datierungsevidenz
 
 ---
 
@@ -79,7 +77,7 @@ python scripts/validate.py
 | Datei | Beschreibung |
 |-------|--------------|
 | `data/google-spreadsheet/M3GIM-Objekte.xlsx` | Hauptbestand, Plakate, Tonträger |
-| `data/google-spreadsheet/M3GIM-Fotos.xlsx` | Fotografien |
+
 | `data/google-spreadsheet/M3GIM-Verknüpfungen.xlsx` | Relationen |
 
 ### Ausgabe
@@ -119,7 +117,7 @@ python scripts/create-ric-json.py
 | Datei | Beschreibung |
 |-------|--------------|
 | `data/google-spreadsheet/M3GIM-Objekte.xlsx` | Objekte |
-| `data/google-spreadsheet/M3GIM-Fotos.xlsx` | Fotos |
+
 | `data/google-spreadsheet/M3GIM-Verknüpfungen.xlsx` | Relationen |
 | `data/google-spreadsheet/M3GIM-*index.xlsx` | Normdaten (Personen, Orte, Werke, Organisationen) |
 
