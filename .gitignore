@@ -159,6 +159,10 @@ logs/
 # ==========================================
 # knowledge/ is tracked — contains destilled project knowledge
 
+# Source documents (DSGVO: live in Obsidian vault, not in public repo)
+antrag.md
+handreichung.md
+
 # ==========================================
 # IDE & Editor Files
 # ==========================================

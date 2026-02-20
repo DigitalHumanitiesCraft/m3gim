@@ -225,13 +225,13 @@
   font-size: 0.9em;
 }
 
-/* Base link style */
-.info-page a {
+/* Base link style — scoped to content area, not header */
+.info-main a {
   color: var(--color-kug-blau);
   text-decoration: none;
 }
 
-.info-page a:hover {
+.info-main a:hover {
   text-decoration: underline;
 }
 
