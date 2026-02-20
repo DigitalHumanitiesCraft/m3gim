@@ -3,7 +3,7 @@ name: Build View Data
 on:
   push:
     paths:
-      - 'data/export/m3gim.jsonld'
+      - 'data/output/m3gim.jsonld'
       - 'scripts/build-views.py'
   workflow_dispatch:
 
@@ -25,7 +25,8 @@ jobs:
 
       - name: Copy view data to docs
         run: |
-          cp data/views/*.json docs/data/
+          mkdir -p docs/data
+          cp data/output/views/*.json docs/data/
 
       - name: Check for changes
         id: check_changes

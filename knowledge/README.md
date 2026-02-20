@@ -17,6 +17,8 @@ Stand: 2026-02-20
 | 05 | [Design-System](05-design-system.md) | Scholarly Elegance, Farbsystem, Typografie, Layout |
 | 06 | [Visualisierungen](06-visualisierungen.md) | 4 D3.js-Vis, Forschungshypothesen, Evaluation |
 | 07 | [Entscheidungen](07-entscheidungen.md) | 25 finale + 3 offene Entscheidungen, Tech Schulden, Prozesswissen |
+| 08 | [RiC-O Referenz](08-ric-o.md) | RiC-O 1.1 Ontologie, Klassenhierarchie, Properties, M3GIM-Mapping |
+| 09 | [m3gim-Ontologie](09-m3gim-ontology.md) | Projekteigene RiC-O-Erweiterung, MusicalWork, Rollen, Dokumenttypen |
 | — | [Journal](journal.md) | Arbeitstagebuch, alle Sessions kompakt dokumentiert |
 
 ---

@@ -70,4 +70,35 @@
 
 ---
 
+## 2026-02-20 — Session 4: RiC-O Referenz, m3gim-Ontologie, Pipeline Iteration 2
+
+### Was getan
+- RiC-O 1.1 Referenzdokument geschrieben (`knowledge/08-ric-o.md`): Alle relevanten Klassen, Properties, Modellierungsmuster
+- 5 offene Modellierungsfragen analysiert → 3 mit RiC-O allein lösbar, 2 brauchen m3gim-Erweiterung
+- m3gim-Ontologie geschrieben (`knowledge/09-m3gim-ontology.md`): 2 Klassen (MusicalWork, Performance), 4 Object Properties, 2 SKOS-Vokabulare (11 Rollen, 25 Dokumenttypen)
+- **validate.py komplett überarbeitet**: Normalisierung, 25 Dokumenttypen, Konvolut-aware Duplikaterkennung, Cross-Table-Checks, Header-Shift-Korrektur → 1 realer Fehler (PL_07 Duplikat), 177 Warnings
+- **transform.py neu geschrieben** (ersetzt create-ric-json.py): Konvolut-Hierarchie (Fonds → RecordSet → Record), String-Matching gegen Indizes, Wikidata-Anreicherung, Komposit-Typ-Decomposition, 7 Namespaces → 282 Records, 3 Konvolute, 258 KB JSON-LD
+- **build-views.py überarbeitet**: Liest strukturierte RiC-O-Daten (hasOrHadAgent, mentions, hasOrHadSubject, hasOrHadLocation) statt hardcoded Listen → 294 Personen in Matrix (vorher ~30), 7 Komponisten in Kosmos, 17 Flows in Sankey
+- CI/CD aktualisiert (build-views.yml Pfade), scripts/README.md, knowledge/04-architektur.md
+- `create-ric-json.py` gelöscht (ersetzt durch transform.py)
+
+### Erkenntnisse
+- Duale Datenextraktion (strukturiert + Title-Matching) ist robuster als nur eins von beiden
+- Konvolut-Duplikaterkennung braucht Objekt-ID (signatur + folio), nicht nur signatur
+- Wikidata-IDs tauchen als Komponisten-Namen in kosmos.json auf (Q190891, Q723407) — kosmetisch, TODO
+- 294 vs 30 Personen in Matrix zeigt den Wert der strukturierten Verknüpfungen
+
+### Entscheidungen
+- m3gim-Namespace für MusicalWork und Rollen-Qualifikation (RiC-O reicht dafür nicht)
+- transform.py statt create-ric-json.py (klarerer Name)
+- Pfade standardisiert: google-spreadsheet/ → output/ → output/views/ → docs/data/
+
+### Nächste Schritte
+- Wikidata-IDs in Kosmos-View auflösen (Q190891 → Name)
+- reconcile.py implementieren (Wikidata-Reconciliation)
+- Frontend-Visualisierungen an neue Datenstrukturen anpassen
+- Meeting 24. Feb vorbereiten
+
+---
+
 Siehe auch: [→ Projekt](01-projekt.md) · [→ Quellenbestand](02-quellenbestand.md) · [→ Architektur](04-architektur.md)

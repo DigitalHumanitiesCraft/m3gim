@@ -1,0 +1,236 @@
+{
+  "zentrum": {
+    "name": "Ira Malaniuk",
+    "wikidata": "Q94208",
+    "lebensdaten": "1919-2009",
+    "fach": "Alt"
+  },
+  "komponisten": [
+    {
+      "name": "Verdi",
+      "farbe": "#2C5C3F",
+      "dokumente_gesamt": 7,
+      "werke": [
+        {
+          "name": "Aida",
+          "dokumente": 6,
+          "signaturen": [
+            "UAKUG/NIM/PL_05",
+            "UAKUG/NIM/PL_08",
+            "UAKUG/NIM/PL_09",
+            "UAKUG/NIM/PL_11",
+            "UAKUG/NIM_063",
+            "UAKUG/NIM_087"
+          ],
+          "orte": [
+            {
+              "name": "Wien",
+              "count": 3
+            }
+          ],
+          "rollen": []
+        },
+        {
+          "name": "Don Carlos",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_089"
+          ],
+          "orte": [
+            {
+              "name": "Wien",
+              "count": 1
+            }
+          ],
+          "rollen": []
+        }
+      ]
+    },
+    {
+      "name": "Wagner",
+      "farbe": "#6B2C2C",
+      "dokumente_gesamt": 4,
+      "werke": [
+        {
+          "name": "Tristan und Isolde",
+          "dokumente": 2,
+          "signaturen": [
+            "UAKUG/NIM/PL_16",
+            "UAKUG/NIM_119"
+          ],
+          "orte": [
+            {
+              "name": "Wien",
+              "count": 1
+            }
+          ],
+          "rollen": []
+        },
+        {
+          "name": "Die Meistersinger",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_004 13"
+          ],
+          "orte": [],
+          "rollen": []
+        },
+        {
+          "name": "Tannhäuser",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_120"
+          ],
+          "orte": [
+            {
+              "name": "Wien",
+              "count": 1
+            }
+          ],
+          "rollen": []
+        },
+        {
+          "name": "Der Ring des Nibelungen",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_051"
+          ],
+          "orte": [],
+          "rollen": []
+        },
+        {
+          "name": "Götterdämmerung",
+          "dokumente": 0,
+          "signaturen": [],
+          "orte": [],
+          "rollen": []
+        }
+      ]
+    },
+    {
+      "name": "Q190891",
+      "farbe": "#757575",
+      "dokumente_gesamt": 3,
+      "werke": [
+        {
+          "name": "Die Meistersinger von Nürnberg",
+          "dokumente": 3,
+          "signaturen": [
+            "UAKUG/NIM_004 13",
+            "UAKUG/NIM_007 4",
+            "UAKUG/NIM_007 17"
+          ],
+          "orte": [
+            {
+              "name": "München",
+              "count": 2
+            },
+            {
+              "name": "Stuttgart",
+              "count": 2
+            },
+            {
+              "name": "Lissabon",
+              "count": 2
+            }
+          ],
+          "rollen": [
+            {
+              "name": "Sixtus Beckmesser",
+              "count": 1
+            },
+            {
+              "name": "Hans Sachs",
+              "count": 1
+            },
+            {
+              "name": "Veit Pogner",
+              "count": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Gluck/Händel",
+      "farbe": "#8B7355",
+      "dokumente_gesamt": 2,
+      "werke": [
+        {
+          "name": "Orfeo ed Euridice",
+          "dokumente": 2,
+          "signaturen": [
+            "UAKUG/NIM_004 5",
+            "UAKUG/NIM_004 6"
+          ],
+          "orte": [],
+          "rollen": []
+        }
+      ]
+    },
+    {
+      "name": "Beethoven",
+      "farbe": "#4A5A7A",
+      "dokumente_gesamt": 2,
+      "werke": []
+    },
+    {
+      "name": "Q723407",
+      "farbe": "#757575",
+      "dokumente_gesamt": 2,
+      "werke": [
+        {
+          "name": "Salome",
+          "dokumente": 2,
+          "signaturen": [
+            "UAKUG/NIM_007 2",
+            "UAKUG/NIM_007 2"
+          ],
+          "orte": [
+            {
+              "name": "Zürich, Geibelstrasse 1/1",
+              "count": 2
+            },
+            {
+              "name": "München",
+              "count": 2
+            },
+            {
+              "name": "Buenos Aires",
+              "count": 2
+            }
+          ],
+          "rollen": [
+            {
+              "name": "Lady Macbeth",
+              "count": 2
+            },
+            {
+              "name": "Herodias",
+              "count": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Strauss",
+      "farbe": "#4A3A6B",
+      "dokumente_gesamt": 0,
+      "werke": [
+        {
+          "name": "Der Rosenkavalier",
+          "dokumente": 0,
+          "signaturen": [],
+          "orte": [],
+          "rollen": []
+        }
+      ]
+    }
+  ],
+  "_meta": {
+    "generated": "2026-02-20T07:34:05.480892",
+    "source_records": 286,
+    "note": "Includes geographic and role context extracted from titles"
+  }
+}

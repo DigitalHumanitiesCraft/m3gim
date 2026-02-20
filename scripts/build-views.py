@@ -25,8 +25,8 @@ from datetime import datetime
 # Paths
 SCRIPT_DIR = Path(__file__).parent
 PROJECT_ROOT = SCRIPT_DIR.parent
-INPUT_FILE = PROJECT_ROOT / 'data' / 'export' / 'm3gim.jsonld'
-OUTPUT_DIR = PROJECT_ROOT / 'data' / 'views'
+INPUT_FILE = PROJECT_ROOT / 'data' / 'output' / 'm3gim.jsonld'
+OUTPUT_DIR = PROJECT_ROOT / 'data' / 'output' / 'views'
 
 # =============================================================================
 # STATIC DATA: Lebensphasen (based on biographical research)
@@ -476,13 +476,16 @@ def build_matrix(records):
     """
     print('Building matrix.json...')
 
-    # Extract persons from titles with weighted intensity
+    # Extract persons from structured data AND titles
     personen_begegnungen = defaultdict(lambda: defaultdict(list))
 
-    # Known persons to look for in titles
     known_persons = list(PERSONEN_KATEGORIEN.keys())
 
     for record in records:
+        # Skip RecordSets (Fonds, Konvolute)
+        if record.get('@type') == 'rico:RecordSet':
+            continue
+
         title = (record.get('rico:title') or '').lower()
         year = extract_year(record.get('rico:date'))
         period = get_5year_period(year)
@@ -492,24 +495,37 @@ def build_matrix(records):
             continue
 
         # Calculate intensity based on document type
-        # Letter = high intensity (3), Program/Poster = medium (2), Photo = low (1)
         intensity_weight = 1
-        if doc_type == 'Letter':
+        if doc_type in ['brief', 'korrespondenz']:
             intensity_weight = 3
-        elif doc_type in ['Program', 'Poster', 'Contract']:
+        elif doc_type in ['programmheft', 'plakat', 'vertrag']:
             intensity_weight = 2
 
+        signatur = record.get('rico:identifier')
+        doc_entry = {
+            'signatur': signatur,
+            'titel': record.get('rico:title', ''),
+            'typ': doc_type,
+            'weight': intensity_weight
+        }
+
+        # Method 1: Extract from structured data (rico:hasOrHadAgent, m3gim:mentions)
+        seen_names = set()
+        for prop in ['rico:hasOrHadAgent', 'm3gim:mentions']:
+            agents = ensure_list(record.get(prop))
+            for agent in agents:
+                if isinstance(agent, dict):
+                    name = agent.get('name', '')
+                    if name and name not in seen_names:
+                        seen_names.add(name)
+                        personen_begegnungen[name][period].append(doc_entry)
+
+        # Method 2: Fallback title matching for known persons (Iteration 1 approach)
         for person_key in known_persons:
             if person_key in title:
-                # Use full name from lookup table
                 person_name = PERSONEN_VOLLNAMEN.get(person_key, person_key.title())
-
-                personen_begegnungen[person_name][period].append({
-                    'signatur': record.get('rico:identifier'),
-                    'titel': record.get('rico:title', ''),  # Full title for modal
-                    'typ': doc_type,
-                    'weight': intensity_weight
-                })
+                if person_name not in seen_names:
+                    personen_begegnungen[person_name][period].append(doc_entry)
 
     # Convert to output format
     zeitraeume = ['1940-1944', '1945-1949', '1950-1954', '1955-1959',
@@ -644,14 +660,47 @@ def build_kosmos(records):
     }
 
     for record in records:
+        # Skip RecordSets
+        if record.get('@type') == 'rico:RecordSet':
+            continue
+
         title = record.get('rico:title', '')
         title_lower = title.lower()
+        signatur = record.get('rico:identifier')
+
+        # Method 1: Structured data — Werke aus rico:hasOrHadSubject
+        subjects = ensure_list(record.get('rico:hasOrHadSubject'))
+        for subj in subjects:
+            if isinstance(subj, dict) and subj.get('@type') == 'm3gim:MusicalWork':
+                werk_name = subj.get('name', '')
+                komp = subj.get('komponist', '')
+                if komp:
+                    komponisten_data[komp]['dokumente'] += 1
+                    werk_data = komponisten_data[komp]['werke'][werk_name]
+                    werk_data['dokumente'] += 1
+                    werk_data['signaturen'].append(signatur)
+                    # Location from structured data
+                    locs = ensure_list(record.get('rico:hasOrHadLocation'))
+                    for loc in locs:
+                        if isinstance(loc, dict):
+                            loc_name = loc.get('name', '')
+                            if loc_name:
+                                werk_data['orte'][loc_name] += 1
+                    # Roles from structured data
+                    perf_roles = ensure_list(record.get('m3gim:hasPerformanceRole'))
+                    for pr in perf_roles:
+                        if isinstance(pr, dict):
+                            rolle_name = pr.get('name', '')
+                            if rolle_name:
+                                werk_data['rollen'][rolle_name] += 1
+
+        # Method 2: Fallback title matching (Iteration 1 approach)
         komponist = get_komponist_from_title(title)
-
         if komponist:
-            komponisten_data[komponist]['dokumente'] += 1
+            # Nur zaehlen wenn nicht schon via structured data erfasst
+            if not subjects:
+                komponisten_data[komponist]['dokumente'] += 1
 
-            # Extract work name
             werk = None
             for pattern, werk_name in werk_patterns.items():
                 if pattern in title_lower:
@@ -660,16 +709,16 @@ def build_kosmos(records):
 
             if werk:
                 werk_data = komponisten_data[komponist]['werke'][werk]
-                werk_data['dokumente'] += 1
-                werk_data['signaturen'].append(record.get('rico:identifier'))
+                # Nur zaehlen wenn nicht schon via structured data
+                if not any(isinstance(s, dict) and s.get('name') == werk for s in subjects):
+                    werk_data['dokumente'] += 1
+                    werk_data['signaturen'].append(signatur)
 
-                # Extract location
                 for loc_pattern, loc_name in orte_patterns.items():
                     if loc_pattern in title_lower:
                         werk_data['orte'][loc_name] += 1
                         break
 
-                # Extract role
                 for rolle_pattern, rolle_name in rollen_patterns.items():
                     if rolle_pattern in title_lower:
                         werk_data['rollen'][rolle_name] += 1
@@ -747,6 +796,10 @@ def build_sankey(records):
     }
 
     for record in records:
+        # Skip RecordSets
+        if record.get('@type') == 'rico:RecordSet':
+            continue
+
         title = record.get('rico:title', '')
         title_lower = title.lower()
         year = extract_year(record.get('rico:date'))
@@ -763,11 +816,27 @@ def build_sankey(records):
             }
             phase_komponist[phase][komponist].append(doc_info)
 
-            # Try to find location
-            for pattern, ort in orte_patterns.items():
-                if pattern in title_lower:
-                    komponist_ort[komponist][ort].append(doc_info)
+            # Method 1: Structured location data
+            found_loc = False
+            locs = ensure_list(record.get('rico:hasOrHadLocation'))
+            for loc in locs:
+                if isinstance(loc, dict):
+                    loc_name = loc.get('name', '')
+                    # Normalize to known cities
+                    for pattern, ort in orte_patterns.items():
+                        if pattern in loc_name.lower():
+                            komponist_ort[komponist][ort].append(doc_info)
+                            found_loc = True
+                            break
+                if found_loc:
                     break
+
+            # Method 2: Fallback title matching
+            if not found_loc:
+                for pattern, ort in orte_patterns.items():
+                    if pattern in title_lower:
+                        komponist_ort[komponist][ort].append(doc_info)
+                        break
 
     # Build flows with document references
     flows = []

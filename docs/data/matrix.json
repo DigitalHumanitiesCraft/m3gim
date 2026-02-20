@@ -1,0 +1,6556 @@
+{
+  "zeitraeume": [
+    "1940-1944",
+    "1945-1949",
+    "1950-1954",
+    "1955-1959",
+    "1960-1964",
+    "1965-1969",
+    "1970-1974"
+  ],
+  "kategorien": [
+    "Dirigent",
+    "Regisseur",
+    "Korrepetitor",
+    "Kollege",
+    "Vermittler"
+  ],
+  "personen": [
+    {
+      "name": "Knappertsbusch, Hans",
+      "kategorie": "Dirigent",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 2,
+          "anzahl_dokumente": 2,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 8",
+              "titel": "Rezension von Helmut Schmidt-Garre",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 13",
+              "titel": "Rezension zur Festvorstellung Meistersinger aus dem Münchner Merkur",
+              "typ": "rezension"
+            }
+          ]
+        },
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 19",
+              "titel": "Rezension von René Dumesnil zu Tristan und Isolde in Paris",
+              "typ": "rezension"
+            }
+          ]
+        },
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 5",
+              "titel": "Rezension von K.H. Ruppel zu Orpheus und Eurydike in der Süddeutschen Zeitung",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 4
+    },
+    {
+      "name": "Paul Hindemith",
+      "kategorie": "Dirigent",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 11",
+              "titel": "Rezension zu Paul Hindemith in Köln",
+              "typ": "rezension"
+            }
+          ]
+        },
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 2,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM/PL_17",
+              "titel": "Direttore / PAUL HINDEMITH / Mezzosoprano / IRA MALANIUK",
+              "typ": "plakat"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 3
+    },
+    {
+      "name": "Nikolaus Kolessa",
+      "kategorie": "Dirigent",
+      "begegnungen": [
+        {
+          "zeitraum": "1940-1944",
+          "intensitaet": 2,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM/PL_04",
+              "titel": "SINFONISCHES ORCHESTER / in Stanislau / Konzertsaal Armenierstrasse 18. / Zum Abschluss der Wintersaison / Sonntag den 26. April 1942 / BEETHOVEN / KONZERT / Leitung: / NIKOLAUS KOLESSA / Solistin: / IRENE MALANIUK / Mezzosopran / Programm: / Ludwig van Beethoven: Sinfonie Nr. 8 F-Dur / \" Ah! perfido, spergiuro, - Arie / \" Beethoven: Egmont, Ouvertüre / BEGINN / um 19:15 (7.15) / Eintrittskarten von 2-5 Zl[oty]. - Vorverkauf: Theaterkasse von 10-13 / und 15-18 Uhr. - Wehrmachtsangehörige 20% Ermässigung",
+              "typ": "plakat"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Hindemith, Paul",
+      "kategorie": "Dirigent",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 2,
+          "anzahl_dokumente": 2,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 7",
+              "titel": "Rezension von Dr. Joachim Bergfeld (Fränkische Presse) zur IX. Symphonie Beethovens",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 11",
+              "titel": "Rezension zu Paul Hindemith in Köln",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Furtwängler, Wilhelm",
+      "kategorie": "Dirigent",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 7",
+              "titel": "Rezension von Dr. Joachim Bergfeld (Fränkische Presse) zur IX. Symphonie Beethovens",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Böhme, Kurt",
+      "kategorie": "Dirigent",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 13",
+              "titel": "Rezension zur Festvorstellung Meistersinger aus dem Münchner Merkur",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Hartmann, Rudolf",
+      "kategorie": "Regisseur",
+      "begegnungen": [
+        {
+          "zeitraum": "1940-1944",
+          "intensitaet": 2,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_003 1_2",
+              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
+              "typ": "programmheft"
+            }
+          ]
+        },
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 2",
+              "titel": "Rezension zu Lady Macbeth in der Verdi- Premiere der Staatsoper",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 3
+    },
+    {
+      "name": "Hartmann, Prof.",
+      "kategorie": "Regisseur",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 3,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 2",
+              "titel": "Brief von Martin H. Taubman zu Verträgen mit Buenos Aires, Neapel, Wien",
+              "typ": "brief"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 3
+    },
+    {
+      "name": "Rudolf Hartmann",
+      "kategorie": "Regisseur",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 3,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_084",
+              "titel": "1 Glückwunschbillet zur Ernennung Ira Malaniuks zur bayrischen Kammersängerin von Prof. Rudolf Hartmann",
+              "typ": "brief"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 3
+    },
+    {
+      "name": "Erik Werba",
+      "kategorie": "Korrepetitor",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 2,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM/PL_02",
+              "titel": "SALZBURGER MOZART-WOCHE 1959 / Mittwoch, den 21. Jänner 1959 - Mozarteum, Großer Saal, 19.30 / 3. Solistenkonzert im Abonnement / Ira Malaniuk Mezzosopran / Staatsoper Wien / Am Flügel: Eric Werba / Lieder von G. F. Händel, W. A. Mozart, J. Haydn, J. Brahms, F. Schubert, R. Strauss, W. Barwinskyj",
+              "typ": "plakat"
+            }
+          ]
+        },
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 2,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM/PL_01",
+              "titel": "Liederabend / IRA / MALANIUK / Alt / (Staatsoper Wien und München) / am Flügel: Prof. Erik Werba",
+              "typ": "plakat"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 4
+    },
+    {
+      "name": "Werba, Erik",
+      "kategorie": "Korrepetitor",
+      "begegnungen": [
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 2,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 8",
+              "titel": "Konzertprogramm, Liederabend, Palais Pallavicini, 1963-08-28",
+              "typ": "programmheft"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Paul Baumgartner",
+      "kategorie": "Korrepetitor",
+      "begegnungen": [
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_048",
+              "titel": "Programm- und Textheft zu einem Hugo-Wolf-Liederabend mit Ira Malaniuk (Alt), Heinz Rehfuss (Bariton) und Paul Baumgartner (Klavier) am 12.11.1961 in der Tonhalle Zürich",
+              "typ": "konvolut"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Agentur Taubman",
+      "kategorie": "Vermittler",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 6,
+          "anzahl_dokumente": 2,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 2",
+              "titel": "Brief von Martin H. Taubman zu Verträgen mit Buenos Aires, Neapel, Wien",
+              "typ": "brief"
+            },
+            {
+              "signatur": "UAKUG/NIM_007 4",
+              "titel": "Brief von Ernst Kühnly zu Gastspiel in Lissabon an Martin H. Taubman",
+              "typ": "brief"
+            }
+          ]
+        },
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 5_8",
+              "titel": "Einzahlungsbestätigung (?) Dr. Baasch an Martin Hugo Taubman, 1957-05-15",
+              "typ": "quittung"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 7
+    },
+    {
+      "name": "Taubman, Martin Hugo",
+      "kategorie": "Vermittler",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 3,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 4",
+              "titel": "Brief von Ernst Kühnly zu Gastspiel in Lissabon an Martin H. Taubman",
+              "typ": "brief"
+            }
+          ]
+        },
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 2,
+          "anzahl_dokumente": 2,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 5_1",
+              "titel": "Handschriftliche Notiz",
+              "typ": "notiz"
+            },
+            {
+              "signatur": "UAKUG/NIM_007 5_8",
+              "titel": "Einzahlungsbestätigung (?) Dr. Baasch an Martin Hugo Taubman, 1957-05-15",
+              "typ": "quittung"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 5
+    },
+    {
+      "name": "Taubmann, Martin Hugo",
+      "kategorie": "Vermittler",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 3,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 2",
+              "titel": "Brief von Martin H. Taubman zu Verträgen mit Buenos Aires, Neapel, Wien",
+              "typ": "brief"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 3
+    },
+    {
+      "name": "Taubmann, Frau",
+      "kategorie": "Vermittler",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 3,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 2",
+              "titel": "Brief von Martin H. Taubman zu Verträgen mit Buenos Aires, Neapel, Wien",
+              "typ": "brief"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 3
+    },
+    {
+      "name": "Beethoven, Ludwig van",
+      "kategorie": "Kollege",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 2,
+          "anzahl_dokumente": 2,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 7",
+              "titel": "Rezension von Dr. Joachim Bergfeld (Fränkische Presse) zur IX. Symphonie Beethovens",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 8",
+              "titel": "Rezension von Helmut Schmidt-Garre",
+              "typ": "rezension"
+            }
+          ]
+        },
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 2,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 8",
+              "titel": "Konzertprogramm, Liederabend, Palais Pallavicini, 1963-08-28",
+              "typ": "programmheft"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 4
+    },
+    {
+      "name": "Weber, Ludwig",
+      "kategorie": "Kollege",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 2,
+          "anzahl_dokumente": 2,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 7",
+              "titel": "Rezension von Dr. Joachim Bergfeld (Fränkische Presse) zur IX. Symphonie Beethovens",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 10",
+              "titel": "Rezensionen aus der Fränkischen Presse zu \"Die Götterdämmerung\" und \"Tristan und Isolde\"",
+              "typ": "rezension"
+            }
+          ]
+        },
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 2,
+          "anzahl_dokumente": 2,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 15",
+              "titel": "Rezension von Y. zu Tannhäuser",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 19",
+              "titel": "Rezension von René Dumesnil zu Tristan und Isolde in Paris",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 4
+    },
+    {
+      "name": "Christa Ludwig",
+      "kategorie": "Kollege",
+      "begegnungen": [
+        {
+          "zeitraum": "1940-1944",
+          "intensitaet": 2,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM/PL_04",
+              "titel": "SINFONISCHES ORCHESTER / in Stanislau / Konzertsaal Armenierstrasse 18. / Zum Abschluss der Wintersaison / Sonntag den 26. April 1942 / BEETHOVEN / KONZERT / Leitung: / NIKOLAUS KOLESSA / Solistin: / IRENE MALANIUK / Mezzosopran / Programm: / Ludwig van Beethoven: Sinfonie Nr. 8 F-Dur / \" Ah! perfido, spergiuro, - Arie / \" Beethoven: Egmont, Ouvertüre / BEGINN / um 19:15 (7.15) / Eintrittskarten von 2-5 Zl[oty]. - Vorverkauf: Theaterkasse von 10-13 / und 15-18 Uhr. - Wehrmachtsangehörige 20% Ermässigung",
+              "typ": "plakat"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Hoelscher, Ludwig",
+      "kategorie": "Kollege",
+      "begegnungen": [
+        {
+          "zeitraum": "1940-1944",
+          "intensitaet": 2,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_003 1_2",
+              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
+              "typ": "programmheft"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Nilsson, Birgit",
+      "kategorie": "Kollege",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 7",
+              "titel": "Rezension von Dr. Joachim Bergfeld (Fränkische Presse) zur IX. Symphonie Beethovens",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Windgassen, Wolfgang",
+      "kategorie": "Kollege",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 10",
+              "titel": "Rezensionen aus der Fränkischen Presse zu \"Die Götterdämmerung\" und \"Tristan und Isolde\"",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Suthaus, Ludwig",
+      "kategorie": "Kollege",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 19",
+              "titel": "Rezension von René Dumesnil zu Tristan und Isolde in Paris",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Heinz Rehfuss",
+      "kategorie": "Kollege",
+      "begegnungen": [
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_048",
+              "titel": "Programm- und Textheft zu einem Hugo-Wolf-Liederabend mit Ira Malaniuk (Alt), Heinz Rehfuss (Bariton) und Paul Baumgartner (Klavier) am 12.11.1961 in der Tonhalle Zürich",
+              "typ": "konvolut"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Max Kojetinsky",
+      "kategorie": "Institution",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 3,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_081",
+              "titel": "Brief von Prof. Max Kojetinsky (Opernhaus Graz) an Ira Malaniuk (Staatsoper Wien)",
+              "typ": "brief"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 3
+    },
+    {
+      "name": "Dr. C. Gasser",
+      "kategorie": "Korrespondenz",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 3,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_059",
+              "titel": "Korrespondenz zw. Ira Malaniuk und Dr. C. Gasser",
+              "typ": "brief"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 3
+    },
+    {
+      "name": "Dr. Eduard Speck",
+      "kategorie": "Korrespondenz",
+      "begegnungen": [
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 3,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_096",
+              "titel": "Brief von Dr. Eduard Speck an Ira Malaniuk",
+              "typ": "brief"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 3
+    },
+    {
+      "name": "Malaniuk, Ira",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 21,
+          "anzahl_dokumente": 15,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 2",
+              "titel": "Rezension zu Lady Macbeth in der Verdi- Premiere der Staatsoper",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 3",
+              "titel": "Rezension von Karl Schumann zu Macbeth",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 4",
+              "titel": "Rezension von H. Schmidt-Garre zu Macbeth an der Bayerischen Staatsoper",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 7",
+              "titel": "Rezension von Dr. Joachim Bergfeld (Fränkische Presse) zur IX. Symphonie Beethovens",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 8",
+              "titel": "Rezension von Helmut Schmidt-Garre",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 9",
+              "titel": "Rezension von A. Parente zu Tristan und Isolde in Neapel",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 10",
+              "titel": "Rezensionen aus der Fränkischen Presse zu \"Die Götterdämmerung\" und \"Tristan und Isolde\"",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 11",
+              "titel": "Rezension zu Paul Hindemith in Köln",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 12",
+              "titel": "Rezension von Dr. Kurt Honolka zu Titus",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 13",
+              "titel": "Rezension zur Festvorstellung Meistersinger aus dem Münchner Merkur",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 14",
+              "titel": "Rezension von ZED. zu Le Chant de la Terre in Straßburg unter Fritz Munch",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_007 1",
+              "titel": "Brief von Felix Ballhausen zu Dienstverträgen Staatsoper München",
+              "typ": "brief"
+            },
+            {
+              "signatur": "UAKUG/NIM_007 2",
+              "titel": "Brief von Martin H. Taubman zu Verträgen mit Buenos Aires, Neapel, Wien",
+              "typ": "brief"
+            },
+            {
+              "signatur": "UAKUG/NIM_007 3",
+              "titel": "Ausweis für Bayreuther Festspiele 1953",
+              "typ": "ausweis"
+            },
+            {
+              "signatur": "UAKUG/NIM_007 4",
+              "titel": "Brief von Ernst Kühnly zu Gastspiel in Lissabon an Martin H. Taubman",
+              "typ": "brief"
+            }
+          ]
+        },
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 22,
+          "anzahl_dokumente": 16,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 1",
+              "titel": "Kopie eines Briefumschlags adressiert an Malaniuk, Signatur und Poststempel aus New York",
+              "typ": "photokopie"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 15",
+              "titel": "Rezension von Y. zu Tannhäuser",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 16",
+              "titel": "Rezension von Y. zu Aida an der Wiener Staatsoper",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 17",
+              "titel": "Rezension von ibe zu Aida an der Wiener Staatsoper",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 19",
+              "titel": "Rezension von René Dumesnil zu Tristan und Isolde in Paris",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 22",
+              "titel": "Brief von Ira Malaniuk an Cox vom 07.09.1957",
+              "typ": "brief"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 23",
+              "titel": "Brief von Ira Malaniuk an Cox vom 26.11.1957",
+              "typ": "brief"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 25",
+              "titel": "NCAC Newsletter über Künstler:innen (Ira Malaniuk - Hugh Thompson)",
+              "typ": "typoskript"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 27",
+              "titel": "Brief von Margaret Snider an Ira Malaniuk vom 27.10.1959",
+              "typ": "brief"
+            },
+            {
+              "signatur": "UAKUG/NIM_007 5_2",
+              "titel": "Kassa-Eingang, Einzahlungsnachweis der Konzertdirektion, 1957-05-01",
+              "typ": "quittung"
+            },
+            {
+              "signatur": "UAKUG/NIM_007 5_3",
+              "titel": "Kassa-Eingang, Einzahlungsnachweis der Konzertdirektion, 1957-06-24",
+              "typ": "quittung"
+            },
+            {
+              "signatur": "UAKUG/NIM_007 5_4",
+              "titel": "Kassa-Eingang, Einzahlungsnachweis der Konzertdirektion, 1957-06-30",
+              "typ": "quittung"
+            },
+            {
+              "signatur": "UAKUG/NIM_007 5_5",
+              "titel": "Kassa-Eingang, Einzahlungsnachweis der Konzertdirektion, 1957-10-31",
+              "typ": "quittung"
+            },
+            {
+              "signatur": "UAKUG/NIM_007 5_6",
+              "titel": "Kassa-Eingang, Einzahlungsnachweis der Konzertdirektion, 1957-12-05",
+              "typ": "quittung"
+            },
+            {
+              "signatur": "UAKUG/NIM_007 5_7",
+              "titel": "Kassa-Eingang, Einzahlungsnachweis der Konzertdirektion, 1957-03-13",
+              "typ": "quittung"
+            },
+            {
+              "signatur": "UAKUG/NIM_007 6",
+              "titel": "Mittelung über Honorar für Sendung Paradies und Peri 1959 von Nord- und Westdeutscher Rundfunkverband",
+              "typ": "quittung"
+            }
+          ]
+        },
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 12,
+          "anzahl_dokumente": 5,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 5",
+              "titel": "Rezension von K.H. Ruppel zu Orpheus und Eurydike in der Süddeutschen Zeitung",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_007 7",
+              "titel": "Brief von Intendanz der Bayerischen Staatsoper zu Gastspielvertrag und Schiedsvertrag 1961/62 an Ira Malaniuk",
+              "typ": "brief"
+            },
+            {
+              "signatur": "UAKUG/NIM_007 8",
+              "titel": "Konzertprogramm, Liederabend, Palais Pallavicini, 1963-08-28",
+              "typ": "programmheft"
+            },
+            {
+              "signatur": "UAKUG/NIM_007 9",
+              "titel": "Brief von Emil Jucker an Ira Malaniuk über ein Gastspiel in Zürich",
+              "typ": "brief"
+            },
+            {
+              "signatur": "UAKUG/NIM_007 10",
+              "titel": "(Dienst)brief von Intendanz der Bayerischen Staatoper zu den Festspielen an Ira Malaniuk, 1964-08-18",
+              "typ": "brief"
+            }
+          ]
+        },
+        {
+          "zeitraum": "1965-1969",
+          "intensitaet": 5,
+          "anzahl_dokumente": 3,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 11",
+              "titel": "Brief vom Sekretär der Tonhalle-Gesellschaft Zürich zu Bestätigung von Konzerten und Probezeiten",
+              "typ": "brief"
+            },
+            {
+              "signatur": "UAKUG/NIM_007 12",
+              "titel": "Rezension von Gerhard Bauer zu Der Wildschütz (Arbeiter Zeitung)",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_007 14",
+              "titel": "Rezension von k-e-p zu Der Wildschütz (Wiener Zeitung)",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 60
+    },
+    {
+      "name": "Bayerische Staatsoper",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 2,
+          "anzahl_dokumente": 2,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 4",
+              "titel": "Rezension von H. Schmidt-Garre zu Macbeth an der Bayerischen Staatsoper",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 8",
+              "titel": "Rezension von Helmut Schmidt-Garre",
+              "typ": "rezension"
+            }
+          ]
+        },
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 6,
+          "anzahl_dokumente": 2,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 7",
+              "titel": "Brief von Intendanz der Bayerischen Staatsoper zu Gastspielvertrag und Schiedsvertrag 1961/62 an Ira Malaniuk",
+              "typ": "brief"
+            },
+            {
+              "signatur": "UAKUG/NIM_007 10",
+              "titel": "(Dienst)brief von Intendanz der Bayerischen Staatoper zu den Festspielen an Ira Malaniuk, 1964-08-18",
+              "typ": "brief"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 8
+    },
+    {
+      "name": "Strauss, Richard",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1940-1944",
+          "intensitaet": 2,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_003 1_2",
+              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
+              "typ": "programmheft"
+            }
+          ]
+        },
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 2,
+          "anzahl_dokumente": 2,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 7",
+              "titel": "Rezension von Dr. Joachim Bergfeld (Fränkische Presse) zur IX. Symphonie Beethovens",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 14",
+              "titel": "Rezension von ZED. zu Le Chant de la Terre in Straßburg unter Fritz Munch",
+              "typ": "rezension"
+            }
+          ]
+        },
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 2,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 8",
+              "titel": "Konzertprogramm, Liederabend, Palais Pallavicini, 1963-08-28",
+              "typ": "programmheft"
+            }
+          ]
+        },
+        {
+          "zeitraum": "1965-1969",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 17",
+              "titel": "Rezension zu Der Wildschütz",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 7
+    },
+    {
+      "name": "National Artists Corporation",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 7,
+          "anzahl_dokumente": 3,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 1",
+              "titel": "Kopie eines Briefumschlags adressiert an Malaniuk, Signatur und Poststempel aus New York",
+              "typ": "photokopie"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 23",
+              "titel": "Brief von Ira Malaniuk an Cox vom 26.11.1957",
+              "typ": "brief"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 27",
+              "titel": "Brief von Margaret Snider an Ira Malaniuk vom 27.10.1959",
+              "typ": "brief"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 7
+    },
+    {
+      "name": "Konzertdirektion",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 6,
+          "anzahl_dokumente": 6,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 5_2",
+              "titel": "Kassa-Eingang, Einzahlungsnachweis der Konzertdirektion, 1957-05-01",
+              "typ": "quittung"
+            },
+            {
+              "signatur": "UAKUG/NIM_007 5_3",
+              "titel": "Kassa-Eingang, Einzahlungsnachweis der Konzertdirektion, 1957-06-24",
+              "typ": "quittung"
+            },
+            {
+              "signatur": "UAKUG/NIM_007 5_4",
+              "titel": "Kassa-Eingang, Einzahlungsnachweis der Konzertdirektion, 1957-06-30",
+              "typ": "quittung"
+            },
+            {
+              "signatur": "UAKUG/NIM_007 5_5",
+              "titel": "Kassa-Eingang, Einzahlungsnachweis der Konzertdirektion, 1957-10-31",
+              "typ": "quittung"
+            },
+            {
+              "signatur": "UAKUG/NIM_007 5_6",
+              "titel": "Kassa-Eingang, Einzahlungsnachweis der Konzertdirektion, 1957-12-05",
+              "typ": "quittung"
+            },
+            {
+              "signatur": "UAKUG/NIM_007 5_7",
+              "titel": "Kassa-Eingang, Einzahlungsnachweis der Konzertdirektion, 1957-03-13",
+              "typ": "quittung"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 6
+    },
+    {
+      "name": "Altmann, Olga",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 6,
+          "anzahl_dokumente": 6,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 5_2",
+              "titel": "Kassa-Eingang, Einzahlungsnachweis der Konzertdirektion, 1957-05-01",
+              "typ": "quittung"
+            },
+            {
+              "signatur": "UAKUG/NIM_007 5_3",
+              "titel": "Kassa-Eingang, Einzahlungsnachweis der Konzertdirektion, 1957-06-24",
+              "typ": "quittung"
+            },
+            {
+              "signatur": "UAKUG/NIM_007 5_4",
+              "titel": "Kassa-Eingang, Einzahlungsnachweis der Konzertdirektion, 1957-06-30",
+              "typ": "quittung"
+            },
+            {
+              "signatur": "UAKUG/NIM_007 5_5",
+              "titel": "Kassa-Eingang, Einzahlungsnachweis der Konzertdirektion, 1957-10-31",
+              "typ": "quittung"
+            },
+            {
+              "signatur": "UAKUG/NIM_007 5_6",
+              "titel": "Kassa-Eingang, Einzahlungsnachweis der Konzertdirektion, 1957-12-05",
+              "typ": "quittung"
+            },
+            {
+              "signatur": "UAKUG/NIM_007 5_7",
+              "titel": "Kassa-Eingang, Einzahlungsnachweis der Konzertdirektion, 1957-03-13",
+              "typ": "quittung"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 6
+    },
+    {
+      "name": "Wagner, Wieland",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 3,
+          "anzahl_dokumente": 3,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 7",
+              "titel": "Rezension von Dr. Joachim Bergfeld (Fränkische Presse) zur IX. Symphonie Beethovens",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 8",
+              "titel": "Rezension von Helmut Schmidt-Garre",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 10",
+              "titel": "Rezensionen aus der Fränkischen Presse zu \"Die Götterdämmerung\" und \"Tristan und Isolde\"",
+              "typ": "rezension"
+            }
+          ]
+        },
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 15",
+              "titel": "Rezension von Y. zu Tannhäuser",
+              "typ": "rezension"
+            }
+          ]
+        },
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 5",
+              "titel": "Rezension von K.H. Ruppel zu Orpheus und Eurydike in der Süddeutschen Zeitung",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 5
+    },
+    {
+      "name": "Wagner, Richard",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 3,
+          "anzahl_dokumente": 3,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 7",
+              "titel": "Rezension von Dr. Joachim Bergfeld (Fränkische Presse) zur IX. Symphonie Beethovens",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 10",
+              "titel": "Rezensionen aus der Fränkischen Presse zu \"Die Götterdämmerung\" und \"Tristan und Isolde\"",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 12",
+              "titel": "Rezension von Dr. Kurt Honolka zu Titus",
+              "typ": "rezension"
+            }
+          ]
+        },
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 15",
+              "titel": "Rezension von Y. zu Tannhäuser",
+              "typ": "rezension"
+            }
+          ]
+        },
+        {
+          "zeitraum": "1965-1969",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 17",
+              "titel": "Rezension zu Der Wildschütz",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 5
+    },
+    {
+      "name": "Wiener Staatsoper",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 3,
+          "anzahl_dokumente": 3,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 15",
+              "titel": "Rezension von Y. zu Tannhäuser",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 17",
+              "titel": "Rezension von ibe zu Aida an der Wiener Staatsoper",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_007 5_5",
+              "titel": "Kassa-Eingang, Einzahlungsnachweis der Konzertdirektion, 1957-10-31",
+              "typ": "quittung"
+            }
+          ]
+        },
+        {
+          "zeitraum": "1965-1969",
+          "intensitaet": 2,
+          "anzahl_dokumente": 2,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 12",
+              "titel": "Rezension von Gerhard Bauer zu Der Wildschütz (Arbeiter Zeitung)",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_007 17",
+              "titel": "Rezension zu Der Wildschütz",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 5
+    },
+    {
+      "name": "Mozart, Wolfgang Amadeus",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 3,
+          "anzahl_dokumente": 3,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 7",
+              "titel": "Rezension von Dr. Joachim Bergfeld (Fränkische Presse) zur IX. Symphonie Beethovens",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 12",
+              "titel": "Rezension von Dr. Kurt Honolka zu Titus",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 14",
+              "titel": "Rezension von ZED. zu Le Chant de la Terre in Straßburg unter Fritz Munch",
+              "typ": "rezension"
+            }
+          ]
+        },
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 5",
+              "titel": "Rezension von K.H. Ruppel zu Orpheus und Eurydike in der Süddeutschen Zeitung",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 4
+    },
+    {
+      "name": "Krauß, Clemens",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1940-1944",
+          "intensitaet": 2,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_003 1_2",
+              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
+              "typ": "programmheft"
+            }
+          ]
+        },
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 15",
+              "titel": "Rezension von Y. zu Tannhäuser",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 3
+    },
+    {
+      "name": "Bahr-Mildenburg, Anna",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1940-1944",
+          "intensitaet": 2,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_003 1_2",
+              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
+              "typ": "programmheft"
+            }
+          ]
+        },
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 2",
+              "titel": "Rezension zu Lady Macbeth in der Verdi- Premiere der Staatsoper",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 3
+    },
+    {
+      "name": "Arnold, Heinz",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 3,
+          "anzahl_dokumente": 3,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 2",
+              "titel": "Rezension zu Lady Macbeth in der Verdi- Premiere der Staatsoper",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 3",
+              "titel": "Rezension von Karl Schumann zu Macbeth",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 4",
+              "titel": "Rezension von H. Schmidt-Garre zu Macbeth an der Bayerischen Staatsoper",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 3
+    },
+    {
+      "name": "Heger, Robert",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 3,
+          "anzahl_dokumente": 3,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 2",
+              "titel": "Rezension zu Lady Macbeth in der Verdi- Premiere der Staatsoper",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 3",
+              "titel": "Rezension von Karl Schumann zu Macbeth",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 4",
+              "titel": "Rezension von H. Schmidt-Garre zu Macbeth an der Bayerischen Staatsoper",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 3
+    },
+    {
+      "name": "Jürgens, Helmut",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 3,
+          "anzahl_dokumente": 3,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 2",
+              "titel": "Rezension zu Lady Macbeth in der Verdi- Premiere der Staatsoper",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 3",
+              "titel": "Rezension von Karl Schumann zu Macbeth",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 4",
+              "titel": "Rezension von H. Schmidt-Garre zu Macbeth an der Bayerischen Staatsoper",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 3
+    },
+    {
+      "name": "Proebstl, Max",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 3,
+          "anzahl_dokumente": 3,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 2",
+              "titel": "Rezension zu Lady Macbeth in der Verdi- Premiere der Staatsoper",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 3",
+              "titel": "Rezension von Karl Schumann zu Macbeth",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 4",
+              "titel": "Rezension von H. Schmidt-Garre zu Macbeth an der Bayerischen Staatsoper",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 3
+    },
+    {
+      "name": "Vandenburg, Howard",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 3,
+          "anzahl_dokumente": 3,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 2",
+              "titel": "Rezension zu Lady Macbeth in der Verdi- Premiere der Staatsoper",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 3",
+              "titel": "Rezension von Karl Schumann zu Macbeth",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 4",
+              "titel": "Rezension von H. Schmidt-Garre zu Macbeth an der Bayerischen Staatsoper",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 3
+    },
+    {
+      "name": "Gluck, Christoph Willibald",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 2,
+          "anzahl_dokumente": 2,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 8",
+              "titel": "Rezension von Helmut Schmidt-Garre",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 12",
+              "titel": "Rezension von Dr. Kurt Honolka zu Titus",
+              "typ": "rezension"
+            }
+          ]
+        },
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 5",
+              "titel": "Rezension von K.H. Ruppel zu Orpheus und Eurydike in der Süddeutschen Zeitung",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 3
+    },
+    {
+      "name": "Bayreuther Festspiele",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 3,
+          "anzahl_dokumente": 3,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 7",
+              "titel": "Rezension von Dr. Joachim Bergfeld (Fränkische Presse) zur IX. Symphonie Beethovens",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 10",
+              "titel": "Rezensionen aus der Fränkischen Presse zu \"Die Götterdämmerung\" und \"Tristan und Isolde\"",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_007 3",
+              "titel": "Ausweis für Bayreuther Festspiele 1953",
+              "typ": "ausweis"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 3
+    },
+    {
+      "name": "Rott, Adolf",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 9",
+              "titel": "Rezension von A. Parente zu Tristan und Isolde in Neapel",
+              "typ": "rezension"
+            }
+          ]
+        },
+        {
+          "zeitraum": "1965-1969",
+          "intensitaet": 2,
+          "anzahl_dokumente": 2,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 12",
+              "titel": "Rezension von Gerhard Bauer zu Der Wildschütz (Arbeiter Zeitung)",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_007 14",
+              "titel": "Rezension von k-e-p zu Der Wildschütz (Wiener Zeitung)",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 3
+    },
+    {
+      "name": "Warren, Cox",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 3,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 23",
+              "titel": "Brief von Ira Malaniuk an Cox vom 26.11.1957",
+              "typ": "brief"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 3
+    },
+    {
+      "name": "Vichey, Luben",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 3,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 27",
+              "titel": "Brief von Margaret Snider an Ira Malaniuk vom 27.10.1959",
+              "typ": "brief"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 3
+    },
+    {
+      "name": "Snider, Margaret",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 3,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 27",
+              "titel": "Brief von Margaret Snider an Ira Malaniuk vom 27.10.1959",
+              "typ": "brief"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 3
+    },
+    {
+      "name": "Semon, Mrs.",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 3,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 27",
+              "titel": "Brief von Margaret Snider an Ira Malaniuk vom 27.10.1959",
+              "typ": "brief"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 3
+    },
+    {
+      "name": "Ballhausen, Felix",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 3,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 1",
+              "titel": "Brief von Felix Ballhausen zu Dienstverträgen Staatsoper München",
+              "typ": "brief"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 3
+    },
+    {
+      "name": "Teatro Colon",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 3,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 2",
+              "titel": "Brief von Martin H. Taubman zu Verträgen mit Buenos Aires, Neapel, Wien",
+              "typ": "brief"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 3
+    },
+    {
+      "name": "Szemere",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 3,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 2",
+              "titel": "Brief von Martin H. Taubman zu Verträgen mit Buenos Aires, Neapel, Wien",
+              "typ": "brief"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 3
+    },
+    {
+      "name": "Dermota",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 3,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 2",
+              "titel": "Brief von Martin H. Taubman zu Verträgen mit Buenos Aires, Neapel, Wien",
+              "typ": "brief"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 3
+    },
+    {
+      "name": "Di Costanzo, Pasquale",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 3,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 2",
+              "titel": "Brief von Martin H. Taubman zu Verträgen mit Buenos Aires, Neapel, Wien",
+              "typ": "brief"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 3
+    },
+    {
+      "name": "Höngen, Elisabeth",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 3,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 2",
+              "titel": "Brief von Martin H. Taubman zu Verträgen mit Buenos Aires, Neapel, Wien",
+              "typ": "brief"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 3
+    },
+    {
+      "name": "Horwitz",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 3,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 2",
+              "titel": "Brief von Martin H. Taubman zu Verträgen mit Buenos Aires, Neapel, Wien",
+              "typ": "brief"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 3
+    },
+    {
+      "name": "Schnyder",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 3,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 2",
+              "titel": "Brief von Martin H. Taubman zu Verträgen mit Buenos Aires, Neapel, Wien",
+              "typ": "brief"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 3
+    },
+    {
+      "name": "SAS Scandinavian Airlines",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 3,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 4",
+              "titel": "Brief von Ernst Kühnly zu Gastspiel in Lissabon an Martin H. Taubman",
+              "typ": "brief"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 3
+    },
+    {
+      "name": "Ernst Kühnly Bühnenvermittlung Inland und Ausland",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 3,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 4",
+              "titel": "Brief von Ernst Kühnly zu Gastspiel in Lissabon an Martin H. Taubman",
+              "typ": "brief"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 3
+    },
+    {
+      "name": "Kühnly, Ernst",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 3,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 4",
+              "titel": "Brief von Ernst Kühnly zu Gastspiel in Lissabon an Martin H. Taubman",
+              "typ": "brief"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 3
+    },
+    {
+      "name": "Schwab",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 3,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 7",
+              "titel": "Brief von Intendanz der Bayerischen Staatsoper zu Gastspielvertrag und Schiedsvertrag 1961/62 an Ira Malaniuk",
+              "typ": "brief"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 3
+    },
+    {
+      "name": "Jucker, Emil",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 3,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 9",
+              "titel": "Brief von Emil Jucker an Ira Malaniuk über ein Gastspiel in Zürich",
+              "typ": "brief"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 3
+    },
+    {
+      "name": "Meyer, Werner",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 3,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 9",
+              "titel": "Brief von Emil Jucker an Ira Malaniuk über ein Gastspiel in Zürich",
+              "typ": "brief"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 3
+    },
+    {
+      "name": "Wehrli., Dr.",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 3,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 9",
+              "titel": "Brief von Emil Jucker an Ira Malaniuk über ein Gastspiel in Zürich",
+              "typ": "brief"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 3
+    },
+    {
+      "name": "Meiner",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 3,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 10",
+              "titel": "(Dienst)brief von Intendanz der Bayerischen Staatoper zu den Festspielen an Ira Malaniuk, 1964-08-18",
+              "typ": "brief"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 3
+    },
+    {
+      "name": "Sekretär der Tonhalle-Gesellschaft Zürich",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1965-1969",
+          "intensitaet": 3,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 11",
+              "titel": "Brief vom Sekretär der Tonhalle-Gesellschaft Zürich zu Bestätigung von Konzerten und Probezeiten",
+              "typ": "brief"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 3
+    },
+    {
+      "name": "Schulthess, Walter",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1965-1969",
+          "intensitaet": 3,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 11",
+              "titel": "Brief vom Sekretär der Tonhalle-Gesellschaft Zürich zu Bestätigung von Konzerten und Probezeiten",
+              "typ": "brief"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 3
+    },
+    {
+      "name": "Lortzing, Albert",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1965-1969",
+          "intensitaet": 3,
+          "anzahl_dokumente": 3,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 12",
+              "titel": "Rezension von Gerhard Bauer zu Der Wildschütz (Arbeiter Zeitung)",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_007 14",
+              "titel": "Rezension von k-e-p zu Der Wildschütz (Wiener Zeitung)",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_007 17",
+              "titel": "Rezension zu Der Wildschütz",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 3
+    },
+    {
+      "name": "Deutsches Musikinstitut für Ausländer",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1940-1944",
+          "intensitaet": 2,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_003 1_1",
+              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
+              "typ": "programmheft"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Fischer, Edwin",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1940-1944",
+          "intensitaet": 2,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_003 1_2",
+              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
+              "typ": "programmheft"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Gieseking, Walter",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1940-1944",
+          "intensitaet": 2,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_003 1_2",
+              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
+              "typ": "programmheft"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Heitmann, Fritz",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1940-1944",
+          "intensitaet": 2,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_003 1_2",
+              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
+              "typ": "programmheft"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Hüni-Mihacsek, Felicie",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1940-1944",
+          "intensitaet": 2,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_003 1_2",
+              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
+              "typ": "programmheft"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Kempff, Wilhelm",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1940-1944",
+          "intensitaet": 2,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_003 1_2",
+              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
+              "typ": "programmheft"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Kulenkampff, Georg",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1940-1944",
+          "intensitaet": 2,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_003 1_2",
+              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
+              "typ": "programmheft"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Leimer, Karl",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1940-1944",
+          "intensitaet": 2,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_003 1_2",
+              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
+              "typ": "programmheft"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Lohmann, Paul",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1940-1944",
+          "intensitaet": 2,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_003 1_2",
+              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
+              "typ": "programmheft"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Mahlke, Hans",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1940-1944",
+          "intensitaet": 2,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_003 1_2",
+              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
+              "typ": "programmheft"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Martienssen-Lohmann, Franziska",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1940-1944",
+          "intensitaet": 2,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_003 1_2",
+              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
+              "typ": "programmheft"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Marx, Joseph",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1940-1944",
+          "intensitaet": 2,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_003 1_2",
+              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
+              "typ": "programmheft"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Moratti, Vittorino",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1940-1944",
+          "intensitaet": 2,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_003 1_2",
+              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
+              "typ": "programmheft"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Ney, Elly",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1940-1944",
+          "intensitaet": 2,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_003 1_2",
+              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
+              "typ": "programmheft"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Pirchan, Emil",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1940-1944",
+          "intensitaet": 2,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_003 1_2",
+              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
+              "typ": "programmheft"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Prihoda, Vasa",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1940-1944",
+          "intensitaet": 2,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_003 1_2",
+              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
+              "typ": "programmheft"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Ramin, Günther",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1940-1944",
+          "intensitaet": 2,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_003 1_2",
+              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
+              "typ": "programmheft"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Schellenberg, Arno",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1940-1944",
+          "intensitaet": 2,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_003 1_2",
+              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
+              "typ": "programmheft"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Schünemann, Georg",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1940-1944",
+          "intensitaet": 2,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_003 1_2",
+              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
+              "typ": "programmheft"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Steiner, Adolf",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1940-1944",
+          "intensitaet": 2,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_003 1_2",
+              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
+              "typ": "programmheft"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Swarowsky, Hans",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1940-1944",
+          "intensitaet": 2,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_003 1_2",
+              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
+              "typ": "programmheft"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Vilmar-Hansen, E.",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1940-1944",
+          "intensitaet": 2,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_003 1_2",
+              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
+              "typ": "programmheft"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Wolf, Winfried",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1940-1944",
+          "intensitaet": 2,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_003 1_2",
+              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
+              "typ": "programmheft"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Universität Mozarteum Salzburg",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1940-1944",
+          "intensitaet": 2,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_003 1_8",
+              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
+              "typ": "programmheft"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Verdi, Guiseppe",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 2,
+          "anzahl_dokumente": 2,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 2",
+              "titel": "Rezension zu Lady Macbeth in der Verdi- Premiere der Staatsoper",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 3",
+              "titel": "Rezension von Karl Schumann zu Macbeth",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Metternich, Josef",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 2,
+          "anzahl_dokumente": 2,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 2",
+              "titel": "Rezension zu Lady Macbeth in der Verdi- Premiere der Staatsoper",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 3",
+              "titel": "Rezension von Karl Schumann zu Macbeth",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Klarwein, Franz",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 2,
+          "anzahl_dokumente": 2,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 2",
+              "titel": "Rezension zu Lady Macbeth in der Verdi- Premiere der Staatsoper",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 4",
+              "titel": "Rezension von H. Schmidt-Garre zu Macbeth an der Bayerischen Staatsoper",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Bayerischen Staatsoper",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 2,
+          "anzahl_dokumente": 2,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 2",
+              "titel": "Rezension zu Lady Macbeth in der Verdi- Premiere der Staatsoper",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 3",
+              "titel": "Rezension von Karl Schumann zu Macbeth",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Baasch, Dr. med. Ernst",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 2",
+              "titel": "Rezension zu Lady Macbeth in der Verdi- Premiere der Staatsoper",
+              "typ": "rezension"
+            }
+          ]
+        },
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 5_8",
+              "titel": "Einzahlungsbestätigung (?) Dr. Baasch an Martin Hugo Taubman, 1957-05-15",
+              "typ": "quittung"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Fahberg, Antonia",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 8",
+              "titel": "Rezension von Helmut Schmidt-Garre",
+              "typ": "rezension"
+            }
+          ]
+        },
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 5",
+              "titel": "Rezension von K.H. Ruppel zu Orpheus und Eurydike in der Süddeutschen Zeitung",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Erlenwein, Herbert",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 8",
+              "titel": "Rezension von Helmut Schmidt-Garre",
+              "typ": "rezension"
+            }
+          ]
+        },
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 5",
+              "titel": "Rezension von K.H. Ruppel zu Orpheus und Eurydike in der Süddeutschen Zeitung",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Pitz, Wilhelm",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 2,
+          "anzahl_dokumente": 2,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 7",
+              "titel": "Rezension von Dr. Joachim Bergfeld (Fränkische Presse) zur IX. Symphonie Beethovens",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 10",
+              "titel": "Rezensionen aus der Fränkischen Presse zu \"Die Götterdämmerung\" und \"Tristan und Isolde\"",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Münchner Merkur",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 2,
+          "anzahl_dokumente": 2,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 8",
+              "titel": "Rezension von Helmut Schmidt-Garre",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 13",
+              "titel": "Rezension zur Festvorstellung Meistersinger aus dem Münchner Merkur",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Jommelli, Niccolò",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 2,
+          "anzahl_dokumente": 2,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 8",
+              "titel": "Rezension von Helmut Schmidt-Garre",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 12",
+              "titel": "Rezension von Dr. Kurt Honolka zu Titus",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Hasse, Johann Asolph",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 2,
+          "anzahl_dokumente": 2,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 8",
+              "titel": "Rezension von Helmut Schmidt-Garre",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 12",
+              "titel": "Rezension von Dr. Kurt Honolka zu Titus",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Schöffler, Paul",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 9",
+              "titel": "Rezension von A. Parente zu Tristan und Isolde in Neapel",
+              "typ": "rezension"
+            }
+          ]
+        },
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 19",
+              "titel": "Rezension von René Dumesnil zu Tristan und Isolde in Paris",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Varnay, Astrid",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 10",
+              "titel": "Rezensionen aus der Fränkischen Presse zu \"Die Götterdämmerung\" und \"Tristan und Isolde\"",
+              "typ": "rezension"
+            }
+          ]
+        },
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 19",
+              "titel": "Rezension von René Dumesnil zu Tristan und Isolde in Paris",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Richter, Gerd",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 12",
+              "titel": "Rezension von Dr. Kurt Honolka zu Titus",
+              "typ": "rezension"
+            }
+          ]
+        },
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 15",
+              "titel": "Rezension von Y. zu Tannhäuser",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Mahler, Gustav",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 14",
+              "titel": "Rezension von ZED. zu Le Chant de la Terre in Straßburg unter Fritz Munch",
+              "typ": "rezension"
+            }
+          ]
+        },
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 15",
+              "titel": "Rezension von Y. zu Tannhäuser",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Walter, Bruno",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 14",
+              "titel": "Rezension von ZED. zu Le Chant de la Terre in Straßburg unter Fritz Munch",
+              "typ": "rezension"
+            }
+          ]
+        },
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 15",
+              "titel": "Rezension von Y. zu Tannhäuser",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Neues Österreich",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 2,
+          "anzahl_dokumente": 2,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 15",
+              "titel": "Rezension von Y. zu Tannhäuser",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 16",
+              "titel": "Rezension von Y. zu Aida an der Wiener Staatsoper",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Y.",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 2,
+          "anzahl_dokumente": 2,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 15",
+              "titel": "Rezension von Y. zu Tannhäuser",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 16",
+              "titel": "Rezension von Y. zu Aida an der Wiener Staatsoper",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Wagner, Wolfgang",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 3",
+              "titel": "Ausweis für Bayreuther Festspiele 1953",
+              "typ": "ausweis"
+            }
+          ]
+        },
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 15",
+              "titel": "Rezension von Y. zu Tannhäuser",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Rysanek, Leonie",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 2,
+          "anzahl_dokumente": 2,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 16",
+              "titel": "Rezension von Y. zu Aida an der Wiener Staatsoper",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 17",
+              "titel": "Rezension von ibe zu Aida an der Wiener Staatsoper",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Kreppel, Walter",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 2,
+          "anzahl_dokumente": 2,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 16",
+              "titel": "Rezension von Y. zu Aida an der Wiener Staatsoper",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 17",
+              "titel": "Rezension von ibe zu Aida an der Wiener Staatsoper",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Baylé, Theo",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 2,
+          "anzahl_dokumente": 2,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 16",
+              "titel": "Rezension von Y. zu Aida an der Wiener Staatsoper",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 17",
+              "titel": "Rezension von ibe zu Aida an der Wiener Staatsoper",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Durante, Francesco",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 2,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 8",
+              "titel": "Konzertprogramm, Liederabend, Palais Pallavicini, 1963-08-28",
+              "typ": "programmheft"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Busatti, Cherubino",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 2,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 8",
+              "titel": "Konzertprogramm, Liederabend, Palais Pallavicini, 1963-08-28",
+              "typ": "programmheft"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Monteverdi, Claudio",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 2,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 8",
+              "titel": "Konzertprogramm, Liederabend, Palais Pallavicini, 1963-08-28",
+              "typ": "programmheft"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Haydn, Joseph",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 2,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 8",
+              "titel": "Konzertprogramm, Liederabend, Palais Pallavicini, 1963-08-28",
+              "typ": "programmheft"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Schubert, Franz",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 2,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 8",
+              "titel": "Konzertprogramm, Liederabend, Palais Pallavicini, 1963-08-28",
+              "typ": "programmheft"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Brahms, Johannes",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 2,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 8",
+              "titel": "Konzertprogramm, Liederabend, Palais Pallavicini, 1963-08-28",
+              "typ": "programmheft"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Barwinsky, Wolodymyr",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 2,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 8",
+              "titel": "Konzertprogramm, Liederabend, Palais Pallavicini, 1963-08-28",
+              "typ": "programmheft"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Woloszyn, Wolodymyr",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 2,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 8",
+              "titel": "Konzertprogramm, Liederabend, Palais Pallavicini, 1963-08-28",
+              "typ": "programmheft"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Ott, Elfriede",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 2,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 8",
+              "titel": "Konzertprogramm, Liederabend, Palais Pallavicini, 1963-08-28",
+              "typ": "programmheft"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Patzak, Julian",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 2,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 8",
+              "titel": "Konzertprogramm, Liederabend, Palais Pallavicini, 1963-08-28",
+              "typ": "programmheft"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Müller",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 2,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 8",
+              "titel": "Konzertprogramm, Liederabend, Palais Pallavicini, 1963-08-28",
+              "typ": "programmheft"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Kreutzer",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 2,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 8",
+              "titel": "Konzertprogramm, Liederabend, Palais Pallavicini, 1963-08-28",
+              "typ": "programmheft"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Suppé",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 2,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 8",
+              "titel": "Konzertprogramm, Liederabend, Palais Pallavicini, 1963-08-28",
+              "typ": "programmheft"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Drechsler",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 2,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 8",
+              "titel": "Konzertprogramm, Liederabend, Palais Pallavicini, 1963-08-28",
+              "typ": "programmheft"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Volksoper Wien",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1965-1969",
+          "intensitaet": 2,
+          "anzahl_dokumente": 2,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 12",
+              "titel": "Rezension von Gerhard Bauer zu Der Wildschütz (Arbeiter Zeitung)",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_007 17",
+              "titel": "Rezension zu Der Wildschütz",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Klein, Peter",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1965-1969",
+          "intensitaet": 2,
+          "anzahl_dokumente": 2,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 12",
+              "titel": "Rezension von Gerhard Bauer zu Der Wildschütz (Arbeiter Zeitung)",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_007 14",
+              "titel": "Rezension von k-e-p zu Der Wildschütz (Wiener Zeitung)",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Dönch, Carl",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1965-1969",
+          "intensitaet": 2,
+          "anzahl_dokumente": 2,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 12",
+              "titel": "Rezension von Gerhard Bauer zu Der Wildschütz (Arbeiter Zeitung)",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_007 14",
+              "titel": "Rezension von k-e-p zu Der Wildschütz (Wiener Zeitung)",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Witte, Wolfgang",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1965-1969",
+          "intensitaet": 2,
+          "anzahl_dokumente": 2,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 12",
+              "titel": "Rezension von Gerhard Bauer zu Der Wildschütz (Arbeiter Zeitung)",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_007 14",
+              "titel": "Rezension von k-e-p zu Der Wildschütz (Wiener Zeitung)",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Serafin, Harald",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1965-1969",
+          "intensitaet": 2,
+          "anzahl_dokumente": 2,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 12",
+              "titel": "Rezension von Gerhard Bauer zu Der Wildschütz (Arbeiter Zeitung)",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_007 14",
+              "titel": "Rezension von k-e-p zu Der Wildschütz (Wiener Zeitung)",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Lorenz, Gerlinde",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1965-1969",
+          "intensitaet": 2,
+          "anzahl_dokumente": 2,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 12",
+              "titel": "Rezension von Gerhard Bauer zu Der Wildschütz (Arbeiter Zeitung)",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_007 14",
+              "titel": "Rezension von k-e-p zu Der Wildschütz (Wiener Zeitung)",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Lobasa, Monique",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1965-1969",
+          "intensitaet": 2,
+          "anzahl_dokumente": 2,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 12",
+              "titel": "Rezension von Gerhard Bauer zu Der Wildschütz (Arbeiter Zeitung)",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_007 14",
+              "titel": "Rezension von k-e-p zu Der Wildschütz (Wiener Zeitung)",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Bauer-Theussl, Franz",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1965-1969",
+          "intensitaet": 2,
+          "anzahl_dokumente": 2,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 12",
+              "titel": "Rezension von Gerhard Bauer zu Der Wildschütz (Arbeiter Zeitung)",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_007 14",
+              "titel": "Rezension von k-e-p zu Der Wildschütz (Wiener Zeitung)",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Nestroy, Johann Nepomuk",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1965-1969",
+          "intensitaet": 2,
+          "anzahl_dokumente": 2,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 12",
+              "titel": "Rezension von Gerhard Bauer zu Der Wildschütz (Arbeiter Zeitung)",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_007 17",
+              "titel": "Rezension zu Der Wildschütz",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Kautsky, Robert",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1965-1969",
+          "intensitaet": 2,
+          "anzahl_dokumente": 2,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 14",
+              "titel": "Rezension von k-e-p zu Der Wildschütz (Wiener Zeitung)",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_007 17",
+              "titel": "Rezension zu Der Wildschütz",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Michalis, Ruth",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 2",
+              "titel": "Rezension zu Lady Macbeth in der Verdi- Premiere der Staatsoper",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Keil, Adolf",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 2",
+              "titel": "Rezension zu Lady Macbeth in der Verdi- Premiere der Staatsoper",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Peter, Albrecht",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 2",
+              "titel": "Rezension zu Lady Macbeth in der Verdi- Premiere der Staatsoper",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Ranczak, Hildegard",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 2",
+              "titel": "Rezension zu Lady Macbeth in der Verdi- Premiere der Staatsoper",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Schumann, Karl",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 3",
+              "titel": "Rezension von Karl Schumann zu Macbeth",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Abendzeitung",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 3",
+              "titel": "Rezension von Karl Schumann zu Macbeth",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Verdi, Giuseppe",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 4",
+              "titel": "Rezension von H. Schmidt-Garre zu Macbeth an der Bayerischen Staatsoper",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Shakespeare, William",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 4",
+              "titel": "Rezension von H. Schmidt-Garre zu Macbeth an der Bayerischen Staatsoper",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Metternicz, Josef",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 4",
+              "titel": "Rezension von H. Schmidt-Garre zu Macbeth an der Bayerischen Staatsoper",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Leder, Alfred",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 4",
+              "titel": "Rezension von H. Schmidt-Garre zu Macbeth an der Bayerischen Staatsoper",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Schmidt-Garre, Helmut",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 4",
+              "titel": "Rezension von H. Schmidt-Garre zu Macbeth an der Bayerischen Staatsoper",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Kupper, Anneliese",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 5",
+              "titel": "Rezension von K.H. Ruppel zu Orpheus und Eurydike in der Süddeutschen Zeitung",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Offenbach, Jacques",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 5",
+              "titel": "Rezension von K.H. Ruppel zu Orpheus und Eurydike in der Süddeutschen Zeitung",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Ruppel, K. H.",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 5",
+              "titel": "Rezension von K.H. Ruppel zu Orpheus und Eurydike in der Süddeutschen Zeitung",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Süddeutsche Zeitung",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 5",
+              "titel": "Rezension von K.H. Ruppel zu Orpheus und Eurydike in der Süddeutschen Zeitung",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Händel, Georg Friedrich",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 5",
+              "titel": "Rezension von K.H. Ruppel zu Orpheus und Eurydike in der Süddeutschen Zeitung",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Barlach, Ernst",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 5",
+              "titel": "Rezension von K.H. Ruppel zu Orpheus und Eurydike in der Süddeutschen Zeitung",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Alighieri, Dante",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 5",
+              "titel": "Rezension von K.H. Ruppel zu Orpheus und Eurydike in der Süddeutschen Zeitung",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Orff, Carl",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 5",
+              "titel": "Rezension von K.H. Ruppel zu Orpheus und Eurydike in der Süddeutschen Zeitung",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Dermota, Anton",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 7",
+              "titel": "Rezension von Dr. Joachim Bergfeld (Fränkische Presse) zur IX. Symphonie Beethovens",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Bergfeld, Dr. Joachim",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 7",
+              "titel": "Rezension von Dr. Joachim Bergfeld (Fränkische Presse) zur IX. Symphonie Beethovens",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Fränkische Presse",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 7",
+              "titel": "Rezension von Dr. Joachim Bergfeld (Fränkische Presse) zur IX. Symphonie Beethovens",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Bach, Johann Sebastian",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 7",
+              "titel": "Rezension von Dr. Joachim Bergfeld (Fränkische Presse) zur IX. Symphonie Beethovens",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Wagner, Siegfied",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 7",
+              "titel": "Rezension von Dr. Joachim Bergfeld (Fränkische Presse) zur IX. Symphonie Beethovens",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Reger, Max",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 7",
+              "titel": "Rezension von Dr. Joachim Bergfeld (Fränkische Presse) zur IX. Symphonie Beethovens",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Pfitzner, Hans",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 7",
+              "titel": "Rezension von Dr. Joachim Bergfeld (Fränkische Presse) zur IX. Symphonie Beethovens",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Schmidt-Gasse, Helmut",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 8",
+              "titel": "Rezension von Helmut Schmidt-Garre",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Calzabigi, Ranieri de",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 8",
+              "titel": "Rezension von Helmut Schmidt-Garre",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Kupper, Annelies",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 8",
+              "titel": "Rezension von Helmut Schmidt-Garre",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Traetta, Tommaso",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 8",
+              "titel": "Rezension von Helmut Schmidt-Garre",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Rodzinski, Artur",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 9",
+              "titel": "Rezension von A. Parente zu Tristan und Isolde in Neapel",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Grob-Prandl, Gertrude",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 9",
+              "titel": "Rezension von A. Parente zu Tristan und Isolde in Neapel",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Ernest, Wilhelm",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 9",
+              "titel": "Rezension von A. Parente zu Tristan und Isolde in Neapel",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Otto van Rohr",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 9",
+              "titel": "Rezension von A. Parente zu Tristan und Isolde in Neapel",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Ferenz, Willy",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 9",
+              "titel": "Rezension von A. Parente zu Tristan und Isolde in Neapel",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Maykut, Erich",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 9",
+              "titel": "Rezension von A. Parente zu Tristan und Isolde in Neapel",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Gerard, Fritz",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 9",
+              "titel": "Rezension von A. Parente zu Tristan und Isolde in Neapel",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Sforza",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 9",
+              "titel": "Rezension von A. Parente zu Tristan und Isolde in Neapel",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Uva",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 9",
+              "titel": "Rezension von A. Parente zu Tristan und Isolde in Neapel",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Lauro, Michele",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 9",
+              "titel": "Rezension von A. Parente zu Tristan und Isolde in Neapel",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Neumann-Spallart, Gottfried",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 9",
+              "titel": "Rezension von A. Parente zu Tristan und Isolde in Neapel",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Parente, A",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 9",
+              "titel": "Rezension von A. Parente zu Tristan und Isolde in Neapel",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Teatro di San Carlo",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 9",
+              "titel": "Rezension von A. Parente zu Tristan und Isolde in Neapel",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Tasso, Fiorenzo",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 9",
+              "titel": "Rezension von A. Parente zu Tristan und Isolde in Neapel",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Vacchiano",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 9",
+              "titel": "Rezension von A. Parente zu Tristan und Isolde in Neapel",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Campese",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 9",
+              "titel": "Rezension von A. Parente zu Tristan und Isolde in Neapel",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Keilberth, Joseph",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 10",
+              "titel": "Rezensionen aus der Fränkischen Presse zu \"Die Götterdämmerung\" und \"Tristan und Isolde\"",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Jochum, Eugen",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 10",
+              "titel": "Rezensionen aus der Fränkischen Presse zu \"Die Götterdämmerung\" und \"Tristan und Isolde\"",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Mödl, Martha",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 10",
+              "titel": "Rezensionen aus der Fränkischen Presse zu \"Die Götterdämmerung\" und \"Tristan und Isolde\"",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Greindl, Josef",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 10",
+              "titel": "Rezensionen aus der Fränkischen Presse zu \"Die Götterdämmerung\" und \"Tristan und Isolde\"",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Uhde, Hermann",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 10",
+              "titel": "Rezensionen aus der Fränkischen Presse zu \"Die Götterdämmerung\" und \"Tristan und Isolde\"",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Hinsch-Gröhndal, Natalie",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 10",
+              "titel": "Rezensionen aus der Fränkischen Presse zu \"Die Götterdämmerung\" und \"Tristan und Isolde\"",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Neidlinger, Gustav",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 10",
+              "titel": "Rezensionen aus der Fränkischen Presse zu \"Die Götterdämmerung\" und \"Tristan und Isolde\"",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Ilosvay",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 10",
+              "titel": "Rezensionen aus der Fränkischen Presse zu \"Die Götterdämmerung\" und \"Tristan und Isolde\"",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Resnik",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 10",
+              "titel": "Rezensionen aus der Fränkischen Presse zu \"Die Götterdämmerung\" und \"Tristan und Isolde\"",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Zimmermann, Erika",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 10",
+              "titel": "Rezensionen aus der Fränkischen Presse zu \"Die Götterdämmerung\" und \"Tristan und Isolde\"",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Plümacher, Hetty",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 10",
+              "titel": "Rezensionen aus der Fränkischen Presse zu \"Die Götterdämmerung\" und \"Tristan und Isolde\"",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Litz, Gisela",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 10",
+              "titel": "Rezensionen aus der Fränkischen Presse zu \"Die Götterdämmerung\" und \"Tristan und Isolde\"",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Vinay, Ramon",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 10",
+              "titel": "Rezensionen aus der Fränkischen Presse zu \"Die Götterdämmerung\" und \"Tristan und Isolde\"",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Eschert, Hasso",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 10",
+              "titel": "Rezensionen aus der Fränkischen Presse zu \"Die Götterdämmerung\" und \"Tristan und Isolde\"",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Stolze, Gerhard",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 10",
+              "titel": "Rezensionen aus der Fränkischen Presse zu \"Die Götterdämmerung\" und \"Tristan und Isolde\"",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Adam, Theo",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 10",
+              "titel": "Rezensionen aus der Fränkischen Presse zu \"Die Götterdämmerung\" und \"Tristan und Isolde\"",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Tobin, Gene",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 10",
+              "titel": "Rezensionen aus der Fränkischen Presse zu \"Die Götterdämmerung\" und \"Tristan und Isolde\"",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Eberhardt, Paul",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 10",
+              "titel": "Rezensionen aus der Fränkischen Presse zu \"Die Götterdämmerung\" und \"Tristan und Isolde\"",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Scheenerger, Hansheinz",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 11",
+              "titel": "Rezension zu Paul Hindemith in Köln",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Oboussier, Robert",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 11",
+              "titel": "Rezension zu Paul Hindemith in Köln",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Steinecke, Wolfgang",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 11",
+              "titel": "Rezension zu Paul Hindemith in Köln",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Berliner Philharmoniker",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 11",
+              "titel": "Rezension zu Paul Hindemith in Köln",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Düsseldorfer Zeitung",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 11",
+              "titel": "Rezension zu Paul Hindemith in Köln",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Adorno, Theodor W.",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 11",
+              "titel": "Rezension zu Paul Hindemith in Köln",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Honolka, Kurt Dr.",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 12",
+              "titel": "Rezension von Dr. Kurt Honolka zu Titus",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Metastasio, Pietro",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 12",
+              "titel": "Rezension von Dr. Kurt Honolka zu Titus",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Mazzolà, Caterino",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 12",
+              "titel": "Rezension von Dr. Kurt Honolka zu Titus",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Curjel, Hans",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 12",
+              "titel": "Rezension von Dr. Kurt Honolka zu Titus",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Paumgartner, Bernhard",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 12",
+              "titel": "Rezension von Dr. Kurt Honolka zu Titus",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Kurt, Kuhlmann",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 12",
+              "titel": "Rezension von Dr. Kurt Honolka zu Titus",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Traxel, Josef",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 12",
+              "titel": "Rezension von Dr. Kurt Honolka zu Titus",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Wißmann, Lore",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 12",
+              "titel": "Rezension von Dr. Kurt Honolka zu Titus",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Pfeifle, Alfred",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 12",
+              "titel": "Rezension von Dr. Kurt Honolka zu Titus",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Wachmann, Franzi",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 12",
+              "titel": "Rezension von Dr. Kurt Honolka zu Titus",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Grefe, Gustav",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 12",
+              "titel": "Rezension von Dr. Kurt Honolka zu Titus",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Kaufmann, Hans-Joachim",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 12",
+              "titel": "Rezension von Dr. Kurt Honolka zu Titus",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Dünnwald, Josef",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 12",
+              "titel": "Rezension von Dr. Kurt Honolka zu Titus",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Stuttgarter Nachrichten",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 12",
+              "titel": "Rezension von Dr. Kurt Honolka zu Titus",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Stuttgarter Stattsoper",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 12",
+              "titel": "Rezension von Dr. Kurt Honolka zu Titus",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Leopold III.",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 12",
+              "titel": "Rezension von Dr. Kurt Honolka zu Titus",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Süßmayr, Franz Xaver",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 12",
+              "titel": "Rezension von Dr. Kurt Honolka zu Titus",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Bonaparte, Napoleon",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 12",
+              "titel": "Rezension von Dr. Kurt Honolka zu Titus",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Kusche, benno",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 13",
+              "titel": "Rezension zur Festvorstellung Meistersinger aus dem Münchner Merkur",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Frantz, Ferdinand",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 13",
+              "titel": "Rezension zur Festvorstellung Meistersinger aus dem Münchner Merkur",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Holm, Richard",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 13",
+              "titel": "Rezension zur Festvorstellung Meistersinger aus dem Münchner Merkur",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Prinzregententheater",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 13",
+              "titel": "Rezension zur Festvorstellung Meistersinger aus dem Münchner Merkur",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Münchner Opern-Festspiele",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 13",
+              "titel": "Rezension zur Festvorstellung Meistersinger aus dem Münchner Merkur",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Munch, Fritz",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 14",
+              "titel": "Rezension von ZED. zu Le Chant de la Terre in Straßburg unter Fritz Munch",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Haefliger, Ernst",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 14",
+              "titel": "Rezension von ZED. zu Le Chant de la Terre in Straßburg unter Fritz Munch",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Klemperer, Otto",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 14",
+              "titel": "Rezension von ZED. zu Le Chant de la Terre in Straßburg unter Fritz Munch",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Conservatoire",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 14",
+              "titel": "Rezension von ZED. zu Le Chant de la Terre in Straßburg unter Fritz Munch",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "orchestre municipal (Strasbourg)",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 14",
+              "titel": "Rezension von ZED. zu Le Chant de la Terre in Straßburg unter Fritz Munch",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Gielen, Josef",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 15",
+              "titel": "Rezension von Y. zu Tannhäuser",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Hanka, Erika",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 15",
+              "titel": "Rezension von Y. zu Tannhäuser",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Traute, Elisabeth",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 15",
+              "titel": "Rezension von Y. zu Tannhäuser",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Wächter, Eberhard",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 15",
+              "titel": "Rezension von Y. zu Tannhäuser",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Lustigs, Rudolf",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 15",
+              "titel": "Rezension von Y. zu Tannhäuser",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Dermotas, Anton",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 15",
+              "titel": "Rezension von Y. zu Tannhäuser",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Hurshells, Edmund",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 15",
+              "titel": "Rezension von Y. zu Tannhäuser",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Meyer-Welfing, Hugo",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 15",
+              "titel": "Rezension von Y. zu Tannhäuser",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Pantscheff, Ljubomir",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 15",
+              "titel": "Rezension von Y. zu Tannhäuser",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Felberma-Yers, Anny",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 15",
+              "titel": "Rezension von Y. zu Tannhäuser",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Rossmayer, Richard",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 15",
+              "titel": "Rezension von Y. zu Tannhäuser",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Wiener Philharmoniker",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 15",
+              "titel": "Rezension von Y. zu Tannhäuser",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Schumann, Robert",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 15",
+              "titel": "Rezension von Y. zu Tannhäuser",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Tizian",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 15",
+              "titel": "Rezension von Y. zu Tannhäuser",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Masaccio",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 15",
+              "titel": "Rezension von Y. zu Tannhäuser",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Schalk, Franz",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 15",
+              "titel": "Rezension von Y. zu Tannhäuser",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Linné, Carl von",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 15",
+              "titel": "Rezension von Y. zu Tannhäuser",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Wesendonck, Mathilde",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 15",
+              "titel": "Rezension von Y. zu Tannhäuser",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Golther, Wolfgang",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 15",
+              "titel": "Rezension von Y. zu Tannhäuser",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Roller, Alfred",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 15",
+              "titel": "Rezension von Y. zu Tannhäuser",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Kautsky, Hans",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 15",
+              "titel": "Rezension von Y. zu Tannhäuser",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Gostič, Josef",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 16",
+              "titel": "Rezension von Y. zu Aida an der Wiener Staatsoper",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Guthrie, Frederic",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 16",
+              "titel": "Rezension von Y. zu Aida an der Wiener Staatsoper",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Klobucar, Boruslav",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 16",
+              "titel": "Rezension von Y. zu Aida an der Wiener Staatsoper",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Verdi",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 16",
+              "titel": "Rezension von Y. zu Aida an der Wiener Staatsoper",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Ghislanzoni",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 16",
+              "titel": "Rezension von Y. zu Aida an der Wiener Staatsoper",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Landestheater Hannover",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 16",
+              "titel": "Rezension von Y. zu Aida an der Wiener Staatsoper",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Wallerstein",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 16",
+              "titel": "Rezension von Y. zu Aida an der Wiener Staatsoper",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Grillparzer",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 16",
+              "titel": "Rezension von Y. zu Aida an der Wiener Staatsoper",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Gostic, Josef",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 17",
+              "titel": "Rezension von ibe zu Aida an der Wiener Staatsoper",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Guthrie, Frederick",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 17",
+              "titel": "Rezension von ibe zu Aida an der Wiener Staatsoper",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Neuer Kurier",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 17",
+              "titel": "Rezension von ibe zu Aida an der Wiener Staatsoper",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Rialland, Louis",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 19",
+              "titel": "Rezension von René Dumesnil zu Tristan und Isolde in Paris",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Massard, Robert",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 19",
+              "titel": "Rezension von René Dumesnil zu Tristan und Isolde in Paris",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Rouquetty, Camille",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 19",
+              "titel": "Rezension von René Dumesnil zu Tristan und Isolde in Paris",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "René Dumesnil",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 19",
+              "titel": "Rezension von René Dumesnil zu Tristan und Isolde in Paris",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Académie nationale de musique",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 19",
+              "titel": "Rezension von René Dumesnil zu Tristan und Isolde in Paris",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Le Monde",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 19",
+              "titel": "Rezension von René Dumesnil zu Tristan und Isolde in Paris",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Beaton, Cecil Walter Hardy",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 25",
+              "titel": "NCAC Newsletter über Künstler:innen (Ira Malaniuk - Hugh Thompson)",
+              "typ": "typoskript"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Mitropoulos, Dimitri",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 25",
+              "titel": "NCAC Newsletter über Künstler:innen (Ira Malaniuk - Hugh Thompson)",
+              "typ": "typoskript"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Menotti, Gian Carlo",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 25",
+              "titel": "NCAC Newsletter über Künstler:innen (Ira Malaniuk - Hugh Thompson)",
+              "typ": "typoskript"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Barber, Samuel",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 25",
+              "titel": "NCAC Newsletter über Künstler:innen (Ira Malaniuk - Hugh Thompson)",
+              "typ": "typoskript"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Metropolitan Opera",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 25",
+              "titel": "NCAC Newsletter über Künstler:innen (Ira Malaniuk - Hugh Thompson)",
+              "typ": "typoskript"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "[Organi]",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 5_1",
+              "titel": "Handschriftliche Notiz",
+              "typ": "notiz"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Aktiengesellschaft Leu & Co.",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 5_8",
+              "titel": "Einzahlungsbestätigung (?) Dr. Baasch an Martin Hugo Taubman, 1957-05-15",
+              "typ": "quittung"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Nord- und Westdeutscher Rundfunkverband",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 6",
+              "titel": "Mittelung über Honorar für Sendung Paradies und Peri 1959 von Nord- und Westdeutscher Rundfunkverband",
+              "typ": "quittung"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Arbeiter Zeitung",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1965-1969",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 12",
+              "titel": "Rezension von Gerhard Bauer zu Der Wildschütz (Arbeiter Zeitung)",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Bauer, Gerhard",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1965-1969",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 12",
+              "titel": "Rezension von Gerhard Bauer zu Der Wildschütz (Arbeiter Zeitung)",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Raimund, Ferdinand",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1965-1969",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 12",
+              "titel": "Rezension von Gerhard Bauer zu Der Wildschütz (Arbeiter Zeitung)",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Mozart-Sängerknaben",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1965-1969",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 14",
+              "titel": "Rezension von k-e-p zu Der Wildschütz (Wiener Zeitung)",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Wiener Zeitung",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1965-1969",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 14",
+              "titel": "Rezension von k-e-p zu Der Wildschütz (Wiener Zeitung)",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Sobota, Elisabeth",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1965-1969",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 14",
+              "titel": "Rezension von k-e-p zu Der Wildschütz (Wiener Zeitung)",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Schwarzbauer, Erich",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1965-1969",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 14",
+              "titel": "Rezension von k-e-p zu Der Wildschütz (Wiener Zeitung)",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Volksblatt",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1965-1969",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 17",
+              "titel": "Rezension zu Der Wildschütz",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Dönch, Karl",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1965-1969",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 17",
+              "titel": "Rezension zu Der Wildschütz",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Kotzebue, August von",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1965-1969",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 17",
+              "titel": "Rezension zu Der Wildschütz",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    }
+  ],
+  "_meta": {
+    "generated": "2026-02-20T07:34:05.480892",
+    "source_records": 286,
+    "note": "Intensity weighted by document type: Letter=3, Program/Poster/Contract=2, Photo=1"
+  }
+}

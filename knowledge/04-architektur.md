@@ -22,10 +22,10 @@ docs/data/*.json    → GitHub Pages Frontend
 | Script | Funktion | Input | Output |
 |---|---|---|---|
 | explore.py | Datenstruktur-Analyse | data/google-spreadsheet/ | exploration-report.md |
-| validate.py | Datenqualitätsprüfung | data/google-spreadsheet/ XLSX | validation-report.md |
-| create-ric-json.py | Google Sheets → JSON-LD (RiC-O 1.1) | 6 XLSX | m3gim.jsonld |
+| validate.py | Datenqualitaetspruefung + Normalisierung | 6 XLSX + 4 Indizes | validation-report.md |
+| transform.py | Google Sheets → JSON-LD (RiC-O 1.1 + m3gim) | 6 XLSX | m3gim.jsonld |
 | build-views.py | JSON-LD → View-Aggregationen | m3gim.jsonld | 4 View-JSONs |
-| reconcile.py | Wikidata-Reconciliation | Indizes (Personen, Orgs, Orte) | Wikidata-IDs |
+| reconcile.py | Wikidata-Reconciliation (noch nicht implementiert) | Indizes | Wikidata-IDs |
 | migrate.py | AUGIAS-Export → formatierte Excel (einmalig, abgeschlossen) | AUGIAS-XLSX | Excel |
 
 View-JSONs: `partitur.json`, `matrix.json`, `kosmos.json`, `sankey.json`
@@ -77,7 +77,7 @@ data/
 
 ## JSON-LD (RiC-O 1.1)
 
-Namespaces: `rico:` (ICA RiC-O), `m3gim:` (Projektvokabular), `m3gim-dft:` (DocumentaryFormTypes).
+Namespaces: `rico:` (ICA RiC-O), `m3gim:` (Projektvokabular), `m3gim-dft:` (DocumentaryFormTypes), `m3gim-role:` (Rollen), `wd:` (Wikidata), `skos:`, `xsd:`.
 
 Mapping: archivsignatur → `rico:identifier`, titel → `rico:title`, entstehungsdatum → `rico:date`, dokumenttyp → `rico:hasDocumentaryFormType`.
 

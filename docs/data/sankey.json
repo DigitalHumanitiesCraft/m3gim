@@ -1,0 +1,372 @@
+{
+  "phasen": [
+    {
+      "id": "anfaenge",
+      "label": "Anfänge",
+      "von": 1940,
+      "bis": 1950
+    },
+    {
+      "id": "aufstieg",
+      "label": "Aufstieg",
+      "von": 1950,
+      "bis": 1955
+    },
+    {
+      "id": "hoehepunkt",
+      "label": "Höhepunkt",
+      "von": 1955,
+      "bis": 1968
+    },
+    {
+      "id": "spaetphase",
+      "label": "Spätphase",
+      "von": 1968,
+      "bis": 1975
+    }
+  ],
+  "repertoire": [
+    {
+      "id": "Wagner",
+      "label": "Wagner",
+      "farbe": "#6B2C2C"
+    },
+    {
+      "id": "Verdi",
+      "label": "Verdi",
+      "farbe": "#2C5C3F"
+    },
+    {
+      "id": "Strauss",
+      "label": "Strauss",
+      "farbe": "#4A3A6B"
+    },
+    {
+      "id": "Gluck/Händel",
+      "label": "Gluck/Händel",
+      "farbe": "#8B7355"
+    },
+    {
+      "id": "Beethoven",
+      "label": "Beethoven",
+      "farbe": "#4A5A7A"
+    }
+  ],
+  "orte": [
+    {
+      "id": "Wien",
+      "label": "Wien"
+    },
+    {
+      "id": "Bayreuth",
+      "label": "Bayreuth"
+    },
+    {
+      "id": "München",
+      "label": "München"
+    },
+    {
+      "id": "Salzburg",
+      "label": "Salzburg"
+    },
+    {
+      "id": "Graz",
+      "label": "Graz"
+    }
+  ],
+  "flows": [
+    {
+      "source": "hoehepunkt",
+      "target": "Gluck/Händel",
+      "value": 2,
+      "dokumente": [
+        {
+          "signatur": "UAKUG/NIM/PL_02",
+          "titel": "SALZBURGER MOZART-WOCHE 1959 / Mittwoch, den 21. Jänner 1959 - Mozarteum, Großer Saal, 19.30 / 3. So",
+          "typ": "plakat"
+        },
+        {
+          "signatur": "UAKUG/NIM_004 5",
+          "titel": "Rezension von K.H. Ruppel zu Orpheus und Eurydike in der Süddeutschen Zeitung",
+          "typ": "rezension"
+        }
+      ]
+    },
+    {
+      "source": "hoehepunkt",
+      "target": "Beethoven",
+      "value": 1,
+      "dokumente": [
+        {
+          "signatur": "UAKUG/NIM/PL_22",
+          "titel": "Ira Malaniuk / singt Lieder von HAYDN, MOZART, BEETHOVEN, / SCHUBERT, BRAHMS, R. STRAUSS / und ukrai",
+          "typ": "plakat"
+        }
+      ]
+    },
+    {
+      "source": "hoehepunkt",
+      "target": "Wagner",
+      "value": 4,
+      "dokumente": [
+        {
+          "signatur": "UAKUG/NIM_004 15",
+          "titel": "Rezension von Y. zu Tannhäuser",
+          "typ": "rezension"
+        },
+        {
+          "signatur": "UAKUG/NIM_004 19",
+          "titel": "Rezension von René Dumesnil zu Tristan und Isolde in Paris",
+          "typ": "rezension"
+        },
+        {
+          "signatur": "UAKUG/NIM_119",
+          "titel": "Programmheft zu einer Aufführung von \"Tristan und Isolde\" (Wagner) an der Wiener Staatsoper",
+          "typ": "programmheft"
+        },
+        {
+          "signatur": "UAKUG/NIM_120",
+          "titel": "Programmheft zu einer Aufführung von \"Tannhäuser\" (Wagner) an der Wiener Staatsoper",
+          "typ": "programmheft"
+        }
+      ]
+    },
+    {
+      "source": "hoehepunkt",
+      "target": "Verdi",
+      "value": 4,
+      "dokumente": [
+        {
+          "signatur": "UAKUG/NIM_004 16",
+          "titel": "Rezension von Y. zu Aida an der Wiener Staatsoper",
+          "typ": "rezension"
+        },
+        {
+          "signatur": "UAKUG/NIM_004 17",
+          "titel": "Rezension von ibe zu Aida an der Wiener Staatsoper",
+          "typ": "rezension"
+        },
+        {
+          "signatur": "UAKUG/NIM_087",
+          "titel": "Programmheft zu einer Aufführung von \"Aida\" (Verdi) in der Wiener Staatsoper am 28.04.1956",
+          "typ": "konvolut"
+        },
+        {
+          "signatur": "UAKUG/NIM_089",
+          "titel": "Programmheft zu einer Aufführung von \"Don Carlos\" (Verdi) in der Wiener Staatsoper am 11.09.1956",
+          "typ": "konvolut"
+        }
+      ]
+    },
+    {
+      "source": "anfaenge",
+      "target": "Beethoven",
+      "value": 1,
+      "dokumente": [
+        {
+          "signatur": "UAKUG/NIM/PL_04",
+          "titel": "SINFONISCHES ORCHESTER / in Stanislau / Konzertsaal Armenierstrasse 18. / Zum Abschluss der Wintersa",
+          "typ": "plakat"
+        }
+      ]
+    },
+    {
+      "source": "anfaenge",
+      "target": "Verdi",
+      "value": 3,
+      "dokumente": [
+        {
+          "signatur": "UAKUG/NIM/PL_05",
+          "titel": "\"BALLETTABEND\" / \"PAGANINI\" / \"AIDA\"",
+          "typ": "plakat"
+        },
+        {
+          "signatur": "UAKUG/NIM/PL_08",
+          "titel": "\"BALLETTABEND\" / \"PAGANINI\" / \"AIDA\"",
+          "typ": "plakat"
+        },
+        {
+          "signatur": "UAKUG/NIM/PL_11",
+          "titel": "\"TRAVIATA\" / \"AIDA\" / \"BOHÈME\"",
+          "typ": "plakat"
+        }
+      ]
+    },
+    {
+      "source": "anfaenge",
+      "target": "Gluck/Händel",
+      "value": 1,
+      "dokumente": [
+        {
+          "signatur": "UAKUG/NIM_062",
+          "titel": "Programmheft zu einer Aufführung von \"Jephta\" (Georg Friedrich Händel) am 19.03.1950 in der Tonhalle",
+          "typ": "konvolut"
+        }
+      ]
+    },
+    {
+      "source": "aufstieg",
+      "target": "Wagner",
+      "value": 5,
+      "dokumente": [
+        {
+          "signatur": "UAKUG/NIM/PL_16",
+          "titel": "TRISTANO / E / ISOTTA",
+          "typ": "plakat"
+        },
+        {
+          "signatur": "UAKUG/NIM_004 9",
+          "titel": "Rezension von A. Parente zu Tristan und Isolde in Neapel",
+          "typ": "rezension"
+        },
+        {
+          "signatur": "UAKUG/NIM_004 10",
+          "titel": "Rezensionen aus der Fränkischen Presse zu \"Die Götterdämmerung\" und \"Tristan und Isolde\"",
+          "typ": "rezension"
+        },
+        {
+          "signatur": "UAKUG/NIM_004 13",
+          "titel": "Rezension zur Festvorstellung Meistersinger aus dem Münchner Merkur",
+          "typ": "rezension"
+        },
+        {
+          "signatur": "UAKUG/NIM_051",
+          "titel": "\"Paris Mai 55 (Ring)\"",
+          "typ": "zeitungsausschnitt"
+        }
+      ]
+    },
+    {
+      "source": "aufstieg",
+      "target": "Beethoven",
+      "value": 1,
+      "dokumente": [
+        {
+          "signatur": "UAKUG/NIM_004 7",
+          "titel": "Rezension von Dr. Joachim Bergfeld (Fränkische Presse) zur IX. Symphonie Beethovens",
+          "typ": "rezension"
+        }
+      ]
+    },
+    {
+      "source": "aufstieg",
+      "target": "Verdi",
+      "value": 1,
+      "dokumente": [
+        {
+          "signatur": "UAKUG/NIM_063",
+          "titel": "Programmblatt zu einer Aufführung von \"Aida\" (Verdi) am 14. November 1953 in der Bayrischen Staatsop",
+          "typ": "konvolut"
+        }
+      ]
+    },
+    {
+      "source": "Gluck/Händel",
+      "target": "Wien",
+      "value": 1,
+      "dokumente": [
+        {
+          "signatur": "UAKUG/NIM/PL_02",
+          "titel": "SALZBURGER MOZART-WOCHE 1959 / Mittwoch, den 21. Jänner 1959 - Mozarteum, Großer Saal, 19.30 / 3. So",
+          "typ": "plakat"
+        }
+      ]
+    },
+    {
+      "source": "Gluck/Händel",
+      "target": "Bayreuth",
+      "value": 1,
+      "dokumente": [
+        {
+          "signatur": "UAKUG/NIM_004 5",
+          "titel": "Rezension von K.H. Ruppel zu Orpheus und Eurydike in der Süddeutschen Zeitung",
+          "typ": "rezension"
+        }
+      ]
+    },
+    {
+      "source": "Beethoven",
+      "target": "Bayreuth",
+      "value": 1,
+      "dokumente": [
+        {
+          "signatur": "UAKUG/NIM_004 7",
+          "titel": "Rezension von Dr. Joachim Bergfeld (Fränkische Presse) zur IX. Symphonie Beethovens",
+          "typ": "rezension"
+        }
+      ]
+    },
+    {
+      "source": "Wagner",
+      "target": "Bayreuth",
+      "value": 1,
+      "dokumente": [
+        {
+          "signatur": "UAKUG/NIM_004 10",
+          "titel": "Rezensionen aus der Fränkischen Presse zu \"Die Götterdämmerung\" und \"Tristan und Isolde\"",
+          "typ": "rezension"
+        }
+      ]
+    },
+    {
+      "source": "Wagner",
+      "target": "München",
+      "value": 1,
+      "dokumente": [
+        {
+          "signatur": "UAKUG/NIM_004 13",
+          "titel": "Rezension zur Festvorstellung Meistersinger aus dem Münchner Merkur",
+          "typ": "rezension"
+        }
+      ]
+    },
+    {
+      "source": "Wagner",
+      "target": "Wien",
+      "value": 2,
+      "dokumente": [
+        {
+          "signatur": "UAKUG/NIM_119",
+          "titel": "Programmheft zu einer Aufführung von \"Tristan und Isolde\" (Wagner) an der Wiener Staatsoper",
+          "typ": "programmheft"
+        },
+        {
+          "signatur": "UAKUG/NIM_120",
+          "titel": "Programmheft zu einer Aufführung von \"Tannhäuser\" (Wagner) an der Wiener Staatsoper",
+          "typ": "programmheft"
+        }
+      ]
+    },
+    {
+      "source": "Verdi",
+      "target": "Wien",
+      "value": 4,
+      "dokumente": [
+        {
+          "signatur": "UAKUG/NIM_004 16",
+          "titel": "Rezension von Y. zu Aida an der Wiener Staatsoper",
+          "typ": "rezension"
+        },
+        {
+          "signatur": "UAKUG/NIM_004 17",
+          "titel": "Rezension von ibe zu Aida an der Wiener Staatsoper",
+          "typ": "rezension"
+        },
+        {
+          "signatur": "UAKUG/NIM_087",
+          "titel": "Programmheft zu einer Aufführung von \"Aida\" (Verdi) in der Wiener Staatsoper am 28.04.1956",
+          "typ": "konvolut"
+        },
+        {
+          "signatur": "UAKUG/NIM_089",
+          "titel": "Programmheft zu einer Aufführung von \"Don Carlos\" (Verdi) in der Wiener Staatsoper am 11.09.1956",
+          "typ": "konvolut"
+        }
+      ]
+    }
+  ],
+  "_meta": {
+    "generated": "2026-02-20T07:34:05.481892",
+    "source_records": 286
+  }
+}
