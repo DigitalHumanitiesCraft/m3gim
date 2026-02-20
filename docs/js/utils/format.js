@@ -10,13 +10,14 @@ export function formatSignatur(identifier) {
   return identifier.replace('UAKUG/', '');
 }
 
-/** Format a child signatur showing only the folio part (e.g. "UAKUG/NIM_003 1_1" → "Fol. 1_1"). */
+/** Format a child signatur showing only the piece number (e.g. "UAKUG/NIM_003 1_1" → "Nr. 1.1"). */
 export function formatChildSignatur(identifier, parentIdentifier) {
   if (!identifier || !parentIdentifier) return formatSignatur(identifier);
   const sig = formatSignatur(identifier);
   const parentSig = formatSignatur(parentIdentifier);
   if (sig.startsWith(parentSig + ' ')) {
-    return 'Fol.\u2009' + sig.slice(parentSig.length + 1);
+    const nr = sig.slice(parentSig.length + 1).replace(/_/g, '.');
+    return 'Nr.\u2009' + nr;
   }
   return sig;
 }

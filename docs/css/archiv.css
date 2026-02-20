@@ -618,3 +618,123 @@
 .detail-panel .inline-detail__body {
   grid-template-columns: 1fr; /* Sidebar is too narrow for 2 columns */
 }
+
+/* =========================================================================
+   Sortable Table Headers
+   ========================================================================= */
+
+.archiv-th--sortable {
+  cursor: pointer;
+  user-select: none;
+  transition: color var(--transition-fast);
+}
+
+.archiv-th--sortable:hover {
+  color: var(--color-kug-blau);
+}
+
+.archiv-th--active {
+  color: var(--color-kug-blau);
+}
+
+/* =========================================================================
+   Person Combobox (Autocomplete Filter)
+   ========================================================================= */
+
+.archiv-combobox {
+  position: relative;
+  min-width: 180px;
+}
+
+.archiv-combobox__input {
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  padding-right: var(--space-8);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  font-family: var(--font-ui);
+  font-size: var(--text-sm);
+  background: white;
+  transition: border-color var(--transition-fast);
+}
+
+.archiv-combobox__input:focus {
+  outline: none;
+  border-color: var(--color-kug-blau);
+  box-shadow: 0 0 0 2px rgba(0, 74, 143, 0.15);
+}
+
+.archiv-combobox__clear {
+  position: absolute;
+  right: var(--space-2);
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: none;
+  padding: 2px;
+  cursor: pointer;
+  color: var(--color-text-tertiary);
+  line-height: 1;
+}
+
+.archiv-combobox__clear:hover {
+  color: var(--color-text-primary);
+}
+
+.archiv-combobox__dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  max-height: 240px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid var(--border-color);
+  border-top: none;
+  border-radius: 0 0 var(--border-radius) var(--border-radius);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 20;
+}
+
+.archiv-combobox__item {
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--text-sm);
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.archiv-combobox__item:hover {
+  background: var(--color-cream);
+}
+
+.archiv-combobox__item--active {
+  background: var(--color-gold-light);
+}
+
+.archiv-combobox__count {
+  color: var(--color-text-tertiary);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+}
+
+.archiv-combobox__more {
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--text-xs);
+  color: var(--color-text-tertiary);
+  font-style: italic;
+}
+
+/* =========================================================================
+   Unprocessed Records
+   ========================================================================= */
+
+.archiv-row--unprocessed {
+  opacity: 0.6;
+}
+
+.archiv-row--unprocessed:hover {
+  opacity: 0.85;
+}

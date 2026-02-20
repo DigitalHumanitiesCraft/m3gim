@@ -45,7 +45,7 @@ function buildToolbar() {
   const search = el('input', {
     className: 'archiv-search',
     type: 'text',
-    placeholder: 'Suche (Signatur, Titel\u2026)',
+    placeholder: 'Suche (Signatur, Titel, Typ, Datum\u2026)',
     onInput: (e) => { currentSearch = e.target.value.toLowerCase(); applyFilters(); },
   });
 
@@ -55,36 +55,16 @@ function buildToolbar() {
     className: 'archiv-select',
     onChange: (e) => { currentDocType = e.target.value; applyFilters(); },
   },
-    el('option', { value: '' }, 'Alle Typen'),
+    el('option', { value: '' }, '\u2014 Dokumenttyp \u2014'),
     ...docTypes.map(t => el('option', { value: t }, DOKUMENTTYP_LABELS[t] || t))
   );
 
-  // Person filter
+  // Person filter — Autocomplete Combobox
   const personEntries = [...store.persons.entries()]
     .map(([name, data]) => ({ name, count: data.records.size }))
     .sort((a, b) => b.count - a.count);
 
-  const personSelect = el('select', {
-    className: 'archiv-select',
-    id: 'archiv-person-select',
-    onChange: (e) => { currentPerson = e.target.value; applyFilters(); },
-  },
-    el('option', { value: '' }, `Alle Personen (${personEntries.length})`),
-    ...personEntries.map(p => el('option', { value: p.name }, `${p.name} (${p.count})`))
-  );
-
-  // Sort (only for Bestand)
-  const sortSelect = el('select', {
-    className: 'archiv-select archiv-sort-select',
-    onChange: (e) => { currentSort = e.target.value; applyFilters(); },
-  },
-    el('option', { value: 'signatur' }, 'Signatur'),
-    el('option', { value: 'titel' }, 'Titel'),
-    el('option', { value: 'datum' }, 'Datum'),
-    el('option', { value: 'typ' }, 'Typ'),
-    el('option', { value: 'links' }, 'Verkn\u00fcpfungen'),
-  );
-  sortSelect.id = 'archiv-sort-select';
+  const personCombobox = buildPersonCombobox(personEntries);
 
   // Chronik grouping toggle
   const groupingToggle = el('div', {
@@ -106,7 +86,104 @@ function buildToolbar() {
   countEl.id = 'archiv-count';
   countEl.textContent = `${store.allRecords.length} Objekte \u00b7 ${store.konvolute.size} Konvolute`;
 
-  return el('div', { className: 'archiv-toolbar' }, toggle, search, typeSelect, personSelect, sortSelect, groupingToggle, countEl);
+  return el('div', { className: 'archiv-toolbar' }, toggle, search, typeSelect, personCombobox, groupingToggle, countEl);
+}
+
+function buildPersonCombobox(personEntries) {
+  const wrapper = el('div', { className: 'archiv-combobox' });
+
+  const input = el('input', {
+    className: 'archiv-combobox__input',
+    type: 'text',
+    placeholder: 'Person filtern\u2026',
+    title: 'Dokumente nach verkn\u00fcpfter Person filtern',
+  });
+
+  const clearBtn = el('button', {
+    className: 'archiv-combobox__clear',
+    html: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
+    title: 'Filter zur\u00fccksetzen',
+    onClick: (e) => {
+      e.stopPropagation();
+      input.value = '';
+      clearBtn.style.display = 'none';
+      currentPerson = '';
+      dropdown.style.display = 'none';
+      applyFilters();
+    },
+  });
+  clearBtn.style.display = 'none';
+
+  const dropdown = el('div', { className: 'archiv-combobox__dropdown' });
+  dropdown.style.display = 'none';
+
+  function renderDropdownItems(filtered) {
+    clear(dropdown);
+    for (const p of filtered.slice(0, 30)) {
+      const item = el('div', {
+        className: `archiv-combobox__item ${currentPerson === p.name ? 'archiv-combobox__item--active' : ''}`,
+        onClick: (e) => {
+          e.stopPropagation();
+          input.value = p.name;
+          currentPerson = p.name;
+          clearBtn.style.display = '';
+          dropdown.style.display = 'none';
+          applyFilters();
+        },
+      },
+        el('span', {}, p.name),
+        el('span', { className: 'archiv-combobox__count' }, String(p.count)),
+      );
+      dropdown.appendChild(item);
+    }
+    if (filtered.length > 30) {
+      dropdown.appendChild(el('div', { className: 'archiv-combobox__more' },
+        `\u2026 ${filtered.length - 30} weitere`));
+    }
+  }
+
+  input.addEventListener('input', () => {
+    const q = input.value.toLowerCase();
+    const filtered = q
+      ? personEntries.filter(p => p.name.toLowerCase().includes(q))
+      : personEntries;
+    renderDropdownItems(filtered);
+    dropdown.style.display = filtered.length ? '' : 'none';
+    // If input cleared manually, reset filter
+    if (!q && currentPerson) {
+      currentPerson = '';
+      clearBtn.style.display = 'none';
+      applyFilters();
+    }
+  });
+
+  input.addEventListener('focus', () => {
+    const q = input.value.toLowerCase();
+    const filtered = q
+      ? personEntries.filter(p => p.name.toLowerCase().includes(q))
+      : personEntries;
+    renderDropdownItems(filtered);
+    if (filtered.length) dropdown.style.display = '';
+  });
+
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      dropdown.style.display = 'none';
+      input.blur();
+    }
+  });
+
+  // Close dropdown on outside click
+  document.addEventListener('click', (e) => {
+    if (!wrapper.contains(e.target)) {
+      dropdown.style.display = 'none';
+    }
+  });
+
+  wrapper.appendChild(input);
+  wrapper.appendChild(clearBtn);
+  wrapper.appendChild(dropdown);
+  return wrapper;
 }
 
 function buildToggleBtn(view, label, iconSvg) {
@@ -157,10 +234,6 @@ function updateToggleUI() {
     btn.classList.toggle('archiv-view-toggle__btn--active', isActive);
   });
 
-  // Show/hide sort dropdown (only relevant for Bestand)
-  const sortEl = document.getElementById('archiv-sort-select');
-  if (sortEl) sortEl.style.display = activeView === 'bestand' ? '' : 'none';
-
   // Show/hide grouping toggle (only relevant for Chronik)
   const groupToggle = document.getElementById('chronik-grouping-toggle');
   if (groupToggle) groupToggle.style.display = activeView === 'chronik' ? '' : 'none';
@@ -175,7 +248,10 @@ function renderActiveView() {
   const filters = { search: currentSearch, docType: currentDocType, sort: currentSort, person: currentPerson };
 
   if (activeView === 'bestand') {
-    renderBestand(store, viewContainer, filters);
+    renderBestand(store, viewContainer, filters, (sortKey) => {
+      currentSort = sortKey;
+      applyFilters();
+    });
   } else {
     renderChronik(store, viewContainer, filters);
   }
