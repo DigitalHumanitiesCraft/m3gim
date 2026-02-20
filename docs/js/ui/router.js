@@ -1,8 +1,10 @@
 /**
- * M³GIM Router — Tab switching and URL hash state.
+ * M³GIM Router — Tab switching, page navigation, and URL hash state.
  */
 
 const TABS = ['archiv', 'indizes', 'matrix', 'kosmos'];
+const PAGES = ['about', 'projekt', 'hilfe'];
+const ALL_VIEWS = [...TABS, ...PAGES];
 
 const state = {
   activeTab: 'archiv',
@@ -24,6 +26,12 @@ export function initRouter({ onTab, onRecord, onIndex } = {}) {
     if (btn) btn.addEventListener('click', () => switchTab(tab));
   }
 
+  // Set up page link handlers
+  for (const page of PAGES) {
+    const link = document.querySelector(`[data-page="${page}"]`);
+    if (link) link.addEventListener('click', (e) => { e.preventDefault(); switchTab(page); });
+  }
+
   // Parse initial hash
   parseHash();
   applyState();
@@ -36,8 +44,9 @@ export function initRouter({ onTab, onRecord, onIndex } = {}) {
 }
 
 function switchTab(tab) {
-  if (!TABS.includes(tab)) return;
+  if (!ALL_VIEWS.includes(tab)) return;
   state.activeTab = tab;
+  state.selectedRecord = null;
   updateHash();
   applyState();
 }
@@ -70,10 +79,10 @@ function parseHash() {
   const hash = window.location.hash.slice(1);
   if (!hash) return;
   const parts = hash.split('/');
-  if (TABS.includes(parts[0])) {
+  if (ALL_VIEWS.includes(parts[0])) {
     state.activeTab = parts[0];
   }
-  if (parts[1]) {
+  if (parts[1] && TABS.includes(parts[0])) {
     state.selectedRecord = decodeURIComponent(parts[1]);
   }
 }
@@ -90,12 +99,22 @@ function updateHash() {
 }
 
 function applyState() {
+  const isPage = PAGES.includes(state.activeTab);
+
   // Switch tab visibility
   for (const tab of TABS) {
     const section = document.getElementById(`tab-${tab}`);
     const btn = document.querySelector(`[data-tab="${tab}"]`);
-    if (section) section.classList.toggle('active', tab === state.activeTab);
-    if (btn) btn.classList.toggle('active', tab === state.activeTab);
+    if (section) section.classList.toggle('active', !isPage && tab === state.activeTab);
+    if (btn) btn.classList.toggle('active', !isPage && tab === state.activeTab);
+  }
+
+  // Switch page visibility
+  for (const page of PAGES) {
+    const section = document.getElementById(`page-${page}`);
+    const link = document.querySelector(`[data-page="${page}"]`);
+    if (section) section.classList.toggle('active', page === state.activeTab);
+    if (link) link.classList.toggle('active', page === state.activeTab);
   }
 
   if (onTabChange) onTabChange(state.activeTab);

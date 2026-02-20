@@ -18,6 +18,7 @@
   <link rel="stylesheet" href="css/indizes.css">
   <link rel="stylesheet" href="css/matrix.css">
   <link rel="stylesheet" href="css/kosmos.css">
+  <link rel="stylesheet" href="css/pages.css">
 
   <!-- D3.js -->
   <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
@@ -32,12 +33,11 @@
     <div class="app-header__title">M³GIM</div>
     <div class="app-header__subtitle">Teilnachlass Ira Malaniuk · UAKUG/NIM</div>
     <div class="app-header__spacer"></div>
-    <div class="stats-bar" id="stats-bar"></div>
-    <button class="info-btn" id="info-btn" title="Datenstand">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>
-      </svg>
-    </button>
+    <nav class="app-header__nav">
+      <a href="#about" data-page="about">Über</a>
+      <a href="#projekt" data-page="projekt">Projekt</a>
+      <a href="#hilfe" data-page="hilfe">Hilfe</a>
+    </nav>
   </header>
 
   <!-- Tab Bar -->
@@ -80,6 +80,11 @@
     <section id="tab-indizes" class="tab-content"></section>
     <section id="tab-matrix" class="tab-content"></section>
     <section id="tab-kosmos" class="tab-content"></section>
+
+    <!-- Pages -->
+    <section id="page-about" class="tab-content page-content"></section>
+    <section id="page-projekt" class="tab-content page-content"></section>
+    <section id="page-hilfe" class="tab-content page-content"></section>
   </div>
 
   <!-- Detail Panel -->
@@ -97,22 +102,6 @@
     </div>
     <div class="detail-panel__body"></div>
   </aside>
-
-  <!-- Info Modal -->
-  <div class="info-modal" id="info-modal">
-    <div class="info-modal__backdrop"></div>
-    <div class="info-modal__content">
-      <button class="info-modal__close">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
-        </svg>
-      </button>
-      <h3>Datenstand</h3>
-      <ul id="info-stats">
-        <li>Wird geladen…</li>
-      </ul>
-    </div>
-  </div>
 
   <!-- Footer -->
   <footer class="app-footer">

@@ -181,6 +181,9 @@ export function updateChronikView(filters) {
   }
 
   container.appendChild(wrapper);
+
+  // Return count for counter update
+  return records.length;
 }
 
 /**

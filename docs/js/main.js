@@ -6,11 +6,13 @@
 import { loadArchive } from './data/loader.js';
 import { initRouter, getState } from './ui/router.js';
 import { initDetailPanel, showRecord, closePanel } from './ui/detail-panel.js';
-import { renderStatsBar } from './ui/stats-bar.js';
 import { renderArchiv } from './views/archiv.js';
 import { renderIndizes, expandEntry } from './views/indizes.js';
 import { renderMatrix } from './views/matrix.js';
 import { renderKosmos } from './views/kosmos.js';
+import { renderAbout } from './views/about.js';
+import { renderProjekt } from './views/projekt.js';
+import { renderHilfe } from './views/hilfe.js';
 
 let store = null;
 const renderedTabs = new Set();
@@ -26,10 +28,6 @@ async function init() {
 
     // Hide loading
     showLoading(false);
-
-    // Render stats
-    const statsContainer = document.getElementById('stats-bar');
-    if (statsContainer) renderStatsBar(store, statsContainer);
 
     // Initialize detail panel
     initDetailPanel(store);
@@ -52,9 +50,6 @@ async function init() {
     // Render initial tab
     renderTab(getState().activeTab);
 
-    // Set up info modal
-    setupInfoModal();
-
   } catch (err) {
     console.error('M³GIM init error:', err);
     showError(err.message);
@@ -66,7 +61,8 @@ function renderTab(tab) {
   if (renderedTabs.has(tab)) return;
   renderedTabs.add(tab);
 
-  const container = document.getElementById(`tab-${tab}`);
+  // Data tabs use tab-{name}, pages use page-{name}
+  const container = document.getElementById(`tab-${tab}`) || document.getElementById(`page-${tab}`);
   if (!container) return;
 
   switch (tab) {
@@ -81,6 +77,15 @@ function renderTab(tab) {
       break;
     case 'kosmos':
       renderKosmos(store, container);
+      break;
+    case 'about':
+      renderAbout(store, container);
+      break;
+    case 'projekt':
+      renderProjekt(store, container);
+      break;
+    case 'hilfe':
+      renderHilfe(store, container);
       break;
   }
 }
@@ -100,37 +105,6 @@ function showError(message) {
         <p style="font-weight: 600; margin-bottom: 8px;">Fehler beim Laden</p>
         <p style="font-size: 0.8rem;">${message}</p>
       </div>
-    `;
-  }
-}
-
-function setupInfoModal() {
-  const btn = document.getElementById('info-btn');
-  const modal = document.getElementById('info-modal');
-  if (!btn || !modal) return;
-
-  btn.addEventListener('click', () => modal.classList.add('open'));
-  modal.querySelector('.info-modal__backdrop')?.addEventListener('click', () => modal.classList.remove('open'));
-  modal.querySelector('.info-modal__close')?.addEventListener('click', () => modal.classList.remove('open'));
-
-  // Populate dynamic stats
-  const linkedCount = store.allRecords.filter(r => {
-    const agents = r['rico:hasOrHadAgent'];
-    const locs = r['rico:hasOrHadLocation'];
-    const subj = r['rico:hasOrHadSubject'];
-    const ment = r['m3gim:mentions'];
-    return agents || locs || subj || ment;
-  }).length;
-  const pct = Math.round(linkedCount / store.allRecords.length * 100);
-
-  const statsEl = document.getElementById('info-stats');
-  if (statsEl) {
-    statsEl.innerHTML = `
-      <li>Stand: ${store.exportDate ? store.exportDate.split('T')[0] : 'unbekannt'}</li>
-      <li>${store.allRecords.length} Archivalien, davon ${linkedCount} (${pct}%) mit Verkn\u00fcpfungen</li>
-      <li>Indizes: ${store.persons.size} Personen, ${store.organizations.size} Organisationen, ${store.locations.size} Orte, ${store.works.size} Werke</li>
-      <li>Matrix/Kosmos: nur die ${linkedCount} verkn\u00fcpften Objekte</li>
-      <li>Wikidata-Anreicherung ausstehend</li>
     `;
   }
 }

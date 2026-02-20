@@ -82,6 +82,10 @@ export function updateBestandView(filters) {
   }
 
   renderRows(items);
+
+  // Return count for counter update
+  const recordCount = items.filter(i => !i.isKonvolut).length;
+  return recordCount;
 }
 
 function buildTable() {

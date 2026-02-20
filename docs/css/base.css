@@ -78,6 +78,29 @@ code, .mono {
   flex: 1;
 }
 
+.app-header__nav {
+  display: flex;
+  gap: var(--space-4);
+}
+
+.app-header__nav a {
+  color: var(--color-text-inverse);
+  opacity: 0.75;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  text-decoration: none;
+  transition: opacity var(--transition-fast);
+}
+
+.app-header__nav a:hover {
+  opacity: 1;
+  text-decoration: none;
+}
+
+.app-header__nav a.active {
+  opacity: 1;
+}
+
 .app-main {
   flex: 1;
   position: relative;

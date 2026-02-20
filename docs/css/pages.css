@@ -1,0 +1,153 @@
+/* M³GIM Pages — About, Projekt, Hilfe */
+
+.page-content {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-6);
+}
+
+.page {
+  font-size: var(--text-base);
+  line-height: var(--leading-relaxed);
+  color: var(--color-text-primary);
+}
+
+/* Header */
+.page__header {
+  margin-bottom: var(--space-10);
+  padding-bottom: var(--space-6);
+  border-bottom: 2px solid var(--color-kug-blau);
+}
+
+.page__title {
+  font-family: var(--font-title);
+  font-size: var(--text-3xl);
+  font-weight: var(--weight-bold);
+  color: var(--color-kug-blau);
+  margin-bottom: var(--space-3);
+}
+
+.page__lead {
+  font-size: var(--text-lg);
+  color: var(--color-text-secondary);
+  line-height: var(--leading-relaxed);
+}
+
+/* Sections */
+.page__section {
+  margin-bottom: var(--space-10);
+}
+
+.page__section h2 {
+  font-family: var(--font-title);
+  font-size: var(--text-xl);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-4);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.page__section p {
+  margin-bottom: var(--space-4);
+}
+
+.page__section p:last-child {
+  margin-bottom: 0;
+}
+
+/* Definition list for layer/FAQ descriptions */
+.page__layers {
+  margin-top: var(--space-3);
+}
+
+.page__layers dt {
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-primary);
+  margin-top: var(--space-4);
+  margin-bottom: var(--space-1);
+}
+
+.page__layers dt:first-child {
+  margin-top: 0;
+}
+
+.page__layers dd {
+  color: var(--color-text-secondary);
+  padding-left: var(--space-4);
+  margin-bottom: var(--space-2);
+}
+
+/* Stats definition list */
+.page__stats {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-2) var(--space-6);
+  margin-top: var(--space-3);
+}
+
+.page__stats dt {
+  font-weight: var(--weight-medium);
+  color: var(--color-text-tertiary);
+  font-size: var(--text-sm);
+}
+
+.page__stats dd {
+  font-size: var(--text-sm);
+  color: var(--color-text-primary);
+}
+
+/* Tables */
+.page__table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: var(--space-4) 0;
+  font-size: var(--text-sm);
+}
+
+.page__table th {
+  text-align: left;
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: var(--text-xs);
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 2px solid var(--border-color);
+}
+
+.page__table td {
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--border-color-light);
+  color: var(--color-text-primary);
+}
+
+/* Pipeline ordered list */
+.page__pipeline {
+  list-style: decimal;
+  padding-left: var(--space-6);
+  margin-top: var(--space-3);
+}
+
+.page__pipeline li {
+  margin-bottom: var(--space-3);
+  color: var(--color-text-secondary);
+}
+
+.page__pipeline li strong {
+  color: var(--color-text-primary);
+}
+
+/* Note / Prototyp */
+.page__note {
+  font-size: var(--text-sm);
+  color: var(--color-text-tertiary);
+  font-style: italic;
+  margin-top: var(--space-4);
+}
+
+/* Header nav link active state */
+.app-header__nav a.active {
+  opacity: 1;
+  border-bottom: 2px solid var(--color-text-inverse);
+  padding-bottom: 2px;
+}

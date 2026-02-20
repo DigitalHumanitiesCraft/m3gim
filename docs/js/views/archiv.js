@@ -183,9 +183,23 @@ function renderActiveView() {
 
 function applyFilters() {
   const filters = { search: currentSearch, docType: currentDocType, sort: currentSort, person: currentPerson };
+  let filteredCount;
   if (activeView === 'bestand') {
-    updateBestandView(filters);
+    filteredCount = updateBestandView(filters);
   } else {
-    updateChronikView(filters);
+    filteredCount = updateChronikView(filters);
+  }
+  updateCounter(filteredCount);
+}
+
+function updateCounter(filteredCount) {
+  const countEl = document.getElementById('archiv-count');
+  if (!countEl) return;
+  const total = store.allRecords.length;
+  const isFiltered = !!(currentSearch || currentDocType || currentPerson);
+  if (isFiltered && filteredCount !== undefined) {
+    countEl.textContent = `${filteredCount} von ${total} Objekten`;
+  } else {
+    countEl.textContent = `${total} Objekte \u00b7 ${store.konvolute.size} Konvolute`;
   }
 }

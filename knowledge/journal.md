@@ -250,6 +250,21 @@ Personen-Dropdown im Archiv-Tab: Filtert Bestand UND Chronik nach verknuepfter P
 
 4 funktionale Farbkategorien etabliert: KUG-Blau (Interaktion), Signal-Gruen (Verknuepfung), Neutral-Grau (Abwesenheit), Warmer Hintergrund (Struktur). Konkret: `--color-signal-green` fuer VKN.-Zahlen und Wikidata-Badges. Per-Typ-Badge-Farben entfernt (alles neutral-grau). Konvolut- und Folio-Zeilen ohne Hintergrundfarbe (Hierarchie via Typografie). Kategorie-Farbstriche im Personen-Index entfernt. Konsistentes Abwesenheits-Pattern (`--color-absent`) fuer "o. D.", "Nicht klassifiziert", leere VKN.
 
+### Milestone 8: Navigation-Architektur
+
+Info-Modal komplett ersetzt durch 3 eigenstaendige Seiten: About (Ueber M³GIM), Projekt (Datenmodell & Erfassung), Hilfe (Bedienung). Router erweitert: `PAGES = ['about', 'projekt', 'hilfe']` neben den 4 Daten-Tabs. Header umgebaut: Stats-Bar und Info-Button entfernt, 3 Nav-Links (Ueber/Projekt/Hilfe) rechts. Lazy Rendering wie bei Tabs.
+
+Archiv-Counter dynamisch: `updateCounter()` zeigt "X von Y Objekten" bei aktivem Filter, sonst "Y Objekte · Z Konvolute".
+
+Toter Code bereinigt: `setupInfoModal()` entfernt, `renderStatsBar` Import entfernt, `.info-modal`/`.info-btn`/`.stats-bar` CSS entfernt.
+
+Neues CSS: `pages.css` fuer Seiten-Layout (scholarly, Prosa-tauglich, max-width 720px). `base.css` erweitert um `.app-header__nav`.
+
+Zustandsbericht (`12-zustandsbericht.md`) geschrieben und aktualisiert. Korrektur: kosmos.js `store`-Referenz ist kein Bug (Closure erfasst Funktionsparameter korrekt).
+
+**Neue Dateien**: about.js (67), projekt.js (130), hilfe.js (133), pages.css (~130)
+**Geaenderte Dateien**: index.html, router.js, main.js, archiv.js, archiv-bestand.js, archiv-chronik.js, base.css, components.css, 12-zustandsbericht.md
+
 ---
 
 Siehe auch: [→ Projekt](01-projekt.md) · [→ Quellenbestand](02-quellenbestand.md) · [→ Architektur](04-architektur.md)
