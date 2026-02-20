@@ -482,6 +482,9 @@ def main():
     if objekte_path.exists():
         print(f"\nValidiere {objekte_path.name}...")
         df_objekte = pd.read_excel(objekte_path)
+        # Spaltennamen normalisieren (Excel hat gemischte Gross-/Kleinschreibung)
+        df_objekte.columns = [c.lower().strip() if isinstance(c, str) else c
+                              for c in df_objekte.columns]
         stats['objekte'] = len(df_objekte)
         all_issues.extend(validate_objekte(df_objekte))
         valid_signaturen.update(

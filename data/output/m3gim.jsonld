@@ -1192,7 +1192,8 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:typoskript"
       },
-      "rico:hasOrHadLanguage": "de"
+      "rico:hasOrHadLanguage": "de",
+      "m3gim:bearbeitungsstand": "begonnen"
     },
     {
       "@id": "m3gim:NIM_002",
@@ -1202,7 +1203,8 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:biographie"
       },
-      "rico:hasOrHadLanguage": "de"
+      "rico:hasOrHadLanguage": "de",
+      "m3gim:bearbeitungsstand": "begonnen"
     },
     {
       "@id": "m3gim:NIM_003_Folio",
@@ -1213,7 +1215,8 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:programmheft"
       },
-      "rico:hasOrHadLanguage": "de"
+      "rico:hasOrHadLanguage": "de",
+      "m3gim:bearbeitungsstand": "zurueckgestellt"
     },
     {
       "@id": "m3gim:NIM_003_1_1",
@@ -1225,6 +1228,7 @@
         "@id": "m3gim-dft:programmheft"
       },
       "rico:hasOrHadLanguage": "de",
+      "m3gim:bearbeitungsstand": "zurueckgestellt",
       "m3gim:ausgaben": "15, RM erwähnt",
       "rico:hasOrHadAgent": {
         "name": "Deutsches Musikinstitut für Ausländer",
@@ -1257,6 +1261,7 @@
         "@id": "m3gim-dft:programmheft"
       },
       "rico:hasOrHadLanguage": "de",
+      "m3gim:bearbeitungsstand": "zurueckgestellt",
       "m3gim:mentions": [
         {
           "name": "Strauss, Richard",
@@ -1377,7 +1382,8 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:programmheft"
       },
-      "rico:hasOrHadLanguage": "de"
+      "rico:hasOrHadLanguage": "de",
+      "m3gim:bearbeitungsstand": "zurueckgestellt"
     },
     {
       "@id": "m3gim:NIM_003_1_4",
@@ -1388,7 +1394,8 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:programmheft"
       },
-      "rico:hasOrHadLanguage": "de"
+      "rico:hasOrHadLanguage": "de",
+      "m3gim:bearbeitungsstand": "zurueckgestellt"
     },
     {
       "@id": "m3gim:NIM_003_1_5",
@@ -1399,7 +1406,8 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:programmheft"
       },
-      "rico:hasOrHadLanguage": "de"
+      "rico:hasOrHadLanguage": "de",
+      "m3gim:bearbeitungsstand": "zurueckgestellt"
     },
     {
       "@id": "m3gim:NIM_003_1_6",
@@ -1410,7 +1418,8 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:programmheft"
       },
-      "rico:hasOrHadLanguage": "de"
+      "rico:hasOrHadLanguage": "de",
+      "m3gim:bearbeitungsstand": "zurueckgestellt"
     },
     {
       "@id": "m3gim:NIM_003_1_7",
@@ -1421,7 +1430,8 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:programmheft"
       },
-      "rico:hasOrHadLanguage": "de"
+      "rico:hasOrHadLanguage": "de",
+      "m3gim:bearbeitungsstand": "zurueckgestellt"
     },
     {
       "@id": "m3gim:NIM_003_1_8",
@@ -1433,6 +1443,7 @@
         "@id": "m3gim-dft:programmheft"
       },
       "rico:hasOrHadLanguage": "de",
+      "m3gim:bearbeitungsstand": "zurueckgestellt",
       "m3gim:ausgaben": "150, RM erwähnt",
       "rico:hasOrHadAgent": {
         "name": "Universität Mozarteum Salzburg",
@@ -1449,7 +1460,8 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:programmheft"
       },
-      "rico:hasOrHadLanguage": "de"
+      "rico:hasOrHadLanguage": "de",
+      "m3gim:bearbeitungsstand": "zurueckgestellt"
     },
     {
       "@id": "m3gim:NIM_003_1_10",
@@ -1460,7 +1472,8 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:programmheft"
       },
-      "rico:hasOrHadLanguage": "de"
+      "rico:hasOrHadLanguage": "de",
+      "m3gim:bearbeitungsstand": "zurueckgestellt"
     },
     {
       "@id": "m3gim:NIM_004_Folio",
@@ -1482,6 +1495,7 @@
       },
       "rico:hasOrHadLanguage": "en, fr",
       "rico:hasExtent": "1 Blatt, 1 Seite",
+      "m3gim:bearbeitungsstand": "abgeschlossen",
       "rico:hasOrHadAgent": [
         {
           "name": "Malaniuk, Ira",
@@ -1518,6 +1532,7 @@
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
+      "m3gim:bearbeitungsstand": "begonnen",
       "rico:hasOrHadAgent": [
         {
           "name": "Verdi, Guiseppe",
@@ -1673,6 +1688,7 @@
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
+      "m3gim:bearbeitungsstand": "abgeschlossen",
       "rico:hasOrHadAgent": [
         {
           "name": "Schumann, Karl",
@@ -1768,6 +1784,7 @@
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
+      "m3gim:bearbeitungsstand": "abgeschlossen",
       "rico:hasOrHadAgent": [
         {
           "name": "Verdi, Giuseppe",
@@ -1870,6 +1887,7 @@
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
+      "m3gim:bearbeitungsstand": "abgeschlossen",
       "rico:hasOrHadAgent": [
         {
           "name": "Gluck, Christoph Willibald",
@@ -1981,6 +1999,7 @@
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
+      "m3gim:bearbeitungsstand": "abgeschlossen",
       "rico:hasOrHadAgent": [
         {
           "name": "Knappertsbusch, Hans",
@@ -2047,6 +2066,7 @@
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
+      "m3gim:bearbeitungsstand": "abgeschlossen",
       "rico:hasOrHadAgent": [
         {
           "name": "Beethoven, Ludwig van",
@@ -2171,6 +2191,7 @@
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
+      "m3gim:bearbeitungsstand": "begonnen",
       "rico:hasOrHadAgent": [
         {
           "name": "Schmidt-Gasse, Helmut",
@@ -2285,6 +2306,7 @@
       },
       "rico:hasOrHadLanguage": "it",
       "rico:hasExtent": "1 Blatt, 1 Seite",
+      "m3gim:bearbeitungsstand": "begonnen",
       "rico:hasOrHadAgent": [
         {
           "name": "Rodzinski, Artur",
@@ -2437,6 +2459,7 @@
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Batt, 1 Seite",
+      "m3gim:bearbeitungsstand": "abgeschlossen",
       "rico:hasOrHadAgent": [
         {
           "name": "Wagner, Wieland",
@@ -2703,6 +2726,7 @@
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Batt, 1 Seite",
+      "m3gim:bearbeitungsstand": "abgeschlossen",
       "rico:hasOrHadAgent": [
         {
           "name": "Scheenerger, Hansheinz",
@@ -2797,6 +2821,7 @@
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
+      "m3gim:bearbeitungsstand": "abgeschlossen",
       "rico:hasOrHadAgent": [
         {
           "name": "Honolka, Kurt Dr.",
@@ -3008,6 +3033,7 @@
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
+      "m3gim:bearbeitungsstand": "abgeschlossen",
       "rico:hasOrHadAgent": [
         {
           "name": "Knappertsbusch, Hans",
@@ -3110,6 +3136,7 @@
       },
       "rico:hasOrHadLanguage": "fr",
       "rico:hasExtent": "1 Blatt, 1 Seite",
+      "m3gim:bearbeitungsstand": "abgeschlossen",
       "rico:hasOrHadAgent": [
         {
           "name": "Munch, Fritz",
@@ -3192,6 +3219,7 @@
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
+      "m3gim:bearbeitungsstand": "abgeschlossen",
       "rico:hasOrHadAgent": [
         {
           "name": "Wagner, Richard",
@@ -3409,6 +3437,7 @@
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
+      "m3gim:bearbeitungsstand": "abgeschlossen",
       "rico:hasOrHadAgent": [
         {
           "name": "Rysanek, Leonie",
@@ -3530,6 +3559,7 @@
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
+      "m3gim:bearbeitungsstand": "abgeschlossen",
       "rico:hasOrHadAgent": [
         {
           "name": "Malaniuk, Ira",
@@ -3625,6 +3655,7 @@
       },
       "rico:hasOrHadLanguage": "fr",
       "rico:hasExtent": "1 Blatt, 1 Seite",
+      "m3gim:bearbeitungsstand": "begonnen",
       "rico:hasOrHadAgent": [
         {
           "name": "Tinel, Paul",
@@ -3830,6 +3861,7 @@
       },
       "rico:hasOrHadLanguage": "fr",
       "rico:hasExtent": "1 Blatt, 1 Seite",
+      "m3gim:bearbeitungsstand": "abgeschlossen",
       "rico:hasOrHadAgent": [
         {
           "name": "Suthaus, Ludwig",
@@ -4007,6 +4039,7 @@
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
+      "m3gim:bearbeitungsstand": "abgeschlossen",
       "rico:hasOrHadAgent": [
         {
           "name": "Malaniuk, Ira",
@@ -4047,6 +4080,7 @@
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
+      "m3gim:bearbeitungsstand": "begonnen",
       "rico:hasOrHadAgent": [
         {
           "name": "Malaniuk, Ira",
@@ -4300,6 +4334,7 @@
       },
       "rico:hasOrHadLanguage": "en",
       "rico:hasExtent": "1 Blatt, 1 Seite",
+      "m3gim:bearbeitungsstand": "abgeschlossen",
       "rico:hasOrHadAgent": [
         {
           "name": "Malaniuk, Ira",
@@ -4358,7 +4393,8 @@
         "@id": "m3gim-dft:rezension"
       },
       "rico:hasOrHadLanguage": "en",
-      "rico:hasExtent": "1 Blatt, 1 Seite"
+      "rico:hasExtent": "1 Blatt, 1 Seite",
+      "m3gim:bearbeitungsstand": "begonnen"
     },
     {
       "@id": "m3gim:NIM_004_27",
@@ -4371,6 +4407,7 @@
       },
       "rico:hasOrHadLanguage": "en",
       "rico:hasExtent": "1 Blatt, 1 Seite",
+      "m3gim:bearbeitungsstand": "abgeschlossen",
       "rico:hasOrHadAgent": [
         {
           "name": "Vichey, Luben",
@@ -4503,6 +4540,7 @@
       },
       "rico:hasOrHadLanguage": "en",
       "rico:hasExtent": "1 Blatt, 2 Seite",
+      "m3gim:bearbeitungsstand": "begonnen",
       "rico:hasOrHadAgent": [
         {
           "name": "Levinger. Dr. Henry W.",
@@ -4769,6 +4807,7 @@
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
+      "m3gim:bearbeitungsstand": "abgeschlossen",
       "rico:hasOrHadAgent": [
         {
           "name": "Verdi, Giuseppe",
@@ -5144,6 +5183,7 @@
       },
       "rico:hasOrHadLanguage": "fr",
       "rico:hasExtent": "1 Blatt, 1 Seite",
+      "m3gim:bearbeitungsstand": "begonnen",
       "rico:hasOrHadAgent": [
         {
           "name": "Savelli, Laurent",
@@ -5339,6 +5379,7 @@
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
+      "m3gim:bearbeitungsstand": "begonnen",
       "m3gim:mentions": [
         {
           "name": "Krauss, Clemens",
@@ -5372,6 +5413,7 @@
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
+      "m3gim:bearbeitungsstand": "abgeschlossen",
       "rico:hasOrHadAgent": [
         {
           "name": "Neue Zeit",
@@ -5509,6 +5551,7 @@
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
+      "m3gim:bearbeitungsstand": "begonnen",
       "rico:hasOrHadAgent": [
         {
           "name": "Malaniuk, Ira",
@@ -5598,6 +5641,7 @@
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
+      "m3gim:bearbeitungsstand": "abgeschlossen",
       "rico:hasOrHadAgent": [
         {
           "name": "Ballhausen, Felix",
@@ -5643,6 +5687,7 @@
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 2 Seiten",
+      "m3gim:bearbeitungsstand": "abgeschlossen",
       "rico:hasOrHadAgent": [
         {
           "name": "Teatro Colon",
@@ -5771,6 +5816,7 @@
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
+      "m3gim:bearbeitungsstand": "abgeschlossen",
       "rico:hasOrHadAgent": [
         {
           "name": "Bayreuther Festspiele",
@@ -5812,6 +5858,7 @@
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
+      "m3gim:bearbeitungsstand": "abgeschlossen",
       "m3gim:einnahmen": "6000, Esc abendgage",
       "rico:hasOrHadAgent": [
         {
@@ -5945,7 +5992,8 @@
         "@id": "m3gim-dft:konvolut"
       },
       "rico:hasOrHadLanguage": "de",
-      "rico:hasExtent": "8 Blätter, 8 Seiten"
+      "rico:hasExtent": "8 Blätter, 8 Seiten",
+      "m3gim:bearbeitungsstand": "abgeschlossen"
     },
     {
       "@id": "m3gim:NIM_007_5_1",
@@ -5958,6 +6006,7 @@
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
+      "m3gim:bearbeitungsstand": "abgeschlossen",
       "m3gim:ausgaben": "18000 erwähnt",
       "m3gim:einnahmen": "90000 erwähnt",
       "m3gim:summe": "180000 erwähnt",
@@ -6001,6 +6050,7 @@
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
+      "m3gim:bearbeitungsstand": "abgeschlossen",
       "m3gim:ausgaben": "2600, S provision",
       "rico:hasOrHadAgent": [
         {
@@ -6066,6 +6116,7 @@
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
+      "m3gim:bearbeitungsstand": "abgeschlossen",
       "m3gim:ausgaben": "360, S provision",
       "rico:hasOrHadAgent": [
         {
@@ -6111,6 +6162,7 @@
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
+      "m3gim:bearbeitungsstand": "abgeschlossen",
       "m3gim:ausgaben": "2500, S provision",
       "rico:hasOrHadAgent": [
         {
@@ -6176,6 +6228,7 @@
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
+      "m3gim:bearbeitungsstand": "abgeschlossen",
       "m3gim:ausgaben": "4000, S provision",
       "rico:hasOrHadAgent": [
         {
@@ -6231,6 +6284,7 @@
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
+      "m3gim:bearbeitungsstand": "abgeschlossen",
       "m3gim:ausgaben": "510, S provision",
       "rico:hasOrHadAgent": [
         {
@@ -6285,6 +6339,7 @@
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
+      "m3gim:bearbeitungsstand": "abgeschlossen",
       "m3gim:ausgaben": "5500, S provision",
       "rico:hasOrHadAgent": [
         {
@@ -6335,6 +6390,7 @@
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
+      "m3gim:bearbeitungsstand": "abgeschlossen",
       "m3gim:ausgaben": "631,50, Fr. erwähnt",
       "rico:hasOrHadAgent": [
         {
@@ -6379,6 +6435,7 @@
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
+      "m3gim:bearbeitungsstand": "abgeschlossen",
       "m3gim:einnahmen": "1360, DM erwähnt",
       "rico:hasOrHadAgent": [
         {
@@ -6423,6 +6480,7 @@
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
+      "m3gim:bearbeitungsstand": "abgeschlossen",
       "rico:hasOrHadAgent": [
         {
           "name": "Bayerische Staatsoper",
@@ -6721,6 +6779,7 @@
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
+      "m3gim:bearbeitungsstand": "abgeschlossen",
       "m3gim:einnahmen": "1200, Fr abendgage",
       "rico:hasOrHadAgent": [
         {
@@ -6788,6 +6847,7 @@
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
+      "m3gim:bearbeitungsstand": "abgeschlossen",
       "rico:hasOrHadAgent": [
         {
           "name": "Bayerische Staatsoper",
@@ -6837,6 +6897,7 @@
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
+      "m3gim:bearbeitungsstand": "abgeschlossen",
       "rico:hasOrHadAgent": [
         {
           "name": "Sekretär der Tonhalle-Gesellschaft Zürich",
@@ -6894,6 +6955,7 @@
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
+      "m3gim:bearbeitungsstand": "abgeschlossen",
       "rico:hasOrHadAgent": [
         {
           "name": "Wiener Staatsoper",
@@ -7024,6 +7086,7 @@
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
+      "m3gim:bearbeitungsstand": "abgeschlossen",
       "rico:hasOrHadAgent": [
         {
           "name": "Wiener Staatsoper",
@@ -7154,6 +7217,7 @@
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
+      "m3gim:bearbeitungsstand": "abgeschlossen",
       "rico:hasOrHadAgent": [
         {
           "name": "Mozart-Sängerknaben",
@@ -7283,6 +7347,7 @@
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
+      "m3gim:bearbeitungsstand": "abgeschlossen",
       "rico:hasOrHadAgent": [
         {
           "name": "Wiener Staatsoper",
@@ -7415,6 +7480,7 @@
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
+      "m3gim:bearbeitungsstand": "abgeschlossen",
       "rico:hasOrHadAgent": [
         {
           "name": "Wiener Staatsoper",
@@ -7549,6 +7615,7 @@
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
+      "m3gim:bearbeitungsstand": "abgeschlossen",
       "rico:hasOrHadAgent": [
         {
           "name": "Volksblatt",
@@ -7664,6 +7731,7 @@
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
+      "m3gim:bearbeitungsstand": "abgeschlossen",
       "m3gim:summe": "2, S erwähnt",
       "rico:hasOrHadAgent": [
         {
@@ -7825,6 +7893,7 @@
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
+      "m3gim:bearbeitungsstand": "abgeschlossen",
       "rico:hasOrHadAgent": {
         "name": "Konzertgesellschaft Zürich",
         "role": "erwähnt",
@@ -7845,6 +7914,7 @@
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 2 Seiten",
+      "m3gim:bearbeitungsstand": "abgeschlossen",
       "rico:hasOrHadAgent": [
         {
           "name": "Deutsche Oper Berlin",
@@ -9651,7 +9721,7 @@
       "rico:hasExtent": "1 days 06:00:00"
     }
   ],
-  "m3gim:exportDate": "2026-02-20T15:58:13.273699",
+  "m3gim:exportDate": "2026-02-20T18:08:53.931151",
   "m3gim:recordCount": 282,
   "m3gim:konvolutCount": 3
 }

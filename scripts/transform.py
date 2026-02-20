@@ -233,6 +233,14 @@ def convert_objekt(row: pd.Series, folio_col: str = None) -> dict:
     # Bearbeitungsstand (m3gim-Extension)
     bearbeitungsstand = normalize_lower(row.get('bearbeitungsstand'))
     if bearbeitungsstand:
+        # Normalisiere auf einheitliche Werte
+        bs = bearbeitungsstand
+        if 'vollst' in bs or bs == 'abgeschlossen' or bs.startswith('erledigt'):
+            bearbeitungsstand = 'abgeschlossen'
+        elif bs.startswith('begonnen'):
+            bearbeitungsstand = 'begonnen'
+        elif 'ckgestellt' in bs or 'zurück' in bs:
+            bearbeitungsstand = 'zurueckgestellt'
         record["m3gim:bearbeitungsstand"] = bearbeitungsstand
 
     # Zugangs- und Scan-Status
@@ -526,6 +534,9 @@ def main():
 
     print(f"\nLade {objekte_path.name}...")
     df_objekte = pd.read_excel(objekte_path)
+    # Spaltennamen normalisieren (Excel hat gemischte Gross-/Kleinschreibung)
+    df_objekte.columns = [c.lower().strip() if isinstance(c, str) else c
+                          for c in df_objekte.columns]
 
     # Folio-Spalte erkennen
     folio_col = None
