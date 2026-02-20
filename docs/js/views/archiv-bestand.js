@@ -8,6 +8,7 @@ import { formatSignatur, formatChildSignatur, getDocTypeId, countLinks, truncate
 import { extractYear, formatDate } from '../utils/date-parser.js';
 import { DOKUMENTTYP_LABELS } from '../data/constants.js';
 import { buildInlineDetail } from './archiv-inline-detail.js';
+import { toggleKorb, isInKorb } from '../ui/korb.js';
 
 let store = null;
 let container = null;
@@ -308,7 +309,8 @@ function renderRows(items) {
         el('span', { className: `archiv-datum ${isUndated ? 'archiv-datum--undated' : ''}` }, displayDate)
       ),
       el('td', { className: 'archiv-col-links' },
-        el('span', { className: `archiv-links ${hasLinks ? 'archiv-links--has-links' : 'archiv-links--zero'}` }, linksDisplay)
+        el('span', { className: `archiv-links ${hasLinks ? 'archiv-links--has-links' : 'archiv-links--zero'}` }, linksDisplay),
+        !item.isKonvolut ? buildBookmarkBtn(recordId) : null,
       ),
     );
     tbody.appendChild(tr);
@@ -376,4 +378,21 @@ function getFolioHint(record, konvolutId) {
     if (name) return name;
   }
   return null;
+}
+
+const BOOKMARK_SVG_EMPTY = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>';
+const BOOKMARK_SVG_FILLED = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>';
+
+function buildBookmarkBtn(recordId) {
+  const active = isInKorb(recordId);
+  return el('button', {
+    className: `bookmark-btn ${active ? 'bookmark-btn--active' : ''}`,
+    title: active ? 'Aus Wissenskorb entfernen' : 'Zum Wissenskorb hinzuf\u00fcgen',
+    html: active ? BOOKMARK_SVG_FILLED : BOOKMARK_SVG_EMPTY,
+    onClick: (e) => {
+      e.stopPropagation();
+      toggleKorb(recordId);
+      renderRows(currentItems);
+    },
+  });
 }

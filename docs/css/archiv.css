@@ -328,6 +328,38 @@
   color: var(--color-text-primary);
 }
 
+.inline-detail__korb-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--text-xs);
+  font-family: var(--font-ui);
+  border: 1px solid var(--border-color-light);
+  border-radius: var(--border-radius);
+  background: white;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.inline-detail__korb-btn:hover {
+  border-color: var(--color-kug-blau);
+  color: var(--color-kug-blau);
+}
+
+.inline-detail__korb-btn--active {
+  background: var(--color-kug-blau);
+  border-color: var(--color-kug-blau);
+  color: white;
+}
+
+.inline-detail__korb-btn--active:hover {
+  opacity: 0.85;
+  color: white;
+}
+
 .inline-detail__body {
   display: grid;
   grid-template-columns: 1fr 1fr;

@@ -2,7 +2,7 @@
  * M³GIM Router — Tab switching, page navigation, and URL hash state.
  */
 
-const TABS = ['archiv', 'indizes', 'matrix', 'kosmos'];
+const TABS = ['archiv', 'indizes', 'matrix', 'kosmos', 'korb'];
 const PAGES = ['about', 'projekt', 'hilfe'];
 const ALL_VIEWS = [...TABS, ...PAGES];
 

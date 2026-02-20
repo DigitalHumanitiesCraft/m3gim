@@ -7,6 +7,7 @@ import { el } from '../utils/dom.js';
 import { formatSignatur, formatDocType, ensureArray, countLinks } from '../utils/format.js';
 import { formatDate } from '../utils/date-parser.js';
 import { navigateToIndex } from '../ui/router.js';
+import { toggleKorb, isInKorb } from '../ui/korb.js';
 
 /**
  * Build an inline detail DOM element for a record.
@@ -25,12 +26,33 @@ export function buildInlineDetail(record, store, { onClose } = {}) {
   const wrapper = el('div', { className: 'inline-detail' });
 
   // Header
+  const recordId = record['@id'];
+  const inKorb = isInKorb(recordId);
   const header = el('div', { className: 'inline-detail__header' },
     el('span', { className: 'inline-detail__signatur' }, formatSignatur(record['rico:identifier'])),
     el('h4', { className: 'inline-detail__title' }, record['rico:title'] || '(ohne Titel)'),
     el('button', {
+      className: `inline-detail__korb-btn ${inKorb ? 'inline-detail__korb-btn--active' : ''}`,
+      title: inKorb ? 'Aus Wissenskorb entfernen' : 'Zum Wissenskorb hinzuf\u00fcgen',
+      onClick: (e) => {
+        e.stopPropagation();
+        toggleKorb(recordId);
+        // Update button state
+        const btn = e.currentTarget;
+        const nowIn = isInKorb(recordId);
+        btn.classList.toggle('inline-detail__korb-btn--active', nowIn);
+        btn.title = nowIn ? 'Aus Wissenskorb entfernen' : 'Zum Wissenskorb hinzuf\u00fcgen';
+        btn.innerHTML = nowIn
+          ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg> Im Korb'
+          : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg> Zum Korb';
+      },
+      html: inKorb
+        ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg> Im Korb'
+        : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg> Zum Korb',
+    }),
+    el('button', {
       className: 'inline-detail__close',
-      title: 'Schließen',
+      title: 'Schlie\u00dfen',
       onClick: (e) => {
         e.stopPropagation();
         if (onClose) onClose();

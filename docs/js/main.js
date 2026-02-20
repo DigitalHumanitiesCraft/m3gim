@@ -6,10 +6,12 @@
 import { loadArchive } from './data/loader.js';
 import { initRouter, getState } from './ui/router.js';
 import { initDetailPanel, showRecord, closePanel } from './ui/detail-panel.js';
+import { initKorb, onKorbChange, getKorbCount } from './ui/korb.js';
 import { renderArchiv } from './views/archiv.js';
 import { renderIndizes, expandEntry } from './views/indizes.js';
 import { renderMatrix } from './views/matrix.js';
 import { renderKosmos } from './views/kosmos.js';
+import { renderKorb } from './views/korb.js';
 import { renderAbout } from './views/about.js';
 import { renderProjekt } from './views/projekt.js';
 import { renderHilfe } from './views/hilfe.js';
@@ -28,6 +30,11 @@ async function init() {
 
     // Hide loading
     showLoading(false);
+
+    // Initialize korb (before detail panel and router)
+    initKorb();
+    onKorbChange(() => updateKorbTabVisibility());
+    updateKorbTabVisibility();
 
     // Initialize detail panel
     initDetailPanel(store);
@@ -78,6 +85,9 @@ function renderTab(tab) {
     case 'kosmos':
       renderKosmos(store, container);
       break;
+    case 'korb':
+      renderKorb(store, container);
+      break;
     case 'about':
       renderAbout(store, container);
       break;
@@ -106,6 +116,21 @@ function showError(message) {
         <p style="font-size: 0.8rem;">${message}</p>
       </div>
     `;
+  }
+}
+
+function updateKorbTabVisibility() {
+  const count = getKorbCount();
+  const btn = document.getElementById('korb-tab-btn');
+  const badge = document.getElementById('korb-badge');
+  if (btn) btn.style.display = count > 0 ? '' : 'none';
+  if (badge) badge.textContent = String(count);
+
+  // Force re-render of Korb view if it's already rendered
+  if (renderedTabs.has('korb')) {
+    renderedTabs.delete('korb');
+    const { activeTab } = getState();
+    if (activeTab === 'korb') renderTab('korb');
   }
 }
 
