@@ -230,6 +230,10 @@
 4. **QW-4 Kosmos-Legende**: "Knotengroesse = Dokumenthaeufigkeit" als zweite Erklaerungszeile
 5. **QW-5 Malaniuk-Kategorie**: `'malaniuk': 'Archivsubjekt'` in PERSONEN_KATEGORIEN, KUG-Blau (#004A8F) als Farbe
 
+### Milestone 3: Matrix-Drilldown (IT-1)
+
+Klick auf Heatmap-Zelle zeigt jetzt Drilldown-Panel unter der Matrix mit Person, Zeitraum, und allen Dokumenten der Zelle als klickbare Liste. Klick auf Dokument → navigiert zum Archiv-Tab. Zweiter Klick auf gleiche Zelle oder Schliessen-Button → Panel ausblenden. Wiederverwendet: `el()`, `formatSignatur()`, `DOKUMENTTYP_LABELS`, `selectRecord()`.
+
 ---
 
 Siehe auch: [→ Projekt](01-projekt.md) · [→ Quellenbestand](02-quellenbestand.md) · [→ Architektur](04-architektur.md)

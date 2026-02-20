@@ -3,9 +3,10 @@
  */
 
 import { aggregateMatrix } from '../data/aggregator.js';
-import { PERSONEN_FARBEN, ZEITRAEUME } from '../data/constants.js';
+import { PERSONEN_FARBEN, ZEITRAEUME, DOKUMENTTYP_LABELS } from '../data/constants.js';
 import { selectRecord } from '../ui/router.js';
 import { el, clear } from '../utils/dom.js';
+import { formatSignatur } from '../utils/format.js';
 
 let rendered = false;
 let matrixData = null;
@@ -13,6 +14,7 @@ let storeRef = null;
 let containerRef = null;
 let activeCategories = new Set(['Dirigent', 'Regisseur', 'Korrepetitor', 'Kollege', 'Vermittler']);
 let minIntensity = 1;
+let activeDrilldown = null; // { person, zeitraum } or null
 
 export function renderMatrix(store, container) {
   if (rendered) return;
@@ -29,6 +31,11 @@ export function renderMatrix(store, container) {
   container.appendChild(svgContainer);
 
   container.appendChild(buildLegend());
+
+  const drilldown = el('div', { className: 'matrix-drilldown' });
+  drilldown.id = 'matrix-drilldown';
+  container.appendChild(drilldown);
+
   renderHeatmap();
 }
 
@@ -179,10 +186,15 @@ function renderHeatmap() {
         .on('mouseleave', function() { d3.select(this).attr('stroke', 'transparent'); })
         .on('click', () => {
           if (beg.dokumente.length > 0) {
-            // Find first document's record
-            const sig = beg.dokumente[0].signatur;
-            const record = storeRef.bySignatur.get(sig);
-            if (record) selectRecord(record['@id']);
+            const isSame = activeDrilldown
+              && activeDrilldown.person === person.name
+              && activeDrilldown.zeitraum === beg.zeitraum;
+            if (isSame) {
+              activeDrilldown = null;
+            } else {
+              activeDrilldown = { person: person.name, zeitraum: beg.zeitraum };
+            }
+            showDrilldown(person.name, beg.zeitraum, beg.dokumente);
           }
         })
         .append('title').text(
@@ -193,6 +205,48 @@ function renderHeatmap() {
   });
 }
 
+function showDrilldown(person, zeitraum, dokumente) {
+  const panel = document.getElementById('matrix-drilldown');
+  if (!panel) return;
+  clear(panel);
+
+  if (!activeDrilldown) return;
+
+  const header = el('div', { className: 'matrix-drilldown__header' },
+    el('span', { className: 'matrix-drilldown__person' }, person),
+    el('span', { className: 'matrix-drilldown__sep' }, '\u00b7'),
+    el('span', { className: 'matrix-drilldown__period' }, zeitraum),
+    el('span', { className: 'matrix-drilldown__sep' }, '\u00b7'),
+    el('span', { className: 'matrix-drilldown__count' }, `${dokumente.length} Dokumente`),
+    el('button', {
+      className: 'inline-detail__close',
+      title: 'Schlie\u00dfen',
+      onClick: () => { activeDrilldown = null; clear(panel); },
+      html: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>',
+    })
+  );
+  panel.appendChild(header);
+
+  const list = el('div', { className: 'matrix-drilldown__list' });
+  for (const doc of dokumente) {
+    const typLabel = DOKUMENTTYP_LABELS[doc.typ] || '';
+    const row = el('div', {
+      className: 'matrix-drilldown__row',
+      onClick: () => {
+        const record = storeRef.bySignatur.get(doc.signatur);
+        if (record) selectRecord(record['@id']);
+      },
+    },
+      el('span', { className: 'matrix-drilldown__sig' }, formatSignatur(doc.signatur)),
+      el('span', { className: 'matrix-drilldown__title' }, doc.titel || '(ohne Titel)'),
+      typLabel ? el('span', { className: `badge badge--${doc.typ}` }, typLabel) : null,
+    );
+    list.appendChild(row);
+  }
+  panel.appendChild(list);
+}
+
 export function resetMatrix() {
   rendered = false;
+  activeDrilldown = null;
 }
