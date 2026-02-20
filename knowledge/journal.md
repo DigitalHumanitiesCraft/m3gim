@@ -277,6 +277,16 @@ Zustandsbericht (`12-zustandsbericht.md`) geschrieben und aktualisiert. Korrektu
 
 **Geaenderte Dateien**: archiv-bestand.js, archiv-chronik.js, archiv.css
 
+### Milestone 10: Matrix + Kosmos Erweiterungen (M-2, K-1, K-4)
+
+**M-2 Kategorie-Labels**: Matrix Y-Achse zeigt Kuerzel nach Personenname: "Knappertsbusch [D]" fuer Dirigent, "[R]" Regisseur, "[Kr]" Korrepetitor, "[Ko]" Kollege, "[V]" Vermittler, "[Kp]" Komponist. Neue `KATEGORIE_KUERZEL` Map in matrix.js.
+
+**K-1 Visuelle Legende**: Graduated circles (3 Stufen: 1, mittel, max) als SVG in der Kosmos-Legende. Neue `buildSizeLegend()` erstellt SVG-Elemente programmatisch. CSS `.kosmos-legend__sizes`.
+
+**K-4 Zoom/Pan**: `d3.zoom()` auf SVG, 0.3x–3x Constraint. Alle Zeichnungselemente in `<g class="kosmos-zoom-group">`. Reset-Button oben rechts im Container (absolut positioniert). CSS `.kosmos-zoom-reset`.
+
+**Geaenderte Dateien**: matrix.js, kosmos.js, kosmos.css
+
 ---
 
 Siehe auch: [→ Projekt](01-projekt.md) · [→ Quellenbestand](02-quellenbestand.md) · [→ Architektur](04-architektur.md)

@@ -19,14 +19,19 @@ export function renderKosmos(store, container) {
   const svgContainer = el('div', { className: 'kosmos-container' });
   container.appendChild(svgContainer);
 
-  container.appendChild(buildLegend(data));
-
   const width = svgContainer.clientWidth || 900;
   const height = svgContainer.clientHeight || 600;
 
   const svg = d3.select(svgContainer).append('svg')
     .attr('viewBox', `0 0 ${width} ${height}`)
     .attr('preserveAspectRatio', 'xMidYMid meet');
+
+  // Zoom/Pan
+  const zoomGroup = svg.append('g').attr('class', 'kosmos-zoom-group');
+  const zoom = d3.zoom()
+    .scaleExtent([0.3, 3])
+    .on('zoom', (event) => zoomGroup.attr('transform', event.transform));
+  svg.call(zoom);
 
   // Build nodes and links
   const nodes = [];
@@ -100,7 +105,7 @@ export function renderKosmos(store, container) {
     }, width / 2, height / 2).strength(0.6));
 
   // Links
-  const link = svg.append('g')
+  const link = zoomGroup.append('g')
     .selectAll('line')
     .data(links)
     .join('line')
@@ -112,7 +117,7 @@ export function renderKosmos(store, container) {
     .attr('stroke-width', d => Math.max(1, Math.sqrt(d.value)));
 
   // Nodes
-  const node = svg.append('g')
+  const node = zoomGroup.append('g')
     .selectAll('g')
     .data(nodes)
     .join('g')
@@ -199,6 +204,18 @@ export function renderKosmos(store, container) {
 
     node.attr('transform', d => `translate(${d.x}, ${d.y})`);
   });
+
+  // Zoom reset button
+  const resetBtn = el('button', {
+    className: 'kosmos-zoom-reset',
+    title: 'Zoom zur\u00fccksetzen',
+    onClick: () => svg.transition().duration(300).call(zoom.transform, d3.zoomIdentity),
+    html: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg> Reset',
+  });
+  svgContainer.appendChild(resetBtn);
+
+  // Legende nach SVG
+  container.appendChild(buildLegend(data));
 }
 
 function highlightComposer(name, node, link, nodes) {
@@ -238,9 +255,65 @@ function buildLegend(data) {
         `${k.name} (${k.dokumente_gesamt})`
       )
     );
+
+  // Visual size legend: graduated circles
+  const sizeLegend = buildSizeLegend(data);
+
   const hint = el('span', { className: 'kosmos-legend__hint' }, 'Klick auf Komponist: filtern \u00b7 Doppelklick: zur\u00fccksetzen');
-  const sizeHint = el('span', { className: 'kosmos-legend__hint' }, 'Knotengr\u00f6\u00dfe = Dokumenth\u00e4ufigkeit');
-  return el('div', { className: 'kosmos-legend' }, ...items, hint, sizeHint);
+  return el('div', { className: 'kosmos-legend' }, ...items, sizeLegend, hint);
+}
+
+function buildSizeLegend(data) {
+  const maxDocs = d3.max(data.komponisten, k => k.dokumente_gesamt) || 1;
+  const sizes = [
+    { label: '1', r: 6 },
+    { label: String(Math.round(maxDocs / 2)), r: 14 },
+    { label: String(maxDocs), r: 22 },
+  ];
+
+  const svgW = 200;
+  const svgH = 52;
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('width', svgW);
+  svg.setAttribute('height', svgH);
+  svg.setAttribute('class', 'kosmos-size-legend');
+
+  let cx = 10;
+  for (const s of sizes) {
+    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    circle.setAttribute('cx', cx + s.r);
+    circle.setAttribute('cy', svgH / 2);
+    circle.setAttribute('r', s.r);
+    circle.setAttribute('fill', '#004A8F');
+    circle.setAttribute('opacity', '0.3');
+    circle.setAttribute('stroke', '#004A8F');
+    circle.setAttribute('stroke-width', '1');
+    svg.appendChild(circle);
+
+    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    text.setAttribute('x', cx + s.r);
+    text.setAttribute('y', svgH / 2 + 4);
+    text.setAttribute('text-anchor', 'middle');
+    text.setAttribute('fill', '#2C2825');
+    text.setAttribute('font-size', '9px');
+    text.setAttribute('font-family', 'Inter, sans-serif');
+    text.textContent = s.label;
+    svg.appendChild(text);
+
+    cx += s.r * 2 + 12;
+  }
+
+  // Label
+  const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+  label.setAttribute('x', cx + 4);
+  label.setAttribute('y', svgH / 2 + 4);
+  label.setAttribute('fill', '#8A857E');
+  label.setAttribute('font-size', '10px');
+  label.setAttribute('font-family', 'Inter, sans-serif');
+  label.textContent = 'Dok.';
+  svg.appendChild(label);
+
+  return el('div', { className: 'kosmos-legend__sizes' }, svg);
 }
 
 export function resetKosmos() {

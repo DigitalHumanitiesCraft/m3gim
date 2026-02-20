@@ -8,6 +8,12 @@ import { selectRecord } from '../ui/router.js';
 import { el, clear } from '../utils/dom.js';
 import { formatSignatur } from '../utils/format.js';
 
+const KATEGORIE_KUERZEL = {
+  'Dirigent': 'D', 'Regisseur': 'R', 'Korrepetitor': 'Kr',
+  'Kollege': 'Ko', 'Vermittler': 'V', 'Andere': 'A',
+  'Komponist': 'Kp', 'Archivsubjekt': '',
+};
+
 let rendered = false;
 let matrixData = null;
 let storeRef = null;
@@ -158,8 +164,10 @@ function renderHeatmap() {
       .attr('rx', 2)
       .attr('fill', catColor);
 
-    // Name label
-    const displayName = person.name.length > 25 ? person.name.slice(0, 23) + '\u2026' : person.name;
+    // Name label with category abbreviation
+    const catAbbr = KATEGORIE_KUERZEL[person.kategorie] || '';
+    const nameWithCat = catAbbr ? `${person.name} [${catAbbr}]` : person.name;
+    const displayName = nameWithCat.length > 30 ? person.name.slice(0, 23) + '\u2026 [' + catAbbr + ']' : nameWithCat;
     svg.append('text')
       .attr('x', margin.left - 10)
       .attr('y', y + cellH / 2 + 4)
