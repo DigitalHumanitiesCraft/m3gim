@@ -14,6 +14,12 @@ let container = null;
 let expandedRecord = null;
 let collapsedPeriods = new Set();
 let currentFilters = {}; // kept in sync so closures never go stale
+let currentGrouping = 'location'; // 'location' | 'person' | 'werk'
+
+/** Set grouping mode from orchestrator. */
+export function setChronikGrouping(mode) {
+  currentGrouping = mode;
+}
 
 /** Karriere-Notizen pro Periode */
 const KARRIERE_NOTIZEN = {
@@ -65,8 +71,11 @@ export function updateChronikView(filters) {
     records = records.filter(r => getDocTypeId(r) === docType);
   }
 
-  // Group by period → location
-  const grouped = groupByPeriodAndLocation(records);
+  // Group by period → grouping dimension
+  const groupFn = currentGrouping === 'person' ? groupByPeriodAndPerson
+    : currentGrouping === 'werk' ? groupByPeriodAndWerk
+    : groupByPeriodAndLocation;
+  const grouped = groupFn(records);
 
   // Render periods
   const wrapper = el('div', { className: 'chronik' });
@@ -100,23 +109,23 @@ export function updateChronikView(filters) {
     if (!isCollapsed) {
       const bodyEl = el('div', { className: 'chronik-period__body' });
 
-      for (const [location, locRecords] of locationMap) {
-        const isOhneOrt = location === '\u2014 Ohne Ort';
+      for (const [groupName, groupRecords] of locationMap) {
+        const isPlaceholder = groupName.startsWith('\u2014 ');
 
         const locEl = el('div', { className: 'chronik-location' });
         locEl.appendChild(el('div', { className: 'chronik-location__header' },
           el('span', {
             className: 'chronik-location__icon',
-            html: isOhneOrt
+            html: isPlaceholder
               ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.4"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 14.14 14.14"/></svg>'
-              : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>',
+              : getGroupIcon(currentGrouping),
           }),
-          el('span', { className: 'chronik-location__name' }, location),
-          el('span', { className: 'chronik-location__count' }, `(${locRecords.length})`),
+          el('span', { className: 'chronik-location__name' }, groupName),
+          el('span', { className: 'chronik-location__count' }, `(${groupRecords.length})`),
         ));
 
-        // Record rows within this location
-        for (const r of locRecords) {
+        // Record rows within this group
+        for (const r of groupRecords) {
           const konvolutId = store.childToKonvolut?.get(r['@id']);
           const parentSig = konvolutId ? store.konvolute.get(konvolutId)?.['rico:identifier'] : null;
           const sig = parentSig
@@ -236,6 +245,91 @@ function sortLocationMap(locMap) {
     sorted.set(loc, records);
   }
   return sorted;
+}
+
+/** Group records by period → person. */
+function groupByPeriodAndPerson(records) {
+  return groupByPeriodAndDimension(records, r => {
+    const agents = ensureArray(r['rico:hasOrHadAgent']);
+    return agents.map(a => a.name || a['skos:prefLabel'] || '').filter(Boolean);
+  }, '\u2014 Ohne Person');
+}
+
+/** Group records by period → werk. */
+function groupByPeriodAndWerk(records) {
+  return groupByPeriodAndDimension(records, r => {
+    const subjects = ensureArray(r['rico:hasOrHadSubject']);
+    return subjects.map(s => s.name || s['skos:prefLabel'] || '').filter(Boolean);
+  }, '\u2014 Ohne Werk');
+}
+
+/** Generic grouping: period → dimension values extracted by fn. */
+function groupByPeriodAndDimension(records, extractFn, placeholder) {
+  const periodMap = new Map();
+
+  for (const r of records) {
+    const year = extractYear(r['rico:date']);
+    const period = yearToPeriod(year);
+    const values = extractFn(r);
+
+    if (!periodMap.has(period)) periodMap.set(period, new Map());
+    const dimMap = periodMap.get(period);
+
+    if (values.length === 0) {
+      if (!dimMap.has(placeholder)) dimMap.set(placeholder, []);
+      dimMap.get(placeholder).push(r);
+    } else {
+      const primary = values[0];
+      if (!dimMap.has(primary)) dimMap.set(primary, []);
+      dimMap.get(primary).push(r);
+    }
+  }
+
+  return sortGroupedPeriods(periodMap, placeholder);
+}
+
+/** Sort periods chronologically and groups within by count. */
+function sortGroupedPeriods(periodMap, placeholder) {
+  const periodOrder = [
+    'vor 1945', '1945-1949', '1950-1954', '1955-1959',
+    '1960-1964', '1965-1969', '1970-1974', 'nach 1974', 'Undatiert',
+  ];
+
+  const sorted = new Map();
+  for (const p of periodOrder) {
+    if (periodMap.has(p)) {
+      sorted.set(p, sortGroupMap(periodMap.get(p), placeholder));
+    }
+  }
+  for (const [p, m] of periodMap) {
+    if (!sorted.has(p)) sorted.set(p, sortGroupMap(m, placeholder));
+  }
+  return sorted;
+}
+
+/** Sort groups within a period by count, placeholder last. */
+function sortGroupMap(groupMap, placeholder) {
+  const entries = [...groupMap.entries()];
+  entries.sort((a, b) => {
+    if (a[0] === placeholder) return 1;
+    if (b[0] === placeholder) return -1;
+    return b[1].length - a[1].length;
+  });
+  const sorted = new Map();
+  for (const [key, records] of entries) {
+    records.sort((a, b) =>
+      (a['rico:identifier'] || '').localeCompare(b['rico:identifier'] || '', undefined, { numeric: true })
+    );
+    sorted.set(key, records);
+  }
+  return sorted;
+}
+
+/** Get SVG icon for a grouping mode. */
+function getGroupIcon(mode) {
+  if (mode === 'person') return '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
+  if (mode === 'werk') return '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>';
+  return '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>';
 }
 
 /**

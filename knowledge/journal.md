@@ -234,6 +234,10 @@
 
 Klick auf Heatmap-Zelle zeigt jetzt Drilldown-Panel unter der Matrix mit Person, Zeitraum, und allen Dokumenten der Zelle als klickbare Liste. Klick auf Dokument → navigiert zum Archiv-Tab. Zweiter Klick auf gleiche Zelle oder Schliessen-Button → Panel ausblenden. Wiederverwendet: `el()`, `formatSignatur()`, `DOKUMENTTYP_LABELS`, `selectRecord()`.
 
+### Milestone 4: Chronik-Toggle Ort/Person/Werk (IT-3)
+
+Chronik-View kann jetzt nach drei Dimensionen gruppieren: Ort (Standard), Person, Werk. Toggle-Buttons in der Toolbar (nur sichtbar im Chronik-Modus). Generische Gruppierungsfunktion `groupByPeriodAndDimension()` extrahiert Dimension per Callback. Icons: Pin (Ort), User (Person), Music-Note (Werk). Placeholder: "— Ohne Ort/Person/Werk".
+
 ---
 
 Siehe auch: [→ Projekt](01-projekt.md) · [→ Quellenbestand](02-quellenbestand.md) · [→ Architektur](04-architektur.md)

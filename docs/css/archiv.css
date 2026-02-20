@@ -91,6 +91,16 @@
   align-items: center;
 }
 
+/* Chronik Grouping Toggle (smaller variant) */
+.chronik-grouping-toggle {
+  font-size: var(--text-xs);
+}
+
+.chronik-grouping-toggle .archiv-view-toggle__btn {
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--text-xs);
+}
+
 /* =========================================================================
    Table (shared by Bestand)
    ========================================================================= */
