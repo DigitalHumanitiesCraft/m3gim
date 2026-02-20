@@ -2,7 +2,7 @@
 
 > Destilliertes Projektwissen. Dient als Context-Engineering-Quelle fuer LLM-gestuetzte Entwicklung.
 
-Stand: 2026-02-20
+Stand: 2026-02-21
 
 ---
 

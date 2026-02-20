@@ -39,6 +39,8 @@ export function countLinks(record) {
   count += ensureArray(record['rico:hasOrHadLocation']).length;
   count += ensureArray(record['rico:hasOrHadSubject']).length;
   count += ensureArray(record['m3gim:mentions']).length;
+  count += ensureArray(record['rico:isAssociatedWithDate']).length;
+  count += ensureArray(record['m3gim:hasPerformanceRole']).length;
   return count;
 }
 

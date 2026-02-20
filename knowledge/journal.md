@@ -125,4 +125,27 @@
 
 ---
 
+## 2026-02-20 — Session 6: Bestand-View Verbesserungen
+
+### Was getan
+- **formatDate() komplett neu**: ISO-Daten → menschenlesbare deutsche Formate (6 Regeln: Ganzjahr, Multi-Jahr, Monat, gleicher Monat, Monats-Range, Fallback)
+- **countLinks() erweitert**: +2 Properties (`rico:isAssociatedWithDate`, `m3gim:hasPerformanceRole`) → vollständige Verknüpfungszählung
+- **Vkn.-Spalte gefixt**: `0` statt leer (JS falsy-Bug), Konvolute zeigen aggregierte Zahl ("21 Fol. · 423 Vkn.")
+- **Datum-Spalte**: `formatDate()` statt nur Jahreszahl, "o. D." kursiv/gedimmt für undatierte Records
+- **CSS**: Spaltenbreiten angepasst (Datum 100→160px, Vkn. 60→120px), `.archiv-datum--undated` Styling
+- Pipeline-Analyse: Verknüpfungen-Flow von Google Sheets → transform.py → JSON-LD → Frontend komplett verifiziert
+
+### Erkenntnisse
+- 78% der Records haben 0 Verknüpfungen (nur NIM_003, NIM_004, NIM_007 sind erschlossen)
+- 39 Records ohne Datum (Konvolut-Folios + Ephemera)
+- 3 Datumsformate im Datensatz: YYYY-MM-DD (100x), YYYY-MM-DD/YYYY-MM-DD (142x), YYYY (1x)
+- Pipeline funktioniert korrekt — alle Verknüpfungstypen werden sauber gemappt
+
+### Entscheidungen
+- Monatsabkürzungen auf Österreichisch: "Jän." statt "Jan."
+- Thin Space (`\u2009`) zwischen Tag und Monat für typografische Qualität
+- "o. D." (ohne Datum) als Archivkonvention statt leerer Zelle
+
+---
+
 Siehe auch: [→ Projekt](01-projekt.md) · [→ Quellenbestand](02-quellenbestand.md) · [→ Architektur](04-architektur.md)

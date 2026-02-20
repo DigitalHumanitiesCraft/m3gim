@@ -208,8 +208,8 @@
 .archiv-col-signatur { width: 160px; }
 .archiv-col-titel { width: auto; }
 .archiv-col-typ { width: 140px; }
-.archiv-col-datum { width: 100px; }
-.archiv-col-links { width: 60px; text-align: right; }
+.archiv-col-datum { width: 160px; }
+.archiv-col-links { width: 120px; text-align: right; }
 
 .archiv-signatur {
   font-family: var(--font-mono);
@@ -228,6 +228,11 @@
   font-family: var(--font-mono);
   font-size: var(--text-sm);
   color: var(--color-text-secondary);
+}
+
+.archiv-datum--undated {
+  font-style: italic;
+  opacity: 0.5;
 }
 
 .archiv-links {

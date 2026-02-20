@@ -5,7 +5,7 @@
 
 import { el, clear } from '../utils/dom.js';
 import { formatSignatur, getDocTypeId, countLinks, truncate } from '../utils/format.js';
-import { extractYear } from '../utils/date-parser.js';
+import { extractYear, formatDate } from '../utils/date-parser.js';
 import { DOKUMENTTYP_LABELS } from '../data/constants.js';
 import { buildInlineDetail } from './archiv-inline-detail.js';
 
@@ -178,7 +178,16 @@ function renderRows(items) {
     }
 
     const childCount = item.isKonvolut ? (store.konvolutChildren.get(item.konvolutId)?.length || 0) : 0;
-    const linksDisplay = item.isKonvolut ? `${childCount} Fol.` : (links || '');
+    let konvolutLinkCount = 0;
+    if (item.isKonvolut) {
+      for (const cid of store.konvolutChildren.get(item.konvolutId) || []) {
+        const child = store.records.get(cid);
+        if (child) konvolutLinkCount += countLinks(child);
+      }
+    }
+    const linksDisplay = item.isKonvolut
+      ? `${childCount} Fol. \u00b7 ${konvolutLinkCount} Vkn.`
+      : String(links);
 
     const tr = el('tr', {
       className: rowClass,
@@ -199,10 +208,10 @@ function renderRows(items) {
             : el('span')
       ),
       el('td', { className: 'archiv-col-datum' },
-        el('span', { className: 'archiv-datum' }, year ? String(year) : '')
+        el('span', { className: `archiv-datum ${r['rico:date'] ? '' : 'archiv-datum--undated'}` }, formatDate(r['rico:date']) || 'o.\u2009D.')
       ),
       el('td', { className: 'archiv-col-links' },
-        el('span', { className: `archiv-links ${links > 0 ? 'archiv-links--has-links' : ''}` }, String(linksDisplay))
+        el('span', { className: `archiv-links ${(item.isKonvolut ? konvolutLinkCount : links) > 0 ? 'archiv-links--has-links' : ''}` }, String(linksDisplay))
       ),
     );
     tbody.appendChild(tr);
