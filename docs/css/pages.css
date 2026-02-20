@@ -45,6 +45,22 @@
   border-bottom: 1px solid var(--border-color);
 }
 
+.page__section h3 {
+  font-family: var(--font-ui);
+  font-size: var(--text-base);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-primary);
+  margin-top: var(--space-6);
+  margin-bottom: var(--space-3);
+}
+
+.page__section h3 small {
+  font-weight: var(--weight-normal);
+  color: var(--color-text-tertiary);
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+}
+
 .page__section p {
   margin-bottom: var(--space-4);
 }
@@ -155,6 +171,17 @@
 
 .page__section ol li strong {
   color: var(--color-text-primary);
+}
+
+/* Team list (used in about.html) */
+.page__team-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.page__team-list li {
+  padding: var(--space-1) 0;
 }
 
 /* Cross-page links */

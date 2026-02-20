@@ -28,6 +28,10 @@
     </nav>
   </header>
 
+  <div class="research-banner">
+    Research Preview · <a href="https://lisa.gerda-henkel-stiftung.de/digitale_geschichte_pollin" target="_blank" rel="noopener">Promptotype</a> — Dieses Projekt befindet sich in aktiver Entwicklung.
+  </div>
+
   <main class="info-main">
     <article class="page">
 
@@ -61,26 +65,233 @@
       </section>
 
       <section class="page__section">
-        <h2>Ontologie</h2>
+        <h2>Ontologie: RiC-O 1.1</h2>
         <p>
           M³GIM modelliert den Teilnachlass nach dem internationalen Archivstandard
-          RiC-O 1.1 (Records in Contexts — Ontology) und erweitert diesen um
-          musikwissenschaftliche Konzepte im Namensraum <code>m3gim</code>. Jedes
-          Archivstück wird als <code>rico:Record</code> beschrieben, Konvolute als
-          <code>rico:RecordSet</code> mit Teil–Ganzes-Beziehungen.
+          <a href="https://www.ica.org/standards/RiC/ontology" target="_blank" rel="noopener" class="page__link">RiC-O 1.1</a>
+          (Records in Contexts — Ontology). Jedes Archivstück wird als
+          <code>rico:Record</code> beschrieben, Konvolute als <code>rico:RecordSet</code>
+          mit Teil–Ganzes-Beziehungen. RiC-O liefert die Grundstruktur für
+          Archivbeschreibung: Signaturen (<code>rico:identifier</code>), Titel
+          (<code>rico:title</code>), Datierung (<code>rico:date</code>), Umfang
+          (<code>rico:hasExtent</code>), Sprache (<code>rico:hasOrHadLanguage</code>)
+          und Dokumenttyp (<code>rico:hasDocumentaryFormType</code>).
         </p>
         <p>
-          RiC-O liefert die Grundstruktur für Archivbeschreibung (Signaturen, Titel,
-          Datierung, Umfang). Die m3gim-Erweiterung ergänzt Konzepte, die im
-          Archivstandard fehlen: Musikwerke, Aufführungsrollen, Ereignisse (Festspiele,
-          Premieren), Detailinformationen (Honorare, Gagen) und die Unterscheidung
-          zwischen aktiver Beteiligung und bloßer Erwähnung.
+          Beziehungen zu Personen und Institutionen werden über
+          <code>rico:hasOrHadAgent</code> modelliert, Ortsbeziehungen über
+          <code>rico:hasOrHadLocation</code> und thematische Bezüge (Werke, Ereignisse)
+          über <code>rico:hasOrHadSubject</code>. Agenten tragen einen <code>@type</code>
+          (<code>rico:Person</code>, <code>rico:CorporateBody</code> oder
+          <code>rico:Group</code>) und eine kontextspezifische Rolle.
         </p>
         <p>
           Die Wahl von RiC-O ermöglicht perspektivisch die Anbindung an internationale
           Datenbanken zur Musikermobilität (musici.eu, MusMig) und die
           Weiterverarbeitung in etablierten Archivformaten.
         </p>
+      </section>
+
+      <section class="page__section">
+        <h2>Ontologie: m3gim-Erweiterung</h2>
+        <p>
+          RiC-O deckt die archivalische Erschließung ab, nicht aber musikwissenschaftliche
+          Konzepte. Die projektspezifische Erweiterung im Namensraum
+          <code>m3gim</code> (<code>https://dhcraft.org/m3gim/vocab#</code>)
+          ergänzt Klassen und Properties, die für Mobilitätsforschung nötig sind.
+        </p>
+
+        <h3>Klassen</h3>
+        <table class="page__table">
+          <thead>
+            <tr><th>Klasse</th><th>Oberklasse</th><th>Scope Note</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>m3gim:MusicalWork</code></td>
+              <td><code>rico:Thing</code></td>
+              <td>Musikalisches Werk (Oper, Lied, Orchesterstück). Identifikation über Wikidata-URI, Bezeichnung über <code>rico:title</code>, Komponist als Zusatzfeld.</td>
+            </tr>
+            <tr>
+              <td><code>m3gim:Performance</code></td>
+              <td><code>rico:Event</code></td>
+              <td>Aufführungsereignis. Verknüpft Werk, Ort, Datum und Mitwirkende zu einer konkreten Aufführung.</td>
+            </tr>
+            <tr>
+              <td><code>m3gim:PerformanceEvent</code></td>
+              <td><code>rico:Event</code></td>
+              <td>Rahmenveranstaltung: Festspiele, Premieren, Gastspiele. Ermöglicht die Analyse von Karrierestationen unabhängig von einzelnen Dokumenten.</td>
+            </tr>
+            <tr>
+              <td><code>m3gim:DetailAnnotation</code></td>
+              <td>—</td>
+              <td>Finanzielle und vertragliche Details (Honorar, Nebenleistungen, Gagen). Schicht-3-Erweiterung für vertiefende Erschließung.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Object Properties</h3>
+        <table class="page__table">
+          <thead>
+            <tr><th>Property</th><th>Domain → Range</th><th>Scope Note</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>m3gim:mentions</code></td>
+              <td>Record → Person/CorporateBody</td>
+              <td>Person oder Institution wird im Dokument inhaltlich erwähnt — schwächere Verknüpfung als <code>rico:hasOrHadAgent</code>. Zentral für die Unterscheidung zwischen Beteiligung und Rezeption.</td>
+            </tr>
+            <tr>
+              <td><code>m3gim:hasPerformer</code></td>
+              <td>Performance → Person</td>
+              <td>Person wirkt bei einer Aufführung mit (z.&nbsp;B. als Solistin, Dirigent).</td>
+            </tr>
+            <tr>
+              <td><code>m3gim:performanceOf</code></td>
+              <td>Performance → MusicalWork</td>
+              <td>Verknüpft eine Aufführung mit dem aufgeführten Werk.</td>
+            </tr>
+            <tr>
+              <td><code>m3gim:hasPerformanceRole</code></td>
+              <td>Record → Bühnenrolle</td>
+              <td>Konkrete Bühnenrollen in einer Aufführung (z.&nbsp;B. Orpheus, Brünnhilde, Lady Macbeth). Nicht zu verwechseln mit der Rolle einer Person am Dokument.</td>
+            </tr>
+            <tr>
+              <td><code>m3gim:hasDetail</code></td>
+              <td>Record → DetailAnnotation</td>
+              <td>Verweis auf finanzielle oder vertragliche Details. Feldname und Wert sind frei wählbar (z.&nbsp;B. „honorar": „500 DM").</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Datatype Properties</h3>
+        <table class="page__table">
+          <thead>
+            <tr><th>Property</th><th>Wertebereich</th><th>Scope Note</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>m3gim:bearbeitungsstand</code></td>
+              <td><code>xsd:string</code></td>
+              <td>Projektinterner Erfassungsstatus: <em>begonnen</em>, <em>abgeschlossen</em>, <em>zurueckgestellt</em>.</td>
+            </tr>
+            <tr>
+              <td><code>m3gim:dateEvidence</code></td>
+              <td><code>xsd:string</code></td>
+              <td>Qualifiziert die Herkunft einer Datierung: <em>aus_dokument</em> (explizit im Dokument), <em>erschlossen</em> (aus Kontext abgeleitet), <em>extern</em> (aus anderer Quelle), <em>unbekannt</em>.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="page__section">
+        <h2 id="kontrollierte-vokabulare">Kontrollierte Vokabulare</h2>
+        <p>
+          Zwei <a href="https://www.w3.org/2004/02/skos/core" target="_blank" rel="noopener" class="page__link">SKOS</a>-Vokabulare
+          definieren die zulässigen Werte für Dokumenttypen und Aufführungsrollen.
+        </p>
+
+        <h3>Dokumenttypen <small>(m3gim-dft:)</small></h3>
+        <p>
+          25 Konzepte. Die Pipeline mappt die deutschen Erfassungsbegriffe (z.&nbsp;B.
+          „Korrespondenz", „Presse") auf normalisierte Typen. 16 davon sind aktuell
+          im Bestand vertreten.
+        </p>
+        <table class="page__table">
+          <thead>
+            <tr><th>Konzept</th><th>Scope Note</th><th>Im Bestand</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>m3gim-dft:brief</code></td><td>Korrespondenz: Briefe, Schreiben, Mitteilungen</td><td>ja</td></tr>
+            <tr><td><code>m3gim-dft:vertrag</code></td><td>Verträge, Vereinbarungen, Engagements</td><td>ja</td></tr>
+            <tr><td><code>m3gim-dft:programmheft</code></td><td>Programm- und Konzertprogramme</td><td>ja</td></tr>
+            <tr><td><code>m3gim-dft:plakat</code></td><td>Opern- und Konzertplakate</td><td>ja</td></tr>
+            <tr><td><code>m3gim-dft:zeitungsausschnitt</code></td><td>Presseberichte, Zeitungsausschnitte</td><td>ja</td></tr>
+            <tr><td><code>m3gim-dft:rezension</code></td><td>Kritiken und Rezensionen</td><td>ja</td></tr>
+            <tr><td><code>m3gim-dft:biographie</code></td><td>Autobiografische und biografische Texte</td><td>ja</td></tr>
+            <tr><td><code>m3gim-dft:urkunde</code></td><td>Urkunden und Zeugnisse</td><td>—</td></tr>
+            <tr><td><code>m3gim-dft:tagebuch</code></td><td>Tagebucheinträge</td><td>—</td></tr>
+            <tr><td><code>m3gim-dft:notiz</code></td><td>Notizen und Notizbücher</td><td>ja</td></tr>
+            <tr><td><code>m3gim-dft:lebenslauf</code></td><td>Tabellarische und narrative Lebensläufe</td><td>—</td></tr>
+            <tr><td><code>m3gim-dft:ausweis</code></td><td>Identitätsdokumente, Ausweise, Pässe</td><td>ja</td></tr>
+            <tr><td><code>m3gim-dft:typoskript</code></td><td>Maschinenschriftliche Texte</td><td>ja</td></tr>
+            <tr><td><code>m3gim-dft:photokopie</code></td><td>Photokopien und Reproduktionen</td><td>ja</td></tr>
+            <tr><td><code>m3gim-dft:quittung</code></td><td>Quittungen und Rechnungsbelege</td><td>ja</td></tr>
+            <tr><td><code>m3gim-dft:visitenkarte</code></td><td>Visitenkarten</td><td>ja</td></tr>
+            <tr><td><code>m3gim-dft:noten</code></td><td>Musikalien, Notenblätter</td><td>—</td></tr>
+            <tr><td><code>m3gim-dft:telegramm</code></td><td>Telegramme und Depeschen</td><td>—</td></tr>
+            <tr><td><code>m3gim-dft:postkarte</code></td><td>Post- und Ansichtskarten</td><td>—</td></tr>
+            <tr><td><code>m3gim-dft:fotografie</code></td><td>Fotografien und Abzüge</td><td>—</td></tr>
+            <tr><td><code>m3gim-dft:kritik</code></td><td>Theaterkritiken (Alias für Rezension)</td><td>—</td></tr>
+            <tr><td><code>m3gim-dft:konvolut</code></td><td>Sammlung oder Mappe (Aggregationseinheit)</td><td>ja</td></tr>
+            <tr><td><code>m3gim-dft:tontraeger</code></td><td>Audioaufnahmen</td><td>ja</td></tr>
+            <tr><td><code>m3gim-dft:dokument</code></td><td>Allgemeiner Dokumenttyp (Fallback)</td><td>ja</td></tr>
+            <tr><td><code>m3gim-dft:sonstiges</code></td><td>Nicht klassifizierbar</td><td>—</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Rollen <small>(m3gim-role:)</small></h3>
+        <p>
+          47 verschiedene Rollen treten im Bestand auf. Die Pipeline weist sie kontextabhängig
+          zu — Personen, Institutionen, Orte und Werke tragen jeweils unterschiedliche
+          Rollenwerte. Die wichtigsten Kategorien:
+        </p>
+        <table class="page__table">
+          <thead>
+            <tr><th>Kategorie</th><th>Rollen</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Archivalisch</td>
+              <td>verfasser:in, adressat:in, empfänger:in, unterzeichner:in, agent:in</td>
+            </tr>
+            <tr>
+              <td>Künstlerisch</td>
+              <td>dirigent:in, sänger:in, regisseur:in, komponist:in, choreograph:in, librettist:in, arrangeur:in, bühnenbildner:in, kostümbildner:in</td>
+            </tr>
+            <tr>
+              <td>Institutionell</td>
+              <td>veranstalter:in, vermittler:in, auftraggeber:in, herausgeber:in</td>
+            </tr>
+            <tr>
+              <td>Inhaltlich</td>
+              <td>erwähnt, interpret:in, protagonist</td>
+            </tr>
+            <tr>
+              <td>Ortsbezogen</td>
+              <td>entstehungsort, auffuehrungsort, zielort, absendeort, abreiseort</td>
+            </tr>
+            <tr>
+              <td>Werkbezogen</td>
+              <td>aufführung, premiere, festvorstellung, wiederaufnahme, gastspiel</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="page__section">
+        <h2>Bestandshierarchie</h2>
+        <p>
+          Der Teilnachlass ist dreistufig modelliert:
+        </p>
+        <dl class="page__layers">
+          <dt>Fonds — <code>rico:RecordSet</code></dt>
+          <dd>
+            Der Gesamtbestand UAKUG/NIM mit drei Bestandsgruppen (Hauptbestand, Plakate,
+            Tonträger) und einem übergeordneten Fonds-Knoten.
+          </dd>
+          <dt>Konvolut — <code>rico:RecordSet</code></dt>
+          <dd>
+            Physische Umschläge oder Mappen mit mehreren Einzelstücken. Aktuell sind
+            3&nbsp;Konvolute (NIM_003, NIM_004, NIM_007) mit insgesamt 76&nbsp;Einzelstücken
+            erschlossen. Die Verknüpfung erfolgt über <code>rico:hasOrHadPart</code>.
+          </dd>
+          <dt>Einzelstück — <code>rico:Record</code></dt>
+          <dd>
+            Jedes Dokument innerhalb eines Konvoluts oder eigenständig. Trägt alle
+            Metadaten (Schicht&nbsp;1) und Verknüpfungen (Schicht&nbsp;2–3).
+          </dd>
+        </dl>
       </section>
 
       <section class="page__section">
@@ -97,49 +308,49 @@
             <tr>
               <th>Kategorie</th>
               <th>Eigenschaft</th>
-              <th>Mögliche Rollen</th>
+              <th>Beschreibung</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td>Personen</td>
-              <td><code>rico:hasOrHadAgent</code></td>
-              <td>verfasser, adressat, erwähnt, vertragspartner, unterzeichner, abgebildet</td>
+              <td>Personen (aktiv)</td>
+              <td><code>rico:hasOrHadAgent</code><br><small>@type: rico:Person</small></td>
+              <td>Aktive Beteiligung: verfasser, adressat, dirigent, solistin, komponist, regisseur, u.&nbsp;a.</td>
             </tr>
             <tr>
               <td>Institutionen</td>
-              <td><code>rico:hasOrHadAgent</code></td>
-              <td>vertragspartner, arbeitgeber, veranstalter, vermittler, adressat, erwähnt</td>
-            </tr>
-            <tr>
-              <td>Orte</td>
-              <td><code>rico:hasOrHadLocation</code></td>
-              <td>entstehungsort, zielort, erwähnt, auffuehrungsort, wohnort, vertragsort</td>
-            </tr>
-            <tr>
-              <td>Werke</td>
-              <td><code>rico:hasOrHadSubject</code></td>
-              <td>interpretin</td>
-            </tr>
-            <tr>
-              <td>Ereignisse</td>
-              <td><code>m3gim:PerformanceEvent</code></td>
-              <td>rahmenveranstaltung, premiere, auftritt, probe, implizit</td>
-            </tr>
-            <tr>
-              <td>Details</td>
-              <td><code>m3gim:DetailAnnotation</code></td>
-              <td>honorar, nebenleistungen, einnahme, währung (frei wählbar)</td>
-            </tr>
-            <tr>
-              <td>Bühnenrollen</td>
-              <td><code>m3gim:hasPerformanceRole</code></td>
-              <td>Orpheus, Brünnhilde, Brangäne, Isolde, …</td>
+              <td><code>rico:hasOrHadAgent</code><br><small>@type: rico:CorporateBody</small></td>
+              <td>Organisationen als Akteure: vertragspartner, arbeitgeber, veranstalter, vermittler, adressat</td>
             </tr>
             <tr>
               <td>Erwähnung</td>
               <td><code>m3gim:mentions</code></td>
-              <td>erwähnt (schwächere Verknüpfung als Agent)</td>
+              <td>Person oder Institution wird im Text erwähnt, ohne direkt beteiligt zu sein</td>
+            </tr>
+            <tr>
+              <td>Orte</td>
+              <td><code>rico:hasOrHadLocation</code></td>
+              <td>Kontextspezifisch: entstehungsort, auffuehrungsort, zielort, wohnort, vertragsort</td>
+            </tr>
+            <tr>
+              <td>Werke</td>
+              <td><code>rico:hasOrHadSubject</code><br><small>@type: m3gim:MusicalWork</small></td>
+              <td>Musikalische Werke mit Komponist und Rolle: auffuehrung, erwaehnt, premiere, u.&nbsp;a.</td>
+            </tr>
+            <tr>
+              <td>Ereignisse</td>
+              <td><code>rico:hasOrHadSubject</code><br><small>@type: m3gim:PerformanceEvent</small></td>
+              <td>Festspiele, Premieren, Gastspiele als eigenständige Entitäten</td>
+            </tr>
+            <tr>
+              <td>Bühnenrollen</td>
+              <td><code>m3gim:hasPerformanceRole</code></td>
+              <td>Konkrete Rollen: Orpheus, Brünnhilde, Brangäne, Isolde, …</td>
+            </tr>
+            <tr>
+              <td>Details</td>
+              <td><code>m3gim:hasDetail</code><br><small>@type: m3gim:DetailAnnotation</small></td>
+              <td>Finanzielle Details: Honorar, Nebenleistungen, Einnahmen (frei wählbar)</td>
             </tr>
           </tbody>
         </table>
@@ -162,7 +373,7 @@
             Agents werden nach Typ unterschieden: <code>rico:Person</code> (natürliche Personen),
             <code>rico:CorporateBody</code> (Institutionen wie Opernhäuser, Verlage, Zeitungen)
             und <code>rico:Group</code> (Ensembles).
-            Im Bestand: 383 Personen-Verknüpfungen, 101 Institutions-Verknüpfungen.
+            Im Bestand: 383 Personen-Verknüpfungen, 100 Institutions-Verknüpfungen.
           </dd>
           <dt>Ort-Rollen und Mobilität</dt>
           <dd>
@@ -175,11 +386,12 @@
           </dd>
           <dt>Ereignisse</dt>
           <dd>
-            Festspiele, Premieren und Gastspiele werden als eigenständige Entitäten
-            (<code>m3gim:PerformanceEvent</code>) modelliert. Ein Ereignis hat ein Datum,
-            einen Ort und eine Rolle (z.&nbsp;B. Rahmenveranstaltung, Premiere). Diese
-            Modellierung erlaubt die Analyse von Karrierestationen und Aufführungszyklen
-            unabhängig von einzelnen Dokumenten.
+            Festspiele, Premieren und Gastspiele werden als eigenständige Entitäten modelliert.
+            Im JSON-LD erscheinen sie als Einträge in <code>rico:hasOrHadSubject</code> mit
+            <code>@type: m3gim:PerformanceEvent</code>. Ein Ereignis hat ein Datum, einen Ort
+            und eine Rolle (z.&nbsp;B. Rahmenveranstaltung, Premiere). Diese Modellierung
+            erlaubt die Analyse von Karrierestationen und Aufführungszyklen unabhängig von
+            einzelnen Dokumenten.
           </dd>
           <dt>Werk mit Kontext</dt>
           <dd>
@@ -190,7 +402,7 @@
           </dd>
           <dt>Datierungsevidenz</dt>
           <dd>
-            Jede Datierung wird durch eine Evidenzstufe qualifiziert:
+            Jede Datierung wird durch <code>m3gim:dateEvidence</code> qualifiziert:
             <em>aus_dokument</em> (Datum steht explizit im Dokument),
             <em>erschlossen</em> (aus Kontext abgeleitet),
             <em>extern</em> (aus anderer Quelle) oder
@@ -204,7 +416,8 @@
       <section class="page__section">
         <h2>Identifikatoren und Normdaten</h2>
         <p>
-          Wo möglich, werden Entitäten mit Wikidata-Identifikatoren
+          Wo möglich, werden Entitäten mit
+          <a href="https://www.wikidata.org" target="_blank" rel="noopener" class="page__link">Wikidata</a>-Identifikatoren
           (<code>wd:QXXXXX</code>) verknüpft. Dies ermöglicht die Verbindung zu externen
           Wissensbasen und die eindeutige Identifikation von Personen, Institutionen und
           Werken über Namensvarianten hinweg. Die systematische Reconciliation gegen
@@ -212,11 +425,11 @@
         </p>
         <dl class="page__stats">
           <dt>Personen mit Wikidata</dt>
-          <dd>2 von 217</dd>
+          <dd>2 von 313</dd>
           <dt>Organisationen mit Wikidata</dt>
           <dd>2 von 64</dd>
           <dt>Werke mit Wikidata</dt>
-          <dd>2 von 102</dd>
+          <dd>2 von 94</dd>
         </dl>
         <p>
           Die Archiv-Signaturen folgen dem Schema UAKUG/NIM und gliedern sich in drei
@@ -231,13 +444,13 @@
           <dt>Archiveinheiten</dt>
           <dd>282 (255 Konvolute im Hauptbestand, 26 Plakate, 1 Tonträger)</dd>
           <dt>Personen</dt>
-          <dd>217 (davon 2 mit Wikidata-ID)</dd>
+          <dd>313 (davon 2 mit Wikidata-ID)</dd>
           <dt>Organisationen</dt>
           <dd>64 (davon 2 mit Wikidata-ID)</dd>
           <dt>Orte</dt>
           <dd>43</dd>
           <dt>Werke</dt>
-          <dd>102 (davon 2 mit Wikidata-ID)</dd>
+          <dd>94 (davon 2 mit Wikidata-ID)</dd>
           <dt>Verknüpfte Objekte</dt>
           <dd>62 von 282 (22 %)</dd>
         </dl>
@@ -246,22 +459,29 @@
       <section class="page__section">
         <h2>Technische Referenz</h2>
         <p>
-          Die Daten werden als JSON-LD serialisiert. Der <code>@context</code> definiert
-          die Namensräume:
+          Die Daten werden als <a href="https://json-ld.org" target="_blank" rel="noopener" class="page__link">JSON-LD</a>
+          serialisiert. Der <code>@context</code> definiert sieben Namensräume:
         </p>
         <dl class="page__layers">
-          <dt>rico:</dt>
+          <dt><a href="https://www.ica.org/standards/RiC/ontology" target="_blank" rel="noopener" class="page__link">rico:</a></dt>
           <dd>Records in Contexts Ontology 1.1 — Archivbeschreibung, Agenten, Orte, Datierung</dd>
           <dt>m3gim:</dt>
           <dd>M³GIM-Erweiterung — Musikwerke, Aufführungsrollen, Ereignisse, Details, Erwähnung</dd>
-          <dt>skos:</dt>
+          <dt><a href="#kontrollierte-vokabulare" class="page__link">m3gim-dft:</a></dt>
+          <dd>25 Dokumenttypbezeichnungen als SKOS-Konzepte (Brief, Vertrag, Plakat, …)</dd>
+          <dt><a href="#kontrollierte-vokabulare" class="page__link">m3gim-role:</a></dt>
+          <dd>11 Aufführungsrollen als SKOS-Konzepte (dirigent, solistin, regisseur, …)</dd>
+          <dt><a href="https://www.w3.org/2004/02/skos/core" target="_blank" rel="noopener" class="page__link">skos:</a></dt>
           <dd>Simple Knowledge Organization System — Vokabulareinträge und Bezeichnungen</dd>
-          <dt>wd:</dt>
+          <dt><a href="https://www.wikidata.org" target="_blank" rel="noopener" class="page__link">wd:</a></dt>
           <dd>Wikidata-Entitäten (z.&nbsp;B. <code>wd:Q94208</code> für Ira Malaniuk)</dd>
+          <dt>xsd:</dt>
+          <dd>XML Schema Datatypes — Datentypen für Datierungen und Zeichenketten</dd>
         </dl>
         <p class="page__note">
-          Vollständige Ontologie-Dokumentation im GitHub-Repository unter
-          knowledge/datenmodell-ontologie.md.
+          Vollständige Ontologie-Dokumentation im
+          <a href="https://github.com/DigitalHumanitiesCraft/m3gim" target="_blank" rel="noopener" class="page__link">GitHub-Repository</a>
+          unter knowledge/Daten/Datenmodell und Ontologie.md.
         </p>
       </section>
 
@@ -269,13 +489,13 @@
   </main>
 
   <footer class="app-footer">
-    <span>KUG Graz — Universitätsarchiv</span>
+    <a href="https://www.kug.ac.at" target="_blank" rel="noopener">KUG Graz</a>
     <span>·</span>
     <a href="impressum.html">Impressum</a>
     <span>·</span>
     <a href="https://github.com/DigitalHumanitiesCraft/m3gim" target="_blank" rel="noopener">GitHub</a>
     <span>·</span>
-    <span>Prototyp</span>
+    <a href="https://lisa.gerda-henkel-stiftung.de/digitale_geschichte_pollin" target="_blank" rel="noopener">Promptotype</a>
   </footer>
 
 </body>

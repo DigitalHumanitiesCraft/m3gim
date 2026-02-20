@@ -61,7 +61,7 @@ Die Mobilitaet von Saenger:innen war nicht nur notwendige Voraussetzung fuer ihr
 
 - 282 Objekte in der Objekttabelle (255 Konvolute im Hauptbestand, 26 Plakate, 1 Tontraeger)
 - 1.246 effektive Verknuepfungen (nach Filterung leerer/Template-Zeilen)
-- 4 Indizes: Personen (217), Organisationen (64), Orte (43), Werke (102)
+- 4 Indizes: Personen (313 inkl. Erwaehnungen), Organisationen (64), Orte (43), Werke (94)
 - 62 von 282 Objekten mit mindestens einer Verknuepfung (22%)
 - Konvolut-Schwerpunkt: NIM_003 (11 Folios), NIM_004 (35), NIM_007 (30) tragen den Grossteil der Verknuepfungen
 
@@ -105,5 +105,5 @@ Das Vorhaben ist als Machbarkeitsstudie fuer einen FWF-Antrag konzipiert. Die Pi
 ## Geltungsbereich dieser KB
 
 - Diese Datei beschreibt den fachlichen Rahmen und den belastbaren Zustand.
-- Technische Details sind in `knowledge/system-architektur-pipeline.md` und `knowledge/datenmodell-ontologie.md` kanonisch.
-- Operative Prioritaeten stehen in `knowledge/operativer-plan-claude.md`.
+- Technische Details sind in `knowledge/Technik/Technische Dokumentation.md` und `knowledge/Daten/Datenmodell und Ontologie.md` kanonisch.
+- Operative Prioritaeten stehen in `knowledge/Prozess/Operativer Plan.md`.

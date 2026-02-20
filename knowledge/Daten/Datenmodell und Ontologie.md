@@ -46,9 +46,9 @@
 | person | verfasser, adressat, erwaehnt, vertragspartner, unterzeichner, abgebildet | implementiert (als Agent/Mention) |
 | ort | entstehungsort, zielort, erwaehnt, auffuehrungsort, wohnort, vertragsort | implementiert |
 | institution | vertragspartner, arbeitgeber, veranstalter, vermittler, adressat, erwaehnt | implementiert (als Agent/Mention) |
-| ereignis | rahmenveranstaltung, premiere, auftritt, probe, implizit | **noch nicht in Pipeline** |
+| ereignis | rahmenveranstaltung, premiere, auftritt, probe, implizit | implementiert (als m3gim:PerformanceEvent) |
 | werk | interpretin | implementiert (als auffuehrung/erwaehnt) |
-| detail | [Feldname frei waehlbar]: honorar, nebenleistungen, einnahme, waehrung | **noch nicht in Pipeline** |
+| detail | [Feldname frei waehlbar]: honorar, nebenleistungen, einnahme, waehrung | implementiert (als m3gim:DetailAnnotation) |
 
 **Anmerkung Werk-Rolle:** Handreichung definiert "interpretin" (Malaniuk-zentriert), Pipeline mappt auf "auffuehrung" vs. "erwaehnt" (Dokument-zentriert). Beide Perspektiven sind gueltig.
 
@@ -84,7 +84,7 @@ Feld in der Erfassungstabelle, das die Qualitaet der Datierung dokumentiert:
 | extern | Datum aus anderer Quelle ermittelt |
 | unbekannt | Keine Datierung moeglich |
 
-**Pipeline-Status:** Datierungsevidenz wird aktuell nicht in die JSON-LD-Transformation uebernommen. Implementierung geplant.
+**Pipeline-Status:** Datierungsevidenz wird als `m3gim:dateEvidence` in die JSON-LD-Transformation uebernommen.
 
 ## Erfassungsstatus
 
@@ -117,16 +117,21 @@ RiC-O deckt archivalische Erschliessung ab, nicht aber: inhaltliche Rollen (wer 
 
 - `m3gim:MusicalWork` (Oberklasse: `rico:Thing`) — Musikalisches Werk (Oper, Lied, Konzert). Identifikation ueber `rico:identifier` (Wikidata-URI), Bezeichnung ueber `rico:title`.
 - `m3gim:Performance` (Oberklasse: `rico:Event`) — Auffuehrungsereignis. Verknuepft mit Werk (`m3gim:performanceOf`), Ort (`rico:hasOrHadLocation`), Datum (`rico:isAssociatedWithDate`), Mitwirkende (`m3gim:hasPerformer`).
+- `m3gim:PerformanceEvent` (Oberklasse: `rico:Event`) — Rahmenveranstaltung: Festspiele, Premieren, Gastspiele. Karrierestationen unabhaengig von einzelnen Dokumenten.
+- `m3gim:DetailAnnotation` — Finanzielle und vertragliche Details (Honorar, Nebenleistungen, Gagen). Schicht-3-Erweiterung.
 
 **Object Properties:**
 
-- `m3gim:mentionedIn` / `m3gim:mentions` — Person wird im Dokument inhaltlich erwaehnt (nicht als Erzeuger/Autor)
+- `m3gim:mentions` — Person/Institution wird im Dokument inhaltlich erwaehnt (nicht als Erzeuger/Autor)
 - `m3gim:hasPerformer` — Person wirkt bei Auffuehrung mit
 - `m3gim:performanceOf` — Auffuehrung eines bestimmten Werks
+- `m3gim:hasPerformanceRole` — Konkrete Buehnenrolle (z.B. Orpheus, Bruennhilde)
+- `m3gim:hasDetail` — Verweis auf finanzielle/vertragliche Details
 
 **Datatype Properties:**
 
 - `m3gim:bearbeitungsstand` — Projektinterner Bearbeitungsstand (xsd:string)
+- `m3gim:dateEvidence` — Herkunft der Datierung: aus_dokument, erschlossen, extern, unbekannt (xsd:string)
 
 **11 PerformanceRoles** (SKOS ConceptScheme, Namespace `m3gim-role`):
 
@@ -156,11 +161,11 @@ brief, vertrag, programmheft, plakat, kritik, fotografie, telegramm, postkarte, 
 - RiC-O liefert: Bestand/Konvolut/Folio-Hierarchie, archivalische Beschreibung, Agenten-Rollen (Creator, Author, Accumulator), Orts-/Datumsverknuepfung, thematische Verknuepfung, Dokumenttyp-Zuordnung
 - m3gim ergaenzt: Inhaltliche Rollen, Musikwerke, Auffuehrungen, 25 Dokumenttypen, Bearbeitungsstand
 
-### Noch nicht modelliert (Handreichung → Pipeline)
+### Implementiert (seit Iteration 2)
 
-- **Ereignisse:** Festspiele, Premieren, Gastspiele als eigener Entitaetstyp. Handreichung definiert `typ: ereignis` mit Rollen (rahmenveranstaltung, premiere, auftritt, probe, implizit). Moegliches RiC-O-Mapping: `rico:Event` oder eigene `m3gim:PerformanceEvent`-Klasse.
-- **Details (Schicht 3):** Honorare, Nebenleistungen, Gagen. Handreichung definiert `typ: detail` mit freiem Feldnamen in `name` und Wert in `rolle`.
-- **Datierungsevidenz:** Qualitaetsindikator fuer Datierung (aus_dokument, erschlossen, extern, unbekannt).
+- **Ereignisse:** `m3gim:PerformanceEvent` (Subklasse von `rico:Event`). Pipeline verarbeitet `typ: ereignis` mit Rollen (rahmenveranstaltung, premiere, auftritt, probe, implizit).
+- **Details (Schicht 3):** `m3gim:DetailAnnotation` mit `m3gim:hasDetail`. Pipeline verarbeitet `typ: detail` (Feldname in `name`, Wert in `rolle`).
+- **Datierungsevidenz:** `m3gim:dateEvidence` (aus_dokument, erschlossen, extern, unbekannt).
 
 ## Kontrollierte Vokabulare und Normalisierung
 
@@ -190,7 +195,7 @@ brief, vertrag, programmheft, plakat, kritik, fotografie, telegramm, postkarte, 
 
 - Pipeline-seitige Korrekturen ersetzen keine Erfassungspflege.
 - Kritische Datenverluste (fehlende Signatur/Typ) muessen in den Quelltabellen behoben werden.
-- Diese Datei definiert Modell- und Verarbeitungslogik; Priorisierung der Behebung steht in `knowledge/operativer-plan-claude.md`.
+- Diese Datei definiert Modell- und Verarbeitungslogik; Priorisierung der Behebung steht in `knowledge/Prozess/Operativer Plan.md`.
 
 ## Offene Fragen (Handreichung, Kick-off)
 

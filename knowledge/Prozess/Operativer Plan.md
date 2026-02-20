@@ -31,7 +31,7 @@
 
 ### Deferred / offen
 
-- Wikidata-Reconciliation-Skript (`reconcile.py`) fehlt weiterhin
+- Wikidata-Reconciliation-Skript (`reconcile.py`) implementiert (100%-Match-Strategie mit P31-Verifikation)
 - Matrix-Zeitauflosung und Sortierausbau (Matrix aktuell ausgeblendet)
 - Erweiterte Indextiefe (z. B. Orts-Hierarchien)
 - Wissenskorb-Export (Download als Liste/BibTeX)
@@ -41,16 +41,16 @@
 
 Aus dem Abgleich Antrag + Handreichung vs. Pipeline (Session 14):
 
-### Kritisch
+### Erledigt (seit Session 17/18)
 
-1. **Ereignis-Typ (`typ: ereignis`):** Handreichung definiert Festspiele, Premieren, Gastspiele mit 5 Rollen (rahmenveranstaltung, premiere, auftritt, probe, implizit). Pipeline ignoriert diesen Typ aktuell. → transform.py erweitern.
-2. **Detail-Typ (`typ: detail`, Schicht 3):** Honorare, Nebenleistungen, Gagen. Handreichung definiert Schema (name=Feldname, rolle=Wert). → transform.py erweitern.
+1. ~~**Ereignis-Typ (`typ: ereignis`):**~~ Implementiert als `m3gim:PerformanceEvent` in transform.py.
+2. ~~**Detail-Typ (`typ: detail`, Schicht 3):**~~ Implementiert als `m3gim:DetailAnnotation` in transform.py.
+3. ~~**reconcile.py:**~~ Implementiert (100%-Match-Strategie mit Wikidata Search API und P31-Verifikation).
+4. ~~**datierungsevidenz:**~~ Implementiert als `m3gim:dateEvidence` in transform.py.
 
-### Hoch
+### Hoch (offen)
 
-3. **Erfassungsstatus vereinheitlichen:** 3 parallele Systeme (Handreichung: 4 Werte, Pipeline: 3, Meeting: 3). → Google Sheets + transform.py synchronisieren.
-4. **reconcile.py:** Wikidata-Reconciliation implementieren.
-5. **datierungsevidenz:** Feld aus Handreichung (aus_dokument, erschlossen, extern, unbekannt) in Pipeline aufnehmen.
+5. **Erfassungsstatus vereinheitlichen:** 3 parallele Systeme (Handreichung: 4 Werte, Pipeline: 3, Meeting: 3). → Google Sheets + transform.py synchronisieren.
 
 ### Mittel
 
@@ -76,17 +76,19 @@ Diese Punkte sind in der Handreichung als "OFFEN" markiert und muessen im Kick-o
 
 1. Historische Tooling-Referenzen (Vite/package.json) nicht mehr als Ist-Stand behandeln.
 2. Legacy-Output-Nutzung klar markieren (`partitur.json`, `sankey.json`).
-3. Reconciliation als geplanten, nicht implementierten Baustein eindeutig kennzeichnen.
+3. ~~Reconciliation als geplanten, nicht implementierten Baustein eindeutig kennzeichnen.~~ → erledigt.
 
 ## Operative Naechste Schritte
 
-1. Ereignis-Typ und Detail-Typ in transform.py implementieren.
-2. datierungsevidenz-Feld in Pipeline aufnehmen.
-3. Reconciliation-Workflow spezifizieren und implementieren (`reconcile.py`).
+1. ~~Ereignis-Typ und Detail-Typ in transform.py implementieren.~~ → erledigt.
+2. ~~datierungsevidenz-Feld in Pipeline aufnehmen.~~ → erledigt.
+3. ~~Reconciliation-Workflow spezifizieren und implementieren (`reconcile.py`).~~ → erledigt.
 4. Erfassungsstatus mit Team vereinheitlichen (Kick-off).
 5. Datenqualitaetsluecken in den Quelltabellen reduzieren.
 6. Wissenskorb-Export (CSV/BibTeX) evaluieren.
 7. Reports und KB synchron halten.
+8. reconcile.py ausfuehren und Ergebnisse in Google Sheets uebertragen.
+9. Info-Seiten (modell.html) Zahlen nach Pipeline-Lauf aktualisieren.
 
 ## Steuerlogik fuer Folgearbeit
 

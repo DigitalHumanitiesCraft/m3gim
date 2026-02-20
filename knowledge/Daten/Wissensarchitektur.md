@@ -50,16 +50,16 @@ Dieses Wissen wird direkt operationalisiert — es definiert die Datenstruktur.
 | **Ort** | Auftrittsorte, Graz-Bezuege | 6 Rollen (entstehungsort, auffuehrungsort, ...) | rico:hasOrHadLocation | Ort-Index, Chips | **IMPLEMENTIERT** |
 | **Werk** | Musikwerke mit Komponist | 1 Rolle (interpretin) | rico:hasOrHadSubject | Werk-Index, Chips | **IMPLEMENTIERT** |
 | **Rolle** | Buehnenrollen | Nicht explizit | m3gim:hasPerformanceRole | Korb-Chips | **IMPLEMENTIERT** |
-| **Datum** | Zeitliche Zuordnung | Formate + Qualifier + Evidenz | rico:isAssociatedWithDate | Chronik, Sortierung | **TEILWEISE** (Evidenz fehlt) |
-| **Ereignis** | Auftritte, Gastspiele, Ehrungen | 5 Rollen (rahmenveranstaltung, premiere, ...) | **FEHLT** | **FEHLT** | **KRITISCHE LUECKE** |
-| **Detail** | Honorare, Gagen | Schema (name=Feld, rolle=Wert) | **FEHLT** | **FEHLT** | **GEPLANT** |
+| **Datum** | Zeitliche Zuordnung | Formate + Qualifier + Evidenz | rico:isAssociatedWithDate + m3gim:dateEvidence | Chronik, Sortierung | **IMPLEMENTIERT** |
+| **Ereignis** | Auftritte, Gastspiele, Ehrungen | 5 Rollen (rahmenveranstaltung, premiere, ...) | m3gim:PerformanceEvent via rico:hasOrHadSubject | Inline-Detail | **IMPLEMENTIERT** |
+| **Detail** | Honorare, Gagen | Schema (name=Feld, rolle=Wert) | m3gim:DetailAnnotation via m3gim:hasDetail | Inline-Detail, Korb | **IMPLEMENTIERT** |
 | **Ensemble** | Gruppen Musizierender | Erwaehnt | Nicht implementiert | Nicht implementiert | **NIEDRIG** |
 
-## Event-Modellierung: Konzept
+## Event-Modellierung (implementiert)
 
-### Problem
+### Umsetzung
 
-Ereignisse (Festspiele, Premieren, Gastspiele, Ehrungen) sind eine zentrale Forschungsressource fuer die Mobilitaetsanalyse, werden aber aktuell in der Pipeline ignoriert. In der Verknuepfungstabelle existieren bereits Eintraege vom `typ: ereignis`.
+Ereignisse (Festspiele, Premieren, Gastspiele, Ehrungen) werden als `m3gim:PerformanceEvent` in der Pipeline verarbeitet. Die Verknuepfungstabelle enthaelt Eintraege vom `typ: ereignis`.
 
 ### Vorgeschlagenes Modell
 

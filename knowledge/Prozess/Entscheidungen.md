@@ -42,7 +42,7 @@
 | Thema | Prioritaet | Status |
 |---|---|---|
 | Matrix Zeitfilter UI | hoch | Slider, Dropdown, oder Timeline-Brush — noch nicht entschieden |
-| Wikidata-Reconciliation | hoch | reconcile.py implementieren, Kosmos-View anpassen |
+| Wikidata-Reconciliation | hoch | reconcile.py implementiert (100%-Match, P31-Verifikation), Kosmos-View anpassen |
 
 ## Technische Schulden (Iteration 1) — Status
 
@@ -57,7 +57,7 @@
 
 | Prioritaet | Feature | Status |
 |---|---|---|
-| Hoch | Wikidata-Reconciliation (reconcile.py) | offen |
+| Hoch | Wikidata-Reconciliation (reconcile.py) | implementiert |
 | Hoch | Export CSV/JSON-LD/GEXF | offen |
 | Mittel | Matrix Zeitfilter/Zoom | offen |
 | Mittel | Cross-Visualization Linking | offen |

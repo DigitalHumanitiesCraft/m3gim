@@ -48,7 +48,8 @@
 | `scripts/validate.py` | Validierung und Qualitaetschecks | XLSX-Exporte | `data/reports/validation-report.md` |
 | `scripts/transform.py` | Transformation nach JSON-LD (RiC-O + m3gim) | XLSX-Exporte | `data/output/m3gim.jsonld` |
 | `scripts/build-views.py` | View-spezifische Aggregationen | JSON-LD | `data/output/views/*.json` |
-| `scripts/migrate.py` | Legacy-Migration (AUGIAS -> Arbeitsformat) | Archive-Export | `data/processed/*.xlsx` |
+| `scripts/reconcile.py` | Wikidata-Reconciliation (100%-Match, P31-Verifikation) | XLSX-Indizes | `data/output/wikidata-reconciliation.json` |
+| `scripts/audit-data.py` | Alignment-Pruefung XLSX vs JSON-LD vs Views | XLSX + JSON-LD + Views | Konsolenreport |
 
 ### Datenfluss
 
@@ -107,7 +108,7 @@ Archiv und Indizes lesen direkt aus `m3gim.jsonld` (via Store), nicht aus separa
 
 ## Dokumentation-vs-Code: verbindliche Klarstellungen
 
-- `reconcile.py` ist geplant, aber im Repository derzeit nicht vorhanden.
+- `reconcile.py` ist implementiert (100%-Match-Strategie mit Wikidata Search API und P31-Verifikation).
 - `partitur.json` und `sankey.json` werden erzeugt, im aktuellen Frontend jedoch nicht konsumiert (Legacy).
 - Historische Vite-/package.json-Referenzen gelten nicht als kanonischer Laufzeitpfad.
 - `migrate.py` wurde in Session 15 entfernt (Legacy-Migration abgeschlossen).
