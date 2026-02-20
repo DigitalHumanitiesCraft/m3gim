@@ -99,13 +99,13 @@ DATE_PATTERN = re.compile(
 HEADER_SHIFTS = {
     "organisationsindex": {
         # "Graz" als Header der name-Spalte → korrigieren
-        "expected_columns": ["m3gim_id", "name", "ort", "wikidata_id", "gnd_id", "anmerkung"],
+        "expected_columns": ["m3gim_id", "name", "wikidata_id", "ort", "assoziierte_person", "anmerkung"],
     },
     "ortsindex": {
         "expected_columns": ["m3gim_id", "name", "wikidata_id"],
     },
     "werkindex": {
-        "expected_columns": ["m3gim_id", "name", "komponist", "wikidata_id", "gnd_id", "anmerkung"],
+        "expected_columns": ["m3gim_id", "name", "wikidata_id", "komponist", "rolle_stimme", "anmerkung"],
     }
 }
 

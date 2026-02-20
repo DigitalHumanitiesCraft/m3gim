@@ -85,9 +85,9 @@ DOKUMENTTYP_TO_DFT = {
 # ---------------------------------------------------------------------------
 
 HEADER_SHIFTS = {
-    "organisationsindex": ["m3gim_id", "name", "ort", "wikidata_id", "gnd_id", "anmerkung"],
+    "organisationsindex": ["m3gim_id", "name", "wikidata_id", "ort", "assoziierte_person", "anmerkung"],
     "ortsindex": ["m3gim_id", "name", "wikidata_id"],
-    "werkindex": ["m3gim_id", "name", "komponist", "wikidata_id", "gnd_id", "anmerkung"]
+    "werkindex": ["m3gim_id", "name", "wikidata_id", "komponist", "rolle_stimme", "anmerkung"]
 }
 
 
@@ -218,7 +218,7 @@ def convert_objekt(row: pd.Series, folio_col: str = None) -> dict:
     # Sprache
     sprache = normalize_str(row.get('sprache'))
     if sprache:
-        record["rico:hasLanguage"] = sprache
+        record["rico:hasOrHadLanguage"] = sprache
 
     # Umfang
     umfang = normalize_str(row.get('umfang'))
@@ -400,8 +400,9 @@ def add_relations_to_records(records: list, relations: dict):
 
             # Basis-Entry mit Name
             entry = {"name": name}
-            if rel.get("wikidata_id"):
-                entry["@id"] = f"wd:{rel['wikidata_id']}"
+            wid = rel.get("wikidata_id", "")
+            if wid and re.match(r'^Q\d+$', wid):
+                entry["@id"] = f"wd:{wid}"
             if rel.get("rolle"):
                 entry["role"] = rel["rolle"]
 

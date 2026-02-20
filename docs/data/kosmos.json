@@ -7,6 +7,428 @@
   },
   "komponisten": [
     {
+      "name": "Wagner, Richard",
+      "farbe": "#757575",
+      "dokumente_gesamt": 17,
+      "werke": [
+        {
+          "name": "Tristan und Isolde",
+          "dokumente": 10,
+          "signaturen": [
+            "UAKUG/NIM_004 9",
+            "UAKUG/NIM_004 10",
+            "UAKUG/NIM_004 18",
+            "UAKUG/NIM_004 19",
+            "UAKUG/NIM_004 24",
+            "UAKUG/NIM_004 29",
+            "UAKUG/NIM_004 30",
+            "UAKUG/NIM_004 34",
+            "UAKUG/NIM_007 4",
+            "UAKUG/NIM_007 9"
+          ],
+          "orte": [
+            {
+              "name": "Bayreuth",
+              "count": 4
+            },
+            {
+              "name": "Stuttgart",
+              "count": 4
+            },
+            {
+              "name": "Lissabon",
+              "count": 4
+            }
+          ],
+          "rollen": [
+            {
+              "name": "Brangäne",
+              "count": 10
+            },
+            {
+              "name": "Kurwenal",
+              "count": 4
+            },
+            {
+              "name": "Amneris",
+              "count": 4
+            }
+          ]
+        },
+        {
+          "name": "Götterdämmerung",
+          "dokumente": 3,
+          "signaturen": [
+            "UAKUG/NIM_004 10",
+            "UAKUG/NIM_004 30",
+            "UAKUG/NIM_007 5_1"
+          ],
+          "orte": [
+            {
+              "name": "Bayreuth",
+              "count": 1
+            },
+            {
+              "name": "Zürich, Zürichbergstrasse 104",
+              "count": 1
+            },
+            {
+              "name": "Paris",
+              "count": 1
+            }
+          ],
+          "rollen": [
+            {
+              "name": "Brangäne",
+              "count": 2
+            },
+            {
+              "name": "Magdalena",
+              "count": 2
+            },
+            {
+              "name": "Judith",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "name": "Die Meistersinger von Nürnberg",
+          "dokumente": 3,
+          "signaturen": [
+            "UAKUG/NIM_004 13",
+            "UAKUG/NIM_007 4",
+            "UAKUG/NIM_007 17"
+          ],
+          "orte": [
+            {
+              "name": "München",
+              "count": 2
+            },
+            {
+              "name": "Stuttgart",
+              "count": 2
+            },
+            {
+              "name": "Lissabon",
+              "count": 2
+            }
+          ],
+          "rollen": [
+            {
+              "name": "Sixtus Beckmesser",
+              "count": 1
+            },
+            {
+              "name": "Hans Sachs",
+              "count": 1
+            },
+            {
+              "name": "Veit Pogner",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "name": "Lohengrin",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_004 30"
+          ],
+          "orte": [
+            {
+              "name": "Zürich, Zürichbergstrasse 104",
+              "count": 1
+            }
+          ],
+          "rollen": [
+            {
+              "name": "Magdalena",
+              "count": 2
+            },
+            {
+              "name": "Judith",
+              "count": 2
+            },
+            {
+              "name": "Amneris",
+              "count": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Wolf, Hugo",
+      "farbe": "#757575",
+      "dokumente_gesamt": 14,
+      "werke": [
+        {
+          "name": "Führ mich, Kind, nach Bethlehem",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_007 18"
+          ],
+          "orte": [],
+          "rollen": []
+        },
+        {
+          "name": "Ach, des Knaben Augen",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_007 18"
+          ],
+          "orte": [],
+          "rollen": []
+        },
+        {
+          "name": "Nun wandre, Maria",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_007 18"
+          ],
+          "orte": [],
+          "rollen": []
+        },
+        {
+          "name": "Die ihr schwebet um diese Palmen",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_007 18"
+          ],
+          "orte": [],
+          "rollen": []
+        },
+        {
+          "name": "Herr, was trägt der Boden hier",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_007 18"
+          ],
+          "orte": [],
+          "rollen": []
+        },
+        {
+          "name": "Mühvoll komm' ich und beladen",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_007 18"
+          ],
+          "orte": [],
+          "rollen": []
+        },
+        {
+          "name": "Sagt, seid Ihr es, feiner Herr",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_007 18"
+          ],
+          "orte": [],
+          "rollen": []
+        },
+        {
+          "name": "Auf dem grünen Balkon mein Mädchen schaut",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_007 18"
+          ],
+          "orte": [],
+          "rollen": []
+        },
+        {
+          "name": "In dem Schatten meiner Locken",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_007 18"
+          ],
+          "orte": [],
+          "rollen": []
+        },
+        {
+          "name": "Wenn du zu den Blumen gehst",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_007 18"
+          ],
+          "orte": [],
+          "rollen": []
+        },
+        {
+          "name": "Bedeckt mich mit Blumen",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_007 18"
+          ],
+          "orte": [],
+          "rollen": []
+        },
+        {
+          "name": "Alle gingen, Herz, zur Ruh",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_007 18"
+          ],
+          "orte": [],
+          "rollen": []
+        },
+        {
+          "name": "Geh', Geliebter, geh' jetzt",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_007 18"
+          ],
+          "orte": [],
+          "rollen": []
+        },
+        {
+          "name": "Spanisches Liederbuch",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_007 18"
+          ],
+          "orte": [],
+          "rollen": []
+        }
+      ]
+    },
+    {
+      "name": "Verdi, Giuseppe",
+      "farbe": "#757575",
+      "dokumente_gesamt": 10,
+      "werke": [
+        {
+          "name": "Aida",
+          "dokumente": 5,
+          "signaturen": [
+            "UAKUG/NIM_004 16",
+            "UAKUG/NIM_004 17",
+            "UAKUG/NIM_004 24",
+            "UAKUG/NIM_004 29",
+            "UAKUG/NIM_004 30"
+          ],
+          "orte": [
+            {
+              "name": "Lemberg",
+              "count": 2
+            },
+            {
+              "name": "Wien",
+              "count": 2
+            },
+            {
+              "name": "Graz",
+              "count": 2
+            }
+          ],
+          "rollen": [
+            {
+              "name": "Amneris",
+              "count": 5
+            },
+            {
+              "name": "Brangäne",
+              "count": 4
+            },
+            {
+              "name": "Sextus",
+              "count": 4
+            }
+          ]
+        },
+        {
+          "name": "Macbeth",
+          "dokumente": 3,
+          "signaturen": [
+            "UAKUG/NIM_004 3",
+            "UAKUG/NIM_004 4",
+            "UAKUG/NIM_004 30"
+          ],
+          "orte": [
+            {
+              "name": "München, 1952-12-17",
+              "count": 1
+            },
+            {
+              "name": "München",
+              "count": 1
+            },
+            {
+              "name": "Zürich, Zürichbergstrasse 104",
+              "count": 1
+            }
+          ],
+          "rollen": [
+            {
+              "name": "Lady Macbeth",
+              "count": 3
+            },
+            {
+              "name": "Macbeth",
+              "count": 2
+            },
+            {
+              "name": "Magdalena",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "name": "Rigoletto",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_004 30"
+          ],
+          "orte": [
+            {
+              "name": "Zürich, Zürichbergstrasse 104",
+              "count": 1
+            }
+          ],
+          "rollen": [
+            {
+              "name": "Magdalena",
+              "count": 2
+            },
+            {
+              "name": "Judith",
+              "count": 2
+            },
+            {
+              "name": "Amneris",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "name": "La Traviata",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_007 17"
+          ],
+          "orte": [
+            {
+              "name": "Wien, 1968-09-25",
+              "count": 1
+            }
+          ],
+          "rollen": [
+            {
+              "name": "Baculus",
+              "count": 1
+            },
+            {
+              "name": "Graf von Eberbach",
+              "count": 1
+            },
+            {
+              "name": "Doktor",
+              "count": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
       "name": "Verdi",
       "farbe": "#2C5C3F",
       "dokumente_gesamt": 7,
@@ -43,6 +465,325 @@
             }
           ],
           "rollen": []
+        }
+      ]
+    },
+    {
+      "name": "Mozart, Wolfgang Amadeus",
+      "farbe": "#757575",
+      "dokumente_gesamt": 7,
+      "werke": [
+        {
+          "name": "Don Giovanni",
+          "dokumente": 3,
+          "signaturen": [
+            "UAKUG/NIM_004 9",
+            "UAKUG/NIM_004 12",
+            "UAKUG/NIM_004 33"
+          ],
+          "orte": [
+            {
+              "name": "Italien",
+              "count": 1
+            },
+            {
+              "name": "Stuttgart, 1954-07-06",
+              "count": 1
+            },
+            {
+              "name": "Graz",
+              "count": 1
+            }
+          ],
+          "rollen": [
+            {
+              "name": "Brangäne",
+              "count": 1
+            },
+            {
+              "name": "Marke",
+              "count": 1
+            },
+            {
+              "name": "Kurwenal",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "name": "La clemenza di Tito",
+          "dokumente": 3,
+          "signaturen": [
+            "UAKUG/NIM_004 12",
+            "UAKUG/NIM_004 24",
+            "UAKUG/NIM_004 29"
+          ],
+          "orte": [
+            {
+              "name": "Lemberg",
+              "count": 2
+            },
+            {
+              "name": "Wien",
+              "count": 2
+            },
+            {
+              "name": "Graz",
+              "count": 2
+            }
+          ],
+          "rollen": [
+            {
+              "name": "Sextus",
+              "count": 4
+            },
+            {
+              "name": "Orpheus",
+              "count": 2
+            },
+            {
+              "name": "Brangäne",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "name": "Die Zauberflöte",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_007 4"
+          ],
+          "orte": [
+            {
+              "name": "Stuttgart",
+              "count": 2
+            },
+            {
+              "name": "Lissabon",
+              "count": 2
+            },
+            {
+              "name": "Wien",
+              "count": 1
+            }
+          ],
+          "rollen": [
+            {
+              "name": "Magdalene",
+              "count": 1
+            },
+            {
+              "name": "Zweite Dame",
+              "count": 1
+            },
+            {
+              "name": "Aufseherin",
+              "count": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Strauss, Richard",
+      "farbe": "#757575",
+      "dokumente_gesamt": 6,
+      "werke": [
+        {
+          "name": "Daphne",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_004 30"
+          ],
+          "orte": [
+            {
+              "name": "Zürich, Zürichbergstrasse 104",
+              "count": 1
+            }
+          ],
+          "rollen": [
+            {
+              "name": "Magdalena",
+              "count": 2
+            },
+            {
+              "name": "Judith",
+              "count": 2
+            },
+            {
+              "name": "Amneris",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "name": "Der Rosenkavalier",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_004 31"
+          ],
+          "orte": [],
+          "rollen": [
+            {
+              "name": "Octavian",
+              "count": 1
+            },
+            {
+              "name": "Die Feldmarschallin Fürstin Werdenberg",
+              "count": 1
+            },
+            {
+              "name": "Sophie",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "name": "Elektra",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_007 4"
+          ],
+          "orte": [
+            {
+              "name": "Stuttgart",
+              "count": 2
+            },
+            {
+              "name": "Lissabon",
+              "count": 2
+            },
+            {
+              "name": "Wien",
+              "count": 1
+            }
+          ],
+          "rollen": [
+            {
+              "name": "Magdalene",
+              "count": 1
+            },
+            {
+              "name": "Zweite Dame",
+              "count": 1
+            },
+            {
+              "name": "Aufseherin",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "name": "Glücks genug",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_007 8"
+          ],
+          "orte": [
+            {
+              "name": "Palais Pallavicini",
+              "count": 1
+            },
+            {
+              "name": "Palais Schwarzenberg",
+              "count": 1
+            },
+            {
+              "name": "Palais Auersberg",
+              "count": 1
+            }
+          ],
+          "rollen": []
+        },
+        {
+          "name": "Mein Herz ist stumm",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_007 8"
+          ],
+          "orte": [
+            {
+              "name": "Palais Pallavicini",
+              "count": 1
+            },
+            {
+              "name": "Palais Schwarzenberg",
+              "count": 1
+            },
+            {
+              "name": "Palais Auersberg",
+              "count": 1
+            }
+          ],
+          "rollen": []
+        },
+        {
+          "name": "Befreit",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_007 8"
+          ],
+          "orte": [
+            {
+              "name": "Palais Pallavicini",
+              "count": 1
+            },
+            {
+              "name": "Palais Schwarzenberg",
+              "count": 1
+            },
+            {
+              "name": "Palais Auersberg",
+              "count": 1
+            }
+          ],
+          "rollen": []
+        }
+      ]
+    },
+    {
+      "name": "Gluck, Christoph Willibald",
+      "farbe": "#757575",
+      "dokumente_gesamt": 5,
+      "werke": [
+        {
+          "name": "Orpheus und Eurydike",
+          "dokumente": 5,
+          "signaturen": [
+            "UAKUG/NIM_004 5",
+            "UAKUG/NIM_004 6",
+            "UAKUG/NIM_004 8",
+            "UAKUG/NIM_004 24",
+            "UAKUG/NIM_004 29"
+          ],
+          "orte": [
+            {
+              "name": "Bayreuth",
+              "count": 3
+            },
+            {
+              "name": "München",
+              "count": 3
+            },
+            {
+              "name": "Lemberg",
+              "count": 2
+            }
+          ],
+          "rollen": [
+            {
+              "name": "Orpheus",
+              "count": 5
+            },
+            {
+              "name": "Eurydike",
+              "count": 3
+            },
+            {
+              "name": "Sextus",
+              "count": 3
+            }
+          ]
         }
       ]
     },
@@ -108,44 +849,358 @@
       ]
     },
     {
-      "name": "Q190891",
+      "name": "Brahms, Johannes",
+      "farbe": "#757575",
+      "dokumente_gesamt": 4,
+      "werke": [
+        {
+          "name": "3. Symphonie",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_004 33"
+          ],
+          "orte": [
+            {
+              "name": "Graz",
+              "count": 1
+            },
+            {
+              "name": "München",
+              "count": 1
+            },
+            {
+              "name": "Stuttgart",
+              "count": 1
+            }
+          ],
+          "rollen": [
+            {
+              "name": "Amneris",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "name": "Der Gang zum Liebchen",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_007 8"
+          ],
+          "orte": [
+            {
+              "name": "Palais Pallavicini",
+              "count": 1
+            },
+            {
+              "name": "Palais Schwarzenberg",
+              "count": 1
+            },
+            {
+              "name": "Palais Auersberg",
+              "count": 1
+            }
+          ],
+          "rollen": []
+        },
+        {
+          "name": "Es träumte mir",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_007 8"
+          ],
+          "orte": [
+            {
+              "name": "Palais Pallavicini",
+              "count": 1
+            },
+            {
+              "name": "Palais Schwarzenberg",
+              "count": 1
+            },
+            {
+              "name": "Palais Auersberg",
+              "count": 1
+            }
+          ],
+          "rollen": []
+        },
+        {
+          "name": "Von ewiger Liebe",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_007 8"
+          ],
+          "orte": [
+            {
+              "name": "Palais Pallavicini",
+              "count": 1
+            },
+            {
+              "name": "Palais Schwarzenberg",
+              "count": 1
+            },
+            {
+              "name": "Palais Auersberg",
+              "count": 1
+            }
+          ],
+          "rollen": []
+        }
+      ]
+    },
+    {
+      "name": "Schubert, Franz",
+      "farbe": "#757575",
+      "dokumente_gesamt": 4,
+      "werke": [
+        {
+          "name": "Ganymed",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_007 8"
+          ],
+          "orte": [
+            {
+              "name": "Palais Pallavicini",
+              "count": 1
+            },
+            {
+              "name": "Palais Schwarzenberg",
+              "count": 1
+            },
+            {
+              "name": "Palais Auersberg",
+              "count": 1
+            }
+          ],
+          "rollen": []
+        },
+        {
+          "name": "Nachtstück",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_007 8"
+          ],
+          "orte": [
+            {
+              "name": "Palais Pallavicini",
+              "count": 1
+            },
+            {
+              "name": "Palais Schwarzenberg",
+              "count": 1
+            },
+            {
+              "name": "Palais Auersberg",
+              "count": 1
+            }
+          ],
+          "rollen": []
+        },
+        {
+          "name": "Er liebt mich nicht",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_007 8"
+          ],
+          "orte": [
+            {
+              "name": "Palais Pallavicini",
+              "count": 1
+            },
+            {
+              "name": "Palais Schwarzenberg",
+              "count": 1
+            },
+            {
+              "name": "Palais Auersberg",
+              "count": 1
+            }
+          ],
+          "rollen": []
+        },
+        {
+          "name": "Rastlose Liebe",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_007 8"
+          ],
+          "orte": [
+            {
+              "name": "Palais Pallavicini",
+              "count": 1
+            },
+            {
+              "name": "Palais Schwarzenberg",
+              "count": 1
+            },
+            {
+              "name": "Palais Auersberg",
+              "count": 1
+            }
+          ],
+          "rollen": []
+        }
+      ]
+    },
+    {
+      "name": "Beethoven, Ludwig von",
       "farbe": "#757575",
       "dokumente_gesamt": 3,
       "werke": [
         {
-          "name": "Die Meistersinger von Nürnberg",
-          "dokumente": 3,
+          "name": "Sinfonien, Nr. 9, op. 125 (d-Moll)",
+          "dokumente": 1,
           "signaturen": [
-            "UAKUG/NIM_004 13",
-            "UAKUG/NIM_007 4",
-            "UAKUG/NIM_007 17"
+            "UAKUG/NIM_004 7"
           ],
           "orte": [
             {
-              "name": "München",
+              "name": "Bayreuth",
+              "count": 1
+            }
+          ],
+          "rollen": [
+            {
+              "name": "Alt Solo",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "name": "Ich liebe dich",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_007 8"
+          ],
+          "orte": [
+            {
+              "name": "Palais Pallavicini",
+              "count": 1
+            },
+            {
+              "name": "Palais Schwarzenberg",
+              "count": 1
+            },
+            {
+              "name": "Palais Auersberg",
+              "count": 1
+            }
+          ],
+          "rollen": []
+        },
+        {
+          "name": "Lied der Mignon",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_007 8"
+          ],
+          "orte": [
+            {
+              "name": "Palais Pallavicini",
+              "count": 1
+            },
+            {
+              "name": "Palais Schwarzenberg",
+              "count": 1
+            },
+            {
+              "name": "Palais Auersberg",
+              "count": 1
+            }
+          ],
+          "rollen": []
+        }
+      ]
+    },
+    {
+      "name": "Hindemith, Paul",
+      "farbe": "#757575",
+      "dokumente_gesamt": 3,
+      "werke": [
+        {
+          "name": "Gesang an die Hoffnung",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_004 11"
+          ],
+          "orte": [
+            {
+              "name": "Köln",
+              "count": 1
+            }
+          ],
+          "rollen": []
+        },
+        {
+          "name": "Rilke-Zyklus",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_004 11"
+          ],
+          "orte": [
+            {
+              "name": "Köln",
+              "count": 1
+            }
+          ],
+          "rollen": []
+        },
+        {
+          "name": "Apparebit reppentina Dies",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_004 11"
+          ],
+          "orte": [
+            {
+              "name": "Köln",
+              "count": 1
+            }
+          ],
+          "rollen": []
+        }
+      ]
+    },
+    {
+      "name": "Bizet, Georges",
+      "farbe": "#757575",
+      "dokumente_gesamt": 3,
+      "werke": [
+        {
+          "name": "Carmen",
+          "dokumente": 3,
+          "signaturen": [
+            "UAKUG/NIM_004 24",
+            "UAKUG/NIM_004 29",
+            "UAKUG/NIM_004 30"
+          ],
+          "orte": [
+            {
+              "name": "Lemberg",
               "count": 2
             },
             {
-              "name": "Stuttgart",
+              "name": "Wien",
               "count": 2
             },
             {
-              "name": "Lissabon",
+              "name": "Graz",
               "count": 2
             }
           ],
           "rollen": [
             {
-              "name": "Sixtus Beckmesser",
-              "count": 1
+              "name": "Sextus",
+              "count": 4
             },
             {
-              "name": "Hans Sachs",
-              "count": 1
+              "name": "Brangäne",
+              "count": 3
             },
             {
-              "name": "Veit Pogner",
-              "count": 1
+              "name": "Amneris",
+              "count": 3
             }
           ]
         }
@@ -175,41 +1230,395 @@
       "werke": []
     },
     {
-      "name": "Q723407",
+      "name": "Beethoven, Ludwig van",
       "farbe": "#757575",
       "dokumente_gesamt": 2,
       "werke": [
         {
-          "name": "Salome",
-          "dokumente": 2,
+          "name": "Die Geschöpfe des Prometheus",
+          "dokumente": 1,
           "signaturen": [
-            "UAKUG/NIM_007 2",
-            "UAKUG/NIM_007 2"
+            "UAKUG/NIM_004 33"
           ],
           "orte": [
             {
-              "name": "Zürich, Geibelstrasse 1/1",
-              "count": 2
+              "name": "Graz",
+              "count": 1
             },
             {
               "name": "München",
-              "count": 2
+              "count": 1
             },
             {
-              "name": "Buenos Aires",
-              "count": 2
+              "name": "Stuttgart",
+              "count": 1
             }
           ],
           "rollen": [
             {
-              "name": "Lady Macbeth",
+              "name": "Amneris",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "name": "8. Symphonie",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_004 33"
+          ],
+          "orte": [
+            {
+              "name": "Graz",
+              "count": 1
+            },
+            {
+              "name": "München",
+              "count": 1
+            },
+            {
+              "name": "Stuttgart",
+              "count": 1
+            }
+          ],
+          "rollen": [
+            {
+              "name": "Amneris",
+              "count": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Barwinsky, Wolodymyr",
+      "farbe": "#757575",
+      "dokumente_gesamt": 2,
+      "werke": [
+        {
+          "name": "Traurigkeit",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_007 8"
+          ],
+          "orte": [
+            {
+              "name": "Palais Pallavicini",
+              "count": 1
+            },
+            {
+              "name": "Palais Schwarzenberg",
+              "count": 1
+            },
+            {
+              "name": "Palais Auersberg",
+              "count": 1
+            }
+          ],
+          "rollen": []
+        },
+        {
+          "name": "O ihr Felder",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_007 8"
+          ],
+          "orte": [
+            {
+              "name": "Palais Pallavicini",
+              "count": 1
+            },
+            {
+              "name": "Palais Schwarzenberg",
+              "count": 1
+            },
+            {
+              "name": "Palais Auersberg",
+              "count": 1
+            }
+          ],
+          "rollen": []
+        }
+      ]
+    },
+    {
+      "name": "Ponchielli, Amilcare",
+      "farbe": "#757575",
+      "dokumente_gesamt": 1,
+      "werke": [
+        {
+          "name": "La Gioconda",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_004 9"
+          ],
+          "orte": [
+            {
+              "name": "Italien",
+              "count": 1
+            }
+          ],
+          "rollen": [
+            {
+              "name": "Brangäne",
+              "count": 1
+            },
+            {
+              "name": "Marke",
+              "count": 1
+            },
+            {
+              "name": "Kurwenal",
+              "count": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Mahler, Gustav",
+      "farbe": "#757575",
+      "dokumente_gesamt": 1,
+      "werke": [
+        {
+          "name": "Le chant de la Terre",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_004 14"
+          ],
+          "orte": [
+            {
+              "name": "Strasbourg",
+              "count": 1
+            }
+          ],
+          "rollen": []
+        }
+      ]
+    },
+    {
+      "name": "Barber, Samuel",
+      "farbe": "#757575",
+      "dokumente_gesamt": 1,
+      "werke": [
+        {
+          "name": "Vanessa",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_004 25"
+          ],
+          "orte": [
+            {
+              "name": "Salzburg",
+              "count": 1
+            }
+          ],
+          "rollen": []
+        }
+      ]
+    },
+    {
+      "name": "Kienzl, Wilhelm",
+      "farbe": "#757575",
+      "dokumente_gesamt": 1,
+      "werke": [
+        {
+          "name": "Der Evangelimann",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_004 30"
+          ],
+          "orte": [
+            {
+              "name": "Zürich, Zürichbergstrasse 104",
+              "count": 1
+            }
+          ],
+          "rollen": [
+            {
+              "name": "Magdalena",
               "count": 2
             },
             {
-              "name": "Herodias",
+              "name": "Judith",
               "count": 2
+            },
+            {
+              "name": "Amneris",
+              "count": 1
             }
           ]
+        }
+      ]
+    },
+    {
+      "name": "Honegger, Arthur",
+      "farbe": "#757575",
+      "dokumente_gesamt": 1,
+      "werke": [
+        {
+          "name": "Judith",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_004 30"
+          ],
+          "orte": [
+            {
+              "name": "Zürich, Zürichbergstrasse 104",
+              "count": 1
+            }
+          ],
+          "rollen": [
+            {
+              "name": "Magdalena",
+              "count": 2
+            },
+            {
+              "name": "Judith",
+              "count": 2
+            },
+            {
+              "name": "Amneris",
+              "count": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Durante, Francesco",
+      "farbe": "#757575",
+      "dokumente_gesamt": 1,
+      "werke": [
+        {
+          "name": "Vergin tutt' amor",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_007 8"
+          ],
+          "orte": [
+            {
+              "name": "Palais Pallavicini",
+              "count": 1
+            },
+            {
+              "name": "Palais Schwarzenberg",
+              "count": 1
+            },
+            {
+              "name": "Palais Auersberg",
+              "count": 1
+            }
+          ],
+          "rollen": []
+        }
+      ]
+    },
+    {
+      "name": "Monteverdi, Claudio",
+      "farbe": "#757575",
+      "dokumente_gesamt": 1,
+      "werke": [
+        {
+          "name": "Lamento d'Arianna",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_007 8"
+          ],
+          "orte": [
+            {
+              "name": "Palais Pallavicini",
+              "count": 1
+            },
+            {
+              "name": "Palais Schwarzenberg",
+              "count": 1
+            },
+            {
+              "name": "Palais Auersberg",
+              "count": 1
+            }
+          ],
+          "rollen": []
+        }
+      ]
+    },
+    {
+      "name": "Haydn, Joseph",
+      "farbe": "#757575",
+      "dokumente_gesamt": 1,
+      "werke": [
+        {
+          "name": "Ein kleines Haus",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_007 8"
+          ],
+          "orte": [
+            {
+              "name": "Palais Pallavicini",
+              "count": 1
+            },
+            {
+              "name": "Palais Schwarzenberg",
+              "count": 1
+            },
+            {
+              "name": "Palais Auersberg",
+              "count": 1
+            }
+          ],
+          "rollen": []
+        }
+      ]
+    },
+    {
+      "name": "Berg, Alban",
+      "farbe": "#757575",
+      "dokumente_gesamt": 1,
+      "werke": [
+        {
+          "name": "Wozzeck",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_007 17"
+          ],
+          "orte": [
+            {
+              "name": "Wien, 1968-09-25",
+              "count": 1
+            }
+          ],
+          "rollen": [
+            {
+              "name": "Baculus",
+              "count": 1
+            },
+            {
+              "name": "Graf von Eberbach",
+              "count": 1
+            },
+            {
+              "name": "Doktor",
+              "count": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Schmidt, Franz",
+      "farbe": "#757575",
+      "dokumente_gesamt": 1,
+      "werke": [
+        {
+          "name": "Quintett für Klavier und Schteichquartett, G-Dur",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_007 18"
+          ],
+          "orte": [],
+          "rollen": []
         }
       ]
     },
@@ -229,7 +1638,7 @@
     }
   ],
   "_meta": {
-    "generated": "2026-02-20T07:34:05.480892",
+    "generated": "2026-02-20T08:11:49.881317",
     "source_records": 286,
     "note": "Includes geographic and role context extracted from titles"
   }

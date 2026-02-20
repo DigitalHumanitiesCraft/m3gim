@@ -101,4 +101,28 @@
 
 ---
 
+## 2026-02-20 — Session 5: Pipeline-Audit und Bugfix
+
+### Was getan
+- Umfassender Audit: Excel-Rohdaten gegen JSON-LD und View-JSONs verglichen
+- 5 potentielle Bugs identifiziert, davon 3 echte Code-Bugs, 1 Datenqualitaets-Problem, 1 korrektes Verhalten
+- **Bug 1 gefixt (schwerwiegend):** HEADER_SHIFTS in transform.py und validate.py hatten Spalten 2+3 vertauscht fuer Organisationsindex und Werkindex → 145 falsche Wikidata-URIs (`wd:Wien`, `wd:Wagner, Richard`). Fix: Spaltenreihenfolge korrigiert + Regex-Validierung `^Q\d+$`
+- **Bug 2 gefixt:** Q-IDs als Komponistennamen in Kosmos (Q190891, Q723407) — durch Bug-1-Fix automatisch behoben
+- **Bug 3 gefixt:** `rico:hasLanguage` → `rico:hasOrHadLanguage` (falscher RiC-O Property-Name) → 74 Records mit Sprache (vorher 0)
+- `knowledge/10-datenqualitaet.md` geschrieben: Alle Erfassungsprobleme dokumentiert
+- MEETING-2026-02-24.md komplett ueberarbeitet mit Datenqualitaets-Sektion
+- Knowledge-Refactoring: Veraltete Zahlen und Referenzen in 01, 02, 04, 07 aktualisiert
+
+### Erkenntnisse
+- Header-Shift-Bug war subtil: Spalte 2 (wikidata_id) wurde zu `ort`/`komponist` gemappt, Spalte 3 (ort/komponist) wurde zu `wikidata_id` → Komponentennamen landeten als Wikidata-URIs
+- Pipeline-Audit gegen Rohdaten ist essentiell — Bugs waren nicht durch reine Code-Review erkennbar
+- 62/282 Objekte haben Verknuepfungen (22%), nicht 3 wie zuvor angenommen (3 Konvolute, aber 62 Records)
+
+### Entscheidungen
+- Bug 4 (17 verlorene Verknuepfungen) ist Datenqualitaet, kein Code-Fix
+- Bug 5 (Phantom-Relationen) ist korrektes Verhalten (Komposit-Decomposition)
+- P1-P5 Redundanz in 02-quellenbestand.md durch Verweis auf 10-datenqualitaet.md ersetzt
+
+---
+
 Siehe auch: [→ Projekt](01-projekt.md) · [→ Quellenbestand](02-quellenbestand.md) · [→ Architektur](04-architektur.md)

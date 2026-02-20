@@ -11,13 +11,13 @@ Google Drive (6 Spreadsheets als XLSX)
     ↓ Download als XLSX → data/google-spreadsheet/
 explore.py          → data/reports/exploration-report.md
 validate.py         → data/reports/validation-report.md
-create-ric-json.py  → data/output/m3gim.jsonld
+transform.py        → data/output/m3gim.jsonld
 build-views.py      → data/output/views/*.json
     ↓ CI/CD
 docs/data/*.json    → GitHub Pages Frontend
 ```
 
-## Pipeline (6 Python-Scripts)
+## Pipeline (5 Python-Scripts + 1 abgeschlossen)
 
 | Script | Funktion | Input | Output |
 |---|---|---|---|
@@ -50,11 +50,12 @@ data/
 
 | ID | Was | Details |
 |---|---|---|
-| **N1** | Spaltennamen-Mapping | Org: "Graz"→"name", Werk: "Rossini"→"titel"/"Barber"→"komponist", Ort: "Unnamed: 0"→"m3gim_id" |
+| **N1** | Spaltennamen-Mapping | Org: "Graz"→"name", Werk: "Rossini"→"name"/"Barber"→"komponist", Ort: "Unnamed: 0"→"m3gim_id" |
 | **N2** | Case-Normalisierung | `.lower().strip()` auf typ, rolle, dokumenttyp, bearbeitungsstand |
 | **N3** | Datetime-Bereinigung | `1958-04-18 00:00:00` → `1958-04-18` (Excel-Export-Artefakt) |
-| **N4** | Leere Zeilen überspringen | 18 Zeilen ohne typ/rolle/name in Verknüpfungen |
+| **N4** | Leere Zeilen überspringen | 45 Zeilen ohne typ/rolle/name in Verknüpfungen |
 | **N5** | Template-Zeilen filtern | archivsignatur="beispiel" |
+| **N6** | Wikidata-URI-Validierung | Nur Werte mit `^Q\d+$` bekommen `wd:` Prefix |
 
 ### Transformation
 
@@ -79,7 +80,7 @@ data/
 
 Namespaces: `rico:` (ICA RiC-O), `m3gim:` (Projektvokabular), `m3gim-dft:` (DocumentaryFormTypes), `m3gim-role:` (Rollen), `wd:` (Wikidata), `skos:`, `xsd:`.
 
-Mapping: archivsignatur → `rico:identifier`, titel → `rico:title`, entstehungsdatum → `rico:date`, dokumenttyp → `rico:hasDocumentaryFormType`.
+Mapping: archivsignatur → `rico:identifier`, titel → `rico:title`, entstehungsdatum → `rico:date`, dokumenttyp → `rico:hasDocumentaryFormType`, sprache → `rico:hasOrHadLanguage`.
 
 ---
 

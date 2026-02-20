@@ -50,7 +50,7 @@
 
 - `app.js` monolithisch (1.101 Zeilen)
 - `partitur.js` monolithisch (4.460 Zeilen)
-- Synthetische Daten noch präsent
+- Synthetische Daten noch in Frontend-Code praesent (Iteration 1 Artefakt)
 - Kategoriefilter-HTML ohne JS-Binding
 - Kein CSV/JSON-LD-Export aus Archiv-View
 - Inline-CSS in partitur.js
@@ -91,7 +91,7 @@
 
 ### Positive Überraschungen aus der Datenanalyse
 
-- Erschließungstiefe bei 3 Konvoluten (1.264 Verknüpfungen) übertrifft Erwartungen
+- Erschließungstiefe bei 3 Konvoluten (1.246 effektive Verknüpfungen) übertrifft Erwartungen
 - Gender-inklusives Rollen-Vokabular (58 Werte mit `:in`-Form) zeigt sorgfältige Erfassung
 - 257/296 Personen mit Kategorie — Begegnungs-Matrix bekommt direkt Daten
 - 134 Werk-Verknüpfungen ermöglichen substantiellen Rollen-Kosmos
@@ -104,7 +104,7 @@
 - Dokumenttyp-Vokabular gewachsen (18 → 25 Werte)
 - Case-Inkonsistenzen durchgängig — Pipeline normalisiert mit `.lower().strip()`
 - Wikidata wird via Reconciliation-Script befüllt, nicht manuell
-- Nur 3/282 Objekte bisher verknüpft — Verknüpfungsarbeit steht am Anfang
+- 62/282 Objekte mit Verknüpfungen (22%) — Verknüpfungsarbeit steht am Anfang
 
 ---
 

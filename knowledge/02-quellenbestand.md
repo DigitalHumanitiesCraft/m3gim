@@ -35,7 +35,7 @@ Weitere Konvolute werden im Laufe der Erfassung hinzukommen.
 
 ## Verknüpfungen
 
-1.264 Verknüpfungen (+ 18 leere Zeilen, werden ignoriert). Bisher sind nur 3 von 282 Objekten verknüpft (NIM_003, NIM_004, NIM_007) — die Verknüpfungsarbeit steht am Anfang.
+1.292 Zeilen gesamt, davon 1.246 effektive Verknuepfungen (45 leere Zeilen + 1 Template-Zeile werden uebersprungen). 62 von 282 Objekten haben Verknuepfungen (22%) — die Verknuepfungsarbeit steht am Anfang.
 
 **Verknüpfungs-Mechanismus:** String-Matching über die `name`-Spalte. Die Spalte `typ` bestimmt den Ziel-Index:
 - `typ=person`, `name="Strauss, Richard"` → Lookup im Personenindex
@@ -54,7 +54,7 @@ IDs in den Indizes (O1–O63, W1–W95 etc.) sind Durchzählungen, keine Verknü
 | Tabelle | Zeilen | Spalten |
 |---|---|---|
 | M3GIM-Objekte | 282 | 18 |
-| M3GIM-Verknüpfungen | 1.264 | 6 |
+| M3GIM-Verknüpfungen | 1.292 (1.246 effektiv) | 6 |
 | Personenindex | 296 | 6 |
 | Organisationsindex | 58 | 6 |
 | Ortsindex | 31 | 3 |
@@ -84,24 +84,9 @@ Wikidata-IDs werden **nicht** vom Erfassungsteam eingetragen. Geplanter Workflow
 2. Automatisierte Reconciliation via `reconcile.py`
 3. Händische Nachbearbeitung
 
-### Bekannte Probleme (Pipeline löst P1–P5 automatisch)
+### Bekannte Probleme
 
-| Prio | Problem | Lösung |
-|---|---|---|
-| **P1** | Header-Shifts in 3 Indizes (erste Datenzeile als Spaltenname) | Pipeline: Spaltennamen-Mapping |
-| **P2** | Konvolut-Hierarchie (`Unnamed: 2` = Folio-Spalte in Objekte) | Pipeline: Objekt-ID = signatur + folio |
-| **P3** | 7 neue Dokumenttypen nicht im bisherigen Vokabular | Vokabular erweitert |
-| **P4** | Case/Whitespace-Inkonsistenzen (typ, rolle, bearbeitungsstand) | Pipeline: `.lower().strip()` |
-| **P5** | 18 leere Zeilen in Verknüpfungen | Pipeline: überspringen |
-
-### Header-Shifts im Detail
-
-| Index | Spalte | Steht als Header | Sollte sein |
-|---|---|---|---|
-| Organisationsindex | 2 | "Graz" | "name" |
-| Ortsindex | 1 | "Unnamed: 0" | "m3gim_id" |
-| Werkindex | 2 | "Rossini, Gioachino" | "titel" |
-| Werkindex | 4 | "Barber, Samuel" | "komponist" |
+Pipeline-seitig geloest (automatische Korrekturen) und offene Erfassungsprobleme: siehe [→ Datenqualitaet](10-datenqualitaet.md).
 
 ---
 

@@ -1,6 +1,6 @@
 # M³GIM Projektwissen
 
-> Destilliertes Wissen aus Iteration 1. Dient als Context-Engineering-Quelle für LLM-gestützte Entwicklung in Iteration 2.
+> Destilliertes Projektwissen. Dient als Context-Engineering-Quelle fuer LLM-gestuetzte Entwicklung.
 
 Stand: 2026-02-20
 
@@ -13,12 +13,13 @@ Stand: 2026-02-20
 | 01 | [Projekt](01-projekt.md) | Projektkern, Forschungsfragen, Mobilitätstypen, Meilensteine |
 | 02 | [Quellenbestand](02-quellenbestand.md) | 282 Objekte, Konvolute, Verknüpfungen, Datenqualität |
 | 03 | [Datenmodell](03-datenmodell.md) | Dreischichtenmodell v2.5, Konvolut-Hierarchie, Vokabulare, String-Matching |
-| 04 | [Architektur](04-architektur.md) | Pipeline (6 Python-Scripts), Normalisierung, JSON-LD/RiC-O, CI/CD |
+| 04 | [Architektur](04-architektur.md) | Pipeline (5 Python-Scripts), Normalisierung, JSON-LD/RiC-O, CI/CD |
 | 05 | [Design-System](05-design-system.md) | Scholarly Elegance, Farbsystem, Typografie, Layout |
 | 06 | [Visualisierungen](06-visualisierungen.md) | 4 D3.js-Vis, Forschungshypothesen, Evaluation |
 | 07 | [Entscheidungen](07-entscheidungen.md) | 25 finale + 3 offene Entscheidungen, Tech Schulden, Prozesswissen |
 | 08 | [RiC-O Referenz](08-ric-o.md) | RiC-O 1.1 Ontologie, Klassenhierarchie, Properties, M3GIM-Mapping |
 | 09 | [m3gim-Ontologie](09-m3gim-ontology.md) | Projekteigene RiC-O-Erweiterung, MusicalWork, Rollen, Dokumenttypen |
+| 10 | [Datenqualität](10-datenqualitaet.md) | Audit-Ergebnisse, Erfassungsprobleme, Handlungsbedarfe |
 | — | [Journal](journal.md) | Arbeitstagebuch, alle Sessions kompakt dokumentiert |
 
 ---

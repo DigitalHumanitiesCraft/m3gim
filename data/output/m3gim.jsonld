@@ -1192,7 +1192,7 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:typoskript"
       },
-      "rico:hasLanguage": "de"
+      "rico:hasOrHadLanguage": "de"
     },
     {
       "@id": "m3gim:NIM_002",
@@ -1202,7 +1202,7 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:biographie"
       },
-      "rico:hasLanguage": "de"
+      "rico:hasOrHadLanguage": "de"
     },
     {
       "@id": "m3gim:NIM_003_Folio",
@@ -1213,7 +1213,7 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:programmheft"
       },
-      "rico:hasLanguage": "de"
+      "rico:hasOrHadLanguage": "de"
     },
     {
       "@id": "m3gim:NIM_003_1_1",
@@ -1224,11 +1224,10 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:programmheft"
       },
-      "rico:hasLanguage": "de",
+      "rico:hasOrHadLanguage": "de",
       "m3gim:ausgaben": "15, RM erwähnt",
       "rico:hasOrHadAgent": {
         "name": "Deutsches Musikinstitut für Ausländer",
-        "@id": "wd:Berlin-Charlottenburg",
         "role": "herausgeber:in",
         "@type": "rico:CorporateBody"
       },
@@ -1257,7 +1256,7 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:programmheft"
       },
-      "rico:hasLanguage": "de",
+      "rico:hasOrHadLanguage": "de",
       "m3gim:mentions": [
         {
           "name": "Strauss, Richard",
@@ -1378,7 +1377,7 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:programmheft"
       },
-      "rico:hasLanguage": "de"
+      "rico:hasOrHadLanguage": "de"
     },
     {
       "@id": "m3gim:NIM_003_1_4",
@@ -1389,7 +1388,7 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:programmheft"
       },
-      "rico:hasLanguage": "de"
+      "rico:hasOrHadLanguage": "de"
     },
     {
       "@id": "m3gim:NIM_003_1_5",
@@ -1400,7 +1399,7 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:programmheft"
       },
-      "rico:hasLanguage": "de"
+      "rico:hasOrHadLanguage": "de"
     },
     {
       "@id": "m3gim:NIM_003_1_6",
@@ -1411,7 +1410,7 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:programmheft"
       },
-      "rico:hasLanguage": "de"
+      "rico:hasOrHadLanguage": "de"
     },
     {
       "@id": "m3gim:NIM_003_1_7",
@@ -1422,7 +1421,7 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:programmheft"
       },
-      "rico:hasLanguage": "de"
+      "rico:hasOrHadLanguage": "de"
     },
     {
       "@id": "m3gim:NIM_003_1_8",
@@ -1433,11 +1432,10 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:programmheft"
       },
-      "rico:hasLanguage": "de",
+      "rico:hasOrHadLanguage": "de",
       "m3gim:ausgaben": "150, RM erwähnt",
       "rico:hasOrHadAgent": {
         "name": "Universität Mozarteum Salzburg",
-        "@id": "wd:Salzburg",
         "role": "ausbildungsstätte",
         "@type": "rico:CorporateBody"
       }
@@ -1451,7 +1449,7 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:programmheft"
       },
-      "rico:hasLanguage": "de"
+      "rico:hasOrHadLanguage": "de"
     },
     {
       "@id": "m3gim:NIM_003_1_10",
@@ -1462,7 +1460,7 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:programmheft"
       },
-      "rico:hasLanguage": "de"
+      "rico:hasOrHadLanguage": "de"
     },
     {
       "@id": "m3gim:NIM_004_Folio",
@@ -1482,7 +1480,7 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:photokopie"
       },
-      "rico:hasLanguage": "en, fr",
+      "rico:hasOrHadLanguage": "en, fr",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "rico:hasOrHadAgent": [
         {
@@ -1493,7 +1491,6 @@
         },
         {
           "name": "National Artists Corporation",
-          "@id": "wd:New York",
           "role": "verfasser:in",
           "@type": "rico:CorporateBody"
         }
@@ -1519,7 +1516,7 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:rezension"
       },
-      "rico:hasLanguage": "de",
+      "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "rico:hasOrHadAgent": [
         {
@@ -1674,7 +1671,7 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:rezension"
       },
-      "rico:hasLanguage": "de",
+      "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "rico:hasOrHadAgent": [
         {
@@ -1725,7 +1722,6 @@
         },
         {
           "name": "Abendzeitung",
-          "@id": "wd:München",
           "role": "herausgeber:in",
           "@type": "rico:CorporateBody"
         },
@@ -1741,9 +1737,9 @@
       },
       "rico:hasOrHadSubject": {
         "name": "Macbeth",
-        "@id": "wd:Verdi, Giuseppe",
         "role": "Aufführung",
-        "@type": "m3gim:MusicalWork"
+        "@type": "m3gim:MusicalWork",
+        "komponist": "Verdi, Giuseppe"
       },
       "rico:isAssociatedWithDate": "München, 1952-12-17",
       "m3gim:hasPerformanceRole": [
@@ -1770,7 +1766,7 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:rezension"
       },
-      "rico:hasLanguage": "de",
+      "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "rico:hasOrHadAgent": [
         {
@@ -1836,7 +1832,7 @@
         },
         {
           "name": "Bayerische Staatsoper",
-          "@id": "wd:München",
+          "@id": "wd:Q681931",
           "role": "auffuehrungsort",
           "@type": "rico:CorporateBody"
         }
@@ -1847,9 +1843,9 @@
       },
       "rico:hasOrHadSubject": {
         "name": "Macbeth",
-        "@id": "wd:Verdi, Giuseppe",
         "role": "Aufführung",
-        "@type": "m3gim:MusicalWork"
+        "@type": "m3gim:MusicalWork",
+        "komponist": "Verdi, Giuseppe"
       },
       "rico:isAssociatedWithDate": "1952-12-18 00:00:00",
       "m3gim:hasPerformanceRole": [
@@ -1872,7 +1868,7 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:rezension"
       },
-      "rico:hasLanguage": "de",
+      "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "rico:hasOrHadAgent": [
         {
@@ -1933,9 +1929,9 @@
       },
       "rico:hasOrHadSubject": {
         "name": "Orpheus und Eurydike",
-        "@id": "wd:Gluck, Christoph Willibald",
         "role": "Aufführung",
-        "@type": "m3gim:MusicalWork"
+        "@type": "m3gim:MusicalWork",
+        "komponist": "Gluck, Christoph Willibald"
       },
       "m3gim:mentions": [
         {
@@ -1983,7 +1979,7 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:rezension"
       },
-      "rico:hasLanguage": "de",
+      "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "rico:hasOrHadAgent": [
         {
@@ -2025,9 +2021,9 @@
       ],
       "rico:hasOrHadSubject": {
         "name": "Orpheus und Eurydike",
-        "@id": "wd:Gluck, Christoph Willibald",
         "role": "premiere",
-        "@type": "m3gim:MusicalWork"
+        "@type": "m3gim:MusicalWork",
+        "komponist": "Gluck, Christoph Willibald"
       },
       "m3gim:hasPerformanceRole": [
         {
@@ -2049,7 +2045,7 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:rezension"
       },
-      "rico:hasLanguage": "de",
+      "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "rico:hasOrHadAgent": [
         {
@@ -2100,7 +2096,7 @@
         },
         {
           "name": "Bayreuther Festspiele",
-          "@id": "wd:Bayreuth",
+          "@id": "wd:Q157596",
           "role": "rahmenveranstaltung",
           "@type": "rico:CorporateBody"
         }
@@ -2111,9 +2107,9 @@
       },
       "rico:hasOrHadSubject": {
         "name": "Sinfonien, Nr. 9, op. 125 (d-Moll)",
-        "@id": "wd:Beethoven, Ludwig von",
         "role": "Aufführung",
-        "@type": "m3gim:MusicalWork"
+        "@type": "m3gim:MusicalWork",
+        "komponist": "Beethoven, Ludwig von"
       },
       "m3gim:mentions": [
         {
@@ -2173,7 +2169,7 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:rezension"
       },
-      "rico:hasLanguage": "de",
+      "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "rico:hasOrHadAgent": [
         {
@@ -2224,13 +2220,12 @@
         },
         {
           "name": "Bayerische Staatsoper",
-          "@id": "wd:München",
+          "@id": "wd:Q681931",
           "role": "erwähnt",
           "@type": "rico:CorporateBody"
         },
         {
           "name": "Münchner Merkur",
-          "@id": "wd:München",
           "role": "herausgeber:in",
           "@type": "rico:CorporateBody"
         }
@@ -2241,9 +2236,9 @@
       },
       "rico:hasOrHadSubject": {
         "name": "Orpheus und Eurydike",
-        "@id": "wd:Gluck, Christoph Willibald",
         "role": "Aufführung",
-        "@type": "m3gim:MusicalWork"
+        "@type": "m3gim:MusicalWork",
+        "komponist": "Gluck, Christoph Willibald"
       },
       "m3gim:mentions": [
         {
@@ -2288,7 +2283,7 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:rezension"
       },
-      "rico:hasLanguage": "it",
+      "rico:hasOrHadLanguage": "it",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "rico:hasOrHadAgent": [
         {
@@ -2380,21 +2375,21 @@
       "rico:hasOrHadSubject": [
         {
           "name": "Tristan und Isolde",
-          "@id": "wd:Wagner, Richard",
           "role": "Aufführung",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Wagner, Richard"
         },
         {
           "name": "Don Giovanni",
-          "@id": "wd:Mozart, Wolfgang Amadeus",
           "role": "erwähnt",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Mozart, Wolfgang Amadeus"
         },
         {
           "name": "La Gioconda",
-          "@id": "wd:Ponchielli, Amilcare",
           "role": "erwähnt",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Ponchielli, Amilcare"
         }
       ],
       "m3gim:mentions": [
@@ -2440,7 +2435,7 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:rezension"
       },
-      "rico:hasLanguage": "de",
+      "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Batt, 1 Seite",
       "rico:hasOrHadAgent": [
         {
@@ -2566,7 +2561,7 @@
         },
         {
           "name": "Bayreuther Festspiele",
-          "@id": "wd:Bayreuth",
+          "@id": "wd:Q157596",
           "role": "rahmenveranstaltung",
           "@type": "rico:CorporateBody"
         }
@@ -2578,15 +2573,15 @@
       "rico:hasOrHadSubject": [
         {
           "name": "Götterdämmerung",
-          "@id": "wd:Wagner, Richard",
           "role": "premiere",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Wagner, Richard"
         },
         {
           "name": "Tristan und Isolde",
-          "@id": "wd:Wagner, Richard",
           "role": "premiere",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Wagner, Richard"
         }
       ],
       "m3gim:mentions": {
@@ -2706,7 +2701,7 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:rezension"
       },
-      "rico:hasLanguage": "de",
+      "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Batt, 1 Seite",
       "rico:hasOrHadAgent": [
         {
@@ -2747,7 +2742,6 @@
         },
         {
           "name": "Düsseldorfer Zeitung",
-          "@id": "wd:Düsseldorf",
           "role": "herausgeber:in",
           "@type": "rico:CorporateBody"
         }
@@ -2759,9 +2753,9 @@
       "rico:hasOrHadSubject": [
         {
           "name": "Gesang an die Hoffnung",
-          "@id": "wd:Hindemith, Paul",
           "role": "erwähnt",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Hindemith, Paul"
         },
         {
           "name": "Claudel-Kontate",
@@ -2770,15 +2764,15 @@
         },
         {
           "name": "Rilke-Zyklus",
-          "@id": "wd:Hindemith, Paul",
           "role": "erwähnt",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Hindemith, Paul"
         },
         {
           "name": "Apparebit reppentina Dies",
-          "@id": "wd:Hindemith, Paul",
           "role": "erwähnt",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Hindemith, Paul"
         }
       ],
       "m3gim:mentions": {
@@ -2801,7 +2795,7 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:rezension"
       },
-      "rico:hasLanguage": "de",
+      "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "rico:hasOrHadAgent": [
         {
@@ -2887,7 +2881,6 @@
         },
         {
           "name": "Stuttgarter Nachrichten",
-          "@id": "wd:Neapel",
           "role": "herausgeber:in",
           "@type": "rico:CorporateBody"
         },
@@ -2904,9 +2897,9 @@
       "rico:hasOrHadSubject": [
         {
           "name": "La clemenza di Tito",
-          "@id": "wd:Mozart, Wolfgang Amadeus",
           "role": "festvorstellung",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Mozart, Wolfgang Amadeus"
         },
         {
           "name": "Zauberflöte",
@@ -2915,9 +2908,9 @@
         },
         {
           "name": "Don Giovanni",
-          "@id": "wd:Mozart, Wolfgang Amadeus",
           "role": "erwähnt",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Mozart, Wolfgang Amadeus"
         },
         {
           "name": "Cosi fan tutte",
@@ -3013,7 +3006,7 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:rezension"
       },
-      "rico:hasLanguage": "de",
+      "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "rico:hasOrHadAgent": [
         {
@@ -3049,19 +3042,16 @@
         },
         {
           "name": "Prinzregententheater",
-          "@id": "wd:München",
           "role": "auffuehrungsort",
           "@type": "rico:CorporateBody"
         },
         {
           "name": "Münchner Opern-Festspiele",
-          "@id": "wd:München",
           "role": "rahmenveranstaltung",
           "@type": "rico:CorporateBody"
         },
         {
           "name": "Münchner Merkur",
-          "@id": "wd:München",
           "role": "herausgeber:in",
           "@type": "rico:CorporateBody"
         }
@@ -3072,10 +3062,10 @@
       },
       "rico:hasOrHadSubject": {
         "name": "Die Meistersinger von Nürnberg",
-        "@id": "wd:Wagner, Richard",
+        "@id": "wd:Q190891",
         "role": "festvorstellung",
         "@type": "m3gim:MusicalWork",
-        "komponist": "Q190891"
+        "komponist": "Wagner, Richard"
       },
       "rico:isAssociatedWithDate": "1954-08-14 00:00:00",
       "m3gim:hasPerformanceRole": [
@@ -3118,7 +3108,7 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:rezension"
       },
-      "rico:hasLanguage": "fr",
+      "rico:hasOrHadLanguage": "fr",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "rico:hasOrHadAgent": [
         {
@@ -3164,13 +3154,11 @@
         },
         {
           "name": "Conservatoire",
-          "@id": "wd:Strasbourg",
           "role": "erwähnt",
           "@type": "rico:CorporateBody"
         },
         {
           "name": "orchestre municipal (Strasbourg)",
-          "@id": "wd:Strasbourg",
           "role": "Aufführung",
           "@type": "rico:CorporateBody"
         }
@@ -3182,9 +3170,9 @@
       "rico:hasOrHadSubject": [
         {
           "name": "Le chant de la Terre",
-          "@id": "wd:Mahler, Gustav",
           "role": "Aufführung",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Mahler, Gustav"
         },
         {
           "name": "2e concert de l'abonnement",
@@ -3202,7 +3190,7 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:rezension"
       },
-      "rico:hasLanguage": "de",
+      "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "rico:hasOrHadAgent": [
         {
@@ -3283,19 +3271,16 @@
         },
         {
           "name": "Wiener Philharmoniker",
-          "@id": "wd:Wien",
           "role": "auftritt",
           "@type": "rico:CorporateBody"
         },
         {
           "name": "Wiener Staatsoper",
-          "@id": "wd:Wien",
           "role": "auffuehrungsort",
           "@type": "rico:CorporateBody"
         },
         {
           "name": "Neues Österreich",
-          "@id": "wd:Wien",
           "role": "herausgeber:in",
           "@type": "rico:CorporateBody"
         },
@@ -3422,7 +3407,7 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:rezension"
       },
-      "rico:hasLanguage": "de",
+      "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "rico:hasOrHadAgent": [
         {
@@ -3478,7 +3463,6 @@
         },
         {
           "name": "Neues Österreich",
-          "@id": "wd:Wien",
           "role": "herausgeber:in",
           "@type": "rico:CorporateBody"
         },
@@ -3490,9 +3474,9 @@
       ],
       "rico:hasOrHadSubject": {
         "name": "Aida",
-        "@id": "wd:Verdi, Giuseppe",
         "role": "wiederaufnahme",
-        "@type": "m3gim:MusicalWork"
+        "@type": "m3gim:MusicalWork",
+        "komponist": "Verdi, Giuseppe"
       },
       "m3gim:mentions": [
         {
@@ -3544,7 +3528,7 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:rezension"
       },
-      "rico:hasLanguage": "de",
+      "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "rico:hasOrHadAgent": [
         {
@@ -3580,22 +3564,20 @@
         },
         {
           "name": "Neuer Kurier",
-          "@id": "wd:Wien?",
           "role": "herausgeber:in",
           "@type": "rico:CorporateBody"
         },
         {
           "name": "Wiener Staatsoper",
-          "@id": "wd:Wien",
           "role": "auffuehrungsort",
           "@type": "rico:CorporateBody"
         }
       ],
       "rico:hasOrHadSubject": {
         "name": "Aida",
-        "@id": "wd:Verdi, Giuseppe",
         "role": "wiederaufnahme",
-        "@type": "m3gim:MusicalWork"
+        "@type": "m3gim:MusicalWork",
+        "komponist": "Verdi, Giuseppe"
       },
       "rico:isAssociatedWithDate": "1956-05-02 00:00:00",
       "m3gim:hasPerformanceRole": [
@@ -3641,7 +3623,7 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:rezension"
       },
-      "rico:hasLanguage": "fr",
+      "rico:hasOrHadLanguage": "fr",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "rico:hasOrHadAgent": [
         {
@@ -3736,7 +3718,7 @@
         },
         {
           "name": "Bayreuther Festspiele",
-          "@id": "wd:Bayreuth",
+          "@id": "wd:Q157596",
           "role": "erwähnt",
           "@type": "rico:CorporateBody"
         }
@@ -3747,9 +3729,9 @@
       },
       "rico:hasOrHadSubject": {
         "name": "Tristan und Isolde",
-        "@id": "wd:Wagner, Richard",
         "role": "Aufführung",
-        "@type": "m3gim:MusicalWork"
+        "@type": "m3gim:MusicalWork",
+        "komponist": "Wagner, Richard"
       },
       "m3gim:mentions": [
         {
@@ -3846,7 +3828,7 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:rezension"
       },
-      "rico:hasLanguage": "fr",
+      "rico:hasOrHadLanguage": "fr",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "rico:hasOrHadAgent": [
         {
@@ -3902,7 +3884,6 @@
         },
         {
           "name": "Académie nationale de musique",
-          "@id": "wd:Paris",
           "role": "erwähnt",
           "@type": "rico:CorporateBody"
         },
@@ -3925,9 +3906,9 @@
       "rico:hasOrHadSubject": [
         {
           "name": "Tristan und Isolde",
-          "@id": "wd:Wagner, Richard",
           "role": "Aufführung",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Wagner, Richard"
         },
         {
           "name": "Der Ring des Niebelungen",
@@ -4006,7 +3987,7 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:brief"
       },
-      "rico:hasLanguage": "de",
+      "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "rico:hasOrHadAgent": {
         "name": "Malaniuk, Ira",
@@ -4024,7 +4005,7 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:brief"
       },
-      "rico:hasLanguage": "de",
+      "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "rico:hasOrHadAgent": [
         {
@@ -4040,7 +4021,6 @@
         },
         {
           "name": "National Artists Corporation",
-          "@id": "wd:New York",
           "role": "empfänger:in",
           "@type": "rico:CorporateBody"
         }
@@ -4065,7 +4045,7 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:biographie"
       },
-      "rico:hasLanguage": "de",
+      "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "rico:hasOrHadAgent": [
         {
@@ -4091,7 +4071,6 @@
         },
         {
           "name": "Volksoper Wien",
-          "@id": "wd:Wien",
           "role": "erwähnt",
           "@type": "rico:CorporateBody"
         },
@@ -4107,7 +4086,6 @@
         },
         {
           "name": "Staatsoper Wien",
-          "@id": "wd:Wien",
           "role": "erwähnt",
           "@type": "rico:CorporateBody"
         },
@@ -4226,33 +4204,33 @@
       "rico:hasOrHadSubject": [
         {
           "name": "Orpheus und Eurydike",
-          "@id": "wd:Gluck, Christoph Willibald",
           "role": "erwähnt",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Gluck, Christoph Willibald"
         },
         {
           "name": "Tristan und Isolde",
-          "@id": "wd:Wagner, Richard",
           "role": "erwähnt",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Wagner, Richard"
         },
         {
           "name": "Aida",
-          "@id": "wd:Verdi, Giuseppe",
           "role": "erwähnt",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Verdi, Giuseppe"
         },
         {
           "name": "Carmen",
-          "@id": "wd:Bizet, Georges",
           "role": "erwähnt",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Bizet, Georges"
         },
         {
           "name": "La clemenza di Tito",
-          "@id": "wd:Mozart, Wolfgang Amadeus",
           "role": "erwähnt",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Mozart, Wolfgang Amadeus"
         }
       ],
       "m3gim:mentions": [
@@ -4320,7 +4298,7 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:typoskript"
       },
-      "rico:hasLanguage": "en",
+      "rico:hasOrHadLanguage": "en",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "rico:hasOrHadAgent": [
         {
@@ -4361,9 +4339,9 @@
       },
       "rico:hasOrHadSubject": {
         "name": "Vanessa",
-        "@id": "wd:Barber, Samuel",
         "role": "Aufführung",
-        "@type": "m3gim:MusicalWork"
+        "@type": "m3gim:MusicalWork",
+        "komponist": "Barber, Samuel"
       },
       "rico:isAssociatedWithDate": [
         "1958-04-09 00:00:00",
@@ -4379,7 +4357,7 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:rezension"
       },
-      "rico:hasLanguage": "en",
+      "rico:hasOrHadLanguage": "en",
       "rico:hasExtent": "1 Blatt, 1 Seite"
     },
     {
@@ -4391,7 +4369,7 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:brief"
       },
-      "rico:hasLanguage": "en",
+      "rico:hasOrHadLanguage": "en",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "rico:hasOrHadAgent": [
         {
@@ -4412,7 +4390,6 @@
         },
         {
           "name": "National Artists Corporation",
-          "@id": "wd:New York",
           "role": "vermittler:in",
           "@type": "rico:CorporateBody"
         }
@@ -4441,7 +4418,7 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:typoskript"
       },
-      "rico:hasLanguage": "en",
+      "rico:hasOrHadLanguage": "en",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "rico:hasOrHadAgent": [
         {
@@ -4524,7 +4501,7 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:biographie"
       },
-      "rico:hasLanguage": "en",
+      "rico:hasOrHadLanguage": "en",
       "rico:hasExtent": "1 Blatt, 2 Seite",
       "rico:hasOrHadAgent": [
         {
@@ -4575,7 +4552,6 @@
         },
         {
           "name": "Staatsoper Wien",
-          "@id": "wd:Wien",
           "role": "erwähnt",
           "@type": "rico:CorporateBody"
         },
@@ -4694,33 +4670,33 @@
       "rico:hasOrHadSubject": [
         {
           "name": "Orpheus und Eurydike",
-          "@id": "wd:Gluck, Christoph Willibald",
           "role": "erwähnt",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Gluck, Christoph Willibald"
         },
         {
           "name": "Tristan und Isolde",
-          "@id": "wd:Wagner, Richard",
           "role": "erwähnt",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Wagner, Richard"
         },
         {
           "name": "Aida",
-          "@id": "wd:Verdi, Giuseppe",
           "role": "erwähnt",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Verdi, Giuseppe"
         },
         {
           "name": "Carmen",
-          "@id": "wd:Bizet, Georges",
           "role": "erwähnt",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Bizet, Georges"
         },
         {
           "name": "La clemenza di Tito",
-          "@id": "wd:Mozart, Wolfgang Amadeus",
           "role": "erwähnt",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Mozart, Wolfgang Amadeus"
         }
       ],
       "m3gim:mentions": [
@@ -4791,7 +4767,7 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:dokument"
       },
-      "rico:hasLanguage": "de",
+      "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "rico:hasOrHadAgent": [
         {
@@ -4872,9 +4848,9 @@
       "rico:hasOrHadSubject": [
         {
           "name": "Aida",
-          "@id": "wd:Verdi, Giuseppe",
           "role": "erwähnt",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Verdi, Giuseppe"
         },
         {
           "name": "Troubadour",
@@ -4893,15 +4869,15 @@
         },
         {
           "name": "Rigoletto",
-          "@id": "wd:Verdi, Giuseppe",
           "role": "erwähnt",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Verdi, Giuseppe"
         },
         {
           "name": "Macbeth",
-          "@id": "wd:Verdi, Giuseppe",
           "role": "erwähnt",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Verdi, Giuseppe"
         },
         {
           "name": "Madame Butterfly",
@@ -4910,9 +4886,9 @@
         },
         {
           "name": "Carmen",
-          "@id": "wd:Bizet, Georges",
           "role": "erwähnt",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Bizet, Georges"
         },
         {
           "name": "Figaro",
@@ -4936,15 +4912,15 @@
         },
         {
           "name": "Lohengrin",
-          "@id": "wd:Wagner, Richard",
           "role": "erwähnt",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Wagner, Richard"
         },
         {
           "name": "Tristan und Isolde",
-          "@id": "wd:Wagner, Richard",
           "role": "erwähnt",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Wagner, Richard"
         },
         {
           "name": "Tannhäuser",
@@ -4963,15 +4939,15 @@
         },
         {
           "name": "Götterdämmerung",
-          "@id": "wd:Wagner, Richard",
           "role": "erwähnt",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Wagner, Richard"
         },
         {
           "name": "Der Evangelimann",
-          "@id": "wd:Kienzl, Wilhelm",
           "role": "erwähnt",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Kienzl, Wilhelm"
         },
         {
           "name": "Boris Godunow",
@@ -5000,9 +4976,9 @@
         },
         {
           "name": "Daphne",
-          "@id": "wd:Strauss, Richard",
           "role": "erwähnt",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Strauss, Richard"
         },
         {
           "name": "Herzog Blaubarts Burg",
@@ -5021,9 +4997,9 @@
         },
         {
           "name": "Judith",
-          "@id": "wd:Honegger, Arthur",
           "role": "erwähnt",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Honegger, Arthur"
         },
         {
           "name": "Les Noces",
@@ -5166,7 +5142,7 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:rezension"
       },
-      "rico:hasLanguage": "fr",
+      "rico:hasOrHadLanguage": "fr",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "rico:hasOrHadAgent": [
         {
@@ -5267,13 +5243,11 @@
         },
         {
           "name": "Opéra de Monte-Carlo",
-          "@id": "wd:Monaco",
           "role": "auffuehrungsort",
           "@type": "rico:CorporateBody"
         },
         {
           "name": "Opéra de Monte-Carlo. Orchestre national",
-          "@id": "wd:Monaco",
           "role": "auftritt",
           "@type": "rico:CorporateBody"
         },
@@ -5291,9 +5265,9 @@
         },
         {
           "name": "Der Rosenkavalier",
-          "@id": "wd:Strauss, Richard",
           "role": "Aufführung",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Strauss, Richard"
         }
       ],
       "m3gim:mentions": {
@@ -5363,7 +5337,7 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:rezension"
       },
-      "rico:hasLanguage": "de",
+      "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:mentions": [
         {
@@ -5396,7 +5370,7 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:rezension"
       },
-      "rico:hasLanguage": "de",
+      "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "rico:hasOrHadAgent": [
         {
@@ -5421,7 +5395,6 @@
         },
         {
           "name": "Oper Graz",
-          "@id": "wd:Graz",
           "role": "erwähnt",
           "@type": "rico:CorporateBody"
         },
@@ -5487,27 +5460,27 @@
       "rico:hasOrHadSubject": [
         {
           "name": "Die Geschöpfe des Prometheus",
-          "@id": "wd:Beethoven, Ludwig van",
           "role": "Aufführung",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Beethoven, Ludwig van"
         },
         {
           "name": "8. Symphonie",
-          "@id": "wd:Beethoven, Ludwig van",
           "role": "Aufführung",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Beethoven, Ludwig van"
         },
         {
           "name": "3. Symphonie",
-          "@id": "wd:Brahms, Johannes",
           "role": "Aufführung",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Brahms, Johannes"
         },
         {
           "name": "Don Giovanni",
-          "@id": "wd:Mozart, Wolfgang Amadeus",
           "role": "erwähnt",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Mozart, Wolfgang Amadeus"
         },
         {
           "name": "Fidelio",
@@ -5534,7 +5507,7 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:zeitungsausschnitt"
       },
-      "rico:hasLanguage": "de",
+      "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "rico:hasOrHadAgent": [
         {
@@ -5550,7 +5523,7 @@
         },
         {
           "name": "Bayreuther Festspiele",
-          "@id": "wd:Bayreuth",
+          "@id": "wd:Q157596",
           "role": "erwähnt",
           "@type": "rico:CorporateBody"
         }
@@ -5561,9 +5534,9 @@
       },
       "rico:hasOrHadSubject": {
         "name": "Tristan und Isolde",
-        "@id": "wd:Wagner, Richard",
         "role": "erwähnt",
-        "@type": "m3gim:MusicalWork"
+        "@type": "m3gim:MusicalWork",
+        "komponist": "Wagner, Richard"
       },
       "m3gim:mentions": {
         "name": "Wagner, Richard",
@@ -5623,7 +5596,7 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:brief"
       },
-      "rico:hasLanguage": "de",
+      "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "rico:hasOrHadAgent": [
         {
@@ -5668,7 +5641,7 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:brief"
       },
-      "rico:hasLanguage": "de",
+      "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 2 Seiten",
       "rico:hasOrHadAgent": [
         {
@@ -5717,15 +5690,15 @@
       "rico:hasOrHadSubject": [
         {
           "name": "Salome",
+          "@id": "wd:Q723407",
           "role": "premiere",
-          "@type": "m3gim:MusicalWork",
-          "komponist": "Q723407"
+          "@type": "m3gim:MusicalWork"
         },
         {
           "name": "Salome",
+          "@id": "wd:Q723407",
           "role": "erwähnt",
-          "@type": "m3gim:MusicalWork",
-          "komponist": "Q723407"
+          "@type": "m3gim:MusicalWork"
         },
         {
           "name": "Herzog Blaubarts Burg",
@@ -5796,12 +5769,12 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:ausweis"
       },
-      "rico:hasLanguage": "de",
+      "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "rico:hasOrHadAgent": [
         {
           "name": "Bayreuther Festspiele",
-          "@id": "wd:Bayreuth",
+          "@id": "wd:Q157596",
           "role": "rahmenveranstaltung",
           "@type": "rico:CorporateBody"
         },
@@ -5837,7 +5810,7 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:brief"
       },
-      "rico:hasLanguage": "de",
+      "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:einnahmen": "6000, Esc abendgage",
       "rico:hasOrHadAgent": [
@@ -5848,7 +5821,6 @@
         },
         {
           "name": "Ernst Kühnly Bühnenvermittlung Inland und Ausland",
-          "@id": "wd:Stuttgart",
           "role": "vermittler:in",
           "@type": "rico:CorporateBody"
         },
@@ -5910,28 +5882,28 @@
       "rico:hasOrHadSubject": [
         {
           "name": "Die Meistersinger von Nürnberg",
-          "@id": "wd:Wagner, Richard",
+          "@id": "wd:Q190891",
           "role": "erwähnt",
           "@type": "m3gim:MusicalWork",
-          "komponist": "Q190891"
+          "komponist": "Wagner, Richard"
         },
         {
           "name": "Die Zauberflöte",
-          "@id": "wd:Mozart, Wolfgang Amadeus",
           "role": "erwähnt",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Mozart, Wolfgang Amadeus"
         },
         {
           "name": "Elektra",
-          "@id": "wd:Strauss, Richard",
           "role": "erwähnt",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Strauss, Richard"
         },
         {
           "name": "Tristan und Isolde",
-          "@id": "wd:Wagner, Richard",
           "role": "erwähnt",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Wagner, Richard"
         }
       ],
       "m3gim:mentions": {
@@ -5972,7 +5944,7 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:konvolut"
       },
-      "rico:hasLanguage": "de",
+      "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "8 Blätter, 8 Seiten"
     },
     {
@@ -5984,7 +5956,7 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:notiz"
       },
-      "rico:hasLanguage": "de",
+      "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:ausgaben": "18000 erwähnt",
       "m3gim:einnahmen": "90000 erwähnt",
@@ -6001,9 +5973,9 @@
         },
         {
           "name": "Götterdämmerung",
-          "@id": "wd:Wagner, Richard",
           "role": "erwähnt",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Wagner, Richard"
         }
       ],
       "m3gim:mentions": [
@@ -6027,7 +5999,7 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:quittung"
       },
-      "rico:hasLanguage": "de",
+      "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:ausgaben": "2600, S provision",
       "rico:hasOrHadAgent": [
@@ -6092,7 +6064,7 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:quittung"
       },
-      "rico:hasLanguage": "de",
+      "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:ausgaben": "360, S provision",
       "rico:hasOrHadAgent": [
@@ -6137,7 +6109,7 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:quittung"
       },
-      "rico:hasLanguage": "de",
+      "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:ausgaben": "2500, S provision",
       "rico:hasOrHadAgent": [
@@ -6202,13 +6174,12 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:quittung"
       },
-      "rico:hasLanguage": "de",
+      "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:ausgaben": "4000, S provision",
       "rico:hasOrHadAgent": [
         {
           "name": "Wiener Staatsoper",
-          "@id": "wd:Wien",
           "role": "erwähnt",
           "@type": "rico:CorporateBody"
         },
@@ -6258,7 +6229,7 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:quittung"
       },
-      "rico:hasLanguage": "de",
+      "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:ausgaben": "510, S provision",
       "rico:hasOrHadAgent": [
@@ -6312,7 +6283,7 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:quittung"
       },
-      "rico:hasLanguage": "de",
+      "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:ausgaben": "5500, S provision",
       "rico:hasOrHadAgent": [
@@ -6362,13 +6333,12 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:quittung"
       },
-      "rico:hasLanguage": "de",
+      "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:ausgaben": "631,50, Fr. erwähnt",
       "rico:hasOrHadAgent": [
         {
           "name": "Aktiengesellschaft Leu & Co.",
-          "@id": "wd:Zürich",
           "role": "erwähnt",
           "@type": "rico:CorporateBody"
         },
@@ -6407,13 +6377,12 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:quittung"
       },
-      "rico:hasLanguage": "de",
+      "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:einnahmen": "1360, DM erwähnt",
       "rico:hasOrHadAgent": [
         {
           "name": "Nord- und Westdeutscher Rundfunkverband",
-          "@id": "wd:Köln",
           "role": "verfasser:in",
           "@type": "rico:CorporateBody"
         },
@@ -6452,12 +6421,12 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:brief"
       },
-      "rico:hasLanguage": "de",
+      "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "rico:hasOrHadAgent": [
         {
           "name": "Bayerische Staatsoper",
-          "@id": "wd:München",
+          "@id": "wd:Q681931",
           "role": "verfasser:in",
           "@type": "rico:CorporateBody"
         },
@@ -6491,7 +6460,7 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:programmheft"
       },
-      "rico:hasLanguage": "de, en, fr",
+      "rico:hasOrHadLanguage": "de, en, fr",
       "rico:hasExtent": "1 Blatt, 4 Seiten",
       "rico:hasOrHadAgent": [
         {
@@ -6593,9 +6562,9 @@
         },
         {
           "name": "Vergin tutt' amor",
-          "@id": "wd:Durante, Francesco",
           "role": "Aufführung",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Durante, Francesco"
         },
         {
           "name": "Pupillette",
@@ -6604,9 +6573,9 @@
         },
         {
           "name": "Lamento d'Arianna",
-          "@id": "wd:Monteverdi, Claudio",
           "role": "Aufführung",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Monteverdi, Claudio"
         },
         {
           "name": "Stets barg die Liebe sie",
@@ -6615,75 +6584,75 @@
         },
         {
           "name": "Ein kleines Haus",
-          "@id": "wd:Haydn, Joseph",
           "role": "Aufführung",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Haydn, Joseph"
         },
         {
           "name": "Ich liebe dich",
-          "@id": "wd:Beethoven, Ludwig von",
           "role": "Aufführung",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Beethoven, Ludwig von"
         },
         {
           "name": "Lied der Mignon",
-          "@id": "wd:Beethoven, Ludwig von",
           "role": "Aufführung",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Beethoven, Ludwig von"
         },
         {
           "name": "Ganymed",
-          "@id": "wd:Schubert, Franz",
           "role": "Aufführung",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Schubert, Franz"
         },
         {
           "name": "Nachtstück",
-          "@id": "wd:Schubert, Franz",
           "role": "Aufführung",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Schubert, Franz"
         },
         {
           "name": "Er liebt mich nicht",
-          "@id": "wd:Schubert, Franz",
           "role": "Aufführung",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Schubert, Franz"
         },
         {
           "name": "Rastlose Liebe",
-          "@id": "wd:Schubert, Franz",
           "role": "Aufführung",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Schubert, Franz"
         },
         {
           "name": "Der Gang zum Liebchen",
-          "@id": "wd:Brahms, Johannes",
           "role": "Aufführung",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Brahms, Johannes"
         },
         {
           "name": "Es träumte mir",
-          "@id": "wd:Brahms, Johannes",
           "role": "Aufführung",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Brahms, Johannes"
         },
         {
           "name": "Von ewiger Liebe",
-          "@id": "wd:Brahms, Johannes",
           "role": "Aufführung",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Brahms, Johannes"
         },
         {
           "name": "Traurigkeit",
-          "@id": "wd:Barwinsky, Wolodymyr",
           "role": "Aufführung",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Barwinsky, Wolodymyr"
         },
         {
           "name": "O ihr Felder",
-          "@id": "wd:Barwinsky, Wolodymyr",
           "role": "Aufführung",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Barwinsky, Wolodymyr"
         },
         {
           "name": "Wenn ich in die Weite",
@@ -6692,21 +6661,21 @@
         },
         {
           "name": "Glücks genug",
-          "@id": "wd:Strauss, Richard",
           "role": "Aufführung",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Strauss, Richard"
         },
         {
           "name": "Mein Herz ist stumm",
-          "@id": "wd:Strauss, Richard",
           "role": "Aufführung",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Strauss, Richard"
         },
         {
           "name": "Befreit",
-          "@id": "wd:Strauss, Richard",
           "role": "Aufführung",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Strauss, Richard"
         }
       ],
       "m3gim:mentions": [
@@ -6750,7 +6719,7 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:brief"
       },
-      "rico:hasLanguage": "de",
+      "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:einnahmen": "1200, Fr abendgage",
       "rico:hasOrHadAgent": [
@@ -6783,9 +6752,9 @@
       ],
       "rico:hasOrHadSubject": {
         "name": "Tristan und Isolde",
-        "@id": "wd:Wagner, Richard",
         "role": "Aufführung",
-        "@type": "m3gim:MusicalWork"
+        "@type": "m3gim:MusicalWork",
+        "komponist": "Wagner, Richard"
       },
       "m3gim:mentions": [
         {
@@ -6817,12 +6786,12 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:brief"
       },
-      "rico:hasLanguage": "de",
+      "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "rico:hasOrHadAgent": [
         {
           "name": "Bayerische Staatsoper",
-          "@id": "wd:München",
+          "@id": "wd:Q681931",
           "role": "verfasser:in",
           "@type": "rico:CorporateBody"
         },
@@ -6866,7 +6835,7 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:brief"
       },
-      "rico:hasLanguage": "de",
+      "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "rico:hasOrHadAgent": [
         {
@@ -6923,24 +6892,21 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:rezension"
       },
-      "rico:hasLanguage": "de",
+      "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "rico:hasOrHadAgent": [
         {
           "name": "Wiener Staatsoper",
-          "@id": "wd:Wien",
           "role": "erwähnt",
           "@type": "rico:CorporateBody"
         },
         {
           "name": "Volksoper Wien",
-          "@id": "wd:Wien",
           "role": "auffuehrungsort",
           "@type": "rico:CorporateBody"
         },
         {
           "name": "Arbeiter Zeitung",
-          "@id": "wd:Wien",
           "role": "herausgeber:in",
           "@type": "rico:CorporateBody"
         },
@@ -7056,18 +7022,16 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:rezension"
       },
-      "rico:hasLanguage": "de",
+      "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "rico:hasOrHadAgent": [
         {
           "name": "Wiener Staatsoper",
-          "@id": "wd:Wien",
           "role": "erwähnt",
           "@type": "rico:CorporateBody"
         },
         {
           "name": "Volksoper Wien",
-          "@id": "wd:Wien",
           "role": "auffuehrungsort",
           "@type": "rico:CorporateBody"
         },
@@ -7134,7 +7098,6 @@
         },
         {
           "name": "Löbl, Karl",
-          "@id": "wd:K",
           "role": "verfasser:in",
           "@type": "rico:Person"
         }
@@ -7189,7 +7152,7 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:rezension"
       },
-      "rico:hasLanguage": "de",
+      "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "rico:hasOrHadAgent": [
         {
@@ -7199,7 +7162,6 @@
         },
         {
           "name": "Wiener Zeitung",
-          "@id": "wd:Wien",
           "role": "herausgeber:in",
           "@type": "rico:CorporateBody"
         },
@@ -7319,18 +7281,16 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:rezension"
       },
-      "rico:hasLanguage": "de",
+      "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "rico:hasOrHadAgent": [
         {
           "name": "Wiener Staatsoper",
-          "@id": "wd:Wien",
           "role": "auffuehrungsort",
           "@type": "rico:CorporateBody"
         },
         {
           "name": "Volksoper Wien",
-          "@id": "wd:Wien",
           "role": "auffuehrungsort",
           "@type": "rico:CorporateBody"
         },
@@ -7453,18 +7413,16 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:rezension"
       },
-      "rico:hasLanguage": "de",
+      "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "rico:hasOrHadAgent": [
         {
           "name": "Wiener Staatsoper",
-          "@id": "wd:Wien",
           "role": "auffuehrungsort",
           "@type": "rico:CorporateBody"
         },
         {
           "name": "Volksoper Wien",
-          "@id": "wd:Wien",
           "role": "auffuehrungsort",
           "@type": "rico:CorporateBody"
         },
@@ -7589,7 +7547,7 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:rezension"
       },
-      "rico:hasLanguage": "de",
+      "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "rico:hasOrHadAgent": [
         {
@@ -7599,13 +7557,11 @@
         },
         {
           "name": "Wiener Staatsoper",
-          "@id": "wd:Wien",
           "role": "auffuehrungsort",
           "@type": "rico:CorporateBody"
         },
         {
           "name": "Volksoper Wien",
-          "@id": "wd:Wien",
           "role": "auffuehrungsort",
           "@type": "rico:CorporateBody"
         },
@@ -7647,22 +7603,22 @@
         },
         {
           "name": "La Traviata",
-          "@id": "wd:Verdi, Giuseppe",
           "role": "erwähnt",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Verdi, Giuseppe"
         },
         {
           "name": "Wozzeck",
-          "@id": "wd:Berg, Alban",
           "role": "erwähnt",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Berg, Alban"
         },
         {
           "name": "Die Meistersinger von Nürnberg",
-          "@id": "wd:Wagner, Richard",
+          "@id": "wd:Q190891",
           "role": "erwähnt",
           "@type": "m3gim:MusicalWork",
-          "komponist": "Q190891"
+          "komponist": "Wagner, Richard"
         }
       ],
       "m3gim:mentions": [
@@ -7706,7 +7662,7 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:programmheft"
       },
-      "rico:hasLanguage": "de",
+      "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:summe": "2, S erwähnt",
       "rico:hasOrHadAgent": [
@@ -7769,93 +7725,93 @@
         },
         {
           "name": "Führ mich, Kind, nach Bethlehem",
-          "@id": "wd:Wolf, Hugo",
           "role": "Aufführung",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Wolf, Hugo"
         },
         {
           "name": "Ach, des Knaben Augen",
-          "@id": "wd:Wolf, Hugo",
           "role": "Aufführung",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Wolf, Hugo"
         },
         {
           "name": "Nun wandre, Maria",
-          "@id": "wd:Wolf, Hugo",
           "role": "Aufführung",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Wolf, Hugo"
         },
         {
           "name": "Die ihr schwebet um diese Palmen",
-          "@id": "wd:Wolf, Hugo",
           "role": "Aufführung",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Wolf, Hugo"
         },
         {
           "name": "Herr, was trägt der Boden hier",
-          "@id": "wd:Wolf, Hugo",
           "role": "Aufführung",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Wolf, Hugo"
         },
         {
           "name": "Mühvoll komm' ich und beladen",
-          "@id": "wd:Wolf, Hugo",
           "role": "Aufführung",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Wolf, Hugo"
         },
         {
           "name": "Sagt, seid Ihr es, feiner Herr",
-          "@id": "wd:Wolf, Hugo",
           "role": "Aufführung",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Wolf, Hugo"
         },
         {
           "name": "Auf dem grünen Balkon mein Mädchen schaut",
-          "@id": "wd:Wolf, Hugo",
           "role": "Aufführung",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Wolf, Hugo"
         },
         {
           "name": "In dem Schatten meiner Locken",
-          "@id": "wd:Wolf, Hugo",
           "role": "Aufführung",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Wolf, Hugo"
         },
         {
           "name": "Wenn du zu den Blumen gehst",
-          "@id": "wd:Wolf, Hugo",
           "role": "Aufführung",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Wolf, Hugo"
         },
         {
           "name": "Bedeckt mich mit Blumen",
-          "@id": "wd:Wolf, Hugo",
           "role": "Aufführung",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Wolf, Hugo"
         },
         {
           "name": "Alle gingen, Herz, zur Ruh",
-          "@id": "wd:Wolf, Hugo",
           "role": "Aufführung",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Wolf, Hugo"
         },
         {
           "name": "Geh', Geliebter, geh' jetzt",
-          "@id": "wd:Wolf, Hugo",
           "role": "Aufführung",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Wolf, Hugo"
         },
         {
           "name": "Quintett für Klavier und Schteichquartett, G-Dur",
-          "@id": "wd:Schmidt, Franz",
           "role": "Aufführung",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Schmidt, Franz"
         },
         {
           "name": "Spanisches Liederbuch",
-          "@id": "wd:Wolf, Hugo",
           "role": "erwähnt",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Wolf, Hugo"
         }
       ]
     },
@@ -7867,7 +7823,7 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:visitenkarte"
       },
-      "rico:hasLanguage": "de",
+      "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "rico:hasOrHadAgent": {
         "name": "Konzertgesellschaft Zürich",
@@ -7887,12 +7843,11 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:brief"
       },
-      "rico:hasLanguage": "de",
+      "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 2 Seiten",
       "rico:hasOrHadAgent": [
         {
           "name": "Deutsche Oper Berlin",
-          "@id": "wd:Berlin",
           "role": "empfänger:in",
           "@type": "rico:CorporateBody"
         },
@@ -7922,12 +7877,11 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:brief"
       },
-      "rico:hasLanguage": "de",
+      "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 2 Seiten",
       "rico:hasOrHadAgent": [
         {
           "name": "Deutsche Oper Berlin",
-          "@id": "wd:Berlin",
           "role": "empfänger:in",
           "@type": "rico:CorporateBody"
         },
@@ -9697,7 +9651,7 @@
       "rico:hasExtent": "1 days 06:00:00"
     }
   ],
-  "m3gim:exportDate": "2026-02-20T07:32:38.543883",
+  "m3gim:exportDate": "2026-02-20T08:18:50.083880",
   "m3gim:recordCount": 282,
   "m3gim:konvolutCount": 3
 }

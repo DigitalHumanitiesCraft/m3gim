@@ -6,7 +6,7 @@
 
 ## Kern
 
-**Mapping Mobile Musicians (M³GIM)** untersucht Mobilität und Musiktheaterwissen im Graz der Nachkriegszeit am Beispiel der Mezzosopranistin Ira Malaniuk (1919–2009). Malaniuk floh 1944 aus Lemberg, erhielt 1945–47 ihr erstes Festengagement am Grazer Opernhaus und machte von dort internationale Karriere (Bayreuth ab 1952, Wiener Staatsoper, Bayerische Staatsoper). Ab 1970 Professorin an der KUG Graz. Ihr Teilnachlass (UAKUG/NIM, 283 Archiveinheiten) wird digital erschlossen.
+**Mapping Mobile Musicians (M³GIM)** untersucht Mobilität und Musiktheaterwissen im Graz der Nachkriegszeit am Beispiel der Mezzosopranistin Ira Malaniuk (1919–2009). Malaniuk floh 1944 aus Lemberg, erhielt 1945–47 ihr erstes Festengagement am Grazer Opernhaus und machte von dort internationale Karriere (Bayreuth ab 1952, Wiener Staatsoper, Bayerische Staatsoper). Ab 1970 Professorin an der KUG Graz. Ihr Teilnachlass (UAKUG/NIM, 282 Archiveinheiten) wird digital erschlossen.
 
 - **Laufzeit:** 01.03.2026–28.02.2027 (Machbarkeitsstudie für FWF-Folgeprojekt)
 - **Finanzierung:** Stadt Graz (bewilligt Dez 2025), Mariann Steegmann Foundation (bewilligt Feb 2026)
@@ -48,9 +48,10 @@
 | 18. Feb 2026 | Wissens-Destillation Iteration 1 → Vault | done |
 | 18. Feb 2026 | Google-Sheets-Analyse, Datenmodell v2.3 | done |
 | 20. Feb 2026 | Daten-Exploration (explore.py), Datenmodell v2.5 | done |
+| 20. Feb 2026 | Pipeline Iteration 2 (validate/transform/build-views), Audit + Bugfix | done |
 | 21. Feb 2026 | Konvolut-Lieferung | pending |
 | 24. Feb 2026 | Meeting: Datenerfassung, Modellierung, Workflows | pending |
-| Mär–Apr 2026 | Pipeline-Anpassung (validate/transform/build-views), Start Erfassung | planned |
+| Mär–Apr 2026 | Frontend an echte Daten anpassen, Start Erfassung | planned |
 | Mai–Jun 2026 | Promptotyping Iteration 2, Frontend-Entwicklung | planned |
 | Sep 2026 | Arbeitsgespräch mit externen Expert\*innen | planned |
 | Mär 2027 | Website-Veröffentlichung | planned |
