@@ -28,7 +28,7 @@ docs/data/*.json    → GitHub Pages Frontend
 | reconcile.py | Wikidata-Reconciliation (noch nicht implementiert) | Indizes | Wikidata-IDs |
 | migrate.py | AUGIAS-Export → formatierte Excel (einmalig, abgeschlossen) | AUGIAS-XLSX | Excel |
 
-View-JSONs: `partitur.json`, `matrix.json`, `kosmos.json`, `sankey.json`
+View-JSONs: `archiv.json`, `matrix.json`, `kosmos.json`, `indizes.json`
 
 Details: siehe [`scripts/README.md`](../scripts/README.md)
 
@@ -86,7 +86,43 @@ Mapping: archivsignatur → `rico:identifier`, titel → `rico:title`, entstehun
 
 ## Frontend
 
-Vanilla JS (ES6-Module, kein Framework), D3.js v7 für alle Visualisierungen, Lucide Icons (CDN). Offline-first: alle Daten (~500KB) bei Startup geladen, kein Backend.
+Vanilla JS (ES6-Module, kein Framework), D3.js v7 (CDN) fuer Matrix + Kosmos, Lucide Icons (CDN). Offline-first: alle Daten (~500KB) bei Startup geladen, kein Backend. Kein Build-Tool (Vite aus Iteration 1 entfernt) — direkt auf GitHub Pages.
+
+### 4 Tabs
+
+| Tab | Typ | Datenquelle | Beschreibung |
+|---|---|---|---|
+| **Archiv** | Datengetriebene View | archiv.json | Bestand (Tektonik-Hierarchie) + Chronik (zeitlich-geografisch), Toggle, Inline-Expansion statt Sidebar |
+| **Indizes** | Datengetriebene View | indizes.json | 4-Grid: Personen, Organisationen, Orte, Werke mit Detailansicht |
+| **Matrix** | D3.js Heatmap | matrix.json | Person x 5-Jahres-Periode, Begegnungsintensitaet |
+| **Kosmos** | D3.js Force-Graph | kosmos.json | Radiale Darstellung: Malaniuk → Komponisten → Rollen |
+
+### Modulstruktur
+
+```
+docs/js/
+├── main.js              # Einstiegspunkt, Store-Aufbau, Router
+├── data/
+│   ├── loader.js        # Fetch + JSON-Parse
+│   ├── aggregator.js    # buildStore() — Maps, Indizes, Konvolute
+│   └── constants.js     # DOKUMENTTYP_LABELS, PERSONEN_NORMALISIERUNG
+├── ui/
+│   ├── router.js        # Tab-Wechsel, URL-Hash-State
+│   ├── detail-panel.js  # Slide-in Sidebar (fuer Indizes/Matrix/Kosmos)
+│   ├── stats-bar.js     # Header-Statistik-Chips
+│   └── info-modal.js    # Datenstand-Dialog
+├── views/
+│   ├── archiv.js              # Orchestrator: Toggle, Filter, Sort
+│   ├── archiv-bestand.js      # Tektonik: Fonds → Konvolute → Objekte
+│   ├── archiv-chronik.js      # Zeitlich-geografische Gruppierung
+│   ├── archiv-inline-detail.js # Shared Detail-Komponente
+│   ├── indizes.js             # 4-Grid mit Detailansicht
+│   ├── matrix.js              # D3.js Heatmap
+│   └── kosmos.js              # D3.js Force-Graph
+└── utils/
+    ├── dom.js           # el(), clear(), HTML-Helpers
+    └── format.js        # formatSignatur(), formatDate()
+```
 
 ---
 

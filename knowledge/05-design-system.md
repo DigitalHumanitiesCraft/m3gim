@@ -50,10 +50,14 @@ Primary `#2C2825` · Secondary `#5C5651` · Tertiary `#8A857E`
 
 ## Layout
 
-Zwei-Bereiche-Architektur:
+Tab-basierte Single-Page-App mit 4 Tabs:
 
-- **ARCHIV:** Tektonik-Sidebar (280px), Card Grid, Detail Modal (720px)
-- **ANALYSE:** 4 D3.js-Visualisierungen, Document Panel (380px), Horizontale Toolbar
+- **Header:** KUG-Blau, Statistik-Chips (Objekte, Konvolute, Zeitraum, Personen)
+- **Tab-Bar:** Archiv · Indizes · Matrix · Kosmos
+- **Archiv:** Bestand/Chronik-Toggle, Suchleiste + Typfilter + Sortierung, Inline-Expansion (kein Modal/Sidebar)
+- **Indizes:** 4-Grid (Personen, Organisationen, Orte, Werke), Suche + Kategorie-Filter, Detailansicht in Sidebar
+- **Matrix/Kosmos:** D3.js-Visualisierungen mit Slide-in Detail-Panel (420px)
+- **Footer:** KUG Graz · GitHub · Prototyp
 
 Spacing: 8px-Raster. Icons: Lucide (CDN). Accessibility: WCAG 2.1 AA.
 

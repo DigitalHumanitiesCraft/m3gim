@@ -1,31 +1,37 @@
-# Visualisierungen
+# Visualisierungen & Views
 
-> Vier D3.js-basierte Darstellungen, operieren auf vorberechneten View-JSONs.
+> 2 D3.js-Visualisierungen (Matrix, Kosmos) + 2 datengetriebene Views (Archiv, Indizes), operieren auf vorberechneten View-JSONs.
 
 ---
 
 ## Übersicht
 
-| Visualisierung | Dimension | View-JSON | Forschungsfragen |
+| Tab | Typ | View-JSON | Forschungsfragen |
 |---|---|---|---|
-| Mobilitäts-Partitur | Zeit | partitur.json | FF1–FF4 |
-| Begegnungs-Matrix | Netzwerk | matrix.json | FF1, FF3 |
-| Rollen-Kosmos | Repertoire | kosmos.json | FF2 |
-| Karrierefluss | Korrelation | sankey.json | FF2, FF4 |
+| Archiv (Bestand + Chronik) | Datengetriebene View | archiv.json | FF1, FF4 |
+| Indizes | Datengetriebene View | indizes.json | FF1, FF3 |
+| Begegnungs-Matrix | D3.js Heatmap | matrix.json | FF1, FF3 |
+| Rollen-Kosmos | D3.js Force-Graph | kosmos.json | FF2 |
 
 ---
 
-## Mobilitäts-Partitur (Zeit)
+## Archiv (Bestand + Chronik)
 
-6 Spuren auf gemeinsamer Zeitachse:
-1. **Lebensphasen** LP1–LP7 (1919–2009)
-2. **Orte-Swimlane** (Wohnorte oberhalb, Aufführungsorte unterhalb)
-3. **Mobilitäts-Spur** (5 Migrationsereignisse farbkodiert)
-4. **Netzwerk-Aggregation** (Balkendiagramm pro 5-Jahres-Periode)
-5. **Repertoire** (Rollen als Balken nach Komponist)
-6. **Dokumente** (Überlieferungsdichte)
+Zwei umschaltbare Perspektiven auf denselben Datenbestand:
 
-Fokus-Linie als zentrales Navigationsinstrument.
+**Bestand (Tektonik):** Hierarchische Darstellung Fonds → Konvolute → Objekte. Konvolute sind aufklappbar. Jeder Record kann inline expandiert werden (shared `buildInlineDetail()`-Komponente). Suchleiste, Dokumenttyp-Filter, Sortierung (Signatur/Datum/Titel).
+
+**Chronik (Mobilität):** Zeitlich-geografische Gruppierung nach 5-Jahres-Perioden → Orte. Karriere-Notizen pro Periode (z.B. "1945-1949: Graz / Nachkriegszeit"). Records inline expandierbar.
+
+Ersetzt die ursprüngliche Mobilitäts-Partitur (6-Spuren-Zeitachse aus Iteration 1, zu komplex für den aktuellen Datenstand).
+
+---
+
+## Indizes (4-Grid)
+
+Vier durchsuchbare Index-Karten: Personen, Organisationen, Orte, Werke. Jeder Index mit Suchfeld und Kategorie-Filter. Detail-Panel (Sidebar) zeigt verknüpfte Archiv-Records.
+
+Ersetzt den Karrierefluss/Sankey aus Iteration 1.
 
 ---
 
@@ -45,11 +51,13 @@ Radiale Force-Graph. Zentrum: Malaniuk (50px). Mittlere Bahn: Komponisten. Äuß
 
 ---
 
-## Karrierefluss (Korrelation)
+## Nicht umgesetzte Konzepte (Iteration 1)
 
-Alluvial/Sankey: Phase → Repertoire → Ort. Schwächste Visualisierung, redundant mit Partitur und Kosmos.
-
-**Empfehlung Iteration 2:** Ablösung durch Leaflet-Karte (CartoDB Positron).
+| Konzept | Status | Begründung |
+|---|---|---|
+| Mobilitäts-Partitur (6-Spuren-Zeitachse) | Ersetzt durch Archiv-Chronik | Zu komplex, Daten unzureichend für 6 Spuren |
+| Karrierefluss/Sankey (Phase → Repertoire → Ort) | Ersetzt durch Indizes | Redundant mit Partitur und Kosmos |
+| Leaflet-Karte (CartoDB Positron) | Verschoben | Deferred auf spätere Iteration |
 
 ---
 
@@ -66,9 +74,9 @@ Alluvial/Sankey: Phase → Repertoire → Ort. Schwächste Visualisierung, redun
 | FF | Zielerreichung | Hauptlücke |
 |---|---|---|
 | FF1 Vernetzung | 70% | Zeitfilter in Matrix fehlt |
-| FF2 Genre | 90% | Kosmos + Partitur bilden Repertoire ab |
+| FF2 Genre | 90% | Kosmos bildet Repertoire ab |
 | FF3 Wissenstransfer | 60% | Vermittler identifizierbar, Inhalte nicht kodiert |
-| FF4 Mobilität | 85% | Kartendarstellung fehlt |
+| FF4 Mobilität | 85% | Kartendarstellung fehlt, Chronik-View als Zwischenlösung |
 
 ---
 
