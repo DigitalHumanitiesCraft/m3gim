@@ -1,0 +1,144 @@
+/* M³GIM Base Styles — Reset, Typography, Layout */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap');
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-ui);
+  font-size: var(--text-base);
+  font-weight: var(--weight-normal);
+  line-height: var(--leading-normal);
+  color: var(--color-text-primary);
+  background-color: var(--color-paper);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-title);
+  line-height: var(--leading-tight);
+}
+
+h1 { font-size: var(--text-3xl); font-weight: var(--weight-bold); }
+h2 { font-size: var(--text-2xl); font-weight: var(--weight-semibold); }
+h3 { font-size: var(--text-xl); font-weight: var(--weight-semibold); }
+h4 { font-size: var(--text-lg); font-weight: var(--weight-medium); }
+
+a {
+  color: var(--color-kug-blau);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, .mono {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+/* App Shell */
+.app-header {
+  background: var(--color-kug-blau);
+  color: var(--color-text-inverse);
+  height: var(--header-height);
+  display: flex;
+  align-items: center;
+  padding: 0 var(--space-6);
+  gap: var(--space-6);
+  flex-shrink: 0;
+}
+
+.app-header__title {
+  font-family: var(--font-title);
+  font-size: var(--text-xl);
+  font-weight: var(--weight-semibold);
+  white-space: nowrap;
+}
+
+.app-header__subtitle {
+  font-size: var(--text-sm);
+  opacity: 0.8;
+}
+
+.app-header__spacer {
+  flex: 1;
+}
+
+.app-main {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+#main-content {
+  flex: 1;
+  overflow: hidden;
+}
+
+.app-footer {
+  background: var(--color-cream);
+  border-top: 1px solid var(--border-color);
+  height: var(--footer-height);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  font-size: var(--text-sm);
+  color: var(--color-text-tertiary);
+  flex-shrink: 0;
+}
+
+.app-footer a {
+  color: var(--color-text-secondary);
+}
+
+/* Tab Content Sections */
+.tab-content {
+  display: none;
+  height: 100%;
+  overflow-y: auto;
+  padding: var(--space-6);
+}
+
+.tab-content.active {
+  display: block;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-cream);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-sand);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-tertiary);
+}
+
+/* Selection */
+::selection {
+  background: var(--color-gold-light);
+  color: var(--color-text-primary);
+}

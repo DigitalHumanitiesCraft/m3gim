@@ -1,0 +1,105 @@
+/* M³GIM Design Tokens — Scholarly Elegance */
+
+:root {
+  /* Primary */
+  --color-kug-blau: #004A8F;
+  --color-kug-blau-light: #1a6ab5;
+  --color-kug-blau-dark: #003366;
+
+  /* Archival Neutrals */
+  --color-paper: #FAF8F5;
+  --color-cream: #F5F0E8;
+  --color-parchment: #EDE5D8;
+  --color-sand: #C4B49A;
+  --color-shadow: #4A4A4A;
+
+  /* Gold Accents */
+  --color-gold-rich: #9A7B4F;
+  --color-gold-medium: #C4A574;
+  --color-gold-light: #E8DBC7;
+
+  /* Text */
+  --color-text-primary: #2C2825;
+  --color-text-secondary: #5C5651;
+  --color-text-tertiary: #8A857E;
+  --color-text-inverse: #FFFFFF;
+
+  /* Semantic: Composers */
+  --color-wagner: #6B2C2C;
+  --color-verdi: #2C5C3F;
+  --color-strauss: #4A3A6B;
+  --color-gluck-haendel: #8B7355;
+  --color-beethoven: #4A5A7A;
+  --color-andere: #757575;
+
+  /* Semantic: Mobility */
+  --color-mob-erzwungen: #8B3A3A;
+  --color-mob-geografisch: #3D7A5A;
+  --color-mob-bildung: #B67D3D;
+  --color-mob-lebensstil: #6B4E8C;
+  --color-mob-national: #4A6E96;
+
+  /* Semantic: Person Categories */
+  --color-cat-dirigent: #4A6E96;
+  --color-cat-regisseur: #6B4E8C;
+  --color-cat-korrepetitor: #8B7355;
+  --color-cat-vermittler: #3D7A5A;
+  --color-cat-kollege: #9A6B3D;
+  --color-cat-andere: #757575;
+
+  /* Typography */
+  --font-ui: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-title: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.8125rem;
+  --text-base: 0.875rem;
+  --text-lg: 1rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 2rem;
+
+  --weight-normal: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  --leading-tight: 1.25;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.75;
+
+  /* Spacing (8px grid) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* Layout */
+  --detail-panel-width: 420px;
+  --header-height: 64px;
+  --tab-bar-height: 48px;
+  --footer-height: 48px;
+
+  /* Borders */
+  --border-radius: 4px;
+  --border-radius-lg: 8px;
+  --border-color: #E0DCD6;
+  --border-color-light: #EDE9E3;
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+  --transition-slow: 400ms ease;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.14);
+}
