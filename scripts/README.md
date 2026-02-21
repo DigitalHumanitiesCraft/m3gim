@@ -7,6 +7,7 @@ Google Sheets (XLSX in data/google-spreadsheet/)
   -> explore.py      -> data/reports/exploration-report.md
   -> validate.py     -> data/reports/validation-report.md
   -> transform.py    -> data/output/m3gim.jsonld
+  -> reconcile.py    -> data/output/wikidata-reconciliation.json
   -> build-views.py  -> data/output/views/*.json
 ```
 
@@ -69,15 +70,18 @@ python scripts/audit-data.py
 
 Output: Konsolenreport mit Fehler/Warnungs-Zaehlung.
 
-### `migrate.py` (Legacy)
+### `reconcile.py`
 
-Einmalige Migration fuer fruehere AUGIAS-Exporte.
+Wikidata-Reconciliation fuer die 4 Index-Tabellen. Sucht ueber die Wikidata Search API und traegt Q-IDs ein bei exaktem Label-Match + P31-Verifikation (Personen: Q5, Orte: geographic entities, Organisationen: organisations, Werke: musical works). Ergebnisse als JSON-Datei, die manuell geprueft und ins Google Sheet uebertragen wird.
 
 ```bash
-python scripts/migrate.py
+python scripts/reconcile.py                  # alle 4 Indizes
+python scripts/reconcile.py --type person    # nur Personen
+python scripts/reconcile.py --dry-run        # nur Namen auflisten
 ```
+
+Output: `data/output/wikidata-reconciliation.json`
 
 ## Hinweise
 
-- `reconcile.py` ist als naechster Schritt geplant, derzeit nicht im Repository vorhanden.
 - Reports in `data/reports/` sind generiert und koennen bei erneutem Lauf ueberschrieben werden.

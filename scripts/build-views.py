@@ -10,10 +10,15 @@ Usage:
     python scripts/build-views.py
 
 Output:
-    data/views/partitur.json
+    data/views/partitur.json   (Legacy — nicht im Frontend konsumiert)
     data/views/matrix.json
     data/views/kosmos.json
-    data/views/sankey.json
+    data/views/sankey.json     (Legacy — nicht im Frontend konsumiert)
+
+Hinweis:
+    partitur.json und sankey.json werden weiterhin erzeugt, sind aber
+    im aktuellen Frontend nicht eingebunden. Matrix und Kosmos sind
+    als Tabs ausgeblendet (hidden), der Code bleibt erhalten.
 """
 
 import json

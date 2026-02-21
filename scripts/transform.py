@@ -6,6 +6,18 @@ Erzeugt JSON-LD im RiC-O 1.1 Format mit m3gim-Erweiterungen.
 Liest Google Sheets Exporte, normalisiert Daten, baut Konvolut-Hierarchie,
 matched Verknuepfungen gegen Indizes.
 
+Normalisierungsschritte:
+    1. Spaltennamen: .lower().strip() (Excel hat gemischte Gross-/Kleinschreibung)
+    2. Header-Shift-Korrektur: 3 Indizes (Org, Ort, Werk) haben verschobene Header
+    3. String-Werte: .strip() (Leerzeichen), .lower() fuer Vokabularfelder
+    4. Datumsfelder: Excel-Artefakte entfernen ("1958-04-18 00:00:00" → "1958-04-18")
+    5. Dokumenttyp: Mapping deutsch → m3gim-dft SKOS-Konzept (25 Typen)
+    6. Bearbeitungsstand: Varianten normalisieren (vollstaendig/Erledigt → abgeschlossen)
+    7. Komposit-Typen: "ort,datum" decomponieren in separate Relationen
+    8. Komposit-Werte: "Muenchen, 1952-12-17" → Ort + Datum getrennt
+    9. Rollen: .lower() fuer konsistente Kleinschreibung
+   10. Wikidata-IDs: Regex-Validierung ^Q\d+$ (verhindert falsche URIs)
+
 Verwendung:
     python scripts/transform.py
 """

@@ -24,7 +24,6 @@ m3gim/
 |-- scripts/                  # Explore/Validate/Transform/View-Build
 |-- docs/                     # GitHub Pages Frontend + ausgelieferte Daten
 |-- .github/workflows/        # CI fuer View-Daten-Build
-|-- MEETING-2026-02-24.md
 `-- README.md
 ```
 
@@ -34,13 +33,13 @@ m3gim/
 - Pipeline: Python 3.11+ (`pandas`, `openpyxl`)
 - Frontend: Vanilla JS (ES-Module), D3.js v7
 - Hosting: GitHub Pages
-- Normdaten: Wikidata-Q-IDs (Reconciliation als naechster Schritt)
+- Normdaten: Wikidata-Q-IDs (Reconciliation via `reconcile.py` implementiert)
 
 ## Dokumentation
 
 - Einstieg in die KB: [knowledge/README.md](knowledge/README.md)
 - Pipeline-Workflow: [scripts/README.md](scripts/README.md)
-- Nachvollziehbarkeit: [knowledge/traceability-matrix.md](knowledge/traceability-matrix.md)
+- Entscheidungen: [knowledge/Prozess/Entscheidungen.md](knowledge/Prozess/Entscheidungen.md)
 
 ## Lizenz
 
