@@ -13,6 +13,7 @@ let store = null;
 let container = null;
 let expandedRecord = null;
 let collapsedPeriods = new Set();
+let initialRender = true; // first render collapses all periods
 let currentFilters = {}; // kept in sync so closures never go stale
 let currentGrouping = 'location'; // 'location' | 'person' | 'werk'
 
@@ -85,6 +86,14 @@ export function updateChronikView(filters) {
     : groupByPeriodAndLocation;
   const grouped = groupFn(records);
 
+  // On first render, collapse all periods for overview
+  if (initialRender) {
+    for (const [period] of grouped) {
+      collapsedPeriods.add(period);
+    }
+    initialRender = false;
+  }
+
   // Render periods
   const wrapper = el('div', { className: 'chronik' });
 
@@ -92,6 +101,29 @@ export function updateChronikView(filters) {
     const totalCount = [...locationMap.values()].reduce((sum, arr) => sum + arr.length, 0);
     const note = KARRIERE_NOTIZEN[period] || '';
     const isCollapsed = collapsedPeriods.has(period);
+
+    // Aggregate summary for collapsed header
+    const periodRecords = [...locationMap.values()].flat();
+    const typeCounts = new Map();
+    for (const r of periodRecords) {
+      const t = getDocTypeId(r);
+      if (t) typeCounts.set(t, (typeCounts.get(t) || 0) + 1);
+    }
+    const topTypes = [...typeCounts.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3)
+      .map(([t, c]) => `${c}\u00a0${DOKUMENTTYP_LABELS[t] || t}`);
+
+    const topGroups = [...locationMap.entries()]
+      .filter(([name]) => !name.startsWith('\u2014 '))
+      .sort((a, b) => b[1].length - a[1].length)
+      .slice(0, 3)
+      .map(([name]) => name);
+
+    const summaryParts = [];
+    if (topTypes.length) summaryParts.push(topTypes.join(' \u00b7 '));
+    if (topGroups.length) summaryParts.push(topGroups.join(', '));
+    const summaryText = summaryParts.join(' \u2014 ');
 
     const periodEl = el('div', { className: 'chronik-period' });
 
@@ -112,7 +144,10 @@ export function updateChronikView(filters) {
       period === 'Undatiert'
         ? el('span', { className: 'chronik-period__note' }, 'ohne Datumsangabe in der Quelle')
         : null,
-      el('span', { className: 'chronik-period__count' }, `${totalCount}`),
+      el('span', { className: 'chronik-period__count', dataset: { tip: `${totalCount} Archiveinheiten` } }, `${totalCount}`),
+      summaryText
+        ? el('span', { className: 'chronik-period__summary' }, summaryText)
+        : null,
     );
     periodEl.appendChild(headerEl);
 
@@ -132,7 +167,7 @@ export function updateChronikView(filters) {
               : getGroupIcon(currentGrouping),
           }),
           el('span', { className: 'chronik-location__name' }, groupName),
-          el('span', { className: 'chronik-location__count' }, `(${groupRecords.length})`),
+          el('span', { className: 'chronik-location__count', dataset: { tip: `${groupRecords.length} Archiveinheiten` } }, `(${groupRecords.length})`),
         ];
         if (isPlaceholder) {
           const hintText = currentGrouping === 'location'
@@ -163,9 +198,9 @@ export function updateChronikView(filters) {
           const agentEl = displayNames.length > 0
             ? el('span', {
                 className: 'chronik-record__agents',
-                title: allAgentNames.length > 3
-                  ? allAgentNames.join(', ')
-                  : '',
+                dataset: allAgentNames.length > 3
+                  ? { tip: allAgentNames.join(', '), tipWrap: '', tipPos: 'bottom-left' }
+                  : {},
               }, displayNames.join(', ') + (allAgentNames.length > 3 ? ` (+${allAgentNames.length - 3})` : ''))
             : null;
 
@@ -177,7 +212,10 @@ export function updateChronikView(filters) {
             },
           },
             el('span', { className: 'chronik-record__sig' }, sig),
-            el('span', { className: 'chronik-record__title' }, truncate(r['rico:title'] || '(ohne Titel)', 60)),
+            el('span', {
+              className: 'chronik-record__title',
+              dataset: (r['rico:title'] || '').length > 60 ? { tip: r['rico:title'], tipWrap: '', tipPos: 'bottom-left' } : {},
+            }, truncate(r['rico:title'] || '(ohne Titel)', 60)),
             docLabel ? el('span', { className: `badge badge--${docType || ''}` }, docLabel) : null,
             agentEl,
           );
@@ -273,7 +311,7 @@ function sortLocationMap(locMap) {
   const sorted = new Map();
   for (const [loc, records] of entries) {
     records.sort((a, b) =>
-      (a['rico:identifier'] || '').localeCompare(b['rico:identifier'] || '', undefined, { numeric: true })
+      (a['rico:identifier'] || '').localeCompare(b['rico:identifier'] || '', 'de-DE', { numeric: true })
     );
     sorted.set(loc, records);
   }
@@ -351,7 +389,7 @@ function sortGroupMap(groupMap, placeholder) {
   const sorted = new Map();
   for (const [key, records] of entries) {
     records.sort((a, b) =>
-      (a['rico:identifier'] || '').localeCompare(b['rico:identifier'] || '', undefined, { numeric: true })
+      (a['rico:identifier'] || '').localeCompare(b['rico:identifier'] || '', 'de-DE', { numeric: true })
     );
     sorted.set(key, records);
   }

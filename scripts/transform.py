@@ -415,7 +415,7 @@ def process_verknuepfungen(df: pd.DataFrame, indices: dict) -> dict:
             }
             if t in index_map and name:
                 lookup = indices.get(index_map[t], {})
-                match = lookup.get(name.lower())
+                match = lookup.get(name.strip().lower())
                 if match and 'wikidata_id' in match:
                     rel["wikidata_id"] = match["wikidata_id"]
                 if match and 'komponist' in match:
@@ -473,6 +473,9 @@ def add_relations_to_records(records: list, relations: dict):
                 agents.append(entry)
 
             elif t == "ort":
+                # Skip date-like strings that leaked into locations
+                if name and re.match(r'^\d{4}(-\d{2}){0,2}', name):
+                    continue
                 locations.append(entry)
 
             elif t == "werk":

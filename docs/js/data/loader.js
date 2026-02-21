@@ -125,12 +125,11 @@ function buildStore(jsonld) {
     store.allRecords = store.allRecords.filter(r => !store.folioIds.has(r['@id']));
   }
 
-  // Pass 4: Identify unprocessed records (no links AND no bearbeitungsstand)
+  // Pass 4: Identify unprocessed records (no links at all)
   store.unprocessedIds = new Set();
   for (const record of store.allRecords) {
     const hasLinks = countLinks(record) > 0;
-    const hasStatus = !!record['m3gim:bearbeitungsstand'];
-    if (!hasLinks && !hasStatus) {
+    if (!hasLinks) {
       store.unprocessedIds.add(record['@id']);
     }
   }

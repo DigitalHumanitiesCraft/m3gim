@@ -1,15 +1,15 @@
 /**
- * M³GIM Wissenskorb — sessionStorage-based bookmarking of records.
+ * M³GIM Wissenskorb — localStorage-based bookmarking of records.
  */
 
 const STORAGE_KEY = 'm3gim-korb';
 const items = new Set();
 const listeners = [];
 
-/** Load from sessionStorage */
+/** Load from localStorage */
 export function initKorb() {
   try {
-    const stored = sessionStorage.getItem(STORAGE_KEY);
+    const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
       for (const id of JSON.parse(stored)) items.add(id);
     }
@@ -18,7 +18,7 @@ export function initKorb() {
 
 function persist() {
   try {
-    sessionStorage.setItem(STORAGE_KEY, JSON.stringify([...items]));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify([...items]));
   } catch { /* ignore */ }
   for (const cb of listeners) cb();
 }

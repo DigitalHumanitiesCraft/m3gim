@@ -112,7 +112,7 @@ function buildToolbar() {
 
   const countEl = el('span', { className: 'archiv-count' });
   countEl.id = 'archiv-count';
-  countEl.textContent = `${store.allRecords.length} Objekte \u00b7 ${store.konvolute.size} Konvolute`;
+  countEl.textContent = `${store.recordCount || store.allRecords.length} Archiveinheiten`;
 
   return el('div', { className: 'archiv-toolbar' }, toggle, search, typeSelect, personCombobox, groupingToggle, resetBtn, countEl);
 }
@@ -201,12 +201,17 @@ function buildPersonCombobox(personEntries) {
     }
   });
 
-  // Close dropdown on outside click
-  document.addEventListener('click', (e) => {
-    if (!wrapper.contains(e.target)) {
-      dropdown.style.display = 'none';
-    }
-  });
+  // Close dropdown on outside click (delegated, avoids memory leak on re-render)
+  if (!buildPersonCombobox._listenerAttached) {
+    document.addEventListener('click', (e) => {
+      const openDropdown = document.querySelector('.archiv-combobox__dropdown');
+      const combobox = document.querySelector('.archiv-combobox');
+      if (openDropdown && combobox && !combobox.contains(e.target)) {
+        openDropdown.style.display = 'none';
+      }
+    });
+    buildPersonCombobox._listenerAttached = true;
+  }
 
   wrapper.appendChild(input);
   wrapper.appendChild(clearBtn);
@@ -336,8 +341,8 @@ function updateCounter(filteredCount) {
   const total = store.allRecords.length;
   const isFiltered = !!(currentSearch || currentDocType || currentPerson);
   if (isFiltered && filteredCount !== undefined) {
-    countEl.textContent = `${filteredCount} von ${total} Objekten`;
+    countEl.textContent = `${filteredCount} von ${store.recordCount || total} Archiveinheiten`;
   } else {
-    countEl.textContent = `${total} Objekte \u00b7 ${store.konvolute.size} Konvolute`;
+    countEl.textContent = `${store.recordCount || total} Archiveinheiten`;
   }
 }

@@ -250,7 +250,7 @@ function renderGrid(gridKey, config) {
     if (key === 'count') return (a.count - b.count) * state.dir;
     const va = (a[key] || '').toLowerCase();
     const vb = (b[key] || '').toLowerCase();
-    return va.localeCompare(vb) * state.dir;
+    return va.localeCompare(vb, 'de-DE') * state.dir;
   });
 
   const isFilterSource = activeFilter && activeFilter.gridKey === gridKey;
@@ -360,7 +360,7 @@ function renderExpandedRecords(entry, gridKey) {
   const records = recordIds
     .map(id => store.records.get(id))
     .filter(Boolean)
-    .sort((a, b) => (a['rico:identifier'] || '').localeCompare(b['rico:identifier'] || '', undefined, { numeric: true }));
+    .sort((a, b) => (a['rico:identifier'] || '').localeCompare(b['rico:identifier'] || '', 'de-DE', { numeric: true }));
 
   const total = records.length;
   const limited = records.slice(0, DETAIL_LIMIT);

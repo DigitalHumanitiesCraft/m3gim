@@ -160,6 +160,14 @@ KOMPONISTEN_FARBEN = {
     'Strauss': '#4A3A6B',
     'Gluck/Händel': '#8B7355',
     'Beethoven': '#4A5A7A',
+    'Mozart': '#5B4A8A',
+    'Wolf': '#6B5B3F',
+    'Brahms': '#3A5C6B',
+    'Schubert': '#7A5A4A',
+    'Bizet': '#8A3A4A',
+    'Hindemith': '#4A6B5A',
+    'Lortzing': '#5A6B7A',
+    'Rossini': '#7A4A5A',
     'Andere': '#757575'
 }
 
@@ -323,6 +331,47 @@ def ensure_list(value):
     if isinstance(value, list):
         return value
     return [value]
+
+
+# Normalisierung: "Wagner, Richard" → "Wagner" (Kurzform fuer Farb-Zuordnung)
+KOMPONISTEN_NORMALISIERUNG = {
+    'wagner, richard': 'Wagner',
+    'wagner': 'Wagner',
+    'verdi, giuseppe': 'Verdi',
+    'verdi, guiseppe': 'Verdi',
+    'verdi': 'Verdi',
+    'strauss, richard': 'Strauss',
+    'strauss': 'Strauss',
+    'gluck, christoph willibald': 'Gluck/Händel',
+    'gluck': 'Gluck/Händel',
+    'händel': 'Gluck/Händel',
+    'beethoven, ludwig van': 'Beethoven',
+    'beethoven, ludwig von': 'Beethoven',
+    'beethoven': 'Beethoven',
+    'mozart, wolfgang amadeus': 'Mozart',
+    'mozart': 'Mozart',
+    'wolf, hugo': 'Wolf',
+    'wolf': 'Wolf',
+    'brahms, johannes': 'Brahms',
+    'brahms': 'Brahms',
+    'schubert, franz': 'Schubert',
+    'schubert': 'Schubert',
+    'bizet, georges': 'Bizet',
+    'bizet': 'Bizet',
+    'hindemith, paul': 'Hindemith',
+    'hindemith': 'Hindemith',
+    'lortzing, albert': 'Lortzing',
+    'lortzing': 'Lortzing',
+    'rossini, gioachino': 'Rossini',
+    'rossini': 'Rossini',
+}
+
+
+def normalize_komponist(name):
+    """Normalisiert Komponistennamen auf kanonische Kurzform."""
+    if not name:
+        return name
+    return KOMPONISTEN_NORMALISIERUNG.get(name.strip().lower(), name.strip())
 
 
 # =============================================================================
@@ -678,7 +727,7 @@ def build_kosmos(records):
         for subj in subjects:
             if isinstance(subj, dict) and subj.get('@type') == 'm3gim:MusicalWork':
                 werk_name = subj.get('name', '')
-                komp = subj.get('komponist', '')
+                komp = normalize_komponist(subj.get('komponist', ''))
                 if komp:
                     komponisten_data[komp]['dokumente'] += 1
                     werk_data = komponisten_data[komp]['werke'][werk_name]

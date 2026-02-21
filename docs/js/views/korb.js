@@ -57,7 +57,7 @@ function renderList() {
   const records = ids
     .map(id => store.records.get(id))
     .filter(Boolean)
-    .sort((a, b) => (a['rico:identifier'] || '').localeCompare(b['rico:identifier'] || '', undefined, { numeric: true }));
+    .sort((a, b) => (a['rico:identifier'] || '').localeCompare(b['rico:identifier'] || '', 'de-DE', { numeric: true }));
 
   for (const r of records) {
     list.appendChild(renderCard(r));

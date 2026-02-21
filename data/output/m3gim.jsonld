@@ -3356,10 +3356,6 @@
           "@type": "rico:Person"
         }
       ],
-      "rico:hasOrHadLocation": {
-        "name": "1956-11-21 00:00:00",
-        "role": "erscheinungsdatum"
-      },
       "rico:hasOrHadSubject": {
         "name": "Tannhäuser",
         "role": "aufführung",
@@ -5628,10 +5624,6 @@
           "@type": "rico:CorporateBody"
         }
       ],
-      "rico:hasOrHadLocation": {
-        "name": "2026-09-06 00:00:00",
-        "role": "erscheinungsdatum"
-      },
       "rico:hasOrHadSubject": {
         "name": "Tristan und Isolde",
         "role": "erwähnt",
@@ -9896,7 +9888,7 @@
       "rico:hasExtent": "1 days 06:00:00"
     }
   ],
-  "m3gim:exportDate": "2026-02-20T20:45:35.974642",
+  "m3gim:exportDate": "2026-02-21T07:43:11.923622",
   "m3gim:recordCount": 282,
   "m3gim:konvolutCount": 3
 }

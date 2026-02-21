@@ -133,7 +133,7 @@ export function buildInlineDetail(record, store, { onClose } = {}) {
   } else {
     body.appendChild(el('div', { className: 'inline-detail__col inline-detail__empty-state' },
       el('p', {}, 'Noch nicht erschlossen'),
-      el('p', { className: 'inline-detail__empty-hint' }, 'Verkn\u00fcpfungen werden im Rahmen der Erschlie\u00dfung erg\u00e4nzt.')
+      el('p', { className: 'inline-detail__empty-hint' }, 'Annotationen werden im Rahmen der Erschlie\u00dfung erg\u00e4nzt.')
     ));
   }
   wrapper.appendChild(body);
@@ -144,7 +144,12 @@ export function buildInlineDetail(record, store, { onClose } = {}) {
     const konvolut = store.konvolute.get(konvolutId);
     if (konvolut) {
       const konvSig = formatSignatur(konvolut['rico:identifier']);
-      wrapper.appendChild(el('div', { className: 'inline-detail__konvolut' },
+      const konvMeta = store.konvolutMeta?.get(konvolutId);
+      const konvTitle = konvMeta?.title || '';
+      wrapper.appendChild(el('div', {
+        className: 'inline-detail__konvolut',
+        dataset: konvTitle ? { tip: `${konvSig}: ${konvTitle}` } : {},
+      },
         `Teil von Konvolut ${konvSig}`
       ));
     }
@@ -183,7 +188,7 @@ function renderEntityChips(entities, gridType) {
         e.stopPropagation();
         navigateToIndex(gridType, name);
       };
-      chipProps.title = `Im Index \u00f6ffnen: ${name}`;
+      chipProps.dataset = { tip: `Im Index \u00f6ffnen` };
     }
 
     const chip = el('span', chipProps,
@@ -215,7 +220,7 @@ function renderWorkChips(subjects) {
     const role = subj.role || '';
     const chip = el('span', {
       className: 'chip chip--werk chip--clickable',
-      title: `Im Index \u00f6ffnen: ${name}`,
+      dataset: { tip: 'Im Index \u00f6ffnen' },
       onClick: (e) => { e.stopPropagation(); navigateToIndex('werke', name); },
     },
       komponist ? `${name} (${komponist})` : name,
@@ -258,7 +263,7 @@ function buildKonvolutDetail(record, store, { onClose } = {}) {
     const pct = Math.round(meta.datedCount / meta.childCount * 100);
     metaPairs.push(['Datiert', `${meta.datedCount} von ${meta.childCount} (${pct}\u2009%)`]);
   }
-  if (meta?.totalLinks) metaPairs.push(['Verkn\u00fcpfungen', `${meta.totalLinks} gesamt`]);
+  if (meta?.totalLinks) metaPairs.push(['Annotationen', `${meta.totalLinks} gesamt`]);
   leftCol.appendChild(renderSection('\u00dcbersicht', renderMetaGrid(metaPairs)));
 
   // Right column: aggregated top entities

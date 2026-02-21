@@ -250,7 +250,7 @@
 .archiv-col-titel { width: auto; }
 .archiv-col-typ { width: 140px; }
 .archiv-col-datum { width: 160px; }
-.archiv-col-links { width: 120px; text-align: right; }
+.archiv-col-links { width: 120px; text-align: center; }
 
 .archiv-signatur {
   font-family: var(--font-mono);
@@ -290,7 +290,7 @@
 }
 
 .archiv-links {
-  text-align: right;
+  text-align: center;
   font-family: var(--font-mono);
   font-size: var(--text-sm);
   color: var(--color-text-tertiary);
@@ -518,21 +518,23 @@
 .chronik {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: 0;
 }
 
 .chronik-period {
-  border: 1px solid var(--border-color-light);
-  border-radius: var(--border-radius);
-  overflow: hidden;
+  border-bottom: 1px solid var(--border-color-light);
+}
+
+.chronik-period:last-child {
+  border-bottom: none;
 }
 
 .chronik-period__header {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: var(--space-2);
-  padding: var(--space-3) var(--space-4);
-  background: var(--color-parchment);
+  padding: var(--space-3) var(--space-2);
   cursor: pointer;
   user-select: none;
   transition: background var(--transition-fast);
@@ -549,7 +551,7 @@
 .chronik-period__toggle {
   display: flex;
   align-items: center;
-  color: var(--color-text-secondary);
+  color: var(--color-text-tertiary);
   transition: transform var(--transition-fast);
 }
 
@@ -563,45 +565,59 @@
 .chronik-period__note {
   font-family: var(--font-title);
   font-size: var(--text-sm);
-  color: var(--color-text-secondary);
+  color: var(--color-text-tertiary);
   font-style: italic;
 }
 
 .chronik-period__count {
   margin-left: auto;
   font-family: var(--font-mono);
-  font-size: var(--text-sm);
+  font-size: var(--text-xs);
   color: var(--color-text-tertiary);
 }
 
+.chronik-period__summary {
+  display: none;
+  flex-basis: 100%;
+  padding-left: 20px;
+  padding-top: var(--space-1);
+  font-size: var(--text-xs);
+  color: var(--color-text-tertiary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chronik-period__header--collapsed .chronik-period__summary {
+  display: block;
+}
+
 .chronik-period__body {
-  padding: var(--space-2) var(--space-4) var(--space-4);
+  padding: 0 var(--space-2) var(--space-4) var(--space-6);
 }
 
 /* Location groups within a period */
 .chronik-location {
-  margin-top: var(--space-3);
+  margin-top: var(--space-2);
 }
 
 .chronik-location__header {
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  padding-bottom: var(--space-2);
-  border-bottom: 1px solid var(--border-color-light);
-  margin-bottom: var(--space-2);
+  padding: var(--space-1) 0;
 }
 
 .chronik-location__icon {
   display: flex;
   align-items: center;
-  color: var(--color-text-secondary);
+  color: var(--color-text-tertiary);
 }
 
 .chronik-location__name {
   font-size: var(--text-sm);
   font-weight: var(--weight-semibold);
-  color: var(--color-text-primary);
+  color: var(--color-text-secondary);
 }
 
 .chronik-location__count {
@@ -621,8 +637,8 @@
   display: flex;
   align-items: baseline;
   gap: var(--space-3);
-  padding: var(--space-2) var(--space-3);
-  margin-left: var(--space-5);
+  padding: var(--space-1) var(--space-3);
+  margin-left: var(--space-4);
   border-radius: var(--border-radius);
   cursor: pointer;
   transition: background var(--transition-fast);
@@ -633,8 +649,9 @@
 }
 
 .chronik-record--active {
-  background: var(--color-gold-light);
-  border-left: 3px solid var(--color-kug-blau);
+  background: var(--color-cream);
+  border-left: 2px solid var(--color-kug-blau);
+  padding-left: calc(var(--space-3) - 2px);
 }
 
 .chronik-record__sig {
@@ -662,8 +679,8 @@
 
 /* Detail expansion in Chronik */
 .chronik-record__detail {
-  margin-left: var(--space-5);
-  margin-bottom: var(--space-3);
+  margin-left: var(--space-4);
+  margin-bottom: var(--space-2);
 }
 
 /* =========================================================================

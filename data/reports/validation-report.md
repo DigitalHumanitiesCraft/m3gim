@@ -1,11 +1,11 @@
 # M3GIM Validierungsreport
 
-> Generiert: 2026-02-20 18:17
+> Generiert: 2026-02-21 07:43
 
 ## Executive Summary
 
-- Status: **92 Fehler muessen behoben werden**
-- Fehler gesamt: **92**
+- Status: **69 Fehler muessen behoben werden**
+- Fehler gesamt: **69**
 - Warnungen gesamt: **177**
 - Objekte geprueft: **283**
 - Verknuepfungen geprueft: **1292**
@@ -15,35 +15,19 @@
 
 | Bereich | Fehler | Warnungen |
 |---|---|---|
-| Objekte | 71 | 3 |
+| Objekte | 48 | 3 |
 | Verknuepfungen | 21 | 174 |
 | Indizes/sonstige | 0 | 0 |
 
 ## Blocker (Fehler)
 
 - **E001 Objekte Zeile 9:** archivsignatur = `UAKUG/NIM/PL_07` -> Doppelte Objekt-ID: UAKUG/NIM/PL_07 (auch in Zeile 8)
-- **E004 Objekte Zeile 28:** bearbeitungsstand = `Begonnen` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 29:** bearbeitungsstand = `Begonnen` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 30:** bearbeitungsstand = `zurückgestellt` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 31:** bearbeitungsstand = `zurückgestellt` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 32:** bearbeitungsstand = `zurückgestellt` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 33:** bearbeitungsstand = `zurückgestellt` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 34:** bearbeitungsstand = `zurückgestellt` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 35:** bearbeitungsstand = `zurückgestellt` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 36:** bearbeitungsstand = `zurückgestellt` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 37:** bearbeitungsstand = `zurückgestellt` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 38:** bearbeitungsstand = `zurückgestellt` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 39:** bearbeitungsstand = `zurückgestellt` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 40:** bearbeitungsstand = `zurückgestellt` -> Ungueltiger Wert fuer bearbeitungsstand
 - **E004 Objekte Zeile 42:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 43:** bearbeitungsstand = `begonnen` -> Ungueltiger Wert fuer bearbeitungsstand
 - **E004 Objekte Zeile 44:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
 - **E004 Objekte Zeile 45:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
 - **E004 Objekte Zeile 46:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
 - **E004 Objekte Zeile 47:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
 - **E004 Objekte Zeile 48:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 49:** bearbeitungsstand = `begonnen` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 50:** bearbeitungsstand = `begonnen` -> Ungueltiger Wert fuer bearbeitungsstand
 - **E004 Objekte Zeile 51:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
 - **E004 Objekte Zeile 52:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
 - **E004 Objekte Zeile 53:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
@@ -52,17 +36,10 @@
 - **E004 Objekte Zeile 56:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
 - **E004 Objekte Zeile 57:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
 - **E004 Objekte Zeile 58:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 59:** bearbeitungsstand = `begonnen` -> Ungueltiger Wert fuer bearbeitungsstand
 - **E004 Objekte Zeile 60:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
 - **E004 Objekte Zeile 64:** bearbeitungsstand = `vollstädig ` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 65:** bearbeitungsstand = `begonnen` -> Ungueltiger Wert fuer bearbeitungsstand
 - **E004 Objekte Zeile 66:** bearbeitungsstand = `Erledigt (Ira Malaniuk betreffend. Rest zurückgestellt)` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 67:** bearbeitungsstand = `begonnen` -> Ungueltiger Wert fuer bearbeitungsstand
 - **E004 Objekte Zeile 68:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 70:** bearbeitungsstand = `begonnen` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 71:** bearbeitungsstand = `abgeschlossen` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 72:** bearbeitungsstand = `begonnen` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 73:** bearbeitungsstand = `begonnen` -> Ungueltiger Wert fuer bearbeitungsstand
 - **E004 Objekte Zeile 74:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
 - **E004 Objekte Zeile 75:** bearbeitungsstand = `begonnen (nur Ira Malaniuk)` -> Ungueltiger Wert fuer bearbeitungsstand
 - **E004 Objekte Zeile 80:** bearbeitungsstand = `Vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
@@ -124,28 +101,12 @@
 ## Vollstaendige Fehlerliste
 
 - **E001 Objekte Zeile 9:** archivsignatur = `UAKUG/NIM/PL_07` -> Doppelte Objekt-ID: UAKUG/NIM/PL_07 (auch in Zeile 8)
-- **E004 Objekte Zeile 28:** bearbeitungsstand = `Begonnen` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 29:** bearbeitungsstand = `Begonnen` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 30:** bearbeitungsstand = `zurückgestellt` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 31:** bearbeitungsstand = `zurückgestellt` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 32:** bearbeitungsstand = `zurückgestellt` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 33:** bearbeitungsstand = `zurückgestellt` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 34:** bearbeitungsstand = `zurückgestellt` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 35:** bearbeitungsstand = `zurückgestellt` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 36:** bearbeitungsstand = `zurückgestellt` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 37:** bearbeitungsstand = `zurückgestellt` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 38:** bearbeitungsstand = `zurückgestellt` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 39:** bearbeitungsstand = `zurückgestellt` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 40:** bearbeitungsstand = `zurückgestellt` -> Ungueltiger Wert fuer bearbeitungsstand
 - **E004 Objekte Zeile 42:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 43:** bearbeitungsstand = `begonnen` -> Ungueltiger Wert fuer bearbeitungsstand
 - **E004 Objekte Zeile 44:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
 - **E004 Objekte Zeile 45:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
 - **E004 Objekte Zeile 46:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
 - **E004 Objekte Zeile 47:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
 - **E004 Objekte Zeile 48:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 49:** bearbeitungsstand = `begonnen` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 50:** bearbeitungsstand = `begonnen` -> Ungueltiger Wert fuer bearbeitungsstand
 - **E004 Objekte Zeile 51:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
 - **E004 Objekte Zeile 52:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
 - **E004 Objekte Zeile 53:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
@@ -154,17 +115,10 @@
 - **E004 Objekte Zeile 56:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
 - **E004 Objekte Zeile 57:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
 - **E004 Objekte Zeile 58:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 59:** bearbeitungsstand = `begonnen` -> Ungueltiger Wert fuer bearbeitungsstand
 - **E004 Objekte Zeile 60:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
 - **E004 Objekte Zeile 64:** bearbeitungsstand = `vollstädig ` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 65:** bearbeitungsstand = `begonnen` -> Ungueltiger Wert fuer bearbeitungsstand
 - **E004 Objekte Zeile 66:** bearbeitungsstand = `Erledigt (Ira Malaniuk betreffend. Rest zurückgestellt)` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 67:** bearbeitungsstand = `begonnen` -> Ungueltiger Wert fuer bearbeitungsstand
 - **E004 Objekte Zeile 68:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 70:** bearbeitungsstand = `begonnen` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 71:** bearbeitungsstand = `abgeschlossen` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 72:** bearbeitungsstand = `begonnen` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 73:** bearbeitungsstand = `begonnen` -> Ungueltiger Wert fuer bearbeitungsstand
 - **E004 Objekte Zeile 74:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
 - **E004 Objekte Zeile 75:** bearbeitungsstand = `begonnen (nur Ira Malaniuk)` -> Ungueltiger Wert fuer bearbeitungsstand
 - **E004 Objekte Zeile 80:** bearbeitungsstand = `Vollständig` -> Ungueltiger Wert fuer bearbeitungsstand

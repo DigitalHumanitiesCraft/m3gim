@@ -52,7 +52,9 @@ VOCAB = {
         "konvolut", "dokument", "noten", "sonstiges", "repertoireliste"
     ],
     "bearbeitungsstand": [
-        "vollstÃ¤ndig", "vollstaendig", "in bearbeitung", "offen"
+        "vollstÃ¤ndig", "vollstaendig", "in bearbeitung", "offen",
+        "abgeschlossen", "begonnen", "zurueckgestellt", "zurückgestellt",
+        "erledigt"
     ],
     "datierungsevidenz": [
         "aus_dokument", "erschlossen", "extern", "unbekannt"
@@ -68,7 +70,7 @@ VOCAB = {
     ],
     "verknuepfung_typ": [
         "person", "ort", "institution", "ereignis", "werk", "rolle",
-        "datum", "detail", "ensemble"
+        "datum", "detail", "ensemble", "ausgaben", "einnahmen", "summe"
     ]
 }
 
@@ -78,7 +80,8 @@ KOMPOSIT_TYPEN = [
     "ausgaben,waehrung", "ausgaben, waehrung", "ausgaben, wÃ¤hrung",
     "einnahmen,waehrung", "einnahmen, waehrung", "einnahmen, wÃ¤hrung",
     "summe,waehrung", "summe, waehrung", "summe, wÃ¤hrung",
-    "ereignis,ort,datum", "ereignis, ort, datum"
+    "ereignis,ort,datum", "ereignis, ort, datum",
+    "ausgaben,währung", "einnahmen,währung", "summe,währung"
 ]
 
 # Datumsformat-Pattern (ISO 8601 + Qualifier + Bereiche)

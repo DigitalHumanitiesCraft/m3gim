@@ -30,12 +30,7 @@ export function renderBestand(storeRef, containerEl, filters, onSortChange) {
   container = containerEl;
   onSortChangeCallback = onSortChange || null;
 
-  // All Konvolute start expanded — they show their children by default
-  if (expandedKonvolute.size === 0) {
-    for (const [kid] of store.konvolutChildren) {
-      expandedKonvolute.add(kid);
-    }
-  }
+  // Konvolute start collapsed — user clicks to expand
 
   clear(container);
   container.appendChild(buildTable());
@@ -106,7 +101,7 @@ function buildTable() {
     { key: 'titel', label: 'Titel', className: 'archiv-col-titel', title: 'Sortieren nach Titel' },
     { key: 'typ', label: 'Typ', className: 'archiv-col-typ', title: 'Sortieren nach Dokumenttyp' },
     { key: 'datum', label: 'Datum', className: 'archiv-col-datum', title: 'Sortieren nach Datum' },
-    { key: 'links', label: 'Verkn.', className: 'archiv-col-links', title: 'Verkn\u00fcpfungen zu Personen, Orten, Werken' },
+    { key: 'links', label: 'Annotationen', className: 'archiv-col-links', title: 'Annotationen zu Personen, Orten, Werken' },
   ];
 
   const headerRow = el('tr');
@@ -204,7 +199,7 @@ function sortFn(a, b, sort) {
     case 'typ': {
       const ta = getDocTypeId(a) || 'zzz';
       const tb = getDocTypeId(b) || 'zzz';
-      return ta.localeCompare(tb);
+      return ta.localeCompare(tb, 'de-DE');
     }
     case 'links':
       return countLinks(b) - countLinks(a);
@@ -270,11 +265,18 @@ function renderRows(items) {
       : (formatDate(r['rico:date']) || 'o.\u2009D.');
     const isUndated = !item.isKonvolut && !r['rico:date'];
 
-    // Links: Konvolute use pre-computed total, Records show count or dash
-    const linksDisplay = item.isKonvolut
-      ? `${childCount} Nr.\u2009\u00b7\u2009${meta?.totalLinks || 0} Verkn.`
-      : (links > 0 ? String(links) : '\u00b7');
-    const hasLinks = item.isKonvolut ? (meta?.totalLinks > 0) : (links > 0);
+    // Links: Konvolute show total with tooltip summary, Records show count or dash
+    let linksDisplay, hasLinks, linksTooltip = '';
+    if (item.isKonvolut) {
+      const totalLinks = meta?.totalLinks || 0;
+      linksDisplay = String(totalLinks);
+      hasLinks = totalLinks > 0;
+      linksTooltip = buildKonvolutTooltip(item.konvolutId);
+    } else {
+      linksDisplay = links > 0 ? String(links) : '\u00b7';
+      hasLinks = links > 0;
+      if (links > 0) linksTooltip = buildRecordTooltip(r);
+    }
 
     // Unprocessed marking
     const isUnprocessed = !item.isKonvolut && store.unprocessedIds && store.unprocessedIds.has(recordId);
@@ -282,15 +284,18 @@ function renderRows(items) {
 
     const tr = el('tr', {
       className: rowClass,
-      title: isUnprocessed ? 'Noch nicht erschlossen' : '',
-      onClick: () => toggleRecordInline(recordId),
+      title: isUnprocessed ? 'Noch keine Annotationen vorhanden' : '',
+      onClick: () => item.isKonvolut ? toggleKonvolut(item.konvolutId) : toggleRecordInline(recordId),
     },
       el('td', { className: 'archiv-col-signatur' },
         ...sigContent,
         el('span', { className: 'archiv-signatur' }, displaySig)
       ),
       el('td', { className: 'archiv-col-titel' },
-        el('span', { className: 'archiv-titel' }, truncate(displayTitle, 80)),
+        el('span', {
+          className: 'archiv-titel',
+          dataset: displayTitle.length > 80 ? { tip: displayTitle, tipWrap: '', tipPos: 'bottom-left' } : {},
+        }, truncate(displayTitle, 80)),
         item.isChild ? (() => {
           const hint = getFolioHint(r, item.konvolutId);
           return hint ? el('span', { className: 'archiv-folio-hint' }, hint) : null;
@@ -298,22 +303,28 @@ function renderRows(items) {
       ),
       el('td', { className: 'archiv-col-typ' },
         item.isKonvolut
-          ? el('span', { className: 'badge badge--konvolut-struct' }, `Konvolut (${childCount})`)
+          ? el('span', { className: 'badge badge--konvolut-struct', dataset: { tip: `Enth\u00e4lt ${childCount} Objekte` } }, `Konvolut (${childCount})`)
           : item.isChild
             ? (docLabel && docType !== 'konvolut'
               ? el('span', { className: `badge badge--${docType || ''}` }, docLabel)
               : el('span', { className: 'badge badge--unclassified' }, 'Nicht klassifiziert'))
             : isStandaloneKonvolut(r)
-              ? el('span', { className: 'badge badge--konvolut-struct' }, 'Konvolut')
+              ? el('span', { className: 'badge badge--konvolut-struct', dataset: { tip: 'Noch nicht in Einzelobjekte aufgel\u00f6st' } }, 'Konvolut')
               : (docLabel
                 ? el('span', { className: `badge badge--${docType || ''}` }, docLabel)
                 : el('span', { className: 'badge badge--unclassified' }, 'Nicht klassifiziert'))
       ),
       el('td', { className: 'archiv-col-datum' },
-        el('span', { className: `archiv-datum ${isUndated ? 'archiv-datum--undated' : ''}` }, displayDate)
+        el('span', {
+          className: `archiv-datum ${isUndated ? 'archiv-datum--undated' : ''}`,
+          dataset: isUndated ? { tip: 'Ohne Datumsangabe in der Quelle' } : {},
+        }, displayDate)
       ),
       el('td', { className: 'archiv-col-links' },
-        el('span', { className: `archiv-links ${hasLinks ? 'archiv-links--has-links' : 'archiv-links--zero'}` }, linksDisplay),
+        el('span', {
+          className: `archiv-links ${hasLinks ? 'archiv-links--has-links' : 'archiv-links--zero'}`,
+          dataset: linksTooltip ? { tip: linksTooltip, tipWrap: '' } : {},
+        }, linksDisplay),
         !item.isKonvolut ? buildBookmarkBtn(recordId) : null,
       ),
     );
@@ -347,7 +358,7 @@ function toggleKonvolut(konvolutId) {
 }
 
 function naturalSort(a, b) {
-  return a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });
+  return a.localeCompare(b, 'de-DE', { numeric: true, sensitivity: 'base' });
 }
 
 /** Top-level Hauptbestand records are archival units (Konvolute), not single items.
@@ -394,6 +405,50 @@ function getFolioHint(record, konvolutId) {
 
 const BOOKMARK_SVG_EMPTY = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>';
 const BOOKMARK_SVG_FILLED = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>';
+
+function buildRecordTooltip(record) {
+  const agents = ensureArray(record['rico:hasOrHadAgent']);
+  const mentions = ensureArray(record['m3gim:mentions']);
+  const locs = ensureArray(record['rico:hasOrHadLocation'])
+    .filter(l => !/^\d{4}/.test(l.name || l['skos:prefLabel'] || ''));
+  const subjects = ensureArray(record['rico:hasOrHadSubject']);
+  const parts = [];
+  const personCount = agents.length + mentions.length;
+  if (personCount > 0) parts.push(`${personCount} Person${personCount > 1 ? 'en' : ''}`);
+  if (locs.length > 0) parts.push(`${locs.length} Ort${locs.length > 1 ? 'e' : ''}`);
+  if (subjects.length > 0) parts.push(`${subjects.length} Werk${subjects.length > 1 ? 'e' : ''}`);
+  return parts.join(', ');
+}
+
+function buildKonvolutTooltip(konvolutId) {
+  const childIds = (store.konvolutChildren.get(konvolutId) || []).filter(cid => !store.folioIds.has(cid));
+  const agentCounts = new Map();
+  const locationCounts = new Map();
+
+  for (const cid of childIds) {
+    const child = store.records.get(cid);
+    if (!child) continue;
+    for (const agent of ensureArray(child['rico:hasOrHadAgent'])) {
+      const name = agent.name || agent['skos:prefLabel'] || '';
+      if (name) agentCounts.set(name, (agentCounts.get(name) || 0) + 1);
+    }
+    for (const loc of ensureArray(child['rico:hasOrHadLocation'])) {
+      const name = loc.name || loc['skos:prefLabel'] || '';
+      if (name && !/^\d{4}/.test(name)) locationCounts.set(name, (locationCounts.get(name) || 0) + 1);
+    }
+  }
+
+  const parts = [];
+  if (agentCounts.size > 0) {
+    const top = [...agentCounts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5).map(([n]) => n);
+    parts.push(`Personen: ${top.join(', ')}`);
+  }
+  if (locationCounts.size > 0) {
+    const top = [...locationCounts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 3).map(([n]) => n);
+    parts.push(`Orte: ${top.join(', ')}`);
+  }
+  return parts.join('\n');
+}
 
 function buildBookmarkBtn(recordId) {
   const active = isInKorb(recordId);
