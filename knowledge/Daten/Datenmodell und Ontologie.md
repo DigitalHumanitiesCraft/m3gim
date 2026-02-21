@@ -103,8 +103,8 @@ Feld in der Erfassungstabelle, das die Qualitaet der Datierung dokumentiert:
 ### RiC-O Kern
 
 - Hierarchie: `rico:RecordSet` (Konvolut/Fonds), `rico:Record` (Einzelstueck), Teil-Ganzes-Beziehungen
-- Beschreibung: `rico:identifier`, `rico:title`, `rico:date`, `rico:hasExtent`, `rico:hasOrHadLanguage`
-- Relationen: `rico:hasOrHadAgent`, `rico:hasOrHadLocation`, `rico:hasOrHadSubject`
+- Beschreibung: `rico:identifier`, `rico:title`, `rico:date`, `rico:hasExtent`, `rico:hasOrHadLanguage`, `rico:generalDescription`
+- Relationen: `rico:hasOrHadLocation`, `rico:hasOrHadSubject` (+ projektspezifisch `m3gim:hasAssociatedAgent`)
 - Agenten-Typen: `rico:Person`, `rico:CorporateBody`, `rico:Group`
 
 ### m3gim-Erweiterung
@@ -116,13 +116,13 @@ RiC-O deckt archivalische Erschliessung ab, nicht aber: inhaltliche Rollen (wer 
 **Klassen:**
 
 - `m3gim:MusicalWork` (Oberklasse: `rico:Thing`) — Musikalisches Werk (Oper, Lied, Konzert). Identifikation ueber `rico:identifier` (Wikidata-URI), Bezeichnung ueber `rico:title`.
-- `m3gim:Performance` (Oberklasse: `rico:Event`) — Auffuehrungsereignis. Verknuepft mit Werk (`m3gim:performanceOf`), Ort (`rico:hasOrHadLocation`), Datum (`rico:isAssociatedWithDate`), Mitwirkende (`m3gim:hasPerformer`).
+- `m3gim:Performance` (Oberklasse: `rico:Event`) — Auffuehrungsereignis. Verknuepft mit Werk (`m3gim:performanceOf`), Ort (`rico:hasOrHadLocation`), Datum (`m3gim:eventDate`), Mitwirkende (`m3gim:hasPerformer`).
 - `m3gim:PerformanceEvent` (Oberklasse: `rico:Event`) — Rahmenveranstaltung: Festspiele, Premieren, Gastspiele. Karrierestationen unabhaengig von einzelnen Dokumenten.
 - `m3gim:DetailAnnotation` — Finanzielle und vertragliche Details (Honorar, Nebenleistungen, Gagen). Schicht-3-Erweiterung.
 
 **Object Properties:**
 
-- `m3gim:mentions` — Person/Institution wird im Dokument inhaltlich erwaehnt (nicht als Erzeuger/Autor)
+- `m3gim:hasAssociatedAgent` — Agenten-Verknuepfung (ersetzt nicht-existentes `rico:hasOrHadAgent`). Domain: Record, Range: Person/CorporateBody/Group.
 - `m3gim:hasPerformer` — Person wirkt bei Auffuehrung mit
 - `m3gim:performanceOf` — Auffuehrung eines bestimmten Werks
 - `m3gim:hasPerformanceRole` — Konkrete Buehnenrolle (z.B. Orpheus, Bruennhilde)
@@ -132,6 +132,11 @@ RiC-O deckt archivalische Erschliessung ab, nicht aber: inhaltliche Rollen (wer 
 
 - `m3gim:bearbeitungsstand` — Projektinterner Bearbeitungsstand (xsd:string)
 - `m3gim:dateEvidence` — Herkunft der Datierung: aus_dokument, erschlossen, extern, unbekannt (xsd:string)
+- `m3gim:eventDate` — Datum eines Ereignisses als Literal (xsd:string). Ersetzt `rico:isAssociatedWithDate`, das in RiC-O 1.1 eine ObjectProperty mit Range `rico:Date` ist und daher nicht fuer String-Literale geeignet.
+
+**Erwaehnung als Subject (kein eigenes Property):**
+
+Inhaltlich erwaehnete Personen/Institutionen werden als `rico:hasOrHadSubject` mit `@type: rico:Person` modelliert (RiC-O-konform, domain: RecordResource, range: Thing). Das fruehere `m3gim:mentions` wurde zugunsten dieses Standardansatzes entfernt.
 
 **11 PerformanceRoles** (SKOS ConceptScheme, Namespace `m3gim-role`):
 
@@ -144,7 +149,7 @@ RiC-O deckt archivalische Erschliessung ab, nicht aber: inhaltliche Rollen (wer 
 **25 DocumentaryFormTypes** (SKOS ConceptScheme, Namespace `m3gim-dft`):
 brief, vertrag, programmheft, plakat, kritik, fotografie, telegramm, postkarte, urkunde, zeitungsausschnitt, notiz, biographie, visitenkarte, quittung, typoskript, photokopie, rezension, tagebuch, lebenslauf, ausweis, noten, sonstiges, konvolut, tontraeger, dokument
 
-**JSON-LD Context (7 Prefixe):**
+**JSON-LD Context (7 Prefixe + 3 Aliase):**
 
 | Prefix | Namespace |
 |---|---|
@@ -156,10 +161,18 @@ brief, vertrag, programmheft, plakat, kritik, fotografie, telegramm, postkarte, 
 | skos | `http://www.w3.org/2004/02/skos/core#` |
 | xsd | `http://www.w3.org/2001/XMLSchema#` |
 
+**@context-Aliase** (kurze JSON-Keys bei semantischer Korrektheit):
+
+| Alias | Expandiert zu |
+|---|---|
+| `name` | `rico:name` |
+| `role` | `m3gim:role` |
+| `komponist` | `m3gim:komponist` |
+
 **Was kommt woher:**
 
-- RiC-O liefert: Bestand/Konvolut/Folio-Hierarchie, archivalische Beschreibung, Agenten-Rollen (Creator, Author, Accumulator), Orts-/Datumsverknuepfung, thematische Verknuepfung, Dokumenttyp-Zuordnung
-- m3gim ergaenzt: Inhaltliche Rollen, Musikwerke, Auffuehrungen, 25 Dokumenttypen, Bearbeitungsstand
+- RiC-O liefert: Bestand/Konvolut/Folio-Hierarchie, archivalische Beschreibung, Orts-/Datumsverknuepfung (`rico:hasOrHadLocation`, `rico:date`), thematische Verknuepfung (`rico:hasOrHadSubject`), Dokumenttyp-Zuordnung, Typisierung (`rico:Place`, `rico:Person`)
+- m3gim ergaenzt: Agenten-Verknuepfung (`m3gim:hasAssociatedAgent`), Ereignisdaten als Literale (`m3gim:eventDate`), Inhaltliche Rollen, Musikwerke, Auffuehrungen, 25 Dokumenttypen, Bearbeitungsstand
 
 ### Implementiert (seit Iteration 2)
 

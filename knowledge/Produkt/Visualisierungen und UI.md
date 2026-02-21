@@ -18,6 +18,7 @@
 - Projekt (`projekt.html`) — Quellenbeschreibung, Tektonik, Erfassung, Modellierung
 - Modell (`modell.html`) — Ontologie (RiC-O + m3gim), Verknuepfungstypen, Identifikatoren, Statistik
 - Hilfe (`hilfe.html`) — Bedienung, Interaktion, Datumskonventionen, FAQ
+- Impressum (`impressum.html`) — Team, Foerderung, Datenschutz, Lizenz
 - Einheitliches Template: info-header, info-nav, info-main, info-footer
 - Statische Zahlen (aktualisieren nach Pipeline-Lauf, kein JS-Store)
 - Optimale Lesebreite 720px, Source Serif 4 Titel, Print-Styles
@@ -48,6 +49,8 @@
 - Kompakte Toolbar: Suche (flex: 1) + Facet-Chips auf einer Zeile
 - Detail-Expansion auf 10 Records begrenzt + "Alle im Archiv anzeigen" Link
 - Grid-Count zeigt gefilterte/total bei aktivem Filter
+- Wikidata-Icons (Original-Barcode-Logo in Markenfarben) bei Index-Eintraegen mit WD-ID
+- WD-Coverage-Prozent in Index-Grid-Headern
 - Suche, Sortierung, Expansion und Seiteneinstieg in zugehoerige Records
 
 ### Matrix
@@ -83,7 +86,7 @@
     - Personen und Institutionen als separate Zeilen (nach @type gesplittet)
     - Werke mit Rolle (auffuehrung, erwaehnt)
     - Orte, Rollen, Erwaehnt als klickbare Chips
-  - Wikidata-Badges wo vorhanden
+  - Wikidata-Icons (Original-Barcode-Logo) als klickbare Links wo vorhanden
   - Konvolut-Info (Teil von Konvolut X)
   - Empty-State fuer unerschlossene Objekte
 - Cross-Navigation: Signatur-Klick → Archiv mit Inline-Expansion, Chip-Klick → Index
@@ -94,5 +97,5 @@
 ## Offene Luecken und Constraints
 
 - Deferred Features (z. B. Matrix-Zeitzoom, erweiterte Index-Hierarchien)
-- Reconciliation-Pfad fuer Wikidata noch nicht als eigenes Skript im Repo
+- Wikidata-Reconciliation: `reconcile.py` implementiert (171 Matches), Ergebnisse im Frontend sichtbar
 - Datenabdeckung ist weiterhin der dominierende Qualitaetshebel

@@ -37,7 +37,7 @@
 ## Weitere Ressourcen
 
 - [Projektkontext](projekt-kontext.md) — Kompakter Projektsteckbrief
-- [Journal Volltext](appendices/journal-volltext.md) — Arbeitsjournal Sessions 1–15
+- [Journal Volltext](appendices/journal-volltext.md) — Arbeitsjournal Sessions 1–17
 - [Meeting 2026-02-24](appendices/meeting-2026-02-24.md) — Volltext Kick-off-Vorbereitung
 
 ## Pflegehinweis

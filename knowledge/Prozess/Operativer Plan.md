@@ -19,7 +19,7 @@
 - Archiv UX: Spalten-Sortierung, Autocomplete-Personenfilter, erweiterte Suche, Bearbeitungsstand-Markierung
 - Indizes Explorer: Facettensuche, Viewport-Fix, Detail-Begrenzung, Cross-Navigation
 - Wissenskorb: Bookmark-Icons, Korb-Tab mit Card-Details, sessionStorage-Persistenz
-- Navigation: 3 aktive Tabs (archiv, indizes, korb) + 2 ausgeblendet (matrix, kosmos) + 4 HTML-Seiten
+- Navigation: 3 aktive Tabs (archiv, indizes, korb) + 2 ausgeblendet (matrix, kosmos) + 5 HTML-Seiten (inkl. Impressum)
 - Matrix/Kosmos-Verbesserungen (Drilldown, Labels, Zoom/Legende) — aktuell ausgeblendet
 - Knowledge-Refactor: 12 nummerierte Docs → 5 kanonische + Traceability-Matrix + Quellenindex + Anhaenge
 - Gap-Analyse Antrag/Handreichung/KB (Session 14): Kritische Luecken identifiziert und KB aktualisiert
@@ -28,10 +28,12 @@
 - Impressum-Seite (Session 15): docs/impressum.html mit Team, Foerderung, Datenschutz, Lizenz
 - Audit-Fixes (Session 15): audit-data.py View-JSON-Parsing korrigiert, quellenindex + traceability aktualisiert
 - Repo-Cleanup (Session 15): migrate.py, Fotos-XLSX-Dateien entfernt
+- Wikidata-Integration (Session 17): reconcile.py refactored (171 Matches), WD-Icons in Indizes/Korb/Inline-Detail, WD-Coverage in Grid-Headern
+- RiC-O 1.1 Compliance (Session 17): 6 Property-Korrekturen nach OWL-Pruefung, @context-Aliase, rico:Place Typisierung
+- GitHub Actions Workflow entfernt (Session 17): Merge-Konflikte vermieden, Pipeline laeuft lokal
 
 ### Deferred / offen
 
-- Wikidata-Reconciliation-Skript (`reconcile.py`) implementiert (100%-Match-Strategie mit P31-Verifikation)
 - Matrix-Zeitauflosung und Sortierausbau (Matrix aktuell ausgeblendet)
 - Erweiterte Indextiefe (z. B. Orts-Hierarchien)
 - Wissenskorb-Export (Download als Liste/BibTeX)
@@ -87,7 +89,7 @@ Diese Punkte sind in der Handreichung als "OFFEN" markiert und muessen im Kick-o
 5. Datenqualitaetsluecken in den Quelltabellen reduzieren.
 6. Wissenskorb-Export (CSV/BibTeX) evaluieren.
 7. Reports und KB synchron halten.
-8. reconcile.py ausfuehren und Ergebnisse in Google Sheets uebertragen.
+8. ~~reconcile.py ausfuehren~~ → erledigt (171 Matches). Ergebnisse in Google Sheets uebertragen.
 9. Info-Seiten (modell.html) Zahlen nach Pipeline-Lauf aktualisieren.
 
 ## Steuerlogik fuer Folgearbeit

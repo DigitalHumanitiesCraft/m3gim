@@ -1,7 +1,7 @@
 # Projektkontext
 
 > Kanonische Quelle fuer Projektziel, Forschungsrahmen, belastbaren Ist-Stand und Projektsteuerung.
-> Stand der Faktenbasis: Working Tree vom 2026-02-20.
+> Stand der Faktenbasis: Working Tree vom 2026-02-21.
 
 ## Projektsteckbrief
 
@@ -69,7 +69,7 @@ Die Mobilitaet von Saenger:innen war nicht nur notwendige Voraussetzung fuer ihr
 
 - 3 aktive Daten-Tabs: Archiv (Bestand/Chronik), Indizes (4-Grid), Wissenskorb
 - 2 ausgeblendete Tabs: Matrix (D3 Heatmap), Kosmos (D3 Force)
-- 4 statische Info-Seiten: Ueber, Projekt, Modell, Hilfe (eigenstaendige HTML-Dateien)
+- 5 statische Info-Seiten: Ueber, Projekt, Modell, Hilfe, Impressum (eigenstaendige HTML-Dateien)
 - Hash-Routing fuer Daten-Tabs, normale Links fuer Info-Seiten
 - Detail-Interaktion: Inline-Expansion im Archiv, Cross-Navigation aus Indizes/Korb
 
@@ -96,7 +96,8 @@ Die Mobilitaet von Saenger:innen war nicht nur notwendige Voraussetzung fuer ihr
 
 - Iteration 1: abgeschlossen
 - Iteration 2 (Pipeline + Frontend-Refinement): weitgehend umgesetzt
-- Laufende Prioritaet: Erfassungsqualitaet, Reconciliation-Workflow, Deferred Features
+- Wikidata-Reconciliation: `reconcile.py` implementiert (171 Matches), WD-Icons im Frontend
+- Laufende Prioritaet: Erfassungsqualitaet, WD-Ergebnisse in Google Sheets uebertragen, Deferred Features
 
 ## Strategischer Kontext
 

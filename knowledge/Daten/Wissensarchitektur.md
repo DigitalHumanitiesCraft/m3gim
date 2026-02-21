@@ -45,12 +45,12 @@ Dieses Wissen wird direkt operationalisiert — es definiert die Datenstruktur.
 
 | Entitaetstyp | Antrag | Handreichung | Pipeline | Frontend | Status |
 |-------------|--------|-------------|---------|---------|--------|
-| **Person** | Personen als Agenten, Netzwerke | 6 Rollen (verfasser, adressat, ...) | rico:hasOrHadAgent + m3gim:mentions | Personen-Index, Chips | **IMPLEMENTIERT** |
-| **Institution** | Institutionen als Agenten | 6 Rollen (vertragspartner, arbeitgeber, ...) | rico:hasOrHadAgent (CorporateBody/Group) | Org-Index, Chips | **IMPLEMENTIERT** |
+| **Person** | Personen als Agenten, Netzwerke | 6 Rollen (verfasser, adressat, ...) | m3gim:hasAssociatedAgent + rico:hasOrHadSubject (@type: rico:Person) | Personen-Index, Chips | **IMPLEMENTIERT** |
+| **Institution** | Institutionen als Agenten | 6 Rollen (vertragspartner, arbeitgeber, ...) | m3gim:hasAssociatedAgent (CorporateBody/Group) | Org-Index, Chips | **IMPLEMENTIERT** |
 | **Ort** | Auftrittsorte, Graz-Bezuege | 6 Rollen (entstehungsort, auffuehrungsort, ...) | rico:hasOrHadLocation | Ort-Index, Chips | **IMPLEMENTIERT** |
 | **Werk** | Musikwerke mit Komponist | 1 Rolle (interpretin) | rico:hasOrHadSubject | Werk-Index, Chips | **IMPLEMENTIERT** |
 | **Rolle** | Buehnenrollen | Nicht explizit | m3gim:hasPerformanceRole | Korb-Chips | **IMPLEMENTIERT** |
-| **Datum** | Zeitliche Zuordnung | Formate + Qualifier + Evidenz | rico:isAssociatedWithDate + m3gim:dateEvidence | Chronik, Sortierung | **IMPLEMENTIERT** |
+| **Datum** | Zeitliche Zuordnung | Formate + Qualifier + Evidenz | m3gim:eventDate + m3gim:dateEvidence | Chronik, Sortierung | **IMPLEMENTIERT** |
 | **Ereignis** | Auftritte, Gastspiele, Ehrungen | 5 Rollen (rahmenveranstaltung, premiere, ...) | m3gim:PerformanceEvent via rico:hasOrHadSubject | Inline-Detail | **IMPLEMENTIERT** |
 | **Detail** | Honorare, Gagen | Schema (name=Feld, rolle=Wert) | m3gim:DetailAnnotation via m3gim:hasDetail | Inline-Detail, Korb | **IMPLEMENTIERT** |
 | **Ensemble** | Gruppen Musizierender | Erwaehnt | Nicht implementiert | Nicht implementiert | **NIEDRIG** |
@@ -77,9 +77,7 @@ Ereignis in Verknuepfungstabelle:
   "@type": "m3gim:PerformanceEvent",
   "rico:title": "Muenchner Sommerfestspiele 1958",
   "m3gim:eventRole": "rahmenveranstaltung",
-  "rico:isAssociatedWithDate": {
-    "rico:expressedDate": "1958-08-10/1958-09-09"
-  }
+  "m3gim:eventDate": "1958-08-10/1958-09-09"
 }
 ```
 
@@ -131,7 +129,7 @@ Detail in Verknuepfungstabelle:
   "@type": "m3gim:DetailAnnotation",
   "m3gim:detailField": "honorar",
   "m3gim:detailValue": "1.000 DM",
-  "rico:descriptiveNote": "Julius Caesar"
+  "rico:generalDescription": "Julius Caesar"
 }
 ```
 

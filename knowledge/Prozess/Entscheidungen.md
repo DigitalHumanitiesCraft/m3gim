@@ -1,6 +1,6 @@
 # Architekturentscheidungen und Prozesswissen
 
-> 30 finale Architekturentscheidungen (E-01 bis E-30), offene Entscheidungen, technische Schulden und Learnings aus Iteration 1+2.
+> 35 finale Architekturentscheidungen (E-01 bis E-35), offene Entscheidungen, technische Schulden und Learnings aus Iteration 1+2.
 
 ## Architekturentscheidungen (final)
 
@@ -36,13 +36,18 @@
 | E-28 | Handreichung als UX-Quelle — Erfassungskonventionen direkt in Frontend-Texte |
 | E-29 | Dynamischer Counter: "X von Y Objekten" bei aktivem Filter, sonst "Y Objekte · Z Konvolute" |
 | E-30 | Stats-Bar entfernt — keine duplizierte Statistik im Header, Info nur kontextuell im Archiv-Tab |
+| E-31 | `m3gim:hasAssociatedAgent` statt `rico:hasOrHadAgent` (existiert nicht in RiC-O 1.1) oder `rico:hasCreator` (zu einschraenkend fuer Archivdaten mit diversen Rollen) |
+| E-32 | Erwaehnungen als `rico:hasOrHadSubject` mit `@type: rico:Person` — standard RiC-O statt custom `m3gim:mentions` |
+| E-33 | `m3gim:eventDate` fuer Datum-Literale — `rico:isAssociatedWithDate` ist ObjectProperty mit Range `rico:Date` (Klasse), nicht fuer Strings geeignet |
+| E-34 | `@context`-Aliase (`name` → `rico:name`, `role` → `m3gim:role`, `komponist` → `m3gim:komponist`) — kurze JSON-Keys bei semantischer Korrektheit |
+| E-35 | GitHub Actions Workflow entfernt — erzeugte Merge-Konflikte, Pipeline laeuft lokal. Reaktivierung moeglich wenn Dritte Daten updaten. |
 
 ## Offene Entscheidungen
 
 | Thema | Prioritaet | Status |
 |---|---|---|
 | Matrix Zeitfilter UI | hoch | Slider, Dropdown, oder Timeline-Brush — noch nicht entschieden |
-| Wikidata-Reconciliation | hoch | reconcile.py implementiert (100%-Match, P31-Verifikation), Kosmos-View anpassen |
+| Wikidata-Reconciliation | hoch | reconcile.py implementiert (171 Matches), WD-Icons im Frontend sichtbar. Offen: Kosmos-View anpassen, Ergebnisse in Google Sheets uebertragen |
 
 ## Technische Schulden (Iteration 1) — Status
 

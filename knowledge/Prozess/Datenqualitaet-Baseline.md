@@ -94,7 +94,7 @@ Von 480 Eintraegen in den 4 Indizes haben nur 11 eine Wikidata-ID:
 - Ortsindex: 0 von 31
 - Werkindex: 4 von 95
 
-Handlungsbedarf: Wird durch `reconcile.py` (geplant) semi-automatisch geloest.
+**Update Session 17:** `reconcile.py` implementiert und ausgefuehrt — 171 Matches (Personen, Orte, Organisationen, Werke). Ergebnisse noch in Google Sheets zu uebertragen.
 
 ### Sprache nur bei 74 von 282 Objekten erfasst
 
@@ -127,5 +127,6 @@ Handlungsbedarf: Wird durch `reconcile.py` (geplant) semi-automatisch geloest.
 
 ### Nach Abschluss der Erfassung
 
-- Wikidata-Reconciliation (`reconcile.py`)
+- ~~Wikidata-Reconciliation (`reconcile.py`)~~ → erledigt (171 Matches, Session 17)
+- Wikidata-Ergebnisse in Google Sheets uebertragen
 - Verknuepfungs-Fortschritt pruefen (Ziel: >50% verknuepfte Objekte)

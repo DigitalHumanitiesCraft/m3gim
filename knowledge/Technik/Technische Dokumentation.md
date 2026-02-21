@@ -31,7 +31,7 @@
 
 - 18 JS-Module unter `docs/js/`
 - 9 CSS-Dateien unter `docs/css/`
-- 4 statische HTML-Seiten: `docs/about.html`, `docs/projekt.html`, `docs/modell.html`, `docs/hilfe.html`
+- 5 statische HTML-Seiten: `docs/about.html`, `docs/projekt.html`, `docs/modell.html`, `docs/hilfe.html`, `docs/impressum.html`
 - Einstieg: `docs/js/main.js`
 - Routing: `docs/js/ui/router.js` (3 aktive Tabs: archiv, indizes, korb; 2 ausgeblendet: matrix, kosmos)
 - Info-Seiten: Eigenstaendige HTML-Dateien (kein JS, kein Store), verlinkt aus SPA-Header
@@ -48,7 +48,7 @@
 | `scripts/validate.py` | Validierung und Qualitaetschecks | XLSX-Exporte | `data/reports/validation-report.md` |
 | `scripts/transform.py` | Transformation nach JSON-LD (RiC-O + m3gim) | XLSX-Exporte | `data/output/m3gim.jsonld` |
 | `scripts/build-views.py` | View-spezifische Aggregationen | JSON-LD | `data/output/views/*.json` |
-| `scripts/reconcile.py` | Wikidata-Reconciliation (100%-Match, P31-Verifikation) | XLSX-Indizes | `data/output/wikidata-reconciliation.json` |
+| `scripts/reconcile.py` | Wikidata-Reconciliation (100%-Match, P31-Verifikation, Caching, MIN_NAME_LENGTH=3). 171 Matches. | XLSX-Indizes | `data/output/wikidata-reconciliation.json` |
 | `scripts/audit-data.py` | Alignment-Pruefung XLSX vs JSON-LD vs Views | XLSX + JSON-LD + Views | Konsolenreport |
 
 ### Datenfluss
@@ -61,9 +61,9 @@
 
 ## CI/CD
 
-- Workflow: `.github/workflows/build-views.yml`
-- Trigger: Push auf `data/output/m3gim.jsonld` oder `scripts/build-views.py`
-- Aktion: Rebuild der View-JSONs und Commit von Aenderungen in `docs/data/`
+- Kein aktiver Workflow (`.github/workflows/build-views.yml` in Session 17 entfernt — erzeugte Merge-Konflikte mit lokal generierten View-Daten)
+- Pipeline wird lokal ausgefuehrt und Ergebnisse manuell committet
+- Kann spaeter reaktiviert werden, wenn Dritte Daten updaten sollen
 
 ## Pipeline-Korrekturen (Session 10)
 
@@ -84,7 +84,7 @@ store = {
   bySignatur: Map<sig, Record>,
   persons: Map<name, {records, roles, kategorie, wikidata}>,
   organizations: Map<name, {records, roles, wikidata}>,
-  locations: Map<name, {records, roles}>,
+  locations: Map<name, {records, roles, wikidata}>,
   works: Map<name, {records, komponist, wikidata}>,
   konvolutChildren: Map<konvolutId, childIds[]>,
   childToKonvolut: Map<childId, konvolutId>,
@@ -118,5 +118,5 @@ Archiv und Indizes lesen direkt aus `m3gim.jsonld` (via Store), nicht aus separa
 - Kanonische Systemaussagen fuer Architekturentscheidungen stehen in dieser Datei.
 - Detailmapping fuer Ontologie und Datenvokabulare steht in `knowledge/Daten/Datenmodell und Ontologie.md`.
 - Operative Priorisierung und offene Arbeiten stehen in `knowledge/Prozess/Operativer Plan.md`.
-- Architekturentscheidungen (E-01 bis E-30) stehen in `knowledge/Prozess/Entscheidungen.md`.
+- Architekturentscheidungen (E-01 bis E-35) stehen in `knowledge/Prozess/Entscheidungen.md`.
 - Datenqualitaets-Baseline steht in `knowledge/Prozess/Datenqualitaet-Baseline.md`.
