@@ -47,11 +47,10 @@ export function ensureArray(value) {
 /** Count linked entities on a record. */
 export function countLinks(record) {
   let count = 0;
-  count += ensureArray(record['rico:hasOrHadAgent']).length;
+  count += ensureArray(record['m3gim:hasAssociatedAgent']).length;
   count += ensureArray(record['rico:hasOrHadLocation']).length;
   count += ensureArray(record['rico:hasOrHadSubject']).length;
-  count += ensureArray(record['m3gim:mentions']).length;
-  count += ensureArray(record['rico:isAssociatedWithDate']).length;
+  count += ensureArray(record['m3gim:eventDate']).length;
   count += ensureArray(record['m3gim:hasPerformanceRole']).length;
   return count;
 }

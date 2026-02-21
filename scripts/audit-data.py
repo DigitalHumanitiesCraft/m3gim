@@ -156,7 +156,7 @@ def audit_verknuepfungen(df_verk, graph):
     for node in graph:
         if node.get("@type") not in ("rico:Record",):
             continue
-        agents = node.get("rico:hasOrHadAgent", [])
+        agents = node.get("m3gim:hasAssociatedAgent", [])
         if isinstance(agents, dict):
             agents = [agents]
         jsonld_agents += len(agents)
@@ -173,13 +173,10 @@ def audit_verknuepfungen(df_verk, graph):
         for s in subjs:
             if s.get("@type") == "m3gim:PerformanceEvent":
                 jsonld_events += 1
+            elif s.get("@type") == "rico:Person":
+                jsonld_mentions += 1
 
-        ments = node.get("m3gim:mentions", [])
-        if isinstance(ments, dict):
-            ments = [ments]
-        jsonld_mentions += len(ments)
-
-        dts = node.get("rico:isAssociatedWithDate", [])
+        dts = node.get("m3gim:eventDate", [])
         if isinstance(dts, (str,)):
             dts = [dts]
         elif isinstance(dts, dict):
@@ -335,8 +332,8 @@ def audit_quality(df_objekte, graph):
             continue
         has_links = any(
             node.get(prop) for prop in [
-                "rico:hasOrHadAgent", "rico:hasOrHadLocation",
-                "rico:hasOrHadSubject", "m3gim:mentions",
+                "m3gim:hasAssociatedAgent", "rico:hasOrHadLocation",
+                "rico:hasOrHadSubject",
                 "m3gim:hasPerformanceRole"
             ]
         )
@@ -359,7 +356,7 @@ def audit_quality(df_objekte, graph):
     for node in graph:
         if node.get("@type") != "rico:Record":
             continue
-        agents = node.get("rico:hasOrHadAgent", [])
+        agents = node.get("m3gim:hasAssociatedAgent", [])
         if isinstance(agents, dict):
             agents = [agents]
         for a in agents:

@@ -242,37 +242,7 @@
 }
 
 /* Footer: Info-Seiten verwenden .app-footer aus base.css */
-
-/* Scrollbar (match SPA) */
-.info-page ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-.info-page ::-webkit-scrollbar-track {
-  background: var(--color-cream);
-}
-
-.info-page ::-webkit-scrollbar-thumb {
-  background: var(--color-sand);
-  border-radius: 4px;
-}
-
-.info-page ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-text-tertiary);
-}
-
-/* Selection */
-.info-page ::selection {
-  background: var(--color-gold-light);
-  color: var(--color-text-primary);
-}
-
-/* Inline code */
-.info-page code, .info-page .mono {
-  font-family: var(--font-mono);
-  font-size: 0.9em;
-}
+/* Scrollbar, Selection, code/mono: geerbt von base.css */
 
 /* Base link style — scoped to content area, not header */
 .info-main a {

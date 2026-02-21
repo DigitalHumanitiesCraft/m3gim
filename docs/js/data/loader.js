@@ -166,8 +166,7 @@ function isJunkName(name) {
 }
 
 function indexAgents(store, record) {
-  const agents = ensureArray(record['rico:hasOrHadAgent']);
-  const mentions = ensureArray(record['m3gim:mentions']);
+  const agents = ensureArray(record['m3gim:hasAssociatedAgent']);
 
   for (const agent of agents) {
     const rawName = agent.name || agent['skos:prefLabel'] || '';
@@ -196,19 +195,21 @@ function indexAgents(store, record) {
     }
   }
 
-  // Mentions are always persons
-  for (const mention of mentions) {
-    const rawName = mention.name || mention['skos:prefLabel'] || '';
+  // Mentioned persons are now in rico:hasOrHadSubject with @type rico:Person
+  const subjects = ensureArray(record['rico:hasOrHadSubject']);
+  for (const subj of subjects) {
+    if (subj['@type'] !== 'rico:Person') continue;
+    const rawName = subj.name || subj['skos:prefLabel'] || '';
     if (!rawName) continue;
     const name = normalizeName(rawName);
     if (isJunkName(name)) continue;
-    const wikidata = mention['@id'] || null;
+    const wikidata = subj['@id'] || null;
     if (!store.persons.has(name)) {
       store.persons.set(name, { records: new Set(), roles: new Set(), kategorie: getPersonKategorie(name), wikidata });
     }
     const entry = store.persons.get(name);
     entry.records.add(record['@id']);
-    if (mention.role) entry.roles.add(mention.role);
+    if (subj.role) entry.roles.add(subj.role);
     if (wikidata && !entry.wikidata) entry.wikidata = wikidata;
   }
 }
@@ -220,12 +221,14 @@ function indexLocations(store, record) {
     if (!name) continue;
     // Skip date-like strings that leaked into locations
     if (/^\d{4}(-\d{2}){0,2}/.test(name)) continue;
+    const wikidata = loc['@id'] || null;
     if (!store.locations.has(name)) {
-      store.locations.set(name, { records: new Set(), roles: new Set() });
+      store.locations.set(name, { records: new Set(), roles: new Set(), wikidata: wikidata });
     }
     const entry = store.locations.get(name);
     entry.records.add(record['@id']);
     if (loc.role) entry.roles.add(loc.role);
+    if (wikidata && !entry.wikidata) entry.wikidata = wikidata;
   }
 }
 

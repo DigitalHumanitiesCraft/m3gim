@@ -5,7 +5,7 @@
 import { el, clear } from '../utils/dom.js';
 import { formatSignatur, getDocTypeId, ensureArray, formatDocType } from '../utils/format.js';
 import { formatDate } from '../utils/date-parser.js';
-import { DOKUMENTTYP_LABELS } from '../data/constants.js';
+import { DOKUMENTTYP_LABELS, WIKIDATA_ICON_SVG } from '../data/constants.js';
 import { getKorbItems, removeFromKorb, clearKorb, onKorbChange } from '../ui/korb.js';
 import { navigateToIndex } from '../ui/router.js';
 
@@ -112,15 +112,16 @@ function renderCard(record) {
   }
 
   // Verknuepfungen — split agents into persons and institutions
-  const allAgents = ensureArray(record['rico:hasOrHadAgent']);
+  const allAgents = ensureArray(record['m3gim:hasAssociatedAgent']);
   const persons = allAgents.filter(a => a['@type'] !== 'rico:CorporateBody' && a['@type'] !== 'rico:Group');
   const institutions = allAgents.filter(a => a['@type'] === 'rico:CorporateBody' || a['@type'] === 'rico:Group');
   const locations = ensureArray(record['rico:hasOrHadLocation']);
   const subjects = ensureArray(record['rico:hasOrHadSubject']);
+  const mentionedPersons = subjects.filter(s => s['@type'] === 'rico:Person');
+  const works = subjects.filter(s => s['@type'] === 'm3gim:MusicalWork' || s['@type'] === 'm3gim:PerformanceEvent');
   const roles = ensureArray(record['m3gim:hasPerformanceRole']);
-  const mentions = ensureArray(record['m3gim:mentions']);
 
-  const hasLinks = allAgents.length || locations.length || subjects.length || roles.length || mentions.length;
+  const hasLinks = allAgents.length || locations.length || subjects.length || roles.length;
 
   if (hasLinks) {
     const linksEl = el('div', { className: 'korb-card__links' });
@@ -134,14 +135,14 @@ function renderCard(record) {
     if (locations.length) {
       linksEl.appendChild(renderLinkRow('Orte', locations, 'orte'));
     }
-    if (subjects.length) {
-      linksEl.appendChild(renderWorkRow('Werke', subjects));
+    if (works.length) {
+      linksEl.appendChild(renderWorkRow('Werke', works));
     }
     if (roles.length) {
       linksEl.appendChild(renderLinkRow('Rollen', roles));
     }
-    if (mentions.length) {
-      linksEl.appendChild(renderLinkRow('Erw\u00e4hnt', mentions, 'personen'));
+    if (mentionedPersons.length) {
+      linksEl.appendChild(renderLinkRow('Erw\u00e4hnt', mentionedPersons, 'personen'));
     }
 
     card.appendChild(linksEl);
@@ -193,8 +194,9 @@ function renderLinkRow(label, entities, gridType) {
         target: '_blank',
         rel: 'noopener noreferrer',
         title: wikidata,
+        html: WIKIDATA_ICON_SVG,
         onClick: (e) => e.stopPropagation(),
-      }, 'WD'));
+      }));
     }
 
     row.appendChild(chip);

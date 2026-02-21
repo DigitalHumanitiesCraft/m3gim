@@ -139,21 +139,27 @@ code, .mono {
   color: var(--color-text-secondary);
 }
 
-/* Research Preview Banner */
-.research-banner {
-  background: var(--color-gold-light);
-  color: var(--color-text-secondary);
-  text-align: center;
-  padding: var(--space-2) var(--space-4);
-  font-size: var(--text-xs);
-  font-weight: var(--weight-medium);
-  letter-spacing: 0.03em;
-  border-bottom: 1px solid var(--border-color);
+/* Research Preview Badge (in header) */
+.app-header__badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  font-size: 0.65rem;
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.75);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background var(--transition-fast);
 }
 
-.research-banner a {
-  color: var(--color-kug-blau);
-  font-weight: var(--weight-semibold);
+.app-header__badge:hover {
+  background: rgba(255, 255, 255, 0.25);
+  text-decoration: none;
 }
 
 /* Tab Content Sections — absolute fill so height: 100% resolves reliably */

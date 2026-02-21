@@ -19,6 +19,7 @@
   <header class="app-header">
     <a href="index.html" class="app-header__brand">M³GIM</a>
     <div class="app-header__subtitle">Teilnachlass Ira Malaniuk — UAKUG/NIM</div>
+    <a href="projekt.html" class="app-header__badge">Research Preview</a>
     <div class="app-header__spacer"></div>
     <nav class="app-header__nav" aria-label="Informationsseiten">
       <a href="about.html">Über</a>
@@ -27,10 +28,6 @@
       <a href="hilfe.html">Hilfe</a>
     </nav>
   </header>
-
-  <div class="research-banner">
-    Research Preview · <a href="https://lisa.gerda-henkel-stiftung.de/digitale_geschichte_pollin" target="_blank" rel="noopener">Promptotype</a> — Dieses Projekt befindet sich in aktiver Entwicklung.
-  </div>
 
   <main class="info-main">
     <article class="page">
@@ -79,11 +76,14 @@
         </p>
         <p>
           Beziehungen zu Personen und Institutionen werden über
-          <code>rico:hasOrHadAgent</code> modelliert, Ortsbeziehungen über
-          <code>rico:hasOrHadLocation</code> und thematische Bezüge (Werke, Ereignisse)
-          über <code>rico:hasOrHadSubject</code>. Agenten tragen einen <code>@type</code>
-          (<code>rico:Person</code>, <code>rico:CorporateBody</code> oder
-          <code>rico:Group</code>) und eine kontextspezifische Rolle.
+          <code>m3gim:hasAssociatedAgent</code> modelliert (eine projektspezifische
+          Erweiterung, da RiC-O keine generische Agent-Property bietet),
+          Ortsbeziehungen über <code>rico:hasOrHadLocation</code> mit
+          <code>@type: rico:Place</code>, und thematische Bezüge (Werke, Ereignisse,
+          erwähnte Personen) über <code>rico:hasOrHadSubject</code>. Agenten tragen
+          einen <code>@type</code> (<code>rico:Person</code>,
+          <code>rico:CorporateBody</code> oder <code>rico:Group</code>) und
+          eine kontextspezifische Rolle.
         </p>
         <p>
           Die Wahl von RiC-O ermöglicht perspektivisch die Anbindung an internationale
@@ -137,9 +137,9 @@
           </thead>
           <tbody>
             <tr>
-              <td><code>m3gim:mentions</code></td>
-              <td>Record → Person/CorporateBody</td>
-              <td>Person oder Institution wird im Dokument inhaltlich erwähnt — schwächere Verknüpfung als <code>rico:hasOrHadAgent</code>. Zentral für die Unterscheidung zwischen Beteiligung und Rezeption.</td>
+              <td><code>m3gim:hasAssociatedAgent</code></td>
+              <td>Record → Agent</td>
+              <td>Verknüpft ein Dokument mit einer Person, Institution oder Gruppe, die aktiv beteiligt war. Projektspezifische Erweiterung, da RiC-O keine generische Agent-Property für Records bereitstellt; spezifische RiC-O-Properties wie <code>rico:hasCreator</code> oder <code>rico:hasSender</code> wären zu einschränkend.</td>
             </tr>
             <tr>
               <td><code>m3gim:hasPerformer</code></td>
@@ -314,18 +314,18 @@
           <tbody>
             <tr>
               <td>Personen (aktiv)</td>
-              <td><code>rico:hasOrHadAgent</code><br><small>@type: rico:Person</small></td>
+              <td><code>m3gim:hasAssociatedAgent</code><br><small>@type: rico:Person</small></td>
               <td>Aktive Beteiligung: verfasser, adressat, dirigent, solistin, komponist, regisseur, u.&nbsp;a.</td>
             </tr>
             <tr>
               <td>Institutionen</td>
-              <td><code>rico:hasOrHadAgent</code><br><small>@type: rico:CorporateBody</small></td>
+              <td><code>m3gim:hasAssociatedAgent</code><br><small>@type: rico:CorporateBody</small></td>
               <td>Organisationen als Akteure: vertragspartner, arbeitgeber, veranstalter, vermittler, adressat</td>
             </tr>
             <tr>
               <td>Erwähnung</td>
-              <td><code>m3gim:mentions</code></td>
-              <td>Person oder Institution wird im Text erwähnt, ohne direkt beteiligt zu sein</td>
+              <td><code>rico:hasOrHadSubject</code><br><small>@type: rico:Person</small></td>
+              <td>Person wird im Text erwähnt, ohne direkt beteiligt zu sein. Modelliert als Thema des Dokuments (RiC-O-konform).</td>
             </tr>
             <tr>
               <td>Orte</td>
@@ -361,9 +361,10 @@
         <dl class="page__layers">
           <dt>Agent vs. Erwähnung</dt>
           <dd>
-            Eine Person als <code>rico:hasOrHadAgent</code> war aktiv am Dokument beteiligt
-            (z.&nbsp;B. als Sängerin, Dirigent oder Verfasserin). Eine Person als
-            <code>m3gim:mentions</code> wird im Text erwähnt, ohne direkt beteiligt zu sein.
+            Eine Person als <code>m3gim:hasAssociatedAgent</code> war aktiv am Dokument
+            beteiligt (z.&nbsp;B. als Sängerin, Dirigent oder Verfasserin). Eine Person als
+            <code>rico:hasOrHadSubject</code> (mit <code>@type: rico:Person</code> und
+            <code>role: "erwähnt"</code>) wird im Text erwähnt, ohne direkt beteiligt zu sein.
             Diese Unterscheidung ist zentral für Netzwerkanalysen: Ein Erwähnungsnetz hat
             eine andere Qualität als ein Beteiligungsnetz — ersteres bildet
             Rezeptionswege ab, letzteres tatsächliche Zusammenarbeit.

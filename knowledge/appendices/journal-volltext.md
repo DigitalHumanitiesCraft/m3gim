@@ -177,4 +177,59 @@
 
 ---
 
+## Session 14 (2026-02-20): Einheitlicher Header, CSS-Bereinigung
+
+- App-Header auf allen 6 Info-Seiten vereinheitlicht (about, projekt, modell, hilfe, impressum, index)
+- CSS-Bug gefixt: `.info-page a` → `.info-main a` (verhinderte blaue-auf-blau Links)
+- `.gitignore` aktualisiert: antrag.md, handreichung.md ausgeschlossen (DSGVO)
+
+---
+
+## Session 15 (2026-02-20): Vault-Reorganisation, Knowledge-Sync
+
+- 16 Vault-Dokumente in thematische Unterordner: Forschung/, Daten/, Technik/, Produkt/, Prozess/
+- Knowledge-Ordner im Repo mit Vault synchronisiert
+- `_archive/` aufgeloest, Wissen in kanonische Dokumente integriert
+
+---
+
+## Session 16 (2026-02-20): CSS-Tooltips, Chronik-Redesign
+
+- CSS-only Tooltips (`data-tip` Attribut) als Ersatz fuer Browser-Tooltips
+- Chronik-Redesign: Perioden starten zugeklappt, aggregierte Summary-Zeile im Header
+- nummerierte Listen mit KUG-Blau-Kreisen auf Info-Seiten
+
+---
+
+## Session 17 (2026-02-21): Wikidata-Integration, reconcile.py, RiC-O 1.1 Compliance
+
+**Wikidata-Sichtbarkeit:**
+- Wikidata-Icon (Original-Barcode-Logo in Markenfarben #990000/#339966/#006699) in allen Indizes, Inline-Detail und Korb
+- WD-Coverage-Prozent in Index-Grid-Headern
+- Orte-Index: Wikidata-Feld in loader.js + indizes.js ergaenzt
+
+**reconcile.py Refactoring:**
+- MIN_NAME_LENGTH = 3 (verhindert falsche Matches)
+- 4 identische Code-Sektionen → generische INDEX_CONFIG-Schleife
+- Caching: vorhandene Ergebnisse ueberspringen (--force zum Ignorieren)
+- Redundante time.sleep entfernt
+- 171 Wikidata-Matches (Personen, Orte, Organisationen, Werke)
+
+**RiC-O 1.1 Compliance (OWL-Pruefung gegen RiC-O_1-1.rdf):**
+- `rico:hasOrHadAgent` existiert nicht in RiC-O → `m3gim:hasAssociatedAgent` (bewusste Extension)
+- `m3gim:mentions` → `rico:hasOrHadSubject` mit `@type: rico:Person` (RiC-O-konform)
+- `rico:isAssociatedWithDate` ist ObjectProperty (Range: Date-Klasse) → `m3gim:eventDate` fuer Literale
+- `rico:descriptiveNote` umbenannt → `rico:generalDescription`
+- Locations: `@type: "rico:Place"` ergaenzt (161/161)
+- Bare Properties via `@context`-Aliase: `name` → `rico:name`, `role` → `m3gim:role`, `komponist` → `m3gim:komponist`
+
+**Geaenderte Dateien:** transform.py, build-views.py, audit-data.py, loader.js, format.js, aggregator.js, archiv-bestand.js, archiv-chronik.js, archiv-inline-detail.js, korb.js, indizes.js, constants.js, modell.html
+
+**Entscheidungen:**
+- `m3gim:hasAssociatedAgent` statt `rico:hasCreator` (zu einschraenkend fuer Archivdaten mit diversen Rollen)
+- Erwaehnungen als `rico:hasOrHadSubject` (domain: RecordResource, range: Thing — standard RiC-O)
+- `@context`-Aliase fuer kurze JSON-Keys bei semantischer Korrektheit
+
+---
+
 Siehe auch: [→ Projekt](../projekt-kontext.md) · [→ Datenmodell](../Daten/Datenmodell%20und%20Ontologie.md) · [→ Technische Dokumentation](../Technik/Technische%20Dokumentation.md)

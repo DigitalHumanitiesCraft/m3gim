@@ -5,7 +5,7 @@
 
 import { el, clear } from '../utils/dom.js';
 import { formatSignatur, getDocTypeId, truncate } from '../utils/format.js';
-import { PERSONEN_FARBEN, DOKUMENTTYP_LABELS } from '../data/constants.js';
+import { PERSONEN_FARBEN, DOKUMENTTYP_LABELS, WIKIDATA_ICON_SVG } from '../data/constants.js';
 import { selectRecord } from '../ui/router.js';
 import { toggleKorb, isInKorb } from '../ui/korb.js';
 
@@ -67,14 +67,14 @@ const GRID_CONFIG = {
     label: 'Orte',
     icon: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>',
     getEntries: (s) => [...s.locations.entries()].map(([name, data]) => ({
-      name, count: data.records.size, records: data.records,
+      name, count: data.records.size, wikidata: data.wikidata, records: data.records,
     })),
     columns: [
       { key: 'name', label: 'Name', flex: 1 },
       { key: 'count', label: 'Dok.', width: '50px', align: 'right' },
     ],
     renderCell: (entry, col) => {
-      if (col.key === 'name') return el('span', { className: 'idx-name' }, entry.name);
+      if (col.key === 'name') return renderNameCell(entry);
       if (col.key === 'count') return el('span', { className: 'idx-count' }, String(entry.count));
       return el('span');
     },
@@ -257,14 +257,26 @@ function renderGrid(gridKey, config) {
   const grid = el('div', { className: `idx-grid ${isFilterSource ? 'idx-grid--filter-source' : ''}` });
 
   // Header
-  const totalCount = config.getEntries(store).length;
+  const allEntries = config.getEntries(store);
+  const totalCount = allEntries.length;
   const isFiltered = entries.length < totalCount;
-  const countText = isFiltered ? `${entries.length} / ${totalCount}` : `${entries.length}`;
+  const countText = isFiltered ? `${entries.length} / ${totalCount}` : `${totalCount}`;
+
+  // Reconciliation progress (count entries with Wikidata ID)
+  const wdCount = allEntries.filter(e => e.wikidata && String(e.wikidata).startsWith('wd:')).length;
+  const wdPct = totalCount > 0 ? Math.round(wdCount / totalCount * 100) : 0;
 
   const header = el('div', { className: 'idx-grid__header' },
     el('span', { className: 'idx-grid__icon', html: config.icon }),
     el('span', { className: 'idx-grid__title' }, config.label),
     el('span', { className: 'idx-grid__count' }, countText),
+    wdCount > 0
+      ? el('span', {
+          className: 'idx-grid__wd-status',
+          dataset: { tip: `${wdCount} von ${totalCount} mit Wikidata verkn\u00fcpft` },
+          html: `${WIKIDATA_ICON_SVG} ${wdPct}\u2009%`,
+        })
+      : null,
   );
   grid.appendChild(header);
 
@@ -343,8 +355,9 @@ function renderNameCell(entry) {
       target: '_blank',
       rel: 'noopener noreferrer',
       title: wd,
+      html: WIKIDATA_ICON_SVG,
       onClick: (e) => e.stopPropagation(),
-    }, 'WD'));
+    }));
   }
   return frag;
 }

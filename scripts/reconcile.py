@@ -10,7 +10,7 @@ uebernommen wird.
 
 Strategie:
   - Nur exakte Matches (Label == Name, case-insensitive)
-  - Personen: zusaeztlich Filterung auf instance-of human (Q5)
+  - Personen: zusaetzlich Filterung auf instance-of human (Q5)
   - Organisationen: Filterung auf organisation/institution
   - Orte: Filterung auf geographic entity
   - Werke: Suche mit "Komponist + Titel" fuer bessere Praezision
@@ -18,6 +18,7 @@ Strategie:
 
 Verwendung:
     python scripts/reconcile.py [--dry-run] [--type person|org|location|work]
+                                [--force]
 """
 
 import sys
@@ -28,6 +29,7 @@ import urllib.request
 import urllib.parse
 import urllib.error
 import pandas as pd
+from datetime import datetime
 from pathlib import Path
 
 # Windows-Konsole: UTF-8 erzwingen
@@ -48,6 +50,7 @@ OUTPUT_FILE = BASE_DIR / "data" / "output" / "wikidata-reconciliation.json"
 
 WIKIDATA_API = "https://www.wikidata.org/w/api.php"
 REQUEST_DELAY = 0.5  # Sekunden zwischen Anfragen (Rate Limiting)
+MIN_NAME_LENGTH = 3  # Kurze Namen (Kuerzel, Initialien) ueberspringen
 
 # Instance-of (P31) Werte fuer Filterung
 Q_HUMAN = "Q5"
@@ -131,12 +134,24 @@ def is_exact_match(search_name: str, result_label: str) -> bool:
     return search_name.strip().lower() == result_label.strip().lower()
 
 
-def reconcile_person(name: str) -> dict | None:
+def check_type(qid: str, expected_types: set) -> bool:
+    """Prueft ob eine Entitaet den erwarteten P31-Typ hat."""
+    time.sleep(REQUEST_DELAY)
+    claims = get_entity_claims(qid)
+    instances = get_instance_of(claims)
+    if isinstance(expected_types, str):
+        return expected_types in instances
+    return bool(instances & expected_types)
+
+
+# ---------------------------------------------------------------------------
+# Reconciliation-Funktionen pro Typ
+# ---------------------------------------------------------------------------
+
+def reconcile_person(name: str, **_) -> dict | None:
     """Reconciliation fuer Personen: Name → Q-ID wenn exakter Match + Q5."""
-    # Personennamen: "Nachname, Vorname" → suche beides
     results = search_wikidata(name, language="de")
     if not results:
-        # Versuche mit umgedrehtem Namen
         parts = name.split(",", 1)
         if len(parts) == 2:
             reversed_name = f"{parts[1].strip()} {parts[0].strip()}"
@@ -146,66 +161,35 @@ def reconcile_person(name: str) -> dict | None:
         label = r.get("label", "")
         qid = r.get("id", "")
 
-        # Exakter Match auf Label oder aliases
         if is_exact_match(name, label):
-            # Prüfe instance-of
-            time.sleep(REQUEST_DELAY)
-            claims = get_entity_claims(qid)
-            instances = get_instance_of(claims)
-            if Q_HUMAN in instances:
+            if check_type(qid, Q_HUMAN):
                 return {"qid": qid, "label": label, "match": "exact_label"}
 
-        # Auch umgedrehten Namen prüfen
         parts = name.split(",", 1)
         if len(parts) == 2:
             reversed_name = f"{parts[1].strip()} {parts[0].strip()}"
             if is_exact_match(reversed_name, label):
-                time.sleep(REQUEST_DELAY)
-                claims = get_entity_claims(qid)
-                instances = get_instance_of(claims)
-                if Q_HUMAN in instances:
+                if check_type(qid, Q_HUMAN):
                     return {"qid": qid, "label": label, "match": "exact_reversed"}
 
     return None
 
 
-def reconcile_org(name: str) -> dict | None:
-    """Reconciliation fuer Organisationen."""
+def reconcile_simple(name: str, expected_types: set, **_) -> dict | None:
+    """Generische Reconciliation: exakter Match + P31-Typfilter."""
     results = search_wikidata(name, language="de")
 
     for r in results:
         label = r.get("label", "")
         qid = r.get("id", "")
-
         if is_exact_match(name, label):
-            time.sleep(REQUEST_DELAY)
-            claims = get_entity_claims(qid)
-            instances = get_instance_of(claims)
-            if instances & Q_ORGANIZATION:
+            if check_type(qid, expected_types):
                 return {"qid": qid, "label": label, "match": "exact_label"}
 
     return None
 
 
-def reconcile_location(name: str) -> dict | None:
-    """Reconciliation fuer Orte."""
-    results = search_wikidata(name, language="de")
-
-    for r in results:
-        label = r.get("label", "")
-        qid = r.get("id", "")
-
-        if is_exact_match(name, label):
-            time.sleep(REQUEST_DELAY)
-            claims = get_entity_claims(qid)
-            instances = get_instance_of(claims)
-            if instances & Q_GEOGRAPHIC:
-                return {"qid": qid, "label": label, "match": "exact_label"}
-
-    return None
-
-
-def reconcile_work(name: str, komponist: str = None) -> dict | None:
+def reconcile_work(name: str, komponist: str = None, **_) -> dict | None:
     """Reconciliation fuer Werke. Sucht mit Komponist fuer bessere Praezision."""
     query = f"{name} {komponist}" if komponist else name
     results = search_wikidata(query, language="de")
@@ -213,19 +197,15 @@ def reconcile_work(name: str, komponist: str = None) -> dict | None:
     for r in results:
         label = r.get("label", "")
         qid = r.get("id", "")
-
         if is_exact_match(name, label):
-            time.sleep(REQUEST_DELAY)
-            claims = get_entity_claims(qid)
-            instances = get_instance_of(claims)
-            if instances & Q_MUSICAL_WORK:
+            if check_type(qid, Q_MUSICAL_WORK):
                 return {"qid": qid, "label": label, "match": "exact_label"}
 
     return None
 
 
 # ---------------------------------------------------------------------------
-# Header-Shift-Korrekturen (identisch mit transform.py)
+# Index-Konfiguration (ersetzt den Duplikat-Code)
 # ---------------------------------------------------------------------------
 
 HEADER_SHIFTS = {
@@ -235,6 +215,41 @@ HEADER_SHIFTS = {
     "werkindex": ["m3gim_id", "name", "wikidata_id", "komponist",
                   "rolle_stimme", "anmerkung"]
 }
+
+INDEX_CONFIG = [
+    {
+        "type": "person",
+        "label": "Personenindex",
+        "filename": "M3GIM-Personenindex.xlsx",
+        "shift_key": None,
+        "reconcile_fn": reconcile_person,
+        "extra_fields": [],
+    },
+    {
+        "type": "org",
+        "label": "Organisationsindex",
+        "filename": "M3GIM-Organisationsindex.xlsx",
+        "shift_key": "organisationsindex",
+        "reconcile_fn": lambda name, **kw: reconcile_simple(name, Q_ORGANIZATION),
+        "extra_fields": [],
+    },
+    {
+        "type": "location",
+        "label": "Ortsindex",
+        "filename": "M3GIM-Ortsindex.xlsx",
+        "shift_key": "ortsindex",
+        "reconcile_fn": lambda name, **kw: reconcile_simple(name, Q_GEOGRAPHIC),
+        "extra_fields": [],
+    },
+    {
+        "type": "work",
+        "label": "Werkindex",
+        "filename": "M3GIM-Werkindex.xlsx",
+        "shift_key": "werkindex",
+        "reconcile_fn": reconcile_work,
+        "extra_fields": ["komponist"],
+    },
+]
 
 
 def load_index(filename: str, shift_key: str = None) -> pd.DataFrame:
@@ -249,10 +264,8 @@ def load_index(filename: str, shift_key: str = None) -> pd.DataFrame:
     if shift_key and shift_key in HEADER_SHIFTS:
         expected = HEADER_SHIFTS[shift_key]
         if len(df.columns) >= len(expected):
-            # Erste Datenzeile ist eigentlich Header-Zeile
             first_row = df.iloc[0].tolist()
             df.columns = expected + list(df.columns[len(expected):])
-            # Erste Zeile als Daten wiederherstellen
             first_df = pd.DataFrame([first_row], columns=df.columns)
             df = pd.concat([first_df, df.iloc[1:]], ignore_index=True)
 
@@ -260,16 +273,58 @@ def load_index(filename: str, shift_key: str = None) -> pd.DataFrame:
 
 
 # ---------------------------------------------------------------------------
+# Caching: vorhandene Ergebnisse laden
+# ---------------------------------------------------------------------------
+
+def load_previous_results() -> dict:
+    """Laedt vorhandene Reconciliation-Ergebnisse als Cache.
+
+    Returns dict mit:
+      matched_keys: set of (type, name) Tupeln
+      unmatched_keys: set of (type, name) Tupeln
+      matched_data: dict (type, name) → vollstaendiger Match-Eintrag
+    """
+    empty = {"matched_keys": set(), "unmatched_keys": set(), "matched_data": {}}
+    if not OUTPUT_FILE.exists():
+        return empty
+
+    with open(OUTPUT_FILE, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    result = {
+        "matched_keys": set(),
+        "unmatched_keys": set(),
+        "matched_data": {},
+    }
+    for m in data.get("matched", []):
+        key = (m["type"], m["name"])
+        result["matched_keys"].add(key)
+        result["matched_data"][key] = m
+    for u in data.get("unmatched", []):
+        result["unmatched_keys"].add((u["type"], u["name"]))
+
+    return result
+
+
+# ---------------------------------------------------------------------------
 # Hauptprogramm
 # ---------------------------------------------------------------------------
 
-def run_reconciliation(entity_types: list, dry_run: bool = False):
+def run_reconciliation(entity_types: list, dry_run: bool = False,
+                       force: bool = False):
     """Fuehrt die Reconciliation durch."""
+
+    # Cache laden (ueberspringbare Namen)
+    cache = load_previous_results() if not force else {
+        "matched_keys": set(), "unmatched_keys": set(), "matched_data": {}
+    }
+    cached_count = 0
 
     results = {
         "meta": {
-            "date": __import__("datetime").datetime.now().isoformat(),
+            "date": datetime.now().isoformat(),
             "strategy": "exact_match_only",
+            "min_name_length": MIN_NAME_LENGTH,
             "note": "Nur 100%-Matches. Rest muss manuell geprueft werden."
         },
         "matched": [],
@@ -277,178 +332,126 @@ def run_reconciliation(entity_types: list, dry_run: bool = False):
         "skipped": [],
     }
 
-    # --- Personen ---
-    if "person" in entity_types:
-        print("\n=== Personenindex ===")
-        df = load_index("M3GIM-Personenindex.xlsx")
-        if not df.empty:
-            name_col = "name" if "name" in df.columns else df.columns[1]
-            wd_col = "wikidata_id" if "wikidata_id" in df.columns else None
+    # Vorhandene Matches aus Cache uebernehmen (damit sie nicht verloren gehen)
+    if not force and OUTPUT_FILE.exists():
+        with open(OUTPUT_FILE, "r", encoding="utf-8") as f:
+            prev = json.load(f)
+        # Nur Matches uebernehmen, die nicht im aktuellen Lauf neu abgefragt werden
+        for m in prev.get("matched", []):
+            if m["type"] not in entity_types:
+                results["matched"].append(m)
+        for u in prev.get("unmatched", []):
+            if u["type"] not in entity_types:
+                results["unmatched"].append(u)
+        for s in prev.get("skipped", []):
+            if s["type"] not in entity_types:
+                results["skipped"].append(s)
 
-            for _, row in df.iterrows():
-                name = str(row.get(name_col, "")).strip()
-                existing_wd = str(row.get(wd_col, "")).strip() if wd_col else ""
+    for cfg in INDEX_CONFIG:
+        etype = cfg["type"]
+        if etype not in entity_types:
+            continue
 
-                if not name or name == "nan":
+        print(f"\n=== {cfg['label']} ===")
+        df = load_index(cfg["filename"], shift_key=cfg["shift_key"])
+        if df.empty:
+            continue
+
+        # Spaltennamen ermitteln
+        name_col = "name" if "name" in df.columns else df.columns[1]
+        wd_col = "wikidata_id" if "wikidata_id" in df.columns else None
+
+        for _, row in df.iterrows():
+            name = str(row.get(name_col, "")).strip()
+            existing_wd = str(row.get(wd_col, "")).strip() if wd_col else ""
+
+            if not name or name == "nan":
+                continue
+
+            # Bereits im Google Sheet verknuepft
+            if existing_wd and existing_wd != "nan" and existing_wd != "":
+                results["skipped"].append({
+                    "type": etype, "name": name,
+                    "existing_qid": existing_wd
+                })
+                print(f"  [SKIP] {name} — bereits {existing_wd}")
+                continue
+
+            # Mindestlaenge pruefen (verhindert False Positives bei Kuerzeln)
+            if len(name) < MIN_NAME_LENGTH:
+                results["skipped"].append({
+                    "type": etype, "name": name,
+                    "existing_qid": f"zu kurz ({len(name)} Zeichen)"
+                })
+                print(f"  [SKIP] {name} — zu kurz ({len(name)} Zeichen)")
+                continue
+
+            # Cache-Hit: bereits abgefragt, Ergebnis wiederverwenden
+            cache_key = (etype, name)
+            if cache_key in cache["matched_keys"]:
+                prev_match = cache["matched_data"].get(cache_key)
+                if prev_match:
+                    results["matched"].append(prev_match)
+                    cached_count += 1
+                    print(f"  [CACHE] {name} → {prev_match['qid']}")
                     continue
-                if existing_wd and existing_wd != "nan" and existing_wd != "":
-                    results["skipped"].append({
-                        "type": "person", "name": name,
-                        "existing_qid": existing_wd
-                    })
-                    print(f"  [SKIP] {name} — bereits {existing_wd}")
-                    continue
+            if cache_key in cache["unmatched_keys"]:
+                results["unmatched"].append({"type": etype, "name": name})
+                cached_count += 1
+                print(f"  [CACHE] {name} → kein Match")
+                continue
 
-                print(f"  [SEARCH] {name}...", end=" ", flush=True)
-                if not dry_run:
-                    match = reconcile_person(name)
-                    time.sleep(REQUEST_DELAY)
-                    if match:
-                        results["matched"].append({
-                            "type": "person", "name": name, **match
-                        })
-                        print(f"→ {match['qid']} ({match['match']})")
-                    else:
-                        results["unmatched"].append({
-                            "type": "person", "name": name
-                        })
-                        print("→ kein Match")
-                else:
-                    print("→ [DRY RUN]")
+            # Extra-Felder sammeln (z.B. komponist fuer Werke)
+            extra = {}
+            for field in cfg["extra_fields"]:
+                val = str(row.get(field, "")).strip()
+                extra[field] = val if val != "nan" else None
 
-    # --- Organisationen ---
-    if "org" in entity_types:
-        print("\n=== Organisationsindex ===")
-        df = load_index("M3GIM-Organisationsindex.xlsx",
-                        shift_key="organisationsindex")
-        if not df.empty:
-            for _, row in df.iterrows():
-                name = str(row.get("name", "")).strip()
-                existing_wd = str(row.get("wikidata_id", "")).strip()
+            # Anzeige
+            display = name
+            if extra.get("komponist"):
+                display = f"{name} ({extra['komponist']})"
+            print(f"  [SEARCH] {display}...", end=" ", flush=True)
 
-                if not name or name == "nan":
-                    continue
-                if existing_wd and existing_wd != "nan":
-                    results["skipped"].append({
-                        "type": "org", "name": name,
-                        "existing_qid": existing_wd
-                    })
-                    print(f"  [SKIP] {name} — bereits {existing_wd}")
-                    continue
+            if dry_run:
+                print("→ [DRY RUN]")
+                continue
 
-                print(f"  [SEARCH] {name}...", end=" ", flush=True)
-                if not dry_run:
-                    match = reconcile_org(name)
-                    time.sleep(REQUEST_DELAY)
-                    if match:
-                        results["matched"].append({
-                            "type": "org", "name": name, **match
-                        })
-                        print(f"→ {match['qid']} ({match['match']})")
-                    else:
-                        results["unmatched"].append({
-                            "type": "org", "name": name
-                        })
-                        print("→ kein Match")
-                else:
-                    print("→ [DRY RUN]")
+            match = cfg["reconcile_fn"](name, **extra)
+            time.sleep(REQUEST_DELAY)
 
-    # --- Orte ---
-    if "location" in entity_types:
-        print("\n=== Ortsindex ===")
-        df = load_index("M3GIM-Ortsindex.xlsx", shift_key="ortsindex")
-        if not df.empty:
-            for _, row in df.iterrows():
-                name = str(row.get("name", "")).strip()
-                existing_wd = str(row.get("wikidata_id", "")).strip()
+            if match:
+                entry = {"type": etype, "name": name, **extra, **match}
+                results["matched"].append(entry)
+                print(f"→ {match['qid']} ({match['match']})")
+            else:
+                entry = {"type": etype, "name": name}
+                if extra:
+                    entry.update(extra)
+                results["unmatched"].append(entry)
+                print("→ kein Match")
 
-                if not name or name == "nan":
-                    continue
-                if existing_wd and existing_wd != "nan":
-                    results["skipped"].append({
-                        "type": "location", "name": name,
-                        "existing_qid": existing_wd
-                    })
-                    print(f"  [SKIP] {name} — bereits {existing_wd}")
-                    continue
-
-                print(f"  [SEARCH] {name}...", end=" ", flush=True)
-                if not dry_run:
-                    match = reconcile_location(name)
-                    time.sleep(REQUEST_DELAY)
-                    if match:
-                        results["matched"].append({
-                            "type": "location", "name": name, **match
-                        })
-                        print(f"→ {match['qid']} ({match['match']})")
-                    else:
-                        results["unmatched"].append({
-                            "type": "location", "name": name
-                        })
-                        print("→ kein Match")
-                else:
-                    print("→ [DRY RUN]")
-
-    # --- Werke ---
-    if "work" in entity_types:
-        print("\n=== Werkindex ===")
-        df = load_index("M3GIM-Werkindex.xlsx", shift_key="werkindex")
-        if not df.empty:
-            for _, row in df.iterrows():
-                name = str(row.get("name", "")).strip()
-                komponist = str(row.get("komponist", "")).strip()
-                existing_wd = str(row.get("wikidata_id", "")).strip()
-
-                if not name or name == "nan":
-                    continue
-                if existing_wd and existing_wd != "nan":
-                    results["skipped"].append({
-                        "type": "work", "name": name,
-                        "existing_qid": existing_wd
-                    })
-                    print(f"  [SKIP] {name} — bereits {existing_wd}")
-                    continue
-
-                komp = komponist if komponist != "nan" else None
-                print(f"  [SEARCH] {name}"
-                      f"{f' ({komp})' if komp else ''}...",
-                      end=" ", flush=True)
-                if not dry_run:
-                    match = reconcile_work(name, komp)
-                    time.sleep(REQUEST_DELAY)
-                    if match:
-                        results["matched"].append({
-                            "type": "work", "name": name,
-                            "komponist": komp, **match
-                        })
-                        print(f"→ {match['qid']} ({match['match']})")
-                    else:
-                        results["unmatched"].append({
-                            "type": "work", "name": name,
-                            "komponist": komp
-                        })
-                        print("→ kein Match")
-                else:
-                    print("→ [DRY RUN]")
-
-    # --- Ergebnis speichern ---
-    OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
-    with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
-        json.dump(results, f, ensure_ascii=False, indent=2)
+    # --- Ergebnis speichern (nicht im Dry-Run) ---
+    if not dry_run:
+        OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
+        with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
+            json.dump(results, f, ensure_ascii=False, indent=2)
 
     # --- Zusammenfassung ---
     print(f"\n{'='*60}")
     print(f"Ergebnis:")
-    print(f"  Matches:   {len(results['matched'])}")
-    print(f"  Kein Match: {len(results['unmatched'])}")
+    print(f"  Matches:      {len(results['matched'])}")
+    print(f"  Kein Match:   {len(results['unmatched'])}")
     print(f"  Uebersprungen: {len(results['skipped'])}")
-    print(f"\nGespeichert: {OUTPUT_FILE}")
+    if cached_count > 0:
+        print(f"  Aus Cache:    {cached_count}")
+    if not dry_run:
+        print(f"\nGespeichert: {OUTPUT_FILE}")
 
     if not dry_run and results["matched"]:
         print(f"\nNaechster Schritt:")
-        print(f"  1. Ergebnisse in {OUTPUT_FILE} pruefen")
-        print(f"  2. Gepruefe Q-IDs ins Google Sheet eintragen")
-        print(f"  3. Pipeline neu ausfuehren: python scripts/transform.py")
+        print(f"  Pipeline neu ausfuehren: python scripts/transform.py")
+        print(f"  (transform.py liest {OUTPUT_FILE.name} automatisch)")
 
 
 def main():
@@ -463,6 +466,10 @@ def main():
         "--type", choices=["person", "org", "location", "work"],
         help="Nur einen bestimmten Typ reconcilen"
     )
+    parser.add_argument(
+        "--force", action="store_true",
+        help="Cache ignorieren, alle Namen neu abfragen"
+    )
     args = parser.parse_args()
 
     entity_types = [args.type] if args.type else [
@@ -470,11 +477,13 @@ def main():
     ]
 
     print("M³GIM Wikidata-Reconciliation")
-    print(f"Strategie: Nur exakte Matches (100%)")
+    print(f"Strategie: Nur exakte Matches (100%), min. {MIN_NAME_LENGTH} Zeichen")
     if args.dry_run:
         print("[DRY RUN — keine API-Abfragen]")
+    if args.force:
+        print("[FORCE — Cache wird ignoriert]")
 
-    run_reconciliation(entity_types, dry_run=args.dry_run)
+    run_reconciliation(entity_types, dry_run=args.dry_run, force=args.force)
 
 
 if __name__ == "__main__":

@@ -52,7 +52,11 @@ CONTEXT = {
     "m3gim-role": "https://dhcraft.org/m3gim/roles#",
     "wd": "http://www.wikidata.org/entity/",
     "skos": "http://www.w3.org/2004/02/skos/core#",
-    "xsd": "http://www.w3.org/2001/XMLSchema#"
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    # Inline-Property-Aliase: bare keys → qualifizierte URIs
+    "name": "rico:name",
+    "role": "m3gim:role",
+    "komponist": "m3gim:komponist"
 }
 
 # ---------------------------------------------------------------------------
@@ -476,6 +480,7 @@ def add_relations_to_records(records: list, relations: dict):
                 # Skip date-like strings that leaked into locations
                 if name and re.match(r'^\d{4}(-\d{2}){0,2}', name):
                     continue
+                entry["@type"] = "rico:Place"
                 locations.append(entry)
 
             elif t == "werk":
@@ -509,7 +514,7 @@ def add_relations_to_records(records: list, relations: dict):
                 if rel.get("rolle"):
                     detail_entry["m3gim:detailValue"] = rel["rolle"]
                 if rel.get("anmerkung"):
-                    detail_entry["rico:descriptiveNote"] = rel["anmerkung"]
+                    detail_entry["rico:generalDescription"] = rel["anmerkung"]
                 if "m3gim:hasDetail" not in record:
                     record["m3gim:hasDetail"] = []
                 record["m3gim:hasDetail"].append(detail_entry)
@@ -525,17 +530,21 @@ def add_relations_to_records(records: list, relations: dict):
                     record["m3gim:hasDetail"] = []
                 record["m3gim:hasDetail"].append(detail_entry)
 
+        # Erwähnte Personen → rico:hasOrHadSubject (statt m3gim:mentions)
+        # Sie werden als rico:Person mit role "erwähnt" modelliert
+        for m in mentions:
+            m["@type"] = "rico:Person"
+            subjects.append(m)
+
         # Properties setzen (nur wenn nicht leer)
         if agents:
-            record["rico:hasOrHadAgent"] = agents if len(agents) > 1 else agents[0]
+            record["m3gim:hasAssociatedAgent"] = agents if len(agents) > 1 else agents[0]
         if locations:
             record["rico:hasOrHadLocation"] = locations if len(locations) > 1 else locations[0]
         if subjects:
             record["rico:hasOrHadSubject"] = subjects if len(subjects) > 1 else subjects[0]
-        if mentions:
-            record["m3gim:mentions"] = mentions if len(mentions) > 1 else mentions[0]
         if dates:
-            record["rico:isAssociatedWithDate"] = dates if len(dates) > 1 else dates[0]
+            record["m3gim:eventDate"] = dates if len(dates) > 1 else dates[0]
         if roles:
             record["m3gim:hasPerformanceRole"] = roles if len(roles) > 1 else roles[0]
 
@@ -567,6 +576,28 @@ def main():
             print(f"  {name}: {len(indices[key])} Eintraege")
         else:
             print(f"  WARNUNG: {name} nicht gefunden")
+
+    # Reconciliation-Ergebnisse als Fallback laden
+    recon_path = OUTPUT_DIR / "wikidata-reconciliation.json"
+    recon_count = 0
+    if recon_path.exists():
+        with open(recon_path, "r", encoding="utf-8") as f:
+            recon_data = json.load(f)
+        type_map = {"person": "person", "org": "organisation",
+                     "location": "ort", "work": "werk"}
+        for match in recon_data.get("matched", []):
+            etype = type_map.get(match.get("type"))
+            if not etype or etype not in indices:
+                continue
+            name_key = match["name"].strip().lower()
+            if name_key in indices[etype]:
+                entry = indices[etype][name_key]
+                if "wikidata_id" not in entry:
+                    entry["wikidata_id"] = match["qid"]
+                    recon_count += 1
+        print(f"\n  Reconciliation: {recon_count} Q-IDs ergaenzt aus {recon_path.name}")
+    else:
+        print(f"\n  Reconciliation: {recon_path.name} nicht vorhanden (uebersprungen)")
 
     # Objekte laden
     objekte_path = SHEETS_DIR / "M3GIM-Objekte.xlsx"

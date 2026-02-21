@@ -6,7 +6,10 @@
     "m3gim-role": "https://dhcraft.org/m3gim/roles#",
     "wd": "http://www.wikidata.org/entity/",
     "skos": "http://www.w3.org/2004/02/skos/core#",
-    "xsd": "http://www.w3.org/2001/XMLSchema#"
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "name": "rico:name",
+    "role": "m3gim:role",
+    "komponist": "m3gim:komponist"
   },
   "@graph": [
     {
@@ -1238,7 +1241,7 @@
         "m3gim:detailField": "ausgaben",
         "m3gim:detailValue": "15, RM erwähnt"
       },
-      "rico:hasOrHadAgent": {
+      "m3gim:hasAssociatedAgent": {
         "name": "Deutsches Musikinstitut für Ausländer",
         "role": "herausgeber:in",
         "@type": "rico:CorporateBody"
@@ -1246,11 +1249,15 @@
       "rico:hasOrHadLocation": [
         {
           "name": "Potsdam",
-          "role": "auffuehrungsort"
+          "@id": "wd:Q1711",
+          "role": "auffuehrungsort",
+          "@type": "rico:Place"
         },
         {
           "name": "Salzburg",
-          "role": "auffuehrungsort"
+          "@id": "wd:Q34713",
+          "role": "auffuehrungsort",
+          "@type": "rico:Place"
         }
       ],
       "rico:hasOrHadSubject": {
@@ -1258,7 +1265,7 @@
         "role": "rahmenveranstaltung",
         "@type": "m3gim:PerformanceEvent"
       },
-      "rico:isAssociatedWithDate": "1944-05 bis 1944-09"
+      "m3gim:eventDate": "1944-05 bis 1944-09"
     },
     {
       "@id": "m3gim:NIM_003_1_2",
@@ -1272,114 +1279,163 @@
       },
       "rico:hasOrHadLanguage": "de",
       "m3gim:bearbeitungsstand": "zurueckgestellt",
-      "m3gim:mentions": [
+      "rico:hasOrHadSubject": [
         {
           "name": "Strauss, Richard",
-          "role": "erwähnt"
+          "@id": "wd:Q13894",
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Fischer, Edwin",
-          "role": "erwähnt"
+          "@id": "wd:Q123249",
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Gieseking, Walter",
-          "role": "erwähnt"
+          "@id": "wd:Q61028",
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Hartmann, Rudolf",
-          "role": "erwähnt"
+          "@id": "wd:Q124351",
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Heitmann, Fritz",
-          "role": "erwähnt"
+          "@id": "wd:Q91286",
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Hoelscher, Ludwig",
-          "role": "erwähnt"
+          "@id": "wd:Q108009",
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Hüni-Mihacsek, Felicie",
-          "role": "erwähnt"
+          "@id": "wd:Q3068099",
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Kempff, Wilhelm",
-          "role": "erwähnt"
+          "@id": "wd:Q159946",
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Krauß, Clemens",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Kulenkampff, Georg",
-          "role": "erwähnt"
+          "@id": "wd:Q470033",
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Leimer, Karl",
-          "role": "erwähnt"
+          "@id": "wd:Q1664629",
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Lohmann, Paul",
-          "role": "erwähnt"
+          "@id": "wd:Q2061025",
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Mahlke, Hans",
-          "role": "erwähnt"
+          "@id": "wd:Q109441772",
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Martienssen-Lohmann, Franziska",
-          "role": "erwähnt"
+          "@id": "wd:Q4282634",
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Marx, Joseph",
-          "role": "erwähnt"
+          "@id": "wd:Q506561",
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Moratti, Vittorino",
-          "role": "erwähnt"
+          "@id": "wd:Q16677800",
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Ney, Elly",
-          "role": "erwähnt"
+          "@id": "wd:Q66912",
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Pirchan, Emil",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Prihoda, Vasa",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Ramin, Günther",
-          "role": "erwähnt"
+          "@id": "wd:Q518002",
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Schellenberg, Arno",
-          "role": "erwähnt"
+          "@id": "wd:Q694529",
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Schünemann, Georg",
-          "role": "erwähnt"
+          "@id": "wd:Q121675",
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Steiner, Adolf",
-          "role": "erwähnt"
+          "@id": "wd:Q89574267",
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Swarowsky, Hans",
-          "role": "erwähnt"
+          "@id": "wd:Q78721",
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Vilmar-Hansen, E.",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Wolf, Winfried",
-          "role": "erwähnt"
+          "@id": "wd:Q2584346",
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Bahr-Mildenburg, Anna",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         }
       ]
     },
@@ -1465,7 +1521,7 @@
         "m3gim:detailField": "ausgaben",
         "m3gim:detailValue": "150, RM erwähnt"
       },
-      "rico:hasOrHadAgent": {
+      "m3gim:hasAssociatedAgent": {
         "name": "Universität Mozarteum Salzburg",
         "role": "ausbildungsstätte",
         "@type": "rico:CorporateBody"
@@ -1519,7 +1575,7 @@
       "rico:hasOrHadLanguage": "en, fr",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "rico:hasOrHadAgent": [
+      "m3gim:hasAssociatedAgent": [
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
@@ -1535,14 +1591,17 @@
       "rico:hasOrHadLocation": [
         {
           "name": "New York",
-          "role": "absendeort"
+          "@id": "wd:Q1384",
+          "role": "absendeort",
+          "@type": "rico:Place"
         },
         {
           "name": "Zürich, Zürichbergstrasse 104",
-          "role": "zielort"
+          "role": "zielort",
+          "@type": "rico:Place"
         }
       ],
-      "rico:isAssociatedWithDate": "1959-10-28"
+      "m3gim:eventDate": "1959-10-28"
     },
     {
       "@id": "m3gim:NIM_004_2",
@@ -1557,7 +1616,7 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "begonnen",
-      "rico:hasOrHadAgent": [
+      "m3gim:hasAssociatedAgent": [
         {
           "name": "Verdi, Guiseppe",
           "role": "komponist:in",
@@ -1570,26 +1629,31 @@
         },
         {
           "name": "Metternich, Josef",
+          "@id": "wd:Q95732",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Hartmann, Rudolf",
+          "@id": "wd:Q124351",
           "role": "regisseur:in",
           "@type": "rico:Person"
         },
         {
           "name": "Heger, Robert",
+          "@id": "wd:Q72123",
           "role": "dirigent:in",
           "@type": "rico:Person"
         },
         {
           "name": "Jürgens, Helmut",
+          "@id": "wd:Q2716190",
           "role": "bühnenbildner:in",
           "@type": "rico:Person"
         },
         {
           "name": "Proebstl, Max",
+          "@id": "wd:Q1913239",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -1600,21 +1664,25 @@
         },
         {
           "name": "Klarwein, Franz",
+          "@id": "wd:Q1447805",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Vandenburg, Howard",
+          "@id": "wd:Q94932751",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Keil, Adolf",
+          "@id": "wd:Q94931882",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Peter, Albrecht",
+          "@id": "wd:Q94901792",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -1627,53 +1695,65 @@
       "rico:hasOrHadLocation": [
         {
           "name": "Buenos Aires",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "Bayreuth",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "Zürich",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "Wien",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "München",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "Lemberg",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "Graz",
-          "role": "erwähnt"
+          "@id": "wd:Q13298",
+          "role": "erwähnt",
+          "@type": "rico:Place"
         }
       ],
-      "m3gim:mentions": [
+      "rico:hasOrHadSubject": [
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Bahr-Mildenburg, Anna",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Ranczak, Hildegard",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Baasch, Dr. med. Ernst",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         }
       ],
-      "rico:isAssociatedWithDate": [
+      "m3gim:eventDate": [
         "1952-12-16",
         "1952-12-16",
         "1952-12-22"
@@ -1714,7 +1794,7 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "rico:hasOrHadAgent": [
+      "m3gim:hasAssociatedAgent": [
         {
           "name": "Schumann, Karl",
           "role": "verfasser:in",
@@ -1733,21 +1813,25 @@
         },
         {
           "name": "Metternich, Josef",
+          "@id": "wd:Q95732",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Jürgens, Helmut",
+          "@id": "wd:Q2716190",
           "role": "bühnenbildner:in",
           "@type": "rico:Person"
         },
         {
           "name": "Proebstl, Max",
+          "@id": "wd:Q1913239",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Vandenburg, Howard",
+          "@id": "wd:Q94932751",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -1758,6 +1842,7 @@
         },
         {
           "name": "Heger, Robert",
+          "@id": "wd:Q72123",
           "role": "dirigent:in",
           "@type": "rico:Person"
         },
@@ -1774,7 +1859,8 @@
       ],
       "rico:hasOrHadLocation": {
         "name": "München",
-        "role": "erscheinungsdatum"
+        "role": "erscheinungsdatum",
+        "@type": "rico:Place"
       },
       "rico:hasOrHadSubject": {
         "name": "Macbeth",
@@ -1782,7 +1868,7 @@
         "@type": "m3gim:MusicalWork",
         "komponist": "Verdi, Giuseppe"
       },
-      "rico:isAssociatedWithDate": "1952-12-17",
+      "m3gim:eventDate": "1952-12-17",
       "m3gim:hasPerformanceRole": [
         {
           "name": "Lady Macbeth",
@@ -1811,7 +1897,7 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "rico:hasOrHadAgent": [
+      "m3gim:hasAssociatedAgent": [
         {
           "name": "Verdi, Giuseppe",
           "role": "komponist:in",
@@ -1824,6 +1910,7 @@
         },
         {
           "name": "Jürgens, Helmut",
+          "@id": "wd:Q2716190",
           "role": "bühnenbildner:in",
           "@type": "rico:Person"
         },
@@ -1845,31 +1932,37 @@
         },
         {
           "name": "Proebstl, Max",
+          "@id": "wd:Q1913239",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Vandenburg, Howard",
+          "@id": "wd:Q94932751",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Klarwein, Franz",
+          "@id": "wd:Q1447805",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Heger, Robert",
+          "@id": "wd:Q72123",
           "role": "dirigent:in",
           "@type": "rico:Person"
         },
         {
           "name": "Leder, Alfred",
+          "@id": "wd:Q27732662",
           "role": "chorleiter:in",
           "@type": "rico:Person"
         },
         {
           "name": "Schmidt-Garre, Helmut",
+          "@id": "wd:Q95634885",
           "role": "verfasser:in",
           "@type": "rico:Person"
         },
@@ -1882,7 +1975,8 @@
       ],
       "rico:hasOrHadLocation": {
         "name": "München",
-        "role": "entstehungsort"
+        "role": "entstehungsort",
+        "@type": "rico:Place"
       },
       "rico:hasOrHadSubject": {
         "name": "Macbeth",
@@ -1890,7 +1984,7 @@
         "@type": "m3gim:MusicalWork",
         "komponist": "Verdi, Giuseppe"
       },
-      "rico:isAssociatedWithDate": "1952-12-18",
+      "m3gim:eventDate": "1952-12-18",
       "m3gim:hasPerformanceRole": [
         {
           "name": "Lady Macbeth",
@@ -1915,7 +2009,7 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "rico:hasOrHadAgent": [
+      "m3gim:hasAssociatedAgent": [
         {
           "name": "Gluck, Christoph Willibald",
           "role": "komponist:in",
@@ -1923,6 +2017,7 @@
         },
         {
           "name": "Knappertsbusch, Hans",
+          "@id": "wd:Q57425",
           "role": "dirigent:in",
           "@type": "rico:Person"
         },
@@ -1934,6 +2029,7 @@
         },
         {
           "name": "Wagner, Wieland",
+          "@id": "wd:Q60465",
           "role": "regisseur:in",
           "@type": "rico:Person"
         },
@@ -1944,6 +2040,7 @@
         },
         {
           "name": "Fahberg, Antonia",
+          "@id": "wd:Q598316",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -1954,6 +2051,7 @@
         },
         {
           "name": "Erlenwein, Herbert",
+          "@id": "wd:Q95636832",
           "role": "chorleiter:in",
           "@type": "rico:Person"
         },
@@ -1970,37 +2068,43 @@
       ],
       "rico:hasOrHadLocation": {
         "name": "Bayreuth",
-        "role": "erwähnt"
+        "role": "erwähnt",
+        "@type": "rico:Place"
       },
-      "rico:hasOrHadSubject": {
-        "name": "Orpheus und Eurydike",
-        "role": "aufführung",
-        "@type": "m3gim:MusicalWork",
-        "komponist": "Gluck, Christoph Willibald"
-      },
-      "m3gim:mentions": [
+      "rico:hasOrHadSubject": [
+        {
+          "name": "Orpheus und Eurydike",
+          "role": "aufführung",
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Gluck, Christoph Willibald"
+        },
         {
           "name": "Händel, Georg Friedrich",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Mozart, Wolfgang Amadeus",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Barlach, Ernst",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Alighieri, Dante",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Orff, Carl",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         }
       ],
-      "rico:isAssociatedWithDate": "1953-03-05",
+      "m3gim:eventDate": "1953-03-05",
       "m3gim:hasPerformanceRole": [
         {
           "name": "Orpheus",
@@ -2028,14 +2132,16 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "rico:hasOrHadAgent": [
+      "m3gim:hasAssociatedAgent": [
         {
           "name": "Knappertsbusch, Hans",
+          "@id": "wd:Q57425",
           "role": "dirigent:in",
           "@type": "rico:Person"
         },
         {
           "name": "Wagner, Wieland",
+          "@id": "wd:Q60465",
           "role": "regisseur:in",
           "@type": "rico:Person"
         },
@@ -2047,6 +2153,7 @@
         },
         {
           "name": "Kupper, Annelies",
+          "@id": "wd:Q75998",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -2059,11 +2166,13 @@
       "rico:hasOrHadLocation": [
         {
           "name": "München",
-          "role": "auffuehrungsort"
+          "role": "auffuehrungsort",
+          "@type": "rico:Place"
         },
         {
           "name": "Prinzregententheater",
-          "role": "auffuehrungsort"
+          "role": "auffuehrungsort",
+          "@type": "rico:Place"
         }
       ],
       "rico:hasOrHadSubject": {
@@ -2096,7 +2205,7 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "rico:hasOrHadAgent": [
+      "m3gim:hasAssociatedAgent": [
         {
           "name": "Beethoven, Ludwig van",
           "role": "komponist:in",
@@ -2109,6 +2218,7 @@
         },
         {
           "name": "Pitz, Wilhelm",
+          "@id": "wd:Q2574498",
           "role": "chorleiter:in",
           "@type": "rico:Person"
         },
@@ -2120,16 +2230,19 @@
         },
         {
           "name": "Nilsson, Birgit",
+          "@id": "wd:Q233951",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Dermota, Anton",
+          "@id": "wd:Q12784779",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Weber, Ludwig",
+          "@id": "wd:Q136748514",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -2152,53 +2265,69 @@
       ],
       "rico:hasOrHadLocation": {
         "name": "Bayreuth",
-        "role": "auffuehrungsort"
+        "role": "auffuehrungsort",
+        "@type": "rico:Place"
       },
-      "rico:hasOrHadSubject": {
-        "name": "Sinfonien, Nr. 9, op. 125 (d-Moll)",
-        "role": "aufführung",
-        "@type": "m3gim:MusicalWork",
-        "komponist": "Beethoven, Ludwig von"
-      },
-      "m3gim:mentions": [
+      "rico:hasOrHadSubject": [
+        {
+          "name": "Sinfonien, Nr. 9, op. 125 (d-Moll)",
+          "role": "aufführung",
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Beethoven, Ludwig von"
+        },
         {
           "name": "Wagner, Wieland",
-          "role": "erwähnt"
+          "@id": "wd:Q60465",
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Strauss, Richard",
-          "role": "erwähnt"
+          "@id": "wd:Q13894",
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Furtwängler, Wilhelm",
-          "role": "erwähnt"
+          "@id": "wd:Q57285",
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Mozart, Wolfgang Amadeus",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Bach, Johann Sebastian",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Wagner, Richard",
-          "role": "erwähnt"
+          "@id": "wd:Q1511",
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Wagner, Siegfied",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Reger, Max",
-          "role": "erwähnt"
+          "@id": "wd:Q57139",
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Pfitzner, Hans",
-          "role": "erwähnt"
+          "@id": "wd:Q57358",
+          "role": "erwähnt",
+          "@type": "rico:Person"
         }
       ],
-      "rico:isAssociatedWithDate": [
+      "m3gim:eventDate": [
         "1953-08-13",
         "1872",
         "1933",
@@ -2222,7 +2351,7 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "begonnen",
-      "rico:hasOrHadAgent": [
+      "m3gim:hasAssociatedAgent": [
         {
           "name": "Schmidt-Gasse, Helmut",
           "role": "verfasser:in",
@@ -2230,6 +2359,7 @@
         },
         {
           "name": "Wagner, Wieland",
+          "@id": "wd:Q60465",
           "role": "regisseur:in",
           "@type": "rico:Person"
         },
@@ -2251,21 +2381,25 @@
         },
         {
           "name": "Kupper, Annelies",
+          "@id": "wd:Q75998",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Fahberg, Antonia",
+          "@id": "wd:Q598316",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Knappertsbusch, Hans",
+          "@id": "wd:Q57425",
           "role": "dirigent:in",
           "@type": "rico:Person"
         },
         {
           "name": "Erlenwein, Herbert",
+          "@id": "wd:Q95636832",
           "role": "chorleiter:in",
           "@type": "rico:Person"
         },
@@ -2283,33 +2417,38 @@
       ],
       "rico:hasOrHadLocation": {
         "name": "München",
-        "role": "erscheinungsdatum"
+        "role": "erscheinungsdatum",
+        "@type": "rico:Place"
       },
-      "rico:hasOrHadSubject": {
-        "name": "Orpheus und Eurydike",
-        "role": "aufführung",
-        "@type": "m3gim:MusicalWork",
-        "komponist": "Gluck, Christoph Willibald"
-      },
-      "m3gim:mentions": [
+      "rico:hasOrHadSubject": [
+        {
+          "name": "Orpheus und Eurydike",
+          "role": "aufführung",
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Gluck, Christoph Willibald"
+        },
         {
           "name": "Jommelli, Niccolò",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Traetta, Tommaso",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Hasse, Johann Asolph",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Beethoven, Ludwig van",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         }
       ],
-      "rico:isAssociatedWithDate": "1953-03-06",
+      "m3gim:eventDate": "1953-03-06",
       "m3gim:hasPerformanceRole": [
         {
           "name": "Orpheus",
@@ -2338,7 +2477,7 @@
       "rico:hasOrHadLanguage": "it",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "begonnen",
-      "rico:hasOrHadAgent": [
+      "m3gim:hasAssociatedAgent": [
         {
           "name": "Rodzinski, Artur",
           "role": "dirigent:in",
@@ -2346,6 +2485,7 @@
         },
         {
           "name": "Grob-Prandl, Gertrude",
+          "@id": "wd:Q3818034",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -2361,11 +2501,13 @@
         },
         {
           "name": "Schöffler, Paul",
+          "@id": "wd:Q71953",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Ferenz, Willy",
+          "@id": "wd:Q47291788",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -2391,6 +2533,7 @@
         },
         {
           "name": "Lauro, Michele",
+          "@id": "wd:Q133793307",
           "role": "chorleiter:in",
           "@type": "rico:Person"
         },
@@ -2407,6 +2550,7 @@
         },
         {
           "name": "Rott, Adolf",
+          "@id": "wd:Q364029",
           "role": "regisseur:in",
           "@type": "rico:Person"
         },
@@ -2423,7 +2567,8 @@
       ],
       "rico:hasOrHadLocation": {
         "name": "Italien",
-        "role": "auffuehrungsort"
+        "role": "auffuehrungsort",
+        "@type": "rico:Place"
       },
       "rico:hasOrHadSubject": [
         {
@@ -2443,23 +2588,25 @@
           "role": "erwähnt",
           "@type": "m3gim:MusicalWork",
           "komponist": "Ponchielli, Amilcare"
-        }
-      ],
-      "m3gim:mentions": [
+        },
         {
           "name": "Tasso, Fiorenzo",
-          "role": "erwähnt"
+          "@id": "wd:Q137834857",
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Vacchiano",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Campese",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         }
       ],
-      "rico:isAssociatedWithDate": [
+      "m3gim:eventDate": [
         "1964-01-08",
         "1950",
         "1954-01-07"
@@ -2492,39 +2639,46 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Batt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "rico:hasOrHadAgent": [
+      "m3gim:hasAssociatedAgent": [
         {
           "name": "Wagner, Wieland",
+          "@id": "wd:Q60465",
           "role": "regisseur:in",
           "@type": "rico:Person"
         },
         {
           "name": "Keilberth, Joseph",
+          "@id": "wd:Q61123",
           "role": "dirigent:in",
           "@type": "rico:Person"
         },
         {
           "name": "Jochum, Eugen",
+          "@id": "wd:Q57419",
           "role": "dirigent:in",
           "@type": "rico:Person"
         },
         {
           "name": "Pitz, Wilhelm",
+          "@id": "wd:Q2574498",
           "role": "chorleiter:in",
           "@type": "rico:Person"
         },
         {
           "name": "Mödl, Martha",
+          "@id": "wd:Q62964",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Windgassen, Wolfgang",
+          "@id": "wd:Q60906",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Greindl, Josef",
+          "@id": "wd:Q63857",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -2540,6 +2694,7 @@
         },
         {
           "name": "Neidlinger, Gustav",
+          "@id": "wd:Q68344",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -2561,21 +2716,25 @@
         },
         {
           "name": "Zimmermann, Erika",
+          "@id": "wd:Q95756451",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Plümacher, Hetty",
+          "@id": "wd:Q1616310",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Litz, Gisela",
+          "@id": "wd:Q5564902",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Varnay, Astrid",
+          "@id": "wd:Q254518",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -2586,21 +2745,25 @@
         },
         {
           "name": "Weber, Ludwig",
+          "@id": "wd:Q136748514",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Eschert, Hasso",
+          "@id": "wd:Q95339861",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Stolze, Gerhard",
+          "@id": "wd:Q73847",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Adam, Theo",
+          "@id": "wd:Q64414",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -2611,6 +2774,7 @@
         },
         {
           "name": "Wagner, Richard",
+          "@id": "wd:Q1511",
           "role": "komponist:in",
           "@type": "rico:Person"
         },
@@ -2623,7 +2787,8 @@
       ],
       "rico:hasOrHadLocation": {
         "name": "Bayreuth",
-        "role": "auffuehrungsort"
+        "role": "auffuehrungsort",
+        "@type": "rico:Place"
       },
       "rico:hasOrHadSubject": [
         {
@@ -2637,13 +2802,15 @@
           "role": "premiere",
           "@type": "m3gim:MusicalWork",
           "komponist": "Wagner, Richard"
+        },
+        {
+          "name": "Eberhardt, Paul",
+          "@id": "wd:Q94761352",
+          "role": "erwähnt",
+          "@type": "rico:Person"
         }
       ],
-      "m3gim:mentions": {
-        "name": "Eberhardt, Paul",
-        "role": "erwähnt"
-      },
-      "rico:isAssociatedWithDate": "1953-08-01",
+      "m3gim:eventDate": "1953-08-01",
       "m3gim:hasPerformanceRole": [
         {
           "name": "Brünnhilde",
@@ -2760,7 +2927,7 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Batt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "rico:hasOrHadAgent": [
+      "m3gim:hasAssociatedAgent": [
         {
           "name": "Scheenerger, Hansheinz",
           "role": "interpret:in",
@@ -2784,11 +2951,13 @@
         },
         {
           "name": "Oboussier, Robert",
+          "@id": "wd:Q12333612",
           "role": "komponist:in",
           "@type": "rico:Person"
         },
         {
           "name": "Steinecke, Wolfgang",
+          "@id": "wd:Q16720951",
           "role": "herausgeber:in",
           "@type": "rico:Person"
         },
@@ -2805,7 +2974,8 @@
       ],
       "rico:hasOrHadLocation": {
         "name": "Köln",
-        "role": "erwähnt"
+        "role": "erwähnt",
+        "@type": "rico:Place"
       },
       "rico:hasOrHadSubject": [
         {
@@ -2830,13 +3000,15 @@
           "role": "erwähnt",
           "@type": "m3gim:MusicalWork",
           "komponist": "Hindemith, Paul"
+        },
+        {
+          "name": "Adorno, Theodor W.",
+          "@id": "wd:Q152388",
+          "role": "erwähnt",
+          "@type": "rico:Person"
         }
       ],
-      "m3gim:mentions": {
-        "name": "Adorno, Theodor W.",
-        "role": "erwähnt"
-      },
-      "rico:isAssociatedWithDate": [
+      "m3gim:eventDate": [
         "1954-03-31",
         "1923",
         "1939",
@@ -2856,7 +3028,7 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "rico:hasOrHadAgent": [
+      "m3gim:hasAssociatedAgent": [
         {
           "name": "Honolka, Kurt Dr.",
           "role": "verfasser:in",
@@ -2874,16 +3046,19 @@
         },
         {
           "name": "Mazzolà, Caterino",
+          "@id": "wd:Q2856477",
           "role": "librettist:in",
           "@type": "rico:Person"
         },
         {
           "name": "Curjel, Hans",
+          "@id": "wd:Q17249803",
           "role": "übersetzer:in",
           "@type": "rico:Person"
         },
         {
           "name": "Paumgartner, Bernhard",
+          "@id": "wd:Q214365",
           "role": "arrangeur:in",
           "@type": "rico:Person"
         },
@@ -2894,6 +3069,7 @@
         },
         {
           "name": "Richter, Gerd",
+          "@id": "wd:Q116526092",
           "role": "bühnenbildner:in",
           "@type": "rico:Person"
         },
@@ -2905,6 +3081,7 @@
         },
         {
           "name": "Traxel, Josef",
+          "@id": "wd:Q92013",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -2915,6 +3092,7 @@
         },
         {
           "name": "Pfeifle, Alfred",
+          "@id": "wd:Q2645656",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -2925,6 +3103,7 @@
         },
         {
           "name": "Grefe, Gustav",
+          "@id": "wd:Q112472552",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -2935,6 +3114,7 @@
         },
         {
           "name": "Dünnwald, Josef",
+          "@id": "wd:Q25271239",
           "role": "dirigent:in",
           "@type": "rico:Person"
         },
@@ -2951,7 +3131,8 @@
       ],
       "rico:hasOrHadLocation": {
         "name": "Stuttgart",
-        "role": "erscheinungsdatum"
+        "role": "erscheinungsdatum",
+        "@type": "rico:Place"
       },
       "rico:hasOrHadSubject": [
         {
@@ -2980,39 +3161,45 @@
           "name": "Figaro",
           "role": "erwähnt",
           "@type": "m3gim:MusicalWork"
-        }
-      ],
-      "m3gim:mentions": [
+        },
         {
           "name": "Leopold III.",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Gluck, Christoph Willibald",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Jommelli, Niccolò",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Hasse, Johann Asolph",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Wagner, Richard",
-          "role": "erwähnt"
+          "@id": "wd:Q1511",
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Süßmayr, Franz Xaver",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Bonaparte, Napoleon",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         }
       ],
-      "rico:isAssociatedWithDate": "1954-07-06",
+      "m3gim:eventDate": "1954-07-06",
       "m3gim:hasPerformanceRole": [
         {
           "name": "Sextus",
@@ -3069,24 +3256,28 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "rico:hasOrHadAgent": [
+      "m3gim:hasAssociatedAgent": [
         {
           "name": "Knappertsbusch, Hans",
+          "@id": "wd:Q57425",
           "role": "dirigent:in",
           "@type": "rico:Person"
         },
         {
           "name": "Kusche, benno",
+          "@id": "wd:Q817948",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Frantz, Ferdinand",
+          "@id": "wd:Q77205",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Böhme, Kurt",
+          "@id": "wd:Q10314824",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -3103,6 +3294,7 @@
         },
         {
           "name": "Prinzregententheater",
+          "@id": "wd:Q456586",
           "role": "auffuehrungsort",
           "@type": "rico:CorporateBody"
         },
@@ -3119,7 +3311,8 @@
       ],
       "rico:hasOrHadLocation": {
         "name": "München",
-        "role": "auffuehrungsort"
+        "role": "auffuehrungsort",
+        "@type": "rico:Place"
       },
       "rico:hasOrHadSubject": {
         "name": "Die Meistersinger von Nürnberg",
@@ -3128,7 +3321,7 @@
         "@type": "m3gim:MusicalWork",
         "komponist": "Wagner, Richard"
       },
-      "rico:isAssociatedWithDate": "1954-08-14",
+      "m3gim:eventDate": "1954-08-14",
       "m3gim:hasPerformanceRole": [
         {
           "name": "Sixtus Beckmesser",
@@ -3173,7 +3366,7 @@
       "rico:hasOrHadLanguage": "fr",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "rico:hasOrHadAgent": [
+      "m3gim:hasAssociatedAgent": [
         {
           "name": "Munch, Fritz",
           "role": "dirigent:in",
@@ -3192,11 +3385,13 @@
         },
         {
           "name": "Haefliger, Ernst",
+          "@id": "wd:Q124177",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Strauss, Richard",
+          "@id": "wd:Q13894",
           "role": "komponist:in",
           "@type": "rico:Person"
         },
@@ -3228,7 +3423,8 @@
       ],
       "rico:hasOrHadLocation": {
         "name": "Strasbourg",
-        "role": "auffuehrungsort"
+        "role": "auffuehrungsort",
+        "@type": "rico:Place"
       },
       "rico:hasOrHadSubject": [
         {
@@ -3243,7 +3439,7 @@
           "@type": "m3gim:PerformanceEvent"
         }
       ],
-      "rico:isAssociatedWithDate": "1954-10-28"
+      "m3gim:eventDate": "1954-10-28"
     },
     {
       "@id": "m3gim:NIM_004_15",
@@ -3258,24 +3454,28 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "rico:hasOrHadAgent": [
+      "m3gim:hasAssociatedAgent": [
         {
           "name": "Wagner, Richard",
+          "@id": "wd:Q1511",
           "role": "komponist:in",
           "@type": "rico:Person"
         },
         {
           "name": "Richter, Gerd",
+          "@id": "wd:Q116526092",
           "role": "bühnenbildner:in",
           "@type": "rico:Person"
         },
         {
           "name": "Gielen, Josef",
+          "@id": "wd:Q1465297",
           "role": "regisseur:in",
           "@type": "rico:Person"
         },
         {
           "name": "Hanka, Erika",
+          "@id": "wd:Q50825278",
           "role": "choreograph:in",
           "@type": "rico:Person"
         },
@@ -3302,6 +3502,7 @@
         },
         {
           "name": "Weber, Ludwig",
+          "@id": "wd:Q136748514",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -3317,11 +3518,13 @@
         },
         {
           "name": "Meyer-Welfing, Hugo",
+          "@id": "wd:Q55677315",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Pantscheff, Ljubomir",
+          "@id": "wd:Q55675699",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -3332,6 +3535,7 @@
         },
         {
           "name": "Rossmayer, Richard",
+          "@id": "wd:Q110071082",
           "role": "chorleiter:in",
           "@type": "rico:Person"
         },
@@ -3356,71 +3560,92 @@
           "@type": "rico:Person"
         }
       ],
-      "rico:hasOrHadSubject": {
-        "name": "Tannhäuser",
-        "role": "aufführung",
-        "@type": "m3gim:MusicalWork"
-      },
-      "m3gim:mentions": [
+      "rico:hasOrHadSubject": [
+        {
+          "name": "Tannhäuser",
+          "role": "aufführung",
+          "@type": "m3gim:MusicalWork"
+        },
         {
           "name": "Schumann, Robert",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Tizian",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Masaccio",
-          "role": "erwähnt"
+          "@id": "wd:Q5811",
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Mahler, Gustav",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Schalk, Franz",
-          "role": "erwähnt"
+          "@id": "wd:Q79026",
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Walter, Bruno",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Krauß, Clemens",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Linné, Carl von",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Wesendonck, Mathilde",
-          "role": "erwähnt"
+          "@id": "wd:Q63265",
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Golther, Wolfgang",
-          "role": "erwähnt"
+          "@id": "wd:Q103583",
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Wagner, Wolfgang",
           "@id": "wd:Q60452",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Wagner, Wieland",
-          "role": "erwähnt"
+          "@id": "wd:Q60465",
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Roller, Alfred",
-          "role": "erwähnt"
+          "@id": "wd:Q78981",
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Kautsky, Hans",
-          "role": "erwähnt"
+          "@id": "wd:Q1580703",
+          "role": "erwähnt",
+          "@type": "rico:Person"
         }
       ],
-      "rico:isAssociatedWithDate": "1956-11-21",
+      "m3gim:eventDate": "1956-11-21",
       "m3gim:hasPerformanceRole": [
         {
           "name": "Elisabeth",
@@ -3473,9 +3698,10 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "rico:hasOrHadAgent": [
+      "m3gim:hasAssociatedAgent": [
         {
           "name": "Rysanek, Leonie",
+          "@id": "wd:Q78613",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -3497,11 +3723,13 @@
         },
         {
           "name": "Kreppel, Walter",
+          "@id": "wd:Q19629015",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Baylé, Theo",
+          "@id": "wd:Q27864063",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -3536,23 +3764,25 @@
           "@type": "rico:CorporateBody"
         }
       ],
-      "rico:hasOrHadSubject": {
-        "name": "Aida",
-        "role": "wiederaufnahme",
-        "@type": "m3gim:MusicalWork",
-        "komponist": "Verdi, Giuseppe"
-      },
-      "m3gim:mentions": [
+      "rico:hasOrHadSubject": [
+        {
+          "name": "Aida",
+          "role": "wiederaufnahme",
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Verdi, Giuseppe"
+        },
         {
           "name": "Wallerstein",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Grillparzer",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         }
       ],
-      "rico:isAssociatedWithDate": [
+      "m3gim:eventDate": [
         "1956-05-01",
         "1956-11-01"
       ],
@@ -3596,7 +3826,7 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "rico:hasOrHadAgent": [
+      "m3gim:hasAssociatedAgent": [
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
@@ -3605,6 +3835,7 @@
         },
         {
           "name": "Rysanek, Leonie",
+          "@id": "wd:Q78613",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -3615,11 +3846,13 @@
         },
         {
           "name": "Baylé, Theo",
+          "@id": "wd:Q27864063",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Kreppel, Walter",
+          "@id": "wd:Q19629015",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -3645,7 +3878,7 @@
         "@type": "m3gim:MusicalWork",
         "komponist": "Verdi, Giuseppe"
       },
-      "rico:isAssociatedWithDate": "1956-05-02",
+      "m3gim:eventDate": "1956-05-02",
       "m3gim:hasPerformanceRole": [
         {
           "name": "Amneris",
@@ -3693,24 +3926,28 @@
       "rico:hasOrHadLanguage": "fr",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "begonnen",
-      "rico:hasOrHadAgent": [
+      "m3gim:hasAssociatedAgent": [
         {
           "name": "Tinel, Paul",
+          "@id": "wd:Q110850252",
           "role": "verfasser:in",
           "@type": "rico:Person"
         },
         {
           "name": "Wagner, Wieland",
+          "@id": "wd:Q60465",
           "role": "regisseur:in",
           "@type": "rico:Person"
         },
         {
           "name": "Mödl, Martha",
+          "@id": "wd:Q62964",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Windgassen, Wolfgang",
+          "@id": "wd:Q60906",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -3722,31 +3959,37 @@
         },
         {
           "name": "Neidlinger, Gustav",
+          "@id": "wd:Q68344",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Greindl, Josef",
+          "@id": "wd:Q63857",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Blankenheim, Toni",
+          "@id": "wd:Q95565",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Kuën, Paul",
+          "@id": "wd:Q105714",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Stolze, Gerhard",
+          "@id": "wd:Q73847",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Pitz, Wilhelm",
+          "@id": "wd:Q2574498",
           "role": "chorleiter:in",
           "@type": "rico:Person"
         },
@@ -3757,10 +4000,12 @@
         },
         {
           "name": "Eberhardt, Paul",
+          "@id": "wd:Q94761352",
           "@type": "rico:Person"
         },
         {
           "name": "Thiel, Fred",
+          "@id": "wd:Q78170333",
           "role": "kostümbildner:in",
           "@type": "rico:Person"
         },
@@ -3776,6 +4021,7 @@
         },
         {
           "name": "Keilberth, Joseph",
+          "@id": "wd:Q61123",
           "role": "dirigent:in",
           "@type": "rico:Person"
         },
@@ -3793,63 +4039,76 @@
       ],
       "rico:hasOrHadLocation": {
         "name": "Bayreuth",
-        "role": "erwähnt"
+        "role": "erwähnt",
+        "@type": "rico:Place"
       },
-      "rico:hasOrHadSubject": {
-        "name": "Tristan und Isolde",
-        "role": "aufführung",
-        "@type": "m3gim:MusicalWork",
-        "komponist": "Wagner, Richard"
-      },
-      "m3gim:mentions": [
+      "rico:hasOrHadSubject": [
+        {
+          "name": "Tristan und Isolde",
+          "role": "aufführung",
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Wagner, Richard"
+        },
         {
           "name": "Wagner, Wolfgang",
           "@id": "wd:Q60452",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Königin Elisabeth",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Appia, Adolphe",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Hirsch, Robert",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Pfeiffer, Mme",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "voioumaa, Mme",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Strachwitz, Graf von",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Rogatschewsky, Joseph",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Rogatschewsky, Mme",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Kuborn, M.",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Kuborn - de Gauquier, Mme",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Reding, Jeannine",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         }
       ],
       "m3gim:hasPerformanceRole": [
@@ -3900,24 +4159,28 @@
       "rico:hasOrHadLanguage": "fr",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "rico:hasOrHadAgent": [
+      "m3gim:hasAssociatedAgent": [
         {
           "name": "Suthaus, Ludwig",
+          "@id": "wd:Q70400",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Rialland, Louis",
+          "@id": "wd:Q132941819",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Massard, Robert",
+          "@id": "wd:Q3435871",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Rouquetty, Camille",
+          "@id": "wd:Q112391565",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -3929,21 +4192,25 @@
         },
         {
           "name": "Schöffler, Paul",
+          "@id": "wd:Q71953",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Weber, Ludwig",
+          "@id": "wd:Q136748514",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Varnay, Astrid",
+          "@id": "wd:Q254518",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Knappertsbusch, Hans",
+          "@id": "wd:Q57425",
           "role": "dirigent:in",
           "@type": "rico:Person"
         },
@@ -3966,11 +4233,13 @@
       "rico:hasOrHadLocation": [
         {
           "name": "Paris",
-          "role": "aufführung"
+          "role": "aufführung",
+          "@type": "rico:Place"
         },
         {
           "name": "Paris",
-          "role": "aufführung"
+          "role": "aufführung",
+          "@type": "rico:Place"
         }
       ],
       "rico:hasOrHadSubject": [
@@ -3986,7 +4255,7 @@
           "@type": "m3gim:MusicalWork"
         }
       ],
-      "rico:isAssociatedWithDate": [
+      "m3gim:eventDate": [
         "1956",
         "1955",
         "1956-05-13/1956-05-14"
@@ -4060,7 +4329,7 @@
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
-      "rico:hasOrHadAgent": {
+      "m3gim:hasAssociatedAgent": {
         "name": "Malaniuk, Ira",
         "@id": "wd:Q94208",
         "role": "verfasser:in",
@@ -4080,7 +4349,7 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "rico:hasOrHadAgent": [
+      "m3gim:hasAssociatedAgent": [
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
@@ -4101,14 +4370,17 @@
       "rico:hasOrHadLocation": [
         {
           "name": "Wien",
-          "role": "entstehung"
+          "role": "entstehung",
+          "@type": "rico:Place"
         },
         {
           "name": "New York",
-          "role": "zielort"
+          "@id": "wd:Q1384",
+          "role": "zielort",
+          "@type": "rico:Place"
         }
       ],
-      "rico:isAssociatedWithDate": "1957-11-26"
+      "m3gim:eventDate": "1957-11-26"
     },
     {
       "@id": "m3gim:NIM_004_24",
@@ -4122,7 +4394,7 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "begonnen",
-      "rico:hasOrHadAgent": [
+      "m3gim:hasAssociatedAgent": [
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
@@ -4173,107 +4445,141 @@
       "rico:hasOrHadLocation": [
         {
           "name": "Lemberg",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "Wien",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "Graz",
-          "role": "erwähnt"
+          "@id": "wd:Q13298",
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "Zürich",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "München",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "Bayreuth",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "Salzburg",
-          "role": "erwähnt"
+          "@id": "wd:Q34713",
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "London",
-          "role": "erwähnt"
+          "@id": "wd:Q84",
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "Paris",
-          "role": "erwähnt"
+          "@id": "wd:Q90",
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "Mailand",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "Rom",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "Neapel",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "Venedig",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "Berlin",
-          "role": "erwähnt"
+          "@id": "wd:Q64",
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "Hamburg",
-          "role": "erwähnt"
+          "@id": "wd:Q1055",
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "Frankfurt",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "Stuttgart",
-          "role": "erwähnt"
+          "@id": "wd:Q1022",
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "Monte Carlo",
-          "role": "erwähnt"
+          "@id": "wd:Q45240",
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "Lissabon",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "Buenos Aires",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "Stanislau",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "Zürich",
-          "role": "spielzeit"
+          "role": "spielzeit",
+          "@type": "rico:Place"
         },
         {
           "name": "München",
-          "role": "spielzeit"
+          "role": "spielzeit",
+          "@type": "rico:Place"
         },
         {
           "name": "Wien, ab 1956",
-          "role": "spielzeit"
+          "role": "spielzeit",
+          "@type": "rico:Place"
         },
         {
           "name": "Bayreuth",
-          "role": "gastspiel"
+          "role": "gastspiel",
+          "@type": "rico:Place"
         },
         {
           "name": "Salzburg",
-          "role": "gastspiel"
+          "role": "gastspiel",
+          "@type": "rico:Place"
         }
       ],
       "rico:hasOrHadSubject": [
@@ -4306,35 +4612,39 @@
           "role": "erwähnt",
           "@type": "m3gim:MusicalWork",
           "komponist": "Mozart, Wolfgang Amadeus"
-        }
-      ],
-      "m3gim:mentions": [
+        },
         {
           "name": "Malaniuk, Josef (Osyp)",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Didur, Adam",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Bahr-Mildenburg, Anna",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Baasch, Dr. med. Ernst",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Mozart, Wolfgang Amadeus",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Gluck, Christoph Willibald",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         }
       ],
-      "rico:isAssociatedWithDate": [
+      "m3gim:eventDate": [
         "1947-1952",
         "1952-1957",
         "Wien, ab 1956",
@@ -4377,7 +4687,7 @@
       "rico:hasOrHadLanguage": "en",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "rico:hasOrHadAgent": [
+      "m3gim:hasAssociatedAgent": [
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
@@ -4396,6 +4706,7 @@
         },
         {
           "name": "Menotti, Gian Carlo",
+          "@id": "wd:Q270662",
           "role": "librettist:in",
           "@type": "rico:Person"
         },
@@ -4412,7 +4723,9 @@
       ],
       "rico:hasOrHadLocation": {
         "name": "Salzburg",
-        "role": "auffuehrungsort"
+        "@id": "wd:Q34713",
+        "role": "auffuehrungsort",
+        "@type": "rico:Place"
       },
       "rico:hasOrHadSubject": {
         "name": "Vanessa",
@@ -4420,7 +4733,7 @@
         "@type": "m3gim:MusicalWork",
         "komponist": "Barber, Samuel"
       },
-      "rico:isAssociatedWithDate": [
+      "m3gim:eventDate": [
         "1958-04-09",
         "1958-08-16"
       ]
@@ -4452,7 +4765,7 @@
       "rico:hasOrHadLanguage": "en",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "rico:hasOrHadAgent": [
+      "m3gim:hasAssociatedAgent": [
         {
           "name": "Vichey, Luben",
           "role": "vermittler:in",
@@ -4478,18 +4791,21 @@
       "rico:hasOrHadLocation": [
         {
           "name": "New York",
-          "role": "entstehung"
+          "role": "entstehung",
+          "@type": "rico:Place"
         },
         {
           "name": "Zürich, Zurichbergstrasse 104",
-          "role": "zielort"
+          "role": "zielort",
+          "@type": "rico:Place"
         }
       ],
-      "m3gim:mentions": {
+      "rico:hasOrHadSubject": {
         "name": "Semon, Mrs.",
-        "role": "erwähnt"
+        "role": "erwähnt",
+        "@type": "rico:Person"
       },
-      "rico:isAssociatedWithDate": "1959-10-27"
+      "m3gim:eventDate": "1959-10-27"
     },
     {
       "@id": "m3gim:NIM_004_28",
@@ -4502,7 +4818,7 @@
       },
       "rico:hasOrHadLanguage": "en",
       "rico:hasExtent": "1 Blatt, 1 Seite",
-      "rico:hasOrHadAgent": [
+      "m3gim:hasAssociatedAgent": [
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
@@ -4538,15 +4854,19 @@
       "rico:hasOrHadLocation": [
         {
           "name": "Wien",
-          "role": "aufführung"
+          "role": "aufführung",
+          "@type": "rico:Place"
         },
         {
           "name": "München",
-          "role": "aufführung"
+          "role": "aufführung",
+          "@type": "rico:Place"
         },
         {
           "name": "Paris",
-          "role": "aufführung"
+          "@id": "wd:Q90",
+          "role": "aufführung",
+          "@type": "rico:Place"
         }
       ],
       "rico:hasOrHadSubject": [
@@ -4589,7 +4909,7 @@
       "rico:hasOrHadLanguage": "en",
       "rico:hasExtent": "1 Blatt, 2 Seite",
       "m3gim:bearbeitungsstand": "begonnen",
-      "rico:hasOrHadAgent": [
+      "m3gim:hasAssociatedAgent": [
         {
           "name": "Levinger. Dr. Henry W.",
           "role": "verfasser:in",
@@ -4650,107 +4970,141 @@
       "rico:hasOrHadLocation": [
         {
           "name": "Lemberg",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "Wien",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "Graz",
-          "role": "erwähnt"
+          "@id": "wd:Q13298",
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "Zürich",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "München",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "Bayreuth",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "Salzburg",
-          "role": "erwähnt"
+          "@id": "wd:Q34713",
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "London",
-          "role": "erwähnt"
+          "@id": "wd:Q84",
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "Paris",
-          "role": "erwähnt"
+          "@id": "wd:Q90",
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "Mailand",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "Rom",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "Neapel",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "Venedig",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "Berlin",
-          "role": "erwähnt"
+          "@id": "wd:Q64",
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "Hamburg",
-          "role": "erwähnt"
+          "@id": "wd:Q1055",
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "Frankfurt",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "Stuttgart",
-          "role": "erwähnt"
+          "@id": "wd:Q1022",
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "Monte Carlo",
-          "role": "erwähnt"
+          "@id": "wd:Q45240",
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "Lissabon",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "Buenos Aires",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "Stanislau",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "Zürich",
-          "role": "spielzeit"
+          "role": "spielzeit",
+          "@type": "rico:Place"
         },
         {
           "name": "München",
-          "role": "spielzeit"
+          "role": "spielzeit",
+          "@type": "rico:Place"
         },
         {
           "name": "Wien, ab 1956",
-          "role": "spielzeit"
+          "role": "spielzeit",
+          "@type": "rico:Place"
         },
         {
           "name": "Bayreuth",
-          "role": "gastspiel"
+          "role": "gastspiel",
+          "@type": "rico:Place"
         },
         {
           "name": "Salzburg",
-          "role": "gastspiel"
+          "role": "gastspiel",
+          "@type": "rico:Place"
         }
       ],
       "rico:hasOrHadSubject": [
@@ -4783,35 +5137,39 @@
           "role": "erwähnt",
           "@type": "m3gim:MusicalWork",
           "komponist": "Mozart, Wolfgang Amadeus"
-        }
-      ],
-      "m3gim:mentions": [
+        },
         {
           "name": "Malaniuk, Josef (Osyp)",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Didur, Adam",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Bahr-Mildenburg, Anna",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Baasch, Dr. med. Ernst",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Mozart, Wolfgang Amadeus",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Gluck, Christoph Willibald",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         }
       ],
-      "rico:isAssociatedWithDate": [
+      "m3gim:eventDate": [
         "1947-1952",
         "1952-1957",
         "Wien, ab 1956",
@@ -4857,7 +5215,7 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "rico:hasOrHadAgent": [
+      "m3gim:hasAssociatedAgent": [
         {
           "name": "Verdi, Giuseppe",
           "role": "komponist:in",
@@ -4865,6 +5223,7 @@
         },
         {
           "name": "Puccini, Giacomo",
+          "@id": "wd:Q7311",
           "role": "komponist:in",
           "@type": "rico:Person"
         },
@@ -4880,11 +5239,13 @@
         },
         {
           "name": "Wagner, Richard",
+          "@id": "wd:Q1511",
           "role": "komponist:in",
           "@type": "rico:Person"
         },
         {
           "name": "Kienzl, Wilhelm",
+          "@id": "wd:Q637353",
           "role": "komponist:in",
           "@type": "rico:Person"
         },
@@ -4900,6 +5261,7 @@
         },
         {
           "name": "Strauss, Richard",
+          "@id": "wd:Q13894",
           "role": "komponist:in",
           "@type": "rico:Person"
         },
@@ -4931,7 +5293,8 @@
       ],
       "rico:hasOrHadLocation": {
         "name": "Zürich, Zürichbergstrasse 104",
-        "role": "erwähnt"
+        "role": "erwähnt",
+        "@type": "rico:Place"
       },
       "rico:hasOrHadSubject": [
         {
@@ -5093,12 +5456,13 @@
           "name": "Les Noces",
           "role": "erwähnt",
           "@type": "m3gim:MusicalWork"
+        },
+        {
+          "name": "Baasch-Malaniuk, Ira",
+          "role": "erwähnt",
+          "@type": "rico:Person"
         }
       ],
-      "m3gim:mentions": {
-        "name": "Baasch-Malaniuk, Ira",
-        "role": "erwähnt"
-      },
       "m3gim:hasPerformanceRole": [
         {
           "name": "Amneris",
@@ -5234,7 +5598,7 @@
       "rico:hasOrHadLanguage": "fr",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "begonnen",
-      "rico:hasOrHadAgent": [
+      "m3gim:hasAssociatedAgent": [
         {
           "name": "Savelli, Laurent",
           "role": "verfasser:in",
@@ -5242,21 +5606,25 @@
         },
         {
           "name": "Strauss, Richard",
+          "@id": "wd:Q13894",
           "role": "komponist:in",
           "@type": "rico:Person"
         },
         {
           "name": "Samazeuilh, Gustave",
+          "@id": "wd:Q447590",
           "role": "übersetzer:in",
           "@type": "rico:Person"
         },
         {
           "name": "Prêtre, Georges",
+          "@id": "wd:Q342381",
           "role": "dirigent:in",
           "@type": "rico:Person"
         },
         {
           "name": "Moralt, Rudolf",
+          "@id": "wd:Q70098",
           "role": "dirigent:in",
           "@type": "rico:Person"
         },
@@ -5267,21 +5635,25 @@
         },
         {
           "name": "Cortis, Marcello",
+          "@id": "wd:Q52306091",
           "role": "bühnenbildner:in",
           "@type": "rico:Person"
         },
         {
           "name": "Zadek, Hilde",
+          "@id": "wd:Q72147",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Loose, Emmy",
+          "@id": "wd:Q89450",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Weber, Ludwig",
+          "@id": "wd:Q136748514",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -5292,16 +5664,19 @@
         },
         {
           "name": "Kuën, Paul",
+          "@id": "wd:Q105714",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Pandano, Vittorio",
+          "@id": "wd:Q130777432",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Kunz, Erich",
+          "@id": "wd:Q78855",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -5312,11 +5687,13 @@
         },
         {
           "name": "Willy Heyer",
+          "@id": "wd:Q95264973",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Majkut, Erich",
+          "@id": "wd:Q59531271",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -5358,12 +5735,13 @@
           "role": "aufführung",
           "@type": "m3gim:MusicalWork",
           "komponist": "Strauss, Richard"
+        },
+        {
+          "name": "Besnard, Maurice",
+          "role": "erwähnt",
+          "@type": "rico:Person"
         }
       ],
-      "m3gim:mentions": {
-        "name": "Besnard, Maurice",
-        "role": "erwähnt"
-      },
       "m3gim:hasPerformanceRole": [
         {
           "name": "Octavian",
@@ -5431,26 +5809,35 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "begonnen",
-      "m3gim:mentions": [
+      "rico:hasOrHadSubject": [
         {
           "name": "Krauss, Clemens",
-          "role": "erwähnt"
+          "@id": "wd:Q78918",
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Strauss, Richard",
-          "role": "erwähnt"
+          "@id": "wd:Q13894",
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Hartmann, Rudolf",
-          "role": "erwähnt"
+          "@id": "wd:Q124351",
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Della Casa, Lisa",
-          "role": "erwähnt"
+          "@id": "wd:Q123575",
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Chenier, André",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         }
       ]
     },
@@ -5466,7 +5853,7 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "rico:hasOrHadAgent": [
+      "m3gim:hasAssociatedAgent": [
         {
           "name": "Neue Zeit",
           "role": "herausgeber:in",
@@ -5474,6 +5861,7 @@
         },
         {
           "name": "Kaufmann, Harald",
+          "@id": "wd:Q1584570",
           "role": "verfasser:in",
           "@type": "rico:Person"
         },
@@ -5520,11 +5908,13 @@
         },
         {
           "name": "Wehofschitz, Kurt",
+          "@id": "wd:Q95305013",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Zimmermann, Wolfram",
+          "@id": "wd:Q108824609",
           "role": "sänger:in",
           "@type": "rico:Person"
         }
@@ -5532,23 +5922,31 @@
       "rico:hasOrHadLocation": [
         {
           "name": "Graz",
-          "role": "auffuehrungsort"
+          "@id": "wd:Q13298",
+          "role": "auffuehrungsort",
+          "@type": "rico:Place"
         },
         {
           "name": "München",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "Stuttgart",
-          "role": "erwähnt"
+          "@id": "wd:Q1022",
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "Linz",
-          "role": "erwähnt"
+          "@id": "wd:Q41329",
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "Wien",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Place"
         }
       ],
       "rico:hasOrHadSubject": [
@@ -5583,6 +5981,7 @@
         },
         {
           "name": "Stabat mater",
+          "@id": "wd:Q643347",
           "role": "aufführung",
           "@type": "m3gim:MusicalWork"
         }
@@ -5605,7 +6004,7 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "begonnen",
-      "rico:hasOrHadAgent": [
+      "m3gim:hasAssociatedAgent": [
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
@@ -5624,17 +6023,21 @@
           "@type": "rico:CorporateBody"
         }
       ],
-      "rico:hasOrHadSubject": {
-        "name": "Tristan und Isolde",
-        "role": "erwähnt",
-        "@type": "m3gim:MusicalWork",
-        "komponist": "Wagner, Richard"
-      },
-      "m3gim:mentions": {
-        "name": "Wagner, Richard",
-        "role": "erwähnt"
-      },
-      "rico:isAssociatedWithDate": "2026-09-06",
+      "rico:hasOrHadSubject": [
+        {
+          "name": "Tristan und Isolde",
+          "role": "erwähnt",
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Wagner, Richard"
+        },
+        {
+          "name": "Wagner, Richard",
+          "@id": "wd:Q1511",
+          "role": "erwähnt",
+          "@type": "rico:Person"
+        }
+      ],
+      "m3gim:eventDate": "2026-09-06",
       "m3gim:hasPerformanceRole": [
         {
           "name": "Brangäne",
@@ -5692,7 +6095,7 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "rico:hasOrHadAgent": [
+      "m3gim:hasAssociatedAgent": [
         {
           "name": "Ballhausen, Felix",
           "role": "verfasser:in",
@@ -5713,18 +6116,21 @@
       "rico:hasOrHadLocation": [
         {
           "name": "Zürich, Geibelstrasse 1/1",
-          "role": "zielort"
+          "role": "zielort",
+          "@type": "rico:Place"
         },
         {
           "name": "München, Martiusstrasse 3",
-          "role": "entstehungsort"
+          "role": "entstehungsort",
+          "@type": "rico:Place"
         },
         {
           "name": "Bayerische Staatsoper",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Place"
         }
       ],
-      "rico:isAssociatedWithDate": "1952-03-18"
+      "m3gim:eventDate": "1952-03-18"
     },
     {
       "@id": "m3gim:NIM_007_2",
@@ -5739,7 +6145,7 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 2 Seiten",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "rico:hasOrHadAgent": [
+      "m3gim:hasAssociatedAgent": [
         {
           "name": "Teatro Colon",
           "role": "auffuehrungsort",
@@ -5760,27 +6166,33 @@
       "rico:hasOrHadLocation": [
         {
           "name": "Zürich, Geibelstrasse 1/1",
-          "role": "zielort"
+          "role": "zielort",
+          "@type": "rico:Place"
         },
         {
           "name": "München",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "Buenos Aires",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "Neapel",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "Wien",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "Bayreuth",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Place"
         }
       ],
       "rico:hasOrHadSubject": [
@@ -5800,43 +6212,50 @@
           "name": "Herzog Blaubarts Burg",
           "role": "erwähnt",
           "@type": "m3gim:MusicalWork"
-        }
-      ],
-      "m3gim:mentions": [
+        },
         {
           "name": "Szemere",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Dermota",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Hartmann, Prof.",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Di Costanzo, Pasquale",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Höngen, Elisabeth",
-          "role": "erwähnt"
+          "@id": "wd:Q74611",
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Horwitz",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Schnyder",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Taubmann, Frau",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         }
       ],
-      "rico:isAssociatedWithDate": [
+      "m3gim:eventDate": [
         "1952-05-27",
         "1952-05-21",
         "1952-08-27/1952-08-28",
@@ -5869,7 +6288,7 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "rico:hasOrHadAgent": [
+      "m3gim:hasAssociatedAgent": [
         {
           "name": "Bayreuther Festspiele",
           "@id": "wd:Q157596",
@@ -5891,14 +6310,15 @@
       ],
       "rico:hasOrHadLocation": {
         "name": "Bayreuth",
-        "role": "ausstellungsdatum"
+        "role": "ausstellungsdatum",
+        "@type": "rico:Place"
       },
       "rico:hasOrHadSubject": {
         "name": "Bayreuther Festspiele",
         "role": "rahmenveranstaltung",
         "@type": "m3gim:PerformanceEvent"
       },
-      "rico:isAssociatedWithDate": "1953-07-06"
+      "m3gim:eventDate": "1953-07-06"
     },
     {
       "@id": "m3gim:NIM_007_4",
@@ -5935,7 +6355,7 @@
           "m3gim:detailValue": "6000, Esc abendgage"
         }
       ],
-      "rico:hasOrHadAgent": [
+      "m3gim:hasAssociatedAgent": [
         {
           "name": "SAS Scandinavian Airlines",
           "role": "fluggesellschaft",
@@ -5970,35 +6390,45 @@
       "rico:hasOrHadLocation": [
         {
           "name": "Stuttgart",
-          "role": "entstehungsort"
+          "@id": "wd:Q1022",
+          "role": "entstehungsort",
+          "@type": "rico:Place"
         },
         {
           "name": "Wien",
-          "role": "zielort"
+          "role": "zielort",
+          "@type": "rico:Place"
         },
         {
           "name": "Lissabon",
-          "role": "auffuehrungsort"
+          "role": "auffuehrungsort",
+          "@type": "rico:Place"
         },
         {
           "name": "Lissabon",
-          "role": "zielort"
+          "role": "zielort",
+          "@type": "rico:Place"
         },
         {
           "name": "München",
-          "role": "abreiseort"
+          "role": "abreiseort",
+          "@type": "rico:Place"
         },
         {
           "name": "Frankfurt",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "Stuttgart",
-          "role": "erwähnt"
+          "@id": "wd:Q1022",
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "Lissabon",
-          "role": "gastspiel"
+          "role": "gastspiel",
+          "@type": "rico:Place"
         }
       ],
       "rico:hasOrHadSubject": [
@@ -6026,14 +6456,15 @@
           "role": "erwähnt",
           "@type": "m3gim:MusicalWork",
           "komponist": "Wagner, Richard"
+        },
+        {
+          "name": "Malaniuk, Ira",
+          "@id": "wd:Q94208",
+          "role": "erwähnt",
+          "@type": "rico:Person"
         }
       ],
-      "m3gim:mentions": {
-        "name": "Malaniuk, Ira",
-        "@id": "wd:Q94208",
-        "role": "erwähnt"
-      },
-      "rico:isAssociatedWithDate": [
+      "m3gim:eventDate": [
         "1953-09-29",
         "1954-01-23",
         "1954-01-19",
@@ -6113,7 +6544,9 @@
       ],
       "rico:hasOrHadLocation": {
         "name": "Paris",
-        "role": "erwähnt"
+        "@id": "wd:Q90",
+        "role": "erwähnt",
+        "@type": "rico:Place"
       },
       "rico:hasOrHadSubject": [
         {
@@ -6126,19 +6559,19 @@
           "role": "erwähnt",
           "@type": "m3gim:MusicalWork",
           "komponist": "Wagner, Richard"
-        }
-      ],
-      "m3gim:mentions": [
+        },
         {
           "name": "Taubman, Martin Hugo",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "[Organi]",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         }
       ],
-      "rico:isAssociatedWithDate": "1957-[05-27?]"
+      "m3gim:eventDate": "1957-[05-27?]"
     },
     {
       "@id": "m3gim:NIM_007_5_2",
@@ -6158,7 +6591,7 @@
         "m3gim:detailField": "ausgaben",
         "m3gim:detailValue": "2600, S provision"
       },
-      "rico:hasOrHadAgent": [
+      "m3gim:hasAssociatedAgent": [
         {
           "name": "Konzertdirektion",
           "role": "erwähnt",
@@ -6172,6 +6605,7 @@
         },
         {
           "name": "Altmann, Olga",
+          "@id": "wd:Q95686480",
           "role": "unterzeichner:in",
           "@type": "rico:Person"
         }
@@ -6179,30 +6613,36 @@
       "rico:hasOrHadLocation": [
         {
           "name": "Wien",
-          "role": "entstehungsort"
+          "role": "entstehungsort",
+          "@type": "rico:Place"
         },
         {
           "name": "Wien",
-          "role": "gastspiel"
+          "role": "gastspiel",
+          "@type": "rico:Place"
         },
         {
           "name": "Wien",
-          "role": "gastspiel"
+          "role": "gastspiel",
+          "@type": "rico:Place"
         },
         {
           "name": "Wien",
-          "role": "gastspiel"
+          "role": "gastspiel",
+          "@type": "rico:Place"
         },
         {
           "name": "Wien",
-          "role": "gastspiel"
+          "role": "gastspiel",
+          "@type": "rico:Place"
         },
         {
           "name": "Stuttgart",
-          "role": "gastspiel"
+          "role": "gastspiel",
+          "@type": "rico:Place"
         }
       ],
-      "rico:isAssociatedWithDate": [
+      "m3gim:eventDate": [
         "1957-05-01",
         "1957-01-04",
         "1957-04-20",
@@ -6229,7 +6669,7 @@
         "m3gim:detailField": "ausgaben",
         "m3gim:detailValue": "360, S provision"
       },
-      "rico:hasOrHadAgent": [
+      "m3gim:hasAssociatedAgent": [
         {
           "name": "Konzertdirektion",
           "role": "erwähnt",
@@ -6243,6 +6683,7 @@
         },
         {
           "name": "Altmann, Olga",
+          "@id": "wd:Q95686480",
           "role": "unterzeichner:in",
           "@type": "rico:Person"
         }
@@ -6250,14 +6691,16 @@
       "rico:hasOrHadLocation": [
         {
           "name": "Wien",
-          "role": "entstehungsort"
+          "role": "entstehungsort",
+          "@type": "rico:Place"
         },
         {
           "name": "Stuttgart",
-          "role": "gastspiel"
+          "role": "gastspiel",
+          "@type": "rico:Place"
         }
       ],
-      "rico:isAssociatedWithDate": [
+      "m3gim:eventDate": [
         "1957-06-24",
         "1957-06-07"
       ]
@@ -6280,7 +6723,7 @@
         "m3gim:detailField": "ausgaben",
         "m3gim:detailValue": "2500, S provision"
       },
-      "rico:hasOrHadAgent": [
+      "m3gim:hasAssociatedAgent": [
         {
           "name": "Konzertdirektion",
           "role": "erwähnt",
@@ -6294,6 +6737,7 @@
         },
         {
           "name": "Altmann, Olga",
+          "@id": "wd:Q95686480",
           "role": "unterzeichner:in",
           "@type": "rico:Person"
         }
@@ -6301,30 +6745,36 @@
       "rico:hasOrHadLocation": [
         {
           "name": "Wien",
-          "role": "entstehungsort"
+          "role": "entstehungsort",
+          "@type": "rico:Place"
         },
         {
           "name": "Wien",
-          "role": "gastspiel"
+          "role": "gastspiel",
+          "@type": "rico:Place"
         },
         {
           "name": "Wien",
-          "role": "gastspiel"
+          "role": "gastspiel",
+          "@type": "rico:Place"
         },
         {
           "name": "Wien",
-          "role": "gastspiel"
+          "role": "gastspiel",
+          "@type": "rico:Place"
         },
         {
           "name": "Wien",
-          "role": "gastspiel"
+          "role": "gastspiel",
+          "@type": "rico:Place"
         },
         {
           "name": "Wien",
-          "role": "gastspiel"
+          "role": "gastspiel",
+          "@type": "rico:Place"
         }
       ],
-      "rico:isAssociatedWithDate": [
+      "m3gim:eventDate": [
         "1957-06-30",
         "1957-06-04",
         "1957-06-12",
@@ -6351,7 +6801,7 @@
         "m3gim:detailField": "ausgaben",
         "m3gim:detailValue": "4000, S provision"
       },
-      "rico:hasOrHadAgent": [
+      "m3gim:hasAssociatedAgent": [
         {
           "name": "Wiener Staatsoper",
           "role": "erwähnt",
@@ -6370,6 +6820,7 @@
         },
         {
           "name": "Altmann, Olga",
+          "@id": "wd:Q95686480",
           "role": "unterzeichner:in",
           "@type": "rico:Person"
         }
@@ -6377,18 +6828,21 @@
       "rico:hasOrHadLocation": [
         {
           "name": "Wien",
-          "role": "entstehungsort"
+          "role": "entstehungsort",
+          "@type": "rico:Place"
         },
         {
           "name": "Wien",
-          "role": "gastspiel"
+          "role": "gastspiel",
+          "@type": "rico:Place"
         },
         {
           "name": "Wien",
-          "role": "gastspiel"
+          "role": "gastspiel",
+          "@type": "rico:Place"
         }
       ],
-      "rico:isAssociatedWithDate": [
+      "m3gim:eventDate": [
         "1957-10-31",
         "1957-09",
         "1957-10"
@@ -6412,7 +6866,7 @@
         "m3gim:detailField": "ausgaben",
         "m3gim:detailValue": "510, S provision"
       },
-      "rico:hasOrHadAgent": [
+      "m3gim:hasAssociatedAgent": [
         {
           "name": "Konzertdirektion",
           "role": "erwähnt",
@@ -6426,6 +6880,7 @@
         },
         {
           "name": "Altmann, Olga",
+          "@id": "wd:Q95686480",
           "role": "unterzeichner:in",
           "@type": "rico:Person"
         }
@@ -6433,22 +6888,27 @@
       "rico:hasOrHadLocation": [
         {
           "name": "Wien",
-          "role": "entstehungsort"
+          "role": "entstehungsort",
+          "@type": "rico:Place"
         },
         {
           "name": "Berlin",
-          "role": "erwähnt"
+          "@id": "wd:Q64",
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "Berlin",
-          "role": "gastspiel"
+          "role": "gastspiel",
+          "@type": "rico:Place"
         },
         {
           "name": "Berlin",
-          "role": "gastspiel"
+          "role": "gastspiel",
+          "@type": "rico:Place"
         }
       ],
-      "rico:isAssociatedWithDate": [
+      "m3gim:eventDate": [
         "1957-12-05",
         "1957-11-10",
         "1957-11-11"
@@ -6472,7 +6932,7 @@
         "m3gim:detailField": "ausgaben",
         "m3gim:detailValue": "5500, S provision"
       },
-      "rico:hasOrHadAgent": [
+      "m3gim:hasAssociatedAgent": [
         {
           "name": "Konzertdirektion",
           "role": "erwähnt",
@@ -6486,6 +6946,7 @@
         },
         {
           "name": "Altmann, Olga",
+          "@id": "wd:Q95686480",
           "role": "unterzeichner:in",
           "@type": "rico:Person"
         }
@@ -6493,18 +6954,21 @@
       "rico:hasOrHadLocation": [
         {
           "name": "Wien",
-          "role": "entstehungsort"
+          "role": "entstehungsort",
+          "@type": "rico:Place"
         },
         {
           "name": "Wien",
-          "role": "gastspiel"
+          "role": "gastspiel",
+          "@type": "rico:Place"
         },
         {
           "name": "Wien",
-          "role": "gastspiel"
+          "role": "gastspiel",
+          "@type": "rico:Place"
         }
       ],
-      "rico:isAssociatedWithDate": [
+      "m3gim:eventDate": [
         "1958-03-13",
         "1957-11",
         "1957-12"
@@ -6528,7 +6992,7 @@
         "m3gim:detailField": "ausgaben",
         "m3gim:detailValue": "631,50, Fr. erwähnt"
       },
-      "rico:hasOrHadAgent": [
+      "m3gim:hasAssociatedAgent": [
         {
           "name": "Aktiengesellschaft Leu & Co.",
           "role": "erwähnt",
@@ -6548,14 +7012,16 @@
       "rico:hasOrHadLocation": [
         {
           "name": "Zürich",
-          "role": "entstehung"
+          "role": "entstehung",
+          "@type": "rico:Place"
         },
         {
           "name": "Zürich",
-          "role": "auftrag"
+          "role": "auftrag",
+          "@type": "rico:Place"
         }
       ],
-      "rico:isAssociatedWithDate": [
+      "m3gim:eventDate": [
         "1957-05-15",
         "1957-05-14"
       ]
@@ -6578,9 +7044,10 @@
         "m3gim:detailField": "einnahmen",
         "m3gim:detailValue": "1360, DM erwähnt"
       },
-      "rico:hasOrHadAgent": [
+      "m3gim:hasAssociatedAgent": [
         {
           "name": "Nord- und Westdeutscher Rundfunkverband",
+          "@id": "wd:Q1997444",
           "role": "verfasser:in",
           "@type": "rico:CorporateBody"
         },
@@ -6593,14 +7060,15 @@
       ],
       "rico:hasOrHadLocation": {
         "name": "Köln",
-        "role": "erwähnt"
+        "role": "erwähnt",
+        "@type": "rico:Place"
       },
       "rico:hasOrHadSubject": {
         "name": "Paradies und Peri",
         "role": "erwähnt",
         "@type": "m3gim:MusicalWork"
       },
-      "rico:isAssociatedWithDate": [
+      "m3gim:eventDate": [
         "1959-11-18",
         "1959-08-31",
         "1959-05-09"
@@ -6623,7 +7091,7 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "rico:hasOrHadAgent": [
+      "m3gim:hasAssociatedAgent": [
         {
           "name": "Bayerische Staatsoper",
           "@id": "wd:Q681931",
@@ -6644,9 +7112,10 @@
       ],
       "rico:hasOrHadLocation": {
         "name": "München",
-        "role": "entstehung"
+        "role": "entstehung",
+        "@type": "rico:Place"
       },
-      "rico:isAssociatedWithDate": [
+      "m3gim:eventDate": [
         "1961/1962",
         "1961-11-21"
       ]
@@ -6663,7 +7132,7 @@
       },
       "rico:hasOrHadLanguage": "de, en, fr",
       "rico:hasExtent": "1 Blatt, 4 Seiten",
-      "rico:hasOrHadAgent": [
+      "m3gim:hasAssociatedAgent": [
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
@@ -6672,6 +7141,7 @@
         },
         {
           "name": "Werba, Erik",
+          "@id": "wd:Q1354192",
           "role": "interpret:in",
           "@type": "rico:Person"
         },
@@ -6722,6 +7192,7 @@
         },
         {
           "name": "Strauss, Richard",
+          "@id": "wd:Q13894",
           "role": "komponist:in",
           "@type": "rico:Person"
         }
@@ -6729,31 +7200,38 @@
       "rico:hasOrHadLocation": [
         {
           "name": "Palais Pallavicini",
-          "role": "auffuehrungsort"
+          "role": "auffuehrungsort",
+          "@type": "rico:Place"
         },
         {
           "name": "Palais Schwarzenberg",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "Palais Auersberg",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "Palais Palffy",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "Palais Lobkowitz",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "Hofburg",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "Palais Rasumofsky",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Place"
         }
       ],
       "rico:hasOrHadSubject": [
@@ -6878,35 +7356,39 @@
           "role": "aufführung",
           "@type": "m3gim:MusicalWork",
           "komponist": "Strauss, Richard"
-        }
-      ],
-      "m3gim:mentions": [
+        },
         {
           "name": "Ott, Elfriede",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Patzak, Julian",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Müller",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Kreutzer",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Suppé",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Drechsler",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         }
       ],
-      "rico:isAssociatedWithDate": [
+      "m3gim:eventDate": [
         "1963-08-28",
         "1963-08-29",
         "1963-07-01/1963-08-29"
@@ -6930,7 +7412,7 @@
         "m3gim:detailField": "einnahmen",
         "m3gim:detailValue": "1200, Fr abendgage"
       },
-      "rico:hasOrHadAgent": [
+      "m3gim:hasAssociatedAgent": [
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
@@ -6951,30 +7433,35 @@
       "rico:hasOrHadLocation": [
         {
           "name": "Zürich, Zürichbergstrasse 104",
-          "role": "zielort"
+          "role": "zielort",
+          "@type": "rico:Place"
         },
         {
           "name": "Zürich",
-          "role": "entstehung"
+          "role": "entstehung",
+          "@type": "rico:Place"
         }
       ],
-      "rico:hasOrHadSubject": {
-        "name": "Tristan und Isolde",
-        "role": "aufführung",
-        "@type": "m3gim:MusicalWork",
-        "komponist": "Wagner, Richard"
-      },
-      "m3gim:mentions": [
+      "rico:hasOrHadSubject": [
+        {
+          "name": "Tristan und Isolde",
+          "role": "aufführung",
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Wagner, Richard"
+        },
         {
           "name": "Meyer, Werner",
-          "role": "erwähnt"
+          "@id": "wd:Q114183944",
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Wehrli., Dr.",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         }
       ],
-      "rico:isAssociatedWithDate": [
+      "m3gim:eventDate": [
         "1963-05-23",
         "1963-06-06",
         "1963-05-11",
@@ -6998,7 +7485,7 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "rico:hasOrHadAgent": [
+      "m3gim:hasAssociatedAgent": [
         {
           "name": "Bayerische Staatsoper",
           "@id": "wd:Q681931",
@@ -7020,11 +7507,13 @@
       "rico:hasOrHadLocation": [
         {
           "name": "Zürich, Zürichbergstrasse 104",
-          "role": "zielort"
+          "role": "zielort",
+          "@type": "rico:Place"
         },
         {
           "name": "München",
-          "role": "absendedatum"
+          "role": "absendedatum",
+          "@type": "rico:Place"
         }
       ],
       "rico:hasOrHadSubject": {
@@ -7032,7 +7521,7 @@
         "role": "erwähnt",
         "@type": "m3gim:PerformanceEvent"
       },
-      "rico:isAssociatedWithDate": [
+      "m3gim:eventDate": [
         "1964",
         "1964-08-18"
       ]
@@ -7050,7 +7539,7 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "rico:hasOrHadAgent": [
+      "m3gim:hasAssociatedAgent": [
         {
           "name": "Sekretär der Tonhalle-Gesellschaft Zürich",
           "role": "verfasser:in",
@@ -7066,18 +7555,22 @@
       "rico:hasOrHadLocation": [
         {
           "name": "Wien",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Place"
         },
         {
           "name": "Zürich",
-          "role": "absendedatum"
+          "role": "absendedatum",
+          "@type": "rico:Place"
         }
       ],
-      "m3gim:mentions": {
+      "rico:hasOrHadSubject": {
         "name": "Schulthess, Walter",
-        "role": "erwähnt"
+        "@id": "wd:Q4527615",
+        "role": "erwähnt",
+        "@type": "rico:Person"
       },
-      "rico:isAssociatedWithDate": [
+      "m3gim:eventDate": [
         "1968-11-12",
         "1955",
         "1961",
@@ -7109,7 +7602,7 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "rico:hasOrHadAgent": [
+      "m3gim:hasAssociatedAgent": [
         {
           "name": "Wiener Staatsoper",
           "role": "erwähnt",
@@ -7132,11 +7625,13 @@
         },
         {
           "name": "Rott, Adolf",
+          "@id": "wd:Q364029",
           "role": "regisseur:in",
           "@type": "rico:Person"
         },
         {
           "name": "Klein, Peter",
+          "@id": "wd:Q102360758",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -7147,16 +7642,19 @@
         },
         {
           "name": "Witte, Wolfgang",
+          "@id": "wd:Q2591797",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Serafin, Harald",
+          "@id": "wd:Q1584745",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Lorenz, Gerlinde",
+          "@id": "wd:Q112474535",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -7173,35 +7671,40 @@
         },
         {
           "name": "Bauer-Theussl, Franz",
+          "@id": "wd:Q113646",
           "role": "dirigent:in",
           "@type": "rico:Person"
         },
         {
           "name": "Bauer, Gerhard",
+          "@id": "wd:Q1511281",
           "role": "verfasser:in",
           "@type": "rico:Person"
         }
       ],
       "rico:hasOrHadLocation": {
         "name": "Wien",
-        "role": "auffuehrungsort"
+        "role": "auffuehrungsort",
+        "@type": "rico:Place"
       },
-      "rico:hasOrHadSubject": {
-        "name": "Der Wildschütz",
-        "role": "premiere",
-        "@type": "m3gim:MusicalWork"
-      },
-      "m3gim:mentions": [
+      "rico:hasOrHadSubject": [
+        {
+          "name": "Der Wildschütz",
+          "role": "premiere",
+          "@type": "m3gim:MusicalWork"
+        },
         {
           "name": "Raimund, Ferdinand",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Nestroy, Johann Nepomuk",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         }
       ],
-      "rico:isAssociatedWithDate": "1968-09-25",
+      "m3gim:eventDate": "1968-09-25",
       "m3gim:hasPerformanceRole": [
         {
           "name": "Graf von Eberbach",
@@ -7241,7 +7744,7 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "rico:hasOrHadAgent": [
+      "m3gim:hasAssociatedAgent": [
         {
           "name": "Wiener Staatsoper",
           "role": "erwähnt",
@@ -7259,26 +7762,31 @@
         },
         {
           "name": "Rott, Adolf",
+          "@id": "wd:Q364029",
           "role": "regisseur:in",
           "@type": "rico:Person"
         },
         {
           "name": "Kautsky, Robert",
+          "@id": "wd:Q27990163",
           "role": "bühnenbildner:in",
           "@type": "rico:Person"
         },
         {
           "name": "Urbancic, Elisabeth",
+          "@id": "wd:Q1330331",
           "role": "bühnenbildner:in",
           "@type": "rico:Person"
         },
         {
           "name": "Bauer-Theussl, Franz",
+          "@id": "wd:Q113646",
           "role": "dirigent:in",
           "@type": "rico:Person"
         },
         {
           "name": "Serafin, Harald",
+          "@id": "wd:Q1584745",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -7290,16 +7798,19 @@
         },
         {
           "name": "Witte, Wolfgang",
+          "@id": "wd:Q2591797",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Lorenz, Gerlinde",
+          "@id": "wd:Q112474535",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Klein, Peter",
+          "@id": "wd:Q102360758",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -7321,14 +7832,15 @@
       ],
       "rico:hasOrHadLocation": {
         "name": "Wien",
-        "role": "auffuehrungsort"
+        "role": "auffuehrungsort",
+        "@type": "rico:Place"
       },
       "rico:hasOrHadSubject": {
         "name": "Der Wildschütz",
         "role": "premiere",
         "@type": "m3gim:MusicalWork"
       },
-      "rico:isAssociatedWithDate": "1960",
+      "m3gim:eventDate": "1960",
       "m3gim:hasPerformanceRole": [
         {
           "name": "Graf von Eberbach",
@@ -7373,7 +7885,7 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "rico:hasOrHadAgent": [
+      "m3gim:hasAssociatedAgent": [
         {
           "name": "Mozart-Sängerknaben",
           "role": "aufführung",
@@ -7391,21 +7903,25 @@
         },
         {
           "name": "Rott, Adolf",
+          "@id": "wd:Q364029",
           "role": "regisseur:in",
           "@type": "rico:Person"
         },
         {
           "name": "Kautsky, Robert",
+          "@id": "wd:Q27990163",
           "role": "bühnenbildner:in",
           "@type": "rico:Person"
         },
         {
           "name": "Bauer-Theussl, Franz",
+          "@id": "wd:Q113646",
           "role": "dirigent:in",
           "@type": "rico:Person"
         },
         {
           "name": "Serafin, Harald",
+          "@id": "wd:Q1584745",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -7417,16 +7933,19 @@
         },
         {
           "name": "Witte, Wolfgang",
+          "@id": "wd:Q2591797",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Lorenz, Gerlinde",
+          "@id": "wd:Q112474535",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Klein, Peter",
+          "@id": "wd:Q102360758",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -7442,6 +7961,7 @@
         },
         {
           "name": "Sobota, Elisabeth",
+          "@id": "wd:Q95704592",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -7456,7 +7976,7 @@
         "role": "premiere",
         "@type": "m3gim:MusicalWork"
       },
-      "rico:isAssociatedWithDate": "1968-09-25",
+      "m3gim:eventDate": "1968-09-25",
       "m3gim:hasPerformanceRole": [
         {
           "name": "Graf von Eberbach",
@@ -7504,7 +8024,7 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "rico:hasOrHadAgent": [
+      "m3gim:hasAssociatedAgent": [
         {
           "name": "Wiener Staatsoper",
           "role": "auffuehrungsort",
@@ -7522,21 +8042,25 @@
         },
         {
           "name": "Rott, Adolf",
+          "@id": "wd:Q364029",
           "role": "regisseur:in",
           "@type": "rico:Person"
         },
         {
           "name": "Kautsky, Robert",
+          "@id": "wd:Q27990163",
           "role": "bühnenbildner:in",
           "@type": "rico:Person"
         },
         {
           "name": "Bauer-Theussl, Franz",
+          "@id": "wd:Q113646",
           "role": "dirigent:in",
           "@type": "rico:Person"
         },
         {
           "name": "Serafin, Harald",
+          "@id": "wd:Q1584745",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -7548,16 +8072,19 @@
         },
         {
           "name": "Witte, Wolfgang",
+          "@id": "wd:Q2591797",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Lorenz, Gerlinde",
+          "@id": "wd:Q112474535",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Klein, Peter",
+          "@id": "wd:Q102360758",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -7573,24 +8100,29 @@
         },
         {
           "name": "Sobota, Elisabeth",
+          "@id": "wd:Q95704592",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Weishappel, Rudolf",
+          "@id": "wd:Q55681641",
           "role": "verfasser:in",
           "@type": "rico:Person"
         }
       ],
-      "rico:hasOrHadSubject": {
-        "name": "Der Wildschütz",
-        "role": "premiere",
-        "@type": "m3gim:MusicalWork"
-      },
-      "m3gim:mentions": {
-        "name": "Sophokles",
-        "role": "erwähnt"
-      },
+      "rico:hasOrHadSubject": [
+        {
+          "name": "Der Wildschütz",
+          "role": "premiere",
+          "@type": "m3gim:MusicalWork"
+        },
+        {
+          "name": "Sophokles",
+          "role": "erwähnt",
+          "@type": "rico:Person"
+        }
+      ],
       "m3gim:hasPerformanceRole": [
         {
           "name": "Graf von Eberbach",
@@ -7638,7 +8170,7 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "rico:hasOrHadAgent": [
+      "m3gim:hasAssociatedAgent": [
         {
           "name": "Wiener Staatsoper",
           "role": "auffuehrungsort",
@@ -7656,21 +8188,25 @@
         },
         {
           "name": "Rott, Adolf",
+          "@id": "wd:Q364029",
           "role": "regisseur:in",
           "@type": "rico:Person"
         },
         {
           "name": "Kautsky, Robert",
+          "@id": "wd:Q27990163",
           "role": "bühnenbildner:in",
           "@type": "rico:Person"
         },
         {
           "name": "Bauer-Theussl, Franz",
+          "@id": "wd:Q113646",
           "role": "dirigent:in",
           "@type": "rico:Person"
         },
         {
           "name": "Serafin, Harald",
+          "@id": "wd:Q1584745",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -7682,16 +8218,19 @@
         },
         {
           "name": "Witte, Wolfgang",
+          "@id": "wd:Q2591797",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Lorenz, Gerlinde",
+          "@id": "wd:Q112474535",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Klein, Peter",
+          "@id": "wd:Q102360758",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -7707,11 +8246,13 @@
         },
         {
           "name": "Sobota, Elisabeth",
+          "@id": "wd:Q95704592",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Weishappel, Rudolf",
+          "@id": "wd:Q55681641",
           "role": "verfasser:in",
           "@type": "rico:Person"
         },
@@ -7774,7 +8315,7 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "rico:hasOrHadAgent": [
+      "m3gim:hasAssociatedAgent": [
         {
           "name": "Volksblatt",
           "role": "herausgeber:in",
@@ -7797,16 +8338,19 @@
         },
         {
           "name": "Wagner, Richard",
+          "@id": "wd:Q1511",
           "role": "komponist:in",
           "@type": "rico:Person"
         },
         {
           "name": "Strauss, Richard",
+          "@id": "wd:Q13894",
           "role": "komponist:in",
           "@type": "rico:Person"
         },
         {
           "name": "Kautsky, Robert",
+          "@id": "wd:Q27990163",
           "role": "bühnenbildner:in",
           "@type": "rico:Person"
         },
@@ -7818,7 +8362,8 @@
       ],
       "rico:hasOrHadLocation": {
         "name": "Wien",
-        "role": "erscheinungsdatum"
+        "role": "erscheinungsdatum",
+        "@type": "rico:Place"
       },
       "rico:hasOrHadSubject": [
         {
@@ -7844,19 +8389,20 @@
           "role": "erwähnt",
           "@type": "m3gim:MusicalWork",
           "komponist": "Wagner, Richard"
-        }
-      ],
-      "m3gim:mentions": [
+        },
         {
           "name": "Nestroy, Johann Nepomuk",
-          "role": "erwähnt"
+          "role": "erwähnt",
+          "@type": "rico:Person"
         },
         {
           "name": "Kotzebue, August von",
-          "role": "erwähnt"
+          "@id": "wd:Q57242",
+          "role": "erwähnt",
+          "@type": "rico:Person"
         }
       ],
-      "rico:isAssociatedWithDate": [
+      "m3gim:eventDate": [
         "1968-09-23",
         "1968-09-25"
       ],
@@ -7896,7 +8442,7 @@
         "m3gim:detailField": "summe",
         "m3gim:detailValue": "2, S erwähnt"
       },
-      "rico:hasOrHadAgent": [
+      "m3gim:hasAssociatedAgent": [
         {
           "name": "Philharmoniaquartett",
           "role": "interpret:in",
@@ -7904,16 +8450,19 @@
         },
         {
           "name": "Wolf, Hugo",
+          "@id": "wd:Q215747",
           "role": "komponist:in",
           "@type": "rico:Person"
         },
         {
           "name": "Schmidt, Franz",
+          "@id": "wd:Q95295060",
           "role": "komponist:in",
           "@type": "rico:Person"
         },
         {
           "name": "Hübner, Wilhelm",
+          "@id": "wd:Q2573335",
           "role": "interpret:in",
           "@type": "rico:Person"
         },
@@ -8059,14 +8608,15 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "rico:hasOrHadAgent": {
+      "m3gim:hasAssociatedAgent": {
         "name": "Konzertgesellschaft Zürich",
         "role": "erwähnt",
         "@type": "rico:CorporateBody"
       },
       "rico:hasOrHadLocation": {
         "name": "Zürich",
-        "role": "erwähnt"
+        "role": "erwähnt",
+        "@type": "rico:Place"
       }
     },
     {
@@ -8081,7 +8631,7 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 2 Seiten",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "rico:hasOrHadAgent": [
+      "m3gim:hasAssociatedAgent": [
         {
           "name": "Deutsche Oper Berlin",
           "role": "empfänger:in",
@@ -8097,11 +8647,13 @@
       "rico:hasOrHadLocation": [
         {
           "name": "Zürich",
-          "role": "zielort"
+          "role": "zielort",
+          "@type": "rico:Place"
         },
         {
           "name": "Wien",
-          "role": "absendeort"
+          "role": "absendeort",
+          "@type": "rico:Place"
         }
       ]
     },
@@ -8116,7 +8668,7 @@
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 2 Seiten",
-      "rico:hasOrHadAgent": [
+      "m3gim:hasAssociatedAgent": [
         {
           "name": "Deutsche Oper Berlin",
           "role": "empfänger:in",
@@ -8132,11 +8684,14 @@
       "rico:hasOrHadLocation": [
         {
           "name": "Berlin",
-          "role": "zielort"
+          "@id": "wd:Q64",
+          "role": "zielort",
+          "@type": "rico:Place"
         },
         {
           "name": "Wien",
-          "role": "absendeort"
+          "role": "absendeort",
+          "@type": "rico:Place"
         }
       ]
     },
@@ -9888,7 +10443,7 @@
       "rico:hasExtent": "1 days 06:00:00"
     }
   ],
-  "m3gim:exportDate": "2026-02-21T07:43:11.923622",
+  "m3gim:exportDate": "2026-02-21T10:25:36.015791",
   "m3gim:recordCount": 282,
   "m3gim:konvolutCount": 3
 }

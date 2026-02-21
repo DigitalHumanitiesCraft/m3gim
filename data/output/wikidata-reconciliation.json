@@ -1,0 +1,2546 @@
+{
+  "meta": {
+    "date": "2026-02-21T10:03:47.147400",
+    "strategy": "exact_match_only",
+    "min_name_length": 3,
+    "note": "Nur 100%-Matches. Rest muss manuell geprueft werden."
+  },
+  "matched": [
+    {
+      "type": "person",
+      "name": "Adam, Theo",
+      "qid": "Q64414",
+      "label": "Theo Adam",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Adorno, Theodor W.",
+      "qid": "Q152388",
+      "label": "Theodor W. Adorno",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Altmann, Olga",
+      "qid": "Q95686480",
+      "label": "Olga Altmann",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Bauer-Theussl, Franz",
+      "qid": "Q113646",
+      "label": "Franz Bauer-Theussl",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Bauer, Gerhard",
+      "qid": "Q1511281",
+      "label": "Gerhard Bauer",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Baylé, Theo",
+      "qid": "Q27864063",
+      "label": "Theo Baylé",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Blankenheim, Toni",
+      "qid": "Q95565",
+      "label": "Toni Blankenheim",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Böhme, Kurt",
+      "qid": "Q10314824",
+      "label": "Kurt Böhme",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Cortis, Marcello",
+      "qid": "Q52306091",
+      "label": "Marcello Cortis",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Curjel, Hans",
+      "qid": "Q17249803",
+      "label": "Hans Curjel",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Della Casa, Lisa",
+      "qid": "Q123575",
+      "label": "Lisa Della Casa",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Dermota, Anton",
+      "qid": "Q12784779",
+      "label": "Anton Dermota",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Dumesnil, René",
+      "qid": "Q3426141",
+      "label": "René Dumesnil",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Dünnwald, Josef",
+      "qid": "Q25271239",
+      "label": "Josef Dünnwald",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Eberhardt, Paul",
+      "qid": "Q94761352",
+      "label": "Paul Eberhardt",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Elfriede Ott",
+      "qid": "Q1328656",
+      "label": "Elfriede Ott",
+      "match": "exact_label"
+    },
+    {
+      "type": "person",
+      "name": "Erlenwein, Herbert",
+      "qid": "Q95636832",
+      "label": "Herbert Erlenwein",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Eschert, Hasso",
+      "qid": "Q95339861",
+      "label": "Hasso Eschert",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Fahberg, Antonia",
+      "qid": "Q598316",
+      "label": "Antonia Fahberg",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Ferenz, Willy",
+      "qid": "Q47291788",
+      "label": "Willy Ferenz",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Fischer, Edwin",
+      "qid": "Q123249",
+      "label": "Edwin Fischer",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Frantz, Ferdinand",
+      "qid": "Q77205",
+      "label": "Ferdinand Frantz",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Furtwängler, Wilhelm",
+      "qid": "Q57285",
+      "label": "Wilhelm Furtwängler",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Ghislanzoni, Antonio",
+      "qid": "Q524960",
+      "label": "Antonio Ghislanzoni",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Gielen, Josef",
+      "qid": "Q1465297",
+      "label": "Josef Gielen",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Gieseking, Walter",
+      "qid": "Q61028",
+      "label": "Walter Gieseking",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Golther, Wolfgang",
+      "qid": "Q103583",
+      "label": "Wolfgang Golther",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Grefe, Gustav",
+      "qid": "Q112472552",
+      "label": "Gustav Grefe",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Greindl, Josef",
+      "qid": "Q63857",
+      "label": "Josef Greindl",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Grob-Prandl, Gertrude",
+      "qid": "Q3818034",
+      "label": "Gertrude Grob-Prandl",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Günter, Horst",
+      "qid": "Q95886871",
+      "label": "Horst Günter",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Haefliger, Ernst",
+      "qid": "Q124177",
+      "label": "Ernst Haefliger",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Hanka, Erika",
+      "qid": "Q50825278",
+      "label": "Erika Hanka",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Hartmann, Rudolf",
+      "qid": "Q124351",
+      "label": "Rudolf Hartmann",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Hartmann, Rudolf",
+      "qid": "Q124351",
+      "label": "Rudolf Hartmann",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Heger, Robert",
+      "qid": "Q72123",
+      "label": "Robert Heger",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Heger, Robert",
+      "qid": "Q72123",
+      "label": "Robert Heger",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Heitmann, Fritz",
+      "qid": "Q91286",
+      "label": "Fritz Heitmann",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Hoelscher, Ludwig",
+      "qid": "Q108009",
+      "label": "Ludwig Hoelscher",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Höngen, Elisabeth",
+      "qid": "Q74611",
+      "label": "Elisabeth Höngen",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Hübner, Wilhelm",
+      "qid": "Q2573335",
+      "label": "Wilhelm Hübner",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Hüni-Mihacsek, Felicie",
+      "qid": "Q3068099",
+      "label": "Felicie Hüni-Mihacsek",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "ibe",
+      "qid": "Q56402502",
+      "label": "Ibe",
+      "match": "exact_label"
+    },
+    {
+      "type": "person",
+      "name": "Jochum, Eugen",
+      "qid": "Q57419",
+      "label": "Eugen Jochum",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Jürgens, Helmut",
+      "qid": "Q2716190",
+      "label": "Helmut Jürgens",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Kaufmann, Harald",
+      "qid": "Q1584570",
+      "label": "Harald Kaufmann",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Kautsky, Hans",
+      "qid": "Q1580703",
+      "label": "Hans Kautsky",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Kautsky, Robert",
+      "qid": "Q27990163",
+      "label": "Robert Kautsky",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Keil, Adolf",
+      "qid": "Q94931882",
+      "label": "Adolf Keil",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Keilberth, Joseph",
+      "qid": "Q61123",
+      "label": "Joseph Keilberth",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Kempff, Wilhelm",
+      "qid": "Q159946",
+      "label": "Wilhelm Kempff",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Kienzl, Wilhelm",
+      "qid": "Q637353",
+      "label": "Wilhelm Kienzl",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Klarwein, Franz",
+      "qid": "Q1447805",
+      "label": "Franz Klarwein",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Klein, Peter",
+      "qid": "Q102360758",
+      "label": "Peter Klein",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Klobučar, Berislav",
+      "qid": "Q2897169",
+      "label": "Berislav Klobučar",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Knappertsbusch, Hans",
+      "qid": "Q57425",
+      "label": "Hans Knappertsbusch",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Köth, Erika",
+      "qid": "Q77743",
+      "label": "Erika Köth",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Kotzebue, August von",
+      "qid": "Q57242",
+      "label": "August von Kotzebue",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Krauss, Clemens",
+      "qid": "Q78918",
+      "label": "Clemens Krauss",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Kreppel, Walter",
+      "qid": "Q19629015",
+      "label": "Walter Kreppel",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Kuen, Paul",
+      "qid": "Q94912384",
+      "label": "Paul Kuen",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Kuën, Paul",
+      "qid": "Q105714",
+      "label": "Paul Kuën",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Kulenkampff, Georg",
+      "qid": "Q470033",
+      "label": "Georg Kulenkampff",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Kunz, Erich",
+      "qid": "Q78855",
+      "label": "Erich Kunz",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Kupper, Annelies",
+      "qid": "Q75998",
+      "label": "Annelies Kupper",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Kusche, Benno",
+      "qid": "Q817948",
+      "label": "Benno Kusche",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Lauro, Michele",
+      "qid": "Q133793307",
+      "label": "Michele Lauro",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Leder, Alfred",
+      "qid": "Q27732662",
+      "label": "Alfred Leder",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Leimer, Karl",
+      "qid": "Q1664629",
+      "label": "Karl Leimer",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Litz, Gisela",
+      "qid": "Q5564902",
+      "label": "Gisela Litz",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Lohmann, Paul",
+      "qid": "Q2061025",
+      "label": "Paul Lohmann",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Loose, Emmy",
+      "qid": "Q89450",
+      "label": "Emmy Loose",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Lorenz, Gerlinde",
+      "qid": "Q112474535",
+      "label": "Gerlinde Lorenz",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Mahlke, Hans",
+      "qid": "Q109441772",
+      "label": "Hans Mahlke",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Majkut, Erich",
+      "qid": "Q59531271",
+      "label": "Erich Majkut",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Martienssen-Lohmann, Franziska",
+      "qid": "Q4282634",
+      "label": "Franziska Martienssen-Lohmann",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Marx, Joseph",
+      "qid": "Q506561",
+      "label": "Joseph Marx",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Masaccio",
+      "qid": "Q5811",
+      "label": "Masaccio",
+      "match": "exact_label"
+    },
+    {
+      "type": "person",
+      "name": "Massard, Robert",
+      "qid": "Q3435871",
+      "label": "Robert Massard",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Mazzolà, Caterino",
+      "qid": "Q2856477",
+      "label": "Caterino Mazzolà",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Menotti, Gian Carlo",
+      "qid": "Q270662",
+      "label": "Gian Carlo Menotti",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Metternich, Josef",
+      "qid": "Q95732",
+      "label": "Josef Metternich",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Meyer-Welfing, Hugo",
+      "qid": "Q55677315",
+      "label": "Hugo Meyer-Welfing",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Meyer, Werner",
+      "qid": "Q114183944",
+      "label": "Werner Meyer",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Mödl, Martha",
+      "qid": "Q62964",
+      "label": "Martha Mödl",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Moralt, Rudolf",
+      "qid": "Q70098",
+      "label": "Rudolf Moralt",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Moratti, Vittorino",
+      "qid": "Q16677800",
+      "label": "Vittorino Moratti",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Neidlinger, Gustav",
+      "qid": "Q68344",
+      "label": "Gustav Neidlinger",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Neidlinger, Gustav",
+      "qid": "Q68344",
+      "label": "Gustav Neidlinger",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Ney, Elly",
+      "qid": "Q66912",
+      "label": "Elly Ney",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Nilsson, Birgit",
+      "qid": "Q233951",
+      "label": "Birgit Nilsson",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Oboussier, Robert",
+      "qid": "Q12333612",
+      "label": "Robert Oboussier",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Pandano, Vittorio",
+      "qid": "Q130777432",
+      "label": "Vittorio Pandano",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Pantscheff, Ljubomir",
+      "qid": "Q55675699",
+      "label": "Ljubomir Pantscheff",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Paumgartner, Bernhard",
+      "qid": "Q214365",
+      "label": "Bernhard Paumgartner",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Peter, Albrecht",
+      "qid": "Q94901792",
+      "label": "Albrecht Peter",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Pfeifle, Alfred",
+      "qid": "Q2645656",
+      "label": "Alfred Pfeifle",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Pfitzner, Hans",
+      "qid": "Q57358",
+      "label": "Hans Pfitzner",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Pitz, Wilhelm",
+      "qid": "Q2574498",
+      "label": "Wilhelm Pitz",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Plümacher, Hetty",
+      "qid": "Q1616310",
+      "label": "Hetty Plümacher",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Prêtre, Georges",
+      "qid": "Q342381",
+      "label": "Georges Prêtre",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Proebstl, Max",
+      "qid": "Q1913239",
+      "label": "Max Proebstl",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Puccini, Giacomo",
+      "qid": "Q7311",
+      "label": "Giacomo Puccini",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Ramin, Günther",
+      "qid": "Q518002",
+      "label": "Günther Ramin",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Reger, Max",
+      "qid": "Q57139",
+      "label": "Max Reger",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Rialland, Louis",
+      "qid": "Q132941819",
+      "label": "Louis Rialland",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Richter, Gerd",
+      "qid": "Q116526092",
+      "label": "Gerd Richter",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Roller, Alfred",
+      "qid": "Q78981",
+      "label": "Alfred Roller",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Rossmayer, Richard",
+      "qid": "Q110071082",
+      "label": "Richard Rossmayer",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Rott, Adolf",
+      "qid": "Q364029",
+      "label": "Adolf Rott",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Rouquetty, Camille",
+      "qid": "Q112391565",
+      "label": "Camille Rouquetty",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Rysanek, Leonie",
+      "qid": "Q78613",
+      "label": "Leonie Rysanek",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Samazeuilh, Gustave",
+      "qid": "Q447590",
+      "label": "Gustave Samazeuilh",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Schalk, Franz",
+      "qid": "Q79026",
+      "label": "Franz Schalk",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Schellenberg, Arno",
+      "qid": "Q694529",
+      "label": "Arno Schellenberg",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Schmidt-Garre, Helmut",
+      "qid": "Q95634885",
+      "label": "Helmut Schmidt-Garre",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Schmidt, Franz",
+      "qid": "Q95295060",
+      "label": "Franz Schmidt",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Schöffler, Paul",
+      "qid": "Q71953",
+      "label": "Paul Schöffler",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Schulthess, Walter",
+      "qid": "Q4527615",
+      "label": "Walter Schulthess",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Schünemann, Georg",
+      "qid": "Q121675",
+      "label": "Georg Schünemann",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Serafin, Harald",
+      "qid": "Q1584745",
+      "label": "Harald Serafin",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Sobota, Elisabeth",
+      "qid": "Q95704592",
+      "label": "Elisabeth Sobota",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Steinecke, Wolfgang",
+      "qid": "Q16720951",
+      "label": "Wolfgang Steinecke",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Steiner, Adolf",
+      "qid": "Q89574267",
+      "label": "Adolf Steiner",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Stolze, Gerhard",
+      "qid": "Q73847",
+      "label": "Gerhard Stolze",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Strauss, Richard",
+      "qid": "Q13894",
+      "label": "Richard Strauss",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Suthaus, Ludwig",
+      "qid": "Q70400",
+      "label": "Ludwig Suthaus",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Swarowsky, Hans",
+      "qid": "Q78721",
+      "label": "Hans Swarowsky",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Tasso, Fiorenzo",
+      "qid": "Q137834857",
+      "label": "Fiorenzo Tasso",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Thiel, Fred",
+      "qid": "Q78170333",
+      "label": "Fred Thiel",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Tinel, Paul",
+      "qid": "Q110850252",
+      "label": "Paul Tinel",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Traxel, Josef",
+      "qid": "Q92013",
+      "label": "Josef Traxel",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Urbancic, Elisabeth",
+      "qid": "Q1330331",
+      "label": "Elisabeth Urbancic",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Vandenburg, Howard",
+      "qid": "Q94932751",
+      "label": "Howard Vandenburg",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Varnay, Astrid",
+      "qid": "Q254518",
+      "label": "Astrid Varnay",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Wagner, Richard",
+      "qid": "Q1511",
+      "label": "Richard Wagner",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Wagner, Siegfried",
+      "qid": "Q143867",
+      "label": "Siegfried Wagner",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Wagner, Wieland",
+      "qid": "Q60465",
+      "label": "Wieland Wagner",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Weber, Ludwig",
+      "qid": "Q136748514",
+      "label": "Weber, Ludwig",
+      "match": "exact_label"
+    },
+    {
+      "type": "person",
+      "name": "Wehofschitz, Kurt",
+      "qid": "Q95305013",
+      "label": "Kurt Wehofschitz",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Weishappel, Rudolf",
+      "qid": "Q55681641",
+      "label": "Rudolf Weishappel",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Werba, Erik",
+      "qid": "Q1354192",
+      "label": "Erik Werba",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Wesendonck, Mathilde",
+      "qid": "Q63265",
+      "label": "Mathilde Wesendonck",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Wieter, Georg",
+      "qid": "Q1506390",
+      "label": "Georg Wieter",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Willy Heyer",
+      "qid": "Q95264973",
+      "label": "Willy Heyer",
+      "match": "exact_label"
+    },
+    {
+      "type": "person",
+      "name": "Windgassen, Wolfgang",
+      "qid": "Q60906",
+      "label": "Wolfgang Windgassen",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Witte, Wolfgang",
+      "qid": "Q2591797",
+      "label": "Wolfgang Witte",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Wolf, Hugo",
+      "qid": "Q215747",
+      "label": "Hugo Wolf",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Wolf, Winfried",
+      "qid": "Q2584346",
+      "label": "Winfried Wolf",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Zadek, Hilde",
+      "qid": "Q72147",
+      "label": "Hilde Zadek",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Zimmermann, Erika",
+      "qid": "Q95756451",
+      "label": "Erika Zimmermann",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "person",
+      "name": "Zimmermann, Wolfram",
+      "qid": "Q108824609",
+      "label": "Wolfram Zimmermann",
+      "match": "exact_reversed"
+    },
+    {
+      "type": "org",
+      "name": "Nord- und Westdeutscher Rundfunkverband",
+      "qid": "Q1997444",
+      "label": "Nord- und Westdeutscher Rundfunkverband",
+      "match": "exact_label"
+    },
+    {
+      "type": "org",
+      "name": "Prinzregententheater",
+      "qid": "Q456586",
+      "label": "Prinzregententheater",
+      "match": "exact_label"
+    },
+    {
+      "type": "org",
+      "name": "Teatro Colón",
+      "qid": "Q11951072",
+      "label": "Teatro Colón",
+      "match": "exact_label"
+    },
+    {
+      "type": "location",
+      "name": "Berlin",
+      "qid": "Q64",
+      "label": "Berlin",
+      "match": "exact_label"
+    },
+    {
+      "type": "location",
+      "name": "Graz",
+      "qid": "Q13298",
+      "label": "Graz",
+      "match": "exact_label"
+    },
+    {
+      "type": "location",
+      "name": "Hamburg",
+      "qid": "Q1055",
+      "label": "Hamburg",
+      "match": "exact_label"
+    },
+    {
+      "type": "location",
+      "name": "Linz",
+      "qid": "Q41329",
+      "label": "Linz",
+      "match": "exact_label"
+    },
+    {
+      "type": "location",
+      "name": "London",
+      "qid": "Q84",
+      "label": "London",
+      "match": "exact_label"
+    },
+    {
+      "type": "location",
+      "name": "Monte Carlo",
+      "qid": "Q45240",
+      "label": "Monte Carlo",
+      "match": "exact_label"
+    },
+    {
+      "type": "location",
+      "name": "New York",
+      "qid": "Q1384",
+      "label": "New York",
+      "match": "exact_label"
+    },
+    {
+      "type": "location",
+      "name": "Paris",
+      "qid": "Q90",
+      "label": "Paris",
+      "match": "exact_label"
+    },
+    {
+      "type": "location",
+      "name": "Perchtoldsdorf",
+      "qid": "Q21880302",
+      "label": "Perchtoldsdorf",
+      "match": "exact_label"
+    },
+    {
+      "type": "location",
+      "name": "Potsdam",
+      "qid": "Q1711",
+      "label": "Potsdam",
+      "match": "exact_label"
+    },
+    {
+      "type": "location",
+      "name": "Salzburg",
+      "qid": "Q34713",
+      "label": "Salzburg",
+      "match": "exact_label"
+    },
+    {
+      "type": "location",
+      "name": "Stuttgart",
+      "qid": "Q1022",
+      "label": "Stuttgart",
+      "match": "exact_label"
+    },
+    {
+      "type": "location",
+      "name": "Stuttgart",
+      "qid": "Q1022",
+      "label": "Stuttgart",
+      "match": "exact_label"
+    },
+    {
+      "type": "location",
+      "name": "Basel",
+      "qid": "Q78",
+      "label": "Basel",
+      "match": "exact_label"
+    },
+    {
+      "type": "work",
+      "name": "Regentropfen",
+      "komponist": null,
+      "qid": "Q60992362",
+      "label": "Regentropfen",
+      "match": "exact_label"
+    },
+    {
+      "type": "work",
+      "name": "Stabat mater",
+      "komponist": null,
+      "qid": "Q643347",
+      "label": "Stabat Mater",
+      "match": "exact_label"
+    }
+  ],
+  "unmatched": [
+    {
+      "type": "person",
+      "name": "Alighieri, Dante"
+    },
+    {
+      "type": "person",
+      "name": "Appia, Adolphe"
+    },
+    {
+      "type": "person",
+      "name": "Arnold, Heinz"
+    },
+    {
+      "type": "person",
+      "name": "Autran, Victor"
+    },
+    {
+      "type": "person",
+      "name": "Baasch, Dr. med. Ernst"
+    },
+    {
+      "type": "person",
+      "name": "Bach, Johann Sebastian"
+    },
+    {
+      "type": "person",
+      "name": "Bahr-Mildenburg, Anna"
+    },
+    {
+      "type": "person",
+      "name": "Ballhausen, Felix"
+    },
+    {
+      "type": "person",
+      "name": "Barber, Samuel"
+    },
+    {
+      "type": "person",
+      "name": "Barlach, Ernst"
+    },
+    {
+      "type": "person",
+      "name": "Bartók, Béla"
+    },
+    {
+      "type": "person",
+      "name": "Beaton, Cecil Walter Hardy"
+    },
+    {
+      "type": "person",
+      "name": "Beethoven, Ludwig van"
+    },
+    {
+      "type": "person",
+      "name": "Bergfeld, Dr. Johann"
+    },
+    {
+      "type": "person",
+      "name": "Besnard, Maurice"
+    },
+    {
+      "type": "person",
+      "name": "Bizet, Georges"
+    },
+    {
+      "type": "person",
+      "name": "Bonaparte, Napoleon"
+    },
+    {
+      "type": "person",
+      "name": "Brahms, Johannes"
+    },
+    {
+      "type": "person",
+      "name": "Braun, Hans"
+    },
+    {
+      "type": "person",
+      "name": "Čajkovskij, Pëtr Ilʹič"
+    },
+    {
+      "type": "person",
+      "name": "Calzabigi, Ranieri de"
+    },
+    {
+      "type": "person",
+      "name": "Campese"
+    },
+    {
+      "type": "person",
+      "name": "Carey, Michel"
+    },
+    {
+      "type": "person",
+      "name": "Caridis, Militades"
+    },
+    {
+      "type": "person",
+      "name": "Cesare, curzi"
+    },
+    {
+      "type": "person",
+      "name": "Chenier, André"
+    },
+    {
+      "type": "person",
+      "name": "Crampe, Fernand"
+    },
+    {
+      "type": "person",
+      "name": "Dermotas, Anton"
+    },
+    {
+      "type": "person",
+      "name": "Di Costanzo, Pasquale"
+    },
+    {
+      "type": "person",
+      "name": "Didur, Adam"
+    },
+    {
+      "type": "person",
+      "name": "Dönch, Carl"
+    },
+    {
+      "type": "person",
+      "name": "Ernest, Wilhelm"
+    },
+    {
+      "type": "person",
+      "name": "Felberma-Yers, Anny"
+    },
+    {
+      "type": "person",
+      "name": "Fürst, Paul"
+    },
+    {
+      "type": "person",
+      "name": "Gerard, Fritz"
+    },
+    {
+      "type": "person",
+      "name": "Gluck, Christoph Willibald"
+    },
+    {
+      "type": "person",
+      "name": "Gostič, Josip"
+    },
+    {
+      "type": "person",
+      "name": "Grillparzer, Franz"
+    },
+    {
+      "type": "person",
+      "name": "Guthrie, Frederick"
+    },
+    {
+      "type": "person",
+      "name": "Händel, Georg Friedrich"
+    },
+    {
+      "type": "person",
+      "name": "Hartmann, Prof."
+    },
+    {
+      "type": "person",
+      "name": "Hasse, Johann Asolph"
+    },
+    {
+      "type": "person",
+      "name": "Hindemith, Paul"
+    },
+    {
+      "type": "person",
+      "name": "Hinsch-Gröhndal, Natalie"
+    },
+    {
+      "type": "person",
+      "name": "Hirsch, Robert"
+    },
+    {
+      "type": "person",
+      "name": "Holm, Richard"
+    },
+    {
+      "type": "person",
+      "name": "Holm, Richard"
+    },
+    {
+      "type": "person",
+      "name": "Honegger, Arthur"
+    },
+    {
+      "type": "person",
+      "name": "Honolka, Kurt Dr."
+    },
+    {
+      "type": "person",
+      "name": "Horwitz"
+    },
+    {
+      "type": "person",
+      "name": "Hübner-Langenbruck, Prof."
+    },
+    {
+      "type": "person",
+      "name": "Hurshells, Edmund"
+    },
+    {
+      "type": "person",
+      "name": "Ilosvay"
+    },
+    {
+      "type": "person",
+      "name": "Janáček, Leoš"
+    },
+    {
+      "type": "person",
+      "name": "Jommelli, Niccolò"
+    },
+    {
+      "type": "person",
+      "name": "Jucker, Emil"
+    },
+    {
+      "type": "person",
+      "name": "Kaufmann, Hans-Joachim"
+    },
+    {
+      "type": "person",
+      "name": "Klemperer, Otto"
+    },
+    {
+      "type": "person",
+      "name": "Kodály, Zoltán"
+    },
+    {
+      "type": "person",
+      "name": "Königin Elisabeth"
+    },
+    {
+      "type": "person",
+      "name": "Krauß, Clemens"
+    },
+    {
+      "type": "person",
+      "name": "Kuborn - de Gauquier, Mme"
+    },
+    {
+      "type": "person",
+      "name": "Kuborn, M."
+    },
+    {
+      "type": "person",
+      "name": "Kühnly, Ernst"
+    },
+    {
+      "type": "person",
+      "name": "Kurt, Kuhlmann"
+    },
+    {
+      "type": "person",
+      "name": "Leopold III."
+    },
+    {
+      "type": "person",
+      "name": "Levinger. Dr. Henry W."
+    },
+    {
+      "type": "person",
+      "name": "Linné, Carl von"
+    },
+    {
+      "type": "person",
+      "name": "Lobasa, Monique"
+    },
+    {
+      "type": "person",
+      "name": "Lortzing, Albert"
+    },
+    {
+      "type": "person",
+      "name": "Lustigs, Rudolf"
+    },
+    {
+      "type": "person",
+      "name": "Mahler, Gustav"
+    },
+    {
+      "type": "person",
+      "name": "Malaniuk, Josef (Osyp)"
+    },
+    {
+      "type": "person",
+      "name": "Mathels, Elsa"
+    },
+    {
+      "type": "person",
+      "name": "Maykut, Erich"
+    },
+    {
+      "type": "person",
+      "name": "Meiner"
+    },
+    {
+      "type": "person",
+      "name": "Metastasio, Pietro"
+    },
+    {
+      "type": "person",
+      "name": "Michalis, Ruth"
+    },
+    {
+      "type": "person",
+      "name": "Mitropoulos, Dimitri"
+    },
+    {
+      "type": "person",
+      "name": "Mozart, Wolfgang Amadeus"
+    },
+    {
+      "type": "person",
+      "name": "Munch, Fritz"
+    },
+    {
+      "type": "person",
+      "name": "Musorgskij, Modest Petrovič"
+    },
+    {
+      "type": "person",
+      "name": "Nestroy, Johann Nepomuk"
+    },
+    {
+      "type": "person",
+      "name": "Neumann-Spallart, Gottfried"
+    },
+    {
+      "type": "person",
+      "name": "Offenbach, Jacques"
+    },
+    {
+      "type": "person",
+      "name": "Orff, Carl"
+    },
+    {
+      "type": "person",
+      "name": "Otto van Rohr"
+    },
+    {
+      "type": "person",
+      "name": "Pfeiffer, Mme"
+    },
+    {
+      "type": "person",
+      "name": "Pirchan, Emil"
+    },
+    {
+      "type": "person",
+      "name": "Prihoda, Vasa"
+    },
+    {
+      "type": "person",
+      "name": "Raimund, Ferdinand"
+    },
+    {
+      "type": "person",
+      "name": "Reding, Jeannine"
+    },
+    {
+      "type": "person",
+      "name": "Reinhard, Georges"
+    },
+    {
+      "type": "person",
+      "name": "Resnik"
+    },
+    {
+      "type": "person",
+      "name": "Rodzinski, Artur"
+    },
+    {
+      "type": "person",
+      "name": "Rogatschewsky, Joseph"
+    },
+    {
+      "type": "person",
+      "name": "Rogatschewsky, Mme"
+    },
+    {
+      "type": "person",
+      "name": "Rossini, Gioachino"
+    },
+    {
+      "type": "person",
+      "name": "Rössl-Majdan, Hilde"
+    },
+    {
+      "type": "person",
+      "name": "Ruppert, K. H."
+    },
+    {
+      "type": "person",
+      "name": "Savelli, Laurent"
+    },
+    {
+      "type": "person",
+      "name": "Scheenerger, Hansheinz"
+    },
+    {
+      "type": "person",
+      "name": "Scheinwein, Robert"
+    },
+    {
+      "type": "person",
+      "name": "Schnyder"
+    },
+    {
+      "type": "person",
+      "name": "Schumann, Karl"
+    },
+    {
+      "type": "person",
+      "name": "Schumann, Robert"
+    },
+    {
+      "type": "person",
+      "name": "Schwab"
+    },
+    {
+      "type": "person",
+      "name": "Schwarzbauer, Erich"
+    },
+    {
+      "type": "person",
+      "name": "Semon, Mrs."
+    },
+    {
+      "type": "person",
+      "name": "Sforza"
+    },
+    {
+      "type": "person",
+      "name": "Simon, Théo"
+    },
+    {
+      "type": "person",
+      "name": "Snider, Margaret"
+    },
+    {
+      "type": "person",
+      "name": "Sophokles"
+    },
+    {
+      "type": "person",
+      "name": "Strachwitz, Graf von"
+    },
+    {
+      "type": "person",
+      "name": "Stravinsky, Igor"
+    },
+    {
+      "type": "person",
+      "name": "Süßmayr, Franz Xaver"
+    },
+    {
+      "type": "person",
+      "name": "Szemere"
+    },
+    {
+      "type": "person",
+      "name": "Taubman, Frau"
+    },
+    {
+      "type": "person",
+      "name": "Taubman, Martin Hugo"
+    },
+    {
+      "type": "person",
+      "name": "Tizian"
+    },
+    {
+      "type": "person",
+      "name": "Tobin, Gene"
+    },
+    {
+      "type": "person",
+      "name": "Traetta, Tommaso"
+    },
+    {
+      "type": "person",
+      "name": "Traute, Elisabeth"
+    },
+    {
+      "type": "person",
+      "name": "Uhde, Hermann"
+    },
+    {
+      "type": "person",
+      "name": "Uva"
+    },
+    {
+      "type": "person",
+      "name": "Vacchiano"
+    },
+    {
+      "type": "person",
+      "name": "Verdi, Giuseppe"
+    },
+    {
+      "type": "person",
+      "name": "Vichey, Luben"
+    },
+    {
+      "type": "person",
+      "name": "Vilmar-Hansen, E."
+    },
+    {
+      "type": "person",
+      "name": "Vinay, Ramon"
+    },
+    {
+      "type": "person",
+      "name": "voioumaa, Mme"
+    },
+    {
+      "type": "person",
+      "name": "Wachmann, Franzi"
+    },
+    {
+      "type": "person",
+      "name": "Wächter, Eberhard"
+    },
+    {
+      "type": "person",
+      "name": "Wallerstein"
+    },
+    {
+      "type": "person",
+      "name": "Walter, Bruno"
+    },
+    {
+      "type": "person",
+      "name": "Warren, Cox"
+    },
+    {
+      "type": "person",
+      "name": "Wehrli., Dr."
+    },
+    {
+      "type": "person",
+      "name": "Welt, Alfred"
+    },
+    {
+      "type": "person",
+      "name": "Wißmann, Lore"
+    },
+    {
+      "type": "person",
+      "name": "Wissner, Otto"
+    },
+    {
+      "type": "org",
+      "name": "Abendkonzerte in Wiener Palais"
+    },
+    {
+      "type": "org",
+      "name": "Abendzeitung"
+    },
+    {
+      "type": "org",
+      "name": "Académie nationale de musique"
+    },
+    {
+      "type": "org",
+      "name": "Aktiengesellschaft Leu & Co."
+    },
+    {
+      "type": "org",
+      "name": "Arbeiter Zeitung"
+    },
+    {
+      "type": "org",
+      "name": "Conservatoire"
+    },
+    {
+      "type": "org",
+      "name": "Convent Garden Opera Company"
+    },
+    {
+      "type": "org",
+      "name": "Deutsche Oper Berlin"
+    },
+    {
+      "type": "org",
+      "name": "Deutsches Musikinstitut für Ausländer"
+    },
+    {
+      "type": "org",
+      "name": "Düsseldorfer Zeitung"
+    },
+    {
+      "type": "org",
+      "name": "Ernst Kühnly Bühnenvermittlung Inland und Ausland"
+    },
+    {
+      "type": "org",
+      "name": "Fränkische Presse"
+    },
+    {
+      "type": "org",
+      "name": "Konzertgesellschaft Zürich"
+    },
+    {
+      "type": "org",
+      "name": "Landestheater (Hannover)"
+    },
+    {
+      "type": "org",
+      "name": "Le Monde"
+    },
+    {
+      "type": "org",
+      "name": "Metropolitan Opera"
+    },
+    {
+      "type": "org",
+      "name": "Mozart-Sängerknaben"
+    },
+    {
+      "type": "org",
+      "name": "Münchner Merkur"
+    },
+    {
+      "type": "org",
+      "name": "Münchner Opern-Festspiele"
+    },
+    {
+      "type": "org",
+      "name": "Musikakademie in Lemberg"
+    },
+    {
+      "type": "org",
+      "name": "Musikverein Graz"
+    },
+    {
+      "type": "org",
+      "name": "National Artists Corporation"
+    },
+    {
+      "type": "org",
+      "name": "National Artists Corporation"
+    },
+    {
+      "type": "org",
+      "name": "Neuer Kurier"
+    },
+    {
+      "type": "org",
+      "name": "Neues Österreich"
+    },
+    {
+      "type": "org",
+      "name": "Oper Graz"
+    },
+    {
+      "type": "org",
+      "name": "Opéra de Monte-Carlo"
+    },
+    {
+      "type": "org",
+      "name": "Opéra de Monte-Carlo. Orchestre national"
+    },
+    {
+      "type": "org",
+      "name": "Opernhaus Zürich"
+    },
+    {
+      "type": "org",
+      "name": "orchestre municipal (Strasbourg)"
+    },
+    {
+      "type": "org",
+      "name": "Österreichische neue Tageszeitung"
+    },
+    {
+      "type": "org",
+      "name": "Philharmoniaquartett"
+    },
+    {
+      "type": "org",
+      "name": "Plattenevrlag Decca"
+    },
+    {
+      "type": "org",
+      "name": "Plattenverlag Philipps"
+    },
+    {
+      "type": "org",
+      "name": "Salzburger Festspiele"
+    },
+    {
+      "type": "org",
+      "name": "SAS  Scandinavian Airlines"
+    },
+    {
+      "type": "org",
+      "name": "Staatsoper München"
+    },
+    {
+      "type": "org",
+      "name": "Staatsoper Wien"
+    },
+    {
+      "type": "org",
+      "name": "Stadttheater Graz"
+    },
+    {
+      "type": "org",
+      "name": "Stadttheater Zürich"
+    },
+    {
+      "type": "org",
+      "name": "Stuttgarter Nachrichten"
+    },
+    {
+      "type": "org",
+      "name": "Stuttgarter Staatsoper"
+    },
+    {
+      "type": "org",
+      "name": "Süddeutsche Zeitung"
+    },
+    {
+      "type": "org",
+      "name": "Teatro di San Carlo"
+    },
+    {
+      "type": "org",
+      "name": "Théâtre National de l'Opéra-Comique"
+    },
+    {
+      "type": "org",
+      "name": "Tonhalle-Gesellschaft Zürich"
+    },
+    {
+      "type": "org",
+      "name": "Universität Mozarteum Salzburg"
+    },
+    {
+      "type": "org",
+      "name": "Volksoper Wien"
+    },
+    {
+      "type": "org",
+      "name": "Wiener Philharmoniker"
+    },
+    {
+      "type": "org",
+      "name": "Wiener Staatsoper"
+    },
+    {
+      "type": "org",
+      "name": "Wiener Zeitung"
+    },
+    {
+      "type": "location",
+      "name": "Bayreuth"
+    },
+    {
+      "type": "location",
+      "name": "Buenos Aires"
+    },
+    {
+      "type": "location",
+      "name": "Köln"
+    },
+    {
+      "type": "location",
+      "name": "Lemberg"
+    },
+    {
+      "type": "location",
+      "name": "Lissabon"
+    },
+    {
+      "type": "location",
+      "name": "Madrid"
+    },
+    {
+      "type": "location",
+      "name": "Mailand"
+    },
+    {
+      "type": "location",
+      "name": "München"
+    },
+    {
+      "type": "location",
+      "name": "Neapel"
+    },
+    {
+      "type": "location",
+      "name": "Rom"
+    },
+    {
+      "type": "location",
+      "name": "Schottland"
+    },
+    {
+      "type": "location",
+      "name": "Stanislau"
+    },
+    {
+      "type": "location",
+      "name": "Straßburg"
+    },
+    {
+      "type": "location",
+      "name": "Venedig"
+    },
+    {
+      "type": "location",
+      "name": "Wien"
+    },
+    {
+      "type": "location",
+      "name": "Zürich"
+    },
+    {
+      "type": "work",
+      "name": "3. Symphonie",
+      "komponist": "Brahms, Johannes"
+    },
+    {
+      "type": "work",
+      "name": "8. Symphonie",
+      "komponist": "Beethoven, Ludwig van"
+    },
+    {
+      "type": "work",
+      "name": "Ach, des Knaben Augen",
+      "komponist": "Wolf, Hugo"
+    },
+    {
+      "type": "work",
+      "name": "Aida",
+      "komponist": "Verdi, Giuseppe"
+    },
+    {
+      "type": "work",
+      "name": "Alle gingen, Herz, zur Ruh",
+      "komponist": "Wolf, Hugo"
+    },
+    {
+      "type": "work",
+      "name": "Apparebit reppentina Dies",
+      "komponist": "Hindemith, Paul"
+    },
+    {
+      "type": "work",
+      "name": "Arabella",
+      "komponist": "Strauss, Richard"
+    },
+    {
+      "type": "work",
+      "name": "Auf dem grünen Balkon mein Mädchen schaut",
+      "komponist": "Wolf, Hugo"
+    },
+    {
+      "type": "work",
+      "name": "Bedeckt mich mit Blumen",
+      "komponist": "Wolf, Hugo"
+    },
+    {
+      "type": "work",
+      "name": "Befreit",
+      "komponist": "Strauss, Richard"
+    },
+    {
+      "type": "work",
+      "name": "Boris Godunov",
+      "komponist": "Musorgskij, Modest Petrovič"
+    },
+    {
+      "type": "work",
+      "name": "Capriccio",
+      "komponist": null
+    },
+    {
+      "type": "work",
+      "name": "Carmen",
+      "komponist": "Bizet, Georges"
+    },
+    {
+      "type": "work",
+      "name": "Chovanščina",
+      "komponist": "Musorgskij, Modest Petrovič"
+    },
+    {
+      "type": "work",
+      "name": "Così fan tutte",
+      "komponist": "Mozart, Wolfgang Amadeus"
+    },
+    {
+      "type": "work",
+      "name": "Daphne",
+      "komponist": "Strauss, Richard"
+    },
+    {
+      "type": "work",
+      "name": "Der Evangelimann",
+      "komponist": "Kienzl, Wilhelm"
+    },
+    {
+      "type": "work",
+      "name": "Der Gang zum Liebchen",
+      "komponist": "Brahms, Johannes"
+    },
+    {
+      "type": "work",
+      "name": "Der Rosenkavalier",
+      "komponist": "Strauss, Richard"
+    },
+    {
+      "type": "work",
+      "name": "Der Wildschütz oder Die Stimme der Natur",
+      "komponist": "Lortzing, Albert"
+    },
+    {
+      "type": "work",
+      "name": "Die Geschöpfe des Prometheus",
+      "komponist": "Beethoven, Ludwig van"
+    },
+    {
+      "type": "work",
+      "name": "Die ihr schwebet um diese Palmen",
+      "komponist": "Wolf, Hugo"
+    },
+    {
+      "type": "work",
+      "name": "Die Meistersinger von Nürnberg",
+      "komponist": "Wagner, Richard"
+    },
+    {
+      "type": "work",
+      "name": "Die Walküre",
+      "komponist": "Wagner, Richard"
+    },
+    {
+      "type": "work",
+      "name": "Die Zauberflöte",
+      "komponist": "Mozart, Wolfgang Amadeus"
+    },
+    {
+      "type": "work",
+      "name": "Die Zauberflöte",
+      "komponist": "Mozart, Wolfgang Amadeus"
+    },
+    {
+      "type": "work",
+      "name": "Don Giovanni",
+      "komponist": "Mozart, Wolfgang Amadeus"
+    },
+    {
+      "type": "work",
+      "name": "Ein kleines Haus",
+      "komponist": "Haydn, Joseph"
+    },
+    {
+      "type": "work",
+      "name": "Elektra",
+      "komponist": "Strauss, Richard"
+    },
+    {
+      "type": "work",
+      "name": "Er liebt mich nicht",
+      "komponist": "Schubert, Franz"
+    },
+    {
+      "type": "work",
+      "name": "Es träumte mir",
+      "komponist": "Brahms, Johannes"
+    },
+    {
+      "type": "work",
+      "name": "Evgenij Onegin",
+      "komponist": "Čajkovskij, Pëtr Ilʹič"
+    },
+    {
+      "type": "work",
+      "name": "Falstaff",
+      "komponist": "Verdi, Giuseppe"
+    },
+    {
+      "type": "work",
+      "name": "Führ mich, Kind, nach Bethlehem",
+      "komponist": "Wolf, Hugo"
+    },
+    {
+      "type": "work",
+      "name": "Ganymed",
+      "komponist": "Schubert, Franz"
+    },
+    {
+      "type": "work",
+      "name": "Geh', Geliebter, geh' jetzt",
+      "komponist": "Wolf, Hugo"
+    },
+    {
+      "type": "work",
+      "name": "Gesang an die Hoffnung",
+      "komponist": "Hindemith, Paul"
+    },
+    {
+      "type": "work",
+      "name": "Glücks genug",
+      "komponist": "Strauss, Richard"
+    },
+    {
+      "type": "work",
+      "name": "Götterdämmerung",
+      "komponist": "Wagner, Richard"
+    },
+    {
+      "type": "work",
+      "name": "Herr, was trägt der Boden hier",
+      "komponist": "Wolf, Hugo"
+    },
+    {
+      "type": "work",
+      "name": "Herzog Blaubart's Burg",
+      "komponist": null
+    },
+    {
+      "type": "work",
+      "name": "Ich liebe dich",
+      "komponist": "Beethoven, Ludwig von"
+    },
+    {
+      "type": "work",
+      "name": "Il Trovatore",
+      "komponist": "Verdi, Giuseppe"
+    },
+    {
+      "type": "work",
+      "name": "In dem Schatten meiner Locken",
+      "komponist": "Wolf, Hugo"
+    },
+    {
+      "type": "work",
+      "name": "Judith",
+      "komponist": "Honegger, Arthur"
+    },
+    {
+      "type": "work",
+      "name": "Kát'a Kabanová",
+      "komponist": "Janáček, Leoš"
+    },
+    {
+      "type": "work",
+      "name": "La clemenza di Tito",
+      "komponist": "Mozart, Wolfgang Amadeus"
+    },
+    {
+      "type": "work",
+      "name": "La Gioconda",
+      "komponist": "Ponchielli, Amilcare"
+    },
+    {
+      "type": "work",
+      "name": "La Traviata",
+      "komponist": "Verdi, Giuseppe"
+    },
+    {
+      "type": "work",
+      "name": "Lamento d'Arianna",
+      "komponist": "Monteverdi, Claudio"
+    },
+    {
+      "type": "work",
+      "name": "Le chant de la Terre",
+      "komponist": "Mahler, Gustav"
+    },
+    {
+      "type": "work",
+      "name": "Le nozze di Figaro",
+      "komponist": "Mozart, Wolfgang Amadeus"
+    },
+    {
+      "type": "work",
+      "name": "Lied der Mignon",
+      "komponist": "Beethoven, Ludwig von"
+    },
+    {
+      "type": "work",
+      "name": "Lohengrin",
+      "komponist": "Wagner, Richard"
+    },
+    {
+      "type": "work",
+      "name": "Macbeth",
+      "komponist": "Verdi, Giuseppe"
+    },
+    {
+      "type": "work",
+      "name": "Madama Butterfly",
+      "komponist": "Puccini, Giacomo"
+    },
+    {
+      "type": "work",
+      "name": "Mein Herz ist stumm",
+      "komponist": "Strauss, Richard"
+    },
+    {
+      "type": "work",
+      "name": "Mühvoll komm' ich und beladen",
+      "komponist": "Wolf, Hugo"
+    },
+    {
+      "type": "work",
+      "name": "Nachtstück",
+      "komponist": "Schubert, Franz"
+    },
+    {
+      "type": "work",
+      "name": "Nun wandre, Maria",
+      "komponist": "Wolf, Hugo"
+    },
+    {
+      "type": "work",
+      "name": "O ihr Felder",
+      "komponist": "Barwinsky, Wolodymyr"
+    },
+    {
+      "type": "work",
+      "name": "Oh, ihr Felder",
+      "komponist": null
+    },
+    {
+      "type": "work",
+      "name": "Orpheus und Eurydike",
+      "komponist": "Gluck, Christoph Willibald"
+    },
+    {
+      "type": "work",
+      "name": "Paradies und Peri",
+      "komponist": null
+    },
+    {
+      "type": "work",
+      "name": "Parsifal",
+      "komponist": "Wagner, Richard"
+    },
+    {
+      "type": "work",
+      "name": "Pikovaja dama",
+      "komponist": "Čajkovskij, Pëtr Ilʹič"
+    },
+    {
+      "type": "work",
+      "name": "Pupilette",
+      "komponist": "Busatti, Cherubino"
+    },
+    {
+      "type": "work",
+      "name": "Quintett für Klavier und Schteichquartett, G-Dur",
+      "komponist": "Schmidt, Franz"
+    },
+    {
+      "type": "work",
+      "name": "Rastlose Liebe",
+      "komponist": "Schubert, Franz"
+    },
+    {
+      "type": "work",
+      "name": "Rigoletto",
+      "komponist": "Verdi, Giuseppe"
+    },
+    {
+      "type": "work",
+      "name": "Rilke-Zyklus",
+      "komponist": "Hindemith, Paul"
+    },
+    {
+      "type": "work",
+      "name": "Sagt, seid Ihr es, feiner Herr",
+      "komponist": "Wolf, Hugo"
+    },
+    {
+      "type": "work",
+      "name": "Sinfonien, Nr. 9, op. 125 (d-Moll)",
+      "komponist": "Beethoven, Ludwig von"
+    },
+    {
+      "type": "work",
+      "name": "Spanisches Liederbuch",
+      "komponist": "Wolf, Hugo"
+    },
+    {
+      "type": "work",
+      "name": "Stets barg, die Liebe sie",
+      "komponist": "Haydn, Joseph"
+    },
+    {
+      "type": "work",
+      "name": "Svadebka",
+      "komponist": "Stravinsky, Igor"
+    },
+    {
+      "type": "work",
+      "name": "Székely fonó",
+      "komponist": "Kodály, Zoltán"
+    },
+    {
+      "type": "work",
+      "name": "Tannhäuser und der Sängerkrieg auf Wartburg",
+      "komponist": "Wagner, Richard"
+    },
+    {
+      "type": "work",
+      "name": "Traurigkeit",
+      "komponist": "Barwinsky, Wolodymyr"
+    },
+    {
+      "type": "work",
+      "name": "Tristan und Isolde",
+      "komponist": "Wagner, Richard"
+    },
+    {
+      "type": "work",
+      "name": "Un ballo in maschera",
+      "komponist": "Verdi, Giuseppe"
+    },
+    {
+      "type": "work",
+      "name": "Vanessa",
+      "komponist": "Barber, Samuel"
+    },
+    {
+      "type": "work",
+      "name": "Vergin tutt' amor",
+      "komponist": "Durante, Francesco"
+    },
+    {
+      "type": "work",
+      "name": "Von ewiger Liebe",
+      "komponist": "Brahms, Johannes"
+    },
+    {
+      "type": "work",
+      "name": "Wenn du zu den Blumen gehst",
+      "komponist": "Wolf, Hugo"
+    },
+    {
+      "type": "work",
+      "name": "Wenn ich die Weite",
+      "komponist": "Woloszyn, Wolodymyr"
+    },
+    {
+      "type": "work",
+      "name": "Wenn ich in die Weite der Steppe schaue",
+      "komponist": null
+    },
+    {
+      "type": "work",
+      "name": "Wozzeck",
+      "komponist": "Berg, Alban"
+    }
+  ],
+  "skipped": [
+    {
+      "type": "person",
+      "name": "Löbl, Karl",
+      "existing_qid": "K"
+    },
+    {
+      "type": "person",
+      "name": "Malaniuk, Ira",
+      "existing_qid": "Q94208"
+    },
+    {
+      "type": "person",
+      "name": "Wagner, Wolfgang",
+      "existing_qid": "Q60452"
+    },
+    {
+      "type": "person",
+      "name": "Y.",
+      "existing_qid": "zu kurz (2 Zeichen)"
+    },
+    {
+      "type": "org",
+      "name": "Bayerische Staatsoper",
+      "existing_qid": "Q681931"
+    },
+    {
+      "type": "org",
+      "name": "Bayreuther Festspiele",
+      "existing_qid": "Q157596"
+    },
+    {
+      "type": "org",
+      "name": "Centropa Concert Organisation, Konzertdirektion",
+      "existing_qid": "nicht verifizierbar"
+    },
+    {
+      "type": "org",
+      "name": "Felix Ballhausen Bühnenvermittlung, Ballhaus Agentur München",
+      "existing_qid": "nicht verifizierbar"
+    },
+    {
+      "type": "location",
+      "name": "Frankfurt",
+      "existing_qid": "Frankfurt am Main"
+    },
+    {
+      "type": "work",
+      "name": "Die Meistersinger von Nürnberg",
+      "existing_qid": "Q190891"
+    },
+    {
+      "type": "work",
+      "name": "Julius Cäsar",
+      "existing_qid": "Q729645"
+    },
+    {
+      "type": "work",
+      "name": "Orfeo ed Euridice",
+      "existing_qid": "Q309823"
+    },
+    {
+      "type": "work",
+      "name": "Salome",
+      "existing_qid": "Q723407"
+    }
+  ]
+}

@@ -194,17 +194,61 @@
 }
 
 /* F-1: Unified neutral badges - type indicated by text, not color */
-.badge--konvolut { background: var(--color-gold-light); color: var(--color-gold-rich); }
+.badge--konvolut { background: var(--color-parchment); color: var(--color-text-secondary); }
 .badge--konvolut-struct { background: var(--color-cream); color: var(--color-text-secondary); border: 1px solid var(--border-color); font-style: italic; }
 
-/* F-3 + F-9: Signal green for link/data indicators */
+/* Wikidata badge — original logo colors, neutral background */
 .badge--wikidata {
-  background: var(--color-signal-green-light);
-  color: var(--color-signal-green);
-  font-family: var(--font-mono);
-  font-size: 0.65rem;
-  padding: 1px 4px;
+  background: var(--color-parchment);
+  padding: 2px 3px;
   cursor: pointer;
+  line-height: 1;
+  text-decoration: none;
+}
+
+.badge--wikidata svg {
+  display: block;
+  width: 10px;
+  height: 10px;
+}
+
+/* Chips */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: var(--text-xs);
+  line-height: 1.5;
+}
+
+.chip--entity {
+  background: rgba(0, 74, 143, 0.08);
+  color: var(--color-text-primary);
+}
+
+.chip--werk {
+  background: rgba(139, 58, 58, 0.08);
+  color: var(--color-text-primary);
+}
+
+.chip--clickable {
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.chip--clickable:hover {
+  background: rgba(0, 74, 143, 0.18);
+}
+
+.chip--werk.chip--clickable:hover {
+  background: rgba(139, 58, 58, 0.18);
+}
+
+.chip__role {
+  color: var(--color-text-tertiary);
+  font-size: 0.7rem;
 }
 
 /* Spinner */

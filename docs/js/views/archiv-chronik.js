@@ -190,7 +190,7 @@ export function updateChronikView(filters) {
             : formatSignatur(r['rico:identifier']);
           const docType = getDocTypeId(r);
           const docLabel = DOKUMENTTYP_LABELS[docType] || '';
-          const agents = ensureArray(r['rico:hasOrHadAgent']);
+          const agents = ensureArray(r['m3gim:hasAssociatedAgent']);
           const allAgentNames = agents.map(a => a.name || a['skos:prefLabel'] || '').filter(Boolean);
           const displayNames = allAgentNames.slice(0, 3);
           const recordId = r['@id'];
@@ -321,7 +321,7 @@ function sortLocationMap(locMap) {
 /** Group records by period → person. */
 function groupByPeriodAndPerson(records) {
   return groupByPeriodAndDimension(records, r => {
-    const agents = ensureArray(r['rico:hasOrHadAgent']);
+    const agents = ensureArray(r['m3gim:hasAssociatedAgent']);
     return agents.map(a => a.name || a['skos:prefLabel'] || '').filter(Boolean);
   }, '\u2014 Ohne Person');
 }

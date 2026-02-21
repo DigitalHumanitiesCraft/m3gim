@@ -472,45 +472,6 @@
   font-style: italic;
 }
 
-/* Chips (used in inline detail and chronik) */
-.chip--clickable {
-  cursor: pointer;
-  transition: background var(--transition-fast);
-}
-
-.chip--clickable:hover {
-  background: rgba(0, 74, 143, 0.18);
-}
-
-.chip--werk.chip--clickable:hover {
-  background: rgba(139, 58, 58, 0.18);
-}
-
-.chip {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-1);
-  padding: 2px 8px;
-  border-radius: 12px;
-  font-size: var(--text-xs);
-  line-height: 1.5;
-}
-
-.chip--entity {
-  background: rgba(0, 74, 143, 0.08);
-  color: var(--color-text-primary);
-}
-
-.chip--werk {
-  background: rgba(139, 58, 58, 0.08);
-  color: var(--color-text-primary);
-}
-
-.chip__role {
-  color: var(--color-text-tertiary);
-  font-size: 0.7rem;
-}
-
 /* =========================================================================
    Chronik View
    ========================================================================= */
@@ -594,11 +555,17 @@
 
 .chronik-period__body {
   padding: 0 var(--space-2) var(--space-4) var(--space-6);
+  border-left: 2px solid var(--border-color-light);
+  margin-left: 6px;
 }
 
 /* Location groups within a period */
 .chronik-location {
-  margin-top: var(--space-2);
+  margin-top: var(--space-1);
+}
+
+.chronik-location:first-child {
+  margin-top: 0;
 }
 
 .chronik-location__header {

@@ -28,10 +28,11 @@ export function aggregateMatrix(store) {
     const docType = getDocTypeId(record) || '';
     const weight = getIntensityWeight(docType);
 
-    // Collect agents and mentions
-    const agents = ensureArray(record['rico:hasOrHadAgent']);
-    const mentions = ensureArray(record['m3gim:mentions']);
-    const allPersons = [...agents, ...mentions];
+    // Collect agents and mentioned persons (now in subjects with @type rico:Person)
+    const agents = ensureArray(record['m3gim:hasAssociatedAgent']);
+    const mentionedPersons = ensureArray(record['rico:hasOrHadSubject'])
+      .filter(s => s['@type'] === 'rico:Person');
+    const allPersons = [...agents, ...mentionedPersons];
 
     for (const agent of allPersons) {
       const rawName = agent.name || agent['skos:prefLabel'] || '';

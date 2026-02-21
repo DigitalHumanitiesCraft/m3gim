@@ -563,16 +563,21 @@ def build_matrix(records):
             'weight': intensity_weight
         }
 
-        # Method 1: Extract from structured data (rico:hasOrHadAgent, m3gim:mentions)
+        # Method 1: Extract from structured data (m3gim:hasAssociatedAgent + mentioned persons in subjects)
         seen_names = set()
-        for prop in ['rico:hasOrHadAgent', 'm3gim:mentions']:
-            agents = ensure_list(record.get(prop))
-            for agent in agents:
-                if isinstance(agent, dict):
-                    name = agent.get('name', '')
-                    if name and name not in seen_names:
-                        seen_names.add(name)
-                        personen_begegnungen[name][period].append(doc_entry)
+        for agent in ensure_list(record.get('m3gim:hasAssociatedAgent')):
+            if isinstance(agent, dict):
+                name = agent.get('name', '')
+                if name and name not in seen_names:
+                    seen_names.add(name)
+                    personen_begegnungen[name][period].append(doc_entry)
+        # Mentioned persons are now in rico:hasOrHadSubject with @type rico:Person
+        for subj in ensure_list(record.get('rico:hasOrHadSubject')):
+            if isinstance(subj, dict) and subj.get('@type') == 'rico:Person':
+                name = subj.get('name', '')
+                if name and name not in seen_names:
+                    seen_names.add(name)
+                    personen_begegnungen[name][period].append(doc_entry)
 
         # Method 2: Fallback title matching for known persons (Iteration 1 approach)
         for person_key in known_persons:

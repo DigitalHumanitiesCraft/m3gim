@@ -384,15 +384,16 @@ function getFolioHint(record, konvolutId) {
   const dupes = siblings.filter(s => (s['rico:title'] || '') === title);
   if (dupes.length <= 1) return null;
 
-  // Try agents, then mentions, then locations
-  const agents = ensureArray(record['rico:hasOrHadAgent']);
+  // Try agents, then mentioned persons (in subjects), then locations
+  const agents = ensureArray(record['m3gim:hasAssociatedAgent']);
   if (agents.length > 0) {
     const name = agents[0].name || agents[0]['skos:prefLabel'] || '';
     if (name) return name;
   }
-  const mentions = ensureArray(record['m3gim:mentions']);
-  if (mentions.length > 0) {
-    const name = mentions[0].name || mentions[0]['skos:prefLabel'] || '';
+  const mentionedPersons = ensureArray(record['rico:hasOrHadSubject'])
+    .filter(s => s['@type'] === 'rico:Person');
+  if (mentionedPersons.length > 0) {
+    const name = mentionedPersons[0].name || mentionedPersons[0]['skos:prefLabel'] || '';
     if (name) return name;
   }
   const locs = ensureArray(record['rico:hasOrHadLocation']);
@@ -407,16 +408,17 @@ const BOOKMARK_SVG_EMPTY = '<svg width="14" height="14" viewBox="0 0 24 24" fill
 const BOOKMARK_SVG_FILLED = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>';
 
 function buildRecordTooltip(record) {
-  const agents = ensureArray(record['rico:hasOrHadAgent']);
-  const mentions = ensureArray(record['m3gim:mentions']);
+  const agents = ensureArray(record['m3gim:hasAssociatedAgent']);
+  const subjects = ensureArray(record['rico:hasOrHadSubject']);
+  const mentionedPersons = subjects.filter(s => s['@type'] === 'rico:Person');
+  const works = subjects.filter(s => s['@type'] === 'm3gim:MusicalWork');
   const locs = ensureArray(record['rico:hasOrHadLocation'])
     .filter(l => !/^\d{4}/.test(l.name || l['skos:prefLabel'] || ''));
-  const subjects = ensureArray(record['rico:hasOrHadSubject']);
   const parts = [];
-  const personCount = agents.length + mentions.length;
+  const personCount = agents.length + mentionedPersons.length;
   if (personCount > 0) parts.push(`${personCount} Person${personCount > 1 ? 'en' : ''}`);
   if (locs.length > 0) parts.push(`${locs.length} Ort${locs.length > 1 ? 'e' : ''}`);
-  if (subjects.length > 0) parts.push(`${subjects.length} Werk${subjects.length > 1 ? 'e' : ''}`);
+  if (works.length > 0) parts.push(`${works.length} Werk${works.length > 1 ? 'e' : ''}`);
   return parts.join(', ');
 }
 
@@ -428,7 +430,7 @@ function buildKonvolutTooltip(konvolutId) {
   for (const cid of childIds) {
     const child = store.records.get(cid);
     if (!child) continue;
-    for (const agent of ensureArray(child['rico:hasOrHadAgent'])) {
+    for (const agent of ensureArray(child['m3gim:hasAssociatedAgent'])) {
       const name = agent.name || agent['skos:prefLabel'] || '';
       if (name) agentCounts.set(name, (agentCounts.get(name) || 0) + 1);
     }

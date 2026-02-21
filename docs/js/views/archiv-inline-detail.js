@@ -8,6 +8,7 @@ import { formatSignatur, formatDocType, ensureArray, countLinks } from '../utils
 import { formatDate } from '../utils/date-parser.js';
 import { navigateToIndex } from '../ui/router.js';
 import { toggleKorb, isInKorb } from '../ui/korb.js';
+import { WIKIDATA_ICON_SVG } from '../data/constants.js';
 
 /**
  * Build an inline detail DOM element for a record.
@@ -97,7 +98,7 @@ export function buildInlineDetail(record, store, { onClose } = {}) {
   // Right column: Verknüpfungen
   const rightCol = el('div', { className: 'inline-detail__col' });
 
-  const allAgents = ensureArray(record['rico:hasOrHadAgent']);
+  const allAgents = ensureArray(record['m3gim:hasAssociatedAgent']);
   const persons = allAgents.filter(a => a['@type'] !== 'rico:CorporateBody' && a['@type'] !== 'rico:Group');
   const institutions = allAgents.filter(a => a['@type'] === 'rico:CorporateBody' || a['@type'] === 'rico:Group');
   if (persons.length) {
@@ -113,8 +114,10 @@ export function buildInlineDetail(record, store, { onClose } = {}) {
   }
 
   const subjects = ensureArray(record['rico:hasOrHadSubject']);
-  if (subjects.length) {
-    rightCol.appendChild(renderSection(`Werke (${subjects.length})`, renderWorkChips(subjects)));
+  const works = subjects.filter(s => s['@type'] === 'm3gim:MusicalWork' || s['@type'] === 'm3gim:PerformanceEvent');
+  const mentionedPersons = subjects.filter(s => s['@type'] === 'rico:Person');
+  if (works.length) {
+    rightCol.appendChild(renderSection(`Werke (${works.length})`, renderWorkChips(works)));
   }
 
   const roles = ensureArray(record['m3gim:hasPerformanceRole']);
@@ -122,9 +125,8 @@ export function buildInlineDetail(record, store, { onClose } = {}) {
     rightCol.appendChild(renderSection(`Rollen (${roles.length})`, renderEntityChips(roles)));
   }
 
-  const mentions = ensureArray(record['m3gim:mentions']);
-  if (mentions.length) {
-    rightCol.appendChild(renderSection(`Erw\u00e4hnt (${mentions.length})`, renderEntityChips(mentions, 'personen')));
+  if (mentionedPersons.length) {
+    rightCol.appendChild(renderSection(`Erw\u00e4hnt (${mentionedPersons.length})`, renderEntityChips(mentionedPersons, 'personen')));
   }
 
   body.appendChild(leftCol);
@@ -203,8 +205,9 @@ function renderEntityChips(entities, gridType) {
         target: '_blank',
         rel: 'noopener noreferrer',
         title: wikidata,
+        html: WIKIDATA_ICON_SVG,
         onClick: (e) => e.stopPropagation(),
-      }, 'WD'));
+      }));
     }
 
     container.appendChild(chip);
@@ -276,7 +279,7 @@ function buildKonvolutDetail(record, store, { onClose } = {}) {
   for (const cid of childIds) {
     const child = store.records.get(cid);
     if (!child) continue;
-    for (const agent of ensureArray(child['rico:hasOrHadAgent'])) {
+    for (const agent of ensureArray(child['m3gim:hasAssociatedAgent'])) {
       const name = agent.name || agent['skos:prefLabel'] || '';
       if (name) agentCounts.set(name, (agentCounts.get(name) || 0) + 1);
     }

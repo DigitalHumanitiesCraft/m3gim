@@ -166,6 +166,12 @@ export const PERSONEN_FARBEN = {
 };
 
 // =========================================================================
+// Wikidata Icon (simplified barcode logo, inline SVG)
+// =========================================================================
+
+export const WIKIDATA_ICON_SVG = '<svg width="12" height="12" viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="1" width="1" height="10" fill="#990000"/><rect x="2" y="1" width="1" height="10" fill="#990000"/><rect x="4" y="1" width="1" height="10" fill="#339966"/><rect x="5.5" y="1" width="1" height="10" fill="#339966"/><rect x="7.5" y="1" width="1" height="10" fill="#006699"/><rect x="9" y="1" width="1" height="10" fill="#006699"/><rect x="10.5" y="1" width="1" height="10" fill="#006699"/></svg>';
+
+// =========================================================================
 // Dokumenttyp Labels
 // =========================================================================
 
