@@ -1,6 +1,6 @@
 # Architekturentscheidungen und Prozesswissen
 
-> 35 finale Architekturentscheidungen (E-01 bis E-35), offene Entscheidungen, technische Schulden und Learnings aus Iteration 1+2.
+> 39 finale Architekturentscheidungen (E-01 bis E-39), offene Entscheidungen, technische Schulden und Learnings aus Iteration 1+2.
 
 ## Architekturentscheidungen (final)
 
@@ -41,6 +41,10 @@
 | E-33 | `m3gim:eventDate` fuer Datum-Literale — `rico:isAssociatedWithDate` ist ObjectProperty mit Range `rico:Date` (Klasse), nicht fuer Strings geeignet |
 | E-34 | `@context`-Aliase (`name` → `rico:name`, `role` → `m3gim:role`, `komponist` → `m3gim:komponist`) — kurze JSON-Keys bei semantischer Korrektheit |
 | E-35 | GitHub Actions Workflow entfernt — erzeugte Merge-Konflikte, Pipeline laeuft lokal. Reaktivierung moeglich wenn Dritte Daten updaten. |
+| E-36 | Floating-Tooltip (HTML-div ueber SVG) statt CSS-`::after`-Tooltips — SVG-Elemente unterstuetzen keine Pseudo-Elemente, deshalb positioniertes `<div>` mit `clientX/Y - getBoundingClientRect()` |
+| E-37 | Popup-Menue fuer Multi-Dokument-Dots — bei >1 Dokumenten pro Gastspiel-Dot zeigt ein Popup die Signaturen + Titel, Klick navigiert zum Archiv-Tab |
+| E-38 | Guest-City-Display-Normalisierung — `GUEST_DISPLAY_MAP` mappt Granularitaetsmischungen ("Italien" → "Italien (versch.)", "Palais Pallavicini" → "Wien — Palais Pallavicini") |
+| E-39 | Piecewise-linear Zeitskala mit Skalenbruch — BREAK_YEAR=1975 komprimiert sparse 1975–2009 (BREAK_RATIO=0.74), visuell markiert durch Zigzag + "// komprimiert" Annotation |
 
 ## Offene Entscheidungen
 
@@ -65,7 +69,7 @@
 | Hoch | Wikidata-Reconciliation (reconcile.py) | implementiert |
 | Hoch | Export CSV/JSON-LD/GEXF | offen |
 | Mittel | Matrix Zeitfilter/Zoom | offen |
-| Mittel | Cross-Visualization Linking | offen |
+| Mittel | Cross-Visualization Linking | teilweise (Mobilitaet-Dots → Archiv, Mobilitaet-Bars → Ort-Index) |
 | Mittel | Merkliste + CSV-Export | offen |
 | Niedrig | Leaflet Karte | offen |
 

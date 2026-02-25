@@ -1,6 +1,6 @@
-# Produkt, UI und Visualisierungen
+# Visualisierungen und UI
 
-> Kanonische Quelle fuer Informationsarchitektur, Interaktionen, Designsystem und offene Produktluecken.
+> Informationsarchitektur, Ansichtslogik, Interaktionen, Designsystem und offene Produktluecken.
 
 ## Informationsarchitektur
 
@@ -17,11 +17,10 @@
 
 - Ueber (`about.html`) — Projektueberblick, Methodik, Datenstand
 - Projekt (`projekt.html`) — Quellenbeschreibung, Tektonik, Erfassung, Modellierung
-- Modell (`modell.html`) — Ontologie (RiC-O + m3gim), Verknuepfungstypen, Identifikatoren, Statistik
+- Modell (`modell.html`) — Ontologie (RiC-O + m3gim), Verknuepfungstypen, Statistik
 - Hilfe (`hilfe.html`) — Bedienung, Interaktion, Datumskonventionen, FAQ
 - Impressum (`impressum.html`) — Team, Foerderung, Datenschutz, Lizenz
 - Einheitliches Template: info-header, info-nav, info-main, info-footer
-- Statische Zahlen (aktualisieren nach Pipeline-Lauf, kein JS-Store)
 - Optimale Lesebreite 720px, Source Serif 4 Titel, Print-Styles
 
 ### Routing
@@ -50,9 +49,8 @@
 - Kompakte Toolbar: Suche (flex: 1) + Facet-Chips auf einer Zeile
 - Detail-Expansion auf 10 Records begrenzt + "Alle im Archiv anzeigen" Link
 - Grid-Count zeigt gefilterte/total bei aktivem Filter
-- Wikidata-Icons (Original-Barcode-Logo in Markenfarben) bei Index-Eintraegen mit WD-ID
+- Wikidata-Icons (Original-Barcode-Logo) bei Index-Eintraegen mit WD-ID
 - WD-Coverage-Prozent in Index-Grid-Headern
-- Suche, Sortierung, Expansion und Seiteneinstieg in zugehoerige Records
 
 ### Mobilitaet (Session 17/18)
 
@@ -86,49 +84,48 @@ Schwimmbahn-Timeline (D3.js) fuer Ira Malaniuks geografische Mobilitaet 1919–2
 - Legende ueber dem Diagramm (nicht darunter)
 - Wien→Zuerich-Bogen bewusst abgeschwaecht (bowFactor 0.30 statt 0.45)
 
+### Wissenskorb
+
+- Bookmark-Icons in Archiv (Bestand-Zeilen, Inline-Detail) und Indizes (Detail-Records)
+- Korb-Tab immer sichtbar (auch bei 0 Items), Badge-Count bei >= 1
+- Card-basierte Darstellung pro Record:
+  - Header: Signatur (klickbar → Archiv), Titel, Typ-Badge, Entfernen-Button
+  - Meta-Zeile: Datum, Sprache, Umfang, Status
+  - Verknuepfungen: Personen, Institutionen, Werke, Orte, Rollen als klickbare Chips
+  - Wikidata-Icons als klickbare Links wo vorhanden
+  - Konvolut-Info (Teil von Konvolut X)
+- Cross-Navigation: Signatur-Klick → Archiv, Chip-Klick → Index
+- sessionStorage-Persistenz (kein Server)
+- Empty-State mit Lesezeichen-Icon und Anleitung
+
 ### Matrix
 
 - Begegnungsstruktur als Heatmap (Person x Zeitraum)
 - Kategoriefilter und Drilldown auf Dokumentliste
+- Aktuell ausgeblendet
 
 ### Kosmos
 
 - Repertoire-/Rollenbezug als Force-Graph
 - Fokus-Interaktionen, Zoom/Pan, Legendenlogik
+- Aktuell ausgeblendet
 
-## Designsystem (konsolidiert)
+## Designsystem
 
-- Funktionale Farbsemantik statt ueberfrachteter Einzeltypen-Farben
+- Funktionale Farbsemantik: KUG-Blau (#004A8F, Interaktion), Signal-Gruen (Verknuepfung), Neutral-Grau (Abwesenheit), Warmer Hintergrund (Struktur)
 - Typografische Rollen fuer UI, Titel und Signaturdarstellung
 - Konsistente Abwesenheitsdarstellung fuer fehlende Erschliessungsangaben
+- CSS Custom Properties als Design-System
 
 ## Forschungsbezug
 
 - Archiv und Indizes: Quellenbezug und Nachvollziehbarkeit
 - Matrix: Netzwerk- und Zeitmuster
 - Kosmos: Repertoire- und Rollenprofil
+- Mobilitaet: Geografische Mobilitaetsanalyse (FF4)
 
-### Wissenskorb (Session 10 + 12)
+## Offene Luecken
 
-- Bookmark-Icons in Archiv (Bestand-Zeilen, Inline-Detail) und Indizes (Detail-Records)
-- Korb-Tab immer sichtbar (auch bei 0 Items), Badge-Count bei >= 1
-- Card-basierte Darstellung pro Record:
-  - Header: Signatur (klickbar → Archiv), Titel, Typ-Badge, Entfernen-Button
-  - Meta-Zeile: Datum, Sprache, Umfang, Status (Midpoint-Separator)
-  - Verknuepfungen mit semantischer Trennung:
-    - Personen und Institutionen als separate Zeilen (nach @type gesplittet)
-    - Werke mit Rolle (auffuehrung, erwaehnt)
-    - Orte, Rollen, Erwaehnt als klickbare Chips
-  - Wikidata-Icons (Original-Barcode-Logo) als klickbare Links wo vorhanden
-  - Konvolut-Info (Teil von Konvolut X)
-  - Empty-State fuer unerschlossene Objekte
-- Cross-Navigation: Signatur-Klick → Archiv mit Inline-Expansion, Chip-Klick → Index
-- sessionStorage-Persistenz (kein Server)
-- Empty-State mit Lesezeichen-Icon und Anleitung
-- Detail-Panel (Sidebar) deaktiviert — alle Klicks navigieren zum Archiv-Tab
-
-## Offene Luecken und Constraints
-
-- Deferred Features (z. B. Matrix-Zeitzoom, erweiterte Index-Hierarchien)
-- Wikidata-Reconciliation: `reconcile.py` implementiert (171 Matches), Ergebnisse im Frontend sichtbar
-- Datenabdeckung ist weiterhin der dominierende Qualitaetshebel
+- Matrix-Zeitzoom, erweiterte Index-Hierarchien (deferred)
+- Wikidata-Reconciliation: 171 Matches im Frontend sichtbar, Kosmos-View noch anzupassen
+- Datenabdeckung bleibt dominierender Qualitaetshebel (22% verknuepfte Objekte)

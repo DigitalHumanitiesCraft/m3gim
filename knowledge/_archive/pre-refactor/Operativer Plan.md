@@ -14,12 +14,12 @@
 
 - Pipeline Iteration 2 lauffaehig
 - Pipeline-Fix: Bearbeitungsstand-Spalte normalisiert, Werte gemappt (Session 10)
-- Frontend-Refactor auf modulare Struktur (18 JS-Module, 9 CSS)
+- Frontend-Refactor auf modulare Struktur (19 JS-Module, 10 CSS)
 - Info-Seiten als eigenstaendige HTML-Dateien (Session 13): about.html, projekt.html, modell.html, hilfe.html
 - Archiv UX: Spalten-Sortierung, Autocomplete-Personenfilter, erweiterte Suche, Bearbeitungsstand-Markierung
 - Indizes Explorer: Facettensuche, Viewport-Fix, Detail-Begrenzung, Cross-Navigation
 - Wissenskorb: Bookmark-Icons, Korb-Tab mit Card-Details, sessionStorage-Persistenz
-- Navigation: 3 aktive Tabs (archiv, indizes, korb) + 2 ausgeblendet (matrix, kosmos) + 5 HTML-Seiten (inkl. Impressum)
+- Navigation: 4 aktive Tabs (archiv, indizes, mobilitaet, korb) + 2 ausgeblendet (matrix, kosmos) + 5 HTML-Seiten (inkl. Impressum)
 - Matrix/Kosmos-Verbesserungen (Drilldown, Labels, Zoom/Legende) — aktuell ausgeblendet
 - Knowledge-Refactor: 12 nummerierte Docs → 5 kanonische + Traceability-Matrix + Quellenindex + Anhaenge
 - Gap-Analyse Antrag/Handreichung/KB (Session 14): Kritische Luecken identifiziert und KB aktualisiert
@@ -31,6 +31,8 @@
 - Wikidata-Integration (Session 17): reconcile.py refactored (171 Matches), WD-Icons in Indizes/Korb/Inline-Detail, WD-Coverage in Grid-Headern
 - RiC-O 1.1 Compliance (Session 17): 6 Property-Korrekturen nach OWL-Pruefung, @context-Aliase, rico:Place Typisierung
 - GitHub Actions Workflow entfernt (Session 17): Merge-Konflikte vermieden, Pipeline laeuft lokal
+- Mobilitaet-View (Session 17): Schwimmbahn-Timeline mit D3.js, 7 Swim-Lanes, Lebensphasen, Mobilitaetspfeile, Gastspiel-Dots
+- Mobilitaet-Verbesserungen (Session 18): Floating-Tooltips, Dokument-Klick-Navigation, Popup-Menue, Skalenbruch, Legende ueber Diagramm, Phasen-Label-Abbreviations, Guest-City-Normalisierung
 
 ### Deferred / offen
 
@@ -77,7 +79,7 @@ Diese Punkte sind in der Handreichung als "OFFEN" markiert und muessen im Kick-o
 ## Priorisierte Korrekturpunkte (Doku vs Code)
 
 1. Historische Tooling-Referenzen (Vite/package.json) nicht mehr als Ist-Stand behandeln.
-2. Legacy-Output-Nutzung klar markieren (`partitur.json`, `sankey.json`).
+2. ~~Legacy-Output-Nutzung klar markieren (`partitur.json`, `sankey.json`).~~ → `partitur.json` ist aktiv (Mobilitaet-View), nur `sankey.json` ist Legacy.
 3. ~~Reconciliation als geplanten, nicht implementierten Baustein eindeutig kennzeichnen.~~ → erledigt.
 
 ## Operative Naechste Schritte

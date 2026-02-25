@@ -204,6 +204,30 @@ brief, vertrag, programmheft, plakat, kritik, fotografie, telegramm, postkarte, 
 - **Institutionen:** Offizielle Bezeichnung ohne Rechtsform ("Bayerische Staatsoper", nicht "...GmbH").
 - **Werke:** Titel aus der Quelle, Komponist als Zusatzfeld.
 
+## partitur.json (Biografische Masterdaten)
+
+Manuell kuratierte Datenquelle fuer die Mobilitaet-Ansicht. Wird von `build-views.py` erzeugt und von `mobilitaet.js` konsumiert.
+
+```
+{
+  lebensphasen: [                    // 7 Eintraege (LP1–LP7)
+    { id, label, von, bis, ort, beschreibung }
+  ],
+  orte: [                            // 8 Eintraege (5 Wohnorte + 3 Auffuehrungsorte)
+    { ort, typ: "wohnort"|"auffuehrungsort", von, bis }
+  ],
+  mobilitaet: [                      // 5 Bewegungsereignisse
+    { von, nach, jahr, form: "erzwungen"|"geografisch"|"lebensstil", beschreibung }
+  ],
+  netzwerk: [{ periode, intensitaet }],  // 7 Fuenfjahresperioden
+  repertoire: [{ komponist, farbe, von, bis, dokumente, dokumente_liste }],
+  dokumente: [{ jahr, anzahl }],     // Dokumentverteilung pro Jahr
+  _meta: { generated, source_records }
+}
+```
+
+Gastspiel-Daten kommen NICHT aus partitur.json, sondern werden zur Laufzeit aus `store.locations` extrahiert (Rollen: auffuehrungsort, gastspiel, auffuehrung, spielzeit).
+
 ## Datenqualitaetsvertrag
 
 - Pipeline-seitige Korrekturen ersetzen keine Erfassungspflege.

@@ -29,11 +29,11 @@
 
 ### Frontend-Module (Ist-Zustand)
 
-- 18 JS-Module unter `docs/js/`
-- 9 CSS-Dateien unter `docs/css/`
+- 19 JS-Module unter `docs/js/`
+- 10 CSS-Dateien unter `docs/css/`
 - 5 statische HTML-Seiten: `docs/about.html`, `docs/projekt.html`, `docs/modell.html`, `docs/hilfe.html`, `docs/impressum.html`
 - Einstieg: `docs/js/main.js`
-- Routing: `docs/js/ui/router.js` (3 aktive Tabs: archiv, indizes, korb; 2 ausgeblendet: matrix, kosmos)
+- Routing: `docs/js/ui/router.js` (4 aktive Tabs: archiv, indizes, mobilitaet, korb; 2 ausgeblendet: matrix, kosmos)
 - Info-Seiten: Eigenstaendige HTML-Dateien (kein JS, kein Store), verlinkt aus SPA-Header
 - Dataloading/Store: `docs/js/data/loader.js`
 - Wissenskorb: `docs/js/ui/korb.js` (sessionStorage-Persistenz)
@@ -95,6 +95,7 @@ store = {
 ```
 
 Archiv und Indizes lesen direkt aus `m3gim.jsonld` (via Store), nicht aus separaten View-JSONs.
+Mobilitaet liest aus beiden: `partitur.json` (biografische Masterdaten) + Store (Gastspiel-Dokumente dynamisch extrahiert).
 
 ## Dateien in docs/data/
 
@@ -103,13 +104,13 @@ Archiv und Indizes lesen direkt aus `m3gim.jsonld` (via Store), nicht aus separa
 | `m3gim.jsonld` | JSON-LD | Primaere Datenquelle fuer Archiv + Indizes |
 | `matrix.json` | JSON | Personen × Zeitraeume × Kategorien (Matrix-View) |
 | `kosmos.json` | JSON | Zentrum + Komponisten + Werke (Kosmos-View) |
-| `partitur.json` | JSON | Legacy — wird erzeugt, aber nicht konsumiert |
+| `partitur.json` | JSON | Biografische Masterdaten fuer Mobilitaet-View (Lebensphasen, Orte, Mobilitaetsereignisse) |
 | `sankey.json` | JSON | Legacy — wird erzeugt, aber nicht konsumiert |
 
 ## Dokumentation-vs-Code: verbindliche Klarstellungen
 
 - `reconcile.py` ist implementiert (100%-Match-Strategie mit Wikidata Search API und P31-Verifikation).
-- `partitur.json` und `sankey.json` werden erzeugt, im aktuellen Frontend jedoch nicht konsumiert (Legacy).
+- `partitur.json` wird von `mobilitaet.js` konsumiert (Lebensphasen, Orte, Mobilitaetspfeile). `sankey.json` wird erzeugt, aber nicht konsumiert (Legacy).
 - Historische Vite-/package.json-Referenzen gelten nicht als kanonischer Laufzeitpfad.
 - `migrate.py` wurde in Session 15 entfernt (Legacy-Migration abgeschlossen).
 
