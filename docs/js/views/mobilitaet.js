@@ -5,6 +5,7 @@
 import { el, clear } from '../utils/dom.js';
 import { extractYear } from '../utils/date-parser.js';
 import { ensureArray } from '../utils/format.js';
+import { navigateToIndex } from '../ui/router.js';
 
 /* ------------------------------------------------------------------ */
 /*  Constants                                                          */
@@ -44,11 +45,27 @@ const GUEST_ROW_H = 20;        // height per guest-city row
 const GUEST_SECTION_GAP = 24;  // gap between swim lanes and dot section
 const GUEST_DOT_COLOR = '#9A7B4F';
 
+/** Display-name overrides for guest cities with granularity issues. */
+const GUEST_DISPLAY_MAP = {
+  'Italien': 'Italien (versch.)',
+  'Palais Pallavicini': 'Wien \u2014 Palais Pallavicini',
+};
+
+/** Abbreviations for narrow phase labels. */
+const PHASE_ABBR = {
+  'Kindheit & Jugend': 'Kindheit',
+  'Flucht & Neuanfang': 'Flucht',
+  'Erste Engagements': '1.\u00a0Engagem.',
+  'Sp\u00e4tphase & Ruhestand': 'Sp\u00e4tphase',
+};
+
 /* ------------------------------------------------------------------ */
 /*  State                                                              */
 /* ------------------------------------------------------------------ */
 
 let rendered = false;
+let tooltipEl = null;
+let popupEl = null;
 
 /* ------------------------------------------------------------------ */
 /*  Public API                                                         */
@@ -70,8 +87,8 @@ export function resetMobilitaet() {
 /* ------------------------------------------------------------------ */
 
 /**
- * Build a Map<cityName, {years: Map<year, count>}> from store.locations,
- * excluding the 7 biographical main cities.
+ * Build a Map<displayName, Map<year, {count, records: string[]}>>
+ * from store.locations, excluding the 7 biographical main cities.
  */
 function extractGuestPerformances(store) {
   const mainCities = new Set(LOCATION_ORDER);
@@ -84,18 +101,19 @@ function extractGuestPerformances(store) {
       if (PERFORMANCE_ROLES.has(r)) { isPerformance = true; break; }
     }
     if (!isPerformance) continue;
-    if (mainCities.has(name)) continue;
 
-    const years = new Map(); // year → record count
+    // Exclude main cities and sub-entries like "Wien, ab 1956"
+    if (mainCities.has(name)) continue;
+    if (LOCATION_ORDER.some(c => name.startsWith(c + ','))) continue;
+
+    const displayName = GUEST_DISPLAY_MAP[name] || name;
+    const years = result.get(displayName) || new Map();
 
     for (const recId of entry.records) {
       const rec = store.records.get(recId);
       if (!rec) continue;
 
-      // Primary: rico:date
       let year = extractYear(rec['rico:date']);
-
-      // Fallback: first m3gim:eventDate entry
       if (!year) {
         const evts = ensureArray(rec['m3gim:eventDate']);
         for (const e of evts) {
@@ -105,16 +123,85 @@ function extractGuestPerformances(store) {
       }
 
       if (year && year >= 1935 && year <= 2009) {
-        years.set(year, (years.get(year) || 0) + 1);
+        if (!years.has(year)) years.set(year, { count: 0, records: [] });
+        const bucket = years.get(year);
+        bucket.count += 1;
+        bucket.records.push(recId);
       }
     }
 
     if (years.size > 0) {
-      result.set(name, years);
+      result.set(displayName, years);
     }
   }
 
   return result;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Tooltip + Popup helpers                                            */
+/* ------------------------------------------------------------------ */
+
+function showTooltip(event, html) {
+  if (!tooltipEl) return;
+  tooltipEl.innerHTML = html;
+  tooltipEl.classList.add('mob__tooltip--visible');
+  const rect = tooltipEl.parentElement.getBoundingClientRect();
+  let left = event.clientX - rect.left + 12;
+  let top  = event.clientY - rect.top - 28;
+  // Keep tooltip inside container
+  if (left + 280 > rect.width) left = event.clientX - rect.left - 290;
+  if (top < 0) top = event.clientY - rect.top + 16;
+  tooltipEl.style.left = `${left}px`;
+  tooltipEl.style.top  = `${top}px`;
+}
+
+function hideTooltip() {
+  if (!tooltipEl) return;
+  tooltipEl.classList.remove('mob__tooltip--visible');
+}
+
+function showPopup(event, records, store) {
+  closePopup();
+  const container = tooltipEl?.parentElement;
+  if (!container) return;
+
+  popupEl = el('div', { className: 'mob__popup' });
+  for (const recId of records) {
+    const rec = store.records.get(recId);
+    const sig = rec?.['rico:identifier'] || recId;
+    const title = rec?.['rico:title'] || '';
+    const label = title ? `${sig} \u2014 ${title.slice(0, 60)}` : sig;
+    const btn = el('button', {
+      className: 'mob__popup-item',
+      onClick: () => {
+        closePopup();
+        window.location.hash = '#archiv/' + encodeURIComponent(recId);
+      },
+    }, label);
+    popupEl.appendChild(btn);
+  }
+
+  const rect = container.getBoundingClientRect();
+  const left = event.clientX - rect.left + 8;
+  const top  = event.clientY - rect.top + 8;
+  popupEl.style.position = 'absolute';
+  popupEl.style.left = `${left}px`;
+  popupEl.style.top  = `${top}px`;
+  container.appendChild(popupEl);
+
+  // Close on outside click
+  setTimeout(() => {
+    document.addEventListener('click', closePopupOutside, { once: true });
+  }, 0);
+}
+
+function closePopup() {
+  if (popupEl) { popupEl.remove(); popupEl = null; }
+}
+
+function closePopupOutside(e) {
+  if (popupEl && !popupEl.contains(e.target)) closePopup();
 }
 
 /* ------------------------------------------------------------------ */
@@ -130,24 +217,29 @@ async function buildView(store, container) {
   const wrapper = el('div', { className: 'mob' });
 
   wrapper.appendChild(
-    el('h3', { className: 'mob__heading' },
-      'Mobilität \u2014 Ira Malaniuk (1919\u20132009)'),
+    el('h3', { className: 'mob__heading' }, 'Mobilit\u00e4t'),
   );
 
-  const svgBox = el('div', { className: 'mob__container' });
-  wrapper.appendChild(svgBox);
-
+  // Legend above diagram
   wrapper.appendChild(buildLegend());
 
+  const svgBox = el('div', { className: 'mob__container' });
+
+  // Floating tooltip & popup live inside the positioned container
+  tooltipEl = el('div', { className: 'mob__tooltip' });
+  svgBox.appendChild(tooltipEl);
+
+  wrapper.appendChild(svgBox);
+
   container.appendChild(wrapper);
-  renderTimeline(data, guestData, svgBox);
+  renderTimeline(data, guestData, store, svgBox);
 }
 
 /* ------------------------------------------------------------------ */
 /*  D3 Timeline                                                        */
 /* ------------------------------------------------------------------ */
 
-function renderTimeline(data, guestData, svgBox) {
+function renderTimeline(data, guestData, store, svgBox) {
   const margin = { top: 90, right: 40, bottom: 44, left: 110 };
   const laneH = 36;
   const lanePad = 0.3;
@@ -210,7 +302,7 @@ function renderTimeline(data, guestData, svgBox) {
   // Guest performances dot-plot
   if (guestCities.length > 0) {
     const guestTop = margin.top + swimH + GUEST_SECTION_GAP;
-    drawGuestDots(svg, guestCities, guestData, x, guestTop, margin, chartW);
+    drawGuestDots(svg, guestCities, guestData, x, guestTop, margin, chartW, store);
   }
 
   // Axes last (on top)
@@ -229,6 +321,16 @@ function sortedGuestCities(guestData) {
   }
   entries.sort((a, b) => a.minYear - b.minYear);
   return entries.map(e => e.city);
+}
+
+/** Get count from a guest-year bucket (supports both old number and new {count} format). */
+function guestCount(bucket) {
+  return typeof bucket === 'number' ? bucket : bucket.count;
+}
+
+/** Get record IDs from a guest-year bucket. */
+function guestRecords(bucket) {
+  return typeof bucket === 'object' && bucket.records ? bucket.records : [];
 }
 
 /* ------------------------------------------------------------------ */
@@ -256,13 +358,34 @@ function drawPhaseBands(svg, phases, x, margin, bottomY) {
 
 function drawScaleBreak(svg, x, margin, bottomY) {
   const bx = x(BREAK_YEAR);
-  const y1 = bottomY - 2;
-  const amp = 3;
-  svg.append('path')
-    .attr('d', `M${bx - amp},${y1} l${amp},-4 l${amp * 2},8 l${amp},-4`)
+  const g = svg.append('g').attr('class', 'mob__break');
+
+  // Dashed vertical line spanning chart height
+  g.append('line')
+    .attr('x1', bx).attr('x2', bx)
+    .attr('y1', margin.top).attr('y2', bottomY)
+    .attr('stroke', '#E0DCD6')
+    .attr('stroke-width', 1)
+    .attr('stroke-dasharray', '4,4');
+
+  // Zigzag break indicator on x-axis
+  const amp = 5;
+  const y1 = bottomY - 4;
+  g.append('path')
+    .attr('d', `M${bx - amp},${y1} l${amp},-5 l${amp * 2},10 l${amp},-5`)
     .attr('fill', 'none')
     .attr('stroke', '#8A857E')
-    .attr('stroke-width', 1);
+    .attr('stroke-width', 1.5);
+
+  // Annotation below x-axis
+  g.append('text')
+    .attr('x', bx)
+    .attr('y', bottomY + 28)
+    .attr('text-anchor', 'middle')
+    .attr('font-family', "'JetBrains Mono', monospace")
+    .attr('font-size', '8px')
+    .attr('fill', '#8A857E')
+    .text('// komprimiert');
 }
 
 /* ------------------------------------------------------------------ */
@@ -332,14 +455,23 @@ function drawBars(svg, orte, x, y) {
       .attr('stroke-width', 1)
       .attr('stroke-opacity', 0.5);
 
-    rect.append('title')
-      .text(`${ort.ort} (${style.label})\n${ort.von}\u2013${ort.bis}`);
-
-    rect.on('mouseenter', function () {
-      d3.select(this).attr('stroke-width', 2).attr('stroke-opacity', 0.9);
-    }).on('mouseleave', function () {
-      d3.select(this).attr('stroke-width', 1).attr('stroke-opacity', 0.5);
-    });
+    rect
+      .style('cursor', 'pointer')
+      .on('mouseenter', function (event) {
+        showTooltip(event, `<strong>${ort.ort}</strong> (${style.label})<br>${ort.von}\u2013${ort.bis}`);
+        d3.select(this).attr('stroke-width', 2).attr('stroke-opacity', 0.9);
+      })
+      .on('mousemove', function (event) {
+        showTooltip(event, tooltipEl.innerHTML);
+      })
+      .on('mouseleave', function () {
+        hideTooltip();
+        d3.select(this).attr('stroke-width', 1).attr('stroke-opacity', 0.5);
+      })
+      .on('click', function () {
+        hideTooltip();
+        navigateToIndex('orte', ort.ort);
+      });
   });
 }
 
@@ -360,19 +492,28 @@ function drawArrows(svg, events, x, y) {
     const isForced = mov.form === 'erzwungen';
 
     const vDist = Math.abs(yTo - yFrom);
-    const bow = Math.max(36, vDist * 0.45);
+    // Reduce bow for lebensstil to tame the Wien→Zürich arc
+    const bowFactor = mov.form === 'lebensstil' ? 0.30 : 0.45;
+    const bow = Math.max(36, vDist * bowFactor);
 
     const goesUp = yTo < yFrom;
     const bowDir = goesUp ? -1 : 1;
     const cx = mx + bow * bowDir;
 
-    const path = `M${mx},${yFrom} Q${cx},${(yFrom + yTo) / 2} ${mx},${yTo}`;
+    const pathD = `M${mx},${yFrom} Q${cx},${(yFrom + yTo) / 2} ${mx},${yTo}`;
 
-    const strokeW = isForced ? 3.5 : 2.5;
+    const strokeW = isForced ? 3.5 : 2.0;
     const dash = isForced ? '6,3' : 'none';
 
+    // Invisible hit-area path for easier hover on thin strokes
+    g.append('path')
+      .attr('d', pathD)
+      .attr('fill', 'none')
+      .attr('stroke', 'transparent')
+      .attr('stroke-width', 14);
+
     const arrow = g.append('path')
-      .attr('d', path)
+      .attr('d', pathD)
       .attr('fill', 'none')
       .attr('stroke', color)
       .attr('stroke-width', strokeW)
@@ -380,17 +521,28 @@ function drawArrows(svg, events, x, y) {
       .attr('stroke-dasharray', dash)
       .attr('marker-end', `url(#mob-arrow-${mov.form})`);
 
-    arrow.append('title')
-      .text(`${mov.von} \u2192 ${mov.nach} (${mov.jahr})\n${MOBILITY_LABELS[mov.form] || mov.form}: ${mov.beschreibung}`);
+    const tipHtml = `<strong>${mov.von} \u2192 ${mov.nach}</strong> (${mov.jahr})<br>${MOBILITY_LABELS[mov.form] || mov.form}<br><em>${mov.beschreibung}</em>`;
 
     const hoverW = strokeW + 1.5;
-    arrow
-      .on('mouseenter', function () {
-        d3.select(this).attr('stroke-width', hoverW).attr('stroke-opacity', 1);
-      })
-      .on('mouseleave', function () {
-        d3.select(this).attr('stroke-width', strokeW).attr('stroke-opacity', 0.85);
-      });
+
+    // Attach hover to both hit-area and visible arrow
+    const hitArea = arrow.node().previousSibling;
+    const attachHover = (sel) => {
+      sel
+        .on('mouseenter', function (event) {
+          showTooltip(event, tipHtml);
+          arrow.attr('stroke-width', hoverW).attr('stroke-opacity', 1);
+        })
+        .on('mousemove', function (event) {
+          showTooltip(event, tipHtml);
+        })
+        .on('mouseleave', function () {
+          hideTooltip();
+          arrow.attr('stroke-width', strokeW).attr('stroke-opacity', 0.85);
+        });
+    };
+    attachHover(arrow);
+    attachHover(d3.select(hitArea));
 
     const labelX = mx + bow * bowDir + (bowDir > 0 ? 6 : -6);
     let labelY = (yFrom + yTo) / 2 + 4;
@@ -462,15 +614,14 @@ function drawPhaseLabels(svg, phases, x, margin) {
 
   items.forEach(p => {
     const cx = (p.px1 + p.px2) / 2;
-    const narrow = p.pxW < 55;
+    const narrow = p.pxW < 65;
     const row = narrow ? ROW_HI : ROW_LO;
 
     let label = p.label;
     if (p.pxW < 30) {
-      label = p.label.split('&')[0].split(' ')[0];
+      label = PHASE_ABBR[p.label] || p.label.split(' ')[0];
     } else if (p.pxW < 70) {
-      const words = p.label.split(' ');
-      label = words.length > 2 ? words.slice(0, 2).join(' ') : p.label;
+      label = PHASE_ABBR[p.label] || p.label;
     }
 
     const fontSize = p.pxW < 40 ? '9px' : '11px';
@@ -494,14 +645,17 @@ function drawPhaseLabels(svg, phases, x, margin) {
       .attr('fill', '#5C5651')
       .text(label);
 
-    g.append('text')
-      .attr('x', cx)
-      .attr('y', row + 13)
-      .attr('text-anchor', 'middle')
-      .attr('font-family', "'JetBrains Mono', monospace")
-      .attr('font-size', '8px')
-      .attr('fill', '#8A857E')
-      .text(`${p.von}\u2013${p.bis}`);
+    // Skip year sub-label for very narrow phases (unreadable)
+    if (p.pxW >= 35) {
+      g.append('text')
+        .attr('x', cx)
+        .attr('y', row + 13)
+        .attr('text-anchor', 'middle')
+        .attr('font-family', "'JetBrains Mono', monospace")
+        .attr('font-size', '8px')
+        .attr('fill', '#8A857E')
+        .text(`${p.von}\u2013${p.bis}`);
+    }
   });
 }
 
@@ -509,7 +663,7 @@ function drawPhaseLabels(svg, phases, x, margin) {
 /*  Layer: guest-performance dot-plot                                  */
 /* ------------------------------------------------------------------ */
 
-function drawGuestDots(svg, cities, guestData, x, top, margin, chartW) {
+function drawGuestDots(svg, cities, guestData, x, top, margin, chartW, store) {
   const g = svg.append('g').attr('class', 'mob__guests');
 
   // Separator line
@@ -545,9 +699,11 @@ function drawGuestDots(svg, cities, guestData, x, top, margin, chartW) {
       .text(city);
 
     // Dots per year
-    for (const [year, count] of years) {
+    for (const [year, bucket] of years) {
+      const count = guestCount(bucket);
+      const records = guestRecords(bucket);
       const cx = x(year);
-      const r = Math.min(3 + count, 7);
+      const r = Math.min(4 + count * 1.5, 10);
 
       const dot = g.append('circle')
         .attr('cx', cx)
@@ -556,20 +712,37 @@ function drawGuestDots(svg, cities, guestData, x, top, margin, chartW) {
         .attr('fill', GUEST_DOT_COLOR)
         .attr('fill-opacity', 0.65)
         .attr('stroke', GUEST_DOT_COLOR)
-        .attr('stroke-width', 1)
-        .attr('stroke-opacity', 0.4);
+        .attr('stroke-width', 1.5)
+        .attr('stroke-opacity', 0.4)
+        .style('cursor', records.length ? 'pointer' : 'default');
 
       const docLabel = count === 1 ? '1 Dokument' : `${count} Dokumente`;
-      dot.append('title')
-        .text(`${city} (${year}) \u2014 ${docLabel}`);
 
       dot
-        .on('mouseenter', function () {
+        .on('mouseenter', function (event) {
+          showTooltip(event, `<strong>${city}</strong> (${year})<br>${docLabel}`);
           d3.select(this).attr('fill-opacity', 1).attr('stroke-opacity', 0.8);
         })
+        .on('mousemove', function (event) {
+          showTooltip(event, tooltipEl.innerHTML);
+        })
         .on('mouseleave', function () {
+          hideTooltip();
           d3.select(this).attr('fill-opacity', 0.65).attr('stroke-opacity', 0.4);
         });
+
+      // Click → navigate to document(s)
+      if (records.length === 1) {
+        dot.on('click', function () {
+          hideTooltip();
+          window.location.hash = '#archiv/' + encodeURIComponent(records[0]);
+        });
+      } else if (records.length > 1) {
+        dot.on('click', function (event) {
+          hideTooltip();
+          showPopup(event, records, store);
+        });
+      }
     }
 
     // Faint grid line
@@ -596,7 +769,7 @@ function buildLegend() {
     { color: '#3D7A5A', opacity: 1, label: 'Geografische Mobilität' },
     { color: '#6B4E8C', opacity: 1, label: 'Lebensstil-Mobilität' },
     { spacer: true },
-    { color: GUEST_DOT_COLOR, opacity: 0.65, label: 'Gastspiel-Beleg', round: true },
+    { color: GUEST_DOT_COLOR, opacity: 0.65, label: 'Gastspiel', round: true },
   ];
 
   const children = items.map(it => {
