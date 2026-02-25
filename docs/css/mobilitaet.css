@@ -1,0 +1,96 @@
+/* M³GIM Mobilität Tab Styles */
+
+.mob {
+  padding: var(--space-6);
+}
+
+.mob__heading {
+  font-family: var(--font-title);
+  font-size: var(--text-xl);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-4);
+}
+
+.mob__container {
+  position: relative;
+  width: 100%;
+  border: 1px solid var(--border-color-light);
+  border-radius: var(--border-radius);
+  background: white;
+  overflow-x: auto;
+}
+
+.mob__container svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  min-height: 360px;
+}
+
+/* D3 axis styling */
+.mob__axis-x .domain,
+.mob__axis-y .domain {
+  stroke: var(--border-color);
+}
+
+.mob__axis-x .tick line {
+  stroke: var(--border-color-light);
+}
+
+.mob__axis-y .domain {
+  display: none;
+}
+
+.mob__axis-y .tick line {
+  display: none;
+}
+
+/* Legend */
+.mob__legend {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-top: var(--space-2);
+  padding: var(--space-1) 0;
+  font-family: var(--font-ui);
+  font-size: var(--text-xs);
+  color: var(--color-text-tertiary);
+  flex-wrap: wrap;
+}
+
+.mob__legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.mob__legend-dot {
+  display: inline-block;
+  width: 14px;
+  height: 8px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.mob__legend-spacer {
+  color: var(--border-color);
+}
+
+.mob__legend-dot--round {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.mob__legend-dot--dashed {
+  background: repeating-linear-gradient(
+    90deg,
+    currentColor 0px,
+    currentColor 3px,
+    transparent 3px,
+    transparent 5px
+  ) !important;
+  background-color: transparent !important;
+  color: #8B3A3A;
+}

@@ -12,6 +12,7 @@ import { renderIndizes, expandEntry } from './views/indizes.js';
 import { renderMatrix } from './views/matrix.js';
 import { renderKosmos } from './views/kosmos.js';
 import { renderKorb } from './views/korb.js';
+import { renderMobilitaet } from './views/mobilitaet.js';
 
 let store = null;
 const renderedTabs = new Set();
@@ -85,6 +86,9 @@ function renderTab(tab) {
       break;
     case 'kosmos':
       renderKosmos(store, container);
+      break;
+    case 'mobilitaet':
+      renderMobilitaet(store, container);
       break;
     case 'korb':
       renderKorb(store, container);
