@@ -6,10 +6,10 @@
 
 import { extractYear, get5YearPeriod } from '../utils/date-parser.js';
 import { ensureArray, getDocTypeId } from '../utils/format.js';
+import { normalizePerson, getPersonKategorie } from '../utils/normalize.js';
 import {
   KOMPONISTEN_MAPPING, KOMPONISTEN_NORMALISIERUNG, KOMPONISTEN_FARBEN,
-  PERSONEN_KATEGORIEN, PERSONEN_NORMALISIERUNG, KOMPONISTEN_NAMEN,
-  PERSONEN_FARBEN, ZEITRAEUME,
+  KOMPONISTEN_NAMEN, PERSONEN_FARBEN, ZEITRAEUME,
 } from './constants.js';
 
 // =========================================================================
@@ -109,28 +109,10 @@ function isComposerName(name) {
   return false;
 }
 
-function normalizePerson(name) {
-  const lower = name.toLowerCase().trim();
-  return PERSONEN_NORMALISIERUNG[lower] || name;
-}
-
 function getIntensityWeight(docType) {
   if (docType === 'brief') return 3;
   if (['programmheft', 'plakat', 'vertrag'].includes(docType)) return 2;
   return 1;
-}
-
-// Sort by keyword length descending so specific names match before generic ones
-const SORTED_KATEGORIEN = Object.entries(PERSONEN_KATEGORIEN)
-  .sort((a, b) => b[0].length - a[0].length);
-
-function getPersonKategorie(name) {
-  if (!name) return 'Andere';
-  const lower = name.toLowerCase();
-  for (const [keyword, kat] of SORTED_KATEGORIEN) {
-    if (lower.includes(keyword)) return kat;
-  }
-  return 'Andere';
 }
 
 // =========================================================================

@@ -29,8 +29,7 @@
 }
 
 /* D3 axis styling */
-.mob__axis-x .domain,
-.mob__axis-y .domain {
+.mob__axis-x .domain {
   stroke: var(--border-color);
 }
 
@@ -91,9 +90,8 @@
     currentColor 3px,
     transparent 3px,
     transparent 5px
-  ) !important;
-  background-color: transparent !important;
-  color: #8B3A3A;
+  );
+  color: var(--color-mob-erzwungen, #8B3A3A);
 }
 
 /* Floating tooltip for SVG elements */
@@ -104,13 +102,13 @@
   transition: opacity 150ms ease;
   padding: var(--space-1) var(--space-2);
   background: var(--color-text-primary);
-  color: #fff;
+  color: var(--color-text-inverse);
   font-family: var(--font-ui);
   font-size: var(--text-xs);
   line-height: 1.45;
   white-space: pre-line;
   max-width: 280px;
-  border-radius: 4px;
+  border-radius: var(--border-radius);
   z-index: 200;
 }
 .mob__tooltip--visible {
@@ -121,9 +119,9 @@
 .mob__popup {
   position: absolute;
   z-index: 210;
-  background: #fff;
+  background: var(--color-paper);
   border: 1px solid var(--border-color);
-  border-radius: 4px;
+  border-radius: var(--border-radius);
   box-shadow: 0 2px 8px rgba(0,0,0,.15);
   padding: var(--space-1) 0;
   font-family: var(--font-ui);
@@ -143,6 +141,6 @@
   background: none;
 }
 .mob__popup-item:hover {
-  background: #F5F0E8;
-  color: #004A8F;
+  background: var(--color-cream);
+  color: var(--color-kug-blau);
 }

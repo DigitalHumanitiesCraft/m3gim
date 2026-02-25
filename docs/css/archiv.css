@@ -651,23 +651,6 @@
 }
 
 /* =========================================================================
-   Inline Detail inside Sidebar (detail-panel)
-   ========================================================================= */
-
-.detail-panel .inline-detail {
-  border-left: none;
-  padding: 0;
-}
-
-.detail-panel .inline-detail__header {
-  display: none; /* Panel has its own header */
-}
-
-.detail-panel .inline-detail__body {
-  grid-template-columns: 1fr; /* Sidebar is too narrow for 2 columns */
-}
-
-/* =========================================================================
    Sortable Table Headers
    ========================================================================= */
 

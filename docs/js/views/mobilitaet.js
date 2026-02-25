@@ -75,7 +75,12 @@ export function renderMobilitaet(store, container) {
   if (rendered) return;
   rendered = true;
   clear(container);
-  buildView(store, container);
+  buildView(store, container).catch(err => {
+    console.error('Mobilitaet view error:', err);
+    container.appendChild(el('p', {
+      style: 'padding: 40px; text-align: center; color: var(--color-text-tertiary);',
+    }, 'Fehler beim Laden der Mobilitätsansicht.'));
+  });
 }
 
 export function resetMobilitaet() {
@@ -210,6 +215,12 @@ function closePopupOutside(e) {
 
 async function buildView(store, container) {
   const resp = await fetch('./data/partitur.json');
+  if (!resp.ok) {
+    container.appendChild(el('p', {
+      style: 'padding: 40px; text-align: center; color: var(--color-text-tertiary);',
+    }, `Fehler beim Laden der Mobilitätsdaten (${resp.status}).`));
+    return;
+  }
   const data = await resp.json();
 
   const guestData = extractGuestPerformances(store);

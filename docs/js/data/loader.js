@@ -5,7 +5,7 @@
 
 import { extractYear } from '../utils/date-parser.js';
 import { ensureArray, getDocTypeId, countLinks } from '../utils/format.js';
-import { PERSONEN_KATEGORIEN, PERSONEN_NORMALISIERUNG } from './constants.js';
+import { normalizePerson, getPersonKategorie } from '../utils/normalize.js';
 
 /**
  * Load and parse the archive JSON-LD, build the Store.
@@ -153,11 +153,6 @@ function indexByDocType(store, record) {
   }
 }
 
-function normalizeName(rawName) {
-  const lower = rawName.toLowerCase().trim();
-  return PERSONEN_NORMALISIERUNG[lower] || rawName;
-}
-
 function isJunkName(name) {
   // Filter out placeholder entries like [Organi], Y., single chars
   if (name.length <= 2) return true;
@@ -183,7 +178,7 @@ function indexAgents(store, record) {
       if (agent.role) entry.roles.add(agent.role);
       if (wikidata && !entry.wikidata) entry.wikidata = wikidata;
     } else {
-      const name = normalizeName(rawName);
+      const name = normalizePerson(rawName);
       if (isJunkName(name)) continue;
       if (!store.persons.has(name)) {
         store.persons.set(name, { records: new Set(), roles: new Set(), kategorie: getPersonKategorie(name), wikidata });
@@ -201,7 +196,7 @@ function indexAgents(store, record) {
     if (subj['@type'] !== 'rico:Person') continue;
     const rawName = subj.name || subj['skos:prefLabel'] || '';
     if (!rawName) continue;
-    const name = normalizeName(rawName);
+    const name = normalizePerson(rawName);
     if (isJunkName(name)) continue;
     const wikidata = subj['@id'] || null;
     if (!store.persons.has(name)) {
@@ -243,18 +238,4 @@ function indexWorks(store, record) {
     }
     store.works.get(name).records.add(record['@id']);
   }
-}
-
-// Sort by keyword length descending so specific names match before generic ones
-// e.g., "wieland wagner" matches before "wagner"
-const SORTED_KATEGORIEN = Object.entries(PERSONEN_KATEGORIEN)
-  .sort((a, b) => b[0].length - a[0].length);
-
-function getPersonKategorie(name) {
-  if (!name) return 'Andere';
-  const lower = name.toLowerCase();
-  for (const [keyword, kat] of SORTED_KATEGORIEN) {
-    if (lower.includes(keyword)) return kat;
-  }
-  return 'Andere';
 }

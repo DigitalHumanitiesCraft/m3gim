@@ -70,9 +70,6 @@ code, .mono {
   font-size: var(--text-xl);
   font-weight: var(--weight-semibold);
   white-space: nowrap;
-}
-
-.app-header__brand {
   color: var(--color-text-inverse);
   text-decoration: none;
 }
@@ -191,6 +188,23 @@ code, .mono {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-text-tertiary);
+}
+
+/* Focus — keyboard accessibility */
+:focus-visible {
+  outline: 2px solid var(--color-kug-blau);
+  outline-offset: 2px;
+}
+
+button:focus-visible {
+  outline: 2px solid var(--color-kug-blau);
+  outline-offset: 2px;
+}
+
+a:focus-visible {
+  outline: 2px solid var(--color-kug-blau);
+  outline-offset: 2px;
+  border-radius: 2px;
 }
 
 /* Selection */

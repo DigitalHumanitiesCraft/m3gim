@@ -5,7 +5,6 @@
 
 import { loadArchive } from './data/loader.js';
 import { initRouter, getState } from './ui/router.js';
-import { initDetailPanel, showRecord, closePanel } from './ui/detail-panel.js';
 import { initKorb, onKorbChange, getKorbCount } from './ui/korb.js';
 import { renderArchiv, selectArchivRecord } from './views/archiv.js';
 import { renderIndizes, expandEntry } from './views/indizes.js';
@@ -29,13 +28,10 @@ async function init() {
     // Hide loading
     showLoading(false);
 
-    // Initialize korb (before detail panel and router)
+    // Initialize korb (before router)
     initKorb();
     onKorbChange(() => updateKorbTabVisibility());
     updateKorbTabVisibility();
-
-    // Detail panel deactivated (Demo mode — clicks navigate to Archiv instead)
-    // initDetailPanel(store);
 
     // Initialize router
     initRouter({

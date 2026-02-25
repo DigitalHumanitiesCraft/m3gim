@@ -11,10 +11,6 @@
   overflow: hidden;
 }
 
-.kosmos-container svg {
-  touch-action: none;
-}
-
 .kosmos-zoom-reset {
   position: absolute;
   top: var(--space-3);
@@ -42,6 +38,7 @@
   display: block;
   width: 100%;
   height: 100%;
+  touch-action: none;
 }
 
 .kosmos-node--zentrum {
