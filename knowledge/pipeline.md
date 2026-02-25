@@ -11,6 +11,7 @@
 | `scripts/transform.py` | Transformation nach JSON-LD (RiC-O + m3gim) | XLSX-Exporte | `data/output/m3gim.jsonld` |
 | `scripts/build-views.py` | View-spezifische Aggregationen | JSON-LD | `data/output/views/*.json` |
 | `scripts/reconcile.py` | Wikidata-Reconciliation (100%-Match, P31-Verifikation, Caching) | XLSX-Indizes | `data/output/wikidata-reconciliation.json` |
+| `scripts/export-wikidata-csv.py` | Wikidata-CSVs fuer Google-Sheets-Import | wikidata-reconciliation.json | `data/output/wikidata-csvs/*.csv` (5 Dateien) |
 | `scripts/audit-data.py` | Alignment-Pruefung XLSX vs JSON-LD vs Views | XLSX + JSON-LD + Views | Konsolenreport |
 
 ## Datenfluss (5 Stufen)
@@ -21,11 +22,14 @@
 4. **View-Aggregation** (`build-views.py`) → `data/output/views/` (matrix.json, kosmos.json, partitur.json, sankey.json)
 5. **Bereitstellung** in `docs/data/` (manuelles Copy oder Pipeline-Schritt)
 
-## Pipeline-Korrekturen (Session 10)
+## Pipeline-Korrekturen (Session 10 + 19)
 
 - Spaltennamen-Normalisierung: `df.columns = [c.lower().strip() ...]` nach `pd.read_excel()` in transform.py und validate.py
 - Bearbeitungsstand-Werte: `vollstaendig/Erledigt → abgeschlossen`, `begonnen → begonnen`, `zurueckgestellt → zurueckgestellt`
 - Store: `unprocessedIds` (Set) — Records ohne Links UND ohne Bearbeitungsstand
+- Session 19: Mojibake in validate.py VOCAB + KOMPOSIT_TYPEN gefixt (doppelte UTF-8-Kodierung)
+- Session 19: `normalize_bearbeitungsstand()` in validate.py eingefuehrt (Fuzzy-Matching wie transform.py)
+- Session 19: `is_komposit_typ()` verbessert — Input-Wert vor Vergleich `.replace(" ", "")`
 
 ## Wikidata-Reconciliation (Session 17)
 
@@ -56,7 +60,7 @@
 
 ## Datenqualitaets-Baseline
 
-> Audit-Stand: 2026-02-20 (282 Objekte, 1.246 effektive Verknuepfungen, 4 Indizes).
+> Audit-Stand: 2026-02-25 (282 Objekte, 1.246 effektive Verknuepfungen, 4 Indizes).
 
 ### Kritisch — Datenverlust
 
@@ -87,6 +91,8 @@
 - 45 Leerzeilen + 1 Template-Zeile (uebersprungen)
 - Komposit-Typen (dekomponiert)
 - Header-Shifts (HEADER_SHIFTS-Mapping)
+- Mojibake in validate.py (Session 19: VOCAB + KOMPOSIT_TYPEN korrigiert)
+- Bearbeitungsstand-Varianten (Session 19: `normalize_bearbeitungsstand()` fuzzy-matched)
 
 ## Handlungsbedarfe
 

@@ -1,6 +1,6 @@
 # Plan: Post-Audit Fixes — Pipeline, Wikidata-CSV, Commits
 
-> Session 19 (2026-02-25). Erstellt nach vollstaendigem Pipeline-Audit.
+> Session 19 (2026-02-25). **ABGESCHLOSSEN.**
 
 ## Kontext
 
@@ -10,97 +10,63 @@ Pipeline-Audit (Session 19) ergab 69 Fehler in validate.py — alle verursacht d
 
 ---
 
-## Schritt 1: validate.py Bearbeitungsstand-Bug fixen (47 E004-Fehler)
+## Schritt 1: validate.py Bearbeitungsstand-Bug fixen (47 E004-Fehler) — ERLEDIGT
 
 **Datei:** `scripts/validate.py`
 
-**Root Cause:** Zeile 55 enthaelt `"vollstÃ¤ndig"` (Mojibake durch doppelte UTF-8-Kodierung) statt `"vollständig"`. Nach `normalize_str()` (.lower().strip()) bleibt `"vollstÃ¤ndig"` — matcht nicht gegen das korrekte `"vollständig"` aus den Excel-Daten.
+**Root Cause:** Mojibake durch doppelte UTF-8-Kodierung in VOCAB-Liste.
 
-**Loesung:** Fuzzy-Normalisierungsfunktion `normalize_bearbeitungsstand()` einfuehren, die transform.py's Logik (Zeilen 258-264) spiegelt:
-
-- `'vollst' in bs` → `'abgeschlossen'`
-- `bs.startswith('erledigt')` → `'abgeschlossen'`
-- `bs.startswith('begonnen')` → `'begonnen'`
-- `'ckgestellt' in bs` → `'zurueckgestellt'`
-- Alles andere → `None` (dann E004)
-
-Plus: VOCAB-Liste korrigieren (Mojibake durch korrektes UTF-8 ersetzen).
+**Loesung:** Fuzzy-Normalisierungsfunktion `normalize_bearbeitungsstand()` eingefuehrt + VOCAB-Liste korrigiert.
 
 **Ergebnis:** 47 Fehler → 0.
 
 ---
 
-## Schritt 2: validate.py Komposit-Typen-Bug fixen (21 E004-Fehler)
+## Schritt 2: validate.py Komposit-Typen-Bug fixen (21 E004-Fehler) — ERLEDIGT
 
 **Datei:** `scripts/validate.py`
 
-**Root Cause:** KOMPOSIT_TYPEN (Zeilen 78-85) enthaelt `"ausgaben, wÃ¤hrung"` (Mojibake). Excel liefert `"ausgaben, währung"` — kein Match.
-
-**Loesung:**
-1. Mojibake in KOMPOSIT_TYPEN durch korrektes UTF-8 ersetzen
-2. `is_komposit_typ()` verbessern: Input-Wert vor Vergleich ebenfalls `.replace(" ", "")` anwenden
+**Loesung:** Mojibake in KOMPOSIT_TYPEN korrigiert, `is_komposit_typ()` mit `.replace(" ", "")` verbessert.
 
 **Ergebnis:** 21 Fehler → 0.
 
 ---
 
-## Schritt 3: PL_07-Duplikat dokumentieren (1 E001-Fehler)
+## Schritt 3: PL_07-Duplikat dokumentieren (1 E001-Fehler) — DOKUMENTIERT
 
-**Kein Code-Fix.** Zeile 9 in Objekte-Tabelle ist eine leere Duplikatzeile. Muss im Google Sheet geloescht werden. Validator meldet korrekt.
+**Kein Code-Fix.** Leere Duplikatzeile im Google Sheet. Validator meldet korrekt. Muss im Sheet geloescht werden.
 
 ---
 
-## Schritt 4: Wikidata-Lookup-CSVs generieren
+## Schritt 4: Wikidata-Lookup-CSVs generieren — ERLEDIGT
 
 **Neue Datei:** `scripts/export-wikidata-csv.py`
 
-Liest `data/output/wikidata-reconciliation.json` (171 Matches) und erzeugt 5 CSVs in `data/output/wikidata-csvs/`:
-
-| Datei | Zeilen | Spalten |
-|-------|--------|---------|
-| `person-matches.csv` | 152 | name, qid, wikidata_label, match_type |
-| `org-matches.csv` | 3 | name, qid, wikidata_label, match_type |
-| `location-matches.csv` | 14 | name, qid, wikidata_label, match_type |
-| `work-matches.csv` | 2 | name, qid, wikidata_label, match_type |
-| `unmatched.csv` | 295 | name, type |
-
-Zweck: Nicole/Wolfgang koennen die CSVs per VLOOKUP in Google Sheets einpflegen.
+5 CSVs in `data/output/wikidata-csvs/` erzeugt (person-matches, org-matches, location-matches, work-matches, unmatched).
 
 ---
 
-## Schritt 5: Pipeline neu durchlaufen + Reports regenerieren
+## Schritt 5: Pipeline neu durchlaufen + Reports regenerieren — ERLEDIGT
 
-1. `python scripts/validate.py` → erwartetes Ergebnis: **1 Fehler** (E001 Duplikat), ~177 Warnungen
-2. `python scripts/transform.py` → JSONLD regenerieren
-3. `python scripts/build-views.py` → Views regenerieren
-4. `python scripts/audit-data.py` → BESTANDEN bestaetigen
-5. `docs/data/` synchronisieren
+Validierung: 1 Fehler (E001 Duplikat), 177 Warnungen. Pipeline-Status: BESTANDEN.
 
 ---
 
-## Schritt 6: 3 Git-Commits erstellen
+## Schritt 6: 3 Git-Commits erstellen — ERLEDIGT
 
-**Commit 1 — Session 18 Mobilitaet:**
-- `docs/js/views/mobilitaet.js`, `docs/css/mobilitaet.css`
-- `feat: Mobilität-Tooltips, Dokument-Navigation, Popup-Menü, Skalenbruch`
-
-**Commit 2 — Knowledge-Refactor:**
-- 12 Renames + 5 modifizierte Archiv-Dateien + 7 neue Knowledge-Docs + README
-- `docs: Knowledge-Base destilliert — 7 flache Dokumente, 12 Quellen archiviert`
-
-**Commit 3 — Pipeline-Audit-Fixes:**
-- validate.py + export-wikidata-csv.py + CSVs + Reports + JSONLD + docs/data/
-- `fix: validate.py Encoding-Bugs, Wikidata-CSV-Export, Pipeline-Reports aktualisiert`
+1. `feat: Mobilität-Tooltips, Dokument-Navigation, Popup-Menü, Skalenbruch`
+2. `docs: Knowledge-Base destilliert — 7 flache Dokumente, 12 Quellen archiviert`
+3. `fix: validate.py Encoding-Bugs, Wikidata-CSV-Export, Pipeline-Reports aktualisiert`
 
 ---
 
-## Schritt 7: Vault-Sync notieren
+## Schritt 7: Vault-Sync notieren — MANUELL OFFEN
 
 Manuelle Aktion: 7 neue Knowledge-Docs nach Obsidian-Vault kopieren.
 
 ---
 
-## Erwartetes Ergebnis
+## Ergebnis
 
 | Metrik | Vorher | Nachher |
 |--------|--------|---------|
@@ -108,10 +74,3 @@ Manuelle Aktion: 7 neue Knowledge-Docs nach Obsidian-Vault kopieren.
 | Wikidata-CSVs | 0 | 5 Dateien |
 | Uncommittete Dateien | ~27 | 0 |
 | Pipeline-Status | BESTANDEN | BESTANDEN |
-
-## Verifikation
-
-1. `python scripts/validate.py` → 1 Fehler, ~177 Warnungen
-2. `python scripts/audit-data.py` → BESTANDEN
-3. `ls data/output/wikidata-csvs/` → 5 CSV-Dateien
-4. `git status` → clean (nach 3 Commits)

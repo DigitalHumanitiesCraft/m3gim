@@ -40,11 +40,18 @@
 - Wikidata-Reconciliation: 171 Matches (reconcile.py), Icons im Frontend
 - RiC-O 1.1 Compliance: 6 Property-Korrekturen nach OWL-Pruefung
 
+### Erreicht (Session 20)
+
+- Matrix + Kosmos Tabs aktiviert (6 aktive Tabs)
+- Cross-Visualization Linking: Matrix ↔ Kosmos ↔ Indizes (navigateToView, Popups)
+- Wissenskorb CSV/BibTeX-Export
+- modell.html Zahlen aktualisiert (171 WD-Matches)
+- Meeting-Referenzen aus allen Docs entfernt
+
 ### Deferred / offen
 
 - Matrix-Zeitauflosung und Sortierausbau
 - Erweiterte Indextiefe (z.B. Orts-Hierarchien)
-- Wissenskorb-Export (CSV/BibTeX)
 - Leaflet-Karte
 
 ## Gap-Analyse: Offene Pipeline-Implementierungen
@@ -78,9 +85,7 @@
 1. Erfassungsstatus mit Team vereinheitlichen
 2. Datenqualitaetsluecken in Quelltabellen reduzieren
 3. Wikidata-Ergebnisse in Google Sheets uebertragen (171 Matches vorhanden)
-4. Wissenskorb-Export (CSV/BibTeX) evaluieren
-5. Info-Seiten (modell.html) Zahlen nach Pipeline-Lauf aktualisieren
-6. Reports und KB synchron halten
+4. Reports und KB synchron halten
 
 ## Strategischer Kontext
 

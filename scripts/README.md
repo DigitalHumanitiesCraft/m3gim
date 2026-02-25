@@ -82,6 +82,16 @@ python scripts/reconcile.py --dry-run        # nur Namen auflisten
 
 Output: `data/output/wikidata-reconciliation.json`
 
+### `export-wikidata-csv.py`
+
+Exportiert die Wikidata-Reconciliation-Ergebnisse als CSVs fuer den Google-Sheets-Import (VLOOKUP).
+
+```bash
+python scripts/export-wikidata-csv.py
+```
+
+Output: `data/output/wikidata-csvs/` (5 Dateien: person-matches.csv, org-matches.csv, location-matches.csv, work-matches.csv, unmatched.csv)
+
 ## Hinweise
 
 - Reports in `data/reports/` sind generiert und koennen bei erneutem Lauf ueberschrieben werden.

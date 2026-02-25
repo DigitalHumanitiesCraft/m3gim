@@ -126,9 +126,17 @@ Schwimmbahn-Timeline (D3.js) fuer Ira Malaniuks geografische Mobilitaet 1919–2
 - Kosmos: Repertoire- und Rollenprofil
 - Mobilitaet: Geografische Mobilitaetsanalyse (FF4)
 
+## Cross-View Navigation (Session 20)
+
+- Matrix → Indizes: Person-Name klickbar (navigateToIndex)
+- Matrix → Kosmos: Komponist-Link mit Highlight-Event (navigateToView + m3gim:navigate)
+- Kosmos → Matrix: Komponist-Popup mit Aktions-Links
+- Kosmos → Indizes: Werk-Popup mit Dokumentliste + Index-Link
+- Wissenskorb: CSV- und BibTeX-Export-Buttons
+- Router: navigateToView(tab, context) als generische Cross-View-Funktion
+
 ## Offene Luecken
 
-- Cross-Visualization Linking (Mobilitaet → Matrix → Kosmos)
 - Matrix-Zeitzoom, erweiterte Index-Hierarchien (deferred)
-- Wissenskorb-Export (CSV/BibTeX)
+- Mobilitaet → Matrix/Kosmos (braucht Pipeline-Aenderungen fuer Personen-Kontext)
 - Datenabdeckung bleibt dominierender Qualitaetshebel (22% verknuepfte Objekte)
