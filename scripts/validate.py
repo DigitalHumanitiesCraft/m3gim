@@ -52,7 +52,7 @@ VOCAB = {
         "konvolut", "dokument", "noten", "sonstiges", "repertoireliste"
     ],
     "bearbeitungsstand": [
-        "vollstÃ¤ndig", "vollstaendig", "in bearbeitung", "offen",
+        "vollständig", "vollstaendig", "in bearbeitung", "offen",
         "abgeschlossen", "begonnen", "zurueckgestellt", "zurückgestellt",
         "erledigt"
     ],
@@ -77,9 +77,9 @@ VOCAB = {
 # Komposit-Typen die als gueltig akzeptiert werden
 KOMPOSIT_TYPEN = [
     "ort,datum", "ort, datum",
-    "ausgaben,waehrung", "ausgaben, waehrung", "ausgaben, wÃ¤hrung",
-    "einnahmen,waehrung", "einnahmen, waehrung", "einnahmen, wÃ¤hrung",
-    "summe,waehrung", "summe, waehrung", "summe, wÃ¤hrung",
+    "ausgaben,waehrung", "ausgaben, waehrung", "ausgaben, währung",
+    "einnahmen,waehrung", "einnahmen, waehrung", "einnahmen, währung",
+    "summe,waehrung", "summe, waehrung", "summe, währung",
     "ereignis,ort,datum", "ereignis, ort, datum",
     "ausgaben,währung", "einnahmen,währung", "summe,währung"
 ]
@@ -166,6 +166,22 @@ def validate_date(date_str: str) -> bool:
     return bool(DATE_PATTERN.match(date_str))
 
 
+def normalize_bearbeitungsstand(value: str) -> str | None:
+    """Normalisiert Bearbeitungsstand wie transform.py (fuzzy matching)."""
+    if value is None:
+        return None
+    bs = value.strip().lower()
+    if not bs:
+        return None
+    if 'vollst' in bs or bs == 'abgeschlossen' or bs.startswith('erledigt'):
+        return 'abgeschlossen'
+    elif bs.startswith('begonnen') or bs == 'in bearbeitung' or bs == 'offen':
+        return bs  # Originalwert behalten (ist im Vokabular)
+    elif 'ckgestellt' in bs or 'zurück' in bs:
+        return 'zurueckgestellt'
+    return None  # Unbekannter Wert -> E004
+
+
 def validate_vocab(value: str, vocab_name: str) -> bool:
     """Prueft ob Wert im Vokabular enthalten ist (nach Normalisierung)"""
     if value is None:
@@ -177,7 +193,8 @@ def is_komposit_typ(value: str) -> bool:
     """Prueft ob ein Typ ein gueltiger Komposit-Typ ist"""
     if value is None:
         return False
-    return value in [k.replace(" ", "") for k in KOMPOSIT_TYPEN] or value in KOMPOSIT_TYPEN
+    normalized = value.replace(" ", "")
+    return normalized in [k.replace(" ", "") for k in KOMPOSIT_TYPEN] or value in KOMPOSIT_TYPEN
 
 
 def is_empty_row(row: pd.Series, key_fields: list) -> bool:
@@ -286,14 +303,24 @@ def validate_objekte(df: pd.DataFrame) -> list[ValidationIssue]:
         # Vokabular-Pruefung (nach Normalisierung)
         for field, vocab in [('dokumenttyp', 'dokumenttyp'),
                              ('zugaenglichkeit', 'zugaenglichkeit'), ('scan_status', 'scan_status'),
-                             ('datierungsevidenz', 'datierungsevidenz'),
-                             ('bearbeitungsstand', 'bearbeitungsstand')]:
+                             ('datierungsevidenz', 'datierungsevidenz')]:
             val = normalize_str(row.get(field))
             if val is not None and not validate_vocab(val, vocab):
                 issues.append(ValidationIssue(
                     level="ERROR", code="E004", table="Objekte", row=excel_row,
                     field=field, value=str(row.get(field)),
                     message=f"Ungueltiger Wert fuer {field}"
+                ))
+
+        # Bearbeitungsstand: fuzzy Normalisierung (spiegelt transform.py)
+        bs_raw = normalize_str(row.get('bearbeitungsstand'))
+        if bs_raw is not None:
+            bs_norm = normalize_bearbeitungsstand(bs_raw)
+            if bs_norm is None:
+                issues.append(ValidationIssue(
+                    level="ERROR", code="E004", table="Objekte", row=excel_row,
+                    field="bearbeitungsstand", value=str(row.get('bearbeitungsstand')),
+                    message="Ungueltiger Wert fuer bearbeitungsstand"
                 ))
 
         # Sprache: Komma-separierte Werte erlaubt (z.B. "de, en, fr")

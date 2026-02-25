@@ -1,11 +1,11 @@
 # M3GIM Validierungsreport
 
-> Generiert: 2026-02-21 07:43
+> Generiert: 2026-02-25 19:03
 
 ## Executive Summary
 
-- Status: **69 Fehler muessen behoben werden**
-- Fehler gesamt: **69**
+- Status: **1 Fehler muessen behoben werden**
+- Fehler gesamt: **1**
 - Warnungen gesamt: **177**
 - Objekte geprueft: **283**
 - Verknuepfungen geprueft: **1292**
@@ -15,81 +15,13 @@
 
 | Bereich | Fehler | Warnungen |
 |---|---|---|
-| Objekte | 48 | 3 |
-| Verknuepfungen | 21 | 174 |
+| Objekte | 1 | 3 |
+| Verknuepfungen | 0 | 174 |
 | Indizes/sonstige | 0 | 0 |
 
 ## Blocker (Fehler)
 
 - **E001 Objekte Zeile 9:** archivsignatur = `UAKUG/NIM/PL_07` -> Doppelte Objekt-ID: UAKUG/NIM/PL_07 (auch in Zeile 8)
-- **E004 Objekte Zeile 42:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 44:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 45:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 46:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 47:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 48:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 51:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 52:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 53:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 54:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 55:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 56:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 57:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 58:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 60:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 64:** bearbeitungsstand = `vollstädig ` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 66:** bearbeitungsstand = `Erledigt (Ira Malaniuk betreffend. Rest zurückgestellt)` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 68:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 74:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 75:** bearbeitungsstand = `begonnen (nur Ira Malaniuk)` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 80:** bearbeitungsstand = `Vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 81:** bearbeitungsstand = `Vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 82:** bearbeitungsstand = `Vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 83:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 84:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 85:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 86:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 87:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 88:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 89:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 90:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 91:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 92:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 93:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 94:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 96:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 97:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 98:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 99:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 100:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 101:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 102:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 103:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 104:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 105:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 106:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 107:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Verknuepfungen Zeile 8:** typ = `ausgaben, währung` -> Ungueltiger Verknuepfungstyp
-- **E004 Verknuepfungen Zeile 9:** typ = `ausgaben, währung` -> Ungueltiger Verknuepfungstyp
-- **E004 Verknuepfungen Zeile 911:** typ = `einnahmen, währung` -> Ungueltiger Verknuepfungstyp
-- **E004 Verknuepfungen Zeile 912:** typ = `einnahmen, währung` -> Ungueltiger Verknuepfungstyp
-- **E004 Verknuepfungen Zeile 913:** typ = `einnahmen, währung` -> Ungueltiger Verknuepfungstyp
-- **E004 Verknuepfungen Zeile 914:** typ = `einnahmen, währung` -> Ungueltiger Verknuepfungstyp
-- **E004 Verknuepfungen Zeile 940:** typ = `einnahmen, währung` -> Ungueltiger Verknuepfungstyp
-- **E004 Verknuepfungen Zeile 1003:** typ = `einnahmen, währung` -> Ungueltiger Verknuepfungstyp
-- **E004 Verknuepfungen Zeile 1196:** typ = `summe, währung` -> Ungueltiger Verknuepfungstyp
-- **E004 Verknuepfungen Zeile 1222:** typ = `ausgaben, währung` -> Ungueltiger Verknuepfungstyp
-- **E004 Verknuepfungen Zeile 1223:** typ = `ausgaben, währung` -> Ungueltiger Verknuepfungstyp
-- **E004 Verknuepfungen Zeile 1225:** typ = `einnahmen, währung` -> Ungueltiger Verknuepfungstyp
-- **E004 Verknuepfungen Zeile 1226:** typ = `einnahmen, währung` -> Ungueltiger Verknuepfungstyp
-- **E004 Verknuepfungen Zeile 1230:** typ = `summe, währung` -> Ungueltiger Verknuepfungstyp
-- **E004 Verknuepfungen Zeile 1233:** typ = `ausgaben, währung` -> Ungueltiger Verknuepfungstyp
-- **E004 Verknuepfungen Zeile 1244:** typ = `ausgaben, währung` -> Ungueltiger Verknuepfungstyp
-- **E004 Verknuepfungen Zeile 1251:** typ = `ausgaben, währung` -> Ungueltiger Verknuepfungstyp
-- **E004 Verknuepfungen Zeile 1262:** typ = `ausgaben, währung` -> Ungueltiger Verknuepfungstyp
-- **E004 Verknuepfungen Zeile 1271:** typ = `ausgaben, währung` -> Ungueltiger Verknuepfungstyp
-- **E004 Verknuepfungen Zeile 1280:** typ = `ausgaben, währung` -> Ungueltiger Verknuepfungstyp
-- **E004 Verknuepfungen Zeile 1288:** typ = `ausgaben, währung` -> Ungueltiger Verknuepfungstyp
 
 ## Warnungen nach Kategorie
 
@@ -101,74 +33,6 @@
 ## Vollstaendige Fehlerliste
 
 - **E001 Objekte Zeile 9:** archivsignatur = `UAKUG/NIM/PL_07` -> Doppelte Objekt-ID: UAKUG/NIM/PL_07 (auch in Zeile 8)
-- **E004 Objekte Zeile 42:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 44:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 45:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 46:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 47:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 48:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 51:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 52:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 53:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 54:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 55:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 56:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 57:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 58:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 60:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 64:** bearbeitungsstand = `vollstädig ` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 66:** bearbeitungsstand = `Erledigt (Ira Malaniuk betreffend. Rest zurückgestellt)` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 68:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 74:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 75:** bearbeitungsstand = `begonnen (nur Ira Malaniuk)` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 80:** bearbeitungsstand = `Vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 81:** bearbeitungsstand = `Vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 82:** bearbeitungsstand = `Vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 83:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 84:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 85:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 86:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 87:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 88:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 89:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 90:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 91:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 92:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 93:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 94:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 96:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 97:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 98:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 99:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 100:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 101:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 102:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 103:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 104:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 105:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 106:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Objekte Zeile 107:** bearbeitungsstand = `vollständig` -> Ungueltiger Wert fuer bearbeitungsstand
-- **E004 Verknuepfungen Zeile 8:** typ = `ausgaben, währung` -> Ungueltiger Verknuepfungstyp
-- **E004 Verknuepfungen Zeile 9:** typ = `ausgaben, währung` -> Ungueltiger Verknuepfungstyp
-- **E004 Verknuepfungen Zeile 911:** typ = `einnahmen, währung` -> Ungueltiger Verknuepfungstyp
-- **E004 Verknuepfungen Zeile 912:** typ = `einnahmen, währung` -> Ungueltiger Verknuepfungstyp
-- **E004 Verknuepfungen Zeile 913:** typ = `einnahmen, währung` -> Ungueltiger Verknuepfungstyp
-- **E004 Verknuepfungen Zeile 914:** typ = `einnahmen, währung` -> Ungueltiger Verknuepfungstyp
-- **E004 Verknuepfungen Zeile 940:** typ = `einnahmen, währung` -> Ungueltiger Verknuepfungstyp
-- **E004 Verknuepfungen Zeile 1003:** typ = `einnahmen, währung` -> Ungueltiger Verknuepfungstyp
-- **E004 Verknuepfungen Zeile 1196:** typ = `summe, währung` -> Ungueltiger Verknuepfungstyp
-- **E004 Verknuepfungen Zeile 1222:** typ = `ausgaben, währung` -> Ungueltiger Verknuepfungstyp
-- **E004 Verknuepfungen Zeile 1223:** typ = `ausgaben, währung` -> Ungueltiger Verknuepfungstyp
-- **E004 Verknuepfungen Zeile 1225:** typ = `einnahmen, währung` -> Ungueltiger Verknuepfungstyp
-- **E004 Verknuepfungen Zeile 1226:** typ = `einnahmen, währung` -> Ungueltiger Verknuepfungstyp
-- **E004 Verknuepfungen Zeile 1230:** typ = `summe, währung` -> Ungueltiger Verknuepfungstyp
-- **E004 Verknuepfungen Zeile 1233:** typ = `ausgaben, währung` -> Ungueltiger Verknuepfungstyp
-- **E004 Verknuepfungen Zeile 1244:** typ = `ausgaben, währung` -> Ungueltiger Verknuepfungstyp
-- **E004 Verknuepfungen Zeile 1251:** typ = `ausgaben, währung` -> Ungueltiger Verknuepfungstyp
-- **E004 Verknuepfungen Zeile 1262:** typ = `ausgaben, währung` -> Ungueltiger Verknuepfungstyp
-- **E004 Verknuepfungen Zeile 1271:** typ = `ausgaben, währung` -> Ungueltiger Verknuepfungstyp
-- **E004 Verknuepfungen Zeile 1280:** typ = `ausgaben, währung` -> Ungueltiger Verknuepfungstyp
-- **E004 Verknuepfungen Zeile 1288:** typ = `ausgaben, währung` -> Ungueltiger Verknuepfungstyp
 
 ## Vollstaendige Warnungsliste
 
