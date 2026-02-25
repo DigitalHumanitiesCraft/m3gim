@@ -9,7 +9,7 @@ import { ensureArray, getDocTypeId } from '../utils/format.js';
 import { normalizePerson, getPersonKategorie } from '../utils/normalize.js';
 import {
   KOMPONISTEN_MAPPING, KOMPONISTEN_NORMALISIERUNG, KOMPONISTEN_FARBEN,
-  KOMPONISTEN_NAMEN, PERSONEN_FARBEN, ZEITRAEUME,
+  KOMPONISTEN_NAMEN, PERSONEN_KATEGORIEN, PERSONEN_FARBEN, ZEITRAEUME,
 } from './constants.js';
 
 // =========================================================================
