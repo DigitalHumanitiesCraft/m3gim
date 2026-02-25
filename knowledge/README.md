@@ -1,6 +1,6 @@
 # M³GIM Knowledge Base
 
-> 7 destillierte Wissensdokumente als flacher Vault. Stand: Session 19.
+> 7 destillierte Wissensdokumente als flacher Vault. Stand: Session 21.
 
 ## Dokumente
 

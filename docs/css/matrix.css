@@ -53,9 +53,18 @@
   border-radius: 50%;
 }
 
+.matrix-sparkline {
+  overflow-x: auto;
+  margin-bottom: 2px;
+}
+
+.matrix-sparkline svg {
+  display: block;
+}
+
 .matrix-container {
   overflow: auto;
-  max-height: calc(100vh - 280px);
+  max-height: calc(100vh - 330px);
   border: 1px solid var(--border-color-light);
   border-radius: var(--border-radius);
 }
@@ -190,4 +199,23 @@
   flex: 1;
   font-size: var(--text-sm);
   color: var(--color-text-primary);
+}
+
+.matrix-drilldown__loc-tag {
+  font-size: 0.65rem;
+  padding: 1px 5px;
+  border-radius: 8px;
+  background: var(--color-parchment);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+.matrix-drilldown__loc-tag--graz {
+  background: var(--color-signal-green-light);
+  color: var(--color-signal-green);
+  font-weight: var(--weight-semibold);
+}
+
+.matrix-drilldown__werk-chip {
+  font-size: 0.65rem;
 }

@@ -1,5 +1,54 @@
 /* M³GIM Kosmos Tab Styles — Deterministic concentric layout */
 
+.kosmos-header-row {
+  display: flex;
+  justify-content: flex-end;
+  padding: var(--space-2) var(--space-2) 0;
+}
+
+/* =========================================================================
+   Phase Filter Buttons
+   ========================================================================= */
+
+.kosmos-phase-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  flex-wrap: wrap;
+}
+
+.kosmos-phase-bar__label {
+  font-size: var(--text-xs);
+  color: var(--color-text-tertiary);
+  margin-right: var(--space-1);
+  white-space: nowrap;
+}
+
+.kosmos-phase-btn {
+  font-size: 0.6rem;
+  font-family: var(--font-mono);
+  padding: 2px 8px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  background: var(--color-paper);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.kosmos-phase-btn:hover {
+  border-color: var(--color-kug-blau);
+  color: var(--color-kug-blau);
+}
+
+.kosmos-phase-btn--active {
+  background: var(--color-kug-blau);
+  color: var(--color-text-inverse);
+  border-color: var(--color-kug-blau);
+}
+
 .kosmos-container {
   position: relative;
   width: 100%;
@@ -185,6 +234,24 @@
   padding: 2px var(--space-2);
   color: var(--color-text-tertiary);
   font-size: var(--text-xs);
+}
+
+.kosmos-popup__rollen {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  margin-bottom: var(--space-1);
+  border-bottom: 1px solid var(--border-color-light);
+}
+
+.kosmos-popup__rolle {
+  font-size: 0.65rem;
+  padding: 1px 5px;
+  border-radius: 8px;
+  background: var(--color-parchment);
+  color: var(--color-text-secondary);
+  font-style: italic;
 }
 
 /* =========================================================================

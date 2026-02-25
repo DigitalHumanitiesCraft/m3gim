@@ -289,4 +289,78 @@
 
 ---
 
+## Session 20 (2026-02-25): Cross-View Linking, Korb-Export, Kosmos-Overhaul
+
+**Cross-Visualization Linking:**
+- Matrix → Indizes: Person-Name klickbar (navigateToIndex)
+- Matrix → Kosmos: Komponist-Link mit Highlight-Event (navigateToView + m3gim:navigate)
+- Kosmos → Matrix: Komponist-Popup mit Aktions-Links
+- Kosmos → Indizes: Werk-Popup mit Dokumentliste + Index-Link
+- Router: navigateToView(tab, context) als generische Cross-View-Funktion
+
+**Wissenskorb-Export:**
+- CSV-Export (Blob-Download) mit allen Korb-Eintraegen
+- BibTeX-Export fuer Literaturverwaltung
+
+**Kosmos-Overhaul:**
+- Deterministisches konzentrisches Layout statt instabilem Force-Layout
+- Feste Radien: Komponisten-Layer innen, Werk-Layer aussen
+- Konsistente Positionierung bei jedem Laden
+
+**Refactoring:**
+- Dead Code entfernt (alte Sankey-Referenzen, ungenutzte Funktionen)
+- CSS-Duplikate bereinigt
+- Normalisierung in eigenes Modul extrahiert
+- Meeting-Referenzen aus allen Knowledge-Docs entfernt
+
+**Commits:**
+1. `feat: Cross-Visualization Linking, Wissenskorb-Export, modell.html aktualisiert`
+2. `refactor: Dead Code entfernt, CSS-Duplikate bereinigt, Normalisierung extrahiert`
+3. `fix: PERSONEN_KATEGORIEN Import in aggregator.js wiederhergestellt`
+4. `feat: Kosmos-View komplett neu — deterministisches konzentrisches Layout`
+
+---
+
+## Session 21 (2026-02-25): FF-Enhancement — Visualisierungen forschungskonform staerken
+
+**Analyse:** Systematische Evaluation der 3 Visualisierungen gegen FF1–FF4 ergab:
+- FF4 (Mobilitaetsformen) = stark
+- FF1 (Graz/Vernetzung) = mittel
+- FF2 (Aesthetische Strukturen) = schwach
+- FF3 (Wissenstransfer) = schwach
+
+**10-Punkte-Plan (Phase 1 + Phase 2)** entwickelt und groesstenteils umgesetzt:
+
+**Phase 1 — Sofort sichtbar (alle erledigt):**
+1. FF-Badges + Datenabdeckungs-Zeile auf Matrix, Kosmos, Mobilitaet
+2. 2 fehlende Mobilitaetstypen: National (Lemberg→Wien, ~1950) und Bildung (Zuerich→Graz, 1970)
+3. Lehrphase: Gestrichelter Balken fuer KUG-Professur (1970–2000) als eigener Ortstyp
+4. Graz-Tags (gruen hervorgehoben) + Werk-Chips (klickbar → Kosmos) im Matrix-Drilldown
+5. Netzwerk-Sparkline ueber der Heatmap: 7 Perioden-Intensitaet aus partitur.json
+
+**Phase 2 — Tiefere FF-Argumentation (teilweise erledigt):**
+6. Volle Rollen-Anzeige im Kosmos: Tooltip und Popup zeigen alle Rollen mit Counts
+7. Dokument-Sparkline auf Mobilitaet-Timeline: Archivalischer Puls als Flaechendiagramm
+8. Kosmos-Phasenfilter (Zeitdimension) — in Arbeit
+9. Repertoire-Overlay auf Mobilitaet-Timeline — offen
+
+**Knowledge-Base-Konsolidierung:**
+- Vault: 6 alte Einzeldocs in _archive/ verschoben, Project Overview als einziges Destillat (v4.0)
+- Repo: PLAN.md und Status.md geloescht (obsolet/redundant)
+- README.md: Tote Links gefixt, Struktur aktualisiert
+- 5 stale Knowledge-Docs aktualisiert (frontend, visualisierungen, entscheidungen, projekt-status, README)
+- Journal um Session 20 + 21 ergaenzt
+
+**Geaenderte Dateien:**
+- `docs/js/views/matrix.js` — FF-Badges, Sparkline, Drilldown mit Graz-Tags + Werk-Chips
+- `docs/js/views/kosmos.js` — FF-Badges, volle Rollen-Anzeige
+- `docs/js/views/mobilitaet.js` — FF-Badges, 2 neue Mobilitaetstypen, Lehrphase, Dokument-Sparkline
+- `docs/css/components.css` — FF-Badges, Data-Coverage CSS
+- `docs/css/matrix.css` — Sparkline, Drilldown-Tags, Werk-Chips
+- `docs/css/kosmos.css` — Header-Row, Rollen-CSS
+- `docs/css/mobilitaet.css` — Header-Row
+- `docs/data/partitur.json` — National/Bildung-Pfeile, Lehrstaette
+
+---
+
 Siehe auch: [→ Projekt-Status](../projekt-status.md) · [→ Pipeline](../pipeline.md) · [→ Entscheidungen](../entscheidungen.md)

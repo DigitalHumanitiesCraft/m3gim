@@ -1,4 +1,4 @@
-﻿# M3GIM: Mapping Mobile Musicians
+# M3GIM: Mapping Mobile Musicians
 
 Digitale Erschliessung des Teilnachlasses Ira Malaniuk (UAKUG/NIM) am Universitaetsarchiv der KUG Graz.
 
@@ -16,30 +16,29 @@ Dieses Repository enthaelt:
 
 ```text
 m3gim/
-|-- knowledge/                 # Kanonische KB + Archive + Anhaenge
+|-- knowledge/                 # Kanonische KB (7 Docs + Appendices + Archive)
 |-- data/
 |   |-- google-spreadsheet/   # XLSX-Exporte (Arbeitsstand)
 |   |-- output/               # Generierte JSON-LD/View-Daten
 |   `-- reports/              # Generierte Markdown-Reports
-|-- scripts/                  # Explore/Validate/Transform/View-Build
+|-- scripts/                  # Explore/Validate/Transform/Build-Views/Reconcile
 |-- docs/                     # GitHub Pages Frontend + ausgelieferte Daten
-|-- .github/workflows/        # CI fuer View-Daten-Build
 `-- README.md
 ```
 
-## Technologiestand (Ist)
+## Technologiestand
 
 - Datenmodell: RiC-O 1.1 + m3gim-Erweiterungen
 - Pipeline: Python 3.11+ (`pandas`, `openpyxl`)
-- Frontend: Vanilla JS (ES-Module), D3.js v7
+- Frontend: Vanilla JS (ES-Module), D3.js v7, 6 aktive Tabs
 - Hosting: GitHub Pages
-- Normdaten: Wikidata-Q-IDs (Reconciliation via `reconcile.py` implementiert)
+- Normdaten: Wikidata-Q-IDs (Reconciliation via `reconcile.py`, 171 Matches)
 
 ## Dokumentation
 
 - Einstieg in die KB: [knowledge/README.md](knowledge/README.md)
-- Pipeline-Workflow: [scripts/README.md](scripts/README.md)
-- Entscheidungen: [knowledge/Prozess/Entscheidungen.md](knowledge/Prozess/Entscheidungen.md)
+- Entscheidungen: [knowledge/entscheidungen.md](knowledge/entscheidungen.md)
+- Pipeline: [knowledge/pipeline.md](knowledge/pipeline.md)
 
 ## Lizenz
 

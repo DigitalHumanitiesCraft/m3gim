@@ -33,20 +33,20 @@
 |------|-------|
 | `main.js` | Einstiegspunkt, Lazy-Tab-Rendering |
 | `data/loader.js` | Dataloading, Store-Aufbau |
-| `ui/router.js` | Hash-Routing (4 aktive + 2 ausgeblendete Tabs) |
-| `ui/detail-panel.js` | Slide-in Sidebar (aktuell deaktiviert) |
+| `ui/router.js` | Hash-Routing (6 aktive Tabs) |
 | `ui/korb.js` | Wissenskorb (sessionStorage) |
 | `views/archiv.js` | Bestand + Chronik |
 | `views/indizes.js` | 4-Grid Explorer |
 | `views/mobilitaet.js` | Schwimmbahn-Timeline (D3) |
 | `views/korb.js` | Korb-Cards |
-| `views/matrix.js` | Heatmap (ausgeblendet) |
-| `views/kosmos.js` | Force-Graph (ausgeblendet) |
-| `helpers/format.js` | Formatierungshilfen |
-| `helpers/search.js` | Suchlogik |
-| ... | Weitere UI-Helfer |
+| `views/matrix.js` | Person×Zeit-Heatmap (D3) |
+| `views/kosmos.js` | Repertoire-Force-Graph (D3) |
+| `utils/format.js` | Formatierungshilfen |
+| `utils/dom.js` | DOM-Helfer (el, clear) |
+| `utils/date-parser.js` | Datumsparser |
+| `utils/normalize.js` | Normalisierung |
 
-10 CSS-Dateien unter `docs/css/` (base, archiv, indizes, mobilitaet, korb, matrix, kosmos, detail, info-pages, korb).
+10 CSS-Dateien unter `docs/css/` (variables, base, archiv, indizes, mobilitaet, korb, matrix, kosmos, components, pages).
 
 ### Info-Seiten (statisches HTML, kein JS)
 
@@ -55,7 +55,7 @@ Einheitliches Template: info-header, info-nav, info-main, info-footer. Lesebreit
 
 ## Routing
 
-- Hash-basiert in `router.js`: 4 aktive Tabs (archiv, indizes, mobilitaet, korb), 2 ausgeblendet (matrix, kosmos)
+- Hash-basiert in `router.js`: 6 aktive Tabs (archiv, indizes, mobilitaet, matrix, kosmos, korb)
 - Deep Links: `#archiv/UAKUG/NIM_003%20Folio%2001` fuer Datensatzkontext
 - Info-Seiten als eigenstaendige HTML-Dateien (normale Links, kein Hash-Routing)
 - `navigateToIndex(gridType, entityName)` fuer Cross-Tab-Navigation

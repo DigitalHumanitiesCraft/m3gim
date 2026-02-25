@@ -45,11 +45,25 @@
 - Matrix + Kosmos Tabs aktiviert (6 aktive Tabs)
 - Cross-Visualization Linking: Matrix ↔ Kosmos ↔ Indizes (navigateToView, Popups)
 - Wissenskorb CSV/BibTeX-Export
+- Kosmos: Deterministisches konzentrisches Layout (Overhaul)
 - modell.html Zahlen aktualisiert (171 WD-Matches)
-- Meeting-Referenzen aus allen Docs entfernt
+- Dead Code entfernt, CSS-Duplikate bereinigt
+
+### Erreicht (Session 21) — FF-Enhancement
+
+- FF-Badges + Datenabdeckungs-Zeile auf allen 3 Visualisierungen
+- 2 fehlende Mobilitaetstypen (National + Bildung) in Timeline
+- Lehrphase als gestrichelter Balken (KUG-Professur 1970–2000)
+- Graz-Tags + Werk-Chips im Matrix-Drilldown
+- Netzwerk-Sparkline ueber der Heatmap
+- Volle Rollen-Anzeige im Kosmos-Tooltip + Popup
+- Dokument-Sparkline auf Mobilitaet-Timeline
+- Knowledge-Base und Vault konsolidiert
 
 ### Deferred / offen
 
+- Kosmos-Phasenfilter (Zeitdimension) — in Arbeit
+- Repertoire-Overlay auf Mobilitaet-Timeline — offen
 - Matrix-Zeitauflosung und Sortierausbau
 - Erweiterte Indextiefe (z.B. Orts-Hierarchien)
 - Leaflet-Karte
@@ -71,7 +85,7 @@
 
 ### Mittel
 
-8. **Wissenskorb-Export:** CSV/BibTeX
+8. ~~**Wissenskorb-Export:** CSV/BibTeX~~ → erledigt (Session 20)
 9. **Nachhaltigkeit:** Zenodo-Archivierung vorbereiten
 
 ### Niedrig
@@ -82,10 +96,11 @@
 
 ## Operative Naechste Schritte
 
-1. Erfassungsstatus mit Team vereinheitlichen
-2. Datenqualitaetsluecken in Quelltabellen reduzieren
-3. Wikidata-Ergebnisse in Google Sheets uebertragen (171 Matches vorhanden)
-4. Reports und KB synchron halten
+1. FF-Enhancement Phase 2 abschliessen (Kosmos-Phasenfilter, Repertoire-Overlay)
+2. Erfassungsstatus mit Team vereinheitlichen
+3. Datenqualitaetsluecken in Quelltabellen reduzieren
+4. Wikidata-Ergebnisse in Google Sheets uebertragen (171 Matches vorhanden)
+5. Zenodo-Archivierung vorbereiten
 
 ## Strategischer Kontext
 

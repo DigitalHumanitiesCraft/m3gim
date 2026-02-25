@@ -11,6 +11,8 @@ import { el, clear } from '../utils/dom.js';
 let rendered = false;
 let storeRef = null;
 let tooltipEl = null;
+let lebensphasen = null;
+let activePhase = null;
 
 /* ------------------------------------------------------------------ */
 /*  Public API                                                         */
@@ -24,6 +26,18 @@ export function renderKosmos(store, container) {
   const data = aggregateKosmos(store);
   clear(container);
 
+  // FF-Badges
+  container.appendChild(el('div', { className: 'kosmos-header-row' },
+    el('div', { className: 'ff-badges' },
+      el('span', { className: 'ff-badges__tag' }, 'FF2'),
+      el('span', { className: 'ff-badges__tag' }, 'FF3'),
+    ),
+  ));
+
+  // Phase filter bar (populated async after partitur.json loads)
+  const phaseBar = el('div', { className: 'kosmos-phase-bar' });
+  container.appendChild(phaseBar);
+
   // Tooltip (floating HTML div over SVG, like Mobilität)
   tooltipEl = el('div', { className: 'kosmos-tooltip' });
   container.appendChild(tooltipEl);
@@ -33,12 +47,23 @@ export function renderKosmos(store, container) {
 
   buildVisualization(data, store, svgContainer);
 
+  // Load lebensphasen and build phase buttons
+  loadPhasen(phaseBar, svgContainer);
+
   container.appendChild(buildLegend(data));
+
+  // Data coverage
+  const totalRecs = store.allRecords?.length || 0;
+  const werkeCount = data.komponisten.reduce((s, k) => s + k.werke.length, 0);
+  container.appendChild(el('div', { className: 'data-coverage' },
+    `${data.komponisten.length} Komponisten, ${werkeCount} Werke aus ${totalRecs} Datensätzen · Repertoire-Verknüpfungen: ${data.totalDocs} Dokumente`,
+  ));
 }
 
 export function resetKosmos() {
   rendered = false;
   storeRef = null;
+  activePhase = null;
 }
 
 /* ------------------------------------------------------------------ */
@@ -234,8 +259,10 @@ function computeLayout(data, cx, cy, R1, R2) {
         r: werkR, color: komp.farbe,
         docs: werk.dokumente, signaturen: werk.signaturen,
         parentKomp: komp.name,
-        rolleHaupt: werk.rolleHaupt, istOper: werk.istOper,
+        rolleHaupt: werk.rolleHaupt, rollen: werk.rollen || [],
+        istOper: werk.istOper,
         orte: werk.orte, angle: workAngle,
+        jahre: werk.jahre || [],
       });
 
       links.push({
@@ -320,9 +347,13 @@ function showTooltip(event, d) {
   } else if (d.type === 'werk') {
     html = `<strong>${d.name}</strong>`;
     if (d.parentKomp) html += `<br>${d.parentKomp}`;
-    if (d.rolleHaupt) html += `<br>Rolle: ${d.rolleHaupt}`;
+    if (d.rollen && d.rollen.length > 0) {
+      html += '<br>Rollen: ' + d.rollen.map(r => `${r.name} (${r.count})`).join(' · ');
+    } else if (d.rolleHaupt) {
+      html += `<br>Rolle: ${d.rolleHaupt}`;
+    }
     if (d.orte && d.orte.length > 0) {
-      html += '<br>' + d.orte.slice(0, 3).map(o => o.name).join(', ');
+      html += '<br>Orte: ' + d.orte.slice(0, 4).map(o => `${o.name} (${o.count})`).join(', ');
     }
     html += `<br>${d.docs} Dok.`;
   }
@@ -499,11 +530,19 @@ function showWerkPopup(event, d, store, svgContainer) {
     }, title.length > 40 ? title.slice(0, 38) + '\u2026' : title);
   });
 
+  // Roles line
+  const rollenLine = (d.rollen && d.rollen.length > 0)
+    ? el('div', { className: 'kosmos-popup__rollen' },
+        ...d.rollen.map(r => el('span', { className: 'kosmos-popup__rolle' }, `${r.name} (${r.count})`))
+      )
+    : null;
+
   const popup = el('div', { className: 'kosmos-popup' },
     el('div', { className: 'kosmos-popup__header' },
       d.rolleHaupt ? `${d.name} \u2014 ${d.rolleHaupt}` : d.name,
       ` (${d.docs} Dok.)`,
     ),
+    rollenLine,
     ...items,
     d.signaturen.length > 5 ? el('span', { className: 'kosmos-popup__more' }, `+${d.signaturen.length - 5} weitere`) : null,
     el('a', {
@@ -565,6 +604,120 @@ function buildLegend(data) {
     'Klick: Aktionen \u00b7 Doppelklick: zur\u00fccksetzen');
 
   return el('div', { className: 'kosmos-legend' }, ...colorItems, symbolLegend, hint);
+}
+
+/* ------------------------------------------------------------------ */
+/*  Phase filter                                                       */
+/* ------------------------------------------------------------------ */
+
+function loadPhasen(phaseBar, svgContainer) {
+  fetch('./data/partitur.json')
+    .then(r => r.ok ? r.json() : null)
+    .then(data => {
+      if (!data || !data.lebensphasen) return;
+      lebensphasen = data.lebensphasen;
+
+      phaseBar.appendChild(el('span', { className: 'kosmos-phase-bar__label' }, 'Phase:'));
+
+      // "Alle" button
+      const alleBtn = el('button', {
+        className: 'kosmos-phase-btn kosmos-phase-btn--active',
+        onClick: () => {
+          activePhase = null;
+          phaseBar.querySelectorAll('.kosmos-phase-btn').forEach(b => b.classList.remove('kosmos-phase-btn--active'));
+          alleBtn.classList.add('kosmos-phase-btn--active');
+          applyPhaseFilter(svgContainer, null);
+        },
+      }, 'Alle');
+      phaseBar.appendChild(alleBtn);
+
+      // One button per phase
+      for (const phase of lebensphasen) {
+        const btn = el('button', {
+          className: 'kosmos-phase-btn',
+          title: `${phase.label} (${phase.von}–${phase.bis})`,
+          onClick: () => {
+            activePhase = phase;
+            phaseBar.querySelectorAll('.kosmos-phase-btn').forEach(b => b.classList.remove('kosmos-phase-btn--active'));
+            btn.classList.add('kosmos-phase-btn--active');
+            applyPhaseFilter(svgContainer, phase);
+          },
+        }, `${phase.id} ${phase.von}–${phase.bis}`);
+        phaseBar.appendChild(btn);
+      }
+    })
+    .catch(() => {});
+}
+
+function applyPhaseFilter(svgContainer, phase) {
+  const svg = d3.select(svgContainer).select('svg');
+  if (svg.empty()) return;
+
+  const g = svg.select('.kosmos-zoom-group');
+  const nodeSel = g.selectAll('.kosmos-node');
+  const linkSel = g.selectAll('line.kosmos-link');
+
+  if (!phase) {
+    // Reset: show everything
+    nodeSel.select('circle')
+      .transition().duration(300)
+      .attr('opacity', d => d.type === 'zentrum' ? 0.9 : d.type === 'komponist' ? 0.85 : 0.65);
+    nodeSel.select('rect')
+      .transition().duration(300)
+      .attr('opacity', 0.45);
+    nodeSel.selectAll('text')
+      .transition().duration(300)
+      .attr('opacity', 1);
+    linkSel.transition().duration(300)
+      .attr('stroke-opacity', 0.4);
+    return;
+  }
+
+  // Determine which werk nodes have documents in this phase
+  const matchingWerke = new Set();
+  const matchingComps = new Set();
+
+  nodeSel.each(function(d) {
+    if (d.type === 'werk' && d.jahre && d.jahre.length > 0) {
+      const hasMatch = d.jahre.some(y => y >= phase.von && y < phase.bis);
+      if (hasMatch) {
+        matchingWerke.add(d.id);
+        if (d.parentKomp) matchingComps.add(d.parentKomp);
+      }
+    }
+  });
+
+  // Always keep zentrum visible
+  const isActive = (d) => {
+    if (d.type === 'zentrum') return true;
+    if (d.type === 'komponist') return matchingComps.has(d.name);
+    if (d.type === 'werk') return matchingWerke.has(d.id);
+    if (d.type === 'andere') return false;
+    return false;
+  };
+
+  nodeSel.select('circle')
+    .transition().duration(300)
+    .attr('opacity', d => isActive(d) ? (d.type === 'zentrum' ? 0.9 : d.type === 'komponist' ? 0.85 : 0.65) : 0.08);
+  nodeSel.select('rect')
+    .transition().duration(300)
+    .attr('opacity', d => isActive(d) ? 0.45 : 0.05);
+  nodeSel.selectAll('text')
+    .transition().duration(300)
+    .attr('opacity', d => isActive(d) ? 1 : 0.12);
+
+  linkSel.transition().duration(300)
+    .attr('stroke-opacity', d => {
+      // Check if link connects to an active composer
+      for (const compName of matchingComps) {
+        const compNode = nodeSel.data().find(n => n.id === `comp_${compName}`);
+        if (compNode && ((d.x1 === compNode.x && d.y1 === compNode.y)
+            || (d.x2 === compNode.x && d.y2 === compNode.y))) {
+          return 0.5;
+        }
+      }
+      return 0.04;
+    });
 }
 
 /* ------------------------------------------------------------------ */

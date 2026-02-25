@@ -4,12 +4,19 @@
   padding: var(--space-6);
 }
 
+.mob__header-row {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
 .mob__heading {
   font-family: var(--font-title);
   font-size: var(--text-xl);
   font-weight: var(--weight-semibold);
   color: var(--color-text-primary);
-  margin-bottom: var(--space-4);
+  margin-bottom: 0;
 }
 
 .mob__container {
@@ -92,6 +99,13 @@
     transparent 5px
   );
   color: var(--color-mob-erzwungen, #8B3A3A);
+}
+
+.mob__legend-dot--diamond {
+  width: 8px;
+  height: 8px;
+  border-radius: 1px;
+  transform: rotate(45deg);
 }
 
 /* Floating tooltip for SVG elements */

@@ -105,6 +105,12 @@
       "typ": "auffuehrungsort",
       "von": 1955,
       "bis": 1965
+    },
+    {
+      "ort": "Graz",
+      "typ": "lehrstaette",
+      "von": 1970,
+      "bis": 2000
     }
   ],
   "mobilitaet": [
@@ -142,6 +148,20 @@
       "jahr": 1970,
       "form": "lebensstil",
       "beschreibung": "Übersiedlung (Ehemann)"
+    },
+    {
+      "von": "Lemberg",
+      "nach": "Wien",
+      "jahr": 1950,
+      "form": "national",
+      "beschreibung": "Staatsbürgerschaft durch Heirat"
+    },
+    {
+      "von": "Zürich",
+      "nach": "Graz",
+      "jahr": 1970,
+      "form": "bildung",
+      "beschreibung": "Professur für Liedinterpretation, KUG Graz"
     }
   ],
   "netzwerk": [

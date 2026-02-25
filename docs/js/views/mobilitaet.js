@@ -18,18 +18,23 @@ const LOCATION_ORDER = [
 const PLACE_STYLES = {
   wohnort:         { fill: '#004A8F', opacity: 0.55, label: 'Wohnort' },
   auffuehrungsort: { fill: '#9A7B4F', opacity: 0.35, label: 'Aufführungsort' },
+  lehrstaette:     { fill: '#004A8F', opacity: 0.30, label: 'Lehrstätte', dashed: true },
 };
 
 const MOBILITY_COLORS = {
   erzwungen:   '#8B3A3A',
   geografisch: '#3D7A5A',
   lebensstil:  '#6B4E8C',
+  national:    '#4A6E96',
+  bildung:     '#B67D3D',
 };
 
 const MOBILITY_LABELS = {
   erzwungen:   'Erzwungene Mobilität',
   geografisch: 'Geografische Mobilität',
   lebensstil:  'Lebensstil-Mobilität',
+  national:    'Nationale Mobilität',
+  bildung:     'Bildungsmobilität',
 };
 
 /** Roles that indicate a performance at a location. */
@@ -228,7 +233,13 @@ async function buildView(store, container) {
   const wrapper = el('div', { className: 'mob' });
 
   wrapper.appendChild(
-    el('h3', { className: 'mob__heading' }, 'Mobilit\u00e4t'),
+    el('div', { className: 'mob__header-row' },
+      el('h3', { className: 'mob__heading' }, 'Mobilit\u00e4t'),
+      el('div', { className: 'ff-badges' },
+        el('span', { className: 'ff-badges__tag' }, 'FF4'),
+        el('span', { className: 'ff-badges__tag' }, 'FF1'),
+      ),
+    ),
   );
 
   // Legend above diagram
@@ -242,6 +253,13 @@ async function buildView(store, container) {
 
   wrapper.appendChild(svgBox);
 
+  // Data coverage
+  const totalRecs = store.allRecords?.length || 0;
+  const locRecs = store.locations?.size || 0;
+  wrapper.appendChild(el('div', { className: 'data-coverage' },
+    `${data.orte.length} Orte, ${data.mobilitaet.length} Mobilitätsereignisse · ${locRecs} Orts-Verknüpfungen aus ${totalRecs} Datensätzen`,
+  ));
+
   container.appendChild(wrapper);
   renderTimeline(data, guestData, store, svgBox);
 }
@@ -251,7 +269,9 @@ async function buildView(store, container) {
 /* ------------------------------------------------------------------ */
 
 function renderTimeline(data, guestData, store, svgBox) {
-  const margin = { top: 90, right: 40, bottom: 44, left: 110 };
+  const repCount = (data.repertoire && data.repertoire.length) || 0;
+  const repSpace = repCount > 0 ? repCount * 7 + 16 : 0;
+  const margin = { top: 90 + repSpace, right: 40, bottom: 44, left: 110 };
   const laneH = 36;
   const lanePad = 0.3;
   const chartW = Math.max(svgBox.clientWidth || 900, 800);
@@ -265,7 +285,11 @@ function renderTimeline(data, guestData, store, svgBox) {
     ? GUEST_SECTION_GAP + guestCities.length * GUEST_ROW_H + 8
     : 0;
 
-  const chartH = margin.top + swimH + guestH + margin.bottom;
+  // Document sparkline height
+  const sparkH = (data.dokumente && data.dokumente.length > 0) ? 40 : 0;
+  const sparkGap = sparkH > 0 ? 12 : 0;
+
+  const chartH = margin.top + swimH + guestH + sparkGap + sparkH + margin.bottom;
 
   const svg = d3.select(svgBox)
     .append('svg')
@@ -300,7 +324,7 @@ function renderTimeline(data, guestData, store, svgBox) {
   }
 
   /* ---- layers (z-order) ---- */
-  const axisY = margin.top + swimH + guestH;  // x-axis at very bottom
+  const axisY = margin.top + swimH + guestH + sparkGap + sparkH;
 
   drawPhaseBands(svg, data.lebensphasen, x, margin, axisY);
   drawScaleBreak(svg, x, margin, axisY);
@@ -308,12 +332,21 @@ function renderTimeline(data, guestData, store, svgBox) {
   drawContextLines(svg, data.orte, x, y);
   drawBars(svg, data.orte, x, y);
   drawArrows(svg, data.mobilitaet, x, y);
+  if (data.repertoire && data.repertoire.length > 0) {
+    drawRepertoireOverlay(svg, data.repertoire, x, margin);
+  }
   drawPhaseLabels(svg, data.lebensphasen, x, margin);
 
   // Guest performances dot-plot
   if (guestCities.length > 0) {
     const guestTop = margin.top + swimH + GUEST_SECTION_GAP;
     drawGuestDots(svg, guestCities, guestData, x, guestTop, margin, chartW, store);
+  }
+
+  // Document sparkline (archival pulse)
+  if (sparkH > 0) {
+    const sparkTop = margin.top + swimH + guestH + sparkGap;
+    drawDocSparkline(svg, data.dokumente, x, sparkTop, sparkH, margin, chartW);
   }
 
   // Axes last (on top)
@@ -460,11 +493,12 @@ function drawBars(svg, orte, x, y) {
       .attr('width', Math.max(x2 - x1, 4))
       .attr('height', bw)
       .attr('rx', 3)
-      .attr('fill', style.fill)
+      .attr('fill', style.dashed ? 'none' : style.fill)
       .attr('opacity', style.opacity)
       .attr('stroke', style.fill)
-      .attr('stroke-width', 1)
-      .attr('stroke-opacity', 0.5);
+      .attr('stroke-width', style.dashed ? 2 : 1)
+      .attr('stroke-opacity', style.dashed ? 0.7 : 0.5)
+      .attr('stroke-dasharray', style.dashed ? '6,3' : 'none');
 
     rect
       .style('cursor', 'pointer')
@@ -503,8 +537,9 @@ function drawArrows(svg, events, x, y) {
     const isForced = mov.form === 'erzwungen';
 
     const vDist = Math.abs(yTo - yFrom);
-    // Reduce bow for lebensstil to tame the Wien→Zürich arc
-    const bowFactor = mov.form === 'lebensstil' ? 0.30 : 0.45;
+    // Reduce bow for specific long arcs to avoid visual clutter
+    const bowFactor = (mov.form === 'lebensstil' || mov.form === 'national') ? 0.30
+      : mov.form === 'bildung' ? 0.35 : 0.45;
     const bow = Math.max(36, vDist * bowFactor);
 
     const goesUp = yTo < yFrom;
@@ -513,8 +548,9 @@ function drawArrows(svg, events, x, y) {
 
     const pathD = `M${mx},${yFrom} Q${cx},${(yFrom + yTo) / 2} ${mx},${yTo}`;
 
+    const isNational = mov.form === 'national';
     const strokeW = isForced ? 3.5 : 2.0;
-    const dash = isForced ? '6,3' : 'none';
+    const dash = (isForced || isNational) ? '6,3' : 'none';
 
     // Invisible hit-area path for easier hover on thin strokes
     g.append('path')
@@ -768,6 +804,124 @@ function drawGuestDots(svg, cities, guestData, x, top, margin, chartW, store) {
 }
 
 /* ------------------------------------------------------------------ */
+/*  Layer: repertoire overlay (composer time spans)                     */
+/* ------------------------------------------------------------------ */
+
+function drawRepertoireOverlay(svg, repertoire, x, margin) {
+  const g = svg.append('g').attr('class', 'mob__repertoire');
+  const baseY = margin.top - 6; // just above swim lanes
+  const barH = 5;
+  const gap = 7;
+
+  // Sort by start year
+  const sorted = [...repertoire].sort((a, b) => a.von - b.von);
+
+  sorted.forEach((rep, i) => {
+    const x1 = x(Math.max(rep.von, 1919));
+    const x2 = x(Math.min(rep.bis, 2009));
+    const yPos = baseY - (sorted.length - i) * gap;
+
+    // Colored bar
+    g.append('rect')
+      .attr('x', x1)
+      .attr('y', yPos)
+      .attr('width', Math.max(x2 - x1, 4))
+      .attr('height', barH)
+      .attr('rx', 2)
+      .attr('fill', rep.farbe)
+      .attr('opacity', 0.7);
+
+    // Diamond marker at midpoint
+    const midX = (x1 + x2) / 2;
+    g.append('path')
+      .attr('d', `M${midX},${yPos - 2} l3,4 l-3,4 l-3,-4 z`)
+      .attr('fill', rep.farbe)
+      .attr('opacity', 0.9);
+
+    // Label
+    g.append('text')
+      .attr('x', x2 + 4)
+      .attr('y', yPos + barH - 1)
+      .attr('class', 'mob__repertoire-label')
+      .attr('fill', rep.farbe)
+      .attr('font-size', '8px')
+      .attr('font-family', 'var(--font-ui)')
+      .attr('font-weight', '600')
+      .text(`${rep.komponist} (${rep.dokumente})`);
+  });
+
+  // Section label
+  g.append('text')
+    .attr('x', margin.left - 4)
+    .attr('y', baseY - sorted.length * gap - 2)
+    .attr('text-anchor', 'end')
+    .attr('font-size', '8px')
+    .attr('font-family', 'var(--font-ui)')
+    .attr('fill', 'var(--color-text-tertiary)')
+    .attr('font-style', 'italic')
+    .text('Repertoire');
+}
+
+/* ------------------------------------------------------------------ */
+/*  Layer: document sparkline (archival pulse)                         */
+/* ------------------------------------------------------------------ */
+
+function drawDocSparkline(svg, dokumente, x, top, height, margin, chartW) {
+  const g = svg.append('g').attr('class', 'mob__sparkline');
+  const filtered = dokumente.filter(d => d.jahr >= 1919 && d.jahr <= 2009 && d.anzahl > 0);
+  if (filtered.length === 0) return;
+
+  // Separator
+  g.append('line')
+    .attr('x1', margin.left).attr('x2', chartW - margin.right)
+    .attr('y1', top - 6).attr('y2', top - 6)
+    .attr('stroke', '#E0DCD6')
+    .attr('stroke-width', 1);
+
+  // Label
+  g.append('text')
+    .attr('x', margin.left - 6)
+    .attr('y', top + height / 2 + 3)
+    .attr('text-anchor', 'end')
+    .attr('font-family', "'Inter', sans-serif")
+    .attr('font-size', '9px')
+    .attr('font-style', 'italic')
+    .attr('fill', '#8A857E')
+    .text('Dok./Jahr');
+
+  const maxVal = d3.max(filtered, d => d.anzahl) || 1;
+  const yScale = d3.scaleLinear()
+    .domain([0, maxVal])
+    .range([top + height, top + 2]);
+
+  // Area
+  const area = d3.area()
+    .x(d => x(d.jahr))
+    .y0(top + height)
+    .y1(d => yScale(d.anzahl))
+    .curve(d3.curveMonotoneX);
+
+  g.append('path')
+    .datum(filtered)
+    .attr('d', area)
+    .attr('fill', 'rgba(0, 74, 143, 0.08)')
+    .attr('stroke', 'rgba(0, 74, 143, 0.25)')
+    .attr('stroke-width', 1);
+
+  // Peak annotation
+  const peak = filtered.reduce((a, b) => b.anzahl > a.anzahl ? b : a);
+  g.append('text')
+    .attr('x', x(peak.jahr))
+    .attr('y', yScale(peak.anzahl) - 3)
+    .attr('text-anchor', 'middle')
+    .attr('font-family', "'JetBrains Mono', monospace")
+    .attr('font-size', '7px')
+    .attr('fill', '#004A8F')
+    .attr('font-weight', '600')
+    .text(`${peak.anzahl}`);
+}
+
+/* ------------------------------------------------------------------ */
 /*  Legend (HTML)                                                       */
 /* ------------------------------------------------------------------ */
 
@@ -775,12 +929,16 @@ function buildLegend() {
   const items = [
     { color: '#004A8F', opacity: 0.55, label: 'Wohnort' },
     { color: '#9A7B4F', opacity: 0.35, label: 'Aufführungsort' },
+    { color: '#004A8F', opacity: 0.30, label: 'Lehrstätte', dashed: true },
     { spacer: true },
     { color: '#8B3A3A', opacity: 1, label: 'Erzwungene Mobilität', dashed: true },
     { color: '#3D7A5A', opacity: 1, label: 'Geografische Mobilität' },
     { color: '#6B4E8C', opacity: 1, label: 'Lebensstil-Mobilität' },
+    { color: '#4A6E96', opacity: 1, label: 'Nationale Mobilität' },
+    { color: '#B67D3D', opacity: 1, label: 'Bildungsmobilität' },
     { spacer: true },
     { color: GUEST_DOT_COLOR, opacity: 0.65, label: 'Gastspiel', round: true },
+    { color: '#6B2C2C', opacity: 0.7, label: 'Repertoire', diamond: true },
   ];
 
   const children = items.map(it => {
@@ -788,6 +946,7 @@ function buildLegend() {
     let cls = 'mob__legend-dot';
     if (it.dashed) cls += ' mob__legend-dot--dashed';
     if (it.round) cls += ' mob__legend-dot--round';
+    if (it.diamond) cls += ' mob__legend-dot--diamond';
     const dotStyle = `background:${it.color};opacity:${it.opacity}`;
     return el('span', { className: 'mob__legend-item' },
       el('span', { className: cls, style: dotStyle }),

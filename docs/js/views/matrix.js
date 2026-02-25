@@ -6,7 +6,7 @@ import { aggregateMatrix } from '../data/aggregator.js';
 import { PERSONEN_FARBEN, ZEITRAEUME, DOKUMENTTYP_LABELS } from '../data/constants.js';
 import { selectRecord, navigateToIndex, navigateToView } from '../ui/router.js';
 import { el, clear } from '../utils/dom.js';
-import { formatSignatur } from '../utils/format.js';
+import { formatSignatur, ensureArray } from '../utils/format.js';
 
 const KATEGORIE_KUERZEL = {
   'Dirigent': 'D', 'Regisseur': 'R', 'Korrepetitor': 'Kr',
@@ -32,17 +32,24 @@ export function renderMatrix(store, container) {
   clear(container);
   container.appendChild(buildToolbar());
 
+  // Netzwerk-Sparkline (document intensity over time)
+  const sparkContainer = el('div', { className: 'matrix-sparkline' });
+  sparkContainer.id = 'matrix-sparkline';
+  container.appendChild(sparkContainer);
+
   const svgContainer = el('div', { className: 'matrix-container' });
   svgContainer.id = 'matrix-svg-container';
   container.appendChild(svgContainer);
 
   container.appendChild(buildLegend());
+  container.appendChild(buildCoverage(store));
 
   const drilldown = el('div', { className: 'matrix-drilldown' });
   drilldown.id = 'matrix-drilldown';
   container.appendChild(drilldown);
 
   renderHeatmap();
+  renderSparkline();
 }
 
 function buildToolbar() {
@@ -87,6 +94,10 @@ function buildToolbar() {
       el('div', { className: 'matrix-checkbox-group' }, ...checkboxes),
     ),
     showAll,
+    el('div', { className: 'ff-badges' },
+      el('span', { className: 'ff-badges__tag' }, 'FF1'),
+      el('span', { className: 'ff-badges__tag' }, 'FF3'),
+    ),
   );
 }
 
@@ -250,20 +261,127 @@ function showDrilldown(person, zeitraum, dokumente) {
   const list = el('div', { className: 'matrix-drilldown__list' });
   for (const doc of dokumente) {
     const typLabel = DOKUMENTTYP_LABELS[doc.typ] || '';
+    const record = storeRef?.bySignatur?.get(doc.signatur);
+
+    // Extract location tags from record
+    const locTags = [];
+    if (record) {
+      for (const loc of ensureArray(record['rico:hasOrHadLocation'])) {
+        const name = loc.name || loc['rico:name'] || '';
+        if (name) locTags.push(name);
+      }
+    }
+
+    // Extract work references from record
+    const werkTags = [];
+    if (record) {
+      for (const subj of ensureArray(record['rico:hasOrHadSubject'])) {
+        if (subj['@type'] === 'm3gim:MusicalWork') {
+          const wName = subj.name || subj['rico:name'] || '';
+          if (wName) werkTags.push(wName);
+        }
+      }
+    }
+
     const row = el('div', {
       className: 'matrix-drilldown__row',
       onClick: () => {
-        const record = storeRef.bySignatur.get(doc.signatur);
         if (record) selectRecord(record['@id']);
       },
     },
       el('span', { className: 'matrix-drilldown__sig' }, formatSignatur(doc.signatur)),
       el('span', { className: 'matrix-drilldown__title' }, doc.titel || '(ohne Titel)'),
       typLabel ? el('span', { className: `badge badge--${doc.typ}` }, typLabel) : null,
+      ...locTags.map(loc => el('span', {
+        className: `badge matrix-drilldown__loc-tag${loc === 'Graz' ? ' matrix-drilldown__loc-tag--graz' : ''}`,
+      }, loc)),
+      ...werkTags.map(w => el('span', {
+        className: 'chip chip--werk chip--clickable matrix-drilldown__werk-chip',
+        onClick: (e) => { e.stopPropagation(); navigateToView('kosmos'); },
+      }, w)),
     );
     list.appendChild(row);
   }
   panel.appendChild(list);
+}
+
+function renderSparkline() {
+  const sparkEl = document.getElementById('matrix-sparkline');
+  if (!sparkEl) return;
+
+  fetch('./data/partitur.json')
+    .then(r => r.ok ? r.json() : null)
+    .then(data => {
+      if (!data || !data.netzwerk) return;
+
+      const margin = { top: 4, right: 20, bottom: 16, left: 180 };
+      const cellW = 80;
+      const width = margin.left + ZEITRAEUME.length * cellW + margin.right;
+      const height = 50;
+
+      const svg = d3.select(sparkEl).append('svg')
+        .attr('width', width)
+        .attr('height', height);
+
+      const nw = data.netzwerk;
+      const maxVal = d3.max(nw, d => d.intensitaet) || 1;
+
+      const xScale = d3.scaleLinear()
+        .domain([0, nw.length - 1])
+        .range([margin.left + cellW / 2, margin.left + (nw.length - 1) * cellW + cellW / 2]);
+
+      const yScale = d3.scaleLinear()
+        .domain([0, maxVal])
+        .range([height - margin.bottom, margin.top]);
+
+      // Area
+      const area = d3.area()
+        .x((d, i) => xScale(i))
+        .y0(height - margin.bottom)
+        .y1((d) => yScale(d.intensitaet))
+        .curve(d3.curveMonotoneX);
+
+      svg.append('path')
+        .datum(nw)
+        .attr('d', area)
+        .attr('fill', 'rgba(0, 74, 143, 0.10)')
+        .attr('stroke', 'rgba(0, 74, 143, 0.35)')
+        .attr('stroke-width', 1.5);
+
+      // Value labels at peaks
+      nw.forEach((d, i) => {
+        svg.append('text')
+          .attr('x', xScale(i))
+          .attr('y', yScale(d.intensitaet) - 3)
+          .attr('text-anchor', 'middle')
+          .style('font-size', '8px')
+          .style('font-family', "'JetBrains Mono', monospace")
+          .style('fill', d.intensitaet === maxVal ? '#004A8F' : '#8A857E')
+          .style('font-weight', d.intensitaet === maxVal ? '700' : '400')
+          .text(d.intensitaet);
+      });
+
+      // Label
+      svg.append('text')
+        .attr('x', margin.left - 10)
+        .attr('y', height / 2 + 3)
+        .attr('text-anchor', 'end')
+        .style('font-size', '9px')
+        .style('font-family', 'Inter, sans-serif')
+        .style('fill', '#8A857E')
+        .style('font-style', 'italic')
+        .text('Netzwerk-Puls');
+    })
+    .catch(() => {});
+}
+
+function buildCoverage(store) {
+  const total = store.allRecords?.length || 0;
+  const linked = [...(store.persons?.values() || [])].filter(p => p.records.size > 0).length;
+  const pct = total > 0 ? Math.round((matrixData.personen.length / Math.max(linked, 1)) * 100) : 0;
+  return el('div', { className: 'data-coverage' },
+    `${matrixData.personen.length} Personen aus ${total} Datensätzen · Netzwerk-Verknüpfungen: ${linked} Personen (${Math.round(linked / Math.max(total, 1) * 100)}% des Bestands)`,
+  );
 }
 
 export function resetMatrix() {

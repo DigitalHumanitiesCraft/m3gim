@@ -142,11 +142,13 @@ export function aggregateKosmos(store) {
 
       if (werkName) {
         if (!kEntry.werke.has(werkName)) {
-          kEntry.werke.set(werkName, { docs: new Set(), signaturen: new Set(), orte: new Map(), rollen: new Map() });
+          kEntry.werke.set(werkName, { docs: new Set(), signaturen: new Set(), orte: new Map(), rollen: new Map(), jahre: new Set() });
         }
         const wEntry = kEntry.werke.get(werkName);
         wEntry.docs.add(record['@id']);
         if (record['rico:identifier']) wEntry.signaturen.add(record['rico:identifier']);
+        const yr = extractYear(record['rico:date']);
+        if (yr) wEntry.jahre.add(yr);
       }
     }
 
@@ -226,6 +228,7 @@ export function aggregateKosmos(store) {
         rollen,
         rolleHaupt,
         istOper: rolleHaupt !== null,
+        jahre: [...w.jahre].sort(),
       };
     }).sort((a, b) => b.dokumente - a.dokumente),
   })).sort((a, b) => b.dokumente_gesamt - a.dokumente_gesamt);

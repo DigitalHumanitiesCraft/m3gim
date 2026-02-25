@@ -55,17 +55,17 @@
 
 ## Technische Schulden
 
-- Kein CSV/JSON-LD-Export aus Archiv-View (offen)
+- Kein JSON-LD/GEXF-Export aus Archiv-View (offen)
 - Alle Iteration-1-Schulden behoben (monolithische Dateien, synthetische Daten, Inline-CSS)
 
 ## Verschobene Features
 
 | Prioritaet | Feature | Status |
 |---|---|---|
-| Hoch | Export CSV/JSON-LD/GEXF | offen |
+| Hoch | Export CSV/JSON-LD/GEXF | CSV/BibTeX erledigt (Session 20), JSON-LD/GEXF offen |
 | Mittel | Matrix Zeitfilter/Zoom | offen |
-| Mittel | Cross-Visualization Linking | teilweise (Mobilitaet → Archiv/Index) |
-| Mittel | Merkliste + CSV-Export | offen |
+| ~~Mittel~~ | ~~Cross-Visualization Linking~~ | erledigt (Session 20): Matrix ↔ Kosmos ↔ Indizes |
+| ~~Mittel~~ | ~~Merkliste + CSV-Export~~ | erledigt (Session 20): Wissenskorb + CSV/BibTeX |
 | Niedrig | Leaflet Karte | offen |
 
 ## Prozesswissen

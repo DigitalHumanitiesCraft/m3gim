@@ -9,9 +9,9 @@
 - Archiv
 - Indizes
 - Mobilitaet
+- Matrix
+- Kosmos
 - Wissenskorb
-- Matrix (ausgeblendet fuer Demo)
-- Kosmos (ausgeblendet fuer Demo)
 
 ### Kontextseiten (statisches HTML, kein JS)
 
@@ -25,7 +25,7 @@
 
 ### Routing
 
-- Hash-basiertes Routing in `router.js` (4 aktive Tabs: archiv, indizes, mobilitaet, korb)
+- Hash-basiertes Routing in `router.js` (6 aktive Tabs: archiv, indizes, mobilitaet, matrix, kosmos, korb)
 - Info-Seiten als eigenstaendige HTML-Dateien (normale Links, kein Hash-Routing)
 - Deep Links fuer Views und Datensatzkontext
 
@@ -57,7 +57,7 @@
 Schwimmbahn-Timeline (D3.js) fuer Ira Malaniuks geografische Mobilitaet 1919–2009.
 
 **Datenquellen:**
-- `partitur.json`: Lebensphasen, Orte (Wohnort/Auffuehrungsort), Mobilitaetsereignisse (5 Pfeile)
+- `partitur.json`: Lebensphasen, Orte (Wohnort/Auffuehrungsort/Lehrstaette), Mobilitaetsereignisse (5 Typen), Netzwerk-/Repertoire-/Dokumentdaten
 - `store.locations` + `store.records`: Gastspiel-Dots dynamisch aus Archivdaten extrahiert
 
 **Visualisierungsschichten (Z-Order):**
@@ -66,9 +66,10 @@ Schwimmbahn-Timeline (D3.js) fuer Ira Malaniuks geografische Mobilitaet 1919–2
 3. Gitterlinien — Horizontale Trennlinien zwischen Swim-Lanes
 4. Kontextlinien — Gestrichelte Verbindungen Wien → Auffuehrungsorte
 5. Balken — Farbige Balken (KUG-Blau = Wohnort, Beige = Auffuehrungsort)
-6. Pfeile — Bezier-Kurven fuer Mobilitaetsereignisse (rot-gestrichelt = erzwungen, gruen = geografisch, lila = Lebensstil)
+6. Pfeile — Bezier-Kurven fuer Mobilitaetsereignisse (rot-gestrichelt = erzwungen, gruen = geografisch, lila = Lebensstil, blaugrau-gestrichelt = national, braun = Bildung)
 7. Gastspiel-Dots — Dot-Plot unterhalb der Swim-Lanes mit dynamischem Radius
-8. Achsen — X-Achse (1920–2009) und Y-Achse (7 Orte)
+8. Dokument-Sparkline — Archivalischer Puls als Flaechendiagramm am unteren Rand
+9. Achsen — X-Achse (1920–2009) und Y-Achse (7 Orte)
 
 **Interaktion:**
 - Floating-Tooltip (HTML-div ueber SVG) fuer Balken, Pfeile und Gastspiel-Dots
@@ -83,6 +84,9 @@ Schwimmbahn-Timeline (D3.js) fuer Ira Malaniuks geografische Mobilitaet 1919–2
 - PHASE_ABBR kuerzt Labels bei schmalen Phasen-Baendern
 - Legende ueber dem Diagramm (nicht darunter)
 - Wien→Zuerich-Bogen bewusst abgeschwaecht (bowFactor 0.30 statt 0.45)
+- Lehrstaette (KUG-Professur 1970–2000) als gestrichelter Balken
+- Dokument-Sparkline am unteren Rand: jaehrliche Dokumentanzahl als Flaechendiagramm mit Peak-Annotation
+- FF-Badges (FF4, FF1) und Datenabdeckungs-Zeile im Header
 
 ### Wissenskorb
 
@@ -102,15 +106,19 @@ Schwimmbahn-Timeline (D3.js) fuer Ira Malaniuks geografische Mobilitaet 1919–2
 
 - Begegnungsstruktur als Heatmap (Person x Zeitraum, 5-Jahres-Perioden)
 - Kategoriefilter (Dirigent, Regisseur, Korrepetitor, Kollege, Vermittler, Andere)
-- Drilldown auf Dokumentliste, Dokument-Klick navigiert zu Archiv
+- Drilldown auf Dokumentliste mit Orts-Tags (Graz = gruen hervorgehoben) und Werk-Chips (klickbar → Kosmos)
+- Netzwerk-Sparkline ueber der Heatmap: 7 Perioden aus partitur.json mit Peak-Annotation
 - Blaue Intensitaetsskala (KUG-Blau), gewichtet nach Dokumenttyp
+- FF-Badges (FF1, FF3) und Datenabdeckungs-Zeile in Toolbar
 
 ### Kosmos
 
 - Repertoire-/Rollenbezug als radialer Force-Graph (D3.js)
-- Zentrum: Ira Malaniuk, Komponisten-Layer, Werk-Layer
+- Deterministisches konzentrisches Layout: Zentrum Malaniuk, Komponisten-Layer, Werk-Layer
 - Fokus-Interaktionen (Komponist-Klick highlightet), Zoom/Pan, Drag
 - Groesse nach Dokumentanzahl, Farbe nach Komponist (KOMPONISTEN_FARBEN)
+- Volle Rollen-Anzeige im Tooltip und Popup (alle Rollen mit Counts statt nur Hauptrolle)
+- FF-Badges (FF2, FF3) und Datenabdeckungs-Zeile im Header
 
 ## Designsystem
 
