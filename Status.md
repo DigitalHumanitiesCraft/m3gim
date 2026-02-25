@@ -21,16 +21,15 @@
 
 ## Frontend
 
-- [x] 4 aktive Tabs: Archiv, Indizes, Mobilitaet, Korb
+- [x] 6 aktive Tabs: Archiv, Indizes, Mobilitaet, Matrix, Kosmos, Korb
 - [x] Archiv: Sortierung, Autocomplete, erweiterte Suche, Inline-Expansion, Bookmark-Icons
 - [x] Indizes: Facettensuche, Cross-Navigation, Wikidata-Icons, WD-Coverage
 - [x] Mobilitaet: Schwimmbahn-Timeline (D3.js), 7 Swim-Lanes, Floating-Tooltips, Popup-Menue
 - [x] Mobilitaet: Skalenbruch bei 1975, GUEST_DISPLAY_MAP, PHASE_ABBR
+- [x] Matrix: Person-x-Zeit-Heatmap, Kategoriefilter, Drilldown auf Dokumentliste
+- [x] Kosmos: Repertoire-Force-Graph, Komponisten-Highlight, Zoom/Pan
 - [x] Wissenskorb: Card-Details, sessionStorage, Cross-Navigation
 - [x] 5 Info-Seiten (about, projekt, modell, hilfe, impressum) mit einheitlichem Header
-- [x] Matrix + Kosmos Code erhalten, Tabs ausgeblendet (hidden)
-- [ ] Matrix wieder einblenden + Zeitfilter-UI entscheiden
-- [ ] Kosmos wieder einblenden + Wikidata-Icons integrieren
 - [ ] Cross-Visualization Linking (Mobilitaet → Matrix → Kosmos)
 - [ ] Wissenskorb-Export (CSV/BibTeX)
 - [ ] Leaflet-Karte (deferred)

@@ -25,6 +25,30 @@
   margin: 0;
 }
 
+.korb-header__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-left: auto;
+}
+
+.korb-export {
+  font-size: var(--text-xs);
+  font-family: var(--font-ui);
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--color-kug-blau);
+  border-radius: var(--border-radius);
+  background: transparent;
+  color: var(--color-kug-blau);
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.korb-export:hover {
+  background: var(--color-kug-blau);
+  color: var(--color-text-inverse);
+}
+
 .korb-clear {
   font-size: var(--text-xs);
   font-family: var(--font-ui);

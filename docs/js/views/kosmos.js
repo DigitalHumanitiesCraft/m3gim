@@ -4,7 +4,7 @@
 
 import { aggregateKosmos } from '../data/aggregator.js';
 import { KOMPONISTEN_FARBEN } from '../data/constants.js';
-import { selectRecord } from '../ui/router.js';
+import { selectRecord, navigateToIndex, navigateToView } from '../ui/router.js';
 import { el, clear } from '../utils/dom.js';
 
 let rendered = false;
@@ -137,10 +137,10 @@ export function renderKosmos(store, container) {
     .style('cursor', d => d.type === 'zentrum' ? 'default' : 'pointer')
     .on('click', (event, d) => {
       if (d.type === 'werk' && d.signaturen && d.signaturen.length > 0) {
-        const record = store.bySignatur.get(d.signaturen[0]);
-        if (record) selectRecord(record['@id']);
+        showWerkPopup(event, d, store);
       } else if (d.type === 'komponist') {
         highlightComposer(d.name, node, link, nodes);
+        showKomponistActions(event, d, svgContainer);
       }
     });
 
@@ -259,7 +259,7 @@ function buildLegend(data) {
   // Visual size legend: graduated circles
   const sizeLegend = buildSizeLegend(data);
 
-  const hint = el('span', { className: 'kosmos-legend__hint' }, 'Klick auf Komponist: filtern \u00b7 Doppelklick: zur\u00fccksetzen');
+  const hint = el('span', { className: 'kosmos-legend__hint' }, 'Klick auf Komponist: filtern + Aktionen \u00b7 Doppelklick: zur\u00fccksetzen');
   return el('div', { className: 'kosmos-legend' }, ...items, sizeLegend, hint);
 }
 
@@ -314,6 +314,84 @@ function buildSizeLegend(data) {
   svg.appendChild(label);
 
   return el('div', { className: 'kosmos-legend__sizes' }, svg);
+}
+
+/* === Cross-View Navigation === */
+
+function showKomponistActions(event, d, svgContainer) {
+  dismissPopup();
+  const popup = el('div', { className: 'kosmos-popup' },
+    el('div', { className: 'kosmos-popup__header' }, d.name),
+    el('a', {
+      className: 'kosmos-popup__action',
+      onClick: (e) => { e.preventDefault(); dismissPopup(); navigateToIndex('personen', d.name); },
+    }, '\u2192 Index'),
+    el('a', {
+      className: 'kosmos-popup__action',
+      onClick: (e) => { e.preventDefault(); dismissPopup(); navigateToView('matrix'); },
+    }, '\u2192 Matrix'),
+  );
+  popup.style.left = `${event.offsetX + 10}px`;
+  popup.style.top = `${event.offsetY - 10}px`;
+  svgContainer.appendChild(popup);
+  setTimeout(() => document.addEventListener('click', dismissPopup, { once: true }), 0);
+}
+
+function showWerkPopup(event, d, store) {
+  dismissPopup();
+  const container = event.target.closest('.kosmos-container');
+  if (!container) return;
+
+  const items = d.signaturen.slice(0, 5).map(sig => {
+    const record = store.bySignatur.get(sig);
+    const title = record ? (record['rico:title'] || sig) : sig;
+    return el('a', {
+      className: 'kosmos-popup__action',
+      onClick: (e) => { e.preventDefault(); dismissPopup(); if (record) selectRecord(record['@id']); },
+    }, title.length > 40 ? title.slice(0, 38) + '\u2026' : title);
+  });
+
+  const popup = el('div', { className: 'kosmos-popup' },
+    el('div', { className: 'kosmos-popup__header' }, `${d.name} (${d.docs} Dok.)`),
+    ...items,
+    d.signaturen.length > 5 ? el('span', { className: 'kosmos-popup__more' }, `+${d.signaturen.length - 5} weitere`) : null,
+    el('a', {
+      className: 'kosmos-popup__action kosmos-popup__action--secondary',
+      onClick: (e) => { e.preventDefault(); dismissPopup(); navigateToIndex('werke', d.name); },
+    }, '\u2192 Alle im Index'),
+  );
+  popup.style.left = `${event.offsetX + 10}px`;
+  popup.style.top = `${event.offsetY - 10}px`;
+  container.appendChild(popup);
+  setTimeout(() => document.addEventListener('click', dismissPopup, { once: true }), 0);
+}
+
+function dismissPopup() {
+  document.querySelectorAll('.kosmos-popup').forEach(p => p.remove());
+}
+
+// Listen for cross-view navigation (from Matrix → Kosmos)
+let pendingHighlight = null;
+
+window.addEventListener('m3gim:navigate', (event) => {
+  const { tab, komponist } = event.detail || {};
+  if (tab === 'kosmos' && komponist) {
+    pendingHighlight = komponist;
+    tryHighlight();
+  }
+});
+
+function tryHighlight() {
+  if (!pendingHighlight || !rendered) return;
+  // Find the SVG nodes and trigger highlight
+  const svg = document.querySelector('.kosmos-container svg');
+  if (!svg) return;
+  const g = d3.select(svg).select('.kosmos-zoom-group');
+  const node = g.selectAll('g[class^="kosmos-node"]');
+  const link = g.selectAll('line.kosmos-link');
+  const allNodes = node.data();
+  highlightComposer(pendingHighlight, node, link, allNodes);
+  pendingHighlight = null;
 }
 
 export function resetKosmos() {

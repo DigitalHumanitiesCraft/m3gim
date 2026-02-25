@@ -32,10 +32,22 @@ function renderList() {
   const header = el('div', { className: 'korb-header' },
     el('h2', { className: 'korb-title' }, ids.length > 0 ? `Wissenskorb (${ids.length})` : 'Wissenskorb'),
     ids.length > 0
-      ? el('button', {
-          className: 'korb-clear',
-          onClick: () => { clearKorb(); },
-        }, 'Korb leeren')
+      ? el('div', { className: 'korb-header__actions' },
+          el('button', {
+            className: 'korb-export',
+            title: 'Als CSV exportieren',
+            onClick: () => exportCSV(ids),
+          }, '\u2193 CSV'),
+          el('button', {
+            className: 'korb-export',
+            title: 'Als BibTeX exportieren',
+            onClick: () => exportBibTeX(ids),
+          }, '\u2193 BibTeX'),
+          el('button', {
+            className: 'korb-clear',
+            onClick: () => { clearKorb(); },
+          }, 'Korb leeren'),
+        )
       : null,
   );
   wrapper.appendChild(header);
@@ -202,6 +214,72 @@ function renderLinkRow(label, entities, gridType) {
     row.appendChild(chip);
   }
   return row;
+}
+
+/* === Export Functions === */
+
+function exportCSV(ids) {
+  const records = ids.map(id => store.records.get(id)).filter(Boolean);
+  const rows = [['Signatur', 'Titel', 'Typ', 'Datierung', 'Konvolut', 'Personen', 'Orte', 'Werke']];
+
+  for (const r of records) {
+    const sig = r['rico:identifier'] || '';
+    const title = (r['rico:title'] || '').replace(/"/g, '""');
+    const docType = formatDocType(r) || '';
+    const date = formatDate(r['rico:date']) || '';
+    const konvolutId = store.childToKonvolut?.get(r['@id']);
+    const konvolut = konvolutId ? (store.konvolute.get(konvolutId)?.['rico:identifier'] || '') : '';
+    const agents = ensureArray(r['m3gim:hasAssociatedAgent']);
+    const persons = agents.filter(a => a['@type'] === 'rico:Person').map(a => a.name || '').join('; ');
+    const locations = ensureArray(r['rico:hasOrHadLocation']).map(l => l.name || '').join('; ');
+    const subjects = ensureArray(r['rico:hasOrHadSubject'])
+      .filter(s => s['@type'] === 'm3gim:MusicalWork')
+      .map(s => s.name || '').join('; ');
+
+    rows.push([sig, title, docType, date, konvolut, persons, locations, subjects].map(v => `"${v}"`));
+  }
+
+  downloadFile(rows.map(r => r.join(',')).join('\n'), 'm3gim-korb.csv', 'text/csv;charset=utf-8');
+}
+
+function exportBibTeX(ids) {
+  const records = ids.map(id => store.records.get(id)).filter(Boolean);
+  const entries = [];
+
+  for (const r of records) {
+    const sig = r['rico:identifier'] || 'unknown';
+    const key = sig.replace(/[^a-zA-Z0-9]/g, '_');
+    const title = r['rico:title'] || 'Ohne Titel';
+    const date = formatDate(r['rico:date']) || '';
+    const year = date.match(/\d{4}/)?.[0] || '';
+    const agents = ensureArray(r['m3gim:hasAssociatedAgent']);
+    const author = agents
+      .filter(a => a.role === 'verfasser:in' || a.role === 'verfasser')
+      .map(a => a.name || '')
+      .join(' and ') || '';
+
+    const fields = [];
+    if (author) fields.push(`  author    = {${author}}`);
+    fields.push(`  title     = {${title}}`);
+    if (year) fields.push(`  year      = {${year}}`);
+    fields.push(`  note      = {${sig}}`);
+    fields.push(`  howpublished = {Teilnachlass Ira Malaniuk, UAKUG/NIM, KUG Graz}`);
+
+    entries.push(`@misc{${key},\n${fields.join(',\n')}\n}`);
+  }
+
+  downloadFile(entries.join('\n\n'), 'm3gim-korb.bib', 'application/x-bibtex');
+}
+
+function downloadFile(content, filename, mimeType) {
+  const BOM = '\uFEFF';
+  const blob = new Blob([BOM + content], { type: mimeType });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 function renderWorkRow(label, subjects) {

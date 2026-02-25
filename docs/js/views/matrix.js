@@ -4,7 +4,7 @@
 
 import { aggregateMatrix } from '../data/aggregator.js';
 import { PERSONEN_FARBEN, ZEITRAEUME, DOKUMENTTYP_LABELS } from '../data/constants.js';
-import { selectRecord } from '../ui/router.js';
+import { selectRecord, navigateToIndex, navigateToView } from '../ui/router.js';
 import { el, clear } from '../utils/dom.js';
 import { formatSignatur } from '../utils/format.js';
 
@@ -220,8 +220,20 @@ function showDrilldown(person, zeitraum, dokumente) {
 
   if (!activeDrilldown) return;
 
+  // Check if person is a composer (has works in store)
+  const isKomponist = storeRef && [...(storeRef.works?.values() || [])].some(w => w.komponist === person);
+
   const header = el('div', { className: 'matrix-drilldown__header' },
-    el('span', { className: 'matrix-drilldown__person' }, person),
+    el('a', {
+      className: 'matrix-drilldown__person matrix-drilldown__link',
+      title: `${person} im Index anzeigen`,
+      onClick: (e) => { e.preventDefault(); navigateToIndex('personen', person); },
+    }, person),
+    isKomponist ? el('a', {
+      className: 'matrix-drilldown__kosmos-link',
+      title: `${person} im Kosmos anzeigen`,
+      onClick: (e) => { e.preventDefault(); navigateToView('kosmos', { komponist: person }); },
+    }, '\u2192 Kosmos') : null,
     el('span', { className: 'matrix-drilldown__sep' }, '\u00b7'),
     el('span', { className: 'matrix-drilldown__period' }, zeitraum),
     el('span', { className: 'matrix-drilldown__sep' }, '\u00b7'),

@@ -31,7 +31,7 @@
 - Pipeline Iteration 2 lauffaehig (explore → validate → transform → build-views → reconcile)
 - validate.py Encoding-Bugs gefixt (Session 19): Mojibake in VOCAB + KOMPOSIT_TYPEN, `normalize_bearbeitungsstand()` eingefuehrt
 - Wikidata-CSV-Export: 5 CSVs fuer Google-Sheets-Import (export-wikidata-csv.py)
-- Frontend: 19 JS-Module, 10 CSS, 4 aktive Tabs (Archiv, Indizes, Mobilitaet, Korb)
+- Frontend: 19 JS-Module, 10 CSS, 6 aktive Tabs (Archiv, Indizes, Mobilitaet, Matrix, Kosmos, Korb)
 - Archiv UX: Sortierung, Autocomplete, erweiterte Suche, Inline-Expansion, Bookmark-Icons
 - Indizes Explorer: Facettensuche, Cross-Navigation, Wikidata-Icons, WD-Coverage
 - Mobilitaet-View: Schwimmbahn-Timeline mit D3, Floating-Tooltips, Dokument-Navigation, Popup-Menue
@@ -42,7 +42,6 @@
 
 ### Deferred / offen
 
-- Matrix/Kosmos wieder einblenden nach erster Praesentation
 - Matrix-Zeitauflosung und Sortierausbau
 - Erweiterte Indextiefe (z.B. Orts-Hierarchien)
 - Wissenskorb-Export (CSV/BibTeX)

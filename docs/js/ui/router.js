@@ -59,6 +59,19 @@ export function navigateToIndex(gridType, entityName) {
   if (onIndexNavigate) onIndexNavigate(gridType, entityName);
 }
 
+export function navigateToView(tab, context = {}) {
+  if (!ALL_VIEWS.includes(tab)) return;
+  state.activeTab = tab;
+  state.selectedRecord = null;
+  updateHash();
+  applyState();
+  requestAnimationFrame(() => {
+    window.dispatchEvent(new CustomEvent('m3gim:navigate', {
+      detail: { tab, ...context },
+    }));
+  });
+}
+
 export function deselectRecord() {
   state.selectedRecord = null;
   updateHash();

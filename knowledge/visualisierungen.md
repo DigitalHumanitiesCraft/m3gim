@@ -100,15 +100,17 @@ Schwimmbahn-Timeline (D3.js) fuer Ira Malaniuks geografische Mobilitaet 1919–2
 
 ### Matrix
 
-- Begegnungsstruktur als Heatmap (Person x Zeitraum)
-- Kategoriefilter und Drilldown auf Dokumentliste
-- Aktuell ausgeblendet
+- Begegnungsstruktur als Heatmap (Person x Zeitraum, 5-Jahres-Perioden)
+- Kategoriefilter (Dirigent, Regisseur, Korrepetitor, Kollege, Vermittler, Andere)
+- Drilldown auf Dokumentliste, Dokument-Klick navigiert zu Archiv
+- Blaue Intensitaetsskala (KUG-Blau), gewichtet nach Dokumenttyp
 
 ### Kosmos
 
-- Repertoire-/Rollenbezug als Force-Graph
-- Fokus-Interaktionen, Zoom/Pan, Legendenlogik
-- Aktuell ausgeblendet
+- Repertoire-/Rollenbezug als radialer Force-Graph (D3.js)
+- Zentrum: Ira Malaniuk, Komponisten-Layer, Werk-Layer
+- Fokus-Interaktionen (Komponist-Klick highlightet), Zoom/Pan, Drag
+- Groesse nach Dokumentanzahl, Farbe nach Komponist (KOMPONISTEN_FARBEN)
 
 ## Designsystem
 
@@ -126,6 +128,7 @@ Schwimmbahn-Timeline (D3.js) fuer Ira Malaniuks geografische Mobilitaet 1919–2
 
 ## Offene Luecken
 
+- Cross-Visualization Linking (Mobilitaet → Matrix → Kosmos)
 - Matrix-Zeitzoom, erweiterte Index-Hierarchien (deferred)
-- Wikidata-Reconciliation: 171 Matches im Frontend sichtbar, Kosmos-View noch anzupassen
+- Wissenskorb-Export (CSV/BibTeX)
 - Datenabdeckung bleibt dominierender Qualitaetshebel (22% verknuepfte Objekte)

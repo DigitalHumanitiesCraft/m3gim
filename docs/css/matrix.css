@@ -116,6 +116,32 @@
   color: var(--color-text-primary);
 }
 
+.matrix-drilldown__link {
+  cursor: pointer;
+  text-decoration: none;
+  border-bottom: 1px dashed var(--border-color);
+}
+.matrix-drilldown__link:hover {
+  color: var(--color-kug-blau);
+  border-bottom-color: var(--color-kug-blau);
+}
+
+.matrix-drilldown__kosmos-link {
+  font-size: var(--text-xs);
+  color: var(--color-kug-blau);
+  cursor: pointer;
+  text-decoration: none;
+  padding: 2px 6px;
+  border: 1px solid var(--border-color-light);
+  border-radius: 10px;
+  transition: var(--transition-fast);
+}
+.matrix-drilldown__kosmos-link:hover {
+  background: var(--color-kug-blau);
+  color: var(--color-text-inverse);
+  border-color: var(--color-kug-blau);
+}
+
 .matrix-drilldown__period {
   font-family: var(--font-mono);
   font-size: var(--text-sm);
