@@ -205,23 +205,40 @@ export function aggregateKosmos(store) {
     }
   }
 
-  // Convert to output format
-  const komponisten = [...kompMap.entries()].map(([name, data]) => ({
+  // Convert to output format, enriched with role and type info
+  const ANDERE_THRESHOLD = 1; // composers with ≤ this many docs → "Andere" group
+  const allKomponisten = [...kompMap.entries()].map(([name, data]) => ({
     name,
     farbe: KOMPONISTEN_FARBEN[name] || KOMPONISTEN_FARBEN['Andere'],
     dokumente_gesamt: data.dokumente.size,
-    werke: [...data.werke.entries()].map(([werkName, w]) => ({
-      name: werkName,
-      dokumente: w.docs.size,
-      signaturen: [...w.signaturen],
-      orte: [...w.orte.entries()].map(([n, c]) => ({ name: n, count: c })),
-      rollen: [...w.rollen.entries()].map(([n, c]) => ({ name: n, count: c })),
-    })).sort((a, b) => b.dokumente - a.dokumente),
+    werke: [...data.werke.entries()].map(([werkName, w]) => {
+      const rollen = [...w.rollen.entries()]
+        .map(([n, c]) => ({ name: n, count: c }))
+        .sort((a, b) => b.count - a.count);
+      // Primary role: highest count, but only if plausible (count ≥ 2, or single role)
+      const rolleHaupt = rollen.length > 0 && (rollen[0].count >= 2 || rollen.length === 1)
+        ? rollen[0].name : null;
+      return {
+        name: werkName,
+        dokumente: w.docs.size,
+        signaturen: [...w.signaturen],
+        orte: [...w.orte.entries()].map(([n, c]) => ({ name: n, count: c })),
+        rollen,
+        rolleHaupt,
+        istOper: rolleHaupt !== null,
+      };
+    }).sort((a, b) => b.dokumente - a.dokumente),
   })).sort((a, b) => b.dokumente_gesamt - a.dokumente_gesamt);
+
+  // Split into named composers and "Andere" group
+  const hauptKomponisten = allKomponisten.filter(k => k.dokumente_gesamt > ANDERE_THRESHOLD);
+  const andereKomponisten = allKomponisten.filter(k => k.dokumente_gesamt <= ANDERE_THRESHOLD);
 
   return {
     zentrum: { name: 'Ira Malaniuk', wikidata: 'Q94208', lebensdaten: '1919\u20132009', fach: 'Mezzosopran' },
-    komponisten,
+    komponisten: hauptKomponisten,
+    andere: andereKomponisten,
+    totalDocs: allKomponisten.reduce((s, k) => s + k.dokumente_gesamt, 0),
   };
 }
 

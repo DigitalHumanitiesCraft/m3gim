@@ -1,4 +1,4 @@
-/* M³GIM Kosmos Tab Styles */
+/* M³GIM Kosmos Tab Styles — Deterministic concentric layout */
 
 .kosmos-container {
   position: relative;
@@ -10,6 +10,17 @@
   background: var(--color-cream);
   overflow: hidden;
 }
+
+.kosmos-container svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+}
+
+/* =========================================================================
+   Zoom Reset Button
+   ========================================================================= */
 
 .kosmos-zoom-reset {
   position: absolute;
@@ -34,21 +45,16 @@
   color: var(--color-text-primary);
 }
 
-.kosmos-container svg {
-  display: block;
-  width: 100%;
-  height: 100%;
-  touch-action: none;
-}
+/* =========================================================================
+   Nodes
+   ========================================================================= */
 
-.kosmos-node--zentrum {
-  cursor: default;
-}
+.kosmos-node { cursor: pointer; }
+.kosmos-node--zentrum { cursor: default; }
 
-.kosmos-node--komponist,
-.kosmos-node--werk {
-  cursor: pointer;
-}
+/* =========================================================================
+   Labels
+   ========================================================================= */
 
 .kosmos-label {
   font-family: var(--font-ui);
@@ -74,51 +80,61 @@
   fill: var(--color-text-secondary);
 }
 
+.kosmos-label--andere {
+  font-size: 11px;
+  font-style: italic;
+  fill: var(--color-text-tertiary);
+}
+
+/* =========================================================================
+   Role Badges (pill labels near opera work nodes)
+   ========================================================================= */
+
+.kosmos-role-badge {
+  font-family: var(--font-ui);
+  font-size: 9px;
+  font-weight: var(--weight-medium);
+  fill: var(--color-text-primary);
+  pointer-events: none;
+  user-select: none;
+}
+
+/* =========================================================================
+   Links
+   ========================================================================= */
+
 .kosmos-link {
-  stroke-opacity: 0.55;
   fill: none;
 }
 
-.kosmos-legend {
-  display: flex;
-  align-items: center;
-  gap: var(--space-4);
-  margin-top: var(--space-3);
+/* =========================================================================
+   Floating Tooltip (HTML over SVG, like Mobilität)
+   ========================================================================= */
+
+.kosmos-tooltip {
+  position: absolute;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 150ms ease;
+  padding: var(--space-1) var(--space-2);
+  background: var(--color-text-primary);
+  color: var(--color-text-inverse);
+  font-family: var(--font-ui);
   font-size: var(--text-xs);
-  color: var(--color-text-tertiary);
-  flex-wrap: wrap;
+  line-height: 1.45;
+  max-width: 280px;
+  border-radius: var(--border-radius);
+  z-index: 200;
 }
 
-.kosmos-legend__item {
-  display: flex;
-  align-items: center;
-  gap: var(--space-1);
+.kosmos-tooltip--visible {
+  opacity: 1;
 }
 
-.kosmos-legend__dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-}
+/* =========================================================================
+   Popup (Komponist/Werk actions — cross-view navigation)
+   ========================================================================= */
 
-.kosmos-legend__sizes {
-  display: flex;
-  align-items: center;
-  margin-left: var(--space-2);
-}
-
-.kosmos-size-legend {
-  display: block;
-}
-
-.kosmos-legend__hint {
-  margin-left: auto;
-  font-style: italic;
-  color: var(--color-text-tertiary);
-  opacity: 0.7;
-}
-
-/* Kosmos Popup (for Komponist actions & Werk documents) */
 .kosmos-popup {
   position: absolute;
   z-index: 100;
@@ -169,4 +185,70 @@
   padding: 2px var(--space-2);
   color: var(--color-text-tertiary);
   font-size: var(--text-xs);
+}
+
+/* =========================================================================
+   Legend
+   ========================================================================= */
+
+.kosmos-legend {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-top: var(--space-3);
+  font-size: var(--text-xs);
+  color: var(--color-text-tertiary);
+  flex-wrap: wrap;
+}
+
+.kosmos-legend__item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.kosmos-legend__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.kosmos-legend__symbols {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.kosmos-legend__symbol-circle {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color-kug-blau);
+  opacity: 0.6;
+}
+
+.kosmos-legend__symbol-diamond {
+  width: 8px;
+  height: 8px;
+  background: var(--color-kug-blau);
+  opacity: 0.4;
+  transform: rotate(45deg);
+}
+
+.kosmos-legend__role-sample {
+  font-style: italic;
+  color: var(--color-text-primary);
+  font-weight: var(--weight-medium);
+}
+
+.kosmos-legend__sep {
+  color: var(--border-color);
+  margin: 0 2px;
+}
+
+.kosmos-legend__hint {
+  margin-left: auto;
+  font-style: italic;
+  color: var(--color-text-tertiary);
+  opacity: 0.7;
 }
