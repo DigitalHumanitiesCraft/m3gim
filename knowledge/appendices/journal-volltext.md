@@ -232,4 +232,61 @@
 
 ---
 
-Siehe auch: [→ Projekt](../projekt-kontext.md) · [→ Datenmodell](../Daten/Datenmodell%20und%20Ontologie.md) · [→ Technische Dokumentation](../Technik/Technische%20Dokumentation.md)
+## Session 18 (2026-02-25): Mobilitaet-View Verbesserungen, Knowledge-Refactor
+
+**Mobilitaet-View Verbesserungen:**
+- Floating-Tooltips (HTML-div ueber SVG) statt CSS-`::after` (SVG-Elemente unterstuetzen keine Pseudo-Elemente)
+- Dokument-Navigation: Klick auf Gastspiel-Dot → Archiv-Tab (1 Dokument) oder Popup-Menue (>1 Dokumente)
+- Popup-Menue fuer Multi-Dokument-Dots mit Signatur + Titel-Liste
+- Piecewise-linear Zeitskala: BREAK_YEAR=1975, BREAK_RATIO=0.74 komprimiert sparse 1975–2009
+- GUEST_DISPLAY_MAP normalisiert Gastspiel-Staedtenamen
+- PHASE_ABBR kuerzt Labels bei schmalen Phasen-Baendern
+- Legende ueber dem Diagramm
+- Unsichtbare Hit-Areas (14px) hinter Pfeilen
+
+**Knowledge-Refactor:**
+- 12 alte Quelldateien in `_archive/pre-refactor/` archiviert
+- 7 destillierte Wissensdokumente als flacher Vault erstellt:
+  forschung.md, datenmodell.md, pipeline.md, frontend.md, visualisierungen.md, entscheidungen.md, projekt-status.md
+- knowledge/README.md aktualisiert
+- Appendices: journal-volltext.md
+
+**Entscheidungen:**
+- E-36: Floating-Tooltip statt CSS-Pseudo-Elemente
+- E-37: Popup-Menue fuer Multi-Dokument-Dots
+- E-38: Guest-City-Display-Normalisierung via GUEST_DISPLAY_MAP
+- E-39: Piecewise-linear Zeitskala mit Skalenbruch
+
+---
+
+## Session 19 (2026-02-25): Pipeline-Audit, validate.py Fixes, Wikidata-CSVs
+
+**Pipeline-Audit:**
+- Vollstaendiger Audit ergab 69 Fehler in validate.py — alle verursacht durch einen einzigen Bug: doppelte UTF-8-Kodierung (Mojibake) in den Vokabular-Listen
+- transform.py verarbeitet alle Daten korrekt (kein Datenverlust)
+
+**validate.py Fixes:**
+- Mojibake in VOCAB["bearbeitungsstand"] korrigiert (47 E004-Fehler → 0)
+- Mojibake in KOMPOSIT_TYPEN korrigiert (21 E004-Fehler → 0)
+- `normalize_bearbeitungsstand()` eingefuehrt: Fuzzy-Matching das transform.py's Logik spiegelt
+- `is_komposit_typ()` verbessert: Input-Wert vor Vergleich `.replace(" ", "")`
+- Ergebnis: 69 Fehler → 1 (E001 PL_07-Duplikat, Sheet-seitig)
+
+**Wikidata-CSV-Export:**
+- Neues Skript `scripts/export-wikidata-csv.py`
+- 5 CSVs in `data/output/wikidata-csvs/`: person-matches (152), org-matches (3), location-matches (14), work-matches (2), unmatched (295)
+- Zweck: VLOOKUP-Import in Google Sheets fuer Nicole/Wolfgang
+
+**3 Git-Commits:**
+1. `feat: Mobilität-Tooltips, Dokument-Navigation, Popup-Menü, Skalenbruch`
+2. `docs: Knowledge-Base destilliert — 7 flache Dokumente, 12 Quellen archiviert`
+3. `fix: validate.py Encoding-Bugs, Wikidata-CSV-Export, Pipeline-Reports aktualisiert`
+
+**Erkenntnisse:**
+- Mojibake-Bugs sind subtil — `.py`-Dateien muessen konsistent UTF-8 sein
+- Fuzzy-Matching in validate.py (wie transform.py) ist robuster als exakte VOCAB-Listen
+- 177 verbleibende Warnungen (W004) sind alle Cross-Table-Mismatches — erwartetes Verhalten bei laufender Erschliessung
+
+---
+
+Siehe auch: [→ Projekt-Status](../projekt-status.md) · [→ Pipeline](../pipeline.md) · [→ Entscheidungen](../entscheidungen.md)

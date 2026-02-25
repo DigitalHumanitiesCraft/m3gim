@@ -1,6 +1,6 @@
 # M³GIM Knowledge Base
 
-> 7 destillierte Wissensdokumente als flacher Vault. Stand: Session 18.
+> 7 destillierte Wissensdokumente als flacher Vault. Stand: Session 19.
 
 ## Dokumente
 
@@ -12,11 +12,11 @@
 | [frontend.md](frontend.md) | Laufzeitmodell, Verzeichnisstruktur, Store, Routing, Schnittstellenvertrag |
 | [visualisierungen.md](visualisierungen.md) | 6 Ansichten, Interaktion, Designsystem, Offene Luecken |
 | [entscheidungen.md](entscheidungen.md) | E-01 bis E-39, Technische Schulden, Verschobene Features, Prozesswissen |
-| [projekt-status.md](projekt-status.md) | Steckbrief, Meilensteine, Umsetzungsstand, Gap-Analyse, Naechste Schritte |
+| [projekt-status.md](projekt-status.md) | Steckbrief, Umsetzungsstand, Gap-Analyse, Naechste Schritte |
 
 ## Weitere Ressourcen
 
-- `appendices/` — [Journal Volltext](appendices/journal-volltext.md), [Meeting 2026-02-24](appendices/meeting-2026-02-24.md)
+- `appendices/` — [Journal Volltext](appendices/journal-volltext.md)
 - `_archive/pre-refactor/` — 12 archivierte Quelldateien der frueheren Ordnerstruktur
 
 ## Pflegehinweis

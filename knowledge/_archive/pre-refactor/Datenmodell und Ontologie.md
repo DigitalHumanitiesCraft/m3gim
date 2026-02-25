@@ -234,7 +234,7 @@ Gastspiel-Daten kommen NICHT aus partitur.json, sondern werden zur Laufzeit aus 
 - Kritische Datenverluste (fehlende Signatur/Typ) muessen in den Quelltabellen behoben werden.
 - Diese Datei definiert Modell- und Verarbeitungslogik; Priorisierung der Behebung steht in `knowledge/Prozess/Operativer Plan.md`.
 
-## Offene Fragen (Handreichung, Kick-off)
+## Offene Fragen
 
 - Transliteration ukrainischer Namen — welcher Standard? (ISO 9, wissenschaftliche Transliteration, vereinfachte Umschrift)
 - Titelbildung — wie viel Normierung, wie viel Quellennaehe?

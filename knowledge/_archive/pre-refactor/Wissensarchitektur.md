@@ -144,6 +144,6 @@ Detail in Verknuepfungstabelle:
 | Dokument | Rolle | Pflegeort |
 |----------|-------|-----------|
 | antrag.md (= Wissensdokument v2) | Historisches Referenzdokument, nicht aktualisierbar | Repo-Root (read-only) |
-| handreichung.md | Erfassungsanleitung fuer KUG-Team, lebend | Repo-Root (zu aktualisieren nach Kick-off) |
+| handreichung.md | Erfassungsanleitung fuer KUG-Team, lebend | Repo-Root |
 | knowledge/*.md | Kanonische Wissensbasis, Code-nah | knowledge/ (aktiv gepflegt) |
 | docs/*.html | Oeffentliche Darstellung | docs/ (bei Pipeline-Lauf aktualisieren) |

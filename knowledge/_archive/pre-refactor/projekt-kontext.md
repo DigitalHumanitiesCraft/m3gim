@@ -12,8 +12,6 @@
 - **Projektleitung:** Nicole K. Strohmann (Professur fuer Historische Musikwissenschaft und Genderforschung, KUG)
 - **Kooperationspartner:** Wolfgang Madl (Archiv KUG), Christopher Pollin (DH Craft OG)
 - **Beratend:** Georg Vogeler (Institut fuer Digitale Geisteswissenschaften, Universitaet Graz)
-- **Foerderinstitutionen:** KUG Eigenmittel, Stadt Graz, Mariann Steegmann Foundation
-- **Foerderzeitraum:** 01.03.2026 – 29.02.2027 (12 Monate)
 - **Raeumlicher Fokus:** Oper Graz in der Nachkriegszeit (1945–1969)
 - **Technischer Kern:** Python-Datenpipeline + statisches Frontend auf GitHub Pages
 - **Live-Umgebung:** https://dhcraft.org/m3gim
@@ -78,19 +76,6 @@ Die Mobilitaet von Saenger:innen war nicht nur notwendige Voraussetzung fuer ihr
 - Ein blockierender Fehler im Rohbestand dokumentiert: Duplikat `UAKUG/NIM/PL_07`
 - Kritische Erfassungsluecken: fehlende Signatur- und Typwerte in Teilen der Verknuepfungstabelle
 - Strukturelle Probleme in drei Indizes (Header-Shift), pipeline-seitig abgefedert
-
-## Meilensteine
-
-### Projektmeilensteine (Antrag)
-
-| Datum | Meilenstein |
-|-------|-------------|
-| Maerz 2026 | Kick-off, Projektstart |
-| April 2026 | Studientag (projektinterner Austausch) |
-| 24.04.2026 | Lange Nacht der Forschung (oeffentliche Sichtbarkeit) |
-| September 2026 | Arbeitsgespraech (externe Expert:innen, Zeitgenoss:innen, Grazer Opernfreunde) |
-| Januar 2027 | Studientag (finale Abstimmung, Vorbereitung Go live) |
-| Maerz 2027 | Go live (Online-Veroeffentlichung) |
 
 ### Technische Iterationen
 

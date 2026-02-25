@@ -199,13 +199,7 @@ Drei parallele Systeme (zu vereinheitlichen):
 |--------|-------|
 | Handreichung (Soll) | in_bearbeitung, schicht1_fertig, schicht2_fertig, abgeschlossen |
 | Pipeline (transform.py) | begonnen, abgeschlossen, zurueckgestellt |
-| Meeting-Doku | vollstaendig, in bearbeitung, offen |
+
 
 Empfehlung: Handreichungs-System (4 Werte, bildet Schichtfortschritt ab).
 
-## Offene Fragen
-
-- Transliteration ukrainischer Namen — welcher Standard?
-- Titelbildung — wie viel Normierung, wie viel Quellennaehe?
-- Fremdsprachige Dokumente — Titel auf Deutsch oder Originalsprache?
-- Vier-Augen-Prinzip bei der Erfassung?

@@ -67,15 +67,6 @@ Aus dem Abgleich Antrag + Handreichung vs. Pipeline (Session 14):
 9. **EAD-Kompatibilitaet:** Antrag erwaehnt Test, nicht umgesetzt.
 10. **Digitalisate-Strategie:** Platzhalter-URLs, finale Loesung offen.
 
-## Offene Handreichungs-Fragen (Kick-off)
-
-Diese Punkte sind in der Handreichung als "OFFEN" markiert und muessen im Kick-off-Meeting geklaert werden:
-
-1. Transliteration ukrainischer Namen — welcher Standard?
-2. Titelbildung — wie viel Normierung, wie viel Quellennaehe?
-3. Fremdsprachige Dokumente — Titel auf Deutsch oder Originalsprache?
-4. Vier-Augen-Prinzip bei der Erfassung?
-
 ## Priorisierte Korrekturpunkte (Doku vs Code)
 
 1. Historische Tooling-Referenzen (Vite/package.json) nicht mehr als Ist-Stand behandeln.
@@ -87,7 +78,7 @@ Diese Punkte sind in der Handreichung als "OFFEN" markiert und muessen im Kick-o
 1. ~~Ereignis-Typ und Detail-Typ in transform.py implementieren.~~ → erledigt.
 2. ~~datierungsevidenz-Feld in Pipeline aufnehmen.~~ → erledigt.
 3. ~~Reconciliation-Workflow spezifizieren und implementieren (`reconcile.py`).~~ → erledigt.
-4. Erfassungsstatus mit Team vereinheitlichen (Kick-off).
+4. Erfassungsstatus mit Team vereinheitlichen.
 5. Datenqualitaetsluecken in den Quelltabellen reduzieren.
 6. Wissenskorb-Export (CSV/BibTeX) evaluieren.
 7. Reports und KB synchron halten.

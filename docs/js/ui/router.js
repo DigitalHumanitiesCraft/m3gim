@@ -3,8 +3,7 @@
  * Info pages (about, projekt, modell, hilfe) are standalone HTML files.
  */
 
-const TABS = ['archiv', 'indizes', 'mobilitaet', 'korb'];
-const HIDDEN_TABS = ['matrix', 'kosmos']; // ausgeblendet fuer Demo, Code bleibt
+const TABS = ['archiv', 'indizes', 'mobilitaet', 'matrix', 'kosmos', 'korb'];
 const ALL_VIEWS = [...TABS];
 
 const state = {

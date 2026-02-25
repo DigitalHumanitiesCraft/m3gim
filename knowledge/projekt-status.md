@@ -11,36 +11,26 @@
 - **Projektleitung:** Nicole K. Strohmann (Professur fuer Historische Musikwissenschaft und Genderforschung, KUG)
 - **Kooperationspartner:** Wolfgang Madl (Archiv KUG), Christopher Pollin (DH Craft OG)
 - **Beratend:** Georg Vogeler (Institut fuer Digitale Geisteswissenschaften, Universitaet Graz)
-- **Foerderinstitutionen:** KUG Eigenmittel, Stadt Graz, Mariann Steegmann Foundation
-- **Foerderzeitraum:** 01.03.2026 – 29.02.2027 (12 Monate)
 - **Raeumlicher Fokus:** Oper Graz in der Nachkriegszeit (1945–1969)
 - **Technischer Kern:** Python-Datenpipeline + statisches Frontend auf GitHub Pages
 - **Live-Umgebung:** https://dhcraft.org/m3gim
 
-## Meilensteine
-
-| Datum | Meilenstein |
-|-------|-------------|
-| Maerz 2026 | Kick-off, Projektstart |
-| April 2026 | Studientag (projektinterner Austausch) |
-| 24.04.2026 | Lange Nacht der Forschung (oeffentliche Sichtbarkeit) |
-| September 2026 | Arbeitsgespraech (externe Expert:innen, Zeitgenoss:innen, Grazer Opernfreunde) |
-| Januar 2027 | Studientag (finale Abstimmung, Vorbereitung Go live) |
-| Maerz 2027 | Go live (Online-Veroeffentlichung) |
-
-## Datenstand
+## Datenstand (Stand: 2026-02-25)
 
 - 282 Objekte (255 Konvolute, 26 Plakate, 1 Tontraeger)
 - 1.246 effektive Verknuepfungen (nach Filterung leerer/Template-Zeilen)
-- 4 Indizes: Personen (313), Organisationen (64), Orte (43), Werke (94)
+- 4 Indizes: Personen (296), Organisationen (59), Orte (31), Werke (96)
 - 62/282 Objekte mit mindestens einer Verknuepfung (22%)
 - Verknuepfungs-Schwerpunkt: NIM_003, NIM_004, NIM_007
+- Validierung: 1 Fehler (E001 PL_07-Duplikat, Sheet-seitig), 177 Warnungen (W004 Cross-Table)
 
 ## Umsetzungsstand
 
 ### Erreichte Kernpunkte
 
-- Pipeline Iteration 2 lauffaehig (explore → validate → transform → build-views)
+- Pipeline Iteration 2 lauffaehig (explore → validate → transform → build-views → reconcile)
+- validate.py Encoding-Bugs gefixt (Session 19): Mojibake in VOCAB + KOMPOSIT_TYPEN, `normalize_bearbeitungsstand()` eingefuehrt
+- Wikidata-CSV-Export: 5 CSVs fuer Google-Sheets-Import (export-wikidata-csv.py)
 - Frontend: 19 JS-Module, 10 CSS, 4 aktive Tabs (Archiv, Indizes, Mobilitaet, Korb)
 - Archiv UX: Sortierung, Autocomplete, erweiterte Suche, Inline-Expansion, Bookmark-Icons
 - Indizes Explorer: Facettensuche, Cross-Navigation, Wikidata-Icons, WD-Coverage
@@ -60,38 +50,33 @@
 
 ## Gap-Analyse: Offene Pipeline-Implementierungen
 
-### Erledigt (Session 17/18)
+### Erledigt (Session 17–19)
 
 1. ~~Ereignis-Typ (`typ: ereignis`)~~ → implementiert als `m3gim:PerformanceEvent`
 2. ~~Detail-Typ (`typ: detail`, Schicht 3)~~ → implementiert als `m3gim:DetailAnnotation`
 3. ~~reconcile.py~~ → 171 Matches
 4. ~~datierungsevidenz~~ → implementiert als `m3gim:dateEvidence`
+5. ~~validate.py Encoding-Bugs~~ → Mojibake gefixt, `normalize_bearbeitungsstand()` eingefuehrt (Session 19)
+6. ~~Wikidata-CSV-Export~~ → 5 CSVs in `data/output/wikidata-csvs/` (Session 19)
 
 ### Hoch (offen)
 
-5. **Erfassungsstatus vereinheitlichen:** 3 parallele Systeme → Google Sheets + transform.py synchronisieren
+7. **Erfassungsstatus vereinheitlichen:** 3 parallele Systeme → Google Sheets + transform.py synchronisieren
 
 ### Mittel
 
-6. **Wissenskorb-Export:** CSV/BibTeX
-7. **Nachhaltigkeit:** Zenodo-Archivierung vorbereiten
+8. **Wissenskorb-Export:** CSV/BibTeX
+9. **Nachhaltigkeit:** Zenodo-Archivierung vorbereiten
 
 ### Niedrig
 
-8. **box_nr und scan_status:** Antrag nennt sie, Pipeline kennt sie nicht
-9. **EAD-Kompatibilitaet:** Antrag erwaehnt Test
-10. **Digitalisate-Strategie:** Platzhalter-URLs, finale Loesung offen
-
-## Offene Handreichungs-Fragen (Kick-off)
-
-1. Transliteration ukrainischer Namen — welcher Standard?
-2. Titelbildung — wie viel Normierung, wie viel Quellennaehe?
-3. Fremdsprachige Dokumente — Titel auf Deutsch oder Originalsprache?
-4. Vier-Augen-Prinzip bei der Erfassung?
+10. **box_nr und scan_status:** Antrag nennt sie, Pipeline kennt sie nicht
+11. **EAD-Kompatibilitaet:** Antrag erwaehnt Test
+12. **Digitalisate-Strategie:** Platzhalter-URLs, finale Loesung offen
 
 ## Operative Naechste Schritte
 
-1. Erfassungsstatus mit Team vereinheitlichen (Kick-off)
+1. Erfassungsstatus mit Team vereinheitlichen
 2. Datenqualitaetsluecken in Quelltabellen reduzieren
 3. Wikidata-Ergebnisse in Google Sheets uebertragen (171 Matches vorhanden)
 4. Wissenskorb-Export (CSV/BibTeX) evaluieren
