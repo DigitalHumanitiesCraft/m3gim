@@ -1,6 +1,6 @@
 # Entscheidungen und Prozesswissen
 
-> 39 Architekturentscheidungen (E-01 bis E-39), offene Entscheidungen, technische Schulden und Learnings.
+> 40 Architekturentscheidungen (E-01 bis E-40), offene Entscheidungen, technische Schulden und Learnings.
 
 ## Architekturentscheidungen (final)
 
@@ -45,6 +45,7 @@
 | E-37 | Popup-Menue fuer Multi-Dokument-Dots — bei >1 Dokumenten pro Gastspiel-Dot |
 | E-38 | Guest-City-Display-Normalisierung via GUEST_DISPLAY_MAP |
 | E-39 | Piecewise-linear Zeitskala mit Skalenbruch (BREAK_YEAR=1975, BREAK_RATIO=0.74) |
+| E-40 | Excel-Quelldateien in `data/source/` git-getrackt (Reproduzierbarkeit statt nur Google Sheets) |
 
 ## Offene Entscheidungen
 

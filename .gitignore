@@ -60,6 +60,7 @@ dmypy.json
 *.xlsx
 *.xls
 *.csv
+!data/source/*.xlsx        # Keep source Excel spreadsheet for reproducibility
 !data/vocabularies/*.json  # Keep vocabulary files
 
 # PDF scans (too large for Git)

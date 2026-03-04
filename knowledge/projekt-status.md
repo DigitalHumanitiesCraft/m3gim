@@ -60,6 +60,12 @@
 - Dokument-Sparkline auf Mobilitaet-Timeline
 - Knowledge-Base und Vault konsolidiert
 
+### Erreicht (Session 22) — Daten-Reproduzierbarkeit
+
+- Excel-Quelldateien in `data/source/` git-getrackt (7 XLSX: Objekte, Verknuepfungen, 4 Indizes, Fotos)
+- `.gitignore` angepasst: `!data/source/*.xlsx` Ausnahme
+- Pipeline-Skripte referenzieren noch `data/google-spreadsheet/` → Migration offen
+
 ### Deferred / offen
 
 - Kosmos-Phasenfilter (Zeitdimension) — in Arbeit
@@ -96,11 +102,12 @@
 
 ## Operative Naechste Schritte
 
-1. FF-Enhancement Phase 2 abschliessen (Kosmos-Phasenfilter, Repertoire-Overlay)
-2. Erfassungsstatus mit Team vereinheitlichen
-3. Datenqualitaetsluecken in Quelltabellen reduzieren
-4. Wikidata-Ergebnisse in Google Sheets uebertragen (171 Matches vorhanden)
-5. Zenodo-Archivierung vorbereiten
+1. Pipeline-Skripte auf `data/source/` migrieren (SHEETS_DIR Pfad aendern)
+2. FF-Enhancement Phase 2 abschliessen (Kosmos-Phasenfilter, Repertoire-Overlay)
+3. Erfassungsstatus mit Team vereinheitlichen
+4. Datenqualitaetsluecken in Quelltabellen reduzieren
+5. Wikidata-Ergebnisse in Google Sheets uebertragen (171 Matches vorhanden)
+6. Zenodo-Archivierung vorbereiten
 
 ## Strategischer Kontext
 

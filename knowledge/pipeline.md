@@ -6,9 +6,9 @@
 
 | Script | Zweck | Input | Output |
 |---|---|---|---|
-| `scripts/explore.py` | Datenexploration, Strukturdiagnostik | XLSX-Exporte | `data/reports/exploration-report.md` |
-| `scripts/validate.py` | Validierung, Qualitaetschecks | XLSX-Exporte | `data/reports/validation-report.md` |
-| `scripts/transform.py` | Transformation nach JSON-LD (RiC-O + m3gim) | XLSX-Exporte | `data/output/m3gim.jsonld` |
+| `scripts/explore.py` | Datenexploration, Strukturdiagnostik | `data/source/*.xlsx` | `data/reports/exploration-report.md` |
+| `scripts/validate.py` | Validierung, Qualitaetschecks | `data/source/*.xlsx` | `data/reports/validation-report.md` |
+| `scripts/transform.py` | Transformation nach JSON-LD (RiC-O + m3gim) | `data/source/*.xlsx` | `data/output/m3gim.jsonld` |
 | `scripts/build-views.py` | View-spezifische Aggregationen | JSON-LD | `data/output/views/*.json` |
 | `scripts/reconcile.py` | Wikidata-Reconciliation (100%-Match, P31-Verifikation, Caching) | XLSX-Indizes | `data/output/wikidata-reconciliation.json` |
 | `scripts/export-wikidata-csv.py` | Wikidata-CSVs fuer Google-Sheets-Import | wikidata-reconciliation.json | `data/output/wikidata-csvs/*.csv` (5 Dateien) |
@@ -16,11 +16,13 @@
 
 ## Datenfluss (5 Stufen)
 
-1. **XLSX-Export** aus Google Sheets nach `data/google-spreadsheet/`
+1. **XLSX-Export** aus Google Sheets nach `data/source/` (git-getrackt fuer Reproduzierbarkeit)
 2. **Exploration + Validierung** (`explore.py`, `validate.py`) → Reports
 3. **Modelltransformation** (`transform.py`) → `data/output/m3gim.jsonld`
 4. **View-Aggregation** (`build-views.py`) → `data/output/views/` (matrix.json, kosmos.json, partitur.json, sankey.json)
 5. **Bereitstellung** in `docs/data/` (manuelles Copy oder Pipeline-Schritt)
+
+> **Hinweis:** Pipeline-Skripte referenzieren aktuell noch `data/google-spreadsheet/` als SHEETS_DIR. Migration auf `data/source/` steht aus.
 
 ## Pipeline-Korrekturen (Session 10 + 19)
 
