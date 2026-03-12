@@ -18,11 +18,12 @@ Dieses Repository enthaelt:
 m3gim/
 |-- knowledge/                 # Kanonische KB (7 Docs + Appendices + Archive)
 |-- data/
-|   |-- google-spreadsheet/   # XLSX-Exporte (Arbeitsstand)
-|   |-- output/               # Generierte JSON-LD/View-Daten
-|   `-- reports/              # Generierte Markdown-Reports
+|   |-- source/              # Originale XLSX-Quelldateien (reproduzierbar)
+|   |-- google-spreadsheet/  # XLSX-Exporte (Arbeitsstand)
+|   |-- output/              # Generierte JSON-LD/View-Daten
+|   `-- reports/             # Generierte Markdown-Reports
 |-- scripts/                  # Explore/Validate/Transform/Build-Views/Reconcile
-|-- docs/                     # GitHub Pages Frontend + ausgelieferte Daten
+|-- docs/                     # GitHub Pages Frontend (20 JS-Module, 11 CSS)
 `-- README.md
 ```
 
@@ -30,7 +31,7 @@ m3gim/
 
 - Datenmodell: RiC-O 1.1 + m3gim-Erweiterungen
 - Pipeline: Python 3.11+ (`pandas`, `openpyxl`)
-- Frontend: Vanilla JS (ES-Module), D3.js v7, 6 aktive Tabs
+- Frontend: Vanilla JS (ES-Module), D3.js v7, 7 aktive Tabs (4 D3-Visualisierungen)
 - Hosting: GitHub Pages
 - Normdaten: Wikidata-Q-IDs (Reconciliation via `reconcile.py`, 171 Matches)
 

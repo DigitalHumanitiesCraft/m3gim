@@ -1,0 +1,180 @@
+/* M³GIM Zeitfluss Tab — Repertoire Dot-Plot */
+
+/* Toolbar, filter chips, sort toggle, zoom reset, legend layout:
+   now use shared .viz-toolbar / .phase-chip / .viz-zoom-reset / .viz-legend
+   from components.css — view-specific symbol classes kept below */
+
+/* =========================================================================
+   Legend Symbols (view-specific shapes used inside .viz-legend)
+   ========================================================================= */
+
+.zeitfluss-legende__circle {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-text-secondary);
+}
+
+.zeitfluss-legende__diamond {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  background: var(--color-text-secondary);
+  transform: rotate(45deg);
+}
+
+.zeitfluss-legende__circle--sm {
+  width: 5px;
+  height: 5px;
+}
+
+.zeitfluss-legende__circle--lg {
+  width: 12px;
+  height: 12px;
+}
+
+.zeitfluss-legende__size-hint {
+  gap: 2px;
+}
+
+/* .zeitfluss-legende__sep / __hint → now .viz-legend__sep / __hint */
+
+/* =========================================================================
+   SVG Container
+   ========================================================================= */
+
+.zeitfluss-container {
+  width: 100%;
+  min-height: 200px;
+  background: var(--color-paper);
+  overflow: hidden;
+  position: relative;
+}
+
+.zeitfluss-zoom-rect {
+  cursor: grab;
+}
+
+.zeitfluss-zoom-rect:active {
+  cursor: grabbing;
+}
+
+.zeitfluss-container svg {
+  display: block;
+}
+
+/* =========================================================================
+   Lebensphasen Bands
+   ========================================================================= */
+
+.zeitfluss-phase-label {
+  font-family: 'Source Serif 4', serif;
+  font-style: italic;
+  font-size: 0.65rem;
+  font-weight: 600;
+  fill: #004A8F;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.zeitfluss-phase-years {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.5rem;
+  fill: var(--color-text-tertiary);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* =========================================================================
+   Y-Axis Labels (Composer names)
+   ========================================================================= */
+
+.zeitfluss-ylabel {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.zeitfluss-ylabel-count {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.55rem;
+  fill: var(--color-text-tertiary);
+  opacity: 0.6;
+}
+
+.zeitfluss-ylabel--einzel {
+  font-size: 0.6rem;
+  font-weight: 500;
+  opacity: 0.7;
+}
+
+.zeitfluss-ylabel--undatiert {
+  font-size: 0.6rem;
+  font-weight: 500;
+  fill: var(--color-text-tertiary);
+  font-style: italic;
+}
+
+/* =========================================================================
+   Dots (the core visualization)
+   ========================================================================= */
+
+.zeitfluss-dot {
+  cursor: pointer;
+  transition: fill-opacity 100ms;
+}
+
+.zeitfluss-dots {
+  transition: opacity 150ms;
+}
+
+/* =========================================================================
+   Section Dividers
+   ========================================================================= */
+
+.zeitfluss-section-divider {
+  stroke: var(--border-color);
+  stroke-width: 1;
+  stroke-dasharray: 6,4;
+  opacity: 0.5;
+}
+
+/* =========================================================================
+   Undatiert Row (inside SVG)
+   ========================================================================= */
+
+.zeitfluss-undatiert-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.5rem;
+  fill: var(--color-text-tertiary);
+  pointer-events: none;
+}
+
+/* Tooltip: now uses shared .viz-tooltip from components.css */
+
+/* .zeitfluss-coverage → now .data-coverage from components.css */
+
+/* =========================================================================
+   Axis Styling
+   ========================================================================= */
+
+.zeitfluss-axis text {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  fill: var(--color-text-secondary);
+}
+
+.zeitfluss-axis line,
+.zeitfluss-axis path {
+  stroke: var(--border-color);
+}
+
+/* =========================================================================
+   Y-Label Highlight (from cross-view navigation)
+   ========================================================================= */
+
+.zeitfluss-ylabel--highlighted {
+  font-weight: 700;
+  fill: var(--color-kug-blau) !important;
+}

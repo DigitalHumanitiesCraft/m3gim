@@ -363,4 +363,44 @@
 
 ---
 
+## Session 23 (2026-03-12): UI-Vereinheitlichung, FF-Schaerfung, Cross-View-Netzwerk
+
+**Kontext:** Kritische UI-Analyse ergab Inkonsistenzen: 4 verschiedene Toolbar-Architekturen, 3 verschiedene Phasen-Chip-Implementierungen, 3 verschiedene Tooltip-Stile, uneinheitliche Legende-Platzierung, unvollstaendiges Cross-View-Netzwerk. 6-Phasen-Optimierungsplan erstellt und umgesetzt.
+
+**Phase 0 — Zeitfluss Navigate-Listener:**
+- Zeitfluss empfaengt `m3gim:navigate`-Events und highlightet Komponisten-Zeile
+- `pendingHighlight`/`activeHighlight`-Pattern fuer Lazy-Highlight nach Render
+
+**Phase 1 — Shared Component Foundation:**
+- `components.css`: ~100 Zeilen shared CSS (`.viz-toolbar`, `.phase-chip`, `.viz-legend`, `.viz-tooltip`, `.viz-zoom-reset`)
+- `viz-components.js`: Neue Datei mit `buildFFBadges()`, `buildPhaseChips()`, `buildCoverageFooter()`
+
+**Phase 2 — Toolbar-Refactor alle 4 D3-Views:**
+- Alle 4 Views migriert auf `.viz-toolbar` + `.phase-chip` + `.viz-legend`
+- ~235 Zeilen view-spezifisches CSS entfernt
+- Mobilitaet: NEU Phase-Chip-Bar mit `applyMobPhaseFilter()` (Dimming ausserhalb gewaehlter Phase)
+
+**Phase 3 — Forschungsfragen schaerfen (FF1–FF4):**
+1. FF1: Graz-Fokus-Toggle in Matrix-Toolbar
+2. FF1: Netzwerk-Intensitaets-Overlay auf Mobilitaet
+3. FF2: Genre-Ratio-Annotation im Kosmos bei Phasenfilter
+4. FF3: Ort-Chips im Kosmos Werk-Popup (klickbar → Orte-Index)
+5. FF3: Ort-kodierte Dot-Strokes im Zeitfluss (Graz=gruen, Wien=blau, Bayreuth=gold)
+6. FF4: Repertoire-Kontext in Mobilitaets-Arrow-Tooltips
+
+**Phase 4 — Cross-View-Navigation komplettiert:**
+- 6 neue Navigationslinks: Zeitfluss↔Kosmos, Zeitfluss→Indizes, Mob→Matrix, Mob→Zeitfluss, Matrix→Mob
+
+**Phase 5 — Tooltip-Vereinheitlichung:**
+- Alle 3 D3-Views: einheitlich `.viz-tooltip` (dunkler Stil, opacity-Transition)
+
+**Bugfixes nach Screenshot-Analyse:**
+- Kosmos: Flex-Column-Layout, Reset-Button nur bei Zoom, Legende sichtbar
+- Mobilitaet: Legende-Spacing vereinheitlicht, Netzwerk-Overlay Position korrigiert
+- Console-Diagnostik fuer alle 4 Views
+
+**Neue Datei:** `docs/js/utils/viz-components.js`
+
+---
+
 Siehe auch: [→ Projekt-Status](../projekt-status.md) · [→ Pipeline](../pipeline.md) · [→ Entscheidungen](../entscheidungen.md)

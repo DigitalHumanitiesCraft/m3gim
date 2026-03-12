@@ -16,14 +16,38 @@ import {
 // Matrix
 // =========================================================================
 
-export function aggregateMatrix(store) {
-  const personMap = new Map(); // name → { kategorie, begegnungen: Map<periode, {intensitaet, docs}> }
+/**
+ * aggregateMatrix — aggregates person × life-phase heatmap data.
+ * @param {Object} store - the JSON-LD store
+ * @param {Array} lebensphasen - array of {id, label, von, bis} from partitur.json
+ *   Falls back to ZEITRAEUME-based 5-year periods when lebensphasen is empty/null.
+ */
+export function aggregateMatrix(store, lebensphasen) {
+  const phasen = lebensphasen && lebensphasen.length > 0 ? lebensphasen : null;
+  const phasenIds = phasen ? phasen.map(p => p.id) : ZEITRAEUME;
+
+  /** Map year → phase id */
+  function yearToPhase(year) {
+    if (phasen) {
+      for (const p of phasen) {
+        if (year >= p.von && year < p.bis) return p.id;
+      }
+      // Inclusive upper bound for last phase
+      const last = phasen[phasen.length - 1];
+      if (year === last.bis) return last.id;
+      return null;
+    }
+    const periode = get5YearPeriod(year);
+    return periode && ZEITRAEUME.includes(periode) ? periode : null;
+  }
+
+  const personMap = new Map(); // name → { kategorie, begegnungen: Map<phaseId, {intensitaet, docs}> }
 
   for (const record of store.allRecords) {
     const year = extractYear(record['rico:date']);
     if (!year) continue;
-    const periode = get5YearPeriod(year);
-    if (!periode || !ZEITRAEUME.includes(periode)) continue;
+    const phase = yearToPhase(year);
+    if (!phase) continue;
 
     const docType = getDocTypeId(record) || '';
     const weight = getIntensityWeight(docType);
@@ -41,7 +65,6 @@ export function aggregateMatrix(store) {
       // Skip composers — they belong in Kosmos, not Matrix
       if (isComposerName(rawName)) continue;
 
-      // Normalize known variants
       const name = normalizePerson(rawName);
 
       if (!personMap.has(name)) {
@@ -51,17 +74,23 @@ export function aggregateMatrix(store) {
         });
       }
       const person = personMap.get(name);
-      if (!person.begegnungen.has(periode)) {
-        person.begegnungen.set(periode, { intensitaet: 0, anzahl: 0, dokumente: [] });
+      if (!person.begegnungen.has(phase)) {
+        person.begegnungen.set(phase, { intensitaet: 0, anzahl: 0, dokumente: [] });
       }
-      const beg = person.begegnungen.get(periode);
+      const beg = person.begegnungen.get(phase);
       beg.intensitaet += weight;
       beg.anzahl++;
+      // Collect locations for this record
+      const recLocs = ensureArray(record['rico:hasOrHadLocation'])
+        .map(loc => loc.name || loc['rico:name'] || '')
+        .filter(Boolean);
+
       if (beg.dokumente.length < 10) {
         beg.dokumente.push({
           signatur: record['rico:identifier'],
           titel: (record['rico:title'] || '').slice(0, 80),
           typ: docType,
+          orte: recLocs,
         });
       }
     }
@@ -75,10 +104,10 @@ export function aggregateMatrix(store) {
           personMap.set(fullName, { kategorie: kat, begegnungen: new Map() });
         }
         const person = personMap.get(fullName);
-        if (!person.begegnungen.has(periode)) {
-          person.begegnungen.set(periode, { intensitaet: 0, anzahl: 0, dokumente: [] });
+        if (!person.begegnungen.has(phase)) {
+          person.begegnungen.set(phase, { intensitaet: 0, anzahl: 0, dokumente: [] });
         }
-        const beg = person.begegnungen.get(periode);
+        const beg = person.begegnungen.get(phase);
         beg.intensitaet += weight;
         beg.anzahl++;
       }
@@ -87,17 +116,23 @@ export function aggregateMatrix(store) {
 
   // Convert to sorted array
   const personen = [...personMap.entries()].map(([name, data]) => {
-    const begegnungen = ZEITRAEUME.map(z => {
+    const begegnungen = phasenIds.map(z => {
       const beg = data.begegnungen.get(z);
       return beg
         ? { zeitraum: z, intensitaet: beg.intensitaet, anzahl_dokumente: beg.anzahl, dokumente: beg.dokumente }
         : { zeitraum: z, intensitaet: 0, anzahl_dokumente: 0, dokumente: [] };
     });
     const gesamt = begegnungen.reduce((sum, b) => sum + b.intensitaet, 0);
-    return { name, kategorie: data.kategorie, begegnungen, gesamt_intensitaet: gesamt };
+    const anzahl_gesamt = begegnungen.reduce((sum, b) => sum + b.anzahl_dokumente, 0);
+    return { name, kategorie: data.kategorie, begegnungen, gesamt_intensitaet: gesamt, anzahl_gesamt };
   }).sort((a, b) => b.gesamt_intensitaet - a.gesamt_intensitaet);
 
-  return { zeitraeume: ZEITRAEUME, personen };
+  return {
+    zeitraeume: phasenIds,
+    phasenLabels: phasen ? Object.fromEntries(phasen.map(p => [p.id, p.label])) : null,
+    phasenJahre: phasen ? Object.fromEntries(phasen.map(p => [p.id, `${p.von}\u2013${p.bis}`])) : null,
+    personen,
+  };
 }
 
 function isComposerName(name) {
@@ -249,4 +284,163 @@ function normalizeKomponist(raw) {
   if (!raw) return null;
   const lower = raw.toLowerCase().trim();
   return KOMPONISTEN_NORMALISIERUNG[lower] || raw;
+}
+
+// =========================================================================
+// Zeitfluss (Temporal Flow)
+// =========================================================================
+
+export function aggregateZeitfluss(store) {
+  const kompMap = new Map(); // canonicalName → { docs: Set, undated: Set, werke: Map }
+
+  // --- Pass 1: Structured data from rico:hasOrHadSubject ---
+  for (const record of store.allRecords) {
+    const subjects = ensureArray(record['rico:hasOrHadSubject']);
+    for (const subj of subjects) {
+      if (subj['@type'] !== 'm3gim:MusicalWork') continue;
+      const werkName = subj.name || '';
+      const rawKomponist = subj.komponist || '';
+      if (!werkName && !rawKomponist) continue;
+
+      const komponist = normalizeKomponist(rawKomponist);
+      if (!komponist) continue;
+
+      if (!kompMap.has(komponist)) {
+        kompMap.set(komponist, { docs: new Set(), undated: new Set(), werke: new Map() });
+      }
+      const kEntry = kompMap.get(komponist);
+
+      const year = extractYear(record['rico:date']);
+      if (year && year >= 1900 && year <= 2020) {
+        kEntry.docs.add(record['@id']);
+      } else {
+        kEntry.undated.add(record['@id']);
+      }
+
+      if (werkName) {
+        if (!kEntry.werke.has(werkName)) {
+          kEntry.werke.set(werkName, {
+            jahre: [], orte: new Map(), rollen: new Map(),
+            signaturen: [], istOper: false,
+          });
+        }
+        const wEntry = kEntry.werke.get(werkName);
+        if (year && year >= 1900 && year <= 2020) wEntry.jahre.push(year);
+        if (record['rico:identifier']) wEntry.signaturen.push(record['rico:identifier']);
+
+        // Locations
+        const locs = ensureArray(record['rico:hasOrHadLocation']);
+        for (const loc of locs) {
+          const locName = (loc.name || '').trim();
+          if (locName && loc.role !== 'erscheinungsdatum') {
+            wEntry.orte.set(locName, (wEntry.orte.get(locName) || 0) + 1);
+          }
+        }
+
+        // Roles
+        const roles = ensureArray(record['m3gim:hasPerformanceRole']);
+        for (const role of roles) {
+          const rName = (role.name || '').trim();
+          if (rName) {
+            wEntry.rollen.set(rName, (wEntry.rollen.get(rName) || 0) + 1);
+            wEntry.istOper = true;
+          }
+        }
+      }
+    }
+  }
+
+  // --- Pass 2: Title-matching fallback (composers without structured data) ---
+  for (const record of store.allRecords) {
+    const subjects = ensureArray(record['rico:hasOrHadSubject']);
+    if (subjects.some(s => s['@type'] === 'm3gim:MusicalWork')) continue;
+
+    const title = (record['rico:title'] || '').toLowerCase();
+    for (const [keyword, komponist] of Object.entries(KOMPONISTEN_MAPPING)) {
+      if (title.includes(keyword)) {
+        if (!kompMap.has(komponist)) {
+          kompMap.set(komponist, { docs: new Set(), undated: new Set(), werke: new Map() });
+        }
+        const year = extractYear(record['rico:date']);
+        if (year && year >= 1900 && year <= 2020) {
+          kompMap.get(komponist).docs.add(record['@id']);
+        } else {
+          kompMap.get(komponist).undated.add(record['@id']);
+        }
+        break;
+      }
+    }
+  }
+
+  // --- Build output ---
+  const straenge = [];
+  const undatiert = [];
+
+  for (const [name, data] of kompMap) {
+    const allYears = [];
+    for (const [, w] of data.werke) {
+      allYears.push(...w.jahre);
+    }
+    const uniqueYears = [...new Set(allYears)].sort((a, b) => a - b);
+
+    if (uniqueYears.length === 0) {
+      // Completely undated composer
+      undatiert.push({
+        komponist: name,
+        farbe: KOMPONISTEN_FARBEN[name] || KOMPONISTEN_FARBEN['Andere'],
+        werke_count: data.werke.size,
+        dokumente_count: data.docs.size + data.undated.size,
+      });
+      continue;
+    }
+
+    const werke = [...data.werke.entries()]
+      .map(([werkName, w]) => {
+        const sorted = [...new Set(w.jahre)].sort((a, b) => a - b);
+        const topRolle = [...w.rollen.entries()].sort((a, b) => b[1] - a[1])[0];
+        return {
+          name: werkName,
+          erstbeleg: sorted.length > 0 ? sorted[0] : null,
+          letztbeleg: sorted.length > 0 ? sorted[sorted.length - 1] : null,
+          orte: [...w.orte.keys()],
+          rolle: topRolle ? topRolle[0] : null,
+          istOper: w.istOper,
+          signaturen: w.signaturen,
+          dokumente: w.signaturen.length,
+          datiert: sorted.length > 0,
+        };
+      })
+      .sort((a, b) => (a.erstbeleg || 9999) - (b.erstbeleg || 9999));
+
+    straenge.push({
+      komponist: name,
+      farbe: KOMPONISTEN_FARBEN[name] || KOMPONISTEN_FARBEN['Andere'],
+      von: uniqueYears[0],
+      bis: uniqueYears[uniqueYears.length - 1],
+      dokumente_datiert: data.docs.size,
+      dokumente_undatiert: data.undated.size,
+      werke,
+    });
+  }
+
+  // Sort: most documents first
+  straenge.sort((a, b) => b.dokumente_datiert - a.dokumente_datiert);
+
+  // Coverage stats
+  const totalRecords = store.allRecords.length;
+  const linked = store.allRecords.filter(r => ensureArray(r['rico:hasOrHadSubject']).some(s => s['@type'] === 'm3gim:MusicalWork')).length;
+  const dated = store.allRecords.filter(r => extractYear(r['rico:date'])).length;
+
+  return {
+    straenge,
+    undatiert,
+    abdeckung: {
+      total: totalRecords,
+      verknuepft: linked,
+      datiert: dated,
+      zeitspanne: straenge.length > 0
+        ? { von: Math.min(...straenge.map(s => s.von)), bis: Math.max(...straenge.map(s => s.bis)) }
+        : { von: 1940, bis: 1970 },
+    },
+  };
 }

@@ -31,7 +31,7 @@
 - Pipeline Iteration 2 lauffaehig (explore → validate → transform → build-views → reconcile)
 - validate.py Encoding-Bugs gefixt (Session 19): Mojibake in VOCAB + KOMPOSIT_TYPEN, `normalize_bearbeitungsstand()` eingefuehrt
 - Wikidata-CSV-Export: 5 CSVs fuer Google-Sheets-Import (export-wikidata-csv.py)
-- Frontend: 19 JS-Module, 10 CSS, 6 aktive Tabs (Archiv, Indizes, Mobilitaet, Matrix, Kosmos, Korb)
+- Frontend: 20 JS-Module, 11 CSS, 7 aktive Tabs (Archiv, Indizes, Mobilitaet, Zeitfluss, Matrix, Kosmos, Korb)
 - Archiv UX: Sortierung, Autocomplete, erweiterte Suche, Inline-Expansion, Bookmark-Icons
 - Indizes Explorer: Facettensuche, Cross-Navigation, Wikidata-Icons, WD-Coverage
 - Mobilitaet-View: Schwimmbahn-Timeline mit D3, Floating-Tooltips, Dokument-Navigation, Popup-Menue
@@ -66,10 +66,24 @@
 - `.gitignore` angepasst: `!data/source/*.xlsx` Ausnahme
 - Pipeline-Skripte referenzieren noch `data/google-spreadsheet/` → Migration offen
 
+### Erreicht (Session 23) — UI-Vereinheitlichung + FF-Schaerfung
+
+- **Zeitfluss-View** neu: Chronologischer Dot-Plot (D3) mit Gattungsfilter, Phasen-Zoom, Ort-kodierten Dot-Raendern
+- **Shared Component System**: `.viz-toolbar`, `.phase-chip`, `.viz-legend`, `.viz-tooltip`, `.viz-zoom-reset` in components.css
+- **JS-Builder**: `viz-components.js` mit `buildFFBadges()`, `buildPhaseChips()`, `buildCoverageFooter()`
+- **Einheitliches Layout** in allen 4 D3-Views: Toolbar → Visualisierung → Legende → Coverage
+- **Cross-View Navigation komplett**: 4×6 Navigationsmatrix (Matrix ↔ Kosmos ↔ Zeitfluss ↔ Mobilitaet ↔ Indizes ↔ Archiv)
+- **FF-Schaerfungen**:
+  - FF1: Graz-Fokus-Toggle in Matrix, Netzwerk-Intensitaets-Overlay auf Mobilitaet
+  - FF2: Genre-Ratio-Annotation bei Kosmos-Phasenfilter
+  - FF3: Ort-Chips in Kosmos Werk-Popup, Ort-kodierte Dot-Raender im Zeitfluss
+  - FF4: Repertoire-Kontext in Mobilitaets-Arrow-Tooltips, Phasen-Filter auf Mobilitaet
+- **Tooltip-Vereinheitlichung**: Alle 3 D3-Views nutzen `.viz-tooltip` (dunkel, opacity-Transition)
+- **Console-Diagnostik**: Strukturierte Gruppenausgabe in allen 4 D3-Views
+- ~270 Zeilen view-spezifisches CSS entfernt, ~180 Zeilen shared CSS eingefuehrt
+
 ### Deferred / offen
 
-- Kosmos-Phasenfilter (Zeitdimension) — in Arbeit
-- Repertoire-Overlay auf Mobilitaet-Timeline — offen
 - Matrix-Zeitauflosung und Sortierausbau
 - Erweiterte Indextiefe (z.B. Orts-Hierarchien)
 - Leaflet-Karte
@@ -103,11 +117,10 @@
 ## Operative Naechste Schritte
 
 1. Pipeline-Skripte auf `data/source/` migrieren (SHEETS_DIR Pfad aendern)
-2. FF-Enhancement Phase 2 abschliessen (Kosmos-Phasenfilter, Repertoire-Overlay)
+2. Datenqualitaetsluecken in Quelltabellen reduzieren (22% Verknuepfungsrate erhoehen)
 3. Erfassungsstatus mit Team vereinheitlichen
-4. Datenqualitaetsluecken in Quelltabellen reduzieren
-5. Wikidata-Ergebnisse in Google Sheets uebertragen (171 Matches vorhanden)
-6. Zenodo-Archivierung vorbereiten
+4. Wikidata-Ergebnisse in Google Sheets uebertragen (171 Matches vorhanden)
+5. Zenodo-Archivierung vorbereiten
 
 ## Strategischer Kontext
 

@@ -4,19 +4,12 @@
   padding: var(--space-6);
 }
 
-.mob__header-row {
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-4);
-  margin-bottom: var(--space-4);
-}
+/* Toolbar: uses shared .viz-toolbar from components.css */
 
-.mob__heading {
-  font-family: var(--font-title);
-  font-size: var(--text-xl);
-  font-weight: var(--weight-semibold);
-  color: var(--color-text-primary);
-  margin-bottom: 0;
+/* Phase filter dimming */
+.mob--phase-dimmed {
+  opacity: 0.12;
+  transition: opacity 200ms;
 }
 
 .mob__container {
@@ -52,16 +45,13 @@
   display: none;
 }
 
-/* Legend (above diagram) */
+/* Legend (below diagram — unified placement) */
 .mob__legend {
   display: flex;
   align-items: center;
-  gap: var(--space-4);
-  margin-bottom: var(--space-2);
-  padding: var(--space-1) 0;
-  border-bottom: 1px solid var(--border-color-light);
-  font-family: var(--font-ui);
-  font-size: var(--text-xs);
+  gap: var(--space-1) var(--space-2);
+  padding: var(--space-1) var(--space-2);
+  font-size: 0.7rem;
   color: var(--color-text-tertiary);
   flex-wrap: wrap;
 }
@@ -108,26 +98,7 @@
   transform: rotate(45deg);
 }
 
-/* Floating tooltip for SVG elements */
-.mob__tooltip {
-  position: absolute;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 150ms ease;
-  padding: var(--space-1) var(--space-2);
-  background: var(--color-text-primary);
-  color: var(--color-text-inverse);
-  font-family: var(--font-ui);
-  font-size: var(--text-xs);
-  line-height: 1.45;
-  white-space: pre-line;
-  max-width: 280px;
-  border-radius: var(--border-radius);
-  z-index: 200;
-}
-.mob__tooltip--visible {
-  opacity: 1;
-}
+/* Tooltip: now uses shared .viz-tooltip from components.css */
 
 /* Popup menu for multi-document dots */
 .mob__popup {

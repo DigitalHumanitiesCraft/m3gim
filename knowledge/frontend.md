@@ -27,17 +27,19 @@
 
 ### Frontend-Module
 
-19 JS-Module unter `docs/js/`:
+20 JS-Module unter `docs/js/`:
 
 | Pfad | Zweck |
 |------|-------|
 | `main.js` | Einstiegspunkt, Lazy-Tab-Rendering |
 | `data/loader.js` | Dataloading, Store-Aufbau |
-| `ui/router.js` | Hash-Routing (6 aktive Tabs) |
+| `data/aggregator.js` | Daten-Aggregation fuer Views |
+| `ui/router.js` | Hash-Routing (6 aktive Tabs), navigateToView/navigateToIndex |
 | `ui/korb.js` | Wissenskorb (sessionStorage) |
 | `views/archiv.js` | Bestand + Chronik |
 | `views/indizes.js` | 4-Grid Explorer |
 | `views/mobilitaet.js` | Schwimmbahn-Timeline (D3) |
+| `views/zeitfluss.js` | Chronologischer Dot-Plot (D3) |
 | `views/korb.js` | Korb-Cards |
 | `views/matrix.js` | Person×Zeit-Heatmap (D3) |
 | `views/kosmos.js` | Repertoire-Force-Graph (D3) |
@@ -45,8 +47,9 @@
 | `utils/dom.js` | DOM-Helfer (el, clear) |
 | `utils/date-parser.js` | Datumsparser |
 | `utils/normalize.js` | Normalisierung |
+| `utils/viz-components.js` | Shared Viz-Builder (FF-Badges, Phase-Chips, Coverage) |
 
-10 CSS-Dateien unter `docs/css/` (variables, base, archiv, indizes, mobilitaet, korb, matrix, kosmos, components, pages).
+11 CSS-Dateien unter `docs/css/` (variables, base, archiv, indizes, mobilitaet, korb, matrix, kosmos, zeitfluss, components, pages).
 
 ### Info-Seiten (statisches HTML, kein JS)
 
@@ -55,7 +58,7 @@ Einheitliches Template: info-header, info-nav, info-main, info-footer. Lesebreit
 
 ## Routing
 
-- Hash-basiert in `router.js`: 6 aktive Tabs (archiv, indizes, mobilitaet, matrix, kosmos, korb)
+- Hash-basiert in `router.js`: 7 aktive Tabs (archiv, indizes, mobilitaet, zeitfluss, matrix, kosmos, korb)
 - Deep Links: `#archiv/UAKUG/NIM_003%20Folio%2001` fuer Datensatzkontext
 - Info-Seiten als eigenstaendige HTML-Dateien (normale Links, kein Hash-Routing)
 - `navigateToIndex(gridType, entityName)` fuer Cross-Tab-Navigation

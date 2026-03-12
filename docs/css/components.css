@@ -135,6 +135,7 @@
   gap: var(--space-1);
   margin-left: auto;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .ff-badges__tag {
@@ -256,3 +257,163 @@
   bottom: auto;
   top: calc(100% + 4px);
 }
+
+/* =========================================================================
+   Viz-Toolbar — shared layout for all D3 visualization toolbars
+   ========================================================================= */
+
+.viz-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  flex-shrink: 0;
+}
+
+.viz-toolbar__row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.viz-toolbar__group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.viz-toolbar__label {
+  font-size: 0.6rem;
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-right: 2px;
+}
+
+.viz-toolbar__sep {
+  width: 1px;
+  height: 16px;
+  background: var(--border-color);
+  margin: 0 2px;
+}
+
+/* =========================================================================
+   Phase Chip — unified button for Lebensphasen in all views
+   ========================================================================= */
+
+.phase-chip {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: var(--weight-medium);
+  color: var(--color-text-secondary);
+  background: var(--color-bg-subtle, #f5f2ec);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 2px 8px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 150ms, color 150ms, border-color 150ms;
+}
+
+.phase-chip:hover {
+  border-color: var(--color-kug-blau);
+  color: var(--color-kug-blau);
+}
+
+.phase-chip--active {
+  background: var(--color-kug-blau);
+  color: var(--color-text-inverse);
+  border-color: var(--color-kug-blau);
+}
+
+.phase-chip--active:hover {
+  background: #003670;
+  border-color: #003670;
+}
+
+/* =========================================================================
+   Viz Legend — unified legend bar below visualization
+   ========================================================================= */
+
+.viz-legend {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-2);
+  padding: var(--space-1) var(--space-2);
+  font-size: 0.7rem;
+  color: var(--color-text-tertiary);
+}
+
+.viz-legend__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.viz-legend__sep {
+  color: var(--border-color);
+  margin: 0 2px;
+}
+
+.viz-legend__hint {
+  font-style: italic;
+  opacity: 0.7;
+}
+
+/* =========================================================================
+   Floating Tooltip — unified dark tooltip for all D3 views
+   ========================================================================= */
+
+.viz-tooltip {
+  position: absolute;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 150ms ease;
+  padding: var(--space-1) var(--space-2);
+  background: var(--color-text-primary);
+  color: var(--color-text-inverse);
+  font-family: var(--font-ui);
+  font-size: var(--text-xs);
+  line-height: var(--leading-normal);
+  white-space: pre-line;
+  max-width: 300px;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-sm);
+  z-index: 200;
+}
+
+.viz-tooltip--visible { opacity: 1; }
+
+.viz-tooltip .tt-werk { font-style: italic; margin-left: 4px; }
+.viz-tooltip .tt-type { font-size: 0.65rem; font-weight: 500; }
+.viz-tooltip .tt-orte { font-size: 0.65rem; color: #7ab8f5; }
+.viz-tooltip .tt-meta { font-family: var(--font-mono); font-size: 0.6rem; opacity: 0.7; }
+
+/* =========================================================================
+   Zoom Reset — unified button (absolute in SVG container)
+   ========================================================================= */
+
+.viz-zoom-reset {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-family: var(--font-ui);
+  font-size: 0.6rem;
+  font-weight: 500;
+  color: var(--color-kug-blau);
+  background: rgba(255,255,255,0.9);
+  border: 1px solid rgba(0,74,143,0.25);
+  border-radius: var(--border-radius);
+  padding: 3px 8px;
+  cursor: pointer;
+  transition: background 150ms, opacity 150ms;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.viz-zoom-reset--visible { opacity: 1; pointer-events: auto; }
+.viz-zoom-reset:hover { background: rgba(0,74,143,0.08); }

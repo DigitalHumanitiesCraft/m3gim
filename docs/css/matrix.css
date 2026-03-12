@@ -1,26 +1,29 @@
 /* M³GIM Matrix Tab Styles */
 
-.matrix-toolbar {
+#tab-matrix.tab-content.active {
   display: flex;
-  align-items: center;
-  gap: var(--space-4);
-  margin-bottom: var(--space-4);
-  flex-wrap: wrap;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 0;
 }
 
-.matrix-filter-group {
+.matrix-wrapper {
   display: flex;
-  align-items: center;
-  gap: var(--space-3);
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  padding: var(--space-4) var(--space-5);
+  box-sizing: border-box;
 }
 
-.matrix-filter-label {
-  font-size: var(--text-xs);
-  font-weight: var(--weight-semibold);
-  color: var(--color-text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+.matrix-loading {
+  padding: 40px;
+  text-align: center;
+  color: var(--color-text-tertiary);
+  font-style: italic;
 }
+
+/* Toolbar layout: uses shared .viz-toolbar from components.css */
 
 .matrix-checkbox-group {
   display: flex;
@@ -53,24 +56,217 @@
   border-radius: 50%;
 }
 
+.matrix-select {
+  font-size: var(--text-xs);
+  font-family: var(--font-ui);
+  padding: 3px 6px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  background: white;
+  color: var(--color-text-primary);
+  cursor: pointer;
+  max-width: 180px;
+}
+
+.matrix-select:focus {
+  border-color: var(--color-kug-blau);
+  outline: none;
+}
+
+.matrix-active-filters:empty {
+  display: none;
+}
+
+.matrix-active-filters {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.matrix-active-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  background: var(--color-kug-blau);
+  color: white;
+}
+
+.matrix-active-filter__close {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.7);
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  padding: 0 0 0 2px;
+}
+
+.matrix-active-filter__close:hover {
+  color: white;
+}
+
 .matrix-sparkline {
-  overflow-x: auto;
   margin-bottom: 2px;
+  flex-shrink: 0;
 }
 
 .matrix-sparkline svg {
   display: block;
 }
 
+/* Heatmap container: takes available space */
 .matrix-container {
-  overflow: auto;
-  max-height: calc(100vh - 330px);
+  flex: 1;
+  min-height: 120px;
+  overflow-y: auto;
   border: 1px solid var(--border-color-light);
   border-radius: var(--border-radius);
 }
 
 .matrix-container svg {
   display: block;
+}
+
+/* =========================================================================
+   Periphery — compact chip list for persons with few docs
+   ========================================================================= */
+
+.matrix-periphery:empty {
+  display: none;
+}
+
+.matrix-periphery {
+  flex-shrink: 0;
+  margin-top: var(--space-3);
+  border-top: 1px solid var(--border-color-light);
+  padding-top: var(--space-3);
+}
+
+.matrix-periphery__header {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: var(--space-2);
+}
+
+.matrix-periphery__grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 6px;
+}
+
+.matrix-periphery__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 7px;
+  border-radius: 10px;
+  font-size: 0.7rem;
+  color: var(--color-text-secondary);
+  background: var(--color-cream);
+  border: 1px solid var(--border-color-light);
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+  white-space: nowrap;
+}
+
+.matrix-periphery__chip:hover {
+  background: white;
+  border-color: var(--color-kug-blau);
+  color: var(--color-text-primary);
+}
+
+.matrix-periphery__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.matrix-periphery__cat {
+  font-size: 0.6rem;
+  opacity: 0.6;
+}
+
+.matrix-periphery__count {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  opacity: 0.5;
+}
+
+/* Collapsible phase groups */
+.matrix-periphery__group {
+  margin-bottom: 2px;
+}
+
+.matrix-periphery__group-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-2);
+  cursor: pointer;
+  user-select: none;
+  border-radius: var(--border-radius);
+  transition: background var(--transition-fast);
+}
+
+.matrix-periphery__group-header:hover {
+  background: var(--color-cream);
+}
+
+.matrix-periphery__toggle {
+  display: flex;
+  align-items: center;
+  color: var(--color-text-tertiary);
+  transition: transform 150ms ease;
+}
+
+.matrix-periphery__group-header--collapsed .matrix-periphery__toggle {
+  transform: rotate(-90deg);
+}
+
+.matrix-periphery__phase-label {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-secondary);
+}
+
+.matrix-periphery__phase-jahre {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--color-text-tertiary);
+}
+
+.matrix-periphery__group-count {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  background: var(--color-cream);
+  padding: 1px 6px;
+  border-radius: 8px;
+  color: var(--color-text-secondary);
+}
+
+.matrix-periphery__group-body {
+  padding: var(--space-1) 0 var(--space-1) 24px;
+}
+
+/* =========================================================================
+   Bottom bar
+   ========================================================================= */
+
+.matrix-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-shrink: 0;
+  flex-wrap: wrap;
 }
 
 .matrix-legend {
@@ -103,12 +299,15 @@
 }
 
 .matrix-drilldown {
-  margin-top: var(--space-4);
+  margin-top: var(--space-3);
   border: 1px solid var(--border-color);
   border-left: 3px solid var(--color-kug-blau);
   border-radius: var(--border-radius);
   background: white;
   padding: var(--space-3) var(--space-4);
+  flex-shrink: 0;
+  max-height: 35vh;
+  overflow-y: auto;
 }
 
 .matrix-drilldown__header {
@@ -146,6 +345,22 @@
   transition: var(--transition-fast);
 }
 .matrix-drilldown__kosmos-link:hover {
+  background: var(--color-kug-blau);
+  color: var(--color-text-inverse);
+  border-color: var(--color-kug-blau);
+}
+
+.matrix-drilldown__zeitfluss-link {
+  font-size: var(--text-xs);
+  color: var(--color-kug-blau);
+  cursor: pointer;
+  text-decoration: none;
+  padding: 2px 6px;
+  border: 1px solid var(--border-color-light);
+  border-radius: 10px;
+  transition: var(--transition-fast);
+}
+.matrix-drilldown__zeitfluss-link:hover {
   background: var(--color-kug-blau);
   color: var(--color-text-inverse);
   border-color: var(--color-kug-blau);

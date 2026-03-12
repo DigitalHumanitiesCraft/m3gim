@@ -7,6 +7,7 @@
 import { aggregateKosmos } from '../data/aggregator.js';
 import { selectRecord, navigateToIndex, navigateToView } from '../ui/router.js';
 import { el, clear } from '../utils/dom.js';
+import { buildFFBadges, buildPhaseChips } from '../utils/viz-components.js';
 
 let rendered = false;
 let storeRef = null;
@@ -26,20 +27,29 @@ export function renderKosmos(store, container) {
   const data = aggregateKosmos(store);
   clear(container);
 
-  // FF-Badges
-  container.appendChild(el('div', { className: 'kosmos-header-row' },
-    el('div', { className: 'ff-badges' },
-      el('span', { className: 'ff-badges__tag' }, 'FF2'),
-      el('span', { className: 'ff-badges__tag' }, 'FF3'),
-    ),
-  ));
+  console.group('%c[Kosmos]', 'color: #2E7D4F; font-weight: bold');
+  console.log(`${data.komponisten.length} Komponisten, ${data.totalDocs} Dok. gesamt`);
+  data.komponisten.forEach(k => {
+    const opern = k.werke.filter(w => w.istOper).length;
+    const konzerte = k.werke.filter(w => !w.istOper).length;
+    console.log(`  ${k.name}: ${k.dokumente_gesamt} Dok., ${opern} Opern, ${konzerte} Konzerte, ${k.werke.length} Werke`);
+  });
+  console.groupEnd();
 
-  // Phase filter bar (populated async after partitur.json loads)
-  const phaseBar = el('div', { className: 'kosmos-phase-bar' });
-  container.appendChild(phaseBar);
+  // Toolbar: phase chips (populated async) + FF-badges
+  const toolbarRow = el('div', { className: 'viz-toolbar__row' });
+  const phaseSlot = el('div'); // placeholder for async phase chips
+  toolbarRow.appendChild(phaseSlot);
+  toolbarRow.appendChild(buildFFBadges('FF2', 'FF3'));
+  const toolbar = el('div', { className: 'viz-toolbar' }, toolbarRow);
+  container.appendChild(toolbar);
 
-  // Tooltip (floating HTML div over SVG, like Mobilität)
-  tooltipEl = el('div', { className: 'kosmos-tooltip' });
+  // Genre-ratio annotation (FF2: shows Oper/Konzert count when phase active)
+  const genreRatio = el('div', { className: 'kosmos-genre-ratio' });
+  container.appendChild(genreRatio);
+
+  // Tooltip (floating HTML div over SVG)
+  tooltipEl = el('div', { className: 'viz-tooltip' });
   container.appendChild(tooltipEl);
 
   const svgContainer = el('div', { className: 'kosmos-container' });
@@ -47,8 +57,8 @@ export function renderKosmos(store, container) {
 
   buildVisualization(data, store, svgContainer);
 
-  // Load lebensphasen and build phase buttons
-  loadPhasen(phaseBar, svgContainer);
+  // Load lebensphasen and build phase buttons into toolbar
+  loadPhasen(phaseSlot, svgContainer, genreRatio);
 
   container.appendChild(buildLegend(data));
 
@@ -56,7 +66,7 @@ export function renderKosmos(store, container) {
   const totalRecs = store.allRecords?.length || 0;
   const werkeCount = data.komponisten.reduce((s, k) => s + k.werke.length, 0);
   container.appendChild(el('div', { className: 'data-coverage' },
-    `${data.komponisten.length} Komponisten, ${werkeCount} Werke aus ${totalRecs} Datensätzen · Repertoire-Verknüpfungen: ${data.totalDocs} Dokumente`,
+    `${data.komponisten.length} Komponisten, ${werkeCount} Werke aus ${totalRecs} Datensätzen \u00b7 Repertoire-Verkn\u00fcpfungen: ${data.totalDocs} Dokumente`,
   ));
 }
 
@@ -88,7 +98,12 @@ function buildVisualization(data, store, svgContainer) {
   const zoomGroup = svg.append('g').attr('class', 'kosmos-zoom-group');
   const zoom = d3.zoom()
     .scaleExtent([0.3, 3])
-    .on('zoom', (event) => zoomGroup.attr('transform', event.transform));
+    .on('zoom', (event) => {
+      zoomGroup.attr('transform', event.transform);
+      const isIdentity = event.transform.k === 1 && event.transform.x === 0 && event.transform.y === 0;
+      const resetBtn = svgContainer.querySelector('.viz-zoom-reset');
+      if (resetBtn) resetBtn.classList.toggle('viz-zoom-reset--visible', !isIdentity);
+    });
   svg.call(zoom);
 
   // Compute deterministic layout
@@ -184,13 +199,12 @@ function buildVisualization(data, store, svgContainer) {
   // Interactive states
   setupInteractions(nodeSel, linkSel, nodes, store, svgContainer);
 
-  // Zoom reset button
+  // Zoom reset button (shared style)
   svgContainer.appendChild(el('button', {
-    className: 'kosmos-zoom-reset',
+    className: 'viz-zoom-reset',
     title: 'Zoom zur\u00fccksetzen',
     onClick: () => svg.transition().duration(300).call(zoom.transform, d3.zoomIdentity),
-    html: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg> Reset',
-  }));
+  }, 'Reset'));
 }
 
 /* ------------------------------------------------------------------ */
@@ -358,7 +372,7 @@ function showTooltip(event, d) {
     html += `<br>${d.docs} Dok.`;
   }
   tooltipEl.innerHTML = html;
-  tooltipEl.classList.add('kosmos-tooltip--visible');
+  tooltipEl.classList.add('viz-tooltip--visible');
   moveTooltip(event);
 }
 
@@ -372,7 +386,7 @@ function moveTooltip(event) {
 }
 
 function hideTooltip() {
-  if (tooltipEl) tooltipEl.classList.remove('kosmos-tooltip--visible');
+  if (tooltipEl) tooltipEl.classList.remove('viz-tooltip--visible');
 }
 
 /* ------------------------------------------------------------------ */
@@ -514,6 +528,10 @@ function showKomponistPopup(event, d, svgContainer) {
       className: 'kosmos-popup__action',
       onClick: (e) => { e.preventDefault(); dismissPopup(); navigateToView('matrix'); },
     }, '\u2192 Matrix'),
+    el('a', {
+      className: 'kosmos-popup__action',
+      onClick: (e) => { e.preventDefault(); dismissPopup(); navigateToView('zeitfluss', { komponist: d.name }); },
+    }, '\u2192 Zeitfluss'),
   );
   positionPopup(popup, event, svgContainer);
 }
@@ -537,12 +555,25 @@ function showWerkPopup(event, d, store, svgContainer) {
       )
     : null;
 
+  // Ort chips (FF3: Geo-Dimension im Werk-Popup)
+  const orteLine = (d.orte && d.orte.length > 0)
+    ? el('div', { className: 'kosmos-popup__orte' },
+        el('span', { className: 'kosmos-popup__orte-label' }, 'Orte:'),
+        ...d.orte.slice(0, 5).map(o => el('span', {
+          className: 'chip--entity',
+          style: 'cursor: pointer;',
+          onClick: (e) => { e.stopPropagation(); dismissPopup(); navigateToIndex('orte', o.name); },
+        }, `${o.name} (${o.count})`))
+      )
+    : null;
+
   const popup = el('div', { className: 'kosmos-popup' },
     el('div', { className: 'kosmos-popup__header' },
       d.rolleHaupt ? `${d.name} \u2014 ${d.rolleHaupt}` : d.name,
       ` (${d.docs} Dok.)`,
     ),
     rollenLine,
+    orteLine,
     ...items,
     d.signaturen.length > 5 ? el('span', { className: 'kosmos-popup__more' }, `+${d.signaturen.length - 5} weitere`) : null,
     el('a', {
@@ -610,46 +641,23 @@ function buildLegend(data) {
 /*  Phase filter                                                       */
 /* ------------------------------------------------------------------ */
 
-function loadPhasen(phaseBar, svgContainer) {
+function loadPhasen(phaseSlot, svgContainer, genreRatio) {
   fetch('./data/partitur.json')
     .then(r => r.ok ? r.json() : null)
     .then(data => {
       if (!data || !data.lebensphasen) return;
       lebensphasen = data.lebensphasen;
 
-      phaseBar.appendChild(el('span', { className: 'kosmos-phase-bar__label' }, 'Phase:'));
-
-      // "Alle" button
-      const alleBtn = el('button', {
-        className: 'kosmos-phase-btn kosmos-phase-btn--active',
-        onClick: () => {
-          activePhase = null;
-          phaseBar.querySelectorAll('.kosmos-phase-btn').forEach(b => b.classList.remove('kosmos-phase-btn--active'));
-          alleBtn.classList.add('kosmos-phase-btn--active');
-          applyPhaseFilter(svgContainer, null);
-        },
-      }, 'Alle');
-      phaseBar.appendChild(alleBtn);
-
-      // One button per phase
-      for (const phase of lebensphasen) {
-        const btn = el('button', {
-          className: 'kosmos-phase-btn',
-          title: `${phase.label} (${phase.von}–${phase.bis})`,
-          onClick: () => {
-            activePhase = phase;
-            phaseBar.querySelectorAll('.kosmos-phase-btn').forEach(b => b.classList.remove('kosmos-phase-btn--active'));
-            btn.classList.add('kosmos-phase-btn--active');
-            applyPhaseFilter(svgContainer, phase);
-          },
-        }, `${phase.id} ${phase.von}–${phase.bis}`);
-        phaseBar.appendChild(btn);
-      }
+      const { element } = buildPhaseChips(lebensphasen, (phase) => {
+        activePhase = phase;
+        applyPhaseFilter(svgContainer, phase, genreRatio);
+      }, { labelMode: 'full' });
+      phaseSlot.appendChild(element);
     })
     .catch(() => {});
 }
 
-function applyPhaseFilter(svgContainer, phase) {
+function applyPhaseFilter(svgContainer, phase, genreRatio) {
   const svg = d3.select(svgContainer).select('svg');
   if (svg.empty()) return;
 
@@ -670,6 +678,7 @@ function applyPhaseFilter(svgContainer, phase) {
       .attr('opacity', 1);
     linkSel.transition().duration(300)
       .attr('stroke-opacity', 0.4);
+    if (genreRatio) genreRatio.textContent = '';
     return;
   }
 
@@ -718,6 +727,21 @@ function applyPhaseFilter(svgContainer, phase) {
       }
       return 0.04;
     });
+
+  // FF2: Genre-Ratio annotation
+  if (genreRatio) {
+    let opern = 0;
+    let konzerte = 0;
+    nodeSel.each(function (d) {
+      if (d.type === 'werk' && matchingWerke.has(d.id)) {
+        if (d.istOper) opern++;
+        else konzerte++;
+      }
+    });
+    genreRatio.textContent = opern + konzerte > 0
+      ? `${phase.id} ${phase.label}: ${opern} Opern · ${konzerte} Konzerte/Lieder · ${matchingComps.size} Komponisten`
+      : `${phase.id}: keine Werke in dieser Phase`;
+  }
 }
 
 /* ------------------------------------------------------------------ */

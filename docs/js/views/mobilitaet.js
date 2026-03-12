@@ -5,7 +5,8 @@
 import { el, clear } from '../utils/dom.js';
 import { extractYear } from '../utils/date-parser.js';
 import { ensureArray } from '../utils/format.js';
-import { navigateToIndex } from '../ui/router.js';
+import { navigateToIndex, navigateToView } from '../ui/router.js';
+import { buildFFBadges, buildPhaseChips } from '../utils/viz-components.js';
 
 /* ------------------------------------------------------------------ */
 /*  Constants                                                          */
@@ -155,7 +156,7 @@ function extractGuestPerformances(store) {
 function showTooltip(event, html) {
   if (!tooltipEl) return;
   tooltipEl.innerHTML = html;
-  tooltipEl.classList.add('mob__tooltip--visible');
+  tooltipEl.classList.add('viz-tooltip--visible');
   const rect = tooltipEl.parentElement.getBoundingClientRect();
   let left = event.clientX - rect.left + 12;
   let top  = event.clientY - rect.top - 28;
@@ -168,7 +169,7 @@ function showTooltip(event, html) {
 
 function hideTooltip() {
   if (!tooltipEl) return;
-  tooltipEl.classList.remove('mob__tooltip--visible');
+  tooltipEl.classList.remove('viz-tooltip--visible');
 }
 
 function showPopup(event, records, store) {
@@ -228,36 +229,48 @@ async function buildView(store, container) {
   }
   const data = await resp.json();
 
+  console.group('%c[Mobilität]', 'color: #8B3A3A; font-weight: bold');
+  console.log(`${data.orte.length} Orte, ${data.mobilitaet.length} Mobilitätsereignisse`);
+  console.log(`${(data.lebensphasen || []).length} Lebensphasen, ${(data.repertoire || []).length} Repertoire-Einträge`);
+  console.log(`Netzwerk: ${(data.netzwerk || []).length} Perioden`, data.netzwerk || []);
+  if (data.repertoire) data.repertoire.forEach(r => console.log(`  Repertoire: ${r.komponist} (${r.von}–${r.bis}), ${r.dokumente} Dok.`));
+  console.groupEnd();
+
   const guestData = extractGuestPerformances(store);
 
   const wrapper = el('div', { className: 'mob' });
 
-  wrapper.appendChild(
-    el('div', { className: 'mob__header-row' },
-      el('h3', { className: 'mob__heading' }, 'Mobilit\u00e4t'),
-      el('div', { className: 'ff-badges' },
-        el('span', { className: 'ff-badges__tag' }, 'FF4'),
-        el('span', { className: 'ff-badges__tag' }, 'FF1'),
-      ),
-    ),
-  );
+  // Toolbar: phase chips (populated after data loads) + FF-badges
+  const toolbarRow = el('div', { className: 'viz-toolbar__row' });
+  const phaseSlot = el('div'); // placeholder for phase chips
+  toolbarRow.appendChild(phaseSlot);
+  toolbarRow.appendChild(buildFFBadges('FF4', 'FF1'));
+  wrapper.appendChild(el('div', { className: 'viz-toolbar' }, toolbarRow));
 
-  // Legend above diagram
-  wrapper.appendChild(buildLegend());
+  // Build phase chips from partitur.json data
+  if (data.lebensphasen && data.lebensphasen.length > 0) {
+    const { element } = buildPhaseChips(data.lebensphasen, (phase) => {
+      applyMobPhaseFilter(wrapper, phase);
+    }, { labelMode: 'short' });
+    phaseSlot.appendChild(element);
+  }
 
   const svgBox = el('div', { className: 'mob__container' });
 
   // Floating tooltip & popup live inside the positioned container
-  tooltipEl = el('div', { className: 'mob__tooltip' });
+  tooltipEl = el('div', { className: 'viz-tooltip' });
   svgBox.appendChild(tooltipEl);
 
   wrapper.appendChild(svgBox);
+
+  // Legend below diagram (unified: always below viz)
+  wrapper.appendChild(buildLegend());
 
   // Data coverage
   const totalRecs = store.allRecords?.length || 0;
   const locRecs = store.locations?.size || 0;
   wrapper.appendChild(el('div', { className: 'data-coverage' },
-    `${data.orte.length} Orte, ${data.mobilitaet.length} Mobilitätsereignisse · ${locRecs} Orts-Verknüpfungen aus ${totalRecs} Datensätzen`,
+    `${data.orte.length} Orte, ${data.mobilitaet.length} Mobilit\u00e4tsereignisse \u00b7 ${locRecs} Orts-Verkn\u00fcpfungen aus ${totalRecs} Datens\u00e4tzen`,
   ));
 
   container.appendChild(wrapper);
@@ -331,7 +344,7 @@ function renderTimeline(data, guestData, store, svgBox) {
   drawGridLines(svg, LOCATION_ORDER, y, margin, chartW);
   drawContextLines(svg, data.orte, x, y);
   drawBars(svg, data.orte, x, y);
-  drawArrows(svg, data.mobilitaet, x, y);
+  drawArrows(svg, data.mobilitaet, x, y, data.repertoire || []);
   if (data.repertoire && data.repertoire.length > 0) {
     drawRepertoireOverlay(svg, data.repertoire, x, margin);
   }
@@ -347,6 +360,11 @@ function renderTimeline(data, guestData, store, svgBox) {
   if (sparkH > 0) {
     const sparkTop = margin.top + swimH + guestH + sparkGap;
     drawDocSparkline(svg, data.dokumente, x, sparkTop, sparkH, margin, chartW);
+  }
+
+  // Network intensity overlay (FF1: Vernetzung sichtbar machen)
+  if (data.netzwerk && data.netzwerk.length > 0) {
+    drawNetworkOverlay(svg, data.netzwerk, x, margin);
   }
 
   // Axes last (on top)
@@ -513,9 +531,13 @@ function drawBars(svg, orte, x, y) {
         hideTooltip();
         d3.select(this).attr('stroke-width', 1).attr('stroke-opacity', 0.5);
       })
-      .on('click', function () {
+      .on('click', function (event) {
         hideTooltip();
-        navigateToIndex('orte', ort.ort);
+        if (event.shiftKey) {
+          navigateToView('matrix');
+        } else {
+          navigateToIndex('orte', ort.ort);
+        }
       });
   });
 }
@@ -524,7 +546,7 @@ function drawBars(svg, orte, x, y) {
 /*  Layer: mobility arrows                                             */
 /* ------------------------------------------------------------------ */
 
-function drawArrows(svg, events, x, y) {
+function drawArrows(svg, events, x, y, repertoire) {
   const g = svg.append('g').attr('class', 'mob__arrows');
 
   const usedLabels = [];
@@ -568,7 +590,13 @@ function drawArrows(svg, events, x, y) {
       .attr('stroke-dasharray', dash)
       .attr('marker-end', `url(#mob-arrow-${mov.form})`);
 
-    const tipHtml = `<strong>${mov.von} \u2192 ${mov.nach}</strong> (${mov.jahr})<br>${MOBILITY_LABELS[mov.form] || mov.form}<br><em>${mov.beschreibung}</em>`;
+    // FF4: repertoire context for this mobility event
+    const activeRep = repertoire.filter(r => mov.jahr >= r.von && mov.jahr <= r.bis);
+    const repLine = activeRep.length > 0
+      ? `<br><span style="font-size:0.65rem;color:#9A7B4F">Repertoire: ${activeRep.map(r => r.komponist).join(', ')}</span>`
+      : '';
+
+    const tipHtml = `<strong>${mov.von} \u2192 ${mov.nach}</strong> (${mov.jahr})<br>${MOBILITY_LABELS[mov.form] || mov.form}<br><em>${mov.beschreibung}</em>${repLine}`;
 
     const hoverW = strokeW + 1.5;
 
@@ -831,14 +859,16 @@ function drawRepertoireOverlay(svg, repertoire, x, margin) {
       .attr('fill', rep.farbe)
       .attr('opacity', 0.7);
 
-    // Diamond marker at midpoint
+    // Diamond marker at midpoint (clickable → Zeitfluss)
     const midX = (x1 + x2) / 2;
     g.append('path')
       .attr('d', `M${midX},${yPos - 2} l3,4 l-3,4 l-3,-4 z`)
       .attr('fill', rep.farbe)
-      .attr('opacity', 0.9);
+      .attr('opacity', 0.9)
+      .style('cursor', 'pointer')
+      .on('click', () => navigateToView('zeitfluss', { komponist: rep.komponist }));
 
-    // Label
+    // Label (clickable → Zeitfluss)
     g.append('text')
       .attr('x', x2 + 4)
       .attr('y', yPos + barH - 1)
@@ -847,7 +877,9 @@ function drawRepertoireOverlay(svg, repertoire, x, margin) {
       .attr('font-size', '8px')
       .attr('font-family', 'var(--font-ui)')
       .attr('font-weight', '600')
-      .text(`${rep.komponist} (${rep.dokumente})`);
+      .style('cursor', 'pointer')
+      .text(`${rep.komponist} (${rep.dokumente})`)
+      .on('click', () => navigateToView('zeitfluss', { komponist: rep.komponist }));
   });
 
   // Section label
@@ -922,6 +954,97 @@ function drawDocSparkline(svg, dokumente, x, top, height, margin, chartW) {
 }
 
 /* ------------------------------------------------------------------ */
+/*  Layer: network intensity overlay (FF1: Vernetzung)                  */
+/* ------------------------------------------------------------------ */
+
+function drawNetworkOverlay(svg, netzwerk, x, margin) {
+  const g = svg.append('g').attr('class', 'mob__network-overlay');
+  const maxI = d3.max(netzwerk, d => d.intensitaet) || 1;
+  const bandH = 10;
+  const baseY = margin.top; // top of swim lanes — bands sit just above
+
+  netzwerk.forEach(d => {
+    const [vonStr, bisStr] = d.periode.split('-');
+    const von = +vonStr;
+    const bis = +bisStr;
+    const x1 = x(von);
+    const x2 = x(bis);
+    const opac = (d.intensitaet / maxI) * 0.35;
+
+    g.append('rect')
+      .attr('x', x1)
+      .attr('y', baseY - bandH)
+      .attr('width', Math.max(x2 - x1, 2))
+      .attr('height', bandH)
+      .attr('fill', '#004A8F')
+      .attr('opacity', opac)
+      .attr('rx', 2);
+
+    // Intensity number
+    if (d.intensitaet >= 10) {
+      g.append('text')
+        .attr('x', (x1 + x2) / 2)
+        .attr('y', baseY - bandH / 2 + 3)
+        .attr('text-anchor', 'middle')
+        .attr('font-family', 'var(--font-mono)')
+        .attr('font-size', '6px')
+        .attr('fill', '#004A8F')
+        .attr('opacity', 0.7)
+        .text(d.intensitaet);
+    }
+  });
+
+  // Label
+  g.append('text')
+    .attr('x', margin.left - 4)
+    .attr('y', baseY - bandH / 2 + 2)
+    .attr('text-anchor', 'end')
+    .attr('font-size', '7px')
+    .attr('font-family', 'var(--font-ui)')
+    .attr('fill', 'var(--color-text-tertiary)')
+    .attr('font-style', 'italic')
+    .text('Netzwerk');
+}
+
+/* ------------------------------------------------------------------ */
+/*  Phase Filter (dims SVG elements outside selected phase)             */
+/* ------------------------------------------------------------------ */
+
+function applyMobPhaseFilter(wrapper, phase) {
+  const svg = wrapper.querySelector('svg');
+  if (!svg) return;
+
+  // Remove all previous dim classes
+  svg.querySelectorAll('.mob--phase-dimmed').forEach(el => {
+    el.classList.remove('mob--phase-dimmed');
+  });
+
+  if (!phase) return; // "Alle" selected — everything visible
+
+  const von = phase.von;
+  const bis = phase.bis;
+
+  // Dim bars outside phase range
+  svg.querySelectorAll('.mob__bar').forEach(bar => {
+    const bVon = +bar.getAttribute('data-von');
+    const bBis = +bar.getAttribute('data-bis');
+    if (bBis < von || bVon > bis) bar.classList.add('mob--phase-dimmed');
+  });
+
+  // Dim arrows outside phase range
+  svg.querySelectorAll('.mob__arrow-hit').forEach(arrow => {
+    const yr = +arrow.getAttribute('data-year');
+    if (yr < von || yr > bis) arrow.previousSibling?.classList.add('mob--phase-dimmed');
+  });
+
+  // Dim guest dots outside phase range
+  svg.querySelectorAll('.mob__guest-dot').forEach(dot => {
+    const yr = +dot.getAttribute('data-year');
+    if (yr < von || yr > bis) dot.classList.add('mob--phase-dimmed');
+  });
+}
+
+/* ------------------------------------------------------------------ */
 /*  Legend (HTML)                                                       */
 /* ------------------------------------------------------------------ */
 
@@ -954,5 +1077,10 @@ function buildLegend() {
     );
   });
 
-  return el('div', { className: 'mob__legend' }, ...children);
+  const hint = el('span', {
+    className: 'viz-legend__hint',
+    style: 'font-size: 0.65rem;',
+  }, 'Klick: Indizes \u00b7 Shift+Klick: Matrix \u00b7 Repertoire-Klick: Zeitfluss');
+
+  return el('div', { className: 'mob__legend' }, ...children, hint);
 }

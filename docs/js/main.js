@@ -12,6 +12,7 @@ import { renderMatrix } from './views/matrix.js';
 import { renderKosmos } from './views/kosmos.js';
 import { renderKorb } from './views/korb.js';
 import { renderMobilitaet } from './views/mobilitaet.js';
+import { renderZeitfluss } from './views/zeitfluss.js';
 
 let store = null;
 const renderedTabs = new Set();
@@ -85,6 +86,9 @@ function renderTab(tab) {
       break;
     case 'mobilitaet':
       renderMobilitaet(store, container);
+      break;
+    case 'zeitfluss':
+      renderZeitfluss(store, container);
       break;
     case 'korb':
       renderKorb(store, container);
