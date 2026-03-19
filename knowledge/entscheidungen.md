@@ -1,6 +1,6 @@
 # Entscheidungen und Prozesswissen
 
-> 40 Architekturentscheidungen (E-01 bis E-40), offene Entscheidungen, technische Schulden und Learnings.
+> 56 Architekturentscheidungen (E-01 bis E-56), offene Entscheidungen, technische Schulden und Learnings.
 
 ## Architekturentscheidungen (final)
 
@@ -55,6 +55,13 @@
 | E-47 | Prototyp-Seiten als eigenstaendige HTML (lebensstationen.html, lebenspartitur.html) statt weitere SPA-Tab-Iterationen |
 | E-48 | Lebensstationen: Scrollytelling mit IntersectionObserver, 7 Kapitel + 7 Wendepunkte, Sticky Mini-Timeline |
 | E-49 | Lebenspartitur: Vertikaler Bump-Chart (Lebenslinie + synchronisierte Facetten fuer Netzwerk/Repertoire) |
+| E-50 | DEV/Prod Log-Toggle: `viewLog()` gibt No-Ops auf GitHub Pages, Console-Diagnostik nur auf localhost |
+| E-51 | Error Boundaries pro View: main.js faengt Render-Fehler pro Tab ab (sync+async), erlaubt Re-Render |
+| E-52 | Deutsche Fehlermeldungen in loader.js: Netzwerk/404/Parse unterschieden, `loadPartitur()` warnt statt stilles null |
+| E-53 | Zentraler Cross-View Event-Bus (`events.js`): `onViewNavigate(tab, handler)` mit Auto-Replay statt `pendingHighlight`-Pattern pro View |
+| E-54 | Prototyp-Seiten modularisiert: inline CSS/JS extrahiert in externe Module, `loadPartitur()` Singleton statt direktem fetch() |
+| E-55 | ARIA-Accessibility: `role="tablist/tab/tabpanel"`, `aria-selected` dynamisch, `aria-hidden` auf dekorativen SVG-Icons |
+| E-56 | Responsive Breakpoints: `@media <768px` in base.css + components.css, FF-Badges hidden, Toolbars kompakter |
 
 ## Offene Entscheidungen
 
@@ -67,6 +74,8 @@
 
 - Kein JSON-LD/GEXF-Export aus Archiv-View (offen)
 - Alle Iteration-1-Schulden behoben (monolithische Dateien, synthetische Daten, Inline-CSS)
+- `aggregator.js` dupliziert Pipeline-Logik (pre-built JSONs nutzen 5-Jahres-Perioden statt Lebensphasen → Pipeline-Update noetig)
+- Legend-Builder nicht konsolidiert (bewusst: zu heterogene Patterns, Abstraktion lohnt nicht)
 
 ## Verschobene Features
 

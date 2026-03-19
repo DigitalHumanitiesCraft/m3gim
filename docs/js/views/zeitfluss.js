@@ -12,6 +12,7 @@
 import { aggregateZeitfluss } from '../data/aggregator.js';
 import { loadPartitur, getLebensphasen } from '../data/loader.js';
 import { navigateToView, navigateToIndex } from '../ui/router.js';
+import { onViewNavigate } from '../ui/events.js';
 import { el, clear } from '../utils/dom.js';
 import { buildFFBadges, buildPhaseChips, createTooltip, viewLog } from '../utils/viz-components.js';
 
@@ -28,7 +29,6 @@ let activeSvg = null;        // svg selection for programmatic zoom
 let activeXScale = null;     // xScale for phase→transform calculation
 let activeInnerWidth = null; // innerWidth for phase→transform calculation
 let activePhaseChips = [];   // chip buttons for active-state toggle
-let pendingHighlight = null; // komponist name from cross-view navigation
 let activeHighlight = null;  // currently highlighted komponist name
 
 /* ================================================================== */
@@ -79,6 +79,10 @@ export async function renderZeitfluss(store, container) {
   if (rendered) return;
   rendered = true;
   cachedStore = store;
+
+  // Show loading state
+  clear(container);
+  container.appendChild(el('div', { className: 'matrix-loading' }, 'Lade Zeitfluss\u2026'));
 
   // Load Lebensphasen from shared singleton (cached after first call)
   const partitur = await loadPartitur();
@@ -153,8 +157,7 @@ export async function renderZeitfluss(store, container) {
     undatiertText,
   ));
 
-  // If a cross-view navigation event arrived before render, apply highlight now
-  tryHighlight();
+  // Cross-view navigation is handled via event bus (events.js) with auto-replay
 }
 
 /* ================================================================== */
@@ -792,20 +795,13 @@ function buildDotTooltip(werk, strang) {
 /*  Cross-View Navigation: Highlight                                   */
 /* ================================================================== */
 
-window.addEventListener('m3gim:navigate', (e) => {
-  const d = e.detail || {};
-  if (d.tab !== 'zeitfluss' || !d.komponist) return;
-  pendingHighlight = d.komponist;
-  tryHighlight();
+onViewNavigate('zeitfluss', (detail) => {
+  const { komponist } = detail;
+  if (!komponist || !rendered) return;
+  const match = document.querySelector(`.zeitfluss-dots[data-komponist="${komponist}"]`);
+  if (!match) return;
+  highlightKomponist(komponist);
 });
-
-function tryHighlight() {
-  if (!pendingHighlight) return;
-  const match = document.querySelector(`.zeitfluss-dots[data-komponist="${pendingHighlight}"]`);
-  if (!match) return; // not rendered yet — will retry after renderZeitfluss()
-  highlightKomponist(pendingHighlight);
-  pendingHighlight = null;
-}
 
 function highlightKomponist(name) {
   activeHighlight = name;

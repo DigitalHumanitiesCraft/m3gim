@@ -13,9 +13,24 @@ import { normalizePerson, getPersonKategorie } from '../utils/normalize.js';
  * @returns {Promise<Store>}
  */
 export async function loadArchive(url = './data/m3gim.jsonld') {
-  const response = await fetch(url);
-  if (!response.ok) throw new Error(`Failed to load ${url}: ${response.status}`);
-  const jsonld = await response.json();
+  let response;
+  try {
+    response = await fetch(url);
+  } catch (e) {
+    throw new Error('Archivdaten nicht erreichbar — bitte Netzwerkverbindung prüfen.');
+  }
+  if (response.status === 404) {
+    throw new Error(`Archivdaten nicht gefunden (${url}).`);
+  }
+  if (!response.ok) {
+    throw new Error(`Fehler beim Laden der Archivdaten (HTTP ${response.status}).`);
+  }
+  let jsonld;
+  try {
+    jsonld = await response.json();
+  } catch (e) {
+    throw new Error('Archivdaten konnten nicht gelesen werden — ungültiges Datenformat.');
+  }
   return buildStore(jsonld);
 }
 
@@ -257,9 +272,18 @@ export async function loadPartitur(url = './data/partitur.json') {
   if (_partiturCache) return _partiturCache;
   if (_partiturPromise) return _partiturPromise;
   _partiturPromise = fetch(url)
-    .then(r => r.ok ? r.json() : null)
+    .then(r => {
+      if (!r.ok) {
+        console.warn(`[Partitur] Laden fehlgeschlagen (HTTP ${r.status})`);
+        return null;
+      }
+      return r.json();
+    })
     .then(data => { _partiturCache = data; return data; })
-    .catch(() => null);
+    .catch(err => {
+      console.warn('[Partitur] Nicht erreichbar:', err.message);
+      return null;
+    });
   return _partiturPromise;
 }
 

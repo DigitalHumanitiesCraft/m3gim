@@ -77,6 +77,9 @@ data/raw_sheets_export.json
 data/*_temp.json
 data/*_backup_*.json
 
+# Pipeline-generated view JSONs (copies live in docs/data/)
+data/output/views/
+
 # ==========================================
 # Credentials & Secrets
 # ==========================================

@@ -49,49 +49,49 @@
   </header>
 
   <!-- Tab Bar -->
-  <nav class="tab-bar" aria-label="Hauptnavigation">
-    <button class="tab-bar__tab active" data-tab="archiv">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <nav class="tab-bar" aria-label="Hauptnavigation" role="tablist">
+    <button class="tab-bar__tab active" data-tab="archiv" role="tab" aria-selected="true" aria-controls="tab-archiv" id="btn-archiv">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <rect width="20" height="5" x="2" y="3" rx="1"/><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/><path d="M10 12h4"/>
       </svg>
       Archiv
     </button>
-    <button class="tab-bar__tab" data-tab="indizes">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <button class="tab-bar__tab" data-tab="indizes" role="tab" aria-selected="false" aria-controls="tab-indizes" id="btn-indizes">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path d="M16 22h2a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v3"/><path d="M14 2v5h5"/><path d="M3 15h6"/><path d="M3 19h4"/><path d="M3 11h8"/>
       </svg>
       Indizes
     </button>
-    <button class="tab-bar__tab" data-tab="mobilitaet">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <button class="tab-bar__tab" data-tab="mobilitaet" role="tab" aria-selected="false" aria-controls="tab-mobilitaet" id="btn-mobilitaet">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path d="M3 17l6-6 4 4 8-8"/><path d="M17 7h4v4"/>
       </svg>
       Mobilität
     </button>
-    <button class="tab-bar__tab" data-tab="matrix">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <button class="tab-bar__tab" data-tab="matrix" role="tab" aria-selected="false" aria-controls="tab-matrix" id="btn-matrix">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/><path d="M15 3v18"/>
       </svg>
       Matrix
     </button>
-    <button class="tab-bar__tab" data-tab="kosmos">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <button class="tab-bar__tab" data-tab="kosmos" role="tab" aria-selected="false" aria-controls="tab-kosmos" id="btn-kosmos">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <circle cx="12" cy="12" r="1"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="9"/>
       </svg>
       Kosmos
     </button>
-    <button class="tab-bar__tab" data-tab="zeitfluss">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <button class="tab-bar__tab" data-tab="zeitfluss" role="tab" aria-selected="false" aria-controls="tab-zeitfluss" id="btn-zeitfluss">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path d="M3 12h4l3-9 4 18 3-9h4"/>
       </svg>
       Zeitfluss
     </button>
-    <button class="tab-bar__tab" data-tab="korb" id="korb-tab-btn">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <button class="tab-bar__tab" data-tab="korb" id="korb-tab-btn" role="tab" aria-selected="false" aria-controls="tab-korb">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/>
       </svg>
       Korb
-      <span class="tab-bar__badge" id="korb-badge">0</span>
+      <span class="tab-bar__badge" id="korb-badge" aria-label="Anzahl Einträge im Korb">0</span>
     </button>
   </nav>
 
@@ -103,13 +103,13 @@
 
   <!-- Main Content -->
   <main id="main-content" hidden>
-    <section id="tab-archiv" class="tab-content active"></section>
-    <section id="tab-indizes" class="tab-content"></section>
-    <section id="tab-matrix" class="tab-content"></section>
-    <section id="tab-kosmos" class="tab-content"></section>
-    <section id="tab-mobilitaet" class="tab-content"></section>
-    <section id="tab-zeitfluss" class="tab-content"></section>
-    <section id="tab-korb" class="tab-content"></section>
+    <section id="tab-archiv" class="tab-content active" role="tabpanel" aria-labelledby="btn-archiv"></section>
+    <section id="tab-indizes" class="tab-content" role="tabpanel" aria-labelledby="btn-indizes"></section>
+    <section id="tab-matrix" class="tab-content" role="tabpanel" aria-labelledby="btn-matrix"></section>
+    <section id="tab-kosmos" class="tab-content" role="tabpanel" aria-labelledby="btn-kosmos"></section>
+    <section id="tab-mobilitaet" class="tab-content" role="tabpanel" aria-labelledby="btn-mobilitaet"></section>
+    <section id="tab-zeitfluss" class="tab-content" role="tabpanel" aria-labelledby="btn-zeitfluss"></section>
+    <section id="tab-korb" class="tab-content" role="tabpanel" aria-labelledby="btn-korb"></section>
 
   </main>
 

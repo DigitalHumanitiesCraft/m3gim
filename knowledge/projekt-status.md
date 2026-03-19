@@ -31,7 +31,7 @@
 - Pipeline Iteration 2 lauffaehig (explore → validate → transform → build-views → reconcile)
 - validate.py Encoding-Bugs gefixt (Session 19): Mojibake in VOCAB + KOMPOSIT_TYPEN, `normalize_bearbeitungsstand()` eingefuehrt
 - Wikidata-CSV-Export: 5 CSVs fuer Google-Sheets-Import (export-wikidata-csv.py)
-- Frontend: 20 JS-Module, 11 CSS, 7 aktive Tabs (Archiv, Indizes, Mobilitaet, Zeitfluss, Matrix, Kosmos, Korb)
+- Frontend: 23 JS-Module, 13 CSS, 7 aktive Tabs (Archiv, Indizes, Mobilitaet, Zeitfluss, Matrix, Kosmos, Korb)
 - Archiv UX: Sortierung, Autocomplete, erweiterte Suche, Inline-Expansion, Bookmark-Icons
 - Indizes Explorer: Facettensuche, Cross-Navigation, Wikidata-Icons, WD-Coverage
 - Mobilitaet-View: Schwimmbahn-Timeline mit D3, Floating-Tooltips, Dokument-Navigation, Popup-Menue
@@ -166,14 +166,30 @@
 - Scrollytelling (Lebensstationen) und Bump-Chart (Lebenspartitur) sind vielversprechende Alternativen
 - Auftritte als Pipeline-Kategorie (4 Typen) ist wertvoller Datenanreicherungsschritt
 
+### Erreicht (Session 26) — Frontend-Refactoring + Qualitaet
+
+- **DEV/Prod Log-Toggle**: `viewLog()` gibt No-Ops auf GitHub Pages (DEV-Flag in viz-components.js)
+- **Error Boundaries**: Pro-Tab try/catch in main.js (sync+async), dt. Fehlermeldungen
+- **Fehlerbehandlung Datenladen**: loader.js unterscheidet Netzwerk/404/Parse-Fehler, `loadPartitur()` warnt statt stilles null
+- **Cross-View Event-Bus**: `events.js` mit `onViewNavigate(tab, handler)` + Auto-Replay (ersetzt `pendingHighlight`-Pattern in kosmos.js, zeitfluss.js, archiv.js)
+- **Prototyp-Seiten modularisiert**: ~1.700 Zeilen inline CSS/JS extrahiert in 4 neue Dateien (`css/lebensstationen.css`, `css/lebenspartitur.css`, `js/views/lebensstationen.js`, `js/views/lebenspartitur.js`), HTML von 1243+770 auf 104+100 Zeilen reduziert, nutzen `loadPartitur()` Singleton
+- **ARIA/Accessibility**: `role="tablist/tab/tabpanel"`, `aria-selected` dynamisch, `aria-hidden` auf SVG-Icons, `aria-label` auf Korb-Badge
+- **Ladezustaende**: Spinner in Zeitfluss + Mobilitaet waehrend async-Datenlade
+- **Responsive Breakpoints**: `@media <768px` in base.css (Header, Tab-Bar, Footer) + components.css (Toolbars, FF-Badges, Legenden, Phase-Chips)
+- **Responsive SVGs**: `max-width: 100%; height: auto` auf Matrix + Zeitfluss SVG-Container
+- **.gitignore**: `data/output/views/` ignoriert (Pipeline-Artefakte)
+- **Bewusst uebersprungen**: Aggregation-Eliminierung (braucht Pipeline-Update), Legend-Builder-Konsolidierung (zu heterogen), View-Lifecycle-Basis (zu duenn)
+
 ## Operative Naechste Schritte
 
 1. Prototyp-Seiten evaluieren (Lebensstationen vs. Lebenspartitur) — welcher Ansatz passt besser zu FF1–FF4?
-2. Pipeline-Skripte auf `data/source/` migrieren (SHEETS_DIR Pfad aendern)
-3. Datenqualitaetsluecken in Quelltabellen reduzieren (22% Verknuepfungsrate erhoehen)
-4. Erfassungsstatus mit Team vereinheitlichen
-5. Wikidata-Ergebnisse in Google Sheets uebertragen (171 Matches vorhanden)
-6. Zenodo-Archivierung vorbereiten
+2. **Mobilitaet-Redesign entscheiden**: Scrollytelling vs. Bump-Chart vs. Toggle
+3. Pipeline-Skripte auf `data/source/` migrieren (SHEETS_DIR Pfad aendern)
+4. Pipeline: view-JSONs auf Lebensphasen statt 5-Jahres-Perioden umstellen (fuer aggregator.js-Elimination)
+5. Datenqualitaetsluecken in Quelltabellen reduzieren (22% Verknuepfungsrate erhoehen)
+6. Erfassungsstatus mit Team vereinheitlichen
+7. Wikidata-Ergebnisse in Google Sheets uebertragen (171 Matches vorhanden)
+8. Zenodo-Archivierung vorbereiten
 
 ## Strategischer Kontext
 

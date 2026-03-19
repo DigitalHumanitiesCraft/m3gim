@@ -132,7 +132,7 @@ Zwei alternative Mobilitaets-Visualisierungen als eigenstaendige HTML-Seiten (E-
 
 **Lebenspartitur** (`lebenspartitur.html`, E-49): Vertikaler Bump-Chart (Zeitachse Y, Orte X). Durchgehende "Lebenslinie" mit farbkodierten Mobilitaetssprüngen. 3-Spalten-Grid: Netzwerk-Facette (links), Hauptchart, Repertoire-Facette (rechts). Synchronisierte Hover-Highlight-Linie ueber alle 3 Spalten.
 
-Beide laden `partitur.json` via fetch(), nutzen D3.js v7, sind eigenstaendig (kein SPA-Router).
+Beide nutzen `loadPartitur()` Singleton (seit Session 26), D3.js v7, sind eigenstaendig (kein SPA-Router). CSS/JS in externe Module extrahiert (Session 26): `css/lebensstationen.css`, `js/views/lebensstationen.js`, `css/lebenspartitur.css`, `js/views/lebenspartitur.js`.
 
 ### Wissenskorb
 
@@ -198,9 +198,10 @@ Chronologischer Dot-Plot (D3.js) aller Werke nach Komponist, Gattung und Zeit.
 - Zoom/Pan mit D3-Zoom, `.viz-zoom-reset` nur bei aktivem Zoom sichtbar
 - Navigation-Listener (`m3gim:navigate`): Hervorhebt Komponist bei Cross-View-Navigation
 
-**Highlight-System:**
-- `pendingHighlight` / `activeHighlight` State-Variablen
-- `tryHighlight()` / `highlightKomponist()` / `clearHighlight()` Funktionen
+**Highlight-System (refactored Session 26):**
+- `activeHighlight` State-Variable (pendingHighlight durch Event-Bus ersetzt)
+- Cross-View Navigation via `onViewNavigate('zeitfluss', handler)` aus `events.js` (Auto-Replay)
+- `highlightKomponist()` / `clearHighlight()` Funktionen
 - Doppelklick auf SVG → Highlight aufheben
 - CSS: `.zeitfluss-ylabel--highlighted` (fett, KUG-Blau)
 
@@ -230,7 +231,8 @@ Vollstaendiges Navigationsnetzwerk zwischen allen 4 Visualisierungen + Archiv + 
 | **Mobilitaet** | Shift+Klick Bar | — | Repertoire-Diamond-Klick | — | Bar-Klick | Dot-Klick |
 
 - Router: `navigateToView(tab, context)` als generische Cross-View-Funktion
-- Custom Event: `m3gim:navigate` mit `{ tab, komponist }` fuer Highlight-Kontext
+- **Event-Bus (Session 26)**: `events.js` — `onViewNavigate(tab, handler)` mit Auto-Replay fuer noch nicht gerenderte Views. Ersetzt verteilte `window.addEventListener('m3gim:navigate')` in kosmos.js, zeitfluss.js, archiv.js
+- Custom Event: `m3gim:navigate` mit `{ tab, komponist }` fuer Highlight-Kontext (dispatched by router, consumed by event-bus)
 - Wissenskorb: CSV- und BibTeX-Export-Buttons
 
 ## Offene Luecken

@@ -466,3 +466,45 @@
   border-top: 1px solid var(--border-color-light);
   font-weight: var(--weight-medium);
 }
+
+/* =========================================================================
+   Responsive — Toolbars, Badges, Legends
+   ========================================================================= */
+
+@media (max-width: 768px) {
+  .viz-toolbar {
+    padding: var(--space-1);
+  }
+
+  .viz-toolbar__row {
+    gap: var(--space-1);
+  }
+
+  .viz-toolbar__sep {
+    display: none;
+  }
+
+  .ff-badges {
+    display: none;
+  }
+
+  .viz-legend {
+    font-size: 0.6rem;
+    gap: var(--space-1);
+    flex-wrap: wrap;
+  }
+
+  .viz-legend__sep {
+    display: none;
+  }
+
+  .data-coverage {
+    font-size: 0.6rem;
+    padding: var(--space-1) var(--space-2);
+  }
+
+  .phase-chip {
+    padding: 2px 6px;
+    font-size: 0.6rem;
+  }
+}

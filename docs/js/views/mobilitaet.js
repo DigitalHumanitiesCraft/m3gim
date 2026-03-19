@@ -111,6 +111,7 @@ export function renderMobilitaet(store, container) {
   if (rendered) return;
   rendered = true;
   clear(container);
+  container.appendChild(el('div', { className: 'matrix-loading' }, 'Lade Mobilit\u00e4tsansicht\u2026'));
   buildView(store, container).catch(err => {
     console.error('Mobilitaet view error:', err);
     container.appendChild(el('p', {
@@ -211,6 +212,7 @@ function applyFocus(svg, index, mobilitaet) {
 
 async function buildView(store, container) {
   const data = await loadPartitur();
+  clear(container);
   if (!data) {
     container.appendChild(el('p', {
       style: 'padding: 40px; text-align: center; color: var(--color-text-tertiary);',

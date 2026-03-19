@@ -4,6 +4,7 @@
 
 import { el, clear } from '../utils/dom.js';
 import { DOKUMENTTYP_LABELS } from '../data/constants.js';
+import { onViewNavigate } from '../ui/events.js';
 import { renderBestand, updateBestandView, expandRecord } from './archiv-bestand.js';
 import { renderChronik, updateChronikView, setChronikGrouping } from './archiv-chronik.js';
 
@@ -30,8 +31,8 @@ export function renderArchiv(storeRef, containerEl) {
   renderActiveView();
 
   // Listen for cross-navigation from Indizes "Alle im Archiv anzeigen" link
-  window.addEventListener('m3gim:archiv-filter', (e) => {
-    const { type, name } = e.detail || {};
+  onViewNavigate('archiv', (detail) => {
+    const { type, name } = detail;
     if (type === 'personen' && name) {
       setPersonFilter(name);
     }

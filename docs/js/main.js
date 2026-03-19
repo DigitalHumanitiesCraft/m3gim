@@ -13,6 +13,7 @@ import { renderKosmos } from './views/kosmos.js';
 import { renderKorb } from './views/korb.js';
 import { renderMobilitaet } from './views/mobilitaet.js';
 import { renderZeitfluss } from './views/zeitfluss.js';
+import { DEV } from './utils/viz-components.js';
 
 let store = null;
 const renderedTabs = new Set();
@@ -35,7 +36,7 @@ async function init() {
 
     // Load data
     store = await loadArchive('./data/m3gim.jsonld');
-    console.log(`M³GIM loaded: ${store.allRecords.length} Records, ${store.konvolute.size} Konvolute, ${store.persons.size} Personen, ${store.organizations.size} Organisationen`);
+    if (DEV) console.log(`M³GIM loaded: ${store.allRecords.length} Records, ${store.konvolute.size} Konvolute, ${store.persons.size} Personen, ${store.organizations.size} Organisationen`);
 
     // Hide loading
     showLoading(false);
@@ -83,7 +84,29 @@ function renderTab(tab) {
   if (!container) return;
 
   const renderer = TAB_RENDERERS.get(tab);
-  if (renderer) renderer(store, container);
+  if (!renderer) return;
+
+  try {
+    const result = renderer(store, container);
+    // Handle async renderers (D3 views that load partitur.json)
+    if (result && typeof result.catch === 'function') {
+      result.catch(err => showTabError(tab, container, err));
+    }
+  } catch (err) {
+    showTabError(tab, container, err);
+  }
+}
+
+function showTabError(tab, container, err) {
+  console.error(`[${tab}] Render-Fehler:`, err);
+  container.innerHTML = `
+    <div style="color: #8B3A3A; text-align: center; padding: 40px; font-family: var(--font-sans);">
+      <p style="font-weight: 600; margin-bottom: 8px;">Fehler in dieser Ansicht</p>
+      <p style="font-size: 0.8rem; opacity: 0.7;">${err.message || 'Unbekannter Fehler'}</p>
+    </div>
+  `;
+  // Allow re-render on next tab switch
+  renderedTabs.delete(tab);
 }
 
 function showLoading(show) {

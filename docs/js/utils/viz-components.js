@@ -5,6 +5,10 @@
 
 import { el } from './dom.js';
 
+/** True when running on localhost (dev mode) — enables console diagnostics. */
+export const DEV = typeof location !== 'undefined'
+  && (location.hostname === 'localhost' || location.hostname === '127.0.0.1');
+
 /**
  * FF-Badges — research question annotation tags.
  * @param {...string} ffs - FF identifiers, e.g. 'FF1', 'FF3'
@@ -184,6 +188,7 @@ export function setupD3Zoom({ svg, zoomGroup, container, scaleExtent = [0.3, 3],
  * @returns {{ group: Function, log: Function, end: Function }}
  */
 export function viewLog(name, color) {
+  if (!DEV) return { group() {}, log() {}, end() {} };
   return {
     group() { console.group(`%c[${name}]`, `color: ${color}; font-weight: bold`); },
     log(...args) { console.log(...args); },

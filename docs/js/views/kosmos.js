@@ -7,6 +7,7 @@
 import { aggregateKosmos } from '../data/aggregator.js';
 import { loadPartitur } from '../data/loader.js';
 import { selectRecord, navigateToIndex, navigateToView } from '../ui/router.js';
+import { onViewNavigate } from '../ui/events.js';
 import { el, clear } from '../utils/dom.js';
 import { buildFFBadges, buildPhaseChips, createTooltip, setupD3Zoom, viewLog } from '../utils/viz-components.js';
 
@@ -716,24 +717,15 @@ function applyPhaseFilter(svgContainer, phase, genreRatio) {
 /*  Cross-view navigation listener (Matrix → Kosmos)                   */
 /* ------------------------------------------------------------------ */
 
-let pendingHighlight = null;
-
-window.addEventListener('m3gim:navigate', (event) => {
-  const { tab, komponist } = event.detail || {};
-  if (tab === 'kosmos' && komponist) {
-    pendingHighlight = komponist;
-    tryHighlight();
-  }
-});
-
-function tryHighlight() {
-  if (!pendingHighlight || !rendered) return;
+onViewNavigate('kosmos', (detail) => {
+  const { komponist } = detail;
+  if (!komponist) return;
+  if (!rendered) return; // event-bus queues & replays if we register before render
   const svg = document.querySelector('.kosmos-container svg');
   if (!svg) return;
   const g = d3.select(svg).select('.kosmos-zoom-group');
   const nodeSel = g.selectAll('.kosmos-node');
   const linkSel = g.selectAll('line.kosmos-link');
   const allNodes = nodeSel.data();
-  highlightComposer(pendingHighlight, nodeSel, linkSel, allNodes);
-  pendingHighlight = null;
-}
+  highlightComposer(komponist, nodeSel, linkSel, allNodes);
+});

@@ -106,12 +106,16 @@ function updateHash() {
 }
 
 function applyState() {
-  // Switch tab visibility
+  // Switch tab visibility + ARIA state
   for (const tab of TABS) {
     const section = document.getElementById(`tab-${tab}`);
     const btn = document.querySelector(`[data-tab="${tab}"]`);
-    if (section) section.classList.toggle('active', tab === state.activeTab);
-    if (btn) btn.classList.toggle('active', tab === state.activeTab);
+    const isActive = tab === state.activeTab;
+    if (section) section.classList.toggle('active', isActive);
+    if (btn) {
+      btn.classList.toggle('active', isActive);
+      btn.setAttribute('aria-selected', String(isActive));
+    }
   }
 
   if (onTabChange) onTabChange(state.activeTab);

@@ -27,14 +27,15 @@
 
 ### Frontend-Module
 
-20 JS-Module unter `docs/js/`:
+23 JS-Module unter `docs/js/`:
 
 | Pfad | Zweck |
 |------|-------|
 | `main.js` | Einstiegspunkt, TAB_RENDERERS Registry, Lazy-Tab-Rendering |
 | `data/loader.js` | Dataloading, Store-Aufbau, Partitur-Singleton (`loadPartitur()`, `getLebensphasen()`) |
 | `data/aggregator.js` | Daten-Aggregation fuer Views (`buildKomponistenMap` shared, `aggregateMatrix`, `aggregateKosmos`, `aggregateZeitfluss`) |
-| `ui/router.js` | Hash-Routing (7 aktive Tabs), navigateToView/navigateToIndex |
+| `ui/router.js` | Hash-Routing (7 aktive Tabs), navigateToView/navigateToIndex, ARIA-State |
+| `ui/events.js` | Cross-View Event-Bus (`onViewNavigate()`) mit Auto-Replay (Session 26) |
 | `ui/korb.js` | Wissenskorb (sessionStorage) |
 | `views/archiv.js` | Bestand + Chronik |
 | `views/indizes.js` | 4-Grid Explorer |
@@ -47,14 +48,16 @@
 | `utils/dom.js` | DOM-Helfer (el, clear) |
 | `utils/date-parser.js` | Datumsparser |
 | `utils/normalize.js` | Normalisierung |
-| `utils/viz-components.js` | Shared Viz-Builder (FF-Badges, Phase-Chips, **Layer-Chips** (Session 25), Coverage, Tooltip, Zoom, Console-Log) |
+| `utils/viz-components.js` | Shared Viz-Builder (FF-Badges, Phase-Chips, Layer-Chips, Coverage, Tooltip, Zoom, Console-Log, **DEV-Flag** (Session 26)) |
+| `views/lebensstationen.js` | Scrollytelling-Prototyp (D3, IntersectionObserver) — extrahiert aus inline HTML (Session 26) |
+| `views/lebenspartitur.js` | Bump-Chart-Prototyp (D3) — extrahiert aus inline HTML (Session 26) |
 
-11 CSS-Dateien unter `docs/css/` (variables, base, archiv, indizes, mobilitaet, korb, matrix, kosmos, zeitfluss, components, pages).
+13 CSS-Dateien unter `docs/css/` (variables, base, archiv, indizes, mobilitaet, korb, matrix, kosmos, zeitfluss, components, pages, **lebensstationen**, **lebenspartitur** — letzte 2 extrahiert Session 26).
 
 ### Info-Seiten (statisches HTML)
 
 5 Content-Seiten: `about.html`, `projekt.html`, `modell.html`, `hilfe.html`, `impressum.html`.
-2 Prototyp-Seiten (Session 25): `lebensstationen.html` (Scrollytelling, D3+IntersectionObserver), `lebenspartitur.html` (Bump-Chart, D3). Beide eigenstaendig (laden `partitur.json` via fetch(), kein SPA-Router).
+2 Prototyp-Seiten (Session 25, modularisiert Session 26): `lebensstationen.html` (Scrollytelling, D3+IntersectionObserver), `lebenspartitur.html` (Bump-Chart, D3). CSS/JS in externe Dateien extrahiert (`css/lebensstationen.css`, `js/views/lebensstationen.js`, etc.). Beide nutzen `loadPartitur()` Singleton statt direktem fetch().
 Einheitliches Template: info-header, info-nav, info-main, info-footer. Lesebreite 720px.
 
 ## Routing
