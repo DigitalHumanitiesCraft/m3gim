@@ -1,17 +1,45 @@
-/* M³GIM Mobilität Tab Styles */
+/* M³GIM Mobilität Tab Styles — Redesign: Event Markers + 3-Color Scheme */
 
 .mob {
   padding: var(--space-6);
 }
 
-/* Toolbar: uses shared .viz-toolbar from components.css */
+/* ---- Toolbar ---- */
+.mob .viz-toolbar__row {
+  flex-wrap: wrap;
+  row-gap: var(--space-1);
+}
 
-/* Phase filter dimming */
+/* ---- Layer toggle ---- */
+.mob__layer--hidden {
+  display: none !important;
+}
+
+/* ---- Phase filter dimming ---- */
 .mob--phase-dimmed {
   opacity: 0.12;
   transition: opacity 200ms;
 }
 
+/* ---- Event marker focus ---- */
+.mob__event-marker {
+  transition: opacity 200ms;
+}
+
+.mob--event-dimmed {
+  opacity: 0.1;
+  transition: opacity 200ms;
+}
+
+.mob--event-focused line {
+  stroke-opacity: 0.8 !important;
+}
+
+.mob--event-focused text {
+  font-weight: 700 !important;
+}
+
+/* ---- SVG container ---- */
 .mob__container {
   position: relative;
   width: 100%;
@@ -25,33 +53,27 @@
   display: block;
   width: 100%;
   height: auto;
-  min-height: 360px;
+  min-height: 400px;
 }
 
-/* D3 axis styling */
-.mob__axis-x .domain {
-  stroke: var(--border-color);
+/* ---- D3 axes ---- */
+.mob__axis-x .domain { stroke: var(--border-color); }
+.mob__axis-x .tick line { stroke: var(--border-color-light); }
+.mob__axis-y .domain { display: none; }
+.mob__axis-y .tick line { display: none; }
+
+/* ---- Auftritte dots ---- */
+.mob__auftritte circle {
+  transition: fill-opacity 150ms, stroke-opacity 150ms;
 }
 
-.mob__axis-x .tick line {
-  stroke: var(--border-color-light);
-}
-
-.mob__axis-y .domain {
-  display: none;
-}
-
-.mob__axis-y .tick line {
-  display: none;
-}
-
-/* Legend (below diagram — unified placement) */
+/* ---- Legend ---- */
 .mob__legend {
   display: flex;
   align-items: center;
-  gap: var(--space-1) var(--space-2);
+  gap: 2px var(--space-2);
   padding: var(--space-1) var(--space-2);
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   color: var(--color-text-tertiary);
   flex-wrap: wrap;
 }
@@ -59,24 +81,26 @@
 .mob__legend-item {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-1);
+  gap: 3px;
+  white-space: nowrap;
 }
 
 .mob__legend-dot {
   display: inline-block;
-  width: 14px;
-  height: 8px;
+  width: 12px;
+  height: 6px;
   border-radius: 2px;
   flex-shrink: 0;
 }
 
 .mob__legend-spacer {
   color: var(--border-color);
+  margin: 0 2px;
 }
 
 .mob__legend-dot--round {
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
 }
 
@@ -87,20 +111,16 @@
     currentColor 3px,
     transparent 3px,
     transparent 5px
-  );
-  color: var(--color-mob-erzwungen, #8B3A3A);
+  ) !important;
 }
 
-.mob__legend-dot--diamond {
-  width: 8px;
-  height: 8px;
+.mob__legend-dot--marker {
+  width: 2px;
+  height: 14px;
   border-radius: 1px;
-  transform: rotate(45deg);
 }
 
-/* Tooltip: now uses shared .viz-tooltip from components.css */
-
-/* Popup menu for multi-document dots */
+/* ---- Popup menu ---- */
 .mob__popup {
   position: absolute;
   z-index: 210;
@@ -114,18 +134,4 @@
   max-height: 200px;
   overflow-y: auto;
   min-width: 180px;
-}
-.mob__popup-item {
-  display: block;
-  width: 100%;
-  padding: var(--space-1) var(--space-2);
-  cursor: pointer;
-  color: var(--color-text-primary);
-  text-align: left;
-  border: none;
-  background: none;
-}
-.mob__popup-item:hover {
-  background: var(--color-cream);
-  color: var(--color-kug-blau);
 }

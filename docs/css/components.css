@@ -417,3 +417,52 @@
 
 .viz-zoom-reset--visible { opacity: 1; pointer-events: auto; }
 .viz-zoom-reset:hover { background: rgba(0,74,143,0.08); }
+
+/* =========================================================================
+   Cross-View Link — pill-shaped navigation links in drilldowns/popups
+   ========================================================================= */
+
+.cross-link {
+  font-size: var(--text-xs);
+  color: var(--color-kug-blau);
+  cursor: pointer;
+  text-decoration: none;
+  padding: 2px 6px;
+  border: 1px solid var(--border-color-light);
+  border-radius: 10px;
+  transition: var(--transition-fast);
+}
+.cross-link:hover {
+  background: var(--color-kug-blau);
+  color: var(--color-text-inverse);
+  border-color: var(--color-kug-blau);
+}
+
+/* =========================================================================
+   Popup Item — clickable action row in context popups (Kosmos, Mobilitaet)
+   ========================================================================= */
+
+.popup-item {
+  display: block;
+  width: 100%;
+  padding: 4px var(--space-2);
+  color: var(--color-kug-blau);
+  cursor: pointer;
+  text-decoration: none;
+  text-align: left;
+  border: none;
+  background: none;
+  border-radius: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.popup-item:hover {
+  background: var(--color-cream);
+}
+.popup-item--secondary {
+  margin-top: var(--space-1);
+  padding-top: var(--space-1);
+  border-top: 1px solid var(--border-color-light);
+  font-weight: var(--weight-medium);
+}

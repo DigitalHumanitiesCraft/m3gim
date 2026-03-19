@@ -171,6 +171,34 @@ KOMPONISTEN_FARBEN = {
     'Andere': '#757575'
 }
 
+# =============================================================================
+# AUFTRITTS-KATEGORISIERUNG
+# =============================================================================
+
+# Biografische Hauptorte mit Engagement-Zeiträumen
+LOCATION_ORDER = ['Lemberg', 'Wien', 'Graz', 'Bayreuth', 'München', 'Salzburg', 'Zürich']
+
+ENGAGEMENT_ZEITRAEUME = {
+    'Graz': (1945, 1950),
+    'Wien': (1950, 1970),
+}
+
+FESTSPIEL_ORTE = {'Bayreuth', 'Salzburg'}
+FESTSPIEL_KEYWORDS = {'festspiel', 'festival', 'festvorstellung', 'festwoche', 'mozart-woche'}
+
+KONZERT_KEYWORDS = {'liederabend', 'konzert', 'sinfonisch', 'symphonie', 'sinfonie',
+                    'lied', 'solistin', 'lieder'}
+
+# Oper-Indikatoren (Titel oder Rollenname → Gattung oper)
+OPER_KEYWORDS = {'oper', 'opera', 'atto', 'akte', 'aufzüge', 'musikdrama'}
+
+AUFTRITT_FARBEN = {
+    'engagement': '#004A8F',
+    'festspiel': '#9A7B4F',
+    'gastspiel': '#3D7A5A',
+    'konzert': '#6B4E8C',
+}
+
 # Personen-Kategorien (bekannte Persönlichkeiten aus dem Archiv)
 # Erweiterte Liste basierend auf Archivanalyse
 PERSONEN_KATEGORIEN = {
@@ -375,6 +403,301 @@ def normalize_komponist(name):
 
 
 # =============================================================================
+# AUFTRITTS-EXTRAKTION
+# =============================================================================
+
+def _get_lebensphase(year):
+    """Determine life phase ID for a given year."""
+    if not year:
+        return None
+    for phase in LEBENSPHASEN:
+        if phase['von'] <= year <= phase['bis']:
+            return phase['id']
+    return None
+
+
+def _extract_ort_from_record(record):
+    """Extract performance location from record (structured data)."""
+    ort = None
+    ort_detail = None
+
+    # 1. Check rico:hasOrHadLocation with role auffuehrungsort
+    locations = ensure_list(record.get('rico:hasOrHadLocation'))
+    for loc in locations:
+        if isinstance(loc, dict):
+            role = (loc.get('role') or '').lower()
+            if role in ('auffuehrungsort', 'gastspiel', 'aufführung', 'spielzeit'):
+                ort = loc.get('name', '')
+                break
+
+    # 2. Check agents with role auffuehrungsort (institutions as venues)
+    if not ort:
+        agents = ensure_list(record.get('m3gim:hasAssociatedAgent'))
+        for agent in agents:
+            if isinstance(agent, dict):
+                role = (agent.get('role') or '').lower()
+                if role == 'auffuehrungsort':
+                    name = agent.get('name', '')
+                    # Map institution → city
+                    if 'staatsoper' in name.lower() and 'wien' in name.lower():
+                        ort, ort_detail = 'Wien', name
+                    elif 'staatsoper' in name.lower() and 'bayer' in name.lower():
+                        ort, ort_detail = 'München', name
+                    elif 'bayreuth' in name.lower() or 'festspiel' in name.lower():
+                        ort, ort_detail = 'Bayreuth', name
+                    elif 'salzburg' in name.lower():
+                        ort, ort_detail = 'Salzburg', name
+                    elif 'graz' in name.lower():
+                        ort, ort_detail = 'Graz', name
+                    else:
+                        ort_detail = name
+                    break
+
+    # 3. Fallback: first location with any meaningful role
+    if not ort:
+        for loc in locations:
+            if isinstance(loc, dict):
+                role = (loc.get('role') or '').lower()
+                if role in ('entstehungsort', 'erscheinungsdatum'):
+                    ort = loc.get('name', '')
+                    break
+
+    return ort, ort_detail
+
+
+def _extract_werk_from_record(record):
+    """Extract musical work + composer from record."""
+    werk = None
+    komponist = None
+    gattung = None
+
+    # 1. Structured: rico:hasOrHadSubject with @type m3gim:MusicalWork
+    subjects = ensure_list(record.get('rico:hasOrHadSubject'))
+    for subj in subjects:
+        if isinstance(subj, dict) and subj.get('@type') == 'm3gim:MusicalWork':
+            werk = subj.get('name', '')
+            komponist = normalize_komponist(subj.get('komponist', ''))
+            break
+
+    # 2. Fallback: title-matching
+    if not komponist:
+        komponist = get_komponist_from_title(record.get('rico:title'))
+
+    # Determine gattung
+    title_lower = (record.get('rico:title') or '').lower()
+    roles = ensure_list(record.get('m3gim:hasPerformanceRole'))
+    has_character_role = any(
+        isinstance(r, dict) and r.get('name', '') and r.get('name', '') not in ('Alt Solo',)
+        for r in roles
+    )
+
+    if any(kw in title_lower for kw in OPER_KEYWORDS) or has_character_role:
+        gattung = 'oper'
+    elif any(kw in title_lower for kw in KONZERT_KEYWORDS):
+        gattung = 'konzert'
+    elif werk and komponist:
+        gattung = 'oper'  # default for named works with composer
+    else:
+        gattung = None
+
+    return werk, komponist, gattung
+
+
+def _extract_rolle_from_record(record):
+    """Extract Malaniuk's performance role from record."""
+    roles = ensure_list(record.get('m3gim:hasPerformanceRole'))
+    for role in roles:
+        if isinstance(role, dict):
+            role_type = (role.get('role') or '').lower()
+            if role_type in ('aufführung', 'interpret:in', 'premiere', 'auftritt'):
+                return role.get('name')
+    # First role as fallback
+    if roles and isinstance(roles[0], dict):
+        return roles[0].get('name')
+    return None
+
+
+def _categorize_auftritt(ort, jahr, title, roles_raw):
+    """Determine auftritt category: engagement, festspiel, gastspiel, konzert."""
+    title_lower = (title or '').lower()
+
+    # 1. Festspiel-Orte
+    if ort in FESTSPIEL_ORTE:
+        return 'festspiel'
+
+    # 2. Festspiel-Keywords in title
+    if any(kw in title_lower for kw in FESTSPIEL_KEYWORDS):
+        return 'festspiel'
+
+    # 3. Gastspiel role in performance roles
+    roles = ensure_list(roles_raw)
+    for r in roles:
+        if isinstance(r, dict) and (r.get('role') or '').lower() == 'gastspiel':
+            return 'gastspiel'
+
+    # 4. Engagement: known city within engagement period
+    if ort and jahr and ort in ENGAGEMENT_ZEITRAEUME:
+        von, bis = ENGAGEMENT_ZEITRAEUME[ort]
+        if von <= jahr <= bis:
+            return 'engagement'
+
+    # 5. Konzert-Keywords
+    if any(kw in title_lower for kw in KONZERT_KEYWORDS):
+        return 'konzert'
+
+    # 6. Main city outside engagement period → engagement (broader sense)
+    if ort in LOCATION_ORDER:
+        return 'engagement'
+
+    # 7. Fallback
+    return 'gastspiel'
+
+
+def extract_auftritte(records):
+    """
+    Extract performance events from archive records.
+
+    Three-pass extraction:
+    - Pass 1: Structured data (eventDate + location + work)
+    - Pass 2: Programmhefte + Plakate (title parsing)
+    - Pass 3: Rezensionen with performance context
+
+    Returns deduplicated list of performance events.
+    """
+    raw_auftritte = []
+    seen_records = set()
+
+    for record in records:
+        if record.get('@type') == 'rico:RecordSet':
+            continue
+
+        rec_id = record.get('@id', '')
+        signatur = record.get('rico:identifier', '')
+        title = record.get('rico:title', '')
+        doc_type = get_dokumenttyp(record)
+
+        # Extract year from eventDate (preferred) or rico:date
+        jahr = None
+        datum = None
+        event_dates = ensure_list(record.get('m3gim:eventDate'))
+        for ed in event_dates:
+            if isinstance(ed, str):
+                j = extract_year(ed)
+                if j:
+                    jahr = j
+                    datum = ed.split('/')[0] if '/' in ed else ed  # first date
+                    break
+
+        if not jahr:
+            rico_date = record.get('rico:date')
+            if rico_date:
+                jahr = extract_year(rico_date)
+                datum = rico_date
+
+        if not jahr or jahr < 1935 or jahr > 2009:
+            continue
+
+        # Extract components
+        ort, ort_detail = _extract_ort_from_record(record)
+        werk, komponist, gattung = _extract_werk_from_record(record)
+        rolle = _extract_rolle_from_record(record)
+
+        # Pass 1: Structured data (eventDate + location/agent auffuehrungsort)
+        has_event_date = len(event_dates) > 0
+        has_perf_context = ort is not None or werk is not None
+
+        # Pass 2: Programmhefte + Plakate
+        is_performance_doc = doc_type in ('programmheft', 'plakat')
+
+        # Pass 3: Rezensionen with work reference
+        is_perf_rezension = (doc_type == 'rezension' and
+                             (werk is not None or komponist is not None))
+
+        if not (has_event_date and has_perf_context) and \
+           not is_performance_doc and \
+           not is_perf_rezension:
+            continue
+
+        if rec_id in seen_records:
+            continue
+        seen_records.add(rec_id)
+
+        # Try to infer ort from title for programmhefte/plakate if missing
+        if not ort and title:
+            title_lower = title.lower()
+            for city in LOCATION_ORDER:
+                if city.lower() in title_lower:
+                    ort = city
+                    break
+            # Check common venue names
+            if not ort:
+                venue_map = {
+                    'wiener staatsoper': 'Wien',
+                    'staatsoper wien': 'Wien',
+                    'volksoper': 'Wien',
+                    'bayerische staatsoper': 'München',
+                    'prinzregententheater': 'München',
+                    'festspielhaus': 'Bayreuth',
+                    'mozarteum': 'Salzburg',
+                    'tonhalle': 'Zürich',
+                    'grazer oper': 'Graz',
+                    'opernhaus graz': 'Graz',
+                }
+                for venue, city in venue_map.items():
+                    if venue in title_lower:
+                        ort = city
+                        ort_detail = venue.title()
+                        break
+
+        kategorie = _categorize_auftritt(ort, jahr, title, record.get('m3gim:hasPerformanceRole'))
+
+        raw_auftritte.append({
+            'ort': ort,
+            'ort_detail': ort_detail,
+            'kategorie': kategorie,
+            'werk': werk,
+            'komponist': komponist,
+            'rolle': rolle,
+            'jahr': jahr,
+            'datum': datum,
+            'phase': _get_lebensphase(jahr),
+            'dokumente': [signatur],
+            'gattung': gattung,
+            'titel': title[:80] if title else None,
+        })
+
+    # Deduplicate: merge records with same (ort, jahr, werk)
+    dedup = {}
+    for a in raw_auftritte:
+        key = (a['ort'] or '', a['jahr'], a['werk'] or '')
+        if key in dedup:
+            existing = dedup[key]
+            for sig in a['dokumente']:
+                if sig not in existing['dokumente']:
+                    existing['dokumente'].append(sig)
+            # Upgrade fields if missing
+            if not existing['rolle'] and a['rolle']:
+                existing['rolle'] = a['rolle']
+            if not existing['ort_detail'] and a['ort_detail']:
+                existing['ort_detail'] = a['ort_detail']
+            if not existing['gattung'] and a['gattung']:
+                existing['gattung'] = a['gattung']
+        else:
+            dedup[key] = a
+
+    result = sorted(dedup.values(), key=lambda x: (x['jahr'], x['ort'] or ''))
+
+    # Log statistics
+    cats = defaultdict(int)
+    for a in result:
+        cats[a['kategorie']] += 1
+    print(f'  Auftritte: {len(result)} total — ' +
+          ', '.join(f'{k}: {v}' for k, v in sorted(cats.items())))
+
+    return result
+
+
+# =============================================================================
 # VIEW BUILDERS
 # =============================================================================
 
@@ -440,42 +763,62 @@ def build_partitur(records):
         if v['min'] < 9999
     ]
 
-    # Placeholder for mobility events (would need manual annotation)
+    # Mobility events with narrative context
     mobilitaet = [
         {
             'von': 'Lemberg',
             'nach': 'Wien',
             'jahr': 1944,
             'form': 'erzwungen',
-            'beschreibung': 'Flucht vor der Roten Armee'
+            'beschreibung': 'Flucht vor der Roten Armee',
+            'kontext': 'Abbruch des Studiums am Konservatorium Lemberg, Verlust aller lokalen Netzwerke. 11 Dokumente aus 1944 belegen die dichteste Überlieferung vor 1950.'
         },
         {
             'von': 'Wien',
             'nach': 'Graz',
             'jahr': 1945,
             'form': 'geografisch',
-            'beschreibung': 'Erstes Engagement'
+            'beschreibung': 'Erstes Engagement',
+            'kontext': 'Engagement als Altistin an der Grazer Oper — Graz als Sprungbrett für die internationale Karriere.'
         },
         {
             'von': 'Graz',
             'nach': 'Wien',
             'jahr': 1950,
             'form': 'geografisch',
-            'beschreibung': 'Wiener Staatsoper'
+            'beschreibung': 'Wiener Staatsoper',
+            'kontext': 'Wechsel an die Wiener Staatsoper markiert den Beginn der Aufstiegsphase. Netzwerk-Intensität verdoppelt sich (7 → 46).'
         },
         {
             'von': 'Wien',
             'nach': 'Bayreuth',
             'jahr': 1952,
             'form': 'geografisch',
-            'beschreibung': 'Bayreuther Festspiele Debüt'
+            'beschreibung': 'Bayreuther Festspiele Debüt',
+            'kontext': 'Internationaler Durchbruch. Zusammenarbeit mit Wieland Wagner und Knappertsbusch beginnt.'
         },
         {
             'von': 'Wien',
             'nach': 'Zürich',
             'jahr': 1970,
             'form': 'lebensstil',
-            'beschreibung': 'Übersiedlung (Ehemann)'
+            'beschreibung': 'Übersiedlung (Ehemann)',
+            'kontext': 'Rückzug aus dem aktiven Bühnenleben. Gleichzeitig Beginn der Lehrtätigkeit an der KUG Graz.'
+        },
+        {
+            'von': 'Lemberg',
+            'nach': 'Wien',
+            'jahr': 1950,
+            'form': 'national',
+            'beschreibung': 'Staatsbürgerschaft durch Heirat'
+        },
+        {
+            'von': 'Zürich',
+            'nach': 'Graz',
+            'jahr': 1970,
+            'form': 'bildung',
+            'beschreibung': 'Professur für Liedinterpretation, KUG Graz',
+            'kontext': 'Wissenstransfer: Erfahrung aus internationaler Karriere fließt in die Lehre. Graz als Ort der Rückkehr.'
         }
     ]
 
@@ -491,6 +834,9 @@ def build_partitur(records):
             'intensitaet': count
         })
 
+    # Extract performance events
+    auftritte = extract_auftritte(records)
+
     return {
         'lebensphasen': LEBENSPHASEN,
         'orte': [
@@ -504,6 +850,7 @@ def build_partitur(records):
             {'ort': 'Salzburg', 'typ': 'auffuehrungsort', 'von': 1955, 'bis': 1965}
         ],
         'mobilitaet': mobilitaet,
+        'auftritte': auftritte,
         'netzwerk': netzwerk,
         'repertoire': sorted(repertoire_aggregated, key=lambda x: -x['dokumente']),
         'dokumente': [
@@ -981,6 +1328,19 @@ def main():
         with open(output_file, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
         print(f'  [OK] {output_file.name} ({len(json.dumps(data)):,} bytes)')
+
+    # Copy frontend-consumed views to docs/data/
+    docs_data = PROJECT_ROOT / 'docs' / 'data'
+    frontend_views = ['partitur', 'matrix', 'kosmos']
+    print()
+    print('Copying to docs/data/:')
+    for name in frontend_views:
+        src = OUTPUT_DIR / f'{name}.json'
+        dst = docs_data / f'{name}.json'
+        if src.exists() and dst.parent.exists():
+            import shutil
+            shutil.copy2(src, dst)
+            print(f'  [CP] {name}.json -> docs/data/')
 
     print()
     print('Done!')

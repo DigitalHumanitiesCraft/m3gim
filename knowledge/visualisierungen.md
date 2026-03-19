@@ -25,11 +25,11 @@
 
 ### Routing
 
-- Hash-basiertes Routing in `router.js` (6 aktive Tabs: archiv, indizes, mobilitaet, matrix, kosmos, korb)
+- Hash-basiertes Routing in `router.js` (7 aktive Tabs: archiv, indizes, mobilitaet, zeitfluss, matrix, kosmos, korb)
 - Info-Seiten als eigenstaendige HTML-Dateien (normale Links, kein Hash-Routing)
 - Deep Links fuer Views und Datensatzkontext
 
-## Shared Components (Session 23)
+## Shared Components (Session 23–25)
 
 Alle 4 D3-Visualisierungen (Matrix, Kosmos, Mobilitaet, Zeitfluss) nutzen ein einheitliches Component-System:
 
@@ -40,11 +40,20 @@ Alle 4 D3-Visualisierungen (Matrix, Kosmos, Mobilitaet, Zeitfluss) nutzen ein ei
 - `.viz-tooltip` / `.viz-tooltip--visible` — Dunkler Floating-Tooltip (opacity-Transition)
 - `.viz-zoom-reset` / `.viz-zoom-reset--visible` — Absolut positionierter Zoom-Reset im SVG-Container
 - `.ff-badges` / `.ff-badges__tag` — Forschungsfragen-Annotation (rechtsbuendig, flex-shrink: 0)
+- `.cross-link` — Pill-foermiger Navigationslink fuer Cross-View-Drilldowns (Session 25)
+- `.popup-item` / `.popup-item--secondary` — Klickbare Aktionszeile in Kontext-Popups (Session 25)
 
 ### JS-Builder (in `utils/viz-components.js`)
 - `buildFFBadges(...ffs)` — Erzeugt FF-Badge-Container
 - `buildPhaseChips(lebensphasen, onSelect, { labelMode })` — Erzeugt Phase-Chip-Bar mit "Alle"-Button, liefert `{ element, setActive, chips }`
 - `buildCoverageFooter(text)` — Erzeugt `.data-coverage`-Zeile
+- `createTooltip(container)` — Floating-Tooltip-Controller mit Boundary-Clamping, liefert `{ el, show, move, hide }` (Session 24)
+- `setupD3Zoom({ svg, zoomGroup, container, scaleExtent, onZoom })` — D3-Zoom+Pan mit Reset-Button, liefert `{ zoom, resetZoom }` (Session 24)
+- `viewLog(name, color)` — Console-Diagnostik mit farbigem Gruppen-Header, liefert `{ group, log, end }` (Session 24)
+
+### Daten-Singleton (in `data/loader.js`, Session 24)
+- `loadPartitur(url)` — Laedt `partitur.json` einmalig, cached, concurrent-safe
+- `getLebensphasen()` — Liefert gecachte Lebensphasen (erfordert vorherigen `loadPartitur()`-Aufruf)
 
 ### Einheitliches Layout-Pattern
 Alle Views folgen dem Schema: `[.viz-toolbar] → [Visualisierung/SVG] → [.viz-legend] → [.data-coverage]`
@@ -72,47 +81,58 @@ Alle Views folgen dem Schema: `[.viz-toolbar] → [Visualisierung/SVG] → [.viz
 - Wikidata-Icons (Original-Barcode-Logo) bei Index-Eintraegen mit WD-ID
 - WD-Coverage-Prozent in Index-Grid-Headern
 
-### Mobilitaet (Session 17/18/23)
+### Mobilitaet (Session 17/18/23/25)
 
-Schwimmbahn-Timeline (D3.js) fuer Ira Malaniuks geografische Mobilitaet 1919–2009.
+Schwimmbahn-Timeline (D3.js) fuer Ira Malaniuks geografische Mobilitaet 1919–2009. Layer-basiert mit zuschaltbaren Schichten.
 
 **Datenquellen:**
-- `partitur.json`: Lebensphasen, Orte (Wohnort/Auffuehrungsort/Lehrstaette), Mobilitaetsereignisse (5 Typen), Netzwerk-/Repertoire-/Dokumentdaten
-- `store.locations` + `store.records`: Gastspiel-Dots dynamisch aus Archivdaten extrahiert
+- `partitur.json`: Lebensphasen, Orte (Wohnort/Auffuehrungsort/Lehrstaette), Mobilitaetsereignisse (5 Typen + `kontext`-Felder), `auftritte[]` (60 Pipeline-extrahierte Events), Netzwerk-/Repertoire-/Dokumentdaten
+- `store.locations` + `store.records`: Gastspiel-Dots dynamisch aus Archivdaten extrahiert (Fallback)
 
-**Visualisierungsschichten (Z-Order):**
-1. Netzwerk-Overlay — Blaues Intensitaetsband am oberen Rand (Hoehe nach `netzwerk[].intensitaet`, FF1)
-2. Phasen-Baender — 7 Lebensphasen als alternierende Hintergrundfarben
-3. Skalenbruch — Vertikale Linie + Zigzag bei 1975, Annotation "// komprimiert"
-4. Gitterlinien — Horizontale Trennlinien zwischen Swim-Lanes
-5. Kontextlinien — Gestrichelte Verbindungen Wien → Auffuehrungsorte
-6. Balken — Farbige Balken (KUG-Blau = Wohnort, Beige = Auffuehrungsort)
-7. Pfeile — Bezier-Kurven fuer Mobilitaetsereignisse (rot-gestrichelt = erzwungen, gruen = geografisch, lila = Lebensstil, blaugrau-gestrichelt = national, braun = Bildung)
-8. Repertoire-Diamonds — Rauten im oberen Bereich zeigen aktive Repertoire-Perioden
-9. Gastspiel-Dots — Dot-Plot unterhalb der Swim-Lanes mit dynamischem Radius
-10. Dokument-Sparkline — Archivalischer Puls als Flaechendiagramm am unteren Rand
-11. Achsen — X-Achse (1920–2009) und Y-Achse (7 Orte)
+**Layer-Architektur (Session 25, E-41):**
+5 togglebare Layer via `buildLayerChips()` (Multi-Select):
+
+| Layer | Default | Inhalt |
+|---|---|---|
+| mobilitaet | AN | Swim-Lane-Balken + Event-Marker + Gitterlinien |
+| auftritte | AN | Aggregierte Auftritte-Dots ueber den Balken + Gastspiel-Section |
+| netzwerk | AUS | Intensitaetsband am oberen Rand |
+| repertoire | AUS | Komponisten-Zeitspannen |
+| sparkline | AUS | Dokumente-pro-Jahr Flaechendiagramm |
+
+**Visualisierungselemente:**
+- Phasen-Baender — 7 Lebensphasen als alternierende Hintergrundfarben (immer sichtbar)
+- Skalenbruch — Zigzag bei 1975 (immer sichtbar)
+- Balken — Schmalere Balken (55% Lane-Hoehe, 30% Offset), KUG-Blau = Wohnort, Gold = Auffuehrungsort
+- Event-Marker (E-42) — Vertikale Linien an Mobilitaetsereignis-Jahren mit gestaffelten Text-Labels (Stagger bei <55px Abstand), Richtungs-Chevrons, Flucht 1944 als einziges Signal-Rot
+- Auftritte-Dots (E-45) — Aggregiert pro Ort+Jahr, Radius nach Dokumentanzahl, ueber dem Balken positioniert
+- Gastspiel-Section — "Internationale Auftritte" unterhalb der Swim-Lanes
+- 3-Farben-Schema: KUG-Blau (Wohnort/Engagement), Warm-Gold (Auffuehrungsort/Gastspiel), Signal-Rot (nur Flucht 1944)
 
 **Interaktion:**
-- Floating-Tooltip (`.viz-tooltip`) fuer Balken, Pfeile und Gastspiel-Dots
-- Arrow-Tooltips zeigen aktives Repertoire im Zeitfenster (FF4)
-- Phasen-Chip-Bar: filtert alle Elemente auf gewaehlte Lebensphase (opacity-Dimming)
-- Klick auf Balken → navigiert zum Ort-Index (via `navigateToIndex`)
-- Shift+Klick auf Balken → Matrix (FF1)
-- Klick auf Repertoire-Diamond/Label → Zeitfluss mit Komponist-Kontext
-- Klick auf Gastspiel-Dot (1 Dokument) → navigiert direkt zum Archiv-Tab
-- Klick auf Gastspiel-Dot (>1 Dokument) → Popup-Menue mit Signatur + Titel-Liste
-- Unsichtbare Hit-Areas (14px) hinter Pfeilen fuer zuverlaessiges Hovern
+- Layer-Chips (buildLayerChips): Multi-Select-Toggle fuer 5 Schichten
+- Phasen-Chip-Bar: filtert via `data-year`/`data-von`/`data-bis` Attribute
+- Event-Marker: Hover zeigt kontext + Repertoire-Kontext, Klick aktiviert Fokus-Modus (Dimming)
+- Auftritte-Dots: Hover zeigt Werk/Rolle/Ort/Kategorie, Klick → Archiv oder Popup
+- Balken: Klick → Ort-Index, Shift+Klick → Matrix
+- Doppelklick auf SVG: Reset Fokus-Modus
+- FF-Badges (FF1, FF2, FF3, FF4) — alle 4 Forschungsfragen adressiert
 
 **Besonderheiten:**
-- Piecewise-linear Zeitskala: BREAK_YEAR=1975, BREAK_RATIO=0.74 komprimiert sparse 1975–2009
-- GUEST_DISPLAY_MAP normalisiert Granularitaetsmischungen ("Italien" → "Italien (versch.)")
-- PHASE_ABBR kuerzt Labels bei schmalen Phasen-Baendern
-- Legende unterhalb des Diagramms (einheitlich mit anderen Views)
-- Wien→Zuerich-Bogen bewusst abgeschwaecht (bowFactor 0.30 statt 0.45)
-- Lehrstaette (KUG-Professur 1970–2000) als gestrichelter Balken
-- Dokument-Sparkline am unteren Rand: jaehrliche Dokumentanzahl als Flaechendiagramm mit Peak-Annotation
-- FF-Badges (FF4, FF1) und Datenabdeckungs-Zeile in `.viz-toolbar`
+- Piecewise-linear Zeitskala: BREAK_YEAR=1975, BREAK_RATIO=0.74
+- Lane-Hoehe 44px (breiter als andere Views), Balken im unteren Bereich positioniert
+- Fokus-Modus: `.mob--event-dimmed` (opacity 0.1), `.mob--event-focused` (hervorgehoben)
+- Peak-Annotation in Sparkline: Jahre ab 1995 als "Nachlass" markiert
+
+### Prototyp-Seiten (Session 25)
+
+Zwei alternative Mobilitaets-Visualisierungen als eigenstaendige HTML-Seiten (E-47):
+
+**Lebensstationen** (`lebensstationen.html`, E-48): Scrollytelling mit 7 Kapiteln + 7 Wendepunkten. Sticky Mini-Timeline, 2-Spalten-Grid (Text + Ort-Schema-SVG), Stat-Cards (Netzwerk/Auftritte/Repertoire), Synthese-Section. IntersectionObserver fuer Scroll-Tracking.
+
+**Lebenspartitur** (`lebenspartitur.html`, E-49): Vertikaler Bump-Chart (Zeitachse Y, Orte X). Durchgehende "Lebenslinie" mit farbkodierten Mobilitaetssprüngen. 3-Spalten-Grid: Netzwerk-Facette (links), Hauptchart, Repertoire-Facette (rechts). Synchronisierte Hover-Highlight-Linie ueber alle 3 Spalten.
+
+Beide laden `partitur.json` via fetch(), nutzen D3.js v7, sind eigenstaendig (kein SPA-Router).
 
 ### Wissenskorb
 
@@ -141,7 +161,7 @@ Schwimmbahn-Timeline (D3.js) fuer Ira Malaniuks geografische Mobilitaet 1919–2
 
 ### Kosmos (Session 20/21/23)
 
-- Repertoire-/Rollenbezug als radialer Force-Graph (D3.js)
+- Repertoire-/Rollenbezug als deterministisches konzentrisches Layout (D3.js)
 - Deterministisches konzentrisches Layout: Zentrum Malaniuk, Komponisten-Layer, Werk-Layer
 - Fokus-Interaktionen (Komponist-Klick highlightet), Zoom/Pan, Drag
 - **Phasen-Chip-Bar**: Filtert Nodes auf Lebensphasen, zeigt Genre-Ratio-Annotation (z.B. "LP6: 12 Opern · 5 Konzerte", FF2)

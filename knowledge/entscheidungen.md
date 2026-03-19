@@ -16,7 +16,7 @@
 | E-08 | JSON-LD / RiC-O 1.1 als Datenformat |
 | E-09 | Mobilitaetsform-Praefix `[mobilitaet:]` im Anmerkungsfeld |
 | E-10 | Synthetische Daten mit `_meta.synthetic` |
-| E-11 | 2 D3-Vis (Matrix, Kosmos) + 4 Views (Archiv, Indizes, Mobilitaet, Korb) |
+| E-11 | 4 D3-Vis (Matrix, Kosmos, Zeitfluss, Mobilitaet) + 3 Views (Archiv, Indizes, Korb) |
 | E-12 | Netzwerk-Schwellenwert 3+ fuer Matrix |
 | E-13 | 5-Jahres-Intervalle in Matrix |
 | E-14 | Komponisten-Farbkodierung |
@@ -46,6 +46,15 @@
 | E-38 | Guest-City-Display-Normalisierung via GUEST_DISPLAY_MAP |
 | E-39 | Piecewise-linear Zeitskala mit Skalenbruch (BREAK_YEAR=1975, BREAK_RATIO=0.74) |
 | E-40 | Excel-Quelldateien in `data/source/` git-getrackt (Reproduzierbarkeit statt nur Google Sheets) |
+| E-41 | Layer-Toggle statt gleichzeitiger Darstellung aller Schichten in Mobilitaet (5 Layer: mobilitaet, auftritte, netzwerk, repertoire, sparkline) |
+| E-42 | Vertikale Event-Marker statt Bezier-Pfeile fuer Mobilitaetsereignisse — Position + Text statt Kurve + Farbe |
+| E-43 | `extract_auftritte()` Pipeline-Funktion — 3-Pass-Extraktion (strukturiert, Programmhefte/Plakate, Rezensionen) mit 4 Kategorien (engagement, festspiel, gastspiel, konzert) |
+| E-44 | `buildLayerChips()` als Multi-Select-Erweiterung des Phase-Chip-Patterns in viz-components.js |
+| E-45 | Auftritte-Aggregation — Deduplizierung nach (ort, jahr, werk), Dots ueber dem Balken positioniert |
+| E-46 | `kontext`-Felder in `mobilitaet[]` — narrative Zusatztexte fuer Forschungsbezug (z.B. Netzwerk-Deltas, Wissenstransfer) |
+| E-47 | Prototyp-Seiten als eigenstaendige HTML (lebensstationen.html, lebenspartitur.html) statt weitere SPA-Tab-Iterationen |
+| E-48 | Lebensstationen: Scrollytelling mit IntersectionObserver, 7 Kapitel + 7 Wendepunkte, Sticky Mini-Timeline |
+| E-49 | Lebenspartitur: Vertikaler Bump-Chart (Lebenslinie + synchronisierte Facetten fuer Netzwerk/Repertoire) |
 
 ## Offene Entscheidungen
 

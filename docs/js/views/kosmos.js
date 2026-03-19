@@ -5,13 +5,16 @@
  */
 
 import { aggregateKosmos } from '../data/aggregator.js';
+import { loadPartitur } from '../data/loader.js';
 import { selectRecord, navigateToIndex, navigateToView } from '../ui/router.js';
 import { el, clear } from '../utils/dom.js';
-import { buildFFBadges, buildPhaseChips } from '../utils/viz-components.js';
+import { buildFFBadges, buildPhaseChips, createTooltip, setupD3Zoom, viewLog } from '../utils/viz-components.js';
+
+const log = viewLog('Kosmos', '#2E7D4F');
 
 let rendered = false;
 let storeRef = null;
-let tooltipEl = null;
+let tooltip = null;  // shared tooltip controller from viz-components.js
 let lebensphasen = null;
 let activePhase = null;
 
@@ -27,14 +30,14 @@ export function renderKosmos(store, container) {
   const data = aggregateKosmos(store);
   clear(container);
 
-  console.group('%c[Kosmos]', 'color: #2E7D4F; font-weight: bold');
-  console.log(`${data.komponisten.length} Komponisten, ${data.totalDocs} Dok. gesamt`);
+  log.group();
+  log.log(`${data.komponisten.length} Komponisten, ${data.totalDocs} Dok. gesamt`);
   data.komponisten.forEach(k => {
     const opern = k.werke.filter(w => w.istOper).length;
     const konzerte = k.werke.filter(w => !w.istOper).length;
-    console.log(`  ${k.name}: ${k.dokumente_gesamt} Dok., ${opern} Opern, ${konzerte} Konzerte, ${k.werke.length} Werke`);
+    log.log(`  ${k.name}: ${k.dokumente_gesamt} Dok., ${opern} Opern, ${konzerte} Konzerte, ${k.werke.length} Werke`);
   });
-  console.groupEnd();
+  log.end();
 
   // Toolbar: phase chips (populated async) + FF-badges
   const toolbarRow = el('div', { className: 'viz-toolbar__row' });
@@ -49,8 +52,7 @@ export function renderKosmos(store, container) {
   container.appendChild(genreRatio);
 
   // Tooltip (floating HTML div over SVG)
-  tooltipEl = el('div', { className: 'viz-tooltip' });
-  container.appendChild(tooltipEl);
+  tooltip = createTooltip(container);
 
   const svgContainer = el('div', { className: 'kosmos-container' });
   container.appendChild(svgContainer);
@@ -70,11 +72,6 @@ export function renderKosmos(store, container) {
   ));
 }
 
-export function resetKosmos() {
-  rendered = false;
-  storeRef = null;
-  activePhase = null;
-}
 
 /* ------------------------------------------------------------------ */
 /*  Main visualization builder                                         */
@@ -96,15 +93,7 @@ function buildVisualization(data, store, svgContainer) {
 
   // Zoom/Pan
   const zoomGroup = svg.append('g').attr('class', 'kosmos-zoom-group');
-  const zoom = d3.zoom()
-    .scaleExtent([0.3, 3])
-    .on('zoom', (event) => {
-      zoomGroup.attr('transform', event.transform);
-      const isIdentity = event.transform.k === 1 && event.transform.x === 0 && event.transform.y === 0;
-      const resetBtn = svgContainer.querySelector('.viz-zoom-reset');
-      if (resetBtn) resetBtn.classList.toggle('viz-zoom-reset--visible', !isIdentity);
-    });
-  svg.call(zoom);
+  setupD3Zoom({ svg, zoomGroup, container: svgContainer });
 
   // Compute deterministic layout
   const { nodes, links } = computeLayout(data, cx, cy, R1, R2);
@@ -199,12 +188,7 @@ function buildVisualization(data, store, svgContainer) {
   // Interactive states
   setupInteractions(nodeSel, linkSel, nodes, store, svgContainer);
 
-  // Zoom reset button (shared style)
-  svgContainer.appendChild(el('button', {
-    className: 'viz-zoom-reset',
-    title: 'Zoom zur\u00fccksetzen',
-    onClick: () => svg.transition().duration(300).call(zoom.transform, d3.zoomIdentity),
-  }, 'Reset'));
+  // Zoom reset button created by setupD3Zoom() above
 }
 
 /* ------------------------------------------------------------------ */
@@ -326,8 +310,8 @@ function setupInteractions(nodeSel, linkSel, nodes, store, svgContainer) {
   // Hover → floating tooltip
   nodeSel
     .on('mouseenter', (event, d) => showTooltip(event, d))
-    .on('mousemove', (event) => moveTooltip(event))
-    .on('mouseleave', () => hideTooltip());
+    .on('mousemove', (event) => tooltip.move(event))
+    .on('mouseleave', () => tooltip.hide());
 
   // Click
   nodeSel.on('click', (event, d) => {
@@ -350,7 +334,7 @@ function setupInteractions(nodeSel, linkSel, nodes, store, svgContainer) {
 }
 
 function showTooltip(event, d) {
-  if (!tooltipEl) return;
+  if (!tooltip) return;
   let html = '';
   if (d.type === 'zentrum') {
     html = '<strong>Ira Malaniuk</strong><br>Mezzosopran, 1919\u20132009';
@@ -371,22 +355,7 @@ function showTooltip(event, d) {
     }
     html += `<br>${d.docs} Dok.`;
   }
-  tooltipEl.innerHTML = html;
-  tooltipEl.classList.add('viz-tooltip--visible');
-  moveTooltip(event);
-}
-
-function moveTooltip(event) {
-  if (!tooltipEl) return;
-  const container = tooltipEl.parentElement;
-  if (!container) return;
-  const rect = container.getBoundingClientRect();
-  tooltipEl.style.left = `${event.clientX - rect.left + 12}px`;
-  tooltipEl.style.top = `${event.clientY - rect.top - 10}px`;
-}
-
-function hideTooltip() {
-  if (tooltipEl) tooltipEl.classList.remove('viz-tooltip--visible');
+  tooltip.show(event, html);
 }
 
 /* ------------------------------------------------------------------ */
@@ -465,8 +434,8 @@ function expandAndere(d, nodeSel, linkSel, nodes, svgContainer) {
         showKomponistPopup(event, { name: komp.name, docs: komp.dokumente_gesamt }, svgContainer);
       })
       .on('mouseenter', (event) => showTooltip(event, { type: 'komponist', name: komp.name, docs: komp.dokumente_gesamt }))
-      .on('mousemove', (event) => moveTooltip(event))
-      .on('mouseleave', () => hideTooltip());
+      .on('mousemove', (event) => tooltip.move(event))
+      .on('mouseleave', () => tooltip.hide());
 
     g.append('circle')
       .attr('r', 8)
@@ -521,15 +490,15 @@ function showKomponistPopup(event, d, svgContainer) {
   const popup = el('div', { className: 'kosmos-popup' },
     el('div', { className: 'kosmos-popup__header' }, `${d.name} (${d.docs} Dok.)`),
     el('a', {
-      className: 'kosmos-popup__action',
+      className: 'popup-item',
       onClick: (e) => { e.preventDefault(); dismissPopup(); navigateToIndex('personen', d.name); },
     }, '\u2192 Index'),
     el('a', {
-      className: 'kosmos-popup__action',
+      className: 'popup-item',
       onClick: (e) => { e.preventDefault(); dismissPopup(); navigateToView('matrix'); },
     }, '\u2192 Matrix'),
     el('a', {
-      className: 'kosmos-popup__action',
+      className: 'popup-item',
       onClick: (e) => { e.preventDefault(); dismissPopup(); navigateToView('zeitfluss', { komponist: d.name }); },
     }, '\u2192 Zeitfluss'),
   );
@@ -543,7 +512,7 @@ function showWerkPopup(event, d, store, svgContainer) {
     const record = store.bySignatur.get(sig);
     const title = record ? (record['rico:title'] || sig) : sig;
     return el('a', {
-      className: 'kosmos-popup__action',
+      className: 'popup-item',
       onClick: (e) => { e.preventDefault(); dismissPopup(); if (record) selectRecord(record['@id']); },
     }, title.length > 40 ? title.slice(0, 38) + '\u2026' : title);
   });
@@ -577,7 +546,7 @@ function showWerkPopup(event, d, store, svgContainer) {
     ...items,
     d.signaturen.length > 5 ? el('span', { className: 'kosmos-popup__more' }, `+${d.signaturen.length - 5} weitere`) : null,
     el('a', {
-      className: 'kosmos-popup__action kosmos-popup__action--secondary',
+      className: 'popup-item popup-item--secondary',
       onClick: (e) => { e.preventDefault(); dismissPopup(); navigateToIndex('werke', d.name); },
     }, '\u2192 Alle im Index'),
   );
@@ -642,8 +611,7 @@ function buildLegend(data) {
 /* ------------------------------------------------------------------ */
 
 function loadPhasen(phaseSlot, svgContainer, genreRatio) {
-  fetch('./data/partitur.json')
-    .then(r => r.ok ? r.json() : null)
+  loadPartitur()
     .then(data => {
       if (!data || !data.lebensphasen) return;
       lebensphasen = data.lebensphasen;

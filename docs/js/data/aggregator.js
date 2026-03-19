@@ -151,13 +151,25 @@ function getIntensityWeight(docType) {
 }
 
 // =========================================================================
-// Kosmos
+// Shared: Komponisten-Map Builder (used by Kosmos + Zeitfluss)
 // =========================================================================
 
-export function aggregateKosmos(store) {
-  const kompMap = new Map(); // canonicalName → { dokumente: Set, werke: Map<werkName, {docs, orte, rollen}> }
+/**
+ * buildKomponistenMap — extracts composer → works structure from store.
+ * Pass 1: Structured data from rico:hasOrHadSubject (MusicalWork).
+ * Pass 2: Title-matching fallback for records without structured work data.
+ *
+ * Each entry: { dokumente: Set<id>, werke: Map<werkName, {
+ *   docs: Set, signaturen: Set, orte: Map<name,count>, rollen: Map<name,count>, jahre: Set
+ * }> }
+ *
+ * @param {Object} store
+ * @returns {Map}
+ */
+function buildKomponistenMap(store) {
+  const kompMap = new Map();
 
-  // Method 1: Structured data from rico:hasOrHadSubject
+  // --- Pass 1: Structured data from rico:hasOrHadSubject ---
   for (const record of store.allRecords) {
     const subjects = ensureArray(record['rico:hasOrHadSubject']);
     for (const subj of subjects) {
@@ -187,11 +199,10 @@ export function aggregateKosmos(store) {
       }
     }
 
-    // Also harvest performance roles
+    // Harvest performance roles
     const roles = ensureArray(record['m3gim:hasPerformanceRole']);
     for (const role of roles) {
       const roleName = role.name || role['skos:prefLabel'] || '';
-      // Try to find which werk this role belongs to
       for (const subj of subjects) {
         if (subj['@type'] === 'm3gim:MusicalWork' && subj.name) {
           const komponist = normalizeKomponist(subj.komponist || '');
@@ -205,7 +216,7 @@ export function aggregateKosmos(store) {
       }
     }
 
-    // Locations on this record → attribute to all works in this record
+    // Locations → attribute to all works in this record
     const locs = ensureArray(record['rico:hasOrHadLocation']);
     for (const loc of locs) {
       const locName = loc.name || '';
@@ -224,13 +235,12 @@ export function aggregateKosmos(store) {
     }
   }
 
-  // Method 2: Title-matching fallback
+  // --- Pass 2: Title-matching fallback ---
   for (const record of store.allRecords) {
-    const title = (record['rico:title'] || '').toLowerCase();
     const subjects = ensureArray(record['rico:hasOrHadSubject']);
-    // Skip if already has structured work data
     if (subjects.some(s => s['@type'] === 'm3gim:MusicalWork')) continue;
 
+    const title = (record['rico:title'] || '').toLowerCase();
     for (const [keyword, komponist] of Object.entries(KOMPONISTEN_MAPPING)) {
       if (title.includes(keyword)) {
         if (!kompMap.has(komponist)) {
@@ -241,6 +251,16 @@ export function aggregateKosmos(store) {
       }
     }
   }
+
+  return kompMap;
+}
+
+// =========================================================================
+// Kosmos
+// =========================================================================
+
+export function aggregateKosmos(store) {
+  const kompMap = buildKomponistenMap(store);
 
   // Convert to output format, enriched with role and type info
   const ANDERE_THRESHOLD = 1; // composers with ≤ this many docs → "Andere" group
@@ -291,122 +311,61 @@ function normalizeKomponist(raw) {
 // =========================================================================
 
 export function aggregateZeitfluss(store) {
-  const kompMap = new Map(); // canonicalName → { docs: Set, undated: Set, werke: Map }
+  const kompMap = buildKomponistenMap(store);
 
-  // --- Pass 1: Structured data from rico:hasOrHadSubject ---
-  for (const record of store.allRecords) {
-    const subjects = ensureArray(record['rico:hasOrHadSubject']);
-    for (const subj of subjects) {
-      if (subj['@type'] !== 'm3gim:MusicalWork') continue;
-      const werkName = subj.name || '';
-      const rawKomponist = subj.komponist || '';
-      if (!werkName && !rawKomponist) continue;
-
-      const komponist = normalizeKomponist(rawKomponist);
-      if (!komponist) continue;
-
-      if (!kompMap.has(komponist)) {
-        kompMap.set(komponist, { docs: new Set(), undated: new Set(), werke: new Map() });
-      }
-      const kEntry = kompMap.get(komponist);
-
-      const year = extractYear(record['rico:date']);
-      if (year && year >= 1900 && year <= 2020) {
-        kEntry.docs.add(record['@id']);
-      } else {
-        kEntry.undated.add(record['@id']);
-      }
-
-      if (werkName) {
-        if (!kEntry.werke.has(werkName)) {
-          kEntry.werke.set(werkName, {
-            jahre: [], orte: new Map(), rollen: new Map(),
-            signaturen: [], istOper: false,
-          });
-        }
-        const wEntry = kEntry.werke.get(werkName);
-        if (year && year >= 1900 && year <= 2020) wEntry.jahre.push(year);
-        if (record['rico:identifier']) wEntry.signaturen.push(record['rico:identifier']);
-
-        // Locations
-        const locs = ensureArray(record['rico:hasOrHadLocation']);
-        for (const loc of locs) {
-          const locName = (loc.name || '').trim();
-          if (locName && loc.role !== 'erscheinungsdatum') {
-            wEntry.orte.set(locName, (wEntry.orte.get(locName) || 0) + 1);
-          }
-        }
-
-        // Roles
-        const roles = ensureArray(record['m3gim:hasPerformanceRole']);
-        for (const role of roles) {
-          const rName = (role.name || '').trim();
-          if (rName) {
-            wEntry.rollen.set(rName, (wEntry.rollen.get(rName) || 0) + 1);
-            wEntry.istOper = true;
-          }
-        }
-      }
-    }
-  }
-
-  // --- Pass 2: Title-matching fallback (composers without structured data) ---
-  for (const record of store.allRecords) {
-    const subjects = ensureArray(record['rico:hasOrHadSubject']);
-    if (subjects.some(s => s['@type'] === 'm3gim:MusicalWork')) continue;
-
-    const title = (record['rico:title'] || '').toLowerCase();
-    for (const [keyword, komponist] of Object.entries(KOMPONISTEN_MAPPING)) {
-      if (title.includes(keyword)) {
-        if (!kompMap.has(komponist)) {
-          kompMap.set(komponist, { docs: new Set(), undated: new Set(), werke: new Map() });
-        }
-        const year = extractYear(record['rico:date']);
-        if (year && year >= 1900 && year <= 2020) {
-          kompMap.get(komponist).docs.add(record['@id']);
-        } else {
-          kompMap.get(komponist).undated.add(record['@id']);
-        }
-        break;
-      }
-    }
-  }
-
-  // --- Build output ---
+  // --- Build output (adapts shared kompMap to Zeitfluss format) ---
   const straenge = [];
   const undatiert = [];
 
   for (const [name, data] of kompMap) {
+    // Collect all years from werke (jahre is a Set in the shared map)
     const allYears = [];
     for (const [, w] of data.werke) {
       allYears.push(...w.jahre);
     }
-    const uniqueYears = [...new Set(allYears)].sort((a, b) => a - b);
+    const datedYears = allYears.filter(y => y >= 1900 && y <= 2020);
+    const uniqueYears = [...new Set(datedYears)].sort((a, b) => a - b);
+
+    // Compute dated/undated doc counts from the shared dokumente Set
+    let datedDocs = 0;
+    let undatedDocs = 0;
+    for (const docId of data.dokumente) {
+      // Check if any werk references this doc with a dated year
+      let hasDatedYear = false;
+      for (const [, w] of data.werke) {
+        if (w.docs.has(docId) && [...w.jahre].some(y => y >= 1900 && y <= 2020)) {
+          hasDatedYear = true;
+          break;
+        }
+      }
+      if (hasDatedYear) datedDocs++;
+      else undatedDocs++;
+    }
 
     if (uniqueYears.length === 0) {
-      // Completely undated composer
       undatiert.push({
         komponist: name,
         farbe: KOMPONISTEN_FARBEN[name] || KOMPONISTEN_FARBEN['Andere'],
         werke_count: data.werke.size,
-        dokumente_count: data.docs.size + data.undated.size,
+        dokumente_count: data.dokumente.size,
       });
       continue;
     }
 
     const werke = [...data.werke.entries()]
       .map(([werkName, w]) => {
-        const sorted = [...new Set(w.jahre)].sort((a, b) => a - b);
+        const sorted = [...w.jahre].filter(y => y >= 1900 && y <= 2020).sort((a, b) => a - b);
         const topRolle = [...w.rollen.entries()].sort((a, b) => b[1] - a[1])[0];
+        const sigs = [...w.signaturen];
         return {
           name: werkName,
           erstbeleg: sorted.length > 0 ? sorted[0] : null,
           letztbeleg: sorted.length > 0 ? sorted[sorted.length - 1] : null,
           orte: [...w.orte.keys()],
           rolle: topRolle ? topRolle[0] : null,
-          istOper: w.istOper,
-          signaturen: w.signaturen,
-          dokumente: w.signaturen.length,
+          istOper: w.rollen.size > 0,
+          signaturen: sigs,
+          dokumente: sigs.length,
           datiert: sorted.length > 0,
         };
       })
@@ -417,8 +376,8 @@ export function aggregateZeitfluss(store) {
       farbe: KOMPONISTEN_FARBEN[name] || KOMPONISTEN_FARBEN['Andere'],
       von: uniqueYears[0],
       bis: uniqueYears[uniqueYears.length - 1],
-      dokumente_datiert: data.docs.size,
-      dokumente_undatiert: data.undated.size,
+      dokumente_datiert: datedDocs,
+      dokumente_undatiert: undatedDocs,
       werke,
     });
   }

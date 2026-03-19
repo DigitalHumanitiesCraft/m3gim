@@ -31,10 +31,10 @@
 
 | Pfad | Zweck |
 |------|-------|
-| `main.js` | Einstiegspunkt, Lazy-Tab-Rendering |
-| `data/loader.js` | Dataloading, Store-Aufbau |
-| `data/aggregator.js` | Daten-Aggregation fuer Views |
-| `ui/router.js` | Hash-Routing (6 aktive Tabs), navigateToView/navigateToIndex |
+| `main.js` | Einstiegspunkt, TAB_RENDERERS Registry, Lazy-Tab-Rendering |
+| `data/loader.js` | Dataloading, Store-Aufbau, Partitur-Singleton (`loadPartitur()`, `getLebensphasen()`) |
+| `data/aggregator.js` | Daten-Aggregation fuer Views (`buildKomponistenMap` shared, `aggregateMatrix`, `aggregateKosmos`, `aggregateZeitfluss`) |
+| `ui/router.js` | Hash-Routing (7 aktive Tabs), navigateToView/navigateToIndex |
 | `ui/korb.js` | Wissenskorb (sessionStorage) |
 | `views/archiv.js` | Bestand + Chronik |
 | `views/indizes.js` | 4-Grid Explorer |
@@ -42,23 +42,25 @@
 | `views/zeitfluss.js` | Chronologischer Dot-Plot (D3) |
 | `views/korb.js` | Korb-Cards |
 | `views/matrix.js` | Person×Zeit-Heatmap (D3) |
-| `views/kosmos.js` | Repertoire-Force-Graph (D3) |
+| `views/kosmos.js` | Repertoire-Konzentrisches Layout (D3) |
 | `utils/format.js` | Formatierungshilfen |
 | `utils/dom.js` | DOM-Helfer (el, clear) |
 | `utils/date-parser.js` | Datumsparser |
 | `utils/normalize.js` | Normalisierung |
-| `utils/viz-components.js` | Shared Viz-Builder (FF-Badges, Phase-Chips, Coverage) |
+| `utils/viz-components.js` | Shared Viz-Builder (FF-Badges, Phase-Chips, **Layer-Chips** (Session 25), Coverage, Tooltip, Zoom, Console-Log) |
 
 11 CSS-Dateien unter `docs/css/` (variables, base, archiv, indizes, mobilitaet, korb, matrix, kosmos, zeitfluss, components, pages).
 
-### Info-Seiten (statisches HTML, kein JS)
+### Info-Seiten (statisches HTML)
 
-5 eigenstaendige HTML-Dateien: `about.html`, `projekt.html`, `modell.html`, `hilfe.html`, `impressum.html`.
+5 Content-Seiten: `about.html`, `projekt.html`, `modell.html`, `hilfe.html`, `impressum.html`.
+2 Prototyp-Seiten (Session 25): `lebensstationen.html` (Scrollytelling, D3+IntersectionObserver), `lebenspartitur.html` (Bump-Chart, D3). Beide eigenstaendig (laden `partitur.json` via fetch(), kein SPA-Router).
 Einheitliches Template: info-header, info-nav, info-main, info-footer. Lesebreite 720px.
 
 ## Routing
 
 - Hash-basiert in `router.js`: 7 aktive Tabs (archiv, indizes, mobilitaet, zeitfluss, matrix, kosmos, korb)
+- Alle 4 D3-Views laden Lebensphasen ueber `loadPartitur()` Singleton (loader.js) statt separater Fetch-Aufrufe
 - Deep Links: `#archiv/UAKUG/NIM_003%20Folio%2001` fuer Datensatzkontext
 - Info-Seiten als eigenstaendige HTML-Dateien (normale Links, kein Hash-Routing)
 - `navigateToIndex(gridType, entityName)` fuer Cross-Tab-Navigation

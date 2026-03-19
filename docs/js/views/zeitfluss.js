@@ -10,12 +10,15 @@
  */
 
 import { aggregateZeitfluss } from '../data/aggregator.js';
+import { loadPartitur, getLebensphasen } from '../data/loader.js';
 import { navigateToView, navigateToIndex } from '../ui/router.js';
 import { el, clear } from '../utils/dom.js';
-import { buildFFBadges, buildPhaseChips } from '../utils/viz-components.js';
+import { buildFFBadges, buildPhaseChips, createTooltip, viewLog } from '../utils/viz-components.js';
+
+const log = viewLog('Zeitfluss', '#6B4E8C');
 
 let rendered = false;
-let tooltipEl = null;
+let tooltip = null;  // shared tooltip controller
 let currentSort = 'dichte'; // 'dichte' | 'erstbeleg'
 let currentGattung = 'alle'; // 'alle' | 'oper' | 'konzert'
 let cachedStore = null;
@@ -53,15 +56,8 @@ const JITTER_SEED = 42;
 /*  Lebensphasen                                                       */
 /* ================================================================== */
 
-const LEBENSPHASEN = [
-  { id: 'LP1', label: 'Kindheit',   von: 1919, bis: 1937 },
-  { id: 'LP2', label: 'Studium',    von: 1937, bis: 1944 },
-  { id: 'LP3', label: 'Flucht',     von: 1944, bis: 1945 },
-  { id: 'LP4', label: 'Graz',       von: 1945, bis: 1950 },
-  { id: 'LP5', label: 'Aufstieg',   von: 1950, bis: 1955 },
-  { id: 'LP6', label: 'Internat.',  von: 1955, bis: 1970 },
-  { id: 'LP7', label: 'Spätphase',  von: 1970, bis: 2009 },
-];
+/** Cached Lebensphasen from partitur.json (loaded once via singleton). */
+let lebensphasen = [];
 
 /* ================================================================== */
 /*  Deterministic pseudo-random (for jitter)                           */
@@ -79,10 +75,14 @@ function seededRandom(seed) {
 /*  Public API                                                         */
 /* ================================================================== */
 
-export function renderZeitfluss(store, container) {
+export async function renderZeitfluss(store, container) {
   if (rendered) return;
   rendered = true;
   cachedStore = store;
+
+  // Load Lebensphasen from shared singleton (cached after first call)
+  const partitur = await loadPartitur();
+  lebensphasen = partitur?.lebensphasen || [];
 
   const data = aggregateZeitfluss(store);
   clear(container);
@@ -91,22 +91,18 @@ export function renderZeitfluss(store, container) {
   const weitereStraenge = data.straenge.filter(s => s.dokumente_datiert < STRANG_MIN_DOCS);
   const sorted = sortStraenge(hauptStraenge, currentSort);
 
-  console.group('%c[Zeitfluss]', 'color: #6B4E8C; font-weight: bold');
-  console.log(`${sorted.length} Haupt-Stränge, ${weitereStraenge.length} Einzelbelege`);
-  console.log(`Abdeckung: ${data.abdeckung.datiert} datiert, ${data.abdeckung.total - data.abdeckung.datiert} undatiert von ${data.abdeckung.total}`);
+  log.group();
+  log.log(`${sorted.length} Haupt-Stränge, ${weitereStraenge.length} Einzelbelege`);
+  log.log(`Abdeckung: ${data.abdeckung.datiert} datiert, ${data.abdeckung.total - data.abdeckung.datiert} undatiert von ${data.abdeckung.total}`);
   sorted.forEach(s => {
     const orte = s.werke.flatMap(w => w.orte || []);
     const ortSet = [...new Set(orte)];
-    console.log(`  ${s.komponist}: ${s.dokumente_datiert} dat. Dok., ${s.werke.length} Werke, Orte: [${ortSet.join(', ')}]`);
+    log.log(`  ${s.komponist}: ${s.dokumente_datiert} dat. Dok., ${s.werke.length} Werke, Orte: [${ortSet.join(', ')}]`);
   });
-  console.groupEnd();
+  log.end();
 
   // Toolbar: Gattung chips + Phase chips + Sort toggle + FF-badges
   container.appendChild(buildFilterToolbar(container));
-
-  // Tooltip
-  tooltipEl = el('div', { className: 'viz-tooltip' });
-  container.appendChild(tooltipEl);
 
   // SVG container (with zoom-reset overlay)
   const svgContainer = el('div', { className: 'zeitfluss-container' });
@@ -116,6 +112,7 @@ export function renderZeitfluss(store, container) {
   }, 'Reset Zoom');
   resetZoomBtn.addEventListener('click', () => zoomToPhase(null));
   svgContainer.appendChild(resetZoomBtn);
+  tooltip = createTooltip(svgContainer);
   container.appendChild(svgContainer);
 
   buildDotPlot(sorted, weitereStraenge, data.abdeckung, svgContainer);
@@ -195,7 +192,7 @@ function buildFilterToolbar(container) {
   row.appendChild(el('div', { className: 'viz-toolbar__sep' }));
 
   // --- Phasenfilter (smooth zoom via buildPhaseChips) ---
-  const { element: phaseEl, setActive, chips } = buildPhaseChips(LEBENSPHASEN, (phase) => {
+  const { element: phaseEl, setActive, chips } = buildPhaseChips(lebensphasen, (phase) => {
     zoomToPhase(phase ? phase.id : null);
   }, { labelMode: 'short' });
   activePhaseChips = chips;
@@ -240,7 +237,7 @@ function zoomToPhase(phaseId) {
     return;
   }
 
-  const phase = LEBENSPHASEN.find(p => p.id === phaseId);
+  const phase = lebensphasen.find(p => p.id === phaseId);
   if (!phase) return;
 
   // Calculate transform to fill innerWidth with [phase.von, phase.bis]
@@ -506,7 +503,7 @@ function setupZoom(svg, g, clipG, xScale, xAxisG, xAxisFn, innerWidth, innerHeig
 function drawPhaseBands(g, xScale, height, yearMax) {
   const pg = g.append('g').attr('class', 'zeitfluss-phase-bands');
 
-  LEBENSPHASEN.forEach((phase, i) => {
+  lebensphasen.forEach((phase, i) => {
     const x0 = Math.max(xScale(phase.von), 0);
     const x1 = Math.min(xScale(phase.bis), xScale(yearMax));
     if (x1 <= x0) return;
@@ -549,7 +546,7 @@ function drawPhaseBands(g, xScale, height, yearMax) {
     }
   });
 
-  const lastVisible = [...LEBENSPHASEN].reverse().find(p => {
+  const lastVisible = [...lebensphasen].reverse().find(p => {
     return Math.min(xScale(p.bis), xScale(yearMax)) > Math.max(xScale(p.von), 0);
   });
   if (lastVisible) {
@@ -736,9 +733,9 @@ function attachDotEvents(sel, werk, strang, svgContainer, shape, baseR) {
           const dk = d3.select(this).attr('data-komponist');
           return (!dk || dk === strang.komponist) ? 1 : 0.15;
         });
-      showTooltip(event, svgContainer, buildDotTooltip(werk, strang));
+      tooltip.show(event, buildDotTooltip(werk, strang));
     })
-    .on('mousemove', (event) => moveTooltip(event, svgContainer))
+    .on('mousemove', (event) => tooltip.move(event))
     .on('mouseout', function () {
       if (shape === 'circle') {
         d3.select(this).transition().duration(100)
@@ -756,7 +753,7 @@ function attachDotEvents(sel, werk, strang, svgContainer, shape, baseR) {
       } else {
         d3.selectAll('.zeitfluss-dots').transition().duration(150).style('opacity', 1);
       }
-      hideTooltip();
+      tooltip.hide();
     })
     .on('click', (event) => {
       if (event.shiftKey) {
@@ -772,23 +769,7 @@ function attachDotEvents(sel, werk, strang, svgContainer, shape, baseR) {
 /*  Tooltip                                                            */
 /* ================================================================== */
 
-function showTooltip(event, svgContainer, html) {
-  if (!tooltipEl) return;
-  tooltipEl.innerHTML = html;
-  tooltipEl.classList.add('viz-tooltip--visible');
-  moveTooltip(event, svgContainer);
-}
-
-function moveTooltip(event, svgContainer) {
-  if (!tooltipEl) return;
-  const rect = svgContainer.getBoundingClientRect();
-  tooltipEl.style.left = (event.clientX - rect.left + 14) + 'px';
-  tooltipEl.style.top = (event.clientY - rect.top - 10) + 'px';
-}
-
-function hideTooltip() {
-  if (tooltipEl) tooltipEl.classList.remove('viz-tooltip--visible');
-}
+/* Tooltip functions delegated to shared createTooltip() controller */
 
 function buildDotTooltip(werk, strang) {
   const type = werk.istOper ? '<span class="tt-type">Oper</span> \u00b7 ' : '';

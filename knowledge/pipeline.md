@@ -19,8 +19,8 @@
 1. **XLSX-Export** aus Google Sheets nach `data/source/` (git-getrackt fuer Reproduzierbarkeit)
 2. **Exploration + Validierung** (`explore.py`, `validate.py`) → Reports
 3. **Modelltransformation** (`transform.py`) → `data/output/m3gim.jsonld`
-4. **View-Aggregation** (`build-views.py`) → `data/output/views/` (matrix.json, kosmos.json, partitur.json, sankey.json)
-5. **Bereitstellung** in `docs/data/` (manuelles Copy oder Pipeline-Schritt)
+4. **View-Aggregation** (`build-views.py`) → `data/output/views/partitur.json` (einzige konsumierte View-Datei; matrix/kosmos/sankey werden zwar generiert, aber seit Session 25 nicht mehr git-getrackt — Frontend aggregiert on-the-fly via aggregator.js). Neu (Session 25): `extract_auftritte()` extrahiert ~60 Auftrittsereignisse in 3 Passes (strukturiert → Programmhefte/Plakate → Rezensionen), 4 Kategorien (engagement/festspiel/gastspiel/konzert). `mobilitaet[]` hat jetzt `kontext`-Felder.
+5. **Bereitstellung**: `main()` kopiert automatisch partitur.json, matrix.json, kosmos.json nach `docs/data/` (Session 25, kein manuelles Copy mehr noetig)
 
 > **Hinweis:** Pipeline-Skripte referenzieren aktuell noch `data/google-spreadsheet/` als SHEETS_DIR. Migration auf `data/source/` steht aus.
 
@@ -54,11 +54,11 @@
 
 | Datei | Format | Status |
 |-------|--------|--------|
-| `m3gim.jsonld` | JSON-LD | Primaere Datenquelle fuer Archiv + Indizes |
-| `matrix.json` | JSON | Personen x Zeitraeume x Kategorien (Matrix-View) |
-| `kosmos.json` | JSON | Zentrum + Komponisten + Werke (Kosmos-View) |
-| `partitur.json` | JSON | Biografische Masterdaten fuer Mobilitaet-View |
-| `sankey.json` | JSON | Legacy — wird erzeugt, aber nicht konsumiert |
+| `m3gim.jsonld` | JSON-LD | Primaere Datenquelle fuer Archiv + Indizes + Client-Aggregation (Matrix, Kosmos, Zeitfluss) |
+| `partitur.json` | JSON | Biografische Masterdaten fuer alle 4 D3-Views + Prototyp-Seiten (Lebensphasen, Orte, Mobilitaet mit kontext, `auftritte[]` mit 60 Events, Netzwerk, Repertoire, Dokumente) |
+| ~~`matrix.json`~~ | JSON | Nicht mehr git-getrackt — Frontend aggregiert on-the-fly (Session 25) |
+| ~~`kosmos.json`~~ | JSON | Nicht mehr git-getrackt — Frontend aggregiert on-the-fly (Session 25) |
+| ~~`sankey.json`~~ | JSON | Nicht mehr git-getrackt — Legacy, nie konsumiert (Session 25) |
 
 ## Datenqualitaets-Baseline
 

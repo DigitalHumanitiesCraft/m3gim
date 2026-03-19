@@ -239,3 +239,34 @@ function indexWorks(store, record) {
     store.works.get(name).records.add(record['@id']);
   }
 }
+
+/* ------------------------------------------------------------------ */
+/*  Partitur singleton                                                 */
+/* ------------------------------------------------------------------ */
+
+let _partiturCache = null;
+let _partiturPromise = null;
+
+/**
+ * Load partitur.json once, cache the result.
+ * Concurrent calls share the same in-flight promise.
+ * @param {string} [url]
+ * @returns {Promise<Object|null>}
+ */
+export async function loadPartitur(url = './data/partitur.json') {
+  if (_partiturCache) return _partiturCache;
+  if (_partiturPromise) return _partiturPromise;
+  _partiturPromise = fetch(url)
+    .then(r => r.ok ? r.json() : null)
+    .then(data => { _partiturCache = data; return data; })
+    .catch(() => null);
+  return _partiturPromise;
+}
+
+/**
+ * Get cached Lebensphasen array (requires prior loadPartitur() call).
+ * @returns {Array}
+ */
+export function getLebensphasen() {
+  return _partiturCache?.lebensphasen || [];
+}

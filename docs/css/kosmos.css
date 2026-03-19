@@ -129,28 +129,7 @@
   color: var(--color-text-primary);
 }
 
-.kosmos-popup__action {
-  display: block;
-  padding: 4px var(--space-2);
-  color: var(--color-kug-blau);
-  cursor: pointer;
-  text-decoration: none;
-  border-radius: 3px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.kosmos-popup__action:hover {
-  background: var(--color-cream);
-}
-
-.kosmos-popup__action--secondary {
-  margin-top: var(--space-1);
-  padding-top: var(--space-1);
-  border-top: 1px solid var(--border-color-light);
-  font-weight: var(--weight-medium);
-}
+/* .kosmos-popup__action → use .popup-item (components.css) */
 
 .kosmos-popup__more {
   display: block;

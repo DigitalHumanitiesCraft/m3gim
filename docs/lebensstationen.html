@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lebensstationen — M³GIM</title>
+  <meta name="description" content="7 Stationen einer mobilen Karriere — Scrollytelling-Prototyp zur Mobilität von Ira Malaniuk (1919–2009).">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap">
+
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/pages.css">
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+
+  <style>
+    /* ── Scrollytelling Layout ─────────────────────────────── */
+    html { scroll-behavior: smooth; }
+
+    .station-main {
+      flex: 1;
+      padding: 0;
+    }
+
+    /* ── Hero ─────────────────────────────────────────────── */
+    .station-hero {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: var(--space-16) var(--space-6) var(--space-12);
+      text-align: center;
+    }
+
+    .station-hero__title {
+      font-family: var(--font-title);
+      font-size: 2.4rem;
+      font-weight: var(--weight-bold);
+      color: var(--color-kug-blau);
+      margin-bottom: var(--space-4);
+      line-height: var(--leading-tight);
+    }
+
+    .station-hero__lead {
+      font-family: var(--font-title);
+      font-size: var(--text-lg);
+      color: var(--color-text-secondary);
+      line-height: var(--leading-relaxed);
+      max-width: 560px;
+      margin: 0 auto var(--space-6);
+    }
+
+    .station-hero__badges {
+      display: flex;
+      justify-content: center;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+    }
+
+    .ff-tag {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      font-weight: 400;
+      letter-spacing: 0.04em;
+      padding: 2px 8px;
+      border-radius: 10px;
+      background: var(--color-cream);
+      color: var(--color-text-tertiary);
+      border: 1px solid var(--border-color);
+    }
+
+    /* ── Sticky Mini-Timeline ─────────────────────────────── */
+    .station-timeline {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      padding: var(--space-2) var(--space-6);
+    }
+
+    .station-timeline__inner {
+      max-width: 720px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .station-timeline__svg {
+      flex: 1;
+      height: 44px;
+      display: block;
+    }
+
+    .station-timeline__label {
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      color: var(--color-text-tertiary);
+      white-space: nowrap;
+      min-width: 120px;
+      text-align: right;
+      transition: color var(--transition-normal);
+    }
+
+    .station-timeline__label--active {
+      color: var(--color-kug-blau);
+      font-weight: 500;
+    }
+
+    /* ── Chapter Sections ─────────────────────────────────── */
+    .station__chapter {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: var(--space-12) var(--space-6);
+    }
+
+    .station__chapter-header {
+      margin-bottom: var(--space-6);
+    }
+
+    .station__chapter-title {
+      font-family: var(--font-title);
+      font-size: var(--text-2xl);
+      font-weight: var(--weight-semibold);
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-1);
+    }
+
+    .station__chapter-ort {
+      font-family: var(--font-ui);
+      font-size: var(--text-sm);
+      color: var(--color-text-tertiary);
+    }
+
+    .station__chapter-grid {
+      display: grid;
+      grid-template-columns: 1fr 200px;
+      gap: var(--space-8);
+      align-items: start;
+    }
+
+    .station__chapter-text {
+      font-size: var(--text-base);
+      line-height: var(--leading-relaxed);
+      color: var(--color-text-secondary);
+    }
+
+    .station__chapter-text p {
+      margin-bottom: var(--space-4);
+    }
+
+    .station__chapter-text p:last-child {
+      margin-bottom: 0;
+    }
+
+    .station__chapter-stats {
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      color: var(--color-text-tertiary);
+      margin-top: var(--space-3);
+    }
+
+    .station__chapter-stats span {
+      display: inline-block;
+      margin-right: var(--space-4);
+    }
+
+    .station__chapter-stats strong {
+      color: var(--color-text-primary);
+      font-weight: var(--weight-medium);
+    }
+
+    .station__chapter-map {
+      width: 200px;
+      height: 150px;
+      flex-shrink: 0;
+    }
+
+    /* ── Wendepunkt Blocks ────────────────────────────────── */
+    .station__wendepunkt {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: var(--space-8) var(--space-6);
+    }
+
+    .station__wendepunkt-inner {
+      border-left: 4px solid var(--color-text-tertiary);
+      padding: var(--space-6) var(--space-8);
+      border-radius: 0 var(--border-radius-lg) var(--border-radius-lg) 0;
+    }
+
+    .station__wendepunkt-badge {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border-radius: 10px;
+      margin-bottom: var(--space-3);
+    }
+
+    .station__wendepunkt-route {
+      font-family: var(--font-title);
+      font-size: 1.3rem;
+      font-weight: var(--weight-semibold);
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-1);
+    }
+
+    .station__wendepunkt-year {
+      font-family: var(--font-mono);
+      font-size: 1.5rem;
+      color: var(--color-text-primary);
+      opacity: 0.3;
+      margin-bottom: var(--space-4);
+    }
+
+    .station__wendepunkt-desc {
+      font-size: var(--text-base);
+      line-height: var(--leading-relaxed);
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-3);
+    }
+
+    .station__wendepunkt-kontext {
+      font-size: var(--text-sm);
+      font-style: italic;
+      color: var(--color-text-tertiary);
+      line-height: var(--leading-relaxed);
+      margin-bottom: var(--space-6);
+    }
+
+    .station__wendepunkt-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-3);
+    }
+
+    .station__stat-card {
+      background: #fff;
+      border: 1px solid var(--border-color-light);
+      border-radius: var(--border-radius);
+      padding: var(--space-3) var(--space-4);
+      text-align: center;
+    }
+
+    .station__stat-card-label {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--color-text-tertiary);
+      margin-bottom: var(--space-1);
+    }
+
+    .station__stat-card-value {
+      font-family: var(--font-title);
+      font-size: var(--text-xl);
+      font-weight: var(--weight-semibold);
+      color: var(--color-text-primary);
+    }
+
+    .station__stat-card-detail {
+      font-size: 0.65rem;
+      color: var(--color-text-tertiary);
+      margin-top: 2px;
+    }
+
+    /* ── Synthese ─────────────────────────────────────────── */
+    .station-synthese {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: var(--space-16) var(--space-6) var(--space-12);
+    }
+
+    .station-synthese__title {
+      font-family: var(--font-title);
+      font-size: var(--text-2xl);
+      font-weight: var(--weight-semibold);
+      color: var(--color-kug-blau);
+      margin-bottom: var(--space-6);
+      padding-bottom: var(--space-2);
+      border-bottom: 2px solid var(--color-kug-blau);
+    }
+
+    .station-synthese__svg {
+      width: 100%;
+      height: 250px;
+      display: block;
+      margin-bottom: var(--space-6);
+    }
+
+    .station-synthese__text {
+      font-size: var(--text-base);
+      line-height: var(--leading-relaxed);
+      color: var(--color-text-secondary);
+    }
+
+    .station-synthese__text p {
+      margin-bottom: var(--space-4);
+    }
+
+    /* ── Separator ────────────────────────────────────────── */
+    .station__separator {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 0 var(--space-6);
+    }
+
+    .station__separator hr {
+      border: none;
+      border-top: 1px solid var(--border-color-light);
+    }
+
+    /* ── Responsive ───────────────────────────────────────── */
+    @media (max-width: 768px) {
+      .station-hero__title {
+        font-size: 1.8rem;
+      }
+
+      .station__chapter-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .station__chapter-map {
+        width: 100%;
+        max-width: 240px;
+        margin: 0 auto;
+      }
+
+      .station__wendepunkt-cards {
+        grid-template-columns: 1fr;
+      }
+
+      .station-timeline__label {
+        display: none;
+      }
+
+      .station__wendepunkt-inner {
+        padding: var(--space-4) var(--space-6);
+      }
+    }
+
+    /* ── Print ────────────────────────────────────────────── */
+    @media print {
+      .station-timeline {
+        display: none;
+      }
+
+      .station__chapter,
+      .station__wendepunkt,
+      .station-synthese {
+        break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body class="info-page">
+
+  <header class="app-header">
+    <a href="index.html" class="app-header__brand">M³GIM</a>
+    <div class="app-header__subtitle">Teilnachlass Ira Malaniuk — UAKUG/NIM</div>
+    <a href="projekt.html" class="app-header__badge">Research Preview</a>
+    <div class="app-header__spacer"></div>
+    <nav class="app-header__nav" aria-label="Informationsseiten">
+      <a href="about.html">Über</a>
+      <a href="projekt.html">Projekt</a>
+      <a href="lebensstationen.html" class="active">Stationen</a>
+      <a href="lebenspartitur.html">Partitur</a>
+    </nav>
+  </header>
+
+  <main class="station-main">
+
+    <!-- ── Hero ─────────────────────────────────────────── -->
+    <section class="station-hero">
+      <h1 class="station-hero__title">7 Stationen einer mobilen Karriere</h1>
+      <p class="station-hero__lead">
+        Ira Malaniuk (1919–2009) — Flucht, Karriere, Rückkehr.
+        Eine Mezzosopranistin zwischen Lemberg, Wien, Bayreuth und Graz.
+      </p>
+      <div class="station-hero__badges">
+        <span class="ff-tag">FF1 Graz als Knotenpunkt</span>
+        <span class="ff-tag">FF2 Repertoire-Spezialisierung</span>
+        <span class="ff-tag">FF3 Ortsgebundenes Wissen</span>
+        <span class="ff-tag">FF4 Netzwerk-Transfer</span>
+      </div>
+    </section>
+
+    <!-- ── Sticky Mini-Timeline ────────────────────────── -->
+    <nav class="station-timeline" aria-label="Lebensphasen-Navigation">
+      <div class="station-timeline__inner">
+        <svg class="station-timeline__svg" id="timeline-svg"></svg>
+        <div class="station-timeline__label" id="timeline-label">LP1 · 1919–1937</div>
+      </div>
+    </nav>
+
+    <!-- Content rendered by JS -->
+    <div id="station-content"></div>
+
+    <!-- ── Synthese ────────────────────────────────────── -->
+    <section class="station-synthese" id="synthese">
+      <h2 class="station-synthese__title">Synthese — Mobilität als Karrierekatalysator</h2>
+      <svg class="station-synthese__svg" id="synthese-svg"></svg>
+      <div class="station-synthese__text">
+        <p>
+          Die Lebensstationen Ira Malaniuks zeigen ein Muster, das die These von Mobilität
+          als Karrierekatalysator stützt: Jeder Ortswechsel — ob erzwungen, beruflich motiviert
+          oder durch Lebensstil bedingt — korreliert mit Veränderungen in Netzwerk-Intensität,
+          Repertoire-Breite und Auftrittsdichte.
+        </p>
+        <p>
+          Besonders signifikant ist der Übergang Graz → Wien (1950), der die Netzwerk-Intensität
+          von 7 auf 46 steigerte, sowie das Bayreuth-Debüt (1952), das den internationalen
+          Durchbruch markierte. Der Rückzug nach Zürich (1970) beendete zwar die aktive
+          Bühnenkarriere, ermöglichte aber den Wissenstransfer in die Lehre an der KUG Graz —
+          eine Rückkehr, die den Kreis schließt.
+        </p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="app-footer">
+    <a href="https://www.kug.ac.at" target="_blank" rel="noopener">KUG Graz</a>
+    <span>·</span>
+    <a href="impressum.html">Impressum</a>
+    <span>·</span>
+    <a href="https://github.com/DigitalHumanitiesCraft/m3gim" target="_blank" rel="noopener">GitHub</a>
+    <span>·</span>
+    <a href="index.html#mobilitaet">← Zurück zur App</a>
+  </footer>
+
+  <script type="module">
+
+    /* ── Constants ──────────────────────────────────────── */
+    const MOB_COLORS = {
+      erzwungen:    '#8B3A3A',
+      geografisch:  '#3D7A5A',
+      lebensstil:   '#6B4E8C',
+      national:     '#4A6E96',
+      bildung:      '#B67D3D'
+    };
+
+    const MOB_LABELS = {
+      erzwungen:    'Erzwungene Mobilität',
+      geografisch:  'Geografische Mobilität',
+      lebensstil:   'Lebensstil-Migration',
+      national:     'Nationale Mobilität',
+      bildung:      'Bildungs-Mobilität'
+    };
+
+    /* Abstract city positions for mini-maps (relative, 0-1 space) */
+    const ORT_POS = {
+      'Lemberg':   { x: 0.08, y: 0.18 },
+      'Wien':      { x: 0.40, y: 0.42 },
+      'Graz':      { x: 0.38, y: 0.72 },
+      'Bayreuth':  { x: 0.68, y: 0.15 },
+      'München':   { x: 0.70, y: 0.45 },
+      'Salzburg':  { x: 0.72, y: 0.75 },
+      'Zürich':    { x: 0.95, y: 0.42 }
+    };
+
+    const ALL_CITIES = Object.keys(ORT_POS);
+
+    /* ── Data Loading ──────────────────────────────────── */
+    const data = await fetch('data/partitur.json').then(r => r.json());
+    const { lebensphasen, mobilitaet, auftritte, netzwerk, repertoire } = data;
+
+    /* Sort mobility events by year for interleaving */
+    const mobSorted = [...mobilitaet].sort((a, b) => a.jahr - b.jahr);
+
+    /* ── Helper Functions ──────────────────────────────── */
+
+    function auftritteInPhase(phaseId) {
+      return auftritte.filter(a => a.phase === phaseId);
+    }
+
+    function auftritteAroundYear(year, range = 3) {
+      return auftritte.filter(a => a.jahr >= year - range && a.jahr <= year + range);
+    }
+
+    function netzwerkForPeriod(year) {
+      for (const n of netzwerk) {
+        const [von, bis] = n.periode.split('-').map(Number);
+        if (year >= von && year <= bis) return n;
+      }
+      /* fallback: closest period */
+      let best = netzwerk[0];
+      let bestDist = Infinity;
+      for (const n of netzwerk) {
+        const mid = n.periode.split('-').map(Number).reduce((a,b) => (a+b)/2);
+        const dist = Math.abs(mid - year);
+        if (dist < bestDist) { bestDist = dist; best = n; }
+      }
+      return best;
+    }
+
+    function activeRepertoireAt(year) {
+      return repertoire.filter(r => r.von <= year && r.bis >= year);
+    }
+
+    function auftrittsorteInPhase(phase) {
+      const orte = new Set();
+      auftritteInPhase(phase.id).forEach(a => {
+        if (a.ort) orte.add(a.ort);
+      });
+      /* also check the orte array for auffuehrungsorte active during the phase */
+      data.orte.forEach(o => {
+        if (o.typ === 'auffuehrungsort' && o.von <= phase.bis && o.bis >= phase.von) {
+          orte.add(o.ort);
+        }
+      });
+      return orte;
+    }
+
+    function wohnortInPhase(phase) {
+      /* The phase.ort may contain "/" separated cities */
+      return phase.ort.split('/').map(s => s.trim());
+    }
+
+    /* ── Build narrative text from data ────────────────── */
+    function buildNarrativeText(phase) {
+      const phaseAuftritte = auftritteInPhase(phase.id);
+      const orteSet = auftrittsorteInPhase(phase);
+      const wohnorte = wohnortInPhase(phase);
+
+      let parts = [];
+      parts.push(phase.beschreibung + '.');
+
+      if (phaseAuftritte.length > 0) {
+        const orteList = [...orteSet].filter(o => o).slice(0, 4);
+        if (orteList.length > 0) {
+          parts.push(`In dieser Phase sind ${phaseAuftritte.length} Auftritte dokumentiert, u.\u202Fa. in ${orteList.join(', ')}.`);
+        } else {
+          parts.push(`In dieser Phase sind ${phaseAuftritte.length} Auftritte im Nachlass dokumentiert.`);
+        }
+      } else {
+        parts.push('Für diese Phase sind keine Auftritte im Nachlass dokumentiert.');
+      }
+
+      /* Netzwerk */
+      const nw = netzwerkForPeriod((phase.von + phase.bis) / 2);
+      if (nw) {
+        parts.push(`Die Netzwerk-Intensität liegt bei ${nw.intensitaet} (Periode ${nw.periode}).`);
+      }
+
+      /* Komponisten */
+      const activeRep = repertoire.filter(r =>
+        r.von <= phase.bis && r.bis >= phase.von
+      );
+      if (activeRep.length > 0) {
+        const names = activeRep.map(r => r.komponist);
+        parts.push(`Aktives Repertoire: ${names.join(', ')}.`);
+      }
+
+      return parts;
+    }
+
+    /* ── Mobility events that transition INTO a phase ─── */
+    function mobEventsBeforePhase(phase) {
+      return mobSorted.filter(m => m.jahr === phase.von || (m.jahr >= phase.von - 1 && m.jahr <= phase.von));
+    }
+
+    function mobEventsInOrAfterPhase(phase) {
+      return mobSorted.filter(m => m.jahr >= phase.von && m.jahr <= phase.bis);
+    }
+
+    /* ── Assign mobility events to phase boundaries ───── */
+    function buildSequence() {
+      /*
+        We interleave chapters (phases) and wendepunkte (mobility events).
+        Each phase gets the mobility events whose year matches the phase start.
+        We deduplicate: each mob event is shown only once, before its target phase.
+      */
+      const usedMob = new Set();
+      const sequence = [];
+
+      for (let i = 0; i < lebensphasen.length; i++) {
+        const phase = lebensphasen[i];
+
+        /* Mobility events leading into this phase (year = phase.von ± 1, or between prev and this) */
+        const prevEnd = i > 0 ? lebensphasen[i - 1].bis : 0;
+        const relevantMob = mobSorted.filter(m =>
+          !usedMob.has(m) &&
+          m.jahr >= prevEnd && m.jahr <= phase.von + 2
+        );
+
+        relevantMob.forEach(m => {
+          usedMob.add(m);
+          sequence.push({ type: 'wendepunkt', data: m });
+        });
+
+        sequence.push({ type: 'chapter', data: phase });
+      }
+
+      /* Any remaining mob events (e.g. at end of last phase) */
+      mobSorted.filter(m => !usedMob.has(m)).forEach(m => {
+        /* Insert before the synthese */
+        sequence.push({ type: 'wendepunkt', data: m });
+      });
+
+      return sequence;
+    }
+
+    /* ── Render Content ────────────────────────────────── */
+    const container = document.getElementById('station-content');
+    const sequence = buildSequence();
+
+    let chapterIndex = 0;
+
+    for (const item of sequence) {
+      if (item.type === 'chapter') {
+        const phase = item.data;
+        const idx = lebensphasen.indexOf(phase);
+        const narrative = buildNarrativeText(phase);
+        const phaseAuftritte = auftritteInPhase(phase.id);
+
+        const section = document.createElement('section');
+        section.className = 'station__chapter';
+        section.id = `chapter-${phase.id}`;
+        section.dataset.phase = phase.id;
+
+        section.innerHTML = `
+          <header class="station__chapter-header">
+            <h2 class="station__chapter-title">${phase.label} · ${phase.von}–${phase.bis}</h2>
+            <div class="station__chapter-ort">${phase.ort}</div>
+          </header>
+          <div class="station__chapter-grid">
+            <div class="station__chapter-text">
+              ${narrative.map(p => `<p>${p}</p>`).join('')}
+              <div class="station__chapter-stats">
+                <span>Auftritte: <strong>${phaseAuftritte.length}</strong></span>
+                <span>Orte: <strong>${[...auftrittsorteInPhase(phase)].filter(o=>o).length}</strong></span>
+              </div>
+            </div>
+            <svg class="station__chapter-map" id="map-${phase.id}" viewBox="0 0 200 150"></svg>
+          </div>
+        `;
+        container.appendChild(section);
+
+        /* Render mini-map */
+        renderMiniMap(phase);
+
+        chapterIndex++;
+      } else {
+        /* Wendepunkt */
+        const mob = item.data;
+        const color = MOB_COLORS[mob.form] || '#999';
+        const bgColor = color + '0A'; /* ~4% opacity via hex alpha */
+
+        const nw = netzwerkForPeriod(mob.jahr);
+        const nearAuftritte = auftritteAroundYear(mob.jahr);
+        const activeRep = activeRepertoireAt(mob.jahr);
+
+        const section = document.createElement('section');
+        section.className = 'station__wendepunkt';
+        section.dataset.year = mob.jahr;
+
+        section.innerHTML = `
+          <div class="station__wendepunkt-inner" style="border-left-color: ${color}; background: ${bgColor};">
+            <span class="station__wendepunkt-badge" style="color: ${color}; background: ${color}15; border: 1px solid ${color}30;">
+              ${MOB_LABELS[mob.form] || mob.form}
+            </span>
+            <div class="station__wendepunkt-route">${mob.von} → ${mob.nach}</div>
+            <div class="station__wendepunkt-year">${mob.jahr}</div>
+            <p class="station__wendepunkt-desc">${mob.beschreibung}</p>
+            ${mob.kontext ? `<p class="station__wendepunkt-kontext">${mob.kontext}</p>` : ''}
+            <div class="station__wendepunkt-cards">
+              <div class="station__stat-card">
+                <div class="station__stat-card-label">Netzwerk</div>
+                <div class="station__stat-card-value">${nw ? nw.intensitaet : '—'}</div>
+                <div class="station__stat-card-detail">${nw ? nw.periode : ''}</div>
+              </div>
+              <div class="station__stat-card">
+                <div class="station__stat-card-label">Auftritte</div>
+                <div class="station__stat-card-value">${nearAuftritte.length}</div>
+                <div class="station__stat-card-detail">±3 Jahre</div>
+              </div>
+              <div class="station__stat-card">
+                <div class="station__stat-card-label">Repertoire</div>
+                <div class="station__stat-card-value">${activeRep.length}</div>
+                <div class="station__stat-card-detail">${activeRep.map(r => r.komponist).join(', ') || '—'}</div>
+              </div>
+            </div>
+          </div>
+        `;
+        container.appendChild(section);
+      }
+    }
+
+    /* ── Mini-Map Rendering ────────────────────────────── */
+    function renderMiniMap(phase) {
+      const svg = d3.select(`#map-${phase.id}`);
+      const w = 200, h = 150;
+      const wohnorte = wohnortInPhase(phase);
+      const auffOrte = auftrittsorteInPhase(phase);
+
+      for (const city of ALL_CITIES) {
+        const pos = ORT_POS[city];
+        const cx = pos.x * w;
+        const cy = pos.y * h;
+
+        const isWohnort = wohnorte.includes(city);
+        const isAuftritte = auffOrte.has(city);
+
+        let r, fill, opacity;
+        if (isWohnort) {
+          r = 14;
+          fill = '#004A8F';
+          opacity = 0.7;
+        } else if (isAuftritte) {
+          r = 8;
+          fill = '#9A7B4F';
+          opacity = 0.6;
+        } else {
+          r = 4;
+          fill = '#8A857E';
+          opacity = 0.2;
+        }
+
+        svg.append('circle')
+          .attr('cx', cx).attr('cy', cy)
+          .attr('r', r)
+          .attr('fill', fill)
+          .attr('opacity', opacity);
+
+        /* City label */
+        svg.append('text')
+          .attr('x', cx)
+          .attr('y', cy + r + 10)
+          .attr('text-anchor', 'middle')
+          .attr('font-family', 'Inter, sans-serif')
+          .attr('font-size', '7px')
+          .attr('fill', isWohnort ? '#004A8F' : (isAuftritte ? '#9A7B4F' : '#8A857E'))
+          .attr('opacity', isWohnort || isAuftritte ? 1 : 0.4)
+          .text(city);
+
+        /* Auftritt count in active circle */
+        if (isWohnort) {
+          const count = auftritteInPhase(phase.id).filter(a => a.ort && a.ort.includes(city)).length;
+          if (count > 0) {
+            svg.append('text')
+              .attr('x', cx).attr('y', cy + 4)
+              .attr('text-anchor', 'middle')
+              .attr('font-family', 'JetBrains Mono, monospace')
+              .attr('font-size', '9px')
+              .attr('font-weight', '600')
+              .attr('fill', '#fff')
+              .text(count);
+          }
+        }
+      }
+    }
+
+    /* ── Sticky Mini-Timeline ──────────────────────────── */
+    function renderTimeline() {
+      const svg = d3.select('#timeline-svg');
+      const bbox = document.querySelector('.station-timeline__svg').getBoundingClientRect();
+      const w = bbox.width;
+      const h = 44;
+
+      svg.attr('viewBox', `0 0 ${w} ${h}`).attr('preserveAspectRatio', 'none');
+
+      const totalSpan = 2009 - 1919;
+      const x = d3.scaleLinear().domain([1919, 2009]).range([12, w - 12]);
+      const lineY = 18;
+
+      /* Background line */
+      svg.append('line')
+        .attr('x1', x(1919)).attr('x2', x(2009))
+        .attr('y1', lineY).attr('y2', lineY)
+        .attr('stroke', '#E0DCD6').attr('stroke-width', 2);
+
+      /* Phase segments */
+      lebensphasen.forEach((phase, i) => {
+        const x1 = x(phase.von);
+        const x2 = x(phase.bis);
+
+        svg.append('rect')
+          .attr('class', `tl-segment tl-segment-${phase.id}`)
+          .attr('x', x1).attr('y', lineY - 6)
+          .attr('width', x2 - x1).attr('height', 12)
+          .attr('rx', 2)
+          .attr('fill', i % 2 === 0 ? '#F5F0E8' : 'transparent')
+          .attr('opacity', 0.6);
+
+        /* Phase label under line */
+        svg.append('text')
+          .attr('x', (x1 + x2) / 2)
+          .attr('y', lineY + 18)
+          .attr('text-anchor', 'middle')
+          .attr('font-family', 'JetBrains Mono, monospace')
+          .attr('font-size', '7px')
+          .attr('fill', '#8A857E')
+          .text(phase.id);
+      });
+
+      /* Mobility event dots — deduplicate by year */
+      const mobYears = [...new Set(mobSorted.map(m => m.jahr))];
+      mobYears.forEach(year => {
+        const events = mobSorted.filter(m => m.jahr === year);
+        const color = MOB_COLORS[events[0].form] || '#999';
+
+        svg.append('circle')
+          .attr('class', `tl-dot tl-dot-${year}`)
+          .attr('cx', x(year)).attr('cy', lineY)
+          .attr('r', 4)
+          .attr('fill', color)
+          .attr('stroke', '#fff')
+          .attr('stroke-width', 1.5);
+      });
+    }
+
+    renderTimeline();
+
+    /* ── Scroll Tracking (IntersectionObserver) ─────── */
+    function setupScrollTracking() {
+      const label = document.getElementById('timeline-label');
+      const svg = d3.select('#timeline-svg');
+      let activePhaseId = null;
+
+      const observer = new IntersectionObserver((entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
+            const el = entry.target;
+            const phaseId = el.dataset.phase;
+            if (phaseId && phaseId !== activePhaseId) {
+              activePhaseId = phaseId;
+              const phase = lebensphasen.find(p => p.id === phaseId);
+              if (phase) {
+                label.textContent = `${phase.id} · ${phase.von}–${phase.bis}`;
+                label.classList.add('station-timeline__label--active');
+
+                /* Highlight active segment */
+                svg.selectAll('.tl-segment')
+                  .attr('fill', function() {
+                    const cls = d3.select(this).attr('class');
+                    return cls.includes(phaseId) ? '#004A8F' : (cls.match(/tl-segment-LP(\d)/) ? (parseInt(cls.match(/LP(\d)/)[1]) % 2 === 1 ? '#F5F0E8' : 'transparent') : 'transparent');
+                  })
+                  .attr('opacity', function() {
+                    const cls = d3.select(this).attr('class');
+                    return cls.includes(phaseId) ? 0.15 : 0.6;
+                  });
+              }
+            }
+          }
+        }
+      }, { threshold: 0.5 });
+
+      document.querySelectorAll('.station__chapter').forEach(el => {
+        observer.observe(el);
+      });
+    }
+
+    setupScrollTracking();
+
+    /* ── Synthese SVG ──────────────────────────────────── */
+    function renderSynthese() {
+      const svg = d3.select('#synthese-svg');
+      const bbox = document.querySelector('.station-synthese__svg').getBoundingClientRect();
+      const w = bbox.width || 720;
+      const h = 250;
+
+      svg.attr('viewBox', `0 0 ${w} ${h}`);
+
+      const margin = { top: 20, right: 20, bottom: 40, left: 40 };
+      const innerW = w - margin.left - margin.right;
+      const innerH = h - margin.top - margin.bottom;
+
+      const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
+
+      const x = d3.scaleLinear().domain([1919, 2009]).range([0, innerW]);
+
+      /* Time axis */
+      const tickYears = [1919, 1930, 1940, 1950, 1960, 1970, 1980, 1990, 2000, 2009];
+      g.append('line')
+        .attr('x1', 0).attr('x2', innerW)
+        .attr('y1', 30).attr('y2', 30)
+        .attr('stroke', '#E0DCD6').attr('stroke-width', 1);
+
+      tickYears.forEach(yr => {
+        g.append('text')
+          .attr('x', x(yr)).attr('y', 45)
+          .attr('text-anchor', 'middle')
+          .attr('font-family', 'JetBrains Mono, monospace')
+          .attr('font-size', '8px')
+          .attr('fill', '#8A857E')
+          .text(yr);
+
+        g.append('line')
+          .attr('x1', x(yr)).attr('x2', x(yr))
+          .attr('y1', 27).attr('y2', 33)
+          .attr('stroke', '#8A857E').attr('stroke-width', 0.5);
+      });
+
+      /* Mobility event dots + connecting line */
+      const mobPoints = mobSorted.map(m => ({ x: x(m.jahr), form: m.form }));
+      /* Deduplicate by x position for the line */
+      const uniquePoints = [];
+      const seenX = new Set();
+      for (const p of mobPoints) {
+        const key = Math.round(p.x);
+        if (!seenX.has(key)) { seenX.add(key); uniquePoints.push(p); }
+      }
+
+      /* Connecting line */
+      const lineGen = d3.line().x(d => d.x).y(() => 20).curve(d3.curveMonotoneX);
+      g.append('path')
+        .datum(uniquePoints)
+        .attr('d', lineGen)
+        .attr('fill', 'none')
+        .attr('stroke', '#C4B49A')
+        .attr('stroke-width', 1.5)
+        .attr('stroke-dasharray', '4 3');
+
+      mobSorted.forEach(m => {
+        g.append('circle')
+          .attr('cx', x(m.jahr)).attr('cy', 20)
+          .attr('r', 5)
+          .attr('fill', MOB_COLORS[m.form] || '#999')
+          .attr('stroke', '#fff').attr('stroke-width', 1.5);
+      });
+
+      /* Netzwerk area chart */
+      const nwData = netzwerk.map(n => {
+        const [von, bis] = n.periode.split('-').map(Number);
+        return { mid: (von + bis) / 2, intensitaet: n.intensitaet, von, bis };
+      });
+
+      const yNw = d3.scaleLinear()
+        .domain([0, d3.max(nwData, d => d.intensitaet)])
+        .range([120, 60]);
+
+      const area = d3.area()
+        .x(d => x(d.mid))
+        .y0(120)
+        .y1(d => yNw(d.intensitaet))
+        .curve(d3.curveMonotoneX);
+
+      g.append('path')
+        .datum(nwData)
+        .attr('d', area)
+        .attr('fill', '#004A8F')
+        .attr('opacity', 0.08);
+
+      g.append('path')
+        .datum(nwData)
+        .attr('d', d3.line().x(d => x(d.mid)).y(d => yNw(d.intensitaet)).curve(d3.curveMonotoneX))
+        .attr('fill', 'none')
+        .attr('stroke', '#004A8F')
+        .attr('stroke-width', 1.5)
+        .attr('opacity', 0.4);
+
+      g.append('text')
+        .attr('x', 0).attr('y', 58)
+        .attr('font-family', 'JetBrains Mono, monospace')
+        .attr('font-size', '7px')
+        .attr('fill', '#8A857E')
+        .text('Netzwerk-Intensität');
+
+      /* Repertoire bars */
+      const barY0 = 135;
+      const barH = 12;
+      repertoire.forEach((r, i) => {
+        const rx1 = x(r.von);
+        const rx2 = x(r.bis);
+        const ry = barY0 + i * (barH + 4);
+
+        g.append('rect')
+          .attr('x', rx1).attr('y', ry)
+          .attr('width', rx2 - rx1).attr('height', barH)
+          .attr('rx', 2)
+          .attr('fill', r.farbe)
+          .attr('opacity', 0.6);
+
+        g.append('text')
+          .attr('x', rx2 + 6).attr('y', ry + barH - 2)
+          .attr('font-family', 'Inter, sans-serif')
+          .attr('font-size', '7px')
+          .attr('fill', r.farbe)
+          .text(`${r.komponist} (${r.dokumente})`);
+      });
+    }
+
+    renderSynthese();
+
+  </script>
+
+</body>
+</html>

@@ -105,12 +105,6 @@
       "typ": "auffuehrungsort",
       "von": 1955,
       "bis": 1965
-    },
-    {
-      "ort": "Graz",
-      "typ": "lehrstaette",
-      "von": 1970,
-      "bis": 2000
     }
   ],
   "mobilitaet": [
@@ -119,35 +113,40 @@
       "nach": "Wien",
       "jahr": 1944,
       "form": "erzwungen",
-      "beschreibung": "Flucht vor der Roten Armee"
+      "beschreibung": "Flucht vor der Roten Armee",
+      "kontext": "Abbruch des Studiums am Konservatorium Lemberg, Verlust aller lokalen Netzwerke. 11 Dokumente aus 1944 belegen die dichteste Überlieferung vor 1950."
     },
     {
       "von": "Wien",
       "nach": "Graz",
       "jahr": 1945,
       "form": "geografisch",
-      "beschreibung": "Erstes Engagement"
+      "beschreibung": "Erstes Engagement",
+      "kontext": "Engagement als Altistin an der Grazer Oper — Graz als Sprungbrett für die internationale Karriere."
     },
     {
       "von": "Graz",
       "nach": "Wien",
       "jahr": 1950,
       "form": "geografisch",
-      "beschreibung": "Wiener Staatsoper"
+      "beschreibung": "Wiener Staatsoper",
+      "kontext": "Wechsel an die Wiener Staatsoper markiert den Beginn der Aufstiegsphase. Netzwerk-Intensität verdoppelt sich (7 → 46)."
     },
     {
       "von": "Wien",
       "nach": "Bayreuth",
       "jahr": 1952,
       "form": "geografisch",
-      "beschreibung": "Bayreuther Festspiele Debüt"
+      "beschreibung": "Bayreuther Festspiele Debüt",
+      "kontext": "Internationaler Durchbruch. Zusammenarbeit mit Wieland Wagner und Knappertsbusch beginnt."
     },
     {
       "von": "Wien",
       "nach": "Zürich",
       "jahr": 1970,
       "form": "lebensstil",
-      "beschreibung": "Übersiedlung (Ehemann)"
+      "beschreibung": "Übersiedlung (Ehemann)",
+      "kontext": "Rückzug aus dem aktiven Bühnenleben. Gleichzeitig Beginn der Lehrtätigkeit an der KUG Graz."
     },
     {
       "von": "Lemberg",
@@ -161,7 +160,1008 @@
       "nach": "Graz",
       "jahr": 1970,
       "form": "bildung",
-      "beschreibung": "Professur für Liedinterpretation, KUG Graz"
+      "beschreibung": "Professur für Liedinterpretation, KUG Graz",
+      "kontext": "Wissenstransfer: Erfahrung aus internationaler Karriere fließt in die Lehre. Graz als Ort der Rückkehr."
+    }
+  ],
+  "auftritte": [
+    {
+      "ort": null,
+      "ort_detail": null,
+      "kategorie": "gastspiel",
+      "werk": null,
+      "komponist": null,
+      "rolle": null,
+      "jahr": 1940,
+      "datum": "1940-12-20/1940-12-31",
+      "phase": "LP2",
+      "dokumente": [
+        "UAKUG/NIM/PL_03",
+        "UAKUG/NIM/PL_12"
+      ],
+      "gattung": null,
+      "titel": "\"BOHÈME\" / \"MADAMA BUTTERFLY\" / \"DON QUICHOTTE\""
+    },
+    {
+      "ort": "Lemberg",
+      "ort_detail": null,
+      "kategorie": "engagement",
+      "werk": null,
+      "komponist": null,
+      "rolle": null,
+      "jahr": 1940,
+      "datum": "1940-01-01/1941-12-31",
+      "phase": "LP2",
+      "dokumente": [
+        "UAKUG/NIM_079"
+      ],
+      "gattung": "oper",
+      "titel": "Programmzettel des Opernhauses Lwiw (Lemberg)"
+    },
+    {
+      "ort": null,
+      "ort_detail": null,
+      "kategorie": "gastspiel",
+      "werk": null,
+      "komponist": null,
+      "rolle": null,
+      "jahr": 1941,
+      "datum": "1941-06-01/1941-06-14",
+      "phase": "LP2",
+      "dokumente": [
+        "UAKUG/NIM/PL_10",
+        "UAKUG/NIM/PL_11",
+        "UAKUG/NIM/PL_13"
+      ],
+      "gattung": null,
+      "titel": "\"CARMEN\" / \"DER ROTE MOHN\""
+    },
+    {
+      "ort": "Lemberg",
+      "ort_detail": null,
+      "kategorie": "engagement",
+      "werk": null,
+      "komponist": null,
+      "rolle": null,
+      "jahr": 1941,
+      "datum": "1941-03-16/1941-04-01",
+      "phase": "LP2",
+      "dokumente": [
+        "UAKUG/NIM_075",
+        "UAKUG/NIM_076",
+        "UAKUG/NIM_077",
+        "UAKUG/NIM_078"
+      ],
+      "gattung": "oper",
+      "titel": "Zweiwöchentlicher Spielplan des Theaters in Lwiw (Lemberg)"
+    },
+    {
+      "ort": null,
+      "ort_detail": null,
+      "kategorie": "konzert",
+      "werk": null,
+      "komponist": "Beethoven",
+      "rolle": null,
+      "jahr": 1942,
+      "datum": "1942-04-26",
+      "phase": "LP2",
+      "dokumente": [
+        "UAKUG/NIM/PL_04",
+        "UAKUG/NIM_074"
+      ],
+      "gattung": "konzert",
+      "titel": "SINFONISCHES ORCHESTER / in Stanislau / Konzertsaal Armenierstrasse 18. / Zum Ab"
+    },
+    {
+      "ort": null,
+      "ort_detail": null,
+      "kategorie": "gastspiel",
+      "werk": null,
+      "komponist": "Verdi",
+      "rolle": null,
+      "jahr": 1943,
+      "datum": "1943-03-03/1943-03-14",
+      "phase": "LP2",
+      "dokumente": [
+        "UAKUG/NIM/PL_05",
+        "UAKUG/NIM/PL_06",
+        "UAKUG/NIM/PL_07",
+        "UAKUG/NIM/PL_08",
+        "UAKUG/NIM/PL_14"
+      ],
+      "gattung": null,
+      "titel": "\"BALLETTABEND\" / \"PAGANINI\" / \"AIDA\""
+    },
+    {
+      "ort": "Potsdam",
+      "ort_detail": null,
+      "kategorie": "gastspiel",
+      "werk": null,
+      "komponist": null,
+      "rolle": null,
+      "jahr": 1944,
+      "datum": "1944-05 bis 1944-09",
+      "phase": "LP2",
+      "dokumente": [
+        "UAKUG/NIM_003 1_1"
+      ],
+      "gattung": null,
+      "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und"
+    },
+    {
+      "ort": "Salzburg",
+      "ort_detail": null,
+      "kategorie": "festspiel",
+      "werk": null,
+      "komponist": null,
+      "rolle": null,
+      "jahr": 1944,
+      "datum": "1944-01-01/1944-12-31",
+      "phase": "LP2",
+      "dokumente": [
+        "UAKUG/NIM_003 Folio",
+        "UAKUG/NIM_003 1_2",
+        "UAKUG/NIM_003 1_3",
+        "UAKUG/NIM_003 1_4",
+        "UAKUG/NIM_003 1_5",
+        "UAKUG/NIM_003 1_6",
+        "UAKUG/NIM_003 1_7",
+        "UAKUG/NIM_003 1_8",
+        "UAKUG/NIM_003 1_9",
+        "UAKUG/NIM_003 1_10"
+      ],
+      "gattung": null,
+      "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und"
+    },
+    {
+      "ort": null,
+      "ort_detail": null,
+      "kategorie": "gastspiel",
+      "werk": null,
+      "komponist": null,
+      "rolle": null,
+      "jahr": 1947,
+      "datum": "1947-01-01/1948-12-31",
+      "phase": "LP4",
+      "dokumente": [
+        "UAKUG/NIM_133"
+      ],
+      "gattung": null,
+      "titel": "1947 - / 1948"
+    },
+    {
+      "ort": "Zürich",
+      "ort_detail": null,
+      "kategorie": "engagement",
+      "werk": "Orpheus und Eurydike",
+      "komponist": "Gluck/Händel",
+      "rolle": "Orpheus",
+      "jahr": 1947,
+      "datum": "1947-1952",
+      "phase": "LP4",
+      "dokumente": [
+        "UAKUG/NIM_004 24",
+        "UAKUG/NIM_004 29"
+      ],
+      "gattung": "oper",
+      "titel": "Kurzbiografie  von Ira Malaniuk als Typoscript (vermutlich als Anhang eines Brie"
+    },
+    {
+      "ort": null,
+      "ort_detail": null,
+      "kategorie": "gastspiel",
+      "werk": null,
+      "komponist": null,
+      "rolle": null,
+      "jahr": 1949,
+      "datum": "1949-01-01/1950-12-31",
+      "phase": "LP4",
+      "dokumente": [
+        "UAKUG/NIM_134"
+      ],
+      "gattung": null,
+      "titel": "1949 - / 1950"
+    },
+    {
+      "ort": null,
+      "ort_detail": null,
+      "kategorie": "gastspiel",
+      "werk": null,
+      "komponist": null,
+      "rolle": null,
+      "jahr": 1950,
+      "datum": "1950-01-01/1951-12-31",
+      "phase": "LP4",
+      "dokumente": [
+        "UAKUG/NIM_135"
+      ],
+      "gattung": null,
+      "titel": "1951"
+    },
+    {
+      "ort": null,
+      "ort_detail": null,
+      "kategorie": "gastspiel",
+      "werk": null,
+      "komponist": null,
+      "rolle": null,
+      "jahr": 1952,
+      "datum": "1952-12-28/1953-01-06",
+      "phase": "LP5",
+      "dokumente": [
+        "UAKUG/NIM/PL_15"
+      ],
+      "gattung": null,
+      "titel": "Spielplan der Bayrischen Staatstheater / für die Zeit vom 28. Dezember 1952 bis "
+    },
+    {
+      "ort": "München",
+      "ort_detail": "Bayerische Staatsoper",
+      "kategorie": "engagement",
+      "werk": "Macbeth",
+      "komponist": "Verdi",
+      "rolle": "Lady Macbeth",
+      "jahr": 1952,
+      "datum": "1952-12-17",
+      "phase": "LP5",
+      "dokumente": [
+        "UAKUG/NIM_004 3",
+        "UAKUG/NIM_004 4"
+      ],
+      "gattung": "oper",
+      "titel": "Rezension von Karl Schumann zu Macbeth"
+    },
+    {
+      "ort": "München, Martiusstrasse 3",
+      "ort_detail": null,
+      "kategorie": "gastspiel",
+      "werk": null,
+      "komponist": null,
+      "rolle": null,
+      "jahr": 1952,
+      "datum": "1952-03-18",
+      "phase": "LP5",
+      "dokumente": [
+        "UAKUG/NIM_007 1"
+      ],
+      "gattung": "oper",
+      "titel": "Brief von Felix Ballhausen zu Dienstverträgen Staatsoper München"
+    },
+    {
+      "ort": "Wien",
+      "ort_detail": "Teatro Colon",
+      "kategorie": "engagement",
+      "werk": "Salome",
+      "komponist": null,
+      "rolle": "Lady Macbeth",
+      "jahr": 1952,
+      "datum": "1952-05-27",
+      "phase": "LP5",
+      "dokumente": [
+        "UAKUG/NIM_007 2"
+      ],
+      "gattung": "oper",
+      "titel": "Brief von Martin H. Taubman zu Verträgen mit Buenos Aires, Neapel, Wien"
+    },
+    {
+      "ort": null,
+      "ort_detail": null,
+      "kategorie": "gastspiel",
+      "werk": null,
+      "komponist": "Wagner",
+      "rolle": null,
+      "jahr": 1953,
+      "datum": "1953-05-18",
+      "phase": "LP5",
+      "dokumente": [
+        "UAKUG/NIM/PL_16",
+        "UAKUG/NIM_123"
+      ],
+      "gattung": "oper",
+      "titel": "TRISTANO / E / ISOTTA"
+    },
+    {
+      "ort": null,
+      "ort_detail": null,
+      "kategorie": "gastspiel",
+      "werk": "Orpheus und Eurydike",
+      "komponist": "Gluck/Händel",
+      "rolle": "Orpheus",
+      "jahr": 1953,
+      "datum": "1953-03-05",
+      "phase": "LP5",
+      "dokumente": [
+        "UAKUG/NIM_004 5"
+      ],
+      "gattung": "oper",
+      "titel": "Rezension von K.H. Ruppel zu Orpheus und Eurydike in der Süddeutschen Zeitung"
+    },
+    {
+      "ort": "Bayreuth",
+      "ort_detail": null,
+      "kategorie": "festspiel",
+      "werk": "Sinfonien, Nr. 9, op. 125 (d-Moll)",
+      "komponist": "Beethoven",
+      "rolle": "Alt Solo",
+      "jahr": 1953,
+      "datum": "1953-08-13",
+      "phase": "LP5",
+      "dokumente": [
+        "UAKUG/NIM_004 7"
+      ],
+      "gattung": "konzert",
+      "titel": "Rezension von Dr. Joachim Bergfeld (Fränkische Presse) zur IX. Symphonie Beethov"
+    },
+    {
+      "ort": "Bayreuth",
+      "ort_detail": null,
+      "kategorie": "festspiel",
+      "werk": "Götterdämmerung",
+      "komponist": "Wagner",
+      "rolle": "Brünnhilde",
+      "jahr": 1953,
+      "datum": "1953-08-01",
+      "phase": "LP5",
+      "dokumente": [
+        "UAKUG/NIM_004 10"
+      ],
+      "gattung": "oper",
+      "titel": "Rezensionen aus der Fränkischen Presse zu \"Die Götterdämmerung\" und \"Tristan und"
+    },
+    {
+      "ort": "Lissabon",
+      "ort_detail": null,
+      "kategorie": "gastspiel",
+      "werk": "Die Meistersinger von Nürnberg",
+      "komponist": "Wagner",
+      "rolle": "Magdalene",
+      "jahr": 1953,
+      "datum": "1953-09-29",
+      "phase": "LP5",
+      "dokumente": [
+        "UAKUG/NIM_007 4"
+      ],
+      "gattung": "oper",
+      "titel": "Brief von Ernst Kühnly zu Gastspiel in Lissabon an Martin H. Taubman"
+    },
+    {
+      "ort": "München",
+      "ort_detail": null,
+      "kategorie": "engagement",
+      "werk": "Orpheus und Eurydike",
+      "komponist": "Gluck/Händel",
+      "rolle": "Orpheus",
+      "jahr": 1953,
+      "datum": "1953-03-06",
+      "phase": "LP5",
+      "dokumente": [
+        "UAKUG/NIM_004 8"
+      ],
+      "gattung": "oper",
+      "titel": "Rezension von Helmut Schmidt-Garre"
+    },
+    {
+      "ort": null,
+      "ort_detail": null,
+      "kategorie": "gastspiel",
+      "werk": null,
+      "komponist": null,
+      "rolle": null,
+      "jahr": 1954,
+      "datum": "1954-03-08",
+      "phase": "LP5",
+      "dokumente": [
+        "UAKUG/NIM/PL_18",
+        "UAKUG/NIM_142"
+      ],
+      "gattung": null,
+      "titel": "IL CREPUSCOLO / DEGLI DEI"
+    },
+    {
+      "ort": null,
+      "ort_detail": null,
+      "kategorie": "gastspiel",
+      "werk": "Gesang an die Hoffnung",
+      "komponist": "Hindemith",
+      "rolle": null,
+      "jahr": 1954,
+      "datum": "1954-03-31",
+      "phase": "LP5",
+      "dokumente": [
+        "UAKUG/NIM_004 11"
+      ],
+      "gattung": "oper",
+      "titel": "Rezension zu Paul Hindemith in Köln"
+    },
+    {
+      "ort": "München",
+      "ort_detail": null,
+      "kategorie": "festspiel",
+      "werk": "Die Meistersinger von Nürnberg",
+      "komponist": "Wagner",
+      "rolle": "Sixtus Beckmesser",
+      "jahr": 1954,
+      "datum": "1954-08-14",
+      "phase": "LP5",
+      "dokumente": [
+        "UAKUG/NIM_004 13"
+      ],
+      "gattung": "oper",
+      "titel": "Rezension zur Festvorstellung Meistersinger aus dem Münchner Merkur"
+    },
+    {
+      "ort": "Strasbourg",
+      "ort_detail": null,
+      "kategorie": "gastspiel",
+      "werk": "Le chant de la Terre",
+      "komponist": "Mahler, Gustav",
+      "rolle": null,
+      "jahr": 1954,
+      "datum": "1954-10-28",
+      "phase": "LP5",
+      "dokumente": [
+        "UAKUG/NIM_004 14"
+      ],
+      "gattung": "oper",
+      "titel": "Rezension von ZED. zu Le Chant de la Terre in Straßburg unter Fritz Munch"
+    },
+    {
+      "ort": "Stuttgart",
+      "ort_detail": null,
+      "kategorie": "gastspiel",
+      "werk": "La clemenza di Tito",
+      "komponist": "Mozart",
+      "rolle": "Sextus",
+      "jahr": 1954,
+      "datum": "1954-07-06",
+      "phase": "LP5",
+      "dokumente": [
+        "UAKUG/NIM_004 12"
+      ],
+      "gattung": "oper",
+      "titel": "Rezension von Dr. Kurt Honolka zu Titus"
+    },
+    {
+      "ort": null,
+      "ort_detail": null,
+      "kategorie": "gastspiel",
+      "werk": null,
+      "komponist": null,
+      "rolle": null,
+      "jahr": 1955,
+      "datum": "1955-01-12",
+      "phase": "LP5",
+      "dokumente": [
+        "UAKUG/NIM/PL_17"
+      ],
+      "gattung": null,
+      "titel": "Direttore / PAUL HINDEMITH / Mezzosoprano / IRA MALANIUK"
+    },
+    {
+      "ort": null,
+      "ort_detail": null,
+      "kategorie": "konzert",
+      "werk": null,
+      "komponist": null,
+      "rolle": null,
+      "jahr": 1956,
+      "datum": "1956-01-01/1957-12-31",
+      "phase": "LP6",
+      "dokumente": [
+        "UAKUG/NIM_072"
+      ],
+      "gattung": "konzert",
+      "titel": "Konzertprogramme Vintia [???]"
+    },
+    {
+      "ort": "Paris",
+      "ort_detail": null,
+      "kategorie": "gastspiel",
+      "werk": "Tristan und Isolde",
+      "komponist": "Wagner",
+      "rolle": "Tristan",
+      "jahr": 1956,
+      "datum": "1956",
+      "phase": "LP6",
+      "dokumente": [
+        "UAKUG/NIM_004 19"
+      ],
+      "gattung": "oper",
+      "titel": "Rezension von René Dumesnil zu Tristan und Isolde in Paris"
+    },
+    {
+      "ort": "Wien",
+      "ort_detail": "Wiener Staatsoper",
+      "kategorie": "engagement",
+      "werk": "Tannhäuser",
+      "komponist": "Wagner",
+      "rolle": "Elisabeth",
+      "jahr": 1956,
+      "datum": "1956-11-21",
+      "phase": "LP6",
+      "dokumente": [
+        "UAKUG/NIM_004 15"
+      ],
+      "gattung": "oper",
+      "titel": "Rezension von Y. zu Tannhäuser"
+    },
+    {
+      "ort": "Wien",
+      "ort_detail": "Wiener Staatsoper",
+      "kategorie": "engagement",
+      "werk": "Aida",
+      "komponist": "Verdi",
+      "rolle": "Amneris",
+      "jahr": 1956,
+      "datum": "1956-05-01",
+      "phase": "LP6",
+      "dokumente": [
+        "UAKUG/NIM_004 16",
+        "UAKUG/NIM_004 17"
+      ],
+      "gattung": "oper",
+      "titel": "Rezension von Y. zu Aida an der Wiener Staatsoper"
+    },
+    {
+      "ort": "Wien",
+      "ort_detail": null,
+      "kategorie": "engagement",
+      "werk": null,
+      "komponist": "Wagner",
+      "rolle": null,
+      "jahr": 1956,
+      "datum": "1956-02-18",
+      "phase": "LP6",
+      "dokumente": [
+        "UAKUG/NIM_119",
+        "UAKUG/NIM_120"
+      ],
+      "gattung": "oper",
+      "titel": "Programmheft zu einer Aufführung von \"Tristan und Isolde\" (Wagner) an der Wiener"
+    },
+    {
+      "ort": null,
+      "ort_detail": null,
+      "kategorie": "gastspiel",
+      "werk": "Walküre",
+      "komponist": null,
+      "rolle": null,
+      "jahr": 1957,
+      "datum": "1957-[05-27?]",
+      "phase": "LP6",
+      "dokumente": [
+        "UAKUG/NIM_007 5_1"
+      ],
+      "gattung": null,
+      "titel": "Handschriftliche Notiz"
+    },
+    {
+      "ort": null,
+      "ort_detail": null,
+      "kategorie": "gastspiel",
+      "werk": null,
+      "komponist": null,
+      "rolle": null,
+      "jahr": 1957,
+      "datum": "1957-01-01/1957-12-31",
+      "phase": "LP6",
+      "dokumente": [
+        "UAKUG/NIM_159"
+      ],
+      "gattung": null,
+      "titel": "1957"
+    },
+    {
+      "ort": "Berlin",
+      "ort_detail": null,
+      "kategorie": "konzert",
+      "werk": null,
+      "komponist": null,
+      "rolle": null,
+      "jahr": 1957,
+      "datum": "1957-12-05",
+      "phase": "LP6",
+      "dokumente": [
+        "UAKUG/NIM_007 5_6"
+      ],
+      "gattung": "konzert",
+      "titel": "Kassa-Eingang, Einzahlungsnachweis der Konzertdirektion, 1957-12-05"
+    },
+    {
+      "ort": "Stuttgart",
+      "ort_detail": null,
+      "kategorie": "konzert",
+      "werk": null,
+      "komponist": null,
+      "rolle": null,
+      "jahr": 1957,
+      "datum": "1957-06-24",
+      "phase": "LP6",
+      "dokumente": [
+        "UAKUG/NIM_007 5_3"
+      ],
+      "gattung": "konzert",
+      "titel": "Kassa-Eingang, Einzahlungsnachweis der Konzertdirektion, 1957-06-24"
+    },
+    {
+      "ort": "Wien",
+      "ort_detail": null,
+      "kategorie": "engagement",
+      "werk": null,
+      "komponist": null,
+      "rolle": null,
+      "jahr": 1957,
+      "datum": "1957-05-01",
+      "phase": "LP6",
+      "dokumente": [
+        "UAKUG/NIM_007 5_2",
+        "UAKUG/NIM_007 5_4",
+        "UAKUG/NIM_007 5_5"
+      ],
+      "gattung": "konzert",
+      "titel": "Kassa-Eingang, Einzahlungsnachweis der Konzertdirektion, 1957-05-01"
+    },
+    {
+      "ort": null,
+      "ort_detail": null,
+      "kategorie": "gastspiel",
+      "werk": null,
+      "komponist": null,
+      "rolle": null,
+      "jahr": 1958,
+      "datum": "1958-11-07/1958-11-19",
+      "phase": "LP6",
+      "dokumente": [
+        "UAKUG/NIM/PL_23",
+        "UAKUG/NIM_157"
+      ],
+      "gattung": null,
+      "titel": "Württembergische Staatstheater 07.11. - 19.11.1958"
+    },
+    {
+      "ort": "Salzburg",
+      "ort_detail": null,
+      "kategorie": "festspiel",
+      "werk": "Vanessa",
+      "komponist": "Barber, Samuel",
+      "rolle": null,
+      "jahr": 1958,
+      "datum": "1958-04-09",
+      "phase": "LP6",
+      "dokumente": [
+        "UAKUG/NIM_004 25"
+      ],
+      "gattung": "oper",
+      "titel": "NCAC Newsletter über Künstler:innen (Ira Malaniuk - Hugh Thompson)"
+    },
+    {
+      "ort": "Wien",
+      "ort_detail": null,
+      "kategorie": "engagement",
+      "werk": null,
+      "komponist": null,
+      "rolle": null,
+      "jahr": 1958,
+      "datum": "1958-03-13",
+      "phase": "LP6",
+      "dokumente": [
+        "UAKUG/NIM_007 5_7"
+      ],
+      "gattung": "konzert",
+      "titel": "Kassa-Eingang, Einzahlungsnachweis der Konzertdirektion, 1957-03-13"
+    },
+    {
+      "ort": null,
+      "ort_detail": null,
+      "kategorie": "gastspiel",
+      "werk": "Paradies und Peri",
+      "komponist": null,
+      "rolle": "\"Engel\"",
+      "jahr": 1959,
+      "datum": "1959-11-18",
+      "phase": "LP6",
+      "dokumente": [
+        "UAKUG/NIM_007 6"
+      ],
+      "gattung": "oper",
+      "titel": "Mittelung über Honorar für Sendung Paradies und Peri 1959 von Nord- und Westdeut"
+    },
+    {
+      "ort": "Wien",
+      "ort_detail": null,
+      "kategorie": "festspiel",
+      "werk": null,
+      "komponist": "Gluck/Händel",
+      "rolle": null,
+      "jahr": 1959,
+      "datum": "1959-01-21",
+      "phase": "LP6",
+      "dokumente": [
+        "UAKUG/NIM/PL_02"
+      ],
+      "gattung": "oper",
+      "titel": "SALZBURGER MOZART-WOCHE 1959 / Mittwoch, den 21. Jänner 1959 - Mozarteum, Großer"
+    },
+    {
+      "ort": null,
+      "ort_detail": null,
+      "kategorie": "konzert",
+      "werk": null,
+      "komponist": "Beethoven",
+      "rolle": null,
+      "jahr": 1960,
+      "datum": "1960-01-08",
+      "phase": "LP6",
+      "dokumente": [
+        "UAKUG/NIM/PL_22",
+        "UAKUG/NIM_030",
+        "UAKUG/NIM_068",
+        "UAKUG/NIM_155"
+      ],
+      "gattung": "konzert",
+      "titel": "Ira Malaniuk / singt Lieder von HAYDN, MOZART, BEETHOVEN, / SCHUBERT, BRAHMS, R."
+    },
+    {
+      "ort": "Wien",
+      "ort_detail": null,
+      "kategorie": "engagement",
+      "werk": null,
+      "komponist": null,
+      "rolle": null,
+      "jahr": 1960,
+      "datum": "1960-12-14",
+      "phase": "LP6",
+      "dokumente": [
+        "UAKUG/NIM/PL_01"
+      ],
+      "gattung": "oper",
+      "titel": "Liederabend / IRA / MALANIUK / Alt / (Staatsoper Wien und München) / am Flügel: "
+    },
+    {
+      "ort": "Wien",
+      "ort_detail": null,
+      "kategorie": "engagement",
+      "werk": "Der Wildschütz",
+      "komponist": null,
+      "rolle": "Graf von Eberbach",
+      "jahr": 1960,
+      "datum": "1960",
+      "phase": "LP6",
+      "dokumente": [
+        "UAKUG/NIM_007 13"
+      ],
+      "gattung": "oper",
+      "titel": "Rezension von Karl Löbl zu Der Wildschütz o.D."
+    },
+    {
+      "ort": "Zürich",
+      "ort_detail": null,
+      "kategorie": "konzert",
+      "werk": null,
+      "komponist": null,
+      "rolle": null,
+      "jahr": 1960,
+      "datum": "1960-12-14",
+      "phase": "LP6",
+      "dokumente": [
+        "UAKUG/NIM_046"
+      ],
+      "gattung": "konzert",
+      "titel": "Konzert Zürich / 14/12/60"
+    },
+    {
+      "ort": null,
+      "ort_detail": null,
+      "kategorie": "gastspiel",
+      "werk": null,
+      "komponist": null,
+      "rolle": null,
+      "jahr": 1961,
+      "datum": "1961-01-01/1961-12-31",
+      "phase": "LP6",
+      "dokumente": [
+        "UAKUG/NIM_031",
+        "UAKUG/NIM_154"
+      ],
+      "gattung": null,
+      "titel": "Ira Malaniuk, Verträge und Vereinbarungen"
+    },
+    {
+      "ort": null,
+      "ort_detail": null,
+      "kategorie": "konzert",
+      "werk": null,
+      "komponist": null,
+      "rolle": null,
+      "jahr": 1962,
+      "datum": "1962-06-04/1962-06-07",
+      "phase": "LP6",
+      "dokumente": [
+        "UAKUG/NIM/PL_19",
+        "UAKUG/NIM/PL_20",
+        "UAKUG/NIM/PL_21"
+      ],
+      "gattung": "konzert",
+      "titel": "Musikverein für Steiermark, Konzertsaison 1961/62"
+    },
+    {
+      "ort": null,
+      "ort_detail": null,
+      "kategorie": "gastspiel",
+      "werk": null,
+      "komponist": null,
+      "rolle": null,
+      "jahr": 1963,
+      "datum": "1963-01-01/1963-12-31",
+      "phase": "LP6",
+      "dokumente": [
+        "UAKUG/NIM_152"
+      ],
+      "gattung": null,
+      "titel": "1963"
+    },
+    {
+      "ort": "Palais Pallavicini",
+      "ort_detail": null,
+      "kategorie": "konzert",
+      "werk": "Vergin tutt' amor",
+      "komponist": "Durante, Francesco",
+      "rolle": null,
+      "jahr": 1963,
+      "datum": "1963-08-28",
+      "phase": "LP6",
+      "dokumente": [
+        "UAKUG/NIM_007 8"
+      ],
+      "gattung": "konzert",
+      "titel": "Konzertprogramm, Liederabend, Palais Pallavicini, 1963-08-28"
+    },
+    {
+      "ort": "Zürich",
+      "ort_detail": null,
+      "kategorie": "engagement",
+      "werk": "Tristan und Isolde",
+      "komponist": "Wagner",
+      "rolle": "Brangäne",
+      "jahr": 1963,
+      "datum": "1963-05-23",
+      "phase": "LP6",
+      "dokumente": [
+        "UAKUG/NIM_007 9"
+      ],
+      "gattung": "oper",
+      "titel": "Brief von Emil Jucker an Ira Malaniuk über ein Gastspiel in Zürich"
+    },
+    {
+      "ort": null,
+      "ort_detail": null,
+      "kategorie": "gastspiel",
+      "werk": null,
+      "komponist": null,
+      "rolle": null,
+      "jahr": 1964,
+      "datum": "1964-01-01/1964-12-31",
+      "phase": "LP6",
+      "dokumente": [
+        "UAKUG/NIM_151"
+      ],
+      "gattung": null,
+      "titel": "1964"
+    },
+    {
+      "ort": "Italien",
+      "ort_detail": null,
+      "kategorie": "gastspiel",
+      "werk": "Tristan und Isolde",
+      "komponist": "Wagner",
+      "rolle": "Brangäne",
+      "jahr": 1964,
+      "datum": "1964-01-08",
+      "phase": "LP6",
+      "dokumente": [
+        "UAKUG/NIM_004 9"
+      ],
+      "gattung": "oper",
+      "titel": "Rezension von A. Parente zu Tristan und Isolde in Neapel"
+    },
+    {
+      "ort": null,
+      "ort_detail": null,
+      "kategorie": "gastspiel",
+      "werk": null,
+      "komponist": null,
+      "rolle": null,
+      "jahr": 1965,
+      "datum": "1965-01-01/1965-12-31",
+      "phase": "LP6",
+      "dokumente": [
+        "UAKUG/NIM_150"
+      ],
+      "gattung": null,
+      "titel": "1965"
+    },
+    {
+      "ort": null,
+      "ort_detail": null,
+      "kategorie": "gastspiel",
+      "werk": null,
+      "komponist": null,
+      "rolle": null,
+      "jahr": 1967,
+      "datum": "1967-01-01/1967-12-31",
+      "phase": "LP6",
+      "dokumente": [
+        "UAKUG/NIM_037",
+        "UAKUG/NIM_148"
+      ],
+      "gattung": null,
+      "titel": "Ira Malaniuk, Verträge und Vereinbarungen"
+    },
+    {
+      "ort": "Wien",
+      "ort_detail": "Wiener Staatsoper",
+      "kategorie": "engagement",
+      "werk": "Der Wildschütz",
+      "komponist": null,
+      "rolle": "Graf von Eberbach",
+      "jahr": 1968,
+      "datum": "1968-09-25",
+      "phase": "LP6",
+      "dokumente": [
+        "UAKUG/NIM_007 12",
+        "UAKUG/NIM_007 14",
+        "UAKUG/NIM_007 17"
+      ],
+      "gattung": "oper",
+      "titel": "Rezension von Gerhard Bauer zu Der Wildschütz (Arbeiter Zeitung)"
+    },
+    {
+      "ort": null,
+      "ort_detail": null,
+      "kategorie": "konzert",
+      "werk": null,
+      "komponist": null,
+      "rolle": null,
+      "jahr": 1970,
+      "datum": "1970-06-26/1977-12-15",
+      "phase": "LP6",
+      "dokumente": [
+        "UAKUG/NIM_165"
+      ],
+      "gattung": "konzert",
+      "titel": "Ira Malaniuk Konzertprogramme"
+    },
+    {
+      "ort": "Graz",
+      "ort_detail": null,
+      "kategorie": "konzert",
+      "werk": null,
+      "komponist": null,
+      "rolle": null,
+      "jahr": 1970,
+      "datum": "1970-06-17/1970-06-27",
+      "phase": "LP6",
+      "dokumente": [
+        "UAKUG/NIM/PL_24"
+      ],
+      "gattung": "konzert",
+      "titel": "Konzertprogramm der Akademie für Musik und darstellende Kunst Graz vom 17. bis 2"
+    },
+    {
+      "ort": null,
+      "ort_detail": null,
+      "kategorie": "gastspiel",
+      "werk": null,
+      "komponist": null,
+      "rolle": null,
+      "jahr": 1972,
+      "datum": "1972-01-01/1989-12-31",
+      "phase": "LP7",
+      "dokumente": [
+        "UAKUG/NIM_144"
+      ],
+      "gattung": null,
+      "titel": "ab / 1972"
     }
   ],
   "netzwerk": [
@@ -546,7 +1546,7 @@
     }
   ],
   "_meta": {
-    "generated": "2026-02-25T19:04:06.150393",
+    "generated": "2026-03-19T18:04:54.144091",
     "source_records": 286
   }
 }

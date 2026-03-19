@@ -17,6 +17,17 @@ import { renderZeitfluss } from './views/zeitfluss.js';
 let store = null;
 const renderedTabs = new Set();
 
+/** Tab renderer registry — maps tab name to render function. */
+const TAB_RENDERERS = new Map([
+  ['archiv',     (s, c) => renderArchiv(s, c)],
+  ['indizes',    (s, c) => renderIndizes(s, c)],
+  ['matrix',     (s, c) => renderMatrix(s, c)],
+  ['kosmos',     (s, c) => renderKosmos(s, c)],
+  ['mobilitaet', (s, c) => renderMobilitaet(s, c)],
+  ['zeitfluss',  (s, c) => renderZeitfluss(s, c)],
+  ['korb',       (s, c) => renderKorb(s, c)],
+]);
+
 async function init() {
   try {
     // Show loading state
@@ -71,29 +82,8 @@ function renderTab(tab) {
   const container = document.getElementById(`tab-${tab}`);
   if (!container) return;
 
-  switch (tab) {
-    case 'archiv':
-      renderArchiv(store, container);
-      break;
-    case 'indizes':
-      renderIndizes(store, container);
-      break;
-    case 'matrix':
-      renderMatrix(store, container);
-      break;
-    case 'kosmos':
-      renderKosmos(store, container);
-      break;
-    case 'mobilitaet':
-      renderMobilitaet(store, container);
-      break;
-    case 'zeitfluss':
-      renderZeitfluss(store, container);
-      break;
-    case 'korb':
-      renderKorb(store, container);
-      break;
-  }
+  const renderer = TAB_RENDERERS.get(tab);
+  if (renderer) renderer(store, container);
 }
 
 function showLoading(show) {

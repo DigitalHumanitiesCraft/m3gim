@@ -5,9 +5,13 @@
 
 import { aggregateMatrix } from '../data/aggregator.js';
 import { PERSONEN_FARBEN, DOKUMENTTYP_LABELS } from '../data/constants.js';
+import { loadPartitur } from '../data/loader.js';
 import { selectRecord, navigateToIndex, navigateToView } from '../ui/router.js';
 import { el, clear } from '../utils/dom.js';
 import { formatSignatur, ensureArray } from '../utils/format.js';
+import { buildFFBadges, viewLog } from '../utils/viz-components.js';
+
+const log = viewLog('Matrix', '#004A8F');
 
 const KATEGORIE_KUERZEL = {
   'Dirigent': 'D', 'Regisseur': 'R', 'Korrepetitor': 'Kr',
@@ -49,8 +53,7 @@ export function renderMatrix(store, container) {
   collectFacetOptions(store);
 
   // Load partitur.json for Lebensphasen, then aggregate + render
-  fetch('./data/partitur.json')
-    .then(r => r.ok ? r.json() : null)
+  loadPartitur()
     .then(data => {
       lebensphasen = data?.lebensphasen || null;
       matrixData = aggregateMatrix(store, lebensphasen);
@@ -117,14 +120,14 @@ function reAggregate() {
 }
 
 function buildUI(container, partiturData) {
-  console.group('%c[Matrix]', 'color: #004A8F; font-weight: bold');
-  console.log(`${matrixData.personen.length} Kern-Personen, ${matrixData.peripherie?.length || 0} Peripherie`);
-  console.log(`Orte: ${allOrte.length}, Dokumenttypen: ${allDocTypen.length}`);
-  console.log(`Lebensphasen: ${lebensphasen ? lebensphasen.length : 'keine'}`);
+  log.group();
+  log.log(`${matrixData.personen.length} Kern-Personen, ${matrixData.peripherie?.length || 0} Peripherie`);
+  log.log(`Orte: ${allOrte.length}, Dokumenttypen: ${allDocTypen.length}`);
+  log.log(`Lebensphasen: ${lebensphasen ? lebensphasen.length : 'keine'}`);
   matrixData.personen.slice(0, 10).forEach(p =>
-    console.log(`  ${p.name} [${p.kategorie}]: ${p.anzahl_gesamt} Dok., Intensität ${p.gesamt_intensitaet}`)
+    log.log(`  ${p.name} [${p.kategorie}]: ${p.anzahl_gesamt} Dok., Intensität ${p.gesamt_intensitaet}`)
   );
-  console.groupEnd();
+  log.end();
 
   const wrapper = el('div', { className: 'matrix-wrapper' });
 
@@ -168,6 +171,14 @@ function buildUI(container, partiturData) {
   });
 }
 
+/** Re-aggregate data and re-render all Matrix sub-views. */
+function refreshMatrix() {
+  reAggregate();
+  renderHeatmap();
+  renderPeriphery();
+  updateActiveFilters();
+}
+
 function buildGrazFokusBtn(ortSelect) {
   const btn = el('button', {
     className: 'phase-chip',
@@ -184,10 +195,7 @@ function buildGrazFokusBtn(ortSelect) {
       btn.classList.add('phase-chip--active');
       if (ortSelect) ortSelect.value = 'Graz';
     }
-    reAggregate();
-    renderHeatmap();
-    renderPeriphery();
-    updateActiveFilters();
+    refreshMatrix();
   });
   return btn;
 }
@@ -232,10 +240,7 @@ function buildToolbar() {
     className: 'matrix-select',
     onChange: (e) => {
       activeOrt = e.target.value || null;
-      reAggregate();
-      renderHeatmap();
-      renderPeriphery();
-      updateActiveFilters();
+      refreshMatrix();
     },
   },
     el('option', { value: '' }, 'Alle Orte'),
@@ -249,10 +254,7 @@ function buildToolbar() {
     className: 'matrix-select',
     onChange: (e) => {
       activeDocTyp = e.target.value || null;
-      reAggregate();
-      renderHeatmap();
-      renderPeriphery();
-      updateActiveFilters();
+      refreshMatrix();
     },
   },
     el('option', { value: '' }, 'Alle Dokumenttypen'),
@@ -282,10 +284,7 @@ function buildToolbar() {
       ),
       el('div', { className: 'viz-toolbar__sep' }),
       buildGrazFokusBtn(ortSelect),
-      el('div', { className: 'ff-badges' },
-        el('span', { className: 'ff-badges__tag' }, 'FF1'),
-        el('span', { className: 'ff-badges__tag' }, 'FF3'),
-      ),
+      buildFFBadges('FF1', 'FF3'),
     ),
     activeFiltersEl,
   );
@@ -305,10 +304,7 @@ function updateActiveFilters() {
           activeOrt = null;
           const sel = document.querySelector('.matrix-select');
           if (sel) sel.value = '';
-          reAggregate();
-          renderHeatmap();
-          renderPeriphery();
-          updateActiveFilters();
+          refreshMatrix();
         },
       }, '\u00d7'),
     ));
@@ -322,10 +318,7 @@ function updateActiveFilters() {
           activeDocTyp = null;
           const sels = document.querySelectorAll('.matrix-select');
           if (sels[1]) sels[1].value = '';
-          reAggregate();
-          renderHeatmap();
-          renderPeriphery();
-          updateActiveFilters();
+          refreshMatrix();
         },
       }, '\u00d7'),
     ));
@@ -771,12 +764,12 @@ function showDrilldown(person, zeitraum, dokumente) {
       onClick: (e) => { e.preventDefault(); navigateToIndex('personen', person); },
     }, person),
     isKomponist ? el('a', {
-      className: 'matrix-drilldown__kosmos-link',
+      className: 'cross-link',
       title: `${person} im Kosmos anzeigen`,
       onClick: (e) => { e.preventDefault(); navigateToView('kosmos', { komponist: person }); },
     }, '\u2192 Kosmos') : null,
     hasWerke ? el('a', {
-      className: 'matrix-drilldown__zeitfluss-link',
+      className: 'cross-link',
       title: 'Werke im Zeitfluss anzeigen',
       onClick: (e) => {
         e.preventDefault();
@@ -840,9 +833,3 @@ function showDrilldown(person, zeitraum, dokumente) {
   panel.appendChild(list);
 }
 
-export function resetMatrix() {
-  rendered = false;
-  activeDrilldown = null;
-  collapsedPhases = new Set();
-  peripheryFirstRender = true;
-}

@@ -403,4 +403,70 @@
 
 ---
 
+## Session 22 (2026-03-12): Daten-Reproduzierbarkeit
+
+- Excel-Quelldateien in `data/source/` git-getrackt (7 XLSX: Objekte, Verknuepfungen, 4 Indizes, Fotos)
+- `.gitignore` angepasst: `!data/source/*.xlsx` Ausnahme
+- Pipeline-Skripte referenzieren noch `data/google-spreadsheet/` → Migration offen
+
+**Entscheidung:** Originale XLSX-Quelldateien werden fuer Reproduzierbarkeit im Repo versioniert
+
+---
+
+## Session 24 (2026-03-13): Viz-Infrastruktur-Refactoring
+
+**Kontext:** Analyse ergab 4× duplizierte Patterns (Partitur-Fetch, Tooltip-Logik, Zoom-Setup, Console-Diagnostik) in den 4 D3-Views. 5-Schritte-Plan erstellt und umgesetzt.
+
+**Schritt 1 — Partitur-Singleton:**
+- `loadPartitur()` + `getLebensphasen()` in loader.js (concurrent-safe mit Promise-Caching)
+- Alle 4 Views migriert (statt 3× separater Fetch + 1× Hardcode LEBENSPHASEN)
+- `renderZeitfluss` async gemacht fuer `await loadPartitur()`
+
+**Schritt 2 — Tooltip-Controller:**
+- `createTooltip(container)` in viz-components.js — shared show/move/hide mit Boundary-Clamping
+- Migriert: Kosmos, Zeitfluss, Mobilitaet (je ~12 Zeilen lokaler Code entfernt)
+
+**Schritt 3 — Matrix an Shared-System:**
+- `buildFFBadges()` Import statt inline-HTML
+
+**Schritt 4 — Zoom+Reset-Helper:**
+- `setupD3Zoom()` in viz-components.js — D3-Zoom mit Reset-Button und Visibility-Toggle
+- Migriert: Kosmos. Zeitfluss behaelt eigene horizontale Zoom-Logik (zu spezialisiert)
+
+**Schritt 5 — Console-Diagnostik:**
+- `viewLog(name, color)` in viz-components.js — einheitliche Gruppenausgabe
+- Migriert: alle 4 D3-Views
+
+**Ergebnis:** viz-components.js gewachsen von 68 → 156 Zeilen (6 Exports statt 3)
+
+---
+
+## Session 25 (2026-03-13): Code-Konsolidierung + Repo-Bereinigung
+
+**Kontext:** 5 weitere Refactoring-Kandidaten identifiziert und umgesetzt.
+
+**1. aggregator.js — buildKomponistenMap() extrahiert:**
+- ~90 Zeilen duplizierter Pass-1/Pass-2 Logik (structured subjects + title-matching) in shared Funktion
+- `aggregateKosmos()` und `aggregateZeitfluss()` nutzen beide `buildKomponistenMap(store)`
+
+**2. Unused Reset-Funktionen entfernt:**
+- `resetMatrix()`, `resetKosmos()`, `resetMobilitaet()` — exportiert aber nie importiert → geloescht
+
+**3. CSS konsolidiert:**
+- `.matrix-drilldown__kosmos-link` + `__zeitfluss-link` → `.cross-link` (components.css)
+- `.kosmos-popup__action` + `.mob__popup-item` → `.popup-item` (components.css)
+- ~54 Zeilen view-spezifisches CSS entfernt, ~30 Zeilen shared CSS eingefuehrt
+
+**4. Matrix refreshMatrix():**
+- 6 redundante `reAggregate + renderHeatmap + renderPeriphery + updateActiveFilters` Aufrufe → 1 Funktion
+
+**5. main.js Registry:**
+- Switch-Statement (7 cases) → `TAB_RENDERERS` Map + 3-zeilige `renderTab()` Funktion
+
+**6. Repo-Bereinigung:**
+- 3 ungenutzte View-JSONs aus Git entfernt: `sankey.json`, `matrix.json`, `kosmos.json` (nur `partitur.json` wird konsumiert)
+- `node_modules/` lokal geloescht (~40 MB, kein package.json vorhanden)
+
+---
+
 Siehe auch: [→ Projekt-Status](../projekt-status.md) · [→ Pipeline](../pipeline.md) · [→ Entscheidungen](../entscheidungen.md)
