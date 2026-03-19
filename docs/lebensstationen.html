@@ -271,37 +271,29 @@
 
     /* ── Synthese ─────────────────────────────────────────── */
     .station-synthese {
-      max-width: 720px;
+      max-width: 800px;
       margin: 0 auto;
       padding: var(--space-16) var(--space-6) var(--space-12);
     }
 
-    .station-synthese__title {
-      font-family: var(--font-title);
-      font-size: var(--text-2xl);
-      font-weight: var(--weight-semibold);
-      color: var(--color-kug-blau);
-      margin-bottom: var(--space-6);
-      padding-bottom: var(--space-2);
-      border-bottom: 2px solid var(--color-kug-blau);
+    .synth-tooltip {
+      position: absolute;
+      pointer-events: none;
+      background: var(--color-paper, #FDFBF7);
+      border: 1px solid var(--border-color, #D6D0C6);
+      border-radius: var(--border-radius, 4px);
+      padding: 6px 10px;
+      font-family: var(--font-ui, Inter, sans-serif);
+      font-size: 0.72rem;
+      line-height: 1.4;
+      color: var(--color-text-primary, #2C2824);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+      max-width: 260px;
+      z-index: 100;
+      opacity: 0;
+      transition: opacity 120ms ease;
     }
-
-    .station-synthese__svg {
-      width: 100%;
-      height: 250px;
-      display: block;
-      margin-bottom: var(--space-6);
-    }
-
-    .station-synthese__text {
-      font-size: var(--text-base);
-      line-height: var(--leading-relaxed);
-      color: var(--color-text-secondary);
-    }
-
-    .station-synthese__text p {
-      margin-bottom: var(--space-4);
-    }
+    .synth-tooltip--visible { opacity: 1; }
 
     /* ── Separator ────────────────────────────────────────── */
     .station__separator {
@@ -403,22 +395,21 @@
 
     <!-- ── Synthese ────────────────────────────────────── -->
     <section class="station-synthese" id="synthese">
-      <h2 class="station-synthese__title">Synthese — Mobilität als Karrierekatalysator</h2>
-      <svg class="station-synthese__svg" id="synthese-svg"></svg>
-      <div class="station-synthese__text">
-        <p>
-          Die Lebensstationen Ira Malaniuks zeigen ein Muster, das die These von Mobilität
-          als Karrierekatalysator stützt: Jeder Ortswechsel — ob erzwungen, beruflich motiviert
-          oder durch Lebensstil bedingt — korreliert mit Veränderungen in Netzwerk-Intensität,
-          Repertoire-Breite und Auftrittsdichte.
-        </p>
-        <p>
-          Besonders signifikant ist der Übergang Graz → Wien (1950), der die Netzwerk-Intensität
-          von 7 auf 46 steigerte, sowie das Bayreuth-Debüt (1952), das den internationalen
-          Durchbruch markierte. Der Rückzug nach Zürich (1970) beendete zwar die aktive
-          Bühnenkarriere, ermöglichte aber den Wissenstransfer in die Lehre an der KUG Graz —
-          eine Rückkehr, die den Kreis schließt.
-        </p>
+      <div style="max-width:800px;margin:0 auto;padding:var(--space-8) var(--space-6)">
+        <h2 style="font-family:'Source Serif 4',Georgia,serif;color:#004A8F;font-size:1.5rem;border-bottom:3px solid #004A8F;padding-bottom:var(--space-2);margin-bottom:var(--space-6)">
+          Synthese — Mobilität als Karrierekatalysator
+        </h2>
+        <!-- 3-Spalten Mini-Partitur -->
+        <div id="synthese-partitur" style="display:grid;grid-template-columns:60px 1fr 100px;gap:0;border:1px solid #E0DCD6;border-radius:4px;background:white;overflow:hidden;position:relative">
+          <div id="synth-netzwerk" style="position:relative"></div>
+          <div id="synth-chart" style="position:relative"></div>
+          <div id="synth-repertoire" style="position:relative"></div>
+          <div id="synth-tooltip" class="synth-tooltip"></div>
+        </div>
+        <div style="margin-top:var(--space-6);font-size:0.95rem;line-height:1.7;color:#5C5651">
+          <p>Jeder Ortswechsel korreliert mit Veränderungen in Netzwerk-Intensität, Repertoire-Breite und Auftrittsdichte. Besonders signifikant: der Übergang Graz → Wien (1950), der die Netzwerk-Intensität von 7 auf 46 steigerte, und das Bayreuth-Debüt (1952) als internationaler Durchbruch.</p>
+          <p style="margin-top:var(--space-3)">Der Rückzug nach Zürich (1970) beendete die aktive Bühnenkarriere, ermöglichte aber den Wissenstransfer in die Lehre an der KUG Graz — eine Rückkehr, die den Kreis schließt.</p>
+        </div>
       </div>
     </section>
 
@@ -531,7 +522,10 @@
       let parts = [];
       parts.push(phase.beschreibung + '.');
 
-      if (phaseAuftritte.length > 0) {
+      if (phase.id === 'LP1') {
+        /* Kindheit: kontextualisierte Leerstelle */
+        parts.push('Aus der Kindheit und Jugend in Lemberg sind keine Aufführungsdokumente überliefert.');
+      } else if (phaseAuftritte.length > 0) {
         const orteList = [...orteSet].filter(o => o).slice(0, 4);
         if (orteList.length > 0) {
           parts.push(`In dieser Phase sind ${phaseAuftritte.length} Auftritte dokumentiert, u.\u202Fa. in ${orteList.join(', ')}.`);
@@ -555,6 +549,11 @@
       if (activeRep.length > 0) {
         const names = activeRep.map(r => r.komponist);
         parts.push(`Aktives Repertoire: ${names.join(', ')}.`);
+      }
+
+      /* LP7 Spätphase: kontextualisierte Quellenlage */
+      if (phase.id === 'LP7') {
+        parts.push('Die Spätphase ist im Nachlass kaum dokumentiert — der Rückzug aus dem aktiven Bühnenleben spiegelt sich in der Quellenüberlieferung.');
       }
 
       return parts;
@@ -624,6 +623,14 @@
         section.id = `chapter-${phase.id}`;
         section.dataset.phase = phase.id;
 
+        const orteCount = [...auftrittsorteInPhase(phase)].filter(o=>o).length;
+        let statsHtml;
+        if (phaseAuftritte.length === 0 && orteCount === 0) {
+          statsHtml = `<div class="station__chapter-stats" style="font-style:italic;color:#8A857E">Keine Aufführungsdokumente in dieser Phase überliefert</div>`;
+        } else {
+          statsHtml = `<div class="station__chapter-stats"><span>Auftritte: <strong>${phaseAuftritte.length}</strong></span><span>Orte: <strong>${orteCount}</strong></span></div>`;
+        }
+
         section.innerHTML = `
           <header class="station__chapter-header">
             <h2 class="station__chapter-title">${phase.label} · ${phase.von}–${phase.bis}</h2>
@@ -632,10 +639,7 @@
           <div class="station__chapter-grid">
             <div class="station__chapter-text">
               ${narrative.map(p => `<p>${p}</p>`).join('')}
-              <div class="station__chapter-stats">
-                <span>Auftritte: <strong>${phaseAuftritte.length}</strong></span>
-                <span>Orte: <strong>${[...auftrittsorteInPhase(phase)].filter(o=>o).length}</strong></span>
-              </div>
+              ${statsHtml}
             </div>
             <svg class="station__chapter-map" id="map-${phase.id}" viewBox="0 0 200 150"></svg>
           </div>
@@ -858,131 +862,376 @@
 
     setupScrollTracking();
 
-    /* ── Synthese SVG ──────────────────────────────────── */
+    /* ── Synthese — Mini-Lebenspartitur (Bump-Chart) ──── */
     function renderSynthese() {
-      const svg = d3.select('#synthese-svg');
-      const bbox = document.querySelector('.station-synthese__svg').getBoundingClientRect();
-      const w = bbox.width || 720;
-      const h = 250;
+      const SYNTH_H = 500;
+      const SYNTH_LOCATIONS = ['Lemberg', 'Wien', 'Graz', 'Bayreuth', 'München', 'Salzburg', 'Zürich'];
+      const SYNTH_BREAK_YEAR = 1975;
+      const SYNTH_BREAK_RATIO = 0.74;
 
-      svg.attr('viewBox', `0 0 ${w} ${h}`);
+      const SYNTH_LIFE_SEGMENTS = [
+        { type: 'stay', ort: 'Lemberg', von: 1919, bis: 1944 },
+        { type: 'move', von: 'Lemberg', nach: 'Wien', jahr: 1944, form: 'erzwungen' },
+        { type: 'move', von: 'Wien', nach: 'Graz', jahr: 1945, form: 'geografisch' },
+        { type: 'stay', ort: 'Graz', von: 1945, bis: 1950 },
+        { type: 'move', von: 'Graz', nach: 'Wien', jahr: 1950, form: 'geografisch' },
+        { type: 'stay', ort: 'Wien', von: 1950, bis: 1970 },
+        { type: 'move', von: 'Wien', nach: 'Zürich', jahr: 1970, form: 'lebensstil' },
+        { type: 'stay', ort: 'Zürich', von: 1970, bis: 2009 },
+      ];
 
-      const margin = { top: 20, right: 20, bottom: 40, left: 40 };
-      const innerW = w - margin.left - margin.right;
-      const innerH = h - margin.top - margin.bottom;
+      const MARGIN = { top: 38, right: 8, bottom: 20, left: 8 };
+      const COLOR = {
+        blau: '#004A8F', gold: '#9A7B4F', subtle: '#C4B49A',
+        cream: '#F5F0E8', grau: '#5C5651'
+      };
 
-      const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
+      /* ---- Tooltip helpers ---- */
+      const tipEl = document.getElementById('synth-tooltip');
+      function showTip(event, html) {
+        tipEl.innerHTML = html;
+        tipEl.classList.add('synth-tooltip--visible');
+        moveTip(event);
+      }
+      function moveTip(event) {
+        const box = document.getElementById('synthese-partitur').getBoundingClientRect();
+        let tx = event.clientX - box.left + 12;
+        let ty = event.clientY - box.top + 12;
+        if (tx + 200 > box.width) tx = tx - 220;
+        if (ty + 80 > box.height) ty = ty - 100;
+        tipEl.style.left = tx + 'px';
+        tipEl.style.top = ty + 'px';
+      }
+      function hideTip() { tipEl.classList.remove('synth-tooltip--visible'); }
 
-      const x = d3.scaleLinear().domain([1919, 2009]).range([0, innerW]);
+      /* ---- Scales ---- */
+      const chartEl = document.getElementById('synth-chart');
+      const chartW = chartEl.clientWidth || 500;
+      const usableH = SYNTH_H - MARGIN.top - MARGIN.bottom;
 
-      /* Time axis */
-      const tickYears = [1919, 1930, 1940, 1950, 1960, 1970, 1980, 1990, 2000, 2009];
-      g.append('line')
-        .attr('x1', 0).attr('x2', innerW)
-        .attr('y1', 30).attr('y2', 30)
-        .attr('stroke', '#E0DCD6').attr('stroke-width', 1);
+      const yScale = d3.scaleLinear()
+        .domain([1919, SYNTH_BREAK_YEAR, 2009])
+        .range([MARGIN.top, MARGIN.top + usableH * SYNTH_BREAK_RATIO, SYNTH_H - MARGIN.bottom]);
 
-      tickYears.forEach(yr => {
-        g.append('text')
-          .attr('x', x(yr)).attr('y', 45)
-          .attr('text-anchor', 'middle')
-          .attr('font-family', 'JetBrains Mono, monospace')
-          .attr('font-size', '8px')
+      const xScale = d3.scaleBand()
+        .domain(SYNTH_LOCATIONS)
+        .range([MARGIN.left, chartW - MARGIN.right])
+        .padding(0.15);
+
+      const bandW = xScale.bandwidth();
+
+      /* =========  MAIN CHART  ========= */
+      const svg = d3.select('#synth-chart')
+        .append('svg')
+        .attr('width', chartW)
+        .attr('height', SYNTH_H)
+        .style('display', 'block');
+
+      /* Phase bands (horizontal) */
+      const phaseColors = ['#F5F0E8', 'transparent'];
+      lebensphasen.forEach((p, i) => {
+        svg.append('rect')
+          .attr('x', 0).attr('y', yScale(p.von))
+          .attr('width', chartW).attr('height', yScale(p.bis) - yScale(p.von))
+          .attr('fill', phaseColors[i % 2]).attr('opacity', 0.5);
+      });
+
+      /* Column backgrounds */
+      SYNTH_LOCATIONS.forEach((loc, i) => {
+        svg.append('rect')
+          .attr('x', xScale(loc)).attr('y', MARGIN.top)
+          .attr('width', bandW).attr('height', SYNTH_H - MARGIN.top - MARGIN.bottom)
+          .attr('fill', i % 2 === 0 ? COLOR.cream : 'transparent')
+          .attr('opacity', 0.35);
+      });
+
+      /* Ort labels (top) */
+      SYNTH_LOCATIONS.forEach(loc => {
+        svg.append('text')
+          .attr('x', xScale(loc) + bandW / 2)
+          .attr('y', MARGIN.top - 6)
+          .attr('text-anchor', 'end')
+          .attr('transform', `rotate(-40, ${xScale(loc) + bandW / 2}, ${MARGIN.top - 6})`)
+          .attr('font-family', "'Inter', sans-serif")
+          .attr('font-size', '9px')
+          .attr('font-weight', '500')
+          .attr('fill', COLOR.grau)
+          .text(loc);
+      });
+
+      /* Year ticks */
+      const yearTicks = [1920, 1930, 1940, 1950, 1960, 1970, 1980, 1990, 2000];
+      yearTicks.forEach(yr => {
+        const yy = yScale(yr);
+        svg.append('line')
+          .attr('x1', 0).attr('x2', chartW)
+          .attr('y1', yy).attr('y2', yy)
+          .attr('stroke', '#E0DCD6').attr('stroke-width', 0.5)
+          .attr('stroke-dasharray', '2,6');
+        svg.append('text')
+          .attr('x', 3).attr('y', yy - 2)
+          .attr('font-family', "'JetBrains Mono', monospace")
+          .attr('font-size', '7px')
           .attr('fill', '#8A857E')
           .text(yr);
-
-        g.append('line')
-          .attr('x1', x(yr)).attr('x2', x(yr))
-          .attr('y1', 27).attr('y2', 33)
-          .attr('stroke', '#8A857E').attr('stroke-width', 0.5);
       });
 
-      /* Mobility event dots + connecting line */
-      const mobPoints = mobSorted.map(m => ({ x: x(m.jahr), form: m.form }));
-      /* Deduplicate by x position for the line */
-      const uniquePoints = [];
-      const seenX = new Set();
-      for (const p of mobPoints) {
-        const key = Math.round(p.x);
-        if (!seenX.has(key)) { seenX.add(key); uniquePoints.push(p); }
+      /* Scale break indicator */
+      const breakY = yScale(SYNTH_BREAK_YEAR);
+      svg.append('line')
+        .attr('x1', 0).attr('x2', chartW)
+        .attr('y1', breakY).attr('y2', breakY)
+        .attr('stroke', '#E0DCD6').attr('stroke-width', 1)
+        .attr('stroke-dasharray', '4,4');
+      const amp = 4;
+      svg.append('path')
+        .attr('d', `M${chartW / 2 - 12},${breakY} l4,-${amp} l8,${amp * 2} l4,-${amp}`)
+        .attr('fill', 'none').attr('stroke', '#8A857E').attr('stroke-width', 1.2);
+
+      /* Aufführungsort bars (gold, translucent) */
+      const auffOrte = (data.orte || []).filter(o => o.typ === 'auffuehrungsort');
+      auffOrte.forEach(o => {
+        if (!SYNTH_LOCATIONS.includes(o.ort)) return;
+        const barW2 = bandW * 0.55;
+        const barX2 = xScale(o.ort) + (bandW - barW2) / 2;
+        svg.append('rect')
+          .attr('x', barX2).attr('y', yScale(o.von))
+          .attr('width', barW2).attr('height', yScale(o.bis) - yScale(o.von))
+          .attr('rx', 2)
+          .attr('fill', COLOR.gold).attr('opacity', 0.2);
+      });
+
+      /* Lehrstätte: Graz 1970-2000 (dashed) */
+      {
+        const lBarW = bandW * 0.45;
+        const lBarX = xScale('Graz') + (bandW - lBarW) / 2;
+        svg.append('rect')
+          .attr('x', lBarX).attr('y', yScale(1970))
+          .attr('width', lBarW).attr('height', yScale(2000) - yScale(1970))
+          .attr('rx', 2)
+          .attr('fill', COLOR.blau).attr('opacity', 0.06);
+        svg.append('rect')
+          .attr('x', lBarX).attr('y', yScale(1970))
+          .attr('width', lBarW).attr('height', yScale(2000) - yScale(1970))
+          .attr('rx', 2)
+          .attr('fill', 'none')
+          .attr('stroke', COLOR.blau).attr('stroke-width', 1.2)
+          .attr('stroke-dasharray', '4,3')
+          .attr('stroke-opacity', 0.4);
       }
 
-      /* Connecting line */
-      const lineGen = d3.line().x(d => d.x).y(() => 20).curve(d3.curveMonotoneX);
-      g.append('path')
-        .datum(uniquePoints)
-        .attr('d', lineGen)
-        .attr('fill', 'none')
-        .attr('stroke', '#C4B49A')
-        .attr('stroke-width', 1.5)
-        .attr('stroke-dasharray', '4 3');
-
-      mobSorted.forEach(m => {
-        g.append('circle')
-          .attr('cx', x(m.jahr)).attr('cy', 20)
-          .attr('r', 5)
-          .attr('fill', MOB_COLORS[m.form] || '#999')
-          .attr('stroke', '#fff').attr('stroke-width', 1.5);
+      /* Life-line: stays (vertical) + moves (diagonal) */
+      const lineG = svg.append('g');
+      SYNTH_LIFE_SEGMENTS.filter(s => s.type === 'stay').forEach(seg => {
+        const cx = xScale(seg.ort) + bandW / 2;
+        const line = lineG.append('line')
+          .attr('x1', cx).attr('x2', cx)
+          .attr('y1', yScale(seg.von)).attr('y2', yScale(seg.bis))
+          .attr('stroke', COLOR.blau).attr('stroke-width', 2.5)
+          .attr('stroke-opacity', 0.6)
+          .style('cursor', 'pointer');
+        line
+          .on('mouseenter', e => {
+            showTip(e, `<strong>Wohnort: ${seg.ort}</strong><br>${seg.von}\u2013${seg.bis}`);
+            line.attr('stroke-opacity', 0.9).attr('stroke-width', 3.5);
+          })
+          .on('mousemove', e => moveTip(e))
+          .on('mouseleave', () => { hideTip(); line.attr('stroke-opacity', 0.6).attr('stroke-width', 2.5); });
       });
 
-      /* Netzwerk area chart */
-      const nwData = netzwerk.map(n => {
-        const [von, bis] = n.periode.split('-').map(Number);
-        return { mid: (von + bis) / 2, intensitaet: n.intensitaet, von, bis };
+      SYNTH_LIFE_SEGMENTS.filter(s => s.type === 'move').forEach(seg => {
+        const fromX = xScale(seg.von) + bandW / 2;
+        const toX = xScale(seg.nach) + bandW / 2;
+        const yy = yScale(seg.jahr);
+        const color = MOB_COLORS[seg.form] || COLOR.subtle;
+        const isForced = seg.form === 'erzwungen';
+        const strokeW = isForced ? 2.5 : 1.8;
+        const dash = seg.form === 'lebensstil' ? '5,3' : 'none';
+
+        const diag = lineG.append('line')
+          .attr('x1', fromX).attr('x2', toX)
+          .attr('y1', yy).attr('y2', yy)
+          .attr('stroke', color).attr('stroke-width', strokeW)
+          .attr('stroke-dasharray', dash)
+          .attr('stroke-opacity', 0.8)
+          .style('cursor', 'pointer');
+
+        lineG.append('circle')
+          .attr('cx', toX).attr('cy', yy).attr('r', 3)
+          .attr('fill', color).attr('fill-opacity', 0.9)
+          .attr('stroke', '#fff').attr('stroke-width', 1)
+          .style('pointer-events', 'none');
+
+        /* Tooltip for move */
+        const mobEvent = mobilitaet.find(m => m.von === seg.von && m.nach === seg.nach && m.jahr === seg.jahr);
+        const desc = mobEvent?.beschreibung || '';
+        const label = MOB_LABELS[seg.form] || seg.form;
+        diag
+          .on('mouseenter', e => {
+            showTip(e, `<strong>${seg.jahr}: ${seg.von} \u2192 ${seg.nach}</strong><br>${label}${desc ? '<br><em>' + desc + '</em>' : ''}`);
+            diag.attr('stroke-opacity', 1).attr('stroke-width', strokeW + 1.5);
+          })
+          .on('mousemove', e => moveTip(e))
+          .on('mouseleave', () => { hideTip(); diag.attr('stroke-opacity', 0.8).attr('stroke-width', strokeW); });
       });
 
-      const yNw = d3.scaleLinear()
-        .domain([0, d3.max(nwData, d => d.intensitaet)])
-        .range([120, 60]);
+      /* Auftritte dots (aggregated per ort+year) */
+      const mainCities = new Set(SYNTH_LOCATIONS);
+      const buckets = new Map();
+      for (const a of auftritte) {
+        if (!a.ort || !mainCities.has(a.ort) || !a.jahr) continue;
+        const key = `${a.ort}|${a.jahr}`;
+        if (!buckets.has(key)) buckets.set(key, { ort: a.ort, jahr: a.jahr, items: [] });
+        buckets.get(key).items.push(a);
+      }
+      for (const [, bucket] of buckets) {
+        const cx = xScale(bucket.ort) + bandW / 2;
+        const cy = yScale(bucket.jahr);
+        const totalDocs = bucket.items.reduce((s, a) => s + (a.dokumente?.length || 0), 0);
+        const r = Math.min(2 + totalDocs * 0.4, 5);
+        const isEngagement = bucket.ort === 'Wien' || bucket.ort === 'Graz' || bucket.ort === 'Lemberg';
+        const dotColor = isEngagement ? COLOR.blau : COLOR.gold;
 
-      const area = d3.area()
-        .x(d => x(d.mid))
-        .y0(120)
-        .y1(d => yNw(d.intensitaet))
-        .curve(d3.curveMonotoneX);
+        const dot = svg.append('circle')
+          .attr('cx', cx).attr('cy', cy).attr('r', r)
+          .attr('fill', dotColor).attr('fill-opacity', 0.4)
+          .attr('stroke', dotColor).attr('stroke-width', 0.6).attr('stroke-opacity', 0.3)
+          .style('cursor', 'pointer');
 
-      g.append('path')
-        .datum(nwData)
-        .attr('d', area)
-        .attr('fill', '#004A8F')
-        .attr('opacity', 0.08);
+        const count = bucket.items.length;
+        const werkList = bucket.items.filter(a => a.werk).map(a => a.werk).join(', ');
+        dot
+          .on('mouseenter', e => {
+            showTip(e, `<strong>${bucket.ort}</strong> (${bucket.jahr})<br>${count > 1 ? count + ' Auftritte' : werkList || '1 Auftritt'}<br>${totalDocs} Dokumente`);
+            dot.attr('fill-opacity', 0.7);
+          })
+          .on('mousemove', e => moveTip(e))
+          .on('mouseleave', () => { hideTip(); dot.attr('fill-opacity', 0.4); });
+      }
 
-      g.append('path')
-        .datum(nwData)
-        .attr('d', d3.line().x(d => x(d.mid)).y(d => yNw(d.intensitaet)).curve(d3.curveMonotoneX))
-        .attr('fill', 'none')
-        .attr('stroke', '#004A8F')
-        .attr('stroke-width', 1.5)
-        .attr('opacity', 0.4);
+      /* Hover highlight line (main chart) */
+      const hlMain = svg.append('line')
+        .attr('x1', 0).attr('x2', chartW)
+        .attr('y1', 0).attr('y2', 0)
+        .attr('stroke', COLOR.subtle).attr('stroke-width', 1)
+        .attr('stroke-opacity', 0)
+        .style('pointer-events', 'none');
 
-      g.append('text')
-        .attr('x', 0).attr('y', 58)
-        .attr('font-family', 'JetBrains Mono, monospace')
-        .attr('font-size', '7px')
+      /* =========  NETZWERK FACETTE (60px)  ========= */
+      const netzSvg = d3.select('#synth-netzwerk')
+        .append('svg')
+        .attr('width', 60)
+        .attr('height', SYNTH_H)
+        .style('display', 'block');
+
+      /* Facette label */
+      netzSvg.append('text')
+        .attr('x', 30).attr('y', 12)
+        .attr('text-anchor', 'middle')
+        .attr('font-family', "'Inter', sans-serif")
+        .attr('font-size', '8px')
+        .attr('font-style', 'italic')
         .attr('fill', '#8A857E')
-        .text('Netzwerk-Intensität');
+        .text('Netzwerk');
 
-      /* Repertoire bars */
-      const barY0 = 135;
-      const barH = 12;
-      repertoire.forEach((r, i) => {
-        const rx1 = x(r.von);
-        const rx2 = x(r.bis);
-        const ry = barY0 + i * (barH + 4);
+      const maxIntensity = d3.max(netzwerk, d => d.intensitaet) || 1;
+      netzwerk.forEach(d => {
+        const [vonStr, bisStr] = d.periode.split('-');
+        const von2 = +vonStr, bis2 = +bisStr;
+        const y1 = yScale(von2), y2 = yScale(bis2);
+        const barW3 = (d.intensitaet / maxIntensity) * 50;
+        const barH3 = y2 - y1 - 2;
 
-        g.append('rect')
-          .attr('x', rx1).attr('y', ry)
-          .attr('width', rx2 - rx1).attr('height', barH)
+        netzSvg.append('rect')
+          .attr('x', 60 - barW3).attr('y', y1 + 1)
+          .attr('width', barW3).attr('height', Math.max(barH3, 2))
           .attr('rx', 2)
-          .attr('fill', r.farbe)
-          .attr('opacity', 0.6);
+          .attr('fill', COLOR.blau)
+          .attr('opacity', 0.1 + (d.intensitaet / maxIntensity) * 0.4);
 
-        g.append('text')
-          .attr('x', rx2 + 6).attr('y', ry + barH - 2)
-          .attr('font-family', 'Inter, sans-serif')
+        const textX = barW3 > 18 ? 60 - barW3 + 3 : 60 - barW3 - 2;
+        const anchor = barW3 > 18 ? 'start' : 'end';
+        netzSvg.append('text')
+          .attr('x', textX).attr('y', (y1 + y2) / 2 + 3)
+          .attr('text-anchor', anchor)
+          .attr('font-family', "'JetBrains Mono', monospace")
           .attr('font-size', '7px')
-          .attr('fill', r.farbe)
-          .text(`${r.komponist} (${r.dokumente})`);
+          .attr('fill', COLOR.blau)
+          .attr('opacity', 0.7)
+          .text(d.intensitaet);
+      });
+
+      const hlNetz = netzSvg.append('line')
+        .attr('x1', 0).attr('x2', 60)
+        .attr('y1', 0).attr('y2', 0)
+        .attr('stroke', COLOR.subtle).attr('stroke-width', 1)
+        .attr('stroke-opacity', 0)
+        .style('pointer-events', 'none');
+
+      /* =========  REPERTOIRE FACETTE (100px)  ========= */
+      const repSvg = d3.select('#synth-repertoire')
+        .append('svg')
+        .attr('width', 100)
+        .attr('height', SYNTH_H)
+        .style('display', 'block');
+
+      /* Facette label */
+      repSvg.append('text')
+        .attr('x', 50).attr('y', 12)
+        .attr('text-anchor', 'middle')
+        .attr('font-family', "'Inter', sans-serif")
+        .attr('font-size', '8px')
+        .attr('font-style', 'italic')
+        .attr('fill', '#8A857E')
+        .text('Repertoire');
+
+      const repSorted = [...repertoire].sort((a, b) => a.von - b.von);
+      const maxDocs = d3.max(repSorted, r => r.dokumente) || 1;
+      const repBarMaxW = 20;
+      const repBarGap = 3;
+
+      repSorted.forEach((rep, i) => {
+        const barW4 = Math.max((rep.dokumente / maxDocs) * repBarMaxW, 3);
+        const barX4 = 5 + i * (repBarMaxW + repBarGap);
+        const yTop = yScale(Math.max(rep.von, 1919));
+        const yBot = yScale(Math.min(rep.bis, 2009));
+
+        repSvg.append('rect')
+          .attr('x', barX4).attr('y', yTop)
+          .attr('width', barW4).attr('height', yBot - yTop)
+          .attr('rx', 2)
+          .attr('fill', rep.farbe).attr('opacity', 0.6);
+
+        repSvg.append('text')
+          .attr('x', barX4 + barW4 / 2).attr('y', yTop - 3)
+          .attr('text-anchor', 'middle')
+          .attr('font-family', "'JetBrains Mono', monospace")
+          .attr('font-size', '6px')
+          .attr('fill', rep.farbe)
+          .attr('font-weight', '500')
+          .text(rep.komponist);
+      });
+
+      const hlRep = repSvg.append('line')
+        .attr('x1', 0).attr('x2', 100)
+        .attr('y1', 0).attr('y2', 0)
+        .attr('stroke', COLOR.subtle).attr('stroke-width', 1)
+        .attr('stroke-opacity', 0)
+        .style('pointer-events', 'none');
+
+      /* =========  HOVER HIGHLIGHT across all 3 columns  ========= */
+      svg.on('mousemove', function(event) {
+        const [, mouseY] = d3.pointer(event);
+        if (mouseY >= MARGIN.top && mouseY <= SYNTH_H - MARGIN.bottom) {
+          hlMain.attr('y1', mouseY).attr('y2', mouseY).attr('stroke-opacity', 0.5);
+          hlNetz.attr('y1', mouseY).attr('y2', mouseY).attr('stroke-opacity', 0.5);
+          hlRep.attr('y1', mouseY).attr('y2', mouseY).attr('stroke-opacity', 0.5);
+        }
+      });
+      svg.on('mouseleave', function() {
+        hlMain.attr('stroke-opacity', 0);
+        hlNetz.attr('stroke-opacity', 0);
+        hlRep.attr('stroke-opacity', 0);
       });
     }
 
