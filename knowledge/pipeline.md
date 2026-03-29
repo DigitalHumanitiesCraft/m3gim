@@ -10,7 +10,8 @@
 | `scripts/validate.py` | Validierung, Qualitaetschecks | `data/source/*.xlsx` | `data/reports/validation-report.md` |
 | `scripts/transform.py` | Transformation nach JSON-LD (RiC-O + m3gim) | `data/source/*.xlsx` | `data/output/m3gim.jsonld` |
 | `scripts/build-views.py` | View-spezifische Aggregationen | JSON-LD | `data/output/views/*.json` |
-| `scripts/reconcile.py` | Wikidata-Reconciliation (100%-Match, P31-Verifikation, Caching) | XLSX-Indizes | `data/output/wikidata-reconciliation.json` |
+| `scripts/reconcile.py` | Wikidata-Reconciliation (Fuzzy-Matching, P31-Verifikation, Caching, 3 Confidence-Level) | XLSX-Indizes | `data/output/wikidata-reconciliation.json` |
+| `scripts/enrich-wikidata.py` | Wikidata-Property-Enrichment (P106, P412, P569/570, P625, P1191 etc.) | wikidata-reconciliation.json | `data/output/wikidata-enrichment.json` |
 | `scripts/export-wikidata-csv.py` | Wikidata-CSVs fuer Google-Sheets-Import | wikidata-reconciliation.json | `data/output/wikidata-csvs/*.csv` (5 Dateien) |
 | `scripts/audit-data.py` | Alignment-Pruefung XLSX vs JSON-LD vs Views | XLSX + JSON-LD + Views | Konsolenreport |
 
@@ -18,7 +19,9 @@
 
 1. **XLSX-Export** aus Google Sheets nach `data/source/` (git-getrackt fuer Reproduzierbarkeit)
 2. **Exploration + Validierung** (`explore.py`, `validate.py`) → Reports
-3. **Modelltransformation** (`transform.py`) → `data/output/m3gim.jsonld`
+2b. **Reconciliation** (`reconcile.py`) → `wikidata-reconciliation.json` (Fuzzy-Matching, 3 Confidence-Level)
+2c. **Enrichment** (`enrich-wikidata.py`) → `wikidata-enrichment.json` (WD-Properties fuer gematchte Entitaeten)
+3. **Modelltransformation** (`transform.py`) → `data/output/m3gim.jsonld` (mit `owl:sameAs` + Enrichment-Properties)
 4. **View-Aggregation** (`build-views.py`) → `data/output/views/partitur.json` (einzige konsumierte View-Datei; matrix/kosmos/sankey werden zwar generiert, aber seit Session 25 nicht mehr git-getrackt — Frontend aggregiert on-the-fly via aggregator.js). Neu (Session 25): `extract_auftritte()` extrahiert ~60 Auftrittsereignisse in 3 Passes (strukturiert → Programmhefte/Plakate → Rezensionen), 4 Kategorien (engagement/festspiel/gastspiel/konzert). `mobilitaet[]` hat jetzt `kontext`-Felder.
 5. **Bereitstellung**: `main()` kopiert automatisch partitur.json, matrix.json, kosmos.json nach `docs/data/` (Session 25, kein manuelles Copy mehr noetig)
 
@@ -33,16 +36,29 @@
 - Session 19: `normalize_bearbeitungsstand()` in validate.py eingefuehrt (Fuzzy-Matching wie transform.py)
 - Session 19: `is_komposit_typ()` verbessert — Input-Wert vor Vergleich `.replace(" ", "")`
 
-## Wikidata-Reconciliation (Session 17)
+## Wikidata-Reconciliation (Session 17, erweitert Session 27)
 
 `reconcile.py` implementiert mit:
 
-- 100%-Match-Strategie (Wikidata Search API)
+- **Fuzzy-Matching** (Session 27): `thefuzz.token_set_ratio`, 3 Confidence-Level (exact ≥100, fuzzy_high ≥90, fuzzy_low ≥80)
 - P31-Verifikation (instance-of-Check gegen erwarteten Typ)
+- **Composer-aware Werk-Matching**: Compound-Query "Titel Komponist", P86-Bonus (+5 Score)
 - Caching fuer wiederholte Laeufe
-- MIN_NAME_LENGTH=3 (Einbuchstaben-/Zweibuchstaben-Namen werden uebersprungen)
-- Ergebnis: 171 Matches ueber Personen, Orte, Organisationen, Werke
+- MIN_NAME_LENGTH=3, CLI: `--min-confidence`, `--force`, `--type`
+- Ergebnis (Baseline): 171 Matches (exakt). Fuzzy-Matching noch nicht mit --force gelaufen.
 - Offen: Ergebnisse in Google Sheets uebertragen
+
+## Wikidata-Enrichment (Session 27)
+
+`enrich-wikidata.py` holt Properties aus der Wikidata API:
+
+- Personen: P106 (Beruf), P412 (Stimmfach), P19/P20 (Geburts-/Sterbeort), P569/P570 (Lebensdaten)
+- Orte: P625 (Koordinaten), P17 (Staat)
+- Werke: P86 (Komponist), P136 (Genre), P1191 (Urauffuehrungsdatum)
+- Orgs: P276 (Standort), P571 (Gruendungsdatum)
+- Output: `data/output/wikidata-enrichment.json`
+- `transform.py` injiziert Properties als `owl:sameAs` + `m3gim:`-Properties in JSON-LD
+- Frontend (loader.js) extrahiert Properties in Store → Indizes-Subtitles, Kosmos-UA-Distanz
 
 ## CI/CD
 

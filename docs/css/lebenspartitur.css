@@ -132,6 +132,30 @@
 }
 .lp-tooltip--visible { opacity: 1; }
 
+.lp-tooltip__header { font-weight: 600; margin-bottom: 3px; }
+.lp-tooltip__type { font-size: 0.7rem; margin-bottom: 2px; }
+.lp-tooltip__desc { font-style: italic; margin-bottom: 3px; }
+.lp-tooltip__phase {
+  font-size: 0.65rem;
+  color: #8A857E;
+  border-top: 1px solid #E0DCD6;
+  padding-top: 3px;
+  margin-top: 3px;
+}
+.lp-tooltip__phase-badge {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.6rem;
+  background: #F5F0E8;
+  padding: 1px 4px;
+  border-radius: 2px;
+}
+.lp-tooltip__kontext {
+  font-size: 0.65rem;
+  color: #8A857E;
+  margin-top: 4px;
+  line-height: 1.35;
+}
+
 /* ---- SVG text defaults ---- */
 svg text {
   user-select: none;

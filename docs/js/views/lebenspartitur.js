@@ -1,9 +1,9 @@
-/** M³GIM Lebenspartitur — Bump-Chart Prototype (D3.js) */
+/** M³GIM Lebenspartitur — Bump-Chart (D3.js) */
 
 import { loadPartitur } from '../data/loader.js';
 
 /* ================================================================
-   Lebenspartitur — Bump-Chart-Prototyp
+   Lebenspartitur — Bump-Chart
    ================================================================ */
 
 // ---- Constants ----
@@ -48,28 +48,6 @@ const REP_COLOR = {
   'Beethoven': '#4A5A7A',
 };
 
-// ---- Tooltip Helpers ----
-const tooltipEl = document.getElementById('tooltip');
-
-function showTooltip(event, html) {
-  tooltipEl.innerHTML = html;
-  tooltipEl.classList.add('lp-tooltip--visible');
-  moveTooltip(event);
-}
-function moveTooltip(event) {
-  const container = document.getElementById('chart-container');
-  const rect = container.getBoundingClientRect();
-  let x = event.clientX - rect.left + 12;
-  let y = event.clientY - rect.top + 12;
-  if (x + 200 > rect.width) x = x - 220;
-  if (y + 100 > rect.height) y = y - 120;
-  tooltipEl.style.left = x + 'px';
-  tooltipEl.style.top = y + 'px';
-}
-function hideTooltip() {
-  tooltipEl.classList.remove('lp-tooltip--visible');
-}
-
 // ---- Y-Scale (piecewise-linear with scale break) ----
 function makeYScale() {
   const usableH = CHART_H - MARGIN.top - MARGIN.bottom;
@@ -79,7 +57,6 @@ function makeYScale() {
 }
 
 // ---- Wohnort Segments for Life-line ----
-// Hand-coded from specification since these represent the narrative path
 const LIFE_SEGMENTS = [
   { type: 'stay', ort: 'Lemberg', von: 1919, bis: 1944 },
   { type: 'move', von: 'Lemberg', nach: 'Wien', jahr: 1944, form: 'erzwungen' },
@@ -91,16 +68,40 @@ const LIFE_SEGMENTS = [
   { type: 'stay', ort: 'Zürich', von: 1970, bis: 2009 },
 ];
 
-// ---- Main ----
-async function init() {
+// ---- Tooltip Helpers (container-relative) ----
+function createTooltipHelpers(tooltipEl, chartContainerEl) {
+  function show(event, html) {
+    tooltipEl.innerHTML = html;
+    tooltipEl.classList.add('lp-tooltip--visible');
+    move(event);
+  }
+  function move(event) {
+    const rect = chartContainerEl.getBoundingClientRect();
+    let x = event.clientX - rect.left + 12;
+    let y = event.clientY - rect.top + 12;
+    if (x + 200 > rect.width) x = x - 220;
+    if (y + 100 > rect.height) y = y - 120;
+    tooltipEl.style.left = x + 'px';
+    tooltipEl.style.top = y + 'px';
+  }
+  function hide() {
+    tooltipEl.classList.remove('lp-tooltip--visible');
+  }
+  return { show, move, hide };
+}
+
+// ---- Core Chart Renderer ----
+async function renderChart(refs) {
+  const { chartContainerEl, tooltipEl, netzContainerEl, repContainerEl, coverageEl } = refs;
+  const tooltip = createTooltipHelpers(tooltipEl, chartContainerEl);
+
   const data = await loadPartitur();
   if (!data) {
-    document.getElementById('chart-container').textContent = 'Fehler beim Laden der Daten.';
+    chartContainerEl.textContent = 'Fehler beim Laden der Daten.';
     return;
   }
 
-  const chartContainer = document.getElementById('chart-container');
-  const chartW = Math.max(chartContainer.clientWidth || 600, 500);
+  const chartW = Math.max(chartContainerEl.clientWidth || 600, 500);
 
   const y = makeYScale();
   const x = d3.scaleBand()
@@ -111,7 +112,7 @@ async function init() {
   const bandW = x.bandwidth();
 
   // ---- Main SVG ----
-  const svg = d3.select('#chart-container')
+  const svg = d3.select(chartContainerEl)
     .append('svg')
     .attr('width', chartW)
     .attr('height', CHART_H)
@@ -216,11 +217,11 @@ async function init() {
       .style('cursor', 'pointer');
     rect
       .on('mouseenter', e => {
-        showTooltip(e, `<strong>${o.ort}</strong> (Aufführungsort)<br>${o.von}\u2013${o.bis}`);
+        tooltip.show(e, `<strong>${o.ort}</strong> (Aufführungsort)<br>${o.von}\u2013${o.bis}`);
         rect.attr('opacity', 0.35);
       })
-      .on('mousemove', e => moveTooltip(e))
-      .on('mouseleave', () => { hideTooltip(); rect.attr('opacity', 0.2); });
+      .on('mousemove', e => tooltip.move(e))
+      .on('mouseleave', () => { tooltip.hide(); rect.attr('opacity', 0.2); });
   });
 
   // ---- Lehrstätte: Graz 1970-2000 ----
@@ -237,7 +238,6 @@ async function init() {
       .attr('stroke-opacity', 0.4)
       .attr('opacity', 0.15)
       .style('cursor', 'pointer');
-    // Semi-transparent fill
     svg.append('rect')
       .attr('x', lBarX).attr('y', y(1970))
       .attr('width', lBarW).attr('height', y(2000) - y(1970))
@@ -245,9 +245,9 @@ async function init() {
       .attr('fill', COLOR.blau).attr('opacity', 0.06)
       .style('pointer-events', 'none');
     lRect
-      .on('mouseenter', e => { showTooltip(e, '<strong>Graz</strong> (Lehrstätte)<br>1970\u20132000<br>Professur für Liedinterpretation, KUG'); lRect.attr('opacity', 0.4); })
-      .on('mousemove', e => moveTooltip(e))
-      .on('mouseleave', () => { hideTooltip(); lRect.attr('opacity', 0.15); });
+      .on('mouseenter', e => { tooltip.show(e, '<strong>Graz</strong> (Lehrstätte)<br>1970\u20132000<br>Professur für Liedinterpretation, KUG'); lRect.attr('opacity', 0.4); })
+      .on('mousemove', e => tooltip.move(e))
+      .on('mouseleave', () => { tooltip.hide(); lRect.attr('opacity', 0.15); });
   }
 
   // ---- Life-line: vertical stays + diagonal moves ----
@@ -264,12 +264,12 @@ async function init() {
       .style('cursor', 'pointer');
     line
       .on('mouseenter', e => {
-        showTooltip(e, `<strong>Wohnort: ${seg.ort}</strong><br>${seg.von}\u2013${seg.bis}`);
+        tooltip.show(e, `<strong>Wohnort: ${seg.ort}</strong><br>${seg.von}\u2013${seg.bis}`);
         line.attr('stroke-opacity', 0.9).attr('stroke-width', 3.5);
       })
-      .on('mousemove', e => moveTooltip(e))
+      .on('mousemove', e => tooltip.move(e))
       .on('mouseleave', () => {
-        hideTooltip();
+        tooltip.hide();
         line.attr('stroke-opacity', 0.6).attr('stroke-width', 2.5);
       });
   });
@@ -316,25 +316,30 @@ async function init() {
       .style('pointer-events', 'none')
       .text(seg.jahr);
 
-    // Tooltip
+    // Tooltip with phase context
     const desc = mobEvent?.beschreibung || '';
     const ctx = mobEvent?.kontext || '';
     const label = MOB_LABEL[seg.form] || seg.form;
+    const phase = phases.find(p => seg.jahr >= p.von && seg.jahr < p.bis);
+    const phaseHtml = phase
+      ? `<div class="lp-tooltip__phase"><span class="lp-tooltip__phase-badge">${phase.id}</span> ${phase.label}</div>`
+      : '';
     const tipHtml = [
-      `<strong>${seg.jahr}: ${seg.von} \u2192 ${seg.nach}</strong>`,
-      `${label}`,
-      desc ? `<em>${desc}</em>` : '',
-      ctx ? `<span style="font-size:0.65rem;color:#8A857E;display:block;margin-top:3px">${ctx}</span>` : '',
-    ].filter(Boolean).join('<br>');
+      `<div class="lp-tooltip__header">${seg.jahr}: ${seg.von} \u2192 ${seg.nach}</div>`,
+      `<div class="lp-tooltip__type" style="color:${color}">${label}</div>`,
+      desc ? `<div class="lp-tooltip__desc">${desc}</div>` : '',
+      phaseHtml,
+      ctx ? `<div class="lp-tooltip__kontext">${ctx}</div>` : '',
+    ].filter(Boolean).join('');
 
     diag
       .on('mouseenter', e => {
-        showTooltip(e, tipHtml);
+        tooltip.show(e, tipHtml);
         diag.attr('stroke-opacity', 1).attr('stroke-width', strokeW + 1.5);
       })
-      .on('mousemove', e => moveTooltip(e))
+      .on('mousemove', e => tooltip.move(e))
       .on('mouseleave', () => {
-        hideTooltip();
+        tooltip.hide();
         diag.attr('stroke-opacity', 0.8).attr('stroke-width', strokeW);
       });
   });
@@ -369,8 +374,10 @@ async function init() {
       .filter(a => a.werk).map(a => a.werk + (a.komponist ? ` (${a.komponist})` : '')).join(', ');
     const count = bucket.items.length;
     const docLabel = totalDocs === 1 ? '1 Dokument' : `${totalDocs} Dokumente`;
+    const dotPhase = phases.find(p => bucket.jahr >= p.von && bucket.jahr < p.bis);
+    const phaseTag = dotPhase ? ` \u00b7 ${dotPhase.id}` : '';
     const tipLines = [
-      `<strong>${bucket.ort}</strong> (${bucket.jahr})`,
+      `<strong>${bucket.ort}</strong> (${bucket.jahr}${phaseTag})`,
       count > 1 ? `${count} Auftritte` : (werkList || bucket.items[0]?.titel?.slice(0, 60) || '1 Auftritt'),
       werkList && count > 1 ? `<span style="font-size:0.65rem">${werkList}</span>` : '',
       docLabel,
@@ -378,12 +385,12 @@ async function init() {
 
     dot
       .on('mouseenter', e => {
-        showTooltip(e, tipLines.join('<br>'));
+        tooltip.show(e, tipLines.join('<br>'));
         dot.attr('fill-opacity', 0.7).attr('stroke-opacity', 0.6);
       })
-      .on('mousemove', e => moveTooltip(e))
+      .on('mousemove', e => tooltip.move(e))
       .on('mouseleave', () => {
-        hideTooltip();
+        tooltip.hide();
         dot.attr('fill-opacity', 0.4).attr('stroke-opacity', 0.3);
       });
   }
@@ -396,7 +403,6 @@ async function init() {
     .attr('stroke-opacity', 0)
     .style('pointer-events', 'none');
 
-  // Also create highlight lines for facette SVGs (will be set up after facettes)
   let netzHighlight = null;
   let repHighlight = null;
 
@@ -419,7 +425,7 @@ async function init() {
   // ---- Netzwerk Facette (left, 70px) ----
   const netzwerk = data.netzwerk || [];
   const maxIntensity = d3.max(netzwerk, d => d.intensitaet) || 1;
-  const netzSvg = d3.select('#netzwerk-container')
+  const netzSvg = d3.select(netzContainerEl)
     .append('svg')
     .attr('width', 70)
     .attr('height', CHART_H)
@@ -439,7 +445,6 @@ async function init() {
       .attr('fill', COLOR.blau)
       .attr('opacity', 0.1 + (d.intensitaet / maxIntensity) * 0.4);
 
-    // Intensity number
     const textX = barW > 20 ? 70 - barW + 4 : 70 - barW - 2;
     const anchor = barW > 20 ? 'start' : 'end';
     netzSvg.append('text')
@@ -452,7 +457,6 @@ async function init() {
       .text(d.intensitaet);
   });
 
-  // Netzwerk highlight line
   netzHighlight = netzSvg.append('line')
     .attr('x1', 0).attr('x2', 70)
     .attr('y1', 0).attr('y2', 0)
@@ -463,7 +467,7 @@ async function init() {
   // ---- Repertoire Facette (right, 110px) ----
   const repertoire = data.repertoire || [];
   const maxDocs = d3.max(repertoire, r => r.dokumente) || 1;
-  const repSvg = d3.select('#repertoire-container')
+  const repSvg = d3.select(repContainerEl)
     .append('svg')
     .attr('width', 110)
     .attr('height', CHART_H)
@@ -471,8 +475,6 @@ async function init() {
 
   const repSorted = [...repertoire].sort((a, b) => a.von - b.von);
   const repBarGap = 4;
-  const totalRepBars = repSorted.length;
-  const availRepW = 100;
   const repBarMaxW = 25;
 
   repSorted.forEach((rep, i) => {
@@ -488,7 +490,6 @@ async function init() {
       .attr('fill', rep.farbe).attr('opacity', 0.6)
       .style('cursor', 'pointer');
 
-    // Label at top of bar
     repSvg.append('text')
       .attr('x', barX + barW / 2).attr('y', yTop - 4)
       .attr('text-anchor', 'middle')
@@ -500,26 +501,20 @@ async function init() {
 
     rect
       .on('mouseenter', e => {
-        // Use the main chart tooltip
-        const container = document.getElementById('chart-container');
-        const cRect = container.getBoundingClientRect();
-        const repContainer = document.getElementById('repertoire-container');
-        const rRect = repContainer.getBoundingClientRect();
+        const rRect = repContainerEl.getBoundingClientRect();
         const fakeEvent = {
           clientX: rRect.left + barX + barW / 2,
           clientY: e.clientY,
         };
-        showTooltip(fakeEvent, `<strong>${rep.komponist}</strong><br>${rep.von}\u2013${rep.bis}<br>${rep.dokumente} Dokumente`);
+        tooltip.show(fakeEvent, `<strong>${rep.komponist}</strong><br>${rep.von}\u2013${rep.bis}<br>${rep.dokumente} Dokumente`);
         rect.attr('opacity', 0.85);
       })
       .on('mousemove', e => {
-        const fakeEvent = { clientX: e.clientX, clientY: e.clientY };
-        moveTooltip(fakeEvent);
+        tooltip.move({ clientX: e.clientX, clientY: e.clientY });
       })
-      .on('mouseleave', () => { hideTooltip(); rect.attr('opacity', 0.6); });
+      .on('mouseleave', () => { tooltip.hide(); rect.attr('opacity', 0.6); });
   });
 
-  // Repertoire highlight line
   repHighlight = repSvg.append('line')
     .attr('x1', 0).attr('x2', 110)
     .attr('y1', 0).attr('y2', 0)
@@ -528,10 +523,93 @@ async function init() {
     .style('pointer-events', 'none');
 
   // ---- Coverage Footer ----
-  document.getElementById('coverage').textContent =
-    `${data.orte.length} Orte, ${data.mobilitaet.length} Mobilitätsereignisse, ${auftritte.length} Auftritte \u00b7 ` +
-    `${netzwerk.length} Netzwerk-Perioden, ${repertoire.length} Repertoire-Schwerpunkte`;
+  if (coverageEl) {
+    coverageEl.textContent =
+      `${data.orte.length} Orte, ${data.mobilitaet.length} Mobilitätsereignisse, ${auftritte.length} Auftritte \u00b7 ` +
+      `${netzwerk.length} Netzwerk-Perioden, ${repertoire.length} Repertoire-Schwerpunkte`;
+  }
+}
 
-} // end init
+// ---- SPA Entry Point ----
+export async function renderLebenspartitur(_store, container) {
+  container.innerHTML = '';
+
+  // Build DOM structure inside container
+  const toolbar = document.createElement('div');
+  toolbar.className = 'lp-toolbar';
+  toolbar.innerHTML = '<span class="lp-toolbar__title">Lebenspartitur</span>';
+  container.appendChild(toolbar);
+
+  const grid = document.createElement('div');
+  grid.className = 'lp-grid';
+
+  // Netzwerk column
+  const netzCol = document.createElement('div');
+  netzCol.className = 'lp-grid__netzwerk';
+  netzCol.innerHTML = '<div class="lp-facet-label">Netzwerk</div>';
+  const netzContainer = document.createElement('div');
+  netzContainer.className = 'lp-netzwerk-container';
+  netzCol.appendChild(netzContainer);
+
+  // Chart column
+  const chartCol = document.createElement('div');
+  chartCol.className = 'lp-grid__chart';
+  const chartContainer = document.createElement('div');
+  chartContainer.className = 'lp-chart-container';
+  chartContainer.style.position = 'relative';
+  const tooltipDiv = document.createElement('div');
+  tooltipDiv.className = 'lp-tooltip';
+  chartCol.appendChild(chartContainer);
+  chartCol.appendChild(tooltipDiv);
+
+  // Repertoire column
+  const repCol = document.createElement('div');
+  repCol.className = 'lp-grid__repertoire';
+  repCol.innerHTML = '<div class="lp-facet-label">Repertoire</div>';
+  const repContainer = document.createElement('div');
+  repContainer.className = 'lp-repertoire-container';
+  repCol.appendChild(repContainer);
+
+  grid.appendChild(netzCol);
+  grid.appendChild(chartCol);
+  grid.appendChild(repCol);
+  container.appendChild(grid);
+
+  // Legend
+  const legend = document.createElement('div');
+  legend.className = 'lp-legend';
+  legend.innerHTML = [
+    `<span class="lp-legend__item"><span class="lp-legend__swatch" style="background:${COLOR.blau};opacity:0.6"></span> Wohnort</span>`,
+    `<span class="lp-legend__item"><span class="lp-legend__swatch" style="background:${COLOR.gold};opacity:0.4"></span> Aufführungsort</span>`,
+    `<span class="lp-legend__item"><span class="lp-legend__swatch" style="background:${MOB_COLOR.erzwungen}"></span> Erzwungene Mob.</span>`,
+    `<span class="lp-legend__item"><span class="lp-legend__swatch" style="background:${MOB_COLOR.geografisch}"></span> Geografische Mob.</span>`,
+    `<span class="lp-legend__item"><span class="lp-legend__swatch" style="background:${MOB_COLOR.lebensstil}"></span> Lebensstil</span>`,
+  ].join('');
+  container.appendChild(legend);
+
+  // Coverage
+  const coverage = document.createElement('div');
+  coverage.className = 'lp-coverage';
+  container.appendChild(coverage);
+
+  return renderChart({
+    chartContainerEl: chartContainer,
+    tooltipEl: tooltipDiv,
+    netzContainerEl: netzContainer,
+    repContainerEl: repContainer,
+    coverageEl: coverage,
+  });
+}
+
+// ---- Standalone Page Entry Point (lebenspartitur.html) ----
+async function init() {
+  return renderChart({
+    chartContainerEl: document.getElementById('chart-container'),
+    tooltipEl: document.getElementById('tooltip'),
+    netzContainerEl: document.getElementById('netzwerk-container'),
+    repContainerEl: document.getElementById('repertoire-container'),
+    coverageEl: document.getElementById('coverage'),
+  });
+}
 
 export { init };

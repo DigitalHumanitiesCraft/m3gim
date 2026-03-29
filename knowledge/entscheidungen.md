@@ -62,13 +62,18 @@
 | E-54 | Prototyp-Seiten modularisiert: inline CSS/JS extrahiert in externe Module, `loadPartitur()` Singleton statt direktem fetch() |
 | E-55 | ARIA-Accessibility: `role="tablist/tab/tabpanel"`, `aria-selected` dynamisch, `aria-hidden` auf dekorativen SVG-Icons |
 | E-56 | Responsive Breakpoints: `@media <768px` in base.css + components.css, FF-Badges hidden, Toolbars kompakter |
+| E-57 | Lebenspartitur als SPA-Tab: `renderLebenspartitur(store, container)` mit container-relativem DOM, Standalone-`init()` beibehalten fuer `lebenspartitur.html` |
+| E-58 | Fuzzy-Matching in reconcile.py: `thefuzz.token_set_ratio`, 3 Confidence-Level (exact/fuzzy_high/fuzzy_low), backward-kompatibles JSON-Format |
+| E-59 | Wikidata-Enrichment-Pipeline: `enrich-wikidata.py` holt Properties (P106, P412, P569/P570, P625, P1191 etc.), `transform.py` injiziert `owl:sameAs` + `m3gim:`-Properties in JSON-LD |
+| E-60 | UA-Distanz im Kosmos: Phase-Filter-Annotation zeigt durchschnittliche Urauffuehrungsdistanz, Werk-Tooltips zeigen individuelle Distanz |
+| E-61 | Indizes-Subtitles: `renderNameCell()` zeigt Beruf, Stimmfach, Lebensdaten aus WD-Enrichment unter Personennamen |
 
 ## Offene Entscheidungen
 
 | Thema | Prioritaet | Status |
 |---|---|---|
 | Matrix Zeitfilter UI | hoch | Slider, Dropdown, oder Timeline-Brush |
-| Wikidata in Kosmos-View | mittel | Kosmos-View muss WD-Icons integrieren |
+| ~~Wikidata in Kosmos-View~~ | ~~mittel~~ | erledigt: UA-Distanz-Annotation + Tooltip (E-60) |
 
 ## Technische Schulden
 

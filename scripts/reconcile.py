@@ -3,22 +3,22 @@
 M³GIM Reconcile — Wikidata-Reconciliation für Indizes.
 
 Liest die 4 Index-Tabellen (Personen, Organisationen, Orte, Werke),
-fragt die Wikidata Search API ab und traegt Q-IDs ein, wenn ein
-100%-Match vorliegt. Ergebnisse werden als JSON-Datei gespeichert,
-die von transform.py bei der naechsten Pipeline-Ausfuehrung
-uebernommen wird.
+fragt die Wikidata Search API ab und traegt Q-IDs ein.
+Ergebnisse werden als JSON-Datei gespeichert, die von transform.py
+bei der naechsten Pipeline-Ausfuehrung uebernommen wird.
 
 Strategie:
-  - Nur exakte Matches (Label == Name, case-insensitive)
+  - Exakte Matches (Label == Name, case-insensitive) bevorzugt
+  - Fuzzy-Matching als Fallback (thefuzz token_set_ratio)
   - Personen: zusaetzlich Filterung auf instance-of human (Q5)
   - Organisationen: Filterung auf organisation/institution
   - Orte: Filterung auf geographic entity
-  - Werke: Suche mit "Komponist + Titel" fuer bessere Praezision
-  - Alles was nicht 100% matcht → manuell (spaeter)
+  - Werke: Suche mit "Komponist + Titel", P86-Validierung
+  - Confidence-Level: exact (100), fuzzy_high (>=90), fuzzy_low (>=80)
 
 Verwendung:
     python scripts/reconcile.py [--dry-run] [--type person|org|location|work]
-                                [--force]
+                                [--force] [--min-confidence 80]
 """
 
 import sys
@@ -31,6 +31,7 @@ import urllib.error
 import pandas as pd
 from datetime import datetime
 from pathlib import Path
+from thefuzz import fuzz
 
 # Windows-Konsole: UTF-8 erzwingen
 if sys.stdout.encoding != "utf-8":
@@ -51,6 +52,10 @@ OUTPUT_FILE = BASE_DIR / "data" / "output" / "wikidata-reconciliation.json"
 WIKIDATA_API = "https://www.wikidata.org/w/api.php"
 REQUEST_DELAY = 0.5  # Sekunden zwischen Anfragen (Rate Limiting)
 MIN_NAME_LENGTH = 3  # Kurze Namen (Kuerzel, Initialien) ueberspringen
+
+# Fuzzy-Matching Schwellenwerte
+FUZZY_HIGH_THRESHOLD = 90
+FUZZY_LOW_THRESHOLD = 80
 
 # Instance-of (P31) Werte fuer Filterung
 Q_HUMAN = "Q5"
@@ -134,6 +139,27 @@ def is_exact_match(search_name: str, result_label: str) -> bool:
     return search_name.strip().lower() == result_label.strip().lower()
 
 
+def compute_match_level(search_name: str, result_label: str,
+                        min_confidence: int = FUZZY_LOW_THRESHOLD
+                        ) -> tuple[str | None, int]:
+    """Bewertet Match-Qualitaet zwischen Suchname und WD-Label.
+
+    Returns: (level, score)
+      level: 'exact', 'fuzzy_high', 'fuzzy_low', oder None
+      score: 0-100 Aehnlichkeitswert
+    """
+    if is_exact_match(search_name, result_label):
+        return ('exact', 100)
+
+    score = fuzz.token_set_ratio(search_name.lower(), result_label.lower())
+
+    if score >= FUZZY_HIGH_THRESHOLD:
+        return ('fuzzy_high', score)
+    if score >= min_confidence:
+        return ('fuzzy_low', score)
+    return (None, score)
+
+
 def check_type(qid: str, expected_types: set) -> bool:
     """Prueft ob eine Entitaet den erwarteten P31-Typ hat."""
     time.sleep(REQUEST_DELAY)
@@ -148,60 +174,115 @@ def check_type(qid: str, expected_types: set) -> bool:
 # Reconciliation-Funktionen pro Typ
 # ---------------------------------------------------------------------------
 
-def reconcile_person(name: str, **_) -> dict | None:
-    """Reconciliation fuer Personen: Name → Q-ID wenn exakter Match + Q5."""
-    results = search_wikidata(name, language="de")
-    if not results:
-        parts = name.split(",", 1)
-        if len(parts) == 2:
-            reversed_name = f"{parts[1].strip()} {parts[0].strip()}"
-            results = search_wikidata(reversed_name, language="de")
+def reconcile_person(name: str, min_confidence: int = FUZZY_LOW_THRESHOLD,
+                     **_) -> dict | None:
+    """Reconciliation fuer Personen: Name → Q-ID mit Fuzzy-Matching + Q5."""
+    # Namenskandidaten: Original + umgekehrte Form ("Nachname, Vorname")
+    candidates = [name]
+    parts = name.split(",", 1)
+    if len(parts) == 2:
+        candidates.append(f"{parts[1].strip()} {parts[0].strip()}")
 
-    for r in results:
+    # Alle Suchvarianten ausprobieren
+    all_results = []
+    for query in candidates:
+        results = search_wikidata(query, language="de")
+        if results:
+            all_results.extend(results)
+            break  # Erster erfolgreicher Query reicht
+
+    best_match = None
+    best_score = 0
+
+    for r in all_results:
         label = r.get("label", "")
         qid = r.get("id", "")
 
-        if is_exact_match(name, label):
-            if check_type(qid, Q_HUMAN):
-                return {"qid": qid, "label": label, "match": "exact_label"}
-
-        parts = name.split(",", 1)
-        if len(parts) == 2:
-            reversed_name = f"{parts[1].strip()} {parts[0].strip()}"
-            if is_exact_match(reversed_name, label):
+        # Gegen alle Namenskandidaten pruefen
+        for candidate in candidates:
+            level, score = compute_match_level(candidate, label, min_confidence)
+            if level and score > best_score:
                 if check_type(qid, Q_HUMAN):
-                    return {"qid": qid, "label": label, "match": "exact_reversed"}
+                    best_match = {
+                        "qid": qid, "label": label,
+                        "match": level, "confidence": score,
+                    }
+                    best_score = score
+                    if level == 'exact':
+                        return best_match  # Short-circuit bei exaktem Match
 
-    return None
+    return best_match
 
 
-def reconcile_simple(name: str, expected_types: set, **_) -> dict | None:
-    """Generische Reconciliation: exakter Match + P31-Typfilter."""
+def reconcile_simple(name: str, expected_types: set,
+                     min_confidence: int = FUZZY_LOW_THRESHOLD,
+                     **_) -> dict | None:
+    """Generische Reconciliation mit Fuzzy-Matching + P31-Typfilter."""
     results = search_wikidata(name, language="de")
 
+    best_match = None
+    best_score = 0
+
     for r in results:
         label = r.get("label", "")
         qid = r.get("id", "")
-        if is_exact_match(name, label):
+        level, score = compute_match_level(name, label, min_confidence)
+        if level and score > best_score:
             if check_type(qid, expected_types):
-                return {"qid": qid, "label": label, "match": "exact_label"}
+                best_match = {
+                    "qid": qid, "label": label,
+                    "match": level, "confidence": score,
+                }
+                best_score = score
+                if level == 'exact':
+                    return best_match
 
-    return None
+    return best_match
 
 
-def reconcile_work(name: str, komponist: str = None, **_) -> dict | None:
-    """Reconciliation fuer Werke. Sucht mit Komponist fuer bessere Praezision."""
-    query = f"{name} {komponist}" if komponist else name
-    results = search_wikidata(query, language="de")
+def reconcile_work(name: str, komponist: str = None,
+                   min_confidence: int = FUZZY_LOW_THRESHOLD,
+                   **_) -> dict | None:
+    """Reconciliation fuer Werke. Composer-aware mit P86-Validierung."""
+    queries = []
+    if komponist:
+        queries.append(f"{name} {komponist}")
+    queries.append(name)
 
-    for r in results:
-        label = r.get("label", "")
-        qid = r.get("id", "")
-        if is_exact_match(name, label):
-            if check_type(qid, Q_MUSICAL_WORK):
-                return {"qid": qid, "label": label, "match": "exact_label"}
+    best_match = None
+    best_score = 0
 
-    return None
+    for query in queries:
+        results = search_wikidata(query, language="de")
+        for r in results:
+            label = r.get("label", "")
+            qid = r.get("id", "")
+
+            level, score = compute_match_level(name, label, min_confidence)
+            if not level:
+                continue
+
+            if not check_type(qid, Q_MUSICAL_WORK):
+                continue
+
+            # Bonus fuer Composer-bestaetigung via P86
+            if komponist and score < 100:
+                time.sleep(REQUEST_DELAY)
+                claims = get_entity_claims(qid)
+                p86 = claims.get("P86", [])
+                if p86:  # Hat Composer-Claim → vertrauenswuerdiger
+                    score = min(score + 5, 100)
+
+            if score > best_score:
+                best_match = {
+                    "qid": qid, "label": label,
+                    "match": level, "confidence": score,
+                }
+                best_score = score
+                if level == 'exact':
+                    return best_match
+
+    return best_match
 
 
 # ---------------------------------------------------------------------------
@@ -230,7 +311,7 @@ INDEX_CONFIG = [
         "label": "Organisationsindex",
         "filename": "M3GIM-Organisationsindex.xlsx",
         "shift_key": "organisationsindex",
-        "reconcile_fn": lambda name, **kw: reconcile_simple(name, Q_ORGANIZATION),
+        "reconcile_fn": lambda name, min_confidence=FUZZY_LOW_THRESHOLD, **kw: reconcile_simple(name, Q_ORGANIZATION, min_confidence=min_confidence),
         "extra_fields": [],
     },
     {
@@ -238,7 +319,7 @@ INDEX_CONFIG = [
         "label": "Ortsindex",
         "filename": "M3GIM-Ortsindex.xlsx",
         "shift_key": "ortsindex",
-        "reconcile_fn": lambda name, **kw: reconcile_simple(name, Q_GEOGRAPHIC),
+        "reconcile_fn": lambda name, min_confidence=FUZZY_LOW_THRESHOLD, **kw: reconcile_simple(name, Q_GEOGRAPHIC, min_confidence=min_confidence),
         "extra_fields": [],
     },
     {
@@ -311,7 +392,8 @@ def load_previous_results() -> dict:
 # ---------------------------------------------------------------------------
 
 def run_reconciliation(entity_types: list, dry_run: bool = False,
-                       force: bool = False):
+                       force: bool = False,
+                       min_confidence: int = FUZZY_LOW_THRESHOLD):
     """Fuehrt die Reconciliation durch."""
 
     # Cache laden (ueberspringbare Namen)
@@ -323,9 +405,14 @@ def run_reconciliation(entity_types: list, dry_run: bool = False,
     results = {
         "meta": {
             "date": datetime.now().isoformat(),
-            "strategy": "exact_match_only",
+            "strategy": "fuzzy_match_with_confidence",
             "min_name_length": MIN_NAME_LENGTH,
-            "note": "Nur 100%-Matches. Rest muss manuell geprueft werden."
+            "min_confidence": min_confidence,
+            "thresholds": {
+                "exact": 100,
+                "fuzzy_high": FUZZY_HIGH_THRESHOLD,
+                "fuzzy_low": FUZZY_LOW_THRESHOLD,
+            },
         },
         "matched": [],
         "unmatched": [],
@@ -417,7 +504,8 @@ def run_reconciliation(entity_types: list, dry_run: bool = False,
                 print("→ [DRY RUN]")
                 continue
 
-            match = cfg["reconcile_fn"](name, **extra)
+            match = cfg["reconcile_fn"](name, min_confidence=min_confidence,
+                                          **extra)
             time.sleep(REQUEST_DELAY)
 
             if match:
@@ -470,6 +558,10 @@ def main():
         "--force", action="store_true",
         help="Cache ignorieren, alle Namen neu abfragen"
     )
+    parser.add_argument(
+        "--min-confidence", type=int, default=FUZZY_LOW_THRESHOLD,
+        help=f"Minimale Confidence (0-100, default: {FUZZY_LOW_THRESHOLD})"
+    )
     args = parser.parse_args()
 
     entity_types = [args.type] if args.type else [
@@ -477,13 +569,15 @@ def main():
     ]
 
     print("M³GIM Wikidata-Reconciliation")
-    print(f"Strategie: Nur exakte Matches (100%), min. {MIN_NAME_LENGTH} Zeichen")
+    print(f"Strategie: Fuzzy-Matching (min. Confidence {args.min_confidence}), "
+          f"min. {MIN_NAME_LENGTH} Zeichen")
     if args.dry_run:
         print("[DRY RUN — keine API-Abfragen]")
     if args.force:
         print("[FORCE — Cache wird ignoriert]")
 
-    run_reconciliation(entity_types, dry_run=args.dry_run, force=args.force)
+    run_reconciliation(entity_types, dry_run=args.dry_run, force=args.force,
+                       min_confidence=args.min_confidence)
 
 
 if __name__ == "__main__":

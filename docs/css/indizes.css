@@ -210,6 +210,14 @@
   font-style: italic;
 }
 
+/* WD-Enrichment subtitle */
+.idx-subtitle {
+  font-size: var(--text-xs);
+  color: var(--color-text-tertiary, #8A857E);
+  margin-top: 1px;
+  line-height: 1.3;
+}
+
 /* Wikidata badge inline */
 .idx-name + .badge--wikidata {
   margin-left: var(--space-1);

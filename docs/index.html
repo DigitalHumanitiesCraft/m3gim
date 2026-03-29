@@ -22,6 +22,7 @@
   <link rel="stylesheet" href="css/zeitfluss.css">
   <link rel="stylesheet" href="css/korb.css">
   <link rel="stylesheet" href="css/mobilitaet.css">
+  <link rel="stylesheet" href="css/lebenspartitur.css">
   <link rel="stylesheet" href="css/pages.css">
 
   <!-- D3.js -->
@@ -86,6 +87,12 @@
       </svg>
       Zeitfluss
     </button>
+    <button class="tab-bar__tab" data-tab="lebenspartitur" role="tab" aria-selected="false" aria-controls="tab-lebenspartitur" id="btn-lebenspartitur">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/>
+      </svg>
+      Partitur
+    </button>
     <button class="tab-bar__tab" data-tab="korb" id="korb-tab-btn" role="tab" aria-selected="false" aria-controls="tab-korb">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/>
@@ -109,6 +116,7 @@
     <section id="tab-kosmos" class="tab-content" role="tabpanel" aria-labelledby="btn-kosmos"></section>
     <section id="tab-mobilitaet" class="tab-content" role="tabpanel" aria-labelledby="btn-mobilitaet"></section>
     <section id="tab-zeitfluss" class="tab-content" role="tabpanel" aria-labelledby="btn-zeitfluss"></section>
+    <section id="tab-lebenspartitur" class="tab-content" role="tabpanel" aria-labelledby="btn-lebenspartitur"></section>
     <section id="tab-korb" class="tab-content" role="tabpanel" aria-labelledby="btn-korb"></section>
 
   </main>

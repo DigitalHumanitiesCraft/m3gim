@@ -189,13 +189,15 @@ function buildKomponistenMap(store) {
 
       if (werkName) {
         if (!kEntry.werke.has(werkName)) {
-          kEntry.werke.set(werkName, { docs: new Set(), signaturen: new Set(), orte: new Map(), rollen: new Map(), jahre: new Set() });
+          kEntry.werke.set(werkName, { docs: new Set(), signaturen: new Set(), orte: new Map(), rollen: new Map(), jahre: new Set(), premiereDate: null });
         }
         const wEntry = kEntry.werke.get(werkName);
         wEntry.docs.add(record['@id']);
         if (record['rico:identifier']) wEntry.signaturen.add(record['rico:identifier']);
         const yr = extractYear(record['rico:date']);
         if (yr) wEntry.jahre.add(yr);
+        // WD-Enrichment: Premiere date
+        if (subj['m3gim:premiereDate'] && !wEntry.premiereDate) wEntry.premiereDate = subj['m3gim:premiereDate'];
       }
     }
 
@@ -275,6 +277,7 @@ export function aggregateKosmos(store) {
       // Primary role: highest count, but only if plausible (count ≥ 2, or single role)
       const rolleHaupt = rollen.length > 0 && (rollen[0].count >= 2 || rollen.length === 1)
         ? rollen[0].name : null;
+      const premiereYear = w.premiereDate ? parseInt(w.premiereDate.slice(0, 4)) : null;
       return {
         name: werkName,
         dokumente: w.docs.size,
@@ -284,6 +287,8 @@ export function aggregateKosmos(store) {
         rolleHaupt,
         istOper: rolleHaupt !== null,
         jahre: [...w.jahre].sort(),
+        premiereDate: w.premiereDate || null,
+        premiereYear,
       };
     }).sort((a, b) => b.dokumente - a.dokumente),
   })).sort((a, b) => b.dokumente_gesamt - a.dokumente_gesamt);

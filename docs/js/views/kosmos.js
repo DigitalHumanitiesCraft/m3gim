@@ -262,6 +262,7 @@ function computeLayout(data, cx, cy, R1, R2) {
         istOper: werk.istOper,
         orte: werk.orte, angle: workAngle,
         jahre: werk.jahre || [],
+        premiereYear: werk.premiereYear || null,
       });
 
       links.push({
@@ -347,12 +348,17 @@ function showTooltip(event, d) {
     html = `<strong>${d.name}</strong>`;
     if (d.parentKomp) html += `<br>${d.parentKomp}`;
     if (d.rollen && d.rollen.length > 0) {
-      html += '<br>Rollen: ' + d.rollen.map(r => `${r.name} (${r.count})`).join(' · ');
+      html += '<br>Rollen: ' + d.rollen.map(r => `${r.name} (${r.count})`).join(' \u00b7 ');
     } else if (d.rolleHaupt) {
       html += `<br>Rolle: ${d.rolleHaupt}`;
     }
     if (d.orte && d.orte.length > 0) {
       html += '<br>Orte: ' + d.orte.slice(0, 4).map(o => `${o.name} (${o.count})`).join(', ');
+    }
+    // UA-Distanz
+    if (d.premiereYear && d.jahre && d.jahre.length > 0) {
+      const firstPerf = Math.min(...d.jahre);
+      html += `<br>UA ${d.premiereYear}, Distanz: ${firstPerf - d.premiereYear} J.`;
     }
     html += `<br>${d.docs} Dok.`;
   }
@@ -697,18 +703,30 @@ function applyPhaseFilter(svgContainer, phase, genreRatio) {
       return 0.04;
     });
 
-  // FF2: Genre-Ratio annotation
+  // FF2: Genre-Ratio + UA-Distanz annotation
   if (genreRatio) {
     let opern = 0;
     let konzerte = 0;
+    const distances = [];
     nodeSel.each(function (d) {
       if (d.type === 'werk' && matchingWerke.has(d.id)) {
         if (d.istOper) opern++;
         else konzerte++;
+        // UA-Distanz berechnen (wenn Premiere-Daten vorhanden)
+        if (d.premiereYear && d.jahre && d.jahre.length > 0) {
+          const firstPerf = Math.min(...d.jahre);
+          const dist = firstPerf - d.premiereYear;
+          if (dist >= 0) distances.push({ name: d.name, distance: dist });
+        }
       }
     });
+    let distText = '';
+    if (distances.length > 0) {
+      const avg = Math.round(distances.reduce((s, d) => s + d.distance, 0) / distances.length);
+      distText = ` \u00b7 UA-Distanz: \u2205 ${avg} J.`;
+    }
     genreRatio.textContent = opern + konzerte > 0
-      ? `${phase.id} ${phase.label}: ${opern} Opern · ${konzerte} Konzerte/Lieder · ${matchingComps.size} Komponisten`
+      ? `${phase.id} ${phase.label}: ${opern} Opern \u00b7 ${konzerte} Konzerte/Lieder \u00b7 ${matchingComps.size} Komponisten${distText}`
       : `${phase.id}: keine Werke in dieser Phase`;
   }
 }

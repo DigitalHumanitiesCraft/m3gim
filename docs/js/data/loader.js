@@ -202,6 +202,11 @@ function indexAgents(store, record) {
       entry.records.add(record['@id']);
       if (agent.role) entry.roles.add(agent.role);
       if (wikidata && !entry.wikidata) entry.wikidata = wikidata;
+      // WD-Enrichment-Properties
+      if (agent['m3gim:occupation'] && !entry.occupation) entry.occupation = agent['m3gim:occupation'];
+      if (agent['m3gim:voiceType'] && !entry.voiceType) entry.voiceType = agent['m3gim:voiceType'];
+      if (agent['m3gim:birthDate'] && !entry.birthDate) entry.birthDate = agent['m3gim:birthDate'];
+      if (agent['m3gim:deathDate'] && !entry.deathDate) entry.deathDate = agent['m3gim:deathDate'];
     }
   }
 
@@ -251,7 +256,11 @@ function indexWorks(store, record) {
     if (!store.works.has(name)) {
       store.works.set(name, { records: new Set(), komponist: subj.komponist || null, wikidata: subj['@id'] || null });
     }
-    store.works.get(name).records.add(record['@id']);
+    const wEntry = store.works.get(name);
+    wEntry.records.add(record['@id']);
+    // WD-Enrichment: Premiere date
+    if (subj['m3gim:premiereDate'] && !wEntry.premiereDate) wEntry.premiereDate = subj['m3gim:premiereDate'];
+    if (subj['m3gim:wdGenre'] && !wEntry.wdGenre) wEntry.wdGenre = subj['m3gim:wdGenre'];
   }
 }
 

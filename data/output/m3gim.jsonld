@@ -5,6 +5,8 @@
     "m3gim-dft": "https://dhcraft.org/m3gim/documentaryFormTypes#",
     "m3gim-role": "https://dhcraft.org/m3gim/roles#",
     "wd": "http://www.wikidata.org/entity/",
+    "owl": "http://www.w3.org/2002/07/owl#",
+    "geo": "http://www.w3.org/2003/01/geo/wgs84_pos#",
     "skos": "http://www.w3.org/2004/02/skos/core#",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
     "name": "rico:name",
@@ -1250,12 +1252,20 @@
         {
           "name": "Potsdam",
           "@id": "wd:Q1711",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1711",
+          "geo:lat": 52.4,
+          "geo:long": 13.066666666667,
+          "m3gim:country": "Deutschland",
           "role": "auffuehrungsort",
           "@type": "rico:Place"
         },
         {
           "name": "Salzburg",
           "@id": "wd:Q34713",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q34713",
+          "geo:lat": 47.8,
+          "geo:long": 13.045,
+          "m3gim:country": "Österreich",
           "role": "auffuehrungsort",
           "@type": "rico:Place"
         }
@@ -1283,101 +1293,270 @@
         {
           "name": "Strauss, Richard",
           "@id": "wd:Q13894",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q13894",
+          "m3gim:occupation": [
+            "Komponist",
+            "Dirigent",
+            "Librettist",
+            "Musiker"
+          ],
+          "m3gim:birthDate": "1864-06-11",
+          "m3gim:deathDate": "1949-09-08",
+          "m3gim:birthPlace": "München",
+          "m3gim:deathPlace": "Garmisch-Partenkirchen",
           "role": "erwähnt",
           "@type": "rico:Person"
         },
         {
           "name": "Fischer, Edwin",
           "@id": "wd:Q123249",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q123249",
+          "m3gim:occupation": [
+            "Pianist",
+            "Dirigent",
+            "Musikpädagoge"
+          ],
+          "m3gim:birthDate": "1886-10-06",
+          "m3gim:deathDate": "1960-01-24",
+          "m3gim:birthPlace": "Basel",
+          "m3gim:deathPlace": "Zürich",
           "role": "erwähnt",
           "@type": "rico:Person"
         },
         {
           "name": "Gieseking, Walter",
           "@id": "wd:Q61028",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q61028",
+          "m3gim:occupation": [
+            "Lepidopterologe",
+            "Pianist",
+            "Komponist",
+            "akademischer Musiker"
+          ],
+          "m3gim:birthDate": "1895-11-05",
+          "m3gim:deathDate": "1956-10-26",
+          "m3gim:birthPlace": "2. Arrondissement",
+          "m3gim:deathPlace": "London",
           "role": "erwähnt",
           "@type": "rico:Person"
         },
         {
           "name": "Hartmann, Rudolf",
           "@id": "wd:Q124351",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q124351",
+          "m3gim:occupation": [
+            "Politiker",
+            "Schriftsteller"
+          ],
+          "m3gim:birthDate": "1885-12-11",
+          "m3gim:deathDate": "1945-03-05",
+          "m3gim:birthPlace": "Königsfeld",
+          "m3gim:deathPlace": "KZ Mauthausen",
           "role": "erwähnt",
           "@type": "rico:Person"
         },
         {
           "name": "Heitmann, Fritz",
           "@id": "wd:Q91286",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q91286",
+          "m3gim:occupation": [
+            "Organist",
+            "Musiker"
+          ],
+          "m3gim:birthDate": "1891-05-09",
+          "m3gim:deathDate": "1953-09-07",
+          "m3gim:birthPlace": "Hamburg",
+          "m3gim:deathPlace": "Berlin",
           "role": "erwähnt",
           "@type": "rico:Person"
         },
         {
           "name": "Hoelscher, Ludwig",
           "@id": "wd:Q108009",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q108009",
+          "m3gim:occupation": [
+            "Komponist",
+            "Musiker",
+            "Musikpädagoge",
+            "Hochschullehrer",
+            "Cellist"
+          ],
+          "m3gim:birthDate": "1907-08-23",
+          "m3gim:deathDate": "1996-05-08",
+          "m3gim:birthPlace": "Solingen",
+          "m3gim:deathPlace": "Tutzing",
           "role": "erwähnt",
           "@type": "rico:Person"
         },
         {
           "name": "Hüni-Mihacsek, Felicie",
           "@id": "wd:Q3068099",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q3068099",
+          "m3gim:occupation": [
+            "Opernsänger"
+          ],
+          "m3gim:voiceType": "Sopran",
+          "m3gim:birthDate": "1891-04-03",
+          "m3gim:deathDate": "1976-03-26",
+          "m3gim:birthPlace": "Pécs",
+          "m3gim:deathPlace": "München",
           "role": "erwähnt",
           "@type": "rico:Person"
         },
         {
           "name": "Kempff, Wilhelm",
           "@id": "wd:Q159946",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q159946",
+          "m3gim:occupation": [
+            "Komponist",
+            "Pianist",
+            "Musikwissenschaftler",
+            "Hochschullehrer",
+            "Autobiograf"
+          ],
+          "m3gim:birthDate": "1895-11-25",
+          "m3gim:deathDate": "1991-05-23",
+          "m3gim:birthPlace": "Jüterbog",
+          "m3gim:deathPlace": "Positano",
           "role": "erwähnt",
           "@type": "rico:Person"
         },
         {
           "name": "Krauß, Clemens",
+          "@id": "wd:Q78918",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q78918",
+          "m3gim:occupation": [
+            "Dirigent",
+            "Komponist",
+            "Librettist",
+            "Hochschullehrer",
+            "Schriftsteller",
+            "Musikdirektor"
+          ],
+          "m3gim:birthDate": "1893-03-31",
+          "m3gim:deathDate": "1954-05-16",
+          "m3gim:birthPlace": "Wien",
+          "m3gim:deathPlace": "Mexiko-Stadt",
           "role": "erwähnt",
           "@type": "rico:Person"
         },
         {
           "name": "Kulenkampff, Georg",
           "@id": "wd:Q470033",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q470033",
+          "m3gim:occupation": [
+            "Geiger",
+            "Hochschullehrer",
+            "Konzertmeister",
+            "Dirigent",
+            "Musikpädagoge"
+          ],
+          "m3gim:birthDate": "1898-01-23",
+          "m3gim:deathDate": "1948-10-04",
+          "m3gim:birthPlace": "Bremen",
+          "m3gim:deathPlace": "Schaffhausen",
           "role": "erwähnt",
           "@type": "rico:Person"
         },
         {
           "name": "Leimer, Karl",
-          "@id": "wd:Q1664629",
           "role": "erwähnt",
           "@type": "rico:Person"
         },
         {
           "name": "Lohmann, Paul",
           "@id": "wd:Q2061025",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q2061025",
+          "m3gim:occupation": [
+            "Politiker"
+          ],
+          "m3gim:birthDate": "1902-10-20",
+          "m3gim:deathDate": "1953-10-27",
+          "m3gim:birthPlace": "Minden",
           "role": "erwähnt",
           "@type": "rico:Person"
         },
         {
           "name": "Mahlke, Hans",
           "@id": "wd:Q109441772",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q109441772",
+          "m3gim:occupation": [
+            "Bratschist",
+            "Geiger",
+            "Musikpädagoge"
+          ],
+          "m3gim:birthDate": "1889-07-27",
+          "m3gim:deathDate": "1959-09-16",
+          "m3gim:birthPlace": "Berlin",
+          "m3gim:deathPlace": "München",
           "role": "erwähnt",
           "@type": "rico:Person"
         },
         {
           "name": "Martienssen-Lohmann, Franziska",
           "@id": "wd:Q4282634",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q4282634",
+          "m3gim:occupation": [
+            "Schriftsteller",
+            "Musikpädagoge",
+            "Musikwissenschaftler",
+            "Sänger"
+          ],
+          "m3gim:voiceType": "Sopran",
+          "m3gim:birthDate": "1887-10-06",
+          "m3gim:deathDate": "1971-02-02",
+          "m3gim:birthPlace": "Bydgoszcz",
+          "m3gim:deathPlace": "Düsseldorf",
           "role": "erwähnt",
           "@type": "rico:Person"
         },
         {
           "name": "Marx, Joseph",
           "@id": "wd:Q506561",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q506561",
+          "m3gim:occupation": [
+            "Komponist",
+            "Musikwissenschaftler",
+            "Musikpädagoge",
+            "Hochschullehrer",
+            "Schriftsteller",
+            "Pianist",
+            "Musikkritiker"
+          ],
+          "m3gim:birthDate": "1882-05-11",
+          "m3gim:deathDate": "1964-09-03",
+          "m3gim:birthPlace": "Graz",
+          "m3gim:deathPlace": "Graz",
           "role": "erwähnt",
           "@type": "rico:Person"
         },
         {
           "name": "Moratti, Vittorino",
           "@id": "wd:Q16677800",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q16677800",
+          "m3gim:occupation": [
+            "Musikpädagoge",
+            "Pianist"
+          ],
+          "m3gim:birthDate": "1877-01-01",
+          "m3gim:deathDate": "1944-01-01",
+          "m3gim:birthPlace": "Comun Nuovo",
+          "m3gim:deathPlace": "Sale",
           "role": "erwähnt",
           "@type": "rico:Person"
         },
         {
           "name": "Ney, Elly",
           "@id": "wd:Q66912",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q66912",
+          "m3gim:occupation": [
+            "Pianist",
+            "Musikpädagoge"
+          ],
+          "m3gim:birthDate": "1882-09-27",
+          "m3gim:deathDate": "1968-03-31",
+          "m3gim:birthPlace": "Düsseldorf",
+          "m3gim:deathPlace": "Tutzing",
           "role": "erwähnt",
           "@type": "rico:Person"
         },
@@ -1394,30 +1573,80 @@
         {
           "name": "Ramin, Günther",
           "@id": "wd:Q518002",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q518002",
+          "m3gim:occupation": [
+            "Komponist",
+            "Organist",
+            "Dirigent",
+            "Chorleiter",
+            "Hochschullehrer"
+          ],
+          "m3gim:birthDate": "1898-10-15",
+          "m3gim:deathDate": "1956-02-27",
+          "m3gim:birthPlace": "Karlsruhe",
+          "m3gim:deathPlace": "Leipzig",
           "role": "erwähnt",
           "@type": "rico:Person"
         },
         {
           "name": "Schellenberg, Arno",
           "@id": "wd:Q694529",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q694529",
+          "m3gim:occupation": [
+            "Sänger",
+            "Hochschullehrer",
+            "Opernsänger"
+          ],
+          "m3gim:voiceType": "Bariton",
+          "m3gim:birthDate": "1903-11-16",
+          "m3gim:deathDate": "1983-02-20",
+          "m3gim:birthPlace": "Berlin",
+          "m3gim:deathPlace": "Dresden",
           "role": "erwähnt",
           "@type": "rico:Person"
         },
         {
           "name": "Schünemann, Georg",
           "@id": "wd:Q121675",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q121675",
+          "m3gim:occupation": [
+            "Musikwissenschaftler",
+            "Hochschullehrer"
+          ],
+          "m3gim:birthDate": "1884-03-13",
+          "m3gim:deathDate": "1945-01-02",
+          "m3gim:birthPlace": "Berlin",
+          "m3gim:deathPlace": "Berlin",
           "role": "erwähnt",
           "@type": "rico:Person"
         },
         {
           "name": "Steiner, Adolf",
           "@id": "wd:Q89574267",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q89574267",
+          "m3gim:occupation": [
+            "Cellist"
+          ],
+          "m3gim:birthDate": "1897-04-12",
+          "m3gim:deathDate": "1974-03-27",
+          "m3gim:birthPlace": "Schwäbisch Hall",
+          "m3gim:deathPlace": "Baden-Baden",
           "role": "erwähnt",
           "@type": "rico:Person"
         },
         {
           "name": "Swarowsky, Hans",
           "@id": "wd:Q78721",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q78721",
+          "m3gim:occupation": [
+            "Dirigent",
+            "Musikpädagoge",
+            "Hochschullehrer"
+          ],
+          "m3gim:birthDate": "1899-09-16",
+          "m3gim:deathDate": "1975-09-10",
+          "m3gim:birthPlace": "Budapest",
+          "m3gim:deathPlace": "Salzburg",
           "role": "erwähnt",
           "@type": "rico:Person"
         },
@@ -1429,11 +1658,30 @@
         {
           "name": "Wolf, Winfried",
           "@id": "wd:Q2584346",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q2584346",
+          "m3gim:occupation": [
+            "Politiker"
+          ],
+          "m3gim:birthDate": "1949-03-04",
+          "m3gim:deathDate": "2023-05-22",
+          "m3gim:birthPlace": "Horb am Neckar",
+          "m3gim:deathPlace": "Berlin",
           "role": "erwähnt",
           "@type": "rico:Person"
         },
         {
           "name": "Bahr-Mildenburg, Anna",
+          "@id": "wd:Q79028",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q79028",
+          "m3gim:occupation": [
+            "Opernsänger",
+            "Schriftsteller"
+          ],
+          "m3gim:voiceType": "Sopran",
+          "m3gim:birthDate": "1872-11-29",
+          "m3gim:deathDate": "1947-01-27",
+          "m3gim:birthPlace": "Wien",
+          "m3gim:deathPlace": "Wien",
           "role": "erwähnt",
           "@type": "rico:Person"
         }
@@ -1523,6 +1771,9 @@
       },
       "m3gim:hasAssociatedAgent": {
         "name": "Universität Mozarteum Salzburg",
+        "@id": "wd:Q871369",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q871369",
+        "m3gim:inception": "1841-00-00",
         "role": "ausbildungsstätte",
         "@type": "rico:CorporateBody"
       }
@@ -1579,6 +1830,7 @@
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94208",
           "role": "adressat:in",
           "@type": "rico:Person"
         },
@@ -1592,6 +1844,10 @@
         {
           "name": "New York",
           "@id": "wd:Q1384",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1384",
+          "geo:lat": 43,
+          "geo:long": -75,
+          "m3gim:country": "Vereinigte Staaten",
           "role": "absendeort",
           "@type": "rico:Place"
         },
@@ -1630,30 +1886,79 @@
         {
           "name": "Metternich, Josef",
           "@id": "wd:Q95732",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q95732",
+          "m3gim:occupation": [
+            "Sänger",
+            "Opernsänger",
+            "Musikpädagoge",
+            "Hochschullehrer"
+          ],
+          "m3gim:voiceType": "Bariton",
+          "m3gim:birthDate": "1915-06-02",
+          "m3gim:deathDate": "2005-02-21",
+          "m3gim:birthPlace": "Hermülheim",
+          "m3gim:deathPlace": "Feldafing",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Hartmann, Rudolf",
           "@id": "wd:Q124351",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q124351",
+          "m3gim:occupation": [
+            "Politiker",
+            "Schriftsteller"
+          ],
+          "m3gim:birthDate": "1885-12-11",
+          "m3gim:deathDate": "1945-03-05",
+          "m3gim:birthPlace": "Königsfeld",
+          "m3gim:deathPlace": "KZ Mauthausen",
           "role": "regisseur:in",
           "@type": "rico:Person"
         },
         {
           "name": "Heger, Robert",
           "@id": "wd:Q72123",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q72123",
+          "m3gim:occupation": [
+            "Dirigent",
+            "Komponist",
+            "Hochschullehrer"
+          ],
+          "m3gim:birthDate": "1886-08-19",
+          "m3gim:deathDate": "1978-01-14",
+          "m3gim:birthPlace": "Straßburg",
+          "m3gim:deathPlace": "München",
           "role": "dirigent:in",
           "@type": "rico:Person"
         },
         {
           "name": "Jürgens, Helmut",
           "@id": "wd:Q2716190",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q2716190",
+          "m3gim:occupation": [
+            "Künstler",
+            "Kostümbildner"
+          ],
+          "m3gim:birthDate": "1902-06-19",
+          "m3gim:deathDate": "1963-08-29",
+          "m3gim:birthPlace": "Höxter",
+          "m3gim:deathPlace": "München",
           "role": "bühnenbildner:in",
           "@type": "rico:Person"
         },
         {
           "name": "Proebstl, Max",
           "@id": "wd:Q1913239",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1913239",
+          "m3gim:occupation": [
+            "Opernsänger"
+          ],
+          "m3gim:voiceType": "Bass",
+          "m3gim:birthDate": "1913-09-24",
+          "m3gim:deathDate": "1979-11-19",
+          "m3gim:birthPlace": "München",
+          "m3gim:deathPlace": "München",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -1665,24 +1970,59 @@
         {
           "name": "Klarwein, Franz",
           "@id": "wd:Q1447805",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1447805",
+          "m3gim:occupation": [
+            "Opernsänger",
+            "Sprecher"
+          ],
+          "m3gim:voiceType": "Tenor",
+          "m3gim:birthDate": "1914-03-08",
+          "m3gim:deathDate": "1991-02-16",
+          "m3gim:birthPlace": "Garmisch-Partenkirchen",
+          "m3gim:deathPlace": "München",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Vandenburg, Howard",
           "@id": "wd:Q94932751",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94932751",
+          "m3gim:occupation": [
+            "Sänger",
+            "Musiker"
+          ],
+          "m3gim:birthDate": "1918-05-18",
+          "m3gim:deathDate": "2000-10-28",
+          "m3gim:birthPlace": "Buffalo",
+          "m3gim:deathPlace": "Kürten",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Keil, Adolf",
           "@id": "wd:Q94931882",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94931882",
+          "m3gim:occupation": [
+            "Sänger",
+            "Musiker"
+          ],
+          "m3gim:birthDate": "1909-01-04",
+          "m3gim:deathDate": "1974-08-30",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Peter, Albrecht",
           "@id": "wd:Q94901792",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94901792",
+          "m3gim:occupation": [
+            "Musiker",
+            "Sänger",
+            "Opernsänger"
+          ],
+          "m3gim:birthDate": "1914-00-00",
+          "m3gim:deathDate": "2005-00-00",
+          "m3gim:birthPlace": "Nürnberg",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -1705,6 +2045,11 @@
         },
         {
           "name": "Zürich",
+          "@id": "wd:Q72",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q72",
+          "geo:lat": 47.37444444444444,
+          "geo:long": 8.54111111111111,
+          "m3gim:country": "Schweiz",
           "role": "erwähnt",
           "@type": "rico:Place"
         },
@@ -1726,6 +2071,10 @@
         {
           "name": "Graz",
           "@id": "wd:Q13298",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q13298",
+          "geo:lat": 47.07083333333333,
+          "geo:long": 15.438611111111111,
+          "m3gim:country": "Österreich",
           "role": "erwähnt",
           "@type": "rico:Place"
         }
@@ -1734,11 +2083,23 @@
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94208",
           "role": "erwähnt",
           "@type": "rico:Person"
         },
         {
           "name": "Bahr-Mildenburg, Anna",
+          "@id": "wd:Q79028",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q79028",
+          "m3gim:occupation": [
+            "Opernsänger",
+            "Schriftsteller"
+          ],
+          "m3gim:voiceType": "Sopran",
+          "m3gim:birthDate": "1872-11-29",
+          "m3gim:deathDate": "1947-01-27",
+          "m3gim:birthPlace": "Wien",
+          "m3gim:deathPlace": "Wien",
           "role": "erwähnt",
           "@type": "rico:Person"
         },
@@ -1808,30 +2169,70 @@
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94208",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Metternich, Josef",
           "@id": "wd:Q95732",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q95732",
+          "m3gim:occupation": [
+            "Sänger",
+            "Opernsänger",
+            "Musikpädagoge",
+            "Hochschullehrer"
+          ],
+          "m3gim:voiceType": "Bariton",
+          "m3gim:birthDate": "1915-06-02",
+          "m3gim:deathDate": "2005-02-21",
+          "m3gim:birthPlace": "Hermülheim",
+          "m3gim:deathPlace": "Feldafing",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Jürgens, Helmut",
           "@id": "wd:Q2716190",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q2716190",
+          "m3gim:occupation": [
+            "Künstler",
+            "Kostümbildner"
+          ],
+          "m3gim:birthDate": "1902-06-19",
+          "m3gim:deathDate": "1963-08-29",
+          "m3gim:birthPlace": "Höxter",
+          "m3gim:deathPlace": "München",
           "role": "bühnenbildner:in",
           "@type": "rico:Person"
         },
         {
           "name": "Proebstl, Max",
           "@id": "wd:Q1913239",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1913239",
+          "m3gim:occupation": [
+            "Opernsänger"
+          ],
+          "m3gim:voiceType": "Bass",
+          "m3gim:birthDate": "1913-09-24",
+          "m3gim:deathDate": "1979-11-19",
+          "m3gim:birthPlace": "München",
+          "m3gim:deathPlace": "München",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Vandenburg, Howard",
           "@id": "wd:Q94932751",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94932751",
+          "m3gim:occupation": [
+            "Sänger",
+            "Musiker"
+          ],
+          "m3gim:birthDate": "1918-05-18",
+          "m3gim:deathDate": "2000-10-28",
+          "m3gim:birthPlace": "Buffalo",
+          "m3gim:deathPlace": "Kürten",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -1843,6 +2244,16 @@
         {
           "name": "Heger, Robert",
           "@id": "wd:Q72123",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q72123",
+          "m3gim:occupation": [
+            "Dirigent",
+            "Komponist",
+            "Hochschullehrer"
+          ],
+          "m3gim:birthDate": "1886-08-19",
+          "m3gim:deathDate": "1978-01-14",
+          "m3gim:birthPlace": "Straßburg",
+          "m3gim:deathPlace": "München",
           "role": "dirigent:in",
           "@type": "rico:Person"
         },
@@ -1911,6 +2322,15 @@
         {
           "name": "Jürgens, Helmut",
           "@id": "wd:Q2716190",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q2716190",
+          "m3gim:occupation": [
+            "Künstler",
+            "Kostümbildner"
+          ],
+          "m3gim:birthDate": "1902-06-19",
+          "m3gim:deathDate": "1963-08-29",
+          "m3gim:birthPlace": "Höxter",
+          "m3gim:deathPlace": "München",
           "role": "bühnenbildner:in",
           "@type": "rico:Person"
         },
@@ -1922,6 +2342,7 @@
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94208",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -1933,42 +2354,87 @@
         {
           "name": "Proebstl, Max",
           "@id": "wd:Q1913239",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1913239",
+          "m3gim:occupation": [
+            "Opernsänger"
+          ],
+          "m3gim:voiceType": "Bass",
+          "m3gim:birthDate": "1913-09-24",
+          "m3gim:deathDate": "1979-11-19",
+          "m3gim:birthPlace": "München",
+          "m3gim:deathPlace": "München",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Vandenburg, Howard",
           "@id": "wd:Q94932751",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94932751",
+          "m3gim:occupation": [
+            "Sänger",
+            "Musiker"
+          ],
+          "m3gim:birthDate": "1918-05-18",
+          "m3gim:deathDate": "2000-10-28",
+          "m3gim:birthPlace": "Buffalo",
+          "m3gim:deathPlace": "Kürten",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Klarwein, Franz",
           "@id": "wd:Q1447805",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1447805",
+          "m3gim:occupation": [
+            "Opernsänger",
+            "Sprecher"
+          ],
+          "m3gim:voiceType": "Tenor",
+          "m3gim:birthDate": "1914-03-08",
+          "m3gim:deathDate": "1991-02-16",
+          "m3gim:birthPlace": "Garmisch-Partenkirchen",
+          "m3gim:deathPlace": "München",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Heger, Robert",
           "@id": "wd:Q72123",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q72123",
+          "m3gim:occupation": [
+            "Dirigent",
+            "Komponist",
+            "Hochschullehrer"
+          ],
+          "m3gim:birthDate": "1886-08-19",
+          "m3gim:deathDate": "1978-01-14",
+          "m3gim:birthPlace": "Straßburg",
+          "m3gim:deathPlace": "München",
           "role": "dirigent:in",
           "@type": "rico:Person"
         },
         {
           "name": "Leder, Alfred",
-          "@id": "wd:Q27732662",
           "role": "chorleiter:in",
           "@type": "rico:Person"
         },
         {
           "name": "Schmidt-Garre, Helmut",
           "@id": "wd:Q95634885",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q95634885",
+          "m3gim:occupation": [
+            "Musikwissenschaftler",
+            "Musikkritiker"
+          ],
+          "m3gim:birthDate": "1907-00-00",
+          "m3gim:deathDate": "1989-00-00",
           "role": "verfasser:in",
           "@type": "rico:Person"
         },
         {
           "name": "Bayerische Staatsoper",
           "@id": "wd:Q681931",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q681931",
           "role": "auffuehrungsort",
           "@type": "rico:CorporateBody"
         }
@@ -2012,24 +2478,59 @@
       "m3gim:hasAssociatedAgent": [
         {
           "name": "Gluck, Christoph Willibald",
+          "@id": "wd:Q130759",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q130759",
+          "m3gim:occupation": [
+            "Komponist",
+            "Dirigent"
+          ],
+          "m3gim:birthDate": "1714-07-02",
+          "m3gim:deathDate": "1787-11-15",
+          "m3gim:birthPlace": "Erasbach",
+          "m3gim:deathPlace": "Wien",
           "role": "komponist:in",
           "@type": "rico:Person"
         },
         {
           "name": "Knappertsbusch, Hans",
           "@id": "wd:Q57425",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q57425",
+          "m3gim:occupation": [
+            "Dirigent",
+            "Hochschullehrer",
+            "Komponist"
+          ],
+          "m3gim:birthDate": "1888-03-12",
+          "m3gim:deathDate": "1965-10-25",
+          "m3gim:birthPlace": "Elberfeld",
+          "m3gim:deathPlace": "München",
           "role": "dirigent:in",
           "@type": "rico:Person"
         },
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94208",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Wagner, Wieland",
           "@id": "wd:Q60465",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q60465",
+          "m3gim:occupation": [
+            "Bühnenregisseur",
+            "Komponist",
+            "Schriftsteller",
+            "Schauspieler",
+            "Szenograf",
+            "Regisseur",
+            "Choreograf"
+          ],
+          "m3gim:birthDate": "1917-01-05",
+          "m3gim:deathDate": "1966-10-17",
+          "m3gim:birthPlace": "Bayreuth",
+          "m3gim:deathPlace": "München",
           "role": "regisseur:in",
           "@type": "rico:Person"
         },
@@ -2041,6 +2542,15 @@
         {
           "name": "Fahberg, Antonia",
           "@id": "wd:Q598316",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q598316",
+          "m3gim:occupation": [
+            "Opernsänger"
+          ],
+          "m3gim:voiceType": "Sopran",
+          "m3gim:birthDate": "1928-05-19",
+          "m3gim:deathDate": "2016-10-21",
+          "m3gim:birthPlace": "Wien",
+          "m3gim:deathPlace": "München",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -2052,6 +2562,12 @@
         {
           "name": "Erlenwein, Herbert",
           "@id": "wd:Q95636832",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q95636832",
+          "m3gim:occupation": [
+            "Komponist"
+          ],
+          "m3gim:birthDate": "1896-00-00",
+          "m3gim:deathDate": "1960-00-00",
           "role": "chorleiter:in",
           "@type": "rico:Person"
         },
@@ -2136,24 +2652,59 @@
         {
           "name": "Knappertsbusch, Hans",
           "@id": "wd:Q57425",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q57425",
+          "m3gim:occupation": [
+            "Dirigent",
+            "Hochschullehrer",
+            "Komponist"
+          ],
+          "m3gim:birthDate": "1888-03-12",
+          "m3gim:deathDate": "1965-10-25",
+          "m3gim:birthPlace": "Elberfeld",
+          "m3gim:deathPlace": "München",
           "role": "dirigent:in",
           "@type": "rico:Person"
         },
         {
           "name": "Wagner, Wieland",
           "@id": "wd:Q60465",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q60465",
+          "m3gim:occupation": [
+            "Bühnenregisseur",
+            "Komponist",
+            "Schriftsteller",
+            "Schauspieler",
+            "Szenograf",
+            "Regisseur",
+            "Choreograf"
+          ],
+          "m3gim:birthDate": "1917-01-05",
+          "m3gim:deathDate": "1966-10-17",
+          "m3gim:birthPlace": "Bayreuth",
+          "m3gim:deathPlace": "München",
           "role": "regisseur:in",
           "@type": "rico:Person"
         },
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94208",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Kupper, Annelies",
           "@id": "wd:Q75998",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q75998",
+          "m3gim:occupation": [
+            "Opernsänger",
+            "Hochschullehrer"
+          ],
+          "m3gim:voiceType": "Sopran",
+          "m3gim:birthDate": "1906-07-21",
+          "m3gim:deathDate": "1987-12-08",
+          "m3gim:birthPlace": "Kłodzko",
+          "m3gim:deathPlace": "Haar",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -2219,30 +2770,64 @@
         {
           "name": "Pitz, Wilhelm",
           "@id": "wd:Q2574498",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q2574498",
+          "m3gim:occupation": [
+            "Musiker",
+            "Dirigent"
+          ],
+          "m3gim:birthDate": "1897-08-25",
+          "m3gim:deathDate": "1973-11-21",
+          "m3gim:birthPlace": "Breinig",
+          "m3gim:deathPlace": "Aachen",
           "role": "chorleiter:in",
           "@type": "rico:Person"
         },
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94208",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Nilsson, Birgit",
           "@id": "wd:Q233951",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q233951",
+          "m3gim:occupation": [
+            "Opernsänger"
+          ],
+          "m3gim:voiceType": "Sopran",
+          "m3gim:birthDate": "1918-05-17",
+          "m3gim:deathDate": "2005-12-25",
+          "m3gim:birthPlace": "Västra Karup",
+          "m3gim:deathPlace": "Bjärlöv",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Dermota, Anton",
           "@id": "wd:Q12784779",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q12784779",
+          "m3gim:occupation": [
+            "Politiker",
+            "Rechtsanwalt",
+            "Herausgeber",
+            "Publizist",
+            "Übersetzer",
+            "Jurist"
+          ],
+          "m3gim:birthDate": "1876-01-01",
+          "m3gim:deathDate": "1914-05-03",
+          "m3gim:birthPlace": "Železniki",
+          "m3gim:deathPlace": "Gorizia",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Weber, Ludwig",
           "@id": "wd:Q136748514",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q136748514",
+          "m3gim:birthDate": "1886-11-03",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -2259,6 +2844,7 @@
         {
           "name": "Bayreuther Festspiele",
           "@id": "wd:Q157596",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q157596",
           "role": "rahmenveranstaltung",
           "@type": "rico:CorporateBody"
         }
@@ -2278,18 +2864,53 @@
         {
           "name": "Wagner, Wieland",
           "@id": "wd:Q60465",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q60465",
+          "m3gim:occupation": [
+            "Bühnenregisseur",
+            "Komponist",
+            "Schriftsteller",
+            "Schauspieler",
+            "Szenograf",
+            "Regisseur",
+            "Choreograf"
+          ],
+          "m3gim:birthDate": "1917-01-05",
+          "m3gim:deathDate": "1966-10-17",
+          "m3gim:birthPlace": "Bayreuth",
+          "m3gim:deathPlace": "München",
           "role": "erwähnt",
           "@type": "rico:Person"
         },
         {
           "name": "Strauss, Richard",
           "@id": "wd:Q13894",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q13894",
+          "m3gim:occupation": [
+            "Komponist",
+            "Dirigent",
+            "Librettist",
+            "Musiker"
+          ],
+          "m3gim:birthDate": "1864-06-11",
+          "m3gim:deathDate": "1949-09-08",
+          "m3gim:birthPlace": "München",
+          "m3gim:deathPlace": "Garmisch-Partenkirchen",
           "role": "erwähnt",
           "@type": "rico:Person"
         },
         {
           "name": "Furtwängler, Wilhelm",
           "@id": "wd:Q57285",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q57285",
+          "m3gim:occupation": [
+            "Komponist klassischer Musik",
+            "Dirigent",
+            "Komponist"
+          ],
+          "m3gim:birthDate": "1886-01-25",
+          "m3gim:deathDate": "1954-11-30",
+          "m3gim:birthPlace": "Schöneberg",
+          "m3gim:deathPlace": "Baden-Baden",
           "role": "erwähnt",
           "@type": "rico:Person"
         },
@@ -2306,6 +2927,24 @@
         {
           "name": "Wagner, Richard",
           "@id": "wd:Q1511",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1511",
+          "m3gim:occupation": [
+            "Komponist",
+            "Librettist",
+            "Dirigent",
+            "Essayist",
+            "Bühnenregisseur",
+            "Autobiograf",
+            "Dichter",
+            "Pianist",
+            "Musikkritiker",
+            "Tagebuchschreiber",
+            "Schriftsteller"
+          ],
+          "m3gim:birthDate": "1813-05-22",
+          "m3gim:deathDate": "1883-02-13",
+          "m3gim:birthPlace": "Leipzig",
+          "m3gim:deathPlace": "Venedig",
           "role": "erwähnt",
           "@type": "rico:Person"
         },
@@ -2317,12 +2956,38 @@
         {
           "name": "Reger, Max",
           "@id": "wd:Q57139",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q57139",
+          "m3gim:occupation": [
+            "Komponist",
+            "Dirigent",
+            "Pianist",
+            "Musikwissenschaftler",
+            "Hochschullehrer",
+            "Organist",
+            "Musikpädagoge"
+          ],
+          "m3gim:birthDate": "1873-03-19",
+          "m3gim:deathDate": "1916-05-11",
+          "m3gim:birthPlace": "Brand",
+          "m3gim:deathPlace": "Leipzig",
           "role": "erwähnt",
           "@type": "rico:Person"
         },
         {
           "name": "Pfitzner, Hans",
           "@id": "wd:Q57358",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q57358",
+          "m3gim:occupation": [
+            "Komponist",
+            "Dirigent",
+            "Hochschullehrer",
+            "Schriftsteller",
+            "Pianist"
+          ],
+          "m3gim:birthDate": "1869-05-05",
+          "m3gim:deathDate": "1949-05-22",
+          "m3gim:birthPlace": "Moskau",
+          "m3gim:deathPlace": "Salzburg",
           "role": "erwähnt",
           "@type": "rico:Person"
         }
@@ -2360,52 +3025,124 @@
         {
           "name": "Wagner, Wieland",
           "@id": "wd:Q60465",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q60465",
+          "m3gim:occupation": [
+            "Bühnenregisseur",
+            "Komponist",
+            "Schriftsteller",
+            "Schauspieler",
+            "Szenograf",
+            "Regisseur",
+            "Choreograf"
+          ],
+          "m3gim:birthDate": "1917-01-05",
+          "m3gim:deathDate": "1966-10-17",
+          "m3gim:birthPlace": "Bayreuth",
+          "m3gim:deathPlace": "München",
           "role": "regisseur:in",
           "@type": "rico:Person"
         },
         {
           "name": "Gluck, Christoph Willibald",
+          "@id": "wd:Q130759",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q130759",
+          "m3gim:occupation": [
+            "Komponist",
+            "Dirigent"
+          ],
+          "m3gim:birthDate": "1714-07-02",
+          "m3gim:deathDate": "1787-11-15",
+          "m3gim:birthPlace": "Erasbach",
+          "m3gim:deathPlace": "Wien",
           "role": "komponist:in",
           "@type": "rico:Person"
         },
         {
           "name": "Calzabigi, Ranieri de",
+          "@id": "wd:Q1310912",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1310912",
+          "m3gim:occupation": [
+            "Librettist",
+            "Schriftsteller",
+            "Dichter"
+          ],
+          "m3gim:birthDate": "1714-12-23",
+          "m3gim:deathDate": "1795-07-01",
+          "m3gim:birthPlace": "Livorno",
+          "m3gim:deathPlace": "Neapel",
           "role": "librettist:in",
           "@type": "rico:Person"
         },
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94208",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Kupper, Annelies",
           "@id": "wd:Q75998",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q75998",
+          "m3gim:occupation": [
+            "Opernsänger",
+            "Hochschullehrer"
+          ],
+          "m3gim:voiceType": "Sopran",
+          "m3gim:birthDate": "1906-07-21",
+          "m3gim:deathDate": "1987-12-08",
+          "m3gim:birthPlace": "Kłodzko",
+          "m3gim:deathPlace": "Haar",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Fahberg, Antonia",
           "@id": "wd:Q598316",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q598316",
+          "m3gim:occupation": [
+            "Opernsänger"
+          ],
+          "m3gim:voiceType": "Sopran",
+          "m3gim:birthDate": "1928-05-19",
+          "m3gim:deathDate": "2016-10-21",
+          "m3gim:birthPlace": "Wien",
+          "m3gim:deathPlace": "München",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Knappertsbusch, Hans",
           "@id": "wd:Q57425",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q57425",
+          "m3gim:occupation": [
+            "Dirigent",
+            "Hochschullehrer",
+            "Komponist"
+          ],
+          "m3gim:birthDate": "1888-03-12",
+          "m3gim:deathDate": "1965-10-25",
+          "m3gim:birthPlace": "Elberfeld",
+          "m3gim:deathPlace": "München",
           "role": "dirigent:in",
           "@type": "rico:Person"
         },
         {
           "name": "Erlenwein, Herbert",
           "@id": "wd:Q95636832",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q95636832",
+          "m3gim:occupation": [
+            "Komponist"
+          ],
+          "m3gim:birthDate": "1896-00-00",
+          "m3gim:deathDate": "1960-00-00",
           "role": "chorleiter:in",
           "@type": "rico:Person"
         },
         {
           "name": "Bayerische Staatsoper",
           "@id": "wd:Q681931",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q681931",
           "role": "erwähnt",
           "@type": "rico:CorporateBody"
         },
@@ -2486,11 +3223,31 @@
         {
           "name": "Grob-Prandl, Gertrude",
           "@id": "wd:Q3818034",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q3818034",
+          "m3gim:occupation": [
+            "Opernsänger"
+          ],
+          "m3gim:voiceType": "Sopran",
+          "m3gim:birthDate": "1917-11-11",
+          "m3gim:deathDate": "1995-05-16",
+          "m3gim:birthPlace": "Wien",
+          "m3gim:deathPlace": "Wien",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Ernest, Wilhelm",
+          "@id": "wd:Q2572555",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q2572555",
+          "m3gim:occupation": [
+            "Hochschullehrer",
+            "Theologe",
+            "katholischer Priester"
+          ],
+          "m3gim:birthDate": "1927-10-09",
+          "m3gim:deathDate": "2001-08-01",
+          "m3gim:birthPlace": "Bonenburg",
+          "m3gim:deathPlace": "Erfurt",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -2502,12 +3259,30 @@
         {
           "name": "Schöffler, Paul",
           "@id": "wd:Q71953",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q71953",
+          "m3gim:occupation": [
+            "Opernsänger"
+          ],
+          "m3gim:voiceType": "Bassbariton",
+          "m3gim:birthDate": "1897-09-15",
+          "m3gim:deathDate": "1977-11-21",
+          "m3gim:birthPlace": "Dresden",
+          "m3gim:deathPlace": "Amersham",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Ferenz, Willy",
           "@id": "wd:Q47291788",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q47291788",
+          "m3gim:occupation": [
+            "Opernsänger"
+          ],
+          "m3gim:voiceType": "Bariton",
+          "m3gim:birthDate": "1923-10-22",
+          "m3gim:deathDate": "1998-07-10",
+          "m3gim:birthPlace": "Wien",
+          "m3gim:deathPlace": "Zürich",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -2534,6 +3309,8 @@
         {
           "name": "Lauro, Michele",
           "@id": "wd:Q133793307",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q133793307",
+          "m3gim:birthDate": "1900-00-00",
           "role": "chorleiter:in",
           "@type": "rico:Person"
         },
@@ -2545,12 +3322,22 @@
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94208",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Rott, Adolf",
           "@id": "wd:Q364029",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q364029",
+          "m3gim:occupation": [
+            "Bühnenregisseur",
+            "Regisseur"
+          ],
+          "m3gim:birthDate": "1905-12-14",
+          "m3gim:deathDate": "1982-07-24",
+          "m3gim:birthPlace": "Barmen",
+          "m3gim:deathPlace": "Wien",
           "role": "regisseur:in",
           "@type": "rico:Person"
         },
@@ -2573,18 +3360,32 @@
       "rico:hasOrHadSubject": [
         {
           "name": "Tristan und Isolde",
+          "@id": "wd:Q115127657",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q115127657",
+          "m3gim:wdGenre": [
+            "Oper"
+          ],
+          "m3gim:premiereDate": "1986-07-31",
           "role": "aufführung",
           "@type": "m3gim:MusicalWork",
           "komponist": "Wagner, Richard"
         },
         {
           "name": "Don Giovanni",
+          "@id": "wd:Q3510792",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q3510792",
+          "m3gim:wdGenre": [
+            "Popmusik"
+          ],
+          "m3gim:premiereDate": "1986-01-01",
           "role": "erwähnt",
           "@type": "m3gim:MusicalWork",
           "komponist": "Mozart, Wolfgang Amadeus"
         },
         {
           "name": "La Gioconda",
+          "@id": "wd:Q25218531",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q25218531",
           "role": "erwähnt",
           "@type": "m3gim:MusicalWork",
           "komponist": "Ponchielli, Amilcare"
@@ -2592,16 +3393,39 @@
         {
           "name": "Tasso, Fiorenzo",
           "@id": "wd:Q137834857",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q137834857",
+          "m3gim:occupation": [
+            "Opernsänger"
+          ],
+          "m3gim:voiceType": "Tenor",
           "role": "erwähnt",
           "@type": "rico:Person"
         },
         {
           "name": "Vacchiano",
+          "@id": "wd:Q2580837",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q2580837",
+          "m3gim:occupation": [
+            "Musiker",
+            "Musikpädagoge",
+            "Trompeter"
+          ],
+          "m3gim:birthDate": "1912-05-23",
+          "m3gim:deathDate": "2005-09-19",
+          "m3gim:birthPlace": "Portland",
+          "m3gim:deathPlace": "New York City",
           "role": "erwähnt",
           "@type": "rico:Person"
         },
         {
           "name": "Campese",
+          "@id": "wd:Q5028328",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q5028328",
+          "m3gim:occupation": [
+            "Rugby-Union-Spieler"
+          ],
+          "m3gim:birthDate": "1984-12-19",
+          "m3gim:birthPlace": "Sydney",
           "role": "erwähnt",
           "@type": "rico:Person"
         }
@@ -2643,42 +3467,112 @@
         {
           "name": "Wagner, Wieland",
           "@id": "wd:Q60465",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q60465",
+          "m3gim:occupation": [
+            "Bühnenregisseur",
+            "Komponist",
+            "Schriftsteller",
+            "Schauspieler",
+            "Szenograf",
+            "Regisseur",
+            "Choreograf"
+          ],
+          "m3gim:birthDate": "1917-01-05",
+          "m3gim:deathDate": "1966-10-17",
+          "m3gim:birthPlace": "Bayreuth",
+          "m3gim:deathPlace": "München",
           "role": "regisseur:in",
           "@type": "rico:Person"
         },
         {
           "name": "Keilberth, Joseph",
           "@id": "wd:Q61123",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q61123",
+          "m3gim:occupation": [
+            "Dirigent",
+            "Musikdirektor"
+          ],
+          "m3gim:birthDate": "1908-04-19",
+          "m3gim:deathDate": "1968-07-20",
+          "m3gim:birthPlace": "Karlsruhe",
+          "m3gim:deathPlace": "München",
           "role": "dirigent:in",
           "@type": "rico:Person"
         },
         {
           "name": "Jochum, Eugen",
           "@id": "wd:Q57419",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q57419",
+          "m3gim:occupation": [
+            "Dirigent",
+            "Kapellmeister"
+          ],
+          "m3gim:birthDate": "1902-11-01",
+          "m3gim:deathDate": "1987-03-26",
+          "m3gim:birthPlace": "Babenhausen",
+          "m3gim:deathPlace": "München",
           "role": "dirigent:in",
           "@type": "rico:Person"
         },
         {
           "name": "Pitz, Wilhelm",
           "@id": "wd:Q2574498",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q2574498",
+          "m3gim:occupation": [
+            "Musiker",
+            "Dirigent"
+          ],
+          "m3gim:birthDate": "1897-08-25",
+          "m3gim:deathDate": "1973-11-21",
+          "m3gim:birthPlace": "Breinig",
+          "m3gim:deathPlace": "Aachen",
           "role": "chorleiter:in",
           "@type": "rico:Person"
         },
         {
           "name": "Mödl, Martha",
           "@id": "wd:Q62964",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q62964",
+          "m3gim:occupation": [
+            "Opernsänger",
+            "Autobiograf"
+          ],
+          "m3gim:voiceType": "Sopran",
+          "m3gim:birthDate": "1912-03-22",
+          "m3gim:deathDate": "2001-12-17",
+          "m3gim:birthPlace": "Nürnberg",
+          "m3gim:deathPlace": "Stuttgart",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Windgassen, Wolfgang",
           "@id": "wd:Q60906",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q60906",
+          "m3gim:occupation": [
+            "Opernsänger"
+          ],
+          "m3gim:voiceType": "Heldentenor",
+          "m3gim:birthDate": "1914-06-26",
+          "m3gim:deathDate": "1974-09-08",
+          "m3gim:birthPlace": "Annemasse",
+          "m3gim:deathPlace": "Stuttgart",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Greindl, Josef",
           "@id": "wd:Q63857",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q63857",
+          "m3gim:occupation": [
+            "Opernsänger",
+            "Hochschullehrer"
+          ],
+          "m3gim:voiceType": "Bass",
+          "m3gim:birthDate": "1912-12-23",
+          "m3gim:deathDate": "1993-04-16",
+          "m3gim:birthPlace": "München",
+          "m3gim:deathPlace": "Wien",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -2695,17 +3589,37 @@
         {
           "name": "Neidlinger, Gustav",
           "@id": "wd:Q68344",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q68344",
+          "m3gim:occupation": [
+            "Opernsänger"
+          ],
+          "m3gim:voiceType": "Bassbariton",
+          "m3gim:birthDate": "1910-03-21",
+          "m3gim:deathDate": "1991-12-26",
+          "m3gim:birthPlace": "Mainz",
+          "m3gim:deathPlace": "Bad Ems",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94208",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Ilosvay",
+          "@id": "wd:Q1896516",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1896516",
+          "m3gim:occupation": [
+            "Opernsänger"
+          ],
+          "m3gim:voiceType": "Alt",
+          "m3gim:birthDate": "1913-05-08",
+          "m3gim:deathDate": "1987-06-16",
+          "m3gim:birthPlace": "Budapest",
+          "m3gim:deathPlace": "Hamburg",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -2717,53 +3631,128 @@
         {
           "name": "Zimmermann, Erika",
           "@id": "wd:Q95756451",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q95756451",
+          "m3gim:occupation": [
+            "Sänger",
+            "Musiker"
+          ],
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Plümacher, Hetty",
           "@id": "wd:Q1616310",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1616310",
+          "m3gim:occupation": [
+            "Opernsänger",
+            "Hochschullehrer"
+          ],
+          "m3gim:voiceType": "Mezzosopran",
+          "m3gim:birthDate": "1919-12-03",
+          "m3gim:deathDate": "2005-06-03",
+          "m3gim:birthPlace": "Solingen",
+          "m3gim:deathPlace": "Steinenbronn",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Litz, Gisela",
           "@id": "wd:Q5564902",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q5564902",
+          "m3gim:occupation": [
+            "Opernsänger"
+          ],
+          "m3gim:voiceType": "Alt",
+          "m3gim:birthDate": "1922-12-14",
+          "m3gim:deathDate": "2017-01-01",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Varnay, Astrid",
           "@id": "wd:Q254518",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q254518",
+          "m3gim:occupation": [
+            "Opernsänger",
+            "Biograf",
+            "Tagebuchschreiber",
+            "Pianist"
+          ],
+          "m3gim:voiceType": "Mezzosopran",
+          "m3gim:birthDate": "1918-04-25",
+          "m3gim:deathDate": "2006-09-04",
+          "m3gim:birthPlace": "Stockholm",
+          "m3gim:deathPlace": "München",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Vinay, Ramon",
+          "@id": "wd:Q748221",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q748221",
+          "m3gim:occupation": [
+            "Opernsänger",
+            "Geiger",
+            "Schauspieler"
+          ],
+          "m3gim:voiceType": "Bariton",
+          "m3gim:birthDate": "1911-08-31",
+          "m3gim:deathDate": "1996-01-04",
+          "m3gim:birthPlace": "Chillán",
+          "m3gim:deathPlace": "Puebla",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Weber, Ludwig",
           "@id": "wd:Q136748514",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q136748514",
+          "m3gim:birthDate": "1886-11-03",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Eschert, Hasso",
           "@id": "wd:Q95339861",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q95339861",
+          "m3gim:occupation": [
+            "Musiker",
+            "Sänger"
+          ],
+          "m3gim:birthDate": "1917-11-30",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Stolze, Gerhard",
           "@id": "wd:Q73847",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q73847",
+          "m3gim:occupation": [
+            "Opernsänger"
+          ],
+          "m3gim:voiceType": "Tenor",
+          "m3gim:birthDate": "1926-10-01",
+          "m3gim:deathDate": "1979-03-11",
+          "m3gim:birthPlace": "Dessau",
+          "m3gim:deathPlace": "Garmisch-Partenkirchen",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Adam, Theo",
           "@id": "wd:Q64414",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q64414",
+          "m3gim:occupation": [
+            "Opernsänger",
+            "Hochschullehrer",
+            "Komponist",
+            "Regisseur"
+          ],
+          "m3gim:voiceType": "Bassbariton",
+          "m3gim:birthDate": "1926-08-01",
+          "m3gim:deathDate": "2019-01-10",
+          "m3gim:birthPlace": "Dresden",
+          "m3gim:deathPlace": "Dresden",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -2775,12 +3764,31 @@
         {
           "name": "Wagner, Richard",
           "@id": "wd:Q1511",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1511",
+          "m3gim:occupation": [
+            "Komponist",
+            "Librettist",
+            "Dirigent",
+            "Essayist",
+            "Bühnenregisseur",
+            "Autobiograf",
+            "Dichter",
+            "Pianist",
+            "Musikkritiker",
+            "Tagebuchschreiber",
+            "Schriftsteller"
+          ],
+          "m3gim:birthDate": "1813-05-22",
+          "m3gim:deathDate": "1883-02-13",
+          "m3gim:birthPlace": "Leipzig",
+          "m3gim:deathPlace": "Venedig",
           "role": "komponist:in",
           "@type": "rico:Person"
         },
         {
           "name": "Bayreuther Festspiele",
           "@id": "wd:Q157596",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q157596",
           "role": "rahmenveranstaltung",
           "@type": "rico:CorporateBody"
         }
@@ -2799,6 +3807,12 @@
         },
         {
           "name": "Tristan und Isolde",
+          "@id": "wd:Q115127657",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q115127657",
+          "m3gim:wdGenre": [
+            "Oper"
+          ],
+          "m3gim:premiereDate": "1986-07-31",
           "role": "premiere",
           "@type": "m3gim:MusicalWork",
           "komponist": "Wagner, Richard"
@@ -2806,6 +3820,15 @@
         {
           "name": "Eberhardt, Paul",
           "@id": "wd:Q94761352",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94761352",
+          "m3gim:occupation": [
+            "Theologe",
+            "Herausgeber",
+            "Schriftsteller"
+          ],
+          "m3gim:birthDate": "1879-12-02",
+          "m3gim:deathDate": "1923-00-00",
+          "m3gim:birthPlace": "Q490521",
           "role": "erwähnt",
           "@type": "rico:Person"
         }
@@ -2936,6 +3959,7 @@
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94208",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -2952,12 +3976,32 @@
         {
           "name": "Oboussier, Robert",
           "@id": "wd:Q12333612",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q12333612",
+          "m3gim:occupation": [
+            "Komponist",
+            "Musikkritiker",
+            "Redakteur"
+          ],
+          "m3gim:birthDate": "1900-07-09",
+          "m3gim:deathDate": "1957-06-09",
+          "m3gim:birthPlace": "Antwerpen",
+          "m3gim:deathPlace": "Zürich",
           "role": "komponist:in",
           "@type": "rico:Person"
         },
         {
           "name": "Steinecke, Wolfgang",
           "@id": "wd:Q16720951",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q16720951",
+          "m3gim:occupation": [
+            "Musikwissenschaftler",
+            "Komponist",
+            "Musiktheoretiker"
+          ],
+          "m3gim:birthDate": "1910-04-22",
+          "m3gim:deathDate": "1961-12-23",
+          "m3gim:birthPlace": "Essen",
+          "m3gim:deathPlace": "Darmstadt",
           "role": "herausgeber:in",
           "@type": "rico:Person"
         },
@@ -3004,6 +4048,24 @@
         {
           "name": "Adorno, Theodor W.",
           "@id": "wd:Q152388",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q152388",
+          "m3gim:occupation": [
+            "Philosoph",
+            "Komponist",
+            "Musikwissenschaftler",
+            "Soziologe",
+            "Hochschullehrer",
+            "Literaturkritiker",
+            "Musikkritiker",
+            "Aphoristiker",
+            "Pianist",
+            "Schriftsteller",
+            "Ästhetiker"
+          ],
+          "m3gim:birthDate": "1903-09-11",
+          "m3gim:deathDate": "1969-08-06",
+          "m3gim:birthPlace": "Frankfurt am Main",
+          "m3gim:deathPlace": "Visp",
           "role": "erwähnt",
           "@type": "rico:Person"
         }
@@ -3047,18 +4109,52 @@
         {
           "name": "Mazzolà, Caterino",
           "@id": "wd:Q2856477",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q2856477",
+          "m3gim:occupation": [
+            "Librettist",
+            "Schriftsteller",
+            "Dichter"
+          ],
+          "m3gim:birthDate": "1745-01-18",
+          "m3gim:deathDate": "1806-07-16",
+          "m3gim:birthPlace": "Longarone",
+          "m3gim:deathPlace": "Venedig",
           "role": "librettist:in",
           "@type": "rico:Person"
         },
         {
           "name": "Curjel, Hans",
           "@id": "wd:Q17249803",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q17249803",
+          "m3gim:occupation": [
+            "Kunsthistoriker",
+            "Drehbuchautor"
+          ],
+          "m3gim:birthDate": "1896-01-01",
+          "m3gim:deathDate": "1974-01-01",
+          "m3gim:birthPlace": "Karlsruhe",
+          "m3gim:deathPlace": "Zürich",
           "role": "übersetzer:in",
           "@type": "rico:Person"
         },
         {
           "name": "Paumgartner, Bernhard",
           "@id": "wd:Q214365",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q214365",
+          "m3gim:occupation": [
+            "Dirigent",
+            "Komponist",
+            "Autor",
+            "Musikwissenschaftler",
+            "Musikhistoriker",
+            "Hochschullehrer",
+            "Biograf",
+            "Übersetzer"
+          ],
+          "m3gim:birthDate": "1887-11-14",
+          "m3gim:deathDate": "1971-07-27",
+          "m3gim:birthPlace": "Wien",
+          "m3gim:deathPlace": "Salzburg",
           "role": "arrangeur:in",
           "@type": "rico:Person"
         },
@@ -3070,29 +4166,64 @@
         {
           "name": "Richter, Gerd",
           "@id": "wd:Q116526092",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q116526092",
+          "m3gim:occupation": [
+            "Tischtennisspieler"
+          ],
+          "m3gim:birthDate": "1974-12-29",
           "role": "bühnenbildner:in",
           "@type": "rico:Person"
         },
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94208",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Traxel, Josef",
           "@id": "wd:Q92013",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q92013",
+          "m3gim:occupation": [
+            "Opernsänger",
+            "Sänger"
+          ],
+          "m3gim:voiceType": "Tenor",
+          "m3gim:birthDate": "1916-09-29",
+          "m3gim:deathDate": "1975-10-08",
+          "m3gim:birthPlace": "Mainz",
+          "m3gim:deathPlace": "Stuttgart",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Wißmann, Lore",
+          "@id": "wd:Q1619892",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1619892",
+          "m3gim:occupation": [
+            "Opernsänger"
+          ],
+          "m3gim:voiceType": "Sopran",
+          "m3gim:birthDate": "1922-06-22",
+          "m3gim:deathDate": "2007-12-25",
+          "m3gim:birthPlace": "Neckartailfingen",
+          "m3gim:deathPlace": "Q256364",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Pfeifle, Alfred",
           "@id": "wd:Q2645656",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q2645656",
+          "m3gim:occupation": [
+            "Opernsänger"
+          ],
+          "m3gim:voiceType": "Tenor",
+          "m3gim:birthDate": "1916-05-22",
+          "m3gim:deathDate": "1986-04-09",
+          "m3gim:birthPlace": "Stuttgart",
+          "m3gim:deathPlace": "Stuttgart",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -3104,6 +4235,12 @@
         {
           "name": "Grefe, Gustav",
           "@id": "wd:Q112472552",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q112472552",
+          "m3gim:occupation": [
+            "Opernsänger"
+          ],
+          "m3gim:birthDate": "1910-00-00",
+          "m3gim:deathDate": "1997-00-00",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -3115,6 +4252,12 @@
         {
           "name": "Dünnwald, Josef",
           "@id": "wd:Q25271239",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q25271239",
+          "m3gim:occupation": [
+            "Dirigent"
+          ],
+          "m3gim:birthDate": "1909-11-03",
+          "m3gim:deathDate": "1995-07-07",
           "role": "dirigent:in",
           "@type": "rico:Person"
         },
@@ -3148,6 +4291,12 @@
         },
         {
           "name": "Don Giovanni",
+          "@id": "wd:Q3510792",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q3510792",
+          "m3gim:wdGenre": [
+            "Popmusik"
+          ],
+          "m3gim:premiereDate": "1986-01-01",
           "role": "erwähnt",
           "@type": "m3gim:MusicalWork",
           "komponist": "Mozart, Wolfgang Amadeus"
@@ -3164,11 +4313,30 @@
         },
         {
           "name": "Leopold III.",
+          "@id": "wd:Q349086",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q349086",
+          "m3gim:occupation": [
+            "Herrscher"
+          ],
+          "m3gim:birthDate": "1073-09-29",
+          "m3gim:deathDate": "1136-11-15",
+          "m3gim:birthPlace": "Melk",
+          "m3gim:deathPlace": "Klosterneuburg",
           "role": "erwähnt",
           "@type": "rico:Person"
         },
         {
           "name": "Gluck, Christoph Willibald",
+          "@id": "wd:Q130759",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q130759",
+          "m3gim:occupation": [
+            "Komponist",
+            "Dirigent"
+          ],
+          "m3gim:birthDate": "1714-07-02",
+          "m3gim:deathDate": "1787-11-15",
+          "m3gim:birthPlace": "Erasbach",
+          "m3gim:deathPlace": "Wien",
           "role": "erwähnt",
           "@type": "rico:Person"
         },
@@ -3185,16 +4353,62 @@
         {
           "name": "Wagner, Richard",
           "@id": "wd:Q1511",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1511",
+          "m3gim:occupation": [
+            "Komponist",
+            "Librettist",
+            "Dirigent",
+            "Essayist",
+            "Bühnenregisseur",
+            "Autobiograf",
+            "Dichter",
+            "Pianist",
+            "Musikkritiker",
+            "Tagebuchschreiber",
+            "Schriftsteller"
+          ],
+          "m3gim:birthDate": "1813-05-22",
+          "m3gim:deathDate": "1883-02-13",
+          "m3gim:birthPlace": "Leipzig",
+          "m3gim:deathPlace": "Venedig",
           "role": "erwähnt",
           "@type": "rico:Person"
         },
         {
           "name": "Süßmayr, Franz Xaver",
+          "@id": "wd:Q310518",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q310518",
+          "m3gim:occupation": [
+            "Komponist",
+            "Dirigent"
+          ],
+          "m3gim:birthDate": "1766-07-22",
+          "m3gim:deathDate": "1803-09-17",
+          "m3gim:birthPlace": "Schwanenstadt",
+          "m3gim:deathPlace": "Wien",
           "role": "erwähnt",
           "@type": "rico:Person"
         },
         {
           "name": "Bonaparte, Napoleon",
+          "@id": "wd:Q517",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q517",
+          "m3gim:occupation": [
+            "Politiker",
+            "Staatsmann",
+            "Offizier",
+            "Kunstsammler",
+            "Kaiser",
+            "Souverän",
+            "Militant",
+            "Feldherr",
+            "Monarch",
+            "Heeresoffizier"
+          ],
+          "m3gim:birthDate": "1769-08-15",
+          "m3gim:deathDate": "1821-05-05",
+          "m3gim:birthPlace": "Ajaccio",
+          "m3gim:deathPlace": "Longwood House",
           "role": "erwähnt",
           "@type": "rico:Person"
         }
@@ -3260,41 +4474,92 @@
         {
           "name": "Knappertsbusch, Hans",
           "@id": "wd:Q57425",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q57425",
+          "m3gim:occupation": [
+            "Dirigent",
+            "Hochschullehrer",
+            "Komponist"
+          ],
+          "m3gim:birthDate": "1888-03-12",
+          "m3gim:deathDate": "1965-10-25",
+          "m3gim:birthPlace": "Elberfeld",
+          "m3gim:deathPlace": "München",
           "role": "dirigent:in",
           "@type": "rico:Person"
         },
         {
           "name": "Kusche, benno",
           "@id": "wd:Q817948",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q817948",
+          "m3gim:occupation": [
+            "Opernsänger"
+          ],
+          "m3gim:voiceType": "Bariton",
+          "m3gim:birthDate": "1916-01-30",
+          "m3gim:deathDate": "2010-05-14",
+          "m3gim:birthPlace": "Freiburg im Breisgau",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Frantz, Ferdinand",
           "@id": "wd:Q77205",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q77205",
+          "m3gim:occupation": [
+            "Opernsänger"
+          ],
+          "m3gim:voiceType": "Bassbariton",
+          "m3gim:birthDate": "1906-02-08",
+          "m3gim:deathDate": "1959-05-26",
+          "m3gim:birthPlace": "Kassel",
+          "m3gim:deathPlace": "München",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Böhme, Kurt",
           "@id": "wd:Q10314824",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q10314824",
+          "m3gim:occupation": [
+            "Ubootfahrer",
+            "Soldat",
+            "Marineoffizier"
+          ],
+          "m3gim:birthDate": "1917-01-21",
+          "m3gim:deathDate": "1984-07-16",
+          "m3gim:birthPlace": "Elberfeld",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94208",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Holm, Richard",
+          "@id": "wd:Q19273665",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q19273665",
+          "m3gim:occupation": [
+            "Botaniker",
+            "Sammler",
+            "Hochschullehrer",
+            "Pflanzensammler",
+            "wissenschaftlicher Sammler"
+          ],
+          "m3gim:birthDate": "1925-01-01",
+          "m3gim:deathDate": "1987-00-00",
+          "m3gim:birthPlace": "Dallas",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Prinzregententheater",
           "@id": "wd:Q456586",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q456586",
+          "m3gim:inception": "1901-01-01",
           "role": "auffuehrungsort",
           "@type": "rico:CorporateBody"
         },
@@ -3317,6 +4582,7 @@
       "rico:hasOrHadSubject": {
         "name": "Die Meistersinger von Nürnberg",
         "@id": "wd:Q190891",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q190891",
         "role": "festvorstellung",
         "@type": "m3gim:MusicalWork",
         "komponist": "Wagner, Richard"
@@ -3369,6 +4635,16 @@
       "m3gim:hasAssociatedAgent": [
         {
           "name": "Munch, Fritz",
+          "@id": "wd:Q3087945",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q3087945",
+          "m3gim:occupation": [
+            "Dirigent",
+            "Musikwissenschaftler"
+          ],
+          "m3gim:birthDate": "1890-06-02",
+          "m3gim:deathDate": "1970-03-10",
+          "m3gim:birthPlace": "Straßburg",
+          "m3gim:deathPlace": "Niederbronn-les-Bains",
           "role": "dirigent:in",
           "@type": "rico:Person"
         },
@@ -3380,18 +4656,40 @@
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94208",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Haefliger, Ernst",
           "@id": "wd:Q124177",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q124177",
+          "m3gim:occupation": [
+            "Opernsänger",
+            "Musikpädagoge"
+          ],
+          "m3gim:voiceType": "Tenor",
+          "m3gim:birthDate": "1919-07-06",
+          "m3gim:deathDate": "2007-03-17",
+          "m3gim:birthPlace": "Davos",
+          "m3gim:deathPlace": "Davos",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Strauss, Richard",
           "@id": "wd:Q13894",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q13894",
+          "m3gim:occupation": [
+            "Komponist",
+            "Dirigent",
+            "Librettist",
+            "Musiker"
+          ],
+          "m3gim:birthDate": "1864-06-11",
+          "m3gim:deathDate": "1949-09-08",
+          "m3gim:birthPlace": "München",
+          "m3gim:deathPlace": "Garmisch-Partenkirchen",
           "role": "komponist:in",
           "@type": "rico:Person"
         },
@@ -3429,6 +4727,9 @@
       "rico:hasOrHadSubject": [
         {
           "name": "Le chant de la Terre",
+          "@id": "wd:Q3221001",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q3221001",
+          "m3gim:wdComposer": "Déodat de Séverac",
           "role": "aufführung",
           "@type": "m3gim:MusicalWork",
           "komponist": "Mahler, Gustav"
@@ -3458,40 +4759,101 @@
         {
           "name": "Wagner, Richard",
           "@id": "wd:Q1511",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1511",
+          "m3gim:occupation": [
+            "Komponist",
+            "Librettist",
+            "Dirigent",
+            "Essayist",
+            "Bühnenregisseur",
+            "Autobiograf",
+            "Dichter",
+            "Pianist",
+            "Musikkritiker",
+            "Tagebuchschreiber",
+            "Schriftsteller"
+          ],
+          "m3gim:birthDate": "1813-05-22",
+          "m3gim:deathDate": "1883-02-13",
+          "m3gim:birthPlace": "Leipzig",
+          "m3gim:deathPlace": "Venedig",
           "role": "komponist:in",
           "@type": "rico:Person"
         },
         {
           "name": "Richter, Gerd",
           "@id": "wd:Q116526092",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q116526092",
+          "m3gim:occupation": [
+            "Tischtennisspieler"
+          ],
+          "m3gim:birthDate": "1974-12-29",
           "role": "bühnenbildner:in",
           "@type": "rico:Person"
         },
         {
           "name": "Gielen, Josef",
           "@id": "wd:Q1465297",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1465297",
+          "m3gim:occupation": [
+            "Schauspieler",
+            "Regisseur"
+          ],
+          "m3gim:birthDate": "1890-12-20",
+          "m3gim:deathDate": "1968-10-19",
+          "m3gim:birthPlace": "Köln",
+          "m3gim:deathPlace": "Wien",
           "role": "regisseur:in",
           "@type": "rico:Person"
         },
         {
           "name": "Hanka, Erika",
           "@id": "wd:Q50825278",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q50825278",
+          "m3gim:occupation": [
+            "Balletttänzer",
+            "Choreograf"
+          ],
+          "m3gim:birthDate": "1905-05-18",
+          "m3gim:deathDate": "1958-05-15",
+          "m3gim:birthPlace": "Vinkovci",
+          "m3gim:deathPlace": "Wien",
           "role": "choreograph:in",
           "@type": "rico:Person"
         },
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94208",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Traute, Elisabeth",
+          "@id": "wd:Q55676977",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q55676977",
+          "m3gim:occupation": [
+            "Hausfrau"
+          ],
+          "m3gim:birthDate": "1540-04-23",
+          "m3gim:deathDate": "1607-01-31",
+          "m3gim:birthPlace": "Magdeburg",
+          "m3gim:deathPlace": "Magdeburg",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Wächter, Eberhard",
+          "@id": "wd:Q481471",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q481471",
+          "m3gim:occupation": [
+            "Maler",
+            "Historienmaler"
+          ],
+          "m3gim:birthDate": "1762-02-28",
+          "m3gim:deathDate": "1852-08-14",
+          "m3gim:birthPlace": "Balingen",
+          "m3gim:deathPlace": "Stuttgart",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -3503,6 +4865,8 @@
         {
           "name": "Weber, Ludwig",
           "@id": "wd:Q136748514",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q136748514",
+          "m3gim:birthDate": "1886-11-03",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -3519,12 +4883,29 @@
         {
           "name": "Meyer-Welfing, Hugo",
           "@id": "wd:Q55677315",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q55677315",
+          "m3gim:occupation": [
+            "Sänger",
+            "Opernsänger"
+          ],
+          "m3gim:birthDate": "1905-03-25",
+          "m3gim:deathDate": "1969-11-02",
+          "m3gim:birthPlace": "Hannover",
+          "m3gim:deathPlace": "Wien",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Pantscheff, Ljubomir",
           "@id": "wd:Q55675699",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q55675699",
+          "m3gim:occupation": [
+            "Sänger"
+          ],
+          "m3gim:birthDate": "1913-08-17",
+          "m3gim:deathDate": "2003-08-30",
+          "m3gim:birthPlace": "Sofia",
+          "m3gim:deathPlace": "Wien",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -3536,6 +4917,9 @@
         {
           "name": "Rossmayer, Richard",
           "@id": "wd:Q110071082",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q110071082",
+          "m3gim:birthDate": "1905-01-03",
+          "m3gim:deathDate": "1972-06-16",
           "role": "chorleiter:in",
           "@type": "rico:Person"
         },
@@ -3573,12 +4957,33 @@
         },
         {
           "name": "Tizian",
+          "@id": "wd:Q47551",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q47551",
+          "m3gim:occupation": [
+            "Maler",
+            "Zeichner",
+            "Bauzeichner",
+            "Druckgrafiker",
+            "bildender Künstler"
+          ],
+          "m3gim:birthDate": "1488-00-00",
+          "m3gim:deathDate": "1576-09-26",
+          "m3gim:birthPlace": "Pieve di Cadore",
+          "m3gim:deathPlace": "Venedig",
           "role": "erwähnt",
           "@type": "rico:Person"
         },
         {
           "name": "Masaccio",
           "@id": "wd:Q5811",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q5811",
+          "m3gim:occupation": [
+            "Maler"
+          ],
+          "m3gim:birthDate": "1401-12-21",
+          "m3gim:deathDate": "1428-01-01",
+          "m3gim:birthPlace": "San Giovanni Valdarno",
+          "m3gim:deathPlace": "Rom",
           "role": "erwähnt",
           "@type": "rico:Person"
         },
@@ -3590,6 +4995,16 @@
         {
           "name": "Schalk, Franz",
           "@id": "wd:Q79026",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q79026",
+          "m3gim:occupation": [
+            "Dirigent",
+            "Pädagoge",
+            "Komponist"
+          ],
+          "m3gim:birthDate": "1863-05-27",
+          "m3gim:deathDate": "1931-09-03",
+          "m3gim:birthPlace": "Wien",
+          "m3gim:deathPlace": "Reichenau an der Rax",
           "role": "erwähnt",
           "@type": "rico:Person"
         },
@@ -3600,6 +5015,20 @@
         },
         {
           "name": "Krauß, Clemens",
+          "@id": "wd:Q78918",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q78918",
+          "m3gim:occupation": [
+            "Dirigent",
+            "Komponist",
+            "Librettist",
+            "Hochschullehrer",
+            "Schriftsteller",
+            "Musikdirektor"
+          ],
+          "m3gim:birthDate": "1893-03-31",
+          "m3gim:deathDate": "1954-05-16",
+          "m3gim:birthPlace": "Wien",
+          "m3gim:deathPlace": "Mexiko-Stadt",
           "role": "erwähnt",
           "@type": "rico:Person"
         },
@@ -3611,36 +5040,99 @@
         {
           "name": "Wesendonck, Mathilde",
           "@id": "wd:Q63265",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q63265",
+          "m3gim:occupation": [
+            "Dichter",
+            "Schriftsteller",
+            "Kinderbuchautor"
+          ],
+          "m3gim:birthDate": "1828-12-23",
+          "m3gim:deathDate": "1902-08-31",
+          "m3gim:birthPlace": "Elberfeld",
+          "m3gim:deathPlace": "Altmünster",
           "role": "erwähnt",
           "@type": "rico:Person"
         },
         {
           "name": "Golther, Wolfgang",
           "@id": "wd:Q103583",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q103583",
+          "m3gim:occupation": [
+            "Bibliothekar",
+            "Literaturhistoriker",
+            "Hochschullehrer",
+            "Germanist",
+            "Schriftsteller"
+          ],
+          "m3gim:birthDate": "1863-05-25",
+          "m3gim:deathDate": "1945-12-14",
+          "m3gim:birthPlace": "Stuttgart",
+          "m3gim:deathPlace": "Rostock",
           "role": "erwähnt",
           "@type": "rico:Person"
         },
         {
           "name": "Wagner, Wolfgang",
           "@id": "wd:Q60452",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q60452",
           "role": "erwähnt",
           "@type": "rico:Person"
         },
         {
           "name": "Wagner, Wieland",
           "@id": "wd:Q60465",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q60465",
+          "m3gim:occupation": [
+            "Bühnenregisseur",
+            "Komponist",
+            "Schriftsteller",
+            "Schauspieler",
+            "Szenograf",
+            "Regisseur",
+            "Choreograf"
+          ],
+          "m3gim:birthDate": "1917-01-05",
+          "m3gim:deathDate": "1966-10-17",
+          "m3gim:birthPlace": "Bayreuth",
+          "m3gim:deathPlace": "München",
           "role": "erwähnt",
           "@type": "rico:Person"
         },
         {
           "name": "Roller, Alfred",
           "@id": "wd:Q78981",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q78981",
+          "m3gim:occupation": [
+            "Maler",
+            "Pädagoge",
+            "Lithograf",
+            "Designer",
+            "fashion figure artist",
+            "Szenograf",
+            "Grafiker",
+            "Lehrer",
+            "Illustrator",
+            "Exlibriskünstler"
+          ],
+          "m3gim:birthDate": "1864-10-02",
+          "m3gim:deathDate": "1935-06-21",
+          "m3gim:birthPlace": "Brünn",
+          "m3gim:deathPlace": "Wien",
           "role": "erwähnt",
           "@type": "rico:Person"
         },
         {
           "name": "Kautsky, Hans",
           "@id": "wd:Q1580703",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1580703",
+          "m3gim:occupation": [
+            "Chemiker",
+            "Hochschullehrer"
+          ],
+          "m3gim:birthDate": "1891-04-13",
+          "m3gim:deathDate": "1966-05-15",
+          "m3gim:birthPlace": "Wien",
+          "m3gim:deathPlace": "Kamniška Bistrica",
           "role": "erwähnt",
           "@type": "rico:Person"
         }
@@ -3702,12 +5194,22 @@
         {
           "name": "Rysanek, Leonie",
           "@id": "wd:Q78613",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q78613",
+          "m3gim:occupation": [
+            "Opernsänger"
+          ],
+          "m3gim:voiceType": "Sopran",
+          "m3gim:birthDate": "1926-11-14",
+          "m3gim:deathDate": "1998-03-07",
+          "m3gim:birthPlace": "Wien",
+          "m3gim:deathPlace": "Wien",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94208",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -3724,12 +5226,30 @@
         {
           "name": "Kreppel, Walter",
           "@id": "wd:Q19629015",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q19629015",
+          "m3gim:occupation": [
+            "Musiker",
+            "Sänger",
+            "Opernsänger"
+          ],
+          "m3gim:voiceType": "Bass",
+          "m3gim:birthDate": "1923-06-03",
+          "m3gim:deathDate": "2003-10-18",
+          "m3gim:birthPlace": "Nürnberg",
+          "m3gim:deathPlace": "Wien",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Baylé, Theo",
           "@id": "wd:Q27864063",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q27864063",
+          "m3gim:occupation": [
+            "Sänger"
+          ],
+          "m3gim:voiceType": "Bariton",
+          "m3gim:birthDate": "1912-05-29",
+          "m3gim:deathDate": "1971-04-30",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -3830,12 +5350,22 @@
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94208",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Rysanek, Leonie",
           "@id": "wd:Q78613",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q78613",
+          "m3gim:occupation": [
+            "Opernsänger"
+          ],
+          "m3gim:voiceType": "Sopran",
+          "m3gim:birthDate": "1926-11-14",
+          "m3gim:deathDate": "1998-03-07",
+          "m3gim:birthPlace": "Wien",
+          "m3gim:deathPlace": "Wien",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -3847,12 +5377,30 @@
         {
           "name": "Baylé, Theo",
           "@id": "wd:Q27864063",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q27864063",
+          "m3gim:occupation": [
+            "Sänger"
+          ],
+          "m3gim:voiceType": "Bariton",
+          "m3gim:birthDate": "1912-05-29",
+          "m3gim:deathDate": "1971-04-30",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Kreppel, Walter",
           "@id": "wd:Q19629015",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q19629015",
+          "m3gim:occupation": [
+            "Musiker",
+            "Sänger",
+            "Opernsänger"
+          ],
+          "m3gim:voiceType": "Bass",
+          "m3gim:birthDate": "1923-06-03",
+          "m3gim:deathDate": "2003-10-18",
+          "m3gim:birthPlace": "Nürnberg",
+          "m3gim:deathPlace": "Wien",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -3930,66 +5478,159 @@
         {
           "name": "Tinel, Paul",
           "@id": "wd:Q110850252",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q110850252",
+          "m3gim:occupation": [
+            "Schneider"
+          ],
           "role": "verfasser:in",
           "@type": "rico:Person"
         },
         {
           "name": "Wagner, Wieland",
           "@id": "wd:Q60465",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q60465",
+          "m3gim:occupation": [
+            "Bühnenregisseur",
+            "Komponist",
+            "Schriftsteller",
+            "Schauspieler",
+            "Szenograf",
+            "Regisseur",
+            "Choreograf"
+          ],
+          "m3gim:birthDate": "1917-01-05",
+          "m3gim:deathDate": "1966-10-17",
+          "m3gim:birthPlace": "Bayreuth",
+          "m3gim:deathPlace": "München",
           "role": "regisseur:in",
           "@type": "rico:Person"
         },
         {
           "name": "Mödl, Martha",
           "@id": "wd:Q62964",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q62964",
+          "m3gim:occupation": [
+            "Opernsänger",
+            "Autobiograf"
+          ],
+          "m3gim:voiceType": "Sopran",
+          "m3gim:birthDate": "1912-03-22",
+          "m3gim:deathDate": "2001-12-17",
+          "m3gim:birthPlace": "Nürnberg",
+          "m3gim:deathPlace": "Stuttgart",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Windgassen, Wolfgang",
           "@id": "wd:Q60906",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q60906",
+          "m3gim:occupation": [
+            "Opernsänger"
+          ],
+          "m3gim:voiceType": "Heldentenor",
+          "m3gim:birthDate": "1914-06-26",
+          "m3gim:deathDate": "1974-09-08",
+          "m3gim:birthPlace": "Annemasse",
+          "m3gim:deathPlace": "Stuttgart",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94208",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Neidlinger, Gustav",
           "@id": "wd:Q68344",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q68344",
+          "m3gim:occupation": [
+            "Opernsänger"
+          ],
+          "m3gim:voiceType": "Bassbariton",
+          "m3gim:birthDate": "1910-03-21",
+          "m3gim:deathDate": "1991-12-26",
+          "m3gim:birthPlace": "Mainz",
+          "m3gim:deathPlace": "Bad Ems",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Greindl, Josef",
           "@id": "wd:Q63857",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q63857",
+          "m3gim:occupation": [
+            "Opernsänger",
+            "Hochschullehrer"
+          ],
+          "m3gim:voiceType": "Bass",
+          "m3gim:birthDate": "1912-12-23",
+          "m3gim:deathDate": "1993-04-16",
+          "m3gim:birthPlace": "München",
+          "m3gim:deathPlace": "Wien",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Blankenheim, Toni",
           "@id": "wd:Q95565",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q95565",
+          "m3gim:occupation": [
+            "Opernsänger"
+          ],
+          "m3gim:voiceType": "Bassbariton",
+          "m3gim:birthDate": "1921-12-12",
+          "m3gim:deathDate": "2012-12-11",
+          "m3gim:birthPlace": "Köln",
+          "m3gim:deathPlace": "Hamburg",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Kuën, Paul",
           "@id": "wd:Q105714",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q105714",
+          "m3gim:occupation": [
+            "Opernsänger"
+          ],
+          "m3gim:voiceType": "Tenor",
+          "m3gim:birthDate": "1910-04-08",
+          "m3gim:deathDate": "1997-02-04",
+          "m3gim:birthPlace": "Neuburg an der Kammel",
+          "m3gim:deathPlace": "Sulzberg",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Stolze, Gerhard",
           "@id": "wd:Q73847",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q73847",
+          "m3gim:occupation": [
+            "Opernsänger"
+          ],
+          "m3gim:voiceType": "Tenor",
+          "m3gim:birthDate": "1926-10-01",
+          "m3gim:deathDate": "1979-03-11",
+          "m3gim:birthPlace": "Dessau",
+          "m3gim:deathPlace": "Garmisch-Partenkirchen",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Pitz, Wilhelm",
           "@id": "wd:Q2574498",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q2574498",
+          "m3gim:occupation": [
+            "Musiker",
+            "Dirigent"
+          ],
+          "m3gim:birthDate": "1897-08-25",
+          "m3gim:deathDate": "1973-11-21",
+          "m3gim:birthPlace": "Breinig",
+          "m3gim:deathPlace": "Aachen",
           "role": "chorleiter:in",
           "@type": "rico:Person"
         },
@@ -4001,11 +5642,26 @@
         {
           "name": "Eberhardt, Paul",
           "@id": "wd:Q94761352",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94761352",
+          "m3gim:occupation": [
+            "Theologe",
+            "Herausgeber",
+            "Schriftsteller"
+          ],
+          "m3gim:birthDate": "1879-12-02",
+          "m3gim:deathDate": "1923-00-00",
+          "m3gim:birthPlace": "Q490521",
           "@type": "rico:Person"
         },
         {
           "name": "Thiel, Fred",
           "@id": "wd:Q78170333",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q78170333",
+          "m3gim:occupation": [
+            "Geschäftsmann",
+            "Unternehmensleiter"
+          ],
+          "m3gim:birthDate": "1960-01-01",
           "role": "kostümbildner:in",
           "@type": "rico:Person"
         },
@@ -4016,12 +5672,31 @@
         },
         {
           "name": "Simon, Théo",
+          "@id": "wd:Q20243266",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q20243266",
+          "m3gim:occupation": [
+            "Geologe",
+            "Hochschullehrer"
+          ],
+          "m3gim:birthDate": "1947-00-00",
+          "m3gim:deathDate": "2025-02-15",
+          "m3gim:birthPlace": "Rothenberga",
+          "m3gim:deathPlace": "Fichtenberg",
           "role": "technische leitung",
           "@type": "rico:Person"
         },
         {
           "name": "Keilberth, Joseph",
           "@id": "wd:Q61123",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q61123",
+          "m3gim:occupation": [
+            "Dirigent",
+            "Musikdirektor"
+          ],
+          "m3gim:birthDate": "1908-04-19",
+          "m3gim:deathDate": "1968-07-20",
+          "m3gim:birthPlace": "Karlsruhe",
+          "m3gim:deathPlace": "München",
           "role": "dirigent:in",
           "@type": "rico:Person"
         },
@@ -4033,6 +5708,7 @@
         {
           "name": "Bayreuther Festspiele",
           "@id": "wd:Q157596",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q157596",
           "role": "erwähnt",
           "@type": "rico:CorporateBody"
         }
@@ -4045,6 +5721,12 @@
       "rico:hasOrHadSubject": [
         {
           "name": "Tristan und Isolde",
+          "@id": "wd:Q115127657",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q115127657",
+          "m3gim:wdGenre": [
+            "Oper"
+          ],
+          "m3gim:premiereDate": "1986-07-31",
           "role": "aufführung",
           "@type": "m3gim:MusicalWork",
           "komponist": "Wagner, Richard"
@@ -4052,6 +5734,7 @@
         {
           "name": "Wagner, Wolfgang",
           "@id": "wd:Q60452",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q60452",
           "role": "erwähnt",
           "@type": "rico:Person"
         },
@@ -4163,54 +5846,117 @@
         {
           "name": "Suthaus, Ludwig",
           "@id": "wd:Q70400",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q70400",
+          "m3gim:occupation": [
+            "Opernsänger"
+          ],
+          "m3gim:voiceType": "Heldentenor",
+          "m3gim:birthDate": "1906-12-12",
+          "m3gim:deathDate": "1971-09-07",
+          "m3gim:birthPlace": "Köln",
+          "m3gim:deathPlace": "West-Berlin",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Rialland, Louis",
           "@id": "wd:Q132941819",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q132941819",
+          "m3gim:birthDate": "1919-10-10",
+          "m3gim:deathDate": "1972-01-01",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Massard, Robert",
           "@id": "wd:Q3435871",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q3435871",
+          "m3gim:occupation": [
+            "Opernsänger",
+            "Musikpädagoge",
+            "Kfz-Mechatroniker"
+          ],
+          "m3gim:voiceType": "Bariton",
+          "m3gim:birthDate": "1925-08-15",
+          "m3gim:deathDate": "2025-12-26",
+          "m3gim:birthPlace": "Pau",
+          "m3gim:deathPlace": "Pau",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Rouquetty, Camille",
           "@id": "wd:Q112391565",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q112391565",
+          "m3gim:occupation": [
+            "Opernsänger"
+          ],
+          "m3gim:birthDate": "1910-01-01",
+          "m3gim:deathDate": "1976-03-23",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94208",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Schöffler, Paul",
           "@id": "wd:Q71953",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q71953",
+          "m3gim:occupation": [
+            "Opernsänger"
+          ],
+          "m3gim:voiceType": "Bassbariton",
+          "m3gim:birthDate": "1897-09-15",
+          "m3gim:deathDate": "1977-11-21",
+          "m3gim:birthPlace": "Dresden",
+          "m3gim:deathPlace": "Amersham",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Weber, Ludwig",
           "@id": "wd:Q136748514",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q136748514",
+          "m3gim:birthDate": "1886-11-03",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Varnay, Astrid",
           "@id": "wd:Q254518",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q254518",
+          "m3gim:occupation": [
+            "Opernsänger",
+            "Biograf",
+            "Tagebuchschreiber",
+            "Pianist"
+          ],
+          "m3gim:voiceType": "Mezzosopran",
+          "m3gim:birthDate": "1918-04-25",
+          "m3gim:deathDate": "2006-09-04",
+          "m3gim:birthPlace": "Stockholm",
+          "m3gim:deathPlace": "München",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Knappertsbusch, Hans",
           "@id": "wd:Q57425",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q57425",
+          "m3gim:occupation": [
+            "Dirigent",
+            "Hochschullehrer",
+            "Komponist"
+          ],
+          "m3gim:birthDate": "1888-03-12",
+          "m3gim:deathDate": "1965-10-25",
+          "m3gim:birthPlace": "Elberfeld",
+          "m3gim:deathPlace": "München",
           "role": "dirigent:in",
           "@type": "rico:Person"
         },
@@ -4245,6 +5991,12 @@
       "rico:hasOrHadSubject": [
         {
           "name": "Tristan und Isolde",
+          "@id": "wd:Q115127657",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q115127657",
+          "m3gim:wdGenre": [
+            "Oper"
+          ],
+          "m3gim:premiereDate": "1986-07-31",
           "role": "aufführung",
           "@type": "m3gim:MusicalWork",
           "komponist": "Wagner, Richard"
@@ -4332,6 +6084,7 @@
       "m3gim:hasAssociatedAgent": {
         "name": "Malaniuk, Ira",
         "@id": "wd:Q94208",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q94208",
         "role": "verfasser:in",
         "@type": "rico:Person"
       }
@@ -4353,6 +6106,7 @@
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94208",
           "role": "adressat:in",
           "@type": "rico:Person"
         },
@@ -4376,6 +6130,10 @@
         {
           "name": "New York",
           "@id": "wd:Q1384",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1384",
+          "geo:lat": 43,
+          "geo:long": -75,
+          "m3gim:country": "Vereinigte Staaten",
           "role": "zielort",
           "@type": "rico:Place"
         }
@@ -4398,6 +6156,7 @@
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94208",
           "role": "verfasser:in",
           "@type": "rico:Person"
         },
@@ -4456,11 +6215,20 @@
         {
           "name": "Graz",
           "@id": "wd:Q13298",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q13298",
+          "geo:lat": 47.07083333333333,
+          "geo:long": 15.438611111111111,
+          "m3gim:country": "Österreich",
           "role": "erwähnt",
           "@type": "rico:Place"
         },
         {
           "name": "Zürich",
+          "@id": "wd:Q72",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q72",
+          "geo:lat": 47.37444444444444,
+          "geo:long": 8.54111111111111,
+          "m3gim:country": "Schweiz",
           "role": "erwähnt",
           "@type": "rico:Place"
         },
@@ -4477,28 +6245,50 @@
         {
           "name": "Salzburg",
           "@id": "wd:Q34713",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q34713",
+          "geo:lat": 47.8,
+          "geo:long": 13.045,
+          "m3gim:country": "Österreich",
           "role": "erwähnt",
           "@type": "rico:Place"
         },
         {
           "name": "London",
           "@id": "wd:Q84",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q84",
+          "geo:lat": 51.507222222222,
+          "geo:long": -0.1275,
+          "m3gim:country": "Römisches Kaiserreich",
           "role": "erwähnt",
           "@type": "rico:Place"
         },
         {
           "name": "Paris",
           "@id": "wd:Q90",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q90",
+          "geo:lat": 48.85666666666667,
+          "geo:long": 2.352222222222222,
+          "m3gim:country": "Frankreich",
           "role": "erwähnt",
           "@type": "rico:Place"
         },
         {
           "name": "Mailand",
+          "@id": "wd:Q490",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q490",
+          "geo:lat": 45.466944444444,
+          "geo:long": 9.19,
+          "m3gim:country": "Italien",
           "role": "erwähnt",
           "@type": "rico:Place"
         },
         {
           "name": "Rom",
+          "@id": "wd:Q220",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q220",
+          "geo:lat": 41.893055555556,
+          "geo:long": 12.482777777778,
+          "m3gim:country": "Italien",
           "role": "erwähnt",
           "@type": "rico:Place"
         },
@@ -4515,12 +6305,20 @@
         {
           "name": "Berlin",
           "@id": "wd:Q64",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q64",
+          "geo:lat": 52.516666666667,
+          "geo:long": 13.383333333333,
+          "m3gim:country": "Mark Brandenburg",
           "role": "erwähnt",
           "@type": "rico:Place"
         },
         {
           "name": "Hamburg",
           "@id": "wd:Q1055",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1055",
+          "geo:lat": 53.55,
+          "geo:long": 10,
+          "m3gim:country": "Heiliges Römisches Reich",
           "role": "erwähnt",
           "@type": "rico:Place"
         },
@@ -4532,12 +6330,20 @@
         {
           "name": "Stuttgart",
           "@id": "wd:Q1022",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1022",
+          "geo:lat": 48.7775,
+          "geo:long": 9.18,
+          "m3gim:country": "Deutschland",
           "role": "erwähnt",
           "@type": "rico:Place"
         },
         {
           "name": "Monte Carlo",
           "@id": "wd:Q45240",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q45240",
+          "geo:lat": 43.738942,
+          "geo:long": 7.425237,
+          "m3gim:country": "Monaco",
           "role": "erwähnt",
           "@type": "rico:Place"
         },
@@ -4591,6 +6397,12 @@
         },
         {
           "name": "Tristan und Isolde",
+          "@id": "wd:Q115127657",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q115127657",
+          "m3gim:wdGenre": [
+            "Oper"
+          ],
+          "m3gim:premiereDate": "1986-07-31",
           "role": "erwähnt",
           "@type": "m3gim:MusicalWork",
           "komponist": "Wagner, Richard"
@@ -4620,11 +6432,32 @@
         },
         {
           "name": "Didur, Adam",
+          "@id": "wd:Q349160",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q349160",
+          "m3gim:occupation": [
+            "Opernsänger"
+          ],
+          "m3gim:voiceType": "Bass",
+          "m3gim:birthDate": "1874-12-24",
+          "m3gim:deathDate": "1946-01-07",
+          "m3gim:birthPlace": "Wola Sękowa",
+          "m3gim:deathPlace": "Katowice",
           "role": "erwähnt",
           "@type": "rico:Person"
         },
         {
           "name": "Bahr-Mildenburg, Anna",
+          "@id": "wd:Q79028",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q79028",
+          "m3gim:occupation": [
+            "Opernsänger",
+            "Schriftsteller"
+          ],
+          "m3gim:voiceType": "Sopran",
+          "m3gim:birthDate": "1872-11-29",
+          "m3gim:deathDate": "1947-01-27",
+          "m3gim:birthPlace": "Wien",
+          "m3gim:deathPlace": "Wien",
           "role": "erwähnt",
           "@type": "rico:Person"
         },
@@ -4640,6 +6473,16 @@
         },
         {
           "name": "Gluck, Christoph Willibald",
+          "@id": "wd:Q130759",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q130759",
+          "m3gim:occupation": [
+            "Komponist",
+            "Dirigent"
+          ],
+          "m3gim:birthDate": "1714-07-02",
+          "m3gim:deathDate": "1787-11-15",
+          "m3gim:birthPlace": "Erasbach",
+          "m3gim:deathPlace": "Wien",
           "role": "erwähnt",
           "@type": "rico:Person"
         }
@@ -4691,11 +6534,28 @@
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94208",
           "role": "auftritt",
           "@type": "rico:Person"
         },
         {
           "name": "Beaton, Cecil Walter Hardy",
+          "@id": "wd:Q697096",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q697096",
+          "m3gim:occupation": [
+            "Fotograf",
+            "Autobiograf",
+            "Kriegsfotograf",
+            "Tagebuchschreiber",
+            "Kostümbildner",
+            "Maler",
+            "Modefotograf",
+            "Designer"
+          ],
+          "m3gim:birthDate": "1904-01-14",
+          "m3gim:deathDate": "1980-01-18",
+          "m3gim:birthPlace": "Hampstead",
+          "m3gim:deathPlace": "Broad Chalke",
           "role": "ausstatter:in",
           "@type": "rico:Person"
         },
@@ -4707,6 +6567,20 @@
         {
           "name": "Menotti, Gian Carlo",
           "@id": "wd:Q270662",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q270662",
+          "m3gim:occupation": [
+            "Dirigent",
+            "Filmregisseur",
+            "Komponist",
+            "Musikwissenschaftler",
+            "Musikpädagoge",
+            "Librettist",
+            "Drehbuchautor"
+          ],
+          "m3gim:birthDate": "1911-07-07",
+          "m3gim:deathDate": "2007-02-01",
+          "m3gim:birthPlace": "Cadegliano-Viconago",
+          "m3gim:deathPlace": "Monte-Carlo",
           "role": "librettist:in",
           "@type": "rico:Person"
         },
@@ -4717,6 +6591,10 @@
         },
         {
           "name": "Metropolitan Opera",
+          "@id": "wd:Q10583424",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q10583424",
+          "m3gim:wdLocation": "Lincoln Square",
+          "m3gim:inception": "1880-00-00",
           "role": "erwähnt",
           "@type": "rico:CorporateBody"
         }
@@ -4724,6 +6602,10 @@
       "rico:hasOrHadLocation": {
         "name": "Salzburg",
         "@id": "wd:Q34713",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q34713",
+        "geo:lat": 47.8,
+        "geo:long": 13.045,
+        "m3gim:country": "Österreich",
         "role": "auffuehrungsort",
         "@type": "rico:Place"
       },
@@ -4774,6 +6656,7 @@
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94208",
           "role": "adressat:in",
           "@type": "rico:Person"
         },
@@ -4822,6 +6705,7 @@
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94208",
           "role": "auftritt",
           "@type": "rico:Person"
         },
@@ -4865,6 +6749,10 @@
         {
           "name": "Paris",
           "@id": "wd:Q90",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q90",
+          "geo:lat": 48.85666666666667,
+          "geo:long": 2.352222222222222,
+          "m3gim:country": "Frankreich",
           "role": "aufführung",
           "@type": "rico:Place"
         }
@@ -4918,6 +6806,7 @@
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94208",
           "role": "protagonist",
           "@type": "rico:Person"
         },
@@ -4981,11 +6870,20 @@
         {
           "name": "Graz",
           "@id": "wd:Q13298",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q13298",
+          "geo:lat": 47.07083333333333,
+          "geo:long": 15.438611111111111,
+          "m3gim:country": "Österreich",
           "role": "erwähnt",
           "@type": "rico:Place"
         },
         {
           "name": "Zürich",
+          "@id": "wd:Q72",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q72",
+          "geo:lat": 47.37444444444444,
+          "geo:long": 8.54111111111111,
+          "m3gim:country": "Schweiz",
           "role": "erwähnt",
           "@type": "rico:Place"
         },
@@ -5002,28 +6900,50 @@
         {
           "name": "Salzburg",
           "@id": "wd:Q34713",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q34713",
+          "geo:lat": 47.8,
+          "geo:long": 13.045,
+          "m3gim:country": "Österreich",
           "role": "erwähnt",
           "@type": "rico:Place"
         },
         {
           "name": "London",
           "@id": "wd:Q84",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q84",
+          "geo:lat": 51.507222222222,
+          "geo:long": -0.1275,
+          "m3gim:country": "Römisches Kaiserreich",
           "role": "erwähnt",
           "@type": "rico:Place"
         },
         {
           "name": "Paris",
           "@id": "wd:Q90",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q90",
+          "geo:lat": 48.85666666666667,
+          "geo:long": 2.352222222222222,
+          "m3gim:country": "Frankreich",
           "role": "erwähnt",
           "@type": "rico:Place"
         },
         {
           "name": "Mailand",
+          "@id": "wd:Q490",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q490",
+          "geo:lat": 45.466944444444,
+          "geo:long": 9.19,
+          "m3gim:country": "Italien",
           "role": "erwähnt",
           "@type": "rico:Place"
         },
         {
           "name": "Rom",
+          "@id": "wd:Q220",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q220",
+          "geo:lat": 41.893055555556,
+          "geo:long": 12.482777777778,
+          "m3gim:country": "Italien",
           "role": "erwähnt",
           "@type": "rico:Place"
         },
@@ -5040,12 +6960,20 @@
         {
           "name": "Berlin",
           "@id": "wd:Q64",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q64",
+          "geo:lat": 52.516666666667,
+          "geo:long": 13.383333333333,
+          "m3gim:country": "Mark Brandenburg",
           "role": "erwähnt",
           "@type": "rico:Place"
         },
         {
           "name": "Hamburg",
           "@id": "wd:Q1055",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1055",
+          "geo:lat": 53.55,
+          "geo:long": 10,
+          "m3gim:country": "Heiliges Römisches Reich",
           "role": "erwähnt",
           "@type": "rico:Place"
         },
@@ -5057,12 +6985,20 @@
         {
           "name": "Stuttgart",
           "@id": "wd:Q1022",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1022",
+          "geo:lat": 48.7775,
+          "geo:long": 9.18,
+          "m3gim:country": "Deutschland",
           "role": "erwähnt",
           "@type": "rico:Place"
         },
         {
           "name": "Monte Carlo",
           "@id": "wd:Q45240",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q45240",
+          "geo:lat": 43.738942,
+          "geo:long": 7.425237,
+          "m3gim:country": "Monaco",
           "role": "erwähnt",
           "@type": "rico:Place"
         },
@@ -5116,6 +7052,12 @@
         },
         {
           "name": "Tristan und Isolde",
+          "@id": "wd:Q115127657",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q115127657",
+          "m3gim:wdGenre": [
+            "Oper"
+          ],
+          "m3gim:premiereDate": "1986-07-31",
           "role": "erwähnt",
           "@type": "m3gim:MusicalWork",
           "komponist": "Wagner, Richard"
@@ -5145,11 +7087,32 @@
         },
         {
           "name": "Didur, Adam",
+          "@id": "wd:Q349160",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q349160",
+          "m3gim:occupation": [
+            "Opernsänger"
+          ],
+          "m3gim:voiceType": "Bass",
+          "m3gim:birthDate": "1874-12-24",
+          "m3gim:deathDate": "1946-01-07",
+          "m3gim:birthPlace": "Wola Sękowa",
+          "m3gim:deathPlace": "Katowice",
           "role": "erwähnt",
           "@type": "rico:Person"
         },
         {
           "name": "Bahr-Mildenburg, Anna",
+          "@id": "wd:Q79028",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q79028",
+          "m3gim:occupation": [
+            "Opernsänger",
+            "Schriftsteller"
+          ],
+          "m3gim:voiceType": "Sopran",
+          "m3gim:birthDate": "1872-11-29",
+          "m3gim:deathDate": "1947-01-27",
+          "m3gim:birthPlace": "Wien",
+          "m3gim:deathPlace": "Wien",
           "role": "erwähnt",
           "@type": "rico:Person"
         },
@@ -5165,6 +7128,16 @@
         },
         {
           "name": "Gluck, Christoph Willibald",
+          "@id": "wd:Q130759",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q130759",
+          "m3gim:occupation": [
+            "Komponist",
+            "Dirigent"
+          ],
+          "m3gim:birthDate": "1714-07-02",
+          "m3gim:deathDate": "1787-11-15",
+          "m3gim:birthPlace": "Erasbach",
+          "m3gim:deathPlace": "Wien",
           "role": "erwähnt",
           "@type": "rico:Person"
         }
@@ -5224,6 +7197,18 @@
         {
           "name": "Puccini, Giacomo",
           "@id": "wd:Q7311",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q7311",
+          "m3gim:occupation": [
+            "Opernkomponist",
+            "Komponist",
+            "Politiker",
+            "Dirigent",
+            "Organist"
+          ],
+          "m3gim:birthDate": "1858-12-22",
+          "m3gim:deathDate": "1924-11-29",
+          "m3gim:birthPlace": "Lucca",
+          "m3gim:deathPlace": "Brüssel",
           "role": "komponist:in",
           "@type": "rico:Person"
         },
@@ -5240,17 +7225,59 @@
         {
           "name": "Wagner, Richard",
           "@id": "wd:Q1511",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1511",
+          "m3gim:occupation": [
+            "Komponist",
+            "Librettist",
+            "Dirigent",
+            "Essayist",
+            "Bühnenregisseur",
+            "Autobiograf",
+            "Dichter",
+            "Pianist",
+            "Musikkritiker",
+            "Tagebuchschreiber",
+            "Schriftsteller"
+          ],
+          "m3gim:birthDate": "1813-05-22",
+          "m3gim:deathDate": "1883-02-13",
+          "m3gim:birthPlace": "Leipzig",
+          "m3gim:deathPlace": "Venedig",
           "role": "komponist:in",
           "@type": "rico:Person"
         },
         {
           "name": "Kienzl, Wilhelm",
           "@id": "wd:Q637353",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q637353",
+          "m3gim:occupation": [
+            "Komponist",
+            "Dirigent",
+            "Musikwissenschaftler",
+            "Pianist",
+            "Biograf"
+          ],
+          "m3gim:birthDate": "1857-01-17",
+          "m3gim:deathDate": "1941-10-19",
+          "m3gim:birthPlace": "Waizenkirchen",
+          "m3gim:deathPlace": "Wien",
           "role": "komponist:in",
           "@type": "rico:Person"
         },
         {
           "name": "Musorgskij, Modest Petrovič",
+          "@id": "wd:Q132682",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q132682",
+          "m3gim:occupation": [
+            "Komponist",
+            "Pianist",
+            "Librettist",
+            "Militär"
+          ],
+          "m3gim:birthDate": "1839-03-09",
+          "m3gim:deathDate": "1881-03-16",
+          "m3gim:birthPlace": "Karevo",
+          "m3gim:deathPlace": "Sankt Petersburg",
           "role": "komponist:in",
           "@type": "rico:Person"
         },
@@ -5262,6 +7289,17 @@
         {
           "name": "Strauss, Richard",
           "@id": "wd:Q13894",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q13894",
+          "m3gim:occupation": [
+            "Komponist",
+            "Dirigent",
+            "Librettist",
+            "Musiker"
+          ],
+          "m3gim:birthDate": "1864-06-11",
+          "m3gim:deathDate": "1949-09-08",
+          "m3gim:birthPlace": "München",
+          "m3gim:deathPlace": "Garmisch-Partenkirchen",
           "role": "komponist:in",
           "@type": "rico:Person"
         },
@@ -5363,12 +7401,20 @@
         },
         {
           "name": "Lohengrin",
+          "@id": "wd:Q51806381",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q51806381",
           "role": "erwähnt",
           "@type": "m3gim:MusicalWork",
           "komponist": "Wagner, Richard"
         },
         {
           "name": "Tristan und Isolde",
+          "@id": "wd:Q115127657",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q115127657",
+          "m3gim:wdGenre": [
+            "Oper"
+          ],
+          "m3gim:premiereDate": "1986-07-31",
           "role": "erwähnt",
           "@type": "m3gim:MusicalWork",
           "komponist": "Wagner, Richard"
@@ -5607,24 +7653,53 @@
         {
           "name": "Strauss, Richard",
           "@id": "wd:Q13894",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q13894",
+          "m3gim:occupation": [
+            "Komponist",
+            "Dirigent",
+            "Librettist",
+            "Musiker"
+          ],
+          "m3gim:birthDate": "1864-06-11",
+          "m3gim:deathDate": "1949-09-08",
+          "m3gim:birthPlace": "München",
+          "m3gim:deathPlace": "Garmisch-Partenkirchen",
           "role": "komponist:in",
           "@type": "rico:Person"
         },
         {
           "name": "Samazeuilh, Gustave",
           "@id": "wd:Q447590",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q447590",
+          "m3gim:occupation": [
+            "Komponist",
+            "Musikkritiker",
+            "Pianist",
+            "Musikwissenschaftler"
+          ],
+          "m3gim:birthDate": "1877-06-02",
+          "m3gim:deathDate": "1967-08-04",
+          "m3gim:birthPlace": "Bordeaux",
+          "m3gim:deathPlace": "Paris",
           "role": "übersetzer:in",
           "@type": "rico:Person"
         },
         {
           "name": "Prêtre, Georges",
-          "@id": "wd:Q342381",
           "role": "dirigent:in",
           "@type": "rico:Person"
         },
         {
           "name": "Moralt, Rudolf",
           "@id": "wd:Q70098",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q70098",
+          "m3gim:occupation": [
+            "Dirigent"
+          ],
+          "m3gim:birthDate": "1902-02-26",
+          "m3gim:deathDate": "1958-12-16",
+          "m3gim:birthPlace": "München",
+          "m3gim:deathPlace": "Wien",
           "role": "dirigent:in",
           "@type": "rico:Person"
         },
@@ -5636,47 +7711,107 @@
         {
           "name": "Cortis, Marcello",
           "@id": "wd:Q52306091",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q52306091",
+          "m3gim:occupation": [
+            "Sänger"
+          ],
+          "m3gim:birthDate": "1915-11-11",
+          "m3gim:deathDate": "1962-05-23",
           "role": "bühnenbildner:in",
           "@type": "rico:Person"
         },
         {
           "name": "Zadek, Hilde",
           "@id": "wd:Q72147",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q72147",
+          "m3gim:occupation": [
+            "Opernsänger",
+            "Autobiograf"
+          ],
+          "m3gim:voiceType": "Sopran",
+          "m3gim:birthDate": "1917-12-15",
+          "m3gim:deathDate": "2019-02-21",
+          "m3gim:birthPlace": "Bydgoszcz",
+          "m3gim:deathPlace": "Karlsruhe",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Loose, Emmy",
           "@id": "wd:Q89450",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q89450",
+          "m3gim:occupation": [
+            "Opernsänger"
+          ],
+          "m3gim:voiceType": "Soubrette",
+          "m3gim:birthDate": "1914-01-22",
+          "m3gim:deathDate": "1987-10-14",
+          "m3gim:birthPlace": "Chabařovice",
+          "m3gim:deathPlace": "Wien",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Weber, Ludwig",
           "@id": "wd:Q136748514",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q136748514",
+          "m3gim:birthDate": "1886-11-03",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Rössl-Majdan, Hilde",
+          "@id": "wd:Q89249",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q89249",
+          "m3gim:occupation": [
+            "Opernsänger",
+            "Musikpädagoge",
+            "Hochschullehrer"
+          ],
+          "m3gim:voiceType": "Alt",
+          "m3gim:birthDate": "1921-01-30",
+          "m3gim:deathDate": "2010-12-15",
+          "m3gim:birthPlace": "Atzenbrugg",
+          "m3gim:deathPlace": "Wien",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Kuën, Paul",
           "@id": "wd:Q105714",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q105714",
+          "m3gim:occupation": [
+            "Opernsänger"
+          ],
+          "m3gim:voiceType": "Tenor",
+          "m3gim:birthDate": "1910-04-08",
+          "m3gim:deathDate": "1997-02-04",
+          "m3gim:birthPlace": "Neuburg an der Kammel",
+          "m3gim:deathPlace": "Sulzberg",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Pandano, Vittorio",
           "@id": "wd:Q130777432",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q130777432",
+          "m3gim:birthDate": "1919-01-01",
+          "m3gim:deathDate": "2010-01-01",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Kunz, Erich",
           "@id": "wd:Q78855",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q78855",
+          "m3gim:occupation": [
+            "Opernsänger"
+          ],
+          "m3gim:voiceType": "Bariton",
+          "m3gim:birthDate": "1909-05-20",
+          "m3gim:deathDate": "1995-09-08",
+          "m3gim:birthPlace": "Wien",
+          "m3gim:deathPlace": "Wien",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -5688,12 +7823,22 @@
         {
           "name": "Willy Heyer",
           "@id": "wd:Q95264973",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q95264973",
+          "m3gim:birthDate": "1895-00-00",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Majkut, Erich",
           "@id": "wd:Q59531271",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q59531271",
+          "m3gim:occupation": [
+            "Sänger"
+          ],
+          "m3gim:birthDate": "1907-02-03",
+          "m3gim:deathDate": "1976-01-01",
+          "m3gim:birthPlace": "Wien",
+          "m3gim:deathPlace": "Wien",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -5705,6 +7850,7 @@
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94208",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -5720,6 +7866,10 @@
         },
         {
           "name": "Théâtre National de l'Opéra-Comique",
+          "@id": "wd:Q872222",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q872222",
+          "m3gim:wdLocation": "Salle Favart",
+          "m3gim:inception": "1715-00-00",
           "role": "erwähnt",
           "@type": "rico:CorporateBody"
         }
@@ -5732,12 +7882,27 @@
         },
         {
           "name": "Der Rosenkavalier",
+          "@id": "wd:Q85756466",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q85756466",
+          "m3gim:wdGenre": [
+            "Oper"
+          ],
+          "m3gim:premiereDate": "1977-00-00",
           "role": "aufführung",
           "@type": "m3gim:MusicalWork",
           "komponist": "Strauss, Richard"
         },
         {
           "name": "Besnard, Maurice",
+          "@id": "wd:Q3300510",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q3300510",
+          "m3gim:occupation": [
+            "Schauspieler"
+          ],
+          "m3gim:birthDate": "1887-08-12",
+          "m3gim:deathDate": "1977-04-02",
+          "m3gim:birthPlace": "Rouen",
+          "m3gim:deathPlace": "Nizza",
           "role": "erwähnt",
           "@type": "rico:Person"
         }
@@ -5813,29 +7978,82 @@
         {
           "name": "Krauss, Clemens",
           "@id": "wd:Q78918",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q78918",
+          "m3gim:occupation": [
+            "Dirigent",
+            "Komponist",
+            "Librettist",
+            "Hochschullehrer",
+            "Schriftsteller",
+            "Musikdirektor"
+          ],
+          "m3gim:birthDate": "1893-03-31",
+          "m3gim:deathDate": "1954-05-16",
+          "m3gim:birthPlace": "Wien",
+          "m3gim:deathPlace": "Mexiko-Stadt",
           "role": "erwähnt",
           "@type": "rico:Person"
         },
         {
           "name": "Strauss, Richard",
           "@id": "wd:Q13894",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q13894",
+          "m3gim:occupation": [
+            "Komponist",
+            "Dirigent",
+            "Librettist",
+            "Musiker"
+          ],
+          "m3gim:birthDate": "1864-06-11",
+          "m3gim:deathDate": "1949-09-08",
+          "m3gim:birthPlace": "München",
+          "m3gim:deathPlace": "Garmisch-Partenkirchen",
           "role": "erwähnt",
           "@type": "rico:Person"
         },
         {
           "name": "Hartmann, Rudolf",
           "@id": "wd:Q124351",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q124351",
+          "m3gim:occupation": [
+            "Politiker",
+            "Schriftsteller"
+          ],
+          "m3gim:birthDate": "1885-12-11",
+          "m3gim:deathDate": "1945-03-05",
+          "m3gim:birthPlace": "Königsfeld",
+          "m3gim:deathPlace": "KZ Mauthausen",
           "role": "erwähnt",
           "@type": "rico:Person"
         },
         {
           "name": "Della Casa, Lisa",
           "@id": "wd:Q123575",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q123575",
+          "m3gim:occupation": [
+            "Opernsänger",
+            "Sänger"
+          ],
+          "m3gim:voiceType": "Sopran",
+          "m3gim:birthDate": "1919-02-02",
+          "m3gim:deathDate": "2012-12-10",
+          "m3gim:birthPlace": "Burgdorf",
+          "m3gim:deathPlace": "Münsterlingen",
           "role": "erwähnt",
           "@type": "rico:Person"
         },
         {
           "name": "Chenier, André",
+          "@id": "wd:Q295548",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q295548",
+          "m3gim:occupation": [
+            "Dichter",
+            "Schriftsteller"
+          ],
+          "m3gim:birthDate": "1762-10-30",
+          "m3gim:deathDate": "1794-07-25",
+          "m3gim:birthPlace": "Istanbul",
+          "m3gim:deathPlace": "Paris",
           "role": "erwähnt",
           "@type": "rico:Person"
         }
@@ -5862,6 +8080,15 @@
         {
           "name": "Kaufmann, Harald",
           "@id": "wd:Q1584570",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1584570",
+          "m3gim:occupation": [
+            "Musikwissenschaftler",
+            "Hochschullehrer"
+          ],
+          "m3gim:birthDate": "1927-10-01",
+          "m3gim:deathDate": "1970-07-09",
+          "m3gim:birthPlace": "Feldbach",
+          "m3gim:deathPlace": "Graz",
           "role": "verfasser:in",
           "@type": "rico:Person"
         },
@@ -5877,6 +8104,8 @@
         },
         {
           "name": "Oper Graz",
+          "@id": "wd:Q618239",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q618239",
           "role": "erwähnt",
           "@type": "rico:CorporateBody"
         },
@@ -5898,6 +8127,7 @@
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94208",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -5909,12 +8139,27 @@
         {
           "name": "Wehofschitz, Kurt",
           "@id": "wd:Q95305013",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q95305013",
+          "m3gim:occupation": [
+            "Musiker"
+          ],
+          "m3gim:birthDate": "1923-05-03",
+          "m3gim:birthPlace": "Wien",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Zimmermann, Wolfram",
           "@id": "wd:Q108824609",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q108824609",
+          "m3gim:occupation": [
+            "Psychologe",
+            "Sachbuchautor"
+          ],
+          "m3gim:birthDate": "1944-07-20",
+          "m3gim:deathDate": "2023-12-07",
+          "m3gim:birthPlace": "Erfurt",
+          "m3gim:deathPlace": "Bernau bei Berlin",
           "role": "sänger:in",
           "@type": "rico:Person"
         }
@@ -5923,6 +8168,10 @@
         {
           "name": "Graz",
           "@id": "wd:Q13298",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q13298",
+          "geo:lat": 47.07083333333333,
+          "geo:long": 15.438611111111111,
+          "m3gim:country": "Österreich",
           "role": "auffuehrungsort",
           "@type": "rico:Place"
         },
@@ -5934,12 +8183,20 @@
         {
           "name": "Stuttgart",
           "@id": "wd:Q1022",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1022",
+          "geo:lat": 48.7775,
+          "geo:long": 9.18,
+          "m3gim:country": "Deutschland",
           "role": "erwähnt",
           "@type": "rico:Place"
         },
         {
           "name": "Linz",
           "@id": "wd:Q41329",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q41329",
+          "geo:lat": 48.30583333333333,
+          "geo:long": 14.286388888888888,
+          "m3gim:country": "Österreich",
           "role": "erwähnt",
           "@type": "rico:Place"
         },
@@ -5970,6 +8227,12 @@
         },
         {
           "name": "Don Giovanni",
+          "@id": "wd:Q3510792",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q3510792",
+          "m3gim:wdGenre": [
+            "Popmusik"
+          ],
+          "m3gim:premiereDate": "1986-01-01",
           "role": "erwähnt",
           "@type": "m3gim:MusicalWork",
           "komponist": "Mozart, Wolfgang Amadeus"
@@ -5981,7 +8244,11 @@
         },
         {
           "name": "Stabat mater",
-          "@id": "wd:Q643347",
+          "@id": "wd:Q210080",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q210080",
+          "m3gim:wdGenre": [
+            "Dichtkunst"
+          ],
           "role": "aufführung",
           "@type": "m3gim:MusicalWork"
         }
@@ -6008,6 +8275,7 @@
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94208",
           "role": "protagonist",
           "@type": "rico:Person"
         },
@@ -6019,6 +8287,7 @@
         {
           "name": "Bayreuther Festspiele",
           "@id": "wd:Q157596",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q157596",
           "role": "erwähnt",
           "@type": "rico:CorporateBody"
         }
@@ -6026,6 +8295,12 @@
       "rico:hasOrHadSubject": [
         {
           "name": "Tristan und Isolde",
+          "@id": "wd:Q115127657",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q115127657",
+          "m3gim:wdGenre": [
+            "Oper"
+          ],
+          "m3gim:premiereDate": "1986-07-31",
           "role": "erwähnt",
           "@type": "m3gim:MusicalWork",
           "komponist": "Wagner, Richard"
@@ -6033,6 +8308,24 @@
         {
           "name": "Wagner, Richard",
           "@id": "wd:Q1511",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1511",
+          "m3gim:occupation": [
+            "Komponist",
+            "Librettist",
+            "Dirigent",
+            "Essayist",
+            "Bühnenregisseur",
+            "Autobiograf",
+            "Dichter",
+            "Pianist",
+            "Musikkritiker",
+            "Tagebuchschreiber",
+            "Schriftsteller"
+          ],
+          "m3gim:birthDate": "1813-05-22",
+          "m3gim:deathDate": "1883-02-13",
+          "m3gim:birthPlace": "Leipzig",
+          "m3gim:deathPlace": "Venedig",
           "role": "erwähnt",
           "@type": "rico:Person"
         }
@@ -6109,6 +8402,7 @@
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94208",
           "role": "adressat:in",
           "@type": "rico:Person"
         }
@@ -6159,6 +8453,7 @@
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94208",
           "role": "adressat:in",
           "@type": "rico:Person"
         }
@@ -6199,12 +8494,14 @@
         {
           "name": "Salome",
           "@id": "wd:Q723407",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q723407",
           "role": "premiere",
           "@type": "m3gim:MusicalWork"
         },
         {
           "name": "Salome",
           "@id": "wd:Q723407",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q723407",
           "role": "erwähnt",
           "@type": "m3gim:MusicalWork"
         },
@@ -6236,6 +8533,15 @@
         {
           "name": "Höngen, Elisabeth",
           "@id": "wd:Q74611",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q74611",
+          "m3gim:occupation": [
+            "Opernsänger"
+          ],
+          "m3gim:voiceType": "Mezzosopran",
+          "m3gim:birthDate": "1906-12-07",
+          "m3gim:deathDate": "1997-08-07",
+          "m3gim:birthPlace": "Gevelsberg",
+          "m3gim:deathPlace": "Wien",
           "role": "erwähnt",
           "@type": "rico:Person"
         },
@@ -6292,18 +8598,21 @@
         {
           "name": "Bayreuther Festspiele",
           "@id": "wd:Q157596",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q157596",
           "role": "rahmenveranstaltung",
           "@type": "rico:CorporateBody"
         },
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94208",
           "role": "inhaber:in",
           "@type": "rico:Person"
         },
         {
           "name": "Wagner, Wolfgang",
           "@id": "wd:Q60452",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q60452",
           "role": "unterzeichner:in",
           "@type": "rico:Person"
         }
@@ -6391,6 +8700,10 @@
         {
           "name": "Stuttgart",
           "@id": "wd:Q1022",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1022",
+          "geo:lat": 48.7775,
+          "geo:long": 9.18,
+          "m3gim:country": "Deutschland",
           "role": "entstehungsort",
           "@type": "rico:Place"
         },
@@ -6422,6 +8735,10 @@
         {
           "name": "Stuttgart",
           "@id": "wd:Q1022",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1022",
+          "geo:lat": 48.7775,
+          "geo:long": 9.18,
+          "m3gim:country": "Deutschland",
           "role": "erwähnt",
           "@type": "rico:Place"
         },
@@ -6435,6 +8752,7 @@
         {
           "name": "Die Meistersinger von Nürnberg",
           "@id": "wd:Q190891",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q190891",
           "role": "erwähnt",
           "@type": "m3gim:MusicalWork",
           "komponist": "Wagner, Richard"
@@ -6453,6 +8771,12 @@
         },
         {
           "name": "Tristan und Isolde",
+          "@id": "wd:Q115127657",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q115127657",
+          "m3gim:wdGenre": [
+            "Oper"
+          ],
+          "m3gim:premiereDate": "1986-07-31",
           "role": "erwähnt",
           "@type": "m3gim:MusicalWork",
           "komponist": "Wagner, Richard"
@@ -6460,6 +8784,7 @@
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94208",
           "role": "erwähnt",
           "@type": "rico:Person"
         }
@@ -6545,6 +8870,10 @@
       "rico:hasOrHadLocation": {
         "name": "Paris",
         "@id": "wd:Q90",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q90",
+        "geo:lat": 48.85666666666667,
+        "geo:long": 2.352222222222222,
+        "m3gim:country": "Frankreich",
         "role": "erwähnt",
         "@type": "rico:Place"
       },
@@ -6600,12 +8929,14 @@
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94208",
           "role": "auftraggeber:in",
           "@type": "rico:Person"
         },
         {
           "name": "Altmann, Olga",
           "@id": "wd:Q95686480",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q95686480",
           "role": "unterzeichner:in",
           "@type": "rico:Person"
         }
@@ -6678,12 +9009,14 @@
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94208",
           "role": "auftraggeber:in",
           "@type": "rico:Person"
         },
         {
           "name": "Altmann, Olga",
           "@id": "wd:Q95686480",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q95686480",
           "role": "unterzeichner:in",
           "@type": "rico:Person"
         }
@@ -6732,12 +9065,14 @@
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94208",
           "role": "auftraggeber:in",
           "@type": "rico:Person"
         },
         {
           "name": "Altmann, Olga",
           "@id": "wd:Q95686480",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q95686480",
           "role": "unterzeichner:in",
           "@type": "rico:Person"
         }
@@ -6815,12 +9150,14 @@
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94208",
           "role": "auftraggeber:in",
           "@type": "rico:Person"
         },
         {
           "name": "Altmann, Olga",
           "@id": "wd:Q95686480",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q95686480",
           "role": "unterzeichner:in",
           "@type": "rico:Person"
         }
@@ -6875,12 +9212,14 @@
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94208",
           "role": "auftraggeber:in",
           "@type": "rico:Person"
         },
         {
           "name": "Altmann, Olga",
           "@id": "wd:Q95686480",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q95686480",
           "role": "unterzeichner:in",
           "@type": "rico:Person"
         }
@@ -6894,6 +9233,10 @@
         {
           "name": "Berlin",
           "@id": "wd:Q64",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q64",
+          "geo:lat": 52.516666666667,
+          "geo:long": 13.383333333333,
+          "m3gim:country": "Mark Brandenburg",
           "role": "erwähnt",
           "@type": "rico:Place"
         },
@@ -6941,12 +9284,14 @@
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94208",
           "role": "auftraggeber:in",
           "@type": "rico:Person"
         },
         {
           "name": "Altmann, Olga",
           "@id": "wd:Q95686480",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q95686480",
           "role": "unterzeichner:in",
           "@type": "rico:Person"
         }
@@ -7048,12 +9393,15 @@
         {
           "name": "Nord- und Westdeutscher Rundfunkverband",
           "@id": "wd:Q1997444",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1997444",
+          "m3gim:inception": "1956-00-00",
           "role": "verfasser:in",
           "@type": "rico:CorporateBody"
         },
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94208",
           "role": "adressat:in",
           "@type": "rico:Person"
         }
@@ -7095,12 +9443,14 @@
         {
           "name": "Bayerische Staatsoper",
           "@id": "wd:Q681931",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q681931",
           "role": "verfasser:in",
           "@type": "rico:CorporateBody"
         },
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94208",
           "role": "adressat:in",
           "@type": "rico:Person"
         },
@@ -7136,12 +9486,23 @@
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94208",
           "role": "interpret:in",
           "@type": "rico:Person"
         },
         {
           "name": "Werba, Erik",
           "@id": "wd:Q1354192",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1354192",
+          "m3gim:occupation": [
+            "Komponist",
+            "Pianist",
+            "Musikkritiker"
+          ],
+          "m3gim:birthDate": "1918-05-23",
+          "m3gim:deathDate": "1992-04-09",
+          "m3gim:birthPlace": "Baden bei Wien",
+          "m3gim:deathPlace": "Hinterbrühl",
           "role": "interpret:in",
           "@type": "rico:Person"
         },
@@ -7193,6 +9554,17 @@
         {
           "name": "Strauss, Richard",
           "@id": "wd:Q13894",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q13894",
+          "m3gim:occupation": [
+            "Komponist",
+            "Dirigent",
+            "Librettist",
+            "Musiker"
+          ],
+          "m3gim:birthDate": "1864-06-11",
+          "m3gim:deathDate": "1949-09-08",
+          "m3gim:birthPlace": "München",
+          "m3gim:deathPlace": "Garmisch-Partenkirchen",
           "role": "komponist:in",
           "@type": "rico:Person"
         }
@@ -7253,6 +9625,13 @@
         },
         {
           "name": "Lamento d'Arianna",
+          "@id": "wd:Q47008942",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q47008942",
+          "m3gim:wdComposer": "Claudio Monteverdi",
+          "m3gim:wdGenre": [
+            "Complainte",
+            "Lamento"
+          ],
           "role": "aufführung",
           "@type": "m3gim:MusicalWork",
           "komponist": "Monteverdi, Claudio"
@@ -7276,6 +9655,12 @@
         },
         {
           "name": "Lied der Mignon",
+          "@id": "wd:Q110953165",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q110953165",
+          "m3gim:wdGenre": [
+            "Lyrik"
+          ],
+          "m3gim:premiereDate": "1795-00-00",
           "role": "aufführung",
           "@type": "m3gim:MusicalWork",
           "komponist": "Beethoven, Ludwig von"
@@ -7288,6 +9673,8 @@
         },
         {
           "name": "Nachtstück",
+          "@id": "wd:Q33056195",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q33056195",
           "role": "aufführung",
           "@type": "m3gim:MusicalWork",
           "komponist": "Schubert, Franz"
@@ -7300,6 +9687,9 @@
         },
         {
           "name": "Rastlose Liebe",
+          "@id": "wd:Q7295275",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q7295275",
+          "m3gim:wdComposer": "Franz Schubert",
           "role": "aufführung",
           "@type": "m3gim:MusicalWork",
           "komponist": "Schubert, Franz"
@@ -7318,6 +9708,12 @@
         },
         {
           "name": "Von ewiger Liebe",
+          "@id": "wd:Q11550399",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q11550399",
+          "m3gim:wdComposer": "Johannes Brahms",
+          "m3gim:wdGenre": [
+            "Musik der Romantik"
+          ],
           "role": "aufführung",
           "@type": "m3gim:MusicalWork",
           "komponist": "Brahms, Johannes"
@@ -7353,6 +9749,13 @@
         },
         {
           "name": "Befreit",
+          "@id": "wd:Q23010225",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q23010225",
+          "m3gim:wdComposer": "Richard Strauss",
+          "m3gim:wdGenre": [
+            "Musik der Romantik"
+          ],
+          "m3gim:premiereDate": "1898-00-00",
           "role": "aufführung",
           "@type": "m3gim:MusicalWork",
           "komponist": "Strauss, Richard"
@@ -7416,6 +9819,7 @@
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94208",
           "role": "adressat:in",
           "@type": "rico:Person"
         },
@@ -7445,6 +9849,12 @@
       "rico:hasOrHadSubject": [
         {
           "name": "Tristan und Isolde",
+          "@id": "wd:Q115127657",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q115127657",
+          "m3gim:wdGenre": [
+            "Oper"
+          ],
+          "m3gim:premiereDate": "1986-07-31",
           "role": "aufführung",
           "@type": "m3gim:MusicalWork",
           "komponist": "Wagner, Richard"
@@ -7452,6 +9862,17 @@
         {
           "name": "Meyer, Werner",
           "@id": "wd:Q114183944",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q114183944",
+          "m3gim:occupation": [
+            "Maler",
+            "Radierer",
+            "Lithograf",
+            "Holzschnitzer"
+          ],
+          "m3gim:birthDate": "1895-06-12",
+          "m3gim:deathDate": "1981-11-02",
+          "m3gim:birthPlace": "Choindez",
+          "m3gim:deathPlace": "Winterthur",
           "role": "erwähnt",
           "@type": "rico:Person"
         },
@@ -7489,12 +9910,14 @@
         {
           "name": "Bayerische Staatsoper",
           "@id": "wd:Q681931",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q681931",
           "role": "verfasser:in",
           "@type": "rico:CorporateBody"
         },
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94208",
           "role": "adressat:in",
           "@type": "rico:Person"
         },
@@ -7548,6 +9971,7 @@
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94208",
           "role": "adressat:in",
           "@type": "rico:Person"
         }
@@ -7567,6 +9991,14 @@
       "rico:hasOrHadSubject": {
         "name": "Schulthess, Walter",
         "@id": "wd:Q4527615",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q4527615",
+        "m3gim:occupation": [
+          "Komponist"
+        ],
+        "m3gim:birthDate": "1894-07-24",
+        "m3gim:deathDate": "1971-06-23",
+        "m3gim:birthPlace": "Zürich",
+        "m3gim:deathPlace": "Zürich",
         "role": "erwähnt",
         "@type": "rico:Person"
       },
@@ -7626,12 +10058,26 @@
         {
           "name": "Rott, Adolf",
           "@id": "wd:Q364029",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q364029",
+          "m3gim:occupation": [
+            "Bühnenregisseur",
+            "Regisseur"
+          ],
+          "m3gim:birthDate": "1905-12-14",
+          "m3gim:deathDate": "1982-07-24",
+          "m3gim:birthPlace": "Barmen",
+          "m3gim:deathPlace": "Wien",
           "role": "regisseur:in",
           "@type": "rico:Person"
         },
         {
           "name": "Klein, Peter",
           "@id": "wd:Q102360758",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q102360758",
+          "m3gim:occupation": [
+            "Informatiker"
+          ],
+          "m3gim:birthDate": "1966-00-00",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -7643,24 +10089,48 @@
         {
           "name": "Witte, Wolfgang",
           "@id": "wd:Q2591797",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q2591797",
+          "m3gim:occupation": [
+            "Biologe"
+          ],
+          "m3gim:birthDate": "1945-04-20",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Serafin, Harald",
           "@id": "wd:Q1584745",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1584745",
+          "m3gim:occupation": [
+            "Intendant",
+            "Musiker",
+            "Sänger",
+            "Bariton",
+            "Schauspieler"
+          ],
+          "m3gim:voiceType": "Bariton",
+          "m3gim:birthDate": "1931-12-24",
+          "m3gim:deathDate": "2025-09-15",
+          "m3gim:birthPlace": "Kybartai",
+          "m3gim:deathPlace": "Wien",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Lorenz, Gerlinde",
           "@id": "wd:Q112474535",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q112474535",
+          "m3gim:occupation": [
+            "Opernsänger"
+          ],
+          "m3gim:birthDate": "1939-00-00",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94208",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -7672,12 +10142,28 @@
         {
           "name": "Bauer-Theussl, Franz",
           "@id": "wd:Q113646",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q113646",
+          "m3gim:occupation": [
+            "Dirigent"
+          ],
+          "m3gim:birthDate": "1928-09-25",
+          "m3gim:deathDate": "2010-04-30",
+          "m3gim:birthPlace": "Zillingdorf",
+          "m3gim:deathPlace": "Salzburg",
           "role": "dirigent:in",
           "@type": "rico:Person"
         },
         {
           "name": "Bauer, Gerhard",
           "@id": "wd:Q1511281",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1511281",
+          "m3gim:occupation": [
+            "Politiker"
+          ],
+          "m3gim:birthDate": "1940-12-13",
+          "m3gim:deathDate": "2007-03-23",
+          "m3gim:birthPlace": "Wien",
+          "m3gim:deathPlace": "Neufeld an der Leitha",
           "role": "verfasser:in",
           "@type": "rico:Person"
         }
@@ -7700,6 +10186,27 @@
         },
         {
           "name": "Nestroy, Johann Nepomuk",
+          "@id": "wd:Q44862",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q44862",
+          "m3gim:occupation": [
+            "Schriftsteller",
+            "Dramatiker",
+            "Dichterjurist",
+            "Theaterschauspieler",
+            "Opernsänger",
+            "Satiriker",
+            "Dichter",
+            "Schauspieler",
+            "Librettist",
+            "Komponist",
+            "Theaterleiter",
+            "Regisseur"
+          ],
+          "m3gim:voiceType": "Bass",
+          "m3gim:birthDate": "1801-12-07",
+          "m3gim:deathDate": "1862-05-25",
+          "m3gim:birthPlace": "Wien",
+          "m3gim:deathPlace": "Graz",
           "role": "erwähnt",
           "@type": "rico:Person"
         }
@@ -7763,54 +10270,117 @@
         {
           "name": "Rott, Adolf",
           "@id": "wd:Q364029",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q364029",
+          "m3gim:occupation": [
+            "Bühnenregisseur",
+            "Regisseur"
+          ],
+          "m3gim:birthDate": "1905-12-14",
+          "m3gim:deathDate": "1982-07-24",
+          "m3gim:birthPlace": "Barmen",
+          "m3gim:deathPlace": "Wien",
           "role": "regisseur:in",
           "@type": "rico:Person"
         },
         {
           "name": "Kautsky, Robert",
           "@id": "wd:Q27990163",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q27990163",
+          "m3gim:occupation": [
+            "Maler"
+          ],
+          "m3gim:birthDate": "1895-10-26",
+          "m3gim:deathDate": "1963-06-18",
+          "m3gim:birthPlace": "Wien",
+          "m3gim:deathPlace": "Leoben",
           "role": "bühnenbildner:in",
           "@type": "rico:Person"
         },
         {
           "name": "Urbancic, Elisabeth",
           "@id": "wd:Q1330331",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1330331",
+          "m3gim:occupation": [
+            "Bühnenbildner",
+            "Kostümbildner",
+            "Grafiker"
+          ],
+          "m3gim:birthDate": "1925-08-13",
+          "m3gim:deathDate": "2021-10-16",
+          "m3gim:birthPlace": "Wien",
           "role": "bühnenbildner:in",
           "@type": "rico:Person"
         },
         {
           "name": "Bauer-Theussl, Franz",
           "@id": "wd:Q113646",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q113646",
+          "m3gim:occupation": [
+            "Dirigent"
+          ],
+          "m3gim:birthDate": "1928-09-25",
+          "m3gim:deathDate": "2010-04-30",
+          "m3gim:birthPlace": "Zillingdorf",
+          "m3gim:deathPlace": "Salzburg",
           "role": "dirigent:in",
           "@type": "rico:Person"
         },
         {
           "name": "Serafin, Harald",
           "@id": "wd:Q1584745",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1584745",
+          "m3gim:occupation": [
+            "Intendant",
+            "Musiker",
+            "Sänger",
+            "Bariton",
+            "Schauspieler"
+          ],
+          "m3gim:voiceType": "Bariton",
+          "m3gim:birthDate": "1931-12-24",
+          "m3gim:deathDate": "2025-09-15",
+          "m3gim:birthPlace": "Kybartai",
+          "m3gim:deathPlace": "Wien",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94208",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Witte, Wolfgang",
           "@id": "wd:Q2591797",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q2591797",
+          "m3gim:occupation": [
+            "Biologe"
+          ],
+          "m3gim:birthDate": "1945-04-20",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Lorenz, Gerlinde",
           "@id": "wd:Q112474535",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q112474535",
+          "m3gim:occupation": [
+            "Opernsänger"
+          ],
+          "m3gim:birthDate": "1939-00-00",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Klein, Peter",
           "@id": "wd:Q102360758",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q102360758",
+          "m3gim:occupation": [
+            "Informatiker"
+          ],
+          "m3gim:birthDate": "1966-00-00",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -7904,48 +10474,102 @@
         {
           "name": "Rott, Adolf",
           "@id": "wd:Q364029",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q364029",
+          "m3gim:occupation": [
+            "Bühnenregisseur",
+            "Regisseur"
+          ],
+          "m3gim:birthDate": "1905-12-14",
+          "m3gim:deathDate": "1982-07-24",
+          "m3gim:birthPlace": "Barmen",
+          "m3gim:deathPlace": "Wien",
           "role": "regisseur:in",
           "@type": "rico:Person"
         },
         {
           "name": "Kautsky, Robert",
           "@id": "wd:Q27990163",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q27990163",
+          "m3gim:occupation": [
+            "Maler"
+          ],
+          "m3gim:birthDate": "1895-10-26",
+          "m3gim:deathDate": "1963-06-18",
+          "m3gim:birthPlace": "Wien",
+          "m3gim:deathPlace": "Leoben",
           "role": "bühnenbildner:in",
           "@type": "rico:Person"
         },
         {
           "name": "Bauer-Theussl, Franz",
           "@id": "wd:Q113646",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q113646",
+          "m3gim:occupation": [
+            "Dirigent"
+          ],
+          "m3gim:birthDate": "1928-09-25",
+          "m3gim:deathDate": "2010-04-30",
+          "m3gim:birthPlace": "Zillingdorf",
+          "m3gim:deathPlace": "Salzburg",
           "role": "dirigent:in",
           "@type": "rico:Person"
         },
         {
           "name": "Serafin, Harald",
           "@id": "wd:Q1584745",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1584745",
+          "m3gim:occupation": [
+            "Intendant",
+            "Musiker",
+            "Sänger",
+            "Bariton",
+            "Schauspieler"
+          ],
+          "m3gim:voiceType": "Bariton",
+          "m3gim:birthDate": "1931-12-24",
+          "m3gim:deathDate": "2025-09-15",
+          "m3gim:birthPlace": "Kybartai",
+          "m3gim:deathPlace": "Wien",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94208",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Witte, Wolfgang",
           "@id": "wd:Q2591797",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q2591797",
+          "m3gim:occupation": [
+            "Biologe"
+          ],
+          "m3gim:birthDate": "1945-04-20",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Lorenz, Gerlinde",
           "@id": "wd:Q112474535",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q112474535",
+          "m3gim:occupation": [
+            "Opernsänger"
+          ],
+          "m3gim:birthDate": "1939-00-00",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Klein, Peter",
           "@id": "wd:Q102360758",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q102360758",
+          "m3gim:occupation": [
+            "Informatiker"
+          ],
+          "m3gim:birthDate": "1966-00-00",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -7962,6 +10586,7 @@
         {
           "name": "Sobota, Elisabeth",
           "@id": "wd:Q95704592",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q95704592",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -8043,48 +10668,102 @@
         {
           "name": "Rott, Adolf",
           "@id": "wd:Q364029",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q364029",
+          "m3gim:occupation": [
+            "Bühnenregisseur",
+            "Regisseur"
+          ],
+          "m3gim:birthDate": "1905-12-14",
+          "m3gim:deathDate": "1982-07-24",
+          "m3gim:birthPlace": "Barmen",
+          "m3gim:deathPlace": "Wien",
           "role": "regisseur:in",
           "@type": "rico:Person"
         },
         {
           "name": "Kautsky, Robert",
           "@id": "wd:Q27990163",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q27990163",
+          "m3gim:occupation": [
+            "Maler"
+          ],
+          "m3gim:birthDate": "1895-10-26",
+          "m3gim:deathDate": "1963-06-18",
+          "m3gim:birthPlace": "Wien",
+          "m3gim:deathPlace": "Leoben",
           "role": "bühnenbildner:in",
           "@type": "rico:Person"
         },
         {
           "name": "Bauer-Theussl, Franz",
           "@id": "wd:Q113646",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q113646",
+          "m3gim:occupation": [
+            "Dirigent"
+          ],
+          "m3gim:birthDate": "1928-09-25",
+          "m3gim:deathDate": "2010-04-30",
+          "m3gim:birthPlace": "Zillingdorf",
+          "m3gim:deathPlace": "Salzburg",
           "role": "dirigent:in",
           "@type": "rico:Person"
         },
         {
           "name": "Serafin, Harald",
           "@id": "wd:Q1584745",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1584745",
+          "m3gim:occupation": [
+            "Intendant",
+            "Musiker",
+            "Sänger",
+            "Bariton",
+            "Schauspieler"
+          ],
+          "m3gim:voiceType": "Bariton",
+          "m3gim:birthDate": "1931-12-24",
+          "m3gim:deathDate": "2025-09-15",
+          "m3gim:birthPlace": "Kybartai",
+          "m3gim:deathPlace": "Wien",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94208",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Witte, Wolfgang",
           "@id": "wd:Q2591797",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q2591797",
+          "m3gim:occupation": [
+            "Biologe"
+          ],
+          "m3gim:birthDate": "1945-04-20",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Lorenz, Gerlinde",
           "@id": "wd:Q112474535",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q112474535",
+          "m3gim:occupation": [
+            "Opernsänger"
+          ],
+          "m3gim:birthDate": "1939-00-00",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Klein, Peter",
           "@id": "wd:Q102360758",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q102360758",
+          "m3gim:occupation": [
+            "Informatiker"
+          ],
+          "m3gim:birthDate": "1966-00-00",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -8101,12 +10780,21 @@
         {
           "name": "Sobota, Elisabeth",
           "@id": "wd:Q95704592",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q95704592",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Weishappel, Rudolf",
           "@id": "wd:Q55681641",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q55681641",
+          "m3gim:occupation": [
+            "Journalist"
+          ],
+          "m3gim:birthDate": "1921-03-25",
+          "m3gim:deathDate": "2006-01-02",
+          "m3gim:birthPlace": "Graz",
+          "m3gim:deathPlace": "Wien",
           "role": "verfasser:in",
           "@type": "rico:Person"
         }
@@ -8119,6 +10807,19 @@
         },
         {
           "name": "Sophokles",
+          "@id": "wd:Q7235",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q7235",
+          "m3gim:occupation": [
+            "Tragiker",
+            "Dramatiker",
+            "Schriftsteller",
+            "Priester",
+            "Politiker"
+          ],
+          "m3gim:birthDate": "0496-00-00",
+          "m3gim:deathDate": "0406-00-00",
+          "m3gim:birthPlace": "Kolonos",
+          "m3gim:deathPlace": "Athen",
           "role": "erwähnt",
           "@type": "rico:Person"
         }
@@ -8189,48 +10890,102 @@
         {
           "name": "Rott, Adolf",
           "@id": "wd:Q364029",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q364029",
+          "m3gim:occupation": [
+            "Bühnenregisseur",
+            "Regisseur"
+          ],
+          "m3gim:birthDate": "1905-12-14",
+          "m3gim:deathDate": "1982-07-24",
+          "m3gim:birthPlace": "Barmen",
+          "m3gim:deathPlace": "Wien",
           "role": "regisseur:in",
           "@type": "rico:Person"
         },
         {
           "name": "Kautsky, Robert",
           "@id": "wd:Q27990163",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q27990163",
+          "m3gim:occupation": [
+            "Maler"
+          ],
+          "m3gim:birthDate": "1895-10-26",
+          "m3gim:deathDate": "1963-06-18",
+          "m3gim:birthPlace": "Wien",
+          "m3gim:deathPlace": "Leoben",
           "role": "bühnenbildner:in",
           "@type": "rico:Person"
         },
         {
           "name": "Bauer-Theussl, Franz",
           "@id": "wd:Q113646",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q113646",
+          "m3gim:occupation": [
+            "Dirigent"
+          ],
+          "m3gim:birthDate": "1928-09-25",
+          "m3gim:deathDate": "2010-04-30",
+          "m3gim:birthPlace": "Zillingdorf",
+          "m3gim:deathPlace": "Salzburg",
           "role": "dirigent:in",
           "@type": "rico:Person"
         },
         {
           "name": "Serafin, Harald",
           "@id": "wd:Q1584745",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1584745",
+          "m3gim:occupation": [
+            "Intendant",
+            "Musiker",
+            "Sänger",
+            "Bariton",
+            "Schauspieler"
+          ],
+          "m3gim:voiceType": "Bariton",
+          "m3gim:birthDate": "1931-12-24",
+          "m3gim:deathDate": "2025-09-15",
+          "m3gim:birthPlace": "Kybartai",
+          "m3gim:deathPlace": "Wien",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94208",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Witte, Wolfgang",
           "@id": "wd:Q2591797",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q2591797",
+          "m3gim:occupation": [
+            "Biologe"
+          ],
+          "m3gim:birthDate": "1945-04-20",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Lorenz, Gerlinde",
           "@id": "wd:Q112474535",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q112474535",
+          "m3gim:occupation": [
+            "Opernsänger"
+          ],
+          "m3gim:birthDate": "1939-00-00",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Klein, Peter",
           "@id": "wd:Q102360758",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q102360758",
+          "m3gim:occupation": [
+            "Informatiker"
+          ],
+          "m3gim:birthDate": "1966-00-00",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -8247,17 +11002,39 @@
         {
           "name": "Sobota, Elisabeth",
           "@id": "wd:Q95704592",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q95704592",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
         {
           "name": "Weishappel, Rudolf",
           "@id": "wd:Q55681641",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q55681641",
+          "m3gim:occupation": [
+            "Journalist"
+          ],
+          "m3gim:birthDate": "1921-03-25",
+          "m3gim:deathDate": "2006-01-02",
+          "m3gim:birthPlace": "Graz",
+          "m3gim:deathPlace": "Wien",
           "role": "verfasser:in",
           "@type": "rico:Person"
         },
         {
           "name": "Sophokles",
+          "@id": "wd:Q7235",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q7235",
+          "m3gim:occupation": [
+            "Tragiker",
+            "Dramatiker",
+            "Schriftsteller",
+            "Priester",
+            "Politiker"
+          ],
+          "m3gim:birthDate": "0496-00-00",
+          "m3gim:deathDate": "0406-00-00",
+          "m3gim:birthPlace": "Kolonos",
+          "m3gim:deathPlace": "Athen",
           "role": "aufführung",
           "@type": "rico:Person"
         }
@@ -8339,18 +11116,55 @@
         {
           "name": "Wagner, Richard",
           "@id": "wd:Q1511",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1511",
+          "m3gim:occupation": [
+            "Komponist",
+            "Librettist",
+            "Dirigent",
+            "Essayist",
+            "Bühnenregisseur",
+            "Autobiograf",
+            "Dichter",
+            "Pianist",
+            "Musikkritiker",
+            "Tagebuchschreiber",
+            "Schriftsteller"
+          ],
+          "m3gim:birthDate": "1813-05-22",
+          "m3gim:deathDate": "1883-02-13",
+          "m3gim:birthPlace": "Leipzig",
+          "m3gim:deathPlace": "Venedig",
           "role": "komponist:in",
           "@type": "rico:Person"
         },
         {
           "name": "Strauss, Richard",
           "@id": "wd:Q13894",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q13894",
+          "m3gim:occupation": [
+            "Komponist",
+            "Dirigent",
+            "Librettist",
+            "Musiker"
+          ],
+          "m3gim:birthDate": "1864-06-11",
+          "m3gim:deathDate": "1949-09-08",
+          "m3gim:birthPlace": "München",
+          "m3gim:deathPlace": "Garmisch-Partenkirchen",
           "role": "komponist:in",
           "@type": "rico:Person"
         },
         {
           "name": "Kautsky, Robert",
           "@id": "wd:Q27990163",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q27990163",
+          "m3gim:occupation": [
+            "Maler"
+          ],
+          "m3gim:birthDate": "1895-10-26",
+          "m3gim:deathDate": "1963-06-18",
+          "m3gim:birthPlace": "Wien",
+          "m3gim:deathPlace": "Leoben",
           "role": "bühnenbildner:in",
           "@type": "rico:Person"
         },
@@ -8386,18 +11200,53 @@
         {
           "name": "Die Meistersinger von Nürnberg",
           "@id": "wd:Q190891",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q190891",
           "role": "erwähnt",
           "@type": "m3gim:MusicalWork",
           "komponist": "Wagner, Richard"
         },
         {
           "name": "Nestroy, Johann Nepomuk",
+          "@id": "wd:Q44862",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q44862",
+          "m3gim:occupation": [
+            "Schriftsteller",
+            "Dramatiker",
+            "Dichterjurist",
+            "Theaterschauspieler",
+            "Opernsänger",
+            "Satiriker",
+            "Dichter",
+            "Schauspieler",
+            "Librettist",
+            "Komponist",
+            "Theaterleiter",
+            "Regisseur"
+          ],
+          "m3gim:voiceType": "Bass",
+          "m3gim:birthDate": "1801-12-07",
+          "m3gim:deathDate": "1862-05-25",
+          "m3gim:birthPlace": "Wien",
+          "m3gim:deathPlace": "Graz",
           "role": "erwähnt",
           "@type": "rico:Person"
         },
         {
           "name": "Kotzebue, August von",
           "@id": "wd:Q57242",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q57242",
+          "m3gim:occupation": [
+            "Schriftsteller",
+            "Dramatiker",
+            "Dichter",
+            "Rechtsanwalt",
+            "Historiker",
+            "Autobiograf"
+          ],
+          "m3gim:birthDate": "1761-05-03",
+          "m3gim:deathDate": "1819-03-23",
+          "m3gim:birthPlace": "Weimar",
+          "m3gim:deathPlace": "Mannheim",
           "role": "erwähnt",
           "@type": "rico:Person"
         }
@@ -8451,18 +11300,45 @@
         {
           "name": "Wolf, Hugo",
           "@id": "wd:Q215747",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q215747",
+          "m3gim:occupation": [
+            "Komponist",
+            "Musikkritiker",
+            "Musikwissenschaftler"
+          ],
+          "m3gim:birthDate": "1860-03-13",
+          "m3gim:deathDate": "1903-02-22",
+          "m3gim:birthPlace": "Slovenj Gradec",
+          "m3gim:deathPlace": "Wien",
           "role": "komponist:in",
           "@type": "rico:Person"
         },
         {
           "name": "Schmidt, Franz",
           "@id": "wd:Q95295060",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q95295060",
+          "m3gim:occupation": [
+            "Philosoph",
+            "Literaturwissenschaftler",
+            "Bibliothekar"
+          ],
+          "m3gim:birthDate": "1895-00-00",
+          "m3gim:deathDate": "1972-12-16",
           "role": "komponist:in",
           "@type": "rico:Person"
         },
         {
           "name": "Hübner, Wilhelm",
           "@id": "wd:Q2573335",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q2573335",
+          "m3gim:occupation": [
+            "Komponist",
+            "Dirigent"
+          ],
+          "m3gim:birthDate": "1915-11-12",
+          "m3gim:deathDate": "2004-01-30",
+          "m3gim:birthPlace": "Prag",
+          "m3gim:deathPlace": "Dresden",
           "role": "interpret:in",
           "@type": "rico:Person"
         },
@@ -8473,6 +11349,9 @@
         },
         {
           "name": "Welt, Alfred",
+          "@id": "wd:Q132908618",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q132908618",
+          "m3gim:birthDate": "1944-01-01",
           "role": "interpret:in",
           "@type": "rico:Person"
         },
@@ -8489,6 +11368,7 @@
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94208",
           "role": "sänger:in",
           "@type": "rico:Person"
         },
@@ -8590,6 +11470,9 @@
         },
         {
           "name": "Spanisches Liederbuch",
+          "@id": "wd:Q19896118",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q19896118",
+          "m3gim:wdComposer": "Hugo Wolf",
           "role": "erwähnt",
           "@type": "m3gim:MusicalWork",
           "komponist": "Wolf, Hugo"
@@ -8615,6 +11498,11 @@
       },
       "rico:hasOrHadLocation": {
         "name": "Zürich",
+        "@id": "wd:Q72",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q72",
+        "geo:lat": 47.37444444444444,
+        "geo:long": 8.54111111111111,
+        "m3gim:country": "Schweiz",
         "role": "erwähnt",
         "@type": "rico:Place"
       }
@@ -8640,6 +11528,7 @@
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94208",
           "role": "verfasser:in",
           "@type": "rico:Person"
         }
@@ -8647,6 +11536,11 @@
       "rico:hasOrHadLocation": [
         {
           "name": "Zürich",
+          "@id": "wd:Q72",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q72",
+          "geo:lat": 47.37444444444444,
+          "geo:long": 8.54111111111111,
+          "m3gim:country": "Schweiz",
           "role": "zielort",
           "@type": "rico:Place"
         },
@@ -8677,6 +11571,7 @@
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94208",
           "role": "verfasser:in",
           "@type": "rico:Person"
         }
@@ -8685,6 +11580,10 @@
         {
           "name": "Berlin",
           "@id": "wd:Q64",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q64",
+          "geo:lat": 52.516666666667,
+          "geo:long": 13.383333333333,
+          "m3gim:country": "Mark Brandenburg",
           "role": "zielort",
           "@type": "rico:Place"
         },
@@ -10443,7 +13342,7 @@
       "rico:hasExtent": "1 days 06:00:00"
     }
   ],
-  "m3gim:exportDate": "2026-02-25T19:04:02.567561",
+  "m3gim:exportDate": "2026-03-29T11:02:00.701050",
   "m3gim:recordCount": 282,
   "m3gim:konvolutCount": 3
 }

@@ -32,6 +32,8 @@ const GRID_CONFIG = {
     icon: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
     getEntries: (s) => [...s.persons.entries()].map(([name, data]) => ({
       name, count: data.records.size, kategorie: data.kategorie, wikidata: data.wikidata, records: data.records,
+      occupation: data.occupation || null, voiceType: data.voiceType || null,
+      birthDate: data.birthDate || null, deathDate: data.deathDate || null,
     })),
     columns: [
       { key: 'name', label: 'Name', flex: 1 },
@@ -358,6 +360,21 @@ function renderNameCell(entry) {
       html: WIKIDATA_ICON_SVG,
       onClick: (e) => e.stopPropagation(),
     }));
+  }
+  // WD-Enrichment subtitle (Beruf · Stimmfach · Lebensdaten)
+  const parts = [];
+  if (entry.occupation) {
+    const occ = Array.isArray(entry.occupation) ? entry.occupation : [entry.occupation];
+    parts.push(occ.join(', '));
+  }
+  if (entry.voiceType) parts.push(entry.voiceType);
+  if (entry.birthDate || entry.deathDate) {
+    const birth = entry.birthDate ? entry.birthDate.slice(0, 4) : '?';
+    const death = entry.deathDate ? entry.deathDate.slice(0, 4) : '';
+    parts.push(death ? `${birth}\u2013${death}` : `*${birth}`);
+  }
+  if (parts.length > 0) {
+    frag.appendChild(el('div', { className: 'idx-subtitle' }, parts.join(' \u00b7 ')));
   }
   return frag;
 }

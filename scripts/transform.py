@@ -51,6 +51,8 @@ CONTEXT = {
     "m3gim-dft": "https://dhcraft.org/m3gim/documentaryFormTypes#",
     "m3gim-role": "https://dhcraft.org/m3gim/roles#",
     "wd": "http://www.wikidata.org/entity/",
+    "owl": "http://www.w3.org/2002/07/owl#",
+    "geo": "http://www.w3.org/2003/01/geo/wgs84_pos#",
     "skos": "http://www.w3.org/2004/02/skos/core#",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
     # Inline-Property-Aliase: bare keys → qualifizierte URIs
@@ -432,8 +434,11 @@ def process_verknuepfungen(df: pd.DataFrame, indices: dict) -> dict:
     return relations
 
 
-def add_relations_to_records(records: list, relations: dict):
+def add_relations_to_records(records: list, relations: dict,
+                             enrichment_data: dict | None = None):
     """Fuegt Verknuepfungen als RiC-O/m3gim Properties zu Records hinzu"""
+    if enrichment_data is None:
+        enrichment_data = {}
     for record in records:
         identifier = record.get("rico:identifier")
         if not identifier or identifier not in relations:
@@ -457,6 +462,11 @@ def add_relations_to_records(records: list, relations: dict):
             wid = rel.get("wikidata_id", "")
             if wid and re.match(r'^Q\d+$', wid):
                 entry["@id"] = f"wd:{wid}"
+                entry["owl:sameAs"] = f"http://www.wikidata.org/entity/{wid}"
+                # Enrichment-Properties injizieren
+                enrich = enrichment_data.get(wid, {}).get("properties", {})
+                if enrich:
+                    _inject_enrichment(entry, enrich)
             if rel.get("rolle"):
                 entry["role"] = rel["rolle"]
 
@@ -556,6 +566,73 @@ def add_relations_to_records(records: list, relations: dict):
 
 
 # ---------------------------------------------------------------------------
+# Enrichment-Injection
+# ---------------------------------------------------------------------------
+
+def _inject_enrichment(entry: dict, props: dict):
+    """Injiziert Wikidata-Enrichment-Properties in eine Entitaet."""
+    # Personen
+    if "occupation" in props:
+        labels = [o.get("label", o.get("qid", "")) for o in props["occupation"]
+                  if isinstance(o, dict)]
+        if labels:
+            entry["m3gim:occupation"] = labels
+    if "voiceType" in props:
+        items = props["voiceType"]
+        if isinstance(items, list) and items:
+            entry["m3gim:voiceType"] = items[0].get("label", "") if isinstance(items[0], dict) else str(items[0])
+        elif isinstance(items, dict):
+            entry["m3gim:voiceType"] = items.get("label", "")
+    if "birthDate" in props:
+        entry["m3gim:birthDate"] = props["birthDate"]
+    if "deathDate" in props:
+        entry["m3gim:deathDate"] = props["deathDate"]
+    if "birthPlace" in props:
+        bp = props["birthPlace"]
+        if isinstance(bp, dict):
+            entry["m3gim:birthPlace"] = bp.get("label", bp.get("qid", ""))
+    if "deathPlace" in props:
+        dp = props["deathPlace"]
+        if isinstance(dp, dict):
+            entry["m3gim:deathPlace"] = dp.get("label", dp.get("qid", ""))
+
+    # Orte
+    if "coordinates" in props:
+        coords = props["coordinates"]
+        if isinstance(coords, dict) and "lat" in coords:
+            entry["geo:lat"] = coords["lat"]
+            entry["geo:long"] = coords["lon"]
+    if "country" in props:
+        c = props["country"]
+        if isinstance(c, dict):
+            entry["m3gim:country"] = c.get("label", c.get("qid", ""))
+
+    # Werke
+    if "composer" in props:
+        c = props["composer"]
+        if isinstance(c, dict):
+            entry["m3gim:wdComposer"] = c.get("label", c.get("qid", ""))
+    if "genre" in props:
+        items = props["genre"]
+        if isinstance(items, list) and items:
+            entry["m3gim:wdGenre"] = [g.get("label", "") for g in items if isinstance(g, dict)]
+        elif isinstance(items, dict):
+            entry["m3gim:wdGenre"] = items.get("label", "")
+    if "premiereDate" in props:
+        entry["m3gim:premiereDate"] = props["premiereDate"]
+    elif "publicationDate" in props:
+        entry["m3gim:premiereDate"] = props["publicationDate"]
+
+    # Organisationen
+    if "location" in props:
+        loc = props["location"]
+        if isinstance(loc, dict):
+            entry["m3gim:wdLocation"] = loc.get("label", loc.get("qid", ""))
+    if "inception" in props:
+        entry["m3gim:inception"] = props["inception"]
+
+
+# ---------------------------------------------------------------------------
 # Hauptfunktion
 # ---------------------------------------------------------------------------
 
@@ -599,6 +676,17 @@ def main():
     else:
         print(f"\n  Reconciliation: {recon_path.name} nicht vorhanden (uebersprungen)")
 
+    # Enrichment-Daten laden (wikidata-enrichment.json)
+    enrichment_data = {}
+    enrichment_path = OUTPUT_DIR / "wikidata-enrichment.json"
+    if enrichment_path.exists():
+        with open(enrichment_path, "r", encoding="utf-8") as f:
+            enrich_raw = json.load(f)
+        enrichment_data = enrich_raw.get("entities", {})
+        print(f"  Enrichment: {len(enrichment_data)} Entitaeten aus {enrichment_path.name}")
+    else:
+        print(f"  Enrichment: {enrichment_path.name} nicht vorhanden (uebersprungen)")
+
     # Objekte laden
     objekte_path = SHEETS_DIR / "M3GIM-Objekte.xlsx"
     if not objekte_path.exists():
@@ -640,10 +728,10 @@ def main():
         total_rels = sum(len(v) for v in relations.values())
         print(f"  {total_rels} Verknuepfungen fuer {len(relations)} Objekte")
 
-        # Relations zu Records hinzufuegen
-        add_relations_to_records(records, relations)
+        # Relations zu Records hinzufuegen (mit Enrichment-Daten)
+        add_relations_to_records(records, relations, enrichment_data)
         # Relations auch zu Konvolut-Records (falls Verknuepfungen am Konvolut haengen)
-        add_relations_to_records(konvolute, relations)
+        add_relations_to_records(konvolute, relations, enrichment_data)
 
     # Gesamtbestand als Fonds
     fonds = {

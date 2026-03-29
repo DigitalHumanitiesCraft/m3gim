@@ -34,7 +34,7 @@
 | `main.js` | Einstiegspunkt, TAB_RENDERERS Registry, Lazy-Tab-Rendering |
 | `data/loader.js` | Dataloading, Store-Aufbau, Partitur-Singleton (`loadPartitur()`, `getLebensphasen()`) |
 | `data/aggregator.js` | Daten-Aggregation fuer Views (`buildKomponistenMap` shared, `aggregateMatrix`, `aggregateKosmos`, `aggregateZeitfluss`) |
-| `ui/router.js` | Hash-Routing (7 aktive Tabs), navigateToView/navigateToIndex, ARIA-State |
+| `ui/router.js` | Hash-Routing (8 aktive Tabs inkl. Lebenspartitur), navigateToView/navigateToIndex, ARIA-State |
 | `ui/events.js` | Cross-View Event-Bus (`onViewNavigate()`) mit Auto-Replay (Session 26) |
 | `ui/korb.js` | Wissenskorb (sessionStorage) |
 | `views/archiv.js` | Bestand + Chronik |
@@ -50,7 +50,7 @@
 | `utils/normalize.js` | Normalisierung |
 | `utils/viz-components.js` | Shared Viz-Builder (FF-Badges, Phase-Chips, Layer-Chips, Coverage, Tooltip, Zoom, Console-Log, **DEV-Flag** (Session 26)) |
 | `views/lebensstationen.js` | Scrollytelling-Prototyp (D3, IntersectionObserver) — extrahiert aus inline HTML (Session 26) |
-| `views/lebenspartitur.js` | Bump-Chart-Prototyp (D3) — extrahiert aus inline HTML (Session 26) |
+| `views/lebenspartitur.js` | Bump-Chart (D3) — SPA-Tab (`renderLebenspartitur`) + Standalone-Seite (`init`), container-relatives DOM (Session 27) |
 
 13 CSS-Dateien unter `docs/css/` (variables, base, archiv, indizes, mobilitaet, korb, matrix, kosmos, zeitfluss, components, pages, **lebensstationen**, **lebenspartitur** — letzte 2 extrahiert Session 26).
 

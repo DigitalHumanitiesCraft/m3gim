@@ -13,6 +13,7 @@ import { renderKosmos } from './views/kosmos.js';
 import { renderKorb } from './views/korb.js';
 import { renderMobilitaet } from './views/mobilitaet.js';
 import { renderZeitfluss } from './views/zeitfluss.js';
+import { renderLebenspartitur } from './views/lebenspartitur.js';
 import { DEV } from './utils/viz-components.js';
 
 let store = null;
@@ -25,8 +26,9 @@ const TAB_RENDERERS = new Map([
   ['matrix',     (s, c) => renderMatrix(s, c)],
   ['kosmos',     (s, c) => renderKosmos(s, c)],
   ['mobilitaet', (s, c) => renderMobilitaet(s, c)],
-  ['zeitfluss',  (s, c) => renderZeitfluss(s, c)],
-  ['korb',       (s, c) => renderKorb(s, c)],
+  ['zeitfluss',       (s, c) => renderZeitfluss(s, c)],
+  ['lebenspartitur',  (s, c) => renderLebenspartitur(s, c)],
+  ['korb',            (s, c) => renderKorb(s, c)],
 ]);
 
 async function init() {
