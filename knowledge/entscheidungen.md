@@ -1,6 +1,6 @@
 # Entscheidungen und Prozesswissen
 
-> 56 Architekturentscheidungen (E-01 bis E-56), offene Entscheidungen, technische Schulden und Learnings.
+> 69 Architekturentscheidungen (E-01 bis E-69), offene Entscheidungen, technische Schulden und Learnings.
 
 ## Architekturentscheidungen (final)
 
@@ -67,6 +67,14 @@
 | E-59 | Wikidata-Enrichment-Pipeline: `enrich-wikidata.py` holt Properties (P106, P412, P569/P570, P625, P1191 etc.), `transform.py` injiziert `owl:sameAs` + `m3gim:`-Properties in JSON-LD |
 | E-60 | UA-Distanz im Kosmos: Phase-Filter-Annotation zeigt durchschnittliche Urauffuehrungsdistanz, Werk-Tooltips zeigen individuelle Distanz |
 | E-61 | Indizes-Subtitles: `renderNameCell()` zeigt Beruf, Stimmfach, Lebensdaten aus WD-Enrichment unter Personennamen |
+| E-62 | v2-Parallelstruktur: `data/source-v2/`, `data/output-v2/`, `data/reports-v2/` neben v1; Pipeline via ENV-Overrides (`M3GIM_SHEETS_DIR`, `M3GIM_OUTPUT_DIR`, `M3GIM_REPORTS_DIR`). v1 bleibt byte-identisch, v2 wächst modellseitig. `build-views.py` kopiert nur bei Default-OUTPUT nach `docs/data/` (Schutz gegen versehentliches Frontend-Overwrite). |
+| E-63 | Gender-neutrale Rollennormalisierung (`normalize_role`): `:in`/`:innen`-Suffixe werden gestrippt. Ambiguierende End-`in`-Formen bleiben erhalten (interpret, technische leitung). Kontrolliertes Vokabular in [datenmodell.md § 5](datenmodell.md). |
+| E-64 | SKOS-Hierarchie für Dokumenttypen: `build_dft_concepts()` emittiert `skos:Concept`-Knoten mit `skos:broader` als Top-Level-Graph-Entitäten. Korrespondenz, Presse, Programm, Biographisch, Identitätsdokument als Oberklassen. Nur effektiv verwendete Konzepte werden emittiert (transitives Closure). |
+| E-65 | `m3gim:dateEvidence` → `agrelon:hasProvenance` + `agrelon:hasConfidenceValue`: Der Record verweist als Provenance auf sich selbst; die Evidenz-Stufen (`aus_dokument`/`erschlossen`/`extern`/`unbekannt`) werden auf Dezimal-Konfidenzen (1.0/0.6/0.8/0.0) gemappt. Kompletter Drop des alten Property-Namens, nicht additiv — **Frontend-breaking**, Phase 6 nachziehen. |
+| E-66 | `m3gim:SpatiotemporalEvent` als Top-Level-Graph-Entitäten: Komposit `ort, datum` erzeugt zusätzlich zu den zwei getrennten Relationen eine SpatiotemporalEvent-Instanz mit `atPlace`, `atDate`, `eventRole`. Records referenzieren via `m3gim:hasSpatiotemporalEvent`. Rein additiv, bestehende `rico:hasOrHadLocation`+`m3gim:eventDate` bleiben. |
+| E-67 | Finanzschicht strukturiert: `parse_monetary_value` zerlegt `AMOUNT, CURRENCY`, Komma als Dezimaltrenner. `m3gim:DetailAnnotation` trägt `monetaryAmount` (xsd:decimal), `currency` (belegter Code ohne ISO-4217-Zwang wegen Ambiguität „Fr" = FRF/CHF), `detailRole`, `detailValue` (Rohwert). |
+| E-68 | Typisierte Datumsproperty-Familie: `m3gim:absendedatum`, `m3gim:auffuehrungsdatum`, `m3gim:premieredatum` etc. je nach Rolle statt generisch `m3gim:eventDate`. `is_iso_date()` als Gatekeeper gegen Freitext-Leaks (`"Wien, ab 1956"` landet im Fallback `m3gim:eventDate`, nicht in typisierter Property). `clean_date` normalisiert `YYYY-YYYY` → `YYYY/YYYY` (data.md § 6). |
+| E-69 | AgRelOn für Agent-Agent-Relationen: `AGRELON_MAPPING` (typ, rolle) → AgRelOn-Klasse + -Property. Umgesetzt: `HasEmployeeEmployer`, `HasCorrespondent`, `HasProfessionalContact`, `HasIsPatron`, `HasIsMember`. Emission als `m3gim:agentRelation`-Array am Record mit `agrelon:hasProvenance` (Record-URI). `hasValidityPeriod` aus `rico:date` als Heuristik für Employer-Relationen. |
 
 ## Offene Entscheidungen
 
