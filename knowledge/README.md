@@ -18,7 +18,6 @@
 ## Weitere Ressourcen
 
 - `appendices/` — [Journal Volltext](appendices/journal-volltext.md)
-- `_archive/pre-refactor/` — 12 archivierte Quelldateien der frueheren Ordnerstruktur
 - Session-Memory: `.claude/projects/.../memory/` (persistiert ueber Sessions)
 - Root: `../CLAUDE.md` — Workflow-Regeln fuer Claude-Code-Sessions (nicht dokumentarisch, prozessual)
 - Root: `../IMPLEMENTATION-PLAN.md` — v2-Migration-Plan (7 Phasen, Phase 4.1/4.2/4.3/4.4/4.6/4.7/4.8 umgesetzt)
