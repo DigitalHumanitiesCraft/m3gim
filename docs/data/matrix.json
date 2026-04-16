@@ -177,37 +177,6 @@
       "gesamt_intensitaet": 1
     },
     {
-      "name": "Hartmann, Rudolf",
-      "kategorie": "Regisseur",
-      "begegnungen": [
-        {
-          "zeitraum": "1940-1944",
-          "intensitaet": 2,
-          "anzahl_dokumente": 1,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_003 1_2",
-              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
-              "typ": "programmheft"
-            }
-          ]
-        },
-        {
-          "zeitraum": "1950-1954",
-          "intensitaet": 1,
-          "anzahl_dokumente": 1,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_004 2",
-              "titel": "Rezension zu Lady Macbeth in der Verdi- Premiere der Staatsoper",
-              "typ": "rezension"
-            }
-          ]
-        }
-      ],
-      "gesamt_intensitaet": 3
-    },
-    {
       "name": "Hartmann, Prof.",
       "kategorie": "Regisseur",
       "begegnungen": [
@@ -219,7 +188,7 @@
             {
               "signatur": "UAKUG/NIM_007 2",
               "titel": "Brief von Martin H. Taubman zu Verträgen mit Buenos Aires, Neapel, Wien",
-              "typ": "brief"
+              "typ": "korrespondenz"
             }
           ]
         }
@@ -238,12 +207,43 @@
             {
               "signatur": "UAKUG/NIM_084",
               "titel": "1 Glückwunschbillet zur Ernennung Ira Malaniuks zur bayrischen Kammersängerin von Prof. Rudolf Hartmann",
-              "typ": "brief"
+              "typ": "korrespondenz"
             }
           ]
         }
       ],
       "gesamt_intensitaet": 3
+    },
+    {
+      "name": "Hartmann, Rudolf",
+      "kategorie": "Regisseur",
+      "begegnungen": [
+        {
+          "zeitraum": "1940-1944",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_003 1_2",
+              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
+              "typ": "programm"
+            }
+          ]
+        },
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 2",
+              "titel": "Rezension zu Lady Macbeth in der Verdi- Premiere der Staatsoper",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 2
     },
     {
       "name": "Erik Werba",
@@ -282,18 +282,18 @@
       "begegnungen": [
         {
           "zeitraum": "1960-1964",
-          "intensitaet": 2,
+          "intensitaet": 1,
           "anzahl_dokumente": 1,
           "dokumente": [
             {
               "signatur": "UAKUG/NIM_007 8",
               "titel": "Konzertprogramm, Liederabend, Palais Pallavicini, 1963-08-28",
-              "typ": "programmheft"
+              "typ": "programm"
             }
           ]
         }
       ],
-      "gesamt_intensitaet": 2
+      "gesamt_intensitaet": 1
     },
     {
       "name": "Paul Baumgartner",
@@ -326,12 +326,12 @@
             {
               "signatur": "UAKUG/NIM_007 2",
               "titel": "Brief von Martin H. Taubman zu Verträgen mit Buenos Aires, Neapel, Wien",
-              "typ": "brief"
+              "typ": "korrespondenz"
             },
             {
               "signatur": "UAKUG/NIM_007 4",
               "titel": "Brief von Ernst Kühnly zu Gastspiel in Lissabon an Martin H. Taubman",
-              "typ": "brief"
+              "typ": "korrespondenz"
             }
           ]
         },
@@ -362,7 +362,7 @@
             {
               "signatur": "UAKUG/NIM_007 4",
               "titel": "Brief von Ernst Kühnly zu Gastspiel in Lissabon an Martin H. Taubman",
-              "typ": "brief"
+              "typ": "korrespondenz"
             }
           ]
         },
@@ -398,7 +398,7 @@
             {
               "signatur": "UAKUG/NIM_007 2",
               "titel": "Brief von Martin H. Taubman zu Verträgen mit Buenos Aires, Neapel, Wien",
-              "typ": "brief"
+              "typ": "korrespondenz"
             }
           ]
         }
@@ -417,48 +417,12 @@
             {
               "signatur": "UAKUG/NIM_007 2",
               "titel": "Brief von Martin H. Taubman zu Verträgen mit Buenos Aires, Neapel, Wien",
-              "typ": "brief"
+              "typ": "korrespondenz"
             }
           ]
         }
       ],
       "gesamt_intensitaet": 3
-    },
-    {
-      "name": "Beethoven, Ludwig van",
-      "kategorie": "Kollege",
-      "begegnungen": [
-        {
-          "zeitraum": "1950-1954",
-          "intensitaet": 2,
-          "anzahl_dokumente": 2,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_004 7",
-              "titel": "Rezension von Dr. Joachim Bergfeld (Fränkische Presse) zur IX. Symphonie Beethovens",
-              "typ": "rezension"
-            },
-            {
-              "signatur": "UAKUG/NIM_004 8",
-              "titel": "Rezension von Helmut Schmidt-Garre",
-              "typ": "rezension"
-            }
-          ]
-        },
-        {
-          "zeitraum": "1960-1964",
-          "intensitaet": 2,
-          "anzahl_dokumente": 1,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_007 8",
-              "titel": "Konzertprogramm, Liederabend, Palais Pallavicini, 1963-08-28",
-              "typ": "programmheft"
-            }
-          ]
-        }
-      ],
-      "gesamt_intensitaet": 4
     },
     {
       "name": "Weber, Ludwig",
@@ -502,6 +466,42 @@
       "gesamt_intensitaet": 4
     },
     {
+      "name": "Beethoven, Ludwig van",
+      "kategorie": "Kollege",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 2,
+          "anzahl_dokumente": 2,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 7",
+              "titel": "Rezension von Dr. Joachim Bergfeld (Fränkische Presse) zur IX. Symphonie Beethovens",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 8",
+              "titel": "Rezension von Helmut Schmidt-Garre",
+              "typ": "rezension"
+            }
+          ]
+        },
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 8",
+              "titel": "Konzertprogramm, Liederabend, Palais Pallavicini, 1963-08-28",
+              "typ": "programm"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 3
+    },
+    {
       "name": "Christa Ludwig",
       "kategorie": "Kollege",
       "begegnungen": [
@@ -526,18 +526,18 @@
       "begegnungen": [
         {
           "zeitraum": "1940-1944",
-          "intensitaet": 2,
+          "intensitaet": 1,
           "anzahl_dokumente": 1,
           "dokumente": [
             {
               "signatur": "UAKUG/NIM_003 1_2",
               "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
-              "typ": "programmheft"
+              "typ": "programm"
             }
           ]
         }
       ],
-      "gesamt_intensitaet": 2
+      "gesamt_intensitaet": 1
     },
     {
       "name": "Nilsson, Birgit",
@@ -627,7 +627,7 @@
             {
               "signatur": "UAKUG/NIM_081",
               "titel": "Brief von Prof. Max Kojetinsky (Opernhaus Graz) an Ira Malaniuk (Staatsoper Wien)",
-              "typ": "brief"
+              "typ": "korrespondenz"
             }
           ]
         }
@@ -646,7 +646,7 @@
             {
               "signatur": "UAKUG/NIM_059",
               "titel": "Korrespondenz zw. Ira Malaniuk und Dr. C. Gasser",
-              "typ": "brief"
+              "typ": "korrespondenz"
             }
           ]
         }
@@ -665,7 +665,7 @@
             {
               "signatur": "UAKUG/NIM_096",
               "titel": "Brief von Dr. Eduard Speck an Ira Malaniuk",
-              "typ": "brief"
+              "typ": "korrespondenz"
             }
           ]
         }
@@ -739,22 +739,22 @@
             {
               "signatur": "UAKUG/NIM_007 1",
               "titel": "Brief von Felix Ballhausen zu Dienstverträgen Staatsoper München",
-              "typ": "brief"
+              "typ": "korrespondenz"
             },
             {
               "signatur": "UAKUG/NIM_007 2",
               "titel": "Brief von Martin H. Taubman zu Verträgen mit Buenos Aires, Neapel, Wien",
-              "typ": "brief"
+              "typ": "korrespondenz"
             },
             {
               "signatur": "UAKUG/NIM_007 3",
               "titel": "Ausweis für Bayreuther Festspiele 1953",
-              "typ": "ausweis"
+              "typ": "identitaetsdokument"
             },
             {
               "signatur": "UAKUG/NIM_007 4",
               "titel": "Brief von Ernst Kühnly zu Gastspiel in Lissabon an Martin H. Taubman",
-              "typ": "brief"
+              "typ": "korrespondenz"
             }
           ]
         },
@@ -791,12 +791,12 @@
             {
               "signatur": "UAKUG/NIM_004 22",
               "titel": "Brief von Ira Malaniuk an Cox vom 07.09.1957",
-              "typ": "brief"
+              "typ": "korrespondenz"
             },
             {
               "signatur": "UAKUG/NIM_004 23",
               "titel": "Brief von Ira Malaniuk an Cox vom 26.11.1957",
-              "typ": "brief"
+              "typ": "korrespondenz"
             },
             {
               "signatur": "UAKUG/NIM_004 25",
@@ -806,7 +806,7 @@
             {
               "signatur": "UAKUG/NIM_004 27",
               "titel": "Brief von Margaret Snider an Ira Malaniuk vom 27.10.1959",
-              "typ": "brief"
+              "typ": "korrespondenz"
             },
             {
               "signatur": "UAKUG/NIM_007 5_2",
@@ -847,7 +847,7 @@
         },
         {
           "zeitraum": "1960-1964",
-          "intensitaet": 12,
+          "intensitaet": 11,
           "anzahl_dokumente": 5,
           "dokumente": [
             {
@@ -858,22 +858,22 @@
             {
               "signatur": "UAKUG/NIM_007 7",
               "titel": "Brief von Intendanz der Bayerischen Staatsoper zu Gastspielvertrag und Schiedsvertrag 1961/62 an Ira Malaniuk",
-              "typ": "brief"
+              "typ": "korrespondenz"
             },
             {
               "signatur": "UAKUG/NIM_007 8",
               "titel": "Konzertprogramm, Liederabend, Palais Pallavicini, 1963-08-28",
-              "typ": "programmheft"
+              "typ": "programm"
             },
             {
               "signatur": "UAKUG/NIM_007 9",
               "titel": "Brief von Emil Jucker an Ira Malaniuk über ein Gastspiel in Zürich",
-              "typ": "brief"
+              "typ": "korrespondenz"
             },
             {
               "signatur": "UAKUG/NIM_007 10",
               "titel": "(Dienst)brief von Intendanz der Bayerischen Staatoper zu den Festspielen an Ira Malaniuk, 1964-08-18",
-              "typ": "brief"
+              "typ": "korrespondenz"
             }
           ]
         },
@@ -885,7 +885,7 @@
             {
               "signatur": "UAKUG/NIM_007 11",
               "titel": "Brief vom Sekretär der Tonhalle-Gesellschaft Zürich zu Bestätigung von Konzerten und Probezeiten",
-              "typ": "brief"
+              "typ": "korrespondenz"
             },
             {
               "signatur": "UAKUG/NIM_007 12",
@@ -900,7 +900,7 @@
           ]
         }
       ],
-      "gesamt_intensitaet": 60
+      "gesamt_intensitaet": 59
     },
     {
       "name": "Bayerische Staatsoper",
@@ -931,77 +931,17 @@
             {
               "signatur": "UAKUG/NIM_007 7",
               "titel": "Brief von Intendanz der Bayerischen Staatsoper zu Gastspielvertrag und Schiedsvertrag 1961/62 an Ira Malaniuk",
-              "typ": "brief"
+              "typ": "korrespondenz"
             },
             {
               "signatur": "UAKUG/NIM_007 10",
               "titel": "(Dienst)brief von Intendanz der Bayerischen Staatoper zu den Festspielen an Ira Malaniuk, 1964-08-18",
-              "typ": "brief"
+              "typ": "korrespondenz"
             }
           ]
         }
       ],
       "gesamt_intensitaet": 8
-    },
-    {
-      "name": "Strauss, Richard",
-      "kategorie": "Andere",
-      "begegnungen": [
-        {
-          "zeitraum": "1940-1944",
-          "intensitaet": 2,
-          "anzahl_dokumente": 1,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_003 1_2",
-              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
-              "typ": "programmheft"
-            }
-          ]
-        },
-        {
-          "zeitraum": "1950-1954",
-          "intensitaet": 2,
-          "anzahl_dokumente": 2,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_004 7",
-              "titel": "Rezension von Dr. Joachim Bergfeld (Fränkische Presse) zur IX. Symphonie Beethovens",
-              "typ": "rezension"
-            },
-            {
-              "signatur": "UAKUG/NIM_004 14",
-              "titel": "Rezension von ZED. zu Le Chant de la Terre in Straßburg unter Fritz Munch",
-              "typ": "rezension"
-            }
-          ]
-        },
-        {
-          "zeitraum": "1960-1964",
-          "intensitaet": 2,
-          "anzahl_dokumente": 1,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_007 8",
-              "titel": "Konzertprogramm, Liederabend, Palais Pallavicini, 1963-08-28",
-              "typ": "programmheft"
-            }
-          ]
-        },
-        {
-          "zeitraum": "1965-1969",
-          "intensitaet": 1,
-          "anzahl_dokumente": 1,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_007 17",
-              "titel": "Rezension zu Der Wildschütz",
-              "typ": "rezension"
-            }
-          ]
-        }
-      ],
-      "gesamt_intensitaet": 7
     },
     {
       "name": "National Artists Corporation",
@@ -1020,12 +960,12 @@
             {
               "signatur": "UAKUG/NIM_004 23",
               "titel": "Brief von Ira Malaniuk an Cox vom 26.11.1957",
-              "typ": "brief"
+              "typ": "korrespondenz"
             },
             {
               "signatur": "UAKUG/NIM_004 27",
               "titel": "Brief von Margaret Snider an Ira Malaniuk vom 27.10.1959",
-              "typ": "brief"
+              "typ": "korrespondenz"
             }
           ]
         }
@@ -1119,6 +1059,66 @@
         }
       ],
       "gesamt_intensitaet": 6
+    },
+    {
+      "name": "Strauss, Richard",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1940-1944",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_003 1_2",
+              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
+              "typ": "programm"
+            }
+          ]
+        },
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 2,
+          "anzahl_dokumente": 2,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 7",
+              "titel": "Rezension von Dr. Joachim Bergfeld (Fränkische Presse) zur IX. Symphonie Beethovens",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 14",
+              "titel": "Rezension von ZED. zu Le Chant de la Terre in Straßburg unter Fritz Munch",
+              "typ": "rezension"
+            }
+          ]
+        },
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 8",
+              "titel": "Konzertprogramm, Liederabend, Palais Pallavicini, 1963-08-28",
+              "typ": "programm"
+            }
+          ]
+        },
+        {
+          "zeitraum": "1965-1969",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 17",
+              "titel": "Rezension zu Der Wildschütz",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 5
     },
     {
       "name": "Wagner, Wieland",
@@ -1312,68 +1312,6 @@
         }
       ],
       "gesamt_intensitaet": 4
-    },
-    {
-      "name": "Krauß, Clemens",
-      "kategorie": "Andere",
-      "begegnungen": [
-        {
-          "zeitraum": "1940-1944",
-          "intensitaet": 2,
-          "anzahl_dokumente": 1,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_003 1_2",
-              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
-              "typ": "programmheft"
-            }
-          ]
-        },
-        {
-          "zeitraum": "1955-1959",
-          "intensitaet": 1,
-          "anzahl_dokumente": 1,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_004 15",
-              "titel": "Rezension von Y. zu Tannhäuser",
-              "typ": "rezension"
-            }
-          ]
-        }
-      ],
-      "gesamt_intensitaet": 3
-    },
-    {
-      "name": "Bahr-Mildenburg, Anna",
-      "kategorie": "Andere",
-      "begegnungen": [
-        {
-          "zeitraum": "1940-1944",
-          "intensitaet": 2,
-          "anzahl_dokumente": 1,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_003 1_2",
-              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
-              "typ": "programmheft"
-            }
-          ]
-        },
-        {
-          "zeitraum": "1950-1954",
-          "intensitaet": 1,
-          "anzahl_dokumente": 1,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_004 2",
-              "titel": "Rezension zu Lady Macbeth in der Verdi- Premiere der Staatsoper",
-              "typ": "rezension"
-            }
-          ]
-        }
-      ],
-      "gesamt_intensitaet": 3
     },
     {
       "name": "Arnold, Heinz",
@@ -1578,7 +1516,7 @@
             {
               "signatur": "UAKUG/NIM_007 3",
               "titel": "Ausweis für Bayreuther Festspiele 1953",
-              "typ": "ausweis"
+              "typ": "identitaetsdokument"
             }
           ]
         }
@@ -1633,7 +1571,7 @@
             {
               "signatur": "UAKUG/NIM_004 23",
               "titel": "Brief von Ira Malaniuk an Cox vom 26.11.1957",
-              "typ": "brief"
+              "typ": "korrespondenz"
             }
           ]
         }
@@ -1652,7 +1590,7 @@
             {
               "signatur": "UAKUG/NIM_004 27",
               "titel": "Brief von Margaret Snider an Ira Malaniuk vom 27.10.1959",
-              "typ": "brief"
+              "typ": "korrespondenz"
             }
           ]
         }
@@ -1671,7 +1609,7 @@
             {
               "signatur": "UAKUG/NIM_004 27",
               "titel": "Brief von Margaret Snider an Ira Malaniuk vom 27.10.1959",
-              "typ": "brief"
+              "typ": "korrespondenz"
             }
           ]
         }
@@ -1690,7 +1628,7 @@
             {
               "signatur": "UAKUG/NIM_004 27",
               "titel": "Brief von Margaret Snider an Ira Malaniuk vom 27.10.1959",
-              "typ": "brief"
+              "typ": "korrespondenz"
             }
           ]
         }
@@ -1709,7 +1647,7 @@
             {
               "signatur": "UAKUG/NIM_007 1",
               "titel": "Brief von Felix Ballhausen zu Dienstverträgen Staatsoper München",
-              "typ": "brief"
+              "typ": "korrespondenz"
             }
           ]
         }
@@ -1728,7 +1666,7 @@
             {
               "signatur": "UAKUG/NIM_007 2",
               "titel": "Brief von Martin H. Taubman zu Verträgen mit Buenos Aires, Neapel, Wien",
-              "typ": "brief"
+              "typ": "korrespondenz"
             }
           ]
         }
@@ -1747,7 +1685,7 @@
             {
               "signatur": "UAKUG/NIM_007 2",
               "titel": "Brief von Martin H. Taubman zu Verträgen mit Buenos Aires, Neapel, Wien",
-              "typ": "brief"
+              "typ": "korrespondenz"
             }
           ]
         }
@@ -1766,7 +1704,7 @@
             {
               "signatur": "UAKUG/NIM_007 2",
               "titel": "Brief von Martin H. Taubman zu Verträgen mit Buenos Aires, Neapel, Wien",
-              "typ": "brief"
+              "typ": "korrespondenz"
             }
           ]
         }
@@ -1785,7 +1723,7 @@
             {
               "signatur": "UAKUG/NIM_007 2",
               "titel": "Brief von Martin H. Taubman zu Verträgen mit Buenos Aires, Neapel, Wien",
-              "typ": "brief"
+              "typ": "korrespondenz"
             }
           ]
         }
@@ -1804,7 +1742,7 @@
             {
               "signatur": "UAKUG/NIM_007 2",
               "titel": "Brief von Martin H. Taubman zu Verträgen mit Buenos Aires, Neapel, Wien",
-              "typ": "brief"
+              "typ": "korrespondenz"
             }
           ]
         }
@@ -1823,7 +1761,7 @@
             {
               "signatur": "UAKUG/NIM_007 2",
               "titel": "Brief von Martin H. Taubman zu Verträgen mit Buenos Aires, Neapel, Wien",
-              "typ": "brief"
+              "typ": "korrespondenz"
             }
           ]
         }
@@ -1842,7 +1780,7 @@
             {
               "signatur": "UAKUG/NIM_007 2",
               "titel": "Brief von Martin H. Taubman zu Verträgen mit Buenos Aires, Neapel, Wien",
-              "typ": "brief"
+              "typ": "korrespondenz"
             }
           ]
         }
@@ -1861,7 +1799,7 @@
             {
               "signatur": "UAKUG/NIM_007 4",
               "titel": "Brief von Ernst Kühnly zu Gastspiel in Lissabon an Martin H. Taubman",
-              "typ": "brief"
+              "typ": "korrespondenz"
             }
           ]
         }
@@ -1880,7 +1818,7 @@
             {
               "signatur": "UAKUG/NIM_007 4",
               "titel": "Brief von Ernst Kühnly zu Gastspiel in Lissabon an Martin H. Taubman",
-              "typ": "brief"
+              "typ": "korrespondenz"
             }
           ]
         }
@@ -1899,7 +1837,7 @@
             {
               "signatur": "UAKUG/NIM_007 4",
               "titel": "Brief von Ernst Kühnly zu Gastspiel in Lissabon an Martin H. Taubman",
-              "typ": "brief"
+              "typ": "korrespondenz"
             }
           ]
         }
@@ -1918,7 +1856,7 @@
             {
               "signatur": "UAKUG/NIM_007 7",
               "titel": "Brief von Intendanz der Bayerischen Staatsoper zu Gastspielvertrag und Schiedsvertrag 1961/62 an Ira Malaniuk",
-              "typ": "brief"
+              "typ": "korrespondenz"
             }
           ]
         }
@@ -1937,7 +1875,7 @@
             {
               "signatur": "UAKUG/NIM_007 9",
               "titel": "Brief von Emil Jucker an Ira Malaniuk über ein Gastspiel in Zürich",
-              "typ": "brief"
+              "typ": "korrespondenz"
             }
           ]
         }
@@ -1956,7 +1894,7 @@
             {
               "signatur": "UAKUG/NIM_007 9",
               "titel": "Brief von Emil Jucker an Ira Malaniuk über ein Gastspiel in Zürich",
-              "typ": "brief"
+              "typ": "korrespondenz"
             }
           ]
         }
@@ -1975,7 +1913,7 @@
             {
               "signatur": "UAKUG/NIM_007 9",
               "titel": "Brief von Emil Jucker an Ira Malaniuk über ein Gastspiel in Zürich",
-              "typ": "brief"
+              "typ": "korrespondenz"
             }
           ]
         }
@@ -1994,7 +1932,7 @@
             {
               "signatur": "UAKUG/NIM_007 10",
               "titel": "(Dienst)brief von Intendanz der Bayerischen Staatoper zu den Festspielen an Ira Malaniuk, 1964-08-18",
-              "typ": "brief"
+              "typ": "korrespondenz"
             }
           ]
         }
@@ -2013,7 +1951,7 @@
             {
               "signatur": "UAKUG/NIM_007 11",
               "titel": "Brief vom Sekretär der Tonhalle-Gesellschaft Zürich zu Bestätigung von Konzerten und Probezeiten",
-              "typ": "brief"
+              "typ": "korrespondenz"
             }
           ]
         }
@@ -2032,7 +1970,7 @@
             {
               "signatur": "UAKUG/NIM_007 11",
               "titel": "Brief vom Sekretär der Tonhalle-Gesellschaft Zürich zu Bestätigung von Konzerten und Probezeiten",
-              "typ": "brief"
+              "typ": "korrespondenz"
             }
           ]
         }
@@ -2069,37 +2007,30 @@
       "gesamt_intensitaet": 3
     },
     {
-      "name": "Deutsches Musikinstitut für Ausländer",
+      "name": "Krauß, Clemens",
       "kategorie": "Andere",
       "begegnungen": [
         {
           "zeitraum": "1940-1944",
-          "intensitaet": 2,
-          "anzahl_dokumente": 1,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_003 1_1",
-              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
-              "typ": "programmheft"
-            }
-          ]
-        }
-      ],
-      "gesamt_intensitaet": 2
-    },
-    {
-      "name": "Fischer, Edwin",
-      "kategorie": "Andere",
-      "begegnungen": [
-        {
-          "zeitraum": "1940-1944",
-          "intensitaet": 2,
+          "intensitaet": 1,
           "anzahl_dokumente": 1,
           "dokumente": [
             {
               "signatur": "UAKUG/NIM_003 1_2",
               "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
-              "typ": "programmheft"
+              "typ": "programm"
+            }
+          ]
+        },
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 15",
+              "titel": "Rezension von Y. zu Tannhäuser",
+              "typ": "rezension"
             }
           ]
         }
@@ -2107,417 +2038,30 @@
       "gesamt_intensitaet": 2
     },
     {
-      "name": "Gieseking, Walter",
+      "name": "Bahr-Mildenburg, Anna",
       "kategorie": "Andere",
       "begegnungen": [
         {
           "zeitraum": "1940-1944",
-          "intensitaet": 2,
+          "intensitaet": 1,
           "anzahl_dokumente": 1,
           "dokumente": [
             {
               "signatur": "UAKUG/NIM_003 1_2",
               "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
-              "typ": "programmheft"
+              "typ": "programm"
             }
           ]
-        }
-      ],
-      "gesamt_intensitaet": 2
-    },
-    {
-      "name": "Heitmann, Fritz",
-      "kategorie": "Andere",
-      "begegnungen": [
+        },
         {
-          "zeitraum": "1940-1944",
-          "intensitaet": 2,
+          "zeitraum": "1950-1954",
+          "intensitaet": 1,
           "anzahl_dokumente": 1,
           "dokumente": [
             {
-              "signatur": "UAKUG/NIM_003 1_2",
-              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
-              "typ": "programmheft"
-            }
-          ]
-        }
-      ],
-      "gesamt_intensitaet": 2
-    },
-    {
-      "name": "Hüni-Mihacsek, Felicie",
-      "kategorie": "Andere",
-      "begegnungen": [
-        {
-          "zeitraum": "1940-1944",
-          "intensitaet": 2,
-          "anzahl_dokumente": 1,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_003 1_2",
-              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
-              "typ": "programmheft"
-            }
-          ]
-        }
-      ],
-      "gesamt_intensitaet": 2
-    },
-    {
-      "name": "Kempff, Wilhelm",
-      "kategorie": "Andere",
-      "begegnungen": [
-        {
-          "zeitraum": "1940-1944",
-          "intensitaet": 2,
-          "anzahl_dokumente": 1,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_003 1_2",
-              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
-              "typ": "programmheft"
-            }
-          ]
-        }
-      ],
-      "gesamt_intensitaet": 2
-    },
-    {
-      "name": "Kulenkampff, Georg",
-      "kategorie": "Andere",
-      "begegnungen": [
-        {
-          "zeitraum": "1940-1944",
-          "intensitaet": 2,
-          "anzahl_dokumente": 1,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_003 1_2",
-              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
-              "typ": "programmheft"
-            }
-          ]
-        }
-      ],
-      "gesamt_intensitaet": 2
-    },
-    {
-      "name": "Leimer, Karl",
-      "kategorie": "Andere",
-      "begegnungen": [
-        {
-          "zeitraum": "1940-1944",
-          "intensitaet": 2,
-          "anzahl_dokumente": 1,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_003 1_2",
-              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
-              "typ": "programmheft"
-            }
-          ]
-        }
-      ],
-      "gesamt_intensitaet": 2
-    },
-    {
-      "name": "Lohmann, Paul",
-      "kategorie": "Andere",
-      "begegnungen": [
-        {
-          "zeitraum": "1940-1944",
-          "intensitaet": 2,
-          "anzahl_dokumente": 1,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_003 1_2",
-              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
-              "typ": "programmheft"
-            }
-          ]
-        }
-      ],
-      "gesamt_intensitaet": 2
-    },
-    {
-      "name": "Mahlke, Hans",
-      "kategorie": "Andere",
-      "begegnungen": [
-        {
-          "zeitraum": "1940-1944",
-          "intensitaet": 2,
-          "anzahl_dokumente": 1,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_003 1_2",
-              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
-              "typ": "programmheft"
-            }
-          ]
-        }
-      ],
-      "gesamt_intensitaet": 2
-    },
-    {
-      "name": "Martienssen-Lohmann, Franziska",
-      "kategorie": "Andere",
-      "begegnungen": [
-        {
-          "zeitraum": "1940-1944",
-          "intensitaet": 2,
-          "anzahl_dokumente": 1,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_003 1_2",
-              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
-              "typ": "programmheft"
-            }
-          ]
-        }
-      ],
-      "gesamt_intensitaet": 2
-    },
-    {
-      "name": "Marx, Joseph",
-      "kategorie": "Andere",
-      "begegnungen": [
-        {
-          "zeitraum": "1940-1944",
-          "intensitaet": 2,
-          "anzahl_dokumente": 1,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_003 1_2",
-              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
-              "typ": "programmheft"
-            }
-          ]
-        }
-      ],
-      "gesamt_intensitaet": 2
-    },
-    {
-      "name": "Moratti, Vittorino",
-      "kategorie": "Andere",
-      "begegnungen": [
-        {
-          "zeitraum": "1940-1944",
-          "intensitaet": 2,
-          "anzahl_dokumente": 1,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_003 1_2",
-              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
-              "typ": "programmheft"
-            }
-          ]
-        }
-      ],
-      "gesamt_intensitaet": 2
-    },
-    {
-      "name": "Ney, Elly",
-      "kategorie": "Andere",
-      "begegnungen": [
-        {
-          "zeitraum": "1940-1944",
-          "intensitaet": 2,
-          "anzahl_dokumente": 1,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_003 1_2",
-              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
-              "typ": "programmheft"
-            }
-          ]
-        }
-      ],
-      "gesamt_intensitaet": 2
-    },
-    {
-      "name": "Pirchan, Emil",
-      "kategorie": "Andere",
-      "begegnungen": [
-        {
-          "zeitraum": "1940-1944",
-          "intensitaet": 2,
-          "anzahl_dokumente": 1,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_003 1_2",
-              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
-              "typ": "programmheft"
-            }
-          ]
-        }
-      ],
-      "gesamt_intensitaet": 2
-    },
-    {
-      "name": "Prihoda, Vasa",
-      "kategorie": "Andere",
-      "begegnungen": [
-        {
-          "zeitraum": "1940-1944",
-          "intensitaet": 2,
-          "anzahl_dokumente": 1,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_003 1_2",
-              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
-              "typ": "programmheft"
-            }
-          ]
-        }
-      ],
-      "gesamt_intensitaet": 2
-    },
-    {
-      "name": "Ramin, Günther",
-      "kategorie": "Andere",
-      "begegnungen": [
-        {
-          "zeitraum": "1940-1944",
-          "intensitaet": 2,
-          "anzahl_dokumente": 1,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_003 1_2",
-              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
-              "typ": "programmheft"
-            }
-          ]
-        }
-      ],
-      "gesamt_intensitaet": 2
-    },
-    {
-      "name": "Schellenberg, Arno",
-      "kategorie": "Andere",
-      "begegnungen": [
-        {
-          "zeitraum": "1940-1944",
-          "intensitaet": 2,
-          "anzahl_dokumente": 1,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_003 1_2",
-              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
-              "typ": "programmheft"
-            }
-          ]
-        }
-      ],
-      "gesamt_intensitaet": 2
-    },
-    {
-      "name": "Schünemann, Georg",
-      "kategorie": "Andere",
-      "begegnungen": [
-        {
-          "zeitraum": "1940-1944",
-          "intensitaet": 2,
-          "anzahl_dokumente": 1,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_003 1_2",
-              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
-              "typ": "programmheft"
-            }
-          ]
-        }
-      ],
-      "gesamt_intensitaet": 2
-    },
-    {
-      "name": "Steiner, Adolf",
-      "kategorie": "Andere",
-      "begegnungen": [
-        {
-          "zeitraum": "1940-1944",
-          "intensitaet": 2,
-          "anzahl_dokumente": 1,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_003 1_2",
-              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
-              "typ": "programmheft"
-            }
-          ]
-        }
-      ],
-      "gesamt_intensitaet": 2
-    },
-    {
-      "name": "Swarowsky, Hans",
-      "kategorie": "Andere",
-      "begegnungen": [
-        {
-          "zeitraum": "1940-1944",
-          "intensitaet": 2,
-          "anzahl_dokumente": 1,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_003 1_2",
-              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
-              "typ": "programmheft"
-            }
-          ]
-        }
-      ],
-      "gesamt_intensitaet": 2
-    },
-    {
-      "name": "Vilmar-Hansen, E.",
-      "kategorie": "Andere",
-      "begegnungen": [
-        {
-          "zeitraum": "1940-1944",
-          "intensitaet": 2,
-          "anzahl_dokumente": 1,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_003 1_2",
-              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
-              "typ": "programmheft"
-            }
-          ]
-        }
-      ],
-      "gesamt_intensitaet": 2
-    },
-    {
-      "name": "Wolf, Winfried",
-      "kategorie": "Andere",
-      "begegnungen": [
-        {
-          "zeitraum": "1940-1944",
-          "intensitaet": 2,
-          "anzahl_dokumente": 1,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_003 1_2",
-              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
-              "typ": "programmheft"
-            }
-          ]
-        }
-      ],
-      "gesamt_intensitaet": 2
-    },
-    {
-      "name": "Universität Mozarteum Salzburg",
-      "kategorie": "Andere",
-      "begegnungen": [
-        {
-          "zeitraum": "1940-1944",
-          "intensitaet": 2,
-          "anzahl_dokumente": 1,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_003 1_8",
-              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
-              "typ": "programmheft"
+              "signatur": "UAKUG/NIM_004 2",
+              "titel": "Rezension zu Lady Macbeth in der Verdi- Premiere der Staatsoper",
+              "typ": "rezension"
             }
           ]
         }
@@ -3024,7 +2568,7 @@
             {
               "signatur": "UAKUG/NIM_007 3",
               "titel": "Ausweis für Bayreuther Festspiele 1953",
-              "typ": "ausweis"
+              "typ": "identitaetsdokument"
             }
           ]
         },
@@ -3109,272 +2653,6 @@
               "signatur": "UAKUG/NIM_004 17",
               "titel": "Rezension von ibe zu Aida an der Wiener Staatsoper",
               "typ": "rezension"
-            }
-          ]
-        }
-      ],
-      "gesamt_intensitaet": 2
-    },
-    {
-      "name": "Durante, Francesco",
-      "kategorie": "Andere",
-      "begegnungen": [
-        {
-          "zeitraum": "1960-1964",
-          "intensitaet": 2,
-          "anzahl_dokumente": 1,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_007 8",
-              "titel": "Konzertprogramm, Liederabend, Palais Pallavicini, 1963-08-28",
-              "typ": "programmheft"
-            }
-          ]
-        }
-      ],
-      "gesamt_intensitaet": 2
-    },
-    {
-      "name": "Busatti, Cherubino",
-      "kategorie": "Andere",
-      "begegnungen": [
-        {
-          "zeitraum": "1960-1964",
-          "intensitaet": 2,
-          "anzahl_dokumente": 1,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_007 8",
-              "titel": "Konzertprogramm, Liederabend, Palais Pallavicini, 1963-08-28",
-              "typ": "programmheft"
-            }
-          ]
-        }
-      ],
-      "gesamt_intensitaet": 2
-    },
-    {
-      "name": "Monteverdi, Claudio",
-      "kategorie": "Andere",
-      "begegnungen": [
-        {
-          "zeitraum": "1960-1964",
-          "intensitaet": 2,
-          "anzahl_dokumente": 1,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_007 8",
-              "titel": "Konzertprogramm, Liederabend, Palais Pallavicini, 1963-08-28",
-              "typ": "programmheft"
-            }
-          ]
-        }
-      ],
-      "gesamt_intensitaet": 2
-    },
-    {
-      "name": "Haydn, Joseph",
-      "kategorie": "Andere",
-      "begegnungen": [
-        {
-          "zeitraum": "1960-1964",
-          "intensitaet": 2,
-          "anzahl_dokumente": 1,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_007 8",
-              "titel": "Konzertprogramm, Liederabend, Palais Pallavicini, 1963-08-28",
-              "typ": "programmheft"
-            }
-          ]
-        }
-      ],
-      "gesamt_intensitaet": 2
-    },
-    {
-      "name": "Schubert, Franz",
-      "kategorie": "Andere",
-      "begegnungen": [
-        {
-          "zeitraum": "1960-1964",
-          "intensitaet": 2,
-          "anzahl_dokumente": 1,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_007 8",
-              "titel": "Konzertprogramm, Liederabend, Palais Pallavicini, 1963-08-28",
-              "typ": "programmheft"
-            }
-          ]
-        }
-      ],
-      "gesamt_intensitaet": 2
-    },
-    {
-      "name": "Brahms, Johannes",
-      "kategorie": "Andere",
-      "begegnungen": [
-        {
-          "zeitraum": "1960-1964",
-          "intensitaet": 2,
-          "anzahl_dokumente": 1,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_007 8",
-              "titel": "Konzertprogramm, Liederabend, Palais Pallavicini, 1963-08-28",
-              "typ": "programmheft"
-            }
-          ]
-        }
-      ],
-      "gesamt_intensitaet": 2
-    },
-    {
-      "name": "Barwinsky, Wolodymyr",
-      "kategorie": "Andere",
-      "begegnungen": [
-        {
-          "zeitraum": "1960-1964",
-          "intensitaet": 2,
-          "anzahl_dokumente": 1,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_007 8",
-              "titel": "Konzertprogramm, Liederabend, Palais Pallavicini, 1963-08-28",
-              "typ": "programmheft"
-            }
-          ]
-        }
-      ],
-      "gesamt_intensitaet": 2
-    },
-    {
-      "name": "Woloszyn, Wolodymyr",
-      "kategorie": "Andere",
-      "begegnungen": [
-        {
-          "zeitraum": "1960-1964",
-          "intensitaet": 2,
-          "anzahl_dokumente": 1,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_007 8",
-              "titel": "Konzertprogramm, Liederabend, Palais Pallavicini, 1963-08-28",
-              "typ": "programmheft"
-            }
-          ]
-        }
-      ],
-      "gesamt_intensitaet": 2
-    },
-    {
-      "name": "Ott, Elfriede",
-      "kategorie": "Andere",
-      "begegnungen": [
-        {
-          "zeitraum": "1960-1964",
-          "intensitaet": 2,
-          "anzahl_dokumente": 1,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_007 8",
-              "titel": "Konzertprogramm, Liederabend, Palais Pallavicini, 1963-08-28",
-              "typ": "programmheft"
-            }
-          ]
-        }
-      ],
-      "gesamt_intensitaet": 2
-    },
-    {
-      "name": "Patzak, Julian",
-      "kategorie": "Andere",
-      "begegnungen": [
-        {
-          "zeitraum": "1960-1964",
-          "intensitaet": 2,
-          "anzahl_dokumente": 1,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_007 8",
-              "titel": "Konzertprogramm, Liederabend, Palais Pallavicini, 1963-08-28",
-              "typ": "programmheft"
-            }
-          ]
-        }
-      ],
-      "gesamt_intensitaet": 2
-    },
-    {
-      "name": "Müller",
-      "kategorie": "Andere",
-      "begegnungen": [
-        {
-          "zeitraum": "1960-1964",
-          "intensitaet": 2,
-          "anzahl_dokumente": 1,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_007 8",
-              "titel": "Konzertprogramm, Liederabend, Palais Pallavicini, 1963-08-28",
-              "typ": "programmheft"
-            }
-          ]
-        }
-      ],
-      "gesamt_intensitaet": 2
-    },
-    {
-      "name": "Kreutzer",
-      "kategorie": "Andere",
-      "begegnungen": [
-        {
-          "zeitraum": "1960-1964",
-          "intensitaet": 2,
-          "anzahl_dokumente": 1,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_007 8",
-              "titel": "Konzertprogramm, Liederabend, Palais Pallavicini, 1963-08-28",
-              "typ": "programmheft"
-            }
-          ]
-        }
-      ],
-      "gesamt_intensitaet": 2
-    },
-    {
-      "name": "Suppé",
-      "kategorie": "Andere",
-      "begegnungen": [
-        {
-          "zeitraum": "1960-1964",
-          "intensitaet": 2,
-          "anzahl_dokumente": 1,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_007 8",
-              "titel": "Konzertprogramm, Liederabend, Palais Pallavicini, 1963-08-28",
-              "typ": "programmheft"
-            }
-          ]
-        }
-      ],
-      "gesamt_intensitaet": 2
-    },
-    {
-      "name": "Drechsler",
-      "kategorie": "Andere",
-      "begegnungen": [
-        {
-          "zeitraum": "1960-1964",
-          "intensitaet": 2,
-          "anzahl_dokumente": 1,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_007 8",
-              "titel": "Konzertprogramm, Liederabend, Palais Pallavicini, 1963-08-28",
-              "typ": "programmheft"
             }
           ]
         }
@@ -3620,6 +2898,462 @@
         }
       ],
       "gesamt_intensitaet": 2
+    },
+    {
+      "name": "Deutsches Musikinstitut für Ausländer",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1940-1944",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_003 1_1",
+              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
+              "typ": "programm"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Fischer, Edwin",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1940-1944",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_003 1_2",
+              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
+              "typ": "programm"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Gieseking, Walter",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1940-1944",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_003 1_2",
+              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
+              "typ": "programm"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Heitmann, Fritz",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1940-1944",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_003 1_2",
+              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
+              "typ": "programm"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Hüni-Mihacsek, Felicie",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1940-1944",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_003 1_2",
+              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
+              "typ": "programm"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Kempff, Wilhelm",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1940-1944",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_003 1_2",
+              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
+              "typ": "programm"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Kulenkampff, Georg",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1940-1944",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_003 1_2",
+              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
+              "typ": "programm"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Leimer, Karl",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1940-1944",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_003 1_2",
+              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
+              "typ": "programm"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Lohmann, Paul",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1940-1944",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_003 1_2",
+              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
+              "typ": "programm"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Mahlke, Hans",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1940-1944",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_003 1_2",
+              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
+              "typ": "programm"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Martienssen-Lohmann, Franziska",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1940-1944",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_003 1_2",
+              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
+              "typ": "programm"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Marx, Joseph",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1940-1944",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_003 1_2",
+              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
+              "typ": "programm"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Moratti, Vittorino",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1940-1944",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_003 1_2",
+              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
+              "typ": "programm"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Ney, Elly",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1940-1944",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_003 1_2",
+              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
+              "typ": "programm"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Pirchan, Emil",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1940-1944",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_003 1_2",
+              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
+              "typ": "programm"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Prihoda, Vasa",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1940-1944",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_003 1_2",
+              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
+              "typ": "programm"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Ramin, Günther",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1940-1944",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_003 1_2",
+              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
+              "typ": "programm"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Schellenberg, Arno",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1940-1944",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_003 1_2",
+              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
+              "typ": "programm"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Schünemann, Georg",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1940-1944",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_003 1_2",
+              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
+              "typ": "programm"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Steiner, Adolf",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1940-1944",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_003 1_2",
+              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
+              "typ": "programm"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Swarowsky, Hans",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1940-1944",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_003 1_2",
+              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
+              "typ": "programm"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Vilmar-Hansen, E.",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1940-1944",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_003 1_2",
+              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
+              "typ": "programm"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Wolf, Winfried",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1940-1944",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_003 1_2",
+              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
+              "typ": "programm"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Universität Mozarteum Salzburg",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1940-1944",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_003 1_8",
+              "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und Salzburg (korrigiert)",
+              "typ": "programm"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
     },
     {
       "name": "Michalis, Ruth",
@@ -6358,6 +6092,272 @@
       "gesamt_intensitaet": 1
     },
     {
+      "name": "Durante, Francesco",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 8",
+              "titel": "Konzertprogramm, Liederabend, Palais Pallavicini, 1963-08-28",
+              "typ": "programm"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Busatti, Cherubino",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 8",
+              "titel": "Konzertprogramm, Liederabend, Palais Pallavicini, 1963-08-28",
+              "typ": "programm"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Monteverdi, Claudio",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 8",
+              "titel": "Konzertprogramm, Liederabend, Palais Pallavicini, 1963-08-28",
+              "typ": "programm"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Haydn, Joseph",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 8",
+              "titel": "Konzertprogramm, Liederabend, Palais Pallavicini, 1963-08-28",
+              "typ": "programm"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Schubert, Franz",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 8",
+              "titel": "Konzertprogramm, Liederabend, Palais Pallavicini, 1963-08-28",
+              "typ": "programm"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Brahms, Johannes",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 8",
+              "titel": "Konzertprogramm, Liederabend, Palais Pallavicini, 1963-08-28",
+              "typ": "programm"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Barwinsky, Wolodymyr",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 8",
+              "titel": "Konzertprogramm, Liederabend, Palais Pallavicini, 1963-08-28",
+              "typ": "programm"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Woloszyn, Wolodymyr",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 8",
+              "titel": "Konzertprogramm, Liederabend, Palais Pallavicini, 1963-08-28",
+              "typ": "programm"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Ott, Elfriede",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 8",
+              "titel": "Konzertprogramm, Liederabend, Palais Pallavicini, 1963-08-28",
+              "typ": "programm"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Patzak, Julian",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 8",
+              "titel": "Konzertprogramm, Liederabend, Palais Pallavicini, 1963-08-28",
+              "typ": "programm"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Müller",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 8",
+              "titel": "Konzertprogramm, Liederabend, Palais Pallavicini, 1963-08-28",
+              "typ": "programm"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Kreutzer",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 8",
+              "titel": "Konzertprogramm, Liederabend, Palais Pallavicini, 1963-08-28",
+              "typ": "programm"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Suppé",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 8",
+              "titel": "Konzertprogramm, Liederabend, Palais Pallavicini, 1963-08-28",
+              "typ": "programm"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Drechsler",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 8",
+              "titel": "Konzertprogramm, Liederabend, Palais Pallavicini, 1963-08-28",
+              "typ": "programm"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
       "name": "Arbeiter Zeitung",
       "kategorie": "Andere",
       "begegnungen": [
@@ -6549,8 +6549,8 @@
     }
   ],
   "_meta": {
-    "generated": "2026-03-29T11:02:00.855832",
-    "source_records": 286,
+    "generated": "2026-04-16T21:02:25.984912",
+    "source_records": 304,
     "note": "Intensity weighted by document type: Letter=3, Program/Poster/Contract=2, Photo=1"
   }
 }

@@ -29,8 +29,8 @@ import pandas as pd
 # ---------------------------------------------------------------------------
 
 ROOT = Path(__file__).resolve().parent.parent
-INPUT_DIR = ROOT / "data" / "google-spreadsheet"
-REPORT_DIR = ROOT / "data" / "reports"
+INPUT_DIR = Path(os.environ.get("M3GIM_SHEETS_DIR", ROOT / "data" / "google-spreadsheet"))
+REPORT_DIR = Path(os.environ.get("M3GIM_REPORTS_DIR", ROOT / "data" / "reports"))
 
 # Erwartete Tabellen (flexible Zuordnung: SchlÃ¼ssel = kanonischer Name)
 EXPECTED_TABLES = {

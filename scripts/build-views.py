@@ -21,6 +21,7 @@ Hinweis:
     als Tabs ausgeblendet (hidden), der Code bleibt erhalten.
 """
 
+import os
 import json
 import re
 from pathlib import Path
@@ -30,8 +31,9 @@ from datetime import datetime
 # Paths
 SCRIPT_DIR = Path(__file__).parent
 PROJECT_ROOT = SCRIPT_DIR.parent
-INPUT_FILE = PROJECT_ROOT / 'data' / 'output' / 'm3gim.jsonld'
-OUTPUT_DIR = PROJECT_ROOT / 'data' / 'output' / 'views'
+_OUTPUT_BASE = Path(os.environ.get("M3GIM_OUTPUT_DIR", PROJECT_ROOT / 'data' / 'output'))
+INPUT_FILE = Path(os.environ.get("M3GIM_JSONLD_PATH", _OUTPUT_BASE / 'm3gim.jsonld'))
+OUTPUT_DIR = _OUTPUT_BASE / 'views'
 
 # =============================================================================
 # STATIC DATA: Lebensphasen (based on biographical research)
@@ -1330,17 +1332,23 @@ def main():
         print(f'  [OK] {output_file.name} ({len(json.dumps(data)):,} bytes)')
 
     # Copy frontend-consumed views to docs/data/
-    docs_data = PROJECT_ROOT / 'docs' / 'data'
-    frontend_views = ['partitur', 'matrix', 'kosmos']
-    print()
-    print('Copying to docs/data/:')
-    for name in frontend_views:
-        src = OUTPUT_DIR / f'{name}.json'
-        dst = docs_data / f'{name}.json'
-        if src.exists() and dst.parent.exists():
-            import shutil
-            shutil.copy2(src, dst)
-            print(f'  [CP] {name}.json -> docs/data/')
+    # Only when building the default output (v1 pipeline), not for v2/parallel runs.
+    default_output = PROJECT_ROOT / 'data' / 'output'
+    if _OUTPUT_BASE.resolve() == default_output.resolve():
+        docs_data = PROJECT_ROOT / 'docs' / 'data'
+        frontend_views = ['partitur', 'matrix', 'kosmos']
+        print()
+        print('Copying to docs/data/:')
+        for name in frontend_views:
+            src = OUTPUT_DIR / f'{name}.json'
+            dst = docs_data / f'{name}.json'
+            if src.exists() and dst.parent.exists():
+                import shutil
+                shutil.copy2(src, dst)
+                print(f'  [CP] {name}.json -> docs/data/')
+    else:
+        print()
+        print(f'Skip copy to docs/data/ (non-default output: {_OUTPUT_BASE})')
 
     print()
     print('Done!')

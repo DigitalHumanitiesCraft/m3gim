@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dhcraft.org/m3gim/schemas/m3gim_jsonld.schema.json",
+  "title": "M3GIM JSON-LD Archive",
+  "type": "object",
+  "required": ["@context", "@graph"],
+  "properties": {
+    "@context": {
+      "type": "object",
+      "required": ["rico", "m3gim", "m3gim-dft", "m3gim-role", "wd", "owl", "geo", "skos", "xsd"]
+    },
+    "@graph": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/graphNode" }
+    },
+    "m3gim:exportDate": { "type": "string" },
+    "m3gim:recordCount": { "type": "integer", "minimum": 0 },
+    "m3gim:konvolutCount": { "type": "integer", "minimum": 0 }
+  },
+  "$defs": {
+    "graphNode": {
+      "type": "object",
+      "required": ["@id", "@type"],
+      "properties": {
+        "@id": {
+          "type": "string",
+          "pattern": "^(m3gim|m3gim-dft|m3gim-role|wd):[\\w/_.-]+$"
+        },
+        "@type": {
+          "type": "string",
+          "enum": ["rico:Record", "rico:RecordSet", "skos:Concept", "m3gim:SpatiotemporalEvent"]
+        },
+        "rico:identifier": { "type": "string" },
+        "rico:title": { "type": "string" },
+        "rico:date": {
+          "type": "string",
+          "pattern": "^\\d{4}(-\\d{2}(-\\d{2})?)?(/\\d{4}(-\\d{2}(-\\d{2})?)?)?$"
+        },
+        "rico:hasDocumentaryFormType": { "type": "object" },
+        "rico:hasOrHadLanguage": { "type": "string" },
+        "rico:hasExtent": { "type": "string" },
+        "rico:scopeAndContent": { "type": "string" },
+        "m3gim:bearbeitungsstand": {
+          "type": "string",
+          "enum": ["abgeschlossen", "begonnen", "zurueckgestellt"]
+        },
+        "m3gim:dateEvidence": {
+          "type": "string",
+          "enum": ["aus_dokument", "erschlossen", "extern", "unbekannt"]
+        },
+        "m3gim:accessStatus": { "type": "string" },
+        "m3gim:digitizationStatus": { "type": "string" },
+        "m3gim:hasAssociatedAgent": {
+          "oneOf": [
+            { "$ref": "#/$defs/entityRef" },
+            { "type": "array", "items": { "$ref": "#/$defs/entityRef" } }
+          ]
+        },
+        "rico:hasOrHadLocation": {
+          "oneOf": [
+            { "$ref": "#/$defs/entityRef" },
+            { "type": "array", "items": { "$ref": "#/$defs/entityRef" } }
+          ]
+        },
+        "rico:hasOrHadSubject": {
+          "oneOf": [
+            { "$ref": "#/$defs/entityRef" },
+            { "type": "array", "items": { "$ref": "#/$defs/entityRef" } }
+          ]
+        },
+        "rico:hasOrHadPart": {
+          "oneOf": [
+            { "$ref": "#/$defs/idRef" },
+            { "type": "array", "items": { "$ref": "#/$defs/idRef" } }
+          ]
+        },
+        "rico:hasRecordSetType": { "type": "object" }
+      }
+    },
+    "entityRef": {
+      "type": "object",
+      "properties": {
+        "@id": {
+          "type": "string",
+          "pattern": "^wd:Q\\d+$"
+        },
+        "@type": { "type": "string" },
+        "name": { "type": "string", "minLength": 1 },
+        "role": { "type": "string" },
+        "komponist": { "type": "string" },
+        "owl:sameAs": { "type": "string" },
+        "m3gim:birthDate": {
+          "type": "string",
+          "pattern": "^\\d{4}(-\\d{2}(-\\d{2})?)?"
+        },
+        "m3gim:deathDate": {
+          "type": "string",
+          "pattern": "^\\d{4}(-\\d{2}(-\\d{2})?)?"
+        },
+        "m3gim:premiereDate": { "type": "string" },
+        "geo:lat": { "type": "number", "minimum": -90, "maximum": 90 },
+        "geo:long": { "type": "number", "minimum": -180, "maximum": 180 }
+      }
+    },
+    "idRef": {
+      "type": "object",
+      "required": ["@id"],
+      "properties": {
+        "@id": { "type": "string", "pattern": "^m3gim:[\\w/_.-]+$" }
+      }
+    }
+  }
+}

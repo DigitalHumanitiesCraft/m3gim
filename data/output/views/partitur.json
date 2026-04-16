@@ -183,22 +183,6 @@
       "titel": "\"BOHÈME\" / \"MADAMA BUTTERFLY\" / \"DON QUICHOTTE\""
     },
     {
-      "ort": "Lemberg",
-      "ort_detail": null,
-      "kategorie": "engagement",
-      "werk": null,
-      "komponist": null,
-      "rolle": null,
-      "jahr": 1940,
-      "datum": "1940-01-01/1941-12-31",
-      "phase": "LP2",
-      "dokumente": [
-        "UAKUG/NIM_079"
-      ],
-      "gattung": "oper",
-      "titel": "Programmzettel des Opernhauses Lwiw (Lemberg)"
-    },
-    {
       "ort": null,
       "ort_detail": null,
       "kategorie": "gastspiel",
@@ -217,25 +201,6 @@
       "titel": "\"CARMEN\" / \"DER ROTE MOHN\""
     },
     {
-      "ort": "Lemberg",
-      "ort_detail": null,
-      "kategorie": "engagement",
-      "werk": null,
-      "komponist": null,
-      "rolle": null,
-      "jahr": 1941,
-      "datum": "1941-03-16/1941-04-01",
-      "phase": "LP2",
-      "dokumente": [
-        "UAKUG/NIM_075",
-        "UAKUG/NIM_076",
-        "UAKUG/NIM_077",
-        "UAKUG/NIM_078"
-      ],
-      "gattung": "oper",
-      "titel": "Zweiwöchentlicher Spielplan des Theaters in Lwiw (Lemberg)"
-    },
-    {
       "ort": null,
       "ort_detail": null,
       "kategorie": "konzert",
@@ -246,8 +211,7 @@
       "datum": "1942-04-26",
       "phase": "LP2",
       "dokumente": [
-        "UAKUG/NIM/PL_04",
-        "UAKUG/NIM_074"
+        "UAKUG/NIM/PL_04"
       ],
       "gattung": "konzert",
       "titel": "SINFONISCHES ORCHESTER / in Stanislau / Konzertsaal Armenierstrasse 18. / Zum Ab"
@@ -289,47 +253,6 @@
       "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und"
     },
     {
-      "ort": "Salzburg",
-      "ort_detail": null,
-      "kategorie": "festspiel",
-      "werk": null,
-      "komponist": null,
-      "rolle": null,
-      "jahr": 1944,
-      "datum": "1944-01-01/1944-12-31",
-      "phase": "LP2",
-      "dokumente": [
-        "UAKUG/NIM_003 Folio",
-        "UAKUG/NIM_003 1_2",
-        "UAKUG/NIM_003 1_3",
-        "UAKUG/NIM_003 1_4",
-        "UAKUG/NIM_003 1_5",
-        "UAKUG/NIM_003 1_6",
-        "UAKUG/NIM_003 1_7",
-        "UAKUG/NIM_003 1_8",
-        "UAKUG/NIM_003 1_9",
-        "UAKUG/NIM_003 1_10"
-      ],
-      "gattung": null,
-      "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und"
-    },
-    {
-      "ort": null,
-      "ort_detail": null,
-      "kategorie": "gastspiel",
-      "werk": null,
-      "komponist": null,
-      "rolle": null,
-      "jahr": 1947,
-      "datum": "1947-01-01/1948-12-31",
-      "phase": "LP4",
-      "dokumente": [
-        "UAKUG/NIM_133"
-      ],
-      "gattung": null,
-      "titel": "1947 - / 1948"
-    },
-    {
       "ort": "Zürich",
       "ort_detail": null,
       "kategorie": "engagement",
@@ -345,38 +268,6 @@
       ],
       "gattung": "oper",
       "titel": "Kurzbiografie  von Ira Malaniuk als Typoscript (vermutlich als Anhang eines Brie"
-    },
-    {
-      "ort": null,
-      "ort_detail": null,
-      "kategorie": "gastspiel",
-      "werk": null,
-      "komponist": null,
-      "rolle": null,
-      "jahr": 1949,
-      "datum": "1949-01-01/1950-12-31",
-      "phase": "LP4",
-      "dokumente": [
-        "UAKUG/NIM_134"
-      ],
-      "gattung": null,
-      "titel": "1949 - / 1950"
-    },
-    {
-      "ort": null,
-      "ort_detail": null,
-      "kategorie": "gastspiel",
-      "werk": null,
-      "komponist": null,
-      "rolle": null,
-      "jahr": 1950,
-      "datum": "1950-01-01/1951-12-31",
-      "phase": "LP4",
-      "dokumente": [
-        "UAKUG/NIM_135"
-      ],
-      "gattung": null,
-      "titel": "1951"
     },
     {
       "ort": null,
@@ -454,10 +345,9 @@
       "datum": "1953-05-18",
       "phase": "LP5",
       "dokumente": [
-        "UAKUG/NIM/PL_16",
-        "UAKUG/NIM_123"
+        "UAKUG/NIM/PL_16"
       ],
-      "gattung": "oper",
+      "gattung": null,
       "titel": "TRISTANO / E / ISOTTA"
     },
     {
@@ -551,8 +441,7 @@
       "datum": "1954-03-08",
       "phase": "LP5",
       "dokumente": [
-        "UAKUG/NIM/PL_18",
-        "UAKUG/NIM_142"
+        "UAKUG/NIM/PL_18"
       ],
       "gattung": null,
       "titel": "IL CREPUSCOLO / DEGLI DEI"
@@ -638,22 +527,6 @@
       "titel": "Direttore / PAUL HINDEMITH / Mezzosoprano / IRA MALANIUK"
     },
     {
-      "ort": null,
-      "ort_detail": null,
-      "kategorie": "konzert",
-      "werk": null,
-      "komponist": null,
-      "rolle": null,
-      "jahr": 1956,
-      "datum": "1956-01-01/1957-12-31",
-      "phase": "LP6",
-      "dokumente": [
-        "UAKUG/NIM_072"
-      ],
-      "gattung": "konzert",
-      "titel": "Konzertprogramme Vintia [???]"
-    },
-    {
       "ort": "Paris",
       "ort_detail": null,
       "kategorie": "gastspiel",
@@ -703,23 +576,6 @@
       "titel": "Rezension von Y. zu Aida an der Wiener Staatsoper"
     },
     {
-      "ort": "Wien",
-      "ort_detail": null,
-      "kategorie": "engagement",
-      "werk": null,
-      "komponist": "Wagner",
-      "rolle": null,
-      "jahr": 1956,
-      "datum": "1956-02-18",
-      "phase": "LP6",
-      "dokumente": [
-        "UAKUG/NIM_119",
-        "UAKUG/NIM_120"
-      ],
-      "gattung": "oper",
-      "titel": "Programmheft zu einer Aufführung von \"Tristan und Isolde\" (Wagner) an der Wiener"
-    },
-    {
       "ort": null,
       "ort_detail": null,
       "kategorie": "gastspiel",
@@ -734,22 +590,6 @@
       ],
       "gattung": null,
       "titel": "Handschriftliche Notiz"
-    },
-    {
-      "ort": null,
-      "ort_detail": null,
-      "kategorie": "gastspiel",
-      "werk": null,
-      "komponist": null,
-      "rolle": null,
-      "jahr": 1957,
-      "datum": "1957-01-01/1957-12-31",
-      "phase": "LP6",
-      "dokumente": [
-        "UAKUG/NIM_159"
-      ],
-      "gattung": null,
-      "titel": "1957"
     },
     {
       "ort": "Berlin",
@@ -812,8 +652,7 @@
       "datum": "1958-11-07/1958-11-19",
       "phase": "LP6",
       "dokumente": [
-        "UAKUG/NIM/PL_23",
-        "UAKUG/NIM_157"
+        "UAKUG/NIM/PL_23"
       ],
       "gattung": null,
       "titel": "Württembergische Staatstheater 07.11. - 19.11.1958"
@@ -893,10 +732,7 @@
       "datum": "1960-01-08",
       "phase": "LP6",
       "dokumente": [
-        "UAKUG/NIM/PL_22",
-        "UAKUG/NIM_030",
-        "UAKUG/NIM_068",
-        "UAKUG/NIM_155"
+        "UAKUG/NIM/PL_22"
       ],
       "gattung": "konzert",
       "titel": "Ira Malaniuk / singt Lieder von HAYDN, MOZART, BEETHOVEN, / SCHUBERT, BRAHMS, R."
@@ -934,39 +770,6 @@
       "titel": "Rezension von Karl Löbl zu Der Wildschütz o.D."
     },
     {
-      "ort": "Zürich",
-      "ort_detail": null,
-      "kategorie": "konzert",
-      "werk": null,
-      "komponist": null,
-      "rolle": null,
-      "jahr": 1960,
-      "datum": "1960-12-14",
-      "phase": "LP6",
-      "dokumente": [
-        "UAKUG/NIM_046"
-      ],
-      "gattung": "konzert",
-      "titel": "Konzert Zürich / 14/12/60"
-    },
-    {
-      "ort": null,
-      "ort_detail": null,
-      "kategorie": "gastspiel",
-      "werk": null,
-      "komponist": null,
-      "rolle": null,
-      "jahr": 1961,
-      "datum": "1961-01-01/1961-12-31",
-      "phase": "LP6",
-      "dokumente": [
-        "UAKUG/NIM_031",
-        "UAKUG/NIM_154"
-      ],
-      "gattung": null,
-      "titel": "Ira Malaniuk, Verträge und Vereinbarungen"
-    },
-    {
       "ort": null,
       "ort_detail": null,
       "kategorie": "konzert",
@@ -983,22 +786,6 @@
       ],
       "gattung": "konzert",
       "titel": "Musikverein für Steiermark, Konzertsaison 1961/62"
-    },
-    {
-      "ort": null,
-      "ort_detail": null,
-      "kategorie": "gastspiel",
-      "werk": null,
-      "komponist": null,
-      "rolle": null,
-      "jahr": 1963,
-      "datum": "1963-01-01/1963-12-31",
-      "phase": "LP6",
-      "dokumente": [
-        "UAKUG/NIM_152"
-      ],
-      "gattung": null,
-      "titel": "1963"
     },
     {
       "ort": "Palais Pallavicini",
@@ -1033,22 +820,6 @@
       "titel": "Brief von Emil Jucker an Ira Malaniuk über ein Gastspiel in Zürich"
     },
     {
-      "ort": null,
-      "ort_detail": null,
-      "kategorie": "gastspiel",
-      "werk": null,
-      "komponist": null,
-      "rolle": null,
-      "jahr": 1964,
-      "datum": "1964-01-01/1964-12-31",
-      "phase": "LP6",
-      "dokumente": [
-        "UAKUG/NIM_151"
-      ],
-      "gattung": null,
-      "titel": "1964"
-    },
-    {
       "ort": "Italien",
       "ort_detail": null,
       "kategorie": "gastspiel",
@@ -1063,39 +834,6 @@
       ],
       "gattung": "oper",
       "titel": "Rezension von A. Parente zu Tristan und Isolde in Neapel"
-    },
-    {
-      "ort": null,
-      "ort_detail": null,
-      "kategorie": "gastspiel",
-      "werk": null,
-      "komponist": null,
-      "rolle": null,
-      "jahr": 1965,
-      "datum": "1965-01-01/1965-12-31",
-      "phase": "LP6",
-      "dokumente": [
-        "UAKUG/NIM_150"
-      ],
-      "gattung": null,
-      "titel": "1965"
-    },
-    {
-      "ort": null,
-      "ort_detail": null,
-      "kategorie": "gastspiel",
-      "werk": null,
-      "komponist": null,
-      "rolle": null,
-      "jahr": 1967,
-      "datum": "1967-01-01/1967-12-31",
-      "phase": "LP6",
-      "dokumente": [
-        "UAKUG/NIM_037",
-        "UAKUG/NIM_148"
-      ],
-      "gattung": null,
-      "titel": "Ira Malaniuk, Verträge und Vereinbarungen"
     },
     {
       "ort": "Wien",
@@ -1116,22 +854,6 @@
       "titel": "Rezension von Gerhard Bauer zu Der Wildschütz (Arbeiter Zeitung)"
     },
     {
-      "ort": null,
-      "ort_detail": null,
-      "kategorie": "konzert",
-      "werk": null,
-      "komponist": null,
-      "rolle": null,
-      "jahr": 1970,
-      "datum": "1970-06-26/1977-12-15",
-      "phase": "LP6",
-      "dokumente": [
-        "UAKUG/NIM_165"
-      ],
-      "gattung": "konzert",
-      "titel": "Ira Malaniuk Konzertprogramme"
-    },
-    {
       "ort": "Graz",
       "ort_detail": null,
       "kategorie": "konzert",
@@ -1146,22 +868,6 @@
       ],
       "gattung": "konzert",
       "titel": "Konzertprogramm der Akademie für Musik und darstellende Kunst Graz vom 17. bis 2"
-    },
-    {
-      "ort": null,
-      "ort_detail": null,
-      "kategorie": "gastspiel",
-      "werk": null,
-      "komponist": null,
-      "rolle": null,
-      "jahr": 1972,
-      "datum": "1972-01-01/1989-12-31",
-      "phase": "LP7",
-      "dokumente": [
-        "UAKUG/NIM_144"
-      ],
-      "gattung": null,
-      "titel": "ab / 1972"
     }
   ],
   "netzwerk": [
@@ -1235,17 +941,17 @@
         {
           "signatur": "UAKUG/NIM_051",
           "titel": "\"Paris Mai 55 (Ring)\"",
-          "typ": "zeitungsausschnitt"
+          "typ": "presse"
         },
         {
           "signatur": "UAKUG/NIM_119",
           "titel": "Programmheft zu einer Aufführung von \"Tristan und Isolde\" (Wagner) an der Wiener Staatsoper",
-          "typ": "programmheft"
+          "typ": "programm"
         },
         {
           "signatur": "UAKUG/NIM_120",
           "titel": "Programmheft zu einer Aufführung von \"Tannhäuser\" (Wagner) an der Wiener Staatsoper",
-          "typ": "programmheft"
+          "typ": "programm"
         }
       ]
     },
@@ -1546,7 +1252,7 @@
     }
   ],
   "_meta": {
-    "generated": "2026-03-29T11:02:00.852834",
-    "source_records": 286
+    "generated": "2026-04-16T21:02:25.982875",
+    "source_records": 304
   }
 }

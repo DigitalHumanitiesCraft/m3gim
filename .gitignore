@@ -61,6 +61,7 @@ dmypy.json
 *.xls
 *.csv
 !data/source/*.xlsx        # Keep source Excel spreadsheet for reproducibility
+!data/source-v2/*.xlsx     # v2-Parallel: keep new Excel exports for reproducibility
 !data/vocabularies/*.json  # Keep vocabulary files
 
 # PDF scans (too large for Git)
@@ -79,6 +80,7 @@ data/*_backup_*.json
 
 # Pipeline-generated view JSONs (copies live in docs/data/)
 data/output/views/
+data/output-v2/views/
 
 # ==========================================
 # Credentials & Secrets

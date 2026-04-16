@@ -22,6 +22,7 @@ Verwendung:
     python scripts/transform.py
 """
 
+import os
 import sys
 import re
 import json
@@ -38,8 +39,8 @@ if sys.stdout.encoding != "utf-8":
 # ---------------------------------------------------------------------------
 
 BASE_DIR = Path(__file__).parent.parent
-SHEETS_DIR = BASE_DIR / "data" / "google-spreadsheet"
-OUTPUT_DIR = BASE_DIR / "data" / "output"
+SHEETS_DIR = Path(os.environ.get("M3GIM_SHEETS_DIR", BASE_DIR / "data" / "google-spreadsheet"))
+OUTPUT_DIR = Path(os.environ.get("M3GIM_OUTPUT_DIR", BASE_DIR / "data" / "output"))
 
 # ---------------------------------------------------------------------------
 # JSON-LD Context
@@ -50,6 +51,7 @@ CONTEXT = {
     "m3gim": "https://dhcraft.org/m3gim/vocab#",
     "m3gim-dft": "https://dhcraft.org/m3gim/documentaryFormTypes#",
     "m3gim-role": "https://dhcraft.org/m3gim/roles#",
+    "agrelon": "https://d-nb.info/standards/elementset/agrelon#",
     "wd": "http://www.wikidata.org/entity/",
     "owl": "http://www.w3.org/2002/07/owl#",
     "geo": "http://www.w3.org/2003/01/geo/wgs84_pos#",
@@ -61,41 +63,116 @@ CONTEXT = {
     "komponist": "m3gim:komponist"
 }
 
+# Mapping Datierungsevidenz → Konfidenz (data.md § 9)
+EVIDENZ_TO_CONFIDENCE = {
+    "aus_dokument": "1.0",
+    "erschlossen": "0.6",
+    "extern": "0.8",
+    "unbekannt": "0.0",
+}
+
+# Mapping (typ, rolle) → AgRelOn-Klasse + -Property (data.md § 8.3, Phase 4.8).
+# Die Pipeline erzeugt zusaetzlich zur normalen Agent-Relation eine agrelon-
+# Relation mit Provenance auf den Record.
+AGRELON_MAPPING = {
+    # (typ, rolle) -> (agrelon_class, agrelon_property_on_subject)
+    ("institution", "arbeitgeber"): ("agrelon:HasEmployeeEmployer", "agrelon:hasEmployer"),
+    ("person", "absender"):          ("agrelon:HasCorrespondent",    "agrelon:hasCorrespondent"),
+    ("person", "empfänger"):         ("agrelon:HasCorrespondent",    "agrelon:hasCorrespondent"),
+    ("person", "adressat"):          ("agrelon:HasCorrespondent",    "agrelon:hasCorrespondent"),
+    ("person", "agent"):             ("agrelon:HasProfessionalContact", "agrelon:hasProfessionalContact"),
+    ("person", "vermittler"):        ("agrelon:HasProfessionalContact", "agrelon:hasProfessionalContact"),
+    ("person", "auftraggeber"):      ("agrelon:HasIsPatron",         "agrelon:hasPatron"),
+    ("institution", "ausbildungsstätte"): ("agrelon:HasIsMember",    "agrelon:isMemberOf"),
+}
+
+
+# Mapping Datumsrolle → typisierte m3gim-Property (data.md § 7, Phase 4.7).
+# Rollen ohne Eintrag landen im generischen Fallback m3gim:eventDate.
+DATUMSROLLE_TO_PROPERTY = {
+    "absendedatum": "m3gim:absendedatum",
+    "empfangsdatum": "m3gim:empfangsdatum",
+    "ausstellungsdatum": "m3gim:ausstellungsdatum",
+    "erscheinungsdatum": "m3gim:erscheinungsdatum",
+    "abreisedatum": "m3gim:abreisedatum",
+    "auftritt": "m3gim:auftrittsdatum",
+    "aufführung": "m3gim:auffuehrungsdatum",
+    "probe": "m3gim:probendatum",
+    "probenbeginn": "m3gim:probenbeginn",
+    "premiere": "m3gim:premieredatum",
+    "ausstrahlung": "m3gim:ausstrahlungsdatum",
+    "spielzeit": "m3gim:spielzeitVon",
+    "überweisung": "m3gim:ueberweisungsdatum",
+    "gespräch": "m3gim:gespraechsdatum",
+}
+
 # ---------------------------------------------------------------------------
 # Dokumenttyp-Mapping (deutsch → m3gim-dft)
 # ---------------------------------------------------------------------------
 
 DOKUMENTTYP_TO_DFT = {
-    "korrespondenz": "m3gim-dft:brief",
-    "vertrag": "m3gim-dft:vertrag",
-    "presse": "m3gim-dft:zeitungsausschnitt",
-    "programm": "m3gim-dft:programmheft",
+    # Korrespondenz-Hierarchie
+    "korrespondenz": "m3gim-dft:korrespondenz",
+    "brief": "m3gim-dft:brief",
+    "postkarte": "m3gim-dft:postkarte",
+    "telegramm": "m3gim-dft:telegramm",
+    # Presse-Hierarchie
+    "presse": "m3gim-dft:presse",
+    "zeitungsausschnitt": "m3gim-dft:zeitungsausschnitt",
+    "kritik": "m3gim-dft:kritik",
+    "rezension": "m3gim-dft:rezension",
+    # Programm-Hierarchie
+    "programm": "m3gim-dft:programm",
+    "programmheft": "m3gim-dft:programmheft",
     "konzertprogramm": "m3gim-dft:programmheft",
-    "plakat": "m3gim-dft:plakat",
-    "tontraeger": "m3gim-dft:tontraeger",
-    "autobiografie": "m3gim-dft:biographie",
+    # Biographisch-Hierarchie
+    "biographisch": "m3gim-dft:biographisch",
     "biographie": "m3gim-dft:biographie",
-    "identitaetsdokument": "m3gim-dft:ausweis",
-    "studienunterlagen": "m3gim-dft:dokument",
-    "repertoire": "m3gim-dft:dokument",
-    "repertoireliste": "m3gim-dft:dokument",
+    "autobiografie": "m3gim-dft:autobiografie",
+    "lebenslauf": "m3gim-dft:lebenslauf",
+    # Identitaetsdokument-Hierarchie
+    "identitaetsdokument": "m3gim-dft:identitaetsdokument",
+    "ausweis": "m3gim-dft:ausweis",
+    # Konvolut-Aggregate
     "sammlung": "m3gim-dft:konvolut",
     "konvolut": "m3gim-dft:konvolut",
+    # Flache Typen
+    "vertrag": "m3gim-dft:vertrag",
+    "plakat": "m3gim-dft:plakat",
+    "tontraeger": "m3gim-dft:tontraeger",
+    "studienunterlagen": "m3gim-dft:dokument",
+    "repertoire": "m3gim-dft:repertoireliste",
+    "repertoireliste": "m3gim-dft:repertoireliste",
     "tagebuch": "m3gim-dft:tagebuch",
     "notizbuch": "m3gim-dft:notiz",
     "notiz": "m3gim-dft:notiz",
     "urkunde": "m3gim-dft:urkunde",
     "zeugnis": "m3gim-dft:urkunde",
-    "lebenslauf": "m3gim-dft:lebenslauf",
     "widmung": "m3gim-dft:dokument",
     "photokopie": "m3gim-dft:photokopie",
     "quittung": "m3gim-dft:quittung",
-    "rezension": "m3gim-dft:rezension",
     "typoskript": "m3gim-dft:typoskript",
     "visitenkarte": "m3gim-dft:visitenkarte",
     "noten": "m3gim-dft:noten",
     "dokument": "m3gim-dft:dokument",
-    "sonstiges": "m3gim-dft:sonstiges"
+    "sonstiges": "m3gim-dft:sonstiges",
+}
+
+# SKOS-Hierarchie fuer m3gim-dft (data.md Abschnitt 12).
+# Jeder Key ist ein Konzept, der Wert sein direkter Oberbegriff (skos:broader).
+# Konzepte ohne Eintrag sind Top-Level (broader = dokument).
+DFT_BROADER = {
+    "brief": "korrespondenz",
+    "postkarte": "korrespondenz",
+    "telegramm": "korrespondenz",
+    "zeitungsausschnitt": "presse",
+    "kritik": "presse",
+    "rezension": "presse",
+    "programmheft": "programm",
+    "biographie": "biographisch",
+    "autobiografie": "biographisch",
+    "lebenslauf": "biographisch",
+    "ausweis": "identitaetsdokument",
 }
 
 # ---------------------------------------------------------------------------
@@ -127,15 +204,89 @@ def normalize_lower(value) -> str | None:
     return str(value).strip().lower()
 
 
+def build_dft_concepts(records: list) -> list:
+    """Erzeugt SKOS-Concept-Knoten fuer alle tatsaechlich genutzten m3gim-dft-Begriffe.
+
+    Fuegt skos:broader-Relation gemaess data.md Abschnitt 12 hinzu.
+    Nur verwendete Konzepte werden emittiert (sparsamer Graph).
+    Transitive Elternbegriffe werden mitgenommen (z.B. "brief" zieht
+    "korrespondenz" mit ein).
+    """
+    used = set()
+    for r in records:
+        dft = r.get("rico:hasDocumentaryFormType")
+        if isinstance(dft, dict):
+            ident = dft.get("@id", "")
+            if ident.startswith("m3gim-dft:"):
+                used.add(ident.split(":", 1)[1])
+
+    # Transitiv Elternbegriffe ergaenzen
+    to_process = list(used)
+    while to_process:
+        concept = to_process.pop()
+        broader = DFT_BROADER.get(concept)
+        if broader and broader not in used:
+            used.add(broader)
+            to_process.append(broader)
+
+    concepts = []
+    for concept in sorted(used):
+        node = {
+            "@id": f"m3gim-dft:{concept}",
+            "@type": "skos:Concept",
+            "skos:prefLabel": concept,
+        }
+        if concept in DFT_BROADER:
+            node["skos:broader"] = {"@id": f"m3gim-dft:{DFT_BROADER[concept]}"}
+        concepts.append(node)
+    return concepts
+
+
+def normalize_role(value) -> str | None:
+    """Normalisiert Rollenbezeichner: lower + strip + Gender-Suffix entfernen.
+
+    Strippt :innen und :in (z.B. saenger:in -> saenger, dirigent:innen -> dirigent).
+    Finales 'in' ohne Doppelpunkt wird nicht generell entfernt, da mehrdeutig
+    (interpret, verfassen...); bei Bedarf ueber Stem-Allowlist erweiterbar.
+    Siehe data.md Abschnitt 5.
+    """
+    v = normalize_lower(value)
+    if v is None:
+        return None
+    for suffix in (":innen", ":in"):
+        if v.endswith(suffix):
+            v = v[: -len(suffix)]
+            break
+    return v
+
+
 def clean_date(value) -> str | None:
-    """Bereinigt Datumsartefakte (Excel 00:00:00)"""
+    """Bereinigt Datumsartefakte (Excel 00:00:00) + normalisiert Zeitspannen.
+
+    YYYY-YYYY (Spielzeit) wird zu YYYY/YYYY (ISO-8601 TimeSpan, data.md § 6).
+    Freitext-Werte wie 'Wien, ab 1956' bleiben unveraendert — werden in der
+    Pipeline per Pattern-Match herausgefiltert, bevor sie in typisierte
+    Datumsproperties gelangen.
+    """
     if pd.isna(value):
         return None
     s = str(value).strip()
     s = re.sub(r'\s+00:00:00$', '', s)
     if s == "":
         return None
+    # YYYY-YYYY -> YYYY/YYYY (ISO-Konvention fuer Zeitspannen nur Jahre)
+    s = re.sub(r'^(\d{4})-(\d{4})$', r'\1/\2', s)
     return s
+
+
+# Pattern fuer akzeptierte typisierte Datumswerte: ISO-8601 + Zeitspanne + Qualifier
+ISO_DATE_PATTERN = re.compile(
+    r"^(circa:|vor:|nach:)?\d{4}(-\d{2}(-\d{2})?)?(/\d{4}(-\d{2}(-\d{2})?)?)?$"
+)
+
+
+def is_iso_date(value) -> bool:
+    return isinstance(value, str) and bool(ISO_DATE_PATTERN.match(value))
 
 
 def create_record_id(signatur: str, folio: str = None) -> str:
@@ -226,10 +377,16 @@ def convert_objekt(row: pd.Series, folio_col: str = None) -> dict:
     if date_val:
         record["rico:date"] = date_val
 
-    # Datierungsevidenz (Qualitaet der Datierung)
+    # Datierungsevidenz → agrelon:hasProvenance + agrelon:hasConfidenceValue
+    # (data.md § 9, Phase 4.3)
     evidenz = normalize_lower(row.get('datierungsevidenz'))
-    if evidenz and evidenz in ('aus_dokument', 'erschlossen', 'extern', 'unbekannt'):
-        record["m3gim:dateEvidence"] = evidenz
+    if evidenz and evidenz in EVIDENZ_TO_CONFIDENCE:
+        # Provenance: Self-Reference auf den Record als Aussagequelle
+        record["agrelon:hasProvenance"] = {"@id": record["@id"]}
+        record["agrelon:hasConfidenceValue"] = {
+            "@value": EVIDENZ_TO_CONFIDENCE[evidenz],
+            "@type": "xsd:decimal",
+        }
 
     # Dokumenttyp → m3gim-dft
     dokumenttyp = normalize_lower(row.get('dokumenttyp'))
@@ -331,6 +488,43 @@ def build_konvolut_hierarchy(df: pd.DataFrame, folio_col: str = None) -> tuple[l
 # Verknuepfungen → RiC-O Relations
 # ---------------------------------------------------------------------------
 
+def parse_monetary_value(name: str) -> tuple[str | None, str | None]:
+    """Zerlegt Finanz-Rohwert in (amount, currency).
+
+    Erwartetes Format: 'AMOUNT[, CURRENCY]' wie '4000, ESC' / '631,50, Fr.' / '36000'.
+    Dezimaltrenner: Komma (europaeisch). Ergebnis amount ist xsd:decimal-kompatibler
+    String, currency bleibt Originalcode (keine ISO-4217-Normalisierung wegen
+    Ambiguitaet, z.B. 'Fr' = FRF oder CHF). Siehe data.md Abschnitt 11.
+    """
+    if not name:
+        return None, None
+    s = str(name).strip()
+    if not s:
+        return None, None
+
+    # Letztes Komma trennt Betrag und Waehrung
+    if ',' in s:
+        amount_str, currency = s.rsplit(',', 1)
+        amount_str = amount_str.strip()
+        currency = currency.strip().rstrip('.').strip() or None
+    else:
+        amount_str = s
+        currency = None
+
+    # Betrag parsen: Komma als Dezimaltrenner, Punkte als Tausendertrenner
+    cleaned = amount_str.replace('.', '').replace(',', '.')
+    try:
+        amount_decimal = float(cleaned)
+        if amount_decimal == int(amount_decimal):
+            amount_out = str(int(amount_decimal))
+        else:
+            amount_out = f"{amount_decimal:g}"
+    except ValueError:
+        amount_out = None
+
+    return amount_out, currency
+
+
 def decompose_komposit_typ(typ: str) -> list[str]:
     """Zerlegt Komposit-Typ in Einzeltypen: 'ort, datum' → ['ort', 'datum']"""
     parts = [t.strip().lower() for t in typ.split(",")]
@@ -390,7 +584,7 @@ def process_verknuepfungen(df: pd.DataFrame, indices: dict) -> dict:
 
         typ = normalize_lower(row.get('typ'))
         name = normalize_str(row.get('name'))
-        rolle = normalize_lower(row.get('rolle'))
+        rolle = normalize_role(row.get('rolle'))
         datum = clean_date(row.get('datum') if 'datum' in df.columns else None)
         anmerkung = normalize_str(row.get('anmerkung'))
 
@@ -401,6 +595,23 @@ def process_verknuepfungen(df: pd.DataFrame, indices: dict) -> dict:
         typen = decompose_komposit_typ(typ) if "," in typ else [typ]
         # Komposit-Werte decomponieren (z.B. "München, 1952-12-17" → Ort + Datum)
         decomposed = decompose_komposit_value(name, typen) if len(typen) > 1 else {}
+
+        # Komposit ort,datum: zusaetzlich eine SpatiotemporalEvent-Relation emittieren
+        # (data.md § 4, § 10, Phase 4.4). Die Event-Instanz wird in add_relations
+        # als Top-Level-Entity gebaut.
+        if 'ort' in typen and 'datum' in typen:
+            ort_val = decomposed.get('ort')
+            datum_val = decomposed.get('datum')
+            if ort_val and datum_val and is_iso_date(datum_val):
+                ste_rel = {
+                    "typ": "spatiotemporal",
+                    "name": ort_val,  # name wird als Event-Ort verwendet
+                    "ort": ort_val,
+                    "datum": datum_val,
+                    "rolle": rolle,
+                    "anmerkung": anmerkung,
+                }
+                relations.setdefault(objekt_id, []).append(ste_rel)
 
         for t in typen:
             rel_name = decomposed.get(t, name) if decomposed else name
@@ -434,11 +645,44 @@ def process_verknuepfungen(df: pd.DataFrame, indices: dict) -> dict:
     return relations
 
 
+def _maybe_add_agrelon(record: dict, typ: str, rolle: str, agent_entry: dict):
+    """Emittiert eine agrelon:*-Relation, wenn (typ, rolle) in AGRELON_MAPPING.
+
+    Die Relation haengt am Record (m3gim:agentRelation) und traegt als
+    Provenance die Record-URI selbst.
+    """
+    mapping = AGRELON_MAPPING.get((typ, rolle))
+    if not mapping:
+        return
+    agrelon_class, _prop = mapping
+    rel_entry = {
+        "@type": agrelon_class,
+        "agrelon:hasObject": {"name": agent_entry.get("name")},
+        "agrelon:hasProvenance": {"@id": record["@id"]},
+    }
+    # Agent-@id (wd:) durchreichen, falls vorhanden
+    if agent_entry.get("@id"):
+        rel_entry["agrelon:hasObject"]["@id"] = agent_entry["@id"]
+    # Validity aus rico:date des Records als Heuristik (nur fuer HasEmployeeEmployer)
+    if agrelon_class == "agrelon:HasEmployeeEmployer" and record.get("rico:date"):
+        rel_entry["agrelon:hasValidityPeriod"] = {
+            "agrelon:hasBeginDate": record["rico:date"][:4],
+        }
+    record.setdefault("m3gim:agentRelation", []).append(rel_entry)
+
+
 def add_relations_to_records(records: list, relations: dict,
-                             enrichment_data: dict | None = None):
-    """Fuegt Verknuepfungen als RiC-O/m3gim Properties zu Records hinzu"""
+                             enrichment_data: dict | None = None) -> list:
+    """Fuegt Verknuepfungen als RiC-O/m3gim Properties zu Records hinzu.
+
+    Returns:
+        list: Top-Level-Entities (m3gim:SpatiotemporalEvent-Instanzen),
+        die dem Graph hinzugefuegt werden sollen.
+    """
     if enrichment_data is None:
         enrichment_data = {}
+    spatiotemporal_events = []
+    event_counter = 0
     for record in records:
         identifier = record.get("rico:identifier")
         if not identifier or identifier not in relations:
@@ -448,6 +692,7 @@ def add_relations_to_records(records: list, relations: dict,
         locations = []
         subjects = []
         dates = []
+        typed_dates = {}  # property-URI -> list[str]
         mentions = []
         roles = []
 
@@ -477,10 +722,12 @@ def add_relations_to_records(records: list, relations: dict,
                 else:
                     entry["@type"] = "rico:Person"
                     agents.append(entry)
+                    _maybe_add_agrelon(record, t, rolle_lower, entry)
 
             elif t == "institution":
                 entry["@type"] = "rico:CorporateBody"
                 agents.append(entry)
+                _maybe_add_agrelon(record, t, (rel.get("rolle") or "").lower(), entry)
 
             elif t == "ensemble":
                 entry["@type"] = "rico:Group"
@@ -512,7 +759,16 @@ def add_relations_to_records(records: list, relations: dict,
 
             elif t == "datum":
                 date_val = clean_date(rel.get("datum") or name)
-                if date_val:
+                if not date_val:
+                    continue
+                # Typisierte Datumsproperty je nach Rolle (data.md § 7, Phase 4.7).
+                # Freitext-Werte (nicht-ISO) landen in generischem eventDate, damit
+                # die typisierte Property rein ISO-konform bleibt.
+                rolle_key = (rel.get("rolle") or "").strip().lower()
+                prop = DATUMSROLLE_TO_PROPERTY.get(rolle_key)
+                if prop and is_iso_date(date_val):
+                    typed_dates.setdefault(prop, []).append(date_val)
+                else:
                     dates.append(date_val)
 
             elif t == "detail":
@@ -529,13 +785,44 @@ def add_relations_to_records(records: list, relations: dict,
                     record["m3gim:hasDetail"] = []
                 record["m3gim:hasDetail"].append(detail_entry)
 
+            elif t == "spatiotemporal":
+                # Phase 4.4: Komposit ort,datum -> m3gim:SpatiotemporalEvent
+                # als Top-Level Graph-Entity mit Rueckverweis.
+                event_counter += 1
+                rec_local_id = record["@id"].split(":", 1)[-1]
+                ev_id = f"m3gim:ste_{rec_local_id}_{event_counter}"
+                ev = {
+                    "@id": ev_id,
+                    "@type": "m3gim:SpatiotemporalEvent",
+                    "m3gim:atPlace": {"name": rel["ort"]},
+                    "m3gim:atDate": rel["datum"],
+                    "rico:isAssociatedWithRecord": {"@id": record["@id"]},
+                }
+                role_val = rel.get("rolle")
+                if role_val:
+                    ev["m3gim:eventRole"] = role_val
+                if rel.get("anmerkung"):
+                    ev["rico:generalDescription"] = rel["anmerkung"]
+                spatiotemporal_events.append(ev)
+                record.setdefault("m3gim:hasSpatiotemporalEvent", []).append({"@id": ev_id})
+
             elif t in ["ausgaben", "einnahmen", "summe"]:
-                # Finanz-Informationen als Detail-Objekt
+                # Finanz-Informationen als DetailAnnotation (data.md Abschnitt 11)
+                amount, currency = parse_monetary_value(name)
                 detail_entry = {
                     "@type": "m3gim:DetailAnnotation",
                     "m3gim:detailField": t,
-                    "m3gim:detailValue": f"{name} {rel['rolle']}" if rel.get("rolle") else name
+                    "m3gim:detailValue": name,
                 }
+                if rel.get("rolle"):
+                    detail_entry["m3gim:detailRole"] = rel["rolle"]
+                if amount is not None:
+                    detail_entry["m3gim:monetaryAmount"] = {
+                        "@value": amount,
+                        "@type": "xsd:decimal",
+                    }
+                if currency:
+                    detail_entry["m3gim:currency"] = currency
                 if "m3gim:hasDetail" not in record:
                     record["m3gim:hasDetail"] = []
                 record["m3gim:hasDetail"].append(detail_entry)
@@ -555,6 +842,9 @@ def add_relations_to_records(records: list, relations: dict,
             record["rico:hasOrHadSubject"] = subjects if len(subjects) > 1 else subjects[0]
         if dates:
             record["m3gim:eventDate"] = dates if len(dates) > 1 else dates[0]
+        # Typisierte Datumsproperties (data.md § 7, Phase 4.7)
+        for prop, vals in typed_dates.items():
+            record[prop] = vals if len(vals) > 1 else vals[0]
         if roles:
             record["m3gim:hasPerformanceRole"] = roles if len(roles) > 1 else roles[0]
 
@@ -563,6 +853,12 @@ def add_relations_to_records(records: list, relations: dict,
             details = record["m3gim:hasDetail"]
             if len(details) == 1:
                 record["m3gim:hasDetail"] = details[0]
+        if "m3gim:hasSpatiotemporalEvent" in record:
+            evs = record["m3gim:hasSpatiotemporalEvent"]
+            if len(evs) == 1:
+                record["m3gim:hasSpatiotemporalEvent"] = evs[0]
+
+    return spatiotemporal_events
 
 
 # ---------------------------------------------------------------------------
@@ -702,7 +998,8 @@ def main():
     # Folio-Spalte erkennen
     folio_col = None
     for col in df_objekte.columns:
-        if col.lower() in ['folio'] or 'unnamed' in col.lower():
+        col_lower = col.lower()
+        if col_lower in ['folio', 'folio nr', 'folio_nr'] or 'unnamed' in col_lower:
             # Pruefen ob die Spalte Folio-artige Werte hat
             sample = df_objekte[col].dropna().astype(str).head(5)
             if any(re.match(r'^\d+_\d+$', s.strip()) or s.strip().startswith('fol.') for s in sample):
@@ -729,9 +1026,10 @@ def main():
         print(f"  {total_rels} Verknuepfungen fuer {len(relations)} Objekte")
 
         # Relations zu Records hinzufuegen (mit Enrichment-Daten)
-        add_relations_to_records(records, relations, enrichment_data)
+        ste_events = add_relations_to_records(records, relations, enrichment_data)
         # Relations auch zu Konvolut-Records (falls Verknuepfungen am Konvolut haengen)
-        add_relations_to_records(konvolute, relations, enrichment_data)
+        ste_events_k = add_relations_to_records(konvolute, relations, enrichment_data)
+        ste_events = list(ste_events) + list(ste_events_k)
 
     # Gesamtbestand als Fonds
     fonds = {
@@ -758,8 +1056,15 @@ def main():
         if r["@id"] not in konvolut_member_ids:
             fonds["rico:hasOrHadPart"].append({"@id": r["@id"]})
 
+    # SKOS-Konzepte fuer verwendete Dokumenttypen (data.md Abschnitt 12)
+    dft_concepts = build_dft_concepts(records)
+
+    # Fallback falls add_relations nicht gerufen wurde (z.B. keine Verknuepfungen)
+    if 'ste_events' not in locals():
+        ste_events = []
+
     # JSON-LD Dokument
-    graph = [fonds] + konvolute + records
+    graph = [fonds] + konvolute + records + dft_concepts + ste_events
 
     jsonld = {
         "@context": CONTEXT,

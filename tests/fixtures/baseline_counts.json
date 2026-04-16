@@ -1,0 +1,14 @@
+{
+  "_comment": "Mindestwerte (>=) aus v1-Stand. Aktualisieren nach erfolgreichem Datenupdate. Siehe knowledge/testing.md.",
+  "records_min": 280,
+  "konvolute_min": 3,
+  "persons_min": 100,
+  "organizations_min": 30,
+  "locations_min": 20,
+  "works_min": 50,
+  "verknuepfungen_min": 1000,
+  "wd_matches_min": 100,
+  "partitur_auftritte_min": 40,
+  "partitur_lebensphasen_exact": 7,
+  "partitur_mobilitaet_min": 5
+}

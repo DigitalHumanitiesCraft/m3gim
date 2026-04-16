@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dhcraft.org/m3gim/schemas/partitur.schema.json",
+  "title": "M3GIM Partitur (biographisches Masterdokument)",
+  "type": "object",
+  "required": ["lebensphasen", "orte", "mobilitaet", "auftritte", "netzwerk", "repertoire", "dokumente", "_meta"],
+  "properties": {
+    "lebensphasen": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "label", "von", "bis"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^LP\\d+$" },
+          "label": { "type": "string", "minLength": 1 },
+          "von": { "type": "integer", "minimum": 1900, "maximum": 2030 },
+          "bis": { "type": "integer", "minimum": 1900, "maximum": 2030 },
+          "ort": { "type": "string" },
+          "beschreibung": { "type": "string" }
+        }
+      }
+    },
+    "orte": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["ort", "typ", "von", "bis"],
+        "properties": {
+          "ort": { "type": "string", "minLength": 1 },
+          "typ": { "type": "string" },
+          "von": { "type": "integer" },
+          "bis": { "type": "integer" }
+        }
+      }
+    },
+    "mobilitaet": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["von", "nach", "jahr", "form"],
+        "properties": {
+          "von": { "type": "string" },
+          "nach": { "type": "string" },
+          "jahr": { "type": "integer" },
+          "form": {
+            "type": "string",
+            "enum": ["erzwungen", "geografisch", "lebensstil", "national", "bildung"]
+          },
+          "beschreibung": { "type": "string" },
+          "kontext": { "type": "string" }
+        }
+      }
+    },
+    "auftritte": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["jahr", "phase", "kategorie"],
+        "properties": {
+          "ort": { "type": ["string", "null"] },
+          "ort_detail": { "type": ["string", "null"] },
+          "werk": { "type": ["string", "null"] },
+          "komponist": { "type": ["string", "null"] },
+          "rolle": { "type": ["string", "null"] },
+          "datum": { "type": ["string", "null"] },
+          "jahr": { "type": ["integer", "null"] },
+          "phase": { "type": "string", "pattern": "^LP\\d+$" },
+          "kategorie": {
+            "type": "string",
+            "enum": ["engagement", "festspiel", "gastspiel", "konzert"]
+          },
+          "dokumente": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      }
+    },
+    "netzwerk": { "type": "array" },
+    "repertoire": { "type": "array" },
+    "dokumente": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["jahr", "anzahl"],
+        "properties": {
+          "jahr": { "type": "integer" },
+          "anzahl": { "type": "integer", "minimum": 0 }
+        }
+      }
+    },
+    "_meta": { "type": "object" }
+  }
+}

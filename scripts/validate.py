@@ -9,6 +9,7 @@ Verwendung:
     python scripts/validate.py
 """
 
+import os
 import sys
 import re
 import pandas as pd
@@ -25,8 +26,8 @@ if sys.stdout.encoding != "utf-8":
 # ---------------------------------------------------------------------------
 
 BASE_DIR = Path(__file__).parent.parent
-SHEETS_DIR = BASE_DIR / "data" / "google-spreadsheet"
-REPORTS_DIR = BASE_DIR / "data" / "reports"
+SHEETS_DIR = Path(os.environ.get("M3GIM_SHEETS_DIR", BASE_DIR / "data" / "google-spreadsheet"))
+REPORTS_DIR = Path(os.environ.get("M3GIM_REPORTS_DIR", BASE_DIR / "data" / "reports"))
 
 # ---------------------------------------------------------------------------
 # Signatur-Patterns

@@ -1,0 +1,5480 @@
+{
+  "meta": {
+    "date": "2026-03-29T11:01:55.325959",
+    "source": "wikidata-reconciliation.json",
+    "entity_count": 216,
+    "properties_fetched": [
+      "P106",
+      "P1191",
+      "P136",
+      "P17",
+      "P19",
+      "P20",
+      "P276",
+      "P412",
+      "P569",
+      "P570",
+      "P571",
+      "P577",
+      "P625",
+      "P86"
+    ]
+  },
+  "entities": {
+    "Q64414": {
+      "type": "person",
+      "name": "Adam, Theo",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q2865819",
+            "label": "Opernsänger"
+          },
+          {
+            "qid": "Q1622272",
+            "label": "Hochschullehrer"
+          },
+          {
+            "qid": "Q36834",
+            "label": "Komponist"
+          },
+          {
+            "qid": "Q3455803",
+            "label": "Regisseur"
+          }
+        ],
+        "voiceType": [
+          {
+            "qid": "Q810480",
+            "label": "Bassbariton"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q1731",
+          "label": "Dresden"
+        },
+        "deathPlace": {
+          "qid": "Q1731",
+          "label": "Dresden"
+        },
+        "birthDate": "1926-08-01",
+        "deathDate": "2019-01-10"
+      }
+    },
+    "Q152388": {
+      "type": "person",
+      "name": "Adorno, Theodor W.",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q4964182",
+            "label": "Philosoph"
+          },
+          {
+            "qid": "Q36834",
+            "label": "Komponist"
+          },
+          {
+            "qid": "Q14915627",
+            "label": "Musikwissenschaftler"
+          },
+          {
+            "qid": "Q2306091",
+            "label": "Soziologe"
+          },
+          {
+            "qid": "Q1622272",
+            "label": "Hochschullehrer"
+          },
+          {
+            "qid": "Q4263842",
+            "label": "Literaturkritiker"
+          },
+          {
+            "qid": "Q1350157",
+            "label": "Musikkritiker"
+          },
+          {
+            "qid": "Q3606216",
+            "label": "Aphoristiker"
+          },
+          {
+            "qid": "Q486748",
+            "label": "Pianist"
+          },
+          {
+            "qid": "Q36180",
+            "label": "Schriftsteller"
+          },
+          {
+            "qid": "Q21550346",
+            "label": "Ästhetiker"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q1794",
+          "label": "Frankfurt am Main"
+        },
+        "deathPlace": {
+          "qid": "Q64147",
+          "label": "Visp"
+        },
+        "birthDate": "1903-09-11",
+        "deathDate": "1969-08-06"
+      }
+    },
+    "Q95686480": {
+      "type": "person",
+      "name": "Altmann, Olga",
+      "properties": {}
+    },
+    "Q79028": {
+      "type": "person",
+      "name": "Bahr-Mildenburg, Anna",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q2865819",
+            "label": "Opernsänger"
+          },
+          {
+            "qid": "Q36180",
+            "label": "Schriftsteller"
+          }
+        ],
+        "voiceType": [
+          {
+            "qid": "Q30903",
+            "label": "Sopran"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q1741",
+          "label": "Wien"
+        },
+        "deathPlace": {
+          "qid": "Q1741",
+          "label": "Wien"
+        },
+        "birthDate": "1872-11-29",
+        "deathDate": "1947-01-27"
+      }
+    },
+    "Q113646": {
+      "type": "person",
+      "name": "Bauer-Theussl, Franz",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q158852",
+            "label": "Dirigent"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q203186",
+          "label": "Zillingdorf"
+        },
+        "deathPlace": {
+          "qid": "Q34713",
+          "label": "Salzburg"
+        },
+        "birthDate": "1928-09-25",
+        "deathDate": "2010-04-30"
+      }
+    },
+    "Q1511281": {
+      "type": "person",
+      "name": "Bauer, Gerhard",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q82955",
+            "label": "Politiker"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q1741",
+          "label": "Wien"
+        },
+        "deathPlace": {
+          "qid": "Q259859",
+          "label": "Neufeld an der Leitha"
+        },
+        "birthDate": "1940-12-13",
+        "deathDate": "2007-03-23"
+      }
+    },
+    "Q27864063": {
+      "type": "person",
+      "name": "Baylé, Theo",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q177220",
+            "label": "Sänger"
+          }
+        ],
+        "voiceType": [
+          {
+            "qid": "Q31687",
+            "label": "Bariton"
+          }
+        ],
+        "birthDate": "1912-05-29",
+        "deathDate": "1971-04-30"
+      }
+    },
+    "Q697096": {
+      "type": "person",
+      "name": "Beaton, Cecil Walter Hardy",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q33231",
+            "label": "Fotograf"
+          },
+          {
+            "qid": "Q18814623",
+            "label": "Autobiograf"
+          },
+          {
+            "qid": "Q11496048",
+            "label": "Kriegsfotograf"
+          },
+          {
+            "qid": "Q18939491",
+            "label": "Tagebuchschreiber"
+          },
+          {
+            "qid": "Q1323191",
+            "label": "Kostümbildner"
+          },
+          {
+            "qid": "Q1028181",
+            "label": "Maler"
+          },
+          {
+            "qid": "Q19698265",
+            "label": "Modefotograf"
+          },
+          {
+            "qid": "Q5322166",
+            "label": "Designer"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q25610",
+          "label": "Hampstead"
+        },
+        "deathPlace": {
+          "qid": "Q2554678",
+          "label": "Broad Chalke"
+        },
+        "birthDate": "1904-01-14",
+        "deathDate": "1980-01-18"
+      }
+    },
+    "Q3300510": {
+      "type": "person",
+      "name": "Besnard, Maurice",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q33999",
+            "label": "Schauspieler"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q30974",
+          "label": "Rouen"
+        },
+        "deathPlace": {
+          "qid": "Q33959",
+          "label": "Nizza"
+        },
+        "birthDate": "1887-08-12",
+        "deathDate": "1977-04-02"
+      }
+    },
+    "Q95565": {
+      "type": "person",
+      "name": "Blankenheim, Toni",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q2865819",
+            "label": "Opernsänger"
+          }
+        ],
+        "voiceType": [
+          {
+            "qid": "Q810480",
+            "label": "Bassbariton"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q365",
+          "label": "Köln"
+        },
+        "deathPlace": {
+          "qid": "Q1055",
+          "label": "Hamburg"
+        },
+        "birthDate": "1921-12-12",
+        "deathDate": "2012-12-11"
+      }
+    },
+    "Q10314824": {
+      "type": "person",
+      "name": "Böhme, Kurt",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q3492027",
+            "label": "Ubootfahrer"
+          },
+          {
+            "qid": "Q4991371",
+            "label": "Soldat"
+          },
+          {
+            "qid": "Q16102070",
+            "label": "Marineoffizier"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q702259",
+          "label": "Elberfeld"
+        },
+        "birthDate": "1917-01-21",
+        "deathDate": "1984-07-16"
+      }
+    },
+    "Q517": {
+      "type": "person",
+      "name": "Bonaparte, Napoleon",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q82955",
+            "label": "Politiker"
+          },
+          {
+            "qid": "Q372436",
+            "label": "Staatsmann"
+          },
+          {
+            "qid": "Q189290",
+            "label": "Offizier"
+          },
+          {
+            "qid": "Q10732476",
+            "label": "Kunstsammler"
+          },
+          {
+            "qid": "Q39018",
+            "label": "Kaiser"
+          },
+          {
+            "qid": "Q2304859",
+            "label": "Souverän"
+          },
+          {
+            "qid": "Q17010072",
+            "label": "Militant"
+          },
+          {
+            "qid": "Q1402561",
+            "label": "Feldherr"
+          },
+          {
+            "qid": "Q116",
+            "label": "Monarch"
+          },
+          {
+            "qid": "Q38239859",
+            "label": "Heeresoffizier"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q40104",
+          "label": "Ajaccio"
+        },
+        "deathPlace": {
+          "qid": "Q578060",
+          "label": "Longwood House"
+        },
+        "birthDate": "1769-08-15",
+        "deathDate": "1821-05-05"
+      }
+    },
+    "Q1310912": {
+      "type": "person",
+      "name": "Calzabigi, Ranieri de",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q8178443",
+            "label": "Librettist"
+          },
+          {
+            "qid": "Q36180",
+            "label": "Schriftsteller"
+          },
+          {
+            "qid": "Q49757",
+            "label": "Dichter"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q6761",
+          "label": "Livorno"
+        },
+        "deathPlace": {
+          "qid": "Q2634",
+          "label": "Neapel"
+        },
+        "birthDate": "1714-12-23",
+        "deathDate": "1795-07-01"
+      }
+    },
+    "Q5028328": {
+      "type": "person",
+      "name": "Campese",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q14089670",
+            "label": "Rugby-Union-Spieler"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q3130",
+          "label": "Sydney"
+        },
+        "birthDate": "1984-12-19"
+      }
+    },
+    "Q295548": {
+      "type": "person",
+      "name": "Chenier, André",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q49757",
+            "label": "Dichter"
+          },
+          {
+            "qid": "Q36180",
+            "label": "Schriftsteller"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q406",
+          "label": "Istanbul"
+        },
+        "deathPlace": {
+          "qid": "Q90",
+          "label": "Paris"
+        },
+        "birthDate": "1762-10-30",
+        "deathDate": "1794-07-25"
+      }
+    },
+    "Q52306091": {
+      "type": "person",
+      "name": "Cortis, Marcello",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q177220",
+            "label": "Sänger"
+          }
+        ],
+        "birthDate": "1915-11-11",
+        "deathDate": "1962-05-23"
+      }
+    },
+    "Q17249803": {
+      "type": "person",
+      "name": "Curjel, Hans",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q1792450",
+            "label": "Kunsthistoriker"
+          },
+          {
+            "qid": "Q28389",
+            "label": "Drehbuchautor"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q1040",
+          "label": "Karlsruhe"
+        },
+        "deathPlace": {
+          "qid": "Q72",
+          "label": "Zürich"
+        },
+        "birthDate": "1896-01-01",
+        "deathDate": "1974-01-01"
+      }
+    },
+    "Q123575": {
+      "type": "person",
+      "name": "Della Casa, Lisa",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q2865819",
+            "label": "Opernsänger"
+          },
+          {
+            "qid": "Q177220",
+            "label": "Sänger"
+          }
+        ],
+        "voiceType": [
+          {
+            "qid": "Q30903",
+            "label": "Sopran"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q68311",
+          "label": "Burgdorf"
+        },
+        "deathPlace": {
+          "qid": "Q69233",
+          "label": "Münsterlingen"
+        },
+        "birthDate": "1919-02-02",
+        "deathDate": "2012-12-10"
+      }
+    },
+    "Q12784779": {
+      "type": "person",
+      "name": "Dermota, Anton",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q82955",
+            "label": "Politiker"
+          },
+          {
+            "qid": "Q40348",
+            "label": "Rechtsanwalt"
+          },
+          {
+            "qid": "Q1607826",
+            "label": "Herausgeber"
+          },
+          {
+            "qid": "Q6051619",
+            "label": "Publizist"
+          },
+          {
+            "qid": "Q333634",
+            "label": "Übersetzer"
+          },
+          {
+            "qid": "Q185351",
+            "label": "Jurist"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q3440936",
+          "label": "Železniki"
+        },
+        "deathPlace": {
+          "qid": "Q6596",
+          "label": "Gorizia"
+        },
+        "birthDate": "1876-01-01",
+        "deathDate": "1914-05-03"
+      }
+    },
+    "Q349160": {
+      "type": "person",
+      "name": "Didur, Adam",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q2865819",
+            "label": "Opernsänger"
+          }
+        ],
+        "voiceType": [
+          {
+            "qid": "Q27911",
+            "label": "Bass"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q2872840",
+          "label": "Wola Sękowa"
+        },
+        "deathPlace": {
+          "qid": "Q588",
+          "label": "Katowice"
+        },
+        "birthDate": "1874-12-24",
+        "deathDate": "1946-01-07"
+      }
+    },
+    "Q3426141": {
+      "type": "person",
+      "name": "Dumesnil, René",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q39631",
+            "label": "Arzt"
+          },
+          {
+            "qid": "Q14915627",
+            "label": "Musikwissenschaftler"
+          },
+          {
+            "qid": "Q4263842",
+            "label": "Literaturkritiker"
+          },
+          {
+            "qid": "Q1350157",
+            "label": "Musikkritiker"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q30974",
+          "label": "Rouen"
+        },
+        "deathPlace": {
+          "qid": "Q90",
+          "label": "Paris"
+        },
+        "birthDate": "1879-06-19",
+        "deathDate": "1967-12-24"
+      }
+    },
+    "Q25271239": {
+      "type": "person",
+      "name": "Dünnwald, Josef",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q158852",
+            "label": "Dirigent"
+          }
+        ],
+        "birthDate": "1909-11-03",
+        "deathDate": "1995-07-07"
+      }
+    },
+    "Q94761352": {
+      "type": "person",
+      "name": "Eberhardt, Paul",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q1234713",
+            "label": "Theologe"
+          },
+          {
+            "qid": "Q1607826",
+            "label": "Herausgeber"
+          },
+          {
+            "qid": "Q36180",
+            "label": "Schriftsteller"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q490521",
+          "label": "Q490521"
+        },
+        "birthDate": "1879-12-02",
+        "deathDate": "1923-00-00"
+      }
+    },
+    "Q1328656": {
+      "type": "person",
+      "name": "Elfriede Ott",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q2259451",
+            "label": "Theaterschauspieler"
+          },
+          {
+            "qid": "Q10800557",
+            "label": "Filmschauspieler"
+          },
+          {
+            "qid": "Q2526255",
+            "label": "Filmregisseur"
+          },
+          {
+            "qid": "Q33999",
+            "label": "Schauspieler"
+          },
+          {
+            "qid": "Q177220",
+            "label": "Sänger"
+          },
+          {
+            "qid": "Q3387717",
+            "label": "Bühnenregisseur"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q1741",
+          "label": "Wien"
+        },
+        "deathPlace": {
+          "qid": "Q1741",
+          "label": "Wien"
+        },
+        "birthDate": "1925-06-11",
+        "deathDate": "2019-06-12"
+      }
+    },
+    "Q95636832": {
+      "type": "person",
+      "name": "Erlenwein, Herbert",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q36834",
+            "label": "Komponist"
+          }
+        ],
+        "birthDate": "1896-00-00",
+        "deathDate": "1960-00-00"
+      }
+    },
+    "Q2572555": {
+      "type": "person",
+      "name": "Ernest, Wilhelm",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q1622272",
+            "label": "Hochschullehrer"
+          },
+          {
+            "qid": "Q1234713",
+            "label": "Theologe"
+          },
+          {
+            "qid": "Q250867",
+            "label": "katholischer Priester"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q892321",
+          "label": "Bonenburg"
+        },
+        "deathPlace": {
+          "qid": "Q1729",
+          "label": "Erfurt"
+        },
+        "birthDate": "1927-10-09",
+        "deathDate": "2001-08-01"
+      }
+    },
+    "Q95339861": {
+      "type": "person",
+      "name": "Eschert, Hasso",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q639669",
+            "label": "Musiker"
+          },
+          {
+            "qid": "Q177220",
+            "label": "Sänger"
+          }
+        ],
+        "birthDate": "1917-11-30"
+      }
+    },
+    "Q598316": {
+      "type": "person",
+      "name": "Fahberg, Antonia",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q2865819",
+            "label": "Opernsänger"
+          }
+        ],
+        "voiceType": [
+          {
+            "qid": "Q30903",
+            "label": "Sopran"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q1741",
+          "label": "Wien"
+        },
+        "deathPlace": {
+          "qid": "Q1726",
+          "label": "München"
+        },
+        "birthDate": "1928-05-19",
+        "deathDate": "2016-10-21"
+      }
+    },
+    "Q47291788": {
+      "type": "person",
+      "name": "Ferenz, Willy",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q2865819",
+            "label": "Opernsänger"
+          }
+        ],
+        "voiceType": [
+          {
+            "qid": "Q31687",
+            "label": "Bariton"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q1741",
+          "label": "Wien"
+        },
+        "deathPlace": {
+          "qid": "Q72",
+          "label": "Zürich"
+        },
+        "birthDate": "1923-10-22",
+        "deathDate": "1998-07-10"
+      }
+    },
+    "Q123249": {
+      "type": "person",
+      "name": "Fischer, Edwin",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q486748",
+            "label": "Pianist"
+          },
+          {
+            "qid": "Q158852",
+            "label": "Dirigent"
+          },
+          {
+            "qid": "Q16145150",
+            "label": "Musikpädagoge"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q78",
+          "label": "Basel"
+        },
+        "deathPlace": {
+          "qid": "Q72",
+          "label": "Zürich"
+        },
+        "birthDate": "1886-10-06",
+        "deathDate": "1960-01-24"
+      }
+    },
+    "Q77205": {
+      "type": "person",
+      "name": "Frantz, Ferdinand",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q2865819",
+            "label": "Opernsänger"
+          }
+        ],
+        "voiceType": [
+          {
+            "qid": "Q810480",
+            "label": "Bassbariton"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q2865",
+          "label": "Kassel"
+        },
+        "deathPlace": {
+          "qid": "Q1726",
+          "label": "München"
+        },
+        "birthDate": "1906-02-08",
+        "deathDate": "1959-05-26"
+      }
+    },
+    "Q57285": {
+      "type": "person",
+      "name": "Furtwängler, Wilhelm",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q21680663",
+            "label": "Komponist klassischer Musik"
+          },
+          {
+            "qid": "Q158852",
+            "label": "Dirigent"
+          },
+          {
+            "qid": "Q36834",
+            "label": "Komponist"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q313189",
+          "label": "Schöneberg"
+        },
+        "deathPlace": {
+          "qid": "Q4100",
+          "label": "Baden-Baden"
+        },
+        "birthDate": "1886-01-25",
+        "deathDate": "1954-11-30"
+      }
+    },
+    "Q524960": {
+      "type": "person",
+      "name": "Ghislanzoni, Antonio",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q8178443",
+            "label": "Librettist"
+          },
+          {
+            "qid": "Q1930187",
+            "label": "Journalist"
+          },
+          {
+            "qid": "Q49757",
+            "label": "Dichter"
+          },
+          {
+            "qid": "Q36180",
+            "label": "Schriftsteller"
+          },
+          {
+            "qid": "Q18844224",
+            "label": "Science-Fiction-Schriftsteller"
+          },
+          {
+            "qid": "Q2865819",
+            "label": "Opernsänger"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q6237",
+          "label": "Lecco"
+        },
+        "deathPlace": {
+          "qid": "Q100143",
+          "label": "Caprino Bergamasco"
+        },
+        "birthDate": "1824-11-25",
+        "deathDate": "1893-07-16"
+      }
+    },
+    "Q1465297": {
+      "type": "person",
+      "name": "Gielen, Josef",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q33999",
+            "label": "Schauspieler"
+          },
+          {
+            "qid": "Q3455803",
+            "label": "Regisseur"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q365",
+          "label": "Köln"
+        },
+        "deathPlace": {
+          "qid": "Q1741",
+          "label": "Wien"
+        },
+        "birthDate": "1890-12-20",
+        "deathDate": "1968-10-19"
+      }
+    },
+    "Q61028": {
+      "type": "person",
+      "name": "Gieseking, Walter",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q497294",
+            "label": "Lepidopterologe"
+          },
+          {
+            "qid": "Q486748",
+            "label": "Pianist"
+          },
+          {
+            "qid": "Q36834",
+            "label": "Komponist"
+          },
+          {
+            "qid": "Q19747285",
+            "label": "akademischer Musiker"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q3344",
+          "label": "2. Arrondissement"
+        },
+        "deathPlace": {
+          "qid": "Q84",
+          "label": "London"
+        },
+        "birthDate": "1895-11-05",
+        "deathDate": "1956-10-26"
+      }
+    },
+    "Q130759": {
+      "type": "person",
+      "name": "Gluck, Christoph Willibald",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q36834",
+            "label": "Komponist"
+          },
+          {
+            "qid": "Q158852",
+            "label": "Dirigent"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q23894249",
+          "label": "Erasbach"
+        },
+        "deathPlace": {
+          "qid": "Q1741",
+          "label": "Wien"
+        },
+        "birthDate": "1714-07-02",
+        "deathDate": "1787-11-15"
+      }
+    },
+    "Q103583": {
+      "type": "person",
+      "name": "Golther, Wolfgang",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q182436",
+            "label": "Bibliothekar"
+          },
+          {
+            "qid": "Q13570226",
+            "label": "Literaturhistoriker"
+          },
+          {
+            "qid": "Q1622272",
+            "label": "Hochschullehrer"
+          },
+          {
+            "qid": "Q2599593",
+            "label": "Germanist"
+          },
+          {
+            "qid": "Q36180",
+            "label": "Schriftsteller"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q1022",
+          "label": "Stuttgart"
+        },
+        "deathPlace": {
+          "qid": "Q2861",
+          "label": "Rostock"
+        },
+        "birthDate": "1863-05-25",
+        "deathDate": "1945-12-14"
+      }
+    },
+    "Q112472552": {
+      "type": "person",
+      "name": "Grefe, Gustav",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q2865819",
+            "label": "Opernsänger"
+          }
+        ],
+        "birthDate": "1910-00-00",
+        "deathDate": "1997-00-00"
+      }
+    },
+    "Q63857": {
+      "type": "person",
+      "name": "Greindl, Josef",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q2865819",
+            "label": "Opernsänger"
+          },
+          {
+            "qid": "Q1622272",
+            "label": "Hochschullehrer"
+          }
+        ],
+        "voiceType": [
+          {
+            "qid": "Q27911",
+            "label": "Bass"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q1726",
+          "label": "München"
+        },
+        "deathPlace": {
+          "qid": "Q1741",
+          "label": "Wien"
+        },
+        "birthDate": "1912-12-23",
+        "deathDate": "1993-04-16"
+      }
+    },
+    "Q3818034": {
+      "type": "person",
+      "name": "Grob-Prandl, Gertrude",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q2865819",
+            "label": "Opernsänger"
+          }
+        ],
+        "voiceType": [
+          {
+            "qid": "Q30903",
+            "label": "Sopran"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q1741",
+          "label": "Wien"
+        },
+        "deathPlace": {
+          "qid": "Q1741",
+          "label": "Wien"
+        },
+        "birthDate": "1917-11-11",
+        "deathDate": "1995-05-16"
+      }
+    },
+    "Q15456377": {
+      "type": "person",
+      "name": "Günter, Horst",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q2865819",
+            "label": "Opernsänger"
+          }
+        ],
+        "voiceType": [
+          {
+            "qid": "Q31687",
+            "label": "Bariton"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q2079",
+          "label": "Leipzig"
+        },
+        "deathPlace": {
+          "qid": "Q1055",
+          "label": "Hamburg"
+        },
+        "birthDate": "1913-05-23",
+        "deathDate": "2013-01-07"
+      }
+    },
+    "Q124177": {
+      "type": "person",
+      "name": "Haefliger, Ernst",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q2865819",
+            "label": "Opernsänger"
+          },
+          {
+            "qid": "Q16145150",
+            "label": "Musikpädagoge"
+          }
+        ],
+        "voiceType": [
+          {
+            "qid": "Q27914",
+            "label": "Tenor"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q68097",
+          "label": "Davos"
+        },
+        "deathPlace": {
+          "qid": "Q68097",
+          "label": "Davos"
+        },
+        "birthDate": "1919-07-06",
+        "deathDate": "2007-03-17"
+      }
+    },
+    "Q50825278": {
+      "type": "person",
+      "name": "Hanka, Erika",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q805221",
+            "label": "Balletttänzer"
+          },
+          {
+            "qid": "Q2490358",
+            "label": "Choreograf"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q221495",
+          "label": "Vinkovci"
+        },
+        "deathPlace": {
+          "qid": "Q1741",
+          "label": "Wien"
+        },
+        "birthDate": "1905-05-18",
+        "deathDate": "1958-05-15"
+      }
+    },
+    "Q124351": {
+      "type": "person",
+      "name": "Hartmann, Rudolf",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q82955",
+            "label": "Politiker"
+          },
+          {
+            "qid": "Q36180",
+            "label": "Schriftsteller"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q671239",
+          "label": "Königsfeld"
+        },
+        "deathPlace": {
+          "qid": "Q160139",
+          "label": "KZ Mauthausen"
+        },
+        "birthDate": "1885-12-11",
+        "deathDate": "1945-03-05"
+      }
+    },
+    "Q72123": {
+      "type": "person",
+      "name": "Heger, Robert",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q158852",
+            "label": "Dirigent"
+          },
+          {
+            "qid": "Q36834",
+            "label": "Komponist"
+          },
+          {
+            "qid": "Q1622272",
+            "label": "Hochschullehrer"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q6602",
+          "label": "Straßburg"
+        },
+        "deathPlace": {
+          "qid": "Q1726",
+          "label": "München"
+        },
+        "birthDate": "1886-08-19",
+        "deathDate": "1978-01-14"
+      }
+    },
+    "Q91286": {
+      "type": "person",
+      "name": "Heitmann, Fritz",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q765778",
+            "label": "Organist"
+          },
+          {
+            "qid": "Q639669",
+            "label": "Musiker"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q1055",
+          "label": "Hamburg"
+        },
+        "deathPlace": {
+          "qid": "Q64",
+          "label": "Berlin"
+        },
+        "birthDate": "1891-05-09",
+        "deathDate": "1953-09-07"
+      }
+    },
+    "Q108009": {
+      "type": "person",
+      "name": "Hoelscher, Ludwig",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q36834",
+            "label": "Komponist"
+          },
+          {
+            "qid": "Q639669",
+            "label": "Musiker"
+          },
+          {
+            "qid": "Q16145150",
+            "label": "Musikpädagoge"
+          },
+          {
+            "qid": "Q1622272",
+            "label": "Hochschullehrer"
+          },
+          {
+            "qid": "Q13219637",
+            "label": "Cellist"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q2942",
+          "label": "Solingen"
+        },
+        "deathPlace": {
+          "qid": "Q533166",
+          "label": "Tutzing"
+        },
+        "birthDate": "1907-08-23",
+        "deathDate": "1996-05-08"
+      }
+    },
+    "Q19273665": {
+      "type": "person",
+      "name": "Holm, Richard",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q2374149",
+            "label": "Botaniker"
+          },
+          {
+            "qid": "Q3243461",
+            "label": "Sammler"
+          },
+          {
+            "qid": "Q1622272",
+            "label": "Hochschullehrer"
+          },
+          {
+            "qid": "Q2083925",
+            "label": "Pflanzensammler"
+          },
+          {
+            "qid": "Q98544732",
+            "label": "wissenschaftlicher Sammler"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q630985",
+          "label": "Dallas"
+        },
+        "birthDate": "1925-01-01",
+        "deathDate": "1987-00-00"
+      }
+    },
+    "Q74611": {
+      "type": "person",
+      "name": "Höngen, Elisabeth",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q2865819",
+            "label": "Opernsänger"
+          }
+        ],
+        "voiceType": [
+          {
+            "qid": "Q186506",
+            "label": "Mezzosopran"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q11331",
+          "label": "Gevelsberg"
+        },
+        "deathPlace": {
+          "qid": "Q1741",
+          "label": "Wien"
+        },
+        "birthDate": "1906-12-07",
+        "deathDate": "1997-08-07"
+      }
+    },
+    "Q2573335": {
+      "type": "person",
+      "name": "Hübner, Wilhelm",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q36834",
+            "label": "Komponist"
+          },
+          {
+            "qid": "Q158852",
+            "label": "Dirigent"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q1085",
+          "label": "Prag"
+        },
+        "deathPlace": {
+          "qid": "Q1731",
+          "label": "Dresden"
+        },
+        "birthDate": "1915-11-12",
+        "deathDate": "2004-01-30"
+      }
+    },
+    "Q3068099": {
+      "type": "person",
+      "name": "Hüni-Mihacsek, Felicie",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q2865819",
+            "label": "Opernsänger"
+          }
+        ],
+        "voiceType": [
+          {
+            "qid": "Q30903",
+            "label": "Sopran"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q45779",
+          "label": "Pécs"
+        },
+        "deathPlace": {
+          "qid": "Q1726",
+          "label": "München"
+        },
+        "birthDate": "1891-04-03",
+        "deathDate": "1976-03-26"
+      }
+    },
+    "Q56402502": {
+      "type": "person",
+      "name": "ibe",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q177220",
+            "label": "Sänger"
+          },
+          {
+            "qid": "Q2252262",
+            "label": "Rapper"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q1757",
+          "label": "Helsinki"
+        },
+        "birthDate": "1999-01-29"
+      }
+    },
+    "Q1896516": {
+      "type": "person",
+      "name": "Ilosvay",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q2865819",
+            "label": "Opernsänger"
+          }
+        ],
+        "voiceType": [
+          {
+            "qid": "Q37137",
+            "label": "Alt"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q1781",
+          "label": "Budapest"
+        },
+        "deathPlace": {
+          "qid": "Q1055",
+          "label": "Hamburg"
+        },
+        "birthDate": "1913-05-08",
+        "deathDate": "1987-06-16"
+      }
+    },
+    "Q57419": {
+      "type": "person",
+      "name": "Jochum, Eugen",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q158852",
+            "label": "Dirigent"
+          },
+          {
+            "qid": "Q215793",
+            "label": "Kapellmeister"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q566620",
+          "label": "Babenhausen"
+        },
+        "deathPlace": {
+          "qid": "Q1726",
+          "label": "München"
+        },
+        "birthDate": "1902-11-01",
+        "deathDate": "1987-03-26"
+      }
+    },
+    "Q2716190": {
+      "type": "person",
+      "name": "Jürgens, Helmut",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q483501",
+            "label": "Künstler"
+          },
+          {
+            "qid": "Q1323191",
+            "label": "Kostümbildner"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q16107",
+          "label": "Höxter"
+        },
+        "deathPlace": {
+          "qid": "Q1726",
+          "label": "München"
+        },
+        "birthDate": "1902-06-19",
+        "deathDate": "1963-08-29"
+      }
+    },
+    "Q1584570": {
+      "type": "person",
+      "name": "Kaufmann, Harald",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q14915627",
+            "label": "Musikwissenschaftler"
+          },
+          {
+            "qid": "Q1622272",
+            "label": "Hochschullehrer"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q672717",
+          "label": "Feldbach"
+        },
+        "deathPlace": {
+          "qid": "Q13298",
+          "label": "Graz"
+        },
+        "birthDate": "1927-10-01",
+        "deathDate": "1970-07-09"
+      }
+    },
+    "Q1580703": {
+      "type": "person",
+      "name": "Kautsky, Hans",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q593644",
+            "label": "Chemiker"
+          },
+          {
+            "qid": "Q1622272",
+            "label": "Hochschullehrer"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q1741",
+          "label": "Wien"
+        },
+        "deathPlace": {
+          "qid": "Q12793311",
+          "label": "Kamniška Bistrica"
+        },
+        "birthDate": "1891-04-13",
+        "deathDate": "1966-05-15"
+      }
+    },
+    "Q27990163": {
+      "type": "person",
+      "name": "Kautsky, Robert",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q1028181",
+            "label": "Maler"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q1741",
+          "label": "Wien"
+        },
+        "deathPlace": {
+          "qid": "Q485294",
+          "label": "Leoben"
+        },
+        "birthDate": "1895-10-26",
+        "deathDate": "1963-06-18"
+      }
+    },
+    "Q94931882": {
+      "type": "person",
+      "name": "Keil, Adolf",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q177220",
+            "label": "Sänger"
+          },
+          {
+            "qid": "Q639669",
+            "label": "Musiker"
+          }
+        ],
+        "birthDate": "1909-01-04",
+        "deathDate": "1974-08-30"
+      }
+    },
+    "Q61123": {
+      "type": "person",
+      "name": "Keilberth, Joseph",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q158852",
+            "label": "Dirigent"
+          },
+          {
+            "qid": "Q1198887",
+            "label": "Musikdirektor"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q1040",
+          "label": "Karlsruhe"
+        },
+        "deathPlace": {
+          "qid": "Q1726",
+          "label": "München"
+        },
+        "birthDate": "1908-04-19",
+        "deathDate": "1968-07-20"
+      }
+    },
+    "Q159946": {
+      "type": "person",
+      "name": "Kempff, Wilhelm",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q36834",
+            "label": "Komponist"
+          },
+          {
+            "qid": "Q486748",
+            "label": "Pianist"
+          },
+          {
+            "qid": "Q14915627",
+            "label": "Musikwissenschaftler"
+          },
+          {
+            "qid": "Q1622272",
+            "label": "Hochschullehrer"
+          },
+          {
+            "qid": "Q18814623",
+            "label": "Autobiograf"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q486541",
+          "label": "Jüterbog"
+        },
+        "deathPlace": {
+          "qid": "Q81345",
+          "label": "Positano"
+        },
+        "birthDate": "1895-11-25",
+        "deathDate": "1991-05-23"
+      }
+    },
+    "Q637353": {
+      "type": "person",
+      "name": "Kienzl, Wilhelm",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q36834",
+            "label": "Komponist"
+          },
+          {
+            "qid": "Q158852",
+            "label": "Dirigent"
+          },
+          {
+            "qid": "Q14915627",
+            "label": "Musikwissenschaftler"
+          },
+          {
+            "qid": "Q486748",
+            "label": "Pianist"
+          },
+          {
+            "qid": "Q864380",
+            "label": "Biograf"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q681309",
+          "label": "Waizenkirchen"
+        },
+        "deathPlace": {
+          "qid": "Q1741",
+          "label": "Wien"
+        },
+        "birthDate": "1857-01-17",
+        "deathDate": "1941-10-19"
+      }
+    },
+    "Q1447805": {
+      "type": "person",
+      "name": "Klarwein, Franz",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q2865819",
+            "label": "Opernsänger"
+          },
+          {
+            "qid": "Q2405480",
+            "label": "Sprecher"
+          }
+        ],
+        "voiceType": [
+          {
+            "qid": "Q27914",
+            "label": "Tenor"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q127043",
+          "label": "Garmisch-Partenkirchen"
+        },
+        "deathPlace": {
+          "qid": "Q1726",
+          "label": "München"
+        },
+        "birthDate": "1914-03-08",
+        "deathDate": "1991-02-16"
+      }
+    },
+    "Q102360758": {
+      "type": "person",
+      "name": "Klein, Peter",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q82594",
+            "label": "Informatiker"
+          }
+        ],
+        "birthDate": "1966-00-00"
+      }
+    },
+    "Q2897169": {
+      "type": "person",
+      "name": "Klobučar, Berislav",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q158852",
+            "label": "Dirigent"
+          },
+          {
+            "qid": "Q36834",
+            "label": "Komponist"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q1435",
+          "label": "Zagreb"
+        },
+        "deathPlace": {
+          "qid": "Q1741",
+          "label": "Wien"
+        },
+        "birthDate": "1924-08-28",
+        "deathDate": "2014-06-13"
+      }
+    },
+    "Q57425": {
+      "type": "person",
+      "name": "Knappertsbusch, Hans",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q158852",
+            "label": "Dirigent"
+          },
+          {
+            "qid": "Q1622272",
+            "label": "Hochschullehrer"
+          },
+          {
+            "qid": "Q36834",
+            "label": "Komponist"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q702259",
+          "label": "Elberfeld"
+        },
+        "deathPlace": {
+          "qid": "Q1726",
+          "label": "München"
+        },
+        "birthDate": "1888-03-12",
+        "deathDate": "1965-10-25"
+      }
+    },
+    "Q77743": {
+      "type": "person",
+      "name": "Köth, Erika",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q2865819",
+            "label": "Opernsänger"
+          },
+          {
+            "qid": "Q16145150",
+            "label": "Musikpädagoge"
+          },
+          {
+            "qid": "Q1622272",
+            "label": "Hochschullehrer"
+          }
+        ],
+        "voiceType": [
+          {
+            "qid": "Q58192",
+            "label": "Koloratursopran"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q2973",
+          "label": "Darmstadt"
+        },
+        "deathPlace": {
+          "qid": "Q6829",
+          "label": "Speyer"
+        },
+        "birthDate": "1925-09-15",
+        "deathDate": "1989-02-20"
+      }
+    },
+    "Q57242": {
+      "type": "person",
+      "name": "Kotzebue, August von",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q36180",
+            "label": "Schriftsteller"
+          },
+          {
+            "qid": "Q214917",
+            "label": "Dramatiker"
+          },
+          {
+            "qid": "Q49757",
+            "label": "Dichter"
+          },
+          {
+            "qid": "Q40348",
+            "label": "Rechtsanwalt"
+          },
+          {
+            "qid": "Q201788",
+            "label": "Historiker"
+          },
+          {
+            "qid": "Q18814623",
+            "label": "Autobiograf"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q3955",
+          "label": "Weimar"
+        },
+        "deathPlace": {
+          "qid": "Q2119",
+          "label": "Mannheim"
+        },
+        "birthDate": "1761-05-03",
+        "deathDate": "1819-03-23"
+      }
+    },
+    "Q78918": {
+      "type": "person",
+      "name": "Krauß, Clemens",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q158852",
+            "label": "Dirigent"
+          },
+          {
+            "qid": "Q36834",
+            "label": "Komponist"
+          },
+          {
+            "qid": "Q8178443",
+            "label": "Librettist"
+          },
+          {
+            "qid": "Q1622272",
+            "label": "Hochschullehrer"
+          },
+          {
+            "qid": "Q36180",
+            "label": "Schriftsteller"
+          },
+          {
+            "qid": "Q1198887",
+            "label": "Musikdirektor"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q1741",
+          "label": "Wien"
+        },
+        "deathPlace": {
+          "qid": "Q1489",
+          "label": "Mexiko-Stadt"
+        },
+        "birthDate": "1893-03-31",
+        "deathDate": "1954-05-16"
+      }
+    },
+    "Q19629015": {
+      "type": "person",
+      "name": "Kreppel, Walter",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q639669",
+            "label": "Musiker"
+          },
+          {
+            "qid": "Q177220",
+            "label": "Sänger"
+          },
+          {
+            "qid": "Q2865819",
+            "label": "Opernsänger"
+          }
+        ],
+        "voiceType": [
+          {
+            "qid": "Q27911",
+            "label": "Bass"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q2090",
+          "label": "Nürnberg"
+        },
+        "deathPlace": {
+          "qid": "Q1741",
+          "label": "Wien"
+        },
+        "birthDate": "1923-06-03",
+        "deathDate": "2003-10-18"
+      }
+    },
+    "Q94912384": {
+      "type": "person",
+      "name": "Kuen, Paul",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q36834",
+            "label": "Komponist"
+          }
+        ],
+        "birthDate": "1878-07-12",
+        "deathDate": "1962-03-28"
+      }
+    },
+    "Q105714": {
+      "type": "person",
+      "name": "Kuën, Paul",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q2865819",
+            "label": "Opernsänger"
+          }
+        ],
+        "voiceType": [
+          {
+            "qid": "Q27914",
+            "label": "Tenor"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q627590",
+          "label": "Neuburg an der Kammel"
+        },
+        "deathPlace": {
+          "qid": "Q552104",
+          "label": "Sulzberg"
+        },
+        "birthDate": "1910-04-08",
+        "deathDate": "1997-02-04"
+      }
+    },
+    "Q470033": {
+      "type": "person",
+      "name": "Kulenkampff, Georg",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q1259917",
+            "label": "Geiger"
+          },
+          {
+            "qid": "Q1622272",
+            "label": "Hochschullehrer"
+          },
+          {
+            "qid": "Q691031",
+            "label": "Konzertmeister"
+          },
+          {
+            "qid": "Q158852",
+            "label": "Dirigent"
+          },
+          {
+            "qid": "Q16145150",
+            "label": "Musikpädagoge"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q24879",
+          "label": "Bremen"
+        },
+        "deathPlace": {
+          "qid": "Q9009",
+          "label": "Schaffhausen"
+        },
+        "birthDate": "1898-01-23",
+        "deathDate": "1948-10-04"
+      }
+    },
+    "Q78855": {
+      "type": "person",
+      "name": "Kunz, Erich",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q2865819",
+            "label": "Opernsänger"
+          }
+        ],
+        "voiceType": [
+          {
+            "qid": "Q31687",
+            "label": "Bariton"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q1741",
+          "label": "Wien"
+        },
+        "deathPlace": {
+          "qid": "Q1741",
+          "label": "Wien"
+        },
+        "birthDate": "1909-05-20",
+        "deathDate": "1995-09-08"
+      }
+    },
+    "Q75998": {
+      "type": "person",
+      "name": "Kupper, Annelies",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q2865819",
+            "label": "Opernsänger"
+          },
+          {
+            "qid": "Q1622272",
+            "label": "Hochschullehrer"
+          }
+        ],
+        "voiceType": [
+          {
+            "qid": "Q30903",
+            "label": "Sopran"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q284604",
+          "label": "Kłodzko"
+        },
+        "deathPlace": {
+          "qid": "Q504820",
+          "label": "Haar"
+        },
+        "birthDate": "1906-07-21",
+        "deathDate": "1987-12-08"
+      }
+    },
+    "Q817948": {
+      "type": "person",
+      "name": "Kusche, Benno",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q2865819",
+            "label": "Opernsänger"
+          }
+        ],
+        "voiceType": [
+          {
+            "qid": "Q31687",
+            "label": "Bariton"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q2833",
+          "label": "Freiburg im Breisgau"
+        },
+        "birthDate": "1916-01-30",
+        "deathDate": "2010-05-14"
+      }
+    },
+    "Q133793307": {
+      "type": "person",
+      "name": "Lauro, Michele",
+      "properties": {
+        "birthDate": "1900-00-00"
+      }
+    },
+    "Q349086": {
+      "type": "person",
+      "name": "Leopold III.",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q1097498",
+            "label": "Herrscher"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q489806",
+          "label": "Melk"
+        },
+        "deathPlace": {
+          "qid": "Q487522",
+          "label": "Klosterneuburg"
+        },
+        "birthDate": "1073-09-29",
+        "deathDate": "1136-11-15"
+      }
+    },
+    "Q5564902": {
+      "type": "person",
+      "name": "Litz, Gisela",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q2865819",
+            "label": "Opernsänger"
+          }
+        ],
+        "voiceType": [
+          {
+            "qid": "Q37137",
+            "label": "Alt"
+          }
+        ],
+        "birthDate": "1922-12-14",
+        "deathDate": "2017-01-01"
+      }
+    },
+    "Q2061025": {
+      "type": "person",
+      "name": "Lohmann, Paul",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q82955",
+            "label": "Politiker"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q3846",
+          "label": "Minden"
+        },
+        "birthDate": "1902-10-20",
+        "deathDate": "1953-10-27"
+      }
+    },
+    "Q89450": {
+      "type": "person",
+      "name": "Loose, Emmy",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q2865819",
+            "label": "Opernsänger"
+          }
+        ],
+        "voiceType": [
+          {
+            "qid": "Q836983",
+            "label": "Soubrette"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q1019326",
+          "label": "Chabařovice"
+        },
+        "deathPlace": {
+          "qid": "Q1741",
+          "label": "Wien"
+        },
+        "birthDate": "1914-01-22",
+        "deathDate": "1987-10-14"
+      }
+    },
+    "Q112474535": {
+      "type": "person",
+      "name": "Lorenz, Gerlinde",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q2865819",
+            "label": "Opernsänger"
+          }
+        ],
+        "birthDate": "1939-00-00"
+      }
+    },
+    "Q109441772": {
+      "type": "person",
+      "name": "Mahlke, Hans",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q899758",
+            "label": "Bratschist"
+          },
+          {
+            "qid": "Q1259917",
+            "label": "Geiger"
+          },
+          {
+            "qid": "Q16145150",
+            "label": "Musikpädagoge"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q64",
+          "label": "Berlin"
+        },
+        "deathPlace": {
+          "qid": "Q1726",
+          "label": "München"
+        },
+        "birthDate": "1889-07-27",
+        "deathDate": "1959-09-16"
+      }
+    },
+    "Q59531271": {
+      "type": "person",
+      "name": "Majkut, Erich",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q177220",
+            "label": "Sänger"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q1741",
+          "label": "Wien"
+        },
+        "deathPlace": {
+          "qid": "Q1741",
+          "label": "Wien"
+        },
+        "birthDate": "1907-02-03",
+        "deathDate": "1976-01-01"
+      }
+    },
+    "Q4282634": {
+      "type": "person",
+      "name": "Martienssen-Lohmann, Franziska",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q36180",
+            "label": "Schriftsteller"
+          },
+          {
+            "qid": "Q16145150",
+            "label": "Musikpädagoge"
+          },
+          {
+            "qid": "Q14915627",
+            "label": "Musikwissenschaftler"
+          },
+          {
+            "qid": "Q177220",
+            "label": "Sänger"
+          }
+        ],
+        "voiceType": [
+          {
+            "qid": "Q30903",
+            "label": "Sopran"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q41252",
+          "label": "Bydgoszcz"
+        },
+        "deathPlace": {
+          "qid": "Q1718",
+          "label": "Düsseldorf"
+        },
+        "birthDate": "1887-10-06",
+        "deathDate": "1971-02-02"
+      }
+    },
+    "Q506561": {
+      "type": "person",
+      "name": "Marx, Joseph",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q36834",
+            "label": "Komponist"
+          },
+          {
+            "qid": "Q14915627",
+            "label": "Musikwissenschaftler"
+          },
+          {
+            "qid": "Q16145150",
+            "label": "Musikpädagoge"
+          },
+          {
+            "qid": "Q1622272",
+            "label": "Hochschullehrer"
+          },
+          {
+            "qid": "Q36180",
+            "label": "Schriftsteller"
+          },
+          {
+            "qid": "Q486748",
+            "label": "Pianist"
+          },
+          {
+            "qid": "Q1350157",
+            "label": "Musikkritiker"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q13298",
+          "label": "Graz"
+        },
+        "deathPlace": {
+          "qid": "Q13298",
+          "label": "Graz"
+        },
+        "birthDate": "1882-05-11",
+        "deathDate": "1964-09-03"
+      }
+    },
+    "Q5811": {
+      "type": "person",
+      "name": "Masaccio",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q1028181",
+            "label": "Maler"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q52097",
+          "label": "San Giovanni Valdarno"
+        },
+        "deathPlace": {
+          "qid": "Q220",
+          "label": "Rom"
+        },
+        "birthDate": "1401-12-21",
+        "deathDate": "1428-01-01"
+      }
+    },
+    "Q3435871": {
+      "type": "person",
+      "name": "Massard, Robert",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q2865819",
+            "label": "Opernsänger"
+          },
+          {
+            "qid": "Q16145150",
+            "label": "Musikpädagoge"
+          },
+          {
+            "qid": "Q706835",
+            "label": "Kfz-Mechatroniker"
+          }
+        ],
+        "voiceType": [
+          {
+            "qid": "Q31687",
+            "label": "Bariton"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q132671",
+          "label": "Pau"
+        },
+        "deathPlace": {
+          "qid": "Q132671",
+          "label": "Pau"
+        },
+        "birthDate": "1925-08-15",
+        "deathDate": "2025-12-26"
+      }
+    },
+    "Q2856477": {
+      "type": "person",
+      "name": "Mazzolà, Caterino",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q8178443",
+            "label": "Librettist"
+          },
+          {
+            "qid": "Q36180",
+            "label": "Schriftsteller"
+          },
+          {
+            "qid": "Q49757",
+            "label": "Dichter"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q40161",
+          "label": "Longarone"
+        },
+        "deathPlace": {
+          "qid": "Q641",
+          "label": "Venedig"
+        },
+        "birthDate": "1745-01-18",
+        "deathDate": "1806-07-16"
+      }
+    },
+    "Q270662": {
+      "type": "person",
+      "name": "Menotti, Gian Carlo",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q158852",
+            "label": "Dirigent"
+          },
+          {
+            "qid": "Q2526255",
+            "label": "Filmregisseur"
+          },
+          {
+            "qid": "Q36834",
+            "label": "Komponist"
+          },
+          {
+            "qid": "Q14915627",
+            "label": "Musikwissenschaftler"
+          },
+          {
+            "qid": "Q16145150",
+            "label": "Musikpädagoge"
+          },
+          {
+            "qid": "Q8178443",
+            "label": "Librettist"
+          },
+          {
+            "qid": "Q28389",
+            "label": "Drehbuchautor"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q39840",
+          "label": "Cadegliano-Viconago"
+        },
+        "deathPlace": {
+          "qid": "Q45240",
+          "label": "Monte-Carlo"
+        },
+        "birthDate": "1911-07-07",
+        "deathDate": "2007-02-01"
+      }
+    },
+    "Q95732": {
+      "type": "person",
+      "name": "Metternich, Josef",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q177220",
+            "label": "Sänger"
+          },
+          {
+            "qid": "Q2865819",
+            "label": "Opernsänger"
+          },
+          {
+            "qid": "Q16145150",
+            "label": "Musikpädagoge"
+          },
+          {
+            "qid": "Q1622272",
+            "label": "Hochschullehrer"
+          }
+        ],
+        "voiceType": [
+          {
+            "qid": "Q31687",
+            "label": "Bariton"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q787920",
+          "label": "Hermülheim"
+        },
+        "deathPlace": {
+          "qid": "Q507424",
+          "label": "Feldafing"
+        },
+        "birthDate": "1915-06-02",
+        "deathDate": "2005-02-21"
+      }
+    },
+    "Q55677315": {
+      "type": "person",
+      "name": "Meyer-Welfing, Hugo",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q177220",
+            "label": "Sänger"
+          },
+          {
+            "qid": "Q2865819",
+            "label": "Opernsänger"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q1715",
+          "label": "Hannover"
+        },
+        "deathPlace": {
+          "qid": "Q1741",
+          "label": "Wien"
+        },
+        "birthDate": "1905-03-25",
+        "deathDate": "1969-11-02"
+      }
+    },
+    "Q114183944": {
+      "type": "person",
+      "name": "Meyer, Werner",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q1028181",
+            "label": "Maler"
+          },
+          {
+            "qid": "Q10862983",
+            "label": "Radierer"
+          },
+          {
+            "qid": "Q16947657",
+            "label": "Lithograf"
+          },
+          {
+            "qid": "Q6138343",
+            "label": "Holzschnitzer"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q2964344",
+          "label": "Choindez"
+        },
+        "deathPlace": {
+          "qid": "Q9125",
+          "label": "Winterthur"
+        },
+        "birthDate": "1895-06-12",
+        "deathDate": "1981-11-02"
+      }
+    },
+    "Q62964": {
+      "type": "person",
+      "name": "Mödl, Martha",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q2865819",
+            "label": "Opernsänger"
+          },
+          {
+            "qid": "Q18814623",
+            "label": "Autobiograf"
+          }
+        ],
+        "voiceType": [
+          {
+            "qid": "Q30903",
+            "label": "Sopran"
+          },
+          {
+            "qid": "Q186506",
+            "label": "Mezzosopran"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q2090",
+          "label": "Nürnberg"
+        },
+        "deathPlace": {
+          "qid": "Q1022",
+          "label": "Stuttgart"
+        },
+        "birthDate": "1912-03-22",
+        "deathDate": "2001-12-17"
+      }
+    },
+    "Q70098": {
+      "type": "person",
+      "name": "Moralt, Rudolf",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q158852",
+            "label": "Dirigent"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q1726",
+          "label": "München"
+        },
+        "deathPlace": {
+          "qid": "Q1741",
+          "label": "Wien"
+        },
+        "birthDate": "1902-02-26",
+        "deathDate": "1958-12-16"
+      }
+    },
+    "Q16677800": {
+      "type": "person",
+      "name": "Moratti, Vittorino",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q16145150",
+            "label": "Musikpädagoge"
+          },
+          {
+            "qid": "Q486748",
+            "label": "Pianist"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q100404",
+          "label": "Comun Nuovo"
+        },
+        "deathPlace": {
+          "qid": "Q17660",
+          "label": "Sale"
+        },
+        "birthDate": "1877-01-01",
+        "deathDate": "1944-01-01"
+      }
+    },
+    "Q3087945": {
+      "type": "person",
+      "name": "Munch, Fritz",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q158852",
+            "label": "Dirigent"
+          },
+          {
+            "qid": "Q14915627",
+            "label": "Musikwissenschaftler"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q6602",
+          "label": "Straßburg"
+        },
+        "deathPlace": {
+          "qid": "Q21387",
+          "label": "Niederbronn-les-Bains"
+        },
+        "birthDate": "1890-06-02",
+        "deathDate": "1970-03-10"
+      }
+    },
+    "Q132682": {
+      "type": "person",
+      "name": "Musorgskij, Modest Petrovič",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q36834",
+            "label": "Komponist"
+          },
+          {
+            "qid": "Q486748",
+            "label": "Pianist"
+          },
+          {
+            "qid": "Q8178443",
+            "label": "Librettist"
+          },
+          {
+            "qid": "Q47064",
+            "label": "Militär"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q4214859",
+          "label": "Karevo"
+        },
+        "deathPlace": {
+          "qid": "Q656",
+          "label": "Sankt Petersburg"
+        },
+        "birthDate": "1839-03-09",
+        "deathDate": "1881-03-16"
+      }
+    },
+    "Q68344": {
+      "type": "person",
+      "name": "Neidlinger, Gustav",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q2865819",
+            "label": "Opernsänger"
+          }
+        ],
+        "voiceType": [
+          {
+            "qid": "Q810480",
+            "label": "Bassbariton"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q1720",
+          "label": "Mainz"
+        },
+        "deathPlace": {
+          "qid": "Q490670",
+          "label": "Bad Ems"
+        },
+        "birthDate": "1910-03-21",
+        "deathDate": "1991-12-26"
+      }
+    },
+    "Q44862": {
+      "type": "person",
+      "name": "Nestroy, Johann Nepomuk",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q36180",
+            "label": "Schriftsteller"
+          },
+          {
+            "qid": "Q214917",
+            "label": "Dramatiker"
+          },
+          {
+            "qid": "Q1209498",
+            "label": "Dichterjurist"
+          },
+          {
+            "qid": "Q2259451",
+            "label": "Theaterschauspieler"
+          },
+          {
+            "qid": "Q2865819",
+            "label": "Opernsänger"
+          },
+          {
+            "qid": "Q9334029",
+            "label": "Satiriker"
+          },
+          {
+            "qid": "Q49757",
+            "label": "Dichter"
+          },
+          {
+            "qid": "Q33999",
+            "label": "Schauspieler"
+          },
+          {
+            "qid": "Q8178443",
+            "label": "Librettist"
+          },
+          {
+            "qid": "Q36834",
+            "label": "Komponist"
+          },
+          {
+            "qid": "Q1776724",
+            "label": "Theaterleiter"
+          },
+          {
+            "qid": "Q3455803",
+            "label": "Regisseur"
+          }
+        ],
+        "voiceType": [
+          {
+            "qid": "Q27911",
+            "label": "Bass"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q1741",
+          "label": "Wien"
+        },
+        "deathPlace": {
+          "qid": "Q13298",
+          "label": "Graz"
+        },
+        "birthDate": "1801-12-07",
+        "deathDate": "1862-05-25"
+      }
+    },
+    "Q66912": {
+      "type": "person",
+      "name": "Ney, Elly",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q486748",
+            "label": "Pianist"
+          },
+          {
+            "qid": "Q16145150",
+            "label": "Musikpädagoge"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q1718",
+          "label": "Düsseldorf"
+        },
+        "deathPlace": {
+          "qid": "Q533166",
+          "label": "Tutzing"
+        },
+        "birthDate": "1882-09-27",
+        "deathDate": "1968-03-31"
+      }
+    },
+    "Q233951": {
+      "type": "person",
+      "name": "Nilsson, Birgit",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q2865819",
+            "label": "Opernsänger"
+          }
+        ],
+        "voiceType": [
+          {
+            "qid": "Q30903",
+            "label": "Sopran"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q10718286",
+          "label": "Västra Karup"
+        },
+        "deathPlace": {
+          "qid": "Q2593709",
+          "label": "Bjärlöv"
+        },
+        "birthDate": "1918-05-17",
+        "deathDate": "2005-12-25"
+      }
+    },
+    "Q12333612": {
+      "type": "person",
+      "name": "Oboussier, Robert",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q36834",
+            "label": "Komponist"
+          },
+          {
+            "qid": "Q1350157",
+            "label": "Musikkritiker"
+          },
+          {
+            "qid": "Q876864",
+            "label": "Redakteur"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q12892",
+          "label": "Antwerpen"
+        },
+        "deathPlace": {
+          "qid": "Q72",
+          "label": "Zürich"
+        },
+        "birthDate": "1900-07-09",
+        "deathDate": "1957-06-09"
+      }
+    },
+    "Q130777432": {
+      "type": "person",
+      "name": "Pandano, Vittorio",
+      "properties": {
+        "birthDate": "1919-01-01",
+        "deathDate": "2010-01-01"
+      }
+    },
+    "Q55675699": {
+      "type": "person",
+      "name": "Pantscheff, Ljubomir",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q177220",
+            "label": "Sänger"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q472",
+          "label": "Sofia"
+        },
+        "deathPlace": {
+          "qid": "Q1741",
+          "label": "Wien"
+        },
+        "birthDate": "1913-08-17",
+        "deathDate": "2003-08-30"
+      }
+    },
+    "Q214365": {
+      "type": "person",
+      "name": "Paumgartner, Bernhard",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q158852",
+            "label": "Dirigent"
+          },
+          {
+            "qid": "Q36834",
+            "label": "Komponist"
+          },
+          {
+            "qid": "Q482980",
+            "label": "Autor"
+          },
+          {
+            "qid": "Q14915627",
+            "label": "Musikwissenschaftler"
+          },
+          {
+            "qid": "Q20198542",
+            "label": "Musikhistoriker"
+          },
+          {
+            "qid": "Q1622272",
+            "label": "Hochschullehrer"
+          },
+          {
+            "qid": "Q864380",
+            "label": "Biograf"
+          },
+          {
+            "qid": "Q333634",
+            "label": "Übersetzer"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q1741",
+          "label": "Wien"
+        },
+        "deathPlace": {
+          "qid": "Q34713",
+          "label": "Salzburg"
+        },
+        "birthDate": "1887-11-14",
+        "deathDate": "1971-07-27"
+      }
+    },
+    "Q94901792": {
+      "type": "person",
+      "name": "Peter, Albrecht",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q639669",
+            "label": "Musiker"
+          },
+          {
+            "qid": "Q177220",
+            "label": "Sänger"
+          },
+          {
+            "qid": "Q2865819",
+            "label": "Opernsänger"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q2090",
+          "label": "Nürnberg"
+        },
+        "birthDate": "1914-00-00",
+        "deathDate": "2005-00-00"
+      }
+    },
+    "Q2645656": {
+      "type": "person",
+      "name": "Pfeifle, Alfred",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q2865819",
+            "label": "Opernsänger"
+          }
+        ],
+        "voiceType": [
+          {
+            "qid": "Q27914",
+            "label": "Tenor"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q1022",
+          "label": "Stuttgart"
+        },
+        "deathPlace": {
+          "qid": "Q1022",
+          "label": "Stuttgart"
+        },
+        "birthDate": "1916-05-22",
+        "deathDate": "1986-04-09"
+      }
+    },
+    "Q57358": {
+      "type": "person",
+      "name": "Pfitzner, Hans",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q36834",
+            "label": "Komponist"
+          },
+          {
+            "qid": "Q158852",
+            "label": "Dirigent"
+          },
+          {
+            "qid": "Q1622272",
+            "label": "Hochschullehrer"
+          },
+          {
+            "qid": "Q36180",
+            "label": "Schriftsteller"
+          },
+          {
+            "qid": "Q486748",
+            "label": "Pianist"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q649",
+          "label": "Moskau"
+        },
+        "deathPlace": {
+          "qid": "Q34713",
+          "label": "Salzburg"
+        },
+        "birthDate": "1869-05-05",
+        "deathDate": "1949-05-22"
+      }
+    },
+    "Q2574498": {
+      "type": "person",
+      "name": "Pitz, Wilhelm",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q639669",
+            "label": "Musiker"
+          },
+          {
+            "qid": "Q158852",
+            "label": "Dirigent"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q152328",
+          "label": "Breinig"
+        },
+        "deathPlace": {
+          "qid": "Q1017",
+          "label": "Aachen"
+        },
+        "birthDate": "1897-08-25",
+        "deathDate": "1973-11-21"
+      }
+    },
+    "Q1616310": {
+      "type": "person",
+      "name": "Plümacher, Hetty",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q2865819",
+            "label": "Opernsänger"
+          },
+          {
+            "qid": "Q1622272",
+            "label": "Hochschullehrer"
+          }
+        ],
+        "voiceType": [
+          {
+            "qid": "Q186506",
+            "label": "Mezzosopran"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q2942",
+          "label": "Solingen"
+        },
+        "deathPlace": {
+          "qid": "Q557784",
+          "label": "Steinenbronn"
+        },
+        "birthDate": "1919-12-03",
+        "deathDate": "2005-06-03"
+      }
+    },
+    "Q1913239": {
+      "type": "person",
+      "name": "Proebstl, Max",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q2865819",
+            "label": "Opernsänger"
+          }
+        ],
+        "voiceType": [
+          {
+            "qid": "Q27911",
+            "label": "Bass"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q1726",
+          "label": "München"
+        },
+        "deathPlace": {
+          "qid": "Q1726",
+          "label": "München"
+        },
+        "birthDate": "1913-09-24",
+        "deathDate": "1979-11-19"
+      }
+    },
+    "Q7311": {
+      "type": "person",
+      "name": "Puccini, Giacomo",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q21680731",
+            "label": "Opernkomponist"
+          },
+          {
+            "qid": "Q36834",
+            "label": "Komponist"
+          },
+          {
+            "qid": "Q82955",
+            "label": "Politiker"
+          },
+          {
+            "qid": "Q158852",
+            "label": "Dirigent"
+          },
+          {
+            "qid": "Q765778",
+            "label": "Organist"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q13373",
+          "label": "Lucca"
+        },
+        "deathPlace": {
+          "qid": "Q239",
+          "label": "Brüssel"
+        },
+        "birthDate": "1858-12-22",
+        "deathDate": "1924-11-29"
+      }
+    },
+    "Q518002": {
+      "type": "person",
+      "name": "Ramin, Günther",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q36834",
+            "label": "Komponist"
+          },
+          {
+            "qid": "Q765778",
+            "label": "Organist"
+          },
+          {
+            "qid": "Q158852",
+            "label": "Dirigent"
+          },
+          {
+            "qid": "Q1076502",
+            "label": "Chorleiter"
+          },
+          {
+            "qid": "Q1622272",
+            "label": "Hochschullehrer"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q1040",
+          "label": "Karlsruhe"
+        },
+        "deathPlace": {
+          "qid": "Q2079",
+          "label": "Leipzig"
+        },
+        "birthDate": "1898-10-15",
+        "deathDate": "1956-02-27"
+      }
+    },
+    "Q57139": {
+      "type": "person",
+      "name": "Reger, Max",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q36834",
+            "label": "Komponist"
+          },
+          {
+            "qid": "Q158852",
+            "label": "Dirigent"
+          },
+          {
+            "qid": "Q486748",
+            "label": "Pianist"
+          },
+          {
+            "qid": "Q14915627",
+            "label": "Musikwissenschaftler"
+          },
+          {
+            "qid": "Q1622272",
+            "label": "Hochschullehrer"
+          },
+          {
+            "qid": "Q765778",
+            "label": "Organist"
+          },
+          {
+            "qid": "Q16145150",
+            "label": "Musikpädagoge"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q705752",
+          "label": "Brand"
+        },
+        "deathPlace": {
+          "qid": "Q2079",
+          "label": "Leipzig"
+        },
+        "birthDate": "1873-03-19",
+        "deathDate": "1916-05-11"
+      }
+    },
+    "Q132941819": {
+      "type": "person",
+      "name": "Rialland, Louis",
+      "properties": {
+        "birthDate": "1919-10-10",
+        "deathDate": "1972-01-01"
+      }
+    },
+    "Q116526092": {
+      "type": "person",
+      "name": "Richter, Gerd",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q13382519",
+            "label": "Tischtennisspieler"
+          }
+        ],
+        "birthDate": "1974-12-29"
+      }
+    },
+    "Q78981": {
+      "type": "person",
+      "name": "Roller, Alfred",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q1028181",
+            "label": "Maler"
+          },
+          {
+            "qid": "Q1231865",
+            "label": "Pädagoge"
+          },
+          {
+            "qid": "Q16947657",
+            "label": "Lithograf"
+          },
+          {
+            "qid": "Q5322166",
+            "label": "Designer"
+          },
+          {
+            "qid": "Q3744886",
+            "label": "fashion figure artist"
+          },
+          {
+            "qid": "Q2707485",
+            "label": "Szenograf"
+          },
+          {
+            "qid": "Q1925963",
+            "label": "Grafiker"
+          },
+          {
+            "qid": "Q37226",
+            "label": "Lehrer"
+          },
+          {
+            "qid": "Q644687",
+            "label": "Illustrator"
+          },
+          {
+            "qid": "Q107212688",
+            "label": "Exlibriskünstler"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q14960",
+          "label": "Brünn"
+        },
+        "deathPlace": {
+          "qid": "Q1741",
+          "label": "Wien"
+        },
+        "birthDate": "1864-10-02",
+        "deathDate": "1935-06-21"
+      }
+    },
+    "Q89249": {
+      "type": "person",
+      "name": "Rössl-Majdan, Hilde",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q2865819",
+            "label": "Opernsänger"
+          },
+          {
+            "qid": "Q16145150",
+            "label": "Musikpädagoge"
+          },
+          {
+            "qid": "Q1622272",
+            "label": "Hochschullehrer"
+          }
+        ],
+        "voiceType": [
+          {
+            "qid": "Q37137",
+            "label": "Alt"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q676663",
+          "label": "Atzenbrugg"
+        },
+        "deathPlace": {
+          "qid": "Q1741",
+          "label": "Wien"
+        },
+        "birthDate": "1921-01-30",
+        "deathDate": "2010-12-15"
+      }
+    },
+    "Q110071082": {
+      "type": "person",
+      "name": "Rossmayer, Richard",
+      "properties": {
+        "birthDate": "1905-01-03",
+        "deathDate": "1972-06-16"
+      }
+    },
+    "Q364029": {
+      "type": "person",
+      "name": "Rott, Adolf",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q3387717",
+            "label": "Bühnenregisseur"
+          },
+          {
+            "qid": "Q3455803",
+            "label": "Regisseur"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q153974",
+          "label": "Barmen"
+        },
+        "deathPlace": {
+          "qid": "Q1741",
+          "label": "Wien"
+        },
+        "birthDate": "1905-12-14",
+        "deathDate": "1982-07-24"
+      }
+    },
+    "Q112391565": {
+      "type": "person",
+      "name": "Rouquetty, Camille",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q2865819",
+            "label": "Opernsänger"
+          }
+        ],
+        "birthDate": "1910-01-01",
+        "deathDate": "1976-03-23"
+      }
+    },
+    "Q78613": {
+      "type": "person",
+      "name": "Rysanek, Leonie",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q2865819",
+            "label": "Opernsänger"
+          }
+        ],
+        "voiceType": [
+          {
+            "qid": "Q30903",
+            "label": "Sopran"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q1741",
+          "label": "Wien"
+        },
+        "deathPlace": {
+          "qid": "Q1741",
+          "label": "Wien"
+        },
+        "birthDate": "1926-11-14",
+        "deathDate": "1998-03-07"
+      }
+    },
+    "Q447590": {
+      "type": "person",
+      "name": "Samazeuilh, Gustave",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q36834",
+            "label": "Komponist"
+          },
+          {
+            "qid": "Q1350157",
+            "label": "Musikkritiker"
+          },
+          {
+            "qid": "Q486748",
+            "label": "Pianist"
+          },
+          {
+            "qid": "Q14915627",
+            "label": "Musikwissenschaftler"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q1479",
+          "label": "Bordeaux"
+        },
+        "deathPlace": {
+          "qid": "Q90",
+          "label": "Paris"
+        },
+        "birthDate": "1877-06-02",
+        "deathDate": "1967-08-04"
+      }
+    },
+    "Q79026": {
+      "type": "person",
+      "name": "Schalk, Franz",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q158852",
+            "label": "Dirigent"
+          },
+          {
+            "qid": "Q1231865",
+            "label": "Pädagoge"
+          },
+          {
+            "qid": "Q36834",
+            "label": "Komponist"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q1741",
+          "label": "Wien"
+        },
+        "deathPlace": {
+          "qid": "Q665243",
+          "label": "Reichenau an der Rax"
+        },
+        "birthDate": "1863-05-27",
+        "deathDate": "1931-09-03"
+      }
+    },
+    "Q694529": {
+      "type": "person",
+      "name": "Schellenberg, Arno",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q177220",
+            "label": "Sänger"
+          },
+          {
+            "qid": "Q1622272",
+            "label": "Hochschullehrer"
+          },
+          {
+            "qid": "Q2865819",
+            "label": "Opernsänger"
+          }
+        ],
+        "voiceType": [
+          {
+            "qid": "Q31687",
+            "label": "Bariton"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q64",
+          "label": "Berlin"
+        },
+        "deathPlace": {
+          "qid": "Q1731",
+          "label": "Dresden"
+        },
+        "birthDate": "1903-11-16",
+        "deathDate": "1983-02-20"
+      }
+    },
+    "Q95634885": {
+      "type": "person",
+      "name": "Schmidt-Garre, Helmut",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q14915627",
+            "label": "Musikwissenschaftler"
+          },
+          {
+            "qid": "Q1350157",
+            "label": "Musikkritiker"
+          }
+        ],
+        "birthDate": "1907-00-00",
+        "deathDate": "1989-00-00"
+      }
+    },
+    "Q95295060": {
+      "type": "person",
+      "name": "Schmidt, Franz",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q4964182",
+            "label": "Philosoph"
+          },
+          {
+            "qid": "Q17167049",
+            "label": "Literaturwissenschaftler"
+          },
+          {
+            "qid": "Q182436",
+            "label": "Bibliothekar"
+          }
+        ],
+        "birthDate": "1895-00-00",
+        "deathDate": "1972-12-16"
+      }
+    },
+    "Q71953": {
+      "type": "person",
+      "name": "Schöffler, Paul",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q2865819",
+            "label": "Opernsänger"
+          }
+        ],
+        "voiceType": [
+          {
+            "qid": "Q810480",
+            "label": "Bassbariton"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q1731",
+          "label": "Dresden"
+        },
+        "deathPlace": {
+          "qid": "Q470188",
+          "label": "Amersham"
+        },
+        "birthDate": "1897-09-15",
+        "deathDate": "1977-11-21"
+      }
+    },
+    "Q4527615": {
+      "type": "person",
+      "name": "Schulthess, Walter",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q36834",
+            "label": "Komponist"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q72",
+          "label": "Zürich"
+        },
+        "deathPlace": {
+          "qid": "Q72",
+          "label": "Zürich"
+        },
+        "birthDate": "1894-07-24",
+        "deathDate": "1971-06-23"
+      }
+    },
+    "Q121675": {
+      "type": "person",
+      "name": "Schünemann, Georg",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q14915627",
+            "label": "Musikwissenschaftler"
+          },
+          {
+            "qid": "Q1622272",
+            "label": "Hochschullehrer"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q64",
+          "label": "Berlin"
+        },
+        "deathPlace": {
+          "qid": "Q64",
+          "label": "Berlin"
+        },
+        "birthDate": "1884-03-13",
+        "deathDate": "1945-01-02"
+      }
+    },
+    "Q1584745": {
+      "type": "person",
+      "name": "Serafin, Harald",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q6491450",
+            "label": "Intendant"
+          },
+          {
+            "qid": "Q639669",
+            "label": "Musiker"
+          },
+          {
+            "qid": "Q177220",
+            "label": "Sänger"
+          },
+          {
+            "qid": "Q98834032",
+            "label": "Bariton"
+          },
+          {
+            "qid": "Q33999",
+            "label": "Schauspieler"
+          }
+        ],
+        "voiceType": [
+          {
+            "qid": "Q31687",
+            "label": "Bariton"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q1004295",
+          "label": "Kybartai"
+        },
+        "deathPlace": {
+          "qid": "Q1741",
+          "label": "Wien"
+        },
+        "birthDate": "1931-12-24",
+        "deathDate": "2025-09-15"
+      }
+    },
+    "Q20243266": {
+      "type": "person",
+      "name": "Simon, Théo",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q520549",
+            "label": "Geologe"
+          },
+          {
+            "qid": "Q1622272",
+            "label": "Hochschullehrer"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q2168642",
+          "label": "Rothenberga"
+        },
+        "deathPlace": {
+          "qid": "Q83212",
+          "label": "Fichtenberg"
+        },
+        "birthDate": "1947-00-00",
+        "deathDate": "2025-02-15"
+      }
+    },
+    "Q95704592": {
+      "type": "person",
+      "name": "Sobota, Elisabeth",
+      "properties": {}
+    },
+    "Q7235": {
+      "type": "person",
+      "name": "Sophokles",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q22073916",
+            "label": "Tragiker"
+          },
+          {
+            "qid": "Q214917",
+            "label": "Dramatiker"
+          },
+          {
+            "qid": "Q36180",
+            "label": "Schriftsteller"
+          },
+          {
+            "qid": "Q42603",
+            "label": "Priester"
+          },
+          {
+            "qid": "Q82955",
+            "label": "Politiker"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q1235930",
+          "label": "Kolonos"
+        },
+        "deathPlace": {
+          "qid": "Q1524",
+          "label": "Athen"
+        },
+        "birthDate": "0496-00-00",
+        "deathDate": "0406-00-00"
+      }
+    },
+    "Q16720951": {
+      "type": "person",
+      "name": "Steinecke, Wolfgang",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q14915627",
+            "label": "Musikwissenschaftler"
+          },
+          {
+            "qid": "Q36834",
+            "label": "Komponist"
+          },
+          {
+            "qid": "Q16031530",
+            "label": "Musiktheoretiker"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q2066",
+          "label": "Essen"
+        },
+        "deathPlace": {
+          "qid": "Q2973",
+          "label": "Darmstadt"
+        },
+        "birthDate": "1910-04-22",
+        "deathDate": "1961-12-23"
+      }
+    },
+    "Q89574267": {
+      "type": "person",
+      "name": "Steiner, Adolf",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q13219637",
+            "label": "Cellist"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q14910",
+          "label": "Schwäbisch Hall"
+        },
+        "deathPlace": {
+          "qid": "Q4100",
+          "label": "Baden-Baden"
+        },
+        "birthDate": "1897-04-12",
+        "deathDate": "1974-03-27"
+      }
+    },
+    "Q73847": {
+      "type": "person",
+      "name": "Stolze, Gerhard",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q2865819",
+            "label": "Opernsänger"
+          }
+        ],
+        "voiceType": [
+          {
+            "qid": "Q27914",
+            "label": "Tenor"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q487070",
+          "label": "Dessau"
+        },
+        "deathPlace": {
+          "qid": "Q127043",
+          "label": "Garmisch-Partenkirchen"
+        },
+        "birthDate": "1926-10-01",
+        "deathDate": "1979-03-11"
+      }
+    },
+    "Q13894": {
+      "type": "person",
+      "name": "Strauss, Richard",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q36834",
+            "label": "Komponist"
+          },
+          {
+            "qid": "Q158852",
+            "label": "Dirigent"
+          },
+          {
+            "qid": "Q8178443",
+            "label": "Librettist"
+          },
+          {
+            "qid": "Q639669",
+            "label": "Musiker"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q1726",
+          "label": "München"
+        },
+        "deathPlace": {
+          "qid": "Q127043",
+          "label": "Garmisch-Partenkirchen"
+        },
+        "birthDate": "1864-06-11",
+        "deathDate": "1949-09-08"
+      }
+    },
+    "Q310518": {
+      "type": "person",
+      "name": "Süßmayr, Franz Xaver",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q36834",
+            "label": "Komponist"
+          },
+          {
+            "qid": "Q158852",
+            "label": "Dirigent"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q264819",
+          "label": "Schwanenstadt"
+        },
+        "deathPlace": {
+          "qid": "Q1741",
+          "label": "Wien"
+        },
+        "birthDate": "1766-07-22",
+        "deathDate": "1803-09-17"
+      }
+    },
+    "Q70400": {
+      "type": "person",
+      "name": "Suthaus, Ludwig",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q2865819",
+            "label": "Opernsänger"
+          }
+        ],
+        "voiceType": [
+          {
+            "qid": "Q1601762",
+            "label": "Heldentenor"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q365",
+          "label": "Köln"
+        },
+        "deathPlace": {
+          "qid": "Q56036",
+          "label": "West-Berlin"
+        },
+        "birthDate": "1906-12-12",
+        "deathDate": "1971-09-07"
+      }
+    },
+    "Q78721": {
+      "type": "person",
+      "name": "Swarowsky, Hans",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q158852",
+            "label": "Dirigent"
+          },
+          {
+            "qid": "Q16145150",
+            "label": "Musikpädagoge"
+          },
+          {
+            "qid": "Q1622272",
+            "label": "Hochschullehrer"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q1781",
+          "label": "Budapest"
+        },
+        "deathPlace": {
+          "qid": "Q34713",
+          "label": "Salzburg"
+        },
+        "birthDate": "1899-09-16",
+        "deathDate": "1975-09-10"
+      }
+    },
+    "Q137834857": {
+      "type": "person",
+      "name": "Tasso, Fiorenzo",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q2865819",
+            "label": "Opernsänger"
+          }
+        ],
+        "voiceType": [
+          {
+            "qid": "Q27914",
+            "label": "Tenor"
+          }
+        ]
+      }
+    },
+    "Q78170333": {
+      "type": "person",
+      "name": "Thiel, Fred",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q43845",
+            "label": "Geschäftsmann"
+          },
+          {
+            "qid": "Q2961975",
+            "label": "Unternehmensleiter"
+          }
+        ],
+        "birthDate": "1960-01-01"
+      }
+    },
+    "Q110850252": {
+      "type": "person",
+      "name": "Tinel, Paul",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q242468",
+            "label": "Schneider"
+          }
+        ]
+      }
+    },
+    "Q47551": {
+      "type": "person",
+      "name": "Tizian",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q1028181",
+            "label": "Maler"
+          },
+          {
+            "qid": "Q15296811",
+            "label": "Zeichner"
+          },
+          {
+            "qid": "Q14623005",
+            "label": "Bauzeichner"
+          },
+          {
+            "qid": "Q11569986",
+            "label": "Druckgrafiker"
+          },
+          {
+            "qid": "Q3391743",
+            "label": "bildender Künstler"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q41065",
+          "label": "Pieve di Cadore"
+        },
+        "deathPlace": {
+          "qid": "Q641",
+          "label": "Venedig"
+        },
+        "birthDate": "1488-00-00",
+        "deathDate": "1576-09-26"
+      }
+    },
+    "Q55676977": {
+      "type": "person",
+      "name": "Traute, Elisabeth",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q1934684",
+            "label": "Hausfrau"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q1733",
+          "label": "Magdeburg"
+        },
+        "deathPlace": {
+          "qid": "Q1733",
+          "label": "Magdeburg"
+        },
+        "birthDate": "1540-04-23",
+        "deathDate": "1607-01-31"
+      }
+    },
+    "Q92013": {
+      "type": "person",
+      "name": "Traxel, Josef",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q2865819",
+            "label": "Opernsänger"
+          },
+          {
+            "qid": "Q177220",
+            "label": "Sänger"
+          }
+        ],
+        "voiceType": [
+          {
+            "qid": "Q27914",
+            "label": "Tenor"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q1720",
+          "label": "Mainz"
+        },
+        "deathPlace": {
+          "qid": "Q1022",
+          "label": "Stuttgart"
+        },
+        "birthDate": "1916-09-29",
+        "deathDate": "1975-10-08"
+      }
+    },
+    "Q1330331": {
+      "type": "person",
+      "name": "Urbancic, Elisabeth",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q11613590",
+            "label": "Bühnenbildner"
+          },
+          {
+            "qid": "Q1323191",
+            "label": "Kostümbildner"
+          },
+          {
+            "qid": "Q1925963",
+            "label": "Grafiker"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q1741",
+          "label": "Wien"
+        },
+        "birthDate": "1925-08-13",
+        "deathDate": "2021-10-16"
+      }
+    },
+    "Q2580837": {
+      "type": "person",
+      "name": "Vacchiano",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q639669",
+            "label": "Musiker"
+          },
+          {
+            "qid": "Q16145150",
+            "label": "Musikpädagoge"
+          },
+          {
+            "qid": "Q12377274",
+            "label": "Trompeter"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q49201",
+          "label": "Portland"
+        },
+        "deathPlace": {
+          "qid": "Q60",
+          "label": "New York City"
+        },
+        "birthDate": "1912-05-23",
+        "deathDate": "2005-09-19"
+      }
+    },
+    "Q94932751": {
+      "type": "person",
+      "name": "Vandenburg, Howard",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q177220",
+            "label": "Sänger"
+          },
+          {
+            "qid": "Q639669",
+            "label": "Musiker"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q40435",
+          "label": "Buffalo"
+        },
+        "deathPlace": {
+          "qid": "Q245542",
+          "label": "Kürten"
+        },
+        "birthDate": "1918-05-18",
+        "deathDate": "2000-10-28"
+      }
+    },
+    "Q254518": {
+      "type": "person",
+      "name": "Varnay, Astrid",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q2865819",
+            "label": "Opernsänger"
+          },
+          {
+            "qid": "Q864380",
+            "label": "Biograf"
+          },
+          {
+            "qid": "Q18939491",
+            "label": "Tagebuchschreiber"
+          },
+          {
+            "qid": "Q486748",
+            "label": "Pianist"
+          }
+        ],
+        "voiceType": [
+          {
+            "qid": "Q186506",
+            "label": "Mezzosopran"
+          },
+          {
+            "qid": "Q30903",
+            "label": "Sopran"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q1754",
+          "label": "Stockholm"
+        },
+        "deathPlace": {
+          "qid": "Q1726",
+          "label": "München"
+        },
+        "birthDate": "1918-04-25",
+        "deathDate": "2006-09-04"
+      }
+    },
+    "Q748221": {
+      "type": "person",
+      "name": "Vinay, Ramon",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q2865819",
+            "label": "Opernsänger"
+          },
+          {
+            "qid": "Q1259917",
+            "label": "Geiger"
+          },
+          {
+            "qid": "Q33999",
+            "label": "Schauspieler"
+          }
+        ],
+        "voiceType": [
+          {
+            "qid": "Q31687",
+            "label": "Bariton"
+          },
+          {
+            "qid": "Q1601762",
+            "label": "Heldentenor"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q3774",
+          "label": "Chillán"
+        },
+        "deathPlace": {
+          "qid": "Q125293",
+          "label": "Puebla"
+        },
+        "birthDate": "1911-08-31",
+        "deathDate": "1996-01-04"
+      }
+    },
+    "Q481471": {
+      "type": "person",
+      "name": "Wächter, Eberhard",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q1028181",
+            "label": "Maler"
+          },
+          {
+            "qid": "Q59938438",
+            "label": "Historienmaler"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q16015",
+          "label": "Balingen"
+        },
+        "deathPlace": {
+          "qid": "Q1022",
+          "label": "Stuttgart"
+        },
+        "birthDate": "1762-02-28",
+        "deathDate": "1852-08-14"
+      }
+    },
+    "Q1511": {
+      "type": "person",
+      "name": "Wagner, Richard",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q36834",
+            "label": "Komponist"
+          },
+          {
+            "qid": "Q8178443",
+            "label": "Librettist"
+          },
+          {
+            "qid": "Q158852",
+            "label": "Dirigent"
+          },
+          {
+            "qid": "Q11774202",
+            "label": "Essayist"
+          },
+          {
+            "qid": "Q3387717",
+            "label": "Bühnenregisseur"
+          },
+          {
+            "qid": "Q18814623",
+            "label": "Autobiograf"
+          },
+          {
+            "qid": "Q49757",
+            "label": "Dichter"
+          },
+          {
+            "qid": "Q486748",
+            "label": "Pianist"
+          },
+          {
+            "qid": "Q1350157",
+            "label": "Musikkritiker"
+          },
+          {
+            "qid": "Q18939491",
+            "label": "Tagebuchschreiber"
+          },
+          {
+            "qid": "Q36180",
+            "label": "Schriftsteller"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q2079",
+          "label": "Leipzig"
+        },
+        "deathPlace": {
+          "qid": "Q641",
+          "label": "Venedig"
+        },
+        "birthDate": "1813-05-22",
+        "deathDate": "1883-02-13"
+      }
+    },
+    "Q143867": {
+      "type": "person",
+      "name": "Wagner, Siegfried",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q36834",
+            "label": "Komponist"
+          },
+          {
+            "qid": "Q158852",
+            "label": "Dirigent"
+          },
+          {
+            "qid": "Q36180",
+            "label": "Schriftsteller"
+          },
+          {
+            "qid": "Q2526255",
+            "label": "Filmregisseur"
+          },
+          {
+            "qid": "Q28054786",
+            "label": "Opernregisseur"
+          },
+          {
+            "qid": "Q3455803",
+            "label": "Regisseur"
+          },
+          {
+            "qid": "Q8178443",
+            "label": "Librettist"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q665288",
+          "label": "Landsitz Tribschen"
+        },
+        "deathPlace": {
+          "qid": "Q3923",
+          "label": "Bayreuth"
+        },
+        "birthDate": "1869-06-06",
+        "deathDate": "1930-08-04"
+      }
+    },
+    "Q60465": {
+      "type": "person",
+      "name": "Wagner, Wieland",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q3387717",
+            "label": "Bühnenregisseur"
+          },
+          {
+            "qid": "Q36834",
+            "label": "Komponist"
+          },
+          {
+            "qid": "Q36180",
+            "label": "Schriftsteller"
+          },
+          {
+            "qid": "Q33999",
+            "label": "Schauspieler"
+          },
+          {
+            "qid": "Q2707485",
+            "label": "Szenograf"
+          },
+          {
+            "qid": "Q3455803",
+            "label": "Regisseur"
+          },
+          {
+            "qid": "Q2490358",
+            "label": "Choreograf"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q3923",
+          "label": "Bayreuth"
+        },
+        "deathPlace": {
+          "qid": "Q1726",
+          "label": "München"
+        },
+        "birthDate": "1917-01-05",
+        "deathDate": "1966-10-17"
+      }
+    },
+    "Q136748514": {
+      "type": "person",
+      "name": "Weber, Ludwig",
+      "properties": {
+        "birthDate": "1886-11-03"
+      }
+    },
+    "Q95305013": {
+      "type": "person",
+      "name": "Wehofschitz, Kurt",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q639669",
+            "label": "Musiker"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q1741",
+          "label": "Wien"
+        },
+        "birthDate": "1923-05-03"
+      }
+    },
+    "Q55681641": {
+      "type": "person",
+      "name": "Weishappel, Rudolf",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q1930187",
+            "label": "Journalist"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q13298",
+          "label": "Graz"
+        },
+        "deathPlace": {
+          "qid": "Q1741",
+          "label": "Wien"
+        },
+        "birthDate": "1921-03-25",
+        "deathDate": "2006-01-02"
+      }
+    },
+    "Q132908618": {
+      "type": "person",
+      "name": "Welt, Alfred",
+      "properties": {
+        "birthDate": "1944-01-01"
+      }
+    },
+    "Q1354192": {
+      "type": "person",
+      "name": "Werba, Erik",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q36834",
+            "label": "Komponist"
+          },
+          {
+            "qid": "Q486748",
+            "label": "Pianist"
+          },
+          {
+            "qid": "Q1350157",
+            "label": "Musikkritiker"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q486450",
+          "label": "Baden bei Wien"
+        },
+        "deathPlace": {
+          "qid": "Q664735",
+          "label": "Hinterbrühl"
+        },
+        "birthDate": "1918-05-23",
+        "deathDate": "1992-04-09"
+      }
+    },
+    "Q63265": {
+      "type": "person",
+      "name": "Wesendonck, Mathilde",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q49757",
+            "label": "Dichter"
+          },
+          {
+            "qid": "Q36180",
+            "label": "Schriftsteller"
+          },
+          {
+            "qid": "Q4853732",
+            "label": "Kinderbuchautor"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q702259",
+          "label": "Elberfeld"
+        },
+        "deathPlace": {
+          "qid": "Q443039",
+          "label": "Altmünster"
+        },
+        "birthDate": "1828-12-23",
+        "deathDate": "1902-08-31"
+      }
+    },
+    "Q1506390": {
+      "type": "person",
+      "name": "Wieter, Georg",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q2865819",
+            "label": "Opernsänger"
+          }
+        ],
+        "voiceType": [
+          {
+            "qid": "Q27911",
+            "label": "Bass"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q1715",
+          "label": "Hannover"
+        },
+        "deathPlace": {
+          "qid": "Q1726",
+          "label": "München"
+        },
+        "birthDate": "1896-03-10",
+        "deathDate": "1988-03-20"
+      }
+    },
+    "Q95264973": {
+      "type": "person",
+      "name": "Willy Heyer",
+      "properties": {
+        "birthDate": "1895-00-00"
+      }
+    },
+    "Q60906": {
+      "type": "person",
+      "name": "Windgassen, Wolfgang",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q2865819",
+            "label": "Opernsänger"
+          }
+        ],
+        "voiceType": [
+          {
+            "qid": "Q1601762",
+            "label": "Heldentenor"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q212901",
+          "label": "Annemasse"
+        },
+        "deathPlace": {
+          "qid": "Q1022",
+          "label": "Stuttgart"
+        },
+        "birthDate": "1914-06-26",
+        "deathDate": "1974-09-08"
+      }
+    },
+    "Q1619892": {
+      "type": "person",
+      "name": "Wißmann, Lore",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q2865819",
+            "label": "Opernsänger"
+          }
+        ],
+        "voiceType": [
+          {
+            "qid": "Q30903",
+            "label": "Sopran"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q81642",
+          "label": "Neckartailfingen"
+        },
+        "deathPlace": {
+          "qid": "Q256364",
+          "label": "Q256364"
+        },
+        "birthDate": "1922-06-22",
+        "deathDate": "2007-12-25"
+      }
+    },
+    "Q2591797": {
+      "type": "person",
+      "name": "Witte, Wolfgang",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q864503",
+            "label": "Biologe"
+          }
+        ],
+        "birthDate": "1945-04-20"
+      }
+    },
+    "Q215747": {
+      "type": "person",
+      "name": "Wolf, Hugo",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q36834",
+            "label": "Komponist"
+          },
+          {
+            "qid": "Q1350157",
+            "label": "Musikkritiker"
+          },
+          {
+            "qid": "Q14915627",
+            "label": "Musikwissenschaftler"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q15918",
+          "label": "Slovenj Gradec"
+        },
+        "deathPlace": {
+          "qid": "Q1741",
+          "label": "Wien"
+        },
+        "birthDate": "1860-03-13",
+        "deathDate": "1903-02-22"
+      }
+    },
+    "Q2584346": {
+      "type": "person",
+      "name": "Wolf, Winfried",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q82955",
+            "label": "Politiker"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q82690",
+          "label": "Horb am Neckar"
+        },
+        "deathPlace": {
+          "qid": "Q64",
+          "label": "Berlin"
+        },
+        "birthDate": "1949-03-04",
+        "deathDate": "2023-05-22"
+      }
+    },
+    "Q72147": {
+      "type": "person",
+      "name": "Zadek, Hilde",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q2865819",
+            "label": "Opernsänger"
+          },
+          {
+            "qid": "Q18814623",
+            "label": "Autobiograf"
+          }
+        ],
+        "voiceType": [
+          {
+            "qid": "Q30903",
+            "label": "Sopran"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q41252",
+          "label": "Bydgoszcz"
+        },
+        "deathPlace": {
+          "qid": "Q1040",
+          "label": "Karlsruhe"
+        },
+        "birthDate": "1917-12-15",
+        "deathDate": "2019-02-21"
+      }
+    },
+    "Q95756451": {
+      "type": "person",
+      "name": "Zimmermann, Erika",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q177220",
+            "label": "Sänger"
+          },
+          {
+            "qid": "Q639669",
+            "label": "Musiker"
+          }
+        ]
+      }
+    },
+    "Q108824609": {
+      "type": "person",
+      "name": "Zimmermann, Wolfram",
+      "properties": {
+        "occupation": [
+          {
+            "qid": "Q212980",
+            "label": "Psychologe"
+          },
+          {
+            "qid": "Q15980158",
+            "label": "Sachbuchautor"
+          }
+        ],
+        "birthPlace": {
+          "qid": "Q1729",
+          "label": "Erfurt"
+        },
+        "deathPlace": {
+          "qid": "Q9300",
+          "label": "Bernau bei Berlin"
+        },
+        "birthDate": "1944-07-20",
+        "deathDate": "2023-12-07"
+      }
+    },
+    "Q10583424": {
+      "type": "org",
+      "name": "Metropolitan Opera",
+      "properties": {
+        "location": {
+          "qid": "Q1139313",
+          "label": "Lincoln Square"
+        },
+        "inception": "1880-00-00"
+      }
+    },
+    "Q1997444": {
+      "type": "org",
+      "name": "Nord- und Westdeutscher Rundfunkverband",
+      "properties": {
+        "inception": "1956-00-00"
+      }
+    },
+    "Q618239": {
+      "type": "org",
+      "name": "Oper Graz",
+      "properties": {}
+    },
+    "Q456586": {
+      "type": "org",
+      "name": "Prinzregententheater",
+      "properties": {
+        "inception": "1901-01-01"
+      }
+    },
+    "Q11951072": {
+      "type": "org",
+      "name": "Teatro Colón",
+      "properties": {}
+    },
+    "Q872222": {
+      "type": "org",
+      "name": "Théâtre National de l'Opéra-Comique",
+      "properties": {
+        "location": {
+          "qid": "Q47419907",
+          "label": "Salle Favart"
+        },
+        "inception": "1715-00-00"
+      }
+    },
+    "Q871369": {
+      "type": "org",
+      "name": "Universität Mozarteum Salzburg",
+      "properties": {
+        "inception": "1841-00-00"
+      }
+    },
+    "Q64": {
+      "type": "location",
+      "name": "Berlin",
+      "properties": {
+        "coordinates": {
+          "lat": 52.516666666667,
+          "lon": 13.383333333333
+        },
+        "country": {
+          "qid": "Q148499",
+          "label": "Mark Brandenburg"
+        }
+      }
+    },
+    "Q13298": {
+      "type": "location",
+      "name": "Graz",
+      "properties": {
+        "coordinates": {
+          "lat": 47.07083333333333,
+          "lon": 15.438611111111111
+        },
+        "country": {
+          "qid": "Q40",
+          "label": "Österreich"
+        }
+      }
+    },
+    "Q1055": {
+      "type": "location",
+      "name": "Hamburg",
+      "properties": {
+        "coordinates": {
+          "lat": 53.55,
+          "lon": 10
+        },
+        "country": {
+          "qid": "Q12548",
+          "label": "Heiliges Römisches Reich"
+        }
+      }
+    },
+    "Q41329": {
+      "type": "location",
+      "name": "Linz",
+      "properties": {
+        "coordinates": {
+          "lat": 48.30583333333333,
+          "lon": 14.286388888888888
+        },
+        "country": {
+          "qid": "Q40",
+          "label": "Österreich"
+        }
+      }
+    },
+    "Q84": {
+      "type": "location",
+      "name": "London",
+      "properties": {
+        "coordinates": {
+          "lat": 51.507222222222,
+          "lon": -0.1275
+        },
+        "country": {
+          "qid": "Q2277",
+          "label": "Römisches Kaiserreich"
+        }
+      }
+    },
+    "Q116170766": {
+      "type": "location",
+      "name": "Madrid",
+      "properties": {
+        "coordinates": {
+          "lat": 40.4165,
+          "lon": -3.70256
+        },
+        "country": {
+          "qid": "Q29",
+          "label": "Spanien"
+        }
+      }
+    },
+    "Q490": {
+      "type": "location",
+      "name": "Mailand",
+      "properties": {
+        "coordinates": {
+          "lat": 45.466944444444,
+          "lon": 9.19
+        },
+        "country": {
+          "qid": "Q38",
+          "label": "Italien"
+        }
+      }
+    },
+    "Q45240": {
+      "type": "location",
+      "name": "Monte Carlo",
+      "properties": {
+        "coordinates": {
+          "lat": 43.738942,
+          "lon": 7.425237
+        },
+        "country": {
+          "qid": "Q235",
+          "label": "Monaco"
+        }
+      }
+    },
+    "Q1384": {
+      "type": "location",
+      "name": "New York",
+      "properties": {
+        "coordinates": {
+          "lat": 43,
+          "lon": -75
+        },
+        "country": {
+          "qid": "Q30",
+          "label": "Vereinigte Staaten"
+        }
+      }
+    },
+    "Q90": {
+      "type": "location",
+      "name": "Paris",
+      "properties": {
+        "coordinates": {
+          "lat": 48.85666666666667,
+          "lon": 2.352222222222222
+        },
+        "country": {
+          "qid": "Q142",
+          "label": "Frankreich"
+        }
+      }
+    },
+    "Q21880302": {
+      "type": "location",
+      "name": "Perchtoldsdorf",
+      "properties": {
+        "coordinates": {
+          "lat": 48.11895,
+          "lon": 16.25736
+        },
+        "country": {
+          "qid": "Q40",
+          "label": "Österreich"
+        }
+      }
+    },
+    "Q1711": {
+      "type": "location",
+      "name": "Potsdam",
+      "properties": {
+        "coordinates": {
+          "lat": 52.4,
+          "lon": 13.066666666667
+        },
+        "country": {
+          "qid": "Q183",
+          "label": "Deutschland"
+        }
+      }
+    },
+    "Q220": {
+      "type": "location",
+      "name": "Rom",
+      "properties": {
+        "coordinates": {
+          "lat": 41.893055555556,
+          "lon": 12.482777777778
+        },
+        "country": {
+          "qid": "Q38",
+          "label": "Italien"
+        }
+      }
+    },
+    "Q34713": {
+      "type": "location",
+      "name": "Salzburg",
+      "properties": {
+        "coordinates": {
+          "lat": 47.8,
+          "lon": 13.045
+        },
+        "country": {
+          "qid": "Q40",
+          "label": "Österreich"
+        }
+      }
+    },
+    "Q22": {
+      "type": "location",
+      "name": "Schottland",
+      "properties": {
+        "coordinates": {
+          "lat": 57,
+          "lon": -5
+        },
+        "country": {
+          "qid": "Q145",
+          "label": "Vereinigtes Königreich"
+        }
+      }
+    },
+    "Q6602": {
+      "type": "location",
+      "name": "Straßburg",
+      "properties": {
+        "coordinates": {
+          "lat": 48.573333333333,
+          "lon": 7.7522222222222
+        },
+        "country": {
+          "qid": "Q142",
+          "label": "Frankreich"
+        }
+      }
+    },
+    "Q1022": {
+      "type": "location",
+      "name": "Stuttgart",
+      "properties": {
+        "coordinates": {
+          "lat": 48.7775,
+          "lon": 9.18
+        },
+        "country": {
+          "qid": "Q183",
+          "label": "Deutschland"
+        }
+      }
+    },
+    "Q72": {
+      "type": "location",
+      "name": "Zürich",
+      "properties": {
+        "coordinates": {
+          "lat": 47.37444444444444,
+          "lon": 8.54111111111111
+        },
+        "country": {
+          "qid": "Q39",
+          "label": "Schweiz"
+        }
+      }
+    },
+    "Q78": {
+      "type": "location",
+      "name": "Basel",
+      "properties": {
+        "coordinates": {
+          "lat": 47.560555555556,
+          "lon": 7.5905555555556
+        },
+        "country": {
+          "qid": "Q39",
+          "label": "Schweiz"
+        }
+      }
+    },
+    "Q23010225": {
+      "type": "work",
+      "name": "Befreit",
+      "properties": {
+        "composer": {
+          "qid": "Q13894",
+          "label": "Richard Strauss"
+        },
+        "genre": [
+          {
+            "qid": "Q207591",
+            "label": "Musik der Romantik"
+          }
+        ],
+        "publicationDate": "1898-00-00"
+      }
+    },
+    "Q85756466": {
+      "type": "work",
+      "name": "Der Rosenkavalier",
+      "properties": {
+        "genre": [
+          {
+            "qid": "Q1344",
+            "label": "Oper"
+          }
+        ],
+        "publicationDate": "1977-00-00"
+      }
+    },
+    "Q3510792": {
+      "type": "work",
+      "name": "Don Giovanni",
+      "properties": {
+        "genre": [
+          {
+            "qid": "Q37073",
+            "label": "Popmusik"
+          }
+        ],
+        "publicationDate": "1986-01-01"
+      }
+    },
+    "Q25218531": {
+      "type": "work",
+      "name": "La Gioconda",
+      "properties": {}
+    },
+    "Q47008942": {
+      "type": "work",
+      "name": "Lamento d'Arianna",
+      "properties": {
+        "composer": {
+          "qid": "Q53068",
+          "label": "Claudio Monteverdi"
+        },
+        "genre": [
+          {
+            "qid": "Q1684811",
+            "label": "Complainte"
+          },
+          {
+            "qid": "Q1471717",
+            "label": "Lamento"
+          }
+        ]
+      }
+    },
+    "Q3221001": {
+      "type": "work",
+      "name": "Le chant de la Terre",
+      "properties": {
+        "composer": {
+          "qid": "Q726550",
+          "label": "Déodat de Séverac"
+        }
+      }
+    },
+    "Q85776062": {
+      "type": "work",
+      "name": "Le nozze di Figaro",
+      "properties": {
+        "genre": [
+          {
+            "qid": "Q1344",
+            "label": "Oper"
+          }
+        ]
+      }
+    },
+    "Q110953165": {
+      "type": "work",
+      "name": "Lied der Mignon",
+      "properties": {
+        "genre": [
+          {
+            "qid": "Q182357",
+            "label": "Lyrik"
+          }
+        ],
+        "publicationDate": "1795-00-00"
+      }
+    },
+    "Q51806381": {
+      "type": "work",
+      "name": "Lohengrin",
+      "properties": {}
+    },
+    "Q33056195": {
+      "type": "work",
+      "name": "Nachtstück",
+      "properties": {}
+    },
+    "Q7295275": {
+      "type": "work",
+      "name": "Rastlose Liebe",
+      "properties": {
+        "composer": {
+          "qid": "Q7312",
+          "label": "Franz Schubert"
+        }
+      }
+    },
+    "Q60992362": {
+      "type": "work",
+      "name": "Regentropfen",
+      "properties": {
+        "composer": {
+          "qid": "Q1336621",
+          "label": "Emil Palm"
+        },
+        "publicationDate": "1935-00-00"
+      }
+    },
+    "Q19896118": {
+      "type": "work",
+      "name": "Spanisches Liederbuch",
+      "properties": {
+        "composer": {
+          "qid": "Q215747",
+          "label": "Hugo Wolf"
+        }
+      }
+    },
+    "Q210080": {
+      "type": "work",
+      "name": "Stabat mater",
+      "properties": {
+        "genre": [
+          {
+            "qid": "Q482",
+            "label": "Dichtkunst"
+          }
+        ]
+      }
+    },
+    "Q115127657": {
+      "type": "work",
+      "name": "Tristan und Isolde",
+      "properties": {
+        "genre": [
+          {
+            "qid": "Q1344",
+            "label": "Oper"
+          }
+        ],
+        "publicationDate": "1986-07-31"
+      }
+    },
+    "Q64732249": {
+      "type": "work",
+      "name": "Un ballo in maschera",
+      "properties": {
+        "composer": {
+          "qid": "Q83309",
+          "label": "Johann Strauss"
+        },
+        "genre": [
+          {
+            "qid": "Q107364106",
+            "label": "quadrille"
+          }
+        ]
+      }
+    },
+    "Q11550399": {
+      "type": "work",
+      "name": "Von ewiger Liebe",
+      "properties": {
+        "composer": {
+          "qid": "Q7294",
+          "label": "Johannes Brahms"
+        },
+        "genre": [
+          {
+            "qid": "Q207591",
+            "label": "Musik der Romantik"
+          }
+        ]
+      }
+    }
+  }
+}
