@@ -1,6 +1,6 @@
 {
   "meta": {
-    "date": "2026-04-17T20:21:12.177128",
+    "date": "2026-04-17T21:09:42.022657",
     "source": "wikidata-reconciliation.json",
     "entity_count": 251,
     "properties_fetched": [
@@ -28,34 +28,34 @@
         "occupation": [
           {
             "qid": "Q2865819",
-            "label": "Q2865819"
+            "label": "Opernsänger"
           },
           {
             "qid": "Q1622272",
-            "label": "Q1622272"
+            "label": "Hochschullehrer"
           },
           {
             "qid": "Q36834",
-            "label": "Q36834"
+            "label": "Komponist"
           },
           {
             "qid": "Q3455803",
-            "label": "Q3455803"
+            "label": "Regisseur"
           }
         ],
         "voiceType": [
           {
             "qid": "Q810480",
-            "label": "Q810480"
+            "label": "Bassbariton"
           }
         ],
         "birthPlace": {
           "qid": "Q1731",
-          "label": "Q1731"
+          "label": "Dresden"
         },
         "deathPlace": {
           "qid": "Q1731",
-          "label": "Q1731"
+          "label": "Dresden"
         },
         "birthDate": "1926-08-01",
         "deathDate": "2019-01-10"
@@ -68,56 +68,56 @@
         "occupation": [
           {
             "qid": "Q4964182",
-            "label": "Q4964182"
+            "label": "Philosoph"
           },
           {
             "qid": "Q36834",
-            "label": "Q36834"
+            "label": "Komponist"
           },
           {
             "qid": "Q14915627",
-            "label": "Q14915627"
+            "label": "Musikwissenschaftler"
           },
           {
             "qid": "Q2306091",
-            "label": "Q2306091"
+            "label": "Soziologe"
           },
           {
             "qid": "Q1622272",
-            "label": "Q1622272"
+            "label": "Hochschullehrer"
           },
           {
             "qid": "Q4263842",
-            "label": "Q4263842"
+            "label": "Literaturkritiker"
           },
           {
             "qid": "Q1350157",
-            "label": "Q1350157"
+            "label": "Musikkritiker"
           },
           {
             "qid": "Q3606216",
-            "label": "Q3606216"
+            "label": "Aphoristiker"
           },
           {
             "qid": "Q486748",
-            "label": "Q486748"
+            "label": "Pianist"
           },
           {
             "qid": "Q36180",
-            "label": "Q36180"
+            "label": "Schriftsteller"
           },
           {
             "qid": "Q21550346",
-            "label": "Q21550346"
+            "label": "Ästhetiker"
           }
         ],
         "birthPlace": {
           "qid": "Q1794",
-          "label": "Q1794"
+          "label": "Frankfurt am Main"
         },
         "deathPlace": {
           "qid": "Q64147",
-          "label": "Q64147"
+          "label": "Visp"
         },
         "birthDate": "1903-09-11",
         "deathDate": "1969-08-06"
@@ -140,16 +140,16 @@
         "occupation": [
           {
             "qid": "Q158852",
-            "label": "Q158852"
+            "label": "Dirigent"
           }
         ],
         "birthPlace": {
           "qid": "Q203186",
-          "label": "Q203186"
+          "label": "Zillingdorf"
         },
         "deathPlace": {
           "qid": "Q34713",
-          "label": "Q34713"
+          "label": "Salzburg"
         },
         "birthDate": "1928-09-25",
         "deathDate": "2010-04-30"
@@ -162,16 +162,16 @@
         "occupation": [
           {
             "qid": "Q82955",
-            "label": "Q82955"
+            "label": "Politiker"
           }
         ],
         "birthPlace": {
           "qid": "Q1741",
-          "label": "Q1741"
+          "label": "Wien"
         },
         "deathPlace": {
           "qid": "Q259859",
-          "label": "Q259859"
+          "label": "Neufeld an der Leitha"
         },
         "birthDate": "1940-12-13",
         "deathDate": "2007-03-23"
@@ -184,22 +184,22 @@
         "occupation": [
           {
             "qid": "Q177220",
-            "label": "Q177220"
+            "label": "Sänger"
           }
         ],
         "voiceType": [
           {
             "qid": "Q31687",
-            "label": "Q31687"
+            "label": "Bariton"
           }
         ],
         "birthPlace": {
           "qid": "Q9945",
-          "label": "Q9945"
+          "label": "Laren"
         },
         "deathPlace": {
           "qid": "Q10014",
-          "label": "Q10014"
+          "label": "Kampen"
         },
         "birthDate": "1912-05-29",
         "deathDate": "1971-04-30"
@@ -212,44 +212,44 @@
         "occupation": [
           {
             "qid": "Q33231",
-            "label": "Q33231"
+            "label": "Fotograf"
           },
           {
             "qid": "Q18814623",
-            "label": "Q18814623"
+            "label": "Autobiograf"
           },
           {
             "qid": "Q11496048",
-            "label": "Q11496048"
+            "label": "Kriegsfotograf"
           },
           {
             "qid": "Q18939491",
-            "label": "Q18939491"
+            "label": "Tagebuchschreiber"
           },
           {
             "qid": "Q1323191",
-            "label": "Q1323191"
+            "label": "Kostümbildner"
           },
           {
             "qid": "Q1028181",
-            "label": "Q1028181"
+            "label": "Maler"
           },
           {
             "qid": "Q19698265",
-            "label": "Q19698265"
+            "label": "Modefotograf"
           },
           {
             "qid": "Q5322166",
-            "label": "Q5322166"
+            "label": "Designer"
           }
         ],
         "birthPlace": {
           "qid": "Q25610",
-          "label": "Q25610"
+          "label": "Hampstead"
         },
         "deathPlace": {
           "qid": "Q2554678",
-          "label": "Q2554678"
+          "label": "Broad Chalke"
         },
         "birthDate": "1904-01-14",
         "deathDate": "1980-01-18"
@@ -262,16 +262,16 @@
         "occupation": [
           {
             "qid": "Q33999",
-            "label": "Q33999"
+            "label": "Schauspieler"
           }
         ],
         "birthPlace": {
           "qid": "Q30974",
-          "label": "Q30974"
+          "label": "Rouen"
         },
         "deathPlace": {
           "qid": "Q33959",
-          "label": "Q33959"
+          "label": "Nizza"
         },
         "birthDate": "1887-08-12",
         "deathDate": "1977-04-02"
@@ -284,22 +284,22 @@
         "occupation": [
           {
             "qid": "Q2865819",
-            "label": "Q2865819"
+            "label": "Opernsänger"
           }
         ],
         "voiceType": [
           {
             "qid": "Q810480",
-            "label": "Q810480"
+            "label": "Bassbariton"
           }
         ],
         "birthPlace": {
           "qid": "Q365",
-          "label": "Q365"
+          "label": "Köln"
         },
         "deathPlace": {
           "qid": "Q1055",
-          "label": "Q1055"
+          "label": "Hamburg"
         },
         "birthDate": "1921-12-12",
         "deathDate": "2012-12-11"
@@ -312,24 +312,24 @@
         "occupation": [
           {
             "qid": "Q158852",
-            "label": "Q158852"
+            "label": "Dirigent"
           },
           {
             "qid": "Q1198887",
-            "label": "Q1198887"
+            "label": "Musikdirektor"
           },
           {
             "qid": "Q36834",
-            "label": "Q36834"
+            "label": "Komponist"
           }
         ],
         "birthPlace": {
           "qid": "Q13298",
-          "label": "Q13298"
+          "label": "Graz"
         },
         "deathPlace": {
           "qid": "Q34713",
-          "label": "Q34713"
+          "label": "Salzburg"
         },
         "birthDate": "1894-08-28",
         "deathDate": "1981-08-14"
@@ -342,20 +342,20 @@
         "occupation": [
           {
             "qid": "Q3492027",
-            "label": "Q3492027"
+            "label": "Ubootfahrer"
           },
           {
             "qid": "Q4991371",
-            "label": "Q4991371"
+            "label": "Soldat"
           },
           {
             "qid": "Q16102070",
-            "label": "Q16102070"
+            "label": "Marineoffizier"
           }
         ],
         "birthPlace": {
           "qid": "Q702259",
-          "label": "Q702259"
+          "label": "Elberfeld"
         },
         "birthDate": "1917-01-21",
         "deathDate": "1984-07-16"
@@ -368,52 +368,52 @@
         "occupation": [
           {
             "qid": "Q82955",
-            "label": "Q82955"
+            "label": "Politiker"
           },
           {
             "qid": "Q372436",
-            "label": "Q372436"
+            "label": "Staatsmann"
           },
           {
             "qid": "Q189290",
-            "label": "Q189290"
+            "label": "Offizier"
           },
           {
             "qid": "Q10732476",
-            "label": "Q10732476"
+            "label": "Kunstsammler"
           },
           {
             "qid": "Q39018",
-            "label": "Q39018"
+            "label": "Kaiser"
           },
           {
             "qid": "Q2304859",
-            "label": "Q2304859"
+            "label": "Souverän"
           },
           {
             "qid": "Q17010072",
-            "label": "Q17010072"
+            "label": "Militant"
           },
           {
             "qid": "Q1402561",
-            "label": "Q1402561"
+            "label": "Feldherr"
           },
           {
             "qid": "Q116",
-            "label": "Q116"
+            "label": "Monarch"
           },
           {
             "qid": "Q38239859",
-            "label": "Q38239859"
+            "label": "Heeresoffizier"
           }
         ],
         "birthPlace": {
           "qid": "Q40104",
-          "label": "Q40104"
+          "label": "Ajaccio"
         },
         "deathPlace": {
           "qid": "Q578060",
-          "label": "Q578060"
+          "label": "Longwood House"
         },
         "birthDate": "1769-08-15",
         "deathDate": "1821-05-05"
@@ -426,24 +426,24 @@
         "occupation": [
           {
             "qid": "Q8178443",
-            "label": "Q8178443"
+            "label": "Librettist"
           },
           {
             "qid": "Q36180",
-            "label": "Q36180"
+            "label": "Schriftsteller"
           },
           {
             "qid": "Q49757",
-            "label": "Q49757"
+            "label": "Dichter"
           }
         ],
         "birthPlace": {
           "qid": "Q6761",
-          "label": "Q6761"
+          "label": "Livorno"
         },
         "deathPlace": {
           "qid": "Q2634",
-          "label": "Q2634"
+          "label": "Neapel"
         },
         "birthDate": "1714-12-23",
         "deathDate": "1795-07-01"
@@ -456,12 +456,12 @@
         "occupation": [
           {
             "qid": "Q14089670",
-            "label": "Q14089670"
+            "label": "Rugby-Union-Spieler"
           }
         ],
         "birthPlace": {
           "qid": "Q3130",
-          "label": "Q3130"
+          "label": "Sydney"
         },
         "birthDate": "1984-12-19"
       }
@@ -473,20 +473,20 @@
         "occupation": [
           {
             "qid": "Q49757",
-            "label": "Q49757"
+            "label": "Dichter"
           },
           {
             "qid": "Q36180",
-            "label": "Q36180"
+            "label": "Schriftsteller"
           }
         ],
         "birthPlace": {
           "qid": "Q406",
-          "label": "Q406"
+          "label": "Istanbul"
         },
         "deathPlace": {
           "qid": "Q90",
-          "label": "Q90"
+          "label": "Paris"
         },
         "birthDate": "1762-10-30",
         "deathDate": "1794-07-25"
@@ -499,16 +499,16 @@
         "occupation": [
           {
             "qid": "Q177220",
-            "label": "Q177220"
+            "label": "Sänger"
           }
         ],
         "birthPlace": {
           "qid": "Q1085",
-          "label": "Q1085"
+          "label": "Prag"
         },
         "deathPlace": {
           "qid": "Q1741",
-          "label": "Q1741"
+          "label": "Wien"
         },
         "birthDate": "1915-11-11",
         "deathDate": "1962-05-23"
@@ -521,20 +521,20 @@
         "occupation": [
           {
             "qid": "Q1792450",
-            "label": "Q1792450"
+            "label": "Kunsthistoriker"
           },
           {
             "qid": "Q28389",
-            "label": "Q28389"
+            "label": "Drehbuchautor"
           }
         ],
         "birthPlace": {
           "qid": "Q1040",
-          "label": "Q1040"
+          "label": "Karlsruhe"
         },
         "deathPlace": {
           "qid": "Q72",
-          "label": "Q72"
+          "label": "Zürich"
         },
         "birthDate": "1896-01-01",
         "deathDate": "1974-01-01"
@@ -547,26 +547,26 @@
         "occupation": [
           {
             "qid": "Q2865819",
-            "label": "Q2865819"
+            "label": "Opernsänger"
           },
           {
             "qid": "Q177220",
-            "label": "Q177220"
+            "label": "Sänger"
           }
         ],
         "voiceType": [
           {
             "qid": "Q30903",
-            "label": "Q30903"
+            "label": "Sopran"
           }
         ],
         "birthPlace": {
           "qid": "Q68311",
-          "label": "Q68311"
+          "label": "Burgdorf"
         },
         "deathPlace": {
           "qid": "Q69233",
-          "label": "Q69233"
+          "label": "Münsterlingen"
         },
         "birthDate": "1919-02-02",
         "deathDate": "2012-12-10"
@@ -579,36 +579,36 @@
         "occupation": [
           {
             "qid": "Q82955",
-            "label": "Q82955"
+            "label": "Politiker"
           },
           {
             "qid": "Q40348",
-            "label": "Q40348"
+            "label": "Rechtsanwalt"
           },
           {
             "qid": "Q1607826",
-            "label": "Q1607826"
+            "label": "Herausgeber"
           },
           {
             "qid": "Q6051619",
-            "label": "Q6051619"
+            "label": "Publizist"
           },
           {
             "qid": "Q333634",
-            "label": "Q333634"
+            "label": "Übersetzer"
           },
           {
             "qid": "Q185351",
-            "label": "Q185351"
+            "label": "Jurist"
           }
         ],
         "birthPlace": {
           "qid": "Q3440936",
-          "label": "Q3440936"
+          "label": "Železniki"
         },
         "deathPlace": {
           "qid": "Q6596",
-          "label": "Q6596"
+          "label": "Gorizia"
         },
         "birthDate": "1876-01-01",
         "deathDate": "1914-05-03"
@@ -621,22 +621,22 @@
         "occupation": [
           {
             "qid": "Q2865819",
-            "label": "Q2865819"
+            "label": "Opernsänger"
           }
         ],
         "voiceType": [
           {
             "qid": "Q27911",
-            "label": "Q27911"
+            "label": "Bass"
           }
         ],
         "birthPlace": {
           "qid": "Q2872840",
-          "label": "Q2872840"
+          "label": "Wola Sękowa"
         },
         "deathPlace": {
           "qid": "Q588",
-          "label": "Q588"
+          "label": "Katowice"
         },
         "birthDate": "1874-12-24",
         "deathDate": "1946-01-07"
@@ -649,28 +649,28 @@
         "occupation": [
           {
             "qid": "Q39631",
-            "label": "Q39631"
+            "label": "Arzt"
           },
           {
             "qid": "Q14915627",
-            "label": "Q14915627"
+            "label": "Musikwissenschaftler"
           },
           {
             "qid": "Q4263842",
-            "label": "Q4263842"
+            "label": "Literaturkritiker"
           },
           {
             "qid": "Q1350157",
-            "label": "Q1350157"
+            "label": "Musikkritiker"
           }
         ],
         "birthPlace": {
           "qid": "Q30974",
-          "label": "Q30974"
+          "label": "Rouen"
         },
         "deathPlace": {
           "qid": "Q90",
-          "label": "Q90"
+          "label": "Paris"
         },
         "birthDate": "1879-06-19",
         "deathDate": "1967-12-24"
@@ -683,12 +683,12 @@
         "occupation": [
           {
             "qid": "Q158852",
-            "label": "Q158852"
+            "label": "Dirigent"
           }
         ],
         "birthPlace": {
           "qid": "Q1718",
-          "label": "Q1718"
+          "label": "Düsseldorf"
         },
         "birthDate": "1909-11-03",
         "deathDate": "1995-07-07"
@@ -701,15 +701,15 @@
         "occupation": [
           {
             "qid": "Q1234713",
-            "label": "Q1234713"
+            "label": "Theologe"
           },
           {
             "qid": "Q1607826",
-            "label": "Q1607826"
+            "label": "Herausgeber"
           },
           {
             "qid": "Q36180",
-            "label": "Q36180"
+            "label": "Schriftsteller"
           }
         ],
         "birthPlace": {
@@ -727,36 +727,36 @@
         "occupation": [
           {
             "qid": "Q2259451",
-            "label": "Q2259451"
+            "label": "Theaterschauspieler"
           },
           {
             "qid": "Q10800557",
-            "label": "Q10800557"
+            "label": "Filmschauspieler"
           },
           {
             "qid": "Q2526255",
-            "label": "Q2526255"
+            "label": "Filmregisseur"
           },
           {
             "qid": "Q33999",
-            "label": "Q33999"
+            "label": "Schauspieler"
           },
           {
             "qid": "Q177220",
-            "label": "Q177220"
+            "label": "Sänger"
           },
           {
             "qid": "Q3387717",
-            "label": "Q3387717"
+            "label": "Bühnenregisseur"
           }
         ],
         "birthPlace": {
           "qid": "Q1741",
-          "label": "Q1741"
+          "label": "Wien"
         },
         "deathPlace": {
           "qid": "Q1741",
-          "label": "Q1741"
+          "label": "Wien"
         },
         "birthDate": "1925-06-11",
         "deathDate": "2019-06-12"
@@ -769,16 +769,16 @@
         "occupation": [
           {
             "qid": "Q36834",
-            "label": "Q36834"
+            "label": "Komponist"
           }
         ],
         "birthPlace": {
           "qid": "Q1715",
-          "label": "Q1715"
+          "label": "Hannover"
         },
         "deathPlace": {
           "qid": "Q1726",
-          "label": "Q1726"
+          "label": "München"
         },
         "birthDate": "1896-00-00",
         "deathDate": "1960-00-00"
@@ -791,24 +791,24 @@
         "occupation": [
           {
             "qid": "Q1622272",
-            "label": "Q1622272"
+            "label": "Hochschullehrer"
           },
           {
             "qid": "Q1234713",
-            "label": "Q1234713"
+            "label": "Theologe"
           },
           {
             "qid": "Q250867",
-            "label": "Q250867"
+            "label": "katholischer Priester"
           }
         ],
         "birthPlace": {
           "qid": "Q892321",
-          "label": "Q892321"
+          "label": "Bonenburg"
         },
         "deathPlace": {
           "qid": "Q1729",
-          "label": "Q1729"
+          "label": "Erfurt"
         },
         "birthDate": "1927-10-09",
         "deathDate": "2001-08-01"
@@ -821,16 +821,16 @@
         "occupation": [
           {
             "qid": "Q639669",
-            "label": "Q639669"
+            "label": "Musiker"
           },
           {
             "qid": "Q177220",
-            "label": "Q177220"
+            "label": "Sänger"
           }
         ],
         "birthPlace": {
           "qid": "Q373077",
-          "label": "Q373077"
+          "label": "Gräfenhainichen"
         },
         "birthDate": "1917-11-30"
       }
@@ -842,22 +842,22 @@
         "occupation": [
           {
             "qid": "Q2865819",
-            "label": "Q2865819"
+            "label": "Opernsänger"
           }
         ],
         "voiceType": [
           {
             "qid": "Q30903",
-            "label": "Q30903"
+            "label": "Sopran"
           }
         ],
         "birthPlace": {
           "qid": "Q1741",
-          "label": "Q1741"
+          "label": "Wien"
         },
         "deathPlace": {
           "qid": "Q1726",
-          "label": "Q1726"
+          "label": "München"
         },
         "birthDate": "1928-05-19",
         "deathDate": "2016-10-21"
@@ -870,22 +870,22 @@
         "occupation": [
           {
             "qid": "Q2865819",
-            "label": "Q2865819"
+            "label": "Opernsänger"
           }
         ],
         "voiceType": [
           {
             "qid": "Q31687",
-            "label": "Q31687"
+            "label": "Bariton"
           }
         ],
         "birthPlace": {
           "qid": "Q1741",
-          "label": "Q1741"
+          "label": "Wien"
         },
         "deathPlace": {
           "qid": "Q72",
-          "label": "Q72"
+          "label": "Zürich"
         },
         "birthDate": "1923-10-22",
         "deathDate": "1998-07-10"
@@ -898,24 +898,24 @@
         "occupation": [
           {
             "qid": "Q486748",
-            "label": "Q486748"
+            "label": "Pianist"
           },
           {
             "qid": "Q158852",
-            "label": "Q158852"
+            "label": "Dirigent"
           },
           {
             "qid": "Q16145150",
-            "label": "Q16145150"
+            "label": "Musikpädagoge"
           }
         ],
         "birthPlace": {
           "qid": "Q78",
-          "label": "Q78"
+          "label": "Basel"
         },
         "deathPlace": {
           "qid": "Q72",
-          "label": "Q72"
+          "label": "Zürich"
         },
         "birthDate": "1886-10-06",
         "deathDate": "1960-01-24"
@@ -928,22 +928,22 @@
         "occupation": [
           {
             "qid": "Q2865819",
-            "label": "Q2865819"
+            "label": "Opernsänger"
           }
         ],
         "voiceType": [
           {
             "qid": "Q810480",
-            "label": "Q810480"
+            "label": "Bassbariton"
           }
         ],
         "birthPlace": {
           "qid": "Q2865",
-          "label": "Q2865"
+          "label": "Kassel"
         },
         "deathPlace": {
           "qid": "Q1726",
-          "label": "Q1726"
+          "label": "München"
         },
         "birthDate": "1906-02-08",
         "deathDate": "1959-05-26"
@@ -956,24 +956,24 @@
         "occupation": [
           {
             "qid": "Q21680663",
-            "label": "Q21680663"
+            "label": "Komponist klassischer Musik"
           },
           {
             "qid": "Q158852",
-            "label": "Q158852"
+            "label": "Dirigent"
           },
           {
             "qid": "Q36834",
-            "label": "Q36834"
+            "label": "Komponist"
           }
         ],
         "birthPlace": {
           "qid": "Q313189",
-          "label": "Q313189"
+          "label": "Schöneberg"
         },
         "deathPlace": {
           "qid": "Q4100",
-          "label": "Q4100"
+          "label": "Baden-Baden"
         },
         "birthDate": "1886-01-25",
         "deathDate": "1954-11-30"
@@ -986,36 +986,36 @@
         "occupation": [
           {
             "qid": "Q8178443",
-            "label": "Q8178443"
+            "label": "Librettist"
           },
           {
             "qid": "Q1930187",
-            "label": "Q1930187"
+            "label": "Journalist"
           },
           {
             "qid": "Q49757",
-            "label": "Q49757"
+            "label": "Dichter"
           },
           {
             "qid": "Q36180",
-            "label": "Q36180"
+            "label": "Schriftsteller"
           },
           {
             "qid": "Q18844224",
-            "label": "Q18844224"
+            "label": "Science-Fiction-Schriftsteller"
           },
           {
             "qid": "Q2865819",
-            "label": "Q2865819"
+            "label": "Opernsänger"
           }
         ],
         "birthPlace": {
           "qid": "Q6237",
-          "label": "Q6237"
+          "label": "Lecco"
         },
         "deathPlace": {
           "qid": "Q100143",
-          "label": "Q100143"
+          "label": "Caprino Bergamasco"
         },
         "birthDate": "1824-11-25",
         "deathDate": "1893-07-16"
@@ -1028,20 +1028,20 @@
         "occupation": [
           {
             "qid": "Q33999",
-            "label": "Q33999"
+            "label": "Schauspieler"
           },
           {
             "qid": "Q3455803",
-            "label": "Q3455803"
+            "label": "Regisseur"
           }
         ],
         "birthPlace": {
           "qid": "Q365",
-          "label": "Q365"
+          "label": "Köln"
         },
         "deathPlace": {
           "qid": "Q1741",
-          "label": "Q1741"
+          "label": "Wien"
         },
         "birthDate": "1890-12-20",
         "deathDate": "1968-10-19"
@@ -1054,28 +1054,28 @@
         "occupation": [
           {
             "qid": "Q497294",
-            "label": "Q497294"
+            "label": "Lepidopterologe"
           },
           {
             "qid": "Q486748",
-            "label": "Q486748"
+            "label": "Pianist"
           },
           {
             "qid": "Q36834",
-            "label": "Q36834"
+            "label": "Komponist"
           },
           {
             "qid": "Q19747285",
-            "label": "Q19747285"
+            "label": "akademischer Musiker"
           }
         ],
         "birthPlace": {
           "qid": "Q3344",
-          "label": "Q3344"
+          "label": "2. Arrondissement"
         },
         "deathPlace": {
           "qid": "Q84",
-          "label": "Q84"
+          "label": "London"
         },
         "birthDate": "1895-11-05",
         "deathDate": "1956-10-26"
@@ -1088,20 +1088,20 @@
         "occupation": [
           {
             "qid": "Q36834",
-            "label": "Q36834"
+            "label": "Komponist"
           },
           {
             "qid": "Q158852",
-            "label": "Q158852"
+            "label": "Dirigent"
           }
         ],
         "birthPlace": {
           "qid": "Q23894249",
-          "label": "Q23894249"
+          "label": "Erasbach"
         },
         "deathPlace": {
           "qid": "Q1741",
-          "label": "Q1741"
+          "label": "Wien"
         },
         "birthDate": "1714-07-02",
         "deathDate": "1787-11-15"
@@ -1114,32 +1114,32 @@
         "occupation": [
           {
             "qid": "Q182436",
-            "label": "Q182436"
+            "label": "Bibliothekar"
           },
           {
             "qid": "Q13570226",
-            "label": "Q13570226"
+            "label": "Literaturhistoriker"
           },
           {
             "qid": "Q1622272",
-            "label": "Q1622272"
+            "label": "Hochschullehrer"
           },
           {
             "qid": "Q2599593",
-            "label": "Q2599593"
+            "label": "Germanist"
           },
           {
             "qid": "Q36180",
-            "label": "Q36180"
+            "label": "Schriftsteller"
           }
         ],
         "birthPlace": {
           "qid": "Q1022",
-          "label": "Q1022"
+          "label": "Stuttgart"
         },
         "deathPlace": {
           "qid": "Q2861",
-          "label": "Q2861"
+          "label": "Rostock"
         },
         "birthDate": "1863-05-25",
         "deathDate": "1945-12-14"
@@ -1152,16 +1152,16 @@
         "occupation": [
           {
             "qid": "Q2865819",
-            "label": "Q2865819"
+            "label": "Opernsänger"
           }
         ],
         "birthPlace": {
           "qid": "Q2871",
-          "label": "Q2871"
+          "label": "Hagen"
         },
         "deathPlace": {
           "qid": "Q1022",
-          "label": "Q1022"
+          "label": "Stuttgart"
         },
         "birthDate": "1910-00-00",
         "deathDate": "1997-00-00"
@@ -1174,26 +1174,26 @@
         "occupation": [
           {
             "qid": "Q2865819",
-            "label": "Q2865819"
+            "label": "Opernsänger"
           },
           {
             "qid": "Q1622272",
-            "label": "Q1622272"
+            "label": "Hochschullehrer"
           }
         ],
         "voiceType": [
           {
             "qid": "Q27911",
-            "label": "Q27911"
+            "label": "Bass"
           }
         ],
         "birthPlace": {
           "qid": "Q1726",
-          "label": "Q1726"
+          "label": "München"
         },
         "deathPlace": {
           "qid": "Q1741",
-          "label": "Q1741"
+          "label": "Wien"
         },
         "birthDate": "1912-12-23",
         "deathDate": "1993-04-16"
@@ -1206,22 +1206,22 @@
         "occupation": [
           {
             "qid": "Q2865819",
-            "label": "Q2865819"
+            "label": "Opernsänger"
           }
         ],
         "voiceType": [
           {
             "qid": "Q30903",
-            "label": "Q30903"
+            "label": "Sopran"
           }
         ],
         "birthPlace": {
           "qid": "Q1741",
-          "label": "Q1741"
+          "label": "Wien"
         },
         "deathPlace": {
           "qid": "Q1741",
-          "label": "Q1741"
+          "label": "Wien"
         },
         "birthDate": "1917-11-11",
         "deathDate": "1995-05-16"
@@ -1234,22 +1234,22 @@
         "occupation": [
           {
             "qid": "Q2865819",
-            "label": "Q2865819"
+            "label": "Opernsänger"
           }
         ],
         "voiceType": [
           {
             "qid": "Q31687",
-            "label": "Q31687"
+            "label": "Bariton"
           }
         ],
         "birthPlace": {
           "qid": "Q2079",
-          "label": "Q2079"
+          "label": "Leipzig"
         },
         "deathPlace": {
           "qid": "Q1055",
-          "label": "Q1055"
+          "label": "Hamburg"
         },
         "birthDate": "1913-05-23",
         "deathDate": "2013-01-07"
@@ -1262,26 +1262,26 @@
         "occupation": [
           {
             "qid": "Q2865819",
-            "label": "Q2865819"
+            "label": "Opernsänger"
           },
           {
             "qid": "Q16145150",
-            "label": "Q16145150"
+            "label": "Musikpädagoge"
           }
         ],
         "voiceType": [
           {
             "qid": "Q27914",
-            "label": "Q27914"
+            "label": "Tenor"
           }
         ],
         "birthPlace": {
           "qid": "Q68097",
-          "label": "Q68097"
+          "label": "Davos"
         },
         "deathPlace": {
           "qid": "Q68097",
-          "label": "Q68097"
+          "label": "Davos"
         },
         "birthDate": "1919-07-06",
         "deathDate": "2007-03-17"
@@ -1294,20 +1294,20 @@
         "occupation": [
           {
             "qid": "Q805221",
-            "label": "Q805221"
+            "label": "Balletttänzer"
           },
           {
             "qid": "Q2490358",
-            "label": "Q2490358"
+            "label": "Choreograf"
           }
         ],
         "birthPlace": {
           "qid": "Q221495",
-          "label": "Q221495"
+          "label": "Vinkovci"
         },
         "deathPlace": {
           "qid": "Q1741",
-          "label": "Q1741"
+          "label": "Wien"
         },
         "birthDate": "1905-05-18",
         "deathDate": "1958-05-15"
@@ -1320,20 +1320,20 @@
         "occupation": [
           {
             "qid": "Q82955",
-            "label": "Q82955"
+            "label": "Politiker"
           },
           {
             "qid": "Q36180",
-            "label": "Q36180"
+            "label": "Schriftsteller"
           }
         ],
         "birthPlace": {
           "qid": "Q671239",
-          "label": "Q671239"
+          "label": "Königsfeld"
         },
         "deathPlace": {
           "qid": "Q160139",
-          "label": "Q160139"
+          "label": "KZ Mauthausen"
         },
         "birthDate": "1885-12-11",
         "deathDate": "1945-03-05"
@@ -1346,24 +1346,24 @@
         "occupation": [
           {
             "qid": "Q158852",
-            "label": "Q158852"
+            "label": "Dirigent"
           },
           {
             "qid": "Q36834",
-            "label": "Q36834"
+            "label": "Komponist"
           },
           {
             "qid": "Q1622272",
-            "label": "Q1622272"
+            "label": "Hochschullehrer"
           }
         ],
         "birthPlace": {
           "qid": "Q6602",
-          "label": "Q6602"
+          "label": "Straßburg"
         },
         "deathPlace": {
           "qid": "Q1726",
-          "label": "Q1726"
+          "label": "München"
         },
         "birthDate": "1886-08-19",
         "deathDate": "1978-01-14"
@@ -1376,20 +1376,20 @@
         "occupation": [
           {
             "qid": "Q765778",
-            "label": "Q765778"
+            "label": "Organist"
           },
           {
             "qid": "Q639669",
-            "label": "Q639669"
+            "label": "Musiker"
           }
         ],
         "birthPlace": {
           "qid": "Q1055",
-          "label": "Q1055"
+          "label": "Hamburg"
         },
         "deathPlace": {
           "qid": "Q64",
-          "label": "Q64"
+          "label": "Berlin"
         },
         "birthDate": "1891-05-09",
         "deathDate": "1953-09-07"
@@ -1402,32 +1402,32 @@
         "occupation": [
           {
             "qid": "Q36834",
-            "label": "Q36834"
+            "label": "Komponist"
           },
           {
             "qid": "Q639669",
-            "label": "Q639669"
+            "label": "Musiker"
           },
           {
             "qid": "Q16145150",
-            "label": "Q16145150"
+            "label": "Musikpädagoge"
           },
           {
             "qid": "Q1622272",
-            "label": "Q1622272"
+            "label": "Hochschullehrer"
           },
           {
             "qid": "Q13219637",
-            "label": "Q13219637"
+            "label": "Cellist"
           }
         ],
         "birthPlace": {
           "qid": "Q2942",
-          "label": "Q2942"
+          "label": "Solingen"
         },
         "deathPlace": {
           "qid": "Q533166",
-          "label": "Q533166"
+          "label": "Tutzing"
         },
         "birthDate": "1907-08-23",
         "deathDate": "1996-05-08"
@@ -1440,28 +1440,28 @@
         "occupation": [
           {
             "qid": "Q2374149",
-            "label": "Q2374149"
+            "label": "Botaniker"
           },
           {
             "qid": "Q3243461",
-            "label": "Q3243461"
+            "label": "Sammler"
           },
           {
             "qid": "Q1622272",
-            "label": "Q1622272"
+            "label": "Hochschullehrer"
           },
           {
             "qid": "Q2083925",
-            "label": "Q2083925"
+            "label": "Pflanzensammler"
           },
           {
             "qid": "Q98544732",
-            "label": "Q98544732"
+            "label": "wissenschaftlicher Sammler"
           }
         ],
         "birthPlace": {
           "qid": "Q630985",
-          "label": "Q630985"
+          "label": "Dallas"
         },
         "birthDate": "1925-01-01",
         "deathDate": "1987-00-00"
@@ -1474,22 +1474,22 @@
         "occupation": [
           {
             "qid": "Q2865819",
-            "label": "Q2865819"
+            "label": "Opernsänger"
           }
         ],
         "voiceType": [
           {
             "qid": "Q186506",
-            "label": "Q186506"
+            "label": "Mezzosopran"
           }
         ],
         "birthPlace": {
           "qid": "Q11331",
-          "label": "Q11331"
+          "label": "Gevelsberg"
         },
         "deathPlace": {
           "qid": "Q1741",
-          "label": "Q1741"
+          "label": "Wien"
         },
         "birthDate": "1906-12-07",
         "deathDate": "1997-08-07"
@@ -1502,20 +1502,20 @@
         "occupation": [
           {
             "qid": "Q36834",
-            "label": "Q36834"
+            "label": "Komponist"
           },
           {
             "qid": "Q158852",
-            "label": "Q158852"
+            "label": "Dirigent"
           }
         ],
         "birthPlace": {
           "qid": "Q1085",
-          "label": "Q1085"
+          "label": "Prag"
         },
         "deathPlace": {
           "qid": "Q1731",
-          "label": "Q1731"
+          "label": "Dresden"
         },
         "birthDate": "1915-11-12",
         "deathDate": "2004-01-30"
@@ -1528,22 +1528,22 @@
         "occupation": [
           {
             "qid": "Q2865819",
-            "label": "Q2865819"
+            "label": "Opernsänger"
           }
         ],
         "voiceType": [
           {
             "qid": "Q30903",
-            "label": "Q30903"
+            "label": "Sopran"
           }
         ],
         "birthPlace": {
           "qid": "Q45779",
-          "label": "Q45779"
+          "label": "Pécs"
         },
         "deathPlace": {
           "qid": "Q1726",
-          "label": "Q1726"
+          "label": "München"
         },
         "birthDate": "1891-04-03",
         "deathDate": "1976-03-26"
@@ -1556,16 +1556,16 @@
         "occupation": [
           {
             "qid": "Q177220",
-            "label": "Q177220"
+            "label": "Sänger"
           },
           {
             "qid": "Q2252262",
-            "label": "Q2252262"
+            "label": "Rapper"
           }
         ],
         "birthPlace": {
           "qid": "Q1757",
-          "label": "Q1757"
+          "label": "Helsinki"
         },
         "birthDate": "1999-01-29"
       }
@@ -1577,22 +1577,22 @@
         "occupation": [
           {
             "qid": "Q2865819",
-            "label": "Q2865819"
+            "label": "Opernsänger"
           }
         ],
         "voiceType": [
           {
             "qid": "Q37137",
-            "label": "Q37137"
+            "label": "Alt"
           }
         ],
         "birthPlace": {
           "qid": "Q1781",
-          "label": "Q1781"
+          "label": "Budapest"
         },
         "deathPlace": {
           "qid": "Q1055",
-          "label": "Q1055"
+          "label": "Hamburg"
         },
         "birthDate": "1913-05-08",
         "deathDate": "1987-06-16"
@@ -1605,20 +1605,20 @@
         "occupation": [
           {
             "qid": "Q158852",
-            "label": "Q158852"
+            "label": "Dirigent"
           },
           {
             "qid": "Q215793",
-            "label": "Q215793"
+            "label": "Kapellmeister"
           }
         ],
         "birthPlace": {
           "qid": "Q566620",
-          "label": "Q566620"
+          "label": "Babenhausen"
         },
         "deathPlace": {
           "qid": "Q1726",
-          "label": "Q1726"
+          "label": "München"
         },
         "birthDate": "1902-11-01",
         "deathDate": "1987-03-26"
@@ -1631,20 +1631,20 @@
         "occupation": [
           {
             "qid": "Q483501",
-            "label": "Q483501"
+            "label": "Künstler"
           },
           {
             "qid": "Q1323191",
-            "label": "Q1323191"
+            "label": "Kostümbildner"
           }
         ],
         "birthPlace": {
           "qid": "Q16107",
-          "label": "Q16107"
+          "label": "Höxter"
         },
         "deathPlace": {
           "qid": "Q1726",
-          "label": "Q1726"
+          "label": "München"
         },
         "birthDate": "1902-06-19",
         "deathDate": "1963-08-29"
@@ -1657,20 +1657,20 @@
         "occupation": [
           {
             "qid": "Q14915627",
-            "label": "Q14915627"
+            "label": "Musikwissenschaftler"
           },
           {
             "qid": "Q1622272",
-            "label": "Q1622272"
+            "label": "Hochschullehrer"
           }
         ],
         "birthPlace": {
           "qid": "Q672717",
-          "label": "Q672717"
+          "label": "Feldbach"
         },
         "deathPlace": {
           "qid": "Q13298",
-          "label": "Q13298"
+          "label": "Graz"
         },
         "birthDate": "1927-10-01",
         "deathDate": "1970-07-09"
@@ -1683,20 +1683,20 @@
         "occupation": [
           {
             "qid": "Q593644",
-            "label": "Q593644"
+            "label": "Chemiker"
           },
           {
             "qid": "Q1622272",
-            "label": "Q1622272"
+            "label": "Hochschullehrer"
           }
         ],
         "birthPlace": {
           "qid": "Q1741",
-          "label": "Q1741"
+          "label": "Wien"
         },
         "deathPlace": {
           "qid": "Q12793311",
-          "label": "Q12793311"
+          "label": "Kamniška Bistrica"
         },
         "birthDate": "1891-04-13",
         "deathDate": "1966-05-15"
@@ -1709,16 +1709,16 @@
         "occupation": [
           {
             "qid": "Q1028181",
-            "label": "Q1028181"
+            "label": "Maler"
           }
         ],
         "birthPlace": {
           "qid": "Q1741",
-          "label": "Q1741"
+          "label": "Wien"
         },
         "deathPlace": {
           "qid": "Q485294",
-          "label": "Q485294"
+          "label": "Leoben"
         },
         "birthDate": "1895-10-26",
         "deathDate": "1963-06-18"
@@ -1731,20 +1731,20 @@
         "occupation": [
           {
             "qid": "Q177220",
-            "label": "Q177220"
+            "label": "Sänger"
           },
           {
             "qid": "Q639669",
-            "label": "Q639669"
+            "label": "Musiker"
           }
         ],
         "birthPlace": {
           "qid": "Q2978",
-          "label": "Q2978"
+          "label": "Regensburg"
         },
         "deathPlace": {
           "qid": "Q1726",
-          "label": "Q1726"
+          "label": "München"
         },
         "birthDate": "1909-01-04",
         "deathDate": "1974-08-30"
@@ -1757,20 +1757,20 @@
         "occupation": [
           {
             "qid": "Q158852",
-            "label": "Q158852"
+            "label": "Dirigent"
           },
           {
             "qid": "Q1198887",
-            "label": "Q1198887"
+            "label": "Musikdirektor"
           }
         ],
         "birthPlace": {
           "qid": "Q1040",
-          "label": "Q1040"
+          "label": "Karlsruhe"
         },
         "deathPlace": {
           "qid": "Q1726",
-          "label": "Q1726"
+          "label": "München"
         },
         "birthDate": "1908-04-19",
         "deathDate": "1968-07-20"
@@ -1783,32 +1783,32 @@
         "occupation": [
           {
             "qid": "Q36834",
-            "label": "Q36834"
+            "label": "Komponist"
           },
           {
             "qid": "Q486748",
-            "label": "Q486748"
+            "label": "Pianist"
           },
           {
             "qid": "Q14915627",
-            "label": "Q14915627"
+            "label": "Musikwissenschaftler"
           },
           {
             "qid": "Q1622272",
-            "label": "Q1622272"
+            "label": "Hochschullehrer"
           },
           {
             "qid": "Q18814623",
-            "label": "Q18814623"
+            "label": "Autobiograf"
           }
         ],
         "birthPlace": {
           "qid": "Q486541",
-          "label": "Q486541"
+          "label": "Jüterbog"
         },
         "deathPlace": {
           "qid": "Q81345",
-          "label": "Q81345"
+          "label": "Positano"
         },
         "birthDate": "1895-11-25",
         "deathDate": "1991-05-23"
@@ -1821,32 +1821,32 @@
         "occupation": [
           {
             "qid": "Q36834",
-            "label": "Q36834"
+            "label": "Komponist"
           },
           {
             "qid": "Q158852",
-            "label": "Q158852"
+            "label": "Dirigent"
           },
           {
             "qid": "Q14915627",
-            "label": "Q14915627"
+            "label": "Musikwissenschaftler"
           },
           {
             "qid": "Q486748",
-            "label": "Q486748"
+            "label": "Pianist"
           },
           {
             "qid": "Q864380",
-            "label": "Q864380"
+            "label": "Biograf"
           }
         ],
         "birthPlace": {
           "qid": "Q681309",
-          "label": "Q681309"
+          "label": "Waizenkirchen"
         },
         "deathPlace": {
           "qid": "Q1741",
-          "label": "Q1741"
+          "label": "Wien"
         },
         "birthDate": "1857-01-17",
         "deathDate": "1941-10-19"
@@ -1859,26 +1859,26 @@
         "occupation": [
           {
             "qid": "Q2865819",
-            "label": "Q2865819"
+            "label": "Opernsänger"
           },
           {
             "qid": "Q2405480",
-            "label": "Q2405480"
+            "label": "Sprecher"
           }
         ],
         "voiceType": [
           {
             "qid": "Q27914",
-            "label": "Q27914"
+            "label": "Tenor"
           }
         ],
         "birthPlace": {
           "qid": "Q127043",
-          "label": "Q127043"
+          "label": "Garmisch-Partenkirchen"
         },
         "deathPlace": {
           "qid": "Q1726",
-          "label": "Q1726"
+          "label": "München"
         },
         "birthDate": "1914-03-08",
         "deathDate": "1991-02-16"
@@ -1891,7 +1891,7 @@
         "occupation": [
           {
             "qid": "Q82594",
-            "label": "Q82594"
+            "label": "Informatiker"
           }
         ],
         "birthDate": "1966-00-00"
@@ -1904,20 +1904,20 @@
         "occupation": [
           {
             "qid": "Q158852",
-            "label": "Q158852"
+            "label": "Dirigent"
           },
           {
             "qid": "Q36834",
-            "label": "Q36834"
+            "label": "Komponist"
           }
         ],
         "birthPlace": {
           "qid": "Q1435",
-          "label": "Q1435"
+          "label": "Zagreb"
         },
         "deathPlace": {
           "qid": "Q1741",
-          "label": "Q1741"
+          "label": "Wien"
         },
         "birthDate": "1924-08-28",
         "deathDate": "2014-06-13"
@@ -1930,24 +1930,24 @@
         "occupation": [
           {
             "qid": "Q158852",
-            "label": "Q158852"
+            "label": "Dirigent"
           },
           {
             "qid": "Q1622272",
-            "label": "Q1622272"
+            "label": "Hochschullehrer"
           },
           {
             "qid": "Q36834",
-            "label": "Q36834"
+            "label": "Komponist"
           }
         ],
         "birthPlace": {
           "qid": "Q702259",
-          "label": "Q702259"
+          "label": "Elberfeld"
         },
         "deathPlace": {
           "qid": "Q1726",
-          "label": "Q1726"
+          "label": "München"
         },
         "birthDate": "1888-03-12",
         "deathDate": "1965-10-25"
@@ -1960,30 +1960,30 @@
         "occupation": [
           {
             "qid": "Q2865819",
-            "label": "Q2865819"
+            "label": "Opernsänger"
           },
           {
             "qid": "Q16145150",
-            "label": "Q16145150"
+            "label": "Musikpädagoge"
           },
           {
             "qid": "Q1622272",
-            "label": "Q1622272"
+            "label": "Hochschullehrer"
           }
         ],
         "voiceType": [
           {
             "qid": "Q58192",
-            "label": "Q58192"
+            "label": "Koloratursopran"
           }
         ],
         "birthPlace": {
           "qid": "Q2973",
-          "label": "Q2973"
+          "label": "Darmstadt"
         },
         "deathPlace": {
           "qid": "Q6829",
-          "label": "Q6829"
+          "label": "Speyer"
         },
         "birthDate": "1925-09-15",
         "deathDate": "1989-02-20"
@@ -1996,36 +1996,36 @@
         "occupation": [
           {
             "qid": "Q36180",
-            "label": "Q36180"
+            "label": "Schriftsteller"
           },
           {
             "qid": "Q214917",
-            "label": "Q214917"
+            "label": "Dramatiker"
           },
           {
             "qid": "Q49757",
-            "label": "Q49757"
+            "label": "Dichter"
           },
           {
             "qid": "Q40348",
-            "label": "Q40348"
+            "label": "Rechtsanwalt"
           },
           {
             "qid": "Q201788",
-            "label": "Q201788"
+            "label": "Historiker"
           },
           {
             "qid": "Q18814623",
-            "label": "Q18814623"
+            "label": "Autobiograf"
           }
         ],
         "birthPlace": {
           "qid": "Q3955",
-          "label": "Q3955"
+          "label": "Weimar"
         },
         "deathPlace": {
           "qid": "Q2119",
-          "label": "Q2119"
+          "label": "Mannheim"
         },
         "birthDate": "1761-05-03",
         "deathDate": "1819-03-23"
@@ -2038,36 +2038,36 @@
         "occupation": [
           {
             "qid": "Q158852",
-            "label": "Q158852"
+            "label": "Dirigent"
           },
           {
             "qid": "Q36834",
-            "label": "Q36834"
+            "label": "Komponist"
           },
           {
             "qid": "Q8178443",
-            "label": "Q8178443"
+            "label": "Librettist"
           },
           {
             "qid": "Q1622272",
-            "label": "Q1622272"
+            "label": "Hochschullehrer"
           },
           {
             "qid": "Q36180",
-            "label": "Q36180"
+            "label": "Schriftsteller"
           },
           {
             "qid": "Q1198887",
-            "label": "Q1198887"
+            "label": "Musikdirektor"
           }
         ],
         "birthPlace": {
           "qid": "Q1741",
-          "label": "Q1741"
+          "label": "Wien"
         },
         "deathPlace": {
           "qid": "Q1489",
-          "label": "Q1489"
+          "label": "Mexiko-Stadt"
         },
         "birthDate": "1893-03-31",
         "deathDate": "1954-05-16"
@@ -2080,30 +2080,30 @@
         "occupation": [
           {
             "qid": "Q639669",
-            "label": "Q639669"
+            "label": "Musiker"
           },
           {
             "qid": "Q177220",
-            "label": "Q177220"
+            "label": "Sänger"
           },
           {
             "qid": "Q2865819",
-            "label": "Q2865819"
+            "label": "Opernsänger"
           }
         ],
         "voiceType": [
           {
             "qid": "Q27911",
-            "label": "Q27911"
+            "label": "Bass"
           }
         ],
         "birthPlace": {
           "qid": "Q2090",
-          "label": "Q2090"
+          "label": "Nürnberg"
         },
         "deathPlace": {
           "qid": "Q1741",
-          "label": "Q1741"
+          "label": "Wien"
         },
         "birthDate": "1923-06-03",
         "deathDate": "2003-10-18"
@@ -2116,7 +2116,7 @@
         "occupation": [
           {
             "qid": "Q36834",
-            "label": "Q36834"
+            "label": "Komponist"
           }
         ],
         "birthDate": "1878-07-12",
@@ -2130,22 +2130,22 @@
         "occupation": [
           {
             "qid": "Q2865819",
-            "label": "Q2865819"
+            "label": "Opernsänger"
           }
         ],
         "voiceType": [
           {
             "qid": "Q27914",
-            "label": "Q27914"
+            "label": "Tenor"
           }
         ],
         "birthPlace": {
           "qid": "Q627590",
-          "label": "Q627590"
+          "label": "Neuburg an der Kammel"
         },
         "deathPlace": {
           "qid": "Q552104",
-          "label": "Q552104"
+          "label": "Sulzberg"
         },
         "birthDate": "1910-04-08",
         "deathDate": "1997-02-04"
@@ -2158,32 +2158,32 @@
         "occupation": [
           {
             "qid": "Q1259917",
-            "label": "Q1259917"
+            "label": "Geiger"
           },
           {
             "qid": "Q1622272",
-            "label": "Q1622272"
+            "label": "Hochschullehrer"
           },
           {
             "qid": "Q691031",
-            "label": "Q691031"
+            "label": "Konzertmeister"
           },
           {
             "qid": "Q158852",
-            "label": "Q158852"
+            "label": "Dirigent"
           },
           {
             "qid": "Q16145150",
-            "label": "Q16145150"
+            "label": "Musikpädagoge"
           }
         ],
         "birthPlace": {
           "qid": "Q24879",
-          "label": "Q24879"
+          "label": "Bremen"
         },
         "deathPlace": {
           "qid": "Q9009",
-          "label": "Q9009"
+          "label": "Schaffhausen"
         },
         "birthDate": "1898-01-23",
         "deathDate": "1948-10-04"
@@ -2196,22 +2196,22 @@
         "occupation": [
           {
             "qid": "Q2865819",
-            "label": "Q2865819"
+            "label": "Opernsänger"
           }
         ],
         "voiceType": [
           {
             "qid": "Q31687",
-            "label": "Q31687"
+            "label": "Bariton"
           }
         ],
         "birthPlace": {
           "qid": "Q1741",
-          "label": "Q1741"
+          "label": "Wien"
         },
         "deathPlace": {
           "qid": "Q1741",
-          "label": "Q1741"
+          "label": "Wien"
         },
         "birthDate": "1909-05-20",
         "deathDate": "1995-09-08"
@@ -2224,24 +2224,24 @@
         "occupation": [
           {
             "qid": "Q1350157",
-            "label": "Q1350157"
+            "label": "Musikkritiker"
           },
           {
             "qid": "Q1930187",
-            "label": "Q1930187"
+            "label": "Journalist"
           },
           {
             "qid": "Q36180",
-            "label": "Q36180"
+            "label": "Schriftsteller"
           }
         ],
         "birthPlace": {
           "qid": "Q60",
-          "label": "Q60"
+          "label": "New York City"
         },
         "deathPlace": {
           "qid": "Q60",
-          "label": "Q60"
+          "label": "New York City"
         },
         "birthDate": "1918-01-01",
         "deathDate": "2001-02-22"
@@ -2254,26 +2254,26 @@
         "occupation": [
           {
             "qid": "Q2865819",
-            "label": "Q2865819"
+            "label": "Opernsänger"
           },
           {
             "qid": "Q1622272",
-            "label": "Q1622272"
+            "label": "Hochschullehrer"
           }
         ],
         "voiceType": [
           {
             "qid": "Q30903",
-            "label": "Q30903"
+            "label": "Sopran"
           }
         ],
         "birthPlace": {
           "qid": "Q284604",
-          "label": "Q284604"
+          "label": "Kłodzko"
         },
         "deathPlace": {
           "qid": "Q504820",
-          "label": "Q504820"
+          "label": "Haar"
         },
         "birthDate": "1906-07-21",
         "deathDate": "1987-12-08"
@@ -2286,18 +2286,18 @@
         "occupation": [
           {
             "qid": "Q2865819",
-            "label": "Q2865819"
+            "label": "Opernsänger"
           }
         ],
         "voiceType": [
           {
             "qid": "Q31687",
-            "label": "Q31687"
+            "label": "Bariton"
           }
         ],
         "birthPlace": {
           "qid": "Q2833",
-          "label": "Q2833"
+          "label": "Freiburg im Breisgau"
         },
         "birthDate": "1916-01-30",
         "deathDate": "2010-05-14"
@@ -2310,12 +2310,12 @@
         "occupation": [
           {
             "qid": "Q1076502",
-            "label": "Q1076502"
+            "label": "Chorleiter"
           }
         ],
         "birthPlace": {
           "qid": "Q2634",
-          "label": "Q2634"
+          "label": "Neapel"
         },
         "birthDate": "1900-00-00"
       }
@@ -2327,12 +2327,12 @@
         "occupation": [
           {
             "qid": "Q81096",
-            "label": "Q81096"
+            "label": "Ingenieur"
           }
         ],
         "birthPlace": {
           "qid": "Q3200",
-          "label": "Q3200"
+          "label": "Salzgitter"
         },
         "birthDate": "1949-08-12"
       }
@@ -2344,24 +2344,24 @@
         "occupation": [
           {
             "qid": "Q486748",
-            "label": "Q486748"
+            "label": "Pianist"
           },
           {
             "qid": "Q16145150",
-            "label": "Q16145150"
+            "label": "Musikpädagoge"
           },
           {
             "qid": "Q1056391",
-            "label": "Q1056391"
+            "label": "Schulleiter"
           }
         ],
         "birthPlace": {
           "qid": "Q656680",
-          "label": "Q656680"
+          "label": "Biebrich"
         },
         "deathPlace": {
           "qid": "Q1721",
-          "label": "Q1721"
+          "label": "Wiesbaden"
         },
         "birthDate": "1858-06-22",
         "deathDate": "1944-07-19"
@@ -2374,16 +2374,16 @@
         "occupation": [
           {
             "qid": "Q1097498",
-            "label": "Q1097498"
+            "label": "Herrscher"
           }
         ],
         "birthPlace": {
           "qid": "Q489806",
-          "label": "Q489806"
+          "label": "Melk"
         },
         "deathPlace": {
           "qid": "Q487522",
-          "label": "Q487522"
+          "label": "Klosterneuburg"
         },
         "birthDate": "1073-09-29",
         "deathDate": "1136-11-15"
@@ -2396,18 +2396,18 @@
         "occupation": [
           {
             "qid": "Q2865819",
-            "label": "Q2865819"
+            "label": "Opernsänger"
           }
         ],
         "voiceType": [
           {
             "qid": "Q37137",
-            "label": "Q37137"
+            "label": "Alt"
           }
         ],
         "birthPlace": {
           "qid": "Q1055",
-          "label": "Q1055"
+          "label": "Hamburg"
         },
         "birthDate": "1922-12-14",
         "deathDate": "2017-01-01"
@@ -2420,12 +2420,12 @@
         "occupation": [
           {
             "qid": "Q82955",
-            "label": "Q82955"
+            "label": "Politiker"
           }
         ],
         "birthPlace": {
           "qid": "Q3846",
-          "label": "Q3846"
+          "label": "Minden"
         },
         "birthDate": "1902-10-20",
         "deathDate": "1953-10-27"
@@ -2438,22 +2438,22 @@
         "occupation": [
           {
             "qid": "Q2865819",
-            "label": "Q2865819"
+            "label": "Opernsänger"
           }
         ],
         "voiceType": [
           {
             "qid": "Q836983",
-            "label": "Q836983"
+            "label": "Soubrette"
           }
         ],
         "birthPlace": {
           "qid": "Q1019326",
-          "label": "Q1019326"
+          "label": "Chabařovice"
         },
         "deathPlace": {
           "qid": "Q1741",
-          "label": "Q1741"
+          "label": "Wien"
         },
         "birthDate": "1914-01-22",
         "deathDate": "1987-10-14"
@@ -2466,12 +2466,12 @@
         "occupation": [
           {
             "qid": "Q2865819",
-            "label": "Q2865819"
+            "label": "Opernsänger"
           }
         ],
         "birthPlace": {
           "qid": "Q2795",
-          "label": "Q2795"
+          "label": "Chemnitz"
         },
         "birthDate": "1939-00-00"
       }
@@ -2483,24 +2483,24 @@
         "occupation": [
           {
             "qid": "Q899758",
-            "label": "Q899758"
+            "label": "Bratschist"
           },
           {
             "qid": "Q1259917",
-            "label": "Q1259917"
+            "label": "Geiger"
           },
           {
             "qid": "Q16145150",
-            "label": "Q16145150"
+            "label": "Musikpädagoge"
           }
         ],
         "birthPlace": {
           "qid": "Q64",
-          "label": "Q64"
+          "label": "Berlin"
         },
         "deathPlace": {
           "qid": "Q1726",
-          "label": "Q1726"
+          "label": "München"
         },
         "birthDate": "1889-07-27",
         "deathDate": "1959-09-16"
@@ -2513,16 +2513,16 @@
         "occupation": [
           {
             "qid": "Q177220",
-            "label": "Q177220"
+            "label": "Sänger"
           }
         ],
         "birthPlace": {
           "qid": "Q1741",
-          "label": "Q1741"
+          "label": "Wien"
         },
         "deathPlace": {
           "qid": "Q1741",
-          "label": "Q1741"
+          "label": "Wien"
         },
         "birthDate": "1907-02-03",
         "deathDate": "1976-01-01"
@@ -2535,34 +2535,34 @@
         "occupation": [
           {
             "qid": "Q36180",
-            "label": "Q36180"
+            "label": "Schriftsteller"
           },
           {
             "qid": "Q16145150",
-            "label": "Q16145150"
+            "label": "Musikpädagoge"
           },
           {
             "qid": "Q14915627",
-            "label": "Q14915627"
+            "label": "Musikwissenschaftler"
           },
           {
             "qid": "Q177220",
-            "label": "Q177220"
+            "label": "Sänger"
           }
         ],
         "voiceType": [
           {
             "qid": "Q30903",
-            "label": "Q30903"
+            "label": "Sopran"
           }
         ],
         "birthPlace": {
           "qid": "Q41252",
-          "label": "Q41252"
+          "label": "Bydgoszcz"
         },
         "deathPlace": {
           "qid": "Q1718",
-          "label": "Q1718"
+          "label": "Düsseldorf"
         },
         "birthDate": "1887-10-06",
         "deathDate": "1971-02-02"
@@ -2575,40 +2575,40 @@
         "occupation": [
           {
             "qid": "Q36834",
-            "label": "Q36834"
+            "label": "Komponist"
           },
           {
             "qid": "Q14915627",
-            "label": "Q14915627"
+            "label": "Musikwissenschaftler"
           },
           {
             "qid": "Q16145150",
-            "label": "Q16145150"
+            "label": "Musikpädagoge"
           },
           {
             "qid": "Q1622272",
-            "label": "Q1622272"
+            "label": "Hochschullehrer"
           },
           {
             "qid": "Q36180",
-            "label": "Q36180"
+            "label": "Schriftsteller"
           },
           {
             "qid": "Q486748",
-            "label": "Q486748"
+            "label": "Pianist"
           },
           {
             "qid": "Q1350157",
-            "label": "Q1350157"
+            "label": "Musikkritiker"
           }
         ],
         "birthPlace": {
           "qid": "Q13298",
-          "label": "Q13298"
+          "label": "Graz"
         },
         "deathPlace": {
           "qid": "Q13298",
-          "label": "Q13298"
+          "label": "Graz"
         },
         "birthDate": "1882-05-11",
         "deathDate": "1964-09-03"
@@ -2621,16 +2621,16 @@
         "occupation": [
           {
             "qid": "Q1028181",
-            "label": "Q1028181"
+            "label": "Maler"
           }
         ],
         "birthPlace": {
           "qid": "Q52097",
-          "label": "Q52097"
+          "label": "San Giovanni Valdarno"
         },
         "deathPlace": {
           "qid": "Q220",
-          "label": "Q220"
+          "label": "Rom"
         },
         "birthDate": "1401-12-21",
         "deathDate": "1428-01-01"
@@ -2643,30 +2643,30 @@
         "occupation": [
           {
             "qid": "Q2865819",
-            "label": "Q2865819"
+            "label": "Opernsänger"
           },
           {
             "qid": "Q16145150",
-            "label": "Q16145150"
+            "label": "Musikpädagoge"
           },
           {
             "qid": "Q706835",
-            "label": "Q706835"
+            "label": "Kfz-Mechatroniker"
           }
         ],
         "voiceType": [
           {
             "qid": "Q31687",
-            "label": "Q31687"
+            "label": "Bariton"
           }
         ],
         "birthPlace": {
           "qid": "Q132671",
-          "label": "Q132671"
+          "label": "Pau"
         },
         "deathPlace": {
           "qid": "Q132671",
-          "label": "Q132671"
+          "label": "Pau"
         },
         "birthDate": "1925-08-15",
         "deathDate": "2025-12-26"
@@ -2679,24 +2679,24 @@
         "occupation": [
           {
             "qid": "Q8178443",
-            "label": "Q8178443"
+            "label": "Librettist"
           },
           {
             "qid": "Q36180",
-            "label": "Q36180"
+            "label": "Schriftsteller"
           },
           {
             "qid": "Q49757",
-            "label": "Q49757"
+            "label": "Dichter"
           }
         ],
         "birthPlace": {
           "qid": "Q40161",
-          "label": "Q40161"
+          "label": "Longarone"
         },
         "deathPlace": {
           "qid": "Q641",
-          "label": "Q641"
+          "label": "Venedig"
         },
         "birthDate": "1745-01-18",
         "deathDate": "1806-07-16"
@@ -2709,40 +2709,40 @@
         "occupation": [
           {
             "qid": "Q158852",
-            "label": "Q158852"
+            "label": "Dirigent"
           },
           {
             "qid": "Q2526255",
-            "label": "Q2526255"
+            "label": "Filmregisseur"
           },
           {
             "qid": "Q36834",
-            "label": "Q36834"
+            "label": "Komponist"
           },
           {
             "qid": "Q14915627",
-            "label": "Q14915627"
+            "label": "Musikwissenschaftler"
           },
           {
             "qid": "Q16145150",
-            "label": "Q16145150"
+            "label": "Musikpädagoge"
           },
           {
             "qid": "Q8178443",
-            "label": "Q8178443"
+            "label": "Librettist"
           },
           {
             "qid": "Q28389",
-            "label": "Q28389"
+            "label": "Drehbuchautor"
           }
         ],
         "birthPlace": {
           "qid": "Q39840",
-          "label": "Q39840"
+          "label": "Cadegliano-Viconago"
         },
         "deathPlace": {
           "qid": "Q45240",
-          "label": "Q45240"
+          "label": "Monte-Carlo"
         },
         "birthDate": "1911-07-07",
         "deathDate": "2007-02-01"
@@ -2755,34 +2755,34 @@
         "occupation": [
           {
             "qid": "Q177220",
-            "label": "Q177220"
+            "label": "Sänger"
           },
           {
             "qid": "Q2865819",
-            "label": "Q2865819"
+            "label": "Opernsänger"
           },
           {
             "qid": "Q16145150",
-            "label": "Q16145150"
+            "label": "Musikpädagoge"
           },
           {
             "qid": "Q1622272",
-            "label": "Q1622272"
+            "label": "Hochschullehrer"
           }
         ],
         "voiceType": [
           {
             "qid": "Q31687",
-            "label": "Q31687"
+            "label": "Bariton"
           }
         ],
         "birthPlace": {
           "qid": "Q787920",
-          "label": "Q787920"
+          "label": "Hermülheim"
         },
         "deathPlace": {
           "qid": "Q507424",
-          "label": "Q507424"
+          "label": "Feldafing"
         },
         "birthDate": "1915-06-02",
         "deathDate": "2005-02-21"
@@ -2795,20 +2795,20 @@
         "occupation": [
           {
             "qid": "Q177220",
-            "label": "Q177220"
+            "label": "Sänger"
           },
           {
             "qid": "Q2865819",
-            "label": "Q2865819"
+            "label": "Opernsänger"
           }
         ],
         "birthPlace": {
           "qid": "Q1715",
-          "label": "Q1715"
+          "label": "Hannover"
         },
         "deathPlace": {
           "qid": "Q1741",
-          "label": "Q1741"
+          "label": "Wien"
         },
         "birthDate": "1905-03-25",
         "deathDate": "1969-11-02"
@@ -2821,28 +2821,28 @@
         "occupation": [
           {
             "qid": "Q1028181",
-            "label": "Q1028181"
+            "label": "Maler"
           },
           {
             "qid": "Q10862983",
-            "label": "Q10862983"
+            "label": "Radierer"
           },
           {
             "qid": "Q16947657",
-            "label": "Q16947657"
+            "label": "Lithograf"
           },
           {
             "qid": "Q6138343",
-            "label": "Q6138343"
+            "label": "Holzschnitzer"
           }
         ],
         "birthPlace": {
           "qid": "Q2964344",
-          "label": "Q2964344"
+          "label": "Choindez"
         },
         "deathPlace": {
           "qid": "Q9125",
-          "label": "Q9125"
+          "label": "Winterthur"
         },
         "birthDate": "1895-06-12",
         "deathDate": "1981-11-02"
@@ -2855,30 +2855,30 @@
         "occupation": [
           {
             "qid": "Q2865819",
-            "label": "Q2865819"
+            "label": "Opernsänger"
           },
           {
             "qid": "Q18814623",
-            "label": "Q18814623"
+            "label": "Autobiograf"
           }
         ],
         "voiceType": [
           {
             "qid": "Q30903",
-            "label": "Q30903"
+            "label": "Sopran"
           },
           {
             "qid": "Q186506",
-            "label": "Q186506"
+            "label": "Mezzosopran"
           }
         ],
         "birthPlace": {
           "qid": "Q2090",
-          "label": "Q2090"
+          "label": "Nürnberg"
         },
         "deathPlace": {
           "qid": "Q1022",
-          "label": "Q1022"
+          "label": "Stuttgart"
         },
         "birthDate": "1912-03-22",
         "deathDate": "2001-12-17"
@@ -2891,16 +2891,16 @@
         "occupation": [
           {
             "qid": "Q158852",
-            "label": "Q158852"
+            "label": "Dirigent"
           }
         ],
         "birthPlace": {
           "qid": "Q1726",
-          "label": "Q1726"
+          "label": "München"
         },
         "deathPlace": {
           "qid": "Q1741",
-          "label": "Q1741"
+          "label": "Wien"
         },
         "birthDate": "1902-02-26",
         "deathDate": "1958-12-16"
@@ -2913,20 +2913,20 @@
         "occupation": [
           {
             "qid": "Q16145150",
-            "label": "Q16145150"
+            "label": "Musikpädagoge"
           },
           {
             "qid": "Q486748",
-            "label": "Q486748"
+            "label": "Pianist"
           }
         ],
         "birthPlace": {
           "qid": "Q100404",
-          "label": "Q100404"
+          "label": "Comun Nuovo"
         },
         "deathPlace": {
           "qid": "Q17660",
-          "label": "Q17660"
+          "label": "Sale"
         },
         "birthDate": "1877-01-01",
         "deathDate": "1944-01-01"
@@ -2939,20 +2939,20 @@
         "occupation": [
           {
             "qid": "Q158852",
-            "label": "Q158852"
+            "label": "Dirigent"
           },
           {
             "qid": "Q14915627",
-            "label": "Q14915627"
+            "label": "Musikwissenschaftler"
           }
         ],
         "birthPlace": {
           "qid": "Q6602",
-          "label": "Q6602"
+          "label": "Straßburg"
         },
         "deathPlace": {
           "qid": "Q21387",
-          "label": "Q21387"
+          "label": "Niederbronn-les-Bains"
         },
         "birthDate": "1890-06-02",
         "deathDate": "1970-03-10"
@@ -2965,22 +2965,22 @@
         "occupation": [
           {
             "qid": "Q2865819",
-            "label": "Q2865819"
+            "label": "Opernsänger"
           }
         ],
         "voiceType": [
           {
             "qid": "Q810480",
-            "label": "Q810480"
+            "label": "Bassbariton"
           }
         ],
         "birthPlace": {
           "qid": "Q1720",
-          "label": "Q1720"
+          "label": "Mainz"
         },
         "deathPlace": {
           "qid": "Q490670",
-          "label": "Q490670"
+          "label": "Bad Ems"
         },
         "birthDate": "1910-03-21",
         "deathDate": "1991-12-26"
@@ -2993,66 +2993,66 @@
         "occupation": [
           {
             "qid": "Q36180",
-            "label": "Q36180"
+            "label": "Schriftsteller"
           },
           {
             "qid": "Q214917",
-            "label": "Q214917"
+            "label": "Dramatiker"
           },
           {
             "qid": "Q1209498",
-            "label": "Q1209498"
+            "label": "Dichterjurist"
           },
           {
             "qid": "Q2259451",
-            "label": "Q2259451"
+            "label": "Theaterschauspieler"
           },
           {
             "qid": "Q2865819",
-            "label": "Q2865819"
+            "label": "Opernsänger"
           },
           {
             "qid": "Q9334029",
-            "label": "Q9334029"
+            "label": "Satiriker"
           },
           {
             "qid": "Q49757",
-            "label": "Q49757"
+            "label": "Dichter"
           },
           {
             "qid": "Q33999",
-            "label": "Q33999"
+            "label": "Schauspieler"
           },
           {
             "qid": "Q8178443",
-            "label": "Q8178443"
+            "label": "Librettist"
           },
           {
             "qid": "Q36834",
-            "label": "Q36834"
+            "label": "Komponist"
           },
           {
             "qid": "Q1776724",
-            "label": "Q1776724"
+            "label": "Theaterleiter"
           },
           {
             "qid": "Q3455803",
-            "label": "Q3455803"
+            "label": "Regisseur"
           }
         ],
         "voiceType": [
           {
             "qid": "Q27911",
-            "label": "Q27911"
+            "label": "Bass"
           }
         ],
         "birthPlace": {
           "qid": "Q1741",
-          "label": "Q1741"
+          "label": "Wien"
         },
         "deathPlace": {
           "qid": "Q13298",
-          "label": "Q13298"
+          "label": "Graz"
         },
         "birthDate": "1801-12-07",
         "deathDate": "1862-05-25"
@@ -3065,20 +3065,20 @@
         "occupation": [
           {
             "qid": "Q486748",
-            "label": "Q486748"
+            "label": "Pianist"
           },
           {
             "qid": "Q16145150",
-            "label": "Q16145150"
+            "label": "Musikpädagoge"
           }
         ],
         "birthPlace": {
           "qid": "Q1718",
-          "label": "Q1718"
+          "label": "Düsseldorf"
         },
         "deathPlace": {
           "qid": "Q533166",
-          "label": "Q533166"
+          "label": "Tutzing"
         },
         "birthDate": "1882-09-27",
         "deathDate": "1968-03-31"
@@ -3091,22 +3091,22 @@
         "occupation": [
           {
             "qid": "Q2865819",
-            "label": "Q2865819"
+            "label": "Opernsänger"
           }
         ],
         "voiceType": [
           {
             "qid": "Q30903",
-            "label": "Q30903"
+            "label": "Sopran"
           }
         ],
         "birthPlace": {
           "qid": "Q10718286",
-          "label": "Q10718286"
+          "label": "Västra Karup"
         },
         "deathPlace": {
           "qid": "Q2593709",
-          "label": "Q2593709"
+          "label": "Bjärlöv"
         },
         "birthDate": "1918-05-17",
         "deathDate": "2005-12-25"
@@ -3119,24 +3119,24 @@
         "occupation": [
           {
             "qid": "Q36834",
-            "label": "Q36834"
+            "label": "Komponist"
           },
           {
             "qid": "Q1350157",
-            "label": "Q1350157"
+            "label": "Musikkritiker"
           },
           {
             "qid": "Q876864",
-            "label": "Q876864"
+            "label": "Redakteur"
           }
         ],
         "birthPlace": {
           "qid": "Q12892",
-          "label": "Q12892"
+          "label": "Antwerpen"
         },
         "deathPlace": {
           "qid": "Q72",
-          "label": "Q72"
+          "label": "Zürich"
         },
         "birthDate": "1900-07-09",
         "deathDate": "1957-06-09"
@@ -3149,7 +3149,7 @@
         "occupation": [
           {
             "qid": "Q639669",
-            "label": "Q639669"
+            "label": "Musiker"
           }
         ],
         "birthDate": "1919-01-01",
@@ -3163,16 +3163,16 @@
         "occupation": [
           {
             "qid": "Q177220",
-            "label": "Q177220"
+            "label": "Sänger"
           }
         ],
         "birthPlace": {
           "qid": "Q472",
-          "label": "Q472"
+          "label": "Sofia"
         },
         "deathPlace": {
           "qid": "Q1741",
-          "label": "Q1741"
+          "label": "Wien"
         },
         "birthDate": "1913-08-17",
         "deathDate": "2003-08-30"
@@ -3185,44 +3185,44 @@
         "occupation": [
           {
             "qid": "Q158852",
-            "label": "Q158852"
+            "label": "Dirigent"
           },
           {
             "qid": "Q36834",
-            "label": "Q36834"
+            "label": "Komponist"
           },
           {
             "qid": "Q482980",
-            "label": "Q482980"
+            "label": "Autor"
           },
           {
             "qid": "Q14915627",
-            "label": "Q14915627"
+            "label": "Musikwissenschaftler"
           },
           {
             "qid": "Q20198542",
-            "label": "Q20198542"
+            "label": "Musikhistoriker"
           },
           {
             "qid": "Q1622272",
-            "label": "Q1622272"
+            "label": "Hochschullehrer"
           },
           {
             "qid": "Q864380",
-            "label": "Q864380"
+            "label": "Biograf"
           },
           {
             "qid": "Q333634",
-            "label": "Q333634"
+            "label": "Übersetzer"
           }
         ],
         "birthPlace": {
           "qid": "Q1741",
-          "label": "Q1741"
+          "label": "Wien"
         },
         "deathPlace": {
           "qid": "Q34713",
-          "label": "Q34713"
+          "label": "Salzburg"
         },
         "birthDate": "1887-11-14",
         "deathDate": "1971-07-27"
@@ -3235,20 +3235,20 @@
         "occupation": [
           {
             "qid": "Q639669",
-            "label": "Q639669"
+            "label": "Musiker"
           },
           {
             "qid": "Q177220",
-            "label": "Q177220"
+            "label": "Sänger"
           },
           {
             "qid": "Q2865819",
-            "label": "Q2865819"
+            "label": "Opernsänger"
           }
         ],
         "birthPlace": {
           "qid": "Q2090",
-          "label": "Q2090"
+          "label": "Nürnberg"
         },
         "birthDate": "1914-00-00",
         "deathDate": "2005-00-00"
@@ -3261,22 +3261,22 @@
         "occupation": [
           {
             "qid": "Q2865819",
-            "label": "Q2865819"
+            "label": "Opernsänger"
           }
         ],
         "voiceType": [
           {
             "qid": "Q27914",
-            "label": "Q27914"
+            "label": "Tenor"
           }
         ],
         "birthPlace": {
           "qid": "Q1022",
-          "label": "Q1022"
+          "label": "Stuttgart"
         },
         "deathPlace": {
           "qid": "Q1022",
-          "label": "Q1022"
+          "label": "Stuttgart"
         },
         "birthDate": "1916-05-22",
         "deathDate": "1986-04-09"
@@ -3289,32 +3289,32 @@
         "occupation": [
           {
             "qid": "Q36834",
-            "label": "Q36834"
+            "label": "Komponist"
           },
           {
             "qid": "Q158852",
-            "label": "Q158852"
+            "label": "Dirigent"
           },
           {
             "qid": "Q1622272",
-            "label": "Q1622272"
+            "label": "Hochschullehrer"
           },
           {
             "qid": "Q36180",
-            "label": "Q36180"
+            "label": "Schriftsteller"
           },
           {
             "qid": "Q486748",
-            "label": "Q486748"
+            "label": "Pianist"
           }
         ],
         "birthPlace": {
           "qid": "Q649",
-          "label": "Q649"
+          "label": "Moskau"
         },
         "deathPlace": {
           "qid": "Q34713",
-          "label": "Q34713"
+          "label": "Salzburg"
         },
         "birthDate": "1869-05-05",
         "deathDate": "1949-05-22"
@@ -3327,20 +3327,20 @@
         "occupation": [
           {
             "qid": "Q639669",
-            "label": "Q639669"
+            "label": "Musiker"
           },
           {
             "qid": "Q158852",
-            "label": "Q158852"
+            "label": "Dirigent"
           }
         ],
         "birthPlace": {
           "qid": "Q152328",
-          "label": "Q152328"
+          "label": "Breinig"
         },
         "deathPlace": {
           "qid": "Q1017",
-          "label": "Q1017"
+          "label": "Aachen"
         },
         "birthDate": "1897-08-25",
         "deathDate": "1973-11-21"
@@ -3353,26 +3353,26 @@
         "occupation": [
           {
             "qid": "Q2865819",
-            "label": "Q2865819"
+            "label": "Opernsänger"
           },
           {
             "qid": "Q1622272",
-            "label": "Q1622272"
+            "label": "Hochschullehrer"
           }
         ],
         "voiceType": [
           {
             "qid": "Q186506",
-            "label": "Q186506"
+            "label": "Mezzosopran"
           }
         ],
         "birthPlace": {
           "qid": "Q2942",
-          "label": "Q2942"
+          "label": "Solingen"
         },
         "deathPlace": {
           "qid": "Q557784",
-          "label": "Q557784"
+          "label": "Steinenbronn"
         },
         "birthDate": "1919-12-03",
         "deathDate": "2005-06-03"
@@ -3385,16 +3385,16 @@
         "occupation": [
           {
             "qid": "Q158852",
-            "label": "Q158852"
+            "label": "Dirigent"
           }
         ],
         "birthPlace": {
           "qid": "Q547568",
-          "label": "Q547568"
+          "label": "Waziers"
         },
         "deathPlace": {
           "qid": "Q923754",
-          "label": "Q923754"
+          "label": "Navès"
         },
         "birthDate": "1924-08-14",
         "deathDate": "2017-01-04"
@@ -3407,20 +3407,20 @@
         "occupation": [
           {
             "qid": "Q39631",
-            "label": "Q39631"
+            "label": "Arzt"
           },
           {
             "qid": "Q1622272",
-            "label": "Q1622272"
+            "label": "Hochschullehrer"
           }
         ],
         "birthPlace": {
           "qid": "Q7033",
-          "label": "Q7033"
+          "label": "Nordhausen"
         },
         "deathPlace": {
           "qid": "Q365",
-          "label": "Q365"
+          "label": "Köln"
         },
         "birthDate": "1866-06-28",
         "deathDate": "1926-10-30"
@@ -3433,22 +3433,22 @@
         "occupation": [
           {
             "qid": "Q2865819",
-            "label": "Q2865819"
+            "label": "Opernsänger"
           }
         ],
         "voiceType": [
           {
             "qid": "Q27911",
-            "label": "Q27911"
+            "label": "Bass"
           }
         ],
         "birthPlace": {
           "qid": "Q1726",
-          "label": "Q1726"
+          "label": "München"
         },
         "deathPlace": {
           "qid": "Q1726",
-          "label": "Q1726"
+          "label": "München"
         },
         "birthDate": "1913-09-24",
         "deathDate": "1979-11-19"
@@ -3461,32 +3461,32 @@
         "occupation": [
           {
             "qid": "Q21680731",
-            "label": "Q21680731"
+            "label": "Opernkomponist"
           },
           {
             "qid": "Q36834",
-            "label": "Q36834"
+            "label": "Komponist"
           },
           {
             "qid": "Q82955",
-            "label": "Q82955"
+            "label": "Politiker"
           },
           {
             "qid": "Q158852",
-            "label": "Q158852"
+            "label": "Dirigent"
           },
           {
             "qid": "Q765778",
-            "label": "Q765778"
+            "label": "Organist"
           }
         ],
         "birthPlace": {
           "qid": "Q13373",
-          "label": "Q13373"
+          "label": "Lucca"
         },
         "deathPlace": {
           "qid": "Q239",
-          "label": "Q239"
+          "label": "Brüssel"
         },
         "birthDate": "1858-12-22",
         "deathDate": "1924-11-29"
@@ -3499,32 +3499,32 @@
         "occupation": [
           {
             "qid": "Q36834",
-            "label": "Q36834"
+            "label": "Komponist"
           },
           {
             "qid": "Q765778",
-            "label": "Q765778"
+            "label": "Organist"
           },
           {
             "qid": "Q158852",
-            "label": "Q158852"
+            "label": "Dirigent"
           },
           {
             "qid": "Q1076502",
-            "label": "Q1076502"
+            "label": "Chorleiter"
           },
           {
             "qid": "Q1622272",
-            "label": "Q1622272"
+            "label": "Hochschullehrer"
           }
         ],
         "birthPlace": {
           "qid": "Q1040",
-          "label": "Q1040"
+          "label": "Karlsruhe"
         },
         "deathPlace": {
           "qid": "Q2079",
-          "label": "Q2079"
+          "label": "Leipzig"
         },
         "birthDate": "1898-10-15",
         "deathDate": "1956-02-27"
@@ -3537,40 +3537,40 @@
         "occupation": [
           {
             "qid": "Q36834",
-            "label": "Q36834"
+            "label": "Komponist"
           },
           {
             "qid": "Q158852",
-            "label": "Q158852"
+            "label": "Dirigent"
           },
           {
             "qid": "Q486748",
-            "label": "Q486748"
+            "label": "Pianist"
           },
           {
             "qid": "Q14915627",
-            "label": "Q14915627"
+            "label": "Musikwissenschaftler"
           },
           {
             "qid": "Q1622272",
-            "label": "Q1622272"
+            "label": "Hochschullehrer"
           },
           {
             "qid": "Q765778",
-            "label": "Q765778"
+            "label": "Organist"
           },
           {
             "qid": "Q16145150",
-            "label": "Q16145150"
+            "label": "Musikpädagoge"
           }
         ],
         "birthPlace": {
           "qid": "Q705752",
-          "label": "Q705752"
+          "label": "Brand"
         },
         "deathPlace": {
           "qid": "Q2079",
-          "label": "Q2079"
+          "label": "Leipzig"
         },
         "birthDate": "1873-03-19",
         "deathDate": "1916-05-11"
@@ -3583,7 +3583,7 @@
         "occupation": [
           {
             "qid": "Q639669",
-            "label": "Q639669"
+            "label": "Musiker"
           }
         ],
         "birthDate": "1919-10-10",
@@ -3597,12 +3597,12 @@
         "occupation": [
           {
             "qid": "Q13382519",
-            "label": "Q13382519"
+            "label": "Tischtennisspieler"
           }
         ],
         "birthPlace": {
           "qid": "Q519663",
-          "label": "Q519663"
+          "label": "Kösching"
         },
         "birthDate": "1974-12-29"
       }
@@ -3614,52 +3614,52 @@
         "occupation": [
           {
             "qid": "Q1028181",
-            "label": "Q1028181"
+            "label": "Maler"
           },
           {
             "qid": "Q1231865",
-            "label": "Q1231865"
+            "label": "Pädagoge"
           },
           {
             "qid": "Q16947657",
-            "label": "Q16947657"
+            "label": "Lithograf"
           },
           {
             "qid": "Q5322166",
-            "label": "Q5322166"
+            "label": "Designer"
           },
           {
             "qid": "Q3744886",
-            "label": "Q3744886"
+            "label": "fashion figure artist"
           },
           {
             "qid": "Q2707485",
-            "label": "Q2707485"
+            "label": "Szenograf"
           },
           {
             "qid": "Q1925963",
-            "label": "Q1925963"
+            "label": "Grafiker"
           },
           {
             "qid": "Q37226",
-            "label": "Q37226"
+            "label": "Lehrer"
           },
           {
             "qid": "Q644687",
-            "label": "Q644687"
+            "label": "Illustrator"
           },
           {
             "qid": "Q107212688",
-            "label": "Q107212688"
+            "label": "Exlibriskünstler"
           }
         ],
         "birthPlace": {
           "qid": "Q14960",
-          "label": "Q14960"
+          "label": "Brünn"
         },
         "deathPlace": {
           "qid": "Q1741",
-          "label": "Q1741"
+          "label": "Wien"
         },
         "birthDate": "1864-10-02",
         "deathDate": "1935-06-21"
@@ -3672,30 +3672,30 @@
         "occupation": [
           {
             "qid": "Q2865819",
-            "label": "Q2865819"
+            "label": "Opernsänger"
           },
           {
             "qid": "Q16145150",
-            "label": "Q16145150"
+            "label": "Musikpädagoge"
           },
           {
             "qid": "Q1622272",
-            "label": "Q1622272"
+            "label": "Hochschullehrer"
           }
         ],
         "voiceType": [
           {
             "qid": "Q37137",
-            "label": "Q37137"
+            "label": "Alt"
           }
         ],
         "birthPlace": {
           "qid": "Q676663",
-          "label": "Q676663"
+          "label": "Atzenbrugg"
         },
         "deathPlace": {
           "qid": "Q1741",
-          "label": "Q1741"
+          "label": "Wien"
         },
         "birthDate": "1921-01-30",
         "deathDate": "2010-12-15"
@@ -3708,12 +3708,12 @@
         "occupation": [
           {
             "qid": "Q158852",
-            "label": "Q158852"
+            "label": "Dirigent"
           }
         ],
         "birthPlace": {
           "qid": "Q1741",
-          "label": "Q1741"
+          "label": "Wien"
         },
         "birthDate": "1905-01-03",
         "deathDate": "1972-06-16"
@@ -3726,20 +3726,20 @@
         "occupation": [
           {
             "qid": "Q3387717",
-            "label": "Q3387717"
+            "label": "Bühnenregisseur"
           },
           {
             "qid": "Q3455803",
-            "label": "Q3455803"
+            "label": "Regisseur"
           }
         ],
         "birthPlace": {
           "qid": "Q153974",
-          "label": "Q153974"
+          "label": "Barmen"
         },
         "deathPlace": {
           "qid": "Q1741",
-          "label": "Q1741"
+          "label": "Wien"
         },
         "birthDate": "1905-12-14",
         "deathDate": "1982-07-24"
@@ -3752,12 +3752,12 @@
         "occupation": [
           {
             "qid": "Q2865819",
-            "label": "Q2865819"
+            "label": "Opernsänger"
           }
         ],
         "deathPlace": {
           "qid": "Q90",
-          "label": "Q90"
+          "label": "Paris"
         },
         "birthDate": "1910-01-01",
         "deathDate": "1976-03-23"
@@ -3770,22 +3770,22 @@
         "occupation": [
           {
             "qid": "Q2865819",
-            "label": "Q2865819"
+            "label": "Opernsänger"
           }
         ],
         "voiceType": [
           {
             "qid": "Q30903",
-            "label": "Q30903"
+            "label": "Sopran"
           }
         ],
         "birthPlace": {
           "qid": "Q1741",
-          "label": "Q1741"
+          "label": "Wien"
         },
         "deathPlace": {
           "qid": "Q1741",
-          "label": "Q1741"
+          "label": "Wien"
         },
         "birthDate": "1926-11-14",
         "deathDate": "1998-03-07"
@@ -3798,28 +3798,28 @@
         "occupation": [
           {
             "qid": "Q36834",
-            "label": "Q36834"
+            "label": "Komponist"
           },
           {
             "qid": "Q1350157",
-            "label": "Q1350157"
+            "label": "Musikkritiker"
           },
           {
             "qid": "Q486748",
-            "label": "Q486748"
+            "label": "Pianist"
           },
           {
             "qid": "Q14915627",
-            "label": "Q14915627"
+            "label": "Musikwissenschaftler"
           }
         ],
         "birthPlace": {
           "qid": "Q1479",
-          "label": "Q1479"
+          "label": "Bordeaux"
         },
         "deathPlace": {
           "qid": "Q90",
-          "label": "Q90"
+          "label": "Paris"
         },
         "birthDate": "1877-06-02",
         "deathDate": "1967-08-04"
@@ -3832,24 +3832,24 @@
         "occupation": [
           {
             "qid": "Q158852",
-            "label": "Q158852"
+            "label": "Dirigent"
           },
           {
             "qid": "Q1231865",
-            "label": "Q1231865"
+            "label": "Pädagoge"
           },
           {
             "qid": "Q36834",
-            "label": "Q36834"
+            "label": "Komponist"
           }
         ],
         "birthPlace": {
           "qid": "Q1741",
-          "label": "Q1741"
+          "label": "Wien"
         },
         "deathPlace": {
           "qid": "Q665243",
-          "label": "Q665243"
+          "label": "Reichenau an der Rax"
         },
         "birthDate": "1863-05-27",
         "deathDate": "1931-09-03"
@@ -3862,30 +3862,30 @@
         "occupation": [
           {
             "qid": "Q177220",
-            "label": "Q177220"
+            "label": "Sänger"
           },
           {
             "qid": "Q1622272",
-            "label": "Q1622272"
+            "label": "Hochschullehrer"
           },
           {
             "qid": "Q2865819",
-            "label": "Q2865819"
+            "label": "Opernsänger"
           }
         ],
         "voiceType": [
           {
             "qid": "Q31687",
-            "label": "Q31687"
+            "label": "Bariton"
           }
         ],
         "birthPlace": {
           "qid": "Q64",
-          "label": "Q64"
+          "label": "Berlin"
         },
         "deathPlace": {
           "qid": "Q1731",
-          "label": "Q1731"
+          "label": "Dresden"
         },
         "birthDate": "1903-11-16",
         "deathDate": "1983-02-20"
@@ -3898,16 +3898,16 @@
         "occupation": [
           {
             "qid": "Q14915627",
-            "label": "Q14915627"
+            "label": "Musikwissenschaftler"
           },
           {
             "qid": "Q1350157",
-            "label": "Q1350157"
+            "label": "Musikkritiker"
           }
         ],
         "birthPlace": {
           "qid": "Q1718",
-          "label": "Q1718"
+          "label": "Düsseldorf"
         },
         "birthDate": "1907-00-00",
         "deathDate": "1989-00-00"
@@ -3920,15 +3920,15 @@
         "occupation": [
           {
             "qid": "Q4964182",
-            "label": "Q4964182"
+            "label": "Philosoph"
           },
           {
             "qid": "Q17167049",
-            "label": "Q17167049"
+            "label": "Literaturwissenschaftler"
           },
           {
             "qid": "Q182436",
-            "label": "Q182436"
+            "label": "Bibliothekar"
           }
         ],
         "birthDate": "1895-00-00",
@@ -3942,22 +3942,22 @@
         "occupation": [
           {
             "qid": "Q2865819",
-            "label": "Q2865819"
+            "label": "Opernsänger"
           }
         ],
         "voiceType": [
           {
             "qid": "Q810480",
-            "label": "Q810480"
+            "label": "Bassbariton"
           }
         ],
         "birthPlace": {
           "qid": "Q1731",
-          "label": "Q1731"
+          "label": "Dresden"
         },
         "deathPlace": {
           "qid": "Q470188",
-          "label": "Q470188"
+          "label": "Amersham"
         },
         "birthDate": "1897-09-15",
         "deathDate": "1977-11-21"
@@ -3970,16 +3970,16 @@
         "occupation": [
           {
             "qid": "Q36834",
-            "label": "Q36834"
+            "label": "Komponist"
           }
         ],
         "birthPlace": {
           "qid": "Q72",
-          "label": "Q72"
+          "label": "Zürich"
         },
         "deathPlace": {
           "qid": "Q72",
-          "label": "Q72"
+          "label": "Zürich"
         },
         "birthDate": "1894-07-24",
         "deathDate": "1971-06-23"
@@ -3992,20 +3992,20 @@
         "occupation": [
           {
             "qid": "Q14915627",
-            "label": "Q14915627"
+            "label": "Musikwissenschaftler"
           },
           {
             "qid": "Q1622272",
-            "label": "Q1622272"
+            "label": "Hochschullehrer"
           }
         ],
         "birthPlace": {
           "qid": "Q64",
-          "label": "Q64"
+          "label": "Berlin"
         },
         "deathPlace": {
           "qid": "Q64",
-          "label": "Q64"
+          "label": "Berlin"
         },
         "birthDate": "1884-03-13",
         "deathDate": "1945-01-02"
@@ -4018,38 +4018,38 @@
         "occupation": [
           {
             "qid": "Q6491450",
-            "label": "Q6491450"
+            "label": "Intendant"
           },
           {
             "qid": "Q639669",
-            "label": "Q639669"
+            "label": "Musiker"
           },
           {
             "qid": "Q177220",
-            "label": "Q177220"
+            "label": "Sänger"
           },
           {
             "qid": "Q98834032",
-            "label": "Q98834032"
+            "label": "Bariton"
           },
           {
             "qid": "Q33999",
-            "label": "Q33999"
+            "label": "Schauspieler"
           }
         ],
         "voiceType": [
           {
             "qid": "Q31687",
-            "label": "Q31687"
+            "label": "Bariton"
           }
         ],
         "birthPlace": {
           "qid": "Q1004295",
-          "label": "Q1004295"
+          "label": "Kybartai"
         },
         "deathPlace": {
           "qid": "Q1741",
-          "label": "Q1741"
+          "label": "Wien"
         },
         "birthDate": "1931-12-24",
         "deathDate": "2025-09-15"
@@ -4062,20 +4062,20 @@
         "occupation": [
           {
             "qid": "Q520549",
-            "label": "Q520549"
+            "label": "Geologe"
           },
           {
             "qid": "Q1622272",
-            "label": "Q1622272"
+            "label": "Hochschullehrer"
           }
         ],
         "birthPlace": {
           "qid": "Q2168642",
-          "label": "Q2168642"
+          "label": "Rothenberga"
         },
         "deathPlace": {
           "qid": "Q83212",
-          "label": "Q83212"
+          "label": "Fichtenberg"
         },
         "birthDate": "1947-00-00",
         "deathDate": "2025-02-15"
@@ -4093,24 +4093,24 @@
         "occupation": [
           {
             "qid": "Q14915627",
-            "label": "Q14915627"
+            "label": "Musikwissenschaftler"
           },
           {
             "qid": "Q36834",
-            "label": "Q36834"
+            "label": "Komponist"
           },
           {
             "qid": "Q16031530",
-            "label": "Q16031530"
+            "label": "Musiktheoretiker"
           }
         ],
         "birthPlace": {
           "qid": "Q2066",
-          "label": "Q2066"
+          "label": "Essen"
         },
         "deathPlace": {
           "qid": "Q2973",
-          "label": "Q2973"
+          "label": "Darmstadt"
         },
         "birthDate": "1910-04-22",
         "deathDate": "1961-12-23"
@@ -4123,16 +4123,16 @@
         "occupation": [
           {
             "qid": "Q13219637",
-            "label": "Q13219637"
+            "label": "Cellist"
           }
         ],
         "birthPlace": {
           "qid": "Q14910",
-          "label": "Q14910"
+          "label": "Schwäbisch Hall"
         },
         "deathPlace": {
           "qid": "Q4100",
-          "label": "Q4100"
+          "label": "Baden-Baden"
         },
         "birthDate": "1897-04-12",
         "deathDate": "1974-03-27"
@@ -4145,22 +4145,22 @@
         "occupation": [
           {
             "qid": "Q2865819",
-            "label": "Q2865819"
+            "label": "Opernsänger"
           }
         ],
         "voiceType": [
           {
             "qid": "Q30903",
-            "label": "Q30903"
+            "label": "Sopran"
           }
         ],
         "birthPlace": {
           "qid": "Q49140",
-          "label": "Q49140"
+          "label": "West Hartford"
         },
         "deathPlace": {
           "qid": "Q1741",
-          "label": "Q1741"
+          "label": "Wien"
         },
         "birthDate": "1927-12-24",
         "deathDate": "2007-07-17"
@@ -4173,22 +4173,22 @@
         "occupation": [
           {
             "qid": "Q2865819",
-            "label": "Q2865819"
+            "label": "Opernsänger"
           }
         ],
         "voiceType": [
           {
             "qid": "Q27914",
-            "label": "Q27914"
+            "label": "Tenor"
           }
         ],
         "birthPlace": {
           "qid": "Q487070",
-          "label": "Q487070"
+          "label": "Dessau"
         },
         "deathPlace": {
           "qid": "Q127043",
-          "label": "Q127043"
+          "label": "Garmisch-Partenkirchen"
         },
         "birthDate": "1926-10-01",
         "deathDate": "1979-03-11"
@@ -4201,28 +4201,28 @@
         "occupation": [
           {
             "qid": "Q36834",
-            "label": "Q36834"
+            "label": "Komponist"
           },
           {
             "qid": "Q158852",
-            "label": "Q158852"
+            "label": "Dirigent"
           },
           {
             "qid": "Q8178443",
-            "label": "Q8178443"
+            "label": "Librettist"
           },
           {
             "qid": "Q639669",
-            "label": "Q639669"
+            "label": "Musiker"
           }
         ],
         "birthPlace": {
           "qid": "Q1726",
-          "label": "Q1726"
+          "label": "München"
         },
         "deathPlace": {
           "qid": "Q127043",
-          "label": "Q127043"
+          "label": "Garmisch-Partenkirchen"
         },
         "birthDate": "1864-06-11",
         "deathDate": "1949-09-08"
@@ -4235,20 +4235,20 @@
         "occupation": [
           {
             "qid": "Q36834",
-            "label": "Q36834"
+            "label": "Komponist"
           },
           {
             "qid": "Q158852",
-            "label": "Q158852"
+            "label": "Dirigent"
           }
         ],
         "birthPlace": {
           "qid": "Q264819",
-          "label": "Q264819"
+          "label": "Schwanenstadt"
         },
         "deathPlace": {
           "qid": "Q1741",
-          "label": "Q1741"
+          "label": "Wien"
         },
         "birthDate": "1766-07-22",
         "deathDate": "1803-09-17"
@@ -4261,22 +4261,22 @@
         "occupation": [
           {
             "qid": "Q2865819",
-            "label": "Q2865819"
+            "label": "Opernsänger"
           }
         ],
         "voiceType": [
           {
             "qid": "Q1601762",
-            "label": "Q1601762"
+            "label": "Heldentenor"
           }
         ],
         "birthPlace": {
           "qid": "Q365",
-          "label": "Q365"
+          "label": "Köln"
         },
         "deathPlace": {
           "qid": "Q56036",
-          "label": "Q56036"
+          "label": "West-Berlin"
         },
         "birthDate": "1906-12-12",
         "deathDate": "1971-09-07"
@@ -4289,24 +4289,24 @@
         "occupation": [
           {
             "qid": "Q158852",
-            "label": "Q158852"
+            "label": "Dirigent"
           },
           {
             "qid": "Q16145150",
-            "label": "Q16145150"
+            "label": "Musikpädagoge"
           },
           {
             "qid": "Q1622272",
-            "label": "Q1622272"
+            "label": "Hochschullehrer"
           }
         ],
         "birthPlace": {
           "qid": "Q1781",
-          "label": "Q1781"
+          "label": "Budapest"
         },
         "deathPlace": {
           "qid": "Q34713",
-          "label": "Q34713"
+          "label": "Salzburg"
         },
         "birthDate": "1899-09-16",
         "deathDate": "1975-09-10"
@@ -4319,13 +4319,13 @@
         "occupation": [
           {
             "qid": "Q2865819",
-            "label": "Q2865819"
+            "label": "Opernsänger"
           }
         ],
         "voiceType": [
           {
             "qid": "Q27914",
-            "label": "Q27914"
+            "label": "Tenor"
           }
         ]
       }
@@ -4337,11 +4337,11 @@
         "occupation": [
           {
             "qid": "Q43845",
-            "label": "Q43845"
+            "label": "Geschäftsmann"
           },
           {
             "qid": "Q2961975",
-            "label": "Q2961975"
+            "label": "Unternehmensleiter"
           }
         ],
         "birthDate": "1960-01-01"
@@ -4354,7 +4354,7 @@
         "occupation": [
           {
             "qid": "Q242468",
-            "label": "Q242468"
+            "label": "Schneider"
           }
         ]
       }
@@ -4366,26 +4366,26 @@
         "occupation": [
           {
             "qid": "Q2865819",
-            "label": "Q2865819"
+            "label": "Opernsänger"
           },
           {
             "qid": "Q177220",
-            "label": "Q177220"
+            "label": "Sänger"
           }
         ],
         "voiceType": [
           {
             "qid": "Q27914",
-            "label": "Q27914"
+            "label": "Tenor"
           }
         ],
         "birthPlace": {
           "qid": "Q1720",
-          "label": "Q1720"
+          "label": "Mainz"
         },
         "deathPlace": {
           "qid": "Q1022",
-          "label": "Q1022"
+          "label": "Stuttgart"
         },
         "birthDate": "1916-09-29",
         "deathDate": "1975-10-08"
@@ -4398,24 +4398,24 @@
         "occupation": [
           {
             "qid": "Q11613590",
-            "label": "Q11613590"
+            "label": "Bühnenbildner"
           },
           {
             "qid": "Q1323191",
-            "label": "Q1323191"
+            "label": "Kostümbildner"
           },
           {
             "qid": "Q1925963",
-            "label": "Q1925963"
+            "label": "Grafiker"
           }
         ],
         "birthPlace": {
           "qid": "Q1741",
-          "label": "Q1741"
+          "label": "Wien"
         },
         "deathPlace": {
           "qid": "Q1741",
-          "label": "Q1741"
+          "label": "Wien"
         },
         "birthDate": "1925-08-13",
         "deathDate": "2021-10-16"
@@ -4428,24 +4428,24 @@
         "occupation": [
           {
             "qid": "Q639669",
-            "label": "Q639669"
+            "label": "Musiker"
           },
           {
             "qid": "Q16145150",
-            "label": "Q16145150"
+            "label": "Musikpädagoge"
           },
           {
             "qid": "Q12377274",
-            "label": "Q12377274"
+            "label": "Trompeter"
           }
         ],
         "birthPlace": {
           "qid": "Q49201",
-          "label": "Q49201"
+          "label": "Portland"
         },
         "deathPlace": {
           "qid": "Q60",
-          "label": "Q60"
+          "label": "New York City"
         },
         "birthDate": "1912-05-23",
         "deathDate": "2005-09-19"
@@ -4458,20 +4458,20 @@
         "occupation": [
           {
             "qid": "Q177220",
-            "label": "Q177220"
+            "label": "Sänger"
           },
           {
             "qid": "Q639669",
-            "label": "Q639669"
+            "label": "Musiker"
           }
         ],
         "birthPlace": {
           "qid": "Q40435",
-          "label": "Q40435"
+          "label": "Buffalo"
         },
         "deathPlace": {
           "qid": "Q245542",
-          "label": "Q245542"
+          "label": "Kürten"
         },
         "birthDate": "1918-05-18",
         "deathDate": "2000-10-28"
@@ -4484,38 +4484,38 @@
         "occupation": [
           {
             "qid": "Q2865819",
-            "label": "Q2865819"
+            "label": "Opernsänger"
           },
           {
             "qid": "Q864380",
-            "label": "Q864380"
+            "label": "Biograf"
           },
           {
             "qid": "Q18939491",
-            "label": "Q18939491"
+            "label": "Tagebuchschreiber"
           },
           {
             "qid": "Q486748",
-            "label": "Q486748"
+            "label": "Pianist"
           }
         ],
         "voiceType": [
           {
             "qid": "Q186506",
-            "label": "Q186506"
+            "label": "Mezzosopran"
           },
           {
             "qid": "Q30903",
-            "label": "Q30903"
+            "label": "Sopran"
           }
         ],
         "birthPlace": {
           "qid": "Q1754",
-          "label": "Q1754"
+          "label": "Stockholm"
         },
         "deathPlace": {
           "qid": "Q1726",
-          "label": "Q1726"
+          "label": "München"
         },
         "birthDate": "1918-04-25",
         "deathDate": "2006-09-04"
@@ -4528,34 +4528,34 @@
         "occupation": [
           {
             "qid": "Q2865819",
-            "label": "Q2865819"
+            "label": "Opernsänger"
           },
           {
             "qid": "Q1259917",
-            "label": "Q1259917"
+            "label": "Geiger"
           },
           {
             "qid": "Q33999",
-            "label": "Q33999"
+            "label": "Schauspieler"
           }
         ],
         "voiceType": [
           {
             "qid": "Q31687",
-            "label": "Q31687"
+            "label": "Bariton"
           },
           {
             "qid": "Q1601762",
-            "label": "Q1601762"
+            "label": "Heldentenor"
           }
         ],
         "birthPlace": {
           "qid": "Q3774",
-          "label": "Q3774"
+          "label": "Chillán"
         },
         "deathPlace": {
           "qid": "Q125293",
-          "label": "Q125293"
+          "label": "Puebla"
         },
         "birthDate": "1911-08-31",
         "deathDate": "1996-01-04"
@@ -4568,20 +4568,20 @@
         "occupation": [
           {
             "qid": "Q1028181",
-            "label": "Q1028181"
+            "label": "Maler"
           },
           {
             "qid": "Q59938438",
-            "label": "Q59938438"
+            "label": "Historienmaler"
           }
         ],
         "birthPlace": {
           "qid": "Q16015",
-          "label": "Q16015"
+          "label": "Balingen"
         },
         "deathPlace": {
           "qid": "Q1022",
-          "label": "Q1022"
+          "label": "Stuttgart"
         },
         "birthDate": "1762-02-28",
         "deathDate": "1852-08-14"
@@ -4594,56 +4594,56 @@
         "occupation": [
           {
             "qid": "Q36834",
-            "label": "Q36834"
+            "label": "Komponist"
           },
           {
             "qid": "Q8178443",
-            "label": "Q8178443"
+            "label": "Librettist"
           },
           {
             "qid": "Q158852",
-            "label": "Q158852"
+            "label": "Dirigent"
           },
           {
             "qid": "Q11774202",
-            "label": "Q11774202"
+            "label": "Essayist"
           },
           {
             "qid": "Q3387717",
-            "label": "Q3387717"
+            "label": "Bühnenregisseur"
           },
           {
             "qid": "Q18814623",
-            "label": "Q18814623"
+            "label": "Autobiograf"
           },
           {
             "qid": "Q49757",
-            "label": "Q49757"
+            "label": "Dichter"
           },
           {
             "qid": "Q486748",
-            "label": "Q486748"
+            "label": "Pianist"
           },
           {
             "qid": "Q1350157",
-            "label": "Q1350157"
+            "label": "Musikkritiker"
           },
           {
             "qid": "Q18939491",
-            "label": "Q18939491"
+            "label": "Tagebuchschreiber"
           },
           {
             "qid": "Q36180",
-            "label": "Q36180"
+            "label": "Schriftsteller"
           }
         ],
         "birthPlace": {
           "qid": "Q2079",
-          "label": "Q2079"
+          "label": "Leipzig"
         },
         "deathPlace": {
           "qid": "Q641",
-          "label": "Q641"
+          "label": "Venedig"
         },
         "birthDate": "1813-05-22",
         "deathDate": "1883-02-13"
@@ -4656,40 +4656,40 @@
         "occupation": [
           {
             "qid": "Q36834",
-            "label": "Q36834"
+            "label": "Komponist"
           },
           {
             "qid": "Q158852",
-            "label": "Q158852"
+            "label": "Dirigent"
           },
           {
             "qid": "Q36180",
-            "label": "Q36180"
+            "label": "Schriftsteller"
           },
           {
             "qid": "Q2526255",
-            "label": "Q2526255"
+            "label": "Filmregisseur"
           },
           {
             "qid": "Q28054786",
-            "label": "Q28054786"
+            "label": "Opernregisseur"
           },
           {
             "qid": "Q3455803",
-            "label": "Q3455803"
+            "label": "Regisseur"
           },
           {
             "qid": "Q8178443",
-            "label": "Q8178443"
+            "label": "Librettist"
           }
         ],
         "birthPlace": {
           "qid": "Q665288",
-          "label": "Q665288"
+          "label": "Landsitz Tribschen"
         },
         "deathPlace": {
           "qid": "Q3923",
-          "label": "Q3923"
+          "label": "Bayreuth"
         },
         "birthDate": "1869-06-06",
         "deathDate": "1930-08-04"
@@ -4702,40 +4702,40 @@
         "occupation": [
           {
             "qid": "Q3387717",
-            "label": "Q3387717"
+            "label": "Bühnenregisseur"
           },
           {
             "qid": "Q36834",
-            "label": "Q36834"
+            "label": "Komponist"
           },
           {
             "qid": "Q36180",
-            "label": "Q36180"
+            "label": "Schriftsteller"
           },
           {
             "qid": "Q33999",
-            "label": "Q33999"
+            "label": "Schauspieler"
           },
           {
             "qid": "Q2707485",
-            "label": "Q2707485"
+            "label": "Szenograf"
           },
           {
             "qid": "Q3455803",
-            "label": "Q3455803"
+            "label": "Regisseur"
           },
           {
             "qid": "Q2490358",
-            "label": "Q2490358"
+            "label": "Choreograf"
           }
         ],
         "birthPlace": {
           "qid": "Q3923",
-          "label": "Q3923"
+          "label": "Bayreuth"
         },
         "deathPlace": {
           "qid": "Q1726",
-          "label": "Q1726"
+          "label": "München"
         },
         "birthDate": "1917-01-05",
         "deathDate": "1966-10-17"
@@ -4755,12 +4755,12 @@
         "occupation": [
           {
             "qid": "Q639669",
-            "label": "Q639669"
+            "label": "Musiker"
           }
         ],
         "birthPlace": {
           "qid": "Q1741",
-          "label": "Q1741"
+          "label": "Wien"
         },
         "birthDate": "1923-05-03"
       }
@@ -4772,16 +4772,16 @@
         "occupation": [
           {
             "qid": "Q1930187",
-            "label": "Q1930187"
+            "label": "Journalist"
           }
         ],
         "birthPlace": {
           "qid": "Q13298",
-          "label": "Q13298"
+          "label": "Graz"
         },
         "deathPlace": {
           "qid": "Q1741",
-          "label": "Q1741"
+          "label": "Wien"
         },
         "birthDate": "1921-03-25",
         "deathDate": "2006-01-02"
@@ -4794,12 +4794,12 @@
         "occupation": [
           {
             "qid": "Q1930187",
-            "label": "Q1930187"
+            "label": "Journalist"
           }
         ],
         "birthPlace": {
           "qid": "Q1721",
-          "label": "Q1721"
+          "label": "Wiesbaden"
         },
         "birthDate": "1944-01-01"
       }
@@ -4811,24 +4811,24 @@
         "occupation": [
           {
             "qid": "Q36834",
-            "label": "Q36834"
+            "label": "Komponist"
           },
           {
             "qid": "Q486748",
-            "label": "Q486748"
+            "label": "Pianist"
           },
           {
             "qid": "Q1350157",
-            "label": "Q1350157"
+            "label": "Musikkritiker"
           }
         ],
         "birthPlace": {
           "qid": "Q486450",
-          "label": "Q486450"
+          "label": "Baden bei Wien"
         },
         "deathPlace": {
           "qid": "Q664735",
-          "label": "Q664735"
+          "label": "Hinterbrühl"
         },
         "birthDate": "1918-05-23",
         "deathDate": "1992-04-09"
@@ -4841,24 +4841,24 @@
         "occupation": [
           {
             "qid": "Q49757",
-            "label": "Q49757"
+            "label": "Dichter"
           },
           {
             "qid": "Q36180",
-            "label": "Q36180"
+            "label": "Schriftsteller"
           },
           {
             "qid": "Q4853732",
-            "label": "Q4853732"
+            "label": "Kinderbuchautor"
           }
         ],
         "birthPlace": {
           "qid": "Q702259",
-          "label": "Q702259"
+          "label": "Elberfeld"
         },
         "deathPlace": {
           "qid": "Q443039",
-          "label": "Q443039"
+          "label": "Altmünster"
         },
         "birthDate": "1828-12-23",
         "deathDate": "1902-08-31"
@@ -4871,20 +4871,20 @@
         "occupation": [
           {
             "qid": "Q169470",
-            "label": "Q169470"
+            "label": "Physiker"
           },
           {
             "qid": "Q1622272",
-            "label": "Q1622272"
+            "label": "Hochschullehrer"
           }
         ],
         "birthPlace": {
           "qid": "Q1040",
-          "label": "Q1040"
+          "label": "Karlsruhe"
         },
         "deathPlace": {
           "qid": "Q2079",
-          "label": "Q2079"
+          "label": "Leipzig"
         },
         "birthDate": "1862-06-15",
         "deathDate": "1927-01-18"
@@ -4897,22 +4897,22 @@
         "occupation": [
           {
             "qid": "Q2865819",
-            "label": "Q2865819"
+            "label": "Opernsänger"
           }
         ],
         "voiceType": [
           {
             "qid": "Q27911",
-            "label": "Q27911"
+            "label": "Bass"
           }
         ],
         "birthPlace": {
           "qid": "Q1715",
-          "label": "Q1715"
+          "label": "Hannover"
         },
         "deathPlace": {
           "qid": "Q1726",
-          "label": "Q1726"
+          "label": "München"
         },
         "birthDate": "1896-03-10",
         "deathDate": "1988-03-20"
@@ -4932,22 +4932,22 @@
         "occupation": [
           {
             "qid": "Q2865819",
-            "label": "Q2865819"
+            "label": "Opernsänger"
           }
         ],
         "voiceType": [
           {
             "qid": "Q1601762",
-            "label": "Q1601762"
+            "label": "Heldentenor"
           }
         ],
         "birthPlace": {
           "qid": "Q212901",
-          "label": "Q212901"
+          "label": "Annemasse"
         },
         "deathPlace": {
           "qid": "Q1022",
-          "label": "Q1022"
+          "label": "Stuttgart"
         },
         "birthDate": "1914-06-26",
         "deathDate": "1974-09-08"
@@ -4960,18 +4960,18 @@
         "occupation": [
           {
             "qid": "Q2865819",
-            "label": "Q2865819"
+            "label": "Opernsänger"
           }
         ],
         "voiceType": [
           {
             "qid": "Q30903",
-            "label": "Q30903"
+            "label": "Sopran"
           }
         ],
         "birthPlace": {
           "qid": "Q81642",
-          "label": "Q81642"
+          "label": "Neckartailfingen"
         },
         "deathPlace": {
           "qid": "Q256364",
@@ -4988,7 +4988,7 @@
         "occupation": [
           {
             "qid": "Q864503",
-            "label": "Q864503"
+            "label": "Biologe"
           }
         ],
         "birthDate": "1945-04-20"
@@ -5001,24 +5001,24 @@
         "occupation": [
           {
             "qid": "Q36834",
-            "label": "Q36834"
+            "label": "Komponist"
           },
           {
             "qid": "Q1350157",
-            "label": "Q1350157"
+            "label": "Musikkritiker"
           },
           {
             "qid": "Q14915627",
-            "label": "Q14915627"
+            "label": "Musikwissenschaftler"
           }
         ],
         "birthPlace": {
           "qid": "Q15918",
-          "label": "Q15918"
+          "label": "Slovenj Gradec"
         },
         "deathPlace": {
           "qid": "Q1741",
-          "label": "Q1741"
+          "label": "Wien"
         },
         "birthDate": "1860-03-13",
         "deathDate": "1903-02-22"
@@ -5031,16 +5031,16 @@
         "occupation": [
           {
             "qid": "Q82955",
-            "label": "Q82955"
+            "label": "Politiker"
           }
         ],
         "birthPlace": {
           "qid": "Q82690",
-          "label": "Q82690"
+          "label": "Horb am Neckar"
         },
         "deathPlace": {
           "qid": "Q64",
-          "label": "Q64"
+          "label": "Berlin"
         },
         "birthDate": "1949-03-04",
         "deathDate": "2023-05-22"
@@ -5053,26 +5053,26 @@
         "occupation": [
           {
             "qid": "Q2865819",
-            "label": "Q2865819"
+            "label": "Opernsänger"
           },
           {
             "qid": "Q18814623",
-            "label": "Q18814623"
+            "label": "Autobiograf"
           }
         ],
         "voiceType": [
           {
             "qid": "Q30903",
-            "label": "Q30903"
+            "label": "Sopran"
           }
         ],
         "birthPlace": {
           "qid": "Q41252",
-          "label": "Q41252"
+          "label": "Bydgoszcz"
         },
         "deathPlace": {
           "qid": "Q1040",
-          "label": "Q1040"
+          "label": "Karlsruhe"
         },
         "birthDate": "1917-12-15",
         "deathDate": "2019-02-21"
@@ -5085,11 +5085,11 @@
         "occupation": [
           {
             "qid": "Q177220",
-            "label": "Q177220"
+            "label": "Sänger"
           },
           {
             "qid": "Q639669",
-            "label": "Q639669"
+            "label": "Musiker"
           }
         ]
       }
@@ -5101,20 +5101,20 @@
         "occupation": [
           {
             "qid": "Q212980",
-            "label": "Q212980"
+            "label": "Psychologe"
           },
           {
             "qid": "Q15980158",
-            "label": "Q15980158"
+            "label": "Sachbuchautor"
           }
         ],
         "birthPlace": {
           "qid": "Q1729",
-          "label": "Q1729"
+          "label": "Erfurt"
         },
         "deathPlace": {
           "qid": "Q9300",
-          "label": "Q9300"
+          "label": "Bernau bei Berlin"
         },
         "birthDate": "1944-07-20",
         "deathDate": "2023-12-07"
@@ -5127,28 +5127,28 @@
         "occupation": [
           {
             "qid": "Q33999",
-            "label": "Q33999"
+            "label": "Schauspieler"
           },
           {
             "qid": "Q2962070",
-            "label": "Q2962070"
+            "label": "Szenenbildner"
           },
           {
             "qid": "Q10800557",
-            "label": "Q10800557"
+            "label": "Filmschauspieler"
           },
           {
             "qid": "Q2259451",
-            "label": "Q2259451"
+            "label": "Theaterschauspieler"
           }
         ],
         "birthPlace": {
           "qid": "Q68311",
-          "label": "Q68311"
+          "label": "Burgdorf"
         },
         "deathPlace": {
           "qid": "Q72",
-          "label": "Q72"
+          "label": "Zürich"
         },
         "birthDate": "1914-09-27",
         "deathDate": "2003-07-28"
@@ -5161,20 +5161,20 @@
         "occupation": [
           {
             "qid": "Q1930187",
-            "label": "Q1930187"
+            "label": "Journalist"
           },
           {
             "qid": "Q36180",
-            "label": "Q36180"
+            "label": "Schriftsteller"
           }
         ],
         "birthPlace": {
           "qid": "Q485294",
-          "label": "Q485294"
+          "label": "Leoben"
         },
         "deathPlace": {
           "qid": "Q13298",
-          "label": "Q13298"
+          "label": "Graz"
         },
         "birthDate": "1901-10-11",
         "deathDate": "1979-11-28"
@@ -5187,20 +5187,20 @@
         "occupation": [
           {
             "qid": "Q9385011",
-            "label": "Q9385011"
+            "label": "Facharzt für Neurochirurgie"
           },
           {
             "qid": "Q1622272",
-            "label": "Q1622272"
+            "label": "Hochschullehrer"
           }
         ],
         "birthPlace": {
           "qid": "Q15855734",
-          "label": "Q15855734"
+          "label": "Zihlschlacht"
         },
         "deathPlace": {
           "qid": "Q72",
-          "label": "Q72"
+          "label": "Zürich"
         },
         "birthDate": "1902-12-03",
         "deathDate": "1985-01-09"
@@ -5213,7 +5213,7 @@
         "occupation": [
           {
             "qid": "Q10732476",
-            "label": "Q10732476"
+            "label": "Kunstsammler"
           }
         ]
       }
@@ -5225,28 +5225,28 @@
         "occupation": [
           {
             "qid": "Q36834",
-            "label": "Q36834"
+            "label": "Komponist"
           },
           {
             "qid": "Q158852",
-            "label": "Q158852"
+            "label": "Dirigent"
           },
           {
             "qid": "Q14915627",
-            "label": "Q14915627"
+            "label": "Musikwissenschaftler"
           },
           {
             "qid": "Q486748",
-            "label": "Q486748"
+            "label": "Pianist"
           }
         ],
         "birthPlace": {
           "qid": "Q673075",
-          "label": "Q673075"
+          "label": "Rohrau"
         },
         "deathPlace": {
           "qid": "Q1741",
-          "label": "Q1741"
+          "label": "Wien"
         },
         "birthDate": "1732-03-31",
         "deathDate": "1809-05-31"
@@ -5259,48 +5259,48 @@
         "occupation": [
           {
             "qid": "Q36834",
-            "label": "Q36834"
+            "label": "Komponist"
           },
           {
             "qid": "Q486748",
-            "label": "Q486748"
+            "label": "Pianist"
           },
           {
             "qid": "Q765778",
-            "label": "Q765778"
+            "label": "Organist"
           },
           {
             "qid": "Q158852",
-            "label": "Q158852"
+            "label": "Dirigent"
           },
           {
             "qid": "Q14915627",
-            "label": "Q14915627"
+            "label": "Musikwissenschaftler"
           },
           {
             "qid": "Q16145150",
-            "label": "Q16145150"
+            "label": "Musikpädagoge"
           },
           {
             "qid": "Q1622272",
-            "label": "Q1622272"
+            "label": "Hochschullehrer"
           },
           {
             "qid": "Q1028181",
-            "label": "Q1028181"
+            "label": "Maler"
           },
           {
             "qid": "Q36180",
-            "label": "Q36180"
+            "label": "Schriftsteller"
           }
         ],
         "birthPlace": {
           "qid": "Q1055",
-          "label": "Q1055"
+          "label": "Hamburg"
         },
         "deathPlace": {
           "qid": "Q2079",
-          "label": "Q2079"
+          "label": "Leipzig"
         },
         "birthDate": "1809-02-03",
         "deathDate": "1847-11-04"
@@ -5313,20 +5313,20 @@
         "occupation": [
           {
             "qid": "Q36834",
-            "label": "Q36834"
+            "label": "Komponist"
           },
           {
             "qid": "Q765778",
-            "label": "Q765778"
+            "label": "Organist"
           }
         ],
         "birthPlace": {
           "qid": "Q13144",
-          "label": "Q13144"
+          "label": "Jesi"
         },
         "deathPlace": {
           "qid": "Q72425",
-          "label": "Q72425"
+          "label": "Pozzuoli"
         },
         "birthDate": "1710-01-04",
         "deathDate": "1736-03-16"
@@ -5339,24 +5339,24 @@
         "occupation": [
           {
             "qid": "Q36834",
-            "label": "Q36834"
+            "label": "Komponist"
           },
           {
             "qid": "Q158852",
-            "label": "Q158852"
+            "label": "Dirigent"
           },
           {
             "qid": "Q639669",
-            "label": "Q639669"
+            "label": "Musiker"
           }
         ],
         "birthPlace": {
           "qid": "Q67094",
-          "label": "Q67094"
+          "label": "Kaiserstuhl"
         },
         "deathPlace": {
           "qid": "Q78",
-          "label": "Q78"
+          "label": "Basel"
         },
         "birthDate": "1870-04-28",
         "deathDate": "1926-06-22"
@@ -5369,24 +5369,24 @@
         "occupation": [
           {
             "qid": "Q2374149",
-            "label": "Q2374149"
+            "label": "Botaniker"
           },
           {
             "qid": "Q39631",
-            "label": "Q39631"
+            "label": "Arzt"
           },
           {
             "qid": "Q1622272",
-            "label": "Q1622272"
+            "label": "Hochschullehrer"
           }
         ],
         "birthPlace": {
           "qid": "Q3033",
-          "label": "Q3033"
+          "label": "Göttingen"
         },
         "deathPlace": {
           "qid": "Q1707",
-          "label": "Q1707"
+          "label": "Kiel"
         },
         "birthDate": "1752-07-27",
         "deathDate": "1828-07-07"
@@ -5399,20 +5399,20 @@
         "occupation": [
           {
             "qid": "Q639669",
-            "label": "Q639669"
+            "label": "Musiker"
           },
           {
             "qid": "Q177220",
-            "label": "Q177220"
+            "label": "Sänger"
           }
         ],
         "birthPlace": {
           "qid": "Q1729",
-          "label": "Q1729"
+          "label": "Erfurt"
         },
         "deathPlace": {
           "qid": "Q1726",
-          "label": "Q1726"
+          "label": "München"
         },
         "birthDate": "1913-03-20",
         "deathDate": "1980-07-13"
@@ -5425,26 +5425,26 @@
         "occupation": [
           {
             "qid": "Q2865819",
-            "label": "Q2865819"
+            "label": "Opernsänger"
           },
           {
             "qid": "Q33999",
-            "label": "Q33999"
+            "label": "Schauspieler"
           }
         ],
         "voiceType": [
           {
             "qid": "Q810480",
-            "label": "Q810480"
+            "label": "Bassbariton"
           }
         ],
         "birthPlace": {
           "qid": "Q3042",
-          "label": "Q3042"
+          "label": "Offenbach am Main"
         },
         "deathPlace": {
           "qid": "Q1726",
-          "label": "Q1726"
+          "label": "München"
         },
         "birthDate": "1909-01-19",
         "deathDate": "2003-12-06"
@@ -5456,7 +5456,7 @@
       "properties": {
         "location": {
           "qid": "Q445524",
-          "label": "Q445524"
+          "label": "Münchner Altstadt"
         }
       }
     },
@@ -5466,7 +5466,7 @@
       "properties": {
         "location": {
           "qid": "Q1139313",
-          "label": "Q1139313"
+          "label": "Lincoln Square"
         },
         "inception": "1880-00-00"
       }
@@ -5501,7 +5501,7 @@
       "properties": {
         "location": {
           "qid": "Q47419907",
-          "label": "Q47419907"
+          "label": "Salle Favart"
         },
         "inception": "1715-00-00"
       }
@@ -5523,7 +5523,7 @@
         },
         "country": {
           "qid": "Q148499",
-          "label": "Q148499"
+          "label": "Mark Brandenburg"
         }
       }
     },
@@ -5551,7 +5551,7 @@
         },
         "country": {
           "qid": "Q12548",
-          "label": "Q12548"
+          "label": "Heiliges Römisches Reich"
         }
       }
     },
@@ -5579,7 +5579,7 @@
         },
         "country": {
           "qid": "Q2277",
-          "label": "Q2277"
+          "label": "Römisches Kaiserreich"
         }
       }
     },
@@ -5593,7 +5593,7 @@
         },
         "country": {
           "qid": "Q29",
-          "label": "Q29"
+          "label": "Spanien"
         }
       }
     },
@@ -5607,7 +5607,7 @@
         },
         "country": {
           "qid": "Q235",
-          "label": "Q235"
+          "label": "Monaco"
         }
       }
     },
@@ -5635,7 +5635,7 @@
         },
         "country": {
           "qid": "Q142",
-          "label": "Q142"
+          "label": "Frankreich"
         }
       }
     },
@@ -5705,7 +5705,7 @@
         },
         "country": {
           "qid": "Q39",
-          "label": "Q39"
+          "label": "Schweiz"
         }
       }
     },
@@ -5719,7 +5719,7 @@
         },
         "country": {
           "qid": "Q39",
-          "label": "Q39"
+          "label": "Schweiz"
         }
       }
     },
@@ -5729,12 +5729,12 @@
       "properties": {
         "composer": {
           "qid": "Q13894",
-          "label": "Q13894"
+          "label": "Richard Strauss"
         },
         "genre": [
           {
             "qid": "Q207591",
-            "label": "Q207591"
+            "label": "Musik der Romantik"
           }
         ],
         "publicationDate": "1898-00-00"
@@ -5754,7 +5754,7 @@
         "genre": [
           {
             "qid": "Q1344",
-            "label": "Q1344"
+            "label": "Oper"
           }
         ],
         "publicationDate": "1977-00-00"
@@ -5767,7 +5767,7 @@
         "genre": [
           {
             "qid": "Q37073",
-            "label": "Q37073"
+            "label": "Popmusik"
           }
         ],
         "publicationDate": "1986-01-01"
@@ -5784,16 +5784,16 @@
       "properties": {
         "composer": {
           "qid": "Q53068",
-          "label": "Q53068"
+          "label": "Claudio Monteverdi"
         },
         "genre": [
           {
             "qid": "Q1684811",
-            "label": "Q1684811"
+            "label": "Complainte"
           },
           {
             "qid": "Q1471717",
-            "label": "Q1471717"
+            "label": "Lamento"
           }
         ]
       }
@@ -5804,7 +5804,7 @@
       "properties": {
         "composer": {
           "qid": "Q726550",
-          "label": "Q726550"
+          "label": "Déodat de Séverac"
         }
       }
     },
@@ -5814,7 +5814,7 @@
       "properties": {
         "composer": {
           "qid": "Q7304",
-          "label": "Q7304"
+          "label": "Gustav Mahler"
         },
         "premiereDate": "1911-11-20"
       }
@@ -5826,7 +5826,7 @@
         "genre": [
           {
             "qid": "Q1344",
-            "label": "Q1344"
+            "label": "Oper"
           }
         ]
       }
@@ -5838,7 +5838,7 @@
         "genre": [
           {
             "qid": "Q182357",
-            "label": "Q182357"
+            "label": "Lyrik"
           }
         ],
         "publicationDate": "1795-00-00"
@@ -5860,7 +5860,7 @@
       "properties": {
         "composer": {
           "qid": "Q7312",
-          "label": "Q7312"
+          "label": "Franz Schubert"
         }
       }
     },
@@ -5870,7 +5870,7 @@
       "properties": {
         "composer": {
           "qid": "Q1336621",
-          "label": "Q1336621"
+          "label": "Emil Palm"
         },
         "publicationDate": "1935-00-00"
       }
@@ -5881,7 +5881,7 @@
       "properties": {
         "composer": {
           "qid": "Q215747",
-          "label": "Q215747"
+          "label": "Hugo Wolf"
         }
       }
     },
@@ -5892,7 +5892,7 @@
         "genre": [
           {
             "qid": "Q482",
-            "label": "Q482"
+            "label": "Dichtkunst"
           }
         ]
       }
@@ -5904,7 +5904,7 @@
         "genre": [
           {
             "qid": "Q1344",
-            "label": "Q1344"
+            "label": "Oper"
           }
         ],
         "publicationDate": "1986-07-31"
@@ -5916,12 +5916,12 @@
       "properties": {
         "composer": {
           "qid": "Q83309",
-          "label": "Q83309"
+          "label": "Johann Strauss"
         },
         "genre": [
           {
             "qid": "Q107364106",
-            "label": "Q107364106"
+            "label": "quadrille"
           }
         ]
       }
@@ -5932,12 +5932,12 @@
       "properties": {
         "composer": {
           "qid": "Q7294",
-          "label": "Q7294"
+          "label": "Johannes Brahms"
         },
         "genre": [
           {
             "qid": "Q207591",
-            "label": "Q207591"
+            "label": "Musik der Romantik"
           }
         ]
       }
@@ -5948,7 +5948,7 @@
       "properties": {
         "composer": {
           "qid": "Q180278",
-          "label": "Q180278"
+          "label": "Charles Gounod"
         }
       }
     },
@@ -5958,7 +5958,7 @@
       "properties": {
         "composer": {
           "qid": "Q56678558",
-          "label": "Q56678558"
+          "label": "unbekannter Urheber"
         }
       }
     },
@@ -5968,12 +5968,12 @@
       "properties": {
         "composer": {
           "qid": "Q7302",
-          "label": "Q7302"
+          "label": "Georg Friedrich Händel"
         },
         "genre": [
           {
             "qid": "Q85477",
-            "label": "Q85477"
+            "label": "Oratorium"
           }
         ],
         "premiereDate": "1747-04-01",
@@ -5986,12 +5986,12 @@
       "properties": {
         "composer": {
           "qid": "Q7302",
-          "label": "Q7302"
+          "label": "Georg Friedrich Händel"
         },
         "genre": [
           {
             "qid": "Q85477",
-            "label": "Q85477"
+            "label": "Oratorium"
           }
         ],
         "premiereDate": "1742-04-13",
@@ -6011,7 +6011,7 @@
       "properties": {
         "composer": {
           "qid": "Q7349",
-          "label": "Q7349"
+          "label": "Joseph Haydn"
         }
       }
     },
@@ -6033,12 +6033,12 @@
       "properties": {
         "composer": {
           "qid": "Q7304",
-          "label": "Q7304"
+          "label": "Gustav Mahler"
         },
         "genre": [
           {
             "qid": "Q893466",
-            "label": "Q893466"
+            "label": "Liederzyklus"
           }
         ],
         "publicationDate": "1905-01-01"
@@ -6057,7 +6057,7 @@
       "properties": {
         "composer": {
           "qid": "Q671472",
-          "label": "Q671472"
+          "label": "Hermann Suter"
         },
         "premiereDate": "1924-06-13"
       }

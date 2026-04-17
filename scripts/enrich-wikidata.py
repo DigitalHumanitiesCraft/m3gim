@@ -268,16 +268,13 @@ def run_enrichment(entity_types: list, force: bool = False):
           f"(Cache: {cached_count} uebersprungen, "
           f"{low_conf_skipped} low-conf ungepruft)")
 
-    if not to_fetch:
-        print("Nichts zu tun.")
-        # Trotzdem Output schreiben (Cache erhalten)
-        _write_output(cache, entity_types, matched)
-        return
-
-    # Batch-Fetch
+    # Batch-Fetch (auch wenn leer — dann nur Cache-Resolve-Pass)
     qid_list = list(to_fetch.keys())
     enriched = dict(cache)  # Start mit Cache
     pending_label_qids = set()
+
+    if not to_fetch:
+        print("Keine neuen Entitaeten — pruefe nur Label-Luecken im Cache.")
 
     for i in range(0, len(qid_list), BATCH_SIZE):
         batch = qid_list[i:i + BATCH_SIZE]
@@ -310,6 +307,21 @@ def run_enrichment(entity_types: list, force: bool = False):
 
         print(f"OK ({len(entities)} Entitaeten)")
 
+    # Cache-Hits einbeziehen: auch fuer bereits gecachte Entitaeten die
+    # Entity-Ref-Label nachholen, falls sie in frueheren Laeufen unaufgeloest
+    # blieben (Muster `label == qid`). Dadurch schliesst z. B. ein spaeterer
+    # Approval-Batch Label-Luecken in zuvor gefetchten Orten.
+    for qid_key, entry in enriched.items():
+        for field_name, val in entry.get("properties", {}).items():
+            if isinstance(val, dict) and "qid" in val:
+                if val.get("label") == val.get("qid"):
+                    pending_label_qids.add(val["qid"])
+            elif isinstance(val, list):
+                for item in val:
+                    if isinstance(item, dict) and "qid" in item:
+                        if item.get("label") == item.get("qid"):
+                            pending_label_qids.add(item["qid"])
+
     # Labels fuer Entity-Referenzen aufloesen
     if pending_label_qids:
         print(f"\nLabels aufloesen: {len(pending_label_qids)} QIDs...")
@@ -320,11 +332,11 @@ def run_enrichment(entity_types: list, force: bool = False):
             props = entry.get("properties", {})
             for field_name, val in props.items():
                 if isinstance(val, dict) and "qid" in val:
-                    val["label"] = labels.get(val["qid"], val["qid"])
+                    val["label"] = labels.get(val["qid"], val["label"] or val["qid"])
                 elif isinstance(val, list):
                     for item in val:
                         if isinstance(item, dict) and "qid" in item:
-                            item["label"] = labels.get(item["qid"], item["qid"])
+                            item["label"] = labels.get(item["qid"], item["label"] or item["qid"])
 
     _write_output(enriched, entity_types, matched)
 
