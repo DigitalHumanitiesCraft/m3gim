@@ -301,6 +301,61 @@ export function roleClusterFor(prefix) {
 }
 
 // =========================================================================
+// Rollen -> funktionale Sektion im Archiv-Inline-Detail (Session 34)
+// Eingabe: Rollenwert in lowercase (wie in JSON-LD, z. B. "komponist").
+// Rueckgabe: Sektionskey ('produktion' | 'mitwirkende' | 'erwaehnt' | null).
+// null bedeutet: keine explizite Zuordnung -> landet im Default-Bucket
+// "Weitere".
+// =========================================================================
+
+export const ROLE_TO_SECTION = {
+  // Produktion — kreative Verantwortung
+  'komponist':         'produktion',
+  'dirigent':          'produktion',
+  'regisseur':         'produktion',
+  'librettist':        'produktion',
+  'übersetzer':        'produktion',
+  'uebersetzer':       'produktion',
+  'verfasser':         'produktion',
+  'herausgeber':       'produktion',
+  'arrangeur':         'produktion',
+  'choreograph':       'produktion',
+  'choreograf':        'produktion',
+  'bühnenbildner':     'produktion',
+  'buehnenbildner':    'produktion',
+  'chorleiter':        'produktion',
+  'kostümbildner':     'produktion',
+  'kostuembildner':    'produktion',
+  'ausstatter':        'produktion',
+  'bühnenleiter':      'produktion',
+  'buehnenleiter':     'produktion',
+  'technische leitung': 'produktion',
+
+  // Mitwirkende — auf der Buehne oder im Archiv-Kontext
+  'sänger':            'mitwirkende',
+  'saenger':           'mitwirkende',
+  'sängerin':          'mitwirkende',
+  'interpret':         'mitwirkende',
+  'protagonist':       'mitwirkende',
+  'agent':             'mitwirkende',
+  'vermittler':        'mitwirkende',
+  'adressat':          'mitwirkende',
+  'empfänger':         'mitwirkende',
+  'empfaenger':        'mitwirkende',
+  'unterzeichner':     'mitwirkende',
+  'auftraggeber':      'mitwirkende',
+
+  // Erwaehnt
+  'erwähnt':           'erwaehnt',
+  'erwaehnt':          'erwaehnt',
+};
+
+export function sectionForRole(role) {
+  if (!role) return null;
+  return ROLE_TO_SECTION[String(role).trim().toLowerCase()] || null;
+}
+
+// =========================================================================
 // Confidence-Dot-Mapping (Session 32: E-75 Mockup-Stil)
 // Erwarteter Input: numerischer Wert 0..1, typischerweise 1.00 / 0.50 / 0.00.
 // Hinweis: nicht-numerische oder fehlende Werte -> null, Dot wird dann nicht

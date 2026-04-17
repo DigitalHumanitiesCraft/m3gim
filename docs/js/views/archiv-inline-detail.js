@@ -8,7 +8,7 @@ import { formatSignatur, formatDocType, ensureArray, countLinks } from '../utils
 import { formatDate } from '../utils/date-parser.js';
 import { navigateToIndex } from '../ui/router.js';
 import { toggleKorb, isInKorb } from '../ui/korb.js';
-import { WIKIDATA_ICON_SVG, AGRELON_LABELS, roleClusterFor } from '../data/constants.js';
+import { WIKIDATA_ICON_SVG, AGRELON_LABELS, roleClusterFor, sectionForRole } from '../data/constants.js';
 
 /**
  * Build an inline detail DOM element for a record.
@@ -97,45 +97,125 @@ export function buildInlineDetail(record, store, { onClose } = {}) {
     leftCol.appendChild(renderSection(`Beziehungen (${agentRelations.length})`, renderAgentRelations(agentRelations)));
   }
 
-  // Ereignisse aus store.mobilityEvents (Phase 6: m3gim:SpatiotemporalEvent)
-  const eventIds = store.recordToEvents?.get(record['@id']) || [];
-  const events = eventIds.map(eid => store.mobilityEvents.get(eid)).filter(Boolean);
-  if (events.length) {
-    leftCol.appendChild(renderSection(`Ereignisse (${events.length})`, renderMobilityEvents(events)));
-  }
-
-  // Right column: Verknüpfungen
+  // Right column: funktionale Bloecke (Session 34).
+  // Agents werden nach Rolle in Produktion / Mitwirkende / Erwaehnt / Weitere
+  // partitioniert; Werke + Buehnenrollen liegen im Block "Werk & Repertoire";
+  // Orte + SpatiotemporalEvents im Block "Ort & Ereignis".
   const rightCol = el('div', { className: 'inline-detail__col' });
 
   const allAgents = ensureArray(record['m3gim:hasAssociatedAgent']);
-  const persons = allAgents.filter(a => a['@type'] !== 'rico:CorporateBody' && a['@type'] !== 'rico:Group');
-  const institutions = allAgents.filter(a => a['@type'] === 'rico:CorporateBody' || a['@type'] === 'rico:Group');
-  if (persons.length) {
-    rightCol.appendChild(renderSection(`Personen (${persons.length})`, renderEntityChips(persons, 'personen')));
-  }
-  if (institutions.length) {
-    rightCol.appendChild(renderSection(`Institutionen (${institutions.length})`, renderEntityChips(institutions, 'organisationen')));
-  }
-
-  const locations = ensureArray(record['rico:hasOrHadLocation']);
-  if (locations.length) {
-    rightCol.appendChild(renderSection(`Orte (${locations.length})`, renderEntityChips(locations, 'orte')));
-  }
-
   const subjects = ensureArray(record['rico:hasOrHadSubject']);
   const works = subjects.filter(s => s['@type'] === 'm3gim:MusicalWork' || s['@type'] === 'm3gim:PerformanceEvent');
   const mentionedPersons = subjects.filter(s => s['@type'] === 'rico:Person');
-  if (works.length) {
-    rightCol.appendChild(renderSection(`Werke (${works.length})`, renderWorkChips(works)));
+  const performanceRoles = ensureArray(record['m3gim:hasPerformanceRole']);
+  const locations = ensureArray(record['rico:hasOrHadLocation']);
+  const eventIds = store.recordToEvents?.get(record['@id']) || [];
+  const events = eventIds.map(eid => store.mobilityEvents.get(eid)).filter(Boolean);
+
+  // Agents nach Sektion gruppieren.
+  const bucket = { produktion: [], mitwirkende: [], erwaehnt: [], weitere: [] };
+  for (const a of allAgents) {
+    const section = sectionForRole(a.role) || 'weitere';
+    bucket[section].push(a);
+  }
+  // Erwaehnt-Personen aus rico:hasOrHadSubject landen ebenfalls im Erwaehnt-Block.
+  for (const p of mentionedPersons) {
+    bucket.erwaehnt.push(p);
   }
 
-  const roles = ensureArray(record['m3gim:hasPerformanceRole']);
-  if (roles.length) {
-    rightCol.appendChild(renderSection(`Rollen (${roles.length})`, renderEntityChips(roles)));
+  if (bucket.produktion.length) {
+    rightCol.appendChild(renderSection(
+      `Produktion (${bucket.produktion.length})`,
+      renderAgentChips(bucket.produktion, 'personen'),
+    ));
+  }
+  if (bucket.mitwirkende.length) {
+    rightCol.appendChild(renderSection(
+      `Mitwirkende (${bucket.mitwirkende.length})`,
+      renderAgentChips(bucket.mitwirkende, 'personen'),
+    ));
   }
 
-  if (mentionedPersons.length) {
-    rightCol.appendChild(renderSection(`Erw\u00e4hnt (${mentionedPersons.length})`, renderEntityChips(mentionedPersons, 'personen')));
+  // Werk & Repertoire: Werke + Buehnenrollen.
+  if (works.length || performanceRoles.length) {
+    const container = el('div', { className: 'inline-detail__chips' });
+    for (const w of works) {
+      const name = w.name || w['skos:prefLabel'] || '?';
+      const komponist = w.komponist || '';
+      container.appendChild(buildRoleChip({
+        prefix: w['@type'] === 'm3gim:PerformanceEvent' ? 'EREIGNIS' : 'WERK',
+        value: komponist ? `${name} (${komponist})` : name,
+        cluster: w['@type'] === 'm3gim:PerformanceEvent' ? 'ort' : 'rolle',
+        xlsxSource: extractXlsxSource(w),
+        wikidata: w['@id'] && String(w['@id']).startsWith('wd:') ? w['@id'] : null,
+        tip: 'Im Werke-Index oeffnen',
+        onClick: () => navigateToIndex('werke', name),
+      }));
+    }
+    for (const r of performanceRoles) {
+      const name = r.name || r['skos:prefLabel'] || '?';
+      container.appendChild(buildRoleChip({
+        prefix: 'ROLLE',
+        value: name,
+        cluster: 'rolle',
+        xlsxSource: extractXlsxSource(r),
+      }));
+    }
+    const total = works.length + performanceRoles.length;
+    rightCol.appendChild(renderSection(`Werk & Repertoire (${total})`, container));
+  }
+
+  // Ort & Ereignis: SpatiotemporalEvents (mit Datum) + Places ohne Event-Verknuepfung.
+  if (events.length || locations.length) {
+    const container = el('div', { className: 'inline-detail__chips' });
+    // Events zuerst — tragen mehr Kontext (Ort + Datum).
+    for (const ev of events) {
+      const dateDisplay = ev.date ? formatDate(ev.date) : '—';
+      const prefix = ev.role || 'EREIGNIS';
+      container.appendChild(buildRoleChip({
+        prefix,
+        value: `${ev.place || '?'}\u00a0\u00b7\u00a0${dateDisplay}`,
+        xlsxSource: ev.xlsxSource,
+        wikidata: ev.placeWikidata,
+        tip: ev.place ? 'Ort im Index oeffnen' : null,
+        onClick: ev.place ? () => navigateToIndex('orte', ev.place) : null,
+      }));
+    }
+    // Orte, die nicht schon ueber STE dargestellt sind.
+    const eventPlaces = new Set(events.map(e => (e.place || '').toLowerCase()));
+    for (const loc of locations) {
+      const name = loc.name || loc['skos:prefLabel'] || '?';
+      if (eventPlaces.has(name.toLowerCase())) continue;
+      container.appendChild(buildRoleChip({
+        prefix: (loc.role || 'ORT').toUpperCase(),
+        value: name,
+        cluster: 'ort',
+        xlsxSource: extractXlsxSource(loc),
+        wikidata: loc['@id'] && String(loc['@id']).startsWith('wd:') ? loc['@id'] : null,
+        tip: 'Ort im Index oeffnen',
+        onClick: () => navigateToIndex('orte', name),
+      }));
+    }
+    if (container.childNodes.length > 0) {
+      rightCol.appendChild(renderSection(
+        `Ort & Ereignis (${container.childNodes.length})`,
+        container,
+      ));
+    }
+  }
+
+  if (bucket.erwaehnt.length) {
+    rightCol.appendChild(renderSection(
+      `Erwaehnt (${bucket.erwaehnt.length})`,
+      renderAgentChips(bucket.erwaehnt, 'personen'),
+    ));
+  }
+
+  if (bucket.weitere.length) {
+    rightCol.appendChild(renderSection(
+      `Weitere (${bucket.weitere.length})`,
+      renderAgentChips(bucket.weitere, 'personen'),
+    ));
   }
 
   body.appendChild(leftCol);
@@ -185,41 +265,38 @@ function renderMetaGrid(pairs) {
   return grid;
 }
 
-function renderEntityChips(entities, gridType) {
+/** Extrahiert xlsxSource aus einem JSON-LD-Subobjekt im kompakten {sheet, row}-Format. */
+function extractXlsxSource(entity) {
+  const src = entity && entity['m3gim:xlsxSource'];
+  if (!src || typeof src !== 'object') return null;
+  const row = src['m3gim:xlsxRow'];
+  if (!row) return null;
+  return {
+    sheet: src['m3gim:xlsxSheet'] || null,
+    row,
+    datenpunkt: src['m3gim:datenpunktId'] || null,
+  };
+}
+
+/**
+ * Rendert eine Liste von Agent-Subobjekten als Rollen-Prefix-Chips (Session 34).
+ * Uppercase-Rolle als Prefix, Name als Wert, Cluster aus roleClusterFor,
+ * Provenance-Pille aus m3gim:xlsxSource, Wikidata-Badge aus @id.
+ */
+function renderAgentChips(entities, gridType) {
   const container = el('div', { className: 'inline-detail__chips' });
   for (const entity of entities) {
     const name = entity.name || entity['skos:prefLabel'] || entity['@id'] || '?';
-    const role = entity.role || '';
-    const wikidata = entity['@id'];
-    const hasWd = wikidata && wikidata.startsWith('wd:');
-
-    const chipProps = { className: `chip chip--entity${gridType ? ' chip--clickable' : ''}` };
-    if (gridType) {
-      chipProps.onClick = (e) => {
-        e.stopPropagation();
-        navigateToIndex(gridType, name);
-      };
-      chipProps.dataset = { tip: `Im Index \u00f6ffnen` };
-    }
-
-    const chip = el('span', chipProps,
-      name,
-      role ? el('span', { className: 'chip__role' }, ` (${role})`) : null,
-    );
-
-    if (hasWd) {
-      chip.appendChild(el('a', {
-        className: 'badge badge--wikidata',
-        href: `https://www.wikidata.org/entity/${wikidata.replace('wd:', '')}`,
-        target: '_blank',
-        rel: 'noopener noreferrer',
-        title: wikidata,
-        html: WIKIDATA_ICON_SVG,
-        onClick: (e) => e.stopPropagation(),
-      }));
-    }
-
-    container.appendChild(chip);
+    const role = entity.role || 'AGENT';
+    const wikidata = entity['@id'] && String(entity['@id']).startsWith('wd:') ? entity['@id'] : null;
+    container.appendChild(buildRoleChip({
+      prefix: role,
+      value: name,
+      xlsxSource: extractXlsxSource(entity),
+      wikidata,
+      tip: gridType ? 'Im Index oeffnen' : null,
+      onClick: gridType ? () => navigateToIndex(gridType, name) : null,
+    }));
   }
   return container;
 }
@@ -317,44 +394,6 @@ function renderAgentRelations(relations) {
   return container;
 }
 
-/**
- * SpatiotemporalEvent-Chips. Eingabe: Array aus store.mobilityEvents-Werten.
- */
-function renderMobilityEvents(events) {
-  const container = el('div', { className: 'inline-detail__chips' });
-  for (const ev of events) {
-    const dateDisplay = ev.date ? formatDate(ev.date) : '—';
-    const prefix = ev.role || 'EREIGNIS';
-    container.appendChild(buildRoleChip({
-      prefix,
-      value: `${ev.place || '?'}\u00a0\u00b7\u00a0${dateDisplay}`,
-      xlsxSource: ev.xlsxSource,
-      wikidata: ev.placeWikidata,
-      tip: ev.place ? 'Ort im Index öffnen' : null,
-      onClick: ev.place ? () => navigateToIndex('orte', ev.place) : null,
-    }));
-  }
-  return container;
-}
-
-function renderWorkChips(subjects) {
-  const container = el('div', { className: 'inline-detail__chips' });
-  for (const subj of subjects) {
-    const name = subj.name || subj['skos:prefLabel'] || '?';
-    const komponist = subj.komponist || '';
-    const role = subj.role || '';
-    const chip = el('span', {
-      className: 'chip chip--werk chip--clickable',
-      dataset: { tip: 'Im Index \u00f6ffnen' },
-      onClick: (e) => { e.stopPropagation(); navigateToIndex('werke', name); },
-    },
-      komponist ? `${name} (${komponist})` : name,
-      role ? el('span', { className: 'chip__role' }, ` \u2014 ${role}`) : null,
-    );
-    container.appendChild(chip);
-  }
-  return container;
-}
 
 /** Build an aggregate detail view for a Konvolut (RecordSet). */
 function buildKonvolutDetail(record, store, { onClose } = {}) {
