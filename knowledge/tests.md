@@ -1,6 +1,6 @@
 # Tests
 
-> Artefakt-basierte Pipeline-Testsuite. 19 Module, 157 Tests grün (v2 ist Default seit 2026-04-17). TDD-Workflow für Modell-Erweiterungen. 7 XPASS(strict) als Phase-6-Marker (loader.js).
+> Artefakt-basierte Pipeline-Testsuite. 19 Module, 164 Tests grün (Phase 6 umgesetzt in Session 30). TDD-Workflow für Modell-Erweiterungen.
 
 ## Zweck
 
@@ -158,15 +158,13 @@ Dieses Muster wurde in Phase 4.1–4.8 erfolgreich angewendet. Siehe [status.md]
 
 - `test_all_record_ids_unique` — **xfail**. PL_07 Duplikat aus XLSX-Erfassung. Fix: im Google Sheet bereinigen, dann xfail-Marker entfernen.
 - `test_has_employer_relations_from_arbeitgeber` — **skip**. Die einzige arbeitgeber-Zeile hat Signatur `UAKUG/NIM_11`, die keinem Record zugeordnet werden kann (verwaist).
-- **7 `XPASS(strict)` in `test_06_frontend_contract.py`** — gewollt rote Phase-6-Marker: die Output-Invarianten für loader.js-Store-Maps (mobilityEvents, agentRelations, finances, dftHierarchy, typisierte Datumsfelder) sind im JSON-LD bereits erfüllt, loader.js indexiert sie aber noch nicht. Marker entfernen, sobald die jeweilige Store-Map in [loader.js](../docs/js/data/loader.js) implementiert ist.
 - Junk-Namen im Personen-Index (`[Organi]`, kurze Initialen) werden als Warnung geloggt, nicht gefailed — Frontend filtert via `isJunkName`.
 - Freitext in Datumsspalte (`"Wien, ab 1956"`, `"1944-05 bis 1944-09"`): `is_iso_date()` lässt sie nicht in typisierte Datumsproperties durch, landen stattdessen in generischem `m3gim:eventDate`.
 
-## Test-Ergebnis (Session 29, 2026-04-17, v2-Konsolidierung)
+## Test-Ergebnis (Session 30, 2026-04-17, Phase 6 abgeschlossen)
 
 ```
-157 passed, 1 skipped (NIM_11 verwaist), 1 xfailed (PL_07)
-+ 7 XPASS(strict) in test_06 → Phase-6-Marker für loader.js
+164 passed, 1 skipped (NIM_11 verwaist), 1 xfailed (PL_07)
 ```
 
 Laufzeit: ~1 Sekunde für `pytest -m "not slow"`, ~60 Sekunden inkl. Determinismus-Test.

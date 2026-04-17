@@ -73,11 +73,12 @@ Einheitliches Template: `info-header`, `info-nav`, `info-main`, `info-footer`. L
 
 ```
 store = {
+  // Basis (seit v1)
   fonds,                           // rico:RecordSet, type=Fonds
   konvolute: Map<id, RecordSet>,
   records: Map<id, Record>,        // alle Records inkl. Folios
   allRecords: Array<Record>,       // Folios gefiltert
-  byYear: Map<year, Record[]>,
+  byYear: Map<year, Record[]>,     // nutzt rico:date ODER typisierte Datumsfelder als Fallback
   byDocType: Map<typeId, Record[]>,
   bySignatur: Map<sig, Record>,
   persons: Map<name, {records, roles, kategorie, wikidata, occupation, voiceType, birthDate, deathDate}>,
@@ -89,23 +90,30 @@ store = {
   konvolutMeta: Map<konvolutId, {title, dateDisplay, childCount, ...}>,
   folioIds: Set<folioId>,
   unprocessedIds: Set<recordId>,
-  recordCount, konvolutCount, exportDate
+  recordCount, konvolutCount, exportDate,
+
+  // v2-Store-Maps (Phase 6, Session 30)
+  dftHierarchy: Map<conceptId, {id, prefLabel, broader, children[]}>,
+  mobilityEvents: Map<eventId, {id, place, placeWikidata, date, role, description, recordId}>,
+  recordToEvents: Map<recordId, eventId[]>,
+  agentRelations: Map<recordId, [{type, objectName, objectWikidata, validityBegin, validityEnd, provenance}]>,
+  finances: Map<recordId, [{field, role, rawValue, amount:Number, currency}]>,
 }
 ```
 
 Archiv und Indizes lesen direkt aus `m3gim.jsonld` (über Store), nicht aus separaten View-JSONs. Mobilität liest aus beiden: `partitur.json` (Lebensphasen, Orte, Pfeile) + Store (Gastspiel-Dokumente dynamisch).
 
-### Phase 6 — geplante Store-Erweiterungen
+### Phase 6 — Store-Erweiterungen (umgesetzt, Session 30)
 
-Das JSON-LD enthält bereits alle v2-Strukturen, loader.js indexiert sie aber noch nicht. Die 7 `XPASS(strict)`-Tests in [test_06_frontend_contract.py](../tests/test_06_frontend_contract.py) formulieren die Spec. Pro Commit eine Store-Map einziehen, entsprechenden xfail-Marker entfernen.
-
-| Neue Store-Map | Quelle im JSON-LD | Nutzen im Frontend |
+| Store-Map | Quelle im JSON-LD | Sichtbarer Nutzen (nach Phase 7) |
 |---|---|---|
-| `store.dftHierarchy` | Top-Level `skos:Concept`-Knoten + `skos:broader` | Indizes-Filter kann Dokumenttypen hierarchisch gruppieren (`biographisch` → `autobiografie`, `biographie`) |
-| `store.mobilityEvents` + `store.recordToEvents` | `m3gim:SpatiotemporalEvent`-Knoten + `m3gim:hasSpatiotemporalEvent`-Refs | Mobilität + Lebenspartitur zeigen präzise Events mit Provenance statt heuristisch aus `partitur.auftritte` |
-| `store.agentRelations` | `m3gim:agentRelation`-Array am Record | Indizes-Personen-Kacheln mit Beziehungs-Badges (Arbeitgeber, Patron, Korrespondent); optional neuer „Beziehungen"-Grid |
-| `store.finances` | `m3gim:hasDetail`-DetailAnnotations mit `monetaryAmount` + `currency` + `detailRole` | Archiv-Inline-Detail zeigt Honorare, optional Finanz-Visualisierung als eigener Tab |
-| typisierte Datumsfelder als Fallback in `indexByYear` | `m3gim:absendedatum`, `m3gim:auffuehrungsdatum` etc. (inkl. Listen + `"ISO/ISO"`-Ranges) | Matrix + Zeitfluss zeigen mehr Dots — Records ohne `rico:date`, aber mit typisiertem Datum werden zeitlich einsortiert |
+| `store.dftHierarchy` (18 Concepts) | Top-Level `skos:Concept`-Knoten + `skos:broader` | Indizes-Filter kann Dokumenttypen hierarchisch gruppieren (`biographisch` → `autobiografie`, `biographie`) |
+| `store.mobilityEvents` (43) + `store.recordToEvents` (24) | `m3gim:SpatiotemporalEvent`-Knoten + `m3gim:hasSpatiotemporalEvent`-Refs | Mobilität + Lebenspartitur zeigen präzise Events mit Provenance statt heuristisch aus `partitur.auftritte` |
+| `store.agentRelations` (19 Records) | `m3gim:agentRelation`-Array am Record | Indizes-Personen-Kacheln mit Beziehungs-Badges (Arbeitgeber, Patron, Korrespondent); optional neuer „Beziehungen"-Grid |
+| `store.finances` (14 Records) | `m3gim:hasDetail`-DetailAnnotations mit `monetaryAmount` + `currency` + `detailRole` | Archiv-Inline-Detail zeigt Honorare, optional Finanz-Visualisierung als eigener Tab |
+| typisierte Datumsfelder als Fallback in `indexByYear` | `m3gim:absendedatum`, `m3gim:auffuehrungsdatum` etc. (inkl. Listen + `"ISO/ISO"`-Ranges + `circa:`/`vor:`/`nach:`-Präfixe) | Matrix + Zeitfluss zeigen mehr Dots — Records ohne `rico:date`, aber mit typisiertem Datum werden zeitlich einsortiert |
+
+Die Invarianten werden als Kontrakttests in [test_06_frontend_contract.py](../tests/test_06_frontend_contract.py) durchgängig geprüft.
 
 Provenance (`agrelon:hasProvenance` + `hasConfidenceValue`) wird nicht als eigene Store-Map indexiert, sondern am Record mitgeführt; einzelne Views können sie bei Bedarf lesen.
 

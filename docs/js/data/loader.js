@@ -54,11 +54,18 @@ function buildStore(jsonld) {
     konvolutCount: jsonld['m3gim:konvolutCount'] || 0,
     exportDate: jsonld['m3gim:exportDate'] || '',
     childToKonvolut: new Map(),
+    // v2-Strukturen (Phase 6)
+    dftHierarchy: new Map(),   // conceptId → { id, prefLabel, broader, children[] }
+    mobilityEvents: new Map(), // eventId → { id, place, date, role, description, recordId }
+    recordToEvents: new Map(), // recordId → eventId[]
+    agentRelations: new Map(), // recordId → RelationEntry[]
+    finances: new Map(),       // recordId → FinanceEntry[]
   };
 
   // Pass 1: Classify nodes
   for (const node of graph) {
-    if (node['@type'] === 'rico:RecordSet') {
+    const nodeType = node['@type'];
+    if (nodeType === 'rico:RecordSet') {
       const setType = node['rico:hasRecordSetType'];
       const typeId = setType ? setType['@id'] : null;
       if (typeId === 'rico:Fonds') {
@@ -72,12 +79,23 @@ function buildStore(jsonld) {
           store.childToKonvolut.set(cid, node['@id']);
         }
       }
-    } else if (node['@type'] === 'rico:Record') {
+    } else if (nodeType === 'rico:Record') {
       store.records.set(node['@id'], node);
       store.allRecords.push(node);
       if (node['rico:identifier']) {
         store.bySignatur.set(node['rico:identifier'], node);
       }
+    } else if (nodeType === 'skos:Concept') {
+      indexConcept(store, node);
+    } else if (nodeType === 'm3gim:SpatiotemporalEvent') {
+      indexMobilityEvent(store, node);
+    }
+  }
+
+  // Pass 1.5: Derive DFT parent→children backrefs (concepts are now all known)
+  for (const [cid, concept] of store.dftHierarchy) {
+    if (concept.broader && store.dftHierarchy.has(concept.broader)) {
+      store.dftHierarchy.get(concept.broader).children.push(cid);
     }
   }
 
@@ -88,6 +106,9 @@ function buildStore(jsonld) {
     indexAgents(store, record);
     indexLocations(store, record);
     indexWorks(store, record);
+    indexRecordToEvents(store, record);
+    indexAgentRelations(store, record);
+    indexFinances(store, record);
   }
 
   // Pass 3: Derive Konvolut display metadata + filter Folio records
@@ -152,8 +173,34 @@ function buildStore(jsonld) {
   return store;
 }
 
+// Typisierte Datumsproperties aus Phase 4.7 — fallback fuer indexByYear,
+// wenn rico:date fehlt. Reihenfolge entspricht dem Auffuehrungsbezug.
+const TYPED_DATE_PROPS = [
+  'm3gim:auffuehrungsdatum', 'm3gim:premieredatum', 'm3gim:auftrittsdatum',
+  'm3gim:absendedatum', 'm3gim:empfangsdatum', 'm3gim:gespraechsdatum',
+  'm3gim:erscheinungsdatum', 'm3gim:ausstellungsdatum', 'm3gim:ausstrahlungsdatum',
+  'm3gim:probenbeginn', 'm3gim:probendatum', 'm3gim:spielzeitVon',
+  'm3gim:ueberweisungsdatum', 'm3gim:abreisedatum',
+];
+
+function firstTypedYear(record) {
+  for (const prop of TYPED_DATE_PROPS) {
+    const v = record[prop];
+    if (!v) continue;
+    const values = Array.isArray(v) ? v : [v];
+    for (const val of values) {
+      if (typeof val !== 'string') continue;
+      // circa:/vor:/nach: Praefix strippen
+      const bare = val.replace(/^(circa|vor|nach):/, '');
+      const y = extractYear(bare);
+      if (y) return y;
+    }
+  }
+  return null;
+}
+
 function indexByYear(store, record) {
-  const year = extractYear(record['rico:date']);
+  const year = extractYear(record['rico:date']) || firstTypedYear(record);
   if (year) {
     if (!store.byYear.has(year)) store.byYear.set(year, []);
     store.byYear.get(year).push(record);
@@ -262,6 +309,99 @@ function indexWorks(store, record) {
     if (subj['m3gim:premiereDate'] && !wEntry.premiereDate) wEntry.premiereDate = subj['m3gim:premiereDate'];
     if (subj['m3gim:wdGenre'] && !wEntry.wdGenre) wEntry.wdGenre = subj['m3gim:wdGenre'];
   }
+}
+
+/* ------------------------------------------------------------------ */
+/*  v2-Store-Maps (Phase 6)                                            */
+/* ------------------------------------------------------------------ */
+
+/** SKOS-Concept (DFT-Hierarchie). Pass 1 legt nur Einzelknoten an, Parent→Children folgt in Pass 1.5. */
+function indexConcept(store, node) {
+  const id = node['@id'];
+  if (!id) return;
+  const broader = node['skos:broader'] && node['skos:broader']['@id'] || null;
+  store.dftHierarchy.set(id, {
+    id,
+    prefLabel: node['skos:prefLabel'] || id.split(':').pop(),
+    broader,
+    children: [],
+  });
+}
+
+/** Top-Level-SpatiotemporalEvent zu store.mobilityEvents. */
+function indexMobilityEvent(store, node) {
+  const id = node['@id'];
+  if (!id) return;
+  const place = node['m3gim:atPlace'];
+  const placeName = place && (place.name || place['skos:prefLabel']) || null;
+  const placeQid = place && place['@id'] && String(place['@id']).startsWith('wd:') ? place['@id'] : null;
+  const recordRef = node['rico:isAssociatedWithRecord'];
+  const recordId = recordRef && recordRef['@id'] || null;
+  store.mobilityEvents.set(id, {
+    id,
+    place: placeName,
+    placeWikidata: placeQid,
+    date: node['m3gim:atDate'] || null,
+    role: node['m3gim:eventRole'] || null,
+    description: node['rico:generalDescription'] || null,
+    recordId,
+  });
+}
+
+/** Record → Event-IDs (aus m3gim:hasSpatiotemporalEvent am Record). */
+function indexRecordToEvents(store, record) {
+  const refs = ensureArray(record['m3gim:hasSpatiotemporalEvent']);
+  if (refs.length === 0) return;
+  const eventIds = [];
+  for (const ref of refs) {
+    const eid = ref && ref['@id'];
+    if (eid && store.mobilityEvents.has(eid)) eventIds.push(eid);
+  }
+  if (eventIds.length > 0) store.recordToEvents.set(record['@id'], eventIds);
+}
+
+/** AgRelOn-Relationen am Record. */
+function indexAgentRelations(store, record) {
+  const rels = ensureArray(record['m3gim:agentRelation']);
+  if (rels.length === 0) return;
+  const entries = [];
+  for (const rel of rels) {
+    if (!rel || typeof rel !== 'object') continue;
+    const obj = rel['agrelon:hasObject'] || {};
+    const validity = rel['agrelon:hasValidityPeriod'];
+    entries.push({
+      type: rel['@type'] || null,
+      objectName: obj.name || null,
+      objectWikidata: obj['@id'] && String(obj['@id']).startsWith('wd:') ? obj['@id'] : null,
+      validityBegin: validity && validity['agrelon:hasBeginDate'] || null,
+      validityEnd: validity && validity['agrelon:hasEndDate'] || null,
+      provenance: rel['agrelon:hasProvenance'] && rel['agrelon:hasProvenance']['@id'] || null,
+    });
+  }
+  if (entries.length > 0) store.agentRelations.set(record['@id'], entries);
+}
+
+/** Finanz-DetailAnnotations (nur mit monetaryAmount). */
+function indexFinances(store, record) {
+  const details = ensureArray(record['m3gim:hasDetail']);
+  if (details.length === 0) return;
+  const entries = [];
+  for (const det of details) {
+    if (!det || typeof det !== 'object') continue;
+    if (det['@type'] !== 'm3gim:DetailAnnotation') continue;
+    const amount = det['m3gim:monetaryAmount'];
+    if (!amount || typeof amount !== 'object') continue;
+    const raw = amount['@value'];
+    const value = raw != null ? Number(raw) : null;
+    entries.push({
+      field: det['m3gim:detailField'] || null,
+      role: det['m3gim:detailRole'] || null,
+      rawValue: det['m3gim:detailValue'] || null,
+      amount: Number.isFinite(value) ? value : null,
+      currency: det['m3gim:currency'] || null,
+    });
+  }
+  if (entries.length > 0) store.finances.set(record['@id'], entries);
 }
 
 /* ------------------------------------------------------------------ */

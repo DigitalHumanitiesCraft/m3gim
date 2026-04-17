@@ -1,6 +1,6 @@
 # Entscheidungen und Prozesswissen
 
-> 71 Architekturentscheidungen (E-01 bis E-71), offene Entscheidungen, technische Schulden und Learnings.
+> 72 Architekturentscheidungen (E-01 bis E-72), offene Entscheidungen, technische Schulden und Learnings.
 
 ## Architekturentscheidungen (final)
 
@@ -77,6 +77,7 @@
 | E-69 | AgRelOn für Agent-Agent-Relationen: `AGRELON_MAPPING` (typ, rolle) → AgRelOn-Klasse + -Property. Umgesetzt: `HasEmployeeEmployer`, `HasCorrespondent`, `HasProfessionalContact`, `HasIsPatron`, `HasIsMember`. Emission als `m3gim:agentRelation`-Array am Record mit `agrelon:hasProvenance` (Record-URI). `hasValidityPeriod` aus `rico:date` als Heuristik für Employer-Relationen. |
 | E-70 | v2-Konsolidierung (Session 29, 2026-04-17): v2 ist alleiniger Default, v1 unter `data/_archive/` archiviert. `docs/data/m3gim.jsonld` ist alleinige primäre Datenquelle des Frontends — Derivate (`partitur.json`, `matrix.json`, `kosmos.json`) sind optionale Visualisierungs-Hilfen, die vom Store aus regeneriert werden können. `build-views.py` kopiert seitdem auch `m3gim.jsonld` automatisch nach `docs/data/` (zuvor manueller Schritt, Drift-Quelle). E-62 damit obsolet. |
 | E-71 | `FINANCE_CURRENCY_DEFAULTS` pro Archivsignatur-Präfix in `transform.py`: greift, wenn XLSX-Typ `ausgaben, währung` markiert ist, das Namensfeld aber keinen Währungs-Suffix trägt. Aktuell `UAKUG/NIM_007` → `S` (Schilling). Defaults sind explizite Redaktionsentscheidungen; ohne Eintrag bleibt `currency` leer und `validate.py` warnt. Alternative heuristisches Raten im Parser wurde bewusst verworfen, weil historisch korrekte Währungszuordnung inhaltlich, nicht syntaktisch erfolgen muss. |
+| E-72 | Phase 6 — 5 Store-Maps in `loader.js` (Session 30): `dftHierarchy`, `mobilityEvents`+`recordToEvents`, `agentRelations`, `finances`, plus typisierte Datumsfelder als Fallback in `indexByYear`. Jede Map ist eigenständige Indexer-Funktion, die Pass 1 (Top-Level-Knoten: Concepts, STE) bzw. Pass 2 (record-gebunden: events-refs, agentRelations, finances) durchläuft. Pass 1.5 verdrahtet `skos:broader` zu `children[]`-Backrefs. DFT-Concepts und STE werden **nicht** direkt als Record-Properties indexiert — sie sind Top-Level-Graph-Entitäten mit `@id`, und Records verweisen via `@id`. Die Views sehen die Maps erst nach Phase 7 (View-Migration). |
 
 ## Offene Entscheidungen
 

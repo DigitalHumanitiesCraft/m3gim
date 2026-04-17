@@ -1,6 +1,6 @@
 # Status
 
-> Steckbrief, aktueller Datenstand, erreichte Meilensteine und nächste Schritte. Stand: 2026-04-17 (Session 29, v2-Konsolidierung: v1 archiviert, v2 ist neuer Default).
+> Steckbrief, aktueller Datenstand, erreichte Meilensteine und nächste Schritte. Stand: 2026-04-17 (Session 30, Phase 6 abgeschlossen: loader.js indexiert alle v2-Strukturen).
 
 ## Steckbrief
 
@@ -32,11 +32,25 @@ Frühere v1-Stände liegen in `data/_archive/` (Snapshot 2026-02-25: 282 Objekte
 
 ### Getestet
 
-- 157 Tests grün, 1 xfail (PL_07 Duplikat), 1 skipped (verwaiste NIM_11-Signatur)
-- 7 Tests in `test_06` als XPASS(strict) → signalisieren, dass loader.js die v2-Strukturen indexieren soll (Phase 6)
+- 164 Tests grün, 1 xfail (PL_07 Duplikat), 1 skipped (verwaiste NIM_11-Signatur)
+- Alle Phase-6-Kontrakttests grün — loader.js indexiert die v2-Strukturen.
 - Siehe [tests.md](tests.md).
 
 ## Erreichte Meilensteine
+
+### Phase 6 — loader.js indexiert v2-Strukturen (Session 30, 2026-04-17)
+
+5 neue Store-Maps in [loader.js](../docs/js/data/loader.js) eingezogen, alle 7 Phase-6-Kontrakttests in `test_06` wurden regulär grün:
+
+| Store-Map | Größe | Funktion |
+|---|---|---|
+| `store.dftHierarchy` | 18 Concepts | SKOS-Dokumenttyp-Hierarchie mit `broader` + `children`-Backrefs |
+| `store.mobilityEvents` | 43 Events | Top-Level-SpatiotemporalEvents mit `place`, `date`, `role`, `recordId` |
+| `store.recordToEvents` | 24 Records | Reverse-Map: Record-ID → Event-IDs aus `m3gim:hasSpatiotemporalEvent` |
+| `store.agentRelations` | 19 Records | AgRelOn-Relationen mit Typ, Objektname, Q-ID, Validity, Provenance |
+| `store.finances` | 14 Records | DetailAnnotations mit geparstem Betrag (Number), Währung, Feld, Rolle |
+
+Zusätzlich: `indexByYear()` nutzt jetzt typisierte Datumsproperties (`m3gim:auffuehrungsdatum` etc.) als Fallback, wenn `rico:date` fehlt — Matrix + Zeitfluss bekommen damit mehr zeitliche Dots. 164 Tests grün. Views sind noch unverändert auf dem alten Store-Kontrakt — **Phase 7 macht die neuen Maps sichtbar**.
 
 ### v2-Konsolidierung + Currency-Fix + Frontend-Kontrakt-Spec (Session 29, 2026-04-17)
 
@@ -81,21 +95,18 @@ Detaillierte Entscheidungen: [entscheidungen.md](entscheidungen.md) (E-01 bis E-
 
 ## Nächste Schritte
 
-### Phase 6 — loader.js um v2-Store-Maps erweitern (aktuell in Arbeit)
+### Phase 7 — Views nutzen die neuen Store-Maps
 
-Das Frontend bedient sich nun aus dem v2-JSON-LD (`docs/data/m3gim.jsonld`, 381 Records), der Loader indexiert die v2-spezifischen Strukturen aber noch nicht. Die 7 XPASS-Tests in `test_06` dokumentieren präzise den Auftrag. Reihenfolge:
+Die Store-Maps aus Phase 6 sind befüllt, die Views zeigen sie noch nicht. Reihenfolge nach Sichtbarkeit des Gewinns:
 
-1. **SKOS-Concept-Hierarchie** → `store.dftHierarchy` (18 Concepts mit broader-Links)
-2. **SpatiotemporalEvents** → `store.mobilityEvents` + `store.recordToEvents` (43 Events, ISO/Range-fähig)
-3. **AgRelOn-Relationen** → `store.agentRelations` (19 Einträge mit @type + hasObject)
-4. **Finanzen** → `store.finances` (21 DetailAnnotations, monetaryAmount + currency)
-5. **Typisierte Datumsproperties** → Fallback in `indexByYear()` für Records ohne `rico:date`
+1. **Archiv-Inline-Detail** — Finanzen, AgRelOn-Relationen, typisierte Datumsfelder, SpatiotemporalEvents als Panels. Kleinster Aufwand, größter User-sichtbarer Effekt (z.B. `NIM_007 5_1` zeigt endlich seine 5 Finanzzeilen).
+2. **Indizes-Personen** — Beziehungsbadges aus `store.agentRelations` an die Personen-Kacheln. Optional: neuer fünfter Grid „Beziehungen".
+3. **Archiv-Dokumenttyp-Filter** — DFT-Hierarchie (`biographisch` → `autobiografie`, `biographie`) gruppieren.
+4. **Mobilitäts-Schwimmbahn** — `store.mobilityEvents` (43 STE) statt heuristische Partitur-Auftritte (39). Präzisere Event-Marker mit Dokument-Link.
+5. **Lebenspartitur** — STE als präzise Orts-Zeit-Anker. Phasen bleiben statisch aus `LEBENSPHASEN`-Konstante.
+6. **Optional: Finanz-Visualisierung** — neuer Tab oder in Lebenspartitur integriert.
 
-Nach jedem Schritt die entsprechenden xfail-Marker aus `test_06` entfernen, Suite grün halten.
-
-### Phase 7 — Views auf Store-Aggregation umstellen
-
-Alle D3-Views lesen heute `partitur.json`. Nach Phase 6 können sie direkt aus dem Store aggregieren — `partitur.json` und die anderen Derivate werden zu optionalen, für einzelne Visualisierungen gedachten Zusatzartefakten. Reihenfolge: Mobilität zuerst (sichtbarster Gewinn), dann Matrix/Zeitfluss, dann Indizes (neuer Beziehungen-Grid), zuletzt Lebenspartitur.
+Nach Phase 7: `partitur.json` kann ausgemustert werden, da kein Konsument mehr übrig ist. Derivate `matrix.json` / `kosmos.json` bleiben optional.
 
 ### Offene Datenqualität (extern blockiert)
 

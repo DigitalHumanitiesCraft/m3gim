@@ -2,10 +2,8 @@
 
 Diese Tests sichern ab, dass der Output die impliziten Annahmen der
 JS-Module erfüllt, damit keine Regressionen beim Datenupdate entstehen.
-
-v2-Erweiterungs-Block (ab Phase 6): Invarianten, die der *erweiterte*
-loader.js erfüllen muss. Als xfail(strict=True) markiert — wird XPASS,
-sobald loader.js die neuen Store-Felder aufbaut. Siehe status.md § Phase 6."""
+Inkl. v2-Store-Invarianten (Phase 6): dftHierarchy, mobilityEvents,
+agentRelations, finances, typisierte Datumsfelder."""
 
 import re
 
@@ -115,20 +113,11 @@ def test_agents_always_object_or_list_of_objects(records):
 #
 # Diese Tests formulieren die Strukturen, die der erweiterte loader.js
 # beim Aufbau von store.mobilityEvents, store.agentRelations, store.finances
-# und store.dftHierarchy voraussetzen darf.
-#
-# Status:
-#   - xfail(strict=True) mit LOADER_PHASE6_REASON — loader.js zieht nach,
-#     XPASS signalisiert fertige Indexierung. Marker entfernen, sobald
-#     Phase 6 live ist.
-#   - xfail(strict=False) ohne LOADER_PHASE6_REASON — echter Pipeline-Bug,
-#     der vor Phase 6 gefixt werden muss, aber Arbeit blockieren würde.
+# und store.dftHierarchy voraussetzt. loader.js wurde in Session 30 erweitert;
+# die Tests sind reguläre Kontrakt-Tests.
 # ---------------------------------------------------------------------------
 
-LOADER_PHASE6_REASON = "Phase 6: loader.js indexiert v2-Strukturen noch nicht — Marker entfernen, sobald Store-Maps stehen"
 
-
-@pytest.mark.xfail(reason=LOADER_PHASE6_REASON, strict=True)
 def test_spatiotemporal_events_are_top_level(graph):
     """store.mobilityEvents soll aus Top-Level-Knoten im @graph aufgebaut werden."""
     ste_nodes = [n for n in graph if n.get("@type") == "m3gim:SpatiotemporalEvent"]
@@ -137,7 +126,6 @@ def test_spatiotemporal_events_are_top_level(graph):
     assert not missing_id, f"SpatiotemporalEvent ohne m3gim:ste_-ID: {missing_id[:3]}"
 
 
-@pytest.mark.xfail(reason=LOADER_PHASE6_REASON, strict=True)
 def test_spatiotemporal_events_have_required_fields(graph):
     """loader.js-Indexierung braucht atPlace + atDate (ISO oder ISO/ISO-Range) pro Event."""
     ste_nodes = [n for n in graph if n.get("@type") == "m3gim:SpatiotemporalEvent"]
@@ -158,7 +146,6 @@ def test_spatiotemporal_events_have_required_fields(graph):
     assert not offenders, f"SpatiotemporalEvent-Pflichtfelder fehlen: {offenders[:5]}"
 
 
-@pytest.mark.xfail(reason=LOADER_PHASE6_REASON, strict=True)
 def test_hasSpatiotemporalEvent_refs_resolve(records, graph):
     """store.recordToEvents erwartet auflösbare @id-Referenzen auf STE-Knoten."""
     ste_ids = {n["@id"] for n in graph if n.get("@type") == "m3gim:SpatiotemporalEvent"}
@@ -177,7 +164,6 @@ def test_hasSpatiotemporalEvent_refs_resolve(records, graph):
     assert not unresolved, f"Unauflösbare STE-Referenzen: {unresolved[:5]}"
 
 
-@pytest.mark.xfail(reason=LOADER_PHASE6_REASON, strict=True)
 def test_agent_relations_have_type_and_object(records):
     """store.agentRelations braucht @type (agrelon:HasXxx) + agrelon:hasObject mit name."""
     offenders = []
@@ -199,7 +185,6 @@ def test_agent_relations_have_type_and_object(records):
     assert not offenders, f"Malformed agentRelation: {offenders[:5]}"
 
 
-@pytest.mark.xfail(reason=LOADER_PHASE6_REASON, strict=True)
 def test_finance_details_have_amount_structure(records):
     """store.finances braucht monetaryAmount als typisiertes Literal + detailRole.
     Currency kann fehlen (Bug, siehe test_finance_details_have_currency)."""
@@ -236,7 +221,6 @@ def test_finance_details_have_currency(records):
     assert not offenders, f"Finanz-Details ohne currency: {offenders[:5]}"
 
 
-@pytest.mark.xfail(reason=LOADER_PHASE6_REASON, strict=True)
 def test_dft_hierarchy_concepts_resolve(graph, records):
     """store.dftHierarchy erwartet auflösbare skos:broader-Referenzen + Record-Referenzen."""
     concepts = {n["@id"]: n for n in graph if n.get("@type") == "skos:Concept"}
@@ -268,7 +252,6 @@ def test_dft_hierarchy_concepts_resolve(graph, records):
     )
 
 
-@pytest.mark.xfail(reason=LOADER_PHASE6_REASON, strict=True)
 def test_typed_date_properties_usable_for_indexByYear(records):
     """indexByYear soll typisierte Daten nutzen, wenn rico:date fehlt.
 
