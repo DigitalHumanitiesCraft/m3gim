@@ -269,9 +269,9 @@
       "titel": "Rezension von A. Parente zu Tristan und Isolde in Neapel"
     },
     {
-      "ort": "Zürich",
+      "ort": "Bayreuth",
       "ort_detail": null,
-      "kategorie": "engagement",
+      "kategorie": "festspiel",
       "werk": "Orpheus und Eurydike",
       "komponist": "Gluck/Händel",
       "rolle": "Orpheus",
@@ -302,9 +302,9 @@
       "titel": "Spielplan der Bayrischen Staatstheater / für die Zeit vom 28. Dezember 1952 bis "
     },
     {
-      "ort": "München",
-      "ort_detail": "Bayerische Staatsoper",
-      "kategorie": "engagement",
+      "ort": null,
+      "ort_detail": null,
+      "kategorie": "gastspiel",
       "werk": "Macbeth",
       "komponist": "Verdi",
       "rolle": "Lady Macbeth",
@@ -312,11 +312,26 @@
       "datum": "1952-12-17",
       "phase": "LP5",
       "dokumente": [
-        "UAKUG/NIM_004 3",
-        "UAKUG/NIM_004 4"
+        "UAKUG/NIM_004 3"
       ],
       "gattung": "oper",
       "titel": "Rezension von Karl Schumann zu Macbeth"
+    },
+    {
+      "ort": "München",
+      "ort_detail": "Bayerische Staatsoper",
+      "kategorie": "engagement",
+      "werk": "Macbeth",
+      "komponist": "Verdi",
+      "rolle": "Lady Macbeth",
+      "jahr": 1952,
+      "datum": "1952-12-18",
+      "phase": "LP5",
+      "dokumente": [
+        "UAKUG/NIM_004 4"
+      ],
+      "gattung": "oper",
+      "titel": "Rezension von H. Schmidt-Garre zu Macbeth an der Bayerischen Staatsoper"
     },
     {
       "ort": "Wien",
@@ -351,6 +366,22 @@
       "titel": "TRISTANO / E / ISOTTA"
     },
     {
+      "ort": null,
+      "ort_detail": null,
+      "kategorie": "gastspiel",
+      "werk": "Orpheus und Eurydike",
+      "komponist": "Gluck/Händel",
+      "rolle": "Orpheus",
+      "jahr": 1953,
+      "datum": "1953-03-06",
+      "phase": "LP5",
+      "dokumente": [
+        "UAKUG/NIM_004 8"
+      ],
+      "gattung": "oper",
+      "titel": "Rezension von Helmut Schmidt-Garre"
+    },
+    {
       "ort": "Bayreuth",
       "ort_detail": null,
       "kategorie": "festspiel",
@@ -367,22 +398,6 @@
       "titel": "Rezensionen aus der Fränkischen Presse zu \"Die Götterdämmerung\" und \"Tristan und"
     },
     {
-      "ort": "München",
-      "ort_detail": null,
-      "kategorie": "engagement",
-      "werk": "Orpheus und Eurydike",
-      "komponist": "Gluck/Händel",
-      "rolle": "Orpheus",
-      "jahr": 1953,
-      "datum": "1953-03-06",
-      "phase": "LP5",
-      "dokumente": [
-        "UAKUG/NIM_004 8"
-      ],
-      "gattung": "oper",
-      "titel": "Rezension von Helmut Schmidt-Garre"
-    },
-    {
       "ort": null,
       "ort_detail": null,
       "kategorie": "gastspiel",
@@ -397,6 +412,22 @@
       ],
       "gattung": null,
       "titel": "IL CREPUSCOLO / DEGLI DEI"
+    },
+    {
+      "ort": null,
+      "ort_detail": null,
+      "kategorie": "gastspiel",
+      "werk": "La clemenza di Tito",
+      "komponist": "Mozart",
+      "rolle": "Sextus",
+      "jahr": 1954,
+      "datum": "1954-07-06",
+      "phase": "LP5",
+      "dokumente": [
+        "UAKUG/NIM_004 12"
+      ],
+      "gattung": "oper",
+      "titel": "Rezension von Dr. Kurt Honolka zu Titus"
     },
     {
       "ort": "Lissabon",
@@ -447,22 +478,6 @@
       "titel": "Rezension von ZED. zu Le Chant de la Terre in Straßburg unter Fritz Munch"
     },
     {
-      "ort": "Stuttgart",
-      "ort_detail": null,
-      "kategorie": "gastspiel",
-      "werk": "La clemenza di Tito",
-      "komponist": "Mozart",
-      "rolle": "Sextus",
-      "jahr": 1954,
-      "datum": "1954-07-06",
-      "phase": "LP5",
-      "dokumente": [
-        "UAKUG/NIM_004 12"
-      ],
-      "gattung": "oper",
-      "titel": "Rezension von Dr. Kurt Honolka zu Titus"
-    },
-    {
       "ort": null,
       "ort_detail": null,
       "kategorie": "gastspiel",
@@ -479,7 +494,7 @@
       "titel": "Direttore / PAUL HINDEMITH / Mezzosoprano / IRA MALANIUK"
     },
     {
-      "ort": "Paris",
+      "ort": null,
       "ort_detail": null,
       "kategorie": "gastspiel",
       "werk": "Tristan und Isolde",
@@ -1210,7 +1225,7 @@
     }
   ],
   "_meta": {
-    "generated": "2026-04-17T19:59:28.459981",
+    "generated": "2026-04-17T20:19:05.078824",
     "source_records": 450
   }
 }

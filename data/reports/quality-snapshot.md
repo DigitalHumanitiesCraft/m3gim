@@ -1,6 +1,6 @@
 # M³GIM Quality-Snapshot
 
-_Generiert: 2026-04-17T19:59_
+_Generiert: 2026-04-17T20:19_
 
 Grundlage: `data\output\m3gim.jsonld` + `data\output\wikidata-reconciliation.json`.
 

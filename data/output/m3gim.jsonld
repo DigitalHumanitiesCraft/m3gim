@@ -3218,7 +3218,6 @@
       ],
       "rico:hasOrHadLocation": {
         "name": "München",
-        "role": "erscheinungsdatum",
         "m3gim:xlsxSource": {
           "m3gim:xlsxSheet": "Verknuepfungen",
           "m3gim:xlsxRow": 83
@@ -4463,7 +4462,6 @@
       ],
       "rico:hasOrHadLocation": {
         "name": "München",
-        "role": "erscheinungsdatum",
         "m3gim:xlsxSource": {
           "m3gim:xlsxSheet": "Verknuepfungen",
           "m3gim:xlsxRow": 178
@@ -5994,7 +5992,6 @@
       ],
       "rico:hasOrHadLocation": {
         "name": "Stuttgart",
-        "role": "erscheinungsdatum",
         "m3gim:xlsxSource": {
           "m3gim:xlsxSheet": "Verknuepfungen",
           "m3gim:xlsxRow": 320
@@ -8326,7 +8323,6 @@
       "rico:hasOrHadLocation": [
         {
           "name": "Paris",
-          "role": "aufführung",
           "m3gim:xlsxSource": {
             "m3gim:xlsxSheet": "Verknuepfungen",
             "m3gim:xlsxRow": 515
@@ -8335,7 +8331,6 @@
         },
         {
           "name": "Paris",
-          "role": "aufführung",
           "m3gim:xlsxSource": {
             "m3gim:xlsxSheet": "Verknuepfungen",
             "m3gim:xlsxRow": 516
@@ -8945,7 +8940,6 @@
         },
         {
           "name": "Zürich",
-          "role": "spielzeit",
           "m3gim:xlsxSource": {
             "m3gim:xlsxSheet": "Verknuepfungen",
             "m3gim:xlsxRow": 574
@@ -8954,7 +8948,6 @@
         },
         {
           "name": "München",
-          "role": "spielzeit",
           "m3gim:xlsxSource": {
             "m3gim:xlsxSheet": "Verknuepfungen",
             "m3gim:xlsxRow": 575
@@ -8963,7 +8956,6 @@
         },
         {
           "name": "Wien, ab 1956",
-          "role": "spielzeit",
           "m3gim:xlsxSource": {
             "m3gim:xlsxSheet": "Verknuepfungen",
             "m3gim:xlsxRow": 576
@@ -9715,7 +9707,6 @@
       "rico:hasOrHadLocation": [
         {
           "name": "Wien",
-          "role": "aufführung",
           "m3gim:xlsxSource": {
             "m3gim:xlsxSheet": "Verknuepfungen",
             "m3gim:xlsxRow": 631
@@ -9724,7 +9715,6 @@
         },
         {
           "name": "München",
-          "role": "aufführung",
           "m3gim:xlsxSource": {
             "m3gim:xlsxSheet": "Verknuepfungen",
             "m3gim:xlsxRow": 632
@@ -9738,7 +9728,6 @@
           "geo:lat": 48.85666666666667,
           "geo:long": 2.352222222222222,
           "m3gim:country": "Frankreich",
-          "role": "aufführung",
           "m3gim:xlsxSource": {
             "m3gim:xlsxSheet": "Verknuepfungen",
             "m3gim:xlsxRow": 633
@@ -10162,7 +10151,6 @@
         },
         {
           "name": "Zürich",
-          "role": "spielzeit",
           "m3gim:xlsxSource": {
             "m3gim:xlsxSheet": "Verknuepfungen",
             "m3gim:xlsxRow": 680
@@ -10171,7 +10159,6 @@
         },
         {
           "name": "München",
-          "role": "spielzeit",
           "m3gim:xlsxSource": {
             "m3gim:xlsxSheet": "Verknuepfungen",
             "m3gim:xlsxRow": 681
@@ -10180,7 +10167,6 @@
         },
         {
           "name": "Wien, ab 1956",
-          "role": "spielzeit",
           "m3gim:xlsxSource": {
             "m3gim:xlsxSheet": "Verknuepfungen",
             "m3gim:xlsxRow": 682
@@ -13203,7 +13189,6 @@
       ],
       "rico:hasOrHadLocation": {
         "name": "Bayreuth",
-        "role": "ausstellungsdatum",
         "m3gim:xlsxSource": {
           "m3gim:xlsxSheet": "Verknuepfungen",
           "m3gim:xlsxRow": 959
@@ -15728,7 +15713,6 @@
         },
         {
           "name": "München",
-          "role": "absendedatum",
           "m3gim:xlsxSource": {
             "m3gim:xlsxSheet": "Verknuepfungen",
             "m3gim:xlsxRow": 1071
@@ -15824,7 +15808,6 @@
         },
         {
           "name": "Zürich",
-          "role": "absendedatum",
           "m3gim:xlsxSource": {
             "m3gim:xlsxSheet": "Verknuepfungen",
             "m3gim:xlsxRow": 1091
@@ -17443,7 +17426,6 @@
       ],
       "rico:hasOrHadLocation": {
         "name": "Wien",
-        "role": "erscheinungsdatum",
         "m3gim:xlsxSource": {
           "m3gim:xlsxSheet": "Verknuepfungen",
           "m3gim:xlsxRow": 1223
@@ -22054,7 +22036,7 @@
       }
     }
   ],
-  "m3gim:exportDate": "2026-04-17T19:59:28.282816",
+  "m3gim:exportDate": "2026-04-17T20:19:04.902422",
   "m3gim:recordCount": 381,
   "m3gim:konvolutCount": 7
 }

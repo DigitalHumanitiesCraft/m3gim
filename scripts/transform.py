@@ -797,6 +797,13 @@ def add_relations_to_records(records: list, relations: dict,
                 if name and re.match(r'^\d{4}(-\d{2}){0,2}', name):
                     continue
                 entry["@type"] = "rico:Place"
+                # Komposit "ort,datum" vererbt die Rolle an beide Haelften.
+                # Eine Datumsrolle (erscheinungsdatum, auffuehrung, ...) gehoert
+                # semantisch nur zum Datum-Teil — am Ort produziert sie im UI
+                # Etiketten wie "Muenchen (erscheinungsdatum)". Hier strippen,
+                # damit die Rolle nur dort erscheint, wo sie aussagekraeftig ist.
+                if (entry.get("role") or "").strip().lower() in DATUMSROLLE_TO_PROPERTY:
+                    entry.pop("role", None)
                 locations.append(entry)
 
             elif t == "werk":
