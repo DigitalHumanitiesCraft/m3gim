@@ -4,7 +4,7 @@
  */
 
 import { el, clear } from '../utils/dom.js';
-import { formatSignatur, formatChildSignatur, getDocTypeId, truncate, ensureArray } from '../utils/format.js';
+import { formatSignatur, formatChildSignatur, getDocTypeId, truncate, ensureArray, expandDftFilter } from '../utils/format.js';
 import { extractYear } from '../utils/date-parser.js';
 import { DOKUMENTTYP_LABELS } from '../data/constants.js';
 import { buildInlineDetail } from './archiv-inline-detail.js';
@@ -67,9 +67,10 @@ export function updateChronikView(filters) {
     });
   }
 
-  // Doc type
+  // Doc type (hierarchisch: Oberbegriff matcht transitiv)
   if (docType) {
-    records = records.filter(r => getDocTypeId(r) === docType);
+    const allowedTypes = expandDftFilter(store, docType);
+    records = records.filter(r => allowedTypes.has(getDocTypeId(r)));
   }
 
   // Person filter

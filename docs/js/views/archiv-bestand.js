@@ -4,7 +4,7 @@
  */
 
 import { el, clear } from '../utils/dom.js';
-import { formatSignatur, formatChildSignatur, getDocTypeId, countLinks, truncate, ensureArray } from '../utils/format.js';
+import { formatSignatur, formatChildSignatur, getDocTypeId, countLinks, truncate, ensureArray, expandDftFilter } from '../utils/format.js';
 import { extractYear, formatDate } from '../utils/date-parser.js';
 import { DOKUMENTTYP_LABELS } from '../data/constants.js';
 import { buildInlineDetail } from './archiv-inline-detail.js';
@@ -65,9 +65,10 @@ export function updateBestandView(filters) {
     });
   }
 
-  // Doc type filter
+  // Doc type filter (hierarchisch: Oberbegriff matcht transitiv)
   if (docType) {
-    items = items.filter(item => getDocTypeId(item.record) === docType);
+    const allowedTypes = expandDftFilter(store, docType);
+    items = items.filter(item => allowedTypes.has(getDocTypeId(item.record)));
   }
 
   // Person filter

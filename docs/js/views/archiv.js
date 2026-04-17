@@ -4,6 +4,7 @@
 
 import { el, clear } from '../utils/dom.js';
 import { DOKUMENTTYP_LABELS } from '../data/constants.js';
+import { buildDftTree } from '../utils/format.js';
 import { onViewNavigate } from '../ui/events.js';
 import { renderBestand, updateBestandView, expandRecord } from './archiv-bestand.js';
 import { renderChronik, updateChronikView, setChronikGrouping } from './archiv-chronik.js';
@@ -69,14 +70,27 @@ function buildToolbar() {
     onInput: (e) => { currentSearch = e.target.value.toLowerCase(); applyFilters(); },
   });
 
-  // Doc type filter
-  const docTypes = [...store.byDocType.keys()].filter(t => t !== 'konvolut').sort();
+  // Doc type filter — hierarchisch aus store.dftHierarchy (Session 32, E-75):
+  // Top-Level-Concepts als optgroup, Kinder als options. Oberbegriff-Wahl
+  // matcht transitiv in expandDftFilter().
+  const dftGroups = buildDftTree(store);
   const typeSelect = el('select', {
     className: 'archiv-select',
     onChange: (e) => { currentDocType = e.target.value; applyFilters(); },
   },
     el('option', { value: '' }, '\u2014 Dokumenttyp \u2014'),
-    ...docTypes.map(t => el('option', { value: t }, DOKUMENTTYP_LABELS[t] || t))
+    ...dftGroups.flatMap(group => {
+      const groupLabel = DOKUMENTTYP_LABELS[group.id] || group.label;
+      const options = [];
+      if (group.id !== '__sonstige__') {
+        // Oberbegriff selbst als waehlbar (matcht transitiv auf alle Kinder).
+        options.push(el('option', { value: group.id }, `${groupLabel} (alle)`));
+      }
+      for (const child of group.children) {
+        options.push(el('option', { value: child.id }, DOKUMENTTYP_LABELS[child.id] || child.label));
+      }
+      return [el('optgroup', { label: groupLabel }, ...options)];
+    })
   );
 
   // Person filter — Autocomplete Combobox
