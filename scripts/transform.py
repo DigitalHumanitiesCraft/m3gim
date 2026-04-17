@@ -657,6 +657,12 @@ def process_verknuepfungen(df: pd.DataFrame, indices: dict) -> dict:
                     "anmerkung": anmerkung,
                     "_source": source_info,
                 }
+                # Ortsindex-Lookup, damit der STE-Zweig in add_relations_to_records
+                # Wikidata-Enrichment (Koordinaten, Land) auf das atPlace-Subobjekt
+                # anwenden kann (Mobilitaets-Atlas-Vorarbeit).
+                ort_lookup = indices.get("ort", {}).get(ort_val.strip().lower())
+                if ort_lookup and 'wikidata_id' in ort_lookup:
+                    ste_rel["wikidata_id"] = ort_lookup["wikidata_id"]
                 relations.setdefault(objekt_id, []).append(ste_rel)
 
         for t in typen:
@@ -845,10 +851,20 @@ def add_relations_to_records(records: list, relations: dict,
                 event_counter += 1
                 rec_local_id = record["@id"].split(":", 1)[-1]
                 ev_id = f"m3gim:ste_{rec_local_id}_{event_counter}"
+                # atPlace: wie reguläre rico:Place-Entries mit Q-ID + Enrichment
+                # anreichern, sobald Reconciliation einen Treffer liefert.
+                place_entry = {"name": rel["ort"]}
+                wid = rel.get("wikidata_id", "")
+                if wid and re.match(r'^Q\d+$', wid):
+                    place_entry["@id"] = f"wd:{wid}"
+                    place_entry["owl:sameAs"] = f"http://www.wikidata.org/entity/{wid}"
+                    enrich = enrichment_data.get(wid, {}).get("properties", {})
+                    if enrich:
+                        _inject_enrichment(place_entry, enrich)
                 ev = {
                     "@id": ev_id,
                     "@type": "m3gim:SpatiotemporalEvent",
-                    "m3gim:atPlace": {"name": rel["ort"]},
+                    "m3gim:atPlace": place_entry,
                     "m3gim:atDate": rel["datum"],
                     "rico:isAssociatedWithRecord": {"@id": record["@id"]},
                 }

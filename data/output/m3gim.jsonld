@@ -21314,7 +21314,12 @@
       "@id": "m3gim:ste_NIM_004_12_3",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
-        "name": "Stuttgart"
+        "name": "Stuttgart",
+        "@id": "wd:Q1022",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q1022",
+        "geo:lat": 48.7775,
+        "geo:long": 9.18,
+        "m3gim:country": "Deutschland"
       },
       "m3gim:atDate": "1954-07-06",
       "rico:isAssociatedWithRecord": {
@@ -21330,7 +21335,12 @@
       "@id": "m3gim:ste_NIM_004_19_4",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
-        "name": "Paris"
+        "name": "Paris",
+        "@id": "wd:Q90",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q90",
+        "geo:lat": 48.85666666666667,
+        "geo:long": 2.352222222222222,
+        "m3gim:country": "Frankreich"
       },
       "m3gim:atDate": "1956",
       "rico:isAssociatedWithRecord": {
@@ -21346,7 +21356,12 @@
       "@id": "m3gim:ste_NIM_004_19_5",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
-        "name": "Paris"
+        "name": "Paris",
+        "@id": "wd:Q90",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q90",
+        "geo:lat": 48.85666666666667,
+        "geo:long": 2.352222222222222,
+        "m3gim:country": "Frankreich"
       },
       "m3gim:atDate": "1955",
       "rico:isAssociatedWithRecord": {
@@ -21378,7 +21393,12 @@
       "@id": "m3gim:ste_NIM_004_24_7",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
-        "name": "Zürich"
+        "name": "Zürich",
+        "@id": "wd:Q72",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q72",
+        "geo:lat": 47.37444444444444,
+        "geo:long": 8.54111111111111,
+        "m3gim:country": "Schweiz"
       },
       "m3gim:atDate": "1947/1952",
       "rico:isAssociatedWithRecord": {
@@ -21428,7 +21448,12 @@
       "@id": "m3gim:ste_NIM_004_24_10",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
-        "name": "Salzburg"
+        "name": "Salzburg",
+        "@id": "wd:Q34713",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q34713",
+        "geo:lat": 47.8,
+        "geo:long": 13.045,
+        "m3gim:country": "Österreich"
       },
       "m3gim:atDate": "1956",
       "rico:isAssociatedWithRecord": {
@@ -21445,7 +21470,12 @@
       "@id": "m3gim:ste_NIM_004_27_11",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
-        "name": "New York"
+        "name": "New York",
+        "@id": "wd:Q1384",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q1384",
+        "geo:lat": 43,
+        "geo:long": -75,
+        "m3gim:country": "Vereinigte Staaten"
       },
       "m3gim:atDate": "1959-10-27",
       "rico:isAssociatedWithRecord": {
@@ -21461,7 +21491,12 @@
       "@id": "m3gim:ste_NIM_004_29_12",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
-        "name": "Zürich"
+        "name": "Zürich",
+        "@id": "wd:Q72",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q72",
+        "geo:lat": 47.37444444444444,
+        "geo:long": 8.54111111111111,
+        "m3gim:country": "Schweiz"
       },
       "m3gim:atDate": "1947/1952",
       "rico:isAssociatedWithRecord": {
@@ -21511,7 +21546,12 @@
       "@id": "m3gim:ste_NIM_004_29_15",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
-        "name": "Salzburg"
+        "name": "Salzburg",
+        "@id": "wd:Q34713",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q34713",
+        "geo:lat": 47.8,
+        "geo:long": 13.045,
+        "m3gim:country": "Österreich"
       },
       "m3gim:atDate": "1956",
       "rico:isAssociatedWithRecord": {
@@ -21641,7 +21681,12 @@
       "@id": "m3gim:ste_NIM_007_5_2_23",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
-        "name": "Stuttgart"
+        "name": "Stuttgart",
+        "@id": "wd:Q1022",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q1022",
+        "geo:lat": 48.7775,
+        "geo:long": 9.18,
+        "m3gim:country": "Deutschland"
       },
       "m3gim:atDate": "1957-04-28",
       "rico:isAssociatedWithRecord": {
@@ -21657,7 +21702,12 @@
       "@id": "m3gim:ste_NIM_007_5_3_24",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
-        "name": "Stuttgart"
+        "name": "Stuttgart",
+        "@id": "wd:Q1022",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q1022",
+        "geo:lat": 48.7775,
+        "geo:long": 9.18,
+        "m3gim:country": "Deutschland"
       },
       "m3gim:atDate": "1957-06-07",
       "rico:isAssociatedWithRecord": {
@@ -21785,7 +21835,12 @@
       "@id": "m3gim:ste_NIM_007_5_6_32",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
-        "name": "Berlin"
+        "name": "Berlin",
+        "@id": "wd:Q64",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q64",
+        "geo:lat": 52.516666666667,
+        "geo:long": 13.383333333333,
+        "m3gim:country": "Mark Brandenburg"
       },
       "m3gim:atDate": "1957-11-10",
       "rico:isAssociatedWithRecord": {
@@ -21801,7 +21856,12 @@
       "@id": "m3gim:ste_NIM_007_5_6_33",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
-        "name": "Berlin"
+        "name": "Berlin",
+        "@id": "wd:Q64",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q64",
+        "geo:lat": 52.516666666667,
+        "geo:long": 13.383333333333,
+        "m3gim:country": "Mark Brandenburg"
       },
       "m3gim:atDate": "1957-11-11",
       "rico:isAssociatedWithRecord": {
@@ -21849,7 +21909,12 @@
       "@id": "m3gim:ste_NIM_007_5_8_36",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
-        "name": "Zürich"
+        "name": "Zürich",
+        "@id": "wd:Q72",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q72",
+        "geo:lat": 47.37444444444444,
+        "geo:long": 8.54111111111111,
+        "m3gim:country": "Schweiz"
       },
       "m3gim:atDate": "1957-05-15",
       "rico:isAssociatedWithRecord": {
@@ -21865,7 +21930,12 @@
       "@id": "m3gim:ste_NIM_007_5_8_37",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
-        "name": "Zürich"
+        "name": "Zürich",
+        "@id": "wd:Q72",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q72",
+        "geo:lat": 47.37444444444444,
+        "geo:long": 8.54111111111111,
+        "m3gim:country": "Schweiz"
       },
       "m3gim:atDate": "1957-05-14",
       "rico:isAssociatedWithRecord": {
@@ -21913,7 +21983,12 @@
       "@id": "m3gim:ste_NIM_007_9_40",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
-        "name": "Zürich"
+        "name": "Zürich",
+        "@id": "wd:Q72",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q72",
+        "geo:lat": 47.37444444444444,
+        "geo:long": 8.54111111111111,
+        "m3gim:country": "Schweiz"
       },
       "m3gim:atDate": "1963-03-08",
       "rico:isAssociatedWithRecord": {
@@ -21945,7 +22020,12 @@
       "@id": "m3gim:ste_NIM_007_11_42",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
-        "name": "Zürich"
+        "name": "Zürich",
+        "@id": "wd:Q72",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q72",
+        "geo:lat": 47.37444444444444,
+        "geo:long": 8.54111111111111,
+        "m3gim:country": "Schweiz"
       },
       "m3gim:atDate": "1968-11-18",
       "rico:isAssociatedWithRecord": {
@@ -21974,7 +22054,7 @@
       }
     }
   ],
-  "m3gim:exportDate": "2026-04-17T17:38:02.529012",
+  "m3gim:exportDate": "2026-04-17T19:59:28.282816",
   "m3gim:recordCount": 381,
   "m3gim:konvolutCount": 7
 }
