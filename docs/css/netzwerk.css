@@ -3,58 +3,58 @@
  */
 
 #tab-netzwerk {
-  padding: 24px 32px 48px;
+  padding: var(--space-6) var(--space-8) var(--space-12);
 }
 
 .netzwerk__header {
-  margin-bottom: 20px;
+  margin-bottom: var(--space-5);
 }
 
 .netzwerk__title {
   font-family: var(--font-title);
-  font-weight: 500;
-  font-size: 1.75rem;
-  margin: 0 0 4px;
-  color: var(--text-color, #1F1B16);
+  font-weight: var(--weight-medium);
+  font-size: var(--text-3xl);
+  margin: 0 0 var(--space-1);
+  color: var(--color-text-primary);
 }
 
 .netzwerk__subtitle {
   margin: 0;
-  color: var(--muted-color, #5C5651);
-  font-size: 0.9rem;
-  line-height: 1.45;
+  color: var(--color-text-secondary);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
 }
 
 .netzwerk__body {
   display: grid;
   grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
-  gap: 28px;
+  gap: var(--space-8);
   align-items: start;
 }
 
 .netzwerk__section-title {
-  margin: 0 0 8px;
+  margin: 0 0 var(--space-2);
   font-family: var(--font-mono);
-  font-size: 0.75rem;
-  font-weight: 600;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--text-color, #1F1B16);
-  padding-bottom: 6px;
-  border-bottom: 1px solid var(--border-color, #d8cfbf);
+  color: var(--color-text-primary);
+  padding-bottom: var(--space-1);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .netzwerk__count {
   float: right;
-  font-weight: 400;
-  color: var(--muted-color, #5C5651);
+  font-weight: var(--weight-normal);
+  color: var(--color-text-secondary);
 }
 
 .netzwerk__empty {
-  padding: 16px 0;
-  color: var(--muted-color, #5C5651);
+  padding: var(--space-4) 0;
+  color: var(--color-text-secondary);
   font-style: italic;
-  font-size: 0.9rem;
+  font-size: var(--text-base);
 }
 
 .netzwerk__list {
@@ -68,37 +68,36 @@
   display: grid;
   grid-template-columns: 24px minmax(0, 1fr) auto auto;
   align-items: center;
-  gap: 12px;
-  padding: 8px 10px;
-  border-bottom: 1px solid var(--border-color-soft, #efe7d6);
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-2);
+  border-bottom: 1px solid var(--border-color-light);
   cursor: pointer;
-  transition: background 120ms ease;
+  transition: background var(--transition-fast);
   counter-increment: netzwerk-rank;
 }
 
 .netzwerk__row::before {
   content: counter(netzwerk-rank);
   font-family: var(--font-mono);
-  font-size: 0.7rem;
-  color: var(--muted-color, #5C5651);
+  font-size: var(--text-xs);
+  color: var(--color-text-tertiary);
   text-align: right;
-  opacity: 0.55;
 }
 
 .netzwerk__row:hover {
-  background: var(--paper-dim, #f3ece0);
+  background: var(--color-cream);
 }
 
 .netzwerk__row--selected {
-  background: var(--paper-dim, #f3ece0);
-  border-left: 3px solid var(--accent, #004A8F);
-  padding-left: 7px;
+  background: var(--color-cream);
+  border-left: 3px solid var(--color-kug-blau);
+  padding-left: calc(var(--space-2) - 3px);
 }
 
 .netzwerk__name-main {
   font-family: var(--font-title);
-  font-size: 1rem;
-  color: var(--text-color, #1F1B16);
+  font-size: var(--text-lg);
+  color: var(--color-text-primary);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -106,60 +105,55 @@
 
 .netzwerk__breakdown {
   display: flex;
-  gap: 4px;
+  gap: var(--space-1);
   flex-wrap: nowrap;
-}
-
-.netzwerk__breakdown .chip {
-  padding: 2px 6px;
-  font-size: 0.72rem;
 }
 
 .netzwerk__summe {
   font-family: var(--font-mono);
-  font-weight: 600;
-  font-size: 0.9rem;
-  color: var(--text-color, #1F1B16);
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-base);
+  color: var(--color-text-primary);
   min-width: 28px;
   text-align: right;
 }
 
 /* Detail */
 .netzwerk__detail {
-  padding: 12px 14px;
-  background: var(--paper, #faf6ec);
-  border: 1px solid var(--border-color-soft, #efe7d6);
-  border-radius: 4px;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-paper);
+  border: 1px solid var(--border-color-light);
+  border-radius: var(--border-radius);
   position: sticky;
-  top: 16px;
+  top: var(--space-4);
 }
 
 .netzwerk__detail-empty {
-  color: var(--muted-color, #5C5651);
+  color: var(--color-text-secondary);
   font-style: italic;
-  font-size: 0.9rem;
+  font-size: var(--text-base);
 }
 
 .netzwerk__detail-title {
-  margin: 0 0 8px;
+  margin: 0 0 var(--space-2);
   font-family: var(--font-title);
-  font-weight: 500;
-  font-size: 1.15rem;
-  color: var(--text-color, #1F1B16);
+  font-weight: var(--weight-medium);
+  font-size: var(--text-xl);
+  color: var(--color-text-primary);
 }
 
 .netzwerk__detail-counts {
   display: flex;
   gap: 6px;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: var(--space-3);
   flex-wrap: wrap;
 }
 
 .netzwerk__detail-total {
   font-family: var(--font-mono);
-  font-size: 0.85rem;
-  color: var(--muted-color, #5C5651);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
   margin-left: 6px;
 }
 
@@ -174,21 +168,21 @@
   grid-template-columns: 90px 1fr 90px;
   gap: 10px;
   align-items: baseline;
-  padding: 4px 6px;
+  padding: var(--space-1) 6px;
   border-radius: 3px;
   cursor: pointer;
-  font-size: 0.85rem;
-  transition: background 120ms ease;
+  font-size: var(--text-sm);
+  transition: background var(--transition-fast);
 }
 
 .netzwerk__record:hover {
-  background: var(--paper-dim, #f3ece0);
+  background: var(--color-cream);
 }
 
 .netzwerk__record-sig {
   font-family: var(--font-mono);
-  font-size: 0.78rem;
-  color: var(--muted-color, #5C5651);
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -196,7 +190,7 @@
 
 .netzwerk__record-title {
   font-family: var(--font-title);
-  color: var(--text-color, #1F1B16);
+  color: var(--color-text-primary);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -204,8 +198,8 @@
 
 .netzwerk__record-date {
   font-family: var(--font-mono);
-  font-size: 0.78rem;
-  color: var(--muted-color, #5C5651);
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
   text-align: right;
 }
 

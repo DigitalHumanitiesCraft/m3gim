@@ -225,7 +225,7 @@ function buildTable({ pivot, title, subtitle, entries, showKomponist }) {
 }
 
 function chip(prefix, count, cluster) {
-  return buildRoleChip({ prefix, value: String(count), cluster });
+  return buildRoleChip({ prefix, value: String(count), cluster, compact: true });
 }
 
 function drawDetail() {

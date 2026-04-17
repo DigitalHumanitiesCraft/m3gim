@@ -140,6 +140,7 @@ function renderTable() {
         value: String(count),
         cluster: 'beziehung',
         tip: labelForType(type),
+        compact: true,
       }));
     }
     li.appendChild(breakdown);

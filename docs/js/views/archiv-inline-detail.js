@@ -315,13 +315,14 @@ function renderAgentChips(entities, gridType) {
  * @param {string} [opts.wikidata] - wd:Qxxx fuer Badge.
  * @param {string} [opts.tip]      - Tooltip fuer den Chip.
  * @param {Function} [opts.onClick]
+ * @param {boolean} [opts.compact] - kompakte Variante fuer Aggregat-Tabellen.
  * @returns {HTMLElement}
  */
-export function buildRoleChip({ prefix, value, cluster, xlsxSource, wikidata, tip, onClick }) {
+export function buildRoleChip({ prefix, value, cluster, xlsxSource, wikidata, tip, onClick, compact }) {
   const prefixUpper = (prefix || '').toUpperCase();
   const cls = cluster || roleClusterFor(prefixUpper);
   const chipProps = {
-    className: `chip chip--role-pair chip--c-${cls}${onClick ? ' chip--clickable' : ''}`,
+    className: `chip chip--role-pair chip--c-${cls}${onClick ? ' chip--clickable' : ''}${compact ? ' chip--compact' : ''}`,
   };
   if (onClick) {
     chipProps.onClick = (e) => { e.stopPropagation(); onClick(e); };
