@@ -33,6 +33,7 @@ JSONLD = BASE / "data" / "output" / "m3gim.jsonld"
 RECON = BASE / "data" / "output" / "wikidata-reconciliation.json"
 SHEETS = BASE / "data" / "google-spreadsheet"
 OUTPUT = BASE / "data" / "reports" / "quality-snapshot.md"
+OUTPUT_JSON = BASE / "data" / "reports" / "quality-snapshot.json"
 
 
 def load_jsonld():
@@ -243,6 +244,116 @@ def main():
     OUTPUT.write_text("\n".join(lines) + "\n", encoding="utf-8")
     size_kb = OUTPUT.stat().st_size / 1024
     print(f"Gespeichert: {OUTPUT.relative_to(BASE)} ({size_kb:.1f} KB)")
+
+    # --- Zusaetzlicher strukturierter JSON-Export fuer den Erschliessungsstand-Tab
+    # (Session 32, E-75). Frontend rendert daraus den Report ohne MD-Parser.
+    snapshot = {
+        "generated": datetime.now().isoformat(timespec="minutes"),
+        "source": {
+            "jsonld": str(JSONLD.relative_to(BASE)),
+            "reconciliation": str(RECON.relative_to(BASE)) if RECON.exists() else None,
+        },
+        "coverage": {
+            "link_rate": {
+                "linked": len(with_links),
+                "total": len(records_real),
+                "pct": link_rate,
+            },
+            "konvolute_multi": [
+                {
+                    "konvolut": k,
+                    "total": multi[k]["total"],
+                    "linked": multi[k]["linked"],
+                    "rate": multi[k]["linked"] / multi[k]["total"] if multi[k]["total"] else 0.0,
+                }
+                for k in sorted(multi.keys())
+            ],
+            "single_aggregate": {
+                "linked": single_linked,
+                "total": single_total,
+                "rate": single_rate,
+                "signatures": len(single),
+            },
+            "bearbeitungsstand": [
+                {"status": stand, "count": count}
+                for stand, count in bs_counter.most_common()
+            ],
+            "provenance": {
+                "records_with_xlsx": {
+                    "n": prov_with_xlsx, "total": prov_total,
+                    "pct": xlsx_pct,
+                },
+                "records_with_agrelon_provenance": {
+                    "n": prov_with_agrelon, "total": prov_total,
+                    "pct": agrelon_pct,
+                },
+                "nested_with_xlsx": {
+                    "n": nested_with_xlsx, "total": nested_total,
+                    "pct": nested_pct,
+                },
+            },
+        },
+        "wikidata": {
+            "summary": {
+                "matched": len(matched),
+                "unmatched": len(unmatched),
+                "skipped": len(skipped),
+            },
+            "by_type": [
+                {
+                    "type": t,
+                    "exact": by_type.get(t, {}).get("exact", 0),
+                    "fuzzy_high": by_type.get(t, {}).get("fuzzy_high", 0),
+                    "fuzzy_low": by_type.get(t, {}).get("fuzzy_low", 0),
+                    "total": by_type.get(t, {}).get("exact", 0)
+                             + by_type.get(t, {}).get("fuzzy_high", 0)
+                             + by_type.get(t, {}).get("fuzzy_low", 0),
+                }
+                for t in ("person", "org", "location", "work")
+            ],
+            "low_confidence": [
+                {
+                    "type": m.get("type"),
+                    "name": m.get("name"),
+                    "qid": m.get("qid"),
+                    "label": m.get("label"),
+                    "confidence": m.get("confidence"),
+                }
+                for m in sorted(low_conf, key=lambda x: (x.get("type", ""), x.get("name", "").lower()))
+            ],
+        },
+        "blockers": [
+            {
+                "id": "pl07-duplicate",
+                "title": "UAKUG/NIM/PL_07 Duplikat",
+                "description": "Im Google Sheet bereinigen. Aktuell xfail in test_05_referential.py.",
+            },
+            {
+                "id": "nim11-orphan",
+                "title": "Verwaiste Signatur UAKUG/NIM_11",
+                "description": (
+                    "Tritt in Verknüpfungen auf, existiert aber nicht in "
+                    "M3GIM-Objekte.xlsx. Tippfehler (NIM_110 / NIM_111?) oder "
+                    "fehlende Objektzeile nachpflegen."
+                ),
+            },
+            {
+                "id": "header-shifts",
+                "title": "Header-Shifts in drei Indizes",
+                "description": (
+                    "Organisationen, Orte, Werke — erste Datenzeile wird als "
+                    "Header gelesen. Pipeline kompensiert via HEADER_SHIFTS "
+                    "in scripts/transform.py. Im Google Sheet fixen."
+                ),
+            },
+        ],
+    }
+    OUTPUT_JSON.write_text(
+        json.dumps(snapshot, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
+    print(f"Gespeichert: {OUTPUT_JSON.relative_to(BASE)} "
+          f"({OUTPUT_JSON.stat().st_size / 1024:.1f} KB)")
 
 
 if __name__ == "__main__":

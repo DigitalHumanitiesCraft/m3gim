@@ -1,0 +1,194 @@
+/* M³GIM Erschliessungsstand Tab Styles (Session 32, E-75)
+   Report-artige Typografie: Uppercase-Letter-Spaced-Section-Header,
+   warme Papier-Palette, Tabellen mit schmalen Zahlenspalten. */
+
+#tab-erschliessungsstand.tab-content.active {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.eschl-view {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--space-5) var(--space-6);
+  max-width: 1000px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.eschl-loading,
+.eschl-error {
+  padding: var(--space-5);
+  color: var(--color-text-tertiary);
+  text-align: center;
+  font-style: italic;
+}
+
+.eschl-error code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  padding: 2px 6px;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 3px;
+}
+
+.eschl-error .eschl-hint {
+  margin-top: var(--space-2);
+  font-size: var(--text-sm);
+}
+
+.eschl-header {
+  margin-bottom: var(--space-5);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--border-color-light);
+}
+
+.eschl-header h2 {
+  font-family: var(--font-title);
+  font-size: 1.75rem;
+  font-weight: var(--weight-semibold);
+  margin: 0 0 var(--space-1) 0;
+  color: var(--color-text-primary);
+}
+
+.eschl-subtitle {
+  font-family: var(--font-title);
+  font-style: italic;
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  margin: 0 0 var(--space-2) 0;
+}
+
+.eschl-meta {
+  font-size: var(--text-xs);
+  color: var(--color-text-tertiary);
+  margin: 0;
+}
+
+.eschl-meta code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+.eschl-section {
+  margin-bottom: var(--space-6);
+}
+
+.eschl-section-title {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--space-2) 0;
+  padding-bottom: var(--space-1);
+  border-bottom: 1px solid var(--border-color-light);
+}
+
+.eschl-section h4 {
+  font-family: var(--font-title);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  margin: var(--space-4) 0 var(--space-2) 0;
+  color: var(--color-text-primary);
+}
+
+.eschl-headline {
+  font-family: var(--font-title);
+  font-size: var(--text-base);
+  margin: 0 0 var(--space-3) 0;
+  color: var(--color-text-primary);
+}
+
+.eschl-note {
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  margin: var(--space-1) 0 var(--space-2) 0;
+  font-style: italic;
+}
+
+.eschl-note code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  padding: 1px 4px;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 3px;
+}
+
+.eschl-empty {
+  color: var(--color-text-tertiary);
+  font-style: italic;
+  font-size: var(--text-sm);
+  margin: var(--space-2) 0;
+}
+
+.eschl-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+  margin: var(--space-2) 0;
+}
+
+.eschl-table th {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-tertiary);
+  text-align: left;
+  padding: var(--space-1) var(--space-2);
+  border-bottom: 1px solid var(--border-color);
+  font-weight: var(--weight-medium);
+}
+
+.eschl-table td {
+  padding: var(--space-1) var(--space-2);
+  border-bottom: 1px dashed var(--border-color-light);
+  font-family: var(--font-title);
+  vertical-align: top;
+}
+
+.eschl-table tr:last-child td {
+  border-bottom: none;
+}
+
+.eschl-table .eschl-num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+}
+
+.eschl-table td a {
+  color: var(--color-kug-blau);
+  text-decoration: none;
+}
+
+.eschl-table td a:hover {
+  text-decoration: underline;
+}
+
+.eschl-blockers {
+  padding-left: var(--space-4);
+  margin: var(--space-2) 0;
+}
+
+.eschl-blockers li {
+  margin-bottom: var(--space-3);
+  font-family: var(--font-title);
+}
+
+.eschl-blockers strong {
+  color: var(--color-text-primary);
+  font-weight: var(--weight-semibold);
+}
+
+.eschl-blocker-desc {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  margin: var(--space-1) 0 0 0;
+  line-height: 1.45;
+}

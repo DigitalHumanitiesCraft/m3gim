@@ -33,6 +33,18 @@ Suite durchgängig grün bis auf die beiden dokumentierten Ausnahmen (`PL_07` xf
 
 ## Erreichte Meilensteine
 
+### Session 32 — Interface-Fundament MVP (E-75)
+
+Fünf aufeinander aufbauende Commits haben das neue Forschungsinterface-Fundament gelegt:
+
+- **Alt-Viz entfernt**: sechs D3-Prototypen (Mobilität, Matrix, Kosmos, Zeitfluss, Lebenspartitur, Lebensstationen) + zugehöriges CSS + zwei Standalone-HTMLs + `aggregator.js` + `viz-components.js` raus. Tab-Leiste reduziert auf Archiv, Indizes, Korb (später erweitert).
+- **Archiv-Inline-Detail** rendert Finanzen, AgRelOn-Beziehungen und SpatiotemporalEvents im neuen Rolle-Prefix-Chip-Pattern aus dem Dossier-Mockup: Uppercase-Mono-Prefix + Serif-Wert + Provenance-Pille (`#1276`) + optionales Wikidata-Badge. Zentraler Helper `buildRoleChip()` in `archiv-inline-detail.js`, Cluster-Farbfamilien in `archiv.css` (ort, person, rolle, beziehung, finanz, datum, neutral).
+- **Indizes-Personen mit Beziehungsbadges**: Loader-Pass 2.5 resolviert AgRelOn-Relationen rückwärts auf Personen-Einträge (Matching primär Q-ID, sekundär `normalizePerson(name)`). `renderNameCell()` zeigt eine dritte Zeile `idx-relations` mit Chips im gleichen Muster. Mehrfach-Relationen werden gezählt, Klick springt zum Beleg.
+- **DFT-Filter hierarchisch**: `buildDftTree(store)` + `expandDftFilter(store, shortId)` in `format.js`. Dropdown nutzt `<optgroup>`-Struktur; Oberbegriff matcht transitiv in Bestand + Chronik.
+- **Erschließungsstand-Tab** (neu): eigener Tab mit Report-Typografie. `scripts/report-quality.py` schreibt zusätzlich zum Markdown eine strukturierte `quality-snapshot.json`, die `build-views.py` nach `docs/data/` kopiert. Der Tab rendert Verknüpfungsrate, Provenance-Coverage, Bearbeitungsstand, Wikidata-Coverage und die Low-Confidence-Freigabeliste + Blocker. Neuer Kontrakttest `test_21_quality_snapshot.py`.
+
+Designgrundlage durchgängig: [interface-konzept.md](interface-konzept.md). Tests: 182 passed, 1 skipped, 1 xfailed.
+
 ### Session 31 — Wikidata-Rerun + xlsxSource-Provenance + Quality-Snapshot
 
 - **Reconciliation + Enrichment** auf aktuellen v2-Indizes neu gelaufen. WD-Coverage pro Index gestiegen, Low-Confidence-Matches werden ab jetzt nicht automatisch angereichert, sondern im Quality-Snapshot zur manuellen Freigabe gelistet (E-74).
@@ -89,23 +101,19 @@ Detaillierte Entscheidungen: [entscheidungen.md](entscheidungen.md).
 
 ## Nächste Schritte
 
-### Interface-Redesign (aktiver Fokus)
+### Interface-Ausbau (aktiver Fokus)
 
-Grundlage: [interface-konzept.md](interface-konzept.md) — Designregeln, Tab-Architektur, Daten-Präsentations-Muster. Die sechs D3-Prototypen (Mobilität, Lebenspartitur, Lebensstationen, Matrix, Kosmos, Zeitfluss) werden entfernt; ihre Lektionen stehen in [frontend.md § Lektionen](frontend.md).
+Grundlage: [interface-konzept.md](interface-konzept.md). MVP-Fundament ist mit Session 32 gelegt (Archiv, Indizes, Erschließungsstand im neuen Designsystem). Die weiteren Tabs bauen darauf auf.
 
-Reihenfolge der Umsetzung:
+1. **Mobilitäts-Atlas-Tab** — Karte + Zeitstrahl + Detailpanel, bi-direktional gekoppelt. Vorarbeit: Koordinaten-Patch in `transform.py` (Orte in SpatiotemporalEvents mit Q-ID + Koordinaten aus `wikidata-enrichment.json` anreichern, weil die STE derzeit nur Orts-Labels ohne Geodaten tragen). MVP deckt die Stories US-1, US-2, US-5, US-6.
+2. **Repertoire-Tab** — Bühnenrollen × Komponisten als parallele Aggregat-Tabellen mit Inline-Breakdown (`ERWÄHNT · AUFFÜHRUNG · REPERTOIRE → Summe`), passend zum Repertoire-Mockup.
+3. **Biogramm-Tab** — chronologische Gesamtsicht (Orte, Netzwerk, Repertoire) pro Lebensphase. Form offen, Konzeption nach Atlas/Repertoire.
+4. **Netzwerk-Tab** — offen. Voraussichtlich Tabelle mit Chip-Breakdown analog Repertoire, nicht Graph.
 
-1. **Alt-Viz-Entfernung** — sechs Views + zwei Standalone-HTMLs + sechs CSS-Dateien + Tab-Registrierungen in `main.js` und Info-Seiten-Nav. Lieber vor dem Ausbau als während — der Wegfall schafft einen sauberen Ausgangspunkt.
-2. **Archiv-Inline-Detail auf Mockup-Stil** — Chip-Pattern mit Rolle-Prefix, Confidence-Dot, Provenance-Pille. Erschließungsteam-tauglich. Erbt die Designregeln aus dem Dossier-Mockup.
-3. **Indizes-Personen mit Beziehungsbadges** — AgRelOn-Chips pro Person aus `store.agentRelations`, Tooltip mit Provenance (Signatur, Verknüpfungsnummer, Konfidenz), Klick springt zum Beleg-Record.
-4. **Archiv-Dokumenttyp-Filter hierarchisch** — DFT-Hierarchie als `<optgroup>`-Struktur statt flachem Dropdown. Oberbegriff-Wahl matcht transitiv.
-5. **Erschließungsstand-Tab** — Browsing-UI für den Quality-Snapshot (Verknüpfungsrate, Lücken, Duplikate, Low-Confidence-Freigabeliste). Statt Markdown-Report als navigierbare Seite.
-6. **Mobilitäts-Atlas-Tab** — Karte + Zeitstrahl + Detailpanel, bi-direktional gekoppelt. Vorarbeit: Koordinaten-Patch in `transform.py` (Orte in SpatiotemporalEvents mit Q-ID + Koordinaten aus `wikidata-enrichment.json` anreichern). MVP deckt die Stories US-1, US-2, US-5, US-6 aus dem Plan ab.
-7. **Repertoire-Tab** — Bühnenrollen × Komponisten als parallele Aggregat-Tabellen mit Inline-Breakdown (`ERWÄHNT · AUFFÜHRUNG · REPERTOIRE → Summe`).
-8. **Biogramm-Tab** — chronologische Gesamtsicht (Orte, Netzwerk, Repertoire) pro Lebensphase. Form offen, Konzeption nach Atlas/Repertoire.
-9. **Netzwerk-Tab** — offen. Voraussichtlich Tabelle mit Chip-Breakdown analog Repertoire, nicht Graph.
+### Deferred Aufräumarbeiten (nach Bedarf)
 
-Schritte 1–5 sind die MVP-Basis des neuen Interfaces. Schritte 6–9 bauen darauf auf.
+- **`loadPartitur()` + `test_08_partitur.py` + partitur.json/matrix.json/kosmos.json-Derivate**: liegen in Session 32 bewusst unberührt. Die Derivate werden weiter gebaut, aber nicht mehr konsumiert. Entfernen, sobald absehbar, dass keine neue Viz sie doch noch braucht.
+- **Confidence-Dot am Record-Header**: `confidenceDotProps()` in `constants.js` ist vorbereitet, aber noch nicht im Archiv-Inline-Detail platziert. Bauplatz ist der Record-Header neben dem Datum.
 
 ### Offene Datenqualität (extern blockiert)
 

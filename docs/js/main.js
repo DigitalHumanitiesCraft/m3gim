@@ -9,6 +9,7 @@ import { initKorb, onKorbChange, getKorbCount } from './ui/korb.js';
 import { renderArchiv, selectArchivRecord } from './views/archiv.js';
 import { renderIndizes, expandEntry } from './views/indizes.js';
 import { renderKorb } from './views/korb.js';
+import { renderErschliessungsstand } from './views/erschliessungsstand.js';
 
 const DEV = typeof location !== 'undefined'
   && (location.hostname === 'localhost' || location.hostname === '127.0.0.1');
@@ -18,9 +19,10 @@ const renderedTabs = new Set();
 
 /** Tab renderer registry — maps tab name to render function. */
 const TAB_RENDERERS = new Map([
-  ['archiv',  (s, c) => renderArchiv(s, c)],
-  ['indizes', (s, c) => renderIndizes(s, c)],
-  ['korb',    (s, c) => renderKorb(s, c)],
+  ['archiv',             (s, c) => renderArchiv(s, c)],
+  ['indizes',            (s, c) => renderIndizes(s, c)],
+  ['erschliessungsstand',(s, c) => renderErschliessungsstand(s, c)],
+  ['korb',               (s, c) => renderKorb(s, c)],
 ]);
 
 async function init() {
@@ -98,9 +100,10 @@ function renderTab(tab) {
 /** Kurze Diagnostik beim erstmaligen Öffnen eines Tabs: welche Datenmengen nutzt die View? */
 function logTabActivation(tab, s) {
   const profile = {
-    archiv:  () => ({ records: s.allRecords.length, bySignatur: s.bySignatur.size, finances: s.finances.size, agentRel: s.agentRelations.size }),
-    indizes: () => ({ persons: s.persons.size, orgs: s.organizations.size, locs: s.locations.size, works: s.works.size, agentRel: s.agentRelations.size }),
-    korb:    () => ({ records: s.allRecords.length }),
+    archiv:              () => ({ records: s.allRecords.length, bySignatur: s.bySignatur.size, finances: s.finances.size, agentRel: s.agentRelations.size }),
+    indizes:             () => ({ persons: s.persons.size, orgs: s.organizations.size, locs: s.locations.size, works: s.works.size, agentRel: s.agentRelations.size, relResolved: s.agentRelationResolvedCount || 0 }),
+    erschliessungsstand: () => ({ source: 'docs/data/quality-snapshot.json' }),
+    korb:                () => ({ records: s.allRecords.length }),
   };
   const fn = profile[tab];
   if (!fn) return;

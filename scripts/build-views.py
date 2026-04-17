@@ -1352,6 +1352,12 @@ def main():
             if src.exists() and dst.parent.exists():
                 shutil.copy2(src, dst)
                 print(f'  [CP] {name}.json -> docs/data/')
+        # Quality-Snapshot-JSON (Session 32, E-75) — Grundlage fuer den
+        # Erschliessungsstand-Tab im Frontend.
+        qs_src = PROJECT_ROOT / 'data' / 'reports' / 'quality-snapshot.json'
+        if qs_src.exists() and docs_data.exists():
+            shutil.copy2(qs_src, docs_data / 'quality-snapshot.json')
+            print('  [CP] quality-snapshot.json -> docs/data/')
     else:
         print()
         print(f'Skip copy to docs/data/ (non-default output: {_OUTPUT_BASE})')
