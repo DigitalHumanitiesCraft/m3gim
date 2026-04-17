@@ -38,7 +38,10 @@ async function init() {
 
     // Load data
     store = await loadArchive('./data/m3gim.jsonld');
-    if (DEV) console.log(`M³GIM loaded: ${store.allRecords.length} Records, ${store.konvolute.size} Konvolute, ${store.persons.size} Personen, ${store.organizations.size} Organisationen`);
+    if (DEV) {
+      logStoreSummary(store);
+      exposeDebug(store);
+    }
 
     // Hide loading
     showLoading(false);
@@ -88,6 +91,8 @@ function renderTab(tab) {
   const renderer = TAB_RENDERERS.get(tab);
   if (!renderer) return;
 
+  if (DEV) logTabActivation(tab, store);
+
   try {
     const result = renderer(store, container);
     // Handle async renderers (D3 views that load partitur.json)
@@ -97,6 +102,23 @@ function renderTab(tab) {
   } catch (err) {
     showTabError(tab, container, err);
   }
+}
+
+/** Kurze Diagnostik beim erstmaligen Öffnen eines Tabs: welche Datenmengen nutzt die View? */
+function logTabActivation(tab, s) {
+  const profile = {
+    archiv:         () => ({ records: s.allRecords.length, bySignatur: s.bySignatur.size, finances: s.finances.size, agentRel: s.agentRelations.size }),
+    indizes:        () => ({ persons: s.persons.size, orgs: s.organizations.size, locs: s.locations.size, works: s.works.size, agentRel: s.agentRelations.size }),
+    matrix:         () => ({ records: s.allRecords.length, byYear: s.byYear.size, persons: s.persons.size }),
+    kosmos:         () => ({ works: s.works.size, records: s.allRecords.length }),
+    mobilitaet:     () => ({ locations: s.locations.size, mobilityEvents: s.mobilityEvents.size, recordsWithEvents: s.recordToEvents.size }),
+    zeitfluss:      () => ({ works: s.works.size, byYear: s.byYear.size }),
+    lebenspartitur: () => ({ records: s.allRecords.length, mobilityEvents: s.mobilityEvents.size }),
+    korb:           () => ({ records: s.allRecords.length }),
+  };
+  const fn = profile[tab];
+  if (!fn) return;
+  console.log(`%c[${tab}] geöffnet`, 'color: #2E7D4F; font-weight: bold', fn());
 }
 
 function showTabError(tab, container, err) {
@@ -146,6 +168,103 @@ function updateKorbTabVisibility() {
     const { activeTab } = getState();
     if (activeTab === 'korb') renderTab('korb');
   }
+}
+
+// ----------------------------------------------------------------------
+// DEV-Logging + Debug-Helper (localhost only, silent in production)
+// ----------------------------------------------------------------------
+
+/**
+ * Strukturierter Load-Report in der Konsole: Base-Counts + alle Phase-6-Maps.
+ * Gibt auf einen Blick Auskunft, ob die Daten im erwarteten Umfang ankommen.
+ */
+function logStoreSummary(s) {
+  console.group('%c[M³GIM] Store geladen', 'color: #004A8F; font-weight: bold; font-size: 1.1em');
+  console.log(`Export: ${s.exportDate || 'unbekannt'}`);
+  console.table({
+    Records:          { count: s.allRecords.length },
+    Konvolute:        { count: s.konvolute.size },
+    Personen:         { count: s.persons.size },
+    Organisationen:   { count: s.organizations.size },
+    Orte:             { count: s.locations.size },
+    Werke:            { count: s.works.size },
+  });
+  console.group('%cv2-Store-Maps (Phase 6)', 'color: #8B3A3A; font-weight: bold');
+  console.table({
+    'dftHierarchy':      { size: s.dftHierarchy.size,   beschreibung: 'SKOS-Concepts mit broader+children' },
+    'mobilityEvents':    { size: s.mobilityEvents.size, beschreibung: 'SpatiotemporalEvents (Top-Level)' },
+    'recordToEvents':    { size: s.recordToEvents.size, beschreibung: 'Records mit STE-Refs' },
+    'agentRelations':    { size: s.agentRelations.size, beschreibung: 'Records mit AgRelOn-Einträgen' },
+    'finances':          { size: s.finances.size,       beschreibung: 'Records mit Finanz-Details' },
+  });
+  console.groupEnd();
+  console.log('%cTipp: window.m3gim.store greift auf alle Daten zu', 'color: gray; font-style: italic');
+  console.log('%c     window.m3gim.inspect("m3gim:NIM_007_5_1") zeigt Record-Details', 'color: gray; font-style: italic');
+  console.groupEnd();
+}
+
+/**
+ * Exponiert den Store + Inspektionsfunktionen auf window — nur im DEV-Modus.
+ * Ermöglicht manuelle Prüfung in der DevTools-Konsole:
+ *   window.m3gim.store                   → kompletter Store
+ *   window.m3gim.inspect('m3gim:NIM_007_5_1')  → Record mit allen v2-Maps
+ *   window.m3gim.finances()              → Alle Finanz-Einträge
+ *   window.m3gim.agentRelations()        → Alle AgRelOn-Beziehungen
+ *   window.m3gim.mobilityEvents()        → Alle SpatiotemporalEvents
+ *   window.m3gim.dftTree()               → DFT-Hierarchie als Baum
+ */
+function exposeDebug(s) {
+  window.m3gim = {
+    store: s,
+    inspect(recordId) {
+      const record = s.records.get(recordId);
+      if (!record) return { error: `Kein Record ${recordId}` };
+      return {
+        record,
+        events: (s.recordToEvents.get(recordId) || []).map(eid => s.mobilityEvents.get(eid)),
+        agentRelations: s.agentRelations.get(recordId) || [],
+        finances: s.finances.get(recordId) || [],
+        konvolut: s.childToKonvolut.get(recordId) || null,
+      };
+    },
+    finances() {
+      const rows = [];
+      for (const [rid, entries] of s.finances) {
+        for (const e of entries) rows.push({ record: rid, ...e });
+      }
+      console.table(rows);
+      return rows;
+    },
+    agentRelations() {
+      const rows = [];
+      for (const [rid, entries] of s.agentRelations) {
+        for (const e of entries) rows.push({ record: rid, type: e.type, object: e.objectName, wd: e.objectWikidata || '' });
+      }
+      console.table(rows);
+      return rows;
+    },
+    mobilityEvents() {
+      const rows = [...s.mobilityEvents.values()].map(e => ({
+        event: e.id, record: e.recordId, place: e.place, date: e.date, role: e.role,
+      }));
+      console.table(rows);
+      return rows;
+    },
+    dftTree() {
+      const roots = [...s.dftHierarchy.values()].filter(c => !c.broader);
+      const render = (c, depth = 0) => {
+        console.log(`${'  '.repeat(depth)}• ${c.prefLabel} (${c.children.length} Kinder)`);
+        for (const childId of c.children) {
+          const child = s.dftHierarchy.get(childId);
+          if (child) render(child, depth + 1);
+        }
+      };
+      console.group('DFT-Hierarchie');
+      for (const r of roots) render(r);
+      console.groupEnd();
+      return roots;
+    },
+  };
 }
 
 // Boot

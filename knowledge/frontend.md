@@ -279,7 +279,7 @@ Vollständiges Navigationsnetzwerk zwischen den Visualisierungen:
 - **CSS Custom Properties** als Design-System
 - **Responsive**: `@media <768px` Breakpoints in base.css + components.css — Header, Tab-Bar, Toolbars, FF-Badges, Legenden
 - **Accessibility**: `role="tablist/tab/tabpanel"`, `aria-selected` dynamisch, `aria-hidden` auf SVG-Icons, `aria-label` auf Korb-Badge
-- **DEV/Prod**: `viewLog()` No-Op auf GitHub Pages (E-50)
+- **DEV/Prod**: `viewLog()` No-Op auf GitHub Pages (E-50). Auf localhost zeigt `main.js` beim Seitenaufruf einen strukturierten Store-Report (Records, Konvolute, alle Phase-6-Maps) und setzt `window.m3gim` mit Debug-Helpern: `window.m3gim.store`, `window.m3gim.inspect(recordId)`, `window.m3gim.finances()`, `window.m3gim.agentRelations()`, `window.m3gim.mobilityEvents()`, `window.m3gim.dftTree()`. Beim Öffnen eines Tabs erscheint eine Kurz-Diagnostik mit den wichtigsten Datenmengen für die View. Auf Produktion (dhcraft.org) bleibt alles stumm.
 - **Error Boundaries** pro View: main.js fängt Render-Fehler pro Tab (sync+async, E-51)
 
 ## Schnittstellenvertrag
