@@ -1,0 +1,203 @@
+/*
+ * M3GIM Biogramm-Tab — chronologische Gesamtsicht auf Malaniuk.
+ */
+
+#tab-biogramm {
+  padding: 24px 32px 48px;
+}
+
+.biogramm__header {
+  margin-bottom: 16px;
+}
+
+.biogramm__title {
+  font-family: var(--font-serif, 'Source Serif 4', Georgia, serif);
+  font-weight: 500;
+  font-size: 1.75rem;
+  margin: 0 0 4px;
+  color: var(--text-color, #1F1B16);
+}
+
+.biogramm__subtitle {
+  margin: 0;
+  color: var(--muted-color, #5C5651);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+/* Phasen-Buttons */
+.biogramm__phases {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 16px;
+}
+
+.biogramm__phase-btn {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+  padding: 5px 10px;
+  border: 1px solid var(--border-color, #d8cfbf);
+  background: var(--paper, #faf6ec);
+  border-radius: 3px;
+  cursor: pointer;
+  font-family: var(--font-sans, system-ui);
+  font-size: 0.78rem;
+  color: var(--text-color, #1F1B16);
+  transition: background 120ms ease, border-color 120ms ease;
+}
+
+.biogramm__phase-btn:hover {
+  background: var(--paper-dim, #f3ece0);
+}
+
+.biogramm__phase-btn--active {
+  background: var(--paper-dim, #f3ece0);
+  border-width: 1.5px;
+  font-weight: 600;
+}
+
+.biogramm__phase-label {
+  font-weight: inherit;
+}
+
+.biogramm__phase-range {
+  font-family: var(--font-mono, ui-monospace, Menlo, monospace);
+  font-size: 0.72rem;
+  color: var(--muted-color, #5C5651);
+}
+
+/* Chart */
+.biogramm__chart-wrap {
+  background: var(--paper, #faf6ec);
+  border: 1px solid var(--border-color-soft, #efe7d6);
+  border-radius: 4px;
+  padding: 8px 4px;
+  margin-bottom: 18px;
+  width: 100%;
+  min-height: 220px;
+}
+
+.biogramm__svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.biogramm__ort-dot { cursor: pointer; }
+.biogramm__beleg-dot { cursor: pointer; }
+
+.biogramm__flucht-line { pointer-events: none; }
+
+.biogramm__no-d3 {
+  padding: 40px;
+  text-align: center;
+  color: var(--muted-color, #5C5651);
+  font-style: italic;
+}
+
+/* Detail-Panel */
+.biogramm__detail {
+  padding: 12px 14px;
+  background: var(--paper, #faf6ec);
+  border: 1px solid var(--border-color-soft, #efe7d6);
+  border-radius: 4px;
+}
+
+.biogramm__detail-title {
+  margin: 0 0 8px;
+  font-family: var(--font-serif, 'Source Serif 4', Georgia, serif);
+  font-weight: 500;
+  font-size: 1.1rem;
+  color: var(--text-color, #1F1B16);
+}
+
+.biogramm__detail-chips {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.biogramm__detail-hint {
+  margin: 0;
+  color: var(--muted-color, #5C5651);
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+.biogramm__detail-meta {
+  display: flex;
+  gap: 14px;
+  align-items: baseline;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.biogramm__detail-sig {
+  font-family: var(--font-mono, ui-monospace, Menlo, monospace);
+  font-size: 0.85rem;
+  color: var(--muted-color, #5C5651);
+}
+
+.biogramm__detail-date {
+  font-family: var(--font-mono, ui-monospace, Menlo, monospace);
+  font-size: 0.85rem;
+  color: var(--text-color, #1F1B16);
+}
+
+.biogramm__detail-dft {
+  font-family: var(--font-mono, ui-monospace, Menlo, monospace);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: var(--paper-dim, #f3ece0);
+  padding: 2px 6px;
+  border-radius: 3px;
+  color: var(--muted-color, #5C5651);
+}
+
+.biogramm__detail-cta,
+.biogramm__detail-close {
+  display: inline-block;
+  padding: 5px 12px;
+  margin-right: 6px;
+  border: 1px solid var(--border-color, #d8cfbf);
+  background: var(--paper-dim, #f3ece0);
+  border-radius: 3px;
+  cursor: pointer;
+  font-family: var(--font-sans, system-ui);
+  font-size: 0.82rem;
+}
+
+.biogramm__detail-cta {
+  background: var(--accent, #004A8F);
+  color: #fff;
+  border-color: var(--accent, #004A8F);
+}
+
+.biogramm__detail-cta:hover {
+  opacity: 0.9;
+}
+
+.biogramm__detail-close:hover {
+  background: var(--paper, #faf6ec);
+}
+
+/* Tooltip */
+.biogramm__tooltip {
+  position: fixed;
+  pointer-events: none;
+  z-index: 1000;
+  background: rgba(31, 27, 22, 0.95);
+  color: #f7efe2;
+  padding: 4px 8px;
+  border-radius: 3px;
+  font-family: var(--font-sans, system-ui);
+  font-size: 0.78rem;
+  max-width: 260px;
+  opacity: 0;
+  transition: opacity 90ms ease;
+}

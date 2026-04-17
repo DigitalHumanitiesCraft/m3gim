@@ -11,6 +11,7 @@ import { renderIndizes, expandEntry } from './views/indizes.js';
 import { renderKorb } from './views/korb.js';
 import { renderMobilitaetsAtlas } from './views/mobilitaets-atlas.js';
 import { renderRepertoire, repertoireAggregate } from './views/repertoire.js';
+import { renderBiogramm, biogrammData } from './views/biogramm.js';
 
 const DEV = typeof location !== 'undefined'
   && (location.hostname === 'localhost' || location.hostname === '127.0.0.1');
@@ -24,6 +25,7 @@ const TAB_RENDERERS = new Map([
   ['indizes',            (s, c) => renderIndizes(s, c)],
   ['mobilitaets-atlas',  (s, c) => renderMobilitaetsAtlas(s, c)],
   ['repertoire',         (s, c) => renderRepertoire(s, c)],
+  ['biogramm',           (s, c) => renderBiogramm(s, c)],
   ['korb',               (s, c) => renderKorb(s, c)],
 ]);
 
@@ -112,6 +114,10 @@ function logTabActivation(tab, s) {
     repertoire: () => {
       const agg = repertoireAggregate();
       return { works: agg?.works.length || 0, composers: agg?.composers.length || 0 };
+    },
+    biogramm: () => {
+      const bio = biogrammData();
+      return { orte: bio?.orte.length || 0, belege: bio?.belege.length || 0 };
     },
     korb:                () => ({ records: s.allRecords.length }),
   };
@@ -293,6 +299,13 @@ function exposeDebug(s) {
       console.log('Werke:'); console.table(agg.works);
       console.log('Komponisten:'); console.table(agg.composers);
       return agg;
+    },
+    biogrammData() {
+      const bio = biogrammData();
+      if (!bio) return null;
+      console.log('Orte:'); console.table(bio.orte);
+      console.log('Belege:'); console.table(bio.belege.slice(0, 20));
+      return bio;
     },
     mobilityEventsWithGeo() {
       const rows = [...s.mobilityEvents.values()]
