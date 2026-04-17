@@ -38,6 +38,16 @@ Frühere v1-Stände liegen in `data/_archive/` (Snapshot 2026-02-25: 282 Objekte
 
 ## Erreichte Meilensteine
 
+### Phase 7 Schritt 1 — Archiv-Inline-Detail zeigt Finanzen, Beziehungen, Ereignisse (Session 30, 2026-04-17)
+
+Alle v2-Daten sind nun im Archiv-Inline-Detail sichtbar. [archiv-inline-detail.js](../docs/js/views/archiv-inline-detail.js) rendert drei neue Panels aus den Phase-6-Store-Maps:
+
+- **Finanzen** (14 Records): Tabelle mit Feld · Betrag+Währung · Rolle. `NIM_007_5_1` zeigt 5 Einträge in Schilling (Ausgaben 36.000 + 18.000, Einnahmen 90.000 × 2, Summe 180.000).
+- **Beziehungen** (19 Records): AgRelOn-Chips mit sprechenden Labels (`HasIsPatron` → „Patron", `HasCorrespondent` → „Korrespondenz", `HasIsMember` → „Mitglied" etc.) + optional Wikidata-Link. Klickbar → Personen-Index.
+- **Ereignisse** (24 Records): SpatiotemporalEvent-Chips mit Rolle + Ort + Datum. `NIM_004_3` zeigt „erscheinungsdatum: München · 17. Dez. 1952". Klickbar → Orte-Index.
+
+Damit sind alle 33 Record-Properties entweder im UI sichtbar oder bewusst als Metadaten ausgelassen (Provenance, Konfidenz). Verifiziert gegen XLSX-Rohdaten für 3 strategische Records: `NIM_004_3` (16 XLSX-Zeilen → alle im UI), `NIM_007_5_1` (Finanzen jetzt sichtbar), `NIM_003_1_8` (Finanzen + AgRelOn sichtbar).
+
 ### Phase 6 — loader.js indexiert v2-Strukturen (Session 30, 2026-04-17)
 
 5 neue Store-Maps in [loader.js](../docs/js/data/loader.js) eingezogen, alle 7 Phase-6-Kontrakttests in `test_06` wurden regulär grün:

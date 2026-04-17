@@ -85,14 +85,23 @@ export function buildInlineDetail(record, store, { onClose } = {}) {
     leftCol.appendChild(renderSection('Metadaten', renderMetaGrid(meta)));
   }
 
-  // Financial data
-  const ausgaben = record['m3gim:ausgaben'];
-  const einnahmen = record['m3gim:einnahmen'];
-  if (ausgaben || einnahmen) {
-    const finMeta = [];
-    if (ausgaben) finMeta.push(['Ausgaben', ausgaben]);
-    if (einnahmen) finMeta.push(['Einnahmen', einnahmen]);
-    leftCol.appendChild(renderSection('Finanzen', renderMetaGrid(finMeta)));
+  // Finanzen aus store.finances (Phase 6: m3gim:hasDetail mit monetaryAmount)
+  const finances = store.finances?.get(record['@id']);
+  if (finances && finances.length) {
+    leftCol.appendChild(renderSection(`Finanzen (${finances.length})`, renderFinances(finances)));
+  }
+
+  // Beziehungen aus store.agentRelations (Phase 6: m3gim:agentRelation)
+  const agentRelations = store.agentRelations?.get(record['@id']);
+  if (agentRelations && agentRelations.length) {
+    leftCol.appendChild(renderSection(`Beziehungen (${agentRelations.length})`, renderAgentRelations(agentRelations)));
+  }
+
+  // Ereignisse aus store.mobilityEvents (Phase 6: m3gim:SpatiotemporalEvent)
+  const eventIds = store.recordToEvents?.get(record['@id']) || [];
+  const events = eventIds.map(eid => store.mobilityEvents.get(eid)).filter(Boolean);
+  if (events.length) {
+    leftCol.appendChild(renderSection(`Ereignisse (${events.length})`, renderMobilityEvents(events)));
   }
 
   // Right column: Verknüpfungen
@@ -210,6 +219,96 @@ function renderEntityChips(entities, gridType) {
       }));
     }
 
+    container.appendChild(chip);
+  }
+  return container;
+}
+
+/**
+ * Finanz-Details als kompakte Tabelle: Feld | Betrag Währung | (Rolle).
+ * Input: Array aus store.finances ([{field, role, amount, currency, rawValue}]).
+ */
+function renderFinances(entries) {
+  const container = el('div', { className: 'inline-detail__finances' });
+  const formatAmount = (n) => Number.isFinite(n) ? n.toLocaleString('de-DE') : '?';
+  for (const e of entries) {
+    const row = el('div', { className: 'inline-detail__finance-row' },
+      el('span', { className: 'inline-detail__finance-field' }, e.field || '—'),
+      el('span', { className: 'inline-detail__finance-amount' },
+        `${formatAmount(e.amount)}${e.currency ? ' ' + e.currency : ''}`
+      ),
+      e.role ? el('span', { className: 'inline-detail__finance-role' }, `(${e.role})`) : null,
+    );
+    container.appendChild(row);
+  }
+  return container;
+}
+
+/**
+ * AgRelOn-Beziehungen: Typ-Label + Objektname + optional Wikidata-Link.
+ * Input: Array aus store.agentRelations ([{type, objectName, objectWikidata, validityBegin, validityEnd}]).
+ */
+const AGRELON_LABELS = {
+  'agrelon:HasEmployeeEmployer': 'Arbeitgeber',
+  'agrelon:HasCorrespondent': 'Korrespondenz',
+  'agrelon:HasProfessionalContact': 'Beruflicher Kontakt',
+  'agrelon:HasIsPatron': 'Patron',
+  'agrelon:HasIsMember': 'Mitglied',
+};
+
+function renderAgentRelations(relations) {
+  const container = el('div', { className: 'inline-detail__chips' });
+  for (const r of relations) {
+    const label = AGRELON_LABELS[r.type] || (r.type || '').replace(/^agrelon:Has/, '');
+    const validity = r.validityBegin
+      ? ` ${r.validityBegin}${r.validityEnd ? '\u2013' + r.validityEnd : ''}`
+      : '';
+    const chip = el('span', {
+      className: 'chip chip--relation chip--clickable',
+      dataset: { tip: 'Im Personen-Index öffnen' },
+      onClick: (e) => {
+        e.stopPropagation();
+        if (r.objectName) navigateToIndex('personen', r.objectName);
+      },
+    },
+      el('span', { className: 'chip__role' }, `${label}:`),
+      ` ${r.objectName || '?'}${validity}`,
+    );
+    if (r.objectWikidata && r.objectWikidata.startsWith('wd:')) {
+      chip.appendChild(el('a', {
+        className: 'badge badge--wikidata',
+        href: `https://www.wikidata.org/entity/${r.objectWikidata.replace('wd:', '')}`,
+        target: '_blank',
+        rel: 'noopener noreferrer',
+        title: r.objectWikidata,
+        html: WIKIDATA_ICON_SVG,
+        onClick: (e) => e.stopPropagation(),
+      }));
+    }
+    container.appendChild(chip);
+  }
+  return container;
+}
+
+/**
+ * SpatiotemporalEvents: Ort + Datum + Rolle.
+ * Input: Array aus store.mobilityEvents-Werten.
+ */
+function renderMobilityEvents(events) {
+  const container = el('div', { className: 'inline-detail__chips' });
+  for (const ev of events) {
+    const dateDisplay = ev.date ? formatDate(ev.date) : '—';
+    const chip = el('span', {
+      className: 'chip chip--event chip--clickable',
+      dataset: { tip: 'Ort im Index öffnen' },
+      onClick: (e) => {
+        e.stopPropagation();
+        if (ev.place) navigateToIndex('orte', ev.place);
+      },
+    },
+      el('span', { className: 'chip__role' }, ev.role ? `${ev.role}:` : ''),
+      ` ${ev.place || '?'} \u00b7 ${dateDisplay}`,
+    );
     container.appendChild(chip);
   }
   return container;

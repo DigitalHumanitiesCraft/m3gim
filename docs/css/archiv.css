@@ -435,6 +435,54 @@
   gap: var(--space-1);
 }
 
+/* Phase 7: Finanzen, Beziehungen, Ereignisse im Inline-Detail */
+.inline-detail__finances {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  font-size: var(--text-xs);
+}
+
+.inline-detail__finance-row {
+  display: grid;
+  grid-template-columns: 90px 1fr auto;
+  gap: var(--space-2);
+  padding: 2px 0;
+  border-bottom: 1px dashed var(--border-color-light);
+  align-items: baseline;
+}
+
+.inline-detail__finance-row:last-child {
+  border-bottom: none;
+}
+
+.inline-detail__finance-field {
+  color: var(--color-text-secondary);
+  font-weight: var(--weight-medium);
+  text-transform: capitalize;
+}
+
+.inline-detail__finance-amount {
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text);
+  font-weight: var(--weight-medium);
+}
+
+.inline-detail__finance-role {
+  color: var(--color-text-tertiary);
+  font-style: italic;
+}
+
+.chip--relation {
+  background: #f4f0e8;
+  border: 1px solid #d4c89a;
+}
+
+.chip--event {
+  background: #e8eef5;
+  border: 1px solid #a9c0d8;
+}
+
 .inline-detail__konvolut {
   margin-top: var(--space-3);
   padding-top: var(--space-2);
