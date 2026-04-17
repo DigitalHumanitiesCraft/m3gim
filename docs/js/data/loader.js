@@ -345,6 +345,7 @@ function indexMobilityEvent(store, node) {
     role: node['m3gim:eventRole'] || null,
     description: node['rico:generalDescription'] || null,
     recordId,
+    xlsxSource: extractXlsxSource(node),
   });
 }
 
@@ -358,6 +359,17 @@ function indexRecordToEvents(store, record) {
     if (eid && store.mobilityEvents.has(eid)) eventIds.push(eid);
   }
   if (eventIds.length > 0) store.recordToEvents.set(record['@id'], eventIds);
+}
+
+/** Extrahiert die xlsxSource aus einem Objekt in kompaktes {sheet, row, datenpunkt}. */
+function extractXlsxSource(obj) {
+  const src = obj && obj['m3gim:xlsxSource'];
+  if (!src) return null;
+  return {
+    sheet: src['m3gim:xlsxSheet'] || null,
+    row: src['m3gim:xlsxRow'] || null,
+    datenpunkt: src['m3gim:datenpunktId'] || null,
+  };
 }
 
 /** AgRelOn-Relationen am Record. */
@@ -376,6 +388,7 @@ function indexAgentRelations(store, record) {
       validityBegin: validity && validity['agrelon:hasBeginDate'] || null,
       validityEnd: validity && validity['agrelon:hasEndDate'] || null,
       provenance: rel['agrelon:hasProvenance'] && rel['agrelon:hasProvenance']['@id'] || null,
+      xlsxSource: extractXlsxSource(rel),
     });
   }
   if (entries.length > 0) store.agentRelations.set(record['@id'], entries);
@@ -399,6 +412,7 @@ function indexFinances(store, record) {
       rawValue: det['m3gim:detailValue'] || null,
       amount: Number.isFinite(value) ? value : null,
       currency: det['m3gim:currency'] || null,
+      xlsxSource: extractXlsxSource(det),
     });
   }
   if (entries.length > 0) store.finances.set(record['@id'], entries);

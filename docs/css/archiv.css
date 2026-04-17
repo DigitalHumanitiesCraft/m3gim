@@ -435,53 +435,61 @@
   gap: var(--space-1);
 }
 
-/* Phase 7: Finanzen, Beziehungen, Ereignisse im Inline-Detail */
-.inline-detail__finances {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-  font-size: var(--text-xs);
-}
+/* =========================================================================
+   Rolle-Prefix-Chip-Pattern (Session 32: E-75 Mockup-Stil)
+   Einheitliche Darstellung fuer Finanzen, AgRelOn-Beziehungen,
+   SpatiotemporalEvents. Aufbau: Uppercase-Mono-Prefix + Serif-Wert
+   + optionale Provenance-Pille + optionales Wikidata-Badge.
+   Farbfamilien ueber .chip--c-<cluster>-Klassen (ort, person, rolle,
+   beziehung, finanz, datum, neutral).
+   ========================================================================= */
 
-.inline-detail__finance-row {
-  display: grid;
-  grid-template-columns: 90px 1fr auto;
-  gap: var(--space-2);
-  padding: 2px 0;
-  border-bottom: 1px dashed var(--border-color-light);
+.chip--role-pair {
+  display: inline-flex;
   align-items: baseline;
+  gap: 6px;
+  padding: 3px 8px;
+  border-radius: var(--border-radius);
+  border: 1px solid transparent;
+  font-size: var(--text-xs);
+  line-height: 1.4;
 }
 
-.inline-detail__finance-row:last-child {
-  border-bottom: none;
+.chip--role-pair .chip-rolle {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  opacity: 0.72;
 }
 
-.inline-detail__finance-field {
-  color: var(--color-text-secondary);
+.chip--role-pair .chip-wert {
+  font-family: var(--font-title);
   font-weight: var(--weight-medium);
-  text-transform: capitalize;
 }
 
-.inline-detail__finance-amount {
-  font-variant-numeric: tabular-nums;
-  color: var(--color-text);
-  font-weight: var(--weight-medium);
-}
-
-.inline-detail__finance-role {
+.chip--role-pair .prov-pill {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.05);
   color: var(--color-text-tertiary);
-  font-style: italic;
+  letter-spacing: 0.02em;
+  user-select: all;
 }
 
-.chip--relation {
-  background: #f4f0e8;
-  border: 1px solid #d4c89a;
-}
+.chip--role-pair.chip--clickable { cursor: pointer; }
+.chip--role-pair.chip--clickable:hover { filter: brightness(0.97); }
 
-.chip--event {
-  background: #e8eef5;
-  border: 1px solid #a9c0d8;
-}
+/* Cluster-Farbfamilien — semantische Gruppierung der Prefix-Typen. */
+.chip--c-ort       { background: #e8f0f4; border-color: #c7d8e2; color: #2a4b62; }
+.chip--c-person    { background: #e4ebf4; border-color: #bdc9dc; color: #1e3a5c; }
+.chip--c-rolle     { background: #f4e8e4; border-color: #d8bfb7; color: #6a2c22; }
+.chip--c-beziehung { background: #ecf0e4; border-color: #c7d2b5; color: #3e5a2c; }
+.chip--c-finanz    { background: #ece8e0; border-color: #c9c1ad; color: #4a4236; }
+.chip--c-datum     { background: #ede9e1; border-color: #c9c1ad; color: #5c5651; }
+.chip--c-neutral   { background: #f1ede6; border-color: #d4ccbd; color: #5c5651; }
 
 .inline-detail__konvolut {
   margin-top: var(--space-3);

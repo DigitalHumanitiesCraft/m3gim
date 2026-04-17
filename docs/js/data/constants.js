@@ -212,3 +212,109 @@ export const ZEITRAEUME = [
   '1960-1964', '1965-1969', '1970-1974',
 ];
 
+// =========================================================================
+// AgRelOn-Beziehungstypen → deutsche Labels (Session 32: E-75 Chip-Pattern)
+// =========================================================================
+
+export const AGRELON_LABELS = {
+  'agrelon:HasEmployeeEmployer':    'Arbeitgeber',
+  'agrelon:HasCorrespondent':       'Korrespondenz',
+  'agrelon:HasProfessionalContact': 'Beruflicher Kontakt',
+  'agrelon:HasIsPatron':            'Patron',
+  'agrelon:HasIsMember':            'Mitglied',
+};
+
+// =========================================================================
+// Role-Cluster fuer Chip-Farbfamilien (Session 32: E-75 Designregeln)
+// Prefix (Uppercase, wie im Chip angezeigt) -> Cluster-Klassenname.
+// CSS-Regeln: .chip--c-ort, .chip--c-person, .chip--c-rolle,
+// .chip--c-beziehung, .chip--c-finanz, .chip--c-datum, .chip--c-neutral.
+// =========================================================================
+
+export const ROLE_CLUSTER = {
+  // Orte + raumzeitliche Ereignisse
+  'AUFFUEHRUNGSORT':  'ort',
+  'AUFFÜHRUNGSORT':   'ort',
+  'ERSCHEINUNGSORT':  'ort',
+  'ABSENDEORT':       'ort',
+  'ZIELORT':          'ort',
+  'ENTSTEHUNGSORT':   'ort',
+  'WOHNORT':          'ort',
+  'AUFFUEHRUNG':      'ort',
+  'AUFFÜHRUNG':       'ort',
+  'GASTSPIEL':        'ort',
+  'SPIELZEIT':        'ort',
+  'PREMIERE':         'ort',
+  'FESTVORSTELLUNG':  'ort',
+  'WIEDERAUFNAHME':   'ort',
+  'ENTSTEHUNG':       'ort',
+  'AUFTRAG':          'ort',
+  'ERWAEHNT':         'ort',
+  'ERWÄHNT':          'ort',
+
+  // Personen in Produktionsrollen
+  'KOMPONIST':        'person',
+  'DIRIGENT':         'person',
+  'SAENGER':          'person',
+  'SÄNGER':           'person',
+  'REGISSEUR':        'person',
+  'CHORLEITER':       'person',
+  'INTERPRET':        'person',
+  'LIBRETTIST':       'person',
+  'VERFASSER':        'person',
+  'UEBERSETZER':      'person',
+  'ÜBERSETZER':       'person',
+
+  // Buehnenrollen
+  'ROLLE':            'rolle',
+
+  // AgRelOn-Beziehungen
+  'ARBEITGEBER':         'beziehung',
+  'KORRESPONDENZ':       'beziehung',
+  'BERUFLICHER KONTAKT': 'beziehung',
+  'PATRON':              'beziehung',
+  'MITGLIED':            'beziehung',
+
+  // Finanzen
+  'AUSGABEN':         'finanz',
+  'EINNAHMEN':        'finanz',
+  'HONORAR':          'finanz',
+  'GAGE':             'finanz',
+  'PROVISION':        'finanz',
+  'VERTRAGSSUMME':    'finanz',
+
+  // Datumsrollen
+  'ERSCHEINUNGSDATUM':  'datum',
+  'ABSENDEDATUM':       'datum',
+  'EMPFANGSDATUM':      'datum',
+  'AUFFUEHRUNGSDATUM':  'datum',
+  'AUFFÜHRUNGSDATUM':   'datum',
+  'PREMIEREDATUM':      'datum',
+  'AUSSTELLUNGSDATUM':  'datum',
+  'ABREISEDATUM':       'datum',
+};
+
+export function roleClusterFor(prefix) {
+  if (!prefix) return 'neutral';
+  const key = String(prefix).toUpperCase();
+  return ROLE_CLUSTER[key] || 'neutral';
+}
+
+// =========================================================================
+// Confidence-Dot-Mapping (Session 32: E-75 Mockup-Stil)
+// Erwarteter Input: numerischer Wert 0..1, typischerweise 1.00 / 0.50 / 0.00.
+// Hinweis: nicht-numerische oder fehlende Werte -> null, Dot wird dann nicht
+// gezeigt.
+// =========================================================================
+
+export function confidenceDotProps(value) {
+  if (value == null || value === '') return null;
+  const n = typeof value === 'number' ? value : parseFloat(value);
+  if (!Number.isFinite(n)) return null;
+  let level, title;
+  if (n >= 0.9)      { level = 'hoch';    title = 'Konfidenz hoch'; }
+  else if (n >= 0.4) { level = 'mittel';  title = 'Konfidenz mittel'; }
+  else               { level = 'niedrig'; title = 'Konfidenz niedrig'; }
+  return { value: n, level, title, label: n.toFixed(2) };
+}
+

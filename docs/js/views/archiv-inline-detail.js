@@ -8,7 +8,7 @@ import { formatSignatur, formatDocType, ensureArray, countLinks } from '../utils
 import { formatDate } from '../utils/date-parser.js';
 import { navigateToIndex } from '../ui/router.js';
 import { toggleKorb, isInKorb } from '../ui/korb.js';
-import { WIKIDATA_ICON_SVG } from '../data/constants.js';
+import { WIKIDATA_ICON_SVG, AGRELON_LABELS, roleClusterFor } from '../data/constants.js';
 
 /**
  * Build an inline detail DOM element for a record.
@@ -225,37 +225,78 @@ function renderEntityChips(entities, gridType) {
 }
 
 /**
- * Finanz-Details als kompakte Tabelle: Feld | Betrag Währung | (Rolle).
- * Input: Array aus store.finances ([{field, role, amount, currency, rawValue}]).
+ * Chip im Mockup-Stil: Rolle-Prefix (Uppercase, Mono) + Wert (Serif) +
+ * optionale Provenance-Pille + optionales Wikidata-Badge. Cluster steuert
+ * die Farbfamilie ueber eine CSS-Klasse .chip--c-<cluster>.
+ *
+ * @param {Object} opts
+ * @param {string} opts.prefix     - Rolle-Label (wird intern zu Uppercase).
+ * @param {string} opts.value      - Primaerwert (z.B. "Bayreuth · 1951-07-30").
+ * @param {string} [opts.cluster]  - Cluster-Key; wird aus prefix abgeleitet,
+ *                                   wenn nicht gesetzt.
+ * @param {Object} [opts.xlsxSource] - {sheet, row, datenpunkt}.
+ * @param {string} [opts.wikidata] - wd:Qxxx fuer Badge.
+ * @param {string} [opts.tip]      - Tooltip fuer den Chip.
+ * @param {Function} [opts.onClick]
+ * @returns {HTMLElement}
+ */
+function buildRoleChip({ prefix, value, cluster, xlsxSource, wikidata, tip, onClick }) {
+  const prefixUpper = (prefix || '').toUpperCase();
+  const cls = cluster || roleClusterFor(prefixUpper);
+  const chipProps = {
+    className: `chip chip--role-pair chip--c-${cls}${onClick ? ' chip--clickable' : ''}`,
+  };
+  if (onClick) {
+    chipProps.onClick = (e) => { e.stopPropagation(); onClick(e); };
+  }
+  if (tip) chipProps.dataset = { tip };
+
+  const parts = [
+    el('span', { className: 'chip-rolle' }, prefixUpper),
+    el('span', { className: 'chip-wert' }, value || '—'),
+  ];
+  if (xlsxSource && xlsxSource.row) {
+    parts.push(el('span', {
+      className: 'prov-pill',
+      title: `Quelle: ${xlsxSource.sheet || 'XLSX'} · Zeile ${xlsxSource.row}`,
+    }, `#${xlsxSource.row}`));
+  }
+  if (wikidata && String(wikidata).startsWith('wd:')) {
+    parts.push(el('a', {
+      className: 'badge badge--wikidata',
+      href: `https://www.wikidata.org/entity/${String(wikidata).replace('wd:', '')}`,
+      target: '_blank',
+      rel: 'noopener noreferrer',
+      title: wikidata,
+      html: WIKIDATA_ICON_SVG,
+      onClick: (e) => e.stopPropagation(),
+    }));
+  }
+  return el('span', chipProps, ...parts);
+}
+
+/**
+ * Finanz-Chips. Eingabe: Array aus store.finances.
  */
 function renderFinances(entries) {
-  const container = el('div', { className: 'inline-detail__finances' });
+  const container = el('div', { className: 'inline-detail__chips' });
   const formatAmount = (n) => Number.isFinite(n) ? n.toLocaleString('de-DE') : '?';
   for (const e of entries) {
-    const row = el('div', { className: 'inline-detail__finance-row' },
-      el('span', { className: 'inline-detail__finance-field' }, e.field || '—'),
-      el('span', { className: 'inline-detail__finance-amount' },
-        `${formatAmount(e.amount)}${e.currency ? ' ' + e.currency : ''}`
-      ),
-      e.role ? el('span', { className: 'inline-detail__finance-role' }, `(${e.role})`) : null,
-    );
-    container.appendChild(row);
+    const prefix = e.field || 'FINANZ';
+    const valueParts = [`${formatAmount(e.amount)}${e.currency ? '\u00a0' + e.currency : ''}`];
+    if (e.role) valueParts.push(`(${e.role})`);
+    container.appendChild(buildRoleChip({
+      prefix,
+      value: valueParts.join(' '),
+      xlsxSource: e.xlsxSource,
+    }));
   }
   return container;
 }
 
 /**
- * AgRelOn-Beziehungen: Typ-Label + Objektname + optional Wikidata-Link.
- * Input: Array aus store.agentRelations ([{type, objectName, objectWikidata, validityBegin, validityEnd}]).
+ * AgRelOn-Chips. Eingabe: Array aus store.agentRelations.
  */
-const AGRELON_LABELS = {
-  'agrelon:HasEmployeeEmployer': 'Arbeitgeber',
-  'agrelon:HasCorrespondent': 'Korrespondenz',
-  'agrelon:HasProfessionalContact': 'Beruflicher Kontakt',
-  'agrelon:HasIsPatron': 'Patron',
-  'agrelon:HasIsMember': 'Mitglied',
-};
-
 function renderAgentRelations(relations) {
   const container = el('div', { className: 'inline-detail__chips' });
   for (const r of relations) {
@@ -263,53 +304,35 @@ function renderAgentRelations(relations) {
     const validity = r.validityBegin
       ? ` ${r.validityBegin}${r.validityEnd ? '\u2013' + r.validityEnd : ''}`
       : '';
-    const chip = el('span', {
-      className: 'chip chip--relation chip--clickable',
-      dataset: { tip: 'Im Personen-Index öffnen' },
-      onClick: (e) => {
-        e.stopPropagation();
-        if (r.objectName) navigateToIndex('personen', r.objectName);
-      },
-    },
-      el('span', { className: 'chip__role' }, `${label}:`),
-      ` ${r.objectName || '?'}${validity}`,
-    );
-    if (r.objectWikidata && r.objectWikidata.startsWith('wd:')) {
-      chip.appendChild(el('a', {
-        className: 'badge badge--wikidata',
-        href: `https://www.wikidata.org/entity/${r.objectWikidata.replace('wd:', '')}`,
-        target: '_blank',
-        rel: 'noopener noreferrer',
-        title: r.objectWikidata,
-        html: WIKIDATA_ICON_SVG,
-        onClick: (e) => e.stopPropagation(),
-      }));
-    }
-    container.appendChild(chip);
+    container.appendChild(buildRoleChip({
+      prefix: label,
+      value: `${r.objectName || '?'}${validity}`,
+      cluster: 'beziehung',
+      xlsxSource: r.xlsxSource,
+      wikidata: r.objectWikidata,
+      tip: r.objectName ? 'Im Personen-Index öffnen' : null,
+      onClick: r.objectName ? () => navigateToIndex('personen', r.objectName) : null,
+    }));
   }
   return container;
 }
 
 /**
- * SpatiotemporalEvents: Ort + Datum + Rolle.
- * Input: Array aus store.mobilityEvents-Werten.
+ * SpatiotemporalEvent-Chips. Eingabe: Array aus store.mobilityEvents-Werten.
  */
 function renderMobilityEvents(events) {
   const container = el('div', { className: 'inline-detail__chips' });
   for (const ev of events) {
     const dateDisplay = ev.date ? formatDate(ev.date) : '—';
-    const chip = el('span', {
-      className: 'chip chip--event chip--clickable',
-      dataset: { tip: 'Ort im Index öffnen' },
-      onClick: (e) => {
-        e.stopPropagation();
-        if (ev.place) navigateToIndex('orte', ev.place);
-      },
-    },
-      el('span', { className: 'chip__role' }, ev.role ? `${ev.role}:` : ''),
-      ` ${ev.place || '?'} \u00b7 ${dateDisplay}`,
-    );
-    container.appendChild(chip);
+    const prefix = ev.role || 'EREIGNIS';
+    container.appendChild(buildRoleChip({
+      prefix,
+      value: `${ev.place || '?'}\u00a0\u00b7\u00a0${dateDisplay}`,
+      xlsxSource: ev.xlsxSource,
+      wikidata: ev.placeWikidata,
+      tip: ev.place ? 'Ort im Index öffnen' : null,
+      onClick: ev.place ? () => navigateToIndex('orte', ev.place) : null,
+    }));
   }
   return container;
 }
