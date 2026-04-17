@@ -18,11 +18,19 @@
   <link rel="stylesheet" href="css/archiv.css">
   <link rel="stylesheet" href="css/indizes.css">
   <link rel="stylesheet" href="css/korb.css">
-  <link rel="stylesheet" href="css/erschliessungsstand.css">
+  <link rel="stylesheet" href="css/mobilitaets-atlas.css">
   <link rel="stylesheet" href="css/pages.css">
 
   <!-- D3.js -->
   <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+
+  <!-- Leaflet (OpenStreetMap-Tiles, keine API-Keys) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin="">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+          integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+          crossorigin=""></script>
 
   <!-- App -->
   <script type="module" src="js/main.js"></script>
@@ -57,11 +65,11 @@
       </svg>
       Indizes
     </button>
-    <button class="tab-bar__tab" data-tab="erschliessungsstand" role="tab" aria-selected="false" aria-controls="tab-erschliessungsstand" id="btn-erschliessungsstand">
+    <button class="tab-bar__tab" data-tab="mobilitaets-atlas" role="tab" aria-selected="false" aria-controls="tab-mobilitaets-atlas" id="btn-mobilitaets-atlas">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <path d="M3 3v18h18"/><path d="M7 16l4-4 4 2 5-6"/>
+        <circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5 8 12 8 12s8-7 8-12a8 8 0 0 0-8-8z"/>
       </svg>
-      Erschließungsstand
+      Mobilitäts-Atlas
     </button>
     <button class="tab-bar__tab" data-tab="korb" id="korb-tab-btn" role="tab" aria-selected="false" aria-controls="tab-korb">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -82,7 +90,7 @@
   <main id="main-content" hidden>
     <section id="tab-archiv" class="tab-content active" role="tabpanel" aria-labelledby="btn-archiv"></section>
     <section id="tab-indizes" class="tab-content" role="tabpanel" aria-labelledby="btn-indizes"></section>
-    <section id="tab-erschliessungsstand" class="tab-content" role="tabpanel" aria-labelledby="btn-erschliessungsstand"></section>
+    <section id="tab-mobilitaets-atlas" class="tab-content" role="tabpanel" aria-labelledby="btn-mobilitaets-atlas"></section>
     <section id="tab-korb" class="tab-content" role="tabpanel" aria-labelledby="btn-korb"></section>
 
   </main>

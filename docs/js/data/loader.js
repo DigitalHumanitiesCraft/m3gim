@@ -342,12 +342,18 @@ function indexMobilityEvent(store, node) {
   const place = node['m3gim:atPlace'];
   const placeName = place && (place.name || place['skos:prefLabel']) || null;
   const placeQid = place && place['@id'] && String(place['@id']).startsWith('wd:') ? place['@id'] : null;
+  const placeLat = place && typeof place['geo:lat'] === 'number' ? place['geo:lat'] : null;
+  const placeLon = place && typeof place['geo:long'] === 'number' ? place['geo:long'] : null;
+  const placeCountry = place && place['m3gim:country'] || null;
   const recordRef = node['rico:isAssociatedWithRecord'];
   const recordId = recordRef && recordRef['@id'] || null;
   store.mobilityEvents.set(id, {
     id,
     place: placeName,
     placeWikidata: placeQid,
+    placeLat,
+    placeLon,
+    placeCountry,
     date: node['m3gim:atDate'] || null,
     role: node['m3gim:eventRole'] || null,
     description: node['rico:generalDescription'] || null,

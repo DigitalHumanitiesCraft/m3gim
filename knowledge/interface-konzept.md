@@ -6,9 +6,9 @@
 
 Das Interface positioniert sich als **Forschungswerkzeug**, nicht als Dashboard. Es zeigt den Archivbestand wie eine Edition ihre Quellen — mit sichtbarer Provenienz, ehrlichem Erschließungsstand und einer Typografie, die zur Lesehaltung passt. Datenqualität wird nicht kaschiert; Lücken und Duplikate stehen so da, wie sie im Bestand sind.
 
-## Tab-Architektur (sechs Tabs)
+## Tab-Architektur (fünf Tabs)
 
-Die sechs Tabs decken je eine legitime Perspektive auf denselben Graph ab. Umschalten bedeutet Perspektivenwechsel, nicht Feature-Wechsel.
+Die fünf Tabs decken je eine legitime Perspektive auf denselben Graph ab. Umschalten bedeutet Perspektivenwechsel, nicht Feature-Wechsel. Qualitätssicht (Abdeckung, Lücken, Duplikate) läuft team-intern über den Markdown-Report `data/reports/quality-snapshot.md` und ist kein eigener Tab.
 
 | Tab | Gegenstand | Primäre Datenquelle im Store | Form |
 |---|---|---|---|
@@ -17,7 +17,6 @@ Die sechs Tabs decken je eine legitime Perspektive auf denselben Graph ab. Umsch
 | **Mobilitäts-Atlas** | Raumzeitliche Aktivität nach Mobilitätstyp | `store.mobilityEvents` (+ Koordinaten-Patch) | Karte + Zeitstrahl + Detailpanel, bi-direktional gekoppelt |
 | **Netzwerk** | Agenten-Beziehungen (AgRelOn-Relationen) und deren Belege | `store.agentRelations`, `store.persons` | Offen — voraussichtlich Tabelle mit Chip-Breakdown analog Repertoire |
 | **Repertoire** | Bühnenrollen und Komponisten, nach Belegtyp aggregiert | `store.works`, Rollen-Belege aus `records` | Parallele Aggregat-Tabellen mit Inline-Breakdown |
-| **Erschließungsstand** | Abdeckung, Lücken, Duplikate, Low-Confidence-Freigaben | `data/reports/quality-snapshot.md` als Quelle, Rendering im UI | Report-artige Seite mit navigierbaren Abschnitten |
 
 Tab-Namen sind inhaltlich (keine „Charts"/„Views"-Floskeln). Jeder Tab trägt einen erklärenden Untertitel, der das Vokabular definiert („Repertoire — Bühnenrollen & Komponisten").
 
@@ -74,7 +73,7 @@ Sektionen im Hauptbereich tragen dezente Überschriften nach dem Muster `BÜHNEN
 
 ### 10. Datenqualität wird gezeigt, nicht gemergt
 
-Tippfehler, Dubletten, Normalisierungslücken (etwa „Verdi, Guiseppe" neben „Verdi, Giuseppe") erscheinen im UI so, wie sie im Bestand liegen. Das Interface ist ein Erschließungsspiegel. Der Erschließungsstand-Tab ist der Ort, an dem solche Funde systematisch gelistet werden.
+Tippfehler, Dubletten, Normalisierungslücken (etwa „Verdi, Guiseppe" neben „Verdi, Giuseppe") erscheinen im UI so, wie sie im Bestand liegen. Das Interface ist ein Erschließungsspiegel. Der Markdown-Report `data/reports/quality-snapshot.md` listet solche Funde systematisch für die Team-Arbeit.
 
 ## Daten-Präsentations-Muster
 

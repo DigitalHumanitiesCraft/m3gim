@@ -33,6 +33,15 @@ Suite durchgängig grün bis auf die beiden dokumentierten Ausnahmen (`PL_07` xf
 
 ## Erreichte Meilensteine
 
+### Session 33 — Mobilitäts-Atlas MVP
+
+Zwei sequenzielle Commits haben den ersten Tab mit Karte realisiert:
+
+- **Koordinaten-Patch (Pipeline)**: `m3gim:SpatiotemporalEvent` trägt im `m3gim:atPlace`-Subobjekt nun `@id` (`wd:Qxxx`), `owl:sameAs`, `geo:lat`, `geo:long` und – falls vorhanden – `m3gim:country`. Umgesetzt in `scripts/transform.py` als zwei minimale Eingriffe: Ortsindex-Lookup für spatiotemporal-rels in `process_verknuepfungen()` und Wiederverwendung von `_inject_enrichment()` im STE-Zweig von `add_relations_to_records()`. TDD via neuem `tests/test_22_ste_coordinates.py` (Anker: Zürich, Salzburg; Soft-Coverage ≥ 10).
+- **Mobilitäts-Atlas-Tab**: neuer Tab `docs/js/views/mobilitaets-atlas.js`, Grid mit Leaflet-Karte (OSM-Tiles, kein API-Key), horizontalem D3-Zeitstrahl (Brush filtert Karte + Panel) und Chip-Detailpanel. Bi-direktionale Kopplung über lokalen Renderer-State (`selectedPlace`, `selectedRange`, `unverortetMode`). Marker-Größe skaliert mit Event-Zahl pro Ort; Signal-Grün markiert die Auswahl. Events ohne Koordinaten (Wien, München, Bayreuth – Reconciliation-Lücke) sind über Badge "N unverortet" erreichbar. Chip-Helper `buildRoleChip()` aus `archiv-inline-detail.js` exportiert und wiederverwendet. Loader-Erweiterung: `placeLat`/`placeLon`/`placeCountry` auf `mobilityEvent`. Debug-Helper `window.m3gim.mobilityEventsWithGeo()`.
+
+Designgrundlage: [interface-konzept.md § Mobilitäts-Atlas](interface-konzept.md). Tests: 188 passed, 1 skipped, 1 xfailed.
+
 ### Session 32 — Interface-Fundament MVP (E-75)
 
 Fünf aufeinander aufbauende Commits haben das neue Forschungsinterface-Fundament gelegt:
@@ -41,7 +50,7 @@ Fünf aufeinander aufbauende Commits haben das neue Forschungsinterface-Fundamen
 - **Archiv-Inline-Detail** rendert Finanzen, AgRelOn-Beziehungen und SpatiotemporalEvents im neuen Rolle-Prefix-Chip-Pattern aus dem Dossier-Mockup: Uppercase-Mono-Prefix + Serif-Wert + Provenance-Pille (`#1276`) + optionales Wikidata-Badge. Zentraler Helper `buildRoleChip()` in `archiv-inline-detail.js`, Cluster-Farbfamilien in `archiv.css` (ort, person, rolle, beziehung, finanz, datum, neutral).
 - **Indizes-Personen mit Beziehungsbadges**: Loader-Pass 2.5 resolviert AgRelOn-Relationen rückwärts auf Personen-Einträge (Matching primär Q-ID, sekundär `normalizePerson(name)`). `renderNameCell()` zeigt eine dritte Zeile `idx-relations` mit Chips im gleichen Muster. Mehrfach-Relationen werden gezählt, Klick springt zum Beleg.
 - **DFT-Filter hierarchisch**: `buildDftTree(store)` + `expandDftFilter(store, shortId)` in `format.js`. Dropdown nutzt `<optgroup>`-Struktur; Oberbegriff matcht transitiv in Bestand + Chronik.
-- **Erschließungsstand-Tab** (neu): eigener Tab mit Report-Typografie. `scripts/report-quality.py` schreibt zusätzlich zum Markdown eine strukturierte `quality-snapshot.json`, die `build-views.py` nach `docs/data/` kopiert. Der Tab rendert Verknüpfungsrate, Provenance-Coverage, Bearbeitungsstand, Wikidata-Coverage und die Low-Confidence-Freigabeliste + Blocker. Neuer Kontrakttest `test_21_quality_snapshot.py`.
+- **Erschließungsstand-Tab** (neu): eigener Tab mit Report-Typografie auf Basis einer strukturierten `quality-snapshot.json`. In Session 33 wieder entfernt, weil redundant zum Markdown-Report (`data/reports/quality-snapshot.md`), der für die Team-Kommunikation ausreicht. Markdown-Report bleibt Pflichtlauf der Pipeline.
 
 Designgrundlage durchgängig: [interface-konzept.md](interface-konzept.md). Tests: 182 passed, 1 skipped, 1 xfailed.
 
@@ -103,12 +112,12 @@ Detaillierte Entscheidungen: [entscheidungen.md](entscheidungen.md).
 
 ### Interface-Ausbau (aktiver Fokus)
 
-Grundlage: [interface-konzept.md](interface-konzept.md). MVP-Fundament ist mit Session 32 gelegt (Archiv, Indizes, Erschließungsstand im neuen Designsystem). Die weiteren Tabs bauen darauf auf.
+Grundlage: [interface-konzept.md](interface-konzept.md). MVP-Fundament steht (Session 32: Archiv, Indizes), Mobilitäts-Atlas steht (Session 33). Die weiteren Tabs bauen darauf auf.
 
-1. **Mobilitäts-Atlas-Tab** — Karte + Zeitstrahl + Detailpanel, bi-direktional gekoppelt. Vorarbeit: Koordinaten-Patch in `transform.py` (Orte in SpatiotemporalEvents mit Q-ID + Koordinaten aus `wikidata-enrichment.json` anreichern, weil die STE derzeit nur Orts-Labels ohne Geodaten tragen). MVP deckt die Stories US-1, US-2, US-5, US-6.
-2. **Repertoire-Tab** — Bühnenrollen × Komponisten als parallele Aggregat-Tabellen mit Inline-Breakdown (`ERWÄHNT · AUFFÜHRUNG · REPERTOIRE → Summe`), passend zum Repertoire-Mockup.
-3. **Biogramm-Tab** — chronologische Gesamtsicht (Orte, Netzwerk, Repertoire) pro Lebensphase. Form offen, Konzeption nach Atlas/Repertoire.
-4. **Netzwerk-Tab** — offen. Voraussichtlich Tabelle mit Chip-Breakdown analog Repertoire, nicht Graph.
+1. **Repertoire-Tab** — Bühnenrollen × Komponisten als parallele Aggregat-Tabellen mit Inline-Breakdown (`ERWÄHNT · AUFFÜHRUNG · REPERTOIRE → Summe`), passend zum Repertoire-Mockup.
+2. **Biogramm-Tab** — chronologische Gesamtsicht (Orte, Netzwerk, Repertoire) pro Lebensphase. Form offen, Konzeption nach Repertoire.
+3. **Netzwerk-Tab** — offen. Voraussichtlich Tabelle mit Chip-Breakdown analog Repertoire, nicht Graph.
+4. **Reconciliation-Lücke Wien/München/Bayreuth schließen** — die drei prominenten Malaniuk-Städte stehen in `wikidata-reconciliation.json` als `unmatched`. Manuelles Freischalten als `manual_review: "approved"` oder Nachzug der Q-IDs füllt den Atlas deutlich auf.
 
 ### Deferred Aufräumarbeiten (nach Bedarf)
 

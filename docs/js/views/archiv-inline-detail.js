@@ -240,7 +240,7 @@ function renderEntityChips(entities, gridType) {
  * @param {Function} [opts.onClick]
  * @returns {HTMLElement}
  */
-function buildRoleChip({ prefix, value, cluster, xlsxSource, wikidata, tip, onClick }) {
+export function buildRoleChip({ prefix, value, cluster, xlsxSource, wikidata, tip, onClick }) {
   const prefixUpper = (prefix || '').toUpperCase();
   const cls = cluster || roleClusterFor(prefixUpper);
   const chipProps = {

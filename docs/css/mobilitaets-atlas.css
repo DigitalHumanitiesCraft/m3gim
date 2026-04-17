@@ -1,0 +1,254 @@
+/* M³GIM Mobilitäts-Atlas — Karte + Zeitstrahl + Detailpanel */
+
+#tab-mobilitaets-atlas {
+  padding: var(--space-4) var(--space-6);
+}
+
+.atlas-header {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--border-color-light);
+}
+
+.atlas-title {
+  margin: 0;
+  font-family: var(--font-title);
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-2xl);
+  color: var(--color-text-primary);
+  letter-spacing: 0.01em;
+}
+
+.atlas-subtitle {
+  flex: 1 1 auto;
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+}
+
+.atlas-badges {
+  display: inline-flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.atlas-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  line-height: 1.6;
+  border: 1px solid transparent;
+}
+
+.atlas-badge--ok {
+  background: var(--color-signal-green-light);
+  color: var(--color-signal-green);
+  border-color: #cde5d6;
+}
+
+.atlas-badge--warn {
+  background: #f3eadd;
+  color: #8b6a3a;
+  border-color: #e4d5bb;
+}
+
+.atlas-badge--clickable {
+  cursor: pointer;
+  user-select: none;
+  transition: background var(--transition-fast);
+}
+.atlas-badge--clickable:hover {
+  filter: brightness(0.97);
+}
+
+/* ------------------------------------------------------------------ */
+/* Grid: Karte + Detailpanel, darunter Zeitstrahl volle Breite        */
+/* ------------------------------------------------------------------ */
+
+.atlas-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(280px, 1.6fr);
+  grid-template-rows: minmax(420px, 60vh) auto;
+  grid-template-areas:
+    "map   panel"
+    "time  panel";
+  gap: var(--space-3);
+  min-height: 500px;
+}
+
+.atlas-map {
+  grid-area: map;
+  background: var(--color-cream);
+  border: 1px solid var(--border-color-light);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+}
+
+.atlas-timeline {
+  grid-area: time;
+  padding: var(--space-2) 0;
+  border-top: 1px solid var(--border-color-light);
+}
+
+.atlas-panel {
+  grid-area: panel;
+  background: var(--color-paper);
+  border: 1px solid var(--border-color-light);
+  border-radius: var(--border-radius);
+  padding: var(--space-4);
+  overflow-y: auto;
+  max-height: calc(60vh + 70px);
+}
+
+/* ------------------------------------------------------------------ */
+/* Leaflet-Overrides im warmen Paper-Stil                              */
+/* ------------------------------------------------------------------ */
+
+.atlas-map .leaflet-container {
+  background: var(--color-cream);
+  font-family: var(--font-ui);
+  font-size: var(--text-xs);
+}
+
+.atlas-map .leaflet-control-attribution {
+  background: rgba(250, 248, 245, 0.85);
+  font-size: 10px;
+}
+
+.atlas-map .leaflet-popup-content-wrapper {
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-md);
+  background: var(--color-paper);
+}
+
+.atlas-map .leaflet-popup-content {
+  margin: var(--space-3) var(--space-4);
+  font-family: var(--font-ui);
+}
+
+.atlas-popup__title {
+  font-family: var(--font-title);
+  font-size: var(--text-base);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-primary);
+  margin-bottom: 2px;
+}
+.atlas-popup__meta {
+  color: var(--color-text-secondary);
+  font-size: var(--text-xs);
+}
+.atlas-popup__qid {
+  font-family: var(--font-mono);
+  color: var(--color-text-tertiary);
+  font-size: 11px;
+  margin-top: 2px;
+}
+.atlas-popup__count {
+  margin-top: 6px;
+  font-size: var(--text-xs);
+  color: var(--color-kug-blau);
+}
+
+/* ------------------------------------------------------------------ */
+/* Detailpanel                                                         */
+/* ------------------------------------------------------------------ */
+
+.atlas-panel__heading {
+  margin-bottom: var(--space-3);
+}
+.atlas-panel__kicker {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--color-text-tertiary);
+  margin-bottom: 2px;
+}
+.atlas-panel__title {
+  margin: 0;
+  font-family: var(--font-title);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.atlas-panel__chips {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.atlas-panel__empty {
+  color: var(--color-text-tertiary);
+  font-size: var(--text-sm);
+  font-style: italic;
+}
+
+/* Atlas uses the same chip pattern as Archiv (chip--role-pair + chip--c-*).
+   Chips stack vertically in the panel. */
+.atlas-panel__chips .chip--role-pair {
+  align-self: flex-start;
+  max-width: 100%;
+}
+
+/* ------------------------------------------------------------------ */
+/* Timeline                                                            */
+/* ------------------------------------------------------------------ */
+
+.atlas-timeline svg {
+  display: block;
+  width: 100%;
+}
+
+.atlas-timeline .atlas-brush .selection {
+  fill: var(--color-kug-blau);
+  fill-opacity: 0.08;
+  stroke: var(--color-kug-blau);
+  stroke-opacity: 0.5;
+}
+.atlas-timeline .atlas-brush .handle {
+  fill: var(--color-kug-blau);
+}
+
+.atlas-timeline .domain {
+  stroke: var(--color-text-tertiary);
+}
+.atlas-timeline .tick line {
+  stroke: var(--color-text-tertiary);
+  stroke-opacity: 0.4;
+}
+.atlas-timeline circle {
+  cursor: pointer;
+  transition: r var(--transition-fast), stroke var(--transition-fast);
+}
+
+/* Empty-State ------------------------------------------------------- */
+
+.atlas-empty {
+  padding: var(--space-8);
+  background: var(--color-cream);
+  border: 1px dashed var(--border-color);
+  border-radius: var(--border-radius);
+  color: var(--color-text-secondary);
+  text-align: center;
+}
+
+/* Small screens ---------------------------------------------------- */
+
+@media (max-width: 900px) {
+  .atlas-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(320px, 50vh) minmax(280px, auto) auto;
+    grid-template-areas:
+      "map"
+      "panel"
+      "time";
+  }
+  .atlas-panel { max-height: none; }
+}

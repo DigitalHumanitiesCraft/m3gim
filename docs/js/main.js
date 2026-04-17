@@ -9,7 +9,7 @@ import { initKorb, onKorbChange, getKorbCount } from './ui/korb.js';
 import { renderArchiv, selectArchivRecord } from './views/archiv.js';
 import { renderIndizes, expandEntry } from './views/indizes.js';
 import { renderKorb } from './views/korb.js';
-import { renderErschliessungsstand } from './views/erschliessungsstand.js';
+import { renderMobilitaetsAtlas } from './views/mobilitaets-atlas.js';
 
 const DEV = typeof location !== 'undefined'
   && (location.hostname === 'localhost' || location.hostname === '127.0.0.1');
@@ -21,7 +21,7 @@ const renderedTabs = new Set();
 const TAB_RENDERERS = new Map([
   ['archiv',             (s, c) => renderArchiv(s, c)],
   ['indizes',            (s, c) => renderIndizes(s, c)],
-  ['erschliessungsstand',(s, c) => renderErschliessungsstand(s, c)],
+  ['mobilitaets-atlas',  (s, c) => renderMobilitaetsAtlas(s, c)],
   ['korb',               (s, c) => renderKorb(s, c)],
 ]);
 
@@ -102,7 +102,11 @@ function logTabActivation(tab, s) {
   const profile = {
     archiv:              () => ({ records: s.allRecords.length, bySignatur: s.bySignatur.size, finances: s.finances.size, agentRel: s.agentRelations.size }),
     indizes:             () => ({ persons: s.persons.size, orgs: s.organizations.size, locs: s.locations.size, works: s.works.size, agentRel: s.agentRelations.size, relResolved: s.agentRelationResolvedCount || 0 }),
-    erschliessungsstand: () => ({ source: 'docs/data/quality-snapshot.json' }),
+    'mobilitaets-atlas': () => {
+      const all = [...s.mobilityEvents.values()];
+      const withGeo = all.filter(e => typeof e.placeLat === 'number' && typeof e.placeLon === 'number');
+      return { events: all.length, withGeo: withGeo.length, unverortet: all.length - withGeo.length };
+    },
     korb:                () => ({ records: s.allRecords.length }),
   };
   const fn = profile[tab];
@@ -274,6 +278,16 @@ function exposeDebug(s) {
       const rows = [...s.mobilityEvents.values()].map(e => ({
         event: e.id, record: e.recordId, place: e.place, date: e.date, role: e.role,
       }));
+      console.table(rows);
+      return rows;
+    },
+    mobilityEventsWithGeo() {
+      const rows = [...s.mobilityEvents.values()]
+        .filter(e => typeof e.placeLat === 'number' && typeof e.placeLon === 'number')
+        .map(e => ({
+          event: e.id, record: e.recordId, place: e.place, date: e.date,
+          lat: e.placeLat, lon: e.placeLon, country: e.placeCountry || '',
+        }));
       console.table(rows);
       return rows;
     },
