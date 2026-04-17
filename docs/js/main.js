@@ -8,27 +8,19 @@ import { initRouter, getState } from './ui/router.js';
 import { initKorb, onKorbChange, getKorbCount } from './ui/korb.js';
 import { renderArchiv, selectArchivRecord } from './views/archiv.js';
 import { renderIndizes, expandEntry } from './views/indizes.js';
-import { renderMatrix } from './views/matrix.js';
-import { renderKosmos } from './views/kosmos.js';
 import { renderKorb } from './views/korb.js';
-import { renderMobilitaet } from './views/mobilitaet.js';
-import { renderZeitfluss } from './views/zeitfluss.js';
-import { renderLebenspartitur } from './views/lebenspartitur.js';
-import { DEV } from './utils/viz-components.js';
+
+const DEV = typeof location !== 'undefined'
+  && (location.hostname === 'localhost' || location.hostname === '127.0.0.1');
 
 let store = null;
 const renderedTabs = new Set();
 
 /** Tab renderer registry — maps tab name to render function. */
 const TAB_RENDERERS = new Map([
-  ['archiv',     (s, c) => renderArchiv(s, c)],
-  ['indizes',    (s, c) => renderIndizes(s, c)],
-  ['matrix',     (s, c) => renderMatrix(s, c)],
-  ['kosmos',     (s, c) => renderKosmos(s, c)],
-  ['mobilitaet', (s, c) => renderMobilitaet(s, c)],
-  ['zeitfluss',       (s, c) => renderZeitfluss(s, c)],
-  ['lebenspartitur',  (s, c) => renderLebenspartitur(s, c)],
-  ['korb',            (s, c) => renderKorb(s, c)],
+  ['archiv',  (s, c) => renderArchiv(s, c)],
+  ['indizes', (s, c) => renderIndizes(s, c)],
+  ['korb',    (s, c) => renderKorb(s, c)],
 ]);
 
 async function init() {
@@ -95,7 +87,6 @@ function renderTab(tab) {
 
   try {
     const result = renderer(store, container);
-    // Handle async renderers (D3 views that load partitur.json)
     if (result && typeof result.catch === 'function') {
       result.catch(err => showTabError(tab, container, err));
     }
@@ -107,14 +98,9 @@ function renderTab(tab) {
 /** Kurze Diagnostik beim erstmaligen Öffnen eines Tabs: welche Datenmengen nutzt die View? */
 function logTabActivation(tab, s) {
   const profile = {
-    archiv:         () => ({ records: s.allRecords.length, bySignatur: s.bySignatur.size, finances: s.finances.size, agentRel: s.agentRelations.size }),
-    indizes:        () => ({ persons: s.persons.size, orgs: s.organizations.size, locs: s.locations.size, works: s.works.size, agentRel: s.agentRelations.size }),
-    matrix:         () => ({ records: s.allRecords.length, byYear: s.byYear.size, persons: s.persons.size }),
-    kosmos:         () => ({ works: s.works.size, records: s.allRecords.length }),
-    mobilitaet:     () => ({ locations: s.locations.size, mobilityEvents: s.mobilityEvents.size, recordsWithEvents: s.recordToEvents.size }),
-    zeitfluss:      () => ({ works: s.works.size, byYear: s.byYear.size }),
-    lebenspartitur: () => ({ records: s.allRecords.length, mobilityEvents: s.mobilityEvents.size }),
-    korb:           () => ({ records: s.allRecords.length }),
+    archiv:  () => ({ records: s.allRecords.length, bySignatur: s.bySignatur.size, finances: s.finances.size, agentRel: s.agentRelations.size }),
+    indizes: () => ({ persons: s.persons.size, orgs: s.organizations.size, locs: s.locations.size, works: s.works.size, agentRel: s.agentRelations.size }),
+    korb:    () => ({ records: s.allRecords.length }),
   };
   const fn = profile[tab];
   if (!fn) return;
