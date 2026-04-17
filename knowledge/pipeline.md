@@ -1,6 +1,6 @@
 # Pipeline
 
-> Skriptverantwortung, Datenfluss, ENV-Overrides, Pipeline-Erweiterungen, Qualitaets-Baseline. Stand: 2026-04-17 nach v2-Konsolidierung.
+> Skriptverantwortung, Datenfluss, ENV-Overrides, Pipeline-Erweiterungen, Qualitaets-Baseline.
 
 ## Skriptverantwortung
 
@@ -11,9 +11,10 @@
 | `scripts/transform.py` | Transformation nach JSON-LD (RiC-O + m3gim + agrelon) | `$M3GIM_SHEETS_DIR` | `$M3GIM_OUTPUT_DIR/m3gim.jsonld` |
 | `scripts/build-views.py` | View-spezifische Aggregationen, partitur.json | `$M3GIM_OUTPUT_DIR/m3gim.jsonld` | `$M3GIM_OUTPUT_DIR/views/*.json` |
 | `scripts/reconcile.py` | Wikidata-Reconciliation (Fuzzy-Matching, P31-Verifikation, Caching, 3 Confidence-Level) | XLSX-Indizes | `data/output/wikidata-reconciliation.json` |
-| `scripts/enrich-wikidata.py` | Wikidata-Property-Enrichment (P106, P412, P569/570, P625, P1191 etc.) | wikidata-reconciliation.json | `data/output/wikidata-enrichment.json` |
-| `scripts/export-wikidata-csv.py` | Wikidata-CSVs fuer Google-Sheets-Import | wikidata-reconciliation.json | `data/output/wikidata-csvs/*.csv` (5 Dateien) |
+| `scripts/enrich-wikidata.py` | Wikidata-Property-Enrichment (P106, P412, P569/570, P625, P1191 etc.). Filtert fuzzy_low ohne `manual_review: "approved"` aus (E-74). | wikidata-reconciliation.json | `data/output/wikidata-enrichment.json` |
+| `scripts/export-wikidata-csv.py` | Wikidata-CSVs fuer Google-Sheets-Import | wikidata-reconciliation.json | `data/output/wikidata-csvs/*.csv` |
 | `scripts/audit-data.py` | Alignment-Pruefung XLSX vs JSON-LD vs Views | XLSX + JSON-LD + Views | Konsolenreport |
+| `scripts/report-quality.py` | Datenqualitaets-Snapshot fuer Erschliessungsteam: Verknuepfungsrate, Bearbeitungsstand, WD-Coverage, Provenance-Coverage, Low-Confidence-Freigabeliste | m3gim.jsonld + wikidata-reconciliation.json | `data/reports/quality-snapshot.md` |
 
 ## ENV-Overrides
 
@@ -41,13 +42,14 @@ python scripts/build-views.py
    2b. **Reconciliation** (`reconcile.py`) → `wikidata-reconciliation.json` (Fuzzy-Matching, 3 Confidence-Level)
    2c. **Enrichment** (`enrich-wikidata.py`) → `wikidata-enrichment.json` (WD-Properties fuer gematchte Entitaeten)
 3. **Modelltransformation** (`transform.py`) → `$M3GIM_OUTPUT_DIR/m3gim.jsonld` mit:
-   - `owl:sameAs` + WD-Enrichment-Properties
+   - `owl:sameAs` + WD-Enrichment-Properties (fuzzy_low nur bei `manual_review: "approved"`, E-74)
    - Skos:Concept-Knoten fuer hierarchische Dokumenttypen (data.md § 12)
    - `m3gim:SpatiotemporalEvent` als Top-Level Graph-Entities (data.md § 10)
    - `agrelon:*`-Relationen fuer Agent-Agent-Beziehungen (data.md § 8)
    - `agrelon:hasProvenance` + `hasConfidenceValue` statt `m3gim:dateEvidence` (data.md § 9)
    - Typisierte Datumsproperties `m3gim:absendedatum` etc. (data.md § 7)
    - `m3gim:DetailAnnotation` mit `monetaryAmount`/`currency`/`detailRole` (data.md § 11)
+   - `m3gim:xlsxSource` pro Record + Nested Entity (technische Quellreferenz auf Sheet + Zeile, data.md § 9, E-73)
 4. **View-Aggregation** (`build-views.py`) → `$M3GIM_OUTPUT_DIR/views/partitur.json` und matrix/kosmos/sankey
 5. **Bereitstellung**: `build-views.py` kopiert im Default-Lauf **`m3gim.jsonld` (primäre Datenquelle)** + die Derivate `partitur.json`, `matrix.json`, `kosmos.json` automatisch nach `docs/data/`.
 
@@ -58,7 +60,7 @@ python scripts/build-views.py
 | 4.1 | `normalize_role()` strippt `:in`/`:innen` — Gender-neutrale Rollenbezeichner |
 | 4.2 | `DOKUMENTTYP_TO_DFT` hierarchisch erweitert + `build_dft_concepts()` emittiert skos:Concept-Knoten mit skos:broader |
 | 4.3 | `EVIDENZ_TO_CONFIDENCE` mapped dateEvidence auf `agrelon:hasConfidenceValue` (1.0/0.8/0.6/0.0), Record-URI als `agrelon:hasProvenance` |
-| 4.4 | Komposit `ort, datum` erzeugt zusaetzlich `m3gim:SpatiotemporalEvent`-Instanz mit `atPlace`, `atDate`, `eventRole` (43 Events im aktuellen Stand) |
+| 4.4 | Komposit `ort, datum` erzeugt zusaetzlich `m3gim:SpatiotemporalEvent`-Instanz mit `atPlace`, `atDate`, `eventRole` |
 | 4.6 | `parse_monetary_value()` zerlegt `AMOUNT, CURRENCY`; Finanz-DetailAnnotation haelt `monetaryAmount` (xsd:decimal), `currency`, `detailRole`. `FINANCE_CURRENCY_DEFAULTS` pro Signatur-Präfix greift, wenn die Quelle keine Währung liefert (Session 29 für NIM_007: `S`). |
 | 4.7 | `DATUMSROLLE_TO_PROPERTY` mapped Datumsrollen auf typisierte Properties (`m3gim:absendedatum`, `m3gim:auffuehrungsdatum` etc.); `is_iso_date()` filtert Freitext in Fallback `m3gim:eventDate`; `clean_date` normalisiert `YYYY-YYYY` → `YYYY/YYYY` |
 | 4.8 | `AGRELON_MAPPING` erzeugt `agrelon:HasEmployeeEmployer`/`HasCorrespondent`/`HasProfessionalContact`/`HasIsPatron`/`HasIsMember` je (typ, rolle); `m3gim:agentRelation`-Array am Record |
@@ -85,7 +87,7 @@ Noch offen:
 - **Composer-aware Werk-Matching**: Compound-Query "Titel Komponist", P86-Bonus (+5 Score)
 - Caching fuer wiederholte Laeufe
 - MIN_NAME_LENGTH=3, CLI: `--min-confidence`, `--force`, `--type`
-- Letzter Reconciliation-Lauf (auf v1-Datenstand 2026-02-25): 217 Q-IDs ergänzt, 216 Enrichments. Re-Run auf aktuellen v2-Indizes steht aus.
+- **Low-Confidence-Policy (E-74):** `fuzzy_low`-Matches werden im Output markiert, aber nur bei `manual_review: "approved"` an Enrichment + transform.py durchgereicht. Der Rest erscheint im Quality-Snapshot zur redaktionellen Freigabe.
 
 ## Wikidata-Enrichment (Session 27)
 
@@ -109,21 +111,15 @@ Noch offen:
 
 | Datei | Format | Status |
 |-------|--------|--------|
-| `m3gim.jsonld` | JSON-LD | **Alleinige primäre Datenquelle** für das Frontend. Enthält alle 381 Records + 43 SpatiotemporalEvents + 18 SKOS-Concepts + 24 AgRelOn-Relationen + 21 Finanz-Details. |
+| `m3gim.jsonld` | JSON-LD | **Alleinige primäre Datenquelle** für das Frontend. Enthält Records + SpatiotemporalEvents + SKOS-Concepts + AgRelOn-Relationen + Finanz-Details + technische Provenance. |
 | `partitur.json` | JSON | Derivat: biografische Masterdaten für Lebenspartitur + Mobilitäts-Schwimmbahn. Wird nach Phase 7 aus dem Store regeneriert und ist dann optional. |
 | `matrix.json` / `kosmos.json` | JSON | Derivat: vorverdichtete Aggregationen für einzelne D3-Views. Aggregator.js kann äquivalent zur Laufzeit aus dem Store rechnen. |
 
-## Datenstand (data/google-spreadsheet, Stand 2026-04-17)
+## Datenstand
 
-- 381 Objekte (354 Hauptbestand, 26 Plakate, 1 Tontraeger)
-- 1.494 Verknuepfungen (1.220 effektive Record-Properties)
-- 4 Indizes: Personen (324), Organisationen (69), Orte (41), Werke (97)
-- 60 `ort, datum`-Kompositen → 43 SpatiotemporalEvents (17 verwaiste Signaturen / Artefakte)
-- 21 Finanz-Zeilen (alle mit Waehrung seit `FINANCE_CURRENCY_DEFAULTS`-Fix), 12 Mobilitaets-Anmerkungen
-- 18 SKOS-Concepts in DFT-Hierarchie
-- Abdeckung: 295/381 Objekte haben Titel + Dokumenttyp (77%), 256/381 haben Datum (67%)
+Aktuelle Zahlen zum Bestand, Abdeckung, Verknüpfungsrate und Wikidata-Coverage stehen im **Quality-Snapshot** (`data/reports/quality-snapshot.md`). Der Snapshot wird bei jedem Pipeline-Lauf neu generiert und ist der Single Source of Truth für Zahlen gegenüber dem Erschließungsteam — knowledge-Dokumente halten keine laufenden Zählstände vor, weil die bei jedem Rerun veralten.
 
-Fruehere Staende unter `data/_archive/` (2026-02-25: 282 Objekte, 1.246 Verknuepfungen).
+Aktuelle Korpus-Struktur qualitativ: Teilnachlass UAKUG/NIM mit drei Bestandsgruppen (Hauptbestand, Plakate, Tonträger), feinerschlossen auf Folio-Ebene sind mehrere Konvolute um NIM_003–007 und NIM_011. Frühere Stände liegen unter `data/_archive/` als Referenz.
 
 ## Datenqualitaets-Baseline
 
@@ -135,8 +131,8 @@ Fruehere Staende unter `data/_archive/` (2026-02-25: 282 Objekte, 1.246 Verknuep
 
 ### Hoch — Unvollstaendige Erfassung
 
-- **Bearbeitungsstand** fehlt bei ~75% der Objekte. Tippfehler ("vollstaedig"). Pipeline normalisiert Case, nicht Tippfehler.
-- **22% aktive Verknuepfungsrate**: Nur ein Bruchteil der Objekte hat Verknuepfungen. Schwerpunkt: NIM_003, NIM_004, NIM_007.
+- **Bearbeitungsstand** fehlt bei der Mehrheit der Objekte. Tippfehler ("vollstaedig") werden nicht automatisch normalisiert; Pipeline normalisiert Case. Aktueller Wert im Quality-Snapshot.
+- **Niedrige aktive Verknuepfungsrate**: Nur ein Bruchteil der Objekte hat Verknuepfungen. Schwerpunkt: NIM_003, NIM_004, NIM_007. Aktueller Wert im Quality-Snapshot.
 
 ### Mittel — Strukturelle Probleme
 
@@ -145,8 +141,8 @@ Fruehere Staende unter `data/_archive/` (2026-02-25: 282 Objekte, 1.246 Verknuep
 
 ### Niedrig — Anreicherungsluecken
 
-- **Wikidata-IDs** in aktuellen Indizes duenn: Personen ~170/324 (55% im Frontend sichtbar), Organisationen 8/69 (12%), Orte 14/41 (34%), Werke 16/97 (16%). Reconciliation mit aktualisiertem v2-Datenstand steht aus.
-- **Sprache** nur bei 24% der Objekte erfasst.
+- **Wikidata-IDs** in aktuellen Indizes: Coverage unterschiedlich pro Entitätstyp — Personen gut, Organisationen und Werke dünn, Orte mittel. Aktuelle Werte im Quality-Snapshot.
+- **Sprache** nur bei einem Viertel der Objekte erfasst.
 
 ### Pipeline-seitig behoben (kein Handlungsbedarf)
 
@@ -166,8 +162,8 @@ Fruehere Staende unter `data/_archive/` (2026-02-25: 282 Objekte, 1.246 Verknuep
 
 - Verwaiste Signaturen (`NIM_11`) klaeren — Umbenennung oder Nachtrag in Objekte.xlsx
 - PL_07 Duplikat bereinigen
-- Reconciliation + Enrichment fuer v2 laufen lassen (mit neuen Indizes)
-- Header-Shifts in 3 Indizes im Google Sheet korrigieren
+- Low-Confidence-Matches aus dem Quality-Snapshot prüfen und ggf. als `manual_review: "approved"` freigeben
+- Header-Shifts in drei Indizes im Google Sheet korrigieren
 
 ### Laufend
 
@@ -178,6 +174,6 @@ Fruehere Staende unter `data/_archive/` (2026-02-25: 282 Objekte, 1.246 Verknuep
 
 ### Modell-Weiterentwicklung
 
-- **Phase 6 (aktiv):** loader.js um Store-Maps erweitern — `store.dftHierarchy`, `store.mobilityEvents`, `store.agentRelations`, `store.finances` + typisierte Datumsfelder als Fallback in `indexByYear`. Spec steht als 7 XPASS-Tests in `test_06`, siehe [tests.md](tests.md).
-- **Phase 7 (geplant):** Views aus Store aggregieren statt aus partitur.json. Reihenfolge: Mobilität → Matrix/Zeitfluss → Indizes (+Beziehungen-Grid) → Lebenspartitur → optional Finanz-Visualisierung.
+- **Phase 6 (abgeschlossen):** loader.js hat Store-Maps `dftHierarchy`, `mobilityEvents`, `recordToEvents`, `agentRelations`, `finances` + typisierte Datumsfelder als Fallback in `indexByYear`. Siehe [frontend.md](frontend.md).
+- **Phase 7 (teilweise, pausiert):** Die bisherigen Visualisierungen (Mobilität, Lebenspartitur, Matrix, Kosmos, Zeitfluss) werden als Prototypen verworfen und später neu konzipiert. Archiv-Inline-Detail zeigt bereits Finanzen, AgRelOn, STE. Nächste Schritte: Indizes-Beziehungsbadges, DFT-Hierarchie-Filter.
 - **Phase 4.5 (deferred, extern blockiert):** Rollenindex-XLSX anlegen (Spalten `m3gim_id`, `name`, `belongsToWork`, `voiceType`, `wikidata_id`). Braucht Abstimmung mit Erschliessungsteam.

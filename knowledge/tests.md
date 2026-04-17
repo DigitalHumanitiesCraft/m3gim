@@ -1,6 +1,6 @@
 # Tests
 
-> Artefakt-basierte Pipeline-Testsuite. 19 Module, 164 Tests grün (Phase 6 umgesetzt in Session 30). TDD-Workflow für Modell-Erweiterungen.
+> Artefakt-basierte Pipeline-Testsuite. TDD-Workflow für Modell-Erweiterungen, Anker-Record-Strategie für XLSX-Provenance.
 
 ## Zweck
 
@@ -18,7 +18,7 @@ tests/
 │   ├── m3gim_jsonld.schema.json   # JSON-Schema Draft 2020-12
 │   └── partitur.schema.json
 ├── fixtures/
-│   └── baseline_counts.json       # Regression-Mindestwerte (v2-Stand 2026-04-17)
+│   └── baseline_counts.json       # Regression-Mindestwerte
 ├── tools/
 │   └── snapshot_diff.py           # CLI: diff zwei m3gim.jsonld-Versionen
 ├── test_01_schema.py              # JSON-Schema + DFT-Hierarchie
@@ -38,12 +38,13 @@ tests/
 ├── test_15_vocab_coverage.py      # XLSX-Vokabular ↔ Output-Vokabular
 ├── test_16_roundtrip_finance.py   # Jede Finanz-Zeile exakt im Output
 ├── test_18_typed_dates.py         # Typisierte Datumsproperty-Familie
-└── test_19_provenance.py          # agrelon:hasProvenance + Konfidenz
+├── test_19_provenance.py          # agrelon:hasProvenance + Konfidenz
+└── test_20_xlsx_provenance.py     # m3gim:xlsxSource + Anker-Records
 ```
 
 Leitsatz: jeder Test prüft eine nicht-triviale, nicht-redundante Invariante und kann failen. Soft-Warnings gehören in `validate.py`, nicht in pytest.
 
-## Teststufen (19 Module, 156 Tests)
+## Teststufen
 
 ### 1. Schema-Validierung (test_01)
 JSON-Schemas (Draft 2020-12) validieren `m3gim.jsonld` und `partitur.json` strukturell. DFT-Hierarchie-Tests: `skos:Concept`-Knoten haben `prefLabel` und optional `broader`, alle Referenzen aus Records sind auflösbar.
@@ -75,7 +76,7 @@ Jede Q-ID im Output stammt aus `wikidata-reconciliation.json`, Enrichment-Werte 
 Lebensphasen lückenlos (`LP(i).bis == LP(i+1).von`), decken 1919–2009 ab, unique IDs. Mobilitäts-Jahre innerhalb Lebensspanne, `form` im Enum. Auftritt-Jahre liegen im Phasen-Fenster, dokumente-Referenzen auflösbar.
 
 ### 9. Regression-Baselines (test_09)
-Mindestwerte aus `fixtures/baseline_counts.json`, auf v2-Stand 2026-04-17 gesetzt (records≥380, persons≥320, orgs≥65, locations≥40, works≥95, verknuepfungen≥1200, wd_matches≥200). Alle Checks `>=`, nicht `==` — Wachstum erlaubt, Schrumpfung verboten.
+Mindestwerte aus `fixtures/baseline_counts.json` pro Entitätstyp (records, persons, orgs, locations, works, verknuepfungen, wd_matches). Alle Checks `>=`, nicht `==` — Wachstum erlaubt, Schrumpfung verboten. Baselines werden bei substanziellen Datenständen nach oben nachgezogen.
 
 ### 10. Determinismus (test_10, slow)
 Lässt `transform.py` zweimal laufen, vergleicht Output (ohne `m3gim:exportDate`). Fängt versehentliche Set-Iteration / Dict-Ordnungsabhängigkeiten. Nur mit `pytest -m slow` ausführen.
@@ -89,14 +90,14 @@ SpatiotemporalEvent-Existenz, `atPlace`+`atDate` Pflicht, Rollen-Vokabular, Anza
 ### 13. Finanzen (test_13, Phase 4.6)
 Jede Finanz-DetailAnnotation hat korrekten `@type`, `detailField`, parsbare `monetaryAmount` (xsd:decimal), Währung im belegten Set (RM/DM/ATS/S/CHF/FRF/Fr/ESC/Esc/USD).
 
-### 14. Parse-Units (test_14, 47 Tests)
+### 14. Parse-Units (test_14)
 Unit-Tests für `parse_monetary_value`, `normalize_role`, `normalize_lower`, `decompose_komposit_typ`, `decompose_komposit_value`, `clean_date`, `is_iso_date`. Liefert schnelles Feedback bei Änderungen an den Kern-Helfern ohne Pipeline-Run.
 
 ### 15. Vokabular-Coverage (test_15)
 Jede in der XLSX belegte Rolle (nach Normalisierung) steht in `data.md § 5`, jeder Dokumenttyp ist im `DOKUMENTTYP_TO_DFT`-Mapping, jede Währung in `ALLOWED_CURRENCIES`. Output-Rollen sind Teilmenge des data.md-Vokabulars.
 
 ### 16. Finanz-Roundtrip (test_16, Phase 4.6)
-Für jede der 21 XLSX-Finanzzeilen: der zugehörige Record (über `rico:identifier`) enthält eine DetailAnnotation mit exaktem `monetaryAmount` + `currency` + `detailRole`. Kein Silent-Drop.
+Für jede XLSX-Finanzzeile: der zugehörige Record (über `rico:identifier`) enthält eine DetailAnnotation mit exaktem `monetaryAmount` + `currency` + `detailRole`. Kein Silent-Drop.
 
 ### 18. Typisierte Datumsproperties (test_18, Phase 4.7)
 Records nutzen die typisierten Properties (`m3gim:absendedatum` etc.) mindestens so häufig wie generisches `m3gim:eventDate`. Alle Werte sind ISO, TimeSpan oder qualifiziert (`circa:`/`vor:`/`nach:`).
@@ -104,13 +105,23 @@ Records nutzen die typisierten Properties (`m3gim:absendedatum` etc.) mindestens
 ### 19. Provenance + Konfidenz (test_19, Phase 4.3)
 Kein `m3gim:dateEvidence` mehr im Output. `agrelon:hasProvenance` und `agrelon:hasConfidenceValue` treten gemeinsam auf (keine halbierten Meta-Aussagen). Konfidenz-Werte aus dem Evidenz-Mapping (1.0/0.8/0.6/0.0) als xsd:decimal.
 
+### 20. XLSX-Provenance + Anker-Records (test_20)
+
+Prüft `m3gim:xlsxSource` an Records + DetailAnnotations + AgRelOn-Relationen + SpatiotemporalEvents. Zwei Testebenen:
+
+**Strict — kuratierte Anker-Records.** Das Modul pflegt ein Fixture-Dict `ANCHOR_RECORDS` mit Erwartungen pro Anker (`xlsx_row`, `expected_doc_type`, `title_contains`, `min_finance_details`). Jeder Anker läuft durch parametrisierte Tests: existiert der Record, zeigt `xlsxSource` auf die erwartete XLSX-Zeile, tragen Nested Entities (Details, AgRelOn) selbst xlsxSource. Bricht der Test, ist entweder die XLSX umsortiert worden (Fixture pflegen, absichtlich) oder die Pipeline hat eine Regression. Aktuelle Anker: `UAKUG/NIM_007 5_1` (Finanz-Konvolut), `UAKUG/NIM_004 3` (Rezension), `UAKUG/NIM_003 1_8` (Musikinstitut).
+
+**Soft — Coverage-Reports.** Mindestens 99 % der Records mit xlsxSource, 95 % nested entities, 100 % SpatiotemporalEvents. Aktuelle Pipeline trifft diese Schwellen durchgehend; die Soft-Variante erlaubt graduellen Ausbau, falls Teilbestände erst später nachgezogen werden.
+
+Das Modul ist damit gleichzeitig Kontrakttest und **lesbare XLSX → JSON-LD-Abbildungs-Dokumentation**. Die Anker zeigen konkret: „Zelle 123 in Objekte.xlsx wird zu diesem Record, mit genau diesen Properties".
+
 ## Ausführung
 
 ```bash
 # Dependencies (einmalig)
 pip install -r requirements-test.txt
 
-pytest tests/ -m "not slow"                 # ~157 Tests, ~1s
+pytest tests/ -m "not slow"                 # schnelle Suite
 pytest tests/                                # inkl. Determinismus
 
 # Snapshot-Diff (bei Datenupdates, CLI, kein Test)
@@ -143,6 +154,15 @@ Bei neuen Features aus [datenmodell.md](datenmodell.md):
 
 Dieses Muster wurde in Phase 4.1–4.8 erfolgreich angewendet. Siehe [status.md](status.md) und [pipeline.md](pipeline.md).
 
+### Anker-Record-Strategie (seit Session 31)
+
+Ergänzend zum aggregat-orientierten TDD ist `test_20_xlsx_provenance` das erste Modul mit **Einzelfall-Fixtures als Living Documentation**. Wenige kuratierte Records (`ANCHOR_RECORDS`-Dict) halten ihre XLSX-Herkunft und erwartete Properties explizit fest. Das macht die Abbildung XLSX-Zelle → JSON-LD im Test selbst nachlesbar.
+
+Wartung:
+- Wenn die XLSX umsortiert wird, **bricht der Anker-Test bewusst**. Die Fixture wird manuell auf die neue Zeilennummer nachgezogen — das ist Feature, kein Bug. Die Alternative wäre eine dynamische Zeilensuche, die aber den Kontraktzweck unterlaufen würde.
+- Neue Anker werden zurückhaltend gepflegt. Ziel ist die Breite des Modells abzudecken (Finanz-Konvolut, Rezensions-Einzelstück, Musikinstitut-Konvolut) — nicht jede Eigenart.
+- `window.m3gim.provenanceOf(recordId)` im Frontend ist das Gegenstück zum Test: beide liefern dieselbe Liste an XLSX-Quellen für einen Record.
+
 ## Workflow bei Daten-Updates
 
 1. Tests auf aktuellem Stand grün — Baseline verifizieren
@@ -161,13 +181,11 @@ Dieses Muster wurde in Phase 4.1–4.8 erfolgreich angewendet. Siehe [status.md]
 - Junk-Namen im Personen-Index (`[Organi]`, kurze Initialen) werden als Warnung geloggt, nicht gefailed — Frontend filtert via `isJunkName`.
 - Freitext in Datumsspalte (`"Wien, ab 1956"`, `"1944-05 bis 1944-09"`): `is_iso_date()` lässt sie nicht in typisierte Datumsproperties durch, landen stattdessen in generischem `m3gim:eventDate`.
 
-## Test-Ergebnis (Session 30, 2026-04-17, Phase 6 abgeschlossen)
+## Stand
 
-```
-164 passed, 1 skipped (NIM_11 verwaist), 1 xfailed (PL_07)
-```
+Suite durchgängig grün bis auf die beiden dokumentierten Ausnahmen (`PL_07` xfail, `NIM_11` skip). Die Module `test_19_provenance` (semantische Provenance) und `test_20_xlsx_provenance` (technische XLSX-Quellreferenz) bilden zusammen den **Provenance-Kontrakt** des Projekts.
 
-Laufzeit: ~1 Sekunde für `pytest -m "not slow"`, ~60 Sekunden inkl. Determinismus-Test.
+Laufzeit im Regelbetrieb unter einer Sekunde für `pytest -m "not slow"`, unter einer Minute inkl. Determinismus-Test.
 
 ## Dependencies
 

@@ -107,10 +107,10 @@ Archiv und Indizes lesen direkt aus `m3gim.jsonld` (über Store), nicht aus sepa
 
 | Store-Map | Quelle im JSON-LD | Sichtbarer Nutzen (nach Phase 7) |
 |---|---|---|
-| `store.dftHierarchy` (18 Concepts) | Top-Level `skos:Concept`-Knoten + `skos:broader` | Indizes-Filter kann Dokumenttypen hierarchisch gruppieren (`biographisch` → `autobiografie`, `biographie`) |
-| `store.mobilityEvents` (43) + `store.recordToEvents` (24) | `m3gim:SpatiotemporalEvent`-Knoten + `m3gim:hasSpatiotemporalEvent`-Refs | Mobilität + Lebenspartitur zeigen präzise Events mit Provenance statt heuristisch aus `partitur.auftritte` |
-| `store.agentRelations` (19 Records) | `m3gim:agentRelation`-Array am Record | Indizes-Personen-Kacheln mit Beziehungs-Badges (Arbeitgeber, Patron, Korrespondent); optional neuer „Beziehungen"-Grid |
-| `store.finances` (14 Records) | `m3gim:hasDetail`-DetailAnnotations mit `monetaryAmount` + `currency` + `detailRole` | Archiv-Inline-Detail zeigt Honorare, optional Finanz-Visualisierung als eigener Tab |
+| `store.dftHierarchy` | Top-Level `skos:Concept`-Knoten + `skos:broader` | Indizes-Filter kann Dokumenttypen hierarchisch gruppieren (`biographisch` → `autobiografie`, `biographie`) |
+| `store.mobilityEvents` + `store.recordToEvents` | `m3gim:SpatiotemporalEvent`-Knoten + `m3gim:hasSpatiotemporalEvent`-Refs | Mobilität + Lebenspartitur zeigen präzise Events mit Provenance statt heuristisch aus `partitur.auftritte` |
+| `store.agentRelations` | `m3gim:agentRelation`-Array am Record | Indizes-Personen-Kacheln mit Beziehungs-Badges (Arbeitgeber, Patron, Korrespondent); optional neuer „Beziehungen"-Grid |
+| `store.finances` | `m3gim:hasDetail`-DetailAnnotations mit `monetaryAmount` + `currency` + `detailRole` | Archiv-Inline-Detail zeigt Honorare, optional Finanz-Visualisierung als eigener Tab |
 | typisierte Datumsfelder als Fallback in `indexByYear` | `m3gim:absendedatum`, `m3gim:auffuehrungsdatum` etc. (inkl. Listen + `"ISO/ISO"`-Ranges + `circa:`/`vor:`/`nach:`-Präfixe) | Matrix + Zeitfluss zeigen mehr Dots — Records ohne `rico:date`, aber mit typisiertem Datum werden zeitlich einsortiert |
 
 Die Invarianten werden als Kontrakttests in [test_06_frontend_contract.py](../tests/test_06_frontend_contract.py) durchgängig geprüft.
@@ -279,7 +279,7 @@ Vollständiges Navigationsnetzwerk zwischen den Visualisierungen:
 - **CSS Custom Properties** als Design-System
 - **Responsive**: `@media <768px` Breakpoints in base.css + components.css — Header, Tab-Bar, Toolbars, FF-Badges, Legenden
 - **Accessibility**: `role="tablist/tab/tabpanel"`, `aria-selected` dynamisch, `aria-hidden` auf SVG-Icons, `aria-label` auf Korb-Badge
-- **DEV/Prod**: `viewLog()` No-Op auf GitHub Pages (E-50). Auf localhost zeigt `main.js` beim Seitenaufruf einen strukturierten Store-Report (Records, Konvolute, alle Phase-6-Maps) und setzt `window.m3gim` mit Debug-Helpern: `window.m3gim.store`, `window.m3gim.inspect(recordId)`, `window.m3gim.finances()`, `window.m3gim.agentRelations()`, `window.m3gim.mobilityEvents()`, `window.m3gim.dftTree()`. Beim Öffnen eines Tabs erscheint eine Kurz-Diagnostik mit den wichtigsten Datenmengen für die View. Auf Produktion (dhcraft.org) bleibt alles stumm.
+- **DEV/Prod**: `viewLog()` No-Op auf GitHub Pages (E-50). Auf localhost zeigt `main.js` beim Seitenaufruf einen strukturierten Store-Report (Records, Konvolute, Phase-6-Maps, WD-Coverage pro Index, Provenance-Coverage) und setzt `window.m3gim` mit Debug-Helpern: `window.m3gim.store`, `window.m3gim.inspect(recordId)`, `window.m3gim.finances()`, `window.m3gim.agentRelations()`, `window.m3gim.mobilityEvents()`, `window.m3gim.dftTree()`, `window.m3gim.provenanceOf(recordId)` (letzterer zeigt alle XLSX-Quellen eines Records + Nested Entities als Liste `{field, sheet, row, datenpunkt}`). Auf Produktion (dhcraft.org) bleibt alles stumm.
 - **Error Boundaries** pro View: main.js fängt Render-Fehler pro Tab (sync+async, E-51)
 
 ## Schnittstellenvertrag

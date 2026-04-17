@@ -39,12 +39,12 @@ Siehe [Forschungsrahmen § Mobilitätstypen](forschungsrahmen.md#fünf-mobilitä
 
 ## Quellenbestand: Teilnachlass UAKUG/NIM
 
-**381 Archiveinheiten (Stand 2026-04-17)** in drei Bestandsgruppen:
+Archiveinheiten in drei Bestandsgruppen:
 
-- Hauptbestand: NIM_001–NIM_200+ (Briefe, Verträge, Presseartikel, Programme, Fotos) — 354 Einheiten
-- Plakate: NIM/PL_01–PL_26 — 26 Einheiten
-- Tonträger: NIM/TT_01 (Schellackplatten, Aufnahmen) — 1 Einheit
+- **Hauptbestand** NIM_001–NIM_200+: Briefe, Verträge, Presseartikel, Programme, Fotos
+- **Plakate** NIM/PL_01–PL_26
+- **Tonträger** NIM/TT_01 (Schellackplatten, Aufnahmen)
 
-Zeitraum der Quellen: 1934–2009. Feinerschlossen sind bislang 6 Konvolute (NIM_003, NIM_004, NIM_005, NIM_006, NIM_007, NIM_011), aus denen die 1.494 XLSX-Verknüpfungszeilen stammen.
+Zeitraum der Quellen: 1934–2009. Feinerschlossen sind bislang die Konvolute um NIM_003, NIM_004, NIM_005, NIM_006, NIM_007 und NIM_011. Aktuelle Bestandszahlen (Anzahl pro Gruppe, Feinerschließungstiefe, Abdeckungsgrade) stehen im Quality-Snapshot (`data/reports/quality-snapshot.md`).
 
 **Keine eigenständige wissenschaftliche Literatur zu Malaniuk** — das Projekt leistet die ersten archivgestützten Erschließungsarbeiten. Siehe [Forschungsrahmen § Forschungslücken](forschungsrahmen.md#forschungskontext-oper-graz).

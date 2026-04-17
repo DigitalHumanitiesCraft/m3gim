@@ -1,6 +1,6 @@
 # Entscheidungen und Prozesswissen
 
-> 72 Architekturentscheidungen (E-01 bis E-72), offene Entscheidungen, technische Schulden und Learnings.
+> Architekturentscheidungen, offene Entscheidungen, technische Schulden und Learnings.
 
 ## Architekturentscheidungen (final)
 
@@ -77,7 +77,9 @@
 | E-69 | AgRelOn für Agent-Agent-Relationen: `AGRELON_MAPPING` (typ, rolle) → AgRelOn-Klasse + -Property. Umgesetzt: `HasEmployeeEmployer`, `HasCorrespondent`, `HasProfessionalContact`, `HasIsPatron`, `HasIsMember`. Emission als `m3gim:agentRelation`-Array am Record mit `agrelon:hasProvenance` (Record-URI). `hasValidityPeriod` aus `rico:date` als Heuristik für Employer-Relationen. |
 | E-70 | v2-Konsolidierung (Session 29, 2026-04-17): v2 ist alleiniger Default, v1 unter `data/_archive/` archiviert. `docs/data/m3gim.jsonld` ist alleinige primäre Datenquelle des Frontends — Derivate (`partitur.json`, `matrix.json`, `kosmos.json`) sind optionale Visualisierungs-Hilfen, die vom Store aus regeneriert werden können. `build-views.py` kopiert seitdem auch `m3gim.jsonld` automatisch nach `docs/data/` (zuvor manueller Schritt, Drift-Quelle). E-62 damit obsolet. |
 | E-71 | `FINANCE_CURRENCY_DEFAULTS` pro Archivsignatur-Präfix in `transform.py`: greift, wenn XLSX-Typ `ausgaben, währung` markiert ist, das Namensfeld aber keinen Währungs-Suffix trägt. Aktuell `UAKUG/NIM_007` → `S` (Schilling). Defaults sind explizite Redaktionsentscheidungen; ohne Eintrag bleibt `currency` leer und `validate.py` warnt. Alternative heuristisches Raten im Parser wurde bewusst verworfen, weil historisch korrekte Währungszuordnung inhaltlich, nicht syntaktisch erfolgen muss. |
-| E-72 | Phase 6 — 5 Store-Maps in `loader.js` (Session 30): `dftHierarchy`, `mobilityEvents`+`recordToEvents`, `agentRelations`, `finances`, plus typisierte Datumsfelder als Fallback in `indexByYear`. Jede Map ist eigenständige Indexer-Funktion, die Pass 1 (Top-Level-Knoten: Concepts, STE) bzw. Pass 2 (record-gebunden: events-refs, agentRelations, finances) durchläuft. Pass 1.5 verdrahtet `skos:broader` zu `children[]`-Backrefs. DFT-Concepts und STE werden **nicht** direkt als Record-Properties indexiert — sie sind Top-Level-Graph-Entitäten mit `@id`, und Records verweisen via `@id`. Die Views sehen die Maps erst nach Phase 7 (View-Migration). |
+| E-72 | Phase 6 — Store-Maps in `loader.js` (Session 30): `dftHierarchy`, `mobilityEvents`+`recordToEvents`, `agentRelations`, `finances`, plus typisierte Datumsfelder als Fallback in `indexByYear`. Jede Map ist eigenständige Indexer-Funktion, die Pass 1 (Top-Level-Knoten: Concepts, STE) bzw. Pass 2 (record-gebunden: events-refs, agentRelations, finances) durchläuft. Pass 1.5 verdrahtet `skos:broader` zu `children[]`-Backrefs. DFT-Concepts und STE werden **nicht** direkt als Record-Properties indexiert — sie sind Top-Level-Graph-Entitäten mit `@id`, und Records verweisen via `@id`. Die Views sehen die Maps erst nach Phase 7 (View-Migration). |
+| E-73 | `m3gim:xlsxSource` als technische Provenance pro Record und pro aus Verknüpfungen abgeleiteter Entität (DetailAnnotation, AgRelOn-Relation, SpatiotemporalEvent). Blank-Node mit `xlsxSheet` (`"Objekte"` / `"Verknuepfungen"`), `xlsxRow` (1-basiert inkl. Header) und optional `datenpunktId`. Einzelne Record-Properties (`rico:title` etc.) bekommen keinen eigenen Eintrag — ihre Quelle ist die des umgebenden Records. Ergänzt die semantische Provenance (`agrelon:hasProvenance`) und ermöglicht direkte Rücknavigation XLSX-Zelle → JSON-LD → UI-Chip. Pipeline-Implementation in [transform.py](../scripts/transform.py) `convert_objekt` + `process_verknuepfungen` + `add_relations_to_records`. Kontrakt in [datenmodell.md § 9](datenmodell.md). |
+| E-74 | Low-Confidence-Policy: Reconcile-Matches mit `match = "fuzzy_low"` (Score 80–89) werden **nicht automatisch** ins Enrichment oder in die JSON-LD übernommen. Filter in `enrich-wikidata.py` + `transform.py` lässt nur `exact`, `fuzzy_high` und explizit als `manual_review: "approved"` freigegebene Einträge durch. Der Quality-Snapshot listet die low-conf-Einträge zur redaktionellen Freigabe. Begründung: Fehl-Matches wie „Schottland" → „Scotland" (Score 89) würden sonst ungeprüft Wikidata-Properties in die Personenindex-Subtitles kippen. Konservative Policy hebt die WD-Coverage langsamer, schützt aber Datenintegrität. |
 
 ## Offene Entscheidungen
 
@@ -123,7 +125,7 @@
 
 ### Positive Ueberraschungen aus Datenanalyse
 
-- Erschliessungstiefe bei 3 Konvoluten (1.246 Verknuepfungen) uebertrifft Erwartungen
-- Gender-inklusives Rollen-Vokabular (58 Werte mit `:in`-Form)
-- 257/296 Personen mit Kategorie — Matrix bekommt direkt Daten
-- 134 Werk-Verknuepfungen ermoeglichen substantiellen Rollen-Kosmos
+- Erschliessungstiefe bei den feinerschlossenen Konvoluten (NIM_003/004/005/006/007) uebertrifft Erwartungen
+- Gender-inklusives Rollen-Vokabular mit substanziellem `:in`-Anteil
+- Hoher Personen-Kategorien-Abdeckungsgrad — Matrix bekommt direkt Daten
+- Werk-Verknuepfungen ermoeglichen substantiellen Rollen-Kosmos

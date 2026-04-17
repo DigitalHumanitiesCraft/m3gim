@@ -1,6 +1,6 @@
 # Status
 
-> Steckbrief, aktueller Datenstand, erreichte Meilensteine und nächste Schritte. Stand: 2026-04-17 (Session 30, Phase 6 abgeschlossen: loader.js indexiert alle v2-Strukturen).
+> Steckbrief, aktueller Datenstand, erreichte Meilensteine und nächste Schritte. Laufende Zählstände stehen im Quality-Snapshot (`data/reports/quality-snapshot.md`), nicht hier — dieses Dokument ist qualitativ.
 
 ## Steckbrief
 
@@ -17,64 +17,50 @@
 
 Siehe [forschungsrahmen.md](forschungsrahmen.md) für Theorie, Forschungsfragen und Kontext.
 
-## Datenstand (aktuell, `data/google-spreadsheet/`)
+## Datenstand
 
-- 381 Objekte (354 Hauptbestand, 26 Plakate, 1 Tonträger)
-- 1.494 XLSX-Verknüpfungen → 1.220 effektive Record-Properties
-- 4 Indizes: Personen 324, Organisationen 69, Orte 41, Werke 97
-- 70 Objekte mit aktiven Verknüpfungen
-- 43 `m3gim:SpatiotemporalEvent`-Instanzen
-- 21 Finanz-Zeilen (abendgage, provision, erwähnt) — **alle mit Währung** seit `FINANCE_CURRENCY_DEFAULTS`-Fix
-- 18 SKOS-Concepts in DFT-Hierarchie
-- 295 von 381 Objekten (77%) mit Titel + Dokumenttyp, 256 (67%) mit Datum
+Aktive Quelle: `data/google-spreadsheet/`. Drei Bestandsgruppen (Hauptbestand, Plakate, Tonträger) + vier Indizes (Personen, Organisationen, Orte, Werke) + eine Verknüpfungstabelle. Feinerschlossen sind vor allem die Konvolute um NIM_003–007 und NIM_011.
 
-Frühere v1-Stände liegen in `data/_archive/` (Snapshot 2026-02-25: 282 Objekte, 1246 Verknüpfungen) — Referenz, nicht operativ.
+Modellerweiterungen der Pipeline sind abgeschlossen: SKOS-Dokumenttyp-Hierarchie, SpatiotemporalEvents, AgRelOn-Relationen, Finanzschicht mit `monetaryAmount`/`currency`, typisierte Datumsproperties, semantische Provenance (`agrelon:hasProvenance`/`hasConfidenceValue`) und technische XLSX-Quellreferenz (`m3gim:xlsxSource`).
+
+**Laufende Zahlen** (Bestand, Feldabdeckung, Verknüpfungsrate, Wikidata-Coverage, Low-Confidence-Freigabeliste): im **Quality-Snapshot** `data/reports/quality-snapshot.md`, wird bei jedem Pipeline-Lauf neu generiert.
+
+Frühere Datenstände liegen in `data/_archive/` — Referenz, nicht operativ.
 
 ### Getestet
 
-- 164 Tests grün, 1 xfail (PL_07 Duplikat), 1 skipped (verwaiste NIM_11-Signatur)
-- Alle Phase-6-Kontrakttests grün — loader.js indexiert die v2-Strukturen.
-- Siehe [tests.md](tests.md).
+Suite durchgängig grün bis auf die beiden dokumentierten Ausnahmen (`PL_07` xfail, `NIM_11` skip). Der Provenance-Kontrakt ist doppelt abgesichert: `test_19` prüft die semantische Ebene (`agrelon:hasProvenance` + Konfidenz), `test_20` die technische XLSX-Quellreferenz mit kuratierten Anker-Records. Siehe [tests.md](tests.md).
 
 ## Erreichte Meilensteine
 
-### Phase 7 Schritt 1 — Archiv-Inline-Detail zeigt Finanzen, Beziehungen, Ereignisse (Session 30, 2026-04-17)
+### Session 31 — Wikidata-Rerun + xlsxSource-Provenance + Quality-Snapshot
 
-Alle v2-Daten sind nun im Archiv-Inline-Detail sichtbar. [archiv-inline-detail.js](../docs/js/views/archiv-inline-detail.js) rendert drei neue Panels aus den Phase-6-Store-Maps:
+- **Reconciliation + Enrichment** auf aktuellen v2-Indizes neu gelaufen. WD-Coverage pro Index gestiegen, Low-Confidence-Matches werden ab jetzt nicht automatisch angereichert, sondern im Quality-Snapshot zur manuellen Freigabe gelistet (E-74).
+- **`m3gim:xlsxSource`** als technische Provenance auf Records + DetailAnnotations + AgRelOn-Relationen + SpatiotemporalEvents. Jeder Datenpunkt lässt sich zur Ursprungs-Zelle in der XLSX zurückführen (E-73, [datenmodell.md § 9](datenmodell.md)).
+- **Anker-Record-Strategie** in `test_20_xlsx_provenance.py`: drei kuratierte Records (`NIM_007 5_1`, `NIM_004 3`, `NIM_003 1_8`) mit strict-Assertions über ihre XLSX-Herkunft plus Soft-Coverage über den Rest. Die Tests sind gleichzeitig Living Documentation der XLSX → JSON-LD-Abbildung.
+- **`scripts/report-quality.py`** + `data/reports/quality-snapshot.md`: Team-taugliches Markdown mit Verknüpfungsrate, Bearbeitungsstand, WD-Coverage, Provenance-Coverage, Low-Confidence-Freigabeliste, Blocker-Abschnitt.
+- **Frontend-Debug erweitert:** Store-Log zeigt WD-Coverage pro Index + Provenance-Coverage; `window.m3gim.provenanceOf(recordId)` liefert alle XLSX-Quellen eines Records + Nested Entities als Liste.
 
-- **Finanzen** (14 Records): Tabelle mit Feld · Betrag+Währung · Rolle. `NIM_007_5_1` zeigt 5 Einträge in Schilling (Ausgaben 36.000 + 18.000, Einnahmen 90.000 × 2, Summe 180.000).
-- **Beziehungen** (19 Records): AgRelOn-Chips mit sprechenden Labels (`HasIsPatron` → „Patron", `HasCorrespondent` → „Korrespondenz", `HasIsMember` → „Mitglied" etc.) + optional Wikidata-Link. Klickbar → Personen-Index.
-- **Ereignisse** (24 Records): SpatiotemporalEvent-Chips mit Rolle + Ort + Datum. `NIM_004_3` zeigt „erscheinungsdatum: München · 17. Dez. 1952". Klickbar → Orte-Index.
+### Phase 7 Schritt 1 — Archiv-Inline-Detail zeigt Finanzen, Beziehungen, Ereignisse (Session 30)
 
-Damit sind alle 33 Record-Properties entweder im UI sichtbar oder bewusst als Metadaten ausgelassen (Provenance, Konfidenz). Verifiziert gegen XLSX-Rohdaten für 3 strategische Records: `NIM_004_3` (16 XLSX-Zeilen → alle im UI), `NIM_007_5_1` (Finanzen jetzt sichtbar), `NIM_003_1_8` (Finanzen + AgRelOn sichtbar).
+Alle v2-Daten sind im Archiv-Inline-Detail sichtbar. [archiv-inline-detail.js](../docs/js/views/archiv-inline-detail.js) rendert drei Panels aus den Phase-6-Store-Maps: **Finanzen** (Tabelle mit Feld · Betrag+Währung · Rolle), **Beziehungen** (AgRelOn-Chips mit sprechenden Labels wie „Patron", „Korrespondenz", „Mitglied"), **Ereignisse** (SpatiotemporalEvent-Chips mit Rolle + Ort + Datum). Verifiziert gegen XLSX-Rohdaten für die drei Anker-Records.
 
-### Phase 6 — loader.js indexiert v2-Strukturen (Session 30, 2026-04-17)
+### Phase 6 — loader.js indexiert v2-Strukturen (Session 30)
 
-5 neue Store-Maps in [loader.js](../docs/js/data/loader.js) eingezogen, alle 7 Phase-6-Kontrakttests in `test_06` wurden regulär grün:
+Store-Maps in [loader.js](../docs/js/data/loader.js) eingezogen: `dftHierarchy` (SKOS-Dokumenttyp-Hierarchie mit `broader`+`children`-Backrefs), `mobilityEvents` + `recordToEvents` (Top-Level-STE + Reverse-Map), `agentRelations` (AgRelOn am Record), `finances` (DetailAnnotations mit geparstem Betrag). `indexByYear()` nutzt typisierte Datumsproperties (`m3gim:auffuehrungsdatum` etc.) als Fallback, wenn `rico:date` fehlt. Details: E-72.
 
-| Store-Map | Größe | Funktion |
-|---|---|---|
-| `store.dftHierarchy` | 18 Concepts | SKOS-Dokumenttyp-Hierarchie mit `broader` + `children`-Backrefs |
-| `store.mobilityEvents` | 43 Events | Top-Level-SpatiotemporalEvents mit `place`, `date`, `role`, `recordId` |
-| `store.recordToEvents` | 24 Records | Reverse-Map: Record-ID → Event-IDs aus `m3gim:hasSpatiotemporalEvent` |
-| `store.agentRelations` | 19 Records | AgRelOn-Relationen mit Typ, Objektname, Q-ID, Validity, Provenance |
-| `store.finances` | 14 Records | DetailAnnotations mit geparstem Betrag (Number), Währung, Feld, Rolle |
+### v2-Konsolidierung + Currency-Fix + Frontend-Kontrakt-Spec (Session 29)
 
-Zusätzlich: `indexByYear()` nutzt jetzt typisierte Datumsproperties (`m3gim:auffuehrungsdatum` etc.) als Fallback, wenn `rico:date` fehlt — Matrix + Zeitfluss bekommen damit mehr zeitliche Dots. 164 Tests grün. Views sind noch unverändert auf dem alten Store-Kontrakt — **Phase 7 macht die neuen Maps sichtbar**.
-
-### v2-Konsolidierung + Currency-Fix + Frontend-Kontrakt-Spec (Session 29, 2026-04-17)
-
-- **Daten:** `data/` aufgeräumt — v1-Stände archiviert unter `data/_archive/`, v2 ist alleiniger Default. Ein Datenfluss, ein `data/output/`, ein `docs/data/`. Keine ENV-Overrides mehr im Normalbetrieb.
-- **Pipeline:** `FINANCE_CURRENCY_DEFAULTS`-Mapping in `transform.py` (NIM_007 → `S`). Alle 21 Finanzzeilen haben jetzt Währung. `build-views.py` kopiert neu auch `m3gim.jsonld` automatisch nach `docs/data/` — der manuelle Schritt (eine Drift-Quelle) entfällt.
-- **Tests:** Baselines auf v2-Niveau gehoben (records≥380, persons≥320, verknuepfungen≥1200, wd_matches≥200). 157 Tests grün. **7 gewollt rote `XPASS(strict)`-Marker in `test_06_frontend_contract.py`** formulieren präzise die Phase-6-loader.js-Arbeit (`store.dftHierarchy`, `store.mobilityEvents`, `store.agentRelations`, `store.finances`, typisierte Datumsfelder als Fallback in `indexByYear`).
-- **Snapshot-Diff-Tool:** läuft ohne `PYTHONIOENCODING=utf-8` auf Windows.
-- **Frontend verifiziert im Browser:** Alle sieben Tabs laden v2-Daten ohne Konsolenfehler. Archiv zeigt 381 Einheiten, Indizes 308 Personen / 69 Organisationen / 41 Orte / 97 Werke. Matrix, Kosmos, Mobilität, Zeitfluss, Lebenspartitur rendern SVGs korrekt. Sichtbarkeit der v2-Tiefe wartet auf Phase 6.
+- **Daten:** `data/` aufgeräumt — v1-Stände archiviert unter `data/_archive/`, v2 ist alleiniger Default. Ein Datenfluss, ein `data/output/`, ein `docs/data/`.
+- **Pipeline:** `FINANCE_CURRENCY_DEFAULTS`-Mapping in `transform.py` (NIM_007 → `S`). `build-views.py` kopiert seitdem `m3gim.jsonld` automatisch nach `docs/data/`.
+- **Tests:** Baselines auf v2-Niveau gehoben. XPASS(strict)-Marker in `test_06_frontend_contract.py` formulierten die Phase-6-loader.js-Arbeit als TDD-Spec.
+- **Frontend verifiziert im Browser:** Alle Tabs laden v2-Daten ohne Konsolenfehler.
 
 Siehe [entscheidungen.md E-70 + E-71](entscheidungen.md).
 
-### v2-Modellerweiterungen (Session 28, 2026-04-16)
+### v2-Modellerweiterungen (Session 28)
 
-Testgetriebene Umsetzung aller in [datenmodell.md](datenmodell.md) spezifizierten Modell-Erweiterungen für die neuen Daten:
+Testgetriebene Umsetzung der in [datenmodell.md](datenmodell.md) spezifizierten Modell-Erweiterungen:
 
 | Phase | Umsetzung |
 |---|---|
@@ -86,64 +72,53 @@ Testgetriebene Umsetzung aller in [datenmodell.md](datenmodell.md) spezifizierte
 | 4.7 | Typisierte Datumsproperty-Familie (`absendedatum`, `auffuehrungsdatum` etc.) |
 | 4.8 | AgRelOn-Relationen (HasEmployeeEmployer, HasCorrespondent, HasProfessionalContact, HasIsPatron, HasIsMember) |
 
-Zusätzlich: 12 neue Test-Module (test_11–19), TDD-Workflow mit strict-xfail-Spec als Leitlinie.
-
-Siehe [entscheidungen.md E-63 bis E-69](entscheidungen.md) für die Architekturentscheidungen und [pipeline.md](pipeline.md) für die Umsetzung.
+Zusätzlich: zahlreiche neue Test-Module (test_11–19), TDD-Workflow mit strict-xfail-Spec als Leitlinie. Siehe [entscheidungen.md E-63 bis E-69](entscheidungen.md).
 
 ### Ältere Meilensteine (kompakt)
 
 - **Session 17–19**: Ereignis- und Detail-Typ, `reconcile.py` mit Fuzzy-Matching, `validate.py` Mojibake gefixt
 - **Session 20–21**: Matrix + Kosmos aktiviert, Cross-Visualization Linking, Wissenskorb CSV/BibTeX, FF-Badges auf allen Visualisierungen
 - **Session 22**: Excel-Quelldateien git-getrackt
-- **Session 23**: Zeitfluss-View neu, Shared Component System (`viz-components.js`), 4×6 Cross-View-Navigation
+- **Session 23**: Zeitfluss-View neu, Shared Component System (`viz-components.js`), Cross-View-Navigation
 - **Session 24**: Partitur-Singleton, Tooltip-Controller, Zoom+Reset-Helper als Shared-Infrastruktur
-- **Session 25**: `extract_auftritte()` (3-Pass, 60 Events), Mobilitäts-Redesign (Layer, Event-Marker), 2 Prototyp-Seiten (Lebensstationen, Lebenspartitur)
+- **Session 25**: `extract_auftritte()` (3-Pass), Mobilitäts-Redesign (Layer, Event-Marker), Prototyp-Seiten (Lebensstationen, Lebenspartitur)
 - **Session 26**: DEV/Prod-Log-Toggle, Error Boundaries pro Tab, Event-Bus, ARIA/Accessibility, Responsive Breakpoints
 - **Session 27**: Wikidata-Enrichment-Pipeline, Lebenspartitur als SPA-Tab, Fuzzy-Matching in reconcile.py
 
-Detaillierte Entscheidungen: [entscheidungen.md](entscheidungen.md) (E-01 bis E-69).
+Detaillierte Entscheidungen: [entscheidungen.md](entscheidungen.md).
 
 ## Nächste Schritte
 
-### Phase 7 — Views nutzen die neuen Store-Maps
+### Phase 7 — Nicht-Viz-Buildout
 
-Die Store-Maps aus Phase 6 sind befüllt, die Views zeigen sie noch nicht. Reihenfolge nach Sichtbarkeit des Gewinns:
+Die bisherigen Visualisierungs-Prototypen (Mobilität, Lebenspartitur, Matrix, Kosmos, Zeitfluss) werden separat neu konzipiert und sind derzeit kein Entwicklungsfokus. Der aktuelle Phase-7-Scope konzentriert sich auf **Archiv + Indizes**:
 
-1. **Archiv-Inline-Detail** — Finanzen, AgRelOn-Relationen, typisierte Datumsfelder, SpatiotemporalEvents als Panels. Kleinster Aufwand, größter User-sichtbarer Effekt (z.B. `NIM_007 5_1` zeigt endlich seine 5 Finanzzeilen).
-2. **Indizes-Personen** — Beziehungsbadges aus `store.agentRelations` an die Personen-Kacheln. Optional: neuer fünfter Grid „Beziehungen".
-3. **Archiv-Dokumenttyp-Filter** — DFT-Hierarchie (`biographisch` → `autobiografie`, `biographie`) gruppieren.
-4. **Mobilitäts-Schwimmbahn** — `store.mobilityEvents` (43 STE) statt heuristische Partitur-Auftritte (39). Präzisere Event-Marker mit Dokument-Link.
-5. **Lebenspartitur** — STE als präzise Orts-Zeit-Anker. Phasen bleiben statisch aus `LEBENSPHASEN`-Konstante.
-6. **Optional: Finanz-Visualisierung** — neuer Tab oder in Lebenspartitur integriert.
-
-Nach Phase 7: `partitur.json` kann ausgemustert werden, da kein Konsument mehr übrig ist. Derivate `matrix.json` / `kosmos.json` bleiben optional.
+1. **Indizes-Personen mit Beziehungsbadges** — AgRelOn-Chips pro Person aus `store.agentRelations`, Tooltip mit Provenance (Signatur, Verknüpfungsnummer, Konfidenz), Klick springt zum Beleg-Record im Archiv-Inline-Detail.
+2. **Archiv-Dokumenttyp-Filter hierarchisch** — DFT-Hierarchie (`biographisch` → `autobiografie`, `biographie`; `korrespondenz` → `brief`, `postkarte`, `telegramm`) als `<optgroup>`-Struktur statt flachem Dropdown. Oberbegriff-Wahl matcht transitiv.
+3. **Provenance-Pill im Archiv-Inline-Detail** — `m3gim:xlsxSource` als kleine Pille pro Finanz-, Beziehungs- und Ereignis-Datenpunkt sichtbar machen.
 
 ### Offene Datenqualität (extern blockiert)
 
-- **Verwaiste Signatur `UAKUG/NIM_11`** — klären mit Erschließungsteam (blockiert die einzige arbeitgeber-Zeile, 1 Skip in `test_12`)
-- **PL_07 Duplikat** im Google Sheet bereinigen → xfail in `test_05_referential.py` entfernen
-- **Reconciliation + Enrichment** auf aktualisierten v2-Indizes neu laufen lassen, damit WD-Coverage hochgeht
+- **Verwaiste Signatur `UAKUG/NIM_11`** — klären mit Erschließungsteam (betroffen: die einzige arbeitgeber-Zeile, Skip in `test_12`).
+- **PL_07 Duplikat** im Google Sheet bereinigen → xfail in `test_05_referential.py` entfernen.
+- **Low-Confidence-Matches** aus dem Quality-Snapshot sichten und ggf. als `manual_review: "approved"` freigeben (E-74).
 
 ### Deferred Modell-Erweiterungen
 
-- **Phase 4.5** `m3gim:StageRole` als eigenständige Entität (221 Bühnenrollen). Braucht neues Rollenindex-XLSX vom Erschließungsteam.
+- **Phase 4.5** `m3gim:StageRole` als eigenständige Entität. Braucht neues Rollenindex-XLSX vom Erschließungsteam.
 - **Phase 4.9** Reifikation / `m3gim:Statement`-Leichtgewicht — nur wo Provenance nicht aus Record-URI folgt.
 - **Zenodo-Archivierung** + **EAD-Export** — Betriebsmodell, später.
 
-### Forschung / Datenqualität (laufend)
+### Datenqualität (laufend, redaktionell)
 
-- Verknüpfungsrate auf über 50 % erhöhen (aktuell 70 von 381 Objekten = 18 %)
-- Bearbeitungsstand pflegen (fehlt bei ~75 %)
-- Header-Shifts in drei Indizes im Google Sheet korrigieren (Pipeline kompensiert aktuell über `HEADER_SHIFTS`-Mapping)
-- Datierungen nicht als Freitext (`"Wien, ab 1956"`), sondern als strukturiertes Feld
+- Verknüpfungsrate erhöhen (Schwerpunkt bisher auf Konvoluten um NIM_003/004/007; Einzelobjekte weitgehend unverknüpft).
+- Bearbeitungsstand bei der Mehrheit der Objekte noch offen.
+- Header-Shifts in drei Indizes im Google Sheet korrigieren (Pipeline kompensiert über `HEADER_SHIFTS`-Mapping).
+- Datierungen nicht als Freitext (`"Wien, ab 1956"`), sondern als strukturiertes Feld.
 
-### Offen / deferred
+### Visualisierungen (komplett neu)
 
-- Matrix: Zeitfilter, Zoom, Sortier-Ausbau
-- Leaflet-Karte (deferred, E-04)
-- Erweiterte Ort-Hierarchien (deferred)
-- EAD-Export (im Antrag erwähnt)
-- Digitalisate-Strategie (Platzhalter-URLs)
+Alle bisherigen Viz-Views sind Prototypen und werden verworfen. Neues Konzept offen; wenn es soweit ist, bauen die neuen Views direkt auf den Phase-6-Store-Maps (`dftHierarchy`, `mobilityEvents`, `agentRelations`, `finances`) auf, nicht mehr auf `partitur.json`.
 
 ## Strategischer Kontext
 

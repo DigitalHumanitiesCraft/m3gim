@@ -20,9 +20,9 @@
 | [ira-malaniuk.md](ira-malaniuk.md) | Biografie als atomare Note, Quellenbestand UAKUG/NIM |
 | [datenmodell.md](datenmodell.md) | RiC-O 1.1 + m3gim + AgRelOn, Mobilitätssichten, Vokabulare, partitur.json-Schema |
 | [pipeline.md](pipeline.md) | Skripte, ENV-Overrides, Pipeline-Erweiterungen, Qualitäts-Baseline |
-| [tests.md](tests.md) | 19 Test-Module, 164 Tests, TDD-Workflow |
-| [frontend.md](frontend.md) | Laufzeitmodell, Store (inkl. v2-Maps), 7 Ansichten, Designsystem |
-| [entscheidungen.md](entscheidungen.md) | E-01 bis E-72, offene Entscheidungen, Tech-Schulden |
+| [tests.md](tests.md) | Testsuite-Überblick, TDD-Workflow, Anker-Record-Strategie |
+| [frontend.md](frontend.md) | Laufzeitmodell, Store (inkl. v2-Maps), Ansichten, Designsystem |
+| [entscheidungen.md](entscheidungen.md) | Architekturentscheidungen, offene Entscheidungen, Tech-Schulden |
 
 ## Weitere Ressourcen
 

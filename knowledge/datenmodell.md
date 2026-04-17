@@ -60,13 +60,15 @@ Das Modell ist in drei fachliche Schichten plus eine Querschnittsebene geglieder
 
 Objektidentität wird durch `archivsignatur` plus optionales Folio gebildet. Konvolute sind aggregierende Einheiten (`rico:RecordSet`) mit Kindern auf Folio-Ebene (`rico:Record`). Verknüpfungen hängen an der granularsten verfügbaren Ebene.
 
-### Bestand (Stand 2026-04-17)
+### Bestand
 
-Aktuell 381 Objekte, gegliedert in drei Bestandsgruppen: Hauptbestand (354), Plakate (26), Tonträger (1). Feinerschlossen mit einzelnen Folio-Einträgen sind sechs Konvolute: NIM_003, NIM_004, NIM_005, NIM_006, NIM_007, NIM_11. Die Verknüpfungstabelle enthält 1.494 Zeilen für 70 Objekte (effektiv 1.220 Record-Properties im Output).
+Teilnachlass UAKUG/NIM in drei Bestandsgruppen: Hauptbestand, Plakate, Tonträger. Feinerschlossen mit einzelnen Folio-Einträgen sind die Konvolute um NIM_003, NIM_004, NIM_005, NIM_006, NIM_007 und NIM_011. Die Verknüpfungstabelle trägt den Großteil der Schicht-2- und Schicht-3-Relationen.
+
+Aktuelle Zählstände pro Bestandsgruppe, Feldabdeckung und Verknüpfungsrate stehen im Quality-Snapshot (`data/reports/quality-snapshot.md`) und werden bei jedem Pipeline-Lauf neu generiert — dieses Modelldokument hält keine laufenden Zahlen vor.
 
 ### Feldabdeckung in der Objekttabelle
 
-Von den 381 Objekten tragen 295 einen Titel und Dokumenttyp (77 Prozent), 256 ein Entstehungsdatum (67 Prozent), 94 eine Umfangsangabe (25 Prozent). Dieser Abdeckungsgrad ist bei jeder Auswertung mitzuführen.
+Nicht alle Objekte sind durchgängig erschlossen: Titel + Dokumenttyp sind am besten abgedeckt, Entstehungsdatum mittel, Umfangsangabe und Sprache dünn. Dieser Abdeckungsgrad ist bei jeder Auswertung mitzuführen — konkrete Werte pro Feld im Quality-Snapshot.
 
 ## 4. Verknüpfungsmechanismus
 
@@ -301,7 +303,7 @@ Hierarchie.
 
 ### Begründung der neuen Klassen
 
-`m3gim:StageRole` trägt der Tatsache Rechnung, dass Bühnenrollen im Datenbestand mit 221 Einträgen als eigenständige Entität geführt werden, nicht als String-Attribut. Werktitel *Waltraute*, *Brangäne*, *2. Norn*, *Alt Solo* sind wiederkehrende referenzierbare Rollen mit Stimmfach und Werkzugehörigkeit.
+`m3gim:StageRole` trägt der Tatsache Rechnung, dass Bühnenrollen im Datenbestand als eigenständige Entität geführt werden sollten, nicht als String-Attribut. Werktitel *Waltraute*, *Brangäne*, *2. Norn*, *Alt Solo* sind wiederkehrende referenzierbare Rollen mit Stimmfach und Werkzugehörigkeit.
 
 `m3gim:SpatiotemporalEvent` bildet den Komposittyp `ort, datum` als Klasse ab. Dieser Typ ist der zentrale Träger der Mobilitätsinformation. Er hat 60 direkte Einträge im Datenbestand plus indirekte Belege in den einfacheren `ort`-Rollen.
 
@@ -436,6 +438,46 @@ Die bisherige Property `m3gim:dateEvidence` geht in `agrelon:hasProvenance` auf.
 | unbekannt | 0.0 |
 
 Der Bearbeitungsstand `m3gim:bearbeitungsstand` bleibt als datensatzinterner Projektstatus erhalten und ist nicht Teil der Meta-Statement-Schicht.
+
+### XLSX-Quellreferenz (`m3gim:xlsxSource`)
+
+Ergänzend zur semantischen Provenance (`agrelon:hasProvenance` + `agrelon:hasConfidenceValue`) trägt jede aus dem Excel abgeleitete Entität eine **technische Quellreferenz** auf die Ursprungszelle. Sie ist keine wissenschaftliche Quellenangabe, sondern eine Rückverfolgbarkeits-Kette für Pipeline und Review.
+
+| Property | Wertebereich | Zweck |
+|---|---|---|
+| `m3gim:xlsxSource` | Blank Node | Container für die drei Adressteile |
+| `m3gim:xlsxSheet` | xsd:string (`"Objekte"` oder `"Verknuepfungen"`) | Name des Ursprungs-Sheets |
+| `m3gim:xlsxRow` | xsd:integer (≥ 2) | 1-basierte XLSX-Zeilennummer inklusive Header-Zeile |
+| `m3gim:datenpunktId` | xsd:integer (optional) | Projekteigener Datenpunkt-Identifier aus Spalte `datenpunkt_id`, falls vorhanden |
+
+Angebracht wird `m3gim:xlsxSource`:
+
+- **am Record** (aus `M3GIM-Objekte.xlsx`). `xlsxSheet = "Objekte"`, `xlsxRow` entspricht der Excel-Zeilennummer des Objekts.
+- **an jeder DetailAnnotation** (Finanz-Detail, Sach-Detail). `xlsxSheet = "Verknuepfungen"`.
+- **an jeder AgRelOn-Relation** (`m3gim:agentRelation`-Einträgen).
+- **an jedem SpatiotemporalEvent** (Top-Level-Graph-Entität).
+
+Direkte Record-Properties (`rico:title`, `rico:date`, `m3gim:documentType` etc.) bekommen keinen eigenen `xlsxSource`, weil ihre Herkunft implizit die des umgebenden Records ist. Damit bleibt die JSON-LD lesbar, ohne Provenance pro Atom-Property zu wiederholen.
+
+Beispiel (Finanz-Detail aus NIM_007 5_1, Zeile 1276):
+
+```json
+{
+  "@type": "m3gim:DetailAnnotation",
+  "m3gim:detailField": "ausgaben",
+  "m3gim:detailValue": "36000",
+  "m3gim:monetaryAmount": {"@value": 36000, "@type": "xsd:decimal"},
+  "m3gim:currency": "S",
+  "m3gim:detailRole": "erwähnt",
+  "rico:generalDescription": "10% an [Organi]",
+  "m3gim:xlsxSource": {
+    "m3gim:xlsxSheet": "Verknuepfungen",
+    "m3gim:xlsxRow": 1276
+  }
+}
+```
+
+Die Kontrakttests in `tests/test_20_xlsx_provenance.py` halten 100 %-Coverage als Soft-Invariante und pflegen drei Anker-Records (NIM_007 5_1, NIM_004 3, NIM_003 1_8) mit exakten Zeilenerwartungen als Fixtures.
 
 ### Anwendung in Reifikation
 
@@ -657,11 +699,15 @@ Empfehlung: Handreichungssystem durchsetzen. Vier Werte bilden den Schichtfortsc
 - `beginDate` → `agrelon:hasBeginDate`
 - `endDate` → `agrelon:hasEndDate`
 
+### Technische Provenance-Properties
+
+`m3gim:xlsxSource`, `m3gim:xlsxSheet`, `m3gim:xlsxRow`, `m3gim:datenpunktId` — siehe § 9 („XLSX-Quellreferenz"). Werden von der Pipeline gesetzt, nicht im Google-Sheet erfasst.
+
 ## 17. Offene Fragen und Klärungsbedarf
 
 Punkte, die im Zuge dieser Modellrevision sichtbar wurden und vor der nächsten Erschließungsetappe geklärt werden sollten.
 
-**Abgrenzung sammlung vs. konvolut.** Der Dokumenttyp `sammlung` (77 Einträge) erscheint überlappend mit `konvolut`. Möglicherweise ist `sammlung` ein aggregierender Erfassungsartefakt. Zu prüfen: lässt sich `sammlung` in `konvolut` aufgehen, oder gibt es einen semantischen Unterschied (z.B. `konvolut` = physischer Umschlag, `sammlung` = thematische Zusammenstellung)?
+**Abgrenzung sammlung vs. konvolut.** Der Dokumenttyp `sammlung` erscheint überlappend mit `konvolut`. Möglicherweise ist `sammlung` ein aggregierender Erfassungsartefakt. Zu prüfen: lässt sich `sammlung` in `konvolut` aufgehen, oder gibt es einen semantischen Unterschied (z.B. `konvolut` = physischer Umschlag, `sammlung` = thematische Zusammenstellung)?
 
 **Status der Rolle `protagonist`.** Zwei Belege im Typ `person`. Vermutlich Erfassungsfehler, weil *protagonist* eine Bühnenrolle ist und in den Typ `rolle` gehört. Zu prüfen und ggf. umzuklassifizieren.
 
@@ -673,6 +719,6 @@ Punkte, die im Zuge dieser Modellrevision sichtbar wurden und vor der nächsten 
 
 **Normalisierung der Ortsdubletten.** `Zürich`/`Zürich, Zürichbergstrasse 104`, `Stuttgart`/`Stuttgart `, Freitextmischungen wie `Wien, ab 1956` sind im Ortsindex vor der nächsten Erschließungsrunde zu bereinigen.
 
-**Nachzuordnung unverknüpfter Einträge.** 574 Zeilen der Verknüpfungstabelle haben keine Signatur. Nachzuordnen oder als inkonsistente Daten aus der Pipeline auszuschließen.
+**Nachzuordnung unverknüpfter Einträge.** Ein substanzieller Anteil der Verknüpfungstabelle hat keine Archivsignatur. Nachzuordnen oder als inkonsistente Daten aus der Pipeline auszuschließen — aktuelle Anzahl im Quality-Snapshot.
 
 **Validierung der AgRelOn-Inferenzen.** Ko-Präsenz bei Aufführungen wird nicht automatisch zu `agrelon:hasColleague`. Die Inferenzregeln sind in der Pipeline explizit zu dokumentieren und zu parametrisieren (z.B. Schwellenwert Mindestanzahl gemeinsamer Aufführungen, Zeitnähe).
