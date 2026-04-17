@@ -1,6 +1,6 @@
 # M³GIM Quality-Snapshot
 
-_Generiert: 2026-04-17T20:19_
+_Generiert: 2026-04-17T20:21_
 
 Grundlage: `data\output\m3gim.jsonld` + `data\output\wikidata-reconciliation.json`.
 
@@ -36,7 +36,7 @@ Grundlage: `data\output\m3gim.jsonld` + `data\output\wikidata-reconciliation.jso
 
 ## Wikidata-Coverage
 
-- 262 gematcht, 273 kein Match, 14 übersprungen (bereits mit Q-ID oder zu kurz)
+- 272 gematcht, 263 kein Match, 14 übersprungen (bereits mit Q-ID oder zu kurz)
 
 ### Nach Typ + Konfidenz
 

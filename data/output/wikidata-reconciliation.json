@@ -2140,6 +2140,106 @@
       "label": "music for the Requiem Mass",
       "match": "fuzzy_high",
       "confidence": 100
+    },
+    {
+      "type": "location",
+      "name": "Wien",
+      "qid": "Q1741",
+      "label": "Vienna",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "Top-10 Malaniuk-Stadt. API lieferte kein Kandidat; Q-ID manuell verifiziert."
+    },
+    {
+      "type": "location",
+      "name": "München",
+      "qid": "Q1726",
+      "label": "Munich",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "Top-10 Malaniuk-Stadt. API lieferte kein Kandidat; Q-ID manuell verifiziert."
+    },
+    {
+      "type": "location",
+      "name": "Bayreuth",
+      "qid": "Q2861",
+      "label": "Bayreuth",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "Top-10 Malaniuk-Stadt. API lieferte kein Kandidat; Q-ID manuell verifiziert."
+    },
+    {
+      "type": "location",
+      "name": "Köln",
+      "qid": "Q365",
+      "label": "Cologne",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "Top-10 Malaniuk-Stadt. API lieferte kein Kandidat; Q-ID manuell verifiziert."
+    },
+    {
+      "type": "location",
+      "name": "Venedig",
+      "qid": "Q641",
+      "label": "Venice",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "Top-10 Malaniuk-Stadt. API lieferte kein Kandidat; Q-ID manuell verifiziert."
+    },
+    {
+      "type": "location",
+      "name": "Neapel",
+      "qid": "Q2634",
+      "label": "Naples",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "Top-10 Malaniuk-Stadt. API lieferte kein Kandidat; Q-ID manuell verifiziert."
+    },
+    {
+      "type": "location",
+      "name": "Buenos Aires",
+      "qid": "Q1486",
+      "label": "Buenos Aires",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "Top-10 Malaniuk-Stadt. API lieferte kein Kandidat; Q-ID manuell verifiziert."
+    },
+    {
+      "type": "location",
+      "name": "Lemberg",
+      "qid": "Q36036",
+      "label": "Lviv",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "Top-10 Malaniuk-Stadt. API lieferte kein Kandidat; Q-ID manuell verifiziert."
+    },
+    {
+      "type": "location",
+      "name": "Lissabon",
+      "qid": "Q597",
+      "label": "Lisbon",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "Top-10 Malaniuk-Stadt. API lieferte kein Kandidat; Q-ID manuell verifiziert."
+    },
+    {
+      "type": "location",
+      "name": "Stanislau",
+      "qid": "Q200491",
+      "label": "Ivano-Frankivsk",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "Top-10 Malaniuk-Stadt. API lieferte kein Kandidat; Q-ID manuell verifiziert."
     }
   ],
   "unmatched": [
@@ -2846,46 +2946,6 @@
     {
       "type": "org",
       "name": "Richard-Wagner-Stipendienstiftung"
-    },
-    {
-      "type": "location",
-      "name": "Bayreuth"
-    },
-    {
-      "type": "location",
-      "name": "Buenos Aires"
-    },
-    {
-      "type": "location",
-      "name": "Köln"
-    },
-    {
-      "type": "location",
-      "name": "Lemberg"
-    },
-    {
-      "type": "location",
-      "name": "Lissabon"
-    },
-    {
-      "type": "location",
-      "name": "München"
-    },
-    {
-      "type": "location",
-      "name": "Neapel"
-    },
-    {
-      "type": "location",
-      "name": "Stanislau"
-    },
-    {
-      "type": "location",
-      "name": "Venedig"
-    },
-    {
-      "type": "location",
-      "name": "Wien"
     },
     {
       "type": "location",
