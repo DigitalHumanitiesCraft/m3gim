@@ -7,7 +7,7 @@
 - **Erstbesuch** → [status.md](status.md) (Steckbrief + aktueller Stand) → [forschungsrahmen.md](forschungsrahmen.md) (Forschungsfragen)
 - **Datenmodell verstehen/ändern** → [datenmodell.md](datenmodell.md)
 - **Pipeline ausführen/debuggen** → [pipeline.md](pipeline.md)
-- **Frontend anpassen** → [frontend.md](frontend.md)
+- **Frontend anpassen** → [frontend.md](frontend.md) + [interface-konzept.md](interface-konzept.md) (Designregeln + Tab-Architektur)
 - **Tests schreiben** → [tests.md](tests.md)
 - **Warum wurde X entschieden** → [entscheidungen.md](entscheidungen.md)
 
@@ -21,7 +21,8 @@
 | [datenmodell.md](datenmodell.md) | RiC-O 1.1 + m3gim + AgRelOn, Mobilitätssichten, Vokabulare, partitur.json-Schema |
 | [pipeline.md](pipeline.md) | Skripte, ENV-Overrides, Pipeline-Erweiterungen, Qualitäts-Baseline |
 | [tests.md](tests.md) | Testsuite-Überblick, TDD-Workflow, Anker-Record-Strategie |
-| [frontend.md](frontend.md) | Laufzeitmodell, Store (inkl. v2-Maps), Ansichten, Designsystem |
+| [frontend.md](frontend.md) | Laufzeitmodell, Store (inkl. v2-Maps), Ansichten, Designsystem, Lektionen aus entfernten Viz |
+| [interface-konzept.md](interface-konzept.md) | Tab-Architektur + Designregeln für das Interface-Redesign (6 Tabs, Chip-Pattern, Tabelle-vor-Chart) |
 | [entscheidungen.md](entscheidungen.md) | Architekturentscheidungen, offene Entscheidungen, Tech-Schulden |
 
 ## Weitere Ressourcen

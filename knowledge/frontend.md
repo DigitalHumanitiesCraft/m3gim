@@ -1,6 +1,6 @@
 # Frontend
 
-> Laufzeitmodell, Modulstruktur, Store, Routing, Visualisierungen und Designsystem. Zusammengeführt aus den vormals getrennten Dokumenten zu Architektur und Ansichten.
+> Laufzeitmodell, Modulstruktur, Store, Routing und Designsystem. Die vormaligen D3-Visualisierungen (Mobilität, Matrix, Kosmos, Zeitfluss, Lebenspartitur, Lebensstationen) sind entfernt. Die destillierten Lektionen stehen unter § Lektionen aus den entfernten Visualisierungen. Die neue Tab-Architektur und die Designregeln für den Nachfolger stehen in [interface-konzept.md](interface-konzept.md).
 
 ## Laufzeitmodell
 
@@ -26,45 +26,31 @@
 - `knowledge/` — Kanonische Wissensbasis
 - `tests/` — Pipeline-Testsuite (siehe [tests.md](tests.md))
 
-### Frontend-Module
-
-23 JS-Module unter `docs/js/`:
+### Frontend-Module (nach Entfernung der D3-Views)
 
 | Pfad | Zweck |
 |------|-------|
 | `main.js` | Einstiegspunkt, `TAB_RENDERERS`-Registry, Lazy-Tab-Rendering, Error Boundaries pro Tab |
-| `data/loader.js` | JSON-LD-Ladeschicht, Store-Aufbau, Partitur-Singleton (`loadPartitur()`, `getLebensphasen()`) |
-| `data/aggregator.js` | Daten-Aggregation (`buildKomponistenMap`, `aggregateMatrix`, `aggregateKosmos`, `aggregateZeitfluss`) |
-| `ui/router.js` | Hash-Routing (8 aktive Tabs inkl. Lebenspartitur), `navigateToView`/`navigateToIndex`, ARIA-State |
+| `data/loader.js` | JSON-LD-Ladeschicht, Store-Aufbau inkl. Phase-6-Maps, Partitur-Singleton |
+| `data/aggregator.js` | Daten-Aggregation (wird für die neue Mobilitäts-Visualisierung neu bewertet) |
+| `ui/router.js` | Hash-Routing, `navigateToView`/`navigateToIndex`, ARIA-State |
 | `ui/events.js` | Cross-View Event-Bus (`onViewNavigate()`) mit Auto-Replay |
 | `ui/korb.js` | Wissenskorb (sessionStorage) |
-| `views/archiv.js` | Bestand + Chronik |
-| `views/indizes.js` | 4-Grid Explorer |
-| `views/mobilitaet.js` | Schwimmbahn-Timeline (D3) |
-| `views/zeitfluss.js` | Chronologischer Dot-Plot (D3) |
+| `views/archiv.js` + `archiv-bestand.js` + `archiv-chronik.js` + `archiv-inline-detail.js` | Archiv als Bestand + Chronik, Inline-Detail mit Finanzen, AgRelOn, SpatiotemporalEvents |
+| `views/indizes.js` | 4-Grid Explorer (Personen, Organisationen, Orte, Werke) |
 | `views/korb.js` | Korb-Cards |
-| `views/matrix.js` | Person × Zeit-Heatmap (D3) |
-| `views/kosmos.js` | Repertoire-Konzentrisches Layout (D3) |
-| `views/lebensstationen.js` | Scrollytelling-Prototyp (D3, IntersectionObserver) |
-| `views/lebenspartitur.js` | Bump-Chart (D3) — SPA-Tab (`renderLebenspartitur`) + Standalone (`init`) |
-| `utils/format.js` | Formatierungshilfen |
-| `utils/dom.js` | DOM-Helfer (`el`, `clear`) |
-| `utils/date-parser.js` | Datumsparser |
-| `utils/normalize.js` | Namensnormalisierung, `getPersonKategorie` |
-| `utils/viz-components.js` | Shared Viz-Builder (siehe [§ Shared Components](#shared-components)) |
+| `utils/format.js`, `utils/dom.js`, `utils/date-parser.js`, `utils/normalize.js` | Formatierungshilfen, DOM-Helper, Datumsparser, Namensnormalisierung |
+| `utils/viz-components.js` | Shared Viz-Builder (werden für die Neukonzeption gesichtet, nicht mehr aktiv genutzt) |
 
-13 CSS-Dateien unter `docs/css/`: `variables`, `base`, `archiv`, `indizes`, `mobilitaet`, `korb`, `matrix`, `kosmos`, `zeitfluss`, `components`, `pages`, `lebensstationen`, `lebenspartitur`.
+CSS-Dateien unter `docs/css/`: `variables`, `base`, `archiv`, `indizes`, `korb`, `components`, `pages`. Die viz-spezifischen CSS-Dateien sind mit den Views entfernt.
 
 ### Info-Seiten (statisches HTML)
 
-5 Content-Seiten (`about.html`, `projekt.html`, `modell.html`, `hilfe.html`, `impressum.html`) + 2 Prototyp-Seiten (`lebensstationen.html`, `lebenspartitur.html`).
-
-Einheitliches Template: `info-header`, `info-nav`, `info-main`, `info-footer`. Lesebreite 720px, Source Serif 4 für Titel.
+Fünf Content-Seiten (`about.html`, `projekt.html`, `modell.html`, `hilfe.html`, `impressum.html`). Einheitliches Template: `info-header`, `info-nav`, `info-main`, `info-footer`. Lesebreite 720px, Source Serif 4 für Titel.
 
 ## Routing
 
-- Hash-basiert in `router.js`: 8 aktive Tabs (archiv, indizes, mobilitaet, zeitfluss, matrix, kosmos, lebenspartitur, korb)
-- Alle D3-Views laden Lebensphasen über `loadPartitur()`-Singleton (loader.js) statt separater Fetches
+- Hash-basiert in `router.js`: aktive Tabs sind Archiv, Indizes, Wissenskorb (die Neukonzeption der Mobilitäts-Visualisierung wird als neuer Tab eingehängt).
 - Deep Links: `#archiv/UAKUG/NIM_003%20Folio%2001` für Datensatzkontext
 - Info-Seiten als eigenständige HTML-Dateien (normale Links, kein Hash-Routing)
 - `navigateToIndex(gridType, entityName)` für Cross-Tab-Navigation
@@ -85,66 +71,31 @@ store = {
   organizations: Map<name, {records, roles, wikidata}>,
   locations: Map<name, {records, roles, wikidata}>,
   works: Map<name, {records, komponist, wikidata, premiereDate, wdGenre}>,
-  konvolutChildren: Map<konvolutId, childIds[]>,
-  childToKonvolut: Map<childId, konvolutId>,
-  konvolutMeta: Map<konvolutId, {title, dateDisplay, childCount, ...}>,
-  folioIds: Set<folioId>,
-  unprocessedIds: Set<recordId>,
+  konvolutChildren, childToKonvolut, konvolutMeta,
+  folioIds, unprocessedIds,
   recordCount, konvolutCount, exportDate,
 
-  // v2-Store-Maps (Phase 6, Session 30)
-  dftHierarchy: Map<conceptId, {id, prefLabel, broader, children[]}>,
+  // Phase-6-Erweiterungen
+  dftHierarchy:   Map<conceptId, {id, prefLabel, broader, children[]}>,
   mobilityEvents: Map<eventId, {id, place, placeWikidata, date, role, description, recordId}>,
   recordToEvents: Map<recordId, eventId[]>,
   agentRelations: Map<recordId, [{type, objectName, objectWikidata, validityBegin, validityEnd, provenance}]>,
-  finances: Map<recordId, [{field, role, rawValue, amount:Number, currency}]>,
+  finances:       Map<recordId, [{field, role, rawValue, amount:Number, currency}]>,
 }
 ```
 
-Archiv und Indizes lesen direkt aus `m3gim.jsonld` (über Store), nicht aus separaten View-JSONs. Mobilität liest aus beiden: `partitur.json` (Lebensphasen, Orte, Pfeile) + Store (Gastspiel-Dokumente dynamisch).
+Archiv und Indizes lesen direkt aus `m3gim.jsonld` (über Store), nicht aus separaten View-JSONs.
 
-### Phase 6 — Store-Erweiterungen (umgesetzt, Session 30)
+### Phase-6-Store-Maps im Überblick
 
-| Store-Map | Quelle im JSON-LD | Sichtbarer Nutzen (nach Phase 7) |
+| Store-Map | Quelle im JSON-LD | Verwendung |
 |---|---|---|
-| `store.dftHierarchy` | Top-Level `skos:Concept`-Knoten + `skos:broader` | Indizes-Filter kann Dokumenttypen hierarchisch gruppieren (`biographisch` → `autobiografie`, `biographie`) |
-| `store.mobilityEvents` + `store.recordToEvents` | `m3gim:SpatiotemporalEvent`-Knoten + `m3gim:hasSpatiotemporalEvent`-Refs | Mobilität + Lebenspartitur zeigen präzise Events mit Provenance statt heuristisch aus `partitur.auftritte` |
-| `store.agentRelations` | `m3gim:agentRelation`-Array am Record | Indizes-Personen-Kacheln mit Beziehungs-Badges (Arbeitgeber, Patron, Korrespondent); optional neuer „Beziehungen"-Grid |
-| `store.finances` | `m3gim:hasDetail`-DetailAnnotations mit `monetaryAmount` + `currency` + `detailRole` | Archiv-Inline-Detail zeigt Honorare, optional Finanz-Visualisierung als eigener Tab |
-| typisierte Datumsfelder als Fallback in `indexByYear` | `m3gim:absendedatum`, `m3gim:auffuehrungsdatum` etc. (inkl. Listen + `"ISO/ISO"`-Ranges + `circa:`/`vor:`/`nach:`-Präfixe) | Matrix + Zeitfluss zeigen mehr Dots — Records ohne `rico:date`, aber mit typisiertem Datum werden zeitlich einsortiert |
+| `store.dftHierarchy` | Top-Level `skos:Concept`-Knoten + `skos:broader` | Vorbereitung für hierarchischen Dokumenttyp-Filter im Archiv |
+| `store.mobilityEvents` + `store.recordToEvents` | `m3gim:SpatiotemporalEvent`-Knoten + `m3gim:hasSpatiotemporalEvent`-Refs | Grundlage für die neu zu konzipierende Mobilitäts-Visualisierung |
+| `store.agentRelations` | `m3gim:agentRelation`-Array am Record | Archiv-Inline-Detail; geplant: Beziehungs-Badges im Personen-Index |
+| `store.finances` | `m3gim:hasDetail`-DetailAnnotations mit `monetaryAmount` + `currency` + `detailRole` | Archiv-Inline-Detail zeigt Honorare |
 
-Die Invarianten werden als Kontrakttests in [test_06_frontend_contract.py](../tests/test_06_frontend_contract.py) durchgängig geprüft.
-
-Provenance (`agrelon:hasProvenance` + `hasConfidenceValue`) wird nicht als eigene Store-Map indexiert, sondern am Record mitgeführt; einzelne Views können sie bei Bedarf lesen.
-
-## Shared Components
-
-Alle D3-Visualisierungen nutzen ein einheitliches Component-System.
-
-### CSS (components.css)
-
-- `.viz-toolbar` / `.viz-toolbar__row` / `.viz-toolbar__group` / `.viz-toolbar__label` — Toolbar-Layout
-- `.phase-chip` / `.phase-chip--active` — Lebensphasen-Buttons
-- `.viz-legend` / `.viz-legend__item` / `.viz-legend__sep` — Legende
-- `.viz-tooltip` / `.viz-tooltip--visible` — Dunkler Floating-Tooltip
-- `.viz-zoom-reset` / `.viz-zoom-reset--visible` — Absolut positionierter Zoom-Reset
-- `.ff-badges` / `.ff-badges__tag` — Forschungsfragen-Annotation
-- `.cross-link` — Pill-förmiger Navigationslink
-- `.popup-item` / `.popup-item--secondary` — Klickbare Aktionszeile in Popups
-
-### JS-Builder (utils/viz-components.js)
-
-- `buildFFBadges(...ffs)` — FF-Badge-Container
-- `buildPhaseChips(lebensphasen, onSelect, { labelMode })` — Phase-Chip-Bar mit „Alle", liefert `{ element, setActive, chips }`
-- `buildLayerChips(...)` — Multi-Select-Layer-Toggle für Mobilität
-- `buildCoverageFooter(text)` — `.data-coverage`-Zeile
-- `createTooltip(container)` — Tooltip-Controller mit Boundary-Clamping
-- `setupD3Zoom({ svg, zoomGroup, container, scaleExtent, onZoom })` — D3-Zoom+Pan mit Reset
-- `viewLog(name, color)` — Console-Diagnostik (No-Op auf GitHub Pages via DEV-Flag)
-
-### Layout-Pattern
-
-Alle Views folgen: `.viz-toolbar → SVG/Visualisierung → .viz-legend → .data-coverage`.
+Die Invarianten werden als Kontrakttests in [test_06_frontend_contract.py](../tests/test_06_frontend_contract.py) durchgängig geprüft. Provenance (`agrelon:hasProvenance` + `hasConfidenceValue`) wird nicht als eigene Store-Map indexiert, sondern am Record mitgeführt.
 
 ## Ansichten
 
@@ -155,7 +106,7 @@ Alle Views folgen: `.viz-toolbar → SVG/Visualisierung → .viz-legend → .dat
 - Autocomplete-Combobox für Personenfilter
 - Erweiterte Suche: Signatur, Titel, Dokumenttyp, Datum
 - Unbearbeitete Objekte dezent markiert (opacity, Tooltip)
-- Inline-Detailflächen mit „Zum Wissenskorb"-Button
+- Inline-Detailflächen zeigen Finanzen, AgRelOn-Beziehungen und SpatiotemporalEvents; „Zum Wissenskorb"-Button pro Record
 - Bookmark-Icons an jeder Zeile (Hover → sichtbar)
 - Reset-Button setzt alle Filter gleichzeitig zurück
 
@@ -164,87 +115,9 @@ Alle Views folgen: `.viz-toolbar → SVG/Visualisierung → .viz-legend → .dat
 - Vier Grid-Blöcke: Personen, Organisationen, Orte, Werke
 - Cross-Grid-Facettensuche: Klick auf Index-Eintrag filtert die anderen drei Grids
 - Kompakte Toolbar: Suche (flex: 1) + Facet-Chips
-- Detail-Expansion auf 10 Records begrenzt + „Alle im Archiv"-Link
-- Wikidata-Icons bei Einträgen mit Q-ID, WD-Coverage-Prozent in Header
+- Detail-Expansion begrenzt + „Alle im Archiv"-Link
+- Wikidata-Icons bei Einträgen mit Q-ID, WD-Coverage-Anzeige im Header
 - **Subtitles** aus WD-Enrichment: `Beruf · Stimmfach · Lebensdaten` unter Personennamen (E-61)
-
-### Mobilität
-
-Schwimmbahn-Timeline (D3) für Malaniuks geografische Mobilität 1919–2009.
-
-**Datenquellen**
-
-- `partitur.json`: Lebensphasen, Orte, Mobilitätsereignisse (mit `kontext`-Feldern), `auftritte[]` (60 Pipeline-extrahierte Events), Netzwerk/Repertoire/Dokumente
-- `store.locations` + `store.records`: Gastspiel-Dots dynamisch aus Archivdaten (Fallback)
-
-**Layer-Architektur (E-41):** 5 togglebare Layer via `buildLayerChips()` (Multi-Select)
-
-| Layer | Default | Inhalt |
-|---|---|---|
-| mobilitaet | AN | Swim-Lane-Balken + Event-Marker + Gitterlinien |
-| auftritte | AN | Aggregierte Auftritte-Dots + Gastspiel-Section |
-| netzwerk | AUS | Intensitätsband am oberen Rand |
-| repertoire | AUS | Komponisten-Zeitspannen |
-| sparkline | AUS | Dokumente-pro-Jahr Flächendiagramm |
-
-**Visualisierungselemente**
-
-- Phasen-Bänder — 7 Lebensphasen als alternierende Hintergrundfarben
-- Skalenbruch — Zigzag bei 1975 (E-39, BREAK_YEAR=1975, BREAK_RATIO=0.74)
-- Balken — 55% Lane-Höhe, KUG-Blau = Wohnort, Gold = Aufführungsort
-- Event-Marker (E-42) — vertikale Linien mit gestaffelten Text-Labels, Flucht 1944 in Signal-Rot
-- Auftritte-Dots (E-45) — aggregiert pro Ort+Jahr, Radius nach Dokumentanzahl
-- 3-Farben-Schema: KUG-Blau (Engagement), Warm-Gold (Gastspiel), Signal-Rot (nur Flucht)
-
-**Interaktion**
-
-- Layer-Chips: Multi-Select-Toggle für 5 Schichten
-- Phasen-Chip-Bar: filtert via `data-year`/`data-von`/`data-bis`
-- Event-Marker: Hover zeigt Kontext + Repertoire, Klick aktiviert Fokus-Modus
-- Auftritte-Dots: Hover zeigt Werk/Rolle/Ort/Kategorie
-- Balken: Klick → Ort-Index, Shift+Klick → Matrix
-- FF-Badges: FF1, FF2, FF3, FF4
-
-### Lebenspartitur
-
-Vertikaler Bump-Chart (D3). Zeitachse Y, Orte X, durchgehende „Lebenslinie" mit farbkodierten Mobilitätssprüngen. 3-Spalten-Grid: Netzwerk-Facette (links), Hauptchart, Repertoire-Facette (rechts). Synchronisierte Hover-Highlight-Linie über alle 3 Spalten.
-
-- Als SPA-Tab (`renderLebenspartitur(store, container)`, E-57) und als Standalone-Seite (`lebenspartitur.html`, E-49)
-- UA-Distanz-Annotation in Phase-Tooltips (E-60)
-
-### Lebensstationen
-
-Scrollytelling (D3 + IntersectionObserver), 7 Kapitel + 7 Wendepunkte, Sticky Mini-Timeline, 2-Spalten-Grid (Text + Ort-Schema-SVG), Stat-Cards (Netzwerk/Auftritte/Repertoire), Synthese-Section. Standalone: `lebensstationen.html` (E-48).
-
-### Matrix
-
-- Begegnungsstruktur als Heatmap (Person × Zeitraum, 5-Jahres-Perioden)
-- Kategoriefilter (Dirigent, Regisseur, Korrepetitor, Kollege, Vermittler, Andere)
-- Graz-Fokus-Toggle (FF1)
-- Drilldown auf Dokumentliste mit Orts-Tags (Graz = grün) und Werk-Chips (klickbar → Kosmos)
-- Netzwerk-Sparkline über der Heatmap
-- FF-Badges: FF1, FF3
-
-### Kosmos
-
-- Repertoire-/Rollenbezug als deterministisches konzentrisches Layout
-- Zentrum Malaniuk, Komponisten-Layer, Werk-Layer
-- Fokus-Interaktionen, Zoom/Pan/Drag
-- Phasen-Chip-Bar: Genre-Ratio-Annotation + UA-Distanz (FF2, E-60)
-- Ort-Chips im Werk-Popup (FF3)
-- Volle Rollen-Anzeige im Tooltip und Popup
-- FF-Badges: FF2, FF3
-
-### Zeitfluss
-
-Chronologischer Dot-Plot (D3) aller Werke nach Komponist, Gattung, Zeit.
-
-- Y-Achse: Komponisten (sortierbar)
-- X-Achse: Premiere-Jahre
-- Dots: Größe nach Dokumentanzahl, Form nach Gattung (Kreis = Oper, Raute = Konzert/Lied)
-- Ort-kodierte Dot-Ränder: Graz=#2E7D4F, Wien=#004A8F, Bayreuth=#9A7B4F, Salzburg=#6B4E8C, München=#4A6E96 (FF3)
-- Phasen-Zoom mit Smooth-Transition
-- FF-Badges: FF1, FF3
 
 ### Wissenskorb
 
@@ -253,19 +126,46 @@ Chronologischer Dot-Plot (D3) aller Werke nach Komponist, Gattung, Zeit.
 - CSV- und BibTeX-Export
 - sessionStorage-Persistenz
 
-## Cross-View Navigation
+## Lektionen aus den entfernten Visualisierungen
 
-Vollständiges Navigationsnetzwerk zwischen den Visualisierungen:
+Die sechs entfernten D3-Views waren Entwürfe. Sie werden nicht rekonstruiert, aber ihre Substanz wird in die Neukonzeption der Mobilitäts-Visualisierung überführt. Die folgenden Muster gelten als Designregeln für den Nachfolger.
 
-| Von \ Nach | Matrix | Kosmos | Zeitfluss | Mobilität | Indizes | Archiv |
-|---|---|---|---|---|---|---|
-| **Matrix** | — | Drilldown | Drilldown | Peripherie-Chip (Malaniuk) | Name-Klick | Sig-Klick |
-| **Kosmos** | Popup-Link | — | Popup-Link | — | Popup-Link | — |
-| **Zeitfluss** | Shift+Klick Dot | Shift+Klick Dot | — | — | Y-Label-Klick | Dot-Klick |
-| **Mobilität** | Shift+Klick Bar | — | Repertoire-Diamond-Klick | — | Bar-Klick | Dot-Klick |
+### Kompositionsentscheidungen, die bleiben
 
-- **Router**: `navigateToView(tab, context)` als generische Cross-View-Funktion
-- **Event-Bus** (E-53): `events.js` — `onViewNavigate(tab, handler)` mit Auto-Replay, ersetzt verteilte `window.addEventListener('m3gim:navigate')`
+- **Skalenbruch als bewusste Geste.** Die Zigzag-Unterbrechung bei 1975 (in Mobilität, Lebenspartitur, Lebensstationen konsistent angewendet) macht die Pre/Post-Flucht-Asymmetrie visuell unmittelbar lesbar. Diskontinuität wird zur Kompositionsform, nicht verdeckt.
+- **Ortsfarbcodierung als Wiedererkennung.** Die durchgehende Farbzuordnung (Graz, Wien, Bayreuth, Salzburg, München) über alle Views hat Orientierung gestiftet. Ort-Farben gehören ins Designsystem, nicht in einzelne Views.
+- **Determinismus vor Schönheit.** Seeded Randomness (Zeitfluss-Jitter) und polar-analytisches Layout (Kosmos) haben garantiert: gleiche Daten ergeben gleiche Grafik. Pflicht für Langzeitstabilität und Wiedererkennbarkeit — keine unkontrollierte Force-Simulation.
+- **Facetten-Synchronisierung via gemeinsamer Y-Scale.** Die 3-Spalten-Partitur (Netzwerk — Hauptchart — Repertoire) mit synchronem Hover-Highlight war das kognitiv stärkste Muster: auf einen Blick sichtbar, welche Netzwerk-Intensität und welches Repertoire zu welchem Zeitpunkt aktiv waren.
+- **Kern-/Peripherie-Dichotomie.** Die Matrix-Aufteilung in stark vernetzte (Kern) und schwach vernetzte (Peripherie als kollapsbare Gruppen) Personen hat Überladung ohne Informationsverlust verhindert. Prinzip: das Häufige zeigen, das Seltene zugänglich halten.
+- **3-Farben-Semantik-Schema.** Engagement-Blau, Gastspiel-Gold, Signal-Rot nur für Flucht 1944 — semantisch scharf, Rot bleibt Ausnahme.
+
+### Interaktionsmuster, die etabliert sind
+
+- **Layer/Fokus/Phase-Dimming** als universelles Muster über mehrere Views bewährt — bleibt als Fade-on-Focus-Standard.
+- **Deep-Link-Hash-Routing** in SPA-Tabs + `navigateToView`-Event-Bus für Cross-View-Interaktion funktioniert.
+- **Shared Phase-Chip-Leiste** zur Jahreseingrenzung war konsistent über alle Views — als wiederverwendbares Element übernommen.
+
+### Anti-Muster, die nicht wiederkehren sollen
+
+- **Räumliche Separation zusammengehöriger Datenschichten.** Der Gastspiel-Block in Mobilität war vom Hauptchart abgesetzt — Parallelen-Lesen wurde kognitiv teuer. Lehre: zusammenhängende Ebenen bleiben in gemeinsamem Koordinatensystem.
+- **Unbegrenzter Zoom ohne State-Persistence.** In Kosmos wurde Expand-/Zoom-Zustand nicht gespeichert, Zoom war unbegrenzt — irgendwann Text unleserlich. Lehre: klare Zoom-Bounds, State im Hash oder der Session.
+- **Inkonsistente Scales zwischen Szenen.** Die Lebensstationen-Scrollytelling-Mini-Karten hatten andere Scales als die Synthese-Sektion — Maßstabs-Dissonanz. Lehre: ein geteiltes Scale-Objekt pro Achse über alle Szenen einer View.
+- **Schmale Facetten mit Text-Quetschung.** Die Netzwerk-Facette in Lebenspartitur war zu schmal, Labels unleserlich. Lehre: Facetten bekommen Mindestbreite oder werden durch Interaktion (Hover-Detail) kompensiert, nicht durch Stauchung.
+- **Scrollytelling mit IntersectionObserver bei kleinen Viewports.** Precision-Probleme und nicht-responsive Stat-Cards haben den Flow gestört. Lehre: Scrollytelling braucht sehr viel Testaufwand; Plot mit Sticky-Filter ist robuster.
+
+### Forschungsfrage-Abdeckung der entfernten Views
+
+| FF | Stärkste frühere Annäherung | Was für die Neukonzeption bleibt |
+|---|---|---|
+| FF1 (Professionalisierung/Vernetzung) | Matrix-Heatmap (Person × Phase) + Ort-Dots in Mobilität | Kern-/Peripherie-Schnitt + Ort als strukturierende Achse |
+| FF2 (narrativ/ästhetisch) | Kosmos mit Genre-Ratio + UA-Distanz | bleibt spekulativ, nicht MVP-relevant |
+| FF3 (Wissenstransfer) | Zeitfluss (Komponist × Ort × Jahr) | Ort-Codierung über Dot-Rand war elegant — übernehmen |
+| FF4 (Mobilitätsformen) | Mobilität-Schwimmbahn + Lebenspartitur-Bump | Stärkster Hebel — hier setzt die Neukonzeption an |
+
+### Datenvorstrukturen, die unverändert bleiben
+
+- `store.mobilityEvents` (Phase 6) zentralisiert, was vorher heuristisch aus `partitur.auftritte` abgeleitet wurde — die neue Viz konsumiert diese Map direkt.
+- `store.agentRelations` + `store.finances` sind bereits in Archiv-Inline-Detail integriert; die neue Viz kann sie pro Ort oder Record sekundär einblenden, ohne selbst zu aggregieren.
 
 ## Designsystem
 
@@ -277,7 +177,7 @@ Vollständiges Navigationsnetzwerk zwischen den Visualisierungen:
   - Signal-Rot — nur für Flucht 1944 (hochselektiv)
 - **Typografie**: Source Serif 4 (Titel), UI-Font stack (Interface), Mono (Signaturen)
 - **CSS Custom Properties** als Design-System
-- **Responsive**: `@media <768px` Breakpoints in base.css + components.css — Header, Tab-Bar, Toolbars, FF-Badges, Legenden
+- **Responsive**: `@media <768px` Breakpoints in base.css + components.css — Header, Tab-Bar, Toolbars, Legenden
 - **Accessibility**: `role="tablist/tab/tabpanel"`, `aria-selected` dynamisch, `aria-hidden` auf SVG-Icons, `aria-label` auf Korb-Badge
 - **DEV/Prod**: `viewLog()` No-Op auf GitHub Pages (E-50). Auf localhost zeigt `main.js` beim Seitenaufruf einen strukturierten Store-Report (Records, Konvolute, Phase-6-Maps, WD-Coverage pro Index, Provenance-Coverage) und setzt `window.m3gim` mit Debug-Helpern: `window.m3gim.store`, `window.m3gim.inspect(recordId)`, `window.m3gim.finances()`, `window.m3gim.agentRelations()`, `window.m3gim.mobilityEvents()`, `window.m3gim.dftTree()`, `window.m3gim.provenanceOf(recordId)` (letzterer zeigt alle XLSX-Quellen eines Records + Nested Entities als Liste `{field, sheet, row, datenpunkt}`). Auf Produktion (dhcraft.org) bleibt alles stumm.
 - **Error Boundaries** pro View: main.js fängt Render-Fehler pro Tab (sync+async, E-51)

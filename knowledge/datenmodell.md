@@ -477,7 +477,7 @@ Beispiel (Finanz-Detail aus NIM_007 5_1, Zeile 1276):
 }
 ```
 
-Die Kontrakttests in `tests/test_20_xlsx_provenance.py` halten 100 %-Coverage als Soft-Invariante und pflegen drei Anker-Records (NIM_007 5_1, NIM_004 3, NIM_003 1_8) mit exakten Zeilenerwartungen als Fixtures.
+Die Kontrakttests in `tests/test_20_xlsx_provenance.py` halten die volle xlsxSource-Coverage als Soft-Invariante und pflegen kuratierte Anker-Records (NIM_007 5_1, NIM_004 3, NIM_003 1_8) mit exakten Zeilenerwartungen als Fixtures.
 
 ### Anwendung in Reifikation
 
@@ -531,7 +531,7 @@ Ortsrolle `wohnort` an Malaniuk mit TimeSpan via `agrelon:hasValidityPeriod`.
 
 ### Abdeckungsabhängigkeit
 
-Jede Mobilitätsauswertung muss die derzeitige Abdeckungsquote mitführen: nur sechs Signaturen sind fein erschlossen, 22 Prozent der Objekte haben Datumsangaben, 25 Prozent Titel. Mobilitätskarten sind deshalb als *Zwischenstand der Erschließung* zu kommunizieren, nicht als Rekonstruktion der Biographie. Dieser Survivorship Bias muss bei Visualisierungen textlich gekennzeichnet sein.
+Jede Mobilitätsauswertung muss den derzeitigen Erschließungsstand mitführen: nur wenige Signaturen sind fein erschlossen, Datumsangaben und Titel sind selektiv vorhanden. Aktuelle Abdeckungszahlen stehen in `data/reports/quality-snapshot.md`. Mobilitätskarten sind deshalb als *Zwischenstand der Erschließung* zu kommunizieren, nicht als Rekonstruktion der Biographie. Dieser Survivorship Bias muss bei Visualisierungen textlich gekennzeichnet sein.
 
 ## 11. Finanzschicht
 

@@ -89,13 +89,23 @@ Detaillierte Entscheidungen: [entscheidungen.md](entscheidungen.md).
 
 ## Nächste Schritte
 
-### Phase 7 — Nicht-Viz-Buildout
+### Interface-Redesign (aktiver Fokus)
 
-Die bisherigen Visualisierungs-Prototypen (Mobilität, Lebenspartitur, Matrix, Kosmos, Zeitfluss) werden separat neu konzipiert und sind derzeit kein Entwicklungsfokus. Der aktuelle Phase-7-Scope konzentriert sich auf **Archiv + Indizes**:
+Grundlage: [interface-konzept.md](interface-konzept.md) — Designregeln, Tab-Architektur, Daten-Präsentations-Muster. Die sechs D3-Prototypen (Mobilität, Lebenspartitur, Lebensstationen, Matrix, Kosmos, Zeitfluss) werden entfernt; ihre Lektionen stehen in [frontend.md § Lektionen](frontend.md).
 
-1. **Indizes-Personen mit Beziehungsbadges** — AgRelOn-Chips pro Person aus `store.agentRelations`, Tooltip mit Provenance (Signatur, Verknüpfungsnummer, Konfidenz), Klick springt zum Beleg-Record im Archiv-Inline-Detail.
-2. **Archiv-Dokumenttyp-Filter hierarchisch** — DFT-Hierarchie (`biographisch` → `autobiografie`, `biographie`; `korrespondenz` → `brief`, `postkarte`, `telegramm`) als `<optgroup>`-Struktur statt flachem Dropdown. Oberbegriff-Wahl matcht transitiv.
-3. **Provenance-Pill im Archiv-Inline-Detail** — `m3gim:xlsxSource` als kleine Pille pro Finanz-, Beziehungs- und Ereignis-Datenpunkt sichtbar machen.
+Reihenfolge der Umsetzung:
+
+1. **Alt-Viz-Entfernung** — sechs Views + zwei Standalone-HTMLs + sechs CSS-Dateien + Tab-Registrierungen in `main.js` und Info-Seiten-Nav. Lieber vor dem Ausbau als während — der Wegfall schafft einen sauberen Ausgangspunkt.
+2. **Archiv-Inline-Detail auf Mockup-Stil** — Chip-Pattern mit Rolle-Prefix, Confidence-Dot, Provenance-Pille. Erschließungsteam-tauglich. Erbt die Designregeln aus dem Dossier-Mockup.
+3. **Indizes-Personen mit Beziehungsbadges** — AgRelOn-Chips pro Person aus `store.agentRelations`, Tooltip mit Provenance (Signatur, Verknüpfungsnummer, Konfidenz), Klick springt zum Beleg-Record.
+4. **Archiv-Dokumenttyp-Filter hierarchisch** — DFT-Hierarchie als `<optgroup>`-Struktur statt flachem Dropdown. Oberbegriff-Wahl matcht transitiv.
+5. **Erschließungsstand-Tab** — Browsing-UI für den Quality-Snapshot (Verknüpfungsrate, Lücken, Duplikate, Low-Confidence-Freigabeliste). Statt Markdown-Report als navigierbare Seite.
+6. **Mobilitäts-Atlas-Tab** — Karte + Zeitstrahl + Detailpanel, bi-direktional gekoppelt. Vorarbeit: Koordinaten-Patch in `transform.py` (Orte in SpatiotemporalEvents mit Q-ID + Koordinaten aus `wikidata-enrichment.json` anreichern). MVP deckt die Stories US-1, US-2, US-5, US-6 aus dem Plan ab.
+7. **Repertoire-Tab** — Bühnenrollen × Komponisten als parallele Aggregat-Tabellen mit Inline-Breakdown (`ERWÄHNT · AUFFÜHRUNG · REPERTOIRE → Summe`).
+8. **Biogramm-Tab** — chronologische Gesamtsicht (Orte, Netzwerk, Repertoire) pro Lebensphase. Form offen, Konzeption nach Atlas/Repertoire.
+9. **Netzwerk-Tab** — offen. Voraussichtlich Tabelle mit Chip-Breakdown analog Repertoire, nicht Graph.
+
+Schritte 1–5 sind die MVP-Basis des neuen Interfaces. Schritte 6–9 bauen darauf auf.
 
 ### Offene Datenqualität (extern blockiert)
 
@@ -115,10 +125,6 @@ Die bisherigen Visualisierungs-Prototypen (Mobilität, Lebenspartitur, Matrix, K
 - Bearbeitungsstand bei der Mehrheit der Objekte noch offen.
 - Header-Shifts in drei Indizes im Google Sheet korrigieren (Pipeline kompensiert über `HEADER_SHIFTS`-Mapping).
 - Datierungen nicht als Freitext (`"Wien, ab 1956"`), sondern als strukturiertes Feld.
-
-### Visualisierungen (komplett neu)
-
-Alle bisherigen Viz-Views sind Prototypen und werden verworfen. Neues Konzept offen; wenn es soweit ist, bauen die neuen Views direkt auf den Phase-6-Store-Maps (`dftHierarchy`, `mobilityEvents`, `agentRelations`, `finances`) auf, nicht mehr auf `partitur.json`.
 
 ## Strategischer Kontext
 
