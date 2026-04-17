@@ -5,8 +5,8 @@
 
 import { el, clear } from '../utils/dom.js';
 import { formatSignatur, getDocTypeId, truncate } from '../utils/format.js';
-import { PERSONEN_FARBEN, DOKUMENTTYP_LABELS, WIKIDATA_ICON_SVG } from '../data/constants.js';
-import { selectRecord } from '../ui/router.js';
+import { PERSONEN_FARBEN, DOKUMENTTYP_LABELS, WIKIDATA_ICON_SVG, AGRELON_LABELS } from '../data/constants.js';
+import { selectRecord, navigateToView } from '../ui/router.js';
 import { toggleKorb, isInKorb } from '../ui/korb.js';
 
 let store = null;
@@ -376,7 +376,55 @@ function renderNameCell(entry) {
   if (parts.length > 0) {
     frag.appendChild(el('div', { className: 'idx-subtitle' }, parts.join(' \u00b7 ')));
   }
+  // AgRelOn-Beziehungsbadges (Session 32, E-75): Chips pro Beziehungstyp mit
+  // Mehrfachzaehlung und Klick-Durchstich zum Beleg-Record im Archiv.
+  if (entry.relations && entry.relations.length > 0) {
+    const relEl = buildRelationBadges(entry.relations);
+    if (relEl) frag.appendChild(relEl);
+  }
   return frag;
+}
+
+/**
+ * Gruppiert Relationen pro Typ, zaehlt Mehrfach-Vorkommen, baut Chips.
+ * Klick auf Chip oeffnet den Beleg-Record im Archiv via Hash-Navigation.
+ */
+function buildRelationBadges(relations) {
+  const byType = new Map();
+  for (const rel of relations) {
+    if (!rel || !rel.type) continue;
+    if (!byType.has(rel.type)) byType.set(rel.type, []);
+    byType.get(rel.type).push(rel);
+  }
+  if (byType.size === 0) return null;
+
+  const container = el('div', { className: 'idx-relations' });
+  for (const [type, rels] of byType) {
+    const label = AGRELON_LABELS[type] || type.replace(/^agrelon:Has/, '');
+    const count = rels.length;
+    const first = rels[0];
+    const tipParts = [`Beleg: ${first.recordId.replace(/^m3gim:/, '')}`];
+    if (first.xlsxSource && first.xlsxSource.row) {
+      tipParts.push(`Quelle: ${first.xlsxSource.sheet || 'XLSX'} Zeile ${first.xlsxSource.row}`);
+    }
+    if (count > 1) tipParts.push(`${count} Belege gesamt`);
+    const chip = el('span', {
+      className: 'chip chip--role-pair chip--c-beziehung chip--clickable',
+      dataset: { tip: tipParts.join(' \u00b7 ') },
+      onClick: (e) => {
+        e.stopPropagation();
+        // Beleg-Record im Archiv oeffnen (erster Beleg dieses Typs).
+        window.location.hash = '#archiv/' + encodeURIComponent(first.recordId);
+      },
+    },
+      el('span', { className: 'chip-rolle' }, label.toUpperCase()),
+      count > 1
+        ? el('span', { className: 'chip-wert' }, `\u00d7 ${count}`)
+        : el('span', { className: 'chip-wert' }, ''),
+    );
+    container.appendChild(chip);
+  }
+  return container;
 }
 
 function renderKategorieCell(entry) {

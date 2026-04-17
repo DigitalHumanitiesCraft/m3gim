@@ -111,6 +111,13 @@ function buildStore(jsonld) {
     indexFinances(store, record);
   }
 
+  // Pass 2.5: AgRelOn-Relationen rueckwaerts auf Personen-Index aufloesen.
+  // Fuer jede Relation wird das Objekt im Personen-Index gesucht (primaer
+  // ueber Q-ID, sekundaer ueber normalizePerson(name)) und dort in
+  // personEntry.relations[] angehaengt. Liefert die Datengrundlage fuer
+  // Beziehungsbadges im Indizes-Tab.
+  resolveAgentRelationsToPersons(store);
+
   // Pass 3: Derive Konvolut display metadata + filter Folio records
   store.folioIds = new Set();
   store.konvolutMeta = new Map();
@@ -416,6 +423,46 @@ function indexFinances(store, record) {
     });
   }
   if (entries.length > 0) store.finances.set(record['@id'], entries);
+}
+
+/**
+ * Pass 2.5 — Rueckwaerts-Aufloesung: fuer jede Relation in store.agentRelations
+ * wird das Ziel (objectName / objectWikidata) im Personen-Index gesucht und
+ * dort in personEntry.relations[] angehaengt. Erlaubt Beziehungsbadges im
+ * Personen-Grid. Zaehlt aufgeloeste vs. gesamte Relationen in
+ * store.agentRelationResolvedCount + store.agentRelationTotalCount.
+ */
+function resolveAgentRelationsToPersons(store) {
+  const personsByQid = new Map();
+  for (const entry of store.persons.values()) {
+    if (entry.wikidata && String(entry.wikidata).startsWith('wd:')) {
+      personsByQid.set(entry.wikidata, entry);
+    }
+  }
+
+  let total = 0;
+  let resolved = 0;
+  for (const [recordId, entries] of store.agentRelations) {
+    for (const rel of entries) {
+      total++;
+      let personEntry = null;
+      if (rel.objectWikidata) personEntry = personsByQid.get(rel.objectWikidata) || null;
+      if (!personEntry && rel.objectName) {
+        personEntry = store.persons.get(normalizePerson(rel.objectName)) || null;
+      }
+      if (!personEntry) continue;
+      if (!personEntry.relations) personEntry.relations = [];
+      personEntry.relations.push({
+        type: rel.type,
+        recordId,
+        objectName: rel.objectName,
+        xlsxSource: rel.xlsxSource || null,
+      });
+      resolved++;
+    }
+  }
+  store.agentRelationTotalCount = total;
+  store.agentRelationResolvedCount = resolved;
 }
 
 /* ------------------------------------------------------------------ */
