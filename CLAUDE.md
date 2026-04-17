@@ -4,12 +4,12 @@
 
 ## Projekt in einem Satz
 
-**M³GIM** (Mapping Mobile Musicians) — DH-Pilotstudie zur Mobilität und Wissensproduktion der Mezzosopranistin Ira Malaniuk (1919–2009), basierend auf dem Teilnachlass UAKUG/NIM (381 Objekte, 1.464 Verknüpfungen in v2), modelliert in RiC-O 1.1 + m3gim-Extension + AgRelOn, als statische SPA auf GitHub Pages. Promptotyping-Methodik: Dokumente sind die Source of Truth, Code ist wegwerfbares Artefakt.
+**M³GIM** (Mapping Mobile Musicians) — DH-Pilotstudie zur Mobilität und Wissensproduktion der Mezzosopranistin Ira Malaniuk (1919–2009), basierend auf dem Teilnachlass UAKUG/NIM (381 Objekte, 1.494 Verknüpfungszeilen, Stand 2026-04-17), modelliert in RiC-O 1.1 + m3gim-Extension + AgRelOn, als statische SPA auf GitHub Pages. Promptotyping-Methodik: Dokumente sind die Source of Truth, Code ist wegwerfbares Artefakt.
 
 ## Spec-Hierarchie
 
 1. **`knowledge/datenmodell.md`** — Modell-Spezifikation. Bei jeder geplanten Modelländerung zuerst lesen und dort verankern, bevor Pipeline/Tests/Frontend angefasst werden.
-2. **`knowledge/status.md`** — aktueller Stand, nächste Schritte, v2-Migrationsphasen.
+2. **`knowledge/status.md`** — aktueller Stand, nächste Schritte.
 3. **`knowledge/tests.md`** — Teststrategie + TDD-Workflow.
 4. **`knowledge/pipeline.md`** — Pipeline-Referenz.
 5. **`knowledge/frontend.md`** — Frontend-Architektur + Visualisierungen.
@@ -19,39 +19,31 @@ Weitere Dokumente siehe [`knowledge/übersicht.md`](knowledge/übersicht.md).
 
 ## Kern-Commands
 
-### v1-Pipeline (Default-Pfade, kopiert nach `docs/data/`)
+### Pipeline (ein Lauf, Default-Pfade, kopiert nach `docs/data/`)
 
 ```bash
 python scripts/transform.py
 python scripts/build-views.py
 ```
 
-### v2-Pipeline (parallel, überschreibt Frontend NICHT)
-
-```bash
-M3GIM_SHEETS_DIR=data/source-v2 M3GIM_OUTPUT_DIR=data/output-v2 python scripts/transform.py
-M3GIM_OUTPUT_DIR=data/output-v2 python scripts/build-views.py
-```
+`build-views.py` schreibt `m3gim.jsonld` + Derivate (`partitur.json`, `matrix.json`, `kosmos.json`) nach `docs/data/`. **`m3gim.jsonld` ist die einzige primäre Datenquelle für das Frontend**, die Views-JSONs sind Derivate für einzelne Visualisierungen.
 
 ### Tests
 
 ```bash
-pytest tests/ -m "not slow"     # v1, ~156 Tests, 1s
-# v2-Tests:
-M3GIM_JSONLD_PATH=data/output-v2/m3gim.jsonld \
-M3GIM_PARTITUR_PATH=data/output-v2/views/partitur.json \
-M3GIM_SHEETS_DIR=data/source-v2 \
-M3GIM_ENRICHMENT_PATH=data/output-v2/wikidata-enrichment.json \
-M3GIM_RECONCILIATION_PATH=data/output-v2/wikidata-reconciliation.json \
-    pytest tests/ -m "not slow"
+pytest tests/ -m "not slow"     # ~164 Tests, ~1s
+pytest tests/                   # inkl. Determinismus-Test (slow)
 ```
 
-### Snapshot-Diff v1 ↔ v2
+Keine ENV-Overrides mehr nötig — es gibt nur einen Datenstand.
+
+### Snapshot-Diff (bei Daten-Updates)
 
 ```bash
-PYTHONIOENCODING=utf-8 python tests/tools/snapshot_diff.py \
-    data/output/m3gim.jsonld data/output-v2/m3gim.jsonld
+python tests/tools/snapshot_diff.py <alt.jsonld> <neu.jsonld>
 ```
+
+Das Tool schaltet intern auf UTF-8, kein `PYTHONIOENCODING` mehr nötig.
 
 ## Workflow-Regeln
 
@@ -64,11 +56,7 @@ Bei neuen Features aus `datenmodell.md`:
 3. Erst dann in `scripts/transform.py` implementieren, bis xfail → XPASS.
 4. xfail-Marker entfernen, Testsuite wieder grün.
 
-Siehe `knowledge/tests.md` § TDD-Workflow. In Phase 4.1–4.8 durchgängig angewendet, 12 neue Test-Module.
-
-### v1 byte-identisch halten
-
-Die alte v1-Pipeline (`data/google-spreadsheet/` → `data/output/`) dient als Referenz. Modelländerungen sollen **additiv** sein; v1-Output darf sich nur durch Spec-Erweiterungen (in `datenmodell.md` dokumentiert) ändern, nie durch Refactoring-Nebeneffekte. Schutz: `build-views.py` kopiert **nur bei Default-OUTPUT** nach `docs/data/`, v2-Läufe landen nie versehentlich im Frontend.
+Siehe `knowledge/tests.md` § TDD-Workflow. In Phase 4.1–4.8 (Session 28) und erneut für den Phase-6-Frontend-Kontrakt (Session 29) durchgängig angewendet.
 
 ### Modell-Erweiterungen testgetrieben in folgender Reihenfolge
 
@@ -78,7 +66,7 @@ Falls in Zukunft weitere Phasen aus `status.md` umgesetzt werden:
 2. `datenmodell.md` ggf. erweitern/konkretisieren.
 3. Pipeline in `scripts/transform.py` implementieren.
 4. xfail → XPASS → xfail-Marker entfernen.
-5. v1- und v2-Tests beide grün. Kein einseitiger Fix.
+5. Testsuite wieder grün.
 
 ### Keine Commits ohne explizite Aufforderung
 
@@ -92,7 +80,7 @@ Die Dateien in `docs/data/*.json` + `docs/data/m3gim.jsonld` werden ausschließl
 
 - `M3GIM-Verknüpfungen.xlsx` — Dateiname enthält das `ü`, nicht `ue`. Pipeline kompensiert via `pd.read_excel()`-Fallback auf beide Varianten, aber beim Schreiben von Skripten immer das `ü`.
 - Plakate-IDs: `UAKUG/NIM/PL_XX` (mit Slash), nicht `UAKUG/NIM_PL_XX`.
-- Konvolut-Hierarchie: Objekt-ID = `archivsignatur + " " + folio`. In v2 heißt die Folio-Spalte im Objekte-XLSX `folio nr`, nicht `folio` oder `Unnamed: 2`. Pipeline akzeptiert beide.
+- Konvolut-Hierarchie: Objekt-ID = `archivsignatur + " " + folio`. Die Folio-Spalte im aktuellen Objekte-XLSX heißt `folio nr` (früher `folio` oder `Unnamed: 2`). Pipeline akzeptiert alle Varianten.
 - Header-Shifts in drei Indizes (Org, Ort, Werk): erste Datenzeile wird als Header gelesen. Pipeline korrigiert über `HEADER_SHIFTS`-Mapping; beim Debugging bewusst sein.
 
 ## Rote Linien
@@ -106,15 +94,15 @@ Die Dateien in `docs/data/*.json` + `docs/data/m3gim.jsonld` werden ausschließl
 
 ```
 data/
-├── google-spreadsheet/   # v1-Quelle (XLSX, git-tracked — 7 Dateien)
-├── source-v2/            # v2-Quelle (XLSX, git-tracked — 6 Dateien, ü-Umlaut)
-├── output/               # v1-Output (m3gim.jsonld, wikidata-*.json, views/)
-├── output-v2/            # v2-Output (parallel, nicht im Frontend)
-├── reports/              # v1 exploration + validation reports
-└── reports-v2/           # v2 reports
+├── google-spreadsheet/   # Quelle (XLSX, git-tracked — 6 Dateien, ü-Umlaut)
+├── output/               # Pipeline-Output (m3gim.jsonld, wikidata-*.json, views/)
+├── reports/              # exploration + validation reports
+└── _archive/             # historische Stände (v1-Snapshots, obsolete Dirs) — Stand: 2026-04-17
 ```
 
-Das Frontend konsumiert `docs/data/m3gim.jsonld` und `docs/data/partitur.json`, die von v1 gespeist werden. Die v2-Migration zum Frontend ist Phase 6 (siehe `knowledge/status.md`).
+**Datenfluss:** `data/google-spreadsheet/` → Pipeline → `data/output/m3gim.jsonld` → `docs/data/m3gim.jsonld` → Frontend-Loader.
+
+Das Frontend konsumiert primär `docs/data/m3gim.jsonld`. Die Derivate (`partitur.json`, `matrix.json`, `kosmos.json`) werden aus der JSON-LD abgeleitet und nur für einzelne Visualisierungen verwendet.
 
 ## Wegweiser
 

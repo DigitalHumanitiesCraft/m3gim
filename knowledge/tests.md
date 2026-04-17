@@ -1,6 +1,6 @@
 # Tests
 
-> Artefakt-basierte Pipeline-Testsuite. 19 Module, 156 Tests grün (v1 + v2). TDD-Workflow für Modell-Erweiterungen.
+> Artefakt-basierte Pipeline-Testsuite. 19 Module, 157 Tests grün (v2 ist Default seit 2026-04-17). TDD-Workflow für Modell-Erweiterungen. 7 XPASS(strict) als Phase-6-Marker (loader.js).
 
 ## Zweck
 
@@ -18,7 +18,7 @@ tests/
 │   ├── m3gim_jsonld.schema.json   # JSON-Schema Draft 2020-12
 │   └── partitur.schema.json
 ├── fixtures/
-│   └── baseline_counts.json       # Regression-Mindestwerte (v1)
+│   └── baseline_counts.json       # Regression-Mindestwerte (v2-Stand 2026-04-17)
 ├── tools/
 │   └── snapshot_diff.py           # CLI: diff zwei m3gim.jsonld-Versionen
 ├── test_01_schema.py              # JSON-Schema + DFT-Hierarchie
@@ -75,7 +75,7 @@ Jede Q-ID im Output stammt aus `wikidata-reconciliation.json`, Enrichment-Werte 
 Lebensphasen lückenlos (`LP(i).bis == LP(i+1).von`), decken 1919–2009 ab, unique IDs. Mobilitäts-Jahre innerhalb Lebensspanne, `form` im Enum. Auftritt-Jahre liegen im Phasen-Fenster, dokumente-Referenzen auflösbar.
 
 ### 9. Regression-Baselines (test_09)
-Mindestwerte aus `fixtures/baseline_counts.json`, eingefroren auf v1-Stand. Alle Checks `>=`, nicht `==` — Wachstum erlaubt, Schrumpfung verboten. 11 Baselines (records, konvolute, persons, organizations, locations, works, verknuepfungen, wd_matches, partitur-auftritte, -lebensphasen, -mobilitaet).
+Mindestwerte aus `fixtures/baseline_counts.json`, auf v2-Stand 2026-04-17 gesetzt (records≥380, persons≥320, orgs≥65, locations≥40, works≥95, verknuepfungen≥1200, wd_matches≥200). Alle Checks `>=`, nicht `==` — Wachstum erlaubt, Schrumpfung verboten.
 
 ### 10. Determinismus (test_10, slow)
 Lässt `transform.py` zweimal laufen, vergleicht Output (ohne `m3gim:exportDate`). Fängt versehentliche Set-Iteration / Dict-Ordnungsabhängigkeiten. Nur mit `pytest -m slow` ausführen.
@@ -110,27 +110,18 @@ Kein `m3gim:dateEvidence` mehr im Output. `agrelon:hasProvenance` und `agrelon:h
 # Dependencies (einmalig)
 pip install -r requirements-test.txt
 
-# v1 — Default-Output
-pytest tests/ -m "not slow"                 # ~156 Tests, ~1s
+pytest tests/ -m "not slow"                 # ~157 Tests, ~1s
 pytest tests/                                # inkl. Determinismus
 
-# v2 — Parallel-Output
-M3GIM_JSONLD_PATH=data/output-v2/m3gim.jsonld \
-M3GIM_PARTITUR_PATH=data/output-v2/views/partitur.json \
-M3GIM_SHEETS_DIR=data/source-v2 \
-M3GIM_ENRICHMENT_PATH=data/output-v2/wikidata-enrichment.json \
-M3GIM_RECONCILIATION_PATH=data/output-v2/wikidata-reconciliation.json \
-    pytest tests/ -m "not slow"
-
-# Snapshot-Diff zweier Outputs (CLI, kein Test)
+# Snapshot-Diff (bei Datenupdates, CLI, kein Test)
 python tests/tools/snapshot_diff.py \
-    data/output/m3gim.jsonld \
-    data/output-v2/m3gim.jsonld
+    data/_archive/output-v1-2026-02-25/m3gim.jsonld \
+    data/output/m3gim.jsonld
 ```
 
 ### ENV-Overrides
 
-Pfade sind überschreibbar für parallele Pipeline-Varianten:
+Pfade sind für Ausnahmefälle (z.B. Experimente mit alternativen Datenständen) überschreibbar:
 
 | ENV | Default |
 |---|---|
@@ -148,31 +139,34 @@ Bei neuen Features aus [datenmodell.md](datenmodell.md):
 2. **Test schreiben** mit `@pytest.mark.xfail(reason="Phase X nicht implementiert", strict=True)`. Mit `strict=True` failt die Suite, sobald der Test grün wird — das signalisiert, dass xfail-Marker entfernt werden muss.
 3. **Mindestvorkommen** in Test verankern (nicht „leer ist ok"), damit der Test nicht trivial durchgeht.
 4. **Implementieren** in `scripts/transform.py`, bis xfail → XPASS → xfail-Marker entfernt.
-5. **Bei Datenadaptivität**: Tests datenadaptiv formulieren (skalieren mit XLSX-Count) statt hartcodierter Zahlen, um v1/v2 zu unterstützen.
+5. **Bei Datenadaptivität**: Tests datenadaptiv formulieren (skalieren mit XLSX-Count) statt hartcodierter Zahlen, damit neue Datenstände ohne Testkorrektur laufen.
 
 Dieses Muster wurde in Phase 4.1–4.8 erfolgreich angewendet. Siehe [status.md](status.md) und [pipeline.md](pipeline.md).
 
 ## Workflow bei Daten-Updates
 
 1. Tests auf aktuellem Stand grün — Baseline verifizieren
-2. Neue XLSX nach `data/source-v2/` ablegen (alte `data/google-spreadsheet/` unverändert)
-3. Pipeline mit ENV-Overrides laufen lassen → `data/output-v2/m3gim.jsonld`
-4. Tests gegen v2 (siehe oben)
-5. Snapshot-Diff als Review-Report: zeigt neue/entfernte/geänderte Records
-6. Bei allen Tests grün + akzeptablem Diff: v2-Output ins Frontend mergen (`docs/data/`)
+2. Aktuellen `data/output/m3gim.jsonld` als Referenz-Snapshot sichern (z.B. `cp data/output/m3gim.jsonld /tmp/pre-update.jsonld`)
+3. Neue XLSX nach `data/google-spreadsheet/` legen (überschreibt vorige Version)
+4. Pipeline laufen lassen: `python scripts/transform.py && python scripts/build-views.py`
+5. Tests: `pytest -m "not slow"`
+6. Snapshot-Diff als Review-Report: `python tests/tools/snapshot_diff.py /tmp/pre-update.jsonld data/output/m3gim.jsonld`
+7. Bei allen Tests grün + akzeptablem Diff: `docs/data/` wurde von `build-views.py` bereits aktualisiert — committen.
+8. Baselines in `tests/fixtures/baseline_counts.json` ggf. nach oben anpassen, wenn neue Daten deutlich mehr Inhalte bringen.
 
 ## Bekannte Ausnahmen
 
 - `test_all_record_ids_unique` — **xfail**. PL_07 Duplikat aus XLSX-Erfassung. Fix: im Google Sheet bereinigen, dann xfail-Marker entfernen.
-- v2: 1 **skip** in `test_has_employer_relations_from_arbeitgeber` — die einzige arbeitgeber-Zeile hat Signatur `UAKUG/NIM_11`, die keinem Record zugeordnet werden kann (verwaist).
+- `test_has_employer_relations_from_arbeitgeber` — **skip**. Die einzige arbeitgeber-Zeile hat Signatur `UAKUG/NIM_11`, die keinem Record zugeordnet werden kann (verwaist).
+- **7 `XPASS(strict)` in `test_06_frontend_contract.py`** — gewollt rote Phase-6-Marker: die Output-Invarianten für loader.js-Store-Maps (mobilityEvents, agentRelations, finances, dftHierarchy, typisierte Datumsfelder) sind im JSON-LD bereits erfüllt, loader.js indexiert sie aber noch nicht. Marker entfernen, sobald die jeweilige Store-Map in [loader.js](../docs/js/data/loader.js) implementiert ist.
 - Junk-Namen im Personen-Index (`[Organi]`, kurze Initialen) werden als Warnung geloggt, nicht gefailed — Frontend filtert via `isJunkName`.
 - Freitext in Datumsspalte (`"Wien, ab 1956"`, `"1944-05 bis 1944-09"`): `is_iso_date()` lässt sie nicht in typisierte Datumsproperties durch, landen stattdessen in generischem `m3gim:eventDate`.
 
-## Test-Ergebnis (Session 28, 2026-04-16)
+## Test-Ergebnis (Session 29, 2026-04-17, v2-Konsolidierung)
 
 ```
-v1:  156 passed, 1 xfailed (PL_07)
-v2:  155 passed, 1 skipped, 1 xfailed
+157 passed, 1 skipped (NIM_11 verwaist), 1 xfailed (PL_07)
++ 7 XPASS(strict) in test_06 → Phase-6-Marker für loader.js
 ```
 
 Laufzeit: ~1 Sekunde für `pytest -m "not slow"`, ~60 Sekunden inkl. Determinismus-Test.

@@ -1,25 +1,25 @@
 # M3GIM Exploration Report
 
-> Generiert: 2026-02-25 18:07
-> Quelle: `C:\Users\Chrisi\Documents\GitHub\DHCraft\m3gim\data\google-spreadsheet`
+> Generiert: 2026-04-16 20:48
+> Quelle: `data\source-v2`
 
 ## Executive Summary
 
 - Tabellen erkannt: **6/6**
-- Gesamtzeilen: **2026**
-- Warnungen: **6**
+- Gesamtzeilen: **2398**
+- Warnungen: **5**
 - Kritische Cross-Checks: **1**
 
 ## Tabellenuebersicht
 
 | Tabelle | Datei | Rows | Columns | Warnungen | Status |
 |---|---|---|---|---|---|
-| objekte | M3GIM-Objekte.xlsx | 282 | 18 | 0 | OK |
-| verknuepfungen | M3GIM-Verknüpfungen.xlsx | 1264 | 6 | 1 | WARNUNG |
-| personenindex | M3GIM-Personenindex.xlsx | 296 | 6 | 1 | WARNUNG |
-| organisationsindex | M3GIM-Organisationsindex.xlsx | 58 | 6 | 1 | WARNUNG |
-| ortsindex | M3GIM-Ortsindex.xlsx | 31 | 3 | 2 | WARNUNG |
-| werkindex | M3GIM-Werkindex.xlsx | 95 | 6 | 1 | WARNUNG |
+| objekte | M3GIM-Objekte.xlsx | 381 | 18 | 0 | OK |
+| verknuepfungen | M3GIM-Verknüpfungen.xlsx | 1445 | 7 | 0 | OK |
+| personenindex | M3GIM-Personenindex.xlsx | 328 | 6 | 1 | WARNUNG |
+| organisationsindex | M3GIM-Organisationsindex.xlsx | 75 | 6 | 1 | WARNUNG |
+| ortsindex | M3GIM-Ortsindex.xlsx | 32 | 3 | 2 | WARNUNG |
+| werkindex | M3GIM-Werkindex.xlsx | 137 | 6 | 1 | WARNUNG |
 
 ## Tabellen im Detail
 
@@ -29,52 +29,52 @@
 
 - Datei: `M3GIM-Objekte.xlsx`
 - Sheets: Objekte
-- Zeilen: 282
+- Zeilen: 381
 - Spalten: 18
 
 #### Spaltenanalyse
 
 | Spalte | Typ | Fuellgrad | Non-Null |
 |---|---|---|---|
-| box_nr | text | 89.4% | 252/282 |
-| archivsignatur | text | 100.0% | 282/282 |
-| Unnamed: 2 | text | 27.0% | 76/282 |
-| titel | text | 98.9% | 279/282 |
-| entstehungsdatum | datum (string) | 86.2% | 243/282 |
-| datierungsevidenz | text | 26.2% | 74/282 |
-| dokumenttyp | text | 98.9% | 279/282 |
-| sprache | text | 26.2% | 74/282 |
-| umfang | text | 30.9% | 87/282 |
-| bearbeiter | text | 74.5% | 210/282 |
-| erfassungsdatum | datum (string) | 89.4% | 252/282 |
-| Bearbeitungsstand | text | 24.8% | 70/282 |
-| Objekttabelle | text | 25.2% | 71/282 |
-| Verknüpfungstabelle | text | 23.0% | 65/282 |
-| Werkindex | text | 23.0% | 65/282 |
-| Ortsindex | text | 23.4% | 66/282 |
-| Organisationsindex | text | 23.0% | 65/282 |
-| Personenindex | text | 19.5% | 55/282 |
+| box_nr | text | 99.7% | 380/381 |
+| archivsignatur | text | 100.0% | 381/381 |
+| folio nr | text | 46.2% | 176/381 |
+| titel | text | 77.4% | 295/381 |
+| entstehungsdatum | datum (string) | 67.2% | 256/381 |
+| datierungsevidenz | text | 23.6% | 90/381 |
+| dokumenttyp | text | 77.4% | 295/381 |
+| sprache | text | 23.6% | 90/381 |
+| umfang | text | 24.7% | 94/381 |
+| bearbeiter | text | 59.3% | 226/381 |
+| erfassungsdatum | datum (string) | 70.3% | 268/381 |
+| Bearbeitungsstand | text | 21.3% | 81/381 |
+| Objekttabelle | text | 22.8% | 87/381 |
+| Verknüpfungstabelle | text | 22.0% | 84/381 |
+| Werkindex | text | 22.0% | 84/381 |
+| Ortsindex | text | 22.3% | 85/381 |
+| Organisationsindex | text | 22.0% | 84/381 |
+| Personenindex | text | 19.4% | 74/381 |
 
 #### Werteprofile
 
-- **datierungsevidenz** (2): aus_dokument · unbekannt
+- **datierungsevidenz** (3): aus_dokument · erschlossen · unbekannt
 - **dokumenttyp** (18): autobiografie · biographie · identitaetsdokument · korrespondenz · notiz · photokopie · plakat · presse · programm · quittung · repertoire · repertoireliste · rezension · sammlung · tontraeger · Typoskript · vertrag · visitenkarte
 - **sprache** (6): de · de, en, fr · en · en, fr · fr · it
-- **Bearbeitungsstand** (9): abgeschlossen · Begonnen · begonnen · begonnen (nur Ira Malaniuk) · Erledigt (Ira Malaniuk betreffend. Rest zurückgestellt) · vollstädig  · vollständig · Vollständig · zurückgestellt
+- **Bearbeitungsstand** (10): abgeschlossen · Begonnen · begonnen · begonnen (nur Ira Malaniuk) · erledigt · Erledigt (Ira Malaniuk betreffend. Rest zurückgestellt) · vollständig · Vollständig · zurückgestellt · Zurückgestellt
 
 #### Signaturanalyse
 
-- hauptbestand: 255
+- hauptbestand: 354
 - plakate: 26
 - tontraeger: 1
 - unbekannt: 0
-- Duplikate: UAKUG/NIM/PL_07, UAKUG/NIM_003, UAKUG/NIM_003, UAKUG/NIM_003, UAKUG/NIM_003, UAKUG/NIM_003, UAKUG/NIM_003, UAKUG/NIM_003, UAKUG/NIM_003, UAKUG/NIM_003, UAKUG/NIM_003, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_007, UAKUG/NIM_007, UAKUG/NIM_007, UAKUG/NIM_007, UAKUG/NIM_007, UAKUG/NIM_007, UAKUG/NIM_007, UAKUG/NIM_007, UAKUG/NIM_007, UAKUG/NIM_007, UAKUG/NIM_007, UAKUG/NIM_007, UAKUG/NIM_007, UAKUG/NIM_007, UAKUG/NIM_007, UAKUG/NIM_007, UAKUG/NIM_007, UAKUG/NIM_007, UAKUG/NIM_007, UAKUG/NIM_007, UAKUG/NIM_007, UAKUG/NIM_007, UAKUG/NIM_007, UAKUG/NIM_007, UAKUG/NIM_007, UAKUG/NIM_007, UAKUG/NIM_007, UAKUG/NIM_007, UAKUG/NIM_007
+- Duplikate: UAKUG/NIM/PL_07, UAKUG/NIM_003, UAKUG/NIM_003, UAKUG/NIM_003, UAKUG/NIM_003, UAKUG/NIM_003, UAKUG/NIM_003, UAKUG/NIM_003, UAKUG/NIM_003, UAKUG/NIM_003, UAKUG/NIM_003, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_004, UAKUG/NIM_005, UAKUG/NIM_005, UAKUG/NIM_005, UAKUG/NIM_005, UAKUG/NIM_005, UAKUG/NIM_005, UAKUG/NIM_005, UAKUG/NIM_005, UAKUG/NIM_005, UAKUG/NIM_005, UAKUG/NIM_005, UAKUG/NIM_005, UAKUG/NIM_005, UAKUG/NIM_005, UAKUG/NIM_005, UAKUG/NIM_005, UAKUG/NIM_005, UAKUG/NIM_005, UAKUG/NIM_005, UAKUG/NIM_005, UAKUG/NIM_005, UAKUG/NIM_005, UAKUG/NIM_005, UAKUG/NIM_005, UAKUG/NIM_005, UAKUG/NIM_005, UAKUG/NIM_005, UAKUG/NIM_005, UAKUG/NIM_005, UAKUG/NIM_005, UAKUG/NIM_006, UAKUG/NIM_006, UAKUG/NIM_006, UAKUG/NIM_006, UAKUG/NIM_006, UAKUG/NIM_006, UAKUG/NIM_006, UAKUG/NIM_006, UAKUG/NIM_006, UAKUG/NIM_007, UAKUG/NIM_007, UAKUG/NIM_007, UAKUG/NIM_007, UAKUG/NIM_007, UAKUG/NIM_007, UAKUG/NIM_007, UAKUG/NIM_007, UAKUG/NIM_007, UAKUG/NIM_007, UAKUG/NIM_007, UAKUG/NIM_007, UAKUG/NIM_007, UAKUG/NIM_007, UAKUG/NIM_007, UAKUG/NIM_007, UAKUG/NIM_007, UAKUG/NIM_007, UAKUG/NIM_007, UAKUG/NIM_007, UAKUG/NIM_007, UAKUG/NIM_007, UAKUG/NIM_007, UAKUG/NIM_007, UAKUG/NIM_007, UAKUG/NIM_007, UAKUG/NIM_007, UAKUG/NIM_007, UAKUG/NIM_007, UAKUG/NIM_008, UAKUG/NIM_008, UAKUG/NIM_008, UAKUG/NIM_008, UAKUG/NIM_008, UAKUG/NIM_008, UAKUG/NIM_008, UAKUG/NIM_008, UAKUG/NIM_008, UAKUG/NIM_008, UAKUG/NIM_008, UAKUG/NIM_008, UAKUG/NIM_008, UAKUG/NIM_008, UAKUG/NIM_008, UAKUG/NIM_008, UAKUG/NIM_008, UAKUG/NIM_008, UAKUG/NIM_008, UAKUG/NIM_008, UAKUG/NIM_008, UAKUG/NIM_008, UAKUG/NIM_008, UAKUG/NIM_008, UAKUG/NIM_008, UAKUG/NIM_008, UAKUG/NIM_008, UAKUG/NIM_008, UAKUG/NIM_008, UAKUG/NIM_008, UAKUG/NIM_008, UAKUG/NIM_008, UAKUG/NIM_008, UAKUG/NIM_008, UAKUG/NIM_008, UAKUG/NIM_008, UAKUG/NIM_008, UAKUG/NIM_008, UAKUG/NIM_008, UAKUG/NIM_008, UAKUG/NIM_011, UAKUG/NIM_011, UAKUG/NIM_011, UAKUG/NIM_011, UAKUG/NIM_011, UAKUG/NIM_011, UAKUG/NIM_011, UAKUG/NIM_011, UAKUG/NIM_011, UAKUG/NIM_011, UAKUG/NIM_011, UAKUG/NIM_011, UAKUG/NIM_011, UAKUG/NIM_011, UAKUG/NIM_011, UAKUG/NIM_011, UAKUG/NIM_011, UAKUG/NIM_011, UAKUG/NIM_011, UAKUG/NIM_011
 
 #### Datumsanalyse
 
-- iso: 59
-- bereich: 142
-- excel_artefakt: 42
+- iso: 60
+- bereich: 143
+- excel_artefakt: 53
 
 ### verknuepfungen
 
@@ -82,53 +82,54 @@
 
 - Datei: `M3GIM-Verknüpfungen.xlsx`
 - Sheets: Verknuepfungen
-- Zeilen: 1264
-- Spalten: 6
+- Zeilen: 1445
+- Spalten: 7
 
 #### Spaltenanalyse
 
 | Spalte | Typ | Fuellgrad | Non-Null |
 |---|---|---|---|
-| archivsignatur | text | 99.4% | 1256/1264 |
-| Folio | text | 99.3% | 1255/1264 |
-| typ | text | 97.9% | 1237/1264 |
-| name | text | 98.6% | 1246/1264 |
-| rolle | text | 97.9% | 1237/1264 |
-| anmerkung | text | 11.3% | 143/1264 |
+| archivsignatur | text | 99.7% | 1441/1445 |
+| Folio | text | 96.5% | 1394/1445 |
+| datenpunkt_id | numerisch | 0.1% | 2/1445 |
+| typ | text | 95.8% | 1384/1445 |
+| name | text | 95.7% | 1383/1445 |
+| rolle | text | 95.7% | 1383/1445 |
+| anmerkung | text | 10.2% | 148/1445 |
 
 #### Werteprofile
 
+- **datenpunkt_id** (2): 1.0 · 2.0
 - **typ** (12): ausgaben, währung · Datum · einnahmen, währung · ensemble · ereignis · institution · ort · ort, datum · person · rolle · summe, währung · werk
-- **rolle** (57): abendgage · Abreisedatum · abreiseort · absendedatum · absendeort · adressat:in · agent:in · arrangeur:in · auffuehrungsort · Aufführung · auftrag · auftraggeber:in · auftritt · ausbildungsstätte · ausstatter:in · ausstellungsdatum · Ausstrahlung · bühnenbildner:in · Bühnenleiter:in · choreograph:in · chorleiter:in · dirigent:in · empfangsdatum · empfänger:in · entstehung · entstehungsort · erscheinungsdatum · erwähnt · festvorstellung · fluggesellschaft · ... (+27)
+- **rolle** (59): abendgage · Abreisedatum · abreiseort · absendedatum · absendeort · adressat:in · agent:in · arbeitgeber:in · arrangeur:in · auffuehrungsort · Aufführung · auftrag · auftraggeber:in · auftritt · ausbildungsstätte · ausstatter:in · ausstellungsdatum · Ausstrahlung · bühnenbildner:in · Bühnenleiter:in · choreograph:in · chorleiter:in · dirigent:in · empfangsdatum · empfänger:in · entstehung · entstehungsort · erscheinungsdatum · erwähnt · festvorstellung · ... (+29)
 
 #### Verknuepfungsanalyse
 
 - Typ-Verteilung:
-  - person: 519
-  - rolle: 215
-  - werk: 134
-  - ort: 117
-  - institution: 100
-  - datum: 74
-  - ort, datum: 48
+  - person: 585
+  - rolle: 221
+  - werk: 171
+  - ort: 126
+  - institution: 114
+  - datum: 77
+  - ort, datum: 60
   - ausgaben, währung: 11
   - ereignis: 8
   - einnahmen, währung: 8
   - summe, währung: 2
   - ensemble: 1
-- Komposit-Typen gesamt: 69
+- Komposit-Typen gesamt: 81
   - `ausgaben, währung`: 11
-  - `ort, datum`: 48
+  - `ort, datum`: 60
   - `einnahmen, währung`: 8
   - `summe, währung`: 2
 - Top-10 Objekte nach Verknuepfungsanzahl:
-  - UAKUG/NIM_004: 795
+  - UAKUG/NIM_004: 817
   - UAKUG/NIM_007: 426
+  - UAKUG/NIM_11: 116
   - UAKUG/NIM_003: 35
-
-#### Warnungen
-
-- 1 Template-Zeile(n) gefunden (archivsignatur='beispiel')
+  - UAKUG/NIM_005: 31
+  - UAKUG/NIM_006: 16
 
 ### personenindex
 
@@ -136,19 +137,19 @@
 
 - Datei: `M3GIM-Personenindex.xlsx`
 - Sheets: Personenindex
-- Zeilen: 296
+- Zeilen: 328
 - Spalten: 6
 
 #### Spaltenanalyse
 
 | Spalte | Typ | Fuellgrad | Non-Null |
 |---|---|---|---|
-| m3gim_id | text | 100.0% | 296/296 |
-| name | text | 100.0% | 296/296 |
-| wikidata_id | text | 1.0% | 3/296 |
-| lebensdaten | datum (string) | 6.8% | 20/296 |
-| anmerkung | text | 86.8% | 257/296 |
-| Unnamed: 5 | text | 0.3% | 1/296 |
+| m3gim_id | text | 99.7% | 327/328 |
+| name | text | 97.9% | 321/328 |
+| wikidata_id | text | 0.9% | 3/328 |
+| lebensdaten | datum (string) | 6.1% | 20/328 |
+| anmerkung | text | 85.4% | 280/328 |
+| Unnamed: 5 | text | 0.3% | 1/328 |
 
 #### Werteprofile
 
@@ -160,7 +161,9 @@
 
 - Fehlende Header: id
 - Gefundene Header: m3gim_id, name, wikidata_id, lebensdaten, anmerkung, Unnamed: 5
-- Wikidata-Abdeckung: 3/296 (1.0%)
+- Doppelte IDs: P293, P290, P295, P289, P288, P291, P287, P296, P294, P286, P292
+- Zeilen ohne ID: 1
+- Wikidata-Abdeckung: 3/328 (0.9%)
 
 #### Warnungen
 
@@ -172,34 +175,33 @@
 
 - Datei: `M3GIM-Organisationsindex.xlsx`
 - Sheets: Organisationsindex
-- Zeilen: 58
+- Zeilen: 75
 - Spalten: 6
 
 #### Spaltenanalyse
 
 | Spalte | Typ | Fuellgrad | Non-Null |
 |---|---|---|---|
-| m3gim_id | text | 94.8% | 55/58 |
-| Graz | text | 100.0% | 58/58 |
-| wikidata_id | text | 6.9% | 4/58 |
-| ort | text | 67.2% | 39/58 |
-| Assoziierte Person | text | 25.9% | 15/58 |
-| anmerkung | text | 27.6% | 16/58 |
+| m3gim_id | text | 100.0% | 75/75 |
+| Graz | text | 96.0% | 72/75 |
+| wikidata_id | text | 6.7% | 5/75 |
+| ort | text | 61.3% | 46/75 |
+| Assoziierte Person | text | 25.3% | 19/75 |
+| anmerkung | text | 24.0% | 18/75 |
 
 #### Werteprofile
 
 - **wikidata_id** (3): nicht verifizierbar · Q157596 · Q681931
-- **ort** (19): Bayreuth · Berlin · Berlin-Charlottenburg · Buenos Aires · Düsseldorf · Graz · Hannover · Köln · Monaco · München · Neapel · New York · Paris · Salzburg · Strasbourg · Stuttgart · Wien · Wien? · Zürich
-- **Assoziierte Person** (15): Ballhausen, Felix · Bauer, Gerhard · Dr. Joachim Bergfeld · Dr. Kurt Honolka · Dumesnil, René · Helmut, Schmidt-Gasse · ibe · k-e-p · K.H. Ruppert · Karl Schumann · Kühnly, Ernst · Taubmann, Martin H., Altmann, Olga · Wagner, Wolfgang · Warren, Cox · Y.
+- **ort** (20): Bayreuth · Berlin · Berlin-Charlottenburg · Bloomington, Indiana · Buenos Aires · Düsseldorf · Graz · Hannover · Köln · Monaco · München · Neapel · New York · Paris · Salzburg · Strasbourg · Stuttgart · Wien · Wien? · Zürich
+- **Assoziierte Person** (19): Angerer, Dorothea · Ballhausen, Felix · Bauer, Gerhard · Dr. Joachim Bergfeld · Dr. Kurt Honolka · Dumesnil, René · Helmut, Schmidt-Gasse · ibe · Ira Malaniuk · k-e-p · K.H. Ruppert · Karl Schumann · Klebe, Carl-Heinz · Kühnly, Ernst · Max Röthlisberger · Taubmann, Martin H., Altmann, Olga · Wagner, Wolfgang · Warren, Cox · Y.
 - **anmerkung** (7): Agentur? · Aktiengesellschaft / Bank · beide Namen haben dieselbe Adresse, daher zusammengefasst · Festival · Fluggesellschaft · Rundfunk · Zeitung
 
 #### Indexanalyse
 
 - Fehlende Header: id, name
 - Gefundene Header: m3gim_id, Graz, wikidata_id, ort, Assoziierte Person, anmerkung
-- Doppelte IDs: O43, O44
-- Zeilen ohne ID: 3
-- Wikidata-Abdeckung: 4/58 (6.9%)
+- Doppelte IDs: O7
+- Wikidata-Abdeckung: 5/75 (6.7%)
 
 #### Warnungen
 
@@ -211,21 +213,21 @@
 
 - Datei: `M3GIM-Ortsindex.xlsx`
 - Sheets: Ortsindex
-- Zeilen: 31
+- Zeilen: 32
 - Spalten: 3
 
 #### Spaltenanalyse
 
 | Spalte | Typ | Fuellgrad | Non-Null |
 |---|---|---|---|
-| Unnamed: 0 | text | 96.8% | 30/31 |
-| name | text | 100.0% | 31/31 |
-| Bei Erfassung hinzugefügt  | text | 3.2% | 1/31 |
+| Unnamed: 0 | text | 100.0% | 32/32 |
+| name | text | 100.0% | 32/32 |
+| Bei Erfassung hinzugefügt  | text | 3.1% | 1/32 |
 
 #### Werteprofile
 
-- **Unnamed: 0** (30): L1 · L10 · L11 · L12 · L13 · L14 · L15 · L16 · L17 · L18 · L19 · L2 · L20 · L21 · L22 · L23 · L24 · L25 · L26 · L27 · L28 · L29 · L3 · L30 · L4 · L5 · L6 · L7 · L8 · L9
-- **name** (31): Basel · Bayreuth · Berlin · Buenos Aires · Frankfurt · Graz · Hamburg · Köln · Lemberg · Linz · Lissabon  · London · Madrid · Mailand · Monte Carlo · München · Neapel · New York · Paris · Perchtoldsdorf · Potsdam · Rom · Salzburg · Schottland · Stanislau · Straßburg · Stuttgart · Stuttgart  · Venedig · Wien · ... (+1)
+- **Unnamed: 0** (32): L1 · L10 · L11 · L12 · L13 · L14 · L15 · L16 · L17 · L18 · L19 · L2 · L20 · L21 · L22 · L23 · L24 · L25 · L26 · L27 · L28 · L29 · L3 · L30 · L31 · L32 · L4 · L5 · L6 · L7 · ... (+2)
+- **name** (32): Basel · Bayreuth · Berlin · Bloomington, Indiana · Buenos Aires · Frankfurt · Graz · Hamburg · Köln · Lemberg · Linz · Lissabon  · London · Madrid · Mailand · Monte Carlo · München · Neapel · New York · Paris · Perchtoldsdorf · Potsdam · Rom · Salzburg · Schottland · Stanislau · Straßburg · Stuttgart · Stuttgart  · Venedig · ... (+2)
 - **Bei Erfassung hinzugefügt ** (1): Frankfurt am Main
 
 #### Indexanalyse
@@ -244,32 +246,31 @@
 
 - Datei: `M3GIM-Werkindex.xlsx`
 - Sheets: Werkindex
-- Zeilen: 95
+- Zeilen: 137
 - Spalten: 6
 
 #### Spaltenanalyse
 
 | Spalte | Typ | Fuellgrad | Non-Null |
 |---|---|---|---|
-| m3gim_id | text | 89.5% | 85/95 |
-| Rossini, Gioachino | text | 98.9% | 94/95 |
-| wikidata_id | text | 4.2% | 4/95 |
-| Barber, Samuel | text | 90.5% | 86/95 |
-| rolle/stimme | text | 36.8% | 35/95 |
-| anmerkung | text | 30.5% | 29/95 |
+| m3gim_id | text | 100.0% | 137/137 |
+| Rossini, Gioachino | text | 90.5% | 124/137 |
+| wikidata_id | text | 2.9% | 4/137 |
+| Barber, Samuel | text | 84.7% | 116/137 |
+| rolle/stimme | text | 46.0% | 63/137 |
+| anmerkung | text | 21.9% | 30/137 |
 
 #### Werteprofile
 
 - **wikidata_id** (4): Q190891 · Q309823 · Q723407 · Q729645
-- **rolle/stimme** (33): Adelaide · Alt-Solo · Amneris · Aufseherin · Azucena · Brangäne · Carmen · Dorabella · Engel · Gaea · Hausfrau · Judith · Kabanicha · keine Rollenangabe · Lady Macbeth · Maddalena · Magdalena · Magdalene · Marfa · Marina · Octavian · ohne Angabe · Olga und Filipjewna · Orpheus · Ortrud · Quickly und Meg · Salome · Sextus (Hosenrolle) · Suzuki · Ulrika · ... (+3)
-- **anmerkung** (12): Bartok, Bela  (UAKUG/NIM_007_2) · Geistliche Lieder, Spanisches Liederbuch · Mozart, Wolfgang (UAKUG/NIM_007_4) · Oper · Schumann, Robert (UAKUG/NIM_007_6) · Sprache des Werktitels noch unklar (Vereinheitlichung notwendig!) · Strauss, Richard (UAKUG/NIM_007_4) · Strauss, Strauss (UAKUG/NIM_007_2) · Ukrainisches Lied · Wagner, Richard (UAKUG/NIM_007_4) · Wagner, Richard (UAKUG/NIM_007_5_1) · Weltliche Lieder, Spanisches Liederbuch
+- **anmerkung** (13): Bartok, Bela  (UAKUG/NIM_007_2) · Geistliche Lieder, Spanisches Liederbuch · Missa Solemnis · Mozart, Wolfgang (UAKUG/NIM_007_4) · Oper · Schumann, Robert (UAKUG/NIM_007_6) · Sprache des Werktitels noch unklar (Vereinheitlichung notwendig!) · Strauss, Richard (UAKUG/NIM_007_4) · Strauss, Strauss (UAKUG/NIM_007_2) · Ukrainisches Lied · Wagner, Richard (UAKUG/NIM_007_4) · Wagner, Richard (UAKUG/NIM_007_5_1) · Weltliche Lieder, Spanisches Liederbuch
 
 #### Indexanalyse
 
 - Fehlende Header: id, titel, komponist
 - Gefundene Header: m3gim_id, Rossini, Gioachino, wikidata_id, Barber, Samuel, rolle/stimme, anmerkung
-- Zeilen ohne ID: 10
-- Wikidata-Abdeckung: 4/95 (4.2%)
+- Doppelte IDs: W53
+- Wikidata-Abdeckung: 4/137 (2.9%)
 
 #### Warnungen
 
@@ -281,11 +282,11 @@
 
 VerknÃ¼pfungen referenzieren existierende Objekte
 
-- Verwaiste Signaturen (1): beispiel
+- Verwaiste Signaturen (1): UAKUG/NIM_11
 
 ## Abschluss
 
 - Tabellen erkannt: 6/6
-- Gesamt-Zeilen: 2026
-- Warnungen: 6
+- Gesamt-Zeilen: 2398
+- Warnungen: 5
 - Cross-Table-Checks: 1

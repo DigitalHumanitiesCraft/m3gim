@@ -476,9 +476,65 @@
       ]
     },
     {
+      "name": "Gluck/Händel",
+      "farbe": "#8B7355",
+      "dokumente_gesamt": 7,
+      "werke": [
+        {
+          "name": "Orpheus und Eurydike",
+          "dokumente": 5,
+          "signaturen": [
+            "UAKUG/NIM_004 5",
+            "UAKUG/NIM_004 6",
+            "UAKUG/NIM_004 8",
+            "UAKUG/NIM_004 24",
+            "UAKUG/NIM_004 29"
+          ],
+          "orte": [
+            {
+              "name": "München",
+              "count": 6
+            },
+            {
+              "name": "Bayreuth",
+              "count": 5
+            },
+            {
+              "name": "Zürich",
+              "count": 4
+            }
+          ],
+          "rollen": [
+            {
+              "name": "Orpheus",
+              "count": 5
+            },
+            {
+              "name": "Eurydike",
+              "count": 3
+            },
+            {
+              "name": "Sextus",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "name": "Orfeo ed Euridice",
+          "dokumente": 2,
+          "signaturen": [
+            "UAKUG/NIM_004 5",
+            "UAKUG/NIM_004 6"
+          ],
+          "orte": [],
+          "rollen": []
+        }
+      ]
+    },
+    {
       "name": "Beethoven",
       "farbe": "#4A5A7A",
-      "dokumente_gesamt": 8,
+      "dokumente_gesamt": 7,
       "werke": [
         {
           "name": "Sinfonien, Nr. 9, op. 125 (d-Moll)",
@@ -600,62 +656,6 @@
       ]
     },
     {
-      "name": "Gluck/Händel",
-      "farbe": "#8B7355",
-      "dokumente_gesamt": 7,
-      "werke": [
-        {
-          "name": "Orpheus und Eurydike",
-          "dokumente": 5,
-          "signaturen": [
-            "UAKUG/NIM_004 5",
-            "UAKUG/NIM_004 6",
-            "UAKUG/NIM_004 8",
-            "UAKUG/NIM_004 24",
-            "UAKUG/NIM_004 29"
-          ],
-          "orte": [
-            {
-              "name": "München",
-              "count": 6
-            },
-            {
-              "name": "Bayreuth",
-              "count": 5
-            },
-            {
-              "name": "Zürich",
-              "count": 4
-            }
-          ],
-          "rollen": [
-            {
-              "name": "Orpheus",
-              "count": 5
-            },
-            {
-              "name": "Eurydike",
-              "count": 3
-            },
-            {
-              "name": "Sextus",
-              "count": 3
-            }
-          ]
-        },
-        {
-          "name": "Orfeo ed Euridice",
-          "dokumente": 2,
-          "signaturen": [
-            "UAKUG/NIM_004 5",
-            "UAKUG/NIM_004 6"
-          ],
-          "orte": [],
-          "rollen": []
-        }
-      ]
-    },
-    {
       "name": "Mozart",
       "farbe": "#5B4A8A",
       "dokumente_gesamt": 7,
@@ -768,119 +768,6 @@
               "count": 1
             }
           ]
-        }
-      ]
-    },
-    {
-      "name": "Schubert",
-      "farbe": "#7A5A4A",
-      "dokumente_gesamt": 6,
-      "werke": [
-        {
-          "name": "E-Dur Messe",
-          "dokumente": 1,
-          "signaturen": [
-            "UAKUG/NIM_004 26"
-          ],
-          "orte": [],
-          "rollen": []
-        },
-        {
-          "name": "Ave Maria",
-          "dokumente": 1,
-          "signaturen": [
-            "UAKUG/NIM_004 26"
-          ],
-          "orte": [],
-          "rollen": []
-        },
-        {
-          "name": "Ganymed",
-          "dokumente": 1,
-          "signaturen": [
-            "UAKUG/NIM_007 8"
-          ],
-          "orte": [
-            {
-              "name": "Palais Pallavicini",
-              "count": 1
-            },
-            {
-              "name": "Palais Schwarzenberg",
-              "count": 1
-            },
-            {
-              "name": "Palais Auersberg",
-              "count": 1
-            }
-          ],
-          "rollen": []
-        },
-        {
-          "name": "Nachtstück",
-          "dokumente": 1,
-          "signaturen": [
-            "UAKUG/NIM_007 8"
-          ],
-          "orte": [
-            {
-              "name": "Palais Pallavicini",
-              "count": 1
-            },
-            {
-              "name": "Palais Schwarzenberg",
-              "count": 1
-            },
-            {
-              "name": "Palais Auersberg",
-              "count": 1
-            }
-          ],
-          "rollen": []
-        },
-        {
-          "name": "Er liebt mich nicht",
-          "dokumente": 1,
-          "signaturen": [
-            "UAKUG/NIM_007 8"
-          ],
-          "orte": [
-            {
-              "name": "Palais Pallavicini",
-              "count": 1
-            },
-            {
-              "name": "Palais Schwarzenberg",
-              "count": 1
-            },
-            {
-              "name": "Palais Auersberg",
-              "count": 1
-            }
-          ],
-          "rollen": []
-        },
-        {
-          "name": "Rastlose Liebe",
-          "dokumente": 1,
-          "signaturen": [
-            "UAKUG/NIM_007 8"
-          ],
-          "orte": [
-            {
-              "name": "Palais Pallavicini",
-              "count": 1
-            },
-            {
-              "name": "Palais Schwarzenberg",
-              "count": 1
-            },
-            {
-              "name": "Palais Auersberg",
-              "count": 1
-            }
-          ],
-          "rollen": []
         }
       ]
     },
@@ -1119,6 +1006,101 @@
         },
         {
           "name": "Von ewiger Liebe",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_007 8"
+          ],
+          "orte": [
+            {
+              "name": "Palais Pallavicini",
+              "count": 1
+            },
+            {
+              "name": "Palais Schwarzenberg",
+              "count": 1
+            },
+            {
+              "name": "Palais Auersberg",
+              "count": 1
+            }
+          ],
+          "rollen": []
+        }
+      ]
+    },
+    {
+      "name": "Schubert",
+      "farbe": "#7A5A4A",
+      "dokumente_gesamt": 4,
+      "werke": [
+        {
+          "name": "Ganymed",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_007 8"
+          ],
+          "orte": [
+            {
+              "name": "Palais Pallavicini",
+              "count": 1
+            },
+            {
+              "name": "Palais Schwarzenberg",
+              "count": 1
+            },
+            {
+              "name": "Palais Auersberg",
+              "count": 1
+            }
+          ],
+          "rollen": []
+        },
+        {
+          "name": "Nachtstück",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_007 8"
+          ],
+          "orte": [
+            {
+              "name": "Palais Pallavicini",
+              "count": 1
+            },
+            {
+              "name": "Palais Schwarzenberg",
+              "count": 1
+            },
+            {
+              "name": "Palais Auersberg",
+              "count": 1
+            }
+          ],
+          "rollen": []
+        },
+        {
+          "name": "Er liebt mich nicht",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_007 8"
+          ],
+          "orte": [
+            {
+              "name": "Palais Pallavicini",
+              "count": 1
+            },
+            {
+              "name": "Palais Schwarzenberg",
+              "count": 1
+            },
+            {
+              "name": "Palais Auersberg",
+              "count": 1
+            }
+          ],
+          "rollen": []
+        },
+        {
+          "name": "Rastlose Liebe",
           "dokumente": 1,
           "signaturen": [
             "UAKUG/NIM_007 8"
@@ -1430,40 +1412,6 @@
       ]
     },
     {
-      "name": "Rossini",
-      "farbe": "#7A4A5A",
-      "dokumente_gesamt": 1,
-      "werke": [
-        {
-          "name": "Stabat mater",
-          "dokumente": 1,
-          "signaturen": [
-            "UAKUG/NIM_004 33"
-          ],
-          "orte": [
-            {
-              "name": "Graz",
-              "count": 1
-            },
-            {
-              "name": "München",
-              "count": 1
-            },
-            {
-              "name": "Stuttgart",
-              "count": 1
-            }
-          ],
-          "rollen": [
-            {
-              "name": "Amneris",
-              "count": 1
-            }
-          ]
-        }
-      ]
-    },
-    {
       "name": "Durante, Francesco",
       "farbe": "#757575",
       "dokumente_gesamt": 1,
@@ -1602,8 +1550,8 @@
     }
   ],
   "_meta": {
-    "generated": "2026-04-17T13:09:41.272498",
-    "source_records": 450,
+    "generated": "2026-04-16T21:02:25.985912",
+    "source_records": 304,
     "note": "Includes geographic and role context extracted from titles"
   }
 }

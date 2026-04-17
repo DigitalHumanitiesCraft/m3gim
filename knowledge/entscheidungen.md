@@ -1,6 +1,6 @@
 # Entscheidungen und Prozesswissen
 
-> 69 Architekturentscheidungen (E-01 bis E-69), offene Entscheidungen, technische Schulden und Learnings.
+> 71 Architekturentscheidungen (E-01 bis E-71), offene Entscheidungen, technische Schulden und Learnings.
 
 ## Architekturentscheidungen (final)
 
@@ -67,7 +67,7 @@
 | E-59 | Wikidata-Enrichment-Pipeline: `enrich-wikidata.py` holt Properties (P106, P412, P569/P570, P625, P1191 etc.), `transform.py` injiziert `owl:sameAs` + `m3gim:`-Properties in JSON-LD |
 | E-60 | UA-Distanz im Kosmos: Phase-Filter-Annotation zeigt durchschnittliche Urauffuehrungsdistanz, Werk-Tooltips zeigen individuelle Distanz |
 | E-61 | Indizes-Subtitles: `renderNameCell()` zeigt Beruf, Stimmfach, Lebensdaten aus WD-Enrichment unter Personennamen |
-| E-62 | v2-Parallelstruktur: `data/source-v2/`, `data/output-v2/`, `data/reports-v2/` neben v1; Pipeline via ENV-Overrides (`M3GIM_SHEETS_DIR`, `M3GIM_OUTPUT_DIR`, `M3GIM_REPORTS_DIR`). v1 bleibt byte-identisch, v2 wächst modellseitig. `build-views.py` kopiert nur bei Default-OUTPUT nach `docs/data/` (Schutz gegen versehentliches Frontend-Overwrite). |
+| E-62 | ~~v2-Parallelstruktur~~ — **obsolet seit 2026-04-17, Session 29**: v2 wurde zum alleinigen Default konsolidiert. `data/google-spreadsheet/` + `data/output/` + `data/reports/` sind die einzigen operativen Verzeichnisse; alte v1-Stände liegen unter `data/_archive/`. ENV-Overrides bleiben als Technik verfügbar (z.B. für Experimente mit alternativen Datenständen), sind im Normalbetrieb aber nicht mehr nötig. `build-views.py` kopiert im Default-Lauf automatisch `m3gim.jsonld` + Derivate nach `docs/data/`. |
 | E-63 | Gender-neutrale Rollennormalisierung (`normalize_role`): `:in`/`:innen`-Suffixe werden gestrippt. Ambiguierende End-`in`-Formen bleiben erhalten (interpret, technische leitung). Kontrolliertes Vokabular in [datenmodell.md § 5](datenmodell.md). |
 | E-64 | SKOS-Hierarchie für Dokumenttypen: `build_dft_concepts()` emittiert `skos:Concept`-Knoten mit `skos:broader` als Top-Level-Graph-Entitäten. Korrespondenz, Presse, Programm, Biographisch, Identitätsdokument als Oberklassen. Nur effektiv verwendete Konzepte werden emittiert (transitives Closure). |
 | E-65 | `m3gim:dateEvidence` → `agrelon:hasProvenance` + `agrelon:hasConfidenceValue`: Der Record verweist als Provenance auf sich selbst; die Evidenz-Stufen (`aus_dokument`/`erschlossen`/`extern`/`unbekannt`) werden auf Dezimal-Konfidenzen (1.0/0.6/0.8/0.0) gemappt. Kompletter Drop des alten Property-Namens, nicht additiv — **Frontend-breaking**, Phase 6 nachziehen. |
@@ -75,6 +75,8 @@
 | E-67 | Finanzschicht strukturiert: `parse_monetary_value` zerlegt `AMOUNT, CURRENCY`, Komma als Dezimaltrenner. `m3gim:DetailAnnotation` trägt `monetaryAmount` (xsd:decimal), `currency` (belegter Code ohne ISO-4217-Zwang wegen Ambiguität „Fr" = FRF/CHF), `detailRole`, `detailValue` (Rohwert). |
 | E-68 | Typisierte Datumsproperty-Familie: `m3gim:absendedatum`, `m3gim:auffuehrungsdatum`, `m3gim:premieredatum` etc. je nach Rolle statt generisch `m3gim:eventDate`. `is_iso_date()` als Gatekeeper gegen Freitext-Leaks (`"Wien, ab 1956"` landet im Fallback `m3gim:eventDate`, nicht in typisierter Property). `clean_date` normalisiert `YYYY-YYYY` → `YYYY/YYYY` (data.md § 6). |
 | E-69 | AgRelOn für Agent-Agent-Relationen: `AGRELON_MAPPING` (typ, rolle) → AgRelOn-Klasse + -Property. Umgesetzt: `HasEmployeeEmployer`, `HasCorrespondent`, `HasProfessionalContact`, `HasIsPatron`, `HasIsMember`. Emission als `m3gim:agentRelation`-Array am Record mit `agrelon:hasProvenance` (Record-URI). `hasValidityPeriod` aus `rico:date` als Heuristik für Employer-Relationen. |
+| E-70 | v2-Konsolidierung (Session 29, 2026-04-17): v2 ist alleiniger Default, v1 unter `data/_archive/` archiviert. `docs/data/m3gim.jsonld` ist alleinige primäre Datenquelle des Frontends — Derivate (`partitur.json`, `matrix.json`, `kosmos.json`) sind optionale Visualisierungs-Hilfen, die vom Store aus regeneriert werden können. `build-views.py` kopiert seitdem auch `m3gim.jsonld` automatisch nach `docs/data/` (zuvor manueller Schritt, Drift-Quelle). E-62 damit obsolet. |
+| E-71 | `FINANCE_CURRENCY_DEFAULTS` pro Archivsignatur-Präfix in `transform.py`: greift, wenn XLSX-Typ `ausgaben, währung` markiert ist, das Namensfeld aber keinen Währungs-Suffix trägt. Aktuell `UAKUG/NIM_007` → `S` (Schilling). Defaults sind explizite Redaktionsentscheidungen; ohne Eintrag bleibt `currency` leer und `validate.py` warnt. Alternative heuristisches Raten im Parser wurde bewusst verworfen, weil historisch korrekte Währungszuordnung inhaltlich, nicht syntaktisch erfolgen muss. |
 
 ## Offene Entscheidungen
 

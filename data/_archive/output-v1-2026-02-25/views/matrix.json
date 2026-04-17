@@ -139,37 +139,6 @@
       "gesamt_intensitaet": 2
     },
     {
-      "name": "Böhme, Kurt",
-      "kategorie": "Dirigent",
-      "begegnungen": [
-        {
-          "zeitraum": "1950-1954",
-          "intensitaet": 1,
-          "anzahl_dokumente": 1,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_004 13",
-              "titel": "Rezension zur Festvorstellung Meistersinger aus dem Münchner Merkur",
-              "typ": "rezension"
-            }
-          ]
-        },
-        {
-          "zeitraum": "1955-1959",
-          "intensitaet": 1,
-          "anzahl_dokumente": 1,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_004 26",
-              "titel": "Rezension von Herbert Kupferberg zu Mozarts Requiem und Schuberts Messe in Es-Dur mit Ira Malaniuk",
-              "typ": "rezension"
-            }
-          ]
-        }
-      ],
-      "gesamt_intensitaet": 2
-    },
-    {
       "name": "Furtwängler, Wilhelm",
       "kategorie": "Dirigent",
       "begegnungen": [
@@ -189,17 +158,17 @@
       "gesamt_intensitaet": 1
     },
     {
-      "name": "Böhm,Karl",
+      "name": "Böhme, Kurt",
       "kategorie": "Dirigent",
       "begegnungen": [
         {
-          "zeitraum": "1955-1959",
+          "zeitraum": "1950-1954",
           "intensitaet": 1,
           "anzahl_dokumente": 1,
           "dokumente": [
             {
-              "signatur": "UAKUG/NIM_004 26",
-              "titel": "Rezension von Herbert Kupferberg zu Mozarts Requiem und Schuberts Messe in Es-Dur mit Ira Malaniuk",
+              "signatur": "UAKUG/NIM_004 13",
+              "titel": "Rezension zur Festvorstellung Meistersinger aus dem Münchner Merkur",
               "typ": "rezension"
             }
           ]
@@ -219,25 +188,6 @@
             {
               "signatur": "UAKUG/NIM_007 2",
               "titel": "Brief von Martin H. Taubman zu Verträgen mit Buenos Aires, Neapel, Wien",
-              "typ": "korrespondenz"
-            }
-          ]
-        }
-      ],
-      "gesamt_intensitaet": 3
-    },
-    {
-      "name": "Wieland Wagner",
-      "kategorie": "Regisseur",
-      "begegnungen": [
-        {
-          "zeitraum": "1950-1954",
-          "intensitaet": 3,
-          "anzahl_dokumente": 1,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_011 15",
-              "titel": "Korrespondenz von Ira Malaniuk an Wieland Wagner zu Proben in Bayreuth",
               "typ": "korrespondenz"
             }
           ]
@@ -810,8 +760,8 @@
         },
         {
           "zeitraum": "1955-1959",
-          "intensitaet": 23,
-          "anzahl_dokumente": 17,
+          "intensitaet": 22,
+          "anzahl_dokumente": 16,
           "dokumente": [
             {
               "signatur": "UAKUG/NIM_004 1",
@@ -852,11 +802,6 @@
               "signatur": "UAKUG/NIM_004 25",
               "titel": "NCAC Newsletter über Künstler:innen (Ira Malaniuk - Hugh Thompson)",
               "typ": "typoskript"
-            },
-            {
-              "signatur": "UAKUG/NIM_004 26",
-              "titel": "Rezension von Herbert Kupferberg zu Mozarts Requiem und Schuberts Messe in Es-Dur mit Ira Malaniuk",
-              "typ": "rezension"
             },
             {
               "signatur": "UAKUG/NIM_004 27",
@@ -955,7 +900,7 @@
           ]
         }
       ],
-      "gesamt_intensitaet": 60
+      "gesamt_intensitaet": 59
     },
     {
       "name": "Bayerische Staatsoper",
@@ -1229,59 +1174,6 @@
       "gesamt_intensitaet": 5
     },
     {
-      "name": "Mozart, Wolfgang Amadeus",
-      "kategorie": "Andere",
-      "begegnungen": [
-        {
-          "zeitraum": "1950-1954",
-          "intensitaet": 3,
-          "anzahl_dokumente": 3,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_004 7",
-              "titel": "Rezension von Dr. Joachim Bergfeld (Fränkische Presse) zur IX. Symphonie Beethovens",
-              "typ": "rezension"
-            },
-            {
-              "signatur": "UAKUG/NIM_004 12",
-              "titel": "Rezension von Dr. Kurt Honolka zu Titus",
-              "typ": "rezension"
-            },
-            {
-              "signatur": "UAKUG/NIM_004 14",
-              "titel": "Rezension von ZED. zu Le Chant de la Terre in Straßburg unter Fritz Munch",
-              "typ": "rezension"
-            }
-          ]
-        },
-        {
-          "zeitraum": "1955-1959",
-          "intensitaet": 1,
-          "anzahl_dokumente": 1,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_004 26",
-              "titel": "Rezension von Herbert Kupferberg zu Mozarts Requiem und Schuberts Messe in Es-Dur mit Ira Malaniuk",
-              "typ": "rezension"
-            }
-          ]
-        },
-        {
-          "zeitraum": "1960-1964",
-          "intensitaet": 1,
-          "anzahl_dokumente": 1,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_004 5",
-              "titel": "Rezension von K.H. Ruppel zu Orpheus und Eurydike in der Süddeutschen Zeitung",
-              "typ": "rezension"
-            }
-          ]
-        }
-      ],
-      "gesamt_intensitaet": 5
-    },
-    {
       "name": "Wagner, Richard",
       "kategorie": "Andere",
       "begegnungen": [
@@ -1379,6 +1271,47 @@
         }
       ],
       "gesamt_intensitaet": 5
+    },
+    {
+      "name": "Mozart, Wolfgang Amadeus",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1950-1954",
+          "intensitaet": 3,
+          "anzahl_dokumente": 3,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 7",
+              "titel": "Rezension von Dr. Joachim Bergfeld (Fränkische Presse) zur IX. Symphonie Beethovens",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 12",
+              "titel": "Rezension von Dr. Kurt Honolka zu Titus",
+              "typ": "rezension"
+            },
+            {
+              "signatur": "UAKUG/NIM_004 14",
+              "titel": "Rezension von ZED. zu Le Chant de la Terre in Straßburg unter Fritz Munch",
+              "typ": "rezension"
+            }
+          ]
+        },
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 5",
+              "titel": "Rezension von K.H. Ruppel zu Orpheus und Eurydike in der Süddeutschen Zeitung",
+              "typ": "rezension"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 4
     },
     {
       "name": "Arnold, Heinz",
@@ -1638,6 +1571,25 @@
             {
               "signatur": "UAKUG/NIM_004 23",
               "titel": "Brief von Ira Malaniuk an Cox vom 26.11.1957",
+              "typ": "korrespondenz"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 3
+    },
+    {
+      "name": "Vichey, Luben",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1955-1959",
+          "intensitaet": 3,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_004 27",
+              "titel": "Brief von Margaret Snider an Ira Malaniuk vom 27.10.1959",
               "typ": "korrespondenz"
             }
           ]
@@ -2701,37 +2653,6 @@
               "signatur": "UAKUG/NIM_004 17",
               "titel": "Rezension von ibe zu Aida an der Wiener Staatsoper",
               "typ": "rezension"
-            }
-          ]
-        }
-      ],
-      "gesamt_intensitaet": 2
-    },
-    {
-      "name": "Schubert, Franz",
-      "kategorie": "Andere",
-      "begegnungen": [
-        {
-          "zeitraum": "1955-1959",
-          "intensitaet": 1,
-          "anzahl_dokumente": 1,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_004 26",
-              "titel": "Rezension von Herbert Kupferberg zu Mozarts Requiem und Schuberts Messe in Es-Dur mit Ira Malaniuk",
-              "typ": "rezension"
-            }
-          ]
-        },
-        {
-          "zeitraum": "1960-1964",
-          "intensitaet": 1,
-          "anzahl_dokumente": 1,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_007 8",
-              "titel": "Konzertprogramm, Liederabend, Palais Pallavicini, 1963-08-28",
-              "typ": "programm"
             }
           ]
         }
@@ -6114,158 +6035,6 @@
       "gesamt_intensitaet": 1
     },
     {
-      "name": "Kupferberg, Herbert",
-      "kategorie": "Andere",
-      "begegnungen": [
-        {
-          "zeitraum": "1955-1959",
-          "intensitaet": 1,
-          "anzahl_dokumente": 1,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_004 26",
-              "titel": "Rezension von Herbert Kupferberg zu Mozarts Requiem und Schuberts Messe in Es-Dur mit Ira Malaniuk",
-              "typ": "rezension"
-            }
-          ]
-        }
-      ],
-      "gesamt_intensitaet": 1
-    },
-    {
-      "name": "Wiener Symphoniker",
-      "kategorie": "Andere",
-      "begegnungen": [
-        {
-          "zeitraum": "1955-1959",
-          "intensitaet": 1,
-          "anzahl_dokumente": 1,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_004 26",
-              "titel": "Rezension von Herbert Kupferberg zu Mozarts Requiem und Schuberts Messe in Es-Dur mit Ira Malaniuk",
-              "typ": "rezension"
-            }
-          ]
-        }
-      ],
-      "gesamt_intensitaet": 1
-    },
-    {
-      "name": "Wiener Staatopernchor",
-      "kategorie": "Andere",
-      "begegnungen": [
-        {
-          "zeitraum": "1955-1959",
-          "intensitaet": 1,
-          "anzahl_dokumente": 1,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_004 26",
-              "titel": "Rezension von Herbert Kupferberg zu Mozarts Requiem und Schuberts Messe in Es-Dur mit Ira Malaniuk",
-              "typ": "rezension"
-            }
-          ]
-        }
-      ],
-      "gesamt_intensitaet": 1
-    },
-    {
-      "name": "Kmett, Waldemar",
-      "kategorie": "Andere",
-      "begegnungen": [
-        {
-          "zeitraum": "1955-1959",
-          "intensitaet": 1,
-          "anzahl_dokumente": 1,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_004 26",
-              "titel": "Rezension von Herbert Kupferberg zu Mozarts Requiem und Schuberts Messe in Es-Dur mit Ira Malaniuk",
-              "typ": "rezension"
-            }
-          ]
-        }
-      ],
-      "gesamt_intensitaet": 1
-    },
-    {
-      "name": "Stich-Randall, Teresa",
-      "kategorie": "Andere",
-      "begegnungen": [
-        {
-          "zeitraum": "1955-1959",
-          "intensitaet": 1,
-          "anzahl_dokumente": 1,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_004 26",
-              "titel": "Rezension von Herbert Kupferberg zu Mozarts Requiem und Schuberts Messe in Es-Dur mit Ira Malaniuk",
-              "typ": "rezension"
-            }
-          ]
-        }
-      ],
-      "gesamt_intensitaet": 1
-    },
-    {
-      "name": "Moralt, Rudolf",
-      "kategorie": "Andere",
-      "begegnungen": [
-        {
-          "zeitraum": "1955-1959",
-          "intensitaet": 1,
-          "anzahl_dokumente": 1,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_004 26",
-              "titel": "Rezension von Herbert Kupferberg zu Mozarts Requiem und Schuberts Messe in Es-Dur mit Ira Malaniuk",
-              "typ": "rezension"
-            }
-          ]
-        }
-      ],
-      "gesamt_intensitaet": 1
-    },
-    {
-      "name": "R. C. A. -VIctor",
-      "kategorie": "Andere",
-      "begegnungen": [
-        {
-          "zeitraum": "1955-1959",
-          "intensitaet": 1,
-          "anzahl_dokumente": 1,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_004 26",
-              "titel": "Rezension von Herbert Kupferberg zu Mozarts Requiem und Schuberts Messe in Es-Dur mit Ira Malaniuk",
-              "typ": "rezension"
-            }
-          ]
-        }
-      ],
-      "gesamt_intensitaet": 1
-    },
-    {
-      "name": "Epic Records",
-      "kategorie": "Andere",
-      "begegnungen": [
-        {
-          "zeitraum": "1955-1959",
-          "intensitaet": 1,
-          "anzahl_dokumente": 1,
-          "dokumente": [
-            {
-              "signatur": "UAKUG/NIM_004 26",
-              "titel": "Rezension von Herbert Kupferberg zu Mozarts Requiem und Schuberts Messe in Es-Dur mit Ira Malaniuk",
-              "typ": "rezension"
-            }
-          ]
-        }
-      ],
-      "gesamt_intensitaet": 1
-    },
-    {
       "name": "[Organi]",
       "kategorie": "Andere",
       "begegnungen": [
@@ -6381,6 +6150,25 @@
     },
     {
       "name": "Haydn, Joseph",
+      "kategorie": "Andere",
+      "begegnungen": [
+        {
+          "zeitraum": "1960-1964",
+          "intensitaet": 1,
+          "anzahl_dokumente": 1,
+          "dokumente": [
+            {
+              "signatur": "UAKUG/NIM_007 8",
+              "titel": "Konzertprogramm, Liederabend, Palais Pallavicini, 1963-08-28",
+              "typ": "programm"
+            }
+          ]
+        }
+      ],
+      "gesamt_intensitaet": 1
+    },
+    {
+      "name": "Schubert, Franz",
       "kategorie": "Andere",
       "begegnungen": [
         {
@@ -6761,8 +6549,8 @@
     }
   ],
   "_meta": {
-    "generated": "2026-04-17T13:09:41.271496",
-    "source_records": 450,
+    "generated": "2026-04-16T21:02:25.984912",
+    "source_records": 304,
     "note": "Intensity weighted by document type: Letter=3, Program/Poster/Contract=2, Photo=1"
   }
 }

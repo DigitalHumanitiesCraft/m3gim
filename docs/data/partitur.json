@@ -253,15 +253,31 @@
       "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und"
     },
     {
+      "ort": "Italien",
+      "ort_detail": null,
+      "kategorie": "gastspiel",
+      "werk": "Tristan und Isolde",
+      "komponist": "Wagner",
+      "rolle": "Brangäne",
+      "jahr": 1950,
+      "datum": "1950",
+      "phase": "LP4",
+      "dokumente": [
+        "UAKUG/NIM_004 9"
+      ],
+      "gattung": "oper",
+      "titel": "Rezension von A. Parente zu Tristan und Isolde in Neapel"
+    },
+    {
       "ort": "Zürich",
       "ort_detail": null,
       "kategorie": "engagement",
       "werk": "Orpheus und Eurydike",
       "komponist": "Gluck/Händel",
       "rolle": "Orpheus",
-      "jahr": 1947,
-      "datum": "1947-1952",
-      "phase": "LP4",
+      "jahr": 1951,
+      "datum": "1951",
+      "phase": "LP5",
       "dokumente": [
         "UAKUG/NIM_004 24",
         "UAKUG/NIM_004 29"
@@ -303,22 +319,6 @@
       "titel": "Rezension von Karl Schumann zu Macbeth"
     },
     {
-      "ort": "München, Martiusstrasse 3",
-      "ort_detail": null,
-      "kategorie": "gastspiel",
-      "werk": null,
-      "komponist": null,
-      "rolle": null,
-      "jahr": 1952,
-      "datum": "1952-03-18",
-      "phase": "LP5",
-      "dokumente": [
-        "UAKUG/NIM_007 1"
-      ],
-      "gattung": "oper",
-      "titel": "Brief von Felix Ballhausen zu Dienstverträgen Staatsoper München"
-    },
-    {
       "ort": "Wien",
       "ort_detail": "Teatro Colon",
       "kategorie": "engagement",
@@ -326,7 +326,7 @@
       "komponist": null,
       "rolle": "Lady Macbeth",
       "jahr": 1952,
-      "datum": "1952-05-27",
+      "datum": "1952-08-26",
       "phase": "LP5",
       "dokumente": [
         "UAKUG/NIM_007 2"
@@ -351,38 +351,6 @@
       "titel": "TRISTANO / E / ISOTTA"
     },
     {
-      "ort": null,
-      "ort_detail": null,
-      "kategorie": "gastspiel",
-      "werk": "Orpheus und Eurydike",
-      "komponist": "Gluck/Händel",
-      "rolle": "Orpheus",
-      "jahr": 1953,
-      "datum": "1953-03-05",
-      "phase": "LP5",
-      "dokumente": [
-        "UAKUG/NIM_004 5"
-      ],
-      "gattung": "oper",
-      "titel": "Rezension von K.H. Ruppel zu Orpheus und Eurydike in der Süddeutschen Zeitung"
-    },
-    {
-      "ort": "Bayreuth",
-      "ort_detail": null,
-      "kategorie": "festspiel",
-      "werk": "Sinfonien, Nr. 9, op. 125 (d-Moll)",
-      "komponist": "Beethoven",
-      "rolle": "Alt Solo",
-      "jahr": 1953,
-      "datum": "1953-08-13",
-      "phase": "LP5",
-      "dokumente": [
-        "UAKUG/NIM_004 7"
-      ],
-      "gattung": "konzert",
-      "titel": "Rezension von Dr. Joachim Bergfeld (Fränkische Presse) zur IX. Symphonie Beethov"
-    },
-    {
       "ort": "Bayreuth",
       "ort_detail": null,
       "kategorie": "festspiel",
@@ -397,22 +365,6 @@
       ],
       "gattung": "oper",
       "titel": "Rezensionen aus der Fränkischen Presse zu \"Die Götterdämmerung\" und \"Tristan und"
-    },
-    {
-      "ort": "Lissabon",
-      "ort_detail": null,
-      "kategorie": "gastspiel",
-      "werk": "Die Meistersinger von Nürnberg",
-      "komponist": "Wagner",
-      "rolle": "Magdalene",
-      "jahr": 1953,
-      "datum": "1953-09-29",
-      "phase": "LP5",
-      "dokumente": [
-        "UAKUG/NIM_007 4"
-      ],
-      "gattung": "oper",
-      "titel": "Brief von Ernst Kühnly zu Gastspiel in Lissabon an Martin H. Taubman"
     },
     {
       "ort": "München",
@@ -447,20 +399,20 @@
       "titel": "IL CREPUSCOLO / DEGLI DEI"
     },
     {
-      "ort": null,
+      "ort": "Lissabon",
       "ort_detail": null,
       "kategorie": "gastspiel",
-      "werk": "Gesang an die Hoffnung",
-      "komponist": "Hindemith",
-      "rolle": null,
+      "werk": "Die Meistersinger von Nürnberg",
+      "komponist": "Wagner",
+      "rolle": "Magdalene",
       "jahr": 1954,
-      "datum": "1954-03-31",
+      "datum": "1954-01-23",
       "phase": "LP5",
       "dokumente": [
-        "UAKUG/NIM_004 11"
+        "UAKUG/NIM_007 4"
       ],
       "gattung": "oper",
-      "titel": "Rezension zu Paul Hindemith in Köln"
+      "titel": "Brief von Ernst Kühnly zu Gastspiel in Lissabon an Martin H. Taubman"
     },
     {
       "ort": "München",
@@ -534,7 +486,7 @@
       "komponist": "Wagner",
       "rolle": "Tristan",
       "jahr": 1956,
-      "datum": "1956",
+      "datum": "1956-05-13/1956-05-14",
       "phase": "LP6",
       "dokumente": [
         "UAKUG/NIM_004 19"
@@ -550,7 +502,7 @@
       "komponist": "Wagner",
       "rolle": "Elisabeth",
       "jahr": 1956,
-      "datum": "1956-11-21",
+      "datum": "1956-10-21",
       "phase": "LP6",
       "dokumente": [
         "UAKUG/NIM_004 15"
@@ -566,7 +518,7 @@
       "komponist": "Verdi",
       "rolle": "Amneris",
       "jahr": 1956,
-      "datum": "1956-05-01",
+      "datum": "1956-11-01",
       "phase": "LP6",
       "dokumente": [
         "UAKUG/NIM_004 16",
@@ -599,7 +551,7 @@
       "komponist": null,
       "rolle": null,
       "jahr": 1957,
-      "datum": "1957-12-05",
+      "datum": "1957-11-10",
       "phase": "LP6",
       "dokumente": [
         "UAKUG/NIM_007 5_6"
@@ -615,7 +567,7 @@
       "komponist": null,
       "rolle": null,
       "jahr": 1957,
-      "datum": "1957-06-24",
+      "datum": "1957-06-07",
       "phase": "LP6",
       "dokumente": [
         "UAKUG/NIM_007 5_3"
@@ -631,12 +583,13 @@
       "komponist": null,
       "rolle": null,
       "jahr": 1957,
-      "datum": "1957-05-01",
+      "datum": "1957-01-04",
       "phase": "LP6",
       "dokumente": [
         "UAKUG/NIM_007 5_2",
         "UAKUG/NIM_007 5_4",
-        "UAKUG/NIM_007 5_5"
+        "UAKUG/NIM_007 5_5",
+        "UAKUG/NIM_007 5_7"
       ],
       "gattung": "konzert",
       "titel": "Kassa-Eingang, Einzahlungsnachweis der Konzertdirektion, 1957-05-01"
@@ -658,36 +611,20 @@
       "titel": "Württembergische Staatstheater 07.11. - 19.11.1958"
     },
     {
-      "ort": "Salzburg",
+      "ort": null,
       "ort_detail": null,
-      "kategorie": "festspiel",
-      "werk": "Vanessa",
-      "komponist": "Barber, Samuel",
-      "rolle": null,
-      "jahr": 1958,
-      "datum": "1958-04-09",
-      "phase": "LP6",
-      "dokumente": [
-        "UAKUG/NIM_004 25"
-      ],
-      "gattung": "oper",
-      "titel": "NCAC Newsletter über Künstler:innen (Ira Malaniuk - Hugh Thompson)"
-    },
-    {
-      "ort": "Wien",
-      "ort_detail": null,
-      "kategorie": "engagement",
-      "werk": null,
+      "kategorie": "gastspiel",
+      "werk": "Mozarts Requium",
       "komponist": null,
       "rolle": null,
-      "jahr": 1958,
-      "datum": "1958-03-13",
+      "jahr": 1959,
+      "datum": "1959-01-02",
       "phase": "LP6",
       "dokumente": [
-        "UAKUG/NIM_007 5_7"
+        "UAKUG/NIM_004 26"
       ],
-      "gattung": "konzert",
-      "titel": "Kassa-Eingang, Einzahlungsnachweis der Konzertdirektion, 1957-03-13"
+      "gattung": null,
+      "titel": "Rezension von Herbert Kupferberg zu Mozarts Requiem und Schuberts Messe in Es-Du"
     },
     {
       "ort": null,
@@ -697,7 +634,7 @@
       "komponist": null,
       "rolle": "\"Engel\"",
       "jahr": 1959,
-      "datum": "1959-11-18",
+      "datum": "1959-05-09",
       "phase": "LP6",
       "dokumente": [
         "UAKUG/NIM_007 6"
@@ -788,6 +725,22 @@
       "titel": "Musikverein für Steiermark, Konzertsaison 1961/62"
     },
     {
+      "ort": null,
+      "ort_detail": null,
+      "kategorie": "gastspiel",
+      "werk": "Orpheus und Eurydike",
+      "komponist": "Gluck/Händel",
+      "rolle": "Orpheus",
+      "jahr": 1963,
+      "datum": "1963-03-06",
+      "phase": "LP6",
+      "dokumente": [
+        "UAKUG/NIM_004 5"
+      ],
+      "gattung": "oper",
+      "titel": "Rezension von K.H. Ruppel zu Orpheus und Eurydike in der Süddeutschen Zeitung"
+    },
+    {
       "ort": "Palais Pallavicini",
       "ort_detail": null,
       "kategorie": "konzert",
@@ -795,7 +748,7 @@
       "komponist": "Durante, Francesco",
       "rolle": null,
       "jahr": 1963,
-      "datum": "1963-08-28",
+      "datum": "1963-08-29",
       "phase": "LP6",
       "dokumente": [
         "UAKUG/NIM_007 8"
@@ -811,29 +764,13 @@
       "komponist": "Wagner",
       "rolle": "Brangäne",
       "jahr": 1963,
-      "datum": "1963-05-23",
+      "datum": "1963-03-08",
       "phase": "LP6",
       "dokumente": [
         "UAKUG/NIM_007 9"
       ],
       "gattung": "oper",
       "titel": "Brief von Emil Jucker an Ira Malaniuk über ein Gastspiel in Zürich"
-    },
-    {
-      "ort": "Italien",
-      "ort_detail": null,
-      "kategorie": "gastspiel",
-      "werk": "Tristan und Isolde",
-      "komponist": "Wagner",
-      "rolle": "Brangäne",
-      "jahr": 1964,
-      "datum": "1964-01-08",
-      "phase": "LP6",
-      "dokumente": [
-        "UAKUG/NIM_004 9"
-      ],
-      "gattung": "oper",
-      "titel": "Rezension von A. Parente zu Tristan und Isolde in Neapel"
     },
     {
       "ort": "Wien",
@@ -881,7 +818,7 @@
     },
     {
       "periode": "1950-1954",
-      "intensitaet": 46
+      "intensitaet": 51
     },
     {
       "periode": "1955-1959",
@@ -1005,6 +942,35 @@
       ]
     },
     {
+      "komponist": "Beethoven",
+      "farbe": "#4A5A7A",
+      "von": 1942,
+      "bis": 1960,
+      "dokumente": 4,
+      "dokumente_liste": [
+        {
+          "signatur": "UAKUG/NIM/PL_04",
+          "titel": "SINFONISCHES ORCHESTER / in Stanislau / Konzertsaal Armenierstrasse 18. / Zum Abschluss der Wintersa",
+          "typ": "plakat"
+        },
+        {
+          "signatur": "UAKUG/NIM/PL_22",
+          "titel": "Ira Malaniuk / singt Lieder von HAYDN, MOZART, BEETHOVEN, / SCHUBERT, BRAHMS, R. STRAUSS / und ukrai",
+          "typ": "plakat"
+        },
+        {
+          "signatur": "UAKUG/NIM_004 7",
+          "titel": "Rezension von Dr. Joachim Bergfeld (Fränkische Presse) zur IX. Symphonie Beethovens",
+          "typ": "rezension"
+        },
+        {
+          "signatur": "UAKUG/NIM_011 11",
+          "titel": "Anfrage von Carl-Heinz Klebe an Ira Malaniuk, Altsolo neunte Sinfonie Beethoven in Bayreuth",
+          "typ": "korrespondenz"
+        }
+      ]
+    },
+    {
       "komponist": "Gluck/Händel",
       "farbe": "#8B7355",
       "von": 1950,
@@ -1025,30 +991,6 @@
           "signatur": "UAKUG/NIM_062",
           "titel": "Programmheft zu einer Aufführung von \"Jephta\" (Georg Friedrich Händel) am 19.03.1950 in der Tonhalle",
           "typ": "konvolut"
-        }
-      ]
-    },
-    {
-      "komponist": "Beethoven",
-      "farbe": "#4A5A7A",
-      "von": 1942,
-      "bis": 1960,
-      "dokumente": 3,
-      "dokumente_liste": [
-        {
-          "signatur": "UAKUG/NIM/PL_04",
-          "titel": "SINFONISCHES ORCHESTER / in Stanislau / Konzertsaal Armenierstrasse 18. / Zum Abschluss der Wintersa",
-          "typ": "plakat"
-        },
-        {
-          "signatur": "UAKUG/NIM/PL_22",
-          "titel": "Ira Malaniuk / singt Lieder von HAYDN, MOZART, BEETHOVEN, / SCHUBERT, BRAHMS, R. STRAUSS / und ukrai",
-          "typ": "plakat"
-        },
-        {
-          "signatur": "UAKUG/NIM_004 7",
-          "titel": "Rezension von Dr. Joachim Bergfeld (Fränkische Presse) zur IX. Symphonie Beethovens",
-          "typ": "rezension"
         }
       ]
     }
@@ -1112,7 +1054,7 @@
     },
     {
       "jahr": 1952,
-      "anzahl": 12
+      "anzahl": 15
     },
     {
       "jahr": 1953,
@@ -1120,7 +1062,7 @@
     },
     {
       "jahr": 1954,
-      "anzahl": 11
+      "anzahl": 13
     },
     {
       "jahr": 1955,
@@ -1203,7 +1145,23 @@
       "anzahl": 0
     },
     {
+      "jahr": 1976,
+      "anzahl": 1
+    },
+    {
       "jahr": 1978,
+      "anzahl": 2
+    },
+    {
+      "jahr": 1984,
+      "anzahl": 4
+    },
+    {
+      "jahr": 1985,
+      "anzahl": 1
+    },
+    {
+      "jahr": 1986,
       "anzahl": 1
     },
     {
@@ -1252,7 +1210,7 @@
     }
   ],
   "_meta": {
-    "generated": "2026-04-16T21:02:25.982875",
-    "source_records": 304
+    "generated": "2026-04-17T13:09:41.268989",
+    "source_records": 450
   }
 }

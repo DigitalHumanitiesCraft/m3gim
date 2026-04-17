@@ -488,6 +488,29 @@ def build_konvolut_hierarchy(df: pd.DataFrame, folio_col: str = None) -> tuple[l
 # Verknuepfungen → RiC-O Relations
 # ---------------------------------------------------------------------------
 
+# Fallback-Währung pro Archivsignatur-Präfix. Greift, wenn eine Zeile als
+# "ausgaben, währung" / "einnahmen, währung" / "summe, währung" markiert ist,
+# aber im Namensfeld nur eine Zahl ohne Suffix steht. Setzt eine Redaktions-
+# entscheidung voraus — jeder Eintrag dokumentiert die inhaltliche Annahme.
+#
+# NIM_007 "Aufstellung 1966": Folio 5_1 hat fünf Zahlen ohne Währung
+# (36000, 18000, 90000 ×2, 180000). Benachbarte Folien 5_2..5_8 sind
+# konsistent in S (Schilling) ausgewiesen, daher S als Default.
+FINANCE_CURRENCY_DEFAULTS = {
+    "UAKUG/NIM_007": "S",
+}
+
+
+def _default_currency_for(signatur: str) -> str | None:
+    """Liefert Default-Währung, falls die Archivsignatur ein bekanntes Präfix hat."""
+    if not signatur:
+        return None
+    for prefix, curr in FINANCE_CURRENCY_DEFAULTS.items():
+        if signatur.startswith(prefix):
+            return curr
+    return None
+
+
 def parse_monetary_value(name: str) -> tuple[str | None, str | None]:
     """Zerlegt Finanz-Rohwert in (amount, currency).
 
@@ -809,6 +832,8 @@ def add_relations_to_records(records: list, relations: dict,
             elif t in ["ausgaben", "einnahmen", "summe"]:
                 # Finanz-Informationen als DetailAnnotation (data.md Abschnitt 11)
                 amount, currency = parse_monetary_value(name)
+                if currency is None and amount is not None:
+                    currency = _default_currency_for(record.get("rico:identifier", ""))
                 detail_entry = {
                     "@type": "m3gim:DetailAnnotation",
                     "m3gim:detailField": t,

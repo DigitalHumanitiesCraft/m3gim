@@ -1,6 +1,6 @@
 # Pipeline
 
-> Skriptverantwortung, Datenfluss, ENV-Overrides, v2-Parallel-Workflow, Pipeline-Erweiterungen, Qualitaets-Baseline.
+> Skriptverantwortung, Datenfluss, ENV-Overrides, Pipeline-Erweiterungen, Qualitaets-Baseline. Stand: 2026-04-17 nach v2-Konsolidierung.
 
 ## Skriptverantwortung
 
@@ -15,30 +15,23 @@
 | `scripts/export-wikidata-csv.py` | Wikidata-CSVs fuer Google-Sheets-Import | wikidata-reconciliation.json | `data/output/wikidata-csvs/*.csv` (5 Dateien) |
 | `scripts/audit-data.py` | Alignment-Pruefung XLSX vs JSON-LD vs Views | XLSX + JSON-LD + Views | Konsolenreport |
 
-## ENV-Overrides (Parallel-Pipelines)
+## ENV-Overrides
 
-Alle Pipeline-Skripte respektieren drei Umgebungsvariablen, damit v1- und v2-Laeufe nebeneinander existieren koennen:
+Alle Pipeline-Skripte respektieren drei Umgebungsvariablen für Ausnahmefälle (z.B. alternative Datenstände, Experimente):
 
-| ENV | Default (v1) | v2 |
-|---|---|---|
-| `M3GIM_SHEETS_DIR` | `data/google-spreadsheet` | `data/source-v2` |
-| `M3GIM_OUTPUT_DIR` | `data/output` | `data/output-v2` |
-| `M3GIM_REPORTS_DIR` | `data/reports` | `data/reports-v2` |
+| ENV | Default |
+|---|---|
+| `M3GIM_SHEETS_DIR` | `data/google-spreadsheet` |
+| `M3GIM_OUTPUT_DIR` | `data/output` |
+| `M3GIM_REPORTS_DIR` | `data/reports` |
 
-`build-views.py` kopiert die Frontend-Artefakte (`partitur.json`, `matrix.json`, `kosmos.json`) nur dann nach `docs/data/`, wenn `M3GIM_OUTPUT_DIR` auf den Default zeigt. So landen v2-Ergebnisse nie versehentlich im Frontend.
+`build-views.py` kopiert die Frontend-Artefakte (`m3gim.jsonld`, `partitur.json`, `matrix.json`, `kosmos.json`) nur dann nach `docs/data/`, wenn `M3GIM_OUTPUT_DIR` auf den Default zeigt.
 
-### v1-Workflow (byte-identisch, Produktionsstand)
+### Workflow (ein Aufruf)
 
 ```bash
 python scripts/transform.py
 python scripts/build-views.py
-```
-
-### v2-Workflow (parallel, neue Daten + Modell-Erweiterungen)
-
-```bash
-M3GIM_SHEETS_DIR=data/source-v2 M3GIM_OUTPUT_DIR=data/output-v2 python scripts/transform.py
-M3GIM_OUTPUT_DIR=data/output-v2 python scripts/build-views.py
 ```
 
 ## Datenfluss (5 Stufen)
@@ -56,23 +49,21 @@ M3GIM_OUTPUT_DIR=data/output-v2 python scripts/build-views.py
    - Typisierte Datumsproperties `m3gim:absendedatum` etc. (data.md § 7)
    - `m3gim:DetailAnnotation` mit `monetaryAmount`/`currency`/`detailRole` (data.md § 11)
 4. **View-Aggregation** (`build-views.py`) → `$M3GIM_OUTPUT_DIR/views/partitur.json` und matrix/kosmos/sankey
-5. **Bereitstellung**: `build-views.py` kopiert `partitur.json`, `matrix.json`, `kosmos.json` automatisch nach `docs/data/` — nur im Default-Lauf (v1)
+5. **Bereitstellung**: `build-views.py` kopiert im Default-Lauf **`m3gim.jsonld` (primäre Datenquelle)** + die Derivate `partitur.json`, `matrix.json`, `kosmos.json` automatisch nach `docs/data/`.
 
-## Pipeline-Erweiterungen (Phase 4, Session 28)
-
-Umgesetzt aus dem IMPLEMENTATION-PLAN.md:
+## Umgesetzte Pipeline-Erweiterungen (Phase 4, Session 28)
 
 | Phase | Änderung in transform.py |
 |---|---|
 | 4.1 | `normalize_role()` strippt `:in`/`:innen` — Gender-neutrale Rollenbezeichner |
 | 4.2 | `DOKUMENTTYP_TO_DFT` hierarchisch erweitert + `build_dft_concepts()` emittiert skos:Concept-Knoten mit skos:broader |
 | 4.3 | `EVIDENZ_TO_CONFIDENCE` mapped dateEvidence auf `agrelon:hasConfidenceValue` (1.0/0.8/0.6/0.0), Record-URI als `agrelon:hasProvenance` |
-| 4.4 | Komposit `ort, datum` erzeugt zusaetzlich `m3gim:SpatiotemporalEvent`-Instanz mit `atPlace`, `atDate`, `eventRole` (43 Events in v2) |
-| 4.6 | `parse_monetary_value()` zerlegt `AMOUNT, CURRENCY`; Finanz-DetailAnnotation haelt `monetaryAmount` (xsd:decimal), `currency`, `detailRole` |
+| 4.4 | Komposit `ort, datum` erzeugt zusaetzlich `m3gim:SpatiotemporalEvent`-Instanz mit `atPlace`, `atDate`, `eventRole` (43 Events im aktuellen Stand) |
+| 4.6 | `parse_monetary_value()` zerlegt `AMOUNT, CURRENCY`; Finanz-DetailAnnotation haelt `monetaryAmount` (xsd:decimal), `currency`, `detailRole`. `FINANCE_CURRENCY_DEFAULTS` pro Signatur-Präfix greift, wenn die Quelle keine Währung liefert (Session 29 für NIM_007: `S`). |
 | 4.7 | `DATUMSROLLE_TO_PROPERTY` mapped Datumsrollen auf typisierte Properties (`m3gim:absendedatum`, `m3gim:auffuehrungsdatum` etc.); `is_iso_date()` filtert Freitext in Fallback `m3gim:eventDate`; `clean_date` normalisiert `YYYY-YYYY` → `YYYY/YYYY` |
 | 4.8 | `AGRELON_MAPPING` erzeugt `agrelon:HasEmployeeEmployer`/`HasCorrespondent`/`HasProfessionalContact`/`HasIsPatron`/`HasIsMember` je (typ, rolle); `m3gim:agentRelation`-Array am Record |
 
-Noch offen (Plan):
+Noch offen:
 - Phase 4.5: `m3gim:StageRole` als eigenstaendige Entitaet — erfordert neuen Rollenindex-XLSX, mit Team abzustimmen
 - Phase 4.9: Reifikation / `m3gim:Statement` — optional, spaet
 
@@ -94,7 +85,7 @@ Noch offen (Plan):
 - **Composer-aware Werk-Matching**: Compound-Query "Titel Komponist", P86-Bonus (+5 Score)
 - Caching fuer wiederholte Laeufe
 - MIN_NAME_LENGTH=3, CLI: `--min-confidence`, `--force`, `--type`
-- Aktueller Stand v1: 217 Q-IDs ergaenzt, 216 Enrichments
+- Letzter Reconciliation-Lauf (auf v1-Datenstand 2026-02-25): 217 Q-IDs ergänzt, 216 Enrichments. Re-Run auf aktuellen v2-Indizes steht aus.
 
 ## Wikidata-Enrichment (Session 27)
 
@@ -118,33 +109,28 @@ Noch offen (Plan):
 
 | Datei | Format | Status |
 |-------|--------|--------|
-| `m3gim.jsonld` | JSON-LD | Primaere Datenquelle fuer Archiv + Indizes + Client-Aggregation (Matrix, Kosmos, Zeitfluss) |
-| `partitur.json` | JSON | Biografische Masterdaten fuer alle 4 D3-Views + Prototyp-Seiten |
-| `matrix.json` / `kosmos.json` | JSON | Client-Aggregation via aggregator.js (Pipeline-Artefakt nicht mehr git-getrackt, aber Copy bleibt) |
+| `m3gim.jsonld` | JSON-LD | **Alleinige primäre Datenquelle** für das Frontend. Enthält alle 381 Records + 43 SpatiotemporalEvents + 18 SKOS-Concepts + 24 AgRelOn-Relationen + 21 Finanz-Details. |
+| `partitur.json` | JSON | Derivat: biografische Masterdaten für Lebenspartitur + Mobilitäts-Schwimmbahn. Wird nach Phase 7 aus dem Store regeneriert und ist dann optional. |
+| `matrix.json` / `kosmos.json` | JSON | Derivat: vorverdichtete Aggregationen für einzelne D3-Views. Aggregator.js kann äquivalent zur Laufzeit aus dem Store rechnen. |
 
-## Datenstand
+## Datenstand (data/google-spreadsheet, Stand 2026-04-17)
 
-### v1 (data/google-spreadsheet, Baseline 2026-02-25)
-
-- 282 Objekte (255 Konvolute, 26 Plakate, 1 Tontraeger)
-- 1.246 effektive Verknuepfungen
-- 4 Indizes: Personen (296), Organisationen (59), Orte (31), Werke (96)
-
-### v2 (data/source-v2, aktuell 2026-04-16)
-
-- 381 Objekte
-- 1.464 Verknuepfungen
-- 4 Indizes: Personen (328), Organisationen (75), Orte (32), Werke (137)
+- 381 Objekte (354 Hauptbestand, 26 Plakate, 1 Tontraeger)
+- 1.494 Verknuepfungen (1.220 effektive Record-Properties)
+- 4 Indizes: Personen (324), Organisationen (69), Orte (41), Werke (97)
 - 60 `ort, datum`-Kompositen → 43 SpatiotemporalEvents (17 verwaiste Signaturen / Artefakte)
-- 21 Finanz-Zeilen, 12 Mobilitaets-Anmerkungen
+- 21 Finanz-Zeilen (alle mit Waehrung seit `FINANCE_CURRENCY_DEFAULTS`-Fix), 12 Mobilitaets-Anmerkungen
+- 18 SKOS-Concepts in DFT-Hierarchie
 - Abdeckung: 295/381 Objekte haben Titel + Dokumenttyp (77%), 256/381 haben Datum (67%)
+
+Fruehere Staende unter `data/_archive/` (2026-02-25: 282 Objekte, 1.246 Verknuepfungen).
 
 ## Datenqualitaets-Baseline
 
 ### Kritisch — Datenverlust
 
-- **Verwaiste Signaturen** (1 in v2): `UAKUG/NIM_11` existiert in Verknuepfungen, aber nicht in Objekte.xlsx (nur `NIM_110`, `NIM_111` etc.). Betroffen u.a. die einzige `arbeitgeber:in`-Zeile.
-- **Verknuepfungen ohne Archivsignatur** (v1: 8, v2: 20+): gehen in Pipeline verloren → Signaturen nachtragen.
+- **Verwaiste Signaturen** (1): `UAKUG/NIM_11` existiert in Verknuepfungen, aber nicht in Objekte.xlsx (nur `NIM_110`, `NIM_111` etc.). Betroffen u.a. die einzige `arbeitgeber:in`-Zeile.
+- **Verknuepfungen ohne Archivsignatur** (~20): gehen in Pipeline verloren → Signaturen nachtragen.
 - **PL_07 Duplikat:** Signatur `UAKUG/NIM/PL_07` erscheint doppelt → im Sheet bereinigen, dann xfail-Marker in `test_05_referential.py` entfernen.
 
 ### Hoch — Unvollstaendige Erfassung
@@ -159,7 +145,7 @@ Noch offen (Plan):
 
 ### Niedrig — Anreicherungsluecken
 
-- **Wikidata-IDs** in v2-Indizes noch duenn: Personen 3/328, Organisationen 5/75, Werke 4/137. Reconciliation gegen v2 noch nicht gelaufen.
+- **Wikidata-IDs** in aktuellen Indizes duenn: Personen ~170/324 (55% im Frontend sichtbar), Organisationen 8/69 (12%), Orte 14/41 (34%), Werke 16/97 (16%). Reconciliation mit aktualisiertem v2-Datenstand steht aus.
 - **Sprache** nur bei 24% der Objekte erfasst.
 
 ### Pipeline-seitig behoben (kein Handlungsbedarf)
@@ -192,5 +178,6 @@ Noch offen (Plan):
 
 ### Modell-Weiterentwicklung
 
-- Phase 4.5: Rollenindex-XLSX anlegen (Spalten `m3gim_id`, `name`, `belongsToWork`, `voiceType`, `wikidata_id`)
-- Phase 6: Frontend auf v2 umstellen — loader.js soll `m3gim:hasSpatiotemporalEvent`, `m3gim:agentRelation`, typisierte Datumsproperties und Finanz-Details indexieren
+- **Phase 6 (aktiv):** loader.js um Store-Maps erweitern — `store.dftHierarchy`, `store.mobilityEvents`, `store.agentRelations`, `store.finances` + typisierte Datumsfelder als Fallback in `indexByYear`. Spec steht als 7 XPASS-Tests in `test_06`, siehe [tests.md](tests.md).
+- **Phase 7 (geplant):** Views aus Store aggregieren statt aus partitur.json. Reihenfolge: Mobilität → Matrix/Zeitfluss → Indizes (+Beziehungen-Grid) → Lebenspartitur → optional Finanz-Visualisierung.
+- **Phase 4.5 (deferred, extern blockiert):** Rollenindex-XLSX anlegen (Spalten `m3gim_id`, `name`, `belongsToWork`, `voiceType`, `wikidata_id`). Braucht Abstimmung mit Erschliessungsteam.

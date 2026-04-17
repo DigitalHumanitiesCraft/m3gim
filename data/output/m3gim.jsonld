@@ -31,7 +31,19 @@
           "@id": "m3gim:NIM_004"
         },
         {
+          "@id": "m3gim:NIM_005"
+        },
+        {
+          "@id": "m3gim:NIM_006"
+        },
+        {
           "@id": "m3gim:NIM_007"
+        },
+        {
+          "@id": "m3gim:NIM_008"
+        },
+        {
+          "@id": "m3gim:NIM_011"
         },
         {
           "@id": "m3gim:NIM_PL_01"
@@ -116,9 +128,6 @@
         },
         {
           "@id": "m3gim:NIM_002"
-        },
-        {
-          "@id": "m3gim:NIM_005"
         },
         {
           "@id": "m3gim:NIM_006"
@@ -812,6 +821,146 @@
       ]
     },
     {
+      "@id": "m3gim:NIM_005",
+      "@type": "rico:RecordSet",
+      "rico:hasRecordSetType": {
+        "@id": "rico:File"
+      },
+      "rico:identifier": "UAKUG/NIM_005",
+      "rico:hasOrHadPart": [
+        {
+          "@id": "m3gim:NIM_005_folio"
+        },
+        {
+          "@id": "m3gim:NIM_005_1"
+        },
+        {
+          "@id": "m3gim:NIM_005_2"
+        },
+        {
+          "@id": "m3gim:NIM_005_3"
+        },
+        {
+          "@id": "m3gim:NIM_005_4"
+        },
+        {
+          "@id": "m3gim:NIM_005_5"
+        },
+        {
+          "@id": "m3gim:NIM_005_6"
+        },
+        {
+          "@id": "m3gim:NIM_005_7"
+        },
+        {
+          "@id": "m3gim:NIM_005_8"
+        },
+        {
+          "@id": "m3gim:NIM_005_9"
+        },
+        {
+          "@id": "m3gim:NIM_005_10"
+        },
+        {
+          "@id": "m3gim:NIM_005_11"
+        },
+        {
+          "@id": "m3gim:NIM_005_12"
+        },
+        {
+          "@id": "m3gim:NIM_005_13"
+        },
+        {
+          "@id": "m3gim:NIM_005_14"
+        },
+        {
+          "@id": "m3gim:NIM_005_15"
+        },
+        {
+          "@id": "m3gim:NIM_005_16"
+        },
+        {
+          "@id": "m3gim:NIM_005_17"
+        },
+        {
+          "@id": "m3gim:NIM_005_18"
+        },
+        {
+          "@id": "m3gim:NIM_005_19"
+        },
+        {
+          "@id": "m3gim:NIM_005_20"
+        },
+        {
+          "@id": "m3gim:NIM_005_21"
+        },
+        {
+          "@id": "m3gim:NIM_005_22"
+        },
+        {
+          "@id": "m3gim:NIM_005_23"
+        },
+        {
+          "@id": "m3gim:NIM_005_24"
+        },
+        {
+          "@id": "m3gim:NIM_005_25"
+        },
+        {
+          "@id": "m3gim:NIM_005_26"
+        },
+        {
+          "@id": "m3gim:NIM_005_27"
+        },
+        {
+          "@id": "m3gim:NIM_005_28"
+        },
+        {
+          "@id": "m3gim:NIM_005_29"
+        },
+        {
+          "@id": "m3gim:NIM_005_30"
+        }
+      ]
+    },
+    {
+      "@id": "m3gim:NIM_006",
+      "@type": "rico:RecordSet",
+      "rico:hasRecordSetType": {
+        "@id": "rico:File"
+      },
+      "rico:identifier": "UAKUG/NIM_006",
+      "rico:hasOrHadPart": [
+        {
+          "@id": "m3gim:NIM_006_1"
+        },
+        {
+          "@id": "m3gim:NIM_006_2"
+        },
+        {
+          "@id": "m3gim:NIM_006_3"
+        },
+        {
+          "@id": "m3gim:NIM_006_4"
+        },
+        {
+          "@id": "m3gim:NIM_006_5"
+        },
+        {
+          "@id": "m3gim:NIM_006_6"
+        },
+        {
+          "@id": "m3gim:NIM_006_7"
+        },
+        {
+          "@id": "m3gim:NIM_006_8"
+        },
+        {
+          "@id": "m3gim:NIM_006_9"
+        }
+      ]
+    },
+    {
       "@id": "m3gim:NIM_007",
       "@type": "rico:RecordSet",
       "rico:hasRecordSetType": {
@@ -908,6 +1057,206 @@
         },
         {
           "@id": "m3gim:NIM_007_21"
+        }
+      ]
+    },
+    {
+      "@id": "m3gim:NIM_008",
+      "@type": "rico:RecordSet",
+      "rico:hasRecordSetType": {
+        "@id": "rico:File"
+      },
+      "rico:identifier": "UAKUG/NIM_008",
+      "rico:hasOrHadPart": [
+        {
+          "@id": "m3gim:NIM_008_1"
+        },
+        {
+          "@id": "m3gim:NIM_008_2"
+        },
+        {
+          "@id": "m3gim:NIM_008_3"
+        },
+        {
+          "@id": "m3gim:NIM_008_4"
+        },
+        {
+          "@id": "m3gim:NIM_008_5"
+        },
+        {
+          "@id": "m3gim:NIM_008_6"
+        },
+        {
+          "@id": "m3gim:NIM_008_7"
+        },
+        {
+          "@id": "m3gim:NIM_008_8"
+        },
+        {
+          "@id": "m3gim:NIM_008_9"
+        },
+        {
+          "@id": "m3gim:NIM_008_10"
+        },
+        {
+          "@id": "m3gim:NIM_008_11"
+        },
+        {
+          "@id": "m3gim:NIM_008_12"
+        },
+        {
+          "@id": "m3gim:NIM_008_13"
+        },
+        {
+          "@id": "m3gim:NIM_008_14"
+        },
+        {
+          "@id": "m3gim:NIM_008_15"
+        },
+        {
+          "@id": "m3gim:NIM_008_16"
+        },
+        {
+          "@id": "m3gim:NIM_008_17"
+        },
+        {
+          "@id": "m3gim:NIM_008_18"
+        },
+        {
+          "@id": "m3gim:NIM_008_19"
+        },
+        {
+          "@id": "m3gim:NIM_008_20"
+        },
+        {
+          "@id": "m3gim:NIM_008_21"
+        },
+        {
+          "@id": "m3gim:NIM_008_22"
+        },
+        {
+          "@id": "m3gim:NIM_008_23"
+        },
+        {
+          "@id": "m3gim:NIM_008_24"
+        },
+        {
+          "@id": "m3gim:NIM_008_25"
+        },
+        {
+          "@id": "m3gim:NIM_008_26"
+        },
+        {
+          "@id": "m3gim:NIM_008_27"
+        },
+        {
+          "@id": "m3gim:NIM_008_28"
+        },
+        {
+          "@id": "m3gim:NIM_008_29"
+        },
+        {
+          "@id": "m3gim:NIM_008_30"
+        },
+        {
+          "@id": "m3gim:NIM_008_31"
+        },
+        {
+          "@id": "m3gim:NIM_008_32"
+        },
+        {
+          "@id": "m3gim:NIM_008_33"
+        },
+        {
+          "@id": "m3gim:NIM_008_34"
+        },
+        {
+          "@id": "m3gim:NIM_008_35"
+        },
+        {
+          "@id": "m3gim:NIM_008_36"
+        },
+        {
+          "@id": "m3gim:NIM_008_37"
+        },
+        {
+          "@id": "m3gim:NIM_008_38"
+        },
+        {
+          "@id": "m3gim:NIM_008_39"
+        },
+        {
+          "@id": "m3gim:NIM_008_40"
+        }
+      ]
+    },
+    {
+      "@id": "m3gim:NIM_011",
+      "@type": "rico:RecordSet",
+      "rico:hasRecordSetType": {
+        "@id": "rico:File"
+      },
+      "rico:identifier": "UAKUG/NIM_011",
+      "rico:hasOrHadPart": [
+        {
+          "@id": "m3gim:NIM_011_1"
+        },
+        {
+          "@id": "m3gim:NIM_011_2"
+        },
+        {
+          "@id": "m3gim:NIM_011_3"
+        },
+        {
+          "@id": "m3gim:NIM_011_4"
+        },
+        {
+          "@id": "m3gim:NIM_011_5"
+        },
+        {
+          "@id": "m3gim:NIM_011_6"
+        },
+        {
+          "@id": "m3gim:NIM_011_7"
+        },
+        {
+          "@id": "m3gim:NIM_011_8"
+        },
+        {
+          "@id": "m3gim:NIM_011_9"
+        },
+        {
+          "@id": "m3gim:NIM_011_10"
+        },
+        {
+          "@id": "m3gim:NIM_011_11"
+        },
+        {
+          "@id": "m3gim:NIM_011_12"
+        },
+        {
+          "@id": "m3gim:NIM_011_13"
+        },
+        {
+          "@id": "m3gim:NIM_011_14"
+        },
+        {
+          "@id": "m3gim:NIM_011_15"
+        },
+        {
+          "@id": "m3gim:NIM_011_16"
+        },
+        {
+          "@id": "m3gim:NIM_011_17"
+        },
+        {
+          "@id": "m3gim:NIM_011_18"
+        },
+        {
+          "@id": "m3gim:NIM_011_19"
+        },
+        {
+          "@id": "m3gim:NIM_011_20"
         }
       ]
     },
@@ -3017,7 +3366,7 @@
           "name": "Sinfonien, Nr. 9, op. 125 (d-Moll)",
           "role": "aufführung",
           "@type": "m3gim:MusicalWork",
-          "komponist": "Beethoven, Ludwig von"
+          "komponist": "Beethoven, Ludwig van"
         },
         {
           "name": "Wagner, Wieland",
@@ -6940,7 +7289,114 @@
       },
       "rico:hasOrHadLanguage": "en",
       "rico:hasExtent": "1 Blatt, 1 Seite",
-      "m3gim:bearbeitungsstand": "begonnen"
+      "m3gim:bearbeitungsstand": "begonnen",
+      "m3gim:hasAssociatedAgent": [
+        {
+          "name": "Mozart, Wolfgang Amadeus",
+          "role": "komponist",
+          "@type": "rico:Person"
+        },
+        {
+          "name": "Schubert, Franz",
+          "role": "komponist",
+          "@type": "rico:Person"
+        },
+        {
+          "name": "Kupferberg, Herbert",
+          "role": "verfasser",
+          "@type": "rico:Person"
+        },
+        {
+          "name": "Böhm,Karl",
+          "role": "dirigent",
+          "@type": "rico:Person"
+        },
+        {
+          "name": "Wiener Symphoniker",
+          "role": "aufführung",
+          "@type": "rico:CorporateBody"
+        },
+        {
+          "name": "Wiener Staatopernchor",
+          "role": "aufführung",
+          "@type": "rico:CorporateBody"
+        },
+        {
+          "name": "Malaniuk, Ira",
+          "@id": "wd:Q94208",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94208",
+          "role": "sänger",
+          "@type": "rico:Person"
+        },
+        {
+          "name": "Kmett, Waldemar",
+          "role": "sänger",
+          "@type": "rico:Person"
+        },
+        {
+          "name": "Böhme, Kurt",
+          "@id": "wd:Q10314824",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q10314824",
+          "m3gim:occupation": [
+            "Ubootfahrer",
+            "Soldat",
+            "Marineoffizier"
+          ],
+          "m3gim:birthDate": "1917-01-21",
+          "m3gim:deathDate": "1984-07-16",
+          "m3gim:birthPlace": "Elberfeld",
+          "role": "sänger",
+          "@type": "rico:Person"
+        },
+        {
+          "name": "Stich-Randall, Teresa",
+          "role": "sänger",
+          "@type": "rico:Person"
+        },
+        {
+          "name": "Moralt, Rudolf",
+          "@id": "wd:Q70098",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q70098",
+          "m3gim:occupation": [
+            "Dirigent"
+          ],
+          "m3gim:birthDate": "1902-02-26",
+          "m3gim:deathDate": "1958-12-16",
+          "m3gim:birthPlace": "München",
+          "m3gim:deathPlace": "Wien",
+          "role": "dirigent",
+          "@type": "rico:Person"
+        },
+        {
+          "name": "R. C. A. -VIctor",
+          "role": "erwähnt",
+          "@type": "rico:CorporateBody"
+        },
+        {
+          "name": "Epic Records",
+          "role": "erwähnt",
+          "@type": "rico:CorporateBody"
+        }
+      ],
+      "rico:hasOrHadSubject": [
+        {
+          "name": "Mozarts Requium",
+          "role": "auftritt",
+          "@type": "m3gim:MusicalWork"
+        },
+        {
+          "name": "E-Dur Messe",
+          "role": "auftritt",
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Schubert, Franz"
+        },
+        {
+          "name": "Ave Maria",
+          "role": "auftritt",
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Schubert, Franz"
+        }
+      ]
     },
     {
       "@id": "m3gim:NIM_004_27",
@@ -6963,15 +7419,6 @@
       "m3gim:bearbeitungsstand": "abgeschlossen",
       "m3gim:agentRelation": [
         {
-          "@type": "agrelon:HasProfessionalContact",
-          "agrelon:hasObject": {
-            "name": "Vichey, Luben"
-          },
-          "agrelon:hasProvenance": {
-            "@id": "m3gim:NIM_004_27"
-          }
-        },
-        {
           "@type": "agrelon:HasCorrespondent",
           "agrelon:hasObject": {
             "name": "Malaniuk, Ira",
@@ -6986,11 +7433,6 @@
         "@id": "m3gim:ste_NIM_004_27_11"
       },
       "m3gim:hasAssociatedAgent": [
-        {
-          "name": "Vichey, Luben",
-          "role": "vermittler",
-          "@type": "rico:Person"
-        },
         {
           "name": "Malaniuk, Ira",
           "@id": "wd:Q94208",
@@ -8358,7 +8800,191 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "begonnen",
+      "m3gim:hasAssociatedAgent": [
+        {
+          "name": "Strauss, Richard",
+          "@id": "wd:Q13894",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q13894",
+          "m3gim:occupation": [
+            "Komponist",
+            "Dirigent",
+            "Librettist",
+            "Musiker"
+          ],
+          "m3gim:birthDate": "1864-06-11",
+          "m3gim:deathDate": "1949-09-08",
+          "m3gim:birthPlace": "München",
+          "m3gim:deathPlace": "Garmisch-Partenkirchen",
+          "role": "komponist",
+          "@type": "rico:Person"
+        },
+        {
+          "name": "Della Casa, Lisa",
+          "@id": "wd:Q123575",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q123575",
+          "m3gim:occupation": [
+            "Opernsänger",
+            "Sänger"
+          ],
+          "m3gim:voiceType": "Sopran",
+          "m3gim:birthDate": "1919-02-02",
+          "m3gim:deathDate": "2012-12-10",
+          "m3gim:birthPlace": "Burgdorf",
+          "m3gim:deathPlace": "Münsterlingen",
+          "role": "sänger",
+          "@type": "rico:Person"
+        },
+        {
+          "name": "Chenier, André",
+          "@id": "wd:Q295548",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q295548",
+          "m3gim:occupation": [
+            "Dichter",
+            "Schriftsteller"
+          ],
+          "m3gim:birthDate": "1762-10-30",
+          "m3gim:deathDate": "1794-07-25",
+          "m3gim:birthPlace": "Istanbul",
+          "m3gim:deathPlace": "Paris",
+          "role": "sänger",
+          "@type": "rico:Person"
+        },
+        {
+          "name": "Holm, Richard",
+          "@id": "wd:Q19273665",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q19273665",
+          "m3gim:occupation": [
+            "Botaniker",
+            "Sammler",
+            "Hochschullehrer",
+            "Pflanzensammler",
+            "wissenschaftlicher Sammler"
+          ],
+          "m3gim:birthDate": "1925-01-01",
+          "m3gim:deathDate": "1987-00-00",
+          "m3gim:birthPlace": "Dallas",
+          "role": "sänger",
+          "@type": "rico:Person"
+        },
+        {
+          "name": "Günter, Horst",
+          "@id": "wd:Q15456377",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q15456377",
+          "m3gim:occupation": [
+            "Opernsänger"
+          ],
+          "m3gim:voiceType": "Bariton",
+          "m3gim:birthDate": "1913-05-23",
+          "m3gim:deathDate": "2013-01-07",
+          "m3gim:birthPlace": "Leipzig",
+          "m3gim:deathPlace": "Hamburg",
+          "role": "sänger",
+          "@type": "rico:Person"
+        },
+        {
+          "name": "Wieter, Georg",
+          "@id": "wd:Q1506390",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1506390",
+          "m3gim:occupation": [
+            "Opernsänger"
+          ],
+          "m3gim:voiceType": "Bass",
+          "m3gim:birthDate": "1896-03-10",
+          "m3gim:deathDate": "1988-03-20",
+          "m3gim:birthPlace": "Hannover",
+          "m3gim:deathPlace": "München",
+          "role": "sänger",
+          "@type": "rico:Person"
+        },
+        {
+          "name": "Kuen, Paul",
+          "@id": "wd:Q94912384",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94912384",
+          "m3gim:occupation": [
+            "Komponist"
+          ],
+          "m3gim:birthDate": "1878-07-12",
+          "m3gim:deathDate": "1962-03-28",
+          "role": "sänger",
+          "@type": "rico:Person"
+        },
+        {
+          "name": "Köth, Erika",
+          "@id": "wd:Q77743",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q77743",
+          "m3gim:occupation": [
+            "Opernsänger",
+            "Musikpädagoge",
+            "Hochschullehrer"
+          ],
+          "m3gim:voiceType": "Koloratursopran",
+          "m3gim:birthDate": "1925-09-15",
+          "m3gim:deathDate": "1989-02-20",
+          "m3gim:birthPlace": "Darmstadt",
+          "m3gim:deathPlace": "Speyer",
+          "role": "sänger",
+          "@type": "rico:Person"
+        },
+        {
+          "name": "Cesare, curzi",
+          "role": "sänger",
+          "@type": "rico:Person"
+        },
+        {
+          "name": "Heger, Robert",
+          "@id": "wd:Q72123",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q72123",
+          "m3gim:occupation": [
+            "Dirigent",
+            "Komponist",
+            "Hochschullehrer"
+          ],
+          "m3gim:birthDate": "1886-08-19",
+          "m3gim:deathDate": "1978-01-14",
+          "m3gim:birthPlace": "Straßburg",
+          "m3gim:deathPlace": "München",
+          "role": "sänger",
+          "@type": "rico:Person"
+        },
+        {
+          "name": "Malaniuk, Ira",
+          "@id": "wd:Q94208",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q94208",
+          "role": "sänger",
+          "@type": "rico:Person"
+        },
+        {
+          "name": "Sch. K.",
+          "role": "verfasser",
+          "@type": "rico:Person"
+        },
+        {
+          "name": "Preys, Hermann",
+          "role": "sänger",
+          "@type": "rico:Person"
+        },
+        {
+          "name": "Wiener, Otto",
+          "role": "sänger",
+          "@type": "rico:Person"
+        },
+        {
+          "name": "Cuvilliéstheater",
+          "role": "auffuehrungsort",
+          "@type": "rico:CorporateBody"
+        }
+      ],
+      "rico:hasOrHadLocation": {
+        "name": "München",
+        "role": "auffuehrungsort",
+        "@type": "rico:Place"
+      },
       "rico:hasOrHadSubject": [
+        {
+          "name": "Capriccio",
+          "role": "aufführung",
+          "@type": "m3gim:MusicalWork"
+        },
         {
           "name": "Krauss, Clemens",
           "@id": "wd:Q78918",
@@ -8379,23 +9005,6 @@
           "@type": "rico:Person"
         },
         {
-          "name": "Strauss, Richard",
-          "@id": "wd:Q13894",
-          "owl:sameAs": "http://www.wikidata.org/entity/Q13894",
-          "m3gim:occupation": [
-            "Komponist",
-            "Dirigent",
-            "Librettist",
-            "Musiker"
-          ],
-          "m3gim:birthDate": "1864-06-11",
-          "m3gim:deathDate": "1949-09-08",
-          "m3gim:birthPlace": "München",
-          "m3gim:deathPlace": "Garmisch-Partenkirchen",
-          "role": "erwähnt",
-          "@type": "rico:Person"
-        },
-        {
           "name": "Hartmann, Rudolf",
           "@id": "wd:Q124351",
           "owl:sameAs": "http://www.wikidata.org/entity/Q124351",
@@ -8409,37 +9018,20 @@
           "m3gim:deathPlace": "KZ Mauthausen",
           "role": "erwähnt",
           "@type": "rico:Person"
+        }
+      ],
+      "m3gim:hasPerformanceRole": [
+        {
+          "name": "Clairon",
+          "role": "auftritt"
         },
         {
-          "name": "Della Casa, Lisa",
-          "@id": "wd:Q123575",
-          "owl:sameAs": "http://www.wikidata.org/entity/Q123575",
-          "m3gim:occupation": [
-            "Opernsänger",
-            "Sänger"
-          ],
-          "m3gim:voiceType": "Sopran",
-          "m3gim:birthDate": "1919-02-02",
-          "m3gim:deathDate": "2012-12-10",
-          "m3gim:birthPlace": "Burgdorf",
-          "m3gim:deathPlace": "Münsterlingen",
-          "role": "erwähnt",
-          "@type": "rico:Person"
+          "name": "La Roche",
+          "role": "auftritt"
         },
         {
-          "name": "Chenier, André",
-          "@id": "wd:Q295548",
-          "owl:sameAs": "http://www.wikidata.org/entity/Q295548",
-          "m3gim:occupation": [
-            "Dichter",
-            "Schriftsteller"
-          ],
-          "m3gim:birthDate": "1762-10-30",
-          "m3gim:deathDate": "1794-07-25",
-          "m3gim:birthPlace": "Istanbul",
-          "m3gim:deathPlace": "Paris",
-          "role": "erwähnt",
-          "@type": "rico:Person"
+          "name": "Gräfin Madeleine",
+          "role": "erwähnt"
         }
       ]
     },
@@ -8640,7 +9232,8 @@
             "Dichtkunst"
           ],
           "role": "aufführung",
-          "@type": "m3gim:MusicalWork"
+          "@type": "m3gim:MusicalWork",
+          "komponist": "Rossini, Gioachino"
         }
       ],
       "m3gim:hasPerformanceRole": {
@@ -8743,13 +9336,163 @@
       ]
     },
     {
-      "@id": "m3gim:NIM_005",
+      "@id": "m3gim:NIM_005_folio",
       "@type": "rico:Record",
-      "rico:identifier": "UAKUG/NIM_005",
+      "rico:identifier": "UAKUG/NIM_005 folio",
       "rico:title": "Tätigkeitslisten",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:konvolut"
       }
+    },
+    {
+      "@id": "m3gim:NIM_005_1",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_005 1"
+    },
+    {
+      "@id": "m3gim:NIM_005_2",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_005 2"
+    },
+    {
+      "@id": "m3gim:NIM_005_3",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_005 3"
+    },
+    {
+      "@id": "m3gim:NIM_005_4",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_005 4"
+    },
+    {
+      "@id": "m3gim:NIM_005_5",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_005 5"
+    },
+    {
+      "@id": "m3gim:NIM_005_6",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_005 6"
+    },
+    {
+      "@id": "m3gim:NIM_005_7",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_005 7"
+    },
+    {
+      "@id": "m3gim:NIM_005_8",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_005 8"
+    },
+    {
+      "@id": "m3gim:NIM_005_9",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_005 9"
+    },
+    {
+      "@id": "m3gim:NIM_005_10",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_005 10"
+    },
+    {
+      "@id": "m3gim:NIM_005_11",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_005 11"
+    },
+    {
+      "@id": "m3gim:NIM_005_12",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_005 12"
+    },
+    {
+      "@id": "m3gim:NIM_005_13",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_005 13"
+    },
+    {
+      "@id": "m3gim:NIM_005_14",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_005 14"
+    },
+    {
+      "@id": "m3gim:NIM_005_15",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_005 15"
+    },
+    {
+      "@id": "m3gim:NIM_005_16",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_005 16"
+    },
+    {
+      "@id": "m3gim:NIM_005_17",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_005 17"
+    },
+    {
+      "@id": "m3gim:NIM_005_18",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_005 18"
+    },
+    {
+      "@id": "m3gim:NIM_005_19",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_005 19"
+    },
+    {
+      "@id": "m3gim:NIM_005_20",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_005 20"
+    },
+    {
+      "@id": "m3gim:NIM_005_21",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_005 21"
+    },
+    {
+      "@id": "m3gim:NIM_005_22",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_005 22"
+    },
+    {
+      "@id": "m3gim:NIM_005_23",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_005 23"
+    },
+    {
+      "@id": "m3gim:NIM_005_24",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_005 24"
+    },
+    {
+      "@id": "m3gim:NIM_005_25",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_005 25"
+    },
+    {
+      "@id": "m3gim:NIM_005_26",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_005 26"
+    },
+    {
+      "@id": "m3gim:NIM_005_27",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_005 27"
+    },
+    {
+      "@id": "m3gim:NIM_005_28",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_005 28"
+    },
+    {
+      "@id": "m3gim:NIM_005_29",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_005 29"
+    },
+    {
+      "@id": "m3gim:NIM_005_30",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_005 30"
     },
     {
       "@id": "m3gim:NIM_006",
@@ -8760,6 +9503,171 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:konvolut"
       }
+    },
+    {
+      "@id": "m3gim:NIM_006_1",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_006 1",
+      "rico:title": "Vorlage für Silbergravur pointed by Sir Jos. A. Reynolds Miss Harris",
+      "agrelon:hasProvenance": {
+        "@id": "m3gim:NIM_006_1"
+      },
+      "agrelon:hasConfidenceValue": {
+        "@value": "0.0",
+        "@type": "xsd:decimal"
+      },
+      "rico:hasDocumentaryFormType": {
+        "@id": "m3gim-dft:typoskript"
+      },
+      "rico:hasOrHadLanguage": "en",
+      "m3gim:bearbeitungsstand": "zurueckgestellt"
+    },
+    {
+      "@id": "m3gim:NIM_006_2",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_006 2",
+      "rico:title": "Zeitungsbericht zum 70. Geburtstag M. Röthlisberger",
+      "rico:date": "1984-09-26",
+      "agrelon:hasProvenance": {
+        "@id": "m3gim:NIM_006_2"
+      },
+      "agrelon:hasConfidenceValue": {
+        "@value": "1.0",
+        "@type": "xsd:decimal"
+      },
+      "rico:hasDocumentaryFormType": {
+        "@id": "m3gim-dft:presse"
+      },
+      "rico:hasOrHadLanguage": "de"
+    },
+    {
+      "@id": "m3gim:NIM_006_3",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_006 3",
+      "rico:title": "Zeitungsbericht \"Steirischer Kalender\"",
+      "rico:date": "1976",
+      "agrelon:hasProvenance": {
+        "@id": "m3gim:NIM_006_3"
+      },
+      "agrelon:hasConfidenceValue": {
+        "@value": "0.6",
+        "@type": "xsd:decimal"
+      },
+      "rico:hasDocumentaryFormType": {
+        "@id": "m3gim-dft:presse"
+      },
+      "rico:hasOrHadLanguage": "de"
+    },
+    {
+      "@id": "m3gim:NIM_006_4",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_006 4",
+      "rico:title": "Zeitungsbericht Neue Zürcher Zeitung zum Tod von Prof. Hugo Krayenbühl",
+      "rico:date": "1985-01-14",
+      "agrelon:hasProvenance": {
+        "@id": "m3gim:NIM_006_4"
+      },
+      "agrelon:hasConfidenceValue": {
+        "@value": "0.6",
+        "@type": "xsd:decimal"
+      },
+      "rico:hasDocumentaryFormType": {
+        "@id": "m3gim-dft:presse"
+      },
+      "rico:hasOrHadLanguage": "de"
+    },
+    {
+      "@id": "m3gim:NIM_006_5",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_006 5",
+      "rico:title": "Zeitungsbericht Neue Zürcher Zeitung zur Sanierung des Opernhauses Zürich",
+      "rico:date": "1984-12-01/1984-12-02",
+      "agrelon:hasProvenance": {
+        "@id": "m3gim:NIM_006_5"
+      },
+      "agrelon:hasConfidenceValue": {
+        "@value": "1.0",
+        "@type": "xsd:decimal"
+      },
+      "rico:hasDocumentaryFormType": {
+        "@id": "m3gim-dft:presse"
+      },
+      "rico:hasOrHadLanguage": "de",
+      "m3gim:bearbeitungsstand": "zurueckgestellt"
+    },
+    {
+      "@id": "m3gim:NIM_006_6",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_006 6",
+      "rico:title": "Zeitungsbericht ZüriWoche zur Jubelfeiern im Opernhaus Zürich",
+      "rico:date": "1984-12-06",
+      "agrelon:hasProvenance": {
+        "@id": "m3gim:NIM_006_6"
+      },
+      "agrelon:hasConfidenceValue": {
+        "@value": "1.0",
+        "@type": "xsd:decimal"
+      },
+      "rico:hasDocumentaryFormType": {
+        "@id": "m3gim-dft:presse"
+      },
+      "rico:hasOrHadLanguage": "de",
+      "m3gim:bearbeitungsstand": "zurueckgestellt"
+    },
+    {
+      "@id": "m3gim:NIM_006_7",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_006 7",
+      "rico:title": "Zeitungsbericht zum möchlichen Verkauf von Schloss Rued",
+      "rico:date": "1986-02-18",
+      "agrelon:hasProvenance": {
+        "@id": "m3gim:NIM_006_7"
+      },
+      "agrelon:hasConfidenceValue": {
+        "@value": "1.0",
+        "@type": "xsd:decimal"
+      },
+      "rico:hasDocumentaryFormType": {
+        "@id": "m3gim-dft:presse"
+      },
+      "rico:hasOrHadLanguage": "de"
+    },
+    {
+      "@id": "m3gim:NIM_006_8",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_006 8",
+      "rico:title": "Zeitungsbericht zur Wiedereröffnung des Züricher Opernhauses",
+      "rico:date": "1984-11-29",
+      "agrelon:hasProvenance": {
+        "@id": "m3gim:NIM_006_8"
+      },
+      "agrelon:hasConfidenceValue": {
+        "@value": "1.0",
+        "@type": "xsd:decimal"
+      },
+      "rico:hasDocumentaryFormType": {
+        "@id": "m3gim-dft:presse"
+      },
+      "rico:hasOrHadLanguage": "de",
+      "m3gim:bearbeitungsstand": "zurueckgestellt"
+    },
+    {
+      "@id": "m3gim:NIM_006_9",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_006 9",
+      "rico:title": "Zeitungsbericht zu Obstipation und Ernährung in der Medical Tribune",
+      "rico:date": "1978-08-18",
+      "agrelon:hasProvenance": {
+        "@id": "m3gim:NIM_006_9"
+      },
+      "agrelon:hasConfidenceValue": {
+        "@value": "1.0",
+        "@type": "xsd:decimal"
+      },
+      "rico:hasDocumentaryFormType": {
+        "@id": "m3gim-dft:presse"
+      },
+      "rico:hasOrHadLanguage": "de"
     },
     {
       "@id": "m3gim:NIM_007_Folio",
@@ -9376,7 +10284,8 @@
           "m3gim:monetaryAmount": {
             "@value": "36000",
             "@type": "xsd:decimal"
-          }
+          },
+          "m3gim:currency": "S"
         },
         {
           "@type": "m3gim:DetailAnnotation",
@@ -9386,7 +10295,8 @@
           "m3gim:monetaryAmount": {
             "@value": "18000",
             "@type": "xsd:decimal"
-          }
+          },
+          "m3gim:currency": "S"
         },
         {
           "@type": "m3gim:DetailAnnotation",
@@ -9396,7 +10306,8 @@
           "m3gim:monetaryAmount": {
             "@value": "90000",
             "@type": "xsd:decimal"
-          }
+          },
+          "m3gim:currency": "S"
         },
         {
           "@type": "m3gim:DetailAnnotation",
@@ -9406,7 +10317,8 @@
           "m3gim:monetaryAmount": {
             "@value": "90000",
             "@type": "xsd:decimal"
-          }
+          },
+          "m3gim:currency": "S"
         },
         {
           "@type": "m3gim:DetailAnnotation",
@@ -9416,7 +10328,8 @@
           "m3gim:monetaryAmount": {
             "@value": "180000",
             "@type": "xsd:decimal"
-          }
+          },
+          "m3gim:currency": "S"
         }
       ],
       "rico:hasOrHadLocation": {
@@ -12588,6 +13501,206 @@
       }
     },
     {
+      "@id": "m3gim:NIM_008_1",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_008 1"
+    },
+    {
+      "@id": "m3gim:NIM_008_2",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_008 2"
+    },
+    {
+      "@id": "m3gim:NIM_008_3",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_008 3"
+    },
+    {
+      "@id": "m3gim:NIM_008_4",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_008 4"
+    },
+    {
+      "@id": "m3gim:NIM_008_5",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_008 5"
+    },
+    {
+      "@id": "m3gim:NIM_008_6",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_008 6"
+    },
+    {
+      "@id": "m3gim:NIM_008_7",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_008 7"
+    },
+    {
+      "@id": "m3gim:NIM_008_8",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_008 8"
+    },
+    {
+      "@id": "m3gim:NIM_008_9",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_008 9"
+    },
+    {
+      "@id": "m3gim:NIM_008_10",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_008 10"
+    },
+    {
+      "@id": "m3gim:NIM_008_11",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_008 11"
+    },
+    {
+      "@id": "m3gim:NIM_008_12",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_008 12"
+    },
+    {
+      "@id": "m3gim:NIM_008_13",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_008 13"
+    },
+    {
+      "@id": "m3gim:NIM_008_14",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_008 14"
+    },
+    {
+      "@id": "m3gim:NIM_008_15",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_008 15"
+    },
+    {
+      "@id": "m3gim:NIM_008_16",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_008 16"
+    },
+    {
+      "@id": "m3gim:NIM_008_17",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_008 17"
+    },
+    {
+      "@id": "m3gim:NIM_008_18",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_008 18"
+    },
+    {
+      "@id": "m3gim:NIM_008_19",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_008 19"
+    },
+    {
+      "@id": "m3gim:NIM_008_20",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_008 20"
+    },
+    {
+      "@id": "m3gim:NIM_008_21",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_008 21"
+    },
+    {
+      "@id": "m3gim:NIM_008_22",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_008 22"
+    },
+    {
+      "@id": "m3gim:NIM_008_23",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_008 23"
+    },
+    {
+      "@id": "m3gim:NIM_008_24",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_008 24"
+    },
+    {
+      "@id": "m3gim:NIM_008_25",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_008 25"
+    },
+    {
+      "@id": "m3gim:NIM_008_26",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_008 26"
+    },
+    {
+      "@id": "m3gim:NIM_008_27",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_008 27"
+    },
+    {
+      "@id": "m3gim:NIM_008_28",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_008 28"
+    },
+    {
+      "@id": "m3gim:NIM_008_29",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_008 29"
+    },
+    {
+      "@id": "m3gim:NIM_008_30",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_008 30"
+    },
+    {
+      "@id": "m3gim:NIM_008_31",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_008 31"
+    },
+    {
+      "@id": "m3gim:NIM_008_32",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_008 32"
+    },
+    {
+      "@id": "m3gim:NIM_008_33",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_008 33"
+    },
+    {
+      "@id": "m3gim:NIM_008_34",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_008 34"
+    },
+    {
+      "@id": "m3gim:NIM_008_35",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_008 35"
+    },
+    {
+      "@id": "m3gim:NIM_008_36",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_008 36"
+    },
+    {
+      "@id": "m3gim:NIM_008_37",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_008 37"
+    },
+    {
+      "@id": "m3gim:NIM_008_38",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_008 38"
+    },
+    {
+      "@id": "m3gim:NIM_008_39",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_008 39"
+    },
+    {
+      "@id": "m3gim:NIM_008_40",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_008 40"
+    },
+    {
       "@id": "m3gim:NIM_009",
       "@type": "rico:Record",
       "rico:identifier": "UAKUG/NIM_009",
@@ -12616,6 +13729,209 @@
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-dft:korrespondenz"
       }
+    },
+    {
+      "@id": "m3gim:NIM_011_1",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_011 1"
+    },
+    {
+      "@id": "m3gim:NIM_011_2",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_011 2"
+    },
+    {
+      "@id": "m3gim:NIM_011_3",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_011 3"
+    },
+    {
+      "@id": "m3gim:NIM_011_4",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_011 4"
+    },
+    {
+      "@id": "m3gim:NIM_011_5",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_011 5"
+    },
+    {
+      "@id": "m3gim:NIM_011_6",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_011 6"
+    },
+    {
+      "@id": "m3gim:NIM_011_7",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_011 7"
+    },
+    {
+      "@id": "m3gim:NIM_011_8",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_011 8"
+    },
+    {
+      "@id": "m3gim:NIM_011_9",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_011 9"
+    },
+    {
+      "@id": "m3gim:NIM_011_10",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_011 10"
+    },
+    {
+      "@id": "m3gim:NIM_011_11",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_011 11",
+      "rico:title": "Anfrage von Carl-Heinz Klebe an Ira Malaniuk, Altsolo neunte Sinfonie Beethoven in Bayreuth",
+      "rico:date": "1954-06-30",
+      "agrelon:hasProvenance": {
+        "@id": "m3gim:NIM_011_11"
+      },
+      "agrelon:hasConfidenceValue": {
+        "@value": "1.0",
+        "@type": "xsd:decimal"
+      },
+      "rico:hasDocumentaryFormType": {
+        "@id": "m3gim-dft:korrespondenz"
+      },
+      "rico:hasOrHadLanguage": "de",
+      "rico:hasExtent": "1 Blatt, 1 Seite",
+      "m3gim:bearbeitungsstand": "abgeschlossen"
+    },
+    {
+      "@id": "m3gim:NIM_011_12",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_011 12",
+      "rico:title": "Liste des Konzertrepertoires Altsoli und Lieder Ira Malaniuks",
+      "agrelon:hasProvenance": {
+        "@id": "m3gim:NIM_011_12"
+      },
+      "agrelon:hasConfidenceValue": {
+        "@value": "0.0",
+        "@type": "xsd:decimal"
+      },
+      "rico:hasDocumentaryFormType": {
+        "@id": "m3gim-dft:repertoireliste"
+      },
+      "rico:hasOrHadLanguage": "de",
+      "rico:hasExtent": "1 Blatt, 1 Seite",
+      "m3gim:bearbeitungsstand": "abgeschlossen"
+    },
+    {
+      "@id": "m3gim:NIM_011_13",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_011 13",
+      "rico:title": "Korrespondenz von Carl-Heiz Klebe an Ira Malaniuk zu Verträgen",
+      "rico:date": "1954-06-09",
+      "agrelon:hasProvenance": {
+        "@id": "m3gim:NIM_011_13"
+      },
+      "agrelon:hasConfidenceValue": {
+        "@value": "1.0",
+        "@type": "xsd:decimal"
+      },
+      "rico:hasDocumentaryFormType": {
+        "@id": "m3gim-dft:korrespondenz"
+      },
+      "rico:hasOrHadLanguage": "de",
+      "rico:hasExtent": "1 Blatt, 1 Seite",
+      "m3gim:bearbeitungsstand": "abgeschlossen"
+    },
+    {
+      "@id": "m3gim:NIM_011_14",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_011 14",
+      "rico:title": "Korrespondenz von Ira Malaniuk an Dr. Dorothea Angerer zu den Festspielen in Bayreuth und München",
+      "rico:date": "1952-12-13",
+      "agrelon:hasProvenance": {
+        "@id": "m3gim:NIM_011_14"
+      },
+      "agrelon:hasConfidenceValue": {
+        "@value": "1.0",
+        "@type": "xsd:decimal"
+      },
+      "rico:hasDocumentaryFormType": {
+        "@id": "m3gim-dft:korrespondenz"
+      },
+      "rico:hasOrHadLanguage": "de",
+      "rico:hasExtent": "1 Blatt, 1 Seite",
+      "m3gim:bearbeitungsstand": "abgeschlossen"
+    },
+    {
+      "@id": "m3gim:NIM_011_15",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_011 15",
+      "rico:title": "Korrespondenz von Ira Malaniuk an Wieland Wagner zu Proben in Bayreuth",
+      "rico:date": "1952-11-09",
+      "agrelon:hasProvenance": {
+        "@id": "m3gim:NIM_011_15"
+      },
+      "agrelon:hasConfidenceValue": {
+        "@value": "1.0",
+        "@type": "xsd:decimal"
+      },
+      "rico:hasDocumentaryFormType": {
+        "@id": "m3gim-dft:korrespondenz"
+      },
+      "rico:hasOrHadLanguage": "de",
+      "rico:hasExtent": "1 Blatt, 1 Seite",
+      "m3gim:bearbeitungsstand": "abgeschlossen"
+    },
+    {
+      "@id": "m3gim:NIM_011_16",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_011 16",
+      "rico:title": "Brief von Dorothea Angerer an Ira Malaniuk bezügliche einer Konzertanfrage für den Richard-Wagner-Verband",
+      "rico:date": "1952-11-12",
+      "agrelon:hasProvenance": {
+        "@id": "m3gim:NIM_011_16"
+      },
+      "agrelon:hasConfidenceValue": {
+        "@value": "1.0",
+        "@type": "xsd:decimal"
+      },
+      "rico:hasDocumentaryFormType": {
+        "@id": "m3gim-dft:korrespondenz"
+      },
+      "rico:hasOrHadLanguage": "de",
+      "rico:hasExtent": "1 Blatt, 2 Seiten",
+      "m3gim:bearbeitungsstand": "abgeschlossen"
+    },
+    {
+      "@id": "m3gim:NIM_011_17",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_011 17",
+      "rico:title": "Zettel mit Schriftzug \"Alles Bayreuth\"",
+      "agrelon:hasProvenance": {
+        "@id": "m3gim:NIM_011_17"
+      },
+      "agrelon:hasConfidenceValue": {
+        "@value": "0.0",
+        "@type": "xsd:decimal"
+      },
+      "rico:hasDocumentaryFormType": {
+        "@id": "m3gim-dft:notiz"
+      },
+      "rico:hasOrHadLanguage": "de",
+      "rico:hasExtent": "1 Blatt, 1 Seite",
+      "m3gim:bearbeitungsstand": "abgeschlossen"
+    },
+    {
+      "@id": "m3gim:NIM_011_18",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_011 18"
+    },
+    {
+      "@id": "m3gim:NIM_011_19",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_011 19"
+    },
+    {
+      "@id": "m3gim:NIM_011_20",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_011 20"
     },
     {
       "@id": "m3gim:NIM_012",
@@ -14947,7 +16263,7 @@
       "m3gim:eventRole": "erscheinungsdatum"
     }
   ],
-  "m3gim:exportDate": "2026-04-16T21:30:57.373791",
-  "m3gim:recordCount": 282,
-  "m3gim:konvolutCount": 3
+  "m3gim:exportDate": "2026-04-17T13:09:01.209692",
+  "m3gim:recordCount": 381,
+  "m3gim:konvolutCount": 7
 }

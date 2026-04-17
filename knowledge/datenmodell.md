@@ -60,13 +60,13 @@ Das Modell ist in drei fachliche Schichten plus eine Querschnittsebene geglieder
 
 Objektidentität wird durch `archivsignatur` plus optionales Folio gebildet. Konvolute sind aggregierende Einheiten (`rico:RecordSet`) mit Kindern auf Folio-Ebene (`rico:Record`). Verknüpfungen hängen an der granularsten verfügbaren Ebene.
 
-### Bestand
+### Bestand (Stand 2026-04-17)
 
-Aktuell 282 Objekte, gegliedert in drei Bestandsgruppen: Hauptbestand (255, davon 255 Konvolute), Plakate (26), Tonträger (1). Feinerschlossen mit einzelnen Folio-Einträgen sind bislang sechs Konvolute: NIM_003, NIM_004, NIM_005, NIM_006, NIM_007, NIM_11. Die Verknüpfungstabelle enthält 2.015 Einträge, davon 574 ohne zugewiesene Signatur (Nachzuordnungsbedarf).
+Aktuell 381 Objekte, gegliedert in drei Bestandsgruppen: Hauptbestand (354), Plakate (26), Tonträger (1). Feinerschlossen mit einzelnen Folio-Einträgen sind sechs Konvolute: NIM_003, NIM_004, NIM_005, NIM_006, NIM_007, NIM_11. Die Verknüpfungstabelle enthält 1.494 Zeilen für 70 Objekte (effektiv 1.220 Record-Properties im Output).
 
 ### Feldabdeckung in der Objekttabelle
 
-Von den 1.172 Einträgen der Objekttabelle tragen 295 einen Titel und Dokumenttyp (25 Prozent), 256 ein Entstehungsdatum (22 Prozent), 94 eine Umfangsangabe (8 Prozent). Dieser Abdeckungsgrad ist bei jeder Auswertung mitzuführen.
+Von den 381 Objekten tragen 295 einen Titel und Dokumenttyp (77 Prozent), 256 ein Entstehungsdatum (67 Prozent), 94 eine Umfangsangabe (25 Prozent). Dieser Abdeckungsgrad ist bei jeder Auswertung mitzuführen.
 
 ## 4. Verknüpfungsmechanismus
 

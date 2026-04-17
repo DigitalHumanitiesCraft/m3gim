@@ -1,6 +1,6 @@
 # Status
 
-> Steckbrief, aktueller Datenstand, erreichte Meilensteine und nächste Schritte. Stand: 2026-04-16 (Session 28, v2-Pipeline live + Phase 4.1–4.8 umgesetzt).
+> Steckbrief, aktueller Datenstand, erreichte Meilensteine und nächste Schritte. Stand: 2026-04-17 (Session 29, v2-Konsolidierung: v1 archiviert, v2 ist neuer Default).
 
 ## Steckbrief
 
@@ -17,34 +17,38 @@
 
 Siehe [forschungsrahmen.md](forschungsrahmen.md) für Theorie, Forschungsfragen und Kontext.
 
-## Datenstand
-
-### v1 (`data/google-spreadsheet/`, Baseline 2026-02-25)
-
-- 282 Objekte (255 Konvolute, 26 Plakate, 1 Tonträger)
-- 1.246 effektive Verknüpfungen
-- 4 Indizes: Personen 296, Organisationen 59, Orte 31, Werke 96
-- 62 von 282 Objekten (22%) aktiv verknüpft
-
-### v2 (`data/source-v2/`, aktuell)
+## Datenstand (aktuell, `data/google-spreadsheet/`)
 
 - 381 Objekte (354 Hauptbestand, 26 Plakate, 1 Tonträger)
-- 1.464 Verknüpfungen
-- 4 Indizes: Personen 328, Organisationen 75, Orte 32, Werke 137
+- 1.494 XLSX-Verknüpfungen → 1.220 effektive Record-Properties
+- 4 Indizes: Personen 324, Organisationen 69, Orte 41, Werke 97
 - 70 Objekte mit aktiven Verknüpfungen
-- 43 `m3gim:SpatiotemporalEvent`-Instanzen (aus 60 Komposit-Rows, Verluste durch Artefakte und verwaiste Signaturen)
-- 21 Finanz-Zeilen (abendgage, provision, erwähnt)
+- 43 `m3gim:SpatiotemporalEvent`-Instanzen
+- 21 Finanz-Zeilen (abendgage, provision, erwähnt) — **alle mit Währung** seit `FINANCE_CURRENCY_DEFAULTS`-Fix
+- 18 SKOS-Concepts in DFT-Hierarchie
 - 295 von 381 Objekten (77%) mit Titel + Dokumenttyp, 256 (67%) mit Datum
+
+Frühere v1-Stände liegen in `data/_archive/` (Snapshot 2026-02-25: 282 Objekte, 1246 Verknüpfungen) — Referenz, nicht operativ.
 
 ### Getestet
 
-- v1: 156 Tests grün, 1 xfail (PL_07 Duplikat)
-- v2: 155 Tests grün, 1 skipped (verwaiste NIM_11-Signatur), 1 xfail
+- 157 Tests grün, 1 xfail (PL_07 Duplikat), 1 skipped (verwaiste NIM_11-Signatur)
+- 7 Tests in `test_06` als XPASS(strict) → signalisieren, dass loader.js die v2-Strukturen indexieren soll (Phase 6)
 - Siehe [tests.md](tests.md).
 
 ## Erreichte Meilensteine
 
-### v2-Parallelstruktur + Modell-Erweiterungen (Session 28, 2026-04-16)
+### v2-Konsolidierung + Currency-Fix + Frontend-Kontrakt-Spec (Session 29, 2026-04-17)
+
+- **Daten:** `data/` aufgeräumt — v1-Stände archiviert unter `data/_archive/`, v2 ist alleiniger Default. Ein Datenfluss, ein `data/output/`, ein `docs/data/`. Keine ENV-Overrides mehr im Normalbetrieb.
+- **Pipeline:** `FINANCE_CURRENCY_DEFAULTS`-Mapping in `transform.py` (NIM_007 → `S`). Alle 21 Finanzzeilen haben jetzt Währung. `build-views.py` kopiert neu auch `m3gim.jsonld` automatisch nach `docs/data/` — der manuelle Schritt (eine Drift-Quelle) entfällt.
+- **Tests:** Baselines auf v2-Niveau gehoben (records≥380, persons≥320, verknuepfungen≥1200, wd_matches≥200). 157 Tests grün. **7 gewollt rote `XPASS(strict)`-Marker in `test_06_frontend_contract.py`** formulieren präzise die Phase-6-loader.js-Arbeit (`store.dftHierarchy`, `store.mobilityEvents`, `store.agentRelations`, `store.finances`, typisierte Datumsfelder als Fallback in `indexByYear`).
+- **Snapshot-Diff-Tool:** läuft ohne `PYTHONIOENCODING=utf-8` auf Windows.
+- **Frontend verifiziert im Browser:** Alle sieben Tabs laden v2-Daten ohne Konsolenfehler. Archiv zeigt 381 Einheiten, Indizes 308 Personen / 69 Organisationen / 41 Orte / 97 Werke. Matrix, Kosmos, Mobilität, Zeitfluss, Lebenspartitur rendern SVGs korrekt. Sichtbarkeit der v2-Tiefe wartet auf Phase 6.
+
+Siehe [entscheidungen.md E-70 + E-71](entscheidungen.md).
+
+### v2-Modellerweiterungen (Session 28, 2026-04-16)
 
 Testgetriebene Umsetzung aller in [datenmodell.md](datenmodell.md) spezifizierten Modell-Erweiterungen für die neuen Daten:
 
@@ -58,9 +62,9 @@ Testgetriebene Umsetzung aller in [datenmodell.md](datenmodell.md) spezifizierte
 | 4.7 | Typisierte Datumsproperty-Familie (`absendedatum`, `auffuehrungsdatum` etc.) |
 | 4.8 | AgRelOn-Relationen (HasEmployeeEmployer, HasCorrespondent, HasProfessionalContact, HasIsPatron, HasIsMember) |
 
-Zusätzlich: 12 neue Test-Module (test_11–19), 156 Tests grün, TDD-Workflow mit strict-xfail-Spec als Leitlinie.
+Zusätzlich: 12 neue Test-Module (test_11–19), TDD-Workflow mit strict-xfail-Spec als Leitlinie.
 
-Siehe [entscheidungen.md E-62 bis E-69](entscheidungen.md) für die Architekturentscheidungen und [pipeline.md](pipeline.md) für die Umsetzung.
+Siehe [entscheidungen.md E-63 bis E-69](entscheidungen.md) für die Architekturentscheidungen und [pipeline.md](pipeline.md) für die Umsetzung.
 
 ### Ältere Meilensteine (kompakt)
 
@@ -77,43 +81,37 @@ Detaillierte Entscheidungen: [entscheidungen.md](entscheidungen.md) (E-01 bis E-
 
 ## Nächste Schritte
 
-### Sofort (Datenqualität)
+### Phase 6 — loader.js um v2-Store-Maps erweitern (aktuell in Arbeit)
 
-- **Verwaiste Signatur `UAKUG/NIM_11`** klären — entweder Umbenennung oder Nachtrag in Objekte.xlsx (blockiert die einzige arbeitgeber-Zeile)
-- **PL_07 Duplikat** im Google Sheet bereinigen, dann xfail in `test_05_referential.py` entfernen
-- **Reconciliation + Enrichment** für v2 laufen lassen (reconcile.py + enrich-wikidata.py mit v2-Indizes), damit WD-Coverage von 0,9 % (Personen) auf v1-Niveau (60 %+) steigt
+Das Frontend bedient sich nun aus dem v2-JSON-LD (`docs/data/m3gim.jsonld`, 381 Records), der Loader indexiert die v2-spezifischen Strukturen aber noch nicht. Die 7 XPASS-Tests in `test_06` dokumentieren präzise den Auftrag. Reihenfolge:
 
-### v2-Migration (abgeleitet aus ehemaligem IMPLEMENTATION-PLAN.md)
+1. **SKOS-Concept-Hierarchie** → `store.dftHierarchy` (18 Concepts mit broader-Links)
+2. **SpatiotemporalEvents** → `store.mobilityEvents` + `store.recordToEvents` (43 Events, ISO/Range-fähig)
+3. **AgRelOn-Relationen** → `store.agentRelations` (19 Einträge mit @type + hasObject)
+4. **Finanzen** → `store.finances` (21 DetailAnnotations, monetaryAmount + currency)
+5. **Typisierte Datumsproperties** → Fallback in `indexByYear()` für Records ohne `rico:date`
 
-**Phase 4.5 — `m3gim:StageRole` als eigenständige Entität**
-- Erfordert neues Rollenindex-XLSX (Spalten `m3gim_id`, `name`, `belongsToWork`, `voiceType`, `wikidata_id`)
-- Muss mit Erschließungsteam abgestimmt werden (221 Bühnenrollen-Zeilen im Datenbestand)
-- Pipeline: Typ `rolle` wird zu StageRole-Entity statt String-Literal
+Nach jedem Schritt die entsprechenden xfail-Marker aus `test_06` entfernen, Suite grün halten.
 
-**Phase 4.9 — Reifikation / Meta-Statement-Klasse** *(optional, spät)*
-- `m3gim:Statement` als Leichtgewicht-Variante von RDF-Reifikation
-- Nur wo Provenance nicht aus Record-URI folgt
+### Phase 7 — Views auf Store-Aggregation umstellen
 
-**Phase 5 — Testsuite weiter ausbauen** *(größtenteils erledigt in Session 28)*
-- Weitere Mobilitätssicht-Tests ausbauen (biografische + diskursive Sichten)
-- Determinismus-Test auf v2 prüfen
+Alle D3-Views lesen heute `partitur.json`. Nach Phase 6 können sie direkt aus dem Store aggregieren — `partitur.json` und die anderen Derivate werden zu optionalen, für einzelne Visualisierungen gedachten Zusatzartefakten. Reihenfolge: Mobilität zuerst (sichtbarster Gewinn), dann Matrix/Zeitfluss, dann Indizes (neuer Beziehungen-Grid), zuletzt Lebenspartitur.
 
-**Phase 6 — Frontend auf v2 umstellen**
-- `loader.js` erweitern: `m3gim:hasSpatiotemporalEvent`, `m3gim:agentRelation`, `m3gim:hasDetail`, typisierte Datumsproperties indexieren (neue Store-Felder `mobilityEvents`, `agentRelations`, `finances`, `dftHierarchy`)
-- Feature-Flag `DATA_VERSION = 'v2'` in `constants.js`
-- Mobilitäts-Tab und Lebenspartitur nutzen SpatiotemporalEvent-Instanzen direkt (statt aus `partitur.json`)
-- Neuer Indizes-Grid für Bühnenrollen (Phase 4.5 vorausgesetzt)
-- Optional: Finanz-Visualisierung (Honorare, Währungsverläufe)
+### Offene Datenqualität (extern blockiert)
 
-**Phase 7 — Betriebsmodell**
-- Update-Workflow dokumentiert: `cp neue XLSX → data/source-v2/` → `python scripts/transform.py` (mit ENV) → `pytest` → Snapshot-Diff → Merge
-- Rollenvokabular-Pflege: neue unbekannte Rolle → Warnung im Pipeline-Log, Review ob in [datenmodell.md § 5](datenmodell.md) ergänzen
-- Baselines halb-automatisch aktualisieren, wenn Tests durchlaufen
-- Zenodo-Archivierung vorbereiten
+- **Verwaiste Signatur `UAKUG/NIM_11`** — klären mit Erschließungsteam (blockiert die einzige arbeitgeber-Zeile, 1 Skip in `test_12`)
+- **PL_07 Duplikat** im Google Sheet bereinigen → xfail in `test_05_referential.py` entfernen
+- **Reconciliation + Enrichment** auf aktualisierten v2-Indizes neu laufen lassen, damit WD-Coverage hochgeht
+
+### Deferred Modell-Erweiterungen
+
+- **Phase 4.5** `m3gim:StageRole` als eigenständige Entität (221 Bühnenrollen). Braucht neues Rollenindex-XLSX vom Erschließungsteam.
+- **Phase 4.9** Reifikation / `m3gim:Statement`-Leichtgewicht — nur wo Provenance nicht aus Record-URI folgt.
+- **Zenodo-Archivierung** + **EAD-Export** — Betriebsmodell, später.
 
 ### Forschung / Datenqualität (laufend)
 
-- Verknüpfungsrate auf über 50 % erhöhen (aktuell 22 % in v1, 18 % in v2 bezogen auf alle Objekte)
+- Verknüpfungsrate auf über 50 % erhöhen (aktuell 70 von 381 Objekten = 18 %)
 - Bearbeitungsstand pflegen (fehlt bei ~75 %)
 - Header-Shifts in drei Indizes im Google Sheet korrigieren (Pipeline kompensiert aktuell über `HEADER_SHIFTS`-Mapping)
 - Datierungen nicht als Freitext (`"Wien, ab 1956"`), sondern als strukturiertes Feld

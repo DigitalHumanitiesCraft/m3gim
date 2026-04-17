@@ -14,6 +14,13 @@ import sys
 from collections import Counter
 from pathlib import Path
 
+# Windows-Konsolen (cp1252) können den U+2192-Pfeil nicht rendern.
+if sys.stdout.encoding and sys.stdout.encoding.lower() != "utf-8":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+    except (AttributeError, OSError):
+        pass
+
 
 def load_graph(path: Path) -> dict:
     with open(path, encoding="utf-8") as f:

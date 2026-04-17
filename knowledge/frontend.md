@@ -4,7 +4,7 @@
 
 ## Laufzeitmodell
 
-- **Erfassung:** Google-Sheets-Exporte als XLSX → `data/source-v2/`
+- **Erfassung:** Google-Sheets-Exporte als XLSX → `data/google-spreadsheet/`
 - **Verarbeitung:** Python-Skripte ([pipeline.md](pipeline.md)) → JSON/JSON-LD in `docs/data/`
 - **Präsentation:** Statische SPA in `docs/` (Vanilla JS + D3 v7)
 - Offline-first: alle Daten beim Startup geladen (E-05)
@@ -95,18 +95,19 @@ store = {
 
 Archiv und Indizes lesen direkt aus `m3gim.jsonld` (über Store), nicht aus separaten View-JSONs. Mobilität liest aus beiden: `partitur.json` (Lebensphasen, Orte, Pfeile) + Store (Gastspiel-Dokumente dynamisch).
 
-### v2-Felder (noch nicht indexiert)
+### Phase 6 — geplante Store-Erweiterungen
 
-Die v2-Pipeline emittiert zusätzliche Felder am Record, die loader.js noch nicht auswertet. Siehe Phase 6 der [v2-Migration in status.md](status.md):
+Das JSON-LD enthält bereits alle v2-Strukturen, loader.js indexiert sie aber noch nicht. Die 7 `XPASS(strict)`-Tests in [test_06_frontend_contract.py](../tests/test_06_frontend_contract.py) formulieren die Spec. Pro Commit eine Store-Map einziehen, entsprechenden xfail-Marker entfernen.
 
-- `m3gim:hasSpatiotemporalEvent` — Referenzen auf Top-Level-SpatiotemporalEvent-Entities im Graph
-- `m3gim:agentRelation` — AgRelOn-Relationen (HasEmployeeEmployer, HasCorrespondent etc.)
-- `agrelon:hasProvenance`, `agrelon:hasConfidenceValue` — Meta-Statements (ersetzt `m3gim:dateEvidence`)
-- Typisierte Datumsproperties: `m3gim:absendedatum`, `m3gim:auffuehrungsdatum`, `m3gim:premieredatum` etc.
-- `m3gim:hasDetail` mit `monetaryAmount` / `currency` / `detailRole` (Finanzschicht)
-- SKOS-Hierarchie der Dokumenttypen (`skos:Concept` + `skos:broader`)
+| Neue Store-Map | Quelle im JSON-LD | Nutzen im Frontend |
+|---|---|---|
+| `store.dftHierarchy` | Top-Level `skos:Concept`-Knoten + `skos:broader` | Indizes-Filter kann Dokumenttypen hierarchisch gruppieren (`biographisch` → `autobiografie`, `biographie`) |
+| `store.mobilityEvents` + `store.recordToEvents` | `m3gim:SpatiotemporalEvent`-Knoten + `m3gim:hasSpatiotemporalEvent`-Refs | Mobilität + Lebenspartitur zeigen präzise Events mit Provenance statt heuristisch aus `partitur.auftritte` |
+| `store.agentRelations` | `m3gim:agentRelation`-Array am Record | Indizes-Personen-Kacheln mit Beziehungs-Badges (Arbeitgeber, Patron, Korrespondent); optional neuer „Beziehungen"-Grid |
+| `store.finances` | `m3gim:hasDetail`-DetailAnnotations mit `monetaryAmount` + `currency` + `detailRole` | Archiv-Inline-Detail zeigt Honorare, optional Finanz-Visualisierung als eigener Tab |
+| typisierte Datumsfelder als Fallback in `indexByYear` | `m3gim:absendedatum`, `m3gim:auffuehrungsdatum` etc. (inkl. Listen + `"ISO/ISO"`-Ranges) | Matrix + Zeitfluss zeigen mehr Dots — Records ohne `rico:date`, aber mit typisiertem Datum werden zeitlich einsortiert |
 
-Empfohlene Erweiterungen in loader.js: `store.mobilityEvents`, `store.agentRelations`, `store.dftHierarchy`, `store.finances`.
+Provenance (`agrelon:hasProvenance` + `hasConfidenceValue`) wird nicht als eigene Store-Map indexiert, sondern am Record mitgeführt; einzelne Views können sie bei Bedarf lesen.
 
 ## Shared Components
 

@@ -1331,19 +1331,25 @@ def main():
             json.dump(data, f, ensure_ascii=False, indent=2)
         print(f'  [OK] {output_file.name} ({len(json.dumps(data)):,} bytes)')
 
-    # Copy frontend-consumed views to docs/data/
-    # Only when building the default output (v1 pipeline), not for v2/parallel runs.
+    # Copy frontend-consumed artefacts to docs/data/ beim Default-Output.
+    # docs/data/ ist die Frontend-Datenquelle; hier fließt alles zusammen.
     default_output = PROJECT_ROOT / 'data' / 'output'
     if _OUTPUT_BASE.resolve() == default_output.resolve():
         docs_data = PROJECT_ROOT / 'docs' / 'data'
-        frontend_views = ['partitur', 'matrix', 'kosmos']
+        import shutil
         print()
         print('Copying to docs/data/:')
+        # Hauptquelle: m3gim.jsonld — einzige Wahrheit, auf der loader.js aufsetzt
+        jsonld_src = _OUTPUT_BASE / 'm3gim.jsonld'
+        if jsonld_src.exists() and docs_data.exists():
+            shutil.copy2(jsonld_src, docs_data / 'm3gim.jsonld')
+            print('  [CP] m3gim.jsonld -> docs/data/')
+        # Derivate: vorverdichtete View-JSONs für einzelne Visualisierungen
+        frontend_views = ['partitur', 'matrix', 'kosmos']
         for name in frontend_views:
             src = OUTPUT_DIR / f'{name}.json'
             dst = docs_data / f'{name}.json'
             if src.exists() and dst.parent.exists():
-                import shutil
                 shutil.copy2(src, dst)
                 print(f'  [CP] {name}.json -> docs/data/')
     else:
