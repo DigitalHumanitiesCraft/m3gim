@@ -3,7 +3,7 @@
  * Info pages (about, projekt, modell, hilfe) are standalone HTML files.
  */
 
-const TABS = ['archiv', 'indizes', 'mobilitaets-atlas', 'repertoire', 'biogramm', 'korb'];
+const TABS = ['archiv', 'indizes', 'mobilitaets-atlas', 'repertoire', 'biogramm', 'netzwerk', 'korb'];
 const ALL_VIEWS = [...TABS];
 
 const state = {

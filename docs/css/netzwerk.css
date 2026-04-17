@@ -1,0 +1,219 @@
+/*
+ * M3GIM Netzwerk-Tab — AgRelOn-Beziehungen als Tabelle.
+ */
+
+#tab-netzwerk {
+  padding: 24px 32px 48px;
+}
+
+.netzwerk__header {
+  margin-bottom: 20px;
+}
+
+.netzwerk__title {
+  font-family: var(--font-serif, 'Source Serif 4', Georgia, serif);
+  font-weight: 500;
+  font-size: 1.75rem;
+  margin: 0 0 4px;
+  color: var(--text-color, #1F1B16);
+}
+
+.netzwerk__subtitle {
+  margin: 0;
+  color: var(--muted-color, #5C5651);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.netzwerk__body {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  gap: 28px;
+  align-items: start;
+}
+
+.netzwerk__section-title {
+  margin: 0 0 8px;
+  font-family: var(--font-mono, ui-monospace, Menlo, monospace);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-color, #1F1B16);
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border-color, #d8cfbf);
+}
+
+.netzwerk__count {
+  float: right;
+  font-weight: 400;
+  color: var(--muted-color, #5C5651);
+}
+
+.netzwerk__empty {
+  padding: 16px 0;
+  color: var(--muted-color, #5C5651);
+  font-style: italic;
+  font-size: 0.9rem;
+}
+
+.netzwerk__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  counter-reset: netzwerk-rank;
+}
+
+.netzwerk__row {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border-color-soft, #efe7d6);
+  cursor: pointer;
+  transition: background 120ms ease;
+  counter-increment: netzwerk-rank;
+}
+
+.netzwerk__row::before {
+  content: counter(netzwerk-rank);
+  font-family: var(--font-mono, ui-monospace, Menlo, monospace);
+  font-size: 0.7rem;
+  color: var(--muted-color, #5C5651);
+  text-align: right;
+  opacity: 0.55;
+}
+
+.netzwerk__row:hover {
+  background: var(--paper-dim, #f3ece0);
+}
+
+.netzwerk__row--selected {
+  background: var(--paper-dim, #f3ece0);
+  border-left: 3px solid var(--accent, #004A8F);
+  padding-left: 7px;
+}
+
+.netzwerk__name-main {
+  font-family: var(--font-serif, 'Source Serif 4', Georgia, serif);
+  font-size: 1rem;
+  color: var(--text-color, #1F1B16);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.netzwerk__breakdown {
+  display: flex;
+  gap: 4px;
+  flex-wrap: nowrap;
+}
+
+.netzwerk__breakdown .chip {
+  padding: 2px 6px;
+  font-size: 0.72rem;
+}
+
+.netzwerk__summe {
+  font-family: var(--font-mono, ui-monospace, Menlo, monospace);
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-color, #1F1B16);
+  min-width: 28px;
+  text-align: right;
+}
+
+/* Detail */
+.netzwerk__detail {
+  padding: 12px 14px;
+  background: var(--paper, #faf6ec);
+  border: 1px solid var(--border-color-soft, #efe7d6);
+  border-radius: 4px;
+  position: sticky;
+  top: 16px;
+}
+
+.netzwerk__detail-empty {
+  color: var(--muted-color, #5C5651);
+  font-style: italic;
+  font-size: 0.9rem;
+}
+
+.netzwerk__detail-title {
+  margin: 0 0 8px;
+  font-family: var(--font-serif, 'Source Serif 4', Georgia, serif);
+  font-weight: 500;
+  font-size: 1.15rem;
+  color: var(--text-color, #1F1B16);
+}
+
+.netzwerk__detail-counts {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.netzwerk__detail-total {
+  font-family: var(--font-mono, ui-monospace, Menlo, monospace);
+  font-size: 0.85rem;
+  color: var(--muted-color, #5C5651);
+  margin-left: 6px;
+}
+
+.netzwerk__record-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.netzwerk__record {
+  display: grid;
+  grid-template-columns: 90px 1fr 90px;
+  gap: 10px;
+  align-items: baseline;
+  padding: 4px 6px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background 120ms ease;
+}
+
+.netzwerk__record:hover {
+  background: var(--paper-dim, #f3ece0);
+}
+
+.netzwerk__record-sig {
+  font-family: var(--font-mono, ui-monospace, Menlo, monospace);
+  font-size: 0.78rem;
+  color: var(--muted-color, #5C5651);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.netzwerk__record-title {
+  font-family: var(--font-serif, 'Source Serif 4', Georgia, serif);
+  color: var(--text-color, #1F1B16);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.netzwerk__record-date {
+  font-family: var(--font-mono, ui-monospace, Menlo, monospace);
+  font-size: 0.78rem;
+  color: var(--muted-color, #5C5651);
+  text-align: right;
+}
+
+@media (max-width: 900px) {
+  .netzwerk__body {
+    grid-template-columns: 1fr;
+  }
+  .netzwerk__detail {
+    position: static;
+  }
+}

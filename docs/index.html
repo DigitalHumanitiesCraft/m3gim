@@ -21,6 +21,7 @@
   <link rel="stylesheet" href="css/mobilitaets-atlas.css">
   <link rel="stylesheet" href="css/repertoire.css">
   <link rel="stylesheet" href="css/biogramm.css">
+  <link rel="stylesheet" href="css/netzwerk.css">
   <link rel="stylesheet" href="css/pages.css">
 
   <!-- D3.js -->
@@ -85,6 +86,12 @@
       </svg>
       Biogramm
     </button>
+    <button class="tab-bar__tab" data-tab="netzwerk" role="tab" aria-selected="false" aria-controls="tab-netzwerk" id="btn-netzwerk">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="5" cy="5" r="2"/><circle cx="19" cy="5" r="2"/><circle cx="19" cy="19" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="12" cy="12" r="2"/><path d="M6.5 6.5 10.5 10.5"/><path d="M17.5 6.5 13.5 10.5"/><path d="M6.5 17.5 10.5 13.5"/><path d="M17.5 17.5 13.5 13.5"/>
+      </svg>
+      Netzwerk
+    </button>
     <button class="tab-bar__tab" data-tab="korb" id="korb-tab-btn" role="tab" aria-selected="false" aria-controls="tab-korb">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/>
@@ -107,6 +114,7 @@
     <section id="tab-mobilitaets-atlas" class="tab-content" role="tabpanel" aria-labelledby="btn-mobilitaets-atlas"></section>
     <section id="tab-repertoire" class="tab-content" role="tabpanel" aria-labelledby="btn-repertoire"></section>
     <section id="tab-biogramm" class="tab-content" role="tabpanel" aria-labelledby="btn-biogramm"></section>
+    <section id="tab-netzwerk" class="tab-content" role="tabpanel" aria-labelledby="btn-netzwerk"></section>
     <section id="tab-korb" class="tab-content" role="tabpanel" aria-labelledby="btn-korb"></section>
 
   </main>

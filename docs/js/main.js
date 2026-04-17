@@ -12,6 +12,7 @@ import { renderKorb } from './views/korb.js';
 import { renderMobilitaetsAtlas } from './views/mobilitaets-atlas.js';
 import { renderRepertoire, repertoireAggregate } from './views/repertoire.js';
 import { renderBiogramm, biogrammData } from './views/biogramm.js';
+import { renderNetzwerk, netzwerkAggregate } from './views/netzwerk.js';
 
 const DEV = typeof location !== 'undefined'
   && (location.hostname === 'localhost' || location.hostname === '127.0.0.1');
@@ -26,6 +27,7 @@ const TAB_RENDERERS = new Map([
   ['mobilitaets-atlas',  (s, c) => renderMobilitaetsAtlas(s, c)],
   ['repertoire',         (s, c) => renderRepertoire(s, c)],
   ['biogramm',           (s, c) => renderBiogramm(s, c)],
+  ['netzwerk',           (s, c) => renderNetzwerk(s, c)],
   ['korb',               (s, c) => renderKorb(s, c)],
 ]);
 
@@ -118,6 +120,10 @@ function logTabActivation(tab, s) {
     biogramm: () => {
       const bio = biogrammData();
       return { orte: bio?.orte.length || 0, belege: bio?.belege.length || 0 };
+    },
+    netzwerk: () => {
+      const agg = netzwerkAggregate();
+      return { agenten: agg?.length || 0 };
     },
     korb:                () => ({ records: s.allRecords.length }),
   };
@@ -306,6 +312,12 @@ function exposeDebug(s) {
       console.log('Orte:'); console.table(bio.orte);
       console.log('Belege:'); console.table(bio.belege.slice(0, 20));
       return bio;
+    },
+    netzwerkAggregate() {
+      const agg = netzwerkAggregate();
+      if (!agg) return null;
+      console.table(agg.map(e => ({ name: e.name, summe: e.summe, records: e.records.size })));
+      return agg;
     },
     mobilityEventsWithGeo() {
       const rows = [...s.mobilityEvents.values()]
