@@ -179,16 +179,54 @@ function updateKorbTabVisibility() {
  * Gibt auf einen Blick Auskunft, ob die Daten im erwarteten Umfang ankommen.
  */
 function logStoreSummary(s) {
+  const wdCount = (map) => {
+    let n = 0;
+    for (const entry of map.values()) {
+      if (entry.wikidata && String(entry.wikidata).startsWith('wd:')) n++;
+    }
+    return n;
+  };
+  const pct = (n, t) => t > 0 ? `${Math.round(n / t * 100)} %` : '0 %';
+
+  const wdP = wdCount(s.persons), wdO = wdCount(s.organizations);
+  const wdL = wdCount(s.locations), wdW = wdCount(s.works);
+
+  // Provenance-Coverage
+  let recProv = 0, nestedTotal = 0, nestedProv = 0;
+  for (const rec of s.allRecords) {
+    if (rec['m3gim:xlsxSource']) recProv++;
+    const details = rec['m3gim:hasDetail'];
+    const detailList = Array.isArray(details) ? details : (details ? [details] : []);
+    for (const d of detailList) {
+      if (d && d['@type'] === 'm3gim:DetailAnnotation') {
+        nestedTotal++;
+        if (d['m3gim:xlsxSource']) nestedProv++;
+      }
+    }
+    const rels = rec['m3gim:agentRelation'];
+    const relList = Array.isArray(rels) ? rels : (rels ? [rels] : []);
+    for (const r of relList) {
+      if (r) {
+        nestedTotal++;
+        if (r['m3gim:xlsxSource']) nestedProv++;
+      }
+    }
+  }
+
   console.group('%c[M³GIM] Store geladen', 'color: #004A8F; font-weight: bold; font-size: 1.1em');
   console.log(`Export: ${s.exportDate || 'unbekannt'}`);
   console.table({
-    Records:          { count: s.allRecords.length },
-    Konvolute:        { count: s.konvolute.size },
-    Personen:         { count: s.persons.size },
-    Organisationen:   { count: s.organizations.size },
-    Orte:             { count: s.locations.size },
-    Werke:            { count: s.works.size },
+    Records:          { count: s.allRecords.length, wikidata: '—' },
+    Konvolute:        { count: s.konvolute.size,    wikidata: '—' },
+    Personen:         { count: s.persons.size,        wikidata: `${wdP} (${pct(wdP, s.persons.size)})` },
+    Organisationen:   { count: s.organizations.size,  wikidata: `${wdO} (${pct(wdO, s.organizations.size)})` },
+    Orte:             { count: s.locations.size,      wikidata: `${wdL} (${pct(wdL, s.locations.size)})` },
+    Werke:            { count: s.works.size,          wikidata: `${wdW} (${pct(wdW, s.works.size)})` },
   });
+  console.log(
+    `%cProvenance: ${recProv}/${s.allRecords.length} Records + ${nestedProv}/${nestedTotal} nested entities mit xlsxSource`,
+    'color: #5C5651; font-style: italic'
+  );
   console.group('%cv2-Store-Maps (Phase 6)', 'color: #8B3A3A; font-weight: bold');
   console.table({
     'dftHierarchy':      { size: s.dftHierarchy.size,   beschreibung: 'SKOS-Concepts mit broader+children' },
@@ -263,6 +301,29 @@ function exposeDebug(s) {
       for (const r of roots) render(r);
       console.groupEnd();
       return roots;
+    },
+    /**
+     * Provenance-Uebersicht fuer einen Record: welche XLSX-Quellen liegen
+     * dahinter (direkt + nested). Gibt Liste mit {field, sheet, row} zurueck.
+     */
+    provenanceOf(recordId) {
+      const rec = s.records.get(recordId) || s.bySignatur.get(recordId);
+      if (!rec) return { error: `Kein Record ${recordId}` };
+      const rows = [];
+      const src = rec['m3gim:xlsxSource'];
+      if (src) rows.push({ field: 'record', sheet: src['m3gim:xlsxSheet'], row: src['m3gim:xlsxRow'], datenpunkt: src['m3gim:datenpunktId'] || '' });
+      const details = Array.isArray(rec['m3gim:hasDetail']) ? rec['m3gim:hasDetail'] : (rec['m3gim:hasDetail'] ? [rec['m3gim:hasDetail']] : []);
+      for (const d of details) {
+        const s2 = d && d['m3gim:xlsxSource'];
+        if (s2) rows.push({ field: `detail:${d['m3gim:detailField'] || '?'}`, sheet: s2['m3gim:xlsxSheet'], row: s2['m3gim:xlsxRow'], datenpunkt: s2['m3gim:datenpunktId'] || '' });
+      }
+      const rels = Array.isArray(rec['m3gim:agentRelation']) ? rec['m3gim:agentRelation'] : (rec['m3gim:agentRelation'] ? [rec['m3gim:agentRelation']] : []);
+      for (const r of rels) {
+        const s2 = r && r['m3gim:xlsxSource'];
+        if (s2) rows.push({ field: `agrelon:${r['@type'] || '?'}`, sheet: s2['m3gim:xlsxSheet'], row: s2['m3gim:xlsxRow'], datenpunkt: s2['m3gim:datenpunktId'] || '' });
+      }
+      console.table(rows);
+      return rows;
     },
   };
 }

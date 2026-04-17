@@ -235,7 +235,11 @@ def run_enrichment(entity_types: list, force: bool = False):
     cached_count = 0
 
     # Entitaeten nach Typ filtern und gruppieren
+    # Konservative Policy: fuzzy_low-Matches (Score 80-89) werden nur
+    # angereichert, wenn sie manuell als approved freigegeben wurden.
+    # Das schuetzt die UI vor falsch zugewiesenen Wikidata-Properties.
     to_fetch = {}  # qid → {type, name}
+    low_conf_skipped = 0
     for m in matched:
         etype = m.get("type", "")
         if etype not in entity_types:
@@ -247,6 +251,11 @@ def run_enrichment(entity_types: list, force: bool = False):
         if not qid:
             continue
 
+        # Konservativer Filter: fuzzy_low nur bei manuell approved
+        if m.get("match") == "fuzzy_low" and m.get("manual_review") != "approved":
+            low_conf_skipped += 1
+            continue
+
         # Cache-Hit
         if qid in cache and not force:
             cached_count += 1
@@ -255,7 +264,8 @@ def run_enrichment(entity_types: list, force: bool = False):
         to_fetch[qid] = {"type": etype, "name": m.get("name", "")}
 
     print(f"Zu fetchen: {len(to_fetch)} Entitaeten "
-          f"(Cache: {cached_count} uebersprungen)")
+          f"(Cache: {cached_count} uebersprungen, "
+          f"{low_conf_skipped} low-conf ungepruft)")
 
     if not to_fetch:
         print("Nichts zu tun.")

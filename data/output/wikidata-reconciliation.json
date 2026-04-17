@@ -1,6 +1,6 @@
 {
   "meta": {
-    "date": "2026-03-29T10:34:58.438919",
+    "date": "2026-04-17T16:34:37.467763",
     "strategy": "fuzzy_match_with_confidence",
     "min_name_length": 3,
     "min_confidence": 80,
@@ -32,6 +32,14 @@
       "name": "Altmann, Olga",
       "qid": "Q95686480",
       "label": "Olga Altmann",
+      "match": "fuzzy_high",
+      "confidence": 100
+    },
+    {
+      "type": "person",
+      "name": "Autran, Victor",
+      "qid": "Q139169792",
+      "label": "Victor Autran",
       "match": "fuzzy_high",
       "confidence": 100
     },
@@ -88,6 +96,22 @@
       "name": "Blankenheim, Toni",
       "qid": "Q95565",
       "label": "Toni Blankenheim",
+      "match": "fuzzy_high",
+      "confidence": 100
+    },
+    {
+      "type": "person",
+      "name": "Böhm,Karl",
+      "qid": "Q84241",
+      "label": "Karl Böhm",
+      "match": "fuzzy_high",
+      "confidence": 100
+    },
+    {
+      "type": "person",
+      "name": "Böhme, Kurt",
+      "qid": "Q10314824",
+      "label": "Kurt Böhme",
       "match": "fuzzy_high",
       "confidence": 100
     },
@@ -637,6 +661,14 @@
     },
     {
       "type": "person",
+      "name": "Kupferberg, Herbert",
+      "qid": "Q26992171",
+      "label": "Herbert Kupferberg",
+      "match": "fuzzy_high",
+      "confidence": 100
+    },
+    {
+      "type": "person",
       "name": "Kupper, Annelies",
       "qid": "Q75998",
       "label": "Annelies Kupper",
@@ -656,6 +688,22 @@
       "name": "Lauro, Michele",
       "qid": "Q133793307",
       "label": "Michele Lauro",
+      "match": "fuzzy_high",
+      "confidence": 100
+    },
+    {
+      "type": "person",
+      "name": "Leder, Alfred",
+      "qid": "Q27732662",
+      "label": "Alfred Leder",
+      "match": "fuzzy_high",
+      "confidence": 100
+    },
+    {
+      "type": "person",
+      "name": "Leimer, Karl",
+      "qid": "Q1664629",
+      "label": "Karl Leimer",
       "match": "fuzzy_high",
       "confidence": 100
     },
@@ -805,6 +853,14 @@
     },
     {
       "type": "person",
+      "name": "Moralt, Rudolf",
+      "qid": "Q70098",
+      "label": "Rudolf Moralt",
+      "match": "fuzzy_high",
+      "confidence": 100
+    },
+    {
+      "type": "person",
       "name": "Moratti, Vittorino",
       "qid": "Q16677800",
       "label": "Vittorino Moratti",
@@ -938,6 +994,22 @@
       "label": "Hetty Plümacher",
       "match": "fuzzy_high",
       "confidence": 100
+    },
+    {
+      "type": "person",
+      "name": "Prêtre, Georges",
+      "qid": "Q342381",
+      "label": "Georges Prêtre",
+      "match": "fuzzy_high",
+      "confidence": 100
+    },
+    {
+      "type": "person",
+      "name": "Preys, Hermann",
+      "qid": "Q1612378",
+      "label": "Hermann Preysing",
+      "match": "fuzzy_high",
+      "confidence": 90
     },
     {
       "type": "person",
@@ -1144,6 +1216,14 @@
       "name": "Steiner, Adolf",
       "qid": "Q89574267",
       "label": "Adolf Steiner",
+      "match": "fuzzy_high",
+      "confidence": 100
+    },
+    {
+      "type": "person",
+      "name": "Stich-Randall, Teresa",
+      "qid": "Q433730",
+      "label": "Teresa Stich-Randall",
       "match": "fuzzy_high",
       "confidence": 100
     },
@@ -1357,6 +1437,14 @@
     },
     {
       "type": "person",
+      "name": "Wiener, Otto",
+      "qid": "Q86610",
+      "label": "Otto Wiener",
+      "match": "fuzzy_high",
+      "confidence": 100
+    },
+    {
+      "type": "person",
       "name": "Wieter, Georg",
       "qid": "Q1506390",
       "label": "Georg Wieter",
@@ -1434,6 +1522,102 @@
       "label": "Wolfram Zimmermann",
       "match": "fuzzy_high",
       "confidence": 100
+    },
+    {
+      "type": "person",
+      "name": "Röthlisberger, Max",
+      "qid": "Q1913324",
+      "label": "Max Röthlisberger",
+      "match": "fuzzy_high",
+      "confidence": 100
+    },
+    {
+      "type": "person",
+      "name": "List, Rudolf",
+      "qid": "Q2173338",
+      "label": "Rudolf List",
+      "match": "fuzzy_high",
+      "confidence": 100
+    },
+    {
+      "type": "person",
+      "name": "Krayenbühl, Hugo",
+      "qid": "Q15441062",
+      "label": "Hugo Krayenbühl",
+      "match": "fuzzy_high",
+      "confidence": 100
+    },
+    {
+      "type": "person",
+      "name": "Klebe, Karl-Heinz",
+      "qid": "Q133073813",
+      "label": "Karl Heinz Klebe",
+      "match": "fuzzy_high",
+      "confidence": 100
+    },
+    {
+      "type": "person",
+      "name": "Haydn, Joseph",
+      "qid": "Q7349",
+      "label": "Joseph Haydn",
+      "match": "fuzzy_high",
+      "confidence": 100
+    },
+    {
+      "type": "person",
+      "name": "Mendelssohn Bartholdy, Felix",
+      "qid": "Q46096",
+      "label": "Felix Mendelssohn",
+      "match": "fuzzy_high",
+      "confidence": 100
+    },
+    {
+      "type": "person",
+      "name": "Pergolesi, Giovanni Battista",
+      "qid": "Q185312",
+      "label": "Giovanni Battista Pergolesi",
+      "match": "fuzzy_high",
+      "confidence": 100
+    },
+    {
+      "type": "person",
+      "name": "Suter, Hermann",
+      "qid": "Q671472",
+      "label": "Hermann Suter",
+      "match": "fuzzy_high",
+      "confidence": 100
+    },
+    {
+      "type": "person",
+      "name": "Weber",
+      "qid": "Q63875",
+      "label": "Georg Heinrich Weber",
+      "match": "fuzzy_high",
+      "confidence": 100
+    },
+    {
+      "type": "person",
+      "name": "Barth, Irmgard",
+      "qid": "Q94777017",
+      "label": "Irmgard Barth",
+      "match": "fuzzy_high",
+      "confidence": 100
+    },
+    {
+      "type": "person",
+      "name": "Hotter, Hans",
+      "qid": "Q63244",
+      "label": "Hans Hotter",
+      "match": "fuzzy_high",
+      "confidence": 100
+    },
+    {
+      "type": "org",
+      "name": "Cuvilliéstheater",
+      "qid": "Q532191",
+      "label": "Cuvilliés Theatre",
+      "match": "fuzzy_high",
+      "confidence": 90
     },
     {
       "type": "org",
@@ -1662,6 +1846,15 @@
     },
     {
       "type": "work",
+      "name": "Carmen",
+      "komponist": "Bizet, Georges",
+      "qid": "Q674832",
+      "label": "Carmen",
+      "match": "exact",
+      "confidence": 100
+    },
+    {
+      "type": "work",
       "name": "Der Rosenkavalier",
       "komponist": "Strauss, Richard",
       "qid": "Q85756466",
@@ -1703,6 +1896,15 @@
       "qid": "Q3221001",
       "label": "Le chant de la terre",
       "match": "exact",
+      "confidence": 100
+    },
+    {
+      "type": "work",
+      "name": "Lied von der Erde",
+      "komponist": "Mahler, Gustav",
+      "qid": "Q846646",
+      "label": "Das Lied von der Erde",
+      "match": "fuzzy_high",
       "confidence": 100
     },
     {
@@ -1803,6 +2005,141 @@
       "label": "Von ewiger Liebe",
       "match": "exact",
       "confidence": 100
+    },
+    {
+      "type": "work",
+      "name": "Wozzeck",
+      "komponist": "Berg, Alban",
+      "qid": "Q657215",
+      "label": "Woyzeck",
+      "match": "fuzzy_low",
+      "confidence": 86
+    },
+    {
+      "type": "work",
+      "name": "Ave Maria",
+      "komponist": "Schubert, Franz",
+      "qid": "Q790310",
+      "label": "Ave Maria",
+      "match": "exact",
+      "confidence": 100
+    },
+    {
+      "type": "work",
+      "name": "Johannespassion",
+      "komponist": "Bach, Johann Sebastian",
+      "qid": "Q106280609",
+      "label": "Johannespassion / Passio Salvatoris et Domini Nostri Jesu Christi",
+      "match": "fuzzy_high",
+      "confidence": 100
+    },
+    {
+      "type": "work",
+      "name": "Judas Maccabaeus",
+      "komponist": "Händel, Georg Friedrich",
+      "qid": "Q993971",
+      "label": "Judas Maccabaeus",
+      "match": "exact",
+      "confidence": 100
+    },
+    {
+      "type": "work",
+      "name": "Messiah",
+      "komponist": "Händel, Georg Friedrich",
+      "qid": "Q207732",
+      "label": "Messiah",
+      "match": "exact",
+      "confidence": 100
+    },
+    {
+      "type": "work",
+      "name": "Die Jahreszeiten",
+      "komponist": "Haydn, Joseph",
+      "qid": "Q1213668",
+      "label": "Die Jahreszeiten",
+      "match": "exact",
+      "confidence": 100
+    },
+    {
+      "type": "work",
+      "name": "Theresienmesse",
+      "komponist": "Haydn, Joseph",
+      "qid": "Q1438716",
+      "label": "Theresienmesse",
+      "match": "exact",
+      "confidence": 100
+    },
+    {
+      "type": "work",
+      "name": "Die junge Magd",
+      "komponist": "Hindemith, Paul",
+      "qid": "Q19183563",
+      "label": "Die junge Magd",
+      "match": "exact",
+      "confidence": 100
+    },
+    {
+      "type": "work",
+      "name": "Requiem",
+      "komponist": "Hindemith, Paul",
+      "qid": "Q6941842",
+      "label": "music for the Requiem Mass",
+      "match": "fuzzy_high",
+      "confidence": 100
+    },
+    {
+      "type": "work",
+      "name": "Kindertotenlieder",
+      "komponist": "Mahler, Gustav",
+      "qid": "Q589396",
+      "label": "Kindertotenlieder",
+      "match": "exact",
+      "confidence": 100
+    },
+    {
+      "type": "work",
+      "name": "Stabat mater",
+      "komponist": "Pergolesi, Giovanni Battista",
+      "qid": "Q210080",
+      "label": "Stabat Mater",
+      "match": "exact",
+      "confidence": 100
+    },
+    {
+      "type": "work",
+      "name": "Stabat mater",
+      "komponist": "Rossini, Gioachino",
+      "qid": "Q210080",
+      "label": "Stabat Mater",
+      "match": "exact",
+      "confidence": 100
+    },
+    {
+      "type": "work",
+      "name": "Pulcinella",
+      "komponist": "Stravinsky, Igor",
+      "qid": "Q86670408",
+      "label": "Pulcinella",
+      "match": "exact",
+      "confidence": 100
+    },
+    {
+      "type": "work",
+      "name": "Le laudi di San Francesco d'Assisi",
+      "komponist": "Suter, Hermann",
+      "qid": "Q1809945",
+      "label": "Le Laudi",
+      "match": "fuzzy_high",
+      "confidence": 100
+    },
+    {
+      "type": "work",
+      "name": "Requiem",
+      "komponist": "Verdi, Giuseppe",
+      "qid": "Q6941842",
+      "label": "music for the Requiem Mass",
+      "match": "fuzzy_high",
+      "confidence": 100
     }
   ],
   "unmatched": [
@@ -1817,10 +2154,6 @@
     {
       "type": "person",
       "name": "Arnold, Heinz"
-    },
-    {
-      "type": "person",
-      "name": "Autran, Victor"
     },
     {
       "type": "person",
@@ -1988,6 +2321,10 @@
     },
     {
       "type": "person",
+      "name": "Kmett, Waldemar"
+    },
+    {
+      "type": "person",
       "name": "Kodály, Zoltán"
     },
     {
@@ -2009,14 +2346,6 @@
     {
       "type": "person",
       "name": "Kurt, Kuhlmann"
-    },
-    {
-      "type": "person",
-      "name": "Leder, Alfred"
-    },
-    {
-      "type": "person",
-      "name": "Leimer, Karl"
     },
     {
       "type": "person",
@@ -2100,10 +2429,6 @@
     },
     {
       "type": "person",
-      "name": "Prêtre, Georges"
-    },
-    {
-      "type": "person",
       "name": "Prihoda, Vasa"
     },
     {
@@ -2148,6 +2473,10 @@
     },
     {
       "type": "person",
+      "name": "Sch. K."
+    },
+    {
+      "type": "person",
       "name": "Scheenerger, Hansheinz"
     },
     {
@@ -2157,6 +2486,10 @@
     {
       "type": "person",
       "name": "Schnyder"
+    },
+    {
+      "type": "person",
+      "name": "Schubert, Franz"
     },
     {
       "type": "person",
@@ -2263,6 +2596,22 @@
       "name": "Wissner, Otto"
     },
     {
+      "type": "person",
+      "name": "Bruckner, Anton"
+    },
+    {
+      "type": "person",
+      "name": "Dvořák, Antonín"
+    },
+    {
+      "type": "person",
+      "name": "Schoeck"
+    },
+    {
+      "type": "person",
+      "name": "Angerer, Dr. Dorothea"
+    },
+    {
       "type": "org",
       "name": "Abendkonzerte in Wiener Palais"
     },
@@ -2301,6 +2650,10 @@
     {
       "type": "org",
       "name": "Düsseldorfer Zeitung"
+    },
+    {
+      "type": "org",
+      "name": "Epic Records"
     },
     {
       "type": "org",
@@ -2392,6 +2745,10 @@
     },
     {
       "type": "org",
+      "name": "R.C.A.-Victor"
+    },
+    {
+      "type": "org",
       "name": "Salzburger Festspiele"
     },
     {
@@ -2444,11 +2801,51 @@
     },
     {
       "type": "org",
+      "name": "Wiener Staatopernchor"
+    },
+    {
+      "type": "org",
       "name": "Wiener Staatsoper"
     },
     {
       "type": "org",
+      "name": "Wiener Symphoniker"
+    },
+    {
+      "type": "org",
       "name": "Wiener Zeitung"
+    },
+    {
+      "type": "org",
+      "name": "Zürcher Tagblatt"
+    },
+    {
+      "type": "org",
+      "name": "Indiana University School of Music"
+    },
+    {
+      "type": "org",
+      "name": "Hochschule für Musik und darstellende Kunst Graz"
+    },
+    {
+      "type": "org",
+      "name": "Südost-Tagespost"
+    },
+    {
+      "type": "org",
+      "name": "Musikverein für Steiermark"
+    },
+    {
+      "type": "org",
+      "name": "Markgräfliches Opernhaus"
+    },
+    {
+      "type": "org",
+      "name": "Richard-Wagner-Verband"
+    },
+    {
+      "type": "org",
+      "name": "Richard-Wagner-Stipendienstiftung"
     },
     {
       "type": "location",
@@ -2489,6 +2886,10 @@
     {
       "type": "location",
       "name": "Wien"
+    },
+    {
+      "type": "location",
+      "name": "Bloomington, Indiana"
     },
     {
       "type": "work",
@@ -2547,11 +2948,6 @@
     },
     {
       "type": "work",
-      "name": "Carmen",
-      "komponist": "Bizet, Georges"
-    },
-    {
-      "type": "work",
       "name": "Chovanščina",
       "komponist": "Musorgskij, Modest Petrovič"
     },
@@ -2599,11 +2995,6 @@
       "type": "work",
       "name": "Die Walküre",
       "komponist": "Wagner, Richard"
-    },
-    {
-      "type": "work",
-      "name": "Die Zauberflöte",
-      "komponist": "Mozart, Wolfgang Amadeus"
     },
     {
       "type": "work",
@@ -2852,8 +3243,83 @@
     },
     {
       "type": "work",
-      "name": "Wozzeck",
-      "komponist": "Berg, Alban"
+      "name": "E-Dur Messe",
+      "komponist": "Schubert, Franz"
+    },
+    {
+      "type": "work",
+      "name": "Requium",
+      "komponist": "Mozart, Wolfgang Amadeus"
+    },
+    {
+      "type": "work",
+      "name": "Sinfonien, Nr. 9, op. 125 (d-Moll)",
+      "komponist": "Beethoven, Ludwig van"
+    },
+    {
+      "type": "work",
+      "name": "Matthäuspassion",
+      "komponist": "Bach, Johann Sebastian"
+    },
+    {
+      "type": "work",
+      "name": "Weihnachts-Oratorium",
+      "komponist": "Bach, Johann Sebastian"
+    },
+    {
+      "type": "work",
+      "name": "Messen, op. 123 (D-Dur)",
+      "komponist": "Beethoven, Ludwig van"
+    },
+    {
+      "type": "work",
+      "name": "Rhapsodien, Alt, Männerchor, Orchester, op. 53",
+      "komponist": "Brahms, Johannes"
+    },
+    {
+      "type": "work",
+      "name": "Messen, WAB 28 (f-Moll)",
+      "komponist": "Bruckner, Anton"
+    },
+    {
+      "type": "work",
+      "name": "Missa in angustijs",
+      "komponist": "Haydn, Joseph"
+    },
+    {
+      "type": "work",
+      "name": "Marienlieder",
+      "komponist": "Hindemith, Paul"
+    },
+    {
+      "type": "work",
+      "name": "Elias, op. 70, MWV A 25",
+      "komponist": "Mendelssohn Bartholdy, Felix"
+    },
+    {
+      "type": "work",
+      "name": "Messen, KV 317",
+      "komponist": "Mozart, Wolfgang Amadeus"
+    },
+    {
+      "type": "work",
+      "name": "Litaniae lauretanae  KV 109",
+      "komponist": "Mozart, Wolfgang Amadeus"
+    },
+    {
+      "type": "work",
+      "name": "Litaniae lauretanae KV 195",
+      "komponist": "Mozart, Wolfgang Amadeus"
+    },
+    {
+      "type": "work",
+      "name": "Litaniae lauretanae KV 195",
+      "komponist": "Requiem"
+    },
+    {
+      "type": "work",
+      "name": "die Götterdämmerung",
+      "komponist": "Wagner, Richard"
     }
   ],
   "skipped": [
@@ -2881,6 +3347,11 @@
       "type": "org",
       "name": "Bayerische Staatsoper",
       "existing_qid": "Q681931"
+    },
+    {
+      "type": "org",
+      "name": "Bayreuther Festspiele",
+      "existing_qid": "Q157596"
     },
     {
       "type": "org",

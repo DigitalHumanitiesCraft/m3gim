@@ -355,8 +355,13 @@ def build_index_lookup(df: pd.DataFrame) -> dict:
 # Objekte → Records
 # ---------------------------------------------------------------------------
 
-def convert_objekt(row: pd.Series, folio_col: str = None) -> dict:
-    """Konvertiert ein Objekt zu JSON-LD Record"""
+def convert_objekt(row: pd.Series, folio_col: str = None,
+                   xlsx_row: int | None = None) -> dict:
+    """Konvertiert ein Objekt zu JSON-LD Record.
+
+    xlsx_row: 1-basierte XLSX-Zeilennummer inkl. Header (= pandas idx + 2),
+              wird als m3gim:xlsxSource angehaengt.
+    """
     sig = str(row['archivsignatur']).strip()
     folio_raw = row.get(folio_col) if folio_col else None
     folio = str(folio_raw).strip() if pd.notna(folio_raw) and str(folio_raw).strip() else None
@@ -366,6 +371,12 @@ def convert_objekt(row: pd.Series, folio_col: str = None) -> dict:
         "@type": "rico:Record",
         "rico:identifier": f"{sig} {folio}" if folio else sig
     }
+
+    if xlsx_row is not None:
+        record["m3gim:xlsxSource"] = {
+            "m3gim:xlsxSheet": "Objekte",
+            "m3gim:xlsxRow": xlsx_row,
+        }
 
     # Titel
     titel = normalize_str(row.get('titel'))
@@ -449,7 +460,7 @@ def build_konvolut_hierarchy(df: pd.DataFrame, folio_col: str = None) -> tuple[l
     records = []
     konvolut_members = {}  # {signatur: [record_ids]}
 
-    for _, row in df.iterrows():
+    for idx, row in df.iterrows():
         if pd.isna(row.get('archivsignatur')) or str(row['archivsignatur']).strip() == "":
             continue
         # Template-Zeilen ueberspringen
@@ -460,7 +471,8 @@ def build_konvolut_hierarchy(df: pd.DataFrame, folio_col: str = None) -> tuple[l
         folio_raw = row.get(folio_col) if folio_col else None
         folio = str(folio_raw).strip() if pd.notna(folio_raw) and str(folio_raw).strip() else None
 
-        record = convert_objekt(row, folio_col)
+        # XLSX-Zeilennummer: pandas-Idx ist 0-basiert, XLSX hat Header in Zeile 1
+        record = convert_objekt(row, folio_col, xlsx_row=int(idx) + 2)
         records.append(record)
 
         # Track Konvolut-Zugehoerigkeit
@@ -585,7 +597,7 @@ def process_verknuepfungen(df: pd.DataFrame, indices: dict) -> dict:
     """
     relations = {}
 
-    for _, row in df.iterrows():
+    for idx, row in df.iterrows():
         sig = row.get('archivsignatur')
         if pd.isna(sig) or str(sig).strip() == "":
             continue
@@ -614,6 +626,22 @@ def process_verknuepfungen(df: pd.DataFrame, indices: dict) -> dict:
         if typ is None:
             continue
 
+        # Provenance: XLSX-Zeile + datenpunkt_id (falls vorhanden)
+        xlsx_row = int(idx) + 2  # pandas idx 0-basiert, XLSX-Header in Zeile 1
+        dp_raw = row.get('datenpunkt_id') if 'datenpunkt_id' in df.columns else None
+        datenpunkt_id = None
+        if pd.notna(dp_raw):
+            try:
+                datenpunkt_id = int(float(dp_raw))
+            except (ValueError, TypeError):
+                datenpunkt_id = str(dp_raw).strip() or None
+        source_info = {
+            "m3gim:xlsxSheet": "Verknuepfungen",
+            "m3gim:xlsxRow": xlsx_row,
+        }
+        if datenpunkt_id is not None:
+            source_info["m3gim:datenpunktId"] = datenpunkt_id
+
         # Komposit-Typen decomponieren
         typen = decompose_komposit_typ(typ) if "," in typ else [typ]
         # Komposit-Werte decomponieren (z.B. "München, 1952-12-17" → Ort + Datum)
@@ -633,6 +661,7 @@ def process_verknuepfungen(df: pd.DataFrame, indices: dict) -> dict:
                     "datum": datum_val,
                     "rolle": rolle,
                     "anmerkung": anmerkung,
+                    "_source": source_info,
                 }
                 relations.setdefault(objekt_id, []).append(ste_rel)
 
@@ -643,7 +672,8 @@ def process_verknuepfungen(df: pd.DataFrame, indices: dict) -> dict:
                 "name": rel_name,
                 "rolle": rolle,
                 "datum": decomposed.get('datum', datum) if t == 'datum' else datum,
-                "anmerkung": anmerkung
+                "anmerkung": anmerkung,
+                "_source": source_info,
             }
 
             # Wikidata-URI aus Index anreichern
@@ -668,11 +698,13 @@ def process_verknuepfungen(df: pd.DataFrame, indices: dict) -> dict:
     return relations
 
 
-def _maybe_add_agrelon(record: dict, typ: str, rolle: str, agent_entry: dict):
+def _maybe_add_agrelon(record: dict, typ: str, rolle: str, agent_entry: dict,
+                       xlsx_source: dict | None = None):
     """Emittiert eine agrelon:*-Relation, wenn (typ, rolle) in AGRELON_MAPPING.
 
     Die Relation haengt am Record (m3gim:agentRelation) und traegt als
-    Provenance die Record-URI selbst.
+    Provenance die Record-URI selbst. xlsx_source (optional) wird als
+    m3gim:xlsxSource angehaengt.
     """
     mapping = AGRELON_MAPPING.get((typ, rolle))
     if not mapping:
@@ -691,6 +723,8 @@ def _maybe_add_agrelon(record: dict, typ: str, rolle: str, agent_entry: dict):
         rel_entry["agrelon:hasValidityPeriod"] = {
             "agrelon:hasBeginDate": record["rico:date"][:4],
         }
+    if xlsx_source:
+        rel_entry["m3gim:xlsxSource"] = xlsx_source
     record.setdefault("m3gim:agentRelation", []).append(rel_entry)
 
 
@@ -737,6 +771,9 @@ def add_relations_to_records(records: list, relations: dict,
                     _inject_enrichment(entry, enrich)
             if rel.get("rolle"):
                 entry["role"] = rel["rolle"]
+            # Provenance an jede Relation haengen
+            if rel.get("_source"):
+                entry["m3gim:xlsxSource"] = rel["_source"]
 
             if t == "person":
                 rolle_lower = (rel.get("rolle") or "").lower()
@@ -745,12 +782,14 @@ def add_relations_to_records(records: list, relations: dict,
                 else:
                     entry["@type"] = "rico:Person"
                     agents.append(entry)
-                    _maybe_add_agrelon(record, t, rolle_lower, entry)
+                    _maybe_add_agrelon(record, t, rolle_lower, entry,
+                                        xlsx_source=rel.get("_source"))
 
             elif t == "institution":
                 entry["@type"] = "rico:CorporateBody"
                 agents.append(entry)
-                _maybe_add_agrelon(record, t, (rel.get("rolle") or "").lower(), entry)
+                _maybe_add_agrelon(record, t, (rel.get("rolle") or "").lower(), entry,
+                                    xlsx_source=rel.get("_source"))
 
             elif t == "ensemble":
                 entry["@type"] = "rico:Group"
@@ -804,6 +843,8 @@ def add_relations_to_records(records: list, relations: dict,
                     detail_entry["m3gim:detailValue"] = rel["rolle"]
                 if rel.get("anmerkung"):
                     detail_entry["rico:generalDescription"] = rel["anmerkung"]
+                if rel.get("_source"):
+                    detail_entry["m3gim:xlsxSource"] = rel["_source"]
                 if "m3gim:hasDetail" not in record:
                     record["m3gim:hasDetail"] = []
                 record["m3gim:hasDetail"].append(detail_entry)
@@ -826,6 +867,8 @@ def add_relations_to_records(records: list, relations: dict,
                     ev["m3gim:eventRole"] = role_val
                 if rel.get("anmerkung"):
                     ev["rico:generalDescription"] = rel["anmerkung"]
+                if rel.get("_source"):
+                    ev["m3gim:xlsxSource"] = rel["_source"]
                 spatiotemporal_events.append(ev)
                 record.setdefault("m3gim:hasSpatiotemporalEvent", []).append({"@id": ev_id})
 
@@ -848,6 +891,8 @@ def add_relations_to_records(records: list, relations: dict,
                     }
                 if currency:
                     detail_entry["m3gim:currency"] = currency
+                if rel.get("_source"):
+                    detail_entry["m3gim:xlsxSource"] = rel["_source"]
                 if "m3gim:hasDetail" not in record:
                     record["m3gim:hasDetail"] = []
                 record["m3gim:hasDetail"].append(detail_entry)
@@ -975,9 +1020,11 @@ def main():
         else:
             print(f"  WARNUNG: {name} nicht gefunden")
 
-    # Reconciliation-Ergebnisse als Fallback laden
+    # Reconciliation-Ergebnisse als Fallback laden.
+    # Konservative Policy: fuzzy_low nur uebernehmen, wenn manuell approved.
     recon_path = OUTPUT_DIR / "wikidata-reconciliation.json"
     recon_count = 0
+    recon_low_skipped = 0
     if recon_path.exists():
         with open(recon_path, "r", encoding="utf-8") as f:
             recon_data = json.load(f)
@@ -987,13 +1034,18 @@ def main():
             etype = type_map.get(match.get("type"))
             if not etype or etype not in indices:
                 continue
+            if (match.get("match") == "fuzzy_low"
+                    and match.get("manual_review") != "approved"):
+                recon_low_skipped += 1
+                continue
             name_key = match["name"].strip().lower()
             if name_key in indices[etype]:
                 entry = indices[etype][name_key]
                 if "wikidata_id" not in entry:
                     entry["wikidata_id"] = match["qid"]
                     recon_count += 1
-        print(f"\n  Reconciliation: {recon_count} Q-IDs ergaenzt aus {recon_path.name}")
+        print(f"\n  Reconciliation: {recon_count} Q-IDs ergaenzt aus {recon_path.name}"
+              f" ({recon_low_skipped} low-conf ignoriert)")
     else:
         print(f"\n  Reconciliation: {recon_path.name} nicht vorhanden (uebersprungen)")
 
