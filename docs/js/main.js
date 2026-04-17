@@ -10,6 +10,7 @@ import { renderArchiv, selectArchivRecord } from './views/archiv.js';
 import { renderIndizes, expandEntry } from './views/indizes.js';
 import { renderKorb } from './views/korb.js';
 import { renderMobilitaetsAtlas } from './views/mobilitaets-atlas.js';
+import { renderRepertoire, repertoireAggregate } from './views/repertoire.js';
 
 const DEV = typeof location !== 'undefined'
   && (location.hostname === 'localhost' || location.hostname === '127.0.0.1');
@@ -22,6 +23,7 @@ const TAB_RENDERERS = new Map([
   ['archiv',             (s, c) => renderArchiv(s, c)],
   ['indizes',            (s, c) => renderIndizes(s, c)],
   ['mobilitaets-atlas',  (s, c) => renderMobilitaetsAtlas(s, c)],
+  ['repertoire',         (s, c) => renderRepertoire(s, c)],
   ['korb',               (s, c) => renderKorb(s, c)],
 ]);
 
@@ -106,6 +108,10 @@ function logTabActivation(tab, s) {
       const all = [...s.mobilityEvents.values()];
       const withGeo = all.filter(e => typeof e.placeLat === 'number' && typeof e.placeLon === 'number');
       return { events: all.length, withGeo: withGeo.length, unverortet: all.length - withGeo.length };
+    },
+    repertoire: () => {
+      const agg = repertoireAggregate();
+      return { works: agg?.works.length || 0, composers: agg?.composers.length || 0 };
     },
     korb:                () => ({ records: s.allRecords.length }),
   };
@@ -280,6 +286,13 @@ function exposeDebug(s) {
       }));
       console.table(rows);
       return rows;
+    },
+    repertoireAggregate() {
+      const agg = repertoireAggregate();
+      if (!agg) return null;
+      console.log('Werke:'); console.table(agg.works);
+      console.log('Komponisten:'); console.table(agg.composers);
+      return agg;
     },
     mobilityEventsWithGeo() {
       const rows = [...s.mobilityEvents.values()]

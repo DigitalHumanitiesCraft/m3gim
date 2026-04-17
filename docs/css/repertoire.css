@@ -1,0 +1,257 @@
+/*
+ * M3GIM Repertoire-Tab — parallele Aggregat-Tabellen.
+ * Designgrundlage: knowledge/interface-konzept.md § Parallele Facet-Tabellen
+ * + § Inline-Breakdown statt Drilldown-Panel.
+ */
+
+#tab-repertoire {
+  padding: 24px 32px 48px;
+}
+
+.repertoire__header {
+  margin-bottom: 20px;
+}
+
+.repertoire__title {
+  font-family: var(--font-serif, 'Source Serif 4', Georgia, serif);
+  font-weight: 500;
+  font-size: 1.75rem;
+  margin: 0 0 4px;
+  color: var(--text-color, #1F1B16);
+}
+
+.repertoire__subtitle {
+  margin: 0;
+  color: var(--muted-color, #5C5651);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.repertoire__mono {
+  font-family: var(--font-mono, ui-monospace, Menlo, monospace);
+  font-size: 0.82em;
+  letter-spacing: 0.04em;
+  background: var(--paper-dim, #f3ece0);
+  padding: 1px 6px;
+  border-radius: 3px;
+}
+
+/* Zwei-Spalten-Grid: 60 % Werke · 40 % Komponisten */
+.repertoire__body {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  gap: 28px;
+  align-items: start;
+}
+
+.repertoire__table {
+  min-width: 0;
+}
+
+.repertoire__section-title {
+  margin: 0 0 8px;
+  font-family: var(--font-mono, ui-monospace, Menlo, monospace);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-color, #1F1B16);
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border-color, #d8cfbf);
+}
+
+.repertoire__gloss {
+  font-weight: 400;
+  color: var(--muted-color, #5C5651);
+  text-transform: none;
+  letter-spacing: 0.04em;
+  margin-left: 2px;
+}
+
+.repertoire__count {
+  float: right;
+  font-weight: 400;
+  color: var(--muted-color, #5C5651);
+}
+
+.repertoire__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  counter-reset: repertoire-rank;
+}
+
+.repertoire__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border-color-soft, #efe7d6);
+  cursor: pointer;
+  transition: background 120ms ease, border-color 120ms ease;
+  counter-increment: repertoire-rank;
+}
+
+.repertoire__row:hover {
+  background: var(--paper-dim, #f3ece0);
+}
+
+.repertoire__row--selected {
+  background: var(--paper-dim, #f3ece0);
+  border-left: 3px solid var(--accent, #004A8F);
+  padding-left: 7px;
+}
+
+.repertoire__row::before {
+  /* Rang-Anzeige in Mono — sehr dezent */
+  content: counter(repertoire-rank);
+  font-family: var(--font-mono, ui-monospace, Menlo, monospace);
+  font-size: 0.7rem;
+  color: var(--muted-color, #5C5651);
+  min-width: 24px;
+  text-align: right;
+  opacity: 0.55;
+  grid-column: auto;
+  /* verschoben: eigene Column vor dem Namen */
+}
+
+/* Umstellen: Rang · Name · Breakdown · Summe */
+.repertoire__row {
+  grid-template-columns: 24px minmax(0, 1fr) auto auto;
+}
+
+.repertoire__name {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.repertoire__name-main {
+  font-family: var(--font-serif, 'Source Serif 4', Georgia, serif);
+  font-size: 1rem;
+  color: var(--text-color, #1F1B16);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.repertoire__name-sub {
+  font-family: var(--font-sans, system-ui);
+  font-size: 0.78rem;
+  color: var(--muted-color, #5C5651);
+  margin-top: 1px;
+}
+
+.repertoire__breakdown {
+  display: flex;
+  gap: 4px;
+  flex-wrap: nowrap;
+}
+
+.repertoire__breakdown .chip {
+  /* Kompakter als im Archiv — nur Prefix + Zahl */
+  padding: 2px 6px;
+  font-size: 0.72rem;
+}
+
+.repertoire__summe {
+  font-family: var(--font-mono, ui-monospace, Menlo, monospace);
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-color, #1F1B16);
+  min-width: 28px;
+  text-align: right;
+}
+
+/* Detail-Panel darunter */
+.repertoire__detail {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-color, #d8cfbf);
+}
+
+.repertoire__detail-empty {
+  color: var(--muted-color, #5C5651);
+  font-style: italic;
+  padding: 12px 0;
+  font-size: 0.9rem;
+}
+
+.repertoire__detail-title {
+  margin: 0 0 8px;
+  font-family: var(--font-serif, 'Source Serif 4', Georgia, serif);
+  font-weight: 500;
+  font-size: 1.2rem;
+}
+
+.repertoire__detail-counts {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.repertoire__detail-total {
+  font-family: var(--font-mono, ui-monospace, Menlo, monospace);
+  font-size: 0.85rem;
+  color: var(--muted-color, #5C5651);
+  margin-left: 6px;
+}
+
+.repertoire__record-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 4px 18px;
+}
+
+.repertoire__record {
+  display: grid;
+  grid-template-columns: 90px 1fr 90px;
+  gap: 10px;
+  align-items: baseline;
+  padding: 4px 6px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background 120ms ease;
+}
+
+.repertoire__record:hover {
+  background: var(--paper-dim, #f3ece0);
+}
+
+.repertoire__record-sig {
+  font-family: var(--font-mono, ui-monospace, Menlo, monospace);
+  font-size: 0.78rem;
+  color: var(--muted-color, #5C5651);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.repertoire__record-title {
+  font-family: var(--font-serif, 'Source Serif 4', Georgia, serif);
+  color: var(--text-color, #1F1B16);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.repertoire__record-date {
+  font-family: var(--font-mono, ui-monospace, Menlo, monospace);
+  font-size: 0.78rem;
+  color: var(--muted-color, #5C5651);
+  text-align: right;
+}
+
+/* Responsive: unter 900px die Tabellen untereinander */
+@media (max-width: 900px) {
+  .repertoire__body {
+    grid-template-columns: 1fr;
+  }
+}
