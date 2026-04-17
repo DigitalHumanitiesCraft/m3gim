@@ -45,6 +45,14 @@ python tests/tools/snapshot_diff.py <alt.jsonld> <neu.jsonld>
 
 Das Tool schaltet intern auf UTF-8, kein `PYTHONIOENCODING` mehr nötig.
 
+### Manuelle Wikidata-Approvals verifizieren
+
+```bash
+python scripts/verify-manual-approvals.py
+```
+
+Prüft alle `match: "manual"`-Einträge in `wikidata-reconciliation.json` gegen Wikidata (Label + Alias + Typ-Signal in der Description). Pflichtlauf nach jedem manuellen Approval-Batch — Session 34 hat gezeigt, dass Q-IDs aus dem Kopf tragende Datenfehler produzieren (Q2861 war Rostock statt Bayreuth, Q200491 war ein Game-Publisher statt Iwano-Frankiwsk). Offline überspringbar via `SKIP_VERIFY_MANUAL=1`.
+
 ## Workflow-Regeln
 
 ### TDD-Modus für Modell-Erweiterungen
