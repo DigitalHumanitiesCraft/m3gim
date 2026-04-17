@@ -33,6 +33,19 @@ Suite durchgängig grün bis auf die beiden dokumentierten Ausnahmen (`PL_07` xf
 
 ## Erreichte Meilensteine
 
+### Session 34 — Datenqualität + Interface-Ausbau (Repertoire · Biogramm · Netzwerk)
+
+Sechs Commits schließen die Datenqualitäts-Gaps und vervollständigen das in [interface-konzept.md](interface-konzept.md) verankerte Fünf-Tab-Fundament.
+
+- **ORTE-Label-Bug (Pipeline).** Im Komposit `ort,datum` der Verknüpfungstabelle wird die Rolle des Eintrags (z. B. `erscheinungsdatum`) an beide Hälften vererbt — der `rico:Place` trug dadurch eine Datumsrolle, im UI erschien „Stuttgart (erscheinungsdatum)". `scripts/transform.py` strippt das `role`-Feld im Ort-Zweig, wenn es in `DATUMSROLLE_TO_PROPERTY` liegt. TDD in `tests/test_23_role_hygiene.py`. Wirkung: 18 Places mit Datumsrolle → 0.
+- **Reconciliation-Lücke geschlossen.** Zehn prominente Malaniuk-Städte (Wien Q1741, München Q1726, Bayreuth Q2861, Köln Q365, Venedig Q641, Neapel Q2634, Buenos Aires Q1486, Lemberg Q36036, Lissabon Q597, Stanislau Q200491) manuell als `match: "manual"` + `manual_review: "approved"` in `wikidata-reconciliation.json` eingetragen. Enrichment + Transform ziehen Koordinaten nach. Effekt auf den Mobilitäts-Atlas: STE-Coverage von 37 % auf 100 % (43/43), Wien trägt allein 15 Events.
+- **Archiv-Inline-Detail-Migration.** `renderEntityChips()` entfallen. Alle Agent-, Werk- und Ort-Chips laufen durch `buildRoleChip()` und tragen Cluster-Farbe + Provenance-Pille. Rechte Spalte in fünf funktionale Blöcke (Produktion · Mitwirkende · Werk & Repertoire · Ort & Ereignis · Erwähnt · Weitere) statt sechs typbasierter Sektionen. Mapping in `ROLE_TO_SECTION`/`sectionForRole()` in `docs/js/data/constants.js`. Ereignisse wandern in den Ort-&-Ereignis-Block (Doppeldarstellung entfällt).
+- **Repertoire-Tab.** Zwei parallele Aggregat-Tabellen (Bühnenrepertoire × Komponisten), jede Zeile mit Inline-Breakdown `ERW · AUFF · REP → Summe`. Aggregation im Frontend aus `store.records` + `store.works`, DFT-Typ `m3gim-dft:repertoireliste` für REP. Klick öffnet Belegliste chronologisch. Debug-Helper `window.m3gim.repertoireAggregate()`.
+- **Biogramm-Tab.** D3-Zeitstrahl 1919–2009 mit zwei Spuren (Orte aus `mobilityEvents` nach Land, Belege aller datierten Records). Phasen-Quickselect (Jugend · Nachkriegs-Graz · Europäische Karriere · Lehrtätigkeit). Flucht 1944 als vertikale Signal-Rot-Linie. Dritte (Netzwerk-)Spur deferred, weil AgRelOn keine Validity-Perioden trägt.
+- **Netzwerk-Tab.** Tabelle vor Graph. Pivot pro Agenten-Gegenseite mit Chip-Breakdown (`KORRESP · BERUF · PATRON · ARBGBR · MITGLIED`). Klick öffnet Belegliste rechts (sticky). Datenlage aktuell dünn (sieben Agenten); Tab wächst ohne Code-Änderung mit der Erschließung.
+
+Tests: 186 passed, 1 skipped, 1 xfailed.
+
 ### Session 33 — Mobilitäts-Atlas MVP
 
 Zwei sequenzielle Commits haben den ersten Tab mit Karte realisiert:
@@ -110,14 +123,13 @@ Detaillierte Entscheidungen: [entscheidungen.md](entscheidungen.md).
 
 ## Nächste Schritte
 
-### Interface-Ausbau (aktiver Fokus)
+### Interface-Ausbau
 
-Grundlage: [interface-konzept.md](interface-konzept.md). MVP-Fundament steht (Session 32: Archiv, Indizes), Mobilitäts-Atlas steht (Session 33). Die weiteren Tabs bauen darauf auf.
+Grundlage: [interface-konzept.md](interface-konzept.md). Fünf-Tab-Fundament nach Session 34 vollständig (Archiv · Indizes · Mobilitäts-Atlas · Repertoire · Biogramm · Netzwerk). Offen ist der Feinschliff:
 
-1. **Repertoire-Tab** — Bühnenrollen × Komponisten als parallele Aggregat-Tabellen mit Inline-Breakdown (`ERWÄHNT · AUFFÜHRUNG · REPERTOIRE → Summe`), passend zum Repertoire-Mockup.
-2. **Biogramm-Tab** — chronologische Gesamtsicht (Orte, Netzwerk, Repertoire) pro Lebensphase. Form offen, Konzeption nach Repertoire.
-3. **Netzwerk-Tab** — offen. Voraussichtlich Tabelle mit Chip-Breakdown analog Repertoire, nicht Graph.
-4. **Reconciliation-Lücke Wien/München/Bayreuth schließen** — die drei prominenten Malaniuk-Städte stehen in `wikidata-reconciliation.json` als `unmatched`. Manuelles Freischalten als `manual_review: "approved"` oder Nachzug der Q-IDs füllt den Atlas deutlich auf.
+1. **Biogramm — Netzwerk-Spur** sobald AgRelOn-Relationen validity-dates (`agrelon:hasProvenance.m3gim:temporalEvidence`) tragen. Aktuell sind alle 24 Relationen ohne Validity-Periode.
+2. **Weitere Reconciliation-Runde** — Unmatched-Restliste (u. a. Bloomington) manuell prüfen, falls gewünscht. Nicht blockierend.
+3. **Konvolut-Inline-Detail-Migration** — `buildKonvolutDetail()` nutzt noch die alte `.chip--entity`-Primitive für die aggregierten Top-10-Listen. Kein funktionaler Defekt, nur Designkonsistenz.
 
 ### Deferred Aufräumarbeiten (nach Bedarf)
 
