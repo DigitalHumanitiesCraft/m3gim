@@ -172,17 +172,55 @@ def extract_claim_value(claim: dict) -> dict | str | None:
     return None
 
 
+def _pick_current_claim(claims_list: list) -> dict | None:
+    """Waehlt aus einer P-Claim-Liste den "aktuellen" Eintrag.
+
+    Reihenfolge:
+      1. Claims mit ``rank == "preferred"`` (Wikidatas kuratierter Default).
+      2. Claims ohne ``P582`` (end time) Qualifier — noch gueltige Zuordnungen.
+      3. Erstes Claim, das kein deprecated ist (Fallback).
+
+    Loest das Berlin-Problem: P17 hat 11 historische Eintraege (Mark
+    Brandenburg, Deutsches Reich, DDR, BRD, ...), aber nur einer mit
+    rank=preferred auf Q183 Deutschland.
+    """
+    non_deprecated = [c for c in claims_list if c.get("rank") != "deprecated"]
+    if not non_deprecated:
+        return None
+    preferred = [c for c in non_deprecated if c.get("rank") == "preferred"]
+    if preferred:
+        return preferred[0]
+    still_valid = [c for c in non_deprecated if "P582" not in c.get("qualifiers", {})]
+    if still_valid:
+        return still_valid[0]
+    return non_deprecated[0]
+
+
 def extract_properties(entity: dict, prop_config: dict) -> dict:
     """Extrahiert konfigurierte Properties aus einer WD-Entitaet."""
     claims = entity.get("claims", {})
     result = {}
 
+    # Entity-Ref-Properties werden ueber _pick_current_claim disambiguiert,
+    # damit historische Zuordnungen nicht den Default stellen.
+    SINGLE_ENTITY_REFS = ("P19", "P20", "P17", "P276", "P86")
+    SINGLE_VALUES = ("P625", "P569", "P570", "P1191", "P571", "P577")
+
     for pid, field_name in prop_config.items():
         if pid not in claims:
             continue
 
+        if pid in SINGLE_ENTITY_REFS:
+            chosen = _pick_current_claim(claims[pid])
+            val = extract_claim_value(chosen) if chosen else None
+            if val is not None:
+                result[field_name] = val
+            continue
+
         values = []
         for claim in claims[pid]:
+            if claim.get("rank") == "deprecated":
+                continue
             val = extract_claim_value(claim)
             if val is not None:
                 values.append(val)
@@ -190,12 +228,7 @@ def extract_properties(entity: dict, prop_config: dict) -> dict:
         if not values:
             continue
 
-        # Einzelwert vs. Liste
-        if pid in ("P625",):  # Koordinaten: immer Einzelwert
-            result[field_name] = values[0]
-        elif pid in ("P569", "P570", "P1191", "P571", "P577"):  # Datumsfelder: Einzelwert
-            result[field_name] = values[0]
-        elif pid in ("P19", "P20", "P17", "P276", "P86"):  # Entity-Refs: Einzelwert
+        if pid in SINGLE_VALUES:
             result[field_name] = values[0]
         else:  # P106, P412, P136: koennen mehrere sein
             result[field_name] = values
@@ -332,11 +365,11 @@ def run_enrichment(entity_types: list, force: bool = False):
             props = entry.get("properties", {})
             for field_name, val in props.items():
                 if isinstance(val, dict) and "qid" in val:
-                    val["label"] = labels.get(val["qid"], val["label"] or val["qid"])
+                    val["label"] = labels.get(val["qid"], val.get("label") or val["qid"])
                 elif isinstance(val, list):
                     for item in val:
                         if isinstance(item, dict) and "qid" in item:
-                            item["label"] = labels.get(item["qid"], item["label"] or item["qid"])
+                            item["label"] = labels.get(item["qid"], item.get("label") or item["qid"])
 
     _write_output(enriched, entity_types, matched)
 

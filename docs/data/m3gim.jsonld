@@ -2909,10 +2909,10 @@
         },
         {
           "name": "Bayreuth",
-          "@id": "wd:Q2861",
-          "owl:sameAs": "http://www.wikidata.org/entity/Q2861",
-          "geo:lat": 54.083333333333,
-          "geo:long": 12.133333333333,
+          "@id": "wd:Q3923",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q3923",
+          "geo:lat": 49.948055555556,
+          "geo:long": 11.578333333333,
           "m3gim:country": "Deutschland",
           "role": "erwähnt",
           "m3gim:xlsxSource": {
@@ -3699,10 +3699,10 @@
       ],
       "rico:hasOrHadLocation": {
         "name": "Bayreuth",
-        "@id": "wd:Q2861",
-        "owl:sameAs": "http://www.wikidata.org/entity/Q2861",
-        "geo:lat": 54.083333333333,
-        "geo:long": 12.133333333333,
+        "@id": "wd:Q3923",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q3923",
+        "geo:lat": 49.948055555556,
+        "geo:long": 11.578333333333,
         "m3gim:country": "Deutschland",
         "role": "erwähnt",
         "m3gim:xlsxSource": {
@@ -4096,10 +4096,10 @@
       ],
       "rico:hasOrHadLocation": {
         "name": "Bayreuth",
-        "@id": "wd:Q2861",
-        "owl:sameAs": "http://www.wikidata.org/entity/Q2861",
-        "geo:lat": 54.083333333333,
-        "geo:long": 12.133333333333,
+        "@id": "wd:Q3923",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q3923",
+        "geo:lat": 49.948055555556,
+        "geo:long": 11.578333333333,
         "m3gim:country": "Deutschland",
         "role": "auffuehrungsort",
         "m3gim:xlsxSource": {
@@ -5387,10 +5387,10 @@
       ],
       "rico:hasOrHadLocation": {
         "name": "Bayreuth",
-        "@id": "wd:Q2861",
-        "owl:sameAs": "http://www.wikidata.org/entity/Q2861",
-        "geo:lat": 54.083333333333,
-        "geo:long": 12.133333333333,
+        "@id": "wd:Q3923",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q3923",
+        "geo:lat": 49.948055555556,
+        "geo:long": 11.578333333333,
         "m3gim:country": "Deutschland",
         "role": "auffuehrungsort",
         "m3gim:xlsxSource": {
@@ -7993,10 +7993,10 @@
       ],
       "rico:hasOrHadLocation": {
         "name": "Bayreuth",
-        "@id": "wd:Q2861",
-        "owl:sameAs": "http://www.wikidata.org/entity/Q2861",
-        "geo:lat": 54.083333333333,
-        "geo:long": 12.133333333333,
+        "@id": "wd:Q3923",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q3923",
+        "geo:lat": 49.948055555556,
+        "geo:long": 11.578333333333,
         "m3gim:country": "Deutschland",
         "role": "erwähnt",
         "m3gim:xlsxSource": {
@@ -8841,10 +8841,10 @@
         },
         {
           "name": "Bayreuth",
-          "@id": "wd:Q2861",
-          "owl:sameAs": "http://www.wikidata.org/entity/Q2861",
-          "geo:lat": 54.083333333333,
-          "geo:long": 12.133333333333,
+          "@id": "wd:Q3923",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q3923",
+          "geo:lat": 49.948055555556,
+          "geo:long": 11.578333333333,
           "m3gim:country": "Deutschland",
           "role": "erwähnt",
           "m3gim:xlsxSource": {
@@ -8873,7 +8873,7 @@
           "owl:sameAs": "http://www.wikidata.org/entity/Q84",
           "geo:lat": 51.507222222222,
           "geo:long": -0.1275,
-          "m3gim:country": "Römisches Kaiserreich",
+          "m3gim:country": "Vereinigtes Königreich",
           "role": "erwähnt",
           "m3gim:xlsxSource": {
             "m3gim:xlsxSheet": "Verknuepfungen",
@@ -8947,7 +8947,7 @@
           "owl:sameAs": "http://www.wikidata.org/entity/Q64",
           "geo:lat": 52.516666666667,
           "geo:long": 13.383333333333,
-          "m3gim:country": "Mark Brandenburg",
+          "m3gim:country": "Deutschland",
           "role": "erwähnt",
           "m3gim:xlsxSource": {
             "m3gim:xlsxSheet": "Verknuepfungen",
@@ -8961,7 +8961,7 @@
           "owl:sameAs": "http://www.wikidata.org/entity/Q1055",
           "geo:lat": 53.55,
           "geo:long": 10,
-          "m3gim:country": "Heiliges Römisches Reich",
+          "m3gim:country": "Deutschland",
           "role": "erwähnt",
           "m3gim:xlsxSource": {
             "m3gim:xlsxSheet": "Verknuepfungen",
@@ -9036,9 +9036,11 @@
         },
         {
           "name": "Stanislau",
-          "@id": "wd:Q200491",
-          "owl:sameAs": "http://www.wikidata.org/entity/Q200491",
-          "m3gim:country": "Vereinigte Staaten",
+          "@id": "wd:Q156726",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q156726",
+          "geo:lat": 48.922777777778,
+          "geo:long": 24.710555555556,
+          "m3gim:country": "Ukraine",
           "role": "erwähnt",
           "m3gim:xlsxSource": {
             "m3gim:xlsxSheet": "Verknuepfungen",
@@ -10105,10 +10107,10 @@
         },
         {
           "name": "Bayreuth",
-          "@id": "wd:Q2861",
-          "owl:sameAs": "http://www.wikidata.org/entity/Q2861",
-          "geo:lat": 54.083333333333,
-          "geo:long": 12.133333333333,
+          "@id": "wd:Q3923",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q3923",
+          "geo:lat": 49.948055555556,
+          "geo:long": 11.578333333333,
           "m3gim:country": "Deutschland",
           "role": "erwähnt",
           "m3gim:xlsxSource": {
@@ -10137,7 +10139,7 @@
           "owl:sameAs": "http://www.wikidata.org/entity/Q84",
           "geo:lat": 51.507222222222,
           "geo:long": -0.1275,
-          "m3gim:country": "Römisches Kaiserreich",
+          "m3gim:country": "Vereinigtes Königreich",
           "role": "erwähnt",
           "m3gim:xlsxSource": {
             "m3gim:xlsxSheet": "Verknuepfungen",
@@ -10211,7 +10213,7 @@
           "owl:sameAs": "http://www.wikidata.org/entity/Q64",
           "geo:lat": 52.516666666667,
           "geo:long": 13.383333333333,
-          "m3gim:country": "Mark Brandenburg",
+          "m3gim:country": "Deutschland",
           "role": "erwähnt",
           "m3gim:xlsxSource": {
             "m3gim:xlsxSheet": "Verknuepfungen",
@@ -10225,7 +10227,7 @@
           "owl:sameAs": "http://www.wikidata.org/entity/Q1055",
           "geo:lat": 53.55,
           "geo:long": 10,
-          "m3gim:country": "Heiliges Römisches Reich",
+          "m3gim:country": "Deutschland",
           "role": "erwähnt",
           "m3gim:xlsxSource": {
             "m3gim:xlsxSheet": "Verknuepfungen",
@@ -10300,9 +10302,11 @@
         },
         {
           "name": "Stanislau",
-          "@id": "wd:Q200491",
-          "owl:sameAs": "http://www.wikidata.org/entity/Q200491",
-          "m3gim:country": "Vereinigte Staaten",
+          "@id": "wd:Q156726",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q156726",
+          "geo:lat": 48.922777777778,
+          "geo:long": 24.710555555556,
+          "m3gim:country": "Ukraine",
           "role": "erwähnt",
           "m3gim:xlsxSource": {
             "m3gim:xlsxSheet": "Verknuepfungen",
@@ -14681,7 +14685,7 @@
           "owl:sameAs": "http://www.wikidata.org/entity/Q64",
           "geo:lat": 52.516666666667,
           "geo:long": 13.383333333333,
-          "m3gim:country": "Mark Brandenburg",
+          "m3gim:country": "Deutschland",
           "role": "erwähnt",
           "m3gim:xlsxSource": {
             "m3gim:xlsxSheet": "Verknuepfungen",
@@ -18314,7 +18318,7 @@
           "owl:sameAs": "http://www.wikidata.org/entity/Q64",
           "geo:lat": 52.516666666667,
           "geo:long": 13.383333333333,
-          "m3gim:country": "Mark Brandenburg",
+          "m3gim:country": "Deutschland",
           "role": "zielort",
           "m3gim:xlsxSource": {
             "m3gim:xlsxSheet": "Verknuepfungen",
@@ -21706,10 +21710,10 @@
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Bayreuth",
-        "@id": "wd:Q2861",
-        "owl:sameAs": "http://www.wikidata.org/entity/Q2861",
-        "geo:lat": 54.083333333333,
-        "geo:long": 12.133333333333,
+        "@id": "wd:Q3923",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q3923",
+        "geo:lat": 49.948055555556,
+        "geo:long": 11.578333333333,
         "m3gim:country": "Deutschland"
       },
       "m3gim:atDate": "1951/1953",
@@ -21814,10 +21818,10 @@
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Bayreuth",
-        "@id": "wd:Q2861",
-        "owl:sameAs": "http://www.wikidata.org/entity/Q2861",
-        "geo:lat": 54.083333333333,
-        "geo:long": 12.133333333333,
+        "@id": "wd:Q3923",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q3923",
+        "geo:lat": 49.948055555556,
+        "geo:long": 11.578333333333,
         "m3gim:country": "Deutschland"
       },
       "m3gim:atDate": "1951/1953",
@@ -21857,10 +21861,10 @@
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Bayreuth",
-        "@id": "wd:Q2861",
-        "owl:sameAs": "http://www.wikidata.org/entity/Q2861",
-        "geo:lat": 54.083333333333,
-        "geo:long": 12.133333333333,
+        "@id": "wd:Q3923",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q3923",
+        "geo:lat": 49.948055555556,
+        "geo:long": 11.578333333333,
         "m3gim:country": "Deutschland"
       },
       "m3gim:atDate": "1952-08-26",
@@ -21878,10 +21882,10 @@
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Bayreuth",
-        "@id": "wd:Q2861",
-        "owl:sameAs": "http://www.wikidata.org/entity/Q2861",
-        "geo:lat": 54.083333333333,
-        "geo:long": 12.133333333333,
+        "@id": "wd:Q3923",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q3923",
+        "geo:lat": 49.948055555556,
+        "geo:long": 11.578333333333,
         "m3gim:country": "Deutschland"
       },
       "m3gim:atDate": "1953-07-06",
@@ -22198,7 +22202,7 @@
         "owl:sameAs": "http://www.wikidata.org/entity/Q64",
         "geo:lat": 52.516666666667,
         "geo:long": 13.383333333333,
-        "m3gim:country": "Mark Brandenburg"
+        "m3gim:country": "Deutschland"
       },
       "m3gim:atDate": "1957-11-10",
       "rico:isAssociatedWithRecord": {
@@ -22219,7 +22223,7 @@
         "owl:sameAs": "http://www.wikidata.org/entity/Q64",
         "geo:lat": 52.516666666667,
         "geo:long": 13.383333333333,
-        "m3gim:country": "Mark Brandenburg"
+        "m3gim:country": "Deutschland"
       },
       "m3gim:atDate": "1957-11-11",
       "rico:isAssociatedWithRecord": {
@@ -22442,7 +22446,7 @@
       }
     }
   ],
-  "m3gim:exportDate": "2026-04-17T21:10:03.248527",
+  "m3gim:exportDate": "2026-04-17T21:18:26.386637",
   "m3gim:recordCount": 381,
   "m3gim:konvolutCount": 7
 }

@@ -1,6 +1,6 @@
 {
   "meta": {
-    "date": "2026-04-17T21:09:42.022657",
+    "date": "2026-04-17T21:18:14.301508",
     "source": "wikidata-reconciliation.json",
     "entity_count": 251,
     "properties_fetched": [
@@ -5513,216 +5513,6 @@
         "inception": "1841-00-00"
       }
     },
-    "Q64": {
-      "type": "location",
-      "name": "Berlin",
-      "properties": {
-        "coordinates": {
-          "lat": 52.516666666667,
-          "lon": 13.383333333333
-        },
-        "country": {
-          "qid": "Q148499",
-          "label": "Mark Brandenburg"
-        }
-      }
-    },
-    "Q13298": {
-      "type": "location",
-      "name": "Graz",
-      "properties": {
-        "coordinates": {
-          "lat": 47.07083333333333,
-          "lon": 15.438611111111111
-        },
-        "country": {
-          "qid": "Q40",
-          "label": "Österreich"
-        }
-      }
-    },
-    "Q1055": {
-      "type": "location",
-      "name": "Hamburg",
-      "properties": {
-        "coordinates": {
-          "lat": 53.55,
-          "lon": 10
-        },
-        "country": {
-          "qid": "Q12548",
-          "label": "Heiliges Römisches Reich"
-        }
-      }
-    },
-    "Q41329": {
-      "type": "location",
-      "name": "Linz",
-      "properties": {
-        "coordinates": {
-          "lat": 48.30583333333333,
-          "lon": 14.286388888888888
-        },
-        "country": {
-          "qid": "Q40",
-          "label": "Österreich"
-        }
-      }
-    },
-    "Q84": {
-      "type": "location",
-      "name": "London",
-      "properties": {
-        "coordinates": {
-          "lat": 51.507222222222,
-          "lon": -0.1275
-        },
-        "country": {
-          "qid": "Q2277",
-          "label": "Römisches Kaiserreich"
-        }
-      }
-    },
-    "Q116170766": {
-      "type": "location",
-      "name": "Madrid",
-      "properties": {
-        "coordinates": {
-          "lat": 40.4165,
-          "lon": -3.70256
-        },
-        "country": {
-          "qid": "Q29",
-          "label": "Spanien"
-        }
-      }
-    },
-    "Q45240": {
-      "type": "location",
-      "name": "Monte Carlo",
-      "properties": {
-        "coordinates": {
-          "lat": 43.738942,
-          "lon": 7.425237
-        },
-        "country": {
-          "qid": "Q235",
-          "label": "Monaco"
-        }
-      }
-    },
-    "Q1384": {
-      "type": "location",
-      "name": "New York",
-      "properties": {
-        "coordinates": {
-          "lat": 43,
-          "lon": -75
-        },
-        "country": {
-          "qid": "Q30",
-          "label": "Vereinigte Staaten"
-        }
-      }
-    },
-    "Q90": {
-      "type": "location",
-      "name": "Paris",
-      "properties": {
-        "coordinates": {
-          "lat": 48.85666666666667,
-          "lon": 2.352222222222222
-        },
-        "country": {
-          "qid": "Q142",
-          "label": "Frankreich"
-        }
-      }
-    },
-    "Q21880302": {
-      "type": "location",
-      "name": "Perchtoldsdorf",
-      "properties": {
-        "coordinates": {
-          "lat": 48.11895,
-          "lon": 16.25736
-        },
-        "country": {
-          "qid": "Q40",
-          "label": "Österreich"
-        }
-      }
-    },
-    "Q1711": {
-      "type": "location",
-      "name": "Potsdam",
-      "properties": {
-        "coordinates": {
-          "lat": 52.4,
-          "lon": 13.066666666667
-        },
-        "country": {
-          "qid": "Q183",
-          "label": "Deutschland"
-        }
-      }
-    },
-    "Q34713": {
-      "type": "location",
-      "name": "Salzburg",
-      "properties": {
-        "coordinates": {
-          "lat": 47.8,
-          "lon": 13.045
-        },
-        "country": {
-          "qid": "Q40",
-          "label": "Österreich"
-        }
-      }
-    },
-    "Q1022": {
-      "type": "location",
-      "name": "Stuttgart",
-      "properties": {
-        "coordinates": {
-          "lat": 48.7775,
-          "lon": 9.18
-        },
-        "country": {
-          "qid": "Q183",
-          "label": "Deutschland"
-        }
-      }
-    },
-    "Q72": {
-      "type": "location",
-      "name": "Zürich",
-      "properties": {
-        "coordinates": {
-          "lat": 47.37444444444444,
-          "lon": 8.54111111111111
-        },
-        "country": {
-          "qid": "Q39",
-          "label": "Schweiz"
-        }
-      }
-    },
-    "Q78": {
-      "type": "location",
-      "name": "Basel",
-      "properties": {
-        "coordinates": {
-          "lat": 47.560555555556,
-          "lon": 7.5905555555556
-        },
-        "country": {
-          "qid": "Q39",
-          "label": "Schweiz"
-        }
-      }
-    },
     "Q23010225": {
       "type": "work",
       "name": "Befreit",
@@ -6062,6 +5852,216 @@
         "premiereDate": "1924-06-13"
       }
     },
+    "Q64": {
+      "type": "location",
+      "name": "Berlin",
+      "properties": {
+        "coordinates": {
+          "lat": 52.516666666667,
+          "lon": 13.383333333333
+        },
+        "country": {
+          "qid": "Q183",
+          "label": "Deutschland"
+        }
+      }
+    },
+    "Q13298": {
+      "type": "location",
+      "name": "Graz",
+      "properties": {
+        "coordinates": {
+          "lat": 47.07083333333333,
+          "lon": 15.438611111111111
+        },
+        "country": {
+          "qid": "Q40",
+          "label": "Österreich"
+        }
+      }
+    },
+    "Q1055": {
+      "type": "location",
+      "name": "Hamburg",
+      "properties": {
+        "coordinates": {
+          "lat": 53.55,
+          "lon": 10
+        },
+        "country": {
+          "qid": "Q183",
+          "label": "Deutschland"
+        }
+      }
+    },
+    "Q41329": {
+      "type": "location",
+      "name": "Linz",
+      "properties": {
+        "coordinates": {
+          "lat": 48.30583333333333,
+          "lon": 14.286388888888888
+        },
+        "country": {
+          "qid": "Q40",
+          "label": "Österreich"
+        }
+      }
+    },
+    "Q84": {
+      "type": "location",
+      "name": "London",
+      "properties": {
+        "coordinates": {
+          "lat": 51.507222222222,
+          "lon": -0.1275
+        },
+        "country": {
+          "qid": "Q145",
+          "label": "Vereinigtes Königreich"
+        }
+      }
+    },
+    "Q116170766": {
+      "type": "location",
+      "name": "Madrid",
+      "properties": {
+        "coordinates": {
+          "lat": 40.4165,
+          "lon": -3.70256
+        },
+        "country": {
+          "qid": "Q29",
+          "label": "Spanien"
+        }
+      }
+    },
+    "Q45240": {
+      "type": "location",
+      "name": "Monte Carlo",
+      "properties": {
+        "coordinates": {
+          "lat": 43.738942,
+          "lon": 7.425237
+        },
+        "country": {
+          "qid": "Q235",
+          "label": "Monaco"
+        }
+      }
+    },
+    "Q1384": {
+      "type": "location",
+      "name": "New York",
+      "properties": {
+        "coordinates": {
+          "lat": 43,
+          "lon": -75
+        },
+        "country": {
+          "qid": "Q30",
+          "label": "Vereinigte Staaten"
+        }
+      }
+    },
+    "Q90": {
+      "type": "location",
+      "name": "Paris",
+      "properties": {
+        "coordinates": {
+          "lat": 48.85666666666667,
+          "lon": 2.352222222222222
+        },
+        "country": {
+          "qid": "Q142",
+          "label": "Frankreich"
+        }
+      }
+    },
+    "Q21880302": {
+      "type": "location",
+      "name": "Perchtoldsdorf",
+      "properties": {
+        "coordinates": {
+          "lat": 48.11895,
+          "lon": 16.25736
+        },
+        "country": {
+          "qid": "Q40",
+          "label": "Österreich"
+        }
+      }
+    },
+    "Q1711": {
+      "type": "location",
+      "name": "Potsdam",
+      "properties": {
+        "coordinates": {
+          "lat": 52.4,
+          "lon": 13.066666666667
+        },
+        "country": {
+          "qid": "Q183",
+          "label": "Deutschland"
+        }
+      }
+    },
+    "Q34713": {
+      "type": "location",
+      "name": "Salzburg",
+      "properties": {
+        "coordinates": {
+          "lat": 47.8,
+          "lon": 13.045
+        },
+        "country": {
+          "qid": "Q40",
+          "label": "Österreich"
+        }
+      }
+    },
+    "Q1022": {
+      "type": "location",
+      "name": "Stuttgart",
+      "properties": {
+        "coordinates": {
+          "lat": 48.7775,
+          "lon": 9.18
+        },
+        "country": {
+          "qid": "Q183",
+          "label": "Deutschland"
+        }
+      }
+    },
+    "Q72": {
+      "type": "location",
+      "name": "Zürich",
+      "properties": {
+        "coordinates": {
+          "lat": 47.37444444444444,
+          "lon": 8.54111111111111
+        },
+        "country": {
+          "qid": "Q39",
+          "label": "Schweiz"
+        }
+      }
+    },
+    "Q78": {
+      "type": "location",
+      "name": "Basel",
+      "properties": {
+        "coordinates": {
+          "lat": 47.560555555556,
+          "lon": 7.5905555555556
+        },
+        "country": {
+          "qid": "Q39",
+          "label": "Schweiz"
+        }
+      }
+    },
     "Q1741": {
       "type": "location",
       "name": "Wien",
@@ -6090,13 +6090,13 @@
         }
       }
     },
-    "Q2861": {
+    "Q3923": {
       "type": "location",
       "name": "Bayreuth",
       "properties": {
         "coordinates": {
-          "lat": 54.083333333333,
-          "lon": 12.133333333333
+          "lat": 49.948055555556,
+          "lon": 11.578333333333
         },
         "country": {
           "qid": "Q183",
@@ -6188,13 +6188,17 @@
         }
       }
     },
-    "Q200491": {
+    "Q156726": {
       "type": "location",
       "name": "Stanislau",
       "properties": {
+        "coordinates": {
+          "lat": 48.922777777778,
+          "lon": 24.710555555556
+        },
         "country": {
-          "qid": "Q30",
-          "label": "Vereinigte Staaten"
+          "qid": "Q212",
+          "label": "Ukraine"
         }
       }
     }

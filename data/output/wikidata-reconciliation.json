@@ -2164,12 +2164,12 @@
     {
       "type": "location",
       "name": "Bayreuth",
-      "qid": "Q2861",
+      "qid": "Q3923",
       "label": "Bayreuth",
       "match": "manual",
       "confidence": 100,
       "manual_review": "approved",
-      "note": "Top-10 Malaniuk-Stadt. API lieferte kein Kandidat; Q-ID manuell verifiziert."
+      "note": "Top-10 Malaniuk-Stadt. API lieferte kein Kandidat; Q-ID manuell verifiziert. | 2026-04-17: Q-ID korrigiert Q2861 (Rostock) → Q3923 (Bayreuth)."
     },
     {
       "type": "location",
@@ -2234,12 +2234,12 @@
     {
       "type": "location",
       "name": "Stanislau",
-      "qid": "Q200491",
+      "qid": "Q156726",
       "label": "Ivano-Frankivsk",
       "match": "manual",
       "confidence": 100,
       "manual_review": "approved",
-      "note": "Top-10 Malaniuk-Stadt. API lieferte kein Kandidat; Q-ID manuell verifiziert."
+      "note": "Top-10 Malaniuk-Stadt. API lieferte kein Kandidat; Q-ID manuell verifiziert. | 2026-04-17: Q-ID korrigiert Q200491 (US-Game-Publisher) → Q156726 (Iwano-Frankiwsk)."
     }
   ],
   "unmatched": [
