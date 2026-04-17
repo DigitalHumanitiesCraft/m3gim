@@ -11,7 +11,7 @@
 }
 
 .netzwerk__title {
-  font-family: var(--font-serif, 'Source Serif 4', Georgia, serif);
+  font-family: var(--font-title);
   font-weight: 500;
   font-size: 1.75rem;
   margin: 0 0 4px;
@@ -34,7 +34,7 @@
 
 .netzwerk__section-title {
   margin: 0 0 8px;
-  font-family: var(--font-mono, ui-monospace, Menlo, monospace);
+  font-family: var(--font-mono);
   font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.12em;
@@ -78,7 +78,7 @@
 
 .netzwerk__row::before {
   content: counter(netzwerk-rank);
-  font-family: var(--font-mono, ui-monospace, Menlo, monospace);
+  font-family: var(--font-mono);
   font-size: 0.7rem;
   color: var(--muted-color, #5C5651);
   text-align: right;
@@ -96,7 +96,7 @@
 }
 
 .netzwerk__name-main {
-  font-family: var(--font-serif, 'Source Serif 4', Georgia, serif);
+  font-family: var(--font-title);
   font-size: 1rem;
   color: var(--text-color, #1F1B16);
   overflow: hidden;
@@ -116,7 +116,7 @@
 }
 
 .netzwerk__summe {
-  font-family: var(--font-mono, ui-monospace, Menlo, monospace);
+  font-family: var(--font-mono);
   font-weight: 600;
   font-size: 0.9rem;
   color: var(--text-color, #1F1B16);
@@ -142,7 +142,7 @@
 
 .netzwerk__detail-title {
   margin: 0 0 8px;
-  font-family: var(--font-serif, 'Source Serif 4', Georgia, serif);
+  font-family: var(--font-title);
   font-weight: 500;
   font-size: 1.15rem;
   color: var(--text-color, #1F1B16);
@@ -157,7 +157,7 @@
 }
 
 .netzwerk__detail-total {
-  font-family: var(--font-mono, ui-monospace, Menlo, monospace);
+  font-family: var(--font-mono);
   font-size: 0.85rem;
   color: var(--muted-color, #5C5651);
   margin-left: 6px;
@@ -186,7 +186,7 @@
 }
 
 .netzwerk__record-sig {
-  font-family: var(--font-mono, ui-monospace, Menlo, monospace);
+  font-family: var(--font-mono);
   font-size: 0.78rem;
   color: var(--muted-color, #5C5651);
   white-space: nowrap;
@@ -195,7 +195,7 @@
 }
 
 .netzwerk__record-title {
-  font-family: var(--font-serif, 'Source Serif 4', Georgia, serif);
+  font-family: var(--font-title);
   color: var(--text-color, #1F1B16);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -203,7 +203,7 @@
 }
 
 .netzwerk__record-date {
-  font-family: var(--font-mono, ui-monospace, Menlo, monospace);
+  font-family: var(--font-mono);
   font-size: 0.78rem;
   color: var(--muted-color, #5C5651);
   text-align: right;

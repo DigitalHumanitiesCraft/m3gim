@@ -11,7 +11,7 @@
 }
 
 .biogramm__title {
-  font-family: var(--font-serif, 'Source Serif 4', Georgia, serif);
+  font-family: var(--font-title);
   font-weight: 500;
   font-size: 1.75rem;
   margin: 0 0 4px;
@@ -43,7 +43,7 @@
   background: var(--paper, #faf6ec);
   border-radius: 3px;
   cursor: pointer;
-  font-family: var(--font-sans, system-ui);
+  font-family: var(--font-ui);
   font-size: 0.78rem;
   color: var(--text-color, #1F1B16);
   transition: background 120ms ease, border-color 120ms ease;
@@ -64,7 +64,7 @@
 }
 
 .biogramm__phase-range {
-  font-family: var(--font-mono, ui-monospace, Menlo, monospace);
+  font-family: var(--font-mono);
   font-size: 0.72rem;
   color: var(--muted-color, #5C5651);
 }
@@ -108,7 +108,7 @@
 
 .biogramm__detail-title {
   margin: 0 0 8px;
-  font-family: var(--font-serif, 'Source Serif 4', Georgia, serif);
+  font-family: var(--font-title);
   font-weight: 500;
   font-size: 1.1rem;
   color: var(--text-color, #1F1B16);
@@ -137,19 +137,19 @@
 }
 
 .biogramm__detail-sig {
-  font-family: var(--font-mono, ui-monospace, Menlo, monospace);
+  font-family: var(--font-mono);
   font-size: 0.85rem;
   color: var(--muted-color, #5C5651);
 }
 
 .biogramm__detail-date {
-  font-family: var(--font-mono, ui-monospace, Menlo, monospace);
+  font-family: var(--font-mono);
   font-size: 0.85rem;
   color: var(--text-color, #1F1B16);
 }
 
 .biogramm__detail-dft {
-  font-family: var(--font-mono, ui-monospace, Menlo, monospace);
+  font-family: var(--font-mono);
   font-size: 0.75rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -168,7 +168,7 @@
   background: var(--paper-dim, #f3ece0);
   border-radius: 3px;
   cursor: pointer;
-  font-family: var(--font-sans, system-ui);
+  font-family: var(--font-ui);
   font-size: 0.82rem;
 }
 
@@ -195,7 +195,7 @@
   color: #f7efe2;
   padding: 4px 8px;
   border-radius: 3px;
-  font-family: var(--font-sans, system-ui);
+  font-family: var(--font-ui);
   font-size: 0.78rem;
   max-width: 260px;
   opacity: 0;
