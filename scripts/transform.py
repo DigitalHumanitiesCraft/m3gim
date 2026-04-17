@@ -30,6 +30,8 @@ import pandas as pd
 from pathlib import Path
 from datetime import datetime
 
+from _common import attach_xlsx_source, build_xlsx_source, is_approved_match
+
 # Windows-Konsole: UTF-8 erzwingen
 if sys.stdout.encoding != "utf-8":
     sys.stdout.reconfigure(encoding="utf-8")
@@ -373,10 +375,7 @@ def convert_objekt(row: pd.Series, folio_col: str = None,
     }
 
     if xlsx_row is not None:
-        record["m3gim:xlsxSource"] = {
-            "m3gim:xlsxSheet": "Objekte",
-            "m3gim:xlsxRow": xlsx_row,
-        }
+        record["m3gim:xlsxSource"] = build_xlsx_source("Objekte", xlsx_row)
 
     # Titel
     titel = normalize_str(row.get('titel'))
@@ -635,12 +634,7 @@ def process_verknuepfungen(df: pd.DataFrame, indices: dict) -> dict:
                 datenpunkt_id = int(float(dp_raw))
             except (ValueError, TypeError):
                 datenpunkt_id = str(dp_raw).strip() or None
-        source_info = {
-            "m3gim:xlsxSheet": "Verknuepfungen",
-            "m3gim:xlsxRow": xlsx_row,
-        }
-        if datenpunkt_id is not None:
-            source_info["m3gim:datenpunktId"] = datenpunkt_id
+        source_info = build_xlsx_source("Verknuepfungen", xlsx_row, datenpunkt_id)
 
         # Komposit-Typen decomponieren
         typen = decompose_komposit_typ(typ) if "," in typ else [typ]
@@ -699,12 +693,13 @@ def process_verknuepfungen(df: pd.DataFrame, indices: dict) -> dict:
 
 
 def _maybe_add_agrelon(record: dict, typ: str, rolle: str, agent_entry: dict,
-                       xlsx_source: dict | None = None):
+                       rel: dict | None = None):
     """Emittiert eine agrelon:*-Relation, wenn (typ, rolle) in AGRELON_MAPPING.
 
     Die Relation haengt am Record (m3gim:agentRelation) und traegt als
-    Provenance die Record-URI selbst. xlsx_source (optional) wird als
-    m3gim:xlsxSource angehaengt.
+    Provenance die Record-URI selbst. Der optionale ``rel``-Parameter ist die
+    Quell-Verknuepfungszeile — sein ``_source`` wird als ``m3gim:xlsxSource``
+    durchgereicht (technische Provenance).
     """
     mapping = AGRELON_MAPPING.get((typ, rolle))
     if not mapping:
@@ -723,8 +718,8 @@ def _maybe_add_agrelon(record: dict, typ: str, rolle: str, agent_entry: dict,
         rel_entry["agrelon:hasValidityPeriod"] = {
             "agrelon:hasBeginDate": record["rico:date"][:4],
         }
-    if xlsx_source:
-        rel_entry["m3gim:xlsxSource"] = xlsx_source
+    if rel is not None:
+        attach_xlsx_source(rel_entry, rel)
     record.setdefault("m3gim:agentRelation", []).append(rel_entry)
 
 
@@ -771,9 +766,7 @@ def add_relations_to_records(records: list, relations: dict,
                     _inject_enrichment(entry, enrich)
             if rel.get("rolle"):
                 entry["role"] = rel["rolle"]
-            # Provenance an jede Relation haengen
-            if rel.get("_source"):
-                entry["m3gim:xlsxSource"] = rel["_source"]
+            attach_xlsx_source(entry, rel)
 
             if t == "person":
                 rolle_lower = (rel.get("rolle") or "").lower()
@@ -782,14 +775,12 @@ def add_relations_to_records(records: list, relations: dict,
                 else:
                     entry["@type"] = "rico:Person"
                     agents.append(entry)
-                    _maybe_add_agrelon(record, t, rolle_lower, entry,
-                                        xlsx_source=rel.get("_source"))
+                    _maybe_add_agrelon(record, t, rolle_lower, entry, rel=rel)
 
             elif t == "institution":
                 entry["@type"] = "rico:CorporateBody"
                 agents.append(entry)
-                _maybe_add_agrelon(record, t, (rel.get("rolle") or "").lower(), entry,
-                                    xlsx_source=rel.get("_source"))
+                _maybe_add_agrelon(record, t, (rel.get("rolle") or "").lower(), entry, rel=rel)
 
             elif t == "ensemble":
                 entry["@type"] = "rico:Group"
@@ -843,8 +834,7 @@ def add_relations_to_records(records: list, relations: dict,
                     detail_entry["m3gim:detailValue"] = rel["rolle"]
                 if rel.get("anmerkung"):
                     detail_entry["rico:generalDescription"] = rel["anmerkung"]
-                if rel.get("_source"):
-                    detail_entry["m3gim:xlsxSource"] = rel["_source"]
+                attach_xlsx_source(detail_entry, rel)
                 if "m3gim:hasDetail" not in record:
                     record["m3gim:hasDetail"] = []
                 record["m3gim:hasDetail"].append(detail_entry)
@@ -867,8 +857,7 @@ def add_relations_to_records(records: list, relations: dict,
                     ev["m3gim:eventRole"] = role_val
                 if rel.get("anmerkung"):
                     ev["rico:generalDescription"] = rel["anmerkung"]
-                if rel.get("_source"):
-                    ev["m3gim:xlsxSource"] = rel["_source"]
+                attach_xlsx_source(ev, rel)
                 spatiotemporal_events.append(ev)
                 record.setdefault("m3gim:hasSpatiotemporalEvent", []).append({"@id": ev_id})
 
@@ -891,8 +880,7 @@ def add_relations_to_records(records: list, relations: dict,
                     }
                 if currency:
                     detail_entry["m3gim:currency"] = currency
-                if rel.get("_source"):
-                    detail_entry["m3gim:xlsxSource"] = rel["_source"]
+                attach_xlsx_source(detail_entry, rel)
                 if "m3gim:hasDetail" not in record:
                     record["m3gim:hasDetail"] = []
                 record["m3gim:hasDetail"].append(detail_entry)
@@ -1034,8 +1022,7 @@ def main():
             etype = type_map.get(match.get("type"))
             if not etype or etype not in indices:
                 continue
-            if (match.get("match") == "fuzzy_low"
-                    and match.get("manual_review") != "approved"):
+            if not is_approved_match(match):
                 recon_low_skipped += 1
                 continue
             name_key = match["name"].strip().lower()

@@ -22,6 +22,10 @@ import urllib.error
 from datetime import datetime
 from pathlib import Path
 
+# Pipeline-Shared-Utilities (scripts/_common.py)
+sys.path.insert(0, str(Path(__file__).parent))
+from _common import is_approved_match  # noqa: E402
+
 # Windows-Konsole: UTF-8 erzwingen
 if sys.stdout.encoding != "utf-8":
     sys.stdout.reconfigure(encoding="utf-8")
@@ -234,10 +238,8 @@ def run_enrichment(entity_types: list, force: bool = False):
                  if v.get("type") not in entity_types}
     cached_count = 0
 
-    # Entitaeten nach Typ filtern und gruppieren
-    # Konservative Policy: fuzzy_low-Matches (Score 80-89) werden nur
-    # angereichert, wenn sie manuell als approved freigegeben wurden.
-    # Das schuetzt die UI vor falsch zugewiesenen Wikidata-Properties.
+    # Entitaeten nach Typ filtern und gruppieren.
+    # Konservative Low-Confidence-Policy in _common.is_approved_match (E-74).
     to_fetch = {}  # qid → {type, name}
     low_conf_skipped = 0
     for m in matched:
@@ -251,8 +253,7 @@ def run_enrichment(entity_types: list, force: bool = False):
         if not qid:
             continue
 
-        # Konservativer Filter: fuzzy_low nur bei manuell approved
-        if m.get("match") == "fuzzy_low" and m.get("manual_review") != "approved":
+        if not is_approved_match(m):
             low_conf_skipped += 1
             continue
 

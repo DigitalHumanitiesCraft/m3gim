@@ -24,23 +24,22 @@ from _helpers import ensure_list, iter_entities_with_id  # noqa: F401
 
 
 ANCHOR_RECORDS = {
+    # Finanz-Konvolut: 5 Detail-Eintraege (Ausgaben/Einnahmen/Summe) in Schilling
     "UAKUG/NIM_007 5_1": {
         "xlsx_row": 123,
-        "folio": "5_1",
         "expected_doc_type": "m3gim-dft:notiz",
-        "title_contains": "Handschriftliche Notiz",
         "min_finance_details": 5,
     },
+    # Rezension: Dokumenttyp + Ort-/Datum-Kompositum (SpatiotemporalEvent)
     "UAKUG/NIM_004 3": {
         "xlsx_row": 44,
-        "folio": "3",
         "expected_doc_type": "m3gim-dft:rezension",
-        "title_contains": "Rezension",
+        "has_spatiotemporal": True,
     },
+    # Musikinstitut-Konvolut: AgRelOn HasIsMember
     "UAKUG/NIM_003 1_8": {
         "xlsx_row": 38,
-        "folio": "1_8",
-        "title_contains": "Musikinstitut",
+        "has_agent_relation_type": "agrelon:HasIsMember",
     },
 }
 
@@ -91,15 +90,21 @@ def test_anchor_record_has_xlsx_source(records, signatur, expected):
 
 
 @pytest.mark.parametrize("signatur,expected", list(ANCHOR_RECORDS.items()))
-def test_anchor_record_title_and_type(records, signatur, expected):
-    """Titel + Dokumenttyp passen zu den XLSX-Rohdaten."""
+def test_anchor_record_structural_shape(records, signatur, expected):
+    """Strukturelle Record-Eigenschaften aus der XLSX-Rohzeile passen.
+
+    Bewusst keine Title-Substring-Assertion: Titel sind in der XLSX textuell
+    frei und aenderungsgefaehrdet. Wir pruefen stattdessen den Dokumenttyp
+    (aus der mapped `DOKUMENTTYP_TO_DFT`-Spalte) und das Vorhandensein eines
+    nicht-leeren Titels als Smoke-Check.
+    """
     by_sig = _records_by_signatur(records)
     rec = by_sig.get(signatur)
     assert rec is not None, f"Anker {signatur} fehlt"
 
     title = rec.get("rico:title", "")
-    assert expected["title_contains"] in title, (
-        f"{signatur}: title={title!r} enthaelt nicht {expected['title_contains']!r}"
+    assert isinstance(title, str) and title.strip(), (
+        f"{signatur}: kein Titel gesetzt"
     )
 
     if "expected_doc_type" in expected:
@@ -111,35 +116,25 @@ def test_anchor_record_title_and_type(records, signatur, expected):
         )
 
 
-def test_anchor_nim_007_finances_have_source():
-    """UAKUG/NIM_007 5_1: alle 5 Finanz-DetailAnnotations tragen xlsxSource
-    mit sheet=Verknuepfungen und passender Verknuepfungs-Zeile."""
-    # Ueber direkte Fixture, damit Parametrisierung den Fokus auf Finanzen behaelt
-    pass  # in test_anchor_nested_entities_have_source abgedeckt
-
-
 @pytest.mark.parametrize("signatur,expected", list(ANCHOR_RECORDS.items()))
 def test_anchor_nested_entities_have_source(records, signatur, expected):
-    """Alle Relations-abgeleiteten Entities im Anker-Record tragen xlsxSource."""
+    """Alle Relations-abgeleiteten Entities im Anker-Record tragen xlsxSource
+    und die fachlich erwarteten Strukturen (Finanzen, AgRelOn, STE)."""
     by_sig = _records_by_signatur(records)
     rec = by_sig.get(signatur)
     assert rec is not None, f"Anker {signatur} fehlt"
 
     nested_without_source = []
 
-    # Finanzen / Details
-    for detail in ensure_list(rec.get("m3gim:hasDetail")):
-        if not isinstance(detail, dict):
-            continue
-        if detail.get("@type") != "m3gim:DetailAnnotation":
-            continue
+    details = [d for d in ensure_list(rec.get("m3gim:hasDetail"))
+               if isinstance(d, dict) and d.get("@type") == "m3gim:DetailAnnotation"]
+    for detail in details:
         if not isinstance(detail.get("m3gim:xlsxSource"), dict):
             nested_without_source.append(("detail", detail.get("m3gim:detailField")))
 
-    # AgRelOn-Beziehungen
-    for rel in ensure_list(rec.get("m3gim:agentRelation")):
-        if not isinstance(rel, dict):
-            continue
+    agent_rels = [r for r in ensure_list(rec.get("m3gim:agentRelation"))
+                  if isinstance(r, dict)]
+    for rel in agent_rels:
         if not isinstance(rel.get("m3gim:xlsxSource"), dict):
             nested_without_source.append(("agentRelation", rel.get("@type")))
 
@@ -147,18 +142,46 @@ def test_anchor_nested_entities_have_source(records, signatur, expected):
         f"{signatur}: nested entities ohne xlsxSource: {nested_without_source}"
     )
 
-    # Finance-specific: Anzahl pruefen
+    # Fachliche Erwartung: Mindestanzahl Finanz-Details
     if "min_finance_details" in expected:
-        details = ensure_list(rec.get("m3gim:hasDetail"))
         finance_count = sum(
             1 for d in details
-            if isinstance(d, dict)
-            and d.get("m3gim:detailField") in {"ausgaben", "einnahmen", "summe"}
+            if d.get("m3gim:detailField") in {"ausgaben", "einnahmen", "summe"}
         )
         assert finance_count >= expected["min_finance_details"], (
             f"{signatur}: {finance_count} Finanz-Details gefunden, "
             f"erwartet >= {expected['min_finance_details']}"
         )
+
+    # Fachliche Erwartung: bestimmter AgRelOn-Typ vorhanden
+    if "has_agent_relation_type" in expected:
+        found_types = {r.get("@type") for r in agent_rels}
+        assert expected["has_agent_relation_type"] in found_types, (
+            f"{signatur}: AgRelOn-Typen {found_types}, "
+            f"erwartet {expected['has_agent_relation_type']!r}"
+        )
+
+    # Fachliche Erwartung: SpatiotemporalEvent-Referenz vorhanden
+    if expected.get("has_spatiotemporal"):
+        ste_refs = ensure_list(rec.get("m3gim:hasSpatiotemporalEvent"))
+        assert ste_refs, (
+            f"{signatur}: kein m3gim:hasSpatiotemporalEvent-Ref gefunden"
+        )
+
+
+def test_anchors_cover_v2_feature_breadth():
+    """Meta-Test: die gewaehlten Anker decken zusammen die Breite der v2-Features
+    ab (Finanzen, AgRelOn, SpatiotemporalEvent, typisierter Dokumenttyp).
+    Sichert, dass ein Austausch eines Ankers nicht versehentlich eine Dimension
+    aus der Living Documentation streicht."""
+    has_finance = any("min_finance_details" in v for v in ANCHOR_RECORDS.values())
+    has_agrelon = any("has_agent_relation_type" in v for v in ANCHOR_RECORDS.values())
+    has_ste = any(v.get("has_spatiotemporal") for v in ANCHOR_RECORDS.values())
+    has_dft = any("expected_doc_type" in v for v in ANCHOR_RECORDS.values())
+    assert has_finance, "Kein Anker testet Finanz-DetailAnnotations"
+    assert has_agrelon, "Kein Anker testet AgRelOn-Relationen"
+    assert has_ste, "Kein Anker testet SpatiotemporalEvents"
+    assert has_dft, "Kein Anker testet Dokumenttyp-Mapping"
 
 
 # ---------------------------------------------------------------------------
