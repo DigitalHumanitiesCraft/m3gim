@@ -16,30 +16,34 @@ Dieses Repository enthaelt:
 
 ```text
 m3gim/
-|-- knowledge/                 # Kanonische KB (7 Docs + Appendices + Archive)
+|-- knowledge/                 # Kanonische KB (siehe knowledge/uebersicht.md)
 |-- data/
-|   |-- source/              # Originale XLSX-Quelldateien (reproduzierbar)
-|   |-- google-spreadsheet/  # XLSX-Exporte (Arbeitsstand)
+|   |-- google-spreadsheet/  # XLSX-Exporte (git-getrackt)
 |   |-- output/              # Generierte JSON-LD/View-Daten
 |   `-- reports/             # Generierte Markdown-Reports
-|-- scripts/                  # Explore/Validate/Transform/Build-Views/Reconcile
-|-- docs/                     # GitHub Pages Frontend (20 JS-Module, 11 CSS)
+|-- scripts/                  # explore/validate/reconcile/enrich-wikidata/transform/build-views/report-quality
+|-- docs/                     # GitHub Pages Frontend (Vanilla JS, keine Build-Kette)
 `-- README.md
 ```
 
 ## Technologiestand
 
-- Datenmodell: RiC-O 1.1 + m3gim-Erweiterungen
-- Pipeline: Python 3.11+ (`pandas`, `openpyxl`)
-- Frontend: Vanilla JS (ES-Module), D3.js v7, 7 aktive Tabs (4 D3-Visualisierungen)
+- Datenmodell: RiC-O 1.1 + m3gim-Erweiterungen + AgRelOn
+- Pipeline: Python 3.11+ (`pandas`, `openpyxl`, `thefuzz[speedup]`)
+- Frontend: Vanilla JS (ES-Module), D3.js v7 als Library, Leaflet fuer den Mobilitaets-Atlas, kein Build-Tool
+- Tab-Architektur: Archiv, Indizes, Mobilitaets-Atlas, Repertoire, Biogramm, Netzwerk + Wissenskorb (Querschnitts-Werkzeug). Details in [`knowledge/interface-konzept.md`](knowledge/interface-konzept.md)
 - Hosting: GitHub Pages
-- Normdaten: Wikidata-Q-IDs (Reconciliation via `reconcile.py`, 171 Matches)
+- Normdaten: Wikidata-Q-IDs (Reconciliation via `reconcile.py` + Enrichment via `enrich-wikidata.py`)
+
+Laufende Zahlen (Bestand, Verknuepfungsrate, WD-Coverage) stehen im generierten Quality-Snapshot unter [`data/reports/quality-snapshot.md`](data/reports/quality-snapshot.md), nicht im README.
 
 ## Dokumentation
 
-- Einstieg in die KB: [knowledge/README.md](knowledge/README.md)
-- Entscheidungen: [knowledge/entscheidungen.md](knowledge/entscheidungen.md)
-- Pipeline: [knowledge/pipeline.md](knowledge/pipeline.md)
+- Einstieg in die KB: [`knowledge/übersicht.md`](knowledge/übersicht.md)
+- Aktueller Stand + Roadmap: [`knowledge/status.md`](knowledge/status.md)
+- Architekturentscheidungen: [`knowledge/entscheidungen.md`](knowledge/entscheidungen.md)
+- Pipeline: [`knowledge/pipeline.md`](knowledge/pipeline.md)
+- Workflow-Regeln fuer Claude-Code-Sessions: [`CLAUDE.md`](CLAUDE.md)
 
 ## Lizenz
 

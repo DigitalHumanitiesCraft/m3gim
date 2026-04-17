@@ -26,23 +26,27 @@
 - `knowledge/` — Kanonische Wissensbasis
 - `tests/` — Pipeline-Testsuite (siehe [tests.md](tests.md))
 
-### Frontend-Module (nach Entfernung der D3-Views)
+### Frontend-Module (Stand nach Session 34)
 
 | Pfad | Zweck |
 |------|-------|
-| `main.js` | Einstiegspunkt, `TAB_RENDERERS`-Registry, Lazy-Tab-Rendering, Error Boundaries pro Tab |
-| `data/loader.js` | JSON-LD-Ladeschicht, Store-Aufbau inkl. Phase-6-Maps, Partitur-Singleton |
-| `data/aggregator.js` | Daten-Aggregation (wird für die neue Mobilitäts-Visualisierung neu bewertet) |
+| `main.js` | Einstiegspunkt, `TAB_RENDERERS`-Registry, Lazy-Tab-Rendering, Error Boundaries pro Tab, DEV-Debug-Helper (`window.m3gim.*`) |
+| `data/loader.js` | JSON-LD-Ladeschicht, Store-Aufbau inkl. Phase-6-Maps, `extractXlsxSource()`, Koordinaten-Patch-aware STE-Indizierung |
+| `data/constants.js` | `ROLE_CLUSTER`, `ROLE_TO_SECTION`, `AGRELON_LABELS`, `WIKIDATA_ICON_SVG`, Komponisten-/Personen-Kategorien, `confidenceDotProps()` |
 | `ui/router.js` | Hash-Routing, `navigateToView`/`navigateToIndex`, ARIA-State |
-| `ui/events.js` | Cross-View Event-Bus (`onViewNavigate()`) mit Auto-Replay |
 | `ui/korb.js` | Wissenskorb (sessionStorage) |
-| `views/archiv.js` + `archiv-bestand.js` + `archiv-chronik.js` + `archiv-inline-detail.js` | Archiv als Bestand + Chronik, Inline-Detail mit Finanzen, AgRelOn, SpatiotemporalEvents |
-| `views/indizes.js` | 4-Grid Explorer (Personen, Organisationen, Orte, Werke) |
-| `views/korb.js` | Korb-Cards |
+| `views/archiv*.js` | Archiv als Bestand + Chronik, Inline-Detail mit fünf funktionalen Blöcken (Produktion · Mitwirkende · Werk & Repertoire · Ort & Ereignis · Erwähnt), `buildRoleChip()` als geteilter Helper |
+| `views/indizes.js` | 4-Grid Explorer (Personen, Organisationen, Orte, Werke) mit Beziehungsbadges (AgRelOn) |
+| `views/mobilitaets-atlas.js` | Leaflet-Karte + D3-Zeitstrahl + Detailpanel, bi-direktional gekoppelt (Session 33) |
+| `views/repertoire.js` | Zwei parallele Aggregat-Tabellen Werke × Komponisten mit Inline-Breakdown (Session 34) |
+| `views/biogramm.js` | Chronologischer D3-Zeitstrahl 1919–2009 mit Orte- + Belege-Spur, Phasen-Quickselect, Flucht-Marker (Session 34) |
+| `views/netzwerk.js` | AgRelOn-Tabelle mit Chip-Breakdown (Session 34) |
+| `views/korb.js` | Korb-Cards, CSV- + BibTeX-Export |
 | `utils/format.js`, `utils/dom.js`, `utils/date-parser.js`, `utils/normalize.js` | Formatierungshilfen, DOM-Helper, Datumsparser, Namensnormalisierung |
-| `utils/viz-components.js` | Shared Viz-Builder (werden für die Neukonzeption gesichtet, nicht mehr aktiv genutzt) |
 
-CSS-Dateien unter `docs/css/`: `variables`, `base`, `archiv`, `indizes`, `korb`, `components`, `pages`. Die viz-spezifischen CSS-Dateien sind mit den Views entfernt.
+`data/aggregator.js` und `utils/viz-components.js` wurden Session 32 mit den D3-Prototypen entfernt.
+
+CSS-Dateien unter `docs/css/`: `variables`, `base`, `components`, `archiv`, `indizes`, `korb`, `mobilitaets-atlas`, `repertoire`, `biogramm`, `netzwerk`, `pages`. Design-Tokens (Farben, Spacing, Text-Sizes, Transitions) zentral in `variables.css`; alle Tab-CSS nutzen diese Tokens (Session 34).
 
 ### Info-Seiten (statisches HTML)
 
@@ -50,10 +54,10 @@ Fünf Content-Seiten (`about.html`, `projekt.html`, `modell.html`, `hilfe.html`,
 
 ## Routing
 
-- Hash-basiert in `router.js`: aktive Tabs sind Archiv, Indizes, Wissenskorb (die Neukonzeption der Mobilitäts-Visualisierung wird als neuer Tab eingehängt).
+- Hash-basiert in `router.js`: sieben Tabs — `archiv`, `indizes`, `mobilitaets-atlas`, `repertoire`, `biogramm`, `netzwerk`, `korb`. Sechs davon sind Perspektiv-Tabs, der Wissenskorb ist ein Querschnitts-Werkzeug.
 - Deep Links: `#archiv/UAKUG/NIM_003%20Folio%2001` für Datensatzkontext
 - Info-Seiten als eigenständige HTML-Dateien (normale Links, kein Hash-Routing)
-- `navigateToIndex(gridType, entityName)` für Cross-Tab-Navigation
+- `navigateToIndex(gridType, entityName)` für Cross-Tab-Navigation, `navigateToView(tab, {recordId})` für Sprung aus Repertoire/Biogramm/Netzwerk ins Archiv
 
 ## Store-Struktur (aus loader.js)
 
@@ -75,25 +79,25 @@ store = {
   folioIds, unprocessedIds,
   recordCount, konvolutCount, exportDate,
 
-  // Phase-6-Erweiterungen
+  // Phase-6-Erweiterungen + Session-33-Koordinaten-Patch
   dftHierarchy:   Map<conceptId, {id, prefLabel, broader, children[]}>,
-  mobilityEvents: Map<eventId, {id, place, placeWikidata, date, role, description, recordId}>,
+  mobilityEvents: Map<eventId, {id, place, placeWikidata, placeLat, placeLon, placeCountry, date, role, description, recordId, xlsxSource}>,
   recordToEvents: Map<recordId, eventId[]>,
-  agentRelations: Map<recordId, [{type, objectName, objectWikidata, validityBegin, validityEnd, provenance}]>,
-  finances:       Map<recordId, [{field, role, rawValue, amount:Number, currency}]>,
+  agentRelations: Map<recordId, [{type, objectName, objectWikidata, validityBegin, validityEnd, provenance, xlsxSource}]>,
+  finances:       Map<recordId, [{field, role, rawValue, amount:Number, currency, xlsxSource}]>,
 }
 ```
 
-Archiv und Indizes lesen direkt aus `m3gim.jsonld` (über Store), nicht aus separaten View-JSONs.
+Alle Tabs lesen direkt aus `m3gim.jsonld` (über Store), nicht aus separaten View-JSONs. Die Derivate `partitur.json`, `matrix.json`, `kosmos.json` sind nicht mehr angebunden.
 
 ### Phase-6-Store-Maps im Überblick
 
 | Store-Map | Quelle im JSON-LD | Verwendung |
 |---|---|---|
-| `store.dftHierarchy` | Top-Level `skos:Concept`-Knoten + `skos:broader` | Vorbereitung für hierarchischen Dokumenttyp-Filter im Archiv |
-| `store.mobilityEvents` + `store.recordToEvents` | `m3gim:SpatiotemporalEvent`-Knoten + `m3gim:hasSpatiotemporalEvent`-Refs | Grundlage für die neu zu konzipierende Mobilitäts-Visualisierung |
-| `store.agentRelations` | `m3gim:agentRelation`-Array am Record | Archiv-Inline-Detail; geplant: Beziehungs-Badges im Personen-Index |
-| `store.finances` | `m3gim:hasDetail`-DetailAnnotations mit `monetaryAmount` + `currency` + `detailRole` | Archiv-Inline-Detail zeigt Honorare |
+| `store.dftHierarchy` | Top-Level `skos:Concept`-Knoten + `skos:broader` | Hierarchischer Dokumenttyp-Filter im Archiv |
+| `store.mobilityEvents` + `store.recordToEvents` | `m3gim:SpatiotemporalEvent`-Knoten + `m3gim:hasSpatiotemporalEvent`-Refs; seit Session 33 inkl. `placeLat`/`placeLon`/`placeCountry` aus dem Koordinaten-Patch | Mobilitäts-Atlas, Biogramm-Orte-Spur, Archiv-Inline-Detail Ort-&-Ereignis-Block |
+| `store.agentRelations` | `m3gim:agentRelation`-Array am Record | Archiv-Inline-Detail Beziehungen-Block, Indizes-Personen-Beziehungsbadges, Netzwerk-Tab |
+| `store.finances` | `m3gim:hasDetail`-DetailAnnotations mit `monetaryAmount` + `currency` + `detailRole` | Archiv-Inline-Detail Finanzen-Block |
 
 Die Invarianten werden als Kontrakttests in [test_06_frontend_contract.py](../tests/test_06_frontend_contract.py) durchgängig geprüft. Provenance (`agrelon:hasProvenance` + `hasConfidenceValue`) wird nicht als eigene Store-Map indexiert, sondern am Record mitgeführt.
 
@@ -106,7 +110,7 @@ Die Invarianten werden als Kontrakttests in [test_06_frontend_contract.py](../te
 - Autocomplete-Combobox für Personenfilter
 - Erweiterte Suche: Signatur, Titel, Dokumenttyp, Datum
 - Unbearbeitete Objekte dezent markiert (opacity, Tooltip)
-- Inline-Detailflächen zeigen Finanzen, AgRelOn-Beziehungen und SpatiotemporalEvents; „Zum Wissenskorb"-Button pro Record
+- **Inline-Detail (Session 34):** Fünf funktionale Blöcke — Produktion · Mitwirkende · Werk & Repertoire · Ort & Ereignis · Erwähnt, plus Default-Bucket „Weitere" für nicht-mapped Rollen. Alle Chips via `buildRoleChip()` mit Cluster-Farbe + Provenance-Pille. Finanzen + AgRelOn-Beziehungen links, Entity-Blöcke rechts.
 - Bookmark-Icons an jeder Zeile (Hover → sichtbar)
 - Reset-Button setzt alle Filter gleichzeitig zurück
 
@@ -118,6 +122,38 @@ Die Invarianten werden als Kontrakttests in [test_06_frontend_contract.py](../te
 - Detail-Expansion begrenzt + „Alle im Archiv"-Link
 - Wikidata-Icons bei Einträgen mit Q-ID, WD-Coverage-Anzeige im Header
 - **Subtitles** aus WD-Enrichment: `Beruf · Stimmfach · Lebensdaten` unter Personennamen (E-61)
+- **Beziehungsbadges an Personen** (Session 32): Loader-Pass 2.5 resolviert AgRelOn-Relationen rückwärts auf Personen-Einträge; `renderNameCell()` zeigt eine dritte Zeile `idx-relations` mit Chips (Match primär Q-ID, sekundär `normalizePerson(name)`).
+
+### Mobilitäts-Atlas
+
+- Leaflet-Karte mit OpenStreetMap-Tiles (CDN, kein API-Key); Canvas-Renderer
+- Ein Marker pro Ort, Größe skaliert mit Event-Zahl pro Ort, Signal-Grün markiert Auswahl
+- D3-Zeitstrahl (Brush) unter der Karte, bi-direktional gekoppelt über Closure-State (`selectedPlace`, `selectedRange`, `unverortetMode`)
+- Detailpanel rechts mit Chips je Event, Klick → Sprung ins Archiv
+- Badge „N unverortet" öffnet Liste der Events ohne Koordinaten
+- Voraussetzung: Koordinaten-Patch (E-76) liefert `geo:lat`/`geo:long` an `store.mobilityEvents`
+
+### Repertoire
+
+- Zwei parallele Aggregat-Tabellen: Bühnenrepertoire (60 %) × Komponisten (40 %)
+- Jede Zeile: Name + Inline-Breakdown `ERW · AUFF · REP → Summe`
+- Aggregation frontend-seitig aus `store.works` + DFT-Typ der Records
+- Klick → Belegliste chronologisch im Detail-Panel; Klick auf Beleg → Sprung ins Archiv
+
+### Biogramm
+
+- Chronologische Gesamtsicht 1919–2009 als D3-Zeitstrahl
+- Zwei Spuren: Orte (aus `store.mobilityEvents` nach Land) + Belege (alle Records mit Datum, leichter Jitter)
+- Phasen-Quickselect: Jugend (≤1944) · Nachkriegs-Graz · Europäische Karriere · Lehrtätigkeit
+- Vertikaler Signal-Rot-Marker für Flucht 1944
+- Klick auf Beleg-Punkt → Detail-Panel, Sprung ins Archiv via CTA
+
+### Netzwerk
+
+- Tabelle vor Graph (Begründung: interface-konzept.md § Tabelle-vor-Chart)
+- Pivot pro Agenten-Gegenseite (Liste der Beziehungstypen mit Count + Summe)
+- Kompakte Uppercase-Kurzform: `KORRESP`, `BERUF`, `PATRON`, `ARBGBR`, `MITGLIED` (Langform im Tooltip)
+- Klick auf Zeile öffnet Belegliste sticky im Detail-Panel
 
 ### Wissenskorb
 
@@ -128,7 +164,7 @@ Die Invarianten werden als Kontrakttests in [test_06_frontend_contract.py](../te
 
 ## Lektionen aus den entfernten Visualisierungen
 
-Die sechs entfernten D3-Views waren Entwürfe. Sie werden nicht rekonstruiert, aber ihre Substanz wird in die Neukonzeption der Mobilitäts-Visualisierung überführt. Die folgenden Muster gelten als Designregeln für den Nachfolger.
+Die sechs entfernten D3-Views (Mobilität, Matrix, Kosmos, Zeitfluss, Lebenspartitur, Lebensstationen) waren Entwürfe. Sie werden nicht rekonstruiert. Ihre Substanz ist in den neuen Tabs weiterverarbeitet (Ort-Farbcodierung im Atlas, Signal-Rot für Flucht 1944 im Biogramm, Tabelle-vor-Chart im Netzwerk + Repertoire). Die folgenden Muster gelten als Designregeln auch für künftige Arbeit.
 
 ### Kompositionsentscheidungen, die bleiben
 
@@ -164,8 +200,9 @@ Die sechs entfernten D3-Views waren Entwürfe. Sie werden nicht rekonstruiert, a
 
 ### Datenvorstrukturen, die unverändert bleiben
 
-- `store.mobilityEvents` (Phase 6) zentralisiert, was vorher heuristisch aus `partitur.auftritte` abgeleitet wurde — die neue Viz konsumiert diese Map direkt.
-- `store.agentRelations` + `store.finances` sind bereits in Archiv-Inline-Detail integriert; die neue Viz kann sie pro Ort oder Record sekundär einblenden, ohne selbst zu aggregieren.
+- `store.mobilityEvents` (Phase 6, Session-33-Koordinaten-Patch) zentralisiert, was vorher heuristisch aus `partitur.auftritte` abgeleitet wurde — Atlas und Biogramm konsumieren die Map direkt.
+- `store.agentRelations` ist in Archiv-Inline-Detail, Indizes-Beziehungsbadges und Netzwerk-Tab integriert.
+- `store.finances` sitzt im Archiv-Inline-Detail Finanzen-Block.
 
 ## Designsystem
 

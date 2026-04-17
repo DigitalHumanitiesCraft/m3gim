@@ -4,7 +4,7 @@
 
 ## Projekt in einem Satz
 
-**M³GIM** (Mapping Mobile Musicians) — DH-Pilotstudie zur Mobilität und Wissensproduktion der Mezzosopranistin Ira Malaniuk (1919–2009), basierend auf dem Teilnachlass UAKUG/NIM (381 Objekte, 1.494 Verknüpfungszeilen, Stand 2026-04-17), modelliert in RiC-O 1.1 + m3gim-Extension + AgRelOn, als statische SPA auf GitHub Pages. Promptotyping-Methodik: Dokumente sind die Source of Truth, Code ist wegwerfbares Artefakt.
+**M³GIM** (Mapping Mobile Musicians) — DH-Pilotstudie zur Mobilität und Wissensproduktion der Mezzosopranistin Ira Malaniuk (1919–2009), basierend auf dem Teilnachlass UAKUG/NIM am Universitätsarchiv der KUG Graz, modelliert in RiC-O 1.1 + m3gim-Extension + AgRelOn, als statische SPA auf GitHub Pages. Promptotyping-Methodik: Dokumente sind die Source of Truth, Code ist wegwerfbares Artefakt. Laufende Zählstände im Quality-Snapshot (`data/reports/quality-snapshot.md`), nicht hier.
 
 ## Spec-Hierarchie
 
@@ -13,7 +13,7 @@
 3. **`knowledge/tests.md`** — Teststrategie + TDD-Workflow.
 4. **`knowledge/pipeline.md`** — Pipeline-Referenz.
 5. **`knowledge/frontend.md`** — Frontend-Architektur + Visualisierungen.
-6. **`knowledge/entscheidungen.md`** — E-01 bis E-69, historische Architekturentscheidungen.
+6. **`knowledge/entscheidungen.md`** — historische Architekturentscheidungen (E-01 aufwärts, laufend ergänzt).
 
 Weitere Dokumente siehe [`knowledge/übersicht.md`](knowledge/übersicht.md).
 
@@ -26,12 +26,12 @@ python scripts/transform.py
 python scripts/build-views.py
 ```
 
-`build-views.py` schreibt `m3gim.jsonld` + Derivate (`partitur.json`, `matrix.json`, `kosmos.json`) nach `docs/data/`. **`m3gim.jsonld` ist die einzige primäre Datenquelle für das Frontend**, die Views-JSONs sind Derivate für einzelne Visualisierungen.
+`build-views.py` schreibt `m3gim.jsonld` + Derivate (`partitur.json`, `matrix.json`, `kosmos.json`) nach `docs/data/`. **`m3gim.jsonld` ist die einzige primäre Datenquelle für das Frontend**. Die drei Derivate werden seit Session 32 von keinem aktiven Tab mehr konsumiert (sie wurden für die entfernten D3-Prototypen gebaut) und stehen im Deferred-Aufräumblock — sie bleiben vorerst als potenzielle Bausteine für eine künftige Viz.
 
 ### Tests
 
 ```bash
-pytest tests/ -m "not slow"     # ~164 Tests, ~1s
+pytest tests/ -m "not slow"     # Standard-Lauf, <1s
 pytest tests/                   # inkl. Determinismus-Test (slow)
 ```
 
@@ -110,7 +110,7 @@ data/
 
 **Datenfluss:** `data/google-spreadsheet/` → Pipeline → `data/output/m3gim.jsonld` → `docs/data/m3gim.jsonld` → Frontend-Loader.
 
-Das Frontend konsumiert primär `docs/data/m3gim.jsonld`. Die Derivate (`partitur.json`, `matrix.json`, `kosmos.json`) werden aus der JSON-LD abgeleitet und nur für einzelne Visualisierungen verwendet.
+Das Frontend konsumiert ausschließlich `docs/data/m3gim.jsonld`. Die Derivate `partitur.json`, `matrix.json`, `kosmos.json` werden von `build-views.py` weiterhin gebaut, aber von keinem aktiven Tab mehr gelesen (Deferred-Aufräumblock in `status.md`).
 
 ## Wegweiser
 

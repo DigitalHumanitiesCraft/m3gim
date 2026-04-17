@@ -1,22 +1,24 @@
 # Interface-Konzept
 
-> Designregeln und Tab-Architektur für die Neufassung des Forschungsinterfaces nach Entfernung der sechs D3-Prototypen. Basiert auf zwei Mockup-Ansichten (Dossier, Repertoire) und den in [frontend.md § Lektionen](frontend.md) verdichteten Erfahrungen.
+> Designregeln und Tab-Architektur für die Neufassung des Forschungsinterfaces nach Entfernung der sechs D3-Prototypen. Basiert auf zwei Mockup-Ansichten (Archiv, Repertoire) und den in [frontend.md § Lektionen](frontend.md) verdichteten Erfahrungen.
 
 ## Grundhaltung
 
 Das Interface positioniert sich als **Forschungswerkzeug**, nicht als Dashboard. Es zeigt den Archivbestand wie eine Edition ihre Quellen — mit sichtbarer Provenienz, ehrlichem Erschließungsstand und einer Typografie, die zur Lesehaltung passt. Datenqualität wird nicht kaschiert; Lücken und Duplikate stehen so da, wie sie im Bestand sind.
 
-## Tab-Architektur (fünf Tabs)
+## Tab-Architektur (sechs Perspektiven + Werkzeug)
 
-Die fünf Tabs decken je eine legitime Perspektive auf denselben Graph ab. Umschalten bedeutet Perspektivenwechsel, nicht Feature-Wechsel. Qualitätssicht (Abdeckung, Lücken, Duplikate) läuft team-intern über den Markdown-Report `data/reports/quality-snapshot.md` und ist kein eigener Tab.
+Sechs Tabs decken je eine legitime Perspektive auf denselben Graph ab. Umschalten bedeutet Perspektivenwechsel, nicht Feature-Wechsel. Der siebte Tab „Wissenskorb" ist ein Querschnitts-Werkzeug (Merkliste + Export), keine Perspektive. Qualitätssicht (Abdeckung, Lücken, Duplikate) läuft team-intern über den Markdown-Report `data/reports/quality-snapshot.md` und ist kein eigener Tab.
 
 | Tab | Gegenstand | Primäre Datenquelle im Store | Form |
 |---|---|---|---|
-| **Dossier** | Einzelbelege des Teilnachlasses, Facet-Filterung per Sidebar (Dokumenttyp, Ort, Agent) | `store.records`, `store.agentRelations`, `store.finances`, `store.recordToEvents` | Record-Liste mit Rolle-Prefix-Chips, Confidence-Dot, Provenance-Pill |
-| **Biogramm** | Chronologische Gesamtsicht — Orte, Netzwerk, Repertoire pro Lebensphase | `store.mobilityEvents`, `store.records`, WD-Enrichment an Person „Malaniuk" | Mehrschichtige Zeit-Darstellung, Form offen |
-| **Mobilitäts-Atlas** | Raumzeitliche Aktivität nach Mobilitätstyp | `store.mobilityEvents` (+ Koordinaten-Patch) | Karte + Zeitstrahl + Detailpanel, bi-direktional gekoppelt |
-| **Netzwerk** | Agenten-Beziehungen (AgRelOn-Relationen) und deren Belege | `store.agentRelations`, `store.persons` | Offen — voraussichtlich Tabelle mit Chip-Breakdown analog Repertoire |
-| **Repertoire** | Bühnenrollen und Komponisten, nach Belegtyp aggregiert | `store.works`, Rollen-Belege aus `records` | Parallele Aggregat-Tabellen mit Inline-Breakdown |
+| **Archiv** | Einzelbelege des Teilnachlasses, Facet-Filterung per Sidebar (Dokumenttyp, Ort, Agent), Inline-Detail mit fünf funktionalen Blöcken | `store.records`, `store.agentRelations`, `store.finances`, `store.recordToEvents` | Record-Liste mit Rolle-Prefix-Chips, Confidence-Dot, Provenance-Pill |
+| **Indizes** | Aggregierte Übersicht über Personen, Organisationen, Orte, Werke mit Facet-Filter und Cross-Grid-Linking | `store.persons`, `store.organizations`, `store.locations`, `store.works` | Vier parallele Grids, `renderNameCell()` mit Beziehungsbadges |
+| **Mobilitäts-Atlas** | Raumzeitliche Aktivität, Leaflet-Karte + D3-Zeitstrahl + Detailpanel, bi-direktional gekoppelt | `store.mobilityEvents` mit Koordinaten-Patch | Karte + Zeitstrahl + Detailpanel |
+| **Repertoire** | Bühnenrepertoire und Komponisten, nach Belegtyp aggregiert | `store.works` + DFT-Typ der Records | Parallele Aggregat-Tabellen mit Inline-Breakdown (ERW · AUFF · REP) |
+| **Biogramm** | Chronologische Gesamtsicht — Orte + Belege entlang der Lebensspanne 1919–2009, Phasen-Quickselect, Flucht-Marker 1944 | `store.mobilityEvents`, `store.records` mit Datum | D3-Zeitstrahl mit zwei Spuren (Orte nach Land · Belege) |
+| **Netzwerk** | AgRelOn-Beziehungen tabellarisch (nicht Graph) | `store.agentRelations` | Pivot-Tabelle mit Chip-Breakdown nach Beziehungstyp |
+| *Wissenskorb* | Querschnitts-Merkliste mit CSV-/BibTeX-Export | `store.korb` (session-lokal) | Listenansicht, als Werkzeug-Tab |
 
 Tab-Namen sind inhaltlich (keine „Charts"/„Views"-Floskeln). Jeder Tab trägt einen erklärenden Untertitel, der das Vokabular definiert („Repertoire — Bühnenrollen & Komponisten").
 
@@ -38,9 +40,12 @@ Hintergrund creme/warm. Akzentfarben sparsam und semantisch: KUG-Blau für Inter
 
 Jeder semantische Datenpunkt wird als Chip mit Uppercase-Rollenbezeichner und Wert gezeigt: `AUFFUEHRUNGSORT München`, `KOMPONIST Beethoven, Ludwig van`, `DIRIGENT Hindemith, Paul`. Dasselbe Chip-Muster trägt:
 
-- Einzelbelege im Dossier (konkrete Werte)
-- Aggregatverteilungen im Repertoire (mit Count: `AUFFÜHRUNG 5`)
+- Einzelbelege im Archiv-Inline-Detail (konkrete Werte)
+- Aggregatverteilungen im Repertoire und Netzwerk (mit Count: `AUFFÜHRUNG 5`, `KORRESP 10`)
 - AgRelOn-Beziehungen im Archiv-Inline-Detail
+- Chips in Atlas-Popups und Biogramm-Summary
+
+Implementiert als `buildRoleChip({prefix, value, cluster, xlsxSource, wikidata, onClick, compact})` in `docs/js/views/archiv-inline-detail.js`.
 
 Visuell dieselbe Primitive, semantisch kontextabhängig. Ein einziges robustes Muster statt fünf Darstellungsformen.
 

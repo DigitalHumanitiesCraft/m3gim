@@ -15,6 +15,7 @@
 | `scripts/export-wikidata-csv.py` | Wikidata-CSVs fuer Google-Sheets-Import | wikidata-reconciliation.json | `data/output/wikidata-csvs/*.csv` |
 | `scripts/audit-data.py` | Alignment-Pruefung XLSX vs JSON-LD vs Views | XLSX + JSON-LD + Views | Konsolenreport |
 | `scripts/report-quality.py` | Datenqualitaets-Snapshot fuer Erschliessungsteam: Verknuepfungsrate, Bearbeitungsstand, WD-Coverage, Provenance-Coverage, Low-Confidence-Freigabeliste | m3gim.jsonld + wikidata-reconciliation.json | `data/reports/quality-snapshot.md` |
+| `scripts/verify-manual-approvals.py` | Pflichtlauf nach manuellen Q-ID-Approvals: prueft `match: "manual"`-Eintraege gegen Live-Wikidata-Labels + Typ-Signal; Exitcode 1 bei Mismatch (E-78). Offline-Bypass via `SKIP_VERIFY_MANUAL=1`. | wikidata-reconciliation.json | Konsolenreport, Exitcode |
 
 ## ENV-Overrides
 
@@ -69,6 +70,30 @@ Noch offen:
 - Phase 4.5: `m3gim:StageRole` als eigenstaendige Entitaet — erfordert neuen Rollenindex-XLSX, mit Team abzustimmen
 - Phase 4.9: Reifikation / `m3gim:Statement` — optional, spaet
 
+## Nachzuege (Session 33 + 34)
+
+### Koordinaten-Patch fuer SpatiotemporalEvents (Session 33, E-76)
+
+`scripts/transform.py` injiziert Wikidata-Koordinaten jetzt auch in den `m3gim:atPlace`-Subteil eines `SpatiotemporalEvent`. Vorher hatten nur regulaere `rico:Place`-Entries `geo:lat`/`geo:long`; STE-Orte trugen nur den Namen und blieben auf der Karte unverortet. Zwei minimale Eingriffe: (a) `process_verknuepfungen()` loest den Ortsteil des `ort,datum`-Komposits gegen `indices["ort"]` auf und setzt `wikidata_id`, (b) `add_relations_to_records()` baut den Place-Entry mit gleichem Muster wie im Haupt-Loop und ruft `_inject_enrichment()`. TDD-Abdeckung in `tests/test_22_ste_coordinates.py` (Anker Zuerich Q72, Salzburg Q34713).
+
+### ORTE-Rollen-Hygiene (Session 34)
+
+Bug: Im Komposit `ort,datum` wurde die Rolle (z. B. `erscheinungsdatum`) blind an beide Haelften vererbt — der `rico:Place` trug dadurch eine Datumsrolle, im UI erschien „Stuttgart (erscheinungsdatum)". Fix in `add_relations_to_records()`: wenn die Rolle in `DATUMSROLLE_TO_PROPERTY` liegt, wird `role` am Place-Entry geloescht. Nicht-Datumsrollen (`auffuehrungsort`, `wohnort`, `erscheinungsort`) bleiben. Regression-Test in `tests/test_23_role_hygiene.py`.
+
+### Smart-P17 Claim-Selection (Session 34, E-79)
+
+`enrich-wikidata.py` waehlt fuer Entity-Ref-Properties (P17, P19, P20, P276, P86) jetzt den „aktuellen" Claim via Helper `_pick_current_claim()`: (1) `rank == "preferred"`, (2) Claims ohne `P582`-Qualifier, (3) erster Non-deprecated-Claim. Loest Berlin Q64 → Deutschland (war „Mark Brandenburg" als chronologisch erster Claim). Ebenfalls: Label-Aufloesung laeuft jetzt auch ueber bereits gecachte Entitaeten (vorher blieben Q-IDs aus alten Cache-Laeufen als „Q39"-Strings stehen).
+
+### Manuelle Q-ID-Approvals — Workflow (E-78)
+
+Manuelle Eintraege in `wikidata-reconciliation.json` (Shape siehe E-74) werden vor dem Commit gegen Live-Wikidata geprueft:
+
+```bash
+python scripts/verify-manual-approvals.py
+```
+
+Das Skript batch-fetcht Labels + Aliases + Descriptions und vergleicht mit dem `name`-Feld. Exitcode 1 bei Mismatch blockiert CI/Commit. Begruendung: Session 34 hatte zwei von zehn Approvals stumm falsch (Q2861 war Rostock statt Bayreuth, Q200491 war ein US-Videospiel-Publisher statt Iwano-Frankiwsk). Siehe auch [CLAUDE.md § Manuelle Wikidata-Approvals verifizieren](../CLAUDE.md).
+
 ## Pipeline-Korrekturen (Session 10 + 19 + 28)
 
 - Spaltennamen-Normalisierung: `df.columns = [c.lower().strip() ...]` nach `pd.read_excel()`
@@ -112,8 +137,7 @@ Noch offen:
 | Datei | Format | Status |
 |-------|--------|--------|
 | `m3gim.jsonld` | JSON-LD | **Alleinige primäre Datenquelle** für das Frontend. Enthält Records + SpatiotemporalEvents + SKOS-Concepts + AgRelOn-Relationen + Finanz-Details + technische Provenance. |
-| `partitur.json` | JSON | Derivat: biografische Masterdaten für Lebenspartitur + Mobilitäts-Schwimmbahn. Wird nach Phase 7 aus dem Store regeneriert und ist dann optional. |
-| `matrix.json` / `kosmos.json` | JSON | Derivat: vorverdichtete Aggregationen für einzelne D3-Views. Aggregator.js kann äquivalent zur Laufzeit aus dem Store rechnen. |
+| `partitur.json` / `matrix.json` / `kosmos.json` | JSON | Derivate der entfernten D3-Prototypen. Seit Session 32 von keinem aktiven Tab mehr konsumiert; werden von `build-views.py` weiterhin gebaut (Deferred-Aufräumblock in `status.md` — Entfernung, sobald sicher ist, dass keine künftige Viz sie doch noch braucht). |
 
 ## Datenstand
 
@@ -174,6 +198,6 @@ Aktuelle Korpus-Struktur qualitativ: Teilnachlass UAKUG/NIM mit drei Bestandsgru
 
 ### Modell-Weiterentwicklung
 
-- **Phase 6 (abgeschlossen):** loader.js hat Store-Maps `dftHierarchy`, `mobilityEvents`, `recordToEvents`, `agentRelations`, `finances` + typisierte Datumsfelder als Fallback in `indexByYear`. Siehe [frontend.md](frontend.md).
-- **Phase 7 (teilweise, pausiert):** Die bisherigen Visualisierungen (Mobilität, Lebenspartitur, Matrix, Kosmos, Zeitfluss) werden als Prototypen verworfen und später neu konzipiert. Archiv-Inline-Detail zeigt bereits Finanzen, AgRelOn, STE. Nächste Schritte: Indizes-Beziehungsbadges, DFT-Hierarchie-Filter.
+- **Phase 6 (abgeschlossen, Session 30):** loader.js hat Store-Maps `dftHierarchy`, `mobilityEvents`, `recordToEvents`, `agentRelations`, `finances` + typisierte Datumsfelder als Fallback in `indexByYear`. Siehe [frontend.md](frontend.md).
+- **Phase 7 (abgeschlossen, Sessions 32–34):** Interface-Redesign nach [interface-konzept.md](interface-konzept.md). Sechs Perspektiv-Tabs (Archiv, Indizes, Mobilitäts-Atlas, Repertoire, Biogramm, Netzwerk) plus Wissenskorb als Werkzeug-Tab. Die sechs D3-Prototypen sind entfernt; ihre Lektionen stehen in [frontend.md § Lektionen](frontend.md).
 - **Phase 4.5 (deferred, extern blockiert):** Rollenindex-XLSX anlegen (Spalten `m3gim_id`, `name`, `belongsToWork`, `voiceType`, `wikidata_id`). Braucht Abstimmung mit Erschliessungsteam.

@@ -469,4 +469,110 @@
 
 ---
 
-Siehe auch: [→ Projekt-Status](../projekt-status.md) · [→ Pipeline](../pipeline.md) · [→ Entscheidungen](../entscheidungen.md)
+## Session 26 (2026-03-20): DEV/Prod-Log-Toggle, Error Boundaries, ARIA
+
+- `viewLog()`-Wrapper: Konsolen-Diagnostik nur auf localhost (E-50)
+- Error Boundaries pro View in `main.js`: sync + async Renderfehler fangen, Tab re-renderbar (E-51)
+- Deutsche Fehlermeldungen in `loader.js`: Netzwerk/404/Parse unterschieden, `loadPartitur()` warnt statt stilles null (E-52)
+- Zentraler Cross-View Event-Bus in `events.js`: `onViewNavigate(tab, handler)` mit Auto-Replay ersetzt `pendingHighlight`-Pattern (E-53)
+- ARIA-Accessibility: `role="tablist/tab/tabpanel"`, `aria-selected` dynamisch, `aria-hidden` auf dekorativen SVG-Icons (E-55)
+- Responsive Breakpoints: `@media <768px` in `base.css` + `components.css`, FF-Badges versteckt, Toolbars kompakter (E-56)
+
+---
+
+## Session 27 (2026-03-25): Wikidata-Enrichment-Pipeline, Lebenspartitur als SPA-Tab, Fuzzy-Matching
+
+- `reconcile.py` erweitert: `thefuzz.token_set_ratio`, 3 Confidence-Level (exact/fuzzy_high/fuzzy_low) (E-58)
+- `enrich-wikidata.py` neu: fetcht WD-Properties (P106, P412, P569/P570, P625, P1191 etc.), `transform.py` injiziert als `owl:sameAs` + `m3gim:`-Properties (E-59)
+- UA-Distanz im Kosmos via Phase-Filter-Annotation (E-60)
+- Indizes-Subtitles: `Beruf · Stimmfach · Lebensdaten` unter Personennamen aus WD-Enrichment (E-61)
+- Lebenspartitur als SPA-Tab: `renderLebenspartitur(store, container)` mit container-relativem DOM, Standalone-`init()` beibehalten für `lebenspartitur.html` (E-57)
+
+---
+
+## Session 28 (2026-04-10): v2-Modellerweiterungen (Phase 4.1–4.8)
+
+Testgetriebene Umsetzung der in `datenmodell.md` spezifizierten Modell-Erweiterungen (E-63 bis E-69).
+
+- 4.1 `normalize_role()`: Gender-neutrale Rollennormalisierung (strippt `:in`/`:innen`-Suffixe)
+- 4.2 SKOS-Hierarchie für Dokumenttypen, `build_dft_concepts()` emittiert `skos:Concept`-Knoten
+- 4.3 `m3gim:dateEvidence` → `agrelon:hasProvenance` + `hasConfidenceValue` (Frontend-breaking, Phase 6 zieht nach)
+- 4.4 `m3gim:SpatiotemporalEvent` als Top-Level-Graph-Entitäten (Komposit `ort, datum`)
+- 4.6 Finanzschicht mit `monetaryAmount`/`currency`/`detailRole`, `parse_monetary_value()`, belegtes Währungsvokabular ohne ISO-4217-Zwang
+- 4.7 Typisierte Datumsproperty-Familie (`m3gim:absendedatum`, `m3gim:auffuehrungsdatum` etc.); `is_iso_date()` filtert Freitext
+- 4.8 AgRelOn-Relationen via `AGRELON_MAPPING` (HasEmployeeEmployer, HasCorrespondent, HasProfessionalContact, HasIsPatron, HasIsMember)
+
+Durchgängig TDD mit `xfail(strict=True)`-Spec.
+
+---
+
+## Session 29 (2026-04-17): v2-Konsolidierung + Currency-Fix + Frontend-Kontrakt-Spec
+
+- `data/` aufgeräumt: v1-Stände archiviert unter `data/_archive/`, v2 alleiniger Default. Ein Datenfluss, ein `data/output/`, ein `docs/data/` (E-70)
+- `FINANCE_CURRENCY_DEFAULTS`-Mapping in `transform.py` (NIM_007 → `S` Schilling, E-71)
+- `build-views.py` kopiert seitdem `m3gim.jsonld` + Derivate automatisch nach `docs/data/` (zuvor Drift-Quelle)
+- Baselines in `tests/fixtures/baseline_counts.json` auf v2-Niveau gehoben
+- `test_06_frontend_contract.py`: XPASS(strict)-Marker formulieren die Phase-6-loader.js-Arbeit als TDD-Spec
+
+---
+
+## Session 30 (2026-04-17): Phase 6 — loader.js indexiert v2-Strukturen + Phase 7 Schritt 1
+
+**Phase 6 (Store-Maps in `loader.js`, E-72):**
+- `dftHierarchy` (SKOS-Dokumenttyp-Hierarchie mit `broader`+`children`-Backrefs)
+- `mobilityEvents` + `recordToEvents` (Top-Level-STE + Reverse-Map)
+- `agentRelations` (AgRelOn am Record)
+- `finances` (DetailAnnotations mit geparstem Betrag)
+- `indexByYear()` nutzt typisierte Datumsproperties als Fallback
+
+**Phase 7 Schritt 1 — Archiv-Inline-Detail zeigt v2-Daten:**
+- Drei Panels: Finanzen (Tabelle), Beziehungen (AgRelOn-Chips), Ereignisse (SpatiotemporalEvent-Chips)
+- Verifiziert gegen XLSX-Rohdaten für drei Anker-Records
+
+---
+
+## Session 31 (2026-04-17): Wikidata-Rerun + xlsxSource-Provenance + Quality-Snapshot
+
+- Reconciliation + Enrichment auf v2-Indizes neu gelaufen; Low-Confidence-Policy: `fuzzy_low` nur bei `manual_review: "approved"` durchgereicht (E-74)
+- `m3gim:xlsxSource` als technische Provenance auf Records + DetailAnnotations + AgRelOn-Relationen + SpatiotemporalEvents (E-73)
+- Anker-Record-Strategie in `test_20_xlsx_provenance.py`: drei kuratierte Records (`NIM_007 5_1`, `NIM_004 3`, `NIM_003 1_8`) mit strict-Assertions + Soft-Coverage
+- `scripts/report-quality.py` + `data/reports/quality-snapshot.md` als Team-taugliches Markdown
+- Frontend-Debug: `window.m3gim.provenanceOf(recordId)` liefert alle XLSX-Quellen eines Records + Nested Entities
+
+---
+
+## Session 32 (2026-04-17): Interface-Fundament MVP — Redesign als Forschungswerkzeug (E-75)
+
+Fünf aufeinander aufbauende Commits legten das neue Interface-Fundament:
+
+- Alt-Viz entfernt: sechs D3-Prototypen (Mobilität, Matrix, Kosmos, Zeitfluss, Lebenspartitur, Lebensstationen) + zugehöriges CSS + zwei Standalone-HTMLs + `aggregator.js` + `viz-components.js` raus
+- Archiv-Inline-Detail rendert Finanzen, AgRelOn-Beziehungen und SpatiotemporalEvents im neuen Rolle-Prefix-Chip-Pattern aus dem Archiv-Mockup: Uppercase-Mono-Prefix + Serif-Wert + Provenance-Pille + optionales Wikidata-Badge
+- Indizes-Personen mit Beziehungsbadges: Loader-Pass 2.5 resolviert AgRelOn rückwärts auf Personen-Einträge
+- DFT-Filter hierarchisch: `buildDftTree(store)` + `expandDftFilter()` in `format.js`
+- Erschließungsstand-Tab als Browsing-UI für Quality-Snapshot (in Session 33 wieder entfernt, weil redundant zum Markdown-Report)
+
+Designgrundlage durchgängig: `interface-konzept.md`.
+
+---
+
+## Session 33 (2026-04-17): Mobilitäts-Atlas MVP
+
+Zwei sequenzielle Commits:
+
+- **Koordinaten-Patch (Pipeline, TDD):** STE-`atPlace` trägt jetzt `@id`, `owl:sameAs`, `geo:lat`, `geo:long`, `m3gim:country` aus Wikidata-Enrichment. `process_verknuepfungen()` + `add_relations_to_records()` wiederverwenden vorhandenen `_inject_enrichment()`-Pfad. TDD via `tests/test_22_ste_coordinates.py` (Anker Zürich Q72, Salzburg Q34713).
+- **Mobilitäts-Atlas-Tab:** neuer Tab `docs/js/views/mobilitaets-atlas.js`, Grid mit Leaflet-Karte (OSM-Tiles) + D3-Zeitstrahl (Brush) + Chip-Detailpanel, bi-direktional gekoppelt. Marker-Größe skaliert mit Event-Zahl pro Ort; Signal-Grün markiert Auswahl. Events ohne Koordinaten via Badge „N unverortet". `buildRoleChip()` aus `archiv-inline-detail.js` exportiert. Erschließungsstand-Tab wurde in diesem Pass wieder entfernt. (E-76)
+
+---
+
+## Session 34 (2026-04-17): Datenqualität + Interface-Ausbau (Repertoire · Biogramm · Netzwerk)
+
+Mehrere Commits schlossen die Datenqualitäts-Gaps und vervollständigten das Sechs-Perspektiven-Fundament:
+
+- **ORTE-Label-Bug (Pipeline):** `rico:Place` im Komposit `ort,datum` erbte die Datumsrolle — Fix in `transform.py`, TDD in `test_23_role_hygiene.py`. 18 Places mit Datumsrolle → 0.
+- **Reconciliation-10-cities manuell approved:** Wien, München, Bayreuth, Köln, Venedig, Neapel, Buenos Aires, Lemberg, Lissabon, Stanislau. Effekt auf Atlas: STE-Coverage von 37 % auf 100 %.
+- **Archiv-Inline-Detail-Migration:** `renderEntityChips()` entfallen, alle Chips via `buildRoleChip()`. Rechte Spalte auf fünf funktionale Blöcke regruppiert (Produktion · Mitwirkende · Werk & Repertoire · Ort & Ereignis · Erwähnt + Weitere). `ROLE_TO_SECTION`-Mapping in `constants.js` (E-77).
+- **Drei neue Tabs:** Repertoire (parallele Aggregat-Tabellen Werke × Komponisten), Biogramm (D3-Zeitstrahl 1919–2009 mit Orte- + Belege-Spur + Flucht-Marker 1944), Netzwerk (AgRelOn-Tabelle mit Chip-Breakdown). (E-80)
+- **CSS-Token-Refactor:** Font-, Farb-, Spacing- und Text-Tokens aus `variables.css` konsequent in den neuen Tab-CSS-Files. `.chip--compact` als geteilter Modifier in `archiv.css`.
+- **Datenqualität Wikidata:** Zwei falsche Q-IDs aus dem Approval-Batch korrigiert (Bayreuth Q2861 war Rostock → Q3923; Stanislau Q200491 war US-Game-Publisher → Q156726). Neues `verify-manual-approvals.py`-Skript als Gate (E-78). Smart-P17-Selector in `enrich-wikidata.py` (`rank=preferred`) löst Berlin → Deutschland statt „Mark Brandenburg" (E-79).
+
+---

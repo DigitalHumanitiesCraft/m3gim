@@ -26,9 +26,9 @@ tests/
 ├── test_03_roundtrip.py           # XLSX-Rohdaten ↔ JSON-LD
 ├── test_04_verknuepfungen.py      # Verknüpfungs-Typ-Mapping + Gender-neutrale Rollen
 ├── test_05_referential.py         # Referentielle Integrität, PL_07 xfail
-├── test_06_frontend_contract.py   # loader.js/aggregator.js-Annahmen
+├── test_06_frontend_contract.py   # loader.js-Store-Shape-Annahmen
 ├── test_07_wikidata.py            # WD-Enrichment-Integrität
-├── test_08_partitur.py            # Partitur-Invarianten
+├── test_08_partitur.py            # Partitur-Invarianten (Derivat, nicht mehr konsumiert)
 ├── test_09_baselines.py           # Regression-Zahlen (>=)
 ├── test_10_determinismus.py       # Pipeline 2× laufen (slow)
 ├── test_11_mobilitaet.py          # SpatiotemporalEvent + 5 Mobilitätssichten
@@ -39,7 +39,9 @@ tests/
 ├── test_16_roundtrip_finance.py   # Jede Finanz-Zeile exakt im Output
 ├── test_18_typed_dates.py         # Typisierte Datumsproperty-Familie
 ├── test_19_provenance.py          # agrelon:hasProvenance + Konfidenz
-└── test_20_xlsx_provenance.py     # m3gim:xlsxSource + Anker-Records
+├── test_20_xlsx_provenance.py     # m3gim:xlsxSource + Anker-Records
+├── test_22_ste_coordinates.py     # STE.atPlace mit @id + geo:lat/long (Session 33)
+└── test_23_role_hygiene.py        # rico:Place trägt keine Datumsrollen (Session 34)
 ```
 
 Leitsatz: jeder Test prüft eine nicht-triviale, nicht-redundante Invariante und kann failen. Soft-Warnings gehören in `validate.py`, nicht in pytest.
@@ -62,7 +64,7 @@ Jeder der 8 Basis-Typen (person, institution, ensemble, ort, werk, ereignis, rol
 Fonds existiert genau einmal, `hasOrHadPart`-Referenzen sind alle im Graph auflösbar, keine Waisen-Records. **xfail**: `test_all_record_ids_unique` — PL_07 erscheint doppelt (XLSX-Bug).
 
 ### 6. Frontend-Kontrakt (test_06)
-Implizite Annahmen aus `loader.js`/`aggregator.js`:
+Implizite Annahmen aus `loader.js` (`aggregator.js` wurde Session 32 entfernt):
 - `rico:hasOrHadPart` nie als String (ensureArray-kompatibel)
 - Keine Date-like Strings in Locations
 - Wikidata-IDs matchen `^wd:Q\d+$`
@@ -109,11 +111,21 @@ Kein `m3gim:dateEvidence` mehr im Output. `agrelon:hasProvenance` und `agrelon:h
 
 Prüft `m3gim:xlsxSource` an Records + DetailAnnotations + AgRelOn-Relationen + SpatiotemporalEvents. Zwei Testebenen:
 
+
+
 **Strict — kuratierte Anker-Records.** Das Modul pflegt ein Fixture-Dict `ANCHOR_RECORDS` mit Erwartungen pro Anker (`xlsx_row`, `expected_doc_type`, `title_contains`, `min_finance_details`). Jeder Anker läuft durch parametrisierte Tests: existiert der Record, zeigt `xlsxSource` auf die erwartete XLSX-Zeile, tragen Nested Entities (Details, AgRelOn) selbst xlsxSource. Bricht der Test, ist entweder die XLSX umsortiert worden (Fixture pflegen, absichtlich) oder die Pipeline hat eine Regression. Aktuelle Anker: `UAKUG/NIM_007 5_1` (Finanz-Konvolut), `UAKUG/NIM_004 3` (Rezension), `UAKUG/NIM_003 1_8` (Musikinstitut).
 
 **Soft — Coverage-Reports.** Prüft, dass alle Records und nested entities `xlsxSource` tragen, mit Toleranz für einzelne Nachzügler. Die Soft-Variante erlaubt graduellen Ausbau, falls Teilbestände erst später nachgezogen werden. Aktuelle Coverage-Werte stehen in `data/reports/quality-snapshot.md`.
 
 Das Modul ist damit gleichzeitig Kontrakttest und **lesbare XLSX → JSON-LD-Abbildungs-Dokumentation**. Die Anker zeigen konkret: „Zelle 123 in Objekte.xlsx wird zu diesem Record, mit genau diesen Properties".
+
+### 22. SpatiotemporalEvent-Koordinaten (test_22, Session 33)
+
+TDD-Spec für den Koordinaten-Patch: jedes ortsindex-auflösbare `m3gim:SpatiotemporalEvent` trägt im `atPlace`-Subobjekt `@id` (`wd:Qxxx`), `owl:sameAs`, `geo:lat`, `geo:long` und — falls Wikidata P17 das liefert — `m3gim:country`. Anker: `ste_NIM_004_24_7` (Zürich Q72), `ste_NIM_004_24_10` (Salzburg Q34713). Soft-Coverage ≥ 10 STE mit Koordinaten.
+
+### 23. Rollen-Hygiene an Orten (test_23, Session 34)
+
+Regression-Test für einen Pipeline-Bug: im Komposit `ort,datum` der Verknüpfungstabelle wurde die Rolle (z. B. `erscheinungsdatum`) blind an beide Hälften vererbt — der `rico:Place`-Eintrag trug dadurch eine Datumsrolle, die im UI als „Stuttgart (erscheinungsdatum)" erschien. Der Test prüft: kein `rico:Place` an einem Record trägt eine Rolle aus `DATUMSROLLE_TO_PROPERTY`. Anker: NIM_004_12 (Stuttgart).
 
 ## Ausführung
 
@@ -152,7 +164,7 @@ Bei neuen Features aus [datenmodell.md](datenmodell.md):
 4. **Implementieren** in `scripts/transform.py`, bis xfail → XPASS → xfail-Marker entfernt.
 5. **Bei Datenadaptivität**: Tests datenadaptiv formulieren (skalieren mit XLSX-Count) statt hartcodierter Zahlen, damit neue Datenstände ohne Testkorrektur laufen.
 
-Dieses Muster wurde in Phase 4.1–4.8 erfolgreich angewendet. Siehe [status.md](status.md) und [pipeline.md](pipeline.md).
+Dieses Muster wurde in Phase 4.1–4.8 (Session 28) erfolgreich angewendet, ebenso beim Koordinaten-Patch (Session 33, test_22) und beim ORTE-Rollen-Fix (Session 34, test_23). Siehe [status.md](status.md) und [pipeline.md](pipeline.md).
 
 ### Anker-Record-Strategie (seit Session 31)
 
