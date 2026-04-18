@@ -1,6 +1,6 @@
 # M³GIM Quality-Snapshot
 
-_Generiert: 2026-04-17T21:18_
+_Generiert: 2026-04-18T08:54_
 
 Grundlage: `data\output\m3gim.jsonld` + `data\output\wikidata-reconciliation.json`.
 
@@ -42,27 +42,16 @@ Grundlage: `data\output\m3gim.jsonld` + `data\output\wikidata-reconciliation.jso
 
 | Typ | exact | fuzzy_high | fuzzy_low | gesamt |
 |---|---:|---:|---:|---:|
-| person | 5 | 190 | 5 | 200 |
+| person | 5 | 190 | 1 | 196 |
 | org | 3 | 5 | 0 | 8 |
-| location | 14 | 2 | 4 | 20 |
-| work | 27 | 6 | 1 | 34 |
+| location | 14 | 2 | 0 | 16 |
+| work | 27 | 6 | 0 | 33 |
 
 ### Low-Confidence-Matches (manuelle Freigabe erforderlich)
 
-**10 Matches mit Score 80–89** — prüfen, ob sie tatsächlich das korrekte Wikidata-Objekt treffen. Freigegebene Einträge manuell als `manual_review: approved` markieren.
+**0 Matches mit Score 80–89** — prüfen, ob sie tatsächlich das korrekte Wikidata-Objekt treffen. Freigegebene Einträge manuell als `manual_review: approved` markieren.
 
-| Typ | Name | → | Q-ID | Label | Score |
-|---|---|---|---|---|---:|
-| location | Mailand | → | [Q490](https://www.wikidata.org/wiki/Q490) | Milan | 83 |
-| location | Rom | → | [Q220](https://www.wikidata.org/wiki/Q220) | Rome | 86 |
-| location | Schottland | → | [Q22](https://www.wikidata.org/wiki/Q22) | Scotland | 89 |
-| location | Straßburg | → | [Q6602](https://www.wikidata.org/wiki/Q6602) | Strasbourg | 89 |
-| person | Bahr-Mildenburg, Anna | → | [Q79028](https://www.wikidata.org/wiki/Q79028) | Anna von Mildenburg | 88 |
-| person | Musorgskij, Modest Petrovič | → | [Q132682](https://www.wikidata.org/wiki/Q132682) | Modest Petrovich Mussorgsky | 87 |
-| person | Sophokles | → | [Q7235](https://www.wikidata.org/wiki/Q7235) | Sophocles | 89 |
-| person | Tizian | → | [Q47551](https://www.wikidata.org/wiki/Q47551) | Titian | 83 |
-| person | Traute, Elisabeth | → | [Q55676977](https://www.wikidata.org/wiki/Q55676977) | Elisabeth Trauterbul | 89 |
-| work | Wozzeck | → | [Q657215](https://www.wikidata.org/wiki/Q657215) | Woyzeck | 86 |
+_Keine Low-Confidence-Matches in diesem Lauf._
 
 ## Provenance-Coverage
 

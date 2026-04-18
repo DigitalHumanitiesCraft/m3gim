@@ -14,7 +14,7 @@ def test_fonds_exists_exactly_once(graph):
     assert len(fonds) == 1, f"Erwartet 1 Fonds, gefunden: {len(fonds)}"
 
 
-@pytest.mark.xfail(strict=False, reason="PL_07 XLSX-Duplikat, dokumentiert in pipeline.md")
+@pytest.mark.xfail(strict=False, reason="PL_07 XLSX-Duplikat (siehe knowledge/xlsx-fixes.md — redaktionell zu bereinigen)")
 def test_all_record_ids_unique(graph):
     ids = [n["@id"] for n in graph]
     counts = Counter(ids)

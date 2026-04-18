@@ -48,8 +48,10 @@
       "name": "Bahr-Mildenburg, Anna",
       "qid": "Q79028",
       "label": "Anna von Mildenburg",
-      "match": "fuzzy_low",
-      "confidence": 88
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-04-18: fuzzy_low 88 verifiziert — Wikidata fuehrt unter Ehenamen \"Anna von Mildenburg\"."
     },
     {
       "type": "person",
@@ -880,8 +882,10 @@
       "name": "Musorgskij, Modest Petrovič",
       "qid": "Q132682",
       "label": "Modest Petrovich Mussorgsky",
-      "match": "fuzzy_low",
-      "confidence": 87
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-04-18: fuzzy_low 87 verifiziert — Transliteration (CSFR/EN)."
     },
     {
       "type": "person",
@@ -1200,8 +1204,10 @@
       "name": "Sophokles",
       "qid": "Q7235",
       "label": "Sophocles",
-      "match": "fuzzy_low",
-      "confidence": 89
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-04-18: fuzzy_low 89 verifiziert — DE/EN-Schreibweise (Sophokles/Sophocles)."
     },
     {
       "type": "person",
@@ -1296,8 +1302,10 @@
       "name": "Tizian",
       "qid": "Q47551",
       "label": "Titian",
-      "match": "fuzzy_low",
-      "confidence": 83
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-04-18: fuzzy_low 83 verifiziert — DE/EN-Schreibweise (Tizian/Titian)."
     },
     {
       "type": "person",
@@ -1305,7 +1313,9 @@
       "qid": "Q55676977",
       "label": "Elisabeth Trauterbul",
       "match": "fuzzy_low",
-      "confidence": 89
+      "confidence": 89,
+      "manual_review": "rejected",
+      "note": "2026-04-18: fuzzy_low 89 REJECTED — Labels weichen stark ab (\"Traute, Elisabeth\" vs. \"Elisabeth Trauterbul\"), Kontext des Belegs nicht rekonstruierbar. Bleibt unmatched."
     },
     {
       "type": "person",
@@ -1728,8 +1738,10 @@
       "name": "Mailand",
       "qid": "Q490",
       "label": "Milan",
-      "match": "fuzzy_low",
-      "confidence": 83
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-04-18: fuzzy_low 83 verifiziert — DE/EN-Schreibweise (Mailand/Milan)."
     },
     {
       "type": "location",
@@ -1776,8 +1788,10 @@
       "name": "Rom",
       "qid": "Q220",
       "label": "Rome",
-      "match": "fuzzy_low",
-      "confidence": 86
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-04-18: fuzzy_low 86 verifiziert — DE/EN-Schreibweise (Rom/Rome)."
     },
     {
       "type": "location",
@@ -1792,16 +1806,20 @@
       "name": "Schottland",
       "qid": "Q22",
       "label": "Scotland",
-      "match": "fuzzy_low",
-      "confidence": 89
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-04-18: fuzzy_low 89 verifiziert — DE/EN-Schreibweise (Schottland/Scotland)."
     },
     {
       "type": "location",
       "name": "Straßburg",
       "qid": "Q6602",
       "label": "Strasbourg",
-      "match": "fuzzy_low",
-      "confidence": 89
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-04-18: fuzzy_low 89 verifiziert — DE/EN-Schreibweise (Strassburg/Strasbourg)."
     },
     {
       "type": "location",
@@ -2010,10 +2028,12 @@
       "type": "work",
       "name": "Wozzeck",
       "komponist": "Berg, Alban",
-      "qid": "Q657215",
-      "label": "Woyzeck",
-      "match": "fuzzy_low",
-      "confidence": 86
+      "qid": "Q45784",
+      "label": "Wozzeck",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-04-18: fuzzy_low 86 war FALSCH (Q657215 = Buechners Drama \"Woyzeck\"). Erstkorrektur Q250796 war auch falsch (Winkeralphabet/Semaphore). Korrekt: Q45784 = Berg-Oper \"Wozzeck\" (1925) — via wbsearchentities verifiziert."
     },
     {
       "type": "work",

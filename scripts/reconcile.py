@@ -33,6 +33,8 @@ from datetime import datetime
 from pathlib import Path
 from thefuzz import fuzz
 
+from _common import INDEX_HEADER_SHIFTS
+
 # Windows-Konsole: UTF-8 erzwingen
 if sys.stdout.encoding != "utf-8":
     sys.stdout.reconfigure(encoding="utf-8")
@@ -289,13 +291,7 @@ def reconcile_work(name: str, komponist: str = None,
 # Index-Konfiguration (ersetzt den Duplikat-Code)
 # ---------------------------------------------------------------------------
 
-HEADER_SHIFTS = {
-    "organisationsindex": ["m3gim_id", "name", "wikidata_id", "ort",
-                           "assoziierte_person", "anmerkung"],
-    "ortsindex": ["m3gim_id", "name", "wikidata_id"],
-    "werkindex": ["m3gim_id", "name", "wikidata_id", "komponist",
-                  "rolle_stimme", "anmerkung"]
-}
+# Header-Shift-Korrekturen kommen aus _common.py (INDEX_HEADER_SHIFTS).
 
 INDEX_CONFIG = [
     {
@@ -342,8 +338,8 @@ def load_index(filename: str, shift_key: str = None) -> pd.DataFrame:
 
     df = pd.read_excel(path)
 
-    if shift_key and shift_key in HEADER_SHIFTS:
-        expected = HEADER_SHIFTS[shift_key]
+    if shift_key and shift_key in INDEX_HEADER_SHIFTS:
+        expected = INDEX_HEADER_SHIFTS[shift_key]
         if len(df.columns) >= len(expected):
             first_row = df.iloc[0].tolist()
             df.columns = expected + list(df.columns[len(expected):])

@@ -38,7 +38,7 @@ def _iter_record_locations(graph):
 
 
 # ---------------------------------------------------------------------------
-# Anker-Assert (strict xfail bis Pipeline-Fix implementiert)
+# Anker-Assert (sichert Role-Hygiene-Fix aus Session 34)
 # ---------------------------------------------------------------------------
 
 

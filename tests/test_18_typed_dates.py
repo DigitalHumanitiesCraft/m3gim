@@ -1,7 +1,8 @@
 """Typisierte Datumsproperty-Spec: Phase 4.7 aus data.md Abschnitt 7.
 
-STATUS: aktuell xfail. Wird grun, wenn die Pipeline Datums-Verknuepfungen
-nach Rolle typisiert emittiert (statt generischem m3gim:eventDate):
+STATUS: aktiv, sichert den Phase-4.7-Output (seit Session 28). Tests greifen,
+wenn die Pipeline Datums-Verknuepfungen nicht mehr nach Rolle typisiert
+emittiert und auf generisches m3gim:eventDate zurueckfaellt:
   rolle=absendedatum       -> m3gim:absendedatum
   rolle=empfangsdatum      -> m3gim:empfangsdatum
   rolle=auftritt / aufführung -> m3gim:auftrittsdatum / m3gim:auffuehrungsdatum

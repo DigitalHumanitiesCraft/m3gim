@@ -86,10 +86,11 @@ Die Dateien in `docs/data/*.json` + `docs/data/m3gim.jsonld` werden ausschließl
 
 ### Plakate/Dateinamen-Eigenheiten
 
-- `M3GIM-Verknüpfungen.xlsx` — Dateiname enthält das `ü`, nicht `ue`. Pipeline kompensiert via `pd.read_excel()`-Fallback auf beide Varianten, aber beim Schreiben von Skripten immer das `ü`.
+- `M3GIM-Verknüpfungen.xlsx` — Dateiname enthält das `ü`, nicht `ue`. Beim Schreiben von Skripten immer das `ü`; die Pipeline wirft `FileNotFoundError` bei Abweichungen.
 - Plakate-IDs: `UAKUG/NIM/PL_XX` (mit Slash), nicht `UAKUG/NIM_PL_XX`.
-- Konvolut-Hierarchie: Objekt-ID = `archivsignatur + " " + folio`. Die Folio-Spalte im aktuellen Objekte-XLSX heißt `folio nr` (früher `folio` oder `Unnamed: 2`). Pipeline akzeptiert alle Varianten.
-- Header-Shifts in drei Indizes (Org, Ort, Werk): erste Datenzeile wird als Header gelesen. Pipeline korrigiert über `HEADER_SHIFTS`-Mapping; beim Debugging bewusst sein.
+- Konvolut-Hierarchie: Objekt-ID = `archivsignatur + " " + folio`. Die Folio-Spalte im aktuellen Objekte-XLSX heißt `folio nr` (früher `folio` oder `Unnamed: 2`). Pipeline akzeptiert aktuell alle Varianten.
+
+Vollständiger Katalog der Pipeline-Workarounds (Header-Shifts, Finance-Currency-Defaults, Bearbeitungsstand-Normalisierung, Role-Hygiene, Freitext-Datierungen, Orphans) inkl. Source-Fix-Vorschlägen und Test-Absicherung: [`knowledge/xlsx-fixes.md`](knowledge/xlsx-fixes.md).
 
 ## Rote Linien
 

@@ -24,6 +24,7 @@
 | [frontend.md](frontend.md) | Laufzeitmodell, Store (inkl. v2-Maps), Ansichten, Designsystem, Lektionen aus entfernten Viz |
 | [interface-konzept.md](interface-konzept.md) | Tab-Architektur + Designregeln für das Interface-Redesign (6 Tabs, Chip-Pattern, Tabelle-vor-Chart) |
 | [entscheidungen.md](entscheidungen.md) | Architekturentscheidungen, offene Entscheidungen, Tech-Schulden |
+| [xlsx-fixes.md](xlsx-fixes.md) | Pipeline-Workarounds für XLSX-Eigenheiten, Source-Fix-Vorschläge, Test-Absicherung |
 
 ## Weitere Ressourcen
 

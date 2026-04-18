@@ -1,9 +1,9 @@
 """Mobilitaets-Spec: Phase 4.4 SpatiotemporalEvent + die 5 Mobilitaetssichten
 aus data.md Abschnitt 10.
 
-STATUS: aktuell xfail. Wird grun, sobald Pipeline den Komposittyp `ort, datum`
-als m3gim:SpatiotemporalEvent-Instanz statt als zwei getrennte Relationen
-emittiert.
+STATUS: aktiv, sichert den Phase-4.4-Output (seit Session 28). Tests greifen,
+wenn die Pipeline den Komposittyp `ort, datum` nicht mehr als SpatiotemporalEvent
+emittiert oder die Mindest-Invarianten unterschreitet.
 
 Ziel-Invarianten (aus data.md § 10):
 - Jede XLSX-Zeile mit typ='ort, datum' erzeugt genau eine SpatiotemporalEvent
@@ -59,7 +59,8 @@ def test_spatiotemporal_event_roles_known(graph):
     allowed = {
         "gastspiel", "aufführung", "auftritt", "probe", "generalprobe",
         "premiere", "wiederaufnahme", "festvorstellung", "spielzeit",
-        "absendedatum", "auftrag", "entstehung", "erscheinungsdatum",
+        "absendedatum", "auffuehrungsdatum", "absendeort",
+        "auftrag", "entstehung", "erscheinungsdatum",
         "ausstellungsdatum", "erwähnt",
     }
     events = [n for n in graph if n.get("@type") == "m3gim:SpatiotemporalEvent"]

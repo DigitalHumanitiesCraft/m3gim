@@ -39,8 +39,9 @@ def test_xlsx_roles_have_stable_normalization(xlsx_verknuepfungen):
     muss einen nicht-leeren, eindeutigen normalisierten Wert haben.
     """
     df = xlsx_verknuepfungen
-    if "rolle" not in df.columns:
-        pytest.skip("rolle-Spalte nicht in XLSX")
+    assert "rolle" in df.columns, (
+        "Verknuepfungs-XLSX hat keine rolle-Spalte — Struktur-Regress."
+    )
     mapping = {}
     for raw in df["rolle"].dropna().astype(str):
         norm = _normalize_role_for_test(raw)
@@ -76,6 +77,7 @@ DATA_MD_ROLES = {
     "wiederaufnahme", "implizit", "repertoire",
     # Datumsrollen
     "absendedatum", "empfangsdatum", "ausstellungsdatum", "erscheinungsdatum",
+    "auffuehrungsdatum", "premieredatum",
     "abreisedatum", "probenbeginn", "ausstrahlung", "spielzeit", "überweisung",
     "gespräch",
     # Finanz
@@ -90,8 +92,9 @@ def test_v2_roles_covered_by_data_md_vocab(xlsx_verknuepfungen):
     Wenn Unbekannte auftauchen: data.md erweitern oder XLSX korrigieren.
     """
     df = xlsx_verknuepfungen
-    if "rolle" not in df.columns:
-        pytest.skip("rolle-Spalte nicht in XLSX")
+    assert "rolle" in df.columns, (
+        "Verknuepfungs-XLSX hat keine rolle-Spalte — Struktur-Regress."
+    )
     present = Counter()
     for raw in df["rolle"].dropna().astype(str):
         norm = _normalize_role_for_test(raw)
@@ -120,8 +123,9 @@ def test_every_xlsx_dokumenttyp_is_mapped(xlsx_objekte):
     from transform import DOKUMENTTYP_TO_DFT
 
     df = xlsx_objekte
-    if "dokumenttyp" not in df.columns:
-        pytest.skip("dokumenttyp-Spalte fehlt")
+    assert "dokumenttyp" in df.columns, (
+        "Objekte-XLSX hat keine dokumenttyp-Spalte — Struktur-Regress."
+    )
     unknown = Counter()
     for raw in df["dokumenttyp"].dropna().astype(str):
         norm = raw.strip().lower()
@@ -170,6 +174,73 @@ def test_output_roles_subset_of_data_md(records):
     )
 
 
+# Rollen, die bewusst im Frontend als 'neutral' rendern sollen (z.B. reine
+# Datumsmarker, die in der Repertoire-/Biogramm-Ansicht keine Farbfamilie
+# brauchen). Erweitern nur nach Absprache mit interface-konzept.md.
+FRONTEND_NEUTRAL_IGNORELIST = {
+    "empfänger", "widmungsempfänger",
+    # Bühnenrollen (nur in PerformanceRole-Chips)
+    "lady macbeth", "dorabella", "brangäne", "amneris", "adelaide",
+    # Datumsrollen, die bereits typisiert emittiert werden und nicht als
+    # Chip-Prefix erscheinen
+    "ausstrahlung", "gespräch", "probenbeginn", "spielzeit", "überweisung",
+    # Finanz-Sub-Rollen ohne eigenes Cluster
+    "abendgage", "vertragspartner", "inhaber",
+    # Komposit-Markierungen ohne Chip
+    "implizit", "rahmenveranstaltung", "fluggesellschaft", "abgebildet",
+    "ausbildungsstätte",
+}
+
+
+def _load_frontend_role_cluster_keys():
+    """Extrahiert die Keys aus docs/js/data/constants.js::ROLE_CLUSTER.
+
+    Regex-Parsing ist bewusst simpel — wenn das JS-Format veraendert wird,
+    bricht dieser Test und muss angepasst werden. Das ist erwuenschte
+    Kopplung (Test erzwingt Konsistenz).
+    """
+    import re
+    from pathlib import Path
+    js_path = (Path(__file__).parent.parent
+               / "docs" / "js" / "data" / "constants.js")
+    text = js_path.read_text(encoding="utf-8")
+    match = re.search(r"ROLE_CLUSTER\s*=\s*\{(.*?)\};", text, re.DOTALL)
+    assert match, "ROLE_CLUSTER-Block in constants.js nicht gefunden"
+    body = match.group(1)
+    keys = re.findall(r"'([^']+)'\s*:\s*'[^']+'", body)
+    return {k.lower() for k in keys}
+
+
+def test_xlsx_roles_all_in_frontend_cluster(xlsx_verknuepfungen):
+    """Jede normalisierte Rolle aus der XLSX ist entweder im Frontend-
+    ROLE_CLUSTER gemapped (Farbfamilie: ort/person/rolle/beziehung/finanz/
+    datum) oder explizit in FRONTEND_NEUTRAL_IGNORELIST. Sonst landet sie
+    im UI als 'neutral' — stille Datenqualitaets-Luecke.
+
+    Source-Fix: Rolle zu docs/js/data/constants.js::ROLE_CLUSTER
+    hinzufuegen (interface-konzept.md beachten).
+    """
+    df = xlsx_verknuepfungen
+    assert "rolle" in df.columns
+    present = set()
+    for raw in df["rolle"].dropna().astype(str):
+        norm = _normalize_role_for_test(raw)
+        if norm:
+            present.add(norm)
+
+    frontend_keys = _load_frontend_role_cluster_keys()
+    unmapped = sorted(
+        r for r in present
+        if r not in frontend_keys and r not in FRONTEND_NEUTRAL_IGNORELIST
+    )
+    assert not unmapped, (
+        f"{len(unmapped)} XLSX-Rollen ohne Frontend-Cluster (landen als "
+        f"'neutral'): {unmapped}. ROLE_CLUSTER in "
+        f"docs/js/data/constants.js erweitern oder in "
+        f"FRONTEND_NEUTRAL_IGNORELIST aufnehmen."
+    )
+
+
 # ---------------------------------------------------------------------------
 # Waehrungs-Coverage: jede belegte Waehrung im Datenbestand ist erlaubt
 # ---------------------------------------------------------------------------
@@ -186,8 +257,9 @@ def test_xlsx_currencies_all_allowed(xlsx_verknuepfungen):
     from transform import parse_monetary_value
 
     df = xlsx_verknuepfungen
-    if "typ" not in df.columns or "name" not in df.columns:
-        pytest.skip("Spalten fehlen")
+    assert "typ" in df.columns and "name" in df.columns, (
+        "Verknuepfungs-XLSX hat keine typ/name-Spalte — Struktur-Regress."
+    )
     # Finanz-Rows erkennen ueber typ-Prefix
     fin_mask = df["typ"].fillna("").str.lower().str.contains(
         "ausgaben|einnahmen|summe", regex=True

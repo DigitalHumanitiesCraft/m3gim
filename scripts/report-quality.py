@@ -108,8 +108,10 @@ def main():
         by_type.setdefault(t, {"high": 0, "low": 0, "exact": 0}).setdefault(m.get("match", "?"), 0)
         by_type[t][m.get("match", "?")] = by_type[t].get(m.get("match", "?"), 0) + 1
 
-    # Low-Confidence Manual-Review-Liste
-    low_conf = [m for m in matched if m.get("match") == "fuzzy_low"]
+    # Low-Confidence Manual-Review-Liste — nur ungeprueft (weder approved noch rejected)
+    low_conf = [m for m in matched
+                if m.get("match") == "fuzzy_low"
+                and m.get("manual_review") not in ("approved", "rejected")]
 
     # --- Provenance-Coverage
     prov_total = len(records_real)

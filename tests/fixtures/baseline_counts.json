@@ -10,5 +10,7 @@
   "wd_matches_min": 200,
   "partitur_auftritte_min": 35,
   "partitur_lebensphasen_exact": 7,
-  "partitur_mobilitaet_min": 5
+  "partitur_mobilitaet_min": 5,
+  "event_date_non_iso_max": 4,
+  "_event_date_non_iso_comment": "Aktuell bekannte Freitext-/Non-ISO-Datierungen (siehe knowledge/xlsx-fixes.md § 6). Wenn diese Zahl waechst, muss eine neue Freitext-Datierung im Output aufgetaucht sein — XLSX bereinigen. Wenn sie sinkt, Baseline nach unten anpassen."
 }

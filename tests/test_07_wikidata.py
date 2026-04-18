@@ -23,19 +23,19 @@ def _collect_used_qids(records):
 
 
 def test_every_wd_id_in_output_stems_from_reconciliation(records, reconciliation):
-    """Jede Q-ID im Output kommt aus wikidata-reconciliation.json ODER direkt aus Indizes."""
-    if reconciliation is None:
-        pytest.skip("wikidata-reconciliation.json nicht vorhanden")
-
-    # Reconciliation liefert QIDs im 'matched' Array
+    """Jede Q-ID im Output kommt aus wikidata-reconciliation.json ODER direkt
+    aus Indizes. Nach einem regulaeren Pipeline-Lauf existiert die Datei
+    immer; Fehlen ist ein Fehler, kein Skip-Grund.
+    """
+    assert reconciliation is not None, (
+        "wikidata-reconciliation.json fehlt. Pipeline vollstaendig ausfuehren: "
+        "`python scripts/reconcile.py` (oder transform.py mit vorhandener Datei)."
+    )
     recon_qids = {m.get("qid") for m in reconciliation.get("matched", []) if m.get("qid")}
     used_qids = _collect_used_qids(records)
-
-    # Output kann zusätzliche Q-IDs direkt aus XLSX-Indizes haben
-    # Soft-Assertion: große Überlappung erwartet
     overlap = used_qids & recon_qids
-    if recon_qids:
-        assert len(overlap) > 0, "Keine Q-IDs aus reconciliation im Output"
+    assert recon_qids, "reconciliation.matched ist leer — Pipeline-Regress."
+    assert overlap, "Keine Q-IDs aus reconciliation im Output — Enrichment hat nichts gezogen."
 
 
 def test_enrichment_properties_well_typed(records):

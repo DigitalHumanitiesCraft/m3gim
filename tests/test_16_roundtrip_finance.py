@@ -44,8 +44,9 @@ def xlsx_finance_rows(xlsx_verknuepfungen):
     df = xlsx_verknuepfungen
     needed_cols = {"archivsignatur", "typ", "name", "rolle"}
     missing = needed_cols - set(df.columns)
-    if missing:
-        pytest.skip(f"XLSX-Spalten fehlen: {missing}")
+    assert not missing, (
+        f"Verknuepfungs-XLSX fehlen Spalten {missing} — Struktur-Regress."
+    )
     rows = []
     folio_col = "folio" if "folio" in df.columns else None
     for _, row in df.iterrows():

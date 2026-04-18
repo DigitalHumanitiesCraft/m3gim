@@ -18,11 +18,16 @@ def _signatur_from_xlsx(df):
 
 
 def test_record_count_reasonable(records, xlsx_objekte):
-    """Records-Zahl muss im Bereich der XLSX-Zeilen liegen (Folios erhöhen den Count)."""
+    """Records-Zahl muss mindestens die Zahl der XLSX-Signaturen erreichen.
+
+    Jede gueltige Signatur erzeugt mindestens einen Record; Folio-Konvolute
+    erhoehen den Count zusaetzlich. Unterschreitung signalisiert stillen
+    Datenverlust in der Pipeline.
+    """
     xlsx_valid = _signatur_from_xlsx(xlsx_objekte)
-    # Records >= unique Signaturen (jede Signatur ist mind. 1 Record)
-    assert len(records) >= len(xlsx_valid) * 0.9, (
-        f"Nur {len(records)} Records für {len(xlsx_valid)} XLSX-Signaturen"
+    assert len(records) >= len(xlsx_valid), (
+        f"Record-Verlust: {len(records)} Records fuer {len(xlsx_valid)} "
+        f"XLSX-Signaturen (Folios sollten den Count erhoehen, nicht senken)"
     )
 
 

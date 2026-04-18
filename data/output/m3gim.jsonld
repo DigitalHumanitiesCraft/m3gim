@@ -130,19 +130,10 @@
           "@id": "m3gim:NIM_002"
         },
         {
-          "@id": "m3gim:NIM_006"
-        },
-        {
-          "@id": "m3gim:NIM_008"
-        },
-        {
           "@id": "m3gim:NIM_009"
         },
         {
           "@id": "m3gim:NIM_010"
-        },
-        {
-          "@id": "m3gim:NIM_011"
         },
         {
           "@id": "m3gim:NIM_012"
@@ -957,6 +948,9 @@
         },
         {
           "@id": "m3gim:NIM_006_9"
+        },
+        {
+          "@id": "m3gim:NIM_006_sammlung"
         }
       ]
     },
@@ -1187,6 +1181,9 @@
         },
         {
           "@id": "m3gim:NIM_008_40"
+        },
+        {
+          "@id": "m3gim:NIM_008_sammlung"
         }
       ]
     },
@@ -1257,6 +1254,9 @@
         },
         {
           "@id": "m3gim:NIM_011_20"
+        },
+        {
+          "@id": "m3gim:NIM_011_sammlung"
         }
       ]
     },
@@ -2318,6 +2318,8 @@
         },
         {
           "name": "Bahr-Mildenburg, Anna",
+          "@id": "wd:Q79028",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q79028",
           "role": "erwähnt",
           "m3gim:xlsxSource": {
             "m3gim:xlsxSheet": "Verknuepfungen",
@@ -3006,6 +3008,8 @@
         },
         {
           "name": "Bahr-Mildenburg, Anna",
+          "@id": "wd:Q79028",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q79028",
           "role": "erwähnt",
           "m3gim:xlsxSource": {
             "m3gim:xlsxSheet": "Verknuepfungen",
@@ -6992,6 +6996,8 @@
         },
         {
           "name": "Tizian",
+          "@id": "wd:Q47551",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q47551",
           "role": "erwähnt",
           "m3gim:xlsxSource": {
             "m3gim:xlsxSheet": "Verknuepfungen",
@@ -8897,6 +8903,8 @@
         },
         {
           "name": "Mailand",
+          "@id": "wd:Q490",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q490",
           "role": "erwähnt",
           "m3gim:xlsxSource": {
             "m3gim:xlsxSheet": "Verknuepfungen",
@@ -8906,6 +8914,8 @@
         },
         {
           "name": "Rom",
+          "@id": "wd:Q220",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q220",
           "role": "erwähnt",
           "m3gim:xlsxSource": {
             "m3gim:xlsxSheet": "Verknuepfungen",
@@ -9181,6 +9191,8 @@
         },
         {
           "name": "Bahr-Mildenburg, Anna",
+          "@id": "wd:Q79028",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q79028",
           "role": "erwähnt",
           "m3gim:xlsxSource": {
             "m3gim:xlsxSheet": "Verknuepfungen",
@@ -10163,6 +10175,8 @@
         },
         {
           "name": "Mailand",
+          "@id": "wd:Q490",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q490",
           "role": "erwähnt",
           "m3gim:xlsxSource": {
             "m3gim:xlsxSheet": "Verknuepfungen",
@@ -10172,6 +10186,8 @@
         },
         {
           "name": "Rom",
+          "@id": "wd:Q220",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q220",
           "role": "erwähnt",
           "m3gim:xlsxSource": {
             "m3gim:xlsxSheet": "Verknuepfungen",
@@ -10447,6 +10463,8 @@
         },
         {
           "name": "Bahr-Mildenburg, Anna",
+          "@id": "wd:Q79028",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q79028",
           "role": "erwähnt",
           "m3gim:xlsxSource": {
             "m3gim:xlsxSheet": "Verknuepfungen",
@@ -10652,6 +10670,8 @@
         },
         {
           "name": "Musorgskij, Modest Petrovič",
+          "@id": "wd:Q132682",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q132682",
           "role": "komponist",
           "m3gim:xlsxSource": {
             "m3gim:xlsxSheet": "Verknuepfungen",
@@ -12700,7 +12720,7 @@
       }
     },
     {
-      "@id": "m3gim:NIM_006",
+      "@id": "m3gim:NIM_006_sammlung",
       "@type": "rico:Record",
       "rico:identifier": "UAKUG/NIM_006",
       "m3gim:xlsxSource": {
@@ -17220,6 +17240,8 @@
         },
         {
           "name": "Sophokles",
+          "@id": "wd:Q7235",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q7235",
           "role": "erwähnt",
           "m3gim:xlsxSource": {
             "m3gim:xlsxSheet": "Verknuepfungen",
@@ -17497,6 +17519,8 @@
         },
         {
           "name": "Sophokles",
+          "@id": "wd:Q7235",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q7235",
           "role": "aufführung",
           "m3gim:xlsxSource": {
             "m3gim:xlsxSheet": "Verknuepfungen",
@@ -17719,6 +17743,8 @@
         },
         {
           "name": "Wozzeck",
+          "@id": "wd:Q45784",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q45784",
           "role": "erwähnt",
           "m3gim:xlsxSource": {
             "m3gim:xlsxSheet": "Verknuepfungen",
@@ -18343,7 +18369,7 @@
       ]
     },
     {
-      "@id": "m3gim:NIM_008",
+      "@id": "m3gim:NIM_008_sammlung",
       "@type": "rico:Record",
       "rico:identifier": "UAKUG/NIM_008",
       "m3gim:xlsxSource": {
@@ -18745,7 +18771,7 @@
       }
     },
     {
-      "@id": "m3gim:NIM_011",
+      "@id": "m3gim:NIM_011_sammlung",
       "@type": "rico:Record",
       "rico:identifier": "UAKUG/NIM_011",
       "m3gim:xlsxSource": {
@@ -22446,7 +22472,7 @@
       }
     }
   ],
-  "m3gim:exportDate": "2026-04-17T21:18:26.386637",
+  "m3gim:exportDate": "2026-04-18T08:54:50.486985",
   "m3gim:recordCount": 381,
   "m3gim:konvolutCount": 7
 }

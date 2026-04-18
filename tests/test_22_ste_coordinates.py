@@ -42,7 +42,7 @@ def _at_place(ste):
 
 
 # ---------------------------------------------------------------------------
-# Anker-Asserts (strict xfail bis Pipeline-Patch implementiert ist)
+# Anker-Asserts (sichern STE-Koordinaten-Patch aus Session 33)
 # ---------------------------------------------------------------------------
 
 

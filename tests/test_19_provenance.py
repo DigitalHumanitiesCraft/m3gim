@@ -1,7 +1,8 @@
 """Provenance + Konfidenz-Spec: Phase 4.3 aus data.md Abschnitt 9.
 
-STATUS: aktuell xfail. Wird grun, wenn m3gim:dateEvidence durch
-agrelon:hasProvenance + agrelon:hasConfidenceValue ersetzt ist.
+STATUS: aktiv, sichert den Phase-4.3-Output (seit Session 28). Tests greifen,
+wenn m3gim:dateEvidence statt agrelon:hasProvenance + agrelon:hasConfidenceValue
+im Output auftaucht (Rueckfall auf altes Schema).
 
 Mapping (data.md § 9):
   aus_dokument -> hasConfidenceValue 1.0

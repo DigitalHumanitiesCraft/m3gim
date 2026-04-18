@@ -30,7 +30,14 @@ import pandas as pd
 from pathlib import Path
 from datetime import datetime
 
-from _common import attach_xlsx_source, build_xlsx_source, is_approved_match
+from _common import (
+    attach_xlsx_source,
+    build_xlsx_source,
+    default_currency_for,
+    is_approved_match,
+    normalize_bearbeitungsstand,
+    INDEX_HEADER_SHIFTS,
+)
 
 # Windows-Konsole: UTF-8 erzwingen
 if sys.stdout.encoding != "utf-8":
@@ -98,14 +105,21 @@ DATUMSROLLE_TO_PROPERTY = {
     "erscheinungsdatum": "m3gim:erscheinungsdatum",
     "abreisedatum": "m3gim:abreisedatum",
     "auftritt": "m3gim:auftrittsdatum",
+    "auftrittsdatum": "m3gim:auftrittsdatum",
     "aufführung": "m3gim:auffuehrungsdatum",
+    "auffuehrungsdatum": "m3gim:auffuehrungsdatum",
     "probe": "m3gim:probendatum",
+    "probendatum": "m3gim:probendatum",
     "probenbeginn": "m3gim:probenbeginn",
     "premiere": "m3gim:premieredatum",
+    "premieredatum": "m3gim:premieredatum",
     "ausstrahlung": "m3gim:ausstrahlungsdatum",
+    "ausstrahlungsdatum": "m3gim:ausstrahlungsdatum",
     "spielzeit": "m3gim:spielzeitVon",
     "überweisung": "m3gim:ueberweisungsdatum",
+    "ueberweisungsdatum": "m3gim:ueberweisungsdatum",
     "gespräch": "m3gim:gespraechsdatum",
+    "gespraechsdatum": "m3gim:gespraechsdatum",
 }
 
 # ---------------------------------------------------------------------------
@@ -177,15 +191,9 @@ DFT_BROADER = {
     "ausweis": "identitaetsdokument",
 }
 
-# ---------------------------------------------------------------------------
-# Header-Shift-Korrekturen
-# ---------------------------------------------------------------------------
-
-HEADER_SHIFTS = {
-    "organisationsindex": ["m3gim_id", "name", "wikidata_id", "ort", "assoziierte_person", "anmerkung"],
-    "ortsindex": ["m3gim_id", "name", "wikidata_id"],
-    "werkindex": ["m3gim_id", "name", "wikidata_id", "komponist", "rolle_stimme", "anmerkung"]
-}
+# Header-Shift-Korrekturen und Waehrungs-/Bearbeitungsstand-Defaults
+# kommen aus _common.py (INDEX_HEADER_SHIFTS, FINANCE_CURRENCY_DEFAULTS,
+# normalize_bearbeitungsstand). Siehe knowledge/xlsx-fixes.md.
 
 
 # ---------------------------------------------------------------------------
@@ -311,8 +319,8 @@ def load_index(name: str) -> pd.DataFrame | None:
     df = pd.read_excel(path)
     canonical = name.lower()
 
-    if canonical in HEADER_SHIFTS:
-        expected = HEADER_SHIFTS[canonical]
+    if canonical in INDEX_HEADER_SHIFTS:
+        expected = INDEX_HEADER_SHIFTS[canonical]
         if len(df.columns) == len(expected):
             first_val = str(df.columns[1]) if len(df.columns) > 1 else ""
             if first_val and first_val not in ["name", "titel", "ort", "m3gim_id"]:
@@ -420,17 +428,9 @@ def convert_objekt(row: pd.Series, folio_col: str = None,
     if beschreibung:
         record["rico:scopeAndContent"] = beschreibung
 
-    # Bearbeitungsstand (m3gim-Extension)
-    bearbeitungsstand = normalize_lower(row.get('bearbeitungsstand'))
+    # Bearbeitungsstand (m3gim-Extension) — Mapping in _common.py
+    bearbeitungsstand = normalize_bearbeitungsstand(row.get('bearbeitungsstand'))
     if bearbeitungsstand:
-        # Normalisiere auf einheitliche Werte
-        bs = bearbeitungsstand
-        if 'vollst' in bs or bs == 'abgeschlossen' or bs.startswith('erledigt'):
-            bearbeitungsstand = 'abgeschlossen'
-        elif bs.startswith('begonnen'):
-            bearbeitungsstand = 'begonnen'
-        elif 'ckgestellt' in bs or 'zurück' in bs:
-            bearbeitungsstand = 'zurueckgestellt'
         record["m3gim:bearbeitungsstand"] = bearbeitungsstand
 
     # Zugangs- und Scan-Status
@@ -492,6 +492,21 @@ def build_konvolut_hierarchy(df: pd.DataFrame, folio_col: str = None) -> tuple[l
         }
         konvolute.append(konvolut)
 
+    # --- Kollisions-Aufloesung (siehe knowledge/xlsx-fixes.md § 13) ---
+    # Wenn eine Signatur sowohl eine Sammel-Zeile (ohne Folio) als auch
+    # Folio-Zeilen hat, hat der Sammel-Record die gleiche @id wie das
+    # RecordSet. Wir geben der Sammel-Zeile ein _sammlung-Suffix und
+    # haengen sie als Meta-Member an das Konvolut.
+    konvolut_ids = {k["@id"] for k in konvolute}
+    for rec in records:
+        if rec["@id"] in konvolut_ids and rec.get("@type") == "rico:Record":
+            old_id = rec["@id"]
+            new_id = f"{old_id}_sammlung"
+            rec["@id"] = new_id
+            # Dem Konvolut als Meta-Member anfuegen
+            konv = next(k for k in konvolute if k["@id"] == old_id)
+            konv["rico:hasOrHadPart"].append({"@id": new_id})
+
     return records, konvolute
 
 
@@ -499,27 +514,9 @@ def build_konvolut_hierarchy(df: pd.DataFrame, folio_col: str = None) -> tuple[l
 # Verknuepfungen → RiC-O Relations
 # ---------------------------------------------------------------------------
 
-# Fallback-Währung pro Archivsignatur-Präfix. Greift, wenn eine Zeile als
-# "ausgaben, währung" / "einnahmen, währung" / "summe, währung" markiert ist,
-# aber im Namensfeld nur eine Zahl ohne Suffix steht. Setzt eine Redaktions-
-# entscheidung voraus — jeder Eintrag dokumentiert die inhaltliche Annahme.
-#
-# NIM_007 "Aufstellung 1966": Folio 5_1 hat fünf Zahlen ohne Währung
-# (36000, 18000, 90000 ×2, 180000). Benachbarte Folien 5_2..5_8 sind
-# konsistent in S (Schilling) ausgewiesen, daher S als Default.
-FINANCE_CURRENCY_DEFAULTS = {
-    "UAKUG/NIM_007": "S",
-}
-
-
-def _default_currency_for(signatur: str) -> str | None:
-    """Liefert Default-Währung, falls die Archivsignatur ein bekanntes Präfix hat."""
-    if not signatur:
-        return None
-    for prefix, curr in FINANCE_CURRENCY_DEFAULTS.items():
-        if signatur.startswith(prefix):
-            return curr
-    return None
+# Fallback-Waehrung pro Archivsignatur-Praefix lebt in _common.py
+# (FINANCE_CURRENCY_DEFAULTS + default_currency_for). Siehe
+# knowledge/xlsx-fixes.md fuer die redaktionellen Annahmen.
 
 
 def parse_monetary_value(name: str) -> tuple[str | None, str | None]:
@@ -888,7 +885,7 @@ def add_relations_to_records(records: list, relations: dict,
                 # Finanz-Informationen als DetailAnnotation (data.md Abschnitt 11)
                 amount, currency = parse_monetary_value(name)
                 if currency is None and amount is not None:
-                    currency = _default_currency_for(record.get("rico:identifier", ""))
+                    currency = default_currency_for(record.get("rico:identifier", ""))
                 detail_entry = {
                     "@type": "m3gim:DetailAnnotation",
                     "m3gim:detailField": t,
@@ -1102,21 +1099,22 @@ def main():
     # Verknuepfungen laden
     verk_path = SHEETS_DIR / "M3GIM-Verknüpfungen.xlsx"
     if not verk_path.exists():
-        verk_path = SHEETS_DIR / "M3GIM-Verknuepfungen.xlsx"
+        raise FileNotFoundError(
+            f"Verknuepfungstabelle fehlt: {verk_path}. "
+            "Erwartet wird genau dieser Dateiname mit Umlaut."
+        )
 
-    relations = {}
-    if verk_path.exists():
-        print(f"\nLade {verk_path.name}...")
-        df_verk = pd.read_excel(verk_path)
-        relations = process_verknuepfungen(df_verk, indices)
-        total_rels = sum(len(v) for v in relations.values())
-        print(f"  {total_rels} Verknuepfungen fuer {len(relations)} Objekte")
+    print(f"\nLade {verk_path.name}...")
+    df_verk = pd.read_excel(verk_path)
+    relations = process_verknuepfungen(df_verk, indices)
+    total_rels = sum(len(v) for v in relations.values())
+    print(f"  {total_rels} Verknuepfungen fuer {len(relations)} Objekte")
 
-        # Relations zu Records hinzufuegen (mit Enrichment-Daten)
-        ste_events = add_relations_to_records(records, relations, enrichment_data)
-        # Relations auch zu Konvolut-Records (falls Verknuepfungen am Konvolut haengen)
-        ste_events_k = add_relations_to_records(konvolute, relations, enrichment_data)
-        ste_events = list(ste_events) + list(ste_events_k)
+    # Relations zu Records hinzufuegen (mit Enrichment-Daten)
+    ste_events = add_relations_to_records(records, relations, enrichment_data)
+    # Relations auch zu Konvolut-Records (falls Verknuepfungen am Konvolut haengen)
+    ste_events_k = add_relations_to_records(konvolute, relations, enrichment_data)
+    ste_events = list(ste_events) + list(ste_events_k)
 
     # Gesamtbestand als Fonds
     fonds = {

@@ -1,7 +1,8 @@
 """AgRelOn-Spec: Phase 4.8 — Agent-Agent-Relationen aus data.md Abschnitt 8.
 
-STATUS: aktuell xfail. Wird grun, wenn die Pipeline Rollen wie 'arbeitgeber',
-'absender' etc. zu agrelon:*-Relationen transformiert.
+STATUS: aktiv, sichert den Phase-4.8-Output (seit Session 28). Tests greifen,
+wenn die Pipeline Rollen wie 'arbeitgeber', 'absender' etc. nicht mehr zu
+agrelon:*-Relationen transformiert.
 
 Mapping aus data.md § 8.3:
   arbeitgeber (institution)        -> agrelon:hasEmployer
@@ -36,8 +37,10 @@ def test_has_employer_relations_from_arbeitgeber(records, xlsx_verknuepfungen):
     Verwaiste Rows (Signatur/Folio nicht matchbar) sind ausgenommen.
     """
     df = xlsx_verknuepfungen
-    if "typ" not in df.columns or "rolle" not in df.columns:
-        pytest.skip("XLSX-Spalten fehlen")
+    assert "typ" in df.columns and "rolle" in df.columns, (
+        "Verknuepfungs-XLSX hat keine typ/rolle-Spalten — Struktur-Regress "
+        "(siehe knowledge/xlsx-fixes.md)."
+    )
     # Record-Identifier-Index aufbauen
     by_ident = {}
     for r in records:

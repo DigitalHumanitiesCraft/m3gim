@@ -17,6 +17,8 @@ from pathlib import Path
 from datetime import datetime
 from dataclasses import dataclass
 
+from _common import INDEX_HEADER_SHIFTS
+
 # Windows-Konsole: UTF-8 erzwingen
 if sys.stdout.encoding != "utf-8":
     sys.stdout.reconfigure(encoding="utf-8")
@@ -97,21 +99,7 @@ DATE_PATTERN = re.compile(
 )
 
 # ---------------------------------------------------------------------------
-# Header-Shift-Korrekturen fuer Indizes
-# ---------------------------------------------------------------------------
-
-HEADER_SHIFTS = {
-    "organisationsindex": {
-        # "Graz" als Header der name-Spalte â†’ korrigieren
-        "expected_columns": ["m3gim_id", "name", "wikidata_id", "ort", "assoziierte_person", "anmerkung"],
-    },
-    "ortsindex": {
-        "expected_columns": ["m3gim_id", "name", "wikidata_id"],
-    },
-    "werkindex": {
-        "expected_columns": ["m3gim_id", "name", "wikidata_id", "komponist", "rolle_stimme", "anmerkung"],
-    }
-}
+# Header-Shift-Korrekturen kommen aus _common.py (INDEX_HEADER_SHIFTS).
 
 
 # ---------------------------------------------------------------------------
@@ -218,8 +206,8 @@ def load_index(name: str) -> pd.DataFrame | None:
 
     # Header-Shift-Korrektur: wenn ein bekannter Datenwert als Header steht
     canonical = name.lower().replace("m3gim-", "")
-    if canonical in HEADER_SHIFTS:
-        expected = HEADER_SHIFTS[canonical]["expected_columns"]
+    if canonical in INDEX_HEADER_SHIFTS:
+        expected = INDEX_HEADER_SHIFTS[canonical]
         if len(df.columns) == len(expected):
             # Pruefen ob erste Zeile wie ein Datenwert aussieht (nicht wie ein Header)
             first_val = str(df.columns[1]) if len(df.columns) > 1 else ""

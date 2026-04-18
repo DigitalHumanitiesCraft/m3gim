@@ -3,9 +3,78 @@
 Enthaelt schlanke Helpers, die in mehreren Scripts identisch gebraucht
 werden. Kein Framework, keine Abstraktion auf Vorrat — nur konkret
 dedupliziertes Wissen.
+
+Zentralisierte XLSX-Workaround-Konstanten siehe knowledge/xlsx-fixes.md.
 """
 
 from __future__ import annotations
+
+
+# ---------------------------------------------------------------------------
+# XLSX-Workaround-Konstanten (siehe knowledge/xlsx-fixes.md)
+# ---------------------------------------------------------------------------
+
+# Header-Shift-Korrektur fuer Org-/Ort-/Werkindex: erste Datenzeile laeuft als
+# Header durch, weil die XLSX-Kopfzeile nicht korrekt gesetzt ist. Pipeline
+# erkennt das am untypischen Spaltennamen in Position 1 und schiebt die
+# Daten zurueck. Zentral, damit transform.py, validate.py und reconcile.py
+# denselben Kanon nutzen.
+INDEX_HEADER_SHIFTS: dict[str, list[str]] = {
+    "organisationsindex": [
+        "m3gim_id", "name", "wikidata_id",
+        "ort", "assoziierte_person", "anmerkung",
+    ],
+    "ortsindex": ["m3gim_id", "name", "wikidata_id"],
+    "werkindex": [
+        "m3gim_id", "name", "wikidata_id",
+        "komponist", "rolle_stimme", "anmerkung",
+    ],
+}
+
+# Finanz-Waehrungs-Defaults pro Konvolut-Signatur. NIM_007 "Aufstellung 1966"
+# Folio 5_1 hat fuenf Zahlen ohne Waehrung; benachbarte Folien 5_2..5_8 sind
+# konsistent in Schilling ausgewiesen, daher "S" als Default.
+FINANCE_CURRENCY_DEFAULTS: dict[str, str] = {
+    "UAKUG/NIM_007": "S",
+}
+
+
+def default_currency_for(signatur: str | None) -> str | None:
+    """Default-Waehrung, wenn die Archivsignatur ein bekanntes Praefix hat."""
+    if not signatur:
+        return None
+    for prefix, curr in FINANCE_CURRENCY_DEFAULTS.items():
+        if signatur.startswith(prefix):
+            return curr
+    return None
+
+
+# Kontrolliertes Bearbeitungsstand-Vokabular. XLSX schreibt Varianten wie
+# "Vollständig", "erledigt", "zurückgestellt"; Pipeline mappt auf drei
+# kanonische Werte. Source-Fix: Dropdown in Google Sheets.
+BEARBEITUNGSSTAND_CANONICAL = {"abgeschlossen", "begonnen", "zurueckgestellt"}
+
+
+def normalize_bearbeitungsstand(value) -> str | None:
+    """Mappt Freitext-Varianten auf kanonische Werte.
+
+    Akzeptiert pandas-NaN (Float) und None; liefert in dem Fall None zurueck.
+    Rueckgabe sonst: einer aus ``BEARBEITUNGSSTAND_CANONICAL`` oder der
+    lower-strip-Wert unveraendert, wenn kein Muster greift (dann schlaegt
+    test_03 an).
+    """
+    if value is None or value != value:  # None oder NaN (NaN != NaN)
+        return None
+    bs = str(value).strip().lower()
+    if not bs or bs == "nan":
+        return None
+    if "vollst" in bs or bs == "abgeschlossen" or bs.startswith("erledigt"):
+        return "abgeschlossen"
+    if bs.startswith("begonnen"):
+        return "begonnen"
+    if "ckgestellt" in bs or "zurück" in bs:
+        return "zurueckgestellt"
+    return bs
 
 
 def is_approved_match(match_entry: dict) -> bool:
