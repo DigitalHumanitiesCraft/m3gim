@@ -117,15 +117,8 @@
   margin: 0;
 }
 
-.stat-section--placeholder {
-  opacity: 0.55;
-}
-
-.stat-section__placeholder {
-  font-size: var(--text-sm);
-  color: var(--color-text-tertiary);
-  font-style: italic;
-  margin: 0;
+.stat-section--minor {
+  opacity: 0.92;
 }
 
 .stat-subsection {
@@ -329,6 +322,11 @@
 .statistik-chip--relation {
   border-color: var(--color-kug-blau-light);
   background: rgba(0, 74, 143, 0.05);
+}
+
+.statistik-chip--finance {
+  border-color: var(--color-gold-medium);
+  background: rgba(196, 165, 116, 0.08);
 }
 
 .statistik-chip--kategoriekomponist  { border-color: var(--color-wagner); background: rgba(107, 44, 44, 0.06); }

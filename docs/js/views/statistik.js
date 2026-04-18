@@ -26,7 +26,8 @@ export function renderStatistik(store, container) {
   body.appendChild(buildGeografieSection(store));
   body.appendChild(buildNetzwerkSection(store));
   body.appendChild(buildRepertoireSection(store));
-  body.appendChild(placeholderSection('Qualitaet + Finanzen', 'M4'));
+  body.appendChild(buildQualitaetSection(store));
+  body.appendChild(buildFinanzenSection(store));
   wrap.appendChild(body);
 
   container.appendChild(wrap);
@@ -37,6 +38,7 @@ export function renderStatistik(store, container) {
   const places = aggregatePlaces(store);
   const relations = aggregateAgentRelations(store);
   const composers = aggregateComposers(store);
+  const finances = aggregateFinances(store);
 
   logStamp('statistik', [
     ['records', store.allRecords.length],
@@ -51,6 +53,8 @@ export function renderStatistik(store, container) {
     ['orte', places.length],
     ['relationen', relations.total],
     ['komponisten', composers.length],
+    ['finanzen', finances.total],
+    ['waehrungen', finances.currencies.length],
   ]);
 }
 
@@ -492,6 +496,168 @@ function buildRepertoireSection(store) {
 }
 
 // ---------------------------------------------------------------------------
+// § 6 Verlinkung & Qualitaet
+// ---------------------------------------------------------------------------
+
+function wikidataCoverage(map) {
+  let withQid = 0;
+  for (const entry of map.values()) {
+    if (entry.wikidata && String(entry.wikidata).startsWith('wd:')) withQid++;
+  }
+  return { withQid, total: map.size };
+}
+
+function provenanceCoverage(store) {
+  let withSource = 0;
+  for (const rec of store.allRecords) {
+    if (rec['m3gim:xlsxSource']) withSource++;
+  }
+  return { withSource, total: store.allRecords.length };
+}
+
+function buildQualitaetSection(store) {
+  const section = el('section', { className: 'stat-section' });
+  section.appendChild(el('h3', { className: 'stat-section__title' },
+    'Verlinkung & Qualitaet'));
+  section.appendChild(el('p', { className: 'stat-section__lead' },
+    'Anteil der Wikidata-verknuepften Entitaeten und Nachvollziehbarkeit '
+    + 'ueber die ursprunglichen XLSX-Zeilen. Der ehrliche Blick auf die Daten.'));
+
+  const wikidata = [
+    { label: 'Personen',       ...wikidataCoverage(store.persons) },
+    { label: 'Organisationen', ...wikidataCoverage(store.organizations) },
+    { label: 'Orte',           ...wikidataCoverage(store.locations) },
+    { label: 'Werke',          ...wikidataCoverage(store.works) },
+  ];
+  const wdWrap = el('div', { className: 'stat-subsection' });
+  wdWrap.appendChild(el('h4', { className: 'stat-subsection__title' },
+    'Wikidata-Abdeckung nach Entitaetstyp'));
+  const wdList = el('ul', { className: 'stat-bars' });
+  for (const row of wikidata) {
+    const pct = row.total ? Math.round((row.withQid / row.total) * 100) : 0;
+    const li = el('li', { className: 'stat-bars__row' });
+    li.appendChild(el('span', { className: 'stat-bars__label' }, row.label));
+    const track = el('div', { className: 'stat-bars__track' });
+    const fill = el('div', { className: 'stat-bars__fill stat-bars__fill--complete' });
+    fill.style.width = `${Math.max(2, pct)}%`;
+    track.appendChild(fill);
+    li.appendChild(track);
+    li.appendChild(el('span', { className: 'stat-bars__count' },
+      `${row.withQid}\u2009/\u2009${row.total} (${pct}\u2009%)`));
+    wdList.appendChild(li);
+  }
+  wdWrap.appendChild(wdList);
+  section.appendChild(wdWrap);
+
+  const prov = provenanceCoverage(store);
+  const provWrap = el('div', { className: 'stat-subsection' });
+  provWrap.appendChild(el('h4', { className: 'stat-subsection__title' }, 'Provenienz'));
+  const provBadge = el('p', { className: 'statistik-note' });
+  provBadge.appendChild(el('strong', {}, `${prov.withSource}\u2009/\u2009${prov.total}`));
+  provBadge.appendChild(document.createTextNode(
+    ' Records tragen `m3gim:xlsxSource` mit Sheet + Zeile. Jeder Datenpunkt '
+    + 'ist in der Quell-Tabelle nachvollziehbar; verschachtelte Entities '
+    + '(Agent-Relationen, DetailAnnotations, Spatiotemporal-Events) haben '
+    + 'eigene xlsxSource-Einträge.'));
+  provWrap.appendChild(provBadge);
+  section.appendChild(provWrap);
+
+  return section;
+}
+
+// ---------------------------------------------------------------------------
+// § 7 Finanzen
+// ---------------------------------------------------------------------------
+
+const CURRENCY_LABEL = {
+  'S':   'Schilling',
+  'Esc': 'Escudo',
+  'RM':  'Reichsmark',
+  'Fr':  'Franc',
+  'DM':  'Deutsche Mark',
+};
+
+function aggregateFinances(store) {
+  let total = 0;
+  let recordsWithFin = 0;
+  const currencies = new Map();
+  const roles = new Map();
+  for (const entries of store.finances.values()) {
+    if (entries.length > 0) recordsWithFin++;
+    for (const e of entries) {
+      total++;
+      if (e.currency) {
+        currencies.set(e.currency, (currencies.get(e.currency) || 0) + 1);
+      }
+      if (e.role) {
+        roles.set(e.role, (roles.get(e.role) || 0) + 1);
+      }
+    }
+  }
+  return {
+    total,
+    recordsWithFin,
+    currencies: [...currencies.entries()]
+      .map(([code, count]) => ({ code, label: CURRENCY_LABEL[code] || code, count }))
+      .sort((a, b) => b.count - a.count),
+    roles: [...roles.entries()]
+      .map(([role, count]) => ({ role, count }))
+      .sort((a, b) => b.count - a.count),
+  };
+}
+
+function buildFinanzenSection(store) {
+  const section = el('section', { className: 'stat-section stat-section--minor' });
+  section.appendChild(el('h3', { className: 'stat-section__title' }, 'Finanzen'));
+  section.appendChild(el('p', { className: 'stat-section__lead' },
+    'Monetäre Nennungen aus Briefen, Vertraegen und Abrechnungen, modelliert '
+    + 'als DetailAnnotations mit `m3gim:monetaryAmount`. Eine Teilerschliessung '
+    + '-- vollstaendige Auswertung braucht weitere Sichtung.'));
+
+  const fin = aggregateFinances(store);
+
+  const totalRow = el('p', { className: 'statistik-note' });
+  totalRow.appendChild(el('strong', {}, String(fin.total)));
+  totalRow.appendChild(document.createTextNode(
+    ` monetäre Eintraege in ${fin.recordsWithFin} Records.`));
+  section.appendChild(totalRow);
+
+  if (fin.currencies.length > 0) {
+    const curWrap = el('div', { className: 'stat-subsection' });
+    curWrap.appendChild(el('h4', { className: 'stat-subsection__title' },
+      'Waehrungen'));
+    const curRow = el('div', { className: 'statistik-chips' });
+    for (const c of fin.currencies) {
+      curRow.appendChild(buildCountChip({
+        label: `${c.label} (${c.code})`,
+        count: c.count,
+        tone: 'finance',
+      }));
+    }
+    curWrap.appendChild(curRow);
+    section.appendChild(curWrap);
+  }
+
+  if (fin.roles.length > 0) {
+    const roleWrap = el('div', { className: 'stat-subsection' });
+    roleWrap.appendChild(el('h4', { className: 'stat-subsection__title' },
+      'Detail-Rollen'));
+    const roleRow = el('div', { className: 'statistik-chips' });
+    for (const r of fin.roles) {
+      roleRow.appendChild(buildCountChip({
+        label: r.role,
+        count: r.count,
+        tone: 'finance',
+      }));
+    }
+    roleWrap.appendChild(roleRow);
+    section.appendChild(roleWrap);
+  }
+
+  return section;
+}
+
+// ---------------------------------------------------------------------------
 // Shared: horizontale Balken-Liste
 // ---------------------------------------------------------------------------
 
@@ -519,14 +685,3 @@ function buildBarList(rows) {
   return list;
 }
 
-// ---------------------------------------------------------------------------
-// Placeholder fuer noch nicht umgesetzte Milestones
-// ---------------------------------------------------------------------------
-
-function placeholderSection(label, milestone) {
-  const section = el('section', { className: 'stat-section stat-section--placeholder' });
-  section.appendChild(el('h3', { className: 'stat-section__title' }, label));
-  section.appendChild(el('p', { className: 'stat-section__placeholder' },
-    `Folgt in Milestone ${milestone}.`));
-  return section;
-}
