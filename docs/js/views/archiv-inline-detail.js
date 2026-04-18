@@ -6,7 +6,24 @@
 import { el } from '../utils/dom.js';
 import { formatSignatur, formatDocType, ensureArray, countLinks } from '../utils/format.js';
 import { formatDate } from '../utils/date-parser.js';
-import { navigateToIndex } from '../ui/router.js';
+import { navigateToIndex, applyArchivFilter } from '../ui/router.js';
+import { extractXlsxSource } from '../utils/provenance.js';
+
+// Mapping Indizes-Grid -> Toolbar-Filter-Facet (E-91). Grids ohne
+// Toolbar-Equivalent (organisationen) navigieren weiterhin in den Index.
+const GRID_TO_FACET = { personen: 'person', orte: 'location', werke: 'werk' };
+
+/**
+ * Dispatch fuer Chip-Klick: wenn ein Facet-Mapping existiert, setzt den
+ * Filter in der aktiven Bestand/Chronik-Toolbar; sonst Fallback in den
+ * passenden Index.
+ */
+function chipClickFor(gridType, name) {
+  if (!gridType || !name) return null;
+  const facet = GRID_TO_FACET[gridType];
+  if (facet) return () => applyArchivFilter(facet, name);
+  return () => navigateToIndex(gridType, name);
+}
 import { toggleKorb, isInKorb } from '../ui/korb.js';
 import { WIKIDATA_ICON_SVG, AGRELON_LABELS, roleClusterFor, sectionForRole, steChipPrefix, formatLanguage } from '../data/constants.js';
 
@@ -171,8 +188,8 @@ export function buildInlineDetail(record, store, { onClose } = {}) {
         cluster: w['@type'] === 'm3gim:PerformanceEvent' ? 'ort' : 'rolle',
         xlsxSource: extractXlsxSource(w),
         wikidata: w['@id'] && String(w['@id']).startsWith('wd:') ? w['@id'] : null,
-        tip: 'Im Werke-Index oeffnen',
-        onClick: () => navigateToIndex('werke', name),
+        tip: 'Als Filter setzen',
+        onClick: chipClickFor('werke', name),
       }));
     }
     for (const r of performanceRoles) {
@@ -201,8 +218,8 @@ export function buildInlineDetail(record, store, { onClose } = {}) {
         cluster: 'ort',  // STE-Chips immer ort-Farbfamilie
         xlsxSource: ev.xlsxSource,
         wikidata: ev.placeWikidata,
-        tip: ev.place ? 'Ort im Index oeffnen' : null,
-        onClick: ev.place ? () => navigateToIndex('orte', ev.place) : null,
+        tip: ev.place ? 'Als Filter setzen' : null,
+        onClick: ev.place ? chipClickFor('orte', ev.place) : null,
       }));
     }
     // Orte, die nicht schon ueber STE dargestellt sind.
@@ -216,8 +233,8 @@ export function buildInlineDetail(record, store, { onClose } = {}) {
         cluster: 'ort',
         xlsxSource: extractXlsxSource(loc),
         wikidata: loc['@id'] && String(loc['@id']).startsWith('wd:') ? loc['@id'] : null,
-        tip: 'Ort im Index oeffnen',
-        onClick: () => navigateToIndex('orte', name),
+        tip: 'Als Filter setzen',
+        onClick: chipClickFor('orte', name),
       }));
     }
     if (container.childNodes.length > 0) {
@@ -289,18 +306,6 @@ function renderMetaGrid(pairs) {
   return grid;
 }
 
-/** Extrahiert xlsxSource aus einem JSON-LD-Subobjekt im kompakten {sheet, row}-Format. */
-function extractXlsxSource(entity) {
-  const src = entity && entity['m3gim:xlsxSource'];
-  if (!src || typeof src !== 'object') return null;
-  const row = src['m3gim:xlsxRow'];
-  if (!row) return null;
-  return {
-    sheet: src['m3gim:xlsxSheet'] || null,
-    row,
-    datenpunkt: src['m3gim:datenpunktId'] || null,
-  };
-}
 
 /**
  * Rendert eine Liste von Agent-Subobjekten als Rollen-Prefix-Chips (Session 34).
@@ -318,8 +323,8 @@ function renderAgentChips(entities, gridType) {
       value: name,
       xlsxSource: extractXlsxSource(entity),
       wikidata,
-      tip: gridType ? 'Im Index oeffnen' : null,
-      onClick: gridType ? () => navigateToIndex(gridType, name) : null,
+      tip: gridType ? 'Als Filter setzen' : null,
+      onClick: chipClickFor(gridType, name),
     }));
   }
   return container;
@@ -342,34 +347,51 @@ function renderAgentChips(entities, gridType) {
  * @param {boolean} [opts.compact] - kompakte Variante fuer Aggregat-Tabellen.
  * @returns {HTMLElement}
  */
+const PROV_ICON_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>';
+
 export function buildRoleChip({ prefix, value, cluster, xlsxSource, wikidata, tip, onClick, compact }) {
   const prefixUpper = (prefix || '').toUpperCase();
   const cls = cluster || roleClusterFor(prefixUpper);
+  const hasProv = xlsxSource && xlsxSource.row;
+  const hasWikidata = wikidata && String(wikidata).startsWith('wd:');
+  // Chip-Tip nur, wenn keine Children eigene Tips tragen — sonst stapeln sich
+  // mehrere Tooltips beim Hover auf der Pille oder dem Wikidata-Badge (E-90).
+  const childrenHaveTips = hasProv || hasWikidata;
+
   const chipProps = {
     className: `chip chip--role-pair chip--c-${cls}${onClick ? ' chip--clickable' : ''}${compact ? ' chip--compact' : ''}`,
   };
   if (onClick) {
     chipProps.onClick = (e) => { e.stopPropagation(); onClick(e); };
   }
-  if (tip) chipProps.dataset = { tip };
+  if (tip && !childrenHaveTips) chipProps.dataset = { tip };
 
   const parts = [
     el('span', { className: 'chip-rolle' }, prefixUpper),
     el('span', { className: 'chip-wert' }, value || '—'),
   ];
-  if (xlsxSource && xlsxSource.row) {
+  if (hasProv) {
+    const provTipLines = [
+      xlsxSource.sheet ? `Quelle: ${xlsxSource.sheet}` : 'Quelle',
+      `Zeile ${xlsxSource.row}`,
+    ];
+    if (xlsxSource.datenpunkt) provTipLines.push(`Datenpunkt ${xlsxSource.datenpunkt}`);
     parts.push(el('span', {
       className: 'prov-pill',
-      title: `Quelle: ${xlsxSource.sheet || 'XLSX'} · Zeile ${xlsxSource.row}`,
-    }, `#${xlsxSource.row}`));
+      dataset: { tip: provTipLines.join('\n'), tipWrap: '' },
+      'aria-label': 'Provenienz anzeigen',
+    },
+      el('span', { className: 'prov-pill__icon', html: PROV_ICON_SVG }),
+      el('span', { className: 'prov-pill__label' }, `Z.${xlsxSource.row}`),
+    ));
   }
-  if (wikidata && String(wikidata).startsWith('wd:')) {
+  if (hasWikidata) {
     parts.push(el('a', {
       className: 'badge badge--wikidata',
       href: `https://www.wikidata.org/entity/${String(wikidata).replace('wd:', '')}`,
       target: '_blank',
       rel: 'noopener noreferrer',
-      title: wikidata,
+      dataset: { tip: `Bei Wikidata ansehen (${wikidata})` },
       html: WIKIDATA_ICON_SVG,
       onClick: (e) => e.stopPropagation(),
     }));
@@ -412,8 +434,8 @@ function renderAgentRelations(relations) {
       cluster: 'beziehung',
       xlsxSource: r.xlsxSource,
       wikidata: r.objectWikidata,
-      tip: r.objectName ? 'Im Personen-Index öffnen' : null,
-      onClick: r.objectName ? () => navigateToIndex('personen', r.objectName) : null,
+      tip: r.objectName ? 'Als Filter setzen' : null,
+      onClick: r.objectName ? chipClickFor('personen', r.objectName) : null,
     }));
   }
   return container;

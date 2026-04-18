@@ -43,14 +43,21 @@ export function renderBestand(storeRef, containerEl) {
   container.appendChild(buildTable());
   updateBestandView();
 
-  // Cross-navigation: Indizes "Alle im Archiv anzeigen" oder Korb-Klick
+  // Cross-navigation: Indizes "Alle im Archiv anzeigen", Korb-Klick,
+  // Chip-Klick aus Inline-Detail (applyArchivFilter) oder Chronik-Punkt.
   onViewNavigate('bestand', (detail) => {
-    const { type, name, recordId } = detail || {};
-    if (type === 'personen' && name) {
-      toolbar.setPerson(name);
-    }
+    const { type, name, recordId, filter } = detail || {};
+    if (type === 'personen' && name) toolbar.setPerson(name);
+    if (filter && filter.value) applyToolbarFilter(filter);
     if (recordId) expandRecord(recordId);
   });
+}
+
+function applyToolbarFilter({ facet, value }) {
+  if (!toolbar) return;
+  if (facet === 'person') toolbar.setPerson(value);
+  else if (facet === 'location') toolbar.setLocation(value);
+  else if (facet === 'werk') toolbar.setWerk(value);
 }
 
 /**
@@ -58,8 +65,8 @@ export function renderBestand(storeRef, containerEl) {
  */
 function updateBestandView(filters) {
   const state = filters || (toolbar ? toolbar.getState() : {});
-  const { search = '', docType = '', person = '' } = state;
-  const isFiltered = !!(search || docType || person);
+  const { search = '', docType = '', person = '', location = '', werk = '' } = state;
+  const isFiltered = !!(search || docType || person || location || werk);
   let items = getOrderedItems();
 
   // When filtering, flatten: remove Konvolut headers, show children as standalone
@@ -93,6 +100,22 @@ function updateBestandView(filters) {
     const personData = store.persons.get(person);
     if (personData) {
       items = items.filter(item => personData.records.has(item.record['@id']));
+    }
+  }
+
+  // Ort filter
+  if (location) {
+    const locData = store.locations.get(location);
+    if (locData) {
+      items = items.filter(item => locData.records.has(item.record['@id']));
+    }
+  }
+
+  // Werk filter
+  if (werk) {
+    const werkData = store.works.get(werk);
+    if (werkData) {
+      items = items.filter(item => werkData.records.has(item.record['@id']));
     }
   }
 
@@ -299,11 +322,13 @@ function renderRows(items) {
       const expanded = expandedKonvolute.has(item.konvolutId);
       const toggle = el('button', {
         className: `konvolut-toggle ${expanded ? '' : 'collapsed'}`,
+        'aria-label': expanded ? 'Objekte einklappen' : 'Objekte aufklappen',
+        'aria-expanded': String(expanded),
         onClick: (e) => {
           e.stopPropagation();
           toggleKonvolut(item.konvolutId);
         },
-        html: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>',
+        html: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>',
       });
       sigContent.push(toggle);
     }

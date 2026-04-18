@@ -1,57 +1,31 @@
 /**
- * M³GIM Archiv Chronik View — Zeit → Ort → Records.
- * Groups records by 5-year period and location to tell Malaniuk's mobility story.
+ * M³GIM Archiv Chronik View — scrollender Jahres-Zeitstrahl.
+ * Records werden pro Jahr als Punkte/Chips an einer vertikalen Zeitlinie
+ * angeordnet. Jahre ohne Records bleiben sichtbar (Erschliessungsspiegel),
+ * Undatiertes landet am Ende. Die Toolbar (Suche, Typ, Person, Ort, Werk)
+ * filtert die Record-Menge; Filter und Jahres-Gliederung sind unabhaengig.
  */
 
 import { el, clear } from '../utils/dom.js';
-import { formatSignatur, formatChildSignatur, getDocTypeId, truncate, ensureArray, expandDftFilter } from '../utils/format.js';
-import { extractYear } from '../utils/date-parser.js';
+import { formatSignatur, getDocTypeId, ensureArray, expandDftFilter } from '../utils/format.js';
+import { extractYear, formatDate } from '../utils/date-parser.js';
 import { DOKUMENTTYP_LABELS } from '../data/constants.js';
-import { buildInlineDetail } from './archiv-inline-detail.js';
 import { buildFilterToolbar } from './_archiv-toolbar.js';
 import { logStamp } from '../utils/env.js';
+import { selectRecord } from '../ui/router.js';
+import { onViewNavigate } from '../ui/events.js';
 
 let store = null;
 let container = null;
 let toolbar = null;
-let viewContainer = null;  // innerer Container fuer die Chronik-Liste
-let expandedRecord = null;
-let collapsedPeriods = new Set();
-let initialRender = true; // first render collapses all periods
-let currentGrouping = 'location'; // 'location' | 'person' | 'werk'
+let viewContainer = null;
 
-/**
- * Karriere-Notizen pro Periode. Redaktionelle Einordnung durch das
- * Projektteam, nicht aus Metadaten generiert -- wird im UI via Editorial-
- * Tooltip sichtbar gemacht.
- */
-const KARRIERE_NOTIZEN = {
-  'vor 1945':  'Lemberg / Jugend',
-  '1945-1949': 'Graz / Nachkriegszeit',
-  '1950-1954': 'Internationale Karriere',
-  '1955-1959': 'Wien, Bayreuth, M\u00fcnchen',
-  '1960-1964': 'Etablierte K\u00fcnstlerin',
-  '1965-1969': 'Sp\u00e4te Karriere',
-  '1970-1974': 'R\u00fcckzug / Z\u00fcrich',
-  'nach 1974': 'Nachlass',
-};
+/** Ira Malaniuks Lebensspanne. Records davor/danach werden trotzdem gerendert
+ *  (als zusaetzliche Jahresblocke vor/nach dem Band), damit der Nachlass-Stand
+ *  ehrlich bleibt.  */
+const YEAR_MIN = 1919;
+const YEAR_MAX = 2009;
 
-const KARRIERE_NOTIZ_TOOLTIP = 'Redaktionelle Einordnung durch das Projektteam, '
-  + 'nicht aus Metadaten generiert.';
-
-/** Perioden-Reihenfolge. 'Undatiert' ist das Ende und wird nur gerendert,
- *  wenn es tatsaechlich undatierte Records gibt. Alle anderen Perioden
- *  werden immer gerendert -- leere als Erschliessungsspiegel (Session 36, M2). */
-const PERIOD_ORDER = [
-  'vor 1945', '1945-1949', '1950-1954', '1955-1959',
-  '1960-1964', '1965-1969', '1970-1974', 'nach 1974', 'Undatiert',
-];
-
-/**
- * Render the Chronik view: Toolbar + Grouping-Toggle + Zeitstrahl.
- * @param {Object} storeRef
- * @param {HTMLElement} containerEl
- */
 export function renderChronik(storeRef, containerEl) {
   store = storeRef;
   container = containerEl;
@@ -61,67 +35,31 @@ export function renderChronik(storeRef, containerEl) {
     onChange: () => updateChronikView(),
   });
   container.appendChild(toolbar.element);
-  container.appendChild(buildGroupingToggle());
 
-  viewContainer = el('div', { className: 'chronik-view-container' });
+  viewContainer = el('div', { className: 'chronik-timeline-container' });
   container.appendChild(viewContainer);
+
   updateChronikView();
-}
 
-function buildGroupingToggle() {
-  const toggleEl = el('div', {
-    className: 'archiv-view-toggle chronik-grouping-toggle',
-    id: 'chronik-grouping-toggle',
+  // Chip-Klick in Inline-Detail dispatcht `filter` -> Toolbar hier setzen.
+  onViewNavigate('chronik', (detail) => {
+    const { filter } = detail || {};
+    if (filter && filter.value) {
+      if (filter.facet === 'person') toolbar.setPerson(filter.value);
+      else if (filter.facet === 'location') toolbar.setLocation(filter.value);
+      else if (filter.facet === 'werk') toolbar.setWerk(filter.value);
+    }
   });
-  const modes = [
-    ['location', 'Ort',
-     '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>'],
-    ['person', 'Person',
-     '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>'],
-    ['werk', 'Werk',
-     '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>'],
-  ];
-  for (const [mode, label, iconSvg] of modes) {
-    toggleEl.appendChild(el('button', {
-      className: `archiv-view-toggle__btn ${currentGrouping === mode ? 'archiv-view-toggle__btn--active' : ''}`,
-      onClick: () => {
-        if (currentGrouping === mode) return;
-        currentGrouping = mode;
-        initialRender = true; // neue Gruppierung -> alle Perioden wieder kollabieren
-        collapsedPeriods.clear();
-        for (const btn of toggleEl.querySelectorAll('.archiv-view-toggle__btn')) {
-          btn.classList.remove('archiv-view-toggle__btn--active');
-        }
-        // Nach dem Re-Render: aktive Klasse neu setzen
-        updateChronikView();
-        const btns = toggleEl.querySelectorAll('.archiv-view-toggle__btn');
-        btns.forEach((b, i) => {
-          b.classList.toggle('archiv-view-toggle__btn--active', modes[i][0] === currentGrouping);
-        });
-      },
-    },
-      el('span', { className: 'archiv-view-toggle__icon', html: iconSvg }),
-      el('span', {}, label),
-    ));
-  }
-  return toggleEl;
 }
 
-/**
- * Re-render rows; reads current filter state from the toolbar.
- */
 function updateChronikView() {
-  const { search = '', docType = '', person = '' } = toolbar ? toolbar.getState() : {};
+  const { search = '', docType = '', person = '', location = '', werk = '' } = toolbar ? toolbar.getState() : {};
   clear(viewContainer);
 
-  // Nur bearbeitete Records. Plakate und Tontraeger werden bereits vollstaendig
-  // von der `unprocessedIds`-Maske ausgeschlossen -- die fruehere lokale
-  // EXCLUDED_DFT-Schranke war toter Code (0 Matches im Bearbeitet-Pool, Stand
-  // Session 36). Bestand behaelt seine eigene EXCLUDED_DFT-Konstante fuer den
-  // Toolbar-Counter.
+  // Bearbeitete Records (die unverknuepften Massenrecords waeren als Punkte
+  // nicht ansprechbar und wuerden den Zeitstrahl mit Platzhaltern fluten).
   let records = store.allRecords.filter(r => !store.unprocessedIds.has(r['@id']));
 
-  // Search
   if (search) {
     const q = search.toLowerCase();
     records = records.filter(r => {
@@ -130,432 +68,172 @@ function updateChronikView() {
       return sig.includes(q) || title.includes(q);
     });
   }
-
-  // Doc type (hierarchisch: Oberbegriff matcht transitiv)
   if (docType) {
     const allowedTypes = expandDftFilter(store, docType);
     records = records.filter(r => allowedTypes.has(getDocTypeId(r)));
   }
-
-  // Person filter
   if (person) {
     const personData = store.persons.get(person);
-    if (personData) {
-      records = records.filter(r => personData.records.has(r['@id']));
+    if (personData) records = records.filter(r => personData.records.has(r['@id']));
+  }
+  if (location) {
+    const locData = store.locations.get(location);
+    if (locData) records = records.filter(r => locData.records.has(r['@id']));
+  }
+  if (werk) {
+    const werkData = store.works.get(werk);
+    if (werkData) records = records.filter(r => werkData.records.has(r['@id']));
+  }
+
+  // Records nach Jahr gruppieren. extractYear liefert die erste vierstellige
+  // Jahreszahl aus rico:date; fuer typisierte Datumsfelder (absendedatum etc.)
+  // ist der Fallback in indexByYear schon im Loader -- hier halten wir die
+  // View-Logik aber an rico:date fest, damit ein Record genau einem Punkt
+  // entspricht und nicht dupliziert wird.
+  const byYear = new Map();
+  let undated = 0;
+  for (const r of records) {
+    const y = extractYear(r['rico:date']);
+    if (typeof y === 'number' && Number.isFinite(y)) {
+      if (!byYear.has(y)) byYear.set(y, []);
+      byYear.get(y).push(r);
+    } else {
+      undated++;
     }
   }
 
-  // Group by period → grouping dimension
-  const groupFn = currentGrouping === 'person' ? groupByPeriodAndPerson
-    : currentGrouping === 'werk' ? groupByPeriodAndWerk
-    : groupByPeriodAndLocation;
-  const grouped = groupFn(records);
+  // Jahresraster: mindestens YEAR_MIN..YEAR_MAX, plus vorhandene Aussreisser.
+  const years = [...byYear.keys()];
+  const min = Math.min(YEAR_MIN, ...(years.length ? years : [YEAR_MIN]));
+  const max = Math.max(YEAR_MAX, ...(years.length ? years : [YEAR_MAX]));
 
-  // On first render, collapse all periods for overview
-  if (initialRender) {
-    for (const [period] of grouped) {
-      collapsedPeriods.add(period);
-    }
-    initialRender = false;
+  // Max-Records-pro-Jahr fuer die Dichte-Skalierung der Jahres-Punkte.
+  let maxPerYear = 0;
+  for (const arr of byYear.values()) {
+    if (arr.length > maxPerYear) maxPerYear = arr.length;
   }
 
-  // Render periods
-  const wrapper = el('div', { className: 'chronik' });
+  const isFiltered = !!(search || docType || person || location || werk);
 
-  // Max-Count ueber alle Perioden fuer den Dichte-Mikro-Balken. Leere
-  // Perioden haben 0 und bleiben trotzdem sichtbar als Erschliessungsspiegel.
-  let maxPeriodCount = 0;
-  for (const locMap of grouped.values()) {
-    const n = [...locMap.values()].reduce((s, a) => s + a.length, 0);
-    if (n > maxPeriodCount) maxPeriodCount = n;
+  const timeline = el('div', { className: 'chronik-timeline' });
+  timeline.appendChild(el('div', { className: 'chronik-timeline__axis', 'aria-hidden': 'true' }));
+
+  const isEmptyDecadeBoundary = (y) => y % 10 === 0;
+  for (let y = min; y <= max; y++) {
+    timeline.appendChild(renderYearRow(y, byYear.get(y) || [], maxPerYear, isEmptyDecadeBoundary(y)));
   }
 
-  // Render-Reihenfolge: erst alle bekannten Perioden (auch leere), dann
-  // Undatiert nur wenn befuellt, dann unerwartete Perioden als Fallback.
-  const renderOrder = PERIOD_ORDER.filter(p => p !== 'Undatiert' || grouped.has(p));
-  for (const extra of grouped.keys()) {
-    if (!renderOrder.includes(extra)) renderOrder.push(extra);
+  if (undated > 0) {
+    timeline.appendChild(renderUndatedRow(records.filter(r => {
+      const yr = extractYear(r['rico:date']);
+      return !(typeof yr === 'number' && Number.isFinite(yr));
+    })));
   }
 
-  for (const period of renderOrder) {
-    const locationMap = grouped.get(period);
-    const totalCount = locationMap
-      ? [...locationMap.values()].reduce((sum, arr) => sum + arr.length, 0)
-      : 0;
-    const note = KARRIERE_NOTIZEN[period] || '';
-    const isEmpty = totalCount === 0;
-    const isCollapsed = isEmpty ? true : collapsedPeriods.has(period);
+  viewContainer.appendChild(timeline);
 
-    // Aggregate summary for collapsed header (only if non-empty)
-    let summaryText = '';
-    if (!isEmpty) {
-      const periodRecords = [...locationMap.values()].flat();
-      const typeCounts = new Map();
-      for (const r of periodRecords) {
-        const t = getDocTypeId(r);
-        if (t) typeCounts.set(t, (typeCounts.get(t) || 0) + 1);
-      }
-      const topTypes = [...typeCounts.entries()]
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 3)
-        .map(([t, c]) => `${c}\u00a0${DOKUMENTTYP_LABELS[t] || t}`);
-
-      const topGroups = [...locationMap.entries()]
-        .filter(([name]) => !name.startsWith('\u2014 '))
-        .sort((a, b) => b[1].length - a[1].length)
-        .slice(0, 3)
-        .map(([name]) => name);
-
-      const summaryParts = [];
-      if (topTypes.length) summaryParts.push(topTypes.join(' \u00b7 '));
-      if (topGroups.length) summaryParts.push(topGroups.join(', '));
-      summaryText = summaryParts.join(' \u2014 ');
-    }
-
-    const periodEl = el('div', {
-      className: `chronik-period ${isEmpty ? 'chronik-period--empty' : ''}`,
-    });
-
-    // Period header
-    const headerChildren = [
-      el('span', { className: 'chronik-period__toggle',
-        html: isEmpty
-          ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.35"><circle cx="12" cy="12" r="9"/></svg>'
-          : '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>',
-      }),
-      el('span', { className: 'chronik-period__label' }, period),
-      note
-        ? el('span', {
-            className: 'chronik-period__note chronik-period__note--editorial',
-            dataset: { tip: KARRIERE_NOTIZ_TOOLTIP, tipWrap: '' },
-          },
-            el('span', { className: 'chronik-period__editorial-marker' }, 'red.'),
-            note,
-          )
-        : null,
-      period === 'Undatiert'
-        ? el('span', { className: 'chronik-period__note' }, 'ohne Datumsangabe in der Quelle')
-        : null,
-      el('span', {
-        className: 'chronik-period__count',
-        dataset: { tip: isEmpty
-          ? 'Kein bearbeitetes Material erfasst'
-          : `${totalCount} Archiveinheiten`,
-        },
-      }, `${totalCount}`),
-      el('span', {
-        className: 'chronik-period__density',
-        title: maxPeriodCount > 0
-          ? `${totalCount} von max. ${maxPeriodCount} je Periode`
-          : 'Keine Bearbeitung in den Perioden',
-      },
-        el('span', {
-          className: 'chronik-period__density-bar',
-          style: `width: ${maxPeriodCount > 0 ? Math.round(totalCount / maxPeriodCount * 100) : 0}%`,
-        }),
-      ),
-      isEmpty
-        ? el('span', { className: 'chronik-period__summary chronik-period__summary--empty' },
-            'Kein bearbeitetes Material erfasst')
-        : (summaryText
-          ? el('span', { className: 'chronik-period__summary' }, summaryText)
-          : null),
-    ];
-
-    const headerEl = el('div', {
-      className: `chronik-period__header ${isCollapsed ? 'chronik-period__header--collapsed' : ''}`,
-      onClick: isEmpty ? null : () => {
-        if (isCollapsed) collapsedPeriods.delete(period);
-        else collapsedPeriods.add(period);
-        updateChronikView();
-      },
-    }, ...headerChildren);
-    periodEl.appendChild(headerEl);
-
-    // Period body (locations + records)
-    if (!isCollapsed) {
-      const bodyEl = el('div', { className: 'chronik-period__body' });
-
-      for (const [groupName, groupRecords] of locationMap) {
-        const isPlaceholder = groupName.startsWith('\u2014 ');
-
-        const locEl = el('div', { className: 'chronik-location' });
-        const headerChildren = [
-          el('span', {
-            className: 'chronik-location__icon',
-            html: isPlaceholder
-              ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.4"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 14.14 14.14"/></svg>'
-              : getGroupIcon(currentGrouping),
-          }),
-          el('span', { className: 'chronik-location__name' }, groupName),
-          el('span', { className: 'chronik-location__count', dataset: { tip: `${groupRecords.length} Archiveinheiten` } }, `(${groupRecords.length})`),
-        ];
-        if (isPlaceholder) {
-          const hintText = currentGrouping === 'location'
-            ? 'Ort noch nicht erfasst (Schicht\u00a02)'
-            : currentGrouping === 'person'
-              ? 'Person noch nicht verknüpft (Schicht\u00a02)'
-              : 'Werk noch nicht verknüpft (Schicht\u00a02)';
-          headerChildren.push(
-            el('span', { className: 'chronik-location__hint' }, hintText)
-          );
-        }
-        locEl.appendChild(el('div', { className: 'chronik-location__header' }, ...headerChildren));
-
-        // Record rows within this group
-        for (const r of groupRecords) {
-          const konvolutId = store.childToKonvolut?.get(r['@id']);
-          const parentSig = konvolutId ? store.konvolute.get(konvolutId)?.['rico:identifier'] : null;
-          const sig = parentSig
-            ? formatChildSignatur(r['rico:identifier'], parentSig)
-            : formatSignatur(r['rico:identifier']);
-          const docType = getDocTypeId(r);
-          const docLabel = DOKUMENTTYP_LABELS[docType] || '';
-          const agents = ensureArray(r['m3gim:hasAssociatedAgent']);
-          const allAgentNames = agents.map(a => a.name || a['skos:prefLabel'] || '').filter(Boolean);
-          const displayNames = allAgentNames.slice(0, 3);
-          const recordId = r['@id'];
-
-          const agentEl = displayNames.length > 0
-            ? el('span', {
-                className: 'chronik-record__agents',
-                dataset: allAgentNames.length > 3
-                  ? { tip: allAgentNames.join(', '), tipWrap: '', tipPos: 'bottom-left' }
-                  : {},
-              }, displayNames.join(', ') + (allAgentNames.length > 3 ? ` (+${allAgentNames.length - 3})` : ''))
-            : null;
-
-          const recordEl = el('div', {
-            className: `chronik-record ${expandedRecord === recordId ? 'chronik-record--active' : ''}`,
-            onClick: () => {
-              expandedRecord = expandedRecord === recordId ? null : recordId;
-              updateChronikView();
-            },
-          },
-            el('span', { className: 'chronik-record__sig' }, sig),
-            el('span', {
-              className: 'chronik-record__title',
-              dataset: (r['rico:title'] || '').length > 60 ? { tip: r['rico:title'], tipWrap: '', tipPos: 'bottom-left' } : {},
-            }, truncate(r['rico:title'] || '(ohne Titel)', 60)),
-            docLabel ? el('span', { className: `badge badge--${docType || ''}` }, docLabel) : null,
-            agentEl,
-          );
-          locEl.appendChild(recordEl);
-
-          // Inline detail
-          if (expandedRecord === recordId) {
-            const detailEl = el('div', { className: 'chronik-record__detail' });
-            detailEl.appendChild(buildInlineDetail(r, store, {
-              onClose: () => { expandedRecord = null; updateChronikView(); },
-            }));
-            locEl.appendChild(detailEl);
-          }
-        }
-
-        bodyEl.appendChild(locEl);
-      }
-
-      periodEl.appendChild(bodyEl);
-    }
-
-    wrapper.appendChild(periodEl);
-  }
-
-  viewContainer.appendChild(wrapper);
-
-  // Count-Anzeige aktualisieren (nach Filterung sichtbare Einheiten)
-  const totalBearbeitet = store.allRecords.filter(
-    r => !store.unprocessedIds.has(r['@id'])
-  ).length;
-  const sichtbar = records.length;
-  const isFiltered = !!(search || docType || person);
+  // Count-Anzeige an der Toolbar
+  const total = store.allRecords.filter(r => !store.unprocessedIds.has(r['@id'])).length;
   if (toolbar) {
     toolbar.setCount(isFiltered
-      ? `${sichtbar} von ${totalBearbeitet} bearbeiteten Einheiten`
-      : `${totalBearbeitet} bearbeitete Einheiten`);
+      ? `${records.length} von ${total} Einheiten mit Datum / undatiert`
+      : `${total} Einheiten`);
   }
 
-  // Kompakter State-Stempel fuer Playwright + manuelles Debugging.
-  const undatiert = grouped.get('Undatiert')
-    ? [...grouped.get('Undatiert').values()].reduce((n, arr) => n + arr.length, 0)
-    : 0;
-  const ohneKey = currentGrouping === 'person' ? '\u2014 Ohne Person'
-    : currentGrouping === 'werk' ? '\u2014 Ohne Werk'
-    : '\u2014 Ohne Ort';
-  let ohneCount = 0;
-  for (const locMap of grouped.values()) {
-    if (locMap.has(ohneKey)) ohneCount += locMap.get(ohneKey).length;
-  }
-  const periodenBelegt = grouped.size;
-  const periodenLeer = PERIOD_ORDER.filter(p => p !== 'Undatiert' && !grouped.has(p)).length;
   logStamp('chronik', [
-    ['bearbeitet', sichtbar],
-    ['perioden', periodenBelegt],
-    ['perioden-leer', periodenLeer],
-    ['undatiert', undatiert],
-    [`ohne-${currentGrouping}`, ohneCount],
-    ['modus', currentGrouping],
+    ['records', records.length],
+    ['jahre-belegt', byYear.size],
+    ['undatiert', undated],
+    ['spanne', `${min}\u2013${max}`],
     ['gefiltert', isFiltered ? 'ja' : ''],
   ]);
-
-  // Return count for counter update
-  return records.length;
 }
 
-/**
- * Group records into Map<period, Map<location, Record[]>>.
- * Sorted: periods chronologically, locations by count descending, "Ohne Ort" last.
- */
-function groupByPeriodAndLocation(records) {
-  const periodMap = new Map();
-
-  for (const r of records) {
-    const year = extractYear(r['rico:date']);
-    const period = yearToPeriod(year);
-    const locations = ensureArray(r['rico:hasOrHadLocation']);
-    const locNames = locations
-      .map(l => l.name || l['skos:prefLabel'] || '')
-      .filter(n => n && !/^\d{4}(-\d{2}){0,2}/.test(n));
-
-    if (!periodMap.has(period)) periodMap.set(period, new Map());
-    const locMap = periodMap.get(period);
-
-    if (locNames.length === 0) {
-      const key = '\u2014 Ohne Ort';
-      if (!locMap.has(key)) locMap.set(key, []);
-      locMap.get(key).push(r);
-    } else {
-      // Add to first location (primary)
-      const primary = locNames[0];
-      if (!locMap.has(primary)) locMap.set(primary, []);
-      locMap.get(primary).push(r);
-    }
-  }
-
-  // Sort periods chronologically -- PERIOD_ORDER ist Modul-Konstante.
-  const sorted = new Map();
-  for (const p of PERIOD_ORDER) {
-    if (periodMap.has(p)) {
-      sorted.set(p, sortLocationMap(periodMap.get(p)));
-    }
-  }
-  // Any remaining periods not in our list
-  for (const [p, locMap] of periodMap) {
-    if (!sorted.has(p)) sorted.set(p, sortLocationMap(locMap));
-  }
-
-  return sorted;
-}
-
-/**
- * Sort locations within a period: by count descending, "Ohne Ort" last.
- * Also sort records within each location by signatur.
- */
-function sortLocationMap(locMap) {
-  const entries = [...locMap.entries()];
-  entries.sort((a, b) => {
-    if (a[0] === '\u2014 Ohne Ort') return 1;
-    if (b[0] === '\u2014 Ohne Ort') return -1;
-    return b[1].length - a[1].length;
+function renderYearRow(year, recordsInYear, maxPerYear, isDecadeBoundary) {
+  const isEmpty = recordsInYear.length === 0;
+  const row = el('div', {
+    className: `chronik-year ${isEmpty ? 'chronik-year--empty' : ''} ${isDecadeBoundary ? 'chronik-year--decade' : ''}`,
+    dataset: { year: String(year) },
   });
 
-  const sorted = new Map();
-  for (const [loc, records] of entries) {
-    records.sort((a, b) =>
-      (a['rico:identifier'] || '').localeCompare(b['rico:identifier'] || '', 'de-DE', { numeric: true })
-    );
-    sorted.set(loc, records);
+  // Left: year label on axis
+  row.appendChild(el('div', {
+    className: 'chronik-year__label',
+    title: isEmpty ? 'Kein bearbeitetes Material mit diesem Jahr' : `${recordsInYear.length} Einheit${recordsInYear.length === 1 ? '' : 'en'}`,
+  }, String(year)));
+
+  // Center: axis dot scaled by density
+  const densityRatio = maxPerYear > 0 ? recordsInYear.length / maxPerYear : 0;
+  row.appendChild(el('div', { className: 'chronik-year__marker', 'aria-hidden': 'true' },
+    el('div', {
+      className: `chronik-year__dot ${isEmpty ? 'chronik-year__dot--empty' : ''}`,
+      style: isEmpty
+        ? ''
+        : `--density:${densityRatio}; transform:scale(${0.35 + densityRatio * 0.9});`,
+    }),
+  ));
+
+  // Right: records as points
+  const pointsWrap = el('div', { className: 'chronik-year__points' });
+  if (!isEmpty) {
+    recordsInYear
+      .sort((a, b) => (a['rico:date'] || '').localeCompare(b['rico:date'] || ''))
+      .forEach(r => pointsWrap.appendChild(renderRecordPoint(r)));
   }
-  return sorted;
+  row.appendChild(pointsWrap);
+
+  return row;
 }
 
-/** Group records by period → person. */
-function groupByPeriodAndPerson(records) {
-  return groupByPeriodAndDimension(records, r => {
-    const agents = ensureArray(r['m3gim:hasAssociatedAgent']);
-    return agents.map(a => a.name || a['skos:prefLabel'] || '').filter(Boolean);
-  }, '\u2014 Ohne Person');
+function renderUndatedRow(undatedRecords) {
+  const row = el('div', { className: 'chronik-year chronik-year--undated' });
+  row.appendChild(el('div', { className: 'chronik-year__label' }, 'Undatiert'));
+  row.appendChild(el('div', { className: 'chronik-year__marker', 'aria-hidden': 'true' },
+    el('div', { className: 'chronik-year__dot chronik-year__dot--undated' }),
+  ));
+  const pointsWrap = el('div', { className: 'chronik-year__points' });
+  undatedRecords
+    .sort((a, b) => (a['rico:identifier'] || '').localeCompare(b['rico:identifier'] || '', 'de-DE', { numeric: true }))
+    .forEach(r => pointsWrap.appendChild(renderRecordPoint(r)));
+  row.appendChild(pointsWrap);
+  return row;
 }
 
-/** Group records by period → werk. */
-function groupByPeriodAndWerk(records) {
-  return groupByPeriodAndDimension(records, r => {
-    const subjects = ensureArray(r['rico:hasOrHadSubject']);
-    return subjects.map(s => s.name || s['skos:prefLabel'] || '').filter(Boolean);
-  }, '\u2014 Ohne Werk');
-}
+function renderRecordPoint(record) {
+  const rid = record['@id'];
+  const sig = formatSignatur(record['rico:identifier']);
+  const title = record['rico:title'] || '(ohne Titel)';
+  const docType = getDocTypeId(record) || '';
+  const docLabel = DOKUMENTTYP_LABELS[docType] || docType || '';
+  const dateDisplay = formatDate(record['rico:date']) || '';
 
-/** Generic grouping: period → dimension values extracted by fn. */
-function groupByPeriodAndDimension(records, extractFn, placeholder) {
-  const periodMap = new Map();
-
-  for (const r of records) {
-    const year = extractYear(r['rico:date']);
-    const period = yearToPeriod(year);
-    const values = extractFn(r);
-
-    if (!periodMap.has(period)) periodMap.set(period, new Map());
-    const dimMap = periodMap.get(period);
-
-    if (values.length === 0) {
-      if (!dimMap.has(placeholder)) dimMap.set(placeholder, []);
-      dimMap.get(placeholder).push(r);
-    } else {
-      const primary = values[0];
-      if (!dimMap.has(primary)) dimMap.set(primary, []);
-      dimMap.get(primary).push(r);
-    }
+  // Primaer-Ort aus m3gim:SpatiotemporalEvent (falls vorhanden), sonst
+  // erster rico:hasOrHadLocation. Nur Name, keine Event-Rolle -- das ist
+  // Leseanker, nicht semantische Spezifikation.
+  let place = '';
+  const eventIds = store.recordToEvents?.get(rid) || [];
+  if (eventIds.length > 0) {
+    const ev = store.mobilityEvents.get(eventIds[0]);
+    if (ev && ev.place) place = ev.place;
+  }
+  if (!place) {
+    const locs = ensureArray(record['rico:hasOrHadLocation']);
+    if (locs.length > 0) place = locs[0].name || '';
   }
 
-  return sortGroupedPeriods(periodMap, placeholder);
-}
-
-/** Sort periods chronologically and groups within by count. */
-function sortGroupedPeriods(periodMap, placeholder) {
-  const sorted = new Map();
-  for (const p of PERIOD_ORDER) {
-    if (periodMap.has(p)) {
-      sorted.set(p, sortGroupMap(periodMap.get(p), placeholder));
-    }
-  }
-  for (const [p, m] of periodMap) {
-    if (!sorted.has(p)) sorted.set(p, sortGroupMap(m, placeholder));
-  }
-  return sorted;
-}
-
-/** Sort groups within a period by count, placeholder last. */
-function sortGroupMap(groupMap, placeholder) {
-  const entries = [...groupMap.entries()];
-  entries.sort((a, b) => {
-    if (a[0] === placeholder) return 1;
-    if (b[0] === placeholder) return -1;
-    return b[1].length - a[1].length;
-  });
-  const sorted = new Map();
-  for (const [key, records] of entries) {
-    records.sort((a, b) =>
-      (a['rico:identifier'] || '').localeCompare(b['rico:identifier'] || '', 'de-DE', { numeric: true })
-    );
-    sorted.set(key, records);
-  }
-  return sorted;
-}
-
-/** Get SVG icon for a grouping mode. */
-function getGroupIcon(mode) {
-  if (mode === 'person') return '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
-  if (mode === 'werk') return '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>';
-  return '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>';
-}
-
-/**
- * Map a year to a named period.
- */
-function yearToPeriod(year) {
-  if (!year) return 'Undatiert';
-  if (year < 1945) return 'vor 1945';
-  if (year > 1974) return 'nach 1974';
-  const start = Math.floor(year / 5) * 5;
-  return `${start}-${start + 4}`;
+  return el('button', {
+    className: `chronik-point chronik-point--${docType}`,
+    onClick: (e) => { e.stopPropagation(); selectRecord(rid); },
+    dataset: { tip: `${sig} — ${title}${place ? ' · ' + place : ''}`, tipWrap: '' },
+  },
+    el('span', { className: 'chronik-point__date' }, dateDisplay),
+    el('span', { className: 'chronik-point__sig' }, sig),
+    el('span', { className: 'chronik-point__title' }, title),
+    docLabel && docType !== 'konvolut'
+      ? el('span', { className: `chronik-point__badge badge badge--${docType}` }, docLabel)
+      : null,
+    place
+      ? el('span', { className: 'chronik-point__place' }, place)
+      : null,
+  );
 }

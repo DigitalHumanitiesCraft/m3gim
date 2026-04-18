@@ -6,6 +6,7 @@
 import { extractYear } from '../utils/date-parser.js';
 import { ensureArray, getDocTypeId, countLinks } from '../utils/format.js';
 import { normalizePerson, getPersonKategorie } from '../utils/normalize.js';
+import { extractXlsxSource } from '../utils/provenance.js';
 
 /**
  * Load and parse the archive JSON-LD, build the Store.
@@ -443,16 +444,6 @@ function indexRecordToEvents(store, record) {
   if (eventIds.length > 0) store.recordToEvents.set(record['@id'], eventIds);
 }
 
-/** Extrahiert die xlsxSource aus einem Objekt in kompaktes {sheet, row, datenpunkt}. */
-function extractXlsxSource(obj) {
-  const src = obj && obj['m3gim:xlsxSource'];
-  if (!src) return null;
-  return {
-    sheet: src['m3gim:xlsxSheet'] || null,
-    row: src['m3gim:xlsxRow'] || null,
-    datenpunkt: src['m3gim:datenpunktId'] || null,
-  };
-}
 
 /** AgRelOn-Relationen am Record. */
 function indexAgentRelations(store, record) {

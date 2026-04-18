@@ -9,6 +9,7 @@ import { PERSONEN_FARBEN, DOKUMENTTYP_LABELS, WIKIDATA_ICON_SVG, AGRELON_LABELS 
 import { selectRecord, navigateToView } from '../ui/router.js';
 import { toggleKorb, isInKorb } from '../ui/korb.js';
 import { logStamp } from '../utils/env.js';
+import { buildToolbar } from './_toolbar.js';
 
 let store = null;
 let container = null;
@@ -16,13 +17,18 @@ let container = null;
 /** Max records shown in expanded detail before "show all" link */
 const DETAIL_LIMIT = 10;
 
-// Per-grid state
+// Per-grid state (Sort + Expanded). Suchterm und Wikidata-Filter sind
+// global (Toolbar-Facetten, E-91).
 const gridState = {
-  personen:       { sort: 'count', dir: -1, search: '', expanded: null },
-  organisationen: { sort: 'count', dir: -1, search: '', expanded: null },
-  orte:           { sort: 'count', dir: -1, search: '', expanded: null },
-  werke:          { sort: 'count', dir: -1, search: '', expanded: null },
+  personen:       { sort: 'count', dir: -1, expanded: null },
+  organisationen: { sort: 'count', dir: -1, expanded: null },
+  orte:           { sort: 'count', dir: -1, expanded: null },
+  werke:          { sort: 'count', dir: -1, expanded: null },
 };
+
+/** Globaler Toolbar-State: Suche und Wikidata-Toggle. */
+let toolbarState = { q: '', withWikidata: false };
+let indizesToolbar = null;
 
 /** Cross-grid facet filter: { gridKey, name, recordIds: Set<string> } | null */
 let activeFilter = null;
@@ -118,7 +124,6 @@ const GRID_CONFIG = {
 export function expandEntry(gridType, entityName) {
   if (!gridState[gridType]) return;
   gridState[gridType].expanded = entityName;
-  gridState[gridType].search = '';
 
   // Also set facet filter for cross-grid filtering
   const config = GRID_CONFIG[gridType];
@@ -148,28 +153,28 @@ export function renderIndizes(storeRef, containerEl) {
 
   const wrapper = el('div', { className: 'idx-page' });
 
-  // Toolbar: Search + Facet Chips on one line
-  const chipContainer = el('div', { className: 'idx-facet-chips' });
-  chipContainer.id = 'idx-facet-chips';
+  // Globale Toolbar ueber die generische buildToolbar-Komponente (E-91).
+  // Facetten: Suche (alle 4 Grids), Nur-mit-Wikidata-Toggle.
+  indizesToolbar = buildToolbar(store, {
+    initial: toolbarState,
+    className: 'archiv-toolbar',
+    showCount: false,
+    facets: [
+      { kind: 'search', key: 'q', placeholder: 'Alle Indizes durchsuchen\u2026' },
+      { kind: 'toggle', key: 'withWikidata', label: 'Nur mit Wikidata' },
+    ],
+    onChange: (s) => {
+      toolbarState = s;
+      for (const key of Object.keys(gridState)) gridState[key].expanded = null;
+      activeFilter = null;
+      renderAllGrids(wrapper);
+    },
+  });
+  wrapper.appendChild(indizesToolbar.element);
 
-  const toolbar = el('div', { className: 'idx-toolbar' },
-    el('input', {
-      className: 'idx-search-input',
-      type: 'text',
-      placeholder: 'Alle Indizes durchsuchen\u2026',
-      onInput: (e) => {
-        const q = e.target.value.toLowerCase();
-        for (const key of Object.keys(gridState)) {
-          gridState[key].search = q;
-          gridState[key].expanded = null;
-        }
-        activeFilter = null; // clear facet on global search
-        renderAllGrids(wrapper);
-      },
-    }),
-    chipContainer,
-  );
-  wrapper.appendChild(toolbar);
+  // Separater Chip-Container fuer den Cross-Grid-Facet-Filter.
+  const chipContainer = el('div', { className: 'idx-facet-chips', id: 'idx-facet-chips' });
+  wrapper.appendChild(chipContainer);
 
   const gridsContainer = el('div', { className: 'idx-grids' });
   wrapper.appendChild(gridsContainer);
@@ -187,19 +192,21 @@ function renderAllGrids(wrapper) {
   renderFacetChip(wrapper);
 
   const stampParts = [];
+  const q = (toolbarState.q || '').toLowerCase();
   for (const [gridKey, config] of Object.entries(GRID_CONFIG)) {
     gridsContainer.appendChild(renderGrid(gridKey, config));
     const all = config.getEntries(store);
     const total = all.length;
-    const search = gridState[gridKey]?.search || '';
     let visible = all;
     visible = applyFacetFilter(visible, gridKey);
-    if (search) visible = visible.filter(e => config.searchFields(e).toLowerCase().includes(search));
+    if (toolbarState.withWikidata) {
+      visible = visible.filter(e => e.wikidata && String(e.wikidata).startsWith('wd:'));
+    }
+    if (q) visible = visible.filter(e => config.searchFields(e).toLowerCase().includes(q));
     stampParts.push([gridKey, `${visible.length}/${total}`]);
   }
-  if (activeFilter) {
-    stampParts.push(['facet', `${activeFilter.gridKey}=${activeFilter.name}`]);
-  }
+  if (activeFilter) stampParts.push(['facet', `${activeFilter.gridKey}=${activeFilter.name}`]);
+  if (toolbarState.withWikidata) stampParts.push(['wd-only', 'ja']);
   logStamp('indizes', stampParts);
 }
 
@@ -262,9 +269,13 @@ function renderGrid(gridKey, config) {
   // Apply cross-grid facet filter
   entries = applyFacetFilter(entries, gridKey);
 
-  // Filter
-  if (state.search) {
-    entries = entries.filter(e => config.searchFields(e).toLowerCase().includes(state.search));
+  // Globale Toolbar-Filter (E-91)
+  if (toolbarState.withWikidata) {
+    entries = entries.filter(e => e.wikidata && String(e.wikidata).startsWith('wd:'));
+  }
+  const q = (toolbarState.q || '').toLowerCase();
+  if (q) {
+    entries = entries.filter(e => config.searchFields(e).toLowerCase().includes(q));
   }
 
   // Sort

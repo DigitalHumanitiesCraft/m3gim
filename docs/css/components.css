@@ -75,19 +75,44 @@
 .badge--konvolut { background: var(--color-parchment); color: var(--color-text-secondary); }
 .badge--konvolut-struct { background: var(--color-cream); color: var(--color-text-secondary); border: 1px solid var(--border-color); font-style: italic; }
 
-/* Wikidata badge — original logo colors, neutral background */
+/* Wikidata badge — original logo colors, neutral background.
+   In Rolle-Prefix-Chips: als separater Link erkennbar (E-90):
+   Trennlinie links, eigenes Hover, eigenes data-tip. */
 .badge--wikidata {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background: var(--color-parchment);
-  padding: 2px 3px;
+  padding: 3px 5px;
   cursor: pointer;
   line-height: 1;
   text-decoration: none;
+  border-radius: 3px;
+  transition: background var(--transition-fast);
+}
+
+.badge--wikidata:hover {
+  background: rgba(0, 74, 143, 0.14);
 }
 
 .badge--wikidata svg {
   display: block;
-  width: 10px;
-  height: 10px;
+  width: 12px;
+  height: 12px;
+}
+
+/* Im Rolle-Chip: eigene Abgrenzung links, damit der Link sichtbar als
+   zusaetzliche Aktion lesbar ist, nicht als Chip-Dekoration. */
+.chip--role-pair .badge--wikidata {
+  border-left: 1px solid var(--border-color-light);
+  margin-left: 2px;
+  padding-left: 6px;
+  border-radius: 0 3px 3px 0;
+  background: transparent;
+}
+
+.chip--role-pair .badge--wikidata:hover {
+  background: rgba(0, 74, 143, 0.12);
 }
 
 /* Chips */

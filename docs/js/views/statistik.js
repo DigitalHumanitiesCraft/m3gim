@@ -1,24 +1,38 @@
 /**
- * Statistik-View (Session 37).
+ * Statistik-View — visuelles Porträt des Bestandes.
  *
- * Read-only Showroom des Bestandes: aggregiert alle Store-Maps zu einer
- * Zusammenschau. Kein Forschungstool -- keine Filter, keine Suche, keine
- * internen Module-Variablen. Jede Sektion ist eine reine Funktion, die
- * store-Daten in DOM-Knoten umwandelt.
+ * Read-only Showroom: Diagramme aus Store-Aggregaten, keine Filter, keine
+ * interne State-Mutation. Der Fokus liegt auf Datenvisualisierung statt
+ * Tabellen mit Prozent-Zahlen; Tech-Reporting (Bearbeitungsstand,
+ * Wikidata-Abdeckung, Low-Confidence-Policy) wandert in den Markdown-Report
+ * `data/reports/quality-snapshot.md`.
  */
+
+/* global d3 */
 
 import { clear, el } from '../utils/dom.js';
 import { logStamp } from '../utils/env.js';
 import { getDocTypeId } from '../utils/format.js';
 import { mobilityClusterFor } from '../data/constants.js';
 
+const PALETTE = [
+  '#004A8F',  // KUG-Blau
+  '#2E7D4F',  // Signal-Gruen
+  '#B8860B',  // Ocker
+  '#8B3A3A',  // Weinrot
+  '#4B6A8C',  // Staubblau
+  '#6B4E7D',  // Aubergine
+  '#A67C00',  // Dunkelgold
+  '#5F7A61',  // Salbei
+  '#7A5245',  // Kastanie
+  '#3D5A4F',  // Tannengruen
+];
+
 export function renderStatistik(store, container) {
   clear(container);
 
   const wrap = el('div', { className: 'statistik' });
-  wrap.appendChild(buildIntro(store));
-
-  wrap.appendChild(buildHeroRow(store));
+  wrap.appendChild(buildIntro());
 
   const body = el('div', { className: 'statistik__sections' });
   body.appendChild(buildBestandSection(store));
@@ -26,7 +40,6 @@ export function renderStatistik(store, container) {
   body.appendChild(buildGeografieSection(store));
   body.appendChild(buildNetzwerkSection(store));
   body.appendChild(buildRepertoireSection(store));
-  body.appendChild(buildQualitaetSection(store));
   body.appendChild(buildFinanzenSection(store));
   wrap.appendChild(body);
 
@@ -34,7 +47,6 @@ export function renderStatistik(store, container) {
 
   const docTypes = aggregateDocTypes(store);
   const docTypesOhne = docTypes.find(d => d.id === null)?.count || 0;
-  const status = aggregateBearbeitungsstatus(store);
   const sichten = aggregateSichten(store);
   const places = aggregatePlaces(store);
   const relations = aggregateAgentRelations(store);
@@ -49,114 +61,54 @@ export function renderStatistik(store, container) {
     ['sektionen', body.childElementCount],
     ['doctypes', docTypes.filter(d => d.id !== null).length],
     ['doctypes-ohne', docTypesOhne],
-    ['abgeschlossen', status.abgeschlossen],
-    ['unbearbeitet', status.unbearbeitet],
     ['sichten', sichten.filter(s => s.count > 0).length],
     ['orte', places.length],
     ['relationen', relations.total],
     ['komponisten', composers.length],
     ['finanzen', finances.total],
     ['waehrungen', finances.currencies.length],
-    ['approved', store.qualityMeta?.approvedManualMatches ?? 0],
   ]);
 }
 
 // ---------------------------------------------------------------------------
-// Intro + Hero
+// Intro
 // ---------------------------------------------------------------------------
 
-function buildIntro(store) {
-  const status = aggregateBearbeitungsstatus(store);
-  const total = store.allRecords.length;
-  const bearbeitet = status.abgeschlossen + status.begonnen + status.zurueckgestellt;
-  const pct = total ? Math.round((bearbeitet / total) * 100) : 0;
-
+function buildIntro() {
   const intro = el('header', { className: 'statistik__intro' });
   intro.appendChild(el('h2', { className: 'statistik__title' }, 'Statistik'));
   intro.appendChild(el('p', { className: 'statistik__lead' },
-    'Zusammenschau des Bestandes: Umfang, Verknuepfungen, Datenqualitaet. '
-    + 'Kein Forschungswerkzeug -- zeigt, was in den Daten steckt und was damit moeglich wird.'));
-  intro.appendChild(el('p', { className: 'statistik__caveat' },
-    `Der Bestand ist kuratiert, nicht fertig: ${bearbeitet} von ${total} `
-    + `Datensaetzen (${pct}\u2009%) tragen einen Bearbeitungsstand, der `
-    + `Rest wartet auf Erschliessung. Details siehe "Bestand in Zahlen".`));
+    'Visuelles Portr\u00e4t des Bestandes: Umfang, Mobilit\u00e4t, Netzwerk, '
+    + 'Repertoire, Finanzen. Kein Forschungswerkzeug \u2014 zeigt, was in den '
+    + 'Daten steckt und was damit m\u00f6glich wird.'));
   return intro;
 }
 
-function buildHeroRow(store) {
-  const hero = el('div', { className: 'statistik-hero', 'aria-label': 'Kennzahlen' });
-  hero.appendChild(heroCard({
-    value: store.allRecords.length,
-    label: 'Datensaetze',
-    caption: 'Einzelverzeichnungen aus UAKUG/NIM (Plakate, Tontraeger und Folios zusammen)',
-    href: '#bestand',
-  }));
-  hero.appendChild(heroCard({
-    value: store.konvolute.size,
-    label: 'Konvolute',
-    caption: 'Archivische Sammlungseinheiten. Der Bestand-Tab zeigt nur Konvolute mit bearbeiteten Folios.',
-    href: '#bestand',
-  }));
-  hero.appendChild(heroCard({
-    value: store.mobilityEvents.size,
-    label: 'Spatiotemporal-Events',
-    caption: 'Datierte Ereignisse mit Ort und Rolle -- Basis der Chronik',
-    href: '#chronik',
-  }));
-  hero.appendChild(heroCard({
-    value: store.persons.size,
-    label: 'Personen',
-    caption: 'Im Personenindex gefuehrt -- aktive Agent:innen und rein Erwaehnte zusammen',
-    href: '#indizes',
-  }));
-  return hero;
-}
-
-function heroCard({ value, label, caption, href }) {
-  const card = el('a', { className: 'statistik-hero__card', href });
-  card.appendChild(el('span', { className: 'statistik-hero__value' }, String(value)));
-  card.appendChild(el('span', { className: 'statistik-hero__label' }, label));
-  card.appendChild(el('span', { className: 'statistik-hero__caption' }, caption));
-  return card;
-}
-
 // ---------------------------------------------------------------------------
-// § 1 Bestand in Zahlen
+// § 1 Dokumenttypen (Donut)
 // ---------------------------------------------------------------------------
 
 function buildBestandSection(store) {
   const section = el('section', { className: 'stat-section' });
-  section.appendChild(el('h3', { className: 'stat-section__title' }, 'Bestand in Zahlen'));
+  section.appendChild(el('h3', { className: 'stat-section__title' }, 'Dokumenttypen'));
   section.appendChild(el('p', { className: 'stat-section__lead' },
-    'Verteilung nach Dokumenttyp und Bearbeitungsstand. Der Erschliessungsstand '
-    + 'wird ehrlich gezeigt -- der Bestand ist kuratiert, nicht fertig.'));
+    'Verteilung der Datens\u00e4tze nach m3gim-DFT-Oberklasse. Records ohne Typ '
+    + 'erscheinen als eigenes Segment.'));
 
-  // Dokumenttypen
   const docTypes = aggregateDocTypes(store);
-  const docWrap = el('div', { className: 'stat-subsection' });
-  docWrap.appendChild(el('h4', { className: 'stat-subsection__title' }, 'Dokumenttypen'));
-  docWrap.appendChild(buildBarList(docTypes.map(d => ({
-    label: d.label,
-    count: d.count,
-    total: store.allRecords.length,
-    tone: d.tone,
-  }))));
-  section.appendChild(docWrap);
+  const donutData = docTypes
+    .filter(d => d.count > 0)
+    .map((d, i) => ({
+      label: d.label,
+      value: d.count,
+      color: d.id === null ? 'var(--color-text-tertiary)' : PALETTE[i % PALETTE.length],
+      muted: d.id === null,
+    }));
 
-  // Bearbeitungsstatus
-  const status = aggregateBearbeitungsstatus(store);
-  const statusWrap = el('div', { className: 'stat-subsection' });
-  statusWrap.appendChild(el('h4', { className: 'stat-subsection__title' }, 'Bearbeitungsstand'));
-  const total = store.allRecords.length;
-  const statusRows = [
-    { label: 'abgeschlossen',  count: status.abgeschlossen,  total, tone: 'complete' },
-    { label: 'begonnen',       count: status.begonnen,       total, tone: 'progress' },
-    { label: 'zurueckgestellt', count: status.zurueckgestellt, total, tone: 'deferred' },
-    { label: 'ohne Status-Feld', count: status.ohneFeld, total, tone: 'unprocessed' },
-  ];
-  statusWrap.appendChild(buildBarList(statusRows));
-  section.appendChild(statusWrap);
-
+  section.appendChild(buildDonut(donutData, {
+    size: 320,
+    ariaLabel: 'Dokumenttypen im Bestand',
+  }));
   return section;
 }
 
@@ -176,22 +128,9 @@ function aggregateDocTypes(store) {
     })
     .sort((a, b) => b.count - a.count);
   if (ohneTyp > 0) {
-    rows.push({ id: null, count: ohneTyp, label: 'ohne Typ', tone: 'missing' });
+    rows.push({ id: null, count: ohneTyp, label: 'ohne Typ' });
   }
   return rows;
-}
-
-function aggregateBearbeitungsstatus(store) {
-  const out = { abgeschlossen: 0, begonnen: 0, zurueckgestellt: 0, ohneFeld: 0, unbearbeitet: 0 };
-  for (const rec of store.allRecords) {
-    const s = rec['m3gim:bearbeitungsstand'];
-    if (s === 'abgeschlossen') out.abgeschlossen++;
-    else if (s === 'begonnen') out.begonnen++;
-    else if (s === 'zurueckgestellt') out.zurueckgestellt++;
-    else out.ohneFeld++;
-    if (store.unprocessedIds.has(rec['@id'])) out.unbearbeitet++;
-  }
-  return out;
 }
 
 // ---------------------------------------------------------------------------
@@ -206,19 +145,24 @@ const SICHTEN = [
   { id: 'biografisch',    label: 'Biografisch',    desc: 'Ausweise, Wohnsitz, persoenliche Dokumente' },
 ];
 
+const SICHT_COLOR = {
+  performativ:    '#004A8F',
+  institutionell: '#2E7D4F',
+  korrespondenz:  '#B8860B',
+  diskursiv:      '#8B3A3A',
+  biografisch:    '#4B6A8C',
+  neutral:        'var(--color-text-tertiary)',
+};
+
 function aggregateSichten(store) {
-  const buckets = new Map(SICHTEN.map(s => [s.id, { ...s, count: 0, example: null }]));
+  const buckets = new Map(SICHTEN.map(s => [s.id, { ...s, count: 0 }]));
   let unklassifiziert = 0;
-  let unklassifiziertExample = null;
   for (const ev of store.mobilityEvents.values()) {
     const cluster = mobilityClusterFor(ev.role);
     if (cluster && buckets.has(cluster)) {
-      const b = buckets.get(cluster);
-      b.count++;
-      if (!b.example) b.example = ev;
+      buckets.get(cluster).count++;
     } else {
       unklassifiziert++;
-      if (!unklassifiziertExample) unklassifiziertExample = ev;
     }
   }
   const rows = [...buckets.values()];
@@ -226,7 +170,7 @@ function aggregateSichten(store) {
     rows.push({
       id: 'neutral', label: 'Nicht klassifiziert',
       desc: 'Rollen ausserhalb der fuenf Sichten (erwaehnt, auftrag, entstehung)',
-      count: unklassifiziert, example: unklassifiziertExample,
+      count: unklassifiziert,
     });
   }
   return rows;
@@ -234,51 +178,23 @@ function aggregateSichten(store) {
 
 function buildMobilitaetSection(store) {
   const section = el('section', { className: 'stat-section' });
-  section.appendChild(el('h3', { className: 'stat-section__title' },
-    'Die fuenf Mobilitaetssichten'));
+  section.appendChild(el('h3', { className: 'stat-section__title' }, 'Mobilit\u00e4tssichten'));
   section.appendChild(el('p', { className: 'stat-section__lead' },
-    'Spatiotemporal-Events werden nach der '
-    + 'Rolle im Forschungsrahmen klassifiziert. Die Farben entsprechen den '
-    + 'Chronik-Chips -- orthogonal zu den Mobilitaetstypen in '
-    + 'forschungsrahmen.md.'));
+    'Spatiotemporal-Events klassifiziert nach Rolle. F\u00fcnf Sichten plus '
+    + 'unklassifizierte Events, sortiert nach H\u00e4ufigkeit.'));
 
-  const grid = el('div', { className: 'statistik-sichten' });
-  const total = store.mobilityEvents.size;
-  for (const s of aggregateSichten(store)) {
-    grid.appendChild(buildSichtCard(s, total, store));
-  }
-  section.appendChild(grid);
-
+  const rows = aggregateSichten(store).sort((a, b) => b.count - a.count);
+  section.appendChild(buildHorizontalBars(rows.map(s => ({
+    label: s.label,
+    value: s.count,
+    color: SICHT_COLOR[s.id] || PALETTE[0],
+    hrefTitle: s.desc,
+  }))));
   return section;
 }
 
-function buildSichtCard(sicht, total, store) {
-  const pct = total ? Math.round((sicht.count / total) * 100) : 0;
-  const card = el('article', {
-    className: `statistik-sicht statistik-sicht--${sicht.id}`,
-  });
-  card.appendChild(el('h4', { className: 'statistik-sicht__label' }, sicht.label));
-  card.appendChild(el('div', { className: 'statistik-sicht__value' },
-    String(sicht.count)));
-  card.appendChild(el('div', { className: 'statistik-sicht__pct' },
-    `${pct}\u2009% der Events`));
-  card.appendChild(el('p', { className: 'statistik-sicht__desc' }, sicht.desc));
-  if (sicht.example && sicht.example.recordId) {
-    const exRec = store.records.get(sicht.example.recordId);
-    const title = (exRec && exRec['rico:title']) || sicht.example.recordId;
-    const snippet = title.length > 72 ? title.slice(0, 70) + '...' : title;
-    const link = el('a', {
-      className: 'statistik-sicht__example',
-      href: `#bestand/${encodeURIComponent(sicht.example.recordId)}`,
-      title: 'Beispiel-Datensatz oeffnen',
-    }, `Beispiel: ${snippet}`);
-    card.appendChild(link);
-  }
-  return card;
-}
-
 // ---------------------------------------------------------------------------
-// § 3 Geografie
+// § 3 Geografie — Top-Orte + Events-Histogramm
 // ---------------------------------------------------------------------------
 
 function aggregatePlaces(store) {
@@ -294,82 +210,70 @@ function aggregatePlaces(store) {
   return [...map.values()].sort((a, b) => b.count - a.count);
 }
 
-function eventYearSpan(store) {
-  let minY = Infinity, maxY = -Infinity, datedCount = 0;
+function aggregateEventsPerDecade(store) {
+  const buckets = new Map();
   for (const ev of store.mobilityEvents.values()) {
     if (typeof ev.date !== 'string' || ev.date.length < 4) continue;
     const y = parseInt(ev.date.slice(0, 4), 10);
     if (!Number.isFinite(y)) continue;
-    datedCount++;
-    if (y < minY) minY = y;
-    if (y > maxY) maxY = y;
+    const decade = Math.floor(y / 10) * 10;
+    buckets.set(decade, (buckets.get(decade) || 0) + 1);
   }
-  if (!datedCount) return null;
-  return { from: minY, to: maxY, datedCount };
+  if (buckets.size === 0) return [];
+  const min = Math.min(...buckets.keys());
+  const max = Math.max(...buckets.keys());
+  const rows = [];
+  for (let d = min; d <= max; d += 10) {
+    rows.push({ decade: d, count: buckets.get(d) || 0 });
+  }
+  return rows;
 }
 
 function buildGeografieSection(store) {
   const section = el('section', { className: 'stat-section' });
   section.appendChild(el('h3', { className: 'stat-section__title' }, 'Geografie'));
   section.appendChild(el('p', { className: 'stat-section__lead' },
-    'Aus den Spatiotemporal-Events abgeleitet: welche Orte wie oft als '
-    + 'Ereignisort belegt sind, plus die Zeitspanne der datierten Events.'));
+    'Orte aus den Spatiotemporal-Events. Wo und wann belegt der Nachlass '
+    + 'Mobilit\u00e4t?'));
 
   const places = aggregatePlaces(store).slice(0, 10);
   const placesWrap = el('div', { className: 'stat-subsection' });
-  placesWrap.appendChild(el('h4', { className: 'stat-subsection__title' },
-    'Top 10 Orte'));
-  const list = el('ul', { className: 'stat-bars' });
-  const max = places[0]?.count || 1;
-  for (const p of places) {
-    const li = el('li', { className: 'stat-bars__row' });
-    const label = p.qid
-      ? el('a', {
-          className: 'stat-bars__label stat-bars__label--link',
-          href: `https://www.wikidata.org/wiki/${String(p.qid).replace(/^wd:/, '')}`,
-          target: '_blank',
-          rel: 'noopener',
-          title: `Wikidata: ${p.qid}`,
-        }, p.name)
-      : el('span', { className: 'stat-bars__label' }, p.name);
-    const track = el('div', { className: 'stat-bars__track' });
-    const fill = el('div', { className: 'stat-bars__fill' });
-    fill.style.width = `${Math.max(2, Math.round((p.count / max) * 100))}%`;
-    track.appendChild(fill);
-    const count = el('span', { className: 'stat-bars__count' }, String(p.count));
-    li.appendChild(label);
-    li.appendChild(track);
-    li.appendChild(count);
-    list.appendChild(li);
-  }
-  placesWrap.appendChild(list);
+  placesWrap.appendChild(el('h4', { className: 'stat-subsection__title' }, 'Top 10 Orte'));
+  placesWrap.appendChild(buildHorizontalBars(places.map(p => ({
+    label: p.name,
+    value: p.count,
+    href: p.qid ? `https://www.wikidata.org/wiki/${String(p.qid).replace(/^wd:/, '')}` : null,
+    hrefTitle: p.qid ? `Wikidata: ${p.qid}` : '',
+    color: PALETTE[0],
+  }))));
   section.appendChild(placesWrap);
 
-  const span = eventYearSpan(store);
-  const spanWrap = el('div', { className: 'stat-subsection' });
-  spanWrap.appendChild(el('h4', { className: 'stat-subsection__title' },
-    'Zeitspanne der Events'));
-  if (span) {
-    spanWrap.appendChild(el('p', { className: 'statistik-span' },
-      `${span.from} \u2013 ${span.to}`));
-    spanWrap.appendChild(el('p', { className: 'statistik-span__caption' },
-      `${span.datedCount} von ${store.mobilityEvents.size} Events mit Datum`));
-  } else {
-    spanWrap.appendChild(el('p', { className: 'statistik-span__caption' },
-      'Keine datierten Events im Store.'));
+  const decades = aggregateEventsPerDecade(store);
+  if (decades.length > 0) {
+    const histWrap = el('div', { className: 'stat-subsection' });
+    histWrap.appendChild(el('h4', { className: 'stat-subsection__title' },
+      'Events pro Jahrzehnt'));
+    histWrap.appendChild(buildHistogram(decades, {
+      xAccessor: d => d.decade,
+      yAccessor: d => d.count,
+      xLabel: d => String(d.decade) + 's',
+      xAxisLabel: 'Jahrzehnt',
+      yAxisLabel: 'Anzahl Events',
+      ariaLabel: 'Verteilung der Spatiotemporal-Events pro Jahrzehnt',
+    }));
+    section.appendChild(histWrap);
   }
-  section.appendChild(spanWrap);
 
   return section;
 }
 
 // ---------------------------------------------------------------------------
-// § 4 Netzwerk
+// § 4 Netzwerk — AgRelOn-Donut + Kategorien-Bar
 // ---------------------------------------------------------------------------
 
 const AGRELON_LABEL = {
   'agrelon:HasCorrespondent':       'Korrespondenz',
-  'agrelon:HasIsPatron':             'Foerderung / Patronage',
+  'agrelon:HasIsPatron':             'F\u00f6rderung / Patronage',
   'agrelon:HasProfessionalContact':  'Beruflicher Kontakt',
   'agrelon:HasIsMember':             'Mitgliedschaft',
   'agrelon:HasEmployeeEmployer':     'Anstellung',
@@ -410,64 +314,43 @@ function buildNetzwerkSection(store) {
   const section = el('section', { className: 'stat-section' });
   section.appendChild(el('h3', { className: 'stat-section__title' }, 'Netzwerk'));
   section.appendChild(el('p', { className: 'stat-section__lead' },
-    'Agent-zu-Agent-Beziehungen nach AgRelOn (typisierte Relationen wie '
-    + 'Korrespondenz, Foerderung, Mitgliedschaft) und Personen nach Rolle im '
-    + 'Musikleben der Nachkriegszeit. Organisationen werden ergaenzend gezaehlt.'));
+    'Agent-zu-Agent-Beziehungen nach AgRelOn und Personen nach Rolle im '
+    + 'Musikleben der Nachkriegszeit.'));
 
   const { items: relItems, total: relTotal } = aggregateAgentRelations(store);
-  const relWrap = el('div', { className: 'stat-subsection' });
-  relWrap.appendChild(el('h4', { className: 'stat-subsection__title' },
-    `AgRelOn-Relationen (${relTotal})`));
-  const relRow = el('div', { className: 'statistik-chips' });
-  for (const item of relItems) {
-    relRow.appendChild(buildCountChip({
-      label: item.label,
-      count: item.count,
-      title: item.type,
-      tone: 'relation',
-    }));
+  if (relTotal > 0) {
+    const relWrap = el('div', { className: 'stat-subsection' });
+    relWrap.appendChild(el('h4', { className: 'stat-subsection__title' },
+      `AgRelOn-Relationen (${relTotal})`));
+    relWrap.appendChild(buildDonut(
+      relItems.map((item, i) => ({
+        label: item.label,
+        value: item.count,
+        color: PALETTE[i % PALETTE.length],
+      })),
+      { size: 300, ariaLabel: 'Verteilung der AgRelOn-Relationstypen' },
+    ));
+    section.appendChild(relWrap);
   }
-  relWrap.appendChild(relRow);
-  section.appendChild(relWrap);
 
   const katItems = aggregatePersonKategorien(store);
-  const katWrap = el('div', { className: 'stat-subsection' });
-  katWrap.appendChild(el('h4', { className: 'stat-subsection__title' },
-    'Personen nach Kategorie'));
-  const katRow = el('div', { className: 'statistik-chips' });
-  for (const item of katItems) {
-    katRow.appendChild(buildCountChip({
+  if (katItems.length > 0) {
+    const katWrap = el('div', { className: 'stat-subsection' });
+    katWrap.appendChild(el('h4', { className: 'stat-subsection__title' },
+      'Personen nach Kategorie'));
+    katWrap.appendChild(buildHorizontalBars(katItems.map((item, i) => ({
       label: item.kategorie,
-      count: item.count,
-      tone: 'kategorie-' + String(item.kategorie).toLowerCase().replace(/[^a-z]/g, ''),
-    }));
+      value: item.count,
+      color: PALETTE[i % PALETTE.length],
+    }))));
+    section.appendChild(katWrap);
   }
-  katWrap.appendChild(katRow);
-  section.appendChild(katWrap);
-
-  const orgCount = store.organizations.size;
-  const orgRow = el('p', { className: 'statistik-note' },
-    `Organisationen im Index: `);
-  orgRow.appendChild(el('strong', {}, String(orgCount)));
-  orgRow.appendChild(document.createTextNode(
-    ' (Opernhaeuser, Festspiele, Verbaende; in Indizes als eigener Register sichtbar).'));
-  section.appendChild(orgRow);
 
   return section;
 }
 
-function buildCountChip({ label, count, title = '', tone = '' }) {
-  const chip = el('span', {
-    className: 'statistik-chip' + (tone ? ` statistik-chip--${tone}` : ''),
-    ...(title ? { title } : {}),
-  });
-  chip.appendChild(el('span', { className: 'statistik-chip__label' }, label));
-  chip.appendChild(el('span', { className: 'statistik-chip__count' }, String(count)));
-  return chip;
-}
-
 // ---------------------------------------------------------------------------
-// § 5 Repertoire
+// § 5 Repertoire — Top-Komponisten
 // ---------------------------------------------------------------------------
 
 function aggregateComposers(store) {
@@ -486,127 +369,24 @@ function buildRepertoireSection(store) {
   const section = el('section', { className: 'stat-section' });
   section.appendChild(el('h3', { className: 'stat-section__title' }, 'Repertoire'));
   section.appendChild(el('p', { className: 'stat-section__lead' },
-    'Musikalische Werke im Bestand, aggregiert nach Komponist. Basis ist '
-    + '`rico:hasOrHadSubject` mit `@type: m3gim:MusicalWork`; das Komponisten-'
-    + 'Mapping normalisiert Namensvarianten.'));
+    'Musikalische Werke im Bestand nach Komponist.'));
 
   const composers = aggregateComposers(store);
   const top = composers.slice(0, 10);
   const subWrap = el('div', { className: 'stat-subsection' });
   subWrap.appendChild(el('h4', { className: 'stat-subsection__title' },
     `Top 10 Komponisten (von ${composers.length})`));
-  subWrap.appendChild(buildBarList(top.map(c => ({
+  subWrap.appendChild(buildHorizontalBars(top.map(c => ({
     label: c.komponist,
-    count: c.count,
-    total: 0,
+    value: c.count,
+    color: PALETTE[0],
   }))));
   section.appendChild(subWrap);
-
-  const summary = el('p', { className: 'statistik-note' });
-  summary.appendChild(el('strong', {}, String(store.works.size)));
-  summary.appendChild(document.createTextNode(
-    ` einzigartige Werke im Repertoire, verteilt auf ${composers.length} `
-    + `Komponisten.`));
-  if (top.length > 0) {
-    summary.appendChild(document.createTextNode(
-      ` Fuehrend: ${top[0].komponist} (${top[0].count} Werke).`));
-  }
-  section.appendChild(summary);
-
   return section;
 }
 
 // ---------------------------------------------------------------------------
-// § 6 Verlinkung & Qualitaet
-// ---------------------------------------------------------------------------
-
-function wikidataCoverage(map) {
-  let withQid = 0;
-  for (const entry of map.values()) {
-    if (entry.wikidata && String(entry.wikidata).startsWith('wd:')) withQid++;
-  }
-  return { withQid, total: map.size };
-}
-
-function provenanceCoverage(store) {
-  let withSource = 0;
-  for (const rec of store.allRecords) {
-    if (rec['m3gim:xlsxSource']) withSource++;
-  }
-  return { withSource, total: store.allRecords.length };
-}
-
-function buildQualitaetSection(store) {
-  const section = el('section', { className: 'stat-section' });
-  section.appendChild(el('h3', { className: 'stat-section__title' },
-    'Verlinkung & Qualitaet'));
-  section.appendChild(el('p', { className: 'stat-section__lead' },
-    'Anteil der Wikidata-verknuepften Entitaeten und Nachvollziehbarkeit '
-    + 'ueber die ursprunglichen XLSX-Zeilen. Der ehrliche Blick auf die Daten.'));
-
-  const wikidata = [
-    { label: 'Personen',       ...wikidataCoverage(store.persons) },
-    { label: 'Organisationen', ...wikidataCoverage(store.organizations) },
-    { label: 'Orte',           ...wikidataCoverage(store.locations) },
-    { label: 'Werke',          ...wikidataCoverage(store.works) },
-  ];
-  const wdWrap = el('div', { className: 'stat-subsection' });
-  wdWrap.appendChild(el('h4', { className: 'stat-subsection__title' },
-    'Wikidata-Abdeckung nach Entitaetstyp'));
-  const wdList = el('ul', { className: 'stat-bars' });
-  for (const row of wikidata) {
-    const pct = row.total ? Math.round((row.withQid / row.total) * 100) : 0;
-    const li = el('li', { className: 'stat-bars__row' });
-    li.appendChild(el('span', { className: 'stat-bars__label' }, row.label));
-    const track = el('div', { className: 'stat-bars__track' });
-    const fill = el('div', { className: 'stat-bars__fill stat-bars__fill--complete' });
-    fill.style.width = `${Math.max(2, pct)}%`;
-    track.appendChild(fill);
-    li.appendChild(track);
-    li.appendChild(el('span', { className: 'stat-bars__count' },
-      `${row.withQid}\u2009/\u2009${row.total} (${pct}\u2009%)`));
-    wdList.appendChild(li);
-  }
-  wdWrap.appendChild(wdList);
-  section.appendChild(wdWrap);
-
-  const prov = provenanceCoverage(store);
-  const provWrap = el('div', { className: 'stat-subsection' });
-  provWrap.appendChild(el('h4', { className: 'stat-subsection__title' }, 'Provenienz'));
-  const provBadge = el('p', { className: 'statistik-note' });
-  provBadge.appendChild(el('strong', {}, `${prov.withSource}\u2009/\u2009${prov.total}`));
-  provBadge.appendChild(document.createTextNode(
-    ' Records tragen `m3gim:xlsxSource` mit Sheet + Zeile. Jeder Datenpunkt '
-    + 'ist in der Quell-Tabelle nachvollziehbar; verschachtelte Entities '
-    + '(Agent-Relationen, DetailAnnotations, Spatiotemporal-Events) haben '
-    + 'eigene xlsxSource-Einträge.'));
-  provWrap.appendChild(provBadge);
-  section.appendChild(provWrap);
-
-  const qm = store.qualityMeta || { approvedManualMatches: 0, lowConfidenceSkipped: 0 };
-  const skipped = qm.lowConfidenceSkipped;
-  const skippedSatz = skipped === 1
-    ? 'Ein weiterer Low-Confidence-Treffer wartet'
-    : `${skipped} weitere Low-Confidence-Treffer warten`;
-  const policyWrap = el('div', { className: 'stat-subsection' });
-  policyWrap.appendChild(el('h4', { className: 'stat-subsection__title' },
-    'Low-Confidence-Policy'));
-  const policyNote = el('p', { className: 'statistik-note' });
-  policyNote.appendChild(el('strong', {}, String(qm.approvedManualMatches)));
-  policyNote.appendChild(document.createTextNode(
-    ' manuell freigegebene Wikidata-Matches (fuzzy_low 80\u201389). '
-    + `${skippedSatz} auf redaktionelle Sichtung. `
-    + 'Entscheidung E-74: fuzzy_low fliesst nur nach '
-    + '`manual_review: "approved"` ins Modell, damit keine falschen Q-IDs '
-    + 'automatisch durchrutschen.'));
-  policyWrap.appendChild(policyNote);
-  section.appendChild(policyWrap);
-
-  return section;
-}
-
-// ---------------------------------------------------------------------------
-// § 7 Finanzen
+// § 6 Finanzen — Waehrungen als Donut + Detail-Rollen als Bars
 // ---------------------------------------------------------------------------
 
 const CURRENCY_LABEL = {
@@ -626,12 +406,8 @@ function aggregateFinances(store) {
     if (entries.length > 0) recordsWithFin++;
     for (const e of entries) {
       total++;
-      if (e.currency) {
-        currencies.set(e.currency, (currencies.get(e.currency) || 0) + 1);
-      }
-      if (e.role) {
-        roles.set(e.role, (roles.get(e.role) || 0) + 1);
-      }
+      if (e.currency) currencies.set(e.currency, (currencies.get(e.currency) || 0) + 1);
+      if (e.role) roles.set(e.role, (roles.get(e.role) || 0) + 1);
     }
   }
   return {
@@ -650,31 +426,22 @@ function buildFinanzenSection(store) {
   const section = el('section', { className: 'stat-section stat-section--minor' });
   section.appendChild(el('h3', { className: 'stat-section__title' }, 'Finanzen'));
   section.appendChild(el('p', { className: 'stat-section__lead' },
-    'Monetäre Nennungen aus Briefen, Vertraegen und Abrechnungen, modelliert '
-    + 'als DetailAnnotations mit `m3gim:monetaryAmount`. Eine Teilerschliessung '
-    + '-- vollstaendige Auswertung braucht weitere Sichtung.'));
+    'Monet\u00e4re Nennungen aus Briefen, Vertr\u00e4gen und Abrechnungen, '
+    + 'modelliert als DetailAnnotations.'));
 
   const fin = aggregateFinances(store);
 
-  const totalRow = el('p', { className: 'statistik-note' });
-  totalRow.appendChild(el('strong', {}, String(fin.total)));
-  totalRow.appendChild(document.createTextNode(
-    ` monetäre Eintraege in ${fin.recordsWithFin} Records.`));
-  section.appendChild(totalRow);
-
   if (fin.currencies.length > 0) {
     const curWrap = el('div', { className: 'stat-subsection' });
-    curWrap.appendChild(el('h4', { className: 'stat-subsection__title' },
-      'Waehrungen'));
-    const curRow = el('div', { className: 'statistik-chips' });
-    for (const c of fin.currencies) {
-      curRow.appendChild(buildCountChip({
+    curWrap.appendChild(el('h4', { className: 'stat-subsection__title' }, 'W\u00e4hrungen'));
+    curWrap.appendChild(buildDonut(
+      fin.currencies.map((c, i) => ({
         label: `${c.label} (${c.code})`,
-        count: c.count,
-        tone: 'finance',
-      }));
-    }
-    curWrap.appendChild(curRow);
+        value: c.count,
+        color: PALETTE[i % PALETTE.length],
+      })),
+      { size: 260, ariaLabel: 'W\u00e4hrungen in den Finanznennungen' },
+    ));
     section.appendChild(curWrap);
   }
 
@@ -682,15 +449,11 @@ function buildFinanzenSection(store) {
     const roleWrap = el('div', { className: 'stat-subsection' });
     roleWrap.appendChild(el('h4', { className: 'stat-subsection__title' },
       'Detail-Rollen'));
-    const roleRow = el('div', { className: 'statistik-chips' });
-    for (const r of fin.roles) {
-      roleRow.appendChild(buildCountChip({
-        label: r.role,
-        count: r.count,
-        tone: 'finance',
-      }));
-    }
-    roleWrap.appendChild(roleRow);
+    roleWrap.appendChild(buildHorizontalBars(fin.roles.map((r, i) => ({
+      label: r.role,
+      value: r.count,
+      color: PALETTE[i % PALETTE.length],
+    }))));
     section.appendChild(roleWrap);
   }
 
@@ -698,30 +461,199 @@ function buildFinanzenSection(store) {
 }
 
 // ---------------------------------------------------------------------------
-// Shared: horizontale Balken-Liste
+// Visual helpers — Donut, Horizontal Bars, Histogram
 // ---------------------------------------------------------------------------
 
-function buildBarList(rows) {
+/**
+ * Donut-Chart mit Legende rechts. data: [{label, value, color, muted?}].
+ * Wenn d3 nicht verf\u00fcgbar ist (CDN-Ausfall), f\u00e4llt das Chart auf
+ * eine kompakte Liste zur\u00fcck.
+ */
+function buildDonut(data, { size = 300, ariaLabel = '' } = {}) {
+  const total = data.reduce((s, d) => s + d.value, 0);
+  const wrap = el('div', { className: 'stat-chart stat-chart--donut' });
+
+  if (typeof d3 === 'undefined' || total === 0) {
+    wrap.appendChild(buildHorizontalBars(data.map(d => ({
+      label: d.label, value: d.value, color: d.color,
+    }))));
+    return wrap;
+  }
+
+  const chartEl = el('div', { className: 'stat-chart__svg-wrap' });
+  const radius = size / 2;
+  const inner = radius * 0.55;
+
+  const svg = d3.create('svg')
+    .attr('viewBox', `${-radius} ${-radius} ${size} ${size}`)
+    .attr('width', size)
+    .attr('height', size)
+    .attr('role', 'img')
+    .attr('aria-label', ariaLabel);
+
+  const pie = d3.pie().value(d => d.value).sort(null);
+  const arc = d3.arc().innerRadius(inner).outerRadius(radius).padAngle(0.006).cornerRadius(2);
+
+  svg.selectAll('path')
+    .data(pie(data))
+    .join('path')
+      .attr('d', arc)
+      .attr('fill', d => d.data.color)
+      .attr('opacity', d => d.data.muted ? 0.5 : 1)
+      .append('title')
+        .text(d => `${d.data.label}: ${d.data.value} (${Math.round(d.data.value / total * 100)}\u2009%)`);
+
+  svg.append('text')
+    .attr('text-anchor', 'middle')
+    .attr('dy', '-0.1em')
+    .attr('class', 'stat-donut__center-value')
+    .text(total);
+  svg.append('text')
+    .attr('text-anchor', 'middle')
+    .attr('dy', '1.1em')
+    .attr('class', 'stat-donut__center-label')
+    .text(data.length + ' Kategorien');
+
+  chartEl.appendChild(svg.node());
+  wrap.appendChild(chartEl);
+
+  // Legende; lange Labels mit Ellipsis + data-tip fuer Full-Text
+  const legend = el('ul', { className: 'stat-chart__legend' });
+  for (const d of data) {
+    const pct = total ? Math.round(d.value / total * 100) : 0;
+    legend.appendChild(el('li', { className: 'stat-chart__legend-item' },
+      el('span', { className: 'stat-chart__legend-swatch', style: `background:${d.color}; opacity:${d.muted ? 0.5 : 1}` }),
+      el('span', {
+        className: 'stat-chart__legend-label',
+        dataset: { tip: d.label },
+      }, d.label),
+      el('span', { className: 'stat-chart__legend-value' }, `${d.value} \u00b7 ${pct}\u2009%`),
+    ));
+  }
+  wrap.appendChild(legend);
+
+  return wrap;
+}
+
+/**
+ * Horizontale Bar-Liste. Funktional wie die alte `buildBarList`, aber
+ * einheitliche API: rows: [{label, value, href?, color?}]. Keine Prozent,
+ * kein Bearbeitungsstand-Vokabular.
+ */
+function buildHorizontalBars(rows) {
   const list = el('ul', { className: 'stat-bars' });
-  const max = rows.reduce((m, r) => Math.max(m, r.count), 0) || 1;
+  const max = rows.reduce((m, r) => Math.max(m, r.value), 0) || 1;
   for (const row of rows) {
     const li = el('li', { className: 'stat-bars__row' });
-    const label = el('span', { className: 'stat-bars__label' }, row.label);
+    const label = row.href
+      ? el('a', {
+          className: 'stat-bars__label stat-bars__label--link',
+          href: row.href, target: '_blank', rel: 'noopener', title: row.hrefTitle || '',
+        }, row.label)
+      : el('span', {
+          className: 'stat-bars__label',
+          title: row.hrefTitle || '',
+        }, row.label);
     const track = el('div', { className: 'stat-bars__track' });
-    const fill = el('div', {
-      className: 'stat-bars__fill' + (row.tone ? ` stat-bars__fill--${row.tone}` : ''),
-    });
-    fill.style.width = `${Math.max(2, Math.round((row.count / max) * 100))}%`;
+    const fill = el('div', { className: 'stat-bars__fill' });
+    fill.style.width = `${Math.max(2, Math.round((row.value / max) * 100))}%`;
+    if (row.color) fill.style.background = row.color;
     track.appendChild(fill);
-    const countTxt = row.total
-      ? `${row.count} (${Math.round((row.count / row.total) * 100)}\u2009%)`
-      : String(row.count);
-    const count = el('span', { className: 'stat-bars__count' }, countTxt);
     li.appendChild(label);
     li.appendChild(track);
-    li.appendChild(count);
+    li.appendChild(el('span', { className: 'stat-bars__count' }, String(row.value)));
     list.appendChild(li);
   }
   return list;
 }
 
+/**
+ * Einfaches Bar-Chart \u00fcber numerische Achsen (z.B. Jahrzehnte).
+ */
+function buildHistogram(data, {
+  xAccessor, yAccessor, xLabel,
+  xAxisLabel = '', yAxisLabel = '',
+  ariaLabel = '',
+} = {}) {
+  const width = 640;
+  const height = 220;
+  const margin = { top: 10, right: 12, bottom: 46, left: 52 };
+  const innerW = width - margin.left - margin.right;
+  const innerH = height - margin.top - margin.bottom;
+
+  const wrap = el('div', { className: 'stat-chart stat-chart--hist' });
+
+  if (typeof d3 === 'undefined' || data.length === 0) {
+    wrap.appendChild(buildHorizontalBars(data.map(d => ({
+      label: xLabel(d), value: yAccessor(d), color: PALETTE[0],
+    }))));
+    return wrap;
+  }
+
+  const svg = d3.create('svg')
+    .attr('viewBox', `0 0 ${width} ${height}`)
+    .attr('width', width)
+    .attr('height', height)
+    .attr('role', 'img')
+    .attr('aria-label', ariaLabel);
+
+  const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
+
+  const xValues = data.map(xAccessor);
+  const xScale = d3.scaleBand()
+    .domain(xValues)
+    .range([0, innerW])
+    .padding(0.15);
+
+  const maxY = d3.max(data, yAccessor) || 1;
+  const yScale = d3.scaleLinear()
+    .domain([0, maxY])
+    .nice()
+    .range([innerH, 0]);
+
+  g.append('g')
+    .attr('class', 'stat-axis stat-axis--y')
+    .call(d3.axisLeft(yScale).ticks(4).tickSize(-innerW));
+
+  // Tick-Ausduennung: bei > 10 Jahrzehnten jedes zweite Label ausblenden,
+  // um Ueberlappung zu vermeiden (E-90 Phase E).
+  const tickStep = xValues.length > 10 ? 2 : 1;
+  const tickValues = xValues.filter((_, i) => i % tickStep === 0);
+  g.append('g')
+    .attr('class', 'stat-axis stat-axis--x')
+    .attr('transform', `translate(0,${innerH})`)
+    .call(d3.axisBottom(xScale)
+      .tickValues(tickValues)
+      .tickFormat(d => xLabel({ decade: d }) ? xLabel({ decade: d }) : String(d)));
+
+  g.selectAll('rect.stat-hist__bar')
+    .data(data)
+    .join('rect')
+      .attr('class', 'stat-hist__bar')
+      .attr('x', d => xScale(xAccessor(d)))
+      .attr('y', d => yScale(yAccessor(d)))
+      .attr('width', xScale.bandwidth())
+      .attr('height', d => innerH - yScale(yAccessor(d)))
+      .attr('fill', PALETTE[0])
+      .append('title')
+        .text(d => `${xLabel(d)}: ${yAccessor(d)}`);
+
+  if (yAxisLabel) {
+    svg.append('text')
+      .attr('class', 'stat-axis__title')
+      .attr('transform', `translate(14, ${margin.top + innerH / 2}) rotate(-90)`)
+      .attr('text-anchor', 'middle')
+      .text(yAxisLabel);
+  }
+  if (xAxisLabel) {
+    svg.append('text')
+      .attr('class', 'stat-axis__title')
+      .attr('x', margin.left + innerW / 2)
+      .attr('y', height - 6)
+      .attr('text-anchor', 'middle')
+      .text(xAxisLabel);
+  }
+
+  wrap.appendChild(svg.node());
+  return wrap;
+}

@@ -8,7 +8,7 @@
 const TABS = ['bestand', 'chronik', 'statistik', 'indizes', 'mobilitaets-atlas', 'repertoire', 'biogramm', 'netzwerk', 'korb'];
 // VISIBLE_TABS: nur diese sind aktuell in der Tab-Bar sichtbar (Rest `hidden`).
 // Hash-Navigation auf versteckte Tabs wird auf 'bestand' umgebogen.
-const VISIBLE_TABS = new Set(['bestand', 'chronik', 'statistik', 'indizes']);
+const VISIBLE_TABS = new Set(['bestand', 'chronik', 'statistik', 'indizes', 'korb']);
 const ALL_VIEWS = [...TABS, 'archiv']; // 'archiv' als Legacy-Alias fuer alte Bookmarks/Hash-URLs
 
 const state = {
@@ -75,6 +75,21 @@ export function navigateToView(tab, context = {}) {
       detail: { tab, ...context },
     }));
   });
+}
+
+/**
+ * Setzt einen Toolbar-Filter im aktuell aktiven Record-Tab (Bestand oder
+ * Chronik). Wenn ein anderer Tab aktiv ist, switcht zu Bestand. Der Filter
+ * wird ueber `m3gim:navigate` an die View dispatcht, die ihrerseits
+ * `toolbar.setLocation/setWerk/setPerson` aufruft (E-91, Session 44).
+ *
+ * @param {'person'|'location'|'werk'} facet
+ * @param {string} value
+ */
+export function applyArchivFilter(facet, value) {
+  if (!facet || !value) return;
+  const target = state.activeTab === 'chronik' ? 'chronik' : 'bestand';
+  navigateToView(target, { filter: { facet, value } });
 }
 
 export function deselectRecord() {

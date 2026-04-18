@@ -32,73 +32,11 @@
   margin: 0;
 }
 
-.statistik__caveat {
-  font-size: var(--text-sm);
-  color: var(--color-text-secondary);
-  line-height: var(--leading-relaxed);
-  max-width: 72ch;
-  margin: var(--space-3) 0 0;
-  padding: var(--space-2) var(--space-3);
-  background: var(--color-cream);
-  border-left: 3px solid var(--color-gold-medium);
-  border-radius: var(--border-radius);
-}
-
 .statistik__sections {
   display: flex;
   flex-direction: column;
   gap: var(--space-10);
   margin-top: var(--space-8);
-}
-
-/* --- Hero-Row mit 4 Kennzahlen ------------------------------------------- */
-
-.statistik-hero {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: var(--space-3);
-}
-
-.statistik-hero__card {
-  display: flex;
-  flex-direction: column;
-  padding: var(--space-5) var(--space-4);
-  background: var(--color-paper);
-  border: 1px solid var(--border-color-light);
-  border-left: 3px solid var(--color-kug-blau);
-  border-radius: var(--border-radius);
-  text-decoration: none;
-  color: inherit;
-  transition: background var(--transition-fast), border-color var(--transition-fast);
-}
-
-.statistik-hero__card:hover,
-.statistik-hero__card:focus-visible {
-  background: var(--color-cream);
-  border-left-color: var(--color-kug-blau-light);
-  outline: none;
-}
-
-.statistik-hero__value {
-  font-family: var(--font-title);
-  font-size: var(--text-3xl);
-  font-weight: var(--weight-bold);
-  color: var(--color-kug-blau);
-  line-height: 1;
-}
-
-.statistik-hero__label {
-  font-size: var(--text-base);
-  font-weight: var(--weight-semibold);
-  margin-top: var(--space-2);
-  color: var(--color-text-primary);
-}
-
-.statistik-hero__caption {
-  font-size: var(--text-xs);
-  color: var(--color-text-tertiary);
-  margin-top: var(--space-1);
-  line-height: var(--leading-normal);
 }
 
 /* --- Sektionen ----------------------------------------------------------- */
@@ -190,12 +128,6 @@
   transition: width var(--transition-normal);
 }
 
-.stat-bars__fill--complete    { background: var(--color-signal-green); }
-.stat-bars__fill--progress    { background: var(--color-kug-blau-light); }
-.stat-bars__fill--deferred    { background: var(--color-gold-medium); }
-.stat-bars__fill--unprocessed { background: var(--color-sand); }
-.stat-bars__fill--missing     { background: var(--color-text-tertiary); opacity: 0.55; }
-
 .stat-bars__count {
   font-family: var(--font-mono);
   font-size: var(--text-xs);
@@ -215,145 +147,111 @@
   border-bottom-style: solid;
 }
 
-/* --- § 2 Mobilitaetssichten ---------------------------------------------- */
+/* --- Charts (Donut, Histogramm, Legende) --------------------------------- */
 
-.statistik-sichten {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: var(--space-3);
+.stat-chart {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+  flex-wrap: wrap;
 }
 
-.statistik-sicht {
+.stat-chart--hist {
+  display: block;
+}
+
+.stat-chart__svg-wrap {
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.stat-chart svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.stat-donut__center-value {
+  font-family: var(--font-title);
+  font-size: 28px;
+  font-weight: var(--weight-bold);
+  fill: var(--color-text-primary);
+}
+
+.stat-donut__center-label {
+  font-size: 11px;
+  fill: var(--color-text-tertiary);
+}
+
+.stat-chart__legend {
+  list-style: none;
+  padding: 0;
+  margin: 0;
   display: flex;
   flex-direction: column;
+  gap: 4px;
+  min-width: 220px;
+  flex: 1;
+}
+
+.stat-chart__legend-item {
+  display: grid;
+  grid-template-columns: 12px 1fr auto;
+  align-items: center;
   gap: var(--space-2);
-  padding: var(--space-4);
-  background: var(--color-paper);
-  border: 1px solid var(--border-color-light);
-  border-left-width: 4px;
-  border-radius: var(--border-radius);
-}
-
-.statistik-sicht--performativ    { border-left-color: var(--color-sicht-performativ); }
-.statistik-sicht--institutionell { border-left-color: var(--color-sicht-institutionell); }
-.statistik-sicht--korrespondenz  { border-left-color: var(--color-sicht-korrespondenz); }
-.statistik-sicht--diskursiv      { border-left-color: var(--color-sicht-diskursiv); }
-.statistik-sicht--biografisch    { border-left-color: var(--color-sicht-biografisch); }
-.statistik-sicht--neutral        { border-left-color: var(--color-text-tertiary); opacity: 0.78; }
-
-.statistik-sicht__label {
-  font-family: var(--font-title);
-  font-size: var(--text-base);
-  font-weight: var(--weight-semibold);
-  margin: 0;
-  color: var(--color-text-primary);
-}
-
-.statistik-sicht__value {
-  font-family: var(--font-title);
-  font-size: var(--text-2xl);
-  font-weight: var(--weight-bold);
-  color: var(--color-text-primary);
-  line-height: 1;
-}
-
-.statistik-sicht__pct {
   font-size: var(--text-xs);
-  color: var(--color-text-tertiary);
+  padding: 2px 0;
 }
 
-.statistik-sicht__desc {
-  font-size: var(--text-xs);
+.stat-chart__legend-swatch {
+  display: block;
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+}
+
+.stat-chart__legend-label {
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: help;
+  min-width: 0;
+}
+
+.stat-chart__legend-value {
+  font-family: var(--font-mono);
   color: var(--color-text-secondary);
-  margin: 0;
-  line-height: var(--leading-normal);
+  font-size: 11px;
 }
 
-.statistik-sicht__example {
-  margin-top: auto;
-  font-size: var(--text-xs);
-  color: var(--color-kug-blau);
-  text-decoration: none;
-  border-top: 1px solid var(--border-color-light);
-  padding-top: var(--space-2);
+/* Histogramm-Achsen */
+.stat-axis .domain { stroke: var(--border-color); }
+.stat-axis line { stroke: var(--border-color-light); }
+.stat-axis text {
+  font-family: var(--font-ui);
+  font-size: 10px;
+  fill: var(--color-text-tertiary);
 }
 
-.statistik-sicht__example:hover {
-  color: var(--color-kug-blau-dark);
-  text-decoration: underline;
+.stat-axis--y line {
+  stroke: var(--border-color-light);
+  stroke-dasharray: 2,3;
 }
 
-/* --- § 3 Geografie Zeitspanne ------------------------------------------- */
-
-.statistik-span {
-  font-family: var(--font-title);
-  font-size: var(--text-2xl);
+.stat-axis__title {
+  font-family: var(--font-ui);
+  font-size: 11px;
   font-weight: var(--weight-semibold);
-  color: var(--color-kug-blau);
-  margin: 0;
+  fill: var(--color-text-secondary);
   letter-spacing: 0.02em;
 }
 
-.statistik-span__caption {
-  font-size: var(--text-xs);
-  color: var(--color-text-tertiary);
-  margin: var(--space-1) 0 0;
-  font-style: italic;
+.stat-hist__bar {
+  transition: opacity var(--transition-fast);
 }
 
-/* --- § 4 Netzwerk + § 5 Repertoire: Zaehl-Chips + Note ------------------ */
-
-.statistik-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-}
-
-.statistik-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: 4px 10px;
-  background: var(--color-cream);
-  border: 1px solid var(--border-color-light);
-  border-radius: 999px;
-  font-size: var(--text-xs);
-  color: var(--color-text-primary);
-  white-space: nowrap;
-}
-
-.statistik-chip__label {
-  font-weight: var(--weight-medium);
-}
-
-.statistik-chip__count {
-  font-family: var(--font-mono);
-  color: var(--color-kug-blau);
-  font-weight: var(--weight-semibold);
-}
-
-.statistik-chip--relation {
-  border-color: var(--color-kug-blau-light);
-  background: rgba(0, 74, 143, 0.05);
-}
-
-.statistik-chip--finance {
-  border-color: var(--color-gold-medium);
-  background: rgba(196, 165, 116, 0.08);
-}
-
-.statistik-chip--kategoriekomponist  { border-color: var(--color-wagner); background: rgba(107, 44, 44, 0.06); }
-.statistik-chip--kategoriedirigent   { border-color: var(--color-cat-dirigent); background: rgba(74, 110, 150, 0.06); }
-.statistik-chip--kategorieregisseur  { border-color: var(--color-cat-regisseur); background: rgba(107, 78, 140, 0.06); }
-.statistik-chip--kategorievermittler { border-color: var(--color-cat-vermittler); background: rgba(61, 122, 90, 0.06); }
-.statistik-chip--kategoriekorrepetitor { border-color: var(--color-cat-korrepetitor); background: rgba(139, 115, 85, 0.06); }
-.statistik-chip--kategoriekollege    { border-color: var(--color-cat-kollege); background: rgba(154, 107, 61, 0.06); }
-.statistik-chip--kategorieandere     { border-color: var(--color-cat-andere); background: rgba(117, 117, 117, 0.06); }
-
-.statistik-note {
-  font-size: var(--text-sm);
-  color: var(--color-text-secondary);
-  line-height: var(--leading-relaxed);
-  margin: var(--space-1) 0 0;
-  max-width: 72ch;
+.stat-hist__bar:hover {
+  opacity: 0.75;
 }

@@ -5,7 +5,7 @@
 
 import { loadArchive } from './data/loader.js';
 import { initRouter, getState } from './ui/router.js';
-import { initKorb, onKorbChange, getKorbCount } from './ui/korb.js';
+import { initKorb, onKorbChange, getKorbCount, getKorbItems } from './ui/korb.js';
 import { renderBestand, selectArchivRecord } from './views/archiv-bestand.js';
 import { renderChronik } from './views/archiv-chronik.js';
 import { renderStatistik } from './views/statistik.js';
@@ -131,7 +131,18 @@ function logTabActivation(tab, s) {
       const agg = netzwerkAggregate();
       return { agenten: agg?.length || 0 };
     },
-    korb:                () => ({ records: s.allRecords.length }),
+    korb: () => {
+      const ids = getKorbItems();
+      let relations = 0;
+      let finances = 0;
+      let events = 0;
+      for (const id of ids) {
+        relations += (s.agentRelations.get(id) || []).length;
+        finances += (s.finances.get(id) || []).length;
+        events += (s.recordToEvents.get(id) || []).length;
+      }
+      return { records: ids.length, relations, finances, events };
+    },
   };
   const fn = profile[tab];
   if (!fn) return;
@@ -171,15 +182,12 @@ function showError(message) {
 
 function updateKorbTabVisibility() {
   const count = getKorbCount();
-  const btn = document.getElementById('korb-tab-btn');
   const badge = document.getElementById('korb-badge');
-  if (btn) btn.hidden = false; // Korb-Tab immer sichtbar
   if (badge) {
     badge.textContent = String(count);
     badge.hidden = count <= 0;
   }
 
-  // Force re-render of Korb view if it's already rendered
   if (renderedTabs.has('korb')) {
     renderedTabs.delete('korb');
     const { activeTab } = getState();
