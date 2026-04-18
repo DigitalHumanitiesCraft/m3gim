@@ -51,10 +51,20 @@ def main() -> int:
         page = context.new_page()
 
         global_errors: list[str] = []
+        # State-Stempel pro Tab-View: jede Render-Funktion schreibt genau eine
+        # Zeile `[viewname] key:val | ...` in die Konsole; wir sammeln die
+        # letzte Zeile pro View und pruefen sie weiter unten.
+        stamps: dict[str, str] = {}
 
         def on_console(msg):
+            text = msg.text
             if msg.type in ("error", "warning"):
-                global_errors.append(f"[{msg.type}] {msg.text}")
+                global_errors.append(f"[{msg.type}] {text}")
+            # Stempel erkennen: `[chronik] ...`, `[bestand] ...`, `[indizes] ...`
+            if text.startswith("[") and "]" in text:
+                tag = text[1:text.index("]")]
+                if tag in ("chronik", "bestand", "indizes"):
+                    stamps[tag] = text
 
         page.on("console", on_console)
         page.on("pageerror", lambda exc: global_errors.append(f"[pageerror] {exc}"))
@@ -89,6 +99,62 @@ def main() -> int:
                     results.append(("  ", " " * 24, e[:120]))
             except Exception as e:
                 results.append(("FAIL", f"tab:{tab:20s}", str(e)[:120]))
+
+        # --- State-Stempel pro Tab: jeder View muss seinen Log-Stempel
+        #     geschrieben haben. Schuetzt davor, dass ein View still ins
+        #     Nichts rendert (siehe currentFilters-Regression).
+        for view in ("bestand", "chronik", "indizes"):
+            stamp = stamps.get(view)
+            if stamp:
+                results.append(("OK", f"stamp:{view:22s}", stamp[:100]))
+            else:
+                results.append(("FAIL", f"stamp:{view:22s}",
+                                "Kein console.log '[view] ...' waehrend Render"))
+
+        # --- Click-Canary Chronik: Periode aufklappen muss Records sichtbar machen.
+        #     Fing den currentFilters-Silent-Bug nicht, weil die alte Suite nur
+        #     rendert, nicht klickt. Hier explizit pruefen.
+        try:
+            page.locator('[data-tab="chronik"]').first.click()
+            page.wait_for_timeout(400)
+            header = page.locator('#tab-chronik .chronik-period__header').first
+            errs_before = len(global_errors)
+            header.click()
+            page.wait_for_timeout(300)
+            body_visible = page.locator(
+                '#tab-chronik .chronik-period__body'
+            ).count()
+            records_visible = page.locator(
+                '#tab-chronik .chronik-record'
+            ).count()
+            new_errs = global_errors[errs_before:]
+            if body_visible > 0 and records_visible > 0 and not new_errs:
+                results.append(("OK", "click:chronik-period       ",
+                                f"body+{records_visible} Records, 0 Konsole"))
+            else:
+                results.append(("FAIL", "click:chronik-period       ",
+                                f"body={body_visible}, rec={records_visible}, errs={len(new_errs)}"))
+                for e in new_errs[:2]:
+                    results.append(("  ", " " * 24, e[:120]))
+
+            # Record aufklappen -> Inline-Detail
+            if records_visible > 0:
+                errs_before = len(global_errors)
+                page.locator('#tab-chronik .chronik-record').first.click()
+                page.wait_for_timeout(300)
+                detail_visible = page.locator(
+                    '#tab-chronik .chronik-record__detail'
+                ).count()
+                new_errs = global_errors[errs_before:]
+                if detail_visible > 0 and not new_errs:
+                    results.append(("OK", "click:chronik-record       ",
+                                    "Inline-Detail sichtbar, 0 Konsole"))
+                else:
+                    results.append(("FAIL", "click:chronik-record       ",
+                                    f"detail={detail_visible}, errs={len(new_errs)}"))
+        except Exception as e:
+            results.append(("WARN", "click:chronik-period       ",
+                            f"check uebersprungen: {e}"))
 
         # --- Anker-Titel: im DOM erreichbar? ---
         # (Kein Klick, weil Konvolute im Archiv-Tab ggf. eingeklappt sind und

@@ -114,6 +114,7 @@ function updateBestandView(filters) {
   // EXCLUDED_DFT (Plakate/Tontraeger) konsistent rausrechnen -- sonst driftet
   // der Toolbar-Zaehler gegen die tatsaechlich sichtbaren Zeilen.
   const recordCount = items.filter(i => !i.isKonvolut).length;
+  const konvolutCount = items.filter(i => i.isKonvolut).length;
   if (toolbar) {
     const totalBearbeitet = store.allRecords.filter(
       r => !store.unprocessedIds.has(r['@id'])
@@ -123,6 +124,12 @@ function updateBestandView(filters) {
       ? `${recordCount} von ${totalBearbeitet} bearbeiteten Einheiten`
       : `${totalBearbeitet} bearbeitete Einheiten`);
   }
+
+  // Kompakter State-Stempel fuer Playwright + manuelles Debugging.
+  console.log(
+    `[bestand] konvolute:${konvolutCount} | records:${recordCount} | sort:${currentSortKey}${sortDir === -1 ? '-desc' : ''}${isFiltered ? ' | gefiltert' : ''}`
+  );
+
   return recordCount;
 }
 

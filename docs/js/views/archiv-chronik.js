@@ -181,7 +181,7 @@ function updateChronikView() {
       onClick: () => {
         if (isCollapsed) collapsedPeriods.delete(period);
         else collapsedPeriods.add(period);
-        updateChronikView(currentFilters);
+        updateChronikView();
       },
     },
       el('span', { className: 'chronik-period__toggle',
@@ -256,7 +256,7 @@ function updateChronikView() {
             className: `chronik-record ${expandedRecord === recordId ? 'chronik-record--active' : ''}`,
             onClick: () => {
               expandedRecord = expandedRecord === recordId ? null : recordId;
-              updateChronikView(currentFilters);
+              updateChronikView();
             },
           },
             el('span', { className: 'chronik-record__sig' }, sig),
@@ -273,7 +273,7 @@ function updateChronikView() {
           if (expandedRecord === recordId) {
             const detailEl = el('div', { className: 'chronik-record__detail' });
             detailEl.appendChild(buildInlineDetail(r, store, {
-              onClose: () => { expandedRecord = null; updateChronikView(currentFilters); },
+              onClose: () => { expandedRecord = null; updateChronikView(); },
             }));
             locEl.appendChild(detailEl);
           }
@@ -301,6 +301,21 @@ function updateChronikView() {
       ? `${sichtbar} von ${totalBearbeitet} bearbeiteten Einheiten`
       : `${totalBearbeitet} bearbeitete Einheiten`);
   }
+
+  // Kompakter State-Stempel fuer Playwright + manuelles Debugging.
+  const undatiert = grouped.get('Undatiert')
+    ? [...grouped.get('Undatiert').values()].reduce((n, arr) => n + arr.length, 0)
+    : 0;
+  const ohneKey = currentGrouping === 'person' ? '\u2014 Ohne Person'
+    : currentGrouping === 'werk' ? '\u2014 Ohne Werk'
+    : '\u2014 Ohne Ort';
+  let ohneCount = 0;
+  for (const locMap of grouped.values()) {
+    if (locMap.has(ohneKey)) ohneCount += locMap.get(ohneKey).length;
+  }
+  console.log(
+    `[chronik] bearbeitet:${sichtbar} | perioden:${grouped.size} | undatiert:${undatiert} | ohne-${currentGrouping}:${ohneCount} | modus:${currentGrouping}${isFiltered ? ' | gefiltert' : ''}`
+  );
 
   // Return count for counter update
   return records.length;

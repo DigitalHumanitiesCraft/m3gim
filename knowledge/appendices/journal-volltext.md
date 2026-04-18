@@ -576,3 +576,22 @@ Mehrere Commits schlossen die Datenqualitäts-Gaps und vervollständigten das Se
 - **Datenqualität Wikidata:** Zwei falsche Q-IDs aus dem Approval-Batch korrigiert (Bayreuth Q2861 war Rostock → Q3923; Stanislau Q200491 war US-Game-Publisher → Q156726). Neues `verify-manual-approvals.py`-Skript als Gate (E-78). Smart-P17-Selector in `enrich-wikidata.py` (`rank=preferred`) löst Berlin → Deutschland statt „Mark Brandenburg" (E-79).
 
 ---
+
+## Session 35 (2026-04-17): Tab-Fokus + Konvolut-UX-Umbau
+
+Vollständig dokumentiert in `status.md § Erreichte Meilensteine` und `entscheidungen.md § E-81/82/83`. Kurz:
+
+- Tab-Bar auf Bestand · Chronik · Indizes reduziert (E-81); fünf Perspektiv-Tabs per `hidden` deaktiviert, Hash-Umleitung auf Bestand.
+- Konvolut-Meta-Chips direkt in der Bestand-Zeile (E-82); `buildKonvolutDetail` entfällt.
+- Hierarchische Sortierung Konvolute/Kinder (E-83).
+- AgRelOn-Dedup-Bug gefixt, Folio-Filter auf Kinder, Sprach-Label-Auflösung, JSDoc-Shapes auf `buildStore()`.
+- Drei neue Playwright-Canaries: Sprach-Label, Malaniuk-Dedup, Konvolut-Meta-Chips.
+
+---
+
+## Session 36 (2026-04-18): Chronik v2 — STE-Basis, Mobilitätssichten, Mini-Map
+
+Fortsetzung nach 35. Ziel: die Chronik wird räumlich ehrlich und fachlich scharf — STE-Events werden zur Primär-Datenquelle, die fünf Mobilitätssichten aus `forschungsrahmen.md § Fünf Mobilitätstypen` werden als Chip-Farbfamilie sichtbar, eine Mini-Map pro Periode löst das bislang nur textuelle Mobilitäts-Signal ein. Plan: `~/.claude/plans/m3gim-chronik-v2.md` mit sieben Meilensteinen, jeder = ein Commit, jeder mit Journal-/Knowledge-Update.
+
+- **M0 Silent-Bug-Fix + Test-Infrastruktur.** `ReferenceError: currentFilters is not defined` (drei Stellen in `archiv-chronik.js`): Closures referenzierten eine im Session-35-Refactor entfernte Modulvariable, was jede Klick-Interaktion auf Periodenheader und Records still abbrach. Screenshots sahen korrekt aus, die Chronik war de facto read-only. Fix: `updateChronikView(currentFilters)` → `updateChronikView()`. Zusätzlich kompakte State-Log-Stempel in `archiv-bestand.js`, `archiv-chronik.js`, `indizes.js` (eine Zeile pro Render mit fester Key-Reihenfolge, z.B. `[chronik] bearbeitet:63 | perioden:7 | undatiert:16 | ohne-location:13 | modus:location`). Playwright-Smoke erweitert um Stempel-Verify pro Tab und Click-Canary für Chronik (Periode auf → Body + Records + 0 Konsole; Record auf → Inline-Detail). Die Stempel-Prüfung hätte den `currentFilters`-Bug gefangen, da die Render-Funktion vor dem Log-Stempel fehlgeschlagen wäre. Smoke 14/14 grün.
+

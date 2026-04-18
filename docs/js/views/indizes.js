@@ -185,9 +185,20 @@ function renderAllGrids(wrapper) {
   // Render facet chip
   renderFacetChip(wrapper);
 
+  const stampParts = [];
   for (const [gridKey, config] of Object.entries(GRID_CONFIG)) {
     gridsContainer.appendChild(renderGrid(gridKey, config));
+    const all = config.getEntries(store);
+    const total = all.length;
+    const search = gridState[gridKey]?.search || '';
+    let visible = all;
+    visible = applyFacetFilter(visible, gridKey);
+    if (search) visible = visible.filter(e => config.searchFields(e).toLowerCase().includes(search));
+    stampParts.push(`${gridKey}:${visible.length}/${total}`);
   }
+  console.log(
+    `[indizes] ${stampParts.join(' | ')}${activeFilter ? ` | facet:${activeFilter.gridKey}=${activeFilter.name}` : ''}`
+  );
 }
 
 /** Set or clear the cross-grid facet filter */
