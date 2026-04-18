@@ -1156,7 +1156,9 @@ def main():
         "@graph": graph,
         "m3gim:exportDate": datetime.now().isoformat(),
         "m3gim:recordCount": len(records),
-        "m3gim:konvolutCount": len(konvolute)
+        "m3gim:konvolutCount": len(konvolute),
+        "m3gim:approvedManualMatches": recon_count,
+        "m3gim:lowConfidenceSkipped": recon_low_skipped,
     }
 
     # Speichern

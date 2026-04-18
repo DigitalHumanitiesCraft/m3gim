@@ -22472,7 +22472,9 @@
       }
     }
   ],
-  "m3gim:exportDate": "2026-04-18T08:54:50.486985",
+  "m3gim:exportDate": "2026-04-18T15:11:44.218352",
   "m3gim:recordCount": 381,
-  "m3gim:konvolutCount": 7
+  "m3gim:konvolutCount": 7,
+  "m3gim:approvedManualMatches": 261,
+  "m3gim:lowConfidenceSkipped": 1
 }

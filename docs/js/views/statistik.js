@@ -57,6 +57,7 @@ export function renderStatistik(store, container) {
     ['komponisten', composers.length],
     ['finanzen', finances.total],
     ['waehrungen', finances.currencies.length],
+    ['approved', store.qualityMeta?.approvedManualMatches ?? 0],
   ]);
 }
 
@@ -581,6 +582,25 @@ function buildQualitaetSection(store) {
     + 'eigene xlsxSource-Einträge.'));
   provWrap.appendChild(provBadge);
   section.appendChild(provWrap);
+
+  const qm = store.qualityMeta || { approvedManualMatches: 0, lowConfidenceSkipped: 0 };
+  const skipped = qm.lowConfidenceSkipped;
+  const skippedSatz = skipped === 1
+    ? 'Ein weiterer Low-Confidence-Treffer wartet'
+    : `${skipped} weitere Low-Confidence-Treffer warten`;
+  const policyWrap = el('div', { className: 'stat-subsection' });
+  policyWrap.appendChild(el('h4', { className: 'stat-subsection__title' },
+    'Low-Confidence-Policy'));
+  const policyNote = el('p', { className: 'statistik-note' });
+  policyNote.appendChild(el('strong', {}, String(qm.approvedManualMatches)));
+  policyNote.appendChild(document.createTextNode(
+    ' manuell freigegebene Wikidata-Matches (fuzzy_low 80\u201389). '
+    + `${skippedSatz} auf redaktionelle Sichtung. `
+    + 'Entscheidung E-74: fuzzy_low fliesst nur nach '
+    + '`manual_review: "approved"` ins Modell, damit keine falschen Q-IDs '
+    + 'automatisch durchrutschen.'));
+  policyWrap.appendChild(policyNote);
+  section.appendChild(policyWrap);
 
   return section;
 }

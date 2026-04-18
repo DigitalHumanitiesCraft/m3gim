@@ -88,6 +88,10 @@ function buildStore(jsonld) {
     recordCount: jsonld['m3gim:recordCount'] || 0,
     konvolutCount: jsonld['m3gim:konvolutCount'] || 0,
     exportDate: jsonld['m3gim:exportDate'] || '',
+    qualityMeta: {
+      approvedManualMatches: jsonld['m3gim:approvedManualMatches'] ?? 0,
+      lowConfidenceSkipped: jsonld['m3gim:lowConfidenceSkipped'] ?? 0,
+    },
     childToKonvolut: new Map(),
     // v2-Strukturen (Phase 6). Shapes: siehe JSDoc oberhalb buildStore().
     /** @type {Map<string, DftConcept>} */
