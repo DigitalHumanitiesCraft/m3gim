@@ -24,7 +24,8 @@ export function renderStatistik(store, container) {
   body.appendChild(buildBestandSection(store));
   body.appendChild(buildMobilitaetSection(store));
   body.appendChild(buildGeografieSection(store));
-  body.appendChild(placeholderSection('Netzwerk + Repertoire', 'M3'));
+  body.appendChild(buildNetzwerkSection(store));
+  body.appendChild(buildRepertoireSection(store));
   body.appendChild(placeholderSection('Qualitaet + Finanzen', 'M4'));
   wrap.appendChild(body);
 
@@ -34,6 +35,8 @@ export function renderStatistik(store, container) {
   const status = aggregateBearbeitungsstatus(store);
   const sichten = aggregateSichten(store);
   const places = aggregatePlaces(store);
+  const relations = aggregateAgentRelations(store);
+  const composers = aggregateComposers(store);
 
   logStamp('statistik', [
     ['records', store.allRecords.length],
@@ -46,6 +49,8 @@ export function renderStatistik(store, container) {
     ['unbearbeitet', status.unbearbeitet],
     ['sichten', sichten.filter(s => s.count > 0).length],
     ['orte', places.length],
+    ['relationen', relations.total],
+    ['komponisten', composers.length],
   ]);
 }
 
@@ -332,6 +337,156 @@ function buildGeografieSection(store) {
       'Keine datierten Events im Store.'));
   }
   section.appendChild(spanWrap);
+
+  return section;
+}
+
+// ---------------------------------------------------------------------------
+// § 4 Netzwerk
+// ---------------------------------------------------------------------------
+
+const AGRELON_LABEL = {
+  'agrelon:HasCorrespondent':       'Korrespondenz',
+  'agrelon:HasIsPatron':             'Foerderung / Patronage',
+  'agrelon:HasProfessionalContact':  'Beruflicher Kontakt',
+  'agrelon:HasIsMember':             'Mitgliedschaft',
+  'agrelon:HasEmployeeEmployer':     'Anstellung',
+};
+
+function aggregateAgentRelations(store) {
+  const counts = new Map();
+  let total = 0;
+  for (const rels of store.agentRelations.values()) {
+    for (const r of rels) {
+      const t = r.type || '(unbekannt)';
+      counts.set(t, (counts.get(t) || 0) + 1);
+      total++;
+    }
+  }
+  const items = [...counts.entries()]
+    .map(([type, count]) => ({
+      type,
+      label: AGRELON_LABEL[type] || type.replace(/^agrelon:Has/, ''),
+      count,
+    }))
+    .sort((a, b) => b.count - a.count);
+  return { items, total };
+}
+
+function aggregatePersonKategorien(store) {
+  const counts = new Map();
+  for (const p of store.persons.values()) {
+    const k = p.kategorie || 'Andere';
+    counts.set(k, (counts.get(k) || 0) + 1);
+  }
+  return [...counts.entries()]
+    .map(([kategorie, count]) => ({ kategorie, count }))
+    .sort((a, b) => b.count - a.count);
+}
+
+function buildNetzwerkSection(store) {
+  const section = el('section', { className: 'stat-section' });
+  section.appendChild(el('h3', { className: 'stat-section__title' }, 'Netzwerk'));
+  section.appendChild(el('p', { className: 'stat-section__lead' },
+    'Agent-zu-Agent-Beziehungen nach AgRelOn (typisierte Relationen wie '
+    + 'Korrespondenz, Foerderung, Mitgliedschaft) und Personen nach Rolle im '
+    + 'Musikleben der Nachkriegszeit. Organisationen werden ergaenzend gezaehlt.'));
+
+  const { items: relItems, total: relTotal } = aggregateAgentRelations(store);
+  const relWrap = el('div', { className: 'stat-subsection' });
+  relWrap.appendChild(el('h4', { className: 'stat-subsection__title' },
+    `AgRelOn-Relationen (${relTotal})`));
+  const relRow = el('div', { className: 'statistik-chips' });
+  for (const item of relItems) {
+    relRow.appendChild(buildCountChip({
+      label: item.label,
+      count: item.count,
+      title: item.type,
+      tone: 'relation',
+    }));
+  }
+  relWrap.appendChild(relRow);
+  section.appendChild(relWrap);
+
+  const katItems = aggregatePersonKategorien(store);
+  const katWrap = el('div', { className: 'stat-subsection' });
+  katWrap.appendChild(el('h4', { className: 'stat-subsection__title' },
+    'Personen nach Kategorie'));
+  const katRow = el('div', { className: 'statistik-chips' });
+  for (const item of katItems) {
+    katRow.appendChild(buildCountChip({
+      label: item.kategorie,
+      count: item.count,
+      tone: 'kategorie-' + String(item.kategorie).toLowerCase().replace(/[^a-z]/g, ''),
+    }));
+  }
+  katWrap.appendChild(katRow);
+  section.appendChild(katWrap);
+
+  const orgCount = store.organizations.size;
+  const orgRow = el('p', { className: 'statistik-note' },
+    `Organisationen im Index: `);
+  orgRow.appendChild(el('strong', {}, String(orgCount)));
+  orgRow.appendChild(document.createTextNode(
+    ' (Opernhaeuser, Festspiele, Verbaende; in Indizes als eigener Register sichtbar).'));
+  section.appendChild(orgRow);
+
+  return section;
+}
+
+function buildCountChip({ label, count, title = '', tone = '' }) {
+  const chip = el('span', {
+    className: 'statistik-chip' + (tone ? ` statistik-chip--${tone}` : ''),
+    ...(title ? { title } : {}),
+  });
+  chip.appendChild(el('span', { className: 'statistik-chip__label' }, label));
+  chip.appendChild(el('span', { className: 'statistik-chip__count' }, String(count)));
+  return chip;
+}
+
+// ---------------------------------------------------------------------------
+// § 5 Repertoire
+// ---------------------------------------------------------------------------
+
+function aggregateComposers(store) {
+  const counts = new Map();
+  for (const w of store.works.values()) {
+    const k = (w.komponist || '').trim();
+    if (!k) continue;
+    counts.set(k, (counts.get(k) || 0) + 1);
+  }
+  return [...counts.entries()]
+    .map(([komponist, count]) => ({ komponist, count }))
+    .sort((a, b) => b.count - a.count);
+}
+
+function buildRepertoireSection(store) {
+  const section = el('section', { className: 'stat-section' });
+  section.appendChild(el('h3', { className: 'stat-section__title' }, 'Repertoire'));
+  section.appendChild(el('p', { className: 'stat-section__lead' },
+    'Musikalische Werke im Bestand, aggregiert nach Komponist. Basis ist '
+    + '`rico:hasOrHadSubject` mit `@type: m3gim:MusicalWork`; das Komponisten-'
+    + 'Mapping normalisiert Namensvarianten.'));
+
+  const composers = aggregateComposers(store);
+  const top = composers.slice(0, 10);
+  const subWrap = el('div', { className: 'stat-subsection' });
+  subWrap.appendChild(el('h4', { className: 'stat-subsection__title' },
+    `Top 10 Komponisten (von ${composers.length})`));
+  subWrap.appendChild(buildBarList(top.map(c => ({
+    label: c.komponist,
+    count: c.count,
+    total: 0,
+  }))));
+  section.appendChild(subWrap);
+
+  const summary = el('p', { className: 'statistik-note' });
+  summary.appendChild(el('strong', {}, String(store.works.size)));
+  summary.appendChild(document.createTextNode(
+    ' einzigartige Werke im Repertoire -- Wagner und Strauss dominieren, '
+    + 'dazu italienisches Repertoire (Verdi, Puccini) und Lieder-Repertoire '
+    + 'als Zweitlinie.'));
+  section.appendChild(summary);
 
   return section;
 }

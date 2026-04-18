@@ -294,3 +294,55 @@
   margin: var(--space-1) 0 0;
   font-style: italic;
 }
+
+/* --- § 4 Netzwerk + § 5 Repertoire: Zaehl-Chips + Note ------------------ */
+
+.statistik-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.statistik-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 4px 10px;
+  background: var(--color-cream);
+  border: 1px solid var(--border-color-light);
+  border-radius: 999px;
+  font-size: var(--text-xs);
+  color: var(--color-text-primary);
+  white-space: nowrap;
+}
+
+.statistik-chip__label {
+  font-weight: var(--weight-medium);
+}
+
+.statistik-chip__count {
+  font-family: var(--font-mono);
+  color: var(--color-kug-blau);
+  font-weight: var(--weight-semibold);
+}
+
+.statistik-chip--relation {
+  border-color: var(--color-kug-blau-light);
+  background: rgba(0, 74, 143, 0.05);
+}
+
+.statistik-chip--kategoriekomponist  { border-color: var(--color-wagner); background: rgba(107, 44, 44, 0.06); }
+.statistik-chip--kategoriedirigent   { border-color: var(--color-cat-dirigent); background: rgba(74, 110, 150, 0.06); }
+.statistik-chip--kategorieregisseur  { border-color: var(--color-cat-regisseur); background: rgba(107, 78, 140, 0.06); }
+.statistik-chip--kategorievermittler { border-color: var(--color-cat-vermittler); background: rgba(61, 122, 90, 0.06); }
+.statistik-chip--kategoriekorrepetitor { border-color: var(--color-cat-korrepetitor); background: rgba(139, 115, 85, 0.06); }
+.statistik-chip--kategoriekollege    { border-color: var(--color-cat-kollege); background: rgba(154, 107, 61, 0.06); }
+.statistik-chip--kategorieandere     { border-color: var(--color-cat-andere); background: rgba(117, 117, 117, 0.06); }
+
+.statistik-note {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  line-height: var(--leading-relaxed);
+  margin: var(--space-1) 0 0;
+  max-width: 72ch;
+}
