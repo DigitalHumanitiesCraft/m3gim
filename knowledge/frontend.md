@@ -112,7 +112,8 @@ Die Invarianten werden als Kontrakttests in [test_06_frontend_contract.py](../te
 ### Bestand und Chronik (seit Session 35 eigenständige Tabs)
 
 - Bestand und Chronik sind eigene Top-Level-Tabs (früher Archiv-Sub-Toggle), nutzen eine geteilte Toolbar (`_archiv-toolbar.js`).
-- **Leitprinzip „nur bearbeitet"**: Konvolute ohne erschlossene Folios, Records ohne Verknüpfungen und Folios mit 0 Links werden gar nicht erst gerendert. Plakate + Tonträger sind pauschal ausgeblendet (`EXCLUDED_DFT`).
+- **Leitprinzip „nur bearbeitet"**: Konvolute ohne erschlossene Folios, Records ohne Verknüpfungen und Folios mit 0 Links werden gar nicht erst gerendert. Plakate + Tonträger sind pauschal ausgeblendet (`EXCLUDED_DFT` im Bestand-Tab für den Counter; die Chronik filtert ausschließlich über `unprocessedIds`, weil der lokale DFT-Ausschluss 0 Matches liefert — Session 36).
+- **Counter-Tooltip** erklärt „bearbeitet" direkt am `archiv-count`-Span (Schicht 1 + 2 erschlossen, Plakate/Tonträger ausgeblendet, Verweis auf `quality-snapshot.md` für Gesamtzahlen).
 - **Konvolut-Meta-Chips direkt in der Zeile** (E-82): Top-3-Dokumenttyp-Chips + Status-Mix (abgeschlossen/begonnen/zurückgestellt) unter dem Konvolut-Titel. Click auf Konvolut-Zeile = Auf/Zuklappen, kein Inline-Detail.
 - **Hierarchische Sortierung** (E-83): Konvolute bleiben Signatur-sortiert, Kinder werden *innerhalb* ihres Konvoluts nach dem gewählten Sort-Key sortiert. Bei aktivem Filter flach (Hierarchie dann aufgelöst).
 - Titel-Dedup: Folios mit identischem Titel wie Konvolut zeigen leere Titel-Zelle (semantisches Rauschen vermeiden).

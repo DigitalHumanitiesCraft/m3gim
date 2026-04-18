@@ -62,7 +62,12 @@ export function buildFilterToolbar(store, { initial = {}, onChange } = {}) {
   }, '\u00d7 Zur\u00fccksetzen');
   resetBtn.hidden = !(state.search || state.docType || state.person);
 
-  const countEl = el('span', { className: 'archiv-count' });
+  const countEl = el('span', {
+    className: 'archiv-count',
+    title: 'Bearbeitet = Record hat mindestens eine Verkn\u00fcpfung '
+      + '(Schicht 1 + 2 erschlossen). Plakate und Tontr\u00e4ger sind ausgeblendet. '
+      + 'Vollst\u00e4ndige Bestandszahlen siehe data/reports/quality-snapshot.md.',
+  });
 
   function resetAll() {
     state.search = '';

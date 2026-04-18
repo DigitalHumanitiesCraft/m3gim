@@ -98,11 +98,12 @@ function updateChronikView() {
   const { search = '', docType = '', person = '' } = toolbar ? toolbar.getState() : {};
   clear(viewContainer);
 
-  // Nur bearbeitete Records (countLinks > 0), ohne Plakate/Tontraeger.
-  const EXCLUDED_DFT = new Set(['plakat', 'tontraeger']);
-  let records = store.allRecords.filter(r =>
-    !store.unprocessedIds.has(r['@id']) && !EXCLUDED_DFT.has(getDocTypeId(r))
-  );
+  // Nur bearbeitete Records. Plakate und Tontraeger werden bereits vollstaendig
+  // von der `unprocessedIds`-Maske ausgeschlossen -- die fruehere lokale
+  // EXCLUDED_DFT-Schranke war toter Code (0 Matches im Bearbeitet-Pool, Stand
+  // Session 36). Bestand behaelt seine eigene EXCLUDED_DFT-Konstante fuer den
+  // Toolbar-Counter.
+  let records = store.allRecords.filter(r => !store.unprocessedIds.has(r['@id']));
 
   // Search
   if (search) {
