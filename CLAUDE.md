@@ -31,7 +31,7 @@ python scripts/build-views.py
 ### Tests
 
 ```bash
-pytest tests/ -m "not slow"     # Standard-Lauf, <1s
+pytest tests/ -m "not slow"     # Standard-Lauf ohne Determinismus-Test
 pytest tests/                   # inkl. Determinismus-Test (slow)
 ```
 
@@ -90,7 +90,7 @@ Die Dateien in `docs/data/*.json` + `docs/data/m3gim.jsonld` werden ausschließl
 - Plakate-IDs: `UAKUG/NIM/PL_XX` (mit Slash), nicht `UAKUG/NIM_PL_XX`.
 - Konvolut-Hierarchie: Objekt-ID = `archivsignatur + " " + folio`. Die Folio-Spalte im aktuellen Objekte-XLSX heißt `folio nr` (früher `folio` oder `Unnamed: 2`). Pipeline akzeptiert aktuell alle Varianten.
 
-Vollständiger Katalog der Pipeline-Workarounds (Header-Shifts, Finance-Currency-Defaults, Bearbeitungsstand-Normalisierung, Role-Hygiene, Freitext-Datierungen, Orphans) inkl. Source-Fix-Vorschlägen und Test-Absicherung: [`knowledge/xlsx-fixes.md`](knowledge/xlsx-fixes.md).
+Vollständiger Katalog der Pipeline-Workarounds (Header-Shifts, Finance-Currency-Defaults, Bearbeitungsstand-Normalisierung, Role-Hygiene, Freitext-Datierungen, Orphans, Komponisten-Schreibweisen) inkl. Source-Fix-Vorschlägen und Test-Absicherung: [`knowledge/xlsx-fixes.md`](knowledge/xlsx-fixes.md).
 
 ## Rote Linien
 

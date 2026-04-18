@@ -31,7 +31,7 @@ m3gim/
 - Datenmodell: RiC-O 1.1 + m3gim-Erweiterungen + AgRelOn
 - Pipeline: Python 3.11+ (`pandas`, `openpyxl`, `thefuzz[speedup]`)
 - Frontend: Vanilla JS (ES-Module), D3.js v7 als Library, Leaflet fuer den Mobilitaets-Atlas, kein Build-Tool
-- Tab-Architektur: Archiv, Indizes, Mobilitaets-Atlas, Repertoire, Biogramm, Netzwerk + Wissenskorb (Querschnitts-Werkzeug). Details in [`knowledge/interface-konzept.md`](knowledge/interface-konzept.md)
+- Tab-Architektur: sichtbar Bestand · Chronik · Statistik · Indizes; vier Perspektiv-Tabs (Mobilitaets-Atlas, Repertoire, Biogramm, Netzwerk) + Wissenskorb sind aktuell verborgen und werden iterativ reaktiviert. Details in [`knowledge/interface-konzept.md`](knowledge/interface-konzept.md) + [`knowledge/status.md`](knowledge/status.md)
 - Hosting: GitHub Pages
 - Normdaten: Wikidata-Q-IDs (Reconciliation via `reconcile.py` + Enrichment via `enrich-wikidata.py`)
 
