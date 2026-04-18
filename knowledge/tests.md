@@ -41,7 +41,8 @@ tests/
 ├── test_19_provenance.py          # agrelon:hasProvenance + Konfidenz
 ├── test_20_xlsx_provenance.py     # m3gim:xlsxSource + Anker-Records
 ├── test_22_ste_coordinates.py     # STE.atPlace mit @id + geo:lat/long (Session 33)
-└── test_23_role_hygiene.py        # rico:Place trägt keine Datumsrollen (Session 34)
+├── test_23_role_hygiene.py        # rico:Place trägt keine Datumsrollen (Session 34)
+└── test_25_chronik_mobility_cluster.py  # EVENT_ROLE_TO_MOBILITY_CLUSTER-Spec (Session 36)
 ```
 
 Leitsatz: jeder Test prüft eine nicht-triviale, nicht-redundante Invariante und kann failen. Soft-Warnings gehören in `validate.py`, nicht in pytest.

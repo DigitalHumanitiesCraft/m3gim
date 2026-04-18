@@ -363,6 +363,77 @@ export function roleClusterFor(prefix) {
 }
 
 // =========================================================================
+// Mobilitaetssichten (Session 36, M3): `m3gim:eventRole` an STE-Events +
+// Datumsrollen gruppiert nach den fuenf Mobilitaetstypen aus
+// `forschungsrahmen.md § Fuenf Mobilitaetstypen` und `datenmodell.md § 10`.
+// Orthogonal zu ROLE_CLUSTER (dort: Chip-Farbe pro Rolle-Kategorie);
+// hier: thematisches Cluster pro Mobilitaets-Sicht.
+// CSS-Klassen: `.chip--mobility-performativ` etc. in archiv.css.
+// =========================================================================
+
+export const MOBILITY_CLUSTERS = [
+  'performativ',    // Wo trat Malaniuk auf?
+  'institutionell', // Wo war sie engagiert?
+  'korrespondenz',  // Wo war sie wann (Reise- und Briefverkehr)?
+  'diskursiv',      // Wo wurde ueber sie berichtet?
+  'biografisch',    // Wohn-, Ausbildungs-, biografische Zeugnisse
+];
+
+export const EVENT_ROLE_TO_MOBILITY_CLUSTER = {
+  // Performative Mobilitaet (Auftritte, Auffuehrungen)
+  'auftritt':          'performativ',
+  'aufführung':        'performativ',
+  'auffuehrung':       'performativ',
+  'gastspiel':         'performativ',
+  'premiere':          'performativ',
+  'wiederaufnahme':    'performativ',
+  'festvorstellung':   'performativ',
+  'probe':             'performativ',
+  'probenbeginn':      'performativ',
+  'auftrittsdatum':    'performativ',
+  'auffuehrungsdatum': 'performativ',
+  'aufführungsdatum':  'performativ',
+  'probendatum':       'performativ',
+  'premieredatum':     'performativ',
+
+  // Institutionelle Mobilitaet (Engagements)
+  'spielzeit':         'institutionell',
+  'spielzeitVon':      'institutionell',
+  'spielzeitBis':      'institutionell',
+  'auftrag':           'institutionell',
+
+  // Korrespondenz + Reise
+  'absendedatum':      'korrespondenz',
+  'empfangsdatum':     'korrespondenz',
+  'abreisedatum':      'korrespondenz',
+
+  // Diskursive Mobilitaet (Presse, Rundfunk)
+  'erscheinungsdatum': 'diskursiv',
+  'ausstrahlung':      'diskursiv',
+  'ausstrahlungsdatum':'diskursiv',
+
+  // Biografische Mobilitaet (Ausweise, Wohnsitz, Entstehung des Dokuments)
+  'ausstellungsdatum': 'biografisch',
+  'wohnort':           'biografisch',
+  'entstehung':        'biografisch',
+  'gespräch':          'biografisch',
+  'gespraech':         'biografisch',
+  'ueberweisung':      'biografisch',
+  'überweisung':       'biografisch',
+
+  // Neutrale Kennzeichnung
+  'erwähnt':           null,
+  'erwaehnt':          null,
+};
+
+export function mobilityClusterFor(eventRole) {
+  if (!eventRole) return null;
+  const key = String(eventRole).trim().toLowerCase();
+  if (!(key in EVENT_ROLE_TO_MOBILITY_CLUSTER)) return null;
+  return EVENT_ROLE_TO_MOBILITY_CLUSTER[key];
+}
+
+// =========================================================================
 // Rollen -> funktionale Sektion im Archiv-Inline-Detail (Session 34)
 // Eingabe: Rollenwert in lowercase (wie in JSON-LD, z. B. "komponist").
 // Rueckgabe: Sektionskey ('produktion' | 'mitwirkende' | 'erwaehnt' | null).

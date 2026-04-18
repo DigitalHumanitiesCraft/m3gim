@@ -517,6 +517,10 @@ Ortsrolle `wohnort` an Malaniuk mit TimeSpan via `agrelon:hasValidityPeriod`.
 **Diskursive Mobilität.** Wo wurde über sie berichtet?
 `rico:Record` mit Dokumenttyp ∈ {rezension, presse, kritik} + `entstehungsort` oder Herausgeberinstitution mit Ortsreferenz. Der diskursive Raum weicht typischerweise vom performativen ab.
 
+### UI-Andockpunkt (Session 36)
+
+Die fünf Sichten sind im Frontend als Farbfamilie verfügbar: `EVENT_ROLE_TO_MOBILITY_CLUSTER` in `docs/js/data/constants.js` mappt jede eventRole auf genau eine Sicht (oder `null` für neutrale Rollen wie `erwähnt`), die CSS-Tokens `--color-sicht-performativ|institutionell|korrespondenz|diskursiv|biografisch` (in `variables.css`) und die Chip-Modifier `.chip--mobility-*` (in `archiv.css`) tragen die Farben an die Stations-Chips der Chronik. Test `tests/test_25_chronik_mobility_cluster.py` erzwingt: jede im Datenstand vorkommende eventRole ist explizit gemappt, Fallback auf „neutral" nur per bewusster `null`-Entscheidung.
+
 ### Die zentrale Klasse: m3gim:SpatiotemporalEvent
 
 ```turtle

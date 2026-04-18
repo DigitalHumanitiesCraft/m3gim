@@ -32,7 +32,7 @@
 |------|-------|
 | `main.js` | Einstiegspunkt, `TAB_RENDERERS`-Registry, Lazy-Tab-Rendering, Error Boundaries pro Tab, DEV-Debug-Helper (`window.m3gim.*`) |
 | `data/loader.js` | JSON-LD-Ladeschicht, Store-Aufbau inkl. Phase-6-Maps, `extractXlsxSource()`, Koordinaten-Patch-aware STE-Indizierung |
-| `data/constants.js` | `ROLE_CLUSTER`, `ROLE_TO_SECTION`, `AGRELON_LABELS`, `WIKIDATA_ICON_SVG`, Komponisten-/Personen-Kategorien, `confidenceDotProps()` |
+| `data/constants.js` | `ROLE_CLUSTER`, `ROLE_TO_SECTION`, `AGRELON_LABELS`, `EVENT_ROLE_TO_MOBILITY_CLUSTER` (Session 36), `WIKIDATA_ICON_SVG`, Komponisten-/Personen-Kategorien, `confidenceDotProps()` |
 | `ui/router.js` | Hash-Routing, `navigateToView`/`navigateToIndex`, ARIA-State |
 | `ui/korb.js` | Wissenskorb (sessionStorage) |
 | `views/archiv-bestand.js` | Bestand-Tab: Konvolut-Hierarchie mit Meta-Chips (Top-3-Dokumenttyp + Status-Mix) direkt in der Zeile; Inline-Detail nur für Records, nicht mehr für Konvolute (E-82). Hierarchische Sortierung: Konvolute Signatur-stabil, Kinder innerhalb sortierbar (E-83). |

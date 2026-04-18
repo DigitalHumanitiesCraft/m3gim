@@ -52,6 +52,8 @@ Implementiert als `buildRoleChip({prefix, value, cluster, xlsxSource, wikidata, 
 
 Visuell dieselbe Primitive, semantisch kontextabhängig. Ein einziges robustes Muster statt fünf Darstellungsformen.
 
+**Zweite Farbachse für Chronik-Stations-Chips (Session 36, M3).** Zusätzlich zur Rollen-Cluster-Farbe (Rolle-Kategorie wie Ort, Person, Beziehung) tragen Chronik-Stations-Chips einen linken Akzent-Balken in einer der fünf Mobilitätssichten-Farben (`--color-sicht-performativ|institutionell|korrespondenz|diskursiv|biografisch`). Diese zweite Achse macht die in `datenmodell.md § 10` spezifizierten analytischen Perspektiven direkt sichtbar. Mapping in `EVENT_ROLE_TO_MOBILITY_CLUSTER` (constants.js), Chip-Modifier `.chip--mobility-*`.
+
 ### 4. Inline-Breakdown statt Drilldown-Panel
 
 Aggregatzellen zeigen die Verteilung der Untertypen direkt in der Zelle, gefolgt von der Summe als Ranking-Anker:

@@ -37,12 +37,21 @@
   --color-beethoven: #4A5A7A;
   --color-andere: #757575;
 
-  /* Semantic: Mobility */
+  /* Semantic: Mobility (Fuenf Mobilitaetstypen nach forschungsrahmen.md) */
   --color-mob-erzwungen: #8B3A3A;
   --color-mob-geografisch: #3D7A5A;
   --color-mob-bildung: #B67D3D;
   --color-mob-lebensstil: #6B4E8C;
   --color-mob-national: #4A6E96;
+
+  /* Semantic: Mobilitaetssichten (datenmodell.md § 10) --
+     analytische Perspektiven auf die Daten, orthogonal zu den Typen oben.
+     Werden an STE-eventRole-Chips angebracht (Session 36, M3). */
+  --color-sicht-performativ:    #3F5C8E;
+  --color-sicht-institutionell: #4A7A89;
+  --color-sicht-korrespondenz:  #A6844B;
+  --color-sicht-diskursiv:      #7A6F55;
+  --color-sicht-biografisch:    #8B6F5C;
 
   /* Semantic: Person Categories */
   --color-cat-dirigent: #4A6E96;
