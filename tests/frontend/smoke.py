@@ -38,6 +38,39 @@ ANCHOR_TITLES = [
 KNOWN_COLLISIONS = {"m3gim:NIM_PL_07"}
 
 
+# ---------------------------------------------------------------------------
+# Canary-Helper (Session 36 M3.5): extrahiert damit zusaetzliche Tests fuer
+# M4/M5 ohne Copy-Paste-Wuchs angehaengt werden koennen.
+# ---------------------------------------------------------------------------
+
+def expect_stamp(
+    stamps: dict[str, str],
+    view: str,
+    required_keys: list[str] | None = None,
+) -> tuple[str, str, str]:
+    """Prueft, dass der View einen Log-Stempel geschrieben hat und optional,
+    dass bestimmte Keys vorkommen (Reihenfolge egal)."""
+    label = f"stamp:{view:22s}"
+    stamp = stamps.get(view)
+    if not stamp:
+        return ("FAIL", label,
+                "Kein console.log '[view] ...' waehrend Render")
+    if required_keys:
+        missing = [k for k in required_keys if f"{k}:" not in stamp]
+        if missing:
+            return ("FAIL", label,
+                    f"Keys fehlen: {', '.join(missing)} | {stamp[:80]}")
+    return ("OK", label, stamp[:100])
+
+
+def expect_no_new_errors(
+    errors: list[str],
+    errs_before: int,
+) -> list[str]:
+    """Gibt die seit `errs_before` neu eingelaufenen Errors zurueck."""
+    return errors[errs_before:]
+
+
 def main() -> int:
     if sys.stdout.encoding != "utf-8":
         sys.stdout.reconfigure(encoding="utf-8")
@@ -100,16 +133,17 @@ def main() -> int:
             except Exception as e:
                 results.append(("FAIL", f"tab:{tab:20s}", str(e)[:120]))
 
-        # --- State-Stempel pro Tab: jeder View muss seinen Log-Stempel
-        #     geschrieben haben. Schuetzt davor, dass ein View still ins
-        #     Nichts rendert (siehe currentFilters-Regression).
-        for view in ("bestand", "chronik", "indizes"):
-            stamp = stamps.get(view)
-            if stamp:
-                results.append(("OK", f"stamp:{view:22s}", stamp[:100]))
-            else:
-                results.append(("FAIL", f"stamp:{view:22s}",
-                                "Kein console.log '[view] ...' waehrend Render"))
+        # --- State-Stempel pro Tab: jeder View muss seinen Log-Stempel mit
+        #     den erwarteten Keys geschrieben haben. Schuetzt davor, dass
+        #     ein View still ins Nichts rendert (siehe currentFilters-
+        #     Regression) oder ein Key beim Refactor still wegfliegt.
+        stamp_expectations = {
+            "bestand":  ["konvolute", "records", "sort"],
+            "chronik":  ["bearbeitet", "perioden", "perioden-leer", "modus"],
+            "indizes":  ["personen", "organisationen", "orte", "werke"],
+        }
+        for view, required in stamp_expectations.items():
+            results.append(expect_stamp(stamps, view, required))
 
         # --- Click-Canary Chronik: Periode aufklappen muss Records sichtbar machen.
         #     Fing den currentFilters-Silent-Bug nicht, weil die alte Suite nur
@@ -117,18 +151,25 @@ def main() -> int:
         try:
             page.locator('[data-tab="chronik"]').first.click()
             page.wait_for_timeout(400)
-            # Session 36 M2: alle 8 bekannten Perioden inkl. leerer muessen
-            # gerendert sein (Erschliessungsspiegel). 'Undatiert' nur wenn befuellt.
+            # Session 36 M2 + M3.5: alle 8 bekannten Perioden inkl. leerer
+            # muessen gerendert sein (Erschliessungsspiegel). 'Undatiert'
+            # nur wenn befuellt. Leere Perioden MUESSEN leer sein -- ein
+            # Bug, der sie befuellt, soll fangen (deshalb not just DOM-
+            # Presence).
             period_count = page.locator('#tab-chronik .chronik-period').count()
             empty_count = page.locator(
                 '#tab-chronik .chronik-period--empty'
             ).count()
-            if period_count >= 8 and empty_count >= 2:
+            records_in_empty = page.locator(
+                '#tab-chronik .chronik-period--empty .chronik-record'
+            ).count()
+            if period_count >= 8 and empty_count >= 2 and records_in_empty == 0:
                 results.append(("OK", "chronik:empty-periods      ",
-                                f"{period_count} Perioden, {empty_count} leere als Platzhalter"))
+                                f"{period_count} Perioden, {empty_count} leer, 0 Records in leeren"))
             else:
                 results.append(("FAIL", "chronik:empty-periods      ",
-                                f"Nur {period_count} Perioden ({empty_count} leer)"))
+                                f"Perioden={period_count}, leer={empty_count}, "
+                                f"Records-in-leer={records_in_empty}"))
             header = page.locator('#tab-chronik .chronik-period__header').first
             errs_before = len(global_errors)
             header.click()
@@ -139,7 +180,7 @@ def main() -> int:
             records_visible = page.locator(
                 '#tab-chronik .chronik-record'
             ).count()
-            new_errs = global_errors[errs_before:]
+            new_errs = expect_no_new_errors(global_errors, errs_before)
             if body_visible > 0 and records_visible > 0 and not new_errs:
                 results.append(("OK", "click:chronik-period       ",
                                 f"body+{records_visible} Records, 0 Konsole"))
@@ -157,7 +198,7 @@ def main() -> int:
                 detail_visible = page.locator(
                     '#tab-chronik .chronik-record__detail'
                 ).count()
-                new_errs = global_errors[errs_before:]
+                new_errs = expect_no_new_errors(global_errors, errs_before)
                 if detail_visible > 0 and not new_errs:
                     results.append(("OK", "click:chronik-record       ",
                                     "Inline-Detail sichtbar, 0 Konsole"))
