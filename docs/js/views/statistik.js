@@ -16,7 +16,7 @@ export function renderStatistik(store, container) {
   clear(container);
 
   const wrap = el('div', { className: 'statistik' });
-  wrap.appendChild(buildIntro());
+  wrap.appendChild(buildIntro(store));
 
   wrap.appendChild(buildHeroRow(store));
 
@@ -62,12 +62,21 @@ export function renderStatistik(store, container) {
 // Intro + Hero
 // ---------------------------------------------------------------------------
 
-function buildIntro() {
+function buildIntro(store) {
+  const status = aggregateBearbeitungsstatus(store);
+  const total = store.allRecords.length;
+  const bearbeitet = status.abgeschlossen + status.begonnen + status.zurueckgestellt;
+  const pct = total ? Math.round((bearbeitet / total) * 100) : 0;
+
   const intro = el('header', { className: 'statistik__intro' });
   intro.appendChild(el('h2', { className: 'statistik__title' }, 'Statistik'));
   intro.appendChild(el('p', { className: 'statistik__lead' },
     'Zusammenschau des Bestandes: Umfang, Verknuepfungen, Datenqualitaet. '
     + 'Kein Forschungswerkzeug -- zeigt, was in den Daten steckt und was damit moeglich wird.'));
+  intro.appendChild(el('p', { className: 'statistik__caveat' },
+    `Der Bestand ist kuratiert, nicht fertig: ${bearbeitet} von ${total} `
+    + `Datensaetzen (${pct}\u2009%) tragen einen Bearbeitungsstand, der `
+    + `Rest wartet auf Erschliessung. Details siehe "Bestand in Zahlen".`));
   return intro;
 }
 
@@ -76,13 +85,13 @@ function buildHeroRow(store) {
   hero.appendChild(heroCard({
     value: store.allRecords.length,
     label: 'Datensaetze',
-    caption: 'Einzelverzeichnungen aus dem Teilnachlass UAKUG/NIM',
+    caption: 'Einzelverzeichnungen aus UAKUG/NIM (Plakate, Tontraeger und Folios zusammen)',
     href: '#bestand',
   }));
   hero.appendChild(heroCard({
     value: store.konvolute.size,
     label: 'Konvolute',
-    caption: 'Archivische Sammlungseinheiten (NIM_001 ... NIM_011)',
+    caption: 'Archivische Sammlungseinheiten. Der Bestand-Tab zeigt nur Konvolute mit bearbeiteten Folios.',
     href: '#bestand',
   }));
   hero.appendChild(heroCard({
@@ -94,7 +103,7 @@ function buildHeroRow(store) {
   hero.appendChild(heroCard({
     value: store.persons.size,
     label: 'Personen',
-    caption: 'Im Personenindex gefuehrte Agent:innen (Sozio-Netzwerk)',
+    caption: 'Im Personenindex gefuehrt -- aktive Agent:innen und rein Erwaehnte zusammen',
     href: '#indizes',
   }));
   return hero;
@@ -487,9 +496,12 @@ function buildRepertoireSection(store) {
   const summary = el('p', { className: 'statistik-note' });
   summary.appendChild(el('strong', {}, String(store.works.size)));
   summary.appendChild(document.createTextNode(
-    ' einzigartige Werke im Repertoire -- Wagner und Strauss dominieren, '
-    + 'dazu italienisches Repertoire (Verdi, Puccini) und Lieder-Repertoire '
-    + 'als Zweitlinie.'));
+    ` einzigartige Werke im Repertoire, verteilt auf ${composers.length} `
+    + `Komponisten.`));
+  if (top.length > 0) {
+    summary.appendChild(document.createTextNode(
+      ` Fuehrend: ${top[0].komponist} (${top[0].count} Werke).`));
+  }
   section.appendChild(summary);
 
   return section;
