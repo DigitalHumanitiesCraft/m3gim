@@ -236,11 +236,13 @@ Produktions-`requirements.txt` bleibt unberührt (nur pandas + openpyxl + thefuz
 
 `tests/frontend/smoke.py` fährt die SPA headless (Chromium, lokaler `python -m http.server 8765`) und prüft:
 
-1. **Tab-Durchlauf** für alle in `VISIBLE_TABS` eingetragenen Tabs (aktuell Bestand · Chronik · Statistik · Indizes) — keine JS-Errors, DOM rendert nicht-leer. Versteckte Tabs werden nicht angesteuert (E-81).
-2. **Anker-Titel im DOM**: `Rezension von Karl Schumann zu Macbeth` (NIM_004/3), `Handschriftliche Notiz` (NIM_007/5_1). Bricht der Check, ist entweder der Record ausgefiltert worden oder die Render-Logik kaputt.
-3. **Anker-Record NIM_004_1 voll aufgeklappt**: Sprach-Label aufgelöst (`en, fr` → „Englisch, Französisch") und AgRelOn-Dedup greift (Malaniuk erscheint genau einmal). Diese beiden Canaries sind direkt aus den beiden Silent-Bugs der Session 35 abgeleitet.
-4. **Konvolut-Meta-Chips sichtbar**: `.archiv-konvolut-meta .chip--compact` + `.archiv-konvolut-status` zählbar > 0 — Absicherung gegen Regression, die die Meta-Aggregation im Loader leer lässt.
-5. **Duplicate `@id` im JSON-LD-Graph**: bekannte Kollisionen (`m3gim:NIM_PL_07`) sind in `KNOWN_COLLISIONS` aufgeführt und werden toleriert; neue Kollisionen fail’n sofort.
+1. **Tab-Durchlauf** für alle in `VISIBLE_TABS` eingetragenen Tabs (aktuell Bestand · Chronik · Statistik · Indizes · Korb) — keine JS-Errors, DOM rendert nicht-leer. Versteckte Perspektiv-Tabs (Mobilitäts-Atlas, Repertoire, Biogramm, Netzwerk) werden nicht angesteuert (E-81).
+2. **logStamp-Keys pro Tab** (State-Stempel): `bestand` → `konvolute, records, sort`; `chronik` → `records, jahre-belegt, undatiert, spanne` (Scroll-Zeitstrahl, E-88); `statistik` → `records, konvolute, events, personen, sektionen`; `indizes` → `personen, organisationen, orte, werke`.
+3. **Chronik-Zeitstrahl-Canary** (seit Session 44, E-91): `#tab-chronik .chronik-year` ≥ 90 Zeilen (Lebensspanne 1919–2009), leere Jahre sichtbar aber ohne Records-in-leer. Klick auf `chronik-point` dispatcht `selectRecord` und springt in Bestand mit offenem Inline-Detail; fehlerfrei in der Konsole.
+4. **Anker-Titel im DOM**: `Rezension von Karl Schumann zu Macbeth` (NIM_004/3), `Handschriftliche Notiz` (NIM_007/5_1). Bricht der Check, ist entweder der Record ausgefiltert worden oder die Render-Logik kaputt.
+5. **Anker-Record NIM_004_1 voll aufgeklappt**: Sprach-Label aufgelöst (`en, fr` → „Englisch, Französisch") und AgRelOn-Dedup greift (Malaniuk erscheint genau einmal).
+6. **Konvolut-Meta-Chips sichtbar**: `.archiv-konvolut-meta .chip--compact` + `.archiv-konvolut-status` zählbar > 0 — Absicherung gegen Regression, die die Meta-Aggregation im Loader leer lässt.
+7. **Duplicate `@id` im JSON-LD-Graph**: bekannte Kollisionen (`m3gim:NIM_PL_07`) sind in `KNOWN_COLLISIONS` aufgeführt und werden toleriert; neue Kollisionen fail'n sofort.
 
 Aufruf:
 

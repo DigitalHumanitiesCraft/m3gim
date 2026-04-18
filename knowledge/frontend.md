@@ -31,12 +31,13 @@
 | Pfad | Zweck |
 |------|-------|
 | `main.js` | Einstiegspunkt, `TAB_RENDERERS`-Registry, Lazy-Tab-Rendering, Error Boundaries pro Tab, DEV-Debug-Helper (`window.m3gim.*`) |
-| `data/loader.js` | JSON-LD-Ladeschicht, Store-Aufbau inkl. Phase-6-Maps, `extractXlsxSource()`, Koordinaten-Patch-aware STE-Indizierung |
+| `data/loader.js` | JSON-LD-Ladeschicht, Store-Aufbau inkl. Phase-6-Maps, Koordinaten-Patch-aware STE-Indizierung |
+| `utils/provenance.js` | `extractXlsxSource(obj)` — Provenance-Shape-Extraktion, geteilter Helper für Loader, Inline-Detail und Korb (E-91) |
 | `data/constants.js` | `ROLE_CLUSTER`, `ROLE_TO_SECTION`, `AGRELON_LABELS`, `EVENT_ROLE_TO_MOBILITY_CLUSTER` (Session 36), `WIKIDATA_ICON_SVG`, Komponisten-/Personen-Kategorien, `confidenceDotProps()` |
 | `ui/router.js` | Hash-Routing, `navigateToView`/`navigateToIndex`, ARIA-State |
-| `ui/korb.js` | Wissenskorb (sessionStorage) |
+| `ui/korb.js` | Wissenskorb (localStorage) |
 | `views/archiv-bestand.js` | Bestand-Tab: Konvolut-Hierarchie mit Meta-Chips (Top-3-Dokumenttyp + Status-Mix) direkt in der Zeile; Inline-Detail nur für Records, nicht mehr für Konvolute (E-82). Hierarchische Sortierung: Konvolute Signatur-stabil, Kinder innerhalb sortierbar (E-83). |
-| `views/archiv-chronik.js` | Chronik-Tab: Perioden-Gruppierung Ort/Person/Werk, nur bearbeitete Records |
+| `views/archiv-chronik.js` | Chronik-Tab: scrollender Jahres-Zeitstrahl 1919-2009, dichte-adaptive Jahreshoehe |
 | `views/archiv-inline-detail.js` | Record-Detail mit fünf funktionalen Blöcken (Produktion · Mitwirkende · Werk & Repertoire · Ort & Ereignis · Erwähnt), AgRelOn-Dedup (liest `rel.objectName`/`rel.objectWikidata`, nicht das rohe JSON-LD), Sprach-Label-Auflösung, `buildRoleChip()` als geteilter Helper |
 | `views/_archiv-toolbar.js` | Geteilte Toolbar (Suche, Dokumenttyp-Filter, Person-Filter, Count-Anzeige) für Bestand + Chronik |
 | `views/indizes.js` | 4-Grid Explorer (Personen, Organisationen, Orte, Werke) mit Beziehungsbadges (AgRelOn), nur Einträge mit `records.size > 0` |
@@ -44,7 +45,7 @@
 | `views/repertoire.js` | Zwei parallele Aggregat-Tabellen Werke × Komponisten (Tab aktuell `hidden`, E-81) |
 | `views/biogramm.js` | Chronologischer D3-Zeitstrahl 1919–2009 (Tab aktuell `hidden`, E-81) |
 | `views/netzwerk.js` | AgRelOn-Tabelle mit Chip-Breakdown (Tab aktuell `hidden`, E-81) |
-| `views/korb.js` | Korb-Cards, CSV- + BibTeX-Export (Tab aktuell `hidden`, E-81) |
+| `views/korb.js` | Korb-Cards mit `buildRoleChip()` + funktionale Blöcke (Produktion · Mitwirkende · Werk & Repertoire · Ort & Ereignis · Erwähnt · Weitere · Beziehungen · Finanzen), CSV- + BibTeX-Export inkl. AgRelOn + Finanzen |
 | `utils/format.js`, `utils/dom.js`, `utils/date-parser.js`, `utils/normalize.js` | Formatierungshilfen, DOM-Helper, Datumsparser, Namensnormalisierung |
 
 `data/aggregator.js` und `utils/viz-components.js` wurden Session 32 mit den D3-Prototypen entfernt.
@@ -57,7 +58,7 @@ Fünf Content-Seiten (`about.html`, `projekt.html`, `modell.html`, `hilfe.html`,
 
 ## Routing
 
-- Hash-basiert in `router.js`. Der Katalog `TABS` listet alle registrierten Tabs (Bestand, Chronik, Statistik, Indizes, Mobilitaets-Atlas, Repertoire, Biogramm, Netzwerk, Korb). Sichtbar in der Tab-Bar sind die Einträge im `VISIBLE_TABS`-Set (aktuell Bestand · Chronik · Statistik · Indizes, E-81); die restlichen Buttons sind per `hidden` ausgeblendet. Hash-URLs auf versteckte Tabs werden in `parseHash` auf `bestand` umgebogen. `archiv` bleibt als Legacy-Alias für alte Bookmarks auf `bestand` gemappt.
+- Hash-basiert in `router.js`. Der Katalog `TABS` listet alle registrierten Tabs (Bestand, Chronik, Statistik, Indizes, Mobilitaets-Atlas, Repertoire, Biogramm, Netzwerk, Korb). Sichtbar in der Tab-Bar sind die Einträge im `VISIBLE_TABS`-Set (aktuell Bestand · Chronik · Statistik · Indizes · Korb); die vier Perspektiv-Tabs Mobilitäts-Atlas/Repertoire/Biogramm/Netzwerk bleiben per `hidden` ausgeblendet (E-81). Hash-URLs auf versteckte Tabs werden in `parseHash` auf `bestand` umgebogen. `archiv` bleibt als Legacy-Alias für alte Bookmarks auf `bestand` gemappt.
 - Deep Links: `#bestand/UAKUG/NIM_003%20Folio%2001` für Datensatzkontext
 - Info-Seiten als eigenständige HTML-Dateien (normale Links, kein Hash-Routing)
 - `navigateToIndex(gridType, entityName)` für Cross-Tab-Navigation, `navigateToView(tab, {recordId})` für Sprung aus anderen Views ins Bestand-Tab
@@ -114,7 +115,7 @@ Die Invarianten werden als Kontrakttests in [test_06_frontend_contract.py](../te
 - Bestand und Chronik sind eigene Top-Level-Tabs (früher Archiv-Sub-Toggle), nutzen eine geteilte Toolbar (`_archiv-toolbar.js`).
 - **Leitprinzip „nur bearbeitet"**: Konvolute ohne erschlossene Folios, Records ohne Verknüpfungen und Folios mit 0 Links werden gar nicht erst gerendert. Plakate + Tonträger sind pauschal ausgeblendet (`EXCLUDED_DFT` im Bestand-Tab für den Counter; die Chronik filtert ausschließlich über `unprocessedIds`, weil der lokale DFT-Ausschluss 0 Matches liefert — Session 36).
 - **Counter-Tooltip** erklärt „bearbeitet" direkt am `archiv-count`-Span (Schicht 1 + 2 erschlossen, Plakate/Tonträger ausgeblendet, Verweis auf `quality-snapshot.md` für Gesamtzahlen).
-- **Leere Perioden sichtbar** (Session 36, M2 + M3.5): `PERIOD_ORDER` ist Modul-Konstante, die Render-Schleife iteriert alle 8 Perioden; nicht belegte erscheinen als gedimmte Zeile („Kein bearbeitetes Material erfasst") und sind nicht klickbar. `Undatiert` wird weiterhin nur bei Belegung gerendert. Dichte-Mikro-Balken (CSS, `.chronik-period__density`, 64×10 px mit Border) skaliert relativ zum max. Periodenwert; leere Perioden zeigen den leeren Track als eigenständiges Signal. Karriere-Notizen tragen einen sichtbaren `red.`-Präfix-Marker (`.chronik-period__editorial-marker`) + Dotted-Underline + `data-tip`-Tooltip als Editorial-Markierung. Log-Stempel erweitert um `perioden-leer:N`.
+- **Chronik als Scroll-Zeitstrahl** (E-88, seit Session 41): statt Perioden-Akkordeon rendert jedes Jahr 1919-2009 (+ Ausreisser) eine eigene Zeile mit Jahres-Label links, Dot auf der Zeitachse und Record-Chips rechts. Dot-Groesse skaliert mit Jahresbelegung. Leere Jahre bleiben als Umriss-Dot sichtbar, **dichte-adaptiv** (E-92): Nicht-Dekaden-Jahre ohne Records rendern als 6-px-Linie (Label versteckt), Dekaden-Jahre (% 10 == 0) bleiben auch bei Null Records sichtbar als Anker. So bleibt die Lueckenstruktur als Rhythmus lesbar, ohne endloses Scrollen durch Jahrzehnte ohne Belege. Log-Stempel: `records, jahre-belegt, undatiert, spanne, gefiltert`.
 - **Mobilitätssichten als Chip-Farbfamilie** (Session 36, M3): die fünf Sichten aus [datenmodell.md § 10](datenmodell.md) (performativ, institutionell, korrespondenz, diskursiv, biografisch) sind im Frontend über `EVENT_ROLE_TO_MOBILITY_CLUSTER` in `docs/js/data/constants.js` einem `m3gim:eventRole` zugeordnet. CSS-Tokens `--color-sicht-performativ|institutionell|korrespondenz|diskursiv|biografisch` in `variables.css`, Chip-Modifier `.chip--mobility-*` in `archiv.css`. Wird von M4 an den Stations-Chips der Chronik getragen. Ungeklärte Rollen (`auftrag`, `entstehung`, finanzielles `ueberweisung`) stehen explizit auf `null` — keine stillschweigende Einordnung. Abgesichert in `tests/test_25_chronik_mobility_cluster.py`.
 - **DEV-only Log-Stempel** (Session 36, M3.5): der Stempel pro Tab-Render geht durch `logStamp(viewName, parts)` aus `docs/js/utils/env.js`. `IS_DEV` prüft `localhost`/`127.0.0.1`. Auf `dhcraft.org` bleibt die Konsole stumm, lokal und im Playwright-Smoke erscheint der kompakte State pro Render mit fester Key-Reihenfolge.
 - **Konvolut-Meta-Chips direkt in der Zeile** (E-82): Top-3-Dokumenttyp-Chips + Status-Mix (abgeschlossen/begonnen/zurückgestellt) unter dem Konvolut-Titel. Click auf Konvolut-Zeile = Auf/Zuklappen, kein Inline-Detail.
@@ -122,25 +123,25 @@ Die Invarianten werden als Kontrakttests in [test_06_frontend_contract.py](../te
 - Titel-Dedup: Folios mit identischem Titel wie Konvolut zeigen leere Titel-Zelle (semantisches Rauschen vermeiden).
 - Klickbare Spaltenheader, Autocomplete-Combobox für Personenfilter, Suche über Signatur/Titel/Dokumenttyp/Datum.
 - **Inline-Detail für Records:** Fünf funktionale Blöcke — Produktion · Mitwirkende · Werk & Repertoire · Ort & Ereignis · Erwähnt. Agents mit AgRelOn-Äquivalent werden aus „Mitwirkende" unterdrückt (Dedup-Filter liest das *flache* Loader-Format). Sprach-Kürzel (`en, fr`) werden über `formatLanguage()` zu lesbaren Labels aufgelöst. Alle Chips via `buildRoleChip()` mit Cluster-Farbe + Provenance-Pille.
-- Bookmark-Icons an jeder Record-Zeile (Korb-Tab aktuell ausgeblendet, Icons bleiben für künftige Reaktivierung).
+- Bookmark-Icons an jeder Record-Zeile (toggeln in `store.korb`, Klick auf Tab öffnet den Wissenskorb).
 - Reset-Button setzt alle Filter gleichzeitig zurück.
 
-### Statistik (seit Session 37)
+### Statistik
 
-- Read-only Showroom des Bestandes, der sich zwischen Chronik und Indizes einfügt. Kein Forschungswerkzeug: keine Toolbar, keine Filter, keine Interaktion ausser Anker-Links in die fachlichen Tabs. Das senkt die Bug-Oberfläche gegenüber Bestand/Chronik deutlich.
-- Sieben Sektionen, alle aus dem Live-Store aggregiert (kein Pipeline-Derivat, keine Hardcoded-Zahlen): **Hero-Row** (Datensätze · Konvolute · Spatiotemporal-Events · Personen als Anker-Links in `#bestand`, `#chronik`, `#indizes`) → **Bestand in Zahlen** (Dokumenttypen + Bearbeitungsstand) → **Die fünf Mobilitätssichten** (Kacheln in den Farben aus `--color-sicht-*`, sechste neutrale Kachel für `null`-Rollen wie `auftrag`/`entstehung`, jeweils mit Beispiel-Record als Link) → **Geografie** (Top-10-Orte mit Wikidata-Link + Event-Zeitspanne) → **Netzwerk** (AgRelOn-Relationen nach Typ mit deutschem Label aus `AGRELON_LABEL`, Personen-Kategorien als Chip-Row, Organisations-Zahl als Kontextzeile) → **Repertoire** (Top-10-Komponisten + Werke-Gesamtzahl) → **Verlinkung & Qualität** (Wikidata-Abdeckung pro Entitätstyp als Mini-Balken, Provenienz-Anteil über `m3gim:xlsxSource`) → **Finanzen** (Gesamtzahl DetailAnnotations, Währungsverteilung, Detail-Rollen; `stat-section--minor` dimmt den Block als Teilerschließung).
-- Aggregations-Helper sind pure Funktionen ohne Seiteneffekte (`aggregateDocTypes`, `aggregateBearbeitungsstatus`, `aggregateSichten`, `aggregatePlaces`, `aggregateAgentRelations`, `aggregatePersonKategorien`, `aggregateComposers`, `aggregateFinances`, `wikidataCoverage`, `provenanceCoverage`, `eventYearSpan`). Einfach testbar, memoizable wenn später nötig.
-- Wiederverwendete Bausteine: `clear`/`el` aus `docs/js/utils/dom.js`, `logStamp` aus `utils/env.js`, `getDocTypeId` aus `utils/format.js`, `mobilityClusterFor` aus `data/constants.js`. Farb-Tokens `--color-sicht-*`, `--color-cat-*`, `--color-kug-blau`, `--color-gold-medium`, `--color-signal-green` unverändert aus `variables.css` — keine neuen Design-Tokens.
-- Log-Stempel `[statistik] records:N | konvolute:N | events:N | personen:N | sektionen:N | doctypes:N | abgeschlossen:N | unbearbeitet:N | sichten:N | orte:N | relationen:N | komponisten:N | finanzen:N | waehrungen:N`. Smoke verifiziert Key-Präsenz über `stamp_expectations['statistik']` — ein stiller Drift an einer Aggregation fällt auf.
-- Ehrlichkeits-Signale eingebaut: Bearbeitungsstand-Bucket „ohne Status-Feld" mit eigener Sand-Farbe (zeigt den grossen Rest, der keine kuratorische Einordnung trägt), sechste „Nicht klassifiziert"-Mobilitätskachel (statt `null`-Rollen willkürlich einzuordnen), `stat-section--minor` am Finanzen-Block (Teilerschließung). Siehe E-85 für die Abgrenzung zum Research-Tool.
+- Read-only Showroom als **visuelles Porträt des Bestandes** (Session 42-Umbau, E-89; Session-45-Schaerfung E-92). Kein Forschungswerkzeug: keine Toolbar, keine Filter, keine Interaktion ausser Anker-Links in die fachlichen Tabs. Das senkt die Bug-Oberfläche gegenüber Bestand/Chronik deutlich.
+- Sechs Sektionen, alle aus dem Live-Store aggregiert (kein Pipeline-Derivat, keine Hardcoded-Zahlen): **Dokumenttypen** (D3-Donut mit Legende, Records ohne Typ als gedimmtes Segment) → **Mobilitätssichten** (horizontaler Balken-Chart ueber die sechs Sichten plus "Nicht klassifiziert", Farbe pro Sicht via `SICHT_COLOR`) → **Geografie** (Top-10-Orte als horizontal Bar + Events-pro-Jahrzehnt als D3-Histogramm mit Achsen-Titeln "Jahrzehnt"/"Anzahl Events") → **Netzwerk** (AgRelOn-Typen als Donut + Personen-Kategorien als Bar-Liste) → **Repertoire** (Top-10-Komponisten als Bar-Liste) → **Finanzen** (Währungen als Donut + Detail-Rollen als Bar-Liste, `stat-section--minor` dimmt den Block als Teilerschließung). Die frühere Hero-Row (vier Kennzahl-Kacheln) ist entfernt \u2014 die Zahlen tauchen in den Sektions-Legenden ohnehin auf (E-92).
+- Tech-Reporting (Bearbeitungsstand-Balken, Wikidata-Abdeckung pro Entitätstyp, Provenienz-Anteil, Low-Confidence-Policy) wurde aus der Statistik entfernt und lebt im Markdown-Report `data/reports/quality-snapshot.md`. Die Statistik zeigt, was die Daten *sind*, nicht wie vollständig sie sind.
+- D3 v7 global via CDN; zwei Visualisierungs-Primitive im Modul: `buildDonut(data, {size, ariaLabel})` für kategorische Anteile, `buildHistogram(data, {xAccessor, yAccessor, xLabel, xAxisLabel, yAxisLabel})` für numerische Achsen (Achsen-Titel optional, rotierter Y-Titel via `.stat-axis__title`). Beide fallen bei CDN-Ausfall oder leeren Daten auf `buildHorizontalBars()` zurück. Farbpalette: `PALETTE[]` mit zehn getönten Akzenten als einfache Index→Farbe-Zuordnung, keine semantische Mapping-Pflege nötig.
+- Aggregations-Helper sind pure Funktionen ohne Seiteneffekte (`aggregateDocTypes`, `aggregateSichten`, `aggregatePlaces`, `aggregateEventsPerDecade`, `aggregateAgentRelations`, `aggregatePersonKategorien`, `aggregateComposers`, `aggregateFinances`).
+- Log-Stempel `[statistik] records:N | konvolute:N | events:N | personen:N | sektionen:N | doctypes:N | doctypes-ohne:N | sichten:N | orte:N | relationen:N | komponisten:N | finanzen:N | waehrungen:N`. Bearbeitungsstand- und WD-Coverage-Keys sind weggefallen; `stamp_expectations['statistik']` ist entsprechend verschlankt.
 
 ### Indizes
 
-- Vier Grid-Blöcke: Personen, Organisationen, Orte, Werke
-- Cross-Grid-Facettensuche: Klick auf Index-Eintrag filtert die anderen drei Grids
-- Kompakte Toolbar: Suche (flex: 1) + Facet-Chips
-- Detail-Expansion begrenzt + „Alle im Archiv"-Link
-- Wikidata-Icons bei Einträgen mit Q-ID, WD-Coverage-Anzeige im Header
+- Vier Grid-Blöcke: Personen, Organisationen, Orte, Werke — parallel sichtbar, 2×2-Layout
+- **Globale Toolbar** (E-91, seit Session 44): nutzt `buildToolbar` aus [`_toolbar.js`](../docs/js/views/_toolbar.js) mit zwei Facetten — Such-Input (`q`, filtert alle vier Grids gleichzeitig über `config.searchFields`) und Toggle `Nur mit Wikidata` (filtert Entries ohne Q-ID aus). Per-Grid-Suche entfällt.
+- **Cross-Grid-Facettensuche**: Klick auf Index-Eintrag setzt `activeFilter = { gridKey, name, recordIds }` und filtert die anderen drei Grids auf Record-Overlap. Sichtbar als Chip unter der Toolbar, X-Button setzt zurück. Zweite Filterebene neben der Toolbar, unabhängig.
+- Detail-Expansion pro Eintrag begrenzt + „Alle im Archiv"-Link
+- Wikidata-Icons bei Einträgen mit Q-ID
 - **Subtitles** aus WD-Enrichment: `Beruf · Stimmfach · Lebensdaten` unter Personennamen (E-61)
 - **Beziehungsbadges an Personen** (Session 32): Loader-Pass 2.5 resolviert AgRelOn-Relationen rückwärts auf Personen-Einträge; `renderNameCell()` zeigt eine dritte Zeile `idx-relations` mit Chips (Match primär Q-ID, sekundär `normalizePerson(name)`).
 
@@ -177,10 +178,12 @@ Die Invarianten werden als Kontrakttests in [test_06_frontend_contract.py](../te
 
 ### Wissenskorb
 
-- Bookmark-Icons in Archiv + Indizes
-- Card-Darstellung pro Record: Signatur, Titel, Typ-Badge, Meta, Verknüpfungen als Chips
-- CSV- und BibTeX-Export
-- sessionStorage-Persistenz
+- Bookmark-Icons in Bestand, Indizes-Detail und Archiv-Inline-Detail; `toggleKorb(id)` + `onKorbChange`-Callback für Re-Render
+- Card pro Record: Mono-Signatur (Deep-Link auf `#bestand/...`) · Serif-Titel · Typ-Badge · Remove-Button · Meta-Zeile (Datum · Sprache · Umfang · Status) · funktionale Blöcke aus dem Inline-Detail-Muster (Produktion, Mitwirkende, Werk & Repertoire, Ort & Ereignis, Erwähnt, Weitere) plus eigene Blöcke Beziehungen (AgRelOn) und Finanzen
+- Chips durch `buildRoleChip()` aus `archiv-inline-detail.js`; Provenance-Pille und Wikidata-Badge pro Chip; Klick springt in den passenden Index
+- CSV: Spalten Signatur, Titel, Typ, Datierung, Konvolut, Personen (mit Rollen), Orte (inkl. STE-Events mit Datum), Werke (mit Komponist), Beziehungen (AgRelOn), Finanzen (Betrag + Währung + Rolle). UTF-8 BOM
+- BibTeX: `@misc{SIG_sanitized, ...}`, Autor primär aus `verfasser:in`, Fallback auf `agrelon:HasCorrespondent`-Sender
+- localStorage-Persistenz (Key `m3gim-korb`); Badge in der Tab-Bar zeigt die Anzahl
 
 ## Lektionen aus den entfernten Visualisierungen
 

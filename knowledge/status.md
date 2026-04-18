@@ -33,6 +33,53 @@ Suite durchgängig grün bis auf die beiden dokumentierten Ausnahmen (`PL_07` xf
 
 ## Erreichte Meilensteine
 
+### Session 45 — Statistik schaerfer, Chronik dichte-adaptiv
+
+Kleine, gezielte Korrekturen nach Screenshot-Review (E-92):
+
+- **Statistik-Hero entfernt.** Die vier Kennzahl-Kacheln am Statistik-Tab-Kopf waren Tech-Dashboard-Residuum und duplizierten Zahlen, die ohnehin in den Sektions-Legenden auftauchen. `buildHeroRow`/`heroCard` in [`statistik.js`](../docs/js/views/statistik.js) + `.statistik-hero*` in [`statistik.css`](../docs/css/statistik.css) komplett raus.
+- **Mobilitaetssichten als Balken-Chart.** Statt sechs Feature-Kacheln mit Mini-Dichte-Balken rendert die Sektion jetzt einen einzigen `buildHorizontalBars`-Chart, sortiert nach Haeufigkeit, mit eigener Farbfamilie pro Sicht (`SICHT_COLOR`). Die redaktionellen "Beispiel:"-Links (kollidierten mit E-87) und der `.statistik-sicht*`-CSS-Block sind weg. Vorher verglichen die Dichte-Balken nur tile-intern; jetzt sind die Proportionen zwischen Sichten direkt lesbar.
+- **Histogramm bekommt Achsen-Titel.** `buildHistogram` akzeptiert `xAxisLabel`/`yAxisLabel`; Geografie-Jahrzehnt-Histogramm zeigt jetzt "Jahrzehnt" und "Anzahl Events". Neue `.stat-axis__title`-Regel, Margins leicht groesser.
+- **Chronik-Jahre dichte-adaptiv.** Leere Jahre ohne Dekaden-Status rendern als 6-px-Linie (Label versteckt, Marker 6 px), belegte Jahre bleiben auf voller Hoehe, Dekaden-Jahre bleiben auch bei Null Records sichtbar als Anker. Lueckenstruktur als Rhythmus ohne endloses Scrollen, keine neue Interaktion \u2014 pure CSS-Regel `.chronik-year--empty:not(.chronik-year--decade)` in [`archiv.css`](../docs/css/archiv.css). Konform zu E-88 "Datenqualitaet wird gezeigt".
+
+Smoke-Canary unveraendert gueltig (1 passed).
+
+### Session 44 — Projekt-Finalisierung
+
+Abschluss des Interface-Redesign-Zyklus (E-91):
+
+- **Chip-Klick setzt Toolbar-Filter.** Klick auf eine Person/Ort/Werk-Chip im Inline-Detail oder Korb setzt den entsprechenden Toolbar-Filter im aktiven Record-Tab (Bestand/Chronik) und laesst den Lesefluss dort \u2014 kein Sprung mehr in die Indizes. `router.applyArchivFilter(facet, value)` dispatcht ueber den `m3gim:navigate`-Bus, Handler in [`archiv-bestand.js`](../docs/js/views/archiv-bestand.js) + [`archiv-chronik.js`](../docs/js/views/archiv-chronik.js) rufen `toolbar.setPerson/setLocation/setWerk`. Grids ohne Facet-Equivalent (Organisationen) navigieren weiter in den Index (Fallback).
+- **Indizes-Toolbar einheitlich.** Die Indizes-Seite nutzt jetzt die generische [`buildToolbar`](../docs/js/views/_toolbar.js)-Komponente: globale Suche ueber alle vier Grids + Toggle `Nur mit Wikidata`. Per-Grid-Search ist weg, Cross-Grid-Facet-Filter bleibt als zweite Ebene. Tote CSS-Regeln aus [`indizes.css`](../docs/css/indizes.css) entfernt, neue `.archiv-toggle`-Regel in [`archiv.css`](../docs/css/archiv.css).
+- **Refactor `extractXlsxSource`.** Drei identische Kopien in `loader.js`, `archiv-inline-detail.js`, `korb.js` ersetzt durch [`utils/provenance.js`](../docs/js/utils/provenance.js). Ein Ort der Wahrheit fuer das Provenance-Shape, stricteres Verhalten (null bei fehlender Zeile).
+- **Smoke-Test auf Chronik-Zeitstrahl umgestellt.** `tests/frontend/smoke.py` pruefte noch die alte Perioden-Akkordeon-Struktur und brach nach der E-88-Umstellung. Neu: `chronik-year`-Grid (>= 90 Jahre), `chronik-point`-Chips, Click-Canary dispatcht `selectRecord` und prueft den Sprung ins Bestand-Inline-Detail. logStamp-Erwartung fuer Chronik: `records, jahre-belegt, undatiert, spanne`.
+- **Korb-Follow-ups entschieden** (E-91 Punkt 4): Konvolute bleiben nicht bookmarkbar (eigene Export-Aggregationslogik waere noetig \u2014 eigenes Arbeitspaket wenn je noetig). Tab-Name bleibt "Wissenskorb".
+
+Testsuite durchgaengig gruen (191 passed, 1 skipped, 2 xfail). Frontend-Smoke-Canary ebenfalls gruen.
+
+### Session 43 — UI-Feinschliff: Konvolut-Affordance, Provenance-Tooltip, Wikidata-Link, Statistik-Politur
+
+Drei sichtbare Defekte + Statistik-Politur in einem Durchlauf (E-90). Konvolut-Aufklapp-Chevron wird als KUG-blauer Button mit Hintergrund dargestellt, `aria-expanded` gesetzt. Die Provenance-Pille am Rolle-Prefix-Chip nutzt jetzt das CSS-`data-tip`-System mit mehrzeiligem Tooltip (Sheet · Zeile · Datenpunkt) und einem Paperclip-Icon; das Chip-Level-Tooltip "Im Index oeffnen" wird nur noch gesetzt, wenn keine Child-Element eigene Tooltips hat \u2014 damit Schluss mit Doppel-Tooltips bei Hover. Das Wikidata-Badge bekam eine linke Trennlinie und eigenen Hover-State + data-tip, sodass es als separate Klick-Aktion erkennbar ist. In der Statistik bekommen Donut-Legenden-Labels bei Ellipsis jetzt `data-tip` mit dem Voll-Text, das Histogramm duennt Ticks bei > 10 Kategorien aus, und das SVG-Wrap shrinkt auf schmalen Viewports. Klick-Action auf Chip (navigateToIndex) bleibt vorerst \u2014 Entscheidung Phase C im Plan offen.
+
+### Session 42 — Statistik als visuelles Portr\u00e4t + generische Toolbar-Komponente
+
+Statistik-Tab komplett umgebaut (E-89): weg von Prozent-Balken und Tech-Tabellen, hin zu D3-Donut (Dokumenttypen, AgRelOn, W\u00e4hrungen) + Histogramm (Events pro Jahrzehnt) + horizontal Bars (Top-Orte, Komponisten, Detail-Rollen). Sektion `Verlinkung & Qualit\u00e4t` und der `Bearbeitungsstand`-Balken sind entfernt \u2014 Tech-Reporting lebt im Markdown-Report `data/reports/quality-snapshot.md`. Tote CSS-Regeln mit ausger\u00e4umt.
+
+Zus\u00e4tzlich: Die Filter-Toolbar ist als generische Komponente [`docs/js/views/_toolbar.js`](../docs/js/views/_toolbar.js) neu gezogen. Jeder Tab deklariert seine Facetten (`search`, `dftSelect`, `entityCombobox`, `select`, `toggle`); [`_archiv-toolbar.js`](../docs/js/views/_archiv-toolbar.js) ist auf einen d\u00fcnnen Wrapper geschrumpft. Indizes kann die Komponente in einer Nachfolge-Session mit eigenen Facetten anbinden.
+
+### Session 41 — Chronik als Scroll-Zeitstrahl + Ort/Werk-Filter in der Toolbar
+
+Chronik vom Perioden-Akkordeon auf einen scrollenden Jahres-Zeitstrahl umgestellt (E-88). Records werden als klickbare Punkte rechts der Zeitachse pro Jahr angeordnet, leere Jahre bleiben als Umriss-Dot sichtbar, Dot-Groesse skaliert mit Jahresbelegung. Gruppierungs-Toggle (Ort/Person/Werk) und Fuenfjahresperioden-Logik entfallen.
+
+Die geteilte Filter-Toolbar fuer Bestand + Chronik hat zwei neue Facetten: **Ort** und **Werk** als Entity-Comboboxen parallel zur Person-Combobox. `buildPersonCombobox` ist zu einem generischen `buildEntityCombobox(entityMap, opts)` refaktoriert, das auf jede `store.*`-Map mit `records`-Set laeuft. Neue Toolbar-API: `setLocation(name)`, `setWerk(name)` ergaenzen `setPerson(name)`. Bestand- und Chronik-Update-Code filtern zusaetzlich ueber `store.locations.get(loc).records` bzw. `store.works.get(werk).records`.
+
+### Session 40 — Chronik rein datengetrieben
+
+Redaktionelle Karriere-Notizen aus der Chronik entfernt (E-87). `KARRIERE_NOTIZEN` + `KARRIERE_NOTIZ_TOOLTIP` aus [`archiv-chronik.js`](../docs/js/views/archiv-chronik.js) raus, `note`-Rendering im Perioden-Header gestrichen, Editorial-Marker-CSS (`.chronik-period__note--editorial`, `.chronik-period__editorial-marker`) aus [`archiv.css`](../docs/css/archiv.css) entfernt. Die Perioden-Summary aus Top-Typen + Top-Gruppen trägt die datengetriebene Charakterisierung alleine. Knowledge-Sync: [`interface-konzept.md`](interface-konzept.md) § „Redaktionelle Einordnung wird markiert" gestrichen und durch „Keine redaktionelle Deutung im UI" ersetzt. Grundsatz: alles, was gerendert wird, muss aus `store.*` ableitbar sein — strukturelle Labels (`1950-1954`, „Undatiert") und prozessuale Workflow-Terminologie (Low-Confidence-Sichtung, E-74) bleiben, weil sie keine historische Deutung leisten.
+
+### Session 39 — Wissenskorb zurueck in der Tab-Bar
+
+Wissenskorb als fuenfter sichtbarer Tab reaktiviert und an die E-75/E-77-Designsprache angeglichen (E-86). `hidden`-Attribut am Korb-Button entfernt, `VISIBLE_TABS` in [`router.js`](../docs/js/ui/router.js) um `'korb'` erweitert; der stumme Bug in `updateKorbTabVisibility()` (bedingungsloses `btn.hidden = false` sabotierte E-81) ist beseitigt. [`docs/js/views/korb.js`](../docs/js/views/korb.js) rendert jetzt mit `buildRoleChip()` aus dem Inline-Detail und denselben funktionalen Bloecken (Produktion, Mitwirkende, Werk & Repertoire, Ort & Ereignis, Erwaehnt, Weitere, Beziehungen, Finanzen). CSV/BibTeX-Exporte tragen zusaetzlich AgRelOn-Beziehungen und Finanzen; Orte kommen auch aus `store.recordToEvents`, BibTeX-Author faellt bei fehlendem `verfasser:in` auf den `HasCorrespondent`-Sender zurueck. `stamp_expectations['korb']` berichtet nun `{records, relations, finances, events}`. Knowledge-Sync in [`frontend.md`](frontend.md), [`interface-konzept.md`](interface-konzept.md), [`entscheidungen.md`](entscheidungen.md).
+
 ### Session 38 — Statistik-Review + Datenqualitäts-Audit
 
 Drei ehrliche Lücken im Statistik-Tab von Session 37 geschlossen, strikt nach der `xlsx-fixes.md`-Regel „Documents as Source of Truth — Pipeline-Workarounds sind Schulden, nicht Features".
@@ -151,7 +198,7 @@ Detaillierte Entscheidungen: [entscheidungen.md](entscheidungen.md).
 
 ### Interface-Ausbau
 
-Grundlage: [interface-konzept.md](interface-konzept.md). Nach Session 35 aktiv **Bestand · Chronik · Indizes**. Die übrigen vier Perspektiv-Tabs (Mobilitäts-Atlas, Repertoire, Biogramm, Netzwerk) + Wissenskorb sind verborgen und werden später überarbeitet (E-81).
+Grundlage: [interface-konzept.md](interface-konzept.md). Aktiv sind **Bestand · Chronik · Statistik · Indizes · Wissenskorb**. Die übrigen vier Perspektiv-Tabs (Mobilitäts-Atlas, Repertoire, Biogramm, Netzwerk) sind verborgen und werden später überarbeitet (E-81, präzisiert durch E-86).
 
 1. **Reaktivierung + Redesign der vier Perspektiv-Tabs** — pro Tab: Daten-Kontrakt gegen Store verifizieren, Rolle-Prefix-Chip-Muster konsequent anwenden, Meta-Fresh-Check vor Enable. Reihenfolge offen.
 2. **SKOS-Labels in Pipeline pflegen** (offene Entscheidung in [entscheidungen.md](entscheidungen.md)) — `skos:prefLabel` an DFT-Concepts mit lesbaren deutschen Labels; dann kann das Frontend die Handtabelle `DOKUMENTTYP_LABELS` ersetzen.

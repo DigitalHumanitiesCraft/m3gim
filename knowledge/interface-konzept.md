@@ -8,21 +8,21 @@ Das Interface positioniert sich als **Forschungswerkzeug**, nicht als Dashboard.
 
 ## Tab-Architektur
 
-Welche Tabs tatsächlich sichtbar sind, legt `docs/js/ui/router.js::VISIBLE_TABS` fest — das ist die Source of Truth, nicht dieses Dokument. Aktueller Stand: sichtbar sind **Bestand · Chronik · Statistik · Indizes** (Session 35 Fokus auf drei, Session 37 Statistik hinzu). Die verbleibenden Perspektiv-Tabs — Mobilitäts-Atlas, Repertoire, Biogramm, Netzwerk — sowie der Wissenskorb sind per `hidden`-Attribut ausgeblendet; Code, CSS und Store-Maps bleiben erhalten, Hash-URLs auf versteckte Tabs werden auf Bestand umgebogen (E-81). Reaktivieren = `hidden` im HTML entfernen + Eintrag in `VISIBLE_TABS` ergänzen. Qualitätssicht läuft team-intern über `data/reports/quality-snapshot.md` und ist kein eigener Tab.
+Welche Tabs tatsächlich sichtbar sind, legt `docs/js/ui/router.js::VISIBLE_TABS` fest — das ist die Source of Truth, nicht dieses Dokument. Aktueller Stand: sichtbar sind **Bestand · Chronik · Statistik · Indizes · Wissenskorb**. Die verbleibenden Perspektiv-Tabs — Mobilitäts-Atlas, Repertoire, Biogramm, Netzwerk — sind per `hidden`-Attribut ausgeblendet; Code, CSS und Store-Maps bleiben erhalten, Hash-URLs auf versteckte Tabs werden auf Bestand umgebogen (E-81, präzisiert durch E-86). Reaktivieren = `hidden` im HTML entfernen + Eintrag in `VISIBLE_TABS` ergänzen. Qualitätssicht läuft team-intern über `data/reports/quality-snapshot.md` und ist kein eigener Tab.
 
 **Leitprinzip „nur bearbeitet":** Bestand, Chronik und Indizes zeigen ausschließlich Records bzw. Einträge mit Verknüpfungen. Konvolute ohne erschlossene Folios, Records mit `countLinks === 0`, Folios ohne Links innerhalb eines Konvoluts und Index-Einträge ohne Record-Referenz werden gar nicht erst gerendert. Plakate und Tonträger sind pauschal ausgeblendet (`EXCLUDED_DFT`). Die Gesamt-Bestandszahl und Verknüpfungsrate stehen ausschließlich im Quality-Snapshot. Begründung: das Interface positioniert sich als Forschungswerkzeug für substantielles Material — Erschließungs-Platzhalter sind Rauschen, kein Inhalt.
 
 | Tab | Status | Gegenstand | Primäre Datenquelle im Store | Form |
 |---|---|---|---|---|
 | **Bestand** | aktiv | Einzelbelege in Konvolut-Hierarchie; Konvolut-Meta-Chips (Top-3-Dokumenttyp + Status-Mix) direkt in der Zeile (E-82), Kinder werden innerhalb ihres Konvoluts sortiert (E-83), Facet-Filter (Dokumenttyp, Person), Record-Inline-Detail mit fünf funktionalen Blöcken | `store.records`, `store.konvolutMeta` (inkl. `docTypeCounts`, `statusCounts`, `processedCount`), `store.agentRelations`, `store.finances`, `store.recordToEvents` | Record-Tabelle mit Rolle-Prefix-Chips, Konvolut-Meta-Chips, Provenance-Pill |
-| **Chronik** | aktiv | Chronologische Sicht mit Gruppierung Ort/Person/Werk pro Fünfjahresperiode | `store.allRecords` (gefiltert über `unprocessedIds`), `store.mobilityEvents`, `store.persons`, `store.works` | Perioden-Akkordeon mit Chip-Breakdown |
+| **Chronik** | aktiv | Scrollender Jahres-Zeitstrahl 1919–2009 (+ Ausreißer-Jahre), Records als klickbare Punkte pro Jahr, leere Jahre sichtbar als Erschließungsspiegel | `store.allRecords` (gefiltert über `unprocessedIds`), `store.recordToEvents`, `store.mobilityEvents` | Vertikale Achse, Jahres-Labels links, Dot-Dichte = Jahresbelegung, Record-Chips rechts |
 | **Statistik** | aktiv | Read-only Showroom des Bestandes: Kennzahlen, Dokumenttypen, Mobilitätssichten, Geografie, Netzwerk, Repertoire, Verlinkung & Qualität, Finanzen (Session 37, E-85) | gesamter Store, aggregiert pro Sektion | Sieben Sektionen aus pure-function Aggregation |
 | **Indizes** | aktiv | Aggregierte Übersicht Personen, Organisationen, Orte, Werke; Cross-Grid-Linking | `store.persons`, `store.organizations`, `store.locations`, `store.works` (nur Einträge mit `records.size > 0`) | Vier parallele Grids, `renderNameCell()` mit Beziehungsbadges |
 | **Mobilitäts-Atlas** | verborgen | Raumzeitliche Aktivität, Leaflet + D3-Zeitstrahl + Detailpanel | `store.mobilityEvents` | Karte + Zeitstrahl + Detailpanel |
 | **Repertoire** | verborgen | Bühnenrepertoire und Komponisten, nach Belegtyp aggregiert | `store.works` + DFT-Typ der Records | Parallele Aggregat-Tabellen mit Inline-Breakdown |
 | **Biogramm** | verborgen | Chronologische Gesamtsicht entlang der Lebensspanne 1919–2009 | `store.mobilityEvents`, `store.records` mit Datum | D3-Zeitstrahl mit zwei Spuren |
 | **Netzwerk** | verborgen | AgRelOn-Beziehungen tabellarisch | `store.agentRelations` | Pivot-Tabelle mit Chip-Breakdown |
-| *Wissenskorb* | verborgen | Querschnitts-Merkliste mit CSV-/BibTeX-Export | `store.korb` (session-lokal) | Listenansicht, Werkzeug-Tab |
+| **Wissenskorb** | aktiv | Querschnitts-Merkliste mit CSV-/BibTeX-Export; Cards im Rolle-Prefix-Chip-Muster mit AgRelOn + Finanzen + STE-Events | `store.records` gefiltert durch Korb-IDs + `store.agentRelations`, `store.finances`, `store.recordToEvents` | Card-Liste, Werkzeug-Tab; localStorage-Persistenz |
 
 Tab-Namen sind inhaltlich (keine „Charts"/„Views"-Floskeln).
 
@@ -86,9 +86,9 @@ Sektionen im Hauptbereich tragen dezente Überschriften nach dem Muster `BÜHNEN
 
 Tippfehler, Dubletten, Normalisierungslücken (etwa „Verdi, Guiseppe" neben „Verdi, Giuseppe") erscheinen im UI so, wie sie im Bestand liegen. Das Interface ist ein Erschließungsspiegel. Der Markdown-Report `data/reports/quality-snapshot.md` listet solche Funde systematisch für die Team-Arbeit.
 
-**Leere Zeitfenster bleiben sichtbar.** Die Chronik zeigt alle acht Perioden der Lebensspanne (Session 36, M2), auch jene ohne bearbeitetes Material (1945-49, 1970-74). Sie erscheinen gedimmt mit dem Label „Kein bearbeitetes Material erfasst". Ein Dichte-Mikro-Balken neben dem Periodenzähler zeigt den Anteil jeder Periode am stärksten belegten Zeitfenster — Erschließungslücken werden ohne Expansion lesbar. Das Weglassen leerer Perioden hätte suggeriert, es gäbe dort schlicht nichts; tatsächlich gibt es dort Erschließungsbedarf.
+**Leere Zeitfenster bleiben sichtbar.** Die Chronik zeigt jedes Jahr der Lebensspanne einzeln (Session 41, M5 — ersetzt das frühere Perioden-Akkordeon). Jahre ohne bearbeitetes Material bekommen einen Umriss-Dot und gedimmtes Label, Jahre mit Records einen gefüllten Dot, dessen Größe mit der Record-Dichte skaliert. Erschließungslücken bleiben dadurch sichtbar, ohne dass ein redaktioneller Hinweis nötig wäre — die Form selbst ist das Signal.
 
-**Redaktionelle Einordnung wird markiert.** Die Karriere-Notizen pro Periode („Internationale Karriere", „Späte Karriere") sind redaktionell, nicht aus Metadaten abgeleitet. Sie tragen eine dezente Dotted-Underline + Tooltip „Redaktionelle Einordnung durch das Projektteam". Das trennt Daten von Deutung sichtbar.
+**Keine redaktionelle Deutung im UI.** Alles, was gerendert wird, muss aus den Daten ableitbar sein — Aggregate aus `store.*` (Top-Dokumenttypen, Top-Orte/Personen/Werke der Periode, Counts) sind zulässig, handverdrahtete Karriere-Labels („Internationale Karriere", „Späte Karriere") nicht. Die Chronik führte solche Notizen in Session 36 ein und hat sie in Session 40 wieder entfernt (E-87); die Perioden-Summary aus Top-Typen und Top-Gruppen trägt die datengetriebene Charakterisierung alleine.
 
 ## Daten-Präsentations-Muster
 
