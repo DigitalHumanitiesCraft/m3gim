@@ -83,6 +83,10 @@ Sektionen im Hauptbereich tragen dezente Überschriften nach dem Muster `BÜHNEN
 
 Tippfehler, Dubletten, Normalisierungslücken (etwa „Verdi, Guiseppe" neben „Verdi, Giuseppe") erscheinen im UI so, wie sie im Bestand liegen. Das Interface ist ein Erschließungsspiegel. Der Markdown-Report `data/reports/quality-snapshot.md` listet solche Funde systematisch für die Team-Arbeit.
 
+**Leere Zeitfenster bleiben sichtbar.** Die Chronik zeigt alle acht Perioden der Lebensspanne (Session 36, M2), auch jene ohne bearbeitetes Material (1945-49, 1970-74). Sie erscheinen gedimmt mit dem Label „Kein bearbeitetes Material erfasst". Ein Dichte-Mikro-Balken neben dem Periodenzähler zeigt den Anteil jeder Periode am stärksten belegten Zeitfenster — Erschließungslücken werden ohne Expansion lesbar. Das Weglassen leerer Perioden hätte suggeriert, es gäbe dort schlicht nichts; tatsächlich gibt es dort Erschließungsbedarf.
+
+**Redaktionelle Einordnung wird markiert.** Die Karriere-Notizen pro Periode („Internationale Karriere", „Späte Karriere") sind redaktionell, nicht aus Metadaten abgeleitet. Sie tragen eine dezente Dotted-Underline + Tooltip „Redaktionelle Einordnung durch das Projektteam". Das trennt Daten von Deutung sichtbar.
+
 ## Daten-Präsentations-Muster
 
 ### Tabelle vor Chart für Rankings

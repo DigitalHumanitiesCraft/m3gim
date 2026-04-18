@@ -117,6 +117,18 @@ def main() -> int:
         try:
             page.locator('[data-tab="chronik"]').first.click()
             page.wait_for_timeout(400)
+            # Session 36 M2: alle 8 bekannten Perioden inkl. leerer muessen
+            # gerendert sein (Erschliessungsspiegel). 'Undatiert' nur wenn befuellt.
+            period_count = page.locator('#tab-chronik .chronik-period').count()
+            empty_count = page.locator(
+                '#tab-chronik .chronik-period--empty'
+            ).count()
+            if period_count >= 8 and empty_count >= 2:
+                results.append(("OK", "chronik:empty-periods      ",
+                                f"{period_count} Perioden, {empty_count} leere als Platzhalter"))
+            else:
+                results.append(("FAIL", "chronik:empty-periods      ",
+                                f"Nur {period_count} Perioden ({empty_count} leer)"))
             header = page.locator('#tab-chronik .chronik-period__header').first
             errs_before = len(global_errors)
             header.click()

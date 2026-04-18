@@ -630,6 +630,50 @@
   color: var(--color-text-tertiary);
 }
 
+/* Dichte-Mikro-Balken: Anteil dieser Periode am max. belegten Periodenwert.
+   Sichtbar macht Luecken ohne Expansion (Session 36, M2). */
+.chronik-period__density {
+  display: inline-block;
+  width: 48px;
+  height: 6px;
+  background: var(--color-cream, #f4ede0);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-left: var(--space-1);
+}
+
+.chronik-period__density-bar {
+  display: block;
+  height: 100%;
+  background: var(--color-kug-blau, #004A8F);
+  transition: width var(--transition-fast);
+}
+
+/* Editorial-Markierung fuer Karriere-Notizen -- der Tooltip erklaert,
+   dass es redaktionelle Einordnung ist, nicht aus Metadaten generiert. */
+.chronik-period__note--editorial {
+  border-bottom: 1px dotted var(--color-text-tertiary);
+  cursor: help;
+}
+
+/* Leere Perioden bleiben sichtbar, wirken gedimmt -- Erschliessungsspiegel. */
+.chronik-period--empty {
+  opacity: 0.55;
+}
+
+.chronik-period--empty .chronik-period__header {
+  cursor: default;
+}
+
+.chronik-period--empty .chronik-period__header:hover {
+  background: transparent;
+}
+
+.chronik-period--empty .chronik-period__density-bar {
+  background: var(--color-text-tertiary);
+  opacity: 0.3;
+}
+
 .chronik-period__summary {
   display: none;
   flex-basis: 100%;
@@ -642,7 +686,12 @@
   text-overflow: ellipsis;
 }
 
-.chronik-period__header--collapsed .chronik-period__summary {
+.chronik-period__summary--empty {
+  font-style: italic;
+}
+
+.chronik-period__header--collapsed .chronik-period__summary,
+.chronik-period--empty .chronik-period__summary--empty {
   display: block;
 }
 
