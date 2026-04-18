@@ -1,0 +1,68 @@
+/* Statistik-Tab (Session 37).
+   Read-only Showroom. Vertikales Scroll-Layout, CSS-basierte Balken,
+   keine Interaktionskomponenten. Nutzt --color-kug-blau und
+   --color-sicht-* aus variables.css. */
+
+.statistik {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-5) var(--space-10);
+  color: var(--color-text-primary);
+}
+
+.statistik__intro {
+  border-bottom: 1px solid var(--border-color-light);
+  padding-bottom: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+.statistik__title {
+  font-family: var(--font-title);
+  font-size: var(--text-3xl);
+  font-weight: var(--weight-semibold);
+  color: var(--color-kug-blau);
+  margin: 0 0 var(--space-2);
+}
+
+.statistik__lead {
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+  line-height: var(--leading-relaxed);
+  max-width: 68ch;
+  margin: 0;
+}
+
+.statistik__sections {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.stat-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.stat-section__title {
+  font-family: var(--font-title);
+  font-size: var(--text-xl);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0;
+  padding-bottom: var(--space-2);
+  border-bottom: 2px solid var(--color-kug-blau);
+  display: inline-block;
+  align-self: flex-start;
+}
+
+.stat-section--placeholder {
+  opacity: 0.55;
+}
+
+.stat-section__placeholder {
+  font-size: var(--text-sm);
+  color: var(--color-text-tertiary);
+  font-style: italic;
+  margin: 0;
+}

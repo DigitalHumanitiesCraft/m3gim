@@ -17,6 +17,7 @@
   <link rel="stylesheet" href="css/components.css">
   <link rel="stylesheet" href="css/archiv.css">
   <link rel="stylesheet" href="css/indizes.css">
+  <link rel="stylesheet" href="css/statistik.css">
   <link rel="stylesheet" href="css/korb.css">
   <link rel="stylesheet" href="css/mobilitaets-atlas.css">
   <link rel="stylesheet" href="css/repertoire.css">
@@ -67,6 +68,12 @@
         <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
       </svg>
       Chronik
+    </button>
+    <button class="tab-bar__tab" data-tab="statistik" role="tab" aria-selected="false" aria-controls="tab-statistik" id="btn-statistik">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
+      </svg>
+      Statistik
     </button>
     <button class="tab-bar__tab" data-tab="indizes" role="tab" aria-selected="false" aria-controls="tab-indizes" id="btn-indizes">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -121,6 +128,7 @@
   <main id="main-content" hidden>
     <section id="tab-bestand" class="tab-content active" role="tabpanel" aria-labelledby="btn-bestand"></section>
     <section id="tab-chronik" class="tab-content" role="tabpanel" aria-labelledby="btn-chronik"></section>
+    <section id="tab-statistik" class="tab-content" role="tabpanel" aria-labelledby="btn-statistik"></section>
     <section id="tab-indizes" class="tab-content" role="tabpanel" aria-labelledby="btn-indizes"></section>
     <section id="tab-mobilitaets-atlas" class="tab-content" role="tabpanel" aria-labelledby="btn-mobilitaets-atlas"></section>
     <section id="tab-repertoire" class="tab-content" role="tabpanel" aria-labelledby="btn-repertoire"></section>

@@ -8,6 +8,7 @@ import { initRouter, getState } from './ui/router.js';
 import { initKorb, onKorbChange, getKorbCount } from './ui/korb.js';
 import { renderBestand, selectArchivRecord } from './views/archiv-bestand.js';
 import { renderChronik } from './views/archiv-chronik.js';
+import { renderStatistik } from './views/statistik.js';
 import { renderIndizes, expandEntry } from './views/indizes.js';
 import { renderKorb } from './views/korb.js';
 import { renderMobilitaetsAtlas } from './views/mobilitaets-atlas.js';
@@ -25,6 +26,7 @@ const renderedTabs = new Set();
 const TAB_RENDERERS = new Map([
   ['bestand',            (s, c) => renderBestand(s, c)],
   ['chronik',            (s, c) => renderChronik(s, c)],
+  ['statistik',          (s, c) => renderStatistik(s, c)],
   ['indizes',            (s, c) => renderIndizes(s, c)],
   ['mobilitaets-atlas',  (s, c) => renderMobilitaetsAtlas(s, c)],
   ['repertoire',         (s, c) => renderRepertoire(s, c)],
@@ -110,6 +112,7 @@ function logTabActivation(tab, s) {
   const profile = {
     bestand:             () => ({ records: s.allRecords.length, bearbeitet: s.allRecords.length - s.unprocessedIds.size, finances: s.finances.size, agentRel: s.agentRelations.size }),
     chronik:             () => ({ records: s.allRecords.length, bearbeitet: s.allRecords.length - s.unprocessedIds.size }),
+    statistik:           () => ({ records: s.allRecords.length, konvolute: s.konvolute.size, events: s.mobilityEvents.size, personen: s.persons.size }),
     indizes:             () => ({ persons: s.persons.size, orgs: s.organizations.size, locs: s.locations.size, works: s.works.size, agentRel: s.agentRelations.size, relResolved: s.agentRelationResolvedCount || 0 }),
     'mobilitaets-atlas': () => {
       const all = [...s.mobilityEvents.values()];

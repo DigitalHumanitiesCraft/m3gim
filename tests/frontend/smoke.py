@@ -23,7 +23,7 @@ BASE_URL = os.environ.get("M3GIM_SMOKE_URL", "http://localhost:8765/")
 # Nur sichtbare Tabs testen. Die restlichen (mobilitaets-atlas, repertoire,
 # biogramm, netzwerk, korb) sind per `hidden` ausgeblendet und werden spaeter
 # ueberarbeitet.
-TABS = ["bestand", "chronik", "indizes"]
+TABS = ["bestand", "chronik", "statistik", "indizes"]
 
 # Anker-Records: Titel-Snippets, die im Bestand-Tab-DOM erreichbar sein muessen.
 # Nur Records mit Verknuepfungen (sonst werden sie durch den "nur bearbeitet"-
@@ -96,7 +96,7 @@ def main() -> int:
             # Stempel erkennen: `[chronik] ...`, `[bestand] ...`, `[indizes] ...`
             if text.startswith("[") and "]" in text:
                 tag = text[1:text.index("]")]
-                if tag in ("chronik", "bestand", "indizes"):
+                if tag in ("chronik", "bestand", "indizes", "statistik"):
                     stamps[tag] = text
 
         page.on("console", on_console)
@@ -138,9 +138,10 @@ def main() -> int:
         #     ein View still ins Nichts rendert (siehe currentFilters-
         #     Regression) oder ein Key beim Refactor still wegfliegt.
         stamp_expectations = {
-            "bestand":  ["konvolute", "records", "sort"],
-            "chronik":  ["bearbeitet", "perioden", "perioden-leer", "modus"],
-            "indizes":  ["personen", "organisationen", "orte", "werke"],
+            "bestand":   ["konvolute", "records", "sort"],
+            "chronik":   ["bearbeitet", "perioden", "perioden-leer", "modus"],
+            "statistik": ["records", "konvolute", "events", "personen", "sektionen"],
+            "indizes":   ["personen", "organisationen", "orte", "werke"],
         }
         for view, required in stamp_expectations.items():
             results.append(expect_stamp(stamps, view, required))
