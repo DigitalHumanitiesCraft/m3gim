@@ -94,14 +94,9 @@ python scripts/verify-manual-approvals.py
 
 Das Skript batch-fetcht Labels + Aliases + Descriptions und vergleicht mit dem `name`-Feld. Exitcode 1 bei Mismatch blockiert CI/Commit. Begruendung: Session 34 hatte zwei von zehn Approvals stumm falsch (Q2861 war Rostock statt Bayreuth, Q200491 war ein US-Videospiel-Publisher statt Iwano-Frankiwsk). Siehe auch [CLAUDE.md § Manuelle Wikidata-Approvals verifizieren](../CLAUDE.md).
 
-## Pipeline-Korrekturen (Session 10 + 19 + 28)
+## Pipeline-seitige Normalisierungen
 
-- Spaltennamen-Normalisierung: `df.columns = [c.lower().strip() ...]` nach `pd.read_excel()`
-- Folio-Spalten-Erkennung akzeptiert `folio`, `folio nr`, `folio_nr`, `Unnamed:*` (v2 nutzt `folio nr`)
-- Bearbeitungsstand-Werte normalisiert (Fuzzy, inkl. Tippfehler)
-- Store: `unprocessedIds` (Set) — Records ohne Links UND ohne Bearbeitungsstand
-- Mojibake in validate.py VOCAB + KOMPOSIT_TYPEN gefixt (Session 19, doppelte UTF-8-Kodierung)
-- `clean_date()` bereinigt Excel-Artefakte + normalisiert Zeitspannen `YYYY-YYYY` → `YYYY/YYYY`
+Strukturelle Transformationen (keine Datenfehler-Kaschierung): Spalten-Lowercase nach `pd.read_excel`, Folio-Spalten-Heuristik, Bearbeitungsstand-Kanonisierung, Gender-Suffix-Strip in Rollen, Q-ID-Regex-Filter, Zeitspannen-Normalisierung `YYYY-YYYY` → `YYYY/YYYY`, `unprocessedIds`-Set im Store. Vollständiger Katalog mit Prinzip-Einordnung (Spec/Workaround/Policy/Dead), Source-Fix-Vorschlägen und Test-Ankern: **[`knowledge/xlsx-fixes.md`](xlsx-fixes.md)**.
 
 ## Wikidata-Reconciliation (Session 17, erweitert Session 27)
 
@@ -145,59 +140,12 @@ Aktuelle Zahlen zum Bestand, Abdeckung, Verknüpfungsrate und Wikidata-Coverage 
 
 Aktuelle Korpus-Struktur qualitativ: Teilnachlass UAKUG/NIM mit drei Bestandsgruppen (Hauptbestand, Plakate, Tonträger), feinerschlossen auf Folio-Ebene sind mehrere Konvolute um NIM_003–007 und NIM_011. Frühere Stände liegen unter `data/_archive/` als Referenz.
 
-## Datenqualitaets-Baseline
+## Datenqualität
 
-### Kritisch — Datenverlust
+Baseline und Handlungsbedarfe stehen gebündelt in **[`knowledge/xlsx-fixes.md`](xlsx-fixes.md)** (Workaround-Katalog mit Source-Fix-Vorschlägen) und im laufenden **[`data/reports/quality-snapshot.md`](../data/reports/quality-snapshot.md)** (Verknüpfungsrate, Bearbeitungsstand, Wikidata-Coverage pro Entitätstyp, Provenance-Coverage, Low-Confidence-Freigabeliste). Die Pipeline erzeugt den Snapshot bei jedem Lauf neu — sie ist die Single Source of Truth für Zahlen.
 
-- **Verwaiste Signaturen** (1): `UAKUG/NIM_11` existiert in Verknuepfungen, aber nicht in Objekte.xlsx (nur `NIM_110`, `NIM_111` etc.). Betroffen u.a. die einzige `arbeitgeber:in`-Zeile.
-- **Verknuepfungen ohne Archivsignatur** (~20): gehen in Pipeline verloren → Signaturen nachtragen.
-- **PL_07 Duplikat:** Signatur `UAKUG/NIM/PL_07` erscheint doppelt → im Sheet bereinigen, dann xfail-Marker in `test_05_referential.py` entfernen.
+## Modell-Weiterentwicklung
 
-### Hoch — Unvollstaendige Erfassung
-
-- **Bearbeitungsstand** fehlt bei der Mehrheit der Objekte. Tippfehler ("vollstaedig") werden nicht automatisch normalisiert; Pipeline normalisiert Case. Aktueller Wert im Quality-Snapshot.
-- **Niedrige aktive Verknuepfungsrate**: Nur ein Bruchteil der Objekte hat Verknuepfungen. Schwerpunkt: NIM_003, NIM_004, NIM_007. Aktueller Wert im Quality-Snapshot.
-
-### Mittel — Strukturelle Probleme
-
-- **Header-Shifts** in 3/4 Indizes (Org, Ort, Werk): erste Datenzeile wird als Header gelesen. Pipeline korrigiert via HEADER_SHIFTS-Mapping, aber echte Header in XLSX setzen besser.
-- **Freitext-Datumswerte** wie `"Wien, ab 1956"` oder `"1944-05 bis 1944-09"` in `datum`-Spalte: gehen in typisierte Properties nicht durch (`is_iso_date` Gatekeeper), landen stattdessen im generischen `m3gim:eventDate`.
-
-### Niedrig — Anreicherungsluecken
-
-- **Wikidata-IDs** in aktuellen Indizes: Coverage unterschiedlich pro Entitätstyp — Personen gut, Organisationen und Werke dünn, Orte mittel. Aktuelle Werte im Quality-Snapshot.
-- **Sprache** nur bei einem Viertel der Objekte erfasst.
-
-### Pipeline-seitig behoben (kein Handlungsbedarf)
-
-- Case-Inkonsistenzen (lower/strip)
-- Gender-Suffixe in Rollen (`:in`, `:innen` werden gestrippt)
-- Excel-Datetime-Artefakte (Zeitanteil)
-- Leerzeilen + Template-Zeilen (uebersprungen)
-- Komposit-Typen (dekomponiert + SpatiotemporalEvent)
-- Header-Shifts (HEADER_SHIFTS-Mapping)
-- Mojibake in validate.py (Session 19)
-- Bearbeitungsstand-Varianten (`normalize_bearbeitungsstand()`)
-- Jahres-Ranges `YYYY-YYYY` werden zu ISO `YYYY/YYYY`
-
-## Handlungsbedarfe
-
-### Sofort (vor weiterer Erfassung)
-
-- Verwaiste Signaturen (`NIM_11`) klaeren — Umbenennung oder Nachtrag in Objekte.xlsx
-- PL_07 Duplikat bereinigen
-- Low-Confidence-Matches aus dem Quality-Snapshot prüfen und ggf. als `manual_review: "approved"` freigeben
-- Header-Shifts in drei Indizes im Google Sheet korrigieren
-
-### Laufend
-
-- Verknuepfungen: Signatur und Typ immer ausfuellen
-- Bearbeitungsstand pflegen
-- Fehlende Dokumenttypen und Titel nachtragen
-- Datierung nicht als Freitext (`"Wien, ab 1956"`), sondern als strukturiertes Feld
-
-### Modell-Weiterentwicklung
-
-- **Phase 6 (abgeschlossen, Session 30):** loader.js hat Store-Maps `dftHierarchy`, `mobilityEvents`, `recordToEvents`, `agentRelations`, `finances` + typisierte Datumsfelder als Fallback in `indexByYear`. Siehe [frontend.md](frontend.md).
-- **Phase 7 (abgeschlossen, Sessions 32–34):** Interface-Redesign nach [interface-konzept.md](interface-konzept.md). Sechs Perspektiv-Tabs (Archiv, Indizes, Mobilitäts-Atlas, Repertoire, Biogramm, Netzwerk) plus Wissenskorb als Werkzeug-Tab. Die sechs D3-Prototypen sind entfernt; ihre Lektionen stehen in [frontend.md § Lektionen](frontend.md).
+- **Phase 6 (abgeschlossen, Session 30):** `loader.js` hat Store-Maps `dftHierarchy`, `mobilityEvents`, `recordToEvents`, `agentRelations`, `finances` + typisierte Datumsfelder als Fallback in `indexByYear`. Siehe [frontend.md](frontend.md).
+- **Phase 7 (abgeschlossen, Sessions 32–34):** Interface-Redesign nach [interface-konzept.md](interface-konzept.md); aktueller Stand der Tab-Sichtbarkeit in [status.md](status.md) (seit Session 35 Fokus auf Bestand · Chronik · Statistik · Indizes, die übrigen Tabs verborgen, E-81).
 - **Phase 4.5 (deferred, extern blockiert):** Rollenindex-XLSX anlegen (Spalten `m3gim_id`, `name`, `belongsToWork`, `voiceType`, `wikidata_id`). Braucht Abstimmung mit Erschliessungsteam.
