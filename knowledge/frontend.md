@@ -125,6 +125,15 @@ Die Invarianten werden als Kontrakttests in [test_06_frontend_contract.py](../te
 - Bookmark-Icons an jeder Record-Zeile (Korb-Tab aktuell ausgeblendet, Icons bleiben für künftige Reaktivierung).
 - Reset-Button setzt alle Filter gleichzeitig zurück.
 
+### Statistik (seit Session 37)
+
+- Read-only Showroom des Bestandes, der sich zwischen Chronik und Indizes einfügt. Kein Forschungswerkzeug: keine Toolbar, keine Filter, keine Interaktion ausser Anker-Links in die fachlichen Tabs. Das senkt die Bug-Oberfläche gegenüber Bestand/Chronik deutlich.
+- Sieben Sektionen, alle aus dem Live-Store aggregiert (kein Pipeline-Derivat, keine Hardcoded-Zahlen): **Hero-Row** (Datensätze · Konvolute · Spatiotemporal-Events · Personen als Anker-Links in `#bestand`, `#chronik`, `#indizes`) → **Bestand in Zahlen** (Dokumenttypen + Bearbeitungsstand) → **Die fünf Mobilitätssichten** (Kacheln in den Farben aus `--color-sicht-*`, sechste neutrale Kachel für `null`-Rollen wie `auftrag`/`entstehung`, jeweils mit Beispiel-Record als Link) → **Geografie** (Top-10-Orte mit Wikidata-Link + Event-Zeitspanne) → **Netzwerk** (AgRelOn-Relationen nach Typ mit deutschem Label aus `AGRELON_LABEL`, Personen-Kategorien als Chip-Row, Organisations-Zahl als Kontextzeile) → **Repertoire** (Top-10-Komponisten + Werke-Gesamtzahl) → **Verlinkung & Qualität** (Wikidata-Abdeckung pro Entitätstyp als Mini-Balken, Provenienz-Anteil über `m3gim:xlsxSource`) → **Finanzen** (Gesamtzahl DetailAnnotations, Währungsverteilung, Detail-Rollen; `stat-section--minor` dimmt den Block als Teilerschließung).
+- Aggregations-Helper sind pure Funktionen ohne Seiteneffekte (`aggregateDocTypes`, `aggregateBearbeitungsstatus`, `aggregateSichten`, `aggregatePlaces`, `aggregateAgentRelations`, `aggregatePersonKategorien`, `aggregateComposers`, `aggregateFinances`, `wikidataCoverage`, `provenanceCoverage`, `eventYearSpan`). Einfach testbar, memoizable wenn später nötig.
+- Wiederverwendete Bausteine: `clear`/`el` aus `docs/js/utils/dom.js`, `logStamp` aus `utils/env.js`, `getDocTypeId` aus `utils/format.js`, `mobilityClusterFor` aus `data/constants.js`. Farb-Tokens `--color-sicht-*`, `--color-cat-*`, `--color-kug-blau`, `--color-gold-medium`, `--color-signal-green` unverändert aus `variables.css` — keine neuen Design-Tokens.
+- Log-Stempel `[statistik] records:N | konvolute:N | events:N | personen:N | sektionen:N | doctypes:N | abgeschlossen:N | unbearbeitet:N | sichten:N | orte:N | relationen:N | komponisten:N | finanzen:N | waehrungen:N`. Smoke verifiziert Key-Präsenz über `stamp_expectations['statistik']` — ein stiller Drift an einer Aggregation fällt auf.
+- Ehrlichkeits-Signale eingebaut: Bearbeitungsstand-Bucket „ohne Status-Feld" mit eigener Sand-Farbe (zeigt den grossen Rest, der keine kuratorische Einordnung trägt), sechste „Nicht klassifiziert"-Mobilitätskachel (statt `null`-Rollen willkürlich einzuordnen), `stat-section--minor` am Finanzen-Block (Teilerschließung). Siehe E-85 für die Abgrenzung zum Research-Tool.
+
 ### Indizes
 
 - Vier Grid-Blöcke: Personen, Organisationen, Orte, Werke

@@ -33,6 +33,10 @@ Suite durchgängig grün bis auf die beiden dokumentierten Ausnahmen (`PL_07` xf
 
 ## Erreichte Meilensteine
 
+### Session 37 — Statistik-Tab als Zusammenschau des Bestandes
+
+Neuer vierter Tab **Statistik** zwischen Chronik und Indizes. Read-only Showroom mit sieben Sektionen (Hero-Row, Bestand in Zahlen, fünf Mobilitätssichten, Geografie, Netzwerk, Repertoire, Verlinkung & Qualität, Finanzen), alle aus dem Live-Store aggregiert — keine Pipeline-Änderung, keine Hardcoded-Zahlen, keine Knowledge-Zählstände. Fünf Meilensteine M0–M5 in sechs Commits. Tab-Registrierung über `TAB_RENDERERS`/`VISIBLE_TABS`/`router.TABS`, neue View `docs/js/views/statistik.js` ohne Module-State, neues Stylesheet `docs/css/statistik.css`. Aggregations-Helper als pure Funktionen. Log-Stempel mit 14 Keys, Smoke erweitert um `stamp_expectations['statistik']`. Siehe E-85 für die Showroom-vs.-Research-Abgrenzung, `knowledge/frontend.md § Statistik` für die View-Beschreibung.
+
 ### Session 35 — Bestand-Fokus, Konvolut-UX, Verifikationslauf
 
 Fokussierung des Interfaces auf drei aktive Perspektiven + Hygiene-Runde gegen frontendspezifische Silent-Bugs.

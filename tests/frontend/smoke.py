@@ -122,7 +122,9 @@ def main() -> int:
                     f'#tab-{tab} tr, '
                     f'#tab-{tab} .leaflet-marker-icon, '
                     f'#tab-{tab} circle, '
-                    f'#tab-{tab} .chip'
+                    f'#tab-{tab} .chip, '
+                    f'#tab-{tab} .stat-section, '
+                    f'#tab-{tab} .statistik-chip'
                 ).count()
                 new_errs = global_errors[errs_before:]
                 status = "OK" if not new_errs else "WARN"
