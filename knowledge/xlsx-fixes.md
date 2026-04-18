@@ -129,6 +129,17 @@
 | **Test-Absicherung** | `tests/test_05_referential.py::test_all_record_ids_unique` — hat vor dem Fix 4 Kollisionen gezeigt, nach dem Fix nur noch die bekannte PL_07. `tests/frontend/smoke.py` fasst den verbleibenden Stand unter „graph:duplicate-@id" zusammen. |
 | **Zusatz** | Der Sammel-Titel (z. B. „Diverse Zeitungsausschnitte" für NIM_006) wird im Frontend als Konvolut-Titel-Fallback genutzt (`loader.js::konvolutMeta.title`). Seit dem Frontend-Filter „nur bearbeitet" sind Konvolute ohne erschlossene Folios unsichtbar — der Fallback greift nur für teil-erschlossene Konvolute mit Sammel-Zeile. |
 
+## 14. Komponisten-Schreibweise-Varianten im Werkindex
+
+| Feld | Inhalt |
+|---|---|
+| **Workaround** | — (keiner in der Pipeline; reine Detektion in `tests/test_24_composer_uniqueness.py`) |
+| **Kompensiert** | Der Werkindex enthält „Beethoven, Ludwig von" (2 Werke) und „Beethoven, Ludwig van" (3 Werke) als zwei verschiedene Rohstrings. Der Statistik-Tab listet sie deshalb in Top-10 getrennt. Typischer Tippfehler, kein struktureller Varianzgrund. |
+| **Kategorie** | Workaround |
+| **Source-Fix-Vorschlag** | In `data/google-spreadsheet/M3GIM-Werkindex.xlsx` die beiden „von"-Zellen auf „van" vereinheitlichen. Danach Pipeline neu laufen lassen und xfail-Marker in `test_24` entfernen (XPASS(strict) bricht sonst die Suite). |
+| **Test-Absicherung** | `tests/test_24_composer_uniqueness.py::test_komponisten_ohne_fuzzy_duplikate` — strict-xfail, Levenshtein-Ratio ≥ 92 fängt die van/von-Variante und jede künftige Tippfehler-Doppelung. |
+| **Bewusst NICHT im Code** | Kein `normalize_composer()` in `scripts/transform.py`. Das wäre ein Sonderfall-Workaround, der den einzelnen Tippfehler kaschiert und zukünftige Varianten stillschweigend weiter kaschieren würde — das widerspricht dem Prinzip „Pipeline-Workarounds sind Schulden, nicht Features" aus dem Dokument-Intro. |
+
 ## 12. Template-Zeilen-Filter
 
 | Feld | Inhalt |
