@@ -8,19 +8,16 @@ import { formatSignatur, formatChildSignatur, getDocTypeId, truncate, ensureArra
 import { extractYear } from '../utils/date-parser.js';
 import { DOKUMENTTYP_LABELS } from '../data/constants.js';
 import { buildInlineDetail } from './archiv-inline-detail.js';
+import { buildFilterToolbar } from './_archiv-toolbar.js';
 
 let store = null;
 let container = null;
+let toolbar = null;
+let viewContainer = null;  // innerer Container fuer die Chronik-Liste
 let expandedRecord = null;
 let collapsedPeriods = new Set();
 let initialRender = true; // first render collapses all periods
-let currentFilters = {}; // kept in sync so closures never go stale
 let currentGrouping = 'location'; // 'location' | 'person' | 'werk'
-
-/** Set grouping mode from orchestrator. */
-export function setChronikGrouping(mode) {
-  currentGrouping = mode;
-}
 
 /** Karriere-Notizen pro Periode */
 const KARRIERE_NOTIZEN = {
@@ -35,27 +32,77 @@ const KARRIERE_NOTIZEN = {
 };
 
 /**
- * Render the Chronik view.
+ * Render the Chronik view: Toolbar + Grouping-Toggle + Zeitstrahl.
  * @param {Object} storeRef
  * @param {HTMLElement} containerEl
- * @param {{ search: string, docType: string }} filters
  */
-export function renderChronik(storeRef, containerEl, filters) {
+export function renderChronik(storeRef, containerEl) {
   store = storeRef;
   container = containerEl;
   clear(container);
-  updateChronikView(filters);
+
+  toolbar = buildFilterToolbar(store, {
+    onChange: () => updateChronikView(),
+  });
+  container.appendChild(toolbar.element);
+  container.appendChild(buildGroupingToggle());
+
+  viewContainer = el('div', { className: 'chronik-view-container' });
+  container.appendChild(viewContainer);
+  updateChronikView();
+}
+
+function buildGroupingToggle() {
+  const toggleEl = el('div', {
+    className: 'archiv-view-toggle chronik-grouping-toggle',
+    id: 'chronik-grouping-toggle',
+  });
+  const modes = [
+    ['location', 'Ort',
+     '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>'],
+    ['person', 'Person',
+     '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>'],
+    ['werk', 'Werk',
+     '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>'],
+  ];
+  for (const [mode, label, iconSvg] of modes) {
+    toggleEl.appendChild(el('button', {
+      className: `archiv-view-toggle__btn ${currentGrouping === mode ? 'archiv-view-toggle__btn--active' : ''}`,
+      onClick: () => {
+        if (currentGrouping === mode) return;
+        currentGrouping = mode;
+        initialRender = true; // neue Gruppierung -> alle Perioden wieder kollabieren
+        collapsedPeriods.clear();
+        for (const btn of toggleEl.querySelectorAll('.archiv-view-toggle__btn')) {
+          btn.classList.remove('archiv-view-toggle__btn--active');
+        }
+        // Nach dem Re-Render: aktive Klasse neu setzen
+        updateChronikView();
+        const btns = toggleEl.querySelectorAll('.archiv-view-toggle__btn');
+        btns.forEach((b, i) => {
+          b.classList.toggle('archiv-view-toggle__btn--active', modes[i][0] === currentGrouping);
+        });
+      },
+    },
+      el('span', { className: 'archiv-view-toggle__icon', html: iconSvg }),
+      el('span', {}, label),
+    ));
+  }
+  return toggleEl;
 }
 
 /**
- * Re-render with updated filters.
+ * Re-render rows; reads current filter state from the toolbar.
  */
-export function updateChronikView(filters) {
-  currentFilters = filters || {};
-  const { search = '', docType = '', person = '' } = currentFilters;
-  clear(container);
+function updateChronikView() {
+  const { search = '', docType = '', person = '' } = toolbar ? toolbar.getState() : {};
+  clear(viewContainer);
 
-  let records = [...store.allRecords];
+  // Nur bearbeitete Records (countLinks > 0), ohne Plakate/Tontraeger.
+  const EXCLUDED_DFT = new Set(['plakat', 'tontraeger']);
+  let records = store.allRecords.filter(r =>
+    !store.unprocessedIds.has(r['@id']) && !EXCLUDED_DFT.has(getDocTypeId(r))
+  );
 
   // Search
   if (search) {
@@ -241,7 +288,19 @@ export function updateChronikView(filters) {
     wrapper.appendChild(periodEl);
   }
 
-  container.appendChild(wrapper);
+  viewContainer.appendChild(wrapper);
+
+  // Count-Anzeige aktualisieren (nach Filterung sichtbare Einheiten)
+  const totalBearbeitet = store.allRecords.filter(
+    r => !store.unprocessedIds.has(r['@id'])
+  ).length;
+  const sichtbar = records.length;
+  const isFiltered = !!(search || docType || person);
+  if (toolbar) {
+    toolbar.setCount(isFiltered
+      ? `${sichtbar} von ${totalBearbeitet} bearbeiteten Einheiten`
+      : `${totalBearbeitet} bearbeitete Einheiten`);
+  }
 
   // Return count for counter update
   return records.length;

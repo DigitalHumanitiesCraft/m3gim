@@ -277,6 +277,35 @@
   content: '— ';
 }
 
+/* Konvolut-Metadaten direkt unter dem Titel: Top-Dokumenttypen (Chips) +
+   dezenter Status-Mix. Ersetzt die frueher aufklappbare Konvolut-
+   Detailansicht -- siehe knowledge/xlsx-fixes.md. */
+.archiv-konvolut-meta {
+  display: block;
+  margin-top: var(--space-1);
+  white-space: normal;
+  line-height: 1.4;
+}
+
+.archiv-konvolut-meta .chip--compact {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 6px;
+  margin-right: var(--space-1);
+  font-size: var(--text-xs);
+  font-family: var(--font-mono);
+  background: var(--color-surface-subtle, #f1f5f9);
+  color: var(--color-text-secondary);
+  border-radius: 3px;
+}
+
+.archiv-konvolut-status {
+  margin-left: var(--space-1);
+  font-size: var(--text-xs);
+  color: var(--color-text-tertiary);
+  font-style: italic;
+}
+
 .archiv-datum {
   font-family: var(--font-mono);
   font-size: var(--text-sm);

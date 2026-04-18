@@ -56,11 +56,17 @@
 
   <!-- Tab Bar -->
   <nav class="tab-bar" aria-label="Hauptnavigation" role="tablist">
-    <button class="tab-bar__tab active" data-tab="archiv" role="tab" aria-selected="true" aria-controls="tab-archiv" id="btn-archiv">
+    <button class="tab-bar__tab active" data-tab="bestand" role="tab" aria-selected="true" aria-controls="tab-bestand" id="btn-bestand">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <rect width="20" height="5" x="2" y="3" rx="1"/><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/><path d="M10 12h4"/>
       </svg>
-      Archiv
+      Bestand
+    </button>
+    <button class="tab-bar__tab" data-tab="chronik" role="tab" aria-selected="false" aria-controls="tab-chronik" id="btn-chronik">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+      </svg>
+      Chronik
     </button>
     <button class="tab-bar__tab" data-tab="indizes" role="tab" aria-selected="false" aria-controls="tab-indizes" id="btn-indizes">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -68,31 +74,35 @@
       </svg>
       Indizes
     </button>
-    <button class="tab-bar__tab" data-tab="mobilitaets-atlas" role="tab" aria-selected="false" aria-controls="tab-mobilitaets-atlas" id="btn-mobilitaets-atlas">
+    <!-- Tabs Mobilitaets-Atlas / Repertoire / Biogramm / Netzwerk / Korb
+         sind temporaer ausgeblendet (per `hidden`). Sie werden spaeter
+         ueberarbeitet; Code und Container bleiben im Repo. -->
+    <button class="tab-bar__tab" data-tab="mobilitaets-atlas" role="tab" aria-selected="false" aria-controls="tab-mobilitaets-atlas" id="btn-mobilitaets-atlas" hidden>
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5 8 12 8 12s8-7 8-12a8 8 0 0 0-8-8z"/>
       </svg>
       Mobilitäts-Atlas
     </button>
-    <button class="tab-bar__tab" data-tab="repertoire" role="tab" aria-selected="false" aria-controls="tab-repertoire" id="btn-repertoire">
+    <button class="tab-bar__tab" data-tab="repertoire" role="tab" aria-selected="false" aria-controls="tab-repertoire" id="btn-repertoire" hidden>
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>
       </svg>
       Repertoire
     </button>
-    <button class="tab-bar__tab" data-tab="biogramm" role="tab" aria-selected="false" aria-controls="tab-biogramm" id="btn-biogramm">
+    <button class="tab-bar__tab" data-tab="biogramm" role="tab" aria-selected="false" aria-controls="tab-biogramm" id="btn-biogramm" hidden>
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path d="M12 2v20"/><path d="M2 12h20"/><circle cx="12" cy="12" r="4"/>
       </svg>
       Biogramm
     </button>
-    <button class="tab-bar__tab" data-tab="netzwerk" role="tab" aria-selected="false" aria-controls="tab-netzwerk" id="btn-netzwerk">
+    <button class="tab-bar__tab" data-tab="netzwerk" role="tab" aria-selected="false" aria-controls="tab-netzwerk" id="btn-netzwerk" hidden>
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <circle cx="5" cy="5" r="2"/><circle cx="19" cy="5" r="2"/><circle cx="19" cy="19" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="12" cy="12" r="2"/><path d="M6.5 6.5 10.5 10.5"/><path d="M17.5 6.5 13.5 10.5"/><path d="M6.5 17.5 10.5 13.5"/><path d="M17.5 17.5 13.5 13.5"/>
       </svg>
       Netzwerk
     </button>
-    <button class="tab-bar__tab" data-tab="korb" id="korb-tab-btn" role="tab" aria-selected="false" aria-controls="tab-korb">
+    <button class="tab-bar__tab" data-tab="korb" id="korb-tab-btn" role="tab" aria-selected="false" aria-controls="tab-korb"
+            title="Merkliste: ausgewählte Dokumente sammeln und als CSV oder BibTeX exportieren" hidden>
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/>
       </svg>
@@ -109,7 +119,8 @@
 
   <!-- Main Content -->
   <main id="main-content" hidden>
-    <section id="tab-archiv" class="tab-content active" role="tabpanel" aria-labelledby="btn-archiv"></section>
+    <section id="tab-bestand" class="tab-content active" role="tabpanel" aria-labelledby="btn-bestand"></section>
+    <section id="tab-chronik" class="tab-content" role="tabpanel" aria-labelledby="btn-chronik"></section>
     <section id="tab-indizes" class="tab-content" role="tabpanel" aria-labelledby="btn-indizes"></section>
     <section id="tab-mobilitaets-atlas" class="tab-content" role="tabpanel" aria-labelledby="btn-mobilitaets-atlas"></section>
     <section id="tab-repertoire" class="tab-content" role="tabpanel" aria-labelledby="btn-repertoire"></section>

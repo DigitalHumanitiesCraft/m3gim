@@ -30,11 +30,13 @@ const GRID_CONFIG = {
   personen: {
     label: 'Personen',
     icon: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
-    getEntries: (s) => [...s.persons.entries()].map(([name, data]) => ({
-      name, count: data.records.size, kategorie: data.kategorie, wikidata: data.wikidata, records: data.records,
-      occupation: data.occupation || null, voiceType: data.voiceType || null,
-      birthDate: data.birthDate || null, deathDate: data.deathDate || null,
-    })),
+    getEntries: (s) => [...s.persons.entries()]
+      .filter(([, data]) => data.records.size > 0)
+      .map(([name, data]) => ({
+        name, count: data.records.size, kategorie: data.kategorie, wikidata: data.wikidata, records: data.records,
+        occupation: data.occupation || null, voiceType: data.voiceType || null,
+        birthDate: data.birthDate || null, deathDate: data.deathDate || null,
+      })),
     columns: [
       { key: 'name', label: 'Name', flex: 1 },
       { key: 'kategorie', label: 'Kategorie', width: '100px' },
@@ -51,9 +53,11 @@ const GRID_CONFIG = {
   organisationen: {
     label: 'Organisationen',
     icon: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>',
-    getEntries: (s) => [...s.organizations.entries()].map(([name, data]) => ({
-      name, count: data.records.size, wikidata: data.wikidata, records: data.records,
-    })),
+    getEntries: (s) => [...s.organizations.entries()]
+      .filter(([, data]) => data.records.size > 0)
+      .map(([name, data]) => ({
+        name, count: data.records.size, wikidata: data.wikidata, records: data.records,
+      })),
     columns: [
       { key: 'name', label: 'Name', flex: 1 },
       { key: 'count', label: 'Dok.', width: '50px', align: 'right' },
@@ -68,9 +72,11 @@ const GRID_CONFIG = {
   orte: {
     label: 'Orte',
     icon: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>',
-    getEntries: (s) => [...s.locations.entries()].map(([name, data]) => ({
-      name, count: data.records.size, wikidata: data.wikidata, records: data.records,
-    })),
+    getEntries: (s) => [...s.locations.entries()]
+      .filter(([, data]) => data.records.size > 0)
+      .map(([name, data]) => ({
+        name, count: data.records.size, wikidata: data.wikidata, records: data.records,
+      })),
     columns: [
       { key: 'name', label: 'Name', flex: 1 },
       { key: 'count', label: 'Dok.', width: '50px', align: 'right' },
@@ -85,9 +91,11 @@ const GRID_CONFIG = {
   werke: {
     label: 'Werke',
     icon: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>',
-    getEntries: (s) => [...s.works.entries()].map(([name, data]) => ({
-      name, count: data.records.size, komponist: data.komponist || '', wikidata: data.wikidata, records: data.records,
-    })),
+    getEntries: (s) => [...s.works.entries()]
+      .filter(([, data]) => data.records.size > 0)
+      .map(([name, data]) => ({
+        name, count: data.records.size, komponist: data.komponist || '', wikidata: data.wikidata, records: data.records,
+      })),
     columns: [
       { key: 'name', label: 'Werk', flex: 1 },
       { key: 'komponist', label: 'Komponist', width: '120px' },

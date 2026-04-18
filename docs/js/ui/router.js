@@ -3,11 +3,16 @@
  * Info pages (about, projekt, modell, hilfe) are standalone HTML files.
  */
 
-const TABS = ['archiv', 'indizes', 'mobilitaets-atlas', 'repertoire', 'biogramm', 'netzwerk', 'korb'];
-const ALL_VIEWS = [...TABS];
+// Vollstaendiger Katalog -- alle Tabs bleiben im TAB_RENDERERS registriert,
+// damit Hash-URLs und Code-Pfade nicht brechen.
+const TABS = ['bestand', 'chronik', 'indizes', 'mobilitaets-atlas', 'repertoire', 'biogramm', 'netzwerk', 'korb'];
+// VISIBLE_TABS: nur diese sind aktuell in der Tab-Bar sichtbar (Rest `hidden`).
+// Hash-Navigation auf versteckte Tabs wird auf 'bestand' umgebogen.
+const VISIBLE_TABS = new Set(['bestand', 'chronik', 'indizes']);
+const ALL_VIEWS = [...TABS, 'archiv']; // 'archiv' als Legacy-Alias fuer alte Bookmarks/Hash-URLs
 
 const state = {
-  activeTab: 'archiv',
+  activeTab: 'bestand',
   selectedRecord: null,
 };
 
@@ -86,10 +91,12 @@ function parseHash() {
   const hash = window.location.hash.slice(1);
   if (!hash) return;
   const parts = hash.split('/');
-  if (ALL_VIEWS.includes(parts[0])) {
-    state.activeTab = parts[0];
-  }
-  if (parts[1] && TABS.includes(parts[0])) {
+  let t = parts[0];
+  if (t === 'archiv') t = 'bestand'; // Legacy-Alias
+  // Alte Bookmarks auf versteckte Tabs (mobilitaets-atlas etc.) auf Bestand umbiegen.
+  if (TABS.includes(t) && !VISIBLE_TABS.has(t)) t = 'bestand';
+  if (TABS.includes(t)) state.activeTab = t;
+  if (parts[1] && ALL_VIEWS.includes(parts[0])) {
     state.selectedRecord = decodeURIComponent(parts[1]);
   }
 }

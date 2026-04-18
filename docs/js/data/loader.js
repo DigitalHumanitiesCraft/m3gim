@@ -34,6 +34,41 @@ export async function loadArchive(url = './data/m3gim.jsonld') {
   return buildStore(jsonld);
 }
 
+/**
+ * Store-Maps transformieren JSON-LD-Subobjekte zum Teil in ein flaches
+ * Lookup-Format -- damit Consumer nicht durch verschachtelte Strukturen
+ * navigieren muessen. Das hat den Preis, dass *JSON-LD-Keys wie
+ * `agrelon:hasObject` in den Store-Entries NICHT mehr existieren*.
+ * Bei Erweiterungen: immer die JSDoc-Shapes unten zur Hand nehmen.
+ *
+ * @typedef {Object} RelationEntry       Eintrag in store.agentRelations
+ * @property {string} type               AgRelOn-Prädikat ("agrelon:HasCorrespondent" u. a.)
+ * @property {string|null} objectName    Entity-Name des Beziehungs-Partners
+ * @property {string|null} objectWikidata  Q-ID mit wd:-Präfix oder null
+ * @property {string|null} validityBegin
+ * @property {string|null} validityEnd
+ * @property {string} provenance         @id des Records, das die Relation trägt
+ * @property {{sheet: string, row: number, datenpunkt: ?number}} xlsxSource
+ *
+ * @typedef {Object} MobilityEvent       Eintrag in store.mobilityEvents
+ * @property {string} id                 @id des SpatiotemporalEvent
+ * @property {?{name: string, wikidata: ?string}} place
+ * @property {?string} date              ISO-Datum oder Jahresangabe
+ * @property {?string} role              z. B. "auffuehrungsort"
+ * @property {?string} description       freier Text
+ * @property {?string} recordId          @id des Ursprungs-Records
+ *
+ * @typedef {Object} FinanceEntry        Eintrag in store.finances
+ * @property {?number} amount            numerisch (MonetaryAmount hasValue)
+ * @property {?string} currency          ISO 4217 oder Roh-Code (z. B. "S" = Schilling)
+ * @property {?string} description       z. B. "Honorar", "Reisekosten"
+ *
+ * @typedef {Object} DftConcept          Eintrag in store.dftHierarchy
+ * @property {string} id                 @id ohne Präfix
+ * @property {string} prefLabel
+ * @property {?string} broader           Parent-Concept-ID oder null
+ * @property {string[]} children         Kind-Concept-IDs (rückwaerts aufgeloest)
+ */
 function buildStore(jsonld) {
   const graph = jsonld['@graph'] || [];
 
@@ -54,12 +89,17 @@ function buildStore(jsonld) {
     konvolutCount: jsonld['m3gim:konvolutCount'] || 0,
     exportDate: jsonld['m3gim:exportDate'] || '',
     childToKonvolut: new Map(),
-    // v2-Strukturen (Phase 6)
-    dftHierarchy: new Map(),   // conceptId → { id, prefLabel, broader, children[] }
-    mobilityEvents: new Map(), // eventId → { id, place, date, role, description, recordId }
-    recordToEvents: new Map(), // recordId → eventId[]
-    agentRelations: new Map(), // recordId → RelationEntry[]
-    finances: new Map(),       // recordId → FinanceEntry[]
+    // v2-Strukturen (Phase 6). Shapes: siehe JSDoc oberhalb buildStore().
+    /** @type {Map<string, DftConcept>} */
+    dftHierarchy: new Map(),
+    /** @type {Map<string, MobilityEvent>} */
+    mobilityEvents: new Map(),
+    /** @type {Map<string, string[]>} recordId → eventId[] */
+    recordToEvents: new Map(),
+    /** @type {Map<string, RelationEntry[]>} */
+    agentRelations: new Map(),
+    /** @type {Map<string, FinanceEntry[]>} */
+    finances: new Map(),
   };
 
   // Pass 1: Classify nodes
@@ -132,20 +172,42 @@ function buildStore(jsonld) {
     let minYear = Infinity, maxYear = -Infinity;
     let datedCount = 0;
     let totalLinks = 0;
+    const docTypeCounts = new Map();  // DFT-Id -> Count
+    const statusCounts = new Map();   // Bearbeitungsstand -> Count
+    let processedCount = 0;           // mit mind. einer Verknuepfung
 
+    // docTypeCounts / statusCounts aggregieren nur ueber die SICHTBAREN
+    // (= verknuepften) Kinder -- konsistent mit dem Leitprinzip "nur
+    // bearbeitet" und der sichtbaren Kind-Anzahl im Konvolut-Badge. Sonst
+    // entstehen bizarre Diskrepanzen wie "Konvolut (3)" + "10x Programmheft".
     for (const cid of realChildIds) {
       const child = store.records.get(cid);
       if (!child) continue;
-      totalLinks += countLinks(child);
+      const childLinks = countLinks(child);
+      totalLinks += childLinks;
       const year = extractYear(child['rico:date']);
       if (year) {
         datedCount++;
         if (year < minYear) minYear = year;
         if (year > maxYear) maxYear = year;
       }
+      if (childLinks === 0) continue;  // nur bearbeitete Kinder aggregieren
+      processedCount++;
+      const dft = getDocTypeId(child);
+      if (dft) docTypeCounts.set(dft, (docTypeCounts.get(dft) || 0) + 1);
+      const status = child['m3gim:bearbeitungsstand'];
+      if (status) statusCounts.set(status, (statusCounts.get(status) || 0) + 1);
     }
 
-    const title = folioRecord ? folioRecord['rico:title'] : null;
+    // Konvolut-Titel: bevorzugt aus Folio-Record, sonst aus Sammel-Record
+    // (Sammel-Zeilen ohne Folio bekommen _sammlung-Suffix, siehe
+    // knowledge/xlsx-fixes.md § 13 -- ihr Titel beschreibt das Konvolut
+    // inhaltlich, z. B. "Diverse Zeitungsausschnitte" fuer NIM_006).
+    const sammelChildId = realChildIds.find(cid => cid.endsWith('_sammlung'));
+    const sammelRecord = sammelChildId ? store.records.get(sammelChildId) : null;
+    const title = (folioRecord && folioRecord['rico:title'])
+      || (sammelRecord && sammelRecord['rico:title'])
+      || null;
     let dateDisplay = '';
     if (minYear !== Infinity) {
       dateDisplay = minYear === maxYear
@@ -157,9 +219,12 @@ function buildStore(jsonld) {
       title,
       dateDisplay,
       childCount: realChildIds.length,
+      processedCount,
       folioId,
       totalLinks,
       datedCount,
+      docTypeCounts,   // Map<dftId, count>, absteigend sortierbar
+      statusCounts,    // Map<bearbeitungsstand, count>
     });
   }
 

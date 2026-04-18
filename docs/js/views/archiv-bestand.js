@@ -9,39 +9,55 @@ import { extractYear, formatDate } from '../utils/date-parser.js';
 import { DOKUMENTTYP_LABELS } from '../data/constants.js';
 import { buildInlineDetail } from './archiv-inline-detail.js';
 import { toggleKorb, isInKorb } from '../ui/korb.js';
+import { buildFilterToolbar } from './_archiv-toolbar.js';
+import { onViewNavigate } from '../ui/events.js';
 
 let store = null;
 let container = null;
+let toolbar = null;  // { element, setPerson, setCount, getState }
 let expandedKonvolute = new Set();
 let expandedRecord = null; // only one at a time
 let currentItems = []; // kept in sync so closures never go stale
 let sortDir = 1; // 1 = ascending, -1 = descending
 let currentSortKey = 'signatur';
-let onSortChangeCallback = null;
+
+// Plakate + Tontraeger werden pauschal ausgeblendet -- Forschungs-Fokus
+// liegt auf Schriftgut-Belegen, siehe knowledge/interface-konzept.md.
+const EXCLUDED_DFT = new Set(['plakat', 'tontraeger']);
 
 /**
  * Render the Bestand view into the container.
  * @param {Object} storeRef
  * @param {HTMLElement} containerEl
- * @param {{ search: string, docType: string, sort: string }} filters
  */
-export function renderBestand(storeRef, containerEl, filters, onSortChange) {
+export function renderBestand(storeRef, containerEl) {
   store = storeRef;
   container = containerEl;
-  onSortChangeCallback = onSortChange || null;
-
-  // Konvolute start collapsed — user clicks to expand
 
   clear(container);
+  toolbar = buildFilterToolbar(store, {
+    onChange: () => updateBestandView(),
+  });
+  container.appendChild(toolbar.element);
   container.appendChild(buildTable());
-  updateBestandView(filters);
+  updateBestandView();
+
+  // Cross-navigation: Indizes "Alle im Archiv anzeigen" oder Korb-Klick
+  onViewNavigate('bestand', (detail) => {
+    const { type, name, recordId } = detail || {};
+    if (type === 'personen' && name) {
+      toolbar.setPerson(name);
+    }
+    if (recordId) expandRecord(recordId);
+  });
 }
 
 /**
- * Re-render rows with updated filters (called from orchestrator).
+ * Re-render rows; reads current filter state from the toolbar.
  */
-export function updateBestandView(filters) {
-  const { search = '', docType = '', sort = 'signatur', person = '' } = filters || {};
+function updateBestandView(filters) {
+  const state = filters || (toolbar ? toolbar.getState() : {});
+  const { search = '', docType = '', person = '' } = state;
   const isFiltered = !!(search || docType || person);
   let items = getOrderedItems();
 
@@ -79,18 +95,34 @@ export function updateBestandView(filters) {
     }
   }
 
-  // Use local sort state (from clickable headers) or fallback to filter param
-  const effectiveSort = currentSortKey || sort;
-
-  // Sort (only when not in structural grouping mode)
-  if (isFiltered || effectiveSort !== 'signatur' || sortDir !== 1) {
-    items.sort((a, b) => sortFn(a.record, b.record, effectiveSort) * sortDir);
+  // Sortierung:
+  //   - Bei aktivem Filter: flach sortieren (die Hierarchie ist bereits
+  //     aufgeloest).
+  //   - Bei strukturellem View: Konvolute bleiben Signatur-sortiert, ihre
+  //     Kinder werden *innerhalb* des jeweiligen Konvoluts nach dem gewaehlten
+  //     Key sortiert. Standalone-Records ausserhalb der Konvolute bleiben
+  //     zwischen den Konvoluten an ihrer Signaturposition.
+  if (isFiltered) {
+    items.sort((a, b) => sortFn(a.record, b.record, currentSortKey) * sortDir);
+  } else if (currentSortKey !== 'signatur' || sortDir !== 1) {
+    items = sortChildrenWithinKonvolute(items);
   }
 
   renderRows(items);
 
-  // Return count for counter update
+  // Count-Anzeige aktualisieren (bearbeitete Einheiten, nicht Gesamt-Bestand).
+  // EXCLUDED_DFT (Plakate/Tontraeger) konsistent rausrechnen -- sonst driftet
+  // der Toolbar-Zaehler gegen die tatsaechlich sichtbaren Zeilen.
   const recordCount = items.filter(i => !i.isKonvolut).length;
+  if (toolbar) {
+    const totalBearbeitet = store.allRecords.filter(
+      r => !store.unprocessedIds.has(r['@id'])
+        && !EXCLUDED_DFT.has(getDocTypeId(r))
+    ).length;
+    toolbar.setCount(isFiltered
+      ? `${recordCount} von ${totalBearbeitet} bearbeiteten Einheiten`
+      : `${totalBearbeitet} bearbeitete Einheiten`);
+  }
   return recordCount;
 }
 
@@ -102,7 +134,7 @@ function buildTable() {
     { key: 'titel', label: 'Titel', className: 'archiv-col-titel', title: 'Sortieren nach Titel' },
     { key: 'typ', label: 'Typ', className: 'archiv-col-typ', title: 'Sortieren nach Dokumenttyp' },
     { key: 'datum', label: 'Datum', className: 'archiv-col-datum', title: 'Sortieren nach Datum' },
-    { key: 'links', label: 'Annotationen', className: 'archiv-col-links', title: 'Annotationen zu Personen, Orten, Werken' },
+    { key: 'links', label: 'Verknüpfungen', className: 'archiv-col-links', title: 'Verknüpfungen zu Personen, Orten, Werken, Ereignissen' },
   ];
 
   const headerRow = el('tr');
@@ -120,7 +152,7 @@ function buildTable() {
           sortDir = col.key === 'links' ? -1 : 1; // Links default descending
         }
         updateHeaderIndicators(headerRow, columns);
-        if (onSortChangeCallback) onSortChangeCallback(currentSortKey);
+        updateBestandView();
       },
     }, col.label + arrow);
     headerRow.appendChild(th);
@@ -152,8 +184,12 @@ function getOrderedItems() {
     for (const cid of children) childIds.add(cid);
   }
 
-  // Standalone records (not children of any Konvolut)
-  const standalone = store.allRecords.filter(r => !childIds.has(r['@id']));
+  // Standalone records (not children of any Konvolut) + nur bearbeitete.
+  const standalone = store.allRecords.filter(r =>
+    !childIds.has(r['@id'])
+    && !store.unprocessedIds.has(r['@id'])
+    && !EXCLUDED_DFT.has(getDocTypeId(r))
+  );
 
   // Merge standalone records + Konvolut RecordSets into one sorted list
   const topEntries = [];
@@ -165,15 +201,29 @@ function getOrderedItems() {
   }
   topEntries.sort((a, b) => naturalSort(a.sig, b.sig));
 
-  // Build flat list: Konvolute get their children injected after them
+  // Build flat list: Konvolute get their children injected after them.
+  // Leitprinzip "nur bearbeitet" gilt auch innerhalb von Konvoluten:
+  // Folios ohne Verknuepfungen (unprocessedIds) werden ausgeblendet.
+  // Faellt ein Konvolut dadurch auf 0 Kinder zurueck, verschwindet auch
+  // der Header -- Transparenz ueber den Gesamtbestand kommt aus dem
+  // Quality-Snapshot, nicht aus Platzhaltern in der Liste.
   for (const entry of topEntries) {
     if (entry.type === 'konvolut') {
-      items.push({ record: entry.record, isKonvolut: true, konvolutId: entry.konvolutId });
+      const meta = store.konvolutMeta.get(entry.konvolutId);
+      if ((meta?.totalLinks ?? 0) === 0) continue;  // leere Konvolute raus
       const children = (store.konvolutChildren.get(entry.konvolutId) || [])
         .filter(cid => !store.folioIds.has(cid))
+        .filter(cid => !store.unprocessedIds.has(cid))
         .map(cid => store.records.get(cid))
         .filter(Boolean)
         .sort((a, b) => naturalSort(a['rico:identifier'] || '', b['rico:identifier'] || ''));
+      if (children.length === 0) continue;  // keine bearbeiteten Kinder -> raus
+      items.push({
+        record: entry.record,
+        isKonvolut: true,
+        konvolutId: entry.konvolutId,
+        visibleChildCount: children.length,
+      });
       for (const child of children) {
         items.push({ record: child, isChild: true, konvolutId: entry.konvolutId });
       }
@@ -248,17 +298,30 @@ function renderRows(items) {
     }
 
     const meta = item.isKonvolut ? store.konvolutMeta.get(item.konvolutId) : null;
-    const childCount = meta ? meta.childCount : 0;
+    // Badge zeigt die Anzahl *sichtbarer* bearbeiteter Kinder, nicht die
+    // rohe meta.childCount -- sonst driftet Badge vs. Tabellenzeilen.
+    const childCount = item.visibleChildCount ?? (meta ? meta.childCount : 0);
 
     // Signatur: children show only folio part
     const displaySig = item.isChild
       ? formatChildSignatur(r['rico:identifier'], store.konvolute.get(item.konvolutId)?.['rico:identifier'])
       : sig;
 
-    // Title: Konvolute use derived title from Folio record
-    const displayTitle = item.isKonvolut
-      ? (meta?.title || r['rico:identifier'] || '')
-      : (r['rico:title'] || '(ohne Titel)');
+    // Title: Konvolute use derived title from Folio record.
+    // Kinder, deren Titel identisch zum Konvolut-Titel ist (typisch bei
+    // Programmheft-Konvoluten mit geerbtem Sammeltitel), zeigen leere
+    // Titel-Zelle -- semantisches Rauschen vermeiden, der Kontext steht
+    // im Konvolut-Header.
+    let displayTitle;
+    if (item.isKonvolut) {
+      displayTitle = meta?.title || r['rico:identifier'] || '';
+    } else if (item.isChild) {
+      const childTitle = r['rico:title'] || '';
+      const parentTitle = store.konvolutMeta.get(item.konvolutId)?.title || '';
+      displayTitle = (childTitle && childTitle === parentTitle) ? '' : (childTitle || '');
+    } else {
+      displayTitle = r['rico:title'] || '(ohne Titel)';
+    }
 
     // Date: Konvolute show date range from children, Records show formatted date
     const displayDate = item.isKonvolut
@@ -279,13 +342,8 @@ function renderRows(items) {
       if (links > 0) linksTooltip = buildRecordTooltip(r);
     }
 
-    // Unprocessed marking
-    const isUnprocessed = !item.isKonvolut && store.unprocessedIds && store.unprocessedIds.has(recordId);
-    if (isUnprocessed) rowClass += ' archiv-row--unprocessed';
-
     const tr = el('tr', {
       className: rowClass,
-      title: isUnprocessed ? 'Noch keine Annotationen vorhanden' : '',
       onClick: () => item.isKonvolut ? toggleKonvolut(item.konvolutId) : toggleRecordInline(recordId),
     },
       el('td', { className: 'archiv-col-signatur' },
@@ -300,7 +358,8 @@ function renderRows(items) {
         item.isChild ? (() => {
           const hint = getFolioHint(r, item.konvolutId);
           return hint ? el('span', { className: 'archiv-folio-hint' }, hint) : null;
-        })() : null
+        })() : null,
+        item.isKonvolut ? buildKonvolutChips(meta, item.visibleChildCount) : null,
       ),
       el('td', { className: 'archiv-col-typ' },
         item.isKonvolut
@@ -358,8 +417,94 @@ function toggleKonvolut(konvolutId) {
   renderRows(currentItems);
 }
 
+/**
+ * Meta-Chips unter dem Konvolut-Titel: Top-3-Dokumenttypen + Status-Mix.
+ * Gibt die aggregierten Statistiken aus store.konvolutMeta direkt sichtbar,
+ * ohne dass die Konvolut-Zeile aufgeklappt werden muss.
+ */
+function buildKonvolutChips(meta, visibleChildCount) {
+  if (!meta) return null;
+  const chips = [];
+
+  // Top-3-DocType-Chips (absteigend nach Count, Plakat/Tontraeger werden
+  // im Bestand-Tab sowieso ausgeblendet -> hier nicht mit abgebildet).
+  // Wenn mehr als 3 Typen existieren, wird ein "+N weitere"-Chip angehaengt.
+  if (meta.docTypeCounts && meta.docTypeCounts.size > 0) {
+    const all = [...meta.docTypeCounts.entries()]
+      .filter(([dft]) => !['plakat', 'tontraeger'].includes(dft))
+      .sort((a, b) => b[1] - a[1]);
+    const top = all.slice(0, 3);
+    for (const [dft, count] of top) {
+      const label = DOKUMENTTYP_LABELS[dft] || dft;
+      chips.push(el('span', {
+        className: 'chip chip--compact',
+        dataset: { tip: `${count}\u00d7 ${label}` },
+      }, `${count}\u00d7\u00a0${label}`));
+    }
+    const restTypes = all.slice(3);
+    if (restTypes.length > 0) {
+      const restCount = restTypes.reduce((sum, [, c]) => sum + c, 0);
+      const tipLines = restTypes
+        .map(([dft, c]) => `${c}\u00d7 ${DOKUMENTTYP_LABELS[dft] || dft}`)
+        .join(' \u00b7 ');
+      chips.push(el('span', {
+        className: 'chip chip--compact chip--rest',
+        dataset: { tip: tipLines },
+      }, `+${restCount}\u00a0weitere`));
+    }
+  }
+
+  // Status-Mix als dezenter Untertitel (nur wenn mehrere Stufen).
+  const statusParts = [];
+  if (meta.statusCounts && meta.statusCounts.size > 0) {
+    const ordered = ['abgeschlossen', 'begonnen', 'zurueckgestellt'];
+    for (const st of ordered) {
+      const n = meta.statusCounts.get(st);
+      if (n) statusParts.push(`${n}\u00a0${st}`);
+    }
+  }
+
+  const container = el('span', { className: 'archiv-konvolut-meta' },
+    ...chips,
+    statusParts.length
+      ? el('span', { className: 'archiv-konvolut-status' },
+          statusParts.join(' \u00b7 '))
+      : null,
+  );
+  return container;
+}
+
 function naturalSort(a, b) {
   return a.localeCompare(b, 'de-DE', { numeric: true, sensitivity: 'base' });
+}
+
+/**
+ * Sortiert Kinder innerhalb jedes Konvoluts nach currentSortKey/sortDir,
+ * laesst Konvolut-Header und Standalone-Records an ihrer Position.
+ * Das bewahrt die archivische Hierarchie auch bei Sortierung.
+ */
+function sortChildrenWithinKonvolute(items) {
+  const result = [];
+  let i = 0;
+  while (i < items.length) {
+    const item = items[i];
+    if (!item.isKonvolut) {
+      result.push(item);
+      i++;
+      continue;
+    }
+    result.push(item);
+    i++;
+    // Sammle alle Kinder direkt nach dem Konvolut-Header.
+    const children = [];
+    while (i < items.length && items[i].isChild && items[i].konvolutId === item.konvolutId) {
+      children.push(items[i]);
+      i++;
+    }
+    children.sort((a, b) => sortFn(a.record, b.record, currentSortKey) * sortDir);
+    result.push(...children);
+  }
+  return result;
 }
 
 /** Top-level Hauptbestand records are archival units (Konvolute), not single items.
@@ -477,4 +622,10 @@ export function expandRecord(recordId) {
     const row = document.querySelector('.archiv-row--detail');
     if (row) row.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   });
+}
+
+/** Navigate to a record in the Bestand view (used by Korb-Bookmark-Klick). */
+export function selectArchivRecord(recordId) {
+  if (!recordId || !store) return;
+  expandRecord(recordId);
 }

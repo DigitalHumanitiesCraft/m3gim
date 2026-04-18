@@ -176,22 +176,31 @@ export const WIKIDATA_ICON_SVG = '<svg width="12" height="12" viewBox="0 0 12 12
 // =========================================================================
 
 export const DOKUMENTTYP_LABELS = {
+  // Tatsaechlich in den Daten vorkommende DFT-IDs (Stand 2026-04)
+  'autobiografie': 'Autobiografie',
+  'biographie': 'Biographie',
+  'biographisch': 'Biographisch',
+  'identitaetsdokument': 'Identitätsdokument',
+  'konvolut': 'Konvolut',
+  'korrespondenz': 'Korrespondenz',
+  'notiz': 'Notiz',
+  'photokopie': 'Photokopie',
+  'plakat': 'Plakat',
+  'presse': 'Presse',
+  'programm': 'Programmheft',
+  'quittung': 'Quittung',
+  'repertoireliste': 'Repertoireliste',
+  'rezension': 'Rezension',
+  'tontraeger': 'Tonträger',
+  'typoskript': 'Typoskript',
+  'vertrag': 'Vertrag',
+  'visitenkarte': 'Visitenkarte',
+  // Legacy-Labels (aktuell nicht in Daten, belassen fuer Rueckwaertskompatibilitaet)
   'brief': 'Brief',
   'programmheft': 'Programmheft',
-  'plakat': 'Plakat',
-  'rezension': 'Rezension',
   'zeitungsausschnitt': 'Zeitungsausschnitt',
-  'vertrag': 'Vertrag',
-  'konvolut': 'Konvolut',
-  'quittung': 'Quittung',
-  'biographie': 'Biographie',
-  'typoskript': 'Typoskript',
   'ausweis': 'Ausweis',
   'dokument': 'Dokument',
-  'photokopie': 'Photokopie',
-  'notiz': 'Notiz',
-  'visitenkarte': 'Visitenkarte',
-  'tontraeger': 'Tonträger',
   'telegramm': 'Telegramm',
   'postkarte': 'Postkarte',
   'fotografie': 'Fotografie',
@@ -200,8 +209,33 @@ export const DOKUMENTTYP_LABELS = {
   'manuskript': 'Manuskript',
   'rechnung': 'Rechnung',
   'sammlung': 'Sammlung',
-  'korrespondenz': 'Korrespondenz',
 };
+
+// =========================================================================
+// Sprach-Kuerzel (ISO 639-1) -> lesbare deutsche Labels
+// =========================================================================
+
+export const LANGUAGE_LABELS = {
+  'de': 'Deutsch',
+  'en': 'Englisch',
+  'fr': 'Französisch',
+  'it': 'Italienisch',
+};
+
+/**
+ * Loest einen (ggf. kommaseparierten) Sprach-Wert in lesbare Labels auf.
+ * Beispiel: "en, fr" -> "Englisch, Französisch".
+ * Unbekannte Kuerzel werden unveraendert durchgereicht.
+ */
+export function formatLanguage(value) {
+  if (!value) return '';
+  return String(value)
+    .split(/[,/]/)
+    .map(s => s.trim())
+    .filter(Boolean)
+    .map(code => LANGUAGE_LABELS[code.toLowerCase()] || code)
+    .join(', ');
+}
 
 // =========================================================================
 // 5-Year Periods for Matrix
@@ -237,11 +271,15 @@ export const ROLE_CLUSTER = {
   'AUFFÜHRUNGSORT':   'ort',
   'ERSCHEINUNGSORT':  'ort',
   'ABSENDEORT':       'ort',
+  'ABREISEORT':       'ort',
   'ZIELORT':          'ort',
   'ENTSTEHUNGSORT':   'ort',
   'WOHNORT':          'ort',
   'AUFFUEHRUNG':      'ort',
   'AUFFÜHRUNG':       'ort',
+  'AUFTRITT':         'ort',
+  'PROBE':            'ort',
+  'GENERALPROBE':     'ort',
   'GASTSPIEL':        'ort',
   'SPIELZEIT':        'ort',
   'PREMIERE':         'ort',
@@ -249,6 +287,7 @@ export const ROLE_CLUSTER = {
   'WIEDERAUFNAHME':   'ort',
   'ENTSTEHUNG':       'ort',
   'AUFTRAG':          'ort',
+  'REPERTOIRE':       'ort',
   'ERWAEHNT':         'ort',
   'ERWÄHNT':          'ort',
 
@@ -281,6 +320,7 @@ export const ROLE_CLUSTER = {
   'AGENT':            'person',
   'VERMITTLER':       'person',
   'ADRESSAT':         'person',
+  'ABSENDER':         'person',
   'EMPFAENGER':       'person',
   'EMPFÄNGER':        'person',
   'UNTERZEICHNER':    'person',
@@ -291,6 +331,7 @@ export const ROLE_CLUSTER = {
 
   // AgRelOn-Beziehungen
   'ARBEITGEBER':         'beziehung',
+  'VERANSTALTER':        'person',
   'KORRESPONDENZ':       'beziehung',
   'BERUFLICHER KONTAKT': 'beziehung',
   'PATRON':              'beziehung',
@@ -361,10 +402,12 @@ export const ROLE_TO_SECTION = {
   'agent':             'mitwirkende',
   'vermittler':        'mitwirkende',
   'adressat':          'mitwirkende',
+  'absender':          'mitwirkende',
   'empfänger':         'mitwirkende',
   'empfaenger':        'mitwirkende',
   'unterzeichner':     'mitwirkende',
   'auftraggeber':      'mitwirkende',
+  'veranstalter':      'mitwirkende',
 
   // Erwaehnt
   'erwähnt':           'erwaehnt',
@@ -374,6 +417,35 @@ export const ROLE_TO_SECTION = {
 export function sectionForRole(role) {
   if (!role) return null;
   return ROLE_TO_SECTION[String(role).trim().toLowerCase()] || null;
+}
+
+// =========================================================================
+// STE-Chip-Prefix: Datums-Rollen auf Ereignis-/Ort-Rollen mappen.
+// Die Pipeline emittiert m3gim:eventRole im STE mit der Datums-Property
+// aus der XLSX (z. B. "auffuehrungsdatum"). Im Ort-und-Ereignis-Chip
+// (Ort · Datum) ist eine Ort-/Ereignis-Rolle semantisch stimmiger.
+// =========================================================================
+
+export const STE_ROLE_DISPLAY = {
+  absendedatum:       'ABSENDEORT',
+  empfangsdatum:      'EMPFANGSORT',
+  erscheinungsdatum:  'ERSCHEINUNGSORT',
+  ausstellungsdatum:  'AUSSTELLUNGSORT',
+  abreisedatum:       'ABREISEORT',
+  auffuehrungsdatum:  'AUFFÜHRUNG',
+  auftrittsdatum:     'AUFTRITT',
+  premieredatum:      'PREMIERE',
+  probendatum:        'PROBE',
+  probenbeginn:       'PROBENBEGINN',
+  ausstrahlungsdatum: 'AUSSTRAHLUNG',
+  ueberweisungsdatum: 'ÜBERWEISUNG',
+  gespraechsdatum:    'GESPRÄCH',
+};
+
+export function steChipPrefix(eventRole) {
+  if (!eventRole) return 'EREIGNIS';
+  const key = String(eventRole).trim().toLowerCase();
+  return STE_ROLE_DISPLAY[key] || String(eventRole).toUpperCase();
 }
 
 // =========================================================================

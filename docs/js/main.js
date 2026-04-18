@@ -6,7 +6,8 @@
 import { loadArchive } from './data/loader.js';
 import { initRouter, getState } from './ui/router.js';
 import { initKorb, onKorbChange, getKorbCount } from './ui/korb.js';
-import { renderArchiv, selectArchivRecord } from './views/archiv.js';
+import { renderBestand, selectArchivRecord } from './views/archiv-bestand.js';
+import { renderChronik } from './views/archiv-chronik.js';
 import { renderIndizes, expandEntry } from './views/indizes.js';
 import { renderKorb } from './views/korb.js';
 import { renderMobilitaetsAtlas } from './views/mobilitaets-atlas.js';
@@ -22,7 +23,8 @@ const renderedTabs = new Set();
 
 /** Tab renderer registry — maps tab name to render function. */
 const TAB_RENDERERS = new Map([
-  ['archiv',             (s, c) => renderArchiv(s, c)],
+  ['bestand',            (s, c) => renderBestand(s, c)],
+  ['chronik',            (s, c) => renderChronik(s, c)],
   ['indizes',            (s, c) => renderIndizes(s, c)],
   ['mobilitaets-atlas',  (s, c) => renderMobilitaetsAtlas(s, c)],
   ['repertoire',         (s, c) => renderRepertoire(s, c)],
@@ -57,13 +59,13 @@ async function init() {
       onRecord: (recordId) => {
         if (!recordId) return;
         const { activeTab } = getState();
-        if (activeTab === 'archiv') {
+        if (activeTab === 'bestand') {
           // Expand record inline in the Bestand view
           selectArchivRecord(recordId);
           return;
         }
-        // Navigate to Archiv tab and show record inline
-        window.location.hash = '#archiv/' + encodeURIComponent(recordId);
+        // Navigate to Bestand tab and show record inline
+        window.location.hash = '#bestand/' + encodeURIComponent(recordId);
       },
       onIndex: (gridType, entityName) => {
         renderTab('indizes');
@@ -106,7 +108,8 @@ function renderTab(tab) {
 /** Kurze Diagnostik beim erstmaligen Öffnen eines Tabs: welche Datenmengen nutzt die View? */
 function logTabActivation(tab, s) {
   const profile = {
-    archiv:              () => ({ records: s.allRecords.length, bySignatur: s.bySignatur.size, finances: s.finances.size, agentRel: s.agentRelations.size }),
+    bestand:             () => ({ records: s.allRecords.length, bearbeitet: s.allRecords.length - s.unprocessedIds.size, finances: s.finances.size, agentRel: s.agentRelations.size }),
+    chronik:             () => ({ records: s.allRecords.length, bearbeitet: s.allRecords.length - s.unprocessedIds.size }),
     indizes:             () => ({ persons: s.persons.size, orgs: s.organizations.size, locs: s.locations.size, works: s.works.size, agentRel: s.agentRelations.size, relResolved: s.agentRelationResolvedCount || 0 }),
     'mobilitaets-atlas': () => {
       const all = [...s.mobilityEvents.values()];

@@ -5,7 +5,7 @@
 import { el, clear } from '../utils/dom.js';
 import { formatSignatur, getDocTypeId, ensureArray, formatDocType } from '../utils/format.js';
 import { formatDate } from '../utils/date-parser.js';
-import { DOKUMENTTYP_LABELS, WIKIDATA_ICON_SVG } from '../data/constants.js';
+import { DOKUMENTTYP_LABELS, WIKIDATA_ICON_SVG, formatLanguage } from '../data/constants.js';
 import { getKorbItems, removeFromKorb, clearKorb, onKorbChange } from '../ui/korb.js';
 import { navigateToIndex } from '../ui/router.js';
 
@@ -57,8 +57,8 @@ function renderList() {
       el('span', {
         html: '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>',
       }),
-      el('p', { className: 'korb-empty__text' }, 'Noch keine Dokumente gesammelt.'),
-      el('p', { className: 'korb-empty__hint' }, 'Klicken Sie das Lesezeichen-Symbol neben einem Dokument im Archiv oder in den Indizes.'),
+      el('p', { className: 'korb-empty__text' }, 'Der Korb ist eine Merkliste für Ihre Recherche.'),
+      el('p', { className: 'korb-empty__hint' }, 'Klicken Sie das Lesezeichen-Symbol \u{1F516} rechts neben einem Dokument im Bestand oder den Indizes, um es hier zu sammeln. Auswahl lässt sich später als CSV oder BibTeX exportieren.'),
     ));
     container.appendChild(wrapper);
     return;
@@ -113,7 +113,7 @@ function renderCard(record) {
   const date = formatDate(record['rico:date']);
   if (date) metaParts.push(date);
   const lang = record['rico:hasOrHadLanguage'];
-  if (lang) metaParts.push(typeof lang === 'string' ? lang : String(lang));
+  if (lang) metaParts.push(formatLanguage(lang));
   const extent = record['rico:hasExtent'];
   if (extent) metaParts.push(typeof extent === 'string' ? extent : String(extent));
   const status = record['m3gim:bearbeitungsstand'];
