@@ -141,75 +141,60 @@ def main() -> int:
         #     Regression) oder ein Key beim Refactor still wegfliegt.
         stamp_expectations = {
             "bestand":   ["konvolute", "records", "sort"],
-            "chronik":   ["bearbeitet", "perioden", "perioden-leer", "modus"],
+            "chronik":   ["records", "jahre-belegt", "undatiert", "spanne"],
             "statistik": ["records", "konvolute", "events", "personen", "sektionen"],
             "indizes":   ["personen", "organisationen", "orte", "werke"],
         }
         for view, required in stamp_expectations.items():
             results.append(expect_stamp(stamps, view, required))
 
-        # --- Click-Canary Chronik: Periode aufklappen muss Records sichtbar machen.
-        #     Fing den currentFilters-Silent-Bug nicht, weil die alte Suite nur
-        #     rendert, nicht klickt. Hier explizit pruefen.
+        # --- Canary Chronik: Scroll-Zeitstrahl (E-88) rendert Jahres-Zeilen
+        #     1919..2009 (+ Ausreisser), leere Jahre als Umriss-Dots, Records
+        #     als chronik-point-Chips. Klick auf Punkt = selectRecord -> springt
+        #     in Bestand und oeffnet Inline-Detail.
         try:
             page.locator('[data-tab="chronik"]').first.click()
             page.wait_for_timeout(400)
-            # Session 36 M2 + M3.5: alle 8 bekannten Perioden inkl. leerer
-            # muessen gerendert sein (Erschliessungsspiegel). 'Undatiert'
-            # nur wenn befuellt. Leere Perioden MUESSEN leer sein -- ein
-            # Bug, der sie befuellt, soll fangen (deshalb not just DOM-
-            # Presence).
-            period_count = page.locator('#tab-chronik .chronik-period').count()
-            empty_count = page.locator(
-                '#tab-chronik .chronik-period--empty'
+            year_count = page.locator('#tab-chronik .chronik-year').count()
+            empty_years = page.locator(
+                '#tab-chronik .chronik-year--empty'
             ).count()
-            records_in_empty = page.locator(
-                '#tab-chronik .chronik-period--empty .chronik-record'
+            points_in_empty = page.locator(
+                '#tab-chronik .chronik-year--empty .chronik-point'
             ).count()
-            if period_count >= 8 and empty_count >= 2 and records_in_empty == 0:
-                results.append(("OK", "chronik:empty-periods      ",
-                                f"{period_count} Perioden, {empty_count} leer, 0 Records in leeren"))
+            # Erwartung: mindestens 91 Jahre (1919..2009), viele leer, keine
+            # Records in leeren Jahres-Zeilen (Form-ist-Signal-Prinzip).
+            if year_count >= 90 and empty_years >= 10 and points_in_empty == 0:
+                results.append(("OK", "chronik:year-grid          ",
+                                f"{year_count} Jahre, {empty_years} leer, 0 Punkte in leeren"))
             else:
-                results.append(("FAIL", "chronik:empty-periods      ",
-                                f"Perioden={period_count}, leer={empty_count}, "
-                                f"Records-in-leer={records_in_empty}"))
-            header = page.locator('#tab-chronik .chronik-period__header').first
-            errs_before = len(global_errors)
-            header.click()
-            page.wait_for_timeout(300)
-            body_visible = page.locator(
-                '#tab-chronik .chronik-period__body'
-            ).count()
-            records_visible = page.locator(
-                '#tab-chronik .chronik-record'
-            ).count()
-            new_errs = expect_no_new_errors(global_errors, errs_before)
-            if body_visible > 0 and records_visible > 0 and not new_errs:
-                results.append(("OK", "click:chronik-period       ",
-                                f"body+{records_visible} Records, 0 Konsole"))
-            else:
-                results.append(("FAIL", "click:chronik-period       ",
-                                f"body={body_visible}, rec={records_visible}, errs={len(new_errs)}"))
-                for e in new_errs[:2]:
-                    results.append(("  ", " " * 24, e[:120]))
+                results.append(("FAIL", "chronik:year-grid          ",
+                                f"Jahre={year_count}, leer={empty_years}, "
+                                f"Punkte-in-leer={points_in_empty}"))
 
-            # Record aufklappen -> Inline-Detail
-            if records_visible > 0:
+            # Klick auf einen Chronik-Punkt: muss selectRecord triggern und
+            # in Bestand springen.
+            points = page.locator('#tab-chronik .chronik-point')
+            if points.count() > 0:
                 errs_before = len(global_errors)
-                page.locator('#tab-chronik .chronik-record').first.click()
-                page.wait_for_timeout(300)
-                detail_visible = page.locator(
-                    '#tab-chronik .chronik-record__detail'
-                ).count()
+                points.first.click()
+                page.wait_for_timeout(500)
+                detail_visible = page.locator('.inline-detail').count()
+                active_tab = page.locator('[data-tab][aria-selected="true"]').get_attribute('data-tab')
                 new_errs = expect_no_new_errors(global_errors, errs_before)
-                if detail_visible > 0 and not new_errs:
-                    results.append(("OK", "click:chronik-record       ",
-                                    "Inline-Detail sichtbar, 0 Konsole"))
+                if detail_visible > 0 and active_tab == 'bestand' and not new_errs:
+                    results.append(("OK", "click:chronik-point        ",
+                                    "springt in Bestand + Inline-Detail, 0 Konsole"))
                 else:
-                    results.append(("FAIL", "click:chronik-record       ",
-                                    f"detail={detail_visible}, errs={len(new_errs)}"))
+                    results.append(("FAIL", "click:chronik-point        ",
+                                    f"detail={detail_visible}, tab={active_tab}, errs={len(new_errs)}"))
+                    for e in new_errs[:2]:
+                        results.append(("  ", " " * 24, e[:120]))
+            else:
+                results.append(("WARN", "click:chronik-point        ",
+                                "keine Punkte im Zeitstrahl gefunden"))
         except Exception as e:
-            results.append(("WARN", "click:chronik-period       ",
+            results.append(("WARN", "chronik:year-grid          ",
                             f"check uebersprungen: {e}"))
 
         # --- Anker-Titel: im DOM erreichbar? ---
