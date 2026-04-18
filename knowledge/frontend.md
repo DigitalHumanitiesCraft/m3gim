@@ -26,7 +26,7 @@
 - `knowledge/` — Kanonische Wissensbasis
 - `tests/` — Pipeline-Testsuite (siehe [tests.md](tests.md))
 
-### Frontend-Module (Stand nach Session 34)
+### Frontend-Module
 
 | Pfad | Zweck |
 |------|-------|
@@ -57,7 +57,7 @@ Fünf Content-Seiten (`about.html`, `projekt.html`, `modell.html`, `hilfe.html`,
 
 ## Routing
 
-- Hash-basiert in `router.js`. Der Katalog `TABS` enthält acht Einträge — `bestand`, `chronik`, `indizes`, `mobilitaets-atlas`, `repertoire`, `biogramm`, `netzwerk`, `korb`. Sichtbar in der Tab-Bar sind aktuell nur die drei ersten (`VISIBLE_TABS`-Set, E-81); die restlichen Buttons sind per `hidden` ausgeblendet. Hash-URLs auf versteckte Tabs werden in `parseHash` auf `bestand` umgebogen. `archiv` bleibt als Legacy-Alias für alte Bookmarks auf `bestand` gemappt.
+- Hash-basiert in `router.js`. Der Katalog `TABS` listet alle registrierten Tabs (Bestand, Chronik, Statistik, Indizes, Mobilitaets-Atlas, Repertoire, Biogramm, Netzwerk, Korb). Sichtbar in der Tab-Bar sind die Einträge im `VISIBLE_TABS`-Set (aktuell Bestand · Chronik · Statistik · Indizes, E-81); die restlichen Buttons sind per `hidden` ausgeblendet. Hash-URLs auf versteckte Tabs werden in `parseHash` auf `bestand` umgebogen. `archiv` bleibt als Legacy-Alias für alte Bookmarks auf `bestand` gemappt.
 - Deep Links: `#bestand/UAKUG/NIM_003%20Folio%2001` für Datensatzkontext
 - Info-Seiten als eigenständige HTML-Dateien (normale Links, kein Hash-Routing)
 - `navigateToIndex(gridType, entityName)` für Cross-Tab-Navigation, `navigateToView(tab, {recordId})` für Sprung aus anderen Views ins Bestand-Tab
