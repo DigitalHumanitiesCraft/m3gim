@@ -8,6 +8,7 @@ import { formatSignatur, getDocTypeId, truncate } from '../utils/format.js';
 import { PERSONEN_FARBEN, DOKUMENTTYP_LABELS, WIKIDATA_ICON_SVG, AGRELON_LABELS } from '../data/constants.js';
 import { selectRecord, navigateToView } from '../ui/router.js';
 import { toggleKorb, isInKorb } from '../ui/korb.js';
+import { logStamp } from '../utils/env.js';
 
 let store = null;
 let container = null;
@@ -194,11 +195,12 @@ function renderAllGrids(wrapper) {
     let visible = all;
     visible = applyFacetFilter(visible, gridKey);
     if (search) visible = visible.filter(e => config.searchFields(e).toLowerCase().includes(search));
-    stampParts.push(`${gridKey}:${visible.length}/${total}`);
+    stampParts.push([gridKey, `${visible.length}/${total}`]);
   }
-  console.log(
-    `[indizes] ${stampParts.join(' | ')}${activeFilter ? ` | facet:${activeFilter.gridKey}=${activeFilter.name}` : ''}`
-  );
+  if (activeFilter) {
+    stampParts.push(['facet', `${activeFilter.gridKey}=${activeFilter.name}`]);
+  }
+  logStamp('indizes', stampParts);
 }
 
 /** Set or clear the cross-grid facet filter */

@@ -9,6 +9,7 @@ import { extractYear } from '../utils/date-parser.js';
 import { DOKUMENTTYP_LABELS } from '../data/constants.js';
 import { buildInlineDetail } from './archiv-inline-detail.js';
 import { buildFilterToolbar } from './_archiv-toolbar.js';
+import { logStamp } from '../utils/env.js';
 
 let store = null;
 let container = null;
@@ -226,8 +227,11 @@ function updateChronikView() {
       note
         ? el('span', {
             className: 'chronik-period__note chronik-period__note--editorial',
-            title: KARRIERE_NOTIZ_TOOLTIP,
-          }, note)
+            dataset: { tip: KARRIERE_NOTIZ_TOOLTIP, tipWrap: '' },
+          },
+            el('span', { className: 'chronik-period__editorial-marker' }, 'red.'),
+            note,
+          )
         : null,
       period === 'Undatiert'
         ? el('span', { className: 'chronik-period__note' }, 'ohne Datumsangabe in der Quelle')
@@ -384,9 +388,15 @@ function updateChronikView() {
   }
   const periodenBelegt = grouped.size;
   const periodenLeer = PERIOD_ORDER.filter(p => p !== 'Undatiert' && !grouped.has(p)).length;
-  console.log(
-    `[chronik] bearbeitet:${sichtbar} | perioden:${periodenBelegt} | perioden-leer:${periodenLeer} | undatiert:${undatiert} | ohne-${currentGrouping}:${ohneCount} | modus:${currentGrouping}${isFiltered ? ' | gefiltert' : ''}`
-  );
+  logStamp('chronik', [
+    ['bearbeitet', sichtbar],
+    ['perioden', periodenBelegt],
+    ['perioden-leer', periodenLeer],
+    ['undatiert', undatiert],
+    [`ohne-${currentGrouping}`, ohneCount],
+    ['modus', currentGrouping],
+    ['gefiltert', isFiltered ? 'ja' : ''],
+  ]);
 
   // Return count for counter update
   return records.length;

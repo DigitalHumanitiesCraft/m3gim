@@ -64,9 +64,14 @@ export function buildFilterToolbar(store, { initial = {}, onChange } = {}) {
 
   const countEl = el('span', {
     className: 'archiv-count',
-    title: 'Bearbeitet = Record hat mindestens eine Verkn\u00fcpfung '
-      + '(Schicht 1 + 2 erschlossen). Plakate und Tontr\u00e4ger sind ausgeblendet. '
-      + 'Vollst\u00e4ndige Bestandszahlen siehe data/reports/quality-snapshot.md.',
+    dataset: {
+      tip: 'Bearbeitet = Record hat mindestens eine Verkn\u00fcpfung '
+        + '(Schicht 1 + 2 erschlossen). Plakate und Tontr\u00e4ger sind '
+        + 'ausgeblendet. Vollst\u00e4ndige Bestandszahlen siehe '
+        + 'data/reports/quality-snapshot.md.',
+      tipWrap: '',
+      tipPos: 'bottom-left',
+    },
   });
 
   function resetAll() {

@@ -400,7 +400,6 @@ export const EVENT_ROLE_TO_MOBILITY_CLUSTER = {
   'spielzeit':         'institutionell',
   'spielzeitVon':      'institutionell',
   'spielzeitBis':      'institutionell',
-  'auftrag':           'institutionell',
 
   // Korrespondenz + Reise
   'absendedatum':      'korrespondenz',
@@ -412,18 +411,26 @@ export const EVENT_ROLE_TO_MOBILITY_CLUSTER = {
   'ausstrahlung':      'diskursiv',
   'ausstrahlungsdatum':'diskursiv',
 
-  // Biografische Mobilitaet (Ausweise, Wohnsitz, Entstehung des Dokuments)
+  // Biografische Mobilitaet (Ausweise, Wohnsitz)
   'ausstellungsdatum': 'biografisch',
   'wohnort':           'biografisch',
-  'entstehung':        'biografisch',
   'gespräch':          'biografisch',
   'gespraech':         'biografisch',
-  'ueberweisung':      'biografisch',
-  'überweisung':       'biografisch',
 
   // Neutrale Kennzeichnung
   'erwähnt':           null,
   'erwaehnt':          null,
+
+  // Klaerungsbedarf: nicht in datenmodell.md § 5 als Mobilitaets-Rolle
+  // belegt -- bewusst auf null statt willkuerlich einzuordnen.
+  // TODO M3.5-Review (Session 36): mit Erschliessungsteam klaeren.
+  'auftrag':           null,  // Werks-/Vertrags-/Auftritts-Auftrag? Unklar.
+  'entstehung':        null,  // Werk- oder Dokumententstehung? Unklar.
+  // Finanzrolle (datenmodell.md § 5 Finanzrollen) -- gehoert nicht in
+  // Mobilitaetssichten. Hier fuer den Test explizit als nicht-Mobilitaet
+  // markiert; die Darstellung erfolgt ueber das Finanzen-Cluster.
+  'ueberweisung':      null,
+  'überweisung':       null,
 };
 
 export function mobilityClusterFor(eventRole) {

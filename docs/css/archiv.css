@@ -641,15 +641,17 @@
 }
 
 /* Dichte-Mikro-Balken: Anteil dieser Periode am max. belegten Periodenwert.
-   Sichtbar macht Luecken ohne Expansion (Session 36, M2). */
+   Sichtbar macht Luecken ohne Expansion (Session 36, M2 + M3.5). */
 .chronik-period__density {
   display: inline-block;
-  width: 48px;
-  height: 6px;
+  width: 64px;
+  height: 10px;
   background: var(--color-cream, #f4ede0);
+  border: 1px solid var(--color-parchment, #ede5d8);
   border-radius: 2px;
   overflow: hidden;
-  margin-left: var(--space-1);
+  margin-left: var(--space-2);
+  vertical-align: middle;
 }
 
 .chronik-period__density-bar {
@@ -657,13 +659,35 @@
   height: 100%;
   background: var(--color-kug-blau, #004A8F);
   transition: width var(--transition-fast);
+  /* Sicherstellen, dass 0-Breite-Balken den Track sichtbar laesst;
+     das Ausbleiben des Balkens ist selbst das Signal. */
+  min-width: 0;
 }
 
-/* Editorial-Markierung fuer Karriere-Notizen -- der Tooltip erklaert,
-   dass es redaktionelle Einordnung ist, nicht aus Metadaten generiert. */
+/* Editorial-Markierung fuer Karriere-Notizen:
+   sichtbarer "red."-Praefix + Dotted-Underline + Tooltip via data-tip.
+   Trennt Daten (aus Metadaten) von Deutung (redaktionell) fuer alle
+   Leser:innen sichtbar -- nicht nur als Hover-Tooltip. */
 .chronik-period__note--editorial {
   border-bottom: 1px dotted var(--color-text-tertiary);
   cursor: help;
+}
+
+.chronik-period__editorial-marker {
+  display: inline-block;
+  margin-right: var(--space-1);
+  padding: 0 4px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-style: normal;
+  font-weight: var(--weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-tertiary);
+  background: var(--color-cream, #f4ede0);
+  border: 1px solid var(--color-parchment, #ede5d8);
+  border-radius: 2px;
+  vertical-align: 1px;
 }
 
 /* Leere Perioden bleiben sichtbar, wirken gedimmt -- Erschliessungsspiegel. */

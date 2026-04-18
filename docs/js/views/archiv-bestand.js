@@ -11,6 +11,7 @@ import { buildInlineDetail } from './archiv-inline-detail.js';
 import { toggleKorb, isInKorb } from '../ui/korb.js';
 import { buildFilterToolbar } from './_archiv-toolbar.js';
 import { onViewNavigate } from '../ui/events.js';
+import { logStamp } from '../utils/env.js';
 
 let store = null;
 let container = null;
@@ -126,9 +127,12 @@ function updateBestandView(filters) {
   }
 
   // Kompakter State-Stempel fuer Playwright + manuelles Debugging.
-  console.log(
-    `[bestand] konvolute:${konvolutCount} | records:${recordCount} | sort:${currentSortKey}${sortDir === -1 ? '-desc' : ''}${isFiltered ? ' | gefiltert' : ''}`
-  );
+  logStamp('bestand', [
+    ['konvolute', konvolutCount],
+    ['records', recordCount],
+    ['sort', `${currentSortKey}${sortDir === -1 ? '-desc' : ''}`],
+    ['gefiltert', isFiltered ? 'ja' : ''],
+  ]);
 
   return recordCount;
 }
