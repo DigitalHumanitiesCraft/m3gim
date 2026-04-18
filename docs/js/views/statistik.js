@@ -10,6 +10,7 @@
 import { clear, el } from '../utils/dom.js';
 import { logStamp } from '../utils/env.js';
 import { getDocTypeId } from '../utils/format.js';
+import { mobilityClusterFor } from '../data/constants.js';
 
 export function renderStatistik(store, container) {
   clear(container);
@@ -21,7 +22,8 @@ export function renderStatistik(store, container) {
 
   const body = el('div', { className: 'statistik__sections' });
   body.appendChild(buildBestandSection(store));
-  body.appendChild(placeholderSection('Mobilitaetssichten + Geografie', 'M2'));
+  body.appendChild(buildMobilitaetSection(store));
+  body.appendChild(buildGeografieSection(store));
   body.appendChild(placeholderSection('Netzwerk + Repertoire', 'M3'));
   body.appendChild(placeholderSection('Qualitaet + Finanzen', 'M4'));
   wrap.appendChild(body);
@@ -30,6 +32,8 @@ export function renderStatistik(store, container) {
 
   const docTypes = aggregateDocTypes(store);
   const status = aggregateBearbeitungsstatus(store);
+  const sichten = aggregateSichten(store);
+  const places = aggregatePlaces(store);
 
   logStamp('statistik', [
     ['records', store.allRecords.length],
@@ -40,6 +44,8 @@ export function renderStatistik(store, container) {
     ['doctypes', docTypes.length],
     ['abgeschlossen', status.abgeschlossen],
     ['unbearbeitet', status.unbearbeitet],
+    ['sichten', sichten.filter(s => s.count > 0).length],
+    ['orte', places.length],
   ]);
 }
 
@@ -159,6 +165,175 @@ function aggregateBearbeitungsstatus(store) {
     if (store.unprocessedIds.has(rec['@id'])) out.unbearbeitet++;
   }
   return out;
+}
+
+// ---------------------------------------------------------------------------
+// § 2 Mobilitaetssichten
+// ---------------------------------------------------------------------------
+
+const SICHTEN = [
+  { id: 'performativ',    label: 'Performativ',    desc: 'Auftritte, Gastspiele, Premieren' },
+  { id: 'institutionell', label: 'Institutionell', desc: 'Spielzeit-Engagements, Ensemble-Zugehoerigkeit' },
+  { id: 'korrespondenz',  label: 'Korrespondenz',  desc: 'Briefverkehr, Reisedaten' },
+  { id: 'diskursiv',      label: 'Diskursiv',      desc: 'Rezensionen, Rundfunk, Druckerscheinungen' },
+  { id: 'biografisch',    label: 'Biografisch',    desc: 'Ausweise, Wohnsitz, persoenliche Dokumente' },
+];
+
+function aggregateSichten(store) {
+  const buckets = new Map(SICHTEN.map(s => [s.id, { ...s, count: 0, example: null }]));
+  let unklassifiziert = 0;
+  let unklassifiziertExample = null;
+  for (const ev of store.mobilityEvents.values()) {
+    const cluster = mobilityClusterFor(ev.role);
+    if (cluster && buckets.has(cluster)) {
+      const b = buckets.get(cluster);
+      b.count++;
+      if (!b.example) b.example = ev;
+    } else {
+      unklassifiziert++;
+      if (!unklassifiziertExample) unklassifiziertExample = ev;
+    }
+  }
+  const rows = [...buckets.values()];
+  if (unklassifiziert > 0) {
+    rows.push({
+      id: 'neutral', label: 'Nicht klassifiziert',
+      desc: 'Rollen ausserhalb der fuenf Sichten (erwaehnt, auftrag, entstehung)',
+      count: unklassifiziert, example: unklassifiziertExample,
+    });
+  }
+  return rows;
+}
+
+function buildMobilitaetSection(store) {
+  const section = el('section', { className: 'stat-section' });
+  section.appendChild(el('h3', { className: 'stat-section__title' },
+    'Die fuenf Mobilitaetssichten'));
+  section.appendChild(el('p', { className: 'stat-section__lead' },
+    'Spatiotemporal-Events werden nach der '
+    + 'Rolle im Forschungsrahmen klassifiziert. Die Farben entsprechen den '
+    + 'Chronik-Chips -- orthogonal zu den Mobilitaetstypen in '
+    + 'forschungsrahmen.md.'));
+
+  const grid = el('div', { className: 'statistik-sichten' });
+  const total = store.mobilityEvents.size;
+  for (const s of aggregateSichten(store)) {
+    grid.appendChild(buildSichtCard(s, total, store));
+  }
+  section.appendChild(grid);
+
+  return section;
+}
+
+function buildSichtCard(sicht, total, store) {
+  const pct = total ? Math.round((sicht.count / total) * 100) : 0;
+  const card = el('article', {
+    className: `statistik-sicht statistik-sicht--${sicht.id}`,
+  });
+  card.appendChild(el('h4', { className: 'statistik-sicht__label' }, sicht.label));
+  card.appendChild(el('div', { className: 'statistik-sicht__value' },
+    String(sicht.count)));
+  card.appendChild(el('div', { className: 'statistik-sicht__pct' },
+    `${pct}\u2009% der Events`));
+  card.appendChild(el('p', { className: 'statistik-sicht__desc' }, sicht.desc));
+  if (sicht.example && sicht.example.recordId) {
+    const exRec = store.records.get(sicht.example.recordId);
+    const title = (exRec && exRec['rico:title']) || sicht.example.recordId;
+    const snippet = title.length > 72 ? title.slice(0, 70) + '...' : title;
+    const link = el('a', {
+      className: 'statistik-sicht__example',
+      href: `#bestand/${encodeURIComponent(sicht.example.recordId)}`,
+      title: 'Beispiel-Datensatz oeffnen',
+    }, `Beispiel: ${snippet}`);
+    card.appendChild(link);
+  }
+  return card;
+}
+
+// ---------------------------------------------------------------------------
+// § 3 Geografie
+// ---------------------------------------------------------------------------
+
+function aggregatePlaces(store) {
+  const map = new Map();
+  for (const ev of store.mobilityEvents.values()) {
+    if (!ev.place) continue;
+    const key = ev.placeWikidata || ev.place;
+    if (!map.has(key)) {
+      map.set(key, { name: ev.place, qid: ev.placeWikidata || null, count: 0 });
+    }
+    map.get(key).count++;
+  }
+  return [...map.values()].sort((a, b) => b.count - a.count);
+}
+
+function eventYearSpan(store) {
+  let minY = Infinity, maxY = -Infinity, datedCount = 0;
+  for (const ev of store.mobilityEvents.values()) {
+    if (typeof ev.date !== 'string' || ev.date.length < 4) continue;
+    const y = parseInt(ev.date.slice(0, 4), 10);
+    if (!Number.isFinite(y)) continue;
+    datedCount++;
+    if (y < minY) minY = y;
+    if (y > maxY) maxY = y;
+  }
+  if (!datedCount) return null;
+  return { from: minY, to: maxY, datedCount };
+}
+
+function buildGeografieSection(store) {
+  const section = el('section', { className: 'stat-section' });
+  section.appendChild(el('h3', { className: 'stat-section__title' }, 'Geografie'));
+  section.appendChild(el('p', { className: 'stat-section__lead' },
+    'Aus den Spatiotemporal-Events abgeleitet: welche Orte wie oft als '
+    + 'Ereignisort belegt sind, plus die Zeitspanne der datierten Events.'));
+
+  const places = aggregatePlaces(store).slice(0, 10);
+  const placesWrap = el('div', { className: 'stat-subsection' });
+  placesWrap.appendChild(el('h4', { className: 'stat-subsection__title' },
+    'Top 10 Orte'));
+  const list = el('ul', { className: 'stat-bars' });
+  const max = places[0]?.count || 1;
+  for (const p of places) {
+    const li = el('li', { className: 'stat-bars__row' });
+    const label = p.qid
+      ? el('a', {
+          className: 'stat-bars__label stat-bars__label--link',
+          href: `https://www.wikidata.org/wiki/${String(p.qid).replace(/^wd:/, '')}`,
+          target: '_blank',
+          rel: 'noopener',
+          title: `Wikidata: ${p.qid}`,
+        }, p.name)
+      : el('span', { className: 'stat-bars__label' }, p.name);
+    const track = el('div', { className: 'stat-bars__track' });
+    const fill = el('div', { className: 'stat-bars__fill' });
+    fill.style.width = `${Math.max(2, Math.round((p.count / max) * 100))}%`;
+    track.appendChild(fill);
+    const count = el('span', { className: 'stat-bars__count' }, String(p.count));
+    li.appendChild(label);
+    li.appendChild(track);
+    li.appendChild(count);
+    list.appendChild(li);
+  }
+  placesWrap.appendChild(list);
+  section.appendChild(placesWrap);
+
+  const span = eventYearSpan(store);
+  const spanWrap = el('div', { className: 'stat-subsection' });
+  spanWrap.appendChild(el('h4', { className: 'stat-subsection__title' },
+    'Zeitspanne der Events'));
+  if (span) {
+    spanWrap.appendChild(el('p', { className: 'statistik-span' },
+      `${span.from} \u2013 ${span.to}`));
+    spanWrap.appendChild(el('p', { className: 'statistik-span__caption' },
+      `${span.datedCount} von ${store.mobilityEvents.size} Events mit Datum`));
+  } else {
+    spanWrap.appendChild(el('p', { className: 'statistik-span__caption' },
+      'Keine datierten Events im Store.'));
+  }
+  section.appendChild(spanWrap);
+
+  return section;
 }
 
 // ---------------------------------------------------------------------------
