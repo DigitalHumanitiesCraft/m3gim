@@ -6,21 +6,24 @@
 
 Das Interface positioniert sich als **Forschungswerkzeug**, nicht als Dashboard. Es zeigt den Archivbestand wie eine Edition ihre Quellen — mit sichtbarer Provenienz, ehrlichem Erschließungsstand und einer Typografie, die zur Lesehaltung passt. Datenqualität wird nicht kaschiert; Lücken und Duplikate stehen so da, wie sie im Bestand sind.
 
-## Tab-Architektur (sechs Perspektiven + Werkzeug)
+## Tab-Architektur (drei aktive Perspektiven + fünf verborgene)
 
-Sechs Tabs decken je eine legitime Perspektive auf denselben Graph ab. Umschalten bedeutet Perspektivenwechsel, nicht Feature-Wechsel. Der siebte Tab „Wissenskorb" ist ein Querschnitts-Werkzeug (Merkliste + Export), keine Perspektive. Qualitätssicht (Abdeckung, Lücken, Duplikate) läuft team-intern über den Markdown-Report `data/reports/quality-snapshot.md` und ist kein eigener Tab.
+Der Gesamtkatalog umfasst weiterhin sieben Perspektiv-Tabs plus den Wissenskorb als Querschnitts-Werkzeug. Aktiv und in der Tab-Bar sichtbar sind **Bestand, Chronik, Indizes** (Session 35, E-81). Die fünf restlichen Tabs — Mobilitäts-Atlas, Repertoire, Biogramm, Netzwerk, Wissenskorb — sind per `hidden`-Attribut ausgeblendet; Code, CSS und Store-Maps bleiben erhalten, Hash-URLs auf versteckte Tabs werden auf Bestand umgebogen. Reaktivieren = `hidden` im HTML entfernen + `VISIBLE_TABS`-Set in `router.js` erweitern. Qualitätssicht läuft team-intern über `data/reports/quality-snapshot.md` und ist kein eigener Tab.
 
-| Tab | Gegenstand | Primäre Datenquelle im Store | Form |
-|---|---|---|---|
-| **Archiv** | Einzelbelege des Teilnachlasses, Facet-Filterung per Sidebar (Dokumenttyp, Ort, Agent), Inline-Detail mit fünf funktionalen Blöcken | `store.records`, `store.agentRelations`, `store.finances`, `store.recordToEvents` | Record-Liste mit Rolle-Prefix-Chips, Confidence-Dot, Provenance-Pill |
-| **Indizes** | Aggregierte Übersicht über Personen, Organisationen, Orte, Werke mit Facet-Filter und Cross-Grid-Linking | `store.persons`, `store.organizations`, `store.locations`, `store.works` | Vier parallele Grids, `renderNameCell()` mit Beziehungsbadges |
-| **Mobilitäts-Atlas** | Raumzeitliche Aktivität, Leaflet-Karte + D3-Zeitstrahl + Detailpanel, bi-direktional gekoppelt | `store.mobilityEvents` mit Koordinaten-Patch | Karte + Zeitstrahl + Detailpanel |
-| **Repertoire** | Bühnenrepertoire und Komponisten, nach Belegtyp aggregiert | `store.works` + DFT-Typ der Records | Parallele Aggregat-Tabellen mit Inline-Breakdown (ERW · AUFF · REP) |
-| **Biogramm** | Chronologische Gesamtsicht — Orte + Belege entlang der Lebensspanne 1919–2009, Phasen-Quickselect, Flucht-Marker 1944 | `store.mobilityEvents`, `store.records` mit Datum | D3-Zeitstrahl mit zwei Spuren (Orte nach Land · Belege) |
-| **Netzwerk** | AgRelOn-Beziehungen tabellarisch (nicht Graph) | `store.agentRelations` | Pivot-Tabelle mit Chip-Breakdown nach Beziehungstyp |
-| *Wissenskorb* | Querschnitts-Merkliste mit CSV-/BibTeX-Export | `store.korb` (session-lokal) | Listenansicht, als Werkzeug-Tab |
+**Leitprinzip „nur bearbeitet":** Bestand, Chronik und Indizes zeigen ausschließlich Records bzw. Einträge mit Verknüpfungen. Konvolute ohne erschlossene Folios, Records mit `countLinks === 0`, Folios ohne Links innerhalb eines Konvoluts und Index-Einträge ohne Record-Referenz werden gar nicht erst gerendert. Plakate und Tonträger sind pauschal ausgeblendet (`EXCLUDED_DFT`). Die Gesamt-Bestandszahl und Verknüpfungsrate stehen ausschließlich im Quality-Snapshot. Begründung: das Interface positioniert sich als Forschungswerkzeug für substantielles Material — Erschließungs-Platzhalter sind Rauschen, kein Inhalt.
 
-Tab-Namen sind inhaltlich (keine „Charts"/„Views"-Floskeln). Jeder Tab trägt einen erklärenden Untertitel, der das Vokabular definiert („Repertoire — Bühnenrollen & Komponisten").
+| Tab | Status | Gegenstand | Primäre Datenquelle im Store | Form |
+|---|---|---|---|---|
+| **Bestand** | aktiv | Einzelbelege in Konvolut-Hierarchie; Konvolut-Meta-Chips (Top-3-Dokumenttyp + Status-Mix) direkt in der Zeile (E-82), Kinder werden innerhalb ihres Konvoluts sortiert (E-83), Facet-Filter (Dokumenttyp, Person), Record-Inline-Detail mit fünf funktionalen Blöcken | `store.records`, `store.konvolutMeta` (inkl. `docTypeCounts`, `statusCounts`, `processedCount`), `store.agentRelations`, `store.finances`, `store.recordToEvents` | Record-Tabelle mit Rolle-Prefix-Chips, Konvolut-Meta-Chips, Provenance-Pill |
+| **Chronik** | aktiv | Chronologische Sicht mit Gruppierung Ort/Person/Werk pro Fünfjahresperiode | `store.allRecords` (gefiltert über `unprocessedIds`), `store.mobilityEvents`, `store.persons`, `store.works` | Perioden-Akkordeon mit Chip-Breakdown |
+| **Indizes** | aktiv | Aggregierte Übersicht Personen, Organisationen, Orte, Werke; Cross-Grid-Linking | `store.persons`, `store.organizations`, `store.locations`, `store.works` (nur Einträge mit `records.size > 0`) | Vier parallele Grids, `renderNameCell()` mit Beziehungsbadges |
+| **Mobilitäts-Atlas** | verborgen | Raumzeitliche Aktivität, Leaflet + D3-Zeitstrahl + Detailpanel | `store.mobilityEvents` | Karte + Zeitstrahl + Detailpanel |
+| **Repertoire** | verborgen | Bühnenrepertoire und Komponisten, nach Belegtyp aggregiert | `store.works` + DFT-Typ der Records | Parallele Aggregat-Tabellen mit Inline-Breakdown |
+| **Biogramm** | verborgen | Chronologische Gesamtsicht entlang der Lebensspanne 1919–2009 | `store.mobilityEvents`, `store.records` mit Datum | D3-Zeitstrahl mit zwei Spuren |
+| **Netzwerk** | verborgen | AgRelOn-Beziehungen tabellarisch | `store.agentRelations` | Pivot-Tabelle mit Chip-Breakdown |
+| *Wissenskorb* | verborgen | Querschnitts-Merkliste mit CSV-/BibTeX-Export | `store.korb` (session-lokal) | Listenansicht, Werkzeug-Tab |
+
+Tab-Namen sind inhaltlich (keine „Charts"/„Views"-Floskeln).
 
 ## Designregeln
 

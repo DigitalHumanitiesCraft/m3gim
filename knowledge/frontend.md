@@ -35,13 +35,16 @@
 | `data/constants.js` | `ROLE_CLUSTER`, `ROLE_TO_SECTION`, `AGRELON_LABELS`, `WIKIDATA_ICON_SVG`, Komponisten-/Personen-Kategorien, `confidenceDotProps()` |
 | `ui/router.js` | Hash-Routing, `navigateToView`/`navigateToIndex`, ARIA-State |
 | `ui/korb.js` | Wissenskorb (sessionStorage) |
-| `views/archiv*.js` | Archiv als Bestand + Chronik, Inline-Detail mit fünf funktionalen Blöcken (Produktion · Mitwirkende · Werk & Repertoire · Ort & Ereignis · Erwähnt), `buildRoleChip()` als geteilter Helper |
-| `views/indizes.js` | 4-Grid Explorer (Personen, Organisationen, Orte, Werke) mit Beziehungsbadges (AgRelOn) |
-| `views/mobilitaets-atlas.js` | Leaflet-Karte + D3-Zeitstrahl + Detailpanel, bi-direktional gekoppelt (Session 33) |
-| `views/repertoire.js` | Zwei parallele Aggregat-Tabellen Werke × Komponisten mit Inline-Breakdown (Session 34) |
-| `views/biogramm.js` | Chronologischer D3-Zeitstrahl 1919–2009 mit Orte- + Belege-Spur, Phasen-Quickselect, Flucht-Marker (Session 34) |
-| `views/netzwerk.js` | AgRelOn-Tabelle mit Chip-Breakdown (Session 34) |
-| `views/korb.js` | Korb-Cards, CSV- + BibTeX-Export |
+| `views/archiv-bestand.js` | Bestand-Tab: Konvolut-Hierarchie mit Meta-Chips (Top-3-Dokumenttyp + Status-Mix) direkt in der Zeile; Inline-Detail nur für Records, nicht mehr für Konvolute (E-82). Hierarchische Sortierung: Konvolute Signatur-stabil, Kinder innerhalb sortierbar (E-83). |
+| `views/archiv-chronik.js` | Chronik-Tab: Perioden-Gruppierung Ort/Person/Werk, nur bearbeitete Records |
+| `views/archiv-inline-detail.js` | Record-Detail mit fünf funktionalen Blöcken (Produktion · Mitwirkende · Werk & Repertoire · Ort & Ereignis · Erwähnt), AgRelOn-Dedup (liest `rel.objectName`/`rel.objectWikidata`, nicht das rohe JSON-LD), Sprach-Label-Auflösung, `buildRoleChip()` als geteilter Helper |
+| `views/_archiv-toolbar.js` | Geteilte Toolbar (Suche, Dokumenttyp-Filter, Person-Filter, Count-Anzeige) für Bestand + Chronik |
+| `views/indizes.js` | 4-Grid Explorer (Personen, Organisationen, Orte, Werke) mit Beziehungsbadges (AgRelOn), nur Einträge mit `records.size > 0` |
+| `views/mobilitaets-atlas.js` | Leaflet-Karte + D3-Zeitstrahl + Detailpanel (Tab aktuell `hidden`, E-81) |
+| `views/repertoire.js` | Zwei parallele Aggregat-Tabellen Werke × Komponisten (Tab aktuell `hidden`, E-81) |
+| `views/biogramm.js` | Chronologischer D3-Zeitstrahl 1919–2009 (Tab aktuell `hidden`, E-81) |
+| `views/netzwerk.js` | AgRelOn-Tabelle mit Chip-Breakdown (Tab aktuell `hidden`, E-81) |
+| `views/korb.js` | Korb-Cards, CSV- + BibTeX-Export (Tab aktuell `hidden`, E-81) |
 | `utils/format.js`, `utils/dom.js`, `utils/date-parser.js`, `utils/normalize.js` | Formatierungshilfen, DOM-Helper, Datumsparser, Namensnormalisierung |
 
 `data/aggregator.js` und `utils/viz-components.js` wurden Session 32 mit den D3-Prototypen entfernt.
@@ -54,10 +57,10 @@ Fünf Content-Seiten (`about.html`, `projekt.html`, `modell.html`, `hilfe.html`,
 
 ## Routing
 
-- Hash-basiert in `router.js`: sieben Tabs — `archiv`, `indizes`, `mobilitaets-atlas`, `repertoire`, `biogramm`, `netzwerk`, `korb`. Sechs davon sind Perspektiv-Tabs, der Wissenskorb ist ein Querschnitts-Werkzeug.
-- Deep Links: `#archiv/UAKUG/NIM_003%20Folio%2001` für Datensatzkontext
+- Hash-basiert in `router.js`. Der Katalog `TABS` enthält acht Einträge — `bestand`, `chronik`, `indizes`, `mobilitaets-atlas`, `repertoire`, `biogramm`, `netzwerk`, `korb`. Sichtbar in der Tab-Bar sind aktuell nur die drei ersten (`VISIBLE_TABS`-Set, E-81); die restlichen Buttons sind per `hidden` ausgeblendet. Hash-URLs auf versteckte Tabs werden in `parseHash` auf `bestand` umgebogen. `archiv` bleibt als Legacy-Alias für alte Bookmarks auf `bestand` gemappt.
+- Deep Links: `#bestand/UAKUG/NIM_003%20Folio%2001` für Datensatzkontext
 - Info-Seiten als eigenständige HTML-Dateien (normale Links, kein Hash-Routing)
-- `navigateToIndex(gridType, entityName)` für Cross-Tab-Navigation, `navigateToView(tab, {recordId})` für Sprung aus Repertoire/Biogramm/Netzwerk ins Archiv
+- `navigateToIndex(gridType, entityName)` für Cross-Tab-Navigation, `navigateToView(tab, {recordId})` für Sprung aus anderen Views ins Bestand-Tab
 
 ## Store-Struktur (aus loader.js)
 
@@ -75,7 +78,8 @@ store = {
   organizations: Map<name, {records, roles, wikidata}>,
   locations: Map<name, {records, roles, wikidata}>,
   works: Map<name, {records, komponist, wikidata, premiereDate, wdGenre}>,
-  konvolutChildren, childToKonvolut, konvolutMeta,
+  konvolutChildren, childToKonvolut,
+  konvolutMeta:   Map<kid, {title, dateDisplay, childCount, processedCount, folioId, totalLinks, datedCount, docTypeCounts:Map<dft,count>, statusCounts:Map<status,count>}>,
   folioIds, unprocessedIds,
   recordCount, konvolutCount, exportDate,
 
@@ -101,18 +105,21 @@ Alle Tabs lesen direkt aus `m3gim.jsonld` (über Store), nicht aus separaten Vie
 
 Die Invarianten werden als Kontrakttests in [test_06_frontend_contract.py](../tests/test_06_frontend_contract.py) durchgängig geprüft. Provenance (`agrelon:hasProvenance` + `hasConfidenceValue`) wird nicht als eigene Store-Map indexiert, sondern am Record mitgeführt.
 
+**Wichtiger Formatbruch:** `store.agentRelations`, `mobilityEvents` und `finances` transformieren das rohe JSON-LD in ein flaches Lookup-Format (z. B. `objectName`/`objectWikidata` statt des verschachtelten `agrelon:hasObject`). Consumer dürfen nicht die JSON-LD-Keys lesen — das führte Session 35 zu einem stillen Dedup-Bug (Malaniuk doppelt sichtbar). JSDoc-Shapes für `RelationEntry`, `MobilityEvent`, `FinanceEntry`, `DftConcept` sind direkt oberhalb von `buildStore()` in `loader.js` annotiert.
+
 ## Ansichten
 
-### Archiv
+### Bestand und Chronik (seit Session 35 eigenständige Tabs)
 
-- Bestand und Chronik als zwei Perspektiven auf denselben Datenraum
-- Klickbare Spaltenheader mit Sortier-Indikatoren
-- Autocomplete-Combobox für Personenfilter
-- Erweiterte Suche: Signatur, Titel, Dokumenttyp, Datum
-- Unbearbeitete Objekte dezent markiert (opacity, Tooltip)
-- **Inline-Detail (Session 34):** Fünf funktionale Blöcke — Produktion · Mitwirkende · Werk & Repertoire · Ort & Ereignis · Erwähnt, plus Default-Bucket „Weitere" für nicht-mapped Rollen. Alle Chips via `buildRoleChip()` mit Cluster-Farbe + Provenance-Pille. Finanzen + AgRelOn-Beziehungen links, Entity-Blöcke rechts.
-- Bookmark-Icons an jeder Zeile (Hover → sichtbar)
-- Reset-Button setzt alle Filter gleichzeitig zurück
+- Bestand und Chronik sind eigene Top-Level-Tabs (früher Archiv-Sub-Toggle), nutzen eine geteilte Toolbar (`_archiv-toolbar.js`).
+- **Leitprinzip „nur bearbeitet"**: Konvolute ohne erschlossene Folios, Records ohne Verknüpfungen und Folios mit 0 Links werden gar nicht erst gerendert. Plakate + Tonträger sind pauschal ausgeblendet (`EXCLUDED_DFT`).
+- **Konvolut-Meta-Chips direkt in der Zeile** (E-82): Top-3-Dokumenttyp-Chips + Status-Mix (abgeschlossen/begonnen/zurückgestellt) unter dem Konvolut-Titel. Click auf Konvolut-Zeile = Auf/Zuklappen, kein Inline-Detail.
+- **Hierarchische Sortierung** (E-83): Konvolute bleiben Signatur-sortiert, Kinder werden *innerhalb* ihres Konvoluts nach dem gewählten Sort-Key sortiert. Bei aktivem Filter flach (Hierarchie dann aufgelöst).
+- Titel-Dedup: Folios mit identischem Titel wie Konvolut zeigen leere Titel-Zelle (semantisches Rauschen vermeiden).
+- Klickbare Spaltenheader, Autocomplete-Combobox für Personenfilter, Suche über Signatur/Titel/Dokumenttyp/Datum.
+- **Inline-Detail für Records:** Fünf funktionale Blöcke — Produktion · Mitwirkende · Werk & Repertoire · Ort & Ereignis · Erwähnt. Agents mit AgRelOn-Äquivalent werden aus „Mitwirkende" unterdrückt (Dedup-Filter liest das *flache* Loader-Format). Sprach-Kürzel (`en, fr`) werden über `formatLanguage()` zu lesbaren Labels aufgelöst. Alle Chips via `buildRoleChip()` mit Cluster-Farbe + Provenance-Pille.
+- Bookmark-Icons an jeder Record-Zeile (Korb-Tab aktuell ausgeblendet, Icons bleiben für künftige Reaktivierung).
+- Reset-Button setzt alle Filter gleichzeitig zurück.
 
 ### Indizes
 

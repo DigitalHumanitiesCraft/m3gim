@@ -33,6 +33,20 @@ Suite durchgängig grün bis auf die beiden dokumentierten Ausnahmen (`PL_07` xf
 
 ## Erreichte Meilensteine
 
+### Session 35 — Bestand-Fokus, Konvolut-UX, Verifikationslauf
+
+Fokussierung des Interfaces auf drei aktive Perspektiven + Hygiene-Runde gegen frontendspezifische Silent-Bugs.
+
+- **Tab-Bar reduziert auf Bestand · Chronik · Indizes.** Die fünf weiteren Perspektiv-/Werkzeug-Tabs (Mobilitäts-Atlas, Repertoire, Biogramm, Netzwerk, Wissenskorb) sind per `hidden`-Attribut ausgeblendet; Code, CSS und Store-Maps bleiben. Hash-URLs auf versteckte Tabs werden auf Bestand umgebogen (`VISIBLE_TABS` in `router.js`). Begründung + Reaktivierungsprozedur: E-81.
+- **Konvolut-UX geradegezogen.** `buildKonvolutDetail` entfällt; Konvolut-Metadaten (Top-3-Dokumenttyp-Chips + Status-Mix) stehen direkt in der Bestand-Zeile, Click auf Konvolut-Header toggled nur noch auf/zu (E-82). `konvolutMeta` im Loader um `docTypeCounts`, `statusCounts`, `processedCount` erweitert — einmalige Aggregation statt on-the-fly-Rendering.
+- **Hierarchische Sortierung.** Konvolute bleiben Signatur-stabil, Kinder werden *innerhalb* ihres Konvoluts nach dem gewählten Sort-Key sortiert; bei aktivem Filter wird die Hierarchie aufgelöst und flach sortiert (E-83).
+- **Record-Detail aufgeräumt.** AgRelOn-Dedup-Bug gefixt (Loader liefert flaches `objectName`/`objectWikidata`, UI las den JSON-LD-Pfad `rel['agrelon:hasObject']` → silent dead branch → Malaniuk doppelt sichtbar). Folio-Filter auf Kinder ausgeweitet (Folios ohne Links werden nicht mehr gerendert). Titel-Dedup: Folio mit Konvolut-Titel zeigt leere Titel-Zelle. Sprach-Kürzel (`en, fr`) werden über `formatLanguage()` zu „Englisch, Französisch".
+- **Dokumenttyp-Label-Map synchronisiert.** `DOKUMENTTYP_LABELS` enthält die in den Daten tatsächlich vorkommenden DFT-IDs (z. B. `programm` → `Programmheft`). SKOS-Labels aus der Pipeline sind aktuell nur Slugs — strukturell besser wäre, sie in der Pipeline zu schreiben; als offene Entscheidung in [entscheidungen.md](entscheidungen.md) festgehalten.
+- **Typ-Disziplin.** JSDoc-Shapes (`RelationEntry`, `MobilityEvent`, `FinanceEntry`, `DftConcept`) auf `buildStore()` in `loader.js`. Der gestrige Dedup-Bug wird künftig durch Linter sichtbar.
+- **Verifikation gegen Rohdaten.** Record `NIM_004 1` Ende-zu-Ende gegen die XLSX-Quellen verifiziert: Typ, Datum, Sprache, Umfang, Bearbeitungsstand, alle fünf Verknüpfungen + das typisierte `absendedatum` stimmen zu 100 %. Pipeline-Kanonisierung (`vollständig` → `abgeschlossen` via `normalize_bearbeitungsstand`) korrekt.
+- **Frontend-Smoke erweitert.** Drei neue Canaries: Sprach-Label aufgelöst, Malaniuk erscheint einmal (Dedup ok), Konvolut-Meta-Chips sichtbar. Einer der Canaries hätte den Dedup-Bug vorab gefangen.
+- **Offene Entscheidungen neu** (in `entscheidungen.md`): SKOS-Labels in Pipeline, AgRelOn-Granularität (`HasAddressee`/`HasSender` statt pauschal `HasCorrespondent`).
+
 ### Session 34 — Datenqualität + Interface-Ausbau (Repertoire · Biogramm · Netzwerk)
 
 Mehrere Commits schließen die Datenqualitäts-Gaps und vervollständigen das in [interface-konzept.md](interface-konzept.md) verankerte Sechs-Perspektiven-Fundament (Archiv · Indizes · Mobilitäts-Atlas · Repertoire · Biogramm · Netzwerk, plus Wissenskorb als Querschnitts-Werkzeug).
@@ -125,11 +139,13 @@ Detaillierte Entscheidungen: [entscheidungen.md](entscheidungen.md).
 
 ### Interface-Ausbau
 
-Grundlage: [interface-konzept.md](interface-konzept.md). Sechs-Perspektiven-Fundament nach Session 34 vollständig (Archiv · Indizes · Mobilitäts-Atlas · Repertoire · Biogramm · Netzwerk, plus Wissenskorb als Querschnitts-Werkzeug). Offen ist der Feinschliff:
+Grundlage: [interface-konzept.md](interface-konzept.md). Nach Session 35 aktiv **Bestand · Chronik · Indizes**. Die übrigen vier Perspektiv-Tabs (Mobilitäts-Atlas, Repertoire, Biogramm, Netzwerk) + Wissenskorb sind verborgen und werden später überarbeitet (E-81).
 
-1. **Biogramm — Netzwerk-Spur** sobald AgRelOn-Relationen validity-dates (`agrelon:hasProvenance.m3gim:temporalEvidence`) tragen. Aktuell sind alle 24 Relationen ohne Validity-Periode.
-2. **Weitere Reconciliation-Runde** — Unmatched-Restliste (u. a. Bloomington) manuell prüfen, falls gewünscht. Nicht blockierend.
-3. **Konvolut-Inline-Detail-Migration** — `buildKonvolutDetail()` nutzt noch die alte `.chip--entity`-Primitive für die aggregierten Top-10-Listen. Kein funktionaler Defekt, nur Designkonsistenz.
+1. **Reaktivierung + Redesign der vier Perspektiv-Tabs** — pro Tab: Daten-Kontrakt gegen Store verifizieren, Rolle-Prefix-Chip-Muster konsequent anwenden, Meta-Fresh-Check vor Enable. Reihenfolge offen.
+2. **SKOS-Labels in Pipeline pflegen** (offene Entscheidung in [entscheidungen.md](entscheidungen.md)) — `skos:prefLabel` an DFT-Concepts mit lesbaren deutschen Labels; dann kann das Frontend die Handtabelle `DOKUMENTTYP_LABELS` ersetzen.
+3. **AgRelOn-Granularität** (offene Entscheidung) — `HasAddressee` / `HasSender` statt pauschal `HasCorrespondent`, oder symmetrische Beziehung für beide Richtungen.
+4. **Biogramm — Netzwerk-Spur** sobald AgRelOn-Relationen validity-dates tragen.
+5. **Weitere Reconciliation-Runde** — Unmatched-Restliste manuell prüfen, falls gewünscht. Nicht blockierend.
 
 ### Deferred Aufräumarbeiten (nach Bedarf)
 

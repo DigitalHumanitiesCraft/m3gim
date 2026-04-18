@@ -218,5 +218,25 @@ Produktions-`requirements.txt` bleibt unberührt (nur pandas + openpyxl + thefuz
 
 **Was später dazukommen kann**:
 - SHACL-Validierung gegen RiC-O-Shapes (`pyshacl`) — semantisch schärfer als JSON-Schema
-- Frontend-Smoke-Tests (Node-Script, das `loader.js`-Store-Aufbau simuliert)
 - CI-Integration (aktuell keine, siehe [pipeline.md](pipeline.md))
+
+## Frontend-Smoke (Playwright, seit Session 35)
+
+`tests/frontend/smoke.py` fährt die SPA headless (Chromium, lokaler `python -m http.server 8765`) und prüft:
+
+1. **Tab-Durchlauf** für die drei aktiv sichtbaren Tabs (Bestand · Chronik · Indizes) — keine JS-Errors, DOM rendert nicht-leer. Die fünf versteckten Tabs werden nicht angesteuert (E-81).
+2. **Anker-Titel im DOM**: `Rezension von Karl Schumann zu Macbeth` (NIM_004/3), `Handschriftliche Notiz` (NIM_007/5_1). Bricht der Check, ist entweder der Record ausgefiltert worden oder die Render-Logik kaputt.
+3. **Anker-Record NIM_004_1 voll aufgeklappt**: Sprach-Label aufgelöst (`en, fr` → „Englisch, Französisch") und AgRelOn-Dedup greift (Malaniuk erscheint genau einmal). Diese beiden Canaries sind direkt aus den beiden Silent-Bugs der Session 35 abgeleitet.
+4. **Konvolut-Meta-Chips sichtbar**: `.archiv-konvolut-meta .chip--compact` + `.archiv-konvolut-status` zählbar > 0 — Absicherung gegen Regression, die die Meta-Aggregation im Loader leer lässt.
+5. **Duplicate `@id` im JSON-LD-Graph**: bekannte Kollisionen (`m3gim:NIM_PL_07`) sind in `KNOWN_COLLISIONS` aufgeführt und werden toleriert; neue Kollisionen fail’n sofort.
+
+Aufruf:
+
+```bash
+python -m http.server 8765 --directory docs &
+python tests/frontend/smoke.py
+# oder via pytest-Wrapper mit Auto-Server:
+pytest -m frontend tests/frontend/
+```
+
+Der pytest-Wrapper (`tests/frontend/test_smoke.py`, Marker `@pytest.mark.frontend`) startet den Server als Fixture. Standard-`pytest tests/` skippt den Marker per Default, damit Browserless-Environments keinen Playwright-Setup brauchen.
