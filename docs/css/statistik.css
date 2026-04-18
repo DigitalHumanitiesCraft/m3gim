@@ -35,13 +35,66 @@
 .statistik__sections {
   display: flex;
   flex-direction: column;
-  gap: var(--space-8);
+  gap: var(--space-10);
+  margin-top: var(--space-8);
 }
+
+/* --- Hero-Row mit 4 Kennzahlen ------------------------------------------- */
+
+.statistik-hero {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-3);
+}
+
+.statistik-hero__card {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-5) var(--space-4);
+  background: var(--color-paper);
+  border: 1px solid var(--border-color-light);
+  border-left: 3px solid var(--color-kug-blau);
+  border-radius: var(--border-radius);
+  text-decoration: none;
+  color: inherit;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.statistik-hero__card:hover,
+.statistik-hero__card:focus-visible {
+  background: var(--color-cream);
+  border-left-color: var(--color-kug-blau-light);
+  outline: none;
+}
+
+.statistik-hero__value {
+  font-family: var(--font-title);
+  font-size: var(--text-3xl);
+  font-weight: var(--weight-bold);
+  color: var(--color-kug-blau);
+  line-height: 1;
+}
+
+.statistik-hero__label {
+  font-size: var(--text-base);
+  font-weight: var(--weight-semibold);
+  margin-top: var(--space-2);
+  color: var(--color-text-primary);
+}
+
+.statistik-hero__caption {
+  font-size: var(--text-xs);
+  color: var(--color-text-tertiary);
+  margin-top: var(--space-1);
+  line-height: var(--leading-normal);
+}
+
+/* --- Sektionen ----------------------------------------------------------- */
 
 .stat-section {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: var(--space-4);
 }
 
 .stat-section__title {
@@ -56,6 +109,14 @@
   align-self: flex-start;
 }
 
+.stat-section__lead {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  line-height: var(--leading-relaxed);
+  max-width: 72ch;
+  margin: 0;
+}
+
 .stat-section--placeholder {
   opacity: 0.55;
 }
@@ -65,4 +126,74 @@
   color: var(--color-text-tertiary);
   font-style: italic;
   margin: 0;
+}
+
+.stat-subsection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+.stat-subsection__title {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--space-2);
+}
+
+/* --- Horizontale Balkenliste --------------------------------------------- */
+
+.stat-bars {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.stat-bars__row {
+  display: grid;
+  grid-template-columns: minmax(140px, 18ch) 1fr minmax(90px, auto);
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--text-sm);
+}
+
+.stat-bars__label {
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stat-bars__track {
+  background: var(--color-parchment);
+  border-radius: 2px;
+  height: 14px;
+  overflow: hidden;
+  position: relative;
+}
+
+.stat-bars__fill {
+  background: var(--color-kug-blau);
+  height: 100%;
+  border-radius: 2px 0 0 2px;
+  transition: width var(--transition-normal);
+}
+
+.stat-bars__fill--complete    { background: var(--color-signal-green); }
+.stat-bars__fill--progress    { background: var(--color-kug-blau-light); }
+.stat-bars__fill--deferred    { background: var(--color-gold-medium); }
+.stat-bars__fill--unprocessed { background: var(--color-sand); }
+
+.stat-bars__count {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  text-align: right;
+  white-space: nowrap;
 }
