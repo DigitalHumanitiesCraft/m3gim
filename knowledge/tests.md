@@ -42,8 +42,11 @@ tests/
 ├── test_20_xlsx_provenance.py     # m3gim:xlsxSource + Anker-Records
 ├── test_22_ste_coordinates.py     # STE.atPlace mit @id + geo:lat/long (Session 33)
 ├── test_23_role_hygiene.py        # rico:Place trägt keine Datumsrollen (Session 34)
+├── test_24_composer_uniqueness.py # Fuzzy-Varianten-Detektor im Werkindex (Session 38)
 └── test_25_chronik_mobility_cluster.py  # EVENT_ROLE_TO_MOBILITY_CLUSTER-Spec (Session 36)
 ```
+
+Die Nummerierung hat historische Lücken (test_17, test_21 wurden nicht vergeben). Das ist bewusst — die Zahlen sind stabile IDs, kein durchgängiger Index.
 
 Leitsatz: jeder Test prüft eine nicht-triviale, nicht-redundante Invariante und kann failen. Soft-Warnings gehören in `validate.py`, nicht in pytest.
 
@@ -128,6 +131,14 @@ TDD-Spec für den Koordinaten-Patch: jedes ortsindex-auflösbare `m3gim:Spatiote
 
 Regression-Test für einen Pipeline-Bug: im Komposit `ort,datum` der Verknüpfungstabelle wurde die Rolle (z. B. `erscheinungsdatum`) blind an beide Hälften vererbt — der `rico:Place`-Eintrag trug dadurch eine Datumsrolle, die im UI als „Stuttgart (erscheinungsdatum)" erschien. Der Test prüft: kein `rico:Place` an einem Record trägt eine Rolle aus `DATUMSROLLE_TO_PROPERTY`. Anker: NIM_004_12 (Stuttgart).
 
+### 24. Komponisten-Unikat-Check im Werkindex (test_24, Session 38)
+
+Fuzzy-Detektor (Levenshtein-Ratio ≥ 92) über alle Komponistennamen in `m3gim:MusicalWork`-Subjects. Findet Schreibweise-Varianten desselben Komponisten („Beethoven, Ludwig van/von"), die durch Tippfehler im Werkindex-XLSX entstehen. `strict-xfail` bis zum Source-Fix durch das Archivteam — nach Fix wird XPASS und bricht die Suite, damit der Marker entfernt wird. Bewusst **kein** `normalize_composer()` in der Pipeline (siehe `knowledge/xlsx-fixes.md § 14`): das wäre ein Sonderfall-Workaround, der künftige Tippfehler still kaschiert.
+
+### 25. Chronik-Mobilitätscluster (test_25, Session 36)
+
+Lock für die `EVENT_ROLE_TO_MOBILITY_CLUSTER`-Mapping-Tabelle im Frontend (`docs/js/data/constants.js`). Prüft, dass jede `m3gim:eventRole`, die im JSON-LD vorkommt, entweder einer der fünf Sichten (`performativ`/`institutionell`/`korrespondenz`/`diskursiv`/`biografisch`) zugeordnet ist oder explizit auf `null` steht (bewusste Nicht-Einordnung wie `auftrag`, `entstehung`, `ueberweisung`). Fängt stille Mapping-Drift ein, wenn neue Rollen eingeführt werden, ohne die Cluster-Zuordnung mitzuziehen.
+
 ## Ausführung
 
 ```bash
@@ -198,7 +209,7 @@ Wartung:
 
 Suite durchgängig grün bis auf die beiden dokumentierten Ausnahmen (`PL_07` xfail, `NIM_11` skip). Die Module `test_19_provenance` (semantische Provenance) und `test_20_xlsx_provenance` (technische XLSX-Quellreferenz) bilden zusammen den **Provenance-Kontrakt** des Projekts.
 
-Laufzeit im Regelbetrieb unter einer Sekunde für `pytest -m "not slow"`, unter einer Minute inkl. Determinismus-Test.
+Laufzeit im Regelbetrieb überschaubar; der Determinismus-Test (Marker `slow`) dominiert die Gesamtdauer und ist aus der Standard-Suite ausgeschlossen.
 
 ## Dependencies
 
@@ -215,7 +226,7 @@ Produktions-`requirements.txt` bleibt unberührt (nur pandas + openpyxl + thefuz
 - Pipeline-Internas (private Funktionen) — außer die in test_14 als Unit-Tests
 - Google-Sheets-Content selbst — Datenqualität ist redaktionelle Aufgabe (`explore.py`/`validate.py`)
 - Frontend-JavaScript — Browser-Validierung, nicht pytest
-- Performance — Pipeline-Laufzeit unkritisch (<1 min)
+- Performance — Pipeline-Laufzeit unkritisch
 
 **Was später dazukommen kann**:
 - SHACL-Validierung gegen RiC-O-Shapes (`pyshacl`) — semantisch schärfer als JSON-Schema
@@ -225,7 +236,7 @@ Produktions-`requirements.txt` bleibt unberührt (nur pandas + openpyxl + thefuz
 
 `tests/frontend/smoke.py` fährt die SPA headless (Chromium, lokaler `python -m http.server 8765`) und prüft:
 
-1. **Tab-Durchlauf** für die drei aktiv sichtbaren Tabs (Bestand · Chronik · Indizes) — keine JS-Errors, DOM rendert nicht-leer. Die fünf versteckten Tabs werden nicht angesteuert (E-81).
+1. **Tab-Durchlauf** für alle in `VISIBLE_TABS` eingetragenen Tabs (aktuell Bestand · Chronik · Statistik · Indizes) — keine JS-Errors, DOM rendert nicht-leer. Versteckte Tabs werden nicht angesteuert (E-81).
 2. **Anker-Titel im DOM**: `Rezension von Karl Schumann zu Macbeth` (NIM_004/3), `Handschriftliche Notiz` (NIM_007/5_1). Bricht der Check, ist entweder der Record ausgefiltert worden oder die Render-Logik kaputt.
 3. **Anker-Record NIM_004_1 voll aufgeklappt**: Sprach-Label aufgelöst (`en, fr` → „Englisch, Französisch") und AgRelOn-Dedup greift (Malaniuk erscheint genau einmal). Diese beiden Canaries sind direkt aus den beiden Silent-Bugs der Session 35 abgeleitet.
 4. **Konvolut-Meta-Chips sichtbar**: `.archiv-konvolut-meta .chip--compact` + `.archiv-konvolut-status` zählbar > 0 — Absicherung gegen Regression, die die Meta-Aggregation im Loader leer lässt.
