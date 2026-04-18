@@ -33,6 +33,7 @@ export function renderStatistik(store, container) {
   container.appendChild(wrap);
 
   const docTypes = aggregateDocTypes(store);
+  const docTypesOhne = docTypes.find(d => d.id === null)?.count || 0;
   const status = aggregateBearbeitungsstatus(store);
   const sichten = aggregateSichten(store);
   const places = aggregatePlaces(store);
@@ -46,7 +47,8 @@ export function renderStatistik(store, container) {
     ['events', store.mobilityEvents.size],
     ['personen', store.persons.size],
     ['sektionen', body.childElementCount],
-    ['doctypes', docTypes.length],
+    ['doctypes', docTypes.filter(d => d.id !== null).length],
+    ['doctypes-ohne', docTypesOhne],
     ['abgeschlossen', status.abgeschlossen],
     ['unbearbeitet', status.unbearbeitet],
     ['sichten', sichten.filter(s => s.count > 0).length],
@@ -136,6 +138,7 @@ function buildBestandSection(store) {
     label: d.label,
     count: d.count,
     total: store.allRecords.length,
+    tone: d.tone,
   }))));
   section.appendChild(docWrap);
 
@@ -158,18 +161,23 @@ function buildBestandSection(store) {
 
 function aggregateDocTypes(store) {
   const counts = new Map();
+  let ohneTyp = 0;
   for (const rec of store.allRecords) {
     const id = getDocTypeId(rec);
-    if (!id) continue;
+    if (!id) { ohneTyp++; continue; }
     counts.set(id, (counts.get(id) || 0) + 1);
   }
-  return [...counts.entries()]
+  const rows = [...counts.entries()]
     .map(([id, count]) => {
       const concept = store.dftHierarchy.get(id);
       const label = concept?.prefLabel || id;
       return { id, count, label };
     })
     .sort((a, b) => b.count - a.count);
+  if (ohneTyp > 0) {
+    rows.push({ id: null, count: ohneTyp, label: 'ohne Typ', tone: 'missing' });
+  }
+  return rows;
 }
 
 function aggregateBearbeitungsstatus(store) {

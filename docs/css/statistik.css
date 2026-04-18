@@ -194,6 +194,7 @@
 .stat-bars__fill--progress    { background: var(--color-kug-blau-light); }
 .stat-bars__fill--deferred    { background: var(--color-gold-medium); }
 .stat-bars__fill--unprocessed { background: var(--color-sand); }
+.stat-bars__fill--missing     { background: var(--color-text-tertiary); opacity: 0.55; }
 
 .stat-bars__count {
   font-family: var(--font-mono);
