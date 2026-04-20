@@ -6,6 +6,9 @@
   <title>Über — M³GIM</title>
   <meta name="description" content="Mapping Mobile Musicians — Digitale Erschließung des Teilnachlasses Ira Malaniuk (UAKUG/NIM) an der Kunstuniversität Graz. Machbarkeitsstudie zur musikwissenschaftlichen Mobilitätsforschung.">
 
+  <!-- Favicon (Inline-SVG, kein externes Asset) -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='10' fill='%231a1a1a'/%3E%3Ctext x='50%25' y='58%25' text-anchor='middle' font-family='Georgia,serif' font-size='36' font-weight='700' fill='%23f5f1e8'%3EM%3C/text%3E%3Ctext x='78%25' y='38%25' text-anchor='middle' font-family='Georgia,serif' font-size='18' font-weight='700' fill='%23c9a961'%3E3%3C/text%3E%3C/svg%3E">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap">
@@ -24,8 +27,6 @@
     <nav class="app-header__nav" aria-label="Informationsseiten">
       <a href="about.html" class="active">Über</a>
       <a href="projekt.html">Projekt</a>
-      <a href="modell.html">Modell</a>
-      <a href="hilfe.html">Hilfe</a>
     </nav>
   </header>
 
@@ -38,6 +39,14 @@
           Mapping Mobile Musicians — Ein digitaler Erschließungsprototyp für den
           Teilnachlass der Mezzosopranistin Ira Malaniuk am Universitätsarchiv der
           Kunstuniversität Graz.
+        </p>
+        <p class="page__note" style="border-left:3px solid var(--accent-gold,#c9a961);padding:0.75rem 1rem;margin-top:1.5rem;background:rgba(201,169,97,0.08);">
+          <strong>Research Preview · Work in Progress.</strong> Diese Anwendung ist ein
+          laufender Erschließungsprototyp. Die Datengrundlage ist noch nicht abgeschlossen:
+          Archiveinheiten werden fortlaufend erfasst, Verknüpfungen ergänzt und kuratiert,
+          Kontrollvokabulare und Wikidata-Abgleiche iterativ verfeinert. Zahlen, Netzwerke
+          und Visualisierungen spiegeln einen aktuellen Arbeitsstand wider und sind nicht
+          als endgültige Forschungsdaten zu verstehen.
         </p>
       </header>
 
@@ -112,6 +121,17 @@
           über eine Python-Pipeline validiert und in JSON-LD (RiC-O 1.1) transformiert.
           Das statische Frontend auf GitHub Pages ermöglicht die Exploration ohne
           Server-Infrastruktur.
+        </p>
+        <p>
+          Die technische Umsetzung — Pipeline, Transformations- und Validierungsskripte
+          sowie das gesamte Frontend — entsteht in enger Schleife mit Frontier-LLMs,
+          primär <a href="https://www.anthropic.com/claude" target="_blank" rel="noopener" class="page__link">Anthropic&nbsp;Claude</a>
+          über <a href="https://claude.com/claude-code" target="_blank" rel="noopener" class="page__link">Claude&nbsp;Code</a>
+          als agentische Entwicklungsumgebung. Spezifikationen, Erfassungsrichtlinien und
+          Architekturentscheidungen sind dabei der eigentliche Primärtext; generierter
+          Code ist reproduzierbar aus ihnen ableit- und austauschbar. Der Ansatz macht
+          die Umsetzung einer solchen Studie auch unter knappen Ressourcen möglich und
+          ist selbst Gegenstand methodischer Reflexion im Projekt.
         </p>
       </section>
 
