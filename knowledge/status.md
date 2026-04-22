@@ -33,6 +33,19 @@ Suite durchgängig grün bis auf die beiden dokumentierten Ausnahmen (`PL_07` xf
 
 ## Erreichte Meilensteine
 
+### Session 46 — Netzwerk-Tab reaktiviert als konzentrische Personen-Visualisierung
+
+Der Netzwerk-Tab antwortet jetzt auf die Frage „Mit welchen Personen stand Malaniuk in Beziehung?" — Malaniuk im Zentrum, alle anderen Personen auf zwei konzentrischen Ringen um sie herum (E-93). Die alte Pivot-Tabelle (nur ~13 AgRelOn-Relationen zu 6 Gegenparteien) ist ersetzt: sie blendete die Wagner-Familie, Strauss, Mozart und die 72 Multi-Record-Personen komplett aus.
+
+- **Konzentrische Ringe nach Evidenzstärke** (nicht nach Rolle — Rolle wandert in die Füllfarbe). Ring 1 = harte Beziehung (AgRelOn-Partner ODER Wikidata-verknüpft + ≥ 5 Dokumente). Ring 2 = wiederkehrendes Umfeld (≥ 2 Dokumente). Ring 3 wurde bewusst entfernt — einmalige Nennungen waren nur dekorativer Halo. Winkel alphabetisch pro Ring, Positionen analytisch aus Sinus/Kosinus (frontend.md § 196 — Determinismus vor Force-Simulation).
+- **Zwei Linientypen explizit unterschieden.** Gerade blaue Radial-Linie = direkte `agrelon:*`-Beziehung zum Zentrum (explizit in den Metadaten annotiert, aus `store.agentRelations`). Geschwungene Bezier = Ko-Okkurrenz (Personen teilen sich Dokumente, aus Paar-Enumeration in `computeCoOccurrence` abgeleitet). Beide Typen haben eigene Sichtbarkeits-Toggle in der Sidebar und native SVG-`<title>`-Tooltips, die den *Grund* der Verbindung zeigen (AgRelOn-Typ bzw. Anzahl geteilter Dokumente). Der Unterschied war vorher im UI nicht lesbar und hat beim Nutzertest verwirrt.
+- **Pipeline-freier Tab.** Keine Pipeline-Änderung. Die Visualisierung liest direkt aus `store.persons` + `store.agentRelations` + `store.records`. Kategorien (Produktion, Bühne, Vermittlung, Korrespondenz, Presse, Erwähnt, Andere) werden nicht aus der statischen `entry.kategorie` (Namens-Keyword-Lookup in `normalize.js`, trifft ~70 von 305 Personen) abgeleitet, sondern aus den tatsächlichen `entry.roles`-Sets mit Prioritätsordnung Produktion > Bühne > Vermittlung > Korrespondenz > Presse > Erwähnt. „Andere" schrumpft damit auf 1 Datenartefakt (Sophokles).
+- **Geometrie ausgelagert.** Neuer Modul [`docs/js/views/_netzwerk-geometry.js`](../docs/js/views/_netzwerk-geometry.js) enthält alle reinen Funktionen (`computeLayout`, `computeCoOccurrence`, `classifyRing`, `nodeColor`, `derivePersonKategorie`, `labelGeometry`). Keine DOM-Aufrufe, kein D3 — testbar aus der Dev-Console, deterministisch.
+- **Interaktion.** Click auf Knoten pinnt den Highlight-Zustand; weitere Hover werden ignoriert, bis der User wieder ins Leere klickt oder denselben Knoten erneut klickt. Gepinnte Knoten bekommen Kontur + Drop-Shadow (Halo statt Flächenfüllung, Designregel 7). Beim Highlight werden Nachbarn beschriftet, die übrigen gedimmt. Detail-Panel rechts mit Beziehungs-Chips, Rollen, Belegliste; Klick auf Beleg springt ins Bestand-Inline-Detail.
+- **Filter + Zeitfenster.** Sidebar links kombiniert `Mind. Dokumente`, `Verkn. ab (gem. Dok.)`, Kategorie-Multiselect (mit Live-Counts), Volltext-Suche, Wikidata-/AgRelOn-Toggle und ein Von/Bis-Zeitfenster (baut eine Person-→-Jahres-Map aus Record-Daten auf und verbirgt Personen ohne Records im Zeitfenster). Filter ändern nur Opazität, nicht Position — der „groß anfangen, dann verdichten"-Flow funktioniert ohne Layout-Sprung.
+- **Zoom + Pan** via `d3.zoom()`, ScaleExtent `[0.5, 4]`, Controls (+/−/⊙) oben links im Canvas. Labels bekommen einen weißen Text-Halo (`paint-order: stroke fill`), damit sie im Kantenwirrwarr lesbar bleiben.
+- **Sichtbar in der Tab-Bar.** `hidden` am `btn-netzwerk` entfernt, `'netzwerk'` in `router.js::VISIBLE_TABS` ergänzt. Frontend-Smoke erweitert um Tab-Durchlauf + logStamp-Erwartung `total, ring1, ring2, agrelon` (18/18 grün, netzwerk: 71 Personen, Ring 1: 14, Ring 2: 57, AgRelOn: 5).
+
 ### Session 45 — Statistik schaerfer, Chronik dichte-adaptiv
 
 Kleine, gezielte Korrekturen nach Screenshot-Review (E-92):
@@ -198,9 +211,9 @@ Detaillierte Entscheidungen: [entscheidungen.md](entscheidungen.md).
 
 ### Interface-Ausbau
 
-Grundlage: [interface-konzept.md](interface-konzept.md). Aktiv sind **Bestand · Chronik · Statistik · Indizes · Wissenskorb**. Die übrigen vier Perspektiv-Tabs (Mobilitäts-Atlas, Repertoire, Biogramm, Netzwerk) sind verborgen und werden später überarbeitet (E-81, präzisiert durch E-86).
+Grundlage: [interface-konzept.md](interface-konzept.md). Aktiv sind **Bestand · Chronik · Statistik · Indizes · Netzwerk · Wissenskorb** (Netzwerk zuletzt in Session 46 reaktiviert, E-93). Die übrigen drei Perspektiv-Tabs (Mobilitäts-Atlas, Repertoire, Biogramm) sind verborgen und werden später überarbeitet (E-81, präzisiert durch E-86/E-93).
 
-1. **Reaktivierung + Redesign der vier Perspektiv-Tabs** — pro Tab: Daten-Kontrakt gegen Store verifizieren, Rolle-Prefix-Chip-Muster konsequent anwenden, Meta-Fresh-Check vor Enable. Reihenfolge offen.
+1. **Reaktivierung + Redesign der drei verbleibenden Perspektiv-Tabs** (Mobilitäts-Atlas, Repertoire, Biogramm) — pro Tab: Daten-Kontrakt gegen Store verifizieren, Rolle-Prefix-Chip-Muster konsequent anwenden, Meta-Fresh-Check vor Enable. Reihenfolge offen.
 2. **SKOS-Labels in Pipeline pflegen** (offene Entscheidung in [entscheidungen.md](entscheidungen.md)) — `skos:prefLabel` an DFT-Concepts mit lesbaren deutschen Labels; dann kann das Frontend die Handtabelle `DOKUMENTTYP_LABELS` ersetzen.
 3. **AgRelOn-Granularität** (offene Entscheidung) — `HasAddressee` / `HasSender` statt pauschal `HasCorrespondent`, oder symmetrische Beziehung für beide Richtungen.
 4. **Biogramm — Netzwerk-Spur** sobald AgRelOn-Relationen validity-dates tragen.

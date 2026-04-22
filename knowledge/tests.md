@@ -236,8 +236,8 @@ Produktions-`requirements.txt` bleibt unberührt (nur pandas + openpyxl + thefuz
 
 `tests/frontend/smoke.py` fährt die SPA headless (Chromium, lokaler `python -m http.server 8765`) und prüft:
 
-1. **Tab-Durchlauf** für alle in `VISIBLE_TABS` eingetragenen Tabs (aktuell Bestand · Chronik · Statistik · Indizes · Korb) — keine JS-Errors, DOM rendert nicht-leer. Versteckte Perspektiv-Tabs (Mobilitäts-Atlas, Repertoire, Biogramm, Netzwerk) werden nicht angesteuert (E-81).
-2. **logStamp-Keys pro Tab** (State-Stempel): `bestand` → `konvolute, records, sort`; `chronik` → `records, jahre-belegt, undatiert, spanne` (Scroll-Zeitstrahl, E-88); `statistik` → `records, konvolute, events, personen, sektionen`; `indizes` → `personen, organisationen, orte, werke`.
+1. **Tab-Durchlauf** für alle in `VISIBLE_TABS` eingetragenen Tabs (aktuell Bestand · Chronik · Statistik · Indizes · Netzwerk · Korb) — keine JS-Errors, DOM rendert nicht-leer. Versteckte Perspektiv-Tabs (Mobilitäts-Atlas, Repertoire, Biogramm) werden nicht angesteuert (E-81).
+2. **logStamp-Keys pro Tab** (State-Stempel): `bestand` → `konvolute, records, sort`; `chronik` → `records, jahre-belegt, undatiert, spanne` (Scroll-Zeitstrahl, E-88); `statistik` → `records, konvolute, events, personen, sektionen`; `indizes` → `personen, organisationen, orte, werke`; `netzwerk` → `total, ring1, ring2, agrelon` (konzentrische Personen-Viz, E-93).
 3. **Chronik-Zeitstrahl-Canary** (seit Session 44, E-91): `#tab-chronik .chronik-year` ≥ 90 Zeilen (Lebensspanne 1919–2009), leere Jahre sichtbar aber ohne Records-in-leer. Klick auf `chronik-point` dispatcht `selectRecord` und springt in Bestand mit offenem Inline-Detail; fehlerfrei in der Konsole.
 4. **Anker-Titel im DOM**: `Rezension von Karl Schumann zu Macbeth` (NIM_004/3), `Handschriftliche Notiz` (NIM_007/5_1). Bricht der Check, ist entweder der Record ausgefiltert worden oder die Render-Logik kaputt.
 5. **Anker-Record NIM_004_1 voll aufgeklappt**: Sprach-Label aufgelöst (`en, fr` → „Englisch, Französisch") und AgRelOn-Dedup greift (Malaniuk erscheint genau einmal).

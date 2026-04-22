@@ -1,160 +1,639 @@
 /*
- * M3GIM Netzwerk-Tab — AgRelOn-Beziehungen als Tabelle.
+ * M3GIM Netzwerk-Tab — konzentrische Personen-Visualisierung um Malaniuk.
+ * Canvas-zentrierte Layout: Sidebar links (Filter + Legende + Coverage),
+ * Canvas nimmt den kompletten restlichen Viewport. Kein eigener Titel —
+ * der Tab-Button in der Navigation ist bereits Ueberschrift.
  */
 
 #tab-netzwerk {
-  padding: var(--space-6) var(--space-8) var(--space-12);
+  padding: 0;
 }
 
-.netzwerk__header {
-  margin-bottom: var(--space-5);
-}
-
-.netzwerk__title {
-  font-family: var(--font-title);
-  font-weight: var(--weight-medium);
-  font-size: var(--text-3xl);
-  margin: 0 0 var(--space-1);
-  color: var(--color-text-primary);
-}
-
-.netzwerk__subtitle {
-  margin: 0;
-  color: var(--color-text-secondary);
-  font-size: var(--text-base);
-  line-height: var(--leading-normal);
-}
-
-.netzwerk__body {
+.netzwerk__shell {
   display: grid;
-  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
-  gap: var(--space-8);
-  align-items: start;
+  grid-template-columns: 300px 1fr;
+  height: calc(100vh - 130px);
+  min-height: 600px;
 }
 
-.netzwerk__section-title {
-  margin: 0 0 var(--space-2);
+.netzwerk__sidebar {
+  background: var(--color-paper);
+  border-right: 1px solid var(--border-color-light);
+  padding: var(--space-3) var(--space-3) var(--space-4);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.netzwerk__main {
+  position: relative;
+  min-width: 0; /* Grid-Overflow-Fix: Canvas darf schrumpfen */
+  background: var(--color-paper);
+}
+
+/* Zoom-Controls oben links im Canvas-Bereich */
+.netzwerk__zoom-controls {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  z-index: 4;
+}
+
+.nz-zoom-btn {
+  width: 26px;
+  height: 26px;
+  background: var(--color-paper);
+  border: 1px solid var(--border-color-light);
+  color: var(--color-text-primary);
+  font-family: var(--font-title);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: 3px;
+  transition: background var(--transition-fast);
+}
+
+.nz-zoom-btn:hover {
+  background: var(--color-cream);
+}
+
+.nz-zoom-btn--reset {
+  font-size: 14px;
+}
+
+.netzwerk-zoom-bg {
+  cursor: grab;
+}
+.netzwerk-zoom-bg:active {
+  cursor: grabbing;
+}
+
+.netzwerk__canvas-container {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.netzwerk-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* -- Sidebar-Sektionen --------------------------------------------------- */
+
+.nz-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.nz-section__title {
   font-family: var(--font-mono);
-  font-size: var(--text-xs);
+  font-size: 10px;
   font-weight: var(--weight-semibold);
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--color-text-primary);
-  padding-bottom: var(--space-1);
-  border-bottom: 1px solid var(--border-color);
-}
-
-.netzwerk__count {
-  float: right;
-  font-weight: var(--weight-normal);
-  color: var(--color-text-secondary);
-}
-
-.netzwerk__empty {
-  padding: var(--space-4) 0;
-  color: var(--color-text-secondary);
-  font-style: italic;
-  font-size: var(--text-base);
-}
-
-.netzwerk__list {
-  list-style: none;
+  color: var(--color-text-tertiary);
   margin: 0;
-  padding: 0;
-  counter-reset: netzwerk-rank;
-}
-
-.netzwerk__row {
-  display: grid;
-  grid-template-columns: 24px minmax(0, 1fr) auto auto;
-  align-items: center;
-  gap: var(--space-3);
-  padding: var(--space-2) var(--space-2);
+  padding-bottom: 3px;
   border-bottom: 1px solid var(--border-color-light);
-  cursor: pointer;
-  transition: background var(--transition-fast);
-  counter-increment: netzwerk-rank;
 }
 
-.netzwerk__row::before {
-  content: counter(netzwerk-rank);
+
+/* Coverage — oben, prominent, aber kompakt */
+.netzwerk__coverage {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 4px 0 6px;
+  font-family: var(--font-title);
+  color: var(--color-text-primary);
+  line-height: 1.25;
+  border-bottom: 1px solid var(--border-color-light);
+}
+
+.netzwerk__coverage-main {
+  font-size: var(--text-lg);
+  font-weight: var(--weight-medium);
+}
+
+.netzwerk__coverage-sub {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+  letter-spacing: 0.01em;
+}
+
+/* Suche */
+.nz-search {
+  font-family: var(--font-ui);
+  font-size: var(--text-sm);
+  padding: 6px 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Filter-Zeilen (Slider + Toggles) — dichte Darstellung */
+.nz-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nz-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  column-gap: 6px;
+  align-items: center;
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  padding: 2px 0;
+}
+
+.nz-row__label {
+  grid-column: 1 / -1;
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  margin-bottom: 2px;
+}
+
+.nz-slider {
+  grid-column: 1;
+  width: 100%;
+}
+
+.nz-slider__value {
+  grid-column: 2;
   font-family: var(--font-mono);
   font-size: var(--text-xs);
-  color: var(--color-text-tertiary);
+  min-width: 18px;
   text-align: right;
-}
-
-.netzwerk__row:hover {
-  background: var(--color-cream);
-}
-
-.netzwerk__row--selected {
-  background: var(--color-cream);
-  border-left: 3px solid var(--color-kug-blau);
-  padding-left: calc(var(--space-2) - 3px);
-}
-
-.netzwerk__name-main {
-  font-family: var(--font-title);
-  font-size: var(--text-lg);
   color: var(--color-text-primary);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
-.netzwerk__breakdown {
+.netzwerk__toggle {
   display: flex;
-  gap: var(--space-1);
-  flex-wrap: nowrap;
-}
-
-.netzwerk__summe {
-  font-family: var(--font-mono);
-  font-weight: var(--weight-semibold);
-  font-size: var(--text-base);
+  align-items: center;
+  gap: 6px;
+  font-size: var(--text-xs);
   color: var(--color-text-primary);
-  min-width: 28px;
-  text-align: right;
+  cursor: pointer;
+  padding: 1px 0;
 }
 
-/* Detail */
+.netzwerk__toggle input {
+  margin: 0;
+}
+
+/* Zeitfilter-Block — zwei schlanke Slider, kompakt */
+.nz-timefilter {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 4px;
+  padding-top: 6px;
+  border-top: 1px solid var(--border-color-light);
+}
+
+.nz-timefilter__head {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+}
+
+.nz-timefilter__value {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--color-text-primary);
+  align-self: flex-end;
+  margin-bottom: 2px;
+}
+
+.nz-timefilter__label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--color-text-tertiary);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.nz-timefilter__slider {
+  width: 100%;
+}
+
+/* Kategorie-Chips mit Count-Badge */
+.nz-cats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+/* Ring-Swatches: leere Kreise, die den Canvas-Ringen 1:1 entsprechen.
+ *   Ring 1 = solid,  dunkler
+ *   Ring 2 = dashed, heller
+ */
+.netzwerk__legend-dot {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: transparent;
+  justify-self: center;
+  flex-shrink: 0;
+}
+.netzwerk__legend-dot--ring1 {
+  border: 1.8px solid #7a6f5e;
+}
+.netzwerk__legend-dot--ring2 {
+  border: 1.4px dashed #a89f8e;
+}
+
+.netzwerk__cat-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: transparent;
+  border: 1px solid var(--cat-color, #999);
+  color: var(--cat-color, #333);
+  font-family: var(--font-ui);
+  font-size: var(--text-xs);
+  letter-spacing: 0.03em;
+  padding: 3px 8px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.netzwerk__cat-chip--active {
+  background: var(--cat-color, #555);
+  color: #fff;
+}
+
+.nz-cat-chip__label {
+  font-weight: var(--weight-medium);
+}
+
+.nz-cat-chip__count {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  opacity: 0.8;
+}
+
+.netzwerk__cat-chip--active .nz-cat-chip__count {
+  opacity: 1;
+}
+
+/* Legende — immer ausgeklappt, kompakt, explizit:
+ *   - Ring 1 / Ring 2 als Kreis-Swatches
+ *   - AgRelOn / Ko-Okkurrenz als Linien-Swatches (gerade/geschwungen)
+ *   - Wikidata-Stern als Marker
+ */
+.nz-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 11px;
+  color: var(--color-text-primary);
+  line-height: 1.4;
+}
+
+.nz-legend__row {
+  display: grid;
+  grid-template-columns: 22px 1fr;
+  align-items: center;
+  gap: 8px;
+}
+
+.nz-legend__text { min-width: 0; }
+.nz-legend__text strong { color: var(--color-text-primary); font-weight: var(--weight-semibold); }
+.nz-legend__text em { font-style: italic; color: var(--color-text-secondary); }
+
+/* Linien-Swatches: gerade vs. geschwungene Linie visuell unterschieden. */
+.nz-legend__line {
+  display: inline-block;
+  width: 22px;
+  height: 10px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 22px 10px;
+  flex-shrink: 0;
+}
+
+.nz-legend__line--agrelon {
+  /* Horizontale durchgehende Linie, KUG-Blau */
+  background-image: linear-gradient(var(--color-kug-blau, #004A8F), var(--color-kug-blau, #004A8F));
+  background-size: 22px 2px;
+  background-position: center;
+}
+
+.nz-legend__line--cooc {
+  /* Geschwungene Kurve als SVG inline */
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 10'><path d='M 1 8 Q 11 -2 21 8' stroke='%238a6e30' stroke-width='1.5' fill='none'/></svg>");
+}
+
+.nz-legend__qid {
+  display: inline-block;
+  justify-self: center;
+  width: 0; height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 8px solid #c9a961;
+  flex-shrink: 0;
+}
+
+/* Reset-Button — am Fuss des Panels */
+.netzwerk__reset {
+  margin-top: auto;
+  background: transparent;
+  border: 1px solid var(--border-color-light);
+  color: var(--color-text-tertiary);
+  font-family: var(--font-ui);
+  font-size: 11px;
+  padding: 5px 10px;
+  border-radius: 3px;
+  cursor: pointer;
+  width: 100%;
+}
+
+.netzwerk__reset:hover {
+  background: var(--color-cream);
+  color: var(--color-text-primary);
+}
+
+/* Ringe — Evidenzstaerke deutlich sichtbar:
+ *   Ring 1: solid, dunkler, staerker — "harte Beziehung"
+ *   Ring 2: gestrichelt, heller     — "Umfeld"
+ */
+.netzwerk-ring {
+  fill: none;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+.netzwerk-ring--1 {
+  stroke: #7a6f5e;
+  stroke-width: 1.6;
+  opacity: 0.75;
+}
+.netzwerk-ring--2 {
+  stroke: #c5bdaf;
+  stroke-width: 1;
+  stroke-dasharray: 3 4;
+  opacity: 0.55;
+}
+
+/* AgRelOn-Radials: gerade Linie zum Zentrum. Pointer-events:stroke, damit
+ * der native <title>-Tooltip anspringt, aber ohne die Linien als Click-Target
+ * durchgehend zu machen. */
+.netzwerk-link {
+  stroke: var(--color-kug-blau, #004A8F);
+  stroke-opacity: 0.55;
+  pointer-events: stroke;
+  cursor: help;
+  transition: stroke-opacity 0.2s, stroke-width 0.2s;
+}
+.netzwerk-link--strong {
+  stroke-opacity: 0.65;
+}
+.netzwerk-link:hover {
+  stroke-opacity: 1;
+  stroke-width: 2.4 !important;
+}
+.netzwerk-link--hidden {
+  stroke-opacity: 0 !important;
+  pointer-events: none;
+}
+
+/* Ko-Okkurrenz-Baender — das eigentliche Netzwerk. pointer-events:stroke
+ * aktiviert den <title>-Tooltip beim Hover auf die Linie selbst. */
+.netzwerk-cooccurrence {}
+
+.netzwerk-edge {
+  fill: none;
+  stroke: #8a6e30;
+  stroke-opacity: 0.22;
+  pointer-events: stroke;
+  cursor: help;
+  transition: stroke-opacity 0.2s, stroke-width 0.2s;
+}
+.netzwerk-edge:hover {
+  stroke-opacity: 0.85;
+  stroke-width: 2.4 !important;
+}
+.netzwerk-edge--dim {
+  stroke-opacity: 0 !important;
+}
+.netzwerk-edge--active {
+  stroke: var(--color-kug-blau, #004A8F);
+  stroke-opacity: 0.9;
+  stroke-width: 2.2 !important;
+}
+.netzwerk-edge--hidden {
+  stroke-opacity: 0 !important;
+  pointer-events: none;
+}
+
+.netzwerk-node {
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+/* Dim zuerst, damit Hidden danach gewinnt — --hidden braucht gleiche
+ * Spezifitaet wie der --dim-:not()-Chain (3 Klassen), sonst ploppen
+ * Ring-3-Knoten beim Hover eines Nachbarn wieder auf. */
+.netzwerk-node--dim:not(.netzwerk-node--hover):not(.netzwerk-node--selected) {
+  opacity: 0.12;
+}
+
+.netzwerk-node--hidden:not(.netzwerk-node--hover):not(.netzwerk-node--selected) {
+  opacity: 0.04;
+  pointer-events: none;
+}
+
+.netzwerk-node__circle {
+  stroke: rgba(0, 0, 0, 0.35);
+  stroke-width: 1;
+  fill-opacity: 0.9;
+  transition: stroke-width 0.15s, fill-opacity 0.15s;
+}
+
+/* Schwache Evidenz (Ko-Okkurrenz ohne AgRelOn): einfach geringere Fuellung,
+ * KEIN gestrichelter Rand mehr — das machte die Kreise visuell diffus. */
+.netzwerk-node__circle--weak {
+  fill-opacity: 0.55;
+  stroke: rgba(0, 0, 0, 0.25);
+}
+
+.netzwerk-node--hover .netzwerk-node__circle {
+  stroke: var(--color-kug-blau, #004A8F);
+  stroke-width: 2;
+  fill-opacity: 1;
+}
+
+/* Gepinnter Zustand (Click) — prominent hervorgehoben mit Ring + Halo. */
+.netzwerk-node--selected .netzwerk-node__circle {
+  stroke: var(--color-kug-blau, #004A8F);
+  stroke-width: 3.5;
+  fill-opacity: 1;
+}
+.netzwerk-node--selected {
+  filter: drop-shadow(0 0 8px rgba(0, 74, 143, 0.55));
+}
+
+.netzwerk-node__qid {
+  fill: #c9a961;
+  stroke: #8a6e30;
+  stroke-width: 0.5;
+  pointer-events: none;
+}
+
+.netzwerk-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  fill: var(--color-text-primary);
+  pointer-events: none;
+  user-select: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+  /* Weisser Text-"Halo" als lesbarer Hintergrund in jedem Kanten-Wirrwarr. */
+  paint-order: stroke fill;
+  stroke: var(--color-paper, #f5f1e8);
+  stroke-width: 3px;
+  stroke-linejoin: round;
+}
+
+/* Permanent sichtbar: Ring 1 + "wichtige" Ring 2 (>=3 Records). */
+.netzwerk-label--always { opacity: 1; }
+
+/* On-Demand sichtbar bei Hover/Pin/Nachbar. */
+.netzwerk-node--hover .netzwerk-label,
+.netzwerk-node--selected .netzwerk-label,
+.netzwerk-node--neighbour .netzwerk-label {
+  opacity: 1;
+  font-weight: var(--weight-semibold);
+}
+
+.netzwerk-node--ring2 .netzwerk-label {
+  fill: var(--color-text-secondary);
+  font-size: 9.5px;
+}
+
+/* Zentrum */
+.netzwerk-center {
+  pointer-events: none;
+}
+
+.netzwerk-center__circle {
+  fill: var(--color-kug-blau, #004A8F);
+  stroke: #002244;
+  stroke-width: 1.5;
+}
+
+.netzwerk-center__label {
+  fill: #fff;
+  font-family: var(--font-title);
+  font-weight: var(--weight-semibold);
+  font-size: 12px;
+  letter-spacing: 0.02em;
+}
+
+/* -- Detail-Panel rechts ------------------------------------------------- */
+
 .netzwerk__detail {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  width: 360px;
+  max-height: calc(100% - var(--space-6));
   padding: var(--space-3) var(--space-4);
   background: var(--color-paper);
   border: 1px solid var(--border-color-light);
   border-radius: var(--border-radius);
-  position: sticky;
-  top: var(--space-4);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+  overflow-y: auto;
+  z-index: 5;
+  transition: opacity 0.18s, transform 0.18s;
+}
+
+.netzwerk__detail--hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(12px);
+}
+
+.netzwerk__detail-close {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  background: transparent;
+  border: none;
+  color: var(--color-text-tertiary);
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+.netzwerk__detail-close:hover {
+  background: var(--color-cream);
+  color: var(--color-text-primary);
 }
 
 .netzwerk__detail-empty {
   color: var(--color-text-secondary);
   font-style: italic;
   font-size: var(--text-base);
+  padding: var(--space-4) 0;
+}
+
+.netzwerk__detail-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: var(--space-1);
 }
 
 .netzwerk__detail-title {
-  margin: 0 0 var(--space-2);
+  margin: 0;
   font-family: var(--font-title);
   font-weight: var(--weight-medium);
   font-size: var(--text-xl);
   color: var(--color-text-primary);
 }
 
-.netzwerk__detail-counts {
-  display: flex;
-  gap: 6px;
-  align-items: center;
+.netzwerk__detail-meta {
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
   margin-bottom: var(--space-3);
-  flex-wrap: wrap;
 }
 
-.netzwerk__detail-total {
+.netzwerk__detail-section {
+  margin-bottom: var(--space-4);
+}
+
+.netzwerk__detail-subtitle {
+  margin: 0 0 var(--space-1);
   font-family: var(--font-mono);
-  font-size: var(--text-sm);
-  color: var(--color-text-secondary);
-  margin-left: 6px;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text-tertiary);
+}
+
+.netzwerk__detail-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
 }
 
 .netzwerk__record-list {
@@ -165,10 +644,10 @@
 
 .netzwerk__record {
   display: grid;
-  grid-template-columns: 90px 1fr 90px;
-  gap: 10px;
+  grid-template-columns: 90px 1fr 80px;
+  gap: 8px;
   align-items: baseline;
-  padding: var(--space-1) 6px;
+  padding: 4px 6px;
   border-radius: 3px;
   cursor: pointer;
   font-size: var(--text-sm);
@@ -203,11 +682,31 @@
   text-align: right;
 }
 
+/* -- Responsive ---------------------------------------------------------- */
+
 @media (max-width: 900px) {
-  .netzwerk__body {
+  .netzwerk__shell {
     grid-template-columns: 1fr;
+    height: auto;
+    min-height: unset;
+  }
+  .netzwerk__sidebar {
+    border-right: none;
+    border-bottom: 1px solid var(--border-color-light);
+    max-height: 50vh;
+  }
+  .netzwerk__main {
+    height: 70vh;
+    min-height: 480px;
   }
   .netzwerk__detail {
     position: static;
+    width: auto;
+    max-height: none;
+    margin-top: var(--space-3);
+    box-shadow: none;
+  }
+  .netzwerk__detail--hidden {
+    display: none;
   }
 }

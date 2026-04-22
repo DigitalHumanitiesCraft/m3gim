@@ -8,7 +8,7 @@
 const TABS = ['bestand', 'chronik', 'statistik', 'indizes', 'mobilitaets-atlas', 'repertoire', 'biogramm', 'netzwerk', 'korb'];
 // VISIBLE_TABS: nur diese sind aktuell in der Tab-Bar sichtbar (Rest `hidden`).
 // Hash-Navigation auf versteckte Tabs wird auf 'bestand' umgebogen.
-const VISIBLE_TABS = new Set(['bestand', 'chronik', 'statistik', 'indizes', 'korb']);
+const VISIBLE_TABS = new Set(['bestand', 'chronik', 'statistik', 'indizes', 'netzwerk', 'korb']);
 const ALL_VIEWS = [...TABS, 'archiv']; // 'archiv' als Legacy-Alias fuer alte Bookmarks/Hash-URLs
 
 const state = {

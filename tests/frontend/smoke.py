@@ -21,9 +21,9 @@ from playwright.sync_api import sync_playwright
 
 BASE_URL = os.environ.get("M3GIM_SMOKE_URL", "http://localhost:8765/")
 # Nur sichtbare Tabs testen. Die restlichen (mobilitaets-atlas, repertoire,
-# biogramm, netzwerk, korb) sind per `hidden` ausgeblendet und werden spaeter
+# biogramm, korb) sind per `hidden` ausgeblendet und werden spaeter
 # ueberarbeitet.
-TABS = ["bestand", "chronik", "statistik", "indizes"]
+TABS = ["bestand", "chronik", "statistik", "indizes", "netzwerk"]
 
 # Anker-Records: Titel-Snippets, die im Bestand-Tab-DOM erreichbar sein muessen.
 # Nur Records mit Verknuepfungen (sonst werden sie durch den "nur bearbeitet"-
@@ -96,7 +96,7 @@ def main() -> int:
             # Stempel erkennen: `[chronik] ...`, `[bestand] ...`, `[indizes] ...`
             if text.startswith("[") and "]" in text:
                 tag = text[1:text.index("]")]
-                if tag in ("chronik", "bestand", "indizes", "statistik"):
+                if tag in ("chronik", "bestand", "indizes", "statistik", "netzwerk"):
                     stamps[tag] = text
 
         page.on("console", on_console)
@@ -144,6 +144,7 @@ def main() -> int:
             "chronik":   ["records", "jahre-belegt", "undatiert", "spanne"],
             "statistik": ["records", "konvolute", "events", "personen", "sektionen"],
             "indizes":   ["personen", "organisationen", "orte", "werke"],
+            "netzwerk":  ["total", "ring1", "ring2", "agrelon"],
         }
         for view, required in stamp_expectations.items():
             results.append(expect_stamp(stamps, view, required))
