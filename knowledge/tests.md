@@ -254,3 +254,17 @@ pytest -m frontend tests/frontend/
 ```
 
 Der pytest-Wrapper (`tests/frontend/test_smoke.py`, Marker `@pytest.mark.frontend`) startet den Server als Fixture. Standard-`pytest tests/` skippt den Marker per Default, damit Browserless-Environments keinen Playwright-Setup brauchen.
+
+## JS-Unit-Tests (Node, seit Session 47)
+
+`tests/frontend/netzwerk-geometry.test.mjs` prueft die pure Functions aus [`_netzwerk-geometry.js`](../docs/js/views/_netzwerk-geometry.js) (E-94) — die einzige JS-Schicht im Projekt mit Unit-Tests, weil sie bewusst dom-/d3-frei gehalten ist. 42 Tests decken `classifyRing`, `isMalaniuk`, `isPureComposer`, `derivePersonKategorie`, `nodeEvidence`, `nodeColor`, `computeLayout` (inkl. Determinismus-Property, alphabetische Winkel-Reihenfolge, Umlaut-Normalisierung im SortKey, Radius-Cap), `computeCoOccurrence` (inkl. Malaniuk- und Komponisten-Filter, minShared-Threshold, maxEdges-Cap, Tie-breaker-Determinismus) und `labelGeometry` ab.
+
+Lauf:
+
+```bash
+node --test tests/frontend/netzwerk-geometry.test.mjs
+```
+
+Kein npm install, keine build-tools — nutzt `node:test` + `node:assert/strict` builtin (Node 18+). Enabler: `docs/js/package.json` mit `{"type":"module"}` markiert den Baum als ES-Modul fuer Node-seitiges Loading. Browser ignorieren die Datei.
+
+Weitere JS-Views werden *nicht* aehnlich getestet, solange sie DOM- und D3-Aufrufe direkt in der Rendering-Pipeline mischen — der Aufwand waere groesser als der Wert. `_netzwerk-geometry.js` ist die Ausnahme, weil die analytische Geometrie so klar von der DOM-Schicht zu trennen war.

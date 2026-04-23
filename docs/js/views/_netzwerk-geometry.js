@@ -36,14 +36,21 @@ import { KOMPONISTEN_NAMEN, PERSONEN_FARBEN } from '../data/constants.js';
 // ist primaer Dirigent; reine Rezensions-Erwaehnungen stehen hinten an.
 // ---------------------------------------------------------------------------
 
+/**
+ * Farb-Mapping pro Netzwerk-Kategorie. Werte sind CSS-`var(--color-netzwerk-*)`-
+ * Verweise, keine Hex-Strings — die konkreten Hex-Werte leben in
+ * `docs/css/variables.css` als Design-Tokens. Konsumenten muessen die
+ * Werte als *style* setzen (nicht als SVG-`fill`-attribut), damit der
+ * CSS-Variablen-Lookup greift; siehe drawCanvas in netzwerk.js.
+ */
 export const NETZWERK_KATEGORIEN = {
-  'Produktion':     '#6B4E8C',   // violett — Regie/Dirigat/Komposition
-  'Bühne':          '#9A6B3D',   // gold — Sänger:innen-Kolleg:innen
-  'Vermittlung':    '#3D7A5A',   // gruen — Agenten, Veranstalter
-  'Korrespondenz':  '#8B7355',   // braun — Absender, Empfaenger
-  'Presse':         '#6B5A3D',   // oliv — Verfasser:innen von Texten
-  'Erwähnt':        '#A89F95',   // hellgrau — nur in Dritt-Erwaehnung
-  'Andere':         '#757575',
+  'Produktion':     'var(--color-netzwerk-produktion)',    // violett — Regie/Dirigat/Komposition
+  'Bühne':          'var(--color-netzwerk-buehne)',        // gold — Sänger:innen-Kolleg:innen
+  'Vermittlung':    'var(--color-netzwerk-vermittlung)',   // gruen — Agenten, Veranstalter
+  'Korrespondenz':  'var(--color-netzwerk-korrespondenz)', // braun — Absender, Empfaenger
+  'Presse':         'var(--color-netzwerk-presse)',        // oliv — Verfasser:innen von Texten
+  'Erwähnt':        'var(--color-netzwerk-erwaehnt)',      // hellgrau — nur in Dritt-Erwaehnung
+  'Andere':         'var(--color-netzwerk-andere)',
 };
 
 const ROLE_PRIO = [

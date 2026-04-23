@@ -1,0 +1,5 @@
+{
+  "type": "module",
+  "private": true,
+  "description": "Markiert docs/js/ als ES-Modul-Wurzel fuer Node-seitiges Testing (node --test). Browser ignorieren diese Datei."
+}

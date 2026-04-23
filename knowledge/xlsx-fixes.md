@@ -140,6 +140,17 @@
 | **Test-Absicherung** | `tests/test_24_composer_uniqueness.py::test_komponisten_ohne_fuzzy_duplikate` — strict-xfail, Levenshtein-Ratio ≥ 92 fängt die van/von-Variante und jede künftige Tippfehler-Doppelung. |
 | **Bewusst NICHT im Code** | Kein `normalize_composer()` in `scripts/transform.py`. Das wäre ein Sonderfall-Workaround, der den einzelnen Tippfehler kaschiert und zukünftige Varianten stillschweigend weiter kaschieren würde — das widerspricht dem Prinzip „Pipeline-Workarounds sind Schulden, nicht Features" aus dem Dokument-Intro. |
 
+## 15. Werk-Autor mit Performance-Rolle „Aufführung"
+
+| Feld | Inhalt |
+|---|---|
+| **Workaround** | — (keiner in Pipeline oder Frontend) |
+| **Kompensiert** | In `M3GIM-Verknüpfungen.xlsx` Zeile 1208 trägt `Sophokles` (typ=person) die Rolle `Aufführung` für Konvolut `UAKUG/NIM_007` Folio 16. Semantisch falsch: Sophokles wurde nicht aufgeführt, sein *Werk* wurde. Im Netzwerk-Tab (E-93) landet Sophokles dadurch als einzige Person in Kategorie „Andere", weil `aufführung` in keinem ROLE_PRIO-Bucket von `derivePersonKategorie()` liegt und die `onlyErwaehnt`-Prüfung an dieser zweiten Rolle scheitert. |
+| **Kategorie** | Datenartefakt |
+| **Source-Fix-Vorschlag** | In Zeile 1208 der Verknüpfungen-XLSX die Rolle von `Aufführung` auf `Vorlage` (bzw. `Verfasser`, falls das kontrollierte Vokabular dies bereits trägt) ändern. Sophokles ist Autor des Stücks, nicht Performer. |
+| **Test-Absicherung** | — (aktuell keine; ein Unit-Test `derivePersonKategorie: bekannte Werk-Autoren nicht in "Andere"` wäre möglich, aber das Problem ist keines der Funktion, sondern der Quelle). |
+| **Bewusst NICHT im Code** | Kein Sonder-Mapping `aufführung → Bühne` in `_netzwerk-geometry.js`. Das würde für Sänger:innen stimmen (die sind ohnehin über `sänger`/`sängerin` schon in Bühne), für Werk-Autor:innen aber eine neue falsche Einordnung produzieren. Die korrekte Lösung liegt an der Quelle. |
+
 ## 12. Template-Zeilen-Filter
 
 | Feld | Inhalt |

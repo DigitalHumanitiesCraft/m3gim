@@ -53,13 +53,25 @@
   --color-sicht-diskursiv:      #7A6F55;
   --color-sicht-biografisch:    #8B6F5C;
 
-  /* Semantic: Person Categories */
+  /* Semantic: Person Categories (historisch; aktuell ungenutzt, bleibt vorerst) */
   --color-cat-dirigent: #4A6E96;
   --color-cat-regisseur: #6B4E8C;
   --color-cat-korrepetitor: #8B7355;
   --color-cat-vermittler: #3D7A5A;
   --color-cat-kollege: #9A6B3D;
   --color-cat-andere: #757575;
+
+  /* Semantic: Netzwerk-Kategorien (E-93) — rollenbasierte Farbfamilie
+     fuer den Netzwerk-Tab, gemappt durch `derivePersonKategorie()` in
+     docs/js/views/_netzwerk-geometry.js. Prioritaet Produktion > Buehne
+     > Vermittlung > Korrespondenz > Presse > Erwaehnt; Rest -> Andere. */
+  --color-netzwerk-produktion:    #6B4E8C; /* violett */
+  --color-netzwerk-buehne:        #9A6B3D; /* gold */
+  --color-netzwerk-vermittlung:   #3D7A5A; /* gruen */
+  --color-netzwerk-korrespondenz: #8B7355; /* braun */
+  --color-netzwerk-presse:        #6B5A3D; /* oliv */
+  --color-netzwerk-erwaehnt:      #A89F95; /* hellgrau */
+  --color-netzwerk-andere:        #757575;
 
   /* Typography */
   --font-ui: 'Inter', system-ui, -apple-system, sans-serif;
