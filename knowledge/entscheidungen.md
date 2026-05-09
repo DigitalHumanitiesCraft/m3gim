@@ -1,3 +1,22 @@
+---
+title: Entscheidungen und Prozesswissen
+project:
+  name: M³GIM
+  repository: https://github.com/DigitalHumanitiesCraft/m3gim
+status: active
+language: de
+version: 0.1
+created: 2026-02-19
+updated: 2026-05-09
+authors: [Christopher Pollin]
+generated-with: Claude Code
+method:
+  name: Promptotyping
+  url: https://lisa.gerda-henkel-stiftung.de/digitale_geschichte_pollin
+topics: ["[[Decision Records]]", "[[Architecture Decision Records]]"]
+related: [datenmodell, pipeline, frontend, interface-konzept, tests]
+---
+
 # Entscheidungen und Prozesswissen
 
 > Architekturentscheidungen, offene Entscheidungen, technische Schulden und Learnings.

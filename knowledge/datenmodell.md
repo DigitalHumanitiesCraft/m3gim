@@ -1,3 +1,26 @@
+---
+title: Datenmodell
+project:
+  name: M³GIM
+  repository: https://github.com/DigitalHumanitiesCraft/m3gim
+status: active
+language: de
+version: 0.1
+created: 2026-02-19
+updated: 2026-05-09
+authors: [Christopher Pollin]
+generated-with: Claude Code
+method:
+  name: Promptotyping
+  url: https://lisa.gerda-henkel-stiftung.de/digitale_geschichte_pollin
+topics: ["[[RiC-O]]", "[[AgRelOn]]", "[[Data Modelling]]", "[[Controlled Vocabularies]]"]
+knowledge-sources:
+  standards:
+    RiC-O: https://www.ica.org/en/records-context-ontology
+    AgRelOn: https://d-nb.info/standards/elementset/agrelon
+related: [forschungsrahmen, pipeline, entscheidungen, tests]
+---
+
 # Datenmodell
 
 > Ontologie, Schichtenmodell, Verknüpfungslogik, RiC-O- und AgRelOn-Integration, Mobilitätsmodell, Meta-Statements, kontrollierte Vokabulare und partitur.json-Schema.

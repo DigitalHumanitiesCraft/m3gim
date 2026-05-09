@@ -1,3 +1,21 @@
+---
+title: M³GIM Knowledge Base
+project:
+  name: M³GIM
+  repository: https://github.com/DigitalHumanitiesCraft/m3gim
+status: active
+language: de
+version: 0.1
+created: 2026-02-19
+updated: 2026-05-09
+authors: [Christopher Pollin]
+generated-with: Claude Code
+method:
+  name: Promptotyping
+  url: https://lisa.gerda-henkel-stiftung.de/digitale_geschichte_pollin
+related: [status, forschungsrahmen, datenmodell, pipeline, frontend, interface-konzept, entscheidungen, tests, ira-malaniuk, xlsx-fixes]
+---
+
 # M³GIM Knowledge Base
 
 > Map of Content für die Wissensbasis des Projekts. Einstiegspunkt für alle Dokumentationsthemen.

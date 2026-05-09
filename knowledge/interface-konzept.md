@@ -1,3 +1,22 @@
+---
+title: Interface-Konzept
+project:
+  name: M³GIM
+  repository: https://github.com/DigitalHumanitiesCraft/m3gim
+status: active
+language: de
+version: 0.1
+created: 2026-02-19
+updated: 2026-05-09
+authors: [Christopher Pollin]
+generated-with: Claude Code
+method:
+  name: Promptotyping
+  url: https://lisa.gerda-henkel-stiftung.de/digitale_geschichte_pollin
+topics: ["[[Information Visualisation]]", "[[Scholar-Centered Design]]"]
+related: [frontend, entscheidungen, datenmodell]
+---
+
 # Interface-Konzept
 
 > Designregeln und Tab-Architektur für die Neufassung des Forschungsinterfaces nach Entfernung der sechs D3-Prototypen. Basiert auf zwei Mockup-Ansichten (Archiv, Repertoire) und den in [frontend.md § Lektionen](frontend.md) verdichteten Erfahrungen.

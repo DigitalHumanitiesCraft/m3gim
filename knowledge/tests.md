@@ -1,3 +1,22 @@
+---
+title: Tests
+project:
+  name: M³GIM
+  repository: https://github.com/DigitalHumanitiesCraft/m3gim
+status: active
+language: de
+version: 0.1
+created: 2026-02-19
+updated: 2026-05-09
+authors: [Christopher Pollin]
+generated-with: Claude Code
+method:
+  name: Promptotyping
+  url: https://lisa.gerda-henkel-stiftung.de/digitale_geschichte_pollin
+topics: ["[[Test-Driven Development]]", "[[Data Validation]]"]
+related: [pipeline, datenmodell, entscheidungen]
+---
+
 # Tests
 
 > Artefakt-basierte Pipeline-Testsuite. TDD-Workflow für Modell-Erweiterungen, Anker-Record-Strategie für XLSX-Provenance.

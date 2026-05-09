@@ -1,3 +1,22 @@
+---
+title: "XLSX-Workarounds: Was Pipeline kompensiert, was an der Quelle zu fixen ist"
+project:
+  name: M³GIM
+  repository: https://github.com/DigitalHumanitiesCraft/m3gim
+status: active
+language: de
+version: 0.1
+created: 2026-02-19
+updated: 2026-05-09
+authors: [Christopher Pollin]
+generated-with: Claude Code
+method:
+  name: Promptotyping
+  url: https://lisa.gerda-henkel-stiftung.de/digitale_geschichte_pollin
+topics: ["[[Technical Debt]]", "[[Data Quality]]"]
+related: [pipeline, datenmodell, entscheidungen]
+---
+
 # XLSX-Workarounds: Was Pipeline kompensiert, was an der Quelle zu fixen ist
 
 > Prinzip: **Documents as Source of Truth**. Pipeline-Workarounds sind Schulden, nicht Features. Dieses Dokument macht sie sichtbar — damit klar ist, wo das Archiv-Team Änderungen in den XLSX vornehmen sollte und wo der Pipeline-Code defensiv bleiben muss.
