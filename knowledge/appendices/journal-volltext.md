@@ -3,7 +3,7 @@ title: "Appendix: Journal Volltext"
 project:
   name: M³GIM
   repository: https://github.com/DigitalHumanitiesCraft/m3gim
-status: active
+status: draft
 language: de
 version: 0.1
 created: 2026-02-19

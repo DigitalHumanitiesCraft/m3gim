@@ -3,7 +3,7 @@ title: M³GIM Knowledge Base
 project:
   name: M³GIM
   repository: https://github.com/DigitalHumanitiesCraft/m3gim
-status: active
+status: complete
 language: de
 version: 0.1
 created: 2026-02-19
