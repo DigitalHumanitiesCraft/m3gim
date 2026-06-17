@@ -102,13 +102,19 @@ def xlsx_objekte(sheets_dir: Path) -> pd.DataFrame:
 
 @pytest.fixture(scope="session")
 def xlsx_verknuepfungen(sheets_dir: Path) -> pd.DataFrame:
-    # Filename has umlaut variant
+    # Filename has umlaut variant. Der Box-Export verteilt die
+    # Verknuepfungen auf mehrere, inkonsistent benannte Sheets mit
+    # ungesetztem Signatur-Header; daher denselben Multi-Sheet-Loader wie
+    # die Pipeline verwenden (E-95). Backward-kompatibel mit dem
+    # Single-Sheet-Produktions-Workbook.
+    import sys
+    sys.path.insert(0, str(REPO_ROOT / "scripts"))
+    from transform import load_verknuepfungen  # noqa: WPS433
+
     for name in ["M3GIM-Verknüpfungen.xlsx", "M3GIM-Verknuepfungen.xlsx"]:
         p = sheets_dir / name
         if p.exists():
-            df = pd.read_excel(p)
-            df.columns = [c.lower().strip() if isinstance(c, str) else c for c in df.columns]
-            return df
+            return load_verknuepfungen(p)
     raise FileNotFoundError(f"Keine Verknüpfungs-XLSX in {sheets_dir}")
 
 

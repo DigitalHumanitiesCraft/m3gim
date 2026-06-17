@@ -14,12 +14,21 @@ from __future__ import annotations
 # XLSX-Workaround-Konstanten (siehe knowledge/xlsx-fixes.md)
 # ---------------------------------------------------------------------------
 
-# Header-Shift-Korrektur fuer Org-/Ort-/Werkindex: erste Datenzeile laeuft als
-# Header durch, weil die XLSX-Kopfzeile nicht korrekt gesetzt ist. Pipeline
-# erkennt das am untypischen Spaltennamen in Position 1 und schiebt die
-# Daten zurueck. Zentral, damit transform.py, validate.py und reconcile.py
-# denselben Kanon nutzen.
+# Header-Shift-Korrektur fuer Personen-/Org-/Ort-/Werkindex: in mehreren
+# Indizes ist die XLSX-Kopfzeile nicht sauber gesetzt — entweder laeuft die
+# erste Datenzeile als Header durch (Org/Werk: Position 1 traegt einen
+# geleakten Datenwert wie "Graz"/"Rossini, Gioachino" statt "name"), oder die
+# name-Spalte hat gar keinen Header (Personenindex: Position 1 ist leer und
+# wird von pandas zu "Unnamed: 1"). Pipeline erkennt das positionell an
+# Spalte 0 ("m3gim_id" = echte Kopfzeile vorhanden) und benennt die Spalten
+# auf den Kanon um, statt eine echte Datenzeile als Header zu konsumieren.
+# Zentral, damit transform.py, validate.py und reconcile.py denselben Kanon
+# nutzen. Siehe knowledge/xlsx-fixes.md und decisions.md E-95.
 INDEX_HEADER_SHIFTS: dict[str, list[str]] = {
+    "personenindex": [
+        "m3gim_id", "name", "wikidata_id",
+        "lebensdaten", "anmerkung",
+    ],
     "organisationsindex": [
         "m3gim_id", "name", "wikidata_id",
         "ort", "assoziierte_person", "anmerkung",

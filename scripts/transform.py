@@ -311,7 +311,23 @@ def create_record_id(signatur: str, folio: str = None) -> str:
 
 
 def load_index(name: str) -> pd.DataFrame | None:
-    """Laedt einen Index mit Header-Shift-Korrektur"""
+    """Laedt einen Index mit Header-Shift-Korrektur.
+
+    Zwei Fehlbild-Klassen aus dem Box-Export (E-95):
+
+    (a) name-Spalte ohne Kopf — Personenindex: Position 0 traegt den echten
+        Header "m3gim_id", aber die name-Spalte (Position 1) ist leer und
+        wird von pandas zu "Unnamed: 1". Hier ist Zeile 0 eine echte
+        Kopfzeile; es darf KEINE Datenzeile als Header konsumiert werden. Wir
+        benennen die Spalten positionell auf den Kanon um.
+
+    (b) geleakter Datenwert in der Kopfzeile — Org/Werk: Position 1 (bzw. 3)
+        traegt einen Datenwert wie "Graz"/"Rossini, Gioachino" statt eines
+        echten Headers. Position 0 bleibt aber "m3gim_id", d.h. Zeile 0 ist
+        weiterhin eine (verunreinigte) Kopfzeile, keine verlorene Datenzeile.
+        Daher ebenfalls nur Spalten umbenennen — die geleakten Einzelzellen
+        gehen verloren (durchreichen; gleiches Verhalten wie im Prod-Export).
+    """
     path = SHEETS_DIR / f"M3GIM-{name}.xlsx"
     if not path.exists():
         return None
@@ -321,7 +337,18 @@ def load_index(name: str) -> pd.DataFrame | None:
 
     if canonical in INDEX_HEADER_SHIFTS:
         expected = INDEX_HEADER_SHIFTS[canonical]
-        if len(df.columns) == len(expected):
+        col0 = str(df.columns[0]).strip().lower() if len(df.columns) else ""
+        if col0 == "m3gim_id":
+            # Zeile 0 ist eine echte (ggf. verunreinigte) Kopfzeile: nur die
+            # Spalten positionell auf den Kanon umbenennen, keine Datenzeile
+            # als Header konsumieren. Erhaelt etwaige Zusatzspalten am Ende.
+            new_cols = list(expected[:len(df.columns)])
+            if len(df.columns) > len(expected):
+                new_cols += list(df.columns[len(expected):])
+            df.columns = new_cols
+        elif len(df.columns) == len(expected):
+            # Legacy-Fall: Zeile 0 ist eine verschobene Datenzeile, die pandas
+            # als Header gelesen hat (Position 0 != "m3gim_id"). Zurueckschieben.
             first_val = str(df.columns[1]) if len(df.columns) > 1 else ""
             if first_val and first_val not in ["name", "titel", "ort", "m3gim_id"]:
                 old_headers = list(df.columns)
@@ -557,8 +584,21 @@ def parse_monetary_value(name: str) -> tuple[str | None, str | None]:
 
 
 def decompose_komposit_typ(typ: str) -> list[str]:
-    """Zerlegt Komposit-Typ in Einzeltypen: 'ort, datum' → ['ort', 'datum']"""
+    """Zerlegt Komposit-Typ in Einzeltypen: 'ort, datum' → ['ort', 'datum'].
+
+    E-95-Normalisierung: der typ "rolle, Vorname Nachname Saenger*in"
+    (~230 Zeilen, v.a. Box 5) ist eine durchgesickerte Erfassungs-Anweisung,
+    kein echter Typwert. Seine name-Werte sind reale Rolle,Person-Paare
+    (z.B. "Siegfried, Bernd Aldenoff"). Wir mappen ihn auf das kanonische
+    Komposit "rolle, person", damit die Zeilen denselben Decompose-Pfad wie
+    echte rolle,person-Kompositen nehmen (Vorarbeit fuer E-96
+    Performance/StageRole). Strukturelle Absorption, keine Inhaltsaenderung.
+    """
     parts = [t.strip().lower() for t in typ.split(",")]
+    # Durchgesickerte Erfassungs-Anweisung -> kanonisches "rolle, person".
+    if (len(parts) == 2 and parts[0] == "rolle"
+            and "nger" in parts[1] and parts[1].split()[:2] == ["vorname", "nachname"]):
+        return ["rolle", "person"]
     # "waehrung" / "währung" ist kein eigener Typ, gehoert zum vorherigen
     return [p for p in parts if p not in ["waehrung", "währung"]]
 
@@ -585,6 +625,74 @@ def decompose_komposit_value(name: str, typen: list[str]) -> dict[str, str]:
     return result
 
 
+# Kanonische Verknuepfungs-Spalten (nach Lowercasing). Box 6 fehlt
+# datenpunkt_id; die uebrigen Spalten sind in allen Box-Sheets identisch.
+_VERK_KNOWN_COLS = {
+    "folio", "datenpunkt_id", "typ", "name", "rolle", "anmerkung", "datum",
+}
+
+
+def load_verknuepfungen(path: Path) -> pd.DataFrame:
+    """Laedt die Verknuepfungstabelle als EINE DataFrame ueber alle Sheets (E-95).
+
+    Der Box-Export verteilt die Verknuepfungen auf mehrere, inkonsistent
+    benannte Sheets (Box_01, Box_02, Box_4, Box 5, Box 6, Box 9). Der
+    Produktions-Workbook hat genau ein Sheet "Verknuepfungen". Diese Funktion
+    absorbiert beide Faelle:
+
+    - Spalte 0 ist die Archivsignatur, im Box-Export OHNE Header (pandas liest
+      sie als " " bzw. "Unnamed: 0"). Sie wird positionell erkannt, auf
+      "archivsignatur" umbenannt und pro Sheet forward-gefuellt (viele
+      Folgezeilen lassen die Signatur leer).
+    - Die uebrigen Spalten werden per (lowercased) Name angeglichen; Box 6
+      ohne datenpunkt_id wird toleriert.
+    - Provenance (Sheet-Name + 1-basierte XLSX-Zeile) wandert in die
+      Hilfsspalten ``_xlsx_sheet`` / ``_xlsx_row``, damit
+      ``process_verknuepfungen`` die Herkunftszeile sheet-genau aufzeichnet.
+
+    Rueckwaerts-kompatibel: beim Single-Sheet-Workbook mit echtem
+    "archivsignatur"-Header liefert die Funktion genau die bisherige
+    Spaltenstruktur (plus die beiden Provenance-Hilfsspalten).
+    """
+    xl = pd.ExcelFile(path)
+    frames: list[pd.DataFrame] = []
+
+    for sheet in xl.sheet_names:
+        df = pd.read_excel(path, sheet_name=sheet)
+        if df.empty:
+            continue
+
+        # Spalten lowercasen/strippen; nicht-textuelle Header tolerieren.
+        rename: dict = {}
+        cols = list(df.columns)
+        for pos, col in enumerate(cols):
+            if pos == 0:
+                # Spalte 0 ist immer die Archivsignatur — positionell,
+                # unabhaengig vom (oft leeren/ungesetzten) Header.
+                rename[col] = "archivsignatur"
+            elif isinstance(col, str):
+                rename[col] = col.strip().lower()
+            # nicht-textuelle Header bleiben unveraendert (werden unten ignoriert)
+        df = df.rename(columns=rename)
+
+        # Signatur forward-fillen (viele Folgezeilen lassen sie leer).
+        if "archivsignatur" in df.columns:
+            df["archivsignatur"] = df["archivsignatur"].ffill()
+
+        # Provenance: originale XLSX-Zeile (1-basiert inkl. Header) + Sheet.
+        df["_xlsx_sheet"] = sheet
+        df["_xlsx_row"] = [int(i) + 2 for i in range(len(df))]
+
+        frames.append(df)
+
+    if not frames:
+        return pd.DataFrame(columns=["archivsignatur", "_xlsx_sheet", "_xlsx_row"])
+
+    # Union der Spalten ueber alle Sheets (Box 6 fehlt datenpunkt_id -> NaN).
+    combined = pd.concat(frames, ignore_index=True, sort=False)
+    return combined
+
+
 def process_verknuepfungen(df: pd.DataFrame, indices: dict) -> dict:
     """Verarbeitet Verknuepfungen und gruppiert nach Signatur.
 
@@ -601,13 +709,18 @@ def process_verknuepfungen(df: pd.DataFrame, indices: dict) -> dict:
         if sig_str.lower() == "beispiel":
             continue
 
-        # Folio-Feld pruefen (Spalte heisst oft "Folio" in Verknuepfungen)
+        # Folio-Feld pruefen (Spalte heisst oft "Folio" in Verknuepfungen).
+        # load_verknuepfungen lowercased die Header -> "folio".
         folio = None
-        for col in ['Folio', 'folio', 'Unnamed: 1']:
+        for col in ['folio', 'Folio', 'Unnamed: 1']:
             if col in df.columns:
                 folio_raw = row.get(col)
                 if pd.notna(folio_raw) and str(folio_raw).strip():
-                    folio = str(folio_raw).strip()
+                    folio_val = str(folio_raw).strip()
+                    # Guard: vereinzelt steht die Kopfzeichenkette "Folio"
+                    # literal in einer Folio-Datenzelle — keine echte Folio.
+                    if folio_val.lower() != "folio":
+                        folio = folio_val
                 break
 
         # Objekt-ID: signatur + folio
@@ -622,8 +735,18 @@ def process_verknuepfungen(df: pd.DataFrame, indices: dict) -> dict:
         if typ is None:
             continue
 
-        # Provenance: XLSX-Zeile + datenpunkt_id (falls vorhanden)
-        xlsx_row = int(idx) + 2  # pandas idx 0-basiert, XLSX-Header in Zeile 1
+        # Provenance: Sheet-Name + originale XLSX-Zeile + datenpunkt_id.
+        # load_verknuepfungen liefert die Herkunft sheet-genau in den
+        # Hilfsspalten _xlsx_sheet/_xlsx_row (Box-Export verteilt Zeilen auf
+        # mehrere Sheets). Fallback auf "Verknuepfungen"/idx+2, falls die
+        # Hilfsspalten fehlen (DataFrame nicht ueber load_verknuepfungen geladen).
+        sheet_name = "Verknuepfungen"
+        if "_xlsx_sheet" in df.columns and pd.notna(row.get("_xlsx_sheet")):
+            sheet_name = str(row.get("_xlsx_sheet"))
+        if "_xlsx_row" in df.columns and pd.notna(row.get("_xlsx_row")):
+            xlsx_row = int(row.get("_xlsx_row"))
+        else:
+            xlsx_row = int(idx) + 2  # pandas idx 0-basiert, XLSX-Header in Zeile 1
         dp_raw = row.get('datenpunkt_id') if 'datenpunkt_id' in df.columns else None
         datenpunkt_id = None
         if pd.notna(dp_raw):
@@ -631,7 +754,7 @@ def process_verknuepfungen(df: pd.DataFrame, indices: dict) -> dict:
                 datenpunkt_id = int(float(dp_raw))
             except (ValueError, TypeError):
                 datenpunkt_id = str(dp_raw).strip() or None
-        source_info = build_xlsx_source("Verknuepfungen", xlsx_row, datenpunkt_id)
+        source_info = build_xlsx_source(sheet_name, xlsx_row, datenpunkt_id)
 
         # Komposit-Typen decomponieren
         typen = decompose_komposit_typ(typ) if "," in typ else [typ]
@@ -1082,6 +1205,11 @@ def main():
     # Folio-Spalte erkennen
     folio_col = None
     for col in df_objekte.columns:
+        # Guard: nicht-textuelle Header (im Box-Export traegt Spalte 0
+        # statt "box_nr" den int 1) ueberspringen, statt an .lower() zu
+        # scheitern (E-95).
+        if not isinstance(col, str):
+            continue
         col_lower = col.lower()
         if col_lower in ['folio', 'folio nr', 'folio_nr'] or 'unnamed' in col_lower:
             # Pruefen ob die Spalte Folio-artige Werte hat
@@ -1105,7 +1233,10 @@ def main():
         )
 
     print(f"\nLade {verk_path.name}...")
-    df_verk = pd.read_excel(verk_path)
+    df_verk = load_verknuepfungen(verk_path)
+    sheet_names = sorted(df_verk["_xlsx_sheet"].dropna().unique().tolist()) \
+        if "_xlsx_sheet" in df_verk.columns else []
+    print(f"  {len(df_verk)} Zeilen aus {len(sheet_names)} Sheet(s): {sheet_names}")
     relations = process_verknuepfungen(df_verk, indices)
     total_rels = sum(len(v) for v in relations.values())
     print(f"  {total_rels} Verknuepfungen fuer {len(relations)} Objekte")
