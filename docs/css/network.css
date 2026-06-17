@@ -412,10 +412,10 @@
   pointer-events: none;
 }
 
-/* Ko-Okkurrenz-Baender — das eigentliche Netzwerk. pointer-events:stroke
- * aktiviert den <title>-Tooltip beim Hover auf die Linie selbst. */
-.netzwerk-cooccurrence {}
-
+/* Ko-Okkurrenz-Baender — das eigentliche Netzwerk. Die Gruppe .netzwerk-
+ * cooccurrence traegt keine eigene CSS-Regel; gestylt werden die einzelnen
+ * .netzwerk-edge-Pfade. pointer-events:stroke aktiviert den <title>-Tooltip
+ * beim Hover auf die Linie selbst. */
 .netzwerk-edge {
   fill: none;
   stroke: #8a6e30;

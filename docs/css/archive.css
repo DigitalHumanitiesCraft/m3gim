@@ -575,16 +575,6 @@ tr.archiv-row--konvolut:hover .konvolut-toggle {
 .chip--c-datum     { background: #ede9e1; border-color: #c9c1ad; color: #5c5651; }
 .chip--c-neutral   { background: #f1ede6; border-color: #d4ccbd; color: #5c5651; }
 
-/* Mobilitaetssichten (datenmodell.md § 10) als orthogonale Farbfamilie:
-   linker Akzentbalken + untergeordnete Farbintensitaet. Wird an
-   Stations-Chips angebracht, sobald die Chronik STE-Events als
-   Primaerquelle liest (Session 36, M4). */
-.chip--mobility-performativ    { box-shadow: inset 3px 0 0 var(--color-sicht-performativ); }
-.chip--mobility-institutionell { box-shadow: inset 3px 0 0 var(--color-sicht-institutionell); }
-.chip--mobility-korrespondenz  { box-shadow: inset 3px 0 0 var(--color-sicht-korrespondenz); }
-.chip--mobility-diskursiv      { box-shadow: inset 3px 0 0 var(--color-sicht-diskursiv); }
-.chip--mobility-biografisch    { box-shadow: inset 3px 0 0 var(--color-sicht-biografisch); }
-
 .inline-detail__konvolut {
   margin-top: var(--space-3);
   padding-top: var(--space-2);
@@ -887,7 +877,7 @@ tr.archiv-row--konvolut:hover .konvolut-toggle {
   border: 1px solid var(--border-color);
   border-top: none;
   border-radius: 0 0 var(--border-radius) var(--border-radius);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-md);
   z-index: 20;
 }
 
@@ -922,14 +912,3 @@ tr.archiv-row--konvolut:hover .konvolut-toggle {
   font-style: italic;
 }
 
-/* =========================================================================
-   Unprocessed Records
-   ========================================================================= */
-
-.archiv-row--unprocessed {
-  opacity: 0.6;
-}
-
-.archiv-row--unprocessed:hover {
-  opacity: 0.85;
-}

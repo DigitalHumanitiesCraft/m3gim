@@ -1,43 +1,48 @@
 ---
-title: Datenmodell
+title: "Datengrundlage"
 project:
   name: M³GIM
   repository: https://github.com/DigitalHumanitiesCraft/m3gim
-status: active
+status: complete
 language: de
-version: 0.1
+version: 0.2
 created: 2026-02-19
-updated: 2026-05-09
+updated: 2026-06-17
 authors: [Christopher Pollin]
 generated-with: Claude Code
 method:
   name: Promptotyping
   url: https://lisa.gerda-henkel-stiftung.de/digitale_geschichte_pollin
+template:
+  name: Vorlage Datengrundlage
+  version: 0.1
+  url: https://dhcraft.org/Promptotyping/promptotyping-document/data
 topics: ["[[RiC-O]]", "[[AgRelOn]]", "[[Data Modelling]]", "[[Controlled Vocabularies]]"]
 knowledge-sources:
   standards:
     RiC-O: https://www.ica.org/en/records-context-ontology
     AgRelOn: https://d-nb.info/standards/elementset/agrelon
-related: [forschungsrahmen, pipeline, entscheidungen, tests]
+    Wikidata: https://www.wikidata.org
+related: [research, pipeline, decisions, testing, data-entry-guidelines]
 ---
 
-# Datenmodell
+# Datengrundlage
 
-> Ontologie, Schichtenmodell, Verknüpfungslogik, RiC-O- und AgRelOn-Integration, Mobilitätsmodell, Meta-Statements, kontrollierte Vokabulare und partitur.json-Schema.
+Dieses Dokument beschreibt die Datengrundlage des M³GIM-Projekts. Es definiert Ontologie, Schichtenmodell, Verknüpfungslogik, die Integration von RiC-O und AgRelOn, das Mobilitätsmodell, Meta-Statements, kontrollierte Vokabulare und das partitur.json-Schema. Ergänzend dokumentiert es die Quellenlage des Teilnachlasses und die Datenqualität, also welche XLSX-Eigenheiten die Pipeline kompensiert.
 
-Version 2.0, Stand: Revision auf Basis der Ist-Daten-Analyse der sechs M³GIM-Tabellen.
+Version 2.0, Stand der Revision auf Basis der Ist-Daten-Analyse der sechs M³GIM-Tabellen.
 
 ## 1. Präambel
 
-### Zweck
+### Inhalt und Adressaten
 
-Dieses Dokument beschreibt das Datenmodell des M³GIM-Projekts in seinem aktuellen Stand. Es ersetzt die Vorgängerfassung und integriert die empirisch aus den erschlossenen Daten abgeleiteten Erweiterungen, die Mobilitätsperspektive als eigenständige Modellebene sowie die AgRelOn-Integration für Agent-zu-Agent-Beziehungen.
+Dieses Dokument beschreibt das Datenmodell des M³GIM-Projekts in seinem aktuellen Stand. Es integriert die empirisch aus den erschlossenen Daten abgeleiteten Erweiterungen, die Mobilitätsperspektive als eigenständige Modellebene sowie die AgRelOn-Integration für Agent-zu-Agent-Beziehungen.
 
 Adressiert sind Projektmitarbeitende und Folge-Erschließer:innen, nicht externe Ontologie-Reviewer:innen. Der Stil ist operativ. Begründungen werden dort gegeben, wo Modellentscheidungen nicht aus den Tabellen ersichtlich sind.
 
 ### Geltungsbereich
 
-Das Dokument definiert die Entitätsklassen, Relationen, Vokabulare und Normalisierungsregeln, nach denen die Excel-Erfassung in RDF überführt und als JSON-LD serialisiert wird. Pipeline-Implementierung, Projektgeschichte und Forschungsstand sind Gegenstand separater Dokumente (`pipeline.md`, `projekt-status.md`, `forschung.md`).
+Das Dokument definiert die Entitätsklassen, Relationen, Vokabulare und Normalisierungsregeln, nach denen die Excel-Erfassung in RDF überführt und als JSON-LD serialisiert wird. Die Pipeline-Implementierung ist Gegenstand von [pipeline.md](pipeline.md), die Projektsteuerung von [plan.md](plan.md), der Forschungsstand und das Kontextwissen von [research.md](research.md), die Projektgeschichte von [journal.md](journal.md).
 
 ### Namespaces
 
@@ -54,7 +59,7 @@ Das Dokument definiert die Entitätsklassen, Relationen, Vokabulare und Normalis
 
 ### Beziehung zu den anderen Projektdokumenten
 
-Das Datenmodell operiert auf der dritten epistemischen Ebene des Projekts: *Entitäten und Verknüpfungen*. Kontextwissen (Theorie, Forschungsstand) bleibt in `forschung.md`, Projektsteuerung (Arbeitsprogramm, Technik) in `projekt-status.md` und `pipeline.md`.
+Das Datenmodell operiert auf der dritten epistemischen Ebene des Projekts, den *Entitäten und Verknüpfungen*. Kontextwissen wie Theorie und Forschungsstand bleibt in [research.md](research.md), die Projektsteuerung mit Arbeitsprogramm in [plan.md](plan.md), die technische Pipeline in [pipeline.md](pipeline.md).
 
 ## 2. Schichtenmodell
 
@@ -106,6 +111,9 @@ Die Zuordnung einer Verknüpfungszeile zu einem Indexeintrag erfolgt über Strin
 | rolle | Bühnenrollen → `m3gim:StageRole` | Rollenindex ausstehend |
 | datum | direkte Datumsproperty | implementiert |
 | ort, datum | Komposit → `m3gim:SpatiotemporalEvent` | Dekomposition implementiert, Klassenmapping neu |
+| datum, werk | Komposit → `m3gim:Performance` | Dekomposition neu |
+| rolle, person | Komposit → `m3gim:Performance` (Bühnenrolle + Interpret:in) | Dekomposition neu |
+| ort (Mobilitätsrolle) | → `rico:Place` + `m3gim:SpatiotemporalEvent` (ohne Datum) | neu |
 | ereignis | → `m3gim:PerformanceEvent` | implementiert |
 | ausgaben, währung | → `m3gim:DetailAnnotation` | implementiert |
 | einnahmen, währung | → `m3gim:DetailAnnotation` | implementiert |
@@ -115,6 +123,18 @@ Die Zuordnung einer Verknüpfungszeile zu einem Indexeintrag erfolgt über Strin
 ### Dekomposition des Komposittyps `ort, datum`
 
 Der Komposittyp trägt in einem Feld sowohl Ortsreferenz als auch Zeitangabe. In der Pipeline wird er in eine Instanz von `m3gim:SpatiotemporalEvent` aufgelöst, mit `m3gim:atPlace` (Ortsreferenz) und `m3gim:atDate` (ISO-8601 oder TimeSpan). Dieser Typ ist der Mobilitätskern des Modells und wird in Abschnitt 10 ausführlich behandelt.
+
+### Dekomposition des Komposittyps `datum, werk`
+
+Der Typ verbindet Aufführungsdatum und Werktitel (etwa `1953-07-23, Lohengrin`). Er wird in eine `m3gim:Performance` aufgelöst, mit `m3gim:performanceOf` auf das über den Werkindex gematchte `m3gim:MusicalWork` und `m3gim:auffuehrungsdatum` an der Performance. Das Werk-Ziel wird ausschließlich über den Index aufgelöst; ein roher Komposit-String oder eine literale Q-ID landet nie als Werktitel. Zeilen, deren Werthälfte kein führendes Jahr trägt (Komponist statt Werk, etwa eine reine `Beethoven`-Zeile), werden ausgefiltert und nur im Quality-Snapshot gezählt, nicht modelliert.
+
+### Dekomposition der Komposittypen `rolle, person`
+
+Beide Schreibvarianten (`Rolle, Person` und `rolle, … Sänger*in`) verbinden Bühnenrolle und Interpret:in. Sie werden in eine n-äre `m3gim:Performance` aufgelöst, die über `m3gim:hasStageRole` die Bühnenrolle (Abschnitt 7) und über `m3gim:hasPerformer` die gegen den Personenindex aufgelöste Person trägt.
+
+### Mobilitäts-Ortsrollen ohne Datum
+
+Die einfache `ort`-Verknüpfung erzeugt zusätzlich zur `rico:Place`-Referenz eine `m3gim:SpatiotemporalEvent`, wenn ihre Rolle zu den Mobilitäts-Ortsrollen gehört (`MOBILITY_PLACE_ROLES` = zielort, absendeort, abreiseort, empfangsort, vertragsort). Diese Variante trägt nur `m3gim:atPlace` und `m3gim:eventRole`, **kein** `m3gim:atDate` — ein Datum wird nicht geraten (Abschnitt 8, Konfidenz). `wohnort` ist davon ausgenommen und als Zustand mit Gültigkeitsperiode modelliert (Abschnitt 10).
 
 ## 5. Rollenvokabular
 
@@ -159,7 +179,12 @@ Dreiteilung nach Handreichungslogik: archivalisch / künstlerisch / institutione
 | kostümbildner | ● ★ | |
 | ausstatter | ● ★ | |
 | bühnenleiter | ● ★ | |
-| technische leitung | ● ★ | |
+| technische leitung | ● ★ | gegen nacktes „leitung" abzugrenzen, Klärungsbedarf |
+| beleuchter | ● ★ | Produktionscrew |
+| maskenbildner | ● ★ | Quelle führt Tippform „maskenbidner", wird durchgereicht |
+| repetitor | ● ★ | Produktionscrew |
+| regieassistent | ● ★ | Produktionscrew |
+| fotograf | ● ★ | Produktionscrew |
 | interpret | ● ★ | Oberbegriff, sofern Stimmfach/Funktion unklar |
 | protagonist | ● | Klärungsbedarf: möglicherweise Bühnenrolle, nicht Personenrolle |
 
@@ -167,7 +192,7 @@ Dreiteilung nach Handreichungslogik: archivalisch / künstlerisch / institutione
 
 | Rolle | Status | Bemerkung |
 |---|---|---|
-| vertragspartner | ○ | |
+| vertragspartner | ● ★ | als AgRelOn-Relation, nicht als Personenrolle (Abschnitt 8) |
 | inhaber | ● ★ | |
 | herausgeber | ● ★ | auch bei Personen, nicht nur bei Institutionen |
 
@@ -176,19 +201,22 @@ Dreiteilung nach Handreichungslogik: archivalisch / künstlerisch / institutione
 | Rolle | Status | Bemerkung |
 |---|---|---|
 | entstehungsort | ● | |
-| zielort | ● | |
-| absendeort | ● ★ | Korrespondenz- und Reisemobilität |
-| abreiseort | ● ★ | Reisemobilität |
+| zielort | ● ★ | Reisemobilität; erzeugt ort-only `SpatiotemporalEvent` |
+| absendeort | ● ★ | Korrespondenz- und Reisemobilität; ort-only STE |
+| abreiseort | ● ★ | Reisemobilität; ort-only STE |
+| empfangsort | ● ★ | Korrespondenzmobilität; ort-only STE |
 | auffuehrungsort | ● | |
-| wohnort | ○ | |
-| vertragsort | ○ | |
+| vertragsort | ● ★ | ort-only STE |
+| wohnort | ● ★ | Zustand mit Gültigkeitsperiode, kein Punktereignis (Abschnitt 10) |
 | erwähnt | ● | |
+
+Die mit *ort-only STE* markierten Rollen (`MOBILITY_PLACE_ROLES`) erzeugen neben der `rico:Place`-Referenz eine `m3gim:SpatiotemporalEvent` ohne Datum (Abschnitt 4). `wohnort` ist davon ausgenommen.
 
 ### Institutionenrollen
 
 | Rolle | Status | Bemerkung |
 |---|---|---|
-| vertragspartner | ○ | |
+| vertragspartner | ● ★ | AgRelOn `HasEmployeeEmployer` (Institution) bzw. `HasProfessionalContact` (Person), Abschnitt 8 |
 | arbeitgeber | ● | AgRelOn-Mapping: `hasEmployer` |
 | veranstalter | ● | |
 | vermittler | ● | |
@@ -213,6 +241,9 @@ Dreiteilung nach Handreichungslogik: archivalisch / künstlerisch / institutione
 | aufführung | ● ★ | |
 | festvorstellung | ● ★ | |
 | wiederaufnahme | ● ★ | |
+| generalprobe | ● ★ | erzeugt `probendatum` + `probenTyp` (Abschnitt 7) |
+| aufnahme | ● ★ | Rundfunk-/Tonaufnahme, diskursive Mobilität |
+| empfang | ● ★ | auf Rahmenveranstaltung gemappt |
 | veranstalter | ● ★ | Institution veranstaltet Ereignis |
 | implizit | ○ | |
 | erwähnt | ● ★ | |
@@ -262,6 +293,7 @@ Datum ist als First-Class-Typ erfasst, Rollen typisieren den Datumsbezug.
 | ausstrahlung | ● ★ | Rundfunkaufnahmen |
 | spielzeit | ● ★ | institutionelle Bindung, TimeSpan |
 | überweisung | ● ★ | Finanzdatum |
+| erstelldatum | ● ★ | Entstehung eines Dokuments |
 | gespräch | ● ★ | |
 | erwähnt | ● ★ | |
 
@@ -271,6 +303,9 @@ Datum ist als First-Class-Typ erfasst, Rollen typisieren den Datumsbezug.
 |---|---|---|
 | abendgage | ● ★ | Honorar pro Auftritt |
 | provision | ● ★ | Agentenvergütung |
+| gesamtvergütung | ● ★ | Umlaut bleibt erhalten, keine ASCII-Transliteration |
+| reisekosten | ● ★ | |
+| rundfunkhonorar | ● ★ | Quelle führt Tippform „rundfunkshonorar", durchgereicht |
 | erwähnt | ● | |
 
 ## 6. Datumskonventionen
@@ -293,6 +328,17 @@ Datum ist als First-Class-Typ erfasst, Rollen typisieren den Datumsbezug.
 | `vor:` | Terminus ante quem | vor:1958 |
 | `nach:` | Terminus post quem | nach:1958 |
 | *leer* | undatiert | |
+
+### Datums-Routing
+
+Eine Datierung wird nach ihrer Notation auf eine der drei Repräsentationen geführt:
+
+| Notation | Repräsentation |
+|---|---|
+| vollständiges oder partielles ISO-Datum | typisierte Datumsproperty (Abschnitt 7) |
+| Bereich (`von … bis`, `YYYY/YYYY`) | TimeSpan-Wert |
+| Klammer-/Fragezeichen-Unsicherheit (`1957-[05-27?]`) | `m3gim:DatedEvent` mit `dateValue`/`dateRole` |
+| Freitext-Beginn (`ab …`, `seit …`) | Qualifier `nach:` |
 
 ### Datierungsevidenz
 
@@ -328,9 +374,17 @@ Hierarchie.
 
 `m3gim:StageRole` trägt der Tatsache Rechnung, dass Bühnenrollen im Datenbestand als eigenständige Entität geführt werden sollten, nicht als String-Attribut. Werktitel *Waltraute*, *Brangäne*, *2. Norn*, *Alt Solo* sind wiederkehrende referenzierbare Rollen mit Stimmfach und Werkzugehörigkeit.
 
-`m3gim:SpatiotemporalEvent` bildet den Komposittyp `ort, datum` als Klasse ab. Dieser Typ ist der zentrale Träger der Mobilitätsinformation. Er hat 60 direkte Einträge im Datenbestand plus indirekte Belege in den einfacheren `ort`-Rollen.
+`m3gim:SpatiotemporalEvent` bildet den Komposittyp `ort, datum` als Klasse ab und ist der zentrale Träger der Mobilitätsinformation; daneben speist sie sich aus den Mobilitäts-Ortsrollen, die eine datumslose Variante erzeugen (Abschnitt 4).
 
-`m3gim:DatedEvent` ist Fallback für künftige Datumsrollen, die nicht durch typisierte Properties abgedeckt sind. Primär wird die Property-Familie (siehe unten) verwendet.
+`m3gim:DatedEvent` ist Fallback für Datumsangaben, die nicht durch eine typisierte Property abgedeckt sind, insbesondere für klammer- und fragezeichen-unsichere Datierungen (etwa `1957-[05-27?]`). Primär wird die Property-Familie (siehe unten) verwendet.
+
+### Identität der neuen Entitäten
+
+`m3gim:StageRole`-Instanzen bekommen eine deterministische Slug-`@id` der Form `m3gim:role_<slug>` im Entitäts-Namespace und werden darüber dedupliziert. Das ConceptScheme `m3gim-role:` bleibt davon getrennt — es trägt die Relationsrollen als Werte, nicht die Bühnenrollen-Entitäten. `m3gim:hasStageRole` hängt an der `m3gim:Performance`, nicht am Record.
+
+`m3gim:dataQualityFlag` zieht aus einem kontrollierten Vokabular (etwa `name-nicht-eindeutig`, `vorname-fehlt`, `rolle-unsicher`), abgeleitet aus Unsicherheitssignalen im `anmerkung`-Feld. Seine Konfidenz steht in der eigenen Property `m3gim:qualityConfidence`, nicht an der inhaltlichen Aussage.
+
+`m3gim:derivedFromRole` hält die XLSX-Ursprungsrolle dort fest, wo eine Relation ihren Auslöser sonst verlöre — etwa `vertragspartner`, das auf dieselbe AgRelOn-Klasse wie `arbeitgeber` abbildet und ohne den Marker nicht unterscheidbar wäre.
 
 ### m3gim-Object-Properties
 
@@ -341,6 +395,8 @@ Hierarchie.
 | `m3gim:performanceOf` | Performance → MusicalWork | Aufführung eines Werks |
 | `m3gim:hasStageRole` | Performance → StageRole | konkrete Bühnenrolle der Aufführung |
 | `m3gim:belongsToWork` | StageRole → MusicalWork | Bühnenrolle gehört zu Werk |
+| `m3gim:hasPerformance` | Record → Performance | Record verweist auf eine Aufführung |
+| `m3gim:hasSpatiotemporalEvent` | Record → SpatiotemporalEvent | Record verweist auf ein Mobilitätsereignis |
 | `m3gim:atPlace` | SpatiotemporalEvent → Place | Ortsreferenz |
 | `m3gim:hasDetail` | Record/Performance → DetailAnnotation | Verweis auf Detailebene |
 | `m3gim:attachedTo` | DetailAnnotation → Performance/Record | Rückreferenz |
@@ -349,17 +405,25 @@ Hierarchie.
 
 | Property | Typ | Zweck |
 |---|---|---|
-| `m3gim:bearbeitungsstand` | xsd:string | projektinterner Status |
+| `m3gim:bearbeitungsstand` | xsd:string | projektinterner Status (Objektebene) |
+| `m3gim:bearbeitungsnotiz` | xsd:string | redaktionelle Notiz zum Objekt-Bearbeitungsstand |
+| `m3gim:eventRole` | xsd:string | Rolle eines SpatiotemporalEvent |
 | `m3gim:atDate` | xsd:string | Datum als Literal an SpatiotemporalEvent |
 | `m3gim:voiceType` | xsd:string | Stimmfach an StageRole |
+| `m3gim:probenTyp` | xsd:string | Probenart (probe, generalprobe) an der Probendatum-Aussage |
 | `m3gim:monetaryAmount` | xsd:decimal | Geldbetrag an DetailAnnotation |
 | `m3gim:currency` | xsd:string | Währungscode an DetailAnnotation |
+| `m3gim:contractStatus` | xsd:string | Vertragsstatus (etwa „nicht eingehalten") am Vertrags-Record |
+| `m3gim:realized` | xsd:boolean | ob ein Vertrag erfüllt wurde; `false` nur explizit, nie geraten |
+| `m3gim:dataQualityFlag` | xsd:string (SKOS) | kontrolliertes Datenqualitäts-Flag |
+| `m3gim:qualityConfidence` | xsd:decimal | Konfidenz des Flags, getrennt von der Aussage-Konfidenz |
+| `m3gim:derivedFromRole` | xsd:string | XLSX-Ursprungsrolle einer Relation, wenn sonst nicht rekonstruierbar |
 
 ### Typisierte Datumsproperty-Familie
 
 Statt einer generischen `m3gim:eventDate` trägt das Modell für die empirisch belegten Datumsrollen je eine typisierte Property. Damit bleibt die semantische Differenzierung zwischen Absendedatum, Erscheinungsdatum, Premierendatum etc. in Queries direkt adressierbar.
 
-`m3gim:absendedatum`, `m3gim:empfangsdatum`, `m3gim:ausstellungsdatum`, `m3gim:erscheinungsdatum`, `m3gim:abreisedatum`, `m3gim:auftrittsdatum`, `m3gim:auffuehrungsdatum`, `m3gim:probendatum`, `m3gim:probenbeginn`, `m3gim:premieredatum`, `m3gim:ausstrahlungsdatum`, `m3gim:spielzeitVon`, `m3gim:spielzeitBis`, `m3gim:ueberweisungsdatum`.
+`m3gim:absendedatum`, `m3gim:empfangsdatum`, `m3gim:ausstellungsdatum`, `m3gim:erscheinungsdatum`, `m3gim:abreisedatum`, `m3gim:auftrittsdatum`, `m3gim:auffuehrungsdatum`, `m3gim:probendatum`, `m3gim:probenbeginn`, `m3gim:premieredatum`, `m3gim:ausstrahlungsdatum`, `m3gim:spielzeitVon`, `m3gim:spielzeitBis`, `m3gim:ueberweisungsdatum`, `m3gim:erstelldatum`.
 
 Alle Properties vom Typ xsd:string, weil historische Datierung die ISO-Schema-Strenge von xsd:date regelmäßig überschreitet (Qualifier `circa:`, TimeSpans, unvollständige Datierungen).
 
@@ -458,7 +522,9 @@ Die bisherige Property `m3gim:dateEvidence` geht in `agrelon:hasProvenance` auf.
 | aus_dokument | 1.0 |
 | erschlossen | 0.6 |
 | extern | 0.8 |
-| unbekannt | 0.0 |
+| unbekannt | nicht serialisiert |
+
+Ein Konfidenzwert wird nur emittiert, wenn die Aussage auch ein Datum trägt; `unbekannt` bzw. `0.0` wird weggelassen statt als Nullkonfidenz geschrieben. Konfidenz wird nie aus einem fehlgeschlagenen ISO-Parse abgeleitet — eine nicht-ISO-Datierung ist kein Indikator für geringe Sicherheit, sondern für historische Notation.
 
 Der Bearbeitungsstand `m3gim:bearbeitungsstand` bleibt als datensatzinterner Projektstatus erhalten und ist nicht Teil der Meta-Statement-Schicht.
 
@@ -532,7 +598,7 @@ Mobilität ist die zentrale inhaltliche Frage des Projekts. Das Datenmodell unte
 `m3gim:SpatiotemporalEvent` mit `eventRole` = spielzeit. Ergänzend `agrelon:HasEmployeeEmployer`-Relationen mit Gültigkeitsperiode.
 
 **Reise- und Korrespondenzmobilität.** Wo war sie wann?
-`agrelon:HasCorrespondent` mit `agrelon:hasProvenance` auf Briefe. Ergänzt durch Ortsrollen `absendeort`, `zielort`, `abreiseort` und Datumsrollen `absendedatum`, `empfangsdatum`, `abreisedatum`.
+`agrelon:HasCorrespondent` mit `agrelon:hasProvenance` auf Briefe. Ergänzt durch die Mobilitäts-Ortsrollen `absendeort`, `empfangsort`, `zielort`, `abreiseort`, `vertragsort` (je eine datumslose `m3gim:SpatiotemporalEvent`, Abschnitt 4) und die Datumsrollen `absendedatum`, `empfangsdatum`, `abreisedatum`.
 
 **Biographische Mobilität.** Wohn- und Lebensorte.
 Ortsrolle `wohnort` an Malaniuk mit TimeSpan via `agrelon:hasValidityPeriod`.
@@ -540,7 +606,7 @@ Ortsrolle `wohnort` an Malaniuk mit TimeSpan via `agrelon:hasValidityPeriod`.
 **Diskursive Mobilität.** Wo wurde über sie berichtet?
 `rico:Record` mit Dokumenttyp ∈ {rezension, presse, kritik} + `entstehungsort` oder Herausgeberinstitution mit Ortsreferenz. Der diskursive Raum weicht typischerweise vom performativen ab.
 
-Die UI-Anbindung der fünf Sichten (Farbfamilie für Chronik-Chips) liegt in [frontend.md § Chronik](frontend.md). Die Absicherung gegen fehl-gemappte eventRoles in `tests/test_25_chronik_mobility_cluster.py`.
+Die UI-Anbindung der fünf Sichten, etwa die Farbfamilie für Chronik-Chips, liegt in [design.md](design.md). Die Absicherung gegen fehl-gemappte eventRoles erfolgt in `tests/test_25_chronik_mobility_cluster.py`.
 
 ### Die zentrale Klasse: m3gim:SpatiotemporalEvent
 
@@ -571,13 +637,21 @@ Jede Mobilitätsauswertung muss den derzeitigen Erschließungsstand mitführen: 
 | `m3gim:detailRole` | xsd:string (SKOS) | Art des Finanzpostens |
 | `m3gim:attachedTo` | Object Property | Referenz auf Aufführung, Vertrag, Reise oder Record |
 
-Das Rollenvokabular für `detailRole` bleibt offen erweiterbar. Belegte Werte: abendgage, provision, dépôt, transfer, erwähnt.
+Das Rollenvokabular für `detailRole` bleibt offen erweiterbar. Belegte Werte: abendgage, provision, gesamtvergütung, reisekosten, rundfunkhonorar, dépôt, transfer, erwähnt. Umlaute bleiben erhalten (`gesamtvergütung`, keine ASCII-Transliteration).
 
 ### Währungscodes
 
-Wo möglich ISO-4217 (DEM, CHF, ATS, FRF, ESC, USD). Historische Währungen behalten ihren Freitextcode (RM für Reichsmark, S für Schilling) mit Klartext-Auflösung im Kommentarfeld.
+Wo möglich ISO-4217 (DEM, CHF, ATS, FRF, ESC, USD). Historische und uneindeutige Währungen behalten ihren Originalcode aus der Quelle (RM für Reichsmark, S für Schilling, `Lire`, `Belgische Francs`) mit Klartext-Auflösung im Kommentarfeld — sie werden nicht spekulativ auf einen ISO-Code normalisiert.
 
-Belegt im aktuellen Datenbestand: RM (Reichsmark), DM (Deutsche Mark), ATS/S (Österreichischer Schilling), CHF, FRF (Fr), ESC (portugiesischer Escudo), USD.
+Belegt im aktuellen Datenbestand: RM (Reichsmark), DM (Deutsche Mark), ATS/S (Österreichischer Schilling), CHF, FRF (Fr), ESC (portugiesischer Escudo), USD, Lire, Belgische Francs.
+
+### Betragsparsing und Doppelbeträge
+
+Beträge stehen in der Quelle in wechselnder Notation, auch mit nachgestellter Währung (`50000 Lire`) und als Doppelbetrag (`25, DM / 45, DM`). Der Parser trennt zuerst die Währung ab und extrahiert dann den numerischen Wert; ein Doppelbetrag wird zu zwei eigenständigen `m3gim:DetailAnnotation` mit gleichem `detailField`. Kein belegter Betrag darf dabei verloren gehen.
+
+### Vertragsstatus
+
+Ein in der Quelle vermerkter unerfüllter Vertrag (`nicht eingehalten`) wird als `m3gim:contractStatus` mit `m3gim:realized = false` am Vertrags-Record getragen, nicht an der betragslosen DetailAnnotation. `realized = false` wird nur bei explizitem Beleg gesetzt, nie aus fehlendem Beleg geschlossen.
 
 ### Anbindung
 
@@ -607,11 +681,13 @@ dokument
 ├── korrespondenz
 │   ├── brief
 │   ├── postkarte
-│   └── telegramm
+│   ├── telegramm
+│   └── briefumschlag
 ├── presse
 │   ├── zeitungsausschnitt
 │   ├── kritik
-│   └── rezension
+│   ├── rezension
+│   └── musikzeitschrift
 ├── programm
 │   └── programmheft
 ├── vertrag
@@ -628,19 +704,25 @@ dokument
 ├── biographisch
 │   ├── biographie
 │   ├── autobiografie
-│   └── lebenslauf
+│   ├── lebenslauf
+│   └── chronik
 ├── identitaetsdokument
 │   └── ausweis
+├── verzeichnis
 ├── tagebuch
 ├── tontraeger
 └── sonstiges
 ```
 
-32 Werte, erweitert gegenüber der Vorfassung um: korrespondenz, presse, programm, autobiografie, identitaetsdokument, repertoireliste, biographisch. Die Abgrenzung sammlung/konvolut ist als offene Frage markiert (Abschnitt 17).
+Gegenüber der Vorfassung ergänzt sind korrespondenz, presse, programm, autobiografie, identitaetsdokument, repertoireliste, biographisch, briefumschlag, musikzeitschrift, chronik, verzeichnis. `sammlung` bleibt ein eigenständiges Concept **ohne** `skos:broader` auf konvolut — die is-a-Beziehung wird nicht vorentschieden. Die Abgrenzung zwischen sammlung und konvolut ist noch zu klären (Klärungspunkt in [plan.md](plan.md)): möglicherweise ist konvolut der physische Umschlag und sammlung die thematische Zusammenstellung.
+
+### Verknüpfungstyp `dokument` als Aboutness
+
+Der Verknüpfungstyp `dokument` (ein Record nennt einen Dokumenttyp wie „Vertrag" oder „Plakate") beschreibt, **wovon** ein Record handelt, nicht was er enthält. Er wird deshalb nicht als `rico:hasOrHadSubject` serialisiert, sondern als `rico:scopeAndContent` bzw. über einen record-lokalen Blank-Node, der das geteilte SKOS-Concept nur referenziert. Auf den geteilten Concept-Knoten werden keine record-spezifischen Daten gepfropft.
 
 ## 13. partitur.json-Schema
 
-Manuell kuratierte Datenquelle für die Mobilitäts-Ansicht. Von `build-views.py` aus dem erweiterten Modell erzeugt, von `mobilitaet.js` konsumiert.
+Von `build-views.py` aus dem erweiterten Modell erzeugtes Derivat für eine Mobilitäts-Ansicht. Es wird derzeit von keinem aktiven Tab mehr konsumiert (der frühere Konsument `mobilitaet.js` wurde entfernt) und steht im Deferred-Aufräumblock als potenzieller Baustein für eine künftige Visualisierung. Das Schema bleibt hier als Referenz für eine Reaktivierung dokumentiert.
 
 ```json
 {
@@ -677,8 +759,10 @@ Die Anbindung an das erweiterte Modell erfolgt über die Mobilitätssichten (Abs
 - Case- und Whitespace-Normalisierung (`lower().strip()`)
 - Gender-Suffix-Entfernung: `:in`, `:innen`, `in` werden aus Rollenbezeichnern gestrippt
 - Excel-Datetime-Artefakte bereinigt (Zeitanteil `00:00:00` abgestreift)
-- Komposit-Typen dekomponiert (`ort, datum` → `SpatiotemporalEvent`; `ausgaben, währung` → `DetailAnnotation`)
-- Header-Shift-Abfederung in Organisations-, Orts- und Werkindex
+- Komposit-Typen dekomponiert (`ort, datum` → `SpatiotemporalEvent`; `datum, werk` → `Performance`; `rolle, person` → `Performance`; `ausgaben, währung` → `DetailAnnotation`)
+- Mehrblatt-Verknüpfungstabelle über alle Box-Sheets zusammengeführt; Signaturspalte positionsbasiert erkannt (Kopf ist teils nur ein Leerzeichen) und je Sheet forward-gefüllt
+- Header-Shift-Abfederung in Personen-, Organisations-, Orts- und Werkindex
+- nicht-textuelle Spaltenköpfe und Literal-Folio-Werte abgefangen, statt die Folio-Erkennung abbrechen zu lassen
 - Wikidata-URI-Validierung: nur Strings mit Pattern `^Q\d+$` erhalten `wd:`-Prefix
 
 ### Ortsdubletten
@@ -728,22 +812,49 @@ Empfehlung: Handreichungssystem durchsetzen. Vier Werte bilden den Schichtfortsc
 
 `m3gim:xlsxSource`, `m3gim:xlsxSheet`, `m3gim:xlsxRow`, `m3gim:datenpunktId` — siehe § 9 („XLSX-Quellreferenz"). Werden von der Pipeline gesetzt, nicht im Google-Sheet erfasst.
 
-## 17. Offene Fragen und Klärungsbedarf
+## 17. Datenqualität
 
-Punkte, die im Zuge dieser Modellrevision sichtbar wurden und vor der nächsten Erschließungsetappe geklärt werden sollten.
+Es gilt das Prinzip *Documents as Source of Truth*. Die XLSX-Erfassung ist die maßgebliche Quelle, der Pipeline-Code ist wegwerfbares Artefakt. Wo die Pipeline eine XLSX-Eigenheit kompensiert, ist diese Kompensation eine Schuld, kein Feature. Sie wird sichtbar gehalten, damit klar bleibt, was quellseitig zu fixen ist und wo der Code dauerhaft defensiv bleiben muss. Die Code-Stellen der Kompensationen liegen in `scripts/_common.py` und `scripts/transform.py`, die zugehörigen Test-Anker in der Testsuite. Die offenen Source-Fix-Tickets liegen gebündelt in [plan.md](plan.md).
 
-**Abgrenzung sammlung vs. konvolut.** Der Dokumenttyp `sammlung` erscheint überlappend mit `konvolut`. Möglicherweise ist `sammlung` ein aggregierender Erfassungsartefakt. Zu prüfen: lässt sich `sammlung` in `konvolut` aufgehen, oder gibt es einen semantischen Unterschied (z.B. `konvolut` = physischer Umschlag, `sammlung` = thematische Zusammenstellung)?
+Die kompensierten Eigenheiten fallen in vier Kategorien.
 
-**Status der Rolle `protagonist`.** Zwei Belege im Typ `person`. Vermutlich Erfassungsfehler, weil *protagonist* eine Bühnenrolle ist und in den Typ `rolle` gehört. Zu prüfen und ggf. umzuklassifizieren.
+**Spec** sind strukturell unvermeidliche Format-Transformationen, die im Code bleiben, weil sie keinen Datenfehler kaschieren, etwa die Gender-Suffix-Entfernung und der Q-ID-Regex-Filter.
 
-**Rollenindex für Bühnenrollen.** `m3gim:StageRole` benötigt eine eigene Indextabelle analog zu Werk-, Orts-, Personen- und Organisationsindex. Derzeit sind Bühnenrollen nur in der Verknüpfungstabelle als Strings erfasst. Eine saubere Referenzierung setzt einen eigenen Rollenindex voraus (mindestens Spalten `m3gim_id`, `name`, `belongsToWork`, `voiceType`, `wikidata_id`).
+**Workaround** kompensiert eine XLSX-Eigenheit, die quellseitig fixbar wäre, und ist daher ein redaktioneller Hinweis ans Archiv-Team. Hierher gehören die Index-Header-Shifts, die Bearbeitungsstand-Normalisierung, die Role-Hygiene im Ort-Komposit, der Folio-Spalten-Fallback und die @id-Kollision aus Sammel-Zeile plus Folios.
 
-**GND-IDs für Kernpersonen.** Malaniuk selbst sowie Karajan, Furtwängler, Knappertsbusch, Solti, Walter, Keilberth und weitere Hauptkontakte sollten mit GND-IDs angereichert werden. Die AgRelOn-Integration entfaltet ihren Linked-Open-Data-Mehrwert erst mit GND-Anschluss.
+**Policy** ist eine redaktionelle Entscheidung, die gilt, solange die Annahme trägt, etwa die Default-Währung Schilling für die Folie ohne Währungssuffix in NIM_007 und der Template-Zeilen-Filter.
 
-**Wikidata-IDs durchgängig.** Personen-, Organisations-, Orts- und Werkindex haben Wikidata-Spalten, aber keine gepflegten Werte. Die Anreicherung lässt sich teilweise automatisieren (Orte, Komponist:innen, Hauptinstitutionen).
+**Dead** bezeichnet bereits entfernte Kompensationen, die nur noch zur Historie geführt werden, etwa der frühere ASCII-Fallback für den Dateinamen der Verknüpfungen-Datei.
 
-**Normalisierung der Ortsdubletten.** `Zürich`/`Zürich, Zürichbergstrasse 104`, `Stuttgart`/`Stuttgart `, Freitextmischungen wie `Wien, ab 1956` sind im Ortsindex vor der nächsten Erschließungsrunde zu bereinigen.
+| Eigenheit | Kategorie | Pipeline-Kompensation |
+|---|---|---|
+| Index-Blätter ohne saubere Kopfzeile (erste Datenzeile als Header gelesen) | Workaround | `INDEX_HEADER_SHIFTS` schiebt die Zeile zurück ins DataFrame |
+| Finanzwerte ohne Währungssuffix in NIM_007 Folio 5_1 | Policy | `FINANCE_CURRENCY_DEFAULTS` setzt „S" (Schilling) |
+| Bearbeitungsstand in uneinheitlicher Schreibung und Synonymen | Workaround | `normalize_bearbeitungsstand()` mappt auf drei kanonische Werte |
+| Datumsrolle wird im Komposit `ort, datum` an beide Hälften vererbt | Workaround | Role-Strip im Ort-Zweig für Datumsrollen |
+| Freitext-Datierungen (Ort plus Zeit gemischt) | Workaround | Rohwert wird durchgereicht und toleriert, nicht geblockt |
+| Gender-inklusive Rollennotation (`:in`, `:innen`) | Spec | `normalize_role()` strippt das Suffix |
+| Ungültige Wikidata-Roh-Werte (Tippfehler, URLs) | Spec | nur Strings mit Muster `^Q\d+$` erhalten den `wd:`-Prefix |
+| wechselnder Spaltenname der Folio-Nummer | Workaround | heuristische Folio-Spalten-Erkennung plus Regex-Fallback |
+| nicht-textueller Spaltenkopf in der Objekttabelle | Workaround | Folio-Erkennung überspringt nicht-String-Köpfe statt abzubrechen |
+| Literal `Folio` als Folio-Zellwert | Workaround | Guard verhindert die kaputte Objekt-ID, Befund in den Report |
+| Verknüpfungstabelle über mehrere Box-Sheets verteilt | Workaround | alle Sheets werden geladen und zusammengeführt, statt nur das erste |
+| Signaturspalte mit Leerzeichen-Kopf, lückig gefüllt | Workaround | Spalte positionsbasiert erkannt und je Sheet forward-gefüllt |
+| Personenindex ohne sauberen Namensspaltenkopf | Workaround | Header-Shift auch für den Personenindex, sonst Totalverlust der Personen-Normdaten |
+| gleiche `archivsignatur` für Sammel-Zeile und Folio-Zeilen | Workaround | `build_konvolut_hierarchy()` vergibt `_sammlung`-Suffix auf der @id |
+| Muster-/Template-Zeile im Erfassungsblatt | Policy | Zeilen mit `archivsignatur = "beispiel"` werden übersprungen |
+| früherer ASCII-Fallback für den Verknüpfungen-Dateinamen | Dead | entfernt, Pipeline wirft jetzt `FileNotFoundError` |
 
-**Nachzuordnung unverknüpfter Einträge.** Ein substanzieller Anteil der Verknüpfungstabelle hat keine Archivsignatur. Nachzuordnen oder als inkonsistente Daten aus der Pipeline auszuschließen — aktuelle Anzahl im Quality-Snapshot.
+Einzelne Instanz-Befunde sind laut Katalog dokumentiert und gegen den aktuellen Quality-Snapshot (`data/reports/quality-snapshot.md`) zu verifizieren, bevor sie als feststehender Ist-Zustand behandelt werden. Genannt sind das Duplikat zweier Zeilen für `UAKUG/NIM/PL_07`, die verwaiste Signatur `UAKUG/NIM_11` ohne zugehörige Objektzeile, die Schreibweisen-Variante „Beethoven, Ludwig von" gegen „van" im Werkindex und die Person Sophokles, die mit der Aufführungsrolle erfasst ist, obwohl nicht er, sondern sein Werk aufgeführt wurde.
 
-**Validierung der AgRelOn-Inferenzen.** Ko-Präsenz bei Aufführungen wird nicht automatisch zu `agrelon:hasColleague`. Die Inferenzregeln sind in der Pipeline explizit zu dokumentieren und zu parametrisieren (z.B. Schwellenwert Mindestanzahl gemeinsamer Aufführungen, Zeitnähe).
+## 18. Quellen
+
+Datengrundlage ist der Teilnachlass UAKUG/NIM am Universitätsarchiv der KUG Graz. Er gliedert sich in drei Bestandsgruppen.
+
+- **Hauptbestand** NIM_001–NIM_200+ mit Briefen, Verträgen, Presseartikeln, Programmen und Fotos.
+- **Plakate** NIM/PL_01–PL_26.
+- **Tonträger** NIM/TT_01 mit Schellackplatten und Aufnahmen.
+
+Der Quellenzeitraum reicht von 1934 bis 2009. Feinerschlossen mit einzelnen Folio-Einträgen sind bislang die Konvolute um NIM_003, NIM_004, NIM_005, NIM_006, NIM_007 und NIM_011. Bestandszahlen pro Gruppe, Feinerschließungstiefe und Abdeckungsgrade stehen im Quality-Snapshot (`data/reports/quality-snapshot.md`).
+
+Zu Ira Malaniuk existiert keine eigenständige wissenschaftliche Literatur. Das Projekt leistet die ersten archivgestützten Erschließungsarbeiten. Die Einordnung in den Forschungskontext führt [research.md](research.md).

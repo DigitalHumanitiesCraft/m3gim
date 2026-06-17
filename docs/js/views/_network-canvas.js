@@ -1,14 +1,14 @@
 /**
  * Netzwerk-Canvas: SVG-Rendering, Zoom-Controls, Hover-/Highlight-Logik.
  *
- * Extrahiert aus netzwerk.js (E-93, Session 47). Der Haupt-View bleibt
+ * Extrahiert aus network.js (E-93, Session 47). Der Haupt-View bleibt
  * Eigentuemer des Zustands (`state.layout`, `state.coOccurrence`,
  * `state.svgSize`, `state.selected`), Canvas liest diesen lesend und
  * kommuniziert Aenderungen nur ueber `actions`-Callbacks.
  *
  * Exporte:
  *   renderCanvasSlot()   — leerer Container, drawCanvas rendert hinein
- *   renderDetailSlot()   — leerer Container, netzwerk.js::drawDetail rendert hinein
+ *   renderDetailSlot()   — leerer Container, network.js::drawDetail rendert hinein
  *   renderZoomControls(zoomRefs)  — +/−/⊙-Buttons, lesen zoomRefs bei Click
  *   drawCanvas({ state, actions, zoomRefs }) — Hauptroutine
  *   applyHighlight(node|null)     — DOM-Mutation: Nachbarn hervorheben / Reset
@@ -32,7 +32,7 @@
 
 import { el, clear } from '../utils/dom.js';
 import { AGRELON_LABELS } from '../data/constants.js';
-import { labelGeometry } from './_netzwerk-geometry.js';
+import { labelGeometry } from './_network-geometry.js';
 
 // ---------------------------------------------------------------------------
 // Slot-Renderer — liefern leere Container, die drawCanvas/drawDetail fuellen.
@@ -271,7 +271,7 @@ export function drawCanvas({ state, actions, zoomRefs }) {
 
 // ---------------------------------------------------------------------------
 // Highlight-Routinen — reine DOM-Mutation, werden auch vom Detail-Panel
-// aus netzwerk.js aus aufgerufen (Close-Button).
+// aus network.js aus aufgerufen (Close-Button).
 // ---------------------------------------------------------------------------
 
 export function applyHighlight(node) {

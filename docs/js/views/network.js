@@ -8,7 +8,7 @@
  * "Determinismus vor Schoenheit, KEINE Force-Simulation".
  * Vorbild: alte Kosmos-View (git show 2856daa^:docs/js/views/kosmos.js).
  *
- * Drei Ringe nach Evidenzstaerke (siehe _netzwerk-geometry.js):
+ * Drei Ringe nach Evidenzstaerke (siehe _network-geometry.js):
  *   Ring 1 — harte Beziehung (AgRelOn oder Wikidata+Dokumenten-dicht)
  *   Ring 2 — wiederkehrendes Umfeld
  *   Ring 3 — einmalige Nennungen
@@ -23,7 +23,7 @@ import { el, clear } from '../utils/dom.js';
 import { formatSignatur } from '../utils/format.js';
 import { logStamp } from '../utils/env.js';
 import { navigateToView } from '../ui/router.js';
-import { buildRoleChip } from './archiv-inline-detail.js';
+import { buildRoleChip } from './archive-inline-detail.js';
 import { AGRELON_LABELS, WIKIDATA_ICON_SVG } from '../data/constants.js';
 import {
   computeLayout,
@@ -32,15 +32,15 @@ import {
   isPureComposer,
   classifyRing,
   derivePersonKategorie,
-} from './_netzwerk-geometry.js';
-import { renderSidebar } from './_netzwerk-sidebar.js';
+} from './_network-geometry.js';
+import { renderSidebar } from './_network-sidebar.js';
 import {
   renderCanvasSlot,
   renderDetailSlot,
   renderZoomControls,
   drawCanvas,
   applyHighlight,
-} from './_netzwerk-canvas.js';
+} from './_network-canvas.js';
 
 // ---------------------------------------------------------------------------
 // Modul-State (bewusst modul-lokal, analog zu anderen Views).
@@ -257,8 +257,8 @@ function layoutFor(w, h) {
 }
 
 // ---------------------------------------------------------------------------
-// Canvas + Detail-Slot + Rendering leben in _netzwerk-canvas.js (E-93,
-// Session 47); Sidebar in _netzwerk-sidebar.js. Dieses File bleibt
+// Canvas + Detail-Slot + Rendering leben in _network-canvas.js (E-93,
+// Session 47); Sidebar in _network-sidebar.js. Dieses File bleibt
 // Orchestrator fuer State, Filter-Anwendung und Detail-Panel.
 // ---------------------------------------------------------------------------
 

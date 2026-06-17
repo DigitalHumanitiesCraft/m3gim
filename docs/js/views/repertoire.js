@@ -8,8 +8,8 @@
  */
 
 import { el, clear } from '../utils/dom.js';
-import { formatSignatur } from '../utils/format.js';
-import { buildRoleChip } from './archiv-inline-detail.js';
+import { formatSignatur, ensureArray } from '../utils/format.js';
+import { buildRoleChip } from './archive-inline-detail.js';
 import { navigateToView } from '../ui/router.js';
 
 // ---------------------------------------------------------------------------
@@ -113,11 +113,6 @@ function aggregate(store) {
     works: [...works.values()].sort(byTotal),
     composers: [...composers.values()].sort(byTotal),
   };
-}
-
-function ensureArray(v) {
-  if (v === undefined || v === null) return [];
-  return Array.isArray(v) ? v : [v];
 }
 
 // ---------------------------------------------------------------------------
@@ -266,7 +261,7 @@ function drawDetail() {
     const date = r['rico:date'] || '';
     list.appendChild(el('li', {
       className: 'repertoire__record',
-      onClick: () => navigateToView('archiv', { recordId: r['@id'] }),
+      onClick: () => navigateToView('bestand', { recordId: r['@id'] }),
     },
       el('span', { className: 'repertoire__record-sig' }, sig),
       el('span', { className: 'repertoire__record-title' }, title),

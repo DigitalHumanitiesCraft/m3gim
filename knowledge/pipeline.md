@@ -3,18 +3,22 @@ title: Pipeline
 project:
   name: M³GIM
   repository: https://github.com/DigitalHumanitiesCraft/m3gim
-status: active
+status: complete
 language: de
-version: 0.1
+version: 0.2
 created: 2026-02-19
-updated: 2026-05-09
+updated: 2026-06-17
 authors: [Christopher Pollin]
 generated-with: Claude Code
 method:
   name: Promptotyping
   url: https://lisa.gerda-henkel-stiftung.de/digitale_geschichte_pollin
+template:
+  name: Vorlage Architecture
+  version: 0.1
+  url: https://dhcraft.org/Promptotyping/promptotyping-document/architecture
 topics: ["[[Pipeline Design]]", "[[JSON-LD]]", "[[Data Validation]]"]
-related: [datenmodell, frontend, tests, xlsx-fixes, entscheidungen]
+related: [data, architecture, testing, decisions]
 ---
 
 # Pipeline
@@ -79,15 +83,41 @@ python scripts/build-views.py
 |---|---|
 | 4.1 | `normalize_role()` strippt `:in`/`:innen` — Gender-neutrale Rollenbezeichner |
 | 4.2 | `DOKUMENTTYP_TO_DFT` hierarchisch erweitert + `build_dft_concepts()` emittiert skos:Concept-Knoten mit skos:broader |
-| 4.3 | `EVIDENZ_TO_CONFIDENCE` mapped dateEvidence auf `agrelon:hasConfidenceValue` (1.0/0.8/0.6/0.0), Record-URI als `agrelon:hasProvenance` |
+| 4.3 | `EVIDENZ_TO_CONFIDENCE` mapped dateEvidence auf `agrelon:hasConfidenceValue`, Record-URI als `agrelon:hasProvenance`. Seit E-100 wird `unbekannt`/`0.0` nicht mehr serialisiert (Konfidenz nur bei datierter Aussage). |
 | 4.4 | Komposit `ort, datum` erzeugt zusaetzlich `m3gim:SpatiotemporalEvent`-Instanz mit `atPlace`, `atDate`, `eventRole` |
 | 4.6 | `parse_monetary_value()` zerlegt `AMOUNT, CURRENCY`; Finanz-DetailAnnotation haelt `monetaryAmount` (xsd:decimal), `currency`, `detailRole`. `FINANCE_CURRENCY_DEFAULTS` pro Signatur-Präfix greift, wenn die Quelle keine Währung liefert (Session 29 für NIM_007: `S`). |
 | 4.7 | `DATUMSROLLE_TO_PROPERTY` mapped Datumsrollen auf typisierte Properties (`m3gim:absendedatum`, `m3gim:auffuehrungsdatum` etc.); `is_iso_date()` filtert Freitext in Fallback `m3gim:eventDate`; `clean_date` normalisiert `YYYY-YYYY` → `YYYY/YYYY` |
 | 4.8 | `AGRELON_MAPPING` erzeugt `agrelon:HasEmployeeEmployer`/`HasCorrespondent`/`HasProfessionalContact`/`HasIsPatron`/`HasIsMember` je (typ, rolle); `m3gim:agentRelation`-Array am Record |
 
 Noch offen:
-- Phase 4.5: `m3gim:StageRole` als eigenstaendige Entitaet — erfordert neuen Rollenindex-XLSX, mit Team abzustimmen
 - Phase 4.9: Reifikation / `m3gim:Statement` — optional, spaet
+
+## Erweiterungen fuer den neuen Datenstand (testgetrieben)
+
+Ein neuer Export erschliesst mehrere Konvolute tiefer und loest die freigegebene Modell-Erweiterung aus ([decisions.md](decisions.md) E-95 bis E-102). Die Umsetzung folgt dem TDD-Workflow ([testing.md](testing.md)): erst die rote Spec, dann der Code.
+
+### Strukturelle Loader-Absorption (E-95)
+
+Die neue Export-Struktur erzeugt ohne Eingriff stillen Totalverlust bzw. einen Abbruch. Der Loader absorbiert das defensiv, statt die fehlerhaften Zeilen still fallen zu lassen.
+
+- Die Verknuepfungstabelle verteilt sich auf mehrere Box-Sheets; alle werden geladen und zusammengefuehrt, statt nur das erste.
+- Die Signaturspalte traegt teils nur ein Leerzeichen als Kopf und ist luckig gefuellt; sie wird positionsbasiert erkannt und je Sheet forward-gefuellt.
+- Der Personenindex hat keinen sauberen Namensspaltenkopf; der Header-Shift greift jetzt auch fuer den Personenindex, sonst gehen alle Personen-Normdaten verloren.
+- Nicht-textuelle Spaltenkoepfe und Literal-`Folio`-Zellwerte werden abgefangen, statt die Folio-Erkennung abbrechen zu lassen.
+
+Diese Faelle sind nicht durchreichbar; die quellseitige Bereinigung ist als Source-Fix-Ticket in [plan.md](plan.md) vermerkt.
+
+### Neue Modell-Features in transform.py
+
+| Bereich | Aenderung |
+|---|---|
+| Buehnenrollen (E-96) | `rolle, person`-Komposit wird dekomponiert und erzeugt eine n-aere `m3gim:Performance` mit `hasStageRole` (Slug-`@id`, `belongsToWork`) + gegen den Personenindex aufgeloestem `hasPerformer` |
+| Mobilitaet (E-97) | `MOBILITY_PLACE_ROLES` erzeugen am `ort`-Zweig eine datumslose `m3gim:SpatiotemporalEvent`; `wohnort` als `agrelon:hasValidityPeriod`-Zustand; `vertragspartner` ueber `AGRELON_MAPPING` mit `m3gim:derivedFromRole`-Marker |
+| Auffuehrungen (E-98) | `datum, werk`-Branch in `decompose_komposit_value`; `m3gim:Performance` mit `performanceOf` (nur aus Werkindex) + `auffuehrungsdatum`; `^\d{4}`-Guard filtert Komponist-statt-Werk-Zeilen |
+| Finanz (E-99) | `parse_monetary_value`-Umbau: nachgestellte Waehrung abtrennen, Doppelbetraege in zwei DetailAnnotations; neue Waehrungen + detailRoles als Originalcode; `contractStatus`/`realized` fuer „nicht eingehalten" |
+| Datum/Evidenz (E-100/E-102) | Konfidenz nur bei datierter Aussage, kein `0.0`; `m3gim:DatedEvent` fuer klammer-unsichere Datierungen; Datums-Routing (ISO / TimeSpan / DatedEvent / `nach:`); `erstelldatum` als typisierte Property |
+| Dokumentvokabular (E-101) | neue dft-Concepts (musikzeitschrift, briefumschlag, chronik, verzeichnis); `dokument`-Typ als `scopeAndContent`/Blank-Node statt Subject; `sammlung` ohne `skos:broader` |
+| Datenqualitaet (E-102) | `m3gim:dataQualityFlag` aus `anmerkung`-Signalen mit eigener `m3gim:qualityConfidence`; `m3gim:bearbeitungsnotiz` fuer den Objekt-Bearbeitungsstand |
 
 ## Nachzuege (Session 33 + 34)
 
@@ -115,7 +145,7 @@ Das Skript batch-fetcht Labels + Aliases + Descriptions und vergleicht mit dem `
 
 ## Pipeline-seitige Normalisierungen
 
-Strukturelle Transformationen (keine Datenfehler-Kaschierung): Spalten-Lowercase nach `pd.read_excel`, Folio-Spalten-Heuristik, Bearbeitungsstand-Kanonisierung, Gender-Suffix-Strip in Rollen, Q-ID-Regex-Filter, Zeitspannen-Normalisierung `YYYY-YYYY` → `YYYY/YYYY`, `unprocessedIds`-Set im Store. Vollständiger Katalog mit Prinzip-Einordnung (Spec/Workaround/Policy/Dead), Source-Fix-Vorschlägen und Test-Ankern: **[`knowledge/xlsx-fixes.md`](xlsx-fixes.md)**.
+Strukturelle Transformationen (keine Datenfehler-Kaschierung): Spalten-Lowercase nach `pd.read_excel`, Folio-Spalten-Heuristik, Bearbeitungsstand-Kanonisierung, Gender-Suffix-Strip in Rollen, Q-ID-Regex-Filter, Zeitspannen-Normalisierung `YYYY-YYYY` → `YYYY/YYYY`, `unprocessedIds`-Set im Store. Vollständiger Katalog mit Prinzip-Einordnung (Spec/Workaround/Policy/Dead), Source-Fix-Vorschlägen und Test-Ankern: **[data.md § Datenqualität](data.md)**.
 
 ## Wikidata-Reconciliation (Session 17, erweitert Session 27)
 
@@ -151,7 +181,7 @@ Strukturelle Transformationen (keine Datenfehler-Kaschierung): Spalten-Lowercase
 | Datei | Format | Status |
 |-------|--------|--------|
 | `m3gim.jsonld` | JSON-LD | **Alleinige primäre Datenquelle** für das Frontend. Enthält Records + SpatiotemporalEvents + SKOS-Concepts + AgRelOn-Relationen + Finanz-Details + technische Provenance. |
-| `partitur.json` / `matrix.json` / `kosmos.json` | JSON | Derivate der entfernten D3-Prototypen. Seit Session 32 von keinem aktiven Tab mehr konsumiert; werden von `build-views.py` weiterhin gebaut (Deferred-Aufräumblock in `status.md` — Entfernung, sobald sicher ist, dass keine künftige Viz sie doch noch braucht). |
+| `partitur.json` / `matrix.json` / `kosmos.json` | JSON | Derivate der entfernten D3-Prototypen. Seit Session 32 von keinem aktiven Tab mehr konsumiert; werden von `build-views.py` weiterhin gebaut (Deferred-Aufräumblock in [plan.md](plan.md) — Entfernung, sobald sicher ist, dass keine künftige Viz sie doch noch braucht). |
 
 ## Datenstand
 
@@ -161,10 +191,10 @@ Aktuelle Korpus-Struktur qualitativ: Teilnachlass UAKUG/NIM mit drei Bestandsgru
 
 ## Datenqualität
 
-Baseline und Handlungsbedarfe stehen gebündelt in **[`knowledge/xlsx-fixes.md`](xlsx-fixes.md)** (Workaround-Katalog mit Source-Fix-Vorschlägen) und im laufenden **[`data/reports/quality-snapshot.md`](../data/reports/quality-snapshot.md)** (Verknüpfungsrate, Bearbeitungsstand, Wikidata-Coverage pro Entitätstyp, Provenance-Coverage, Low-Confidence-Freigabeliste). Die Pipeline erzeugt den Snapshot bei jedem Lauf neu — sie ist die Single Source of Truth für Zahlen.
+Baseline und Handlungsbedarfe stehen gebündelt in **[data.md § Datenqualität](data.md)** (Workaround-Katalog mit Source-Fix-Vorschlägen) und im laufenden **[`data/reports/quality-snapshot.md`](../data/reports/quality-snapshot.md)** (Verknüpfungsrate, Bearbeitungsstand, Wikidata-Coverage pro Entitätstyp, Provenance-Coverage, Low-Confidence-Freigabeliste). Die Pipeline erzeugt den Snapshot bei jedem Lauf neu — sie ist die Single Source of Truth für Zahlen.
 
 ## Modell-Weiterentwicklung
 
-- **Phase 6 (abgeschlossen, Session 30):** `loader.js` hat Store-Maps `dftHierarchy`, `mobilityEvents`, `recordToEvents`, `agentRelations`, `finances` + typisierte Datumsfelder als Fallback in `indexByYear`. Siehe [frontend.md](frontend.md).
-- **Phase 7 (abgeschlossen, Sessions 32–34):** Interface-Redesign nach [interface-konzept.md](interface-konzept.md); aktueller Stand der Tab-Sichtbarkeit in [status.md](status.md) (seit Session 35 Fokus auf Bestand · Chronik · Statistik · Indizes, die übrigen Tabs verborgen, E-81).
-- **Phase 4.5 (deferred, extern blockiert):** Rollenindex-XLSX anlegen (Spalten `m3gim_id`, `name`, `belongsToWork`, `voiceType`, `wikidata_id`). Braucht Abstimmung mit Erschliessungsteam.
+- **Phase 6 (abgeschlossen, Session 30):** `loader.js` hat Store-Maps `dftHierarchy`, `mobilityEvents`, `recordToEvents`, `agentRelations`, `finances` + typisierte Datumsfelder als Fallback in `indexByYear`. Siehe [architecture.md](architecture.md).
+- **Phase 7 (abgeschlossen, Sessions 32–34):** Interface-Redesign nach [design.md](design.md); aktueller Stand der Tab-Sichtbarkeit in [plan.md](plan.md) (seit Session 35 Fokus auf Bestand · Chronik · Statistik · Indizes, die übrigen Tabs verborgen, E-81).
+- **Modell-Erweiterung neuer Datenstand (aktiv):** Loader-Fix und die Features aus E-95 bis E-102, testgetrieben umgesetzt (siehe oben). `m3gim:StageRole` als Entitaet ist Teil davon; ein dedizierter Rollenindex-XLSX (Spalten `m3gim_id`, `name`, `belongsToWork`, `voiceType`, `wikidata_id`) bleibt extern blockiert und wartet auf das Erschliessungsteam.

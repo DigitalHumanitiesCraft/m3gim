@@ -16,7 +16,7 @@
  * KEINE Force-Simulation.
  */
 
-import { KOMPONISTEN_NAMEN, PERSONEN_FARBEN } from '../data/constants.js';
+import { KOMPONISTEN_NAMEN } from '../data/constants.js';
 
 // ---------------------------------------------------------------------------
 // Rollenbasierte Personen-Kategorisierung fuer den Netzwerk-Tab.
@@ -41,7 +41,7 @@ import { KOMPONISTEN_NAMEN, PERSONEN_FARBEN } from '../data/constants.js';
  * Verweise, keine Hex-Strings — die konkreten Hex-Werte leben in
  * `docs/css/variables.css` als Design-Tokens. Konsumenten muessen die
  * Werte als *style* setzen (nicht als SVG-`fill`-attribut), damit der
- * CSS-Variablen-Lookup greift; siehe drawCanvas in netzwerk.js.
+ * CSS-Variablen-Lookup greift; siehe drawCanvas in network.js.
  */
 export const NETZWERK_KATEGORIEN = {
   'Produktion':     'var(--color-netzwerk-produktion)',    // violett — Regie/Dirigat/Komposition
@@ -97,7 +97,7 @@ const MALANIUK_QID = 'wd:Q94208';
 const MALANIUK_NAME_RX = /malaniuk/i;
 
 // Schwellwerte — oben gebuendelt, damit sie nach einer ersten Demo trivial
-// zu tunen sind. Im Plan-Dokument benannt als "Konstanten in _netzwerk-geometry.js".
+// zu tunen sind. Im Plan-Dokument benannt als "Konstanten in _network-geometry.js".
 export const RING_THRESHOLDS = {
   HARD_MIN_RECORDS_WITH_QID: 5,  // Ring 1 Einstieg, wenn Q-ID + dokumenten-dicht
   MID_MIN_RECORDS: 2,             // Ring 2 Einstieg, wenn >= 2 Records
@@ -325,7 +325,11 @@ export function computeCoOccurrence(persons, { minShared = 2, maxEdges = 250 } =
     }
   }
 
-  // Pro Record alle Paare aufzaehlen, key = a||b mit a alphabetisch < b.
+  // Pro Record alle Paare aufzaehlen. Der Key verbindet die beiden Namen
+  // (alphabetisch sortiert) mit einem U+0001-Steuerzeichen als Trennzeichen.
+  // ACHTUNG: das Trennzeichen rendert in Editoren unsichtbar und sieht aus
+  // wie ''. Es ist bewusst gewaehlt, weil es in keinem Namen vorkommen kann;
+  // split() unten nutzt dasselbe Zeichen. Nicht durch '' ersetzen.
   const pairCount = new Map();
   for (const names of recordToPersons.values()) {
     if (names.size < 2) continue;

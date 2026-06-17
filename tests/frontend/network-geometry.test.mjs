@@ -1,5 +1,5 @@
 /**
- * Unit-Tests fuer docs/js/views/_netzwerk-geometry.js (E-93, Session 47).
+ * Unit-Tests fuer docs/js/views/_network-geometry.js (E-93, Session 47).
  *
  * Lauf:
  *   node --test tests/frontend/netzwerk-geometry.test.mjs
@@ -30,7 +30,7 @@ import {
   labelGeometry,
   NETZWERK_KATEGORIEN,
   RING_THRESHOLDS,
-} from '../../docs/js/views/_netzwerk-geometry.js';
+} from '../../docs/js/views/_network-geometry.js';
 
 // ---------------------------------------------------------------------------
 // Mini-Faktory fuer Person-Entries (spiegelt die im Loader gebaute Shape).
@@ -89,9 +89,14 @@ test('classifyRing: 1 Record, aber explizit kategorisiert (Dirigent) → Ring 2'
   assert.equal(classifyRing(e), 2);
 });
 
-test('classifyRing: Schwellwerte sind exportiert und symmetrisch zur Klassifikation', () => {
-  assert.equal(RING_THRESHOLDS.HARD_MIN_RECORDS_WITH_QID, 5);
-  assert.equal(RING_THRESHOLDS.MID_MIN_RECORDS, 2);
+test('classifyRing: Schwellwerte sind exportiert und konsistent geordnet', () => {
+  // Invariante statt Magic-Number-Tautologie: beide Schwellen sind positive
+  // Ganzzahlen und die harte Schwelle ist strenger als die mittlere. Bleibt
+  // bei bewusster Justierung gruen, schlaegt bei unsinniger Konfiguration an.
+  const { HARD_MIN_RECORDS_WITH_QID: hard, MID_MIN_RECORDS: mid } = RING_THRESHOLDS;
+  assert.ok(Number.isInteger(hard) && hard > 0);
+  assert.ok(Number.isInteger(mid) && mid > 0);
+  assert.ok(hard > mid, 'harte Schwelle muss strenger als die mittlere sein');
 });
 
 // ---------------------------------------------------------------------------

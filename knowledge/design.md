@@ -1,25 +1,29 @@
 ---
-title: Interface-Konzept
+title: Design
 project:
   name: M³GIM
   repository: https://github.com/DigitalHumanitiesCraft/m3gim
-status: active
+status: complete
 language: de
-version: 0.1
+version: 0.2
 created: 2026-02-19
-updated: 2026-05-09
+updated: 2026-06-17
 authors: [Christopher Pollin]
 generated-with: Claude Code
 method:
   name: Promptotyping
   url: https://lisa.gerda-henkel-stiftung.de/digitale_geschichte_pollin
+template:
+  name: Vorlage Design
+  version: 0.1
+  url: https://dhcraft.org/Promptotyping/promptotyping-document/design
 topics: ["[[Information Visualisation]]", "[[Scholar-Centered Design]]"]
-related: [frontend, entscheidungen, datenmodell]
+related: [architecture, research, decisions, data-entry-guidelines]
 ---
 
-# Interface-Konzept
+# Design
 
-> Designregeln und Tab-Architektur für die Neufassung des Forschungsinterfaces nach Entfernung der sechs D3-Prototypen. Basiert auf zwei Mockup-Ansichten (Archiv, Repertoire) und den in [frontend.md § Lektionen](frontend.md) verdichteten Erfahrungen.
+> Designhaltung, Tab-Architektur, Designregeln, Interaktions- und Daten-Präsentations-Muster, das Designsystem mit seinen Design-Tokens sowie die destillierten Lektionen aus den entfernten D3-Visualisierungen. Wie das Frontend technisch gebaut ist (Laufzeitmodell, Module, Store, Routing), steht in [architecture.md](architecture.md). Diese Fassung basiert auf zwei Mockup-Ansichten (Archiv, Repertoire) und den Erfahrungen aus den sechs entfernten D3-Prototypen.
 
 ## Grundhaltung
 
@@ -35,7 +39,7 @@ Welche Tabs tatsächlich sichtbar sind, legt `docs/js/ui/router.js::VISIBLE_TABS
 |---|---|---|---|---|
 | **Bestand** | aktiv | Einzelbelege in Konvolut-Hierarchie; Konvolut-Meta-Chips (Top-3-Dokumenttyp + Status-Mix) direkt in der Zeile (E-82), Kinder werden innerhalb ihres Konvoluts sortiert (E-83), Facet-Filter (Dokumenttyp, Person), Record-Inline-Detail mit fünf funktionalen Blöcken | `store.records`, `store.konvolutMeta` (inkl. `docTypeCounts`, `statusCounts`, `processedCount`), `store.agentRelations`, `store.finances`, `store.recordToEvents` | Record-Tabelle mit Rolle-Prefix-Chips, Konvolut-Meta-Chips, Provenance-Pill |
 | **Chronik** | aktiv | Scrollender Jahres-Zeitstrahl 1919–2009 (+ Ausreißer-Jahre), Records als klickbare Punkte pro Jahr, leere Jahre sichtbar als Erschließungsspiegel | `store.allRecords` (gefiltert über `unprocessedIds`), `store.recordToEvents`, `store.mobilityEvents` | Vertikale Achse, Jahres-Labels links, Dot-Dichte = Jahresbelegung, Record-Chips rechts |
-| **Statistik** | aktiv | Read-only Showroom des Bestandes: Kennzahlen, Dokumenttypen, Mobilitätssichten, Geografie, Netzwerk, Repertoire, Verlinkung & Qualität, Finanzen (Session 37, E-85) | gesamter Store, aggregiert pro Sektion | Sieben Sektionen aus pure-function Aggregation |
+| **Statistik** | aktiv | Read-only Showroom des Bestandes mit Dokumenttypen, Mobilitätssichten, Geografie, Netzwerk, Repertoire und Finanzen (E-85, E-89, E-92), Tech-Reporting ausgelagert in den Quality-Snapshot | gesamter Store, aggregiert pro Sektion | Sechs Sektionen aus pure-function Aggregation |
 | **Indizes** | aktiv | Aggregierte Übersicht Personen, Organisationen, Orte, Werke; Cross-Grid-Linking | `store.persons`, `store.organizations`, `store.locations`, `store.works` (nur Einträge mit `records.size > 0`) | Vier parallele Grids, `renderNameCell()` mit Beziehungsbadges |
 | **Mobilitäts-Atlas** | verborgen | Raumzeitliche Aktivität, Leaflet + D3-Zeitstrahl + Detailpanel | `store.mobilityEvents` | Karte + Zeitstrahl + Detailpanel |
 | **Repertoire** | verborgen | Bühnenrepertoire und Komponisten, nach Belegtyp aggregiert | `store.works` + DFT-Typ der Records | Parallele Aggregat-Tabellen mit Inline-Breakdown |
@@ -72,7 +76,7 @@ Implementiert als `buildRoleChip({prefix, value, cluster, xlsxSource, wikidata, 
 
 Visuell dieselbe Primitive, semantisch kontextabhängig. Ein einziges robustes Muster statt fünf Darstellungsformen.
 
-**Zweite Farbachse für Chronik-Stations-Chips (Session 36, M3).** Zusätzlich zur Rollen-Cluster-Farbe (Rolle-Kategorie wie Ort, Person, Beziehung) tragen Chronik-Stations-Chips einen linken Akzent-Balken in einer der fünf Mobilitätssichten-Farben (`--color-sicht-performativ|institutionell|korrespondenz|diskursiv|biografisch`). Diese zweite Achse macht die in `datenmodell.md § 10` spezifizierten analytischen Perspektiven direkt sichtbar. Mapping in `EVENT_ROLE_TO_MOBILITY_CLUSTER` (constants.js), Chip-Modifier `.chip--mobility-*`.
+**Zweite Farbachse für Chronik-Stations-Chips (Session 36, M3).** Zusätzlich zur Rollen-Cluster-Farbe (Rolle-Kategorie wie Ort, Person, Beziehung) tragen Chronik-Stations-Chips einen linken Akzent-Balken in einer der fünf Mobilitätssichten-Farben (`--color-sicht-performativ|institutionell|korrespondenz|diskursiv|biografisch`). Diese zweite Achse macht die in [data.md § 10](data.md) spezifizierten analytischen Perspektiven direkt sichtbar. Mapping in `EVENT_ROLE_TO_MOBILITY_CLUSTER` (constants.js), Chip-Modifier `.chip--mobility-*`.
 
 ### 4. Inline-Breakdown statt Drilldown-Panel
 
@@ -83,7 +87,7 @@ Das ersetzt für viele Fragen ein Modal-Panel. Drilldown bleibt für Fälle, in 
 
 ### 5. Confidence als Micro-Dot pro Record
 
-`agrelon:hasConfidenceValue` wird als farbiger Punkt mit numerischem Wert inline angezeigt (`● 1.00` grün, `● 0.00` grau). Keine Legende, kein Tooltip nötig. Datenqualität steht neben dem Datenpunkt, nicht in einem separaten Report.
+`agrelon:hasConfidenceValue` wird als farbiger Punkt mit numerischem Wert inline angezeigt (`● 1.00` grün für `aus_dokument`, `● 0.60` gedämpft für `erschlossen`). Undatierte Aussagen tragen gar keinen Punkt — `0.0` wird nicht serialisiert (E-100). Keine Legende, kein Tooltip nötig. Datenqualität steht neben dem Datenpunkt, nicht in einem separaten Report.
 
 ### 6. Provenance-Pille am Datenpunkt
 
@@ -104,6 +108,8 @@ Sektionen im Hauptbereich tragen dezente Überschriften nach dem Muster `BÜHNEN
 ### 10. Datenqualität wird gezeigt, nicht gemergt
 
 Tippfehler, Dubletten, Normalisierungslücken (etwa „Verdi, Guiseppe" neben „Verdi, Giuseppe") erscheinen im UI so, wie sie im Bestand liegen. Das Interface ist ein Erschließungsspiegel. Der Markdown-Report `data/reports/quality-snapshot.md` listet solche Funde systematisch für die Team-Arbeit.
+
+**Explizite Qualitäts- und Statusmarker.** Wo das Modell Qualität oder Status ausdrücklich trägt, zeigt das UI das mit eigenen Markern statt es zu verschweigen. Ein `m3gim:dataQualityFlag` (etwa „Name nicht eindeutig") erscheint als kleiner Hinweis am betroffenen Datenpunkt, mit eigener `qualityConfidence` getrennt von der Aussage-Konfidenz. Ein unerfüllter Vertrag (`m3gim:contractStatus`, `realized = false`) bekommt einen Status-Chip am Vertrags-Record. Beide folgen derselben Haltung wie die übrige Datenqualität — sichtbar, nicht gemergt.
 
 **Leere Zeitfenster bleiben sichtbar.** Die Chronik zeigt jedes Jahr der Lebensspanne einzeln (Session 41, M5 — ersetzt das frühere Perioden-Akkordeon). Jahre ohne bearbeitetes Material bekommen einen Umriss-Dot und gedimmtes Label, Jahre mit Records einen gefüllten Dot, dessen Größe mit der Record-Dichte skaliert. Erschließungslücken bleiben dadurch sichtbar, ohne dass ein redaktioneller Hinweis nötig wäre — die Form selbst ist das Signal.
 
@@ -127,17 +133,70 @@ Keine Viz-Toolbar, keine Layer-Chips, kein Facet-Filter, wenn die sortierte Dars
 
 Was die Pipeline semantisch unterscheidet (Rollen-Typen, Datumsrollen, DFT-Hierarchie, Konfidenzstufen), erscheint auch im UI sichtbar. Sonst ist die Mühe der Differenzierung unsichtbar. Die Chips `ERWÄHNT · AUFFÜHRUNG · INTERPRET · REPERTOIRE` sind die Belegrollen nach `normalize_role()` — direkt aus dem Datenmodell gerendert.
 
+## Designsystem
+
+Die Design-Tokens (Farben, Spacing, Text-Sizes, Transitions) liegen zentral in `docs/css/variables.css`; alle Tab-CSS nutzen diese Tokens. Die Designregeln 1 und 2 beschreiben die Haltung, dieser Abschnitt fasst die konkreten Tokens und Querschnittsregeln zusammen.
+
+- **Funktionale Farbsemantik.**
+  - KUG-Blau `#004A8F` — Interaktion, Engagement, primäre Aktion
+  - Signal-Grün — Verknüpfung, Match
+  - Neutral-Grau — Abwesenheit, unbearbeitet
+  - Warmer Hintergrund — Struktur
+  - Signal-Rot — nur für Flucht 1944 (hochselektiv)
+- **Mobilitätssichten-Farbfamilie.** Fünf Tokens `--color-sicht-performativ|institutionell|korrespondenz|diskursiv|biografisch` in `variables.css`, getragen vom Chip-Modifier `.chip--mobility-*` als zweite Farbachse der Chronik-Stations-Chips.
+- **Ortsfarbcodierung.** Eine durchgehende Farbzuordnung für wiederkehrende Orte (Graz, Wien, Bayreuth, Salzburg, München) gehört ins Designsystem, nicht in einzelne Views — sie stiftet Orientierung über alle Sichten hinweg.
+- **Typografie.** Source Serif 4 (Titel und Record-Bezeichner), UI-Sansserif-Stack (Interface), Monospace (Signaturen und IDs).
+- **CSS Custom Properties** als Design-System.
+- **Responsive.** `@media <768px`-Breakpoints in `base.css` und `components.css` für Header, Tab-Bar, Toolbars, Legenden.
+- **Accessibility.** `role="tablist/tab/tabpanel"`, `aria-selected` dynamisch, `aria-hidden` auf SVG-Icons, `aria-label` auf der Korb-Badge.
+
 ## Anti-Muster
 
-- **Räumliche Separation zusammengehöriger Ebenen.** Wenn Datenschichten in einem gemeinsamen Koordinatensystem zusammenhängen, müssen sie auch visuell zusammen stehen.
-- **Unbegrenzter Zoom ohne State-Persistence.** Zoom-Bounds setzen, State im Hash halten.
-- **Inkonsistente Scales zwischen Szenen.** Ein geteiltes Scale-Objekt pro Achse über alle Szenen einer View.
-- **Schmale Facetten mit Text-Quetschung.** Mindestbreite oder Hover-Detail statt Stauchung.
-- **Scrollytelling mit IntersectionObserver bei kleinen Viewports.** Sticky-Plot ist robuster.
-- **Layer-Toggle-Overengineering.** Erst prüfen, ob statisch reicht, dann Interaktion bauen.
+Konsolidiert aus den Designregeln und den Lektionen der entfernten Prototypen.
+
+- **Räumliche Separation zusammengehöriger Ebenen.** Wenn Datenschichten in einem gemeinsamen Koordinatensystem zusammenhängen, müssen sie auch visuell zusammen stehen. Der Gastspiel-Block in Mobilität war vom Hauptchart abgesetzt, was das Parallelen-Lesen kognitiv teuer machte.
+- **Unbegrenzter Zoom ohne State-Persistence.** Klare Zoom-Bounds setzen, State im Hash oder der Session halten. In Kosmos war der Zoom unbegrenzt und der Zustand wurde nicht gespeichert, bis Text unleserlich wurde.
+- **Inkonsistente Scales zwischen Szenen.** Ein geteiltes Scale-Objekt pro Achse über alle Szenen einer View. Die Lebensstationen-Mini-Karten hatten andere Scales als die Synthese-Sektion (Maßstabs-Dissonanz).
+- **Schmale Facetten mit Text-Quetschung.** Facetten bekommen Mindestbreite oder werden durch Interaktion (Hover-Detail) kompensiert, nicht durch Stauchung. Die Netzwerk-Facette in Lebenspartitur war zu schmal, Labels wurden unleserlich.
+- **Scrollytelling mit IntersectionObserver bei kleinen Viewports.** Sticky-Plot ist robuster. Precision-Probleme und nicht-responsive Stat-Cards haben den Flow gestört; Scrollytelling braucht sehr viel Testaufwand.
+- **Layer-Toggle-Overengineering.** Erst prüfen, ob statisch reicht, dann Interaktion bauen. Die sechs D3-Prototypen hatten durchgehend zu viel Toolbar-Chrome.
+
+## Lektionen aus den entfernten Visualisierungen
+
+Die sechs entfernten D3-Views (Mobilität, Matrix, Kosmos, Zeitfluss, Lebenspartitur, Lebensstationen) und die Standalone-HTMLs (`lebenspartitur.html`, `lebensstationen.html`) waren Entwürfe. Sie werden nicht rekonstruiert. Ihre Substanz ist in den neuen Tabs weiterverarbeitet (Ort-Farbcodierung im Atlas, Signal-Rot für Flucht 1944 im Biogramm, Tabelle-vor-Chart im Netzwerk und Repertoire). Die folgenden Muster gelten als Designregeln auch für künftige Arbeit. Die destruktiven Lehren aus diesen Prototypen sind oben unter § Anti-Muster zusammengeführt.
+
+### Kompositionsentscheidungen, die bleiben
+
+- **Skalenbruch als bewusste Geste.** Die Zigzag-Unterbrechung bei 1975 (in Mobilität, Lebenspartitur, Lebensstationen konsistent angewendet) macht die Pre/Post-Flucht-Asymmetrie visuell unmittelbar lesbar. Diskontinuität wird zur Kompositionsform, nicht verdeckt.
+- **Ortsfarbcodierung als Wiedererkennung.** Die durchgehende Farbzuordnung (Graz, Wien, Bayreuth, Salzburg, München) über alle Views hat Orientierung gestiftet. Ort-Farben gehören ins Designsystem, nicht in einzelne Views.
+- **Determinismus vor Schönheit.** Seeded Randomness (Zeitfluss-Jitter) und polar-analytisches Layout (Kosmos) haben garantiert, dass gleiche Daten gleiche Grafik ergeben. Pflicht für Langzeitstabilität und Wiedererkennbarkeit — keine unkontrollierte Force-Simulation.
+- **Facetten-Synchronisierung via gemeinsamer Y-Scale.** Die 3-Spalten-Partitur (Netzwerk — Hauptchart — Repertoire) mit synchronem Hover-Highlight war das kognitiv stärkste Muster — auf einen Blick sichtbar, welche Netzwerk-Intensität und welches Repertoire zu welchem Zeitpunkt aktiv waren.
+- **Kern-/Peripherie-Dichotomie.** Die Matrix-Aufteilung in stark vernetzte (Kern) und schwach vernetzte (Peripherie als kollapsbare Gruppen) Personen hat Überladung ohne Informationsverlust verhindert. Prinzip: das Häufige zeigen, das Seltene zugänglich halten.
+- **3-Farben-Semantik-Schema.** Engagement-Blau, Gastspiel-Gold, Signal-Rot nur für Flucht 1944 — semantisch scharf, Rot bleibt Ausnahme.
+
+### Interaktionsmuster, die etabliert sind
+
+- **Layer/Fokus/Phase-Dimming** als universelles Muster über mehrere Views bewährt — bleibt als Fade-on-Focus-Standard.
+- **Deep-Link-Hash-Routing** in SPA-Tabs + `navigateToView`-Event-Bus für Cross-View-Interaktion funktioniert.
+- **Shared Phase-Chip-Leiste** zur Jahreseingrenzung war konsistent über alle Views — als wiederverwendbares Element übernommen.
+
+### Forschungsfrage-Abdeckung der entfernten Views
+
+| FF | Stärkste frühere Annäherung | Was für die Neukonzeption bleibt |
+|---|---|---|
+| FF1 (Professionalisierung/Vernetzung) | Matrix-Heatmap (Person × Phase) + Ort-Dots in Mobilität | Kern-/Peripherie-Schnitt + Ort als strukturierende Achse |
+| FF2 (narrativ/ästhetisch) | Kosmos mit Genre-Ratio + UA-Distanz | bleibt spekulativ, nicht MVP-relevant |
+| FF3 (Wissenstransfer) | Zeitfluss (Komponist × Ort × Jahr) | Ort-Codierung über Dot-Rand war elegant — übernehmen |
+| FF4 (Mobilitätsformen) | Mobilität-Schwimmbahn + Lebenspartitur-Bump | Stärkster Hebel — hier setzt die Neukonzeption an |
+
+### Datenvorstrukturen, die unverändert bleiben
+
+- `store.mobilityEvents` (Phase 6, Session-33-Koordinaten-Patch) zentralisiert, was vorher heuristisch aus `partitur.auftritte` abgeleitet wurde — Atlas und Biogramm konsumieren die Map direkt.
+- `store.agentRelations` ist in Archiv-Inline-Detail, Indizes-Beziehungsbadges und Netzwerk-Tab integriert.
+- `store.finances` sitzt im Archiv-Inline-Detail Finanzen-Block.
 
 ## Abgrenzung zur entfernten Frontend-Schicht
 
-Die sechs D3-Views (Mobilität, Matrix, Kosmos, Zeitfluss, Lebenspartitur, Lebensstationen) und die Standalone-HTMLs (`lebenspartitur.html`, `lebensstationen.html`) sind entfernt. Ihre Lektionen sind in [frontend.md § Lektionen](frontend.md) konserviert. Das neue Interface baut nicht auf `partitur.json`, sondern direkt auf den Phase-6-Store-Maps (`dftHierarchy`, `mobilityEvents`, `agentRelations`, `finances`) + `store.records`/`persons`/`works`/`locations`.
+Die sechs D3-Views und die Standalone-HTMLs sind entfernt; ihre Lektionen stehen oben unter § Lektionen aus den entfernten Visualisierungen. Das neue Interface baut nicht auf `partitur.json`, sondern direkt auf den Phase-6-Store-Maps (`dftHierarchy`, `mobilityEvents`, `agentRelations`, `finances`) + `store.records`/`persons`/`works`/`locations` (Aufbau dieser Maps siehe [architecture.md](architecture.md)).
 
 `utils/viz-components.js` (Phase-Chips, Zoom-Helper, Tooltip-Controller) wird je Tab neu bewertet; nicht alle Builder überleben, nicht alle werden gebraucht.

@@ -1,3 +1,9 @@
+# Test- und Dev-Abhaengigkeiten.
+# Bindet die Laufzeit-Deps via Include ein, damit
+#   pip install -r requirements-test.txt
+# eine lauffaehige Testumgebung liefert — die Tests importieren pandas
+# (conftest, test_03) und thefuzz (test_24) aus requirements.txt.
+-r requirements.txt
+
 pytest>=7.0
 jsonschema>=4.0
-deepdiff>=6.0

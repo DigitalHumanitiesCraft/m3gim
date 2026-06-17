@@ -4,63 +4,6 @@
  */
 
 // =========================================================================
-// Komponisten-Mapping (keyword in title → composer name)
-// =========================================================================
-
-export const KOMPONISTEN_MAPPING = {
-  // Wagner
-  'ring': 'Wagner', 'nibelungen': 'Wagner', 'walküre': 'Wagner',
-  'rheingold': 'Wagner', 'siegfried': 'Wagner', 'götterdämmerung': 'Wagner',
-  'meistersinger': 'Wagner', 'tristan': 'Wagner', 'parsifal': 'Wagner',
-  'lohengrin': 'Wagner', 'tannhäuser': 'Wagner',
-  'fricka': 'Wagner', 'waltraute': 'Wagner', 'erda': 'Wagner', 'brangäne': 'Wagner',
-  // Verdi
-  'aida': 'Verdi', 'amneris': 'Verdi', 'trovatore': 'Verdi',
-  'azucena': 'Verdi', 'maskenball': 'Verdi', 'ulrica': 'Verdi',
-  'don carlos': 'Verdi', 'eboli': 'Verdi',
-  // Strauss
-  'rosenkavalier': 'Strauss', 'octavian': 'Strauss', 'ariadne': 'Strauss',
-  'elektra': 'Strauss', 'klytämnestra': 'Strauss', 'frau ohne schatten': 'Strauss',
-  // Gluck/Händel
-  'orpheus': 'Gluck/Händel', 'orfeo': 'Gluck/Händel',
-  'julius cäsar': 'Gluck/Händel', 'händel': 'Gluck/Händel', 'gluck': 'Gluck/Händel',
-  // Beethoven
-  'fidelio': 'Beethoven', 'beethoven': 'Beethoven',
-};
-
-// Normalize variant composer names from JSON-LD to canonical form
-export const KOMPONISTEN_NORMALISIERUNG = {
-  'wagner, richard': 'Wagner', 'wagner': 'Wagner', 'richard wagner': 'Wagner',
-  'verdi, giuseppe': 'Verdi', 'verdi': 'Verdi', 'giuseppe verdi': 'Verdi',
-  'strauss, richard': 'Strauss', 'strauss': 'Strauss', 'richard strauss': 'Strauss',
-  'beethoven, ludwig van': 'Beethoven', 'beethoven, ludwig von': 'Beethoven',
-  'beethoven': 'Beethoven', 'ludwig van beethoven': 'Beethoven',
-  'gluck, christoph willibald': 'Gluck/Händel', 'gluck/händel': 'Gluck/Händel',
-  'händel, georg friedrich': 'Gluck/Händel',
-  'mozart, wolfgang amadeus': 'Mozart', 'mozart': 'Mozart',
-  'wolf, hugo': 'Wolf', 'hugo wolf': 'Wolf',
-  'brahms, johannes': 'Brahms', 'brahms': 'Brahms',
-  'schubert, franz': 'Schubert', 'schubert': 'Schubert',
-  'hindemith, paul': 'Hindemith', 'hindemith': 'Hindemith',
-  'bizet, georges': 'Bizet', 'bizet': 'Bizet',
-  'tschaikowsky, peter': 'Tschaikowsky', 'tschaikowsky': 'Tschaikowsky',
-  'mahler, gustav': 'Mahler', 'mahler': 'Mahler',
-  'barwinsky, wolodymyr': 'Barwinsky', 'barwinsky': 'Barwinsky',
-};
-
-export const KOMPONISTEN_FARBEN = {
-  'Wagner': '#6B2C2C',
-  'Verdi': '#2C5C3F',
-  'Strauss': '#4A3A6B',
-  'Gluck/Händel': '#8B7355',
-  'Beethoven': '#4A5A7A',
-  'Mozart': '#5A3D6B',
-  'Wolf': '#6B5A3D',
-  'Brahms': '#3D5A6B',
-  'Andere': '#757575',
-};
-
-// =========================================================================
 // Personen-Kategorien (keyword in name → category)
 // =========================================================================
 
@@ -154,22 +97,24 @@ export const KOMPONISTEN_NAMEN = new Set([
   'tschaikowsky', 'mahler', 'barwinsky', 'puccini', 'weber',
 ]);
 
-export const PERSONEN_FARBEN = {
-  'Archivsubjekt': '#004A8F',
-  'Komponist': '#6B2C2C',
-  'Dirigent': '#4A6E96',
-  'Regisseur': '#6B4E8C',
-  'Korrepetitor': '#8B7355',
-  'Vermittler': '#3D7A5A',
-  'Kollege': '#9A6B3D',
-  'Andere': '#757575',
-};
-
 // =========================================================================
 // Wikidata Icon (simplified barcode logo, inline SVG)
 // =========================================================================
 
 export const WIKIDATA_ICON_SVG = '<svg width="12" height="12" viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="1" width="1" height="10" fill="#990000"/><rect x="2" y="1" width="1" height="10" fill="#990000"/><rect x="4" y="1" width="1" height="10" fill="#339966"/><rect x="5.5" y="1" width="1" height="10" fill="#339966"/><rect x="7.5" y="1" width="1" height="10" fill="#006699"/><rect x="9" y="1" width="1" height="10" fill="#006699"/><rect x="10.5" y="1" width="1" height="10" fill="#006699"/></svg>';
+
+// =========================================================================
+// Lesezeichen-Icon (Wissenskorb)
+// =========================================================================
+
+/**
+ * Inline-SVG fuer Korb-Buttons. Vereinheitlicht die zuvor 8-fach inline
+ * duplizierten Bookmark-Pfade. size: 12 (Index-Detail) | 14 (Bestand/Inline-
+ * Detail). filled = Record liegt im Korb.
+ */
+export function bookmarkIcon(size = 14, filled = false) {
+  return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="${filled ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>`;
+}
 
 // =========================================================================
 // Dokumenttyp Labels
@@ -209,6 +154,13 @@ export const DOKUMENTTYP_LABELS = {
   'manuskript': 'Manuskript',
   'rechnung': 'Rechnung',
   'sammlung': 'Sammlung',
+  // === PENDING: neuer Datenstand Lane 1 (G6). Aktivieren nach Promote des
+  // neuen Exports; siehe lane-2-frontend-datenstand.md §1. Mittelfristig durch
+  // SKOS-prefLabel-Pfad abgeloest (knowledge/plan.md).
+  // 'musikzeitschrift': 'Musikzeitschrift',
+  // 'briefumschlag':    'Briefumschlag',
+  // 'verzeichnis':      'Verzeichnis',
+  // 'chronik':          'Chronik',
 };
 
 // =========================================================================
@@ -236,15 +188,6 @@ export function formatLanguage(value) {
     .map(code => LANGUAGE_LABELS[code.toLowerCase()] || code)
     .join(', ');
 }
-
-// =========================================================================
-// 5-Year Periods for Matrix
-// =========================================================================
-
-export const ZEITRAEUME = [
-  '1940-1944', '1945-1949', '1950-1954', '1955-1959',
-  '1960-1964', '1965-1969', '1970-1974',
-];
 
 // =========================================================================
 // AgRelOn-Beziehungstypen → deutsche Labels (Session 32: E-75 Chip-Pattern)
@@ -354,6 +297,22 @@ export const ROLE_CLUSTER = {
   'PREMIEREDATUM':      'datum',
   'AUSSTELLUNGSDATUM':  'datum',
   'ABREISEDATUM':       'datum',
+
+  // === PENDING: neuer Datenstand Lane 1 (G1/G2/G3/G8). Aktivieren nach Promote +
+  // Lane-1-Bestaetigung der Rollennamen; siehe lane-2-frontend-datenstand.md §1.
+  // Unmapped faellt auf 'neutral' (grau) -- kein Crash, aber Designregel 3 bricht.
+  // 'EMPFANGSORT':       'ort',          // G1
+  // 'VERTRAGSORT':       'ort',          // G1
+  // 'BELEUCHTER':        'person',       // G2 Crew
+  // 'MASKENBILDNER':     'person',       // G2 (Tippfehler 'MASKENBIDNER' durchgereicht)
+  // 'REPETITOR':         'person',       // G2
+  // 'REGIEASSISTENT':    'person',       // G2
+  // 'FOTOGRAF':          'person',       // G2
+  // 'PUBLIKUM':          'person',       // G8 -- bzw. subject, mit Lane 1 klaeren
+  // 'ABGEBILDET':        'person',       // G8
+  // 'GESAMTVERGÜTUNG':   'finanz',       // G3 detailRole
+  // 'REISEKOSTEN':       'finanz',       // G3
+  // 'RUNDFUNKSHONORAR':  'finanz',       // G3 (Tippfehler-Variante durchgereicht)
 };
 
 export function roleClusterFor(prefix) {
@@ -368,16 +327,7 @@ export function roleClusterFor(prefix) {
 // `forschungsrahmen.md § Fuenf Mobilitaetstypen` und `datenmodell.md § 10`.
 // Orthogonal zu ROLE_CLUSTER (dort: Chip-Farbe pro Rolle-Kategorie);
 // hier: thematisches Cluster pro Mobilitaets-Sicht.
-// CSS-Klassen: `.chip--mobility-performativ` etc. in archiv.css.
 // =========================================================================
-
-export const MOBILITY_CLUSTERS = [
-  'performativ',    // Wo trat Malaniuk auf?
-  'institutionell', // Wo war sie engagiert?
-  'korrespondenz',  // Wo war sie wann (Reise- und Briefverkehr)?
-  'diskursiv',      // Wo wurde ueber sie berichtet?
-  'biografisch',    // Wohn-, Ausbildungs-, biografische Zeugnisse
-];
 
 export const EVENT_ROLE_TO_MOBILITY_CLUSTER = {
   // Performative Mobilitaet (Auftritte, Auffuehrungen)
@@ -431,6 +381,19 @@ export const EVENT_ROLE_TO_MOBILITY_CLUSTER = {
   // markiert; die Darstellung erfolgt ueber das Finanzen-Cluster.
   'ueberweisung':      null,
   'überweisung':       null,
+
+  // === PENDING: neuer Datenstand Lane 1 (G1 STE-eventRoles + G8). KRITISCH:
+  // ohne diese Eintraege failt test_25, sobald die STE im Export landen.
+  // Aktivieren nach Lane-1-Bestaetigung; Cluster-Zuordnung der Ortsrollen ist
+  // die unsichere Stelle (siehe lane-2-frontend-datenstand.md §1).
+  // 'zielort':       'korrespondenz',   // G1 -- korrespondenz/reise
+  // 'absendeort':    'korrespondenz',   // G1
+  // 'abreiseort':    'korrespondenz',   // G1
+  // 'empfangsort':   'korrespondenz',   // G1
+  // 'vertragsort':   'institutionell',  // G1 -- institutionell ODER biografisch, mit Lane 1 klaeren
+  // 'aufnahme':      'diskursiv',       // G8
+  // 'generalprobe':  'performativ',     // G8 (probenTyp)
+  // 'empfang':       null,              // G8 -- ggf. rahmenveranstaltung, mit Lane 1 klaeren
 };
 
 export function mobilityClusterFor(eventRole) {
@@ -490,6 +453,17 @@ export const ROLE_TO_SECTION = {
   // Erwaehnt
   'erwähnt':           'erwaehnt',
   'erwaehnt':          'erwaehnt',
+
+  // === PENDING: neuer Datenstand Lane 1 (G2/G8). Aktivieren nach Promote +
+  // Lane-1-Bestaetigung; siehe lane-2-frontend-datenstand.md §1. Sonst landen
+  // diese Rollen im Default-Bucket "Weitere" statt in Produktion/Erwaehnt.
+  // 'beleuchter':        'produktion',  // G2
+  // 'maskenbildner':     'produktion',  // G2
+  // 'repetitor':         'produktion',  // G2
+  // 'regieassistent':    'produktion',  // G2
+  // 'fotograf':          'produktion',  // G2
+  // 'publikum':          'erwaehnt',    // G8
+  // 'abgebildet':        'erwaehnt',    // G8
 };
 
 export function sectionForRole(role) {

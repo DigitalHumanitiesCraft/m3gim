@@ -16,7 +16,7 @@ Dieses Repository enthaelt:
 
 ```text
 m3gim/
-|-- knowledge/                 # Kanonische KB (siehe knowledge/uebersicht.md)
+|-- knowledge/                 # Kanonische KB (siehe knowledge/INDEX.md)
 |-- data/
 |   |-- google-spreadsheet/  # XLSX-Exporte (git-getrackt)
 |   |-- output/              # Generierte JSON-LD/View-Daten
@@ -31,7 +31,7 @@ m3gim/
 - Datenmodell: RiC-O 1.1 + m3gim-Erweiterungen + AgRelOn
 - Pipeline: Python 3.11+ (`pandas`, `openpyxl`, `thefuzz[speedup]`)
 - Frontend: Vanilla JS (ES-Module), D3.js v7 als Library, Leaflet fuer den Mobilitaets-Atlas, kein Build-Tool
-- Tab-Architektur: sichtbar Bestand · Chronik · Statistik · Indizes; vier Perspektiv-Tabs (Mobilitaets-Atlas, Repertoire, Biogramm, Netzwerk) + Wissenskorb sind aktuell verborgen und werden iterativ reaktiviert. Details in [`knowledge/interface-konzept.md`](knowledge/interface-konzept.md) + [`knowledge/status.md`](knowledge/status.md)
+- Tab-Architektur: sichtbar Bestand · Chronik · Statistik · Indizes · Netzwerk · Wissenskorb; drei Perspektiv-Tabs (Mobilitaets-Atlas, Repertoire, Biogramm) sind aktuell verborgen und werden iterativ reaktiviert. Details in [`knowledge/design.md`](knowledge/design.md) + [`knowledge/plan.md`](knowledge/plan.md)
 - Hosting: GitHub Pages
 - Normdaten: Wikidata-Q-IDs (Reconciliation via `reconcile.py` + Enrichment via `enrich-wikidata.py`)
 
@@ -39,9 +39,9 @@ Laufende Zahlen (Bestand, Verknuepfungsrate, WD-Coverage) stehen im generierten 
 
 ## Dokumentation
 
-- Einstieg in die KB: [`knowledge/übersicht.md`](knowledge/übersicht.md)
-- Aktueller Stand + Roadmap: [`knowledge/status.md`](knowledge/status.md)
-- Architekturentscheidungen: [`knowledge/entscheidungen.md`](knowledge/entscheidungen.md)
+- Einstieg in die KB: [`knowledge/INDEX.md`](knowledge/INDEX.md)
+- Aktueller Stand + Roadmap: [`knowledge/plan.md`](knowledge/plan.md)
+- Architekturentscheidungen: [`knowledge/decisions.md`](knowledge/decisions.md)
 - Pipeline: [`knowledge/pipeline.md`](knowledge/pipeline.md)
 - Workflow-Regeln fuer Claude-Code-Sessions: [`CLAUDE.md`](CLAUDE.md)
 

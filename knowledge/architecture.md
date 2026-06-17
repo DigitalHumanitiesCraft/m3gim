@@ -1,25 +1,29 @@
 ---
-title: Frontend
+title: Architektur
 project:
   name: M³GIM
   repository: https://github.com/DigitalHumanitiesCraft/m3gim
-status: active
+status: complete
 language: de
-version: 0.1
+version: 0.2
 created: 2026-02-19
-updated: 2026-05-09
+updated: 2026-06-17
 authors: [Christopher Pollin]
 generated-with: Claude Code
 method:
   name: Promptotyping
   url: https://lisa.gerda-henkel-stiftung.de/digitale_geschichte_pollin
+template:
+  name: Vorlage Architecture
+  version: 0.1
+  url: https://dhcraft.org/Promptotyping/promptotyping-document/architecture
 topics: ["[[Static Site Architecture]]", "[[Information Visualisation]]"]
-related: [interface-konzept, pipeline, datenmodell, entscheidungen]
+related: [design, pipeline, data, decisions]
 ---
 
-# Frontend
+# Architektur
 
-> Laufzeitmodell, Modulstruktur, Store, Routing und Designsystem. Die vormaligen D3-Visualisierungen (Mobilität, Matrix, Kosmos, Zeitfluss, Lebenspartitur, Lebensstationen) sind entfernt. Die destillierten Lektionen stehen unter § Lektionen aus den entfernten Visualisierungen. Die neue Tab-Architektur und die Designregeln für den Nachfolger stehen in [interface-konzept.md](interface-konzept.md).
+> Wie das Frontend technisch gebaut ist: Laufzeitmodell, Modulstruktur, Store und State, Routing, build-loses Deployment auf GitHub Pages, Datenfluss von JSON-LD in den Store sowie die Ansichten der einzelnen Tabs. Die Designhaltung, das Designsystem und die Lektionen aus den entfernten Visualisierungen stehen in [design.md](design.md). Die vormaligen D3-Visualisierungen (Mobilität, Matrix, Kosmos, Zeitfluss, Lebenspartitur, Lebensstationen) sind entfernt.
 
 ## Laufzeitmodell
 
@@ -43,7 +47,7 @@ related: [interface-konzept, pipeline, datenmodell, entscheidungen]
 - `scripts/` — Datenpipeline
 - `data/` — Rohdaten, Reports, Pipeline-Output
 - `knowledge/` — Kanonische Wissensbasis
-- `tests/` — Pipeline-Testsuite (siehe [tests.md](tests.md))
+- `tests/` — Pipeline-Testsuite (siehe [testing.md](testing.md))
 
 ### Frontend-Module
 
@@ -60,7 +64,7 @@ related: [interface-konzept, pipeline, datenmodell, entscheidungen]
 | `views/archiv-inline-detail.js` | Record-Detail mit fünf funktionalen Blöcken (Produktion · Mitwirkende · Werk & Repertoire · Ort & Ereignis · Erwähnt), AgRelOn-Dedup (liest `rel.objectName`/`rel.objectWikidata`, nicht das rohe JSON-LD), Sprach-Label-Auflösung, `buildRoleChip()` als geteilter Helper |
 | `views/_archiv-toolbar.js` | Geteilte Toolbar (Suche, Dokumenttyp-Filter, Person-Filter, Count-Anzeige) für Bestand + Chronik |
 | `views/indizes.js` | 4-Grid Explorer (Personen, Organisationen, Orte, Werke) mit Beziehungsbadges (AgRelOn), nur Einträge mit `records.size > 0` |
-| `views/mobilitaets-atlas.js` | Leaflet-Karte + D3-Zeitstrahl + Detailpanel (Tab aktuell `hidden`, E-81) |
+| `views/mobilitaets-atlas.js` | Leaflet-Karte + D3-Zeitstrahl + Detailpanel (Tab aktuell `hidden`, E-81; Leaflet ist aus `index.html` entfernt und bei Reaktivierung des Tabs wieder einzubinden) |
 | `views/repertoire.js` | Zwei parallele Aggregat-Tabellen Werke × Komponisten (Tab aktuell `hidden`, E-81) |
 | `views/biogramm.js` | Chronologischer D3-Zeitstrahl 1919–2009 (Tab aktuell `hidden`, E-81) |
 | `views/netzwerk.js` | Orchestrator des Netzwerk-Tabs (E-93, E-94): State-Eigentum, `draw`, Filter-Anwendung, Detail-Panel, Telemetrie, Zeitfenster-Index. Delegiert Sidebar an `_netzwerk-sidebar.js` und Canvas-Rendering an `_netzwerk-canvas.js`. Nach Session-47-Split von 1095 auf 484 Zeilen. |
@@ -138,7 +142,7 @@ Die Invarianten werden als Kontrakttests in [test_06_frontend_contract.py](../te
 - **Leitprinzip „nur bearbeitet"**: Konvolute ohne erschlossene Folios, Records ohne Verknüpfungen und Folios mit 0 Links werden gar nicht erst gerendert. Plakate + Tonträger sind pauschal ausgeblendet (`EXCLUDED_DFT` im Bestand-Tab für den Counter; die Chronik filtert ausschließlich über `unprocessedIds`, weil der lokale DFT-Ausschluss 0 Matches liefert — Session 36).
 - **Counter-Tooltip** erklärt „bearbeitet" direkt am `archiv-count`-Span (Schicht 1 + 2 erschlossen, Plakate/Tonträger ausgeblendet, Verweis auf `quality-snapshot.md` für Gesamtzahlen).
 - **Chronik als Scroll-Zeitstrahl** (E-88, seit Session 41): statt Perioden-Akkordeon rendert jedes Jahr 1919-2009 (+ Ausreisser) eine eigene Zeile mit Jahres-Label links, Dot auf der Zeitachse und Record-Chips rechts. Dot-Groesse skaliert mit Jahresbelegung. Leere Jahre bleiben als Umriss-Dot sichtbar, **dichte-adaptiv** (E-92): Nicht-Dekaden-Jahre ohne Records rendern als 6-px-Linie (Label versteckt), Dekaden-Jahre (% 10 == 0) bleiben auch bei Null Records sichtbar als Anker. So bleibt die Lueckenstruktur als Rhythmus lesbar, ohne endloses Scrollen durch Jahrzehnte ohne Belege. Log-Stempel: `records, jahre-belegt, undatiert, spanne, gefiltert`.
-- **Mobilitätssichten als Chip-Farbfamilie** (Session 36, M3): die fünf Sichten aus [datenmodell.md § 10](datenmodell.md) (performativ, institutionell, korrespondenz, diskursiv, biografisch) sind im Frontend über `EVENT_ROLE_TO_MOBILITY_CLUSTER` in `docs/js/data/constants.js` einem `m3gim:eventRole` zugeordnet. CSS-Tokens `--color-sicht-performativ|institutionell|korrespondenz|diskursiv|biografisch` in `variables.css`, Chip-Modifier `.chip--mobility-*` in `archiv.css`. Wird von M4 an den Stations-Chips der Chronik getragen. Ungeklärte Rollen (`auftrag`, `entstehung`, finanzielles `ueberweisung`) stehen explizit auf `null` — keine stillschweigende Einordnung. Abgesichert in `tests/test_25_chronik_mobility_cluster.py`.
+- **Mobilitätssichten als Chip-Farbfamilie** (Session 36, M3): die fünf Sichten aus [data.md § 10](data.md) (performativ, institutionell, korrespondenz, diskursiv, biografisch) sind im Frontend über `EVENT_ROLE_TO_MOBILITY_CLUSTER` in `docs/js/data/constants.js` einem `m3gim:eventRole` zugeordnet. CSS-Tokens `--color-sicht-performativ|institutionell|korrespondenz|diskursiv|biografisch` in `variables.css`, Chip-Modifier `.chip--mobility-*` in `archiv.css`. Wird von M4 an den Stations-Chips der Chronik getragen. Ungeklärte Rollen (`auftrag`, `entstehung`, finanzielles `ueberweisung`) stehen explizit auf `null` — keine stillschweigende Einordnung. Abgesichert in `tests/test_25_chronik_mobility_cluster.py`.
 - **DEV-only Log-Stempel** (Session 36, M3.5): der Stempel pro Tab-Render geht durch `logStamp(viewName, parts)` aus `docs/js/utils/env.js`. `IS_DEV` prüft `localhost`/`127.0.0.1`. Auf `dhcraft.org` bleibt die Konsole stumm, lokal und im Playwright-Smoke erscheint der kompakte State pro Render mit fester Key-Reihenfolge.
 - **Konvolut-Meta-Chips direkt in der Zeile** (E-82): Top-3-Dokumenttyp-Chips + Status-Mix (abgeschlossen/begonnen/zurückgestellt) unter dem Konvolut-Titel. Click auf Konvolut-Zeile = Auf/Zuklappen, kein Inline-Detail.
 - **Hierarchische Sortierung** (E-83): Konvolute bleiben Signatur-sortiert, Kinder werden *innerhalb* ihres Konvoluts nach dem gewählten Sort-Key sortiert. Bei aktivem Filter flach (Hierarchie dann aufgelöst).
@@ -175,6 +179,7 @@ Die Invarianten werden als Kontrakttests in [test_06_frontend_contract.py](../te
 - Detailpanel rechts mit Chips je Event, Klick → Sprung ins Archiv
 - Badge „N unverortet" öffnet Liste der Events ohne Koordinaten
 - Voraussetzung: Koordinaten-Patch (E-76) liefert `geo:lat`/`geo:long` an `store.mobilityEvents`
+- Leaflet (`window.L`) ist aus `index.html` entfernt, solange der Tab `hidden` ist (E-81). Bei Reaktivierung muss das Leaflet-CDN wieder in `index.html` eingebunden werden. Der Hinweis steht als Kommentar an der Auslassstelle in `index.html` und in `mobilitaets-atlas.js`.
 
 ### Repertoire
 
@@ -195,7 +200,7 @@ Die Invarianten werden als Kontrakttests in [test_06_frontend_contract.py](../te
 
 Konzentrische Personen-Visualisierung um Malaniuk (E-93, Session 46; Session-47-Hygiene-Runde E-94). Antwortet auf die Forschungsfrage „Mit welchen Personen stand Malaniuk in Beziehung?". Tabelle-vor-Graph wurde hier bewusst verlassen — die vorherige Pivot-Tabelle zeigte nur ~13 AgRelOn-Partner und blendete die Wagner-Familie, Strauss, Mozart und 72 Multi-Record-Personen aus. Der Tab ist in vier Module gesplittet: [`_netzwerk-geometry.js`](../docs/js/views/_netzwerk-geometry.js) (pure Funktionen, 42 Unit-Tests), [`_netzwerk-sidebar.js`](../docs/js/views/_netzwerk-sidebar.js) (Filter-UI mit `state`/`actions`-Vertrag), [`_netzwerk-canvas.js`](../docs/js/views/_netzwerk-canvas.js) (SVG-Rendering + Hover + Zoom), [`netzwerk.js`](../docs/js/views/netzwerk.js) (Orchestrator, 484 Zeilen).
 
-- **Zwei Ringe nach Evidenzstärke.** Malaniuk im Zentrum (KUG-Blau, r=38). Ring 1 (`R * 0.32`) = harte Beziehung: `entry.relations.length > 0` ODER (Wikidata-verknüpft UND `records.size ≥ 5`). Ring 2 (`R * 0.82`) = wiederkehrendes Umfeld: `records.size ≥ 2` ODER `entry.kategorie !== "Andere"`. Ring 3 (einmalige Nennungen) ist bewusst weggefiltert — reiner dekorativer Halo. Winkel alphabetisch pro Ring (sortKey nach normalisiertem Nachnamen), gleichverteilt über 2π, Start 12 Uhr. Positionen analytisch aus Sinus/Kosinus — keine Force-Simulation, Determinismus vor Schönheit (frontend.md § 196).
+- **Zwei Ringe nach Evidenzstärke.** Malaniuk im Zentrum (KUG-Blau, r=38). Ring 1 (`R * 0.32`) = harte Beziehung: `entry.relations.length > 0` ODER (Wikidata-verknüpft UND `records.size ≥ 5`). Ring 2 (`R * 0.82`) = wiederkehrendes Umfeld: `records.size ≥ 2` ODER `entry.kategorie !== "Andere"`. Ring 3 (einmalige Nennungen) ist bewusst weggefiltert — reiner dekorativer Halo. Winkel alphabetisch pro Ring (sortKey nach normalisiertem Nachnamen), gleichverteilt über 2π, Start 12 Uhr. Positionen analytisch aus Sinus/Kosinus — keine Force-Simulation, Determinismus vor Schönheit ([design.md § Lektionen aus den entfernten Visualisierungen](design.md)).
 - **Rolle als zweite Dimension über die Füllfarbe.** `derivePersonKategorie(entry)` leitet die Kategorie aus den tatsächlichen `entry.roles`-Sets ab (Prioritätsordnung Produktion > Bühne > Vermittlung > Korrespondenz > Presse > Erwähnt; nur „erwähnt"-Varianten ohne Sonst-Rolle → „Erwähnt"; Rest → „Andere"). Ersetzt die statische Namens-Keyword-Kategorie aus `normalize.js`, die nur ~70 der 305 Personen traf und den Rest stumm in „Andere" kippte. Farbpalette in `NETZWERK_KATEGORIEN` (Produktion violett, Bühne gold, Vermittlung grün, Korrespondenz braun, Presse oliv, Erwähnt hellgrau, Andere neutral).
 - **Zwei Linientypen explizit unterschieden** (Session 46, nach Nutzertest). Gerade blaue Radial-Linien zum Zentrum = `agrelon:*`-Beziehungen, **explizit** in den Archiv-Metadaten annotiert (aus `store.agentRelations`). Geschwungene Bezier-Bänder zwischen Knoten = **Ko-Okkurrenz**, automatisch aus gemeinsamen Dokumenten abgeleitet (`computeCoOccurrence` enumeriert Paare pro Record und zählt, Threshold `minShared` steuerbar). Jede Linie trägt einen nativen SVG-`<title>`-Tooltip, der den *Grund* der Verbindung zeigt: für AgRelOn den deutschen Beziehungstyp (via `AGRELON_LABELS`), für Ko-Okkurrenz die Anzahl geteilter Dokumente. Beide Linientypen haben eigene Sichtbarkeits-Toggle in der Sidebar — der Unterschied war vorher im UI nicht lesbar und hat beim Test verwirrt.
 - **Interaktion.** Klick pinnt den Highlight-Zustand (Knoten bekommt Kontur + Drop-Shadow, Nachbarn werden beschriftet, Rest gedimmt). Gepinnt ignoriert der View weitere Hover, bis der User ins Leere klickt oder denselben Knoten erneut klickt. Doppelklick-Zoom ist deaktiviert, damit der Pin-Flow nicht mit D3-Zoom kollidiert. Detail-Panel rechts (sticky, box-shadowed): Titel + Wikidata-Badge, Meta-Zeile (Kategorie · Dokumenten-Count · Ring · Evidenz-Typ), Beziehungs-Chips via `buildRoleChip({cluster: 'beziehung'})`, Rollen-Chips aus `entry.roles`, chronologische Belegliste. Klick auf Beleg → `navigateToView('bestand', {recordId})`.
@@ -212,70 +217,28 @@ Konzentrische Personen-Visualisierung um Malaniuk (E-93, Session 46; Session-47-
 - BibTeX: `@misc{SIG_sanitized, ...}`, Autor primär aus `verfasser:in`, Fallback auf `agrelon:HasCorrespondent`-Sender
 - localStorage-Persistenz (Key `m3gim-korb`); Badge in der Tab-Bar zeigt die Anzahl
 
-## Lektionen aus den entfernten Visualisierungen
+## DEV/Prod-Verhalten und Error Boundaries
 
-Die sechs entfernten D3-Views (Mobilität, Matrix, Kosmos, Zeitfluss, Lebenspartitur, Lebensstationen) waren Entwürfe. Sie werden nicht rekonstruiert. Ihre Substanz ist in den neuen Tabs weiterverarbeitet (Ort-Farbcodierung im Atlas, Signal-Rot für Flucht 1944 im Biogramm, Tabelle-vor-Chart im Netzwerk + Repertoire). Die folgenden Muster gelten als Designregeln auch für künftige Arbeit.
+- **DEV/Prod-Logging** über `viewLog()`, das auf GitHub Pages ein No-Op ist (E-50). Auf localhost zeigt `main.js` beim Seitenaufruf einen strukturierten Store-Report (Records, Konvolute, Phase-6-Maps, WD-Coverage pro Index, Provenance-Coverage) und setzt `window.m3gim` mit Debug-Helpern `window.m3gim.store`, `window.m3gim.inspect(recordId)`, `window.m3gim.finances()`, `window.m3gim.agentRelations()`, `window.m3gim.mobilityEvents()`, `window.m3gim.dftTree()` und `window.m3gim.provenanceOf(recordId)` (letzterer zeigt alle XLSX-Quellen eines Records + Nested Entities als Liste `{field, sheet, row, datenpunkt}`). Auf Produktion (dhcraft.org) bleibt alles stumm.
+- **Error Boundaries** pro View: `main.js` fängt Render-Fehler pro Tab ab (sync und async, E-51).
 
-### Kompositionsentscheidungen, die bleiben
+## Erweiterung für den neuen Datenstand (geplant)
 
-- **Skalenbruch als bewusste Geste.** Die Zigzag-Unterbrechung bei 1975 (in Mobilität, Lebenspartitur, Lebensstationen konsistent angewendet) macht die Pre/Post-Flucht-Asymmetrie visuell unmittelbar lesbar. Diskontinuität wird zur Kompositionsform, nicht verdeckt.
-- **Ortsfarbcodierung als Wiedererkennung.** Die durchgehende Farbzuordnung (Graz, Wien, Bayreuth, Salzburg, München) über alle Views hat Orientierung gestiftet. Ort-Farben gehören ins Designsystem, nicht in einzelne Views.
-- **Determinismus vor Schönheit.** Seeded Randomness (Zeitfluss-Jitter) und polar-analytisches Layout (Kosmos) haben garantiert: gleiche Daten ergeben gleiche Grafik. Pflicht für Langzeitstabilität und Wiedererkennbarkeit — keine unkontrollierte Force-Simulation.
-- **Facetten-Synchronisierung via gemeinsamer Y-Scale.** Die 3-Spalten-Partitur (Netzwerk — Hauptchart — Repertoire) mit synchronem Hover-Highlight war das kognitiv stärkste Muster: auf einen Blick sichtbar, welche Netzwerk-Intensität und welches Repertoire zu welchem Zeitpunkt aktiv waren.
-- **Kern-/Peripherie-Dichotomie.** Die Matrix-Aufteilung in stark vernetzte (Kern) und schwach vernetzte (Peripherie als kollapsbare Gruppen) Personen hat Überladung ohne Informationsverlust verhindert. Prinzip: das Häufige zeigen, das Seltene zugänglich halten.
-- **3-Farben-Semantik-Schema.** Engagement-Blau, Gastspiel-Gold, Signal-Rot nur für Flucht 1944 — semantisch scharf, Rot bleibt Ausnahme.
+Die freigegebene Modell-Erweiterung ([decisions.md](decisions.md) E-95 bis E-102) zieht Frontend-Anpassungen nach sich, die nach dem Produktivschalten greifen. Die Reihenfolge steuert [plan.md](plan.md).
 
-### Interaktionsmuster, die etabliert sind
-
-- **Layer/Fokus/Phase-Dimming** als universelles Muster über mehrere Views bewährt — bleibt als Fade-on-Focus-Standard.
-- **Deep-Link-Hash-Routing** in SPA-Tabs + `navigateToView`-Event-Bus für Cross-View-Interaktion funktioniert.
-- **Shared Phase-Chip-Leiste** zur Jahreseingrenzung war konsistent über alle Views — als wiederverwendbares Element übernommen.
-
-### Anti-Muster, die nicht wiederkehren sollen
-
-- **Räumliche Separation zusammengehöriger Datenschichten.** Der Gastspiel-Block in Mobilität war vom Hauptchart abgesetzt — Parallelen-Lesen wurde kognitiv teuer. Lehre: zusammenhängende Ebenen bleiben in gemeinsamem Koordinatensystem.
-- **Unbegrenzter Zoom ohne State-Persistence.** In Kosmos wurde Expand-/Zoom-Zustand nicht gespeichert, Zoom war unbegrenzt — irgendwann Text unleserlich. Lehre: klare Zoom-Bounds, State im Hash oder der Session.
-- **Inkonsistente Scales zwischen Szenen.** Die Lebensstationen-Scrollytelling-Mini-Karten hatten andere Scales als die Synthese-Sektion — Maßstabs-Dissonanz. Lehre: ein geteiltes Scale-Objekt pro Achse über alle Szenen einer View.
-- **Schmale Facetten mit Text-Quetschung.** Die Netzwerk-Facette in Lebenspartitur war zu schmal, Labels unleserlich. Lehre: Facetten bekommen Mindestbreite oder werden durch Interaktion (Hover-Detail) kompensiert, nicht durch Stauchung.
-- **Scrollytelling mit IntersectionObserver bei kleinen Viewports.** Precision-Probleme und nicht-responsive Stat-Cards haben den Flow gestört. Lehre: Scrollytelling braucht sehr viel Testaufwand; Plot mit Sticky-Filter ist robuster.
-
-### Forschungsfrage-Abdeckung der entfernten Views
-
-| FF | Stärkste frühere Annäherung | Was für die Neukonzeption bleibt |
-|---|---|---|
-| FF1 (Professionalisierung/Vernetzung) | Matrix-Heatmap (Person × Phase) + Ort-Dots in Mobilität | Kern-/Peripherie-Schnitt + Ort als strukturierende Achse |
-| FF2 (narrativ/ästhetisch) | Kosmos mit Genre-Ratio + UA-Distanz | bleibt spekulativ, nicht MVP-relevant |
-| FF3 (Wissenstransfer) | Zeitfluss (Komponist × Ort × Jahr) | Ort-Codierung über Dot-Rand war elegant — übernehmen |
-| FF4 (Mobilitätsformen) | Mobilität-Schwimmbahn + Lebenspartitur-Bump | Stärkster Hebel — hier setzt die Neukonzeption an |
-
-### Datenvorstrukturen, die unverändert bleiben
-
-- `store.mobilityEvents` (Phase 6, Session-33-Koordinaten-Patch) zentralisiert, was vorher heuristisch aus `partitur.auftritte` abgeleitet wurde — Atlas und Biogramm konsumieren die Map direkt.
-- `store.agentRelations` ist in Archiv-Inline-Detail, Indizes-Beziehungsbadges und Netzwerk-Tab integriert.
-- `store.finances` sitzt im Archiv-Inline-Detail Finanzen-Block.
-
-## Designsystem
-
-- **Funktionale Farbsemantik**:
-  - KUG-Blau `#004A8F` — Interaktion, Engagement, primäre Aktion
-  - Signal-Grün — Verknüpfung, Match
-  - Neutral-Grau — Abwesenheit, unbearbeitet
-  - Warmer Hintergrund — Struktur
-  - Signal-Rot — nur für Flucht 1944 (hochselektiv)
-- **Typografie**: Source Serif 4 (Titel), UI-Font stack (Interface), Mono (Signaturen)
-- **CSS Custom Properties** als Design-System
-- **Responsive**: `@media <768px` Breakpoints in base.css + components.css — Header, Tab-Bar, Toolbars, Legenden
-- **Accessibility**: `role="tablist/tab/tabpanel"`, `aria-selected` dynamisch, `aria-hidden` auf SVG-Icons, `aria-label` auf Korb-Badge
-- **DEV/Prod**: `viewLog()` No-Op auf GitHub Pages (E-50). Auf localhost zeigt `main.js` beim Seitenaufruf einen strukturierten Store-Report (Records, Konvolute, Phase-6-Maps, WD-Coverage pro Index, Provenance-Coverage) und setzt `window.m3gim` mit Debug-Helpern: `window.m3gim.store`, `window.m3gim.inspect(recordId)`, `window.m3gim.finances()`, `window.m3gim.agentRelations()`, `window.m3gim.mobilityEvents()`, `window.m3gim.dftTree()`, `window.m3gim.provenanceOf(recordId)` (letzterer zeigt alle XLSX-Quellen eines Records + Nested Entities als Liste `{field, sheet, row, datenpunkt}`). Auf Produktion (dhcraft.org) bleibt alles stumm.
-- **Error Boundaries** pro View: main.js fängt Render-Fehler pro Tab (sync+async, E-51)
+- **Vokabular-Kopplung in `constants.js`.** Die neuen eventRoles (`zielort`, `absendeort`, `abreiseort`, `empfangsort`, `vertragsort`, `aufnahme`, `generalprobe`, `empfang`) brauchen einen Eintrag in `EVENT_ROLE_TO_MOBILITY_CLUSTER`, die neuen Rollen (Crew, Finanz-Detailrollen, `publikum`/`abgebildet`) je einen in `ROLE_CLUSTER` und `ROLE_TO_SECTION`, die neuen Dokumenttypen einen Label in `DOKUMENTTYP_LABELS`. Ein auskommentiertes Scaffold liegt je Map bereit und wird mit dem Produktivschalten aktiviert — fehlt es, brechen `test_25`/`test_15` (Leitplanke Vokabular-Kopplung).
+- **Loader.** Die datumslosen Mobilitäts-STEs und `wohnort` mit Gültigkeitsperiode dürfen kein `atDate` voraussetzen. Die Ablösung des `m3gim:hasPerformanceRole`-Artefakts durch `m3gim:StageRole`-Entitäten und n-äre `m3gim:Performance` (gelesen heute in `archive-inline-detail`, abgesichert in `record-partition.test.mjs`) ist die strukturell größte Änderung und braucht eine neue Store-Map. Neue Record-Felder (`contractStatus`/`realized`, `dataQualityFlag`/`qualityConfidence`, `bearbeitungsnotiz`, `erstelldatum`) werden in den Store gezogen.
+- **Datums-Handling.** `date-parser.js` gibt qualifizierte Datierungen heute roh aus; Anzeige und Jahres-Extraktion sind um die Qualifier (`circa:`/`vor:`/`nach:`) und das `DatedEvent`-Shape zu erweitern.
+- **Wirkung.** Die neuen Mobilitäts- und Repertoire-Strukturen machen die zurückgestellten Tabs Mobilitäts-Atlas, Repertoire und Biogramm tragfähig; die Rendering-Anpassungen (Bühnenrollen-Block, Vertragsstatus- und Datenqualitäts-Anzeige) stehen in [design.md](design.md).
 
 ## Schnittstellenvertrag
 
 | Thema | Kanonische Quelle |
 |-------|------------------|
-| Datenmodell, Ontologie, Vokabulare | [datenmodell.md](datenmodell.md) |
+| Designhaltung, Designsystem, Lektionen aus den entfernten Visualisierungen | [design.md](design.md) |
+| Datenmodell, Ontologie, Vokabulare | [data.md](data.md) |
 | Pipeline, Datenfluss, Qualitätsbaseline | [pipeline.md](pipeline.md) |
-| Testsuite, TDD-Workflow | [tests.md](tests.md) |
-| Architekturentscheidungen | [entscheidungen.md](entscheidungen.md) |
-| Operativer Stand, nächste Schritte | [status.md](status.md) |
-| Forschungsrahmen | [forschungsrahmen.md](forschungsrahmen.md) |
+| Testsuite, TDD-Workflow | [testing.md](testing.md) |
+| Architekturentscheidungen | [decisions.md](decisions.md) |
+| Operativer Stand, nächste Schritte | [plan.md](plan.md) |
+| Forschungsrahmen | [research.md](research.md) |

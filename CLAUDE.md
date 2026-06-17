@@ -8,14 +8,14 @@
 
 ## Spec-Hierarchie
 
-1. **`knowledge/datenmodell.md`** — Modell-Spezifikation. Bei jeder geplanten Modelländerung zuerst lesen und dort verankern, bevor Pipeline/Tests/Frontend angefasst werden.
-2. **`knowledge/status.md`** — aktueller Stand, nächste Schritte.
-3. **`knowledge/tests.md`** — Teststrategie + TDD-Workflow.
+1. **`knowledge/data.md`** — Datengrundlage und Modell-Spezifikation. Bei jeder geplanten Modelländerung zuerst lesen und dort verankern, bevor Pipeline/Tests/Frontend angefasst werden.
+2. **`knowledge/plan.md`** — aktueller Stand und nächste Schritte (Projektidentität in `knowledge/project.md`).
+3. **`knowledge/testing.md`** — Teststrategie + TDD-Workflow.
 4. **`knowledge/pipeline.md`** — Pipeline-Referenz.
-5. **`knowledge/frontend.md`** — Frontend-Architektur + Visualisierungen.
-6. **`knowledge/entscheidungen.md`** — historische Architekturentscheidungen (E-01 aufwärts, laufend ergänzt).
+5. **`knowledge/architecture.md`** + **`knowledge/design.md`** — Frontend-Architektur und Designsystem.
+6. **`knowledge/decisions.md`** — historische Architekturentscheidungen (E-01 aufwärts, laufend ergänzt).
 
-Weitere Dokumente siehe [`knowledge/übersicht.md`](knowledge/übersicht.md).
+Weitere Dokumente siehe [`knowledge/INDEX.md`](knowledge/INDEX.md).
 
 ## Kern-Commands
 
@@ -57,21 +57,21 @@ Prüft alle `match: "manual"`-Einträge in `wikidata-reconciliation.json` gegen 
 
 ### TDD-Modus für Modell-Erweiterungen
 
-Bei neuen Features aus `datenmodell.md`:
+Bei neuen Features aus `data.md`:
 
 1. Invariante in `tests/test_NN_*.py` als `@pytest.mark.xfail(reason="Phase X nicht implementiert", strict=True)` formulieren. **strict=True** ist wichtig: XPASS failt die Suite und signalisiert, dass der xfail-Marker zu entfernen ist.
 2. Tests mit Mindestvorkommen versehen (nicht „leere Liste ist ok"), damit sie nicht trivial bestehen.
 3. Erst dann in `scripts/transform.py` implementieren, bis xfail → XPASS.
 4. xfail-Marker entfernen, Testsuite wieder grün.
 
-Siehe `knowledge/tests.md` § TDD-Workflow. In Phase 4.1–4.8 (Session 28) und erneut für den Phase-6-Frontend-Kontrakt (Session 29) durchgängig angewendet.
+Siehe `knowledge/testing.md` § TDD-Workflow. In Phase 4.1–4.8 (Session 28) und erneut für den Phase-6-Frontend-Kontrakt (Session 29) durchgängig angewendet.
 
 ### Modell-Erweiterungen testgetrieben in folgender Reihenfolge
 
-Falls in Zukunft weitere Phasen aus `status.md` umgesetzt werden:
+Falls in Zukunft weitere Phasen aus `plan.md` umgesetzt werden:
 
 1. Tests als Spec (xfail strict).
-2. `datenmodell.md` ggf. erweitern/konkretisieren.
+2. `data.md` ggf. erweitern/konkretisieren.
 3. Pipeline in `scripts/transform.py` implementieren.
 4. xfail → XPASS → xfail-Marker entfernen.
 5. Testsuite wieder grün.
@@ -90,7 +90,7 @@ Die Dateien in `docs/data/*.json` + `docs/data/m3gim.jsonld` werden ausschließl
 - Plakate-IDs: `UAKUG/NIM/PL_XX` (mit Slash), nicht `UAKUG/NIM_PL_XX`.
 - Konvolut-Hierarchie: Objekt-ID = `archivsignatur + " " + folio`. Die Folio-Spalte im aktuellen Objekte-XLSX heißt `folio nr` (früher `folio` oder `Unnamed: 2`). Pipeline akzeptiert aktuell alle Varianten.
 
-Vollständiger Katalog der Pipeline-Workarounds (Header-Shifts, Finance-Currency-Defaults, Bearbeitungsstand-Normalisierung, Role-Hygiene, Freitext-Datierungen, Orphans, Komponisten-Schreibweisen) inkl. Source-Fix-Vorschlägen und Test-Absicherung: [`knowledge/xlsx-fixes.md`](knowledge/xlsx-fixes.md).
+Vollständiger Katalog der Pipeline-Workarounds (Header-Shifts, Finance-Currency-Defaults, Bearbeitungsstand-Normalisierung, Role-Hygiene, Freitext-Datierungen, Orphans, Komponisten-Schreibweisen) inkl. Source-Fix-Vorschlägen und Test-Absicherung: [`knowledge/data.md`](knowledge/data.md) § Datenqualität.
 
 ## Rote Linien
 
@@ -111,10 +111,10 @@ data/
 
 **Datenfluss:** `data/google-spreadsheet/` → Pipeline → `data/output/m3gim.jsonld` → `docs/data/m3gim.jsonld` → Frontend-Loader.
 
-Das Frontend konsumiert ausschließlich `docs/data/m3gim.jsonld`. Die Derivate `partitur.json`, `matrix.json`, `kosmos.json` werden von `build-views.py` weiterhin gebaut, aber von keinem aktiven Tab mehr gelesen (Deferred-Aufräumblock in `status.md`).
+Das Frontend konsumiert ausschließlich `docs/data/m3gim.jsonld`. Die Derivate `partitur.json`, `matrix.json`, `kosmos.json` werden von `build-views.py` weiterhin gebaut, aber von keinem aktiven Tab mehr gelesen (Deferred-Aufräumblock in `plan.md`).
 
 ## Wegweiser
 
-- Details zu Architektur, Datenmodell, Tests, Frontend → `knowledge/` (siehe `knowledge/übersicht.md`)
+- Details zu Architektur, Datenmodell, Tests, Frontend → `knowledge/` (siehe `knowledge/INDEX.md`)
 - Session-Memory (persistiert über Sessions): `.claude/projects/*/memory/`
-- Aktuelle Roadmap: `knowledge/status.md` § Nächste Schritte
+- Aktuelle Roadmap: `knowledge/plan.md` § Nächste Schritte

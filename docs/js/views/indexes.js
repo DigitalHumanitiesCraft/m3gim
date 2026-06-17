@@ -5,9 +5,9 @@
 
 import { el, clear } from '../utils/dom.js';
 import { formatSignatur, getDocTypeId, truncate } from '../utils/format.js';
-import { PERSONEN_FARBEN, DOKUMENTTYP_LABELS, WIKIDATA_ICON_SVG, AGRELON_LABELS } from '../data/constants.js';
+import { DOKUMENTTYP_LABELS, WIKIDATA_ICON_SVG, AGRELON_LABELS, bookmarkIcon } from '../data/constants.js';
 import { selectRecord, navigateToView } from '../ui/router.js';
-import { toggleKorb, isInKorb } from '../ui/korb.js';
+import { toggleKorb, isInKorb } from '../ui/basket.js';
 import { logStamp } from '../utils/env.js';
 import { buildToolbar } from './_toolbar.js';
 
@@ -32,6 +32,20 @@ let indizesToolbar = null;
 
 /** Cross-grid facet filter: { gridKey, name, recordIds: Set<string> } | null */
 let activeFilter = null;
+
+// Memoisierte Entry-Listen pro Grid. getEntries() materialisiert je Aufruf
+// die volle Liste aus der Store-Map; der Datenstand aendert sich aber nie nach
+// dem Load. Cache wird in renderIndizes (Store-Wechsel) zurueckgesetzt.
+const entriesCache = new Map();
+
+function getGridEntries(gridKey, config) {
+  let cached = entriesCache.get(gridKey);
+  if (!cached) {
+    cached = config.getEntries(store);
+    entriesCache.set(gridKey, cached);
+  }
+  return cached;
+}
 
 const GRID_CONFIG = {
   personen: {
@@ -128,7 +142,7 @@ export function expandEntry(gridType, entityName) {
   // Also set facet filter for cross-grid filtering
   const config = GRID_CONFIG[gridType];
   if (config) {
-    const entries = config.getEntries(store);
+    const entries = getGridEntries(gridType, config);
     const entry = entries.find(e => e.name === entityName);
     if (entry) {
       activeFilter = { gridKey: gridType, name: entityName, recordIds: entry.records };
@@ -149,6 +163,7 @@ export function expandEntry(gridType, entityName) {
 export function renderIndizes(storeRef, containerEl) {
   store = storeRef;
   container = containerEl;
+  entriesCache.clear();  // Store kann sich geaendert haben -> Memo invalidieren
   clear(container);
 
   const wrapper = el('div', { className: 'idx-page' });
@@ -195,7 +210,7 @@ function renderAllGrids(wrapper) {
   const q = (toolbarState.q || '').toLowerCase();
   for (const [gridKey, config] of Object.entries(GRID_CONFIG)) {
     gridsContainer.appendChild(renderGrid(gridKey, config));
-    const all = config.getEntries(store);
+    const all = getGridEntries(gridKey, config);
     const total = all.length;
     let visible = all;
     visible = applyFacetFilter(visible, gridKey);
@@ -264,7 +279,8 @@ function applyFacetFilter(entries, gridKey) {
 
 function renderGrid(gridKey, config) {
   const state = gridState[gridKey];
-  let entries = config.getEntries(store);
+  // Kopie der memoisierten Liste -- die Sortierung unten mutiert in-place.
+  let entries = getGridEntries(gridKey, config).slice();
 
   // Apply cross-grid facet filter
   entries = applyFacetFilter(entries, gridKey);
@@ -291,7 +307,7 @@ function renderGrid(gridKey, config) {
   const grid = el('div', { className: `idx-grid ${isFilterSource ? 'idx-grid--filter-source' : ''}` });
 
   // Header
-  const allEntries = config.getEntries(store);
+  const allEntries = getGridEntries(gridKey, config);
   const totalCount = allEntries.length;
   const isFiltered = entries.length < totalCount;
   const countText = isFiltered ? `${entries.length} / ${totalCount}` : `${totalCount}`;
@@ -493,15 +509,22 @@ function renderExpandedRecords(entry, gridKey) {
       el('button', {
         className: `bookmark-btn ${inKorb ? 'bookmark-btn--active' : ''}`,
         title: inKorb ? 'Aus Wissenskorb entfernen' : 'Zum Wissenskorb',
-        html: inKorb
-          ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>'
-          : '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>',
+        dataset: { recordId: rid },
+        html: bookmarkIcon(12, inKorb),
         onClick: (e) => {
           e.stopPropagation();
           toggleKorb(rid);
-          // Re-render this grid to reflect bookmark state
-          const wrapper = container?.querySelector('.idx-page');
-          if (wrapper) renderAllGrids(wrapper);
+          // Statt alle 4 Grids neu zu zeichnen: alle Bookmark-Buttons dieses
+          // Records in-place aktualisieren (dasselbe Record kann in mehreren
+          // aufgeklappten Grids auftauchen).
+          const nowIn = isInKorb(rid);
+          const page = container?.querySelector('.idx-page');
+          for (const b of (page ? page.querySelectorAll('.bookmark-btn') : [])) {
+            if (b.dataset.recordId !== rid) continue;
+            b.classList.toggle('bookmark-btn--active', nowIn);
+            b.title = nowIn ? 'Aus Wissenskorb entfernen' : 'Zum Wissenskorb';
+            b.innerHTML = bookmarkIcon(12, nowIn);
+          }
         },
       }),
     );

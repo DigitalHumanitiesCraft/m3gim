@@ -135,14 +135,19 @@ function buildFacet(store, facet, state, notify) {
 
 
 function buildSearch(facet, state, notify) {
+  let debounceTimer = null;
   const input = el('input', {
     className: 'archiv-search',
     type: 'text',
     placeholder: facet.placeholder || 'Suche\u2026',
     value: state[facet.key] || '',
     onInput: (e) => {
+      // State sofort aktualisieren (getState bleibt korrekt), aber den teuren
+      // View-Re-Render buendeln -- ein voller Rebuild pro Tastendruck ist in
+      // Bestand/Indizes spuerbar.
       state[facet.key] = e.target.value.toLowerCase();
-      notify();
+      if (debounceTimer) clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => { debounceTimer = null; notify(); }, 150);
     },
   });
   return {

@@ -7,10 +7,11 @@
  */
 
 import { el, clear } from '../utils/dom.js';
-import { formatSignatur, getDocTypeId, ensureArray, expandDftFilter } from '../utils/format.js';
+import { formatSignatur, getDocTypeId, ensureArray } from '../utils/format.js';
 import { extractYear, formatDate } from '../utils/date-parser.js';
 import { DOKUMENTTYP_LABELS } from '../data/constants.js';
-import { buildFilterToolbar } from './_archiv-toolbar.js';
+import { buildFilterToolbar } from './_archive-toolbar.js';
+import { filterByToolbarState, isToolbarFiltered, searchMatchChronik } from './_archive-filter.js';
 import { logStamp } from '../utils/env.js';
 import { selectRecord } from '../ui/router.js';
 import { onViewNavigate } from '../ui/events.js';
@@ -53,37 +54,20 @@ export function renderChronik(storeRef, containerEl) {
 }
 
 function updateChronikView() {
-  const { search = '', docType = '', person = '', location = '', werk = '' } = toolbar ? toolbar.getState() : {};
+  const state = toolbar ? toolbar.getState() : {};
   clear(viewContainer);
 
   // Bearbeitete Records (die unverknuepften Massenrecords waeren als Punkte
   // nicht ansprechbar und wuerden den Zeitstrahl mit Platzhaltern fluten).
   let records = store.allRecords.filter(r => !store.unprocessedIds.has(r['@id']));
 
-  if (search) {
-    const q = search.toLowerCase();
-    records = records.filter(r => {
-      const sig = (r['rico:identifier'] || '').toLowerCase();
-      const title = (r['rico:title'] || '').toLowerCase();
-      return sig.includes(q) || title.includes(q);
-    });
-  }
-  if (docType) {
-    const allowedTypes = expandDftFilter(store, docType);
-    records = records.filter(r => allowedTypes.has(getDocTypeId(r)));
-  }
-  if (person) {
-    const personData = store.persons.get(person);
-    if (personData) records = records.filter(r => personData.records.has(r['@id']));
-  }
-  if (location) {
-    const locData = store.locations.get(location);
-    if (locData) records = records.filter(r => locData.records.has(r['@id']));
-  }
-  if (werk) {
-    const werkData = store.works.get(werk);
-    if (werkData) records = records.filter(r => werkData.records.has(r['@id']));
-  }
+  // Fuenf Toolbar-Facetten (geteilte Pipeline mit Bestand, Tier 2.6).
+  // Chronik filtert nackte Records -> getRecord ist Identity; Suche nur
+  // Signatur + Titel (searchMatchChronik).
+  records = filterByToolbarState(store, records, state, {
+    getRecord: (r) => r,
+    searchMatch: searchMatchChronik,
+  });
 
   // Records nach Jahr gruppieren. extractYear liefert die erste vierstellige
   // Jahreszahl aus rico:date; fuer typisierte Datumsfelder (absendedatum etc.)
@@ -113,7 +97,7 @@ function updateChronikView() {
     if (arr.length > maxPerYear) maxPerYear = arr.length;
   }
 
-  const isFiltered = !!(search || docType || person || location || werk);
+  const isFiltered = isToolbarFiltered(state);
 
   const timeline = el('div', { className: 'chronik-timeline' });
   timeline.appendChild(el('div', { className: 'chronik-timeline__axis', 'aria-hidden': 'true' }));

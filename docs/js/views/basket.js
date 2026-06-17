@@ -1,41 +1,29 @@
 /**
  * M³GIM Wissenskorb View — bookmarked records with full metadata, relations,
- * finances and spatiotemporal events. Cards use the same buildRoleChip()
- * primitive as the Archiv-Inline-Detail (E-77) so the korb tab shares the
- * design language of the main interface.
+ * finances and spatiotemporal events. Cards reuse buildRecordBlocks() from the
+ * Archiv-Inline-Detail (E-77) so the korb tab shares the exact block logic and
+ * design language of the main interface (single-column, no count suffix).
  */
 
 import { el, clear } from '../utils/dom.js';
 import { formatSignatur, formatDocType, getDocTypeId, ensureArray } from '../utils/format.js';
 import { formatDate } from '../utils/date-parser.js';
-import { DOKUMENTTYP_LABELS, AGRELON_LABELS, sectionForRole, steChipPrefix, formatLanguage } from '../data/constants.js';
-import { buildRoleChip } from './archiv-inline-detail.js';
-import { getKorbItems, removeFromKorb, clearKorb, onKorbChange } from '../ui/korb.js';
-import { navigateToIndex, applyArchivFilter } from '../ui/router.js';
-import { extractXlsxSource } from '../utils/provenance.js';
-
-const GRID_TO_FACET = { personen: 'person', orte: 'location', werke: 'werk' };
-
-function chipClickFor(gridType, name) {
-  if (!gridType || !name) return null;
-  const facet = GRID_TO_FACET[gridType];
-  if (facet) return () => applyArchivFilter(facet, name);
-  return () => navigateToIndex(gridType, name);
-}
+import { DOKUMENTTYP_LABELS, AGRELON_LABELS, formatLanguage } from '../data/constants.js';
+import { buildRecordBlocks } from './archive-inline-detail.js';
+import { getKorbItems, removeFromKorb, clearKorb, onKorbChange } from '../ui/basket.js';
 
 let store = null;
 let container = null;
-
-const AGRELON_ROLES = new Set([
-  'absender', 'empfänger', 'empfaenger', 'adressat',
-  'arbeitgeber', 'agent', 'vermittler', 'auftraggeber',
-]);
+let unsubscribeKorbChange = null;
 
 export function renderKorb(storeRef, containerEl) {
   store = storeRef;
   container = containerEl;
 
-  onKorbChange(() => renderList());
+  // Vorheriges Abonnement abmelden — renderKorb laeuft bei jeder Korb-Aenderung
+  // erneut (main.js rendert den Tab neu), sonst akkumulieren sich Listener.
+  if (unsubscribeKorbChange) unsubscribeKorbChange();
+  unsubscribeKorbChange = onKorbChange(() => renderList());
   renderList();
 }
 
@@ -110,7 +98,7 @@ function renderCard(record) {
   const metaLine = renderMetaLine(record);
   if (metaLine) card.appendChild(metaLine);
 
-  const body = renderCardBody(record, recordId);
+  const body = renderCardBody(record);
   if (body.childNodes.length > 0) {
     card.appendChild(body);
   } else {
@@ -161,119 +149,14 @@ function renderMetaLine(record) {
   return el('div', { className: 'korb-card__meta' }, parts.join(' \u00b7 '));
 }
 
-function renderCardBody(record, recordId) {
+function renderCardBody(record) {
   const body = el('div', { className: 'korb-card__body' });
-
-  const allAgents = ensureArray(record['m3gim:hasAssociatedAgent']);
-  const subjects = ensureArray(record['rico:hasOrHadSubject']);
-  const works = subjects.filter(s => s['@type'] === 'm3gim:MusicalWork' || s['@type'] === 'm3gim:PerformanceEvent');
-  const mentionedPersons = subjects.filter(s => s['@type'] === 'rico:Person');
-  const performanceRoles = ensureArray(record['m3gim:hasPerformanceRole']);
-  const locations = ensureArray(record['rico:hasOrHadLocation']);
-  const eventIds = store.recordToEvents?.get(recordId) || [];
-  const events = eventIds.map(eid => store.mobilityEvents.get(eid)).filter(Boolean);
-  const agentRelations = store.agentRelations?.get(recordId) || [];
-  const finances = store.finances?.get(recordId) || [];
-
-  const agrelonAgentKeys = new Set();
-  for (const rel of agentRelations) {
-    const key = rel.objectWikidata || (rel.objectName || '').toLowerCase();
-    if (key) agrelonAgentKeys.add(key);
+  // Gemeinsame Block-Logik mit dem Inline-Detail (Tier 2.4): im Korb ohne
+  // Count-Suffix und einspaltig gerendert.
+  for (const block of buildRecordBlocks(record, store)) {
+    const chips = el('div', { className: 'korb-chips' }, ...block.chips);
+    body.appendChild(renderSection(block.title, chips));
   }
-
-  const bucket = { produktion: [], mitwirkende: [], erwaehnt: [], weitere: [] };
-  for (const a of allAgents) {
-    const roleKey = (a.role || '').toLowerCase();
-    if (AGRELON_ROLES.has(roleKey)) {
-      const agentKey = a['@id'] || (a.name || '').toLowerCase();
-      if (agentKey && agrelonAgentKeys.has(agentKey)) continue;
-    }
-    const section = sectionForRole(a.role) || 'weitere';
-    bucket[section].push(a);
-  }
-  for (const p of mentionedPersons) bucket.erwaehnt.push(p);
-
-  if (bucket.produktion.length) {
-    body.appendChild(renderSection('Produktion', renderAgentChips(bucket.produktion, 'personen')));
-  }
-  if (bucket.mitwirkende.length) {
-    body.appendChild(renderSection('Mitwirkende', renderAgentChips(bucket.mitwirkende, 'personen')));
-  }
-
-  if (works.length || performanceRoles.length) {
-    const chips = el('div', { className: 'korb-chips' });
-    for (const w of works) {
-      const name = w.name || w['skos:prefLabel'] || '?';
-      const komponist = w.komponist || '';
-      chips.appendChild(buildRoleChip({
-        prefix: w['@type'] === 'm3gim:PerformanceEvent' ? 'EREIGNIS' : 'WERK',
-        value: komponist ? `${name} (${komponist})` : name,
-        cluster: w['@type'] === 'm3gim:PerformanceEvent' ? 'ort' : 'rolle',
-        xlsxSource: extractXlsxSource(w),
-        wikidata: w['@id'] && String(w['@id']).startsWith('wd:') ? w['@id'] : null,
-        tip: 'Als Filter setzen',
-        onClick: chipClickFor('werke', name),
-      }));
-    }
-    for (const r of performanceRoles) {
-      const name = r.name || r['skos:prefLabel'] || '?';
-      chips.appendChild(buildRoleChip({
-        prefix: 'ROLLE',
-        value: name,
-        cluster: 'rolle',
-        xlsxSource: extractXlsxSource(r),
-      }));
-    }
-    body.appendChild(renderSection('Werk & Repertoire', chips));
-  }
-
-  if (events.length || locations.length) {
-    const chips = el('div', { className: 'korb-chips' });
-    for (const ev of events) {
-      const dateDisplay = ev.date ? formatDate(ev.date) : '—';
-      chips.appendChild(buildRoleChip({
-        prefix: steChipPrefix(ev.role),
-        value: `${ev.place || '?'}\u00a0\u00b7\u00a0${dateDisplay}`,
-        cluster: 'ort',
-        xlsxSource: ev.xlsxSource,
-        wikidata: ev.placeWikidata,
-        tip: ev.place ? 'Als Filter setzen' : null,
-        onClick: ev.place ? chipClickFor('orte', ev.place) : null,
-      }));
-    }
-    const eventPlaces = new Set(events.map(e => (e.place || '').toLowerCase()));
-    for (const loc of locations) {
-      const name = loc.name || loc['skos:prefLabel'] || '?';
-      if (eventPlaces.has(name.toLowerCase())) continue;
-      chips.appendChild(buildRoleChip({
-        prefix: (loc.role || 'ORT').toUpperCase(),
-        value: name,
-        cluster: 'ort',
-        xlsxSource: extractXlsxSource(loc),
-        wikidata: loc['@id'] && String(loc['@id']).startsWith('wd:') ? loc['@id'] : null,
-        tip: 'Als Filter setzen',
-        onClick: chipClickFor('orte', name),
-      }));
-    }
-    if (chips.childNodes.length > 0) {
-      body.appendChild(renderSection('Ort & Ereignis', chips));
-    }
-  }
-
-  if (bucket.erwaehnt.length) {
-    body.appendChild(renderSection('Erwähnt', renderAgentChips(bucket.erwaehnt, 'personen')));
-  }
-  if (bucket.weitere.length) {
-    body.appendChild(renderSection('Weitere', renderAgentChips(bucket.weitere, 'personen')));
-  }
-
-  if (agentRelations.length) {
-    body.appendChild(renderSection('Beziehungen', renderAgentRelations(agentRelations)));
-  }
-  if (finances.length) {
-    body.appendChild(renderSection('Finanzen', renderFinances(finances)));
-  }
-
   return body;
 }
 
@@ -282,60 +165,6 @@ function renderSection(title, content) {
     el('div', { className: 'korb-card__section-title' }, title),
     content,
   );
-}
-
-function renderAgentChips(entities, gridType) {
-  const chips = el('div', { className: 'korb-chips' });
-  for (const entity of entities) {
-    const name = entity.name || entity['skos:prefLabel'] || entity['@id'] || '?';
-    const role = entity.role || 'AGENT';
-    const wikidata = entity['@id'] && String(entity['@id']).startsWith('wd:') ? entity['@id'] : null;
-    chips.appendChild(buildRoleChip({
-      prefix: role,
-      value: name,
-      xlsxSource: extractXlsxSource(entity),
-      wikidata,
-      tip: gridType ? 'Als Filter setzen' : null,
-      onClick: chipClickFor(gridType, name),
-    }));
-  }
-  return chips;
-}
-
-function renderAgentRelations(relations) {
-  const chips = el('div', { className: 'korb-chips' });
-  for (const r of relations) {
-    const label = AGRELON_LABELS[r.type] || (r.type || '').replace(/^agrelon:Has/, '');
-    const validity = r.validityBegin
-      ? ` ${r.validityBegin}${r.validityEnd ? '\u2013' + r.validityEnd : ''}`
-      : '';
-    chips.appendChild(buildRoleChip({
-      prefix: label,
-      value: `${r.objectName || '?'}${validity}`,
-      cluster: 'beziehung',
-      xlsxSource: r.xlsxSource,
-      wikidata: r.objectWikidata,
-      tip: r.objectName ? 'Als Filter setzen' : null,
-      onClick: r.objectName ? chipClickFor('personen', r.objectName) : null,
-    }));
-  }
-  return chips;
-}
-
-function renderFinances(entries) {
-  const chips = el('div', { className: 'korb-chips' });
-  const formatAmount = (n) => Number.isFinite(n) ? n.toLocaleString('de-DE') : '?';
-  for (const e of entries) {
-    const prefix = e.field || 'FINANZ';
-    const valueParts = [`${formatAmount(e.amount)}${e.currency ? '\u00a0' + e.currency : ''}`];
-    if (e.role) valueParts.push(`(${e.role})`);
-    chips.appendChild(buildRoleChip({
-      prefix,
-      value: valueParts.join(' '),
-      xlsxSource: e.xlsxSource,
-    }));
-  }
-  return chips;
 }
 
 function renderKonvolutFoot(recordId) {

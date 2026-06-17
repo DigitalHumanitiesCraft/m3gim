@@ -18,26 +18,21 @@
   <link rel="stylesheet" href="css/variables.css">
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/components.css">
-  <link rel="stylesheet" href="css/archiv.css">
-  <link rel="stylesheet" href="css/indizes.css">
-  <link rel="stylesheet" href="css/statistik.css">
-  <link rel="stylesheet" href="css/korb.css">
-  <link rel="stylesheet" href="css/mobilitaets-atlas.css">
+  <link rel="stylesheet" href="css/archive.css">
+  <link rel="stylesheet" href="css/indexes.css">
+  <link rel="stylesheet" href="css/statistics.css">
+  <link rel="stylesheet" href="css/basket.css">
+  <link rel="stylesheet" href="css/mobility-atlas.css">
   <link rel="stylesheet" href="css/repertoire.css">
-  <link rel="stylesheet" href="css/biogramm.css">
-  <link rel="stylesheet" href="css/netzwerk.css">
+  <link rel="stylesheet" href="css/biogram.css">
+  <link rel="stylesheet" href="css/network.css">
   <link rel="stylesheet" href="css/pages.css">
 
   <!-- D3.js -->
   <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
 
-  <!-- Leaflet (OpenStreetMap-Tiles, keine API-Keys) -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-        crossorigin="">
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-          integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-          crossorigin=""></script>
+  <!-- Leaflet wird erst geladen, wenn der Mobilitaets-Atlas-Tab reaktiviert
+       wird (aktuell `hidden`, siehe router.js VISIBLE_TABS). -->
 
   <!-- App -->
   <script type="module" src="js/main.js"></script>
@@ -135,7 +130,7 @@
     <section id="tab-repertoire" class="tab-content" role="tabpanel" aria-labelledby="btn-repertoire"></section>
     <section id="tab-biogramm" class="tab-content" role="tabpanel" aria-labelledby="btn-biogramm"></section>
     <section id="tab-netzwerk" class="tab-content" role="tabpanel" aria-labelledby="btn-netzwerk"></section>
-    <section id="tab-korb" class="tab-content" role="tabpanel" aria-labelledby="btn-korb"></section>
+    <section id="tab-korb" class="tab-content" role="tabpanel" aria-labelledby="korb-tab-btn"></section>
 
   </main>
 

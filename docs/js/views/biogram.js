@@ -15,7 +15,8 @@
 
 import { el, clear } from '../utils/dom.js';
 import { formatSignatur } from '../utils/format.js';
-import { buildRoleChip } from './archiv-inline-detail.js';
+import { extractYear } from '../utils/date-parser.js';
+import { buildRoleChip } from './archive-inline-detail.js';
 import { navigateToView } from '../ui/router.js';
 
 const D3 = typeof d3 !== 'undefined' ? d3 : null;
@@ -37,17 +38,11 @@ const FLUCHT_YEAR = 1944;
 // Daten-Extraktion
 // ---------------------------------------------------------------------------
 
-function parseYear(dateStr) {
-  if (!dateStr) return null;
-  const m = String(dateStr).match(/\d{4}/);
-  return m ? parseInt(m[0], 10) : null;
-}
-
 function extractBiogrammData(store) {
   // Orte-Spur: mobilityEvents mit Datum
   const orte = [];
   for (const ev of store.mobilityEvents.values()) {
-    const year = parseYear(ev.date);
+    const year = extractYear(ev.date);
     if (!year) continue;
     orte.push({
       id: ev.id,
@@ -66,7 +61,7 @@ function extractBiogrammData(store) {
   const belege = [];
   for (const rec of store.records.values()) {
     if (rec['@type'] === 'rico:RecordSet') continue;
-    const year = parseYear(rec['rico:date']);
+    const year = extractYear(rec['rico:date']);
     if (!year) continue;
     const dft = rec['rico:hasDocumentaryFormType'];
     const dftId = (dft && dft['@id']) || (typeof dft === 'string' ? dft : null);
@@ -252,7 +247,7 @@ function drawChart(wrap) {
       hideTooltip();
     })
     .on('click', (ev, o) => {
-      if (o.recordId) navigateToView('archiv', { recordId: o.recordId });
+      if (o.recordId) navigateToView('bestand', { recordId: o.recordId });
     })
     .append('title').text(o => `${o.place}, ${o.date}`);
 
@@ -330,7 +325,7 @@ function drawDetailPanel(panel) {
   ));
   panel.appendChild(el('button', {
     className: 'biogramm__detail-cta',
-    onClick: () => navigateToView('archiv', { recordId: b.id }),
+    onClick: () => navigateToView('bestand', { recordId: b.id }),
   }, 'Im Archiv oeffnen →'));
   panel.appendChild(el('button', {
     className: 'biogramm__detail-close',

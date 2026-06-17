@@ -12,13 +12,6 @@ export function extractYear(dateStr) {
   return match ? parseInt(match[1], 10) : null;
 }
 
-/** Convert a year to a 5-year period string, e.g. 1952 → "1950-1954". */
-export function get5YearPeriod(year) {
-  if (!year) return null;
-  const start = Math.floor(year / 5) * 5;
-  return `${start}-${start + 4}`;
-}
-
 const MONATE = ['J\u00e4n.', 'Feb.', 'M\u00e4r.', 'Apr.', 'Mai', 'Jun.', 'Jul.', 'Aug.', 'Sep.', 'Okt.', 'Nov.', 'Dez.'];
 
 /** Format a single ISO date (YYYY, YYYY-MM-DD) to human-readable German. */

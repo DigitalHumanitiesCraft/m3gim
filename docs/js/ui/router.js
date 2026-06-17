@@ -1,6 +1,6 @@
 /**
  * M³GIM Router — Tab switching and URL hash state.
- * Info pages (about, projekt, modell, hilfe) are standalone HTML files.
+ * Info pages (about, projekt, impressum) are standalone HTML files.
  */
 
 // Vollstaendiger Katalog -- alle Tabs bleiben im TAB_RENDERERS registriert,
@@ -90,12 +90,6 @@ export function applyArchivFilter(facet, value) {
   if (!facet || !value) return;
   const target = state.activeTab === 'chronik' ? 'chronik' : 'bestand';
   navigateToView(target, { filter: { facet, value } });
-}
-
-export function deselectRecord() {
-  state.selectedRecord = null;
-  updateHash();
-  if (onRecordSelect) onRecordSelect(null);
 }
 
 export function getState() {

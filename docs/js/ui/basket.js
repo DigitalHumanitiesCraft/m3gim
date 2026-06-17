@@ -58,4 +58,10 @@ export function clearKorb() {
 
 export function onKorbChange(callback) {
   listeners.push(callback);
+  // Unsubscribe zurueckgeben, damit Abonnenten (z. B. renderKorb) sich vor
+  // einem erneuten Abonnement abmelden koennen und keine Listener leaken.
+  return () => {
+    const i = listeners.indexOf(callback);
+    if (i !== -1) listeners.splice(i, 1);
+  };
 }

@@ -4,12 +4,13 @@
  */
 
 import { el, clear } from '../utils/dom.js';
-import { formatSignatur, formatChildSignatur, getDocTypeId, countLinks, truncate, ensureArray, expandDftFilter } from '../utils/format.js';
+import { formatSignatur, formatChildSignatur, getDocTypeId, countLinks, truncate, ensureArray } from '../utils/format.js';
 import { extractYear, formatDate } from '../utils/date-parser.js';
-import { DOKUMENTTYP_LABELS } from '../data/constants.js';
-import { buildInlineDetail } from './archiv-inline-detail.js';
-import { toggleKorb, isInKorb } from '../ui/korb.js';
-import { buildFilterToolbar } from './_archiv-toolbar.js';
+import { DOKUMENTTYP_LABELS, bookmarkIcon } from '../data/constants.js';
+import { buildInlineDetail } from './archive-inline-detail.js';
+import { filterByToolbarState, isToolbarFiltered, searchMatchBestand } from './_archive-filter.js';
+import { toggleKorb, isInKorb } from '../ui/basket.js';
+import { buildFilterToolbar } from './_archive-toolbar.js';
 import { onViewNavigate } from '../ui/events.js';
 import { logStamp } from '../utils/env.js';
 
@@ -65,8 +66,7 @@ function applyToolbarFilter({ facet, value }) {
  */
 function updateBestandView(filters) {
   const state = filters || (toolbar ? toolbar.getState() : {});
-  const { search = '', docType = '', person = '', location = '', werk = '' } = state;
-  const isFiltered = !!(search || docType || person || location || werk);
+  const isFiltered = isToolbarFiltered(state);
   let items = getOrderedItems();
 
   // When filtering, flatten: remove Konvolut headers, show children as standalone
@@ -76,48 +76,13 @@ function updateBestandView(filters) {
       .map(item => item.isChild ? { record: item.record, konvolutId: item.konvolutId } : item);
   }
 
-  // Search (matches Signatur, Titel, Typ-Label, Datum)
-  if (search) {
-    const q = search.toLowerCase();
-    items = items.filter(item => {
-      const r = item.record;
-      const sig = (r['rico:identifier'] || '').toLowerCase();
-      const title = (r['rico:title'] || '').toLowerCase();
-      const typ = (DOKUMENTTYP_LABELS[getDocTypeId(r)] || '').toLowerCase();
-      const datum = (r['rico:date'] || '').toLowerCase();
-      return sig.includes(q) || title.includes(q) || typ.includes(q) || datum.includes(q);
-    });
-  }
-
-  // Doc type filter (hierarchisch: Oberbegriff matcht transitiv)
-  if (docType) {
-    const allowedTypes = expandDftFilter(store, docType);
-    items = items.filter(item => allowedTypes.has(getDocTypeId(item.record)));
-  }
-
-  // Person filter
-  if (person) {
-    const personData = store.persons.get(person);
-    if (personData) {
-      items = items.filter(item => personData.records.has(item.record['@id']));
-    }
-  }
-
-  // Ort filter
-  if (location) {
-    const locData = store.locations.get(location);
-    if (locData) {
-      items = items.filter(item => locData.records.has(item.record['@id']));
-    }
-  }
-
-  // Werk filter
-  if (werk) {
-    const werkData = store.works.get(werk);
-    if (werkData) {
-      items = items.filter(item => werkData.records.has(item.record['@id']));
-    }
-  }
+  // Fuenf Toolbar-Facetten (geteilte Pipeline mit Chronik, Tier 2.6).
+  // Bestand-Items sind gewrappt -> getRecord entpackt; Suche umfasst zusaetzlich
+  // Typ-Label + Datum (searchMatchBestand).
+  items = filterByToolbarState(store, items, state, {
+    getRecord: (item) => item.record,
+    searchMatch: searchMatchBestand,
+  });
 
   // Sortierung:
   //   - Bei aktivem Filter: flach sortieren (die Hierarchie ist bereits
@@ -378,10 +343,15 @@ function renderRows(items) {
       if (links > 0) linksTooltip = buildRecordTooltip(r);
     }
 
-    const tr = el('tr', {
+    const trProps = {
       className: rowClass,
       onClick: () => item.isKonvolut ? toggleKonvolut(item.konvolutId) : toggleRecordInline(recordId),
-    },
+    };
+    // Datasets fuer gezielte DOM-Mutation beim Konvolut-Auf/Zuklappen
+    // (toggleKonvolut mutiert nur diese Zeilen statt der ganzen Tabelle).
+    if (item.isKonvolut) trProps.dataset = { konvolutHeader: item.konvolutId };
+    else if (item.isChild) trProps.dataset = { konvolutChild: item.konvolutId };
+    const tr = el('tr', trProps,
       el('td', { className: 'archiv-col-signatur' },
         ...sigContent,
         el('span', { className: 'archiv-signatur' }, displaySig)
@@ -445,12 +415,33 @@ function toggleRecordInline(recordId) {
 }
 
 function toggleKonvolut(konvolutId) {
-  if (expandedKonvolute.has(konvolutId)) {
-    expandedKonvolute.delete(konvolutId);
-  } else {
-    expandedKonvolute.add(konvolutId);
+  const willExpand = !expandedKonvolute.has(konvolutId);
+  if (willExpand) expandedKonvolute.add(konvolutId);
+  else expandedKonvolute.delete(konvolutId);
+
+  const tbody = document.getElementById('bestand-tbody');
+  if (!tbody) return;
+
+  // Gezielte DOM-Mutation statt voller Tabellen-Rebuild: Header-Toggle-Button
+  // + Sichtbarkeit der Kindzeilen. Detail-Zeilen (ohne data-konvolut-child)
+  // bleiben unberuehrt -- identisches Verhalten zum bisherigen Rebuild.
+  let mutated = false;
+  for (const row of tbody.children) {
+    if (row.dataset.konvolutHeader === konvolutId) {
+      const toggle = row.querySelector('.konvolut-toggle');
+      if (toggle) {
+        toggle.classList.toggle('collapsed', !willExpand);
+        toggle.setAttribute('aria-expanded', String(willExpand));
+        toggle.setAttribute('aria-label', willExpand ? 'Objekte einklappen' : 'Objekte aufklappen');
+      }
+      mutated = true;
+    } else if (row.dataset.konvolutChild === konvolutId) {
+      row.classList.toggle('archiv-row--hidden', !willExpand);
+      mutated = true;
+    }
   }
-  renderRows(currentItems);
+  // Fallback (z. B. gefilterte Ansicht ohne Konvolut-Header): voller Rebuild.
+  if (!mutated) renderRows(currentItems);
 }
 
 /**
@@ -586,9 +577,6 @@ function getFolioHint(record, konvolutId) {
   return null;
 }
 
-const BOOKMARK_SVG_EMPTY = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>';
-const BOOKMARK_SVG_FILLED = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>';
-
 function buildRecordTooltip(record) {
   const agents = ensureArray(record['m3gim:hasAssociatedAgent']);
   const subjects = ensureArray(record['rico:hasOrHadSubject']);
@@ -639,11 +627,19 @@ function buildBookmarkBtn(recordId) {
   return el('button', {
     className: `bookmark-btn ${active ? 'bookmark-btn--active' : ''}`,
     title: active ? 'Aus Wissenskorb entfernen' : 'Zum Wissenskorb hinzuf\u00fcgen',
-    html: active ? BOOKMARK_SVG_FILLED : BOOKMARK_SVG_EMPTY,
+    html: bookmarkIcon(14, active),
     onClick: (e) => {
       e.stopPropagation();
       toggleKorb(recordId);
-      renderRows(currentItems);
+      // Button in-place aktualisieren statt die ganze Tabelle neu zu zeichnen.
+      const btn = e.currentTarget;
+      const nowActive = isInKorb(recordId);
+      btn.classList.toggle('bookmark-btn--active', nowActive);
+      btn.title = nowActive ? 'Aus Wissenskorb entfernen' : 'Zum Wissenskorb hinzuf\u00fcgen';
+      btn.innerHTML = bookmarkIcon(14, nowActive);
+      // Nur wenn dasselbe Record als Inline-Detail offen ist, muss dessen
+      // zweite Korb-Darstellung mitgezogen werden -> dann voller Rebuild.
+      if (expandedRecord === recordId) renderRows(currentItems);
     },
   });
 }

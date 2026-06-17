@@ -78,6 +78,10 @@ data/raw_sheets_export.json
 data/*_temp.json
 data/*_backup_*.json
 
+# Roh-Backups der Google-Drive-Exporte (backup-only, lokal, via scripts/backup.py).
+# DSGVO: koennen sensible Dateien enthalten (Handreichung, Antrag) - nie committen.
+data/backup/
+
 # Pipeline-generated view JSONs (copies live in docs/data/)
 data/output/views/
 data/output-v2/views/

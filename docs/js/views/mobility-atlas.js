@@ -11,10 +11,11 @@
  */
 
 import { el, clear } from '../utils/dom.js';
-import { buildRoleChip } from './archiv-inline-detail.js';
-import { formatDate } from '../utils/date-parser.js';
+import { buildRoleChip } from './archive-inline-detail.js';
+import { formatDate, extractYear } from '../utils/date-parser.js';
 
-// Leaflet wird via CDN in index.html geladen und exportiert window.L
+// Leaflet (window.L) muss bei Reaktivierung dieses Tabs wieder via CDN in
+// index.html eingebunden werden — wurde entfernt, solange der Tab hidden ist.
 /* global L, d3 */
 
 const MARKER_COLOR = '#004A8F';       // KUG-Blau
@@ -153,8 +154,8 @@ export function renderMobilitaetsAtlas(store, container) {
   }
 
   // ---- Zeitstrahl -----------------------------------------------------
-  const datedEvents = events.filter(e => parseYear(e.date) != null);
-  const years = datedEvents.map(e => parseYear(e.date));
+  const datedEvents = events.filter(e => extractYear(e.date) != null);
+  const years = datedEvents.map(e => extractYear(e.date));
   const minYear = years.length ? Math.min(...years) : 1940;
   const maxYear = years.length ? Math.max(...years) : 1980;
 
@@ -183,7 +184,7 @@ export function renderMobilitaetsAtlas(store, container) {
     svg.append('g').selectAll('circle')
       .data(datedEvents)
       .enter().append('circle')
-        .attr('cx', d => x(parseYear(d.date)))
+        .attr('cx', d => x(extractYear(d.date)))
         .attr('cy', eventY)
         .attr('r', d => state.selectedPlace && (d.placeWikidata || d.place) === state.selectedPlace ? 5 : 3.5)
         .attr('fill', d => ROLE_PALETTE[clusterForEvent(d)] || ROLE_PALETTE.neutral)
@@ -246,7 +247,7 @@ export function renderMobilitaetsAtlas(store, container) {
     if (!state.selectedRange) return list;
     const [y0, y1] = state.selectedRange;
     return list.filter(e => {
-      const y = parseYear(e.date);
+      const y = extractYear(e.date);
       return y != null && y >= y0 && y <= y1;
     });
   }
@@ -311,12 +312,6 @@ function makeBadge(label, cls, onClick) {
     attrs.tabindex = '0';
   }
   return el('span', attrs, label);
-}
-
-function parseYear(iso) {
-  if (!iso) return null;
-  const m = String(iso).match(/^(\d{4})/);
-  return m ? parseInt(m[1], 10) : null;
 }
 
 function clusterForEvent(ev) {

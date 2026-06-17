@@ -3,18 +3,22 @@ title: Forschungsrahmen
 project:
   name: M³GIM
   repository: https://github.com/DigitalHumanitiesCraft/m3gim
-status: active
+status: complete
 language: de
-version: 0.1
+version: 0.2
 created: 2026-02-19
-updated: 2026-05-09
+updated: 2026-06-17
 authors: [Christopher Pollin]
 generated-with: Claude Code
 method:
   name: Promptotyping
   url: https://lisa.gerda-henkel-stiftung.de/digitale_geschichte_pollin
-topics: ["[[Mobility Studies]]", "[[Music History]]", "[[Gender Studies]]"]
-related: [status, ira-malaniuk, datenmodell, entscheidungen]
+template:
+  name: Vorlage Domänenwissen
+  version: 0.1
+  url: https://dhcraft.org/Promptotyping/promptotyping-document/domain-knowledge
+topics: ["[[Mobility Studies]]", "[[Music History]]", "[[Gender Studies]]", "[[Biography]]"]
+related: [project, data, specification, data-entry-guidelines]
 ---
 
 # Forschungsrahmen
@@ -37,19 +41,60 @@ Zwei verwandte Digital-Humanities-Projekte, beide auf die Frühe Neuzeit beschr�
 - **MUSICI** — Goulet/zur Nieden, [musici.eu](https://musici.eu)
 - **MusMig** — Katalinic, Zagreb
 
-M³GIM schließt die Lücke zum 20. Jahrhundert und erprobt dafür eine RiC-O-1.1-basierte Modellierung (siehe [datenmodell.md](datenmodell.md)).
+M³GIM schließt die Lücke zum 20. Jahrhundert und erprobt dafür eine RiC-O-1.1-basierte Modellierung (siehe [data.md](data.md)).
 
 ## Fünf Mobilitätstypen
 
-Am Fallbeispiel [Ira Malaniuk](ira-malaniuk.md) operationalisiert:
+Am Fallbeispiel Ira Malaniuk (siehe [Fallbeispiel Ira Malaniuk](#fallbeispiel-ira-malaniuk)) operationalisiert:
 
 1. **Nationale Mobilität** — durch Heirat bedingte Statusveränderungen
 2. **Geografische Mobilität** — Pendeln zwischen Engagements
-3. **Erzwungene Migration** — Flucht und Vertreibung (bei Malaniuk: 1944 aus der Ukraine)
+3. **Erzwungene Migration** — Flucht und Vertreibung (bei Malaniuk 1944 aus der Ukraine)
 4. **Bildungs- und Ausbildungsmobilität** — Professionalisierung an wechselnden Stätten
 5. **Lebensstil-Migration** — dauerhafte Verlagerung des Lebensmittelpunkts
 
-Die fünf Typen werden im Frontend über die Mobilitätssichten (siehe [datenmodell.md § 10](datenmodell.md)) operationalisiert und in der [Lebenspartitur-Visualisierung](frontend.md) sichtbar gemacht.
+Die fünf Typen werden im Frontend über die Mobilitätssichten (siehe [data.md](data.md)) operationalisiert und in der Chronik und der Statistik sichtbar gemacht (siehe [design.md](design.md)).
+
+## Fallbeispiel Ira Malaniuk
+
+Die ukrainisch-österreichische Mezzosopranistin Ira Malaniuk (1919–2009) ist das konkrete Fallbeispiel des Projekts. Ihre Biografie verkörpert alle fünf oben benannten Mobilitätstypen und verbindet die theoretische Begründungsschicht mit einer durchgehend dokumentierten Lebensbewegung.
+
+### Biografische Stationen
+
+| Jahr | Ort | Ereignis |
+|---|---|---|
+| 1919 | Stanislau (Ukraine) | Geburt |
+| Kindheit | Lemberg | Aufwachsen |
+| 1937–1944 | Lemberg | Gesangsstudium am Konservatorium |
+| 1944 | → Österreich | Flucht (erzwungene Migration) |
+| 1945–1947 | Graz | Erstes Festengagement als Altistin am Grazer Opernhaus |
+| 1947–1952 | Zürich | Engagement |
+| 1952–1956 | München | Bayerische Staatsoper |
+| 1956–1971 | Wien | Wiener Staatsoper |
+| 1951–1958 | Bayreuth | Festspiel-Gastspiele |
+| 1951–1963 | Salzburg | Festspiel-Gastspiele |
+| 1970–2000 | Graz | Professorin für Liedinterpretation an der KUG |
+| 2009 | Zirl (Tirol) | Gestorben |
+
+Internationale Gastspiel-Stationen umfassen das Teatro Colón Buenos Aires, das Royal Opera House London, die Mailänder Scala, Lissabon und Paris.
+
+### Künstlerische Zusammenarbeit
+
+Malaniuk trat mit prägenden Dirigenten und Regisseuren auf, darunter Herbert von Karajan, Wilhelm Furtwängler, Hans Knappertsbusch, Wieland Wagner, Bruno Walter, Joseph Keilberth und Georg Solti.
+
+Ihre Repertoire-Schwerpunkte lagen bei Wagner (Waltraute, Brangäne, 2. Norn, Fricka), Verdi, Mozart, Strauss und Mahler (Das Lied von der Erde) sowie im Konzert- und Liedgesang.
+
+### Bezug zu den fünf Mobilitätstypen
+
+1. **Erzwungene Migration** — 1944, Flucht aus der Ukraine.
+2. **Bildungs- und Ausbildungsmobilität** — Konservatorium Lemberg, Professionalisierung in Graz, Zürich und München.
+3. **Geografische Mobilität** — Pendeln zwischen Engagements (Zürich, München, Wien) und Festspielen.
+4. **Nationale Mobilität** — österreichische Staatsbürgerschaft durch Heirat, kuk-biografische Kontinuität.
+5. **Lebensstil-Migration** — dauerhafte Verlagerung nach Wien (ab 1956), später nach Zirl.
+
+Zur theoretischen Einordnung dieser Typen siehe [Fünf Mobilitätstypen](#fünf-mobilitätstypen).
+
+Zu Malaniuk besteht keine eigenständige wissenschaftliche Literatur. Das Projekt leistet die ersten archivgestützten Erschließungsarbeiten am Teilnachlass UAKUG/NIM (siehe [data.md](data.md)).
 
 ## Forschungsfragen
 
@@ -65,7 +110,7 @@ Die fünf Typen werden im Frontend über die Mobilitätssichten (siehe [datenmod
 
 **Machbarkeit.** Die Pilotstudie evaluiert, ob
 
-1. die Archiveinheiten des Teilnachlasses (siehe [ira-malaniuk.md](ira-malaniuk.md)) mit RiC-O 1.1 + m3gim-Erweiterung + AgRelOn praktikabel erschließbar sind,
+1. die Archiveinheiten des Teilnachlasses (siehe [data.md](data.md)) mit RiC-O 1.1 + m3gim-Erweiterung + AgRelOn praktikabel erschließbar sind,
 2. die Verfahren auf größere Datensätze skalieren,
 3. der Transfer auf eine FWF-Folgestudie (Sängerinnen an europäischen Kulturmetropolen, 19./20. Jh.) möglich ist.
 

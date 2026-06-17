@@ -3,18 +3,22 @@ title: Tests
 project:
   name: M³GIM
   repository: https://github.com/DigitalHumanitiesCraft/m3gim
-status: active
+status: complete
 language: de
-version: 0.1
+version: 0.2
 created: 2026-02-19
-updated: 2026-05-09
+updated: 2026-06-17
 authors: [Christopher Pollin]
 generated-with: Claude Code
 method:
   name: Promptotyping
   url: https://lisa.gerda-henkel-stiftung.de/digitale_geschichte_pollin
+template:
+  name: Vorlage Testing
+  version: 0.1
+  url: https://dhcraft.org/Promptotyping/promptotyping-document/testing
 topics: ["[[Test-Driven Development]]", "[[Data Validation]]"]
-related: [pipeline, datenmodell, entscheidungen]
+related: [pipeline, data, decisions]
 ---
 
 # Tests
@@ -25,7 +29,7 @@ related: [pipeline, datenmodell, entscheidungen]
 
 Die Test-Suite validiert **den Output der Pipeline**, nicht den Pipeline-Code. Sie gibt bei Daten-Updates und Modell-Erweiterungen ein Sicherheitsnetz: wenn alle Tests grün bleiben, ist der Output strukturell, semantisch und referenziell intakt.
 
-Bei Modell-Erweiterungen fungiert die Testsuite zusätzlich als **TDD-Spec**: die Invarianten aus [datenmodell.md](datenmodell.md) werden zuerst als `xfail(strict=True)`-Tests formuliert, dann implementiert, und XPASS signalisiert fertige Phase.
+Bei Modell-Erweiterungen fungiert die Testsuite zusätzlich als **TDD-Spec**: die Invarianten aus [data.md](data.md) werden zuerst als `xfail(strict=True)`-Tests formuliert, dann implementiert, und XPASS signalisiert fertige Phase.
 
 ## Struktur
 
@@ -107,7 +111,7 @@ Mindestwerte aus `fixtures/baseline_counts.json` pro Entitätstyp (records, pers
 Lässt `transform.py` zweimal laufen, vergleicht Output (ohne `m3gim:exportDate`). Fängt versehentliche Set-Iteration / Dict-Ordnungsabhängigkeiten. Nur mit `pytest -m slow` ausführen.
 
 ### 11. Mobilität (test_11, Phase 4.4 + 4.8)
-SpatiotemporalEvent-Existenz, `atPlace`+`atDate` Pflicht, Rollen-Vokabular, Anzahl skaliert mit XLSX-Komposit-Rows. Die 5 Mobilitätssichten aus [datenmodell.md § 10](datenmodell.md) als SPARQL-ähnliche Python-Queries: performative, institutionelle, Korrespondenz-, biographische, diskursive Mobilität.
+SpatiotemporalEvent-Existenz, `atPlace`+`atDate` Pflicht, Rollen-Vokabular, Anzahl skaliert mit XLSX-Komposit-Rows. Die 5 Mobilitätssichten aus [data.md § 10](data.md) als SPARQL-ähnliche Python-Queries: performative, institutionelle, Korrespondenz-, biographische, diskursive Mobilität.
 
 ### 12. AgRelOn (test_12, Phase 4.8)
 `agrelon:`-Namespace im Context, HasEmployeeEmployer-Relationen skalieren mit XLSX-arbeitgeber-Zeilen, HasCorrespondent-Relationen haben Provenance, `hasValidityPeriod` ist well-formed (Begin/End als ISO-String).
@@ -128,7 +132,7 @@ Für jede XLSX-Finanzzeile: der zugehörige Record (über `rico:identifier`) ent
 Records nutzen die typisierten Properties (`m3gim:absendedatum` etc.) mindestens so häufig wie generisches `m3gim:eventDate`. Alle Werte sind ISO, TimeSpan oder qualifiziert (`circa:`/`vor:`/`nach:`).
 
 ### 19. Provenance + Konfidenz (test_19, Phase 4.3)
-Kein `m3gim:dateEvidence` mehr im Output. `agrelon:hasProvenance` und `agrelon:hasConfidenceValue` treten gemeinsam auf (keine halbierten Meta-Aussagen). Konfidenz-Werte aus dem Evidenz-Mapping (1.0/0.8/0.6/0.0) als xsd:decimal.
+Kein `m3gim:dateEvidence` mehr im Output. `agrelon:hasProvenance` und `agrelon:hasConfidenceValue` treten gemeinsam auf (keine halbierten Meta-Aussagen). Konfidenz-Werte aus dem Evidenz-Mapping als xsd:decimal, und nur bei datierter Aussage — `unbekannt`/`0.0` wird nicht serialisiert (E-100); das Modul wird im Zuge der G7-Umsetzung entsprechend nachgezogen.
 
 ### 20. XLSX-Provenance + Anker-Records (test_20)
 
@@ -152,7 +156,7 @@ Regression-Test für einen Pipeline-Bug: im Komposit `ort,datum` der Verknüpfun
 
 ### 24. Komponisten-Unikat-Check im Werkindex (test_24, Session 38)
 
-Fuzzy-Detektor (Levenshtein-Ratio ≥ 92) über alle Komponistennamen in `m3gim:MusicalWork`-Subjects. Findet Schreibweise-Varianten desselben Komponisten („Beethoven, Ludwig van/von"), die durch Tippfehler im Werkindex-XLSX entstehen. `strict-xfail` bis zum Source-Fix durch das Archivteam — nach Fix wird XPASS und bricht die Suite, damit der Marker entfernt wird. Bewusst **kein** `normalize_composer()` in der Pipeline (siehe `knowledge/xlsx-fixes.md § 14`): das wäre ein Sonderfall-Workaround, der künftige Tippfehler still kaschiert.
+Fuzzy-Detektor (Levenshtein-Ratio ≥ 92) über alle Komponistennamen in `m3gim:MusicalWork`-Subjects. Findet Schreibweise-Varianten desselben Komponisten („Beethoven, Ludwig van/von"), die durch Tippfehler im Werkindex-XLSX entstehen. `strict-xfail` bis zum Source-Fix durch das Archivteam — nach Fix wird XPASS und bricht die Suite, damit der Marker entfernt wird. Bewusst **kein** `normalize_composer()` in der Pipeline (siehe [data.md § Datenqualität](data.md)): das wäre ein Sonderfall-Workaround, der künftige Tippfehler still kaschiert.
 
 ### 25. Chronik-Mobilitätscluster (test_25, Session 36)
 
@@ -187,7 +191,7 @@ Pfade sind für Ausnahmefälle (z.B. Experimente mit alternativen Datenständen)
 
 ## TDD-Workflow für Modell-Erweiterungen
 
-Bei neuen Features aus [datenmodell.md](datenmodell.md):
+Bei neuen Features aus [data.md](data.md):
 
 1. **Invariante formulieren**: welcher neue Output soll entstehen?
 2. **Test schreiben** mit `@pytest.mark.xfail(reason="Phase X nicht implementiert", strict=True)`. Mit `strict=True` failt die Suite, sobald der Test grün wird — das signalisiert, dass xfail-Marker entfernt werden muss.
@@ -195,7 +199,31 @@ Bei neuen Features aus [datenmodell.md](datenmodell.md):
 4. **Implementieren** in `scripts/transform.py`, bis xfail → XPASS → xfail-Marker entfernt.
 5. **Bei Datenadaptivität**: Tests datenadaptiv formulieren (skalieren mit XLSX-Count) statt hartcodierter Zahlen, damit neue Datenstände ohne Testkorrektur laufen.
 
-Dieses Muster wurde in Phase 4.1–4.8 (Session 28) erfolgreich angewendet, ebenso beim Koordinaten-Patch (Session 33, test_22) und beim ORTE-Rollen-Fix (Session 34, test_23). Siehe [status.md](status.md) und [pipeline.md](pipeline.md).
+Dieses Muster wurde in Phase 4.1–4.8 (Session 28) erfolgreich angewendet, ebenso beim Koordinaten-Patch (Session 33, test_22) und beim ORTE-Rollen-Fix (Session 34, test_23). Siehe [plan.md](plan.md) und [pipeline.md](pipeline.md).
+
+### Drei Testmodi und die Durchreich-Policy
+
+Die TDD-Spec unterscheidet drei Modi, die entscheiden, was „der Output ist intakt" bedeutet.
+
+- **hart** — strukturelle Invariante, muss grün sein. Fängt Absturz und stillen Datenverlust (etwa die Loader-Blocker, E-95) sowie referenzielle, Namespace- und Q-ID-Garantien. Scharf gegen den bisherigen Stand und gegen den neuen Export.
+- **xfail (strict)** — rot erwartet; sobald das Feature implementiert ist, schlägt der Test um, bricht die Suite und signalisiert, dass der Marker zu entfernen ist. Für noch nicht implementierte Modell-Features und für Source-Fix-Signale wie test_24.
+- **report** — failt nie; gibt den Befund ohne Seiteneffekt aus und mutiert nicht den getrackten Quality-Snapshot (den pflegt allein `report-quality.py`). Für inhaltliche Datenfehler, die per Durchreich-Policy das Archivteam an der Quelle korrigiert, nicht die Pipeline.
+
+Die Trennlinie folgt der Durchreich-Policy: ein **struktureller** Blocker gehört in einen harten oder xfail-Test, die Pipeline muss ihn lösen; ein **inhaltlicher** Datenfehler gehört in einen Report oder ein Source-Fix-Signal und wird nie still korrigiert.
+
+### Autoren-Regeln
+
+- Untergrenzen zur Laufzeit aus der Quelle ableiten, nicht als feste Zahl an die Größe des neuen Exports binden — sonst werden harte Tests gegen den bisherigen Stand rot.
+- Vorbedingungen, die nur für den neuen Export gelten, sind ein Skip, kein Assert.
+- Ein noch nicht implementiertes Feature ist xfail, nicht hart.
+- Manche Invarianten sind ohne einen Pipeline-Herkunftsmarker (`m3gim:derivedFromRole`) gar nicht aus dem Graph berechenbar — der Marker muss dann Teil des Features sein.
+- Der Frontend-Vokabular-Parser in den Kopplungstests muss Kommentare strippen, sonst zählt er auskommentierte Einträge als gemappt.
+- Der Konfidenz-Wertebereich enthält nie null (E-100).
+- Jeder xfail-Grund zeigt auf den `data.md`-Anker, der zuerst existieren muss.
+
+### Zwei Wellen für den neuen Datenstand
+
+Die Modell-Umsetzung (E-95 bis E-102) wird in zwei Wellen abgesichert. Eine modellunabhängige erste Welle ist sofort schreibbar — das strukturelle Regressionsnetz (Loader-Blocker, referenzielle Integrität, Q-ID-Hygiene, Währungs-Typ-Erhalt, Determinismus, Promote-Gate, Approval-Provenienz), grün gegen den bisherigen Stand, rot an den Blockern gegen den neuen Export. Die zweite Welle ist die Modell-Spec als rote xfail-Tests und setzt die in [data.md](data.md) verankerten Entscheidungen voraus. Neue eventRoles und Rollen brechen die bestehenden Vokabular-Tests (test_15, test_25), sobald die Suite gegen den neuen Export läuft; sie brauchen einen koordinierten xfail-Carve-out, sonst ist die Suite zu keinem Zeitpunkt grün.
 
 ### Anker-Record-Strategie (seit Session 31)
 
@@ -232,12 +260,11 @@ Laufzeit im Regelbetrieb überschaubar; der Determinismus-Test (Marker `slow`) d
 
 ## Dependencies
 
-`requirements-test.txt`:
+`requirements-test.txt` bindet die Laufzeit-Abhängigkeiten über `-r requirements.txt` ein (die Suite braucht pandas und thefuzz) und ergänzt:
 - `pytest>=7.0`
 - `jsonschema>=4.0` (Schema-Validierung)
-- `deepdiff>=6.0` (Snapshot-Diff)
 
-Produktions-`requirements.txt` bleibt unberührt (nur pandas + openpyxl + thefuzz).
+`snapshot_diff.py` ist eigenständig implementiert und braucht keine externe Diff-Bibliothek. Produktions-`requirements.txt` bleibt unberührt (pandas, openpyxl, thefuzz).
 
 ## Abgrenzungen
 
@@ -276,14 +303,18 @@ Der pytest-Wrapper (`tests/frontend/test_smoke.py`, Marker `@pytest.mark.fronten
 
 ## JS-Unit-Tests (Node, seit Session 47)
 
-`tests/frontend/netzwerk-geometry.test.mjs` prueft die pure Functions aus [`_netzwerk-geometry.js`](../docs/js/views/_netzwerk-geometry.js) (E-94) — die einzige JS-Schicht im Projekt mit Unit-Tests, weil sie bewusst dom-/d3-frei gehalten ist. 42 Tests decken `classifyRing`, `isMalaniuk`, `isPureComposer`, `derivePersonKategorie`, `nodeEvidence`, `nodeColor`, `computeLayout` (inkl. Determinismus-Property, alphabetische Winkel-Reihenfolge, Umlaut-Normalisierung im SortKey, Radius-Cap), `computeCoOccurrence` (inkl. Malaniuk- und Komponisten-Filter, minShared-Threshold, maxEdges-Cap, Tie-breaker-Determinismus) und `labelGeometry` ab.
+Die JS-Unit-Tests decken die dom-/d3-freien Pure-Functions des Frontends ab, über drei Dateien:
+
+- `tests/frontend/network-geometry.test.mjs` für die Geometrie aus [`_network-geometry.js`](../docs/js/views/_network-geometry.js) (E-94): `classifyRing`, `isMalaniuk`, `isPureComposer`, `derivePersonKategorie`, `nodeEvidence`, `nodeColor`, `computeLayout` (Determinismus-Property, alphabetische Winkel-Reihenfolge, Umlaut-Normalisierung im SortKey, Radius-Cap), `computeCoOccurrence` (Malaniuk- und Komponisten-Filter, minShared-Threshold, maxEdges-Cap, Tie-breaker-Determinismus) und `labelGeometry`.
+- `tests/frontend/utils.test.mjs` für `date-parser` und `format`.
+- `tests/frontend/record-partition.test.mjs` für `partitionRecord`, also den Korb- und Inline-Detail-Pfad.
 
 Lauf:
 
 ```bash
-node --test tests/frontend/netzwerk-geometry.test.mjs
+node --test tests/frontend/*.test.mjs
 ```
 
-Kein npm install, keine build-tools — nutzt `node:test` + `node:assert/strict` builtin (Node 18+). Enabler: `docs/js/package.json` mit `{"type":"module"}` markiert den Baum als ES-Modul fuer Node-seitiges Loading. Browser ignorieren die Datei.
+Kein npm install, keine build-tools — nutzt `node:test` + `node:assert/strict` builtin (Node 18+). Enabler: `docs/js/package.json` mit `{"type":"module"}` markiert den Baum als ES-Modul fuer Node-seitiges Loading. Browser ignorieren die Dateien.
 
-Weitere JS-Views werden *nicht* aehnlich getestet, solange sie DOM- und D3-Aufrufe direkt in der Rendering-Pipeline mischen — der Aufwand waere groesser als der Wert. `_netzwerk-geometry.js` ist die Ausnahme, weil die analytische Geometrie so klar von der DOM-Schicht zu trennen war.
+Weitere JS-Views werden *nicht* aehnlich getestet, solange sie DOM- und D3-Aufrufe direkt in der Rendering-Pipeline mischen — der Aufwand waere groesser als der Wert. Getestet wird, was sich sauber von der DOM-Schicht trennen laesst.

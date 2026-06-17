@@ -5,19 +5,17 @@
 
 import { loadArchive } from './data/loader.js';
 import { initRouter, getState } from './ui/router.js';
-import { initKorb, onKorbChange, getKorbCount, getKorbItems } from './ui/korb.js';
-import { renderBestand, selectArchivRecord } from './views/archiv-bestand.js';
-import { renderChronik } from './views/archiv-chronik.js';
-import { renderStatistik } from './views/statistik.js';
-import { renderIndizes, expandEntry } from './views/indizes.js';
-import { renderKorb } from './views/korb.js';
-import { renderMobilitaetsAtlas } from './views/mobilitaets-atlas.js';
+import { initKorb, onKorbChange, getKorbCount, getKorbItems } from './ui/basket.js';
+import { renderBestand, selectArchivRecord } from './views/archive-holdings.js';
+import { renderChronik } from './views/archive-timeline.js';
+import { renderStatistik } from './views/statistics.js';
+import { renderIndizes, expandEntry } from './views/indexes.js';
+import { renderKorb } from './views/basket.js';
+import { renderMobilitaetsAtlas } from './views/mobility-atlas.js';
 import { renderRepertoire, repertoireAggregate } from './views/repertoire.js';
-import { renderBiogramm, biogrammData } from './views/biogramm.js';
-import { renderNetzwerk, netzwerkAggregate } from './views/netzwerk.js';
-
-const DEV = typeof location !== 'undefined'
-  && (location.hostname === 'localhost' || location.hostname === '127.0.0.1');
+import { renderBiogramm, biogrammData } from './views/biogram.js';
+import { renderNetzwerk, netzwerkAggregate } from './views/network.js';
+import { IS_DEV } from './utils/env.js';
 
 let store = null;
 const renderedTabs = new Set();
@@ -42,7 +40,7 @@ async function init() {
 
     // Load data
     store = await loadArchive('./data/m3gim.jsonld');
-    if (DEV) {
+    if (IS_DEV) {
       logStoreSummary(store);
       exposeDebug(store);
     }
@@ -95,7 +93,7 @@ function renderTab(tab) {
   const renderer = TAB_RENDERERS.get(tab);
   if (!renderer) return;
 
-  if (DEV) logTabActivation(tab, store);
+  if (IS_DEV) logTabActivation(tab, store);
 
   try {
     const result = renderer(store, container);

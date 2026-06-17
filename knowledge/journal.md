@@ -1,24 +1,28 @@
 ---
-title: "Appendix: Journal Volltext"
+title: Journal
 project:
   name: M³GIM
   repository: https://github.com/DigitalHumanitiesCraft/m3gim
-status: active
+status: complete
 language: de
-version: 0.1
+version: 0.2
 created: 2026-02-19
-updated: 2026-05-09
+updated: 2026-06-17
 authors: [Christopher Pollin]
 generated-with: Claude Code
 method:
   name: Promptotyping
   url: https://lisa.gerda-henkel-stiftung.de/digitale_geschichte_pollin
-related: [entscheidungen, status]
+template:
+  name: Vorlage Journal
+  version: 0.1
+  url: https://dhcraft.org/Promptotyping/promptotyping-document/journal
+related: [decisions, project, plan]
 ---
 
-# Appendix: Journal Volltext
+# Journal
 
-> Komprimierte Session-Dokumentation. Entscheidungen und Erkenntnisse vollstaendig, Dateilisten und CSS-Details entfernt.
+Dieses Dokument ist die chronologische Genese des Projekts als komprimierte Session-Dokumentation. Entscheidungen und Erkenntnisse stehen vollständig, Dateilisten und CSS-Details sind entfernt. Die jüngeren Meilensteine ab Session 40 sind aus dem früheren Status-Dokument zusammengeführt.
 
 ---
 
@@ -656,4 +660,38 @@ Audit des `knowledge/`-Ordners (Ist-Zustands-Bericht via Explore-Agent) hat drei
 - **M5 — Journal-Eintrag + Fail-Safe.** Dieser Block schließt die Session. `python -m pytest tests/ -m "not slow"` grün (191 passed, 2 xfailed wie erwartet), Frontend-Smoke 17/17 grün — Knowledge-Änderungen haben keinen Code berührt, war aber Pflicht-Check.
 
 Out of Scope dieses Laufs: Fusion von `interface-konzept.md` ⇄ `frontend.md` (die Redundanz zwischen Design-Spec und Code-Inventar ist absichtlich), Fusion `ira-malaniuk.md` ⇄ `forschungsrahmen.md` (biografische Referenz verdient Eigenständigkeit), Umstrukturierung der Phasen-Roadmap in `datenmodell.md` (zu groß). Die jetzigen Befunde waren die belastbar klar falschen oder redundanten; tiefere Refaktorierungen können folgen, wenn weiterer Drift-Schmerz auftritt.
+
+---
+
+## Session 40 (2026-04-18): Chronik rein datengetrieben (E-87)
+
+Redaktionelle Karriere-Notizen aus der Chronik entfernt. `KARRIERE_NOTIZEN` und das note-Rendering im Perioden-Header gestrichen, Editorial-Marker-CSS entfernt. Die Perioden-Summary aus Top-Typen und Top-Gruppen trägt die datengetriebene Charakterisierung allein. Grundsatz: alles, was gerendert wird, muss aus `store.*` ableitbar sein. Strukturelle Labels und prozessuale Workflow-Terminologie bleiben, weil sie keine historische Deutung leisten. Knowledge-Sync in [design.md](design.md).
+
+## Session 41 (2026-04-18): Chronik als Scroll-Zeitstrahl, Ort- und Werk-Filter
+
+Chronik vom Perioden-Akkordeon auf einen scrollenden Jahres-Zeitstrahl umgestellt (E-88). Records erscheinen als klickbare Punkte rechts der Zeitachse pro Jahr, leere Jahre bleiben als Umriss-Dot sichtbar, die Dot-Größe skaliert mit der Jahresbelegung. Gruppierungs-Toggle und Fünfjahresperioden-Logik entfallen. Die geteilte Filter-Toolbar für Bestand und Chronik bekommt die Facetten Ort und Werk als Entity-Comboboxen; `buildPersonCombobox` ist zu einem generischen `buildEntityCombobox` refaktoriert.
+
+## Session 42 (2026-04-18): Statistik als visuelles Porträt, generische Toolbar
+
+Statistik-Tab umgebaut (E-89), weg von Prozent-Balken und Tech-Tabellen, hin zu D3-Donut, Histogramm und horizontalen Bars. Die Sektion zur Verlinkung und Qualität sowie der Bearbeitungsstand-Balken sind entfernt, das Tech-Reporting lebt im Markdown-Report. Die Filter-Toolbar ist als generische Komponente `_toolbar.js` neu gezogen, jeder Tab deklariert seine Facetten.
+
+## Session 43 (2026-04-18): UI-Feinschliff (E-90)
+
+Drei sichtbare Defekte und eine Statistik-Politur in einem Durchlauf. Der Konvolut-Aufklapp-Chevron wird als KUG-blauer Button mit `aria-expanded` dargestellt. Die Provenance-Pille am Rolle-Prefix-Chip nutzt das CSS-data-tip-System mit mehrzeiligem Tooltip, Doppel-Tooltips sind beseitigt. Das Wikidata-Badge bekommt eine Trennlinie und einen eigenen Hover-State. In der Statistik tragen Donut-Legenden bei Ellipsis ein data-tip, das Histogramm dünnt Ticks aus, das SVG-Wrap shrinkt auf schmalen Viewports.
+
+## Session 44 (2026-04-18): Projekt-Finalisierung (E-91)
+
+Abschluss des Interface-Redesign-Zyklus. Ein Chip-Klick setzt den Toolbar-Filter im aktiven Record-Tab und lässt den Lesefluss dort, statt in die Indizes zu springen. Die Indizes-Toolbar nutzt die generische `buildToolbar`-Komponente. `extractXlsxSource` ist nach `utils/provenance.js` als ein Ort der Wahrheit refaktoriert. Der Smoke-Test ist auf den Chronik-Zeitstrahl umgestellt. Korb-Follow-ups entschieden, Konvolute bleiben nicht bookmarkbar, der Tab-Name bleibt Wissenskorb.
+
+## Session 45 (2026-04-18): Statistik schärfer, Chronik dichte-adaptiv (E-92)
+
+Gezielte Korrekturen nach Screenshot-Review. Die Statistik-Hero-Row ist entfernt. Die Mobilitätssichten rendern als ein einziger Balken-Chart mit eigener Farbfamilie pro Sicht statt als Feature-Kacheln. Das Histogramm bekommt Achsen-Titel. Die Chronik-Jahre sind dichte-adaptiv, leere Jahre als kurze Linie, belegte auf voller Höhe, Dekaden-Jahre als Anker.
+
+## Session 46 (2026-04-18): Netzwerk-Tab als konzentrische Personen-Visualisierung (E-93)
+
+Der Netzwerk-Tab antwortet auf die Frage, mit welchen Personen Malaniuk in Beziehung stand. Malaniuk steht im Zentrum, alle anderen Personen auf zwei konzentrischen Ringen, geordnet nach Evidenzstärke (Ring 1 harte Beziehung, Ring 2 wiederkehrendes Umfeld). Winkel alphabetisch, Positionen analytisch berechnet, Determinismus vor Force-Simulation. Zwei Linientypen sind unterschieden, eine gerade Radial-Linie für die direkte AgRelOn-Beziehung und eine geschwungene Bezier-Kurve für Ko-Okkurrenz. Der Tab ist pipeline-frei und liest direkt aus dem Store, die Kategorien werden aus den tatsächlichen Rollen-Sets mit Prioritätsordnung abgeleitet. Die Geometrie ist nach `_netzwerk-geometry.js` ausgelagert, dazu Zoom, Pan, Filter und Zeitfenster in der Sidebar.
+
+## Session 47 (2026-04-18): Netzwerk-Tab Hygiene-Runde (E-94)
+
+Konstruktiv-kritische Nachbereitung der Netzwerk-Visualisierung. Unit-Tests für die reinen Funktionen über `node:test` decken Ringklassifikation, Layout, Ko-Okkurrenz und Label-Geometrie ab. Das Sophokles-Datenartefakt ist dokumentiert, in Zeile 1208 trägt Sophokles als Person die Rolle Aufführung, was semantisch falsch ist, der Source-Fix-Vorschlag steht in [data.md § Datenqualität](data.md), bewusst ohne Sondermapping im Code. Die Kategorie-Farben sind Design-Tokens. Edge-Hover hebt die Endpunkte hervor. `netzwerk.js` ist in Orchestrator, Sidebar und Canvas gesplittet.
 

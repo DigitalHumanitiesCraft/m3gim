@@ -1,7 +1,7 @@
 /**
  * Netzwerk-Sidebar: Filter, Kategorie-Chips, Legende, Reset.
  *
- * Extrahiert aus netzwerk.js (E-93, Session 47). Der Haupt-View bleibt
+ * Extrahiert aus network.js (E-93, Session 47). Der Haupt-View bleibt
  * State-Eigentuemer, die Sidebar ist reine UI-Produktion: liest aus
  * `state` und ruft `actions`-Callbacks, wenn sich der Filter-Zustand
  * aendert. Keine direkte Mutation globaler State-Variablen hier.
@@ -25,7 +25,7 @@
  */
 
 import { el } from '../utils/dom.js';
-import { derivePersonKategorie, NETZWERK_KATEGORIEN } from './_netzwerk-geometry.js';
+import { derivePersonKategorie, NETZWERK_KATEGORIEN } from './_network-geometry.js';
 
 // ---------------------------------------------------------------------------
 // Public entry point
@@ -67,7 +67,7 @@ function renderSection(title, body) {
 }
 
 function renderCoverageBlock() {
-  // Nur der Container — Inhalt schreibt netzwerk.js::applyFilters() rein.
+  // Nur der Container — Inhalt schreibt network.js::applyFilters() rein.
   return el('div', { className: 'netzwerk__coverage', id: 'netzwerk-coverage' });
 }
 

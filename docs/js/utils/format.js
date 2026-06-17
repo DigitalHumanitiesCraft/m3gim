@@ -44,6 +44,36 @@ export function ensureArray(value) {
   return [value];
 }
 
+/** Wikidata-Q-ID aus einem Wert ziehen ("wd:Q42" -> "wd:Q42", sonst null). */
+export function asWikidataId(value) {
+  return value && String(value).startsWith('wd:') ? value : null;
+}
+
+/** Ob ein Wert eine Wikidata-Q-ID ("wd:...") ist. */
+export function isWikidataId(value) {
+  return !!value && String(value).startsWith('wd:');
+}
+
+/**
+ * Anzeigename eines JSON-LD-Subobjekts: name -> skos:prefLabel -> fallback.
+ * @id wird bewusst NICHT automatisch eingereiht; Call-Sites, die ihn als
+ * Fallback wollen, uebergeben ihn als fallback-Argument.
+ */
+export function entityName(obj, fallback = '') {
+  if (!obj) return fallback;
+  return obj.name || obj['skos:prefLabel'] || fallback;
+}
+
+/** IDs -> Records aus dem Store aufloesen, fehlende ausfiltern. */
+export function resolveRecords(store, ids) {
+  const out = [];
+  for (const id of ids) {
+    const r = store.records.get(id);
+    if (r) out.push(r);
+  }
+  return out;
+}
+
 /** Count linked entities on a record. */
 export function countLinks(record) {
   let count = 0;
