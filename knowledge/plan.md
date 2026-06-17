@@ -78,6 +78,9 @@ Die folgenden Punkte sind quellseitig im Excel zu beheben, nicht im Pipeline-Cod
 - Sophokles-Rolle in Zeile 1208 der Verknüpfungen-XLSX. Sophokles trägt dort die Rolle `Aufführung`, obwohl sein Werk aufgeführt wurde, nicht er selbst. Die Rolle auf `Vorlage` oder `Verfasser` ändern.
 - Zukunftsdatum im neuen Export. Eine Datumszelle trägt ein in der Zukunft liegendes Datum, das auf einen Erfassungsfehler hindeutet, und ist gegen die Quelle zu korrigieren.
 - Verschwundenes Konvolut. Ein im vorigen Stand vorhandenes Presse-Konvolut fehlt im neuen Export; zu prüfen, ob es versehentlich entfernt wurde.
+- Verwaiste Signatur `UAKUG/NIM_168`. Box 9 der Verknüpfungstabelle referenziert durchgehend `UAKUG/NIM_168`, für die kein Objekt erfasst ist, sodass ihre Verknüpfungen nicht angehängt werden können. Die fehlenden Objektzeilen nachpflegen oder die Signatur korrigieren.
+- Fehlende Objekt-Folios bei `UAKUG/NIM_137`. Mehrere in Box 5 referenzierte Folios sind im Objekte-Sheet nicht erfasst, weshalb die zugehörigen Verknüpfungen ins Leere laufen.
+- Datum in der Folio-Spalte. In Box 5 trägt mindestens eine Folio-Zelle ein Datum statt einer Folio-Nummer und ist gegen die Quelle zu korrigieren.
 - Tippfehler in der Erfassung. `Maskenbidner` → `Maskenbildner`, `Rundfunkshonorar` → `Rundfunkhonorar`, `Malaiuk`/`Malniuk` → `Malaniuk`. Bis zur Quellkorrektur reicht die Pipeline sie unverändert durch.
 - Dubletten und fehlende Index-IDs. Mehrere Personen-, Organisations- und Werk-Einträge sind doppelt erfasst oder ohne `m3gim_id`; an der Quelle zu konsolidieren beziehungsweise nachzupflegen.
 
@@ -112,7 +115,7 @@ Diese redaktionellen Punkte werden fortlaufend im Erfassungsteam bearbeitet.
 
 | Arbeitspaket | Status | Notiz |
 |---|---|---|
-| Neuer Datenstand und Modell-Umsetzung | aktiv | testgetrieben, E-95 bis E-102; Loader-Fix vor Modell-Features vor Promote |
+| Neuer Datenstand und Modell-Umsetzung | aktiv | testgetrieben; Loader-Absorption E-95 erledigt und rückwärtskompatibel, als Nächstes Modell-Features E-96 bis E-102 mit Test-Welle (seriell), dann Promote |
 | Reaktivierung Mobilitäts-Atlas, Repertoire, Biogramm | offen | pro Tab Daten-Kontrakt, Chip-Muster, Meta-Fresh-Check |
 | SKOS-Labels in der Pipeline | offen | `skos:prefLabel` ersetzt Hand-Map `DOKUMENTTYP_LABELS` |
 | AgRelOn-Granularität | offen | `HasAddressee`/`HasSender` statt pauschal |
