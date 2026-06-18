@@ -1,6 +1,6 @@
 # M³GIM Quality-Snapshot
 
-_Generiert: 2026-04-18T08:54_
+_Generiert: 2026-06-18T15:09_
 
 Grundlage: `data\output\m3gim.jsonld` + `data\output\wikidata-reconciliation.json`.
 
@@ -56,7 +56,7 @@ _Keine Low-Confidence-Matches in diesem Lauf._
 ## Provenance-Coverage
 
 - Records mit `m3gim:xlsxSource`: **378/378** (100%)
-- Records mit `agrelon:hasProvenance`: **89/378** (24%) — nur Records mit Datierungsevidenz
+- Records mit provenienz-belegten Ereignissen (`agrelon:metadataProvenance` auf STE/DatedEvent/AgRelOn): **38/378** (10%)
 - Nested Entities (Details + AgRelOn) mit `xlsxSource`: **45/45** (100%)
 
 ## Externe Blocker (zur Klärung mit Erschließungsteam)

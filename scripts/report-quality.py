@@ -116,8 +116,16 @@ def main():
     # --- Provenance-Coverage
     prov_total = len(records_real)
     prov_with_xlsx = sum(1 for r in records_real if isinstance(r.get("m3gim:xlsxSource"), dict))
-    prov_with_agrelon = sum(1 for r in records_real
-                            if r.get("agrelon:metadataProvenance") is not None)
+    # E-103: agrelon:metadataProvenance migrated off the record onto its
+    # nested/related entities (STE, DatedEvent, AgRelOn), each backref-ing the
+    # record. Probe the record-owned provenance-bearing entities instead of the
+    # now always-absent record-level property.
+    prov_bearing_keys = ("m3gim:hasSpatiotemporalEvent",
+                         "m3gim:hasDatedEvent", "m3gim:agentRelation")
+    prov_with_events = sum(
+        1 for r in records_real
+        if any(ensure_list(r.get(k)) for k in prov_bearing_keys)
+    )
 
     nested_total = 0
     nested_with_xlsx = 0
@@ -217,12 +225,13 @@ def main():
     lines.append("## Provenance-Coverage")
     lines.append("")
     xlsx_pct = prov_with_xlsx / prov_total if prov_total else 0
-    agrelon_pct = prov_with_agrelon / prov_total if prov_total else 0
+    events_pct = prov_with_events / prov_total if prov_total else 0
     nested_pct = nested_with_xlsx / nested_total if nested_total else 0
     lines.append(f"- Records mit `m3gim:xlsxSource`: **{prov_with_xlsx}/{prov_total}** "
                  f"({xlsx_pct:.0%})")
-    lines.append(f"- Records mit `agrelon:metadataProvenance`: **{prov_with_agrelon}/{prov_total}** "
-                 f"({agrelon_pct:.0%}) — nur Records mit Datierungsevidenz")
+    lines.append(f"- Records mit provenienz-belegten Ereignissen "
+                 f"(`agrelon:metadataProvenance` auf STE/DatedEvent/AgRelOn): "
+                 f"**{prov_with_events}/{prov_total}** ({events_pct:.0%})")
     lines.append(f"- Nested Entities (Details + AgRelOn) mit `xlsxSource`: "
                  f"**{nested_with_xlsx}/{nested_total}** ({nested_pct:.0%})")
     lines.append("")
