@@ -4,7 +4,7 @@ Enthaelt schlanke Helpers, die in mehreren Scripts identisch gebraucht
 werden. Kein Framework, keine Abstraktion auf Vorrat — nur konkret
 dedupliziertes Wissen.
 
-Zentralisierte XLSX-Workaround-Konstanten siehe knowledge/xlsx-fixes.md.
+Zentralisierte XLSX-Workaround-Konstanten siehe knowledge/data.md § 17.
 """
 
 from __future__ import annotations
@@ -13,7 +13,7 @@ import re
 
 
 # ---------------------------------------------------------------------------
-# XLSX-Workaround-Konstanten (siehe knowledge/xlsx-fixes.md)
+# XLSX-Workaround-Konstanten (siehe knowledge/data.md § 17)
 # ---------------------------------------------------------------------------
 
 # Header-Shift-Korrektur fuer Personen-/Org-/Ort-/Werkindex: in mehreren
@@ -25,7 +25,7 @@ import re
 # Spalte 0 ("m3gim_id" = echte Kopfzeile vorhanden) und benennt die Spalten
 # auf den Kanon um, statt eine echte Datenzeile als Header zu konsumieren.
 # Zentral, damit transform.py, validate.py und reconcile.py denselben Kanon
-# nutzen. Siehe knowledge/xlsx-fixes.md und decisions.md E-95.
+# nutzen. Siehe knowledge/data.md § 17 und decisions.md E-95.
 INDEX_HEADER_SHIFTS: dict[str, list[str]] = {
     "personenindex": [
         "m3gim_id", "name", "wikidata_id",

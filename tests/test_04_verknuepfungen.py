@@ -60,7 +60,7 @@ def test_verknuepfungen_every_referenced_record_has_relations(
     Regressions-Alarm statt der frueheren 80-Prozent-Toleranz: wenn die
     Pipeline stillschweigend aufhoert, Relationen fuer ein Konvolut zu
     emittieren, schlaegt dieser Test an. Orphan-Signaturen (NIM_11 u. ae.,
-    siehe knowledge/xlsx-fixes.md § 7) werden uebersprungen, da fuer sie
+    siehe knowledge/data.md § 17) werden uebersprungen, da fuer sie
     kein Ziel-Record existiert.
     """
     # Index: Signatur -> Record(s)
@@ -81,7 +81,7 @@ def test_verknuepfungen_every_referenced_record_has_relations(
     unlinked = []
     for sig in sorted(referenced_sigs):
         if sig not in by_sig:
-            continue  # Orphan — siehe xlsx-fixes.md § 7
+            continue  # Orphan — siehe data.md § 17
         # Mindestens einer der Records dieser Signatur (Konvolut oder Folio)
         # traegt eine Relation
         if not any(_has_any_relation(r) for r in by_sig[sig]):

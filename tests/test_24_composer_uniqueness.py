@@ -5,7 +5,7 @@ im Quell-XLSX fuehrt dazu, dass derselbe Komponist unter zwei Roh-Strings
 auftaucht (z.B. "Beethoven, Ludwig van" vs. "Beethoven, Ludwig von") und in
 der Top-10-Liste doppelt erscheint.
 
-Regel aus ``knowledge/xlsx-fixes.md`` (Documents as Source of Truth,
+Regel aus ``knowledge/data.md § 17`` (Documents as Source of Truth,
 "Pipeline-Workarounds sind Schulden, nicht Features"): Schreibfehler gehoeren
 an der Quelle gefixt. Die Pipeline bekommt dafuer **keinen** Sonderfall-
 Normalisierer (kein ``normalize_composer``), weil das kuenftige Tippfehler
@@ -14,7 +14,7 @@ stillschweigend zukleistern wuerde.
 Stattdessen detektiert dieser Test Fuzzy-aehnliche Komponistennamen und bleibt
 ``xfail(strict=True)``, solange solche Paare existieren. Nach XLSX-Fix wird der
 Test ``XPASS`` → strict bricht die Suite → xfail-Marker entfernen, Eintrag in
-xlsx-fixes.md § 14 streichen.
+data.md § 17 streichen.
 
 Schwelle: Levenshtein-Ratio >= 92. Beethoven van/von liegt typischerweise bei
 96. Mozart vs. Brahms bei ~20. Die Schwelle trifft Tippfehler und echte
@@ -47,7 +47,7 @@ def _iter_works(graph: list) -> list:
 
 
 @pytest.mark.xfail(
-    reason="xlsx-fixes.md § 14 — Beethoven 'van/von' im Werkindex. Fix durch Archiv-Team.",
+    reason="data.md § 17 — Beethoven 'van/von' im Werkindex. Fix durch Archiv-Team.",
     strict=True,
 )
 def test_komponisten_ohne_fuzzy_duplikate(graph):
@@ -67,6 +67,6 @@ def test_komponisten_ohne_fuzzy_duplikate(graph):
 
     assert not duplicates, (
         "Komponisten-Varianten gefunden (Levenshtein-Ratio >= 92). "
-        "Source-Fix noetig (siehe knowledge/xlsx-fixes.md § 14):\n  "
+        "Source-Fix noetig (siehe knowledge/data.md § 17):\n  "
         + "\n  ".join(f"[{s}] '{a}'  <->  '{b}'" for s, a, b in duplicates)
     )

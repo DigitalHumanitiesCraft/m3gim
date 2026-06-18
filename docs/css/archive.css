@@ -306,7 +306,7 @@ tr.archiv-row--konvolut:hover .konvolut-toggle {
 
 /* Konvolut-Metadaten direkt unter dem Titel: Top-Dokumenttypen (Chips) +
    dezenter Status-Mix. Ersetzt die frueher aufklappbare Konvolut-
-   Detailansicht -- siehe knowledge/xlsx-fixes.md. */
+   Detailansicht -- siehe knowledge/data.md § 17. */
 .archiv-konvolut-meta {
   display: block;
   margin-top: var(--space-1);

@@ -39,7 +39,7 @@ def test_has_employer_relations_from_arbeitgeber(records, xlsx_verknuepfungen):
     df = xlsx_verknuepfungen
     assert "typ" in df.columns and "rolle" in df.columns, (
         "Verknuepfungs-XLSX hat keine typ/rolle-Spalten — Struktur-Regress "
-        "(siehe knowledge/xlsx-fixes.md)."
+        "(siehe knowledge/data.md § 17)."
     )
     # Record-Identifier-Index aufbauen
     by_ident = {}

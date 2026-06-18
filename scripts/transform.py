@@ -265,7 +265,7 @@ DFT_LABELS = {
 
 # Header-Shift-Korrekturen und Waehrungs-/Bearbeitungsstand-Defaults
 # kommen aus _common.py (INDEX_HEADER_SHIFTS, FINANCE_CURRENCY_DEFAULTS,
-# normalize_bearbeitungsstand). Siehe knowledge/xlsx-fixes.md.
+# normalize_bearbeitungsstand). Siehe knowledge/data.md § 17.
 
 
 # ---------------------------------------------------------------------------
@@ -649,7 +649,7 @@ def build_konvolut_hierarchy(df: pd.DataFrame, folio_col: str = None) -> tuple[l
         }
         konvolute.append(konvolut)
 
-    # --- Kollisions-Aufloesung (siehe knowledge/xlsx-fixes.md § 13) ---
+    # --- Kollisions-Aufloesung (siehe knowledge/data.md § 17) ---
     # Wenn eine Signatur sowohl eine Sammel-Zeile (ohne Folio) als auch
     # Folio-Zeilen hat, hat der Sammel-Record die gleiche @id wie das
     # RecordSet. Wir geben der Sammel-Zeile ein _sammlung-Suffix und
@@ -673,7 +673,7 @@ def build_konvolut_hierarchy(df: pd.DataFrame, folio_col: str = None) -> tuple[l
 
 # Fallback-Waehrung pro Archivsignatur-Praefix lebt in _common.py
 # (FINANCE_CURRENCY_DEFAULTS + default_currency_for). Siehe
-# knowledge/xlsx-fixes.md fuer die redaktionellen Annahmen.
+# knowledge/data.md § 17 fuer die redaktionellen Annahmen.
 
 
 def parse_monetary_value(name: str) -> tuple[str | None, str | None]:
