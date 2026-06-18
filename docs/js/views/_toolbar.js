@@ -16,7 +16,6 @@
  */
 
 import { el, clear } from '../utils/dom.js';
-import { DOKUMENTTYP_LABELS } from '../data/constants.js';
 import { buildDftTree } from '../utils/format.js';
 
 
@@ -166,13 +165,14 @@ function buildDftSelect(store, facet, state, notify) {
   },
     el('option', { value: '' }, '\u2014 Dokumenttyp \u2014'),
     ...dftGroups.flatMap(group => {
-      const groupLabel = DOKUMENTTYP_LABELS[group.id] || group.label;
+      // group.label/child.label sind bereits die skos:prefLabel (buildDftTree).
+      const groupLabel = group.label;
       const options = [];
       if (group.id !== '__sonstige__') {
         options.push(el('option', { value: group.id }, `${groupLabel} (alle)`));
       }
       for (const child of group.children) {
-        options.push(el('option', { value: child.id }, DOKUMENTTYP_LABELS[child.id] || child.label));
+        options.push(el('option', { value: child.id }, child.label));
       }
       return [el('optgroup', { label: groupLabel }, ...options)];
     })

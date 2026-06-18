@@ -131,6 +131,16 @@ DATUMSROLLE_TO_PROPERTY = {
     "gespraechsdatum": "m3gim:gespraechsdatum",
 }
 
+# Mobilitaets-Ortsrollen (E-97): jede erzeugt eine datumslose
+# m3gim:SpatiotemporalEvent (First-Class-Mobilitaetsereignis fuer den
+# Mobilitaets-Atlas). Vokabular-Vollstaendigkeit aus data.md § 4/§ 10 — im
+# aktuellen Export sind zielort/absendeort/abreiseort belegt, empfangsort/
+# vertragsort scaffolden fuer einen tieferen Export. wohnort ist KEIN
+# Punktereignis (Zustand mit Validity) und steht bewusst nicht in dieser Menge.
+MOBILITY_PLACE_ROLES = {
+    "zielort", "absendeort", "abreiseort", "empfangsort", "vertragsort",
+}
+
 # ---------------------------------------------------------------------------
 # Dokumenttyp-Mapping (deutsch → m3gim-dft)
 # ---------------------------------------------------------------------------
@@ -965,6 +975,27 @@ def process_verknuepfungen(df: pd.DataFrame, indices: dict) -> dict:
                     ste_rel["wikidata_id"] = ort_lookup["wikidata_id"]
                 relations.setdefault(objekt_id, []).append(ste_rel)
 
+        # Reine ort-Zeile mit Mobilitaets-Rolle -> datumslose SpatiotemporalEvent
+        # (E-97). Additiv zur flachen rico:hasOrHadLocation (kein Index-Regress):
+        # der ort-Zweig in add_relations_to_records emittiert den Ort weiterhin
+        # als Location, dieser Block ergaenzt das Mobilitaetsereignis. Greift nur
+        # ohne Datum — mit Datum traegt bereits der Komposit-ort,datum-STE oben.
+        if typen == ['ort'] and (rolle or '').strip().lower() in MOBILITY_PLACE_ROLES:
+            mob_ort = name.strip() if name else ''
+            if mob_ort:
+                mob_rel = {
+                    "typ": "spatiotemporal",
+                    "name": mob_ort,
+                    "ort": mob_ort,
+                    "rolle": rolle,
+                    "anmerkung": anmerkung,
+                    "_source": source_info,
+                }
+                mob_lookup = indices.get("ort", {}).get(mob_ort.lower())
+                if mob_lookup and 'wikidata_id' in mob_lookup:
+                    mob_rel["wikidata_id"] = mob_lookup["wikidata_id"]
+                relations.setdefault(objekt_id, []).append(mob_rel)
+
         # Komposit rolle,person -> m3gim:Performance (Bühnenrolle + Interpret:in),
         # E-96. Die Performance wird in add_relations als Top-Level-Entity gebaut.
         is_roleperson = 'rolle' in typen and 'person' in typen
@@ -1269,12 +1300,14 @@ def add_relations_to_records(records: list, relations: dict,
                     "@id": ev_id,
                     "@type": "m3gim:SpatiotemporalEvent",
                     "m3gim:atPlace": place_entry,
-                    "m3gim:atDate": rel["datum"],
                     # STE→Record-Bezug ist Provenienz (Record dokumentiert das
                     # Ereignis); rico:isAssociatedWithRecord existiert in RiC-O 1.1
                     # nicht (E-103). data.md § 10.
                     "agrelon:metadataProvenance": {"@id": record["@id"]},
                 }
+                # Datumslose Mobilitaets-STE (E-97) tragen kein atDate.
+                if rel.get("datum"):
+                    ev["m3gim:atDate"] = rel["datum"]
                 role_val = rel.get("rolle")
                 if role_val:
                     ev["m3gim:eventRole"] = role_val

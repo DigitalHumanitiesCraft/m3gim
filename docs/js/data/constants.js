@@ -116,52 +116,10 @@ export function bookmarkIcon(size = 14, filled = false) {
   return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="${filled ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>`;
 }
 
-// =========================================================================
-// Dokumenttyp Labels
-// =========================================================================
-
-export const DOKUMENTTYP_LABELS = {
-  // Tatsaechlich in den Daten vorkommende DFT-IDs (Stand 2026-04)
-  'autobiografie': 'Autobiografie',
-  'biographie': 'Biographie',
-  'biographisch': 'Biographisch',
-  'identitaetsdokument': 'Identitätsdokument',
-  'konvolut': 'Konvolut',
-  'korrespondenz': 'Korrespondenz',
-  'notiz': 'Notiz',
-  'photokopie': 'Photokopie',
-  'plakat': 'Plakat',
-  'presse': 'Presse',
-  'programm': 'Programmheft',
-  'quittung': 'Quittung',
-  'repertoireliste': 'Repertoireliste',
-  'rezension': 'Rezension',
-  'tontraeger': 'Tonträger',
-  'typoskript': 'Typoskript',
-  'vertrag': 'Vertrag',
-  'visitenkarte': 'Visitenkarte',
-  // Legacy-Labels (aktuell nicht in Daten, belassen fuer Rueckwaertskompatibilitaet)
-  'brief': 'Brief',
-  'programmheft': 'Programmheft',
-  'zeitungsausschnitt': 'Zeitungsausschnitt',
-  'ausweis': 'Ausweis',
-  'dokument': 'Dokument',
-  'telegramm': 'Telegramm',
-  'postkarte': 'Postkarte',
-  'fotografie': 'Fotografie',
-  'urkunde': 'Urkunde',
-  'noten': 'Noten',
-  'manuskript': 'Manuskript',
-  'rechnung': 'Rechnung',
-  'sammlung': 'Sammlung',
-  // === PENDING: neuer Datenstand Lane 1 (G6). Aktivieren nach Promote des
-  // neuen Exports; siehe lane-2-frontend-datenstand.md §1. Mittelfristig durch
-  // SKOS-prefLabel-Pfad abgeloest (knowledge/plan.md).
-  // 'musikzeitschrift': 'Musikzeitschrift',
-  // 'briefumschlag':    'Briefumschlag',
-  // 'verzeichnis':      'Verzeichnis',
-  // 'chronik':          'Chronik',
-};
+// Dokumenttyp-Labels kommen jetzt aus den Daten: die Pipeline schreibt
+// skos:prefLabel an die m3gim-dft-Concepts (E-101), der Loader legt sie in
+// store.dftHierarchy ab, format.js dftLabel(store, id) löst sie auf. Die
+// frühere Hand-Map DOKUMENTTYP_LABELS entfiel damit.
 
 // =========================================================================
 // Sprach-Kuerzel (ISO 639-1) -> lesbare deutsche Labels
@@ -382,18 +340,23 @@ export const EVENT_ROLE_TO_MOBILITY_CLUSTER = {
   'ueberweisung':      null,
   'überweisung':       null,
 
-  // === PENDING: neuer Datenstand Lane 1 (G1 STE-eventRoles + G8). KRITISCH:
-  // ohne diese Eintraege failt test_25, sobald die STE im Export landen.
-  // Aktivieren nach Lane-1-Bestaetigung; Cluster-Zuordnung der Ortsrollen ist
-  // die unsichere Stelle (siehe lane-2-frontend-datenstand.md §1).
-  // 'zielort':       'korrespondenz',   // G1 -- korrespondenz/reise
-  // 'absendeort':    'korrespondenz',   // G1
-  // 'abreiseort':    'korrespondenz',   // G1
-  // 'empfangsort':   'korrespondenz',   // G1
-  // 'vertragsort':   'institutionell',  // G1 -- institutionell ODER biografisch, mit Lane 1 klaeren
+  // Mobilitaets-Ortsrollen (E-97): erzeugen datumslose SpatiotemporalEvents.
+  // Bewusst auf null statt willkuerlich einzuordnen -- ob zielort/absendeort/
+  // abreiseort der Sicht "korrespondenz" (Reise) oder einer anderen zugehoeren,
+  // ist mit dem Erschliessungsteam zu klaeren (datenmodell.md § 10 nennt keine
+  // Zuordnung der Ortsrollen). null haelt test_25 nach Promote gruen und zeigt
+  // die Events ehrlich als "Nicht klassifiziert", bis die Sicht feststeht.
+  'zielort':           null,
+  'absendeort':        null,
+  'abreiseort':        null,
+  'empfangsort':       null,
+  'vertragsort':       null,
+
+  // === PENDING: G8-Rollen (noch nicht im Export belegt). Aktivieren, sobald
+  // sie im Datenstand auftauchen; Cluster mit Erschliessungsteam klaeren.
   // 'aufnahme':      'diskursiv',       // G8
   // 'generalprobe':  'performativ',     // G8 (probenTyp)
-  // 'empfang':       null,              // G8 -- ggf. rahmenveranstaltung, mit Lane 1 klaeren
+  // 'empfang':       null,              // G8 -- ggf. rahmenveranstaltung
 };
 
 export function mobilityClusterFor(eventRole) {

@@ -72,7 +72,7 @@ Jeder semantische Datenpunkt wird als Chip mit Uppercase-Rollenbezeichner und We
 - AgRelOn-Beziehungen im Archiv-Inline-Detail
 - Chips in Atlas-Popups und Biogramm-Summary
 
-Implementiert als `buildRoleChip({prefix, value, cluster, xlsxSource, wikidata, onClick, compact})` in `docs/js/views/archiv-inline-detail.js`.
+Implementiert als `buildRoleChip({prefix, value, cluster, xlsxSource, wikidata, tip, onClick, compact})` in `docs/js/views/archive-inline-detail.js`.
 
 Visuell dieselbe Primitive, semantisch kontextabhängig. Ein einziges robustes Muster statt fünf Darstellungsformen.
 
@@ -85,9 +85,9 @@ Aggregatzellen zeigen die Verteilung der Untertypen direkt in der Zelle, gefolgt
 
 Das ersetzt für viele Fragen ein Modal-Panel. Drilldown bleibt für Fälle, in denen Einzelbelege gelistet werden müssen.
 
-### 5. Confidence als Micro-Dot pro Record
+### 5. Datierungs-Konfidenz (entfernt mit E-106)
 
-`agrelon:hasConfidenceValue` wird als farbiger Punkt mit numerischem Wert inline angezeigt (`● 1.00` grün für `aus_dokument`, `● 0.60` gedämpft für `erschlossen`). Undatierte Aussagen tragen gar keinen Punkt — `0.0` wird nicht serialisiert (E-100). Keine Legende, kein Tooltip nötig. Datenqualität steht neben dem Datenpunkt, nicht in einem separaten Report.
+Frühere Fassungen zeigten die Datierungs-Konfidenz als farbigen Micro-Dot mit numerischem Wert inline am Record. Dieses Feature ist mit E-106 entfernt: Die Datierungs-Konfidenz wird nicht mehr serialisiert (`agrelon:metadataConfidence` an der Datierung entfällt), und `confidenceDotProps()` ist gelöscht. Es gibt keinen Konfidenz-Dot mehr im UI.
 
 ### 6. Provenance-Pille am Datenpunkt
 
@@ -109,7 +109,7 @@ Sektionen im Hauptbereich tragen dezente Überschriften nach dem Muster `BÜHNEN
 
 Tippfehler, Dubletten, Normalisierungslücken (etwa „Verdi, Guiseppe" neben „Verdi, Giuseppe") erscheinen im UI so, wie sie im Bestand liegen. Das Interface ist ein Erschließungsspiegel. Der Markdown-Report `data/reports/quality-snapshot.md` listet solche Funde systematisch für die Team-Arbeit.
 
-**Explizite Qualitäts- und Statusmarker.** Wo das Modell Qualität oder Status ausdrücklich trägt, zeigt das UI das mit eigenen Markern statt es zu verschweigen. Ein `m3gim:dataQualityFlag` (etwa „Name nicht eindeutig") erscheint als kleiner Hinweis am betroffenen Datenpunkt, mit eigener `qualityConfidence` getrennt von der Aussage-Konfidenz. Ein unerfüllter Vertrag (`m3gim:contractStatus`, `realized = false`) bekommt einen Status-Chip am Vertrags-Record. Beide folgen derselben Haltung wie die übrige Datenqualität — sichtbar, nicht gemergt.
+**Explizite Qualitäts- und Statusmarker.** Wo das Modell Qualität ausdrücklich trägt, zeigt das UI das mit eigenen Markern statt es zu verschweigen. Ein `m3gim:dataQualityFlag` (etwa „Name nicht eindeutig") liegt derzeit nur in den Daten und wird (noch) nicht im UI gerendert. Die Haltung bleibt dieselbe wie für die übrige Datenqualität — sichtbar, nicht gemergt.
 
 **Leere Zeitfenster bleiben sichtbar.** Die Chronik zeigt jedes Jahr der Lebensspanne einzeln (Session 41, M5 — ersetzt das frühere Perioden-Akkordeon). Jahre ohne bearbeitetes Material bekommen einen Umriss-Dot und gedimmtes Label, Jahre mit Records einen gefüllten Dot, dessen Größe mit der Record-Dichte skaliert. Erschließungslücken bleiben dadurch sichtbar, ohne dass ein redaktioneller Hinweis nötig wäre — die Form selbst ist das Signal.
 

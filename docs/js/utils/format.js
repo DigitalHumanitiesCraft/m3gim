@@ -2,7 +2,18 @@
  * M³GIM Display Formatting Utilities
  */
 
-import { DOKUMENTTYP_LABELS } from '../data/constants.js';
+/**
+ * Lesbares Label eines Dokumenttyps aus dem Store (skos:prefLabel der
+ * dft-Concepts, von der Pipeline geliefert — E-101). Loest die frühere
+ * Hand-Map DOKUMENTTYP_LABELS ab. Fallback auf die Short-Id, wenn kein
+ * Concept vorliegt (oder kein Store übergeben wird).
+ */
+export function dftLabel(store, shortId) {
+  if (!shortId) return '';
+  const concept = store && store.dftHierarchy
+    && store.dftHierarchy.get('m3gim-dft:' + shortId);
+  return (concept && concept.prefLabel) || shortId;
+}
 
 /** Extract the short part of a signatur (e.g. "UAKUG/NIM_003 1_1" → "NIM_003 1_1"). */
 export function formatSignatur(identifier) {
@@ -30,11 +41,11 @@ export function getDocTypeId(record) {
   return id ? id.replace('m3gim-dft:', '') : null;
 }
 
-/** Get human-readable label for a document type. */
-export function formatDocType(record) {
+/** Get human-readable label for a document type (store-backed prefLabel). */
+export function formatDocType(record, store) {
   const typeId = getDocTypeId(record);
   if (!typeId) return '';
-  return DOKUMENTTYP_LABELS[typeId] || typeId;
+  return dftLabel(store, typeId);
 }
 
 /** Ensure a value is always an array. */

@@ -4,8 +4,8 @@
  */
 
 import { el, clear } from '../utils/dom.js';
-import { formatSignatur, getDocTypeId, truncate } from '../utils/format.js';
-import { DOKUMENTTYP_LABELS, WIKIDATA_ICON_SVG, AGRELON_LABELS, bookmarkIcon } from '../data/constants.js';
+import { formatSignatur, getDocTypeId, truncate, dftLabel } from '../utils/format.js';
+import { WIKIDATA_ICON_SVG, AGRELON_LABELS, bookmarkIcon } from '../data/constants.js';
 import { selectRecord, navigateToView } from '../ui/router.js';
 import { toggleKorb, isInKorb } from '../ui/basket.js';
 import { logStamp } from '../utils/env.js';
@@ -493,7 +493,7 @@ function renderExpandedRecords(entry, gridKey) {
 
   const rows = limited.map(r => {
     const docType = getDocTypeId(r) || '';
-    const docLabel = DOKUMENTTYP_LABELS[docType] || docType || '';
+    const docLabel = dftLabel(store, docType) || '';
     const rid = r['@id'];
     const inKorb = isInKorb(rid);
     return el('div', {

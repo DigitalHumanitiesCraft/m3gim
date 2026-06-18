@@ -111,7 +111,7 @@ export function buildInlineDetail(record, store, { onClose } = {}) {
   const leftCol = el('div', { className: 'inline-detail__col' });
 
   const meta = [];
-  const docType = formatDocType(record);
+  const docType = formatDocType(record, store);
   if (docType) meta.push(['Typ', docType]);
   const date = formatDate(record['rico:date']);
   if (date) meta.push(['Datum', date]);

@@ -153,13 +153,14 @@ Das Feld `typ` wird immer zuerst gewählt, es bestimmt, welche Rollen verfügbar
 | typ | mögliche Rollen |
 |---|---|
 | person | verfasser, adressat, erwähnt, vertragspartner, unterzeichner, abgebildet, interpret |
-| ort | entstehungsort, zielort, erwähnt, auffuehrungsort, wohnort, vertragsort, lehrtätigkeit |
+| ort | entstehungsort, zielort, erwähnt, auffuehrungsort, wohnort, vertragsort, lehrtätigkeit, absendeort, abreiseort, empfangsort |
 | institution | vertragspartner, arbeitgeber, veranstalter, vermittler, adressat, erwähnt |
 | ereignis | rahmenveranstaltung, premiere, auftritt, probe, implizit |
 | werk | interpret, gastspiel, aufführung |
 | ort, datum | gastspiel, probe, generalprobe |
-| einnahme, währung | abendgage, monatsgage |
-| ausgabe, währung | abendgage, monatsgage |
+| einnahmen, währung | abendgage, provision, gesamtvergütung, reisekosten, rundfunkhonorar, dépôt, transfer (vollständiger detailRole-Katalog in [data.md](data.md) § 11) |
+| ausgaben, währung | abendgage, provision, gesamtvergütung, reisekosten, rundfunkhonorar, dépôt, transfer (vollständiger detailRole-Katalog in [data.md](data.md) § 11) |
+| summe, währung | abendgage, provision, gesamtvergütung, reisekosten, rundfunkhonorar, dépôt, transfer (vollständiger detailRole-Katalog in [data.md](data.md) § 11) |
 | detail | Feldname frei wählbar (Schicht 3) |
 
 Beim Werk steht `aufführung` für die eigenständige Aufführung eines Werkes und `gastspiel` für die in der Quelle ausdrücklich als Gastspiel bezeichnete Aufführung mit festem Ensemble. Eine Gruppe von mehr als zwei musizierenden Personen wird über den Typ `ensemble` erfasst. Eine Bühnenrolle wird zusammen mit ihrer interpretierenden Person geführt.

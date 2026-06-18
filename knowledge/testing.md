@@ -71,7 +71,8 @@ tests/
 ├── test_27_stage_role.py          # m3gim:StageRole wohlgeformt + dedupliziert (E-96)
 ├── test_28_performance.py         # m3gim:Performance + hasPerformance-Auflösung (E-96/98)
 ├── test_30_quality_and_dated_events.py  # DatedEvent-Routing + dataQualityFlag + bearbeitungsnotiz (E-102)
-└── test_31_dft_vocab.py           # sammlung eigenständig + deutsche skos:prefLabel (E-101)
+├── test_31_dft_vocab.py           # sammlung eigenständig + deutsche skos:prefLabel (E-101)
+└── test_32_mobility_events.py     # datumslose Mobilitäts-STE aus Ortsrollen (E-97, additiv, kein atDate, Ort als rico:hasOrHadLocation)
 ```
 
 Die Nummerierung hat historische Lücken (test_17, test_21 wurden nicht vergeben). Das ist bewusst — die Zahlen sind stabile IDs, kein durchgängiger Index.
@@ -116,12 +117,12 @@ Mindestwerte aus `fixtures/baseline_counts.json` pro Entitätstyp (records, pers
 Lässt `transform.py` zweimal laufen, vergleicht Output (ohne `m3gim:exportDate`). Fängt versehentliche Set-Iteration / Dict-Ordnungsabhängigkeiten. Nur mit `pytest -m slow` ausführen.
 
 ### 11. Mobilität (test_11, Phase 4.4 + 4.8)
-SpatiotemporalEvent-Existenz, `atPlace`+`atDate` Pflicht, Rollen-Vokabular, Anzahl skaliert mit XLSX-Komposit-Rows. Die 5 Mobilitätssichten aus [data.md § 10](data.md) als SPARQL-ähnliche Python-Queries: performative, institutionelle, Korrespondenz-, biographische, diskursive Mobilität.
+SpatiotemporalEvent-Existenz, `atPlace` Pflicht; `atDate` nur für datierte STE (datumslose Mobilitäts-STE aus Ortsrollen tragen bewusst kein `atDate`, E-97). Rollen-Vokabular, Anzahl skaliert mit XLSX-Komposit-Rows. Die 5 Mobilitätssichten aus [data.md § 10](data.md) als SPARQL-ähnliche Python-Queries: performative, institutionelle, Korrespondenz-, biographische, diskursive Mobilität.
 
 ### 12. AgRelOn (test_12, Phase 4.8)
 `agrelon:`-Namespace im Context, HasEmployeeEmployer-Relationen skalieren mit XLSX-arbeitgeber-Zeilen, HasCorrespondent-Relationen haben Provenance, `hasValidityPeriod` ist well-formed (Begin/End als ISO-String).
 
-**Hinweis (E-104).** Dieses Modul schreibt aktuell die Fehlterme `hasValidityPeriod`/`hasProvenance` als Invariante fest. Mit der AgRelOn-Termkorrektur sind die Assertions auf `metadataPeriod`/`metadataProvenance` nachzuziehen — der Term-Validierungs-Test (test_26) deckt den Mismatch sonst sofort als rot auf.
+**Hinweis (E-104).** Die AgRelOn-Termkorrektur ist erledigt: test_12 prüft die korrigierten Terme `agrelon:metadataPeriod`/`metadataProvenance`, und der Term-Validierungs-Test (test_26) lockt die Konformität dauerhaft. Verbliebene Altterme stehen nur noch kosmetisch in der Modul-Docstring von test_12.
 
 ### 13. Finanzen (test_13, Phase 4.6)
 Jede Finanz-DetailAnnotation hat korrekten `@type`, `detailField`, parsbare `monetaryAmount` (xsd:decimal), Währung im belegten Set (RM/DM/ATS/S/CHF/FRF/Fr/ESC/Esc/USD).
@@ -275,7 +276,7 @@ Wartung:
 - `test_all_record_ids_unique` — **xfail**. PL_07 Duplikat aus XLSX-Erfassung. Fix: im Google Sheet bereinigen, dann xfail-Marker entfernen.
 - `test_has_employer_relations_from_arbeitgeber` — **skip**. Die einzige arbeitgeber-Zeile hat Signatur `UAKUG/NIM_11`, die keinem Record zugeordnet werden kann (verwaist).
 - Junk-Namen im Personen-Index (`[Organi]`, kurze Initialen) werden als Warnung geloggt, nicht gefailed — Frontend filtert via `isJunkName`.
-- Freitext in Datumsspalte (`"Wien, ab 1956"`, `"1944-05 bis 1944-09"`): `is_iso_date()` lässt sie nicht in typisierte Datumsproperties durch, landen stattdessen in generischem `m3gim:eventDate`.
+- Freitext in Datumsspalte (`"Wien, ab 1956"`, `"1944-05 bis 1944-09"`): `is_iso_date()` lässt sie nicht in typisierte Datumsproperties durch, landen stattdessen im Fallback `m3gim:hasDatedEvent` (inline DatedEvent mit `dateValue`/`dateRole`, E-102). Das generische `m3gim:eventDate` ist abgeschafft (test_18 assertet `generic_count == 0`).
 
 ## Stand
 
@@ -328,11 +329,12 @@ Der pytest-Wrapper (`tests/frontend/test_smoke.py`, Marker `@pytest.mark.fronten
 
 ## JS-Unit-Tests (Node, seit Session 47)
 
-Die JS-Unit-Tests decken die dom-/d3-freien Pure-Functions des Frontends ab, über drei Dateien:
+Die JS-Unit-Tests decken die dom-/d3-freien Pure-Functions des Frontends ab, über vier Dateien:
 
 - `tests/frontend/network-geometry.test.mjs` für die Geometrie aus [`_network-geometry.js`](../docs/js/views/_network-geometry.js) (E-94): `classifyRing`, `isMalaniuk`, `isPureComposer`, `derivePersonKategorie`, `nodeEvidence`, `nodeColor`, `computeLayout` (Determinismus-Property, alphabetische Winkel-Reihenfolge, Umlaut-Normalisierung im SortKey, Radius-Cap), `computeCoOccurrence` (Malaniuk- und Komponisten-Filter, minShared-Threshold, maxEdges-Cap, Tie-breaker-Determinismus) und `labelGeometry`.
 - `tests/frontend/utils.test.mjs` für `date-parser` und `format`.
 - `tests/frontend/record-partition.test.mjs` für `partitionRecord`, also den Korb- und Inline-Detail-Pfad.
+- `tests/frontend/loader.test.mjs` für die Strecke JSON-LD → `loadArchive()` → store (synthetische Fixture + Anker gegen `docs/data`; deckt u.a. die E-97-Datumslosigkeit und die DFT-prefLabel-Auflösung). Anders als die übrigen Module ist dies eine Integrationsstrecke, keine reine Pure-Function.
 
 Lauf:
 

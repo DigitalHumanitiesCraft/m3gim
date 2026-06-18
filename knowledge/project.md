@@ -67,4 +67,4 @@ Das Projekt zieht bewusst Grenzen.
 
 ## Lizenz
 
-Code steht unter MIT, Daten und Dokumentation unter CC BY 4.0, Quellenmaterial nach Einzelrechtevermerk. Details in der Lizenzdatei des Repos.
+Code steht unter MIT, Daten und Dokumentation unter CC BY 4.0, Quellenmaterial nach Einzelrechtevermerk.

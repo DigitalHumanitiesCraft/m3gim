@@ -76,7 +76,7 @@ Die Stand-Kommunikation für Dritte wird bewusst nicht als eigenes Report-Dokume
 
 - [`../CLAUDE.md`](../CLAUDE.md) führt die Workflow-Regeln für Claude-Code-Sessions, prozessual und nicht dokumentarisch
 - Die Session-Memory unter `.claude/projects/*/memory/` persistiert über Sessions
-- Der Obsidian-Vault unter `C:\Users\chris\Documents\obsidian\Projects\M³GIM\` enthält die DSGVO-sensiblen Quellen und Forschungsnotizen, die nicht im Repo liegen
+- Der Obsidian-Vault unter `C:\Users\Chrisi\Documents\obsidian\Projects\M³GIM\` enthält die DSGVO-sensiblen Quellen und Forschungsnotizen, die nicht im Repo liegen
 
 ## Pflegehinweis
 

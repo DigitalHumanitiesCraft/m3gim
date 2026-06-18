@@ -115,10 +115,10 @@ Die Zuordnung einer Verknüpfungszeile zu einem Indexeintrag erfolgt über Strin
 | werk | Werkindex → `m3gim:MusicalWork` | implementiert |
 | rolle | Bühnenrollen → `m3gim:StageRole` | Rollenindex ausstehend |
 | datum | direkte Datumsproperty | implementiert |
-| ort, datum | Komposit → `m3gim:SpatiotemporalEvent` | Dekomposition implementiert, Klassenmapping neu |
-| datum, werk | Komposit → `m3gim:Performance` | Dekomposition neu |
-| rolle, person | Komposit → `m3gim:Performance` (Bühnenrolle + Interpret:in) | Dekomposition neu |
-| ort (Mobilitätsrolle) | → `rico:Place` + `m3gim:SpatiotemporalEvent` (ohne Datum) | neu |
+| ort, datum | Komposit → `m3gim:SpatiotemporalEvent` | implementiert (E-96) |
+| datum, werk | Komposit → `m3gim:Performance` | implementiert (E-98) |
+| rolle, person | Komposit → `m3gim:Performance` (Bühnenrolle + Interpret:in) | implementiert (E-96) |
+| ort (Mobilitätsrolle) | → `rico:Place` + `m3gim:SpatiotemporalEvent` (ohne Datum) | implementiert (E-97) |
 | ereignis | → `m3gim:PerformanceEvent` | implementiert |
 | ausgaben, währung | → `m3gim:DetailAnnotation` | implementiert |
 | einnahmen, währung | → `m3gim:DetailAnnotation` | implementiert |
@@ -519,8 +519,7 @@ Die Integration hat drei Ziele:
         agrelon:hasBeginDate "1956" ;
         agrelon:hasEndDate "1971"
     ] ;
-    agrelon:metadataProvenance <https://m3gim.dhcraft.org/record/UAKUG/NIM_004/24> ;
-    agrelon:metadataConfidence "0.9"^^xsd:decimal .
+    agrelon:metadataProvenance <https://m3gim.dhcraft.org/record/UAKUG/NIM_004/24> .
 ```
 
 ### Abgrenzung
@@ -602,8 +601,7 @@ Für nicht-agentische Relationen, bei denen das n-ary-Reifikationsmuster nicht a
     rdf:subject :performance_bayreuth_1951_walkuere ;
     rdf:predicate m3gim:hasPerformer ;
     rdf:object :malaniuk ;
-    agrelon:metadataProvenance <https://m3gim.dhcraft.org/record/UAKUG/NIM_007/3> ;
-    agrelon:metadataConfidence "1.0"^^xsd:decimal .
+    agrelon:metadataProvenance <https://m3gim.dhcraft.org/record/UAKUG/NIM_007/3> .
 ```
 
 Aus Performance-Gründen ist diese Reifikation optional und nur dort anzuwenden, wo die Provenienz nicht bereits aus der Record-URI selbst folgt.
@@ -641,8 +639,7 @@ Die UI-Anbindung der fünf Sichten, etwa die Farbfamilie für Chronik-Chips, lie
     m3gim:atPlace :bayreuth ;
     m3gim:atDate "1951/1953" ;
     # Record-Bezug von der Record-Seite via rico:isAssociatedWithEvent bzw. m3gim:hasSpatiotemporalEvent (E-103); kein rico:isAssociatedWithRecord
-    agrelon:metadataProvenance <UAKUG/NIM_004/24> ;
-    agrelon:metadataConfidence "1.0"^^xsd:decimal .
+    agrelon:metadataProvenance <UAKUG/NIM_004/24> .
 ```
 
 ### Abdeckungsabhängigkeit
@@ -741,7 +738,7 @@ dokument
 
 Gegenüber der Vorfassung ergänzt sind korrespondenz, presse, programm, autobiografie, identitaetsdokument, repertoireliste, biographisch, briefumschlag, musikzeitschrift, chronik, verzeichnis. `sammlung` bleibt ein eigenständiges Concept **ohne** `skos:broader` auf konvolut — die is-a-Beziehung wird nicht vorentschieden. Die Abgrenzung zwischen sammlung und konvolut ist noch zu klären (Klärungspunkt in [plan.md](plan.md)): möglicherweise ist konvolut der physische Umschlag und sammlung die thematische Zusammenstellung.
 
-Jedes emittierte dft-Concept trägt ein lesbares deutsches `skos:prefLabel` (Pipeline-Map `DFT_LABELS`, E-101) statt des nackten Slugs. Die Labels sind deckungsgleich mit der bisherigen Frontend-Handtabelle `DOKUMENTTYP_LABELS`, sodass das Frontend mittelfristig direkt auf `skos:prefLabel` aus dem Store umstellen kann.
+Jedes emittierte dft-Concept trägt ein lesbares deutsches `skos:prefLabel` (Pipeline-Map `DFT_LABELS`, E-101) statt des nackten Slugs. Das Frontend löst Dokumenttyp-Labels seit E-101 direkt über `skos:prefLabel` aus dem Store auf (`dftLabel(store, id)` über `store.dftHierarchy`); die frühere Frontend-Handtabelle `DOKUMENTTYP_LABELS` ist entfallen.
 
 ### Verknüpfungstyp `dokument` als Aboutness
 

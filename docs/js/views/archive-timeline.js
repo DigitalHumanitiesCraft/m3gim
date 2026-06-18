@@ -7,9 +7,8 @@
  */
 
 import { el, clear } from '../utils/dom.js';
-import { formatSignatur, getDocTypeId, ensureArray } from '../utils/format.js';
+import { formatSignatur, getDocTypeId, ensureArray, dftLabel } from '../utils/format.js';
 import { extractYear, formatDate } from '../utils/date-parser.js';
-import { DOKUMENTTYP_LABELS } from '../data/constants.js';
 import { buildFilterToolbar } from './_archive-toolbar.js';
 import { filterByToolbarState, isToolbarFiltered, searchMatchChronik } from './_archive-filter.js';
 import { logStamp } from '../utils/env.js';
@@ -188,7 +187,7 @@ function renderRecordPoint(record) {
   const sig = formatSignatur(record['rico:identifier']);
   const title = record['rico:title'] || '(ohne Titel)';
   const docType = getDocTypeId(record) || '';
-  const docLabel = DOKUMENTTYP_LABELS[docType] || docType || '';
+  const docLabel = dftLabel(store, docType) || '';
   const dateDisplay = formatDate(record['rico:date']) || '';
 
   // Primaer-Ort aus m3gim:SpatiotemporalEvent (falls vorhanden), sonst

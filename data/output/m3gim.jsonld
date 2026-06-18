@@ -2596,6 +2596,14 @@
           }
         }
       ],
+      "m3gim:hasSpatiotemporalEvent": [
+        {
+          "@id": "m3gim:ste_NIM_004_1_1"
+        },
+        {
+          "@id": "m3gim:ste_NIM_004_1_2"
+        }
+      ],
       "m3gim:hasAssociatedAgent": [
         {
           "name": "Malaniuk, Ira",
@@ -3063,7 +3071,7 @@
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
       "m3gim:hasSpatiotemporalEvent": {
-        "@id": "m3gim:ste_NIM_004_3_1"
+        "@id": "m3gim:ste_NIM_004_3_3"
       },
       "m3gim:hasPerformance": [
         {
@@ -4279,7 +4287,7 @@
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "begonnen",
       "m3gim:hasSpatiotemporalEvent": {
-        "@id": "m3gim:ste_NIM_004_8_2"
+        "@id": "m3gim:ste_NIM_004_8_4"
       },
       "m3gim:hasPerformance": [
         {
@@ -5719,7 +5727,7 @@
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
       "m3gim:hasSpatiotemporalEvent": {
-        "@id": "m3gim:ste_NIM_004_12_3"
+        "@id": "m3gim:ste_NIM_004_12_5"
       },
       "m3gim:hasPerformance": [
         {
@@ -8051,10 +8059,10 @@
       "m3gim:bearbeitungsstand": "abgeschlossen",
       "m3gim:hasSpatiotemporalEvent": [
         {
-          "@id": "m3gim:ste_NIM_004_19_4"
+          "@id": "m3gim:ste_NIM_004_19_6"
         },
         {
-          "@id": "m3gim:ste_NIM_004_19_5"
+          "@id": "m3gim:ste_NIM_004_19_7"
         }
       ],
       "m3gim:hasPerformance": [
@@ -8425,9 +8433,14 @@
           }
         }
       ],
-      "m3gim:hasSpatiotemporalEvent": {
-        "@id": "m3gim:ste_NIM_004_23_6"
-      },
+      "m3gim:hasSpatiotemporalEvent": [
+        {
+          "@id": "m3gim:ste_NIM_004_23_8"
+        },
+        {
+          "@id": "m3gim:ste_NIM_004_23_9"
+        }
+      ],
       "m3gim:hasAssociatedAgent": [
         {
           "name": "Malaniuk, Ira",
@@ -8502,19 +8515,19 @@
       "m3gim:bearbeitungsstand": "begonnen",
       "m3gim:hasSpatiotemporalEvent": [
         {
-          "@id": "m3gim:ste_NIM_004_24_7"
-        },
-        {
-          "@id": "m3gim:ste_NIM_004_24_8"
-        },
-        {
-          "@id": "m3gim:ste_NIM_004_24_9"
-        },
-        {
           "@id": "m3gim:ste_NIM_004_24_10"
         },
         {
           "@id": "m3gim:ste_NIM_004_24_11"
+        },
+        {
+          "@id": "m3gim:ste_NIM_004_24_12"
+        },
+        {
+          "@id": "m3gim:ste_NIM_004_24_13"
+        },
+        {
+          "@id": "m3gim:ste_NIM_004_24_14"
         }
       ],
       "m3gim:hasPerformance": [
@@ -9481,9 +9494,14 @@
           }
         }
       ],
-      "m3gim:hasSpatiotemporalEvent": {
-        "@id": "m3gim:ste_NIM_004_27_12"
-      },
+      "m3gim:hasSpatiotemporalEvent": [
+        {
+          "@id": "m3gim:ste_NIM_004_27_15"
+        },
+        {
+          "@id": "m3gim:ste_NIM_004_27_16"
+        }
+      ],
       "m3gim:hasAssociatedAgent": [
         {
           "name": "Malaniuk, Ira",
@@ -9713,19 +9731,19 @@
       "m3gim:bearbeitungsstand": "begonnen",
       "m3gim:hasSpatiotemporalEvent": [
         {
-          "@id": "m3gim:ste_NIM_004_29_13"
-        },
-        {
-          "@id": "m3gim:ste_NIM_004_29_14"
-        },
-        {
-          "@id": "m3gim:ste_NIM_004_29_15"
-        },
-        {
-          "@id": "m3gim:ste_NIM_004_29_16"
-        },
-        {
           "@id": "m3gim:ste_NIM_004_29_17"
+        },
+        {
+          "@id": "m3gim:ste_NIM_004_29_18"
+        },
+        {
+          "@id": "m3gim:ste_NIM_004_29_19"
+        },
+        {
+          "@id": "m3gim:ste_NIM_004_29_20"
+        },
+        {
+          "@id": "m3gim:ste_NIM_004_29_21"
         }
       ],
       "m3gim:hasPerformance": [
@@ -12589,6 +12607,9 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
+      "m3gim:hasSpatiotemporalEvent": {
+        "@id": "m3gim:ste_NIM_007_1_22"
+      },
       "m3gim:agentRelation": [
         {
           "@type": "agrelon:HasProfessionalContact",
@@ -12706,9 +12727,14 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 2 Seiten",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "m3gim:hasSpatiotemporalEvent": {
-        "@id": "m3gim:ste_NIM_007_2_18"
-      },
+      "m3gim:hasSpatiotemporalEvent": [
+        {
+          "@id": "m3gim:ste_NIM_007_2_23"
+        },
+        {
+          "@id": "m3gim:ste_NIM_007_2_24"
+        }
+      ],
       "m3gim:agentRelation": [
         {
           "@type": "agrelon:HasCorrespondent",
@@ -12991,7 +13017,7 @@
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
       "m3gim:hasSpatiotemporalEvent": {
-        "@id": "m3gim:ste_NIM_007_3_19"
+        "@id": "m3gim:ste_NIM_007_3_25"
       },
       "m3gim:hasAssociatedAgent": [
         {
@@ -13124,9 +13150,20 @@
           }
         }
       ],
-      "m3gim:hasSpatiotemporalEvent": {
-        "@id": "m3gim:ste_NIM_007_4_20"
-      },
+      "m3gim:hasSpatiotemporalEvent": [
+        {
+          "@id": "m3gim:ste_NIM_007_4_26"
+        },
+        {
+          "@id": "m3gim:ste_NIM_007_4_27"
+        },
+        {
+          "@id": "m3gim:ste_NIM_007_4_28"
+        },
+        {
+          "@id": "m3gim:ste_NIM_007_4_29"
+        }
+      ],
       "m3gim:agentRelation": [
         {
           "@type": "agrelon:HasProfessionalContact",
@@ -13647,19 +13684,19 @@
       },
       "m3gim:hasSpatiotemporalEvent": [
         {
-          "@id": "m3gim:ste_NIM_007_5_2_21"
+          "@id": "m3gim:ste_NIM_007_5_2_30"
         },
         {
-          "@id": "m3gim:ste_NIM_007_5_2_22"
+          "@id": "m3gim:ste_NIM_007_5_2_31"
         },
         {
-          "@id": "m3gim:ste_NIM_007_5_2_23"
+          "@id": "m3gim:ste_NIM_007_5_2_32"
         },
         {
-          "@id": "m3gim:ste_NIM_007_5_2_24"
+          "@id": "m3gim:ste_NIM_007_5_2_33"
         },
         {
-          "@id": "m3gim:ste_NIM_007_5_2_25"
+          "@id": "m3gim:ste_NIM_007_5_2_34"
         }
       ],
       "m3gim:agentRelation": [
@@ -13811,7 +13848,7 @@
         }
       },
       "m3gim:hasSpatiotemporalEvent": {
-        "@id": "m3gim:ste_NIM_007_5_3_26"
+        "@id": "m3gim:ste_NIM_007_5_3_35"
       },
       "m3gim:agentRelation": [
         {
@@ -13927,19 +13964,19 @@
       },
       "m3gim:hasSpatiotemporalEvent": [
         {
-          "@id": "m3gim:ste_NIM_007_5_4_27"
+          "@id": "m3gim:ste_NIM_007_5_4_36"
         },
         {
-          "@id": "m3gim:ste_NIM_007_5_4_28"
+          "@id": "m3gim:ste_NIM_007_5_4_37"
         },
         {
-          "@id": "m3gim:ste_NIM_007_5_4_29"
+          "@id": "m3gim:ste_NIM_007_5_4_38"
         },
         {
-          "@id": "m3gim:ste_NIM_007_5_4_30"
+          "@id": "m3gim:ste_NIM_007_5_4_39"
         },
         {
-          "@id": "m3gim:ste_NIM_007_5_4_31"
+          "@id": "m3gim:ste_NIM_007_5_4_40"
         }
       ],
       "m3gim:agentRelation": [
@@ -14092,10 +14129,10 @@
       },
       "m3gim:hasSpatiotemporalEvent": [
         {
-          "@id": "m3gim:ste_NIM_007_5_5_32"
+          "@id": "m3gim:ste_NIM_007_5_5_41"
         },
         {
-          "@id": "m3gim:ste_NIM_007_5_5_33"
+          "@id": "m3gim:ste_NIM_007_5_5_42"
         }
       ],
       "m3gim:agentRelation": [
@@ -14230,10 +14267,10 @@
       },
       "m3gim:hasSpatiotemporalEvent": [
         {
-          "@id": "m3gim:ste_NIM_007_5_6_34"
+          "@id": "m3gim:ste_NIM_007_5_6_43"
         },
         {
-          "@id": "m3gim:ste_NIM_007_5_6_35"
+          "@id": "m3gim:ste_NIM_007_5_6_44"
         }
       ],
       "m3gim:agentRelation": [
@@ -14373,10 +14410,10 @@
       },
       "m3gim:hasSpatiotemporalEvent": [
         {
-          "@id": "m3gim:ste_NIM_007_5_7_36"
+          "@id": "m3gim:ste_NIM_007_5_7_45"
         },
         {
-          "@id": "m3gim:ste_NIM_007_5_7_37"
+          "@id": "m3gim:ste_NIM_007_5_7_46"
         }
       ],
       "m3gim:agentRelation": [
@@ -14502,10 +14539,10 @@
       },
       "m3gim:hasSpatiotemporalEvent": [
         {
-          "@id": "m3gim:ste_NIM_007_5_8_38"
+          "@id": "m3gim:ste_NIM_007_5_8_47"
         },
         {
-          "@id": "m3gim:ste_NIM_007_5_8_39"
+          "@id": "m3gim:ste_NIM_007_5_8_48"
         }
       ],
       "m3gim:agentRelation": [
@@ -14628,7 +14665,7 @@
         }
       },
       "m3gim:hasSpatiotemporalEvent": {
-        "@id": "m3gim:ste_NIM_007_6_40"
+        "@id": "m3gim:ste_NIM_007_6_49"
       },
       "m3gim:agentRelation": [
         {
@@ -14717,7 +14754,7 @@
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
       "m3gim:hasSpatiotemporalEvent": {
-        "@id": "m3gim:ste_NIM_007_7_41"
+        "@id": "m3gim:ste_NIM_007_7_50"
       },
       "m3gim:agentRelation": [
         {
@@ -15362,9 +15399,14 @@
           "m3gim:xlsxRow": 1057
         }
       },
-      "m3gim:hasSpatiotemporalEvent": {
-        "@id": "m3gim:ste_NIM_007_9_42"
-      },
+      "m3gim:hasSpatiotemporalEvent": [
+        {
+          "@id": "m3gim:ste_NIM_007_9_51"
+        },
+        {
+          "@id": "m3gim:ste_NIM_007_9_52"
+        }
+      ],
       "m3gim:agentRelation": [
         {
           "@type": "agrelon:HasCorrespondent",
@@ -15510,9 +15552,14 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "m3gim:hasSpatiotemporalEvent": {
-        "@id": "m3gim:ste_NIM_007_10_43"
-      },
+      "m3gim:hasSpatiotemporalEvent": [
+        {
+          "@id": "m3gim:ste_NIM_007_10_53"
+        },
+        {
+          "@id": "m3gim:ste_NIM_007_10_54"
+        }
+      ],
       "m3gim:agentRelation": [
         {
           "@type": "agrelon:HasCorrespondent",
@@ -15615,7 +15662,7 @@
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
       "m3gim:hasSpatiotemporalEvent": {
-        "@id": "m3gim:ste_NIM_007_11_44"
+        "@id": "m3gim:ste_NIM_007_11_55"
       },
       "m3gim:agentRelation": [
         {
@@ -17145,7 +17192,7 @@
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
       "m3gim:hasSpatiotemporalEvent": {
-        "@id": "m3gim:ste_NIM_007_17_45"
+        "@id": "m3gim:ste_NIM_007_17_56"
       },
       "m3gim:hasPerformance": [
         {
@@ -17763,6 +17810,14 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 2 Seiten",
       "m3gim:bearbeitungsstand": "abgeschlossen",
+      "m3gim:hasSpatiotemporalEvent": [
+        {
+          "@id": "m3gim:ste_NIM_007_20_57"
+        },
+        {
+          "@id": "m3gim:ste_NIM_007_20_58"
+        }
+      ],
       "m3gim:hasAssociatedAgent": [
         {
           "name": "Deutsche Oper Berlin",
@@ -17830,6 +17885,14 @@
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 2 Seiten",
+      "m3gim:hasSpatiotemporalEvent": [
+        {
+          "@id": "m3gim:ste_NIM_007_21_59"
+        },
+        {
+          "@id": "m3gim:ste_NIM_007_21_60"
+        }
+      ],
       "m3gim:hasAssociatedAgent": [
         {
           "name": "Deutsche Oper Berlin",
@@ -21028,242 +21091,7 @@
       "skos:prefLabel": "Visitenkarte"
     },
     {
-      "@id": "m3gim:ste_NIM_004_3_1",
-      "@type": "m3gim:SpatiotemporalEvent",
-      "m3gim:atPlace": {
-        "name": "München",
-        "@id": "wd:Q1726",
-        "owl:sameAs": "http://www.wikidata.org/entity/Q1726",
-        "geo:lat": 48.1375,
-        "geo:long": 11.575,
-        "m3gim:country": "Deutschland"
-      },
-      "m3gim:atDate": "1952-12-17",
-      "agrelon:metadataProvenance": {
-        "@id": "m3gim:NIM_004_3"
-      },
-      "m3gim:eventRole": "erscheinungsdatum",
-      "m3gim:xlsxSource": {
-        "m3gim:xlsxSheet": "Verknuepfungen",
-        "m3gim:xlsxRow": 83
-      }
-    },
-    {
-      "@id": "m3gim:ste_NIM_004_8_2",
-      "@type": "m3gim:SpatiotemporalEvent",
-      "m3gim:atPlace": {
-        "name": "München",
-        "@id": "wd:Q1726",
-        "owl:sameAs": "http://www.wikidata.org/entity/Q1726",
-        "geo:lat": 48.1375,
-        "geo:long": 11.575,
-        "m3gim:country": "Deutschland"
-      },
-      "m3gim:atDate": "1953-03-06",
-      "agrelon:metadataProvenance": {
-        "@id": "m3gim:NIM_004_8"
-      },
-      "m3gim:eventRole": "erscheinungsdatum",
-      "m3gim:xlsxSource": {
-        "m3gim:xlsxSheet": "Verknuepfungen",
-        "m3gim:xlsxRow": 178
-      }
-    },
-    {
-      "@id": "m3gim:ste_NIM_004_12_3",
-      "@type": "m3gim:SpatiotemporalEvent",
-      "m3gim:atPlace": {
-        "name": "Stuttgart",
-        "@id": "wd:Q1022",
-        "owl:sameAs": "http://www.wikidata.org/entity/Q1022",
-        "geo:lat": 48.7775,
-        "geo:long": 9.18,
-        "m3gim:country": "Deutschland"
-      },
-      "m3gim:atDate": "1954-07-06",
-      "agrelon:metadataProvenance": {
-        "@id": "m3gim:NIM_004_12"
-      },
-      "m3gim:eventRole": "erscheinungsdatum",
-      "m3gim:xlsxSource": {
-        "m3gim:xlsxSheet": "Verknuepfungen",
-        "m3gim:xlsxRow": 320
-      }
-    },
-    {
-      "@id": "m3gim:ste_NIM_004_19_4",
-      "@type": "m3gim:SpatiotemporalEvent",
-      "m3gim:atPlace": {
-        "name": "Paris",
-        "@id": "wd:Q90",
-        "owl:sameAs": "http://www.wikidata.org/entity/Q90",
-        "geo:lat": 48.85666666666667,
-        "geo:long": 2.352222222222222,
-        "m3gim:country": "Frankreich"
-      },
-      "m3gim:atDate": "1956",
-      "agrelon:metadataProvenance": {
-        "@id": "m3gim:NIM_004_19"
-      },
-      "m3gim:eventRole": "aufführung",
-      "m3gim:xlsxSource": {
-        "m3gim:xlsxSheet": "Verknuepfungen",
-        "m3gim:xlsxRow": 515
-      }
-    },
-    {
-      "@id": "m3gim:ste_NIM_004_19_5",
-      "@type": "m3gim:SpatiotemporalEvent",
-      "m3gim:atPlace": {
-        "name": "Paris",
-        "@id": "wd:Q90",
-        "owl:sameAs": "http://www.wikidata.org/entity/Q90",
-        "geo:lat": 48.85666666666667,
-        "geo:long": 2.352222222222222,
-        "m3gim:country": "Frankreich"
-      },
-      "m3gim:atDate": "1955",
-      "agrelon:metadataProvenance": {
-        "@id": "m3gim:NIM_004_19"
-      },
-      "m3gim:eventRole": "aufführung",
-      "m3gim:xlsxSource": {
-        "m3gim:xlsxSheet": "Verknuepfungen",
-        "m3gim:xlsxRow": 516
-      }
-    },
-    {
-      "@id": "m3gim:ste_NIM_004_23_6",
-      "@type": "m3gim:SpatiotemporalEvent",
-      "m3gim:atPlace": {
-        "name": "Wien",
-        "@id": "wd:Q1741",
-        "owl:sameAs": "http://www.wikidata.org/entity/Q1741",
-        "geo:lat": 48.208333333333336,
-        "geo:long": 16.3725,
-        "m3gim:country": "Österreich"
-      },
-      "m3gim:atDate": "1957-11-26",
-      "agrelon:metadataProvenance": {
-        "@id": "m3gim:NIM_004_23"
-      },
-      "m3gim:eventRole": "entstehung",
-      "m3gim:xlsxSource": {
-        "m3gim:xlsxSheet": "Verknuepfungen",
-        "m3gim:xlsxRow": 543
-      }
-    },
-    {
-      "@id": "m3gim:ste_NIM_004_24_7",
-      "@type": "m3gim:SpatiotemporalEvent",
-      "m3gim:atPlace": {
-        "name": "Zürich",
-        "@id": "wd:Q72",
-        "owl:sameAs": "http://www.wikidata.org/entity/Q72",
-        "geo:lat": 47.37444444444444,
-        "geo:long": 8.54111111111111,
-        "m3gim:country": "Schweiz"
-      },
-      "m3gim:atDate": "1947/1952",
-      "agrelon:metadataProvenance": {
-        "@id": "m3gim:NIM_004_24"
-      },
-      "m3gim:eventRole": "spielzeit",
-      "rico:generalDescription": "Stadttheater Zürich",
-      "m3gim:xlsxSource": {
-        "m3gim:xlsxSheet": "Verknuepfungen",
-        "m3gim:xlsxRow": 574
-      }
-    },
-    {
-      "@id": "m3gim:ste_NIM_004_24_8",
-      "@type": "m3gim:SpatiotemporalEvent",
-      "m3gim:atPlace": {
-        "name": "München",
-        "@id": "wd:Q1726",
-        "owl:sameAs": "http://www.wikidata.org/entity/Q1726",
-        "geo:lat": 48.1375,
-        "geo:long": 11.575,
-        "m3gim:country": "Deutschland"
-      },
-      "m3gim:atDate": "1952/1957",
-      "agrelon:metadataProvenance": {
-        "@id": "m3gim:NIM_004_24"
-      },
-      "m3gim:eventRole": "spielzeit",
-      "rico:generalDescription": "Staatsoper München",
-      "m3gim:xlsxSource": {
-        "m3gim:xlsxSheet": "Verknuepfungen",
-        "m3gim:xlsxRow": 575
-      }
-    },
-    {
-      "@id": "m3gim:ste_NIM_004_24_9",
-      "@type": "m3gim:SpatiotemporalEvent",
-      "m3gim:atPlace": {
-        "name": "Wien",
-        "@id": "wd:Q1741",
-        "owl:sameAs": "http://www.wikidata.org/entity/Q1741",
-        "geo:lat": 48.208333333333336,
-        "geo:long": 16.3725,
-        "m3gim:country": "Österreich"
-      },
-      "m3gim:atDate": "nach:1956",
-      "agrelon:metadataProvenance": {
-        "@id": "m3gim:NIM_004_24"
-      },
-      "m3gim:eventRole": "spielzeit",
-      "rico:generalDescription": "Staatsoper Wien",
-      "m3gim:xlsxSource": {
-        "m3gim:xlsxSheet": "Verknuepfungen",
-        "m3gim:xlsxRow": 576
-      }
-    },
-    {
-      "@id": "m3gim:ste_NIM_004_24_10",
-      "@type": "m3gim:SpatiotemporalEvent",
-      "m3gim:atPlace": {
-        "name": "Bayreuth",
-        "@id": "wd:Q3923",
-        "owl:sameAs": "http://www.wikidata.org/entity/Q3923",
-        "geo:lat": 49.948055555556,
-        "geo:long": 11.578333333333,
-        "m3gim:country": "Deutschland"
-      },
-      "m3gim:atDate": "1951/1953",
-      "agrelon:metadataProvenance": {
-        "@id": "m3gim:NIM_004_24"
-      },
-      "m3gim:eventRole": "gastspiel",
-      "m3gim:xlsxSource": {
-        "m3gim:xlsxSheet": "Verknuepfungen",
-        "m3gim:xlsxRow": 577
-      }
-    },
-    {
-      "@id": "m3gim:ste_NIM_004_24_11",
-      "@type": "m3gim:SpatiotemporalEvent",
-      "m3gim:atPlace": {
-        "name": "Salzburg",
-        "@id": "wd:Q34713",
-        "owl:sameAs": "http://www.wikidata.org/entity/Q34713",
-        "geo:lat": 47.8,
-        "geo:long": 13.045,
-        "m3gim:country": "Österreich"
-      },
-      "m3gim:atDate": "1956",
-      "agrelon:metadataProvenance": {
-        "@id": "m3gim:NIM_004_24"
-      },
-      "m3gim:eventRole": "gastspiel",
-      "rico:generalDescription": "Festspiel",
-      "m3gim:xlsxSource": {
-        "m3gim:xlsxSheet": "Verknuepfungen",
-        "m3gim:xlsxRow": 578
-      }
-    },
-    {
-      "@id": "m3gim:ste_NIM_004_27_12",
+      "@id": "m3gim:ste_NIM_004_1_1",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "New York",
@@ -21273,40 +21101,32 @@
         "geo:long": -75,
         "m3gim:country": "Vereinigte Staaten"
       },
-      "m3gim:atDate": "1959-10-27",
       "agrelon:metadataProvenance": {
-        "@id": "m3gim:NIM_004_27"
+        "@id": "m3gim:NIM_004_1"
       },
-      "m3gim:eventRole": "entstehung",
+      "m3gim:eventRole": "absendeort",
       "m3gim:xlsxSource": {
         "m3gim:xlsxSheet": "Verknuepfungen",
-        "m3gim:xlsxRow": 627
+        "m3gim:xlsxRow": 39
       }
     },
     {
-      "@id": "m3gim:ste_NIM_004_29_13",
+      "@id": "m3gim:ste_NIM_004_1_2",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
-        "name": "Zürich",
-        "@id": "wd:Q72",
-        "owl:sameAs": "http://www.wikidata.org/entity/Q72",
-        "geo:lat": 47.37444444444444,
-        "geo:long": 8.54111111111111,
-        "m3gim:country": "Schweiz"
+        "name": "Zürich, Zürichbergstrasse 104"
       },
-      "m3gim:atDate": "1947/1952",
       "agrelon:metadataProvenance": {
-        "@id": "m3gim:NIM_004_29"
+        "@id": "m3gim:NIM_004_1"
       },
-      "m3gim:eventRole": "spielzeit",
-      "rico:generalDescription": "Stadttheater Zürich",
+      "m3gim:eventRole": "zielort",
       "m3gim:xlsxSource": {
         "m3gim:xlsxSheet": "Verknuepfungen",
-        "m3gim:xlsxRow": 680
+        "m3gim:xlsxRow": 40
       }
     },
     {
-      "@id": "m3gim:ste_NIM_004_29_14",
+      "@id": "m3gim:ste_NIM_004_3_3",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "München",
@@ -21316,19 +21136,102 @@
         "geo:long": 11.575,
         "m3gim:country": "Deutschland"
       },
-      "m3gim:atDate": "1952/1957",
       "agrelon:metadataProvenance": {
-        "@id": "m3gim:NIM_004_29"
+        "@id": "m3gim:NIM_004_3"
       },
-      "m3gim:eventRole": "spielzeit",
-      "rico:generalDescription": "Staatsoper München",
+      "m3gim:atDate": "1952-12-17",
+      "m3gim:eventRole": "erscheinungsdatum",
       "m3gim:xlsxSource": {
         "m3gim:xlsxSheet": "Verknuepfungen",
-        "m3gim:xlsxRow": 681
+        "m3gim:xlsxRow": 83
       }
     },
     {
-      "@id": "m3gim:ste_NIM_004_29_15",
+      "@id": "m3gim:ste_NIM_004_8_4",
+      "@type": "m3gim:SpatiotemporalEvent",
+      "m3gim:atPlace": {
+        "name": "München",
+        "@id": "wd:Q1726",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q1726",
+        "geo:lat": 48.1375,
+        "geo:long": 11.575,
+        "m3gim:country": "Deutschland"
+      },
+      "agrelon:metadataProvenance": {
+        "@id": "m3gim:NIM_004_8"
+      },
+      "m3gim:atDate": "1953-03-06",
+      "m3gim:eventRole": "erscheinungsdatum",
+      "m3gim:xlsxSource": {
+        "m3gim:xlsxSheet": "Verknuepfungen",
+        "m3gim:xlsxRow": 178
+      }
+    },
+    {
+      "@id": "m3gim:ste_NIM_004_12_5",
+      "@type": "m3gim:SpatiotemporalEvent",
+      "m3gim:atPlace": {
+        "name": "Stuttgart",
+        "@id": "wd:Q1022",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q1022",
+        "geo:lat": 48.7775,
+        "geo:long": 9.18,
+        "m3gim:country": "Deutschland"
+      },
+      "agrelon:metadataProvenance": {
+        "@id": "m3gim:NIM_004_12"
+      },
+      "m3gim:atDate": "1954-07-06",
+      "m3gim:eventRole": "erscheinungsdatum",
+      "m3gim:xlsxSource": {
+        "m3gim:xlsxSheet": "Verknuepfungen",
+        "m3gim:xlsxRow": 320
+      }
+    },
+    {
+      "@id": "m3gim:ste_NIM_004_19_6",
+      "@type": "m3gim:SpatiotemporalEvent",
+      "m3gim:atPlace": {
+        "name": "Paris",
+        "@id": "wd:Q90",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q90",
+        "geo:lat": 48.85666666666667,
+        "geo:long": 2.352222222222222,
+        "m3gim:country": "Frankreich"
+      },
+      "agrelon:metadataProvenance": {
+        "@id": "m3gim:NIM_004_19"
+      },
+      "m3gim:atDate": "1956",
+      "m3gim:eventRole": "aufführung",
+      "m3gim:xlsxSource": {
+        "m3gim:xlsxSheet": "Verknuepfungen",
+        "m3gim:xlsxRow": 515
+      }
+    },
+    {
+      "@id": "m3gim:ste_NIM_004_19_7",
+      "@type": "m3gim:SpatiotemporalEvent",
+      "m3gim:atPlace": {
+        "name": "Paris",
+        "@id": "wd:Q90",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q90",
+        "geo:lat": 48.85666666666667,
+        "geo:long": 2.352222222222222,
+        "m3gim:country": "Frankreich"
+      },
+      "agrelon:metadataProvenance": {
+        "@id": "m3gim:NIM_004_19"
+      },
+      "m3gim:atDate": "1955",
+      "m3gim:eventRole": "aufführung",
+      "m3gim:xlsxSource": {
+        "m3gim:xlsxSheet": "Verknuepfungen",
+        "m3gim:xlsxRow": 516
+      }
+    },
+    {
+      "@id": "m3gim:ste_NIM_004_23_8",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Wien",
@@ -21338,19 +21241,104 @@
         "geo:long": 16.3725,
         "m3gim:country": "Österreich"
       },
-      "m3gim:atDate": "nach:1956",
       "agrelon:metadataProvenance": {
-        "@id": "m3gim:NIM_004_29"
+        "@id": "m3gim:NIM_004_23"
       },
+      "m3gim:atDate": "1957-11-26",
+      "m3gim:eventRole": "entstehung",
+      "m3gim:xlsxSource": {
+        "m3gim:xlsxSheet": "Verknuepfungen",
+        "m3gim:xlsxRow": 543
+      }
+    },
+    {
+      "@id": "m3gim:ste_NIM_004_23_9",
+      "@type": "m3gim:SpatiotemporalEvent",
+      "m3gim:atPlace": {
+        "name": "New York",
+        "@id": "wd:Q1384",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q1384",
+        "geo:lat": 43,
+        "geo:long": -75,
+        "m3gim:country": "Vereinigte Staaten"
+      },
+      "agrelon:metadataProvenance": {
+        "@id": "m3gim:NIM_004_23"
+      },
+      "m3gim:eventRole": "zielort",
+      "m3gim:xlsxSource": {
+        "m3gim:xlsxSheet": "Verknuepfungen",
+        "m3gim:xlsxRow": 544
+      }
+    },
+    {
+      "@id": "m3gim:ste_NIM_004_24_10",
+      "@type": "m3gim:SpatiotemporalEvent",
+      "m3gim:atPlace": {
+        "name": "Zürich",
+        "@id": "wd:Q72",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q72",
+        "geo:lat": 47.37444444444444,
+        "geo:long": 8.54111111111111,
+        "m3gim:country": "Schweiz"
+      },
+      "agrelon:metadataProvenance": {
+        "@id": "m3gim:NIM_004_24"
+      },
+      "m3gim:atDate": "1947/1952",
+      "m3gim:eventRole": "spielzeit",
+      "rico:generalDescription": "Stadttheater Zürich",
+      "m3gim:xlsxSource": {
+        "m3gim:xlsxSheet": "Verknuepfungen",
+        "m3gim:xlsxRow": 574
+      }
+    },
+    {
+      "@id": "m3gim:ste_NIM_004_24_11",
+      "@type": "m3gim:SpatiotemporalEvent",
+      "m3gim:atPlace": {
+        "name": "München",
+        "@id": "wd:Q1726",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q1726",
+        "geo:lat": 48.1375,
+        "geo:long": 11.575,
+        "m3gim:country": "Deutschland"
+      },
+      "agrelon:metadataProvenance": {
+        "@id": "m3gim:NIM_004_24"
+      },
+      "m3gim:atDate": "1952/1957",
+      "m3gim:eventRole": "spielzeit",
+      "rico:generalDescription": "Staatsoper München",
+      "m3gim:xlsxSource": {
+        "m3gim:xlsxSheet": "Verknuepfungen",
+        "m3gim:xlsxRow": 575
+      }
+    },
+    {
+      "@id": "m3gim:ste_NIM_004_24_12",
+      "@type": "m3gim:SpatiotemporalEvent",
+      "m3gim:atPlace": {
+        "name": "Wien",
+        "@id": "wd:Q1741",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q1741",
+        "geo:lat": 48.208333333333336,
+        "geo:long": 16.3725,
+        "m3gim:country": "Österreich"
+      },
+      "agrelon:metadataProvenance": {
+        "@id": "m3gim:NIM_004_24"
+      },
+      "m3gim:atDate": "nach:1956",
       "m3gim:eventRole": "spielzeit",
       "rico:generalDescription": "Staatsoper Wien",
       "m3gim:xlsxSource": {
         "m3gim:xlsxSheet": "Verknuepfungen",
-        "m3gim:xlsxRow": 682
+        "m3gim:xlsxRow": 576
       }
     },
     {
-      "@id": "m3gim:ste_NIM_004_29_16",
+      "@id": "m3gim:ste_NIM_004_24_13",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Bayreuth",
@@ -21360,18 +21348,18 @@
         "geo:long": 11.578333333333,
         "m3gim:country": "Deutschland"
       },
-      "m3gim:atDate": "1951/1953",
       "agrelon:metadataProvenance": {
-        "@id": "m3gim:NIM_004_29"
+        "@id": "m3gim:NIM_004_24"
       },
+      "m3gim:atDate": "1951/1953",
       "m3gim:eventRole": "gastspiel",
       "m3gim:xlsxSource": {
         "m3gim:xlsxSheet": "Verknuepfungen",
-        "m3gim:xlsxRow": 683
+        "m3gim:xlsxRow": 577
       }
     },
     {
-      "@id": "m3gim:ste_NIM_004_29_17",
+      "@id": "m3gim:ste_NIM_004_24_14",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Salzburg",
@@ -21381,10 +21369,155 @@
         "geo:long": 13.045,
         "m3gim:country": "Österreich"
       },
+      "agrelon:metadataProvenance": {
+        "@id": "m3gim:NIM_004_24"
+      },
       "m3gim:atDate": "1956",
+      "m3gim:eventRole": "gastspiel",
+      "rico:generalDescription": "Festspiel",
+      "m3gim:xlsxSource": {
+        "m3gim:xlsxSheet": "Verknuepfungen",
+        "m3gim:xlsxRow": 578
+      }
+    },
+    {
+      "@id": "m3gim:ste_NIM_004_27_15",
+      "@type": "m3gim:SpatiotemporalEvent",
+      "m3gim:atPlace": {
+        "name": "New York",
+        "@id": "wd:Q1384",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q1384",
+        "geo:lat": 43,
+        "geo:long": -75,
+        "m3gim:country": "Vereinigte Staaten"
+      },
+      "agrelon:metadataProvenance": {
+        "@id": "m3gim:NIM_004_27"
+      },
+      "m3gim:atDate": "1959-10-27",
+      "m3gim:eventRole": "entstehung",
+      "m3gim:xlsxSource": {
+        "m3gim:xlsxSheet": "Verknuepfungen",
+        "m3gim:xlsxRow": 627
+      }
+    },
+    {
+      "@id": "m3gim:ste_NIM_004_27_16",
+      "@type": "m3gim:SpatiotemporalEvent",
+      "m3gim:atPlace": {
+        "name": "Zürich, Zurichbergstrasse 104"
+      },
+      "agrelon:metadataProvenance": {
+        "@id": "m3gim:NIM_004_27"
+      },
+      "m3gim:eventRole": "zielort",
+      "m3gim:xlsxSource": {
+        "m3gim:xlsxSheet": "Verknuepfungen",
+        "m3gim:xlsxRow": 628
+      }
+    },
+    {
+      "@id": "m3gim:ste_NIM_004_29_17",
+      "@type": "m3gim:SpatiotemporalEvent",
+      "m3gim:atPlace": {
+        "name": "Zürich",
+        "@id": "wd:Q72",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q72",
+        "geo:lat": 47.37444444444444,
+        "geo:long": 8.54111111111111,
+        "m3gim:country": "Schweiz"
+      },
       "agrelon:metadataProvenance": {
         "@id": "m3gim:NIM_004_29"
       },
+      "m3gim:atDate": "1947/1952",
+      "m3gim:eventRole": "spielzeit",
+      "rico:generalDescription": "Stadttheater Zürich",
+      "m3gim:xlsxSource": {
+        "m3gim:xlsxSheet": "Verknuepfungen",
+        "m3gim:xlsxRow": 680
+      }
+    },
+    {
+      "@id": "m3gim:ste_NIM_004_29_18",
+      "@type": "m3gim:SpatiotemporalEvent",
+      "m3gim:atPlace": {
+        "name": "München",
+        "@id": "wd:Q1726",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q1726",
+        "geo:lat": 48.1375,
+        "geo:long": 11.575,
+        "m3gim:country": "Deutschland"
+      },
+      "agrelon:metadataProvenance": {
+        "@id": "m3gim:NIM_004_29"
+      },
+      "m3gim:atDate": "1952/1957",
+      "m3gim:eventRole": "spielzeit",
+      "rico:generalDescription": "Staatsoper München",
+      "m3gim:xlsxSource": {
+        "m3gim:xlsxSheet": "Verknuepfungen",
+        "m3gim:xlsxRow": 681
+      }
+    },
+    {
+      "@id": "m3gim:ste_NIM_004_29_19",
+      "@type": "m3gim:SpatiotemporalEvent",
+      "m3gim:atPlace": {
+        "name": "Wien",
+        "@id": "wd:Q1741",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q1741",
+        "geo:lat": 48.208333333333336,
+        "geo:long": 16.3725,
+        "m3gim:country": "Österreich"
+      },
+      "agrelon:metadataProvenance": {
+        "@id": "m3gim:NIM_004_29"
+      },
+      "m3gim:atDate": "nach:1956",
+      "m3gim:eventRole": "spielzeit",
+      "rico:generalDescription": "Staatsoper Wien",
+      "m3gim:xlsxSource": {
+        "m3gim:xlsxSheet": "Verknuepfungen",
+        "m3gim:xlsxRow": 682
+      }
+    },
+    {
+      "@id": "m3gim:ste_NIM_004_29_20",
+      "@type": "m3gim:SpatiotemporalEvent",
+      "m3gim:atPlace": {
+        "name": "Bayreuth",
+        "@id": "wd:Q3923",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q3923",
+        "geo:lat": 49.948055555556,
+        "geo:long": 11.578333333333,
+        "m3gim:country": "Deutschland"
+      },
+      "agrelon:metadataProvenance": {
+        "@id": "m3gim:NIM_004_29"
+      },
+      "m3gim:atDate": "1951/1953",
+      "m3gim:eventRole": "gastspiel",
+      "m3gim:xlsxSource": {
+        "m3gim:xlsxSheet": "Verknuepfungen",
+        "m3gim:xlsxRow": 683
+      }
+    },
+    {
+      "@id": "m3gim:ste_NIM_004_29_21",
+      "@type": "m3gim:SpatiotemporalEvent",
+      "m3gim:atPlace": {
+        "name": "Salzburg",
+        "@id": "wd:Q34713",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q34713",
+        "geo:lat": 47.8,
+        "geo:long": 13.045,
+        "m3gim:country": "Österreich"
+      },
+      "agrelon:metadataProvenance": {
+        "@id": "m3gim:NIM_004_29"
+      },
+      "m3gim:atDate": "1956",
       "m3gim:eventRole": "gastspiel",
       "rico:generalDescription": "Festspiel",
       "m3gim:xlsxSource": {
@@ -21393,7 +21526,37 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_2_18",
+      "@id": "m3gim:ste_NIM_007_1_22",
+      "@type": "m3gim:SpatiotemporalEvent",
+      "m3gim:atPlace": {
+        "name": "Zürich, Geibelstrasse 1/1"
+      },
+      "agrelon:metadataProvenance": {
+        "@id": "m3gim:NIM_007_1"
+      },
+      "m3gim:eventRole": "zielort",
+      "m3gim:xlsxSource": {
+        "m3gim:xlsxSheet": "Verknuepfungen",
+        "m3gim:xlsxRow": 923
+      }
+    },
+    {
+      "@id": "m3gim:ste_NIM_007_2_23",
+      "@type": "m3gim:SpatiotemporalEvent",
+      "m3gim:atPlace": {
+        "name": "Zürich, Geibelstrasse 1/1"
+      },
+      "agrelon:metadataProvenance": {
+        "@id": "m3gim:NIM_007_2"
+      },
+      "m3gim:eventRole": "zielort",
+      "m3gim:xlsxSource": {
+        "m3gim:xlsxSheet": "Verknuepfungen",
+        "m3gim:xlsxRow": 936
+      }
+    },
+    {
+      "@id": "m3gim:ste_NIM_007_2_24",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Bayreuth",
@@ -21403,10 +21566,10 @@
         "geo:long": 11.578333333333,
         "m3gim:country": "Deutschland"
       },
-      "m3gim:atDate": "1952-08-26",
       "agrelon:metadataProvenance": {
         "@id": "m3gim:NIM_007_2"
       },
+      "m3gim:atDate": "1952-08-26",
       "m3gim:eventRole": "erwähnt",
       "m3gim:xlsxSource": {
         "m3gim:xlsxSheet": "Verknuepfungen",
@@ -21414,7 +21577,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_3_19",
+      "@id": "m3gim:ste_NIM_007_3_25",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Bayreuth",
@@ -21424,10 +21587,10 @@
         "geo:long": 11.578333333333,
         "m3gim:country": "Deutschland"
       },
-      "m3gim:atDate": "1953-07-06",
       "agrelon:metadataProvenance": {
         "@id": "m3gim:NIM_007_3"
       },
+      "m3gim:atDate": "1953-07-06",
       "m3gim:eventRole": "ausstellungsdatum",
       "m3gim:xlsxSource": {
         "m3gim:xlsxSheet": "Verknuepfungen",
@@ -21435,7 +21598,27 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_4_20",
+      "@id": "m3gim:ste_NIM_007_4_26",
+      "@type": "m3gim:SpatiotemporalEvent",
+      "m3gim:atPlace": {
+        "name": "Wien",
+        "@id": "wd:Q1741",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q1741",
+        "geo:lat": 48.208333333333336,
+        "geo:long": 16.3725,
+        "m3gim:country": "Österreich"
+      },
+      "agrelon:metadataProvenance": {
+        "@id": "m3gim:NIM_007_4"
+      },
+      "m3gim:eventRole": "zielort",
+      "m3gim:xlsxSource": {
+        "m3gim:xlsxSheet": "Verknuepfungen",
+        "m3gim:xlsxRow": 972
+      }
+    },
+    {
+      "@id": "m3gim:ste_NIM_007_4_27",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Lissabon",
@@ -21445,10 +21628,50 @@
         "geo:long": -9.139016,
         "m3gim:country": "Portugal"
       },
-      "m3gim:atDate": "1954",
       "agrelon:metadataProvenance": {
         "@id": "m3gim:NIM_007_4"
       },
+      "m3gim:eventRole": "zielort",
+      "m3gim:xlsxSource": {
+        "m3gim:xlsxSheet": "Verknuepfungen",
+        "m3gim:xlsxRow": 974
+      }
+    },
+    {
+      "@id": "m3gim:ste_NIM_007_4_28",
+      "@type": "m3gim:SpatiotemporalEvent",
+      "m3gim:atPlace": {
+        "name": "München",
+        "@id": "wd:Q1726",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q1726",
+        "geo:lat": 48.1375,
+        "geo:long": 11.575,
+        "m3gim:country": "Deutschland"
+      },
+      "agrelon:metadataProvenance": {
+        "@id": "m3gim:NIM_007_4"
+      },
+      "m3gim:eventRole": "abreiseort",
+      "m3gim:xlsxSource": {
+        "m3gim:xlsxSheet": "Verknuepfungen",
+        "m3gim:xlsxRow": 975
+      }
+    },
+    {
+      "@id": "m3gim:ste_NIM_007_4_29",
+      "@type": "m3gim:SpatiotemporalEvent",
+      "m3gim:atPlace": {
+        "name": "Lissabon",
+        "@id": "wd:Q597",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q597",
+        "geo:lat": 38.708042,
+        "geo:long": -9.139016,
+        "m3gim:country": "Portugal"
+      },
+      "agrelon:metadataProvenance": {
+        "@id": "m3gim:NIM_007_4"
+      },
+      "m3gim:atDate": "1954",
       "m3gim:eventRole": "gastspiel",
       "rico:generalDescription": "@ Pollin: Hier war der Wunsch, Gastspiel + Ort + Zeit zusammenzubringen.",
       "m3gim:xlsxSource": {
@@ -21457,7 +21680,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_5_2_21",
+      "@id": "m3gim:ste_NIM_007_5_2_30",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Wien",
@@ -21467,10 +21690,10 @@
         "geo:long": 16.3725,
         "m3gim:country": "Österreich"
       },
-      "m3gim:atDate": "1957-01-04",
       "agrelon:metadataProvenance": {
         "@id": "m3gim:NIM_007_5_2"
       },
+      "m3gim:atDate": "1957-01-04",
       "m3gim:eventRole": "gastspiel",
       "m3gim:xlsxSource": {
         "m3gim:xlsxSheet": "Verknuepfungen",
@@ -21478,7 +21701,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_5_2_22",
+      "@id": "m3gim:ste_NIM_007_5_2_31",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Wien",
@@ -21488,10 +21711,10 @@
         "geo:long": 16.3725,
         "m3gim:country": "Österreich"
       },
-      "m3gim:atDate": "1957-04-20",
       "agrelon:metadataProvenance": {
         "@id": "m3gim:NIM_007_5_2"
       },
+      "m3gim:atDate": "1957-04-20",
       "m3gim:eventRole": "gastspiel",
       "m3gim:xlsxSource": {
         "m3gim:xlsxSheet": "Verknuepfungen",
@@ -21499,7 +21722,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_5_2_23",
+      "@id": "m3gim:ste_NIM_007_5_2_32",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Wien",
@@ -21509,10 +21732,10 @@
         "geo:long": 16.3725,
         "m3gim:country": "Österreich"
       },
-      "m3gim:atDate": "1957-04-25",
       "agrelon:metadataProvenance": {
         "@id": "m3gim:NIM_007_5_2"
       },
+      "m3gim:atDate": "1957-04-25",
       "m3gim:eventRole": "gastspiel",
       "m3gim:xlsxSource": {
         "m3gim:xlsxSheet": "Verknuepfungen",
@@ -21520,7 +21743,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_5_2_24",
+      "@id": "m3gim:ste_NIM_007_5_2_33",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Wien",
@@ -21530,10 +21753,10 @@
         "geo:long": 16.3725,
         "m3gim:country": "Österreich"
       },
-      "m3gim:atDate": "1957-05-01",
       "agrelon:metadataProvenance": {
         "@id": "m3gim:NIM_007_5_2"
       },
+      "m3gim:atDate": "1957-05-01",
       "m3gim:eventRole": "gastspiel",
       "m3gim:xlsxSource": {
         "m3gim:xlsxSheet": "Verknuepfungen",
@@ -21541,7 +21764,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_5_2_25",
+      "@id": "m3gim:ste_NIM_007_5_2_34",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Stuttgart",
@@ -21551,10 +21774,10 @@
         "geo:long": 9.18,
         "m3gim:country": "Deutschland"
       },
-      "m3gim:atDate": "1957-04-28",
       "agrelon:metadataProvenance": {
         "@id": "m3gim:NIM_007_5_2"
       },
+      "m3gim:atDate": "1957-04-28",
       "m3gim:eventRole": "gastspiel",
       "m3gim:xlsxSource": {
         "m3gim:xlsxSheet": "Verknuepfungen",
@@ -21562,7 +21785,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_5_3_26",
+      "@id": "m3gim:ste_NIM_007_5_3_35",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Stuttgart",
@@ -21572,10 +21795,10 @@
         "geo:long": 9.18,
         "m3gim:country": "Deutschland"
       },
-      "m3gim:atDate": "1957-06-07",
       "agrelon:metadataProvenance": {
         "@id": "m3gim:NIM_007_5_3"
       },
+      "m3gim:atDate": "1957-06-07",
       "m3gim:eventRole": "gastspiel",
       "m3gim:xlsxSource": {
         "m3gim:xlsxSheet": "Verknuepfungen",
@@ -21583,7 +21806,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_5_4_27",
+      "@id": "m3gim:ste_NIM_007_5_4_36",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Wien",
@@ -21593,10 +21816,10 @@
         "geo:long": 16.3725,
         "m3gim:country": "Österreich"
       },
-      "m3gim:atDate": "1957-06-04",
       "agrelon:metadataProvenance": {
         "@id": "m3gim:NIM_007_5_4"
       },
+      "m3gim:atDate": "1957-06-04",
       "m3gim:eventRole": "gastspiel",
       "m3gim:xlsxSource": {
         "m3gim:xlsxSheet": "Verknuepfungen",
@@ -21604,7 +21827,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_5_4_28",
+      "@id": "m3gim:ste_NIM_007_5_4_37",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Wien",
@@ -21614,10 +21837,10 @@
         "geo:long": 16.3725,
         "m3gim:country": "Österreich"
       },
-      "m3gim:atDate": "1957-06-12",
       "agrelon:metadataProvenance": {
         "@id": "m3gim:NIM_007_5_4"
       },
+      "m3gim:atDate": "1957-06-12",
       "m3gim:eventRole": "gastspiel",
       "m3gim:xlsxSource": {
         "m3gim:xlsxSheet": "Verknuepfungen",
@@ -21625,7 +21848,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_5_4_29",
+      "@id": "m3gim:ste_NIM_007_5_4_38",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Wien",
@@ -21635,10 +21858,10 @@
         "geo:long": 16.3725,
         "m3gim:country": "Österreich"
       },
-      "m3gim:atDate": "1957-06-21",
       "agrelon:metadataProvenance": {
         "@id": "m3gim:NIM_007_5_4"
       },
+      "m3gim:atDate": "1957-06-21",
       "m3gim:eventRole": "gastspiel",
       "m3gim:xlsxSource": {
         "m3gim:xlsxSheet": "Verknuepfungen",
@@ -21646,7 +21869,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_5_4_30",
+      "@id": "m3gim:ste_NIM_007_5_4_39",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Wien",
@@ -21656,10 +21879,10 @@
         "geo:long": 16.3725,
         "m3gim:country": "Österreich"
       },
-      "m3gim:atDate": "1957-06-23",
       "agrelon:metadataProvenance": {
         "@id": "m3gim:NIM_007_5_4"
       },
+      "m3gim:atDate": "1957-06-23",
       "m3gim:eventRole": "gastspiel",
       "m3gim:xlsxSource": {
         "m3gim:xlsxSheet": "Verknuepfungen",
@@ -21667,7 +21890,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_5_4_31",
+      "@id": "m3gim:ste_NIM_007_5_4_40",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Wien",
@@ -21677,10 +21900,10 @@
         "geo:long": 16.3725,
         "m3gim:country": "Österreich"
       },
-      "m3gim:atDate": "1957-06-30",
       "agrelon:metadataProvenance": {
         "@id": "m3gim:NIM_007_5_4"
       },
+      "m3gim:atDate": "1957-06-30",
       "m3gim:eventRole": "gastspiel",
       "m3gim:xlsxSource": {
         "m3gim:xlsxSheet": "Verknuepfungen",
@@ -21688,7 +21911,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_5_5_32",
+      "@id": "m3gim:ste_NIM_007_5_5_41",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Wien",
@@ -21698,10 +21921,10 @@
         "geo:long": 16.3725,
         "m3gim:country": "Österreich"
       },
-      "m3gim:atDate": "1957-09",
       "agrelon:metadataProvenance": {
         "@id": "m3gim:NIM_007_5_5"
       },
+      "m3gim:atDate": "1957-09",
       "m3gim:eventRole": "gastspiel",
       "m3gim:xlsxSource": {
         "m3gim:xlsxSheet": "Verknuepfungen",
@@ -21709,7 +21932,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_5_5_33",
+      "@id": "m3gim:ste_NIM_007_5_5_42",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Wien",
@@ -21719,10 +21942,10 @@
         "geo:long": 16.3725,
         "m3gim:country": "Österreich"
       },
-      "m3gim:atDate": "1957-10",
       "agrelon:metadataProvenance": {
         "@id": "m3gim:NIM_007_5_5"
       },
+      "m3gim:atDate": "1957-10",
       "m3gim:eventRole": "gastspiel",
       "m3gim:xlsxSource": {
         "m3gim:xlsxSheet": "Verknuepfungen",
@@ -21730,7 +21953,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_5_6_34",
+      "@id": "m3gim:ste_NIM_007_5_6_43",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Berlin",
@@ -21740,10 +21963,10 @@
         "geo:long": 13.383333333333,
         "m3gim:country": "Deutschland"
       },
-      "m3gim:atDate": "1957-11-10",
       "agrelon:metadataProvenance": {
         "@id": "m3gim:NIM_007_5_6"
       },
+      "m3gim:atDate": "1957-11-10",
       "m3gim:eventRole": "gastspiel",
       "m3gim:xlsxSource": {
         "m3gim:xlsxSheet": "Verknuepfungen",
@@ -21751,7 +21974,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_5_6_35",
+      "@id": "m3gim:ste_NIM_007_5_6_44",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Berlin",
@@ -21761,10 +21984,10 @@
         "geo:long": 13.383333333333,
         "m3gim:country": "Deutschland"
       },
-      "m3gim:atDate": "1957-11-11",
       "agrelon:metadataProvenance": {
         "@id": "m3gim:NIM_007_5_6"
       },
+      "m3gim:atDate": "1957-11-11",
       "m3gim:eventRole": "gastspiel",
       "m3gim:xlsxSource": {
         "m3gim:xlsxSheet": "Verknuepfungen",
@@ -21772,7 +21995,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_5_7_36",
+      "@id": "m3gim:ste_NIM_007_5_7_45",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Wien",
@@ -21782,10 +22005,10 @@
         "geo:long": 16.3725,
         "m3gim:country": "Österreich"
       },
-      "m3gim:atDate": "1957-11",
       "agrelon:metadataProvenance": {
         "@id": "m3gim:NIM_007_5_7"
       },
+      "m3gim:atDate": "1957-11",
       "m3gim:eventRole": "gastspiel",
       "m3gim:xlsxSource": {
         "m3gim:xlsxSheet": "Verknuepfungen",
@@ -21793,7 +22016,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_5_7_37",
+      "@id": "m3gim:ste_NIM_007_5_7_46",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Wien",
@@ -21803,10 +22026,10 @@
         "geo:long": 16.3725,
         "m3gim:country": "Österreich"
       },
-      "m3gim:atDate": "1957-12",
       "agrelon:metadataProvenance": {
         "@id": "m3gim:NIM_007_5_7"
       },
+      "m3gim:atDate": "1957-12",
       "m3gim:eventRole": "gastspiel",
       "m3gim:xlsxSource": {
         "m3gim:xlsxSheet": "Verknuepfungen",
@@ -21814,7 +22037,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_5_8_38",
+      "@id": "m3gim:ste_NIM_007_5_8_47",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Zürich",
@@ -21824,10 +22047,10 @@
         "geo:long": 8.54111111111111,
         "m3gim:country": "Schweiz"
       },
-      "m3gim:atDate": "1957-05-15",
       "agrelon:metadataProvenance": {
         "@id": "m3gim:NIM_007_5_8"
       },
+      "m3gim:atDate": "1957-05-15",
       "m3gim:eventRole": "entstehung",
       "m3gim:xlsxSource": {
         "m3gim:xlsxSheet": "Verknuepfungen",
@@ -21835,7 +22058,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_5_8_39",
+      "@id": "m3gim:ste_NIM_007_5_8_48",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Zürich",
@@ -21845,10 +22068,10 @@
         "geo:long": 8.54111111111111,
         "m3gim:country": "Schweiz"
       },
-      "m3gim:atDate": "1957-05-14",
       "agrelon:metadataProvenance": {
         "@id": "m3gim:NIM_007_5_8"
       },
+      "m3gim:atDate": "1957-05-14",
       "m3gim:eventRole": "auftrag",
       "m3gim:xlsxSource": {
         "m3gim:xlsxSheet": "Verknuepfungen",
@@ -21856,7 +22079,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_6_40",
+      "@id": "m3gim:ste_NIM_007_6_49",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Köln",
@@ -21866,10 +22089,10 @@
         "geo:long": 6.9577777777778,
         "m3gim:country": "Deutschland"
       },
-      "m3gim:atDate": "1959-05-09",
       "agrelon:metadataProvenance": {
         "@id": "m3gim:NIM_007_6"
       },
+      "m3gim:atDate": "1959-05-09",
       "m3gim:eventRole": "erwähnt",
       "m3gim:xlsxSource": {
         "m3gim:xlsxSheet": "Verknuepfungen",
@@ -21877,7 +22100,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_7_41",
+      "@id": "m3gim:ste_NIM_007_7_50",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "München",
@@ -21887,10 +22110,10 @@
         "geo:long": 11.575,
         "m3gim:country": "Deutschland"
       },
-      "m3gim:atDate": "1961-11-21",
       "agrelon:metadataProvenance": {
         "@id": "m3gim:NIM_007_7"
       },
+      "m3gim:atDate": "1961-11-21",
       "m3gim:eventRole": "entstehung",
       "m3gim:xlsxSource": {
         "m3gim:xlsxSheet": "Verknuepfungen",
@@ -21898,7 +22121,22 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_9_42",
+      "@id": "m3gim:ste_NIM_007_9_51",
+      "@type": "m3gim:SpatiotemporalEvent",
+      "m3gim:atPlace": {
+        "name": "Zürich, Zürichbergstrasse 104"
+      },
+      "agrelon:metadataProvenance": {
+        "@id": "m3gim:NIM_007_9"
+      },
+      "m3gim:eventRole": "zielort",
+      "m3gim:xlsxSource": {
+        "m3gim:xlsxSheet": "Verknuepfungen",
+        "m3gim:xlsxRow": 1058
+      }
+    },
+    {
+      "@id": "m3gim:ste_NIM_007_9_52",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Zürich",
@@ -21908,10 +22146,10 @@
         "geo:long": 8.54111111111111,
         "m3gim:country": "Schweiz"
       },
-      "m3gim:atDate": "1963-03-08",
       "agrelon:metadataProvenance": {
         "@id": "m3gim:NIM_007_9"
       },
+      "m3gim:atDate": "1963-03-08",
       "m3gim:eventRole": "entstehung",
       "m3gim:xlsxSource": {
         "m3gim:xlsxSheet": "Verknuepfungen",
@@ -21919,7 +22157,22 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_10_43",
+      "@id": "m3gim:ste_NIM_007_10_53",
+      "@type": "m3gim:SpatiotemporalEvent",
+      "m3gim:atPlace": {
+        "name": "Zürich, Zürichbergstrasse 104"
+      },
+      "agrelon:metadataProvenance": {
+        "@id": "m3gim:NIM_007_10"
+      },
+      "m3gim:eventRole": "zielort",
+      "m3gim:xlsxSource": {
+        "m3gim:xlsxSheet": "Verknuepfungen",
+        "m3gim:xlsxRow": 1070
+      }
+    },
+    {
+      "@id": "m3gim:ste_NIM_007_10_54",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "München",
@@ -21929,10 +22182,10 @@
         "geo:long": 11.575,
         "m3gim:country": "Deutschland"
       },
-      "m3gim:atDate": "1964-08-18",
       "agrelon:metadataProvenance": {
         "@id": "m3gim:NIM_007_10"
       },
+      "m3gim:atDate": "1964-08-18",
       "m3gim:eventRole": "absendedatum",
       "m3gim:xlsxSource": {
         "m3gim:xlsxSheet": "Verknuepfungen",
@@ -21940,7 +22193,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_11_44",
+      "@id": "m3gim:ste_NIM_007_11_55",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Zürich",
@@ -21950,10 +22203,10 @@
         "geo:long": 8.54111111111111,
         "m3gim:country": "Schweiz"
       },
-      "m3gim:atDate": "1968-11-18",
       "agrelon:metadataProvenance": {
         "@id": "m3gim:NIM_007_11"
       },
+      "m3gim:atDate": "1968-11-18",
       "m3gim:eventRole": "absendedatum",
       "m3gim:xlsxSource": {
         "m3gim:xlsxSheet": "Verknuepfungen",
@@ -21961,7 +22214,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_17_45",
+      "@id": "m3gim:ste_NIM_007_17_56",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Wien",
@@ -21971,14 +22224,94 @@
         "geo:long": 16.3725,
         "m3gim:country": "Österreich"
       },
-      "m3gim:atDate": "1968-09-25",
       "agrelon:metadataProvenance": {
         "@id": "m3gim:NIM_007_17"
       },
+      "m3gim:atDate": "1968-09-25",
       "m3gim:eventRole": "erscheinungsdatum",
       "m3gim:xlsxSource": {
         "m3gim:xlsxSheet": "Verknuepfungen",
         "m3gim:xlsxRow": 1223
+      }
+    },
+    {
+      "@id": "m3gim:ste_NIM_007_20_57",
+      "@type": "m3gim:SpatiotemporalEvent",
+      "m3gim:atPlace": {
+        "name": "Zürich",
+        "@id": "wd:Q72",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q72",
+        "geo:lat": 47.37444444444444,
+        "geo:long": 8.54111111111111,
+        "m3gim:country": "Schweiz"
+      },
+      "agrelon:metadataProvenance": {
+        "@id": "m3gim:NIM_007_20"
+      },
+      "m3gim:eventRole": "zielort",
+      "m3gim:xlsxSource": {
+        "m3gim:xlsxSheet": "Verknuepfungen",
+        "m3gim:xlsxRow": 1269
+      }
+    },
+    {
+      "@id": "m3gim:ste_NIM_007_20_58",
+      "@type": "m3gim:SpatiotemporalEvent",
+      "m3gim:atPlace": {
+        "name": "Wien",
+        "@id": "wd:Q1741",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q1741",
+        "geo:lat": 48.208333333333336,
+        "geo:long": 16.3725,
+        "m3gim:country": "Österreich"
+      },
+      "agrelon:metadataProvenance": {
+        "@id": "m3gim:NIM_007_20"
+      },
+      "m3gim:eventRole": "absendeort",
+      "m3gim:xlsxSource": {
+        "m3gim:xlsxSheet": "Verknuepfungen",
+        "m3gim:xlsxRow": 1270
+      }
+    },
+    {
+      "@id": "m3gim:ste_NIM_007_21_59",
+      "@type": "m3gim:SpatiotemporalEvent",
+      "m3gim:atPlace": {
+        "name": "Berlin",
+        "@id": "wd:Q64",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q64",
+        "geo:lat": 52.516666666667,
+        "geo:long": 13.383333333333,
+        "m3gim:country": "Deutschland"
+      },
+      "agrelon:metadataProvenance": {
+        "@id": "m3gim:NIM_007_21"
+      },
+      "m3gim:eventRole": "zielort",
+      "m3gim:xlsxSource": {
+        "m3gim:xlsxSheet": "Verknuepfungen",
+        "m3gim:xlsxRow": 1273
+      }
+    },
+    {
+      "@id": "m3gim:ste_NIM_007_21_60",
+      "@type": "m3gim:SpatiotemporalEvent",
+      "m3gim:atPlace": {
+        "name": "Wien",
+        "@id": "wd:Q1741",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q1741",
+        "geo:lat": 48.208333333333336,
+        "geo:long": 16.3725,
+        "m3gim:country": "Österreich"
+      },
+      "agrelon:metadataProvenance": {
+        "@id": "m3gim:NIM_007_21"
+      },
+      "m3gim:eventRole": "absendeort",
+      "m3gim:xlsxSource": {
+        "m3gim:xlsxSheet": "Verknuepfungen",
+        "m3gim:xlsxRow": 1274
       }
     },
     {
@@ -21992,10 +22325,10 @@
         "geo:long": 16.3725,
         "m3gim:country": "Österreich"
       },
-      "m3gim:atDate": "1957-09-07",
       "agrelon:metadataProvenance": {
         "@id": "m3gim:NIM_004"
       },
+      "m3gim:atDate": "1957-09-07",
       "m3gim:eventRole": "entstehung",
       "m3gim:xlsxSource": {
         "m3gim:xlsxSheet": "Verknuepfungen",
@@ -25071,7 +25404,7 @@
       "rico:name": "Beckmesser"
     }
   ],
-  "m3gim:exportDate": "2026-06-18T10:00:34.242356",
+  "m3gim:exportDate": "2026-06-18T12:20:00.485517",
   "m3gim:recordCount": 381,
   "m3gim:konvolutCount": 7,
   "m3gim:approvedManualMatches": 261,

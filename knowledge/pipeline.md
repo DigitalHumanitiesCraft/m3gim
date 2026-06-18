@@ -70,7 +70,7 @@ python scripts/build-views.py
    - Skos:Concept-Knoten fuer hierarchische Dokumenttypen (data.md § 12)
    - `m3gim:SpatiotemporalEvent` als Top-Level Graph-Entities (data.md § 10)
    - `agrelon:*`-Relationen fuer Agent-Agent-Beziehungen (data.md § 8)
-   - `agrelon:hasProvenance` + `hasConfidenceValue` statt `m3gim:dateEvidence` (data.md § 9)
+   - `agrelon:metadataProvenance` an AgRelOn-Relationen und STEs; Datierungsevidenz wird seit E-106 nicht mehr serialisiert (data.md § 9)
    - Typisierte Datumsproperties `m3gim:absendedatum` etc. (data.md § 7)
    - `m3gim:DetailAnnotation` mit `monetaryAmount`/`currency`/`detailRole` (data.md § 11)
    - `m3gim:xlsxSource` pro Record + Nested Entity (technische Quellreferenz auf Sheet + Zeile, data.md § 9, E-73)
@@ -83,11 +83,11 @@ python scripts/build-views.py
 |---|---|
 | 4.1 | `normalize_role()` strippt `:in`/`:innen` — Gender-neutrale Rollenbezeichner |
 | 4.2 | `DOKUMENTTYP_TO_DFT` hierarchisch erweitert + `build_dft_concepts()` emittiert skos:Concept-Knoten mit skos:broader |
-| 4.3 | `EVIDENZ_TO_CONFIDENCE` mapped dateEvidence auf `agrelon:hasConfidenceValue`, Record-URI als `agrelon:hasProvenance`. Seit E-100 wird `unbekannt`/`0.0` nicht mehr serialisiert (Konfidenz nur bei datierter Aussage). |
+| 4.3 | Record-URI als `agrelon:metadataProvenance` an AgRelOn-Relationen und STEs. Datierungs-Konfidenz ist seit E-106 ganz entfernt (Konstante `EVIDENZ_TO_CONFIDENCE` gestrichen); Konfidenz wird nicht fabriziert. |
 | 4.4 | Komposit `ort, datum` erzeugt zusaetzlich `m3gim:SpatiotemporalEvent`-Instanz mit `atPlace`, `atDate`, `eventRole` |
 | 4.6 | `parse_monetary_value()` zerlegt `AMOUNT, CURRENCY`; Finanz-DetailAnnotation haelt `monetaryAmount` (xsd:decimal), `currency`, `detailRole`. `FINANCE_CURRENCY_DEFAULTS` pro Signatur-Präfix greift, wenn die Quelle keine Währung liefert (Session 29 für NIM_007: `S`). |
-| 4.7 | `DATUMSROLLE_TO_PROPERTY` mapped Datumsrollen auf typisierte Properties (`m3gim:absendedatum`, `m3gim:auffuehrungsdatum` etc.); `is_iso_date()` filtert Freitext in Fallback `m3gim:eventDate`; `clean_date` normalisiert `YYYY-YYYY` → `YYYY/YYYY` |
-| 4.8 | `AGRELON_MAPPING` erzeugt `agrelon:HasEmployeeEmployer`/`HasCorrespondent`/`HasProfessionalContact`/`HasIsPatron`/`HasIsMember` je (typ, rolle); `m3gim:agentRelation`-Array am Record |
+| 4.7 | `DATUMSROLLE_TO_PROPERTY` mapped Datumsrollen auf typisierte Properties (`m3gim:absendedatum`, `m3gim:auffuehrungsdatum` etc.); `is_iso_date()` filtert Freitext in Fallback `m3gim:hasDatedEvent` (inline DatedEvent mit `dateValue`/`dateRole`, E-102); `clean_date` normalisiert `YYYY-YYYY` → `YYYY/YYYY` |
+| 4.8 | `AGRELON_MAPPING` erzeugt `agrelon:HasEmployeeEmployer`/`HasCorrespondent`/`HasProfessionalContact`/`IsHasPatron`/`HasIsMember` je (typ, rolle); `m3gim:agentRelation`-Array am Record |
 
 Noch offen:
 - Phase 4.9: Reifikation / `m3gim:Statement` — optional, spaet
@@ -95,6 +95,8 @@ Noch offen:
 ## Erweiterungen fuer den neuen Datenstand (testgetrieben)
 
 Ein neuer Export erschliesst mehrere Konvolute tiefer und loest die freigegebene Modell-Erweiterung aus ([decisions.md](decisions.md) E-95 bis E-102). Die Umsetzung folgt dem TDD-Workflow ([testing.md](testing.md)): erst die rote Spec, dann der Code.
+
+Darauf aufbauend sichert eine Ontologie-Konformitaets-Welle (E-103 bis E-105) die Term-Korrektheit: `ric-rst:File`/`Fonds`, `agrelon:metadataProvenance`/`metadataConfidence`, `agrelon:IsHasPatron`, Person-Normdaten in `schema:`/`gndo:`, `m3gim:wdPremiereDate`, die Namespaces `documentaryFormTypes#`/`roles#` sowie der `test_26`-Lock. E-106 entfernt die Datierungs-Konfidenz ganz (`m3gim:dateEvidence`/`agrelon:metadataConfidence` an Datumsangaben werden nicht mehr serialisiert).
 
 ### Strukturelle Loader-Absorption (E-95)
 
@@ -112,12 +114,12 @@ Diese Faelle sind nicht durchreichbar; die quellseitige Bereinigung ist als Sour
 | Bereich | Aenderung |
 |---|---|
 | Buehnenrollen (E-96) | `rolle, person`-Komposit wird dekomponiert und erzeugt eine n-aere `m3gim:Performance` mit `hasStageRole` (Slug-`@id`, `belongsToWork`) + gegen den Personenindex aufgeloestem `hasPerformer` |
-| Mobilitaet (E-97) | `MOBILITY_PLACE_ROLES` erzeugen am `ort`-Zweig eine datumslose `m3gim:SpatiotemporalEvent`; `wohnort` als `agrelon:hasValidityPeriod`-Zustand; `vertragspartner` ueber `AGRELON_MAPPING` mit `m3gim:derivedFromRole`-Marker |
+| Mobilitaet (E-97) | `MOBILITY_PLACE_ROLES` = {zielort, absendeort, abreiseort, empfangsort, vertragsort} erzeugen am `ort`-Zweig eine zusaetzliche datumslose `m3gim:SpatiotemporalEvent` (kein `atDate`); die flache `rico:hasOrHadLocation` bleibt. `wohnort`/`vertragspartner` vertagt (0 Daten). |
 | Auffuehrungen (E-98) | `datum, werk`-Branch in `decompose_komposit_value`; `m3gim:Performance` mit `performanceOf` (nur aus Werkindex) + `auffuehrungsdatum`; `^\d{4}`-Guard filtert Komponist-statt-Werk-Zeilen |
 | Finanz (E-99) | `parse_monetary_value`-Umbau: nachgestellte Waehrung abtrennen, Doppelbetraege in zwei DetailAnnotations; neue Waehrungen + detailRoles als Originalcode; `contractStatus`/`realized` fuer „nicht eingehalten" |
-| Datum/Evidenz (E-100/E-102) | Konfidenz nur bei datierter Aussage, kein `0.0`; `m3gim:DatedEvent` fuer klammer-unsichere Datierungen; Datums-Routing (ISO / TimeSpan / DatedEvent / `nach:`); `erstelldatum` als typisierte Property |
+| Datum/Evidenz (E-100/E-102) | `m3gim:hasDatedEvent` (inline `m3gim:DatedEvent`) fuer klammer-unsichere Datierungen; Datums-Routing (ISO / TimeSpan / DatedEvent / `nach:`); `erstelldatum` als typisierte Property |
 | Dokumentvokabular (E-101) | neue dft-Concepts (musikzeitschrift, briefumschlag, chronik, verzeichnis); `dokument`-Typ als `scopeAndContent`/Blank-Node statt Subject; `sammlung` ohne `skos:broader` |
-| Datenqualitaet (E-102) | `m3gim:dataQualityFlag` aus `anmerkung`-Signalen mit eigener `m3gim:qualityConfidence`; `m3gim:bearbeitungsnotiz` fuer den Objekt-Bearbeitungsstand |
+| Datenqualitaet (E-102) | `m3gim:dataQualityFlag` aus `anmerkung`-Signalen; `m3gim:bearbeitungsnotiz` fuer den Bearbeitungsstand |
 
 ## Nachzuege (Session 33 + 34)
 

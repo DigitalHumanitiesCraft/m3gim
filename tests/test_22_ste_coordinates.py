@@ -23,19 +23,26 @@ import pytest
 
 
 ANCHOR_STES = [
-    # (STE-@id, erwarteter Q-ID-Praefix, erwarteter Stadtname)
-    # NIM_004_24 Folio: Zuerich(_7), Muenchen(_8), Wien(_9, nach:1956 — seit
-    # E-102 als eigenes STE statt Datumsfeld-Leak), Bayreuth(_10), Salzburg(_11).
-    ("m3gim:ste_NIM_004_24_7",  "wd:Q72",    "Zürich"),
-    ("m3gim:ste_NIM_004_24_11", "wd:Q34713", "Salzburg"),
+    # (Record-Praefix des STE-@id, erwarteter Q-ID, erwarteter Stadtname)
+    # Anker auf das NIM_004_24-Folio (Zuerich, Salzburg). Die STE-@ids tragen
+    # einen GLOBALEN Zaehler, der bei jeder STE-Aenderung springt (zuletzt E-97
+    # Mobilitaets-STE) — daher ueber (Record-Praefix, Ortsname) ankern statt
+    # ueber die exakte @id, sonst bricht der Test bei jedem STE-Zuwachs.
+    ("m3gim:ste_NIM_004_24_", "wd:Q72",    "Zürich"),
+    ("m3gim:ste_NIM_004_24_", "wd:Q34713", "Salzburg"),
 ]
 
 
-def _ste_by_id(graph):
-    return {
-        n.get("@id"): n for n in graph
-        if n.get("@type") == "m3gim:SpatiotemporalEvent"
-    }
+def _anchor_ste(graph, id_prefix, expected_name):
+    """Findet den STE auf dem Anker-Record (@id-Praefix), dessen atPlace-Name
+    passt — stabil gegen Verschiebungen des globalen STE-Zaehlers."""
+    for n in graph:
+        if (n.get("@type") == "m3gim:SpatiotemporalEvent"
+                and str(n.get("@id", "")).startswith(id_prefix)):
+            p = n.get("m3gim:atPlace")
+            if isinstance(p, dict) and p.get("name") == expected_name:
+                return n
+    return None
 
 
 def _at_place(ste):
@@ -48,14 +55,13 @@ def _at_place(ste):
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.parametrize("ste_id,expected_qid,expected_name", ANCHOR_STES)
-def test_anchor_ste_has_wikidata_id(graph, ste_id, expected_qid, expected_name):
+@pytest.mark.parametrize("id_prefix,expected_qid,expected_name", ANCHOR_STES)
+def test_anchor_ste_has_wikidata_id(graph, id_prefix, expected_qid, expected_name):
     """Anker-STE traegt im atPlace-Subobjekt @id + owl:sameAs auf Wikidata."""
-    stes = _ste_by_id(graph)
-    ste = stes.get(ste_id)
+    ste = _anchor_ste(graph, id_prefix, expected_name)
     assert ste is not None, (
-        f"Anker-STE {ste_id!r} fehlt im Graph. Pipeline-Regression "
-        f"oder Fixture pflegen."
+        f"Anker-STE {expected_name!r} auf {id_prefix!r} fehlt im Graph. "
+        f"Pipeline-Regression oder Fixture pflegen."
     )
     place = _at_place(ste)
     assert place is not None, f"{ste_id}: m3gim:atPlace fehlt oder ist kein Objekt"
@@ -71,26 +77,25 @@ def test_anchor_ste_has_wikidata_id(graph, ste_id, expected_qid, expected_name):
     )
 
 
-@pytest.mark.parametrize("ste_id,expected_qid,expected_name", ANCHOR_STES)
-def test_anchor_ste_has_coordinates(graph, ste_id, expected_qid, expected_name):
+@pytest.mark.parametrize("id_prefix,expected_qid,expected_name", ANCHOR_STES)
+def test_anchor_ste_has_coordinates(graph, id_prefix, expected_qid, expected_name):
     """Anker-STE traegt im atPlace-Subobjekt geo:lat + geo:long als float."""
-    stes = _ste_by_id(graph)
-    ste = stes.get(ste_id)
-    assert ste is not None, f"Anker-STE {ste_id!r} fehlt"
+    ste = _anchor_ste(graph, id_prefix, expected_name)
+    assert ste is not None, f"Anker-STE {expected_name!r} auf {id_prefix!r} fehlt"
     place = _at_place(ste)
-    assert place is not None, f"{ste_id}: m3gim:atPlace fehlt"
+    assert place is not None, f"{expected_name}: m3gim:atPlace fehlt"
 
     lat = place.get("geo:lat")
     lon = place.get("geo:long")
     assert isinstance(lat, (int, float)), (
-        f"{ste_id}: geo:lat={lat!r} (erwartet float)"
+        f"{expected_name}: geo:lat={lat!r} (erwartet float)"
     )
     assert isinstance(lon, (int, float)), (
-        f"{ste_id}: geo:long={lon!r} (erwartet float)"
+        f"{expected_name}: geo:long={lon!r} (erwartet float)"
     )
     # Plausibilitaet: Europa/nearby
-    assert -90 <= lat <= 90, f"{ste_id}: Breitengrad ausserhalb [-90, 90]: {lat}"
-    assert -180 <= lon <= 180, f"{ste_id}: Laengengrad ausserhalb [-180, 180]: {lon}"
+    assert -90 <= lat <= 90, f"{expected_name}: Breitengrad ausserhalb [-90, 90]: {lat}"
+    assert -180 <= lon <= 180, f"{expected_name}: Laengengrad ausserhalb [-180, 180]: {lon}"
 
 
 # ---------------------------------------------------------------------------

@@ -9,8 +9,7 @@
  * Parameter, mit den zwei konkreten Implementierungen hier exportiert.
  */
 
-import { getDocTypeId, expandDftFilter } from '../utils/format.js';
-import { DOKUMENTTYP_LABELS } from '../data/constants.js';
+import { getDocTypeId, expandDftFilter, dftLabel } from '../utils/format.js';
 
 /** Ob mindestens eine der fuenf Facetten aktiv ist. */
 export function isToolbarFiltered(state) {
@@ -18,11 +17,12 @@ export function isToolbarFiltered(state) {
   return !!(search || docType || person || location || werk);
 }
 
-/** Bestand-Suche: Signatur, Titel, Typ-Label, Datum. */
-export function searchMatchBestand(record, q) {
+/** Bestand-Suche: Signatur, Titel, Typ-Label, Datum. Der Store liefert das
+ *  Typ-Label (skos:prefLabel); ohne Store entfällt nur die Label-Teilsuche. */
+export function searchMatchBestand(record, q, store) {
   const sig = (record['rico:identifier'] || '').toLowerCase();
   const title = (record['rico:title'] || '').toLowerCase();
-  const typ = (DOKUMENTTYP_LABELS[getDocTypeId(record)] || '').toLowerCase();
+  const typ = dftLabel(store, getDocTypeId(record)).toLowerCase();
   const datum = (record['rico:date'] || '').toLowerCase();
   return sig.includes(q) || title.includes(q) || typ.includes(q) || datum.includes(q);
 }

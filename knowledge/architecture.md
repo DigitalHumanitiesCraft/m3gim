@@ -56,7 +56,7 @@ related: [design, pipeline, data, decisions]
 | `main.js` | Einstiegspunkt, `TAB_RENDERERS`-Registry, Lazy-Tab-Rendering, Error Boundaries pro Tab, DEV-Debug-Helper (`window.m3gim.*`) |
 | `data/loader.js` | JSON-LD-Ladeschicht, Store-Aufbau inkl. Phase-6-Maps, Koordinaten-Patch-aware STE-Indizierung |
 | `utils/provenance.js` | `extractXlsxSource(obj)` — Provenance-Shape-Extraktion, geteilter Helper für Loader, Inline-Detail und Korb (E-91) |
-| `data/constants.js` | `ROLE_CLUSTER`, `ROLE_TO_SECTION`, `AGRELON_LABELS`, `EVENT_ROLE_TO_MOBILITY_CLUSTER` (Session 36), `WIKIDATA_ICON_SVG`, Komponisten-/Personen-Kategorien, `confidenceDotProps()` |
+| `data/constants.js` | `ROLE_CLUSTER`, `ROLE_TO_SECTION`, `AGRELON_LABELS`, `EVENT_ROLE_TO_MOBILITY_CLUSTER` (Session 36), `WIKIDATA_ICON_SVG`, Komponisten-/Personen-Kategorien |
 | `ui/router.js` | Hash-Routing, `navigateToView`/`navigateToIndex`, ARIA-State |
 | `ui/korb.js` | Wissenskorb (localStorage) |
 | `views/archiv-bestand.js` | Bestand-Tab: Konvolut-Hierarchie mit Meta-Chips (Top-3-Dokumenttyp + Status-Mix) direkt in der Zeile; Inline-Detail nur für Records, nicht mehr für Konvolute (E-82). Hierarchische Sortierung: Konvolute Signatur-stabil, Kinder innerhalb sortierbar (E-83). |
@@ -116,6 +116,8 @@ store = {
   recordToEvents: Map<recordId, eventId[]>,
   agentRelations: Map<recordId, [{type, objectName, objectWikidata, validityBegin, validityEnd, provenance, xlsxSource}]>,
   finances:       Map<recordId, [{field, role, rawValue, amount:Number, currency, xlsxSource}]>,
+  stageRoles:     Map<stageRoleId, name>,         // m3gim:StageRole (E-96/E-98)
+  performances:   Map<performanceId, Performance-Node>,
 }
 ```
 
@@ -129,8 +131,10 @@ Alle Tabs lesen direkt aus `m3gim.jsonld` (über Store), nicht aus separaten Vie
 | `store.mobilityEvents` + `store.recordToEvents` | `m3gim:SpatiotemporalEvent`-Knoten + `m3gim:hasSpatiotemporalEvent`-Refs; seit Session 33 inkl. `placeLat`/`placeLon`/`placeCountry` aus dem Koordinaten-Patch | Mobilitäts-Atlas, Biogramm-Orte-Spur, Archiv-Inline-Detail Ort-&-Ereignis-Block |
 | `store.agentRelations` | `m3gim:agentRelation`-Array am Record | Archiv-Inline-Detail Beziehungen-Block, Indizes-Personen-Beziehungsbadges, Netzwerk-Tab |
 | `store.finances` | `m3gim:hasDetail`-DetailAnnotations mit `monetaryAmount` + `currency` + `detailRole` | Archiv-Inline-Detail Finanzen-Block |
+| `store.stageRoles` | `m3gim:StageRole`-Knoten (`rico:name`) | Bühnenrollen-Auflösung im Archiv-Inline-Detail (E-96/E-98) |
+| `store.performances` | `m3gim:Performance`-Knoten (n-äre Aufführung mit `m3gim:hasStageRole`-Ref) | Archiv-Inline-Detail Werk-&-Repertoire-Block |
 
-Die Invarianten werden als Kontrakttests in [test_06_frontend_contract.py](../tests/test_06_frontend_contract.py) durchgängig geprüft. Provenance (`agrelon:hasProvenance` + `hasConfidenceValue`) wird nicht als eigene Store-Map indexiert, sondern am Record mitgeführt.
+Die Invarianten werden als Kontrakttests in [test_06_frontend_contract.py](../tests/test_06_frontend_contract.py) durchgängig geprüft. Provenance (`agrelon:metadataProvenance`) wird nicht als eigene Store-Map indexiert, sondern am Record mitgeführt.
 
 **Wichtiger Formatbruch:** `store.agentRelations`, `mobilityEvents` und `finances` transformieren das rohe JSON-LD in ein flaches Lookup-Format (z. B. `objectName`/`objectWikidata` statt des verschachtelten `agrelon:hasObject`). Consumer dürfen nicht die JSON-LD-Keys lesen — das führte Session 35 zu einem stillen Dedup-Bug (Malaniuk doppelt sichtbar). JSDoc-Shapes für `RelationEntry`, `MobilityEvent`, `FinanceEntry`, `DftConcept` sind direkt oberhalb von `buildStore()` in `loader.js` annotiert.
 
@@ -222,14 +226,14 @@ Konzentrische Personen-Visualisierung um Malaniuk (E-93, Session 46; Session-47-
 - **DEV/Prod-Logging** über `viewLog()`, das auf GitHub Pages ein No-Op ist (E-50). Auf localhost zeigt `main.js` beim Seitenaufruf einen strukturierten Store-Report (Records, Konvolute, Phase-6-Maps, WD-Coverage pro Index, Provenance-Coverage) und setzt `window.m3gim` mit Debug-Helpern `window.m3gim.store`, `window.m3gim.inspect(recordId)`, `window.m3gim.finances()`, `window.m3gim.agentRelations()`, `window.m3gim.mobilityEvents()`, `window.m3gim.dftTree()` und `window.m3gim.provenanceOf(recordId)` (letzterer zeigt alle XLSX-Quellen eines Records + Nested Entities als Liste `{field, sheet, row, datenpunkt}`). Auf Produktion (dhcraft.org) bleibt alles stumm.
 - **Error Boundaries** pro View: `main.js` fängt Render-Fehler pro Tab ab (sync und async, E-51).
 
-## Erweiterung für den neuen Datenstand (geplant)
+## Erweiterung für den neuen Datenstand (umgesetzt)
 
-Die freigegebene Modell-Erweiterung ([decisions.md](decisions.md) E-95 bis E-102) zieht Frontend-Anpassungen nach sich, die nach dem Produktivschalten greifen. Die Reihenfolge steuert [plan.md](plan.md).
+Die freigegebene Modell-Erweiterung ([decisions.md](decisions.md) E-95 bis E-102) ist committet (007b8c2) und im Code live. Die Reihenfolge steuerte [plan.md](plan.md).
 
-- **Vokabular-Kopplung in `constants.js`.** Die neuen eventRoles (`zielort`, `absendeort`, `abreiseort`, `empfangsort`, `vertragsort`, `aufnahme`, `generalprobe`, `empfang`) brauchen einen Eintrag in `EVENT_ROLE_TO_MOBILITY_CLUSTER`, die neuen Rollen (Crew, Finanz-Detailrollen, `publikum`/`abgebildet`) je einen in `ROLE_CLUSTER` und `ROLE_TO_SECTION`, die neuen Dokumenttypen einen Label in `DOKUMENTTYP_LABELS`. Ein auskommentiertes Scaffold liegt je Map bereit und wird mit dem Produktivschalten aktiviert — fehlt es, brechen `test_25`/`test_15` (Leitplanke Vokabular-Kopplung).
-- **Loader.** Die datumslosen Mobilitäts-STEs und `wohnort` mit Gültigkeitsperiode dürfen kein `atDate` voraussetzen. Die Ablösung des `m3gim:hasPerformanceRole`-Artefakts durch `m3gim:StageRole`-Entitäten und n-äre `m3gim:Performance` (gelesen heute in `archive-inline-detail`, abgesichert in `record-partition.test.mjs`) ist die strukturell größte Änderung und braucht eine neue Store-Map. Neue Record-Felder (`contractStatus`/`realized`, `dataQualityFlag`/`qualityConfidence`, `bearbeitungsnotiz`, `erstelldatum`) werden in den Store gezogen.
-- **Datums-Handling.** `date-parser.js` gibt qualifizierte Datierungen heute roh aus; Anzeige und Jahres-Extraktion sind um die Qualifier (`circa:`/`vor:`/`nach:`) und das `DatedEvent`-Shape zu erweitern.
-- **Wirkung.** Die neuen Mobilitäts- und Repertoire-Strukturen machen die zurückgestellten Tabs Mobilitäts-Atlas, Repertoire und Biogramm tragfähig; die Rendering-Anpassungen (Bühnenrollen-Block, Vertragsstatus- und Datenqualitäts-Anzeige) stehen in [design.md](design.md).
+- **Vokabular-Kopplung in `constants.js`.** Die fünf Mobilitäts-Ortsrollen (`zielort`, `absendeort`, `abreiseort`, `empfangsort`, `vertragsort`) sind in `EVENT_ROLE_TO_MOBILITY_CLUSTER` eingetragen — bewusst auf `null` gemappt, bis das Erschließungsteam die Sicht-Zuordnung klärt. Weitere vorgemerkte eventRoles (`aufnahme`, `generalprobe`, `empfang`) und Rollen (Crew, `publikum`/`abgebildet`) bleiben auskommentiert gerüstet, bis der tiefere Export sie mit Daten füllt. Dokumenttyp-Labels kommen nicht mehr aus einer Hand-Map, sondern über `dftLabel(store, id)` aus `store.dftHierarchy`. Die Leitplanke Vokabular-Kopplung (`test_25`/`test_15`) bleibt grün.
+- **Loader.** Die datumslosen Mobilitäts-STEs setzen kein `atDate` voraus (`date: null`). Die Ablösung des `m3gim:hasPerformanceRole`-Artefakts durch `m3gim:StageRole`-Entitäten und n-äre `m3gim:Performance` (gelesen in `archive-inline-detail`) ist umgesetzt und über die neuen Store-Maps `store.stageRoles` + `store.performances` angebunden. Die neuen Record-Felder `dataQualityFlag`, `bearbeitungsnotiz` und `erstelldatum` liegen an den Record-Knoten. Vertagt: der `wohnort`-Zustand mit Gültigkeitsperiode sowie `contractStatus`/`realized` (E-99, keine Datendeckung); `qualityConfidence` wird bewusst nicht fabriziert.
+- **Datums-Handling (offen).** `date-parser.js` gibt qualifizierte Datierungen heute roh aus; Anzeige und Jahres-Extraktion sind um die Qualifier (`circa:`/`vor:`/`nach:`) und das `DatedEvent`-Shape (`m3gim:hasDatedEvent`) noch zu erweitern.
+- **Wirkung.** Die neuen Mobilitäts- und Repertoire-Strukturen machen die zurückgestellten Tabs Mobilitäts-Atlas, Repertoire und Biogramm tragfähig; der Bühnenrollen-Block steht in [design.md](design.md). Eine UI-Anzeige für `dataQualityFlag` (und ein etwaiger Vertragsstatus) ist noch nicht umgesetzt — die Flags liegen vorerst nur in den Daten.
 
 ## Schnittstellenvertrag
 

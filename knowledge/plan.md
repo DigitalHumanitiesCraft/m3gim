@@ -46,7 +46,7 @@ Die finalen Cluster-Zuordnungen der neuen eventRoles und Rollen sind mit dem Fro
 
 Der Modellierungs-Audit (Web-Verifikation gegen RiC-O 1.1 und AgRelOn, [decisions.md](decisions.md) E-103/E-104) hat mehrere im Output verwendete Terme als nicht konform identifiziert.
 
-**Welle 1 erledigt (2026-06-18, testgetrieben).** Umgesetzt in `transform.py`, Frontend, Tests und JSON-Schema; Pipeline regeneriert, Suite grün (193 passed inkl. `test_26`-Lock, JS 74/74):
+**Welle 1 erledigt (2026-06-18, testgetrieben).** Umgesetzt in `transform.py`, Frontend, Tests und JSON-Schema; Suite grün (217 passed / 1 skipped / 2 xfailed inkl. `test_26`-Lock, JS 85/85):
 
 1. ✅ `test_26` Term-Konformitäts-Lock + quellenbelegte Allowlist-Fixture — validiert jeden `rico:`/`ric-rst:`/`agrelon:`/`schema:`/`gndo:`-Term gegen die offiziellen Listen; verbietet die bekannten Fehlterme namentlich.
 2. ✅ Konformitäts-Brecher: `rico:isAssociatedWithRecord` entfernt (STE trägt jetzt `agrelon:metadataProvenance` auf den Record); `agrelon:hasProvenance` → `metadataProvenance`, `hasConfidenceValue` → `metadataConfidence` (auch test_12/test_19 migriert).
@@ -57,7 +57,7 @@ Der Modellierungs-Audit (Web-Verifikation gegen RiC-O 1.1 und AgRelOn, [decision
 **Offen aus Welle 1:**
 
 - ✅ `agrelon:hasSubject` ergänzt: referenziert Malaniuks verifizierte Wikidata-Entität `wd:Q94208` direkt (Label + Lebensdaten 2026-06-18 gegen Wikidata belegt), kein lokaler Knoten — das Schema lässt Person nicht als Top-Level-@type. Reifikation jetzt symmetrisch.
-- `agrelon:metadataPeriod` erscheint aktuell 0× (Validity nur bei HasEmployeeEmployer, dessen einzige Zeile die verwaiste `NIM_11` ist) — kommt mit der Verknüpfungs-Datenpflege bzw. E-97 (wohnort-Zustand).
+- `agrelon:metadataPeriod` erscheint aktuell 0× (Validity nur bei HasEmployeeEmployer, dessen einzige Zeile die verwaiste `NIM_11` ist) — kommt mit der Verknüpfungs-Datenpflege bzw. dem `wohnort`-Zustand. Letzterer ist der vertagte Teil von E-97: `wohnort` kommt im April-Export 0× vor, daher bewusst **nicht** als Punktereignis modelliert (kein spekulativer Code); der datengedeckte E-97-Kern (zielort/absendeort/abreiseort → datumslose STE) ist umgesetzt.
 - ✅ `m3gim:eventDate`-Drop umgesetzt (E-102): atomar ersetzt durch `m3gim:hasDatedEvent` (DatedEvent-Fallback) + Datums-Routing. `ort,datum`-Daten leben dedupliziert im STE (Blocker-Fix aus dem Audit).
 - ✅ Datierungs-Konfidenz ganz entfernt (E-106, löst E-100 ab): `agrelon:metadataConfidence` war eine erfundene Dezimal-Projektion der `datierungsevidenz` und wurde von nichts gelesen.
 
@@ -66,10 +66,9 @@ Der Modellierungs-Audit (Web-Verifikation gegen RiC-O 1.1 und AgRelOn, [decision
 Aktiv sind Bestand, Chronik, Statistik, Indizes, Netzwerk und Wissenskorb. Die übrigen drei Perspektiv-Tabs sind verborgen und werden überarbeitet, bevor sie wieder sichtbar geschaltet werden.
 
 1. Reaktivierung und Redesign der drei verbleibenden Perspektiv-Tabs Mobilitäts-Atlas, Repertoire und Biogramm. Pro Tab wird der Daten-Kontrakt gegen den Store verifiziert, das Rolle-Prefix-Chip-Muster konsequent angewendet und ein Meta-Fresh-Check vor dem Enable durchgeführt. Die Reihenfolge der drei Tabs ist offen.
-2. SKOS-Labels in der Pipeline pflegen, also `skos:prefLabel` mit lesbaren deutschen Labels an die DFT-Concepts schreiben, damit das Frontend die Handtabelle `DOKUMENTTYP_LABELS` ablösen kann.
-3. AgRelOn-Granularität schärfen über `HasAddressee` und `HasSender` statt des pauschalen `HasCorrespondent`, alternativ über eine symmetrische Beziehung für beide Richtungen.
-4. Die Netzwerk-Spur im Biogramm ergänzen, sobald die AgRelOn-Relationen Validity-Dates tragen.
-5. Eine weitere Reconciliation-Runde fahren und die Unmatched-Restliste manuell prüfen, falls gewünscht. Nicht blockierend.
+2. AgRelOn-Granularität schärfen über `HasAddressee` und `HasSender` statt des pauschalen `HasCorrespondent`, alternativ über eine symmetrische Beziehung für beide Richtungen.
+3. Die Netzwerk-Spur im Biogramm ergänzen, sobald die AgRelOn-Relationen Validity-Dates tragen.
+4. Eine weitere Reconciliation-Runde fahren und die Unmatched-Restliste manuell prüfen, falls gewünscht. Nicht blockierend.
 
 ## Deferred Aufräumarbeiten
 
@@ -136,10 +135,13 @@ Diese redaktionellen Punkte werden fortlaufend im Erfassungsteam bearbeitet.
 
 | Arbeitspaket | Status | Notiz |
 |---|---|---|
-| Neuer Datenstand und Modell-Umsetzung | aktiv | testgetrieben. Erledigt: E-95 (Loader), E-96+E-98 (Performance/StageRole), E-102 (Quality-Flags + DatedEvent + eventDate-Drop + ort,datum-Dedup), E-106 (Datierungs-Konfidenz entfernt, löst E-100 ab), E-101 (Dokumentvokabular, datengedeckte Teile: sammlung eigenständig + deutsche prefLabels + neue Konzepte gerüstet; dokument-Aboutness vertagt). Offen: E-97 (Mobilitäts-Ortsrollen), E-99 (Finanz-Parser), dann Promote (wartet auf tieferen Export) |
+| Neuer Datenstand und Modell-Umsetzung | aktiv | testgetrieben. Erledigt: E-95 (Loader), E-96+E-98 (Performance/StageRole), E-102 (Quality-Flags + DatedEvent + eventDate-Drop + ort,datum-Dedup), E-106 (Datierungs-Konfidenz entfernt, löst E-100 ab), E-101 (Dokumentvokabular, datengedeckte Teile), E-97 (Mobilitäts-Ortsrollen → datumslose STE, datengedeckter Kern; wohnort/vertragspartner mangels Daten vertagt). **E-99 (Finanz-Parser) vertagt:** alle 21 Finanzzeilen parst der Bestand bereits korrekt, die E-99-Sonderfälle kommen 0× vor — wäre spekulativer Code. Dann Promote (E-97 ist promote-bereit gegen April-Daten) |
 | Ontologie-Konformität (E-103/E-104/E-105) | erledigt | Term-Renames + schema/GND-Migration + test_26-Lock, `agrelon:hasSubject`→`wd:Q94208`, `eventDate`-Drop (mit E-102) — alles umgesetzt, Suite grün |
 | Reaktivierung Mobilitäts-Atlas, Repertoire, Biogramm | offen | pro Tab Daten-Kontrakt, Chip-Muster, Meta-Fresh-Check |
-| Frontend auf SKOS-prefLabel umstellen | bereit | Pipeline emittiert deutsche `skos:prefLabel` (E-101); 8 Views + `format.js` von der Hand-Map `DOKUMENTTYP_LABELS` auf `store.concepts.get(...).prefLabel` umstellen, dann Hand-Map entfernen. Unmittelbarer Folgeschritt. |
+| Frontend auf SKOS-prefLabel umstellen | erledigt | `format.js` `dftLabel(store, id)` löst Labels aus `store.dftHierarchy` (skos:prefLabel, E-101) auf; alle 7 Views umgestellt, Hand-Map `DOKUMENTTYP_LABELS` aus `constants.js` entfernt. Verifiziert: JS + Loader-Integrationstest. |
+| Loader-Integrationstest | erledigt | `tests/frontend/loader.test.mjs` deckt die zuvor ungetestete Strecke JSON-LD→`loadArchive`→store ab (synthetische Fixture + Anker gegen `docs/data`). Schließt die Test-Lücke aus der Session-49-Reflexion. JS jetzt 85. |
+| STE-@id stabilisieren (Refactoring) | offen | STE-`@id` tragen einen globalen Zähler → jede STE-Änderung verschiebt alle nachfolgenden @ids (`test_22` 3× gebrochen). Vergabe record-lokal oder inhaltsbasiert (Ort+Rolle+Datum-Hash) machen, dann sind @ids über Läufe stabil und kein Test muss daran ankern. |
+| Datendeckungs-Scouting-Skript | offen | `scripts/scout-coverage.py`: pro geplantem Ticket die Verteilung der betroffenen `typ`/`rolle`-Werte zeigen, damit „erst scouten, dann implementieren" ein reproduzierbarer TDD-Schritt wird statt Handarbeit (verhinderte in Session 49 E-99 als spekulativen Code). |
 | AgRelOn-Granularität | offen | `HasAddressee`/`HasSender` statt pauschal |
 | Biogramm-Netzwerk-Spur | blockiert | wartet auf AgRelOn validity-dates |
 | Weitere Reconciliation-Runde | optional | Unmatched-Restliste, nicht blockierend |

@@ -4,9 +4,9 @@
  */
 
 import { el, clear } from '../utils/dom.js';
-import { formatSignatur, formatChildSignatur, getDocTypeId, countLinks, truncate, ensureArray } from '../utils/format.js';
+import { formatSignatur, formatChildSignatur, getDocTypeId, countLinks, truncate, ensureArray, dftLabel } from '../utils/format.js';
 import { extractYear, formatDate } from '../utils/date-parser.js';
-import { DOKUMENTTYP_LABELS, bookmarkIcon } from '../data/constants.js';
+import { bookmarkIcon } from '../data/constants.js';
 import { buildInlineDetail } from './archive-inline-detail.js';
 import { filterByToolbarState, isToolbarFiltered, searchMatchBestand } from './_archive-filter.js';
 import { toggleKorb, isInKorb } from '../ui/basket.js';
@@ -81,7 +81,7 @@ function updateBestandView(filters) {
   // Typ-Label + Datum (searchMatchBestand).
   items = filterByToolbarState(store, items, state, {
     getRecord: (item) => item.record,
-    searchMatch: searchMatchBestand,
+    searchMatch: (record, q) => searchMatchBestand(record, q, store),
   });
 
   // Sortierung:
@@ -270,7 +270,7 @@ function renderRows(items) {
     const links = countLinks(r);
     const year = extractYear(r['rico:date']);
     const docType = getDocTypeId(r);
-    const docLabel = DOKUMENTTYP_LABELS[docType] || docType || '';
+    const docLabel = dftLabel(store, docType) || '';
     const recordId = r['@id'];
 
     let rowClass = '';
@@ -462,7 +462,7 @@ function buildKonvolutChips(meta, visibleChildCount) {
       .sort((a, b) => b[1] - a[1]);
     const top = all.slice(0, 3);
     for (const [dft, count] of top) {
-      const label = DOKUMENTTYP_LABELS[dft] || dft;
+      const label = dftLabel(store, dft);
       chips.push(el('span', {
         className: 'chip chip--compact',
         dataset: { tip: `${count}\u00d7 ${label}` },
@@ -472,7 +472,7 @@ function buildKonvolutChips(meta, visibleChildCount) {
     if (restTypes.length > 0) {
       const restCount = restTypes.reduce((sum, [, c]) => sum + c, 0);
       const tipLines = restTypes
-        .map(([dft, c]) => `${c}\u00d7 ${DOKUMENTTYP_LABELS[dft] || dft}`)
+        .map(([dft, c]) => `${c}\u00d7 ${dftLabel(store, dft)}`)
         .join(' \u00b7 ');
       chips.push(el('span', {
         className: 'chip chip--compact chip--rest',

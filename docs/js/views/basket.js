@@ -6,9 +6,9 @@
  */
 
 import { el, clear } from '../utils/dom.js';
-import { formatSignatur, formatDocType, getDocTypeId, ensureArray } from '../utils/format.js';
+import { formatSignatur, formatDocType, getDocTypeId, ensureArray, dftLabel } from '../utils/format.js';
 import { formatDate } from '../utils/date-parser.js';
-import { DOKUMENTTYP_LABELS, AGRELON_LABELS, formatLanguage } from '../data/constants.js';
+import { AGRELON_LABELS, formatLanguage } from '../data/constants.js';
 import { buildRecordBlocks } from './archive-inline-detail.js';
 import { getKorbItems, removeFromKorb, clearKorb, onKorbChange } from '../ui/basket.js';
 
@@ -90,7 +90,7 @@ function renderEmpty() {
 function renderCard(record) {
   const recordId = record['@id'];
   const docType = getDocTypeId(record) || '';
-  const docLabel = DOKUMENTTYP_LABELS[docType] || docType || '';
+  const docLabel = dftLabel(store, docType) || '';
 
   const card = el('div', { className: 'korb-card' });
   card.appendChild(renderCardHeader(record, recordId, docType, docLabel));
@@ -191,7 +191,7 @@ function exportCSV(ids) {
     const rid = r['@id'];
     const sig = r['rico:identifier'] || '';
     const title = r['rico:title'] || '';
-    const docType = formatDocType(r) || '';
+    const docType = formatDocType(r, store) || '';
     const date = formatDate(r['rico:date']) || '';
     const konvolutId = store.childToKonvolut?.get(rid);
     const konvolut = konvolutId ? (store.konvolute.get(konvolutId)?.['rico:identifier'] || '') : '';

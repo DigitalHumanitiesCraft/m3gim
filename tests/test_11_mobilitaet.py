@@ -38,16 +38,23 @@ def test_spatiotemporal_events_exist(graph, xlsx_verknuepfungen):
     )
 
 
+MOBILITY_PLACE_ROLES = {
+    "zielort", "absendeort", "abreiseort", "empfangsort", "vertragsort",
+}
+
+
 def test_spatiotemporal_events_have_place_and_date(graph):
-    """Jede SpatiotemporalEvent-Instanz hat m3gim:atPlace UND m3gim:atDate.
-    Ausnahme: Freitext-Rows (3 Stueck) duerfen atDate=None haben."""
+    """Jede SpatiotemporalEvent-Instanz hat m3gim:atPlace; datierte STE auch
+    m3gim:atDate. Ausnahmen ohne atDate: datumslose Mobilitaets-STE (E-97,
+    eventRole aus MOBILITY_PLACE_ROLES) sowie bis zu 3 Freitext-Rows."""
     events = [n for n in graph if n.get("@type") == "m3gim:SpatiotemporalEvent"]
     assert events, "Keine SpatiotemporalEvents"
     missing = []
     for ev in events:
         if not ev.get("m3gim:atPlace"):
             missing.append((ev.get("@id"), "atPlace"))
-        if not ev.get("m3gim:atDate"):
+        if (not ev.get("m3gim:atDate")
+                and ev.get("m3gim:eventRole") not in MOBILITY_PLACE_ROLES):
             missing.append((ev.get("@id"), "atDate"))
     assert len(missing) <= 3, f"Zu viele SpatiotemporalEvents ohne place/date: {missing[:5]}"
 
@@ -59,10 +66,10 @@ def test_spatiotemporal_event_roles_known(graph):
     allowed = {
         "gastspiel", "aufführung", "auftritt", "probe", "generalprobe",
         "premiere", "wiederaufnahme", "festvorstellung", "spielzeit",
-        "absendedatum", "auffuehrungsdatum", "absendeort",
+        "absendedatum", "auffuehrungsdatum",
         "auftrag", "entstehung", "erscheinungsdatum",
         "ausstellungsdatum", "erwähnt",
-    }
+    } | MOBILITY_PLACE_ROLES
     events = [n for n in graph if n.get("@type") == "m3gim:SpatiotemporalEvent"]
     assert len(events) >= 20, f"Zu wenige Events: {len(events)} (erwartet >= 20)"
     unknown = set()

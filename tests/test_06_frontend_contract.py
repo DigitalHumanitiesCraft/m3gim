@@ -130,8 +130,16 @@ def test_spatiotemporal_events_are_top_level(graph):
     assert not missing_id, f"SpatiotemporalEvent ohne m3gim:ste_-ID: {missing_id[:3]}"
 
 
+MOBILITY_PLACE_ROLES = {
+    "zielort", "absendeort", "abreiseort", "empfangsort", "vertragsort",
+}
+
+
 def test_spatiotemporal_events_have_required_fields(graph):
-    """loader.js-Indexierung braucht atPlace + atDate (ISO oder ISO/ISO-Range) pro Event."""
+    """loader.js-Indexierung braucht atPlace pro Event; atDate (ISO oder
+    ISO/ISO-Range) ist Pflicht fuer datierte STE. Datumslose Mobilitaets-STE
+    (E-97, eventRole aus MOBILITY_PLACE_ROLES) tragen bewusst kein atDate — der
+    Loader indexiert sie mit date=null."""
     ste_nodes = [n for n in graph if n.get("@type") == "m3gim:SpatiotemporalEvent"]
     offenders = []
     for n in ste_nodes:
@@ -140,6 +148,8 @@ def test_spatiotemporal_events_have_required_fields(graph):
         if not (isinstance(place, dict) and place.get("name")):
             offenders.append((n.get("@id"), "atPlace"))
             continue
+        if date is None and n.get("m3gim:eventRole") in MOBILITY_PLACE_ROLES:
+            continue  # datumslose Mobilitaets-STE (E-97)
         if not isinstance(date, str):
             offenders.append((n.get("@id"), f"atDate Typ={type(date).__name__}"))
             continue
