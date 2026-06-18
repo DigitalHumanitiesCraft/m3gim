@@ -190,4 +190,27 @@ describe('Loader gegen echte docs/data', () => {
       }
     }
   });
+
+  // E-107-Kontrakt: die 4 Briefe, die durch die Staleness-Behebung erstmals
+  // Mobilitaets-Events bekamen (vorher 0), tragen jetzt datumslose Ortsrollen.
+  // Sichert das reale Ankommen ab (gruene pytest != End-to-End-Store).
+  test('E-97/E-107: die 4 Anker-Briefe tragen datumslose Ortsrollen-Events', async () => {
+    const store = await storeFrom(loadDocsData());
+    const MOBILITY_ROLES = new Set(['zielort', 'absendeort', 'abreiseort']);
+    const ANCHORS = ['m3gim:NIM_004_1', 'm3gim:NIM_007_1',
+                     'm3gim:NIM_007_20', 'm3gim:NIM_007_21'];
+    for (const recId of ANCHORS) {
+      const eventIds = store.recordToEvents.get(recId) || [];
+      const events = eventIds.map(id => store.mobilityEvents.get(id)).filter(Boolean);
+      const ortsrollen = events.filter(e => MOBILITY_ROLES.has(e.role));
+      assert.ok(ortsrollen.length > 0,
+        `${recId}: keine Mobilitaets-Ortsrolle im Store angekommen`);
+      for (const ev of ortsrollen) {
+        assert.equal(ev.date, null,
+          `${recId}: Ortsrolle ${ev.role} darf datumslos sein (date===null)`);
+        assert.ok(ev.place && ev.place.trim(),
+          `${recId}: Ortsrolle ${ev.role} ohne place`);
+      }
+    }
+  });
 });

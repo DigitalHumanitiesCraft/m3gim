@@ -33,7 +33,7 @@ ANCHOR_TITLES = [
     "Handschriftliche Notiz",                        # NIM_007/5_1 (Finanz-Anker)
 ]
 
-# Bekannte, dokumentierte @id-Kollisionen (siehe knowledge/xlsx-fixes.md).
+# Bekannte, dokumentierte @id-Kollisionen (siehe knowledge/data.md § 17).
 # Wird der Satz grosser, ist das ein echter Regressions-Alarm.
 KNOWN_COLLISIONS = {"m3gim:NIM_PL_07"}
 
@@ -249,6 +249,24 @@ def main() -> int:
                 else:
                     results.append(("FAIL", "anchor:NIM_004_1:dedup           ",
                                     f"Malaniuk {malaniuk_count}x sichtbar"))
+                # E-97-Kontrakt: typisierter Mobilitaets-Chip mit Datum "—".
+                # Belegt, dass der datumslose ZIELORT/ABSENDEORT-Chip real
+                # rendert (nicht nur der generische ORT-Chip aus hasOrHadLocation).
+                ort_block = page.locator(
+                    ".inline-detail__section",
+                    has=page.locator(".inline-detail__section-title",
+                                     has_text="Ort & Ereignis")
+                ).first
+                ort_text = ort_block.inner_text() if ort_block.count() else ""
+                has_zielort = "ZIELORT" in ort_text or "ABSENDEORT" in ort_text
+                has_dash = "—" in ort_text   # em dash fuer datumslos
+                if has_zielort and has_dash:
+                    results.append(("OK", "anchor:NIM_004_1:ortsrolle-chip  ",
+                                    "ZIELORT/ABSENDEORT-Chip mit Datum '—' gerendert"))
+                else:
+                    results.append(("FAIL", "anchor:NIM_004_1:ortsrolle-chip  ",
+                                    f"zielort={has_zielort}, dash={has_dash} | "
+                                    f"{ort_text[:80]!r}"))
         except Exception as e:
             results.append(("WARN", "anchor:NIM_004_1                 ",
                             f"check uebersprungen: {e}"))
@@ -304,7 +322,7 @@ def main() -> int:
                                 f"nur bekannte Kollisionen ({len(known)})"))
                 for d in known:
                     results.append(("  ", " " * 34,
-                                    f"{d['id']} (known, siehe xlsx-fixes.md)"))
+                                    f"{d['id']} (known, siehe data.md § 17)"))
             else:
                 results.append(("OK", "graph:duplicate-@id             ",
                                 "keine kollidierenden @ids im Graph"))

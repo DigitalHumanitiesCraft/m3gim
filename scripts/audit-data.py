@@ -10,6 +10,13 @@ Prueft:
 
 Verwendung:
     python scripts/audit-data.py
+
+HINWEIS (Session 51): Dies ist ein grobes Aggregat-Review-Tool (Mengen- und
+Counter-Vergleiche). Der *zellgenaue* Gegencheck Wert-fuer-Wert gegen die
+adressierte XLSX-Zelle liegt jetzt im Suite-Test tests/test_34_rawdata_crosscheck.py
+(laeuft mit `pytest`). Dieses Skript bleibt als schneller Ueberblick erhalten,
+nutzt aber denselben Multi-Sheet-Loader wie die Pipeline (load_verknuepfungen),
+damit seine Zahlen beim Box-Export nicht mehr driften.
 """
 
 import sys
@@ -66,7 +73,13 @@ def audit_records(df_objekte, graph):
     for _, row in df_objekte.iterrows():
         sig = normalize(row.get('archivsignatur'))
         if sig and sig.lower() != 'beispiel':
-            folio = normalize(row.get('unnamed: 2')) if 'unnamed: 2' in df_objekte.columns else None
+            # Folio-Spalte heisst je nach Workbook-Stand 'folio nr' (aktuell),
+            # 'folio'/'folio_nr' oder (alt) 'unnamed: 2'. Erste vorhandene nehmen.
+            folio = None
+            for fcol in ('folio nr', 'folio_nr', 'folio', 'unnamed: 2'):
+                if fcol in df_objekte.columns:
+                    folio = normalize(row.get(fcol))
+                    break
             obj_id = f"{sig} {folio}" if folio else sig
             xlsx_sigs.add(obj_id)
 
@@ -485,7 +498,11 @@ def main():
     verk_path = SHEETS_DIR / "M3GIM-Verknüpfungen.xlsx"
     if not verk_path.exists():
         verk_path = SHEETS_DIR / "M3GIM-Verknuepfungen.xlsx"
-    df_verk = pd.read_excel(verk_path)
+    # Multi-Sheet-Loader der Pipeline (Box-Export verteilt auf mehrere Sheets),
+    # statt single-sheet pd.read_excel — sonst driften die Aggregat-Zahlen.
+    sys.path.insert(0, str(BASE_DIR / "scripts"))
+    from transform import load_verknuepfungen
+    df_verk = load_verknuepfungen(verk_path)
     print(f"  Verknuepfungen-XLSX: {len(df_verk)} Zeilen")
 
     # Audits ausfuehren

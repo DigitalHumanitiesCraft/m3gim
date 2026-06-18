@@ -19,6 +19,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
 import { partitionRecord } from '../../docs/js/views/archive-inline-detail.js';
+import { steChipPrefix } from '../../docs/js/data/constants.js';
 
 test('partitionRecord: Agenten landen rollenbasiert in Buckets, Erwaehnte aus Subjects', () => {
   const record = {
@@ -83,6 +84,19 @@ test('partitionRecord: Events werden aus recordToEvents + mobilityEvents aufgelo
   const { events } = partitionRecord(record, store);
   assert.equal(events.length, 1);             // e_missing wird ausgefiltert
   assert.equal(events[0].place, 'Wien');
+});
+
+test('steChipPrefix: E-97-Mobilitaets-Ortsrollen werden zum Uppercase-Prefix', () => {
+  // Diese drei sind nicht in STE_ROLE_DISPLAY gelistet -> Fallback Uppercase.
+  // Sichert den ZIELORT/ABSENDEORT/ABREISEORT-Prefix der datumslosen Chips ab.
+  assert.equal(steChipPrefix('zielort'), 'ZIELORT');
+  assert.equal(steChipPrefix('absendeort'), 'ABSENDEORT');
+  assert.equal(steChipPrefix('abreiseort'), 'ABREISEORT');
+  // Datumsrollen werden hingegen auf Orts-/Ereignisrollen gemappt.
+  assert.equal(steChipPrefix('absendedatum'), 'ABSENDEORT');
+  assert.equal(steChipPrefix('auffuehrungsdatum'), 'AUFFÜHRUNG');
+  // Leerwert faellt auf den generischen EREIGNIS-Prefix.
+  assert.equal(steChipPrefix(null), 'EREIGNIS');
 });
 
 test('partitionRecord: leerer Record liefert leere, aber wohlgeformte Struktur', () => {
