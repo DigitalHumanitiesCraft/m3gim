@@ -4,7 +4,7 @@
  */
 
 import { extractYear } from '../utils/date-parser.js';
-import { ensureArray, getDocTypeId, countLinks } from '../utils/format.js';
+import { ensureArray, getDocTypeId, countLinks, cityOf } from '../utils/format.js';
 import { normalizePerson, getPersonKategorie } from '../utils/normalize.js';
 import { extractXlsxSource } from '../utils/provenance.js';
 
@@ -164,6 +164,13 @@ function buildStore(jsonld) {
     indexFinances(store, record);
   }
 
+  // Pass 2.2: Adressgenaue Orte ("Stadt, Strasse") rollen ihre Records additiv
+  // zum Stadt-Eintrag hoch, sofern die Stadt eigenstaendig existiert. Schliesst
+  // den Recall-Gap im Ort-Filter (Filter "Zürich" verfehlte sonst Records, die
+  // nur adressgenau erfasst sind) und konsolidiert den Ort-Index. Die
+  // Adress-Eintraege bleiben fuer adressgenaue Recherche erhalten.
+  consolidateCityLocations(store);
+
   // Pass 2.5: AgRelOn-Relationen rueckwaerts auf Personen-Index aufloesen.
   // Fuer jede Relation wird das Objekt im Personen-Index gesucht (primaer
   // ueber Q-ID, sekundaer ueber normalizePerson(name)) und dort in
@@ -214,7 +221,7 @@ function buildStore(jsonld) {
 
     // Konvolut-Titel: bevorzugt aus Folio-Record, sonst aus Sammel-Record
     // (Sammel-Zeilen ohne Folio bekommen _sammlung-Suffix, siehe
-    // knowledge/xlsx-fixes.md § 13 -- ihr Titel beschreibt das Konvolut
+    // knowledge/data.md § 17 -- ihr Titel beschreibt das Konvolut
     // inhaltlich, z. B. "Diverse Zeitungsausschnitte" fuer NIM_006).
     const sammelChildId = realChildIds.find(cid => cid.endsWith('_sammlung'));
     const sammelRecord = sammelChildId ? store.records.get(sammelChildId) : null;
@@ -376,6 +383,23 @@ function indexLocations(store, record) {
     entry.records.add(record['@id']);
     if (loc.role) entry.roles.add(loc.role);
     if (wikidata && !entry.wikidata) entry.wikidata = wikidata;
+  }
+}
+
+/**
+ * Adressgenaue Orte additiv unter ihre Stadt rollen. Konservativ: nur wenn
+ * cityOf(name) != name (also adressgenau) UND die Stadt bereits als eigener
+ * Ort existiert (kein Erzeugen neuer Stadt-Eintraege, kein Falsch-Merge).
+ * Adress-Eintraege bleiben unveraendert bestehen.
+ */
+function consolidateCityLocations(store) {
+  for (const [name, entry] of [...store.locations]) {
+    const city = cityOf(name);
+    if (city === name) continue;
+    const cityEntry = store.locations.get(city);
+    if (!cityEntry) continue;
+    for (const id of entry.records) cityEntry.records.add(id);
+    for (const r of entry.roles) cityEntry.roles.add(r);
   }
 }
 

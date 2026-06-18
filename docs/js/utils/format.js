@@ -21,6 +21,21 @@ export function formatSignatur(identifier) {
   return identifier.replace('UAKUG/', '');
 }
 
+/**
+ * Stadt-Ebene eines (ggf. adressgenauen) Ortsnamens: der Teil vor dem ersten
+ * Komma. "Zürich, Zürichbergstrasse 104" → "Zürich"; "Wien" → "Wien".
+ * Dient der konservativen Stadt-Gruppierung gegen Ortsnamen-Fragmentierung
+ * (adressgenaue Strings aus den E-97-Ortsrollen, die sonst Filter-Recall und
+ * Top-Orte-Zaehlung zersplittern). Reine Anzeige-/Index-Hilfe — die Wurzel
+ * (Ortsindex ohne Stadt/Q-ID-Ebene) bleibt ein Datenticket.
+ */
+export function cityOf(name) {
+  if (!name) return name;
+  const s = String(name);
+  const i = s.indexOf(',');
+  return (i === -1 ? s : s.slice(0, i)).trim();
+}
+
 /** Format a child signatur showing only the piece number (e.g. "UAKUG/NIM_003 1_1" → "Nr. 1.1"). */
 export function formatChildSignatur(identifier, parentIdentifier) {
   if (!identifier || !parentIdentifier) return formatSignatur(identifier);

@@ -12,7 +12,7 @@
 
 import { clear, el } from '../utils/dom.js';
 import { logStamp } from '../utils/env.js';
-import { getDocTypeId } from '../utils/format.js';
+import { getDocTypeId, cityOf } from '../utils/format.js';
 import { mobilityClusterFor } from '../data/constants.js';
 
 const PALETTE = [
@@ -156,20 +156,29 @@ const SICHT_COLOR = {
 
 function aggregateSichten(store) {
   const buckets = new Map(SICHTEN.map(s => [s.id, { ...s, count: 0 }]));
-  let unklassifiziert = 0;
+  // Per-role tally for the residual bucket so the description stays factual as
+  // the data evolves (e.g. E-97 mobility ortsrollen now dominate it). Hard-coded
+  // role lists drift out of sync with the export.
+  const unklassifiziertRollen = new Map();
   for (const ev of store.mobilityEvents.values()) {
     const cluster = mobilityClusterFor(ev.role);
     if (cluster && buckets.has(cluster)) {
       buckets.get(cluster).count++;
     } else {
-      unklassifiziert++;
+      const role = ev.role || '(ohne Rolle)';
+      unklassifiziertRollen.set(role, (unklassifiziertRollen.get(role) || 0) + 1);
     }
   }
   const rows = [...buckets.values()];
+  const unklassifiziert = [...unklassifiziertRollen.values()].reduce((s, n) => s + n, 0);
   if (unklassifiziert > 0) {
+    const breakdown = [...unklassifiziertRollen.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .map(([role, n]) => `${role} (${n})`)
+      .join(', ');
     rows.push({
       id: 'neutral', label: 'Nicht klassifiziert',
-      desc: 'Rollen ausserhalb der fuenf Sichten (erwaehnt, auftrag, entstehung)',
+      desc: `Rollen ausserhalb der fünf Sichten: ${breakdown}`,
       count: unklassifiziert,
     });
   }
@@ -198,14 +207,19 @@ function buildMobilitaetSection(store) {
 // ---------------------------------------------------------------------------
 
 function aggregatePlaces(store) {
+  // Auf Stadt-Ebene aggregieren: adressgenaue Orte ("Zürich, Strasse") und ihre
+  // Stadt fallen sonst auseinander (nur die Stadt traegt eine Q-ID). cityOf
+  // konsolidiert sie; die Stadt-Q-ID wird uebernommen, sobald ein Event sie hat.
   const map = new Map();
   for (const ev of store.mobilityEvents.values()) {
     if (!ev.place) continue;
-    const key = ev.placeWikidata || ev.place;
-    if (!map.has(key)) {
-      map.set(key, { name: ev.place, qid: ev.placeWikidata || null, count: 0 });
+    const city = cityOf(ev.place);
+    if (!map.has(city)) {
+      map.set(city, { name: city, qid: null, count: 0 });
     }
-    map.get(key).count++;
+    const entry = map.get(city);
+    entry.count++;
+    if (!entry.qid && ev.placeWikidata) entry.qid = ev.placeWikidata;
   }
   return [...map.values()].sort((a, b) => b.count - a.count);
 }
@@ -253,6 +267,15 @@ function buildGeografieSection(store) {
     const histWrap = el('div', { className: 'stat-subsection' });
     histWrap.appendChild(el('h4', { className: 'stat-subsection__title' },
       'Events pro Jahrzehnt'));
+    // Datengetriebener Hinweis: datumslose Events (E-97-Ortsrollen) fallen aus
+    // dem Histogramm, sonst waere der stille Verlust unsichtbar.
+    const datiert = decades.reduce((s, d) => s + d.count, 0);
+    const gesamt = store.mobilityEvents.size;
+    if (gesamt > datiert) {
+      histWrap.appendChild(el('p', { className: 'stat-subsection__note' },
+        `${datiert} von ${gesamt} Events mit Jahresangabe — ${gesamt - datiert} `
+        + 'ohne datierbares Jahr hier nicht dargestellt.'));
+    }
     histWrap.appendChild(buildHistogram(decades, {
       xAccessor: d => d.decade,
       yAccessor: d => d.count,

@@ -134,6 +134,7 @@ export function buildInlineDetail(record, store, { onClose } = {}) {
   renderBlock('mitwirkende', rightCol);
   renderBlock('werk', rightCol);
   renderBlock('ort', rightCol);
+  renderBlock('genannte-daten', rightCol);
   renderBlock('erwaehnt', rightCol);
   renderBlock('weitere', rightCol);
 
@@ -208,13 +209,17 @@ export function partitionRecord(record, store) {
     if (!perf) continue;
     const srId = perf['m3gim:hasStageRole'] && perf['m3gim:hasStageRole']['@id'];
     const name = srId && store.stageRoles?.get(srId);
-    if (name) performanceRoles.push({ name });
+    // dataQualityFlag sitzt auf der Performance-Entitaet, nicht der StageRole.
+    if (name) performanceRoles.push({ name, qualityFlag: perf['m3gim:dataQualityFlag'] });
   }
   const locations = ensureArray(record['rico:hasOrHadLocation']);
   const eventIds = store.recordToEvents?.get(recordId) || [];
   const events = eventIds.map(eid => store.mobilityEvents.get(eid)).filter(Boolean);
   const agentRelations = store.agentRelations?.get(recordId) || [];
   const finances = store.finances?.get(recordId) || [];
+  // m3gim:hasDatedEvent: im Dokument GENANNTE Datierungen (dateRole "erwaehnt"),
+  // KEINE biografischen Ereignisse — daher hier am Record, nicht im Zeitstrahl.
+  const datedEvents = ensureArray(record['m3gim:hasDatedEvent']);
 
   // Agents, die schon ueber eine AgRelOn-Beziehung sichtbar sind, unterdruecken.
   const agrelonAgentKeys = new Set();
@@ -235,7 +240,7 @@ export function partitionRecord(record, store) {
   }
   for (const p of mentionedPersons) bucket.erwaehnt.push(p);
 
-  return { bucket, works, performanceRoles, events, locations, agentRelations, finances };
+  return { bucket, works, performanceRoles, events, locations, agentRelations, finances, datedEvents };
 }
 
 /**
@@ -246,7 +251,7 @@ export function partitionRecord(record, store) {
  * weitere, beziehungen, finanzen.
  */
 export function buildRecordBlocks(record, store) {
-  const { bucket, works, performanceRoles, events, locations, agentRelations, finances } = partitionRecord(record, store);
+  const { bucket, works, performanceRoles, events, locations, agentRelations, finances, datedEvents } = partitionRecord(record, store);
 
   const blocks = [];
   const push = (key, title, chips) => {
@@ -256,6 +261,7 @@ export function buildRecordBlocks(record, store) {
   push('mitwirkende', 'Mitwirkende', agentChipEls(bucket.mitwirkende));
   push('werk', 'Werk & Repertoire', workChipEls(works, performanceRoles));
   push('ort', 'Ort & Ereignis', eventChipEls(events, locations));
+  push('genannte-daten', 'Im Dokument genannte Daten', datedEventChipEls(datedEvents));
   push('erwaehnt', 'Erwähnt', agentChipEls(bucket.erwaehnt));
   push('weitere', 'Weitere', agentChipEls(bucket.weitere));
   push('beziehungen', 'Beziehungen', relationChipEls(agentRelations));
@@ -270,6 +276,7 @@ function agentChipEls(entities) {
     value: entityName(entity, entity['@id'] || '?'),
     xlsxSource: extractXlsxSource(entity),
     wikidata: asWikidataId(entity['@id']),
+    qualityFlag: entity['m3gim:dataQualityFlag'],
     tip: 'Als Filter setzen',
     onClick: chipClickFor('personen', entityName(entity, entity['@id'] || '?')),
   }));
@@ -287,6 +294,7 @@ function workChipEls(works, performanceRoles) {
       cluster: w['@type'] === 'm3gim:PerformanceEvent' ? 'ort' : 'rolle',
       xlsxSource: extractXlsxSource(w),
       wikidata: asWikidataId(w['@id']),
+      qualityFlag: w['m3gim:dataQualityFlag'],
       tip: 'Als Filter setzen',
       onClick: chipClickFor('werke', name),
     }));
@@ -297,6 +305,7 @@ function workChipEls(works, performanceRoles) {
       value: entityName(r, '?'),
       cluster: 'rolle',
       xlsxSource: extractXlsxSource(r),
+      qualityFlag: r.qualityFlag,
     }));
   }
   return chips;
@@ -370,6 +379,21 @@ function financeChipEls(entries) {
 }
 
 /**
+ * m3gim:hasDatedEvent -> Datums-Chips. Diese Datierungen werden IM Dokument
+ * genannt (dateRole "erwaehnt"), sind also Eigenschaft des Dokuments, nicht
+ * Malaniuks Biografie — deshalb hier am Record und bewusst NICHT im
+ * Chronik-Zeitstrahl (sonst stuende z. B. ein 1872-Punkt auf ihrer Lebenslinie).
+ */
+function datedEventChipEls(datedEvents) {
+  return datedEvents.map(d => buildRoleChip({
+    prefix: d['m3gim:dateRole'] || 'genannt',
+    value: formatDate(d['m3gim:dateValue']) || d['m3gim:dateValue'] || '?',
+    cluster: 'datum',
+    xlsxSource: extractXlsxSource(d),
+  }));
+}
+
+/**
  * Chip im Mockup-Stil: Rolle-Prefix (Uppercase, Mono) + Wert (Serif) +
  * optionale Provenance-Pille + optionales Wikidata-Badge. Cluster steuert
  * die Farbfamilie ueber eine CSS-Klasse .chip--c-<cluster>.
@@ -388,14 +412,18 @@ function financeChipEls(entries) {
  */
 const PROV_ICON_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>';
 
-export function buildRoleChip({ prefix, value, cluster, xlsxSource, wikidata, tip, onClick, compact }) {
+// Info-Kreis (neutral, nicht alarmierend) fuer den Datenqualitaets-Marker.
+const QUALITY_ICON_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>';
+
+export function buildRoleChip({ prefix, value, cluster, xlsxSource, wikidata, tip, onClick, compact, qualityFlag }) {
   const prefixUpper = (prefix || '').toUpperCase();
   const cls = cluster || roleClusterFor(prefixUpper);
   const hasProv = xlsxSource && xlsxSource.row;
   const hasWikidata = wikidata && String(wikidata).startsWith('wd:');
+  const hasQuality = Boolean(qualityFlag);
   // Chip-Tip nur, wenn keine Children eigene Tips tragen — sonst stapeln sich
   // mehrere Tooltips beim Hover auf der Pille oder dem Wikidata-Badge (E-90).
-  const childrenHaveTips = hasProv || hasWikidata;
+  const childrenHaveTips = hasProv || hasWikidata || hasQuality;
 
   const chipProps = {
     className: `chip chip--role-pair chip--c-${cls}${onClick ? ' chip--clickable' : ''}${compact ? ' chip--compact' : ''}`,
@@ -433,6 +461,17 @@ export function buildRoleChip({ prefix, value, cluster, xlsxSource, wikidata, ti
       dataset: { tip: `Bei Wikidata ansehen (${wikidata})` },
       html: WIKIDATA_ICON_SVG,
       onClick: (e) => e.stopPropagation(),
+    }));
+  }
+  if (hasQuality) {
+    // Datengetriebener Marker: der Flag-Wert (z. B. "rolle-unsicher") steht
+    // verbatim im Tooltip — keine redaktionelle Deutung, nur das modellierte
+    // m3gim:dataQualityFlag sichtbar gemacht.
+    parts.push(el('span', {
+      className: 'quality-flag',
+      dataset: { tip: `Datenqualität: ${qualityFlag}` },
+      'aria-label': `Datenqualität: ${qualityFlag}`,
+      html: QUALITY_ICON_SVG,
     }));
   }
   return el('span', chipProps, ...parts);

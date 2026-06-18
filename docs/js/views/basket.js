@@ -6,6 +6,7 @@
  */
 
 import { el, clear } from '../utils/dom.js';
+import { logStamp } from '../utils/env.js';
 import { formatSignatur, formatDocType, getDocTypeId, ensureArray, dftLabel } from '../utils/format.js';
 import { formatDate } from '../utils/date-parser.js';
 import { AGRELON_LABELS, formatLanguage } from '../data/constants.js';
@@ -36,21 +37,40 @@ function renderList() {
 
   wrapper.appendChild(renderHeader(ids));
 
-  if (ids.length === 0) {
-    wrapper.appendChild(renderEmpty());
-    container.appendChild(wrapper);
-    return;
-  }
-
-  const list = el('div', { className: 'korb-list' });
   const records = ids
     .map(id => store.records.get(id))
     .filter(Boolean)
     .sort((a, b) => (a['rico:identifier'] || '').localeCompare(b['rico:identifier'] || '', 'de-DE', { numeric: true }));
 
-  for (const r of records) list.appendChild(renderCard(r));
-  wrapper.appendChild(list);
+  if (ids.length === 0) {
+    wrapper.appendChild(renderEmpty());
+  } else {
+    const list = el('div', { className: 'korb-list' });
+    for (const r of records) list.appendChild(renderCard(r));
+    wrapper.appendChild(list);
+  }
+
   container.appendChild(wrapper);
+  logKorbStamp(ids, records);
+}
+
+/**
+ * Strukturierter State-Stempel wie die uebrigen Tab-Views (env.logStamp), damit
+ * der Korb smoke-testbar wird (vorher nur "[korb] geoeffnet" ohne Kennzahlen).
+ */
+function logKorbStamp(ids, records) {
+  let events = 0;
+  let finanzen = 0;
+  for (const r of records) {
+    events += (store.recordToEvents?.get(r['@id']) || []).length;
+    finanzen += (store.finances?.get(r['@id']) || []).length;
+  }
+  logStamp('korb', [
+    ['eintraege', ids.length],
+    ['aufgeloest', records.length],
+    ['events', events],
+    ['finanzen', finanzen],
+  ]);
 }
 
 function renderHeader(ids) {

@@ -87,6 +87,14 @@
   margin: 0 0 var(--space-2);
 }
 
+/* Datengetriebener Hinweis (z. B. datumslose Events nicht im Histogramm). */
+.stat-subsection__note {
+  font-size: var(--text-xs);
+  color: var(--color-text-tertiary);
+  font-style: italic;
+  margin: 0 0 var(--space-1);
+}
+
 /* --- Horizontale Balkenliste --------------------------------------------- */
 
 .stat-bars {
