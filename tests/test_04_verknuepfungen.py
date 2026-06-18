@@ -8,7 +8,7 @@ transform.py-Mapping (add_relations_to_records):
   ort          → rico:hasOrHadLocation (@type rico:Place)
   werk         → rico:hasOrHadSubject (@type m3gim:MusicalWork)
   ereignis     → rico:hasOrHadSubject (@type m3gim:PerformanceEvent)
-  rolle        → m3gim:hasPerformanceRole
+  rolle        → m3gim:hasPerformance (m3gim:Performance + m3gim:StageRole, E-96)
   datum        → m3gim:eventDate
 """
 
@@ -32,7 +32,7 @@ _RELATIONAL_PROPS = (
     "m3gim:hasAssociatedAgent",
     "rico:hasOrHadLocation",
     "rico:hasOrHadSubject",
-    "m3gim:hasPerformanceRole",
+    "m3gim:hasPerformance",
     "m3gim:eventDate",
     "m3gim:hasSpatiotemporalEvent",
     "agrelon:hasRelation",
@@ -148,48 +148,33 @@ def test_locations_have_name(records):
     assert not offenders, f"Locations ohne name: {offenders[:3]}"
 
 
-def test_performance_role_structure(records):
-    """m3gim:hasPerformanceRole-Einträge haben name und optional role."""
+def test_performance_references_resolvable(records, graph):
+    """Jede record-referenzierte m3gim:Performance ist im Graph auflösbar und
+    trägt eine hasStageRole-Referenz auf eine m3gim:StageRole (E-96/E-98)."""
+    perfs = {n["@id"]: n for n in graph if n.get("@type") == "m3gim:Performance"}
+    stage_roles = {n["@id"] for n in graph if n.get("@type") == "m3gim:StageRole"}
     for r in records:
-        for rol in ensure_list(r.get("m3gim:hasPerformanceRole")):
-            if isinstance(rol, dict):
-                assert "name" in rol, f"{r['@id']}: Rolle ohne name"
+        for ref in ensure_list(r.get("m3gim:hasPerformance")):
+            pid = ref.get("@id") if isinstance(ref, dict) else None
+            assert pid in perfs, f"{r['@id']}: hasPerformance-Ref {pid} fehlt im Graph"
+            sr = perfs[pid].get("m3gim:hasStageRole")
+            if isinstance(sr, dict):
+                assert sr.get("@id") in stage_roles, (
+                    f"{pid}: hasStageRole zeigt auf nicht-existente StageRole"
+                )
 
 
-def test_event_date_iso_or_range(records):
-    """m3gim:eventDate-Werte sind ISO (YYYY[-MM[-DD]]) oder ISO-Range (YYYY/YYYY).
-
-    Ein Baseline-Wert in baseline_counts.json akzeptiert die aktuell bekannten
-    Freitext-Einträge ("Wien, ab 1956", "1944-05 bis 1944-09", "1957-[05-27?]").
-    Wenn die Zahl waechst, muss eine neue Freitext-Datierung aufgetaucht sein —
-    XLSX bereinigen (knowledge/xlsx-fixes.md § 6). Wenn sie sinkt, die Baseline
-    nach unten ziehen, damit die Bereinigung nicht stillschweigend rueckgaengig
-    gemacht werden kann.
+def test_event_date_retired(records):
+    """Das generische m3gim:eventDate ist nach E-102 abgeschafft: Datumsrollen
+    ohne typisierte Property laufen jetzt in m3gim:hasDatedEvent (DatedEvent),
+    Freitext-/Klammer-Datierungen inklusive. Die ISO-Reinheit der typisierten
+    Properties und die Wohlgeformtheit der DatedEvents prueft test_30; hier nur
+    der Regressionsschutz, dass eventDate nicht zurueckkehrt.
     """
-    import json
-    import re
-    from pathlib import Path
-
-    iso_strict = re.compile(r"^\d{4}(-\d{2}(-\d{2})?)?(/\d{4}(-\d{2}(-\d{2})?)?)?$")
-
-    offenders = []
-    for r in records:
-        for d in ensure_list(r.get("m3gim:eventDate")):
-            if not isinstance(d, str):
-                continue
-            if not iso_strict.match(d):
-                offenders.append((r["@id"], d))
-
-    baseline_path = Path(__file__).parent / "fixtures" / "baseline_counts.json"
-    baseline = json.loads(baseline_path.read_text(encoding="utf-8"))
-    allowed = baseline.get("event_date_non_iso_max", 0)
-
-    assert len(offenders) == allowed, (
-        f"{len(offenders)} eventDate-Werte entsprechen nicht ISO "
-        f"(Baseline erlaubt {allowed}). Drift! Erste Offenders: "
-        f"{offenders[:5]}. XLSX redaktionell bereinigen "
-        f"(knowledge/xlsx-fixes.md § 6); Baseline in "
-        f"tests/fixtures/baseline_counts.json anpassen."
+    offenders = [r["@id"] for r in records if "m3gim:eventDate" in r]
+    assert not offenders, (
+        f"{len(offenders)} Records tragen noch das abgeschaffte m3gim:eventDate "
+        f"(E-102, Routing nach m3gim:hasDatedEvent): {offenders[:5]}"
     )
 
 
@@ -203,7 +188,7 @@ def test_roles_gender_neutral(records):
     offenders = []
     for r in records:
         for prop in ("m3gim:hasAssociatedAgent", "rico:hasOrHadLocation",
-                     "rico:hasOrHadSubject", "m3gim:hasPerformanceRole"):
+                     "rico:hasOrHadSubject"):
             for ent in ensure_list(r.get(prop)):
                 if not isinstance(ent, dict):
                     continue

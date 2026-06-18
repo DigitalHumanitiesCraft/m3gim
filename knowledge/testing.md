@@ -61,12 +61,17 @@ tests/
 ├── test_15_vocab_coverage.py      # XLSX-Vokabular ↔ Output-Vokabular
 ├── test_16_roundtrip_finance.py   # Jede Finanz-Zeile exakt im Output
 ├── test_18_typed_dates.py         # Typisierte Datumsproperty-Familie
-├── test_19_provenance.py          # agrelon:hasProvenance + Konfidenz
+├── test_19_provenance.py          # Datierungs-Meta-Contract (keine Konfidenz, E-106)
 ├── test_20_xlsx_provenance.py     # m3gim:xlsxSource + Anker-Records
 ├── test_22_ste_coordinates.py     # STE.atPlace mit @id + geo:lat/long (Session 33)
 ├── test_23_role_hygiene.py        # rico:Place trägt keine Datumsrollen (Session 34)
 ├── test_24_composer_uniqueness.py # Fuzzy-Varianten-Detektor im Werkindex (Session 38)
-└── test_25_chronik_mobility_cluster.py  # EVENT_ROLE_TO_MOBILITY_CLUSTER-Spec (Session 36)
+├── test_25_chronik_mobility_cluster.py  # EVENT_ROLE_TO_MOBILITY_CLUSTER-Spec (Session 36)
+├── test_26_term_conformance.py    # Term-Konformitäts-Lock gegen Allowlist (E-103/104/105)
+├── test_27_stage_role.py          # m3gim:StageRole wohlgeformt + dedupliziert (E-96)
+├── test_28_performance.py         # m3gim:Performance + hasPerformance-Auflösung (E-96/98)
+├── test_30_quality_and_dated_events.py  # DatedEvent-Routing + dataQualityFlag + bearbeitungsnotiz (E-102)
+└── test_31_dft_vocab.py           # sammlung eigenständig + deutsche skos:prefLabel (E-101)
 ```
 
 Die Nummerierung hat historische Lücken (test_17, test_21 wurden nicht vergeben). Das ist bewusst — die Zahlen sind stabile IDs, kein durchgängiger Index.
@@ -116,6 +121,8 @@ SpatiotemporalEvent-Existenz, `atPlace`+`atDate` Pflicht, Rollen-Vokabular, Anza
 ### 12. AgRelOn (test_12, Phase 4.8)
 `agrelon:`-Namespace im Context, HasEmployeeEmployer-Relationen skalieren mit XLSX-arbeitgeber-Zeilen, HasCorrespondent-Relationen haben Provenance, `hasValidityPeriod` ist well-formed (Begin/End als ISO-String).
 
+**Hinweis (E-104).** Dieses Modul schreibt aktuell die Fehlterme `hasValidityPeriod`/`hasProvenance` als Invariante fest. Mit der AgRelOn-Termkorrektur sind die Assertions auf `metadataPeriod`/`metadataProvenance` nachzuziehen — der Term-Validierungs-Test (test_26) deckt den Mismatch sonst sofort als rot auf.
+
 ### 13. Finanzen (test_13, Phase 4.6)
 Jede Finanz-DetailAnnotation hat korrekten `@type`, `detailField`, parsbare `monetaryAmount` (xsd:decimal), Währung im belegten Set (RM/DM/ATS/S/CHF/FRF/Fr/ESC/Esc/USD).
 
@@ -129,10 +136,16 @@ Jede in der XLSX belegte Rolle (nach Normalisierung) steht in `data.md § 5`, je
 Für jede XLSX-Finanzzeile: der zugehörige Record (über `rico:identifier`) enthält eine DetailAnnotation mit exaktem `monetaryAmount` + `currency` + `detailRole`. Kein Silent-Drop.
 
 ### 18. Typisierte Datumsproperties (test_18, Phase 4.7)
-Records nutzen die typisierten Properties (`m3gim:absendedatum` etc.) mindestens so häufig wie generisches `m3gim:eventDate`. Alle Werte sind ISO, TimeSpan oder qualifiziert (`circa:`/`vor:`/`nach:`).
+Das generische `m3gim:eventDate` ist abgeschafft (E-102): kein Record trägt es mehr, rollenlose/nicht-ISO Datierungen laufen in `m3gim:hasDatedEvent`. Mindestens ein Record nutzt eine typisierte Property; alle Werte sind ISO, TimeSpan oder qualifiziert (`circa:`/`vor:`/`nach:`).
 
-### 19. Provenance + Konfidenz (test_19, Phase 4.3)
-Kein `m3gim:dateEvidence` mehr im Output. `agrelon:hasProvenance` und `agrelon:hasConfidenceValue` treten gemeinsam auf (keine halbierten Meta-Aussagen). Konfidenz-Werte aus dem Evidenz-Mapping als xsd:decimal, und nur bei datierter Aussage — `unbekannt`/`0.0` wird nicht serialisiert (E-100); das Modul wird im Zuge der G7-Umsetzung entsprechend nachgezogen.
+### 19. Datierungs-Meta-Contract (test_19, E-106)
+Die `datierungsevidenz` wird nicht serialisiert: kein `m3gim:dateEvidence`, **kein** `agrelon:metadataConfidence` (nirgends im Graph), keine record-seitige Datierungs-Self-Provenance. Die erfundene Dezimalkonfidenz ist entfernt (E-106, löst E-100 ab). Positivkontrolle: die legitime `agrelon:metadataProvenance` auf den AgRelOn-Relationen (`m3gim:agentRelation`) bleibt erhalten. test_29 (Konfidenz-Hygiene) entfiel mit der Konsolidierung.
+
+### 30. Datums-Routing + Datenqualitäts-Flags (test_30, E-102)
+DatedEvent-Fallback wohlgeformt (`dateValue`/`dateRole`), kein `m3gim:eventDate` mehr, klammer-/freitext-unsichere Datierungen landen im DatedEvent (nicht in typisierten Properties). Ein DatedEvent dupliziert nie ein STE `atDate`+`eventRole` am selben Record (`ort,datum` wird in *eine* Repräsentation aufgelöst, data.md § 4). `dataQualityFlag`-Werte stammen aus dem kontrollierten Vokabular; `m3gim:qualityConfidence` wird nicht fabriziert; `m3gim:bearbeitungsnotiz` trägt den Freitext-Anhang getrennt vom canonischen Status.
+
+### 31. Dokumentvokabular (test_31, E-101)
+`sammlung` ist ein eigenständiges Concept `m3gim-dft:sammlung` ohne `skos:broader` (≥10 Records zeigen darauf). Jedes dft-Concept trägt ein lesbares deutsches `skos:prefLabel` (bekannte Konzepte exakt, nicht der Slug). Coverage: ≥200 Records mit `hasDocumentaryFormType` (kein stiller Typ-Drop). Die neuen Konzepte (briefumschlag/musikzeitschrift/chronik/verzeichnis) sind in `DFT_BROADER`/`DOKUMENTTYP_TO_DFT` strukturell gerüstet. Aboutness-Guard: ein dft-Concept erscheint nie als `rico:hasOrHadSubject`.
 
 ### 20. XLSX-Provenance + Anker-Records (test_20)
 
@@ -162,7 +175,19 @@ Fuzzy-Detektor (Levenshtein-Ratio ≥ 92) über alle Komponistennamen in `m3gim:
 
 Lock für die `EVENT_ROLE_TO_MOBILITY_CLUSTER`-Mapping-Tabelle im Frontend (`docs/js/data/constants.js`). Prüft, dass jede `m3gim:eventRole`, die im JSON-LD vorkommt, entweder einer der fünf Sichten (`performativ`/`institutionell`/`korrespondenz`/`diskursiv`/`biografisch`) zugeordnet ist oder explizit auf `null` steht (bewusste Nicht-Einordnung wie `auftrag`, `entstehung`, `ueberweisung`). Fängt stille Mapping-Drift ein, wenn neue Rollen eingeführt werden, ohne die Cluster-Zuordnung mitzuziehen.
 
-## Ausführung
+### 26. Term-Validierung gegen RiC-O 1.1 und AgRelOn (geplant, test_26)
+
+Konformitäts-Lock aus dem Modellierungs-Audit ([decisions.md](decisions.md) E-103/E-104). Sammelt jeden im Output verwendeten `rico:`- und `agrelon:`-Term (als `@type` und als Property-Key) und prüft ihn gegen eine im Repo hinterlegte Allowlist der offiziellen Termlisten — RiC-O 1.1 aus den ICA-EGAD-CSV-Komponentenlisten, AgRelOn aus der DNB-RDF. Ein nicht gelisteter Term failt hart. Deckt die bekannten Fehlterme (`rico:isAssociatedWithRecord`, `rico:File`/`rico:Fonds` als Klasse, `agrelon:hasProvenance`/`hasConfidenceValue`/`hasValidityPeriod`, `agrelon:HasIsPatron`) sofort als rot auf und sichert dauerhaft gegen Regression — die Fehlerklasse „Term aus der Benennungskonvention extrapoliert" ([Leitplanke „Fremdterme verifizieren"](decisions.md)) wird damit maschinell unmöglich.
+
+Dieser Test ist der TDD-Einstieg der Konformitäts-Korrektur: zuerst rot schreiben (legt die Ist-Fehler offen), dann Pipeline und die Tests test_12/test_19 nachziehen, bis er grün ist. Ein leichtgewichtiger Vorläufer der weiter unten genannten SHACL-Validierung — er prüft Term-Existenz, nicht Shape-Konformität.
+
+### 27. StageRole-Entität (test_27, E-96)
+
+Sichert, dass `m3gim:hasPerformanceRole` vollständig abgelöst ist (kein Record trägt es mehr), dass `m3gim:StageRole`-Entitäten existieren, eine ASCII-Slug-`@id` (`^m3gim:role_[a-z0-9_]+$`) und `rico:name` tragen, und dass ihre `@id`s eindeutig sind (Dedup-Registry). ASCII-Slug ist Pflicht, weil das JSON-LD-@id-Pattern keine Umlaute matcht.
+
+### 28. Performance-Reifikation (test_28, E-96/E-98)
+
+`m3gim:Performance`-Entitäten existieren, jede record-seitige `m3gim:hasPerformance`-Referenz ist im Graph auflösbar, und `m3gim:performanceOf` zeigt stets auf ein `m3gim:MusicalWork` mit `name` (nie literale Q-ID). Die `hasPerformer`/`performanceOf`-Pfade sind datenadaptiv zulässig leer, solange der April-Stand keine `rolle,person`/`datum,werk`-Komposite enthält — sie aktivieren sich mit dem tieferen Box-Export. Begleitend migriert: test_04 (rolle → Performance statt hasPerformanceRole), test_09/test_15 (Relations-Zählung auf `hasPerformance`), die JS-Fixtures `record-partition`/`utils`.
 
 ```bash
 # Dependencies (einmalig)
@@ -218,7 +243,7 @@ Die Trennlinie folgt der Durchreich-Policy: ein **struktureller** Blocker gehör
 - Ein noch nicht implementiertes Feature ist xfail, nicht hart.
 - Manche Invarianten sind ohne einen Pipeline-Herkunftsmarker (`m3gim:derivedFromRole`) gar nicht aus dem Graph berechenbar — der Marker muss dann Teil des Features sein.
 - Der Frontend-Vokabular-Parser in den Kopplungstests muss Kommentare strippen, sonst zählt er auskommentierte Einträge als gemappt.
-- Der Konfidenz-Wertebereich enthält nie null (E-100).
+- Die Datierungs-Konfidenz ist ganz entfernt (E-106); `agrelon:metadataConfidence` taucht nirgends im Graph auf.
 - Jeder xfail-Grund zeigt auf den `data.md`-Anker, der zuerst existieren muss.
 
 ### Zwei Wellen für den neuen Datenstand

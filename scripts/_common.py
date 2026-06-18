@@ -9,6 +9,8 @@ Zentralisierte XLSX-Workaround-Konstanten siehe knowledge/xlsx-fixes.md.
 
 from __future__ import annotations
 
+import re
+
 
 # ---------------------------------------------------------------------------
 # XLSX-Workaround-Konstanten (siehe knowledge/xlsx-fixes.md)
@@ -84,6 +86,25 @@ def normalize_bearbeitungsstand(value) -> str | None:
     if "ckgestellt" in bs or "zurück" in bs:
         return "zurueckgestellt"
     return bs
+
+
+def extract_bearbeitungsnotiz(value) -> str | None:
+    """Extrahiert den Freitext-Anhang des Bearbeitungsstands als Notiz (E-102).
+
+    Der canonische Status (``normalize_bearbeitungsstand``) verwirft den
+    Klammer-Zusatz; hier wird er als ``m3gim:bearbeitungsnotiz`` herausgeloest,
+    z. B. "Erledigt (Ira Malaniuk betreffend. Rest zurueckgestellt)" →
+    "Ira Malaniuk betreffend. Rest zurueckgestellt". Rueckgabe None, wenn kein
+    Klammer-Zusatz vorhanden ist.
+    """
+    if value is None or value != value:  # None oder NaN
+        return None
+    s = str(value).strip()
+    m = re.search(r"\(([^)]+)\)", s)
+    if not m:
+        return None
+    notiz = m.group(1).strip()
+    return notiz or None
 
 
 def is_approved_match(match_entry: dict) -> bool:

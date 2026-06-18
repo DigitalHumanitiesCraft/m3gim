@@ -51,10 +51,10 @@ def test_enrichment_properties_well_typed(records):
                 if not isinstance(lon, (int, float)) or not -180 <= lon <= 180:
                     offenders.append((r["@id"], "geo:long", lon))
 
-            bd = ent.get("m3gim:birthDate")
+            bd = ent.get("schema:birthDate")
             if bd is not None:
                 if not isinstance(bd, str) or not re.match(r"^-?\d{3,4}", bd):
-                    offenders.append((r["@id"], "m3gim:birthDate", bd))
+                    offenders.append((r["@id"], "schema:birthDate", bd))
     assert not offenders, f"Enrichment-Typ-Fehler: {offenders[:5]}"
 
 
@@ -70,11 +70,11 @@ def test_voice_type_is_string_not_list_object(records):
 
 
 def test_occupation_is_list_of_strings(records):
-    """m3gim:occupation ist Liste von Strings (Labels)."""
+    """gndo:professionOrOccupationAsLiteral ist Liste von Strings (Labels)."""
     offenders = []
     for r in records:
         for ent in iter_entities_with_id(r):
-            occ = ent.get("m3gim:occupation")
+            occ = ent.get("gndo:professionOrOccupationAsLiteral")
             if occ is None:
                 continue
             if not isinstance(occ, list):

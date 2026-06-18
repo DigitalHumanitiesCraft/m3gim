@@ -197,7 +197,7 @@ export const AGRELON_LABELS = {
   'agrelon:HasEmployeeEmployer':    'Arbeitgeber',
   'agrelon:HasCorrespondent':       'Korrespondenz',
   'agrelon:HasProfessionalContact': 'Beruflicher Kontakt',
-  'agrelon:HasIsPatron':            'Patron',
+  'agrelon:IsHasPatron':            'Patron',
   'agrelon:HasIsMember':            'Mitglied',
 };
 
@@ -498,23 +498,5 @@ export function steChipPrefix(eventRole) {
   if (!eventRole) return 'EREIGNIS';
   const key = String(eventRole).trim().toLowerCase();
   return STE_ROLE_DISPLAY[key] || String(eventRole).toUpperCase();
-}
-
-// =========================================================================
-// Confidence-Dot-Mapping (Session 32: E-75 Mockup-Stil)
-// Erwarteter Input: numerischer Wert 0..1, typischerweise 1.00 / 0.50 / 0.00.
-// Hinweis: nicht-numerische oder fehlende Werte -> null, Dot wird dann nicht
-// gezeigt.
-// =========================================================================
-
-export function confidenceDotProps(value) {
-  if (value == null || value === '') return null;
-  const n = typeof value === 'number' ? value : parseFloat(value);
-  if (!Number.isFinite(n)) return null;
-  let level, title;
-  if (n >= 0.9)      { level = 'hoch';    title = 'Konfidenz hoch'; }
-  else if (n >= 0.4) { level = 'mittel';  title = 'Konfidenz mittel'; }
-  else               { level = 'niedrig'; title = 'Konfidenz niedrig'; }
-  return { value: n, level, title, label: n.toFixed(2) };
 }
 

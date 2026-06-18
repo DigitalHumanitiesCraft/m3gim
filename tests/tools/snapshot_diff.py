@@ -31,7 +31,7 @@ def load_graph(path: Path) -> dict:
 def classify(graph):
     records = [n for n in graph if n.get("@type") == "rico:Record"]
     konvolute = [n for n in graph if n.get("@type") == "rico:RecordSet"
-                 and n.get("rico:hasRecordSetType", {}).get("@id") != "rico:Fonds"]
+                 and n.get("rico:hasRecordSetType", {}).get("@id") != "ric-rst:Fonds"]
     return records, konvolute
 
 

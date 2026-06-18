@@ -72,7 +72,7 @@ def konvolute(graph: list) -> list:
         if n.get("@type") != "rico:RecordSet":
             continue
         set_type = n.get("rico:hasRecordSetType", {})
-        if isinstance(set_type, dict) and set_type.get("@id") == "rico:Fonds":
+        if isinstance(set_type, dict) and set_type.get("@id") == "ric-rst:Fonds":
             continue
         result.append(n)
     return result
@@ -82,7 +82,7 @@ def konvolute(graph: list) -> list:
 def fonds(graph: list) -> dict:
     for n in graph:
         st = n.get("rico:hasRecordSetType", {})
-        if isinstance(st, dict) and st.get("@id") == "rico:Fonds":
+        if isinstance(st, dict) and st.get("@id") == "ric-rst:Fonds":
             return n
     raise RuntimeError("Kein Fonds im Graph")
 

@@ -32,28 +32,15 @@
               "count": 6
             },
             {
-              "name": "Zürich",
-              "count": 5
+              "name": "Wien",
+              "count": 6
             },
             {
-              "name": "München",
+              "name": "Zürich",
               "count": 5
             }
           ],
-          "rollen": [
-            {
-              "name": "Brangäne",
-              "count": 10
-            },
-            {
-              "name": "Kurwenal",
-              "count": 4
-            },
-            {
-              "name": "Amneris",
-              "count": 4
-            }
-          ]
+          "rollen": []
         },
         {
           "name": "Götterdämmerung",
@@ -77,20 +64,7 @@
               "count": 1
             }
           ],
-          "rollen": [
-            {
-              "name": "Brangäne",
-              "count": 2
-            },
-            {
-              "name": "Magdalena",
-              "count": 2
-            },
-            {
-              "name": "Judith",
-              "count": 2
-            }
-          ]
+          "rollen": []
         },
         {
           "name": "Die Meistersinger von Nürnberg",
@@ -114,20 +88,7 @@
               "count": 2
             }
           ],
-          "rollen": [
-            {
-              "name": "Sixtus Beckmesser",
-              "count": 1
-            },
-            {
-              "name": "Hans Sachs",
-              "count": 1
-            },
-            {
-              "name": "Veit Pogner",
-              "count": 1
-            }
-          ]
+          "rollen": []
         },
         {
           "name": "Die Meistersinger",
@@ -164,20 +125,7 @@
               "count": 1
             }
           ],
-          "rollen": [
-            {
-              "name": "Magdalena",
-              "count": 2
-            },
-            {
-              "name": "Judith",
-              "count": 2
-            },
-            {
-              "name": "Amneris",
-              "count": 1
-            }
-          ]
+          "rollen": []
         },
         {
           "name": "Der Ring des Nibelungen",
@@ -213,7 +161,7 @@
           "orte": [
             {
               "name": "Wien",
-              "count": 5
+              "count": 7
             },
             {
               "name": "Zürich",
@@ -224,20 +172,7 @@
               "count": 4
             }
           ],
-          "rollen": [
-            {
-              "name": "Amneris",
-              "count": 5
-            },
-            {
-              "name": "Brangäne",
-              "count": 4
-            },
-            {
-              "name": "Sextus",
-              "count": 4
-            }
-          ]
+          "rollen": []
         },
         {
           "name": "Macbeth",
@@ -257,20 +192,7 @@
               "count": 1
             }
           ],
-          "rollen": [
-            {
-              "name": "Lady Macbeth",
-              "count": 3
-            },
-            {
-              "name": "Macbeth",
-              "count": 2
-            },
-            {
-              "name": "Magdalena",
-              "count": 2
-            }
-          ]
+          "rollen": []
         },
         {
           "name": "Rigoletto",
@@ -284,20 +206,7 @@
               "count": 1
             }
           ],
-          "rollen": [
-            {
-              "name": "Magdalena",
-              "count": 2
-            },
-            {
-              "name": "Judith",
-              "count": 2
-            },
-            {
-              "name": "Amneris",
-              "count": 1
-            }
-          ]
+          "rollen": []
         },
         {
           "name": "La Traviata",
@@ -311,20 +220,7 @@
               "count": 1
             }
           ],
-          "rollen": [
-            {
-              "name": "Baculus",
-              "count": 1
-            },
-            {
-              "name": "Graf von Eberbach",
-              "count": 1
-            },
-            {
-              "name": "Doktor",
-              "count": 1
-            }
-          ]
+          "rollen": []
         },
         {
           "name": "Don Carlos",
@@ -492,12 +388,7 @@
               "count": 1
             }
           ],
-          "rollen": [
-            {
-              "name": "Alt Solo",
-              "count": 1
-            }
-          ]
+          "rollen": []
         },
         {
           "name": "Die Geschöpfe des Prometheus",
@@ -519,12 +410,7 @@
               "count": 1
             }
           ],
-          "rollen": [
-            {
-              "name": "Amneris",
-              "count": 1
-            }
-          ]
+          "rollen": []
         },
         {
           "name": "8. Symphonie",
@@ -546,12 +432,7 @@
               "count": 1
             }
           ],
-          "rollen": [
-            {
-              "name": "Amneris",
-              "count": 1
-            }
-          ]
+          "rollen": []
         },
         {
           "name": "Ich liebe dich",
@@ -624,24 +505,11 @@
               "count": 5
             },
             {
-              "name": "Zürich",
+              "name": "Wien",
               "count": 4
             }
           ],
-          "rollen": [
-            {
-              "name": "Orpheus",
-              "count": 5
-            },
-            {
-              "name": "Eurydike",
-              "count": 3
-            },
-            {
-              "name": "Sextus",
-              "count": 3
-            }
-          ]
+          "rollen": []
         },
         {
           "name": "Orfeo ed Euridice",
@@ -682,20 +550,7 @@
               "count": 1
             }
           ],
-          "rollen": [
-            {
-              "name": "Brangäne",
-              "count": 1
-            },
-            {
-              "name": "Marke",
-              "count": 1
-            },
-            {
-              "name": "Kurwenal",
-              "count": 1
-            }
-          ]
+          "rollen": []
         },
         {
           "name": "La clemenza di Tito",
@@ -707,32 +562,19 @@
           ],
           "orte": [
             {
+              "name": "Wien",
+              "count": 4
+            },
+            {
               "name": "Zürich",
               "count": 4
             },
             {
               "name": "München",
               "count": 4
-            },
-            {
-              "name": "Bayreuth",
-              "count": 4
             }
           ],
-          "rollen": [
-            {
-              "name": "Sextus",
-              "count": 4
-            },
-            {
-              "name": "Orpheus",
-              "count": 2
-            },
-            {
-              "name": "Brangäne",
-              "count": 2
-            }
-          ]
+          "rollen": []
         },
         {
           "name": "Die Zauberflöte",
@@ -754,20 +596,7 @@
               "count": 1
             }
           ],
-          "rollen": [
-            {
-              "name": "Magdalene",
-              "count": 1
-            },
-            {
-              "name": "Zweite Dame",
-              "count": 1
-            },
-            {
-              "name": "Aufseherin",
-              "count": 1
-            }
-          ]
+          "rollen": []
         }
       ]
     },
@@ -901,20 +730,7 @@
               "count": 1
             }
           ],
-          "rollen": [
-            {
-              "name": "Magdalena",
-              "count": 2
-            },
-            {
-              "name": "Judith",
-              "count": 2
-            },
-            {
-              "name": "Amneris",
-              "count": 1
-            }
-          ]
+          "rollen": []
         },
         {
           "name": "Der Rosenkavalier",
@@ -923,20 +739,7 @@
             "UAKUG/NIM_004 31"
           ],
           "orte": [],
-          "rollen": [
-            {
-              "name": "Octavian",
-              "count": 1
-            },
-            {
-              "name": "Die Feldmarschallin Fürstin Werdenberg",
-              "count": 1
-            },
-            {
-              "name": "Sophie",
-              "count": 1
-            }
-          ]
+          "rollen": []
         },
         {
           "name": "Elektra",
@@ -958,20 +761,7 @@
               "count": 1
             }
           ],
-          "rollen": [
-            {
-              "name": "Magdalene",
-              "count": 1
-            },
-            {
-              "name": "Zweite Dame",
-              "count": 1
-            },
-            {
-              "name": "Aufseherin",
-              "count": 1
-            }
-          ]
+          "rollen": []
         },
         {
           "name": "Glücks genug",
@@ -1066,12 +856,7 @@
               "count": 1
             }
           ],
-          "rollen": [
-            {
-              "name": "Amneris",
-              "count": 1
-            }
-          ]
+          "rollen": []
         },
         {
           "name": "Der Gang zum Liebchen",
@@ -1205,32 +990,19 @@
           ],
           "orte": [
             {
+              "name": "Wien",
+              "count": 4
+            },
+            {
               "name": "Zürich",
               "count": 4
             },
             {
               "name": "München",
               "count": 4
-            },
-            {
-              "name": "Bayreuth",
-              "count": 4
             }
           ],
-          "rollen": [
-            {
-              "name": "Sextus",
-              "count": 4
-            },
-            {
-              "name": "Brangäne",
-              "count": 3
-            },
-            {
-              "name": "Amneris",
-              "count": 3
-            }
-          ]
+          "rollen": []
         }
       ]
     },
@@ -1302,20 +1074,7 @@
               "count": 1
             }
           ],
-          "rollen": [
-            {
-              "name": "Brangäne",
-              "count": 1
-            },
-            {
-              "name": "Marke",
-              "count": 1
-            },
-            {
-              "name": "Kurwenal",
-              "count": 1
-            }
-          ]
+          "rollen": []
         }
       ]
     },
@@ -1378,20 +1137,7 @@
               "count": 1
             }
           ],
-          "rollen": [
-            {
-              "name": "Magdalena",
-              "count": 2
-            },
-            {
-              "name": "Judith",
-              "count": 2
-            },
-            {
-              "name": "Amneris",
-              "count": 1
-            }
-          ]
+          "rollen": []
         }
       ]
     },
@@ -1412,20 +1158,7 @@
               "count": 1
             }
           ],
-          "rollen": [
-            {
-              "name": "Magdalena",
-              "count": 2
-            },
-            {
-              "name": "Judith",
-              "count": 2
-            },
-            {
-              "name": "Amneris",
-              "count": 1
-            }
-          ]
+          "rollen": []
         }
       ]
     },
@@ -1454,12 +1187,7 @@
               "count": 1
             }
           ],
-          "rollen": [
-            {
-              "name": "Amneris",
-              "count": 1
-            }
-          ]
+          "rollen": []
         }
       ]
     },
@@ -1567,20 +1295,7 @@
               "count": 1
             }
           ],
-          "rollen": [
-            {
-              "name": "Baculus",
-              "count": 1
-            },
-            {
-              "name": "Graf von Eberbach",
-              "count": 1
-            },
-            {
-              "name": "Doktor",
-              "count": 1
-            }
-          ]
+          "rollen": []
         }
       ]
     },
@@ -1602,8 +1317,8 @@
     }
   ],
   "_meta": {
-    "generated": "2026-04-18T15:11:57.197697",
-    "source_records": 450,
+    "generated": "2026-06-18T10:00:34.409597",
+    "source_records": 799,
     "note": "Includes geographic and role context extracted from titles"
   }
 }

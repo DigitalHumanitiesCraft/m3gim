@@ -1,23 +1,22 @@
-"""Provenance + Konfidenz-Spec: Phase 4.3 aus data.md Abschnitt 9.
+"""Datierungs-Meta-Contract (data.md § 9, E-106 ersetzt die E-100/E-104-Konfidenz).
 
-STATUS: aktiv, sichert den Phase-4.3-Output (seit Session 28). Tests greifen,
-wenn m3gim:dateEvidence statt agrelon:hasProvenance + agrelon:hasConfidenceValue
-im Output auftaucht (Rueckfall auf altes Schema).
+Die Datierungsevidenz (datierungsevidenz-Spalte) wird NICHT serialisiert: weder
+als altes m3gim:dateEvidence noch als erfundener agrelon:metadataConfidence-
+Dezimalwert. Letzterer war eine nicht gemessene Projektion der kategorialen
+Evidenz (aus_dokument/erschlossen/extern) und wurde von keinem aktiven Feature
+gelesen — entfernt gemaess Leitplanke "Konfidenz nicht erfinden". Damit
+entfaellt auch die record-seitige Datierungs-Self-Provenance.
 
-Mapping (data.md § 9):
-  aus_dokument -> hasConfidenceValue 1.0
-  erschlossen  -> hasConfidenceValue 0.6
-  extern       -> hasConfidenceValue 0.8
-  unbekannt    -> hasConfidenceValue 0.0
-
-hasProvenance = Archivrecord-URI (self-reference) oder externe Quelle.
+Legitime agrelon:metadataProvenance bleibt unberuehrt: auf AgRelOn-Relationen
+(nested in agrelon:hasRelation) und auf SpatiotemporalEvents als Rueckverweis
+auf den dokumentierenden Record.
 """
 
-import pytest
+from _helpers import ensure_list
 
 
 def test_date_evidence_property_removed(records):
-    """Keine m3gim:dateEvidence-Property mehr im Output (Phase 4.3)."""
+    """Kein altes m3gim:dateEvidence im Output (Migration aus Phase 4.3)."""
     offenders = [r["@id"] for r in records if "m3gim:dateEvidence" in r]
     assert not offenders, (
         f"m3gim:dateEvidence noch vorhanden bei {len(offenders)} Records "
@@ -25,39 +24,56 @@ def test_date_evidence_property_removed(records):
     )
 
 
-def test_provenance_paired_with_confidence(records):
-    """agrelon:hasProvenance und agrelon:hasConfidenceValue treten gemeinsam auf.
-    Keine halbierte Meta-Aussage (data.md § 9)."""
-    mismatch = []
-    for r in records:
-        has_prov = "agrelon:hasProvenance" in r
-        has_conf = "agrelon:hasConfidenceValue" in r
-        if has_prov != has_conf:
-            mismatch.append((r["@id"], has_prov, has_conf))
-    assert not mismatch, f"Provenance/Confidence inkonsistent: {mismatch[:5]}"
+def _walk(node):
+    if isinstance(node, dict):
+        yield node
+        for v in node.values():
+            yield from _walk(v)
+    elif isinstance(node, list):
+        for item in node:
+            yield from _walk(item)
 
 
-def test_confidence_values_from_evidenz_mapping(records):
-    """agrelon:hasConfidenceValue ist als Literal mit xsd:decimal getypt und
-    Wert in {0.0, 0.6, 0.8, 1.0}. Mindestens 50 Records mit Konfidenz erwartet
-    (in v2 haben 90 Records datierungsevidenz)."""
-    allowed = {"0.0", "0.6", "0.8", "1.0"}
+def test_no_date_confidence_anywhere(graph):
+    """agrelon:metadataConfidence wird nirgends mehr emittiert (E-106): die
+    erfundene Dezimal-Konfidenz aus datierungsevidenz ist vollstaendig entfernt."""
     offenders = []
-    checked = 0
-    for r in records:
-        cv = r.get("agrelon:hasConfidenceValue")
-        if cv is None:
-            continue
-        checked += 1
-        if isinstance(cv, dict):
-            val = cv.get("@value")
-            typ = cv.get("@type")
-            if typ != "xsd:decimal":
-                offenders.append((r["@id"], f"wrong type: {typ}"))
-            if str(val) not in allowed:
-                offenders.append((r["@id"], f"unexpected value: {val}"))
-        else:
-            if str(cv) not in allowed:
-                offenders.append((r["@id"], f"raw value: {cv}"))
-    assert checked >= 50, f"Nur {checked} Records mit Konfidenz (erwartet >= 50)"
-    assert not offenders, f"Konfidenz-Werte nicht im erwarteten Set: {offenders[:5]}"
+    for n in graph:
+        for node in _walk(n):
+            if "agrelon:metadataConfidence" in node:
+                offenders.append(node.get("@id") or node.get("@type"))
+    assert not offenders, (
+        f"{len(offenders)} Knoten tragen noch eine agrelon:metadataConfidence "
+        f"(entfernt in E-106): {offenders[:5]}"
+    )
+
+
+def test_record_has_no_dating_self_provenance(records):
+    """Kein Record traegt eine DIREKTE agrelon:metadataProvenance/-Confidence:
+    die Datierungs-Self-Provenance ist mit der Konfidenz entfallen (E-106). Die
+    legitime Provenance auf nested AgRelOn-Relationen bleibt davon unberuehrt
+    (sie ist kein direkter Record-Key)."""
+    offenders = [
+        r["@id"] for r in records
+        if "agrelon:metadataProvenance" in r or "agrelon:metadataConfidence" in r
+    ]
+    assert not offenders, (
+        f"{len(offenders)} Records mit direkter Datierungs-Self-Provenance/"
+        f"-Konfidenz (sollte mit E-106 entfallen sein): {offenders[:5]}"
+    )
+
+
+def test_agrelon_relation_provenance_intact(graph):
+    """Positivkontrolle: die legitime agrelon:metadataProvenance auf den
+    AgRelOn-Relationen (m3gim:agentRelation, Rueckverweis auf den Record)
+    existiert weiterhin — die Konfidenz-Entfernung hat sie nicht versehentlich
+    mitgenommen."""
+    seen = 0
+    for n in graph:
+        for rel in ensure_list(n.get("m3gim:agentRelation")):
+            if isinstance(rel, dict) and "agrelon:metadataProvenance" in rel:
+                seen += 1
+    assert seen >= 1, (
+        "Keine AgRelOn-Relation mehr mit metadataProvenance — die "
+        "Konfidenz-Entfernung hat zu viel abgeraeumt."
+    )

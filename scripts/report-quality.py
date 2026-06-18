@@ -8,7 +8,7 @@ schreibt einen kompakten Markdown-Report mit:
   - Bearbeitungsstand-Verteilung
   - Wikidata-Coverage pro Index + Liste der low-confidence Matches
     fuer manuelle Freigabe
-  - Provenance-Coverage (xlsxSource, agrelon:hasProvenance)
+  - Provenance-Coverage (xlsxSource, agrelon:metadataProvenance)
   - Externe Blocker (PL_07, NIM_11, Header-Shifts)
 
 Verwendung:
@@ -117,7 +117,7 @@ def main():
     prov_total = len(records_real)
     prov_with_xlsx = sum(1 for r in records_real if isinstance(r.get("m3gim:xlsxSource"), dict))
     prov_with_agrelon = sum(1 for r in records_real
-                            if r.get("agrelon:hasProvenance") is not None)
+                            if r.get("agrelon:metadataProvenance") is not None)
 
     nested_total = 0
     nested_with_xlsx = 0
@@ -221,7 +221,7 @@ def main():
     nested_pct = nested_with_xlsx / nested_total if nested_total else 0
     lines.append(f"- Records mit `m3gim:xlsxSource`: **{prov_with_xlsx}/{prov_total}** "
                  f"({xlsx_pct:.0%})")
-    lines.append(f"- Records mit `agrelon:hasProvenance`: **{prov_with_agrelon}/{prov_total}** "
+    lines.append(f"- Records mit `agrelon:metadataProvenance`: **{prov_with_agrelon}/{prov_total}** "
                  f"({agrelon_pct:.0%}) — nur Records mit Datierungsevidenz")
     lines.append(f"- Nested Entities (Details + AgRelOn) mit `xlsxSource`: "
                  f"**{nested_with_xlsx}/{nested_total}** ({nested_pct:.0%})")

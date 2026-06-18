@@ -15,7 +15,11 @@ from _helpers import ensure_list, iter_entities_with_id
 WD_ID_PATTERN = re.compile(r"^wd:Q\d+$")
 DATE_LIKE_PATTERN = re.compile(r"^\d{4}(-\d{2}){0,2}")
 ISO_DATE_PATTERN = re.compile(r"^\d{4}(-\d{2}(-\d{2})?)?$")
-AGRELON_TYPE_PATTERN = re.compile(r"^agrelon:Has[A-Z]\w+$")
+# STE atDate darf zusaetzlich einen Qualifier tragen (data.md § 6): "Wien, ab
+# 1956" wird zu atDate="nach:1956" (E-102). extractYear in date-parser.js greift
+# die Jahreszahl unabhaengig vom Praefix.
+ISO_OR_QUALIFIED_PATTERN = re.compile(r"^(circa:|vor:|nach:)?\d{4}(-\d{2}(-\d{2})?)?$")
+AGRELON_TYPE_PATTERN = re.compile(r"^agrelon:(Has|Is)[A-Z]\w+$")
 
 
 def test_hasOrHadPart_never_string(graph):
@@ -139,9 +143,10 @@ def test_spatiotemporal_events_have_required_fields(graph):
         if not isinstance(date, str):
             offenders.append((n.get("@id"), f"atDate Typ={type(date).__name__}"))
             continue
-        # Range (ISO/ISO) zulassen — Spielzeit-Events wie 1947/1952
+        # Range (ISO/ISO) zulassen — Spielzeit-Events wie 1947/1952; Qualifier
+        # (nach:/vor:/circa:) zulassen — Freitext-Beginn wie "nach:1956".
         parts = date.split("/") if "/" in date else [date]
-        if not all(ISO_DATE_PATTERN.match(p) for p in parts):
+        if not all(ISO_OR_QUALIFIED_PATTERN.match(p) for p in parts):
             offenders.append((n.get("@id"), f"atDate={date!r}"))
     assert not offenders, f"SpatiotemporalEvent-Pflichtfelder fehlen: {offenders[:5]}"
 

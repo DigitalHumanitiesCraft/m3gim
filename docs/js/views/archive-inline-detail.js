@@ -200,7 +200,16 @@ export function partitionRecord(record, store) {
   const subjects = ensureArray(record['rico:hasOrHadSubject']);
   const works = subjects.filter(s => s['@type'] === 'm3gim:MusicalWork' || s['@type'] === 'm3gim:PerformanceEvent');
   const mentionedPersons = subjects.filter(s => s['@type'] === 'rico:Person');
-  const performanceRoles = ensureArray(record['m3gim:hasPerformanceRole']);
+  // Bühnenrollen aus den referenzierten m3gim:Performance-Entitäten auflösen
+  // (E-96, löst das frühere Attribut hasPerformanceRole ab).
+  const performanceRoles = [];
+  for (const ref of ensureArray(record['m3gim:hasPerformance'])) {
+    const perf = store.performances?.get(ref && ref['@id']);
+    if (!perf) continue;
+    const srId = perf['m3gim:hasStageRole'] && perf['m3gim:hasStageRole']['@id'];
+    const name = srId && store.stageRoles?.get(srId);
+    if (name) performanceRoles.push({ name });
+  }
   const locations = ensureArray(record['rico:hasOrHadLocation']);
   const eventIds = store.recordToEvents?.get(recordId) || [];
   const events = eventIds.map(eid => store.mobilityEvents.get(eid)).filter(Boolean);

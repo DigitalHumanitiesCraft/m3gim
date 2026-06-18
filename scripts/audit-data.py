@@ -176,7 +176,9 @@ def audit_verknuepfungen(df_verk, graph):
             elif s.get("@type") == "rico:Person":
                 jsonld_mentions += 1
 
-        dts = node.get("m3gim:eventDate", [])
+        # E-102: das generische m3gim:eventDate ist in m3gim:hasDatedEvent
+        # (DatedEvent-Fallback) aufgegangen.
+        dts = node.get("m3gim:hasDatedEvent", [])
         if isinstance(dts, (str,)):
             dts = [dts]
         elif isinstance(dts, dict):

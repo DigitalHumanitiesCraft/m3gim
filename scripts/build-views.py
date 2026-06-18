@@ -560,7 +560,7 @@ def extract_auftritte(records):
     Extract performance events from archive records.
 
     Three-pass extraction:
-    - Pass 1: Structured data (eventDate + location + work)
+    - Pass 1: Structured data (DatedEvent/STE date + location + work)
     - Pass 2: Programmhefte + Plakate (title parsing)
     - Pass 3: Rezensionen with performance context
 
@@ -568,6 +568,14 @@ def extract_auftritte(records):
     """
     raw_auftritte = []
     seen_records = set()
+
+    # E-102: ort,datum-Daten leben (dedupliziert) im SpatiotemporalEvent, nicht
+    # mehr in einem record-seitigen Datumsfeld. Lookup, um deren atDate als
+    # Datumsquelle der Auftritte aufzuloesen.
+    ste_by_id = {
+        n['@id']: n for n in records
+        if isinstance(n, dict) and n.get('@type') == 'm3gim:SpatiotemporalEvent'
+    }
 
     for record in records:
         if record.get('@type') == 'rico:RecordSet':
@@ -578,10 +586,21 @@ def extract_auftritte(records):
         title = record.get('rico:title', '')
         doc_type = get_dokumenttyp(record)
 
-        # Extract year from eventDate (preferred) or rico:date
+        # Extract year from DatedEvent dateValue (preferred) or rico:date.
+        # E-102: das fruehere generische m3gim:eventDate ist in der Fallback-
+        # Klasse m3gim:hasDatedEvent (dateValue) aufgegangen.
         jahr = None
         datum = None
-        event_dates = ensure_list(record.get('m3gim:eventDate'))
+        event_dates = [
+            de.get('m3gim:dateValue')
+            for de in ensure_list(record.get('m3gim:hasDatedEvent'))
+            if isinstance(de, dict) and isinstance(de.get('m3gim:dateValue'), str)
+        ]
+        # ort,datum-Daten aus den referenzierten SpatiotemporalEvents nachziehen.
+        for ref in ensure_list(record.get('m3gim:hasSpatiotemporalEvent')):
+            ste = ste_by_id.get(ref.get('@id')) if isinstance(ref, dict) else None
+            if ste and isinstance(ste.get('m3gim:atDate'), str):
+                event_dates.append(ste['m3gim:atDate'])
         for ed in event_dates:
             if isinstance(ed, str):
                 j = extract_year(ed)
@@ -604,7 +623,7 @@ def extract_auftritte(records):
         werk, komponist, gattung = _extract_werk_from_record(record)
         rolle = _extract_rolle_from_record(record)
 
-        # Pass 1: Structured data (eventDate + location/agent auffuehrungsort)
+        # Pass 1: Structured data (DatedEvent/STE date + location/agent auffuehrungsort)
         has_event_date = len(event_dates) > 0
         has_perf_context = ort is not None or werk is not None
 

@@ -273,7 +273,7 @@ function buildGeografieSection(store) {
 
 const AGRELON_LABEL = {
   'agrelon:HasCorrespondent':       'Korrespondenz',
-  'agrelon:HasIsPatron':             'F\u00f6rderung / Patronage',
+  'agrelon:IsHasPatron':             'F\u00f6rderung / Patronage',
   'agrelon:HasProfessionalContact':  'Beruflicher Kontakt',
   'agrelon:HasIsMember':             'Mitgliedschaft',
   'agrelon:HasEmployeeEmployer':     'Anstellung',

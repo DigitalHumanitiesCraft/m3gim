@@ -47,16 +47,16 @@ def test_records_use_typed_date_properties(records):
     assert typed, "Keine typisierten Datumsproperties im Output"
 
 
-def test_event_date_property_retired_for_typed_cases(records):
-    """Nach Phase 4.7: typisierte Records sollten mindestens so haeufig sein
-    wie generisches eventDate. Wenn generic noch dominiert, deckt
-    DATUMSROLLE_TO_PROPERTY nicht alle belegten Rollen ab."""
-    typed_count = sum(1 for r in records if _any_typed_date(r))
+def test_event_date_property_retired(records):
+    """E-102: das generische m3gim:eventDate ist abgeschafft. Rollenlose oder
+    nicht-ISO Datierungen laufen in m3gim:hasDatedEvent (DatedEvent, geprueft in
+    test_30); kein Record traegt mehr eventDate, und die Typisierung wirkt."""
     generic_count = sum(1 for r in records if "m3gim:eventDate" in r)
-    assert typed_count >= generic_count, (
-        f"typed={typed_count} vs generic eventDate={generic_count} "
-        f"— DATUMSROLLE_TO_PROPERTY erweitern"
+    typed_count = sum(1 for r in records if _any_typed_date(r))
+    assert generic_count == 0, (
+        f"{generic_count} Records mit abgeschafftem m3gim:eventDate (E-102)"
     )
+    assert typed_count > 0, "Keine typisierten Datumsproperties — Typisierung wirkt nicht"
 
 
 def test_typed_date_values_iso_or_qualified(records):

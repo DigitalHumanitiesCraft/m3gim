@@ -80,8 +80,8 @@ export function countLinks(record) {
   count += ensureArray(record['m3gim:hasAssociatedAgent']).length;
   count += ensureArray(record['rico:hasOrHadLocation']).length;
   count += ensureArray(record['rico:hasOrHadSubject']).length;
-  count += ensureArray(record['m3gim:eventDate']).length;
-  count += ensureArray(record['m3gim:hasPerformanceRole']).length;
+  count += ensureArray(record['m3gim:hasDatedEvent']).length;
+  count += ensureArray(record['m3gim:hasPerformance']).length;
   return count;
 }
 

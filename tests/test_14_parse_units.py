@@ -128,14 +128,13 @@ def test_decompose_ort_datum_with_year_only():
     assert result["datum"].startswith("1955")
 
 
-def test_decompose_ort_datum_freitext_fallback():
-    """Freitext 'Wien, ab 1956' matcht das Jahres-Pattern nicht, bleibt als
-    Rohwert in beiden Slots. Muss sauber als Datenqualitaetsproblem erkennbar
-    bleiben (nicht crashen)."""
+def test_decompose_ort_datum_freitext_beginn():
+    """'Wien, ab 1956' wird am Komma getrennt und das Freitext-Datum auf den
+    nach:-Qualifier normalisiert (E-102): ort='Wien', datum='nach:1956'. Kein
+    Ort-Leak mehr ins Datumsfeld."""
     result = decompose_komposit_value("Wien, ab 1956", ["ort", "datum"])
-    # Der Fallback setzt beide Slots auf den Rohwert
-    assert result["ort"] == "Wien, ab 1956"
-    assert result["datum"] == "Wien, ab 1956"
+    assert result["ort"] == "Wien"
+    assert result["datum"] == "nach:1956"
 
 
 # ---------------------------------------------------------------------------

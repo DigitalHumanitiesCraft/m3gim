@@ -24,8 +24,10 @@ import pytest
 
 ANCHOR_STES = [
     # (STE-@id, erwarteter Q-ID-Praefix, erwarteter Stadtname)
+    # NIM_004_24 Folio: Zuerich(_7), Muenchen(_8), Wien(_9, nach:1956 — seit
+    # E-102 als eigenes STE statt Datumsfeld-Leak), Bayreuth(_10), Salzburg(_11).
     ("m3gim:ste_NIM_004_24_7",  "wd:Q72",    "Zürich"),
-    ("m3gim:ste_NIM_004_24_10", "wd:Q34713", "Salzburg"),
+    ("m3gim:ste_NIM_004_24_11", "wd:Q34713", "Salzburg"),
 ]
 
 

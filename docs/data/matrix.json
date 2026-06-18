@@ -357,7 +357,7 @@
             {
               "signatur": "UAKUG/NIM_048",
               "titel": "Programm- und Textheft zu einem Hugo-Wolf-Liederabend mit Ira Malaniuk (Alt), Heinz Rehfuss (Bariton) und Paul Baumgartner (Klavier) am 12.11.1961 in der Tonhalle Zürich",
-              "typ": "konvolut"
+              "typ": "sammlung"
             }
           ]
         }
@@ -658,7 +658,7 @@
             {
               "signatur": "UAKUG/NIM_048",
               "titel": "Programm- und Textheft zu einem Hugo-Wolf-Liederabend mit Ira Malaniuk (Alt), Heinz Rehfuss (Bariton) und Paul Baumgartner (Klavier) am 12.11.1961 in der Tonhalle Zürich",
-              "typ": "konvolut"
+              "typ": "sammlung"
             }
           ]
         }
@@ -6761,8 +6761,8 @@
     }
   ],
   "_meta": {
-    "generated": "2026-04-18T15:11:57.196191",
-    "source_records": 450,
+    "generated": "2026-06-18T10:00:34.408597",
+    "source_records": 799,
     "note": "Intensity weighted by document type: Letter=3, Program/Poster/Contract=2, Photo=1"
   }
 }

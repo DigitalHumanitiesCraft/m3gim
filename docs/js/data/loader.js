@@ -105,6 +105,10 @@ function buildStore(jsonld) {
     agentRelations: new Map(),
     /** @type {Map<string, FinanceEntry[]>} */
     finances: new Map(),
+    /** @type {Map<string, string>} stageRoleId → name (E-96) */
+    stageRoles: new Map(),
+    /** @type {Map<string, object>} performanceId → Performance-Node (E-96/E-98) */
+    performances: new Map(),
   };
 
   // Pass 1: Classify nodes
@@ -113,7 +117,7 @@ function buildStore(jsonld) {
     if (nodeType === 'rico:RecordSet') {
       const setType = node['rico:hasRecordSetType'];
       const typeId = setType ? setType['@id'] : null;
-      if (typeId === 'rico:Fonds') {
+      if (typeId === 'ric-rst:Fonds') {
         store.fonds = node;
       } else {
         store.konvolute.set(node['@id'], node);
@@ -134,6 +138,10 @@ function buildStore(jsonld) {
       indexConcept(store, node);
     } else if (nodeType === 'm3gim:SpatiotemporalEvent') {
       indexMobilityEvent(store, node);
+    } else if (nodeType === 'm3gim:StageRole') {
+      store.stageRoles.set(node['@id'], node['rico:name'] || node['@id']);
+    } else if (nodeType === 'm3gim:Performance') {
+      store.performances.set(node['@id'], node);
     }
   }
 
@@ -327,10 +335,10 @@ function indexAgents(store, record) {
       if (agent.role) entry.roles.add(agent.role);
       if (wikidata && !entry.wikidata) entry.wikidata = wikidata;
       // WD-Enrichment-Properties
-      if (agent['m3gim:occupation'] && !entry.occupation) entry.occupation = agent['m3gim:occupation'];
+      if (agent['gndo:professionOrOccupationAsLiteral'] && !entry.occupation) entry.occupation = agent['gndo:professionOrOccupationAsLiteral'];
       if (agent['m3gim:voiceType'] && !entry.voiceType) entry.voiceType = agent['m3gim:voiceType'];
-      if (agent['m3gim:birthDate'] && !entry.birthDate) entry.birthDate = agent['m3gim:birthDate'];
-      if (agent['m3gim:deathDate'] && !entry.deathDate) entry.deathDate = agent['m3gim:deathDate'];
+      if (agent['schema:birthDate'] && !entry.birthDate) entry.birthDate = agent['schema:birthDate'];
+      if (agent['schema:deathDate'] && !entry.deathDate) entry.deathDate = agent['schema:deathDate'];
     }
   }
 
@@ -383,7 +391,7 @@ function indexWorks(store, record) {
     const wEntry = store.works.get(name);
     wEntry.records.add(record['@id']);
     // WD-Enrichment: Premiere date
-    if (subj['m3gim:premiereDate'] && !wEntry.premiereDate) wEntry.premiereDate = subj['m3gim:premiereDate'];
+    if (subj['m3gim:wdPremiereDate'] && !wEntry.premiereDate) wEntry.premiereDate = subj['m3gim:wdPremiereDate'];
     if (subj['m3gim:wdGenre'] && !wEntry.wdGenre) wEntry.wdGenre = subj['m3gim:wdGenre'];
   }
 }
@@ -415,7 +423,7 @@ function indexMobilityEvent(store, node) {
   const placeLat = place && typeof place['geo:lat'] === 'number' ? place['geo:lat'] : null;
   const placeLon = place && typeof place['geo:long'] === 'number' ? place['geo:long'] : null;
   const placeCountry = place && place['m3gim:country'] || null;
-  const recordRef = node['rico:isAssociatedWithRecord'];
+  const recordRef = node['agrelon:metadataProvenance'];
   const recordId = recordRef && recordRef['@id'] || null;
   store.mobilityEvents.set(id, {
     id,
@@ -453,14 +461,14 @@ function indexAgentRelations(store, record) {
   for (const rel of rels) {
     if (!rel || typeof rel !== 'object') continue;
     const obj = rel['agrelon:hasObject'] || {};
-    const validity = rel['agrelon:hasValidityPeriod'];
+    const validity = rel['agrelon:metadataPeriod'];
     entries.push({
       type: rel['@type'] || null,
       objectName: obj.name || null,
       objectWikidata: obj['@id'] && String(obj['@id']).startsWith('wd:') ? obj['@id'] : null,
       validityBegin: validity && validity['agrelon:hasBeginDate'] || null,
       validityEnd: validity && validity['agrelon:hasEndDate'] || null,
-      provenance: rel['agrelon:hasProvenance'] && rel['agrelon:hasProvenance']['@id'] || null,
+      provenance: rel['agrelon:metadataProvenance'] && rel['agrelon:metadataProvenance']['@id'] || null,
       xlsxSource: extractXlsxSource(rel),
     });
   }

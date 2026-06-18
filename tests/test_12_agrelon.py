@@ -76,7 +76,7 @@ def test_has_employer_relations_from_arbeitgeber(records, xlsx_verknuepfungen):
 
 
 def test_correspondence_relations_have_provenance(records):
-    """Jede hasCorrespondent-Relation traegt agrelon:hasProvenance
+    """Jede hasCorrespondent-Relation traegt agrelon:metadataProvenance
     (= URI des Record-Briefes). Sichert, dass die Provenance-Spur konsistent
     ist — Aussage ohne Quelle ist unzulaessig.
     """
@@ -86,7 +86,7 @@ def test_correspondence_relations_have_provenance(records):
             if isinstance(rel, dict) and rel.get("@type") == "agrelon:HasCorrespondent":
                 corr_rels.append(rel)
     assert corr_rels, "Keine HasCorrespondent-Relation im Output"
-    missing = [r for r in corr_rels if not r.get("agrelon:hasProvenance")]
+    missing = [r for r in corr_rels if not r.get("agrelon:metadataProvenance")]
     assert not missing, (
         f"{len(missing)} Korrespondenz-Relationen ohne Provenance"
     )
@@ -113,7 +113,7 @@ def test_validity_period_well_formed(records, xlsx_verknuepfungen):
         for rel in ensure_list(r.get("m3gim:agentRelation")):
             if not isinstance(rel, dict):
                 continue
-            vp = rel.get("agrelon:hasValidityPeriod")
+            vp = rel.get("agrelon:metadataPeriod")
             if not vp:
                 continue
             checked += 1

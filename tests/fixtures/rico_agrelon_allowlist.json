@@ -1,0 +1,54 @@
+{
+  "_provenance": "Verifiziert im Modellierungs-Audit 2026-06-18 (decisions.md E-103/E-104/E-105). Quellen: RiC-O 1.1 ICA-EGAD CSV-Komponentenlisten (github.com/ICA-EGAD/RiC-O, ontology/current-version), recordSetTypes-Vokabular (modularized-version/RiC_RecordSetTypes_vocabulary.rdf), AgRelOn DNB-RDF (d-nb.info/standards/elementset/agrelon), schema.org, GND-Ontologie (d-nb.info/standards/elementset/gnd). REGEL: nur gegen die offizielle Quelle nachpflegen, nie aus der Benennungskonvention raten (Leitplanke 'Fremdterme verifizieren').",
+  "rico": [
+    "rico:Record",
+    "rico:RecordSet",
+    "rico:Person",
+    "rico:CorporateBody",
+    "rico:Group",
+    "rico:Place",
+    "rico:identifier",
+    "rico:title",
+    "rico:name",
+    "rico:date",
+    "rico:hasExtent",
+    "rico:generalDescription",
+    "rico:scopeAndContent",
+    "rico:hasOrHadLanguage",
+    "rico:hasOrHadLocation",
+    "rico:hasOrHadSubject",
+    "rico:hasOrHadPart",
+    "rico:hasRecordSetType",
+    "rico:hasDocumentaryFormType",
+    "rico:isAssociatedWithEvent"
+  ],
+  "ric-rst": [
+    "ric-rst:Fonds",
+    "ric-rst:File"
+  ],
+  "agrelon": [
+    "agrelon:HasEmployeeEmployer",
+    "agrelon:HasCorrespondent",
+    "agrelon:HasProfessionalContact",
+    "agrelon:HasColleague",
+    "agrelon:HasStudentTeacher",
+    "agrelon:IsHasPatron",
+    "agrelon:HasIsMember",
+    "agrelon:hasSubject",
+    "agrelon:hasObject",
+    "agrelon:metadataProvenance",
+    "agrelon:metadataConfidence",
+    "agrelon:metadataPeriod",
+    "agrelon:hasBeginDate",
+    "agrelon:hasEndDate"
+  ],
+  "schema": [
+    "schema:birthDate",
+    "schema:deathDate",
+    "schema:birthPlace",
+    "schema:deathPlace"
+  ],
+  "gndo": [
+    "gndo:professionOrOccupationAsLiteral"
+  ]
+}

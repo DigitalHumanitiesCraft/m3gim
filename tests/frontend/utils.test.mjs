@@ -138,8 +138,8 @@ test('countLinks: summiert ueber alle Verknuepfungs-Felder', () => {
     'm3gim:hasAssociatedAgent': [{}, {}],
     'rico:hasOrHadLocation': {},          // Skalar -> 1
     'rico:hasOrHadSubject': [{}],
-    'm3gim:eventDate': [],
-    'm3gim:hasPerformanceRole': [{}, {}],
+    'm3gim:hasDatedEvent': [],
+    'm3gim:hasPerformance': [{}, {}],
   };
   assert.equal(countLinks(record), 6);
   assert.equal(countLinks({}), 0);

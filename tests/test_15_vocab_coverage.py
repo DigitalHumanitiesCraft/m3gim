@@ -145,7 +145,7 @@ def _collect_output_roles(records):
     roles = Counter()
     for r in records:
         for prop in ("m3gim:hasAssociatedAgent", "rico:hasOrHadLocation",
-                     "rico:hasOrHadSubject", "m3gim:hasPerformanceRole"):
+                     "rico:hasOrHadSubject"):
             for ent in ensure_list(r.get(prop)):
                 if isinstance(ent, dict) and ent.get("role"):
                     roles[ent["role"]] += 1

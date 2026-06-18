@@ -244,7 +244,7 @@
       "komponist": null,
       "rolle": null,
       "jahr": 1944,
-      "datum": "1944-05 bis 1944-09",
+      "datum": "1944-05",
       "phase": "LP2",
       "dokumente": [
         "UAKUG/NIM_003 1_1"
@@ -253,12 +253,29 @@
       "titel": "Deutsches Musikinstitut für Ausländer, Programmheft Sommerkurs 1944, Potsdam und"
     },
     {
+      "ort": "Bayreuth",
+      "ort_detail": null,
+      "kategorie": "festspiel",
+      "werk": "Orpheus und Eurydike",
+      "komponist": "Gluck/Händel",
+      "rolle": null,
+      "jahr": 1947,
+      "datum": "1947",
+      "phase": "LP4",
+      "dokumente": [
+        "UAKUG/NIM_004 24",
+        "UAKUG/NIM_004 29"
+      ],
+      "gattung": "oper",
+      "titel": "Kurzbiografie  von Ira Malaniuk als Typoscript (vermutlich als Anhang eines Brie"
+    },
+    {
       "ort": "Italien",
       "ort_detail": null,
       "kategorie": "gastspiel",
       "werk": "Tristan und Isolde",
       "komponist": "Wagner",
-      "rolle": "Brangäne",
+      "rolle": null,
       "jahr": 1950,
       "datum": "1950",
       "phase": "LP4",
@@ -267,23 +284,6 @@
       ],
       "gattung": "oper",
       "titel": "Rezension von A. Parente zu Tristan und Isolde in Neapel"
-    },
-    {
-      "ort": "Bayreuth",
-      "ort_detail": null,
-      "kategorie": "festspiel",
-      "werk": "Orpheus und Eurydike",
-      "komponist": "Gluck/Händel",
-      "rolle": "Orpheus",
-      "jahr": 1951,
-      "datum": "1951",
-      "phase": "LP5",
-      "dokumente": [
-        "UAKUG/NIM_004 24",
-        "UAKUG/NIM_004 29"
-      ],
-      "gattung": "oper",
-      "titel": "Kurzbiografie  von Ira Malaniuk als Typoscript (vermutlich als Anhang eines Brie"
     },
     {
       "ort": null,
@@ -307,7 +307,7 @@
       "kategorie": "gastspiel",
       "werk": "Macbeth",
       "komponist": "Verdi",
-      "rolle": "Lady Macbeth",
+      "rolle": null,
       "jahr": 1952,
       "datum": "1952-12-17",
       "phase": "LP5",
@@ -323,7 +323,7 @@
       "kategorie": "engagement",
       "werk": "Macbeth",
       "komponist": "Verdi",
-      "rolle": "Lady Macbeth",
+      "rolle": null,
       "jahr": 1952,
       "datum": "1952-12-18",
       "phase": "LP5",
@@ -339,14 +339,14 @@
       "kategorie": "engagement",
       "werk": "Salome",
       "komponist": null,
-      "rolle": "Lady Macbeth",
+      "rolle": null,
       "jahr": 1952,
       "datum": "1952-08-26",
       "phase": "LP5",
       "dokumente": [
         "UAKUG/NIM_007 2"
       ],
-      "gattung": "oper",
+      "gattung": null,
       "titel": "Brief von Martin H. Taubman zu Verträgen mit Buenos Aires, Neapel, Wien"
     },
     {
@@ -371,7 +371,7 @@
       "kategorie": "gastspiel",
       "werk": "Orpheus und Eurydike",
       "komponist": "Gluck/Händel",
-      "rolle": "Orpheus",
+      "rolle": null,
       "jahr": 1953,
       "datum": "1953-03-06",
       "phase": "LP5",
@@ -387,7 +387,7 @@
       "kategorie": "festspiel",
       "werk": "Götterdämmerung",
       "komponist": "Wagner",
-      "rolle": "Brünnhilde",
+      "rolle": null,
       "jahr": 1953,
       "datum": "1953-08-01",
       "phase": "LP5",
@@ -419,7 +419,7 @@
       "kategorie": "gastspiel",
       "werk": "La clemenza di Tito",
       "komponist": "Mozart",
-      "rolle": "Sextus",
+      "rolle": null,
       "jahr": 1954,
       "datum": "1954-07-06",
       "phase": "LP5",
@@ -435,7 +435,7 @@
       "kategorie": "gastspiel",
       "werk": "Die Meistersinger von Nürnberg",
       "komponist": "Wagner",
-      "rolle": "Magdalene",
+      "rolle": null,
       "jahr": 1954,
       "datum": "1954-01-23",
       "phase": "LP5",
@@ -451,7 +451,7 @@
       "kategorie": "festspiel",
       "werk": "Die Meistersinger von Nürnberg",
       "komponist": "Wagner",
-      "rolle": "Sixtus Beckmesser",
+      "rolle": null,
       "jahr": 1954,
       "datum": "1954-08-14",
       "phase": "LP5",
@@ -499,9 +499,9 @@
       "kategorie": "gastspiel",
       "werk": "Tristan und Isolde",
       "komponist": "Wagner",
-      "rolle": "Tristan",
+      "rolle": null,
       "jahr": 1956,
-      "datum": "1956-05-13/1956-05-14",
+      "datum": "1956",
       "phase": "LP6",
       "dokumente": [
         "UAKUG/NIM_004 19"
@@ -515,7 +515,7 @@
       "kategorie": "engagement",
       "werk": "Tannhäuser",
       "komponist": "Wagner",
-      "rolle": "Elisabeth",
+      "rolle": null,
       "jahr": 1956,
       "datum": "1956-10-21",
       "phase": "LP6",
@@ -531,7 +531,7 @@
       "kategorie": "engagement",
       "werk": "Aida",
       "komponist": "Verdi",
-      "rolle": "Amneris",
+      "rolle": null,
       "jahr": 1956,
       "datum": "1956-11-01",
       "phase": "LP6",
@@ -647,14 +647,14 @@
       "kategorie": "gastspiel",
       "werk": "Paradies und Peri",
       "komponist": null,
-      "rolle": "\"Engel\"",
+      "rolle": null,
       "jahr": 1959,
       "datum": "1959-05-09",
       "phase": "LP6",
       "dokumente": [
         "UAKUG/NIM_007 6"
       ],
-      "gattung": "oper",
+      "gattung": null,
       "titel": "Mittelung über Honorar für Sendung Paradies und Peri 1959 von Nord- und Westdeut"
     },
     {
@@ -711,14 +711,14 @@
       "kategorie": "engagement",
       "werk": "Der Wildschütz",
       "komponist": null,
-      "rolle": "Graf von Eberbach",
+      "rolle": null,
       "jahr": 1960,
       "datum": "1960",
       "phase": "LP6",
       "dokumente": [
         "UAKUG/NIM_007 13"
       ],
-      "gattung": "oper",
+      "gattung": null,
       "titel": "Rezension von Karl Löbl zu Der Wildschütz o.D."
     },
     {
@@ -745,7 +745,7 @@
       "kategorie": "gastspiel",
       "werk": "Orpheus und Eurydike",
       "komponist": "Gluck/Händel",
-      "rolle": "Orpheus",
+      "rolle": null,
       "jahr": 1963,
       "datum": "1963-03-06",
       "phase": "LP6",
@@ -777,7 +777,7 @@
       "kategorie": "engagement",
       "werk": "Tristan und Isolde",
       "komponist": "Wagner",
-      "rolle": "Brangäne",
+      "rolle": null,
       "jahr": 1963,
       "datum": "1963-03-08",
       "phase": "LP6",
@@ -793,7 +793,7 @@
       "kategorie": "engagement",
       "werk": "Der Wildschütz",
       "komponist": null,
-      "rolle": "Graf von Eberbach",
+      "rolle": null,
       "jahr": 1968,
       "datum": "1968-09-25",
       "phase": "LP6",
@@ -802,7 +802,7 @@
         "UAKUG/NIM_007 14",
         "UAKUG/NIM_007 17"
       ],
-      "gattung": "oper",
+      "gattung": null,
       "titel": "Rezension von Gerhard Bauer zu Der Wildschütz (Arbeiter Zeitung)"
     },
     {
@@ -942,17 +942,17 @@
         {
           "signatur": "UAKUG/NIM_063",
           "titel": "Programmblatt zu einer Aufführung von \"Aida\" (Verdi) am 14. November 1953 in der Bayrischen Staatsop",
-          "typ": "konvolut"
+          "typ": "sammlung"
         },
         {
           "signatur": "UAKUG/NIM_087",
           "titel": "Programmheft zu einer Aufführung von \"Aida\" (Verdi) in der Wiener Staatsoper am 28.04.1956",
-          "typ": "konvolut"
+          "typ": "sammlung"
         },
         {
           "signatur": "UAKUG/NIM_089",
           "titel": "Programmheft zu einer Aufführung von \"Don Carlos\" (Verdi) in der Wiener Staatsoper am 11.09.1956",
-          "typ": "konvolut"
+          "typ": "sammlung"
         }
       ]
     },
@@ -1005,7 +1005,7 @@
         {
           "signatur": "UAKUG/NIM_062",
           "titel": "Programmheft zu einer Aufführung von \"Jephta\" (Georg Friedrich Händel) am 19.03.1950 in der Tonhalle",
-          "typ": "konvolut"
+          "typ": "sammlung"
         }
       ]
     }
@@ -1225,7 +1225,7 @@
     }
   ],
   "_meta": {
-    "generated": "2026-04-18T15:11:57.193193",
-    "source_records": 450
+    "generated": "2026-06-18T10:00:34.406090",
+    "source_records": 799
   }
 }

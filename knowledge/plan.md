@@ -42,6 +42,25 @@ Ein neuer Export liegt vor und erschließt mehrere Konvolute tiefer. Die freigeg
 
 Die finalen Cluster-Zuordnungen der neuen eventRoles und Rollen sind mit dem Frontend abzustimmen, bevor produktiv geschaltet wird.
 
+### Ontologie-Konformität
+
+Der Modellierungs-Audit (Web-Verifikation gegen RiC-O 1.1 und AgRelOn, [decisions.md](decisions.md) E-103/E-104) hat mehrere im Output verwendete Terme als nicht konform identifiziert.
+
+**Welle 1 erledigt (2026-06-18, testgetrieben).** Umgesetzt in `transform.py`, Frontend, Tests und JSON-Schema; Pipeline regeneriert, Suite grün (193 passed inkl. `test_26`-Lock, JS 74/74):
+
+1. ✅ `test_26` Term-Konformitäts-Lock + quellenbelegte Allowlist-Fixture — validiert jeden `rico:`/`ric-rst:`/`agrelon:`/`schema:`/`gndo:`-Term gegen die offiziellen Listen; verbietet die bekannten Fehlterme namentlich.
+2. ✅ Konformitäts-Brecher: `rico:isAssociatedWithRecord` entfernt (STE trägt jetzt `agrelon:metadataProvenance` auf den Record); `agrelon:hasProvenance` → `metadataProvenance`, `hasConfidenceValue` → `metadataConfidence` (auch test_12/test_19 migriert).
+3. ✅ Klassen-Fehlgriffe: `rico:File`/`rico:Fonds` → `ric-rst:File`/`ric-rst:Fonds`; `agrelon:HasIsPatron` → `IsHasPatron`.
+4. ✅ Hygiene: Namespace kanonisch auf `documentaryFormTypes#`/`roles#`; `m3gim:premiereDate` → `m3gim:wdPremiereDate` (keine Dublette mit der Datumsrolle `premieredatum`).
+5. ✅ Person-Normdaten auf schema/GND migriert: `schema:birthDate`/`deathDate`/`birthPlace`/`deathPlace`, `gndo:professionOrOccupationAsLiteral`; `m3gim:country` als Place-Property definiert.
+
+**Offen aus Welle 1:**
+
+- ✅ `agrelon:hasSubject` ergänzt: referenziert Malaniuks verifizierte Wikidata-Entität `wd:Q94208` direkt (Label + Lebensdaten 2026-06-18 gegen Wikidata belegt), kein lokaler Knoten — das Schema lässt Person nicht als Top-Level-@type. Reifikation jetzt symmetrisch.
+- `agrelon:metadataPeriod` erscheint aktuell 0× (Validity nur bei HasEmployeeEmployer, dessen einzige Zeile die verwaiste `NIM_11` ist) — kommt mit der Verknüpfungs-Datenpflege bzw. E-97 (wohnort-Zustand).
+- ✅ `m3gim:eventDate`-Drop umgesetzt (E-102): atomar ersetzt durch `m3gim:hasDatedEvent` (DatedEvent-Fallback) + Datums-Routing. `ort,datum`-Daten leben dedupliziert im STE (Blocker-Fix aus dem Audit).
+- ✅ Datierungs-Konfidenz ganz entfernt (E-106, löst E-100 ab): `agrelon:metadataConfidence` war eine erfundene Dezimal-Projektion der `datierungsevidenz` und wurde von nichts gelesen.
+
 ### Interface-Ausbau
 
 Aktiv sind Bestand, Chronik, Statistik, Indizes, Netzwerk und Wissenskorb. Die übrigen drei Perspektiv-Tabs sind verborgen und werden überarbeitet, bevor sie wieder sichtbar geschaltet werden.
@@ -57,7 +76,8 @@ Aktiv sind Bestand, Chronik, Statistik, Indizes, Netzwerk und Wissenskorb. Die �
 Diese Arbeiten sind bewusst zurückgestellt und werden nach Bedarf angegangen.
 
 - `loadPartitur()` samt `test_08_partitur.py` und den Derivaten `partitur.json`, `matrix.json` und `kosmos.json` bleiben unberührt. Die Derivate werden weiter gebaut, aber von keinem aktiven Tab mehr konsumiert. Sie werden entfernt, sobald absehbar ist, dass keine künftige Visualisierung sie noch braucht.
-- Der Confidence-Dot am Record-Header ist über `confidenceDotProps()` in `constants.js` vorbereitet, aber noch nicht im Archiv-Inline-Detail platziert. Bauplatz ist der Record-Header neben dem Datum.
+- `scripts/build-views.py` und `scripts/audit-data.py` lesen noch das durch E-96 entfernte `m3gim:hasPerformanceRole` (Repertoire-/Auftritts-Ableitung). Sie laufen fehlerfrei, liefern aber für diese Spuren leere Listen, bis sie auf `m3gim:hasPerformance`/`m3gim:StageRole` umgestellt werden. Da die Derivate von keinem aktiven Tab konsumiert werden, zurückgestellt. (Die `eventDate`→`hasDatedEvent`-Umstellung beider Skripte ist mit E-102 bereits erledigt; build-views zieht die `ort,datum`-Daten zusätzlich aus dem STE.)
+- Der Confidence-Dot am Record-Header entfällt: die zugrundeliegende Datierungs-Konfidenz ist mit E-106 entfernt, `confidenceDotProps()` wurde gelöscht.
 
 ## Deferred Modell-Erweiterungen
 
@@ -83,6 +103,7 @@ Die folgenden Punkte sind quellseitig im Excel zu beheben, nicht im Pipeline-Cod
 - Datum in der Folio-Spalte. In Box 5 trägt mindestens eine Folio-Zelle ein Datum statt einer Folio-Nummer und ist gegen die Quelle zu korrigieren.
 - Tippfehler in der Erfassung. `Maskenbidner` → `Maskenbildner`, `Rundfunkshonorar` → `Rundfunkhonorar`, `Malaiuk`/`Malniuk` → `Malaniuk`. Bis zur Quellkorrektur reicht die Pipeline sie unverändert durch.
 - Dubletten und fehlende Index-IDs. Mehrere Personen-, Organisations- und Werk-Einträge sind doppelt erfasst oder ohne `m3gim_id`; an der Quelle zu konsolidieren beziehungsweise nachzupflegen.
+- Erkennungslücke `dataQualityFlag` (E-102, Audit). Die vier Flag-Regex (`name-nicht-eindeutig`/`vorname-fehlt`/`rolle-unsicher`/`quelle-tippfehler`) sind bewusst konservativ und fangen einige reale `anmerkung`-Unsicherheitssignale nicht: `Vorname unklar`, `unleserlich`, einzelnes `[…?]`. Bewusst kein Mislabeling (eine „unklar"-Zeile ist nicht „fehlt"). Bei Bedarf entweder Regex erweitern (ggf. neue Flags `quelle-unleserlich`/`vorname-unklar`) oder quellseitig vereinheitlichen.
 
 ### Strukturelle Quell-Fixes
 
@@ -115,13 +136,14 @@ Diese redaktionellen Punkte werden fortlaufend im Erfassungsteam bearbeitet.
 
 | Arbeitspaket | Status | Notiz |
 |---|---|---|
-| Neuer Datenstand und Modell-Umsetzung | aktiv | testgetrieben; Loader-Absorption E-95 erledigt und rückwärtskompatibel, als Nächstes Modell-Features E-96 bis E-102 mit Test-Welle (seriell), dann Promote |
+| Neuer Datenstand und Modell-Umsetzung | aktiv | testgetrieben. Erledigt: E-95 (Loader), E-96+E-98 (Performance/StageRole), E-102 (Quality-Flags + DatedEvent + eventDate-Drop + ort,datum-Dedup), E-106 (Datierungs-Konfidenz entfernt, löst E-100 ab), E-101 (Dokumentvokabular, datengedeckte Teile: sammlung eigenständig + deutsche prefLabels + neue Konzepte gerüstet; dokument-Aboutness vertagt). Offen: E-97 (Mobilitäts-Ortsrollen), E-99 (Finanz-Parser), dann Promote (wartet auf tieferen Export) |
+| Ontologie-Konformität (E-103/E-104/E-105) | erledigt | Term-Renames + schema/GND-Migration + test_26-Lock, `agrelon:hasSubject`→`wd:Q94208`, `eventDate`-Drop (mit E-102) — alles umgesetzt, Suite grün |
 | Reaktivierung Mobilitäts-Atlas, Repertoire, Biogramm | offen | pro Tab Daten-Kontrakt, Chip-Muster, Meta-Fresh-Check |
-| SKOS-Labels in der Pipeline | offen | `skos:prefLabel` ersetzt Hand-Map `DOKUMENTTYP_LABELS` |
+| Frontend auf SKOS-prefLabel umstellen | bereit | Pipeline emittiert deutsche `skos:prefLabel` (E-101); 8 Views + `format.js` von der Hand-Map `DOKUMENTTYP_LABELS` auf `store.concepts.get(...).prefLabel` umstellen, dann Hand-Map entfernen. Unmittelbarer Folgeschritt. |
 | AgRelOn-Granularität | offen | `HasAddressee`/`HasSender` statt pauschal |
 | Biogramm-Netzwerk-Spur | blockiert | wartet auf AgRelOn validity-dates |
 | Weitere Reconciliation-Runde | optional | Unmatched-Restliste, nicht blockierend |
-| Deferred Aufräumarbeiten | zurückgestellt | Partitur-Derivate, Confidence-Dot |
+| Deferred Aufräumarbeiten | zurückgestellt | Partitur-Derivate; build-views/audit-data hasPerformanceRole-Spur |
 | Deferred Modell-Erweiterungen | zurückgestellt | Phase 4.5, Phase 4.9, Zenodo, EAD |
 | Offene Datenqualität | quellseitig | gegen Quality-Snapshot verifizieren |
 | Datenqualität laufend | laufend | Verknüpfungsrate, Bearbeitungsstand |

@@ -10,7 +10,7 @@ from _helpers import ensure_list
 
 def test_fonds_exists_exactly_once(graph):
     fonds = [n for n in graph if isinstance(n.get("rico:hasRecordSetType"), dict)
-             and n["rico:hasRecordSetType"].get("@id") == "rico:Fonds"]
+             and n["rico:hasRecordSetType"].get("@id") == "ric-rst:Fonds"]
     assert len(fonds) == 1, f"Erwartet 1 Fonds, gefunden: {len(fonds)}"
 
 

@@ -20,10 +20,12 @@ def _count_relations(records):
     total = 0
     for r in records:
         for prop in ("m3gim:hasAssociatedAgent", "rico:hasOrHadLocation",
-                     "rico:hasOrHadSubject", "m3gim:hasPerformanceRole"):
+                     "rico:hasOrHadSubject", "m3gim:hasPerformance",
+                     # E-102: das abgeschaffte m3gim:eventDate ist in
+                     # m3gim:hasDatedEvent (DatedEvent-Fallback) aufgegangen;
+                     # ort,datum-Daten leben (dedupliziert) im STE.
+                     "m3gim:hasDatedEvent", "m3gim:hasSpatiotemporalEvent"):
             total += len(ensure_list(r.get(prop)))
-        if "m3gim:eventDate" in r:
-            total += len(ensure_list(r["m3gim:eventDate"]))
     return total
 
 
