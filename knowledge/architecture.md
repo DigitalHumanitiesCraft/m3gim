@@ -181,9 +181,10 @@ Die Invarianten werden als Kontrakttests in [test_06_frontend_contract.py](../te
 - D3-geo-Trajektorienkarte über die volle Breite (E-111, sichtbarer Tab `mobilitaet`). Projektion `geoMercator.fitExtent` auf die europäischen Punkte, lokale Ländergeometrie `docs/data/geo/countries-110m.geo.json` (Natural Earth 110m), kein Tile-Server, kein API-Key, kein Leaflet
 - Orte als Knoten, Größe nach Ereigniszahl, Farbe nach dominanter Mobilitätssicht (`mobilityClusterFor`/`EVENT_ROLE_TO_MOBILITY_CLUSTER`, E-110); Kontextbezüge (Entstehung, Erwähnung) bleiben grau, daher erscheinen Zürich und Köln grau
 - Biografischer Pfad als gerichtete Pfeile zwischen aufeinanderfolgenden verschiedenen Stationen, chronologisch eingefärbt hell (früh) zu dunkel (spät), SVG-Arrowhead-Marker
-- Zeitregler mit Abspielen zieht den Pfad über die Jahre auf; Zoom und Pan per `d3.zoom` (scaleExtent [1,12])
-- Bedienelemente statt Fließtext (order-m3gim Punkt 3): Sicht-Legende als Filter-Toggle, Pfad-Schalter, Klick-Knoten-Detailstreifen, unverortet-Button, einklappbare Voll-Liste für Prüfbarkeit
-- Distinkt von den Session-32 entfernten D3-Prototypen (E-75): dies ist eine geprojizierte Karte, kein abstraktes Diagramm. Die drei New-York-Events laufen als lange Arcs nach Westen (AF-01, [datenfehler.md](datenfehler.md))
+- Zeitregler mit Abspielen zieht den Pfad über die Jahre auf; Zoom und Pan per `d3.zoom` (scaleExtent [1,12]). Der Zoom steuert zugleich die Label-Ausdünnung (bei Basiszoom nur die Top-N-Stationen nach Ereigniszahl, mit Zoom mehr) und skaliert Font und Halo gegen den Zoom, sodass die Beschriftung bildschirmkonstant bleibt (E-114)
+- Knoten-Tooltip beim Überfahren (HTML-Div über dem SVG, E-36): dominante Mobilitätssicht, Ereigniszahl, Zeitspanne; die Karte ist damit ohne Klick lesbar (E-114)
+- Bedienelemente statt Fließtext (order-m3gim Punkt 3): Sicht-Legende als Filter-Toggle, Pfad-Schalter, Klick-Knoten-Detailstreifen, unverortet-Button, „abseits der Karte"-Button, einklappbare Voll-Liste für Prüfbarkeit
+- Distinkt von den Session-32 entfernten D3-Prototypen (E-75): dies ist eine geprojizierte Karte, kein abstraktes Diagramm. Orte außerhalb des Kartenausschnitts (der New-York-Fehlmatch AF-01, [datenfehler.md](datenfehler.md)) werden aus Knoten und Pfad ausgenommen und im Detailstreifen als „abseits der Karte" transparent ausgewiesen, statt als auslaufende Arcs nach Westen (E-114, löst den E-111-Befund auf)
 
 ### Mobilitäts-Atlas
 

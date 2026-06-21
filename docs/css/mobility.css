@@ -116,6 +116,39 @@
   pointer-events: none;
 }
 
+/* --- Knoten-Tooltip (HTML ueber dem SVG) --------------------------------- */
+
+.mob-tip {
+  position: absolute;
+  z-index: 5;
+  pointer-events: none;
+  min-width: 90px;
+  max-width: 220px;
+  padding: 6px 9px;
+  background: var(--color-paper);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  font-size: var(--text-xs);
+  color: var(--color-text-primary);
+  line-height: 1.5;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+.mob-tip--on { opacity: 1; }
+.mob-tip strong {
+  display: block;
+  font-family: var(--font-title);
+  font-size: var(--text-sm);
+}
+.mob-tip__row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-text-secondary);
+}
+.mob-tip__sw { width: 9px; height: 9px; border-radius: 2px; flex: none; }
+
 /* --- Zeitregler ---------------------------------------------------------- */
 
 .mob-scrub {
@@ -186,6 +219,23 @@
   background: #f3eadd;
   color: #8b6a3a;
   cursor: pointer;
+}
+
+.mob-strip__offmap {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid #e0c9c0;
+  background: #f6e9e4;
+  color: #9a5a44;
+  cursor: pointer;
+}
+.mob-strip__offmap-note {
+  font-size: var(--text-xs);
+  color: var(--color-text-tertiary);
+  font-style: italic;
+  margin-bottom: var(--space-2);
 }
 
 .mob-strip__head {

@@ -161,6 +161,8 @@ export function renderMobilitaet(store, container) {
         el('span', {}, `${shown} verortet`),
         el('span', {}, `${events.filter(active).length} Ereignisse`),
         unverortet.length ? makeUnverortetButton(unverortet, state, strip, renderStrip) : null,
+        (state.offMapEvents && state.offMapEvents.length)
+          ? makeOffMapButton(state, strip, renderStrip) : null,
         el('span', { className: 'mob-strip__hint' }, 'Knoten anklicken für Details')));
       return;
     }
@@ -222,6 +224,34 @@ function buildMap(mapCell, countries, withGeo, state, opts) {
   projection.fitExtent([[pad, pad], [width - pad, height - pad]], fitPoints);
   const path = d3.geoPath(projection);
 
+  // HTML-Tooltip ueber dem SVG (SVG-Knoten tragen keine Pseudo-Elemente, E-36).
+  const tip = el('div', { className: 'mob-tip', 'aria-hidden': 'true' });
+  mapCell.appendChild(tip);
+  function showTip(html, mx, my) {
+    tip.innerHTML = html;
+    tip.classList.add('mob-tip--on');
+    const w = tip.offsetWidth, h = tip.offsetHeight;
+    let x = mx + 14, y = my + 14;
+    if (x + w > width) x = mx - w - 14;
+    if (y + h > height) y = my - h - 14;
+    tip.style.left = Math.max(4, x) + 'px';
+    tip.style.top = Math.max(4, y) + 'px';
+  }
+  function hideTip() { tip.classList.remove('mob-tip--on'); }
+  function showNodeTip(event, d) {
+    const [mx, my] = d3.pointer(event, mapCell);
+    const t = TYPE_BY_ID.get(d.dom) || KONTEXT;
+    const span = d.firstYear == null ? 'ohne Datum'
+      : (d.lastYear != null && d.lastYear !== d.firstYear
+          ? `${d.firstYear}–${d.lastYear}` : `${d.firstYear}`);
+    showTip(
+      `<strong>${escapeHtml(d.city)}</strong>` +
+      `<span class="mob-tip__row"><span class="mob-tip__sw" style="background:${t.color}"></span>${t.label}</span>` +
+      `<span class="mob-tip__row">${d.shown} Ereignis${d.shown === 1 ? '' : 'se'}</span>` +
+      `<span class="mob-tip__row">${span}</span>`,
+      mx, my);
+  }
+
   const svg = d3.select(mapCell).append('svg')
     .attr('class', 'mob-map__svg')
     .attr('width', width).attr('height', height)
@@ -246,25 +276,70 @@ function buildMap(mapCell, countries, withGeo, state, opts) {
     .attr('stroke', 'var(--color-sand)')
     .attr('stroke-width', 0.6);
 
-  // Zoom + Pan
+  // Zoom + Pan; der Zoom-Faktor steuert die Label-Ausduennung und haelt
+  // Beschriftung und Halo in etwa bildschirmkonstant (counter-scale).
+  let currentK = 1;
+  let maxShown = 1;
   const zoom = d3.zoom().scaleExtent([1, 12])
-    .on('zoom', (ev) => gZoom.attr('transform', ev.transform));
+    .on('zoom', (ev) => {
+      currentK = ev.transform.k;
+      gZoom.attr('transform', ev.transform);
+      applyLabelLayer();
+    });
   svg.call(zoom);
 
-  // Knoten je Stadt
+  // Label-Schicht: bei wenig Zoom nur die ereignisreichsten Knoten beschriften
+  // (Top-N nach Ereigniszahl), mit steigendem Zoom mehr, ab hohem Zoom alle.
+  // Die ausgewaehlte Stadt traegt immer ihr Label. Font und Halo werden gegen
+  // den Zoom skaliert, damit Beschriftung und Umriss bildschirmkonstant bleiben.
+  const sichtbar = d => d.shown > 0 && (d.firstYear == null || d.firstYear <= state.cursor);
+  function applyLabelLayer() {
+    const sel = gNodes.selectAll('g.mob-node');
+    const counts = [];
+    sel.each(d => { if (sichtbar(d)) counts.push(d.shown); });
+    counts.sort((a, b) => b - a);
+    const topN = Math.min(counts.length, Math.max(3, Math.round(3 * currentK)));
+    const cutoff = topN > 0 ? counts[topN - 1] : Infinity;
+    const fontPx = (11 / currentK).toFixed(2) + 'px';
+    const haloPx = (2.5 / currentK).toFixed(2) + 'px';
+    sel.select('text')
+      .style('font-size', fontPx)
+      .style('stroke-width', haloPx)
+      .attr('opacity', d => {
+        if (!sichtbar(d)) return 0;
+        if (state.selectedCity === d.city) return 1;
+        return d.shown >= cutoff ? 1 : 0;
+      });
+  }
+
+  // Knoten je Stadt. Orte, deren projizierter Punkt ausserhalb des
+  // Kartenausschnitts liegt (z. B. der New-York-Fehlmatch AF-01, weit im
+  // Westen), werden nicht an falscher Stelle gezeichnet und nicht mit Pfeilen
+  // verbunden, sondern ehrlich als "abseits der Karte" im Detailstreifen
+  // ausgewiesen (Datenfehler-Register AF-01).
+  const onMargin = 8;
+  const isOnMap = (x, y) =>
+    x >= -onMargin && x <= width + onMargin && y >= -onMargin && y <= height + onMargin;
   function buildNodes() {
     const m = new Map();
+    const offCities = new Map();
     for (const e of withGeo) {
       const city = cityOf(e.place);
-      if (!m.has(city)) {
-        const [x, y] = projection([e.placeLon, e.placeLat]);
-        m.set(city, { city, x, y, events: [] });
+      const [x, y] = projection([e.placeLon, e.placeLat]);
+      if (!isOnMap(x, y)) {
+        if (!offCities.has(city)) offCities.set(city, []);
+        offCities.get(city).push(e);
+        continue;
       }
+      if (!m.has(city)) m.set(city, { city, x, y, events: [] });
       m.get(city).events.push(e);
     }
+    state.offMapEvents = [].concat(...offCities.values());
+    state.offMapCities = [...offCities.keys()];
     return m;
   }
   const nodeByCity = buildNodes();
+  const onMapCities = new Set(nodeByCity.keys());
 
   // Zeitfarbskala fuer den Pfad (frueh hell, spaet dunkel, im Palettenton)
   const timeColor = d3.scaleLinear().domain([opts.minYear, opts.maxYear])
@@ -278,7 +353,7 @@ function buildMap(mapCell, countries, withGeo, state, opts) {
     let segments = [];
     if (state.showPath) {
       const seq = withGeo
-        .filter(e => active(e) && extractYear(e.date) != null)
+        .filter(e => active(e) && extractYear(e.date) != null && onMapCities.has(cityOf(e.place)))
         .map(e => ({ city: cityOf(e.place), y: extractYear(e.date), date: e.date }))
         .sort((a, b) => a.y - b.y || String(a.date).localeCompare(String(b.date)));
       let prev = null;
@@ -303,16 +378,20 @@ function buildMap(mapCell, countries, withGeo, state, opts) {
     // ---- Knoten ----
     const nodes = [...nodeByCity.values()].map(n => {
       const evs = n.events.filter(active);
-      return { ...n, shown: evs.length, dom: dominantSicht(evs), firstYear: firstYear(evs) };
+      return { ...n, shown: evs.length, dom: dominantSicht(evs),
+        firstYear: firstYear(evs), lastYear: lastYear(evs) };
     });
-    let maxShown = 1;
+    maxShown = 1;
     for (const n of nodes) maxShown = Math.max(maxShown, n.shown);
 
     const sel = gNodes.selectAll('g.mob-node').data(nodes, d => d.city);
     sel.exit().remove();
     const enter = sel.enter().append('g').attr('class', 'mob-node')
       .style('cursor', 'pointer')
-      .on('click', (_, d) => opts.onSelectCity(d.city));
+      .on('click', (_, d) => opts.onSelectCity(d.city))
+      .on('mouseenter', (event, d) => showNodeTip(event, d))
+      .on('mousemove', (event, d) => showNodeTip(event, d))
+      .on('mouseleave', hideTip);
     enter.append('circle');
     enter.append('text');
     const merged = enter.merge(sel)
@@ -332,8 +411,10 @@ function buildMap(mapCell, countries, withGeo, state, opts) {
       .text(d => d.city)
       .attr('x', d => 6 + Math.round(9 * Math.sqrt(Math.max(1, d.shown) / maxShown)))
       .attr('y', 4)
-      .attr('class', 'mob-node__label')
-      .attr('opacity', d => (d.shown > 0 && (d.firstYear == null || d.firstYear <= state.cursor)) ? 1 : 0);
+      .attr('class', 'mob-node__label');
+
+    // Label-Sichtbarkeit und Zoom-Gegenskalierung zentral (auch im Zoom-Handler).
+    applyLabelLayer();
   };
 }
 
@@ -363,6 +444,14 @@ function dominantSicht(evs) {
 function firstYear(evs) {
   const ys = evs.map(e => extractYear(e.date)).filter(y => y != null);
   return ys.length ? Math.min(...ys) : null;
+}
+function lastYear(evs) {
+  const ys = evs.map(e => extractYear(e.date)).filter(y => y != null);
+  return ys.length ? Math.max(...ys) : null;
+}
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"]/g, c =>
+    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 }
 
 // ---------------------------------------------------------------------------
@@ -456,6 +545,29 @@ function makeUnverortetButton(unverortet, state, strip, rerender) {
     strip.appendChild(el('div', { className: 'mob-strip__head' },
       el('h3', { className: 'mob-strip__title' }, 'Unverortete Ereignisse'),
       el('button', { className: 'mob-strip__clear', type: 'button', onClick: rerender }, 'zurück')));
+    strip.appendChild(chips);
+  });
+  return btn;
+}
+
+function makeOffMapButton(state, strip, rerender) {
+  const evs = state.offMapEvents || [];
+  const cities = state.offMapCities || [];
+  const btn = el('button', { className: 'mob-strip__offmap', type: 'button',
+    title: 'Orte ausserhalb des Kartenausschnitts, meist ein Koordinaten-Fehlmatch' },
+    `${evs.length} abseits der Karte`);
+  btn.addEventListener('click', () => {
+    const chips = el('div', { className: 'mob-strip__chips' });
+    for (const ev of sortEvents(evs.filter(e => state.active.has(sichtOf(e)))))
+      chips.appendChild(buildEventChip(ev));
+    clear(strip);
+    strip.appendChild(el('div', { className: 'mob-strip__head' },
+      el('h3', { className: 'mob-strip__title' }, 'Abseits der Karte'),
+      el('button', { className: 'mob-strip__clear', type: 'button', onClick: rerender }, 'zurück')));
+    if (cities.length) {
+      strip.appendChild(el('div', { className: 'mob-strip__offmap-note' },
+        `${cities.join(', ')}: ausserhalb des Kartenausschnitts projiziert, meist ein Koordinaten-Fehlmatch (Datenfehler-Register AF-01, New York).`));
+    }
     strip.appendChild(chips);
   });
   return btn;
