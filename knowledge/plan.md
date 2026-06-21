@@ -12,7 +12,7 @@ template:
   url: https://dhcraft.org/Promptotyping/promptotyping-document/plan
 status: active
 created: 2026-02-19
-updated: 2026-06-17
+updated: 2026-06-21
 language: de
 version: 0.2
 authors: [Christopher Pollin]
@@ -138,6 +138,7 @@ Diese redaktionellen Punkte werden fortlaufend im Erfassungsteam bearbeitet.
 |---|---|---|
 | Neuer Datenstand und Modell-Umsetzung | aktiv | testgetrieben. Erledigt: E-95 (Loader), E-96+E-98 (Performance/StageRole), E-102 (Quality-Flags + DatedEvent + eventDate-Drop + ort,datum-Dedup), E-106 (Datierungs-Konfidenz entfernt, löst E-100 ab), E-101 (Dokumentvokabular, datengedeckte Teile), E-97 (Mobilitäts-Ortsrollen → datumslose STE, datengedeckter Kern; wohnort/vertragspartner mangels Daten vertagt). **E-99 (Finanz-Parser) vertagt:** alle 21 Finanzzeilen parst der Bestand bereits korrekt, die E-99-Sonderfälle kommen 0× vor — wäre spekulativer Code. **Promote erledigt (E-107, 2026-06-18):** Frontend-Daten regeneriert, `docs/data` == `data/output` (+15 E-97-Mobilitäts-STE im Frontend); Staleness-Guard `test_33` ergänzt; `report-quality.py`-Provenienz-Metrik gefixt |
 | Ontologie-Konformität (E-103/E-104/E-105) | erledigt | Term-Renames + schema/GND-Migration + test_26-Lock, `agrelon:hasSubject`→`wd:Q94208`, `eventDate`-Drop (mit E-102) — alles umgesetzt, Suite grün |
+| Mobilitäts-View (eigener Tab) | erledigt | E-109 (2026-06-21, operator-beauftragt). Neuer sichtbarer Tab `mobilitaet`, zeigt alle 61 SpatiotemporalEvents nach den fünf Mobilitätssichten (Reise-Ortsrollen view-lokal als Reise/Korrespondenz, § 10), plus Orte und Zeit. Im Browser verifiziert (61 Chips = Store, Klick-Durchstich, keine Fehler), Suite grün. Greift nicht in den globalen Klassifikator/`test_25` ein; dessen Angleichung an § 10 bleibt die gated Entscheidung in decisions.md. |
 | Reaktivierung Mobilitäts-Atlas, Repertoire, Biogramm | offen | pro Tab Daten-Kontrakt, Chip-Muster, Meta-Fresh-Check. **Atlas-Befund (Session 51):** Tab bricht beim Render mit `ReferenceError: L is not defined` — Leaflet ist bewusst nicht eingebunden (`index.html`, `mobility-atlas.js`), die Error-Boundary fängt es graceful ab. Reaktivierung erfordert Leaflet via CDN; zudem fehlen dann die 15 datumslosen E-97-Ortsrollen im Atlas-Zeitstrahl (`datedEvents`-Filter) und adressgenaue Orte ohne Q-ID landen in „unverortet". Den Silent-Drop-Hinweis (analog Statistik, E-108) bei Reaktivierung mitziehen. |
 | Frontend auf SKOS-prefLabel umstellen | erledigt | `format.js` `dftLabel(store, id)` löst Labels aus `store.dftHierarchy` (skos:prefLabel, E-101) auf; alle 7 Views umgestellt, Hand-Map `DOKUMENTTYP_LABELS` aus `constants.js` entfernt. Verifiziert: JS + Loader-Integrationstest. |
 | Loader-Integrationstest | erledigt | `tests/frontend/loader.test.mjs` deckt die zuvor ungetestete Strecke JSON-LD→`loadArchive`→store ab (synthetische Fixture + Anker gegen `docs/data`). Schließt die Test-Lücke aus der Session-49-Reflexion. JS jetzt 85. |

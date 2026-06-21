@@ -5,10 +5,10 @@
 
 // Vollstaendiger Katalog -- alle Tabs bleiben im TAB_RENDERERS registriert,
 // damit Hash-URLs und Code-Pfade nicht brechen.
-const TABS = ['bestand', 'chronik', 'statistik', 'indizes', 'mobilitaets-atlas', 'repertoire', 'biogramm', 'netzwerk', 'korb'];
+const TABS = ['bestand', 'chronik', 'statistik', 'indizes', 'mobilitaet', 'mobilitaets-atlas', 'repertoire', 'biogramm', 'netzwerk', 'korb'];
 // VISIBLE_TABS: nur diese sind aktuell in der Tab-Bar sichtbar (Rest `hidden`).
 // Hash-Navigation auf versteckte Tabs wird auf 'bestand' umgebogen.
-const VISIBLE_TABS = new Set(['bestand', 'chronik', 'statistik', 'indizes', 'netzwerk', 'korb']);
+const VISIBLE_TABS = new Set(['bestand', 'chronik', 'statistik', 'indizes', 'mobilitaet', 'netzwerk', 'korb']);
 const ALL_VIEWS = [...TABS, 'archiv']; // 'archiv' als Legacy-Alias fuer alte Bookmarks/Hash-URLs
 
 const state = {

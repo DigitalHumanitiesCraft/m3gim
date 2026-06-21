@@ -12,6 +12,7 @@ import { renderStatistik } from './views/statistics.js';
 import { renderIndizes, expandEntry } from './views/indexes.js';
 import { renderKorb } from './views/basket.js';
 import { renderMobilitaetsAtlas } from './views/mobility-atlas.js';
+import { renderMobilitaet } from './views/mobility.js';
 import { renderRepertoire, repertoireAggregate } from './views/repertoire.js';
 import { renderBiogramm, biogrammData } from './views/biogram.js';
 import { renderNetzwerk, netzwerkAggregate } from './views/network.js';
@@ -26,6 +27,7 @@ const TAB_RENDERERS = new Map([
   ['chronik',            (s, c) => renderChronik(s, c)],
   ['statistik',          (s, c) => renderStatistik(s, c)],
   ['indizes',            (s, c) => renderIndizes(s, c)],
+  ['mobilitaet',         (s, c) => renderMobilitaet(s, c)],
   ['mobilitaets-atlas',  (s, c) => renderMobilitaetsAtlas(s, c)],
   ['repertoire',         (s, c) => renderRepertoire(s, c)],
   ['biogramm',           (s, c) => renderBiogramm(s, c)],
@@ -112,6 +114,10 @@ function logTabActivation(tab, s) {
     chronik:             () => ({ records: s.allRecords.length, bearbeitet: s.allRecords.length - s.unprocessedIds.size }),
     statistik:           () => ({ records: s.allRecords.length, konvolute: s.konvolute.size, events: s.mobilityEvents.size, personen: s.persons.size }),
     indizes:             () => ({ persons: s.persons.size, orgs: s.organizations.size, locs: s.locations.size, works: s.works.size, agentRel: s.agentRelations.size, relResolved: s.agentRelationResolvedCount || 0 }),
+    mobilitaet:          () => {
+      const all = [...s.mobilityEvents.values()];
+      return { events: all.length, datiert: all.filter(e => /\d{4}/.test(String(e.date || ''))).length, verortet: all.filter(e => typeof e.placeLat === 'number').length };
+    },
     'mobilitaets-atlas': () => {
       const all = [...s.mobilityEvents.values()];
       const withGeo = all.filter(e => typeof e.placeLat === 'number' && typeof e.placeLon === 'number');

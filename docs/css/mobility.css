@@ -1,0 +1,261 @@
+/* Mobilitäts-Tab.
+   Eigenstaendige Perspektive auf alle SpatiotemporalEvents nach den fuenf
+   Mobilitaetssichten. Statisch lesbar, CSS-basierte Balken, Chips aus dem
+   gemeinsamen .chip-Muster (components/archive.css). Nutzt --color-sicht-*
+   und die Tokens aus variables.css. */
+
+.mobilitaet {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-5) var(--space-10);
+  color: var(--color-text-primary);
+}
+
+/* --- Intro + Deckungs-Kennzahlen ----------------------------------------- */
+
+.mobilitaet__intro {
+  border-bottom: 1px solid var(--border-color-light);
+  padding-bottom: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+.mobilitaet__title {
+  font-family: var(--font-title);
+  font-size: var(--text-3xl);
+  font-weight: var(--weight-semibold);
+  color: var(--color-kug-blau);
+  margin: 0 0 var(--space-2);
+}
+
+.mobilitaet__lead {
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+  line-height: var(--leading-relaxed);
+  max-width: 72ch;
+  margin: 0;
+}
+
+.mobilitaet__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+.mob-badge {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-cream);
+  border: 1px solid var(--border-color-light);
+  border-radius: var(--border-radius);
+  min-width: 96px;
+}
+
+.mob-badge__value {
+  font-family: var(--font-title);
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-bold);
+  color: var(--color-text-primary);
+  line-height: 1;
+}
+
+.mob-badge__label {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-secondary);
+}
+
+.mob-badge__rest {
+  font-size: var(--text-xs);
+  color: var(--color-text-tertiary);
+  font-style: italic;
+}
+
+/* --- Sektionen ----------------------------------------------------------- */
+
+.mobilitaet__sections {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-10);
+  margin-top: var(--space-8);
+}
+
+.mob-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.mob-section__title {
+  font-family: var(--font-title);
+  font-size: var(--text-xl);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0;
+  padding-bottom: var(--space-2);
+  border-bottom: 2px solid var(--color-kug-blau);
+  align-self: flex-start;
+}
+
+.mob-section__lead {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  line-height: var(--leading-relaxed);
+  max-width: 74ch;
+  margin: 0;
+}
+
+.mob-section__note {
+  font-size: var(--text-xs);
+  color: var(--color-text-tertiary);
+  font-style: italic;
+  margin: 0;
+}
+
+/* --- Mobilitätssicht-Block ----------------------------------------------- */
+
+.mob-sicht {
+  --sicht-color: var(--color-text-tertiary);
+  border: 1px solid var(--border-color-light);
+  border-left: 3px solid var(--sicht-color);
+  border-radius: var(--border-radius);
+  padding: var(--space-4);
+  background: var(--color-paper);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.mob-sicht__head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+}
+
+.mob-sicht__accent { display: none; }
+
+.mob-sicht__heading {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  flex: 1;
+  min-width: 0;
+}
+
+.mob-sicht__label {
+  font-family: var(--font-title);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-semibold);
+  color: var(--sicht-color);
+  margin: 0;
+}
+
+.mob-sicht__frage {
+  font-size: var(--text-sm);
+  color: var(--color-text-tertiary);
+  font-style: italic;
+}
+
+.mob-sicht__count {
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  font-weight: var(--weight-semibold);
+  color: var(--sicht-color);
+  white-space: nowrap;
+}
+
+.mob-sicht__desc {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  line-height: var(--leading-normal);
+  max-width: 80ch;
+  margin: 0;
+}
+
+.mob-sicht__empty {
+  font-size: var(--text-sm);
+  color: var(--color-text-tertiary);
+  font-style: italic;
+  margin: 0;
+}
+
+.mob-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+}
+
+/* --- Balkenlisten (Orte, Zeit) ------------------------------------------- */
+
+.mob-bars {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.mob-bars__row {
+  display: grid;
+  grid-template-columns: minmax(140px, 20ch) 1fr minmax(110px, auto);
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--text-sm);
+}
+
+.mob-bars__label {
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mob-bars__label--link {
+  color: var(--color-kug-blau);
+  text-decoration: none;
+  border-bottom: 1px dotted var(--color-kug-blau-light);
+}
+
+.mob-bars__label--link:hover {
+  color: var(--color-kug-blau-dark);
+  border-bottom-style: solid;
+}
+
+.mob-bars__track {
+  background: var(--color-parchment);
+  border-radius: 2px;
+  height: 14px;
+  overflow: hidden;
+}
+
+.mob-bars__fill {
+  background: var(--color-kug-blau);
+  height: 100%;
+  border-radius: 2px 0 0 2px;
+  transition: width var(--transition-normal);
+}
+
+/* Unverortete Orte sichtbar abgesetzt: schraffiert statt voll. */
+.mob-bars__fill--unverortet {
+  background: repeating-linear-gradient(
+    45deg,
+    var(--color-sand),
+    var(--color-sand) 4px,
+    var(--color-parchment) 4px,
+    var(--color-parchment) 8px
+  );
+}
+
+.mob-bars__count {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  text-align: right;
+  white-space: nowrap;
+}
