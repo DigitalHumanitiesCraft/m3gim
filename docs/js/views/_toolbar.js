@@ -208,9 +208,13 @@ function buildToggle(facet, state, notify) {
   const input = el('input', {
     type: 'checkbox',
     className: 'archiv-toggle__input',
-    checked: !!state[facet.key],
     onChange: (e) => { state[facet.key] = e.target.checked; notify(); },
   });
+  // `checked` muss als Property gesetzt werden, nicht als Attribut: el() nutzt
+  // setAttribute, und ein vorhandenes `checked="false"` macht die Box trotzdem
+  // angehakt (Boolean-Attribut). Property haelt den sichtbaren Zustand mit dem
+  // State synchron.
+  input.checked = !!state[facet.key];
   const label = el('label', { className: 'archiv-toggle' }, input, el('span', {}, facet.label || ''));
   return {
     element: label,

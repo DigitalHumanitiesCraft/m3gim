@@ -35,6 +35,11 @@ export function buildFilterToolbar(store, { initial = {}, onChange } = {}) {
         placeholder: 'Werk filtern\u2026',
         title: 'Dokumente nach verkn\u00fcpftem Werk filtern',
       },
+      // Erschliessungs-Umfang (E-116): Default zeigt nur erschlossene Records
+      // (mind. eine Verknuepfung). Eingeschaltet erscheinen zusaetzlich die
+      // noch nicht erschlossenen Bestaende, ausgegraut markiert -- alle Daten
+      // erreichbar, ohne den Erschliessungsstand zu kaschieren.
+      { kind: 'toggle', key: 'zeigeUnerschlossen', label: 'Nicht erschlossene einblenden' },
     ],
   });
 

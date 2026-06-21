@@ -67,7 +67,8 @@ function applyToolbarFilter({ facet, value }) {
 function updateBestandView(filters) {
   const state = filters || (toolbar ? toolbar.getState() : {});
   const isFiltered = isToolbarFiltered(state);
-  let items = getOrderedItems();
+  const showAll = !!state.zeigeUnerschlossen;  // E-116: auch nicht erschlossene
+  let items = getOrderedItems(showAll);
 
   // When filtering, flatten: remove Konvolut headers, show children as standalone
   if (isFiltered) {
@@ -99,19 +100,28 @@ function updateBestandView(filters) {
 
   renderRows(items);
 
-  // Count-Anzeige aktualisieren (bearbeitete Einheiten, nicht Gesamt-Bestand).
-  // EXCLUDED_DFT (Plakate/Tontraeger) konsistent rausrechnen -- sonst driftet
-  // der Toolbar-Zaehler gegen die tatsaechlich sichtbaren Zeilen.
-  const recordCount = items.filter(i => !i.isKonvolut).length;
+  // Count-Anzeige aktualisieren. EXCLUDED_DFT (Plakate/Tontraeger) konsistent
+  // rausrechnen -- sonst driftet der Toolbar-Zaehler gegen die sichtbaren Zeilen.
+  const recordItems = items.filter(i => !i.isKonvolut);
+  const recordCount = recordItems.length;
   const konvolutCount = items.filter(i => i.isKonvolut).length;
+  const unerschlossenCount = recordItems.filter(
+    i => store.unprocessedIds.has(i.record['@id'])).length;
   if (toolbar) {
     const totalBearbeitet = store.allRecords.filter(
       r => !store.unprocessedIds.has(r['@id'])
         && !EXCLUDED_DFT.has(getDocTypeId(r))
     ).length;
-    toolbar.setCount(isFiltered
-      ? `${recordCount} von ${totalBearbeitet} bearbeiteten Einheiten`
-      : `${totalBearbeitet} bearbeitete Einheiten`);
+    let countText;
+    if (showAll) {
+      const erschlossen = recordCount - unerschlossenCount;
+      countText = `${recordCount} Einheiten (${erschlossen} erschlossen, ${unerschlossenCount} nicht erschlossen)`;
+    } else if (isFiltered) {
+      countText = `${recordCount} von ${totalBearbeitet} bearbeiteten Einheiten`;
+    } else {
+      countText = `${totalBearbeitet} bearbeitete Einheiten`;
+    }
+    toolbar.setCount(countText);
   }
 
   // Kompakter State-Stempel fuer Playwright + manuelles Debugging.
@@ -120,6 +130,8 @@ function updateBestandView(filters) {
     ['records', recordCount],
     ['sort', `${currentSortKey}${sortDir === -1 ? '-desc' : ''}`],
     ['gefiltert', isFiltered ? 'ja' : ''],
+    ['erschliessung', showAll ? 'alle' : 'erschlossen'],
+    ['nicht-erschlossen', showAll ? unerschlossenCount : ''],
   ]);
 
   return recordCount;
@@ -176,17 +188,19 @@ function updateHeaderIndicators(headerRow, columns) {
   });
 }
 
-function getOrderedItems() {
+function getOrderedItems(showAll = false) {
   const items = [];
   const childIds = new Set();
   for (const children of store.konvolutChildren.values()) {
     for (const cid of children) childIds.add(cid);
   }
 
-  // Standalone records (not children of any Konvolut) + nur bearbeitete.
+  // Standalone records (not children of any Konvolut). Default nur bearbeitete;
+  // im "alle"-Modus (E-116) auch die nicht erschlossenen, ohne EXCLUDED_DFT
+  // anzutasten (Plakate/Tontraeger bleiben Scope-Entscheidung, nicht hier).
   const standalone = store.allRecords.filter(r =>
     !childIds.has(r['@id'])
-    && !store.unprocessedIds.has(r['@id'])
+    && (showAll || !store.unprocessedIds.has(r['@id']))
     && !EXCLUDED_DFT.has(getDocTypeId(r))
   );
 
@@ -201,22 +215,23 @@ function getOrderedItems() {
   topEntries.sort((a, b) => naturalSort(a.sig, b.sig));
 
   // Build flat list: Konvolute get their children injected after them.
-  // Leitprinzip "nur bearbeitet" gilt auch innerhalb von Konvoluten:
-  // Folios ohne Verknuepfungen (unprocessedIds) werden ausgeblendet.
-  // Faellt ein Konvolut dadurch auf 0 Kinder zurueck, verschwindet auch
-  // der Header -- Transparenz ueber den Gesamtbestand kommt aus dem
-  // Quality-Snapshot, nicht aus Platzhaltern in der Liste.
+  // Default: Leitprinzip "nur bearbeitet" gilt auch innerhalb von Konvoluten,
+  // Folios ohne Verknuepfungen (unprocessedIds) werden ausgeblendet, ein
+  // dadurch leeres Konvolut verschwindet samt Header. Im "alle"-Modus (E-116)
+  // erscheinen auch die unerschlossenen Kinder und Konvolute, in renderRows
+  // ausgegraut markiert -- der Erschliessungsstand bleibt sichtbar statt
+  // kaschiert. Folios (reine Metadaten-Records) bleiben in beiden Modi raus.
   for (const entry of topEntries) {
     if (entry.type === 'konvolut') {
       const meta = store.konvolutMeta.get(entry.konvolutId);
-      if ((meta?.totalLinks ?? 0) === 0) continue;  // leere Konvolute raus
+      if (!showAll && (meta?.totalLinks ?? 0) === 0) continue;  // leere Konvolute nur im Default raus
       const children = (store.konvolutChildren.get(entry.konvolutId) || [])
         .filter(cid => !store.folioIds.has(cid))
-        .filter(cid => !store.unprocessedIds.has(cid))
+        .filter(cid => showAll || !store.unprocessedIds.has(cid))
         .map(cid => store.records.get(cid))
         .filter(Boolean)
         .sort((a, b) => naturalSort(a['rico:identifier'] || '', b['rico:identifier'] || ''));
-      if (children.length === 0) continue;  // keine bearbeiteten Kinder -> raus
+      if (children.length === 0) continue;  // keine darstellbaren Kinder -> raus
       items.push({
         record: entry.record,
         isKonvolut: true,
@@ -279,6 +294,15 @@ function renderRows(items) {
       rowClass = 'archiv-row--child';
       if (!expandedKonvolute.has(item.konvolutId)) rowClass += ' archiv-row--hidden';
     }
+
+    // "Nicht erschlossen" = keine Verknuepfungen. Im Default-Modus nie praesent
+    // (vorher rausgefiltert), nur im "alle"-Modus (E-116) sichtbar und dort
+    // ausgegraut. Ein Konvolut-Header gilt als unerschlossen, wenn sein
+    // gesamter Link-Saldo 0 ist (komplett unbearbeitetes Konvolut).
+    const unerschlossen = item.isKonvolut
+      ? ((store.konvolutMeta.get(item.konvolutId)?.totalLinks ?? 0) === 0)
+      : store.unprocessedIds.has(recordId);
+    if (unerschlossen) rowClass += ' archiv-row--unerschlossen';
 
     if (expandedRecord === recordId) rowClass += ' archiv-row--active';
 
@@ -378,7 +402,13 @@ function renderRows(items) {
               ? el('span', { className: 'badge badge--konvolut-struct', dataset: { tip: 'Noch nicht in Einzelobjekte aufgel\u00f6st' } }, 'Konvolut')
               : (docLabel
                 ? el('span', { className: `badge badge--${docType || ''}` }, docLabel)
-                : el('span', { className: 'badge badge--unclassified' }, 'Nicht klassifiziert'))
+                : el('span', { className: 'badge badge--unclassified' }, 'Nicht klassifiziert')),
+        (!item.isKonvolut && unerschlossen)
+          ? el('span', {
+              className: 'badge badge--unerschlossen',
+              dataset: { tip: 'Im Bestand vorhanden, aber noch nicht erschlossen (keine Verkn\u00fcpfungen).' },
+            }, 'nicht erschlossen')
+          : null,
       ),
       el('td', { className: 'archiv-col-datum' },
         el('span', {

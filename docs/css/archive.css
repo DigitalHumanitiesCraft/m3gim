@@ -211,6 +211,17 @@
   display: none;
 }
 
+/* E-116: Nicht erschlossene Records (nur im "alle"-Modus sichtbar). Ausgegraut,
+   damit der Erschliessungsstand sichtbar bleibt statt kaschiert (Zielbild
+   Linie 3): die Daten sind erreichbar, aber als unbearbeitet erkennbar. */
+.archiv-row--unerschlossen {
+  color: var(--color-text-tertiary);
+}
+.archiv-row--unerschlossen .archiv-titel {
+  font-style: italic;
+  color: var(--color-text-tertiary);
+}
+
 /* Active / expanded row */
 .archiv-row--active {
   background: var(--color-gold-light) !important;
@@ -610,6 +621,14 @@ tr.archiv-row--konvolut:hover .konvolut-toggle {
 .badge--unclassified {
   color: var(--color-absent);
   font-style: italic;
+}
+
+/* E-116: Statusmarke fuer nicht erschlossene Records im "alle"-Modus. */
+.badge--unerschlossen {
+  color: var(--color-text-tertiary);
+  border: 1px dashed var(--color-sand);
+  font-style: italic;
+  font-size: var(--text-xs);
 }
 
 /* =========================================================================

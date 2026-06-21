@@ -329,6 +329,37 @@ def main() -> int:
             results.append(("WARN", "konvolut-meta-chips              ",
                             f"check uebersprungen: {e}"))
 
+        # --- Erschliessungs-Toggle (E-116): der "alle"-Modus blendet die nicht
+        #     erschlossenen Bestaende ein, ausgegraut markiert; der Default zeigt
+        #     nur erschlossene. Sichert, dass alle Daten erreichbar sind, ohne
+        #     den Erschliessungsstand zu kaschieren (Zielbild Linie 3). ---
+        try:
+            page.goto(BASE_URL, wait_until="networkidle", timeout=10000)
+            page.wait_for_timeout(600)
+            page.locator('[data-tab="bestand"]').first.click()
+            page.wait_for_timeout(400)
+            rows_default = page.locator('#tab-bestand tbody tr').count()
+            un_default = page.locator(
+                '#tab-bestand .archiv-row--unerschlossen').count()
+            page.locator('#tab-bestand .archiv-toggle__input').first.check()
+            page.wait_for_timeout(500)
+            rows_all = page.locator('#tab-bestand tbody tr').count()
+            un_all = page.locator(
+                '#tab-bestand .archiv-row--unerschlossen').count()
+            # Erwartung: mehr Zeilen im "alle"-Modus, im Default keine ausgegraute
+            # Zeile, im "alle"-Modus mindestens eine als nicht erschlossen markiert.
+            if rows_all > rows_default and un_default == 0 and un_all > 0:
+                results.append(("OK", "bestand:erschliessung-toggle     ",
+                                f"erschlossen {rows_default} -> alle {rows_all} Zeilen, "
+                                f"{un_all} nicht erschlossen markiert"))
+            else:
+                results.append(("FAIL", "bestand:erschliessung-toggle     ",
+                                f"default={rows_default}/un{un_default}, "
+                                f"alle={rows_all}/un{un_all}"))
+        except Exception as e:
+            results.append(("WARN", "bestand:erschliessung-toggle     ",
+                            f"check uebersprungen: {e}"))
+
         # --- Spezial-Check: duplicate @id im JSON-LD (Frontend-Store) ---
         # JSON-LD-Graph direkt ueber das window.m3gim-Debug-Objekt pruefen
         # (falls vorhanden) oder ueber einen fetch auf /data/m3gim.jsonld.
