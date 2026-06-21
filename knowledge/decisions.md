@@ -7,7 +7,7 @@ status: complete
 language: de
 version: 0.2
 created: 2026-02-19
-updated: 2026-06-18
+updated: 2026-06-20
 authors: [Christopher Pollin]
 generated-with: Claude Code
 method:
@@ -158,6 +158,8 @@ Querliegende Prinzipien, die alle Modellentscheidungen binden und in den Tests a
 | ~~Wikidata in Kosmos-View~~ | ~~mittel~~ | erledigt: UA-Distanz-Annotation + Tooltip (E-60) |
 | ~~SKOS-Labels aus Pipeline pflegen~~ | ~~mittel~~ | erledigt (E-101): Pipeline schreibt lesbare deutsche `skos:prefLabel` auf alle DFT-Concepts via `DFT_LABELS` in `scripts/transform.py`, die Frontend-Handtabelle `DOKUMENTTYP_LABELS` aus `constants.js` ist entfernt, `dftLabel(store, id)` löst das Label aus `store.dftHierarchy` auf. |
 | **AgRelOn-Granularitaet** | mittel | Aktuell wird bei Korrespondenz pauschal `agrelon:HasCorrespondent` erzeugt, und nur fuer die `adressat:in`-Rolle -- der Verfasser (= Absender) wird nicht in die AgRelOn-Relation aufgenommen. Folge: UI-Sektion „KORRESPONDENZ" zeigt nur einen Partner, der zweite steht unter „PRODUKTION VERFASSER". Optionen: (a) beide Richtungen erzeugen (symmetrisch), (b) feinere Praedikate `HasAddressee` / `HasSender` nutzen, (c) status quo belassen und Frontend beide Seiten zusammenfuehren. Entscheidung offen, Design-Input benoetigt. |
+| **Bayreuth-Visualisierungsansatz** | offen | Lane m3gim (Forschungsleitstelle). Wie werden Netzwerk, Rolle und Mobilitaet von Malaniuk hinsichtlich Bayreuth gekoppelt sichtbar gemacht. Optionen: (a) eigene Bayreuth-Ansicht, (b) Orts- und Zeitschnitt im Netzwerk-Tab, (c) Atlas-Reaktivierung mit Bayreuth-Schwerpunkt. Datenlage gescoutet (`scripts/scout-coverage.py`): vier verortete Events, neun Bayreuth-Records, Netzwerk fast nur Ko-Okkurrenz. Empfehlung (b), erweitert um Rolle und Mobilitaet. Definitionen, Datendeckung und Verifikationsliste in [visualisierung-bayreuth.md](visualisierung-bayreuth.md). Richtungsentscheidung, operator-gated. |
+| **Mobilitaets-Ortsrollen in die Mobilitaetssichten** | offen | Lane m3gim (Sichtpruefung 2026-06-21). Die Statistik-Sektion Mobilitaetssichten weist die typisierten Ortsrollen (`zielort` 11, `absendeort` 3, `abreiseort` 1) als „Nicht klassifiziert" (24, so gross wie die groesste benannte Sicht) aus, weil `EVENT_ROLE_TO_MOBILITY_CLUSTER` in `constants.js` sie bewusst auf `null` mappt. Das widerspricht [data.md](data.md) § 10, die `absendeort/empfangsort/zielort/abreiseort/vertragsort` der Reise- und Korrespondenzmobilitaet zuordnet (der Klassifikator-Kommentar, § 10 nenne keine Zuordnung, ist veraltet). Aufloesung deterministisch: die fuenf Ortsrollen auf `korrespondenz` mappen, Kommentar streichen, `test_25` nachziehen. Fachliche Ratifikation noetig (zaehlt ein datumsloser Zielort als Reisemobilitaet?), operator-gated. Befund und Reproduktion in [frontend-sichtpruefung-2026-06-21.md](frontend-sichtpruefung-2026-06-21.md). |
 
 ### Offene Modellentscheidungen
 
