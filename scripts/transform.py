@@ -26,6 +26,7 @@ import os
 import sys
 import re
 import json
+import hashlib
 import pandas as pd
 from pathlib import Path
 from datetime import datetime
@@ -1114,6 +1115,20 @@ def _maybe_add_agrelon(record: dict, typ: str, rolle: str, agent_entry: dict,
     record.setdefault("m3gim:agentRelation", []).append(rel_entry)
 
 
+def _ste_id(rec_local_id: str, ort: str, rolle: str, datum: str, seen: dict) -> str:
+    """Stabile, inhaltsbasierte STE-@id: Hash ueber (Ort, Rolle, Datum) je
+    Record statt eines globalen Zaehlers. Das Einfuegen oder Aendern eines
+    Events verschiebt damit keine anderen @ids mehr (frueher globaler Zaehler,
+    wiederkehrender test_22-Bruch). Echte Inhaltsdubletten auf demselben Record
+    bekommen ein stabiles Ordinal-Suffix in Auftrittsreihenfolge."""
+    raw = "\x1f".join((ort or "", rolle or "", datum or ""))
+    h = hashlib.sha1(raw.encode("utf-8")).hexdigest()[:8]
+    base = f"m3gim:ste_{rec_local_id}_{h}"
+    n = seen.get(base, 0) + 1
+    seen[base] = n
+    return base if n == 1 else f"{base}-{n}"
+
+
 def add_relations_to_records(records: list, relations: dict,
                              enrichment_data: dict | None = None,
                              stage_roles: dict | None = None) -> tuple[list, list]:
@@ -1130,8 +1145,8 @@ def add_relations_to_records(records: list, relations: dict,
         stage_roles = {}
     spatiotemporal_events = []
     performances = []
-    event_counter = 0
-    perf_counter = 0  # getrennt von event_counter, damit STE-@ids stabil bleiben
+    ste_seen = {}  # full-@id -> Auftrittszahl, fuer inhaltsbasierte STE-@ids
+    perf_counter = 0  # Performance-@ids bleiben (Scope: nur STE stabilisiert)
     for record in records:
         identifier = record.get("rico:identifier")
         if not identifier or identifier not in relations:
@@ -1283,9 +1298,9 @@ def add_relations_to_records(records: list, relations: dict,
             elif t == "spatiotemporal":
                 # Phase 4.4: Komposit ort,datum -> m3gim:SpatiotemporalEvent
                 # als Top-Level Graph-Entity mit Rueckverweis.
-                event_counter += 1
                 rec_local_id = record["@id"].split(":", 1)[-1]
-                ev_id = f"m3gim:ste_{rec_local_id}_{event_counter}"
+                ev_id = _ste_id(rec_local_id, rel["ort"], rel.get("rolle"),
+                                rel.get("datum"), ste_seen)
                 # atPlace: wie reguläre rico:Place-Entries mit Q-ID + Enrichment
                 # anreichern, sobald Reconciliation einen Treffer liefert.
                 place_entry = {"name": rel["ort"]}

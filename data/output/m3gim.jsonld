@@ -834,7 +834,7 @@
         }
       ],
       "m3gim:hasSpatiotemporalEvent": {
-        "@id": "m3gim:ste_NIM_004_1"
+        "@id": "m3gim:ste_NIM_004_248e1297"
       },
       "m3gim:hasAssociatedAgent": {
         "name": "Cox, Warren",
@@ -2598,10 +2598,10 @@
       ],
       "m3gim:hasSpatiotemporalEvent": [
         {
-          "@id": "m3gim:ste_NIM_004_1_1"
+          "@id": "m3gim:ste_NIM_004_1_902c53c1"
         },
         {
-          "@id": "m3gim:ste_NIM_004_1_2"
+          "@id": "m3gim:ste_NIM_004_1_60aa8e40"
         }
       ],
       "m3gim:hasAssociatedAgent": [
@@ -3071,7 +3071,7 @@
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
       "m3gim:hasSpatiotemporalEvent": {
-        "@id": "m3gim:ste_NIM_004_3_3"
+        "@id": "m3gim:ste_NIM_004_3_5d99d133"
       },
       "m3gim:hasPerformance": [
         {
@@ -4287,7 +4287,7 @@
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "begonnen",
       "m3gim:hasSpatiotemporalEvent": {
-        "@id": "m3gim:ste_NIM_004_8_4"
+        "@id": "m3gim:ste_NIM_004_8_97eae895"
       },
       "m3gim:hasPerformance": [
         {
@@ -5727,7 +5727,7 @@
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
       "m3gim:hasSpatiotemporalEvent": {
-        "@id": "m3gim:ste_NIM_004_12_5"
+        "@id": "m3gim:ste_NIM_004_12_796133ae"
       },
       "m3gim:hasPerformance": [
         {
@@ -8059,10 +8059,10 @@
       "m3gim:bearbeitungsstand": "abgeschlossen",
       "m3gim:hasSpatiotemporalEvent": [
         {
-          "@id": "m3gim:ste_NIM_004_19_6"
+          "@id": "m3gim:ste_NIM_004_19_04da7ec6"
         },
         {
-          "@id": "m3gim:ste_NIM_004_19_7"
+          "@id": "m3gim:ste_NIM_004_19_b3f677f8"
         }
       ],
       "m3gim:hasPerformance": [
@@ -8435,10 +8435,10 @@
       ],
       "m3gim:hasSpatiotemporalEvent": [
         {
-          "@id": "m3gim:ste_NIM_004_23_8"
+          "@id": "m3gim:ste_NIM_004_23_26065c97"
         },
         {
-          "@id": "m3gim:ste_NIM_004_23_9"
+          "@id": "m3gim:ste_NIM_004_23_5ea88cfa"
         }
       ],
       "m3gim:hasAssociatedAgent": [
@@ -8515,19 +8515,19 @@
       "m3gim:bearbeitungsstand": "begonnen",
       "m3gim:hasSpatiotemporalEvent": [
         {
-          "@id": "m3gim:ste_NIM_004_24_10"
+          "@id": "m3gim:ste_NIM_004_24_67319b11"
         },
         {
-          "@id": "m3gim:ste_NIM_004_24_11"
+          "@id": "m3gim:ste_NIM_004_24_4acbe5ad"
         },
         {
-          "@id": "m3gim:ste_NIM_004_24_12"
+          "@id": "m3gim:ste_NIM_004_24_3e48583c"
         },
         {
-          "@id": "m3gim:ste_NIM_004_24_13"
+          "@id": "m3gim:ste_NIM_004_24_3272e321"
         },
         {
-          "@id": "m3gim:ste_NIM_004_24_14"
+          "@id": "m3gim:ste_NIM_004_24_ed272696"
         }
       ],
       "m3gim:hasPerformance": [
@@ -9496,10 +9496,10 @@
       ],
       "m3gim:hasSpatiotemporalEvent": [
         {
-          "@id": "m3gim:ste_NIM_004_27_15"
+          "@id": "m3gim:ste_NIM_004_27_4f6233fc"
         },
         {
-          "@id": "m3gim:ste_NIM_004_27_16"
+          "@id": "m3gim:ste_NIM_004_27_fa3c2858"
         }
       ],
       "m3gim:hasAssociatedAgent": [
@@ -9731,19 +9731,19 @@
       "m3gim:bearbeitungsstand": "begonnen",
       "m3gim:hasSpatiotemporalEvent": [
         {
-          "@id": "m3gim:ste_NIM_004_29_17"
+          "@id": "m3gim:ste_NIM_004_29_67319b11"
         },
         {
-          "@id": "m3gim:ste_NIM_004_29_18"
+          "@id": "m3gim:ste_NIM_004_29_4acbe5ad"
         },
         {
-          "@id": "m3gim:ste_NIM_004_29_19"
+          "@id": "m3gim:ste_NIM_004_29_3e48583c"
         },
         {
-          "@id": "m3gim:ste_NIM_004_29_20"
+          "@id": "m3gim:ste_NIM_004_29_3272e321"
         },
         {
-          "@id": "m3gim:ste_NIM_004_29_21"
+          "@id": "m3gim:ste_NIM_004_29_ed272696"
         }
       ],
       "m3gim:hasPerformance": [
@@ -12608,7 +12608,7 @@
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
       "m3gim:hasSpatiotemporalEvent": {
-        "@id": "m3gim:ste_NIM_007_1_22"
+        "@id": "m3gim:ste_NIM_007_1_bd830db9"
       },
       "m3gim:agentRelation": [
         {
@@ -12729,10 +12729,10 @@
       "m3gim:bearbeitungsstand": "abgeschlossen",
       "m3gim:hasSpatiotemporalEvent": [
         {
-          "@id": "m3gim:ste_NIM_007_2_23"
+          "@id": "m3gim:ste_NIM_007_2_bd830db9"
         },
         {
-          "@id": "m3gim:ste_NIM_007_2_24"
+          "@id": "m3gim:ste_NIM_007_2_2d8cb340"
         }
       ],
       "m3gim:agentRelation": [
@@ -13017,7 +13017,7 @@
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
       "m3gim:hasSpatiotemporalEvent": {
-        "@id": "m3gim:ste_NIM_007_3_25"
+        "@id": "m3gim:ste_NIM_007_3_07825dd1"
       },
       "m3gim:hasAssociatedAgent": [
         {
@@ -13152,16 +13152,16 @@
       ],
       "m3gim:hasSpatiotemporalEvent": [
         {
-          "@id": "m3gim:ste_NIM_007_4_26"
+          "@id": "m3gim:ste_NIM_007_4_7c2acdb8"
         },
         {
-          "@id": "m3gim:ste_NIM_007_4_27"
+          "@id": "m3gim:ste_NIM_007_4_1f0cddf2"
         },
         {
-          "@id": "m3gim:ste_NIM_007_4_28"
+          "@id": "m3gim:ste_NIM_007_4_cd7ad927"
         },
         {
-          "@id": "m3gim:ste_NIM_007_4_29"
+          "@id": "m3gim:ste_NIM_007_4_4502b89b"
         }
       ],
       "m3gim:agentRelation": [
@@ -13684,19 +13684,19 @@
       },
       "m3gim:hasSpatiotemporalEvent": [
         {
-          "@id": "m3gim:ste_NIM_007_5_2_30"
+          "@id": "m3gim:ste_NIM_007_5_2_16f99551"
         },
         {
-          "@id": "m3gim:ste_NIM_007_5_2_31"
+          "@id": "m3gim:ste_NIM_007_5_2_29b739c1"
         },
         {
-          "@id": "m3gim:ste_NIM_007_5_2_32"
+          "@id": "m3gim:ste_NIM_007_5_2_5464fb91"
         },
         {
-          "@id": "m3gim:ste_NIM_007_5_2_33"
+          "@id": "m3gim:ste_NIM_007_5_2_1b618378"
         },
         {
-          "@id": "m3gim:ste_NIM_007_5_2_34"
+          "@id": "m3gim:ste_NIM_007_5_2_0d94cdf3"
         }
       ],
       "m3gim:agentRelation": [
@@ -13848,7 +13848,7 @@
         }
       },
       "m3gim:hasSpatiotemporalEvent": {
-        "@id": "m3gim:ste_NIM_007_5_3_35"
+        "@id": "m3gim:ste_NIM_007_5_3_f715b813"
       },
       "m3gim:agentRelation": [
         {
@@ -13964,19 +13964,19 @@
       },
       "m3gim:hasSpatiotemporalEvent": [
         {
-          "@id": "m3gim:ste_NIM_007_5_4_36"
+          "@id": "m3gim:ste_NIM_007_5_4_d81bfdf8"
         },
         {
-          "@id": "m3gim:ste_NIM_007_5_4_37"
+          "@id": "m3gim:ste_NIM_007_5_4_07d98e1f"
         },
         {
-          "@id": "m3gim:ste_NIM_007_5_4_38"
+          "@id": "m3gim:ste_NIM_007_5_4_ecd5ddd5"
         },
         {
-          "@id": "m3gim:ste_NIM_007_5_4_39"
+          "@id": "m3gim:ste_NIM_007_5_4_dccff444"
         },
         {
-          "@id": "m3gim:ste_NIM_007_5_4_40"
+          "@id": "m3gim:ste_NIM_007_5_4_a57f4b11"
         }
       ],
       "m3gim:agentRelation": [
@@ -14129,10 +14129,10 @@
       },
       "m3gim:hasSpatiotemporalEvent": [
         {
-          "@id": "m3gim:ste_NIM_007_5_5_41"
+          "@id": "m3gim:ste_NIM_007_5_5_c40dc19e"
         },
         {
-          "@id": "m3gim:ste_NIM_007_5_5_42"
+          "@id": "m3gim:ste_NIM_007_5_5_a8a33388"
         }
       ],
       "m3gim:agentRelation": [
@@ -14267,10 +14267,10 @@
       },
       "m3gim:hasSpatiotemporalEvent": [
         {
-          "@id": "m3gim:ste_NIM_007_5_6_43"
+          "@id": "m3gim:ste_NIM_007_5_6_41dc3486"
         },
         {
-          "@id": "m3gim:ste_NIM_007_5_6_44"
+          "@id": "m3gim:ste_NIM_007_5_6_56c6eac6"
         }
       ],
       "m3gim:agentRelation": [
@@ -14410,10 +14410,10 @@
       },
       "m3gim:hasSpatiotemporalEvent": [
         {
-          "@id": "m3gim:ste_NIM_007_5_7_45"
+          "@id": "m3gim:ste_NIM_007_5_7_de6d7506"
         },
         {
-          "@id": "m3gim:ste_NIM_007_5_7_46"
+          "@id": "m3gim:ste_NIM_007_5_7_f63653b8"
         }
       ],
       "m3gim:agentRelation": [
@@ -14539,10 +14539,10 @@
       },
       "m3gim:hasSpatiotemporalEvent": [
         {
-          "@id": "m3gim:ste_NIM_007_5_8_47"
+          "@id": "m3gim:ste_NIM_007_5_8_79dd6bf7"
         },
         {
-          "@id": "m3gim:ste_NIM_007_5_8_48"
+          "@id": "m3gim:ste_NIM_007_5_8_55badc20"
         }
       ],
       "m3gim:agentRelation": [
@@ -14665,7 +14665,7 @@
         }
       },
       "m3gim:hasSpatiotemporalEvent": {
-        "@id": "m3gim:ste_NIM_007_6_49"
+        "@id": "m3gim:ste_NIM_007_6_018697b4"
       },
       "m3gim:agentRelation": [
         {
@@ -14754,7 +14754,7 @@
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
       "m3gim:hasSpatiotemporalEvent": {
-        "@id": "m3gim:ste_NIM_007_7_50"
+        "@id": "m3gim:ste_NIM_007_7_e11b2771"
       },
       "m3gim:agentRelation": [
         {
@@ -15401,10 +15401,10 @@
       },
       "m3gim:hasSpatiotemporalEvent": [
         {
-          "@id": "m3gim:ste_NIM_007_9_51"
+          "@id": "m3gim:ste_NIM_007_9_60aa8e40"
         },
         {
-          "@id": "m3gim:ste_NIM_007_9_52"
+          "@id": "m3gim:ste_NIM_007_9_06846c91"
         }
       ],
       "m3gim:agentRelation": [
@@ -15554,10 +15554,10 @@
       "m3gim:bearbeitungsstand": "abgeschlossen",
       "m3gim:hasSpatiotemporalEvent": [
         {
-          "@id": "m3gim:ste_NIM_007_10_53"
+          "@id": "m3gim:ste_NIM_007_10_60aa8e40"
         },
         {
-          "@id": "m3gim:ste_NIM_007_10_54"
+          "@id": "m3gim:ste_NIM_007_10_b91c6e11"
         }
       ],
       "m3gim:agentRelation": [
@@ -15662,7 +15662,7 @@
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
       "m3gim:hasSpatiotemporalEvent": {
-        "@id": "m3gim:ste_NIM_007_11_55"
+        "@id": "m3gim:ste_NIM_007_11_0cd1fd62"
       },
       "m3gim:agentRelation": [
         {
@@ -17192,7 +17192,7 @@
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
       "m3gim:hasSpatiotemporalEvent": {
-        "@id": "m3gim:ste_NIM_007_17_56"
+        "@id": "m3gim:ste_NIM_007_17_7e2893e0"
       },
       "m3gim:hasPerformance": [
         {
@@ -17812,10 +17812,10 @@
       "m3gim:bearbeitungsstand": "abgeschlossen",
       "m3gim:hasSpatiotemporalEvent": [
         {
-          "@id": "m3gim:ste_NIM_007_20_57"
+          "@id": "m3gim:ste_NIM_007_20_599b54dd"
         },
         {
-          "@id": "m3gim:ste_NIM_007_20_58"
+          "@id": "m3gim:ste_NIM_007_20_527789f9"
         }
       ],
       "m3gim:hasAssociatedAgent": [
@@ -17887,10 +17887,10 @@
       "rico:hasExtent": "1 Blatt, 2 Seiten",
       "m3gim:hasSpatiotemporalEvent": [
         {
-          "@id": "m3gim:ste_NIM_007_21_59"
+          "@id": "m3gim:ste_NIM_007_21_d5519ad8"
         },
         {
-          "@id": "m3gim:ste_NIM_007_21_60"
+          "@id": "m3gim:ste_NIM_007_21_527789f9"
         }
       ],
       "m3gim:hasAssociatedAgent": [
@@ -21091,7 +21091,7 @@
       "skos:prefLabel": "Visitenkarte"
     },
     {
-      "@id": "m3gim:ste_NIM_004_1_1",
+      "@id": "m3gim:ste_NIM_004_1_902c53c1",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "New York",
@@ -21111,7 +21111,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_004_1_2",
+      "@id": "m3gim:ste_NIM_004_1_60aa8e40",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Zürich, Zürichbergstrasse 104"
@@ -21126,7 +21126,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_004_3_3",
+      "@id": "m3gim:ste_NIM_004_3_5d99d133",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "München",
@@ -21147,7 +21147,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_004_8_4",
+      "@id": "m3gim:ste_NIM_004_8_97eae895",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "München",
@@ -21168,7 +21168,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_004_12_5",
+      "@id": "m3gim:ste_NIM_004_12_796133ae",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Stuttgart",
@@ -21189,7 +21189,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_004_19_6",
+      "@id": "m3gim:ste_NIM_004_19_04da7ec6",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Paris",
@@ -21210,7 +21210,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_004_19_7",
+      "@id": "m3gim:ste_NIM_004_19_b3f677f8",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Paris",
@@ -21231,7 +21231,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_004_23_8",
+      "@id": "m3gim:ste_NIM_004_23_26065c97",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Wien",
@@ -21252,7 +21252,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_004_23_9",
+      "@id": "m3gim:ste_NIM_004_23_5ea88cfa",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "New York",
@@ -21272,7 +21272,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_004_24_10",
+      "@id": "m3gim:ste_NIM_004_24_67319b11",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Zürich",
@@ -21294,7 +21294,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_004_24_11",
+      "@id": "m3gim:ste_NIM_004_24_4acbe5ad",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "München",
@@ -21316,7 +21316,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_004_24_12",
+      "@id": "m3gim:ste_NIM_004_24_3e48583c",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Wien",
@@ -21338,7 +21338,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_004_24_13",
+      "@id": "m3gim:ste_NIM_004_24_3272e321",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Bayreuth",
@@ -21359,7 +21359,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_004_24_14",
+      "@id": "m3gim:ste_NIM_004_24_ed272696",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Salzburg",
@@ -21381,7 +21381,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_004_27_15",
+      "@id": "m3gim:ste_NIM_004_27_4f6233fc",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "New York",
@@ -21402,7 +21402,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_004_27_16",
+      "@id": "m3gim:ste_NIM_004_27_fa3c2858",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Zürich, Zurichbergstrasse 104"
@@ -21417,7 +21417,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_004_29_17",
+      "@id": "m3gim:ste_NIM_004_29_67319b11",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Zürich",
@@ -21439,7 +21439,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_004_29_18",
+      "@id": "m3gim:ste_NIM_004_29_4acbe5ad",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "München",
@@ -21461,7 +21461,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_004_29_19",
+      "@id": "m3gim:ste_NIM_004_29_3e48583c",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Wien",
@@ -21483,7 +21483,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_004_29_20",
+      "@id": "m3gim:ste_NIM_004_29_3272e321",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Bayreuth",
@@ -21504,7 +21504,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_004_29_21",
+      "@id": "m3gim:ste_NIM_004_29_ed272696",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Salzburg",
@@ -21526,7 +21526,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_1_22",
+      "@id": "m3gim:ste_NIM_007_1_bd830db9",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Zürich, Geibelstrasse 1/1"
@@ -21541,7 +21541,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_2_23",
+      "@id": "m3gim:ste_NIM_007_2_bd830db9",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Zürich, Geibelstrasse 1/1"
@@ -21556,7 +21556,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_2_24",
+      "@id": "m3gim:ste_NIM_007_2_2d8cb340",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Bayreuth",
@@ -21577,7 +21577,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_3_25",
+      "@id": "m3gim:ste_NIM_007_3_07825dd1",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Bayreuth",
@@ -21598,7 +21598,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_4_26",
+      "@id": "m3gim:ste_NIM_007_4_7c2acdb8",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Wien",
@@ -21618,7 +21618,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_4_27",
+      "@id": "m3gim:ste_NIM_007_4_1f0cddf2",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Lissabon",
@@ -21638,7 +21638,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_4_28",
+      "@id": "m3gim:ste_NIM_007_4_cd7ad927",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "München",
@@ -21658,7 +21658,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_4_29",
+      "@id": "m3gim:ste_NIM_007_4_4502b89b",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Lissabon",
@@ -21680,7 +21680,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_5_2_30",
+      "@id": "m3gim:ste_NIM_007_5_2_16f99551",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Wien",
@@ -21701,7 +21701,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_5_2_31",
+      "@id": "m3gim:ste_NIM_007_5_2_29b739c1",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Wien",
@@ -21722,7 +21722,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_5_2_32",
+      "@id": "m3gim:ste_NIM_007_5_2_5464fb91",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Wien",
@@ -21743,7 +21743,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_5_2_33",
+      "@id": "m3gim:ste_NIM_007_5_2_1b618378",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Wien",
@@ -21764,7 +21764,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_5_2_34",
+      "@id": "m3gim:ste_NIM_007_5_2_0d94cdf3",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Stuttgart",
@@ -21785,7 +21785,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_5_3_35",
+      "@id": "m3gim:ste_NIM_007_5_3_f715b813",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Stuttgart",
@@ -21806,7 +21806,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_5_4_36",
+      "@id": "m3gim:ste_NIM_007_5_4_d81bfdf8",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Wien",
@@ -21827,7 +21827,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_5_4_37",
+      "@id": "m3gim:ste_NIM_007_5_4_07d98e1f",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Wien",
@@ -21848,7 +21848,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_5_4_38",
+      "@id": "m3gim:ste_NIM_007_5_4_ecd5ddd5",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Wien",
@@ -21869,7 +21869,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_5_4_39",
+      "@id": "m3gim:ste_NIM_007_5_4_dccff444",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Wien",
@@ -21890,7 +21890,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_5_4_40",
+      "@id": "m3gim:ste_NIM_007_5_4_a57f4b11",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Wien",
@@ -21911,7 +21911,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_5_5_41",
+      "@id": "m3gim:ste_NIM_007_5_5_c40dc19e",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Wien",
@@ -21932,7 +21932,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_5_5_42",
+      "@id": "m3gim:ste_NIM_007_5_5_a8a33388",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Wien",
@@ -21953,7 +21953,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_5_6_43",
+      "@id": "m3gim:ste_NIM_007_5_6_41dc3486",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Berlin",
@@ -21974,7 +21974,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_5_6_44",
+      "@id": "m3gim:ste_NIM_007_5_6_56c6eac6",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Berlin",
@@ -21995,7 +21995,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_5_7_45",
+      "@id": "m3gim:ste_NIM_007_5_7_de6d7506",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Wien",
@@ -22016,7 +22016,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_5_7_46",
+      "@id": "m3gim:ste_NIM_007_5_7_f63653b8",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Wien",
@@ -22037,7 +22037,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_5_8_47",
+      "@id": "m3gim:ste_NIM_007_5_8_79dd6bf7",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Zürich",
@@ -22058,7 +22058,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_5_8_48",
+      "@id": "m3gim:ste_NIM_007_5_8_55badc20",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Zürich",
@@ -22079,7 +22079,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_6_49",
+      "@id": "m3gim:ste_NIM_007_6_018697b4",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Köln",
@@ -22100,7 +22100,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_7_50",
+      "@id": "m3gim:ste_NIM_007_7_e11b2771",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "München",
@@ -22121,7 +22121,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_9_51",
+      "@id": "m3gim:ste_NIM_007_9_60aa8e40",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Zürich, Zürichbergstrasse 104"
@@ -22136,7 +22136,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_9_52",
+      "@id": "m3gim:ste_NIM_007_9_06846c91",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Zürich",
@@ -22157,7 +22157,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_10_53",
+      "@id": "m3gim:ste_NIM_007_10_60aa8e40",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Zürich, Zürichbergstrasse 104"
@@ -22172,7 +22172,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_10_54",
+      "@id": "m3gim:ste_NIM_007_10_b91c6e11",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "München",
@@ -22193,7 +22193,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_11_55",
+      "@id": "m3gim:ste_NIM_007_11_0cd1fd62",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Zürich",
@@ -22214,7 +22214,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_17_56",
+      "@id": "m3gim:ste_NIM_007_17_7e2893e0",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Wien",
@@ -22235,7 +22235,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_20_57",
+      "@id": "m3gim:ste_NIM_007_20_599b54dd",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Zürich",
@@ -22255,7 +22255,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_20_58",
+      "@id": "m3gim:ste_NIM_007_20_527789f9",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Wien",
@@ -22275,7 +22275,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_21_59",
+      "@id": "m3gim:ste_NIM_007_21_d5519ad8",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Berlin",
@@ -22295,7 +22295,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_007_21_60",
+      "@id": "m3gim:ste_NIM_007_21_527789f9",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Wien",
@@ -22315,7 +22315,7 @@
       }
     },
     {
-      "@id": "m3gim:ste_NIM_004_1",
+      "@id": "m3gim:ste_NIM_004_248e1297",
       "@type": "m3gim:SpatiotemporalEvent",
       "m3gim:atPlace": {
         "name": "Wien",
@@ -25404,7 +25404,7 @@
       "rico:name": "Beckmesser"
     }
   ],
-  "m3gim:exportDate": "2026-06-18T15:03:00.711684",
+  "m3gim:exportDate": "2026-06-21T21:23:38.265707",
   "m3gim:recordCount": 381,
   "m3gim:konvolutCount": 7,
   "m3gim:approvedManualMatches": 261,
