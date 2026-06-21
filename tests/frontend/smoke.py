@@ -1,7 +1,9 @@
 """Frontend-Smoke-Test via Playwright.
 
 Laedt die SPA unter http://localhost:8765/ in einem Headless-Chromium, klickt
-die sechs Tabs durch und prueft pro Tab: keine JS-Errors, DOM rendert nicht-leer.
+die sieben sichtbaren Tabs durch und prueft pro Tab: keine JS-Errors, DOM rendert
+nicht-leer. Der Mobilitaets-Tab (D3-geo-Karte, E-111) hat zusaetzlich einen
+Karten-Canary (Knoten und Pfeile rendern nach dem asynchronen Geometrie-Load).
 Zusaetzlich werden im Archiv-Tab Anker-Records geoeffnet und das Detail-Panel
 gegen Konsolen-Fehler + erwartete Sektionen gecheckt.
 
@@ -20,10 +22,11 @@ import sys
 from playwright.sync_api import sync_playwright
 
 BASE_URL = os.environ.get("M3GIM_SMOKE_URL", "http://localhost:8765/")
-# Nur sichtbare Tabs testen. Die restlichen (mobilitaets-atlas, repertoire,
-# biogramm, korb) sind per `hidden` ausgeblendet und werden spaeter
-# ueberarbeitet.
-TABS = ["bestand", "chronik", "statistik", "indizes", "netzwerk"]
+# Alle sichtbaren Tabs testen (deckt VISIBLE_TABS). Der Mobilitaets-Tab (D3-geo-
+# Karte, E-111) und der Korb sind seit E-109/E-111 sichtbar und jetzt im Loop;
+# die verborgenen Perspektiv-Tabs (mobilitaets-atlas, repertoire, biogramm)
+# bleiben per `hidden` ausgeblendet und werden spaeter ueberarbeitet (E-81).
+TABS = ["bestand", "chronik", "statistik", "indizes", "mobilitaet", "netzwerk", "korb"]
 
 # Anker-Records: Titel-Snippets, die im Bestand-Tab-DOM erreichbar sein muessen.
 # Nur Records mit Verknuepfungen (sonst werden sie durch den "nur bearbeitet"-
@@ -96,7 +99,8 @@ def main() -> int:
             # Stempel erkennen: `[chronik] ...`, `[bestand] ...`, `[indizes] ...`
             if text.startswith("[") and "]" in text:
                 tag = text[1:text.index("]")]
-                if tag in ("chronik", "bestand", "indizes", "statistik", "netzwerk"):
+                if tag in ("chronik", "bestand", "indizes", "statistik",
+                           "mobilitaet", "netzwerk", "korb"):
                     stamps[tag] = text
 
         page.on("console", on_console)
@@ -140,11 +144,13 @@ def main() -> int:
         #     ein View still ins Nichts rendert (siehe currentFilters-
         #     Regression) oder ein Key beim Refactor still wegfliegt.
         stamp_expectations = {
-            "bestand":   ["konvolute", "records", "sort"],
-            "chronik":   ["records", "jahre-belegt", "undatiert", "spanne"],
-            "statistik": ["records", "konvolute", "events", "personen", "sektionen"],
-            "indizes":   ["personen", "organisationen", "orte", "werke"],
-            "netzwerk":  ["total", "ring1", "ring2", "agrelon"],
+            "bestand":    ["konvolute", "records", "sort"],
+            "chronik":    ["records", "jahre-belegt", "undatiert", "spanne"],
+            "statistik":  ["records", "konvolute", "events", "personen", "sektionen"],
+            "indizes":    ["personen", "organisationen", "orte", "werke"],
+            "mobilitaet": ["events", "verortet", "unverortet", "datiert", "jahre"],
+            "netzwerk":   ["total", "ring1", "ring2", "agrelon"],
+            "korb":       ["eintraege", "aufgeloest", "events", "finanzen"],
         }
         for view, required in stamp_expectations.items():
             results.append(expect_stamp(stamps, view, required))
@@ -197,6 +203,40 @@ def main() -> int:
         except Exception as e:
             results.append(("WARN", "chronik:year-grid          ",
                             f"check uebersprungen: {e}"))
+
+        # --- Canary Mobilitaet: D3-geo-Karte (E-111) zeichnet nach dem
+        #     asynchronen Geometrie-Load Stadt-Knoten und Pfad-Pfeile. Der reine
+        #     logStamp-Check faengt das nicht: der Stempel wird synchron beim
+        #     Render geschrieben, also bevor `loadCountries().then(...)` die
+        #     Knoten zeichnet. Dieser Canary wartet auf den Async-Draw und ist
+        #     der harte Schutz davor, dass die Karte still leer rendert
+        #     (fehlende Geometrie, d3-Ausfall, Projektions-Bug).
+        try:
+            page.locator('[data-tab="mobilitaet"]').first.click()
+            errs_before = len(global_errors)
+            # Knoten erscheinen erst nach dem fetch der Laendergeometrie.
+            page.locator('#tab-mobilitaet .mob-nodes g.mob-node').first.wait_for(
+                state="attached", timeout=8000)
+            nodes = page.locator('#tab-mobilitaet .mob-nodes g.mob-node').count()
+            arcs = page.locator('#tab-mobilitaet .mob-arcs path').count()
+            legend = page.locator('#tab-mobilitaet .mob-legend__item').count()
+            land = page.locator('#tab-mobilitaet .mob-land path').count()
+            new_errs = expect_no_new_errors(global_errors, errs_before)
+            # Erwartung: mehrere Stadt-Knoten, mindestens ein Pfad-Pfeil, die
+            # Sicht-Legende als Filter, Laendergeometrie, keine Konsolenfehler.
+            if nodes >= 5 and arcs >= 1 and legend >= 5 and land >= 50 and not new_errs:
+                results.append(("OK", "mobilitaet:karte-render     ",
+                                f"{nodes} Knoten, {arcs} Pfeile, {legend} Sicht-Filter, "
+                                f"{land} Laender"))
+            else:
+                results.append(("FAIL", "mobilitaet:karte-render     ",
+                                f"Knoten={nodes}, Pfeile={arcs}, Legende={legend}, "
+                                f"Laender={land}, errs={len(new_errs)}"))
+                for e in new_errs[:2]:
+                    results.append(("  ", " " * 24, e[:120]))
+        except Exception as e:
+            results.append(("FAIL", "mobilitaet:karte-render     ",
+                            f"Karte nicht gezeichnet: {str(e)[:90]}"))
 
         # --- Anker-Titel: im DOM erreichbar? ---
         # (Kein Klick, weil Konvolute im Archiv-Tab ggf. eingeklappt sind und
