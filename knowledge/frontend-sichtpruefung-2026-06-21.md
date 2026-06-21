@@ -22,6 +22,9 @@ related: [data, plan, decisions, architecture, design, visualisierung-bayreuth]
 
 > Befundbericht der Forschungsleitstellen-Lane m3gim. Eine Chrome-Sichtprüfung des lokal geserveten Frontends mit dem Ziel, den aktuellen Datenstand vollständig im Interface zu verifizieren, die Mobilitätsdimension zu bewerten, den Mobilitäts-Atlas auf Reaktivierbarkeit zu prüfen und Datenauffälligkeiten als Befund festzuhalten, getrennt nach Pipeline-, Reconciliation- und Quellfehler. Grundlage für das Operator-Feedback durch den Fachexperten. Die kanonische Wissensbasis bleibt in [data.md](data.md), [plan.md](plan.md), [decisions.md](decisions.md); hier steht das Geprüfte und Gefundene.
 
+> [!done] Status der Befunde (Stand 2026-06-21, nach der Order-Runde)
+> Dieser Bericht ist eine Momentaufnahme des Prüfstands. Die Mobilitäts-Befunde sind inzwischen aufgelöst: M1/F1 (Klassifikator führte die typisierten Ortsrollen als „Nicht klassifiziert") durch **E-110** (die fünf Ortsrollen mappen jetzt auf `korrespondenz`, Statistik-Label „Reise & Korrespondenz", `test_25`-Lock); die Mobilitäts-Darstellung selbst durch **E-111** (D3-geo-Trajektorienkarte statt Listendarstellung). Datenfehler-Befunde sind ins kanonische [datenfehler.md](datenfehler.md) überführt (QF-/AF-Register). Der Text unten bleibt als Befund-Trail unverändert.
+
 ## Methode
 
 Geprüft wurde das statische Frontend, lokal über einen HTTP-Server aus `docs/` ausgeliefert, in Chrome. Zahlen sind reproduzierbar erhoben, entweder als Store-Abfrage über `window.m3gim.store` (das flache Loader-Format, das auch die Views konsumieren) oder als DOM-Lesung der gerenderten Ansicht. Wo eine Bildlesung und eine DOM-Lesung sich widersprachen, gilt das DOM, der skalierte Screenshot hat sich zweimal als unzuverlässig erwiesen (siehe Verifikationsnotiz). Der geprüfte Datenstand trägt das Export-Datum 2026-06-18T15:03 (Konsolen-Log beim Laden), deckungsgleich mit `data/output/m3gim.jsonld`.

@@ -64,7 +64,8 @@ related: [design, pipeline, data, decisions]
 | `views/archiv-inline-detail.js` | Record-Detail mit fünf funktionalen Blöcken (Produktion · Mitwirkende · Werk & Repertoire · Ort & Ereignis · Erwähnt), AgRelOn-Dedup (liest `rel.objectName`/`rel.objectWikidata`, nicht das rohe JSON-LD), Sprach-Label-Auflösung, `buildRoleChip()` als geteilter Helper |
 | `views/_archiv-toolbar.js` | Geteilte Toolbar (Suche, Dokumenttyp-Filter, Person-Filter, Count-Anzeige) für Bestand + Chronik |
 | `views/indizes.js` | 4-Grid Explorer (Personen, Organisationen, Orte, Werke) mit Beziehungsbadges (AgRelOn), nur Einträge mit `records.size > 0` |
-| `views/mobilitaets-atlas.js` | Leaflet-Karte + D3-Zeitstrahl + Detailpanel (Tab aktuell `hidden`, E-81; Leaflet ist aus `index.html` entfernt und bei Reaktivierung des Tabs wieder einzubinden) |
+| `views/mobility.js` | Mobilitäts-Tab (sichtbar, E-111): D3-geo-Trajektorienkarte über die volle Breite. Orte als Knoten nach dominanter Mobilitätssicht, biografischer Pfad als gerichtete Pfeile hell-zu-dunkel über die Zeit, Zeitregler mit Abspielen, Sicht-Legende als Filter, Klick-Knoten-Detailstreifen. Lokale Ländergeometrie `docs/data/geo/countries-110m.geo.json` (Natural Earth 110m), kein externer Kartenserver, kein Leaflet. |
+| `views/mobility-atlas.js` | Leaflet-Karte + D3-Zeitstrahl + Detailpanel (Tab `mobilitaets-atlas` aktuell `hidden`, E-81; durch `views/mobility.js` (E-111) überholt, Stilllegung operator-offen; Leaflet ist nicht in `index.html` eingebunden und bei einer Reaktivierung wieder einzubinden) |
 | `views/repertoire.js` | Zwei parallele Aggregat-Tabellen Werke × Komponisten (Tab aktuell `hidden`, E-81) |
 | `views/biogramm.js` | Chronologischer D3-Zeitstrahl 1919–2009 (Tab aktuell `hidden`, E-81) |
 | `views/netzwerk.js` | Orchestrator des Netzwerk-Tabs (E-93, E-94): State-Eigentum, `draw`, Filter-Anwendung, Detail-Panel, Telemetrie, Zeitfenster-Index. Delegiert Sidebar an `_netzwerk-sidebar.js` und Canvas-Rendering an `_netzwerk-canvas.js`. Nach Session-47-Split von 1095 auf 484 Zeilen. |
@@ -76,7 +77,7 @@ related: [design, pipeline, data, decisions]
 
 `data/aggregator.js` und `utils/viz-components.js` wurden Session 32 mit den D3-Prototypen entfernt.
 
-CSS-Dateien unter `docs/css/`: `variables`, `base`, `components`, `archiv`, `indizes`, `korb`, `mobilitaets-atlas`, `repertoire`, `biogramm`, `netzwerk`, `pages`. Design-Tokens (Farben, Spacing, Text-Sizes, Transitions) zentral in `variables.css`; alle Tab-CSS nutzen diese Tokens (Session 34).
+CSS-Dateien unter `docs/css/`: `variables`, `base`, `components`, `archiv`, `indizes`, `korb`, `mobility`, `mobility-atlas`, `repertoire`, `biogramm`, `netzwerk`, `pages`. Design-Tokens (Farben, Spacing, Text-Sizes, Transitions) zentral in `variables.css`; alle Tab-CSS nutzen diese Tokens (Session 34).
 
 ### Info-Seiten (statisches HTML)
 
@@ -84,7 +85,7 @@ Fünf Content-Seiten (`about.html`, `projekt.html`, `modell.html`, `hilfe.html`,
 
 ## Routing
 
-- Hash-basiert in `router.js`. Der Katalog `TABS` listet alle registrierten Tabs (Bestand, Chronik, Statistik, Indizes, Mobilitaets-Atlas, Repertoire, Biogramm, Netzwerk, Korb). Sichtbar in der Tab-Bar sind die Einträge im `VISIBLE_TABS`-Set (aktuell Bestand · Chronik · Statistik · Indizes · Netzwerk · Korb); die drei verbleibenden Perspektiv-Tabs Mobilitäts-Atlas/Repertoire/Biogramm bleiben per `hidden` ausgeblendet (E-81, präzisiert durch E-93 für Netzwerk). Hash-URLs auf versteckte Tabs werden in `parseHash` auf `bestand` umgebogen. `archiv` bleibt als Legacy-Alias für alte Bookmarks auf `bestand` gemappt.
+- Hash-basiert in `ui/router.js`. Der Katalog `TABS` listet alle registrierten Tabs (Bestand, Chronik, Statistik, Indizes, Mobilität, Mobilitäts-Atlas, Repertoire, Biogramm, Netzwerk, Korb). Sichtbar in der Tab-Bar sind die Einträge im `VISIBLE_TABS`-Set (aktuell Bestand · Chronik · Statistik · Indizes · Mobilität · Netzwerk · Korb); die drei verbleibenden Perspektiv-Tabs Mobilitäts-Atlas/Repertoire/Biogramm bleiben per `hidden` ausgeblendet (E-81, präzisiert durch E-93 für Netzwerk). Mobilität (`mobilitaet`, E-109/E-111) und Mobilitäts-Atlas (`mobilitaets-atlas`) sind getrennte Tabs: der sichtbare ist die D3-geo-Karte, der verborgene der ältere Leaflet-Atlas. Hash-URLs auf versteckte Tabs werden in `parseHash` auf `bestand` umgebogen. `archiv` bleibt als Legacy-Alias für alte Bookmarks auf `bestand` gemappt.
 - Deep Links: `#bestand/UAKUG/NIM_003%20Folio%2001` für Datensatzkontext
 - Info-Seiten als eigenständige HTML-Dateien (normale Links, kein Hash-Routing)
 - `navigateToIndex(gridType, entityName)` für Cross-Tab-Navigation, `navigateToView(tab, {recordId})` für Sprung aus anderen Views ins Bestand-Tab
@@ -175,7 +176,18 @@ Die Invarianten werden als Kontrakttests in [test_06_frontend_contract.py](../te
 - **Subtitles** aus WD-Enrichment: `Beruf · Stimmfach · Lebensdaten` unter Personennamen (E-61)
 - **Beziehungsbadges an Personen** (Session 32): Loader-Pass 2.5 resolviert AgRelOn-Relationen rückwärts auf Personen-Einträge; `renderNameCell()` zeigt eine dritte Zeile `idx-relations` mit Chips (Match primär Q-ID, sekundär `normalizePerson(name)`).
 
+### Mobilität
+
+- D3-geo-Trajektorienkarte über die volle Breite (E-111, sichtbarer Tab `mobilitaet`). Projektion `geoMercator.fitExtent` auf die europäischen Punkte, lokale Ländergeometrie `docs/data/geo/countries-110m.geo.json` (Natural Earth 110m), kein Tile-Server, kein API-Key, kein Leaflet
+- Orte als Knoten, Größe nach Ereigniszahl, Farbe nach dominanter Mobilitätssicht (`mobilityClusterFor`/`EVENT_ROLE_TO_MOBILITY_CLUSTER`, E-110); Kontextbezüge (Entstehung, Erwähnung) bleiben grau, daher erscheinen Zürich und Köln grau
+- Biografischer Pfad als gerichtete Pfeile zwischen aufeinanderfolgenden verschiedenen Stationen, chronologisch eingefärbt hell (früh) zu dunkel (spät), SVG-Arrowhead-Marker
+- Zeitregler mit Abspielen zieht den Pfad über die Jahre auf; Zoom und Pan per `d3.zoom` (scaleExtent [1,12])
+- Bedienelemente statt Fließtext (order-m3gim Punkt 3): Sicht-Legende als Filter-Toggle, Pfad-Schalter, Klick-Knoten-Detailstreifen, unverortet-Button, einklappbare Voll-Liste für Prüfbarkeit
+- Distinkt von den Session-32 entfernten D3-Prototypen (E-75): dies ist eine geprojizierte Karte, kein abstraktes Diagramm. Die drei New-York-Events laufen als lange Arcs nach Westen (AF-01, [datenfehler.md](datenfehler.md))
+
 ### Mobilitäts-Atlas
+
+Der ältere, verborgene Karten-Tab (`mobilitaets-atlas`), durch den Mobilitäts-Tab (E-111) überholt; Stilllegung ist operator-offen.
 
 - Leaflet-Karte mit OpenStreetMap-Tiles (CDN, kein API-Key); Canvas-Renderer
 - Ein Marker pro Ort, Größe skaliert mit Event-Zahl pro Ort, Signal-Grün markiert Auswahl
@@ -183,7 +195,7 @@ Die Invarianten werden als Kontrakttests in [test_06_frontend_contract.py](../te
 - Detailpanel rechts mit Chips je Event, Klick → Sprung ins Archiv
 - Badge „N unverortet" öffnet Liste der Events ohne Koordinaten
 - Voraussetzung: Koordinaten-Patch (E-76) liefert `geo:lat`/`geo:long` an `store.mobilityEvents`
-- Leaflet (`window.L`) ist aus `index.html` entfernt, solange der Tab `hidden` ist (E-81). Bei Reaktivierung muss das Leaflet-CDN wieder in `index.html` eingebunden werden. Der Hinweis steht als Kommentar an der Auslassstelle in `index.html` und in `mobilitaets-atlas.js`.
+- Leaflet (`window.L`) ist aus `index.html` entfernt, solange der Tab `hidden` ist (E-81). Bei Reaktivierung muss das Leaflet-CDN wieder in `index.html` eingebunden werden. Der Hinweis steht als Kommentar an der Auslassstelle in `index.html` und in `mobility-atlas.js`.
 
 ### Repertoire
 
@@ -230,10 +242,10 @@ Konzentrische Personen-Visualisierung um Malaniuk (E-93, Session 46; Session-47-
 
 Die freigegebene Modell-Erweiterung ([decisions.md](decisions.md) E-95 bis E-102) ist committet (007b8c2) und im Code live. Die Reihenfolge steuerte [plan.md](plan.md).
 
-- **Vokabular-Kopplung in `constants.js`.** Die fünf Mobilitäts-Ortsrollen (`zielort`, `absendeort`, `abreiseort`, `empfangsort`, `vertragsort`) sind in `EVENT_ROLE_TO_MOBILITY_CLUSTER` eingetragen — bewusst auf `null` gemappt, bis das Erschließungsteam die Sicht-Zuordnung klärt. Weitere vorgemerkte eventRoles (`aufnahme`, `generalprobe`, `empfang`) und Rollen (Crew, `publikum`/`abgebildet`) bleiben auskommentiert gerüstet, bis der tiefere Export sie mit Daten füllt. Dokumenttyp-Labels kommen nicht mehr aus einer Hand-Map, sondern über `dftLabel(store, id)` aus `store.dftHierarchy`. Die Leitplanke Vokabular-Kopplung (`test_25`/`test_15`) bleibt grün.
+- **Vokabular-Kopplung in `constants.js`.** Die fünf Mobilitäts-Ortsrollen (`zielort`, `absendeort`, `abreiseort`, `empfangsort`, `vertragsort`) sind in `EVENT_ROLE_TO_MOBILITY_CLUSTER` auf den Cluster `korrespondenz` gemappt (E-110, order-m3gim Punkt 1, ratifiziert die zuvor offene `null`-Führung) — zielort/abreiseort = Reisemobilität, empfangsort = Korrespondenz, absendeort = beides, vertragsort = Mobilitäts-Ortsrolle derselben Spur, data.md § Ortsrollen/§ 10 folgend. Weitere vorgemerkte eventRoles (`aufnahme`, `generalprobe`, `empfang`) und Rollen (Crew, `publikum`/`abgebildet`) bleiben auskommentiert gerüstet, bis der tiefere Export sie mit Daten füllt. Dokumenttyp-Labels kommen nicht mehr aus einer Hand-Map, sondern über `dftLabel(store, id)` aus `store.dftHierarchy`. Die Leitplanke Vokabular-Kopplung (`test_25`/`test_15`) bleibt grün.
 - **Loader.** Die datumslosen Mobilitäts-STEs setzen kein `atDate` voraus (`date: null`). Die Ablösung des `m3gim:hasPerformanceRole`-Artefakts durch `m3gim:StageRole`-Entitäten und n-äre `m3gim:Performance` (gelesen in `archive-inline-detail`) ist umgesetzt und über die neuen Store-Maps `store.stageRoles` + `store.performances` angebunden. Die neuen Record-Felder `dataQualityFlag`, `bearbeitungsnotiz` und `erstelldatum` liegen an den Record-Knoten. Vertagt: der `wohnort`-Zustand mit Gültigkeitsperiode sowie `contractStatus`/`realized` (E-99, keine Datendeckung); `qualityConfidence` wird bewusst nicht fabriziert.
 - **Datums-Handling (offen).** `date-parser.js` gibt qualifizierte Datierungen heute roh aus; Anzeige und Jahres-Extraktion sind um die Qualifier (`circa:`/`vor:`/`nach:`) und das `DatedEvent`-Shape (`m3gim:hasDatedEvent`) noch zu erweitern.
-- **Wirkung.** Die neuen Mobilitäts- und Repertoire-Strukturen machen die zurückgestellten Tabs Mobilitäts-Atlas, Repertoire und Biogramm tragfähig; der Bühnenrollen-Block steht in [design.md](design.md). Eine UI-Anzeige für `dataQualityFlag` (und ein etwaiger Vertragsstatus) ist noch nicht umgesetzt — die Flags liegen vorerst nur in den Daten.
+- **Wirkung.** Die Mobilitäts-Strukturen tragen den sichtbaren Mobilitäts-Tab (E-111, D3-geo-Karte); die zurückgestellten Tabs Mobilitäts-Atlas, Repertoire und Biogramm bleiben damit ebenfalls tragfähig. Der Bühnenrollen-Block steht in [design.md](design.md). Eine UI-Anzeige für `dataQualityFlag` (und ein etwaiger Vertragsstatus) ist noch nicht umgesetzt — die Flags liegen vorerst nur in den Daten.
 
 ## Schnittstellenvertrag
 
