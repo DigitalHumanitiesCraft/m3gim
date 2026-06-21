@@ -10,33 +10,10 @@
   color: var(--color-text-primary);
 }
 
-.statistik__intro {
-  border-bottom: 1px solid var(--border-color-light);
-  padding-bottom: var(--space-4);
-  margin-bottom: var(--space-6);
-}
-
-.statistik__title {
-  font-family: var(--font-title);
-  font-size: var(--text-3xl);
-  font-weight: var(--weight-semibold);
-  color: var(--color-kug-blau);
-  margin: 0 0 var(--space-2);
-}
-
-.statistik__lead {
-  font-size: var(--text-base);
-  color: var(--color-text-secondary);
-  line-height: var(--leading-relaxed);
-  max-width: 68ch;
-  margin: 0;
-}
-
 .statistik__sections {
   display: flex;
   flex-direction: column;
   gap: var(--space-10);
-  margin-top: var(--space-8);
 }
 
 /* --- Sektionen ----------------------------------------------------------- */
@@ -57,14 +34,6 @@
   border-bottom: 2px solid var(--color-kug-blau);
   display: inline-block;
   align-self: flex-start;
-}
-
-.stat-section__lead {
-  font-size: var(--text-sm);
-  color: var(--color-text-secondary);
-  line-height: var(--leading-relaxed);
-  max-width: 72ch;
-  margin: 0;
 }
 
 .stat-section--minor {

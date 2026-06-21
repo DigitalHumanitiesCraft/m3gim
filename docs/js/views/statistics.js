@@ -32,7 +32,6 @@ export function renderStatistik(store, container) {
   clear(container);
 
   const wrap = el('div', { className: 'statistik' });
-  wrap.appendChild(buildIntro());
 
   const body = el('div', { className: 'statistik__sections' });
   body.appendChild(buildBestandSection(store));
@@ -71,29 +70,12 @@ export function renderStatistik(store, container) {
 }
 
 // ---------------------------------------------------------------------------
-// Intro
-// ---------------------------------------------------------------------------
-
-function buildIntro() {
-  const intro = el('header', { className: 'statistik__intro' });
-  intro.appendChild(el('h2', { className: 'statistik__title' }, 'Statistik'));
-  intro.appendChild(el('p', { className: 'statistik__lead' },
-    'Visuelles Portr\u00e4t des Bestandes: Umfang, Mobilit\u00e4t, Netzwerk, '
-    + 'Repertoire, Finanzen. Kein Forschungswerkzeug \u2014 zeigt, was in den '
-    + 'Daten steckt und was damit m\u00f6glich wird.'));
-  return intro;
-}
-
-// ---------------------------------------------------------------------------
 // § 1 Dokumenttypen (Donut)
 // ---------------------------------------------------------------------------
 
 function buildBestandSection(store) {
   const section = el('section', { className: 'stat-section' });
   section.appendChild(el('h3', { className: 'stat-section__title' }, 'Dokumenttypen'));
-  section.appendChild(el('p', { className: 'stat-section__lead' },
-    'Verteilung der Datens\u00e4tze nach m3gim-DFT-Oberklasse. Records ohne Typ '
-    + 'erscheinen als eigenes Segment.'));
 
   const docTypes = aggregateDocTypes(store);
   const donutData = docTypes
@@ -188,9 +170,6 @@ function aggregateSichten(store) {
 function buildMobilitaetSection(store) {
   const section = el('section', { className: 'stat-section' });
   section.appendChild(el('h3', { className: 'stat-section__title' }, 'Mobilit\u00e4tssichten'));
-  section.appendChild(el('p', { className: 'stat-section__lead' },
-    'Spatiotemporal-Events klassifiziert nach Rolle. F\u00fcnf Sichten plus '
-    + 'unklassifizierte Events, sortiert nach H\u00e4ufigkeit.'));
 
   const rows = aggregateSichten(store).sort((a, b) => b.count - a.count);
   section.appendChild(buildHorizontalBars(rows.map(s => ({
@@ -246,9 +225,6 @@ function aggregateEventsPerDecade(store) {
 function buildGeografieSection(store) {
   const section = el('section', { className: 'stat-section' });
   section.appendChild(el('h3', { className: 'stat-section__title' }, 'Geografie'));
-  section.appendChild(el('p', { className: 'stat-section__lead' },
-    'Orte aus den Spatiotemporal-Events. Wo und wann belegt der Nachlass '
-    + 'Mobilit\u00e4t?'));
 
   const places = aggregatePlaces(store).slice(0, 10);
   const placesWrap = el('div', { className: 'stat-subsection' });
@@ -336,9 +312,6 @@ function aggregatePersonKategorien(store) {
 function buildNetzwerkSection(store) {
   const section = el('section', { className: 'stat-section' });
   section.appendChild(el('h3', { className: 'stat-section__title' }, 'Netzwerk'));
-  section.appendChild(el('p', { className: 'stat-section__lead' },
-    'Agent-zu-Agent-Beziehungen nach AgRelOn und Personen nach Rolle im '
-    + 'Musikleben der Nachkriegszeit.'));
 
   const { items: relItems, total: relTotal } = aggregateAgentRelations(store);
   if (relTotal > 0) {
@@ -391,8 +364,6 @@ function aggregateComposers(store) {
 function buildRepertoireSection(store) {
   const section = el('section', { className: 'stat-section' });
   section.appendChild(el('h3', { className: 'stat-section__title' }, 'Repertoire'));
-  section.appendChild(el('p', { className: 'stat-section__lead' },
-    'Musikalische Werke im Bestand nach Komponist.'));
 
   const composers = aggregateComposers(store);
   const top = composers.slice(0, 10);
@@ -448,9 +419,6 @@ function aggregateFinances(store) {
 function buildFinanzenSection(store) {
   const section = el('section', { className: 'stat-section stat-section--minor' });
   section.appendChild(el('h3', { className: 'stat-section__title' }, 'Finanzen'));
-  section.appendChild(el('p', { className: 'stat-section__lead' },
-    'Monet\u00e4re Nennungen aus Briefen, Vertr\u00e4gen und Abrechnungen, '
-    + 'modelliert als DetailAnnotations.'));
 
   const fin = aggregateFinances(store);
 
