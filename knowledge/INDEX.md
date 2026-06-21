@@ -17,7 +17,7 @@ language: de
 version: 0.2
 authors: [Christopher Pollin]
 generated-with: Claude Code
-related: [project, specification, data, data-entry-guidelines, research, pipeline, architecture, design, decisions, testing, journal, plan]
+related: [project, specification, data, data-entry-guidelines, research, pipeline, architecture, design, decisions, testing, journal, plan, datenfehler]
 ---
 
 # M³GIM Knowledge Base
@@ -35,6 +35,7 @@ Diese Seite ist der Einstiegspunkt in die Wissensbasis des Projekts. Sie ordnet 
 - Funktionsumfang nachschlagen → [specification.md](specification.md)
 - Verstehen, warum etwas so entschieden wurde → [decisions.md](decisions.md)
 - Aktuellen Stand und nächste Schritte → [plan.md](plan.md)
+- Bekannte Datenfehler nachschlagen oder ans Erfassungsteam geben → [datenfehler.md](datenfehler.md)
 - Projektgeschichte nachvollziehen → [journal.md](journal.md)
 
 ## Dokumentenmatrix
@@ -54,6 +55,7 @@ Diese Seite ist der Einstiegspunkt in die Wissensbasis des Projekts. Sie ordnet 
 | Qualitätssicherung | [testing.md](testing.md) | Testsuite-Überblick, TDD-Workflow, Anker-Record-Strategie |
 | Genese | [journal.md](journal.md) | Chronologische Session-Dokumentation, Entscheidungen und Erkenntnisse |
 | Plan und Steuerung | [plan.md](plan.md) | Zielbild, nächste Schritte, deferred Arbeiten, offene Datenqualität |
+| Datenfehler-Register | [datenfehler.md](datenfehler.md) | Gesammelte Quell- und Abgleichfehler mit Fundstelle und Status |
 
 Die Stand-Kommunikation für Dritte wird bewusst nicht als eigenes Report-Dokument geführt. Diese Funktion übernimmt der generierte Quality-Snapshot, der bei jedem Pipeline-Lauf frisch entsteht.
 

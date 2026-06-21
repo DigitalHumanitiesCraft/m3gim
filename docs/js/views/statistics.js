@@ -140,7 +140,7 @@ function aggregateDocTypes(store) {
 const SICHTEN = [
   { id: 'performativ',    label: 'Performativ',    desc: 'Auftritte, Gastspiele, Premieren' },
   { id: 'institutionell', label: 'Institutionell', desc: 'Spielzeit-Engagements, Ensemble-Zugehoerigkeit' },
-  { id: 'korrespondenz',  label: 'Korrespondenz',  desc: 'Briefverkehr, Reisedaten' },
+  { id: 'korrespondenz',  label: 'Reise & Korrespondenz', desc: 'Reisewege (Ziel-, Abreise-, Vertragsort), Korrespondenz-Orte und Briefdaten' },
   { id: 'diskursiv',      label: 'Diskursiv',      desc: 'Rezensionen, Rundfunk, Druckerscheinungen' },
   { id: 'biografisch',    label: 'Biografisch',    desc: 'Ausweise, Wohnsitz, persoenliche Dokumente' },
 ];

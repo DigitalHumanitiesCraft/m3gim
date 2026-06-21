@@ -105,6 +105,21 @@ def test_every_empirical_event_role_is_mapped() -> None:
     )
 
 
+def test_place_roles_count_as_reise_korrespondenz() -> None:
+    """Die fuenf Mobilitaets-Ortsrollen (E-97, MOBILITY_PLACE_ROLES) zaehlen als
+    Reise-/Korrespondenzmobilitaet und mappen auf den Cluster 'korrespondenz'
+    (datenmodell.md § Ortsrollen/§ 10, Entscheidung E-110, order-m3gim
+    2026-06-21 Punkt 1). Lockt die Angleichung gegen stilles Regressieren auf
+    'null' ('Nicht klassifiziert')."""
+    mapping = _load_event_role_map()
+    place_roles = ["zielort", "absendeort", "abreiseort", "empfangsort", "vertragsort"]
+    for role in place_roles:
+        assert mapping.get(role) == "korrespondenz", (
+            f"Mobilitaets-Ortsrolle '{role}' -> '{mapping.get(role)}', "
+            "erwartet 'korrespondenz' (E-110)."
+        )
+
+
 def test_mapping_covers_datenmodell_spec_datumsrollen() -> None:
     """Die in datenmodell.md § 5 als Datumsrollen spezifizierten Werte
     sind entweder gemappt oder sollten gemappt sein. Soft-Check: nur die

@@ -341,16 +341,18 @@ export const EVENT_ROLE_TO_MOBILITY_CLUSTER = {
   'überweisung':       null,
 
   // Mobilitaets-Ortsrollen (E-97): erzeugen datumslose SpatiotemporalEvents.
-  // Bewusst auf null statt willkuerlich einzuordnen -- ob zielort/absendeort/
-  // abreiseort der Sicht "korrespondenz" (Reise) oder einer anderen zugehoeren,
-  // ist mit dem Erschliessungsteam zu klaeren (datenmodell.md § 10 nennt keine
-  // Zuordnung der Ortsrollen). null haelt test_25 nach Promote gruen und zeigt
-  // die Events ehrlich als "Nicht klassifiziert", bis die Sicht feststeht.
-  'zielort':           null,
-  'absendeort':        null,
-  'abreiseort':        null,
-  'empfangsort':       null,
-  'vertragsort':       null,
+  // Zugeordnet zum Cluster 'korrespondenz' (buendelt Reise + Korrespondenz, s.o.)
+  // nach datenmodell.md § Ortsrollen: zielort/abreiseort = Reisemobilitaet,
+  // empfangsort = Korrespondenzmobilitaet, absendeort = beides, vertragsort =
+  // Mobilitaets-Ortsrolle der Reise/Korrespondenz-Spur (§ 10, Z. 624).
+  // Datumslosigkeit ist hier der Normalfall, kein Defekt: die Sicht-Zuordnung
+  // erfolgt ueber die Rolle, nicht ueber ein Datum (kein Datum wird geraten,
+  // § 8 Konfidenz). Entscheidung E-110, order-m3gim 2026-06-21 Punkt 1.
+  'zielort':           'korrespondenz',
+  'absendeort':        'korrespondenz',
+  'abreiseort':        'korrespondenz',
+  'empfangsort':       'korrespondenz',
+  'vertragsort':       'korrespondenz',
 
   // === PENDING: G8-Rollen (noch nicht im Export belegt). Aktivieren, sobald
   // sie im Datenstand auftauchen; Cluster mit Erschliessungsteam klaeren.
