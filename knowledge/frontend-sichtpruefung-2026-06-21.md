@@ -41,6 +41,18 @@ Alle sechs aktiven Tabs rendern den Datenstand:
 
 Die verborgenen Tabs Mobilitäts-Atlas, Repertoire und Biogramm sind im Router auf Bestand umgebogen (siehe Atlas-Abschnitt).
 
+### Reproduzierbarkeits- und Vollständigkeitsnachweis
+
+Auf Operator-Wunsch wurde belastbar nachgewiesen, dass der Frontend-Datenstand wirklich der vollständige, aktuelle Stand ist. Zwei Achsen, Aktualität und Vollständigkeit, je mit reproduzierbarem Beleg.
+
+Aktualität, kein stale und kein Drift. Die neueste Quelle ist von 2026-04-18 (`M3GIM-Objekte.xlsx`, `M3GIM-Verknüpfungen.xlsx`), kein neuerer Export liegt vor. Ein frischer Pipeline-Lauf gegen diese Quelle (`transform.py` plus `build-views.py` in ein temporäres Output-Verzeichnis über `M3GIM_OUTPUT_DIR`, ohne `docs/data` anzutasten) erzeugt eine JSON-LD, die byte-identisch mit `docs/data/m3gim.jsonld` ist, mit einer einzigen Ausnahme, der eingebetteten `m3gim:exportDate`-Zeile (Laufzeit-Stempel). Genau zwei abweichende Diff-Zeilen, das geänderte Zeilenpaar. Wird der Frontend-Stand jetzt aus der Quelle neu gebaut, kommt also exakt dasselbe heraus. Das deckt sich mit dem grünen Determinismus-Test (`test_10`) und dem Staleness-Guard (`test_33`, prüft `docs/data == data/output`).
+
+Vollständigkeit Quelle nach JSON-LD. `test_34` prüft die JSON-LD-Werte zellgenau gegen die per `(xlsxSheet, xlsxRow)` adressierte XLSX-Rohzelle (Records, STE, E-97-Ortsrollen), `test_19` und `test_20` die Provenienz. Alle grün. Im Output tragen 660 Top-Level-Knoten eine `xlsxSource`.
+
+Vollständigkeit JSON-LD nach Store. Die expliziten Top-Level-Knoten des JSON-LD decken sich mit dem Store, ohne stillen Drop: 381 `rico:Record` (Store `recordCount` 381), 61 `m3gim:SpatiotemporalEvent` (Store `mobilityEvents` 61), 128 `m3gim:StageRole`, 218 `m3gim:Performance`, 18 `skos:Concept` (Store `dftHierarchy` 18), 8 `rico:RecordSet` (Konvolute und Fonds). Die aggregierten Entitäten Personen (308), Organisationen (69), Orte (40) und Werke (97) sind keine Top-Level-Knoten, sondern werden vom Loader aus den Referenzen dedupliziert. Diese Strecke deckt der grüne `loader.test.mjs` ab (JSON-LD nach `loadArchive` nach Store, Anker gegen `docs/data`).
+
+Testlauf-Summe. Python 222 passed, 1 skipped, 2 xfailed (die bekannten Quellfehler-Locks `test_05` PL_07-Dublette und `test_24` Beethoven van/von), plus `test_10` Determinismus grün. JS 87 passed, 0 failed. Der Befund insgesamt: der aktuelle Datenstand ist vollständig und reproduzierbar im Frontend, die im Befundteil genannten Auffälligkeiten sind Quell- und Reconciliation-Fragen am Inhalt, kein Verlust auf der Pipeline- oder Loader-Strecke.
+
 ## Mobilität im Frontend
 
 Die typisierten Ortsrollen erscheinen als Chips. Im Record-Detail (geprüft an NIM_007_4, dem Record mit der reichsten Ortsrollen-Belegung) zeigt die Sektion ORT & EREIGNIS die Chips ZIELORT Wien, ZIELORT Lissabon, ABREISEORT München, GASTSPIEL Lissabon. Die datumslosen E-97-Ortsrollen tragen korrekt das Suffix `· —` für das fehlende Datum, die datierten Rollen ihr Datum. Jeder Chip trägt eine Z-Provenienz auf die XLSX-Zeile. Das ist der umgesetzte E-97- und E-108-Kontrakt.
