@@ -1,19 +1,27 @@
 /**
- * M³GIM Mobilitäts-View
+ * M³GIM Mobilitäts-View (E-111, D3-geo Trajektorie)
  *
- * Eigenstaendige Perspektive auf alle SpatiotemporalEvents unter dem
- * Mobilitaetsaspekt: die fuenf Mobilitaetssichten aus datenmodell.md § 10
- * (inklusive der typisierten Reise-Ortsrollen), die Orte und die Zeit.
- * Statisch lesbar, deterministisch, Erschliessungsspiegel — Luecken stehen
- * sichtbar (datumslose, unverortete und kontextuelle Ereignisse).
+ * Forschungswerkzeug fuer die raumzeitliche Mobilitaet Ira Malaniuks. Die
+ * Karte ist das Zentrum und nimmt die volle Breite ein: eine projizierte
+ * Stummkarte (D3-geo, lokale Ländergeometrie, keine externen Kartenserver),
+ * Orte als Knoten farbcodiert nach Mobilitaetssicht, der biografische Pfad
+ * als gerichtete, chronologisch eingefaerbte Pfeile zwischen den Orten.
  *
- * View-lokale Klassifikation: ordnet die E-97-Ortsrollen (zielort, absendeort,
- * abreiseort, empfangsort, vertragsort) der Reise- und Korrespondenzmobilitaet
- * zu, datenmodell.md § 10 folgend. Der globale `mobilityClusterFor`
- * (constants.js) laesst sie bis zur fachlichen Ratifikation neutral; diese
- * View greift bewusst nicht dort ein, damit Statistik und test_25 unberuehrt
- * bleiben. Echte Nicht-Mobilitaets-Rollen (Entstehung, Erwaehnung, Auftrag)
- * laufen sichtbar im Block "Weiterer Ortsbezug", nicht versteckt.
+ * Statt beschreibender Texte traegt die Seite Bedienelemente: ein Zeitregler
+ * mit Abspielen faehrt die Jahre ab und zeichnet den Pfad fortlaufend, die
+ * Sicht-Legende filtert Knoten, Pfad und Detailstreifen zugleich. Datumslose
+ * und unverortete Ereignisse stehen sichtbar (Knoten ohne Pfadanschluss bzw.
+ * abseits der Karte), statt kaschiert zu werden.
+ *
+ * Pfad-Semantik: die datierten, verorteten Ereignisse werden chronologisch
+ * geordnet und aufeinanderfolgende verschiedene Staedte mit einem Pfeil
+ * verbunden. Echte Brief-Quelle-Ziel-Paare sind im Bestand zu duenn fuer
+ * eine eigene Wegschicht (4 Absende-/Abreiseorte gegen 11 Zielorte); der
+ * tragfaehige Pfad ist die biografische Trajektorie ueber die Karriere.
+ *
+ * Klassifikation lokal, deckt sich seit E-110 mit dem globalen
+ * `mobilityClusterFor`, bleibt hier feiner (eigener Block fuer Nicht-
+ * Mobilitaets-Ortsrollen: Entstehung, Erwaehnung, Auftrag).
  */
 
 import { el, clear } from '../utils/dom.js';
@@ -22,213 +30,437 @@ import { cityOf } from '../utils/format.js';
 import { formatDate, extractYear } from '../utils/date-parser.js';
 import { logStamp } from '../utils/env.js';
 
-// Die fuenf Mobilitaetssichten (datenmodell.md § 10) plus ein transparenter
-// Kontext-Block fuer Ortsbezuege ohne eigene Sicht. Reihenfolge bewusst.
-const MOBILITY_TYPES = [
+/* global d3 */
+
+const GEO_URL = 'data/geo/countries-110m.geo.json';
+let COUNTRIES = null;  // module-level cache, ueber Tab-Wechsel hinweg
+
+const SICHTEN = [
   {
-    id: 'performativ',
-    label: 'Performative Mobilität',
-    frage: 'Wo trat sie auf?',
-    desc: 'Auftritte, Aufführungen, Gastspiele, Premieren.',
-    color: 'var(--color-sicht-performativ)',
+    id: 'performativ', label: 'Performativ', frage: 'Wo trat sie auf?', color: '#3F5C8E',
     roles: ['auftritt', 'aufführung', 'auffuehrung', 'gastspiel', 'premiere',
       'wiederaufnahme', 'festvorstellung', 'probe', 'probenbeginn',
       'auftrittsdatum', 'auffuehrungsdatum', 'aufführungsdatum', 'probendatum',
       'premieredatum'],
   },
   {
-    id: 'institutionell',
-    label: 'Institutionelle Mobilität',
-    frage: 'Wo war sie engagiert?',
-    desc: 'Spielzeit-Engagements und Ensemble-Zugehörigkeit.',
-    color: 'var(--color-sicht-institutionell)',
+    id: 'institutionell', label: 'Institutionell', frage: 'Wo war sie engagiert?', color: '#4A7A89',
     roles: ['spielzeit', 'spielzeitvon', 'spielzeitbis'],
   },
   {
-    id: 'reise',
-    label: 'Reise- und Korrespondenzmobilität',
-    frage: 'Woher, wohin, an wen?',
-    desc: 'Reiseziele, Abreise-, Absende-, Empfangs- und Vertragsorte sowie '
-      + 'die Datierungen des Briefverkehrs. Viele Ortsrollen tragen kein '
-      + 'eigenes Datum, das Modell rät keines.',
-    color: 'var(--color-sicht-korrespondenz)',
+    id: 'reise', label: 'Reise & Korrespondenz', frage: 'Woher, wohin, an wen?', color: '#A6844B',
     roles: ['zielort', 'absendeort', 'abreiseort', 'empfangsort', 'vertragsort',
       'absendedatum', 'empfangsdatum', 'abreisedatum'],
   },
   {
-    id: 'diskursiv',
-    label: 'Diskursive Mobilität',
-    frage: 'Wo wurde über sie berichtet?',
-    desc: 'Rezensionen, Rundfunk und Druckerscheinungen.',
-    color: 'var(--color-sicht-diskursiv)',
+    id: 'diskursiv', label: 'Diskursiv', frage: 'Wo wurde über sie berichtet?', color: '#7A6F55',
     roles: ['erscheinungsdatum', 'ausstrahlung', 'ausstrahlungsdatum'],
   },
   {
-    id: 'biografisch',
-    label: 'Biografische Mobilität',
-    frage: 'Wo wohnte und lebte sie?',
-    desc: 'Wohnsitze, Ausweise und persönliche Dokumente.',
-    color: 'var(--color-sicht-biografisch)',
+    id: 'biografisch', label: 'Biografisch', frage: 'Wo wohnte und lebte sie?', color: '#8B6F5C',
     roles: ['wohnort', 'ausstellungsdatum', 'gespräch', 'gespraech'],
   },
 ];
-
-// Transparenter Rest: Ortsbezuege, die keine Mobilitaetssicht sind
-// (Dokument- oder Werkentstehung, blosse Erwaehnung, Auftrag). Sichtbar
-// gefuehrt statt stumm verworfen.
 const KONTEXT = {
-  id: 'kontext',
-  label: 'Weiterer Ortsbezug',
-  frage: 'Welche Orte nennt das Dokument sonst?',
-  desc: 'Entstehungs- und Erwähnungsorte sowie Aufträge. Kein Beleg einer '
-    + 'eigenen Bewegung, hier der Vollständigkeit halber gezeigt.',
-  color: 'var(--color-text-tertiary)',
+  id: 'kontext', label: 'Weiterer Ortsbezug', frage: 'Sonstiger Ortsbezug', color: '#B0A99B',
   roles: ['entstehung', 'erwähnt', 'erwaehnt', 'auftrag'],
 };
-
+const ALL_TYPES = [...SICHTEN, KONTEXT];
+const TYPE_BY_ID = new Map(ALL_TYPES.map(t => [t.id, t]));
 const ROLE_TO_TYPE = (() => {
   const m = new Map();
-  for (const t of [...MOBILITY_TYPES, KONTEXT]) {
-    for (const r of t.roles) m.set(r, t.id);
-  }
+  for (const t of ALL_TYPES) for (const r of t.roles) m.set(r, t.id);
   return m;
 })();
 
-function typeForRole(role) {
-  return ROLE_TO_TYPE.get(String(role || '').trim().toLowerCase()) || KONTEXT.id;
-}
+const sichtOf = ev => ROLE_TO_TYPE.get(String(ev.role || '').trim().toLowerCase()) || KONTEXT.id;
+const colorOf = id => (TYPE_BY_ID.get(id) || KONTEXT).color;
+const hasGeo = ev => typeof ev.placeLat === 'number' && typeof ev.placeLon === 'number';
 
-function hasGeo(ev) {
-  return typeof ev.placeLat === 'number' && typeof ev.placeLon === 'number';
-}
-
-function eventDateLabel(ev) {
-  if (!ev.date) return '—';
-  return formatDate(ev.date) || ev.date;
-}
+// ---------------------------------------------------------------------------
+// Haupteinstieg
+// ---------------------------------------------------------------------------
 
 export function renderMobilitaet(store, container) {
   clear(container);
   const events = [...store.mobilityEvents.values()];
 
   const wrap = el('div', { className: 'mobilitaet' });
-  wrap.appendChild(buildIntro(events));
-
-  const body = el('div', { className: 'mobilitaet__sections' });
-  body.appendChild(buildSichtenSection(events));
-  body.appendChild(buildOrteSection(events));
-  body.appendChild(buildZeitSection(events));
-  wrap.appendChild(body);
-
   container.appendChild(wrap);
 
-  const byType = groupByType(events);
+  if (events.length === 0) {
+    wrap.appendChild(el('div', { className: 'mob-empty' }, 'Keine raumzeitlichen Ereignisse im Datenstand.'));
+    return;
+  }
+  if (typeof d3 === 'undefined') {
+    wrap.appendChild(el('div', { className: 'mob-empty' }, 'D3 ist nicht geladen, die Karte kann nicht gezeichnet werden.'));
+    return;
+  }
+
+  const withGeo = events.filter(hasGeo);
+  const unverortet = events.filter(e => !hasGeo(e));
+  const datedYears = events.map(e => extractYear(e.date)).filter(y => y != null);
+  const minYear = datedYears.length ? Math.min(...datedYears) : 1940;
+  const maxYear = datedYears.length ? Math.max(...datedYears) : 1980;
+
+  // Gemeinsamer Filter-State
+  const state = {
+    active: new Set(ALL_TYPES.map(t => t.id)),
+    showPath: true,
+    cursor: maxYear,       // Zeitregler: Pfad bis zu diesem Jahr
+    selectedCity: null,
+    playing: false,
+    timer: null,
+  };
+
+  // ---- Bedienleiste: Sicht-Filter + Pfad-Schalter ----
+  const controls = el('div', { className: 'mob-controls' });
+  controls.appendChild(buildLegend(events, state, () => redraw()));
+  const layerBox = el('div', { className: 'mob-layers' });
+  const pathToggle = el('button', { className: 'mob-toggle mob-toggle--on', type: 'button' },
+    el('span', { className: 'mob-toggle__dot' }), 'Pfad');
+  pathToggle.addEventListener('click', () => {
+    state.showPath = !state.showPath;
+    pathToggle.classList.toggle('mob-toggle--on', state.showPath);
+    redraw();
+  });
+  layerBox.appendChild(pathToggle);
+  controls.appendChild(layerBox);
+  wrap.appendChild(controls);
+
+  // ---- Karte (volle Breite) ----
+  const mapCell = el('div', { className: 'mob-map' });
+  wrap.appendChild(mapCell);
+
+  // ---- Zeitregler ----
+  const scrubber = buildScrubber(state, minYear, maxYear, () => redraw());
+  wrap.appendChild(scrubber.elementWrap);
+
+  // ---- Detailstreifen + Statuszeile ----
+  const strip = el('div', { className: 'mob-strip' });
+  wrap.appendChild(strip);
+
+  // ---- einklappbare Voll-Liste (Pruefbarkeit) ----
+  wrap.appendChild(buildBackbone(events));
+
+  // Zeichenfunktion (wird nach Geometrie-Load und bei jeder State-Aenderung gerufen)
+  let draw = () => {};
+  function redraw() { draw(); renderStrip(); scrubber.update(); }
+
+  function renderStrip() {
+    clear(strip);
+    const active = e => state.active.has(sichtOf(e));
+    let list, title;
+    if (state.selectedCity) {
+      list = events.filter(e => active(e) && cityOf(e.place) === state.selectedCity);
+      title = state.selectedCity;
+    } else {
+      // Statuszeile statt Prosa: was die aktuelle Auswahl umfasst
+      const shown = withGeo.filter(active).length;
+      strip.appendChild(el('div', { className: 'mob-strip__status' },
+        el('span', {}, `${shown} verortet`),
+        el('span', {}, `${events.filter(active).length} Ereignisse`),
+        unverortet.length ? makeUnverortetButton(unverortet, state, strip, renderStrip) : null,
+        el('span', { className: 'mob-strip__hint' }, 'Knoten anklicken für Details')));
+      return;
+    }
+    strip.appendChild(el('div', { className: 'mob-strip__head' },
+      el('h3', { className: 'mob-strip__title' }, title),
+      el('button', { className: 'mob-strip__clear', type: 'button',
+        onClick: () => { state.selectedCity = null; redraw(); } }, 'Auswahl lösen')));
+    const chips = el('div', { className: 'mob-strip__chips' });
+    for (const ev of sortEvents(list)) chips.appendChild(buildEventChip(ev));
+    strip.appendChild(chips);
+  }
+
+  // Geometrie laden (gecacht), dann zeichnen
+  mapCell.appendChild(el('div', { className: 'mob-map__loading' }, 'Karte wird geladen …'));
+  loadCountries().then(countries => {
+    draw = buildMap(mapCell, countries, withGeo, state, {
+      minYear, maxYear,
+      onSelectCity: city => { state.selectedCity = state.selectedCity === city ? null : city; redraw(); },
+    });
+    redraw();
+  }).catch(() => {
+    clear(mapCell);
+    mapCell.appendChild(el('div', { className: 'mob-empty' },
+      'Ländergeometrie konnte nicht geladen werden. Voll-Liste unten nutzen.'));
+  });
+
   logStamp('mobilitaet', [
-    ['events', events.length],
-    ['datiert', events.filter(e => extractYear(e.date) != null).length],
-    ['verortet', events.filter(hasGeo).length],
-    ['reise', (byType.get('reise') || []).length],
-    ['kontext', (byType.get('kontext') || []).length],
-    ['orte', new Set(events.map(e => cityOf(e.place)).filter(Boolean)).size],
+    ['events', events.length], ['verortet', withGeo.length],
+    ['unverortet', unverortet.length], ['datiert', datedYears.length],
+    ['jahre', `${minYear}-${maxYear}`],
   ]);
 }
 
 // ---------------------------------------------------------------------------
-// Intro + Deckungs-Kennzahlen
+// Karte: Projektion, Knoten, Pfad, Zoom
 // ---------------------------------------------------------------------------
 
-function buildIntro(events) {
-  const total = events.length;
-  const datiert = events.filter(e => extractYear(e.date) != null).length;
-  const verortet = events.filter(hasGeo).length;
-
-  const intro = el('header', { className: 'mobilitaet__intro' });
-  intro.appendChild(el('h2', { className: 'mobilitaet__title' }, 'Mobilität'));
-  intro.appendChild(el('p', { className: 'mobilitaet__lead' },
-    'Alle raumzeitlichen Ereignisse des Nachlasses unter dem Mobilitätsaspekt, '
-    + 'geordnet nach den fünf Mobilitätssichten. Ein Erschließungsspiegel: '
-    + 'datumslose, unverortete und rein kontextuelle Angaben stehen sichtbar, '
-    + 'statt kaschiert zu werden.'));
-
-  const badges = el('div', { className: 'mobilitaet__badges' });
-  badges.appendChild(makeBadge(String(total), 'Ereignisse'));
-  badges.appendChild(makeBadge(`${datiert}`, 'mit Jahr', total - datiert, 'ohne'));
-  badges.appendChild(makeBadge(`${verortet}`, 'verortet', total - verortet, 'ohne Koordinaten'));
-  intro.appendChild(badges);
-  return intro;
+function loadCountries() {
+  if (COUNTRIES) return Promise.resolve(COUNTRIES);
+  return fetch(GEO_URL).then(r => r.json()).then(geo => { COUNTRIES = geo; return geo; });
 }
 
-function makeBadge(value, label, restValue, restLabel) {
-  const b = el('div', { className: 'mob-badge' },
-    el('span', { className: 'mob-badge__value' }, value),
-    el('span', { className: 'mob-badge__label' }, label));
-  if (restValue != null && restValue > 0) {
-    b.appendChild(el('span', { className: 'mob-badge__rest' }, `${restValue} ${restLabel}`));
+function buildMap(mapCell, countries, withGeo, state, opts) {
+  clear(mapCell);
+  const width = Math.max(320, mapCell.clientWidth || 960);
+  const height = Math.round(Math.min(760, Math.max(440, window.innerHeight * 0.6)));
+
+  // Projektion auf den europaeischen Schwerpunkt einpassen (Ausreisser wie
+  // den New-York-Fehlmatch ausgeschlossen; per Zoom erreichbar).
+  const eur = withGeo.filter(e => e.placeLon > -15 && e.placeLon < 35 && e.placeLat > 34 && e.placeLat < 60);
+  const fitPoints = {
+    type: 'FeatureCollection',
+    features: (eur.length ? eur : withGeo).map(e => ({
+      type: 'Feature', geometry: { type: 'Point', coordinates: [e.placeLon, e.placeLat] },
+    })),
+  };
+  const projection = d3.geoMercator();
+  const pad = 60;
+  projection.fitExtent([[pad, pad], [width - pad, height - pad]], fitPoints);
+  const path = d3.geoPath(projection);
+
+  const svg = d3.select(mapCell).append('svg')
+    .attr('class', 'mob-map__svg')
+    .attr('width', width).attr('height', height)
+    .attr('viewBox', `0 0 ${width} ${height}`);
+
+  // Arrowhead-Marker, nimmt die Strichfarbe der Linie (context-stroke)
+  const defs = svg.append('defs');
+  defs.append('marker')
+    .attr('id', 'mob-arrow').attr('viewBox', '0 0 10 10')
+    .attr('refX', 9).attr('refY', 5).attr('markerWidth', 7).attr('markerHeight', 7)
+    .attr('orient', 'auto-start-reverse')
+    .append('path').attr('d', 'M0,0 L10,5 L0,10 z').attr('fill', 'context-stroke');
+
+  const gZoom = svg.append('g');
+  const gLand = gZoom.append('g').attr('class', 'mob-land');
+  const gArcs = gZoom.append('g').attr('class', 'mob-arcs');
+  const gNodes = gZoom.append('g').attr('class', 'mob-nodes');
+
+  gLand.selectAll('path').data(countries.features).enter().append('path')
+    .attr('d', path)
+    .attr('fill', 'var(--color-parchment)')
+    .attr('stroke', 'var(--color-sand)')
+    .attr('stroke-width', 0.6);
+
+  // Zoom + Pan
+  const zoom = d3.zoom().scaleExtent([1, 12])
+    .on('zoom', (ev) => gZoom.attr('transform', ev.transform));
+  svg.call(zoom);
+
+  // Knoten je Stadt
+  function buildNodes() {
+    const m = new Map();
+    for (const e of withGeo) {
+      const city = cityOf(e.place);
+      if (!m.has(city)) {
+        const [x, y] = projection([e.placeLon, e.placeLat]);
+        m.set(city, { city, x, y, events: [] });
+      }
+      m.get(city).events.push(e);
+    }
+    return m;
   }
-  return b;
+  const nodeByCity = buildNodes();
+
+  // Zeitfarbskala fuer den Pfad (frueh hell, spaet dunkel, im Palettenton)
+  const timeColor = d3.scaleLinear().domain([opts.minYear, opts.maxYear])
+    .range(['#C9B68F', '#5B4A36']).interpolate(d3.interpolateLab).clamp(true);
+
+  // Zeichenfunktion ueber State
+  return function drawMap() {
+    const active = e => state.active.has(sichtOf(e));
+
+    // ---- Pfad (Segmente) ----
+    let segments = [];
+    if (state.showPath) {
+      const seq = withGeo
+        .filter(e => active(e) && extractYear(e.date) != null)
+        .map(e => ({ city: cityOf(e.place), y: extractYear(e.date), date: e.date }))
+        .sort((a, b) => a.y - b.y || String(a.date).localeCompare(String(b.date)));
+      let prev = null;
+      for (const v of seq) {
+        if (prev && prev.city !== v.city) {
+          segments.push({ from: prev.city, to: v.city, year: v.y });
+        }
+        prev = v;
+      }
+    }
+    const arcs = gArcs.selectAll('path').data(segments, (d, i) => `${d.from}|${d.to}|${d.year}|${i}`);
+    arcs.exit().remove();
+    arcs.enter().append('path')
+      .attr('fill', 'none')
+      .attr('marker-end', 'url(#mob-arrow)')
+      .merge(arcs)
+        .attr('d', d => arcPath(nodeByCity.get(d.from), nodeByCity.get(d.to)))
+        .attr('stroke', d => timeColor(d.year))
+        .attr('stroke-width', 1.6)
+        .attr('opacity', d => d.year <= state.cursor ? 0.85 : 0.06);
+
+    // ---- Knoten ----
+    const nodes = [...nodeByCity.values()].map(n => {
+      const evs = n.events.filter(active);
+      return { ...n, shown: evs.length, dom: dominantSicht(evs), firstYear: firstYear(evs) };
+    });
+    let maxShown = 1;
+    for (const n of nodes) maxShown = Math.max(maxShown, n.shown);
+
+    const sel = gNodes.selectAll('g.mob-node').data(nodes, d => d.city);
+    sel.exit().remove();
+    const enter = sel.enter().append('g').attr('class', 'mob-node')
+      .style('cursor', 'pointer')
+      .on('click', (_, d) => opts.onSelectCity(d.city));
+    enter.append('circle');
+    enter.append('text');
+    const merged = enter.merge(sel)
+      .attr('transform', d => `translate(${d.x},${d.y})`)
+      .attr('opacity', d => {
+        if (d.shown === 0) return 0.12;
+        if (d.firstYear != null && d.firstYear > state.cursor) return 0.18;
+        return 1;
+      });
+    merged.select('circle')
+      .attr('r', d => d.shown === 0 ? 3 : 4 + Math.round(9 * Math.sqrt(d.shown / maxShown)))
+      .attr('fill', d => colorOf(d.dom))
+      .attr('fill-opacity', 0.82)
+      .attr('stroke', d => state.selectedCity === d.city ? '#1a1a1a' : '#fff')
+      .attr('stroke-width', d => state.selectedCity === d.city ? 2.4 : 1);
+    merged.select('text')
+      .text(d => d.city)
+      .attr('x', d => 6 + Math.round(9 * Math.sqrt(Math.max(1, d.shown) / maxShown)))
+      .attr('y', 4)
+      .attr('class', 'mob-node__label')
+      .attr('opacity', d => (d.shown > 0 && (d.firstYear == null || d.firstYear <= state.cursor)) ? 1 : 0);
+  };
+}
+
+function arcPath(a, b) {
+  if (!a || !b) return '';
+  const dx = b.x - a.x, dy = b.y - a.y;
+  const dr = Math.hypot(dx, dy);
+  // leicht gekruemmt, damit Hin- und Rueckwege nicht uebereinanderliegen
+  const cx = (a.x + b.x) / 2 - dy * 0.12;
+  const cy = (a.y + b.y) / 2 + dx * 0.12;
+  // Endpunkt etwas vor dem Knoten, damit der Pfeil nicht im Kreis steckt
+  const t = dr > 0 ? Math.min(10, dr * 0.18) / dr : 0;
+  const ex = b.x - dx * t, ey = b.y - dy * t;
+  return `M${a.x},${a.y} Q${cx},${cy} ${ex},${ey}`;
+}
+
+function dominantSicht(evs) {
+  const c = new Map();
+  for (const ev of evs) c.set(sichtOf(ev), (c.get(sichtOf(ev)) || 0) + 1);
+  let best = KONTEXT.id, bestN = -1;
+  for (const t of ALL_TYPES) {
+    const n = c.get(t.id) || 0;
+    if (n > bestN) { bestN = n; best = t.id; }
+  }
+  return best;
+}
+function firstYear(evs) {
+  const ys = evs.map(e => extractYear(e.date)).filter(y => y != null);
+  return ys.length ? Math.min(...ys) : null;
 }
 
 // ---------------------------------------------------------------------------
-// § 1 Die fünf Mobilitätssichten
+// Zeitregler mit Abspielen
 // ---------------------------------------------------------------------------
 
-function groupByType(events) {
-  const map = new Map();
-  for (const ev of events) {
-    const t = typeForRole(ev.role);
-    if (!map.has(t)) map.set(t, []);
-    map.get(t).push(ev);
+function buildScrubber(state, minYear, maxYear, onChange) {
+  const wrap = el('div', { className: 'mob-scrub' });
+  const play = el('button', { className: 'mob-scrub__play', type: 'button',
+    'aria-label': 'Pfad über die Zeit abspielen' }, '▶');
+  const range = el('input', {
+    className: 'mob-scrub__range', type: 'range',
+    min: String(minYear), max: String(maxYear), step: '1', value: String(state.cursor),
+  });
+  const label = el('span', { className: 'mob-scrub__year' }, String(state.cursor));
+
+  function setCursor(y, fire = true) {
+    state.cursor = y;
+    range.value = String(y);
+    label.textContent = y >= maxYear ? `bis ${y}` : String(y);
+    if (fire) onChange();
   }
-  return map;
+  range.addEventListener('input', () => setCursor(parseInt(range.value, 10)));
+
+  function stop() {
+    state.playing = false;
+    if (state.timer) { clearInterval(state.timer); state.timer = null; }
+    play.textContent = '▶';
+    play.classList.remove('mob-scrub__play--on');
+  }
+  function start() {
+    state.playing = true;
+    play.textContent = '⏸';
+    play.classList.add('mob-scrub__play--on');
+    if (state.cursor >= maxYear) setCursor(minYear, false);
+    state.timer = setInterval(() => {
+      const next = state.cursor + 1;
+      if (next > maxYear) { setCursor(maxYear); stop(); return; }
+      setCursor(next);
+    }, 700);
+  }
+  play.addEventListener('click', () => { state.playing ? stop() : start(); });
+
+  wrap.append(play, range, label);
+  return {
+    elementWrap: wrap,
+    update() { range.value = String(state.cursor); label.textContent = state.cursor >= maxYear ? `bis ${state.cursor}` : String(state.cursor); },
+  };
 }
 
-function buildSichtenSection(events) {
-  const section = el('section', { className: 'mob-section' });
-  section.appendChild(el('h3', { className: 'mob-section__title' }, 'Die fünf Mobilitätssichten'));
-  section.appendChild(el('p', { className: 'mob-section__lead' },
-    'Jedes Ereignis nach seiner Rolle einer Sicht zugeordnet. Die Reisemobilität '
-    + 'bündelt die typisierten Ortsrollen, auch die datumslosen. Ein Klick auf '
-    + 'einen Chip öffnet das Dokument im Bestand.'));
+// ---------------------------------------------------------------------------
+// Sicht-Legende (Filter)
+// ---------------------------------------------------------------------------
 
-  const byType = groupByType(events);
-  for (const t of MOBILITY_TYPES) {
-    section.appendChild(buildSichtBlock(t, byType.get(t.id) || []));
+function buildLegend(events, state, onChange) {
+  const counts = new Map(ALL_TYPES.map(t => [t.id, 0]));
+  for (const ev of events) counts.set(sichtOf(ev), (counts.get(sichtOf(ev)) || 0) + 1);
+
+  const legend = el('div', { className: 'mob-legend', role: 'group', 'aria-label': 'Mobilitätssichten filtern' });
+  for (const t of ALL_TYPES) {
+    const item = el('button', { className: 'mob-legend__item', type: 'button',
+      title: t.frage, 'aria-pressed': 'true' },
+      el('span', { className: 'mob-legend__swatch' }),
+      el('span', { className: 'mob-legend__label' }, t.label),
+      el('span', { className: 'mob-legend__count' }, String(counts.get(t.id) || 0)));
+    item.querySelector('.mob-legend__swatch').style.background = t.color;
+    item.addEventListener('click', () => {
+      if (state.active.has(t.id)) state.active.delete(t.id); else state.active.add(t.id);
+      const on = state.active.has(t.id);
+      item.classList.toggle('mob-legend__item--off', !on);
+      item.setAttribute('aria-pressed', String(on));
+      onChange();
+    });
+    legend.appendChild(item);
   }
-  const kontext = byType.get(KONTEXT.id) || [];
-  if (kontext.length > 0) {
-    section.appendChild(buildSichtBlock(KONTEXT, kontext));
-  }
-  return section;
+  return legend;
 }
 
-function buildSichtBlock(type, evs) {
-  const block = el('div', { className: 'mob-sicht', dataset: { sicht: type.id } });
-  block.style.setProperty('--sicht-color', type.color);
+// ---------------------------------------------------------------------------
+// Detailstreifen-Helfer
+// ---------------------------------------------------------------------------
 
-  const head = el('div', { className: 'mob-sicht__head' },
-    el('span', { className: 'mob-sicht__accent' }),
-    el('div', { className: 'mob-sicht__heading' },
-      el('h4', { className: 'mob-sicht__label' }, type.label),
-      el('span', { className: 'mob-sicht__frage' }, type.frage)),
-    el('span', { className: 'mob-sicht__count' }, String(evs.length)));
-  block.appendChild(head);
-  block.appendChild(el('p', { className: 'mob-sicht__desc' }, type.desc));
-
-  if (evs.length === 0) {
-    block.appendChild(el('p', { className: 'mob-sicht__empty' },
-      'Keine Belege im aktuellen Datenstand.'));
-    return block;
-  }
-
-  const chips = el('div', { className: 'mob-chips' });
-  for (const ev of sortEvents(evs)) {
-    chips.appendChild(buildEventChip(ev));
-  }
-  block.appendChild(chips);
-  return block;
+function makeUnverortetButton(unverortet, state, strip, rerender) {
+  const btn = el('button', { className: 'mob-strip__unverortet', type: 'button' },
+    `${unverortet.length} unverortet`);
+  btn.addEventListener('click', () => {
+    const chips = el('div', { className: 'mob-strip__chips' });
+    for (const ev of sortEvents(unverortet.filter(e => state.active.has(sichtOf(e)))))
+      chips.appendChild(buildEventChip(ev));
+    clear(strip);
+    strip.appendChild(el('div', { className: 'mob-strip__head' },
+      el('h3', { className: 'mob-strip__title' }, 'Unverortete Ereignisse'),
+      el('button', { className: 'mob-strip__clear', type: 'button', onClick: rerender }, 'zurück')));
+    strip.appendChild(chips);
+  });
+  return btn;
 }
 
-// Deterministische Reihenfolge: nach Jahr (datierte zuerst), dann Ort, dann Rolle.
 function sortEvents(evs) {
   return evs.slice().sort((a, b) => {
     const ya = extractYear(a.date), yb = extractYear(b.date);
@@ -236,148 +468,51 @@ function sortEvents(evs) {
     if (ya != null && yb == null) return -1;
     if (ya == null && yb != null) return 1;
     const pa = (a.place || '').localeCompare(b.place || '', 'de-DE');
-    if (pa !== 0) return pa;
-    return (a.role || '').localeCompare(b.role || '', 'de-DE');
+    return pa !== 0 ? pa : (a.role || '').localeCompare(b.role || '', 'de-DE');
   });
 }
 
 function buildEventChip(ev) {
+  const date = ev.date ? (formatDate(ev.date) || ev.date) : '—';
   const place = ev.place || 'unbekannt';
-  const date = eventDateLabel(ev);
+  const reason = !hasGeo(ev) ? (ev.placeWikidata ? 'Q-ID ohne Koordinaten' : 'ohne Q-ID') : null;
   return buildRoleChip({
     prefix: ev.role || 'EVENT',
-    value: `${place} · ${date}`,
+    value: `${place} · ${date}${reason ? ' · ' + reason : ''}`,
     xlsxSource: ev.xlsxSource,
     wikidata: ev.placeWikidata,
     tip: ev.id,
-    onClick: () => {
-      if (ev.recordId) {
-        window.location.hash = '#bestand/' + encodeURIComponent(ev.recordId);
-      }
-    },
+    onClick: () => { if (ev.recordId) window.location.hash = '#bestand/' + encodeURIComponent(ev.recordId); },
   });
 }
 
 // ---------------------------------------------------------------------------
-// § 2 Orte
+// Einklappbare Voll-Liste (Pruefbarkeit)
 // ---------------------------------------------------------------------------
 
-function aggregatePlaces(events) {
-  // Auf Stadt-Ebene konsolidieren (cityOf), damit adressgenaue Varianten nicht
-  // zersplittern. Ein Ort gilt als verortet, sobald irgendein Ereignis dort
-  // Koordinaten traegt; sonst unverortet (Erschliessungsspiegel).
-  const map = new Map();
+function buildBackbone(events) {
+  const byType = new Map();
   for (const ev of events) {
-    if (!ev.place) continue;
-    const city = cityOf(ev.place);
-    if (!map.has(city)) {
-      map.set(city, { name: city, count: 0, geo: false, qid: null });
-    }
-    const e = map.get(city);
-    e.count++;
-    if (hasGeo(ev)) e.geo = true;
-    if (!e.qid && ev.placeWikidata) e.qid = ev.placeWikidata;
+    const t = sichtOf(ev);
+    if (!byType.has(t)) byType.set(t, []);
+    byType.get(t).push(ev);
   }
-  return [...map.values()].sort((a, b) =>
-    b.count - a.count || a.name.localeCompare(b.name, 'de-DE'));
-}
-
-function buildOrteSection(events) {
-  const section = el('section', { className: 'mob-section' });
-  section.appendChild(el('h3', { className: 'mob-section__title' }, 'Orte'));
-  section.appendChild(el('p', { className: 'mob-section__lead' },
-    'Alle belegten Orte auf Stadt-Ebene, nach Häufigkeit. Orte ohne '
-    + 'Koordinaten erscheinen markiert, sie fehlen einer Kartenansicht.'));
-
-  const places = aggregatePlaces(events);
-  const max = places.length ? places[0].count : 1;
-
-  const list = el('ul', { className: 'mob-bars' });
-  for (const p of places) {
-    const row = el('li', { className: 'mob-bars__row' });
-    const labelCell = p.qid
-      ? el('a', {
-          className: 'mob-bars__label mob-bars__label--link',
-          href: `https://www.wikidata.org/wiki/${String(p.qid).replace(/^wd:/, '')}`,
-          target: '_blank', rel: 'noopener noreferrer',
-          title: `Wikidata: ${p.qid}`,
-        }, p.name)
-      : el('span', { className: 'mob-bars__label' }, p.name);
-    row.appendChild(labelCell);
-
-    const track = el('div', { className: 'mob-bars__track' });
-    const fill = el('div', { className: `mob-bars__fill${p.geo ? '' : ' mob-bars__fill--unverortet'}` });
-    fill.style.width = `${Math.max(4, Math.round(p.count / max * 100))}%`;
-    track.appendChild(fill);
-    row.appendChild(track);
-
-    const count = el('span', { className: 'mob-bars__count' },
-      p.geo ? String(p.count) : `${p.count} · unverortet`);
-    row.appendChild(count);
-    list.appendChild(row);
+  const details = el('details', { className: 'mob-backbone' });
+  details.appendChild(el('summary', { className: 'mob-backbone__summary' },
+    `Alle ${events.length} Ereignisse als Liste`));
+  for (const t of ALL_TYPES) {
+    const evs = byType.get(t.id) || [];
+    if (evs.length === 0) continue;
+    const block = el('div', { className: 'mob-backbone__block' });
+    const sw = el('span', { className: 'mob-backbone__swatch' });
+    sw.style.background = t.color;
+    block.appendChild(el('div', { className: 'mob-backbone__head' },
+      sw, el('span', { className: 'mob-backbone__label' }, t.label),
+      el('span', { className: 'mob-backbone__count' }, String(evs.length))));
+    const chips = el('div', { className: 'mob-strip__chips' });
+    for (const ev of sortEvents(evs)) chips.appendChild(buildEventChip(ev));
+    block.appendChild(chips);
+    details.appendChild(block);
   }
-  section.appendChild(list);
-  return section;
-}
-
-// ---------------------------------------------------------------------------
-// § 3 Zeit
-// ---------------------------------------------------------------------------
-
-function aggregateDecades(events) {
-  const buckets = new Map();
-  let datiert = 0;
-  for (const ev of events) {
-    const y = extractYear(ev.date);
-    if (y == null) continue;
-    datiert++;
-    const decade = Math.floor(y / 10) * 10;
-    buckets.set(decade, (buckets.get(decade) || 0) + 1);
-  }
-  if (buckets.size === 0) return { rows: [], datiert };
-  const min = Math.min(...buckets.keys());
-  const max = Math.max(...buckets.keys());
-  const rows = [];
-  for (let d = min; d <= max; d += 10) {
-    rows.push({ decade: d, count: buckets.get(d) || 0 });
-  }
-  return { rows, datiert };
-}
-
-function buildZeitSection(events) {
-  const section = el('section', { className: 'mob-section' });
-  section.appendChild(el('h3', { className: 'mob-section__title' }, 'Zeit'));
-  section.appendChild(el('p', { className: 'mob-section__lead' },
-    'Datierte Ereignisse pro Jahrzehnt. Ereignisse ohne datierbares Jahr, '
-    + 'darunter die meisten Reise-Ortsrollen, sind hier nicht darstellbar.'));
-
-  const { rows, datiert } = aggregateDecades(events);
-  const ohne = events.length - datiert;
-  if (ohne > 0) {
-    section.appendChild(el('p', { className: 'mob-section__note' },
-      `${datiert} von ${events.length} Ereignissen mit datierbarem Jahr, `
-      + `${ohne} ohne Datum hier nicht dargestellt.`));
-  }
-
-  if (rows.length === 0) {
-    section.appendChild(el('p', { className: 'mob-sicht__empty' },
-      'Keine datierten Ereignisse.'));
-    return section;
-  }
-
-  const max = Math.max(...rows.map(r => r.count), 1);
-  const list = el('ul', { className: 'mob-bars' });
-  for (const r of rows) {
-    const row = el('li', { className: 'mob-bars__row' });
-    row.appendChild(el('span', { className: 'mob-bars__label' }, `${r.decade}er`));
-    const track = el('div', { className: 'mob-bars__track' });
-    const fill = el('div', { className: 'mob-bars__fill' });
-    fill.style.width = `${Math.max(r.count ? 4 : 0, Math.round(r.count / max * 100))}%`;
-    track.appendChild(fill);
-    row.appendChild(track);
-    row.appendChild(el('span', { className: 'mob-bars__count' }, String(r.count)));
-    list.appendChild(row);
-  }
-  section.appendChild(list);
-  return section;
+  return details;
 }
