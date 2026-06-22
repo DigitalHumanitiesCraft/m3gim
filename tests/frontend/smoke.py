@@ -146,7 +146,7 @@ def main() -> int:
         stamp_expectations = {
             "bestand":    ["konvolute", "records", "sort"],
             "chronik":    ["records", "jahre-belegt", "undatiert", "spanne"],
-            "statistik":  ["records", "konvolute", "events", "personen", "sektionen"],
+            "statistik":  ["records", "events", "personen", "panels", "sichtbar"],
             "indizes":    ["personen", "organisationen", "orte", "werke"],
             "karte":      ["events", "verortet", "unverortet", "datiert", "jahre"],
             "netzwerk":   ["total", "ring1", "ring2", "agrelon"],

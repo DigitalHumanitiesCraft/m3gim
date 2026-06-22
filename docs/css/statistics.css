@@ -3,52 +3,42 @@
    keine Interaktionskomponenten. Nutzt --color-kug-blau und
    --color-sicht-* aus variables.css. */
 
-.statistik {
-  max-width: 1240px;
-  margin: 0 auto;
-  padding: var(--space-6) var(--space-5) var(--space-10);
-  color: var(--color-text-primary);
+/* Dashboard-Huelle: linke Ansichten-Sidebar + scrollender Panel-Bereich.
+   Nutzt die geteilte .view-shell/.view-sidebar (sidebar.css) wie Karte/Netzwerk. */
+.statistik-main {
+  overflow-y: auto;
+  padding: var(--space-5) var(--space-5) var(--space-8);
 }
 
-.statistik__sections {
+/* Panels packen sich spaltenweise (Masonry); ungleiche Hoehen ohne Luecken. */
+.statistik__grid {
+  columns: 440px;
+  column-gap: var(--space-5);
+}
+
+.stat-panel {
+  break-inside: avoid;
+  margin: 0 0 var(--space-5);
+  padding: var(--space-4) var(--space-4) var(--space-5);
+  background: var(--color-paper);
+  border: 1px solid var(--border-color-light);
+  border-radius: 8px;
+}
+.stat-panel[hidden] { display: none; }
+
+/* In der schmalen Panel-Spalte stehen Subcharts untereinander, nicht zweispaltig. */
+.stat-panel .stat-section--split {
   display: flex;
   flex-direction: column;
-  gap: var(--space-10);
 }
 
-/* Sprung-Navigation: klebt beim Scrollen am oberen Rand des Statistik-Bereichs. */
-.stat-nav {
-  position: sticky;
-  top: 0;
-  z-index: 5;
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-1) var(--space-5);
-  margin: 0 0 var(--space-8);
-  padding: var(--space-2) 0;
-  background: var(--color-paper);
-  border-bottom: 1px solid var(--border-color);
-}
-
-.stat-nav__link {
-  font-family: var(--font-ui);
+/* Status-Zeile unter dem Zeitraum-Slider: aktiver Schnitt + ausgeblendete undatierte. */
+.stat-filter-note {
   font-size: var(--text-xs);
-  font-weight: var(--weight-semibold);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--color-text-secondary);
-  text-decoration: none;
-  padding: 2px 0;
-  border-bottom: 2px solid transparent;
-  transition: color var(--transition-fast), border-color var(--transition-fast);
+  color: var(--color-text-tertiary);
+  line-height: 1.4;
+  margin: 4px 0 0;
 }
-.stat-nav__link:hover {
-  color: var(--color-kug-blau);
-  border-bottom-color: var(--color-kug-blau-light);
-}
-
-/* Anker landen unter dem klebenden Streifen, nicht darunter verdeckt. */
-.stat-section { scroll-margin-top: 56px; }
 
 /* --- Sektionen ----------------------------------------------------------- */
 /* Subcharts einer Sektion fließen in ein responsives Grid: bei genug Breite

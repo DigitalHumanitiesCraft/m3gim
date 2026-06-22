@@ -8,7 +8,7 @@ method:
   url: https://lisa.gerda-henkel-stiftung.de/digitale_geschichte_pollin
 status: draft
 created: 2026-06-21
-updated: 2026-06-21
+updated: 2026-06-22
 language: de
 version: 0.1
 authors: [Christopher Pollin]
@@ -47,6 +47,7 @@ Im Excel zu beheben. Vor der Bearbeitung jeweils gegen den [Quality-Snapshot](..
 | QF-11 | Erfassungs-Tippfehler: `Maskenbidner` → `Maskenbildner`, `Rundfunkshonorar` → `Rundfunkhonorar`, `Malaiuk`/`Malniuk` → `Malaniuk`. Die Pipeline reicht sie bis zur Quellkorrektur unverändert durch. | XLSX-Erfassung, mehrere Zellen | offen |
 | QF-12 | Zürich-Adressvarianten mit Umlaut-Tippfehler: `Zürich, Zurichbergstrasse 104` (`Zu` statt `Zü`) neben `Zürich, Zürichbergstrasse 104`. Teil der adressgenauen Ortsfragmentierung (siehe AF-03). | `M3GIM-Ortsindex.xlsx` | UI-gemildert (`cityOf`, E-108) |
 | QF-13 | Dubletten und fehlende Index-IDs: mehrere Personen-, Organisations- und Werk-Einträge sind doppelt erfasst oder ohne `m3gim_id`. | Personen-, Organisations-, Werkindex | offen |
+| QF-14 | Betrag in der Währungs-Spalte: einzelne Finanz-Verknüpfungen tragen als Währung `00 DM` bzw. `00 Belgische Francs` (Betrag in das Währungsfeld gerutscht), die in der Statistik als eigene Währungen erschienen. | `M3GIM-Verknüpfungen.xlsx`, Finanz-Verknüpfungen (`einnahmen`/`ausgaben`, `währung`) | UI-gemildert (Statistik-Donut bündelt Codes mit Ziffern als „unklar (Erfassung)") |
 
 ## Abgleichfehler
 

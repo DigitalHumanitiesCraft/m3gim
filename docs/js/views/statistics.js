@@ -1,11 +1,11 @@
 /**
- * Statistik-View — visuelles Porträt des Bestandes.
+ * Statistik-View — interaktives Dashboard ueber den Bestand.
  *
- * Read-only Showroom: Diagramme aus Store-Aggregaten, keine Filter, keine
- * interne State-Mutation. Der Fokus liegt auf Datenvisualisierung statt
- * Tabellen mit Prozent-Zahlen; Tech-Reporting (Bearbeitungsstand,
- * Wikidata-Abdeckung, Low-Confidence-Policy) wandert in den Markdown-Report
- * `data/reports/quality-snapshot.md`.
+ * Geteilte Sidebar-Shell (viewShell/createSidebar) wie Karte und Netzwerk: links
+ * ein record-basierter Zeitraum-Filter plus Panel-Schalter, rechts ein Panel-Grid
+ * aus sechs Aggregat-Panels (Live-Store, kein Pipeline-Derivat). Der Zeitschnitt
+ * rechnet alle Panels gleichzeitig neu. Tech-Reporting (Bearbeitungsstand,
+ * Wikidata-Abdeckung) bleibt im Markdown-Report `data/reports/quality-snapshot.md`.
  */
 
 /* global d3 */
@@ -15,11 +15,8 @@ import { logStamp } from '../utils/env.js';
 import { getDocTypeId, cityOf } from '../utils/format.js';
 import { mobilityClusterFor, ortColor } from '../data/constants.js';
 import { applyArchivFilter, navigateToView } from '../ui/router.js';
-
-// Sichtbare Einzel-Segmente im Dokumenttypen-Donut; der Long-Tail wird in ein
-// aufklappbares "Sonstige" gebuendelt, damit die Sliver lesbar bleiben, ohne
-// Kategorien zu verstecken (Erschliessungsspiegel-Prinzip, design.md § 10).
-const DONUT_TOP = 11;
+import { createSidebar, viewShell } from '../ui/sidebar.js';
+import { extractYear } from '../utils/date-parser.js';
 
 const PALETTE = [
   '#004A8F',  // KUG-Blau
@@ -34,65 +31,182 @@ const PALETTE = [
   '#3D5A4F',  // Tannengruen
 ];
 
+// Dashboard-Bereiche: jeder wird ein per Sidebar schaltbares Panel. Die Farbe
+// dient nur als Wiedererkennungs-Swatch im Sidebar-Chip.
+const SECTIONS = [
+  { id: 'dokumenttypen', label: 'Dokumenttypen', unit: 'Dok.',   color: PALETTE[0], build: buildBestandSection },
+  { id: 'mobilitaet',    label: 'Mobilität',     unit: 'Ereig.', color: 'var(--color-sicht-performativ)', build: buildMobilitaetSection },
+  { id: 'geografie',     label: 'Geografie',     unit: 'Orte',   color: PALETTE[2], build: buildGeografieSection },
+  { id: 'netzwerk',      label: 'Netzwerk',      unit: 'Rel.',   color: PALETTE[3], build: buildNetzwerkSection },
+  { id: 'repertoire',    label: 'Repertoire',    unit: 'Komp.',  color: PALETTE[1], build: buildRepertoireSection },
+  { id: 'finanzen',      label: 'Finanzen',      unit: 'Nenn.',  color: PALETTE[5], build: buildFinanzenSection },
+];
+
 export function renderStatistik(store, container) {
   clear(container);
 
-  const wrap = el('div', { className: 'statistik' });
+  // Jahr-Primitive: kanonisch aus rico:date (wie die Chronik, E-88); null = undatiert.
+  const recordYear = (rec) => extractYear(rec['rico:date']);
 
-  // Sektionen mit Ankern, dazu ein klebender Sprung-Streifen fuer die lange
-  // Scroll-Ansicht (jede .tab-content ist ihr eigener Scroll-Container).
-  const sections = [
-    { id: 'dokumenttypen', label: 'Dokumenttypen', node: buildBestandSection(store) },
-    { id: 'mobilitaet',    label: 'Mobilität',     node: buildMobilitaetSection(store) },
-    { id: 'geografie',     label: 'Geografie',     node: buildGeografieSection(store) },
-    { id: 'netzwerk',      label: 'Netzwerk',      node: buildNetzwerkSection(store) },
-    { id: 'repertoire',    label: 'Repertoire',    node: buildRepertoireSection(store) },
-    { id: 'finanzen',      label: 'Finanzen',      node: buildFinanzenSection(store) },
-  ];
-
-  const nav = el('nav', { className: 'stat-nav', 'aria-label': 'Sektionen' });
-  const body = el('div', { className: 'statistik__sections' });
-  for (const sec of sections) {
-    sec.node.id = `stat-sec-${sec.id}`;
-    body.appendChild(sec.node);
-    nav.appendChild(el('a', {
-      className: 'stat-nav__link',
-      href: '#statistik',
-      onClick: (e) => { e.preventDefault(); sec.node.scrollIntoView({ behavior: 'smooth', block: 'start' }); },
-    }, sec.label));
+  // Spektrum + Inventar aus den datierten Records.
+  const years = [];
+  for (const rec of store.allRecords) {
+    const y = recordYear(rec);
+    if (y != null) years.push(y);
   }
-  wrap.appendChild(nav);
-  wrap.appendChild(body);
+  const minYear = years.length ? Math.min(...years) : 1900;
+  const maxYear = years.length ? Math.max(...years) : 2000;
+  const undatedTotal = store.allRecords.length - years.length;
 
-  container.appendChild(wrap);
+  // Chip-Zahlen bleiben das Gesamtinventar (stabiler Bezug); der Zeitschnitt wirkt
+  // auf die Panels und wird in der Status-Zeile beziffert.
+  const counts = {
+    dokumenttypen: store.allRecords.length,
+    mobilitaet:    store.mobilityEvents.size,
+    geografie:     aggregatePlaces(store).length,
+    netzwerk:      aggregateAgentRelations(store).total,
+    repertoire:    aggregateComposers(store).length,
+    finanzen:      aggregateFinances(store).total,
+  };
+
+  // State.
+  const visible = new Set(SECTIONS.map(s => s.id));
+  let lo = minYear, hi = maxYear;
+
+  // Record-basierter Zeitfilter: einmal die Record-Menge schneiden, daraus einen
+  // gefilterten Sub-Store ableiten. mobilityEvents/agentRelations/finances tragen
+  // einen recordId-Bezug, persons/works ein records-Set (loader.js). Bei vollem
+  // Fenster bleibt der Store unveraendert, damit undatierte Daten sichtbar bleiben.
+  const filteredStore = () => {
+    if (lo <= minYear && hi >= maxYear) return store;
+    const keep = new Set();
+    for (const rec of store.allRecords) {
+      const y = recordYear(rec);
+      if (y != null && y >= lo && y <= hi) keep.add(rec['@id']);
+    }
+    const pick = (map, hasKey) => {
+      const out = new Map();
+      for (const [k, v] of map) if (hasKey(k, v)) out.set(k, v);
+      return out;
+    };
+    const inRecords = (set) => { for (const rid of (set || [])) if (keep.has(rid)) return true; return false; };
+    return {
+      ...store,
+      allRecords:     store.allRecords.filter(r => keep.has(r['@id'])),
+      mobilityEvents: pick(store.mobilityEvents, (_, ev) => ev.recordId && keep.has(ev.recordId)),
+      agentRelations: pick(store.agentRelations, (k) => keep.has(k)),
+      finances:       pick(store.finances, (k) => keep.has(k)),
+      persons:        pick(store.persons, (_, p) => inRecords(p.records)),
+      works:          pick(store.works, (_, w) => inRecords(w.records)),
+    };
+  };
+
+  // Panel-Grid: jede Sektion als Dashboard-Karte.
+  const grid = el('div', { className: 'statistik__grid' });
+  const panels = new Map();
+  for (const def of SECTIONS) {
+    const panel = el('section', { className: 'stat-panel' });
+    panel.id = `stat-panel-${def.id}`;
+    panels.set(def.id, panel);
+    grid.appendChild(panel);
+  }
+  const main = el('div', { className: 'view-main statistik-main' }, grid);
+
+  const syncPanels = () => {
+    for (const def of SECTIONS) panels.get(def.id).hidden = !visible.has(def.id);
+  };
+
+  // Status-Zeile: macht den Zeitschnitt und die ausgeblendeten undatierten Daten
+  // sichtbar (Erschliessungsspiegel-Prinzip, E-87).
+  const noteEl = el('p', { className: 'stat-filter-note' });
+  const updateNote = (fs) => {
+    if (fs === store) {
+      noteEl.textContent = `Voller Zeitraum · ${store.allRecords.length} Dokumente`
+        + (undatedTotal ? ` (inkl. ${undatedTotal} undatierte)` : '');
+    } else {
+      noteEl.textContent = `Zeitfenster ${lo}–${hi} · ${fs.allRecords.length} von `
+        + `${store.allRecords.length} Dokumenten`
+        + (undatedTotal ? ` · ${undatedTotal} undatierte ausgeblendet` : '');
+    }
+  };
+
+  // Neuaufbau der Panel-Inhalte mit dem gefilterten Sub-Store; per rAF gedrosselt,
+  // damit das Ziehen des Sliders nicht jeden Pixel sechs D3-Charts neu zeichnet.
+  const rebuild = () => {
+    const fs = filteredStore();
+    for (const def of SECTIONS) {
+      const panel = panels.get(def.id);
+      clear(panel);
+      panel.appendChild(def.build(fs));
+    }
+    updateNote(fs);
+  };
+  let raf = 0;
+  const scheduleRebuild = () => {
+    if (raf) return;
+    raf = requestAnimationFrame(() => { raf = 0; rebuild(); });
+  };
+
+  const sidebar = createSidebar({
+    sections: [
+      {
+        title: 'Zeitraum',
+        controls: [
+          { kind: 'range', min: minYear, max: maxYear,
+            from: () => lo, to: () => hi, fullLabel: true,
+            onChange: (a, b) => { lo = a; hi = b; scheduleRebuild(); } },
+          { kind: 'custom', node: noteEl },
+        ],
+      },
+      {
+      title: 'Ansichten',
+      controls: [
+        {
+          kind: 'legend',
+          items: SECTIONS.map(d => ({ id: d.id, label: d.label, color: d.color,
+            count: `${counts[d.id]} ${d.unit}` })),
+          isActive: (id) => visible.has(id),
+          onToggle: (id) => {
+            if (visible.has(id)) visible.delete(id); else visible.add(id);
+            syncPanels();
+          },
+        },
+        {
+          kind: 'buttons',
+          items: [
+            { label: 'Alle', title: 'Alle Ansichten zeigen',
+              onClick: () => { SECTIONS.forEach(d => visible.add(d.id)); sidebar.update(); syncPanels(); } },
+            { label: 'Keine', title: 'Alle Ansichten ausblenden',
+              onClick: () => { visible.clear(); sidebar.update(); syncPanels(); } },
+          ],
+        },
+      ],
+    }],
+  });
+
+  container.appendChild(viewShell(sidebar.element, main));
+  rebuild();
+  syncPanels();
 
   const docTypes = aggregateDocTypes(store);
-  const docTypesOhne = docTypes.find(d => d.id === null)?.count || 0;
-  const sichten = aggregateSichten(store);
-  const places = aggregatePlaces(store);
-  const relations = aggregateAgentRelations(store);
-  const composers = aggregateComposers(store);
-  const finances = aggregateFinances(store);
-
   logStamp('statistik', [
     ['records', store.allRecords.length],
-    ['konvolute', store.konvolute.size],
     ['events', store.mobilityEvents.size],
     ['personen', store.persons.size],
-    ['sektionen', body.childElementCount],
+    ['panels', SECTIONS.length],
+    ['sichtbar', visible.size],
+    ['spanne', `${minYear}-${maxYear}`],
+    ['undatiert', undatedTotal],
     ['doctypes', docTypes.filter(d => d.id !== null).length],
-    ['doctypes-ohne', docTypesOhne],
-    ['sichten', sichten.filter(s => s.count > 0).length],
-    ['orte', places.length],
-    ['relationen', relations.total],
-    ['komponisten', composers.length],
-    ['finanzen', finances.total],
-    ['waehrungen', finances.currencies.length],
+    ['orte', counts.geografie],
+    ['relationen', counts.netzwerk],
+    ['komponisten', counts.repertoire],
+    ['finanzen', counts.finanzen],
   ]);
 }
 
 // ---------------------------------------------------------------------------
-// § 1 Dokumenttypen (Donut)
+// § 1 Dokumenttypen (Bar-Rangliste)
 // ---------------------------------------------------------------------------
 
 function buildBestandSection(store) {
@@ -102,38 +216,37 @@ function buildBestandSection(store) {
   const docTypes = aggregateDocTypes(store).filter(d => d.count > 0);
   const typed = docTypes.filter(d => d.id !== null);
   const ohneTyp = docTypes.find(d => d.id === null);
+  const total = docTypes.reduce((s, d) => s + d.count, 0);
 
-  // Klick auf ein Segment fuehrt in den Bestand, dort nach Dokumenttyp gefiltert.
-  const slice = (d, color) => ({
-    label: d.label, value: d.count, color,
+  section.appendChild(el('p', { className: 'stat-subsection__note' },
+    `${total} Dokumente · ${typed.length} Typen`));
+
+  // Viele Typen mit starkem Long-Tail: Rangliste statt Donut-Sliver (Form folgt der
+  // Datenlogik — viele Kategorien + Long-Tail lesen sich als horizontale Balken).
+  // Klick auf eine Zeile fuehrt in den Bestand, dort nach Dokumenttyp gefiltert.
+  const BAR_TOP = 12;
+  const rows = typed.slice(0, BAR_TOP).map((d, i) => ({
+    label: d.label, value: d.count, color: PALETTE[i % PALETTE.length],
     onClick: () => applyArchivFilter('docType', d.id),
-    tip: `${d.label} im Bestand zeigen`,
-  });
-
-  const donutData = typed.slice(0, DONUT_TOP).map((d, i) => slice(d, PALETTE[i % PALETTE.length]));
-  const tail = typed.slice(DONUT_TOP);
+    hrefTitle: `${d.label} im Bestand zeigen`,
+  }));
+  const tail = typed.slice(BAR_TOP);
   if (tail.length) {
-    const sum = tail.reduce((s, d) => s + d.count, 0);
-    donutData.push({
-      label: 'Sonstige', value: sum, color: 'var(--color-sand)',
-      sub: tail.map((d, i) => slice(d, PALETTE[(DONUT_TOP + i) % PALETTE.length])),
-      tip: `${tail.length} weitere Typen, zusammen ${sum} Belege`,
+    rows.push({
+      label: `Sonstige (${tail.length} Typen)`,
+      value: tail.reduce((s, d) => s + d.count, 0),
+      color: 'var(--color-sand)',
     });
   }
   if (ohneTyp) {
-    donutData.push({
-      label: 'ohne Typ', value: ohneTyp.count,
-      color: 'var(--color-text-tertiary)', muted: true,
+    rows.push({
+      label: 'ohne Typ', value: ohneTyp.count, color: 'var(--color-text-tertiary)',
       onClick: () => applyArchivFilter('docType', '__none__'),
-      tip: 'Records ohne klassifizierten Dokumenttyp im Bestand zeigen',
+      hrefTitle: 'Records ohne klassifizierten Dokumenttyp im Bestand zeigen',
     });
   }
 
-  section.appendChild(buildDonut(donutData, {
-    size: 320,
-    ariaLabel: 'Dokumenttypen im Bestand',
-    categoryCount: docTypes.length,
-  }));
+  section.appendChild(buildHorizontalBars(rows));
   return section;
 }
 
@@ -324,7 +437,7 @@ function buildGeografieSection(store) {
 }
 
 // ---------------------------------------------------------------------------
-// § 4 Netzwerk — AgRelOn-Donut + Kategorien-Bar
+// § 4 Netzwerk — AgRelOn-Donut + Rollen-Bar
 // ---------------------------------------------------------------------------
 
 const AGRELON_LABEL = {
@@ -355,14 +468,20 @@ function aggregateAgentRelations(store) {
   return { items, total };
 }
 
-function aggregatePersonKategorien(store) {
+function aggregatePersonRollen(store) {
+  // Personen nach Rolle aus dem roles-Set (jede Person je distinkter Rolle einmal).
+  // Datengetrieben statt der namensbasierten kategorie, die fast alle als "Andere"
+  // fuehrte (loader.js getPersonKategorie deckt nur namentlich bekannte Personen ab).
   const counts = new Map();
   for (const p of store.persons.values()) {
-    const k = p.kategorie || 'Andere';
-    counts.set(k, (counts.get(k) || 0) + 1);
+    for (const r of (p.roles || [])) {
+      if (!r) continue;
+      const label = r.charAt(0).toUpperCase() + r.slice(1);
+      counts.set(label, (counts.get(label) || 0) + 1);
+    }
   }
   return [...counts.entries()]
-    .map(([kategorie, count]) => ({ kategorie, count }))
+    .map(([rolle, count]) => ({ rolle, count }))
     .sort((a, b) => b.count - a.count);
 }
 
@@ -386,17 +505,18 @@ function buildNetzwerkSection(store) {
     section.appendChild(relWrap);
   }
 
-  const katItems = aggregatePersonKategorien(store);
-  if (katItems.length > 0) {
-    const katWrap = el('div', { className: 'stat-subsection' });
-    katWrap.appendChild(el('h4', { className: 'stat-subsection__title' },
-      'Personen nach Kategorie'));
-    katWrap.appendChild(buildHorizontalBars(katItems.map((item, i) => ({
-      label: item.kategorie,
+  const rollItems = aggregatePersonRollen(store);
+  if (rollItems.length > 0) {
+    const top = rollItems.slice(0, 12);
+    const rollWrap = el('div', { className: 'stat-subsection' });
+    rollWrap.appendChild(el('h4', { className: 'stat-subsection__title' },
+      `Personen nach Rolle (Top ${top.length} von ${rollItems.length})`));
+    rollWrap.appendChild(buildHorizontalBars(top.map((item, i) => ({
+      label: item.rolle,
       value: item.count,
       color: PALETTE[i % PALETTE.length],
     }))));
-    section.appendChild(katWrap);
+    section.appendChild(rollWrap);
   }
 
   return section;
@@ -479,17 +599,29 @@ function buildFinanzenSection(store) {
 
   const fin = aggregateFinances(store);
 
-  if (fin.currencies.length > 0) {
+  // Codes mit Ziffern ("00 DM") sind Erfassungsartefakte, keine Waehrungen \u2014 als
+  // eine gedaempfte Sammelgruppe buendeln statt als gleichrangige Waehrung zeigen
+  // (Ehrlichkeitsprinzip, siehe datenfehler.md).
+  const validCur = fin.currencies.filter(c => !/\d/.test(c.code));
+  const suspectCur = fin.currencies.filter(c => /\d/.test(c.code));
+  if (validCur.length > 0 || suspectCur.length > 0) {
     const curWrap = el('div', { className: 'stat-subsection' });
     curWrap.appendChild(el('h4', { className: 'stat-subsection__title' }, 'W\u00e4hrungen'));
-    curWrap.appendChild(buildDonut(
-      fin.currencies.map((c, i) => ({
-        label: `${c.label} (${c.code})`,
-        value: c.count,
-        color: PALETTE[i % PALETTE.length],
-      })),
-      { size: 260, ariaLabel: 'W\u00e4hrungen in den Finanznennungen' },
-    ));
+    const curData = validCur.map((c, i) => ({
+      label: `${c.label} (${c.code})`,
+      value: c.count,
+      color: PALETTE[i % PALETTE.length],
+    }));
+    if (suspectCur.length > 0) {
+      const sum = suspectCur.reduce((s, c) => s + c.count, 0);
+      curData.push({
+        label: 'unklar (Erfassung)', value: sum, muted: true,
+        color: 'var(--color-text-tertiary)',
+        tip: `Fehlerhafte W\u00e4hrungsangaben: ${suspectCur.map(c => `${c.code} (${c.count})`).join(', ')}`,
+      });
+    }
+    curWrap.appendChild(buildDonut(curData,
+      { size: 300, ariaLabel: 'W\u00e4hrungen in den Finanznennungen' }));
     section.appendChild(curWrap);
   }
 
@@ -517,7 +649,7 @@ function buildFinanzenSection(store) {
  * Wenn d3 nicht verf\u00fcgbar ist (CDN-Ausfall), f\u00e4llt das Chart auf
  * eine kompakte Liste zur\u00fcck.
  */
-function buildDonut(data, { size = 300, ariaLabel = '', categoryCount = null } = {}) {
+function buildDonut(data, { size = 300, ariaLabel = '', categoryCount = null, categoryNoun = 'Kategorien' } = {}) {
   const total = data.reduce((s, d) => s + d.value, 0);
   const wrap = el('div', { className: 'stat-chart stat-chart--donut' });
 
@@ -578,7 +710,7 @@ function buildDonut(data, { size = 300, ariaLabel = '', categoryCount = null } =
     .attr('text-anchor', 'middle')
     .attr('dy', '1.1em')
     .attr('class', 'stat-donut__center-label')
-    .text((categoryCount ?? data.length) + ' Kategorien');
+    .text((categoryCount ?? data.length) + ' ' + categoryNoun);
 
   chartEl.appendChild(svg.node());
   wrap.appendChild(chartEl);
