@@ -26,7 +26,7 @@ BASE_URL = os.environ.get("M3GIM_SMOKE_URL", "http://localhost:8765/")
 # Karte, E-111) und der Korb sind seit E-109/E-111 sichtbar und jetzt im Loop;
 # die verborgenen Perspektiv-Tabs (mobilitaets-atlas, repertoire, biogramm)
 # bleiben per `hidden` ausgeblendet und werden spaeter ueberarbeitet (E-81).
-TABS = ["bestand", "chronik", "statistik", "indizes", "mobilitaet", "netzwerk", "korb"]
+TABS = ["bestand", "chronik", "statistik", "indizes", "karte", "netzwerk", "korb"]
 
 # Anker-Records: Titel-Snippets, die im Bestand-Tab-DOM erreichbar sein muessen.
 # Nur Records mit Verknuepfungen (sonst werden sie durch den "nur bearbeitet"-
@@ -100,7 +100,7 @@ def main() -> int:
             if text.startswith("[") and "]" in text:
                 tag = text[1:text.index("]")]
                 if tag in ("chronik", "bestand", "indizes", "statistik",
-                           "mobilitaet", "netzwerk", "korb"):
+                           "karte", "netzwerk", "korb"):
                     stamps[tag] = text
 
         page.on("console", on_console)
@@ -148,7 +148,7 @@ def main() -> int:
             "chronik":    ["records", "jahre-belegt", "undatiert", "spanne"],
             "statistik":  ["records", "konvolute", "events", "personen", "sektionen"],
             "indizes":    ["personen", "organisationen", "orte", "werke"],
-            "mobilitaet": ["events", "verortet", "unverortet", "datiert", "jahre"],
+            "karte":      ["events", "verortet", "unverortet", "datiert", "jahre"],
             "netzwerk":   ["total", "ring1", "ring2", "agrelon"],
             "korb":       ["eintraege", "aufgeloest", "events", "finanzen"],
         }
@@ -212,30 +212,30 @@ def main() -> int:
         #     der harte Schutz davor, dass die Karte still leer rendert
         #     (fehlende Geometrie, d3-Ausfall, Projektions-Bug).
         try:
-            page.locator('[data-tab="mobilitaet"]').first.click()
+            page.locator('[data-tab="karte"]').first.click()
             errs_before = len(global_errors)
             # Knoten erscheinen erst nach dem fetch der Laendergeometrie.
-            page.locator('#tab-mobilitaet .mob-nodes g.mob-node').first.wait_for(
+            page.locator('#tab-karte .mob-nodes g.mob-node').first.wait_for(
                 state="attached", timeout=8000)
-            nodes = page.locator('#tab-mobilitaet .mob-nodes g.mob-node').count()
-            arcs = page.locator('#tab-mobilitaet .mob-arcs path').count()
-            legend = page.locator('#tab-mobilitaet .vs-legend .vs-chip').count()
-            land = page.locator('#tab-mobilitaet .mob-land path').count()
+            nodes = page.locator('#tab-karte .mob-nodes g.mob-node').count()
+            arcs = page.locator('#tab-karte .mob-arcs path').count()
+            legend = page.locator('#tab-karte .vs-legend .vs-chip').count()
+            land = page.locator('#tab-karte .mob-land path').count()
             new_errs = expect_no_new_errors(global_errors, errs_before)
             # Erwartung: mehrere Stadt-Knoten, mindestens ein Pfad-Pfeil, die
             # Sicht-Legende als Filter, Laendergeometrie, keine Konsolenfehler.
             if nodes >= 5 and arcs >= 1 and legend >= 5 and land >= 50 and not new_errs:
-                results.append(("OK", "mobilitaet:karte-render     ",
+                results.append(("OK", "karte:render               ",
                                 f"{nodes} Knoten, {arcs} Pfeile, {legend} Sicht-Filter, "
                                 f"{land} Laender"))
             else:
-                results.append(("FAIL", "mobilitaet:karte-render     ",
+                results.append(("FAIL", "karte:render               ",
                                 f"Knoten={nodes}, Pfeile={arcs}, Legende={legend}, "
                                 f"Laender={land}, errs={len(new_errs)}"))
                 for e in new_errs[:2]:
                     results.append(("  ", " " * 24, e[:120]))
         except Exception as e:
-            results.append(("FAIL", "mobilitaet:karte-render     ",
+            results.append(("FAIL", "karte:render               ",
                             f"Karte nicht gezeichnet: {str(e)[:90]}"))
 
         # --- Anker-Titel: im DOM erreichbar? ---

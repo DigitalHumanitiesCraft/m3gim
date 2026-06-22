@@ -51,5 +51,13 @@ export function buildFilterToolbar(store, { initial = {}, onChange } = {}) {
     setDocType(id)    { toolbar.setFacet('docType', id); },
     setCount(text)    { toolbar.setCount(text); },
     getState()        { return toolbar.getState(); },
+    // Cross-View-Filter: eine Facette {facet,value} auf die Toolbar anwenden.
+    // Bestand und Chronik teilen sich dieselbe Zuordnung (vorher dupliziert).
+    applyFacet(facet, value) {
+      if (facet === 'person') toolbar.setFacet('person', value);
+      else if (facet === 'location') toolbar.setFacet('location', value);
+      else if (facet === 'werk') toolbar.setFacet('werk', value);
+      else if (facet === 'docType') toolbar.setFacet('docType', value);
+    },
   };
 }

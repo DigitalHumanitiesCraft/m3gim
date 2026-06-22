@@ -7,7 +7,7 @@ status: complete
 language: de
 version: 0.2
 created: 2026-02-19
-updated: 2026-06-17
+updated: 2026-06-22
 authors: [Christopher Pollin]
 generated-with: Claude Code
 method:
@@ -31,7 +31,7 @@ Das Interface positioniert sich als **Forschungswerkzeug**, nicht als Dashboard.
 
 ## Tab-Architektur
 
-Welche Tabs tatsächlich sichtbar sind, legt `docs/js/ui/router.js::VISIBLE_TABS` fest — das ist die Source of Truth, nicht dieses Dokument. Aktueller Stand: sichtbar sind **Bestand · Chronik · Statistik · Indizes · Netzwerk · Wissenskorb** (Netzwerk zuletzt in Session 46 reaktiviert, E-93). Die verbleibenden drei Perspektiv-Tabs — Mobilitäts-Atlas, Repertoire, Biogramm — sind per `hidden`-Attribut ausgeblendet; Code, CSS und Store-Maps bleiben erhalten, Hash-URLs auf versteckte Tabs werden auf Bestand umgebogen (E-81, präzisiert durch E-86 und E-93). Reaktivieren = `hidden` im HTML entfernen + Eintrag in `VISIBLE_TABS` ergänzen. Qualitätssicht läuft team-intern über `data/reports/quality-snapshot.md` und ist kein eigener Tab.
+Welche Tabs tatsächlich sichtbar sind, legt `docs/js/ui/router.js::VISIBLE_TABS` fest — das ist die Source of Truth, nicht dieses Dokument. Aktueller Stand: sichtbar sind **Bestand · Chronik · Statistik · Indizes · Karte · Netzwerk · Wissenskorb** (Karte als D3-geo-Trajektorienkarte aus E-111, Route `karte` seit E-118; Netzwerk in Session 46 reaktiviert, E-93). Die verbleibenden Perspektiv-Tabs — Mobilitäts-Atlas (der durch die Karte abgelöste Leaflet-Vorgänger), Repertoire, Biogramm — sind per `hidden`-Attribut ausgeblendet; Code, CSS und Store-Maps bleiben erhalten, Hash-URLs auf versteckte Tabs werden auf Bestand umgebogen (E-81, präzisiert durch E-86 und E-93). Reaktivieren = `hidden` im HTML entfernen + Eintrag in `VISIBLE_TABS` ergänzen. Qualitätssicht läuft team-intern über `data/reports/quality-snapshot.md` und ist kein eigener Tab.
 
 **Leitprinzip „nur bearbeitet":** Bestand, Chronik und Indizes zeigen ausschließlich Records bzw. Einträge mit Verknüpfungen. Konvolute ohne erschlossene Folios, Records mit `countLinks === 0`, Folios ohne Links innerhalb eines Konvoluts und Index-Einträge ohne Record-Referenz werden gar nicht erst gerendert. Plakate und Tonträger sind pauschal ausgeblendet (`EXCLUDED_DFT`). Die Gesamt-Bestandszahl und Verknüpfungsrate stehen ausschließlich im Quality-Snapshot. Begründung: das Interface positioniert sich als Forschungswerkzeug für substantielles Material — Erschließungs-Platzhalter sind Rauschen, kein Inhalt.
 
@@ -41,7 +41,8 @@ Welche Tabs tatsächlich sichtbar sind, legt `docs/js/ui/router.js::VISIBLE_TABS
 | **Chronik** | aktiv | Scrollender Jahres-Zeitstrahl 1919–2009 (+ Ausreißer-Jahre), Records als klickbare Punkte pro Jahr, leere Jahre sichtbar als Erschließungsspiegel | `store.allRecords` (gefiltert über `unprocessedIds`), `store.recordToEvents`, `store.mobilityEvents` | Vertikale Achse, Jahres-Labels links, Dot-Dichte = Jahresbelegung, Record-Chips rechts |
 | **Statistik** | aktiv | Read-only Showroom des Bestandes mit Dokumenttypen, Mobilitätssichten, Geografie, Netzwerk, Repertoire und Finanzen (E-85, E-89, E-92), Tech-Reporting ausgelagert in den Quality-Snapshot | gesamter Store, aggregiert pro Sektion | Sechs Sektionen aus pure-function Aggregation |
 | **Indizes** | aktiv | Aggregierte Übersicht Personen, Organisationen, Orte, Werke; Cross-Grid-Linking | `store.persons`, `store.organizations`, `store.locations`, `store.works` (nur Einträge mit `records.size > 0`) | Vier parallele Grids, `renderNameCell()` mit Beziehungsbadges |
-| **Mobilitäts-Atlas** | verborgen | Raumzeitliche Aktivität, Leaflet + D3-Zeitstrahl + Detailpanel | `store.mobilityEvents` | Karte + Zeitstrahl + Detailpanel |
+| **Karte** | aktiv | Raumzeitliche Mobilität als projizierte D3-geo-Trajektorienkarte (E-111): Orte als Knoten, farbcodiert nach Mobilitätssicht, der biografische Pfad als chronologisch eingefärbte Pfeile; Sicht-, Zeit- und Pfad-Filter, Ortsauswahl betont die Etappen der Stadt (E-118 Route `karte`) | `store.mobilityEvents`, lokale Ländergeometrie | Stummkarte (lokal, kein Kartenserver) + gerichteter Pfad |
+| **Mobilitäts-Atlas** | verborgen | Durch die Karte abgelöster Leaflet-Vorgänger; raumzeitliche Aktivität, Leaflet + D3-Zeitstrahl + Detailpanel | `store.mobilityEvents` | Karte + Zeitstrahl + Detailpanel |
 | **Repertoire** | verborgen | Bühnenrepertoire und Komponisten, nach Belegtyp aggregiert | `store.works` + DFT-Typ der Records | Parallele Aggregat-Tabellen mit Inline-Breakdown |
 | **Biogramm** | verborgen | Chronologische Gesamtsicht entlang der Lebensspanne 1919–2009 | `store.mobilityEvents`, `store.records` mit Datum | D3-Zeitstrahl mit zwei Spuren |
 | **Netzwerk** | aktiv | Konzentrische Personen-Visualisierung um Malaniuk (E-93): zwei Ringe nach Evidenzstärke (harte Beziehung / Umfeld), Rolle als Füllfarbe, zwei Linientypen explizit unterschieden — gerade Radial = `agrelon:*` (explizit annotiert), geschwungene Bezier = Ko-Okkurrenz (aus Dokumenten abgeleitet), beide mit SVG-`<title>`-Tooltips + eigenem Sichtbarkeits-Toggle | `store.persons`, `store.agentRelations`, `store.records` | D3-SVG-Viz mit Filter-Sidebar, Zoom/Pan, Zeitfenster, Detail-Panel |
@@ -143,8 +144,8 @@ Die Design-Tokens (Farben, Spacing, Text-Sizes, Transitions) liegen zentral in `
   - Neutral-Grau — Abwesenheit, unbearbeitet
   - Warmer Hintergrund — Struktur
   - Signal-Rot — nur für Flucht 1944 (hochselektiv)
-- **Mobilitätssichten-Farbfamilie.** Fünf Tokens `--color-sicht-performativ|institutionell|korrespondenz|diskursiv|biografisch` in `variables.css`, getragen vom Chip-Modifier `.chip--mobility-*` als zweite Farbachse der Chronik-Stations-Chips.
-- **Ortsfarbcodierung.** Eine durchgehende Farbzuordnung für wiederkehrende Orte (Graz, Wien, Bayreuth, Salzburg, München) gehört ins Designsystem, nicht in einzelne Views — sie stiftet Orientierung über alle Sichten hinweg.
+- **Mobilitätssichten-Farbfamilie.** Fünf Tokens `--color-sicht-performativ|institutionell|korrespondenz|diskursiv|biografisch` in `variables.css`, getragen vom Chip-Modifier `.chip--mobility-*` als zweite Farbachse der Chronik-Stations-Chips. Seit E-119 sind diese Tokens die einzige Quelle der Sicht-Farben auch in Karte und Statistik (zuvor divergierende Paletten), ergänzt um `--color-sicht-kontext` für „Weiterer Ortsbezug".
+- **Ortsfarbcodierung.** Eine durchgehende Farbzuordnung für wiederkehrende Orte (Wien, Graz, München, Bayreuth, Salzburg) als `--color-ort-*`-Tokens, aufgelöst über `ortColor()` (constants.js); erster Konsument sind die Statistik-Top-Orte (E-120). Sie stiftet Orientierung über alle Sichten hinweg — die Karte selbst bleibt bei der Sicht-Farbcodierung ihrer Knoten.
 - **Typografie.** Source Serif 4 (Titel und Record-Bezeichner), UI-Sansserif-Stack (Interface), Monospace (Signaturen und IDs).
 - **CSS Custom Properties** als Design-System.
 - **Responsive.** `@media <768px`-Breakpoints in `base.css` und `components.css` für Header, Tab-Bar, Toolbars, Legenden.

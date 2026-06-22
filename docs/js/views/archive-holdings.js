@@ -55,11 +55,7 @@ export function renderBestand(storeRef, containerEl) {
 }
 
 function applyToolbarFilter({ facet, value }) {
-  if (!toolbar) return;
-  if (facet === 'person') toolbar.setPerson(value);
-  else if (facet === 'location') toolbar.setLocation(value);
-  else if (facet === 'werk') toolbar.setWerk(value);
-  else if (facet === 'docType') toolbar.setDocType(value);
+  if (toolbar) toolbar.applyFacet(facet, value);
 }
 
 /**

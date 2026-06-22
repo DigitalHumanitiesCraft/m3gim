@@ -44,12 +44,7 @@ export function renderChronik(storeRef, containerEl) {
   // Chip-Klick in Inline-Detail dispatcht `filter` -> Toolbar hier setzen.
   onViewNavigate('chronik', (detail) => {
     const { filter } = detail || {};
-    if (filter && filter.value) {
-      if (filter.facet === 'person') toolbar.setPerson(filter.value);
-      else if (filter.facet === 'location') toolbar.setLocation(filter.value);
-      else if (filter.facet === 'werk') toolbar.setWerk(filter.value);
-      else if (filter.facet === 'docType') toolbar.setDocType(filter.value);
-    }
+    if (filter && filter.value) toolbar.applyFacet(filter.facet, filter.value);
   });
 }
 

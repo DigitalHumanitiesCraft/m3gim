@@ -7,7 +7,7 @@ status: complete
 language: de
 version: 0.2
 created: 2026-02-19
-updated: 2026-06-17
+updated: 2026-06-22
 authors: [Christopher Pollin]
 generated-with: Claude Code
 method:
@@ -787,3 +787,25 @@ Lane-Aktivierung mit Order-Auftrag Milestone 3: das Filter-State-Modell für den
 **Numerierungs-Drift gemeldet.** Die Order nannte als Entscheidungsnummer E-167, die höchste belegte Nummer in decisions.md ist E-116. Statt eine 50er-Lücke zu öffnen, fortlaufend E-117 vergeben und die Abweichung der Leitstelle im handoff gemeldet, damit der Orchestrator sie reconciled. Verify-not-trust, ein Befehl legitimiert keine inkonsistente Numerierung im eigenen Register.
 
 **Verifikation.** Maschinelles Grün-Kriterium Milestone 3 erfüllt: `knowledge/filter-modell.md` existiert, decisions.md E-117 und der plan.md-Status-Tracker verweisen darauf, der Scout ist frisch gelaufen und im Entwurf verankert. Dokumentationsmilestone, kein Code, daher kein Test-Lauf nötig; die belegten Zahlen sind über den Scout reproduzierbar. Nach main gesichert.
+
+---
+
+## Session 57 (2026-06-22): Frontend-Politur, Cross-View-Konsistenz, Karten-Umbenennung
+
+Frontend-Runde über die vier sichtbaren Analyse-Tabs (Statistik, Karte, Netzwerk, Chronik), rein in `docs/` plus der nachgezogene Smoke-Test. Kein Eingriff in Pipeline, Daten oder Modell.
+
+**Politur und Interaktivität pro View.**
+- **Statistik:** Dokumenttypen-Donut entwirrt (Top 11 als Einzelsegmente, der Long-Tail in ein aufklappbares „Sonstige" gebündelt, „ohne Typ" als eigener neutraler Block), zweispaltiges Layout für Sektionen mit zwei Subcharts, Legende kompakt statt am rechten Rand verstreut. Interaktiv: Hover verkettet Donut-Segment und Legendenzeile, Klick auf Segment/Zeile führt als Drilldown in den Bestand (nach Dokumenttyp gefiltert), Top-Orte verlinken in den Ortsfilter, ein klebender Sprung-Streifen navigiert zwischen den sechs Sektionen.
+- **Karte:** ruhigere Pfeil-Deckkraft (0.85 → 0.55), Ortsauswahl betont jetzt die Etappen der gewählten Stadt und dimmt den Rest.
+- **Netzwerk:** deterministische Entzerrung der Dauer-Labels am dichten Ring 2 (Greedy nach Priorität Ring 1 → Dokumentzahl, Überlappende fallen auf On-Demand zurück), die Text-Wand am Außenring ist weg.
+- **Chronik:** Filter-Toolbar bleibt beim Scrollen der Zeitleiste oben kleben (sticky, je `.tab-content` eigener Scroll-Container).
+
+**Cross-View-Konsistenz (die fünf Folge-Optimierungen).** Siehe E-118 bis E-121: Karten-Route von `mobilitaet` auf `karte` umbenannt (Legacy-Hash-Alias), Mobilitätssichten-Farben auf eine Token-Quelle vereinheitlicht (Karte und Statistik konsistent, Sicht-ID `reise`→`korrespondenz`), Cross-Link von einem Statistik-Sicht-Balken in die Karte mit aktiver Sicht (über den `m3gim:navigate`-Bus, mobility.js bekommt einen `onViewNavigate`-Handler), Ortsfarbcodierung als `--color-ort-*`-Tokens plus `ortColor()`, Erschließungslücke „ohne Typ" als Filter-Spezialwert `__none__` begehbar.
+
+**Smoke-Test nachgezogen.** Die Umbenennung brach `tests/frontend/smoke.py` (Tab-Key `mobilitaet`, `#tab-mobilitaet`-Selektoren, `data-tab`-Klick, logStamp-Key). Alle vier Stellen auf `karte` umgestellt, der Karten-Canary heißt jetzt `karte:render`. Lehre: ein interner Tab-Bezeichner ist Vertrag bis in die Tests, eine Umbenennung ist nicht abgeschlossen, bevor der Smoke-Loop grün ist.
+
+**Verifikation.** JS 87/87, smoke 25 OK / 0 FAIL gegen den lokalen Server (inkl. `tab:karte`, `stamp:karte`, `karte:render` mit 14 Knoten / 37 Pfeilen / 177 Ländern, 0 Konsolenfehler über alle Tabs). **pytest separat:** 14 Fehler / 215 grün, durchgängig daten- und pipelineseitig (Schema, Währungs-Vokabular, Mojibake „Köln", Mobilitäts-STE-Rohabgleich) und **vorbestehend** — die Daten wurden zuletzt in `277b480` regeneriert, vor dieser rein frontendseitigen Runde; kein Test-`.py`, kein `scripts/`, keine `data/`-Datei wurde hier angefasst. Diese Pipeline-Drift ist ein eigener, offener Punkt außerhalb dieser Runde.
+
+**Doku.** Knowledge nachgezogen in derselben Session: dieser Eintrag, E-118 bis E-121 in [decisions.md](decisions.md), Tab-Architektur und Designsystem in [design.md](design.md) korrigiert (die sichtbare Karte fehlte dort, der Atlas war noch als einziger Mobilitäts-Tab geführt).
+
+**Entscheidungen:** E-118 (Karten-Umbenennung), E-119 (Sicht-Farben eine Quelle), E-120 (Ort-Farbtokens), E-121 („ohne Typ"-Drilldown).
