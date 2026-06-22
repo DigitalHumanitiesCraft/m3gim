@@ -1,35 +1,19 @@
-/* Statistik-Tab (Session 37).
-   Read-only Showroom. Vertikales Scroll-Layout, CSS-basierte Balken,
-   keine Interaktionskomponenten. Nutzt --color-kug-blau und
-   --color-sicht-* aus variables.css. */
+/* Statistik-Tab (Session 37, Master-Detail seit 2026-06-22).
+   Interaktives Dashboard: links Single-Select-Ansicht + Zeitraum-Filter,
+   rechts genau eine Ansicht ueber die volle Breite. CSS-basierte Balken,
+   D3-Donuts/Histogramme. Nutzt --color-kug-blau und --color-sicht-* (variables.css). */
 
-/* Dashboard-Huelle: linke Ansichten-Sidebar + scrollender Panel-Bereich.
+/* Dashboard-Huelle: linke Sidebar + scrollender Detailbereich.
    Nutzt die geteilte .view-shell/.view-sidebar (sidebar.css) wie Karte/Netzwerk. */
 .statistik-main {
   overflow-y: auto;
   padding: var(--space-5) var(--space-5) var(--space-8);
 }
 
-/* Panels packen sich spaltenweise (Masonry); ungleiche Hoehen ohne Luecken. */
-.statistik__grid {
-  columns: 440px;
-  column-gap: var(--space-5);
-}
-
-.stat-panel {
-  break-inside: avoid;
-  margin: 0 0 var(--space-5);
-  padding: var(--space-4) var(--space-4) var(--space-5);
-  background: var(--color-paper);
-  border: 1px solid var(--border-color-light);
-  border-radius: 8px;
-}
-.stat-panel[hidden] { display: none; }
-
-/* In der schmalen Panel-Spalte stehen Subcharts untereinander, nicht zweispaltig. */
-.stat-panel .stat-section--split {
-  display: flex;
-  flex-direction: column;
+/* Buehne: nur die aktive Ansicht, links ausgerichtet, generoes breit aber
+   typografisch noch lesbar (kein Vollbild-Stretch auf Ultrawide). */
+.statistik__stage {
+  max-width: 1200px;
 }
 
 /* Status-Zeile unter dem Zeitraum-Slider: aktiver Schnitt + ausgeblendete undatierte. */
@@ -115,12 +99,22 @@
   gap: var(--space-2);
 }
 
+/* Track capped so short bars do not float in front of dead space:
+   label | readable-width track | count, then an empty filler column
+   absorbs the remaining stage width. */
 .stat-bars__row {
   display: grid;
-  grid-template-columns: minmax(140px, 18ch) 1fr minmax(90px, auto);
+  grid-template-columns: minmax(140px, 18ch) minmax(0, 520px) minmax(90px, auto) 1fr;
   align-items: center;
   gap: var(--space-3);
   font-size: var(--text-sm);
+}
+
+@media (max-width: 768px) {
+  .stat-bars__row {
+    grid-template-columns: minmax(96px, 12ch) minmax(0, 1fr) minmax(72px, auto);
+    gap: var(--space-2);
+  }
 }
 
 .stat-bars__label {
@@ -170,6 +164,99 @@
   outline-offset: 2px;
 }
 
+/* --- Horizontale Stapelbalken (Jahrzehnt x Sicht) ------------------------ */
+/* One stacked bar per decade; each segment is one of the five mobility
+   views (SICHT_COLOR, shared with the map). Track capped like .stat-bars. */
+
+.stat-stack {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.stat-stack__row {
+  display: grid;
+  grid-template-columns: minmax(140px, 18ch) minmax(0, 520px) minmax(90px, auto) 1fr;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--text-sm);
+}
+
+.stat-stack__label {
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stat-stack__track {
+  display: flex;
+  height: 16px;
+  border-radius: 2px;
+  background: var(--color-parchment);
+  overflow: hidden;
+}
+
+.stat-stack__seg {
+  height: 100%;
+  border: none;
+  transition: flex-basis var(--transition-normal);
+}
+
+.stat-stack__total {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* Compact inline legend mapping segment color to view name. */
+.stat-stack-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-3);
+  margin: 0 0 var(--space-2);
+  padding: 0;
+  list-style: none;
+}
+
+.stat-stack-legend__item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+}
+
+.stat-stack-legend__swatch {
+  flex: 0 0 10px;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+@media (max-width: 768px) {
+  .stat-stack__row {
+    grid-template-columns: minmax(96px, 12ch) minmax(0, 1fr) minmax(72px, auto);
+    gap: var(--space-2);
+  }
+}
+
+/* --- Sidebar-Swatch-Ehrlichkeit ------------------------------------------ */
+/* The "Ansicht" selector carries no real per-view fill, so its swatch must
+   not pretend to. Lane C passes a transparent/neutral background for those
+   chips; a thin ring keeps the slot visible without faking a category color.
+   The .vs-chip__swatch base lives in sidebar.css; only this honesty rule
+   is owned here. */
+.vs-chip__swatch--neutral {
+  background: transparent !important;
+  box-shadow: inset 0 0 0 1px var(--border-color);
+}
+
 /* --- Charts (Donut, Histogramm, Legende) --------------------------------- */
 
 .stat-chart {
@@ -177,10 +264,6 @@
   align-items: flex-start;
   gap: var(--space-4);
   flex-wrap: wrap;
-}
-
-.stat-chart--hist {
-  display: block;
 }
 
 .stat-chart__svg-wrap {
@@ -319,33 +402,3 @@
   margin-right: 6px;
 }
 .stat-bars__ext:hover { color: var(--color-kug-blau); }
-
-/* Histogramm-Achsen */
-.stat-axis .domain { stroke: var(--border-color); }
-.stat-axis line { stroke: var(--border-color-light); }
-.stat-axis text {
-  font-family: var(--font-ui);
-  font-size: 10px;
-  fill: var(--color-text-tertiary);
-}
-
-.stat-axis--y line {
-  stroke: var(--border-color-light);
-  stroke-dasharray: 2,3;
-}
-
-.stat-axis__title {
-  font-family: var(--font-ui);
-  font-size: 11px;
-  font-weight: var(--weight-semibold);
-  fill: var(--color-text-secondary);
-  letter-spacing: 0.02em;
-}
-
-.stat-hist__bar {
-  transition: opacity var(--transition-fast);
-}
-
-.stat-hist__bar:hover {
-  opacity: 0.75;
-}

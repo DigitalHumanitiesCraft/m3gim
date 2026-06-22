@@ -145,8 +145,8 @@ def main() -> int:
         #     Regression) oder ein Key beim Refactor still wegfliegt.
         stamp_expectations = {
             "bestand":    ["konvolute", "records", "sort"],
-            "chronik":    ["records", "jahre-belegt", "undatiert", "spanne"],
-            "statistik":  ["records", "events", "personen", "panels", "sichtbar"],
+            "chronik":    ["records", "jahre-belegt", "datiert", "undatiert", "sicht-gedeckt", "spanne"],
+            "statistik":  ["records", "events", "personen", "ansichten", "aktiv"],
             "indizes":    ["personen", "organisationen", "orte", "werke"],
             "karte":      ["events", "verortet", "unverortet", "datiert", "jahre"],
             "netzwerk":   ["total", "ring1", "ring2", "agrelon"],
@@ -202,6 +202,36 @@ def main() -> int:
                                 "keine Punkte im Zeitstrahl gefunden"))
         except Exception as e:
             results.append(("WARN", "chronik:year-grid          ",
+                            f"check uebersprungen: {e}"))
+
+        # --- Canary Chronik: Aggregat -> Quelle (E-124). Klick auf ein
+        #     Dekaden-Sicht-Segment muss genau seine belegenden Chips
+        #     hervorheben (.chronik-point--hit) und den Rest daempfen
+        #     (.chronik-point--dim). Das ist der harte Schutz fuer die
+        #     Vorgabe "kein Aggregat ohne Aufloesung auf die Einzelquellen":
+        #     bleibt hit==0, ist der Stapelbalken eine unbelegte Zahl.
+        try:
+            page.locator('[data-tab="chronik"]').first.click()
+            page.wait_for_timeout(300)
+            segs = page.locator('#tab-chronik .chronik-decades__seg')
+            if segs.count() > 0:
+                errs_before = len(global_errors)
+                segs.first.click()
+                page.wait_for_timeout(400)
+                hit = page.locator('#tab-chronik .chronik-point--hit').count()
+                dim = page.locator('#tab-chronik .chronik-point--dim').count()
+                new_errs = expect_no_new_errors(global_errors, errs_before)
+                if hit > 0 and dim > 0 and not new_errs:
+                    results.append(("OK", "chronik:aggregat-aufloesung",
+                                    f"Segment-Klick: {hit} Chips hervor, {dim} gedaempft, 0 Konsole"))
+                else:
+                    results.append(("FAIL", "chronik:aggregat-aufloesung",
+                                    f"hit={hit}, dim={dim}, errs={len(new_errs)}"))
+            else:
+                results.append(("WARN", "chronik:aggregat-aufloesung",
+                                "kein Dekaden-Segment gefunden"))
+        except Exception as e:
+            results.append(("WARN", "chronik:aggregat-aufloesung",
                             f"check uebersprungen: {e}"))
 
         # --- Canary Mobilitaet: D3-geo-Karte (E-111) zeichnet nach dem

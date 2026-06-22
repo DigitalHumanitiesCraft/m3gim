@@ -1,145 +1,148 @@
 /**
- * Statistik-View — interaktives Dashboard ueber den Bestand.
+ * Statistik-View — interaktives Master-Detail-Dashboard ueber den Bestand.
  *
  * Geteilte Sidebar-Shell (viewShell/createSidebar) wie Karte und Netzwerk: links
- * ein record-basierter Zeitraum-Filter plus Panel-Schalter, rechts ein Panel-Grid
- * aus sechs Aggregat-Panels (Live-Store, kein Pipeline-Derivat). Der Zeitschnitt
- * rechnet alle Panels gleichzeitig neu. Tech-Reporting (Bearbeitungsstand,
- * Wikidata-Abdeckung) bleibt im Markdown-Report `data/reports/quality-snapshot.md`.
+ * waehlt ein uebergreifendes Single-Select genau eine von sechs Ansichten in zwei
+ * Gruppen (Mobilitaet / Werk & Bestand). Darunter schneidet ein record-basierter
+ * Zeitraum-Filter; bei event-getriebenen Ansichten kommen Sicht- und Land-Facetten
+ * hinzu. Rechts rendert die gewaehlte Ansicht ueber die volle Breite (Live-Store,
+ * kein Pipeline-Derivat). Tech-Reporting (Bearbeitungsstand, Wikidata-Abdeckung)
+ * bleibt im Markdown-Report `data/reports/quality-snapshot.md`.
+ *
+ * Diese Datei ist reine View-Orchestrierung + DOM-Rendering. Alle Aggregationen,
+ * der Zeit-/Facetten-Filter (filterStore) und die geteilten Sichten-Konstanten
+ * liegen in `statistics-data.js` (keine DOM-/d3-Abhaengigkeit).
  */
 
 /* global d3 */
 
 import { clear, el } from '../utils/dom.js';
 import { logStamp } from '../utils/env.js';
-import { getDocTypeId, cityOf } from '../utils/format.js';
-import { mobilityClusterFor, ortColor } from '../data/constants.js';
+import { ortColor } from '../data/constants.js';
 import { applyArchivFilter, navigateToView } from '../ui/router.js';
 import { createSidebar, viewShell } from '../ui/sidebar.js';
-import { extractYear } from '../utils/date-parser.js';
+import {
+  SICHTEN, SICHT_COLOR,
+  facetInventory, filterStore,
+  aggregateSichten, aggregateEventRoles, aggregateDecadesBySicht,
+  aggregatePlaces, aggregateCountries,
+  aggregateDocTypes, aggregateAgentRelations, aggregateRelationPartners,
+  aggregatePersonRollen, aggregateComposers, aggregateFinances,
+} from './statistics-data.js';
 
-const PALETTE = [
+// KUG-Blau als monochrome Leitfarbe; sequenzielle Abstufung fuer Long-Tail-Bars.
+const KUG_BLUE = '#004A8F';
+
+// Gedaempfte kategoriale Palette nur fuer den Netzwerk-/Finanz-Donut, wo ein
+// Donut Kategorien zeigt. Kein Regenbogen: gesetzte, ruhige Toene.
+const DONUT_PALETTE = [
   '#004A8F',  // KUG-Blau
-  '#2E7D4F',  // Signal-Gruen
-  '#B8860B',  // Ocker
-  '#8B3A3A',  // Weinrot
   '#4B6A8C',  // Staubblau
-  '#6B4E7D',  // Aubergine
-  '#A67C00',  // Dunkelgold
   '#5F7A61',  // Salbei
   '#7A5245',  // Kastanie
+  '#6B4E7D',  // Aubergine
   '#3D5A4F',  // Tannengruen
 ];
 
-// Dashboard-Bereiche: jeder wird ein per Sidebar schaltbares Panel. Die Farbe
-// dient nur als Wiedererkennungs-Swatch im Sidebar-Chip.
+// Sequenzielle KUG-Blau-Abstufung fuer monochrome Ranglisten (Dokumenttypen).
+// Index 0 = vollton, danach schrittweise aufgehellt; deckt die Top-Balken ab.
+function blueShade(i, n) {
+  const t = n > 1 ? i / (n - 1) : 0;
+  // Lighten towards a pale blue without leaving the KUG-blue family.
+  const lo = [0x00, 0x4A, 0x8F];
+  const hi = [0xB6, 0xC8, 0xDE];
+  const mix = lo.map((c, k) => Math.round(c + (hi[k] - c) * t * 0.75));
+  return `rgb(${mix[0]},${mix[1]},${mix[2]})`;
+}
+
+// Dashboard-Bereiche in zwei Gruppen; Single-Select uebergreifend (genau eine
+// aktive View). Event-getriebene Views erhalten die Sicht-/Land-Facetten.
 const SECTIONS = [
-  { id: 'dokumenttypen', label: 'Dokumenttypen', unit: 'Dok.',   color: PALETTE[0], build: buildBestandSection },
-  { id: 'mobilitaet',    label: 'Mobilität',     unit: 'Ereig.', color: 'var(--color-sicht-performativ)', build: buildMobilitaetSection },
-  { id: 'geografie',     label: 'Geografie',     unit: 'Orte',   color: PALETTE[2], build: buildGeografieSection },
-  { id: 'netzwerk',      label: 'Netzwerk',      unit: 'Rel.',   color: PALETTE[3], build: buildNetzwerkSection },
-  { id: 'repertoire',    label: 'Repertoire',    unit: 'Komp.',  color: PALETTE[1], build: buildRepertoireSection },
-  { id: 'finanzen',      label: 'Finanzen',      unit: 'Nenn.',  color: PALETTE[5], build: buildFinanzenSection },
+  { id: 'wohin-wann',    group: 'Mobilität',      label: 'Wohin & Wann',       events: true,  build: buildWohinWann },
+  { id: 'art',           group: 'Mobilität',      label: 'Art der Mobilität',  events: true,  build: buildArtDerMobilitaet },
+  // "Mit wem" liegt in der Mobilitaets-Gruppe, ist aber NICHT event-facettierbar:
+  // es zaehlt agentRelations (record-, nicht ereignisbasiert). Daher greifen nur
+  // Zeitraum, keine Sicht/Land-Facetten — sonst staenden tote Regler.
+  { id: 'netzwerk',      group: 'Mobilität',      label: 'Mit wem',            events: false, build: buildMitWem },
+  { id: 'repertoire',    group: 'Werk & Bestand', label: 'Repertoire',         events: false, build: buildRepertoireSection },
+  { id: 'personen',      group: 'Werk & Bestand', label: 'Personen',           events: false, build: buildPersonenSection },
+  { id: 'dokumenttypen', group: 'Werk & Bestand', label: 'Dokumenttypen',      events: false, build: buildBestandSection },
+  { id: 'finanzen',      group: 'Werk & Bestand', label: 'Finanzen',           events: false, build: buildFinanzenSection },
 ];
+
+const SECTION_BY_ID = new Map(SECTIONS.map(s => [s.id, s]));
 
 export function renderStatistik(store, container) {
   clear(container);
 
-  // Jahr-Primitive: kanonisch aus rico:date (wie die Chronik, E-88); null = undatiert.
-  const recordYear = (rec) => extractYear(rec['rico:date']);
+  // Inventar aus dem vollen Store: Jahresspektrum, Sichten- und Land-Facetten.
+  const inv = facetInventory(store);
+  const minYear = inv.minYear;
+  const maxYear = inv.maxYear;
+  const undatedTotal = inv.undatedTotal;
 
-  // Spektrum + Inventar aus den datierten Records.
-  const years = [];
-  for (const rec of store.allRecords) {
-    const y = recordYear(rec);
-    if (y != null) years.push(y);
-  }
-  const minYear = years.length ? Math.min(...years) : 1900;
-  const maxYear = years.length ? Math.max(...years) : 2000;
-  const undatedTotal = store.allRecords.length - years.length;
-
-  // Chip-Zahlen bleiben das Gesamtinventar (stabiler Bezug); der Zeitschnitt wirkt
-  // auf die Panels und wird in der Status-Zeile beziffert.
-  const counts = {
-    dokumenttypen: store.allRecords.length,
-    mobilitaet:    store.mobilityEvents.size,
-    geografie:     aggregatePlaces(store).length,
-    netzwerk:      aggregateAgentRelations(store).total,
-    repertoire:    aggregateComposers(store).length,
-    finanzen:      aggregateFinances(store).total,
-  };
-
-  // State.
-  const visible = new Set(SECTIONS.map(s => s.id));
+  // State: genau eine aktive Ansicht plus Zeitfenster plus zwei Event-Facetten.
+  // sichtSel/landSel = null bedeutet "alle" (kein Schnitt).
+  let active = 'wohin-wann';
   let lo = minYear, hi = maxYear;
+  let sichtSel = null;   // Set<string> | null
+  let landSel = null;    // Set<string> | null
 
-  // Record-basierter Zeitfilter: einmal die Record-Menge schneiden, daraus einen
-  // gefilterten Sub-Store ableiten. mobilityEvents/agentRelations/finances tragen
-  // einen recordId-Bezug, persons/works ein records-Set (loader.js). Bei vollem
-  // Fenster bleibt der Store unveraendert, damit undatierte Daten sichtbar bleiben.
-  const filteredStore = () => {
-    if (lo <= minYear && hi >= maxYear) return store;
-    const keep = new Set();
-    for (const rec of store.allRecords) {
-      const y = recordYear(rec);
-      if (y != null && y >= lo && y <= hi) keep.add(rec['@id']);
-    }
-    const pick = (map, hasKey) => {
-      const out = new Map();
-      for (const [k, v] of map) if (hasKey(k, v)) out.set(k, v);
-      return out;
-    };
-    const inRecords = (set) => { for (const rid of (set || [])) if (keep.has(rid)) return true; return false; };
-    return {
-      ...store,
-      allRecords:     store.allRecords.filter(r => keep.has(r['@id'])),
-      mobilityEvents: pick(store.mobilityEvents, (_, ev) => ev.recordId && keep.has(ev.recordId)),
-      agentRelations: pick(store.agentRelations, (k) => keep.has(k)),
-      finances:       pick(store.finances, (k) => keep.has(k)),
-      persons:        pick(store.persons, (_, p) => inRecords(p.records)),
-      works:          pick(store.works, (_, w) => inRecords(w.records)),
-    };
-  };
+  const activeDef = () => SECTION_BY_ID.get(active) || SECTIONS[0];
+  const isEventView = () => activeDef().events;
 
-  // Panel-Grid: jede Sektion als Dashboard-Karte.
-  const grid = el('div', { className: 'statistik__grid' });
-  const panels = new Map();
-  for (const def of SECTIONS) {
-    const panel = el('section', { className: 'stat-panel' });
-    panel.id = `stat-panel-${def.id}`;
-    panels.set(def.id, panel);
-    grid.appendChild(panel);
-  }
-  const main = el('div', { className: 'view-main statistik-main' }, grid);
+  // Buehne: nur die aktive Ansicht, ueber die volle Breite.
+  const stage = el('div', { className: 'statistik__stage' });
+  const main = el('div', { className: 'view-main statistik-main' }, stage);
 
-  const syncPanels = () => {
-    for (const def of SECTIONS) panels.get(def.id).hidden = !visible.has(def.id);
-  };
-
-  // Status-Zeile: macht den Zeitschnitt und die ausgeblendeten undatierten Daten
-  // sichtbar (Erschliessungsspiegel-Prinzip, E-87).
+  // Status-Zeile: macht Zeitschnitt, ausgeblendete undatierte Records und die
+  // wirkenden Facetten sichtbar (Erschliessungsspiegel, E-87).
   const noteEl = el('p', { className: 'stat-filter-note' });
-  const updateNote = (fs) => {
-    if (fs === store) {
-      noteEl.textContent = `Voller Zeitraum · ${store.allRecords.length} Dokumente`
-        + (undatedTotal ? ` (inkl. ${undatedTotal} undatierte)` : '');
+
+  const sichtCount = () => (sichtSel ? sichtSel.size : 'alle');
+  const landCount = () => (landSel ? landSel.size : 'alle');
+
+  const updateNote = (fs, full) => {
+    const parts = [];
+    if (full) {
+      parts.push(`Voller Zeitraum · ${store.allRecords.length} Dokumente`
+        + (undatedTotal ? ` (inkl. ${undatedTotal} undatierte)` : ''));
     } else {
-      noteEl.textContent = `Zeitfenster ${lo}–${hi} · ${fs.allRecords.length} von `
+      parts.push(`Zeitfenster ${lo}–${hi} · ${fs.allRecords.length} von `
         + `${store.allRecords.length} Dokumenten`
-        + (undatedTotal ? ` · ${undatedTotal} undatierte ausgeblendet` : '');
+        + (undatedTotal ? ` · ${undatedTotal} undatierte ausgeblendet` : ''));
     }
+    // Facetten greifen nur in event-getriebenen Views und schneiden Ereignisse,
+    // nicht Records; das hier ehrlich benennen.
+    if (isEventView() && (sichtSel || landSel)) {
+      const f = [];
+      if (sichtSel) f.push(`Sicht: ${sichtSel.size} gewählt`);
+      if (landSel) f.push(`Land: ${landSel.size} gewählt`);
+      parts.push(`${f.join(' · ')} (schneidet Ereignisse, nicht Dokumente)`);
+    }
+    noteEl.textContent = parts.join(' — ');
   };
 
-  // Neuaufbau der Panel-Inhalte mit dem gefilterten Sub-Store; per rAF gedrosselt,
-  // damit das Ziehen des Sliders nicht jeden Pixel sechs D3-Charts neu zeichnet.
+  // Aktuell geltende Facetten je nach View: record-only Views ignorieren
+  // Sicht/Land (sie wirken nur auf Ereignisse).
+  const currentFilters = () => ({
+    lo, hi,
+    sichten: isEventView() ? sichtSel : null,
+    laender: isEventView() ? landSel : null,
+  });
+
+  // Neuaufbau der aktiven Ansicht mit dem gefilterten Sub-Store.
+  let sidebar = null;
   const rebuild = () => {
-    const fs = filteredStore();
-    for (const def of SECTIONS) {
-      const panel = panels.get(def.id);
-      clear(panel);
-      panel.appendChild(def.build(fs));
-    }
-    updateNote(fs);
+    const f = currentFilters();
+    // Nur das ZEITFENSTER entscheidet ueber "voll vs. geschnitten" — Facetten
+    // schneiden Ereignisse, nicht Records, und blenden keine undatierten aus.
+    const timeFull = (lo <= minYear && hi >= maxYear);
+    const fs = filterStore(store, f);
+    const def = activeDef();
+    clear(stage);
+    stage.appendChild(def.build(fs));
+    updateNote(fs, timeFull);
   };
   let raf = 0;
   const scheduleRebuild = () => {
@@ -147,8 +150,45 @@ export function renderStatistik(store, container) {
     raf = requestAnimationFrame(() => { raf = 0; rebuild(); });
   };
 
-  const sidebar = createSidebar({
-    sections: [
+  // Sidebar wird je nach aktiver View frisch gebaut: bei einer event-getriebenen
+  // View erscheinen Sicht- und Land-Facetten, bei record-only Views nicht. Der
+  // Shell wird erst beim ersten Mount aus der echten Sidebar gebaut (kein
+  // Platzhalter — sonst stuende ein klassenloser Div als erstes Flex-Kind und
+  // die .view-sidebar-Breitenregel griffe nicht).
+  let shell = null;
+  const mountSidebar = () => {
+    const fresh = buildSidebar();
+    if (sidebar) shell.replaceChild(fresh.element, sidebar.element);
+    else shell = viewShell(fresh.element, main);
+    sidebar = fresh;
+  };
+
+  // Wechsel der aktiven View: Sidebar neu (Facetten-Kontext) + Stage neu.
+  const switchView = (id) => {
+    if (id === active) return;
+    active = id;
+    mountSidebar();
+    rebuild();
+  };
+
+  const ansichtSection = (groupTitle) => ({
+    title: groupTitle,
+    controls: [{
+      kind: 'legend',
+      items: SECTIONS.filter(s => s.group === groupTitle).map(d => ({
+        id: d.id, label: d.label,
+        // Neutrale Swatch: die Ansicht-Chips tragen keine irrefuehrende Leitfarbe.
+        color: 'var(--color-text-tertiary)',
+      })),
+      isActive: (id) => id === active,
+      onToggle: (id) => switchView(id),
+    }],
+  });
+
+  function buildSidebar() {
+    const sections = [
+      ansichtSection('Mobilität'),
+      ansichtSection('Werk & Bestand'),
       {
         title: 'Zeitraum',
         controls: [
@@ -158,55 +198,308 @@ export function renderStatistik(store, container) {
           { kind: 'custom', node: noteEl },
         ],
       },
-      {
-      title: 'Ansichten',
-      controls: [
-        {
+    ];
+
+    // Facetten nur bei event-getriebenen Views — sie schneiden Ereignisse.
+    if (isEventView()) {
+      sections.push({
+        title: 'Sicht',
+        controls: [{
           kind: 'legend',
-          items: SECTIONS.map(d => ({ id: d.id, label: d.label, color: d.color,
-            count: `${counts[d.id]} ${d.unit}` })),
-          isActive: (id) => visible.has(id),
+          items: inv.sichten.map(s => ({
+            id: s.id, label: s.label, color: SICHT_COLOR[s.id] || KUG_BLUE,
+            count: s.count,
+          })),
+          isActive: (id) => !sichtSel || sichtSel.has(id),
           onToggle: (id) => {
-            if (visible.has(id)) visible.delete(id); else visible.add(id);
-            syncPanels();
+            if (!sichtSel) sichtSel = new Set(inv.sichten.map(s => s.id));
+            if (sichtSel.has(id)) sichtSel.delete(id); else sichtSel.add(id);
+            if (sichtSel.size === inv.sichten.length) sichtSel = null;
+            sidebar.update();
+            scheduleRebuild();
           },
-        },
-        {
-          kind: 'buttons',
-          items: [
-            { label: 'Alle', title: 'Alle Ansichten zeigen',
-              onClick: () => { SECTIONS.forEach(d => visible.add(d.id)); sidebar.update(); syncPanels(); } },
-            { label: 'Keine', title: 'Alle Ansichten ausblenden',
-              onClick: () => { visible.clear(); sidebar.update(); syncPanels(); } },
-          ],
-        },
-      ],
-    }],
-  });
+        }],
+      });
+      sections.push({
+        title: 'Land',
+        controls: [{
+          kind: 'legend',
+          items: inv.laender.map(l => ({
+            id: l.code, label: l.label,
+            // Neutrale Farbe: Laender sind keine Mobilitaets-Sichten.
+            color: 'var(--color-text-tertiary)', count: l.count,
+          })),
+          isActive: (id) => !landSel || landSel.has(id),
+          onToggle: (id) => {
+            if (!landSel) landSel = new Set(inv.laender.map(l => l.code));
+            if (landSel.has(id)) landSel.delete(id); else landSel.add(id);
+            if (landSel.size === inv.laender.length) landSel = null;
+            sidebar.update();
+            scheduleRebuild();
+          },
+        }],
+      });
+    }
 
-  container.appendChild(viewShell(sidebar.element, main));
+    return createSidebar({ sections });
+  }
+
+  mountSidebar();
+  container.appendChild(shell);
   rebuild();
-  syncPanels();
 
-  const docTypes = aggregateDocTypes(store);
   logStamp('statistik', [
     ['records', store.allRecords.length],
     ['events', store.mobilityEvents.size],
     ['personen', store.persons.size],
-    ['panels', SECTIONS.length],
-    ['sichtbar', visible.size],
+    ['ansichten', SECTIONS.length],
+    ['aktiv', active],
     ['spanne', `${minYear}-${maxYear}`],
     ['undatiert', undatedTotal],
-    ['doctypes', docTypes.filter(d => d.id !== null).length],
-    ['orte', counts.geografie],
-    ['relationen', counts.netzwerk],
-    ['komponisten', counts.repertoire],
-    ['finanzen', counts.finanzen],
+    ['sicht', sichtCount()],
+    ['land', landCount()],
   ]);
 }
 
 // ---------------------------------------------------------------------------
-// § 1 Dokumenttypen (Bar-Rangliste)
+// § Mobilitaet — Wohin & Wann
+// ---------------------------------------------------------------------------
+
+function buildWohinWann(store) {
+  const section = el('section', { className: 'stat-section stat-section--split' });
+  section.appendChild(el('h3', { className: 'stat-section__title' }, 'Wohin & Wann'));
+
+  // Subsection 1: Jahrzehnte, gestapelt nach Mobilitaets-Sicht.
+  const decades = aggregateDecadesBySicht(store);
+  const whenWrap = el('div', { className: 'stat-subsection' });
+  whenWrap.appendChild(el('h4', { className: 'stat-subsection__title' }, 'Wann & welche Art'));
+  // Ehrliche Caption: datierte vs. alle Ereignisse.
+  if (decades.total > decades.dated) {
+    whenWrap.appendChild(el('p', { className: 'stat-subsection__note' },
+      `${decades.dated} von ${decades.total} Ereignissen mit Jahresangabe — `
+      + `${decades.total - decades.dated} ohne datierbares Jahr hier nicht gestapelt.`));
+  }
+  const segMeta = SICHTEN.map(s => ({ id: s.id, label: s.label }))
+    .concat([{ id: 'neutral', label: 'Nicht klassifiziert' }]);
+  whenWrap.appendChild(buildStackedBars(decades.rows, segMeta));
+  section.appendChild(whenWrap);
+
+  // Subsection 2: Reichweite ueber Laender, monochrom KUG-Blau.
+  const countries = aggregateCountries(store);
+  if (countries.length > 0) {
+    const located = countries.reduce((s, c) => s + c.count, 0);
+    const landWrap = el('div', { className: 'stat-subsection' });
+    landWrap.appendChild(el('h4', { className: 'stat-subsection__title' }, 'Reichweite (Länder)'));
+    if (decades.total > located) {
+      landWrap.appendChild(el('p', { className: 'stat-subsection__note' },
+        `${located} von ${decades.total} Ereignissen mit Länderangabe verortet.`));
+    }
+    landWrap.appendChild(buildHorizontalBars(countries.map(c => ({
+      label: c.label, value: c.count, color: KUG_BLUE,
+    }))));
+    section.appendChild(landWrap);
+  }
+
+  // Subsection 3: Top-Orte (Stadt-Ebene) mit Wikidata-ext-Link + Bestand-Cross-Link.
+  const places = aggregatePlaces(store).slice(0, 12);
+  if (places.length > 0) {
+    const placesWrap = el('div', { className: 'stat-subsection' });
+    placesWrap.appendChild(el('h4', { className: 'stat-subsection__title' }, 'Top-Orte'));
+    placesWrap.appendChild(buildHorizontalBars(places.map(p => {
+      // Cross-Link nur, wenn der aggregierte Stadtname ein Orts-Eintrag ist.
+      const linkable = store.locations.has(p.name);
+      return {
+        label: p.name,
+        value: p.count,
+        onClick: linkable ? () => applyArchivFilter('location', p.name) : null,
+        hrefTitle: linkable ? `${p.name} im Bestand zeigen` : p.name,
+        extraHref: p.qid ? `https://www.wikidata.org/wiki/${String(p.qid).replace(/^wd:/, '')}` : null,
+        extraTitle: p.qid ? `Bei Wikidata ansehen (${p.qid})` : '',
+        // Wiederkehrende Orte in ihrer konstanten Wiedererkennungsfarbe, sonst KUG-Blau.
+        color: ortColor(p.name) || KUG_BLUE,
+      };
+    })));
+    section.appendChild(placesWrap);
+  }
+
+  return section;
+}
+
+// ---------------------------------------------------------------------------
+// § Mobilitaet — Art der Mobilitaet
+// ---------------------------------------------------------------------------
+
+function buildArtDerMobilitaet(store) {
+  const section = el('section', { className: 'stat-section stat-section--split' });
+  section.appendChild(el('h3', { className: 'stat-section__title' }, 'Art der Mobilität'));
+
+  // Subsection 1: die fuenf Sichten + Residual, in den Sicht-Farben.
+  const rows = aggregateSichten(store).slice().sort((a, b) => b.count - a.count);
+  const sichtWrap = el('div', { className: 'stat-subsection' });
+  sichtWrap.appendChild(el('h4', { className: 'stat-subsection__title' }, 'Sichten'));
+  sichtWrap.appendChild(buildHorizontalBars(rows.map(s => ({
+    label: s.label,
+    value: s.count,
+    color: SICHT_COLOR[s.id] || KUG_BLUE,
+    // Klick fuehrt in die Karte, dort nur diese Sicht aktiv. Residual hat kein Pendant.
+    onClick: s.id === 'neutral' ? null : () => navigateToView('karte', { sicht: s.id }),
+    hrefTitle: s.id === 'neutral' ? s.desc : `${s.label} auf der Karte zeigen`,
+  }))));
+  section.appendChild(sichtWrap);
+
+  // Subsection 2: Auftrittstypen (Event-Rollen), jeder Balken in der Sicht-Farbe.
+  const roles = aggregateEventRoles(store);
+  if (roles.length > 0) {
+    const roleWrap = el('div', { className: 'stat-subsection' });
+    roleWrap.appendChild(el('h4', { className: 'stat-subsection__title' }, 'Auftrittstypen'));
+    roleWrap.appendChild(el('p', { className: 'stat-subsection__note' },
+      'Die Ensemble- oder Institutions-Zuordnung pro Ereignis ist derzeit nicht '
+      + 'erfasst (z. B. Bayreuther Ensemble). Gastspiele erscheinen daher als Rolle '
+      + 'und Ort, nicht nach Ensemble auswertbar.'));
+    roleWrap.appendChild(buildHorizontalBars(roles.map(r => ({
+      label: r.label,
+      value: r.count,
+      color: SICHT_COLOR[r.sicht] || SICHT_COLOR.neutral,
+    }))));
+    section.appendChild(roleWrap);
+  }
+
+  return section;
+}
+
+// ---------------------------------------------------------------------------
+// § Mobilitaet — Mit wem (Netzwerk: AgRelOn-Donut + Rollen-Bars)
+// ---------------------------------------------------------------------------
+
+function buildMitWem(store) {
+  const section = el('section', { className: 'stat-section stat-section--split' });
+  section.appendChild(el('h3', { className: 'stat-section__title' }, 'Mit wem'));
+
+  const { items: relItems, total: relTotal } = aggregateAgentRelations(store);
+  const { partners, namedRelations, allRelations } = aggregateRelationPartners(store);
+
+  // Eine stabile Farbe je Beziehungstyp, geteilt zwischen Donut und Partnerliste,
+  // damit der Klick-Filter visuell zusammenhaengt.
+  const typeColor = new Map(relItems.map((it, i) => [it.label, DONUT_PALETTE[i % DONUT_PALETTE.length]]));
+
+  // Drill-State: ein gewaehlter Typ filtert die Partnerliste; null = alle.
+  let selectedType = null;
+
+  // Rechte Spalte: benannte Partner, re-rendert bei Typ-Auswahl.
+  const partnerWrap = el('div', { className: 'stat-subsection' });
+  const partnerTitle = el('h4', { className: 'stat-subsection__title' }, 'Benannte Partner');
+  partnerWrap.appendChild(partnerTitle);
+  if (allRelations > 0) {
+    partnerWrap.appendChild(el('p', { className: 'stat-subsection__note' },
+      `${namedRelations} von ${allRelations} Relationen mit benanntem Gegenüber — bei den `
+      + 'übrigen ist Malaniuk das genannte Ende. Klick auf ein Segment filtert nach Typ.'));
+  }
+  const partnerList = el('div');
+  partnerWrap.appendChild(partnerList);
+
+  const renderPartners = () => {
+    clear(partnerList);
+    const shown = selectedType
+      ? partners.filter(p => p.byType.some(t => t.label === selectedType))
+      : partners;
+    partnerTitle.textContent = selectedType
+      ? `Benannte Partner — ${selectedType}` : 'Benannte Partner';
+    if (shown.length === 0) {
+      partnerList.appendChild(el('p', { className: 'stat-subsection__note' },
+        'Keine benannten Partner für diesen Beziehungstyp.'));
+      return;
+    }
+    partnerList.appendChild(buildHorizontalBars(shown.map(p => {
+      const segForType = selectedType ? p.byType.find(t => t.label === selectedType) : null;
+      const value = segForType ? segForType.count : p.count;
+      const dominant = selectedType || p.byType[0].label;
+      return {
+        label: p.name,
+        value,
+        color: typeColor.get(dominant) || KUG_BLUE,
+        hrefTitle: p.byType.map(t => `${t.label} (${t.count})`).join(' · '),
+      };
+    })));
+  };
+
+  // Linke Spalte: Typ-Donut. Klick auf Segment oder Legendenzeile schaltet den
+  // Partnerfilter (Toggle). Das ist die Zusammenfuehrung: Beziehungstyp x Partner.
+  if (relTotal > 0) {
+    const relWrap = el('div', { className: 'stat-subsection' });
+    relWrap.appendChild(el('h4', { className: 'stat-subsection__title' },
+      `AgRelOn-Relationen (${relTotal})`));
+    relWrap.appendChild(buildDonut(
+      relItems.map(item => ({
+        label: item.label,
+        value: item.count,
+        color: typeColor.get(item.label),
+        onClick: () => {
+          selectedType = (selectedType === item.label) ? null : item.label;
+          renderPartners();
+        },
+      })),
+      { size: 300, ariaLabel: 'AgRelOn-Relationstypen, klickbar zum Filtern der Partner' },
+    ));
+    section.appendChild(relWrap);
+  }
+
+  renderPartners();
+  section.appendChild(partnerWrap);
+  return section;
+}
+
+// ---------------------------------------------------------------------------
+// § Werk & Bestand — Personen (Funktions-Census des Bestands)
+// ---------------------------------------------------------------------------
+
+function buildPersonenSection(store) {
+  const section = el('section', { className: 'stat-section' });
+  section.appendChild(el('h3', { className: 'stat-section__title' }, 'Personen'));
+
+  const rollItems = aggregatePersonRollen(store);
+  section.appendChild(el('p', { className: 'stat-subsection__note' },
+    `${store.persons.size} Personen im Bestand · nach Funktion (Mehrfachrollen möglich)`));
+
+  if (rollItems.length > 0) {
+    const top = rollItems.slice(0, 12);
+    const wrap = el('div', { className: 'stat-subsection' });
+    wrap.appendChild(el('h4', { className: 'stat-subsection__title' },
+      `Personen nach Rolle (Top ${top.length} von ${rollItems.length})`));
+    wrap.appendChild(buildHorizontalBars(top.map(item => ({
+      label: item.rolle,
+      value: item.count,
+      color: KUG_BLUE,
+    }))));
+    section.appendChild(wrap);
+  }
+
+  return section;
+}
+
+// ---------------------------------------------------------------------------
+// § Werk & Bestand — Repertoire (Top-Komponisten)
+// ---------------------------------------------------------------------------
+
+function buildRepertoireSection(store) {
+  const section = el('section', { className: 'stat-section' });
+  section.appendChild(el('h3', { className: 'stat-section__title' }, 'Repertoire'));
+
+  const composers = aggregateComposers(store);
+  const top = composers.slice(0, 10);
+  const subWrap = el('div', { className: 'stat-subsection' });
+  subWrap.appendChild(el('h4', { className: 'stat-subsection__title' },
+    `Top 10 Komponisten (von ${composers.length})`));
+  subWrap.appendChild(buildHorizontalBars(top.map(c => ({
+    label: c.komponist,
+    value: c.count,
+    color: KUG_BLUE,
+  }))));
+  section.appendChild(subWrap);
+  return section;
+}
+
+// ---------------------------------------------------------------------------
+// § Werk & Bestand — Dokumenttypen (monochrome Rangliste)
 // ---------------------------------------------------------------------------
 
 function buildBestandSection(store) {
@@ -221,12 +514,12 @@ function buildBestandSection(store) {
   section.appendChild(el('p', { className: 'stat-subsection__note' },
     `${total} Dokumente · ${typed.length} Typen`));
 
-  // Viele Typen mit starkem Long-Tail: Rangliste statt Donut-Sliver (Form folgt der
-  // Datenlogik — viele Kategorien + Long-Tail lesen sich als horizontale Balken).
-  // Klick auf eine Zeile fuehrt in den Bestand, dort nach Dokumenttyp gefiltert.
+  // Long-Tail-Rangliste: monochrom in sequenzieller KUG-Blau-Abstufung statt
+  // Regenbogen. Klick fuehrt in den Bestand, dort nach Dokumenttyp gefiltert.
   const BAR_TOP = 12;
-  const rows = typed.slice(0, BAR_TOP).map((d, i) => ({
-    label: d.label, value: d.count, color: PALETTE[i % PALETTE.length],
+  const head = typed.slice(0, BAR_TOP);
+  const rows = head.map((d, i) => ({
+    label: d.label, value: d.count, color: blueShade(i, head.length),
     onClick: () => applyArchivFilter('docType', d.id),
     hrefTitle: `${d.label} im Bestand zeigen`,
   }));
@@ -250,348 +543,9 @@ function buildBestandSection(store) {
   return section;
 }
 
-function aggregateDocTypes(store) {
-  const counts = new Map();
-  let ohneTyp = 0;
-  for (const rec of store.allRecords) {
-    const id = getDocTypeId(rec);
-    if (!id) { ohneTyp++; continue; }
-    counts.set(id, (counts.get(id) || 0) + 1);
-  }
-  const rows = [...counts.entries()]
-    .map(([id, count]) => {
-      const concept = store.dftHierarchy.get(id);
-      const label = concept?.prefLabel || id;
-      return { id, count, label };
-    })
-    .sort((a, b) => b.count - a.count);
-  if (ohneTyp > 0) {
-    rows.push({ id: null, count: ohneTyp, label: 'ohne Typ' });
-  }
-  return rows;
-}
-
 // ---------------------------------------------------------------------------
-// § 2 Mobilitaetssichten
+// § Werk & Bestand — Finanzen (Waehrungs-Donut + Detail-Rollen)
 // ---------------------------------------------------------------------------
-
-const SICHTEN = [
-  { id: 'performativ',    label: 'Performativ',    desc: 'Auftritte, Gastspiele, Premieren' },
-  { id: 'institutionell', label: 'Institutionell', desc: 'Spielzeit-Engagements, Ensemble-Zugehoerigkeit' },
-  { id: 'korrespondenz',  label: 'Reise & Korrespondenz', desc: 'Reisewege (Ziel-, Abreise-, Vertragsort), Korrespondenz-Orte und Briefdaten' },
-  { id: 'diskursiv',      label: 'Diskursiv',      desc: 'Rezensionen, Rundfunk, Druckerscheinungen' },
-  { id: 'biografisch',    label: 'Biografisch',    desc: 'Ausweise, Wohnsitz, persoenliche Dokumente' },
-];
-
-// Eine Quelle fuer die Sichten-Farben: die --color-sicht-*-Tokens (variables.css).
-// Karte und Statistik zeigen dieselbe Sicht damit in derselben Farbe.
-const SICHT_COLOR = {
-  performativ:    'var(--color-sicht-performativ)',
-  institutionell: 'var(--color-sicht-institutionell)',
-  korrespondenz:  'var(--color-sicht-korrespondenz)',
-  diskursiv:      'var(--color-sicht-diskursiv)',
-  biografisch:    'var(--color-sicht-biografisch)',
-  neutral:        'var(--color-text-tertiary)',
-};
-
-function aggregateSichten(store) {
-  const buckets = new Map(SICHTEN.map(s => [s.id, { ...s, count: 0 }]));
-  // Per-role tally for the residual bucket so the description stays factual as
-  // the data evolves (e.g. E-97 mobility ortsrollen now dominate it). Hard-coded
-  // role lists drift out of sync with the export.
-  const unklassifiziertRollen = new Map();
-  for (const ev of store.mobilityEvents.values()) {
-    const cluster = mobilityClusterFor(ev.role);
-    if (cluster && buckets.has(cluster)) {
-      buckets.get(cluster).count++;
-    } else {
-      const role = ev.role || '(ohne Rolle)';
-      unklassifiziertRollen.set(role, (unklassifiziertRollen.get(role) || 0) + 1);
-    }
-  }
-  const rows = [...buckets.values()];
-  const unklassifiziert = [...unklassifiziertRollen.values()].reduce((s, n) => s + n, 0);
-  if (unklassifiziert > 0) {
-    const breakdown = [...unklassifiziertRollen.entries()]
-      .sort((a, b) => b[1] - a[1])
-      .map(([role, n]) => `${role} (${n})`)
-      .join(', ');
-    rows.push({
-      id: 'neutral', label: 'Nicht klassifiziert',
-      desc: `Rollen ausserhalb der fünf Sichten: ${breakdown}`,
-      count: unklassifiziert,
-    });
-  }
-  return rows;
-}
-
-function buildMobilitaetSection(store) {
-  const section = el('section', { className: 'stat-section' });
-  section.appendChild(el('h3', { className: 'stat-section__title' }, 'Mobilit\u00e4tssichten'));
-
-  const rows = aggregateSichten(store).sort((a, b) => b.count - a.count);
-  section.appendChild(buildHorizontalBars(rows.map(s => ({
-    label: s.label,
-    value: s.count,
-    color: SICHT_COLOR[s.id] || PALETTE[0],
-    // Klick fuehrt in die Karte, dort nur diese Sicht aktiv. Die residuale
-    // "Nicht klassifiziert"-Gruppe hat kein Karten-Pendant und bleibt statisch.
-    onClick: s.id === 'neutral' ? null : () => navigateToView('karte', { sicht: s.id }),
-    hrefTitle: s.id === 'neutral' ? s.desc : `${s.label} auf der Karte zeigen`,
-  }))));
-  return section;
-}
-
-// ---------------------------------------------------------------------------
-// § 3 Geografie — Top-Orte + Events-Histogramm
-// ---------------------------------------------------------------------------
-
-function aggregatePlaces(store) {
-  // Auf Stadt-Ebene aggregieren: adressgenaue Orte ("Zürich, Strasse") und ihre
-  // Stadt fallen sonst auseinander (nur die Stadt traegt eine Q-ID). cityOf
-  // konsolidiert sie; die Stadt-Q-ID wird uebernommen, sobald ein Event sie hat.
-  const map = new Map();
-  for (const ev of store.mobilityEvents.values()) {
-    if (!ev.place) continue;
-    const city = cityOf(ev.place);
-    if (!map.has(city)) {
-      map.set(city, { name: city, qid: null, count: 0 });
-    }
-    const entry = map.get(city);
-    entry.count++;
-    if (!entry.qid && ev.placeWikidata) entry.qid = ev.placeWikidata;
-  }
-  return [...map.values()].sort((a, b) => b.count - a.count);
-}
-
-function aggregateEventsPerDecade(store) {
-  const buckets = new Map();
-  for (const ev of store.mobilityEvents.values()) {
-    if (typeof ev.date !== 'string' || ev.date.length < 4) continue;
-    const y = parseInt(ev.date.slice(0, 4), 10);
-    if (!Number.isFinite(y)) continue;
-    const decade = Math.floor(y / 10) * 10;
-    buckets.set(decade, (buckets.get(decade) || 0) + 1);
-  }
-  if (buckets.size === 0) return [];
-  const min = Math.min(...buckets.keys());
-  const max = Math.max(...buckets.keys());
-  const rows = [];
-  for (let d = min; d <= max; d += 10) {
-    rows.push({ decade: d, count: buckets.get(d) || 0 });
-  }
-  return rows;
-}
-
-function buildGeografieSection(store) {
-  const section = el('section', { className: 'stat-section stat-section--split' });
-  section.appendChild(el('h3', { className: 'stat-section__title' }, 'Geografie'));
-
-  const places = aggregatePlaces(store).slice(0, 10);
-  const placesWrap = el('div', { className: 'stat-subsection' });
-  placesWrap.appendChild(el('h4', { className: 'stat-subsection__title' }, 'Top 10 Orte'));
-  placesWrap.appendChild(buildHorizontalBars(places.map(p => {
-    // Cross-Link nur, wenn der aggregierte Stadtname ein Orts-Eintrag ist
-    // (sonst liefe der location-Filter ins Leere; cityOf-Konsolidierung trifft
-    // nicht jeden adressgenauen Ortsnamen). Wikidata bleibt als externer Verweis.
-    const linkable = store.locations.has(p.name);
-    return {
-      label: p.name,
-      value: p.count,
-      onClick: linkable ? () => applyArchivFilter('location', p.name) : null,
-      hrefTitle: linkable ? `${p.name} im Bestand zeigen` : p.name,
-      extraHref: p.qid ? `https://www.wikidata.org/wiki/${String(p.qid).replace(/^wd:/, '')}` : null,
-      extraTitle: p.qid ? `Bei Wikidata ansehen (${p.qid})` : '',
-      // Wiederkehrende Orte in ihrer konstanten Wiedererkennungsfarbe, sonst KUG-Blau.
-      color: ortColor(p.name) || PALETTE[0],
-    };
-  })));
-  section.appendChild(placesWrap);
-
-  const decades = aggregateEventsPerDecade(store);
-  if (decades.length > 0) {
-    const histWrap = el('div', { className: 'stat-subsection' });
-    histWrap.appendChild(el('h4', { className: 'stat-subsection__title' },
-      'Events pro Jahrzehnt'));
-    // Datengetriebener Hinweis: datumslose Events (E-97-Ortsrollen) fallen aus
-    // dem Histogramm, sonst waere der stille Verlust unsichtbar.
-    const datiert = decades.reduce((s, d) => s + d.count, 0);
-    const gesamt = store.mobilityEvents.size;
-    if (gesamt > datiert) {
-      histWrap.appendChild(el('p', { className: 'stat-subsection__note' },
-        `${datiert} von ${gesamt} Events mit Jahresangabe — ${gesamt - datiert} `
-        + 'ohne datierbares Jahr hier nicht dargestellt.'));
-    }
-    histWrap.appendChild(buildHistogram(decades, {
-      xAccessor: d => d.decade,
-      yAccessor: d => d.count,
-      xLabel: d => String(d.decade) + 's',
-      xAxisLabel: 'Jahrzehnt',
-      yAxisLabel: 'Anzahl Events',
-      ariaLabel: 'Verteilung der Spatiotemporal-Events pro Jahrzehnt',
-    }));
-    section.appendChild(histWrap);
-  }
-
-  return section;
-}
-
-// ---------------------------------------------------------------------------
-// § 4 Netzwerk — AgRelOn-Donut + Rollen-Bar
-// ---------------------------------------------------------------------------
-
-const AGRELON_LABEL = {
-  'agrelon:HasCorrespondent':       'Korrespondenz',
-  'agrelon:IsHasPatron':             'F\u00f6rderung / Patronage',
-  'agrelon:HasProfessionalContact':  'Beruflicher Kontakt',
-  'agrelon:HasIsMember':             'Mitgliedschaft',
-  'agrelon:HasEmployeeEmployer':     'Anstellung',
-};
-
-function aggregateAgentRelations(store) {
-  const counts = new Map();
-  let total = 0;
-  for (const rels of store.agentRelations.values()) {
-    for (const r of rels) {
-      const t = r.type || '(unbekannt)';
-      counts.set(t, (counts.get(t) || 0) + 1);
-      total++;
-    }
-  }
-  const items = [...counts.entries()]
-    .map(([type, count]) => ({
-      type,
-      label: AGRELON_LABEL[type] || type.replace(/^agrelon:Has/, ''),
-      count,
-    }))
-    .sort((a, b) => b.count - a.count);
-  return { items, total };
-}
-
-function aggregatePersonRollen(store) {
-  // Personen nach Rolle aus dem roles-Set (jede Person je distinkter Rolle einmal).
-  // Datengetrieben statt der namensbasierten kategorie, die fast alle als "Andere"
-  // fuehrte (loader.js getPersonKategorie deckt nur namentlich bekannte Personen ab).
-  const counts = new Map();
-  for (const p of store.persons.values()) {
-    for (const r of (p.roles || [])) {
-      if (!r) continue;
-      const label = r.charAt(0).toUpperCase() + r.slice(1);
-      counts.set(label, (counts.get(label) || 0) + 1);
-    }
-  }
-  return [...counts.entries()]
-    .map(([rolle, count]) => ({ rolle, count }))
-    .sort((a, b) => b.count - a.count);
-}
-
-function buildNetzwerkSection(store) {
-  const section = el('section', { className: 'stat-section stat-section--split' });
-  section.appendChild(el('h3', { className: 'stat-section__title' }, 'Netzwerk'));
-
-  const { items: relItems, total: relTotal } = aggregateAgentRelations(store);
-  if (relTotal > 0) {
-    const relWrap = el('div', { className: 'stat-subsection' });
-    relWrap.appendChild(el('h4', { className: 'stat-subsection__title' },
-      `AgRelOn-Relationen (${relTotal})`));
-    relWrap.appendChild(buildDonut(
-      relItems.map((item, i) => ({
-        label: item.label,
-        value: item.count,
-        color: PALETTE[i % PALETTE.length],
-      })),
-      { size: 300, ariaLabel: 'Verteilung der AgRelOn-Relationstypen' },
-    ));
-    section.appendChild(relWrap);
-  }
-
-  const rollItems = aggregatePersonRollen(store);
-  if (rollItems.length > 0) {
-    const top = rollItems.slice(0, 12);
-    const rollWrap = el('div', { className: 'stat-subsection' });
-    rollWrap.appendChild(el('h4', { className: 'stat-subsection__title' },
-      `Personen nach Rolle (Top ${top.length} von ${rollItems.length})`));
-    rollWrap.appendChild(buildHorizontalBars(top.map((item, i) => ({
-      label: item.rolle,
-      value: item.count,
-      color: PALETTE[i % PALETTE.length],
-    }))));
-    section.appendChild(rollWrap);
-  }
-
-  return section;
-}
-
-// ---------------------------------------------------------------------------
-// § 5 Repertoire — Top-Komponisten
-// ---------------------------------------------------------------------------
-
-function aggregateComposers(store) {
-  const counts = new Map();
-  for (const w of store.works.values()) {
-    const k = (w.komponist || '').trim();
-    if (!k) continue;
-    counts.set(k, (counts.get(k) || 0) + 1);
-  }
-  return [...counts.entries()]
-    .map(([komponist, count]) => ({ komponist, count }))
-    .sort((a, b) => b.count - a.count);
-}
-
-function buildRepertoireSection(store) {
-  const section = el('section', { className: 'stat-section' });
-  section.appendChild(el('h3', { className: 'stat-section__title' }, 'Repertoire'));
-
-  const composers = aggregateComposers(store);
-  const top = composers.slice(0, 10);
-  const subWrap = el('div', { className: 'stat-subsection' });
-  subWrap.appendChild(el('h4', { className: 'stat-subsection__title' },
-    `Top 10 Komponisten (von ${composers.length})`));
-  subWrap.appendChild(buildHorizontalBars(top.map(c => ({
-    label: c.komponist,
-    value: c.count,
-    color: PALETTE[0],
-  }))));
-  section.appendChild(subWrap);
-  return section;
-}
-
-// ---------------------------------------------------------------------------
-// § 6 Finanzen — Waehrungen als Donut + Detail-Rollen als Bars
-// ---------------------------------------------------------------------------
-
-const CURRENCY_LABEL = {
-  'S':   'Schilling',
-  'Esc': 'Escudo',
-  'RM':  'Reichsmark',
-  'Fr':  'Franc',
-  'DM':  'Deutsche Mark',
-};
-
-function aggregateFinances(store) {
-  let total = 0;
-  let recordsWithFin = 0;
-  const currencies = new Map();
-  const roles = new Map();
-  for (const entries of store.finances.values()) {
-    if (entries.length > 0) recordsWithFin++;
-    for (const e of entries) {
-      total++;
-      if (e.currency) currencies.set(e.currency, (currencies.get(e.currency) || 0) + 1);
-      if (e.role) roles.set(e.role, (roles.get(e.role) || 0) + 1);
-    }
-  }
-  return {
-    total,
-    recordsWithFin,
-    currencies: [...currencies.entries()]
-      .map(([code, count]) => ({ code, label: CURRENCY_LABEL[code] || code, count }))
-      .sort((a, b) => b.count - a.count),
-    roles: [...roles.entries()]
-      .map(([role, count]) => ({ role, count }))
-      .sort((a, b) => b.count - a.count),
-  };
-}
 
 function buildFinanzenSection(store) {
   const section = el('section', { className: 'stat-section stat-section--minor stat-section--split' });
@@ -599,29 +553,30 @@ function buildFinanzenSection(store) {
 
   const fin = aggregateFinances(store);
 
-  // Codes mit Ziffern ("00 DM") sind Erfassungsartefakte, keine Waehrungen \u2014 als
+  // Codes mit Ziffern ("00 DM") sind Erfassungsartefakte, keine Waehrungen — als
   // eine gedaempfte Sammelgruppe buendeln statt als gleichrangige Waehrung zeigen
-  // (Ehrlichkeitsprinzip, siehe datenfehler.md).
+  // (Ehrlichkeitsprinzip, siehe datenfehler.md). Betraege werden NIE summiert,
+  // nur Nennungen gezaehlt.
   const validCur = fin.currencies.filter(c => !/\d/.test(c.code));
   const suspectCur = fin.currencies.filter(c => /\d/.test(c.code));
   if (validCur.length > 0 || suspectCur.length > 0) {
     const curWrap = el('div', { className: 'stat-subsection' });
-    curWrap.appendChild(el('h4', { className: 'stat-subsection__title' }, 'W\u00e4hrungen'));
+    curWrap.appendChild(el('h4', { className: 'stat-subsection__title' }, 'Währungen'));
     const curData = validCur.map((c, i) => ({
       label: `${c.label} (${c.code})`,
       value: c.count,
-      color: PALETTE[i % PALETTE.length],
+      color: DONUT_PALETTE[i % DONUT_PALETTE.length],
     }));
     if (suspectCur.length > 0) {
       const sum = suspectCur.reduce((s, c) => s + c.count, 0);
       curData.push({
         label: 'unklar (Erfassung)', value: sum, muted: true,
         color: 'var(--color-text-tertiary)',
-        tip: `Fehlerhafte W\u00e4hrungsangaben: ${suspectCur.map(c => `${c.code} (${c.count})`).join(', ')}`,
+        tip: `Fehlerhafte Währungsangaben: ${suspectCur.map(c => `${c.code} (${c.count})`).join(', ')}`,
       });
     }
     curWrap.appendChild(buildDonut(curData,
-      { size: 300, ariaLabel: 'W\u00e4hrungen in den Finanznennungen' }));
+      { size: 300, ariaLabel: 'Währungen in den Finanznennungen' }));
     section.appendChild(curWrap);
   }
 
@@ -629,10 +584,11 @@ function buildFinanzenSection(store) {
     const roleWrap = el('div', { className: 'stat-subsection' });
     roleWrap.appendChild(el('h4', { className: 'stat-subsection__title' },
       'Detail-Rollen'));
-    roleWrap.appendChild(buildHorizontalBars(fin.roles.map((r, i) => ({
+    // Rollen-Bars monochrom KUG-Blau.
+    roleWrap.appendChild(buildHorizontalBars(fin.roles.map(r => ({
       label: r.role,
       value: r.count,
-      color: PALETTE[i % PALETTE.length],
+      color: KUG_BLUE,
     }))));
     section.appendChild(roleWrap);
   }
@@ -641,22 +597,65 @@ function buildFinanzenSection(store) {
 }
 
 // ---------------------------------------------------------------------------
-// Visual helpers — Donut, Horizontal Bars, Histogram
+// Visual helpers — Donut, Horizontal Bars, Stacked Bars, Histogram, Legend
 // ---------------------------------------------------------------------------
 
 /**
- * Donut-Chart mit Legende rechts. data: [{label, value, color, muted?}].
- * Wenn d3 nicht verf\u00fcgbar ist (CDN-Ausfall), f\u00e4llt das Chart auf
- * eine kompakte Liste zur\u00fcck.
+ * Gestapelte Jahrzehnt-Balken: je rows-Eintrag eine Zeile mit Decade-Label, einem
+ * Track aus farbigen Segmenten je Sicht und einer Gesamtsumme. segMeta liefert die
+ * Reihenfolge und Labels der Sicht-Segmente; die Faerbung kommt aus SICHT_COLOR.
+ * rows: [{decade, total, bySicht:{sichtId:count}}].
  */
-function buildDonut(data, { size = 300, ariaLabel = '', categoryCount = null, categoryNoun = 'Kategorien' } = {}) {
+function buildStackedBars(rows, segMeta) {
+  const wrap = el('div', { className: 'stat-stack-wrap' });
+  const list = el('div', { className: 'stat-stack' });
+  const max = rows.reduce((m, r) => Math.max(m, r.total), 0) || 1;
+
+  for (const row of rows) {
+    const track = el('div', { className: 'stat-stack__track' });
+    for (const seg of segMeta) {
+      const v = (row.bySicht && row.bySicht[seg.id]) || 0;
+      if (v <= 0) continue;
+      const segEl = el('span', {
+        className: 'stat-stack__seg',
+        title: `${row.decade}s · ${seg.label}: ${v}`,
+      });
+      segEl.style.width = `${(v / max) * 100}%`;
+      segEl.style.background = SICHT_COLOR[seg.id] || SICHT_COLOR.neutral;
+      track.appendChild(segEl);
+    }
+    list.appendChild(el('div', { className: 'stat-stack__row' },
+      el('span', { className: 'stat-stack__label' }, `${row.decade}s`),
+      track,
+      el('span', { className: 'stat-stack__total' }, String(row.total)),
+    ));
+  }
+  wrap.appendChild(list);
+
+  // Sicht-Legende unterhalb der Stapel.
+  const legend = el('div', { className: 'stat-stack-legend' });
+  for (const seg of segMeta) {
+    legend.appendChild(el('span', { className: 'stat-stack-legend__item' },
+      el('span', { className: 'stat-stack-legend__swatch',
+        style: `background:${SICHT_COLOR[seg.id] || SICHT_COLOR.neutral}` }),
+      el('span', { className: 'stat-stack-legend__label' }, seg.label),
+    ));
+  }
+  wrap.appendChild(legend);
+
+  return wrap;
+}
+
+/**
+ * Donut-Chart mit Legende rechts. data: [{label, value, color, muted?, onClick?, tip?}].
+ * Faellt ohne d3 (CDN-Ausfall) auf eine kompakte Balkenliste zurueck.
+ */
+function buildDonut(data, { size = 300, ariaLabel = '' } = {}) {
   const total = data.reduce((s, d) => s + d.value, 0);
   const wrap = el('div', { className: 'stat-chart stat-chart--donut' });
 
   if (typeof d3 === 'undefined' || total === 0) {
-    // Ohne d3: Segmente plus aufgeloeste Sonstige-Kinder als Balkenliste.
-    const flat = data.flatMap(d => Array.isArray(d.sub) ? d.sub : [d]);
-    wrap.appendChild(buildHorizontalBars(flat.map(d => ({
+    wrap.appendChild(buildHorizontalBars(data.map(d => ({
       label: d.label, value: d.value, color: d.color, onClick: d.onClick,
     }))));
     return wrap;
@@ -699,7 +698,7 @@ function buildDonut(data, { size = 300, ariaLabel = '', categoryCount = null, ca
       .on('click', (_, d) => { if (d.data.onClick) d.data.onClick(); })
       .append('title')
         .text(d => d.data.tip
-          || `${d.data.label}: ${d.data.value} (${Math.round(d.data.value / total * 100)}\u2009%)`);
+          || `${d.data.label}: ${d.data.value} (${Math.round(d.data.value / total * 100)} %)`);
 
   svg.append('text')
     .attr('text-anchor', 'middle')
@@ -710,7 +709,7 @@ function buildDonut(data, { size = 300, ariaLabel = '', categoryCount = null, ca
     .attr('text-anchor', 'middle')
     .attr('dy', '1.1em')
     .attr('class', 'stat-donut__center-label')
-    .text((categoryCount ?? data.length) + ' ' + categoryNoun);
+    .text(data.length + ' Kategorien');
 
   chartEl.appendChild(svg.node());
   wrap.appendChild(chartEl);
@@ -728,8 +727,8 @@ function buildDonut(data, { size = 300, ariaLabel = '', categoryCount = null, ca
 
 /**
  * Eine Legendenzeile. Mit `onClick` wird sie zum Cross-Link-Button (Drilldown),
- * mit `sub[]` zur aufklappbaren Gruppe ("Sonstige"), deren Kinder selbst
- * wieder Cross-Links sein koennen. `row` ist das Element fuer das Hover-Highlight.
+ * mit `sub[]` zur aufklappbaren Gruppe ("Sonstige"), deren Kinder selbst wieder
+ * Cross-Links sein koennen. `row` ist das Element fuer das Hover-Highlight.
  */
 function buildLegendItem(d, idx, total, setActive) {
   const pct = total ? Math.round(d.value / total * 100) : 0;
@@ -753,11 +752,11 @@ function buildLegendItem(d, idx, total, setActive) {
     el('span', {
       className: `stat-chart__legend-caret${hasSub ? '' : ' stat-chart__legend-caret--empty'}`,
       'aria-hidden': 'true',
-    }, hasSub ? '\u203a' : ''),
+    }, hasSub ? '›' : ''),
     el('span', { className: 'stat-chart__legend-swatch',
       style: `background:${d.color}; opacity:${d.muted ? 0.5 : 1}` }),
     el('span', { className: 'stat-chart__legend-label', dataset: { tip: d.tip || d.label } }, d.label),
-    el('span', { className: 'stat-chart__legend-value' }, `${d.value} \u00b7 ${pct}\u2009%`),
+    el('span', { className: 'stat-chart__legend-value' }, `${d.value} · ${pct} %`),
   );
   row.addEventListener('mouseenter', () => setActive(idx));
   row.addEventListener('mouseleave', () => setActive(null));
@@ -784,7 +783,7 @@ function buildLegendItem(d, idx, total, setActive) {
       subList.appendChild(el('li', subAttrs,
         el('span', { className: 'stat-chart__legend-swatch', style: `background:${s.color}` }),
         el('span', { className: 'stat-chart__legend-label', dataset: { tip: s.tip || s.label } }, s.label),
-        el('span', { className: 'stat-chart__legend-value' }, `${s.value} \u00b7 ${subPct}\u2009%`),
+        el('span', { className: 'stat-chart__legend-value' }, `${s.value} · ${subPct} %`),
       ));
     }
     row.addEventListener('click', () => {
@@ -799,9 +798,8 @@ function buildLegendItem(d, idx, total, setActive) {
 }
 
 /**
- * Horizontale Bar-Liste. Funktional wie die alte `buildBarList`, aber
- * einheitliche API: rows: [{label, value, href?, color?}]. Keine Prozent,
- * kein Bearbeitungsstand-Vokabular.
+ * Horizontale Bar-Liste. rows: [{label, value, href?, color?, onClick?, extraHref?}].
+ * Keine Prozent, kein Bearbeitungsstand-Vokabular.
  */
 function buildHorizontalBars(rows) {
   const list = el('ul', { className: 'stat-bars' });
@@ -850,93 +848,5 @@ function buildHorizontalBars(rows) {
   return list;
 }
 
-/**
- * Einfaches Bar-Chart \u00fcber numerische Achsen (z.B. Jahrzehnte).
- */
-function buildHistogram(data, {
-  xAccessor, yAccessor, xLabel,
-  xAxisLabel = '', yAxisLabel = '',
-  ariaLabel = '',
-} = {}) {
-  const width = 640;
-  const height = 220;
-  const margin = { top: 10, right: 12, bottom: 46, left: 52 };
-  const innerW = width - margin.left - margin.right;
-  const innerH = height - margin.top - margin.bottom;
-
-  const wrap = el('div', { className: 'stat-chart stat-chart--hist' });
-
-  if (typeof d3 === 'undefined' || data.length === 0) {
-    wrap.appendChild(buildHorizontalBars(data.map(d => ({
-      label: xLabel(d), value: yAccessor(d), color: PALETTE[0],
-    }))));
-    return wrap;
-  }
-
-  const svg = d3.create('svg')
-    .attr('viewBox', `0 0 ${width} ${height}`)
-    .attr('width', width)
-    .attr('height', height)
-    .attr('role', 'img')
-    .attr('aria-label', ariaLabel);
-
-  const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
-
-  const xValues = data.map(xAccessor);
-  const xScale = d3.scaleBand()
-    .domain(xValues)
-    .range([0, innerW])
-    .padding(0.15);
-
-  const maxY = d3.max(data, yAccessor) || 1;
-  const yScale = d3.scaleLinear()
-    .domain([0, maxY])
-    .nice()
-    .range([innerH, 0]);
-
-  g.append('g')
-    .attr('class', 'stat-axis stat-axis--y')
-    .call(d3.axisLeft(yScale).ticks(4).tickSize(-innerW));
-
-  // Tick-Ausduennung: bei > 10 Jahrzehnten jedes zweite Label ausblenden,
-  // um Ueberlappung zu vermeiden (E-90 Phase E).
-  const tickStep = xValues.length > 10 ? 2 : 1;
-  const tickValues = xValues.filter((_, i) => i % tickStep === 0);
-  g.append('g')
-    .attr('class', 'stat-axis stat-axis--x')
-    .attr('transform', `translate(0,${innerH})`)
-    .call(d3.axisBottom(xScale)
-      .tickValues(tickValues)
-      .tickFormat(d => xLabel({ decade: d }) ? xLabel({ decade: d }) : String(d)));
-
-  g.selectAll('rect.stat-hist__bar')
-    .data(data)
-    .join('rect')
-      .attr('class', 'stat-hist__bar')
-      .attr('x', d => xScale(xAccessor(d)))
-      .attr('y', d => yScale(yAccessor(d)))
-      .attr('width', xScale.bandwidth())
-      .attr('height', d => innerH - yScale(yAccessor(d)))
-      .attr('fill', PALETTE[0])
-      .append('title')
-        .text(d => `${xLabel(d)}: ${yAccessor(d)}`);
-
-  if (yAxisLabel) {
-    svg.append('text')
-      .attr('class', 'stat-axis__title')
-      .attr('transform', `translate(14, ${margin.top + innerH / 2}) rotate(-90)`)
-      .attr('text-anchor', 'middle')
-      .text(yAxisLabel);
-  }
-  if (xAxisLabel) {
-    svg.append('text')
-      .attr('class', 'stat-axis__title')
-      .attr('x', margin.left + innerW / 2)
-      .attr('y', height - 6)
-      .attr('text-anchor', 'middle')
-      .text(xAxisLabel);
-  }
-
-  wrap.appendChild(svg.node());
-  return wrap;
-}
+// buildHistogram wurde mit dem Umbau auf gestapelte Jahrzehnt-Balken
+// (buildStackedBars) ueberfluessig und entfernt (kein toter Code).
