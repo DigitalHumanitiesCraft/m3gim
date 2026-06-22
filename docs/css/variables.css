@@ -52,6 +52,7 @@
   --color-sicht-korrespondenz:  #A6844B;
   --color-sicht-diskursiv:      #7A6F55;
   --color-sicht-biografisch:    #8B6F5C;
+  --color-sicht-kontext:        #B0A99B;
 
   /* Semantic: Person Categories (historisch; aktuell ungenutzt, bleibt vorerst) */
   --color-cat-dirigent: #4A6E96;
@@ -72,6 +73,15 @@
   --color-netzwerk-presse:        #6B5A3D; /* oliv */
   --color-netzwerk-erwaehnt:      #A89F95; /* hellgrau */
   --color-netzwerk-andere:        #757575;
+
+  /* Semantic: Ortsfarbcodierung (design.md) — wiederkehrende Orte tragen ueber
+     alle Views eine konstante Farbe zur Wiedererkennung. Gemappt durch
+     ortColor() in docs/js/data/constants.js. */
+  --color-ort-wien:      #8E3B46; /* brick */
+  --color-ort-graz:      #3D6E4E; /* forest */
+  --color-ort-muenchen:  #2E6E8E; /* teal */
+  --color-ort-bayreuth:  #B5862A; /* amber */
+  --color-ort-salzburg:  #6E4E8C; /* violett */
 
   /* Typography */
   --font-ui: 'Inter', system-ui, -apple-system, sans-serif;

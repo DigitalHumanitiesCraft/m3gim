@@ -175,7 +175,9 @@ function buildDftSelect(store, facet, state, notify) {
         options.push(el('option', { value: child.id }, child.label));
       }
       return [el('optgroup', { label: groupLabel }, ...options)];
-    })
+    }),
+    // Erschliessungsluecke als waehlbarer Filter (Spezialwert, vgl. _archive-filter).
+    el('option', { value: '__none__' }, 'ohne Typ'),
   );
   if (state[facet.key]) select.value = state[facet.key];
   return {

@@ -13,7 +13,13 @@
 import { clear, el } from '../utils/dom.js';
 import { logStamp } from '../utils/env.js';
 import { getDocTypeId, cityOf } from '../utils/format.js';
-import { mobilityClusterFor } from '../data/constants.js';
+import { mobilityClusterFor, ortColor } from '../data/constants.js';
+import { applyArchivFilter, navigateToView } from '../ui/router.js';
+
+// Sichtbare Einzel-Segmente im Dokumenttypen-Donut; der Long-Tail wird in ein
+// aufklappbares "Sonstige" gebuendelt, damit die Sliver lesbar bleiben, ohne
+// Kategorien zu verstecken (Erschliessungsspiegel-Prinzip, design.md § 10).
+const DONUT_TOP = 11;
 
 const PALETTE = [
   '#004A8F',  // KUG-Blau
@@ -33,13 +39,29 @@ export function renderStatistik(store, container) {
 
   const wrap = el('div', { className: 'statistik' });
 
+  // Sektionen mit Ankern, dazu ein klebender Sprung-Streifen fuer die lange
+  // Scroll-Ansicht (jede .tab-content ist ihr eigener Scroll-Container).
+  const sections = [
+    { id: 'dokumenttypen', label: 'Dokumenttypen', node: buildBestandSection(store) },
+    { id: 'mobilitaet',    label: 'Mobilität',     node: buildMobilitaetSection(store) },
+    { id: 'geografie',     label: 'Geografie',     node: buildGeografieSection(store) },
+    { id: 'netzwerk',      label: 'Netzwerk',      node: buildNetzwerkSection(store) },
+    { id: 'repertoire',    label: 'Repertoire',    node: buildRepertoireSection(store) },
+    { id: 'finanzen',      label: 'Finanzen',      node: buildFinanzenSection(store) },
+  ];
+
+  const nav = el('nav', { className: 'stat-nav', 'aria-label': 'Sektionen' });
   const body = el('div', { className: 'statistik__sections' });
-  body.appendChild(buildBestandSection(store));
-  body.appendChild(buildMobilitaetSection(store));
-  body.appendChild(buildGeografieSection(store));
-  body.appendChild(buildNetzwerkSection(store));
-  body.appendChild(buildRepertoireSection(store));
-  body.appendChild(buildFinanzenSection(store));
+  for (const sec of sections) {
+    sec.node.id = `stat-sec-${sec.id}`;
+    body.appendChild(sec.node);
+    nav.appendChild(el('a', {
+      className: 'stat-nav__link',
+      href: '#statistik',
+      onClick: (e) => { e.preventDefault(); sec.node.scrollIntoView({ behavior: 'smooth', block: 'start' }); },
+    }, sec.label));
+  }
+  wrap.appendChild(nav);
   wrap.appendChild(body);
 
   container.appendChild(wrap);
@@ -77,19 +99,40 @@ function buildBestandSection(store) {
   const section = el('section', { className: 'stat-section' });
   section.appendChild(el('h3', { className: 'stat-section__title' }, 'Dokumenttypen'));
 
-  const docTypes = aggregateDocTypes(store);
-  const donutData = docTypes
-    .filter(d => d.count > 0)
-    .map((d, i) => ({
-      label: d.label,
-      value: d.count,
-      color: d.id === null ? 'var(--color-text-tertiary)' : PALETTE[i % PALETTE.length],
-      muted: d.id === null,
-    }));
+  const docTypes = aggregateDocTypes(store).filter(d => d.count > 0);
+  const typed = docTypes.filter(d => d.id !== null);
+  const ohneTyp = docTypes.find(d => d.id === null);
+
+  // Klick auf ein Segment fuehrt in den Bestand, dort nach Dokumenttyp gefiltert.
+  const slice = (d, color) => ({
+    label: d.label, value: d.count, color,
+    onClick: () => applyArchivFilter('docType', d.id),
+    tip: `${d.label} im Bestand zeigen`,
+  });
+
+  const donutData = typed.slice(0, DONUT_TOP).map((d, i) => slice(d, PALETTE[i % PALETTE.length]));
+  const tail = typed.slice(DONUT_TOP);
+  if (tail.length) {
+    const sum = tail.reduce((s, d) => s + d.count, 0);
+    donutData.push({
+      label: 'Sonstige', value: sum, color: 'var(--color-sand)',
+      sub: tail.map((d, i) => slice(d, PALETTE[(DONUT_TOP + i) % PALETTE.length])),
+      tip: `${tail.length} weitere Typen, zusammen ${sum} Belege`,
+    });
+  }
+  if (ohneTyp) {
+    donutData.push({
+      label: 'ohne Typ', value: ohneTyp.count,
+      color: 'var(--color-text-tertiary)', muted: true,
+      onClick: () => applyArchivFilter('docType', '__none__'),
+      tip: 'Records ohne klassifizierten Dokumenttyp im Bestand zeigen',
+    });
+  }
 
   section.appendChild(buildDonut(donutData, {
     size: 320,
     ariaLabel: 'Dokumenttypen im Bestand',
+    categoryCount: docTypes.length,
   }));
   return section;
 }
@@ -127,12 +170,14 @@ const SICHTEN = [
   { id: 'biografisch',    label: 'Biografisch',    desc: 'Ausweise, Wohnsitz, persoenliche Dokumente' },
 ];
 
+// Eine Quelle fuer die Sichten-Farben: die --color-sicht-*-Tokens (variables.css).
+// Karte und Statistik zeigen dieselbe Sicht damit in derselben Farbe.
 const SICHT_COLOR = {
-  performativ:    '#004A8F',
-  institutionell: '#2E7D4F',
-  korrespondenz:  '#B8860B',
-  diskursiv:      '#8B3A3A',
-  biografisch:    '#4B6A8C',
+  performativ:    'var(--color-sicht-performativ)',
+  institutionell: 'var(--color-sicht-institutionell)',
+  korrespondenz:  'var(--color-sicht-korrespondenz)',
+  diskursiv:      'var(--color-sicht-diskursiv)',
+  biografisch:    'var(--color-sicht-biografisch)',
   neutral:        'var(--color-text-tertiary)',
 };
 
@@ -176,7 +221,10 @@ function buildMobilitaetSection(store) {
     label: s.label,
     value: s.count,
     color: SICHT_COLOR[s.id] || PALETTE[0],
-    hrefTitle: s.desc,
+    // Klick fuehrt in die Karte, dort nur diese Sicht aktiv. Die residuale
+    // "Nicht klassifiziert"-Gruppe hat kein Karten-Pendant und bleibt statisch.
+    onClick: s.id === 'neutral' ? null : () => navigateToView('karte', { sicht: s.id }),
+    hrefTitle: s.id === 'neutral' ? s.desc : `${s.label} auf der Karte zeigen`,
   }))));
   return section;
 }
@@ -223,19 +271,28 @@ function aggregateEventsPerDecade(store) {
 }
 
 function buildGeografieSection(store) {
-  const section = el('section', { className: 'stat-section' });
+  const section = el('section', { className: 'stat-section stat-section--split' });
   section.appendChild(el('h3', { className: 'stat-section__title' }, 'Geografie'));
 
   const places = aggregatePlaces(store).slice(0, 10);
   const placesWrap = el('div', { className: 'stat-subsection' });
   placesWrap.appendChild(el('h4', { className: 'stat-subsection__title' }, 'Top 10 Orte'));
-  placesWrap.appendChild(buildHorizontalBars(places.map(p => ({
-    label: p.name,
-    value: p.count,
-    href: p.qid ? `https://www.wikidata.org/wiki/${String(p.qid).replace(/^wd:/, '')}` : null,
-    hrefTitle: p.qid ? `Wikidata: ${p.qid}` : '',
-    color: PALETTE[0],
-  }))));
+  placesWrap.appendChild(buildHorizontalBars(places.map(p => {
+    // Cross-Link nur, wenn der aggregierte Stadtname ein Orts-Eintrag ist
+    // (sonst liefe der location-Filter ins Leere; cityOf-Konsolidierung trifft
+    // nicht jeden adressgenauen Ortsnamen). Wikidata bleibt als externer Verweis.
+    const linkable = store.locations.has(p.name);
+    return {
+      label: p.name,
+      value: p.count,
+      onClick: linkable ? () => applyArchivFilter('location', p.name) : null,
+      hrefTitle: linkable ? `${p.name} im Bestand zeigen` : p.name,
+      extraHref: p.qid ? `https://www.wikidata.org/wiki/${String(p.qid).replace(/^wd:/, '')}` : null,
+      extraTitle: p.qid ? `Bei Wikidata ansehen (${p.qid})` : '',
+      // Wiederkehrende Orte in ihrer konstanten Wiedererkennungsfarbe, sonst KUG-Blau.
+      color: ortColor(p.name) || PALETTE[0],
+    };
+  })));
   section.appendChild(placesWrap);
 
   const decades = aggregateEventsPerDecade(store);
@@ -310,7 +367,7 @@ function aggregatePersonKategorien(store) {
 }
 
 function buildNetzwerkSection(store) {
-  const section = el('section', { className: 'stat-section' });
+  const section = el('section', { className: 'stat-section stat-section--split' });
   section.appendChild(el('h3', { className: 'stat-section__title' }, 'Netzwerk'));
 
   const { items: relItems, total: relTotal } = aggregateAgentRelations(store);
@@ -417,7 +474,7 @@ function aggregateFinances(store) {
 }
 
 function buildFinanzenSection(store) {
-  const section = el('section', { className: 'stat-section stat-section--minor' });
+  const section = el('section', { className: 'stat-section stat-section--minor stat-section--split' });
   section.appendChild(el('h3', { className: 'stat-section__title' }, 'Finanzen'));
 
   const fin = aggregateFinances(store);
@@ -460,13 +517,15 @@ function buildFinanzenSection(store) {
  * Wenn d3 nicht verf\u00fcgbar ist (CDN-Ausfall), f\u00e4llt das Chart auf
  * eine kompakte Liste zur\u00fcck.
  */
-function buildDonut(data, { size = 300, ariaLabel = '' } = {}) {
+function buildDonut(data, { size = 300, ariaLabel = '', categoryCount = null } = {}) {
   const total = data.reduce((s, d) => s + d.value, 0);
   const wrap = el('div', { className: 'stat-chart stat-chart--donut' });
 
   if (typeof d3 === 'undefined' || total === 0) {
-    wrap.appendChild(buildHorizontalBars(data.map(d => ({
-      label: d.label, value: d.value, color: d.color,
+    // Ohne d3: Segmente plus aufgeloeste Sonstige-Kinder als Balkenliste.
+    const flat = data.flatMap(d => Array.isArray(d.sub) ? d.sub : [d]);
+    wrap.appendChild(buildHorizontalBars(flat.map(d => ({
+      label: d.label, value: d.value, color: d.color, onClick: d.onClick,
     }))));
     return wrap;
   }
@@ -485,14 +544,30 @@ function buildDonut(data, { size = 300, ariaLabel = '' } = {}) {
   const pie = d3.pie().value(d => d.value).sort(null);
   const arc = d3.arc().innerRadius(inner).outerRadius(radius).padAngle(0.006).cornerRadius(2);
 
+  // Hover-Verkettung Segment <-> Legende: ein aktiver Index hebt beide hervor,
+  // alle anderen werden ueber die CSS-Klasse `is-hovering` gedimmt.
+  const arcNodes = [];
+  const legendRows = [];
+  const setActive = (idx) => {
+    wrap.classList.toggle('is-hovering', idx != null);
+    arcNodes.forEach((n, i) => n && n.classList.toggle('is-active', i === idx));
+    legendRows.forEach((n, i) => n && n.classList.toggle('is-active', i === idx));
+  };
+
   svg.selectAll('path')
     .data(pie(data))
     .join('path')
+      .attr('class', d => `stat-donut__arc${d.data.onClick ? ' stat-donut__arc--link' : ''}`)
       .attr('d', arc)
       .attr('fill', d => d.data.color)
       .attr('opacity', d => d.data.muted ? 0.5 : 1)
+      .each(function (d) { arcNodes[d.index] = this; })
+      .on('mouseenter', (_, d) => setActive(d.index))
+      .on('mouseleave', () => setActive(null))
+      .on('click', (_, d) => { if (d.data.onClick) d.data.onClick(); })
       .append('title')
-        .text(d => `${d.data.label}: ${d.data.value} (${Math.round(d.data.value / total * 100)}\u2009%)`);
+        .text(d => d.data.tip
+          || `${d.data.label}: ${d.data.value} (${Math.round(d.data.value / total * 100)}\u2009%)`);
 
   svg.append('text')
     .attr('text-anchor', 'middle')
@@ -503,27 +578,92 @@ function buildDonut(data, { size = 300, ariaLabel = '' } = {}) {
     .attr('text-anchor', 'middle')
     .attr('dy', '1.1em')
     .attr('class', 'stat-donut__center-label')
-    .text(data.length + ' Kategorien');
+    .text((categoryCount ?? data.length) + ' Kategorien');
 
   chartEl.appendChild(svg.node());
   wrap.appendChild(chartEl);
 
-  // Legende; lange Labels mit Ellipsis + data-tip fuer Full-Text
   const legend = el('ul', { className: 'stat-chart__legend' });
-  for (const d of data) {
-    const pct = total ? Math.round(d.value / total * 100) : 0;
-    legend.appendChild(el('li', { className: 'stat-chart__legend-item' },
-      el('span', { className: 'stat-chart__legend-swatch', style: `background:${d.color}; opacity:${d.muted ? 0.5 : 1}` }),
-      el('span', {
-        className: 'stat-chart__legend-label',
-        dataset: { tip: d.label },
-      }, d.label),
-      el('span', { className: 'stat-chart__legend-value' }, `${d.value} \u00b7 ${pct}\u2009%`),
-    ));
-  }
+  data.forEach((d, i) => {
+    const { element, row } = buildLegendItem(d, i, total, setActive);
+    legendRows[i] = row;
+    legend.appendChild(element);
+  });
   wrap.appendChild(legend);
 
   return wrap;
+}
+
+/**
+ * Eine Legendenzeile. Mit `onClick` wird sie zum Cross-Link-Button (Drilldown),
+ * mit `sub[]` zur aufklappbaren Gruppe ("Sonstige"), deren Kinder selbst
+ * wieder Cross-Links sein koennen. `row` ist das Element fuer das Hover-Highlight.
+ */
+function buildLegendItem(d, idx, total, setActive) {
+  const pct = total ? Math.round(d.value / total * 100) : 0;
+  const hasSub = Array.isArray(d.sub) && d.sub.length > 0;
+  const clickable = typeof d.onClick === 'function';
+
+  const rowAttrs = {
+    className: 'stat-chart__legend-row'
+      + (clickable ? ' stat-chart__legend-row--link' : '')
+      + (hasSub ? ' stat-chart__legend-row--group' : ''),
+  };
+  if (clickable) {
+    rowAttrs.role = 'button';
+    rowAttrs.tabindex = '0';
+    rowAttrs.onClick = () => d.onClick();
+    rowAttrs.onKeydown = (e) => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); d.onClick(); }
+    };
+  }
+  const row = el('div', rowAttrs,
+    el('span', {
+      className: `stat-chart__legend-caret${hasSub ? '' : ' stat-chart__legend-caret--empty'}`,
+      'aria-hidden': 'true',
+    }, hasSub ? '\u203a' : ''),
+    el('span', { className: 'stat-chart__legend-swatch',
+      style: `background:${d.color}; opacity:${d.muted ? 0.5 : 1}` }),
+    el('span', { className: 'stat-chart__legend-label', dataset: { tip: d.tip || d.label } }, d.label),
+    el('span', { className: 'stat-chart__legend-value' }, `${d.value} \u00b7 ${pct}\u2009%`),
+  );
+  row.addEventListener('mouseenter', () => setActive(idx));
+  row.addEventListener('mouseleave', () => setActive(null));
+
+  const li = el('li', { className: 'stat-chart__legend-item' }, row);
+
+  if (hasSub) {
+    const subList = el('ul', { className: 'stat-chart__legend-sub' });
+    subList.hidden = true;
+    for (const s of d.sub) {
+      const subPct = total ? Math.round(s.value / total * 100) : 0;
+      const subClickable = typeof s.onClick === 'function';
+      const subAttrs = {
+        className: 'stat-chart__legend-subitem' + (subClickable ? ' stat-chart__legend-row--link' : ''),
+      };
+      if (subClickable) {
+        subAttrs.role = 'button';
+        subAttrs.tabindex = '0';
+        subAttrs.onClick = () => s.onClick();
+        subAttrs.onKeydown = (e) => {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); s.onClick(); }
+        };
+      }
+      subList.appendChild(el('li', subAttrs,
+        el('span', { className: 'stat-chart__legend-swatch', style: `background:${s.color}` }),
+        el('span', { className: 'stat-chart__legend-label', dataset: { tip: s.tip || s.label } }, s.label),
+        el('span', { className: 'stat-chart__legend-value' }, `${s.value} \u00b7 ${subPct}\u2009%`),
+      ));
+    }
+    row.addEventListener('click', () => {
+      const open = subList.hidden;
+      subList.hidden = !open;
+      row.classList.toggle('is-open', open);
+    });
+    li.appendChild(subList);
+  }
+
+  return { element: li, row };
 }
 
 /**
@@ -536,23 +676,43 @@ function buildHorizontalBars(rows) {
   const max = rows.reduce((m, r) => Math.max(m, r.value), 0) || 1;
   for (const row of rows) {
     const li = el('li', { className: 'stat-bars__row' });
-    const label = row.href
-      ? el('a', {
-          className: 'stat-bars__label stat-bars__label--link',
-          href: row.href, target: '_blank', rel: 'noopener', title: row.hrefTitle || '',
-        }, row.label)
-      : el('span', {
-          className: 'stat-bars__label',
-          title: row.hrefTitle || '',
-        }, row.label);
+
+    // Label: in-App-Cross-Link (onClick) als Button, externer Link (href) als
+    // Anker, sonst statischer Text.
+    let label;
+    if (typeof row.onClick === 'function') {
+      label = el('span', {
+        className: 'stat-bars__label stat-bars__label--link',
+        role: 'button', tabindex: '0', title: row.hrefTitle || '',
+        onClick: () => row.onClick(),
+        onKeydown: (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); row.onClick(); } },
+      }, row.label);
+    } else if (row.href) {
+      label = el('a', {
+        className: 'stat-bars__label stat-bars__label--link',
+        href: row.href, target: '_blank', rel: 'noopener', title: row.hrefTitle || '',
+      }, row.label);
+    } else {
+      label = el('span', { className: 'stat-bars__label', title: row.hrefTitle || '' }, row.label);
+    }
+
     const track = el('div', { className: 'stat-bars__track' });
     const fill = el('div', { className: 'stat-bars__fill' });
     fill.style.width = `${Math.max(2, Math.round((row.value / max) * 100))}%`;
     if (row.color) fill.style.background = row.color;
     track.appendChild(fill);
+
+    const ext = row.extraHref
+      ? el('a', {
+          className: 'stat-bars__ext', href: row.extraHref,
+          target: '_blank', rel: 'noopener', title: row.extraTitle || 'Externer Verweis',
+          'aria-label': row.extraTitle || 'Externer Verweis',
+        }, '↗')
+      : null;
+
     li.appendChild(label);
     li.appendChild(track);
-    li.appendChild(el('span', { className: 'stat-bars__count' }, String(row.value)));
+    li.appendChild(el('span', { className: 'stat-bars__count' }, ext, String(row.value)));
     list.appendChild(li);
   }
   return list;

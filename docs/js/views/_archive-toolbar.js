@@ -48,6 +48,7 @@ export function buildFilterToolbar(store, { initial = {}, onChange } = {}) {
     setPerson(name)   { toolbar.setFacet('person', name); },
     setLocation(name) { toolbar.setFacet('location', name); },
     setWerk(name)     { toolbar.setFacet('werk', name); },
+    setDocType(id)    { toolbar.setFacet('docType', id); },
     setCount(text)    { toolbar.setCount(text); },
     getState()        { return toolbar.getState(); },
   };

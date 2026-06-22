@@ -48,6 +48,7 @@ export function renderChronik(storeRef, containerEl) {
       if (filter.facet === 'person') toolbar.setPerson(filter.value);
       else if (filter.facet === 'location') toolbar.setLocation(filter.value);
       else if (filter.facet === 'werk') toolbar.setWerk(filter.value);
+      else if (filter.facet === 'docType') toolbar.setDocType(filter.value);
     }
   });
 }

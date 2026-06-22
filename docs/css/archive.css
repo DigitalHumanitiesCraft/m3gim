@@ -635,6 +635,18 @@ tr.archiv-row--konvolut:hover .konvolut-toggle {
    Chronik View — scrollender Jahres-Zeitstrahl
    ========================================================================= */
 
+/* Chronik: Die Filter-Toolbar bleibt beim Scrollen der langen Zeitleiste oben
+   sichtbar. Jede .tab-content ist ihr eigener Scroll-Container, also klebt
+   top:0 am oberen Rand des Chronik-Bereichs (unter der Tab-Leiste). Nur hier
+   gescopet, damit Bestand unberuehrt bleibt; .archiv-toolbar ist bereits opak. */
+#tab-chronik .archiv-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
 .chronik-timeline-container {
   padding: var(--space-3) var(--space-2);
 }

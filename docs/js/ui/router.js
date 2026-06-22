@@ -5,10 +5,10 @@
 
 // Vollstaendiger Katalog -- alle Tabs bleiben im TAB_RENDERERS registriert,
 // damit Hash-URLs und Code-Pfade nicht brechen.
-const TABS = ['bestand', 'chronik', 'statistik', 'indizes', 'mobilitaet', 'mobilitaets-atlas', 'repertoire', 'biogramm', 'netzwerk', 'korb'];
+const TABS = ['bestand', 'chronik', 'statistik', 'indizes', 'karte', 'mobilitaets-atlas', 'repertoire', 'biogramm', 'netzwerk', 'korb'];
 // VISIBLE_TABS: nur diese sind aktuell in der Tab-Bar sichtbar (Rest `hidden`).
 // Hash-Navigation auf versteckte Tabs wird auf 'bestand' umgebogen.
-const VISIBLE_TABS = new Set(['bestand', 'chronik', 'statistik', 'indizes', 'mobilitaet', 'netzwerk', 'korb']);
+const VISIBLE_TABS = new Set(['bestand', 'chronik', 'statistik', 'indizes', 'karte', 'netzwerk', 'korb']);
 const ALL_VIEWS = [...TABS, 'archiv']; // 'archiv' als Legacy-Alias fuer alte Bookmarks/Hash-URLs
 
 const state = {
@@ -102,7 +102,10 @@ function parseHash() {
   const parts = hash.split('/');
   let t = parts[0];
   if (t === 'archiv') t = 'bestand'; // Legacy-Alias
-  // Alte Bookmarks auf versteckte Tabs (mobilitaets-atlas etc.) auf Bestand umbiegen.
+  // Legacy-Alias: der Tab heisst jetzt 'karte'; alte mobilitaet/-atlas-Bookmarks
+  // landen auf der Karte (der Atlas war der hier abgeloeste Vorgaenger).
+  if (t === 'mobilitaet' || t === 'mobilitaets-atlas') t = 'karte';
+  // Alte Bookmarks auf versteckte Tabs auf Bestand umbiegen.
   if (TABS.includes(t) && !VISIBLE_TABS.has(t)) t = 'bestand';
   if (TABS.includes(t)) state.activeTab = t;
   if (parts[1] && ALL_VIEWS.includes(parts[0])) {

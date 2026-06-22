@@ -4,7 +4,7 @@
    --color-sicht-* aus variables.css. */
 
 .statistik {
-  max-width: 1100px;
+  max-width: 1240px;
   margin: 0 auto;
   padding: var(--space-6) var(--space-5) var(--space-10);
   color: var(--color-text-primary);
@@ -16,13 +16,58 @@
   gap: var(--space-10);
 }
 
+/* Sprung-Navigation: klebt beim Scrollen am oberen Rand des Statistik-Bereichs. */
+.stat-nav {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-5);
+  margin: 0 0 var(--space-8);
+  padding: var(--space-2) 0;
+  background: var(--color-paper);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.stat-nav__link {
+  font-family: var(--font-ui);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  padding: 2px 0;
+  border-bottom: 2px solid transparent;
+  transition: color var(--transition-fast), border-color var(--transition-fast);
+}
+.stat-nav__link:hover {
+  color: var(--color-kug-blau);
+  border-bottom-color: var(--color-kug-blau-light);
+}
+
+/* Anker landen unter dem klebenden Streifen, nicht darunter verdeckt. */
+.stat-section { scroll-margin-top: 56px; }
+
 /* --- Sektionen ----------------------------------------------------------- */
+/* Subcharts einer Sektion fließen in ein responsives Grid: bei genug Breite
+   stehen Geografie/Netzwerk/Finanzen zweispaltig, der Titel spannt voll. */
 
 .stat-section {
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
 }
+
+/* Sektionen mit zwei Subcharts stehen auf breiten Viewports nebeneinander. */
+.stat-section--split {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-5) var(--space-6);
+  align-items: start;
+}
+.stat-section--split .stat-section__title { grid-column: 1 / -1; }
 
 .stat-section__title {
   font-family: var(--font-title);
@@ -34,6 +79,11 @@
   border-bottom: 2px solid var(--color-kug-blau);
   display: inline-block;
   align-self: flex-start;
+  justify-self: start;
+}
+
+@media (max-width: 768px) {
+  .stat-section--split { grid-template-columns: 1fr; }
 }
 
 .stat-section--minor {
@@ -117,11 +167,17 @@
   color: var(--color-kug-blau);
   text-decoration: none;
   border-bottom: 1px dotted var(--color-kug-blau-light);
+  cursor: pointer;
 }
 
 .stat-bars__label--link:hover {
   color: var(--color-kug-blau-dark);
   border-bottom-style: solid;
+}
+
+.stat-bars__label--link:focus-visible {
+  outline: 2px solid var(--color-kug-blau);
+  outline-offset: 2px;
 }
 
 /* --- Charts (Donut, Histogramm, Legende) --------------------------------- */
@@ -167,21 +223,35 @@
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 1px;
+  flex: 1 1 280px;
   min-width: 220px;
-  flex: 1;
+  max-width: 440px;
 }
 
-.stat-chart__legend-item {
-  display: grid;
-  grid-template-columns: 12px 1fr auto;
+.stat-chart__legend-item { list-style: none; }
+
+.stat-chart__legend-row {
+  display: flex;
   align-items: center;
   gap: var(--space-2);
   font-size: var(--text-xs);
-  padding: 2px 0;
+  padding: 3px 6px;
+  border-radius: 4px;
+  transition: background var(--transition-fast), opacity var(--transition-fast);
 }
 
+.stat-chart__legend-caret {
+  flex: 0 0 10px;
+  width: 10px;
+  text-align: center;
+  color: var(--color-text-tertiary);
+  transition: transform 0.15s ease;
+}
+.stat-chart__legend-row.is-open .stat-chart__legend-caret { transform: rotate(90deg); }
+
 .stat-chart__legend-swatch {
+  flex: 0 0 12px;
   display: block;
   width: 12px;
   height: 12px;
@@ -189,19 +259,76 @@
 }
 
 .stat-chart__legend-label {
+  flex: 1 1 auto;
+  min-width: 0;
   color: var(--color-text-primary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   cursor: help;
-  min-width: 0;
 }
 
 .stat-chart__legend-value {
+  flex: 0 0 auto;
+  margin-left: var(--space-2);
   font-family: var(--font-mono);
   color: var(--color-text-secondary);
   font-size: 11px;
+  white-space: nowrap;
 }
+
+/* Klickbare Zeile (Drilldown in den Bestand) und aufklappbare Gruppe. */
+.stat-chart__legend-row--link,
+.stat-chart__legend-row--group { cursor: pointer; }
+.stat-chart__legend-row--link .stat-chart__legend-label {
+  color: var(--color-kug-blau);
+  cursor: pointer;
+}
+.stat-chart__legend-row--link:hover,
+.stat-chart__legend-row--group:hover { background: var(--color-parchment); }
+.stat-chart__legend-row--link:focus-visible {
+  outline: 2px solid var(--color-kug-blau);
+  outline-offset: 1px;
+}
+
+/* Aufgeklappte "Sonstige"-Kinder, unter die Gruppe eingerueckt. */
+.stat-chart__legend-sub {
+  list-style: none;
+  margin: 1px 0 4px;
+  padding: 0 0 0 calc(10px + var(--space-2));
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.stat-chart__legend-subitem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  opacity: 0.9;
+}
+.stat-chart__legend-subitem .stat-chart__legend-label { color: var(--color-text-secondary); }
+.stat-chart__legend-subitem.stat-chart__legend-row--link:hover { background: var(--color-parchment); }
+.stat-chart__legend-subitem.stat-chart__legend-row--link .stat-chart__legend-label { color: var(--color-kug-blau); }
+
+/* Hover-Verkettung Segment <-> Legende. */
+.stat-donut__arc { transition: opacity var(--transition-fast); }
+.stat-donut__arc--link { cursor: pointer; }
+.stat-chart--donut.is-hovering .stat-donut__arc:not(.is-active) { opacity: 0.3; }
+.stat-chart--donut.is-hovering .stat-chart__legend-row:not(.is-active) { opacity: 0.4; }
+.stat-chart__legend-row.is-active { background: var(--color-parchment); }
+
+/* Externer Verweis (z. B. Wikidata) in einer Balkenzeile. */
+.stat-bars__ext {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  color: var(--color-text-tertiary);
+  text-decoration: none;
+  margin-right: 6px;
+}
+.stat-bars__ext:hover { color: var(--color-kug-blau); }
 
 /* Histogramm-Achsen */
 .stat-axis .domain { stroke: var(--border-color); }

@@ -267,6 +267,47 @@ export function drawCanvas({ state, actions, zoomRefs }) {
   });
 
   slot.appendChild(svg.node());
+
+  // Label-Entzerrung: ueberlappende Dauer-Labels (--always) ausduennen. Das
+  // Wichtigere (Ring 1, dann Dokumentzahl) behaelt sein Label, der Rest faellt
+  // auf On-Demand (Hover/Pin/Nachbar) zurueck. Positionen sind deterministisch,
+  // also ist auch das Ergebnis stabil.
+  declutterLabels(nodeSel);
+}
+
+/**
+ * Greedy-Entzerrung der Dauer-Labels: nach Prioritaet (Ring 1 zuerst, dann
+ * Dokumentzahl) sortiert, ein Label behaelt seinen --always-Status nur, wenn
+ * seine Box keine bereits behaltene schneidet. getBBox liefert die Box in
+ * lokalen Koordinaten (vor Zoom); der Knoten-Offset macht sie vergleichbar.
+ * Ergebnislos (no-op), falls das Layout noch keine Masse hat — nie schlechter
+ * als der Vorzustand.
+ */
+function declutterLabels(nodeSel) {
+  const labels = [];
+  nodeSel.each(function (d) {
+    const textEl = this.querySelector('text.netzwerk-label--always');
+    if (!textEl) return;
+    let bb;
+    try { bb = textEl.getBBox(); } catch (_e) { return; }
+    if (!bb || (bb.width === 0 && bb.height === 0)) return;
+    labels.push({
+      el: textEl,
+      priority: (d.ring === 1 ? 10000 : 0) + (d.entry.records.size || 0),
+      box: { x: d.x + bb.x, y: d.y + bb.y, w: bb.width, h: bb.height },
+    });
+  });
+  labels.sort((a, b) => b.priority - a.priority);
+  const kept = [];
+  const pad = 1.5;
+  for (const l of labels) {
+    const b = l.box;
+    const hit = kept.some(k =>
+      b.x < k.x + k.w + pad && b.x + b.w + pad > k.x &&
+      b.y < k.y + k.h + pad && b.y + b.h + pad > k.y);
+    if (hit) l.el.classList.remove('netzwerk-label--always');
+    else kept.push(b);
+  }
 }
 
 // ---------------------------------------------------------------------------

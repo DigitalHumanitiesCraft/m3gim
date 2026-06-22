@@ -53,7 +53,10 @@ export function filterByToolbarState(store, items, state, { getRecord, searchMat
     const q = search.toLowerCase();
     out = out.filter(it => searchMatch(getRecord(it), q));
   }
-  if (docType) {
+  if (docType === '__none__') {
+    // Erschliessungsluecke begehbar: Records ohne klassifizierten Dokumenttyp.
+    out = out.filter(it => !getDocTypeId(getRecord(it)));
+  } else if (docType) {
     const allowed = expandDftFilter(store, docType);
     out = out.filter(it => allowed.has(getDocTypeId(getRecord(it))));
   }

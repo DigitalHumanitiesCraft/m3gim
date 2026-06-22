@@ -27,7 +27,7 @@ const TAB_RENDERERS = new Map([
   ['chronik',            (s, c) => renderChronik(s, c)],
   ['statistik',          (s, c) => renderStatistik(s, c)],
   ['indizes',            (s, c) => renderIndizes(s, c)],
-  ['mobilitaet',         (s, c) => renderMobilitaet(s, c)],
+  ['karte',              (s, c) => renderMobilitaet(s, c)],
   ['mobilitaets-atlas',  (s, c) => renderMobilitaetsAtlas(s, c)],
   ['repertoire',         (s, c) => renderRepertoire(s, c)],
   ['biogramm',           (s, c) => renderBiogramm(s, c)],
@@ -114,7 +114,7 @@ function logTabActivation(tab, s) {
     chronik:             () => ({ records: s.allRecords.length, bearbeitet: s.allRecords.length - s.unprocessedIds.size }),
     statistik:           () => ({ records: s.allRecords.length, konvolute: s.konvolute.size, events: s.mobilityEvents.size, personen: s.persons.size }),
     indizes:             () => ({ persons: s.persons.size, orgs: s.organizations.size, locs: s.locations.size, works: s.works.size, agentRel: s.agentRelations.size, relResolved: s.agentRelationResolvedCount || 0 }),
-    mobilitaet:          () => {
+    karte:               () => {
       const all = [...s.mobilityEvents.values()];
       return { events: all.length, datiert: all.filter(e => /\d{4}/.test(String(e.date || ''))).length, verortet: all.filter(e => typeof e.placeLat === 'number').length };
     },

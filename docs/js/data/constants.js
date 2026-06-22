@@ -36,6 +36,26 @@ export const PERSONEN_KATEGORIEN = {
   'hotter': 'Kollege', 'rehfuss': 'Kollege', 'callas': 'Kollege',
 };
 
+// =========================================================================
+// Ortsfarbcodierung — wiederkehrende Orte tragen ueber alle Views eine
+// konstante Farbe (Wiedererkennung, design.md § Ortsfarbcodierung). Die Werte
+// liegen als --color-ort-*-Tokens in variables.css. Nicht gelistete Orte
+// liefern null, der Aufrufer waehlt dann seinen eigenen Default.
+// =========================================================================
+
+const ORT_COLOR = {
+  'Wien':     'var(--color-ort-wien)',
+  'Graz':     'var(--color-ort-graz)',
+  'München':  'var(--color-ort-muenchen)',
+  'Bayreuth': 'var(--color-ort-bayreuth)',
+  'Salzburg': 'var(--color-ort-salzburg)',
+};
+
+/** Konstante Farbe eines wiederkehrenden Orts, sonst null. */
+export function ortColor(name) {
+  return ORT_COLOR[name] || null;
+}
+
 // Normalize variant person names to canonical form
 // Keys are lowercase, matching is done on lowercased input
 export const PERSONEN_NORMALISIERUNG = {

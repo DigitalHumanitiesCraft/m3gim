@@ -4,7 +4,7 @@
    liegen in sidebar.css (geteilte View-Sidebar). Nutzt die Tokens aus
    variables.css. */
 
-#tab-mobilitaet { padding: 0; }
+#tab-karte { padding: 0; }
 
 .mob-notice {
   padding: var(--space-8);

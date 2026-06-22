@@ -34,6 +34,7 @@ import { buildRoleChip } from './archive-inline-detail.js';
 import { cityOf } from '../utils/format.js';
 import { formatDate, extractYear } from '../utils/date-parser.js';
 import { logStamp } from '../utils/env.js';
+import { onViewNavigate } from '../ui/events.js';
 
 /* global d3 */
 
@@ -42,32 +43,32 @@ let COUNTRIES = null;  // module-level cache, ueber Tab-Wechsel hinweg
 
 const SICHTEN = [
   {
-    id: 'performativ', label: 'Performativ', frage: 'Wo trat sie auf?', color: '#3F5C8E',
+    id: 'performativ', label: 'Performativ', frage: 'Wo trat sie auf?', color: 'var(--color-sicht-performativ)',
     roles: ['auftritt', 'aufführung', 'auffuehrung', 'gastspiel', 'premiere',
       'wiederaufnahme', 'festvorstellung', 'probe', 'probenbeginn',
       'auftrittsdatum', 'auffuehrungsdatum', 'aufführungsdatum', 'probendatum',
       'premieredatum'],
   },
   {
-    id: 'institutionell', label: 'Institutionell', frage: 'Wo war sie engagiert?', color: '#4A7A89',
+    id: 'institutionell', label: 'Institutionell', frage: 'Wo war sie engagiert?', color: 'var(--color-sicht-institutionell)',
     roles: ['spielzeit', 'spielzeitvon', 'spielzeitbis'],
   },
   {
-    id: 'reise', label: 'Reise & Korrespondenz', frage: 'Woher, wohin, an wen?', color: '#A6844B',
+    id: 'korrespondenz', label: 'Reise & Korrespondenz', frage: 'Woher, wohin, an wen?', color: 'var(--color-sicht-korrespondenz)',
     roles: ['zielort', 'absendeort', 'abreiseort', 'empfangsort', 'vertragsort',
       'absendedatum', 'empfangsdatum', 'abreisedatum'],
   },
   {
-    id: 'diskursiv', label: 'Diskursiv', frage: 'Wo wurde über sie berichtet?', color: '#7A6F55',
+    id: 'diskursiv', label: 'Diskursiv', frage: 'Wo wurde über sie berichtet?', color: 'var(--color-sicht-diskursiv)',
     roles: ['erscheinungsdatum', 'ausstrahlung', 'ausstrahlungsdatum'],
   },
   {
-    id: 'biografisch', label: 'Biografisch', frage: 'Wo wohnte und lebte sie?', color: '#8B6F5C',
+    id: 'biografisch', label: 'Biografisch', frage: 'Wo wohnte und lebte sie?', color: 'var(--color-sicht-biografisch)',
     roles: ['wohnort', 'ausstellungsdatum', 'gespräch', 'gespraech'],
   },
 ];
 const KONTEXT = {
-  id: 'kontext', label: 'Weiterer Ortsbezug', frage: 'Sonstiger Ortsbezug', color: '#B0A99B',
+  id: 'kontext', label: 'Weiterer Ortsbezug', frage: 'Sonstiger Ortsbezug', color: 'var(--color-sicht-kontext)',
   roles: ['entstehung', 'erwähnt', 'erwaehnt', 'auftrag'],
 };
 const ALL_TYPES = [...SICHTEN, KONTEXT];
@@ -222,6 +223,18 @@ export function renderMobilitaet(store, container) {
       'Knoten auf der Karte anklicken für Details'));
   }
 
+  // Cross-View: Klick auf einen Sicht-Balken in der Statistik oeffnet die Karte
+  // mit genau dieser Sicht aktiv (Statistik dispatcht m3gim:navigate, events.js
+  // replayt auch, falls das Event vor dem Geometrie-Load eintrifft).
+  onViewNavigate('karte', (detail) => {
+    const s = detail && detail.sicht;
+    if (s && TYPE_BY_ID.has(s)) {
+      state.active = new Set([s]);
+      state.selectedCity = null;
+      redraw();
+    }
+  });
+
   // Geometrie laden (gecacht), dann zeichnen
   loadCountries().then(countries => {
     const map = buildMap(mapCell, countries, withGeo, state, {
@@ -237,7 +250,7 @@ export function renderMobilitaet(store, container) {
       'Ländergeometrie konnte nicht geladen werden. Liste in der Sidebar nutzen.'));
   });
 
-  logStamp('mobilitaet', [
+  logStamp('karte', [
     ['events', events.length], ['verortet', withGeo.length],
     ['unverortet', unverortet.length], ['datiert', datedYears.length],
     ['jahre', `${minYear}-${maxYear}`],
@@ -357,12 +370,23 @@ function buildMap(mapCell, countries, withGeo, state, opts) {
     gArcs.selectAll('path').attr('stroke-width', 1.6 / currentK);
     gArcHit.selectAll('path').attr('stroke-width', 12 / currentK);
   }
+  // Basis-Deckkraft einer Etappe: ausserhalb des Jahresfensters fast
+  // transparent; bei Ortsauswahl werden nur die Etappen der gewaehlten Stadt
+  // betont und der Rest stark gedimmt; sonst eine ruhige mittlere Deckkraft
+  // (weniger Linien-Wirrwarr als die fruehere 0.85).
+  const arcBaseOpacity = (d) => {
+    const inWin = d.year == null || (d.year >= state.yearFrom && d.year <= state.yearTo);
+    if (!inWin) return 0.06;
+    if (state.selectedCity) {
+      return (d.from === state.selectedCity || d.to === state.selectedCity) ? 0.9 : 0.1;
+    }
+    return 0.55;
+  };
   // Eine Etappe beim Hovern hervorheben (volle Deckkraft, nach vorn), ohne den
   // teuren Voll-Redraw, da nur ein Pfad betroffen ist.
   function highlightArc(d, on) {
-    const inWin = d.year == null || (d.year >= state.yearFrom && d.year <= state.yearTo);
     const sel = gArcs.selectAll('path').filter(dd => dd === d);
-    sel.attr('opacity', on ? 1 : (inWin ? 0.85 : 0.06));
+    sel.attr('opacity', on ? 1 : arcBaseOpacity(d));
     if (on) sel.raise();
   }
 
@@ -494,7 +518,7 @@ function buildMap(mapCell, countries, withGeo, state, opts) {
         .attr('d', d => arcPath(nodeByCity.get(d.from), nodeByCity.get(d.to)))
         .attr('stroke', d => timeColor(d.year))
         .attr('stroke-width', 1.6 / currentK)
-        .attr('opacity', d => inWindow(d.year) ? 0.85 : 0.06);
+        .attr('opacity', d => arcBaseOpacity(d));
 
     // Breite, unsichtbare Trefferspur unter den Knoten: macht die duennen
     // Linien robust hoverbar, ohne die Knoten-Hover zu stehlen.
@@ -545,7 +569,9 @@ function buildMap(mapCell, countries, withGeo, state, opts) {
       });
     merged.select('circle')
       .attr('r', d => d.shown === 0 ? 3 : 4 + Math.round(9 * Math.sqrt(d.shown / maxShown)))
-      .attr('fill', d => colorOf(d.dom))
+      // style() statt attr(): der Wert ist `var(--color-sicht-*)`, SVG-Attribute
+      // wuerden var() nicht aufloesen (analog Netzwerk-Knoten).
+      .style('fill', d => colorOf(d.dom))
       .attr('fill-opacity', 0.82)
       .attr('stroke', d => state.selectedCity === d.city ? '#1a1a1a' : '#fff')
       .attr('stroke-width', d => state.selectedCity === d.city ? 2.4 : 1);

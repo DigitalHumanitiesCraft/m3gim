@@ -59,6 +59,7 @@ function applyToolbarFilter({ facet, value }) {
   if (facet === 'person') toolbar.setPerson(value);
   else if (facet === 'location') toolbar.setLocation(value);
   else if (facet === 'werk') toolbar.setWerk(value);
+  else if (facet === 'docType') toolbar.setDocType(value);
 }
 
 /**
