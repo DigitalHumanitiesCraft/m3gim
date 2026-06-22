@@ -1,16 +1,20 @@
 /**
- * M³GIM Mobilitäts-View (E-111, D3-geo Trajektorie)
+ * M³GIM Karten-View (E-111, D3-geo Trajektorie)
  *
- * Forschungswerkzeug fuer die raumzeitliche Mobilitaet Ira Malaniuks. Die
- * Karte ist das Zentrum und nimmt die volle Breite ein: eine projizierte
- * Stummkarte (D3-geo, lokale Ländergeometrie, keine externen Kartenserver),
- * Orte als Knoten farbcodiert nach Mobilitaetssicht, der biografische Pfad
- * als gerichtete, chronologisch eingefaerbte Pfeile zwischen den Orten.
+ * Forschungswerkzeug fuer die raumzeitliche Mobilitaet Ira Malaniuks. Das
+ * Layout nutzt die geteilte View-Sidebar (docs/js/ui/sidebar.js): eine
+ * deklarativ erzeugte Filter-Spalte links, die Karte nimmt den restlichen
+ * Viewport. Die Karte ist eine projizierte Stummkarte (D3-geo, lokale
+ * Ländergeometrie, keine externen Kartenserver), Orte als Knoten farbcodiert
+ * nach Mobilitaetssicht, der biografische Pfad als gerichtete, chronologisch
+ * eingefaerbte Pfeile zwischen den Orten.
  *
- * Statt beschreibender Texte traegt die Seite Bedienelemente: ein Zeitregler
- * mit Abspielen faehrt die Jahre ab und zeichnet den Pfad fortlaufend, die
- * Sicht-Legende filtert Knoten, Pfad und Detailstreifen zugleich. Datumslose
- * und unverortete Ereignisse stehen sichtbar (Knoten ohne Pfadanschluss bzw.
+ * Sidebar-Spec: die Sicht-Legende filtert Knoten, Pfad und Liste zugleich, ein
+ * Zeitraum-Filter (von–bis statt Abspielen) blendet Ereignisse ausserhalb des
+ * gewaehlten Jahresfensters aus, der Pfad-Schalter zeigt oder verbirgt die
+ * Trajektorie. Die Ereignis-Region zeigt eine Statuszeile, bei Knotenwahl die
+ * Ereignisse des Orts, darunter die einklappbare Voll-Liste. Datumslose und
+ * unverortete Ereignisse bleiben sichtbar (Knoten ohne Pfadanschluss bzw.
  * abseits der Karte), statt kaschiert zu werden.
  *
  * Pfad-Semantik: die datierten, verorteten Ereignisse werden chronologisch
@@ -25,6 +29,7 @@
  */
 
 import { el, clear } from '../utils/dom.js';
+import { createSidebar, viewShell } from '../ui/sidebar.js';
 import { buildRoleChip } from './archive-inline-detail.js';
 import { cityOf } from '../utils/format.js';
 import { formatDate, extractYear } from '../utils/date-parser.js';
@@ -85,15 +90,14 @@ export function renderMobilitaet(store, container) {
   clear(container);
   const events = [...store.mobilityEvents.values()];
 
-  const wrap = el('div', { className: 'mobilitaet' });
-  container.appendChild(wrap);
-
   if (events.length === 0) {
-    wrap.appendChild(el('div', { className: 'mob-empty' }, 'Keine raumzeitlichen Ereignisse im Datenstand.'));
+    container.appendChild(el('div', { className: 'mob-notice' },
+      el('div', { className: 'mob-empty' }, 'Keine raumzeitlichen Ereignisse im Datenstand.')));
     return;
   }
   if (typeof d3 === 'undefined') {
-    wrap.appendChild(el('div', { className: 'mob-empty' }, 'D3 ist nicht geladen, die Karte kann nicht gezeichnet werden.'));
+    container.appendChild(el('div', { className: 'mob-notice' },
+      el('div', { className: 'mob-empty' }, 'D3 ist nicht geladen, die Karte kann nicht gezeichnet werden.')));
     return;
   }
 
@@ -103,80 +107,104 @@ export function renderMobilitaet(store, container) {
   const minYear = datedYears.length ? Math.min(...datedYears) : 1940;
   const maxYear = datedYears.length ? Math.max(...datedYears) : 1980;
 
-  // Gemeinsamer Filter-State
+  // Gemeinsamer Filter-State. Der Zeitraum (yearFrom..yearTo) ist ein
+  // beidseitiges Fenster, kein abspielender Cursor: Ereignisse und Pfad-
+  // segmente ausserhalb des Fensters werden ausgeblendet.
   const state = {
     active: new Set(ALL_TYPES.map(t => t.id)),
     showPath: true,
-    cursor: maxYear,       // Zeitregler: Pfad bis zu diesem Jahr
+    yearFrom: minYear,
+    yearTo: maxYear,
     selectedCity: null,
-    playing: false,
-    timer: null,
   };
 
-  // ---- Bedienleiste: Sicht-Filter + Pfad-Schalter ----
-  const controls = el('div', { className: 'mob-controls' });
-  controls.appendChild(buildLegend(events, state, () => redraw()));
-  const layerBox = el('div', { className: 'mob-layers' });
-  const pathToggle = el('button', { className: 'mob-toggle mob-toggle--on', type: 'button' },
-    el('span', { className: 'mob-toggle__dot' }), 'Pfad');
-  pathToggle.addEventListener('click', () => {
-    state.showPath = !state.showPath;
-    pathToggle.classList.toggle('mob-toggle--on', state.showPath);
-    redraw();
+  const active = e => state.active.has(sichtOf(e));
+  const inWindow = e => {
+    const y = extractYear(e.date);
+    return y == null || (y >= state.yearFrom && y <= state.yearTo);
+  };
+
+  // Sicht-Counts fuer die Legende
+  const counts = new Map(ALL_TYPES.map(t => [t.id, 0]));
+  for (const ev of events) counts.set(sichtOf(ev), (counts.get(sichtOf(ev)) || 0) + 1);
+
+  // Ereignis-Region (Statuszeile / Ortsauswahl) plus einklappbare Voll-Liste.
+  const detailRegion = el('div', { className: 'mob-panel__detail' });
+  const panelNode = el('div', { className: 'mob-panel' }, detailRegion, buildBackbone(events));
+
+  // ---- Sidebar (deklarativ) ----
+  const sidebar = createSidebar({
+    sections: [
+      {
+        title: 'Sichten',
+        controls: [{
+          kind: 'legend',
+          items: ALL_TYPES.map(t => ({ id: t.id, label: t.label, color: t.color,
+            count: counts.get(t.id) || 0, title: t.frage })),
+          isActive: id => state.active.has(id),
+          onToggle: id => {
+            if (state.active.has(id)) state.active.delete(id); else state.active.add(id);
+            redraw();
+          },
+        }],
+      },
+      {
+        title: 'Darstellung',
+        controls: [
+          { kind: 'toggle', label: 'Pfad anzeigen',
+            value: () => state.showPath,
+            onChange: v => { state.showPath = v; redraw(); } },
+          { kind: 'range', fromCap: 'Von', toCap: 'Bis', min: minYear, max: maxYear, fullLabel: true,
+            from: () => state.yearFrom, to: () => state.yearTo,
+            onChange: (f, t) => { state.yearFrom = f; state.yearTo = t; redraw(); } },
+        ],
+      },
+      {
+        title: 'Ereignisse',
+        controls: [{ kind: 'custom', node: panelNode }],
+      },
+    ],
   });
-  layerBox.appendChild(pathToggle);
-  controls.appendChild(layerBox);
-  wrap.appendChild(controls);
 
-  // ---- Karte (volle Breite) ----
-  const mapCell = el('div', { className: 'mob-map' });
-  wrap.appendChild(mapCell);
+  // ---- Karte (volle Restbreite und -hoehe) ----
+  const mapCell = el('div', { className: 'mob-map' },
+    el('div', { className: 'mob-map__loading' }, 'Karte wird geladen …'));
+  const main = el('div', { className: 'view-main' }, mapCell);
 
-  // ---- Zeitregler ----
-  const scrubber = buildScrubber(state, minYear, maxYear, () => redraw());
-  wrap.appendChild(scrubber.elementWrap);
-
-  // ---- Detailstreifen + Statuszeile ----
-  const strip = el('div', { className: 'mob-strip' });
-  wrap.appendChild(strip);
-
-  // ---- einklappbare Voll-Liste (Pruefbarkeit) ----
-  wrap.appendChild(buildBackbone(events));
+  container.appendChild(viewShell(sidebar.element, main));
 
   // Zeichenfunktion (wird nach Geometrie-Load und bei jeder State-Aenderung gerufen)
   let draw = () => {};
-  function redraw() { draw(); renderStrip(); scrubber.update(); }
+  function redraw() { draw(); renderPanel(); sidebar.update(); }
 
-  function renderStrip() {
-    clear(strip);
-    const active = e => state.active.has(sichtOf(e));
-    let list, title;
+  function renderPanel() {
+    clear(detailRegion);
     if (state.selectedCity) {
-      list = events.filter(e => active(e) && cityOf(e.place) === state.selectedCity);
-      title = state.selectedCity;
-    } else {
-      // Statuszeile statt Prosa: was die aktuelle Auswahl umfasst
-      const shown = withGeo.filter(active).length;
-      strip.appendChild(el('div', { className: 'mob-strip__status' },
-        el('span', {}, `${shown} verortet`),
-        el('span', {}, `${events.filter(active).length} Ereignisse`),
-        unverortet.length ? makeUnverortetButton(unverortet, state, strip, renderStrip) : null,
-        (state.offMapEvents && state.offMapEvents.length)
-          ? makeOffMapButton(state, strip, renderStrip) : null,
-        el('span', { className: 'mob-strip__hint' }, 'Knoten anklicken für Details')));
+      const list = events.filter(e => active(e) && cityOf(e.place) === state.selectedCity);
+      detailRegion.appendChild(el('div', { className: 'mob-detail__head' },
+        el('h3', { className: 'mob-detail__title' }, state.selectedCity),
+        el('button', { className: 'mob-detail__clear', type: 'button',
+          onClick: () => { state.selectedCity = null; redraw(); } }, 'Auswahl lösen')));
+      const chips = el('div', { className: 'mob-chips' });
+      for (const ev of sortEvents(list)) chips.appendChild(buildEventChip(ev));
+      detailRegion.appendChild(chips);
       return;
     }
-    strip.appendChild(el('div', { className: 'mob-strip__head' },
-      el('h3', { className: 'mob-strip__title' }, title),
-      el('button', { className: 'mob-strip__clear', type: 'button',
-        onClick: () => { state.selectedCity = null; redraw(); } }, 'Auswahl lösen')));
-    const chips = el('div', { className: 'mob-strip__chips' });
-    for (const ev of sortEvents(list)) chips.appendChild(buildEventChip(ev));
-    strip.appendChild(chips);
+    // Statuszeile: was die aktuelle Auswahl und der Zeitraum umfassen
+    const verortet = withGeo.filter(e => active(e) && inWindow(e)).length;
+    const total = events.filter(e => active(e) && inWindow(e)).length;
+    detailRegion.appendChild(el('div', { className: 'mob-status' },
+      el('span', {}, `${verortet} verortet`),
+      el('span', {}, `${total} Ereignisse`)));
+    const flags = el('div', { className: 'mob-status__flags' });
+    if (unverortet.length) flags.appendChild(makeUnverortetButton(unverortet, state, detailRegion, renderPanel));
+    if (state.offMapEvents && state.offMapEvents.length) flags.appendChild(makeOffMapButton(state, detailRegion, renderPanel));
+    if (flags.childNodes.length) detailRegion.appendChild(flags);
+    detailRegion.appendChild(el('div', { className: 'mob-status__hint' },
+      'Knoten auf der Karte anklicken für Details'));
   }
 
   // Geometrie laden (gecacht), dann zeichnen
-  mapCell.appendChild(el('div', { className: 'mob-map__loading' }, 'Karte wird geladen …'));
   loadCountries().then(countries => {
     draw = buildMap(mapCell, countries, withGeo, state, {
       minYear, maxYear,
@@ -186,7 +214,7 @@ export function renderMobilitaet(store, container) {
   }).catch(() => {
     clear(mapCell);
     mapCell.appendChild(el('div', { className: 'mob-empty' },
-      'Ländergeometrie konnte nicht geladen werden. Voll-Liste unten nutzen.'));
+      'Ländergeometrie konnte nicht geladen werden. Liste in der Sidebar nutzen.'));
   });
 
   logStamp('mobilitaet', [
@@ -208,7 +236,7 @@ function loadCountries() {
 function buildMap(mapCell, countries, withGeo, state, opts) {
   clear(mapCell);
   const width = Math.max(320, mapCell.clientWidth || 960);
-  const height = Math.round(Math.min(760, Math.max(440, window.innerHeight * 0.6)));
+  const height = Math.max(440, mapCell.clientHeight || 600);
 
   // Projektion auf den europaeischen Schwerpunkt einpassen (Ausreisser wie
   // den New-York-Fehlmatch ausgeschlossen; per Zoom erreichbar).
@@ -247,7 +275,7 @@ function buildMap(mapCell, countries, withGeo, state, opts) {
     showTip(
       `<strong>${escapeHtml(d.city)}</strong>` +
       `<span class="mob-tip__row"><span class="mob-tip__sw" style="background:${t.color}"></span>${t.label}</span>` +
-      `<span class="mob-tip__row">${d.shown} Ereignis${d.shown === 1 ? '' : 'se'}</span>` +
+      `<span class="mob-tip__row">${d.shown} Ereignis${d.shown === 1 ? '' : 'se'} im Zeitraum</span>` +
       `<span class="mob-tip__row">${span}</span>`,
       mx, my);
   }
@@ -292,7 +320,7 @@ function buildMap(mapCell, countries, withGeo, state, opts) {
   // (Top-N nach Ereigniszahl), mit steigendem Zoom mehr, ab hohem Zoom alle.
   // Die ausgewaehlte Stadt traegt immer ihr Label. Font und Halo werden gegen
   // den Zoom skaliert, damit Beschriftung und Umriss bildschirmkonstant bleiben.
-  const sichtbar = d => d.shown > 0 && (d.firstYear == null || d.firstYear <= state.cursor);
+  const sichtbar = d => d.shown > 0;
   function applyLabelLayer() {
     const sel = gNodes.selectAll('g.mob-node');
     const counts = [];
@@ -315,7 +343,7 @@ function buildMap(mapCell, countries, withGeo, state, opts) {
   // Knoten je Stadt. Orte, deren projizierter Punkt ausserhalb des
   // Kartenausschnitts liegt (z. B. der New-York-Fehlmatch AF-01, weit im
   // Westen), werden nicht an falscher Stelle gezeichnet und nicht mit Pfeilen
-  // verbunden, sondern ehrlich als "abseits der Karte" im Detailstreifen
+  // verbunden, sondern ehrlich als "abseits der Karte" in der Liste
   // ausgewiesen (Datenfehler-Register AF-01).
   const onMargin = 8;
   const isOnMap = (x, y) =>
@@ -348,8 +376,11 @@ function buildMap(mapCell, countries, withGeo, state, opts) {
   // Zeichenfunktion ueber State
   return function drawMap() {
     const active = e => state.active.has(sichtOf(e));
+    const inWindow = y => y == null || (y >= state.yearFrom && y <= state.yearTo);
 
     // ---- Pfad (Segmente) ----
+    // Die Trajektorie bleibt als Ganzes erhalten; Segmente ausserhalb des
+    // Jahresfensters werden abgeblendet, statt die Kette zu zerreissen.
     let segments = [];
     if (state.showPath) {
       const seq = withGeo
@@ -373,13 +404,18 @@ function buildMap(mapCell, countries, withGeo, state, opts) {
         .attr('d', d => arcPath(nodeByCity.get(d.from), nodeByCity.get(d.to)))
         .attr('stroke', d => timeColor(d.year))
         .attr('stroke-width', 1.6)
-        .attr('opacity', d => d.year <= state.cursor ? 0.85 : 0.06);
+        .attr('opacity', d => inWindow(d.year) ? 0.85 : 0.06);
 
     // ---- Knoten ----
+    // shown = aktive Ereignisse im Jahresfenster (steuert Groesse, Label,
+    // Sichtbarkeit). active = aktive Ereignisse ueber alle Jahre (Halbschatten
+    // fuer Orte, die ausserhalb des Fensters liegen, aber zur Auswahl gehoeren).
     const nodes = [...nodeByCity.values()].map(n => {
-      const evs = n.events.filter(active);
-      return { ...n, shown: evs.length, dom: dominantSicht(evs),
-        firstYear: firstYear(evs), lastYear: lastYear(evs) };
+      const evsActive = n.events.filter(active);
+      const evsWin = evsActive.filter(e => inWindow(extractYear(e.date)));
+      return { ...n, active: evsActive.length, shown: evsWin.length,
+        dom: dominantSicht(evsActive.length ? evsActive : n.events),
+        firstYear: firstYear(evsActive), lastYear: lastYear(evsActive) };
     });
     maxShown = 1;
     for (const n of nodes) maxShown = Math.max(maxShown, n.shown);
@@ -397,8 +433,8 @@ function buildMap(mapCell, countries, withGeo, state, opts) {
     const merged = enter.merge(sel)
       .attr('transform', d => `translate(${d.x},${d.y})`)
       .attr('opacity', d => {
-        if (d.shown === 0) return 0.12;
-        if (d.firstYear != null && d.firstYear > state.cursor) return 0.18;
+        if (d.active === 0) return 0.12;
+        if (d.shown === 0) return 0.2;
         return 1;
       });
     merged.select('circle')
@@ -455,120 +491,44 @@ function escapeHtml(s) {
 }
 
 // ---------------------------------------------------------------------------
-// Zeitregler mit Abspielen
+// Listen-Helfer (Statuszeile, Ortsauswahl, Sonderfaelle)
 // ---------------------------------------------------------------------------
 
-function buildScrubber(state, minYear, maxYear, onChange) {
-  const wrap = el('div', { className: 'mob-scrub' });
-  const play = el('button', { className: 'mob-scrub__play', type: 'button',
-    'aria-label': 'Pfad über die Zeit abspielen' }, '▶');
-  const range = el('input', {
-    className: 'mob-scrub__range', type: 'range',
-    min: String(minYear), max: String(maxYear), step: '1', value: String(state.cursor),
-  });
-  const label = el('span', { className: 'mob-scrub__year' }, String(state.cursor));
-
-  function setCursor(y, fire = true) {
-    state.cursor = y;
-    range.value = String(y);
-    label.textContent = y >= maxYear ? `bis ${y}` : String(y);
-    if (fire) onChange();
-  }
-  range.addEventListener('input', () => setCursor(parseInt(range.value, 10)));
-
-  function stop() {
-    state.playing = false;
-    if (state.timer) { clearInterval(state.timer); state.timer = null; }
-    play.textContent = '▶';
-    play.classList.remove('mob-scrub__play--on');
-  }
-  function start() {
-    state.playing = true;
-    play.textContent = '⏸';
-    play.classList.add('mob-scrub__play--on');
-    if (state.cursor >= maxYear) setCursor(minYear, false);
-    state.timer = setInterval(() => {
-      const next = state.cursor + 1;
-      if (next > maxYear) { setCursor(maxYear); stop(); return; }
-      setCursor(next);
-    }, 700);
-  }
-  play.addEventListener('click', () => { state.playing ? stop() : start(); });
-
-  wrap.append(play, range, label);
-  return {
-    elementWrap: wrap,
-    update() { range.value = String(state.cursor); label.textContent = state.cursor >= maxYear ? `bis ${state.cursor}` : String(state.cursor); },
-  };
-}
-
-// ---------------------------------------------------------------------------
-// Sicht-Legende (Filter)
-// ---------------------------------------------------------------------------
-
-function buildLegend(events, state, onChange) {
-  const counts = new Map(ALL_TYPES.map(t => [t.id, 0]));
-  for (const ev of events) counts.set(sichtOf(ev), (counts.get(sichtOf(ev)) || 0) + 1);
-
-  const legend = el('div', { className: 'mob-legend', role: 'group', 'aria-label': 'Mobilitätssichten filtern' });
-  for (const t of ALL_TYPES) {
-    const item = el('button', { className: 'mob-legend__item', type: 'button',
-      title: t.frage, 'aria-pressed': 'true' },
-      el('span', { className: 'mob-legend__swatch' }),
-      el('span', { className: 'mob-legend__label' }, t.label),
-      el('span', { className: 'mob-legend__count' }, String(counts.get(t.id) || 0)));
-    item.querySelector('.mob-legend__swatch').style.background = t.color;
-    item.addEventListener('click', () => {
-      if (state.active.has(t.id)) state.active.delete(t.id); else state.active.add(t.id);
-      const on = state.active.has(t.id);
-      item.classList.toggle('mob-legend__item--off', !on);
-      item.setAttribute('aria-pressed', String(on));
-      onChange();
-    });
-    legend.appendChild(item);
-  }
-  return legend;
-}
-
-// ---------------------------------------------------------------------------
-// Detailstreifen-Helfer
-// ---------------------------------------------------------------------------
-
-function makeUnverortetButton(unverortet, state, strip, rerender) {
-  const btn = el('button', { className: 'mob-strip__unverortet', type: 'button' },
+function makeUnverortetButton(unverortet, state, region, rerender) {
+  const btn = el('button', { className: 'mob-flag mob-flag--unverortet', type: 'button' },
     `${unverortet.length} unverortet`);
   btn.addEventListener('click', () => {
-    const chips = el('div', { className: 'mob-strip__chips' });
+    const chips = el('div', { className: 'mob-chips' });
     for (const ev of sortEvents(unverortet.filter(e => state.active.has(sichtOf(e)))))
       chips.appendChild(buildEventChip(ev));
-    clear(strip);
-    strip.appendChild(el('div', { className: 'mob-strip__head' },
-      el('h3', { className: 'mob-strip__title' }, 'Unverortete Ereignisse'),
-      el('button', { className: 'mob-strip__clear', type: 'button', onClick: rerender }, 'zurück')));
-    strip.appendChild(chips);
+    clear(region);
+    region.appendChild(el('div', { className: 'mob-detail__head' },
+      el('h3', { className: 'mob-detail__title' }, 'Unverortete Ereignisse'),
+      el('button', { className: 'mob-detail__clear', type: 'button', onClick: rerender }, 'zurück')));
+    region.appendChild(chips);
   });
   return btn;
 }
 
-function makeOffMapButton(state, strip, rerender) {
+function makeOffMapButton(state, region, rerender) {
   const evs = state.offMapEvents || [];
   const cities = state.offMapCities || [];
-  const btn = el('button', { className: 'mob-strip__offmap', type: 'button',
+  const btn = el('button', { className: 'mob-flag mob-flag--offmap', type: 'button',
     title: 'Orte ausserhalb des Kartenausschnitts, meist ein Koordinaten-Fehlmatch' },
     `${evs.length} abseits der Karte`);
   btn.addEventListener('click', () => {
-    const chips = el('div', { className: 'mob-strip__chips' });
+    const chips = el('div', { className: 'mob-chips' });
     for (const ev of sortEvents(evs.filter(e => state.active.has(sichtOf(e)))))
       chips.appendChild(buildEventChip(ev));
-    clear(strip);
-    strip.appendChild(el('div', { className: 'mob-strip__head' },
-      el('h3', { className: 'mob-strip__title' }, 'Abseits der Karte'),
-      el('button', { className: 'mob-strip__clear', type: 'button', onClick: rerender }, 'zurück')));
+    clear(region);
+    region.appendChild(el('div', { className: 'mob-detail__head' },
+      el('h3', { className: 'mob-detail__title' }, 'Abseits der Karte'),
+      el('button', { className: 'mob-detail__clear', type: 'button', onClick: rerender }, 'zurück')));
     if (cities.length) {
-      strip.appendChild(el('div', { className: 'mob-strip__offmap-note' },
+      region.appendChild(el('div', { className: 'mob-detail__note' },
         `${cities.join(', ')}: ausserhalb des Kartenausschnitts projiziert, meist ein Koordinaten-Fehlmatch (Datenfehler-Register AF-01, New York).`));
     }
-    strip.appendChild(chips);
+    region.appendChild(chips);
   });
   return btn;
 }
@@ -621,7 +581,7 @@ function buildBackbone(events) {
     block.appendChild(el('div', { className: 'mob-backbone__head' },
       sw, el('span', { className: 'mob-backbone__label' }, t.label),
       el('span', { className: 'mob-backbone__count' }, String(evs.length))));
-    const chips = el('div', { className: 'mob-strip__chips' });
+    const chips = el('div', { className: 'mob-chips' });
     for (const ev of sortEvents(evs)) chips.appendChild(buildEventChip(ev));
     block.appendChild(chips);
     details.appendChild(block);

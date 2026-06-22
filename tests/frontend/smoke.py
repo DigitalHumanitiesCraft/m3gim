@@ -219,7 +219,7 @@ def main() -> int:
                 state="attached", timeout=8000)
             nodes = page.locator('#tab-mobilitaet .mob-nodes g.mob-node').count()
             arcs = page.locator('#tab-mobilitaet .mob-arcs path').count()
-            legend = page.locator('#tab-mobilitaet .mob-legend__item').count()
+            legend = page.locator('#tab-mobilitaet .vs-legend .vs-chip').count()
             land = page.locator('#tab-mobilitaet .mob-land path').count()
             new_errs = expect_no_new_errors(global_errors, errs_before)
             # Erwartung: mehrere Stadt-Knoten, mindestens ein Pfad-Pfeil, die

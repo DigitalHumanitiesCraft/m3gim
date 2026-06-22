@@ -56,7 +56,7 @@ let _filters = {
   onlyWikidata: false,
   onlyAgRelOn: false,
   search: '',
-  categories: new Set(),      // leer = alle zugelassen
+  hiddenCategories: new Set(),      // leer = alle zugelassen
   showCoOccurrence: true,      // geschwungene Ko-Okkurrenz-Baender
   showAgRelOn: true,           // gerade AgRelOn-Radials zum Zentrum
   minShared: 2,                // Mindest-geteilte-Records fuer eine Kante
@@ -89,7 +89,7 @@ export function renderNetzwerk(store, container) {
     onlyWikidata: false,
     onlyAgRelOn: false,
     search: '',
-    categories: new Set(),
+    hiddenCategories: new Set(),
     showCoOccurrence: true,
     showAgRelOn: true,
     minShared: 2,
@@ -149,7 +149,7 @@ function draw() {
   // berechnet (echte Container-Dimensionen).
   layoutFor(900, 640);
 
-  const shell = el('div', { className: 'netzwerk__shell' });
+  const shell = el('div', { className: 'view-shell' });
   shell.appendChild(renderSidebar({
     state: { filters: _filters, layout: _layout, yearRange: _yearRange },
     actions: {
@@ -173,7 +173,7 @@ function draw() {
       onResetFilters: () => {
         _filters = {
           minRecords: 1, onlyWikidata: false, onlyAgRelOn: false,
-          search: '', categories: new Set(),
+          search: '', hiddenCategories: new Set(),
           showCoOccurrence: true, showAgRelOn: true, minShared: 2,
           yearFrom: null, yearTo: null,
         };
@@ -181,7 +181,7 @@ function draw() {
       },
     },
   }));
-  const main = el('div', { className: 'netzwerk__main' });
+  const main = el('div', { className: 'view-main' });
   main.appendChild(renderCanvasSlot());
   main.appendChild(renderZoomControls(_zoomRefs));
   main.appendChild(renderDetailSlot());
@@ -329,9 +329,9 @@ function passesFilter(node) {
   if (!personInTimeRange(node.name)) return false;
   if (_filters.onlyWikidata && !(e.wikidata && String(e.wikidata).startsWith('wd:'))) return false;
   if (_filters.onlyAgRelOn && !(e.relations && e.relations.length > 0)) return false;
-  if (_filters.categories.size > 0) {
+  if (_filters.hiddenCategories.size > 0) {
     const kat = derivePersonKategorie(e);
-    if (!_filters.categories.has(kat)) return false;
+    if (_filters.hiddenCategories.has(kat)) return false;
   }
   if (_filters.search) {
     if (!String(node.name).toLowerCase().includes(_filters.search)) return false;

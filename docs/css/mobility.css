@@ -1,14 +1,13 @@
-/* Mobilitäts-Tab (E-111, D3-geo Trajektorie).
-   Forschungswerkzeug: projizierte Vollbreitenkarte als Zentrum, Orte als
-   Knoten nach Mobilitätssicht gefärbt, biografischer Pfad als chronologisch
-   eingefärbte Pfeile, Zeitregler mit Abspielen, Sicht-Legende als Filter.
-   Bedienelemente statt beschreibender Texte. Nutzt die Tokens aus
+/* Karten-Tab (E-111, D3-geo Trajektorie).
+   Nur das Karten-Spezifische: das SVG, die Knoten-Labels, der Tooltip und die
+   Ereignis-Region in der Sidebar. Geruest, Sektionen und Filter-Controls
+   liegen in sidebar.css (geteilte View-Sidebar). Nutzt die Tokens aus
    variables.css. */
 
-.mobilitaet {
-  max-width: 1760px;
-  margin: 0 auto;
-  padding: var(--space-4) var(--space-5) var(--space-8);
+#tab-mobilitaet { padding: 0; }
+
+.mob-notice {
+  padding: var(--space-8);
   color: var(--color-text-primary);
 }
 
@@ -21,88 +20,24 @@
   text-align: center;
 }
 
-/* --- Bedienleiste: Sicht-Filter + Ebenen-Schalter ------------------------ */
-
-.mob-controls {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: var(--space-3);
-  margin-bottom: var(--space-3);
-}
-
-.mob-legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-}
-
-.mob-legend__item {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: 4px 10px 4px 8px;
-  background: var(--color-paper);
-  border: 1px solid var(--border-color-light);
-  border-radius: 999px;
-  font-size: var(--text-sm);
-  color: var(--color-text-primary);
-  cursor: pointer;
-  transition: opacity var(--transition-fast), background var(--transition-fast);
-}
-.mob-legend__item:hover { background: var(--color-cream); }
-.mob-legend__item--off { opacity: 0.4; }
-.mob-legend__item--off .mob-legend__swatch { background: var(--color-text-tertiary) !important; }
-
-.mob-legend__swatch { width: 12px; height: 12px; border-radius: 3px; flex: none; }
-.mob-legend__label { white-space: nowrap; }
-.mob-legend__count {
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  color: var(--color-text-tertiary);
-}
-
-.mob-layers { display: inline-flex; gap: var(--space-2); }
-
-.mob-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: 4px 12px;
-  background: var(--color-paper);
-  border: 1px solid var(--border-color-light);
-  border-radius: 999px;
-  font-size: var(--text-sm);
-  color: var(--color-text-secondary);
-  cursor: pointer;
-}
-.mob-toggle__dot {
-  width: 10px; height: 10px; border-radius: 50%;
-  background: var(--color-text-tertiary);
-  border: 1px solid var(--border-color);
-}
-.mob-toggle--on { color: var(--color-text-primary); border-color: var(--color-kug-blau-light); }
-.mob-toggle--on .mob-toggle__dot { background: var(--color-kug-blau); border-color: var(--color-kug-blau); }
-
-/* --- Karte (volle Breite) ------------------------------------------------ */
+/* --- Karte (fuellt den View-Hauptbereich) -------------------------------- */
 
 .mob-map {
-  width: 100%;
-  background: var(--color-cream);
-  border: 1px solid var(--border-color-light);
-  border-radius: var(--border-radius);
+  position: absolute;
+  inset: 0;
   overflow: hidden;
-  position: relative;
 }
 
-.mob-map__svg { display: block; width: 100%; height: auto; background: var(--color-cream); }
+.mob-map__svg { width: 100%; height: 100%; display: block; background: var(--color-cream); }
 .mob-map__svg:active { cursor: grabbing; }
 
 .mob-map__loading {
-  padding: var(--space-8);
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: var(--color-text-tertiary);
-  text-align: center;
   font-size: var(--text-sm);
 }
 
@@ -149,109 +84,46 @@
 }
 .mob-tip__sw { width: 9px; height: 9px; border-radius: 2px; flex: none; }
 
-/* --- Zeitregler ---------------------------------------------------------- */
+/* --- Ereignis-Region in der Sidebar -------------------------------------- */
 
-.mob-scrub {
+.mob-panel { display: flex; flex-direction: column; gap: var(--space-3); }
+.mob-panel__detail { display: flex; flex-direction: column; gap: var(--space-2); }
+
+.mob-status {
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  margin: var(--space-3) 0;
-  padding: var(--space-2) var(--space-3);
-  background: var(--color-paper);
-  border: 1px solid var(--border-color-light);
-  border-radius: var(--border-radius);
-}
-
-.mob-scrub__play {
-  flex: none;
-  width: 36px; height: 36px;
-  border-radius: 50%;
-  border: 1px solid var(--color-kug-blau-light);
-  background: var(--color-cream);
-  color: var(--color-kug-blau);
-  font-size: var(--text-base);
-  line-height: 1;
-  cursor: pointer;
-  transition: background var(--transition-fast);
-}
-.mob-scrub__play:hover { background: var(--color-parchment); }
-.mob-scrub__play--on { background: var(--color-kug-blau); color: var(--color-paper); }
-
-.mob-scrub__range {
-  flex: 1 1 auto;
-  accent-color: var(--color-kug-blau);
-  cursor: pointer;
-}
-
-.mob-scrub__year {
-  flex: none;
-  min-width: 7ch;
-  text-align: right;
-  font-family: var(--font-mono);
-  font-size: var(--text-sm);
-  color: var(--color-text-primary);
-}
-
-/* --- Detailstreifen ------------------------------------------------------ */
-
-.mob-strip {
-  min-height: 2.5em;
-  margin-bottom: var(--space-5);
-}
-
-.mob-strip__status {
-  display: flex;
-  align-items: center;
-  gap: var(--space-4);
   flex-wrap: wrap;
   font-family: var(--font-mono);
   font-size: var(--text-xs);
   color: var(--color-text-secondary);
 }
-.mob-strip__hint { color: var(--color-text-tertiary); font-style: italic; }
+.mob-status__flags { display: flex; flex-wrap: wrap; gap: 6px; }
+.mob-status__hint { color: var(--color-text-tertiary); font-style: italic; font-size: var(--text-xs); }
 
-.mob-strip__unverortet {
+.mob-flag {
   font-family: var(--font-mono);
   font-size: var(--text-xs);
   padding: 2px 8px;
   border-radius: 999px;
-  border: 1px solid #e4d5bb;
-  background: #f3eadd;
-  color: #8b6a3a;
   cursor: pointer;
 }
+.mob-flag--unverortet { border: 1px solid #e4d5bb; background: #f3eadd; color: #8b6a3a; }
+.mob-flag--offmap { border: 1px solid #e0c9c0; background: #f6e9e4; color: #9a5a44; }
 
-.mob-strip__offmap {
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  padding: 2px 8px;
-  border-radius: 999px;
-  border: 1px solid #e0c9c0;
-  background: #f6e9e4;
-  color: #9a5a44;
-  cursor: pointer;
-}
-.mob-strip__offmap-note {
-  font-size: var(--text-xs);
-  color: var(--color-text-tertiary);
-  font-style: italic;
-  margin-bottom: var(--space-2);
-}
-
-.mob-strip__head {
+.mob-detail__head {
   display: flex;
   align-items: baseline;
   gap: var(--space-3);
-  margin-bottom: var(--space-2);
 }
-.mob-strip__title {
+.mob-detail__title {
   margin: 0;
   font-family: var(--font-title);
-  font-size: var(--text-lg);
+  font-size: var(--text-base);
   font-weight: var(--weight-semibold);
   color: var(--color-text-primary);
 }
-.mob-strip__clear {
+.mob-detail__clear {
   background: none;
   border: none;
   color: var(--color-kug-blau);
@@ -259,7 +131,13 @@
   cursor: pointer;
   text-decoration: underline;
 }
-.mob-strip__chips {
+.mob-detail__note {
+  font-size: var(--text-xs);
+  color: var(--color-text-tertiary);
+  font-style: italic;
+}
+
+.mob-chips {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);
@@ -268,14 +146,12 @@
 /* --- Einklappbare Voll-Liste (Prüfbarkeit) ------------------------------- */
 
 .mob-backbone {
-  border: 1px solid var(--border-color-light);
-  border-radius: var(--border-radius);
-  background: var(--color-paper);
-  padding: 0 var(--space-4);
+  border-top: 1px solid var(--border-color-light);
+  padding-top: var(--space-2);
 }
 .mob-backbone__summary {
   cursor: pointer;
-  padding: var(--space-3) 0;
+  padding: var(--space-2) 0;
   font-family: var(--font-ui);
   font-size: var(--text-sm);
   font-weight: var(--weight-semibold);
@@ -291,12 +167,12 @@
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  margin-bottom: var(--space-3);
+  margin-bottom: var(--space-2);
 }
 .mob-backbone__swatch { width: 12px; height: 12px; border-radius: 3px; flex: none; }
 .mob-backbone__label {
   font-family: var(--font-title);
-  font-size: var(--text-base);
+  font-size: var(--text-sm);
   font-weight: var(--weight-semibold);
   color: var(--color-text-primary);
 }
@@ -304,8 +180,4 @@
   font-family: var(--font-mono);
   font-size: var(--text-xs);
   color: var(--color-text-tertiary);
-}
-
-@media (max-width: 700px) {
-  .mob-controls { flex-direction: column; align-items: flex-start; }
 }

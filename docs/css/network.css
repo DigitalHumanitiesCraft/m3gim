@@ -1,35 +1,15 @@
 /*
  * M3GIM Netzwerk-Tab — konzentrische Personen-Visualisierung um Malaniuk.
- * Canvas-zentrierte Layout: Sidebar links (Filter + Legende + Coverage),
- * Canvas nimmt den kompletten restlichen Viewport. Kein eigener Titel —
+ * Geruest und Filter-Controls der Sidebar liegen seit dem Sidebar-Refactor in
+ * sidebar.css (geteilte View-Sidebar, .view-shell/.view-sidebar/.view-main,
+ * .vs-*). Hier bleibt nur das Netzwerk-Spezifische: Canvas, Ringe, Knoten,
+ * Kanten, Detail-Panel, Coverage-Inhalt und die Legenden-Marker, die die
+ * staticLegend-Zeilen ueber markerClass referenzieren. Kein eigener Titel —
  * der Tab-Button in der Navigation ist bereits Ueberschrift.
  */
 
 #tab-netzwerk {
   padding: 0;
-}
-
-.netzwerk__shell {
-  display: grid;
-  grid-template-columns: 300px 1fr;
-  height: calc(100vh - 130px);
-  min-height: 600px;
-}
-
-.netzwerk__sidebar {
-  background: var(--color-paper);
-  border-right: 1px solid var(--border-color-light);
-  padding: var(--space-3) var(--space-3) var(--space-4);
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.netzwerk__main {
-  position: relative;
-  min-width: 0; /* Grid-Overflow-Fix: Canvas darf schrumpfen */
-  background: var(--color-paper);
 }
 
 /* Zoom-Controls oben links im Canvas-Bereich */
@@ -84,28 +64,7 @@
   display: block;
 }
 
-/* -- Sidebar-Sektionen --------------------------------------------------- */
-
-.nz-section {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.nz-section__title {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: var(--weight-semibold);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--color-text-tertiary);
-  margin: 0;
-  padding-bottom: 3px;
-  border-bottom: 1px solid var(--border-color-light);
-}
-
-
-/* Coverage — oben, prominent, aber kompakt */
+/* Coverage — Inhalt der titellosen Status-Sektion (network.js::applyFilters). */
 .netzwerk__coverage {
   display: flex;
   flex-direction: column;
@@ -130,111 +89,7 @@
   letter-spacing: 0.01em;
 }
 
-/* Suche */
-.nz-search {
-  font-family: var(--font-ui);
-  font-size: var(--text-sm);
-  padding: 6px 10px;
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-/* Filter-Zeilen (Slider + Toggles) — dichte Darstellung */
-.nz-filters {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.nz-row {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  column-gap: 6px;
-  align-items: center;
-  font-size: var(--text-xs);
-  color: var(--color-text-secondary);
-  padding: 2px 0;
-}
-
-.nz-row__label {
-  grid-column: 1 / -1;
-  font-size: 11px;
-  color: var(--color-text-secondary);
-  margin-bottom: 2px;
-}
-
-.nz-slider {
-  grid-column: 1;
-  width: 100%;
-}
-
-.nz-slider__value {
-  grid-column: 2;
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  min-width: 18px;
-  text-align: right;
-  color: var(--color-text-primary);
-}
-
-.netzwerk__toggle {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: var(--text-xs);
-  color: var(--color-text-primary);
-  cursor: pointer;
-  padding: 1px 0;
-}
-
-.netzwerk__toggle input {
-  margin: 0;
-}
-
-/* Zeitfilter-Block — zwei schlanke Slider, kompakt */
-.nz-timefilter {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  margin-top: 4px;
-  padding-top: 6px;
-  border-top: 1px solid var(--border-color-light);
-}
-
-.nz-timefilter__head {
-  font-size: 11px;
-  color: var(--color-text-secondary);
-}
-
-.nz-timefilter__value {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--color-text-primary);
-  align-self: flex-end;
-  margin-bottom: 2px;
-}
-
-.nz-timefilter__label {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--color-text-tertiary);
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  margin-top: 2px;
-}
-
-.nz-timefilter__slider {
-  width: 100%;
-}
-
-/* Kategorie-Chips mit Count-Badge */
-.nz-cats {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-}
+/* -- Legenden-Marker (von staticLegend ueber markerClass referenziert) ----- */
 
 /* Ring-Swatches: leere Kreise, die den Canvas-Ringen 1:1 entsprechen.
  *   Ring 1 = solid,  dunkler
@@ -255,66 +110,6 @@
 .netzwerk__legend-dot--ring2 {
   border: 1.4px dashed #a89f8e;
 }
-
-.netzwerk__cat-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  background: transparent;
-  border: 1px solid var(--cat-color, #999);
-  color: var(--cat-color, #333);
-  font-family: var(--font-ui);
-  font-size: var(--text-xs);
-  letter-spacing: 0.03em;
-  padding: 3px 8px;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: background var(--transition-fast), color var(--transition-fast);
-}
-
-.netzwerk__cat-chip--active {
-  background: var(--cat-color, #555);
-  color: #fff;
-}
-
-.nz-cat-chip__label {
-  font-weight: var(--weight-medium);
-}
-
-.nz-cat-chip__count {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  opacity: 0.8;
-}
-
-.netzwerk__cat-chip--active .nz-cat-chip__count {
-  opacity: 1;
-}
-
-/* Legende — immer ausgeklappt, kompakt, explizit:
- *   - Ring 1 / Ring 2 als Kreis-Swatches
- *   - AgRelOn / Ko-Okkurrenz als Linien-Swatches (gerade/geschwungen)
- *   - Wikidata-Stern als Marker
- */
-.nz-legend {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  font-size: 11px;
-  color: var(--color-text-primary);
-  line-height: 1.4;
-}
-
-.nz-legend__row {
-  display: grid;
-  grid-template-columns: 22px 1fr;
-  align-items: center;
-  gap: 8px;
-}
-
-.nz-legend__text { min-width: 0; }
-.nz-legend__text strong { color: var(--color-text-primary); font-weight: var(--weight-semibold); }
-.nz-legend__text em { font-style: italic; color: var(--color-text-secondary); }
 
 /* Linien-Swatches: gerade vs. geschwungene Linie visuell unterschieden. */
 .nz-legend__line {
@@ -347,25 +142,6 @@
   border-right: 5px solid transparent;
   border-bottom: 8px solid #c9a961;
   flex-shrink: 0;
-}
-
-/* Reset-Button — am Fuss des Panels */
-.netzwerk__reset {
-  margin-top: auto;
-  background: transparent;
-  border: 1px solid var(--border-color-light);
-  color: var(--color-text-tertiary);
-  font-family: var(--font-ui);
-  font-size: 11px;
-  padding: 5px 10px;
-  border-radius: 3px;
-  cursor: pointer;
-  width: 100%;
-}
-
-.netzwerk__reset:hover {
-  background: var(--color-cream);
-  color: var(--color-text-primary);
 }
 
 /* Ringe — Evidenzstaerke deutlich sichtbar:
@@ -686,20 +462,6 @@
 /* -- Responsive ---------------------------------------------------------- */
 
 @media (max-width: 900px) {
-  .netzwerk__shell {
-    grid-template-columns: 1fr;
-    height: auto;
-    min-height: unset;
-  }
-  .netzwerk__sidebar {
-    border-right: none;
-    border-bottom: 1px solid var(--border-color-light);
-    max-height: 50vh;
-  }
-  .netzwerk__main {
-    height: 70vh;
-    min-height: 480px;
-  }
   .netzwerk__detail {
     position: static;
     width: auto;
