@@ -12,7 +12,7 @@ template:
   url: https://dhcraft.org/Promptotyping/promptotyping-document/plan
 status: active
 created: 2026-02-19
-updated: 2026-06-21
+updated: 2026-06-22
 language: de
 version: 0.2
 authors: [Christopher Pollin]
@@ -41,6 +41,29 @@ Ein neuer Export liegt vor und erschließt mehrere Konvolute tiefer. Die freigeg
 5. Produktivschalten: den neuen Export übernehmen, Pipeline laufen lassen, Snapshot-Diff als Gate, das Frontend-Vokabular aktivieren ([architecture.md](architecture.md)), danach die Reconciliation-Runde und die Approval-Verifikation.
 
 Die finalen Cluster-Zuordnungen der neuen eventRoles und Rollen sind mit dem Frontend abzustimmen, bevor produktiv geschaltet wird.
+
+### Test-Regression gegen den tieferen Export (Befund 2026-06-22)
+
+Der in `277b480` eingespielte tiefere Export (Verknüpfungstabelle nahezu verdoppelt) bringt 14 pytest-Fehler bei 215 grün; die JS-Suite (87/87) und der Smoke-Loop (25/0) sind davon unberührt, es ist rein daten- und pipelineseitig. Die transform.py-Änderung desselben Commits (Signatur-Normalisierung `NIM_11`→`NIM_011`, Leerzeilen-Filter) ist korrekt und hat Relationen sogar repariert; die Fehler sind der größere Datenbestand, der bestehende Lücken aufdeckt. Bisher nur diagnostiziert, nicht behoben. Drei Gruppen.
+
+**Gruppe 1, echte Parser-Lücken (klare Fixes, keine Klassifikation):**
+
+1. `clean_date` reicht den Platzhalter „ohne Datum" unverändert durch, er landet in `rico:date` (29 Records) und bricht das JSON-LD-Schema (`test_01`). Fix: „ohne Datum"/„o. D." in `clean_date` auf `None` abbilden (die Konvention „o. D." ist etabliert).
+2. Deutsches Dezimalkomma in `parse_monetary_value`: `1500,00 DM` zerlegt in Betrag `1500` und Währung `00 DM`, daher die Geister-Währungen `00 DM` und `00 Belgische Francs` (`test_06`/`test_13`/`test_15`/`test_16`). Fix: Nachkomma-Ziffern als Betragsteil behandeln. Die Status-Tracker-Notiz „E-99-Sonderfälle kommen 0× vor" ist mit dem tieferen Export überholt, die Fälle (Lire, Dezimalbeträge) treten jetzt auf.
+
+**Gruppe 2, neues Vokabular (gated, braucht fachliche Zuordnung):**
+
+1. Neue eventRoles `aufnahme`, `rahmenveranstaltung`, `generalprobe` (`test_11`/`test_25`) in `EVENT_ROLE_TO_MOBILITY_CLUSTER` (constants.js) und [data.md § 10](data.md) einordnen, auch „keine Sicht" (null) ist zulässig (Leitplanke: Klassifikation entscheiden, nicht erfinden).
+2. `nicht eingehalten` erscheint als eventRole, obwohl E-99 es als Vertragsstatus führt, vermutlich eine fehlgeleitete Zelle oder ein Routing-Fehler im STE-Bau, nicht echtes Vokabular. Vor dem Mappen klären.
+3. Währung `Lire` (7×) in die Vokabularliste aufnehmen.
+
+**Gruppe 3, Test- und Fixture-Pflege:**
+
+1. `test_20`: Anker-Record verschob sich um eine Zeile (123→122), weil der Leerzeilen-Filter eine Zeile entfernt. Fixture nachziehen.
+2. `test_32`/`test_34`: Die E-97-Ortsrollen tragen im tieferen Export teils Datum und sind dekomponiert (`atPlace` = `Bayreuth`, Rohzelle = `Bayreuth, 1952-08-25`). Die Tests gehen noch von datumslosen, undekomponierten Ortsrollen aus; Erwartung an die neue Datenform anpassen.
+3. `test_04`: referenzierte Signatur `NIM_168` ohne ausgehende Relation, mögliche Datenlücke, prüfen.
+
+Reihenfolge: Gruppe 1 ist sauber fixbar, danach das Promote-Gate (Regeneration, `docs/data` == `data/output`, `test_33`). Gruppe 2 ist mit dem Erschließungsteam zu entscheiden, bevor produktiv geschaltet wird (siehe Hinweis oben). Gruppe 3 zieht beim Regenerieren mit.
 
 ### Ontologie-Konformität
 
@@ -127,6 +150,7 @@ Diese redaktionellen Punkte werden fortlaufend im Erfassungsteam bearbeitet.
 | Arbeitspaket | Status | Notiz |
 |---|---|---|
 | Neuer Datenstand und Modell-Umsetzung | aktiv | testgetrieben. Erledigt: E-95 (Loader), E-96+E-98 (Performance/StageRole), E-102 (Quality-Flags + DatedEvent + eventDate-Drop + ort,datum-Dedup), E-106 (Datierungs-Konfidenz entfernt, löst E-100 ab), E-101 (Dokumentvokabular, datengedeckte Teile), E-97 (Mobilitäts-Ortsrollen → datumslose STE, datengedeckter Kern; wohnort/vertragspartner mangels Daten vertagt). **E-99 (Finanz-Parser) vertagt:** alle 21 Finanzzeilen parst der Bestand bereits korrekt, die E-99-Sonderfälle kommen 0× vor — wäre spekulativer Code. **Promote erledigt (E-107, 2026-06-18):** Frontend-Daten regeneriert, `docs/data` == `data/output` (+15 E-97-Mobilitäts-STE im Frontend); Staleness-Guard `test_33` ergänzt; `report-quality.py`-Provenienz-Metrik gefixt |
+| Test-Regression tieferer Export (14 pytest-Fehler) | diagnostiziert, Fix offen | Befund 2026-06-22, rein daten-/pipelineseitig (JS 87/87 und smoke 25/0 unberührt). Gruppe 1 klare Parser-Lücken (`clean_date` „ohne Datum"→rico:date, Dezimalkomma→Geister-Währung), Gruppe 2 neues Vokabular gated (eventRoles aufnahme/rahmenveranstaltung/generalprobe, `nicht eingehalten` prüfen, Währung Lire), Gruppe 3 Test-/Fixture-Pflege (test_20 Zeile, test_32/test_34 dekomponierte Ortsrollen, test_04 NIM_168). Details in „Nächste Schritte" |
 | Ontologie-Konformität (E-103/E-104/E-105) | erledigt | Term-Renames + schema/GND-Migration + test_26-Lock, `agrelon:hasSubject`→`wd:Q94208`, `eventDate`-Drop (mit E-102) — alles umgesetzt, Suite grün |
 | Mobilitäts-View (eigener Tab) | erledigt | E-109 → E-111 (2026-06-21, operator-beauftragt). Sichtbarer Tab `mobilitaet`. Zuerst Listendarstellung aller 61 SpatiotemporalEvents nach den fünf Mobilitätssichten (E-109), dann auf direkte Operator-Anweisung durch eine **D3-geo-Trajektorienkarte** ersetzt (E-111): Vollbreitenkarte, Orte als Knoten nach dominanter Mobilitätssicht, biografischer Pfad als gerichtete Pfeile hell-zu-dunkel über die Zeit, Zeitregler mit Abspielen, Sicht-Legende als Filter, Bedienelemente statt Fließtext. Lokale Natural-Earth-110m-Geometrie (`docs/data/geo/`), kein Tile-Server, kein Leaflet. Der globale Klassifikator wurde an § 10 angeglichen (E-110, order-m3gim Punkt 1): die fünf Ortsrollen mappen auf `korrespondenz`, der Statistik-Tab führt sie als „Reise & Korrespondenz" statt „Nicht klassifiziert", `test_25` lockt die Zuordnung. Browser-verifiziert (177 Länder, 11 Knoten, 23 Arcs, Zeit-Reveal greift), Suite grün. Beide Runden nach main gepusht (ea62739, 24ed8e2). **Geschärft (E-114, Milestone-Runde):** Knoten-Tooltip, zoomabhängige Label-Ausdünnung mit Counter-Scaling, ehrlicher Off-Map-Umgang mit dem New-York-Fehlmatch AF-01 (aus Knoten und Pfad ausgenommen, im Detailstreifen ausgewiesen) statt auslaufender Arcs; Screenshot-Spur unter `reports/screens/`, Live-Deploy operator-gated. Offen (handoff Stand 8): Einfärbungsregel Zürich/Köln, Cross-View-Filter (order Punkt 2). |
 | Reaktivierung Mobilitäts-Atlas, Repertoire, Biogramm | offen | **Mobilitäts-Atlas durch E-111 überholt:** der sichtbare D3-geo-Mobilitäts-Tab deckt den raumzeitlichen Zweck ab. Die Reaktivierung des verborgenen Leaflet-Atlas ist damit kein Selbstzweck mehr; ob er stillgelegt oder als zweite Sicht reaktiviert wird, ist offene Operator-Frage (handoff Stand 8 Punkt 2). Repertoire und Biogramm bleiben unabhängig davon offen. Pro Tab Daten-Kontrakt, Chip-Muster, Meta-Fresh-Check. **Atlas-Befund (Session 51):** Tab bricht beim Render mit `ReferenceError: L is not defined` — Leaflet ist bewusst nicht eingebunden (`index.html`, `mobility-atlas.js`), die Error-Boundary fängt es graceful ab. Reaktivierung erfordert Leaflet via CDN; zudem fehlen dann die 15 datumslosen E-97-Ortsrollen im Atlas-Zeitstrahl (`datedEvents`-Filter) und adressgenaue Orte ohne Q-ID landen in „unverortet". Den Silent-Drop-Hinweis (analog Statistik, E-108) bei Reaktivierung mitziehen. **Laufzeit-Befund bestätigt (2026-06-21, Forschungsleitstelle):** `window.L` zur Laufzeit `undefined` verifiziert, Datenkontrakt erfüllt (55 verortet, 6 unverortet = die Zürich-Adressvarianten); von den 15 datumslosen fallen 9 verortete Events aus dem Zeitstrahl, erscheinen aber als Kartenmarker, bei Reaktivierung sichtbar machen. |
