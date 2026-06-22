@@ -219,6 +219,22 @@
 .vs-button:hover { background: var(--color-cream); color: var(--color-text-primary); }
 .vs-button--foot { margin-top: auto; }
 
+.vs-buttons { display: flex; flex-wrap: wrap; gap: 4px; }
+.vs-buttons__btn {
+  flex: 1 1 auto;
+  background: var(--color-paper);
+  border: 1px solid var(--border-color-light);
+  color: var(--color-text-secondary);
+  font-family: var(--font-ui);
+  font-size: var(--text-xs);
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+.vs-buttons__btn:hover { background: var(--color-cream); color: var(--color-text-primary); }
+
 /* --- Responsive ---------------------------------------------------------- */
 
 @media (max-width: 900px) {

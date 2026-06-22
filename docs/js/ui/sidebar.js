@@ -198,6 +198,18 @@ function buttonControl({ label, onClick, variant }) {
   return { node: btn };
 }
 
+/** Kompakte Reihe verwandter Aktions-Buttons (z. B. Fokus-Voreinstellungen). */
+function buttonsControl({ items = [] }) {
+  const wrap = el('div', { className: 'vs-buttons' });
+  for (const it of items) {
+    const btn = el('button', { type: 'button', className: 'vs-buttons__btn',
+      title: it.title || '' }, it.label);
+    btn.addEventListener('click', it.onClick);
+    wrap.appendChild(btn);
+  }
+  return { node: wrap };
+}
+
 /** Bespoke-Region. Entweder ein fertiger node, oder ein Container (mit
  *  optionaler id/className), den die View selbst fuellt. build()/update()
  *  laufen einmalig bzw. bei jedem Sidebar-update(). */
@@ -216,5 +228,6 @@ const FACTORIES = {
   search: searchControl,
   staticLegend: staticLegendControl,
   button: buttonControl,
+  buttons: buttonsControl,
   custom: customControl,
 };
