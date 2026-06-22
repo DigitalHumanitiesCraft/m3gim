@@ -438,6 +438,17 @@ def create_record_id(signatur: str, folio: str = None) -> str:
     return f"m3gim:{clean}"
 
 
+def normalize_signatur(sig: str) -> str:
+    """Nullt die NIM-Konvolutnummer auf drei Stellen (NIM_11 -> NIM_011).
+
+    Die Verknuepfungstabelle fuehrt ein Konvolut zweistellig, die Objekte-
+    Tabelle dreistellig; ohne Angleich treffen die Verknuepfungen ihren
+    Record nicht und verfallen. PL_xx und andere Formen bleiben unberuehrt.
+    """
+    return re.sub(r'NIM_(\d{1,3})\b',
+                  lambda m: f"NIM_{int(m.group(1)):03d}", sig)
+
+
 def load_index(name: str) -> pd.DataFrame | None:
     """Laedt einen Index mit Header-Shift-Korrektur.
 
@@ -627,6 +638,17 @@ def build_konvolut_hierarchy(df: pd.DataFrame, folio_col: str = None) -> tuple[l
         sig = str(row['archivsignatur']).strip()
         folio_raw = row.get(folio_col) if folio_col else None
         folio = str(folio_raw).strip() if pd.notna(folio_raw) and str(folio_raw).strip() else None
+
+        # Leere Platzhalterzeile (nur Signatur/box_nr, kein Folio und kein
+        # Inhalt) ueberspringen: solche Zeilen sind kein Objekt und fielen
+        # ohne Folio alle auf dieselbe Sammlungs-@id (Quellartefakt, z.B.
+        # NIM_137). Eine Zeile mit Folio oder mit Titel/Typ/Datum/Stand bleibt.
+        if not folio:
+            _content_cols = ('titel', 'dokumenttyp', 'entstehungsdatum',
+                             'Bearbeitungsstand')
+            if not any(pd.notna(row.get(c)) and str(row.get(c)).strip()
+                       for c in _content_cols):
+                continue
 
         # XLSX-Zeilennummer: pandas-Idx ist 0-basiert, XLSX hat Header in Zeile 1
         record = convert_objekt(row, folio_col, xlsx_row=int(idx) + 2)
@@ -864,9 +886,13 @@ def load_verknuepfungen(path: Path) -> pd.DataFrame:
             # nicht-textuelle Header bleiben unveraendert (werden unten ignoriert)
         df = df.rename(columns=rename)
 
-        # Signatur forward-fillen (viele Folgezeilen lassen sie leer).
+        # Signatur forward-fillen (viele Folgezeilen lassen sie leer) und die
+        # NIM-Konvolutnummer auf drei Stellen normalisieren, damit zweistellig
+        # erfasste Signaturen (NIM_11) ihren dreistelligen Record treffen.
         if "archivsignatur" in df.columns:
             df["archivsignatur"] = df["archivsignatur"].ffill()
+            df["archivsignatur"] = df["archivsignatur"].map(
+                lambda s: normalize_signatur(s) if isinstance(s, str) else s)
 
         # Provenance: originale XLSX-Zeile (1-basiert inkl. Header) + Sheet.
         df["_xlsx_sheet"] = sheet

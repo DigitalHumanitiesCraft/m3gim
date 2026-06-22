@@ -9,11 +9,11 @@
     {
       "name": "Wagner",
       "farbe": "#6B2C2C",
-      "dokumente_gesamt": 21,
+      "dokumente_gesamt": 258,
       "werke": [
         {
           "name": "Tristan und Isolde",
-          "dokumente": 12,
+          "dokumente": 72,
           "signaturen": [
             "UAKUG/NIM/PL_16",
             "UAKUG/NIM_004 9",
@@ -29,31 +29,69 @@
           "orte": [
             {
               "name": "Bayreuth",
-              "count": 6
+              "count": 27
+            },
+            {
+              "name": "München",
+              "count": 15
             },
             {
               "name": "Wien",
-              "count": 6
+              "count": 9
+            }
+          ],
+          "rollen": []
+        },
+        {
+          "name": "Die Walküre",
+          "dokumente": 56,
+          "signaturen": [
+            "UAKUG/NIM_011 15",
+            "UAKUG/NIM_022 3",
+            "UAKUG/NIM_023 1_1",
+            "UAKUG/NIM_023 2",
+            "UAKUG/NIM_073 33_3_1",
+            "UAKUG/NIM_135 14",
+            "UAKUG/NIM_135 14_1",
+            "UAKUG/NIM_135 14_2",
+            "UAKUG/NIM_135 14_3",
+            "UAKUG/NIM_135 14_4"
+          ],
+          "orte": [
+            {
+              "name": "Bayreuth",
+              "count": 54
             },
             {
-              "name": "Zürich",
-              "count": 5
+              "name": "München",
+              "count": 2
+            },
+            {
+              "name": "Neapel",
+              "count": 2
             }
           ],
           "rollen": []
         },
         {
           "name": "Götterdämmerung",
-          "dokumente": 3,
+          "dokumente": 55,
           "signaturen": [
             "UAKUG/NIM_004 10",
             "UAKUG/NIM_004 30",
-            "UAKUG/NIM_007 5_1"
+            "UAKUG/NIM_007 5_1",
+            "UAKUG/NIM_011 16",
+            "UAKUG/NIM_023 4",
+            "UAKUG/NIM_135 2",
+            "UAKUG/NIM_135 2_1",
+            "UAKUG/NIM_135 2_2",
+            "UAKUG/NIM_135 2_3",
+            "UAKUG/NIM_135 2_4"
           ],
           "orte": [
             {
               "name": "Bayreuth",
-              "count": 1
+              "count": 52
             },
             {
               "name": "Zürich, Zürichbergstrasse 104",
@@ -67,12 +105,40 @@
           "rollen": []
         },
         {
+          "name": "Die Meistersinger",
+          "dokumente": 51,
+          "signaturen": [
+            "UAKUG/NIM_004 13",
+            "UAKUG/NIM_135 13",
+            "UAKUG/NIM_135 13_1",
+            "UAKUG/NIM_135 13_2",
+            "UAKUG/NIM_135 13_3",
+            "UAKUG/NIM_135 13_4",
+            "UAKUG/NIM_135 13_5",
+            "UAKUG/NIM_135 13_6",
+            "UAKUG/NIM_135 13_7",
+            "UAKUG/NIM_135 13_8"
+          ],
+          "orte": [
+            {
+              "name": "Bayreuth",
+              "count": 50
+            }
+          ],
+          "rollen": []
+        },
+        {
           "name": "Die Meistersinger von Nürnberg",
-          "dokumente": 3,
+          "dokumente": 8,
           "signaturen": [
             "UAKUG/NIM_004 13",
             "UAKUG/NIM_007 4",
-            "UAKUG/NIM_007 17"
+            "UAKUG/NIM_007 17",
+            "UAKUG/NIM_022 1_1",
+            "UAKUG/NIM_073 9",
+            "UAKUG/NIM_135 2_24",
+            "UAKUG/NIM_135 13_28",
+            "UAKUG/NIM_135 14_28"
           ],
           "orte": [
             {
@@ -80,23 +146,121 @@
               "count": 3
             },
             {
-              "name": "München",
-              "count": 2
+              "name": "Bayreuth",
+              "count": 3
             },
             {
-              "name": "Stuttgart",
+              "name": "München",
               "count": 2
             }
           ],
           "rollen": []
         },
         {
-          "name": "Die Meistersinger",
-          "dokumente": 1,
+          "name": "Parsifal",
+          "dokumente": 8,
           "signaturen": [
-            "UAKUG/NIM_004 13"
+            "UAKUG/NIM_073 9",
+            "UAKUG/NIM_073 30_1",
+            "UAKUG/NIM_135 2_24",
+            "UAKUG/NIM_135 13_28",
+            "UAKUG/NIM_135 14_28",
+            "UAKUG/NIM_136 95",
+            "UAKUG/NIM_137 12_6",
+            "UAKUG/NIM_137 15_3"
           ],
-          "orte": [],
+          "orte": [
+            {
+              "name": "Bayreuth",
+              "count": 8
+            },
+            {
+              "name": "New York",
+              "count": 5
+            },
+            {
+              "name": "München",
+              "count": 5
+            }
+          ],
+          "rollen": []
+        },
+        {
+          "name": "Lohengrin",
+          "dokumente": 5,
+          "signaturen": [
+            "UAKUG/NIM_004 30",
+            "UAKUG/NIM_073 19",
+            "UAKUG/NIM_137 12_6",
+            "UAKUG/NIM_137 15_3",
+            "UAKUG/NIM_137 15_3"
+          ],
+          "orte": [
+            {
+              "name": "Bayreuth",
+              "count": 3
+            },
+            {
+              "name": "Zürich, Zürichbergstrasse 104",
+              "count": 1
+            }
+          ],
+          "rollen": []
+        },
+        {
+          "name": "Die Götterdämmerung",
+          "dokumente": 4,
+          "signaturen": [
+            "UAKUG/NIM_023 1_1",
+            "UAKUG/NIM_023 4",
+            "UAKUG/NIM_135 2_24",
+            "UAKUG/NIM_137 14"
+          ],
+          "orte": [
+            {
+              "name": "Neapel",
+              "count": 2
+            },
+            {
+              "name": "München",
+              "count": 2
+            },
+            {
+              "name": "Bayreuth",
+              "count": 2
+            }
+          ],
+          "rollen": []
+        },
+        {
+          "name": "Der Ring des Nibelungen",
+          "dokumente": 3,
+          "signaturen": [
+            "UAKUG/NIM_051",
+            "UAKUG/NIM_137 14",
+            "UAKUG/NIM_137 20"
+          ],
+          "orte": [
+            {
+              "name": "Bayreuth",
+              "count": 3
+            }
+          ],
+          "rollen": []
+        },
+        {
+          "name": "Das Rheingold",
+          "dokumente": 2,
+          "signaturen": [
+            "UAKUG/NIM_137 15_1",
+            "UAKUG/NIM_137 15_2"
+          ],
+          "orte": [
+            {
+              "name": "Bayreuth",
+              "count": 2
+            }
+          ],
           "rollen": []
         },
         {
@@ -114,26 +278,21 @@
           "rollen": []
         },
         {
-          "name": "Lohengrin",
+          "name": "die Walküre",
           "dokumente": 1,
           "signaturen": [
-            "UAKUG/NIM_004 30"
+            "UAKUG/NIM_023 2"
           ],
           "orte": [
             {
-              "name": "Zürich, Zürichbergstrasse 104",
+              "name": "Rom",
+              "count": 3
+            },
+            {
+              "name": "Zürich",
               "count": 1
             }
           ],
-          "rollen": []
-        },
-        {
-          "name": "Der Ring des Nibelungen",
-          "dokumente": 1,
-          "signaturen": [
-            "UAKUG/NIM_051"
-          ],
-          "orte": [],
           "rollen": []
         }
       ]
@@ -141,7 +300,7 @@
     {
       "name": "Verdi",
       "farbe": "#2C5C3F",
-      "dokumente_gesamt": 17,
+      "dokumente_gesamt": 20,
       "werke": [
         {
           "name": "Aida",
@@ -195,6 +354,22 @@
           "rollen": []
         },
         {
+          "name": "Requiem",
+          "dokumente": 3,
+          "signaturen": [
+            "UAKUG/NIM_011 12",
+            "UAKUG/NIM_011 12",
+            "UAKUG/NIM_011 12"
+          ],
+          "orte": [
+            {
+              "name": "Wien",
+              "count": 3
+            }
+          ],
+          "rollen": []
+        },
+        {
           "name": "Rigoletto",
           "dokumente": 1,
           "signaturen": [
@@ -227,6 +402,135 @@
           "dokumente": 1,
           "signaturen": [
             "UAKUG/NIM_089"
+          ],
+          "orte": [
+            {
+              "name": "Wien",
+              "count": 1
+            }
+          ],
+          "rollen": []
+        }
+      ]
+    },
+    {
+      "name": "Beethoven",
+      "farbe": "#4A5A7A",
+      "dokumente_gesamt": 14,
+      "werke": [
+        {
+          "name": "Sinfonien, Nr. 9, op. 125 (d-Moll)",
+          "dokumente": 3,
+          "signaturen": [
+            "UAKUG/NIM_004 7",
+            "UAKUG/NIM_011 11",
+            "UAKUG/NIM_011 12"
+          ],
+          "orte": [
+            {
+              "name": "Bayreuth",
+              "count": 6
+            },
+            {
+              "name": "Wien",
+              "count": 1
+            }
+          ],
+          "rollen": []
+        },
+        {
+          "name": "Die Geschöpfe des Prometheus",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_004 33"
+          ],
+          "orte": [
+            {
+              "name": "Graz",
+              "count": 1
+            },
+            {
+              "name": "München",
+              "count": 1
+            },
+            {
+              "name": "Stuttgart",
+              "count": 1
+            }
+          ],
+          "rollen": []
+        },
+        {
+          "name": "8. Symphonie",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_004 33"
+          ],
+          "orte": [
+            {
+              "name": "Graz",
+              "count": 1
+            },
+            {
+              "name": "München",
+              "count": 1
+            },
+            {
+              "name": "Stuttgart",
+              "count": 1
+            }
+          ],
+          "rollen": []
+        },
+        {
+          "name": "Ich liebe dich",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_007 8"
+          ],
+          "orte": [
+            {
+              "name": "Palais Pallavicini",
+              "count": 1
+            },
+            {
+              "name": "Palais Schwarzenberg",
+              "count": 1
+            },
+            {
+              "name": "Palais Auersberg",
+              "count": 1
+            }
+          ],
+          "rollen": []
+        },
+        {
+          "name": "Lied der Mignon",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_007 8"
+          ],
+          "orte": [
+            {
+              "name": "Palais Pallavicini",
+              "count": 1
+            },
+            {
+              "name": "Palais Schwarzenberg",
+              "count": 1
+            },
+            {
+              "name": "Palais Auersberg",
+              "count": 1
+            }
+          ],
+          "rollen": []
+        },
+        {
+          "name": "Messen, op. 123 (D-Dur)",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_011 12"
           ],
           "orte": [
             {
@@ -372,70 +676,200 @@
       ]
     },
     {
-      "name": "Beethoven",
-      "farbe": "#4A5A7A",
+      "name": "Mozart",
+      "farbe": "#5B4A8A",
+      "dokumente_gesamt": 11,
+      "werke": [
+        {
+          "name": "Don Giovanni",
+          "dokumente": 3,
+          "signaturen": [
+            "UAKUG/NIM_004 9",
+            "UAKUG/NIM_004 12",
+            "UAKUG/NIM_004 33"
+          ],
+          "orte": [
+            {
+              "name": "Stuttgart",
+              "count": 2
+            },
+            {
+              "name": "Italien",
+              "count": 1
+            },
+            {
+              "name": "Graz",
+              "count": 1
+            }
+          ],
+          "rollen": []
+        },
+        {
+          "name": "La clemenza di Tito",
+          "dokumente": 3,
+          "signaturen": [
+            "UAKUG/NIM_004 12",
+            "UAKUG/NIM_004 24",
+            "UAKUG/NIM_004 29"
+          ],
+          "orte": [
+            {
+              "name": "Wien",
+              "count": 4
+            },
+            {
+              "name": "Zürich",
+              "count": 4
+            },
+            {
+              "name": "München",
+              "count": 4
+            }
+          ],
+          "rollen": []
+        },
+        {
+          "name": "Così fan tutte",
+          "dokumente": 2,
+          "signaturen": [
+            "UAKUG/NIM_011 1",
+            "UAKUG/NIM_011 1"
+          ],
+          "orte": [
+            {
+              "name": "Wien",
+              "count": 4
+            },
+            {
+              "name": "Genf",
+              "count": 2
+            }
+          ],
+          "rollen": []
+        },
+        {
+          "name": "Die Zauberflöte",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_007 4"
+          ],
+          "orte": [
+            {
+              "name": "Lissabon",
+              "count": 3
+            },
+            {
+              "name": "Stuttgart",
+              "count": 2
+            },
+            {
+              "name": "Wien",
+              "count": 1
+            }
+          ],
+          "rollen": []
+        },
+        {
+          "name": "Messen, KV 317",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_011 12"
+          ],
+          "orte": [
+            {
+              "name": "Wien",
+              "count": 1
+            }
+          ],
+          "rollen": []
+        },
+        {
+          "name": "Litaniae lauretanae  KV 109",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_011 12"
+          ],
+          "orte": [
+            {
+              "name": "Wien",
+              "count": 1
+            }
+          ],
+          "rollen": []
+        }
+      ]
+    },
+    {
+      "name": "Strauss",
+      "farbe": "#4A3A6B",
       "dokumente_gesamt": 8,
       "werke": [
         {
-          "name": "Sinfonien, Nr. 9, op. 125 (d-Moll)",
-          "dokumente": 1,
+          "name": "Arabella",
+          "dokumente": 2,
           "signaturen": [
-            "UAKUG/NIM_004 7"
+            "UAKUG/NIM_011 14",
+            "UAKUG/NIM_011 15"
           ],
           "orte": [
+            {
+              "name": "München",
+              "count": 5
+            },
             {
               "name": "Bayreuth",
-              "count": 1
+              "count": 3
             }
           ],
           "rollen": []
         },
         {
-          "name": "Die Geschöpfe des Prometheus",
+          "name": "Daphne",
           "dokumente": 1,
           "signaturen": [
-            "UAKUG/NIM_004 33"
+            "UAKUG/NIM_004 30"
           ],
           "orte": [
             {
-              "name": "Graz",
-              "count": 1
-            },
-            {
-              "name": "München",
-              "count": 1
-            },
-            {
-              "name": "Stuttgart",
+              "name": "Zürich, Zürichbergstrasse 104",
               "count": 1
             }
           ],
           "rollen": []
         },
         {
-          "name": "8. Symphonie",
+          "name": "Der Rosenkavalier",
           "dokumente": 1,
           "signaturen": [
-            "UAKUG/NIM_004 33"
+            "UAKUG/NIM_004 31"
+          ],
+          "orte": [],
+          "rollen": []
+        },
+        {
+          "name": "Elektra",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_007 4"
           ],
           "orte": [
             {
-              "name": "Graz",
-              "count": 1
-            },
-            {
-              "name": "München",
-              "count": 1
+              "name": "Lissabon",
+              "count": 3
             },
             {
               "name": "Stuttgart",
+              "count": 2
+            },
+            {
+              "name": "Wien",
               "count": 1
             }
           ],
           "rollen": []
         },
         {
-          "name": "Ich liebe dich",
+          "name": "Glücks genug",
           "dokumente": 1,
           "signaturen": [
             "UAKUG/NIM_007 8"
@@ -457,7 +891,29 @@
           "rollen": []
         },
         {
-          "name": "Lied der Mignon",
+          "name": "Mein Herz ist stumm",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_007 8"
+          ],
+          "orte": [
+            {
+              "name": "Palais Pallavicini",
+              "count": 1
+            },
+            {
+              "name": "Palais Schwarzenberg",
+              "count": 1
+            },
+            {
+              "name": "Palais Auersberg",
+              "count": 1
+            }
+          ],
+          "rollen": []
+        },
+        {
+          "name": "Befreit",
           "dokumente": 1,
           "signaturen": [
             "UAKUG/NIM_007 8"
@@ -519,83 +975,6 @@
             "UAKUG/NIM_004 6"
           ],
           "orte": [],
-          "rollen": []
-        }
-      ]
-    },
-    {
-      "name": "Mozart",
-      "farbe": "#5B4A8A",
-      "dokumente_gesamt": 7,
-      "werke": [
-        {
-          "name": "Don Giovanni",
-          "dokumente": 3,
-          "signaturen": [
-            "UAKUG/NIM_004 9",
-            "UAKUG/NIM_004 12",
-            "UAKUG/NIM_004 33"
-          ],
-          "orte": [
-            {
-              "name": "Stuttgart",
-              "count": 2
-            },
-            {
-              "name": "Italien",
-              "count": 1
-            },
-            {
-              "name": "Graz",
-              "count": 1
-            }
-          ],
-          "rollen": []
-        },
-        {
-          "name": "La clemenza di Tito",
-          "dokumente": 3,
-          "signaturen": [
-            "UAKUG/NIM_004 12",
-            "UAKUG/NIM_004 24",
-            "UAKUG/NIM_004 29"
-          ],
-          "orte": [
-            {
-              "name": "Wien",
-              "count": 4
-            },
-            {
-              "name": "Zürich",
-              "count": 4
-            },
-            {
-              "name": "München",
-              "count": 4
-            }
-          ],
-          "rollen": []
-        },
-        {
-          "name": "Die Zauberflöte",
-          "dokumente": 1,
-          "signaturen": [
-            "UAKUG/NIM_007 4"
-          ],
-          "orte": [
-            {
-              "name": "Lissabon",
-              "count": 3
-            },
-            {
-              "name": "Stuttgart",
-              "count": 2
-            },
-            {
-              "name": "Wien",
-              "count": 1
-            }
-          ],
           "rollen": []
         }
       ]
@@ -714,48 +1093,59 @@
       ]
     },
     {
-      "name": "Strauss",
-      "farbe": "#4A3A6B",
-      "dokumente_gesamt": 6,
+      "name": "Hindemith",
+      "farbe": "#4A6B5A",
+      "dokumente_gesamt": 5,
       "werke": [
         {
-          "name": "Daphne",
+          "name": "Gesang an die Hoffnung",
           "dokumente": 1,
           "signaturen": [
-            "UAKUG/NIM_004 30"
+            "UAKUG/NIM_004 11"
           ],
           "orte": [
             {
-              "name": "Zürich, Zürichbergstrasse 104",
+              "name": "Köln",
               "count": 1
             }
           ],
           "rollen": []
         },
         {
-          "name": "Der Rosenkavalier",
+          "name": "Rilke-Zyklus",
           "dokumente": 1,
           "signaturen": [
-            "UAKUG/NIM_004 31"
-          ],
-          "orte": [],
-          "rollen": []
-        },
-        {
-          "name": "Elektra",
-          "dokumente": 1,
-          "signaturen": [
-            "UAKUG/NIM_007 4"
+            "UAKUG/NIM_004 11"
           ],
           "orte": [
             {
-              "name": "Lissabon",
-              "count": 3
-            },
+              "name": "Köln",
+              "count": 1
+            }
+          ],
+          "rollen": []
+        },
+        {
+          "name": "Apparebit reppentina Dies",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_004 11"
+          ],
+          "orte": [
             {
-              "name": "Stuttgart",
-              "count": 2
-            },
+              "name": "Köln",
+              "count": 1
+            }
+          ],
+          "rollen": []
+        },
+        {
+          "name": "Die junge Magd",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_011 12"
+          ],
+          "orte": [
             {
               "name": "Wien",
               "count": 1
@@ -764,66 +1154,14 @@
           "rollen": []
         },
         {
-          "name": "Glücks genug",
+          "name": "Marienlieder",
           "dokumente": 1,
           "signaturen": [
-            "UAKUG/NIM_007 8"
+            "UAKUG/NIM_011 12"
           ],
           "orte": [
             {
-              "name": "Palais Pallavicini",
-              "count": 1
-            },
-            {
-              "name": "Palais Schwarzenberg",
-              "count": 1
-            },
-            {
-              "name": "Palais Auersberg",
-              "count": 1
-            }
-          ],
-          "rollen": []
-        },
-        {
-          "name": "Mein Herz ist stumm",
-          "dokumente": 1,
-          "signaturen": [
-            "UAKUG/NIM_007 8"
-          ],
-          "orte": [
-            {
-              "name": "Palais Pallavicini",
-              "count": 1
-            },
-            {
-              "name": "Palais Schwarzenberg",
-              "count": 1
-            },
-            {
-              "name": "Palais Auersberg",
-              "count": 1
-            }
-          ],
-          "rollen": []
-        },
-        {
-          "name": "Befreit",
-          "dokumente": 1,
-          "signaturen": [
-            "UAKUG/NIM_007 8"
-          ],
-          "orte": [
-            {
-              "name": "Palais Pallavicini",
-              "count": 1
-            },
-            {
-              "name": "Palais Schwarzenberg",
-              "count": 1
-            },
-            {
-              "name": "Palais Auersberg",
+              "name": "Wien",
               "count": 1
             }
           ],
@@ -834,7 +1172,7 @@
     {
       "name": "Brahms",
       "farbe": "#3A5C6B",
-      "dokumente_gesamt": 4,
+      "dokumente_gesamt": 5,
       "werke": [
         {
           "name": "3. Symphonie",
@@ -923,51 +1261,141 @@
             }
           ],
           "rollen": []
+        },
+        {
+          "name": "Rhapsodien, Alt, Männerchor, Orchester, op. 53",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_011 12"
+          ],
+          "orte": [
+            {
+              "name": "Wien",
+              "count": 1
+            }
+          ],
+          "rollen": []
         }
       ]
     },
     {
-      "name": "Hindemith",
-      "farbe": "#4A6B5A",
-      "dokumente_gesamt": 3,
+      "name": "Mahler, Gustav",
+      "farbe": "#757575",
+      "dokumente_gesamt": 4,
       "werke": [
         {
-          "name": "Gesang an die Hoffnung",
-          "dokumente": 1,
+          "name": "Lied von der Erde",
+          "dokumente": 2,
           "signaturen": [
-            "UAKUG/NIM_004 11"
+            "UAKUG/NIM_011 12",
+            "UAKUG/NIM_023 5"
           ],
           "orte": [
             {
-              "name": "Köln",
+              "name": "Wuppertal",
+              "count": 2
+            },
+            {
+              "name": "Wien",
               "count": 1
             }
           ],
           "rollen": []
         },
         {
-          "name": "Rilke-Zyklus",
+          "name": "Le chant de la Terre",
           "dokumente": 1,
           "signaturen": [
-            "UAKUG/NIM_004 11"
+            "UAKUG/NIM_004 14"
           ],
           "orte": [
             {
-              "name": "Köln",
+              "name": "Strasbourg",
               "count": 1
             }
           ],
           "rollen": []
         },
         {
-          "name": "Apparebit reppentina Dies",
+          "name": "Kindertotenlieder",
           "dokumente": 1,
           "signaturen": [
-            "UAKUG/NIM_004 11"
+            "UAKUG/NIM_011 12"
           ],
           "orte": [
             {
-              "name": "Köln",
+              "name": "Wien",
+              "count": 1
+            }
+          ],
+          "rollen": []
+        }
+      ]
+    },
+    {
+      "name": "Haydn, Joseph",
+      "farbe": "#757575",
+      "dokumente_gesamt": 4,
+      "werke": [
+        {
+          "name": "Ein kleines Haus",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_007 8"
+          ],
+          "orte": [
+            {
+              "name": "Palais Pallavicini",
+              "count": 1
+            },
+            {
+              "name": "Palais Schwarzenberg",
+              "count": 1
+            },
+            {
+              "name": "Palais Auersberg",
+              "count": 1
+            }
+          ],
+          "rollen": []
+        },
+        {
+          "name": "Die Jahreszeiten",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_011 12"
+          ],
+          "orte": [
+            {
+              "name": "Wien",
+              "count": 1
+            }
+          ],
+          "rollen": []
+        },
+        {
+          "name": "Theresienmesse",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_011 12"
+          ],
+          "orte": [
+            {
+              "name": "Wien",
+              "count": 1
+            }
+          ],
+          "rollen": []
+        },
+        {
+          "name": "Missa in angustijs",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_011 12"
+          ],
+          "orte": [
+            {
+              "name": "Wien",
               "count": 1
             }
           ],
@@ -1000,6 +1428,86 @@
             {
               "name": "München",
               "count": 4
+            }
+          ],
+          "rollen": []
+        }
+      ]
+    },
+    {
+      "name": "Rossini",
+      "farbe": "#7A4A5A",
+      "dokumente_gesamt": 3,
+      "werke": [
+        {
+          "name": "Stabat mater",
+          "dokumente": 3,
+          "signaturen": [
+            "UAKUG/NIM_004 33",
+            "UAKUG/NIM_011 12",
+            "UAKUG/NIM_011 12"
+          ],
+          "orte": [
+            {
+              "name": "Wien",
+              "count": 3
+            },
+            {
+              "name": "Graz",
+              "count": 1
+            },
+            {
+              "name": "München",
+              "count": 1
+            }
+          ],
+          "rollen": []
+        }
+      ]
+    },
+    {
+      "name": "Bach, Johann Sebastian",
+      "farbe": "#757575",
+      "dokumente_gesamt": 3,
+      "werke": [
+        {
+          "name": "Johannespassion",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_011 12"
+          ],
+          "orte": [
+            {
+              "name": "Wien",
+              "count": 1
+            }
+          ],
+          "rollen": []
+        },
+        {
+          "name": "Matthäuspassion",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_011 12"
+          ],
+          "orte": [
+            {
+              "name": "Wien",
+              "count": 1
+            }
+          ],
+          "rollen": []
+        },
+        {
+          "name": "Weihnachts-Oratorium",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_011 12"
+          ],
+          "orte": [
+            {
+              "name": "Wien",
+              "count": 1
             }
           ],
           "rollen": []
@@ -1058,6 +1566,41 @@
       ]
     },
     {
+      "name": "Händel, Georg Friedrich",
+      "farbe": "#757575",
+      "dokumente_gesamt": 2,
+      "werke": [
+        {
+          "name": "Judas Maccabaeus",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_011 12"
+          ],
+          "orte": [
+            {
+              "name": "Wien",
+              "count": 1
+            }
+          ],
+          "rollen": []
+        },
+        {
+          "name": "Messiah",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_011 12"
+          ],
+          "orte": [
+            {
+              "name": "Wien",
+              "count": 1
+            }
+          ],
+          "rollen": []
+        }
+      ]
+    },
+    {
       "name": "Ponchielli, Amilcare",
       "farbe": "#757575",
       "dokumente_gesamt": 1,
@@ -1071,27 +1614,6 @@
           "orte": [
             {
               "name": "Italien",
-              "count": 1
-            }
-          ],
-          "rollen": []
-        }
-      ]
-    },
-    {
-      "name": "Mahler, Gustav",
-      "farbe": "#757575",
-      "dokumente_gesamt": 1,
-      "werke": [
-        {
-          "name": "Le chant de la Terre",
-          "dokumente": 1,
-          "signaturen": [
-            "UAKUG/NIM_004 14"
-          ],
-          "orte": [
-            {
-              "name": "Strasbourg",
               "count": 1
             }
           ],
@@ -1163,35 +1685,6 @@
       ]
     },
     {
-      "name": "Rossini",
-      "farbe": "#7A4A5A",
-      "dokumente_gesamt": 1,
-      "werke": [
-        {
-          "name": "Stabat mater",
-          "dokumente": 1,
-          "signaturen": [
-            "UAKUG/NIM_004 33"
-          ],
-          "orte": [
-            {
-              "name": "Graz",
-              "count": 1
-            },
-            {
-              "name": "München",
-              "count": 1
-            },
-            {
-              "name": "Stuttgart",
-              "count": 1
-            }
-          ],
-          "rollen": []
-        }
-      ]
-    },
-    {
       "name": "Durante, Francesco",
       "farbe": "#757575",
       "dokumente_gesamt": 1,
@@ -1250,35 +1743,6 @@
       ]
     },
     {
-      "name": "Haydn, Joseph",
-      "farbe": "#757575",
-      "dokumente_gesamt": 1,
-      "werke": [
-        {
-          "name": "Ein kleines Haus",
-          "dokumente": 1,
-          "signaturen": [
-            "UAKUG/NIM_007 8"
-          ],
-          "orte": [
-            {
-              "name": "Palais Pallavicini",
-              "count": 1
-            },
-            {
-              "name": "Palais Schwarzenberg",
-              "count": 1
-            },
-            {
-              "name": "Palais Auersberg",
-              "count": 1
-            }
-          ],
-          "rollen": []
-        }
-      ]
-    },
-    {
       "name": "Berg, Alban",
       "farbe": "#757575",
       "dokumente_gesamt": 1,
@@ -1314,11 +1778,116 @@
           "rollen": []
         }
       ]
+    },
+    {
+      "name": "Bruckner, Anton",
+      "farbe": "#757575",
+      "dokumente_gesamt": 1,
+      "werke": [
+        {
+          "name": "Messen, WAB 28 (f-Moll)",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_011 12"
+          ],
+          "orte": [
+            {
+              "name": "Wien",
+              "count": 1
+            }
+          ],
+          "rollen": []
+        }
+      ]
+    },
+    {
+      "name": "Mendelssohn Bartholdy, Felix",
+      "farbe": "#757575",
+      "dokumente_gesamt": 1,
+      "werke": [
+        {
+          "name": "Elias, op. 70, MWV A 25",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_011 12"
+          ],
+          "orte": [
+            {
+              "name": "Wien",
+              "count": 1
+            }
+          ],
+          "rollen": []
+        }
+      ]
+    },
+    {
+      "name": "Requiem",
+      "farbe": "#757575",
+      "dokumente_gesamt": 1,
+      "werke": [
+        {
+          "name": "Litaniae lauretanae KV 195",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_011 12"
+          ],
+          "orte": [
+            {
+              "name": "Wien",
+              "count": 1
+            }
+          ],
+          "rollen": []
+        }
+      ]
+    },
+    {
+      "name": "Stravinsky, Igor",
+      "farbe": "#757575",
+      "dokumente_gesamt": 1,
+      "werke": [
+        {
+          "name": "Pulcinella",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_011 12"
+          ],
+          "orte": [
+            {
+              "name": "Wien",
+              "count": 1
+            }
+          ],
+          "rollen": []
+        }
+      ]
+    },
+    {
+      "name": "Suter, Hermann",
+      "farbe": "#757575",
+      "dokumente_gesamt": 1,
+      "werke": [
+        {
+          "name": "Le laudi di San Francesco d'Assisi",
+          "dokumente": 1,
+          "signaturen": [
+            "UAKUG/NIM_011 12"
+          ],
+          "orte": [
+            {
+              "name": "Wien",
+              "count": 1
+            }
+          ],
+          "rollen": []
+        }
+      ]
     }
   ],
   "_meta": {
-    "generated": "2026-06-21T21:23:38.448694",
-    "source_records": 814,
+    "generated": "2026-06-22T09:02:37.602620",
+    "source_records": 1974,
     "note": "Includes geographic and role context extracted from titles"
   }
 }
