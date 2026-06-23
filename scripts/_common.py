@@ -45,8 +45,16 @@ INDEX_HEADER_SHIFTS: dict[str, list[str]] = {
 # Finanz-Waehrungs-Defaults pro Konvolut-Signatur. NIM_007 "Aufstellung 1966"
 # Folio 5_1 hat fuenf Zahlen ohne Waehrung; benachbarte Folien 5_2..5_8 sind
 # konsistent in Schilling ausgewiesen, daher "S" als Default.
+# NIM_011 Folio 5 (Bruessel-Gastspiel Tristan, Theatre Royal de la Monnaie):
+# zwei Abendgage-Zeilen "1200" ohne Waehrung; das Folio-9-Pendant desselben
+# Vertragsblocks ist in "Belgische Francs" ausgewiesen und der Vertragsort ist
+# Bruessel. Daher "Belgische Francs" als Default (gleiche folio-nachbarschafts-
+# Heuristik wie NIM_007). Mit dem Erschliessungsteam zu bestaetigen (Treffen
+# 2026-06-23) — Barcelona ist ein sekundaerer Gastspiel-Ort im selben Block,
+# keine zweite Waehrung.
 FINANCE_CURRENCY_DEFAULTS: dict[str, str] = {
     "UAKUG/NIM_007": "S",
+    "UAKUG/NIM_011": "Belgische Francs",
 }
 
 

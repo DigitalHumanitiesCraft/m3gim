@@ -62,6 +62,16 @@ def test_verknuepfungen_every_referenced_record_has_relations(
     emittieren, schlaegt dieser Test an. Orphan-Signaturen (NIM_11 u. ae.,
     siehe knowledge/data.md § 17) werden uebersprungen, da fuer sie
     kein Ziel-Record existiert.
+
+    BEKANNTE ECHTE DATENLUECKE (bewusst rot, Source-Fix offen): NIM_168 wird in
+    der Verknuepfungstabelle ueber Sub-Folios 2_1/2_2/2_3 adressiert, die
+    Objekttabelle kennt aber nur die Folio-Records 1 und 2. Die Relationen
+    haengen daher an nicht existierenden Record-IDs und gehen verloren. Das ist
+    eine Inkonsistenz ZWISCHEN den beiden Quelltabellen (Folio-Granularitaet),
+    nur vom Erschliessungsteam loesbar: entweder die Objekttabelle um die
+    Sub-Folios 2_1..2_3 ergaenzen oder die Verknuepfungsfolios auf 2 vereinheit-
+    lichen. Kein Pipeline-Fallback, weil ein Umhaengen auf Folio 2 die Provenienz
+    falsch zuordnen wuerde. Bis zur Quellbereinigung bleibt der Test rot.
     """
     # Index: Signatur -> Record(s)
     by_sig = {}

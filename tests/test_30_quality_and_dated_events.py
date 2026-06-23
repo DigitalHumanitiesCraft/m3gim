@@ -21,6 +21,9 @@ QUALITY_FLAG_VOCAB = {
     "vorname-fehlt",
     "rolle-unsicher",
     "quelle-tippfehler",
+    # Malformter Quell-Datumswert (kein ISO, z.B. "06-09" ohne Jahr): nicht in
+    # rico:date verwertbar, verlustfrei im DatedEvent-Fallback (convert_objekt).
+    "datierung-malformed",
 }
 
 TYPED_DATE_PROPS = {

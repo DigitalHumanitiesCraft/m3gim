@@ -24,9 +24,11 @@ from _helpers import ensure_list, iter_entities_with_id  # noqa: F401
 
 
 ANCHOR_RECORDS = {
-    # Finanz-Konvolut: 5 Detail-Eintraege (Ausgaben/Einnahmen/Summe) in Schilling
+    # Finanz-Konvolut: 5 Detail-Eintraege (Ausgaben/Einnahmen/Summe) in Schilling.
+    # Zeile 123->122 nachgezogen: der Leerzeilen-Filter des tieferen Exports
+    # entfernte eine Zeile davor (gegen die echte XLSX verifiziert).
     "UAKUG/NIM_007 5_1": {
-        "xlsx_row": 123,
+        "xlsx_row": 122,
         "expected_doc_type": "m3gim-dft:notiz",
         "min_finance_details": 5,
     },

@@ -194,6 +194,8 @@ Dreiteilung nach Handreichungslogik: archivalisch / künstlerisch / institutione
 | fotograf | ● ★ | Produktionscrew |
 | interpret | ● ★ | Oberbegriff, sofern Stimmfach/Funktion unklar |
 | protagonist | ● | Klärungsbedarf: möglicherweise Bühnenrolle, nicht Personenrolle |
+| leitung | ● ★ | nacktes „leitung" aus dem tieferen Export, gegen „technische leitung" abzugrenzen, Klärungsbedarf (Treffen 2026-06-23) |
+| publikum | ● ★ | im Publikum anwesende Person; Person-vs.-Subject-Zuordnung mit dem Erschließungsteam zu klären (Treffen 2026-06-23) |
 
 **Institutionell**
 
@@ -301,6 +303,8 @@ Datum ist als First-Class-Typ erfasst, Rollen typisieren den Datumsbezug.
 | spielzeit | ● ★ | institutionelle Bindung, TimeSpan |
 | überweisung | ● ★ | Finanzdatum |
 | erstelldatum | ● ★ | Entstehung eines Dokuments |
+| lohnbestätigung | ● ★ | Finanzdatum (Bestätigung der Vergütung) |
+| ratenzahlung | ● ★ | Finanzdatum (Ratenzahlungs-Zeitraum) |
 | gespräch | ● ★ | |
 | erwähnt | ● ★ | |
 
@@ -314,6 +318,14 @@ Datum ist als First-Class-Typ erfasst, Rollen typisieren den Datumsbezug.
 | reisekosten | ● ★ | |
 | rundfunkhonorar | ● ★ | Quelle führt Tippform „rundfunkshonorar", durchgereicht |
 | erwähnt | ● | |
+
+### Statusmarkierungen in der Rollenspalte
+
+Die Quelle nutzt die `rolle`-Spalte vereinzelt für einen Vertragsstatus statt für eine echte Rolle. Dieser wird spaltenweit über einen ganzen Vertragsblock durchgereicht (z. B. NIM_023).
+
+| Wert | Status | Bemerkung |
+|---|---|---|
+| nicht eingehalten | ● ★ | Vertragsstatus, keine Ereignis-/Ortsrolle (Abschnitt 11); wird im STE-Bau **nicht** als `m3gim:eventRole` emittiert. Zielmodellierung `m3gim:contractStatus`/`m3gim:realized = false` am Vertrags-Record ist mit dem Erschließungsteam zu klären (Treffen 2026-06-23). |
 
 ## 6. Datumskonventionen
 
@@ -446,6 +458,20 @@ Die aus dem Wikidata-Enrichment injizierten Personen-, Orts- und Werk-Normdaten 
 | `m3gim:wdPremiereDate` | xsd:string | MusicalWork | Uraufführungs-/Publikationsdatum laut Wikidata (löst die englisch/deutsch-Dublette `premiereDate`/`premieredatum` auf — Letzteres bleibt die record-seitige Datumsrolle) |
 | `m3gim:wdLocation` | xsd:string | CorporateBody | Sitz laut Wikidata |
 | `m3gim:inception` | xsd:string | CorporateBody | Gründungsdatum laut Wikidata |
+
+### Kuratierte Index-Properties (M1, Index-Durchreichung)
+
+Die vier Indextabellen pflegen Felder, die die Pipeline zuvor nach `build_index_lookup` verlor (nur `wikidata_id`/`komponist` wurden durchgereicht). M1 reicht sie als eigene `m3gim:`-Properties an die jeweilige Entität durch — getrennt von den Wikidata-Normdaten oben (kuratiert gegen angereichert) und vom Verknüpfungs-`anmerkung`. Quelle ist die Index-Spalte, nicht das Wikidata-Enrichment; damit erreichen Beruf, Sitz und Partie auch ungematchte Entitäten ohne Q-ID.
+
+| Property | Typ / Range | Domain | Quelle (Index-Spalte) | Zweck |
+|---|---|---|---|---|
+| `m3gim:sitz` | xsd:string | CorporateBody | Organisationsindex `ort` | kuratierter Sitz; Vorrang vor `m3gim:wdLocation` (oft nur Stadtteil); trägt „auswärts gegen am Haus" |
+| `m3gim:keyContact` | xsd:string | CorporateBody | Organisationsindex `assoziierte_person` | Schlüsselkontakt der Institution |
+| `m3gim:partie` | xsd:string | MusicalWork | Werkindex `rolle/stimme` | von Malaniuk gesungene Partie pro Werk (Mezzo-Repertoire-Kern) |
+| `m3gim:lifespan` | xsd:string | Person | Personenindex `lebensdaten` | kuratierte Lebensspanne; getrennt von `schema:birthDate`/`deathDate` |
+| `m3gim:editorialNote` | xsd:string | Person/CorporateBody/MusicalWork | Index-`anmerkung` | redaktionelle Anmerkung (Person: Beruf/Funktion; Institution: Typ; Werk: Werkgruppe) |
+
+Loader-seitig landen sie additiv in `store.organizations[].sitz`/`keyContact`/`note`, `store.works[].partie`/`note`, `store.persons[].note`/`lifespan`. Abgesichert durch `tests/test_36_index_completeness.py` (Index-Zelle gegen Entitäts-Property, mit Mindestvorkommen) und die synthetischen Loader-Tests.
 
 ### Typisierte Datumsproperty-Familie
 
@@ -630,6 +656,16 @@ Ortsrolle `wohnort` an Malaniuk mit TimeSpan via `agrelon:metadataPeriod`.
 `rico:Record` mit Dokumenttyp ∈ {rezension, presse, kritik} + `entstehungsort` oder Herausgeberinstitution mit Ortsreferenz. Der diskursive Raum weicht typischerweise vom performativen ab.
 
 Die UI-Anbindung der fünf Sichten, etwa die Farbfamilie für Chronik-Chips, liegt in [design.md](design.md). Die Absicherung gegen fehl-gemappte eventRoles erfolgt in `tests/test_25_chronik_mobility_cluster.py`.
+
+Mit dem tieferen Export aktivierte eventRole-Cluster (`EVENT_ROLE_TO_MOBILITY_CLUSTER` in `docs/js/data/constants.js`), provisorisch und mit dem Erschließungsteam zu bestätigen (Treffen 2026-06-23):
+
+| eventRole | Cluster | Begründung |
+|---|---|---|
+| generalprobe | performativ | wie das Geschwister `probe`, eindeutig performativ |
+| aufnahme | diskursiv | mediale/diskursive Spur wie `ausstrahlung` (Rundfunk-/Tonaufnahme) |
+| rahmenveranstaltung | null | genuin unklar; `null` = keine Sicht/Klärungsbedarf, keine willkürliche Einordnung |
+
+Der Vertragsstatus `nicht eingehalten` (Abschnitt 11) ist keine eventRole und wird im STE-Bau nicht als `m3gim:eventRole` durchgereicht.
 
 ### Die zentrale Klasse: m3gim:SpatiotemporalEvent
 
@@ -854,6 +890,11 @@ Die kompensierten Eigenheiten fallen in vier Kategorien.
 |---|---|---|
 | Index-Blätter ohne saubere Kopfzeile (erste Datenzeile als Header gelesen) | Workaround | `INDEX_HEADER_SHIFTS` schiebt die Zeile zurück ins DataFrame |
 | Finanzwerte ohne Währungssuffix in NIM_007 Folio 5_1 | Policy | `FINANCE_CURRENCY_DEFAULTS` setzt „S" (Schilling) |
+| Finanzwerte ohne Währungssuffix in NIM_011 Folio 5 (Brüssel-Gastspiel) | Policy | `FINANCE_CURRENCY_DEFAULTS` setzt „Belgische Francs" (Folio-9-Pendant + Vertragsort Brüssel); mit Erschließungsteam zu bestätigen |
+| Datums-Platzhalter „ohne Datum"/„o. D." in `entstehungsdatum` | Workaround | `clean_date()` bildet die Platzhalter auf `None` ab (kein Schein-`rico:date`) |
+| Malformter Datumswert ohne Jahr (z. B. „06-09") in `entstehungsdatum` | Workaround | nicht-ISO Wert läuft verlustfrei in `m3gim:hasDatedEvent` (`dataQualityFlag` „datierung-malformed"), nicht in `rico:date`; Quell-Fix offen |
+| Vertragsstatus „nicht eingehalten" spaltenweit in der Rollenspalte (NIM_023) | Workaround | im STE-Bau nicht als `m3gim:eventRole` emittiert (`CONTRACT_STATUS_ROLES`); `contractStatus`-Modellierung mit Erschließungsteam offen |
+| Gemischte Finanz-Betragsnotation (Dezimalkomma vs. Komma-Währungstrenner, Tausenderpunkt, Doppelbetrag `25, DM/45, DM`) | Workaround | `parse_monetary_values()` löst Betrag/Währung robust auf und splittet Doppelbeträge in zwei DetailAnnotations |
 | Bearbeitungsstand in uneinheitlicher Schreibung und Synonymen | Workaround | `normalize_bearbeitungsstand()` mappt auf drei kanonische Werte |
 | Datumsrolle wird im Komposit `ort, datum` an beide Hälften vererbt | Workaround | Role-Strip im Ort-Zweig für Datumsrollen |
 | Freitext-Datierungen (Ort plus Zeit gemischt) | Workaround | Rohwert wird durchgereicht und toleriert, nicht geblockt |

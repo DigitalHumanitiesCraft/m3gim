@@ -33,26 +33,50 @@ def _mobility_stes(graph):
 
 # --- Datengedeckter Kern (E-97) -------------------------------------------
 
-def test_mobility_place_role_emits_dateless_ste(graph, records):
-    """Jede Mobilitaets-Ortsrolle erzeugt eine wohlgeformte, DATUMSLOSE
+def test_mobility_place_role_emits_wellformed_ste(graph, records):
+    """Jede Mobilitaets-Ortsrolle erzeugt eine wohlgeformte
     m3gim:SpatiotemporalEvent: atPlace mit name, eventRole aus dem Mobilitaets-
-    Vokabular, Self-Provenance auf einen existierenden Record, KEIN atDate.
-    Mindestens 10 erwartet (Quelle: zielort 13 + absendeort 3 + abreiseort 1)."""
+    Vokabular, Self-Provenance auf einen existierenden Record.
+
+    Datenform tieferer Export (E-97 erweitert): die meisten Mobilitaets-Ortsrollen
+    stammen aus reinen `ort`-Zeilen und bleiben DATUMSLOS. Einige (z.B.
+    `vertragsort` auf `ort, datum`-Kompositen) tragen ein dekomponiertes ISO-Datum
+    und sind dann legitim datiert — der Ort ist dabei der dekomponierte Teil
+    (atPlace='Bayreuth', nicht die Rohzelle 'Bayreuth, 1952-08-25'). Wenn ein
+    atDate vorhanden ist, muss es ISO-foermig sein (kein Ort-Leak ins Datum)."""
+    from transform import is_iso_date  # noqa: PLC0415
     rec_ids = {r["@id"] for r in records}
     mob = _mobility_stes(graph)
     assert len(mob) >= 10, f"Nur {len(mob)} Mobilitaets-STE — Routing greift nicht"
     offenders = []
     for ev in mob:
-        if "m3gim:atDate" in ev:
-            offenders.append((ev.get("@id"), "atDate vorhanden", ev["m3gim:atDate"]))
+        date = ev.get("m3gim:atDate")
+        if date is not None and not is_iso_date(date):
+            offenders.append((ev.get("@id"), "atDate nicht ISO", date))
         place = ev.get("m3gim:atPlace")
-        if not isinstance(place, dict) or not (place.get("name") or "").strip():
+        place_name = (place.get("name") if isinstance(place, dict) else "") or ""
+        if not place_name.strip():
             offenders.append((ev.get("@id"), "atPlace", place))
+        # Ort-Leak-Guard: der dekomponierte Ortsname enthaelt nie das Datum.
+        elif date and date in place_name:
+            offenders.append((ev.get("@id"), "Datum im Ortsnamen", place_name))
         prov = ev.get("agrelon:metadataProvenance")
         rid = prov.get("@id") if isinstance(prov, dict) else None
         if rid not in rec_ids:
             offenders.append((ev.get("@id"), "provenance", rid))
     assert not offenders, f"Fehlgeformte Mobilitaets-STE: {offenders[:5]}"
+
+
+def test_pure_ort_mobility_stes_stay_dateless(graph, records):
+    """Der datumslose E-97-Kern bleibt erhalten: es gibt weiterhin eine
+    relevante Zahl DATUMSLOSER Mobilitaets-STE (aus reinen `ort`-Zeilen,
+    Quelle: zielort/absendeort/abreiseort ohne Datum). Sichert, dass der
+    dateless-Pfad nicht versehentlich zugunsten datierter STE wegfaellt."""
+    dateless = [ev for ev in _mobility_stes(graph) if "m3gim:atDate" not in ev]
+    assert len(dateless) >= 10, (
+        f"Nur {len(dateless)} datumslose Mobilitaets-STE — der E-97-Kern "
+        f"(reine ort-Zeilen) ist verloren gegangen"
+    )
 
 
 def test_mobility_place_retained_as_location(graph, records):

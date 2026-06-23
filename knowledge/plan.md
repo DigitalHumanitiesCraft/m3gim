@@ -42,9 +42,19 @@ Ein neuer Export liegt vor und erschließt mehrere Konvolute tiefer. Die freigeg
 
 Die finalen Cluster-Zuordnungen der neuen eventRoles und Rollen sind mit dem Frontend abzustimmen, bevor produktiv geschaltet wird.
 
-### Test-Regression gegen den tieferen Export (Befund 2026-06-22)
+### Test-Regression gegen den tieferen Export (Befund 2026-06-22, behoben 2026-06-23)
 
-Der in `277b480` eingespielte tiefere Export (Verknüpfungstabelle nahezu verdoppelt) bringt 14 pytest-Fehler bei 215 grün; die JS-Suite (87/87) und der Smoke-Loop (25/0) sind davon unberührt, es ist rein daten- und pipelineseitig. Die transform.py-Änderung desselben Commits (Signatur-Normalisierung `NIM_11`→`NIM_011`, Leerzeilen-Filter) ist korrekt und hat Relationen sogar repariert; die Fehler sind der größere Datenbestand, der bestehende Lücken aufdeckt. Bisher nur diagnostiziert, nicht behoben. Drei Gruppen.
+Der in `277b480` eingespielte tiefere Export (Verknüpfungstabelle nahezu verdoppelt) brachte 14 pytest-Fehler. **Stand 2026-06-23: behoben bis auf eine echte Datenlücke** (NIM_168, siehe Gruppe 3.3). Suite: 251 passed, 1 failed (NIM_168, bewusst rot), 1 xfailed (PL_07), 1 xpassed (PL_07-Dedup, non-strict). Die Behebung war rein daten-/pipelineseitig.
+
+**Erledigt (Gruppe 1, Parser):** `clean_date` bildet „ohne Datum"/„o. D." auf `None` ab (29 Records); zusätzlich aufgedeckt: ein malformter Datumswert „06-09" (kein Jahr) in NIM_004/34 läuft jetzt ISO-gegated verlustfrei in `m3gim:hasDatedEvent` (`dataQualityFlag` „datierung-malformed"), nicht mehr in `rico:date`. `parse_monetary_values` löst Betrag/Währung robust auf (Dezimalkomma, Komma-Währungstrenner, Tausenderpunkt) und splittet den Doppelbetrag `25, DM/45, DM` in zwei DetailAnnotations; die Geister-Währungen sind weg. Unit-Tests in test_14 gegen alle realen Notationsformen.
+
+**Erledigt (Gruppe 2, Vokabular):** `EVENT_ROLE_TO_MOBILITY_CLUSTER` aktiviert `generalprobe`→performativ, `aufnahme`→diskursiv, `rahmenveranstaltung`→null (provisorisch, Treffen 2026-06-23). `Lire` und `Belgische Francs` ins Währungs-Vokabular (test_13, data.md § 11). `nicht eingehalten` ist als Vertragsstatus erkannt und wird im STE-Bau **nicht** als eventRole emittiert (`CONTRACT_STATUS_ROLES`, Routing-Fix); der None-eventRole-STE (NIM_023/5, Wuppertal) ist ein legitimes datiertes ort,datum-Ereignis ohne Rollenangabe, kein Defekt. Der tiefere Export brachte zudem viele weitere Rollen (publikum, leitung, beleuchter, maskenbidner, repetitor, …), die data.md § 5 bereits führte; das test_15-Fixture `DATA_MD_ROLES` wurde an § 5 angeglichen, Crew-/Event-Rollen ins Frontend-`ROLE_CLUSTER` aufgenommen.
+
+**Erledigt (Gruppe 3, Fixtures):** test_20-Anker NIM_007/5_1 auf Zeile 122 nachgezogen (gegen echte XLSX). test_32/test_34 an die neue Datenform angepasst: Mobilitäts-Ortsrollen aus `ort, datum`-Kompositen (z. B. `vertragsort`) tragen jetzt zulässig ein dekomponiertes ISO-Datum (atPlace=`Bayreuth`, nicht Rohzelle `Bayreuth, …`), der dateless-Kern aus reinen ort-Zeilen bleibt gesichert; Provenienz-Treue bleibt scharf (kein Datum-Leak in den Ortsnamen).
+
+**Offen (echte Datenlücke, nur Erschließungsteam):** test_04 NIM_168 — die Verknüpfungstabelle adressiert Sub-Folios `2_1/2_2/2_3`, die Objekttabelle kennt nur Folio `1`/`2`. Die Relationen hängen an nicht existierenden Record-IDs und gehen verloren. Inkonsistenz **zwischen** den Quelltabellen (Folio-Granularität), kein Pipeline-Fehler. Fix: Objekttabelle um die Sub-Folios ergänzen oder Verknüpfungsfolios auf `2` vereinheitlichen. Bewusst kein Pipeline-Fallback (würde Provenienz falsch zuordnen). Test bleibt bis zur Quellbereinigung rot.
+
+Historischer Befund (Diagnose 2026-06-22), drei Gruppen:
 
 **Gruppe 1, echte Parser-Lücken (klare Fixes, keine Klassifikation):**
 

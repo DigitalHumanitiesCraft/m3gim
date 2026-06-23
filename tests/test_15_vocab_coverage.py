@@ -55,7 +55,9 @@ def test_xlsx_roles_have_stable_normalization(xlsx_verknuepfungen):
             print(f"  {k}: {v}")
 
 
-# Rollen aus data.md § 5 (kanonisches Vokabular nach Normalisierung)
+# Rollen aus data.md § 5 (kanonisches Vokabular nach Normalisierung).
+# Spiegelt § 5 inkl. der mit dem tieferen Export ergaenzten Rollen (Treffen
+# 2026-06-23). Bei Aenderung von § 5 diese Menge nachziehen.
 DATA_MD_ROLES = {
     # Personen
     "verfasser", "adressat", "absender", "empfänger", "unterzeichner",
@@ -64,24 +66,32 @@ DATA_MD_ROLES = {
     "übersetzer", "arrangeur", "chorleiter", "choreograph", "bühnenbildner",
     "kostümbildner", "ausstatter", "bühnenleiter", "technische leitung",
     "interpret", "protagonist",
+    # Produktionscrew (tieferer Export, § 5; maskenbidner ist die Tippform)
+    "beleuchter", "maskenbildner", "maskenbidner", "repetitor",
+    "regieassistent", "fotograf",
+    # Person-Rollen aus dem tieferen Export (§ 5, Klärungsbedarf)
+    "leitung", "publikum",
     # Institutionell (mit Personen-Ueberlapp)
     "vertragspartner", "inhaber", "herausgeber",
     # Orte
     "entstehungsort", "zielort", "absendeort", "abreiseort", "auffuehrungsort",
-    "wohnort", "vertragsort",
+    "wohnort", "vertragsort", "empfangsort",
     # Institutionen
     "arbeitgeber", "veranstalter", "ausbildungsstätte", "fluggesellschaft",
     "rahmenveranstaltung",
     # Ereignisse + Werke + Buehnenrollen
     "premiere", "auftritt", "probe", "aufführung", "festvorstellung",
-    "wiederaufnahme", "implizit", "repertoire",
+    "wiederaufnahme", "implizit", "repertoire", "aufnahme", "empfang",
     # Datumsrollen
     "absendedatum", "empfangsdatum", "ausstellungsdatum", "erscheinungsdatum",
     "auffuehrungsdatum", "premieredatum",
     "abreisedatum", "probenbeginn", "ausstrahlung", "spielzeit", "überweisung",
-    "gespräch",
+    "gespräch", "erstelldatum", "lohnbestätigung", "ratenzahlung",
     # Finanz
-    "abendgage", "provision",
+    "abendgage", "provision", "gesamtvergütung", "reisekosten",
+    "rundfunkhonorar", "rundfunkshonorar",
+    # Vertragsstatus in der Rollenspalte (§ 5/§ 11, keine echte Rolle)
+    "nicht eingehalten",
     # Zusaetzlich aus Datenbestand v2: Komposit-Rollen
     "gastspiel", "generalprobe", "auftrag", "entstehung",
 }
@@ -184,11 +194,14 @@ FRONTEND_NEUTRAL_IGNORELIST = {
     # Datumsrollen, die bereits typisiert emittiert werden und nicht als
     # Chip-Prefix erscheinen
     "ausstrahlung", "gespräch", "probenbeginn", "spielzeit", "überweisung",
+    "erstelldatum", "lohnbestätigung", "ratenzahlung",
     # Finanz-Sub-Rollen ohne eigenes Cluster
     "abendgage", "vertragspartner", "inhaber",
     # Komposit-Markierungen ohne Chip
     "implizit", "rahmenveranstaltung", "fluggesellschaft", "abgebildet",
     "ausbildungsstätte",
+    # Vertragsstatus in der Rollenspalte (§ 11), keine Chip-Rolle
+    "nicht eingehalten",
 }
 
 

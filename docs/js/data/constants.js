@@ -211,6 +211,9 @@ export const ROLE_CLUSTER = {
   'REPERTOIRE':       'ort',
   'ERWAEHNT':         'ort',
   'ERWÄHNT':          'ort',
+  // Aus dem tieferen Export ergaenzte Ereignisrollen (Treffen 2026-06-23).
+  'AUFNAHME':         'ort',
+  'EMPFANG':          'ort',
 
   // Personen in Produktionsrollen
   'KOMPONIST':        'person',
@@ -240,6 +243,10 @@ export const ROLE_CLUSTER = {
   'PROTAGONIST':      'person',
   'AGENT':            'person',
   'VERMITTLER':       'person',
+  // Aus dem tieferen Export ergaenzte Personenrollen (Treffen 2026-06-23).
+  // 'maskenbidner' ist die durchgereichte Tippform aus der Quelle (data.md § 5).
+  'LEITUNG':          'person',
+  'MASKENBIDNER':     'person',
   'ADRESSAT':         'person',
   'ABSENDER':         'person',
   'EMPFAENGER':       'person',
@@ -374,11 +381,14 @@ export const EVENT_ROLE_TO_MOBILITY_CLUSTER = {
   'empfangsort':       'korrespondenz',
   'vertragsort':       'korrespondenz',
 
-  // === PENDING: G8-Rollen (noch nicht im Export belegt). Aktivieren, sobald
-  // sie im Datenstand auftauchen; Cluster mit Erschliessungsteam klaeren.
-  // 'aufnahme':      'diskursiv',       // G8
-  // 'generalprobe':  'performativ',     // G8 (probenTyp)
-  // 'empfang':       null,              // G8 -- ggf. rahmenveranstaltung
+  // Aus dem PENDING-Block aktiviert (tieferer Export belegt diese eventRoles).
+  // Provisorisch, mit dem Erschliessungsteam zu bestaetigen (Treffen 2026-06-23):
+  // generalprobe = performativ (wie das Geschwister 'probe'); aufnahme =
+  // diskursiv (mediale Spur wie 'ausstrahlung'); rahmenveranstaltung = null
+  // (genuin unklar, null = "keine Sicht/Klaerungsbedarf", Leitplanke-konform).
+  'generalprobe':      'performativ',
+  'aufnahme':          'diskursiv',
+  'rahmenveranstaltung': null,
 };
 
 export function mobilityClusterFor(eventRole) {

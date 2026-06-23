@@ -33,7 +33,7 @@ from transform import (  # noqa: E402
 # ---------------------------------------------------------------------------
 
 @pytest.mark.parametrize("raw,expected_amount,expected_currency", [
-    # Standard AMOUNT, CURRENCY
+    # Standard AMOUNT, CURRENCY (Komma+Space als Waehrungstrenner)
     ("15, RM", "15", "RM"),
     ("150, RM", "150", "RM"),
     ("4000, Esc", "4000", "Esc"),
@@ -46,8 +46,23 @@ from transform import (  # noqa: E402
     ("36000", "36000", None),
     ("90000", "90000", None),
     ("180000", "180000", None),
-    # Dezimaltrenner europaeisch + Trailing-Punkt in currency
+    # Dezimaltrenner europaeisch DANN Komma+Waehrung ("631,50, Fr.")
     ("631,50, Fr.", "631.5", "Fr"),
+    # Dezimalkomma, Space, Waehrung, KEIN Trenn-Komma ("1500,00 DM")
+    ("1500,00 DM", "1500", "DM"),
+    ("15,00 DM", "15", "DM"),
+    ("200,00 Belgische Francs", "200", "Belgische Francs"),
+    # Komma OHNE Space als reiner Waehrungstrenner ("153,DM")
+    ("153,DM", "153", "DM"),
+    # Tausenderpunkt + Komma+Waehrung
+    ("1.200, DM", "1200", "DM"),
+    ("150.000, Lire", "150000", "Lire"),
+    ("280.000, Lire", "280000", "Lire"),
+    # Space als Waehrungstrenner ohne Komma ("50000 Lire")
+    ("50000 Lire", "50000", "Lire"),
+    # Tausenderpunkt ohne Waehrung
+    ("18.000", "18000", None),
+    ("90.000", "90000", None),
     # Leerstring, None → beide None
     ("", None, None),
 ])
@@ -154,6 +169,15 @@ def test_decompose_ort_datum_freitext_beginn():
     ("1958-04", "1958-04"),
     # Freitext bleibt, Filter passiert in is_iso_date
     ("Wien, ab 1956", "Wien, ab 1956"),
+    # "ohne Datum"-Platzhalter (und etablierte Kurzformen o. D.) -> None,
+    # damit der Platzhalter nicht in rico:date landet (bricht das Schema).
+    ("ohne Datum", None),
+    ("Ohne Datum", None),
+    ("OHNE DATUM", None),
+    ("  ohne Datum  ", None),
+    ("o. D.", None),
+    ("o.D.", None),
+    ("o. d.", None),
 ])
 def test_clean_date(raw, expected):
     assert clean_date(raw) == expected

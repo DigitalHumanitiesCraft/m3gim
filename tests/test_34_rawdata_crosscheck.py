@@ -36,10 +36,19 @@ from transform import (  # noqa: E402
     normalize_lower,
     normalize_role,
     clean_date,
+    is_iso_date,
     normalize_bearbeitungsstand,
     DOKUMENTTYP_TO_DFT,
     MOBILITY_PLACE_ROLES,
 )
+
+
+def _rico_date_expected(raw):
+    """Spiegelt convert_objekt: rico:date traegt nur ISO-Werte. Ein malformter
+    Quellwert (kein ISO, z.B. '06-09') landet nicht in rico:date, sondern
+    verlustfrei im DatedEvent-Fallback -> hier als Erwartung None."""
+    cd = clean_date(raw)
+    return cd if (cd is not None and is_iso_date(cd)) else None
 
 
 # ---------------------------------------------------------------------------
@@ -70,7 +79,7 @@ def _place_name(ste):
 # Record-Feld -> (XLSX-Spalte, Transformfunktion). Erwartung == f(roh-Zelle).
 OBJEKT_FIELDS = {
     "rico:title": ("titel", normalize_str),
-    "rico:date": ("entstehungsdatum", clean_date),
+    "rico:date": ("entstehungsdatum", _rico_date_expected),
     "rico:hasOrHadLanguage": ("sprache", normalize_str),
     "rico:hasExtent": ("umfang", normalize_str),
     "m3gim:bearbeitungsstand": ("bearbeitungsstand", normalize_bearbeitungsstand),
@@ -196,9 +205,18 @@ def test_ste_provenance_points_to_ort_row(graph, xlsx_verknuepfungen):
 
 
 def test_e97_ortsrollen_exact_cell_match(graph, xlsx_verknuepfungen):
-    """E-97-Mobilitaets-Ortsrollen (datumslos): atPlace.name und eventRole
-    stimmen ZELLGENAU mit der Roh-Zeile, und es gibt kein atDate. Das ist der
-    praezise Gegencheck fuer die 15 neu durchgereichten Events."""
+    """E-97-Mobilitaets-Ortsrollen: atPlace.name, eventRole und (falls vorhanden)
+    atDate stimmen ZELLGENAU mit der Roh-Zeile.
+
+    Datenform tieferer Export: Mobilitaets-Ortsrollen stammen aus reinen `ort`-
+    Zeilen (datumslos, atPlace == ganze Rohzelle) ODER aus `ort, datum`-Kompositen
+    (dekomponiert: atPlace == Ort-Teil, atDate == ISO-Datums-Teil). Beide Formen
+    werden hier gegen die echte Pipeline-Dekomposition geprueft — die Provenienz-
+    Treue (kein Datum-Leak in den Ortsnamen, exakter Ort/Datum-Split) bleibt
+    scharf, nur die frueher angenommene Datumslosigkeit faellt weg."""
+    from transform import (  # noqa: PLC0415
+        decompose_komposit_value, normalize_lower, normalize_dating, is_iso_date,
+    )
     vindex = _verkn_index(xlsx_verknuepfungen)
     events = _spatiotemporal_events(graph)
     mismatches = []
@@ -208,8 +226,6 @@ def test_e97_ortsrollen_exact_cell_match(graph, xlsx_verknuepfungen):
         role = ste.get("m3gim:eventRole")
         if role not in MOBILITY_PLACE_ROLES:
             continue
-        if ste.get("m3gim:atDate"):
-            mismatches.append((ste.get("@id"), "atDate", ste.get("m3gim:atDate"), "(keins)"))
         src = _xlsx_source(ste)
         if not src:
             mismatches.append((ste.get("@id"), "xlsxSource", None, "vorhanden"))
@@ -224,11 +240,31 @@ def test_e97_ortsrollen_exact_cell_match(graph, xlsx_verknuepfungen):
         exp_role = normalize_role(row.get("rolle"))
         if exp_role != role:
             mismatches.append((ste.get("@id"), "eventRole", role, exp_role))
-        exp_place = normalize_str(row.get("name"))
+
+        raw_name = normalize_str(row.get("name"))
+        raw_typ = normalize_lower(row.get("typ")) or ""
+        if "ort" in raw_typ and "datum" in raw_typ:
+            # ort,datum-Komposit -> dekomponierte Erwartung (atPlace = Ort-Teil,
+            # atDate = ISO-Datums-Teil).
+            dec = decompose_komposit_value(raw_name, ["ort", "datum"])
+            exp_place = dec.get("ort")
+            exp_date = normalize_dating(dec.get("datum") or "")
+            actual_date = ste.get("m3gim:atDate")
+            if is_iso_date(exp_date):
+                if actual_date != exp_date:
+                    mismatches.append((ste.get("@id"), "atDate", actual_date, exp_date))
+        else:
+            # reine ort-Zeile -> datumslos, atPlace == ganze Rohzelle.
+            exp_place = raw_name
+            if ste.get("m3gim:atDate"):
+                mismatches.append(
+                    (ste.get("@id"), "atDate", ste.get("m3gim:atDate"), "(keins)"))
+
         if exp_place != _place_name(ste):
             mismatches.append((ste.get("@id"), "atPlace.name", _place_name(ste), exp_place))
 
-    # E-97 reichte 15 Ortsrollen-Events durch (zielort 11, absendeort 3, abreiseort 1).
+    # Mindestens 15 Mobilitaets-Ortsrollen-Events erwartet (reine ort-Zeilen +
+    # ort,datum-Komposite mit Mobilitaetsrolle).
     assert e97_count >= 15, (
         f"Nur {e97_count} E-97-Ortsrollen-Events gefunden (erwartet >= 15). "
         f"Sind sie noch im Output? (E-107 hatte sie nach docs/data gehoben.)"

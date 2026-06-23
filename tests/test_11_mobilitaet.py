@@ -69,6 +69,8 @@ def test_spatiotemporal_event_roles_known(graph):
         "absendedatum", "auffuehrungsdatum",
         "auftrag", "entstehung", "erscheinungsdatum",
         "ausstellungsdatum", "erwähnt",
+        # tieferer Export (G2-Aktivierung, Treffen 2026-06-23):
+        "aufnahme", "rahmenveranstaltung",
     } | MOBILITY_PLACE_ROLES
     events = [n for n in graph if n.get("@type") == "m3gim:SpatiotemporalEvent"]
     assert len(events) >= 20, f"Zu wenige Events: {len(events)} (erwartet >= 20)"

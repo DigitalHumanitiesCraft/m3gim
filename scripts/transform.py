@@ -142,6 +142,16 @@ MOBILITY_PLACE_ROLES = {
     "zielort", "absendeort", "abreiseort", "empfangsort", "vertragsort",
 }
 
+# Vertragsstatus (data.md § 11, E-99): in der Quelle wird ein unerfuellter
+# Vertrag ueber die rolle-Spalte als "nicht eingehalten" markiert, dabei
+# spaltenweit ueber den ganzen Vertragsblock (z.B. NIM_023) durchgereicht. Das
+# ist KEINE Ereignis-/Ortsrolle: ein Ort oder ein ort,datum-Ereignis kann nicht
+# "nicht eingehalten" sein. Wir filtern den Status daher als eventRole heraus,
+# damit kein Schein-eventRole entsteht (Routing-Fix). Die contractStatus-
+# Modellierung (m3gim:realized=false am Vertrags-Record) ist mangels Test-/
+# Frontend-Bedarf noch nicht ausgebaut und mit dem Erschliessungsteam zu klaeren.
+CONTRACT_STATUS_ROLES = {"nicht eingehalten"}
+
 # ---------------------------------------------------------------------------
 # Dokumenttyp-Mapping (deutsch → m3gim-dft)
 # ---------------------------------------------------------------------------
@@ -344,6 +354,13 @@ def normalize_role(value) -> str | None:
     return v
 
 
+# "Kein Datum"-Platzhalter: "ohne Datum" (belegt) sowie die etablierte
+# Archiv-Kurzform "o. D."/"o.d." (case-insensitive, beliebige Innen-Whitespace).
+_NO_DATE_PLACEHOLDER = re.compile(
+    r"^(?:ohne\s+datum|o\.?\s*d\.?)$", re.IGNORECASE
+)
+
+
 def clean_date(value) -> str | None:
     """Bereinigt Datumsartefakte (Excel 00:00:00) + normalisiert Zeitspannen.
 
@@ -357,6 +374,11 @@ def clean_date(value) -> str | None:
     s = str(value).strip()
     s = re.sub(r'\s+00:00:00$', '', s)
     if s == "":
+        return None
+    # "Kein Datum"-Platzhalter (data.md § 6): die etablierte Konvention "ohne
+    # Datum"/"o. D." ist KEIN Datum und darf nicht in rico:date landen (bricht
+    # das JSON-LD-Schema). Auf None abbilden. Belegt im Export: "ohne Datum".
+    if _NO_DATE_PLACEHOLDER.match(s):
         return None
     # YYYY-YYYY -> YYYY/YYYY (ISO-Konvention fuer Zeitspannen nur Jahre)
     s = re.sub(r'^(\d{4})-(\d{4})$', r'\1/\2', s)
@@ -522,6 +544,15 @@ def build_index_lookup(df: pd.DataFrame) -> dict:
             entry["anmerkung"] = str(row['anmerkung']).strip()
         if pd.notna(row.get('komponist')):
             entry["komponist"] = str(row['komponist']).strip()
+        # M1: kuratierte Index-Felder durchreichen, damit ALLE gepflegten Daten
+        # das Frontend erreichen (zuvor fielen sie nach build_index_lookup weg).
+        # Pro Index-Typ nur die jeweils vorhandene Spalte (org: ort/Sitz +
+        # assoziierte_person; person: lebensdaten; werk: rolle_stimme).
+        for col in ('lebensdaten', 'ort', 'assoziierte_person', 'rolle_stimme'):
+            if col in df.columns and pd.notna(row.get(col)):
+                val = str(row[col]).strip()
+                if val:
+                    entry[col] = val
         lookup[name.lower()] = entry
 
     return lookup
@@ -556,10 +587,22 @@ def convert_objekt(row: pd.Series, folio_col: str = None,
     if titel:
         record["rico:title"] = titel
 
-    # Datum (bereinigt)
+    # Datum (bereinigt). rico:date ist im JSON-Schema ISO-typisiert; ein
+    # malformter Quellwert (z.B. "06-09" ohne Jahr) darf dort nicht landen
+    # (bricht das Schema). ISO-Werte gehen in rico:date, nicht-ISO bleibt
+    # verlustfrei als m3gim:hasDatedEvent (Fallback, E-102) mit dateRole
+    # "entstehungsdatum" erhalten und ist als Quell-Datenfehler markiert.
     date_val = clean_date(row.get('entstehungsdatum'))
     if date_val:
-        record["rico:date"] = date_val
+        if is_iso_date(date_val):
+            record["rico:date"] = date_val
+        else:
+            record["m3gim:hasDatedEvent"] = {
+                "@type": "m3gim:DatedEvent",
+                "m3gim:dateValue": date_val,
+                "m3gim:dateRole": "entstehungsdatum",
+                "m3gim:dataQualityFlag": "datierung-malformed",
+            }
 
     # Datierungsevidenz wird bewusst NICHT serialisiert (E-106, ersetzt E-100).
     # Die frueheren agrelon:metadataConfidence-Dezimalwerte (1.0/0.8/0.6) waren
@@ -699,41 +742,85 @@ def build_konvolut_hierarchy(df: pd.DataFrame, folio_col: str = None) -> tuple[l
 # knowledge/data.md § 17 fuer die redaktionellen Annahmen.
 
 
-def parse_monetary_value(name: str) -> tuple[str | None, str | None]:
-    """Zerlegt Finanz-Rohwert in (amount, currency).
+# Numerischer Kopf eines Finanz-Rohwerts: fuehrende Ziffern mit '.' (Tausender)
+# und ',' (Dezimal). Erfasst "1.200", "631,50", "200,00", "50000".
+_AMOUNT_HEAD = re.compile(r"^\s*([\d.,]+)")
 
-    Erwartetes Format: 'AMOUNT[, CURRENCY]' wie '4000, ESC' / '631,50, Fr.' / '36000'.
-    Dezimaltrenner: Komma (europaeisch). Ergebnis amount ist xsd:decimal-kompatibler
-    String, currency bleibt Originalcode (keine ISO-4217-Normalisierung wegen
-    Ambiguitaet, z.B. 'Fr' = FRF oder CHF). Siehe data.md Abschnitt 11.
+
+def _parse_amount_token(token: str) -> str | None:
+    """Wandelt einen numerischen Roh-Token in einen xsd:decimal-String.
+
+    Konvention (data.md § 11, europaeisch): '.' ist Tausendertrenner, ',' ist
+    Dezimaltrenner. Ein abschliessendes Komma vor der Waehrung ist hier bereits
+    abgetrennt; ein verbleibendes ',NN' ist eine echte Nachkommastelle.
     """
-    if not name:
-        return None, None
-    s = str(name).strip()
-    if not s:
-        return None, None
-
-    # Letztes Komma trennt Betrag und Waehrung
-    if ',' in s:
-        amount_str, currency = s.rsplit(',', 1)
-        amount_str = amount_str.strip()
-        currency = currency.strip().rstrip('.').strip() or None
-    else:
-        amount_str = s
-        currency = None
-
-    # Betrag parsen: Komma als Dezimaltrenner, Punkte als Tausendertrenner
-    cleaned = amount_str.replace('.', '').replace(',', '.')
+    token = token.strip().rstrip(",").strip()
+    if not token:
+        return None
+    cleaned = token.replace(".", "").replace(",", ".")
     try:
         amount_decimal = float(cleaned)
-        if amount_decimal == int(amount_decimal):
-            amount_out = str(int(amount_decimal))
-        else:
-            amount_out = f"{amount_decimal:g}"
     except ValueError:
-        amount_out = None
+        return None
+    if amount_decimal == int(amount_decimal):
+        return str(int(amount_decimal))
+    return f"{amount_decimal:g}"
 
-    return amount_out, currency
+
+def _parse_single_monetary(segment: str) -> tuple[str | None, str | None]:
+    """Zerlegt EIN Betrag-Segment (kein Doppelbetrag) in (amount, currency)."""
+    s = segment.strip()
+    if not s:
+        return None, None
+    head = _AMOUNT_HEAD.match(s)
+    if not head:
+        # Kein numerischer Kopf -> nicht parsbar als Betrag.
+        return None, None
+    num_token = head.group(1)
+    rest = s[head.end():].strip()
+    # 'rest' beginnt ggf. mit dem Waehrungstrenner (Komma) -> abschneiden.
+    rest = rest.lstrip(",").strip()
+    currency = rest.rstrip(".").strip() or None
+    return _parse_amount_token(num_token), currency
+
+
+def parse_monetary_values(name: str) -> list[tuple[str | None, str | None]]:
+    """Zerlegt einen Finanz-Rohwert in eine Liste von (amount, currency).
+
+    Robust gegen die in der Quelle gemischten Notationen (data.md § 11):
+      - 'AMOUNT, CURRENCY'     : '4000, Esc', '1.200, DM'  (Komma+Space-Trenner)
+      - 'AMOUNT,DEC, CURRENCY' : '631,50, Fr.'             (Dezimalkomma DANN Trenn-Komma)
+      - 'AMOUNT,DEC CURRENCY'  : '1500,00 DM', '200,00 Belgische Francs'
+                                                           (Dezimalkomma, Space, Waehrung)
+      - 'AMOUNT,CURRENCY'      : '153,DM'                  (Komma ohne Space als Trenner)
+      - 'AMOUNT CURRENCY'      : '50000 Lire'              (Space-Trenner ohne Komma)
+      - 'AMOUNT'               : '36000', '18.000'         (keine Waehrung)
+      - Doppelbetrag '25, DM/45, DM' -> zwei eigenstaendige Eintraege.
+
+    Strategie pro Segment: den numerischen Kopf (Ziffern + '.'/',') vom Rest
+    abloesen, den Rest als Waehrung lesen. Ein ',NN'-Suffix im Kopf ist eine
+    echte Nachkommastelle und bleibt Teil des Betrags; '.'-Gruppen sind Tausender.
+    """
+    if not name:
+        return [(None, None)]
+    s = str(name).strip()
+    if not s:
+        return [(None, None)]
+    # Doppelbetrag am '/' trennen (data.md § 11): jeder Teil wird ein eigener
+    # Eintrag mit gleichem detailField. Nur Segmente mit numerischem Kopf zaehlen.
+    segments = [seg for seg in s.split("/") if seg.strip()]
+    parsed = [_parse_single_monetary(seg) for seg in segments]
+    parsed = [p for p in parsed if p[0] is not None]
+    return parsed or [_parse_single_monetary(s)]
+
+
+def parse_monetary_value(name: str) -> tuple[str | None, str | None]:
+    """Erster (amount, currency)-Eintrag eines Finanz-Rohwerts.
+
+    Duenne Huelle um parse_monetary_values fuer Aufrufer/Tests, die einen
+    einzelnen Betrag erwarten (Doppelbetraege liefern den ersten Teil).
+    """
+    return parse_monetary_values(name)[0]
 
 
 def decompose_komposit_typ(typ: str) -> list[str]:
@@ -1101,6 +1188,11 @@ def process_verknuepfungen(df: pd.DataFrame, indices: dict) -> dict:
                     rel["wikidata_id"] = match["wikidata_id"]
                 if match and 'komponist' in match:
                     rel["komponist"] = match["komponist"]
+                if match:
+                    # Kuratierte Indexfelder fuer add_relations_to_records,
+                    # getrennt vom Verknuepfungs-anmerkung in rel["anmerkung"]
+                    # (M1: ALLE Index-Daten ins JSON-LD).
+                    rel["_index"] = match
 
             if objekt_id not in relations:
                 relations[objekt_id] = []
@@ -1153,6 +1245,38 @@ def _ste_id(rec_local_id: str, ort: str, rolle: str, datum: str, seen: dict) -> 
     n = seen.get(base, 0) + 1
     seen[base] = n
     return base if n == 1 else f"{base}-{n}"
+
+
+def _attach_index_fields(entry: dict, rel: dict, typ: str):
+    """Haengt kuratierte Indexfelder (rel['_index']) als m3gim:-Properties an
+    die Entitaet. Eigener Namespace, additiv zum Loader; getrennt vom
+    Verknuepfungs-anmerkung. data.md § Index-Durchreichung (M1).
+
+    person: anmerkung -> editorialNote (Beruf), lebensdaten -> lifespan.
+    institution: ort -> sitz, assoziierte_person -> keyContact, anmerkung -> editorialNote.
+    werk: rolle_stimme -> partie (von Malaniuk gesungene Partie), anmerkung -> editorialNote.
+    """
+    idx = rel.get("_index")
+    if not idx:
+        return
+    note = idx.get("anmerkung")
+    if typ == "person":
+        if note:
+            entry["m3gim:editorialNote"] = note
+        if idx.get("lebensdaten"):
+            entry["m3gim:lifespan"] = idx["lebensdaten"]
+    elif typ == "institution":
+        if idx.get("ort"):
+            entry["m3gim:sitz"] = idx["ort"]
+        if idx.get("assoziierte_person"):
+            entry["m3gim:keyContact"] = idx["assoziierte_person"]
+        if note:
+            entry["m3gim:editorialNote"] = note
+    elif typ == "werk":
+        if idx.get("rolle_stimme"):
+            entry["m3gim:partie"] = idx["rolle_stimme"]
+        if note:
+            entry["m3gim:editorialNote"] = note
 
 
 def add_relations_to_records(records: list, relations: dict,
@@ -1212,6 +1336,7 @@ def add_relations_to_records(records: list, relations: dict,
 
             if t == "person":
                 rolle_lower = (rel.get("rolle") or "").lower()
+                _attach_index_fields(entry, rel, "person")
                 if rolle_lower in ["erwähnt", "erwaehnt", "erwähnt"]:
                     mentions.append(entry)
                 else:
@@ -1221,6 +1346,7 @@ def add_relations_to_records(records: list, relations: dict,
 
             elif t == "institution":
                 entry["@type"] = "rico:CorporateBody"
+                _attach_index_fields(entry, rel, "institution")
                 agents.append(entry)
                 _maybe_add_agrelon(record, t, (rel.get("rolle") or "").lower(), entry, rel=rel)
 
@@ -1246,6 +1372,7 @@ def add_relations_to_records(records: list, relations: dict,
                 entry["@type"] = "m3gim:MusicalWork"
                 if rel.get("komponist"):
                     entry["komponist"] = rel["komponist"]
+                _attach_index_fields(entry, rel, "werk")
                 subjects.append(entry)
 
             elif t == "ereignis":
@@ -1325,7 +1452,14 @@ def add_relations_to_records(records: list, relations: dict,
                 # Phase 4.4: Komposit ort,datum -> m3gim:SpatiotemporalEvent
                 # als Top-Level Graph-Entity mit Rueckverweis.
                 rec_local_id = record["@id"].split(":", 1)[-1]
-                ev_id = _ste_id(rec_local_id, rel["ort"], rel.get("rolle"),
+                # Vertragsstatus ("nicht eingehalten") ist keine eventRole,
+                # sondern eine spaltenweit durchgereichte Vertragsmarkierung
+                # (data.md § 11). Vor @id-Hash UND eventRole herausfiltern, damit
+                # beide konsistent bleiben (test_35 leitet die @id aus dem Output ab).
+                ste_role = rel.get("rolle")
+                if ste_role and ste_role.strip().lower() in CONTRACT_STATUS_ROLES:
+                    ste_role = None
+                ev_id = _ste_id(rec_local_id, rel["ort"], ste_role,
                                 rel.get("datum"), ste_seen)
                 # atPlace: wie reguläre rico:Place-Entries mit Q-ID + Enrichment
                 # anreichern, sobald Reconciliation einen Treffer liefert.
@@ -1349,9 +1483,8 @@ def add_relations_to_records(records: list, relations: dict,
                 # Datumslose Mobilitaets-STE (E-97) tragen kein atDate.
                 if rel.get("datum"):
                     ev["m3gim:atDate"] = rel["datum"]
-                role_val = rel.get("rolle")
-                if role_val:
-                    ev["m3gim:eventRole"] = role_val
+                if ste_role:
+                    ev["m3gim:eventRole"] = ste_role
                 if rel.get("anmerkung"):
                     ev["rico:generalDescription"] = rel["anmerkung"]
                 attach_xlsx_source(ev, rel)
@@ -1395,28 +1528,31 @@ def add_relations_to_records(records: list, relations: dict,
                 record.setdefault("m3gim:hasPerformance", []).append({"@id": perf_id})
 
             elif t in ["ausgaben", "einnahmen", "summe"]:
-                # Finanz-Informationen als DetailAnnotation (data.md Abschnitt 11)
-                amount, currency = parse_monetary_value(name)
-                if currency is None and amount is not None:
-                    currency = default_currency_for(record.get("rico:identifier", ""))
-                detail_entry = {
-                    "@type": "m3gim:DetailAnnotation",
-                    "m3gim:detailField": t,
-                    "m3gim:detailValue": name,
-                }
-                if rel.get("rolle"):
-                    detail_entry["m3gim:detailRole"] = rel["rolle"]
-                if amount is not None:
-                    detail_entry["m3gim:monetaryAmount"] = {
-                        "@value": amount,
-                        "@type": "xsd:decimal",
+                # Finanz-Informationen als DetailAnnotation (data.md Abschnitt 11).
+                # Doppelbetrag ('25, DM/45, DM') -> zwei DetailAnnotations mit
+                # gleichem detailField (parse_monetary_values).
+                for amount, currency in parse_monetary_values(name):
+                    if currency is None and amount is not None:
+                        currency = default_currency_for(
+                            record.get("rico:identifier", ""))
+                    detail_entry = {
+                        "@type": "m3gim:DetailAnnotation",
+                        "m3gim:detailField": t,
+                        "m3gim:detailValue": name,
                     }
-                if currency:
-                    detail_entry["m3gim:currency"] = currency
-                attach_xlsx_source(detail_entry, rel)
-                if "m3gim:hasDetail" not in record:
-                    record["m3gim:hasDetail"] = []
-                record["m3gim:hasDetail"].append(detail_entry)
+                    if rel.get("rolle"):
+                        detail_entry["m3gim:detailRole"] = rel["rolle"]
+                    if amount is not None:
+                        detail_entry["m3gim:monetaryAmount"] = {
+                            "@value": amount,
+                            "@type": "xsd:decimal",
+                        }
+                    if currency:
+                        detail_entry["m3gim:currency"] = currency
+                    attach_xlsx_source(detail_entry, rel)
+                    if "m3gim:hasDetail" not in record:
+                        record["m3gim:hasDetail"] = []
+                    record["m3gim:hasDetail"].append(detail_entry)
 
         # Erwähnte Personen → rico:hasOrHadSubject (statt m3gim:mentions)
         # Sie werden als rico:Person mit role "erwähnt" modelliert
