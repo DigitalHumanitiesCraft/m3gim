@@ -26,7 +26,7 @@ BASE_URL = os.environ.get("M3GIM_SMOKE_URL", "http://localhost:8765/")
 # Karte, E-111) und der Korb sind seit E-109/E-111 sichtbar und jetzt im Loop;
 # die verborgenen Perspektiv-Tabs (mobilitaets-atlas, repertoire, biogramm)
 # bleiben per `hidden` ausgeblendet und werden spaeter ueberarbeitet (E-81).
-TABS = ["bestand", "chronik", "statistik", "indizes", "karte", "netzwerk", "korb"]
+TABS = ["bestand", "chronik", "statistik", "indizes", "karte", "netzwerk", "verknuepfungen", "korb"]
 
 # Anker-Records: Titel-Snippets, die im Bestand-Tab-DOM erreichbar sein muessen.
 # Nur Records mit Verknuepfungen (sonst werden sie durch den "nur bearbeitet"-
@@ -100,7 +100,7 @@ def main() -> int:
             if text.startswith("[") and "]" in text:
                 tag = text[1:text.index("]")]
                 if tag in ("chronik", "bestand", "indizes", "statistik",
-                           "karte", "netzwerk", "korb"):
+                           "karte", "netzwerk", "verknuepfungen", "korb"):
                     stamps[tag] = text
 
         page.on("console", on_console)
@@ -150,6 +150,7 @@ def main() -> int:
             "indizes":    ["personen", "organisationen", "orte", "werke"],
             "karte":      ["events", "verortet", "unverortet", "datiert", "jahre"],
             "netzwerk":   ["total", "ring1", "ring2", "agrelon"],
+            "verknuepfungen": ["fokus", "schaerfe", "knoten", "recordsWeit", "recordsEng"],
             "korb":       ["eintraege", "aufgeloest", "events", "finanzen"],
         }
         for view, required in stamp_expectations.items():
@@ -267,6 +268,42 @@ def main() -> int:
         except Exception as e:
             results.append(("FAIL", "karte:render               ",
                             f"Karte nicht gezeichnet: {str(e)[:90]}"))
+
+        # --- Canary M4: geteilter Cross-View-Filter (filter-modell.md). Im
+        #     Verknuepfungen-Graph Ort=Bayreuth setzen -> der Graph fokussiert
+        #     Bayreuth (Stempel ort:Bayreuth) UND der bereits gerenderte Bestand
+        #     filtert synchron auf die Bayreuth-Records (Stempel gefiltert:ja).
+        #     Harter Schutz fuer die Synchronitaet ueber den geteilten filter-state.
+        try:
+            page.locator('[data-tab="verknuepfungen"]').first.click()
+            page.wait_for_timeout(500)
+            errs_before = len(global_errors)
+            page.select_option('#tab-verknuepfungen [data-facet="ort"]', 'Bayreuth')
+            page.wait_for_timeout(500)
+            vk_stamp = stamps.get('verknuepfungen', '')
+            page.locator('[data-tab="bestand"]').first.click()
+            page.wait_for_timeout(600)
+            bestand_stamp = stamps.get('bestand', '')
+            new_errs = expect_no_new_errors(global_errors, errs_before)
+            if 'ort:Bayreuth' in vk_stamp and 'gefiltert:ja' in bestand_stamp and not new_errs:
+                results.append(("OK", "m4:cross-view-filter        ",
+                                f"Graph Ort=Bayreuth -> Bestand synchron gefiltert"))
+            else:
+                results.append(("FAIL", "m4:cross-view-filter        ",
+                                f"vk={vk_stamp[-40:]!r} bestand={bestand_stamp[-40:]!r} "
+                                f"errs={len(new_errs)}"))
+                for e in new_errs[:2]:
+                    results.append(("  ", " " * 24, e[:120]))
+        except Exception as e:
+            results.append(("WARN", "m4:cross-view-filter        ",
+                            f"check uebersprungen: {e}"))
+
+        # Reset des geteilten Filters: der Cross-View-Canary oben setzt
+        # ort=Bayreuth, und der filter-state ueberlebt SPA-Navigation bewusst
+        # (Persistenz). Ein voller Reload setzt den modul-lokalen State zurueck,
+        # damit die folgenden Anker-Checks den ungefilterten Bestand sehen.
+        page.goto(BASE_URL, wait_until="networkidle", timeout=10000)
+        page.wait_for_timeout(400)
 
         # --- Anker-Titel: im DOM erreichbar? ---
         # (Kein Klick, weil Konvolute im Archiv-Tab ggf. eingeklappt sind und

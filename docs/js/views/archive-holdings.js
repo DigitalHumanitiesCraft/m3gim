@@ -13,10 +13,16 @@ import { toggleKorb, isInKorb } from '../ui/basket.js';
 import { buildFilterToolbar } from './_archive-toolbar.js';
 import { onViewNavigate } from '../ui/events.js';
 import { logStamp } from '../utils/env.js';
+import { getFilter, setFilter, subscribe } from '../ui/filter-state.js';
+import {
+  sharedToToolbarState, applySchaerfeEng, applyZeitfenster, makeSyncGuard,
+} from '../ui/filter-sync.js';
 
 let store = null;
 let container = null;
 let toolbar = null;  // { element, setPerson, setCount, getState }
+let unsubscribeFilter = null;
+const syncGuard = makeSyncGuard();  // loop guard: setFacet<->setFilter
 let expandedKonvolute = new Set();
 let expandedRecord = null; // only one at a time
 let currentItems = []; // kept in sync so closures never go stale
@@ -38,11 +44,36 @@ export function renderBestand(storeRef, containerEl) {
 
   clear(container);
   toolbar = buildFilterToolbar(store, {
-    onChange: () => updateBestandView(),
+    initial: sharedToToolbarState(getFilter()),
+    onChange: () => {
+      // Toolbar-Aenderung -> geteilte Facetten zurueckschieben (innerhalb des
+      // Guards, damit der eigene subscribe-Callback nicht erneut setzt).
+      syncGuard.run(() => {
+        const s = toolbar.getState();
+        setFilter({ person: s.person || '', ort: s.location || '', werk: s.werk || '' });
+      });
+      updateBestandView();
+    },
   });
   container.appendChild(toolbar.element);
+  container.appendChild(buildSchaerfeBanner());
   container.appendChild(buildTable());
   updateBestandView();
+
+  // Geteilter Filter (M4): externe Aenderung (Ort-Klick anderswo, Zeitfenster,
+  // Schaerfe) zieht die Toolbar nach und zeichnet neu. Loop-Guard verhindert,
+  // dass das Zuruecksetzen der Toolbar erneut auf den geteilten State schreibt.
+  if (unsubscribeFilter) unsubscribeFilter();
+  unsubscribeFilter = subscribe((shared) => {
+    if (syncGuard.isActive()) return;
+    syncGuard.run(() => {
+      const proj = sharedToToolbarState(shared);
+      toolbar.applyFacet('person', proj.person);
+      toolbar.applyFacet('location', proj.location);
+      toolbar.applyFacet('werk', proj.werk);
+    });
+    updateBestandView();
+  }, { immediate: false });
 
   // Cross-navigation: Indizes "Alle im Archiv anzeigen", Korb-Klick,
   // Chip-Klick aus Inline-Detail (applyArchivFilter) oder Chronik-Punkt.
@@ -54,8 +85,31 @@ export function renderBestand(storeRef, containerEl) {
   });
 }
 
+/** Schaerfegrad-Banner: nennt den aktiven Modus und im engen Modus die
+ *  Differenz (X von Y raumzeitlich/auffuehrungs-belegt). Inhalt von
+ *  updateBestandView gefuellt. */
+function buildSchaerfeBanner() {
+  return el('div', { className: 'archiv-schaerfe', id: 'bestand-schaerfe', hidden: true });
+}
+
 function applyToolbarFilter({ facet, value }) {
   if (toolbar) toolbar.applyFacet(facet, value);
+}
+
+/** Schaerfegrad-Banner aktualisieren: im engen Modus die Differenz nennen. */
+function updateSchaerfeBanner(schaerfe, engInfo) {
+  const banner = document.getElementById('bestand-schaerfe');
+  if (!banner) return;
+  if (schaerfe !== 'eng' || !engInfo) {
+    banner.hidden = true;
+    banner.textContent = '';
+    return;
+  }
+  banner.hidden = false;
+  clear(banner);
+  banner.appendChild(el('span', { className: 'archiv-schaerfe__mode' }, 'Schärfegrad eng'));
+  banner.appendChild(el('span', { className: 'archiv-schaerfe__diff' },
+    `${engInfo.eng} von ${engInfo.total} raumzeitlich/Aufführungs-belegt`));
 }
 
 /**
@@ -63,7 +117,12 @@ function applyToolbarFilter({ facet, value }) {
  */
 function updateBestandView(filters) {
   const state = filters || (toolbar ? toolbar.getState() : {});
-  const isFiltered = isToolbarFiltered(state);
+  const sharedF = getFilter();
+  // Geteilte On-Top-Facetten (Zeitfenster/eng) flachen die Hierarchie ebenso ab
+  // wie eine Toolbar-Facette: sie filtern Kinder weg, leere Konvolut-Header
+  // sollen dann nicht stehenbleiben.
+  const sharedActive = Array.isArray(sharedF.zeitfenster) || sharedF.schaerfe === 'eng';
+  const isFiltered = isToolbarFiltered(state) || sharedActive;
   const showAll = !!state.zeigeUnerschlossen;  // E-116: auch nicht erschlossene
   let items = getOrderedItems(showAll);
 
@@ -81,6 +140,19 @@ function updateBestandView(filters) {
     getRecord: (item) => item.record,
     searchMatch: (record, q) => searchMatchBestand(record, q, store),
   });
+
+  // Geteilte Facetten ueber die Toolbar hinaus: Zeitfenster + Schaerfegrad
+  // (M4). person/ort/werk stecken bereits via Sync in der Toolbar-Pipeline.
+  const shared = getFilter();
+  const getRecord = (item) => item.record;
+  items = applyZeitfenster(items, shared.zeitfenster, getRecord);
+  let engInfo = null;
+  if (shared.schaerfe === 'eng') {
+    const r = applySchaerfeEng(items, store, getRecord);
+    items = r.items;
+    engInfo = { total: r.total, eng: r.eng };
+  }
+  updateSchaerfeBanner(shared.schaerfe, engInfo);
 
   // Sortierung:
   //   - Bei aktivem Filter: flach sortieren (die Hierarchie ist bereits

@@ -41,6 +41,8 @@ import {
   drawCanvas,
   applyHighlight,
 } from './_network-canvas.js';
+import { getFilter, setFilter, subscribe } from '../ui/filter-state.js';
+import { zeitfensterToYearRange, makeSyncGuard } from '../ui/filter-sync.js';
 
 // ---------------------------------------------------------------------------
 // Modul-State (bewusst modul-lokal, analog zu anderen Views).
@@ -51,11 +53,14 @@ let _container = null;
 let _layout = null;           // Ergebnis von computeLayout
 let _coOccurrence = [];       // Ko-Okkurrenz-Paare {a, b, shared}
 let _selected = null;         // aktuell geklickter Knoten
+let _unsubscribeFilter = null;
+const _syncGuard = makeSyncGuard();  // loop guard: Sidebar-Zeitfenster <-> setFilter
 let _filters = {
   minRecords: 1,
   onlyWikidata: false,
   onlyAgRelOn: false,
   search: '',
+  sharedPerson: '',            // M4: exakter Name aus dem geteilten person-Filter
   hiddenCategories: new Set(),      // leer = alle zugelassen
   showCoOccurrence: true,      // geschwungene Ko-Okkurrenz-Baender
   showAgRelOn: true,           // gerade AgRelOn-Radials zum Zentrum
@@ -89,6 +94,7 @@ export function renderNetzwerk(store, container) {
     onlyWikidata: false,
     onlyAgRelOn: false,
     search: '',
+    sharedPerson: '',
     hiddenCategories: new Set(),
     showCoOccurrence: true,
     showAgRelOn: true,
@@ -98,8 +104,30 @@ export function renderNetzwerk(store, container) {
   };
   buildPersonYearsIndex();
 
+  // Geteilten Filter (M4) initial nachziehen: person + zeitfenster.
+  applySharedToFilters(getFilter());
+
   draw();
   emitStamp();
+
+  // Geteilter Filter (M4): externe Aenderung (person/zeitfenster) auf die
+  // bestehende Opazitaets-Filterung anwenden. Kein Layout-Neubau.
+  if (_unsubscribeFilter) _unsubscribeFilter();
+  _unsubscribeFilter = subscribe((shared) => {
+    if (_syncGuard.isActive()) return;
+    applySharedToFilters(shared);
+    // Sidebar spiegelt das Zeitfenster -> komplett neu zeichnen (Sidebar liest
+    // _filters beim Bau). applyFilters allein wuerde die Slider nicht nachziehen.
+    draw();
+  }, { immediate: false });
+}
+
+/** Geteilte Facetten (person, zeitfenster) in die lokale _filters-Shape ziehen. */
+function applySharedToFilters(shared) {
+  _filters.sharedPerson = shared.person || '';
+  const { yearFrom, yearTo } = zeitfensterToYearRange(shared.zeitfenster);
+  _filters.yearFrom = yearFrom;
+  _filters.yearTo = yearTo;
 }
 
 /**
@@ -154,6 +182,18 @@ function draw() {
     state: { filters: _filters, layout: _layout, yearRange: _yearRange },
     actions: {
       onFilterChange: () => applyFilters(),
+      // Zeitfenster ist geteilt (M4): Sidebar hat _filters.yearFrom/yearTo schon
+      // gesetzt -> in den geteilten State falten (volle Spanne => null) und nur
+      // Opazitaet neu anwenden. Guard verhindert den subscribe-Rueckschlag.
+      onTimeWindowChange: () => {
+        _syncGuard.run(() => {
+          const from = _filters.yearFrom ?? _yearRange.min;
+          const to = _filters.yearTo ?? _yearRange.max;
+          const full = (from <= _yearRange.min && to >= _yearRange.max);
+          setFilter({ zeitfenster: full ? null : [from, to] });
+        });
+        applyFilters();
+      },
       onMinSharedChanged: () => {
         _coOccurrence = computeCoOccurrence(_store.persons.entries(), {
           minShared: _filters.minShared, maxEdges: 250,
@@ -173,10 +213,12 @@ function draw() {
       onResetFilters: () => {
         _filters = {
           minRecords: 1, onlyWikidata: false, onlyAgRelOn: false,
-          search: '', hiddenCategories: new Set(),
+          search: '', sharedPerson: '', hiddenCategories: new Set(),
           showCoOccurrence: true, showAgRelOn: true, minShared: 2,
           yearFrom: null, yearTo: null,
         };
+        // Geteilte Facetten, die das Netzwerk traegt, ebenfalls loesen (M4).
+        _syncGuard.run(() => setFilter({ person: '', zeitfenster: null }));
         draw();
       },
     },
@@ -335,6 +377,11 @@ function passesFilter(node) {
   }
   if (_filters.search) {
     if (!String(node.name).toLowerCase().includes(_filters.search)) return false;
+  }
+  // Geteilter person-Filter (M4): exakter Name. Malaniuk (Zentrum) bleibt immer
+  // sichtbar, damit die gefilterte Person nicht im Leeren steht.
+  if (_filters.sharedPerson) {
+    if (node.name !== _filters.sharedPerson && !isMalaniuk(node.name)) return false;
   }
   return true;
 }

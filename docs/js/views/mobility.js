@@ -35,11 +35,19 @@ import { cityOf } from '../utils/format.js';
 import { formatDate, extractYear } from '../utils/date-parser.js';
 import { logStamp } from '../utils/env.js';
 import { onViewNavigate } from '../ui/events.js';
+import { mobilityClusterFor } from '../data/constants.js';
+import { getFilter, setFilter, subscribe } from '../ui/filter-state.js';
+import {
+  sichtToActiveSet, activeSetToSicht, zeitfensterToYearRange,
+  yearRangeToZeitfenster, makeSyncGuard,
+} from '../ui/filter-sync.js';
 
 /* global d3 */
 
 const GEO_URL = 'data/geo/countries-110m.geo.json';
 let COUNTRIES = null;  // module-level cache, ueber Tab-Wechsel hinweg
+let _unsubscribeFilter = null;       // geteilter Filter (M4), modul-lebend
+const _syncGuard = makeSyncGuard();  // loop guard: Controls <-> setFilter
 
 const SICHTEN = [
   {
@@ -73,13 +81,12 @@ const KONTEXT = {
 };
 const ALL_TYPES = [...SICHTEN, KONTEXT];
 const TYPE_BY_ID = new Map(ALL_TYPES.map(t => [t.id, t]));
-const ROLE_TO_TYPE = (() => {
-  const m = new Map();
-  for (const t of ALL_TYPES) for (const r of t.roles) m.set(r, t.id);
-  return m;
-})();
+const ALL_TYPE_IDS = ALL_TYPES.map(t => t.id);
 
-const sichtOf = ev => ROLE_TO_TYPE.get(String(ev.role || '').trim().toLowerCase()) || KONTEXT.id;
+// Sicht-Klassifikation ueber den kanonischen Klassifikator (E-117 M4): der
+// view-lokale ROLE_TO_TYPE wurde durch mobilityClusterFor ersetzt, null faellt
+// in den expliziten Bucket 'kontext' (Entstehung, Erwaehnung, Auftrag).
+const sichtOf = ev => mobilityClusterFor(ev.role) || KONTEXT.id;
 const colorOf = id => (TYPE_BY_ID.get(id) || KONTEXT).color;
 const hasGeo = ev => typeof ev.placeLat === 'number' && typeof ev.placeLon === 'number';
 
@@ -111,13 +118,25 @@ export function renderMobilitaet(store, container) {
   // Gemeinsamer Filter-State. Der Zeitraum (yearFrom..yearTo) ist ein
   // beidseitiges Fenster, kein abspielender Cursor: Ereignisse und Pfad-
   // segmente ausserhalb des Fensters werden ausgeblendet.
+  const span = { min: minYear, max: maxYear };
   const state = {
-    active: new Set(ALL_TYPES.map(t => t.id)),
+    active: new Set(ALL_TYPE_IDS),
     showPath: true,
     yearFrom: minYear,
     yearTo: maxYear,
     selectedCity: null,
   };
+
+  // Geteilten Filter (M4) initial nachziehen: sicht -> active, zeitfenster ->
+  // yearFrom/yearTo (an die View-Spanne geklemmt), ort -> selectedCity.
+  function pullSharedIntoState(shared) {
+    state.active = sichtToActiveSet(shared.sicht, ALL_TYPE_IDS);
+    const { yearFrom, yearTo } = zeitfensterToYearRange(shared.zeitfenster);
+    state.yearFrom = yearFrom == null ? minYear : Math.max(minYear, yearFrom);
+    state.yearTo = yearTo == null ? maxYear : Math.min(maxYear, yearTo);
+    state.selectedCity = shared.ort || null;
+  }
+  pullSharedIntoState(getFilter());
 
   const active = e => state.active.has(sichtOf(e));
   const inWindow = e => {
@@ -146,6 +165,8 @@ export function renderMobilitaet(store, container) {
           isActive: id => state.active.has(id),
           onToggle: id => {
             if (state.active.has(id)) state.active.delete(id); else state.active.add(id);
+            // Sicht ist geteilt (M4): genau eine aktive Sicht -> Facette, sonst ''.
+            _syncGuard.run(() => setFilter({ sicht: activeSetToSicht(state.active, ALL_TYPE_IDS) }));
             redraw();
           },
         }],
@@ -158,7 +179,12 @@ export function renderMobilitaet(store, container) {
             onChange: v => { state.showPath = v; redraw(); } },
           { kind: 'range', fromCap: 'Von', toCap: 'Bis', min: minYear, max: maxYear, fullLabel: true,
             from: () => state.yearFrom, to: () => state.yearTo,
-            onChange: (f, t) => { state.yearFrom = f; state.yearTo = t; redraw(); } },
+            onChange: (f, t) => {
+              state.yearFrom = f; state.yearTo = t;
+              // Zeitfenster ist geteilt (M4): volle Spanne -> null (inaktiv).
+              _syncGuard.run(() => setFilter({ zeitfenster: yearRangeToZeitfenster(f, t, span) }));
+              redraw();
+            } },
         ],
       },
       {
@@ -239,7 +265,12 @@ export function renderMobilitaet(store, container) {
   loadCountries().then(countries => {
     const map = buildMap(mapCell, countries, withGeo, state, {
       minYear, maxYear,
-      onSelectCity: city => { state.selectedCity = state.selectedCity === city ? null : city; redraw(); },
+      onSelectCity: city => {
+        state.selectedCity = state.selectedCity === city ? null : city;
+        // Ort ist geteilt (M4): Stadt-Auswahl -> ort-Facette (stadt-konsolidiert).
+        _syncGuard.run(() => setFilter({ ort: state.selectedCity || '' }));
+        redraw();
+      },
     });
     mapApi = map;
     draw = map.draw;
@@ -249,6 +280,16 @@ export function renderMobilitaet(store, container) {
     mapCell.appendChild(el('div', { className: 'mob-empty' },
       'Ländergeometrie konnte nicht geladen werden. Liste in der Sidebar nutzen.'));
   });
+
+  // Geteilter Filter (M4): externe Aenderung (sicht/zeitfenster/ort) auf state
+  // + redraw anwenden. Sidebar liest state ueber Getter -> sidebar.update()
+  // zieht die Controls nach (in redraw enthalten).
+  if (_unsubscribeFilter) _unsubscribeFilter();
+  _unsubscribeFilter = subscribe((shared) => {
+    if (_syncGuard.isActive()) return;
+    pullSharedIntoState(shared);
+    redraw();
+  }, { immediate: false });
 
   logStamp('karte', [
     ['events', events.length], ['verortet', withGeo.length],

@@ -22,11 +22,17 @@ import {
 import { logStamp } from '../utils/env.js';
 import { selectRecord } from '../ui/router.js';
 import { onViewNavigate } from '../ui/events.js';
+import { getFilter, setFilter, subscribe } from '../ui/filter-state.js';
+import {
+  sharedToToolbarState, applySchaerfeEng, applyZeitfenster, makeSyncGuard,
+} from '../ui/filter-sync.js';
 
 let store = null;
 let container = null;
 let toolbar = null;
 let viewContainer = null;
+let unsubscribeFilter = null;
+const syncGuard = makeSyncGuard();  // loop guard: setFacet<->setFilter
 let activeSegment = null;  // "decade|sicht" des aktiven Header-Segments
 
 /** Ira Malaniuks Lebensspanne. Records davor/danach werden trotzdem gerendert
@@ -46,14 +52,36 @@ export function renderChronik(storeRef, containerEl) {
   clear(container);
 
   toolbar = buildFilterToolbar(store, {
-    onChange: () => updateChronikView(),
+    initial: sharedToToolbarState(getFilter()),
+    onChange: () => {
+      syncGuard.run(() => {
+        const s = toolbar.getState();
+        setFilter({ person: s.person || '', ort: s.location || '', werk: s.werk || '' });
+      });
+      updateChronikView();
+    },
   });
   container.appendChild(toolbar.element);
+
+  container.appendChild(el('div', { className: 'archiv-schaerfe', id: 'chronik-schaerfe', hidden: true }));
 
   viewContainer = el('div', { className: 'chronik-timeline-container' });
   container.appendChild(viewContainer);
 
   updateChronikView();
+
+  // Geteilter Filter (M4): externe Aenderung zieht die Toolbar nach + zeichnet neu.
+  if (unsubscribeFilter) unsubscribeFilter();
+  unsubscribeFilter = subscribe((shared) => {
+    if (syncGuard.isActive()) return;
+    syncGuard.run(() => {
+      const proj = sharedToToolbarState(shared);
+      toolbar.applyFacet('person', proj.person);
+      toolbar.applyFacet('location', proj.location);
+      toolbar.applyFacet('werk', proj.werk);
+    });
+    updateChronikView();
+  }, { immediate: false });
 
   // Chip-Klick in Inline-Detail dispatcht `filter` -> Toolbar hier setzen.
   onViewNavigate('chronik', (detail) => {
@@ -76,6 +104,18 @@ function updateChronikView() {
     getRecord: (r) => r,
     searchMatch: searchMatchChronik,
   });
+
+  // Geteilte On-Top-Facetten (M4): Zeitfenster + Schaerfegrad. Records sind
+  // hier nackt -> getRecord ist Identitaet.
+  const shared = getFilter();
+  records = applyZeitfenster(records, shared.zeitfenster, (r) => r);
+  let engInfo = null;
+  if (shared.schaerfe === 'eng') {
+    const res = applySchaerfeEng(records, store, (r) => r);
+    records = res.items;
+    engInfo = { total: res.total, eng: res.eng };
+  }
+  updateChronikSchaerfeBanner(shared.schaerfe, engInfo);
 
   // Pro Record einmal annotieren: Sicht (aus STE) + Anzeigejahr. Das Anzeigejahr
   // ist kanonisch rico:date (E-88); fehlt es, versuchen wir eine SEKUNDAERE
@@ -157,6 +197,22 @@ function updateChronikView() {
     ['spanne', `${min}–${max}`],
     ['gefiltert', isFiltered ? 'ja' : ''],
   ]);
+}
+
+/** Schaerfegrad-Banner (Chronik): im engen Modus die Differenz nennen. */
+function updateChronikSchaerfeBanner(schaerfe, engInfo) {
+  const banner = document.getElementById('chronik-schaerfe');
+  if (!banner) return;
+  if (schaerfe !== 'eng' || !engInfo) {
+    banner.hidden = true;
+    banner.textContent = '';
+    return;
+  }
+  banner.hidden = false;
+  clear(banner);
+  banner.appendChild(el('span', { className: 'archiv-schaerfe__mode' }, 'Schärfegrad eng'));
+  banner.appendChild(el('span', { className: 'archiv-schaerfe__diff' },
+    `${engInfo.eng} von ${engInfo.total} raumzeitlich/Aufführungs-belegt`));
 }
 
 /** Fixe Caption am Achsenkopf: Dichte = Ueberlieferung, nicht Aktivitaet. */

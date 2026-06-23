@@ -82,7 +82,10 @@ export function renderSidebar({ state, actions }) {
           onChange: (from, to) => {
             f.yearFrom = (from === state.yearRange.min) ? null : from;
             f.yearTo = (to === state.yearRange.max) ? null : to;
-            actions.onFilterChange();
+            // Zeitfenster ist geteilt (M4): dedizierte Action schreibt zurueck.
+            // Fallback auf onFilterChange, falls nicht verdrahtet.
+            if (actions.onTimeWindowChange) actions.onTimeWindowChange();
+            else actions.onFilterChange();
           },
         }],
       },
