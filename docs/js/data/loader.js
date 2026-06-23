@@ -109,6 +109,9 @@ function buildStore(jsonld) {
     stageRoles: new Map(),
     /** @type {Map<string, object>} performanceId → Performance-Node (E-96/E-98) */
     performances: new Map(),
+    /** @type {Map<string, Array>} recordId → aufgeloeste Performances (M2):
+     *  [{ id, work:{name,wikidata}|null, performers:[name], stageRoles:[name], date }] */
+    recordToPerformances: new Map(),
   };
 
   // Pass 1: Classify nodes
@@ -162,6 +165,7 @@ function buildStore(jsonld) {
     indexRecordToEvents(store, record);
     indexAgentRelations(store, record);
     indexFinances(store, record);
+    indexPerformances(store, record);
   }
 
   // Pass 2.2: Adressgenaue Orte ("Stadt, Strasse") rollen ihre Records additiv
@@ -331,6 +335,12 @@ function indexAgents(store, record) {
       entry.records.add(record['@id']);
       if (agent.role) entry.roles.add(agent.role);
       if (wikidata && !entry.wikidata) entry.wikidata = wikidata;
+      // M2: kuratierter Sitz (Index) mit Vorrang vor Wikidata-Sitz (oft nur
+      // Stadtteil); traegt die "auswaerts/am Haus"-Achse. + Schluesselkontakt + Notiz.
+      if (agent['m3gim:sitz'] && !entry.sitz) entry.sitz = agent['m3gim:sitz'];
+      else if (agent['m3gim:wdLocation'] && !entry.sitz) entry.sitz = agent['m3gim:wdLocation'];
+      if (agent['m3gim:keyContact'] && !entry.keyContact) entry.keyContact = agent['m3gim:keyContact'];
+      if (agent['m3gim:editorialNote'] && !entry.note) entry.note = agent['m3gim:editorialNote'];
     } else {
       const name = normalizePerson(rawName);
       if (isJunkName(name)) continue;
@@ -346,6 +356,9 @@ function indexAgents(store, record) {
       if (agent['m3gim:voiceType'] && !entry.voiceType) entry.voiceType = agent['m3gim:voiceType'];
       if (agent['schema:birthDate'] && !entry.birthDate) entry.birthDate = agent['schema:birthDate'];
       if (agent['schema:deathDate'] && !entry.deathDate) entry.deathDate = agent['schema:deathDate'];
+      // M2: kuratierte Index-Felder (Beruf-Notiz + Lebensdaten)
+      if (agent['m3gim:editorialNote'] && !entry.note) entry.note = agent['m3gim:editorialNote'];
+      if (agent['m3gim:lifespan'] && !entry.lifespan) entry.lifespan = agent['m3gim:lifespan'];
     }
   }
 
@@ -365,6 +378,9 @@ function indexAgents(store, record) {
     entry.records.add(record['@id']);
     if (subj.role) entry.roles.add(subj.role);
     if (wikidata && !entry.wikidata) entry.wikidata = wikidata;
+    // M2: kuratierte Index-Felder auch fuer erwaehnte Subjekt-Personen
+    if (subj['m3gim:editorialNote'] && !entry.note) entry.note = subj['m3gim:editorialNote'];
+    if (subj['m3gim:lifespan'] && !entry.lifespan) entry.lifespan = subj['m3gim:lifespan'];
   }
 }
 
@@ -417,6 +433,9 @@ function indexWorks(store, record) {
     // WD-Enrichment: Premiere date
     if (subj['m3gim:wdPremiereDate'] && !wEntry.premiereDate) wEntry.premiereDate = subj['m3gim:wdPremiereDate'];
     if (subj['m3gim:wdGenre'] && !wEntry.wdGenre) wEntry.wdGenre = subj['m3gim:wdGenre'];
+    // M2: kuratierte Index-Felder — die von Malaniuk gesungene Partie + Notiz
+    if (subj['m3gim:partie'] && !wEntry.partie) wEntry.partie = subj['m3gim:partie'];
+    if (subj['m3gim:editorialNote'] && !wEntry.note) wEntry.note = subj['m3gim:editorialNote'];
   }
 }
 
@@ -474,6 +493,46 @@ function indexRecordToEvents(store, record) {
     if (eid && store.mobilityEvents.has(eid)) eventIds.push(eid);
   }
   if (eventIds.length > 0) store.recordToEvents.set(record['@id'], eventIds);
+}
+
+
+/**
+ * Performance-Kette aufloesen (M2): Record -> m3gim:hasPerformance -> Performance
+ * -> {performanceOf (Werk, inline), hasPerformer (Person, inline),
+ *     hasStageRole (Ref auf store.stageRoles), auffuehrungsdatum}.
+ * Materialisiert das Rueckgrat des engen Schaerfegrads im Verknuepfungen-Graph:
+ * pro Record die belegten Auffuehrungen mit Werk, Mitwirkenden und Buehnenrolle.
+ * Die einzelnen Performance-Knoten sind fragmentarisch (entweder Rolle, oder
+ * Rolle+Performer, oder Werk+Datum) — hier zusammengefuehrt, nicht erfunden.
+ */
+function indexPerformances(store, record) {
+  const refs = ensureArray(record['m3gim:hasPerformance']);
+  if (refs.length === 0) return;
+  const resolved = [];
+  for (const ref of refs) {
+    const pid = ref && ref['@id'];
+    const perf = pid && store.performances.get(pid);
+    if (!perf) continue;
+    const wof = perf['m3gim:performanceOf'];
+    const work = wof
+      ? { name: wof.name || wof['skos:prefLabel'] || null,
+          wikidata: (wof['@id'] && String(wof['@id']).startsWith('wd:')) ? wof['@id'] : null }
+      : null;
+    const stageRoles = ensureArray(perf['m3gim:hasStageRole'])
+      .map(r => r && r['@id'] && store.stageRoles.get(r['@id']))
+      .filter(Boolean);
+    const performers = ensureArray(perf['m3gim:hasPerformer'])
+      .map(p => p && (p.name || p['skos:prefLabel']))
+      .filter(Boolean);
+    resolved.push({
+      id: pid,
+      work,
+      stageRoles,
+      performers,
+      date: perf['m3gim:auffuehrungsdatum'] || null,
+    });
+  }
+  if (resolved.length > 0) store.recordToPerformances.set(record['@id'], resolved);
 }
 
 

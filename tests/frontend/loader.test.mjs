@@ -50,6 +50,17 @@ const FIXTURE = {
       'rico:hasDocumentaryFormType': { '@id': 'm3gim-dft:korrespondenz' },
       'rico:hasOrHadLocation': { name: 'New York', '@id': 'wd:Q1384' },
       'm3gim:hasSpatiotemporalEvent': { '@id': 'm3gim:ste_TEST_1' },
+      'm3gim:hasAssociatedAgent': [
+        { name: 'Malaniuk, Ira', '@type': 'rico:Person', role: 'sänger',
+          'm3gim:editorialNote': 'Mezzosopranistin', 'm3gim:lifespan': '1919-2009' },
+        { name: 'Metropolitan Opera', '@type': 'rico:CorporateBody', role: 'veranstalter',
+          'm3gim:sitz': 'New York', 'm3gim:keyContact': 'Bing, Rudolf' },
+      ],
+      'rico:hasOrHadSubject': [
+        { name: 'Aida', '@type': 'm3gim:MusicalWork', komponist: 'Verdi, Giuseppe',
+          'm3gim:partie': 'Amneris' },
+      ],
+      'm3gim:hasPerformance': [{ '@id': 'm3gim:perf_TEST_1' }],
       'm3gim:agentRelation': [{
         '@type': 'agrelon:HasCorrespondent',
         'agrelon:hasObject': { name: 'Wieland Wagner', '@id': 'wd:Q61058' },
@@ -69,6 +80,13 @@ const FIXTURE = {
         'geo:lat': 40.7, 'geo:long': -74 },
       'm3gim:eventRole': 'zielort',
       'agrelon:metadataProvenance': { '@id': 'm3gim:TEST_1' } },
+    // M2: StageRole + Performance fuer die Performance-Kette.
+    { '@id': 'm3gim:role_amneris', '@type': 'm3gim:StageRole', 'rico:name': 'Amneris' },
+    { '@id': 'm3gim:perf_TEST_1', '@type': 'm3gim:Performance',
+      'm3gim:hasStageRole': { '@id': 'm3gim:role_amneris' },
+      'm3gim:hasPerformer': { name: 'Malaniuk, Ira', '@type': 'rico:Person' },
+      'm3gim:performanceOf': { name: 'Aida', '@type': 'm3gim:MusicalWork', '@id': 'wd:Q200702' },
+      'm3gim:auffuehrungsdatum': '1956-05-01' },
   ],
 };
 
@@ -127,6 +145,43 @@ describe('Loader gegen synthetische Fixture', () => {
     assert.equal(fin[0].amount, 4000);
     assert.equal(fin[0].currency, 'Esc');
     assert.equal(fin[0].role, 'abendgage');
+  });
+});
+
+describe('M2: kuratierte Index-Felder + Performance-Kette (synthetisch)', () => {
+  test('Org-Sitz + keyContact kommen im Organisations-Store an', async () => {
+    const store = await storeFrom(FIXTURE);
+    const org = store.organizations.get('Metropolitan Opera');
+    assert.ok(org, 'Organisation nicht im Store');
+    assert.equal(org.sitz, 'New York', 'Org-Sitz fehlt (auswaerts/am-Haus-Achse)');
+    assert.equal(org.keyContact, 'Bing, Rudolf');
+  });
+
+  test('Personen-Notiz + Lebensdaten kommen im Personen-Store an', async () => {
+    const store = await storeFrom(FIXTURE);
+    const p = store.persons.get('Malaniuk, Ira');
+    assert.ok(p, 'Person nicht im Store');
+    assert.equal(p.note, 'Mezzosopranistin');
+    assert.equal(p.lifespan, '1919-2009');
+  });
+
+  test('Werk-Partie kommt im Werk-Store an', async () => {
+    const store = await storeFrom(FIXTURE);
+    const w = store.works.get('Aida');
+    assert.ok(w, 'Werk nicht im Store');
+    assert.equal(w.partie, 'Amneris', 'die von Malaniuk gesungene Partie fehlt');
+  });
+
+  test('Performance-Kette: Record -> Werk + Performer + Buehnenrolle aufgeloest', async () => {
+    const store = await storeFrom(FIXTURE);
+    const perfs = store.recordToPerformances.get('m3gim:TEST_1');
+    assert.ok(perfs && perfs.length === 1, 'Performance nicht aufgeloest');
+    const p = perfs[0];
+    assert.equal(p.work?.name, 'Aida');
+    assert.equal(p.work?.wikidata, 'wd:Q200702');
+    assert.deepEqual(p.stageRoles, ['Amneris']);
+    assert.deepEqual(p.performers, ['Malaniuk, Ira']);
+    assert.equal(p.date, '1956-05-01');
   });
 });
 
@@ -189,6 +244,23 @@ describe('Loader gegen echte docs/data', () => {
           `Record ${recId} verweist auf unaufloesbares STE ${eid}`);
       }
     }
+  });
+
+  // M2: kuratierte Index-Felder + Performance-Kette kommen real an (Drift-Lock).
+  test('M2: Org-Sitze, Werk-Partien und Performance-Kette real im Store', async () => {
+    const store = await storeFrom(loadDocsData());
+    const orgsMitSitz = [...store.organizations.values()].filter(o => o.sitz);
+    assert.ok(orgsMitSitz.length >= 15,
+      `nur ${orgsMitSitz.length} Institutionen mit Sitz im Store (erwartet >= 15)`);
+    const werkeMitPartie = [...store.works.values()].filter(w => w.partie);
+    assert.ok(werkeMitPartie.length >= 10,
+      `nur ${werkeMitPartie.length} Werke mit Partie im Store (erwartet >= 10)`);
+    assert.ok(store.recordToPerformances.size >= 20,
+      `nur ${store.recordToPerformances.size} Records mit aufgeloesten Performances`);
+    // Wohlgeformtheit: mind. eine Performance traegt Werk ODER Buehnenrolle.
+    const anyResolved = [...store.recordToPerformances.values()].flat()
+      .some(p => p.work || p.stageRoles.length || p.performers.length);
+    assert.ok(anyResolved, 'keine Performance mit Werk/Rolle/Performer aufgeloest');
   });
 
   // E-107-Kontrakt: die 4 Briefe, die durch die Staleness-Behebung erstmals
