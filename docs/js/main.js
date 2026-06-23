@@ -16,6 +16,7 @@ import { renderMobilitaet } from './views/mobility.js';
 import { renderRepertoire, repertoireAggregate } from './views/repertoire.js';
 import { renderBiogramm, biogrammData } from './views/biogram.js';
 import { renderNetzwerk, netzwerkAggregate } from './views/network.js';
+import { renderVerknuepfungen, verknuepfungenAggregate } from './views/verknuepfungen.js';
 import { IS_DEV } from './utils/env.js';
 
 let store = null;
@@ -32,6 +33,7 @@ const TAB_RENDERERS = new Map([
   ['repertoire',         (s, c) => renderRepertoire(s, c)],
   ['biogramm',           (s, c) => renderBiogramm(s, c)],
   ['netzwerk',           (s, c) => renderNetzwerk(s, c)],
+  ['verknuepfungen',     (s, c) => renderVerknuepfungen(s, c)],
   ['korb',               (s, c) => renderKorb(s, c)],
 ]);
 
@@ -134,6 +136,10 @@ function logTabActivation(tab, s) {
     netzwerk: () => {
       const agg = netzwerkAggregate();
       return { agenten: agg?.length || 0 };
+    },
+    verknuepfungen: () => {
+      const g = verknuepfungenAggregate();
+      return g ? { knoten: g.nodes.length, recordsWeit: g.stats.recordsWeit, recordsEng: g.stats.recordsEng } : {};
     },
     korb: () => {
       const ids = getKorbItems();

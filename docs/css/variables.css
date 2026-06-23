@@ -83,6 +83,15 @@
   --color-ort-bayreuth:  #B5862A; /* amber */
   --color-ort-salzburg:  #6E4E8C; /* violett */
 
+  /* Verknuepfungen-Tab: heterogener Graph, Farbe pro Knotentyp. Orthogonal zu
+     den Ort-Farben oben (dort: einzelne Staedte; hier: der Typ "Ort" als
+     Klasse). Fokus traegt KUG-Blau (Interaktion). */
+  --vk-node-person:      #3F5C8E; /* blau */
+  --vk-node-werk:        #9A6B3D; /* gold */
+  --vk-node-institution: #4A7A89; /* teal */
+  --vk-node-ort:         #3D6E4E; /* forest */
+  --vk-node-focus:       #004A8F; /* KUG-Blau */
+
   /* Typography */
   --font-ui: 'Inter', system-ui, -apple-system, sans-serif;
   --font-title: 'Source Serif 4', Georgia, 'Times New Roman', serif;

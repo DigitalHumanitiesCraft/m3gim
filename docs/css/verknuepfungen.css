@@ -1,0 +1,145 @@
+/* Verknuepfungen-Tab — heterogener Graph. Warmes Papier, funktionale Akzente,
+   erst statisch lesbar (design.md). Knotentyp-Farben aus variables.css (--vk-*). */
+
+.vk-root {
+  padding: var(--space-4, 16px) var(--space-5, 24px);
+  font-family: var(--font-ui, 'Inter', system-ui, sans-serif);
+  color: var(--color-text, #2b2722);
+}
+
+/* --- Controls --- */
+.vk-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 14px 18px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--color-border, #e2dccf);
+}
+.vk-field { display: flex; flex-direction: column; gap: 4px; }
+.vk-field-label {
+  font-size: 0.68rem; letter-spacing: 0.05em; text-transform: uppercase;
+  color: var(--color-text-muted, #7a7266); font-weight: 600;
+}
+.vk-select, .vk-year {
+  font-family: inherit; font-size: 0.85rem;
+  padding: 5px 8px; border: 1px solid var(--color-border, #d8d0c0);
+  border-radius: 5px; background: #fff; color: inherit;
+}
+.vk-select { min-width: 180px; }
+.vk-zf { display: flex; align-items: center; gap: 6px; }
+.vk-year { width: 68px; }
+.vk-zf-dash { color: var(--color-text-muted, #9a9183); }
+
+.vk-toggles { display: flex; flex-wrap: wrap; gap: 8px; }
+.vk-toggle {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 9px; border: 1px solid var(--color-border, #d8d0c0);
+  border-radius: 14px; cursor: pointer; font-size: 0.8rem; user-select: none;
+  background: #fff;
+}
+.vk-toggle input { position: absolute; opacity: 0; width: 0; height: 0; }
+.vk-toggle-dot { width: 11px; height: 11px; border-radius: 50%; flex: none; }
+.vk-toggle--person .vk-toggle-dot { background: var(--vk-node-person); }
+.vk-toggle--werk .vk-toggle-dot { background: var(--vk-node-werk); }
+.vk-toggle--institution .vk-toggle-dot { background: var(--vk-node-institution); }
+.vk-toggle--ort .vk-toggle-dot { background: var(--vk-node-ort); }
+.vk-toggle:has(input:not(:checked)) { opacity: 0.4; }
+
+.vk-reset {
+  font-family: inherit; font-size: 0.8rem; cursor: pointer;
+  padding: 6px 12px; border: 1px solid var(--color-border, #d8d0c0);
+  border-radius: 5px; background: #fff; color: var(--color-text-muted, #7a7266);
+}
+.vk-reset:hover { border-color: var(--vk-node-focus); color: var(--vk-node-focus); }
+
+/* --- Caption (Differenznennung) --- */
+.vk-caption {
+  margin: 10px 0 4px; font-size: 0.86rem; line-height: 1.5;
+  color: var(--color-text, #3a352e);
+  font-family: var(--font-serif, 'Source Serif 4', serif);
+}
+.vk-caption strong { color: var(--vk-node-focus); }
+.vk-trunc { color: var(--color-text-muted, #8a8275); font-style: italic; }
+
+/* --- Stage: SVG + Detail --- */
+.vk-stage { display: flex; gap: 18px; align-items: flex-start; margin-top: 8px; }
+.vk-svg-wrap { flex: 1 1 auto; min-width: 0; display: flex; justify-content: center; }
+.vk-svg {
+  display: block; height: 72vh; max-height: 680px; width: auto; max-width: 100%;
+  background: var(--color-surface, #fbf8f1);
+  border: 1px solid var(--color-border, #e2dccf); border-radius: 8px;
+}
+.vk-empty {
+  padding: 60px 20px; text-align: center; color: var(--color-text-muted, #8a8275);
+  font-style: italic;
+}
+
+.vk-edge { stroke: #c9c0ae; stroke-opacity: 0.55; }
+.vk-node { cursor: pointer; }
+.vk-node-circle { stroke: #fff; stroke-width: 1.5; transition: stroke-width 0.12s; }
+.vk-node:hover .vk-node-circle { stroke: var(--vk-node-focus); stroke-width: 2.5; }
+.vk-node.is-selected .vk-node-circle { stroke: var(--vk-node-focus); stroke-width: 3; }
+.vk-node-label {
+  font-family: var(--font-ui, 'Inter', sans-serif); font-size: 11px;
+  fill: var(--color-text, #3a352e); pointer-events: none;
+}
+.vk-center-circle { stroke: #fff; stroke-width: 2.5; }
+.vk-center-label {
+  font-family: var(--font-serif, serif); font-size: 12px; font-weight: 600;
+  fill: #fff; pointer-events: none;
+}
+
+/* --- Detail-Panel --- */
+.vk-detail {
+  flex: 0 0 264px; padding: 12px 14px;
+  background: var(--color-surface, #fbf8f1);
+  border: 1px solid var(--color-border, #e2dccf); border-radius: 8px;
+  font-size: 0.85rem;
+}
+.vk-detail-empty { color: var(--color-text-muted, #8a8275); font-style: italic; margin-bottom: 14px; }
+.vk-detail-head { display: flex; flex-direction: column; gap: 3px; margin-bottom: 10px; }
+.vk-detail-type {
+  font-size: 0.64rem; letter-spacing: 0.05em; text-transform: uppercase;
+  font-weight: 700; color: #fff; padding: 2px 7px; border-radius: 3px; align-self: flex-start;
+}
+.vk-detail-type--person { background: var(--vk-node-person); }
+.vk-detail-type--werk { background: var(--vk-node-werk); }
+.vk-detail-type--institution { background: var(--vk-node-institution); }
+.vk-detail-type--ort { background: var(--vk-node-ort); }
+.vk-detail-name { font-family: var(--font-serif, serif); font-size: 1.02rem; font-weight: 600; }
+
+.vk-chips { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 8px; }
+.vk-chip {
+  display: inline-flex; align-items: baseline; gap: 4px;
+  background: #fff; border: 1px solid var(--color-border, #e2dccf);
+  border-radius: 4px; padding: 2px 6px; font-size: 0.76rem;
+}
+.vk-chip-prefix {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace); font-size: 0.62rem;
+  letter-spacing: 0.03em; color: var(--color-text-muted, #8a8275); text-transform: uppercase;
+}
+.vk-chip-value { color: var(--color-text, #3a352e); }
+.vk-detail-note {
+  font-size: 0.8rem; color: var(--color-text, #4a443c); line-height: 1.45;
+  padding: 6px 0 4px; border-top: 1px dashed var(--color-border, #e2dccf); margin-bottom: 10px;
+}
+
+/* --- Legende --- */
+.vk-legend { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--color-border, #e2dccf); }
+.vk-legend-title {
+  font-size: 0.64rem; letter-spacing: 0.05em; text-transform: uppercase;
+  color: var(--color-text-muted, #8a8275); font-weight: 600; margin-bottom: 6px;
+}
+.vk-legend-row { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; margin-bottom: 3px; }
+.vk-legend-dot { width: 11px; height: 11px; border-radius: 50%; flex: none; }
+.vk-legend-dot--person { background: var(--vk-node-person); }
+.vk-legend-dot--werk { background: var(--vk-node-werk); }
+.vk-legend-dot--institution { background: var(--vk-node-institution); }
+.vk-legend-dot--ort { background: var(--vk-node-ort); }
+.vk-legend-dot--focus { background: var(--vk-node-focus); }
+
+@media (max-width: 768px) {
+  .vk-stage { flex-direction: column; }
+  .vk-detail { flex-basis: auto; width: 100%; }
+}

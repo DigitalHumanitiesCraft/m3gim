@@ -28,6 +28,7 @@
   <link rel="stylesheet" href="css/repertoire.css">
   <link rel="stylesheet" href="css/biogram.css">
   <link rel="stylesheet" href="css/network.css">
+  <link rel="stylesheet" href="css/verknuepfungen.css">
   <link rel="stylesheet" href="css/pages.css">
 
   <!-- D3.js -->
@@ -112,6 +113,12 @@
       </svg>
       Netzwerk
     </button>
+    <button class="tab-bar__tab" data-tab="verknuepfungen" role="tab" aria-selected="false" aria-controls="tab-verknuepfungen" id="btn-verknuepfungen">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+      </svg>
+      Verknüpfungen
+    </button>
     <button class="tab-bar__tab" data-tab="korb" id="korb-tab-btn" role="tab" aria-selected="false" aria-controls="tab-korb"
             title="Merkliste: ausgewählte Dokumente sammeln und als CSV oder BibTeX exportieren">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -139,6 +146,7 @@
     <section id="tab-repertoire" class="tab-content" role="tabpanel" aria-labelledby="btn-repertoire"></section>
     <section id="tab-biogramm" class="tab-content" role="tabpanel" aria-labelledby="btn-biogramm"></section>
     <section id="tab-netzwerk" class="tab-content" role="tabpanel" aria-labelledby="btn-netzwerk"></section>
+    <section id="tab-verknuepfungen" class="tab-content" role="tabpanel" aria-labelledby="btn-verknuepfungen"></section>
     <section id="tab-korb" class="tab-content" role="tabpanel" aria-labelledby="korb-tab-btn"></section>
 
   </main>
