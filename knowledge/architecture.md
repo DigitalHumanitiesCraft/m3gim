@@ -65,7 +65,7 @@ related: [design, pipeline, data, decisions]
 | `views/archiv-inline-detail.js` | Record-Detail mit fünf funktionalen Blöcken (Produktion · Mitwirkende · Werk & Repertoire · Ort & Ereignis · Erwähnt), AgRelOn-Dedup (liest `rel.objectName`/`rel.objectWikidata`, nicht das rohe JSON-LD), Sprach-Label-Auflösung, `buildRoleChip()` als geteilter Helper |
 | `views/_archiv-toolbar.js` | Geteilte Toolbar (Suche, Dokumenttyp-Filter, Person-Filter, Count-Anzeige) für Bestand + Chronik |
 | `views/indizes.js` | 4-Grid Explorer (Personen, Organisationen, Orte, Werke) mit Beziehungsbadges (AgRelOn), nur Einträge mit `records.size > 0` |
-| `views/mobility.js` | Mobilitäts-Tab (sichtbar, E-111): D3-geo-Trajektorienkarte über die volle Breite. Orte als Knoten nach dominanter Mobilitätssicht, biografischer Pfad als gerichtete Pfeile hell-zu-dunkel über die Zeit, Zeitregler mit Abspielen, Sicht-Legende als Filter, Klick-Knoten-Detailstreifen. Lokale Ländergeometrie `docs/data/geo/countries-110m.geo.json` (Natural Earth 110m), kein externer Kartenserver, kein Leaflet. |
+| `views/mobility.js` | Karten-Tab (sichtbar, **entitätszentriert seit E-126**): man wählt eine Entität (Organisation/Person) und sieht ihre Orte als Knoten, je Ort ein Tortendiagramm nach Mobilitätssicht. **Keine** Verbindungslinien (die Trajektorie aus E-111 entfiel). Datenschicht `views/entity-map-data.js` zieht die Orte aus Record-Orten (`rico:hasOrHadLocation`) + STE zusammen und vergibt Verortungs-Stufen (`secured`/`city`/`far`/`unlocatable`, Adressen auf die Stadt hochgerollt). Sidebar: Entitäts-Auswahl, Zeitraum, Farb- und Verortungs-Legende, Klick-Detail (Zuordnungen + alle Dokumente). Basemap lokal: Ozean (SVG-Hintergrund) + Gradnetz, Ländergeometrie `docs/data/geo/countries-110m.geo.json` (Natural Earth 110m), kein Kartenserver, kein Leaflet. |
 | `views/mobility-atlas.js` | Leaflet-Karte + D3-Zeitstrahl + Detailpanel (Tab `mobilitaets-atlas` aktuell `hidden`, E-81; durch `views/mobility.js` (E-111) überholt, Stilllegung operator-offen; Leaflet ist nicht in `index.html` eingebunden und bei einer Reaktivierung wieder einzubinden) |
 | `views/repertoire.js` | Zwei parallele Aggregat-Tabellen Werke × Komponisten (Tab aktuell `hidden`, E-81) |
 | `views/biogramm.js` | Chronologischer D3-Zeitstrahl 1919–2009 (Tab aktuell `hidden`, E-81) |
@@ -180,13 +180,12 @@ Die Invarianten werden als Kontrakttests in [test_06_frontend_contract.py](../te
 
 ### Mobilität
 
-- D3-geo-Trajektorienkarte über die volle Breite (E-111, sichtbarer Tab `mobilitaet`). Projektion `geoMercator.fitExtent` auf die europäischen Punkte, lokale Ländergeometrie `docs/data/geo/countries-110m.geo.json` (Natural Earth 110m), kein Tile-Server, kein API-Key, kein Leaflet
-- Orte als Knoten, Größe nach Ereigniszahl, Farbe nach dominanter Mobilitätssicht (`mobilityClusterFor`/`EVENT_ROLE_TO_MOBILITY_CLUSTER`, E-110); Kontextbezüge (Entstehung, Erwähnung) bleiben grau, daher erscheinen Zürich und Köln grau
-- Biografischer Pfad als gerichtete Pfeile zwischen aufeinanderfolgenden verschiedenen Stationen, chronologisch eingefärbt hell (früh) zu dunkel (spät), SVG-Arrowhead-Marker
-- Zeitregler mit Abspielen zieht den Pfad über die Jahre auf; Zoom und Pan per `d3.zoom` (scaleExtent [1,12]). Der Zoom steuert zugleich die Label-Ausdünnung (bei Basiszoom nur die Top-N-Stationen nach Ereigniszahl, mit Zoom mehr) und skaliert Font und Halo gegen den Zoom, sodass die Beschriftung bildschirmkonstant bleibt (E-114)
-- Knoten-Tooltip beim Überfahren (HTML-Div über dem SVG, E-36): dominante Mobilitätssicht, Ereigniszahl, Zeitspanne; die Karte ist damit ohne Klick lesbar (E-114)
-- Bedienelemente statt Fließtext (order-m3gim Punkt 3): Sicht-Legende als Filter-Toggle, Pfad-Schalter, Klick-Knoten-Detailstreifen, unverortet-Button, „abseits der Karte"-Button, einklappbare Voll-Liste für Prüfbarkeit
-- Distinkt von den Session-32 entfernten D3-Prototypen (E-75): dies ist eine geprojizierte Karte, kein abstraktes Diagramm. Orte außerhalb des Kartenausschnitts (der New-York-Fehlmatch AF-01, [datenfehler.md](datenfehler.md)) werden aus Knoten und Pfad ausgenommen und im Detailstreifen als „abseits der Karte" transparent ausgewiesen, statt als auslaufende Arcs nach Westen (E-114, löst den E-111-Befund auf)
+- Entitätszentrierte D3-geo-Karte über die volle Breite (E-126, sichtbarer Tab `karte`). Projektion `geoMercator.fitExtent` auf die europäischen Punkte, lokale Ländergeometrie `docs/data/geo/countries-110m.geo.json` (Natural Earth 110m), kein Tile-Server, kein API-Key, kein Leaflet; Basemap-Ebenen Ozean (SVG-Hintergrund) + Gradnetz (`d3.geoGraticule`)
+- Auswahl einer Entität (Organisation/Person) in der Sidebar; ihre Orte werden aus Record-Orten (`rico:hasOrHadLocation`) + STE zusammengezogen (`views/entity-map-data.js`). Default = alle Orte des Bestands
+- Orte als Knoten, je Ort ein Tortendiagramm nach Mobilitätssicht (`mobilityClusterFor`/`EVENT_ROLE_TO_MOBILITY_CLUSTER`, E-110; Farben aus `SICHT_COLOR`), Knotengröße nach Belegzahl im Zeitfenster
+- **Keine Verbindungslinien** — die biografische Trajektorie aus E-111 (gerichtete Pfeile, Zeitregler) ist entfernt; die räumliche Verteilung einer Entität ist die Aussage, nicht der Weg
+- Verortungs-Sicherheit visuell kodiert (Ring-Stil + Legende): `secured` durchgezogen, `city` (Adresse auf die Stadtkoordinate hochgerollt) gestrichelt, `far` (Fehlmatch-Verdacht AF-01, [datenfehler.md](datenfehler.md)) gestrichelt-warnfarben, `unlocatable` als eingeklappte Liste statt Kartenpunkt
+- Hover-Tooltip (Proportionsbalken) und Klick-Detail (Zuordnungen nach Sicht + alle verknüpften Dokumente); Zoom und Pan per `d3.zoom`, `non-scaling-stroke` hält Linien und Ringe beim Zoomen konstant (E-114-Erbe)
 
 ### Mobilitäts-Atlas
 
