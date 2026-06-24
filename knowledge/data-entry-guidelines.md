@@ -167,6 +167,40 @@ Beim Werk steht `aufführung` für die eigenständige Aufführung eines Werkes u
 
 Das vollständige, im Modell ausdifferenzierte Rollenvokabular mit seinem Belegstand steht in [data.md](data.md).
 
+### Auftritte bündeln (`datenpunkt_id`)
+
+Beschreibt ein Dokument mehrere Auftritte, gehören seine Zeilen nicht alle gleichberechtigt zum Dokument, sondern je zu einem Auftritt. Die Spalte `datenpunkt_id` hält diese Zugehörigkeit fest, damit rekonstruierbar bleibt, wer was in welchem Auftritt getan hat, und nicht nur, dass etwas im Dokument vorkommt. Das Modell bildet jede so gebündelte Gruppe als ein Vorkommnis ab (`m3gim:Occurrence`, [data.md](data.md) § 4 und 7).
+
+Die Konvention hat zwei Werte.
+
+- **Leer** ist der Default und meint die Dokument-Ebene. Hierher gehören die Angaben über das Dokument selbst, also Verfasser, Adressat, Absendeort und Erstelldatum, und ebenso jede Angabe, deren Auftritts-Zuordnung die Quelle nicht hergibt. Ein nicht eindeutig zuordenbarer Dirigent bleibt leer, statt geraten zu werden.
+- Eine **fortlaufende Nummer** ab `1` bündelt alle Zeilen eines Auftritts. Zwei Auftritte in einem Folio tragen `1` und `2`. Geteilte Angaben werden je Auftritt wiederholt, damit jeder Auftritt vollständig beschrieben ist.
+
+Gastspiel und Tournee sind ein **Modus** des Auftritts, keine Rolle. Statt `gastspiel` an Ort, Werk und Institution zugleich zu hängen, wird der Ort als `auffuehrungsort`, das Werk als `aufführung` und die Institution als `veranstalter` geführt, und der Modus einmal pro Auftritt an der `aufführung`-Zeile in der Spalte `modus` notiert. Ob ein Auftritt auswärts oder am eigenen Haus stattfand, leitet die Pipeline aus dem Auftrittsort und dem Institutionssitz ab und muss nicht erfasst werden.
+
+Beispiel `UAKUG/NIM_011` Folio 5, ein Brief, der ein Tristan-Gastspiel der Bayreuther in Brüssel und Barcelona beschreibt, also zwei Auftritte.
+
+| datenpunkt_id | typ | name | rolle | modus | anmerkung |
+|---|---|---|---|---|---|
+| (leer) | person | Wagner, Wieland | verfasser | | |
+| (leer) | person | Malaniuk, Ira | adressat | | |
+| (leer) | datum | 1954-05-03 | erstelldatum | | |
+| (leer) | ort | Bayreuth | absendeort | | |
+| (leer) | person | Keilberth, Joseph | dirigent | | Stadt nicht auflösbar |
+| (leer) | person | Jochum, Eugen | dirigent | | Stadt nicht auflösbar |
+| 1 | ort | Brüssel | auffuehrungsort | | |
+| 1 | werk | Tristan und Isolde | aufführung | gastspiel | |
+| 1 | rolle | Brangäne | interpret | | Interpret Malaniuk |
+| 1 | institution | Bayreuther Festspiele | veranstalter | | |
+| 1 | summe, währung | 1200 | abendgage | | freie Bahnfahrt 2. Kl. Brüssel |
+| 2 | ort | Barcelona | auffuehrungsort | | |
+| 2 | werk | Tristan und Isolde | aufführung | gastspiel | |
+| 2 | rolle | Brangäne | interpret | | Interpret Malaniuk |
+| 2 | institution | Bayreuther Festspiele | veranstalter | | |
+| 2 | summe, währung | 1200 | abendgage | | freie Flugreise München-Barcelona-München |
+
+Wo eine Auswahlliste für eine Spalte gepflegt wird, gilt sie für die ganze Spalte, nicht nur für den Bereich, in dem sie angelegt wurde. Eine Validierung wird daher auf die ganze Spalte gelegt oder aus einem Bereich gespeist, damit ein neuer Listeneintrag auch in schon befüllten Zeilen greift. Bestehende Werte werden dabei markiert, nie überschrieben.
+
 ### Ereignisse
 
 Ereignisse werden direkt in der Verknüpfungstabelle erfasst, nicht in einem eigenen Index. Als Ereignis gelten die Festspiele und vergleichbare Rahmenveranstaltungen.

@@ -143,6 +143,19 @@ Eine **Standalone-Bühnenrolle** (Typ `rolle` ohne Interpret:in) erzeugt ebenfal
 
 Die einfache `ort`-Verknüpfung erzeugt zusätzlich zur `rico:Place`-Referenz eine `m3gim:SpatiotemporalEvent`, wenn ihre Rolle zu den Mobilitäts-Ortsrollen gehört (`MOBILITY_PLACE_ROLES` = zielort, absendeort, abreiseort, empfangsort, vertragsort). Diese Variante trägt nur `m3gim:atPlace` und `m3gim:eventRole`, **kein** `m3gim:atDate` — ein Datum wird nicht geraten (Abschnitt 8, Konfidenz). `wohnort` ist davon ausgenommen und als Zustand mit Gültigkeitsperiode modelliert (Abschnitt 10).
 
+### Auftrittsbündelung über `datenpunkt_id`
+
+Eine Verknüpfungszeile trägt je eine Aussage, etwa eine Person, einen Ort, ein Werk, eine Partie oder einen Betrag. Beschreibt ein Dokument mehrere Auftritte, verteilen sich deren Aussagen flach über den Record, und welche Person, welche Partie, welcher Ort und welcher Betrag zu welchem Auftritt gehören, ist nicht mehr rekonstruierbar. Die Annotation ist dann dokumentzentriert, sie belegt „kommt im Dokument vor", nicht „wer hat was getan".
+
+Die Spalte `datenpunkt_id` hebt diese Bündelung auf eine eigene Ebene. Sie ist die Identität eines **Vorkommnisses** (`m3gim:Occurrence`, Abschnitt 7), an dem die zusammengehörigen Aussagen eines Auftritts zusammenlaufen.
+
+- Eine **leere** `datenpunkt_id` ist der Default und bezeichnet die Dokument-Ebene. Hierher gehören Aussagen über das Dokument selbst (Verfasser, Adressat, Absendeort, Erstelldatum) sowie Aussagen, deren Auftritts-Zuordnung die Quelle nicht hergibt.
+- Eine **fortlaufende Nummer** (1, 2, 3 …) bündelt alle Zeilen eines Auftritts innerhalb des Folios zu einer Occurrence.
+
+Die Pipeline gruppiert die Zeilen nach `(archivsignatur, folio, datenpunkt_id)` und erzeugt je Gruppe eine Occurrence. Die bestehenden Aspekt-Klassen werden zu ihren Facetten — `m3gim:SpatiotemporalEvent` trägt Ort und Zeit, `m3gim:Performance` Werk und Partie, `m3gim:DetailAnnotation` den Betrag. Der Record bezeugt die Occurrence über `m3gim:attests` (Abschnitt 7), statt sie zu enthalten, damit dieselbe Occurrence später aus mehreren Dokumenten belegt werden kann.
+
+Der Auftrittsmodus (Gastspiel, Tournee) gehört über `m3gim:mode` an die Occurrence, nicht als konkurrierender Rollenwert an die einzelne Orts-, Werk- oder Institutionszeile. Die Unterscheidung auswärts gegen am Haus folgt zusätzlich aus dem Vergleich von `m3gim:atPlace` mit dem Institutionssitz (`m3gim:sitz`) und wird nicht eigens erfasst. Die konkrete Erfassungskonvention steht in [data-entry-guidelines.md](data-entry-guidelines.md).
+
 ## 5. Rollenvokabular
 
 Die Rollen sind nach Zieltyp gegliedert. Empirisch in den Daten belegte Rollen sind mit ●, bislang nur in der Handreichung spezifizierte Rollen mit ○ markiert. Neu im Modell, gegenüber der Vorversion, sind die mit ★ markierten Rollen.
@@ -390,6 +403,7 @@ Hierarchie.
 | `m3gim:StageRole` | `rico:Thing` | Bühnenrolle als eigenständige Entität | **neu** |
 | `m3gim:SpatiotemporalEvent` | `rico:Event` | raumzeitliches Mobilitätsereignis | **neu** |
 | `m3gim:DatedEvent` | `rico:Event` | Fallback für Datumsrollen ohne typisierte Property | **neu**, optional |
+| `m3gim:Occurrence` | `rico:Event` | Vorkommnis-Bündelknoten (Auftritt) je `datenpunkt_id`, an dem die Aspekt-Facetten zusammenlaufen | **neu**, Spec; Pipeline ausstehend (E-125) |
 
 ### Begründung der neuen Klassen
 
@@ -399,9 +413,13 @@ Hierarchie.
 
 `m3gim:DatedEvent` ist Fallback für Datumsangaben, die nicht durch eine typisierte Property abgedeckt sind, insbesondere für klammer- und fragezeichen-unsichere Datierungen (etwa `1957-[05-27?]`). Primär wird die Property-Familie (siehe unten) verwendet.
 
+`m3gim:Occurrence` ist der Bündelknoten, der die dokumentzentrierte Erfassung um eine Auftritts-Ebene ergänzt (Abschnitt 4). Über die `datenpunkt_id` gruppiert er die Aspekt-Klassen, also SpatiotemporalEvent für Ort und Zeit, Performance für Werk und Partie, DetailAnnotation für den Betrag und die beteiligten Agenten, zu einem Auftritt. So wird „wer hat was getan" auch dort rekonstruierbar, wo ein Dokument mehrere Auftritte bündelt. Der Name Occurrence statt Event ist bewusst weiter gefasst, weil nicht jedes Vorkommnis raumzeitlich ist, etwa ein Vertrag. Die Aspekt-Klassen bleiben als Facetten erhalten, die Occurrence liegt eine Ebene darüber.
+
 ### Identität der neuen Entitäten
 
 `m3gim:StageRole`-Instanzen bekommen eine deterministische Slug-`@id` der Form `m3gim:role_<slug>` im Entitäts-Namespace und werden darüber dedupliziert. Das ConceptScheme `m3gim-role:` bleibt davon getrennt — es trägt die Relationsrollen als Werte, nicht die Bühnenrollen-Entitäten. `m3gim:hasStageRole` hängt an der `m3gim:Performance`, nicht am Record.
+
+`m3gim:Occurrence`-Instanzen bekommen eine deterministische `@id` aus `(archivsignatur, folio, datenpunkt_id)`, analog zur inhaltsbasierten STE-`@id` (E-115). Solange die Identität pro Dokument vergeben wird, gehört eine Occurrence genau einem Record; die Bezeugungs-Relation `m3gim:attests` hält den Weg zu einer dokumentübergreifenden Auftritts-Identität offen, ohne sie schon zu verlangen.
 
 `m3gim:dataQualityFlag` zieht aus einem kontrollierten Vokabular (`name-nicht-eindeutig`, `vorname-fehlt`, `rolle-unsicher`, `quelle-tippfehler` — quell-belegt aus den `anmerkung`-Einträgen, nicht extrapoliert), abgeleitet aus Unsicherheitssignalen im `anmerkung`-Feld. Seine Konfidenz steht in der eigenen Property `m3gim:qualityConfidence`, getrennt von der inhaltlichen Aussage. **Die Property wird derzeit nicht befüllt** (E-102/E-106): die `anmerkung`-Freitexte liefern kein quantifizierbares Konfidenzsignal, und ein gesetzter Zahlenwert wäre genau die von der Leitplanke verbotene erfundene Konfidenz. `m3gim:qualityConfidence` ist deklariert und für eine künftige, belegbare Quelle reserviert. Das Flag selbst ist das Unsicherheitssignal.
 
@@ -421,6 +439,9 @@ Hierarchie.
 | `m3gim:atPlace` | SpatiotemporalEvent → Place | Ortsreferenz |
 | `m3gim:hasDetail` | Record/Performance → DetailAnnotation | Verweis auf Detailebene |
 | `m3gim:attachedTo` | DetailAnnotation → Performance/Record | Rückreferenz |
+| `m3gim:attests` | Record → Occurrence | Record bezeugt ein Vorkommnis (nicht „enthält"; folgt der CIDOC-CRM-`P70`-Logik, Abschnitt 4) |
+
+Die Facetten-Relationen `m3gim:hasAssociatedAgent`, `m3gim:hasSpatiotemporalEvent`, `m3gim:hasPerformance` und `m3gim:hasDetail` bekommen mit dem Occurrence-Modell `m3gim:Occurrence` als zusätzliche Domain. Trägt eine Zeile eine `datenpunkt_id`, hängen sie an der Occurrence; ohne `datenpunkt_id` bleiben sie am Record (Dokument-Default).
 
 ### m3gim-Datatype-Properties
 
@@ -429,6 +450,7 @@ Hierarchie.
 | `m3gim:bearbeitungsstand` | xsd:string | projektinterner Status (Objektebene) |
 | `m3gim:bearbeitungsnotiz` | xsd:string | redaktionelle Notiz zum Objekt-Bearbeitungsstand |
 | `m3gim:eventRole` | xsd:string | Rolle eines SpatiotemporalEvent |
+| `m3gim:mode` | xsd:string | Auftrittsmodus (gastspiel, tournee) an der Occurrence, getrennt vom Rollenvokabular |
 | `m3gim:atDate` | xsd:string | Datum als Literal an SpatiotemporalEvent |
 | `m3gim:voiceType` | xsd:string | Stimmfach an StageRole |
 | `m3gim:probenTyp` | xsd:string | Probenart (probe, generalprobe) an der Probendatum-Aussage |
@@ -587,7 +609,7 @@ Ergänzend zur semantischen Provenance (`agrelon:metadataProvenance`; die Datier
 | `m3gim:xlsxSource` | Blank Node | Container für die drei Adressteile |
 | `m3gim:xlsxSheet` | xsd:string (`"Objekte"` oder `"Verknuepfungen"`) | Name des Ursprungs-Sheets |
 | `m3gim:xlsxRow` | xsd:integer (≥ 2) | 1-basierte XLSX-Zeilennummer inklusive Header-Zeile |
-| `m3gim:datenpunktId` | xsd:integer (optional) | Projekteigener Datenpunkt-Identifier aus Spalte `datenpunkt_id`, falls vorhanden |
+| `m3gim:datenpunktId` | xsd:integer (optional) | Identität der Auftritts-Occurrence innerhalb des Dokuments (Abschnitt 4 und 7); leer = Dokument-Ebene. Aus Spalte `datenpunkt_id`. Die frühere Lesart als reine Provenienz-Kennung ist mit E-125 überholt |
 
 Angebracht wird `m3gim:xlsxSource`:
 
@@ -870,7 +892,7 @@ Empfehlung: Handreichungssystem durchsetzen. Vier Werte bilden den Schichtfortsc
 
 ### Technische Provenance-Properties
 
-`m3gim:xlsxSource`, `m3gim:xlsxSheet`, `m3gim:xlsxRow`, `m3gim:datenpunktId` — siehe § 9 („XLSX-Quellreferenz"). Werden von der Pipeline gesetzt, nicht im Google-Sheet erfasst.
+`m3gim:xlsxSource`, `m3gim:xlsxSheet`, `m3gim:xlsxRow` — siehe § 9 („XLSX-Quellreferenz"). Werden von der Pipeline gesetzt, nicht im Google-Sheet erfasst. `m3gim:datenpunktId` stammt dagegen aus der erfassten Spalte `datenpunkt_id` und trägt seit E-125 die Auftritts-Bündelung (Abschnitt 4), nicht nur Provenienz.
 
 ## 17. Datenqualität
 

@@ -10,12 +10,12 @@ created: 2026-06-22
 updated: 2026-06-22
 authors: [Christopher Pollin]
 generated-with: Claude Code
-related: [research, partner-fragen-2026-06, design, architecture, decisions]
+related: [research, data, data-entry-guidelines, design, architecture, decisions]
 ---
 
 # Use Cases, Personas & Evaluation
 
-> **Arbeitsstand / Platzhalter** (angelegt 2026-06-22). Operationalisiert die Forschungsfragen aus [research.md](research.md) und die Mobilitäts-User-Stories in konkrete Use Cases, leitet Personas ab und skizziert, wie sich beides evaluieren lässt. Bewusst als **Gerüst** angelegt: die mit *(ausarbeiten)* markierten Unterbereiche sind offen und mit den Projektpartner:innen zu schärfen — der laufende Diskussionsstand dazu liegt in [partner-fragen-2026-06.md](partner-fragen-2026-06.md). Was im Tool bereits gebaut ist, steht in [architecture.md](architecture.md) § Statistik und [decisions.md](decisions.md) (E-122/E-123).
+> **Arbeitsstand / Platzhalter** (angelegt 2026-06-22). Operationalisiert die Forschungsfragen aus [research.md](research.md) und die Mobilitäts-User-Stories in konkrete Use Cases, leitet Personas ab und skizziert, wie sich beides evaluieren lässt. Bewusst als **Gerüst** angelegt: die mit *(ausarbeiten)* markierten Unterbereiche sind offen und mit den Projektpartner:innen zu schärfen — die aus der Partner-Runde Juni 2026 abgestimmte Erfassungskonvention und das Auftritts-Occurrence-Modell stehen in [data-entry-guidelines.md](data-entry-guidelines.md) und [data.md](data.md) (Entscheidung E-125). Was im Tool bereits gebaut ist, steht in [architecture.md](architecture.md) § Statistik und [decisions.md](decisions.md) (E-122/E-123).
 
 Zweck dieses Dokuments: die Lücke zwischen den abstrakten Forschungsfragen (FF1–FF4) und den konkreten UI-Bausteinen schließen, damit Entwurfsentscheidungen und eine spätere Evaluation auf benannte Bedürfnisse zurückführbar sind statt auf Bauchgefühl.
 
@@ -98,6 +98,6 @@ Leitfrage: Macht das Tool die Forschungsfragen *beantwortbar* — und für wen?
 ## Verweise
 
 - Forschungsfragen und Theorie: [research.md](research.md)
-- Partner-Rückmeldung, offene Entscheidungen: [partner-fragen-2026-06.md](partner-fragen-2026-06.md)
+- Erfassungskonvention und Auftritts-Occurrence: [data-entry-guidelines.md](data-entry-guidelines.md), [decisions.md](decisions.md) E-125
 - Gebauter Stand: [architecture.md](architecture.md) § Statistik, [decisions.md](decisions.md) E-122/E-123
 - Querschnitt-Filter: [filter-modell.md](filter-modell.md)

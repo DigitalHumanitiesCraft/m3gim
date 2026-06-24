@@ -36,7 +36,6 @@ Diese Seite ist der Einstiegspunkt in die Wissensbasis des Projekts. Sie ordnet 
 - Verstehen, warum etwas so entschieden wurde → [decisions.md](decisions.md)
 - Aktuellen Stand und nächste Schritte → [plan.md](plan.md)
 - Bekannte Datenfehler nachschlagen oder ans Erfassungsteam geben → [datenfehler.md](datenfehler.md)
-- Partner-Rückmeldung und offene Entscheidungen für das nächste Treffen → [partner-fragen-2026-06.md](partner-fragen-2026-06.md)
 - Use Cases, Personas und Evaluation der Forschungsfragen → [use-cases.md](use-cases.md)
 - Projektgeschichte nachvollziehen → [journal.md](journal.md)
 
@@ -58,7 +57,6 @@ Diese Seite ist der Einstiegspunkt in die Wissensbasis des Projekts. Sie ordnet 
 | Genese | [journal.md](journal.md) | Chronologische Session-Dokumentation, Entscheidungen und Erkenntnisse |
 | Plan und Steuerung | [plan.md](plan.md) | Zielbild, nächste Schritte, deferred Arbeiten, offene Datenqualität |
 | Datenfehler-Register | [datenfehler.md](datenfehler.md) | Gesammelte Quell- und Abgleichfehler mit Fundstelle und Status |
-| Besprechungsstand | [partner-fragen-2026-06.md](partner-fragen-2026-06.md) | Diskussionsstand zur Partner-Rückmeldung Juni 2026, offene Entscheidungen für das Treffen 2026-06-23 |
 | Use Cases & Evaluation | [use-cases.md](use-cases.md) | Forschungsfragen als Use Cases, Persona-Stubs, Evaluations-Skizze (Arbeitsstand) |
 
 Die Stand-Kommunikation für Dritte wird bewusst nicht als eigenes Report-Dokument geführt. Diese Funktion übernimmt der generierte Quality-Snapshot, der bei jedem Pipeline-Lauf frisch entsteht.
