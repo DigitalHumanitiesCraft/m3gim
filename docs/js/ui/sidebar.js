@@ -90,33 +90,23 @@ function legendControl({ items = [], isActive, onToggle }) {
   return { node: wrap, update: refresh };
 }
 
-/** Beidseitiges Jahres-/Wertefenster (von–bis) mit Spann-Visualisierung. */
-function rangeControl({ min, max, from, to, onChange, fullLabel = false,
-  fromCap = 'Von', toCap = 'Bis' }) {
+/** Beidseitiges Jahres-/Wertefenster (von–bis): zwei Daumen auf einer Linie
+ *  (zwei ueberlagerte native Range-Inputs, nur die Daumen sind klickbar). */
+function rangeControl({ min, max, from, to, onChange, fullLabel = false }) {
   const wrap = el('div', { className: 'vs-range' });
   const readout = el('div', { className: 'vs-range__readout' });
   wrap.appendChild(readout);
 
-  const track = el('div', { className: 'vs-range__track' });
-  const fill = el('div', { className: 'vs-range__fill' });
-  track.appendChild(fill);
-  wrap.appendChild(track);
-
-  const fromR = el('input', { className: 'vs-range__input', type: 'range', 'aria-label': fromCap,
-    min: String(min), max: String(max), step: '1', value: String(from()) });
-  const toR = el('input', { className: 'vs-range__input', type: 'range', 'aria-label': toCap,
-    min: String(min), max: String(max), step: '1', value: String(to()) });
-  wrap.appendChild(el('div', { className: 'vs-range__row' },
-    el('span', { className: 'vs-range__cap' }, fromCap), fromR));
-  wrap.appendChild(el('div', { className: 'vs-range__row' },
-    el('span', { className: 'vs-range__cap' }, toCap), toR));
+  const fromR = el('input', { className: 'vs-range__input vs-range__input--from', type: 'range',
+    'aria-label': 'Von', min: String(min), max: String(max), step: '1', value: String(from()) });
+  const toR = el('input', { className: 'vs-range__input vs-range__input--to', type: 'range',
+    'aria-label': 'Bis', min: String(min), max: String(max), step: '1', value: String(to()) });
+  wrap.appendChild(el('div', { className: 'vs-range__dual' },
+    el('div', { className: 'vs-range__rail' }), fromR, toR));
 
   function paint() {
     const a = from(), b = to();
     readout.textContent = (fullLabel && a === min && b === max) ? `${a}–${b} (alle)` : `${a}–${b}`;
-    const span = Math.max(1, max - min);
-    fill.style.left = ((a - min) / span * 100) + '%';
-    fill.style.right = ((max - b) / span * 100) + '%';
   }
   function sync() { fromR.value = String(from()); toR.value = String(to()); paint(); }
 

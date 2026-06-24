@@ -148,7 +148,7 @@ def main() -> int:
             "chronik":    ["records", "jahre-belegt", "datiert", "undatiert", "sicht-gedeckt", "spanne"],
             "statistik":  ["records", "events", "personen", "ansichten", "aktiv"],
             "indizes":    ["personen", "organisationen", "orte", "werke"],
-            "karte":      ["events", "verortet", "unverortet", "datiert", "jahre"],
+            "karte":      ["entitaeten", "orte", "belege", "unverortet", "jahre"],
             "netzwerk":   ["total", "ring1", "ring2", "agrelon"],
             "verknuepfungen": ["fokus", "schaerfe", "knoten", "recordsWeit", "recordsEng"],
             "korb":       ["eintraege", "aufgeloest", "events", "finanzen"],
@@ -235,34 +235,48 @@ def main() -> int:
             results.append(("WARN", "chronik:aggregat-aufloesung",
                             f"check uebersprungen: {e}"))
 
-        # --- Canary Mobilitaet: D3-geo-Karte (E-111) zeichnet nach dem
-        #     asynchronen Geometrie-Load Stadt-Knoten und Pfad-Pfeile. Der reine
-        #     logStamp-Check faengt das nicht: der Stempel wird synchron beim
-        #     Render geschrieben, also bevor `loadCountries().then(...)` die
+        # --- Canary Karte: entitaetszentrierte D3-geo-Karte zeichnet nach dem
+        #     asynchronen Geometrie-Load Stadt-Knoten (KEINE Verbindungslinien
+        #     mehr). Der reine logStamp-Check faengt das nicht: der Stempel wird
+        #     synchron beim Render geschrieben, also bevor `loadCountries()` die
         #     Knoten zeichnet. Dieser Canary wartet auf den Async-Draw und ist
         #     der harte Schutz davor, dass die Karte still leer rendert
-        #     (fehlende Geometrie, d3-Ausfall, Projektions-Bug).
+        #     (fehlende Geometrie, d3-Ausfall, Projektions-Bug). Zusaetzlich:
+        #     die Entitaets-Auswahl filtert die Knoten und wirft keine Fehler.
         try:
             page.locator('[data-tab="karte"]').first.click()
             errs_before = len(global_errors)
             # Knoten erscheinen erst nach dem fetch der Laendergeometrie.
             page.locator('#tab-karte .mob-nodes g.mob-node').first.wait_for(
                 state="attached", timeout=8000)
-            nodes = page.locator('#tab-karte .mob-nodes g.mob-node').count()
+            nodes_all = page.locator('#tab-karte .mob-nodes g.mob-node').count()
             arcs = page.locator('#tab-karte .mob-arcs path').count()
-            legend = page.locator('#tab-karte .vs-legend .vs-chip').count()
+            picker = page.locator('#tab-karte .mob-entity__list .mob-entity__item').count()
             land = page.locator('#tab-karte .mob-land path').count()
+
+            # Eine konkrete Entitaet waehlen (Bayreuther Festspiele) und pruefen,
+            # dass die Knotenmenge auf ihre Orte schrumpft.
+            nodes_entity = None
+            target = page.locator(
+                '#tab-karte .mob-entity__item:has-text("Bayreuther Festspiele")').first
+            if target.count() > 0:
+                target.click()
+                page.wait_for_timeout(300)
+                nodes_entity = page.locator('#tab-karte .mob-nodes g.mob-node').count()
             new_errs = expect_no_new_errors(global_errors, errs_before)
-            # Erwartung: mehrere Stadt-Knoten, mindestens ein Pfad-Pfeil, die
-            # Sicht-Legende als Filter, Laendergeometrie, keine Konsolenfehler.
-            if nodes >= 5 and arcs >= 1 and legend >= 5 and land >= 50 and not new_errs:
+            # Erwartung: Gesamt-Geografie mit mehreren Knoten, KEINE Pfeile, eine
+            # befuellte Entitaets-Auswahl, Laendergeometrie, Entitaetswahl
+            # liefert Knoten, keine Konsolenfehler.
+            ok = (nodes_all >= 5 and arcs == 0 and picker >= 5 and land >= 50
+                  and (nodes_entity is None or nodes_entity >= 1) and not new_errs)
+            if ok:
                 results.append(("OK", "karte:render               ",
-                                f"{nodes} Knoten, {arcs} Pfeile, {legend} Sicht-Filter, "
-                                f"{land} Laender"))
+                                f"{nodes_all} Knoten gesamt, 0 Linien, {picker} Entitaeten, "
+                                f"Bayreuther Festspiele -> {nodes_entity} Orte, {land} Laender"))
             else:
                 results.append(("FAIL", "karte:render               ",
-                                f"Knoten={nodes}, Pfeile={arcs}, Legende={legend}, "
-                                f"Laender={land}, errs={len(new_errs)}"))
+                                f"Knoten={nodes_all}, Linien={arcs}, Auswahl={picker}, "
+                                f"Entitaet-Knoten={nodes_entity}, Laender={land}, errs={len(new_errs)}"))
                 for e in new_errs[:2]:
                     results.append(("  ", " " * 24, e[:120]))
         except Exception as e:

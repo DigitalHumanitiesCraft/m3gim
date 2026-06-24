@@ -16,22 +16,27 @@ import { extractYear } from '../utils/date-parser.js';
 // Mobilitaetssichten — geteilt mit der Karte
 // ---------------------------------------------------------------------------
 
+// Konkrete, zielgruppennahe Labels (projektweit einheitlich: Karte, Statistik,
+// Chronik). Der analytische Begriff steht im desc-Feld zur Erlaeuterung.
 export const SICHTEN = [
-  { id: 'performativ',    label: 'Performativ',    desc: 'Auftritte, Gastspiele, Premieren' },
-  { id: 'institutionell', label: 'Institutionell', desc: 'Spielzeit-Engagements, Ensemble-Zugehoerigkeit' },
+  { id: 'performativ',    label: 'Auftritt',    desc: 'Performativ: Auftritte, Gastspiele, Premieren' },
+  { id: 'institutionell', label: 'Engagement',  desc: 'Institutionell: Spielzeit-Engagements, Ensemble-Zugehoerigkeit' },
   { id: 'korrespondenz',  label: 'Reise & Korrespondenz', desc: 'Reisewege (Ziel-, Abreise-, Vertragsort), Korrespondenz-Orte und Briefdaten' },
-  { id: 'diskursiv',      label: 'Diskursiv',      desc: 'Rezensionen, Rundfunk, Druckerscheinungen' },
-  { id: 'biografisch',    label: 'Biografisch',    desc: 'Ausweise, Wohnsitz, persoenliche Dokumente' },
+  { id: 'diskursiv',      label: 'Rezeption',   desc: 'Diskursiv: Rezensionen, Rundfunk, Druckerscheinungen' },
+  { id: 'biografisch',    label: 'Biografisch', desc: 'Ausweise, Wohnsitz, persoenliche Dokumente' },
 ];
 
 // Eine Quelle fuer die Sichten-Farben: die --color-sicht-*-Tokens (variables.css).
-// Karte und Statistik zeigen dieselbe Sicht damit in derselben Farbe.
+// Karte, Statistik und Chronik zeigen dieselbe Sicht damit in derselben Farbe.
+// 'kontext' deckt die Nicht-Cluster-Ortsrollen der Karte ab (Entstehung,
+// Erwaehnung, Auftrag).
 export const SICHT_COLOR = {
   performativ:    'var(--color-sicht-performativ)',
   institutionell: 'var(--color-sicht-institutionell)',
   korrespondenz:  'var(--color-sicht-korrespondenz)',
   diskursiv:      'var(--color-sicht-diskursiv)',
   biografisch:    'var(--color-sicht-biografisch)',
+  kontext:        'var(--color-sicht-kontext)',
   neutral:        'var(--color-text-tertiary)',
 };
 

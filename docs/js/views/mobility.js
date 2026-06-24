@@ -1,31 +1,22 @@
 /**
- * M³GIM Karten-View (E-111, D3-geo Trajektorie)
+ * M³GIM Karten-View — entitaetszentriert (D3-geo).
  *
- * Forschungswerkzeug fuer die raumzeitliche Mobilitaet Ira Malaniuks. Das
- * Layout nutzt die geteilte View-Sidebar (docs/js/ui/sidebar.js): eine
- * deklarativ erzeugte Filter-Spalte links, die Karte nimmt den restlichen
- * Viewport. Die Karte ist eine projizierte Stummkarte (D3-geo, lokale
- * Ländergeometrie, keine externen Kartenserver), Orte als Knoten farbcodiert
- * nach Mobilitaetssicht, der biografische Pfad als gerichtete, chronologisch
- * eingefaerbte Pfeile zwischen den Orten.
+ * Forschungswerkzeug fuer die Frage "wo war diese Entitaet praesent?". Man waehlt
+ * eine Entitaet (Organisation oder Person) in der Sidebar; die Karte zeigt alle
+ * Orte, die an ihren Records haengen, als Punkte. Ohne gewaehlte Entitaet zeigt
+ * sie die Gesamt-Geografie des Bestands. Keine Verbindungslinien zwischen den
+ * Knoten — die biografische Trajektorie (frueher E-111) ist bewusst entfernt;
+ * die raeumliche Verteilung einer Entitaet ist die Aussage, nicht der Weg.
  *
- * Sidebar-Spec: die Sicht-Legende filtert Knoten, Pfad und Liste zugleich, ein
- * Zeitraum-Filter (von–bis statt Abspielen) blendet Ereignisse ausserhalb des
- * gewaehlten Jahresfensters aus, der Pfad-Schalter zeigt oder verbirgt die
- * Trajektorie. Die Ereignis-Region zeigt eine Statuszeile, bei Knotenwahl die
- * Ereignisse des Orts, darunter die einklappbare Voll-Liste. Datumslose und
- * unverortete Ereignisse bleiben sichtbar (Knoten ohne Pfadanschluss bzw.
- * abseits der Karte), statt kaschiert zu werden.
+ * Beispiel: "Bayreuther Festspiele" -> Bayreuth (Hauptort) plus die auswaertigen
+ * Spielorte (Muenchen, Paris, Stuttgart, …), je nach Datenlage mit oder ohne
+ * Koordinaten. Orte ohne Koordinaten werden ehrlich als Liste ausgewiesen, nicht
+ * verschwiegen (Linie "Stand nicht kaschieren").
  *
- * Pfad-Semantik: die datierten, verorteten Ereignisse werden chronologisch
- * geordnet und aufeinanderfolgende verschiedene Staedte mit einem Pfeil
- * verbunden. Echte Brief-Quelle-Ziel-Paare sind im Bestand zu duenn fuer
- * eine eigene Wegschicht (4 Absende-/Abreiseorte gegen 11 Zielorte); der
- * tragfaehige Pfad ist die biografische Trajektorie ueber die Karriere.
- *
- * Klassifikation lokal, deckt sich seit E-110 mit dem globalen
- * `mobilityClusterFor`, bleibt hier feiner (eigener Block fuer Nicht-
- * Mobilitaets-Ortsrollen: Entstehung, Erwaehnung, Auftrag).
+ * Die Orte einer Entitaet werden in entity-map-data.js aus zwei Quellen
+ * zusammengezogen (Record-Orte + STE). Knoten sind nach dominanter
+ * Mobilitaetssicht (mobilityClusterFor, E-110) eingefaerbt, die Groesse traegt
+ * die Belegzahl im Zeitfenster.
  */
 
 import { el, clear } from '../utils/dom.js';
@@ -34,13 +25,13 @@ import { buildRoleChip } from './archive-inline-detail.js';
 import { cityOf } from '../utils/format.js';
 import { formatDate, extractYear } from '../utils/date-parser.js';
 import { logStamp } from '../utils/env.js';
-import { onViewNavigate } from '../ui/events.js';
 import { mobilityClusterFor } from '../data/constants.js';
 import { getFilter, setFilter, subscribe } from '../ui/filter-state.js';
 import {
-  sichtToActiveSet, activeSetToSicht, zeitfensterToYearRange,
-  yearRangeToZeitfenster, makeSyncGuard,
+  zeitfensterToYearRange, yearRangeToZeitfenster, makeSyncGuard,
 } from '../ui/filter-sync.js';
+import { buildEntities, buildOccurrences } from './entity-map-data.js';
+import { SICHTEN as SHARED_SICHTEN, SICHT_COLOR } from './statistics-data.js';
 
 /* global d3 */
 
@@ -49,46 +40,22 @@ let COUNTRIES = null;  // module-level cache, ueber Tab-Wechsel hinweg
 let _unsubscribeFilter = null;       // geteilter Filter (M4), modul-lebend
 const _syncGuard = makeSyncGuard();  // loop guard: Controls <-> setFilter
 
+// Mobilitaetssichten als Farb-/Label-Schluessel der Knoten. Farben und die fuenf
+// Basis-Sichten kommen aus der geteilten Quelle (statistics-data.js: SICHT_COLOR
+// + SICHTEN), damit Karte, Statistik und Chronik dieselbe Sicht in derselben
+// Farbe und mit demselben Label zeigen. Die Karte ergaenzt 'kontext' fuer
+// Nicht-Cluster-Ortsrollen (Entstehung, Erwaehnung, Auftrag); null faellt
+// dorthin. Reihenfolge: Basis-Sichten, dann kontext.
+const KONTEXT_ID = 'kontext';
 const SICHTEN = [
-  {
-    id: 'performativ', label: 'Performativ', frage: 'Wo trat sie auf?', color: 'var(--color-sicht-performativ)',
-    roles: ['auftritt', 'aufführung', 'auffuehrung', 'gastspiel', 'premiere',
-      'wiederaufnahme', 'festvorstellung', 'probe', 'probenbeginn',
-      'auftrittsdatum', 'auffuehrungsdatum', 'aufführungsdatum', 'probendatum',
-      'premieredatum'],
-  },
-  {
-    id: 'institutionell', label: 'Institutionell', frage: 'Wo war sie engagiert?', color: 'var(--color-sicht-institutionell)',
-    roles: ['spielzeit', 'spielzeitvon', 'spielzeitbis'],
-  },
-  {
-    id: 'korrespondenz', label: 'Reise & Korrespondenz', frage: 'Woher, wohin, an wen?', color: 'var(--color-sicht-korrespondenz)',
-    roles: ['zielort', 'absendeort', 'abreiseort', 'empfangsort', 'vertragsort',
-      'absendedatum', 'empfangsdatum', 'abreisedatum'],
-  },
-  {
-    id: 'diskursiv', label: 'Diskursiv', frage: 'Wo wurde über sie berichtet?', color: 'var(--color-sicht-diskursiv)',
-    roles: ['erscheinungsdatum', 'ausstrahlung', 'ausstrahlungsdatum'],
-  },
-  {
-    id: 'biografisch', label: 'Biografisch', frage: 'Wo wohnte und lebte sie?', color: 'var(--color-sicht-biografisch)',
-    roles: ['wohnort', 'ausstellungsdatum', 'gespräch', 'gespraech'],
-  },
+  ...SHARED_SICHTEN.map(s => ({ id: s.id, label: s.label, color: SICHT_COLOR[s.id] })),
+  { id: KONTEXT_ID, label: 'Weiterer Ortsbezug', color: SICHT_COLOR.kontext },
 ];
-const KONTEXT = {
-  id: 'kontext', label: 'Weiterer Ortsbezug', frage: 'Sonstiger Ortsbezug', color: 'var(--color-sicht-kontext)',
-  roles: ['entstehung', 'erwähnt', 'erwaehnt', 'auftrag'],
-};
-const ALL_TYPES = [...SICHTEN, KONTEXT];
-const TYPE_BY_ID = new Map(ALL_TYPES.map(t => [t.id, t]));
-const ALL_TYPE_IDS = ALL_TYPES.map(t => t.id);
+const TYPE_BY_ID = new Map(SICHTEN.map(t => [t.id, t]));
 
-// Sicht-Klassifikation ueber den kanonischen Klassifikator (E-117 M4): der
-// view-lokale ROLE_TO_TYPE wurde durch mobilityClusterFor ersetzt, null faellt
-// in den expliziten Bucket 'kontext' (Entstehung, Erwaehnung, Auftrag).
-const sichtOf = ev => mobilityClusterFor(ev.role) || KONTEXT.id;
-const colorOf = id => (TYPE_BY_ID.get(id) || KONTEXT).color;
-const hasGeo = ev => typeof ev.placeLat === 'number' && typeof ev.placeLon === 'number';
+const sichtOf = o => mobilityClusterFor(o.role) || KONTEXT_ID;
+const colorOf = id => (TYPE_BY_ID.get(id) || TYPE_BY_ID.get(KONTEXT_ID)).color;
+const hasGeo = o => typeof o.placeLat === 'number' && typeof o.placeLon === 'number';
 
 // ---------------------------------------------------------------------------
 // Haupteinstieg
@@ -96,11 +63,13 @@ const hasGeo = ev => typeof ev.placeLat === 'number' && typeof ev.placeLon === '
 
 export function renderMobilitaet(store, container) {
   clear(container);
-  const events = [...store.mobilityEvents.values()];
 
-  if (events.length === 0) {
+  const entities = buildEntities(store);
+  const allOcc = buildOccurrences(store);
+
+  if (allOcc.length === 0) {
     container.appendChild(el('div', { className: 'mob-notice' },
-      el('div', { className: 'mob-empty' }, 'Keine raumzeitlichen Ereignisse im Datenstand.')));
+      el('div', { className: 'mob-empty' }, 'Keine verorteten Belege im Datenstand.')));
     return;
   }
   if (typeof d3 === 'undefined') {
@@ -109,28 +78,25 @@ export function renderMobilitaet(store, container) {
     return;
   }
 
-  const withGeo = events.filter(hasGeo);
-  const unverortet = events.filter(e => !hasGeo(e));
-  const datedYears = events.map(e => extractYear(e.date)).filter(y => y != null);
+  const withGeo = allOcc.filter(hasGeo);
+  const datedYears = allOcc.map(o => extractYear(o.date)).filter(y => y != null);
   const minYear = datedYears.length ? Math.min(...datedYears) : 1940;
   const maxYear = datedYears.length ? Math.max(...datedYears) : 1980;
-
-  // Gemeinsamer Filter-State. Der Zeitraum (yearFrom..yearTo) ist ein
-  // beidseitiges Fenster, kein abspielender Cursor: Ereignisse und Pfad-
-  // segmente ausserhalb des Fensters werden ausgeblendet.
   const span = { min: minYear, max: maxYear };
+
   const state = {
-    active: new Set(ALL_TYPE_IDS),
-    showPath: true,
+    entity: null,          // gewaehlte Entitaet oder null (= alle)
+    entityKind: 'all',     // 'all' | 'org' | 'person' (Filter der Auswahlliste)
+    entityQuery: '',       // Freitextsuche der Auswahlliste
     yearFrom: minYear,
     yearTo: maxYear,
     selectedCity: null,
   };
 
-  // Geteilten Filter (M4) initial nachziehen: sicht -> active, zeitfenster ->
-  // yearFrom/yearTo (an die View-Spanne geklemmt), ort -> selectedCity.
+  // Geteilten Filter (M4) initial nachziehen: zeitfenster -> Jahresfenster,
+  // ort -> selectedCity. Die Sicht-Facette spielt in der Entitaets-Karte keine
+  // Rolle (keine Sicht-Legende) und wird ignoriert.
   function pullSharedIntoState(shared) {
-    state.active = sichtToActiveSet(shared.sicht, ALL_TYPE_IDS);
     const { yearFrom, yearTo } = zeitfensterToYearRange(shared.zeitfenster);
     state.yearFrom = yearFrom == null ? minYear : Math.max(minYear, yearFrom);
     state.yearTo = yearTo == null ? maxYear : Math.min(maxYear, yearTo);
@@ -138,68 +104,61 @@ export function renderMobilitaet(store, container) {
   }
   pullSharedIntoState(getFilter());
 
-  const active = e => state.active.has(sichtOf(e));
-  const inWindow = e => {
-    const y = extractYear(e.date);
+  const inEntity = o => !state.entity || state.entity.records.has(o.recordId);
+  const inWindow = o => {
+    const y = extractYear(o.date);
     return y == null || (y >= state.yearFrom && y <= state.yearTo);
   };
 
-  // Sicht-Counts fuer die Legende
-  const counts = new Map(ALL_TYPES.map(t => [t.id, 0]));
-  for (const ev of events) counts.set(sichtOf(ev), (counts.get(sichtOf(ev)) || 0) + 1);
-
-  // Ereignis-Region (Statuszeile / Ortsauswahl) plus einklappbare Voll-Liste.
+  // Ereignis-Region (Statuszeile / Ortsauswahl).
   const detailRegion = el('div', { className: 'mob-panel__detail' });
-  const panelNode = el('div', { className: 'mob-panel' }, detailRegion, buildBackbone(events));
+  const panelNode = el('div', { className: 'mob-panel' }, detailRegion);
 
   // ---- Sidebar (deklarativ) ----
-  let mapApi = null;  // von buildMap gesetzt; die Fokus-Buttons greifen darauf zu
   const sidebar = createSidebar({
     sections: [
       {
-        title: 'Sichten',
+        title: 'Entität',
         controls: [{
-          kind: 'legend',
-          items: ALL_TYPES.map(t => ({ id: t.id, label: t.label, color: t.color,
-            count: counts.get(t.id) || 0, title: t.frage })),
-          isActive: id => state.active.has(id),
-          onToggle: id => {
-            if (state.active.has(id)) state.active.delete(id); else state.active.add(id);
-            // Sicht ist geteilt (M4): genau eine aktive Sicht -> Facette, sonst ''.
-            _syncGuard.run(() => setFilter({ sicht: activeSetToSicht(state.active, ALL_TYPE_IDS) }));
+          kind: 'custom', className: 'mob-entity',
+          build: region => buildEntityPicker(region, entities, state, () => {
+            state.selectedCity = null;
             redraw();
-          },
+          }),
+          update: region => refreshEntityPicker(region, entities, state),
         }],
       },
       {
-        title: 'Darstellung',
+        title: 'Zeitraum',
         controls: [
-          { kind: 'toggle', label: 'Pfad anzeigen',
-            value: () => state.showPath,
-            onChange: v => { state.showPath = v; redraw(); } },
-          { kind: 'range', fromCap: 'Von', toCap: 'Bis', min: minYear, max: maxYear, fullLabel: true,
+          { kind: 'range', min: minYear, max: maxYear, fullLabel: true,
             from: () => state.yearFrom, to: () => state.yearTo,
             onChange: (f, t) => {
               state.yearFrom = f; state.yearTo = t;
-              // Zeitfenster ist geteilt (M4): volle Spanne -> null (inaktiv).
               _syncGuard.run(() => setFilter({ zeitfenster: yearRangeToZeitfenster(f, t, span) }));
               redraw();
             } },
         ],
       },
       {
-        title: 'Ansicht',
+        title: 'Farbschlüssel',
         controls: [{
-          kind: 'buttons',
-          items: [
-            { label: 'Europa', title: 'Ganz Europa zeigen', onClick: () => mapApi && mapApi.resetView() },
-            { label: 'Österreich', title: 'Auf Österreich zentrieren', onClick: () => mapApi && mapApi.focusCountry('Austria') },
-            { label: 'Deutschland', title: 'Auf Deutschland zentrieren', onClick: () => mapApi && mapApi.focusCountry('Germany') },
+          kind: 'staticLegend',
+          rows: SICHTEN.map(t => ({ color: t.color, label: t.label })),
+        }],
+      },
+      {
+        title: 'Verortung',
+        controls: [{
+          kind: 'staticLegend',
+          rows: [
+            { markerClass: 'mob-vmark mob-vmark--secured', label: 'gesichert (Ort/Stadt)' },
+            { markerClass: 'mob-vmark mob-vmark--city', label: 'stadtgenau (Adresse → Stadt)' },
+            { markerClass: 'mob-vmark mob-vmark--far', label: 'weit · prüfen' },
           ],
         }],
       },
       {
-        title: 'Ereignisse',
         controls: [{ kind: 'custom', node: panelNode }],
       },
     ],
@@ -212,67 +171,88 @@ export function renderMobilitaet(store, container) {
 
   container.appendChild(viewShell(sidebar.element, main));
 
-  // Zeichenfunktion (wird nach Geometrie-Load und bei jeder State-Aenderung gerufen)
   let draw = () => {};
   function redraw() { draw(); renderPanel(); sidebar.update(); }
 
+  // Aktuell sichtbare Belege (Entitaet). Fuer die Detailliste eines gewaehlten Orts.
+  const currentAll = () => allOcc.filter(inEntity);
+
+  // Detail-Region: nur die gewaehlte Entitaet (Kopf mit Loesen) und, bei
+  // Knoten-Klick, die Belege des Orts. Keine Status-/Zaehlzeile mehr.
   function renderPanel() {
     clear(detailRegion);
+
+    if (state.entity) {
+      detailRegion.appendChild(el('div', { className: 'mob-entity__active' },
+        el('span', { className: 'mob-entity__activename' }, state.entity.name),
+        el('button', { className: 'mob-detail__clear', type: 'button',
+          onClick: () => { state.entity = null; state.selectedCity = null; redraw(); } }, 'Auswahl lösen')));
+    }
+
     if (state.selectedCity) {
-      const list = events.filter(e => active(e) && cityOf(e.place) === state.selectedCity);
+      const list = currentAll().filter(o => cityOf(o.place) === state.selectedCity);
       detailRegion.appendChild(el('div', { className: 'mob-detail__head' },
         el('h3', { className: 'mob-detail__title' }, state.selectedCity),
         el('button', { className: 'mob-detail__clear', type: 'button',
-          onClick: () => { state.selectedCity = null; redraw(); } }, 'Auswahl lösen')));
+          onClick: () => { state.selectedCity = null; redraw(); } }, 'Ort lösen')));
+
+      // Zuordnungen: Anteile nach Sicht (gestapelter Balken + Zeilen mit Zahl).
+      const bd = breakdownByView(list);
+      const bar = el('div', { className: 'mob-detail__bar' });
+      for (const s of barSegments(bd)) {
+        const seg = el('span', { title: `${s.label}: ${s.count}` });
+        seg.style.width = s.pct + '%';
+        seg.style.background = s.color;
+        bar.appendChild(seg);
+      }
+      detailRegion.appendChild(bar);
+      const rows = el('div', { className: 'mob-detail__rows' });
+      for (const b of bd) {
+        const sw = el('span', { className: 'mob-detail__sw' });
+        sw.style.background = b.color;
+        rows.appendChild(el('div', { className: 'mob-detail__row' },
+          sw, el('span', { className: 'mob-detail__rowlabel' }, b.label),
+          el('span', { className: 'mob-detail__rown' }, String(b.count))));
+      }
+      detailRegion.appendChild(rows);
+
+      // Dokumente: alle verknuepften Belege, nach Datum. docCount = distinkte Records.
+      const docCount = new Set(list.map(o => o.recordId).filter(Boolean)).size;
+      detailRegion.appendChild(el('div', { className: 'mob-detail__subhead' },
+        `Dokumente (${docCount})`));
       const chips = el('div', { className: 'mob-chips' });
-      for (const ev of sortEvents(list)) chips.appendChild(buildEventChip(ev));
+      for (const o of sortOcc(list)) chips.appendChild(buildOccChip(o));
       detailRegion.appendChild(chips);
       return;
     }
-    // Statuszeile: was die aktuelle Auswahl und der Zeitraum umfassen. Die
-    // undatierte Menge wird ausgewiesen, weil sie immer sichtbar bleibt, aber
-    // weder im Pfad noch im Zeitfilter erfasst ist.
-    const verortet = withGeo.filter(e => active(e) && inWindow(e)).length;
-    const total = events.filter(e => active(e) && inWindow(e)).length;
-    const undatiert = events.filter(e => active(e) && extractYear(e.date) == null).length;
-    detailRegion.appendChild(el('div', { className: 'mob-status' },
-      el('span', {}, `${verortet} verortet`),
-      el('span', {}, `${total} Ereignisse`),
-      undatiert ? el('span', { className: 'mob-status__undated',
-        title: 'Undatierte Ereignisse sind immer sichtbar, aber nicht im Pfad und nicht vom Zeitfilter erfasst' },
-        `${undatiert} undatiert`) : null));
-    const flags = el('div', { className: 'mob-status__flags' });
-    if (unverortet.length) flags.appendChild(makeUnverortetButton(unverortet, state, detailRegion, renderPanel));
-    if (state.offMapEvents && state.offMapEvents.length) flags.appendChild(makeOffMapButton(state, detailRegion, renderPanel, () => { if (mapApi) mapApi.focusAll(); }));
-    if (flags.childNodes.length) detailRegion.appendChild(flags);
-    detailRegion.appendChild(el('div', { className: 'mob-status__hint' },
-      'Knoten auf der Karte anklicken für Details'));
-  }
 
-  // Cross-View: Klick auf einen Sicht-Balken in der Statistik oeffnet die Karte
-  // mit genau dieser Sicht aktiv (Statistik dispatcht m3gim:navigate, events.js
-  // replayt auch, falls das Event vor dem Geometrie-Load eintrifft).
-  onViewNavigate('karte', (detail) => {
-    const s = detail && detail.sicht;
-    if (s && TYPE_BY_ID.has(s)) {
-      state.active = new Set([s]);
-      state.selectedCity = null;
-      redraw();
+    // Ohne Ortsauswahl: nicht verortbare Belege ehrlich ausweisen (kein
+    // Kartenpunkt moeglich). Kompakt und eingeklappt, entitaetsbezogen.
+    const unloc = currentAll().filter(o => o.placement === 'unlocatable');
+    if (unloc.length) {
+      const cities = [...new Set(unloc.map(o => cityOf(o.place)))];
+      const det = el('details', { className: 'mob-unloc' });
+      det.appendChild(el('summary', { className: 'mob-unloc__summary' },
+        `${cities.length} Orte ohne Koordinate`));
+      det.appendChild(el('div', { className: 'mob-detail__note' },
+        'Erfasst, aber (noch) nicht mit Wikidata verortet — daher kein Kartenpunkt.'));
+      const chips = el('div', { className: 'mob-chips' });
+      for (const o of sortOcc(unloc)) chips.appendChild(buildOccChip(o));
+      det.appendChild(chips);
+      detailRegion.appendChild(det);
     }
-  });
+  }
 
   // Geometrie laden (gecacht), dann zeichnen
   loadCountries().then(countries => {
     const map = buildMap(mapCell, countries, withGeo, state, {
-      minYear, maxYear,
+      inEntity, inWindow,
       onSelectCity: city => {
         state.selectedCity = state.selectedCity === city ? null : city;
-        // Ort ist geteilt (M4): Stadt-Auswahl -> ort-Facette (stadt-konsolidiert).
         _syncGuard.run(() => setFilter({ ort: state.selectedCity || '' }));
         redraw();
       },
     });
-    mapApi = map;
     draw = map.draw;
     redraw();
   }).catch(() => {
@@ -281,9 +261,7 @@ export function renderMobilitaet(store, container) {
       'Ländergeometrie konnte nicht geladen werden. Liste in der Sidebar nutzen.'));
   });
 
-  // Geteilter Filter (M4): externe Aenderung (sicht/zeitfenster/ort) auf state
-  // + redraw anwenden. Sidebar liest state ueber Getter -> sidebar.update()
-  // zieht die Controls nach (in redraw enthalten).
+  // Geteilter Filter (M4): externe Aenderung (zeitfenster/ort) anwenden.
   if (_unsubscribeFilter) _unsubscribeFilter();
   _unsubscribeFilter = subscribe((shared) => {
     if (_syncGuard.isActive()) return;
@@ -292,14 +270,92 @@ export function renderMobilitaet(store, container) {
   }, { immediate: false });
 
   logStamp('karte', [
-    ['events', events.length], ['verortet', withGeo.length],
-    ['unverortet', unverortet.length], ['datiert', datedYears.length],
+    ['entitaeten', entities.length],
+    ['orte', new Set(withGeo.map(o => cityOf(o.place))).size],
+    ['belege', allOcc.length],
+    ['unverortet', allOcc.length - withGeo.length],
     ['jahre', `${minYear}-${maxYear}`],
   ]);
 }
 
 // ---------------------------------------------------------------------------
-// Karte: Projektion, Knoten, Pfad, Zoom
+// Entitaets-Auswahl (Sidebar-Custom-Control)
+// ---------------------------------------------------------------------------
+
+function buildEntityPicker(region, entities, state, onSelect) {
+  const kinds = el('div', { className: 'mob-entity__kinds' });
+  const kindBtn = (id, label) => {
+    const b = el('button', { className: 'mob-entity__kind', type: 'button', 'data-kind': id }, label);
+    b.addEventListener('click', () => { state.entityKind = id; refreshEntityPicker(region, entities, state); });
+    return b;
+  };
+  kinds.append(kindBtn('all', 'Alle'), kindBtn('org', 'Organisationen'), kindBtn('person', 'Personen'));
+
+  const search = el('input', { type: 'search', className: 'vs-search mob-entity__search',
+    placeholder: 'Entität suchen…' });
+  search.addEventListener('input', () => { state.entityQuery = search.value; refreshEntityPicker(region, entities, state); });
+
+  const list = el('div', { className: 'mob-entity__list' });
+  list.addEventListener('click', (ev) => {
+    const item = ev.target.closest('[data-entity-id]');
+    if (!item) return;
+    const id = item.getAttribute('data-entity-id');
+    state.entity = id === '__all__' ? null : entities.find(e => e.id === id) || null;
+    onSelect();
+  });
+
+  region.append(kinds, search, list);
+  refreshEntityPicker(region, entities, state);
+}
+
+function refreshEntityPicker(region, entities, state) {
+  // Kind-Buttons markieren
+  region.querySelectorAll('.mob-entity__kind').forEach(b =>
+    b.classList.toggle('mob-entity__kind--on', b.getAttribute('data-kind') === state.entityKind));
+
+  const list = region.querySelector('.mob-entity__list');
+  if (!list) return;
+  clear(list);
+
+  const q = (state.entityQuery || '').trim().toLowerCase();
+  const inKind = e => state.entityKind === 'all' || e.kind === state.entityKind;
+  let matches = entities.filter(e => inKind(e) && (!q || e.name.toLowerCase().includes(q)));
+
+  // "Alle …" als Reset-Option oben, mit der Gesamtzahl der aktuellen Art
+  // (unabhaengig von der Suche), damit immer ersichtlich ist, wie viele es gibt.
+  const kindTotal = entities.filter(inKind).length;
+  const kindLabel = state.entityKind === 'org' ? 'Alle Organisationen'
+    : state.entityKind === 'person' ? 'Alle Personen' : 'Alle Entitäten';
+  const allRow = el('button', {
+    className: 'mob-entity__item mob-entity__item--all' + (state.entity ? '' : ' mob-entity__item--on'),
+    type: 'button', 'data-entity-id': '__all__' },
+    el('span', { className: 'mob-entity__name' }, kindLabel),
+    el('span', { className: 'mob-entity__count' }, String(kindTotal)));
+  list.appendChild(allRow);
+
+  const CAP = 60;  // lange Trefferlisten kappen, Hinweis ausweisen (kein Silent-Cut)
+  for (const e of matches.slice(0, CAP)) {
+    const row = el('button', {
+      className: 'mob-entity__item' + (state.entity && state.entity.id === e.id ? ' mob-entity__item--on' : ''),
+      type: 'button', 'data-entity-id': e.id,
+      title: `${e.kind === 'org' ? 'Organisation' : 'Person'} · ${e.records.size} Records`,
+    },
+      el('span', { className: 'mob-entity__kindtag' }, e.kind === 'org' ? 'Org' : 'Pers'),
+      el('span', { className: 'mob-entity__name' }, e.name),
+      el('span', { className: 'mob-entity__count' }, String(e.records.size)));
+    list.appendChild(row);
+  }
+  if (matches.length > CAP) {
+    list.appendChild(el('div', { className: 'mob-entity__more' },
+      `${matches.length - CAP} weitere — Suche eingrenzen`));
+  }
+  if (matches.length === 0) {
+    list.appendChild(el('div', { className: 'mob-entity__more' }, 'Kein Treffer'));
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Karte: Projektion, Knoten, Zoom (ohne Pfad)
 // ---------------------------------------------------------------------------
 
 function loadCountries() {
@@ -312,13 +368,13 @@ function buildMap(mapCell, countries, withGeo, state, opts) {
   const width = Math.max(320, mapCell.clientWidth || 960);
   const height = Math.max(440, mapCell.clientHeight || 600);
 
-  // Projektion auf den europaeischen Schwerpunkt einpassen (Ausreisser wie
-  // den New-York-Fehlmatch ausgeschlossen; per Zoom erreichbar).
-  const eur = withGeo.filter(e => e.placeLon > -15 && e.placeLon < 35 && e.placeLat > 34 && e.placeLat < 60);
+  // Projektion einmalig auf den europaeischen Schwerpunkt ALLER Belege einpassen
+  // (nicht pro Entitaet), damit die Karte beim Wechsel der Auswahl nicht springt.
+  const eur = withGeo.filter(o => o.placeLon > -15 && o.placeLon < 35 && o.placeLat > 34 && o.placeLat < 60);
   const fitPoints = {
     type: 'FeatureCollection',
-    features: (eur.length ? eur : withGeo).map(e => ({
-      type: 'Feature', geometry: { type: 'Point', coordinates: [e.placeLon, e.placeLat] },
+    features: (eur.length ? eur : withGeo).map(o => ({
+      type: 'Feature', geometry: { type: 'Point', coordinates: [o.placeLon, o.placeLat] },
     })),
   };
   const projection = d3.geoMercator();
@@ -326,7 +382,14 @@ function buildMap(mapCell, countries, withGeo, state, opts) {
   projection.fitExtent([[pad, pad], [width - pad, height - pad]], fitPoints);
   const path = d3.geoPath(projection);
 
-  // HTML-Tooltip ueber dem SVG (SVG-Knoten tragen keine Pseudo-Elemente, E-36).
+  // Knoten als Tortendiagramm: jeder Ort zeigt die Anteile der Mobilitaetssichten
+  // (Auftritt, Engagement, Reise & Korrespondenz, Rezeption, Biografisch,
+  // Weiterer Ortsbezug) als Kreissegmente. Reihenfolge stabil (sort null) entlang
+  // der breakdown-Liste.
+  const pieGen = d3.pie().value(s => s.count).sort(null);
+  const arcGen = d3.arc();
+
+  // HTML-Tooltip ueber dem SVG.
   const tip = el('div', { className: 'mob-tip', 'aria-hidden': 'true' });
   mapCell.appendChild(tip);
   function showTip(html, mx, my) {
@@ -345,21 +408,17 @@ function buildMap(mapCell, countries, withGeo, state, opts) {
     const span = d.firstYear == null ? 'ohne Datum'
       : (d.lastYear != null && d.lastYear !== d.firstYear
           ? `${d.firstYear}–${d.lastYear}` : `${d.firstYear}`);
-    // Volle Sicht-Aufschluesselung statt nur der dominanten Farbe.
-    const rows = (d.breakdown || []).map(b =>
+    const bd = d.breakdown || [];
+    // Gestapelter Proportionsbalken: zeigt die Anteile auf einen Blick, bevor die
+    // Detailzeilen die genauen Zahlen geben.
+    const bar = `<div class="mob-tip__bar">` + barSegments(bd).map(s =>
+      `<span style="width:${s.pct.toFixed(1)}%;background:${s.color}" title="${s.label}"></span>`).join('') + `</div>`;
+    const rows = bd.map(b =>
       `<span class="mob-tip__row"><span class="mob-tip__sw" style="background:${b.color}"></span>` +
       `${b.label}<span class="mob-tip__n">${b.count}</span></span>`).join('');
     showTip(
-      `<strong>${escapeHtml(d.city)}</strong>` + rows +
-      `<span class="mob-tip__row mob-tip__meta">${d.shown} im Zeitraum · ${span}</span>`,
-      mx, my);
-  }
-  function showArcTip(event, d) {
-    const [mx, my] = d3.pointer(event, mapCell);
-    showTip(
-      `<strong>${escapeHtml(d.from)} → ${escapeHtml(d.to)}</strong>` +
-      `<span class="mob-tip__row">${d.year}</span>` +
-      `<span class="mob-tip__row mob-tip__meta">chronologische Folge, kein belegter Reiseweg</span>`,
+      `<strong>${escapeHtml(d.city)}</strong>` + bar + rows +
+      `<span class="mob-tip__row mob-tip__meta">${d.shown} Belege · ${span}</span>`,
       mx, my);
   }
 
@@ -368,30 +427,25 @@ function buildMap(mapCell, countries, withGeo, state, opts) {
     .attr('width', width).attr('height', height)
     .attr('viewBox', `0 0 ${width} ${height}`);
 
-  // Arrowhead-Marker, nimmt die Strichfarbe der Linie (context-stroke)
-  const defs = svg.append('defs');
-  defs.append('marker')
-    .attr('id', 'mob-arrow').attr('viewBox', '0 0 10 10')
-    .attr('refX', 9).attr('refY', 5).attr('markerWidth', 7).attr('markerHeight', 7)
-    .attr('orient', 'auto-start-reverse')
-    .append('path').attr('d', 'M0,0 L10,5 L0,10 z').attr('fill', 'context-stroke');
-
   const gZoom = svg.append('g');
+  // Basemap: Ozean kommt aus dem SVG-Hintergrund (deckt den ganzen Viewport,
+  // robuster als eine Mercator-Sphere, deren Pole ins Unendliche laufen). Darauf
+  // das Gradnetz, dann Land, dann Knoten. Alles lokal aus der Projektion erzeugt
+  // — keine externe Quelle, voll GitHub-Pages-tauglich. non-scaling-stroke haelt
+  // Gitter- und Grenzlinien beim Zoomen konstant duenn.
+  gZoom.append('path').attr('class', 'mob-graticule')
+    .attr('d', path(d3.geoGraticule().step([10, 10])()))
+    .attr('vector-effect', 'non-scaling-stroke');
   const gLand = gZoom.append('g').attr('class', 'mob-land');
-  const gArcs = gZoom.append('g').attr('class', 'mob-arcs');
-  const gArcHit = gZoom.append('g').attr('class', 'mob-archits');  // unsichtbare Trefferspur
   const gNodes = gZoom.append('g').attr('class', 'mob-nodes');
 
   gLand.selectAll('path').data(countries.features).enter().append('path')
     .attr('d', path)
     .attr('fill', 'var(--color-parchment)')
     .attr('stroke', 'var(--color-sand)')
-    .attr('stroke-width', 0.6);
+    .attr('stroke-width', 0.6)
+    .attr('vector-effect', 'non-scaling-stroke');
 
-  // Zoom + Pan; der Zoom-Faktor steuert die Label-Ausduennung und haelt
-  // Beschriftung und Halo in etwa bildschirmkonstant (counter-scale). Die
-  // Untergrenze < 1 erlaubt das Herauszoomen unter den Europa-Fit, um den
-  // groesseren geografischen Kontext zu sehen.
   let currentK = 1;
   let maxShown = 1;
   const minK = 0.3, maxK = 12;
@@ -400,69 +454,10 @@ function buildMap(mapCell, countries, withGeo, state, opts) {
       currentK = ev.transform.k;
       gZoom.attr('transform', ev.transform);
       applyLabelLayer();
-      applyArcScale();
     });
   svg.call(zoom);
 
-  // Linienstaerke der Pfad-Etappen gegen den Zoom konstant halten (wie die
-  // Labels), damit die Karte beim Hineinzoomen nicht visuell zuwaechst. Der
-  // Pfeil-Marker (markerUnits=strokeWidth) skaliert dabei mit.
-  function applyArcScale() {
-    gArcs.selectAll('path').attr('stroke-width', 1.6 / currentK);
-    gArcHit.selectAll('path').attr('stroke-width', 12 / currentK);
-  }
-  // Basis-Deckkraft einer Etappe: ausserhalb des Jahresfensters fast
-  // transparent; bei Ortsauswahl werden nur die Etappen der gewaehlten Stadt
-  // betont und der Rest stark gedimmt; sonst eine ruhige mittlere Deckkraft
-  // (weniger Linien-Wirrwarr als die fruehere 0.85).
-  const arcBaseOpacity = (d) => {
-    const inWin = d.year == null || (d.year >= state.yearFrom && d.year <= state.yearTo);
-    if (!inWin) return 0.06;
-    if (state.selectedCity) {
-      return (d.from === state.selectedCity || d.to === state.selectedCity) ? 0.9 : 0.1;
-    }
-    return 0.55;
-  };
-  // Eine Etappe beim Hovern hervorheben (volle Deckkraft, nach vorn), ohne den
-  // teuren Voll-Redraw, da nur ein Pfad betroffen ist.
-  function highlightArc(d, on) {
-    const sel = gArcs.selectAll('path').filter(dd => dd === d);
-    sel.attr('opacity', on ? 1 : arcBaseOpacity(d));
-    if (on) sel.raise();
-  }
-
-  // Auf eine Landesgrenze zentrieren (exakt ueber die projizierten Polygon-
-  // Bounds), bzw. zurueck auf den Europa-Fit (Zoom-Identitaet).
-  function focusCountry(name) {
-    const feat = countries.features.find(f => f.properties && f.properties.name === name);
-    if (!feat) return;
-    const [[x0, y0], [x1, y1]] = path.bounds(feat);
-    const bw = Math.max(1, x1 - x0), bh = Math.max(1, y1 - y0);
-    const k = Math.max(minK, Math.min(maxK, 0.85 * Math.min(width / bw, height / bh)));
-    const cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
-    svg.transition().duration(650).call(zoom.transform,
-      d3.zoomIdentity.translate(width / 2 - k * cx, height / 2 - k * cy).scale(k));
-  }
-  function resetView() {
-    svg.transition().duration(650).call(zoom.transform, d3.zoomIdentity);
-  }
-  // Alle verorteten Punkte einrahmen, also auch die fernen Ausreisser (New
-  // York). Macht die sonst weit ausserhalb liegenden Punkte sichtbar.
-  function focusAll() {
-    let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
-    for (const e of withGeo) {
-      const [x, y] = projection([e.placeLon, e.placeLat]);
-      if (x < x0) x0 = x; if (x > x1) x1 = x;
-      if (y < y0) y0 = y; if (y > y1) y1 = y;
-    }
-    if (!isFinite(x0)) return;
-    const bw = Math.max(1, x1 - x0), bh = Math.max(1, y1 - y0);
-    const k = Math.max(minK, Math.min(maxK, 0.9 * Math.min(width / bw, height / bh)));
-    svg.transition().duration(650).call(zoom.transform,
-      d3.zoomIdentity.translate(width / 2 - k * (x0 + x1) / 2, height / 2 - k * (y0 + y1) / 2).scale(k));
-  }
-
-  // Zoom-Steuerung auf der Karte (oben links), analog zum Netzwerk-Tab.
+  // Zoom-Steuerung (oben links)
   const zoomCtl = el('div', { className: 'mob-zoomctl' });
   const zoomBtn = (label, title, onClick) => {
     const b = el('button', { className: 'mob-zoomctl__btn', type: 'button', title, 'aria-label': title }, label);
@@ -474,10 +469,6 @@ function buildMap(mapCell, countries, withGeo, state, opts) {
     zoomBtn('−', 'Herauszoomen', () => svg.transition().duration(200).call(zoom.scaleBy, 1 / 1.5)));
   mapCell.appendChild(zoomCtl);
 
-  // Label-Schicht: bei wenig Zoom nur die ereignisreichsten Knoten beschriften
-  // (Top-N nach Ereigniszahl), mit steigendem Zoom mehr, ab hohem Zoom alle.
-  // Die ausgewaehlte Stadt traegt immer ihr Label. Font und Halo werden gegen
-  // den Zoom skaliert, damit Beschriftung und Umriss bildschirmkonstant bleiben.
   const sichtbar = d => d.shown > 0;
   function applyLabelLayer() {
     const sel = gNodes.selectAll('g.mob-node');
@@ -498,100 +489,49 @@ function buildMap(mapCell, countries, withGeo, state, opts) {
       });
   }
 
-  // Alle verorteten Ereignisse werden als Knoten gezeichnet, auch solche weit
-  // ausserhalb Europas (per Herauszoomen erreichbar). Geografische Ausreisser
-  // (die drei New-York-Punkte, lat 43 / lon -75, ein Geocoding-Fehlmatch,
-  // Datenfehler-Register AF-01) werden gesetzt und markiert, aber nicht in die
-  // biografische Trajektorie eingewoben, damit der Pfad die Laufbahn nicht ueber
-  // einen Datenfehler verzerrt.
-  const isFar = e => !(e.placeLon > -15 && e.placeLon < 35 && e.placeLat > 34 && e.placeLat < 60);
+  // Knoten je Stadt aus den aktuell sichtbaren (Entitaet x Geo) Belegen bauen.
+  // Stadt-Schluessel case-insensitiv (mergt "wien"/"Wien"), Anzeigename = die
+  // haeufigste Originalschreibung. Ferne Ausreisser (New-York-Fehlmatch AF-01)
+  // werden als normaler Knoten gesetzt und sind per Herauszoomen erreichbar.
   function buildNodes() {
     const m = new Map();
-    const farEvents = [];
-    const farCities = new Set();
-    for (const e of withGeo) {
-      const city = cityOf(e.place);
-      const [x, y] = projection([e.placeLon, e.placeLat]);
-      if (!m.has(city)) m.set(city, { city, x, y, events: [], far: isFar(e) });
-      m.get(city).events.push(e);
-      if (isFar(e)) { farEvents.push(e); farCities.add(city); }
+    for (const o of withGeo) {
+      if (!opts.inEntity(o)) continue;
+      const cityRaw = cityOf(o.place);
+      const key = cityRaw.toLowerCase();
+      const [x, y] = projection([o.placeLon, o.placeLat]);
+      if (!m.has(key)) m.set(key, { key, x, y, occ: [], casing: new Map() });
+      const n = m.get(key);
+      n.occ.push(o);
+      n.casing.set(cityRaw, (n.casing.get(cityRaw) || 0) + 1);
     }
-    state.offMapEvents = farEvents;
-    state.offMapCities = [...farCities];
-    return { nodes: m, farCities };
+    for (const n of m.values()) {
+      n.city = [...n.casing.entries()].sort((a, b) => b[1] - a[1])[0][0];
+    }
+    return m;
   }
-  const { nodes: nodeByCity, farCities } = buildNodes();
 
-  // Zeitfarbskala fuer den Pfad (frueh hell, spaet dunkel, im Palettenton)
-  const timeColor = d3.scaleLinear().domain([opts.minYear, opts.maxYear])
-    .range(['#C9B68F', '#5B4A36']).interpolate(d3.interpolateLab).clamp(true);
-
-  // Zeichenfunktion ueber State
   function drawMap() {
-    const active = e => state.active.has(sichtOf(e));
-    const inWindow = y => y == null || (y >= state.yearFrom && y <= state.yearTo);
-
-    // ---- Pfad (Segmente) ----
-    // Die Trajektorie bleibt als Ganzes erhalten; Segmente ausserhalb des
-    // Jahresfensters werden abgeblendet, statt die Kette zu zerreissen.
-    let segments = [];
-    if (state.showPath) {
-      const seq = withGeo
-        .filter(e => active(e) && extractYear(e.date) != null && !farCities.has(cityOf(e.place)))
-        .map(e => ({ city: cityOf(e.place), y: extractYear(e.date), date: e.date }))
-        .sort((a, b) => a.y - b.y || String(a.date).localeCompare(String(b.date)));
-      let prev = null;
-      for (const v of seq) {
-        if (prev && prev.city !== v.city) {
-          segments.push({ from: prev.city, to: v.city, year: v.y });
-        }
-        prev = v;
-      }
-    }
-    const segKey = (d, i) => `${d.from}|${d.to}|${d.year}|${i}`;
-    const arcs = gArcs.selectAll('path').data(segments, segKey);
-    arcs.exit().remove();
-    arcs.enter().append('path')
-      .attr('class', 'mob-arc')
-      .attr('fill', 'none')
-      .attr('marker-end', 'url(#mob-arrow)')
-      .merge(arcs)
-        .attr('d', d => arcPath(nodeByCity.get(d.from), nodeByCity.get(d.to)))
-        .attr('stroke', d => timeColor(d.year))
-        .attr('stroke-width', 1.6 / currentK)
-        .attr('opacity', d => arcBaseOpacity(d));
-
-    // Breite, unsichtbare Trefferspur unter den Knoten: macht die duennen
-    // Linien robust hoverbar, ohne die Knoten-Hover zu stehlen.
-    const hits = gArcHit.selectAll('path').data(segments, segKey);
-    hits.exit().remove();
-    hits.enter().append('path')
-      .attr('class', 'mob-archit')
-      .attr('fill', 'none')
-      .attr('stroke', 'transparent')
-      .on('mouseenter', (event, d) => { showArcTip(event, d); highlightArc(d, true); })
-      .on('mousemove', (event, d) => showArcTip(event, d))
-      .on('mouseleave', (event, d) => { hideTip(); highlightArc(d, false); })
-      .merge(hits)
-        .attr('d', d => arcPath(nodeByCity.get(d.from), nodeByCity.get(d.to)))
-        .attr('stroke-width', 12 / currentK);
-
-    // ---- Knoten ----
-    // shown = aktive Ereignisse im Jahresfenster (steuert Groesse, Label,
-    // Sichtbarkeit). active = aktive Ereignisse ueber alle Jahre (Halbschatten
-    // fuer Orte, die ausserhalb des Fensters liegen, aber zur Auswahl gehoeren).
-    const nodes = [...nodeByCity.values()].map(n => {
-      const evsActive = n.events.filter(active);
-      const evsWin = evsActive.filter(e => inWindow(extractYear(e.date)));
-      const breakdown = breakdownByView(evsActive.length ? evsActive : n.events);
-      return { ...n, active: evsActive.length, shown: evsWin.length,
-        dom: breakdown.length ? breakdown[0].id : KONTEXT.id, breakdown,
-        firstYear: firstYear(evsActive), lastYear: lastYear(evsActive) };
+    const nodeByKey = buildNodes();
+    const nodes = [...nodeByKey.values()].map(n => {
+      const evsWin = n.occ.filter(opts.inWindow);
+      // Anteile aus den Belegen im Zeitfenster (sonst aus allen), damit der
+      // Zeitfilter die Tortenstuecke mitfiltert.
+      const breakdown = breakdownByView(evsWin.length ? evsWin : n.occ);
+      // Verortungs-Stufe des Knotens (entitaetsgefiltert): approx = keine
+      // gesicherte Koordinate hier (nur stadtgenau hochgerollt); far = nur weit
+      // entfernte Belege (Fehlmatch-Verdacht). Steuert den Ring-Stil.
+      const nSecured = n.occ.filter(o => o.placement === 'secured').length;
+      const nFar = n.occ.filter(o => o.placement === 'far').length;
+      return { ...n, total: n.occ.length, shown: evsWin.length,
+        dom: breakdown.length ? breakdown[0].id : KONTEXT_ID, breakdown,
+        approx: nSecured === 0, far: nFar > 0 && nSecured === 0,
+        firstYear: firstYear(n.occ), lastYear: lastYear(n.occ) };
     });
     maxShown = 1;
     for (const n of nodes) maxShown = Math.max(maxShown, n.shown);
 
-    const sel = gNodes.selectAll('g.mob-node').data(nodes, d => d.city);
+    const sel = gNodes.selectAll('g.mob-node').data(nodes, d => d.key);
     sel.exit().remove();
     const enter = sel.enter().append('g').attr('class', 'mob-node')
       .style('cursor', 'pointer')
@@ -599,67 +539,90 @@ function buildMap(mapCell, countries, withGeo, state, opts) {
       .on('mouseenter', (event, d) => showNodeTip(event, d))
       .on('mousemove', (event, d) => showNodeTip(event, d))
       .on('mouseleave', hideTip);
-    enter.append('circle');
+    enter.append('g').attr('class', 'mob-node__pie');
+    enter.append('circle').attr('class', 'mob-node__ring');
     enter.append('text');
+    // Groesserer Mindestradius, damit auch Orte mit nur einem Beleg klar sichtbar
+    // sind (Kritik: minimale Datensaetze kaum erkennbar). sqrt-Skala von 7 bis 24.
+    const radiusOf = d => d.shown === 0 ? 4 : 7 + Math.round(17 * Math.sqrt(d.shown / maxShown));
     const merged = enter.merge(sel)
       .attr('transform', d => `translate(${d.x},${d.y})`)
-      .attr('opacity', d => {
-        if (d.active === 0) return 0.12;
-        if (d.shown === 0) return 0.2;
-        return 1;
-      });
-    merged.select('circle')
-      .attr('r', d => d.shown === 0 ? 3 : 4 + Math.round(9 * Math.sqrt(d.shown / maxShown)))
-      // style() statt attr(): der Wert ist `var(--color-sicht-*)`, SVG-Attribute
-      // wuerden var() nicht aufloesen (analog Netzwerk-Knoten).
-      .style('fill', d => colorOf(d.dom))
-      .attr('fill-opacity', 0.82)
-      .attr('stroke', d => state.selectedCity === d.city ? '#1a1a1a' : '#fff')
-      .attr('stroke-width', d => state.selectedCity === d.city ? 2.4 : 1);
+      .attr('opacity', d => d.shown === 0 ? 0.3 : 1);
+
+    // Tortensegmente je Sicht. shown===0 (ausserhalb des Zeitfensters) -> kein
+    // Pie, nur der gedaempfte Basis-Dot ueber den Ring. vector-effect haelt die
+    // Trennlinien beim Zoomen konstant duenn.
+    merged.each(function (d) {
+      const g = d3.select(this).select('.mob-node__pie');
+      arcGen.innerRadius(0).outerRadius(radiusOf(d));
+      const data = d.shown === 0 ? [] : pieGen(d.breakdown);
+      const slices = g.selectAll('path').data(data, s => s.data.id);
+      slices.exit().remove();
+      slices.enter().append('path')
+        .merge(slices)
+        .attr('d', arcGen)
+        .style('fill', s => s.data.color)
+        .attr('fill-opacity', 0.9)
+        .attr('stroke', '#fff')
+        .attr('stroke-width', 1)
+        .attr('vector-effect', 'non-scaling-stroke');
+    });
+
+    // Ring drueckt die Verortungs-Sicherheit aus: durchgezogen = gesichert,
+    // gestrichelt = stadtgenau (hochgerollt), gestrichelt-warnfarben = weit/
+    // pruefen (Fehlmatch-Verdacht). Auswahl uebersteuert mit KUG-blauem Ring.
+    // non-scaling-stroke haelt die Ringstaerke beim Zoomen konstant.
+    const ringStroke = d => {
+      if (state.selectedCity === d.city) return 'var(--color-kug-blau)';
+      if (d.far) return '#A6552F';
+      if (d.approx) return 'var(--color-sand)';
+      return d.shown === 0 ? '#fff' : 'rgba(40,30,20,0.25)';
+    };
+    merged.select('.mob-node__ring')
+      .attr('r', radiusOf)
+      .attr('vector-effect', 'non-scaling-stroke')
+      .style('fill', d => d.shown === 0 ? colorOf(d.dom) : 'none')
+      .attr('fill-opacity', d => d.shown === 0 ? 0.5 : 0)
+      .style('stroke', ringStroke)
+      .attr('stroke-width', d => state.selectedCity === d.city ? 3
+        : (d.far || d.approx ? 1.5 : (d.shown === 0 ? 1 : 0.8)))
+      .attr('stroke-dasharray', d => (state.selectedCity !== d.city && (d.far || d.approx)) ? '3 2' : null);
     merged.select('text')
       .text(d => d.city)
-      .attr('x', d => 6 + Math.round(9 * Math.sqrt(Math.max(1, d.shown) / maxShown)))
+      .attr('x', d => radiusOf(d) + 3)
       .attr('y', 4)
       .attr('class', 'mob-node__label');
 
-    // Label-Sichtbarkeit und Zoom-Gegenskalierung zentral (auch im Zoom-Handler).
     applyLabelLayer();
   }
 
-  return { draw: drawMap, focusCountry, resetView, focusAll };
+  return { draw: drawMap };
 }
 
-function arcPath(a, b) {
-  if (!a || !b) return '';
-  const dx = b.x - a.x, dy = b.y - a.y;
-  const dr = Math.hypot(dx, dy);
-  // leicht gekruemmt, damit Hin- und Rueckwege nicht uebereinanderliegen
-  const cx = (a.x + b.x) / 2 - dy * 0.12;
-  const cy = (a.y + b.y) / 2 + dx * 0.12;
-  // Endpunkt etwas vor dem Knoten, damit der Pfeil nicht im Kreis steckt
-  const t = dr > 0 ? Math.min(10, dr * 0.18) / dr : 0;
-  const ex = b.x - dx * t, ey = b.y - dy * t;
-  return `M${a.x},${a.y} Q${cx},${cy} ${ex},${ey}`;
+// Segmente fuer den gestapelten Proportionsbalken: [{ pct, color, label, count }].
+// Geteilt zwischen Hover-Tooltip (HTML) und Klick-Detail (DOM).
+function barSegments(breakdown) {
+  const sum = breakdown.reduce((s, b) => s + b.count, 0) || 1;
+  return breakdown.map(b => ({ pct: b.count / sum * 100, color: b.color, label: b.label, count: b.count }));
 }
 
-// Sicht-Aufschluesselung eines Knotens, absteigend nach Haeufigkeit. Das erste
-// Element ist die dominante Sicht (Knotenfarbe), die ganze Liste der Mix.
-function breakdownByView(evs) {
+// Sicht-Aufschluesselung eines Knotens, absteigend nach Haeufigkeit.
+function breakdownByView(occ) {
   const c = new Map();
-  for (const ev of evs) { const id = sichtOf(ev); c.set(id, (c.get(id) || 0) + 1); }
+  for (const o of occ) { const id = sichtOf(o); c.set(id, (c.get(id) || 0) + 1); }
   return [...c.entries()]
     .map(([id, count]) => {
-      const t = TYPE_BY_ID.get(id) || KONTEXT;
+      const t = TYPE_BY_ID.get(id) || TYPE_BY_ID.get(KONTEXT_ID);
       return { id, label: t.label, color: t.color, count };
     })
     .sort((a, b) => b.count - a.count);
 }
-function firstYear(evs) {
-  const ys = evs.map(e => extractYear(e.date)).filter(y => y != null);
+function firstYear(occ) {
+  const ys = occ.map(o => extractYear(o.date)).filter(y => y != null);
   return ys.length ? Math.min(...ys) : null;
 }
-function lastYear(evs) {
-  const ys = evs.map(e => extractYear(e.date)).filter(y => y != null);
+function lastYear(occ) {
+  const ys = occ.map(o => extractYear(o.date)).filter(y => y != null);
   return ys.length ? Math.max(...ys) : null;
 }
 function escapeHtml(s) {
@@ -668,51 +631,11 @@ function escapeHtml(s) {
 }
 
 // ---------------------------------------------------------------------------
-// Listen-Helfer (Statuszeile, Ortsauswahl, Sonderfaelle)
+// Listen-Helfer (Ortsauswahl)
 // ---------------------------------------------------------------------------
 
-function makeUnverortetButton(unverortet, state, region, rerender) {
-  const btn = el('button', { className: 'mob-flag mob-flag--unverortet', type: 'button' },
-    `${unverortet.length} unverortet`);
-  btn.addEventListener('click', () => {
-    const chips = el('div', { className: 'mob-chips' });
-    for (const ev of sortEvents(unverortet.filter(e => state.active.has(sichtOf(e)))))
-      chips.appendChild(buildEventChip(ev));
-    clear(region);
-    region.appendChild(el('div', { className: 'mob-detail__head' },
-      el('h3', { className: 'mob-detail__title' }, 'Unverortete Ereignisse'),
-      el('button', { className: 'mob-detail__clear', type: 'button', onClick: rerender }, 'zurück')));
-    region.appendChild(chips);
-  });
-  return btn;
-}
-
-function makeOffMapButton(state, region, rerender, onFocus) {
-  const evs = state.offMapEvents || [];
-  const cities = state.offMapCities || [];
-  const btn = el('button', { className: 'mob-flag mob-flag--offmap', type: 'button',
-    title: 'Weit ausserhalb Europas verortet, mutmasslich ein Geocoding-Fehlmatch. Klick rahmt alle Punkte ein.' },
-    `${evs.length} weit entfernt`);
-  btn.addEventListener('click', () => {
-    if (onFocus) onFocus();
-    const chips = el('div', { className: 'mob-chips' });
-    for (const ev of sortEvents(evs.filter(e => state.active.has(sichtOf(e)))))
-      chips.appendChild(buildEventChip(ev));
-    clear(region);
-    region.appendChild(el('div', { className: 'mob-detail__head' },
-      el('h3', { className: 'mob-detail__title' }, 'Weit entfernt verortet'),
-      el('button', { className: 'mob-detail__clear', type: 'button', onClick: rerender }, 'zurück')));
-    if (cities.length) {
-      region.appendChild(el('div', { className: 'mob-detail__note' },
-        `${cities.join(', ')}: weit ausserhalb Europas verortet, lat/lon deuten auf einen Geocoding-Fehlmatch (Datenfehler-Register AF-01). Die Punkte sind auf der Karte gesetzt und per Herauszoomen erreichbar, aber nicht in den Pfad eingewoben.`));
-    }
-    region.appendChild(chips);
-  });
-  return btn;
-}
-
-function sortEvents(evs) {
-  return evs.slice().sort((a, b) => {
+function sortOcc(occ) {
+  return occ.slice().sort((a, b) => {
     const ya = extractYear(a.date), yb = extractYear(b.date);
     if (ya != null && yb != null && ya !== yb) return ya - yb;
     if (ya != null && yb == null) return -1;
@@ -722,47 +645,20 @@ function sortEvents(evs) {
   });
 }
 
-function buildEventChip(ev) {
-  const date = ev.date ? (formatDate(ev.date) || ev.date) : '—';
-  const place = ev.place || 'unbekannt';
-  const reason = !hasGeo(ev) ? (ev.placeWikidata ? 'Q-ID ohne Koordinaten' : 'ohne Q-ID') : null;
+function buildOccChip(o) {
+  const date = o.date ? (formatDate(o.date) || o.date) : '—';
+  const place = o.place || 'unbekannt';
+  // Verortungs-Notiz: macht die Sicherheit der Platzierung pro Beleg sichtbar.
+  const note = o.placement === 'city' ? 'stadtgenau'
+    : o.placement === 'far' ? 'weit · prüfen'
+    : o.placement === 'unlocatable' ? (o.placeWikidata ? 'Q-ID ohne Koordinaten' : 'ohne Koordinate')
+    : null;
   return buildRoleChip({
-    prefix: ev.role || 'EVENT',
-    value: `${place} · ${date}${reason ? ' · ' + reason : ''}`,
-    xlsxSource: ev.xlsxSource,
-    wikidata: ev.placeWikidata,
-    tip: ev.id,
-    onClick: () => { if (ev.recordId) window.location.hash = '#bestand/' + encodeURIComponent(ev.recordId); },
+    prefix: o.role || (o.source === 'ste' ? 'EREIGNIS' : 'ORT'),
+    value: `${place} · ${date}${note ? ' · ' + note : ''}`,
+    xlsxSource: o.xlsxSource,
+    wikidata: o.placeWikidata,
+    tip: o.recordId || '',
+    onClick: () => { if (o.recordId) window.location.hash = '#bestand/' + encodeURIComponent(o.recordId); },
   });
-}
-
-// ---------------------------------------------------------------------------
-// Einklappbare Voll-Liste (Pruefbarkeit)
-// ---------------------------------------------------------------------------
-
-function buildBackbone(events) {
-  const byType = new Map();
-  for (const ev of events) {
-    const t = sichtOf(ev);
-    if (!byType.has(t)) byType.set(t, []);
-    byType.get(t).push(ev);
-  }
-  const details = el('details', { className: 'mob-backbone' });
-  details.appendChild(el('summary', { className: 'mob-backbone__summary' },
-    `Alle ${events.length} Ereignisse als Liste`));
-  for (const t of ALL_TYPES) {
-    const evs = byType.get(t.id) || [];
-    if (evs.length === 0) continue;
-    const block = el('div', { className: 'mob-backbone__block' });
-    const sw = el('span', { className: 'mob-backbone__swatch' });
-    sw.style.background = t.color;
-    block.appendChild(el('div', { className: 'mob-backbone__head' },
-      sw, el('span', { className: 'mob-backbone__label' }, t.label),
-      el('span', { className: 'mob-backbone__count' }, String(evs.length))));
-    const chips = el('div', { className: 'mob-chips' });
-    for (const ev of sortEvents(evs)) chips.appendChild(buildEventChip(ev));
-    block.appendChild(chips);
-    details.appendChild(block);
-  }
-  return details;
 }
