@@ -571,7 +571,6 @@ def build_workbook(out, path):
         ["Hilfsspalten (vor dem finalen Pipeline-Lauf entfernbar):", ""],
         ["block", "Zeilen aus EINER Altzeile teilen denselben block; Hilfe beim Vergeben der aktivitaet_id pro Beteiligung."],
         ["review", "Pruefhinweis (siehe unten)."],
-        ["quelle-alt", "Herkunft in der Alt-Tabelle (Blatt:Zeile) zur Rueckverfolgung."],
         ["", ""],
         ["review-Werte", "Bedeutung"],
         ["komposit", "Aus einer Kompositzelle aufgetrennt (Partie+Saenger oder ort+datum)."],
@@ -598,7 +597,7 @@ def build_workbook(out, path):
 
     # --- per box ---
     cols = ["archivsignatur", "Folio", "aktivitaet_id", "typ", "value",
-            "anmerkung", "block", "review", "quelle-alt"]
+            "anmerkung", "block", "review"]
     by_sheet = defaultdict(list)
     for r in out:
         by_sheet[r["_sheet"]].append(r)
@@ -609,7 +608,7 @@ def build_workbook(out, path):
         for r in by_sheet[sheetname]:
             sh.append([
                 r["archivsignatur"], r["Folio"], r["aktivitaet_id"], r["typ"],
-                r["value"], r["anmerkung"], r["_block"], r["_flag"], r["_prov"],
+                r["value"], r["anmerkung"], r["_block"], r["_flag"],
             ])
         # aktivitaet_id (col C) as plain text -> no numeric coercion in Sheets
         for cell in sh["C"]:
