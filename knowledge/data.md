@@ -5,9 +5,9 @@ project:
   repository: https://github.com/DigitalHumanitiesCraft/m3gim
 status: complete
 language: de
-version: 0.2
+version: 0.3
 created: 2026-02-19
-updated: 2026-06-17
+updated: 2026-06-25
 authors: [Christopher Pollin]
 generated-with: Claude Code
 method:
@@ -50,6 +50,7 @@ Das Dokument definiert die Entitätsklassen, Relationen, Vokabulare und Normalis
 |---|---|---|
 | `rico` | `https://www.ica.org/standards/RiC/ontology#` | Archivisches Kernmodell |
 | `ric-rst` | `https://www.ica.org/standards/RiC/vocabularies/recordSetTypes#` | RiC-O RecordSetType-Werte (Fonds, File) |
+| `crm` | `http://www.cidoc-crm.org/cidoc-crm/` | CIDOC-CRM-Oberklassen (E7 Activity) für das Occurrence-Modell |
 | `m3gim` | `https://dhcraft.org/m3gim/vocab#` | Projekterweiterung: Werke, Aufführungen, Bühnenrollen, Mobilität |
 | `m3gim-dft` | `https://dhcraft.org/m3gim/documentaryFormTypes#` | SKOS-ConceptScheme Dokumenttypen |
 | `m3gim-role` | `https://dhcraft.org/m3gim/roles#` | SKOS-ConceptScheme Relationsrollen |
@@ -155,6 +156,8 @@ Die Spalte `datenpunkt_id` hebt diese Bündelung auf eine eigene Ebene. Sie ist 
 Die Pipeline gruppiert die Zeilen nach `(archivsignatur, folio, datenpunkt_id)` und erzeugt je Gruppe eine Occurrence. Die bestehenden Aspekt-Klassen werden zu ihren Facetten — `m3gim:SpatiotemporalEvent` trägt Ort und Zeit, `m3gim:Performance` Werk und Partie, `m3gim:DetailAnnotation` den Betrag. Der Record bezeugt die Occurrence über `m3gim:attests` (Abschnitt 7), statt sie zu enthalten, damit dieselbe Occurrence später aus mehreren Dokumenten belegt werden kann.
 
 Der Auftrittsmodus (Gastspiel, Tournee) gehört über `m3gim:mode` an die Occurrence, nicht als konkurrierender Rollenwert an die einzelne Orts-, Werk- oder Institutionszeile. Die Unterscheidung auswärts gegen am Haus folgt zusätzlich aus dem Vergleich von `m3gim:atPlace` mit dem Institutionssitz (`m3gim:sitz`) und wird nicht eigens erfasst. Die konkrete Erfassungskonvention steht in [data-entry-guidelines.md](data-entry-guidelines.md).
+
+Seit E-127 ist diese Identität zweistufig verfeinert: die Erfassungsspalte heißt `aktivitaet_id`, eine Ganzzahl bündelt die Aktivität (Occurrence), eine zweistellige Dezimale `1.01` ff. die einzelne Beteiligung daran. Die einstufige `datenpunkt_id` (eine Nummer je Auftritt) bleibt als Lesepfad gültig, bis die Pipeline umgestellt ist; das Beteiligungs- und Besetzungsmodell steht in Abschnitt 7 (Zielmodell v2).
 
 ## 5. Rollenvokabular
 
@@ -403,7 +406,8 @@ Hierarchie.
 | `m3gim:StageRole` | `rico:Thing` | Bühnenrolle als eigenständige Entität | **neu** |
 | `m3gim:SpatiotemporalEvent` | `rico:Event` | raumzeitliches Mobilitätsereignis | **neu** |
 | `m3gim:DatedEvent` | `rico:Event` | Fallback für Datumsrollen ohne typisierte Property | **neu**, optional |
-| `m3gim:Occurrence` | `rico:Event` | Vorkommnis-Bündelknoten (Auftritt) je `datenpunkt_id`, an dem die Aspekt-Facetten zusammenlaufen | **neu**, Spec; Pipeline ausstehend (E-125) |
+| `m3gim:Occurrence` | `rico:Event`, `crm:E7_Activity` | Vorkommnis-Bündelknoten (Auftritt) je Aktivität, an dem die Aspekt-Facetten zusammenlaufen; domänenspezifische Unterklasse der CIDOC-CRM-Activity | **neu**, Spec; Pipeline ausstehend (E-125/E-128) |
+| `m3gim:Participation` | — | Beteiligung: bindet eine mitwirkende Partei mit Funktion und gesungener Partie an eine Aufführung (je `1.0n`-Ebene der `aktivitaet_id`) | **neu**, Spec (E-128) |
 
 ### Begründung der neuen Klassen
 
@@ -414,6 +418,29 @@ Hierarchie.
 `m3gim:DatedEvent` ist Fallback für Datumsangaben, die nicht durch eine typisierte Property abgedeckt sind, insbesondere für klammer- und fragezeichen-unsichere Datierungen (etwa `1957-[05-27?]`). Primär wird die Property-Familie (siehe unten) verwendet.
 
 `m3gim:Occurrence` ist der Bündelknoten, der die dokumentzentrierte Erfassung um eine Auftritts-Ebene ergänzt (Abschnitt 4). Über die `datenpunkt_id` gruppiert er die Aspekt-Klassen, also SpatiotemporalEvent für Ort und Zeit, Performance für Werk und Partie, DetailAnnotation für den Betrag und die beteiligten Agenten, zu einem Auftritt. So wird „wer hat was getan" auch dort rekonstruierbar, wo ein Dokument mehrere Auftritte bündelt. Der Name Occurrence statt Event ist bewusst weiter gefasst, weil nicht jedes Vorkommnis raumzeitlich ist, etwa ein Vertrag. Die Aspekt-Klassen bleiben als Facetten erhalten, die Occurrence liegt eine Ebene darüber.
+
+### Zielmodell v2: zweistufige Identität und Besetzung (E-127/E-128)
+
+Diese Sektion beschreibt den Zielzustand. Der bestehende einstufige Stand (`datenpunkt_id`, Occurrence subClassOf `rico:Event`) bleibt gültig und lauffähig, bis die Pipeline umgestellt ist; alt und neu laufen parallel, das Ziel ist neu.
+
+**Zweistufige Identität.** Die Erfassungs-ID ist seit E-127 zweistufig. Eine Ganzzahl identifiziert die Aktivität (= Occurrence), eine zweistellige Dezimale `1.01` ff. die einzelne Beteiligung daran. Die `@id` der Occurrence kommt aus `(archivsignatur, folio, aktivität)`, die der Beteiligung aus `(occurrence, beteiligungsnummer)`. Das löst die einstufige `datenpunkt_id` als Identitätsträger ab.
+
+**CIDOC-CRM-Anschluss.** `m3gim:Occurrence` ist zusätzlich `rdfs:subClassOf crm:E7_Activity`, neben der bestehenden `rico:Event`-Oberklasse. `crm:E7_Activity` ist die etablierte Oberklasse für zielgerichtetes Geschehen (Aufführung, Gastspiel, Vertrag); `m3gim:Occurrence` ist die domänenspezifische Unterklasse. Das schließt an die schon genutzte CIDOC-CRM-`P70`-Bezeugungslogik (`m3gim:attests`) an.
+
+**Beteiligung als Knoten.** Jede Beteiligung (`1.0n`) wird eine `m3gim:Participation`, die genau eine mitwirkende Partei mit ihrer Funktion und, bei Sänger:innen, ihrer gesungenen Partie an der Aufführung bindet. Damit ist „X sang Y als Z" rekonstruierbar, was im flachen Modell verloren ging.
+
+- `m3gim:performedBy` → die Person, das Ensemble oder die Organisation.
+- `m3gim:inFunction` → die Funktion als `m3gim-role:`-Wert (sänger:in, dirigent:in), kontrolliert.
+- `m3gim:playsStageRole` → die gesungene Partie als geteilte `m3gim:StageRole`, optional, nur wo eine Partie genannt ist.
+- `m3gim:hasFee` → das Honorar als `m3gim:DetailAnnotation`, optional.
+
+**StageRole bleibt geteilt.** Die Partie (`m3gim:role_fricka`) ist ein wiederverwendeter Konzeptknoten, sodass „wer sang Fricka über die Jahre" beantwortbar bleibt; die konkrete Besetzung sitzt an der Participation, nicht an der StageRole. Das behebt den heutigen Zustand, in dem StageRole-Knoten global und ohne Sänger- und Aufführungsbezug sind.
+
+**Eine Aufführung trägt die ganze Besetzung.** Je Aktivität eine `m3gim:Performance` mit der Liste ihrer Beteiligungen über `m3gim:hasParticipation`, nicht je Person-Rollen-Paar eine eigene Performance. Werk, Ort und Datum hängen als Facetten an der Occurrence.
+
+**Geld.** `m3gim:hasFee` bindet das Honorar an die Beteiligung der Person; `einnahmen`/`ausgaben`/`summe` bleiben Veranstaltungsfinanzen an der Occurrence über `m3gim:hasDetail`.
+
+**Sprache.** Neue Properties sind englisch benannt, anschlussfähig zu rico, agrelon und crm. Die deutschen Bestandsproperties (`partie`, `bearbeitungsstand`, die `*datum`-Familie) wandern im Zuge der Umstellung nach und bleiben bis dahin gültig (E-128 löst die offene Sprachentscheidung auf Englisch auf).
 
 ### Identität der neuen Entitäten
 
@@ -440,6 +467,11 @@ Hierarchie.
 | `m3gim:hasDetail` | Record/Performance → DetailAnnotation | Verweis auf Detailebene |
 | `m3gim:attachedTo` | DetailAnnotation → Performance/Record | Rückreferenz |
 | `m3gim:attests` | Record → Occurrence | Record bezeugt ein Vorkommnis (nicht „enthält"; folgt der CIDOC-CRM-`P70`-Logik, Abschnitt 4) |
+| `m3gim:hasParticipation` | Performance/Occurrence → Participation | Besetzungsbindung einer Aufführung (E-128) |
+| `m3gim:performedBy` | Participation → Person/Group/CorporateBody | mitwirkende Partei der Beteiligung (E-128) |
+| `m3gim:inFunction` | Participation → `m3gim-role:`-Concept | Funktion in der Aufführung, kontrolliert (E-128) |
+| `m3gim:playsStageRole` | Participation → StageRole | gesungene Partie, optional (E-128) |
+| `m3gim:hasFee` | Participation → DetailAnnotation | Honorar der Beteiligung, optional (E-128) |
 
 Die Facetten-Relationen `m3gim:hasAssociatedAgent`, `m3gim:hasSpatiotemporalEvent`, `m3gim:hasPerformance` und `m3gim:hasDetail` bekommen mit dem Occurrence-Modell `m3gim:Occurrence` als zusätzliche Domain. Trägt eine Zeile eine `datenpunkt_id`, hängen sie an der Occurrence; ohne `datenpunkt_id` bleiben sie am Record (Dokument-Default).
 
