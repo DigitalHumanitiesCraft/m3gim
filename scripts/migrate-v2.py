@@ -103,7 +103,7 @@ def load_source(prefix):
         hdr = [lower(h) for h in next(it)]
         for i, r in enumerate(it):
             sig = norm(r[0])
-            if not sig.startswith(prefix):
+            if not sig or not sig.startswith(prefix):
                 continue
             d = dict(zip(hdr, r))
             # skip fully empty spreadsheet artifact rows (no data at all)
@@ -116,6 +116,7 @@ def load_source(prefix):
                 "name": norm(d.get("name")),
                 "rolle": norm(d.get("rolle")),
                 "anmerkung": norm(d.get("anmerkung")),
+                "sheet": ws.title,
                 "prov": f"{ws.title}:{i}",
             })
     wb.close()
@@ -154,6 +155,7 @@ def emit(out, src, block, typ, value, anm="", flag=""):
         "_block": block,
         "_prov": src["prov"],
         "_flag": flag,
+        "_sheet": src["sheet"],
     })
 
 
@@ -163,6 +165,29 @@ def transform_row(src, block, pidx, out):
     name = src["name"]
     anm = src["anmerkung"]
     flags = []
+
+    # ---- composite: "datum, werk" ---------------------------------------
+    if typ == "datum, werk":
+        head, sep, tail = name.partition(",")
+        dval, dflag = norm_date(head.strip())
+        emit(out, src, block, "datum", dval, anm, ("komposit " + dflag).strip())
+        if tail.strip():
+            emit(out, src, block, "werk", tail.strip(), anm, "komposit")
+        return
+
+    # ---- money composite: "einnahmen|ausgaben|summe, waehrung" -----------
+    if typ in ("einnahmen, währung", "ausgaben, währung", "summe, währung"):
+        base = typ.split(",")[0].strip()
+        amount, curr = split_money(name)
+        canon = FUNKTION_ALIASES.get(rolle, rolle)
+        # payment qualifier (abendgage, gage) is not a person function -> note it
+        qual = "" if not rolle or canon in FUNKTION_ROLES else rolle
+        emit(out, src, block, base, amount, join_anm(anm, qual), "geld komposit")
+        if curr:
+            emit(out, src, block, "währung", curr, "", "komposit")
+        if canon in FUNKTION_ROLES:
+            emit_funktion(out, src, block, rolle)
+        return
 
     # ---- composite: "ort, datum" ----------------------------------------
     if typ == "ort, datum":
@@ -197,9 +222,11 @@ def transform_row(src, block, pidx, out):
     if typ == "rolle":
         flag = "erwaehnung" if rolle in MENTION_ROLES else (
             "aktivitaet-trigger" if rolle in TRIGGER_ROLES else "")
-        # preserve the legacy qualifier if it is neither mention nor trigger
-        qual = "" if rolle in MENTION_ROLES | TRIGGER_ROLES else rolle
+        canon = FUNKTION_ALIASES.get(rolle, rolle)
+        # a function role on a bare partie row pertains to the (unnamed) singer
+        qual = "" if rolle in MENTION_ROLES | TRIGGER_ROLES or canon in FUNKTION_ROLES else rolle
         emit(out, src, block, "rolle", name, join_anm(anm, qual), flag)
+        emit_funktion(out, src, block, rolle)
         return
 
     # ---- date row (typ=Datum) -------------------------------------------
@@ -253,6 +280,16 @@ def transform_row(src, block, pidx, out):
     # ---- ereignis row ----------------------------------------------------
     if typ == "ereignis":
         emit(out, src, block, "ereignis", name, anm)
+        emit_funktion(out, src, block, rolle)
+        return
+
+    # ---- dokument row ----------------------------------------------------
+    if typ == "dokument":
+        if rolle in MENTION_ROLES:
+            emit(out, src, block, "dokument", name, anm, "vokab erwaehnung")
+        else:
+            emit(out, src, block, "dokument", name, anm, "vokab")
+            emit_funktion(out, src, block, rolle)
         return
 
     # ---- werk row --------------------------------------------------------
@@ -292,6 +329,18 @@ def norm_date(raw):
     return s, "datum-format"  # ranges / free text: keep verbatim, flag
 
 
+MONEY = re.compile(r"^\s*([\d][\d.,]*?)\s*[,\s]\s*(.+?)\s*$")
+
+
+def split_money(raw):
+    """Split 'AMOUNT, CURRENCY' verbatim; numeric normalization is deferred to
+    the human/pipeline. Returns (amount_str, currency_str|"")."""
+    m = MONEY.match(raw)
+    if m:
+        return m.group(1).strip(), m.group(2).strip()
+    return raw.strip(), ""  # no currency token: keep amount verbatim
+
+
 # --------------------------------------------------------------------------- #
 # driver
 # --------------------------------------------------------------------------- #
@@ -306,19 +355,11 @@ def migrate(prefix):
 
 
 def write_outputs(prefix, out):
+    """Flat CSV export (provenance preserved) for testing and diffing."""
     OUTDIR.mkdir(parents=True, exist_ok=True)
     safe = prefix.replace("/", "_")
-    # XLSX
-    wb = openpyxl.Workbook()
-    ws = wb.active
-    ws.title = "verknuepfungen-v2"
-    ws.append(OUT_COLS)
-    for r in out:
-        ws.append([r[c] for c in OUT_COLS])
-    wb.save(OUTDIR / f"{safe}.xlsx")
-    # CSV
     with open(OUTDIR / f"{safe}.csv", "w", newline="", encoding="utf-8") as f:
-        w = csv.DictWriter(f, fieldnames=OUT_COLS)
+        w = csv.DictWriter(f, fieldnames=OUT_COLS + ["_sheet"])
         w.writeheader()
         w.writerows(out)
     return safe
@@ -446,15 +487,157 @@ def write_report(prefix, src_rows, out, results, gold):
     return "\n".join(lines)
 
 
+# --------------------------------------------------------------------------- #
+# Vokabular-Glossar (Dropdown-Quelle + Definitionen + Ziel-Property)
+# --------------------------------------------------------------------------- #
+# ebene, term, definition, ziel-property, status. status=offen markiert noch
+# zu bestaetigende Vokabular-Entscheidungen fuer den Operator.
+VOKABULAR = [
+    ("typ", "werk", "Musikalisches oder szenisches Werk (Oper, Lied), das aufgefuehrt, erwaehnt oder dokumentiert wird.", "rico:Record / m3gim:Work", "ok"),
+    ("typ", "aktivitaet", "Markerzeile einer Aktivitaet; value benennt die Art (auffuehrung, gastspiel).", "m3gim:Performance", "ok"),
+    ("typ", "ereignis", "Umgebender Rahmen einer Aktivitaet (Festival, Saison, Veranstaltung).", "m3gim:SpatiotemporalEvent", "ok"),
+    ("typ", "auffuehrungsort", "Ort, an dem die Aktivitaet stattfindet.", "m3gim:performanceLocation", "ok"),
+    ("typ", "ort", "Sonstiger Ort (Reise, Entstehung, Kontext); Subrolle in anmerkung.", "rico:Place", "ok"),
+    ("typ", "datum", "Zeitangabe im Format JJJJ-MM-TT (oder JJJJ-MM, JJJJ).", "m3gim:DatedEvent", "ok"),
+    ("typ", "person", "Einzelne mitwirkende oder genannte Person, Form 'Nachname, Vorname'.", "rico:Person", "ok"),
+    ("typ", "funktion", "Aufgabe einer Person oder eines Ensembles in der Aktivitaet (kontrolliert).", "agrelon / m3gim:StageRole", "ok"),
+    ("typ", "rolle", "Gesungene oder gespielte Partie (frei eingetragen).", "m3gim:StageRole", "ok"),
+    ("typ", "gehalt", "Geldbetrag an eine Person; blanke Zahl ohne Tausenderpunkt.", "m3gim:monetaryAmount", "ok"),
+    ("typ", "währung", "Waehrungskuerzel zum Betrag (eigene Zeile).", "m3gim:currency", "ok"),
+    ("typ", "ensemble", "Kollektiv (Chor, Orchester), wirkt wie eine Person.", "rico:Group", "ok"),
+    ("typ", "organisation", "Institution (Theater, Verlag, Firma, Sender).", "rico:CorporateBody", "offen"),
+    ("typ", "einnahmen", "Finanzposten Einnahme auf Aktivitaetsebene (aus Altdaten).", "m3gim:DetailAnnotation", "offen"),
+    ("typ", "ausgaben", "Finanzposten Ausgabe auf Aktivitaetsebene (aus Altdaten).", "m3gim:DetailAnnotation", "offen"),
+    ("typ", "summe", "Finanzposten Summe auf Aktivitaetsebene (aus Altdaten).", "m3gim:DetailAnnotation", "offen"),
+    ("typ", "dokument", "Verwiesenes Schriftstueck (Brief, Vertrag, Druck).", "rico:Record", "offen"),
+    ("aktivitaet", "aufführung", "Oeffentliche Auffuehrung eines Werks.", "", "ok"),
+    ("aktivitaet", "gastspiel", "Auswaertige Auffuehrung ausserhalb des Stammhauses.", "", "ok"),
+    ("aktivitaet", "premiere", "Erstauffuehrung einer Produktion.", "", "ok"),
+    ("aktivitaet", "probe", "Probe zu einer Produktion.", "", "ok"),
+    ("aktivitaet", "aufnahme", "Ton- oder Rundfunkaufnahme.", "", "ok"),
+    ("funktion", "sänger:in", "Singt eine Partie in der Auffuehrung.", "", "ok"),
+    ("funktion", "dirigent:in", "Musikalische Leitung der Auffuehrung.", "", "ok"),
+    ("funktion", "regisseur:in", "Szenische Leitung der Produktion.", "", "ok"),
+    ("funktion", "komponist:in", "Komponiert das aufgefuehrte Werk.", "", "ok"),
+    ("funktion", "chor", "Mitwirkendes Chor-Kollektiv.", "", "ok"),
+    ("funktion", "chorleiter:in", "Einstudierung und Leitung des Chors.", "", "ok"),
+    ("funktion", "choreograph:in", "Choreografie der Produktion.", "", "ok"),
+    ("funktion", "ausstatter:in", "Buehnen- und Kostuemausstattung.", "", "ok"),
+    ("funktion", "kostümbildner:in", "Entwurf der Kostueme.", "", "ok"),
+    ("funktion", "maskenbildner:in", "Masken und Maskenbild.", "", "ok"),
+    ("funktion", "beleuchter:in", "Beleuchtung der Auffuehrung.", "", "ok"),
+    ("funktion", "technische leitung", "Technische Gesamtleitung.", "", "ok"),
+    ("funktion", "bühnenleiter:in", "Leitung des Buehnenbetriebs.", "", "ok"),
+    ("funktion", "repetitor:in", "Musikalische Einstudierung mit Solist:innen.", "", "ok"),
+    ("funktion", "leitung", "Allgemeine Leitung, sofern nicht naeher bezeichnet.", "", "offen"),
+    ("funktion", "interpret:in", "Ausfuehrende:r bei einer Aufnahme oder einem Konzert.", "", "ok"),
+    ("funktion", "verfasser:in", "Verfasser:in eines Schriftstuecks (Brief, Vertrag).", "", "ok"),
+    ("funktion", "herausgeber:in", "Herausgeber:in eines Programms oder Drucks.", "", "ok"),
+    ("funktion", "agent:in", "Kuenstler:innenvermittlung im eigenen Auftrag.", "", "ok"),
+    ("funktion", "vermittler:in", "Vermittelnde Stelle eines Engagements.", "", "ok"),
+    ("funktion", "adressat:in", "Empfaenger:in eines Schriftstuecks.", "", "ok"),
+    ("funktion", "veranstalter:in", "Veranstaltende Institution.", "", "ok"),
+    ("funktion", "vertragspartner:in", "Partei eines Vertrags.", "", "ok"),
+    ("funktion", "fluggesellschaft", "Befoerderndes Luftfahrtunternehmen (Reisebeleg).", "", "offen"),
+]
+
+
+def vokab_terms(ebene):
+    return [t for e, t, *_ in VOKABULAR if e == ebene]
+
+
+def build_workbook(out, path):
+    """One Google-Sheets-ready workbook: Lies-mich, Vokabular, one sheet/box."""
+    from openpyxl.worksheet.datavalidation import DataValidation
+    wb = openpyxl.Workbook()
+
+    # --- Lies mich ---
+    ws = wb.active
+    ws.title = "Lies mich"
+    readme = [
+        ["M3GIM Verknuepfungen v2 — Arbeitsgrundlage", ""],
+        ["", ""],
+        ["Diese Mappe ist der gereinigte Altbestand im neuen Long-Format.", ""],
+        ["Eine Zeile = eine Aussage. Pro Box ein Blatt.", ""],
+        ["", ""],
+        ["Spalte", "Bedeutung"],
+        ["archivsignatur", "Signatur des Dokuments, je Zeile gleich."],
+        ["Folio", "Blatt, auf dem die Information steht."],
+        ["aktivitaet_id", "LEER. Wird von euch vergeben: Aktivitaet ganzzahlig (1), Beteiligung 1.01 ff. Erwaehnungen bleiben leer."],
+        ["typ", "Art der Aussage, kontrolliert (siehe Blatt Vokabular)."],
+        ["value", "Der Wert."],
+        ["anmerkung", "Hinweise, Unsicherheiten, alte Subrollen in [eckigen Klammern]."],
+        ["", ""],
+        ["Hilfsspalten (vor dem finalen Pipeline-Lauf entfernbar):", ""],
+        ["block", "Zeilen aus EINER Altzeile teilen denselben block; Hilfe beim Vergeben der aktivitaet_id pro Beteiligung."],
+        ["review", "Pruefhinweis (siehe unten)."],
+        ["quelle-alt", "Herkunft in der Alt-Tabelle (Blatt:Zeile) zur Rueckverfolgung."],
+        ["", ""],
+        ["review-Werte", "Bedeutung"],
+        ["komposit", "Aus einer Kompositzelle aufgetrennt (Partie+Saenger oder ort+datum)."],
+        ["aktivitaet-trigger", "Zeile gehoert zu einer Auffuehrung; hier eine aktivitaet_id vergeben."],
+        ["erwaehnung", "Bloss genannt, keine Beteiligung; aktivitaet_id leer lassen."],
+        ["name-form", "Name konnte nicht eindeutig auf 'Nachname, Vorname' gebracht werden; bitte pruefen."],
+        ["vokab", "Vokabular-Entscheidung offen (z. B. organisation)."],
+        ["alias", "Altschreibung automatisch korrigiert (z. B. maskenbidner -> maskenbildner)."],
+        ["", ""],
+        ["Redundanz", "Besetzungen koennen mehrfach erscheinen (bare Partie, Komposit, Personenzeile). Das ist Absicht: bare Partie ohne Komposit = Saenger:in unklar. Beim Gruppieren zusammenfuehren."],
+    ]
+    for r in readme:
+        ws.append(r)
+    ws.column_dimensions["A"].width = 22
+    ws.column_dimensions["B"].width = 95
+
+    # --- Vokabular ---
+    vk = wb.create_sheet("Vokabular")
+    vk.append(["ebene", "term", "definition", "ziel-property", "status"])
+    for row in VOKABULAR:
+        vk.append(list(row))
+    for col, w in zip("ABCDE", (12, 20, 70, 28, 8)):
+        vk.column_dimensions[col].width = w
+
+    # --- per box ---
+    cols = ["archivsignatur", "Folio", "aktivitaet_id", "typ", "value",
+            "anmerkung", "block", "review", "quelle-alt"]
+    by_sheet = defaultdict(list)
+    for r in out:
+        by_sheet[r["_sheet"]].append(r)
+    for sheetname in sorted(by_sheet):
+        safe_title = sheetname[:31]
+        sh = wb.create_sheet(safe_title)
+        sh.append(cols)
+        for r in by_sheet[sheetname]:
+            sh.append([
+                r["archivsignatur"], r["Folio"], r["aktivitaet_id"], r["typ"],
+                r["value"], r["anmerkung"], r["_block"], r["_flag"], r["_prov"],
+            ])
+        # aktivitaet_id (col C) as plain text -> no numeric coercion in Sheets
+        for cell in sh["C"]:
+            cell.number_format = "@"
+        # typ dropdown (col D) from inline list (survives Sheets import)
+        dv = DataValidation(type="list", formula1='"%s"' % ",".join(vokab_terms("typ")),
+                            allow_blank=True)
+        sh.add_data_validation(dv)
+        dv.add(f"D2:D{sh.max_row}")
+    wb.save(path)
+    return [s[:31] for s in sorted(by_sheet)]
+
+
 def main():
-    prefix = sys.argv[1] if len(sys.argv) > 1 else "UAKUG/NIM_137"
+    arg = sys.argv[1] if len(sys.argv) > 1 else "ALL"
+    prefix = "" if arg.upper() == "ALL" else arg
     src_rows, out = migrate(prefix)
-    safe = write_outputs(prefix, out)
+    safe = write_outputs(prefix or "ALL", out)
     results = run_tests(src_rows, out)
     gold = gold_7_29(src_rows, out)
-    report = write_report(prefix, src_rows, out, results, gold)
+    report = write_report(prefix or "ALL", src_rows, out, results, gold)
     print(report)
-    print(f"\nGeschrieben: data/migration/{safe}.xlsx, .csv, migration-report.md")
+    # integration-ready workbook for Google Sheets upload
+    wb_path = OUTDIR / "M3GIM-Verknuepfungen-v2.xlsx"
+    sheets = build_workbook(out, wb_path)
+    print(f"\nGeschrieben: data/migration/{safe}.csv (Flachexport)")
+    print(f"Arbeitsmappe: data/migration/{wb_path.name}")
+    print(f"  Blaetter: Lies mich, Vokabular, " + ", ".join(sheets))
     all_ok = all(ok for _, ok, _ in results)
     gold_ok = gold and gold["activity_ok"] and gold["persons_ok"]
     print(f"\nTests: {'ALLE PASS' if all_ok else 'FEHLER'} | "

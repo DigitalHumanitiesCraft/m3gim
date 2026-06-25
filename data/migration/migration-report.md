@@ -1,6 +1,6 @@
-# Migration-Report v2 — UAKUG/NIM_137
+# Migration-Report v2 — ALL
 
-Quellzeilen: 614  →  Zielzeilen: 1166
+Quellzeilen: 3514  →  Zielzeilen: 5547
 
 ## Selbsttests
 
@@ -13,12 +13,16 @@ Quellzeilen: 614  →  Zielzeilen: 1166
 
 ## Flag-Verteilung (Review-Hinweise)
 
-- aktivitaet-trigger: 120
-- alias: 10
-- erwaehnung: 25
-- komposit: 495
-- name-form: 3
-- vokab: 10
+- aktivitaet-trigger: 619
+- alias: 14
+- datum-format: 31
+- erwaehnung: 682
+- geld: 56
+- komposit: 1260
+- name-form: 6
+- ort-rolle: 62
+- unmapped: 1
+- vokab: 399
 
 ## Gold-Sample Folio 7_29 (Anleitungsbeispiel)
 
