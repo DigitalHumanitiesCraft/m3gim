@@ -546,6 +546,45 @@ def vokab_terms(ebene):
     return [t for e, t, *_ in VOKABULAR if e == ebene]
 
 
+# Handkuratiertes Vollbeispiel: Folio 7_29 (Rheingold, Bayreuth 1953-07-25),
+# wie es nach dem menschlichen Durchgang aussehen soll. aktivitaet_id vergeben,
+# Redundanz der Quelle (bare Partie + Komposit + Personenzeile) je Person zu
+# einer Beteiligung zusammengefuehrt. Keine erfundenen Werte. Tupel: (id, typ, value).
+BEISPIEL_SIG = "UAKUG/NIM_137"
+BEISPIEL_FOLIO = "7_29"
+BEISPIEL_7_29 = [
+    ("1", "aktivitaet", "aufführung"),
+    ("1", "ereignis", "Bayreuther Festspiele 1953"),
+    ("1", "werk", "Das Rheingold"),
+    ("1", "auffuehrungsort", "Bayreuth"),
+    ("1", "datum", "1953-07-25"),
+    ("1.01", "person", "Keilberth, Joseph"), ("1.01", "funktion", "dirigent:in"),
+    ("1.02", "person", "Hotter, Hans"), ("1.02", "funktion", "sänger:in"), ("1.02", "rolle", "Wotan"),
+    ("1.03", "person", "Uhde, Hermann"), ("1.03", "funktion", "sänger:in"), ("1.03", "rolle", "Donner"),
+    ("1.04", "person", "Stolze, Gerhard"), ("1.04", "funktion", "sänger:in"), ("1.04", "rolle", "Froh"),
+    ("1.05", "person", "Witte, Erich"), ("1.05", "funktion", "sänger:in"), ("1.05", "rolle", "Loge"),
+    ("1.06", "person", "Weber, Ludwig"), ("1.06", "funktion", "sänger:in"), ("1.06", "rolle", "Fasolt"),
+    ("1.07", "person", "Greindl, Josef"), ("1.07", "funktion", "sänger:in"), ("1.07", "rolle", "Fafner"),
+    ("1.08", "person", "Neidlinger, Gustav"), ("1.08", "funktion", "sänger:in"), ("1.08", "rolle", "Alberich"),
+    ("1.09", "person", "Kuen, Paul"), ("1.09", "funktion", "sänger:in"), ("1.09", "rolle", "Mime"),
+    ("1.10", "person", "Malaniuk, Ira"), ("1.10", "funktion", "sänger:in"), ("1.10", "rolle", "Fricka"),
+    ("1.11", "person", "Falcon, Bruni"), ("1.11", "funktion", "sänger:in"), ("1.11", "rolle", "Freia"),
+    ("1.12", "person", "von Ilosvay, Maria"), ("1.12", "funktion", "sänger:in"), ("1.12", "rolle", "Erda"),
+    ("1.13", "person", "Schlüter, Erna"), ("1.13", "funktion", "sänger:in"), ("1.13", "rolle", "Woglinde"),
+    ("1.14", "person", "Plümacher, Hetty"), ("1.14", "funktion", "sänger:in"), ("1.14", "rolle", "Wellgunde"),
+    ("1.15", "person", "Litz, Gisela"), ("1.15", "funktion", "sänger:in"), ("1.15", "rolle", "Floßhilde"),
+    ("1.16", "person", "Wagner, Wieland"), ("1.16", "funktion", "regisseur:in"),
+    ("1.17", "person", "Wagner, Gertrud"), ("1.17", "funktion", "regisseur:in"),
+    ("1.18", "person", "Wissner, Otto"), ("1.18", "funktion", "ausstatter:in"),
+    ("1.19", "person", "Klomp, M. Z."), ("1.19", "funktion", "kostümbildner:in"),
+    ("1.20", "person", "Klose, Willi"), ("1.20", "funktion", "maskenbildner:in"),
+    ("1.21", "person", "Krott, Josef"), ("1.21", "funktion", "maskenbildner:in"),
+    ("1.22", "person", "Eisenmenger, Arthur"), ("1.22", "funktion", "technische leitung"),
+    ("1.23", "person", "Schneider, Hugo"), ("1.23", "funktion", "beleuchter:in"),
+    ("1.24", "person", "Schubert, Willi"), ("1.24", "funktion", "beleuchter:in"),
+]
+
+
 def build_workbook(out, path):
     """One Google-Sheets-ready workbook: Lies-mich, Vokabular, one sheet/box."""
     from openpyxl.worksheet.datavalidation import DataValidation
@@ -585,6 +624,20 @@ def build_workbook(out, path):
         vk.append(list(row))
     for col, w in zip("ABCDE", (12, 20, 70, 28, 8)):
         vk.column_dimensions[col].width = w
+
+    six = ["archivsignatur", "Folio", "aktivitaet_id", "typ", "value", "anmerkung"]
+    typ_dv = '"%s"' % ",".join(vokab_terms("typ"))
+
+    # --- Beispiel 7_29 (handkuratiertes Vollbeispiel) ---
+    ex = wb.create_sheet("Beispiel 7_29")
+    ex.append(six)
+    for aid, typ, value in BEISPIEL_7_29:
+        ex.append([BEISPIEL_SIG, BEISPIEL_FOLIO, aid, typ, value, ""])
+    for cell in ex["C"]:
+        cell.number_format = "@"
+    dvx = DataValidation(type="list", formula1=typ_dv, allow_blank=True)
+    ex.add_data_validation(dvx)
+    dvx.add(f"D2:D{ex.max_row}")
 
     # --- per box ---
     cols = ["archivsignatur", "Folio", "aktivitaet_id", "typ", "value",
