@@ -568,17 +568,8 @@ def build_workbook(out, path):
         ["value", "Der Wert."],
         ["anmerkung", "Hinweise, Unsicherheiten, alte Subrollen in [eckigen Klammern]."],
         ["", ""],
-        ["Hilfsspalten (vor dem finalen Pipeline-Lauf entfernbar):", ""],
+        ["Hilfsspalte (vor dem finalen Pipeline-Lauf entfernbar):", ""],
         ["block", "Zeilen aus EINER Altzeile teilen denselben block; Hilfe beim Vergeben der aktivitaet_id pro Beteiligung."],
-        ["review", "Pruefhinweis (siehe unten)."],
-        ["", ""],
-        ["review-Werte", "Bedeutung"],
-        ["komposit", "Aus einer Kompositzelle aufgetrennt (Partie+Saenger oder ort+datum)."],
-        ["aktivitaet-trigger", "Zeile gehoert zu einer Auffuehrung; hier eine aktivitaet_id vergeben."],
-        ["erwaehnung", "Bloss genannt, keine Beteiligung; aktivitaet_id leer lassen."],
-        ["name-form", "Name konnte nicht eindeutig auf 'Nachname, Vorname' gebracht werden; bitte pruefen."],
-        ["vokab", "Vokabular-Entscheidung offen (z. B. organisation)."],
-        ["alias", "Altschreibung automatisch korrigiert (z. B. maskenbidner -> maskenbildner)."],
         ["", ""],
         ["Redundanz", "Besetzungen koennen mehrfach erscheinen (bare Partie, Komposit, Personenzeile). Das ist Absicht: bare Partie ohne Komposit = Saenger:in unklar. Beim Gruppieren zusammenfuehren."],
     ]
@@ -597,7 +588,7 @@ def build_workbook(out, path):
 
     # --- per box ---
     cols = ["archivsignatur", "Folio", "aktivitaet_id", "typ", "value",
-            "anmerkung", "block", "review"]
+            "anmerkung", "block"]
     by_sheet = defaultdict(list)
     for r in out:
         by_sheet[r["_sheet"]].append(r)
@@ -608,7 +599,7 @@ def build_workbook(out, path):
         for r in by_sheet[sheetname]:
             sh.append([
                 r["archivsignatur"], r["Folio"], r["aktivitaet_id"], r["typ"],
-                r["value"], r["anmerkung"], r["_block"], r["_flag"],
+                r["value"], r["anmerkung"], r["_block"],
             ])
         # aktivitaet_id (col C) as plain text -> no numeric coercion in Sheets
         for cell in sh["C"]:
