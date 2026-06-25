@@ -12,7 +12,7 @@ template:
   url: https://dhcraft.org/Promptotyping/promptotyping-document/plan
 status: active
 created: 2026-02-19
-updated: 2026-06-22
+updated: 2026-06-25
 language: de
 version: 0.2
 authors: [Christopher Pollin]
@@ -29,6 +29,18 @@ Dieses Dokument steuert die nächsten Arbeitsschritte des Pilotprojekts und häl
 Die Pilotstudie hat drei zusammenhängende Ziele. Sie validiert die Methodik, also die Frage, ob der Nachlass mit RiC-O 1.1 plus m3gim-Extension plus AgRelOn praktikabel und skalierbar erschließbar ist. Sie baut das Forschungsinterface schrittweise zu einem vollständigen Satz von Perspektiven aus. Und sie hebt die Datenqualität, ohne den tatsächlichen Erschließungsstand zu kaschieren. Diese drei Linien tragen den Antrag für das FWF-Folgeprojekt.
 
 ## Nächste Schritte
+
+### Erfassungsschema v2 und Migration des Altbestands (2026-06-25, E-127)
+
+Das Erfassungsschema ist auf das Long-Format mit zweistufiger `aktivitaet_id` verfeinert (E-127, operationalisiert das Occurrence-Modell E-125). Der Altbestand ist migriert, die Pipeline-Umstellung steht aus.
+
+1. **Erledigt:** Migration aller sechs Boxen ins neue Long-Format (`scripts/migrate-v2.py`), Selbsttests T1-T6 plus Gold-Sample 7_29 grün, integrationsfertige Arbeitsmappe `data/migration/M3GIM-Verknuepfungen-v2.xlsx` mit Vokabular-Glossar und Beispiel-Blatt. `aktivitaet_id` bewusst leer.
+2. **Menschlicher Durchgang (Erschließungsteam):** Mappe als Google Sheet hochladen (Post-Import-Round-Trip als Coercion-Guard), `aktivitaet_id` vergeben, Komposit-Redundanz je Beteiligung zusammenführen, die offenen Vokabular- und Namensfälle entscheiden.
+3. **Vokabular als Kontrakt:** das Vokabular-Glossar als kanonische Quelle festlegen, `data.md` verweist darauf (Redundanz auflösen); `validate.py` und die SKOS-Concepts binden dagegen.
+4. **Neuer Lesepfad:** `assemble-verknuepfungen.py` und `load_verknuepfungen` auf das neue Spaltenkontrakt umstellen, `transform.py` baut Occurrence plus Beteiligungen aus den zwei ID-Ebenen; die Altschmutz-Heuristiken (`FINANCE_CURRENCY_DEFAULTS`, Kompositzellen-Parser, `(typ,rolle)`-Disambiguierung, Folio-Ko-Lokation) entfallen.
+5. **Gate:** Äquivalenztest alt gegen neu über `audit-data.py` und den zellgenauen Crosscheck, partielle Gruppierung muss der Lesepfad tragen (gruppierte Zeilen → Performances, Rest → Mention plus Coverage-Report).
+
+Blockiert auf der offenen StageRole-Modellentscheidung ([decisions.md](decisions.md), Offene Modellentscheidungen): ob `m3gim:Performance` eine Person-Rollen-Bindung trägt oder die ganze Besetzung, und ob `StageRole` geteiltes Konzept bleibt oder instanzscharf wird. Erst danach der tiefe Umbau von [data.md](data.md).
 
 ### Neuer Datenstand und Modell-Umsetzung
 

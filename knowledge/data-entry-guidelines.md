@@ -12,9 +12,9 @@ template:
   url: https://dhcraft.org/Promptotyping/promptotyping-document/domain-knowledge
 status: complete
 created: 2026-06-17
-updated: 2026-06-17
+updated: 2026-06-25
 language: de
-version: 0.2
+version: 0.3
 authors: [Christopher Pollin]
 generated-with: Claude Code
 topics: ["[[Data Modelling]]", "[[Controlled Vocabularies]]", "[[Archival Description]]"]
@@ -28,6 +28,9 @@ related: [data, research]
 # Erfassungsrichtlinie
 
 Diese Richtlinie ist der verbindliche Maßstab für die manuelle Datenerfassung des Teilnachlasses UAKUG/NIM, also nach welchen Konventionen die Tabellenfelder befüllt werden, welche kontrollierten Vokabulare gelten und wie mit Unsicherheit umgegangen wird. Sie ist die Soll-Seite der Datenqualität. Wo der erfasste Bestand davon abweicht, ist im generierten Quality-Snapshot und in der Modell-Spezifikation [data.md](data.md) dokumentiert. Das voll modellierte Rollen- und Klassenvokabular steht ebenfalls in [data.md](data.md), diese Seite trägt die Erfassungssicht des Archivteams.
+
+> [!warning] Verknüpfungstabelle: neues Schema seit 2026-06-25 (E-127)
+> Die Verknüpfungserfassung ist auf das Long-Format mit zweistufiger `aktivitaet_id` umgestellt (Anleitung Stand 2026-06-25, verfeinert E-125). Spalten: `archivsignatur`, `Folio`, `aktivitaet_id`, `typ`, `value`, `anmerkung`. Eine Ganzzahl identifiziert die Aktivität, eine zweistellige Dezimale `1.01` ff. die Beteiligung; `funktion` (kontrolliert) ist von `rolle` (gesungene Partie, frei) getrennt, Geld atomar mit eigener `währung`-Zeile, `aktivitaet` markiert die Art. Das löst die unten beschriebene einstufige `datenpunkt_id`-Konvention und die alte `typ`/`name`/`rolle`-Struktur ab. Der gereinigte Altbestand liegt als `data/migration/M3GIM-Verknuepfungen-v2.xlsx` (Vokabular-Glossar plus kuratiertes Beispiel-Blatt 7_29). Die `aktivitaet_id`-Vergabe ist menschlicher Durchgang und im migrierten Stand bewusst leer. Die Abschnitte unten zum Schichtenmodell, Personenform und Unsicherheit gelten unverändert; die Spaltenbeschreibung der Verknüpfungstabelle ist gegen die neue Anleitung zu lesen, bis dieses Dokument vollständig darauf umgeschrieben ist.
 
 ## Schichtenmodell der Erfassung
 

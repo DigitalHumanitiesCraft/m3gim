@@ -7,7 +7,7 @@ status: complete
 language: de
 version: 0.2
 created: 2026-02-19
-updated: 2026-06-22
+updated: 2026-06-25
 authors: [Christopher Pollin]
 generated-with: Claude Code
 method:
@@ -809,3 +809,23 @@ Frontend-Runde über die vier sichtbaren Analyse-Tabs (Statistik, Karte, Netzwer
 **Doku.** Knowledge nachgezogen in derselben Session: dieser Eintrag, E-118 bis E-121 in [decisions.md](decisions.md), Tab-Architektur und Designsystem in [design.md](design.md) korrigiert (die sichtbare Karte fehlte dort, der Atlas war noch als einziger Mobilitäts-Tab geführt).
 
 **Entscheidungen:** E-118 (Karten-Umbenennung), E-119 (Sicht-Farben eine Quelle), E-120 (Ort-Farbtokens), E-121 („ohne Typ"-Drilldown).
+
+---
+
+## Session 58 (2026-06-25): Erfassungsschema v2, Migration des Altbestands, integrationsfertige Arbeitsmappe (E-127)
+
+Arbeit am Erfassungsschema und am Altbestand, ausgelöst durch die neue Erfassungsanleitung (Stand 2026-06-25). Diskussion zuerst, dann Migration und Knowledge-Nachzug. Kein Frontend, kein Eingriff in die laufende Pipeline.
+
+**Befund am Altbestand.** Die `M3GIM-Verknüpfungen.xlsx` real ausgewertet: die Gruppierungsspalte `datenpunkt_id` war in 2 von 4.165 Zeilen gefüllt, die Gruppierung also faktisch nie erfasst (Wurzel von E-125). Die alte `rolle`-Spalte vermischte Funktion (`sänger:in`), Beziehungsqualifier (`erwähnt`) und Ereignistyp; `typ` trug Kompositwerte (`ort, datum`, `rolle, Vorname Nachname Sänger*in` 230x); Geld stand als `15, RM` in einer Zelle. Die Pipeline kompensierte das mit Raten, belegt im Code: `FINANCE_CURRENCY_DEFAULTS` (Folionachbarschafts-Heuristik in `_common.py`) setzt eine fehlende Währung aus Nachbarfolien, ohne sie im Datum als abgeleitet zu markieren (capta als data). Daraus die Linie fürs neue Schema: die Quelle muss die Struktur tragen, damit die Pipeline nicht rät.
+
+**Schema-Verfeinerung (E-127, verfeinert E-125).** Die Erfassungs-ID wird zweistufig: Ganzzahl = Aktivität (Occurrence), `1.01` ff. = Beteiligung. `funktion` (kontrolliert) getrennt von `rolle` (Partie, frei), Geld atomar mit eigener `währung`-Zeile, `aktivitaet`-Marker für die Art. Entscheidung zur `aktivitaet_id`-Vergabe: bleibt in der Migration durchgehend leer, weil eine automatische Gruppierung Raten wäre. An den Daten gemessen: von 167 verknüpften Folien tragen nur 16 genau eine Aktivität, davon ist nur 1 ein sauber auto-füllbares Programmheft (NIM_137/3_1), die Trigger-Zahl ist als Eindeutigkeitssignal widerlegt (Gegenbeispiel NIM_007/4, ein Vertragsbrief). Gruppierung ist menschlicher Durchgang.
+
+**Migration (`scripts/migrate-v2.py`).** Reinigt zellgenau ins neue Long-Format über alle sechs Boxen (3.514 Quellzeilen → 5.547 Zielzeilen): Komposit-Split (Partie+Sänger, ort+datum, datum+werk), funktion/rolle-Trennung, Geld-Split mit Zahlungsqualifier in `anmerkung`, Datum-ISO-Prüfung, Namensumkehr `Hans Hotter` → `Hotter, Hans` nur über Match gegen den Folio-Personenindex (sonst verbatim plus Flag), Vokab-Alias (`maskenbidner` → `maskenbildner`). Kein Merge über Zeilen, keine erfundenen Werte, Unbekanntes verbatim plus Flag. Selbsttests T1-T6 (Vollständigkeit, Korrektheit, Token- und Funktions-Konservierung, Encoding-Guard, leere ID) plus Gold-Sample Folio 7_29 grün.
+
+**Arbeitsmappe.** `data/migration/M3GIM-Verknuepfungen-v2.xlsx` als integrationsfertige Grundlage zum Upload als Google Sheet: Lies-mich, Vokabular-Glossar (Definition plus ziel-property je Term, als Dropdown-Quelle), je ein Blatt pro Box, `aktivitaet_id` als Klartext (keine Zahlen-Coercion), `typ`-Dropdown. Hilfsspalten auf Operator-Wunsch reduziert (`quelle-alt` und `review` entfernt, `block` verbleibt). Eigenes Blatt **Beispiel 7_29** mit der handkuratierten Rheingold-Aufführung (aktivitaet_id `1` plus `1.01`-`1.24`, Quell-Redundanz je Person zu einer Beteiligung zusammengeführt). Per `-f` an der `*.xlsx`-Ignore vorbei getrackt, analog zu den Quell-Sheets.
+
+**Befund am aktuellen JSON-LD.** Gegenprobe gegen `data/output/m3gim.jsonld`: das Soll-Modell aus E-125 ist dort noch nicht erreicht. Folio 7_29 ist als zusammenhängende Aufführung nicht abgebildet, StageRole-Knoten sind global und nackt (`role_fricka` = nur `rico:name`), eine Performance hält höchstens eine Rolle. Das ist die direkte Folge der fehlenden Quell-Gruppierung und bestätigt, dass erst der menschliche Durchgang plus der neue `transform`-Lesepfad die saubere Occurrence-Struktur erzeugt.
+
+**Knowledge nachgezogen.** E-127 und die offene Modellentscheidung zur Abbildung der zweistufigen ID aufs Occurrence-Modell in [decisions.md](decisions.md), Hinweis in [data-entry-guidelines.md](data-entry-guidelines.md), Migrations-Workstream in [plan.md](plan.md). Der tiefe Umbau von [data.md](data.md) (Performance/Beteiligung/StageRole) wartet auf die StageRole-Entscheidung.
+
+**Entscheidungen:** E-127 (zweistufige `aktivitaet_id`, funktion/rolle-Trennung, Migration).
