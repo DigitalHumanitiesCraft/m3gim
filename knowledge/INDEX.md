@@ -12,12 +12,12 @@ template:
   url: https://dhcraft.org/Promptotyping/promptotyping-document/index
 status: complete
 created: 2026-02-19
-updated: 2026-06-17
+updated: 2026-06-30
 language: de
 version: 0.2
 authors: [Christopher Pollin]
 generated-with: Claude Code
-related: [project, specification, data, data-entry-guidelines, research, pipeline, architecture, design, decisions, testing, journal, plan, datenfehler]
+related: [project, specification, use-cases, data, data-entry-guidelines, research, filter-modell, pipeline, architecture, design, decisions, testing, journal, plan, datenfehler]
 ---
 
 # M³GIM Knowledge Base
@@ -37,6 +37,7 @@ Diese Seite ist der Einstiegspunkt in die Wissensbasis des Projekts. Sie ordnet 
 - Aktuellen Stand und nächste Schritte → [plan.md](plan.md)
 - Bekannte Datenfehler nachschlagen oder ans Erfassungsteam geben → [datenfehler.md](datenfehler.md)
 - Use Cases, Personas und Evaluation der Forschungsfragen → [use-cases.md](use-cases.md)
+- Geteilten Cross-View-Filter (Querschnitt über Chronik, Karte, Statistik) verstehen → [filter-modell.md](filter-modell.md)
 - Projektgeschichte nachvollziehen → [journal.md](journal.md)
 
 ## Dokumentenmatrix
@@ -58,8 +59,11 @@ Diese Seite ist der Einstiegspunkt in die Wissensbasis des Projekts. Sie ordnet 
 | Plan und Steuerung | [plan.md](plan.md) | Zielbild, nächste Schritte, deferred Arbeiten, offene Datenqualität |
 | Datenfehler-Register | [datenfehler.md](datenfehler.md) | Gesammelte Quell- und Abgleichfehler mit Fundstelle und Status |
 | Use Cases & Evaluation | [use-cases.md](use-cases.md) | Forschungsfragen als Use Cases, Persona-Stubs, Evaluations-Skizze (Arbeitsstand) |
+| Substanz, Feature-Spec | [filter-modell.md](filter-modell.md) | Geteilter Cross-View-Filter, State-Modell, Filtersemantik, Facetten-Matrix, Bauplan |
 
 Die Stand-Kommunikation für Dritte wird bewusst nicht als eigenes Report-Dokument geführt. Diese Funktion übernimmt der generierte Quality-Snapshot, der bei jedem Pipeline-Lauf frisch entsteht.
+
+Im Ordner liegen zwei datierte Befund-Dokumente, die keine kanonischen Wissensdokumente sind, sondern Momentaufnahmen einer Lane-Arbeit, [frontend-sichtpruefung-2026-06-21.md](frontend-sichtpruefung-2026-06-21.md) (Sichtprüfungs-Audit, Datenfehler bereits ins Register überführt) und [visualisierung-bayreuth.md](visualisierung-bayreuth.md) (Auftrags- und Klärungsdokument der Visualisierungs-Lane). Beide sind Kandidaten für eine Verlagerung nach `data/reports/`, solange sie hier liegen, gehören sie nicht zum Lesepfad.
 
 ## Glossar
 
@@ -80,7 +84,7 @@ Die Stand-Kommunikation für Dritte wird bewusst nicht als eigenes Report-Dokume
 
 - [`../CLAUDE.md`](../CLAUDE.md) führt die Workflow-Regeln für Claude-Code-Sessions, prozessual und nicht dokumentarisch
 - Die Session-Memory unter `.claude/projects/*/memory/` persistiert über Sessions
-- Der Obsidian-Vault unter `C:\Users\Chrisi\Documents\obsidian\Projects\M³GIM\` enthält die DSGVO-sensiblen Quellen und Forschungsnotizen, die nicht im Repo liegen
+- Der Obsidian-Vault unter `C:\Users\chris\Documents\obsidian\Projects\M³GIM\` enthält die DSGVO-sensiblen Quellen und Forschungsnotizen, die nicht im Repo liegen
 
 ## Pflegehinweis
 

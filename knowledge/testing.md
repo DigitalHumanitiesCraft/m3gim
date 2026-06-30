@@ -7,7 +7,7 @@ status: complete
 language: de
 version: 0.2
 created: 2026-02-19
-updated: 2026-06-17
+updated: 2026-06-30
 authors: [Christopher Pollin]
 generated-with: Claude Code
 method:
@@ -54,7 +54,7 @@ tests/
 ├── test_08_partitur.py            # Partitur-Invarianten (Derivat, nicht mehr konsumiert)
 ├── test_09_baselines.py           # Regression-Zahlen (>=)
 ├── test_10_determinismus.py       # Pipeline 2× laufen (slow)
-├── test_11_mobilitaet.py          # SpatiotemporalEvent + 5 Mobilitätssichten
+├── test_11_mobilitaet.py          # SpatiotemporalEvent + Mobilitätssichten
 ├── test_12_agrelon.py             # AgRelOn-Relationen + Provenance
 ├── test_13_finanzen.py            # DetailAnnotation, monetaryAmount, currency
 ├── test_14_parse_units.py         # Unit-Tests für Parse-/Normalisierungsfunktionen
@@ -90,10 +90,10 @@ JSON-Schemas (Draft 2020-12) validieren `m3gim.jsonld` und `partitur.json` struk
 Keine pandas/Excel-Artefakte (`NaT`, `nan`, `None` als Strings), keine Mojibake (`Ã¼`, `Ã¶`), kein Zeitrest (`00:00:00`), ISO-8601-Datumsformate, gestrippte Strings.
 
 ### 3. XLSX-Roundtrip (test_03)
-Lädt die Rohdaten (`M3GIM-Objekte.xlsx`) direkt mit pandas und verifiziert: jede gültige XLSX-Signatur ist als Record im Graph, Titel stimmen überein, Dokumenttyp-Mapping greift. Parametrisierte Einzelfall-Tests für 3 Referenzobjekte (PL_01, PL_02, PL_04).
+Lädt die Rohdaten (`M3GIM-Objekte.xlsx`) direkt mit pandas und verifiziert: jede gültige XLSX-Signatur ist als Record im Graph, Titel stimmen überein, Dokumenttyp-Mapping greift. Parametrisierte Einzelfall-Tests für die Referenzobjekte PL_01, PL_02, PL_04.
 
 ### 4. Verknüpfungs-Mapping (test_04)
-Jeder der 8 Basis-Typen (person, institution, ensemble, ort, werk, ereignis, rolle, datum) hat einen Test, der die korrekte RiC-O-Property prüft. Plus: erwähnte Personen landen in `rico:hasOrHadSubject`, alle Agents haben `name`, Event-Daten im ISO-Format. Zusätzlich: **keine Rolle im Output endet auf `:in`/`:innen`** (Phase 4.1).
+Jeder Basis-Typ (person, institution, ensemble, ort, werk, ereignis, rolle, datum) hat einen Test, der die korrekte RiC-O-Property prüft. Plus: erwähnte Personen landen in `rico:hasOrHadSubject`, alle Agents haben `name`, Event-Daten im ISO-Format. Zusätzlich: **keine Rolle im Output endet auf `:in`/`:innen`** (Phase 4.1).
 
 ### 5. Referentielle Integrität (test_05)
 Fonds existiert genau einmal, `hasOrHadPart`-Referenzen sind alle im Graph auflösbar, keine Waisen-Records. **xfail**: `test_all_record_ids_unique` — PL_07 erscheint doppelt (XLSX-Bug).
@@ -119,7 +119,7 @@ Mindestwerte aus `fixtures/baseline_counts.json` pro Entitätstyp (records, pers
 Lässt `transform.py` zweimal laufen, vergleicht Output (ohne `m3gim:exportDate`). Fängt versehentliche Set-Iteration / Dict-Ordnungsabhängigkeiten. Nur mit `pytest -m slow` ausführen.
 
 ### 11. Mobilität (test_11, Phase 4.4 + 4.8)
-SpatiotemporalEvent-Existenz, `atPlace` Pflicht; `atDate` nur für datierte STE (datumslose Mobilitäts-STE aus Ortsrollen tragen bewusst kein `atDate`, E-97). Rollen-Vokabular, Anzahl skaliert mit XLSX-Komposit-Rows. Die 5 Mobilitätssichten aus [data.md § 10](data.md) als SPARQL-ähnliche Python-Queries: performative, institutionelle, Korrespondenz-, biographische, diskursive Mobilität.
+SpatiotemporalEvent-Existenz, `atPlace` Pflicht; `atDate` nur für datierte STE (datumslose Mobilitäts-STE aus Ortsrollen tragen bewusst kein `atDate`, E-97). Rollen-Vokabular, Anzahl skaliert mit XLSX-Komposit-Rows. Die Mobilitätssichten aus [data.md § 10](data.md) als SPARQL-ähnliche Python-Queries: performative, institutionelle, Korrespondenz-, biographische, diskursive Mobilität.
 
 ### 12. AgRelOn (test_12, Phase 4.8)
 `agrelon:`-Namespace im Context, HasEmployeeEmployer-Relationen skalieren mit XLSX-arbeitgeber-Zeilen, HasCorrespondent-Relationen haben Provenance, `hasValidityPeriod` ist well-formed (Begin/End als ISO-String).
@@ -148,7 +148,7 @@ Die `datierungsevidenz` wird nicht serialisiert: kein `m3gim:dateEvidence`, **ke
 DatedEvent-Fallback wohlgeformt (`dateValue`/`dateRole`), kein `m3gim:eventDate` mehr, klammer-/freitext-unsichere Datierungen landen im DatedEvent (nicht in typisierten Properties). Ein DatedEvent dupliziert nie ein STE `atDate`+`eventRole` am selben Record (`ort,datum` wird in *eine* Repräsentation aufgelöst, data.md § 4). `dataQualityFlag`-Werte stammen aus dem kontrollierten Vokabular; `m3gim:qualityConfidence` wird nicht fabriziert; `m3gim:bearbeitungsnotiz` trägt den Freitext-Anhang getrennt vom canonischen Status.
 
 ### 31. Dokumentvokabular (test_31, E-101)
-`sammlung` ist ein eigenständiges Concept `m3gim-dft:sammlung` ohne `skos:broader` (≥10 Records zeigen darauf). Jedes dft-Concept trägt ein lesbares deutsches `skos:prefLabel` (bekannte Konzepte exakt, nicht der Slug). Coverage: ≥200 Records mit `hasDocumentaryFormType` (kein stiller Typ-Drop). Die neuen Konzepte (briefumschlag/musikzeitschrift/chronik/verzeichnis) sind in `DFT_BROADER`/`DOKUMENTTYP_TO_DFT` strukturell gerüstet. Aboutness-Guard: ein dft-Concept erscheint nie als `rico:hasOrHadSubject`.
+`sammlung` ist ein eigenständiges Concept `m3gim-dft:sammlung` ohne `skos:broader` (Records zeigen darauf). Jedes dft-Concept trägt ein lesbares deutsches `skos:prefLabel` (bekannte Konzepte exakt, nicht der Slug). Coverage: kein stiller Typ-Drop bei `hasDocumentaryFormType`. Die neuen Konzepte (briefumschlag/musikzeitschrift/chronik/verzeichnis) sind in `DFT_BROADER`/`DOKUMENTTYP_TO_DFT` strukturell gerüstet. Aboutness-Guard: ein dft-Concept erscheint nie als `rico:hasOrHadSubject`.
 
 ### 20. XLSX-Provenance + Anker-Records (test_20)
 
@@ -164,7 +164,7 @@ Das Modul ist damit gleichzeitig Kontrakttest und **lesbare XLSX → JSON-LD-Abb
 
 ### 22. SpatiotemporalEvent-Koordinaten (test_22, Session 33)
 
-TDD-Spec für den Koordinaten-Patch: jedes ortsindex-auflösbare `m3gim:SpatiotemporalEvent` trägt im `atPlace`-Subobjekt `@id` (`wd:Qxxx`), `owl:sameAs`, `geo:lat`, `geo:long` und — falls Wikidata P17 das liefert — `m3gim:country`. Anker: `ste_NIM_004_24_7` (Zürich Q72), `ste_NIM_004_24_10` (Salzburg Q34713). Soft-Coverage ≥ 10 STE mit Koordinaten.
+TDD-Spec für den Koordinaten-Patch: jedes ortsindex-auflösbare `m3gim:SpatiotemporalEvent` trägt im `atPlace`-Subobjekt `@id` (`wd:Qxxx`), `owl:sameAs`, `geo:lat`, `geo:long` und — falls Wikidata P17 das liefert — `m3gim:country`. Anker: `ste_NIM_004_24_7` (Zürich Q72), `ste_NIM_004_24_10` (Salzburg Q34713). Soft-Coverage über die STE mit Koordinaten, Werte im Quality-Snapshot.
 
 ### 23. Rollen-Hygiene an Orten (test_23, Session 34)
 
@@ -176,13 +176,13 @@ Fuzzy-Detektor (Levenshtein-Ratio ≥ 92) über alle Komponistennamen in `m3gim:
 
 ### 25. Chronik-Mobilitätscluster (test_25, Session 36)
 
-Lock für die `EVENT_ROLE_TO_MOBILITY_CLUSTER`-Mapping-Tabelle im Frontend (`docs/js/data/constants.js`). Prüft, dass jede `m3gim:eventRole`, die im JSON-LD vorkommt, entweder einer der fünf Sichten (`performativ`/`institutionell`/`korrespondenz`/`diskursiv`/`biografisch`) zugeordnet ist oder explizit auf `null` steht (bewusste Nicht-Einordnung wie `auftrag`, `entstehung`, `ueberweisung`). Fängt stille Mapping-Drift ein, wenn neue Rollen eingeführt werden, ohne die Cluster-Zuordnung mitzuziehen.
+Lock für die `EVENT_ROLE_TO_MOBILITY_CLUSTER`-Mapping-Tabelle im Frontend (`docs/js/data/constants.js`). Prüft, dass jede `m3gim:eventRole`, die im JSON-LD vorkommt, entweder einer der Sichten (`performativ`/`institutionell`/`korrespondenz`/`diskursiv`/`biografisch`) zugeordnet ist oder explizit auf `null` steht (bewusste Nicht-Einordnung wie `auftrag`, `entstehung`, `ueberweisung`). Fängt stille Mapping-Drift ein, wenn neue Rollen eingeführt werden, ohne die Cluster-Zuordnung mitzuziehen.
 
-### 26. Term-Validierung gegen RiC-O 1.1 und AgRelOn (geplant, test_26)
+### 26. Term-Validierung gegen RiC-O 1.1 und AgRelOn (test_26)
 
 Konformitäts-Lock aus dem Modellierungs-Audit ([decisions.md](decisions.md) E-103/E-104). Sammelt jeden im Output verwendeten `rico:`- und `agrelon:`-Term (als `@type` und als Property-Key) und prüft ihn gegen eine im Repo hinterlegte Allowlist der offiziellen Termlisten — RiC-O 1.1 aus den ICA-EGAD-CSV-Komponentenlisten, AgRelOn aus der DNB-RDF. Ein nicht gelisteter Term failt hart. Deckt die bekannten Fehlterme (`rico:isAssociatedWithRecord`, `rico:File`/`rico:Fonds` als Klasse, `agrelon:hasProvenance`/`hasConfidenceValue`/`hasValidityPeriod`, `agrelon:HasIsPatron`) sofort als rot auf und sichert dauerhaft gegen Regression — die Fehlerklasse „Term aus der Benennungskonvention extrapoliert" ([Leitplanke „Fremdterme verifizieren"](decisions.md)) wird damit maschinell unmöglich.
 
-Dieser Test ist der TDD-Einstieg der Konformitäts-Korrektur: zuerst rot schreiben (legt die Ist-Fehler offen), dann Pipeline und die Tests test_12/test_19 nachziehen, bis er grün ist. Ein leichtgewichtiger Vorläufer der weiter unten genannten SHACL-Validierung — er prüft Term-Existenz, nicht Shape-Konformität.
+Der Test lockt die Term-Konformität gegen die Allowlist dauerhaft und verifiziert die mit der Konformitäts-Korrektur nachgezogenen Module test_12/test_19. Ein leichtgewichtiger Vorläufer der weiter unten genannten SHACL-Validierung — er prüft Term-Existenz, nicht Shape-Konformität.
 
 ### 27. StageRole-Entität (test_27, E-96)
 
@@ -249,9 +249,9 @@ Die Trennlinie folgt der Durchreich-Policy: ein **struktureller** Blocker gehör
 - Die Datierungs-Konfidenz ist ganz entfernt (E-106); `agrelon:metadataConfidence` taucht nirgends im Graph auf.
 - Jeder xfail-Grund zeigt auf den `data.md`-Anker, der zuerst existieren muss.
 
-### Zwei Wellen für den neuen Datenstand
+### Wellen für den neuen Datenstand
 
-Die Modell-Umsetzung (E-95 bis E-102) wird in zwei Wellen abgesichert. Eine modellunabhängige erste Welle ist sofort schreibbar — das strukturelle Regressionsnetz (Loader-Blocker, referenzielle Integrität, Q-ID-Hygiene, Währungs-Typ-Erhalt, Determinismus, Promote-Gate, Approval-Provenienz), grün gegen den bisherigen Stand, rot an den Blockern gegen den neuen Export. Die zweite Welle ist die Modell-Spec als rote xfail-Tests und setzt die in [data.md](data.md) verankerten Entscheidungen voraus. Neue eventRoles und Rollen brechen die bestehenden Vokabular-Tests (test_15, test_25), sobald die Suite gegen den neuen Export läuft; sie brauchen einen koordinierten xfail-Carve-out, sonst ist die Suite zu keinem Zeitpunkt grün.
+Die Modell-Umsetzung (E-95 bis E-102) wird in einer ersten und einer zweiten Welle abgesichert. Eine modellunabhängige erste Welle ist sofort schreibbar — das strukturelle Regressionsnetz (Loader-Blocker, referenzielle Integrität, Q-ID-Hygiene, Währungs-Typ-Erhalt, Determinismus, Promote-Gate, Approval-Provenienz), grün gegen den bisherigen Stand, rot an den Blockern gegen den neuen Export. Die zweite Welle ist die Modell-Spec als rote xfail-Tests und setzt die in [data.md](data.md) verankerten Entscheidungen voraus. Neue eventRoles und Rollen brechen die bestehenden Vokabular-Tests (test_15, test_25), sobald die Suite gegen den neuen Export läuft; sie brauchen einen koordinierten xfail-Carve-out, sonst ist die Suite zu keinem Zeitpunkt grün.
 
 ### Anker-Record-Strategie (seit Session 31)
 
@@ -265,11 +265,11 @@ Wartung:
 ## Workflow bei Daten-Updates
 
 1. Tests auf aktuellem Stand grün — Baseline verifizieren
-2. Aktuellen `data/output/m3gim.jsonld` als Referenz-Snapshot sichern (z.B. `cp data/output/m3gim.jsonld /tmp/pre-update.jsonld`)
+2. Aktuellen `data/output/m3gim.jsonld` als Referenz-Snapshot sichern (z.B. `cp data/output/m3gim.jsonld data/_archive/pre-update.jsonld`)
 3. Neue XLSX nach `data/google-spreadsheet/` legen (überschreibt vorige Version)
 4. Pipeline laufen lassen: `python scripts/transform.py && python scripts/build-views.py`
 5. Tests: `pytest -m "not slow"`
-6. Snapshot-Diff als Review-Report: `python tests/tools/snapshot_diff.py /tmp/pre-update.jsonld data/output/m3gim.jsonld`
+6. Snapshot-Diff als Review-Report: `python tests/tools/snapshot_diff.py data/_archive/pre-update.jsonld data/output/m3gim.jsonld`
 7. Bei allen Tests grün + akzeptablem Diff: `docs/data/` wurde von `build-views.py` bereits aktualisiert — committen.
 8. Baselines in `tests/fixtures/baseline_counts.json` ggf. nach oben anpassen, wenn neue Daten deutlich mehr Inhalte bringen.
 
@@ -310,14 +310,14 @@ Laufzeit im Regelbetrieb überschaubar; der Determinismus-Test (Marker `slow`) d
 
 `tests/frontend/smoke.py` fährt die SPA headless (Chromium, lokaler `python -m http.server 8765`) und prüft:
 
-1. **Tab-Durchlauf** über alle sieben sichtbaren Tabs = der reale `VISIBLE_TABS`-Satz (`bestand`, `chronik`, `statistik`, `indizes`, `mobilitaet`, `netzwerk`, `korb`) — keine JS-Errors, DOM rendert nicht-leer. Der seit E-109/E-111 sichtbare Mobilitäts-Tab (D3-geo-Karte) und der Korb sind seit E-113 im Loop; der Mobilitäts-Tab trägt zusätzlich einen eigenen Karten-Canary (Punkt 8). Versteckte Perspektiv-Tabs (Mobilitäts-Atlas, Repertoire, Biogramm) werden bewusst nicht angesteuert (E-81).
+1. **Tab-Durchlauf** über alle sichtbaren Tabs = der reale `VISIBLE_TABS`-Satz (`bestand`, `chronik`, `statistik`, `indizes`, `mobilitaet`, `netzwerk`, `korb`) — keine JS-Errors, DOM rendert nicht-leer. Der seit E-109/E-111 sichtbare Mobilitäts-Tab (D3-geo-Karte) und der Korb sind seit E-113 im Loop; der Mobilitäts-Tab trägt zusätzlich einen eigenen Karten-Canary (Punkt 8). Versteckte Perspektiv-Tabs (Mobilitäts-Atlas, Repertoire, Biogramm) werden bewusst nicht angesteuert (E-81).
 2. **logStamp-Keys pro Tab** (State-Stempel): `bestand` → `konvolute, records, sort`; `chronik` → `records, jahre-belegt, undatiert, spanne` (Scroll-Zeitstrahl, E-88); `statistik` → `records, konvolute, events, personen, sektionen`; `indizes` → `personen, organisationen, orte, werke`; `mobilitaet` → `events, verortet, unverortet, datiert, jahre`; `netzwerk` → `total, ring1, ring2, agrelon` (konzentrische Personen-Viz, E-93); `korb` → `eintraege, aufgeloest, events, finanzen`.
-3. **Chronik-Zeitstrahl-Canary** (seit Session 44, E-91): `#tab-chronik .chronik-year` ≥ 90 Zeilen (Lebensspanne 1919–2009), leere Jahre sichtbar aber ohne Records-in-leer. Klick auf `chronik-point` dispatcht `selectRecord` und springt in Bestand mit offenem Inline-Detail; fehlerfrei in der Konsole.
+3. **Chronik-Zeitstrahl-Canary** (seit Session 44, E-91): `#tab-chronik .chronik-year` deckt die Lebensspanne 1919–2009 als durchgehende Jahres-Zeilen ab, leere Jahre sichtbar aber ohne Records-in-leer. Klick auf `chronik-point` dispatcht `selectRecord` und springt in Bestand mit offenem Inline-Detail; fehlerfrei in der Konsole.
 4. **Anker-Titel im DOM**: `Rezension von Karl Schumann zu Macbeth` (NIM_004/3), `Handschriftliche Notiz` (NIM_007/5_1). Bricht der Check, ist entweder der Record ausgefiltert worden oder die Render-Logik kaputt.
 5. **Anker-Record NIM_004_1 voll aufgeklappt**: Sprach-Label aufgelöst (`en, fr` → „Englisch, Französisch") und AgRelOn-Dedup greift (Malaniuk erscheint genau einmal).
 6. **Konvolut-Meta-Chips sichtbar**: `.archiv-konvolut-meta .chip--compact` + `.archiv-konvolut-status` zählbar > 0 — Absicherung gegen Regression, die die Meta-Aggregation im Loader leer lässt.
 7. **Duplicate `@id` im JSON-LD-Graph**: bekannte Kollisionen (`m3gim:NIM_PL_07`) sind in `KNOWN_COLLISIONS` aufgeführt und werden toleriert; neue Kollisionen fail'n sofort.
-8. **Karten-Canary** (E-113, neu gefasst mit E-126): nach dem Klick auf den Karten-Tab wartet der Check auf den asynchronen Geometrie-Load (`loadCountries().then(...)`) und prüft, dass die entitätszentrierte D3-geo-Karte real zeichnet — Stadt-Knoten (`.mob-nodes g.mob-node` ≥ 5), **keine** Verbindungslinien (`.mob-arcs path` == 0, da die Trajektorie mit E-126 entfiel), eine befüllte Entitäts-Auswahl (`.mob-entity__list .mob-entity__item` ≥ 5) und Ländergeometrie (`.mob-land path` ≥ 50), ohne neue Konsolenfehler. Zusätzlich wählt der Canary „Bayreuther Festspiele" und verifiziert, dass die Knotenmenge auf deren Orte schrumpft. Harter FAIL, nicht WARN: eine still leer rendernde Karte (fehlende Geometrie, d3-Ausfall, Projektions-Bug) ist genau die Regression, die der logStamp-Check verfehlt, weil der Stempel synchron vor dem Async-Draw geschrieben wird.
+8. **Karten-Canary** (E-113, neu gefasst mit E-126): nach dem Klick auf den Karten-Tab wartet der Check auf den asynchronen Geometrie-Load (`loadCountries().then(...)`) und prüft, dass die entitätszentrierte D3-geo-Karte real zeichnet — Stadt-Knoten (`.mob-nodes g.mob-node` vorhanden), **keine** Verbindungslinien (`.mob-arcs path` == 0, da die Trajektorie mit E-126 entfiel), eine befüllte Entitäts-Auswahl (`.mob-entity__list .mob-entity__item` vorhanden) und Ländergeometrie (`.mob-land path` vorhanden), ohne neue Konsolenfehler. Zusätzlich wählt der Canary „Bayreuther Festspiele" und verifiziert, dass die Knotenmenge auf deren Orte schrumpft. Harter FAIL, nicht WARN: eine still leer rendernde Karte (fehlende Geometrie, d3-Ausfall, Projektions-Bug) ist genau die Regression, die der logStamp-Check verfehlt, weil der Stempel synchron vor dem Async-Draw geschrieben wird.
 
 Aufruf:
 

@@ -8,7 +8,7 @@ method:
   url: https://lisa.gerda-henkel-stiftung.de/digitale_geschichte_pollin
 status: draft
 created: 2026-06-21
-updated: 2026-06-21
+updated: 2026-06-30
 language: de
 version: 0.1
 authors: [Christopher Pollin]
@@ -19,13 +19,13 @@ related: [architecture, data, decisions, plan, visualisierung-bayreuth]
 
 # Filter-Modell
 
-> Spezifikation des view-übergreifenden einheitlichen Filters für das M³GIM-Frontend. Das Dokument legt das geteilte Filter-State-Modell fest, seine Verteilung über die bestehende Mechanik und die Filtersemantik der zwei Schärfegrade. Es ist der Entwurf für Milestone 3 (order-m3gim, 2026-06-21). Der Bau des Filters ist Milestone 4 und bleibt propose-first gated, hier nur gescopt. Die Source of Truth des Datenmodells bleibt in [data.md](data.md) und [architecture.md](architecture.md), der Bayreuth-Befund in [visualisierung-bayreuth.md](visualisierung-bayreuth.md).
+> Spezifikation des view-übergreifenden einheitlichen Filters für das M³GIM-Frontend. Das Dokument legt das geteilte Filter-State-Modell fest, seine Verteilung über die bestehende Mechanik und die Filtersemantik der beiden Schärfegrade `weit` und `eng`. Es ist der Entwurf für Milestone 3 (order-m3gim, 2026-06-21). Der Bau des Filters ist Milestone 4 und bleibt propose-first gated, hier nur gescopt. Die Source of Truth des Datenmodells bleibt in [data.md](data.md) und [architecture.md](architecture.md), der Bayreuth-Befund in [visualisierung-bayreuth.md](visualisierung-bayreuth.md).
 
 ## Zweck
 
-Ein gesetzter Schnitt nach Ort, Person, Werk, Rolle, Zeitfenster oder Mobilitätssicht soll synchron in allen filterbaren Views wirken, statt in jedem Tab getrennt gesetzt zu werden. Bayreuth 1951 bis 1953 erscheint dann als reines Filterergebnis (order Punkt 2 „Filter und Selektion einheitlich über alle Views"), und ein generalisierter Ort-Zeit-Schnitt ersetzt einen eigenen Bayreuth-View (order Punkt 5). Der Filter ist ein neutraler gekoppelter Schnitt mit zwei sichtbar getrennten Schärfegraden, das ist die orchestratorseitig entschiedene Baurichtung. Eine Forschungsfrage-Rahmung bleibt additive spätere Schicht und wird jetzt nicht verdrahtet.
+Ein gesetzter Schnitt nach Ort, Person, Werk, Rolle, Zeitfenster oder Mobilitätssicht soll synchron in allen filterbaren Views wirken, statt in jedem Tab getrennt gesetzt zu werden. Bayreuth 1951 bis 1953 erscheint dann als reines Filterergebnis (order Punkt 2 „Filter und Selektion einheitlich über alle Views"), und ein generalisierter Ort-Zeit-Schnitt ersetzt einen eigenen Bayreuth-View (order Punkt 5). Der Filter ist ein neutraler gekoppelter Schnitt mit den sichtbar getrennten Schärfegraden `weit` und `eng`, das ist die orchestratorseitig entschiedene Baurichtung. Eine Forschungsfrage-Rahmung bleibt additive spätere Schicht und wird jetzt nicht verdrahtet.
 
-## Ausgangslage, drei getrennte Filtermechaniken
+## Ausgangslage, getrennte Filtermechaniken
 
 Heute trägt jeder filterbare View seine eigene Filterlogik, die Zustände sind nicht gekoppelt.
 
@@ -51,30 +51,30 @@ Ein einziges Filter-State-Objekt ist die Quelle, alle Views lesen daraus und sch
 
 `rolle` ist die Akteursrolle (Dirigent, Sänger, Korrespondenzpartner), nicht die `eventRole`. Die `eventRole` speist ausschließlich die `sicht`-Facette, damit beide nicht vermengt werden. Die bestand-lokale Erschließungs-Umschaltung aus E-116 (`zeigeUnerschlossen`) bleibt view-lokal und wandert nicht in den geteilten State, sie ist eine Darstellungsfrage des Bestands, kein view-übergreifender Datenschnitt.
 
-## Zwei Schärfegrade als Filtersemantik
+## Schärfegrade als Filtersemantik
 
-Die wichtigste Designvorgabe (visualisierung-bayreuth.md § Methodische Kopplung). Ein Ort, eine Person, ein Werk koppeln an Daten auf zwei unterschiedlich scharfen Ebenen, und der Filter darf die unscharfe nicht als die scharfe ausgeben.
+Die wichtigste Designvorgabe (visualisierung-bayreuth.md § Methodische Kopplung). Ein Ort, eine Person, ein Werk koppeln an Daten auf unterschiedlich scharfen Ebenen, der Record-Bezug ist weit und unscharf, die Ereignis-Verortung eng und exakt, und der Filter darf die unscharfe nicht als die scharfe ausgeben.
 
 - `schaerfe = 'weit'`, Record-Bezug. Ein Treffer ist ein Record, der die Entität führt, etwa über `rico:hasOrHadLocation` auf Stadtebene. Weit und unscharf, weil Sammeldokumente (Lebenslauf, Rollenverzeichnis) mehrere Orte und Zeiten bündeln. Das Vorhandensein im selben Record ist kein Nachweis, dass das Ereignis an diesem Ort stattfand.
 - `schaerfe = 'eng'`, Ereignis-Verortung. Ein Treffer ist ein `m3gim:SpatiotemporalEvent` mit `atPlace` und Datum und Koordinaten. Raumzeitlich exakt.
 
-Der `schaerfe`-Modus ist kein eigener Entitätsfilter, sondern ein Schalter, der die Auflösung der `ort`- und `zeitfenster`-Facette umstellt: weit filtert über die Record-Menge (`store.locations[name].records`, `store.recordToEvents` nicht nötig), eng filtert über die Event-Menge (`store.mobilityEvents` mit `place === ort`). Die Leitplanke gegen den Bayreuth-Auftrittsnachweis-Fehlschluss ist damit im Modell verankert, nicht der Disziplin überlassen: der Default ist `weit` (der Kontext bleibt sichtbar), aber jeder View zeigt den aktiven Schärfegrad an und nennt im engen Modus die Differenz (etwa „4 von 9 raumzeitlich belegt"). Das ist die Anwendung des Erschließungsspiegel-Prinzips (E-87) auf den Filter.
+Der `schaerfe`-Modus ist kein eigener Entitätsfilter, sondern ein Schalter, der die Auflösung der `ort`- und `zeitfenster`-Facette umstellt: weit filtert über die Record-Menge (`store.locations[name].records`, `store.recordToEvents` nicht nötig), eng filtert über die Event-Menge (`store.mobilityEvents` mit `place === ort`). Die Leitplanke gegen den Bayreuth-Auftrittsnachweis-Fehlschluss ist damit im Modell verankert, nicht der Disziplin überlassen: der Default ist `weit` (der Kontext bleibt sichtbar), aber jeder View zeigt den aktiven Schärfegrad an und nennt im engen Modus die Differenz, wie viele der record-bezogenen Treffer raumzeitlich belegt sind. Das ist die Anwendung des Erschließungsspiegel-Prinzips (E-87) auf den Filter.
 
 ## Die eine geteilte Sicht-Facette
 
-Order Punkt: die `sicht`-Facette darf nicht zwei divergierende Definitionen erben. Befund nach Abgleich der zwei Klassifikatoren.
+Order Punkt: die `sicht`-Facette darf nicht divergierende Definitionen erben. Befund nach Abgleich der beiden Klassifikatoren, des globalen und des view-lokalen.
 
-- Global, kanonisch: `mobilityClusterFor(eventRole)` aus `EVENT_ROLE_TO_MOBILITY_CLUSTER` (`constants.js`), seit E-110 an [data.md § 10](data.md) angeglichen. Liefert eine der fünf Sichten (performativ, institutionell, korrespondenz, diskursiv, biografisch) oder `null`.
+- Global, kanonisch: `mobilityClusterFor(eventRole)` aus `EVENT_ROLE_TO_MOBILITY_CLUSTER` (`constants.js`), seit E-110 an [data.md § 10](data.md) angeglichen. Liefert eine der Sichten performativ, institutionell, korrespondenz, diskursiv, biografisch oder `null`.
 - View-lokal: `ROLE_TO_TYPE` in `mobility.js` (E-109). Sein eigener Kommentar hält fest, dass es sich seit E-110 mit dem globalen Klassifikator deckt und nur feiner ist, weil es einen expliziten Eimer `kontext` für die Nicht-Mobilitäts-Ortsrollen (Entstehung, Erwähnung, Auftrag) führt, dort wo der globale Klassifikator `null` liefert.
 
-Ableitung für den geteilten Filter: die `sicht`-Facette nutzt `mobilityClusterFor` als alleinige Quelle und faltet dessen `null`-Rückgabe in eine explizite Option `kontext`, exakt wie `mobility.js` es bereits tut. Damit gibt es eine Sicht-Definition, der view-lokale `ROLE_TO_TYPE` wird in Milestone 4 durch denselben kanonischen Pfad ersetzt, statt zwei parallele Tabellen zu pflegen.
+Ableitung für den geteilten Filter: die `sicht`-Facette nutzt `mobilityClusterFor` als alleinige Quelle und faltet dessen `null`-Rückgabe in eine explizite Option `kontext`, exakt wie `mobility.js` es bereits tut. Damit gibt es eine Sicht-Definition, der view-lokale `ROLE_TO_TYPE` wird in Milestone 4 durch denselben kanonischen Pfad ersetzt, statt parallele Tabellen zu pflegen.
 
 ## Verteilung über die bestehende Mechanik
 
 Kein neuer Apparat, der vorhandene Event-Bus und die generische Toolbar werden erweitert.
 
 - Ein geteilter Filter-Halter (Milestone 4: neues Modul `docs/js/ui/filter-state.js`) hält das eine Filter-State-Objekt und bietet `getFilter()`, `setFilter(patch)`, `subscribe(fn)`. `setFilter` merged den Patch und dispatcht ein `m3gim:filter`-CustomEvent über denselben `window`-Kanal, den `events.js` schon trägt. Damit bleibt `events.js` die zentrale Dispatch-Stelle, erweitert um den Filter-Kanal neben dem bestehenden `m3gim:navigate`.
-- Die vier Views abonnieren beim Render und zeichnen bei Filteränderung neu, indem sie ihre bestehende Filterfunktion auf den geteilten State statt auf privaten State anwenden (Bestand und Chronik über `filterByToolbarState`, Netzwerk über seine Sidebar-Logik, Karte über ihren Sicht- und Zeit-Filter).
+- Die Views Bestand, Chronik, Netzwerk und Karte abonnieren beim Render und zeichnen bei Filteränderung neu, indem sie ihre bestehende Filterfunktion auf den geteilten State statt auf privaten State anwenden (Bestand und Chronik über `filterByToolbarState`, Netzwerk über seine Sidebar-Logik, Karte über ihren Sicht- und Zeit-Filter).
 - Die generische `buildToolbar` (`_toolbar.js`) wird zur Sicht auf den geteilten State: `setFacet` schreibt über `setFilter`, der initiale und der reaktive Zustand kommen aus `getFilter`, und die Toolbar abonniert, um externe Änderungen zu spiegeln (ein Klick auf einen Kartenknoten setzt `ort`, die Ort-Combobox im Bestand zieht nach). Das ist die konkrete Integrationsfläche, `events.js` plus `buildToolbar`, nicht ein erfundener Mechanismus.
 - `onViewNavigate` bleibt unverändert für den orthogonalen Sprung „öffne diesen Record und scrolle hin", der Tab-Aktivierung plus Scroll trägt, nicht Filterung.
 
@@ -96,18 +96,18 @@ Lesart. Zeit ist in Chronik, Netzwerk (E-93/E-94) und Karte (Zeitregler) bereits
 
 ## Bayreuth 1951 bis 1953 als durchgerechnetes Filterergebnis
 
-Scout read-only gegen `docs/data/m3gim.jsonld` auf HEAD `f887d1a`, reproduzierbar über `python scripts/scout-coverage.py Bayreuth`. Befund: 9 Records mit Ort Bayreuth (`wd:Q3923`, Rollen auffuehrungsort, gastspiel, erwähnt), 4 SpatiotemporalEvents verortet und datiert, alle mit Koordinaten (49.95, 11.58), Rollen 2× gastspiel über 1951/1953, je 1× 1952-08-26 und 1953-07-06, 59 distinkte Akteure über die 9 Records (Malaniuk 8, Wieland Wagner 3, Wilhelm Pitz 3, Keilberth, Knappertsbusch und das Bayreuther Ensemble). Belegte Spanne 1951 bis 1953, über 1953 hinaus kein Bayreuth-Bezug in der Datengrundlage (V1 in visualisierung-bayreuth.md, Literatur führt bis 1958).
+Der Bayreuth-Befund liegt in [visualisierung-bayreuth.md](visualisierung-bayreuth.md), die laufenden Zählstände im generierten Quality-Snapshot (`data/reports/quality-snapshot.md`), reproduzierbar über `python scripts/scout-coverage.py Bayreuth`. Qualitativ: Bayreuth (`wd:Q3923`) erscheint in mehreren Records über die Rollen auffuehrungsort, gastspiel und erwähnt, ein Teil davon ist als `m3gim:SpatiotemporalEvent` verortet, datiert und mit Koordinaten belegt, der größere Teil bleibt record-bezogen ohne Ereignis-Verortung. Das Akteursfeld um Malaniuk, Wieland Wagner, Wilhelm Pitz und das Bayreuther Ensemble spannt sich über die Record-Menge. Belegte Spanne 1951 bis 1953, über 1953 hinaus kein Bayreuth-Bezug in der Datengrundlage, während die Literatur bis 1958 führt (V1 in visualisierung-bayreuth.md).
 
-Setzt der Operator `ort = 'Bayreuth'`, ergibt sich pro View, nach Schärfegrad getrennt.
+Setzt der Operator `ort = 'Bayreuth'`, ergibt sich pro View, nach Schärfegrad getrennt. Die Mengen sind keine festen Zahlen, sondern Schnitte derselben Datengrundlage.
 
 | View | `schaerfe = 'weit'` (Record-Bezug) | `schaerfe = 'eng'` (Ereignis-Verortung) |
 |---|---|---|
-| Bestand | die 9 Bayreuth-Records als Zeilen | nur die Records, die die 4 Events tragen |
-| Chronik | 9 Records, davon datierte am Jahr, undatierte in der Gruppe „ohne Datum" | die 4 datierten Events an 1951, 1952, 1953 |
-| Netzwerk | Ko-Okkurrenznetz der 59 Akteure über die 9 Records | nur event-belegte Akteure, deutlich schmaler |
-| Karte | datenschwach (Records ohne Event tragen keine Koordinaten) | die 4 Bayreuth-Punkte, der raumzeitlich saubere Kern |
+| Bestand | alle Bayreuth-Records als Zeilen | nur die Records, die die verorteten Events tragen |
+| Chronik | Records am Jahr gruppiert, undatierte in der Gruppe „ohne Datum" | die datierten Events an ihren Jahren |
+| Netzwerk | Ko-Okkurrenznetz aller Akteure über die Bayreuth-Records | nur event-belegte Akteure, deutlich schmaler |
+| Karte | datenschwach (Records ohne Event tragen keine Koordinaten) | die Bayreuth-Punkte, der raumzeitlich saubere Kern |
 
-Das Zeitfenster 1951 bis 1953 fällt aus den Daten, es wird nicht gesetzt, sondern ergibt sich. Die Tabelle ist zugleich die Probe auf die Schärfegrad-Semantik: Karte und Netzwerk zeigen denselben Ort auf gegensätzlichen Schärfegraden, und genau das macht der Filter sichtbar, statt eine der beiden Zahlen als die Wahrheit auszugeben.
+Das Zeitfenster 1951 bis 1953 fällt aus den Daten, es wird nicht gesetzt, sondern ergibt sich. Die Tabelle ist zugleich die Probe auf die Schärfegrad-Semantik, Karte und Netzwerk gehen auf denselben Ort-Schnitt auf gegensätzlichen Schärfegraden, und genau das macht der Filter sichtbar, statt eine der beiden Mengen als die Wahrheit auszugeben.
 
 ## Milestone 4, Scope (nicht bauen)
 
@@ -119,11 +119,11 @@ Der Bau bleibt propose-first gated, hier nur der abgegrenzte Umfang.
 - Schärfegrad-Schalter als geteiltes Control plus pro View die Schärfegrad-Anzeige mit Differenznennung im engen Modus.
 - Bayreuth 1951 bis 1953 als reines Filterergebnis sichtbar, ohne eigenen View.
 
-Grün-Kriterium Milestone 4: neuer Smoke-Canary, der einen geteilten Filter setzt und die synchrone Wirkung in den vier Views prüft, JS-Suite und pytest frontend-contract grün, Screenshot-Spur für die operator-gated Live-Sicht.
+Grün-Kriterium Milestone 4: neuer Smoke-Canary, der einen geteilten Filter setzt und die synchrone Wirkung in den Views Bestand, Chronik, Netzwerk und Karte prüft, JS-Suite und pytest frontend-contract grün, Screenshot-Spur für die operator-gated Live-Sicht.
 
 ## Verifikation Milestone 3
 
-Maschinelles Grün-Kriterium dieses Entwurfs: das Dokument existiert und ist nach main gepusht, [decisions.md](decisions.md) E-117 und der Status-Tracker in [plan.md](plan.md) verweisen darauf, der Scout ist frisch gegen `docs/data/m3gim.jsonld` gelaufen (4 Bayreuth-Events, 9 Records, Spanne 1951 bis 1953) und hier verankert.
+Maschinelles Grün-Kriterium dieses Entwurfs: das Dokument existiert und ist nach main gepusht, [decisions.md](decisions.md) E-117 und der Status-Tracker in [plan.md](plan.md) verweisen darauf, der Scout ist frisch gegen `docs/data/m3gim.jsonld` gelaufen und der Bayreuth-Befund über die Spanne 1951 bis 1953 hier verankert (Zählstände im Quality-Snapshot `data/reports/quality-snapshot.md`).
 
 ## Offene Punkte
 
@@ -133,7 +133,7 @@ Maschinelles Grün-Kriterium dieses Entwurfs: das Dokument existiert und ist nac
 
 ## Related
 
-- [[visualisierung-bayreuth]], der Bayreuth-Befund und die zwei Schärfegrade.
+- [[visualisierung-bayreuth]], der Bayreuth-Befund und die Schärfegrade `weit` und `eng`.
 - [[architecture]], Store-Format, Views, Event-Bus.
 - [[decisions]], E-110 (Sicht-Klassifikator), E-108 (cityOf), E-53 (Event-Bus), E-117 (dieser Entwurf).
-- [[data]] § 10, die fünf Mobilitätssichten.
+- [[data]] § 10, die Mobilitätssichten.

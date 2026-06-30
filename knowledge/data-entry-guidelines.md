@@ -10,9 +10,9 @@ template:
   name: Vorlage Domänenwissen
   version: 0.1
   url: https://dhcraft.org/Promptotyping/promptotyping-document/domain-knowledge
-status: complete
+status: draft
 created: 2026-06-17
-updated: 2026-06-25
+updated: 2026-06-30
 language: de
 version: 0.3
 authors: [Christopher Pollin]
@@ -34,7 +34,7 @@ Diese Richtlinie ist der verbindliche Maßstab für die manuelle Datenerfassung 
 
 ## Schichtenmodell der Erfassung
 
-Die Erschließung läuft in drei Schichten, die aufeinander aufbauen und einzeln abgeschlossen werden können.
+Die Erschließung läuft in den Schichten Daten erfassen, Quellen sprechen lassen und Interpretation, die aufeinander aufbauen und einzeln abgeschlossen werden können.
 
 **Schicht 1, Daten erfassen.** Die Kernmetadaten eines Objekts werden in der Objekttabelle eingetragen, neue Personen, Organisationen, Orte und Werke werden in den Indextabellen angelegt. Für diese Schicht sind Objekttabelle, Personenindex, Organisationsindex und Ortsindex maßgeblich.
 
@@ -46,7 +46,7 @@ Copy-Paste aus der Quelle oder aus bestehenden Einträgen ist gegenüber dem Neu
 
 ## Erfassungs-Workflow
 
-Pro Objekt werden vier Schritte in dieser Reihenfolge durchlaufen.
+Pro Objekt werden die folgenden Schritte in dieser Reihenfolge durchlaufen.
 
 1. **Objekt anlegen.** In der Objekttabelle eine neue Zeile anlegen, die Archivsignatur eintragen und alle Schicht-1-Felder ausfüllen. Wo Dropdowns vorhanden sind, werden sie genutzt, die Normalisierungsregeln dieser Richtlinie sind dabei einzuhalten.
 2. **Verknüpfungen erfassen.** In der Verknüpfungstabelle für dasselbe Objekt alle relevanten Personen, Orte, Institutionen, Ereignisse und Werke eintragen, pro Verknüpfung eine eigene Zeile. Werden dieselbe Person, derselbe Ort oder dasselbe Datum mehrfach genannt, wird der Bezug nur einmal erfasst, es sei denn die Rolle ändert sich.
@@ -174,7 +174,7 @@ Das vollständige, im Modell ausdifferenzierte Rollenvokabular mit seinem Belegs
 
 Beschreibt ein Dokument mehrere Auftritte, gehören seine Zeilen nicht alle gleichberechtigt zum Dokument, sondern je zu einem Auftritt. Die Spalte `datenpunkt_id` hält diese Zugehörigkeit fest, damit rekonstruierbar bleibt, wer was in welchem Auftritt getan hat, und nicht nur, dass etwas im Dokument vorkommt. Das Modell bildet jede so gebündelte Gruppe als ein Vorkommnis ab (`m3gim:Occurrence`, [data.md](data.md) § 4 und 7).
 
-Die Konvention hat zwei Werte.
+Die Konvention kennt die folgenden Werte.
 
 - **Leer** ist der Default und meint die Dokument-Ebene. Hierher gehören die Angaben über das Dokument selbst, also Verfasser, Adressat, Absendeort und Erstelldatum, und ebenso jede Angabe, deren Auftritts-Zuordnung die Quelle nicht hergibt. Ein nicht eindeutig zuordenbarer Dirigent bleibt leer, statt geraten zu werden.
 - Eine **fortlaufende Nummer** ab `1` bündelt alle Zeilen eines Auftritts. Zwei Auftritte in einem Folio tragen `1` und `2`. Geteilte Angaben werden je Auftritt wiederholt, damit jeder Auftritt vollständig beschrieben ist.

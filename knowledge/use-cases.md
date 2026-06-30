@@ -7,7 +7,10 @@ status: draft
 language: de
 version: 0.1
 created: 2026-06-22
-updated: 2026-06-22
+updated: 2026-06-30
+method:
+  name: Promptotyping
+  url: https://lisa.gerda-henkel-stiftung.de/digitale_geschichte_pollin
 authors: [Christopher Pollin]
 generated-with: Claude Code
 related: [research, data, data-entry-guidelines, design, architecture, decisions]
@@ -15,7 +18,7 @@ related: [research, data, data-entry-guidelines, design, architecture, decisions
 
 # Use Cases, Personas & Evaluation
 
-> **Arbeitsstand / Platzhalter** (angelegt 2026-06-22). Operationalisiert die Forschungsfragen aus [research.md](research.md) und die Mobilitäts-User-Stories in konkrete Use Cases, leitet Personas ab und skizziert, wie sich beides evaluieren lässt. Bewusst als **Gerüst** angelegt: die mit *(ausarbeiten)* markierten Unterbereiche sind offen und mit den Projektpartner:innen zu schärfen — die aus der Partner-Runde Juni 2026 abgestimmte Erfassungskonvention und das Auftritts-Occurrence-Modell stehen in [data-entry-guidelines.md](data-entry-guidelines.md) und [data.md](data.md) (Entscheidung E-125). Was im Tool bereits gebaut ist, steht in [architecture.md](architecture.md) § Statistik und [decisions.md](decisions.md) (E-122/E-123).
+> **Arbeitsstand / Platzhalter** (angelegt 2026-06-22). Operationalisiert die Forschungsfragen aus [research.md](research.md) und die Mobilitäts-User-Stories in konkrete Use Cases, leitet Personas ab und skizziert, wie sich beides evaluieren lässt. Bewusst als **Gerüst** angelegt: die mit *(ausarbeiten)* markierten Unterbereiche sind offen und mit den Projektpartner:innen zu schärfen — die aus der Partner-Runde Juni 2026 abgestimmte Erfassungskonvention und das Auftritts-Occurrence-Modell stehen in [data-entry-guidelines.md](data-entry-guidelines.md) und [data.md](data.md) (Entscheidung E-127/E-128). Was im Tool bereits gebaut ist, steht in [architecture.md](architecture.md) § Statistik und [decisions.md](decisions.md) (E-122/E-123).
 
 Zweck dieses Dokuments: die Lücke zwischen den abstrakten Forschungsfragen (FF1–FF4) und den konkreten UI-Bausteinen schließen, damit Entwurfsentscheidungen und eine spätere Evaluation auf benannte Bedürfnisse zurückführbar sind statt auf Bauchgefühl.
 
@@ -48,14 +51,14 @@ Schema je Use Case: **FF-Bezug · Frage · benötigte Daten · UI-Baustein (Stan
 - **Frage:** Räumlich-zeitliches Bewegungsprofil über die Karriere.
 - **Daten:** SpatiotemporalEvents mit `atPlace`/`placeCountry`/`atDate`; Records mit `rico:date`.
 - **UI (Stand):** Chronik als **temporale Achse** (Mobilitäts-Chronik, E-124: Sicht-gefärbter Jahres-Zeitstrahl + kollabierbarer Dekaden-Sicht-Header) + Karte als **räumliche Achse** (Trajektorie, E-111) + Statistik „Wohin & Wann" (Aggregat).
-- **Deckung:** Die Masse des datierten Materials klumpt in den 1950ern; nur drei Lebensdekaden sind überhaupt belegt. Die Chronik ist damit ehrlich eine **Erschließungs-Momentaufnahme der München-/Bayreuth-Jahre**, kein Karriere-Bogen über die Lebensspanne. Dichte = Überlieferung, nicht Aktivität — als Caption ausgewiesen.
+- **Deckung:** Die Masse des datierten Materials klumpt in den 1950ern; nur wenige Lebensdekaden sind überhaupt belegt. Die Chronik ist damit ehrlich eine **Erschließungs-Momentaufnahme der München-/Bayreuth-Jahre**, kein Karriere-Bogen über die Lebensspanne. Dichte = Überlieferung, nicht Aktivität — als Caption ausgewiesen.
 - **Offen:** Ort×Zeit und Trajektorie noch nicht gekoppelt; der Cross-View-Filter würde Chronik, Karte und Statistik auf denselben Schnitt bringen.
 
 ### UC-2 — Welche Art von Mobilität? Gastspiel vs. Engagement vs. Reise (FF1/FF4)
 - **Frage:** Auftrittsformen differenziert sehen (Partnerfrage 1: „alle Gastspiele").
-- **Daten:** `eventRole` (gastspiel/aufführung/spielzeit …), gruppiert zu fünf Sichten (`mobilityClusterFor`).
+- **Daten:** `eventRole` (gastspiel/aufführung/spielzeit …), gruppiert zu den Sichten performativ, institutionell, Reise und Korrespondenz, biografisch, diskursiv (`mobilityClusterFor`).
 - **UI (Stand):** Statistik „Art der Mobilität" (Sichten + feine Auftrittstypen) + Chronik (Sicht als linker Akzentbalken am Record-Chip, E-124).
-- **Deckung:** `gastspiel` als eigene Rolle sichtbar. Aber: nur ein Teil der Chronik-Chips trägt überhaupt eine Sicht (der Rest hat kein SpatiotemporalEvent) — die sicht-losen Chips bleiben **monochrom**, die Monochromie ist die ehrliche Aussage „keine Sicht erschlossen". `biografisch`/`diskursiv` sind faktisch leer; eine gleichberechtigte 5-Sichten-Legende täuscht Ausgewogenheit vor. `korrespondenz`-Dominanz teils ein E-110-Mapping-Artefakt (datumslose Ortsrollen).
+- **Deckung:** `gastspiel` als eigene Rolle sichtbar. Aber: nur ein Teil der Chronik-Chips trägt überhaupt eine Sicht (der Rest hat kein SpatiotemporalEvent) — die sicht-losen Chips bleiben **monochrom**, die Monochromie ist die ehrliche Aussage „keine Sicht erschlossen". `biografisch`/`diskursiv` sind faktisch leer; eine Legende, die alle Sichten gleichberechtigt zeigt, täuscht Ausgewogenheit vor. `korrespondenz`-Dominanz teils ein E-110-Mapping-Artefakt (datumslose Ortsrollen).
 - **Offen:** Ensemble-/Institutions-Zuordnung pro Ereignis **nicht erfasst** → Gastspiel nicht nach Ensemble (z. B. Bayreuth-Festspiel) auswertbar (Datenstufe, siehe § Nächste Datenstufe in [plan.md](plan.md)).
 
 ### UC-3 — Wie international war ihre Karriere? (FF1)
@@ -98,6 +101,6 @@ Leitfrage: Macht das Tool die Forschungsfragen *beantwortbar* — und für wen?
 ## Verweise
 
 - Forschungsfragen und Theorie: [research.md](research.md)
-- Erfassungskonvention und Auftritts-Occurrence: [data-entry-guidelines.md](data-entry-guidelines.md), [decisions.md](decisions.md) E-125
+- Erfassungskonvention und Auftritts-Occurrence: [data-entry-guidelines.md](data-entry-guidelines.md), [decisions.md](decisions.md) E-127/E-128
 - Gebauter Stand: [architecture.md](architecture.md) § Statistik, [decisions.md](decisions.md) E-122/E-123
 - Querschnitt-Filter: [filter-modell.md](filter-modell.md)

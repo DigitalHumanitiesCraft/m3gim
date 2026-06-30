@@ -7,7 +7,7 @@ status: complete
 language: de
 version: 0.2
 created: 2026-06-17
-updated: 2026-06-17
+updated: 2026-06-30
 authors: [Christopher Pollin]
 generated-with: Claude Code
 method:
@@ -45,7 +45,7 @@ Sie ordnet die datierten Objekte zeitlich an und macht die Karrierechronologie s
 
 Sie aggregiert den Bestand zu einer visuellen Zusammenschau, die zeigt, was die Daten sind und was mit ihnen möglich wird.
 
-Sie erschließt die vier Normdatenindizes (Personen, Organisationen, Orte, Werke) als eigenständige Einstiege mit Wikidata-Anreicherung und Querverweisen in den Bestand.
+Sie erschließt die Normdatenindizes Personen, Organisationen, Orte und Werke als eigenständige Einstiege mit Wikidata-Anreicherung und Querverweisen in den Bestand.
 
 Sie stellt das Personennetzwerk um Malaniuk dar und unterscheidet explizit annotierte Beziehungen von aus Ko-Präsenz abgeleiteten Verbindungen.
 
@@ -97,7 +97,7 @@ Die Statistik ist eine read-only Zusammenschau des Bestands.
 
 ### Epic Indizes
 
-Die Indizes erschließen die vier Normdaten-Register als eigenständige Einstiege.
+Die Indizes erschließen die Normdaten-Register Personen, Organisationen, Orte und Werke als eigenständige Einstiege.
 
 - Als Forscher:in möchte ich Personen, Organisationen, Orte und Werke durchsuchen und nach Wikidata-Verknüpfung filtern, um über eine normierte Entität in den Bestand einzusteigen.
 - Als Forscher:in möchte ich an einer Personenzeile die Wikidata-Anreicherung (Beruf, Stimmfach, Lebensdaten) und die annotierten Beziehungen sehen, um die Entität ohne Detailsprung einzuordnen.
@@ -127,7 +127,7 @@ Provenance und Normdatenanschluss durchziehen alle Sichten.
 
 ### Epic Perspektiv-Tabs (verborgen, in Reaktivierung)
 
-Annahme: Die folgenden Stories beschreiben den in vorigen Sessions gebauten, derzeit verborgenen Funktionsstand der drei Perspektiv-Tabs. Sie sind als Zielbild der iterativen Reaktivierung zu verstehen, nicht als aktuell ausgelieferter Funktionsumfang.
+Annahme: Die folgenden Stories beschreiben den in vorigen Sessions gebauten, derzeit verborgenen Funktionsstand der Perspektiv-Tabs Mobilitäts-Atlas, Repertoire und Biogramm. Sie sind als Zielbild der iterativen Reaktivierung zu verstehen, nicht als aktuell ausgelieferter Funktionsumfang.
 
 - Als Forscher:in möchte ich die verorteten Ereignisse auf einer Karte mit Zeitstrahl-Filter sehen (Mobilitäts-Atlas), um die räumliche Mobilität Malaniuks nachzuvollziehen.
 - Als Forscher:in möchte ich das Bühnenrepertoire und die Komponisten als Aggregat-Tabellen mit Belegaufschlüsselung sehen (Repertoire), um den künstlerischen Schwerpunkt zu erfassen.
@@ -135,7 +135,7 @@ Annahme: Die folgenden Stories beschreiben den in vorigen Sessions gebauten, der
 
 ## Funktionsumfang und Abgrenzung
 
-Im Funktionsumfang sind die sichtbaren Tabs Bestand, Chronik, Statistik, Indizes, Netzwerk und der Wissenskorb als Werkzeug, jeweils mit Provenance- und Normdatenanschluss. Die drei Perspektiv-Tabs Mobilitäts-Atlas, Repertoire und Biogramm sind als Code, CSS und Store-Maps vorhanden, aber verborgen und werden iterativ reaktiviert.
+Im Funktionsumfang sind die sichtbaren Tabs Bestand, Chronik, Statistik, Indizes, Netzwerk und der Wissenskorb als Werkzeug, jeweils mit Provenance- und Normdatenanschluss. Die Perspektiv-Tabs Mobilitäts-Atlas, Repertoire und Biogramm sind als Code, CSS und Store-Maps vorhanden, aber verborgen und werden iterativ reaktiviert.
 
 Bewusst nicht im Funktionsumfang sind ein Backend oder eine serverseitige Suche, eine Schreib- oder Bearbeitungsfunktion im Frontend (Erfassung läuft ausschließlich über die XLSX-Quellen), redaktionelle Deutungen im Interface, die nicht aus den Metadaten ableitbar sind, sowie eine präemptive Performance-Optimierung. Ebenfalls verschoben sind ein JSON-LD- und GEXF-Export aus den Sichten sowie EAD-Export und Zenodo-Archivierung als Betriebsmodell.
 

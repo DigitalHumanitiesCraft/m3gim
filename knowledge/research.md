@@ -7,7 +7,7 @@ status: complete
 language: de
 version: 0.2
 created: 2026-02-19
-updated: 2026-06-17
+updated: 2026-06-30
 authors: [Christopher Pollin]
 generated-with: Claude Code
 method:
@@ -23,7 +23,7 @@ related: [project, data, specification, data-entry-guidelines]
 
 # Forschungsrahmen
 
-> Theorie, Forschungsfragen, Mobilitätstypen und der Kontext des Grazer Opernhauses.
+> Theorie, Forschungsfragen, die Mobilitätstypen und der Kontext des Grazer Opernhauses.
 
 ## Theoretischer Rahmen
 
@@ -36,14 +36,14 @@ M³GIM verortet sich im Feld der Mobility Studies und erweitert diese um musikwi
 
 ### DH-Vorläufer
 
-Zwei verwandte Digital-Humanities-Projekte, beide auf die Frühe Neuzeit beschränkt:
+Verwandte Digital-Humanities-Projekte, beide auf die Frühe Neuzeit beschränkt:
 
 - **MUSICI** — Goulet/zur Nieden, [musici.eu](https://musici.eu)
 - **MusMig** — Katalinic, Zagreb
 
 M³GIM schließt die Lücke zum 20. Jahrhundert und erprobt dafür eine RiC-O-1.1-basierte Modellierung (siehe [data.md](data.md)).
 
-## Fünf Mobilitätstypen
+## Mobilitätstypen
 
 Am Fallbeispiel Ira Malaniuk (siehe [Fallbeispiel Ira Malaniuk](#fallbeispiel-ira-malaniuk)) operationalisiert:
 
@@ -53,11 +53,11 @@ Am Fallbeispiel Ira Malaniuk (siehe [Fallbeispiel Ira Malaniuk](#fallbeispiel-ir
 4. **Bildungs- und Ausbildungsmobilität** — Professionalisierung an wechselnden Stätten
 5. **Lebensstil-Migration** — dauerhafte Verlagerung des Lebensmittelpunkts
 
-Die fünf Typen werden im Frontend über die Mobilitätssichten (siehe [data.md](data.md)) operationalisiert und in der Chronik und der Statistik sichtbar gemacht (siehe [design.md](design.md)).
+Diese Typen werden im Frontend über die Mobilitätssichten (siehe [data.md](data.md)) operationalisiert und in der Chronik und der Statistik sichtbar gemacht (siehe [design.md](design.md)).
 
 ## Fallbeispiel Ira Malaniuk
 
-Die ukrainisch-österreichische Mezzosopranistin Ira Malaniuk (1919–2009) ist das konkrete Fallbeispiel des Projekts. Ihre Biografie verkörpert alle fünf oben benannten Mobilitätstypen und verbindet die theoretische Begründungsschicht mit einer durchgehend dokumentierten Lebensbewegung.
+Die ukrainisch-österreichische Mezzosopranistin Ira Malaniuk (1919–2009) ist das konkrete Fallbeispiel des Projekts. Ihre Biografie verkörpert die oben benannten Mobilitätstypen und verbindet die theoretische Begründungsschicht mit einer durchgehend dokumentierten Lebensbewegung.
 
 ### Biografische Stationen
 
@@ -71,10 +71,12 @@ Die ukrainisch-österreichische Mezzosopranistin Ira Malaniuk (1919–2009) ist 
 | 1947–1952 | Zürich | Engagement |
 | 1952–1956 | München | Bayerische Staatsoper |
 | 1956–1971 | Wien | Wiener Staatsoper |
-| 1951–1958 | Bayreuth | Festspiel-Gastspiele |
+| 1951–1958 (Literatur) | Bayreuth | Festspiel-Gastspiele |
 | 1951–1963 | Salzburg | Festspiel-Gastspiele |
 | 1970–2000 | Graz | Professorin für Liedinterpretation an der KUG |
 | 2009 | Zirl (Tirol) | Gestorben |
+
+Die Bayreuther Spanne 1951–1958 ist ein Wert aus der Sekundärliteratur. Die Datengrundlage des Teilnachlasses (UAKUG/NIM) belegt für Bayreuth nur 1951–1953; zur Auflösung dieser Diskrepanz siehe [visualisierung-bayreuth.md](visualisierung-bayreuth.md).
 
 Internationale Gastspiel-Stationen umfassen das Teatro Colón Buenos Aires, das Royal Opera House London, die Mailänder Scala, Lissabon und Paris.
 
@@ -84,7 +86,7 @@ Malaniuk trat mit prägenden Dirigenten und Regisseuren auf, darunter Herbert vo
 
 Ihre Repertoire-Schwerpunkte lagen bei Wagner (Waltraute, Brangäne, 2. Norn, Fricka), Verdi, Mozart, Strauss und Mahler (Das Lied von der Erde) sowie im Konzert- und Liedgesang.
 
-### Bezug zu den fünf Mobilitätstypen
+### Bezug zu den Mobilitätstypen
 
 1. **Erzwungene Migration** — 1944, Flucht aus der Ukraine.
 2. **Bildungs- und Ausbildungsmobilität** — Konservatorium Lemberg, Professionalisierung in Graz, Zürich und München.
@@ -92,7 +94,7 @@ Ihre Repertoire-Schwerpunkte lagen bei Wagner (Waltraute, Brangäne, 2. Norn, Fr
 4. **Nationale Mobilität** — österreichische Staatsbürgerschaft durch Heirat, kuk-biografische Kontinuität.
 5. **Lebensstil-Migration** — dauerhafte Verlagerung nach Wien (ab 1956), später nach Zirl.
 
-Zur theoretischen Einordnung dieser Typen siehe [Fünf Mobilitätstypen](#fünf-mobilitätstypen).
+Zur theoretischen Einordnung dieser Typen siehe [Mobilitätstypen](#mobilitätstypen).
 
 Zu Malaniuk besteht keine eigenständige wissenschaftliche Literatur. Das Projekt leistet die ersten archivgestützten Erschließungsarbeiten am Teilnachlass UAKUG/NIM (siehe [data.md](data.md)).
 

@@ -7,7 +7,7 @@ status: complete
 language: de
 version: 0.3
 created: 2026-02-19
-updated: 2026-06-25
+updated: 2026-06-30
 authors: [Christopher Pollin]
 generated-with: Claude Code
 method:
@@ -30,7 +30,7 @@ related: [research, pipeline, decisions, testing, data-entry-guidelines]
 
 Dieses Dokument beschreibt die Datengrundlage des M³GIM-Projekts. Es definiert Ontologie, Schichtenmodell, Verknüpfungslogik, die Integration von RiC-O und AgRelOn, das Mobilitätsmodell, Meta-Statements, kontrollierte Vokabulare und das partitur.json-Schema. Ergänzend dokumentiert es die Quellenlage des Teilnachlasses und die Datenqualität, also welche XLSX-Eigenheiten die Pipeline kompensiert.
 
-Version 2.0, Stand der Revision auf Basis der Ist-Daten-Analyse der sechs M³GIM-Tabellen.
+Der überarbeitete Modellstand auf Basis der Ist-Daten-Analyse der M³GIM-Tabellen. Dieser Revisionsstand des Modells ist von der Promptotyping-Dokumentversion im Frontmatter zu unterscheiden.
 
 ## 1. Präambel
 
@@ -69,7 +69,7 @@ Das Datenmodell operiert auf der dritten epistemischen Ebene des Projekts, den *
 
 ## 2. Schichtenmodell
 
-Das Modell ist in drei fachliche Schichten plus eine Querschnittsebene gegliedert.
+Das Modell ist in die fachlichen Schichten Kernmetadaten, Verknüpfungen und Erweiterung plus eine Querschnittsebene Meta gegliedert.
 
 **Schicht 1 (Kernmetadaten).** Archivsignatur, Titel, Datum, Dokumenttyp, Sprache, Umfang, Bearbeitungsstand. Direkt aus `rico:Record`-Properties bedient.
 
@@ -77,7 +77,7 @@ Das Modell ist in drei fachliche Schichten plus eine Querschnittsebene geglieder
 
 **Schicht 3 (Erweiterung).** Finanzielle und vertragliche Detailangaben (Honorare, Provisionen, Währungsbeträge). Getragen von `m3gim:DetailAnnotation`.
 
-**Querschnittsebene (Meta).** Gültigkeitsperiode, Konfidenz und Provenienz jeder Aussage. Nach dem Muster von AgRelOn realisiert, wirksam für alle drei Schichten (siehe Abschnitt 9).
+**Querschnittsebene (Meta).** Gültigkeitsperiode, Konfidenz und Provenienz jeder Aussage. Nach dem Muster von AgRelOn realisiert, wirksam für alle fachlichen Schichten (siehe Abschnitt 9).
 
 ## 3. Tabellenmodell
 
@@ -96,7 +96,7 @@ Objektidentität wird durch `archivsignatur` plus optionales Folio gebildet. Kon
 
 ### Bestand
 
-Teilnachlass UAKUG/NIM in drei Bestandsgruppen: Hauptbestand, Plakate, Tonträger. Feinerschlossen mit einzelnen Folio-Einträgen sind die Konvolute um NIM_003, NIM_004, NIM_005, NIM_006, NIM_007 und NIM_011. Die Verknüpfungstabelle trägt den Großteil der Schicht-2- und Schicht-3-Relationen.
+Teilnachlass UAKUG/NIM in den Bestandsgruppen Hauptbestand, Plakate und Tonträger. Feinerschlossen mit einzelnen Folio-Einträgen sind die Konvolute um NIM_003, NIM_004, NIM_005, NIM_006, NIM_007 und NIM_011. Die Verknüpfungstabelle trägt den Großteil der Schicht-2- und Schicht-3-Relationen.
 
 Aktuelle Zählstände pro Bestandsgruppe, Feldabdeckung und Verknüpfungsrate stehen im Quality-Snapshot (`data/reports/quality-snapshot.md`) und werden bei jedem Pipeline-Lauf neu generiert — dieses Modelldokument hält keine laufenden Zahlen vor.
 
@@ -167,7 +167,7 @@ Alle Rollen sind nach Normalisierung geschlechtsneutral. Pipeline-Regel: `:in`, 
 
 ### Personenrollen
 
-Dreiteilung nach Handreichungslogik: archivalisch / künstlerisch / institutionell.
+Gliederung nach Handreichungslogik in archivalisch, künstlerisch und institutionell.
 
 **Archivalisch-inhaltlich**
 
@@ -366,7 +366,7 @@ Die Quelle nutzt die `rolle`-Spalte vereinzelt für einen Vertragsstatus statt f
 
 ### Datums-Routing
 
-Eine Datierung wird nach ihrer Notation auf eine der drei Repräsentationen geführt:
+Eine Datierung wird nach ihrer Notation auf eine der folgenden Repräsentationen geführt:
 
 | Notation | Repräsentation |
 |---|---|
@@ -393,7 +393,7 @@ Datierungsevidenz wird im Meta-Statement-Modell als `agrelon:metadataProvenance`
 Hierarchie.
 `rico:RecordSet` (Konvolut, Fonds) mit `rico:Record` (Einzelstück). Agenten-Typen `rico:Person`, `rico:CorporateBody`, `rico:Group`. Beschreibungs-Properties `rico:identifier`, `rico:title`, `rico:date`, `rico:hasExtent`, `rico:hasOrHadLanguage`, `rico:generalDescription`. Relationen `rico:hasOrHadLocation`, `rico:hasOrHadSubject`, `rico:isAssociatedWithEvent`.
 
-**Konformitäts-Korrektur (E-103).** Der Web-Audit gegen RiC-O 1.1 hat drei im Output emittierte Terme als nicht konform belegt. (1) `rico:isAssociatedWithRecord` existiert nicht — die `isAssociatedWith*`-Familie kennt nur `Date/Event/Place/Rule`; Record-Bezüge laufen über `rico:hasOrHadPart`/`isOrWasPartOf` bzw. eine konkrete RecordResource-Relation, ein Event-zu-Record-Bezug über `rico:isAssociatedWithEvent` von der Record-Seite. (2)/(3) `rico:File` und `rico:Fonds` sind keine Klassen und nicht im `rico:`-Namespace, sondern Werte des Vokabulars `recordSetTypes:`; ein Fonds bzw. eine File ist ein `rico:RecordSet` mit `rico:hasRecordSetType` → `recordSetTypes:Fonds`/`recordSetTypes:File`. Die Pipeline emittiert diese Terme derzeit falsch; Korrektur in derselben Runde wie E-96–E-102.
+**Konformitäts-Korrektur (E-103).** Der Web-Audit gegen RiC-O 1.1 hat im Output emittierte Terme als nicht konform belegt. (1) `rico:isAssociatedWithRecord` existiert nicht — die `isAssociatedWith*`-Familie kennt nur `Date/Event/Place/Rule`; Record-Bezüge laufen über `rico:hasOrHadPart`/`isOrWasPartOf` bzw. eine konkrete RecordResource-Relation, ein Event-zu-Record-Bezug über `rico:isAssociatedWithEvent` von der Record-Seite. (2)/(3) `rico:File` und `rico:Fonds` sind keine Klassen und nicht im `rico:`-Namespace, sondern Werte des Vokabulars `recordSetTypes:`; ein Fonds bzw. eine File ist ein `rico:RecordSet` mit `rico:hasRecordSetType` → `recordSetTypes:Fonds`/`recordSetTypes:File`. Die Pipeline emittiert diese Terme derzeit falsch; Korrektur in derselben Runde wie E-96–E-102.
 
 ### m3gim-Klassen
 
@@ -515,7 +515,7 @@ Die aus dem Wikidata-Enrichment injizierten Personen-, Orts- und Werk-Normdaten 
 
 ### Kuratierte Index-Properties (M1, Index-Durchreichung)
 
-Die vier Indextabellen pflegen Felder, die die Pipeline zuvor nach `build_index_lookup` verlor (nur `wikidata_id`/`komponist` wurden durchgereicht). M1 reicht sie als eigene `m3gim:`-Properties an die jeweilige Entität durch — getrennt von den Wikidata-Normdaten oben (kuratiert gegen angereichert) und vom Verknüpfungs-`anmerkung`. Quelle ist die Index-Spalte, nicht das Wikidata-Enrichment; damit erreichen Beruf, Sitz und Partie auch ungematchte Entitäten ohne Q-ID.
+Die Indextabellen (Personen-, Organisations-, Orts- und Werkindex) pflegen Felder, die die Pipeline zuvor nach `build_index_lookup` verlor (nur `wikidata_id`/`komponist` wurden durchgereicht). M1 reicht sie als eigene `m3gim:`-Properties an die jeweilige Entität durch — getrennt von den Wikidata-Normdaten oben (kuratiert gegen angereichert) und vom Verknüpfungs-`anmerkung`. Quelle ist die Index-Spalte, nicht das Wikidata-Enrichment; damit erreichen Beruf, Sitz und Partie auch ungematchte Entitäten ohne Q-ID.
 
 | Property | Typ / Range | Domain | Quelle (Index-Spalte) | Zweck |
 |---|---|---|---|---|
@@ -543,15 +543,15 @@ Inhaltlich erwähnte Personen und Institutionen werden als `rico:hasOrHadSubject
 
 ### PerformanceRoles als SKOS-ConceptScheme
 
-Das bestehende SKOS-ConceptScheme `m3gim-role:` bündelt die Bühnen- und Aufführungsrollen. Es wird durch die Rollenlisten aus Abschnitt 5 ersetzt und in die drei Kategorien archivalisch-inhaltlich, künstlerisch, institutionell gegliedert.
+Das bestehende SKOS-ConceptScheme `m3gim-role:` bündelt die Bühnen- und Aufführungsrollen. Es wird durch die Rollenlisten aus Abschnitt 5 ersetzt und in die Kategorien archivalisch-inhaltlich, künstlerisch und institutionell gegliedert.
 
 ## 8. AgRelOn-Integration
 
 ### Scope und Begründung
 
-AgRelOn (Agent Relationship Ontology der Deutschen Nationalbibliothek) modelliert Beziehungen zwischen Agenten (Personen, Organisationen) mit rund 70 Relationstypen in sieben Kategorien. Das M³GIM-Modell integriert AgRelOn als *komplementäre Ebene* für Agent-Agent-Beziehungen und für Meta-Statements. AgRelOn ersetzt keinen Teil des m3gim-Modells, weil sein Scope auf Agent-Agent beschränkt ist und raumzeitliche, werkbezogene oder archivische Relationen nicht abdeckt.
+AgRelOn (Agent Relationship Ontology der Deutschen Nationalbibliothek) modelliert Beziehungen zwischen Agenten (Personen, Organisationen) über ein nach Kategorien gegliedertes Vokabular von Relationstypen. Das M³GIM-Modell integriert AgRelOn als *komplementäre Ebene* für Agent-Agent-Beziehungen und für Meta-Statements. AgRelOn ersetzt keinen Teil des m3gim-Modells, weil sein Scope auf Agent-Agent beschränkt ist und raumzeitliche, werkbezogene oder archivische Relationen nicht abdeckt.
 
-Die Integration hat drei Ziele:
+Die Integration verfolgt folgende Ziele:
 
 1. Standardvokabular für die institutionelle und die Korrespondenzschicht.
 2. GND-Anschlussfähigkeit für Bestände anderer Archive.
@@ -575,7 +575,7 @@ Die Integration hat drei Ziele:
 
 `agrelon:hasEmployer`, `agrelon:hasEmployee`, `agrelon:hasCorrespondent`, `agrelon:hasProfessionalContact`, `agrelon:hasColleague`, `agrelon:hasTeacher`, `agrelon:hasStudent`, `agrelon:isPatronOf`, `agrelon:hasPatron`, `agrelon:isMemberOf`, `agrelon:hasMember`.
 
-**Konformitäts-Korrektur (E-104, amendiert E-69).** Der Web-Audit gegen die DNB-RDF hat bestätigt: das n-äre Reifikationsmuster (eine Klasse pro Beziehungstyp, Agenten über `agrelon:hasSubject`/`hasObject`, Gültigkeit als Blank-Node) entspricht AgRelOn exakt. Vier Benennungen sind aber zu korrigieren. Gültigkeit, Konfidenz und Provenienz führt AgRelOn unter `metadata*`, nicht `has*`: `agrelon:metadataPeriod` (statt `hasValidityPeriod`), `agrelon:metadataConfidence` (statt `hasConfidenceValue`), `agrelon:metadataProvenance` (statt `hasProvenance`); `hasBeginDate`/`hasEndDate` am Period-Blank-Node sind korrekt. Die Patron-Klasse heißt `agrelon:IsHasPatron` (nicht `HasIsPatron`); `HasIsMember` ist korrekt. Die Reifikation muss `agrelon:hasSubject` zusätzlich zu `hasObject` setzen (aktuell nur `hasObject` emittiert). Die obigen Beispiele und Tabellen sind bereits auf die korrekten Terme gesetzt; Pipeline und die Tests test_12/test_19 sind nachzuziehen.
+**Konformitäts-Korrektur (E-104, amendiert E-69).** Der Web-Audit gegen die DNB-RDF hat bestätigt: das n-äre Reifikationsmuster (eine Klasse pro Beziehungstyp, Agenten über `agrelon:hasSubject`/`hasObject`, Gültigkeit als Blank-Node) entspricht AgRelOn exakt. Einige Benennungen sind aber zu korrigieren. Gültigkeit, Konfidenz und Provenienz führt AgRelOn unter `metadata*`, nicht `has*`: `agrelon:metadataPeriod` (statt `hasValidityPeriod`), `agrelon:metadataConfidence` (statt `hasConfidenceValue`), `agrelon:metadataProvenance` (statt `hasProvenance`); `hasBeginDate`/`hasEndDate` am Period-Blank-Node sind korrekt. Die Patron-Klasse heißt `agrelon:IsHasPatron` (nicht `HasIsPatron`); `HasIsMember` ist korrekt. Die Reifikation muss `agrelon:hasSubject` zusätzlich zu `hasObject` setzen (aktuell nur `hasObject` emittiert). Die obigen Beispiele und Tabellen sind bereits auf die korrekten Terme gesetzt; Pipeline und die Tests test_12/test_19 sind nachzuziehen.
 
 ### Mapping M³GIM-Rolle → AgRelOn
 
@@ -610,7 +610,7 @@ AgRelOn modelliert *nicht*: Orte, Werke, Bühnenrollen, Aufführungen, Dokumentt
 
 ### Prinzip
 
-Jede Aussage im Modell kann mit drei Meta-Angaben versehen werden: Gültigkeitsperiode, Konfidenzwert, Provenienz. Das Muster stammt aus AgRelOn und wird auf alle M³GIM-Relationen übertragen, nicht nur auf Agent-Agent-Relationen. Damit entsteht eine einheitliche Querschnittsebene über den drei fachlichen Schichten.
+Jede Aussage im Modell kann mit den Meta-Angaben Gültigkeitsperiode, Konfidenzwert und Provenienz versehen werden. Das Muster stammt aus AgRelOn und wird auf alle M³GIM-Relationen übertragen, nicht nur auf Agent-Agent-Relationen. Damit entsteht eine einheitliche Querschnittsebene über den fachlichen Schichten.
 
 ### Properties
 
@@ -638,7 +638,7 @@ Ergänzend zur semantischen Provenance (`agrelon:metadataProvenance`; die Datier
 
 | Property | Wertebereich | Zweck |
 |---|---|---|
-| `m3gim:xlsxSource` | Blank Node | Container für die drei Adressteile |
+| `m3gim:xlsxSource` | Blank Node | Container für die Adressteile (Sheet, Zeile, optional datenpunktId) |
 | `m3gim:xlsxSheet` | xsd:string (`"Objekte"` oder `"Verknuepfungen"`) | Name des Ursprungs-Sheets |
 | `m3gim:xlsxRow` | xsd:integer (≥ 2) | 1-basierte XLSX-Zeilennummer inklusive Header-Zeile |
 | `m3gim:datenpunktId` | xsd:integer (optional) | Identität der Auftritts-Occurrence innerhalb des Dokuments (Abschnitt 4 und 7); leer = Dokument-Ebene. Aus Spalte `datenpunkt_id`. Die frühere Lesart als reine Provenienz-Kennung ist mit E-125 überholt |
@@ -690,7 +690,7 @@ Aus Performance-Gründen ist diese Reifikation optional und nur dort anzuwenden,
 
 ### Motivation
 
-Mobilität ist die zentrale inhaltliche Frage des Projekts. Das Datenmodell unterstützt sie über fünf unterscheidbare Sichten, die als SPARQL-Abfragemuster auf den bestehenden Klassen und Rollen realisiert sind. Sie werden nicht als eigene Klassen angelegt, weil sie verschiedene Schnitte durch dieselben Daten sind.
+Mobilität ist die zentrale inhaltliche Frage des Projekts. Das Datenmodell unterstützt sie über die unterscheidbaren Sichten performative, institutionelle, Reise- und Korrespondenz-, biographische und diskursive Mobilität, die als SPARQL-Abfragemuster auf den bestehenden Klassen und Rollen realisiert sind. Sie werden nicht als eigene Klassen angelegt, weil sie verschiedene Schnitte durch dieselben Daten sind.
 
 ### Mobilitätssichten
 
@@ -709,7 +709,7 @@ Ortsrolle `wohnort` an Malaniuk mit TimeSpan via `agrelon:metadataPeriod`.
 **Diskursive Mobilität.** Wo wurde über sie berichtet?
 `rico:Record` mit Dokumenttyp ∈ {rezension, presse, kritik} + `entstehungsort` oder Herausgeberinstitution mit Ortsreferenz. Der diskursive Raum weicht typischerweise vom performativen ab.
 
-Die UI-Anbindung der fünf Sichten, etwa die Farbfamilie für Chronik-Chips, liegt in [design.md](design.md). Die Absicherung gegen fehl-gemappte eventRoles erfolgt in `tests/test_25_chronik_mobility_cluster.py`.
+Die UI-Anbindung dieser Sichten, etwa die Farbfamilie für Chronik-Chips, liegt in [design.md](design.md). Die Absicherung gegen fehl-gemappte eventRoles erfolgt in `tests/test_25_chronik_mobility_cluster.py`.
 
 Mit dem tieferen Export aktivierte eventRole-Cluster (`EVENT_ROLE_TO_MOBILITY_CLUSTER` in `docs/js/data/constants.js`), provisorisch und mit dem Erschließungsteam zu bestätigen (Treffen 2026-06-23):
 
@@ -896,14 +896,14 @@ Vor der Normalisierung zu vereinheitlichen:
 
 ## 15. Erfassungsstatus
 
-Drei parallel im Feld befindliche Systeme, zu vereinheitlichen auf das Handreichungssystem.
+Parallel im Feld befindliche Systeme, zu vereinheitlichen auf das Handreichungssystem.
 
 | Quelle | Werte |
 |---|---|
 | Handreichung (Soll) | in_bearbeitung, schicht1_fertig, schicht2_fertig, abgeschlossen |
 | Pipeline (transform.py) | begonnen, abgeschlossen, zurueckgestellt |
 
-Empfehlung: Handreichungssystem durchsetzen. Vier Werte bilden den Schichtfortschritt sauber ab und erlauben eine Abdeckungsmessung pro Schicht.
+Empfehlung: Handreichungssystem durchsetzen. Die Werte in_bearbeitung, schicht1_fertig, schicht2_fertig und abgeschlossen bilden den Schichtfortschritt sauber ab und erlauben eine Abdeckungsmessung pro Schicht.
 
 ## 16. JSON-LD Context
 
@@ -930,7 +930,7 @@ Empfehlung: Handreichungssystem durchsetzen. Vier Werte bilden den Schichtfortsc
 
 Es gilt das Prinzip *Documents as Source of Truth*. Die XLSX-Erfassung ist die maßgebliche Quelle, der Pipeline-Code ist wegwerfbares Artefakt. Wo die Pipeline eine XLSX-Eigenheit kompensiert, ist diese Kompensation eine Schuld, kein Feature. Sie wird sichtbar gehalten, damit klar bleibt, was quellseitig zu fixen ist und wo der Code dauerhaft defensiv bleiben muss. Die Code-Stellen der Kompensationen liegen in `scripts/_common.py` und `scripts/transform.py`, die zugehörigen Test-Anker in der Testsuite. Die offenen Source-Fix-Tickets liegen gebündelt in [plan.md](plan.md).
 
-Die kompensierten Eigenheiten fallen in vier Kategorien.
+Die kompensierten Eigenheiten fallen in die Kategorien Spec, Workaround, Policy und Dead.
 
 **Spec** sind strukturell unvermeidliche Format-Transformationen, die im Code bleiben, weil sie keinen Datenfehler kaschieren, etwa die Gender-Suffix-Entfernung und der Q-ID-Regex-Filter.
 
@@ -949,7 +949,7 @@ Die kompensierten Eigenheiten fallen in vier Kategorien.
 | Malformter Datumswert ohne Jahr (z. B. „06-09") in `entstehungsdatum` | Workaround | nicht-ISO Wert läuft verlustfrei in `m3gim:hasDatedEvent` (`dataQualityFlag` „datierung-malformed"), nicht in `rico:date`; Quell-Fix offen |
 | Vertragsstatus „nicht eingehalten" spaltenweit in der Rollenspalte (NIM_023) | Workaround | im STE-Bau nicht als `m3gim:eventRole` emittiert (`CONTRACT_STATUS_ROLES`); `contractStatus`-Modellierung mit Erschließungsteam offen |
 | Gemischte Finanz-Betragsnotation (Dezimalkomma vs. Komma-Währungstrenner, Tausenderpunkt, Doppelbetrag `25, DM/45, DM`) | Workaround | `parse_monetary_values()` löst Betrag/Währung robust auf und splittet Doppelbeträge in zwei DetailAnnotations |
-| Bearbeitungsstand in uneinheitlicher Schreibung und Synonymen | Workaround | `normalize_bearbeitungsstand()` mappt auf drei kanonische Werte |
+| Bearbeitungsstand in uneinheitlicher Schreibung und Synonymen | Workaround | `normalize_bearbeitungsstand()` mappt auf die kanonischen Werte |
 | Datumsrolle wird im Komposit `ort, datum` an beide Hälften vererbt | Workaround | Role-Strip im Ort-Zweig für Datumsrollen |
 | Freitext-Datierungen (Ort plus Zeit gemischt) | Workaround | Rohwert wird durchgereicht und toleriert, nicht geblockt |
 | Gender-inklusive Rollennotation (`:in`, `:innen`) | Spec | `normalize_role()` strippt das Suffix |
@@ -968,7 +968,7 @@ Einzelne Instanz-Befunde sind laut Katalog dokumentiert und gegen den aktuellen 
 
 ## 18. Quellen
 
-Datengrundlage ist der Teilnachlass UAKUG/NIM am Universitätsarchiv der KUG Graz. Er gliedert sich in drei Bestandsgruppen.
+Datengrundlage ist der Teilnachlass UAKUG/NIM am Universitätsarchiv der KUG Graz. Er gliedert sich in die folgenden Bestandsgruppen.
 
 - **Hauptbestand** NIM_001–NIM_200+ mit Briefen, Verträgen, Presseartikeln, Programmen und Fotos.
 - **Plakate** NIM/PL_01–PL_26.

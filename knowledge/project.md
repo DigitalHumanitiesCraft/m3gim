@@ -12,7 +12,7 @@ template:
   url: https://dhcraft.org/Promptotyping/promptotyping-document/project
 status: complete
 created: 2026-02-19
-updated: 2026-06-17
+updated: 2026-06-30
 language: de
 version: 0.2
 authors: [Christopher Pollin]
@@ -32,7 +32,7 @@ M³GIM (Mapping Mobile Musicians) erschließt den Teilnachlass der Mezzosopranis
 
 ## Datengrundlage
 
-Grundlage ist der archivisch erfasste Teilnachlass UAKUG/NIM in drei Bestandsgruppen (Hauptbestand, Plakate, Tonträger), erfasst durch das Archivteam der KUG nach der projekteigenen [Erfassungsrichtlinie](data-entry-guidelines.md). Das Projekt verarbeitet diese Erfassung, es produziert die Quellbeschreibung nicht selbst. Modell, Vokabulare und Quellen stehen im Detail in [data.md](data.md). Laufende Bestandszahlen stehen ausschließlich im generierten Quality-Snapshot, nicht in der Wissensbasis.
+Grundlage ist der archivisch erfasste Teilnachlass UAKUG/NIM in den Bestandsgruppen Hauptbestand, Plakate und Tonträger, erfasst durch das Archivteam der KUG nach der projekteigenen [Erfassungsrichtlinie](data-entry-guidelines.md). Das Projekt verarbeitet diese Erfassung, es produziert die Quellbeschreibung nicht selbst. Modell, Vokabulare und Quellen stehen im Detail in [data.md](data.md). Laufende Bestandszahlen stehen ausschließlich im generierten Quality-Snapshot, nicht in der Wissensbasis.
 
 ## Übergeordneter Kontext
 
