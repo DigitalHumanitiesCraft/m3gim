@@ -89,6 +89,11 @@ def fonds(graph: list) -> dict:
 
 @pytest.fixture(scope="session")
 def partitur(partitur_path: Path) -> dict:
+    # Die Derivate sind deferred (kein aktiver Tab konsumiert sie,
+    # specification.md § Stand). Fehlt das Artefakt, werden die
+    # Partitur-Tests uebersprungen statt als Error zu scheitern.
+    if not partitur_path.exists():
+        pytest.skip(f"partitur.json nicht gebaut ({partitur_path}) — Derivate deferred")
     with open(partitur_path, encoding="utf-8") as f:
         return json.load(f)
 

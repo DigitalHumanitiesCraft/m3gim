@@ -36,9 +36,10 @@ ANCHOR_TITLES = [
     "Handschriftliche Notiz",                        # NIM_007/5_1 (Finanz-Anker)
 ]
 
-# Bekannte, dokumentierte @id-Kollisionen (siehe knowledge/data.md § 17).
-# Wird der Satz grosser, ist das ein echter Regressions-Alarm.
-KNOWN_COLLISIONS = {"m3gim:NIM_PL_07"}
+# Bekannte, dokumentierte @id-Kollisionen (siehe knowledge/datenfehler.md).
+# Aktuell leer — das PL_07-Quellduplikat wird von der Pipeline kompensiert.
+# Jeder Eintrag hier ist ein tolerierter Regressions-Alarm.
+KNOWN_COLLISIONS = set()
 
 
 # ---------------------------------------------------------------------------

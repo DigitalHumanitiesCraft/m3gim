@@ -12,6 +12,8 @@ transform.py-Mapping (add_relations_to_records):
   datum        → m3gim:eventDate
 """
 
+import pytest
+
 from _helpers import ensure_list
 
 
@@ -51,6 +53,12 @@ def _has_any_relation(record):
     return False
 
 
+@pytest.mark.xfail(
+    strict=True,
+    reason="NIM_168 Folio-Granularitaets-Inkonsistenz zwischen Objekt- und "
+    "Verknuepfungstabelle (Sub-Folios 2_1..2_3), Source-Fix beim "
+    "Erschliessungsteam offen — siehe knowledge/datenfehler.md",
+)
 def test_verknuepfungen_every_referenced_record_has_relations(
     records, xlsx_verknuepfungen
 ):
@@ -71,7 +79,9 @@ def test_verknuepfungen_every_referenced_record_has_relations(
     nur vom Erschliessungsteam loesbar: entweder die Objekttabelle um die
     Sub-Folios 2_1..2_3 ergaenzen oder die Verknuepfungsfolios auf 2 vereinheit-
     lichen. Kein Pipeline-Fallback, weil ein Umhaengen auf Folio 2 die Provenienz
-    falsch zuordnen wuerde. Bis zur Quellbereinigung bleibt der Test rot.
+    falsch zuordnen wuerde. Bis zur Quellbereinigung traegt der Test
+    xfail(strict=True); nach dem Source-Fix bricht XPASS die Suite und der
+    Marker wird entfernt.
     """
     # Index: Signatur -> Record(s)
     by_sig = {}

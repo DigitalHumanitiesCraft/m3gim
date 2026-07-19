@@ -48,7 +48,7 @@ tests/
 ├── test_02_strings.py             # Umlaute, Whitespace, Datumsformate
 ├── test_03_roundtrip.py           # XLSX-Rohdaten ↔ JSON-LD
 ├── test_04_verknuepfungen.py      # Verknüpfungs-Typ-Mapping + Gender-neutrale Rollen
-├── test_05_referential.py         # Referentielle Integrität, PL_07 xfail
+├── test_05_referential.py         # Referentielle Integrität, @id-Eindeutigkeit
 ├── test_06_frontend_contract.py   # loader.js-Store-Shape-Annahmen
 ├── test_07_wikidata.py            # WD-Enrichment-Integrität
 ├── test_08_partitur.py            # Partitur-Invarianten (Derivat, nicht mehr konsumiert)
@@ -98,7 +98,7 @@ Lädt die Rohdaten (`M3GIM-Objekte.xlsx`) direkt mit pandas und verifiziert: jed
 Jeder Basis-Typ (person, institution, ensemble, ort, werk, ereignis, rolle, datum) hat einen Test, der die korrekte RiC-O-Property prüft. Plus: erwähnte Personen landen in `rico:hasOrHadSubject`, alle Agents haben `name`, Event-Daten im ISO-Format. Zusätzlich: **keine Rolle im Output endet auf `:in`/`:innen`** (Phase 4.1).
 
 ### 5. Referentielle Integrität (test_05)
-Fonds existiert genau einmal, `hasOrHadPart`-Referenzen sind alle im Graph auflösbar, keine Waisen-Records. **xfail**: `test_all_record_ids_unique` — PL_07 erscheint doppelt (XLSX-Bug).
+Fonds existiert genau einmal, `hasOrHadPart`-Referenzen sind alle im Graph auflösbar, keine Waisen-Records, alle `@id` eindeutig. Das PL_07-Quellduplikat (Datenfehler-Register QF-04) kompensiert die Pipeline auf einen Record; `test_all_record_ids_unique` läuft ohne Marker und wacht über Regressionen.
 
 ### 6. Frontend-Kontrakt (test_06)
 Implizite Annahmen aus `loader.js` (`aggregator.js` wurde Session 32 entfernt):
@@ -289,14 +289,15 @@ Wartung:
 
 ## Bekannte Ausnahmen
 
-- `test_all_record_ids_unique` — **xfail**. PL_07 Duplikat aus XLSX-Erfassung. Fix: im Google Sheet bereinigen, dann xfail-Marker entfernen.
+- `test_verknuepfungen_every_referenced_record_has_relations` — **xfail (strict)**. Folio-Granularitäts-Inkonsistenz NIM_168 zwischen Objekt- und Verknüpfungstabelle (Datenfehler-Register QF-07). Nach dem Source-Fix bricht XPASS die Suite, dann Marker entfernen.
+- Partitur-Tests (`test_01`-Schema, `test_08`, `test_09`-Baselines) — **skip**, wenn `partitur.json` nicht gebaut ist. Die Derivate sind deferred (kein aktiver Tab konsumiert sie); die Fixture überspringt statt mit `FileNotFoundError` zu scheitern.
 - `test_has_employer_relations_from_arbeitgeber` — **skip**. Die einzige arbeitgeber-Zeile hat Signatur `UAKUG/NIM_11`, die keinem Record zugeordnet werden kann (verwaist).
 - Junk-Namen im Personen-Index (`[Organi]`, kurze Initialen) werden als Warnung geloggt, nicht gefailed — Frontend filtert via `isJunkName`.
 - Freitext in Datumsspalte (`"Wien, ab 1956"`, `"1944-05 bis 1944-09"`): `is_iso_date()` lässt sie nicht in typisierte Datumsproperties durch, landen stattdessen im Fallback `m3gim:hasDatedEvent` (inline DatedEvent mit `dateValue`/`dateRole`, E-102). Das generische `m3gim:eventDate` ist abgeschafft (test_18 assertet `generic_count == 0`).
 
 ## Stand
 
-Suite durchgängig grün bis auf die beiden dokumentierten Ausnahmen (`PL_07` xfail, `NIM_11` skip). Die Module `test_19_provenance` (semantische Provenance) und `test_20_xlsx_provenance` (technische XLSX-Quellreferenz) bilden zusammen den **Provenance-Kontrakt** des Projekts.
+Suite durchgängig grün bis auf die dokumentierten Ausnahmen (`NIM_168` xfail strict, `NIM_11` skip, Partitur-Skips bei fehlendem Derivat). Die Module `test_19_provenance` (semantische Provenance) und `test_20_xlsx_provenance` (technische XLSX-Quellreferenz) bilden zusammen den **Provenance-Kontrakt** des Projekts.
 
 Laufzeit im Regelbetrieb überschaubar; der Determinismus-Test (Marker `slow`) dominiert die Gesamtdauer und ist aus der Standard-Suite ausgeschlossen.
 

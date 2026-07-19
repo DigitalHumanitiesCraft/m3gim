@@ -234,7 +234,7 @@ Gesammelt, damit sie nicht über das Dokument verstreut sind; jede braucht eine 
 - Mobilitäts-Atlas stilllegen oder als zweite Sicht reaktivieren (durch die entitätszentrierte Karte E-126 fachlich überholt; Reaktivierung erfordert Leaflet-Einbindung).
 - Bestand-Default-Modus, erschlossen gegen alle (E-116), und der Forschungsscope-Ausschluss Plakate/Tonträger (`EXCLUDED_DFT`).
 - Cross-View-Filter Milestone 4 bauen (propose-first gated).
-- Verfall oder Weiterbau der nicht konsumierten Derivate `partitur.json`, `matrix.json`, `kosmos.json` samt zugehöriger Tests.
+- Verfall oder Weiterbau der nicht konsumierten Derivate `partitur.json`, `matrix.json`, `kosmos.json` samt zugehöriger Tests. Richtungsentscheid der Operatorin (Juli 2026): nicht einfach löschen, sondern das darin kodierte kuratierte Wissen (Lebensphasen-Periodisierung, Engagement-Zeiträume, Personen-Kategorien) sichern und in eine neu konzipierte View einfließen lassen; die Heuristik-Fallbacks (Titel-Keyword-Matching) werden nicht übernommen.
 - Live-Deploy der nicht deployten Frontend-Stände.
 
 ### Deferred
@@ -262,6 +262,6 @@ Nur offene, blockierte und zurückgestellte Pakete; Erledigtes steht in [journal
 | AgRelOn-Granularität | offen | `HasAddressee`/`HasSender` statt pauschal |
 | Biogramm-Netzwerk-Spur | blockiert | wartet auf AgRelOn-Validity-Dates |
 | Weitere Reconciliation-Runde | optional | Unmatched-Restliste, nicht blockierend |
-| Test-Regression NIM_168 | quellseitig offen | bewusst roter `test_04`, Folio-Granularität zwischen den Quelltabellen, siehe Datenfehler-Register QF-07 |
+| Test-Regression NIM_168 | quellseitig offen | `test_04` mit xfail strict gelockt, Folio-Granularität zwischen den Quelltabellen, siehe Datenfehler-Register QF-07 |
 | Nächste Datenstufe Forschungsdaten | offen | Stufen 1 bis 3, siehe oben |
 | Deferred Aufräumarbeiten und Modell-Erweiterungen | zurückgestellt | siehe § Deferred |
