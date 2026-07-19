@@ -156,7 +156,7 @@ Die Facetten **lassen sich kombinieren**, und zwar UND-verknüpft — es ist nic
 - Grenze 2: **eine Fokus-Entität** im Graph, keine zwei gleichrangigen.
 - Vorbehalt: Das kombinierte Ergebnis ist heute Dokument-Ko-Okkurrenz („beide im Dokument genannt"), nicht „zusammen aufgetreten" — erst die Occurrence-Bündelung macht daraus „im selben Auftritt".
 
-### TODOs (in `knowledge/plan.md` § Interface-Ausbau eingetragen)
+### TODOs (in `knowledge/specification.md` § Stand und nächste Schritte eingetragen)
 
 - **Indizes-Seite optimieren** (Personen-, Orts-, Organisations-, Werkindex); konkrete Punkte noch zu schärfen.
 - **Facetten-/Filter-Funktion ausbauen** — Mehrfachauswahl bzw. ODER innerhalb einer Facette, einheitliche Filter-UX über die Views.

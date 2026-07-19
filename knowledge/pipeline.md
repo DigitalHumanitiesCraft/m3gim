@@ -107,7 +107,7 @@ Die neue Export-Struktur erzeugt ohne Eingriff stillen Totalverlust bzw. einen A
 - Der Personenindex hat keinen sauberen Namensspaltenkopf; der Header-Shift greift jetzt auch fuer den Personenindex, sonst gehen alle Personen-Normdaten verloren.
 - Nicht-textuelle Spaltenkoepfe und Literal-`Folio`-Zellwerte werden abgefangen, statt die Folio-Erkennung abbrechen zu lassen.
 
-Diese Faelle sind nicht durchreichbar; die quellseitige Bereinigung ist als Source-Fix-Ticket in [plan.md](plan.md) vermerkt.
+Diese Faelle sind nicht durchreichbar; die quellseitige Bereinigung ist als Source-Fix-Ticket im [Datenfehler-Register](datenfehler.md § Strukturelle Quell-Fixes) vermerkt.
 
 ### Neue Modell-Features in transform.py
 
@@ -183,7 +183,7 @@ Strukturelle Transformationen (keine Datenfehler-Kaschierung): Spalten-Lowercase
 | Datei | Format | Status |
 |-------|--------|--------|
 | `m3gim.jsonld` | JSON-LD | **Alleinige primäre Datenquelle** für das Frontend. Enthält Records + SpatiotemporalEvents + SKOS-Concepts + AgRelOn-Relationen + Finanz-Details + technische Provenance. |
-| `partitur.json` / `matrix.json` / `kosmos.json` | JSON | Derivate der entfernten D3-Prototypen. Von keinem aktiven Tab mehr konsumiert; werden von `build-views.py` weiterhin gebaut (Deferred-Aufräumblock in [plan.md](plan.md), Entfernung, sobald sicher ist, dass keine künftige Viz sie doch noch braucht). |
+| `partitur.json` / `matrix.json` / `kosmos.json` | JSON | Derivate der entfernten D3-Prototypen. Von keinem aktiven Tab mehr konsumiert; werden von `build-views.py` weiterhin gebaut (Deferred-Block in [specification.md](specification.md) § Stand, Entfernung, sobald sicher ist, dass keine künftige Viz sie doch noch braucht). |
 
 ## Datenstand
 
@@ -198,5 +198,5 @@ Baseline und Handlungsbedarfe stehen gebündelt in **[data.md § Datenqualität]
 ## Modell-Weiterentwicklung
 
 - **Phase 6 (abgeschlossen):** `loader.js` hat Store-Maps `dftHierarchy`, `mobilityEvents`, `recordToEvents`, `agentRelations`, `finances` + typisierte Datumsfelder als Fallback in `indexByYear`. Siehe [architecture.md](architecture.md).
-- **Phase 7 (abgeschlossen):** Interface-Redesign nach [design.md](design.md); aktueller Stand der Tab-Sichtbarkeit in [plan.md](plan.md) (Fokus auf Bestand · Chronik · Statistik · Indizes, die übrigen Tabs verborgen, E-81).
+- **Phase 7 (abgeschlossen):** Interface-Redesign nach [design.md](design.md); aktueller Stand der Tab-Sichtbarkeit in [specification.md](specification.md) § Stand (Fokus auf Bestand · Chronik · Statistik · Indizes, die übrigen Tabs verborgen, E-81).
 - **Modell-Erweiterung neuer Datenstand (aktiv):** Loader-Fix und die Features aus E-95 bis E-102, testgetrieben umgesetzt (siehe oben). `m3gim:StageRole` als Entitaet ist Teil davon; ein dedizierter Rollenindex-XLSX (Spalten `m3gim_id`, `name`, `belongsToWork`, `voiceType`, `wikidata_id`) bleibt extern blockiert und wartet auf das Erschliessungsteam.

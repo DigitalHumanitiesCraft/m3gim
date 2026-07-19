@@ -42,7 +42,7 @@ Adressiert sind Projektmitarbeitende und Folge-Erschließer:innen, nicht externe
 
 ### Geltungsbereich
 
-Das Dokument definiert die Entitätsklassen, Relationen, Vokabulare und Normalisierungsregeln, nach denen die Excel-Erfassung in RDF überführt und als JSON-LD serialisiert wird. Die Pipeline-Implementierung ist Gegenstand von [pipeline.md](pipeline.md), die Projektsteuerung von [plan.md](plan.md), der Forschungsstand und das Kontextwissen von [research.md](research.md), die Projektgeschichte von [journal.md](journal.md).
+Das Dokument definiert die Entitätsklassen, Relationen, Vokabulare und Normalisierungsregeln, nach denen die Excel-Erfassung in RDF überführt und als JSON-LD serialisiert wird. Die Pipeline-Implementierung ist Gegenstand von [pipeline.md](pipeline.md), die Projektsteuerung von [specification.md](specification.md) § Stand und nächste Schritte, der Forschungsstand und das Kontextwissen von [research.md](research.md), die Projektgeschichte von [journal.md](journal.md).
 
 ### Namespaces
 
@@ -65,7 +65,7 @@ Die kanonische Form von `m3gim-dft`/`m3gim-role` ist die ausgeschriebene (`docum
 
 ### Beziehung zu den anderen Projektdokumenten
 
-Das Datenmodell operiert auf der dritten epistemischen Ebene des Projekts, den *Entitäten und Verknüpfungen*. Kontextwissen wie Theorie und Forschungsstand bleibt in [research.md](research.md), die Projektsteuerung mit Arbeitsprogramm in [plan.md](plan.md), die technische Pipeline in [pipeline.md](pipeline.md).
+Das Datenmodell operiert auf der dritten epistemischen Ebene des Projekts, den *Entitäten und Verknüpfungen*. Kontextwissen wie Theorie und Forschungsstand bleibt in [research.md](research.md), die Projektsteuerung in [specification.md](specification.md) § Stand und nächste Schritte, die technische Pipeline in [pipeline.md](pipeline.md).
 
 ## 2. Schichtenmodell
 
@@ -826,7 +826,7 @@ dokument
 └── sonstiges
 ```
 
-Gegenüber der Vorfassung ergänzt sind korrespondenz, presse, programm, autobiografie, identitaetsdokument, repertoireliste, biographisch, briefumschlag, musikzeitschrift, chronik, verzeichnis. `sammlung` bleibt ein eigenständiges Concept **ohne** `skos:broader` auf konvolut — die is-a-Beziehung wird nicht vorentschieden. Die Abgrenzung zwischen sammlung und konvolut ist noch zu klären (Klärungspunkt in [plan.md](plan.md)): möglicherweise ist konvolut der physische Umschlag und sammlung die thematische Zusammenstellung.
+Gegenüber der Vorfassung ergänzt sind korrespondenz, presse, programm, autobiografie, identitaetsdokument, repertoireliste, biographisch, briefumschlag, musikzeitschrift, chronik, verzeichnis. `sammlung` bleibt ein eigenständiges Concept **ohne** `skos:broader` auf konvolut — die is-a-Beziehung wird nicht vorentschieden. Die Abgrenzung zwischen sammlung und konvolut ist noch zu klären (Klärungspunkt in [decisions.md](decisions.md) § Offene Modellentscheidungen): möglicherweise ist konvolut der physische Umschlag und sammlung die thematische Zusammenstellung.
 
 Jedes emittierte dft-Concept trägt ein lesbares deutsches `skos:prefLabel` (Pipeline-Map `DFT_LABELS`, E-101) statt des nackten Slugs. Das Frontend löst Dokumenttyp-Labels seit E-101 direkt über `skos:prefLabel` aus dem Store auf (`dftLabel(store, id)` über `store.dftHierarchy`); die frühere Frontend-Handtabelle `DOKUMENTTYP_LABELS` ist entfallen.
 
@@ -928,7 +928,7 @@ Empfehlung: Handreichungssystem durchsetzen. Die Werte in_bearbeitung, schicht1_
 
 ## 17. Datenqualität
 
-Es gilt das Prinzip *Documents as Source of Truth*. Die XLSX-Erfassung ist die maßgebliche Quelle, der Pipeline-Code ist wegwerfbares Artefakt. Wo die Pipeline eine XLSX-Eigenheit kompensiert, ist diese Kompensation eine Schuld, kein Feature. Sie wird sichtbar gehalten, damit klar bleibt, was quellseitig zu fixen ist und wo der Code dauerhaft defensiv bleiben muss. Die Code-Stellen der Kompensationen liegen in `scripts/_common.py` und `scripts/transform.py`, die zugehörigen Test-Anker in der Testsuite. Die offenen Source-Fix-Tickets liegen gebündelt in [plan.md](plan.md).
+Es gilt das Prinzip *Documents as Source of Truth*. Die XLSX-Erfassung ist die maßgebliche Quelle, der Pipeline-Code ist wegwerfbares Artefakt. Wo die Pipeline eine XLSX-Eigenheit kompensiert, ist diese Kompensation eine Schuld, kein Feature. Sie wird sichtbar gehalten, damit klar bleibt, was quellseitig zu fixen ist und wo der Code dauerhaft defensiv bleiben muss. Die Code-Stellen der Kompensationen liegen in `scripts/_common.py` und `scripts/transform.py`, die zugehörigen Test-Anker in der Testsuite. Die offenen Source-Fix-Tickets liegen gebündelt im [Datenfehler-Register](datenfehler.md § Strukturelle Quell-Fixes).
 
 Die kompensierten Eigenheiten fallen in die Kategorien Spec, Workaround, Policy und Dead.
 
@@ -964,7 +964,7 @@ Die kompensierten Eigenheiten fallen in die Kategorien Spec, Workaround, Policy 
 | Muster-/Template-Zeile im Erfassungsblatt | Policy | Zeilen mit `archivsignatur = "beispiel"` werden übersprungen |
 | früherer ASCII-Fallback für den Verknüpfungen-Dateinamen | Dead | entfernt, Pipeline wirft jetzt `FileNotFoundError` |
 
-Einzelne Instanz-Befunde sind laut Katalog dokumentiert und gegen den aktuellen Quality-Snapshot (`data/reports/quality-snapshot.md`) zu verifizieren, bevor sie als feststehender Ist-Zustand behandelt werden. Genannt sind das Duplikat zweier Zeilen für `UAKUG/NIM/PL_07`, die verwaiste Signatur `UAKUG/NIM_11` ohne zugehörige Objektzeile, die Schreibweisen-Variante „Beethoven, Ludwig von" gegen „van" im Werkindex und die Person Sophokles, die mit der Aufführungsrolle erfasst ist, obwohl nicht er, sondern sein Werk aufgeführt wurde.
+Einzelne Instanz-Befunde (Quellfehler und Abgleichfehler mit Fundstelle und Status) stehen kanonisch im [Datenfehler-Register](datenfehler.md) und werden hier nicht dupliziert; vor Bearbeitung gegen den aktuellen Quality-Snapshot (`data/reports/quality-snapshot.md`) verifizieren.
 
 ## 18. Quellen
 

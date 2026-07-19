@@ -9,7 +9,7 @@
 ## Spec-Hierarchie
 
 1. **`knowledge/data.md`** — Datengrundlage und Modell-Spezifikation. Bei jeder geplanten Modelländerung zuerst lesen und dort verankern, bevor Pipeline/Tests/Frontend angefasst werden.
-2. **`knowledge/plan.md`** — aktueller Stand und nächste Schritte (Projektidentität in `knowledge/project.md`).
+2. **`knowledge/specification.md`** — Projektidentität, Funktionsumfang und der volatile Abschnitt „Stand und nächste Schritte" (inklusive Status-Tracker und offener Operator-Entscheidungen).
 3. **`knowledge/testing.md`** — Teststrategie + TDD-Workflow.
 4. **`knowledge/pipeline.md`** — Pipeline-Referenz.
 5. **`knowledge/architecture.md`** + **`knowledge/design.md`** — Frontend-Architektur und Designsystem.
@@ -26,7 +26,7 @@ python scripts/transform.py
 python scripts/build-views.py
 ```
 
-`build-views.py` schreibt `m3gim.jsonld` + Derivate (`partitur.json`, `matrix.json`, `kosmos.json`) nach `docs/data/`. **`m3gim.jsonld` ist die einzige primäre Datenquelle für das Frontend**. Die drei Derivate werden seit Session 32 von keinem aktiven Tab mehr konsumiert (sie wurden für die entfernten D3-Prototypen gebaut) und stehen im Deferred-Aufräumblock — sie bleiben vorerst als potenzielle Bausteine für eine künftige Viz.
+`build-views.py` schreibt `m3gim.jsonld` + Derivate (`partitur.json`, `matrix.json`, `kosmos.json`) nach `docs/data/`. **`m3gim.jsonld` ist die einzige primäre Datenquelle für das Frontend**. Die drei Derivate werden seit Session 32 von keinem aktiven Tab mehr konsumiert (sie wurden für die entfernten D3-Prototypen gebaut) und stehen im Deferred-Block von `knowledge/specification.md` § Stand; ihr Verfall oder Weiterbau ist eine offene Operator-Entscheidung.
 
 ### Tests
 
@@ -68,7 +68,7 @@ Siehe `knowledge/testing.md` § TDD-Workflow. In Phase 4.1–4.8 (Session 28) un
 
 ### Modell-Erweiterungen testgetrieben in folgender Reihenfolge
 
-Falls in Zukunft weitere Phasen aus `plan.md` umgesetzt werden:
+Falls in Zukunft weitere Phasen aus `specification.md` § Stand umgesetzt werden:
 
 1. Tests als Spec (xfail strict).
 2. `data.md` ggf. erweitern/konkretisieren.
@@ -111,10 +111,10 @@ data/
 
 **Datenfluss:** `data/google-spreadsheet/` → Pipeline → `data/output/m3gim.jsonld` → `docs/data/m3gim.jsonld` → Frontend-Loader.
 
-Das Frontend konsumiert ausschließlich `docs/data/m3gim.jsonld`. Die Derivate `partitur.json`, `matrix.json`, `kosmos.json` werden von `build-views.py` weiterhin gebaut, aber von keinem aktiven Tab mehr gelesen (Deferred-Aufräumblock in `plan.md`).
+Das Frontend konsumiert ausschließlich `docs/data/m3gim.jsonld`. Die Derivate `partitur.json`, `matrix.json`, `kosmos.json` werden von `build-views.py` weiterhin gebaut, aber von keinem aktiven Tab mehr gelesen (Deferred-Block in `specification.md` § Stand).
 
 ## Wegweiser
 
 - Details zu Architektur, Datenmodell, Tests, Frontend → `knowledge/` (siehe `knowledge/INDEX.md`)
 - Session-Memory (persistiert über Sessions): `.claude/projects/*/memory/`
-- Aktuelle Roadmap: `knowledge/plan.md` § Nächste Schritte
+- Aktueller Stand und nächste Schritte: `knowledge/specification.md` § Stand und nächste Schritte

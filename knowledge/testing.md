@@ -74,7 +74,9 @@ tests/
 ├── test_31_dft_vocab.py           # sammlung eigenständig + deutsche skos:prefLabel (E-101)
 ├── test_32_mobility_events.py     # datumslose Mobilitäts-STE aus Ortsrollen (E-97, additiv, kein atDate, Ort als rico:hasOrHadLocation)
 ├── test_33_frontend_data_fresh.py # docs/data == data/output (Frontend-Staleness-Guard, E-107)
-└── test_34_rawdata_crosscheck.py  # JSON-LD-Wert zellgenau gegen XLSX-Rohzelle über (Sheet, Zeile) (E-108)
+├── test_34_rawdata_crosscheck.py  # JSON-LD-Wert zellgenau gegen XLSX-Rohzelle über (Sheet, Zeile) (E-108)
+├── test_35_ste_id_stability.py    # inhaltsbasiertes STE-@id-Schema (E-115)
+└── test_36_index_completeness.py  # kuratierte Index-Spalten erreichen das JSON-LD (M1)
 ```
 
 Die Nummerierung hat historische Lücken (test_17, test_21 wurden nicht vergeben). Das ist bewusst — die Zahlen sind stabile IDs, kein durchgängiger Index.
@@ -192,6 +194,18 @@ Sichert, dass `m3gim:hasPerformanceRole` vollständig abgelöst ist (kein Record
 
 `m3gim:Performance`-Entitäten existieren, jede record-seitige `m3gim:hasPerformance`-Referenz ist im Graph auflösbar, und `m3gim:performanceOf` zeigt stets auf ein `m3gim:MusicalWork` mit `name` (nie literale Q-ID). Die `hasPerformer`/`performanceOf`-Pfade sind datenadaptiv zulässig leer, solange der April-Stand keine `rolle,person`/`datum,werk`-Komposite enthält — sie aktivieren sich mit dem tieferen Box-Export. Begleitend migriert: test_04 (rolle → Performance statt hasPerformanceRole), test_09/test_15 (Relations-Zählung auf `hasPerformance`), die JS-Fixtures `record-partition`/`utils`.
 
+### 34. Rohdaten-Gegencheck (test_34, E-108)
+
+Zellgenauer Gegencheck JSON-LD-Wert gegen die per `m3gim:xlsxSource` (`{Sheet, Row}`) adressierte XLSX-Rohzelle, für Objekt-Records gegen `M3GIM-Objekte.xlsx` (Join über `xlsxRow`) und für SpatiotemporalEvents gegen `M3GIM-Verknüpfungen.xlsx` (Join über sheet-lokale `(Sheet, Row)` via demselben Multi-Sheet-Loader wie die Pipeline). Bestätigt zugleich die Provenienz-Pille im UI: sie zeigt nicht nur eine Zeilennummer, sondern die richtige. Ersetzt den zellgenauen Teil von `audit-data.py`.
+
+### 35. STE-@id-Stabilität (test_35, E-115)
+
+Lock für das inhaltsbasierte STE-@id-Schema `m3gim:ste_<record>_<sha1(ort,rolle,datum)[:8]>`, optional mit Ordinal-Suffix bei echten Inhaltsdubletten. Verankert die Invariante, dass die @id eine reine Funktion ihres Inhalts ist, nicht der Verarbeitungsreihenfolge; eine Rückkehr zum früheren globalen Zähler bricht den Test.
+
+### 36. Index-Feld-Vollständigkeit (test_36, M1)
+
+Sichert, dass die kuratierten Spalten der vier Index-XLSX (Org-Sitz, Werk-Partie, Personen-Beruf, Lebensdaten, assoziierte Person) als `m3gim:`-Properties an der jeweiligen Entität im Output ankommen. Soll-Quelle ist der kanonische Index über den echten Pipeline-Reader `load_index` mit Header-Shift-Korrektur, nicht der Roh-XLSX-Header.
+
 ```bash
 # Dependencies (einmalig)
 pip install -r requirements-test.txt
@@ -227,7 +241,7 @@ Bei neuen Features aus [data.md](data.md):
 4. **Implementieren** in `scripts/transform.py`, bis xfail → XPASS → xfail-Marker entfernt.
 5. **Bei Datenadaptivität**: Tests datenadaptiv formulieren (skalieren mit XLSX-Count) statt hartcodierter Zahlen, damit neue Datenstände ohne Testkorrektur laufen.
 
-Dieses Muster wurde in Phase 4.1–4.8 (Session 28) erfolgreich angewendet, ebenso beim Koordinaten-Patch (Session 33, test_22) und beim ORTE-Rollen-Fix (Session 34, test_23). Siehe [plan.md](plan.md) und [pipeline.md](pipeline.md).
+Dieses Muster wurde in Phase 4.1–4.8 (Session 28) erfolgreich angewendet, ebenso beim Koordinaten-Patch (Session 33, test_22) und beim ORTE-Rollen-Fix (Session 34, test_23). Siehe [specification.md](specification.md) § Stand und [pipeline.md](pipeline.md).
 
 ### Drei Testmodi und die Durchreich-Policy
 

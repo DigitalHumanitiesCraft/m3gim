@@ -5,9 +5,9 @@ project:
   repository: https://github.com/DigitalHumanitiesCraft/m3gim
 status: complete
 language: de
-version: 0.2
+version: 0.3
 created: 2026-02-19
-updated: 2026-06-30
+updated: 2026-07-18
 authors: [Christopher Pollin]
 generated-with: Claude Code
 method:
@@ -18,7 +18,7 @@ template:
   version: 0.1
   url: https://dhcraft.org/Promptotyping/promptotyping-document/architecture
 topics: ["[[Static Site Architecture]]", "[[Information Visualisation]]"]
-related: [design, pipeline, data, decisions]
+related: [design, pipeline, data, decisions, specification]
 ---
 
 # Architektur
@@ -242,12 +242,62 @@ Konzentrische Personen-Visualisierung um Malaniuk (E-93, Session 46; Session-47-
 
 ## Erweiterung für den neuen Datenstand (umgesetzt)
 
-Die freigegebene Modell-Erweiterung ([decisions.md](decisions.md) E-95 bis E-102) ist committet (007b8c2) und im Code live. Die Reihenfolge steuerte [plan.md](plan.md).
+Die freigegebene Modell-Erweiterung ([decisions.md](decisions.md) E-95 bis E-102) ist committet (007b8c2) und im Code live. Die Reihenfolge steuerte der damalige Plan.
 
 - **Vokabular-Kopplung in `constants.js`.** Die Mobilitäts-Ortsrollen (`zielort`, `absendeort`, `abreiseort`, `empfangsort`, `vertragsort`) sind in `EVENT_ROLE_TO_MOBILITY_CLUSTER` auf den Cluster `korrespondenz` gemappt (E-110, order-m3gim Punkt 1, ratifiziert die zuvor offene `null`-Führung) — zielort/abreiseort = Reisemobilität, empfangsort = Korrespondenz, absendeort = beides, vertragsort = Mobilitäts-Ortsrolle derselben Spur, data.md § Ortsrollen/§ 10 folgend. Weitere vorgemerkte eventRoles (`aufnahme`, `generalprobe`, `empfang`) und Rollen (Crew, `publikum`/`abgebildet`) bleiben auskommentiert gerüstet, bis der tiefere Export sie mit Daten füllt. Dokumenttyp-Labels kommen nicht mehr aus einer Hand-Map, sondern über `dftLabel(store, id)` aus `store.dftHierarchy`. Die Leitplanke Vokabular-Kopplung (`test_25`/`test_15`) bleibt grün.
 - **Loader.** Die datumslosen Mobilitäts-STEs setzen kein `atDate` voraus (`date: null`). Die Ablösung des `m3gim:hasPerformanceRole`-Artefakts durch `m3gim:StageRole`-Entitäten und n-äre `m3gim:Performance` (gelesen in `archive-inline-detail`) ist umgesetzt und über die neuen Store-Maps `store.stageRoles` + `store.performances` angebunden. Die neuen Record-Felder `dataQualityFlag`, `bearbeitungsnotiz` und `erstelldatum` liegen an den Record-Knoten. Vertagt: der `wohnort`-Zustand mit Gültigkeitsperiode sowie `contractStatus`/`realized` (E-99, keine Datendeckung); `qualityConfidence` wird bewusst nicht fabriziert.
 - **Datums-Handling (offen).** `date-parser.js` gibt qualifizierte Datierungen heute roh aus; Anzeige und Jahres-Extraktion sind um die Qualifier (`circa:`/`vor:`/`nach:`) und das `DatedEvent`-Shape (`m3gim:hasDatedEvent`) noch zu erweitern.
 - **Wirkung.** Die Mobilitäts-Strukturen tragen den sichtbaren Mobilitäts-Tab (E-111, D3-geo-Karte); die zurückgestellten Tabs Mobilitäts-Atlas, Repertoire und Biogramm bleiben damit ebenfalls tragfähig. Der Bühnenrollen-Block steht in [design.md](design.md). Eine UI-Anzeige für `dataQualityFlag` (und ein etwaiger Vertragsstatus) ist noch nicht umgesetzt — die Flags liegen vorerst nur in den Daten.
+
+## Cross-View-Filter
+
+Der view-übergreifende einheitliche Filter (Entwurf E-117, order-m3gim Milestone 3; vormals eigenes Dokument `filter-modell.md`). Ein gesetzter Schnitt nach Ort, Person, Werk, Rolle, Zeitfenster oder Mobilitätssicht soll synchron in allen filterbaren Views wirken, statt in jedem Tab getrennt gesetzt zu werden. Der Filter ist ein neutraler gekoppelter Schnitt mit den sichtbar getrennten Schärfegraden `weit` und `eng`; Bayreuth 1951 bis 1953 wird damit ein reines Filterergebnis, kein eigener View (Entscheidung in [decisions.md](decisions.md), Bayreuth als filterbarer Schnitt). Der Bau ist Milestone 4 und operator-gated; erster realer Baustein ist der Statistik-Zeitfilter (E-122).
+
+### Ausgangslage
+
+Heute trägt jeder filterbare View seine eigene Filterlogik. Bestand und Chronik teilen `filterByToolbarState` (`_archive-filter.js`) und je eine Instanz von `buildFilterToolbar`, aber mit getrenntem State; Netzwerk hat eine eigene Filter-Sidebar mit Zeitfenster; die Karte filtert view-lokal über Sicht-Legende und Zeitraum. Der Event-Bus `events.js` (E-53) ist ein einmaliger Navigationskanal (`m3gim:navigate`), kein geteilter Filter-State; genau diese Lücke schließt das Modell.
+
+### Geteiltes Filter-State-Modell
+
+Ein einziges Filter-State-Objekt ist die Quelle, alle Views lesen daraus und schreiben dorthin. Jede Facette zieht ihre Werte aus `store.*`, nicht aus redaktionellen Listen (E-87). Leerwert heißt Facette inaktiv.
+
+| Facette | Wert-Typ | Quelle im Store | Leerwert |
+|---|---|---|---|
+| `ort` | String (Stadtname) | `store.locations`, Stadt-konsolidiert über `cityOf` (E-108) | `''` |
+| `person` | String (Name) | `store.persons` | `''` |
+| `werk` | String (Name) | `store.works` | `''` |
+| `rolle` | String (Rollen-Id) | distinkte Rollen über `store.persons[].roles` (Akteursrolle) | `''` |
+| `zeitfenster` | `[vonJahr, bisJahr]` | aus `rico:date` der Records und den Event-Daten | `null` (volle Spanne) |
+| `sicht` | Sicht-Id | `mobilityClusterFor(eventRole)`, `null` → Bucket `kontext` | `''` |
+| `schaerfe` | `'weit'` \| `'eng'` | Modus, kein Entitätsfilter | `'weit'` |
+
+`rolle` ist die Akteursrolle, nicht die `eventRole`; die `eventRole` speist ausschließlich die `sicht`-Facette. Die bestand-lokale Erschließungs-Umschaltung (E-116, `zeigeUnerschlossen`) bleibt view-lokal, sie ist eine Darstellungsfrage des Bestands, kein view-übergreifender Datenschnitt.
+
+### Schärfegrade als Filtersemantik
+
+Ein Ort, eine Person, ein Werk koppeln an Daten auf unterschiedlich scharfen Ebenen, und der Filter darf die unscharfe nicht als die scharfe ausgeben.
+
+- `schaerfe = 'weit'`, Record-Bezug. Ein Treffer ist ein Record, der die Entität führt, etwa über `rico:hasOrHadLocation`. Weit und unscharf, weil Sammeldokumente mehrere Orte und Zeiten bündeln; das Vorhandensein im selben Record ist kein Nachweis, dass das Ereignis an diesem Ort stattfand.
+- `schaerfe = 'eng'`, Ereignis-Verortung. Ein Treffer ist ein `m3gim:SpatiotemporalEvent` mit `atPlace`, Datum und Koordinaten. Raumzeitlich exakt.
+
+Der Modus schaltet die Auflösung der `ort`- und `zeitfenster`-Facette um, weit über die Record-Menge, eng über die Event-Menge. Default ist `weit`; jeder View zeigt den aktiven Schärfegrad an und nennt im engen Modus die Differenz, wie viele der record-bezogenen Treffer raumzeitlich belegt sind (Erschließungsspiegel-Prinzip E-87 auf den Filter angewendet). Die Karte ist intrinsisch `eng`, das Netzwerk intrinsisch `weit`.
+
+Die `sicht`-Facette nutzt `mobilityClusterFor` als alleinige Quelle und faltet dessen `null`-Rückgabe in eine explizite Option `kontext`, wie `mobility.js` es bereits tut; der view-lokale `ROLE_TO_TYPE` wird im Bau durch denselben kanonischen Pfad ersetzt.
+
+### Verteilung über die bestehende Mechanik
+
+Kein neuer Apparat; Event-Bus und generische Toolbar werden erweitert.
+
+- Ein geteilter Filter-Halter (neues Modul `docs/js/ui/filter-state.js`) hält das State-Objekt und bietet `getFilter()`, `setFilter(patch)`, `subscribe(fn)`; `setFilter` dispatcht ein `m3gim:filter`-CustomEvent über denselben `window`-Kanal, den `events.js` trägt.
+- Die Views Bestand, Chronik, Netzwerk und Karte abonnieren beim Render und wenden ihre bestehende Filterfunktion auf den geteilten statt auf privaten State an.
+- `buildToolbar` (`_toolbar.js`) wird zur Sicht auf den geteilten State, `setFacet` schreibt über `setFilter`, die Toolbar abonniert und spiegelt externe Änderungen (ein Klick auf einen Kartenknoten setzt `ort`, die Ort-Combobox im Bestand zieht nach).
+- `onViewNavigate` bleibt unverändert für den orthogonalen Sprung „öffne diesen Record und scrolle hin“.
+
+### Milestone-4-Scope und Grün-Kriterium
+
+`filter-state.js` mit `m3gim:filter`-Kanal; `buildToolbar` rückverdrahtet und Bestand/Chronik umgestellt; Netzwerk-Zeitfenster und Karten-Filter an denselben State gekoppelt; `ROLE_TO_TYPE` ersetzt; Schärfegrad-Schalter als geteiltes Control mit Anzeige und Differenznennung pro View. Grün über einen neuen Smoke-Canary (geteilter Filter gesetzt, synchrone Wirkung in Bestand, Chronik, Netzwerk, Karte), JS-Suite und pytest frontend-contract, Screenshot-Spur für die operator-gated Live-Sicht.
+
+Offen: Default-Schärfegrad pro View (Vorschlag, die Karte erzwingt `eng`); Persistenz des Filters über Tab-Wechsel (Vorschlag ja, das ist der Sinn).
 
 ## Schnittstellenvertrag
 
@@ -258,5 +308,5 @@ Die freigegebene Modell-Erweiterung ([decisions.md](decisions.md) E-95 bis E-102
 | Pipeline, Datenfluss, Qualitätsbaseline | [pipeline.md](pipeline.md) |
 | Testsuite, TDD-Workflow | [testing.md](testing.md) |
 | Architekturentscheidungen | [decisions.md](decisions.md) |
-| Operativer Stand, nächste Schritte | [plan.md](plan.md) |
-| Forschungsrahmen | [research.md](research.md) |
+| Identität, Funktionsumfang, operativer Stand | [specification.md](specification.md) |
+| Forschungsrahmen und Use Cases | [research.md](research.md) |

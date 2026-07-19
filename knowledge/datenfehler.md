@@ -8,17 +8,17 @@ method:
   url: https://lisa.gerda-henkel-stiftung.de/digitale_geschichte_pollin
 status: draft
 created: 2026-06-21
-updated: 2026-06-30
+updated: 2026-07-18
 language: de
-version: 0.1
+version: 0.2
 authors: [Christopher Pollin]
 generated-with: Claude Code
-related: [plan, data, frontend-sichtpruefung-2026-06-21, pipeline, decisions]
+related: [specification, data, pipeline, decisions]
 ---
 
 # Datenfehler-Register
 
-> Gesammelte, laufend gepflegte Liste der bekannten Datenfehler des Bestands, getrennt nach Quellfehler und Abgleichfehler, jeder Eintrag mit Fundstelle und Status. Dies ist die kanonische Adresse für Datenfehler; [plan.md](plan.md) und [frontend-sichtpruefung-2026-06-21.md](frontend-sichtpruefung-2026-06-21.md) verweisen hierher. Strukturelle Excel-Formatverbesserungen (Kopfzeilen, Dropdown-Konfiguration, ISO-Datierung) sind keine Datenfehler und bleiben in [plan.md](plan.md § Strukturelle Quell-Fixes).
+> Gesammelte, laufend gepflegte Liste von allem, was quellseitig zu beheben ist, getrennt nach Quellfehler, Abgleichfehler und strukturellen Quell-Fixes, jeder Eintrag mit Fundstelle und Status. Dies ist die kanonische Adresse für Datenfehler; [specification.md](specification.md) § Stand und der Sichtprüfungs-Report (`data/reports/frontend-sichtpruefung-2026-06-21.md`) verweisen hierher.
 
 ## Grundsatz
 
@@ -59,6 +59,29 @@ Entstehen im automatischen Wikidata-Match (Reconciliation), nicht in der Quelle.
 | AF-01 | New York als Bundesstaat statt Stadt: die New-York-Events tragen `wd:Q1384` (Bundesstaat, Zentroid 43 / -75) statt `wd:Q60` (Stadt, 40.7 / -74.0). Für Absende- und Zielort einer Korrespondenz ist die Stadt gemeint; im reaktivierten Atlas läge der Marker an falscher, ländlicher Position. Gleiche Klasse wie der frühere Q2861-Rostock-Fall (behoben). | STE `absendeort` NIM_004_1, `zielort` NIM_004_23, `entstehung` NIM_004_27 | offen |
 | AF-02 | Personen-Fehlmatches auf gleichnamige, prominentere Entitäten, im Interface an widersprüchlichen Berufs- und Lebensdaten erkennbar: Dermota als Politiker (1876 bis 1914 statt Tenor 1910 bis 1989), Böhme als Ubootfahrer, Holm als Botaniker, Wächter als Maler (1762 bis 1852), Wiener als Physiker, Richter als Tischtennisspieler. Nicht je einzeln gegen Wikidata abschließend verifiziert; der Label-Widerspruch ist der Befund. | Personenindex, genannte Namen | offen |
 | AF-03 | Adressgenaue Orte ohne Stadt-/Q-ID-Ebene: der Reconcile-Match-Key ist der rohe Ortsname-String, der Ortsindex trägt keine Stadt-/Q-ID-Spalte. Adressvarianten erhalten keine Q-ID, nur die nackten Städtenamen. Betroffen u. a. `Zürich, Zürichbergstrasse 104`, `Zürich, Geibelstrasse 1/1`, `München, Martiusstrasse 3`. Frontend-Folge: der Ort-Filter „Zürich" verfehlte adressgenau erfasste Records, etliche Events bleiben im Atlas unverortet. | `M3GIM-Ortsindex.xlsx` | UI-gemildert (`cityOf` + Loader-Konsolidierung, E-108) |
+
+## Strukturelle Quell-Fixes
+
+Diese Punkte betreffen das Excel-Format, nicht einzelne Fehlwerte. Jeder erledigte Punkt erlaubt den Abbau einer Pipeline-Kompensation aus dem Katalog in [data.md](data.md) § Datenqualität.
+
+- Index-Header-Shifts in Organisations-, Orts- und Werkindex. Eine saubere Kopfzeile in diese Index-Blätter einfügen und beim Excel-Export mitgeben, damit die Pipeline-Kompensation entfallen kann.
+- Bearbeitungsstand-Dropdown. Die Spalte als Google-Sheets-Dropdown mit den kanonischen Werten `abgeschlossen`, `begonnen` und `zurueckgestellt` konfigurieren, damit das Normalisierungs-Mapping entfällt.
+- Freitext-Datierungen strikt nach ISO. Die Datumsspalte ausschließlich als ISO-Datum erfassen (`YYYY`, `YYYY-MM`, `YYYY-MM-DD`, `YYYY/YYYY`) und ortsmischende Freitext-Angaben in eine separate Anmerkungsspalte verschieben.
+- Ort-Datum-Rollentrennung. Bei Komposit-Einträgen `ort, datum` die Rolle nur dem Datum zuordnen, nicht dem Ort, damit der `rico:Place` keine Datumsrolle erbt.
+- Stabiler Folio-Spaltenname. In den Objektdaten einen stabilen Spaltennamen festlegen (aktuell `folio nr`), damit die heuristischen Spalten-Fallbacks wegfallen können.
+- Sammel-Zeilen und @id-Kollision. Sammel-Zeilen, die ein Konvolut insgesamt beschreiben, entfernen und ihren Inhalt als Konvolut-Metadaten unterbringen, oder ihnen eine eigene Folio-Nummer geben, damit keine zwei Graph-Knoten mit gleicher @id entstehen.
+- Beethoven van/von-Vereinheitlichung im Werkindex. Die als `Beethoven, Ludwig von` erfassten Zellen auf `Beethoven, Ludwig van` vereinheitlichen, danach den xfail-Marker in `test_24` entfernen (siehe QF-03).
+- Box-Sheet-Struktur der Verknüpfungstabelle. Eine einheitliche Kopfzeile mit benannter `archivsignatur`-Spalte und konsistente Sheet-Benennung setzen, damit die Mehrblatt- und Forward-Fill-Kompensation (E-95) entfallen kann. Dropdown-Werte lassen sich Tab-übergreifend halten, indem die Validierung aller Box-Sheets auf denselben benannten Bereich auf einem Vokabular-Hilfsblatt zeigt; eine neue Spalte propagiert dagegen nicht automatisch und muss in jeder Box ergänzt werden. Beides löst sich grundlegend, wenn die Boxen zu einem einzigen Verknüpfungs-Sheet zusammengeführt werden (die Pipeline liest sie ohnehin als Union, E-95).
+- Personenindex-Kopfzeile. Eine saubere Namensspalten-Kopfzeile einfügen, damit der Header-Shift für den Personenindex entfällt.
+- Literal-Folio-Zellen. Zellen mit dem Wert `Folio` durch die tatsächliche Folio-Nummer ersetzen, damit der Guard entfallen kann.
+
+## Anreicherung und Normdaten (laufende Pflege)
+
+- GND-IDs für die Kernpersonen anreichern.
+- Wikidata-IDs durchgängig pflegen, damit die Normdaten-Verknüpfung über alle Indizes hinweg trägt.
+- Wikidata-Fehlmatches korrigieren, siehe AF-01 und AF-02; über `verify-manual-approvals.py` plus gezielte Reconciliation-Prüfung beheben.
+- Ortsdubletten normalisieren, siehe AF-03 und QF-12; daneben ein Stuttgart-Whitespace-Fall und Freitextmischungen wie `Wien, ab 1956`. Die Wurzel bleibt, den Ortsindex um eine Stadt/Q-ID-Spalte erweitern.
+- Unverknüpfte Einträge der Verknüpfungstabelle ohne Archivsignatur nachzuordnen.
 
 ## Verwandte Befunde ohne Quell- oder Abgleichfehler
 

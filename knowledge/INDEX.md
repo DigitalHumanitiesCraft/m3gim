@@ -12,12 +12,12 @@ template:
   url: https://dhcraft.org/Promptotyping/promptotyping-document/index
 status: complete
 created: 2026-02-19
-updated: 2026-06-30
+updated: 2026-07-18
 language: de
-version: 0.2
+version: 0.3
 authors: [Christopher Pollin]
 generated-with: Claude Code
-related: [project, specification, use-cases, data, data-entry-guidelines, research, filter-modell, pipeline, architecture, design, decisions, testing, journal, plan, datenfehler]
+related: [specification, data, data-entry-guidelines, research, pipeline, architecture, design, decisions, testing, journal, datenfehler]
 ---
 
 # M³GIM Knowledge Base
@@ -26,44 +26,35 @@ Diese Seite ist der Einstiegspunkt in die Wissensbasis des Projekts. Sie ordnet 
 
 ## Lesepfad nach Rolle
 
-- Erstbesuch → [project.md](project.md) für Identität und Kontext, dann [research.md](research.md) für Theorie und Forschungsfragen
+- Erstbesuch → [specification.md](specification.md) für Identität, Ziel und Funktionsumfang, dann [research.md](research.md) für Theorie, Forschungsfragen und Use Cases
+- Aktuellen Stand und nächste Schritte → [specification.md](specification.md) § Stand und nächste Schritte
 - Datenmodell verstehen oder ändern → [data.md](data.md)
 - Daten erfassen nach den Soll-Konventionen → [data-entry-guidelines.md](data-entry-guidelines.md)
 - Pipeline ausführen oder debuggen → [pipeline.md](pipeline.md)
-- Frontend anpassen → [architecture.md](architecture.md) für die Bauweise, [design.md](design.md) für Designhaltung und Interaktionsmuster
+- Frontend anpassen → [architecture.md](architecture.md) für die Bauweise (inklusive Cross-View-Filter), [design.md](design.md) für Designhaltung und Interaktionsmuster
 - Tests schreiben → [testing.md](testing.md)
-- Funktionsumfang nachschlagen → [specification.md](specification.md)
 - Verstehen, warum etwas so entschieden wurde → [decisions.md](decisions.md)
-- Aktuellen Stand und nächste Schritte → [plan.md](plan.md)
-- Bekannte Datenfehler nachschlagen oder ans Erfassungsteam geben → [datenfehler.md](datenfehler.md)
-- Use Cases, Personas und Evaluation der Forschungsfragen → [use-cases.md](use-cases.md)
-- Geteilten Cross-View-Filter (Querschnitt über Chronik, Karte, Statistik) verstehen → [filter-modell.md](filter-modell.md)
-- Projektgeschichte nachvollziehen → [journal.md](journal.md)
+- Bekannte Datenfehler und Quell-Fixes nachschlagen oder ans Erfassungsteam geben → [datenfehler.md](datenfehler.md)
+- Projektgeschichte nachvollziehen → [journal.md](journal.md), ältere Sessions in [_archive/journal-sessions-01-47.md](_archive/journal-sessions-01-47.md)
 
 ## Dokumentenmatrix
 
 | Funktion | Dokument | Inhalt |
 |---|---|---|
 | Navigation | [INDEX.md](INDEX.md) | Diese Seite, Lesepfade, Dokumentenmatrix, Glossar |
-| Identität | [project.md](project.md) | Steckbrief, Beteiligte, übergeordneter Kontext, Abgrenzungen, Lizenz |
-| Substanz, Funktionsumfang | [specification.md](specification.md) | Anforderungen, Epics und User Stories, Funktionsumfang und Abgrenzung |
+| Identität, Funktionsumfang, Stand | [specification.md](specification.md) | Projektsteckbrief, Ziel und Rahmen, Anforderungen, Epics und User Stories, Abgrenzung, volatiler Abschnitt Stand und nächste Schritte inklusive Status-Tracker und offener Operator-Entscheidungen |
 | Substanz, Entscheidungen | [decisions.md](decisions.md) | Architekturentscheidungen E-01 aufwärts, offene Entscheidungen, technische Schulden |
-| Material | [data.md](data.md) | RiC-O 1.1, m3gim-Extension und AgRelOn, Vokabulare, Mobilitätssichten, partitur-Schema, Datenqualität, Quellen |
-| Domänenwissen, Theorie | [research.md](research.md) | Mobility Studies, fünf Mobilitätstypen, Forschungsfragen, Fallbeispiel Ira Malaniuk, Oper Graz |
+| Material | [data.md](data.md) | RiC-O 1.1, m3gim-Extension und AgRelOn, Vokabulare, Mobilitätssichten, Datenqualitäts-Katalog, Quellen |
+| Domänenwissen, Theorie und Evaluation | [research.md](research.md) | Mobility Studies, Mobilitätstypen, Forschungsfragen, Fallbeispiel Ira Malaniuk, Oper Graz, Use Cases, Personas, Evaluationsskizze |
 | Domänenwissen, Regelwerk | [data-entry-guidelines.md](data-entry-guidelines.md) | Normative Erfassungsrichtlinie, Workflow, Ansetzungsformen, typ-zu-Rolle-Vokabular, ID-Schema |
 | Bauweise, Pipeline | [pipeline.md](pipeline.md) | Skriptverantwortung, Datenfluss, Pipeline-Erweiterungen, Qualitäts-Baseline |
-| Bauweise, Frontend | [architecture.md](architecture.md) | Laufzeitmodell, Modulstruktur, Store, Routing, build-loses Deployment |
+| Bauweise, Frontend | [architecture.md](architecture.md) | Laufzeitmodell, Modulstruktur, Store, Routing, build-loses Deployment, Cross-View-Filter |
 | Gestalt | [design.md](design.md) | Designhaltung, Tab-Architektur, Designregeln, Designsystem, Lektionen der entfernten Visualisierungen |
 | Qualitätssicherung | [testing.md](testing.md) | Testsuite-Überblick, TDD-Workflow, Anker-Record-Strategie |
-| Genese | [journal.md](journal.md) | Chronologische Session-Dokumentation, Entscheidungen und Erkenntnisse |
-| Plan und Steuerung | [plan.md](plan.md) | Zielbild, nächste Schritte, deferred Arbeiten, offene Datenqualität |
-| Datenfehler-Register | [datenfehler.md](datenfehler.md) | Gesammelte Quell- und Abgleichfehler mit Fundstelle und Status |
-| Use Cases & Evaluation | [use-cases.md](use-cases.md) | Forschungsfragen als Use Cases, Persona-Stubs, Evaluations-Skizze (Arbeitsstand) |
-| Substanz, Feature-Spec | [filter-modell.md](filter-modell.md) | Geteilter Cross-View-Filter, State-Modell, Filtersemantik, Facetten-Matrix, Bauplan |
+| Genese | [journal.md](journal.md) | Chronologische Session-Dokumentation ab Session 48; ältere Sessions im Archiv |
+| Datenfehler-Register | [datenfehler.md](datenfehler.md) | Quellfehler, Abgleichfehler und strukturelle Quell-Fixes mit Fundstelle und Status |
 
-Die Stand-Kommunikation für Dritte wird bewusst nicht als eigenes Report-Dokument geführt. Diese Funktion übernimmt der generierte Quality-Snapshot, der bei jedem Pipeline-Lauf frisch entsteht.
-
-Im Ordner liegen zwei datierte Befund-Dokumente, die keine kanonischen Wissensdokumente sind, sondern Momentaufnahmen einer Lane-Arbeit, [frontend-sichtpruefung-2026-06-21.md](frontend-sichtpruefung-2026-06-21.md) (Sichtprüfungs-Audit, Datenfehler bereits ins Register überführt) und [visualisierung-bayreuth.md](visualisierung-bayreuth.md) (Auftrags- und Klärungsdokument der Visualisierungs-Lane). Beide sind Kandidaten für eine Verlagerung nach `data/reports/`, solange sie hier liegen, gehören sie nicht zum Lesepfad.
+Die Stand-Kommunikation für Dritte wird bewusst nicht als eigenes Report-Dokument geführt. Diese Funktion übernimmt der generierte Quality-Snapshot, der bei jedem Pipeline-Lauf frisch entsteht. Datierte Befund-Dokumente (Sichtprüfungen, Visualisierungsanalysen, Reviews) liegen als Momentaufnahmen unter `data/reports/`, nicht in der Wissensbasis.
 
 ## Glossar
 
@@ -89,6 +80,7 @@ Im Ordner liegen zwei datierte Befund-Dokumente, die keine kanonischen Wissensdo
 ## Pflegehinweis
 
 - Modell-Änderungen werden immer zuerst in [data.md](data.md) verankert, die Spezifikation ist die Source of Truth, Pipeline, Tests und Frontend folgen
+- Der volatile Abschnitt Stand und nächste Schritte lebt am Ende von [specification.md](specification.md); Erledigtes wandert von dort ins [journal.md](journal.md) und nach [decisions.md](decisions.md), Quellseitiges ins [Datenfehler-Register](datenfehler.md)
 - Forschungsnotizen werden im Obsidian-Vault gepflegt, das Repo enthält das destillierte, DSGVO-bereinigte Extrakt
-- Die Struktur ist flach, alle Dokumente liegen auf Top-Level ohne Unterordner
+- Die Struktur ist flach bis auf `_archive/` für ausgelagerte Journal-Sessions
 - Dokumente bleiben konkret, statt Ähnliches zu wiederholen werden Querlinks gesetzt und Inhalte atomar gehalten
