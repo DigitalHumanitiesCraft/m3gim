@@ -61,6 +61,25 @@ def test_datum_ort_underscore_emits_spatiotemporal():
     assert ste[0]["datum"] == "1952-12-17"
 
 
+def test_bare_waehrung_typ_emits_no_relation():
+    """Ein nackter Typ 'währung' (ohne Komposit) ist kein eigener Typwert und
+    darf keine Relation erzeugen. Der bedingungslose decompose-Aufruf filtert
+    ihn zur leeren Liste, statt ihn als Generic-Relation durchzulassen."""
+    df = pd.DataFrame([{
+        "archivsignatur": "NIM_003",
+        "typ": "währung",
+        "name": "RM",
+        "rolle": None,
+        "anmerkung": None,
+    }])
+    indices = {"person": {}, "organisation": {}, "ort": {}, "werk": {}}
+    relations = process_verknuepfungen(df, indices)
+
+    assert relations.get("NIM_003", []) == [], (
+        f"Nackter währung-Typ erzeugte eine Relation: {relations.get('NIM_003')}"
+    )
+
+
 # ---------------------------------------------------------------------------
 # 2. Hilfsblaetter im Export werden nicht als Verknuepfungen gelesen
 # ---------------------------------------------------------------------------

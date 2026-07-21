@@ -125,6 +125,11 @@ def test_normalize_role_none_and_empty():
     ("summe, währung", ["summe"]),
     ("person", ["person"]),
     ("ort, datum, währung", ["ort", "datum"]),  # hypothetisch
+    # Nackte Waehrung ohne Komposit -> leere Liste (kein eigener Typwert).
+    # Der bedingungslose decompose-Aufruf am Call-Site filtert sie damit weg,
+    # statt eine unverarbeitbare Generic-Relation durchzulassen.
+    ("währung", []),
+    ("waehrung", []),
 ])
 def test_decompose_komposit_typ(raw, expected):
     assert decompose_komposit_typ(raw) == expected

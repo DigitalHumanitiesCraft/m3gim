@@ -927,13 +927,6 @@ def _make_stage_role(stage_roles: dict, role_name: str) -> str:
     return sid
 
 
-# Kanonische Verknuepfungs-Spalten (nach Lowercasing). Box 6 fehlt
-# datenpunkt_id; die uebrigen Spalten sind in allen Box-Sheets identisch.
-_VERK_KNOWN_COLS = {
-    "folio", "datenpunkt_id", "typ", "name", "rolle", "anmerkung", "datum",
-}
-
-
 def load_verknuepfungen(path: Path) -> pd.DataFrame:
     """Laedt die Verknuepfungstabelle als EINE DataFrame ueber alle Sheets (E-95).
 
@@ -1070,8 +1063,11 @@ def process_verknuepfungen(df: pd.DataFrame, indices: dict) -> dict:
                 datenpunkt_id = str(dp_raw).strip() or None
         source_info = build_xlsx_source(sheet_name, xlsx_row, datenpunkt_id)
 
-        # Komposit-Typen decomponieren (Komma- und Unterstrich-Trenner)
-        typen = decompose_komposit_typ(typ) if ("," in typ or "_" in typ) else [typ]
+        # Komposit-Typen decomponieren (Komma- und Unterstrich-Trenner).
+        # Bedingungslos: decompose_komposit_typ behandelt Einzeltypen korrekt
+        # ("person" -> ["person"]) und filtert einen nackten Waehrungs-Typ zur
+        # leeren Liste, statt ihn als unverarbeitbare Generic-Relation zu emittieren.
+        typen = decompose_komposit_typ(typ)
         # Komposit-Werte decomponieren (z.B. "München, 1952-12-17" → Ort + Datum)
         decomposed = decompose_komposit_value(name, typen) if len(typen) > 1 else {}
 
