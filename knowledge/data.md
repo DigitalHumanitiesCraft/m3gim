@@ -734,6 +734,8 @@ Der Vertragsstatus `nicht eingehalten` (Abschnitt 11) ist keine eventRole und wi
     agrelon:metadataProvenance <UAKUG/NIM_004/24> .
 ```
 
+Die `@id` im Beispiel ist illustrativ. Real vergibt die Pipeline sie inhaltsbasiert als `m3gim:ste_<record-local-id>_<sha1(ort\x1frolle\x1fdatum)[:8]>`, mit stabilem Ordinal-Suffix `-N` bei echten Inhaltsdubletten auf demselben Record (E-115). Damit ist die `@id` eine reine Funktion ihres Inhalts und stabil gegen die Zeilenreihenfolge im XLSX. Beide Emissionspfade (Komposit `ort, datum` und die datumslose Mobilitäts-STE aus Abschnitt 4) teilen sich denselben Helper `_ste_id`.
+
 ### Abdeckungsabhängigkeit
 
 Jede Mobilitätsauswertung muss den derzeitigen Erschließungsstand mitführen: nur wenige Signaturen sind fein erschlossen, Datumsangaben und Titel sind selektiv vorhanden. Aktuelle Abdeckungszahlen stehen in `data/reports/quality-snapshot.md`. Mobilitätskarten sind deshalb als *Zwischenstand der Erschließung* zu kommunizieren, nicht als Rekonstruktion der Biographie. Dieser Survivorship Bias muss bei Visualisierungen textlich gekennzeichnet sein.
