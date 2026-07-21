@@ -833,8 +833,12 @@ def decompose_komposit_typ(typ: str) -> list[str]:
     Komposit "rolle, person", damit die Zeilen denselben Decompose-Pfad wie
     echte rolle,person-Kompositen nehmen (Vorarbeit fuer E-96
     Performance/StageRole). Strukturelle Absorption, keine Inhaltsaenderung.
+
+    Unterstrich ist gleichwertiger Komposit-Trenner: Google-Sheets-Dropdowns
+    koennen kein Komma im Wert tragen, der Dropdown-Umbau des Erschliessungs-
+    teams exportiert "Datum, Ort" deshalb als "Datum_Ort".
     """
-    parts = [t.strip().lower() for t in typ.split(",")]
+    parts = [t.strip().lower() for t in re.split(r"[,_]", typ)]
     # Durchgesickerte Erfassungs-Anweisung -> kanonisches "rolle, person".
     if (len(parts) == 2 and parts[0] == "rolle"
             and "nger" in parts[1] and parts[1].split()[:2] == ["vorname", "nachname"]):
@@ -973,6 +977,14 @@ def load_verknuepfungen(path: Path) -> pd.DataFrame:
             # nicht-textuelle Header bleiben unveraendert (werden unten ignoriert)
         df = df.rename(columns=rename)
 
+        # Sheets ohne Verknuepfungs-Signatur ueberspringen: der Dropdown-Umbau
+        # des Erschliessungsteams fuegt dem Workbook versteckte Hilfsblaetter
+        # und das Blatt "Typ-Rollen" hinzu. Eine Verknuepfungszeile braucht
+        # mindestens typ + name (Spalte 0 ist positionell die Signatur).
+        if not {"typ", "name"}.issubset(df.columns):
+            print(f"  Sheet '{sheet}' uebersprungen (keine Verknuepfungs-Spalten)")
+            continue
+
         # Signatur forward-fillen (viele Folgezeilen lassen sie leer) und die
         # NIM-Konvolutnummer auf drei Stellen normalisieren, damit zweistellig
         # erfasste Signaturen (NIM_11) ihren dreistelligen Record treffen.
@@ -1058,8 +1070,8 @@ def process_verknuepfungen(df: pd.DataFrame, indices: dict) -> dict:
                 datenpunkt_id = str(dp_raw).strip() or None
         source_info = build_xlsx_source(sheet_name, xlsx_row, datenpunkt_id)
 
-        # Komposit-Typen decomponieren
-        typen = decompose_komposit_typ(typ) if "," in typ else [typ]
+        # Komposit-Typen decomponieren (Komma- und Unterstrich-Trenner)
+        typen = decompose_komposit_typ(typ) if ("," in typ or "_" in typ) else [typ]
         # Komposit-Werte decomponieren (z.B. "München, 1952-12-17" → Ort + Datum)
         decomposed = decompose_komposit_value(name, typen) if len(typen) > 1 else {}
 

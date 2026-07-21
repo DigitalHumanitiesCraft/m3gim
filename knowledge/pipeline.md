@@ -147,7 +147,7 @@ Das Skript batch-fetcht Labels + Aliases + Descriptions und vergleicht mit dem `
 
 ## Pipeline-seitige Normalisierungen
 
-Strukturelle Transformationen (keine Datenfehler-Kaschierung): Spalten-Lowercase nach `pd.read_excel`, Folio-Spalten-Heuristik, Bearbeitungsstand-Kanonisierung, Gender-Suffix-Strip in Rollen, Q-ID-Regex-Filter, Zeitspannen-Normalisierung `YYYY-YYYY` → `YYYY/YYYY`, `unprocessedIds`-Set im Store. Vollständiger Katalog mit Prinzip-Einordnung (Spec/Workaround/Policy/Dead), Source-Fix-Vorschlägen und Test-Ankern: **[data.md § Datenqualität](data.md)**.
+Strukturelle Transformationen (keine Datenfehler-Kaschierung): Spalten-Lowercase nach `pd.read_excel`, Folio-Spalten-Heuristik, Bearbeitungsstand-Kanonisierung, Gender-Suffix-Strip in Rollen, Q-ID-Regex-Filter, Zeitspannen-Normalisierung `YYYY-YYYY` → `YYYY/YYYY`, Unterstrich als Komposit-Trenner (`Datum_Ort` aus dem Dropdown-Export), Hilfsblatt-Filter in `load_verknuepfungen` (Sheets ohne `typ`+`name`), `unprocessedIds`-Set im Store. Vollständiger Katalog mit Prinzip-Einordnung (Spec/Workaround/Policy/Dead), Source-Fix-Vorschlägen und Test-Ankern: **[data.md § Datenqualität](data.md)**.
 
 ## Wikidata-Reconciliation
 

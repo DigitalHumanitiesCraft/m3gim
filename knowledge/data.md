@@ -126,6 +126,8 @@ Die Zuordnung einer Verknüpfungszeile zu einem Indexeintrag erfolgt über Strin
 | summe, währung | → `m3gim:DetailAnnotation` | implementiert |
 | ensemble | direkte Kontextverarbeitung | niedrige Priorität |
 
+Seit dem Dropdown-Umbau der Erfassungstabelle (Juli 2026) erzwingen abhängige Dropdowns die Wertelisten für `typ` und `rolle` an der Quelle; das Blatt „Typ-Rollen“ im Workbook dokumentiert die Zuordnung. Google-Sheets-Dropdowns tragen kein Komma im Wert, der Komposittyp heißt im Export deshalb `Datum_Ort`; die Pipeline akzeptiert den Unterstrich als gleichwertigen Komposit-Trenner. Die versteckten Dropdown-Hilfsblätter des Workbooks werden beim Laden übersprungen.
+
 ### Dekomposition des Komposittyps `ort, datum`
 
 Der Komposittyp trägt in einem Feld sowohl Ortsreferenz als auch Zeitangabe. In der Pipeline wird er in eine Instanz von `m3gim:SpatiotemporalEvent` aufgelöst, mit `m3gim:atPlace` (Ortsreferenz) und `m3gim:atDate` (ISO-8601 oder TimeSpan). Dieser Typ ist der Mobilitätskern des Modells und wird in Abschnitt 10 ausführlich behandelt.
@@ -962,6 +964,8 @@ Die kompensierten Eigenheiten fallen in die Kategorien Spec, Workaround, Policy 
 | Personenindex ohne sauberen Namensspaltenkopf | Workaround | Header-Shift auch für den Personenindex, sonst Totalverlust der Personen-Normdaten |
 | gleiche `archivsignatur` für Sammel-Zeile und Folio-Zeilen | Workaround | `build_konvolut_hierarchy()` vergibt `_sammlung`-Suffix auf der @id |
 | Muster-/Template-Zeile im Erfassungsblatt | Policy | Zeilen mit `archivsignatur = "beispiel"` werden übersprungen |
+| Komposit-Typ `Datum_Ort` statt `Datum, Ort` (Dropdown-Werte können kein Komma tragen) | Spec | `decompose_komposit_typ()` akzeptiert Unterstrich als gleichwertigen Komposit-Trenner |
+| versteckte Dropdown-Hilfsblätter und Blatt „Typ-Rollen“ im Verknüpfungs-Export | Spec | `load_verknuepfungen()` überspringt Sheets ohne `typ`- und `name`-Spalte |
 | früherer ASCII-Fallback für den Verknüpfungen-Dateinamen | Dead | entfernt, Pipeline wirft jetzt `FileNotFoundError` |
 
 Einzelne Instanz-Befunde (Quellfehler und Abgleichfehler mit Fundstelle und Status) stehen kanonisch im [Datenfehler-Register](datenfehler.md) und werden hier nicht dupliziert; vor Bearbeitung gegen den aktuellen Quality-Snapshot (`data/reports/quality-snapshot.md`) verifizieren.
