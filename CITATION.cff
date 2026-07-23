@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it using the metadata below."
+title: m3gim
+type: software
+authors:
+  - given-names: Christopher
+    family-names: Pollin
+    orcid: "https://orcid.org/0000-0002-4879-129X"
+    affiliation: "Digital Humanities Craft OG"
+repository-code: "https://github.com/DigitalHumanitiesCraft/m3gim"
+license: MIT

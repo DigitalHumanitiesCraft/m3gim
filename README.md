@@ -45,8 +45,8 @@ Laufende Zahlen (Bestand, Verknuepfungsrate, WD-Coverage) stehen im generierten 
 - Pipeline: [`knowledge/pipeline.md`](knowledge/pipeline.md)
 - Workflow-Regeln fuer Claude-Code-Sessions: [`CLAUDE.md`](CLAUDE.md)
 
-## Lizenz
+## Licence
 
-- Code: MIT
-- Daten und Dokumentation: CC BY 4.0
-- Quellenmaterial: siehe Einzelrechtevermerke
+- Code: MIT (see [LICENSE](LICENSE)).
+- Documentation and knowledge documents (`knowledge/`, `docs/` prose): CC BY 4.0.
+- Third-party research data is excluded from these licences and the rights remain with their holders. The digitised archival source material (Teilnachlass Ira Malaniuk) is held by the Universitaetsarchiv der Kunstuniversitaet Graz; individual items carry their own rights notices.
