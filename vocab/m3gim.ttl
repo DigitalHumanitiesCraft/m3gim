@@ -1,0 +1,941 @@
+# M3GIM-Vokabular, formale Fassung des projekteigenen Namespace.
+#
+# Erhoben aus data/output/m3gim.jsonld (Terme und Werte), abgeglichen gegen
+# knowledge/data.md, scripts/transform.py und die Testsuite. Die Anschlusskanten
+# auf RiC-O sind gegen die offiziellen Komponentenlisten von RiC-O 1.1 belegt
+# (ICA-EGAD, ontology/current-version/CSV_lists_of_components), entsprechend der
+# Leitplanke Fremdterme verifizieren, nicht extrapolieren (decisions.md E-103).
+#
+# Offene Fragen an das Projekt stehen als skos:editorialNote am jeweiligen Term.
+# Der Befundbericht zur Ableitung liegt in knowledge/vocab-derivation-findings.md.
+
+@prefix m3gim:      <https://dhcraft.org/m3gim/vocab#> .
+@prefix m3gim-dft:  <https://dhcraft.org/m3gim/documentaryFormTypes#> .
+@prefix m3gim-role: <https://dhcraft.org/m3gim/roles#> .
+@prefix rico:       <https://www.ica.org/standards/RiC/ontology#> .
+@prefix agrelon:    <https://d-nb.info/standards/elementset/agrelon#> .
+@prefix skos:       <http://www.w3.org/2004/02/skos/core#> .
+@prefix owl:        <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs:       <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:        <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms:    <http://purl.org/dc/terms/> .
+
+<https://dhcraft.org/m3gim/vocab>
+    a owl:Ontology ;
+    dcterms:title "M3GIM-Vokabular"@de , "M3GIM Vocabulary"@en ;
+    rdfs:label "M3GIM-Vokabular"@de , "M3GIM Vocabulary"@en ;
+    rdfs:comment "Projekteigene Erweiterung zu RiC-O 1.1 und AgRelOn für die Erschließung des Teilnachlasses UAKUG/NIM am Universitätsarchiv der Kunstuniversität Graz. Das Vokabular deckt Werke, Aufführungen, Bühnenrollen, raumzeitliche Mobilitätsereignisse, die Finanzschicht sowie die technische Rückverfolgbarkeit in die Erfassungstabelle."@de ;
+    rdfs:comment "Project extension to RiC-O 1.1 and AgRelOn for the description of the UAKUG/NIM holdings at the archive of the University of Music and Performing Arts Graz. It covers works, performances, stage roles, spatiotemporal mobility events, the financial layer and the technical traceability into the source spreadsheet."@en ;
+    dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
+    dcterms:source <https://github.com/DigitalHumanitiesCraft/m3gim> ;
+    owl:versionInfo "0.1" ;
+    dcterms:created "2026-07-24"^^xsd:date ;
+    skos:editorialNote "Die Klassen und Properties sind aus dem erzeugten Datensatz erhoben. Die beiden kontrollierten Vokabulare vereinigen die im Datensatz belegten Werte mit den in knowledge/data.md spezifizierten; welche Werte zu einem Zeitpunkt belegt sind, ändert sich mit dem Erschließungsstand und wird hier bewusst nicht festgehalten."@de ;
+    skos:editorialNote "Nicht aufgenommen sind die in knowledge/data.md § 4 und § 7 für das Zielmodell v2 spezifizierten Terme (m3gim:Occurrence, m3gim:Participation, m3gim:attests, m3gim:hasParticipation, m3gim:performedBy, m3gim:inFunction, m3gim:playsStageRole, m3gim:hasFee, m3gim:mode, m3gim:contractStatus, m3gim:realized, m3gim:probenTyp, m3gim:derivedFromRole, m3gim:belongsToWork, m3gim:attachedTo). Sie sind entschieden, aber noch nicht in der Pipeline umgesetzt; ihre Aufnahme gehört in die Umsetzungsrunde, damit Spezifikation und Vokabular gemeinsam wandern."@de .
+
+
+# ---------------------------------------------------------------------------
+# Klassen
+# ---------------------------------------------------------------------------
+
+m3gim:MusicalWork
+    a owl:Class ;
+    rdfs:label "Musikalisches Werk"@de , "Musical work"@en ;
+    rdfs:comment "Musikalisches Werk, das im Bestand nachgewiesen ist, etwa eine Oper, ein Lied, ein Oratorium oder ein Konzert. Es wird über den Werkindex identifiziert und trägt den Komponisten als Zusatzangabe."@de ;
+    rdfs:subClassOf rico:Thing ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> .
+
+m3gim:Performance
+    a owl:Class ;
+    rdfs:label "Aufführung"@de , "Performance"@en ;
+    rdfs:comment "Ereignis, in dem ein musikalisches Werk realisiert wird. Die Klasse ist zugleich der Reifikationsknoten für die Komposite aus Bühnenrolle und Interpret sowie aus Datum und Werk."@de ;
+    rdfs:subClassOf rico:Event ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> ;
+    skos:editorialNote "Im erzeugten Datensatz entsteht je Verknüpfungszeile eine eigene Instanz, sodass eine Aufführung in mehrere Knoten zerfällt, die nicht miteinander verbunden sind. Das Zielmodell (data.md § 7, E-128) sieht eine Instanz je Aktivität mit der vollständigen Besetzung vor."@de .
+
+m3gim:PerformanceEvent
+    a owl:Class ;
+    rdfs:label "Rahmenveranstaltung"@de , "Framing event"@en ;
+    rdfs:comment "Übergeordnete Veranstaltung, in deren Rahmen einzelne Aufführungen stattfinden, etwa Festspiele, eine Konzertreihe oder eine Spielzeit."@de ;
+    rdfs:subClassOf rico:Event ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> .
+
+m3gim:SpatiotemporalEvent
+    a owl:Class ;
+    rdfs:label "Raumzeitliches Ereignis"@de , "Spatiotemporal event"@en ;
+    rdfs:comment "Verortetes und wahlweise datiertes Ereignis. Die Klasse trägt den Mobilitätskern des Modells und entsteht aus dem Komposit von Ort und Datum sowie aus den Mobilitäts-Ortsrollen, die eine datumslose Variante erzeugen."@de ;
+    rdfs:subClassOf rico:Event ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> .
+
+m3gim:DatedEvent
+    a owl:Class ;
+    rdfs:label "Datiertes Ereignis"@de , "Dated event"@en ;
+    rdfs:comment "Auffangklasse für eine Datierung, für die keine typisierte Datumsproperty vorgesehen ist oder deren Notation kein ISO-Datum ergibt. Sie hält Wert und Rolle der Datierung fest, damit beim Routing keine Angabe verloren geht."@de ;
+    rdfs:subClassOf rico:Event ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> .
+
+m3gim:StageRole
+    a owl:Class ;
+    rdfs:label "Bühnenrolle"@de , "Stage role"@en ;
+    rdfs:comment "Partie eines musikalischen Werks als eigenständige, wiederverwendete Entität. Die Identität ist ein deterministischer ASCII-Slug, gleichnamige Partien werden dedupliziert."@de ;
+    rdfs:subClassOf rico:Thing ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> ;
+    skos:editorialNote "Die Instanzen tragen im erzeugten Datensatz nur einen Namen. Weder die Zugehörigkeit zum Werk noch das Stimmfach ist gesetzt, und die im Werkindex geführte Partie (m3gim:partie) bleibt ein Literal am Werk statt einer Referenz auf die Bühnenrolle. Ob die Deduplikation über den Namen ohne Werkbindung tragfähig ist, ist mit dem Erschließungsteam zu klären, weil gleichnamige Partien verschiedener Werke zusammenfallen."@de .
+
+m3gim:DetailAnnotation
+    a owl:Class ;
+    rdfs:label "Detailangabe"@de , "Detail annotation"@en ;
+    rdfs:comment "Annotation der dritten Erschließungsschicht, die eine finanzielle oder vertragliche Einzelangabe eines Dokuments trägt, insbesondere Betrag, Währung und Art des Postens."@de ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> ;
+    skos:editorialNote "Für die Klasse ist keine Oberklasse festgelegt. RiC-O 1.1 bietet keine passende Aufhängung, weil die Detailangabe weder Ereignis noch Beschreibungselement einer Ressource ist. Ob sie als Reifikation einer Aussage modelliert werden soll, ist offen."@de .
+
+
+# ---------------------------------------------------------------------------
+# Object Properties
+# ---------------------------------------------------------------------------
+
+m3gim:hasAssociatedAgent
+    a owl:ObjectProperty ;
+    rdfs:label "hat beteiligten Akteur"@de , "has associated agent"@en ;
+    rdfs:comment "Verbindet eine Archivressource mit einer Person, einer Körperschaft oder einem Ensemble, das in ihr eine Rolle einnimmt. Die Art der Beteiligung steht als Wert von m3gim:role am verbundenen Knoten."@de ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( rico:Record rico:RecordSet ) ] ;
+    rdfs:range rico:Agent ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> ;
+    skos:editorialNote "Bewusst ohne rdfs:subPropertyOf. RiC-O 1.1 führt für mehrere der hier gebündelten Rollen eigene Object Properties, nämlich rico:hasCreator, rico:hasAddressee, rico:hasSender, rico:hasReceiver und rico:hasPublisher. Ob die Rollenwerte verfasser, adressat, absender, empfänger und herausgeber auf diese abgebildet werden sollen, ist eine offene Frage an das Projekt; eine Sammelkante kann keine von ihnen korrekt spezialisieren."@de .
+
+m3gim:hasPerformance
+    a owl:ObjectProperty ;
+    rdfs:label "hat Aufführung"@de , "has performance"@en ;
+    rdfs:comment "Verbindet eine Archivressource mit einer Aufführung, die sie bezeugt."@de ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( rico:Record rico:RecordSet ) ] ;
+    rdfs:range m3gim:Performance ;
+    rdfs:subPropertyOf rico:isAssociatedWithEvent ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> .
+
+m3gim:hasSpatiotemporalEvent
+    a owl:ObjectProperty ;
+    rdfs:label "hat raumzeitliches Ereignis"@de , "has spatiotemporal event"@en ;
+    rdfs:comment "Verbindet eine Archivressource mit einem raumzeitlichen Ereignis, das sie bezeugt."@de ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( rico:Record rico:RecordSet ) ] ;
+    rdfs:range m3gim:SpatiotemporalEvent ;
+    rdfs:subPropertyOf rico:isAssociatedWithEvent ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> .
+
+m3gim:hasDatedEvent
+    a owl:ObjectProperty ;
+    rdfs:label "hat datiertes Ereignis"@de , "has dated event"@en ;
+    rdfs:comment "Verbindet eine Archivressource mit einer Datierung, die über die Auffangklasse geführt wird."@de ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( rico:Record rico:RecordSet ) ] ;
+    rdfs:range m3gim:DatedEvent ;
+    rdfs:subPropertyOf rico:isAssociatedWithEvent ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> .
+
+m3gim:hasDetail
+    a owl:ObjectProperty ;
+    rdfs:label "hat Detailangabe"@de , "has detail"@en ;
+    rdfs:comment "Verbindet ein Dokument mit einer Detailangabe der dritten Erschließungsschicht."@de ;
+    rdfs:domain rico:Record ;
+    rdfs:range m3gim:DetailAnnotation ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> ;
+    skos:editorialNote "knowledge/data.md nennt zusätzlich die Aufführung als Domain, damit ein Honorar an der Aufführung statt am Dokument hängen kann. Im erzeugten Datensatz hängen alle Detailangaben am Dokument. Die Bindung an die Beteiligung ist für das Zielmodell entschieden (E-128, m3gim:hasFee)."@de .
+
+m3gim:hasPerformer
+    a owl:ObjectProperty ;
+    rdfs:label "hat Mitwirkende"@de , "has performer"@en ;
+    rdfs:comment "Verbindet eine Aufführung mit einer Person, die an ihr mitwirkt."@de ;
+    rdfs:domain m3gim:Performance ;
+    rdfs:range rico:Person ;
+    rdfs:subPropertyOf rico:hasOrHadParticipant ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> ;
+    skos:editorialNote "Die Funktion der Mitwirkung, also Gesang, Dirigat oder Regie, ist an dieser Kante nicht ausgedrückt. Sie steht am Personenknoten in m3gim:role und gilt damit im Dokumentkontext. Der Aufführung ist sie nicht zugeordnet."@de .
+
+m3gim:performanceOf
+    a owl:ObjectProperty ;
+    rdfs:label "ist Aufführung von"@de , "is performance of"@en ;
+    rdfs:comment "Verbindet eine Aufführung mit dem musikalischen Werk, das in ihr realisiert wird."@de ;
+    rdfs:domain m3gim:Performance ;
+    rdfs:range m3gim:MusicalWork ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> .
+
+m3gim:hasStageRole
+    a owl:ObjectProperty ;
+    rdfs:label "hat Bühnenrolle"@de , "has stage role"@en ;
+    rdfs:comment "Verbindet eine Aufführung mit einer in ihr besetzten Partie."@de ;
+    rdfs:domain m3gim:Performance ;
+    rdfs:range m3gim:StageRole ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> .
+
+m3gim:atPlace
+    a owl:ObjectProperty ;
+    rdfs:label "am Ort"@de , "at place"@en ;
+    rdfs:comment "Verortet ein raumzeitliches Ereignis."@de ;
+    rdfs:domain m3gim:SpatiotemporalEvent ;
+    rdfs:range rico:Place ;
+    rdfs:subPropertyOf rico:hasOrHadLocation ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> .
+
+m3gim:agentRelation
+    a owl:ObjectProperty ;
+    rdfs:label "hat Akteursbeziehung"@de , "has agent relation"@en ;
+    rdfs:comment "Verbindet eine Archivressource mit einer n-är reifizierten AgRelOn-Beziehung zwischen der Nachlassbildnerin und einem zweiten Akteur, für die diese Ressource der Beleg ist."@de ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( rico:Record rico:RecordSet ) ] ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> ;
+    skos:editorialNote "Ohne rdfs:range, weil AgRelOn die Beziehungsklassen nicht unter einer gemeinsamen Oberklasse führt, die hier belegt wäre. Verwendet werden agrelon:HasCorrespondent, agrelon:HasProfessionalContact, agrelon:HasEmployeeEmployer, agrelon:IsHasPatron und agrelon:HasIsMember."@de ;
+    skos:editorialNote "Die Beziehung ist am belegenden Dokument aufgehängt und trägt dieses zugleich als agrelon:metadataProvenance. Damit ist die Provenienz ein Selbstverweis. Ob die Beziehungen stattdessen als eigene Graphknoten mit Verweis auf ihre Belege geführt werden sollen, ist offen."@de .
+
+m3gim:xlsxSource
+    a owl:ObjectProperty ;
+    rdfs:label "hat Quellzelle"@de , "has source cell"@en ;
+    rdfs:comment "Verbindet eine aus der Erfassungstabelle abgeleitete Entität mit der Adresse ihrer Ursprungszeile. Die Angabe ist technische Rückverfolgbarkeit für Pipeline und Review, keine wissenschaftliche Quellenangabe."@de ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> ;
+    skos:editorialNote "Ohne rdfs:domain, weil die Property an Dokumenten, Ereignissen, Aufführungen, Detailangaben, Beziehungen und an allen aus einer Verknüpfungszeile abgeleiteten Entitätsknoten steht. Ohne rdfs:range, weil der Container ein typloser Knoten ist. Eine eigene Klasse für den Container würde ihn adressierbar und validierbar machen."@de .
+
+
+# ---------------------------------------------------------------------------
+# Datatype Properties, Beschreibung und Rollen
+# ---------------------------------------------------------------------------
+
+m3gim:role
+    a owl:DatatypeProperty ;
+    rdfs:label "Rolle"@de , "role"@en ;
+    rdfs:comment "Rolle, in der die verbundene Entität in dem Dokument steht, aus dem die Verknüpfung stammt. Der Wert stammt aus dem Vokabular m3gim-role."@de ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( rico:Person rico:CorporateBody rico:Group rico:Place m3gim:MusicalWork m3gim:PerformanceEvent ) ] ;
+    rdfs:range xsd:string ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> ;
+    skos:editorialNote "Der Wert ist ein Literal, kein Verweis auf ein Concept des Schemas m3gim-role. Das Schema ist im JSON-LD-Kontext deklariert, wird aber von keiner Aussage benutzt. Die Umstellung auf Concept-IRIs ist zu entscheiden."@de ;
+    skos:editorialNote "Die Rolle gilt nur im Kontext des jeweiligen Dokuments, hängt aber am Entitätsknoten. Trägt dieser Knoten eine Wikidata-IRI, geht der Dokumentkontext beim Zusammenführen zu RDF verloren, und dieselbe global identifizierte Entität erhält einander ausschließende Rollen. Wie die Rolle an das Dokument gebunden wird, ist mit dem Projekt zu klären."@de .
+
+m3gim:komponist
+    a owl:DatatypeProperty ;
+    rdfs:label "Komponist"@de , "composer"@en ;
+    rdfs:comment "Kuratierte Komponistenangabe aus dem Werkindex in der Ansetzungsform Nachname, Vorname."@de ;
+    rdfs:domain m3gim:MusicalWork ;
+    rdfs:range xsd:string ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> ;
+    skos:editorialNote "Das angereicherte Gegenstück ist m3gim:wdComposer. Beide können am selben Werk stehen und abweichen; ein Abgleich findet nicht statt."@de .
+
+m3gim:eventRole
+    a owl:DatatypeProperty ;
+    rdfs:label "Ereignisrolle"@de , "event role"@en ;
+    rdfs:comment "Rolle, in der ein raumzeitliches Ereignis zu dem Dokument steht, das es bezeugt, etwa als Zielort einer Reise oder als Aufführungsort."@de ;
+    rdfs:domain m3gim:SpatiotemporalEvent ;
+    rdfs:range xsd:string ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> ;
+    skos:editorialNote "Der Wertebereich mischt Ortsrollen, Ereignisrollen und Datumsrollen. Datumsrollen wie absendedatum, ausstellungsdatum und erscheinungsdatum stehen hier, weil die Rolle einer Verknüpfungszeile an beide Hälften des Komposits aus Ort und Datum vererbt wird. Am reinen Ortsknoten wird diese Vererbung von der Pipeline zurückgenommen, am raumzeitlichen Ereignis nicht. Ob Datumsrollen als Ereignisrolle zulässig sind, ist zu klären."@de .
+
+m3gim:dateRole
+    a owl:DatatypeProperty ;
+    rdfs:label "Datumsrolle"@de , "date role"@en ;
+    rdfs:comment "Rolle, die den Bezug einer Datierung zu ihrem Dokument typisiert, wenn keine typisierte Datumsproperty greift."@de ;
+    rdfs:domain m3gim:DatedEvent ;
+    rdfs:range xsd:string ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> .
+
+
+# ---------------------------------------------------------------------------
+# Datatype Properties, Datumsfamilie
+# ---------------------------------------------------------------------------
+# Alle Datumswerte sind Literale vom Typ xsd:string, weil historische Datierung
+# die Strenge von xsd:date regelmäßig überschreitet: Zeitspannen (1952/1953),
+# unvollständige Datierungen und die Qualifier circa:, vor: und nach:.
+
+m3gim:atDate
+    a owl:DatatypeProperty ;
+    rdfs:label "zum Datum"@de , "at date"@en ;
+    rdfs:comment "Datierung eines raumzeitlichen Ereignisses. Fehlt sie, ist das Ereignis bewusst undatiert, weil die Quelle kein Datum hergibt."@de ;
+    rdfs:domain m3gim:SpatiotemporalEvent ;
+    rdfs:range xsd:string ;
+    rdfs:subPropertyOf rico:date ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> .
+
+m3gim:dateValue
+    a owl:DatatypeProperty ;
+    rdfs:label "Datumswert"@de , "date value"@en ;
+    rdfs:comment "Datierung, die über die Auffangklasse geführt wird, im Wortlaut der normalisierten Quelle."@de ;
+    rdfs:domain m3gim:DatedEvent ;
+    rdfs:range xsd:string ;
+    rdfs:subPropertyOf rico:date ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> .
+
+m3gim:erstelldatum
+    a owl:DatatypeProperty ;
+    rdfs:label "Erstelldatum"@de , "creation date"@en ;
+    rdfs:comment "Datum, an dem das Dokument entstanden ist."@de ;
+    rdfs:domain rico:Record ;
+    rdfs:range xsd:string ;
+    rdfs:subPropertyOf rico:creationDate ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> .
+
+m3gim:absendedatum
+    a owl:DatatypeProperty ;
+    rdfs:label "Absendedatum"@de , "dispatch date"@en ;
+    rdfs:comment "Datum, an dem ein Korrespondenzstück abgesendet wurde."@de ;
+    rdfs:domain rico:Record ;
+    rdfs:range xsd:string ;
+    rdfs:subPropertyOf rico:date ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> .
+
+m3gim:empfangsdatum
+    a owl:DatatypeProperty ;
+    rdfs:label "Empfangsdatum"@de , "receipt date"@en ;
+    rdfs:comment "Datum, an dem ein Korrespondenzstück empfangen wurde."@de ;
+    rdfs:domain rico:Record ;
+    rdfs:range xsd:string ;
+    rdfs:subPropertyOf rico:date ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> .
+
+m3gim:ausstellungsdatum
+    a owl:DatatypeProperty ;
+    rdfs:label "Ausstellungsdatum"@de , "date of issue"@en ;
+    rdfs:comment "Datum, an dem ein Vertrag, ein Ausweis oder eine Urkunde ausgestellt wurde."@de ;
+    rdfs:domain rico:Record ;
+    rdfs:range xsd:string ;
+    rdfs:subPropertyOf rico:date ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> .
+
+m3gim:erscheinungsdatum
+    a owl:DatatypeProperty ;
+    rdfs:label "Erscheinungsdatum"@de , "publication date"@en ;
+    rdfs:comment "Datum, an dem ein Presseartikel oder eine Publikation erschienen ist."@de ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( rico:Record rico:RecordSet ) ] ;
+    rdfs:range xsd:string ;
+    rdfs:subPropertyOf rico:date ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> .
+
+m3gim:abreisedatum
+    a owl:DatatypeProperty ;
+    rdfs:label "Abreisedatum"@de , "departure date"@en ;
+    rdfs:comment "Datum, an dem eine Reise angetreten wurde."@de ;
+    rdfs:domain rico:Record ;
+    rdfs:range xsd:string ;
+    rdfs:subPropertyOf rico:date ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> .
+
+m3gim:auftrittsdatum
+    a owl:DatatypeProperty ;
+    rdfs:label "Auftrittsdatum"@de , "appearance date"@en ;
+    rdfs:comment "Datum eines Auftritts, das im Dokument belegt ist."@de ;
+    rdfs:domain rico:Record ;
+    rdfs:range xsd:string ;
+    rdfs:subPropertyOf rico:date ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> ;
+    skos:editorialNote "Die Abgrenzung gegen m3gim:auffuehrungsdatum folgt allein der Rollenspalte der Quelle. Eine inhaltliche Unterscheidung liegt ihr nicht zugrunde. Ob Auftritt und Aufführung im Modell getrennt bleiben sollen, ist zu klären."@de .
+
+m3gim:auffuehrungsdatum
+    a owl:DatatypeProperty ;
+    rdfs:label "Aufführungsdatum"@de , "performance date"@en ;
+    rdfs:comment "Datum, an dem eine Aufführung stattgefunden hat."@de ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( rico:Record m3gim:Performance ) ] ;
+    rdfs:range xsd:string ;
+    rdfs:subPropertyOf rico:date ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> .
+
+m3gim:probendatum
+    a owl:DatatypeProperty ;
+    rdfs:label "Probendatum"@de , "rehearsal date"@en ;
+    rdfs:comment "Datum einer Probe."@de ;
+    rdfs:domain rico:Record ;
+    rdfs:range xsd:string ;
+    rdfs:subPropertyOf rico:date ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> .
+
+m3gim:probenbeginn
+    a owl:DatatypeProperty ;
+    rdfs:label "Probenbeginn"@de , "start of rehearsals"@en ;
+    rdfs:comment "Datum, an dem die Proben einer Produktion begonnen haben."@de ;
+    rdfs:domain rico:Record ;
+    rdfs:range xsd:string ;
+    rdfs:subPropertyOf rico:beginningDate ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> .
+
+m3gim:premieredatum
+    a owl:DatatypeProperty ;
+    rdfs:label "Premierendatum"@de , "premiere date"@en ;
+    rdfs:comment "Datum der Premiere einer Produktion."@de ;
+    rdfs:domain rico:Record ;
+    rdfs:range xsd:string ;
+    rdfs:subPropertyOf rico:date ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> ;
+    skos:editorialNote "Nicht zu verwechseln mit m3gim:wdPremiereDate, das die Uraufführung des Werks laut Wikidata trägt. Diese Property meint die Premiere der im Dokument belegten Produktion."@de .
+
+m3gim:ausstrahlungsdatum
+    a owl:DatatypeProperty ;
+    rdfs:label "Ausstrahlungsdatum"@de , "broadcast date"@en ;
+    rdfs:comment "Datum, an dem eine Rundfunkaufnahme gesendet wurde."@de ;
+    rdfs:domain rico:Record ;
+    rdfs:range xsd:string ;
+    rdfs:subPropertyOf rico:date ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> .
+
+m3gim:spielzeitVon
+    a owl:DatatypeProperty ;
+    rdfs:label "Spielzeit, Beginn"@de , "season, start"@en ;
+    rdfs:comment "Beginn einer Spielzeit, in der ein Engagement bestand."@de ;
+    rdfs:domain rico:Record ;
+    rdfs:range xsd:string ;
+    rdfs:subPropertyOf rico:beginningDate ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> ;
+    skos:editorialNote "Die Pipeline führt jede Spielzeitangabe auf diese Property. Der Wert trägt deshalb die ganze Spanne in der Form 1952/1953, obwohl der Name den Beginn bezeichnet. Entweder ist die Spanne zu zerlegen oder die Property umzubenennen."@de .
+
+m3gim:spielzeitBis
+    a owl:DatatypeProperty ;
+    rdfs:label "Spielzeit, Ende"@de , "season, end"@en ;
+    rdfs:comment "Ende einer Spielzeit, in der ein Engagement bestand."@de ;
+    rdfs:domain rico:Record ;
+    rdfs:range xsd:string ;
+    rdfs:subPropertyOf rico:endDate ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> ;
+    skos:editorialNote "In knowledge/data.md und in der Testsuite geführt, von der Pipeline nicht befüllt, weil die Spielzeit nicht zerlegt wird. Siehe die Anmerkung an m3gim:spielzeitVon."@de .
+
+m3gim:ueberweisungsdatum
+    a owl:DatatypeProperty ;
+    rdfs:label "Überweisungsdatum"@de , "transfer date"@en ;
+    rdfs:comment "Datum, an dem eine Zahlung überwiesen wurde."@de ;
+    rdfs:domain rico:Record ;
+    rdfs:range xsd:string ;
+    rdfs:subPropertyOf rico:date ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> .
+
+m3gim:gespraechsdatum
+    a owl:DatatypeProperty ;
+    rdfs:label "Gesprächsdatum"@de , "conversation date"@en ;
+    rdfs:comment "Datum eines im Dokument belegten Gesprächs."@de ;
+    rdfs:domain rico:Record ;
+    rdfs:range xsd:string ;
+    rdfs:subPropertyOf rico:date ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> ;
+    skos:editorialNote "Die Property wird von der Pipeline erzeugt, ist in knowledge/data.md § 7 aber nicht in der Aufzählung der typisierten Datumsproperties geführt. Der Eintrag ist dort nachzuziehen."@de .
+
+
+# ---------------------------------------------------------------------------
+# Datatype Properties, Finanzschicht
+# ---------------------------------------------------------------------------
+
+m3gim:detailField
+    a owl:DatatypeProperty ;
+    rdfs:label "Detailfeld"@de , "detail field"@en ;
+    rdfs:comment "Benennt die Art des Postens, den eine Detailangabe trägt. Belegt sind die Finanzfelder ausgaben, einnahmen und summe."@de ;
+    rdfs:domain m3gim:DetailAnnotation ;
+    rdfs:range xsd:string ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> ;
+    skos:editorialNote "Die Pipeline kennt einen zweiten Emissionspfad über den Verknüpfungstyp detail, in dem detailField die Bezeichnung der Angabe und detailValue die Rolle trägt. Die beiden Pfade belegen dasselbe Paar von Properties gegenläufig. Welche Lesart gilt, ist zu klären, bevor der zweite Pfad Daten führt."@de .
+
+m3gim:detailValue
+    a owl:DatatypeProperty ;
+    rdfs:label "Detailwert"@de , "detail value"@en ;
+    rdfs:comment "Unveränderter Zellwert der Quelle, aus dem Betrag und Währung geparst werden. Er bleibt erhalten, damit die Parsung nachprüfbar ist."@de ;
+    rdfs:domain m3gim:DetailAnnotation ;
+    rdfs:range xsd:string ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> .
+
+m3gim:detailRole
+    a owl:DatatypeProperty ;
+    rdfs:label "Detailrolle"@de , "detail role"@en ;
+    rdfs:comment "Art des Finanzpostens, etwa Abendgage, Provision oder Reisekosten. Der Wert stammt aus dem Vokabular m3gim-role."@de ;
+    rdfs:domain m3gim:DetailAnnotation ;
+    rdfs:range xsd:string ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> .
+
+m3gim:monetaryAmount
+    a owl:DatatypeProperty ;
+    rdfs:label "Geldbetrag"@de , "monetary amount"@en ;
+    rdfs:comment "Numerischer Betrag einer Finanzangabe, aus dem Zellwert geparst. Ein Doppelbetrag in einer Zelle wird in zwei Detailangaben aufgelöst, damit kein belegter Betrag verloren geht."@de ;
+    rdfs:domain m3gim:DetailAnnotation ;
+    rdfs:range xsd:decimal ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> .
+
+m3gim:currency
+    a owl:DatatypeProperty ;
+    rdfs:label "Währung"@de , "currency"@en ;
+    rdfs:comment "Währung eines Betrags. Wo die Quelle eindeutig ist, steht der ISO-4217-Code, sonst der Originalcode der Quelle, damit keine spekulative Normalisierung entsteht."@de ;
+    rdfs:domain m3gim:DetailAnnotation ;
+    rdfs:range xsd:string ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> ;
+    skos:editorialNote "Der Wertebereich mischt ISO-Codes und Quellschreibungen, etwa DM neben Belgische Francs. Für maschinelle Auswertung wäre ein zweites Feld mit dem normalisierten Code nötig; ob es angelegt wird, ist offen."@de ;
+    skos:editorialNote "Fehlt die Währung in der Quelle, setzt die Pipeline für zwei Fundstellen einen redaktionell begründeten Vorgabewert. Dieser abgeleitete Charakter ist im Datum nicht markiert, der Wert steht wie ein erfasster da."@de .
+
+
+# ---------------------------------------------------------------------------
+# Datatype Properties, Bearbeitungsstand und Datenqualität
+# ---------------------------------------------------------------------------
+
+m3gim:bearbeitungsstand
+    a owl:DatatypeProperty ;
+    rdfs:label "Bearbeitungsstand"@de , "processing status"@en ;
+    rdfs:comment "Projektinterner Erschließungsstand eines Objekts. Die Pipeline normalisiert die Schreibvarianten der Quelle auf die Werte begonnen, abgeschlossen und zurueckgestellt."@de ;
+    rdfs:domain rico:Record ;
+    rdfs:range xsd:string ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> ;
+    skos:editorialNote "knowledge/data.md § 15 führt ein zweites, abweichendes Wertesystem aus der Erfassungshandreichung mit den Stufen in_bearbeitung, schicht1_fertig, schicht2_fertig und abgeschlossen, das den Schichtfortschritt abbildet. Welches System gilt, ist zu entscheiden; erst dann lässt sich der Erschließungsgrad pro Schicht messen."@de .
+
+m3gim:bearbeitungsnotiz
+    a owl:DatatypeProperty ;
+    rdfs:label "Bearbeitungsnotiz"@de , "processing note"@en ;
+    rdfs:comment "Redaktionelle Anmerkung zum Bearbeitungsstand eines Objekts, aus dem Klammeranhang der Statusspalte."@de ;
+    rdfs:domain rico:Record ;
+    rdfs:range xsd:string ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> .
+
+m3gim:dataQualityFlag
+    a owl:DatatypeProperty ;
+    rdfs:label "Datenqualitäts-Flag"@de , "data quality flag"@en ;
+    rdfs:comment "Kontrolliertes Signal für eine Unsicherheit in der Erfassung, abgeleitet aus dem Anmerkungsfeld der Quellzeile. Belegte Werte sind name-nicht-eindeutig, vorname-fehlt, rolle-unsicher, quelle-tippfehler und datierung-malformed."@de ;
+    rdfs:range xsd:string ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> ;
+    skos:editorialNote "Ohne rdfs:domain, weil das Flag an jede aus einer Verknüpfungszeile abgeleitete Entität wandern kann, auf die sich die Unsicherheit bezieht."@de ;
+    skos:editorialNote "knowledge/data.md typisiert die Property als Zeichenkette mit dem Zusatz SKOS. Die Werte stehen als Literale ohne Concept-IRI, ein Schema für sie existiert nicht. Ob eines angelegt wird, ist offen."@de .
+
+m3gim:qualityConfidence
+    a owl:DatatypeProperty ;
+    rdfs:label "Konfidenz des Qualitäts-Flags"@de , "confidence of the quality flag"@en ;
+    rdfs:comment "Konfidenz eines Datenqualitäts-Flags, getrennt von der Konfidenz der inhaltlichen Aussage."@de ;
+    rdfs:range xsd:decimal ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> ;
+    skos:editorialNote "Deklariert und bewusst unbefüllt. Die Anmerkungsfreitexte der Quelle liefern kein quantifizierbares Konfidenzsignal, und ein gesetzter Zahlenwert wäre eine erfundene Konfidenz (decisions.md E-102 und E-106). Das Flag selbst ist das Unsicherheitssignal. Die Property ist für eine künftige belegbare Quelle reserviert."@de .
+
+
+# ---------------------------------------------------------------------------
+# Datatype Properties, kuratierte Indexfelder
+# ---------------------------------------------------------------------------
+
+m3gim:sitz
+    a owl:DatatypeProperty ;
+    rdfs:label "Sitz"@de , "seat"@en ;
+    rdfs:comment "Kuratierter Sitz einer Institution aus dem Organisationsindex. Er trägt die Unterscheidung zwischen einem Auftritt am eigenen Haus und einem auswärtigen Auftritt."@de ;
+    rdfs:domain rico:CorporateBody ;
+    rdfs:range xsd:string ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> ;
+    skos:editorialNote "Hat Vorrang vor m3gim:wdLocation, das aus Wikidata oft nur einen Stadtteil oder einen Saal liefert. Der Wert ist ein Ortsname als Literal, keine Referenz auf einen Ortsknoten."@de .
+
+m3gim:keyContact
+    a owl:DatatypeProperty ;
+    rdfs:label "Schlüsselkontakt"@de , "key contact"@en ;
+    rdfs:comment "Im Organisationsindex vermerkte Person, über die der Kontakt zu einer Institution lief."@de ;
+    rdfs:domain rico:CorporateBody ;
+    rdfs:range xsd:string ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> ;
+    skos:editorialNote "Der Wert ist ein Personenname als Literal und nicht mit dem Personenindex verknüpft. Dieselbe Person kann daher als Akteur und als Schlüsselkontakt unverbunden nebeneinander stehen."@de .
+
+m3gim:partie
+    a owl:DatatypeProperty ;
+    rdfs:label "Partie"@de , "part"@en ;
+    rdfs:comment "Partie, die die Nachlassbildnerin in diesem Werk gesungen hat, aus dem Werkindex. Sie bildet den Kern des dokumentierten Repertoires."@de ;
+    rdfs:domain m3gim:MusicalWork ;
+    rdfs:range xsd:string ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> ;
+    skos:editorialNote "Dieselbe Partie existiert als m3gim:StageRole mit eigener Identität. Die Verbindung zwischen Literal und Entität ist nicht gesetzt, m3gim:belongsToWork bleibt unbelegt. Damit stehen zwei Repräsentationen derselben Sache nebeneinander."@de .
+
+m3gim:lifespan
+    a owl:DatatypeProperty ;
+    rdfs:label "Lebensspanne"@de , "lifespan"@en ;
+    rdfs:comment "Kuratierte Lebensdaten einer Person aus dem Personenindex, in der Schreibung der Quelle."@de ;
+    rdfs:domain rico:Person ;
+    rdfs:range xsd:string ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> ;
+    skos:editorialNote "Bewusst getrennt von schema:birthDate und schema:deathDate, die aus Wikidata stammen. Beide Angaben können an derselben Person stehen und abweichen; ein Abgleich findet nicht statt."@de .
+
+m3gim:editorialNote
+    a owl:DatatypeProperty ;
+    rdfs:label "Redaktionelle Anmerkung"@de , "editorial note"@en ;
+    rdfs:comment "Anmerkung aus der Anmerkungsspalte eines Indexblatts. Sie trägt bei Personen Beruf oder Funktion, bei Institutionen den Typ und bei Werken die Werkgruppe."@de ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( rico:Person rico:CorporateBody m3gim:MusicalWork ) ] ;
+    rdfs:range xsd:string ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> ;
+    skos:editorialNote "Der Name fällt mit skos:editorialNote zusammen, meint aber ein kuratiertes Quellfeld und keine Anmerkung an der Modellierung. Eine Umbenennung ist zu erwägen."@de ;
+    skos:editorialNote "Das Feld führt bei Personen faktisch eine Berufsangabe und überschneidet sich mit gndo:professionOrOccupationAsLiteral aus der Anreicherung. Ob die kuratierte Angabe dorthin geführt werden soll, ist offen."@de .
+
+m3gim:voiceType
+    a owl:DatatypeProperty ;
+    rdfs:label "Stimmfach"@de , "voice type"@en ;
+    rdfs:comment "Stimmfach einer Person, aus der Wikidata-Anreicherung."@de ;
+    rdfs:domain rico:Person ;
+    rdfs:range xsd:string ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> ;
+    skos:editorialNote "knowledge/data.md sieht die Property auch an der Bühnenrolle vor, um das Stimmfach einer Partie zu führen. Dort ist sie unbelegt. Solange beide Verwendungen offen sind, bleibt unklar, ob ein Wert das Fach der Person oder das der Partie bezeichnet."@de .
+
+
+# ---------------------------------------------------------------------------
+# Datatype Properties, Wikidata-Anreicherung
+# ---------------------------------------------------------------------------
+# Diese Properties tragen Werte, die aus Wikidata injiziert sind. Wo ein
+# etabliertes Vokabular trägt, nutzt das Modell dieses (schema:birthDate,
+# schema:deathDate, schema:birthPlace, schema:deathPlace, geo:lat, geo:long,
+# gndo:professionOrOccupationAsLiteral). Nur wo keines passt, bleibt der Term
+# unter m3gim:.
+
+m3gim:country
+    a owl:DatatypeProperty ;
+    rdfs:label "Land"@de , "country"@en ;
+    rdfs:comment "Land, in dem ein Ort liegt, als Label aus Wikidata."@de ;
+    rdfs:domain rico:Place ;
+    rdfs:range xsd:string ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> ;
+    skos:editorialNote "Die angereicherten Ortsknoten unterhalb von m3gim:atPlace tragen keinen eigenen Typ. Für diese Knoten ist die Domain nur aus der Position im Graphen erschließbar."@de .
+
+m3gim:wdComposer
+    a owl:DatatypeProperty ;
+    rdfs:label "Komponist laut Wikidata"@de , "composer according to Wikidata"@en ;
+    rdfs:comment "Komponist eines Werks als Label aus Wikidata."@de ;
+    rdfs:domain m3gim:MusicalWork ;
+    rdfs:range xsd:string ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> .
+
+m3gim:wdGenre
+    a owl:DatatypeProperty ;
+    rdfs:label "Gattung laut Wikidata"@de , "genre according to Wikidata"@en ;
+    rdfs:comment "Gattung eines Werks als Label aus Wikidata. Ein Werk kann mehrere Werte tragen."@de ;
+    rdfs:domain m3gim:MusicalWork ;
+    rdfs:range xsd:string ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> .
+
+m3gim:wdPremiereDate
+    a owl:DatatypeProperty ;
+    rdfs:label "Uraufführungsdatum laut Wikidata"@de , "premiere date according to Wikidata"@en ;
+    rdfs:comment "Datum der Uraufführung eines Werks laut Wikidata."@de ;
+    rdfs:domain m3gim:MusicalWork ;
+    rdfs:range xsd:string ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> ;
+    skos:editorialNote "Liegt in Wikidata kein Uraufführungsdatum vor, füllt die Anreicherung den Wert ersatzweise aus dem Publikationsdatum. Welche der beiden Quellen einem Wert zugrunde liegt, ist am Datum nicht erkennbar."@de .
+
+m3gim:wdLocation
+    a owl:DatatypeProperty ;
+    rdfs:label "Ort laut Wikidata"@de , "location according to Wikidata"@en ;
+    rdfs:comment "Ortsangabe zu einer Institution laut Wikidata."@de ;
+    rdfs:domain rico:CorporateBody ;
+    rdfs:range xsd:string ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> ;
+    skos:editorialNote "Die Angabe bezeichnet häufig einen Stadtteil oder ein Gebäude statt der Stadt. Für die Auswertung ist der kuratierte m3gim:sitz vorzuziehen."@de .
+
+m3gim:inception
+    a owl:DatatypeProperty ;
+    rdfs:label "Gründungsdatum"@de , "inception"@en ;
+    rdfs:comment "Gründungsdatum einer Institution laut Wikidata."@de ;
+    rdfs:domain rico:CorporateBody ;
+    rdfs:range xsd:string ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> ;
+    skos:editorialNote "Die Werte kommen in der Form 1715-00-00 vor, wenn nur das Jahr bekannt ist. Das ist kein gültiges ISO-Datum, weshalb die Property eine Zeichenkette führt."@de .
+
+
+# ---------------------------------------------------------------------------
+# Datatype Properties, technische Herkunft
+# ---------------------------------------------------------------------------
+
+m3gim:xlsxSheet
+    a owl:DatatypeProperty ;
+    rdfs:label "Quellblatt"@de , "source sheet"@en ;
+    rdfs:comment "Name des Blatts der Erfassungstabelle, aus dem eine Entität stammt."@de ;
+    rdfs:range xsd:string ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> ;
+    skos:editorialNote "knowledge/data.md § 9 nennt als Wertebereich die beiden Namen Objekte und Verknuepfungen. Tatsächlich steht für die Verknüpfungen der Name des jeweiligen Box-Blatts im Wert, weil die Tabelle über mehrere Blätter verteilt ist. Spezifikation und Datum weichen ab; die Spezifikation ist nachzuziehen."@de .
+
+m3gim:xlsxRow
+    a owl:DatatypeProperty ;
+    rdfs:label "Quellzeile"@de , "source row"@en ;
+    rdfs:comment "Zeilennummer in der Erfassungstabelle, einschließlich der Kopfzeile gezählt."@de ;
+    rdfs:range xsd:integer ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> .
+
+m3gim:datenpunktId
+    a owl:DatatypeProperty ;
+    rdfs:label "Datenpunkt-Kennung"@de , "data point identifier"@en ;
+    rdfs:comment "Kennung, die die Aussagen eines einzelnen Vorkommnisses innerhalb eines Dokuments bündelt. Leer bedeutet die Dokumentebene."@de ;
+    rdfs:range xsd:integer ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> ;
+    skos:editorialNote "Die Spalte ist in der Quelle nahezu nie gefüllt, weshalb das darauf aufbauende Vorkommnis-Modell nicht wirksam ist. Die Nachfolgekonvention ist die zweistufige Aktivitätskennung aus decisions.md E-127."@de ;
+    skos:editorialNote "Die Kennung sitzt im Container der technischen Herkunft, trägt seit E-125 aber eine fachliche Bündelung und keine Herkunftsangabe. Sie gehört an die bezeugte Entität statt an die Quellzellenadresse."@de .
+
+
+# ---------------------------------------------------------------------------
+# Datatype Properties, Kennzahlen des Exports
+# ---------------------------------------------------------------------------
+# Diese Properties stehen am Wurzelknoten der Serialisierung, der keinen Typ
+# trägt. Eine Domain lässt sich deshalb nicht angeben. Ein eigener Knoten für
+# den Datensatz würde die Angaben adressierbar machen.
+
+m3gim:exportDate
+    a owl:DatatypeProperty ;
+    rdfs:label "Exportzeitpunkt"@de , "export date"@en ;
+    rdfs:comment "Zeitpunkt, zu dem der Datensatz erzeugt wurde."@de ;
+    rdfs:range xsd:string ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> .
+
+m3gim:recordCount
+    a owl:DatatypeProperty ;
+    rdfs:label "Anzahl der Dokumente"@de , "number of records"@en ;
+    rdfs:comment "Anzahl der Dokumente im Datensatz zum Zeitpunkt des Exports."@de ;
+    rdfs:range xsd:integer ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> .
+
+m3gim:konvolutCount
+    a owl:DatatypeProperty ;
+    rdfs:label "Anzahl der Konvolute"@de , "number of aggregations"@en ;
+    rdfs:comment "Anzahl der aggregierenden Archiveinheiten im Datensatz zum Zeitpunkt des Exports."@de ;
+    rdfs:range xsd:integer ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> .
+
+m3gim:approvedManualMatches
+    a owl:DatatypeProperty ;
+    rdfs:label "Freigegebene manuelle Zuordnungen"@de , "approved manual matches"@en ;
+    rdfs:comment "Anzahl der von Hand geprüften und freigegebenen Wikidata-Zuordnungen, die in den Export eingegangen sind."@de ;
+    rdfs:range xsd:integer ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> .
+
+m3gim:lowConfidenceSkipped
+    a owl:DatatypeProperty ;
+    rdfs:label "Übergangene unsichere Zuordnungen"@de , "skipped low confidence matches"@en ;
+    rdfs:comment "Anzahl der Wikidata-Zuordnungen, die wegen zu geringer Trefferqualität und fehlender Freigabe nicht in den Export eingegangen sind."@de ;
+    rdfs:range xsd:integer ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> .
+
+
+# ---------------------------------------------------------------------------
+# Vokabular der Relationsrollen
+# ---------------------------------------------------------------------------
+
+m3gim-role:scheme
+    a skos:ConceptScheme ;
+    rdfs:label "M3GIM-Relationsrollen"@de , "M3GIM relation roles"@en ;
+    skos:prefLabel "M3GIM-Relationsrollen"@de ;
+    rdfs:comment "Rollenvokabular des Projekts. Eine einzige Spalte der Erfassungstabelle trägt diese Werte, und die Pipeline verteilt sie je nach Verknüpfungstyp auf m3gim:role, m3gim:eventRole, m3gim:dateRole und m3gim:detailRole. Deshalb bilden die vier Properties ein gemeinsames Vokabular."@de ;
+    skos:editorialNote "Die Werte stehen im Datensatz als Literale. Kein Concept dieses Schemas wird über seine IRI referenziert."@de ;
+    skos:editorialNote "Der Wert nicht eingehalten kommt in der Rollenspalte vor, bezeichnet dort aber den Status eines nicht erfüllten Vertrags. Eine Rolle ist er nicht. Er ist hier bewusst nicht als Concept geführt. Das Zielfeld ist m3gim:contractStatus zusammen mit m3gim:realized am Vertragsdokument (data.md § 11); die Modellierung ist mit dem Erschließungsteam zu klären."@de ;
+    skos:editorialNote "Die Werte sind nach der Normalisierung geschlechtsneutral, weil die Pipeline die Endungen :in und :innen entfernt."@de .
+
+m3gim-role:verfasser a skos:Concept ; skos:prefLabel "verfasser"@de ; skos:definition "Person oder Institution, die das Dokument verfasst hat."@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:adressat a skos:Concept ; skos:prefLabel "adressat"@de ; skos:definition "Person oder Institution, an die das Dokument gerichtet ist."@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:absender a skos:Concept ; skos:prefLabel "absender"@de ; skos:definition "Person, die ein Korrespondenzstück abgesendet hat."@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:empfaenger a skos:Concept ; skos:prefLabel "empfänger"@de ; skos:definition "Person oder Institution, die ein Korrespondenzstück empfangen hat."@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:unterzeichner a skos:Concept ; skos:prefLabel "unterzeichner"@de ; skos:definition "Person, die das Dokument unterschrieben hat."@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:abgebildet a skos:Concept ; skos:prefLabel "abgebildet"@de ; skos:definition "Person, die auf einer Fotografie oder einem Plakat abgebildet ist."@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:agent a skos:Concept ; skos:prefLabel "agent"@de ; skos:definition "Person, die als Künstleragentur oder Agent die Karriere vermittelt."@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:vermittler a skos:Concept ; skos:prefLabel "vermittler"@de ; skos:definition "Person oder Institution, die ein Engagement oder einen Kontakt vermittelt hat."@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:auftraggeber a skos:Concept ; skos:prefLabel "auftraggeber"@de ; skos:definition "Person oder Institution, die einen Auftrag erteilt oder eine Tätigkeit finanziert hat."@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:widmungsempfaenger a skos:Concept ; skos:prefLabel "widmungsempfänger"@de ; skos:definition "Person, der ein Dokument oder ein Werk gewidmet ist."@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:erwaehnt a skos:Concept ; skos:prefLabel "erwähnt"@de ; skos:definition "Entität, die im Dokument genannt wird, ohne dass eine bestimmtere Rolle erschließbar ist."@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:inhaber a skos:Concept ; skos:prefLabel "inhaber"@de ; skos:definition "Person, die Inhaberin eines Rechts, eines Amtes oder eines Betriebs ist."@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:herausgeber a skos:Concept ; skos:prefLabel "herausgeber"@de ; skos:definition "Person oder Institution, die eine Publikation herausgibt. Bei Presseerzeugnissen ist es meist die Institution."@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:vertragspartner a skos:Concept ; skos:prefLabel "vertragspartner"@de ; skos:definition "Gegenpartei eines Vertrags."@de ; skos:inScheme m3gim-role:scheme ; skos:editorialNote "Wird im Modell als AgRelOn-Beziehung geführt statt als Rolle am Personenknoten. Weil vertragspartner und arbeitgeber auf dieselbe AgRelOn-Klasse abbilden, ist die Herkunft ohne einen Marker nicht mehr unterscheidbar."@de .
+
+m3gim-role:saenger a skos:Concept ; skos:prefLabel "sänger"@de ; skos:definition "Person, die in einer Aufführung singt."@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:dirigent a skos:Concept ; skos:prefLabel "dirigent"@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:regisseur a skos:Concept ; skos:prefLabel "regisseur"@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:komponist a skos:Concept ; skos:prefLabel "komponist"@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:librettist a skos:Concept ; skos:prefLabel "librettist"@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:uebersetzer a skos:Concept ; skos:prefLabel "übersetzer"@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:arrangeur a skos:Concept ; skos:prefLabel "arrangeur"@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:chorleiter a skos:Concept ; skos:prefLabel "chorleiter"@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:choreograph a skos:Concept ; skos:prefLabel "choreograph"@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:buehnenbildner a skos:Concept ; skos:prefLabel "bühnenbildner"@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:kostuembildner a skos:Concept ; skos:prefLabel "kostümbildner"@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:ausstatter a skos:Concept ; skos:prefLabel "ausstatter"@de ; skos:definition "Person, die Bühnenbild und Kostüm gemeinsam verantwortet."@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:buehnenleiter a skos:Concept ; skos:prefLabel "bühnenleiter"@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:technische_leitung a skos:Concept ; skos:prefLabel "technische leitung"@de ; skos:inScheme m3gim-role:scheme ; skos:editorialNote "Gegen den nackten Wert leitung abzugrenzen. Die Unterscheidung ist mit dem Erschließungsteam zu klären."@de .
+m3gim-role:leitung a skos:Concept ; skos:prefLabel "leitung"@de ; skos:inScheme m3gim-role:scheme ; skos:editorialNote "Der Wert ist unbestimmt und kann musikalische, szenische oder technische Leitung meinen. Klärungsbedarf."@de .
+m3gim-role:beleuchter a skos:Concept ; skos:prefLabel "beleuchter"@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:maskenbidner a skos:Concept ; skos:prefLabel "maskenbidner"@de ; skos:altLabel "maskenbildner"@de ; skos:inScheme m3gim-role:scheme ; skos:editorialNote "Die Quelle führt die Tippform maskenbidner, die unverändert durchgereicht wird. Der Quell-Fix ist im Datenfehler-Register vermerkt."@de .
+m3gim-role:repetitor a skos:Concept ; skos:prefLabel "repetitor"@de ; skos:definition "Person, die Sängerinnen und Sänger am Klavier einstudiert."@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:regieassistent a skos:Concept ; skos:prefLabel "regieassistent"@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:fotograf a skos:Concept ; skos:prefLabel "fotograf"@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:interpret a skos:Concept ; skos:prefLabel "interpret"@de ; skos:definition "Oberbegriff für eine mitwirkende Person, wenn Stimmfach oder Funktion nicht bestimmbar sind."@de ; skos:inScheme m3gim-role:scheme ; skos:editorialNote "Der Wert kommt auch als Rolle einer Detailangabe vor, wo er keine Art des Finanzpostens bezeichnet. Diese Verwendung ist zu prüfen."@de .
+m3gim-role:protagonist a skos:Concept ; skos:prefLabel "protagonist"@de ; skos:inScheme m3gim-role:scheme ; skos:editorialNote "Vermutlich ein Erfassungsfehler, weil der Wert eine Bühnenrolle bezeichnet und damit in den Typ rolle gehört. Als offene Modellentscheidung geführt."@de .
+m3gim-role:publikum a skos:Concept ; skos:prefLabel "publikum"@de ; skos:definition "Person, die als Zuschauerin oder Zuschauer anwesend war."@de ; skos:inScheme m3gim-role:scheme ; skos:editorialNote "Ob solche Personen als Akteur oder als Gegenstand des Dokuments zu führen sind, ist mit dem Erschließungsteam zu klären."@de .
+
+m3gim-role:arbeitgeber a skos:Concept ; skos:prefLabel "arbeitgeber"@de ; skos:definition "Institution, bei der ein Engagement bestand."@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:veranstalter a skos:Concept ; skos:prefLabel "veranstalter"@de ; skos:definition "Institution, die eine Veranstaltung ausrichtet."@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:ausbildungsstaette a skos:Concept ; skos:prefLabel "ausbildungsstätte"@de ; skos:definition "Institution, an der eine Ausbildung stattfand."@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:fluggesellschaft a skos:Concept ; skos:prefLabel "fluggesellschaft"@de ; skos:definition "Institution, die eine Flugreise durchgeführt hat. Der Wert belegt die Reiseart."@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:rahmenveranstaltung a skos:Concept ; skos:prefLabel "rahmenveranstaltung"@de ; skos:definition "Übergeordnete Veranstaltung, in deren Rahmen ein Ereignis stattfindet."@de ; skos:inScheme m3gim-role:scheme .
+
+m3gim-role:entstehungsort a skos:Concept ; skos:prefLabel "entstehungsort"@de ; skos:definition "Ort, an dem das Dokument entstanden ist."@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:entstehung a skos:Concept ; skos:prefLabel "entstehung"@de ; skos:definition "Bezug einer Orts- oder Datumsangabe auf die Entstehung des Dokuments."@de ; skos:inScheme m3gim-role:scheme ; skos:editorialNote "Der Wert steht in knowledge/data.md § 5 nicht in den Rollenlisten, kommt in den Daten aber vor. Die Liste ist nachzuziehen."@de .
+m3gim-role:auffuehrungsort a skos:Concept ; skos:prefLabel "auffuehrungsort"@de ; skos:definition "Ort, an dem eine Aufführung stattfand. Der Wert steht auch an Institutionen, die dann als Ortsvertreter dienen."@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:zielort a skos:Concept ; skos:prefLabel "zielort"@de ; skos:definition "Ort, zu dem eine Reise führt."@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:absendeort a skos:Concept ; skos:prefLabel "absendeort"@de ; skos:definition "Ort, an dem ein Korrespondenzstück abgesendet wurde."@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:abreiseort a skos:Concept ; skos:prefLabel "abreiseort"@de ; skos:definition "Ort, von dem aus eine Reise angetreten wurde."@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:empfangsort a skos:Concept ; skos:prefLabel "empfangsort"@de ; skos:definition "Ort, an dem ein Korrespondenzstück empfangen wurde."@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:vertragsort a skos:Concept ; skos:prefLabel "vertragsort"@de ; skos:definition "Ort, an dem ein Vertrag geschlossen wurde."@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:wohnort a skos:Concept ; skos:prefLabel "wohnort"@de ; skos:definition "Ort, an dem eine Person gewohnt hat."@de ; skos:inScheme m3gim-role:scheme ; skos:editorialNote "Bewusst kein Mobilitätsereignis, weil ein Wohnort ein Zustand mit Gültigkeitsperiode ist und kein Punktereignis."@de .
+m3gim-role:auftrag a skos:Concept ; skos:prefLabel "auftrag"@de ; skos:inScheme m3gim-role:scheme ; skos:editorialNote "Der Wert kommt an Orten und an raumzeitlichen Ereignissen vor, steht aber in keiner Rollenliste der Spezifikation. Seine Bedeutung ist aus den Daten nicht bestimmbar und mit dem Erschließungsteam zu klären."@de .
+
+m3gim-role:auffuehrung a skos:Concept ; skos:prefLabel "aufführung"@de ; skos:definition "Bezug auf eine Aufführung, als Ereignis, als Werkbezug oder als Datierung."@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:auftritt a skos:Concept ; skos:prefLabel "auftritt"@de ; skos:definition "Bezug auf einen Auftritt der Nachlassbildnerin."@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:premiere a skos:Concept ; skos:prefLabel "premiere"@de ; skos:definition "Erste Vorstellung einer Produktion."@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:wiederaufnahme a skos:Concept ; skos:prefLabel "wiederaufnahme"@de ; skos:definition "Erneute Aufnahme einer Produktion in den Spielplan."@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:festvorstellung a skos:Concept ; skos:prefLabel "festvorstellung"@de ; skos:definition "Vorstellung zu einem festlichen Anlass."@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:probe a skos:Concept ; skos:prefLabel "probe"@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:generalprobe a skos:Concept ; skos:prefLabel "generalprobe"@de ; skos:definition "Letzte Probe unter Aufführungsbedingungen."@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:aufnahme a skos:Concept ; skos:prefLabel "aufnahme"@de ; skos:definition "Rundfunk- oder Tonaufnahme. Sie zählt zur diskursiven Mobilität, weil sie die Stimme über den Aufführungsort hinaus verbreitet."@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:empfang a skos:Concept ; skos:prefLabel "empfang"@de ; skos:definition "Gesellschaftlicher Empfang im Umfeld einer Aufführung. Im Modell auf die Rahmenveranstaltung geführt."@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:gastspiel a skos:Concept ; skos:prefLabel "gastspiel"@de ; skos:definition "Auftritt außerhalb des Hauses, an dem ein Engagement besteht."@de ; skos:inScheme m3gim-role:scheme ; skos:editorialNote "Nach data.md § 4 gehört der Auftrittsmodus als m3gim:mode an das Vorkommnis. Als konkurrierender Rollenwert an Ort, Werk oder Institution ist er dort abgelehnt. Solange das Vorkommnis-Modell nicht umgesetzt ist, bleibt der Wert eine Rolle."@de .
+m3gim-role:repertoire a skos:Concept ; skos:prefLabel "repertoire"@de ; skos:definition "Werk als Bestandteil des einstudierten Repertoires, ohne Bezug auf eine bestimmte Aufführung."@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:implizit a skos:Concept ; skos:prefLabel "implizit"@de ; skos:definition "Bezug, der im Dokument nicht ausgesprochen, aber erschließbar ist."@de ; skos:inScheme m3gim-role:scheme .
+
+m3gim-role:absendedatum a skos:Concept ; skos:prefLabel "absendedatum"@de ; skos:definition "Datierung des Absendens eines Korrespondenzstücks."@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:empfangsdatum a skos:Concept ; skos:prefLabel "empfangsdatum"@de ; skos:definition "Datierung des Empfangs eines Korrespondenzstücks."@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:ausstellungsdatum a skos:Concept ; skos:prefLabel "ausstellungsdatum"@de ; skos:definition "Datierung der Ausstellung eines Vertrags, Ausweises oder einer Urkunde."@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:erscheinungsdatum a skos:Concept ; skos:prefLabel "erscheinungsdatum"@de ; skos:definition "Datierung des Erscheinens einer Publikation."@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:erstelldatum a skos:Concept ; skos:prefLabel "erstelldatum"@de ; skos:definition "Datierung der Entstehung eines Dokuments."@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:abreisedatum a skos:Concept ; skos:prefLabel "abreisedatum"@de ; skos:definition "Datierung des Reiseantritts."@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:probenbeginn a skos:Concept ; skos:prefLabel "probenbeginn"@de ; skos:definition "Datierung des Probenbeginns einer Produktion."@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:ausstrahlung a skos:Concept ; skos:prefLabel "ausstrahlung"@de ; skos:definition "Datierung der Sendung einer Rundfunkaufnahme."@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:spielzeit a skos:Concept ; skos:prefLabel "spielzeit"@de ; skos:definition "Zeitraum eines Engagements an einem Haus, als Spielzeit bezeichnet."@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:ueberweisung a skos:Concept ; skos:prefLabel "überweisung"@de ; skos:definition "Datierung einer Zahlung."@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:gespraech a skos:Concept ; skos:prefLabel "gespräch"@de ; skos:definition "Datierung eines im Dokument belegten Gesprächs."@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:lohnbestaetigung a skos:Concept ; skos:prefLabel "lohnbestätigung"@de ; skos:definition "Datierung der Bestätigung einer Vergütung."@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:ratenzahlung a skos:Concept ; skos:prefLabel "ratenzahlung"@de ; skos:definition "Zeitraum einer in Raten geleisteten Zahlung."@de ; skos:inScheme m3gim-role:scheme .
+
+m3gim-role:abendgage a skos:Concept ; skos:prefLabel "abendgage"@de ; skos:definition "Honorar für einen einzelnen Auftritt."@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:provision a skos:Concept ; skos:prefLabel "provision"@de ; skos:definition "Anteil der Agentur oder der Vermittlung an einer Vergütung."@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:gesamtverguetung a skos:Concept ; skos:prefLabel "gesamtvergütung"@de ; skos:definition "Summe der Vergütung eines Engagements oder eines Vertrags."@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:reisekosten a skos:Concept ; skos:prefLabel "reisekosten"@de ; skos:definition "Erstattete oder vereinbarte Kosten einer Reise."@de ; skos:inScheme m3gim-role:scheme .
+m3gim-role:rundfunkshonorar a skos:Concept ; skos:prefLabel "rundfunkshonorar"@de ; skos:altLabel "rundfunkhonorar"@de ; skos:definition "Honorar für eine Rundfunkaufnahme oder eine Sendung."@de ; skos:inScheme m3gim-role:scheme ; skos:editorialNote "Die Quelle führt die Tippform rundfunkshonorar, die unverändert durchgereicht wird."@de .
+
+# Sammlungen nach dem Ziel, an dem eine Rolle im Datensatz auftritt. Eine Rolle
+# kann in mehreren Sammlungen stehen, weil dieselbe Spalte verschiedene
+# Zieltypen bedient.
+
+m3gim-role:personenrollen
+    a skos:Collection ;
+    skos:prefLabel "Rollen an Personen"@de ;
+    rdfs:comment "Rollen, die im Datensatz an einer Person stehen."@de ;
+    skos:member m3gim-role:abgebildet , m3gim-role:absender , m3gim-role:adressat , m3gim-role:agent ,
+        m3gim-role:arrangeur , m3gim-role:auffuehrung , m3gim-role:auftraggeber , m3gim-role:auftritt ,
+        m3gim-role:ausstatter , m3gim-role:beleuchter , m3gim-role:buehnenbildner , m3gim-role:buehnenleiter ,
+        m3gim-role:choreograph , m3gim-role:chorleiter , m3gim-role:dirigent , m3gim-role:empfaenger ,
+        m3gim-role:erwaehnt , m3gim-role:fotograf , m3gim-role:herausgeber , m3gim-role:inhaber ,
+        m3gim-role:interpret , m3gim-role:komponist , m3gim-role:kostuembildner , m3gim-role:leitung ,
+        m3gim-role:librettist , m3gim-role:maskenbidner , m3gim-role:protagonist , m3gim-role:publikum ,
+        m3gim-role:regieassistent , m3gim-role:regisseur , m3gim-role:repetitor , m3gim-role:saenger ,
+        m3gim-role:technische_leitung , m3gim-role:uebersetzer , m3gim-role:unterzeichner ,
+        m3gim-role:veranstalter , m3gim-role:verfasser , m3gim-role:vertragspartner ,
+        m3gim-role:widmungsempfaenger .
+
+m3gim-role:institutionsrollen
+    a skos:Collection ;
+    skos:prefLabel "Rollen an Institutionen"@de ;
+    rdfs:comment "Rollen, die im Datensatz an einer Körperschaft stehen."@de ;
+    skos:member m3gim-role:adressat , m3gim-role:arbeitgeber , m3gim-role:auffuehrung ,
+        m3gim-role:auffuehrungsort , m3gim-role:auftritt , m3gim-role:ausbildungsstaette ,
+        m3gim-role:empfaenger , m3gim-role:empfangsort , m3gim-role:erwaehnt , m3gim-role:fluggesellschaft ,
+        m3gim-role:gastspiel , m3gim-role:herausgeber , m3gim-role:rahmenveranstaltung ,
+        m3gim-role:veranstalter , m3gim-role:verfasser , m3gim-role:vermittler ,
+        m3gim-role:vertragspartner , m3gim-role:zielort .
+
+m3gim-role:ensemblerollen
+    a skos:Collection ;
+    skos:prefLabel "Rollen an Ensembles"@de ;
+    rdfs:comment "Rollen, die im Datensatz an einer Gruppe stehen."@de ;
+    skos:member m3gim-role:auffuehrung , m3gim-role:auftritt , m3gim-role:erwaehnt ,
+        m3gim-role:gastspiel , m3gim-role:interpret , m3gim-role:saenger .
+
+m3gim-role:ortsrollen
+    a skos:Collection ;
+    skos:prefLabel "Rollen an Orten"@de ;
+    rdfs:comment "Rollen, die im Datensatz an einem Ort stehen."@de ;
+    skos:member m3gim-role:abreiseort , m3gim-role:absendeort , m3gim-role:auffuehrungsort ,
+        m3gim-role:aufnahme , m3gim-role:auftrag , m3gim-role:empfang , m3gim-role:empfangsort ,
+        m3gim-role:entstehung , m3gim-role:entstehungsort , m3gim-role:erwaehnt , m3gim-role:gastspiel ,
+        m3gim-role:generalprobe , m3gim-role:rahmenveranstaltung , m3gim-role:vertragsort ,
+        m3gim-role:wohnort , m3gim-role:zielort .
+
+m3gim-role:mobilitaetsortsrollen
+    a skos:Collection ;
+    skos:prefLabel "Mobilitäts-Ortsrollen"@de ;
+    rdfs:comment "Ortsrollen, die für sich genommen ein Mobilitätsereignis belegen. Sie erzeugen zusätzlich zur Ortsreferenz ein raumzeitliches Ereignis ohne Datum, weil die Quelle keines hergibt und keines geraten wird."@de ;
+    skos:member m3gim-role:zielort , m3gim-role:absendeort , m3gim-role:abreiseort ,
+        m3gim-role:empfangsort , m3gim-role:vertragsort .
+
+m3gim-role:werkrollen
+    a skos:Collection ;
+    skos:prefLabel "Rollen an Werken"@de ;
+    rdfs:comment "Rollen, die im Datensatz an einem musikalischen Werk stehen."@de ;
+    skos:member m3gim-role:auffuehrung , m3gim-role:aufnahme , m3gim-role:auftritt , m3gim-role:erwaehnt ,
+        m3gim-role:festvorstellung , m3gim-role:gastspiel , m3gim-role:premiere , m3gim-role:probe ,
+        m3gim-role:repertoire , m3gim-role:wiederaufnahme .
+
+m3gim-role:ereignisrollen
+    a skos:Collection ;
+    skos:prefLabel "Rollen an Rahmenveranstaltungen"@de ;
+    rdfs:comment "Rollen, die im Datensatz an einer Rahmenveranstaltung stehen."@de ;
+    skos:member m3gim-role:auffuehrung , m3gim-role:auffuehrungsort , m3gim-role:aufnahme ,
+        m3gim-role:erwaehnt , m3gim-role:rahmenveranstaltung , m3gim-role:veranstalter .
+
+m3gim-role:datumsrollen
+    a skos:Collection ;
+    skos:prefLabel "Datumsrollen"@de ;
+    rdfs:comment "Rollen, die den Bezug einer Datierung typisieren. Sie werden auf die typisierten Datumsproperties geführt, soweit eine vorgesehen ist, sonst auf die Auffangklasse."@de ;
+    skos:member m3gim-role:abreisedatum , m3gim-role:absendedatum , m3gim-role:auffuehrung ,
+        m3gim-role:aufnahme , m3gim-role:ausstellungsdatum , m3gim-role:ausstrahlung ,
+        m3gim-role:auftritt , m3gim-role:empfang , m3gim-role:empfangsdatum , m3gim-role:entstehung ,
+        m3gim-role:erscheinungsdatum , m3gim-role:erstelldatum , m3gim-role:erwaehnt ,
+        m3gim-role:generalprobe , m3gim-role:gespraech , m3gim-role:lohnbestaetigung ,
+        m3gim-role:premiere , m3gim-role:probe , m3gim-role:probenbeginn ,
+        m3gim-role:rahmenveranstaltung , m3gim-role:ratenzahlung , m3gim-role:spielzeit ,
+        m3gim-role:ueberweisung .
+
+m3gim-role:finanzrollen
+    a skos:Collection ;
+    skos:prefLabel "Finanzrollen"@de ;
+    rdfs:comment "Rollen, die die Art eines Finanzpostens bezeichnen."@de ;
+    skos:member m3gim-role:abendgage , m3gim-role:erwaehnt , m3gim-role:gesamtverguetung ,
+        m3gim-role:interpret , m3gim-role:provision , m3gim-role:reisekosten ,
+        m3gim-role:rundfunkshonorar .
+
+
+# ---------------------------------------------------------------------------
+# Vokabular der Dokumenttypen
+# ---------------------------------------------------------------------------
+
+m3gim-dft:scheme
+    a skos:ConceptScheme ;
+    rdfs:label "M3GIM-Dokumenttypen"@de , "M3GIM documentary form types"@en ;
+    skos:prefLabel "M3GIM-Dokumenttypen"@de ;
+    rdfs:comment "Hierarchisches Vokabular der Dokumenttypen des Bestands. Die Hierarchie erlaubt es, wahlweise granular nach Brief oder aggregiert nach Korrespondenz zu filtern."@de ;
+    skos:hasTopConcept m3gim-dft:dokument ;
+    skos:editorialNote "Die Werte werden über rico:hasDocumentaryFormType referenziert. RiC-O 1.1 erwartet dort ein Individuum der Klasse rico:DocumentaryFormType. Die Concepts tragen bislang nur skos:Concept. Ob sie zusätzlich als rico:DocumentaryFormType typisiert werden, ist eine offene Frage an das Projekt."@de ;
+    skos:editorialNote "Die Kanten der ersten Ebene auf m3gim-dft:dokument folgen der Baumdarstellung in knowledge/data.md § 12. Die Pipeline erzeugt nur die Kanten der zweiten Ebene, sodass die Wurzel im Datensatz nicht erreichbar ist."@de .
+
+m3gim-dft:dokument a skos:Concept ; skos:prefLabel "Dokument"@de ; skos:definition "Oberbegriff aller Dokumenttypen des Bestands."@de ; skos:topConceptOf m3gim-dft:scheme ; skos:inScheme m3gim-dft:scheme .
+
+m3gim-dft:konvolut a skos:Concept ; skos:prefLabel "Konvolut"@de ; skos:definition "Aggregierende Archiveinheit, deren Kinder auf Folioebene erschlossen sind."@de ; skos:broader m3gim-dft:dokument ; skos:inScheme m3gim-dft:scheme .
+m3gim-dft:sammlung a skos:Concept ; skos:prefLabel "Sammlung"@de ; skos:definition "Zusammenstellung mehrerer Dokumente unter einer Signatur."@de ; skos:broader m3gim-dft:dokument ; skos:inScheme m3gim-dft:scheme ; skos:editorialNote "Bewusst ohne skos:broader auf konvolut, weil die Abgrenzung offen ist. Möglicherweise bezeichnet konvolut den physischen Umschlag und sammlung die thematische Zusammenstellung."@de .
+
+m3gim-dft:korrespondenz a skos:Concept ; skos:prefLabel "Korrespondenz"@de ; skos:definition "Schriftwechsel zwischen zwei Parteien."@de ; skos:broader m3gim-dft:dokument ; skos:inScheme m3gim-dft:scheme .
+m3gim-dft:brief a skos:Concept ; skos:prefLabel "Brief"@de ; skos:broader m3gim-dft:korrespondenz ; skos:inScheme m3gim-dft:scheme .
+m3gim-dft:postkarte a skos:Concept ; skos:prefLabel "Postkarte"@de ; skos:broader m3gim-dft:korrespondenz ; skos:inScheme m3gim-dft:scheme .
+m3gim-dft:telegramm a skos:Concept ; skos:prefLabel "Telegramm"@de ; skos:broader m3gim-dft:korrespondenz ; skos:inScheme m3gim-dft:scheme .
+m3gim-dft:briefumschlag a skos:Concept ; skos:prefLabel "Briefumschlag"@de ; skos:definition "Umschlag eines Korrespondenzstücks, der als eigenes Objekt erhalten ist und Absender oder Poststempel trägt."@de ; skos:broader m3gim-dft:korrespondenz ; skos:inScheme m3gim-dft:scheme .
+
+m3gim-dft:presse a skos:Concept ; skos:prefLabel "Presse"@de ; skos:definition "Erzeugnis der Publizistik, das über die Nachlassbildnerin oder ihr Umfeld berichtet."@de ; skos:broader m3gim-dft:dokument ; skos:inScheme m3gim-dft:scheme .
+m3gim-dft:zeitungsausschnitt a skos:Concept ; skos:prefLabel "Zeitungsausschnitt"@de ; skos:broader m3gim-dft:presse ; skos:inScheme m3gim-dft:scheme .
+m3gim-dft:kritik a skos:Concept ; skos:prefLabel "Kritik"@de ; skos:broader m3gim-dft:presse ; skos:inScheme m3gim-dft:scheme .
+m3gim-dft:rezension a skos:Concept ; skos:prefLabel "Rezension"@de ; skos:broader m3gim-dft:presse ; skos:inScheme m3gim-dft:scheme .
+m3gim-dft:musikzeitschrift a skos:Concept ; skos:prefLabel "Musikzeitschrift"@de ; skos:broader m3gim-dft:presse ; skos:inScheme m3gim-dft:scheme .
+
+m3gim-dft:programm a skos:Concept ; skos:prefLabel "Programmheft"@de ; skos:definition "Drucksache zu einer Veranstaltung, die Besetzung und Ablauf verzeichnet."@de ; skos:broader m3gim-dft:dokument ; skos:inScheme m3gim-dft:scheme ; skos:editorialNote "Der Begriff trägt das Label Programmheft und ist zugleich Oberbegriff des Konzepts programmheft. Die Dublette ist aufzulösen, entweder durch ein eigenes Label für die Oberklasse oder durch Zusammenlegung."@de .
+m3gim-dft:programmheft a skos:Concept ; skos:prefLabel "Programmheft"@de ; skos:broader m3gim-dft:programm ; skos:inScheme m3gim-dft:scheme .
+
+m3gim-dft:biographisch a skos:Concept ; skos:prefLabel "Biographisch"@de ; skos:definition "Dokument, das den Lebenslauf der Nachlassbildnerin darstellt."@de ; skos:broader m3gim-dft:dokument ; skos:inScheme m3gim-dft:scheme .
+m3gim-dft:biographie a skos:Concept ; skos:prefLabel "Biographie"@de ; skos:broader m3gim-dft:biographisch ; skos:inScheme m3gim-dft:scheme .
+m3gim-dft:autobiografie a skos:Concept ; skos:prefLabel "Autobiografie"@de ; skos:broader m3gim-dft:biographisch ; skos:inScheme m3gim-dft:scheme .
+m3gim-dft:lebenslauf a skos:Concept ; skos:prefLabel "Lebenslauf"@de ; skos:broader m3gim-dft:biographisch ; skos:inScheme m3gim-dft:scheme .
+m3gim-dft:chronik a skos:Concept ; skos:prefLabel "Chronik"@de ; skos:broader m3gim-dft:biographisch ; skos:inScheme m3gim-dft:scheme .
+
+m3gim-dft:identitaetsdokument a skos:Concept ; skos:prefLabel "Identitätsdokument"@de ; skos:definition "Dokument, das die Person ausweist, etwa für Reisen und Grenzübertritte."@de ; skos:broader m3gim-dft:dokument ; skos:inScheme m3gim-dft:scheme .
+m3gim-dft:ausweis a skos:Concept ; skos:prefLabel "Ausweis"@de ; skos:broader m3gim-dft:identitaetsdokument ; skos:inScheme m3gim-dft:scheme .
+
+m3gim-dft:vertrag a skos:Concept ; skos:prefLabel "Vertrag"@de ; skos:definition "Vereinbarung über ein Engagement, eine Aufnahme oder eine Vermittlung."@de ; skos:broader m3gim-dft:dokument ; skos:inScheme m3gim-dft:scheme .
+m3gim-dft:plakat a skos:Concept ; skos:prefLabel "Plakat"@de ; skos:broader m3gim-dft:dokument ; skos:inScheme m3gim-dft:scheme .
+m3gim-dft:fotografie a skos:Concept ; skos:prefLabel "Fotografie"@de ; skos:broader m3gim-dft:dokument ; skos:inScheme m3gim-dft:scheme ; skos:editorialNote "In knowledge/data.md § 12 geführt, in der Zuordnungstabelle der Pipeline aber nicht angelegt. Ein Quellwert Fotografie liefe deshalb ins Leere."@de .
+m3gim-dft:notiz a skos:Concept ; skos:prefLabel "Notiz"@de ; skos:broader m3gim-dft:dokument ; skos:inScheme m3gim-dft:scheme .
+m3gim-dft:typoskript a skos:Concept ; skos:prefLabel "Typoskript"@de ; skos:broader m3gim-dft:dokument ; skos:inScheme m3gim-dft:scheme .
+m3gim-dft:photokopie a skos:Concept ; skos:prefLabel "Photokopie"@de ; skos:broader m3gim-dft:dokument ; skos:inScheme m3gim-dft:scheme ; skos:editorialNote "Der Wert bezeichnet die Vervielfältigungsform. Die Dokumentgattung bleibt damit unbestimmt. In RiC-O gehört diese Unterscheidung in die Instanziierung. Die Einordnung ist zu prüfen."@de .
+m3gim-dft:urkunde a skos:Concept ; skos:prefLabel "Urkunde"@de ; skos:definition "Beglaubigtes Dokument, etwa ein Zeugnis oder eine Auszeichnung."@de ; skos:broader m3gim-dft:dokument ; skos:inScheme m3gim-dft:scheme .
+m3gim-dft:visitenkarte a skos:Concept ; skos:prefLabel "Visitenkarte"@de ; skos:broader m3gim-dft:dokument ; skos:inScheme m3gim-dft:scheme .
+m3gim-dft:quittung a skos:Concept ; skos:prefLabel "Quittung"@de ; skos:broader m3gim-dft:dokument ; skos:inScheme m3gim-dft:scheme .
+m3gim-dft:noten a skos:Concept ; skos:prefLabel "Noten"@de ; skos:definition "Notenmaterial eines Werks."@de ; skos:broader m3gim-dft:dokument ; skos:inScheme m3gim-dft:scheme .
+m3gim-dft:repertoireliste a skos:Concept ; skos:prefLabel "Repertoireliste"@de ; skos:definition "Aufstellung der einstudierten Partien und Werke."@de ; skos:broader m3gim-dft:dokument ; skos:inScheme m3gim-dft:scheme .
+m3gim-dft:verzeichnis a skos:Concept ; skos:prefLabel "Verzeichnis"@de ; skos:definition "Aufstellung von Objekten oder Personen, die kein Repertoire verzeichnet."@de ; skos:broader m3gim-dft:dokument ; skos:inScheme m3gim-dft:scheme .
+m3gim-dft:tagebuch a skos:Concept ; skos:prefLabel "Tagebuch"@de ; skos:broader m3gim-dft:dokument ; skos:inScheme m3gim-dft:scheme .
+m3gim-dft:tontraeger a skos:Concept ; skos:prefLabel "Tonträger"@de ; skos:definition "Physischer Träger einer Aufnahme, etwa eine Schellackplatte."@de ; skos:broader m3gim-dft:dokument ; skos:inScheme m3gim-dft:scheme .
+m3gim-dft:sonstiges a skos:Concept ; skos:prefLabel "Sonstiges"@de ; skos:definition "Auffangwert für Dokumente, die keinem der geführten Typen entsprechen."@de ; skos:broader m3gim-dft:dokument ; skos:inScheme m3gim-dft:scheme .

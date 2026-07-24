@@ -22,6 +22,7 @@ m3gim/
 |   |-- output/              # Generierte JSON-LD/View-Daten
 |   `-- reports/             # Generierte Markdown-Reports
 |-- scripts/                  # explore/validate/reconcile/enrich-wikidata/transform/build-views/report-quality
+|-- vocab/                    # Formales Projektvokabular (Turtle) + Abdeckungspruefer, siehe knowledge/domain.md
 |-- docs/                     # GitHub Pages Frontend (Vanilla JS, keine Build-Kette)
 `-- README.md
 ```
