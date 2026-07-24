@@ -12,12 +12,12 @@ template:
   url: https://dhcraft.org/Promptotyping/promptotyping-document/index
 status: complete
 created: 2026-02-19
-updated: 2026-07-18
+updated: 2026-07-24
 language: de
 version: 0.3
 authors: [Christopher Pollin]
 generated-with: Claude Code
-related: [specification, data, data-entry-guidelines, research, pipeline, architecture, design, decisions, testing, journal, datenfehler]
+related: [specification, data, domain, data-entry-guidelines, research, pipeline, architecture, design, decisions, testing, journal, datenfehler, vocab-derivation-findings]
 ---
 
 # M³GIM Knowledge Base
@@ -29,6 +29,7 @@ Diese Seite ist der Einstiegspunkt in die Wissensbasis des Projekts. Sie ordnet 
 - Erstbesuch → [specification.md](specification.md) für Identität, Ziel und Funktionsumfang, dann [research.md](research.md) für Theorie, Forschungsfragen und Use Cases
 - Aktuellen Stand und nächste Schritte → [specification.md](specification.md) § Stand und nächste Schritte
 - Datenmodell verstehen oder ändern → [data.md](data.md)
+- Mit dem erzeugten Datensatz arbeiten, ohne die Pipeline zu kennen → [domain.md](domain.md)
 - Daten erfassen nach den Soll-Konventionen → [data-entry-guidelines.md](data-entry-guidelines.md)
 - Pipeline ausführen oder debuggen → [pipeline.md](pipeline.md)
 - Frontend anpassen → [architecture.md](architecture.md) für die Bauweise (inklusive Cross-View-Filter), [design.md](design.md) für Designhaltung und Interaktionsmuster
@@ -45,6 +46,8 @@ Diese Seite ist der Einstiegspunkt in die Wissensbasis des Projekts. Sie ordnet 
 | Identität, Funktionsumfang, Stand | [specification.md](specification.md) | Projektsteckbrief, Ziel und Rahmen, Anforderungen, Epics und User Stories, Abgrenzung, volatiler Abschnitt Stand und nächste Schritte inklusive Status-Tracker und offener Operator-Entscheidungen |
 | Substanz, Entscheidungen | [decisions.md](decisions.md) | Architekturentscheidungen E-01 aufwärts, offene Entscheidungen, technische Schulden |
 | Material | [data.md](data.md) | RiC-O 1.1, m3gim-Extension und AgRelOn, Vokabulare, Mobilitätssichten, Datenqualitäts-Katalog, Quellen |
+| Material, Lesesicht auf den Datensatz | [domain.md](domain.md) | Aus [`vocab/m3gim.ttl`](../vocab/m3gim.ttl) abgeleitetes Domänenmodell: Klassen und ihre Beziehungen, Rollen als Querschnittsvokabular, Datums- und Finanzmodell, kontrollierte Vokabulare, Provenienzstruktur, Grenzen |
+| Methodenbefund | [vocab-derivation-findings.md](vocab-derivation-findings.md) | Ableitbarkeit des Domänenwissens aus dem formalen Vokabular, sichtbar gewordene Unschärfen im Datenmodell, offene Fragen an die Projektleitung |
 | Domänenwissen, Theorie und Evaluation | [research.md](research.md) | Mobility Studies, Mobilitätstypen, Forschungsfragen, Fallbeispiel Ira Malaniuk, Oper Graz, Use Cases, Personas, Evaluationsskizze |
 | Domänenwissen, Regelwerk | [data-entry-guidelines.md](data-entry-guidelines.md) | Normative Erfassungsrichtlinie, Workflow, Ansetzungsformen, typ-zu-Rolle-Vokabular, ID-Schema |
 | Bauweise, Pipeline | [pipeline.md](pipeline.md) | Skriptverantwortung, Datenfluss, Pipeline-Erweiterungen, Qualitäts-Baseline |
