@@ -5,9 +5,9 @@ project:
   repository: https://github.com/DigitalHumanitiesCraft/m3gim
 status: complete
 language: de
-version: 0.2
+version: 0.4
 created: 2026-02-19
-updated: 2026-06-30
+updated: 2026-08-21
 authors: [Christopher Pollin]
 generated-with: Claude Code
 method:
@@ -18,7 +18,7 @@ template:
   version: 0.1
   url: https://dhcraft.org/Promptotyping/promptotyping-document/testing
 topics: ["[[Test-Driven Development]]", "[[Data Validation]]"]
-related: [pipeline, data, decisions]
+related: [pipeline-architecture, data, architecture-decisions]
 ---
 
 # Tests
@@ -182,7 +182,7 @@ Lock für die `EVENT_ROLE_TO_MOBILITY_CLUSTER`-Mapping-Tabelle im Frontend (`doc
 
 ### 26. Term-Validierung gegen RiC-O 1.1 und AgRelOn (test_26)
 
-Konformitäts-Lock aus dem Modellierungs-Audit ([decisions.md](decisions.md) E-103/E-104). Sammelt jeden im Output verwendeten `rico:`- und `agrelon:`-Term (als `@type` und als Property-Key) und prüft ihn gegen eine im Repo hinterlegte Allowlist der offiziellen Termlisten — RiC-O 1.1 aus den ICA-EGAD-CSV-Komponentenlisten, AgRelOn aus der DNB-RDF. Ein nicht gelisteter Term failt hart. Deckt die bekannten Fehlterme (`rico:isAssociatedWithRecord`, `rico:File`/`rico:Fonds` als Klasse, `agrelon:hasProvenance`/`hasConfidenceValue`/`hasValidityPeriod`, `agrelon:HasIsPatron`) sofort als rot auf und sichert dauerhaft gegen Regression — die Fehlerklasse „Term aus der Benennungskonvention extrapoliert" ([Leitplanke „Fremdterme verifizieren"](decisions.md)) wird damit maschinell unmöglich.
+Konformitäts-Lock aus dem Modellierungs-Audit ([architecture-decisions.md](architecture-decisions.md) E-103/E-104). Sammelt jeden im Output verwendeten `rico:`- und `agrelon:`-Term (als `@type` und als Property-Key) und prüft ihn gegen eine im Repo hinterlegte Allowlist der offiziellen Termlisten — RiC-O 1.1 aus den ICA-EGAD-CSV-Komponentenlisten, AgRelOn aus der DNB-RDF. Ein nicht gelisteter Term failt hart. Deckt die bekannten Fehlterme (`rico:isAssociatedWithRecord`, `rico:File`/`rico:Fonds` als Klasse, `agrelon:hasProvenance`/`hasConfidenceValue`/`hasValidityPeriod`, `agrelon:HasIsPatron`) sofort als rot auf und sichert dauerhaft gegen Regression — die Fehlerklasse „Term aus der Benennungskonvention extrapoliert" ([Leitplanke „Fremdterme verifizieren"](architecture-decisions.md)) wird damit maschinell unmöglich.
 
 Der Test lockt die Term-Konformität gegen die Allowlist dauerhaft und verifiziert die mit der Konformitäts-Korrektur nachgezogenen Module test_12/test_19. Ein leichtgewichtiger Vorläufer der weiter unten genannten SHACL-Validierung — er prüft Term-Existenz, nicht Shape-Konformität.
 
@@ -241,7 +241,7 @@ Bei neuen Features aus [data.md](data.md):
 4. **Implementieren** in `scripts/transform.py`, bis xfail → XPASS → xfail-Marker entfernt.
 5. **Bei Datenadaptivität**: Tests datenadaptiv formulieren (skalieren mit XLSX-Count) statt hartcodierter Zahlen, damit neue Datenstände ohne Testkorrektur laufen.
 
-Dieses Muster wurde in Phase 4.1–4.8 (Session 28) erfolgreich angewendet, ebenso beim Koordinaten-Patch (Session 33, test_22) und beim ORTE-Rollen-Fix (Session 34, test_23). Siehe [specification.md](specification.md) § Stand und [pipeline.md](pipeline.md).
+Dieses Muster wurde in Phase 4.1–4.8 (Session 28) erfolgreich angewendet, ebenso beim Koordinaten-Patch (Session 33, test_22) und beim ORTE-Rollen-Fix (Session 34, test_23). Siehe [specification.md](specification.md) § Stand und [pipeline-architecture.md](pipeline-architecture.md).
 
 ### Drei Testmodi und die Durchreich-Policy
 
@@ -319,7 +319,7 @@ Laufzeit im Regelbetrieb überschaubar; der Determinismus-Test (Marker `slow`) d
 
 **Was später dazukommen kann**:
 - SHACL-Validierung gegen RiC-O-Shapes (`pyshacl`) — semantisch schärfer als JSON-Schema
-- CI-Integration (aktuell keine, siehe [pipeline.md](pipeline.md))
+- CI-Integration (aktuell keine, siehe [pipeline-architecture.md](pipeline-architecture.md))
 
 ## Frontend-Smoke (Playwright, seit Session 35)
 

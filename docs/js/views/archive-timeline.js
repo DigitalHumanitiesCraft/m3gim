@@ -14,7 +14,7 @@ import { el, clear } from '../utils/dom.js';
 import { formatSignatur, getDocTypeId, ensureArray, dftLabel } from '../utils/format.js';
 import { extractYear, formatDate } from '../utils/date-parser.js';
 import { ortColor } from '../data/constants.js';
-import { buildFilterToolbar } from './_archive-toolbar.js';
+import { buildFilterToolbar, updateSchaerfeBanner } from './_archive-toolbar.js';
 import { filterByToolbarState, isToolbarFiltered, searchMatchChronik } from './_archive-filter.js';
 import {
   sichtForRecord, secondaryYearForRecord, aggregateDecadeStacks, SICHTEN, SICHT_COLOR,
@@ -115,7 +115,7 @@ function updateChronikView() {
     records = res.items;
     engInfo = { total: res.total, eng: res.eng };
   }
-  updateChronikSchaerfeBanner(shared.schaerfe, engInfo);
+  updateSchaerfeBanner('chronik-schaerfe', shared.schaerfe, engInfo);
 
   // Pro Record einmal annotieren: Sicht (aus STE) + Anzeigejahr. Das Anzeigejahr
   // ist kanonisch rico:date (E-88); fehlt es, versuchen wir eine SEKUNDAERE
@@ -197,22 +197,6 @@ function updateChronikView() {
     ['spanne', `${min}–${max}`],
     ['gefiltert', isFiltered ? 'ja' : ''],
   ]);
-}
-
-/** Schaerfegrad-Banner (Chronik): im engen Modus die Differenz nennen. */
-function updateChronikSchaerfeBanner(schaerfe, engInfo) {
-  const banner = document.getElementById('chronik-schaerfe');
-  if (!banner) return;
-  if (schaerfe !== 'eng' || !engInfo) {
-    banner.hidden = true;
-    banner.textContent = '';
-    return;
-  }
-  banner.hidden = false;
-  clear(banner);
-  banner.appendChild(el('span', { className: 'archiv-schaerfe__mode' }, 'Schärfegrad eng'));
-  banner.appendChild(el('span', { className: 'archiv-schaerfe__diff' },
-    `${engInfo.eng} von ${engInfo.total} raumzeitlich/Aufführungs-belegt`));
 }
 
 /** Fixe Caption am Achsenkopf: Dichte = Ueberlieferung, nicht Aktivitaet. */

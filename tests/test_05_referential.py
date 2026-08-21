@@ -3,7 +3,6 @@
 import re
 from collections import Counter
 
-import pytest
 
 from _helpers import ensure_list
 

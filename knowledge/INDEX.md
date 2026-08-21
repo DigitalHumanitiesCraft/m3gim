@@ -8,82 +8,82 @@ method:
   url: https://lisa.gerda-henkel-stiftung.de/digitale_geschichte_pollin
 template:
   name: Vorlage Index
-  version: 0.1
+  version: 0.4
   url: https://dhcraft.org/Promptotyping/promptotyping-document/index
+  alias: https://dhcraft.org/Promptotyping/#promptotyping-document-index
 status: complete
 created: 2026-02-19
-updated: 2026-07-24
+updated: 2026-08-21
 language: de
-version: 0.3
+version: 0.4
 authors: [Christopher Pollin]
 generated-with: Claude Code
-related: [specification, data, domain, data-entry-guidelines, research, pipeline, architecture, design, decisions, testing, journal, datenfehler, vocab-derivation-findings]
+related: [specification, data, domain-ontology, data-entry-guidelines, research-framework, pipeline-architecture, frontend-architecture, design, architecture-decisions, testing, data-errors, vocabulary-derivation-findings, handoff, journal]
 ---
 
 # M³GIM Knowledge Base
 
-Diese Seite ist der Einstiegspunkt in die Wissensbasis des Projekts. Sie ordnet die Dokumente nach ihrer Promptotyping-Funktion, gibt Lesepfade nach Rolle und erklärt die wiederkehrenden Begriffe. Die Wissensbasis ist die Source of Truth, der Code ist nachgeordnetes Artefakt. Laufende Zahlen stehen ausschließlich im generierten Quality-Snapshot unter [`data/reports/quality-snapshot.md`](../data/reports/quality-snapshot.md), nicht in diesen Dokumenten.
+Diese Seite ist der Einstiegspunkt in die Wissensbasis des Projekts. Sie ordnet die Dokumente nach ihrer Promptotyping-Funktion, benennt die Ablagezonen des Repositorys, gibt Lesepfade und erklärt die konstitutiven Begriffe. Die Wissensbasis ist die Source of Truth, der Code ist nachgeordnetes Artefakt. Laufende Zahlen stehen im generierten Quality-Snapshot unter [`data/reports/quality-snapshot.md`](../data/reports/quality-snapshot.md).
 
-## Lesepfad nach Rolle
+## Dokumente
 
-- Erstbesuch → [specification.md](specification.md) für Identität, Ziel und Funktionsumfang, dann [research.md](research.md) für Theorie, Forschungsfragen und Use Cases
-- Aktuellen Stand und nächste Schritte → [specification.md](specification.md) § Stand und nächste Schritte
-- Datenmodell verstehen oder ändern → [data.md](data.md)
-- Mit dem erzeugten Datensatz arbeiten, ohne die Pipeline zu kennen → [domain.md](domain.md)
-- Daten erfassen nach den Soll-Konventionen → [data-entry-guidelines.md](data-entry-guidelines.md)
-- Pipeline ausführen oder debuggen → [pipeline.md](pipeline.md)
-- Frontend anpassen → [architecture.md](architecture.md) für die Bauweise (inklusive Cross-View-Filter), [design.md](design.md) für Designhaltung und Interaktionsmuster
-- Tests schreiben → [testing.md](testing.md)
-- Verstehen, warum etwas so entschieden wurde → [decisions.md](decisions.md)
-- Bekannte Datenfehler und Quell-Fixes nachschlagen oder ans Erfassungsteam geben → [datenfehler.md](datenfehler.md)
-- Projektgeschichte nachvollziehen → [journal.md](journal.md), ältere Sessions in [_archive/journal-sessions-01-47.md](_archive/journal-sessions-01-47.md)
+| Pfad | Funktion | Routing Question | Aktualisierung |
+|---|---|---|---|
+| [INDEX.md](INDEX.md) | Navigation | Was liegt hier, wie lese ich, welche Begriffe sind konstitutiv? | bei jeder Änderung des Ordnerinhalts |
+| [specification.md](specification.md) | Charter und Specification | Was ist das Projekt, was soll die Anwendung leisten, und wo steht die Arbeit? | bei Änderung von Identität, Anforderungen, Funktionsumfang oder Arbeitsstand |
+| [data.md](data.md) | Material | Woraus besteht die Datengrundlage, und wie ist sie modelliert? | bei neuem Datenexport oder Modelländerung |
+| [domain-ontology.md](domain-ontology.md) | Domain Knowledge | Welche Klassen, Beziehungen und Vokabulare trägt das formale Projektvokabular? | bei Änderung an [`vocab/m3gim.ttl`](../vocab/m3gim.ttl) |
+| [data-entry-guidelines.md](data-entry-guidelines.md) | Domain Knowledge | Wie wird nach den Soll-Konventionen erfasst? | bei Änderung der Erfassungskonvention |
+| [research-framework.md](research-framework.md) | Domain Knowledge | Welche Theorie, Forschungsfragen und Anwendungsfälle tragen das Projekt? | bei Schärfung der Forschungsfragen, Personas oder Use Cases |
+| [architecture-decisions.md](architecture-decisions.md) | Specification, ausgelagerte Entscheidungsschicht | Warum wurde etwas so entschieden, und was ist noch offen? | bei jeder getroffenen oder revidierten Entscheidung |
+| [pipeline-architecture.md](pipeline-architecture.md) | Architecture | Wie läuft die Datenpipeline von der XLSX-Erfassung zum JSON-LD? | bei Änderung an `scripts/` oder am Datenfluss |
+| [frontend-architecture.md](frontend-architecture.md) | Architecture | Wie ist die statische SPA gebaut, was hält der Store? | bei Änderung an `docs/js/` oder am Laufzeitmodell |
+| [design.md](design.md) | Design | Wie sieht die Anwendung aus, und wie verhält sie sich? | bei Änderung von Designhaltung oder Designsystem |
+| [testing.md](testing.md) | Quality Assurance | Was wird garantiert, und wie wird es geprüft? | bei Änderung der Testsuite oder des TDD-Workflows |
+| [data-errors.md](data-errors.md) | Material, Fehlerregister | Welche Quell- und Abgleichfehler sind bekannt, wo liegen sie, wie ist ihr Status? | bei jedem neuen, weitergeleiteten oder behobenen Befund |
+| [vocabulary-derivation-findings.md](vocabulary-derivation-findings.md) | Befund zum Stichtag | Was hat die Formalisierung des Projektvokabulars über das Modell sichtbar gemacht? | nicht fortgeschrieben, Nachträge nur als Verweis auf die kanonische Adresse |
+| [handoff.md](handoff.md) | Handoff | Welche geprüften Übergabepunkte warten auf Integration oder Verwerfung? | bei Eingang oder Verarbeitung eines Punkts |
+| [journal.md](journal.md) | Provenance | Wie sind wir hierhin gekommen? | nach sachlich zusammengehörigen Übergängen |
 
-## Dokumentenmatrix
+## Ablagezonen
 
-| Funktion | Dokument | Inhalt |
-|---|---|---|
-| Navigation | [INDEX.md](INDEX.md) | Diese Seite, Lesepfade, Dokumentenmatrix, Glossar |
-| Identität, Funktionsumfang, Stand | [specification.md](specification.md) | Projektsteckbrief, Ziel und Rahmen, Anforderungen, Epics und User Stories, Abgrenzung, volatiler Abschnitt Stand und nächste Schritte inklusive Status-Tracker und offener Operator-Entscheidungen |
-| Substanz, Entscheidungen | [decisions.md](decisions.md) | Architekturentscheidungen E-01 aufwärts, offene Entscheidungen, technische Schulden |
-| Material | [data.md](data.md) | RiC-O 1.1, m3gim-Extension und AgRelOn, Vokabulare, Mobilitätssichten, Datenqualitäts-Katalog, Quellen |
-| Material, Lesesicht auf den Datensatz | [domain.md](domain.md) | Aus [`vocab/m3gim.ttl`](../vocab/m3gim.ttl) abgeleitetes Domänenmodell: Klassen und ihre Beziehungen, Rollen als Querschnittsvokabular, Datums- und Finanzmodell, kontrollierte Vokabulare, Provenienzstruktur, Grenzen |
-| Methodenbefund | [vocab-derivation-findings.md](vocab-derivation-findings.md) | Ableitbarkeit des Domänenwissens aus dem formalen Vokabular, sichtbar gewordene Unschärfen im Datenmodell, offene Fragen an die Projektleitung |
-| Domänenwissen, Theorie und Evaluation | [research.md](research.md) | Mobility Studies, Mobilitätstypen, Forschungsfragen, Fallbeispiel Ira Malaniuk, Oper Graz, Use Cases, Personas, Evaluationsskizze |
-| Domänenwissen, Regelwerk | [data-entry-guidelines.md](data-entry-guidelines.md) | Normative Erfassungsrichtlinie, Workflow, Ansetzungsformen, typ-zu-Rolle-Vokabular, ID-Schema |
-| Bauweise, Pipeline | [pipeline.md](pipeline.md) | Skriptverantwortung, Datenfluss, Pipeline-Erweiterungen, Qualitäts-Baseline |
-| Bauweise, Frontend | [architecture.md](architecture.md) | Laufzeitmodell, Modulstruktur, Store, Routing, build-loses Deployment, Cross-View-Filter |
-| Gestalt | [design.md](design.md) | Designhaltung, Tab-Architektur, Designregeln, Designsystem, Lektionen der entfernten Visualisierungen |
-| Qualitätssicherung | [testing.md](testing.md) | Testsuite-Überblick, TDD-Workflow, Anker-Record-Strategie |
-| Genese | [journal.md](journal.md) | Chronologische Session-Dokumentation ab Session 48; ältere Sessions im Archiv |
-| Datenfehler-Register | [datenfehler.md](datenfehler.md) | Quellfehler, Abgleichfehler und strukturelle Quell-Fixes mit Fundstelle und Status |
+- `knowledge/` trägt die dauerhaft gepflegten Promptotyping Documents einschließlich der Process Inbox [handoff.md](handoff.md).
+- `knowledge/_archive/` trägt die ausgelagerten Journal-Sessions 1 bis 47 ([journal-sessions-01-47.md](_archive/journal-sessions-01-47.md)); der laufende Teil ab Session 48 steht in [journal.md](journal.md).
+- `data/google-spreadsheet/` trägt das übernommene Quellmaterial, die versionierten XLSX-Exporte der archivischen Erfassung.
+- `data/reports/` trägt die datierten Momentaufnahmen (Sichtprüfungen, Visualisierungsanalysen, Reviews) und den bei jedem Pipeline-Lauf generierten Quality-Snapshot. Dieser Snapshot ist zugleich die Stand-Kommunikation für Dritte.
+- `data/output/` und `docs/data/` tragen die reproduzierbar erzeugten Artefakte der Pipeline.
+- `vocab/` trägt das formale Projektvokabular als Turtle-Datei samt Abdeckungsprüfer; [domain-ontology.md](domain-ontology.md) ist die daraus abgeleitete Lesesicht.
 
-Die Stand-Kommunikation für Dritte wird bewusst nicht als eigenes Report-Dokument geführt. Diese Funktion übernimmt der generierte Quality-Snapshot, der bei jedem Pipeline-Lauf frisch entsteht. Datierte Befund-Dokumente (Sichtprüfungen, Visualisierungsanalysen, Reviews) liegen als Momentaufnahmen unter `data/reports/`, nicht in der Wissensbasis.
+## Lesepfade
 
-## Glossar
+- Sessionstart: [`../CLAUDE.md`](../CLAUDE.md) → [INDEX.md](INDEX.md) → [handoff.md](handoff.md) → [specification.md](specification.md) → aufgabenrelevantes Dokument. Der Action-Layer regelt das Verhalten, die Inbox das noch Offene, die Spezifikation den Rahmen.
+- Datenmodell verstehen oder ändern: [data.md](data.md) → [domain-ontology.md](domain-ontology.md) → [architecture-decisions.md](architecture-decisions.md). Die Modelländerung wird zuerst in `data.md` verankert, Pipeline, Tests und Frontend folgen.
+- Mit dem erzeugten Datensatz arbeiten, ohne die Pipeline zu kennen: [domain-ontology.md](domain-ontology.md) → [data-errors.md](data-errors.md). Erst die Gestalt des Graphen, dann die bekannten Fehlstellen.
+- Pipeline ausführen oder debuggen: [pipeline-architecture.md](pipeline-architecture.md) → [testing.md](testing.md) → [data-errors.md](data-errors.md).
+- Frontend anpassen: [frontend-architecture.md](frontend-architecture.md) → [design.md](design.md) → [architecture-decisions.md](architecture-decisions.md).
+- Daten erfassen: [data-entry-guidelines.md](data-entry-guidelines.md) → [data.md](data.md).
+- Forschungsseitig einsteigen: [research-framework.md](research-framework.md) → [specification.md](specification.md).
 
-- Promptotyping, die Arbeitsweise des Projekts, in der die Dokumente die Source of Truth sind und der Code ein nachgeordnetes Artefakt
-- RiC-O, Records in Contexts Ontology, das archivische Kernmodell in Version 1.1
-- m3gim-Extension, die Projekterweiterung für Werke, Aufführungen, Bühnenrollen und Mobilität
+## Konvention
+
+Diese Wissensbasis folgt der Konvention für Promptotyping Documents, die Naming Contract, Frontmatter-Schema, Routing-Heuristik und Strukturprinzipien regelt. Einzelträger einer Funktion tragen den kanonischen Namen, Spezialisierungen das Muster `<subject>-<function>.md`; deshalb heißen die beiden Architektur-Dokumente [pipeline-architecture.md](pipeline-architecture.md) und [frontend-architecture.md](frontend-architecture.md). Charter, Specification und der volatile Arbeitsstand liegen zusammengefasst in [specification.md](specification.md), weil die Wissensbasis am 2026-07-19 bewusst von achtzehn auf zwölf Dokumente konsolidiert wurde.
+
+Modelländerungen werden zuerst in [data.md](data.md) verankert (Leitplanke Spec-first in [architecture-decisions.md](architecture-decisions.md)). Erledigtes wandert aus dem volatilen Abschnitt von [specification.md](specification.md) nach [journal.md](journal.md) und [architecture-decisions.md](architecture-decisions.md), Quellseitiges nach [data-errors.md](data-errors.md). Forschungsnotizen und DSGVO-sensible Quellen werden im Obsidian-Vault gepflegt, das Repo trägt das destillierte Extrakt.
+
+## Begriffe
+
 - AgRelOn, Agent Relationship Ontology der Deutschen Nationalbibliothek für Agent-Agent-Beziehungen
-- SKOS und DFT, die Vokabularorganisation und die hierarchische Dokumenttypen-Taxonomie
+- DFT, Documentary Form Type, die hierarchische Dokumenttypen-Taxonomie im Namespace `m3gim-dft`
 - Konvolut, eine aggregierende Archiveinheit mit Kindern auf Folio-Ebene
-- Schichtenmodell, die drei Erschließungsschichten Kernmetadaten, Verknüpfungen und Detailerschließung plus die Meta-Querschnittsebene
-- SpatiotemporalEvent, die zentrale raumzeitliche Klasse, die den Mobilitätskern trägt
+- M³GIM, Mapping Mobile Musicians, der Projektname; im Namespace und in Dateinamen als `m3gim` geschrieben
+- m3gim-Extension, die Projekterweiterung für Werke, Aufführungen, Bühnenrollen und Mobilität, formalisiert in [`vocab/m3gim.ttl`](../vocab/m3gim.ttl)
 - Mobilitätssichten, fünf Abfrageperspektiven auf dieselben Daten, performativ, institutionell, Reise und Korrespondenz, biographisch, diskursiv
-- Reconciliation und Enrichment, der Abgleich der Entitäten gegen Wikidata und die Anreicherung mit Normdaten
+- Promptotyping, die Arbeitsweise des Projekts, in der die Dokumente die Source of Truth sind und der Code ein nachgeordnetes Artefakt
 - Provenance, die semantische Quellenangabe je Aussage und die technische Rückverfolgbarkeit zur XLSX-Ursprungszelle
 - Quality-Snapshot, der bei jedem Pipeline-Lauf generierte Markdown-Bericht mit allen laufenden Zahlen
-
-## Weitere Ressourcen
-
-- [`../CLAUDE.md`](../CLAUDE.md) führt die Workflow-Regeln für Claude-Code-Sessions, prozessual und nicht dokumentarisch
-- Die Session-Memory unter `.claude/projects/*/memory/` persistiert über Sessions
-- Der Obsidian-Vault unter `C:\Users\Chrisi\Documents\obsidian\Projects\M³GIM\` enthält die DSGVO-sensiblen Quellen und Forschungsnotizen, die nicht im Repo liegen
-
-## Pflegehinweis
-
-- Modell-Änderungen werden immer zuerst in [data.md](data.md) verankert, die Spezifikation ist die Source of Truth, Pipeline, Tests und Frontend folgen
-- Der volatile Abschnitt Stand und nächste Schritte lebt am Ende von [specification.md](specification.md); Erledigtes wandert von dort ins [journal.md](journal.md) und nach [decisions.md](decisions.md), Quellseitiges ins [Datenfehler-Register](datenfehler.md)
-- Forschungsnotizen werden im Obsidian-Vault gepflegt, das Repo enthält das destillierte, DSGVO-bereinigte Extrakt
-- Die Struktur ist flach bis auf `_archive/` für ausgelagerte Journal-Sessions
-- Dokumente bleiben konkret, statt Ähnliches zu wiederholen werden Querlinks gesetzt und Inhalte atomar gehalten
+- Reconciliation und Enrichment, der Abgleich der Entitäten gegen Wikidata und die Anreicherung mit Normdaten
+- RiC-O, Records in Contexts Ontology, das archivische Kernmodell in Version 1.1
+- Schichtenmodell, die drei Erschließungsschichten Kernmetadaten, Verknüpfungen und Detailerschließung plus die Meta-Querschnittsebene
+- SKOS, Simple Knowledge Organization System, die Organisationsform der kontrollierten Vokabulare
+- SpatiotemporalEvent, kurz STE, die zentrale raumzeitliche Klasse, die den Mobilitätskern trägt
+- UAKUG/NIM, die Signatur des Teilnachlasses Ira Malaniuk am Universitätsarchiv der Kunstuniversität Graz

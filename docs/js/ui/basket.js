@@ -23,11 +23,6 @@ function persist() {
   for (const cb of listeners) cb();
 }
 
-export function addToKorb(recordId) {
-  items.add(recordId);
-  persist();
-}
-
 export function removeFromKorb(recordId) {
   items.delete(recordId);
   persist();

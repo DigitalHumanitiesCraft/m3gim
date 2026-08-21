@@ -6,16 +6,22 @@
 
 **M³GIM** (Mapping Mobile Musicians) — DH-Pilotstudie zur Mobilität und Wissensproduktion der Mezzosopranistin Ira Malaniuk (1919–2009), basierend auf dem Teilnachlass UAKUG/NIM am Universitätsarchiv der KUG Graz, modelliert in RiC-O 1.1 + m3gim-Extension + AgRelOn, als statische SPA auf GitHub Pages. Promptotyping-Methodik: Dokumente sind die Source of Truth, Code ist wegwerfbares Artefakt. Laufende Zählstände im Quality-Snapshot (`data/reports/quality-snapshot.md`), nicht hier.
 
+## Sessionstart
+
+Nach dieser Datei wird [`knowledge/INDEX.md`](knowledge/INDEX.md) als Einstieg in die Wissensbasis gelesen, danach [`knowledge/handoff.md`](knowledge/handoff.md) als Process Inbox mit den offenen Übergabepunkten, danach das aufgabenrelevante Dokument aus der Spec-Hierarchie.
+
 ## Spec-Hierarchie
 
 1. **`knowledge/data.md`** — Datengrundlage und Modell-Spezifikation. Bei jeder geplanten Modelländerung zuerst lesen und dort verankern, bevor Pipeline/Tests/Frontend angefasst werden.
 2. **`knowledge/specification.md`** — Projektidentität, Funktionsumfang und der volatile Abschnitt „Stand und nächste Schritte" (inklusive Status-Tracker und offener Operator-Entscheidungen).
 3. **`knowledge/testing.md`** — Teststrategie + TDD-Workflow.
-4. **`knowledge/pipeline.md`** — Pipeline-Referenz.
-5. **`knowledge/architecture.md`** + **`knowledge/design.md`** — Frontend-Architektur und Designsystem.
-6. **`knowledge/decisions.md`** — historische Architekturentscheidungen (E-01 aufwärts, laufend ergänzt).
+4. **`knowledge/pipeline-architecture.md`** — Pipeline-Referenz.
+5. **`knowledge/frontend-architecture.md`** + **`knowledge/design.md`** — Frontend-Architektur und Designsystem.
+6. **`knowledge/architecture-decisions.md`** — historische Architekturentscheidungen (E-01 aufwärts, laufend ergänzt).
 
 Weitere Dokumente siehe [`knowledge/INDEX.md`](knowledge/INDEX.md).
+
+Das formale Projektvokabular `vocab/m3gim.ttl` steht noch nicht in dieser Hierarchie. Ob es ein gepflegtes Artefakt wird und damit in die Spec-first-Reihenfolge einrückt, ist offene Frage 10 in [`knowledge/vocabulary-derivation-findings.md`](knowledge/vocabulary-derivation-findings.md) und wartet auf eine Entscheidung der Projektleitung. Die daraus abgeleitete Lesesicht auf den Datensatz führt [`knowledge/domain-ontology.md`](knowledge/domain-ontology.md).
 
 ## Kern-Commands
 

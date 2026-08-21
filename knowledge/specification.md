@@ -5,9 +5,9 @@ project:
   repository: https://github.com/DigitalHumanitiesCraft/m3gim
 status: reviewed
 language: de
-version: 0.3
+version: 0.4
 created: 2026-06-17
-updated: 2026-07-18
+updated: 2026-08-21
 authors: [Christopher Pollin]
 generated-with: Claude Code
 method:
@@ -24,12 +24,12 @@ knowledge-sources:
     RiC-O: https://www.ica.org/standards/RiC/ontology
     AgRelOn: https://d-nb.info/standards/elementset/agrelon
 topics: ["[[Requirements]]", "[[User Stories]]", "[[Scope]]"]
-related: [research, data, data-entry-guidelines, architecture, design, decisions, datenfehler, testing, pipeline]
+related: [research-framework, data, data-entry-guidelines, frontend-architecture, design, architecture-decisions, data-errors, testing, pipeline-architecture]
 ---
 
 # Spezifikation
 
-Dieses Dokument trägt die Projektidentität, den Substanz- und Funktionsumfang von M³GIM und den operativen Stand. Es beschreibt, was die Anwendung leistet und für wen, und führt am Ende in einem ausdrücklich volatilen Abschnitt die nächsten Schritte. Das Datenmodell wird in [data.md](data.md) geführt, die Laufzeitarchitektur in [architecture.md](architecture.md), die Designhaltung in [design.md](design.md), die getroffenen Architektur- und Modellentscheidungen in [decisions.md](decisions.md), die quellseitig zu behebenden Datenpunkte im [Datenfehler-Register](datenfehler.md). Laufende Zählstände stehen ausschließlich im Quality-Snapshot (`data/reports/quality-snapshot.md`).
+Dieses Dokument trägt die Projektidentität, den Substanz- und Funktionsumfang von M³GIM und den operativen Stand. Es beschreibt, was die Anwendung leistet und für wen, und führt am Ende in einem ausdrücklich volatilen Abschnitt die nächsten Schritte. Das Datenmodell wird in [data.md](data.md) geführt, die Laufzeitarchitektur in [frontend-architecture.md](frontend-architecture.md), die Designhaltung in [design.md](design.md), die getroffenen Architektur- und Modellentscheidungen in [architecture-decisions.md](architecture-decisions.md), die quellseitig zu behebenden Datenpunkte im [Datenfehler-Register](data-errors.md). Laufende Zählstände stehen ausschließlich im Quality-Snapshot (`data/reports/quality-snapshot.md`).
 
 ## Projekt
 
@@ -41,7 +41,7 @@ Grundlage ist der archivisch erfasste Teilnachlass UAKUG/NIM in den Bestandsgrup
 
 ### Beteiligte und Kontext
 
-Das Projekt ist eine Machbarkeitsstudie für ein FWF-Folgeprojekt zu Mobilität und Wissensproduktion von Sängerinnen an europäischen Kulturmetropolen im 19. und 20. Jahrhundert. Die Projektleitung liegt bei der Professur für Historische Musikwissenschaft und Genderforschung der KUG, Kooperationspartner sind das Universitätsarchiv der KUG und DH Craft, beratend begleitet das Zentrum für Informationsmodellierung der Universität Graz das Vorhaben. Der inhaltliche Schwerpunkt liegt räumlich auf der Oper Graz im Zeitraum 1945–1969, dem prägenden Abschnitt von Malaniuks früher Karriere. Theorie und Forschungsfragen stehen in [research.md](research.md).
+Das Projekt ist eine Machbarkeitsstudie für ein FWF-Folgeprojekt zu Mobilität und Wissensproduktion von Sängerinnen an europäischen Kulturmetropolen im 19. und 20. Jahrhundert. Die Projektleitung liegt bei der Professur für Historische Musikwissenschaft und Genderforschung der KUG, Kooperationspartner sind das Universitätsarchiv der KUG und DH Craft, beratend begleitet das Zentrum für Informationsmodellierung der Universität Graz das Vorhaben. Der inhaltliche Schwerpunkt liegt räumlich auf der Oper Graz im Zeitraum 1945–1969, dem prägenden Abschnitt von Malaniuks früher Karriere. Theorie und Forschungsfragen stehen in [research-framework.md](research-framework.md).
 
 ### Standards
 
@@ -98,7 +98,7 @@ Sie ist reproduzierbar, indem die XLSX-Quelldateien versioniert vorliegen und di
 
 Die einzige primäre Datenquelle des Frontends ist `docs/data/m3gim.jsonld`. Es gibt keine zweite Frontend-Datenquelle und keine im Frontend hartkodierten Zählstände.
 
-Annahme: Die Anwendung adressiert ohne weitere Tuning-Maßnahmen den aktuellen Bestandsumfang. Eine präemptive Performance-Optimierung wird bewusst nicht betrieben (siehe E-25 in [decisions.md](decisions.md)). Bei deutlich größerem Bestand in einem Folgeprojekt wäre dies neu zu bewerten.
+Annahme: Die Anwendung adressiert ohne weitere Tuning-Maßnahmen den aktuellen Bestandsumfang. Eine präemptive Performance-Optimierung wird bewusst nicht betrieben (siehe E-25 in [architecture-decisions.md](architecture-decisions.md)). Bei deutlich größerem Bestand in einem Folgeprojekt wäre dies neu zu bewerten.
 
 ## Epics und User Stories
 
@@ -188,22 +188,22 @@ Bewusst nicht im Funktionsumfang sind:
 
 Verschoben sind ein JSON-LD- und GEXF-Export aus den Sichten sowie EAD-Export und Zenodo-Archivierung als Betriebsmodell.
 
-Für die Designhaltung hinter diesen Sichten (Rolle-Prefix-Chips als universelles Daten-Atom, Tabelle vor Chart, Provenance-Pille, Datenqualität wird gezeigt) siehe [design.md](design.md). Für das Laufzeitmodell, den Store und die Ansichten siehe [architecture.md](architecture.md). Die einzelnen Architektur- und Modellentscheidungen, die diesen Funktionsumfang tragen, werden in [decisions.md](decisions.md) geführt und hier nicht dupliziert.
+Für die Designhaltung hinter diesen Sichten (Rolle-Prefix-Chips als universelles Daten-Atom, Tabelle vor Chart, Provenance-Pille, Datenqualität wird gezeigt) siehe [design.md](design.md). Für das Laufzeitmodell, den Store und die Ansichten siehe [frontend-architecture.md](frontend-architecture.md). Die einzelnen Architektur- und Modellentscheidungen, die diesen Funktionsumfang tragen, werden in [architecture-decisions.md](architecture-decisions.md) geführt und hier nicht dupliziert.
 
 ## Stand und nächste Schritte
 
-Dieser Abschnitt ist volatil und wird je Session fortgeschrieben; alles oberhalb ist der durable Kern der Spezifikation. Erledigte Arbeitspakete wandern von hier in [journal.md](journal.md) und [decisions.md](decisions.md), quellseitige Datenpunkte ins [Datenfehler-Register](datenfehler.md).
+Dieser Abschnitt ist volatil und wird je Session fortgeschrieben; alles oberhalb ist der durable Kern der Spezifikation. Erledigte Arbeitspakete wandern von hier in [journal.md](journal.md) und [architecture-decisions.md](architecture-decisions.md), quellseitige Datenpunkte ins [Datenfehler-Register](data-errors.md).
 
 ### Erfassungsschema v2 und Migration des Altbestands (E-127)
 
-Das Erfassungsschema ist auf das Long-Format mit zweistufiger `aktivitaet_id` verfeinert (E-127, operationalisiert das Occurrence-Modell E-125). Die Modellentscheidung zur Abbildung auf Performance und Participation ist mit E-128 getroffen ([decisions.md](decisions.md)). Der Altbestand ist migriert (`scripts/migrate-v2.py`, integrationsfertige Arbeitsmappe in `data/migration/`), die Pipeline-Umstellung steht aus.
+Das Erfassungsschema ist auf das Long-Format mit zweistufiger `aktivitaet_id` verfeinert (E-127, operationalisiert das Occurrence-Modell E-125). Die Modellentscheidung zur Abbildung auf Performance und Participation ist mit E-128 getroffen ([architecture-decisions.md](architecture-decisions.md)). Der Altbestand ist migriert (`scripts/migrate-v2.py`, integrationsfertige Arbeitsmappe in `data/migration/`), die Pipeline-Umstellung steht aus.
 
 1. **Menschlicher Durchgang (Erschließungsteam):** Mappe als Google Sheet hochladen (Post-Import-Round-Trip als Coercion-Guard), `aktivitaet_id` vergeben, Komposit-Redundanz je Beteiligung zusammenführen, die offenen Vokabular- und Namensfälle entscheiden.
 2. **Vokabular als Kontrakt:** das Vokabular-Glossar als kanonische Quelle festlegen, [data.md](data.md) verweist darauf (Redundanz auflösen); `validate.py` und die SKOS-Concepts binden dagegen.
 3. **Neuer Lesepfad:** `assemble-verknuepfungen.py` und `load_verknuepfungen` auf den neuen Spaltenkontrakt umstellen, `transform.py` baut Occurrence plus Beteiligungen aus den zwei ID-Ebenen; die Altschmutz-Heuristiken (`FINANCE_CURRENCY_DEFAULTS`, Kompositzellen-Parser, `(typ,rolle)`-Disambiguierung, Folio-Ko-Lokation) entfallen.
 4. **Gate:** Äquivalenztest alt gegen neu über `audit-data.py` und den zellgenauen Crosscheck; partielle Gruppierung muss der Lesepfad tragen (gruppierte Zeilen → Performances, Rest → Mention plus Coverage-Report).
 
-Extern offen bleibt daneben das Rollenindex-XLSX vom Erschließungsteam für einen eigenen StageRole-Index ([decisions.md](decisions.md) § Offene Modellentscheidungen).
+Extern offen bleibt daneben das Rollenindex-XLSX vom Erschließungsteam für einen eigenen StageRole-Index ([architecture-decisions.md](architecture-decisions.md) § Offene Modellentscheidungen).
 
 ### Auftritts-Occurrence und Forschungsdatenstufe
 
@@ -219,7 +219,7 @@ Datenstufen darauf aufbauend: Stufe 1 ohne Erfassungsänderung (Partner-Reconcil
 ### Interface-Ausbau
 
 1. Reaktivierung und Redesign der verborgenen Perspektiv-Tabs Repertoire und Biogramm; pro Tab Daten-Kontrakt gegen den Store, Rolle-Prefix-Chip-Muster, Meta-Fresh-Check vor dem Enable. Reihenfolge offen.
-2. Cross-View-Filter bauen (Milestone 4). Gescopt in [architecture.md](architecture.md) § Cross-View-Filter, Bau operator-gated; erster realer Baustein ist der Statistik-Zeitfilter (E-122).
+2. Cross-View-Filter bauen (Milestone 4). Gescopt in [frontend-architecture.md](frontend-architecture.md) § Cross-View-Filter, Bau operator-gated; erster realer Baustein ist der Statistik-Zeitfilter (E-122).
 3. Facetten- und Filter-Funktion ausbauen. Heute je Facette Single-Select mit UND-Verknüpfung (E-117); offen sind Mehrfachauswahl beziehungsweise ODER innerhalb einer Facette und eine einheitliche Filter-UX über die Views.
 4. AgRelOn-Granularität schärfen über `HasAddressee` und `HasSender` statt des pauschalen `HasCorrespondent`, alternativ über eine symmetrische Beziehung.
 5. Im Statistik-Tab den Durchstich vom Aggregat zur Quelle ergänzen, analog zum Aggregat→Quelle-Muster der Chronik (E-124).
@@ -246,17 +246,17 @@ Gesammelt, damit sie nicht über das Dokument verstreut sind; jede braucht eine 
 
 ### Datenqualität
 
-Instanzbezogene Datenfehler, Abgleichfehler und die strukturellen Quell-Fixes stehen kanonisch im [Datenfehler-Register](datenfehler.md); vor Bearbeitung gegen den Quality-Snapshot verifizieren. Fortlaufend im Erfassungsteam: die Verknüpfungsrate erhöhen (Schwerpunkt lag auf den Konvoluten um NIM_003, NIM_004 und NIM_007, Einzelobjekte sind weitgehend unverknüpft) und den mehrheitlich offenen Bearbeitungsstand schließen.
+Instanzbezogene Datenfehler, Abgleichfehler und die strukturellen Quell-Fixes stehen kanonisch im [Datenfehler-Register](data-errors.md); vor Bearbeitung gegen den Quality-Snapshot verifizieren. Fortlaufend im Erfassungsteam: die Verknüpfungsrate erhöhen (Schwerpunkt lag auf den Konvoluten um NIM_003, NIM_004 und NIM_007, Einzelobjekte sind weitgehend unverknüpft) und den mehrheitlich offenen Bearbeitungsstand schließen.
 
 ### Status-Tracker
 
-Nur offene, blockierte und zurückgestellte Pakete; Erledigtes steht in [journal.md](journal.md) und [decisions.md](decisions.md).
+Nur offene, blockierte und zurückgestellte Pakete; Erledigtes steht in [journal.md](journal.md) und [architecture-decisions.md](architecture-decisions.md).
 
 | Arbeitspaket | Status | Notiz |
 |---|---|---|
 | Erfassungsschema v2, Pipeline-Umstellung | wartet | auf den menschlichen Durchgang des Erschließungsteams; Modellentscheidung E-128 liegt vor |
 | Auftritts-Occurrence, Pipeline-Gruppierung | offen | `(archivsignatur, folio, datenpunkt_id)` → `m3gim:Occurrence`, testgetrieben |
-| Cross-View-Filter (Milestone 4) | gescopt, operator-gated | Scope in [architecture.md](architecture.md) § Cross-View-Filter |
+| Cross-View-Filter (Milestone 4) | gescopt, operator-gated | Scope in [frontend-architecture.md](frontend-architecture.md) § Cross-View-Filter |
 | Reaktivierung Repertoire, Biogramm | offen | pro Tab Daten-Kontrakt, Chip-Muster, Meta-Fresh-Check |
 | Mobilitäts-Atlas | operator-offen | stilllegen oder als zweite Sicht reaktivieren |
 | AgRelOn-Granularität | offen | `HasAddressee`/`HasSender` statt pauschal |

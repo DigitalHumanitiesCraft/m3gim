@@ -1,6 +1,6 @@
 """Term-Konformitaets-Lock: jeder rico:/ric-rst:/agrelon:/schema:/gndo:-Term im
 Output muss in der kuratierten Allowlist stehen, die gegen die offiziellen
-Termlisten belegt ist (decisions.md E-103/E-104/E-105).
+Termlisten belegt ist (architecture-decisions.md E-103/E-104/E-105).
 
 Faengt die Fehlerklasse "Term aus der Benennungskonvention extrapoliert"
 (Leitplanke 'Fremdterme verifizieren'): rico:isAssociatedWithRecord (existiert

@@ -3,7 +3,6 @@
 Validiert, dass jede gültige XLSX-Zeile im Output ankommt und Kerninhalte
 erhalten bleiben."""
 
-import pandas as pd
 import pytest
 
 

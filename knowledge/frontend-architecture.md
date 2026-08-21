@@ -1,13 +1,13 @@
 ---
-title: Architektur
+title: Frontend-Architektur
 project:
   name: M³GIM
   repository: https://github.com/DigitalHumanitiesCraft/m3gim
 status: complete
 language: de
-version: 0.3
+version: 0.4
 created: 2026-02-19
-updated: 2026-07-18
+updated: 2026-08-21
 authors: [Christopher Pollin]
 generated-with: Claude Code
 method:
@@ -18,17 +18,17 @@ template:
   version: 0.1
   url: https://dhcraft.org/Promptotyping/promptotyping-document/architecture
 topics: ["[[Static Site Architecture]]", "[[Information Visualisation]]"]
-related: [design, pipeline, data, decisions, specification]
+related: [design, pipeline-architecture, data, architecture-decisions, specification]
 ---
 
-# Architektur
+# Frontend-Architektur
 
 > Wie das Frontend technisch gebaut ist: Laufzeitmodell, Modulstruktur, Store und State, Routing, build-loses Deployment auf GitHub Pages, Datenfluss von JSON-LD in den Store sowie die Ansichten der einzelnen Tabs. Die Designhaltung, das Designsystem und die Lektionen aus den entfernten Visualisierungen stehen in [design.md](design.md). Die vormaligen D3-Visualisierungen (Mobilität, Matrix, Kosmos, Zeitfluss, Lebenspartitur, Lebensstationen) sind entfernt.
 
 ## Laufzeitmodell
 
 - **Erfassung:** Google-Sheets-Exporte als XLSX → `data/google-spreadsheet/`
-- **Verarbeitung:** Python-Skripte ([pipeline.md](pipeline.md)) → JSON/JSON-LD in `docs/data/`
+- **Verarbeitung:** Python-Skripte ([pipeline-architecture.md](pipeline-architecture.md)) → JSON/JSON-LD in `docs/data/`
 - **Präsentation:** Statische SPA in `docs/` (Vanilla JS + D3 v7)
 - Offline-first: alle Daten beim Startup geladen (E-05)
 
@@ -58,22 +58,22 @@ related: [design, pipeline, data, decisions, specification]
 | `utils/provenance.js` | `extractXlsxSource(obj)` — Provenance-Shape-Extraktion, geteilter Helper für Loader, Inline-Detail und Korb (E-91) |
 | `data/constants.js` | `ROLE_CLUSTER`, `ROLE_TO_SECTION`, `AGRELON_LABELS`, `EVENT_ROLE_TO_MOBILITY_CLUSTER` (Session 36), `WIKIDATA_ICON_SVG`, Komponisten-/Personen-Kategorien |
 | `ui/router.js` | Hash-Routing, `navigateToView`/`navigateToIndex`, ARIA-State |
-| `ui/korb.js` | Wissenskorb (localStorage) |
-| `views/archiv-bestand.js` | Bestand-Tab: Konvolut-Hierarchie mit Meta-Chips (Top-3-Dokumenttyp + Status-Mix) direkt in der Zeile; Inline-Detail nur für Records, nicht mehr für Konvolute (E-82). Hierarchische Sortierung: Konvolute Signatur-stabil, Kinder innerhalb sortierbar (E-83). |
+| `ui/basket.js` | Wissenskorb (localStorage) |
+| `views/archive-holdings.js` | Bestand-Tab: Konvolut-Hierarchie mit Meta-Chips (Top-3-Dokumenttyp + Status-Mix) direkt in der Zeile; Inline-Detail nur für Records, nicht mehr für Konvolute (E-82). Hierarchische Sortierung: Konvolute Signatur-stabil, Kinder innerhalb sortierbar (E-83). |
 | `views/archive-timeline.js` | Mobilitäts-Chronik-Tab: scrollender Jahres-Zeitstrahl 1919-2009 mit Sicht-Akzent am Chip, kollabierbarem Dekaden×Sicht-Header (Aggregat→Quelle per Segment-Klick), Sekundär-Datierung undatierter Records und ehrlicher Deckungs-Caption (E-124) |
 | `views/chronik-data.js` | Reine Datenschicht der Chronik (kein DOM/d3): `sichtForRecord` (dominante Sicht aus STEs), `secondaryYearForRecord` (Sekundär-Datierung), `aggregateDecadeStacks` (Dekaden×Sicht) |
-| `views/archiv-inline-detail.js` | Record-Detail mit den funktionalen Blöcken Produktion · Mitwirkende · Werk & Repertoire · Ort & Ereignis · Erwähnt, AgRelOn-Dedup (liest `rel.objectName`/`rel.objectWikidata`, nicht das rohe JSON-LD), Sprach-Label-Auflösung, `buildRoleChip()` als geteilter Helper |
-| `views/_archiv-toolbar.js` | Geteilte Toolbar (Suche, Dokumenttyp-Filter, Person-Filter, Count-Anzeige) für Bestand + Chronik |
-| `views/indizes.js` | Grid-Explorer über Personen, Organisationen, Orte und Werke mit Beziehungsbadges (AgRelOn), nur Einträge mit `records.size > 0` |
+| `views/archive-inline-detail.js` | Record-Detail mit den funktionalen Blöcken Produktion · Mitwirkende · Werk & Repertoire · Ort & Ereignis · Erwähnt, AgRelOn-Dedup (liest `rel.objectName`/`rel.objectWikidata`, nicht das rohe JSON-LD), Sprach-Label-Auflösung, `buildRoleChip()` als geteilter Helper |
+| `views/_archive-toolbar.js` | Geteilte Toolbar (Suche, Dokumenttyp-Filter, Person-Filter, Count-Anzeige) für Bestand + Chronik |
+| `views/indexes.js` | Grid-Explorer über Personen, Organisationen, Orte und Werke mit Beziehungsbadges (AgRelOn), nur Einträge mit `records.size > 0` |
 | `views/mobility.js` | Karten-Tab (sichtbar, **entitätszentriert seit E-126**): man wählt eine Entität (Organisation/Person) und sieht ihre Orte als Knoten, je Ort ein Tortendiagramm nach Mobilitätssicht. **Keine** Verbindungslinien (die Trajektorie aus E-111 entfiel). Datenschicht `views/entity-map-data.js` zieht die Orte aus Record-Orten (`rico:hasOrHadLocation`) + STE zusammen und vergibt Verortungs-Stufen (`secured`/`city`/`far`/`unlocatable`, Adressen auf die Stadt hochgerollt). Sidebar: Entitäts-Auswahl, Zeitraum, Farb- und Verortungs-Legende, Klick-Detail (Zuordnungen + alle Dokumente). Basemap lokal: Ozean (SVG-Hintergrund) + Gradnetz, Ländergeometrie `docs/data/geo/countries-110m.geo.json` (Natural Earth 110m), kein Kartenserver, kein Leaflet. |
 | `views/mobility-atlas.js` | Leaflet-Karte + D3-Zeitstrahl + Detailpanel (Tab `mobilitaets-atlas` aktuell `hidden`, E-81; durch `views/mobility.js` (E-111) überholt, Stilllegung operator-offen; Leaflet ist nicht in `index.html` eingebunden und bei einer Reaktivierung wieder einzubinden) |
 | `views/repertoire.js` | Parallele Aggregat-Tabellen Werke × Komponisten (Tab aktuell `hidden`, E-81) |
-| `views/biogramm.js` | Chronologischer D3-Zeitstrahl 1919–2009 (Tab aktuell `hidden`, E-81) |
-| `views/netzwerk.js` | Orchestrator des Netzwerk-Tabs (E-93, E-94): State-Eigentum, `draw`, Filter-Anwendung, Detail-Panel, Telemetrie, Zeitfenster-Index. Delegiert Sidebar an `_netzwerk-sidebar.js` und Canvas-Rendering an `_netzwerk-canvas.js`. Im Session-47-Split deutlich verschlankt. |
-| `views/_netzwerk-geometry.js` | Reine Layout-Funktionen für den Netzwerk-Tab (E-93): `computeLayout`, `computeCoOccurrence`, `classifyRing`, `nodeColor`, `derivePersonKategorie`, `labelGeometry`. Keine DOM-/D3-Aufrufe, deterministisch, mit Node-Unit-Tests abgedeckt (E-94). |
-| `views/_netzwerk-sidebar.js` | Sidebar-UI des Netzwerk-Tabs (E-94): Suche, Filter-Slider, Toggles (Ko-Okkurrenz + AgRelOn getrennt), Zeitfenster, Kategorie-Chips, Legende, Reset. Reine UI-Produktion mit `state`/`actions`-Vertrag — keine direkte State-Mutation. |
-| `views/_netzwerk-canvas.js` | SVG-Rendering, Zoom/Pan, Hover-/Highlight-Logik des Netzwerk-Tabs (E-94): `drawCanvas`, `renderZoomControls`, `applyHighlight` (Knoten-Nachbarschaft), `applyEdgeHighlight` (einzelne Kante + Endpunkte). Kommuniziert mit dem Orchestrator nur ueber `zoomRefs` (wird mutiert) und `actions = {getSelected, setSelected}`. |
-| `views/korb.js` | Korb-Cards mit `buildRoleChip()` + funktionale Blöcke (Produktion · Mitwirkende · Werk & Repertoire · Ort & Ereignis · Erwähnt · Weitere · Beziehungen · Finanzen), CSV- + BibTeX-Export inkl. AgRelOn + Finanzen |
+| `views/biogram.js` | Chronologischer D3-Zeitstrahl 1919–2009 (Tab aktuell `hidden`, E-81) |
+| `views/network.js` | Orchestrator des Netzwerk-Tabs (E-93, E-94): State-Eigentum, `draw`, Filter-Anwendung, Detail-Panel, Telemetrie, Zeitfenster-Index. Delegiert Sidebar an `_network-sidebar.js` und Canvas-Rendering an `_network-canvas.js`. Im Session-47-Split deutlich verschlankt. |
+| `views/_network-geometry.js` | Reine Layout-Funktionen für den Netzwerk-Tab (E-93): `computeLayout`, `computeCoOccurrence`, `classifyRing`, `nodeColor`, `derivePersonKategorie`, `labelGeometry`. Keine DOM-/D3-Aufrufe, deterministisch, mit Node-Unit-Tests abgedeckt (E-94). |
+| `views/_network-sidebar.js` | Sidebar-UI des Netzwerk-Tabs (E-94): Suche, Filter-Slider, Toggles (Ko-Okkurrenz + AgRelOn getrennt), Zeitfenster, Kategorie-Chips, Legende, Reset. Reine UI-Produktion mit `state`/`actions`-Vertrag — keine direkte State-Mutation. |
+| `views/_network-canvas.js` | SVG-Rendering, Zoom/Pan, Hover-/Highlight-Logik des Netzwerk-Tabs (E-94): `drawCanvas`, `renderZoomControls`, `applyHighlight` (Knoten-Nachbarschaft), `applyEdgeHighlight` (einzelne Kante + Endpunkte). Kommuniziert mit dem Orchestrator nur ueber `zoomRefs` (wird mutiert) und `actions = {getSelected, setSelected}`. |
+| `views/basket.js` | Korb-Cards mit `buildRoleChip()` + funktionale Blöcke (Produktion · Mitwirkende · Werk & Repertoire · Ort & Ereignis · Erwähnt · Weitere · Beziehungen · Finanzen), CSV- + BibTeX-Export inkl. AgRelOn + Finanzen |
 | `utils/format.js`, `utils/dom.js`, `utils/date-parser.js`, `utils/normalize.js` | Formatierungshilfen, DOM-Helper, Datumsparser, Namensnormalisierung |
 
 `data/aggregator.js` und `utils/viz-components.js` wurden Session 32 mit den D3-Prototypen entfernt.
@@ -144,7 +144,7 @@ Die Invarianten werden als Kontrakttests in [test_06_frontend_contract.py](../te
 
 ### Bestand und Chronik (seit Session 35 eigenständige Tabs)
 
-- Bestand und Chronik sind eigene Top-Level-Tabs (früher Archiv-Sub-Toggle), nutzen eine geteilte Toolbar (`_archiv-toolbar.js`).
+- Bestand und Chronik sind eigene Top-Level-Tabs (früher Archiv-Sub-Toggle), nutzen eine geteilte Toolbar (`_archive-toolbar.js`).
 - **Leitprinzip „nur bearbeitet" als Default, umschaltbar (E-116):** Standardmäßig rendern Konvolute ohne erschlossene Folios, Records ohne Verknüpfungen und Folios mit 0 Links nicht. Der Bestand-Toggle „Nicht erschlossene einblenden" (`zeigeUnerschlossen`, Facet-Kind `toggle`) schaltet den „alle"-Modus frei: dann erscheinen auch die nicht erschlossenen Records und Konvolute, in `getOrderedItems(showAll)` durchgereicht und in `renderRows` über `.archiv-row--unerschlossen` ausgegraut plus Badge „nicht erschlossen" markiert. So sind alle Daten erreichbar, ohne den Erschließungsstand zu kaschieren (Zielbild Linie 3): das Form-ist-Signal-Prinzip wird nicht aufgegeben, sondern als sichtbare Markierung statt als Ausblendung umgesetzt. Folios (reine Metadaten-Records) bleiben in beiden Modi raus. Plakate + Tonträger sind davon unabhängig pauschal ausgeblendet (`EXCLUDED_DFT`, Forschungsscope laut `interface-konzept.md`, nicht Teil des Toggles); die Chronik filtert weiterhin ausschließlich über `unprocessedIds` ohne Toggle, weil der lokale DFT-Ausschluss 0 Matches liefert — Session 36. Log-Stempel-Keys ergänzt um `erschliessung` (erschlossen|alle) und `nicht-erschlossen`.
 - **Counter-Tooltip** erklärt „bearbeitet" direkt am `archiv-count`-Span (Schicht 1 + 2 erschlossen, Plakate/Tonträger ausgeblendet, Verweis auf `quality-snapshot.md` für Gesamtzahlen).
 - **Mobilitäts-Chronik als Scroll-Zeitstrahl** (E-88/E-124, seit Session 41): jedes Jahr 1919-2009 (+ Ausreisser) rendert eine Zeile mit Jahres-Label links, dichte-adaptivem Dot und Record-Chips rechts; leere Jahre bleiben sichtbar (dichte-adaptiv E-92: Nicht-Dekaden-Jahre als 6-px-Linie, Dekaden-Jahre als Anker), Lückenstruktur als Rhythmus lesbar. **E-124-Reframe zur Mobilitäts-Chronik:** ein linker **Sicht-Akzent** am Chip (`SICHT_COLOR`, geteilt mit Karte/Statistik; kein STE → monochrom = „keine Sicht erschlossen", divergierende Records → Mehrfach-Verlauf); ein kollabierbarer **Dekaden×Sicht-Header**, dessen Segment-Klick genau die belegenden Chips hervorhebt (`chronik-point--hit`/`--dim`) und so das Aggregat auf seine Einzelquellen auflöst (Vorgabe „kein Aggregat ohne Quellen-Rückführung"); **undatierte ehrlich gespalten** — sekundär-datierte Records (typisiertes Feld oder `STE.atDate`) wandern markiert (gestrichelt + `≈`-Badge) in ihre Jahreszeile, echt-undatierte bleiben im Endblock mit Sicht-Mini-Stapel als Kopf; **Achsenkopf-Caption** „N von M datiert (davon K sekundär), L undatiert · S mit Sicht" plus Hinweis „Dichte zeigt den Erschließungsstand, nicht die Aktivität". Reine Datenschicht `chronik-data.js`. Log-Stempel: `records, jahre-belegt, datiert, sekundaer, undatiert, sicht-gedeckt, spanne, gefiltert`.
@@ -184,7 +184,7 @@ Die Invarianten werden als Kontrakttests in [test_06_frontend_contract.py](../te
 - Auswahl einer Entität (Organisation/Person) in der Sidebar; ihre Orte werden aus Record-Orten (`rico:hasOrHadLocation`) + STE zusammengezogen (`views/entity-map-data.js`). Default = alle Orte des Bestands
 - Orte als Knoten, je Ort ein Tortendiagramm nach Mobilitätssicht (`mobilityClusterFor`/`EVENT_ROLE_TO_MOBILITY_CLUSTER`, E-110; Farben aus `SICHT_COLOR`), Knotengröße nach Belegzahl im Zeitfenster
 - **Keine Verbindungslinien** — die biografische Trajektorie aus E-111 (gerichtete Pfeile, Zeitregler) ist entfernt; die räumliche Verteilung einer Entität ist die Aussage, nicht der Weg
-- Verortungs-Sicherheit visuell kodiert (Ring-Stil + Legende): `secured` durchgezogen, `city` (Adresse auf die Stadtkoordinate hochgerollt) gestrichelt, `far` (Fehlmatch-Verdacht AF-01, [datenfehler.md](datenfehler.md)) gestrichelt-warnfarben, `unlocatable` als eingeklappte Liste statt Kartenpunkt
+- Verortungs-Sicherheit visuell kodiert (Ring-Stil + Legende): `secured` durchgezogen, `city` (Adresse auf die Stadtkoordinate hochgerollt) gestrichelt, `far` (Fehlmatch-Verdacht AF-01, [data-errors.md](data-errors.md)) gestrichelt-warnfarben, `unlocatable` als eingeklappte Liste statt Kartenpunkt
 - Hover-Tooltip (Proportionsbalken) und Klick-Detail (Zuordnungen nach Sicht + alle verknüpften Dokumente); Zoom und Pan per `d3.zoom`, `non-scaling-stroke` hält Linien und Ringe beim Zoomen konstant (E-114-Erbe)
 
 ### Mobilitäts-Atlas
@@ -216,7 +216,7 @@ Der ältere, verborgene Karten-Tab (`mobilitaets-atlas`), durch den Mobilitäts-
 
 ### Netzwerk
 
-Konzentrische Personen-Visualisierung um Malaniuk (E-93, Session 46; Session-47-Hygiene-Runde E-94). Antwortet auf die Forschungsfrage „Mit welchen Personen stand Malaniuk in Beziehung?". Tabelle-vor-Graph wurde hier bewusst verlassen — die vorherige Pivot-Tabelle zeigte nur die wenigen explizit annotierten AgRelOn-Partner und blendete die Wagner-Familie, Strauss, Mozart und die übrigen Multi-Record-Personen aus. Der Tab ist in die Module [`_netzwerk-geometry.js`](../docs/js/views/_netzwerk-geometry.js) (pure Funktionen, mit Unit-Tests), [`_netzwerk-sidebar.js`](../docs/js/views/_netzwerk-sidebar.js) (Filter-UI mit `state`/`actions`-Vertrag), [`_netzwerk-canvas.js`](../docs/js/views/_netzwerk-canvas.js) (SVG-Rendering + Hover + Zoom) und [`netzwerk.js`](../docs/js/views/netzwerk.js) (Orchestrator) gesplittet.
+Konzentrische Personen-Visualisierung um Malaniuk (E-93, Session 46; Session-47-Hygiene-Runde E-94). Antwortet auf die Forschungsfrage „Mit welchen Personen stand Malaniuk in Beziehung?". Tabelle-vor-Graph wurde hier bewusst verlassen — die vorherige Pivot-Tabelle zeigte nur die wenigen explizit annotierten AgRelOn-Partner und blendete die Wagner-Familie, Strauss, Mozart und die übrigen Multi-Record-Personen aus. Der Tab ist in die Module [`_network-geometry.js`](../docs/js/views/_network-geometry.js) (pure Funktionen, mit Unit-Tests), [`_network-sidebar.js`](../docs/js/views/_network-sidebar.js) (Filter-UI mit `state`/`actions`-Vertrag), [`_network-canvas.js`](../docs/js/views/_network-canvas.js) (SVG-Rendering + Hover + Zoom) und [`network.js`](../docs/js/views/network.js) (Orchestrator) gesplittet.
 
 - **Ringe nach Evidenzstärke.** Malaniuk im Zentrum (KUG-Blau, r=38). Ring 1 (`R * 0.32`) = harte Beziehung: `entry.relations.length > 0` ODER (Wikidata-verknüpft UND `records.size ≥ 5`). Ring 2 (`R * 0.82`) = wiederkehrendes Umfeld: `records.size ≥ 2` ODER `entry.kategorie !== "Andere"`. Ring 3 (einmalige Nennungen) ist bewusst weggefiltert — reiner dekorativer Halo. Winkel alphabetisch pro Ring (sortKey nach normalisiertem Nachnamen), gleichverteilt über 2π, Start 12 Uhr. Positionen analytisch aus Sinus/Kosinus — keine Force-Simulation, Determinismus vor Schönheit ([design.md § Lektionen aus den entfernten Visualisierungen](design.md)).
 - **Rolle als zweite Dimension über die Füllfarbe.** `derivePersonKategorie(entry)` leitet die Kategorie aus den tatsächlichen `entry.roles`-Sets ab (Prioritätsordnung Produktion > Bühne > Vermittlung > Korrespondenz > Presse > Erwähnt; nur „erwähnt"-Varianten ohne Sonst-Rolle → „Erwähnt"; Rest → „Andere"). Ersetzt die statische Namens-Keyword-Kategorie aus `normalize.js`, die nur einen kleinen Teil der Personen traf und den Rest stumm in „Andere" kippte. Farbpalette in `NETZWERK_KATEGORIEN` (Produktion violett, Bühne gold, Vermittlung grün, Korrespondenz braun, Presse oliv, Erwähnt hellgrau, Andere neutral).
@@ -230,7 +230,7 @@ Konzentrische Personen-Visualisierung um Malaniuk (E-93, Session 46; Session-47-
 
 - Bookmark-Icons in Bestand, Indizes-Detail und Archiv-Inline-Detail; `toggleKorb(id)` + `onKorbChange`-Callback für Re-Render
 - Card pro Record: Mono-Signatur (Deep-Link auf `#bestand/...`) · Serif-Titel · Typ-Badge · Remove-Button · Meta-Zeile (Datum · Sprache · Umfang · Status) · funktionale Blöcke aus dem Inline-Detail-Muster (Produktion, Mitwirkende, Werk & Repertoire, Ort & Ereignis, Erwähnt, Weitere) plus eigene Blöcke Beziehungen (AgRelOn) und Finanzen
-- Chips durch `buildRoleChip()` aus `archiv-inline-detail.js`; Provenance-Pille und Wikidata-Badge pro Chip; Klick springt in den passenden Index
+- Chips durch `buildRoleChip()` aus `archive-inline-detail.js`; Provenance-Pille und Wikidata-Badge pro Chip; Klick springt in den passenden Index
 - CSV: Spalten Signatur, Titel, Typ, Datierung, Konvolut, Personen (mit Rollen), Orte (inkl. STE-Events mit Datum), Werke (mit Komponist), Beziehungen (AgRelOn), Finanzen (Betrag + Währung + Rolle). UTF-8 BOM
 - BibTeX: `@misc{SIG_sanitized, ...}`, Autor primär aus `verfasser:in`, Fallback auf `agrelon:HasCorrespondent`-Sender
 - localStorage-Persistenz (Key `m3gim-korb`); Badge in der Tab-Bar zeigt die Anzahl
@@ -242,7 +242,7 @@ Konzentrische Personen-Visualisierung um Malaniuk (E-93, Session 46; Session-47-
 
 ## Erweiterung für den neuen Datenstand (umgesetzt)
 
-Die freigegebene Modell-Erweiterung ([decisions.md](decisions.md) E-95 bis E-102) ist committet (007b8c2) und im Code live. Die Reihenfolge steuerte der damalige Plan.
+Die freigegebene Modell-Erweiterung ([architecture-decisions.md](architecture-decisions.md) E-95 bis E-102) ist committet (007b8c2) und im Code live. Die Reihenfolge steuerte der damalige Plan.
 
 - **Vokabular-Kopplung in `constants.js`.** Die Mobilitäts-Ortsrollen (`zielort`, `absendeort`, `abreiseort`, `empfangsort`, `vertragsort`) sind in `EVENT_ROLE_TO_MOBILITY_CLUSTER` auf den Cluster `korrespondenz` gemappt (E-110, order-m3gim Punkt 1, ratifiziert die zuvor offene `null`-Führung) — zielort/abreiseort = Reisemobilität, empfangsort = Korrespondenz, absendeort = beides, vertragsort = Mobilitäts-Ortsrolle derselben Spur, data.md § Ortsrollen/§ 10 folgend. Weitere vorgemerkte eventRoles (`aufnahme`, `generalprobe`, `empfang`) und Rollen (Crew, `publikum`/`abgebildet`) bleiben auskommentiert gerüstet, bis der tiefere Export sie mit Daten füllt. Dokumenttyp-Labels kommen nicht mehr aus einer Hand-Map, sondern über `dftLabel(store, id)` aus `store.dftHierarchy`. Die Leitplanke Vokabular-Kopplung (`test_25`/`test_15`) bleibt grün.
 - **Loader.** Die datumslosen Mobilitäts-STEs setzen kein `atDate` voraus (`date: null`). Die Ablösung des `m3gim:hasPerformanceRole`-Artefakts durch `m3gim:StageRole`-Entitäten und n-äre `m3gim:Performance` (gelesen in `archive-inline-detail`) ist umgesetzt und über die neuen Store-Maps `store.stageRoles` + `store.performances` angebunden. Die neuen Record-Felder `dataQualityFlag`, `bearbeitungsnotiz` und `erstelldatum` liegen an den Record-Knoten. Vertagt: der `wohnort`-Zustand mit Gültigkeitsperiode sowie `contractStatus`/`realized` (E-99, keine Datendeckung); `qualityConfidence` wird bewusst nicht fabriziert.
@@ -251,7 +251,7 @@ Die freigegebene Modell-Erweiterung ([decisions.md](decisions.md) E-95 bis E-102
 
 ## Cross-View-Filter
 
-Der view-übergreifende einheitliche Filter (Entwurf E-117, order-m3gim Milestone 3; vormals eigenes Dokument `filter-modell.md`). Ein gesetzter Schnitt nach Ort, Person, Werk, Rolle, Zeitfenster oder Mobilitätssicht soll synchron in allen filterbaren Views wirken, statt in jedem Tab getrennt gesetzt zu werden. Der Filter ist ein neutraler gekoppelter Schnitt mit den sichtbar getrennten Schärfegraden `weit` und `eng`; Bayreuth 1951 bis 1953 wird damit ein reines Filterergebnis, kein eigener View (Entscheidung in [decisions.md](decisions.md), Bayreuth als filterbarer Schnitt). Der Bau ist Milestone 4 und operator-gated; erster realer Baustein ist der Statistik-Zeitfilter (E-122).
+Der view-übergreifende einheitliche Filter (Entwurf E-117, order-m3gim Milestone 3; vormals eigenes Dokument `filter-modell.md`). Ein gesetzter Schnitt nach Ort, Person, Werk, Rolle, Zeitfenster oder Mobilitätssicht soll synchron in allen filterbaren Views wirken, statt in jedem Tab getrennt gesetzt zu werden. Der Filter ist ein neutraler gekoppelter Schnitt mit den sichtbar getrennten Schärfegraden `weit` und `eng`; Bayreuth 1951 bis 1953 wird damit ein reines Filterergebnis, kein eigener View (Entscheidung in [architecture-decisions.md](architecture-decisions.md), Bayreuth als filterbarer Schnitt). Der Bau ist Milestone 4 und operator-gated; erster realer Baustein ist der Statistik-Zeitfilter (E-122).
 
 ### Ausgangslage
 
@@ -305,8 +305,8 @@ Offen: Default-Schärfegrad pro View (Vorschlag, die Karte erzwingt `eng`); Pers
 |-------|------------------|
 | Designhaltung, Designsystem, Lektionen aus den entfernten Visualisierungen | [design.md](design.md) |
 | Datenmodell, Ontologie, Vokabulare | [data.md](data.md) |
-| Pipeline, Datenfluss, Qualitätsbaseline | [pipeline.md](pipeline.md) |
+| Pipeline, Datenfluss, Qualitätsbaseline | [pipeline-architecture.md](pipeline-architecture.md) |
 | Testsuite, TDD-Workflow | [testing.md](testing.md) |
-| Architekturentscheidungen | [decisions.md](decisions.md) |
+| Architekturentscheidungen | [architecture-decisions.md](architecture-decisions.md) |
 | Identität, Funktionsumfang, operativer Stand | [specification.md](specification.md) |
-| Forschungsrahmen und Use Cases | [research.md](research.md) |
+| Forschungsrahmen und Use Cases | [research-framework.md](research-framework.md) |

@@ -194,13 +194,6 @@ KONZERT_KEYWORDS = {'liederabend', 'konzert', 'sinfonisch', 'symphonie', 'sinfon
 # Oper-Indikatoren (Titel oder Rollenname → Gattung oper)
 OPER_KEYWORDS = {'oper', 'opera', 'atto', 'akte', 'aufzüge', 'musikdrama'}
 
-AUFTRITT_FARBEN = {
-    'engagement': '#004A8F',
-    'festspiel': '#9A7B4F',
-    'gastspiel': '#3D7A5A',
-    'konzert': '#6B4E8C',
-}
-
 # Personen-Kategorien (bekannte Persönlichkeiten aus dem Archiv)
 # Erweiterte Liste basierend auf Archivanalyse
 PERSONEN_KATEGORIEN = {

@@ -5,9 +5,9 @@ project:
   repository: https://github.com/DigitalHumanitiesCraft/m3gim
 status: reviewed
 language: de
-version: 0.3
+version: 0.4
 created: 2026-02-19
-updated: 2026-07-18
+updated: 2026-08-21
 authors: [Christopher Pollin]
 generated-with: Claude Code
 method:
@@ -18,7 +18,7 @@ template:
   version: 0.1
   url: https://dhcraft.org/Promptotyping/promptotyping-document/domain-knowledge
 topics: ["[[Mobility Studies]]", "[[Music History]]", "[[Gender Studies]]", "[[Biography]]"]
-related: [specification, data, data-entry-guidelines, design, architecture, decisions]
+related: [specification, data, data-entry-guidelines, design, frontend-architecture, architecture-decisions]
 ---
 
 # Forschungsrahmen
@@ -159,7 +159,7 @@ Wen bedient das Tool? Vorläufig aus FF1–FF4 und der Partner-Konstellation abg
 
 ## Use Cases (aus den Forschungsfragen)
 
-Schema je Use Case: **FF-Bezug · Frage · benötigte Daten · UI-Baustein (Stand) · Datendeckung · offen**. Der Stand bezieht sich auf das Statistik-Dashboard (E-123) und die Mobilitäts-Chronik (E-124); querschnittlich greift der geplante Cross-View-Filter ([architecture.md](architecture.md) § Cross-View-Filter, Milestone 4). Exakte Deckungszahlen sind dem [Quality-Snapshot](../data/reports/quality-snapshot.md) zu entnehmen, nicht diesem Text; hier nur die Größenordnung und die ehrliche Grenze.
+Schema je Use Case: **FF-Bezug · Frage · benötigte Daten · UI-Baustein (Stand) · Datendeckung · offen**. Der Stand bezieht sich auf das Statistik-Dashboard (E-123) und die Mobilitäts-Chronik (E-124); querschnittlich greift der geplante Cross-View-Filter ([frontend-architecture.md](frontend-architecture.md) § Cross-View-Filter, Milestone 4). Exakte Deckungszahlen sind dem [Quality-Snapshot](../data/reports/quality-snapshot.md) zu entnehmen, nicht diesem Text; hier nur die Größenordnung und die ehrliche Grenze.
 
 ### UC-1 — Wohin und wann bewegte sie sich? (FF4)
 

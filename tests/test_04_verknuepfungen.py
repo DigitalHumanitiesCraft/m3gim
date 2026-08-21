@@ -57,7 +57,7 @@ def _has_any_relation(record):
     strict=True,
     reason="NIM_168 Folio-Granularitaets-Inkonsistenz zwischen Objekt- und "
     "Verknuepfungstabelle (Sub-Folios 2_1..2_3), Source-Fix beim "
-    "Erschliessungsteam offen — siehe knowledge/datenfehler.md",
+    "Erschliessungsteam offen — siehe knowledge/data-errors.md",
 )
 def test_verknuepfungen_every_referenced_record_has_relations(
     records, xlsx_verknuepfungen

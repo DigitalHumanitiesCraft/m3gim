@@ -6,20 +6,10 @@
 
 import { extractYear } from '../utils/date-parser.js';
 import { mobilityClusterFor } from '../data/constants.js';
+import { TYPED_DATE_PROPS } from '../data/loader.js';
 
 // Geteilte Sichten-Konstanten weiterreichen, damit die View eine Quelle hat.
 export { SICHTEN, SICHT_COLOR } from './statistics-data.js';
-
-// Spiegel der Loader-Liste (loader.js TYPED_DATE_PROPS): typisierte Datumsfelder,
-// aus denen ein undatierter Record sekundär datiert werden kann. Reihenfolge =
-// Priorität.
-const TYPED_DATE_PROPS = [
-  'm3gim:auffuehrungsdatum', 'm3gim:premieredatum', 'm3gim:auftrittsdatum',
-  'm3gim:absendedatum', 'm3gim:empfangsdatum', 'm3gim:gespraechsdatum',
-  'm3gim:erscheinungsdatum', 'm3gim:ausstellungsdatum', 'm3gim:ausstrahlungsdatum',
-  'm3gim:probenbeginn', 'm3gim:probendatum', 'm3gim:spielzeitVon',
-  'm3gim:ueberweisungsdatum', 'm3gim:abreisedatum',
-];
 
 // Kurzlabel für die Datierungsherkunft (Badge am sekundär-datierten Chip).
 const SECONDARY_LABEL = {

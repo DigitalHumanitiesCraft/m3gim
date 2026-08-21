@@ -22,7 +22,7 @@ m3gim/
 |   |-- output/              # Generierte JSON-LD/View-Daten
 |   `-- reports/             # Generierte Markdown-Reports
 |-- scripts/                  # explore/validate/reconcile/enrich-wikidata/transform/build-views/report-quality
-|-- vocab/                    # Formales Projektvokabular (Turtle) + Abdeckungspruefer, siehe knowledge/domain.md
+|-- vocab/                    # Formales Projektvokabular (Turtle) + Abdeckungspruefer, siehe knowledge/domain-ontology.md
 |-- docs/                     # GitHub Pages Frontend (Vanilla JS, keine Build-Kette)
 `-- README.md
 ```
@@ -42,8 +42,9 @@ Laufende Zahlen (Bestand, Verknuepfungsrate, WD-Coverage) stehen im generierten 
 
 - Einstieg in die KB: [`knowledge/INDEX.md`](knowledge/INDEX.md)
 - Aktueller Stand + nächste Schritte: [`knowledge/specification.md`](knowledge/specification.md) § Stand und nächste Schritte
-- Architekturentscheidungen: [`knowledge/decisions.md`](knowledge/decisions.md)
-- Pipeline: [`knowledge/pipeline.md`](knowledge/pipeline.md)
+- Offene Uebergabepunkte: [`knowledge/handoff.md`](knowledge/handoff.md)
+- Architekturentscheidungen: [`knowledge/architecture-decisions.md`](knowledge/architecture-decisions.md)
+- Pipeline: [`knowledge/pipeline-architecture.md`](knowledge/pipeline-architecture.md)
 - Workflow-Regeln fuer Claude-Code-Sessions: [`CLAUDE.md`](CLAUDE.md)
 
 ## Licence

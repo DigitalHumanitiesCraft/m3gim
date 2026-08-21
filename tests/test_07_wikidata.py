@@ -2,7 +2,6 @@
 
 import re
 
-import pytest
 
 from _helpers import iter_entities_with_id
 

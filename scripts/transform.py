@@ -1808,7 +1808,6 @@ def main():
         fonds["rico:hasOrHadPart"].append({"@id": k["@id"]})
 
     # Einzelobjekte (nicht in Konvoluten) gehoeren direkt zum Fonds
-    konvolut_sigs = {k["rico:identifier"] for k in konvolute}
     konvolut_member_ids = set()
     for k in konvolute:
         for part in k.get("rico:hasOrHadPart", []):

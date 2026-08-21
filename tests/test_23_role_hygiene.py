@@ -13,7 +13,6 @@ Rolle in ``DATUMSROLLE_TO_PROPERTY`` liegt. Nicht-Datumsrollen
 (``auffuehrungsort``, ``wohnort``, ``erscheinungsort`` etc.) bleiben erhalten.
 """
 
-import pytest
 
 
 # Muss mit DATUMSROLLE_TO_PROPERTY in scripts/transform.py synchron bleiben.

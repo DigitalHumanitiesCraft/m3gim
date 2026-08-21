@@ -6,14 +6,14 @@ project:
 method:
   name: Promptotyping
   url: https://lisa.gerda-henkel-stiftung.de/digitale_geschichte_pollin
-status: draft
+status: active
 created: 2026-06-21
 updated: 2026-08-21
 language: de
-version: 0.2
+version: 0.4
 authors: [Christopher Pollin]
 generated-with: Claude Code
-related: [specification, data, pipeline, decisions]
+related: [specification, data, pipeline-architecture, architecture-decisions]
 ---
 
 # Datenfehler-Register
@@ -90,7 +90,7 @@ Diese Punkte betreffen das Excel-Format, nicht einzelne Fehlwerte. Jeder erledig
 
 Diese Punkte tauchen beim Durchklicken auf, sind aber Frontend- oder Spezifikationsfragen, keine Datenfehler, und werden im Code adressiert.
 
-- Mobilitäts-Klassifikator (Befund M1/F1 der Sichtprüfung): die typisierten Ortsrollen wurden als „Nicht klassifiziert" geführt, obwohl [data.md](data.md § Ortsrollen) sie der Reise- und Korrespondenzmobilität zuordnet. Per order-m3gim Punkt 1 aufgelöst, die typisierten Ortsrollen mappen jetzt auf den `korrespondenz`-Cluster (Entscheidung E-110 in [decisions.md](decisions.md)).
+- Mobilitäts-Klassifikator (Befund M1/F1 der Sichtprüfung): die typisierten Ortsrollen wurden als „Nicht klassifiziert" geführt, obwohl [data.md](data.md § Ortsrollen) sie der Reise- und Korrespondenzmobilität zuordnet. Per order-m3gim Punkt 1 aufgelöst, die typisierten Ortsrollen mappen jetzt auf den `korrespondenz`-Cluster (Entscheidung E-110 in [architecture-decisions.md](architecture-decisions.md)).
 - Datierungs-Metrik-Differenz (Befund F2): das Statistik-Histogramm und die Atlas- beziehungsweise Store-Zählung kommen auf leicht unterschiedliche Zahlen datierter Events. Differenz aus unterschiedlicher Jahr-Parselogik, nicht blockierend, bei einer Mobilitäts-Überarbeitung die Zählwege angleichen.
-- Selbstbezügliche Korrespondenzbeziehungen (Befund der Vokabular-Formalisierung, siehe [vocab-derivation-findings.md](vocab-derivation-findings.md) § 4): die Pipeline setzt die Nachlassbildnerin fest als Subjekt jeder AgRelOn-Beziehung. Ist sie zugleich Adressatin oder Absenderin des Dokuments, entsteht eine Korrespondenzbeziehung von ihr zu sich selbst, mit identischer Wikidata-Kennung auf beiden Seiten (Beispiel `UAKUG/NIM_011 7`). In einem persönlichen Nachlass ist das der Regelfall. **Pipeline-Befund mit Datenwirkung, keine Korrektur vorgenommen.** Die Auflösung verlangt eine fachliche Entscheidung darüber, ob solche Beziehungen unterdrückt, umgehängt oder als Selbstbezug stehen gelassen werden; jede Variante ändert den erzeugten Datensatz.
+- Selbstbezügliche Korrespondenzbeziehungen (Befund der Vokabular-Formalisierung, siehe [vocabulary-derivation-findings.md](vocabulary-derivation-findings.md) § 4): die Pipeline setzt die Nachlassbildnerin fest als Subjekt jeder AgRelOn-Beziehung. Ist sie zugleich Adressatin oder Absenderin des Dokuments, entsteht eine Korrespondenzbeziehung von ihr zu sich selbst, mit identischer Wikidata-Kennung auf beiden Seiten (Beispiel `UAKUG/NIM_011 7`). In einem persönlichen Nachlass ist das der Regelfall. **Pipeline-Befund mit Datenwirkung, keine Korrektur vorgenommen.** Die Auflösung verlangt eine fachliche Entscheidung darüber, ob solche Beziehungen unterdrückt, umgehängt oder als Selbstbezug stehen gelassen werden; jede Variante ändert den erzeugten Datensatz.
 - Erkennungslücke `dataQualityFlag` (E-102, Audit): die vier Flag-Regex (`name-nicht-eindeutig`/`vorname-fehlt`/`rolle-unsicher`/`quelle-tippfehler`) sind bewusst konservativ und fangen einige reale Unsicherheitssignale in `anmerkung` nicht (`Vorname unklar`, `unleserlich`, einzelnes `[…?]`). Bewusst kein Mislabeling, eine „unklar"-Zeile ist nicht „fehlt". Bei Bedarf Regex erweitern (ggf. neue Flags `quelle-unleserlich`/`vorname-unklar`) oder quellseitig vereinheitlichen. Pipeline-Heuristik, kein Datenfehler.

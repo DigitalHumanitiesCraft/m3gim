@@ -7,7 +7,6 @@ agentRelations, finances, typisierte Datumsfelder."""
 
 import re
 
-import pytest
 
 from _helpers import ensure_list, iter_entities_with_id
 

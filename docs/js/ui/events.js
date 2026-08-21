@@ -23,14 +23,6 @@ export function onViewNavigate(tab, handler) {
   }
 }
 
-/**
- * Remove a registered handler.
- * @param {string} tab
- */
-export function offViewNavigate(tab) {
-  handlers.delete(tab);
-}
-
 // --- Global listener (single point of dispatch) ---
 
 window.addEventListener('m3gim:navigate', (event) => {

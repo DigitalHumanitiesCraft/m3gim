@@ -11,7 +11,7 @@ Abgrenzung: wohnort (Zustand mit agrelon:hasValidityPeriod) und vertragspartner
 Code, Leitplanke "datengedeckt"). Die Tests test_dated_ste_unaffected und
 test_wohnort_not_a_point_event sichern diese Abgrenzung als Regression-Guards.
 
-Spec: data.md Abschnitt 4/10, decisions.md E-97.
+Spec: data.md Abschnitt 4/10, architecture-decisions.md E-97.
 """
 
 from _helpers import ensure_list

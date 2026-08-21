@@ -7,7 +7,29 @@
  *   -> { element, setPerson, setLocation, setWerk, setCount, getState }
  */
 
+import { el, clear } from '../utils/dom.js';
 import { buildToolbar } from './_toolbar.js';
+
+
+/**
+ * Schaerfegrad-Banner aktualisieren: im engen Modus die Differenz nennen.
+ * Bestand und Chronik tragen je ein eigenes Banner-Element, adressiert ueber
+ * seine DOM-id; die Darstellung ist dieselbe.
+ */
+export function updateSchaerfeBanner(bannerId, schaerfe, engInfo) {
+  const banner = document.getElementById(bannerId);
+  if (!banner) return;
+  if (schaerfe !== 'eng' || !engInfo) {
+    banner.hidden = true;
+    banner.textContent = '';
+    return;
+  }
+  banner.hidden = false;
+  clear(banner);
+  banner.appendChild(el('span', { className: 'archiv-schaerfe__mode' }, 'Schärfegrad eng'));
+  banner.appendChild(el('span', { className: 'archiv-schaerfe__diff' },
+    `${engInfo.eng} von ${engInfo.total} raumzeitlich/Aufführungs-belegt`));
+}
 
 
 export function buildFilterToolbar(store, { initial = {}, onChange } = {}) {

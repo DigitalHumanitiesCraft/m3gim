@@ -307,7 +307,6 @@ def audit_quality(df_objekte, graph):
     errors = 0
 
     # Pflichtfelder aus Handreichung
-    missing_sig = 0
     missing_titel = 0
     missing_typ = 0
     missing_datum = 0

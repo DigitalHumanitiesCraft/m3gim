@@ -11,7 +11,6 @@ Verwendung:
 import argparse
 import json
 import sys
-from collections import Counter
 from pathlib import Path
 
 # Windows-Konsolen (cp1252) können den U+2192-Pfeil nicht rendern.

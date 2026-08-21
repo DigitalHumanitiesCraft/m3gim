@@ -3,10 +3,14 @@ title: Journal-Archiv, Sessions 1 bis 47
 project:
   name: M³GIM
   repository: https://github.com/DigitalHumanitiesCraft/m3gim
+method:
+  name: Promptotyping
+  url: https://lisa.gerda-henkel-stiftung.de/digitale_geschichte_pollin
 status: archived
+version: 0.4
 language: de
 created: 2026-02-19
-updated: 2026-07-18
+updated: 2026-08-21
 authors: [Christopher Pollin]
 generated-with: Claude Code
 related: [journal]
@@ -261,7 +265,7 @@ Ausgelagerte ältere Einträge des [Journals](../journal.md), Februar bis April 
 **Knowledge-Refactor:**
 - 12 alte Quelldateien in `_archive/pre-refactor/` archiviert
 - 7 destillierte Wissensdokumente als flacher Vault erstellt:
-  forschung.md, datenmodell.md, pipeline.md, frontend.md, visualisierungen.md, entscheidungen.md, projekt-status.md
+  forschung.md, datenmodell.md, pipeline-architecture.md, frontend.md, visualisierungen.md, entscheidungen.md, projekt-status.md
 - knowledge/README.md aktualisiert
 - Appendices: journal-volltext.md
 
@@ -643,12 +647,12 @@ Verification-Lauf gegen den Live-Store hat drei Schwachstellen im Statistik-Tab 
 
 ## Session 39 (2026-04-18): Knowledge-Refactor — Hygiene-Lauf
 
-Audit des `knowledge/`-Ordners (Ist-Zustands-Bericht via Explore-Agent) hat drei Problemklassen aufgedeckt: Quantitäten in Knowledge-Dokumenten (verletzt Memory-Regel `feedback_no_quantities.md`), Drift in Root-Dokumenten (`README.md` listet veraltete Sechs-Tab-Architektur, `CLAUDE.md` kennt § 14 noch nicht), Redundanz zwischen `pipeline.md` und `xlsx-fixes.md`. Kein neues Feature — reiner Hygiene-Lauf in fünf Commits. Plan: `~/.claude/plans/playful-sauteeing-valley.md` (überschrieben).
+Audit des `knowledge/`-Ordners (Ist-Zustands-Bericht via Explore-Agent) hat drei Problemklassen aufgedeckt: Quantitäten in Knowledge-Dokumenten (verletzt Memory-Regel `feedback_no_quantities.md`), Drift in Root-Dokumenten (`README.md` listet veraltete Sechs-Tab-Architektur, `CLAUDE.md` kennt § 14 noch nicht), Redundanz zwischen `pipeline-architecture.md` und `xlsx-fixes.md`. Kein neues Feature — reiner Hygiene-Lauf in fünf Commits. Plan: `~/.claude/plans/playful-sauteeing-valley.md` (überschrieben).
 
 - **M1 — Quantitäten aus Knowledge tilgen.** `status.md` Session-38/37/35/34-Blöcke umformuliert: „86 Records (23 %)", „Summe 378", „14 Log-Keys", „fünf Verknüpfungen zu 100 %", „18 Places → 0", „STE-Coverage 37 % auf 100 % (43/43), Wien 15 Events" etc. durch qualitative Aussagen ersetzt. Zahlen bleiben im Quality-Snapshot, wo sie mit jedem Pipeline-Lauf frisch sind. Nebenbefund im Session-34-Block: zwei Q-IDs waren noch mit den falschen Werten gelistet (Bayreuth Q2861, Stanislau Q200491) — korrigiert auf Q3923 / Q156726 im Stiftungsgedanken, den der Korrekturhinweis selbst bereits beschrieb. `frontend.md` Routing-Absatz: „acht Einträge" / „drei ersten" durch `TABS` + `VISIBLE_TABS`-Verweise ersetzt — mit dem Nebeneffekt, dass der Statistik-Tab in der Aufzählung endlich dabei ist (war in dem Absatz seit Session 37 übersehen). Header „Frontend-Module (Stand nach Session 34)" zu „Frontend-Module" — Session-Datierung im Header war offene Einladung zum Drift.
 - **M2 — `README.md` + `CLAUDE.md` synchron ziehen.** `README.md` Zeile 34 listete noch die Sechs-Tab-Architektur vor Session 35 (Archiv, Indizes, Mobilitäts-Atlas, Repertoire, Biogramm, Netzwerk + Wissenskorb) — glatte Fehlinformation für externe Leser der GitHub-Landing. Auf aktuellen Stand gebracht mit explizitem Hinweis auf die verborgenen Tabs. `CLAUDE.md` Zeile 34: Laufzeit-Aussage „<1s" für pytest entfernt (Suite braucht inzwischen mehrere Sekunden). `CLAUDE.md` Zeile 93: Workaround-Aufzählung um „Komponisten-Schreibweisen" ergänzt (neuer § 14 aus Session 38).
 - **M3 — `tests.md` gegen Realstand synchronisieren.** `pytest --collect-only -q` als Quelle: `test_24_composer_uniqueness` (Session 38) fehlte in der Übersichtsliste und hatte keinen eigenen Abschnitt — beides nachgetragen mit Prinzip-Begründung. `test_25_chronik_mobility_cluster` (Session 36) war nur in der Liste, jetzt eigener Abschnitt. Nummern-Lücken (test_17, test_21) explizit als bewusst dokumentiert — ohne diesen Satz liest sich die Lücke als Fehler. Laufzeit-Aussagen („unter einer Sekunde", „<1 min") entfernt. Smoke-Beschreibung „drei aktiv sichtbaren Tabs" auf `VISIBLE_TABS`-Verweis umgestellt, damit die Beschreibung nicht erneut driftet.
-- **M4 — `pipeline.md` dedupliziert + `interface-konzept.md` präzisiert.** `pipeline.md` hatte die Datenqualitäts-Baseline und die Handlungsbedarfe eigenständig dupliziert — beides existiert strukturierter in `xlsx-fixes.md` (Workaround-Katalog mit Prinzip-Einordnung) und im laufenden `quality-snapshot.md` (Zahlen). Rund sechzig Zeilen durch einen Verweis-Block ersetzt. § „Modell-Weiterentwicklung" Phase 7 sprach noch von „Sechs Perspektiv-Tabs" — durch Verweis auf `status.md` ersetzt. `interface-konzept.md` Tab-Architektur-Kopf: Source of Truth ist `router.js::VISIBLE_TABS`, nicht das Dokument — die aktuelle Sichtbarkeits-Aussage bleibt, aber mit explizitem Verweis-Anker. Die Tab-Tabelle bekommt eine Zeile für Statistik (war seit Session 37 untauglich; das Dokument sprach immer noch nur über Bestand/Chronik/Indizes).
+- **M4 — `pipeline-architecture.md` dedupliziert + `interface-konzept.md` präzisiert.** `pipeline-architecture.md` hatte die Datenqualitäts-Baseline und die Handlungsbedarfe eigenständig dupliziert — beides existiert strukturierter in `xlsx-fixes.md` (Workaround-Katalog mit Prinzip-Einordnung) und im laufenden `quality-snapshot.md` (Zahlen). Rund sechzig Zeilen durch einen Verweis-Block ersetzt. § „Modell-Weiterentwicklung" Phase 7 sprach noch von „Sechs Perspektiv-Tabs" — durch Verweis auf `status.md` ersetzt. `interface-konzept.md` Tab-Architektur-Kopf: Source of Truth ist `router.js::VISIBLE_TABS`, nicht das Dokument — die aktuelle Sichtbarkeits-Aussage bleibt, aber mit explizitem Verweis-Anker. Die Tab-Tabelle bekommt eine Zeile für Statistik (war seit Session 37 untauglich; das Dokument sprach immer noch nur über Bestand/Chronik/Indizes).
 - **M5 — Journal-Eintrag + Fail-Safe.** Dieser Block schließt die Session. `python -m pytest tests/ -m "not slow"` grün (191 passed, 2 xfailed wie erwartet), Frontend-Smoke 17/17 grün — Knowledge-Änderungen haben keinen Code berührt, war aber Pflicht-Check.
 
 Out of Scope dieses Laufs: Fusion von `interface-konzept.md` ⇄ `frontend.md` (die Redundanz zwischen Design-Spec und Code-Inventar ist absichtlich), Fusion `ira-malaniuk.md` ⇄ `forschungsrahmen.md` (biografische Referenz verdient Eigenständigkeit), Umstrukturierung der Phasen-Roadmap in `datenmodell.md` (zu groß). Die jetzigen Befunde waren die belastbar klar falschen oder redundanten; tiefere Refaktorierungen können folgen, wenn weiterer Drift-Schmerz auftritt.
@@ -657,7 +661,7 @@ Out of Scope dieses Laufs: Fusion von `interface-konzept.md` ⇄ `frontend.md` (
 
 ## Session 40 (2026-04-18): Chronik rein datengetrieben (E-87)
 
-Redaktionelle Karriere-Notizen aus der Chronik entfernt. `KARRIERE_NOTIZEN` und das note-Rendering im Perioden-Header gestrichen, Editorial-Marker-CSS entfernt. Die Perioden-Summary aus Top-Typen und Top-Gruppen trägt die datengetriebene Charakterisierung allein. Grundsatz: alles, was gerendert wird, muss aus `store.*` ableitbar sein. Strukturelle Labels und prozessuale Workflow-Terminologie bleiben, weil sie keine historische Deutung leisten. Knowledge-Sync in [design.md](design.md).
+Redaktionelle Karriere-Notizen aus der Chronik entfernt. `KARRIERE_NOTIZEN` und das note-Rendering im Perioden-Header gestrichen, Editorial-Marker-CSS entfernt. Die Perioden-Summary aus Top-Typen und Top-Gruppen trägt die datengetriebene Charakterisierung allein. Grundsatz: alles, was gerendert wird, muss aus `store.*` ableitbar sein. Strukturelle Labels und prozessuale Workflow-Terminologie bleiben, weil sie keine historische Deutung leisten. Knowledge-Sync in [design.md](../design.md).
 
 ## Session 41 (2026-04-18): Chronik als Scroll-Zeitstrahl, Ort- und Werk-Filter
 
@@ -685,7 +689,7 @@ Der Netzwerk-Tab antwortet auf die Frage, mit welchen Personen Malaniuk in Bezie
 
 ## Session 47 (2026-04-18): Netzwerk-Tab Hygiene-Runde (E-94)
 
-Konstruktiv-kritische Nachbereitung der Netzwerk-Visualisierung. Unit-Tests für die reinen Funktionen über `node:test` decken Ringklassifikation, Layout, Ko-Okkurrenz und Label-Geometrie ab. Das Sophokles-Datenartefakt ist dokumentiert, in Zeile 1208 trägt Sophokles als Person die Rolle Aufführung, was semantisch falsch ist, der Source-Fix-Vorschlag steht in [data.md § Datenqualität](data.md), bewusst ohne Sondermapping im Code. Die Kategorie-Farben sind Design-Tokens. Edge-Hover hebt die Endpunkte hervor. `netzwerk.js` ist in Orchestrator, Sidebar und Canvas gesplittet.
+Konstruktiv-kritische Nachbereitung der Netzwerk-Visualisierung. Unit-Tests für die reinen Funktionen über `node:test` decken Ringklassifikation, Layout, Ko-Okkurrenz und Label-Geometrie ab. Das Sophokles-Datenartefakt ist dokumentiert, in Zeile 1208 trägt Sophokles als Person die Rolle Aufführung, was semantisch falsch ist, der Source-Fix-Vorschlag steht in [data.md § Datenqualität](../data.md), bewusst ohne Sondermapping im Code. Die Kategorie-Farben sind Design-Tokens. Edge-Hover hebt die Endpunkte hervor. `netzwerk.js` ist in Orchestrator, Sidebar und Canvas gesplittet.
 
 ---
 

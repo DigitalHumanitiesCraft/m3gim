@@ -4,10 +4,10 @@
 # knowledge/data.md, scripts/transform.py und die Testsuite. Die Anschlusskanten
 # auf RiC-O sind gegen die offiziellen Komponentenlisten von RiC-O 1.1 belegt
 # (ICA-EGAD, ontology/current-version/CSV_lists_of_components), entsprechend der
-# Leitplanke Fremdterme verifizieren, nicht extrapolieren (decisions.md E-103).
+# Leitplanke Fremdterme verifizieren, nicht extrapolieren (architecture-decisions.md E-103).
 #
 # Offene Fragen an das Projekt stehen als skos:editorialNote am jeweiligen Term.
-# Der Befundbericht zur Ableitung liegt in knowledge/vocab-derivation-findings.md.
+# Der Befundbericht zur Ableitung liegt in knowledge/vocabulary-derivation-findings.md.
 
 @prefix m3gim:      <https://dhcraft.org/m3gim/vocab#> .
 @prefix m3gim-dft:  <https://dhcraft.org/m3gim/documentaryFormTypes#> .
@@ -509,7 +509,7 @@ m3gim:qualityConfidence
     rdfs:comment "Konfidenz eines Datenqualitäts-Flags, getrennt von der Konfidenz der inhaltlichen Aussage."@de ;
     rdfs:range xsd:decimal ;
     rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> ;
-    skos:editorialNote "Deklariert und bewusst unbefüllt. Die Anmerkungsfreitexte der Quelle liefern kein quantifizierbares Konfidenzsignal, und ein gesetzter Zahlenwert wäre eine erfundene Konfidenz (decisions.md E-102 und E-106). Das Flag selbst ist das Unsicherheitssignal. Die Property ist für eine künftige belegbare Quelle reserviert."@de .
+    skos:editorialNote "Deklariert und bewusst unbefüllt. Die Anmerkungsfreitexte der Quelle liefern kein quantifizierbares Konfidenzsignal, und ein gesetzter Zahlenwert wäre eine erfundene Konfidenz (architecture-decisions.md E-102 und E-106). Das Flag selbst ist das Unsicherheitssignal. Die Property ist für eine künftige belegbare Quelle reserviert."@de .
 
 
 # ---------------------------------------------------------------------------
@@ -659,7 +659,7 @@ m3gim:datenpunktId
     rdfs:comment "Kennung, die die Aussagen eines einzelnen Vorkommnisses innerhalb eines Dokuments bündelt. Leer bedeutet die Dokumentebene."@de ;
     rdfs:range xsd:integer ;
     rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> ;
-    skos:editorialNote "Die Spalte ist in der Quelle nahezu nie gefüllt, weshalb das darauf aufbauende Vorkommnis-Modell nicht wirksam ist. Die Nachfolgekonvention ist die zweistufige Aktivitätskennung aus decisions.md E-127."@de ;
+    skos:editorialNote "Die Spalte ist in der Quelle nahezu nie gefüllt, weshalb das darauf aufbauende Vorkommnis-Modell nicht wirksam ist. Die Nachfolgekonvention ist die zweistufige Aktivitätskennung aus architecture-decisions.md E-127."@de ;
     skos:editorialNote "Die Kennung sitzt im Container der technischen Herkunft, trägt seit E-125 aber eine fachliche Bündelung und keine Herkunftsangabe. Sie gehört an die bezeugte Entität statt an die Quellzellenadresse."@de .
 
 

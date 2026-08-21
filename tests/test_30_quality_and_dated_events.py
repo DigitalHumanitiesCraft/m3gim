@@ -11,7 +11,7 @@ Drei Invarianten:
   3. m3gim:bearbeitungsnotiz traegt den Freitext-Anhang des Objekt-
      Bearbeitungsstands, der canonische Status bleibt in m3gim:bearbeitungsstand.
 
-Spec: data.md Abschnitt 6/7, decisions.md E-100/E-102.
+Spec: data.md Abschnitt 6/7, architecture-decisions.md E-100/E-102.
 """
 
 from _helpers import ensure_list

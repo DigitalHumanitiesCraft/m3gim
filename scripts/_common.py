@@ -25,7 +25,7 @@ import re
 # Spalte 0 ("m3gim_id" = echte Kopfzeile vorhanden) und benennt die Spalten
 # auf den Kanon um, statt eine echte Datenzeile als Header zu konsumieren.
 # Zentral, damit transform.py, validate.py und reconcile.py denselben Kanon
-# nutzen. Siehe knowledge/data.md § 17 und decisions.md E-95.
+# nutzen. Siehe knowledge/data.md § 17 und architecture-decisions.md E-95.
 INDEX_HEADER_SHIFTS: dict[str, list[str]] = {
     "personenindex": [
         "m3gim_id", "name", "wikidata_id",
@@ -68,19 +68,17 @@ def default_currency_for(signatur: str | None) -> str | None:
     return None
 
 
-# Kontrolliertes Bearbeitungsstand-Vokabular. XLSX schreibt Varianten wie
-# "Vollständig", "erledigt", "zurückgestellt"; Pipeline mappt auf drei
-# kanonische Werte. Source-Fix: Dropdown in Google Sheets.
-BEARBEITUNGSSTAND_CANONICAL = {"abgeschlossen", "begonnen", "zurueckgestellt"}
+# Kontrolliertes Bearbeitungsstand-Vokabular: "abgeschlossen", "begonnen",
+# "zurueckgestellt". XLSX schreibt Varianten wie "Vollständig", "erledigt",
+# "zurückgestellt". Source-Fix: Dropdown in Google Sheets.
 
 
 def normalize_bearbeitungsstand(value) -> str | None:
     """Mappt Freitext-Varianten auf kanonische Werte.
 
     Akzeptiert pandas-NaN (Float) und None; liefert in dem Fall None zurueck.
-    Rueckgabe sonst: einer aus ``BEARBEITUNGSSTAND_CANONICAL`` oder der
-    lower-strip-Wert unveraendert, wenn kein Muster greift (dann schlaegt
-    test_03 an).
+    Rueckgabe sonst: einer der drei kanonischen Werte oder der lower-strip-
+    Wert unveraendert, wenn kein Muster greift (dann schlaegt test_03 an).
     """
     if value is None or value != value:  # None oder NaN (NaN != NaN)
         return None

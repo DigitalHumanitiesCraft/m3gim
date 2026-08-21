@@ -14,9 +14,10 @@
  */
 
 import { el, clear } from '../utils/dom.js';
+import { truncate } from '../utils/format.js';
 import { logStamp } from '../utils/env.js';
 import {
-  buildGraph, computeLayout, nodeId, NODE_TYPES, NODE_TYPE_META, DEFAULT_FOCUS,
+  buildGraph, computeLayout, NODE_TYPES, NODE_TYPE_META, DEFAULT_FOCUS,
 } from './_verknuepfungen-geometry.js';
 import { getFilter, setFilter, subscribe } from '../ui/filter-state.js';
 
@@ -374,10 +375,6 @@ function chip(prefix, value) {
   return el('span', { className: 'vk-chip' },
     el('span', { className: 'vk-chip-prefix' }, prefix),
     el('span', { className: 'vk-chip-value' }, String(value)));
-}
-
-function truncate(s, n) {
-  return s.length > n ? s.slice(0, n - 1) + '…' : s;
 }
 
 function stamp(graph, f) {

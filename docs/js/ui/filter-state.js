@@ -18,8 +18,6 @@
  * abonnieren beim (lazy, einmaligen) Render und bleiben abonniert.
  */
 
-export const FILTER_FACETS = ['ort', 'person', 'werk', 'rolle', 'zeitfenster', 'sicht', 'schaerfe'];
-
 const EMPTY = Object.freeze({
   ort: '',          // Stadtname (store.locations, cityOf-konsolidiert)
   person: '',       // Name (store.persons)

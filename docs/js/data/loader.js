@@ -270,8 +270,9 @@ function buildStore(jsonld) {
 }
 
 // Typisierte Datumsproperties aus Phase 4.7 — fallback fuer indexByYear,
-// wenn rico:date fehlt. Reihenfolge entspricht dem Auffuehrungsbezug.
-const TYPED_DATE_PROPS = [
+// wenn rico:date fehlt. Reihenfolge entspricht dem Auffuehrungsbezug und ist
+// zugleich die Prioritaet der Sekundaer-Datierung in views/chronik-data.js.
+export const TYPED_DATE_PROPS = [
   'm3gim:auffuehrungsdatum', 'm3gim:premieredatum', 'm3gim:auftrittsdatum',
   'm3gim:absendedatum', 'm3gim:empfangsdatum', 'm3gim:gespraechsdatum',
   'm3gim:erscheinungsdatum', 'm3gim:ausstellungsdatum', 'm3gim:ausstrahlungsdatum',

@@ -21,7 +21,6 @@ if str(SCRIPTS) not in sys.path:
 from transform import (  # noqa: E402
     parse_monetary_value,
     normalize_role,
-    normalize_lower,
     decompose_komposit_typ,
     decompose_komposit_value,
     clean_date,

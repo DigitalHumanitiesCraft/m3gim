@@ -5,9 +5,9 @@ project:
   repository: https://github.com/DigitalHumanitiesCraft/m3gim
 status: draft
 language: de
-version: 0.1
+version: 0.4
 created: 2026-07-24
-updated: 2026-07-24
+updated: 2026-08-21
 authors: [Christopher Pollin]
 generated-with: Claude Code
 method:
@@ -24,14 +24,14 @@ knowledge-sources:
     RiC-O: https://www.ica.org/en/records-context-ontology
     AgRelOn: https://d-nb.info/standards/elementset/agrelon
     SKOS: http://www.w3.org/2004/02/skos/core
-related: [data, pipeline, decisions, vocab-derivation-findings]
+related: [data, pipeline-architecture, architecture-decisions, vocabulary-derivation-findings]
 ---
 
 # Domänenmodell
 
 Dieses Dokument beschreibt, was die Daten des Projekts aussagen und wie sie zu lesen sind. Es ist aus der Vokabulardatei [`vocab/m3gim.ttl`](../vocab/m3gim.ttl) abgeleitet und um das Projektwissen ergänzt, das ein formales Vokabular nicht trägt. Adressiert ist, wer mit dem Datensatz arbeitet, ohne die Pipeline zu kennen, also auch ein Agent, der Abfragen formuliert oder Aussagen interpretiert.
 
-Die Spezifikation des Modells bleibt [data.md](data.md). Wo dieses Dokument und data.md auseinandergehen, gilt data.md, und die Abweichung gehört gemeldet. Der Bericht über die Ableitung dieses Dokuments aus dem Vokabular steht in [vocab-derivation-findings.md](vocab-derivation-findings.md).
+Die Spezifikation des Modells bleibt [data.md](data.md). Wo dieses Dokument und data.md auseinandergehen, gilt data.md, und die Abweichung gehört gemeldet. Der Bericht über die Ableitung dieses Dokuments aus dem Vokabular steht in [vocabulary-derivation-findings.md](vocabulary-derivation-findings.md).
 
 ## 1. Gegenstand
 
@@ -179,16 +179,16 @@ Ein dritter Strang ist die Anreicherung. Entitäten werden gegen Wikidata abgegl
 - Die Rollen sind Literale, obwohl ein Vokabular mit Kennungen deklariert ist.
 - Die Mobilitätssichten sind Abfragemuster, keine Klassen. Welcher Rollenwert zu welcher Sicht gehört, ist für einen Teil der Werte noch mit dem Erschließungsteam abzustimmen.
 
-Die vollständige Liste der offenen Punkte steht als redaktionelle Anmerkung an den betroffenen Termen in [`vocab/m3gim.ttl`](../vocab/m3gim.ttl) und zusammengefasst in [vocab-derivation-findings.md](vocab-derivation-findings.md).
+Die vollständige Liste der offenen Punkte steht als redaktionelle Anmerkung an den betroffenen Termen in [`vocab/m3gim.ttl`](../vocab/m3gim.ttl) und zusammengefasst in [vocabulary-derivation-findings.md](vocabulary-derivation-findings.md).
 
 ## 11. Herkunft dieses Dokuments
 
-Klassen, Properties, Domain- und Range-Angaben, Vokabularwerte, Hierarchien und die Anschlüsse an RiC-O stammen aus der Vokabulardatei. Der Gegenstand, die Fragestellung, die Erschließungslage, die Lesehinweise für Abfragen und die Einordnung der offenen Punkte stammen aus den übrigen Dokumenten der Wissensbasis und aus der Beobachtung des Datensatzes. Welcher Teil woher kommt, protokolliert [vocab-derivation-findings.md](vocab-derivation-findings.md).
+Klassen, Properties, Domain- und Range-Angaben, Vokabularwerte, Hierarchien und die Anschlüsse an RiC-O stammen aus der Vokabulardatei. Der Gegenstand, die Fragestellung, die Erschließungslage, die Lesehinweise für Abfragen und die Einordnung der offenen Punkte stammen aus den übrigen Dokumenten der Wissensbasis und aus der Beobachtung des Datensatzes. Welcher Teil woher kommt, protokolliert [vocabulary-derivation-findings.md](vocabulary-derivation-findings.md).
 
 ## 12. Related
 
 - [data.md](data.md) — Spezifikation des Modells, maßgeblich bei Abweichung
-- [pipeline.md](pipeline.md) — wie der Datensatz erzeugt wird
-- [decisions.md](decisions.md) — Begründung der Modellentscheidungen und Leitplanken
-- [vocab-derivation-findings.md](vocab-derivation-findings.md) — Befund zur Ableitbarkeit
+- [pipeline-architecture.md](pipeline-architecture.md) — wie der Datensatz erzeugt wird
+- [architecture-decisions.md](architecture-decisions.md) — Begründung der Modellentscheidungen und Leitplanken
+- [vocabulary-derivation-findings.md](vocabulary-derivation-findings.md) — Befund zur Ableitbarkeit
 - [`vocab/m3gim.ttl`](../vocab/m3gim.ttl) — formale Fassung des Vokabulars

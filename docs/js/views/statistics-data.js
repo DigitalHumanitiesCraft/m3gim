@@ -351,7 +351,7 @@ export function aggregateAgentRelations(store) {
  * selbst (bei rund zwei Dritteln der Relationen ist sie das genannte Objekt). Pro
  * Partner die Beziehungstypen mit Zaehlung. Normalisierungs-Dubletten (z. B. zwei
  * Taubman-Schreibweisen) bleiben als getrennte Eintraege sichtbar — das ist ein
- * Datenbefund (datenfehler.md), kein View-seitiger Normalisierungs-Workaround.
+ * Datenbefund (data-errors.md), kein View-seitiger Normalisierungs-Workaround.
  */
 export function aggregateRelationPartners(store) {
   const MAL = /malaniuk|malnaiuk/i;

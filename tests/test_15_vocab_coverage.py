@@ -8,10 +8,9 @@ Testbasis: data/google-spreadsheet/ vs. data/output/m3gim.jsonld.
 
 from collections import Counter
 
-import pytest
 
 from _helpers import ensure_list
-from test_13_finanzen import FINANCE_FIELDS, ALLOWED_CURRENCIES, iter_finance_details
+from test_13_finanzen import ALLOWED_CURRENCIES
 
 
 # ---------------------------------------------------------------------------

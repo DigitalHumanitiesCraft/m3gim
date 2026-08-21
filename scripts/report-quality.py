@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """M³GIM Quality-Snapshot — Report für das Erschließungsteam.
 
-Liest m3gim.jsonld + wikidata-reconciliation.json + die XLSX-Rohdaten und
-schreibt einen kompakten Markdown-Report mit:
+Liest m3gim.jsonld + wikidata-reconciliation.json und schreibt einen
+kompakten Markdown-Report mit:
 
   - Verknuepfungsrate (Records mit mind. einer Verknuepfung)
   - Bearbeitungsstand-Verteilung
@@ -23,15 +23,12 @@ from collections import Counter
 from datetime import datetime
 from pathlib import Path
 
-import pandas as pd
-
 if sys.stdout.encoding != "utf-8":
     sys.stdout.reconfigure(encoding="utf-8")
 
 BASE = Path(__file__).parent.parent
 JSONLD = BASE / "data" / "output" / "m3gim.jsonld"
 RECON = BASE / "data" / "output" / "wikidata-reconciliation.json"
-SHEETS = BASE / "data" / "google-spreadsheet"
 OUTPUT = BASE / "data" / "reports" / "quality-snapshot.md"
 
 

@@ -10,7 +10,7 @@ import { bookmarkIcon } from '../data/constants.js';
 import { buildInlineDetail } from './archive-inline-detail.js';
 import { filterByToolbarState, isToolbarFiltered, searchMatchBestand } from './_archive-filter.js';
 import { toggleKorb, isInKorb } from '../ui/basket.js';
-import { buildFilterToolbar } from './_archive-toolbar.js';
+import { buildFilterToolbar, updateSchaerfeBanner } from './_archive-toolbar.js';
 import { onViewNavigate } from '../ui/events.js';
 import { logStamp } from '../utils/env.js';
 import { getFilter, setFilter, subscribe } from '../ui/filter-state.js';
@@ -96,22 +96,6 @@ function applyToolbarFilter({ facet, value }) {
   if (toolbar) toolbar.applyFacet(facet, value);
 }
 
-/** Schaerfegrad-Banner aktualisieren: im engen Modus die Differenz nennen. */
-function updateSchaerfeBanner(schaerfe, engInfo) {
-  const banner = document.getElementById('bestand-schaerfe');
-  if (!banner) return;
-  if (schaerfe !== 'eng' || !engInfo) {
-    banner.hidden = true;
-    banner.textContent = '';
-    return;
-  }
-  banner.hidden = false;
-  clear(banner);
-  banner.appendChild(el('span', { className: 'archiv-schaerfe__mode' }, 'Schärfegrad eng'));
-  banner.appendChild(el('span', { className: 'archiv-schaerfe__diff' },
-    `${engInfo.eng} von ${engInfo.total} raumzeitlich/Aufführungs-belegt`));
-}
-
 /**
  * Re-render rows; reads current filter state from the toolbar.
  */
@@ -152,7 +136,7 @@ function updateBestandView(filters) {
     items = r.items;
     engInfo = { total: r.total, eng: r.eng };
   }
-  updateSchaerfeBanner(shared.schaerfe, engInfo);
+  updateSchaerfeBanner('bestand-schaerfe', shared.schaerfe, engInfo);
 
   // Sortierung:
   //   - Bei aktivem Filter: flach sortieren (die Hierarchie ist bereits

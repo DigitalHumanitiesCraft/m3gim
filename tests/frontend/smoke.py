@@ -36,7 +36,7 @@ ANCHOR_TITLES = [
     "Handschriftliche Notiz",                        # NIM_007/5_1 (Finanz-Anker)
 ]
 
-# Bekannte, dokumentierte @id-Kollisionen (siehe knowledge/datenfehler.md).
+# Bekannte, dokumentierte @id-Kollisionen (siehe knowledge/data-errors.md).
 # Aktuell leer — das PL_07-Quellduplikat wird von der Pipeline kompensiert.
 # Jeder Eintrag hier ist ein tolerierter Regressions-Alarm.
 KNOWN_COLLISIONS = set()

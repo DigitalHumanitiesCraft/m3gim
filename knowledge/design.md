@@ -5,9 +5,9 @@ project:
   repository: https://github.com/DigitalHumanitiesCraft/m3gim
 status: complete
 language: de
-version: 0.2
+version: 0.4
 created: 2026-02-19
-updated: 2026-06-30
+updated: 2026-08-21
 authors: [Christopher Pollin]
 generated-with: Claude Code
 method:
@@ -18,12 +18,12 @@ template:
   version: 0.1
   url: https://dhcraft.org/Promptotyping/promptotyping-document/design
 topics: ["[[Information Visualisation]]", "[[Scholar-Centered Design]]"]
-related: [architecture, research, decisions, data-entry-guidelines]
+related: [frontend-architecture, research-framework, architecture-decisions, data-entry-guidelines]
 ---
 
 # Design
 
-> Designhaltung, Tab-Architektur, Designregeln, Interaktions- und Daten-Präsentations-Muster, das Designsystem mit seinen Design-Tokens sowie die destillierten Lektionen aus den entfernten D3-Visualisierungen. Wie das Frontend technisch gebaut ist (Laufzeitmodell, Module, Store, Routing), steht in [architecture.md](architecture.md). Diese Fassung basiert auf den Mockup-Ansichten Archiv und Repertoire und den Erfahrungen aus den entfernten D3-Prototypen.
+> Designhaltung, Tab-Architektur, Designregeln, Interaktions- und Daten-Präsentations-Muster, das Designsystem mit seinen Design-Tokens sowie die destillierten Lektionen aus den entfernten D3-Visualisierungen. Wie das Frontend technisch gebaut ist (Laufzeitmodell, Module, Store, Routing), steht in [frontend-architecture.md](frontend-architecture.md). Diese Fassung basiert auf den Mockup-Ansichten Archiv und Repertoire und den Erfahrungen aus den entfernten D3-Prototypen.
 
 ## Grundhaltung
 
@@ -31,7 +31,7 @@ Das Interface positioniert sich als **Forschungswerkzeug**, nicht als Dashboard.
 
 ## Tab-Architektur
 
-Welche Tabs tatsächlich sichtbar sind, legt `VISIBLE_TABS` fest (Definition und Reaktivierungs-Mechanik siehe [architecture.md](architecture.md)). Aktueller Stand: sichtbar sind **Bestand · Chronik · Statistik · Indizes · Karte · Netzwerk · Wissenskorb** (Karte als entitätszentrierte D3-geo-Karte, E-126, Route `karte` seit E-118; Netzwerk in Session 46 reaktiviert, E-93). Die verbleibenden Perspektiv-Tabs — Mobilitäts-Atlas (der durch die Karte abgelöste Leaflet-Vorgänger), Repertoire, Biogramm — sind per `hidden`-Attribut ausgeblendet; Code, CSS und Store-Maps bleiben erhalten, Hash-URLs auf versteckte Tabs werden auf Bestand umgebogen (E-81, präzisiert durch E-86 und E-93). Reaktivieren = `hidden` im HTML entfernen + Eintrag in `VISIBLE_TABS` ergänzen. Qualitätssicht läuft team-intern über `data/reports/quality-snapshot.md` und ist kein eigener Tab.
+Welche Tabs tatsächlich sichtbar sind, legt `VISIBLE_TABS` fest (Definition und Reaktivierungs-Mechanik siehe [frontend-architecture.md](frontend-architecture.md)). Aktueller Stand: sichtbar sind **Bestand · Chronik · Statistik · Indizes · Karte · Netzwerk · Wissenskorb** (Karte als entitätszentrierte D3-geo-Karte, E-126, Route `karte` seit E-118; Netzwerk in Session 46 reaktiviert, E-93). Die verbleibenden Perspektiv-Tabs — Mobilitäts-Atlas (der durch die Karte abgelöste Leaflet-Vorgänger), Repertoire, Biogramm — sind per `hidden`-Attribut ausgeblendet; Code, CSS und Store-Maps bleiben erhalten, Hash-URLs auf versteckte Tabs werden auf Bestand umgebogen (E-81, präzisiert durch E-86 und E-93). Reaktivieren = `hidden` im HTML entfernen + Eintrag in `VISIBLE_TABS` ergänzen. Qualitätssicht läuft team-intern über `data/reports/quality-snapshot.md` und ist kein eigener Tab.
 
 **Leitprinzip „nur bearbeitet":** Bestand, Chronik und Indizes zeigen ausschließlich Records bzw. Einträge mit Verknüpfungen. Konvolute ohne erschlossene Folios, Records mit `countLinks === 0`, Folios ohne Links innerhalb eines Konvoluts und Index-Einträge ohne Record-Referenz werden gar nicht erst gerendert. Plakate und Tonträger sind pauschal ausgeblendet (`EXCLUDED_DFT`). Die Gesamt-Bestandszahl und Verknüpfungsrate stehen ausschließlich im Quality-Snapshot. Begründung: das Interface positioniert sich als Forschungswerkzeug für substantielles Material — Erschließungs-Platzhalter sind Rauschen, kein Inhalt.
 
@@ -198,6 +198,6 @@ Die entfernten D3-Views (Mobilität, Matrix, Kosmos, Zeitfluss, Lebenspartitur, 
 
 ## Abgrenzung zur entfernten Frontend-Schicht
 
-Die D3-Views und die Standalone-HTMLs sind entfernt; ihre Lektionen stehen oben unter § Lektionen aus den entfernten Visualisierungen. Das neue Interface baut nicht auf `partitur.json`, sondern direkt auf den Phase-6-Store-Maps (`dftHierarchy`, `mobilityEvents`, `agentRelations`, `finances`) + `store.records`/`persons`/`works`/`locations` (Aufbau dieser Maps siehe [architecture.md](architecture.md)).
+Die D3-Views und die Standalone-HTMLs sind entfernt; ihre Lektionen stehen oben unter § Lektionen aus den entfernten Visualisierungen. Das neue Interface baut nicht auf `partitur.json`, sondern direkt auf den Phase-6-Store-Maps (`dftHierarchy`, `mobilityEvents`, `agentRelations`, `finances`) + `store.records`/`persons`/`works`/`locations` (Aufbau dieser Maps siehe [frontend-architecture.md](frontend-architecture.md)).
 
 `utils/viz-components.js` (Phase-Chips, Zoom-Helper, Tooltip-Controller) wird je Tab neu bewertet; nicht alle Builder überleben, nicht alle werden gebraucht.

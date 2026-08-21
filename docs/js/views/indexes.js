@@ -6,7 +6,7 @@
 import { el, clear } from '../utils/dom.js';
 import { formatSignatur, getDocTypeId, truncate, dftLabel } from '../utils/format.js';
 import { WIKIDATA_ICON_SVG, AGRELON_LABELS, bookmarkIcon } from '../data/constants.js';
-import { selectRecord, navigateToView } from '../ui/router.js';
+import { selectRecord } from '../ui/router.js';
 import { toggleKorb, isInKorb } from '../ui/basket.js';
 import { logStamp } from '../utils/env.js';
 import { buildToolbar } from './_toolbar.js';

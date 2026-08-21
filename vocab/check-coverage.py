@@ -43,7 +43,7 @@ CONTEXT_ALIASES = {
     "komponist": "m3gim:komponist",
 }
 
-# Properties, die Werte des Rollenvokabulars tragen (domain.md § 5).
+# Properties, die Werte des Rollenvokabulars tragen (domain-ontology.md § 5).
 ROLE_KEYS = frozenset({"role", "m3gim:eventRole", "m3gim:dateRole", "m3gim:detailRole"})
 
 # Vertragsstatus in der Rollenspalte, im Schema begründet kein Rollenbegriff.

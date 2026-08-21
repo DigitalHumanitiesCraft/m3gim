@@ -1,13 +1,13 @@
 ---
-title: Pipeline
+title: Pipeline-Architektur
 project:
   name: M³GIM
   repository: https://github.com/DigitalHumanitiesCraft/m3gim
 status: complete
 language: de
-version: 0.2
+version: 0.4
 created: 2026-02-19
-updated: 2026-06-30
+updated: 2026-08-21
 authors: [Christopher Pollin]
 generated-with: Claude Code
 method:
@@ -18,10 +18,10 @@ template:
   version: 0.1
   url: https://dhcraft.org/Promptotyping/promptotyping-document/architecture
 topics: ["[[Pipeline Design]]", "[[JSON-LD]]", "[[Data Validation]]"]
-related: [data, architecture, testing, decisions]
+related: [data, frontend-architecture, testing, architecture-decisions]
 ---
 
-# Pipeline
+# Pipeline-Architektur
 
 > Skriptverantwortung, Datenfluss, ENV-Overrides, Pipeline-Erweiterungen, Qualitaets-Baseline.
 
@@ -94,7 +94,7 @@ Noch offen:
 
 ## Erweiterungen fuer den neuen Datenstand (testgetrieben)
 
-Ein neuer Export erschliesst mehrere Konvolute tiefer und loest die freigegebene Modell-Erweiterung aus ([decisions.md](decisions.md) E-95 bis E-102). Die Umsetzung folgt dem TDD-Workflow ([testing.md](testing.md)): erst die rote Spec, dann der Code.
+Ein neuer Export erschliesst mehrere Konvolute tiefer und loest die freigegebene Modell-Erweiterung aus ([architecture-decisions.md](architecture-decisions.md) E-95 bis E-102). Die Umsetzung folgt dem TDD-Workflow ([testing.md](testing.md)): erst die rote Spec, dann der Code.
 
 Darauf aufbauend sichert eine Ontologie-Konformitaets-Welle (E-103 bis E-105) die Term-Korrektheit: `ric-rst:File`/`Fonds`, `agrelon:metadataProvenance`/`metadataConfidence`, `agrelon:IsHasPatron`, Person-Normdaten in `schema:`/`gndo:`, `m3gim:wdPremiereDate`, die Namespaces `documentaryFormTypes#`/`roles#` sowie der `test_26`-Lock. E-106 entfernt die Datierungs-Konfidenz ganz (`m3gim:dateEvidence`/`agrelon:metadataConfidence` an Datumsangaben werden nicht mehr serialisiert).
 
@@ -107,7 +107,7 @@ Die neue Export-Struktur erzeugt ohne Eingriff stillen Totalverlust bzw. einen A
 - Der Personenindex hat keinen sauberen Namensspaltenkopf; der Header-Shift greift jetzt auch fuer den Personenindex, sonst gehen alle Personen-Normdaten verloren.
 - Nicht-textuelle Spaltenkoepfe und Literal-`Folio`-Zellwerte werden abgefangen, statt die Folio-Erkennung abbrechen zu lassen.
 
-Diese Faelle sind nicht durchreichbar; die quellseitige Bereinigung ist als Source-Fix-Ticket im [Datenfehler-Register](datenfehler.md § Strukturelle Quell-Fixes) vermerkt.
+Diese Faelle sind nicht durchreichbar; die quellseitige Bereinigung ist als Source-Fix-Ticket im [Datenfehler-Register](data-errors.md § Strukturelle Quell-Fixes) vermerkt.
 
 ### Neue Modell-Features in transform.py
 
@@ -197,6 +197,6 @@ Baseline und Handlungsbedarfe stehen gebündelt in **[data.md § Datenqualität]
 
 ## Modell-Weiterentwicklung
 
-- **Phase 6 (abgeschlossen):** `loader.js` hat Store-Maps `dftHierarchy`, `mobilityEvents`, `recordToEvents`, `agentRelations`, `finances` + typisierte Datumsfelder als Fallback in `indexByYear`. Siehe [architecture.md](architecture.md).
+- **Phase 6 (abgeschlossen):** `loader.js` hat Store-Maps `dftHierarchy`, `mobilityEvents`, `recordToEvents`, `agentRelations`, `finances` + typisierte Datumsfelder als Fallback in `indexByYear`. Siehe [frontend-architecture.md](frontend-architecture.md).
 - **Phase 7 (abgeschlossen):** Interface-Redesign nach [design.md](design.md); aktueller Stand der Tab-Sichtbarkeit in [specification.md](specification.md) § Stand (Fokus auf Bestand · Chronik · Statistik · Indizes, die übrigen Tabs verborgen, E-81).
 - **Modell-Erweiterung neuer Datenstand (aktiv):** Loader-Fix und die Features aus E-95 bis E-102, testgetrieben umgesetzt (siehe oben). `m3gim:StageRole` als Entitaet ist Teil davon; ein dedizierter Rollenindex-XLSX (Spalten `m3gim_id`, `name`, `belongsToWork`, `voiceType`, `wikidata_id`) bleibt extern blockiert und wartet auf das Erschliessungsteam.

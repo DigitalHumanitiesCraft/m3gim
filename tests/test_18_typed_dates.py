@@ -13,7 +13,6 @@ emittiert und auf generisches m3gim:eventDate zurueckfaellt:
 
 import re
 
-import pytest
 
 from _helpers import ensure_list
 

@@ -3,9 +3,9 @@ title: "Befund: Domänenwissen aus einer formalen Quelle"
 project:
   name: M³GIM
   repository: https://github.com/DigitalHumanitiesCraft/m3gim
-status: complete
+status: snapshot
 language: de
-version: 0.1
+version: 0.4
 created: 2026-07-24
 updated: 2026-08-21
 authors: [Christopher Pollin]
@@ -14,14 +14,14 @@ method:
   name: Promptotyping
   url: https://lisa.gerda-henkel-stiftung.de/digitale_geschichte_pollin
 topics: ["[[Knowledge Engineering]]", "[[Controlled Vocabularies]]", "[[RiC-O]]"]
-related: [domain, data, decisions, datenfehler]
+related: [domain-ontology, data, architecture-decisions, data-errors]
 ---
 
 # Befund: Domänenwissen aus einer formalen Quelle
 
 Dieses Dokument berichtet über einen Versuch am Datensatz des Projekts. Die geprüfte These lautet, dass sich das Domänenwissen für eine agentische Wissensbasis dort, wo ein formales Vokabular vorliegt, aus dieser formalen Quelle ableiten lässt, statt es aus dem Fachexperten zu erheben.
 
-Der Versuch bestand aus zwei Schritten. Zuerst wurde der bislang nur sprechend benannte Namespace `m3gim` empirisch erhoben und als Vokabulardatei [`vocab/m3gim.ttl`](../vocab/m3gim.ttl) formalisiert, mit Klassen, Properties, Domain, Range, Anschlüssen an RiC-O 1.1 und den beiden kontrollierten Vokabularen als SKOS-Schemata. Danach wurde aus dieser Datei das Domänendokument [domain.md](domain.md) abgeleitet und dabei protokolliert, was aus der formalen Quelle kam und was nicht. Pipeline, Daten und Frontend blieben unangetastet.
+Der Versuch bestand aus zwei Schritten. Zuerst wurde der bislang nur sprechend benannte Namespace `m3gim` empirisch erhoben und als Vokabulardatei [`vocab/m3gim.ttl`](../vocab/m3gim.ttl) formalisiert, mit Klassen, Properties, Domain, Range, Anschlüssen an RiC-O 1.1 und den beiden kontrollierten Vokabularen als SKOS-Schemata. Danach wurde aus dieser Datei das Domänendokument [domain-ontology.md](domain-ontology.md) abgeleitet und dabei protokolliert, was aus der formalen Quelle kam und was nicht. Pipeline, Daten und Frontend blieben unangetastet.
 
 ## 1. Was aus dem Vokabular ableitbar war
 
@@ -37,11 +37,11 @@ Innerhalb des Ableitbaren liegen zwei verschiedene Sorten Wissen übereinander.
 
 Vier Sorten Wissen mussten aus der übrigen Wissensbasis und aus der Beobachtung des Datensatzes kommen.
 
-**Gegenstand und Fragestellung.** Dass es um einen Teilnachlass an einem Universitätsarchiv geht, dass die leitende Frage Mobilität ist und dass die Daten den Erschließungsstand abbilden und keine Biographie rekonstruieren, steht in keinem Term. Abschnitt 1 von [domain.md](domain.md) ist vollständig aus [data.md](data.md) und [research.md](research.md) übernommen.
+**Gegenstand und Fragestellung.** Dass es um einen Teilnachlass an einem Universitätsarchiv geht, dass die leitende Frage Mobilität ist und dass die Daten den Erschließungsstand abbilden und keine Biographie rekonstruieren, steht in keinem Term. Abschnitt 1 von [domain-ontology.md](domain-ontology.md) ist vollständig aus [data.md](data.md) und [research-framework.md](research-framework.md) übernommen.
 
 **Die Gestalt des Graphen.** Domain und Range sagen, dass ein Dokument einen beteiligten Akteur hat. Ob dieser Akteur einen eigenen Knoten besitzt oder eingebettet im Dokument steht, lassen sie offen. Im Datensatz gilt der zweite Fall, und er entscheidet darüber, wie eine Abfrage nach allen Dokumenten zu einer Person aussieht. Dieser Abschnitt entstand durch Auszählen der Typen auf der obersten Ebene des Graphen. Aus dem Vokabular allein war er nicht zu gewinnen.
 
-**Negatives Wissen.** Dass `m3gim:qualityConfidence` bewusst leer bleibt, dass `wohnort` bewusst kein Mobilitätsereignis erzeugt und dass eine Dezimalkonfidenz bewusst entfernt wurde, sind Aussagen über Nichtvorhandenes. RDFS und OWL haben dafür keine Konstrukte, die hier trügen. Es blieb die Annotation, und deren Inhalt stammt aus [decisions.md](decisions.md).
+**Negatives Wissen.** Dass `m3gim:qualityConfidence` bewusst leer bleibt, dass `wohnort` bewusst kein Mobilitätsereignis erzeugt und dass eine Dezimalkonfidenz bewusst entfernt wurde, sind Aussagen über Nichtvorhandenes. RDFS und OWL haben dafür keine Konstrukte, die hier trügen. Es blieb die Annotation, und deren Inhalt stammt aus [architecture-decisions.md](architecture-decisions.md).
 
 **Verlässlichkeit einer Angabe.** Ob eine kuratierte Angabe der angereicherten vorgeht, ob eine Währung erfasst oder aus dem Kontext gesetzt wurde und ob ein Wert einer Erfassungskonvention folgt oder eine Kompensation der Pipeline ist, entscheidet über die Belastbarkeit jeder Auswertung. Das Vokabular kann es vermerken, ableiten kann es das nicht.
 
@@ -103,7 +103,7 @@ Ein zweiter Gewinn ist Prüfbarkeit. Der Abgleich des Vokabulars gegen den Daten
 
 Diese Punkte fielen beim Erheben der Wertebereiche auf.
 
-Nachtrag 2026-08-21: alle vier sind inzwischen ins [Datenfehler-Register](datenfehler.md) übernommen, die ersten beiden als Quellfehler QF-18 und QF-19, das Gründungsdatum als Abgleichfehler AF-04, die selbstbezüglichen Beziehungen als Pipeline-Befund mit Datenwirkung unter den verwandten Befunden.
+Nachtrag 2026-08-21: alle vier sind inzwischen ins [Datenfehler-Register](data-errors.md) übernommen, die ersten beiden als Quellfehler QF-18 und QF-19, das Gründungsdatum als Abgleichfehler AF-04, die selbstbezüglichen Beziehungen als Pipeline-Befund mit Datenwirkung unter den verwandten Befunden.
 
 - `UAKUG/NIM_011 7` trägt als Erstelldatum `1055-08-24`, während das Dokumentdatum `1955-08-24` lautet. Vermutlich eine vertippte Jahrhundertstelle in der Verknüpfungszeile.
 - Dasselbe Dokument trägt an einer Ausgabe von 15,00 DM die Detailrolle `interpret`. Eine Personenrolle in der Finanzspalte.
@@ -129,8 +129,8 @@ Der Konformitätstest `test_26` nimmt den eigenen Namespace aus, weil es bislang
 
 ## 8. Related
 
-- [domain.md](domain.md) — das abgeleitete Domänendokument
+- [domain-ontology.md](domain-ontology.md) — das abgeleitete Domänendokument
 - [`vocab/m3gim.ttl`](../vocab/m3gim.ttl) — die formale Quelle
 - [data.md](data.md) — Spezifikation des Modells
-- [decisions.md](decisions.md) — Leitplanken und offene Modellentscheidungen
-- [datenfehler.md](datenfehler.md) — Register der Quell- und Abgleichfehler
+- [architecture-decisions.md](architecture-decisions.md) — Leitplanken und offene Modellentscheidungen
+- [data-errors.md](data-errors.md) — Register der Quell- und Abgleichfehler

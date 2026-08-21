@@ -14,7 +14,6 @@ Ziel-Invarianten (aus data.md § 10):
   reise/korrespondenz, biographische, diskursive Mobilitaet)
 """
 
-import pytest
 
 from _helpers import ensure_list
 

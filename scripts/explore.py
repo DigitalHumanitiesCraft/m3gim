@@ -309,7 +309,6 @@ def _analyze_verknuepfungen(df: pd.DataFrame) -> dict:
         typ_counts = df["typ"].dropna().astype(str).str.strip().str.lower()
         # Komposit-Typen erkennen
         composite = typ_counts[typ_counts.str.contains(",")]
-        simple = typ_counts[~typ_counts.str.contains(",")]
 
         extra["link_analysis"]["typ_distribution"] = dict(Counter(typ_counts))
         extra["link_analysis"]["composite_count"] = len(composite)

@@ -12,9 +12,9 @@ template:
   url: https://dhcraft.org/Promptotyping/promptotyping-document/domain-knowledge
 status: draft
 created: 2026-06-17
-updated: 2026-06-30
+updated: 2026-08-21
 language: de
-version: 0.3
+version: 0.4
 authors: [Christopher Pollin]
 generated-with: Claude Code
 topics: ["[[Data Modelling]]", "[[Controlled Vocabularies]]", "[[Archival Description]]"]
@@ -22,7 +22,7 @@ knowledge-sources:
   vocabularies:
     GND: https://gnd.network
     Wikidata: https://www.wikidata.org
-related: [data, research]
+related: [data, research-framework]
 ---
 
 # Erfassungsrichtlinie
