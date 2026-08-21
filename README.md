@@ -21,7 +21,7 @@ m3gim/
 |   |-- google-spreadsheet/  # XLSX-Exporte (git-getrackt)
 |   |-- output/              # Generierte JSON-LD/View-Daten
 |   `-- reports/             # Generierte Markdown-Reports
-|-- scripts/                  # explore/validate/reconcile/enrich-wikidata/transform/build-views/report-quality
+|-- scripts/                  # explore/validate/reconcile/enrich-wikidata/transform/build-views/audit-data/report-quality
 |-- vocab/                    # Formales Projektvokabular (Turtle) + Abdeckungspruefer, siehe knowledge/domain-ontology.md
 |-- docs/                     # GitHub Pages Frontend (Vanilla JS, keine Build-Kette)
 `-- README.md
@@ -37,6 +37,22 @@ m3gim/
 - Normdaten: Wikidata-Q-IDs (Reconciliation via `reconcile.py` + Enrichment via `enrich-wikidata.py`)
 
 Laufende Zahlen (Bestand, Verknuepfungsrate, WD-Coverage) stehen im generierten Quality-Snapshot unter [`data/reports/quality-snapshot.md`](data/reports/quality-snapshot.md), nicht im README.
+
+## Lokal ausfuehren
+
+Voraussetzungen sind Python 3.11+ sowie Node 18+ fuer die JS-Unit-Tests. `requirements-test.txt` bindet die Laufzeit-Abhaengigkeiten aus `requirements.txt` ein und liefert damit in einem Schritt eine lauffaehige Umgebung.
+
+```bash
+pip install -r requirements-test.txt
+python scripts/transform.py && python scripts/build-views.py
+python -m http.server 8000 --directory docs   # Frontend unter http://localhost:8000
+```
+
+Der vollstaendige Lauf mit allen sechs Pipeline-Schritten, die Testbefehle und der Vokabular-Abdeckungspruefer stehen in [`CLAUDE.md`](CLAUDE.md) § Kern-Commands. Drei Punkte, die in einem frischen Klon leicht in die Irre fuehren:
+
+- `scripts/validate.py` endet mit Exit 1, sobald der Validierungsreport ERROR-Befunde fuehrt. Das ist am aktuellen Datenstand der erwartete Zustand, die Befunde sind Quellfehler aus der Erfassung und stehen im Register [`knowledge/data-errors.md`](knowledge/data-errors.md).
+- Die Normdatendateien `wikidata-reconciliation.json` und `wikidata-enrichment.json` liegen git-getrackt in `data/output/` und werden von der Transformation aus dem Ausgabeverzeichnis gelesen. Ein leeres Ausgabeverzeichnis erzeugt einen Datensatz ganz ohne Wikidata-Anreicherung, und der Lauf endet trotzdem mit Exit 0. Die Falle ist in [`knowledge/pipeline-architecture.md`](knowledge/pipeline-architecture.md) beschrieben.
+- Der Browser-Smoke-Test ist ein optionales Extra. Ohne Playwright ueberspringt er sich und der uebrige Lauf bleibt gruen, siehe [`knowledge/testing.md`](knowledge/testing.md).
 
 ## Dokumentation
 

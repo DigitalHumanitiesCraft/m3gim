@@ -18,6 +18,7 @@ from datetime import datetime
 from dataclasses import dataclass
 
 from _common import INDEX_HEADER_SHIFTS
+from transform import load_verknuepfungen
 
 # Windows-Konsole: UTF-8 erzwingen
 if sys.stdout.encoding != "utf-8":
@@ -578,7 +579,9 @@ def main():
     verk_path = verk_candidates[0] if verk_candidates else SHEETS_DIR / "M3GIM-Verknuepfungen.xlsx"
     if verk_path.exists():
         print(f"Validiere {verk_path.name}...")
-        df_verk = pd.read_excel(verk_path)
+        # Multi-sheet workbook since E-95; reuse the pipeline loader so that
+        # validation covers the same rows transform.py processes.
+        df_verk = load_verknuepfungen(verk_path)
         stats['verknuepfungen'] = len(df_verk)
         all_issues.extend(validate_verknuepfungen(df_verk, valid_signaturen, indices))
         print(f"  {len(df_verk)} Verknuepfungen geladen")

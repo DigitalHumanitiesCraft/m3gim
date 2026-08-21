@@ -9,6 +9,11 @@ fuehrt den Smoke-Durchlauf aus ``smoke.py`` aus und gibt die Liste
 aller Probleme an pytest zurueck.
 """
 
+import pytest
+
+# Browser stack is an optional extra; skip instead of failing the default run.
+pytest.importorskip("playwright")
+
 import contextlib
 import http.server
 import socket

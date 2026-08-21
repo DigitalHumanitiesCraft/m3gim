@@ -59,7 +59,7 @@ Diese Seite ist der Einstiegspunkt in die Wissensbasis des Projekts. Sie ordnet 
 - Sessionstart: [`../CLAUDE.md`](../CLAUDE.md) → [INDEX.md](INDEX.md) → [handoff.md](handoff.md) → [specification.md](specification.md) → aufgabenrelevantes Dokument. Der Action-Layer regelt das Verhalten, die Inbox das noch Offene, die Spezifikation den Rahmen.
 - Datenmodell verstehen oder ändern: [data.md](data.md) → [domain-ontology.md](domain-ontology.md) → [architecture-decisions.md](architecture-decisions.md). Die Modelländerung wird zuerst in `data.md` verankert, Pipeline, Tests und Frontend folgen.
 - Mit dem erzeugten Datensatz arbeiten, ohne die Pipeline zu kennen: [domain-ontology.md](domain-ontology.md) → [data-errors.md](data-errors.md). Erst die Gestalt des Graphen, dann die bekannten Fehlstellen.
-- Pipeline ausführen oder debuggen: [pipeline-architecture.md](pipeline-architecture.md) → [testing.md](testing.md) → [data-errors.md](data-errors.md).
+- Pipeline ausführen oder debuggen: [`../CLAUDE.md`](../CLAUDE.md) § Kern-Commands → [pipeline-architecture.md](pipeline-architecture.md) → [testing.md](testing.md) → [data-errors.md](data-errors.md). Die Befehlsfolge eines vollständigen Laufs steht im Action-Layer, die Architektur und die bekannten Fallen im Wissensdokument.
 - Frontend anpassen: [frontend-architecture.md](frontend-architecture.md) → [design.md](design.md) → [architecture-decisions.md](architecture-decisions.md).
 - Daten erfassen: [data-entry-guidelines.md](data-entry-guidelines.md) → [data.md](data.md).
 - Forschungsseitig einsteigen: [research-framework.md](research-framework.md) → [specification.md](specification.md).

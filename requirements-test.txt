@@ -2,8 +2,15 @@
 # Bindet die Laufzeit-Deps via Include ein, damit
 #   pip install -r requirements-test.txt
 # eine lauffaehige Testumgebung liefert — die Tests importieren pandas
-# (conftest, test_03) und thefuzz (test_24) aus requirements.txt.
+# (conftest, test_36) und thefuzz (test_24) aus requirements.txt.
 -r requirements.txt
 
 pytest>=7.0
 jsonschema>=4.0
+
+# rdflib: vocab/check-coverage.py parst vocab/m3gim.ttl.
+rdflib>=7.0
+
+# playwright ist NICHT enthalten. Der Browser-Smoke-Test unter
+# tests/frontend/test_smoke.py wird ohne ihn uebersprungen; fuer den Lauf
+# zusaetzlich `pip install playwright` und `playwright install chromium`.

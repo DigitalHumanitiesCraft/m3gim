@@ -118,7 +118,7 @@ Lebensphasen lückenlos (`LP(i).bis == LP(i+1).von`), decken 1919–2009 ab, uni
 Mindestwerte aus `fixtures/baseline_counts.json` pro Entitätstyp (records, persons, orgs, locations, works, verknuepfungen, wd_matches). Alle Checks `>=`, nicht `==` — Wachstum erlaubt, Schrumpfung verboten. Baselines werden bei substanziellen Datenständen nach oben nachgezogen.
 
 ### 10. Determinismus (test_10, slow)
-Lässt `transform.py` zweimal laufen, vergleicht Output (ohne `m3gim:exportDate`). Fängt versehentliche Set-Iteration / Dict-Ordnungsabhängigkeiten. Nur mit `pytest -m slow` ausführen.
+Lässt `transform.py` zweimal laufen, vergleicht Output (ohne `m3gim:exportDate`). Fängt versehentliche Set-Iteration / Dict-Ordnungsabhängigkeiten. Der Marker `slow` schließt ihn aus dem Lauf `pytest -m "not slow"` aus, im unmarkierten `pytest tests/` läuft er mit. Welche Felder ein Rerun zulässig verändert, steht in [pipeline-architecture.md](pipeline-architecture.md) § Reproduzierbarkeit.
 
 ### 11. Mobilität (test_11, Phase 4.4 + 4.8)
 SpatiotemporalEvent-Existenz, `atPlace` Pflicht; `atDate` nur für datierte STE (datumslose Mobilitäts-STE aus Ortsrollen tragen bewusst kein `atDate`, E-97). Rollen-Vokabular, Anzahl skaliert mit XLSX-Komposit-Rows. Die Mobilitätssichten aus [data.md § 10](data.md) als SPARQL-ähnliche Python-Queries: performative, institutionelle, Korrespondenz-, biographische, diskursive Mobilität.
@@ -306,6 +306,9 @@ Laufzeit im Regelbetrieb überschaubar; der Determinismus-Test (Marker `slow`) d
 `requirements-test.txt` bindet die Laufzeit-Abhängigkeiten über `-r requirements.txt` ein (die Suite braucht pandas und thefuzz) und ergänzt:
 - `pytest>=7.0`
 - `jsonschema>=4.0` (Schema-Validierung)
+- `rdflib>=7.0` für den Vokabular-Abdeckungsprüfer `vocab/check-coverage.py`, der `vocab/m3gim.ttl` parst. Sein Docstring nennt `uv run` als Aufruf; `uv` ist keine Projektvoraussetzung, `python vocab/check-coverage.py` genügt.
+
+Playwright ist bewusst **nicht** enthalten und bleibt ein optionales Extra, siehe § Frontend-Smoke.
 
 `snapshot_diff.py` ist eigenständig implementiert und braucht keine externe Diff-Bibliothek. Produktions-`requirements.txt` bleibt unberührt (pandas, openpyxl, thefuzz).
 
@@ -316,6 +319,8 @@ Laufzeit im Regelbetrieb überschaubar; der Determinismus-Test (Marker `slow`) d
 - Google-Sheets-Content selbst — Datenqualität ist redaktionelle Aufgabe (`explore.py`/`validate.py`)
 - Frontend-JavaScript — Browser-Validierung, nicht pytest
 - Performance — Pipeline-Laufzeit unkritisch
+
+**Bekannte Testlücke, Korb-Export.** Die beiden Exportwege des Wissenskorbs, `exportCSV` und `exportBibTeX` in [`docs/js/views/basket.js`](../docs/js/views/basket.js), sind modulintern deklariert und tragen kein `export`-Schlüsselwort. Damit kann keine Testdatei sie importieren, und keine tut es. Der Smoke-Durchlauf betritt den Korb-Tab, klickt die beiden Knöpfe aber nicht. Ungeprüft bleiben die Feldauswahl, das CSV-Quoting in `csvEscape`, die Zeichenbehandlung in `bibtexEscape` und der Dateiname des Downloads. Eine Absicherung setzt voraus, dass beide Funktionen exportiert werden, was ein Eingriff in den Frontend-Code ist und deshalb hier nur vermerkt steht.
 
 **Was später dazukommen kann**:
 - SHACL-Validierung gegen RiC-O-Shapes (`pyshacl`) — semantisch schärfer als JSON-Schema
@@ -343,16 +348,29 @@ python tests/frontend/smoke.py
 pytest -m frontend tests/frontend/
 ```
 
-Der pytest-Wrapper (`tests/frontend/test_smoke.py`, Marker `@pytest.mark.frontend`) startet den Server als Fixture. Standard-`pytest tests/` skippt den Marker per Default, damit Browserless-Environments keinen Playwright-Setup brauchen.
+Der pytest-Wrapper (`tests/frontend/test_smoke.py`, Marker `@pytest.mark.frontend`) startet den Server als Fixture.
+
+**Der Browserteil ist ein optionales Extra.** Playwright steht in keiner Requirements-Datei, weil die Testumgebung sonst einen Browser-Download mitzöge. Der Wrapper prüft die Verfügbarkeit beim Import (`pytest.importorskip("playwright")`) und überspringt sich selbst, wenn das Paket fehlt; ein Standardlauf in einer browserlosen Umgebung bleibt dadurch grün. Ist Playwright installiert, läuft der Smoke-Test auch im unmarkierten `pytest tests/` mit, weil `pytest.ini` den Marker nicht ausschließt.
+
+Installation des Extras:
+
+```bash
+pip install playwright
+playwright install chromium
+```
+
+Ohne das Extra prüft die Suite weiterhin die Pipeline-Artefakte, den Frontend-Kontrakt aus den Daten heraus (test_06, test_33) und über `node --test` die dom-freien Frontend-Funktionen. Ungeprüft bleibt allein, was erst im gerenderten Dokument entsteht, also Tab-Durchlauf, logStamp-Keys, Zeitstrahl- und Karten-Canary sowie die Anker-Titel im DOM.
 
 ## JS-Unit-Tests (Node, seit Session 47)
 
-Die JS-Unit-Tests decken die dom-/d3-freien Pure-Functions des Frontends ab, über vier Dateien:
+Die JS-Unit-Tests decken die dom-/d3-freien Pure-Functions des Frontends ab, über sechs Dateien:
 
 - `tests/frontend/network-geometry.test.mjs` für die Geometrie aus [`_network-geometry.js`](../docs/js/views/_network-geometry.js) (E-94): `classifyRing`, `isMalaniuk`, `isPureComposer`, `derivePersonKategorie`, `nodeEvidence`, `nodeColor`, `computeLayout` (Determinismus-Property, alphabetische Winkel-Reihenfolge, Umlaut-Normalisierung im SortKey, Radius-Cap), `computeCoOccurrence` (Malaniuk- und Komponisten-Filter, minShared-Threshold, maxEdges-Cap, Tie-breaker-Determinismus) und `labelGeometry`.
 - `tests/frontend/utils.test.mjs` für `date-parser` und `format`.
 - `tests/frontend/record-partition.test.mjs` für `partitionRecord`, also den Korb- und Inline-Detail-Pfad.
 - `tests/frontend/loader.test.mjs` für die Strecke JSON-LD → `loadArchive()` → store (synthetische Fixture + Anker gegen `docs/data`; deckt u.a. die E-97-Datumslosigkeit und die DFT-prefLabel-Auflösung). Anders als die übrigen Module ist dies eine Integrationsstrecke, keine reine Pure-Function.
+- `tests/frontend/verknuepfungen-geometry.test.mjs` für `buildGraph`, `computeLayout` und `nodeId` aus [`_verknuepfungen-geometry.js`](../docs/js/views/_verknuepfungen-geometry.js), gegen einen synthetischen Store.
+- `tests/frontend/filter-sync.test.mjs` für die Cross-View-Filter-Kopplung (E-117), also die Projektion zwischen geteiltem und View-eigenem Filterzustand und den Loop-Guard gegen die Endlosschleife zwischen `setFacet` und `setFilter`.
 
 Lauf:
 

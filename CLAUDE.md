@@ -25,23 +25,50 @@ Das formale Projektvokabular `vocab/m3gim.ttl` steht noch nicht in dieser Hierar
 
 ## Kern-Commands
 
-### Pipeline (ein Lauf, Default-Pfade, kopiert nach `docs/data/`)
+### Voraussetzungen
+
+Python 3.11+, dann `pip install -r requirements-test.txt`. Die Datei bindet `requirements.txt` per Include ein und liefert damit Laufzeit- und Testumgebung in einem Schritt. Node wird nur für die JS-Unit-Tests gebraucht.
+
+### Pipeline (vollständiger Lauf, Default-Pfade, kopiert nach `docs/data/`)
+
+Sechs Schritte in dieser Reihenfolge, jeder einzeln aufrufbar:
 
 ```bash
-python scripts/transform.py
-python scripts/build-views.py
+python scripts/explore.py         # Strukturdiagnose der XLSX  -> data/reports/exploration-report.md
+python scripts/validate.py        # Quellprüfung der XLSX      -> data/reports/validation-report.md
+python scripts/transform.py       # XLSX nach JSON-LD          -> data/output/m3gim.jsonld
+python scripts/build-views.py     # Derivate aus dem JSON-LD   -> data/output/views/*.json, Kopie nach docs/data/
+python scripts/audit-data.py      # Abgleich XLSX / JSON-LD / Views, nur Konsolenreport
+python scripts/report-quality.py  # laufende Zählstände        -> data/reports/quality-snapshot.md
 ```
+
+`reconcile.py` und `enrich-wikidata.py` stehen außerhalb dieses Laufs. Sie brauchen Netzzugriff, schreiben `wikidata-reconciliation.json` und `wikidata-enrichment.json` nach `data/output/` und laufen nur, wenn der Wikidata-Abgleich neu gezogen wird. Beide Ergebnisdateien sind git-getrackt und im normalen Klon vorhanden.
+
+**`validate.py` endet mit Exit 1, sobald der Report ERROR-Befunde führt.** Das ist der erwartete Zustand am aktuellen Datenstand. Die Befunde sind Quellfehler, die über das Register in [`knowledge/data-errors.md`](knowledge/data-errors.md) ans Erschließungsteam gehen; der Lauf hat geleistet, was er soll, sobald der Report geschrieben ist. `audit-data.py` folgt derselben Konvention und meldet am aktuellen Stand 0 Fehler.
+
+Die ENV-Overrides greifen bei `explore.py`, `validate.py`, `transform.py` und `build-views.py`. `audit-data.py` und `report-quality.py` lesen die Default-Pfade fest. Wer `M3GIM_OUTPUT_DIR` auf ein leeres Verzeichnis zeigt oder das Ausgabeverzeichnis leert, verliert die Normdatenanreicherung stillschweigend; die Falle ist in [`knowledge/pipeline-architecture.md`](knowledge/pipeline-architecture.md) § ENV-Overrides beschrieben.
 
 `build-views.py` schreibt `m3gim.jsonld` + Derivate (`partitur.json`, `matrix.json`, `kosmos.json`) nach `docs/data/`. **`m3gim.jsonld` ist die einzige primäre Datenquelle für das Frontend**. Die drei Derivate werden seit Session 32 von keinem aktiven Tab mehr konsumiert (sie wurden für die entfernten D3-Prototypen gebaut) und stehen im Deferred-Block von `knowledge/specification.md` § Stand; ihr Verfall oder Weiterbau ist eine offene Operator-Entscheidung.
 
 ### Tests
 
 ```bash
-pytest tests/ -m "not slow"     # Standard-Lauf ohne Determinismus-Test
-pytest tests/                   # inkl. Determinismus-Test (slow)
+pytest tests/ -m "not slow"             # Standard-Lauf ohne Determinismus-Test
+pytest tests/                           # inkl. Determinismus-Test (slow)
+node --test tests/frontend/*.test.mjs   # JS-Unit-Tests des Frontends
 ```
 
 Keine ENV-Overrides mehr nötig — es gibt nur einen Datenstand.
+
+Der Browser-Smoke-Test `tests/frontend/test_smoke.py` ist ein optionales Extra. Playwright steht in keiner Requirements-Datei; fehlt das Paket, überspringt sich der Test, und der Standardlauf prüft weiterhin die Pipeline-Artefakte samt Frontend-Kontrakt aus den Daten heraus, ohne die gerenderte Oberfläche. Wer den Browserteil will, installiert ihn mit `pip install playwright` und `playwright install chromium`; danach läuft er in `pytest tests/` mit und lässt sich mit `pytest -m frontend tests/frontend/` einzeln ansteuern. Umfang des Smoke-Durchlaufs in [`knowledge/testing.md`](knowledge/testing.md) § Frontend-Smoke.
+
+### Vokabular-Abdeckung prüfen
+
+```bash
+python vocab/check-coverage.py
+```
+
+Prüft read-only, ob jeder im Datensatz verwendete `m3gim`-Term in `vocab/m3gim.ttl` definiert ist. Der Docstring des Skripts nennt `uv run`; `uv` ist keine Projektvoraussetzung, der normale Interpreter genügt. Die einzige Abhängigkeit rdflib steht in `requirements-test.txt`.
 
 ### Snapshot-Diff (bei Daten-Updates)
 

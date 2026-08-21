@@ -30,7 +30,7 @@ related: [data, frontend-architecture, testing, architecture-decisions]
 | Script | Zweck | Input | Output |
 |---|---|---|---|
 | `scripts/explore.py` | Datenexploration, Strukturdiagnostik | `$M3GIM_SHEETS_DIR` | `$M3GIM_REPORTS_DIR/exploration-report.md` |
-| `scripts/validate.py` | Validierung, Qualitaetschecks | `$M3GIM_SHEETS_DIR` | `$M3GIM_REPORTS_DIR/validation-report.md` |
+| `scripts/validate.py` | Validierung, Qualitaetschecks. Liest die Verknuepfungstabelle ueber denselben Multi-Sheet-Loader wie die Transformation (`load_verknuepfungen`, E-95) und deckt damit alle Box-Blaetter ab. Exitcode 1, sobald ERROR-Befunde im Report stehen, was dem Regelfall entspricht (siehe [CLAUDE.md § Kern-Commands](../CLAUDE.md)). | `$M3GIM_SHEETS_DIR` | `$M3GIM_REPORTS_DIR/validation-report.md` |
 | `scripts/transform.py` | Transformation nach JSON-LD (RiC-O + m3gim + agrelon) | `$M3GIM_SHEETS_DIR` | `$M3GIM_OUTPUT_DIR/m3gim.jsonld` |
 | `scripts/build-views.py` | View-spezifische Aggregationen, partitur.json | `$M3GIM_OUTPUT_DIR/m3gim.jsonld` | `$M3GIM_OUTPUT_DIR/views/*.json` |
 | `scripts/reconcile.py` | Wikidata-Reconciliation (Fuzzy-Matching, P31-Verifikation, Caching, Confidence-Level exact/fuzzy_high/fuzzy_low) | XLSX-Indizes | `data/output/wikidata-reconciliation.json` |
@@ -42,7 +42,7 @@ related: [data, frontend-architecture, testing, architecture-decisions]
 
 ## ENV-Overrides
 
-Alle Pipeline-Skripte respektieren folgende Umgebungsvariablen für Ausnahmefälle (z.B. alternative Datenstände, Experimente):
+Die Pipeline-Skripte respektieren folgende Umgebungsvariablen für Ausnahmefälle (z.B. alternative Datenstände, Experimente):
 
 | ENV | Default |
 |---|---|
@@ -50,14 +50,19 @@ Alle Pipeline-Skripte respektieren folgende Umgebungsvariablen für Ausnahmefäl
 | `M3GIM_OUTPUT_DIR` | `data/output` |
 | `M3GIM_REPORTS_DIR` | `data/reports` |
 
+Die Overrides greifen bei `explore.py`, `validate.py`, `transform.py` und `build-views.py`. `audit-data.py` und `report-quality.py` lesen ihre Pfade fest aus dem Repository-Wurzelverzeichnis und ignorieren die Variablen.
+
 `build-views.py` kopiert die Frontend-Artefakte (`m3gim.jsonld`, `partitur.json`, `matrix.json`, `kosmos.json`) nur dann nach `docs/data/`, wenn `M3GIM_OUTPUT_DIR` auf den Default zeigt.
 
-### Workflow (ein Aufruf)
+### Falle, leeres Ausgabeverzeichnis kostet die Normdaten stillschweigend
 
-```bash
-python scripts/transform.py
-python scripts/build-views.py
-```
+`transform.py` liest `wikidata-reconciliation.json` und `wikidata-enrichment.json` aus dem **Ausgabe**verzeichnis `$M3GIM_OUTPUT_DIR`, also aus derselben Zone, in die es sein eigenes Ergebnis schreibt. Beide Dateien sind git-getrackt und liegen im normalen Klon bereit. Zeigt `M3GIM_OUTPUT_DIR` auf ein frisches Verzeichnis, oder wird `data/output/` geleert, dann meldet der Lauf zwei Hinweiszeilen der Form `nicht vorhanden (uebersprungen)`, endet mit Exit 0 und schreibt einen vollständig aussehenden Datensatz.
+
+Dem Datensatz fehlen dann sämtliche Wikidata-Properties aus dem Enrichment, also Koordinaten, Lebensdaten, Berufe, Stimmfächer, Komponisten- und Genreangaben, dazu jene Q-IDs, die erst die Reconciliation ergänzt. Übrig bleiben allein die Q-IDs, die in den Index-XLSX selbst erfasst sind. Das Frontend rendert daraufhin eine leere Karte, weil `geo:lat` und `geo:long` nirgends mehr im Graph stehen. Der Verlust ist im Ergebnis groß und im Protokoll leise, weshalb die beiden Hinweiszeilen bei jedem Lauf mit gesetztem `M3GIM_OUTPUT_DIR` zu lesen sind. Wer mit einem alternativen Ausgabeverzeichnis arbeitet, kopiert die beiden Dateien vorher dorthin.
+
+### Reihenfolge eines vollständigen Laufs
+
+Explorieren, validieren, transformieren, Ansichten bauen, auditieren, Snapshot schreiben. Die Befehle mit ihren jeweiligen Ausgabezielen stehen in [CLAUDE.md § Kern-Commands](../CLAUDE.md). `reconcile.py` und `enrich-wikidata.py` stehen außerhalb dieses Laufs und werden nur beim Neuziehen des Wikidata-Abgleichs gebraucht.
 
 ## Datenfluss
 
@@ -76,6 +81,10 @@ python scripts/build-views.py
    - `m3gim:xlsxSource` pro Record + Nested Entity (technische Quellreferenz auf Sheet + Zeile, data.md § 9, E-73)
 4. **View-Aggregation** (`build-views.py`) → `$M3GIM_OUTPUT_DIR/views/partitur.json` und matrix/kosmos/sankey
 5. **Bereitstellung**: `build-views.py` kopiert im Default-Lauf **`m3gim.jsonld` (primäre Datenquelle)** + die Derivate `partitur.json`, `matrix.json`, `kosmos.json` automatisch nach `docs/data/`.
+
+### Reproduzierbarkeit
+
+Gleiche Quelldaten ergeben bitgleiche Artefakte, mit genau zwei Ausnahmen. `transform.py` schreibt das Exportdatum als `m3gim:exportDate` in `m3gim.jsonld`, `build-views.py` schreibt in jede erzeugte Ansicht ein Feld `generated`. Beide tragen den Zeitpunkt des Laufs, weshalb ein Rerun aus unverändertem Quellstand in `git diff` genau diese Zeilen zeigt und sonst nichts. Ein Diff, der darüber hinausgeht, ist eine echte Änderung an Daten oder Code. Der Determinismus-Test `tests/test_10_determinismus.py` (Marker `slow`) sichert die Eigenschaft ab, indem er `transform.py` zweimal laufen lässt und `m3gim:exportDate` vor dem Vergleich entfernt. Die generierten Markdown-Reports unter `data/reports/` tragen ihren Generierungszeitpunkt ebenfalls im Kopf.
 
 ## Umgesetzte Pipeline-Erweiterungen (Phase 4)
 
@@ -102,7 +111,7 @@ Darauf aufbauend sichert eine Ontologie-Konformitaets-Welle (E-103 bis E-105) di
 
 Die neue Export-Struktur erzeugt ohne Eingriff stillen Totalverlust bzw. einen Abbruch. Der Loader absorbiert das defensiv, statt die fehlerhaften Zeilen still fallen zu lassen.
 
-- Die Verknuepfungstabelle verteilt sich auf mehrere Box-Sheets; alle werden geladen und zusammengefuehrt, statt nur das erste.
+- Die Verknuepfungstabelle verteilt sich auf mehrere Box-Sheets; alle werden geladen und zusammengefuehrt, statt nur das erste. `validate.py` und `audit-data.py` benutzen denselben Loader; vorher lasen sie die Mappe mit `pd.read_excel` ohne Blattangabe, sahen also nur das erste Blatt, und ihre Befunde blieben hinter dem transformierten Stand zurück.
 - Die Signaturspalte traegt teils nur ein Leerzeichen als Kopf und ist luckig gefuellt; sie wird positionsbasiert erkannt und je Sheet forward-gefuellt.
 - Der Personenindex hat keinen sauberen Namensspaltenkopf; der Header-Shift greift jetzt auch fuer den Personenindex, sonst gehen alle Personen-Normdaten verloren.
 - Nicht-textuelle Spaltenkoepfe und Literal-`Folio`-Zellwerte werden abgefangen, statt die Folio-Erkennung abbrechen zu lassen.
