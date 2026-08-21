@@ -3,7 +3,7 @@
 Fuer Rollen, Dokumenttypen und Waehrungen. Bei jeder Modell-Erweiterung
 gibt diese Suite schnelles Feedback, wenn etwas im Pipeline-Mapping fehlt.
 
-Testbasis: data/source-v2/ vs. data/output-v2/m3gim.jsonld.
+Testbasis: data/google-spreadsheet/ vs. data/output/m3gim.jsonld.
 """
 
 from collections import Counter

@@ -7,7 +7,7 @@ status: complete
 language: de
 version: 0.1
 created: 2026-07-24
-updated: 2026-07-24
+updated: 2026-08-21
 authors: [Christopher Pollin]
 generated-with: Claude Code
 method:
@@ -79,9 +79,9 @@ Ein zweiter Gewinn ist Prüfbarkeit. Der Abgleich des Vokabulars gegen den Daten
 
 ### Zwischen Spezifikation und Datensatz
 
-**Ein Term ohne Spezifikation.** `m3gim:gespraechsdatum` wird erzeugt und fehlt in der Aufzählung der typisierten Datumsproperties in [data.md](data.md) § 7.
+**Ein Term ohne Spezifikation.** `m3gim:gespraechsdatum` wird erzeugt und fehlt in der Aufzählung der typisierten Datumsproperties in [data.md](data.md) § 7. Nachgetragen am 2026-08-21.
 
-**Ein Wertebereich, der anders aussieht als spezifiziert.** Für `m3gim:xlsxSheet` nennt [data.md](data.md) § 9 die beiden Werte `Objekte` und `Verknuepfungen`. Tatsächlich steht dort der Name des jeweiligen Box-Blatts, weil die Verknüpfungstabelle über mehrere Blätter verteilt ist.
+**Ein Wertebereich, der anders aussieht als spezifiziert.** Für `m3gim:xlsxSheet` nennt [data.md](data.md) § 9 die beiden Werte `Objekte` und `Verknuepfungen`. Tatsächlich steht dort der Name des jeweiligen Box-Blatts, weil die Verknüpfungstabelle über mehrere Blätter verteilt ist. § 9 ist am 2026-08-21 auf den tatsächlichen Wertebereich nachgezogen.
 
 **Ein Dokumenttyp ohne Weg in die Daten.** `fotografie` steht im Vokabularbaum in [data.md](data.md) § 12 und hat in der Zuordnungstabelle der Pipeline keinen Eintrag. Ein Quellwert dieses Namens liefe ins Leere.
 
@@ -101,7 +101,9 @@ Ein zweiter Gewinn ist Prüfbarkeit. Der Abgleich des Vokabulars gegen den Daten
 
 ## 5. Datenbefunde, gemeldet und nicht behoben
 
-Diese Punkte fielen beim Erheben der Wertebereiche auf und stehen noch nicht im [Datenfehler-Register](datenfehler.md).
+Diese Punkte fielen beim Erheben der Wertebereiche auf.
+
+Nachtrag 2026-08-21: alle vier sind inzwischen ins [Datenfehler-Register](datenfehler.md) übernommen, die ersten beiden als Quellfehler QF-18 und QF-19, das Gründungsdatum als Abgleichfehler AF-04, die selbstbezüglichen Beziehungen als Pipeline-Befund mit Datenwirkung unter den verwandten Befunden.
 
 - `UAKUG/NIM_011 7` trägt als Erstelldatum `1055-08-24`, während das Dokumentdatum `1955-08-24` lautet. Vermutlich eine vertippte Jahrhundertstelle in der Verknüpfungszeile.
 - Dasselbe Dokument trägt an einer Ausgabe von 15,00 DM die Detailrolle `interpret`. Eine Personenrolle in der Finanzspalte.

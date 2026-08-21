@@ -476,6 +476,24 @@ m3gim:bearbeitungsnotiz
     rdfs:range xsd:string ;
     rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> .
 
+m3gim:accessStatus
+    a owl:DatatypeProperty ;
+    rdfs:label "Zugänglichkeit"@de , "access status"@en ;
+    rdfs:comment "Benutzungsrechtlicher Zugangsstatus eines Objekts, aus der Quellspalte zugaenglichkeit. Das Erfassungsvokabular führt die Werte offen, eingeschraenkt und gesperrt."@de ;
+    rdfs:domain rico:Record ;
+    rdfs:range xsd:string ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> ;
+    skos:editorialNote "Bedingt emittiert. scripts/transform.py setzt die Property nur, wenn die Quellspalte zugaenglichkeit belegt ist. Der aktuelle Objekt-Export führt diese Spalte nicht, weshalb der Term im Datensatz nicht vorkommt."@de .
+
+m3gim:digitizationStatus
+    a owl:DatatypeProperty ;
+    rdfs:label "Digitalisierungsstand"@de , "digitization status"@en ;
+    rdfs:comment "Stand der Digitalisierung eines Objekts, aus der Quellspalte scan_status. Das Erfassungsvokabular führt die Werte nicht_gescannt, gescannt und online."@de ;
+    rdfs:domain rico:Record ;
+    rdfs:range xsd:string ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> ;
+    skos:editorialNote "Bedingt emittiert. scripts/transform.py setzt die Property nur, wenn die Quellspalte scan_status belegt ist. Der aktuelle Objekt-Export führt diese Spalte nicht, weshalb der Term im Datensatz nicht vorkommt."@de .
+
 m3gim:dataQualityFlag
     a owl:DatatypeProperty ;
     rdfs:label "Datenqualitäts-Flag"@de , "data quality flag"@en ;
@@ -626,7 +644,7 @@ m3gim:xlsxSheet
     rdfs:comment "Name des Blatts der Erfassungstabelle, aus dem eine Entität stammt."@de ;
     rdfs:range xsd:string ;
     rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> ;
-    skos:editorialNote "knowledge/data.md § 9 nennt als Wertebereich die beiden Namen Objekte und Verknuepfungen. Tatsächlich steht für die Verknüpfungen der Name des jeweiligen Box-Blatts im Wert, weil die Tabelle über mehrere Blätter verteilt ist. Spezifikation und Datum weichen ab; die Spezifikation ist nachzuziehen."@de .
+    skos:editorialNote "Objektzeilen tragen den festen Wert Objekte, Verknüpfungszeilen den Namen des jeweiligen Box-Blatts, weil die Verknüpfungstabelle über mehrere Blätter verteilt ist. knowledge/data.md § 9 ist auf diesen Wertebereich nachgezogen."@de .
 
 m3gim:xlsxRow
     a owl:DatatypeProperty ;

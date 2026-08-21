@@ -7,7 +7,7 @@ status: complete
 language: de
 version: 0.2
 created: 2026-02-19
-updated: 2026-07-18
+updated: 2026-08-21
 authors: [Christopher Pollin]
 generated-with: Claude Code
 method:
@@ -180,3 +180,23 @@ Runde im Bearbeitungsstopp, auf dem Zweig `feat/vocab-formalisation`, ohne Eingr
 **Gemeldet und offen gelassen.** Vier Datenbefunde stehen noch nicht im [Datenfehler-Register](datenfehler.md) und sind im Befundbericht festgehalten. Es sind das Erstelldatum `1055-08-24` bei `UAKUG/NIM_011 7` neben dem Dokumentdatum `1955-08-24`, die Detailrolle `interpret` an einer Ausgabe desselben Dokuments, Gründungsdaten in der Form `1715-00-00` aus der Anreicherung und die selbstbezüglichen Korrespondenzbeziehungen.
 
 **Keine Entscheidungsnummer vergeben.** Die Runde stellt fest und entscheidet nichts. Die zehn offenen Fragen stehen gebündelt im Befundbericht, damit die Projektleitung entscheiden kann, welche davon als E-Nummer nach [decisions.md](decisions.md) wandern. Der Abdeckungsprüfer liegt als eigenständiges Skript bei und ist bewusst nicht in die Testsuite gezogen; ob er dort als Gate geführt wird, ist eine Operator-Entscheidung. Der bestehende `test_26` nimmt den eigenen Namespace bislang aus, weil es keine Quelle gab, gegen die er hätte prüfen können.
+
+---
+
+## Session 60 (2026-08-21): Nachzug der Dokumentation zur Vokabular-Runde
+
+Handwerkliche Folge zur Formalisierungsrunde, ohne Eingriff in Pipeline, Daten, Frontend und Testlogik. Umgesetzt sind ausschließlich Punkte ohne fachliche Inhaltsänderung am Datensatz.
+
+**Zwei bedingt emittierte Terme nachgetragen.** `m3gim:accessStatus` und `m3gim:digitizationStatus` fehlten im Vokabular und in [data.md](data.md) § 7. `convert_objekt` in `scripts/transform.py` setzt beide am Record, sobald die Quellspalten `zugaenglichkeit` und `scan_status` belegt sind; die Wertebereiche stehen in `scripts/validate.py`. Der aktuelle Objekt-Export führt beide Spalten nicht, weshalb die Terme im Datensatz nicht vorkommen und der Abdeckungsprüfer sie nie sah. Beide sind jetzt mit Domain `rico:Record`, Range `xsd:string` und einer `skos:editorialNote` zur bedingten Emission im Vokabular geführt und in der Datatype-Property-Tabelle von [data.md](data.md) verzeichnet.
+
+**Zwei Abweichungen zwischen Spezifikation und Code angeglichen.** `m3gim:gespraechsdatum` steht jetzt in der Aufzählung der typisierten Datumsproperties. Der Wertebereich von `m3gim:xlsxSheet` in [data.md](data.md) § 9 nannte die beiden Namen Objekte und Verknuepfungen; tatsächlich tragen Verknüpfungszeilen den Namen des jeweiligen Box-Blatts, weil die Tabelle über mehrere Blätter verteilt ist (E-95). Tabelle, Anbringungsregel und Beispielblock sind darauf gesetzt, die `skos:editorialNote` am Term ist von Befund auf Feststellung umgestellt.
+
+**Zwei Befunde nur dokumentiert, weil eine Korrektur Datenwirkung hätte.** Der fehlende Eintrag für `fotografie` in `DOKUMENTTYP_TO_DFT` und die Label-Dublette zwischen `programm` und `programmheft` in `DFT_LABELS` liegen beide in `scripts/transform.py`. Sie stehen jetzt als offene Abweichungen in [data.md](data.md) § 12. Der Quellwert `fotografie` kommt im aktuellen Export nicht vor, ein nachgetragener Mapping-Eintrag bliebe also folgenlos; `programm` ist der häufigste erfasste Dokumenttyp, eine Label-Änderung schlüge bis ins Interface durch.
+
+**Vier Datenbefunde ins Register übernommen.** [datenfehler.md](datenfehler.md) führt den Jahrhundertdreher `1055-08-24` bei `UAKUG/NIM_011 7` als QF-18 und die Personenrolle `interpret:in` in der Ausgabenzeile desselben Dokuments als QF-19, beide mit Blatt- und Zeilenangabe. Die Gründungsdaten der Form `1715-00-00` stehen als AF-04; die Wurzel liegt in `enrich-wikidata.py`, das das Wikidata-Zeitliteral verbatim übernimmt und die Präzisionsangabe wegschneidet. Die selbstbezüglichen Korrespondenzbeziehungen stehen als Pipeline-Befund mit Datenwirkung unter den verwandten Befunden, ausdrücklich ohne Korrektur, weil die Auflösung eine fachliche Entscheidung verlangt.
+
+**Kleinkram.** Der Docstring von `tests/test_15_vocab_coverage.py` nannte die nicht mehr existierenden Pfade `data/source-v2/` und `data/output-v2/`; er zeigt jetzt auf `data/google-spreadsheet/` und `data/output/m3gim.jsonld`. Die Testlogik ist unberührt.
+
+**Verifikation.** `vocab/m3gim.ttl` parst mit rdflib fehlerfrei, `vocab/check-coverage.py` meldet volle Abdeckung, die Testsuite läuft unverändert grün.
+
+**Offen für den Operator.** Die Mapping-Lücke bei `fotografie`, die Label-Dublette bei `programm`, das ISO-Format der angereicherten Gründungsdaten und die selbstbezüglichen Beziehungen brauchen je eine Entscheidung, bevor Code sie anfassen darf. Der Eintrag E-73 in [decisions.md](decisions.md) trägt den überholten `xlsxSheet`-Wertebereich weiter; als historischer Entscheidungstext bleibt er unangetastet.

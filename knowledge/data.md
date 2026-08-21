@@ -483,6 +483,8 @@ Die Facetten-Relationen `m3gim:hasAssociatedAgent`, `m3gim:hasSpatiotemporalEven
 |---|---|---|
 | `m3gim:bearbeitungsstand` | xsd:string | projektinterner Status (Objektebene) |
 | `m3gim:bearbeitungsnotiz` | xsd:string | redaktionelle Notiz zum Objekt-Bearbeitungsstand |
+| `m3gim:accessStatus` | xsd:string | benutzungsrechtlicher Zugangsstatus (Objektebene), aus Quellspalte `zugaenglichkeit`; Werte `offen`, `eingeschraenkt`, `gesperrt`. Bedingt emittiert, die Spalte fehlt im aktuellen Export |
+| `m3gim:digitizationStatus` | xsd:string | Digitalisierungsstand (Objektebene), aus Quellspalte `scan_status`; Werte `nicht_gescannt`, `gescannt`, `online`. Bedingt emittiert, die Spalte fehlt im aktuellen Export |
 | `m3gim:eventRole` | xsd:string | Rolle eines SpatiotemporalEvent |
 | `m3gim:mode` | xsd:string | Auftrittsmodus (gastspiel, tournee) an der Occurrence, getrennt vom Rollenvokabular |
 | `m3gim:atDate` | xsd:string | Datum als Literal an SpatiotemporalEvent |
@@ -533,7 +535,7 @@ Loader-seitig landen sie additiv in `store.organizations[].sitz`/`keyContact`/`n
 
 Statt einer generischen `m3gim:eventDate` trägt das Modell für die empirisch belegten Datumsrollen je eine typisierte Property. Damit bleibt die semantische Differenzierung zwischen Absendedatum, Erscheinungsdatum, Premierendatum etc. in Queries direkt adressierbar.
 
-`m3gim:absendedatum`, `m3gim:empfangsdatum`, `m3gim:ausstellungsdatum`, `m3gim:erscheinungsdatum`, `m3gim:abreisedatum`, `m3gim:auftrittsdatum`, `m3gim:auffuehrungsdatum`, `m3gim:probendatum`, `m3gim:probenbeginn`, `m3gim:premieredatum`, `m3gim:ausstrahlungsdatum`, `m3gim:spielzeitVon`, `m3gim:spielzeitBis`, `m3gim:ueberweisungsdatum`, `m3gim:erstelldatum`.
+`m3gim:absendedatum`, `m3gim:empfangsdatum`, `m3gim:ausstellungsdatum`, `m3gim:erscheinungsdatum`, `m3gim:abreisedatum`, `m3gim:auftrittsdatum`, `m3gim:auffuehrungsdatum`, `m3gim:probendatum`, `m3gim:probenbeginn`, `m3gim:premieredatum`, `m3gim:ausstrahlungsdatum`, `m3gim:spielzeitVon`, `m3gim:spielzeitBis`, `m3gim:ueberweisungsdatum`, `m3gim:erstelldatum`, `m3gim:gespraechsdatum`.
 
 Alle Properties vom Typ xsd:string, weil historische Datierung die ISO-Schema-Strenge von xsd:date regelmäßig überschreitet (Qualifier `circa:`, TimeSpans, unvollständige Datierungen).
 
@@ -641,14 +643,14 @@ Ergänzend zur semantischen Provenance (`agrelon:metadataProvenance`; die Datier
 | Property | Wertebereich | Zweck |
 |---|---|---|
 | `m3gim:xlsxSource` | Blank Node | Container für die Adressteile (Sheet, Zeile, optional datenpunktId) |
-| `m3gim:xlsxSheet` | xsd:string (`"Objekte"` oder `"Verknuepfungen"`) | Name des Ursprungs-Sheets |
+| `m3gim:xlsxSheet` | xsd:string | Name des Ursprungs-Sheets. Objektzeilen tragen `"Objekte"`, Verknüpfungszeilen den Namen des jeweiligen Box-Blatts (etwa `"Box_01"`, `"Box 5"`), weil die Verknüpfungstabelle über mehrere, uneinheitlich benannte Blätter verteilt ist (E-95) |
 | `m3gim:xlsxRow` | xsd:integer (≥ 2) | 1-basierte XLSX-Zeilennummer inklusive Header-Zeile |
 | `m3gim:datenpunktId` | xsd:integer (optional) | Identität der Auftritts-Occurrence innerhalb des Dokuments (Abschnitt 4 und 7); leer = Dokument-Ebene. Aus Spalte `datenpunkt_id`. Die frühere Lesart als reine Provenienz-Kennung ist mit E-125 überholt |
 
 Angebracht wird `m3gim:xlsxSource`:
 
 - **am Record** (aus `M3GIM-Objekte.xlsx`). `xlsxSheet = "Objekte"`, `xlsxRow` entspricht der Excel-Zeilennummer des Objekts.
-- **an jeder DetailAnnotation** (Finanz-Detail, Sach-Detail). `xlsxSheet = "Verknuepfungen"`.
+- **an jeder DetailAnnotation** (Finanz-Detail, Sach-Detail). `xlsxSheet` trägt den Namen des Box-Blatts, aus dem die Verknüpfungszeile stammt.
 - **an jeder AgRelOn-Relation** (`m3gim:agentRelation`-Einträgen).
 - **an jedem SpatiotemporalEvent** (Top-Level-Graph-Entität).
 
@@ -666,7 +668,7 @@ Beispiel (Finanz-Detail aus NIM_007 5_1, Zeile 1276):
   "m3gim:detailRole": "erwähnt",
   "rico:generalDescription": "10% an [Organi]",
   "m3gim:xlsxSource": {
-    "m3gim:xlsxSheet": "Verknuepfungen",
+    "m3gim:xlsxSheet": "Box_01",
     "m3gim:xlsxRow": 1276
   }
 }
@@ -833,6 +835,11 @@ dokument
 Gegenüber der Vorfassung ergänzt sind korrespondenz, presse, programm, autobiografie, identitaetsdokument, repertoireliste, biographisch, briefumschlag, musikzeitschrift, chronik, verzeichnis. `sammlung` bleibt ein eigenständiges Concept **ohne** `skos:broader` auf konvolut — die is-a-Beziehung wird nicht vorentschieden. Die Abgrenzung zwischen sammlung und konvolut ist noch zu klären (Klärungspunkt in [decisions.md](decisions.md) § Offene Modellentscheidungen): möglicherweise ist konvolut der physische Umschlag und sammlung die thematische Zusammenstellung.
 
 Jedes emittierte dft-Concept trägt ein lesbares deutsches `skos:prefLabel` (Pipeline-Map `DFT_LABELS`, E-101) statt des nackten Slugs. Das Frontend löst Dokumenttyp-Labels seit E-101 direkt über `skos:prefLabel` aus dem Store auf (`dftLabel(store, id)` über `store.dftHierarchy`); die frühere Frontend-Handtabelle `DOKUMENTTYP_LABELS` ist entfallen.
+
+Zwei Abweichungen zwischen diesem Baum und der Pipeline sind offen. Beide hätten Datenwirkung, weshalb sie hier verzeichnet bleiben und eine Entscheidung brauchen.
+
+- `fotografie` steht im Baum, hat in der Zuordnungstabelle `DOKUMENTTYP_TO_DFT` aber keinen Eintrag. Ein Quellwert dieses Namens erzeugte kein `rico:hasDocumentaryFormType`. Der aktuelle Objekt-Export führt den Wert nicht, ein nachgetragener Eintrag bliebe im heutigen Stand also folgenlos.
+- `programm` und `programmheft` tragen in `DFT_LABELS` beide das Label Programmheft, obwohl `programm` der Oberbegriff von `programmheft` ist. In der Anzeige sind die beiden Stufen dadurch nicht unterscheidbar. `programm` ist der häufigste erfasste Dokumenttyp, eine Label-Änderung schlägt deshalb bis in den erzeugten Datensatz und ins Interface durch.
 
 ### Verknüpfungstyp `dokument` als Aboutness
 
