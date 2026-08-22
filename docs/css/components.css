@@ -270,3 +270,11 @@
   font-weight: 600;
   color: var(--color-text, #222);
 }
+
+/* Beschriftung mit Erklaerung (E-143). Der Hinweis bleibt zurueckhaltend, die
+   Erklaerung selbst steht im title und erscheint beim Verweilen. */
+.badge--glossed {
+  text-decoration: underline dotted;
+  text-underline-offset: 2px;
+  cursor: help;
+}

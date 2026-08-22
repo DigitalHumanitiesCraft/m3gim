@@ -136,6 +136,7 @@ function buildStore(jsonld) {
     // v2-Strukturen (Phase 6). Shapes: siehe JSDoc oberhalb buildStore().
     /** @type {Map<string, DftConcept>} */
     dftHierarchy: new Map(),
+    conceptDefinitions: new Map(),
     /** @type {Map<string, RoleEntry>} roleId → Rollenbegriff */
     roleVocab: new Map(),
     /** @type {Map<string, Annotation>} alle Annotationen, verortet oder nicht */
@@ -556,19 +557,28 @@ function indexWorks(store, record) {
 /**
  * SKOS-Concept (DFT-Hierarchie). Pass 1 legt nur Einzelknoten an,
  * Parent→Children folgt in Pass 1.5. Dokumenttypen und Rollen teilen sich seit
- * der Zusammenfuehrung den Namensraum m3gim-vocab; ausgeliefert werden bisher
- * ausschliesslich Dokumenttyp-Concepts.
+ * der Namensraum-Dreiteilung den Praefix m3gim-vocab und werden ueber ihr
+ * Begriffsschema getrennt; ohne die Trennung erschiene jede Rolle als
+ * Dokumenttyp in der Facette. Die Definition jedes Begriffs wird unabhaengig
+ * vom Schema erfasst, weil die Oberflaeche sie an jeder Beschriftung braucht
+ * (E-143).
  */
+const DFT_SCHEME = 'm3gim-vocab:documentaryFormTypes';
+
 function indexConcept(store, node) {
   const id = node['@id'];
   if (!id) return;
+  const label = node['skos:prefLabel'] || id.split(':').pop();
+  const definition = node['skos:definition'] || null;
+  if (definition) store.conceptDefinitions.set(id, { id, label, definition });
+
+  const scheme = node['skos:inScheme'] && node['skos:inScheme']['@id'] || null;
+  // Ohne Schemaangabe gilt der Bestandsfall: bis E-143 trug der Datensatz
+  // ausschliesslich Dokumenttyp-Concepts.
+  if (scheme && scheme !== DFT_SCHEME) return;
+
   const broader = node['skos:broader'] && node['skos:broader']['@id'] || null;
-  store.dftHierarchy.set(id, {
-    id,
-    prefLabel: node['skos:prefLabel'] || id.split(':').pop(),
-    broader,
-    children: [],
-  });
+  store.dftHierarchy.set(id, { id, prefLabel: label, broader, children: [] });
 }
 
 /**
@@ -852,3 +862,15 @@ function resolveAgentRelationsToPersons(store) {
   store.agentRelationResolvedCount = resolved;
 }
 
+/**
+ * Der erklaerende Satz zu einem Vokabularbegriff, oder null.
+ * Quelle ist das Vokabular; das Frontend fuehrt keinen zweiten Erklaertext.
+ * @param {Object} store
+ * @param {?string} conceptId  CURIE, etwa 'm3gim-vocab:program'
+ * @returns {?string}
+ */
+export function conceptDefinition(store, conceptId) {
+  if (!store || !store.conceptDefinitions || !conceptId) return null;
+  const entry = store.conceptDefinitions.get(conceptId);
+  return entry ? entry.definition : null;
+}

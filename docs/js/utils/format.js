@@ -258,3 +258,20 @@ export function truncate(str, maxLen = 80) {
   if (!str || str.length <= maxLen) return str || '';
   return str.slice(0, maxLen - 1) + '\u2026';
 }
+
+/**
+ * Erklaerender Satz zu einem Vokabularbegriff, als title-Text der Oberflaeche.
+ * Quelle ist das Vokabular ueber den Datensatz (E-143); leer, wenn der Begriff
+ * keine Definition traegt.
+ * @param {Object} store
+ * @param {?string} shortIdOrCurie  'program' oder 'm3gim-vocab:program'
+ * @returns {string}
+ */
+export function glossOf(store, shortIdOrCurie) {
+  if (!store || !store.conceptDefinitions || !shortIdOrCurie) return '';
+  const id = String(shortIdOrCurie).startsWith(VOCAB_PREFIX)
+    ? shortIdOrCurie
+    : VOCAB_PREFIX + shortIdOrCurie;
+  const entry = store.conceptDefinitions.get(id);
+  return entry ? entry.definition : '';
+}

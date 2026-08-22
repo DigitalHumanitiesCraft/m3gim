@@ -4,7 +4,7 @@
  */
 
 import { el, clear } from '../utils/dom.js';
-import { formatSignatur, formatChildSignatur, getDocTypeId, countLinks, truncate, ensureArray, dftLabel } from '../utils/format.js';
+import { formatSignatur, formatChildSignatur, getDocTypeId, countLinks, truncate, ensureArray, dftLabel, glossOf } from '../utils/format.js';
 import { formatDate } from '../utils/date-parser.js';
 import { primaryYear } from '../data/loader.js';
 import { bookmarkIcon } from '../data/constants.js';
@@ -353,6 +353,7 @@ function renderRows(items) {
     const year = primaryYear(store, r).year;
     const docType = getDocTypeId(r);
     const docLabel = dftLabel(store, docType) || '';
+    const docGloss = glossOf(store, docType);
     const recordId = r['@id'];
 
     let rowClass = '';
@@ -463,12 +464,12 @@ function renderRows(items) {
           ? el('span', { className: 'badge badge--konvolut-struct', dataset: { tip: `Enth\u00e4lt ${childCount} Objekte` } }, `Konvolut (${childCount})`)
           : item.isChild
             ? (docLabel && docType !== 'konvolut'
-              ? el('span', { className: `badge badge--${docType || ''}` }, docLabel)
+              ? el('span', { className: `badge badge--${docType || ''}${docGloss ? ' badge--glossed' : ''}`, title: docGloss }, docLabel)
               : el('span', { className: 'badge badge--unclassified' }, 'Nicht klassifiziert'))
             : isStandaloneKonvolut(r)
               ? el('span', { className: 'badge badge--konvolut-struct', dataset: { tip: 'Noch nicht in Einzelobjekte aufgel\u00f6st' } }, 'Konvolut')
               : (docLabel
-                ? el('span', { className: `badge badge--${docType || ''}` }, docLabel)
+                ? el('span', { className: `badge badge--${docType || ''}${docGloss ? ' badge--glossed' : ''}`, title: docGloss }, docLabel)
                 : el('span', { className: 'badge badge--unclassified' }, 'Nicht klassifiziert')),
         (!item.isKonvolut && unerschlossen)
           ? el('span', {

@@ -12,6 +12,7 @@
 import { el } from '../utils/dom.js';
 import {
   formatSignatur, formatDocType, ensureArray, entityName, asWikidataId, roleLabel, roleToken,
+  glossOf, roleIdOf,
 } from '../utils/format.js';
 import { formatDate } from '../utils/date-parser.js';
 import { navigateToIndex, applyArchivFilter } from '../ui/router.js';
@@ -284,7 +285,7 @@ export function buildRecordBlocks(record, store) {
   push('mitwirkende', 'Mitwirkende', agentChipEls(store, bucket.mitwirkende));
   push('werk', 'Werk & Repertoire', workChipEls(works, performanceRoles));
   push('ort', 'Ort & Ereignis', eventChipEls(store, events, locations, eventDatings));
-  push('genannte-daten', 'Im Dokument genannte Daten', datingChipEls(mentionedDatings));
+  push('genannte-daten', 'Im Dokument genannte Daten', datingChipEls(store, mentionedDatings));
   push('erwaehnt', 'Erwähnt', agentChipEls(store, bucket.erwaehnt));
   push('weitere', 'Weitere', agentChipEls(store, bucket.weitere));
   push('beziehungen', 'Beziehungen', relationChipEls(agentRelations));
@@ -296,6 +297,7 @@ export function buildRecordBlocks(record, store) {
 function agentChipEls(store, entities) {
   return entities.map(entity => buildRoleChip({
     prefix: roleLabel(store, entity.role) || 'AGENT',
+    gloss: glossOf(store, roleIdOf(entity.role)),
     value: entityName(entity, entity['@id'] || '?'),
     xlsxSource: extractXlsxSource(entity),
     wikidata: asWikidataId(entity['@id']),
@@ -364,7 +366,7 @@ function eventChipEls(store, events, locations, eventDatings) {
     }));
   }
   // Ereignisse ohne Ort: dieselbe Sektion, aber Datums-Farbfamilie.
-  chips.push(...datingChipEls(eventDatings));
+  chips.push(...datingChipEls(store, eventDatings));
   // Orte, die nicht schon ueber eine Annotation dargestellt sind.
   const eventPlaces = new Set(events.map(e => (e.place || '').toLowerCase()));
   for (const loc of locations) {
@@ -423,9 +425,10 @@ function financeChipEls(entries) {
  * Biografie — deshalb hier am Record und bewusst NICHT im Chronik-Zeitstrahl
  * (sonst stuende z. B. ein 1872-Punkt auf ihrer Lebenslinie).
  */
-function datingChipEls(datings) {
+function datingChipEls(store, datings) {
   return datings.map(d => buildRoleChip({
     prefix: d.roleLabel || 'genannt',
+    gloss: glossOf(store, d.roleId),
     value: dateText(d) || d.rawDate || '?',
     cluster: 'datum',
     xlsxSource: d.xlsxSource,
@@ -454,7 +457,7 @@ const PROV_ICON_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor
 // Info-Kreis (neutral, nicht alarmierend) fuer den Datenqualitaets-Marker.
 const QUALITY_ICON_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>';
 
-export function buildRoleChip({ prefix, value, cluster, xlsxSource, wikidata, tip, onClick, compact, qualityFlag }) {
+export function buildRoleChip({ prefix, value, cluster, xlsxSource, wikidata, tip, onClick, compact, qualityFlag, gloss }) {
   const prefixUpper = (prefix || '').toUpperCase();
   const cls = cluster || roleClusterFor(prefixUpper);
   const hasProv = xlsxSource && xlsxSource.row;
@@ -467,6 +470,9 @@ export function buildRoleChip({ prefix, value, cluster, xlsxSource, wikidata, ti
   const chipProps = {
     className: `chip chip--role-pair chip--c-${cls}${onClick ? ' chip--clickable' : ''}${compact ? ' chip--compact' : ''}`,
   };
+  // Erklaerung des Rollenbegriffs (E-143). Sie tritt nur ein, wenn der Chip
+  // keinen eigenen Tip traegt, sonst ueberlagern sich zwei Tooltips.
+  if (gloss && !tip && !childrenHaveTips) chipProps.title = gloss;
   if (onClick) {
     chipProps.onClick = (e) => { e.stopPropagation(); onClick(e); };
   }

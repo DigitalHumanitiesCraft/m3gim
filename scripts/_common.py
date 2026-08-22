@@ -272,6 +272,36 @@ def _predicate_objects(statement: str, predicate: str) -> list[str]:
     return [part.split(predicate, 1)[1] for part in parts if pattern.search(part)]
 
 
+def load_concept_meta(vocab_path: Path) -> dict[str, dict[str, str]]:
+    """Liest Definition und Begriffsschema der Vokabularbegriffe.
+
+    Rueckgabe: {CURIE: {"definition": str|None, "scheme": CURIE|None}}. Die
+    Definition ist der erklaerende Satz, den die Oberflaeche an einem
+    Fachbegriff zeigt; sie steht im Vokabular und wird nicht im Frontend
+    zweitgefuehrt. Das Schema trennt Dokumenttypen von Rollen, die sich seit
+    der Namensraum-Dreiteilung denselben Praefix teilen.
+    """
+    meta: dict[str, dict[str, str]] = {}
+    for statement in _turtle_statements(Path(vocab_path).read_text(encoding="utf-8")):
+        subject, _, body = statement.partition(" ")
+        if not subject.startswith(VOCAB_PREFIX) or not _IS_CONCEPT.match(body):
+            continue
+        definition = None
+        for obj in _predicate_objects(body, "skos:definition"):
+            match = _LITERAL_DE.search(obj)
+            if match:
+                definition = match.group(1)
+                break
+        scheme = None
+        for obj in _predicate_objects(body, "skos:inScheme"):
+            candidate = obj.strip().rstrip(" .;,")
+            if candidate.startswith(VOCAB_PREFIX):
+                scheme = candidate
+                break
+        meta[subject] = {"definition": definition, "scheme": scheme}
+    return meta
+
+
 def load_role_concepts(vocab_path: Path) -> dict[str, tuple[str, str]]:
     """Liest die Rollenbegriffe des Vokabulars als deutsches Label auf Concept.
 

@@ -37,6 +37,7 @@ from _common import (
     default_currency_for,
     extract_bearbeitungsnotiz,
     is_approved_match,
+    load_concept_meta,
     load_role_concepts,
     normalize_bearbeitungsstand,
     strip_zero_date_padding,
@@ -84,6 +85,7 @@ CONTEXT = {
 # Rollenwert wird also von dort gelesen und nicht hier zweitgefuehrt.
 VOCAB_PATH = Path(os.environ.get("M3GIM_VOCAB_PATH", BASE_DIR / "vocab" / "m3gim.ttl"))
 ROLE_CONCEPTS = load_role_concepts(VOCAB_PATH)
+CONCEPT_META = load_concept_meta(VOCAB_PATH)
 
 # Mapping (typ, rolle) → AgRelOn-Klasse + -Property (data-model.md § 8.3, Phase 4.8).
 # Die Pipeline erzeugt zusaetzlich zur normalen Agent-Relation eine agrelon-
@@ -352,6 +354,54 @@ def build_dft_concepts(records: list) -> list:
         }
         if concept in DFT_BROADER:
             node["skos:broader"] = {"@id": f"m3gim-vocab:{DFT_BROADER[concept]}"}
+        meta = CONCEPT_META.get(node["@id"], {})
+        if meta.get("definition"):
+            node["skos:definition"] = meta["definition"]
+        if meta.get("scheme"):
+            node["skos:inScheme"] = {"@id": meta["scheme"]}
+        concepts.append(node)
+    return concepts
+
+
+def build_role_concepts(nodes: list) -> list:
+    """Erzeugt SKOS-Concept-Knoten fuer jede im Graph verwendete Rolle.
+
+    Die Rolle steht an ihrer Verwendungsstelle als IRI mit eingebettetem Label
+    (E-137). Ihre Definition gehoert nicht an jede der tausenden Stellen,
+    sondern einmal an den Begriff; die Oberflaeche erklaert den Fachbegriff
+    daraus, ohne einen zweiten Erklaertext zu fuehren (E-143).
+    """
+    used: dict[str, str] = {}
+
+    def walk(node):
+        if isinstance(node, dict):
+            role = node.get("role")
+            if isinstance(role, dict):
+                ident = role.get("@id", "")
+                if ident.startswith("m3gim-vocab:"):
+                    # Das Label kommt von der Verwendungsstelle, damit Knoten
+                    # und Anzeige nicht auseinanderlaufen koennen.
+                    used.setdefault(ident, role.get("skos:prefLabel") or "")
+            for value in node.values():
+                walk(value)
+        elif isinstance(node, list):
+            for item in node:
+                walk(item)
+
+    walk(nodes)
+    concepts = []
+    for ident in sorted(used):
+        meta = CONCEPT_META.get(ident, {})
+        if not meta.get("definition"):
+            continue
+        node = {
+            "@id": ident,
+            "@type": "skos:Concept",
+            "skos:prefLabel": used[ident] or ident.split(":", 1)[1],
+            "skos:definition": meta["definition"],
+        }
+        if meta.get("scheme"):
+            node["skos:inScheme"] = {"@id": meta["scheme"]}
         concepts.append(node)
     return concepts
 
@@ -1953,9 +2003,11 @@ def main():
 
     # SKOS-Konzepte fuer verwendete Dokumenttypen (data.md Abschnitt 12)
     dft_concepts = build_dft_concepts(records)
+    role_concepts = build_role_concepts(
+        [fonds] + konvolute + records + annotations + performances)
 
     # JSON-LD Dokument
-    graph = ([fonds] + konvolute + records + dft_concepts
+    graph = ([fonds] + konvolute + records + dft_concepts + role_concepts
              + annotations + performances + stage_role_nodes)
 
     jsonld = {

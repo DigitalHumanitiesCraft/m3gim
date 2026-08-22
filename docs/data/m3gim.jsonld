@@ -57819,12 +57819,19 @@
       "skos:prefLabel": "Autobiografie",
       "skos:broader": {
         "@id": "m3gim-vocab:biographical"
+      },
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:documentaryFormTypes"
       }
     },
     {
       "@id": "m3gim-vocab:biographical",
       "@type": "skos:Concept",
-      "skos:prefLabel": "Biographisch"
+      "skos:prefLabel": "Biographisch",
+      "skos:definition": "Dokument, das den Lebenslauf der Nachlassbildnerin darstellt.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:documentaryFormTypes"
+      }
     },
     {
       "@id": "m3gim-vocab:biography",
@@ -57832,12 +57839,18 @@
       "skos:prefLabel": "Biographie",
       "skos:broader": {
         "@id": "m3gim-vocab:biographical"
+      },
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:documentaryFormTypes"
       }
     },
     {
       "@id": "m3gim-vocab:businessCard",
       "@type": "skos:Concept",
-      "skos:prefLabel": "Visitenkarte"
+      "skos:prefLabel": "Visitenkarte",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:documentaryFormTypes"
+      }
     },
     {
       "@id": "m3gim-vocab:chronicle",
@@ -57845,22 +57858,37 @@
       "skos:prefLabel": "Chronik",
       "skos:broader": {
         "@id": "m3gim-vocab:biographical"
+      },
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:documentaryFormTypes"
       }
     },
     {
       "@id": "m3gim-vocab:collection",
       "@type": "skos:Concept",
-      "skos:prefLabel": "Sammlung"
+      "skos:prefLabel": "Sammlung",
+      "skos:definition": "Zusammenstellung mehrerer Dokumente unter einer Signatur.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:documentaryFormTypes"
+      }
     },
     {
       "@id": "m3gim-vocab:contract",
       "@type": "skos:Concept",
-      "skos:prefLabel": "Vertrag"
+      "skos:prefLabel": "Vertrag",
+      "skos:definition": "Vereinbarung über ein Engagement, eine Aufnahme oder eine Vermittlung.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:documentaryFormTypes"
+      }
     },
     {
       "@id": "m3gim-vocab:correspondence",
       "@type": "skos:Concept",
-      "skos:prefLabel": "Korrespondenz"
+      "skos:prefLabel": "Korrespondenz",
+      "skos:definition": "Schriftwechsel zwischen zwei Parteien.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:documentaryFormTypes"
+      }
     },
     {
       "@id": "m3gim-vocab:envelope",
@@ -57868,17 +57896,29 @@
       "skos:prefLabel": "Briefumschlag",
       "skos:broader": {
         "@id": "m3gim-vocab:correspondence"
+      },
+      "skos:definition": "Umschlag eines Korrespondenzstücks, der als eigenes Objekt erhalten ist und Absender oder Poststempel trägt.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:documentaryFormTypes"
       }
     },
     {
       "@id": "m3gim-vocab:identityDocument",
       "@type": "skos:Concept",
-      "skos:prefLabel": "Identitätsdokument"
+      "skos:prefLabel": "Identitätsdokument",
+      "skos:definition": "Dokument, das die Person ausweist, etwa für Reisen und Grenzübertritte.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:documentaryFormTypes"
+      }
     },
     {
       "@id": "m3gim-vocab:inventory",
       "@type": "skos:Concept",
-      "skos:prefLabel": "Verzeichnis"
+      "skos:prefLabel": "Verzeichnis",
+      "skos:definition": "Aufstellung von Objekten oder Personen, die kein Repertoire verzeichnet.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:documentaryFormTypes"
+      }
     },
     {
       "@id": "m3gim-vocab:musicPeriodical",
@@ -57886,42 +57926,69 @@
       "skos:prefLabel": "Musikzeitschrift",
       "skos:broader": {
         "@id": "m3gim-vocab:press"
+      },
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:documentaryFormTypes"
       }
     },
     {
       "@id": "m3gim-vocab:note",
       "@type": "skos:Concept",
-      "skos:prefLabel": "Notiz"
+      "skos:prefLabel": "Notiz",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:documentaryFormTypes"
+      }
     },
     {
       "@id": "m3gim-vocab:photocopy",
       "@type": "skos:Concept",
-      "skos:prefLabel": "Photokopie"
+      "skos:prefLabel": "Photokopie",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:documentaryFormTypes"
+      }
     },
     {
       "@id": "m3gim-vocab:poster",
       "@type": "skos:Concept",
-      "skos:prefLabel": "Plakat"
+      "skos:prefLabel": "Plakat",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:documentaryFormTypes"
+      }
     },
     {
       "@id": "m3gim-vocab:press",
       "@type": "skos:Concept",
-      "skos:prefLabel": "Presse"
+      "skos:prefLabel": "Presse",
+      "skos:definition": "Erzeugnis der Publizistik, das über die Nachlassbildnerin oder ihr Umfeld berichtet.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:documentaryFormTypes"
+      }
     },
     {
       "@id": "m3gim-vocab:program",
       "@type": "skos:Concept",
-      "skos:prefLabel": "Programm"
+      "skos:prefLabel": "Programm",
+      "skos:definition": "Drucksache zu einer Veranstaltung, die Besetzung und Ablauf verzeichnet.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:documentaryFormTypes"
+      }
     },
     {
       "@id": "m3gim-vocab:receipt",
       "@type": "skos:Concept",
-      "skos:prefLabel": "Quittung"
+      "skos:prefLabel": "Quittung",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:documentaryFormTypes"
+      }
     },
     {
       "@id": "m3gim-vocab:repertoireList",
       "@type": "skos:Concept",
-      "skos:prefLabel": "Repertoireliste"
+      "skos:prefLabel": "Repertoireliste",
+      "skos:definition": "Aufstellung der einstudierten Partien und Werke.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:documentaryFormTypes"
+      }
     },
     {
       "@id": "m3gim-vocab:review",
@@ -57929,17 +57996,504 @@
       "skos:prefLabel": "Rezension",
       "skos:broader": {
         "@id": "m3gim-vocab:press"
+      },
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:documentaryFormTypes"
       }
     },
     {
       "@id": "m3gim-vocab:soundCarrier",
       "@type": "skos:Concept",
-      "skos:prefLabel": "Tonträger"
+      "skos:prefLabel": "Tonträger",
+      "skos:definition": "Physischer Träger einer Aufnahme, etwa eine Schellackplatte.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:documentaryFormTypes"
+      }
     },
     {
       "@id": "m3gim-vocab:typescript",
       "@type": "skos:Concept",
-      "skos:prefLabel": "Typoskript"
+      "skos:prefLabel": "Typoskript",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:documentaryFormTypes"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:addressee",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "adressat",
+      "skos:definition": "Person oder Institution, an die das Dokument gerichtet ist.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:agentRoles"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:airline",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "fluggesellschaft",
+      "skos:definition": "Institution, die eine Flugreise durchgeführt hat. Der Wert belegt die Reiseart.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:agentRoles"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:artistAgent",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "agent",
+      "skos:definition": "Person, die als Künstleragentur oder Agent die Karriere vermittelt.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:agentRoles"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:audienceMember",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "publikum",
+      "skos:definition": "Person, die als Zuschauerin oder Zuschauer anwesend war.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:agentRoles"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:author",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "verfasser",
+      "skos:definition": "Person oder Institution, die das Dokument verfasst hat.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:agentRoles"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:broadcastDate",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "ausstrahlung",
+      "skos:definition": "Datierung der Sendung einer Rundfunkaufnahme.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:annotationRoles"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:broadcastFee",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "rundfunkshonorar",
+      "skos:definition": "Honorar für eine Rundfunkaufnahme oder eine Sendung.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:financialItemTypes"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:commission",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "provision",
+      "skos:definition": "Anteil der Agentur oder der Vermittlung an einer Vergütung.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:financialItemTypes"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:commissioner",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "auftraggeber",
+      "skos:definition": "Person oder Institution, die einen Auftrag erteilt oder eine Tätigkeit finanziert hat.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:agentRoles"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:contractPlace",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "vertragsort",
+      "skos:definition": "Ort, an dem ein Vertrag geschlossen wurde.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:annotationRoles"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:contractingParty",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "vertragspartner",
+      "skos:definition": "Gegenpartei eines Vertrags.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:agentRoles"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:conversationDate",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "gespräch",
+      "skos:definition": "Datierung eines im Dokument belegten Gesprächs.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:annotationRoles"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:creation",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "entstehung",
+      "skos:definition": "Bezug einer Orts- oder Datumsangabe auf die Entstehung des Dokuments.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:annotationRoles"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:departure",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "abreise",
+      "skos:definition": "Bezug einer Orts- oder Datumsangabe auf den Antritt einer Reise.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:annotationRoles"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:depicted",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "abgebildet",
+      "skos:definition": "Person, die auf einer Fotografie oder einem Plakat abgebildet ist.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:agentRoles"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:destinationPlace",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "zielort",
+      "skos:definition": "Ort, zu dem eine Reise führt.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:annotationRoles"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:dispatch",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "absendung",
+      "skos:definition": "Bezug einer Orts- oder Datumsangabe auf das Absenden eines Korrespondenzstücks.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:annotationRoles"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:dressRehearsal",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "generalprobe",
+      "skos:definition": "Letzte Probe unter Aufführungsbedingungen.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:annotationRoles"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:educationalInstitution",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "ausbildungsstätte",
+      "skos:definition": "Institution, an der eine Ausbildung stattfand.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:agentRoles"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:employer",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "arbeitgeber",
+      "skos:definition": "Institution, bei der ein Engagement bestand.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:agentRoles"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:framingEvent",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "rahmenveranstaltung",
+      "skos:definition": "Übergeordnete Veranstaltung, in deren Rahmen ein Ereignis stattfindet.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:annotationRoles"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:galaPerformance",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "festvorstellung",
+      "skos:definition": "Vorstellung zu einem festlichen Anlass.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:annotationRoles"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:guestPerformance",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "gastspiel",
+      "skos:definition": "Auftritt außerhalb des Hauses, an dem ein Engagement besteht.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:annotationRoles"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:holder",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "inhaber",
+      "skos:definition": "Person, die Inhaberin eines Rechts, eines Amtes oder eines Betriebs ist.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:agentRoles"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:installmentPeriod",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "ratenzahlung",
+      "skos:definition": "Zeitraum einer in Raten geleisteten Zahlung.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:annotationRoles"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:intermediary",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "vermittler",
+      "skos:definition": "Person oder Institution, die ein Engagement oder einen Kontakt vermittelt hat.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:agentRoles"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:issueDate",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "ausstellungsdatum",
+      "skos:definition": "Datierung der Ausstellung eines Vertrags, Ausweises oder einer Urkunde.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:annotationRoles"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:mentioned",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "erwähnt",
+      "skos:definition": "Entität, die im Dokument genannt wird, ohne dass eine bestimmtere Rolle erschließbar ist.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:relationQualifiers"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:organizer",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "veranstalter",
+      "skos:definition": "Institution, die eine Veranstaltung ausrichtet.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:agentRoles"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:performance",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "aufführung",
+      "skos:definition": "Bezug auf eine Aufführung, als Ereignis, als Werkbezug oder als Datierung.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:annotationRoles"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:performanceFee",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "abendgage",
+      "skos:definition": "Honorar für einen einzelnen Auftritt.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:financialItemTypes"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:performancePlace",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "auffuehrungsort",
+      "skos:definition": "Ort, an dem eine Aufführung stattfand. Der Wert steht auch an Institutionen, die dann als Ortsvertreter dienen.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:annotationRoles"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:performer",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "interpret",
+      "skos:definition": "Oberbegriff für eine mitwirkende Person, wenn Stimmfach oder Funktion nicht bestimmbar sind.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:agentRoles"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:premiere",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "premiere",
+      "skos:definition": "Erste Vorstellung einer Produktion.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:annotationRoles"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:productionDesigner",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "ausstatter",
+      "skos:definition": "Person, die Bühnenbild und Kostüm gemeinsam verantwortet.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:agentRoles"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:publicationDate",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "erscheinungsdatum",
+      "skos:definition": "Datierung des Erscheinens einer Publikation.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:annotationRoles"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:publisher",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "herausgeber",
+      "skos:definition": "Person oder Institution, die eine Publikation herausgibt. Bei Presseerzeugnissen ist es meist die Institution.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:agentRoles"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:receiving",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "empfangnahme",
+      "skos:definition": "Bezug einer Orts- oder Datumsangabe auf den Empfang eines Korrespondenzstücks.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:annotationRoles"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:reception",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "empfang",
+      "skos:definition": "Gesellschaftlicher Empfang im Umfeld einer Aufführung. Im Modell auf die Rahmenveranstaltung geführt.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:annotationRoles"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:recipient",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "empfänger",
+      "skos:definition": "Person oder Institution, die ein Korrespondenzstück empfangen hat.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:agentRoles"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:recording",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "aufnahme",
+      "skos:definition": "Rundfunk- oder Tonaufnahme. Sie zählt zur diskursiven Mobilität, weil sie die Stimme über den Aufführungsort hinaus verbreitet.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:annotationRoles"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:rehearsalStartDate",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "probenbeginn",
+      "skos:definition": "Datierung des Probenbeginns einer Produktion.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:annotationRoles"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:repertoire",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "repertoire",
+      "skos:definition": "Werk als Bestandteil des einstudierten Repertoires, ohne Bezug auf eine bestimmte Aufführung.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:annotationRoles"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:repetiteur",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "repetitor",
+      "skos:definition": "Person, die Sängerinnen und Sänger am Klavier einstudiert.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:agentRoles"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:residencePlace",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "wohnort",
+      "skos:definition": "Ort, an dem eine Person gewohnt hat.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:annotationRoles"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:revival",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "wiederaufnahme",
+      "skos:definition": "Erneute Aufnahme einer Produktion in den Spielplan.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:annotationRoles"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:season",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "spielzeit",
+      "skos:definition": "Zeitraum eines Engagements an einem Haus, als Spielzeit bezeichnet.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:annotationRoles"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:signatory",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "unterzeichner",
+      "skos:definition": "Person, die das Dokument unterschrieben hat.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:agentRoles"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:singer",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "sänger",
+      "skos:definition": "Person, die in einer Aufführung singt.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:agentRoles"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:totalRemuneration",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "gesamtvergütung",
+      "skos:definition": "Summe der Vergütung eines Engagements oder eines Vertrags.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:financialItemTypes"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:transferDate",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "überweisung",
+      "skos:definition": "Datierung einer Zahlung.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:annotationRoles"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:travelExpenses",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "reisekosten",
+      "skos:definition": "Erstattete oder vereinbarte Kosten einer Reise.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:financialItemTypes"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:wageConfirmationDate",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "lohnbestätigung",
+      "skos:definition": "Datierung der Bestätigung einer Vergütung.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:annotationRoles"
+      }
     },
     {
       "@id": "m3gim-data:ev_NIM_004_34_8b2fc9e2",
@@ -74885,7 +75439,7 @@
       "rico:name": "Matelot"
     }
   ],
-  "m3gim-ontology:exportDate": "2026-08-22T19:13:55.346631",
+  "m3gim-ontology:exportDate": "2026-08-22T19:43:31.989914",
   "m3gim-ontology:recordCount": 895,
   "m3gim-ontology:recordSetCount": 17,
   "m3gim-ontology:approvedManualMatches": 385,
