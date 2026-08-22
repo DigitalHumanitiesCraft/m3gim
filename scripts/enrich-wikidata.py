@@ -25,7 +25,7 @@ from pathlib import Path
 
 # Pipeline-Shared-Utilities (scripts/_common.py)
 sys.path.insert(0, str(Path(__file__).parent))
-from _common import is_approved_match  # noqa: E402
+from _common import is_approved_match, strip_zero_date_padding  # noqa: E402
 
 # Windows-Konsole: UTF-8 erzwingen
 if sys.stdout.encoding != "utf-8":
@@ -169,7 +169,7 @@ def extract_claim_value(claim: dict) -> dict | str | None:
             elif precision == 10:
                 clean = clean[:7]
         # Guard for a value without precision: no zero month or day survives.
-        return re.sub(r"(-00)+$", "", clean)
+        return strip_zero_date_padding(clean)
 
     elif vtype == "globecoordinate":
         return {

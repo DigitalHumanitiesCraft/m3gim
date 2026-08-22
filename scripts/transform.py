@@ -38,6 +38,7 @@ from _common import (
     extract_bearbeitungsnotiz,
     is_approved_match,
     normalize_bearbeitungsstand,
+    strip_zero_date_padding,
     INDEX_HEADER_SHIFTS,
 )
 
@@ -1632,7 +1633,12 @@ def add_relations_to_records(records: list, relations: dict,
 # ---------------------------------------------------------------------------
 
 def _inject_enrichment(entry: dict, props: dict):
-    """Injiziert Wikidata-Enrichment-Properties in eine Entitaet."""
+    """Injiziert Wikidata-Enrichment-Properties in eine Entitaet.
+
+    Die Datumswerte laufen durch ``strip_zero_date_padding``, weil der
+    Enrichment-Cache aus einem Lauf vor der Praezisions-Normalisierung stammen
+    kann und die Wikidata-Nullform sonst in den Datensatz durchschlaegt (E-132).
+    """
     # Personen
     if "occupation" in props:
         labels = [o.get("label", o.get("qid", "")) for o in props["occupation"]
@@ -1646,9 +1652,9 @@ def _inject_enrichment(entry: dict, props: dict):
         elif isinstance(items, dict):
             entry["m3gim:voiceType"] = items.get("label", "")
     if "birthDate" in props:
-        entry["schema:birthDate"] = props["birthDate"]
+        entry["schema:birthDate"] = strip_zero_date_padding(props["birthDate"])
     if "deathDate" in props:
-        entry["schema:deathDate"] = props["deathDate"]
+        entry["schema:deathDate"] = strip_zero_date_padding(props["deathDate"])
     if "birthPlace" in props:
         bp = props["birthPlace"]
         if isinstance(bp, dict):
@@ -1681,9 +1687,9 @@ def _inject_enrichment(entry: dict, props: dict):
         elif isinstance(items, dict):
             entry["m3gim:wdGenre"] = items.get("label", "")
     if "premiereDate" in props:
-        entry["m3gim:wdPremiereDate"] = props["premiereDate"]
+        entry["m3gim:wdPremiereDate"] = strip_zero_date_padding(props["premiereDate"])
     elif "publicationDate" in props:
-        entry["m3gim:wdPremiereDate"] = props["publicationDate"]
+        entry["m3gim:wdPremiereDate"] = strip_zero_date_padding(props["publicationDate"])
 
     # Organisationen
     if "location" in props:
@@ -1691,7 +1697,7 @@ def _inject_enrichment(entry: dict, props: dict):
         if isinstance(loc, dict):
             entry["m3gim:wdLocation"] = loc.get("label", loc.get("qid", ""))
     if "inception" in props:
-        entry["m3gim:inception"] = props["inception"]
+        entry["m3gim:inception"] = strip_zero_date_padding(props["inception"])
 
 
 # ---------------------------------------------------------------------------

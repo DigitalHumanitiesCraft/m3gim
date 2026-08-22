@@ -163,3 +163,19 @@ def attach_xlsx_source(target: dict, rel: dict, key: str = "_source") -> None:
     source = rel.get(key)
     if source:
         target["m3gim:xlsxSource"] = source
+
+
+def strip_zero_date_padding(value):
+    """Drop Wikidata's zero padding from a date literal.
+
+    Wikidata serialises every time value at full width and carries the real
+    granularity in a separate `precision` field, so a year-only date arrives as
+    1841-00-00, which is no date under ISO 8601. Cutting the trailing zero
+    groups restores the attested precision (E-132). Values without padding and
+    non-string values pass through unchanged.
+    """
+    if not isinstance(value, str):
+        return value
+    if not re.fullmatch(r"\d{4}(-\d{2}){1,2}", value):
+        return value
+    return re.sub(r"(-00)+$", "", value)

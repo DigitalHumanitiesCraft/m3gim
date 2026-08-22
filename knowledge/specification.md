@@ -264,5 +264,5 @@ Nur offene, blockierte und zurückgestellte Pakete; Erledigtes steht in [journal
 | Weitere Reconciliation-Runde | optional | Unmatched-Restliste, nicht blockierend |
 | Test-Regression NIM_168 | quellseitig offen | `test_04` mit xfail strict gelockt, Folio-Granularität zwischen den Quelltabellen, siehe Datenfehler-Register QF-07 |
 | Nächste Datenstufe Forschungsdaten | offen | Stufen 1 bis 3, siehe oben |
-| Anreicherungslauf nach der Präzisions-Normalisierung | offen | `enrich-wikidata.py --force` plus Transformationslauf; bis dahin trägt der Datensatz die Wikidata-Nullform, `test_39` hält das mit xfail strict, siehe Datenfehler-Register AF-04 und E-132 |
+| Anreicherungslauf mit frischem Wikidata-Abruf | offen | Betrifft nicht mehr die Datumsform, sondern die zehn seit April rekonzilierten und noch nicht angereicherten Entitäten sowie zwischenzeitliche Wikidata-Änderungen; die Nullform ist ohne Netzabruf über `strip_zero_date_padding` beseitigt (E-132) |
 | Deferred Aufräumarbeiten und Modell-Erweiterungen | zurückgestellt | siehe § Deferred |

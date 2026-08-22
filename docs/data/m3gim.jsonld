@@ -4396,7 +4396,7 @@
         "name": "Universität Mozarteum Salzburg",
         "@id": "wd:Q871369",
         "owl:sameAs": "http://www.wikidata.org/entity/Q871369",
-        "m3gim:inception": "1841-00-00",
+        "m3gim:inception": "1841",
         "role": "ausbildungsstätte",
         "m3gim:xlsxSource": {
           "m3gim:xlsxSheet": "Box_01",
@@ -4765,8 +4765,8 @@
             "Sänger",
             "Opernsänger"
           ],
-          "schema:birthDate": "1914-00-00",
-          "schema:deathDate": "2005-00-00",
+          "schema:birthDate": "1914",
+          "schema:deathDate": "2005",
           "schema:birthPlace": "Nürnberg",
           "role": "sänger",
           "m3gim:xlsxSource": {
@@ -5364,8 +5364,8 @@
             "Musikwissenschaftler",
             "Musikkritiker"
           ],
-          "schema:birthDate": "1907-00-00",
-          "schema:deathDate": "1989-00-00",
+          "schema:birthDate": "1907",
+          "schema:deathDate": "1989",
           "schema:birthPlace": "Düsseldorf",
           "role": "verfasser",
           "m3gim:xlsxSource": {
@@ -5569,8 +5569,8 @@
           "gndo:professionOrOccupationAsLiteral": [
             "Komponist"
           ],
-          "schema:birthDate": "1896-00-00",
-          "schema:deathDate": "1960-00-00",
+          "schema:birthDate": "1896",
+          "schema:deathDate": "1960",
           "schema:birthPlace": "Hannover",
           "schema:deathPlace": "München",
           "role": "chorleiter",
@@ -6418,8 +6418,8 @@
           "gndo:professionOrOccupationAsLiteral": [
             "Komponist"
           ],
-          "schema:birthDate": "1896-00-00",
-          "schema:deathDate": "1960-00-00",
+          "schema:birthDate": "1896",
+          "schema:deathDate": "1960",
           "schema:birthPlace": "Hannover",
           "schema:deathPlace": "München",
           "role": "chorleiter",
@@ -6694,7 +6694,7 @@
           "gndo:professionOrOccupationAsLiteral": [
             "Chorleiter"
           ],
-          "schema:birthDate": "1900-00-00",
+          "schema:birthDate": "1900",
           "schema:birthPlace": "Neapel",
           "role": "chorleiter",
           "m3gim:xlsxSource": {
@@ -7499,7 +7499,7 @@
             "Schriftsteller"
           ],
           "schema:birthDate": "1879-12-02",
-          "schema:deathDate": "1923-00-00",
+          "schema:deathDate": "1923",
           "schema:birthPlace": "Q490521",
           "role": "erwähnt",
           "m3gim:xlsxSource": {
@@ -8019,8 +8019,8 @@
           "gndo:professionOrOccupationAsLiteral": [
             "Opernsänger"
           ],
-          "schema:birthDate": "1910-00-00",
-          "schema:deathDate": "1997-00-00",
+          "schema:birthDate": "1910",
+          "schema:deathDate": "1997",
           "schema:birthPlace": "Hagen",
           "schema:deathPlace": "Stuttgart",
           "role": "sänger",
@@ -8429,7 +8429,7 @@
             "wissenschaftlicher Sammler"
           ],
           "schema:birthDate": "1925-01-01",
-          "schema:deathDate": "1987-00-00",
+          "schema:deathDate": "1987",
           "schema:birthPlace": "Dallas",
           "role": "sänger",
           "m3gim:xlsxSource": {
@@ -9959,7 +9959,7 @@
             "Schriftsteller"
           ],
           "schema:birthDate": "1879-12-02",
-          "schema:deathDate": "1923-00-00",
+          "schema:deathDate": "1923",
           "schema:birthPlace": "Q490521",
           "m3gim:xlsxSource": {
             "m3gim:xlsxSheet": "Box_01",
@@ -10005,7 +10005,7 @@
             "Geologe",
             "Hochschullehrer"
           ],
-          "schema:birthDate": "1947-00-00",
+          "schema:birthDate": "1947",
           "schema:deathDate": "2025-02-15",
           "schema:birthPlace": "Rothenberga",
           "schema:deathPlace": "Fichtenberg",
@@ -11188,7 +11188,7 @@
           "name": "Carmen",
           "@id": "wd:Q674832",
           "owl:sameAs": "http://www.wikidata.org/entity/Q674832",
-          "m3gim:wdPremiereDate": "1847-00-00",
+          "m3gim:wdPremiereDate": "1847",
           "role": "erwähnt",
           "m3gim:xlsxSource": {
             "m3gim:xlsxSheet": "Box_01",
@@ -11399,7 +11399,7 @@
           "@id": "wd:Q10583424",
           "owl:sameAs": "http://www.wikidata.org/entity/Q10583424",
           "m3gim:wdLocation": "Lincoln Square",
-          "m3gim:inception": "1880-00-00",
+          "m3gim:inception": "1880",
           "role": "erwähnt",
           "m3gim:xlsxSource": {
             "m3gim:xlsxSheet": "Box_01",
@@ -12442,7 +12442,7 @@
           "name": "Carmen",
           "@id": "wd:Q674832",
           "owl:sameAs": "http://www.wikidata.org/entity/Q674832",
-          "m3gim:wdPremiereDate": "1847-00-00",
+          "m3gim:wdPremiereDate": "1847",
           "role": "erwähnt",
           "m3gim:xlsxSource": {
             "m3gim:xlsxSheet": "Box_01",
@@ -12948,7 +12948,7 @@
           "name": "Carmen",
           "@id": "wd:Q674832",
           "owl:sameAs": "http://www.wikidata.org/entity/Q674832",
-          "m3gim:wdPremiereDate": "1847-00-00",
+          "m3gim:wdPremiereDate": "1847",
           "role": "erwähnt",
           "m3gim:xlsxSource": {
             "m3gim:xlsxSheet": "Box_01",
@@ -13516,7 +13516,7 @@
           "name": "Willy Heyer",
           "@id": "wd:Q95264973",
           "owl:sameAs": "http://www.wikidata.org/entity/Q95264973",
-          "schema:birthDate": "1895-00-00",
+          "schema:birthDate": "1895",
           "role": "sänger",
           "m3gim:xlsxSource": {
             "m3gim:xlsxSheet": "Box_01",
@@ -13592,7 +13592,7 @@
           "@id": "wd:Q872222",
           "owl:sameAs": "http://www.wikidata.org/entity/Q872222",
           "m3gim:wdLocation": "Salle Favart",
-          "m3gim:inception": "1715-00-00",
+          "m3gim:inception": "1715",
           "role": "erwähnt",
           "m3gim:xlsxSource": {
             "m3gim:xlsxSheet": "Box_01",
@@ -13618,7 +13618,7 @@
           "m3gim:wdGenre": [
             "Oper"
           ],
-          "m3gim:wdPremiereDate": "1977-00-00",
+          "m3gim:wdPremiereDate": "1977",
           "role": "aufführung",
           "m3gim:xlsxSource": {
             "m3gim:xlsxSheet": "Box_01",
@@ -13750,7 +13750,7 @@
             "wissenschaftlicher Sammler"
           ],
           "schema:birthDate": "1925-01-01",
-          "schema:deathDate": "1987-00-00",
+          "schema:deathDate": "1987",
           "schema:birthPlace": "Dallas",
           "role": "sänger",
           "m3gim:xlsxSource": {
@@ -18223,7 +18223,7 @@
           "name": "Nord- und Westdeutscher Rundfunkverband",
           "@id": "wd:Q1997444",
           "owl:sameAs": "http://www.wikidata.org/entity/Q1997444",
-          "m3gim:inception": "1956-00-00",
+          "m3gim:inception": "1956",
           "role": "verfasser",
           "m3gim:xlsxSource": {
             "m3gim:xlsxSheet": "Box_01",
@@ -18655,7 +18655,7 @@
           "m3gim:wdGenre": [
             "Lyrik"
           ],
-          "m3gim:wdPremiereDate": "1795-00-00",
+          "m3gim:wdPremiereDate": "1795",
           "role": "aufführung",
           "m3gim:xlsxSource": {
             "m3gim:xlsxSheet": "Box_01",
@@ -18802,7 +18802,7 @@
           "m3gim:wdGenre": [
             "Musik der Romantik"
           ],
-          "m3gim:wdPremiereDate": "1898-00-00",
+          "m3gim:wdPremiereDate": "1898",
           "role": "aufführung",
           "m3gim:xlsxSource": {
             "m3gim:xlsxSheet": "Box_01",
@@ -19379,7 +19379,7 @@
           "gndo:professionOrOccupationAsLiteral": [
             "Informatiker"
           ],
-          "schema:birthDate": "1966-00-00",
+          "schema:birthDate": "1966",
           "role": "sänger",
           "m3gim:xlsxSource": {
             "m3gim:xlsxSheet": "Box_01",
@@ -19445,7 +19445,7 @@
           "gndo:professionOrOccupationAsLiteral": [
             "Opernsänger"
           ],
-          "schema:birthDate": "1939-00-00",
+          "schema:birthDate": "1939",
           "schema:birthPlace": "Chemnitz",
           "role": "sänger",
           "m3gim:xlsxSource": {
@@ -19793,7 +19793,7 @@
           "gndo:professionOrOccupationAsLiteral": [
             "Opernsänger"
           ],
-          "schema:birthDate": "1939-00-00",
+          "schema:birthDate": "1939",
           "schema:birthPlace": "Chemnitz",
           "role": "sänger",
           "m3gim:xlsxSource": {
@@ -19810,7 +19810,7 @@
           "gndo:professionOrOccupationAsLiteral": [
             "Informatiker"
           ],
-          "schema:birthDate": "1966-00-00",
+          "schema:birthDate": "1966",
           "role": "sänger",
           "m3gim:xlsxSource": {
             "m3gim:xlsxSheet": "Box_01",
@@ -20074,7 +20074,7 @@
           "gndo:professionOrOccupationAsLiteral": [
             "Opernsänger"
           ],
-          "schema:birthDate": "1939-00-00",
+          "schema:birthDate": "1939",
           "schema:birthPlace": "Chemnitz",
           "role": "sänger",
           "m3gim:xlsxSource": {
@@ -20091,7 +20091,7 @@
           "gndo:professionOrOccupationAsLiteral": [
             "Informatiker"
           ],
-          "schema:birthDate": "1966-00-00",
+          "schema:birthDate": "1966",
           "role": "sänger",
           "m3gim:xlsxSource": {
             "m3gim:xlsxSheet": "Box_01",
@@ -20344,7 +20344,7 @@
           "gndo:professionOrOccupationAsLiteral": [
             "Opernsänger"
           ],
-          "schema:birthDate": "1939-00-00",
+          "schema:birthDate": "1939",
           "schema:birthPlace": "Chemnitz",
           "role": "sänger",
           "m3gim:xlsxSource": {
@@ -20361,7 +20361,7 @@
           "gndo:professionOrOccupationAsLiteral": [
             "Informatiker"
           ],
-          "schema:birthDate": "1966-00-00",
+          "schema:birthDate": "1966",
           "role": "sänger",
           "m3gim:xlsxSource": {
             "m3gim:xlsxSheet": "Box_01",
@@ -20634,7 +20634,7 @@
           "gndo:professionOrOccupationAsLiteral": [
             "Opernsänger"
           ],
-          "schema:birthDate": "1939-00-00",
+          "schema:birthDate": "1939",
           "schema:birthPlace": "Chemnitz",
           "role": "sänger",
           "m3gim:xlsxSource": {
@@ -20651,7 +20651,7 @@
           "gndo:professionOrOccupationAsLiteral": [
             "Informatiker"
           ],
-          "schema:birthDate": "1966-00-00",
+          "schema:birthDate": "1966",
           "role": "sänger",
           "m3gim:xlsxSource": {
             "m3gim:xlsxSheet": "Box_01",
@@ -21067,7 +21067,7 @@
             "Literaturwissenschaftler",
             "Bibliothekar"
           ],
-          "schema:birthDate": "1895-00-00",
+          "schema:birthDate": "1895",
           "schema:deathDate": "1972-12-16",
           "role": "komponist",
           "m3gim:xlsxSource": {
@@ -23984,7 +23984,7 @@
           "name": "Die Jahreszeiten",
           "@id": "wd:Q1213668",
           "owl:sameAs": "http://www.wikidata.org/entity/Q1213668",
-          "m3gim:wdPremiereDate": "1967-00-00",
+          "m3gim:wdPremiereDate": "1967",
           "role": "repertoire",
           "m3gim:xlsxSource": {
             "m3gim:xlsxSheet": "Box_01",
@@ -24183,7 +24183,7 @@
           "name": "Pulcinella",
           "@id": "wd:Q86670408",
           "owl:sameAs": "http://www.wikidata.org/entity/Q86670408",
-          "m3gim:wdPremiereDate": "1965-00-00",
+          "m3gim:wdPremiereDate": "1965",
           "role": "repertoire",
           "m3gim:xlsxSource": {
             "m3gim:xlsxSheet": "Box_01",
@@ -38339,7 +38339,7 @@
           "@id": "wd:Q10583424",
           "owl:sameAs": "http://www.wikidata.org/entity/Q10583424",
           "m3gim:wdLocation": "Lincoln Square",
-          "m3gim:inception": "1880-00-00",
+          "m3gim:inception": "1880",
           "role": "erwähnt",
           "m3gim:xlsxSource": {
             "m3gim:xlsxSheet": "Box 5",
@@ -47461,7 +47461,7 @@
             "Schriftsteller"
           ],
           "schema:birthDate": "1879-12-02",
-          "schema:deathDate": "1923-00-00",
+          "schema:deathDate": "1923",
           "schema:birthPlace": "Q490521",
           "role": "beleuchter",
           "m3gim:xlsxSource": {
@@ -47515,7 +47515,7 @@
             "Geologe",
             "Hochschullehrer"
           ],
-          "schema:birthDate": "1947-00-00",
+          "schema:birthDate": "1947",
           "schema:deathDate": "2025-02-15",
           "schema:birthPlace": "Rothenberga",
           "schema:deathPlace": "Fichtenberg",
@@ -47944,7 +47944,7 @@
             "Schriftsteller"
           ],
           "schema:birthDate": "1879-12-02",
-          "schema:deathDate": "1923-00-00",
+          "schema:deathDate": "1923",
           "schema:birthPlace": "Q490521",
           "role": "beleuchter",
           "m3gim:xlsxSource": {
@@ -47998,7 +47998,7 @@
             "Geologe",
             "Hochschullehrer"
           ],
-          "schema:birthDate": "1947-00-00",
+          "schema:birthDate": "1947",
           "schema:deathDate": "2025-02-15",
           "schema:birthPlace": "Rothenberga",
           "schema:deathPlace": "Fichtenberg",
@@ -61290,7 +61290,7 @@
       "rico:name": "Matelot"
     }
   ],
-  "m3gim:exportDate": "2026-08-22T08:47:25.387466",
+  "m3gim:exportDate": "2026-08-22T09:35:42.724141",
   "m3gim:recordCount": 895,
   "m3gim:konvolutCount": 17,
   "m3gim:approvedManualMatches": 261,

@@ -248,17 +248,6 @@ def test_date_bearing_properties_are_discovered(graph):
     assert checked >= 500, f"Nur {checked} Datumswerte in der Pruefung"
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "data/output/m3gim.jsonld stammt aus dem Anreicherungslauf vor der "
-        "Praezisions-Normalisierung in extract_claim_value; schema:birthDate, "
-        "schema:deathDate, m3gim:wdPremiereDate und m3gim:inception tragen "
-        "dort noch die Wikidata-Nullform YYYY-00-00 (AF-04). Der Marker faellt, "
-        "sobald enrich-wikidata.py --force und transform.py gegen data/output "
-        "nachgeholt sind."
-    ),
-)
 def test_dataset_dates_are_valid_calendar_dates(graph):
     """Jeder Datumswert ist ein gueltiges Kalenderdatum oder eine belegte
     Verkuerzung auf Jahr oder Jahr und Monat."""
