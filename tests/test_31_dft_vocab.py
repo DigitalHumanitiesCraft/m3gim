@@ -13,18 +13,18 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
 
-DFT_PREFIX = "m3gim-dft:"
+DFT_PREFIX = "m3gim-vocab:"
 
 # Erwartete deutsche Labels für die in den April-Daten belegten Typen.
 EXPECTED_LABELS = {
-    "m3gim-dft:korrespondenz": "Korrespondenz",
-    "m3gim-dft:presse": "Presse",
-    "m3gim-dft:rezension": "Rezension",
-    "m3gim-dft:sammlung": "Sammlung",
-    "m3gim-dft:plakat": "Plakat",
-    "m3gim-dft:vertrag": "Vertrag",
-    "m3gim-dft:identitaetsdokument": "Identitätsdokument",
-    "m3gim-dft:tontraeger": "Tonträger",
+    "m3gim-vocab:correspondence": "Korrespondenz",
+    "m3gim-vocab:press": "Presse",
+    "m3gim-vocab:review": "Rezension",
+    "m3gim-vocab:collection": "Sammlung",
+    "m3gim-vocab:poster": "Plakat",
+    "m3gim-vocab:contract": "Vertrag",
+    "m3gim-vocab:identityDocument": "Identitätsdokument",
+    "m3gim-vocab:soundCarrier": "Tonträger",
 }
 
 
@@ -41,18 +41,18 @@ def test_sammlung_is_own_concept_without_broader(records, graph):
     gemappt) und trägt kein `skos:broader` — die is-a-Beziehung zu konvolut
     wird nicht vorentschieden (data.md § 12)."""
     concepts = _dft_concepts(graph)
-    assert "m3gim-dft:sammlung" in concepts, (
-        "m3gim-dft:sammlung fehlt im Graph — sammlung-Records mappen noch auf "
+    assert "m3gim-vocab:collection" in concepts, (
+        "m3gim-vocab:collection fehlt im Graph — sammlung-Records mappen noch auf "
         "konvolut statt auf ein eigenes Concept (E-101)."
     )
-    assert "skos:broader" not in concepts["m3gim-dft:sammlung"], (
+    assert "skos:broader" not in concepts["m3gim-vocab:collection"], (
         "sammlung darf kein skos:broader tragen (data.md § 12)."
     )
     # data-backed: die sammlung-Records (häufigster Typ) zeigen auf das Concept.
     refs = [
         r["@id"] for r in records
         if isinstance(r.get("rico:hasDocumentaryFormType"), dict)
-        and r["rico:hasDocumentaryFormType"].get("@id") == "m3gim-dft:sammlung"
+        and r["rico:hasDocumentaryFormType"].get("@id") == "m3gim-vocab:collection"
     ]
     assert len(refs) >= 10, (
         f"Nur {len(refs)} Records mit dft:sammlung — Mapping greift nicht."
@@ -93,16 +93,21 @@ def test_new_concepts_scaffolded():
     sie erst mit dem tieferen Export; hier nur die Struktur-Spec."""
     from transform import DFT_BROADER, DOKUMENTTYP_TO_DFT
 
-    assert DFT_BROADER.get("briefumschlag") == "korrespondenz"
-    assert DFT_BROADER.get("musikzeitschrift") == "presse"
-    assert DFT_BROADER.get("chronik") == "biographisch"
+    assert DFT_BROADER.get("envelope") == "correspondence"
+    assert DFT_BROADER.get("musicPeriodical") == "press"
+    assert DFT_BROADER.get("chronicle") == "biographical"
     # verzeichnis und sammlung sind top-level / eigenständig (kein broader).
-    assert "verzeichnis" not in DFT_BROADER
-    assert "sammlung" not in DFT_BROADER
+    assert "inventory" not in DFT_BROADER
+    assert "collection" not in DFT_BROADER
     # Dokumenttyp-Mapping kennt die neuen Typen + sammlung als eigenes Concept.
-    assert DOKUMENTTYP_TO_DFT.get("sammlung") == "m3gim-dft:sammlung"
-    for t in ("briefumschlag", "musikzeitschrift", "chronik", "verzeichnis"):
-        assert DOKUMENTTYP_TO_DFT.get(t) == f"m3gim-dft:{t}", f"{t} nicht gemappt"
+    assert DOKUMENTTYP_TO_DFT.get("sammlung") == "m3gim-vocab:collection"
+    for source_value, concept in (("briefumschlag", "envelope"),
+                                  ("musikzeitschrift", "musicPeriodical"),
+                                  ("chronik", "chronicle"),
+                                  ("verzeichnis", "inventory")):
+        assert DOKUMENTTYP_TO_DFT.get(source_value) == f"m3gim-vocab:{concept}", (
+            f"{source_value} nicht gemappt"
+        )
 
 
 def test_dft_aboutness_not_subject(records):

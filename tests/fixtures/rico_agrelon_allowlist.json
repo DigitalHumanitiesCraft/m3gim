@@ -11,6 +11,7 @@
     "rico:title",
     "rico:name",
     "rico:date",
+    "rico:creationDate",
     "rico:hasExtent",
     "rico:generalDescription",
     "rico:scopeAndContent",

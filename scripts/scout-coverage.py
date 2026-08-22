@@ -9,16 +9,16 @@ Frontend im Store sieht:
 
 - Orte aus rico:hasOrHadLocation an den Records, Stadt-konsolidiert via cityOf
   (utils/format.js), Datums-Strings als Ort herausgefiltert.
-- Mobilitaet aus den Top-Level m3gim:SpatiotemporalEvents
-  (m3gim:atPlace / m3gim:atDate / m3gim:eventRole / geo-Koordinaten).
+- Mobilitaet aus den Top-Level-Annotationen mit Ort
+  (m3gim-ontology:atPlace / m3gim-ontology:atDate / role / geo-Koordinaten).
 - Netzwerk, Rollen, Werke aus den Fokus-Records. Personen werden strukturell
-  getrennt in Akteure (m3gim:hasAssociatedAgent) und erwaehnte Subjekte
+  getrennt in Akteure (m3gim-ontology:hasAssociatedAgent) und erwaehnte Subjekte
   (rico:hasOrHadSubject @type rico:Person), weil nur Erstere belegte
   Mitwirkende sind und Letztere oft Komponisten oder Genannte.
 
 Schreibt nichts; reiner Konsolenreport. Die Kopplung "Person/Rolle steht im
 selben Record wie der Ort" ist nicht identisch mit "nachweislich an dem Ort":
-die raumzeitlich exakte Verortung liegt auf den SpatiotemporalEvents, die
+die raumzeitlich exakte Verortung liegt auf den Annotationsknoten, die
 Record-Achsen buendeln den weiteren Dokumentkontext.
 
 Verwendung:
@@ -55,6 +55,14 @@ def node_type(node):
     return ",".join(t) if isinstance(t, list) else t
 
 
+def role_label(node):
+    """Anzeigetext der Rolle eines Knotens, aus dem mitgefuehrten prefLabel."""
+    role = node.get("role")
+    if isinstance(role, dict):
+        return role.get("skos:prefLabel", "")
+    return role or ""
+
+
 def city_of(name):
     """Stadt-Ebene wie utils/format.js cityOf: Teil vor dem ersten Komma."""
     if not name:
@@ -75,20 +83,20 @@ def load_graph(path):
 
 
 def build_mobility_events(graph):
-    """Spiegelt loader.js indexMobilityEvent (Top-Level SpatiotemporalEvents)."""
+    """Spiegelt loader.js indexMobilityEvent (Top-Level-Annotationen)."""
     events = {}
     for node in graph:
-        if node_type(node) != "m3gim:SpatiotemporalEvent":
+        if node_type(node) != "m3gim-ontology:Annotation":
             continue
-        place = node.get("m3gim:atPlace") or {}
+        place = node.get("m3gim-ontology:atPlace") or {}
         qid = place.get("@id")
         events[node["@id"]] = {
             "place": place.get("name") or place.get("skos:prefLabel"),
             "wikidata": qid if str(qid or "").startswith("wd:") else None,
             "lat": place.get("geo:lat"),
             "lon": place.get("geo:long"),
-            "date": node.get("m3gim:atDate"),
-            "role": node.get("m3gim:eventRole"),
+            "date": node.get("m3gim-ontology:atDate"),
+            "role": role_label(node) or None,
             "record": (node.get("agrelon:metadataProvenance") or {}).get("@id"),
         }
     return events
@@ -108,8 +116,8 @@ def build_locations(graph):
                 name, {"records": set(), "roles": set(), "wikidata": loc.get("@id")}
             )
             entry["records"].add(node["@id"])
-            if loc.get("role"):
-                entry["roles"].add(loc["role"])
+            if role_label(loc):
+                entry["roles"].add(role_label(loc))
     return locations
 
 
@@ -132,7 +140,7 @@ def measure_axes(focus_ids, records, performances, stage_roles):
     works, roles, relations = Counter(), Counter(), Counter()
     for rid in focus_ids:
         rec = records[rid]
-        for agent in ensure_list(rec.get("m3gim:hasAssociatedAgent")):
+        for agent in ensure_list(rec.get("m3gim-ontology:hasAssociatedAgent")):
             name = agent.get("name") or agent.get("skos:prefLabel")
             if not name:
                 continue
@@ -146,16 +154,16 @@ def measure_axes(focus_ids, records, performances, stage_roles):
                 continue
             if subj.get("@type") == "rico:Person":
                 subjects[name] += 1
-            elif subj.get("@type") == "m3gim:MusicalWork":
+            elif subj.get("@type") == "m3gim-ontology:MusicalWork":
                 works[name] += 1
-        for perf_ref in ensure_list(rec.get("m3gim:hasPerformance")):
+        for perf_ref in ensure_list(rec.get("m3gim-ontology:hasPerformance")):
             perf = performances.get(perf_ref.get("@id"))
             if not perf:
                 continue
-            srid = (perf.get("m3gim:hasStageRole") or {}).get("@id")
+            srid = (perf.get("m3gim-ontology:hasStageRole") or {}).get("@id")
             if srid:
                 roles[stage_roles.get(srid, srid)] += 1
-        for rel in ensure_list(rec.get("m3gim:agentRelation")):
+        for rel in ensure_list(rec.get("m3gim-ontology:hasAgentRelation")):
             relations[rel.get("@type", "?")] += 1
     return {
         "actors": actors, "subjects": subjects, "orgs": orgs,
@@ -179,10 +187,10 @@ def main():
 
     graph, meta = load_graph(data_path)
     records = {n["@id"]: n for n in graph if node_type(n) == "rico:Record"}
-    performances = {n["@id"]: n for n in graph if node_type(n) == "m3gim:Performance"}
+    performances = {n["@id"]: n for n in graph if node_type(n) == "m3gim-ontology:Performance"}
     stage_roles = {
         n["@id"]: (n.get("rico:name") or n["@id"])
-        for n in graph if node_type(n) == "m3gim:StageRole"
+        for n in graph if node_type(n) == "m3gim-ontology:StageRole"
     }
     events = build_mobility_events(graph)
     locations = build_locations(graph)
@@ -199,7 +207,7 @@ def main():
     print(f"# M3GIM Coverage-Scout — Fokus '{focus}'")
     print(f"# Quelle: {data_path}")
     print(f"# Graph: {len(graph)} Top-Level-Knoten, {len(records)} Records, "
-          f"{len(events)} SpatiotemporalEvents, {len(locations)} Orte\n")
+          f"{len(events)} Annotationen, {len(locations)} Orte\n")
 
     print(f"## Ort '{focus}' im Ortsindex ({len(focus_locs)} Namensvariante(n))")
     for name, v in sorted(focus_locs.items()):
@@ -207,7 +215,7 @@ def main():
               f"rollen={sorted(v['roles'])} | wikidata={v['wikidata']}")
     print(f"   -> Records mit {focus}-Ort (Stadt-konsolidiert): {len(focus_ids)}\n")
 
-    print(f"## Mobilitaet: {len(focus_events)} SpatiotemporalEvent(s) mit Ort '{focus}'")
+    print(f"## Mobilitaet: {len(focus_events)} Annotation(en) mit Ort '{focus}'")
     geo = sum(1 for ev in focus_events.values() if ev["lat"] is not None)
     dated = sum(1 for ev in focus_events.values() if ev["date"])
     print(f"   verortet (Koordinaten): {geo}/{len(focus_events)} | "

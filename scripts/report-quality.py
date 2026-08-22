@@ -54,9 +54,9 @@ def count_links_on_record(rec):
     """Zaehlt "effektive" Property-Eintraege eines Records."""
     count = 0
     for key in (
-        "m3gim:hasAssociatedAgent", "rico:hasOrHadLocation",
-        "rico:hasOrHadSubject", "m3gim:hasDetail",
-        "m3gim:hasSpatiotemporalEvent", "m3gim:agentRelation",
+        "m3gim-ontology:hasAssociatedAgent", "rico:hasOrHadLocation",
+        "rico:hasOrHadSubject", "m3gim-ontology:hasDetail",
+        "m3gim-ontology:hasAnnotation", "m3gim-ontology:hasAgentRelation",
     ):
         count += len(ensure_list(rec.get(key)))
     return count
@@ -90,7 +90,7 @@ def main():
     # --- Bearbeitungsstand
     bs_counter = Counter()
     for r in records_real:
-        bs_counter[r.get("m3gim:bearbeitungsstand", "(leer)")] += 1
+        bs_counter[r.get("m3gim-ontology:processingStatus", "(leer)")] += 1
 
     # --- Wikidata-Coverage
     recon = load_recon() or {}
@@ -112,13 +112,13 @@ def main():
 
     # --- Provenance-Coverage
     prov_total = len(records_real)
-    prov_with_xlsx = sum(1 for r in records_real if isinstance(r.get("m3gim:xlsxSource"), dict))
+    prov_with_xlsx = sum(1 for r in records_real if isinstance(r.get("m3gim-ontology:xlsxSource"), dict))
     # E-103: agrelon:metadataProvenance migrated off the record onto its
-    # nested/related entities (STE, DatedEvent, AgRelOn), each backref-ing the
+    # nested/related entities (Annotation, AgRelOn), each backref-ing the
     # record. Probe the record-owned provenance-bearing entities instead of the
     # now always-absent record-level property.
-    prov_bearing_keys = ("m3gim:hasSpatiotemporalEvent",
-                         "m3gim:hasDatedEvent", "m3gim:agentRelation")
+    prov_bearing_keys = ("m3gim-ontology:hasAnnotation",
+                         "m3gim-ontology:hasAgentRelation")
     prov_with_events = sum(
         1 for r in records_real
         if any(ensure_list(r.get(k)) for k in prov_bearing_keys)
@@ -127,15 +127,15 @@ def main():
     nested_total = 0
     nested_with_xlsx = 0
     for r in records_real:
-        for d in ensure_list(r.get("m3gim:hasDetail")):
-            if isinstance(d, dict) and d.get("@type") == "m3gim:DetailAnnotation":
+        for d in ensure_list(r.get("m3gim-ontology:hasDetail")):
+            if isinstance(d, dict) and d.get("@type") == "m3gim-ontology:Annotation":
                 nested_total += 1
-                if isinstance(d.get("m3gim:xlsxSource"), dict):
+                if isinstance(d.get("m3gim-ontology:xlsxSource"), dict):
                     nested_with_xlsx += 1
-        for rel in ensure_list(r.get("m3gim:agentRelation")):
+        for rel in ensure_list(r.get("m3gim-ontology:hasAgentRelation")):
             if isinstance(rel, dict):
                 nested_total += 1
-                if isinstance(rel.get("m3gim:xlsxSource"), dict):
+                if isinstance(rel.get("m3gim-ontology:xlsxSource"), dict):
                     nested_with_xlsx += 1
 
     # --- Markdown schreiben
@@ -224,10 +224,10 @@ def main():
     xlsx_pct = prov_with_xlsx / prov_total if prov_total else 0
     events_pct = prov_with_events / prov_total if prov_total else 0
     nested_pct = nested_with_xlsx / nested_total if nested_total else 0
-    lines.append(f"- Records mit `m3gim:xlsxSource`: **{prov_with_xlsx}/{prov_total}** "
+    lines.append(f"- Records mit `m3gim-ontology:xlsxSource`: **{prov_with_xlsx}/{prov_total}** "
                  f"({xlsx_pct:.0%})")
     lines.append(f"- Records mit provenienz-belegten Ereignissen "
-                 f"(`agrelon:metadataProvenance` auf STE/DatedEvent/AgRelOn): "
+                 f"(`agrelon:metadataProvenance` auf Annotation/AgRelOn): "
                  f"**{prov_with_events}/{prov_total}** ({events_pct:.0%})")
     lines.append(f"- Nested Entities (Details + AgRelOn) mit `xlsxSource`: "
                  f"**{nested_with_xlsx}/{nested_total}** ({nested_pct:.0%})")

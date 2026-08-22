@@ -10,6 +10,8 @@ Zentralisierte XLSX-Workaround-Konstanten siehe knowledge/data.md § 17.
 from __future__ import annotations
 
 import re
+from collections.abc import Iterator
+from pathlib import Path
 
 
 # ---------------------------------------------------------------------------
@@ -98,7 +100,7 @@ def extract_bearbeitungsnotiz(value) -> str | None:
     """Extrahiert den Freitext-Anhang des Bearbeitungsstands als Notiz (E-102).
 
     Der canonische Status (``normalize_bearbeitungsstand``) verwirft den
-    Klammer-Zusatz; hier wird er als ``m3gim:bearbeitungsnotiz`` herausgeloest,
+    Klammer-Zusatz; hier wird er als ``m3gim-ontology:processingNote`` herausgeloest,
     z. B. "Erledigt (Ira Malaniuk betreffend. Rest zurueckgestellt)" →
     "Ira Malaniuk betreffend. Rest zurueckgestellt". Rueckgabe None, wenn kein
     Klammer-Zusatz vorhanden ist.
@@ -131,38 +133,38 @@ def is_approved_match(match_entry: dict) -> bool:
 
 def build_xlsx_source(sheet: str, row: int,
                       datenpunkt_id: int | str | None = None) -> dict:
-    """Erzeugt das Provenance-Sidecar-Objekt fuer m3gim:xlsxSource (E-73).
+    """Erzeugt das Provenance-Sidecar-Objekt fuer m3gim-ontology:xlsxSource (E-73).
 
     Shape:
         {
-            "m3gim:xlsxSheet": "<Objekte|Verknuepfungen>",
-            "m3gim:xlsxRow":   <int >= 2>,
-            "m3gim:datenpunktId": <optional, nur falls gesetzt>,
+            "m3gim-ontology:xlsxSheet": "<Objekte|Verknuepfungen>",
+            "m3gim-ontology:xlsxRow":   <int >= 2>,
+            "m3gim-ontology:dataPointId": <optional, nur falls gesetzt>,
         }
 
     Aufruf-Muster:
-        record["m3gim:xlsxSource"] = build_xlsx_source("Objekte", row_idx + 2)
+        record["m3gim-ontology:xlsxSource"] = build_xlsx_source("Objekte", row_idx + 2)
     """
     source = {
-        "m3gim:xlsxSheet": sheet,
-        "m3gim:xlsxRow": row,
+        "m3gim-ontology:xlsxSheet": sheet,
+        "m3gim-ontology:xlsxRow": row,
     }
     if datenpunkt_id is not None:
-        source["m3gim:datenpunktId"] = datenpunkt_id
+        source["m3gim-ontology:dataPointId"] = datenpunkt_id
     return source
 
 
 def attach_xlsx_source(target: dict, rel: dict, key: str = "_source") -> None:
-    """Haengt ``rel[key]`` als ``m3gim:xlsxSource`` an ``target``.
+    """Haengt ``rel[key]`` als ``m3gim-ontology:xlsxSource`` an ``target``.
 
     No-op, wenn in ``rel`` keine Quellreferenz vorliegt. Soll in
     ``transform.py`` an jeder Stelle verwendet werden, an der aus einer
     Verknuepfungszeile eine nested entity gebaut wird (Agent, Location,
-    Subject, DetailAnnotation, SpatiotemporalEvent, AgRelOn).
+    Subject, Annotation, AgRelOn).
     """
     source = rel.get(key)
     if source:
-        target["m3gim:xlsxSource"] = source
+        target["m3gim-ontology:xlsxSource"] = source
 
 
 def strip_zero_date_padding(value):
@@ -179,3 +181,125 @@ def strip_zero_date_padding(value):
     if not re.fullmatch(r"\d{4}(-\d{2}){1,2}", value):
         return value
     return re.sub(r"(-00)+$", "", value)
+
+
+# ---------------------------------------------------------------------------
+# Vokabular-Leser
+# ---------------------------------------------------------------------------
+# Die Pipeline braucht zur Laufzeit die Abbildung eines erfassten Rollenwerts
+# auf sein Concept in vocab/m3gim.ttl. Diese Datei steht in der Spec-Hierarchie
+# ueber der Pipeline (E-133), sie ist die Quelle und keine Kopie. rdflib liegt
+# nur in requirements-test.txt; ein Import haette die Laufzeitumgebung um eine
+# Abhaengigkeit erweitert, die sie nicht hat. Der Leser hier deckt genau die
+# Turtle-Form ab, die das Vokabular verwendet, und wird von
+# tests/test_47_vocab_reader.py gegen einen echten Parser gehalten.
+
+VOCAB_PREFIX = "m3gim-vocab:"
+DFT_SCHEME = VOCAB_PREFIX + "documentaryFormTypes"
+
+_LITERAL_DE = re.compile(r'"((?:[^"\\]|\\.)*)"@de')
+_IS_CONCEPT = re.compile(r"^\s*a\s+skos:Concept(?:\s|;|$)")
+
+
+def _turtle_statements(text: str) -> Iterator[str]:
+    """Zerlegt Turtle in seine Aussagen, ohne den abschliessenden Punkt.
+
+    Anfuehrungszeichen und spitze Klammern werden mitgefuehrt, damit ein Punkt
+    innerhalb eines Literals oder einer IRI nicht trennt. Kommentare fallen weg.
+    """
+    buffer: list[str] = []
+    in_string = in_iri = in_comment = escaped = False
+    for char in text:
+        if in_comment:
+            if char == "\n":
+                in_comment = False
+                buffer.append(" ")
+            continue
+        if in_string:
+            buffer.append(char)
+            if escaped:
+                escaped = False
+            elif char == "\\":
+                escaped = True
+            elif char == '"':
+                in_string = False
+            continue
+        if char == "#" and not in_iri:
+            in_comment = True
+            continue
+        if char == "." and not in_iri:
+            statement = "".join(buffer).strip()
+            if statement:
+                yield statement
+            buffer = []
+            continue
+        buffer.append(char)
+        if char == '"':
+            in_string = True
+        elif char == "<":
+            in_iri = True
+        elif char == ">":
+            in_iri = False
+    tail = "".join(buffer).strip()
+    if tail:
+        yield tail
+
+
+def _predicate_objects(statement: str, predicate: str) -> list[str]:
+    """Objektteil jeder Nennung von ``predicate`` in einer Turtle-Aussage."""
+    parts: list[str] = []
+    buffer: list[str] = []
+    in_string = escaped = False
+    for char in statement:
+        if in_string:
+            buffer.append(char)
+            if escaped:
+                escaped = False
+            elif char == "\\":
+                escaped = True
+            elif char == '"':
+                in_string = False
+            continue
+        if char == ";":
+            parts.append("".join(buffer))
+            buffer = []
+            continue
+        buffer.append(char)
+        if char == '"':
+            in_string = True
+    parts.append("".join(buffer))
+    pattern = re.compile(rf"(?:^|\s){re.escape(predicate)}\s")
+    return [part.split(predicate, 1)[1] for part in parts if pattern.search(part)]
+
+
+def load_role_concepts(vocab_path: Path) -> dict[str, tuple[str, str]]:
+    """Liest die Rollenbegriffe des Vokabulars als deutsches Label auf Concept.
+
+    Rueckgabe: {Label: (CURIE, prefLabel)}. Schluessel sind das prefLabel und
+    jedes deutsche altLabel, sodass auch ein aufgegangener Begriff aufloest; der
+    Wert traegt immer das prefLabel des aufnehmenden Concepts. Dokumenttypen
+    bleiben aussen vor, weil ihre Anzeigetexte mit Rollenwerten kollidieren
+    wuerden.
+    """
+    mapping: dict[str, tuple[str, str]] = {}
+    for statement in _turtle_statements(Path(vocab_path).read_text(encoding="utf-8")):
+        subject, _, body = statement.partition(" ")
+        if not subject.startswith(VOCAB_PREFIX) or not _IS_CONCEPT.match(body):
+            continue
+        if any(DFT_SCHEME in obj for obj in _predicate_objects(body, "skos:inScheme")):
+            continue
+        pref = [
+            match.group(1)
+            for obj in _predicate_objects(body, "skos:prefLabel")
+            for match in _LITERAL_DE.finditer(obj)
+        ]
+        if not pref:
+            continue
+        alt = [
+            match.group(1)
+            for obj in _predicate_objects(body, "skos:altLabel")
+            for match in _LITERAL_DE.finditer(obj)
+        ]
+        for label in pref + alt:
+            mapping[label] = (subject, pref[0])
+    return mapping

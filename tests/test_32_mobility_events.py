@@ -1,7 +1,7 @@
 """Mobilitaets-Ereignisse aus Ortsrollen (E-97, datengedeckter Kern).
 
 Die Mobilitaets-Ortsrollen (zielort/absendeort/abreiseort/empfangsort/
-vertragsort) erzeugen je eine DATUMSLOSE m3gim:SpatiotemporalEvent — ein
+vertragsort) erzeugen je einen DATUMSLOSEN m3gim-ontology:Annotation-Knoten — ein
 First-Class-Mobilitaetsereignis fuer den Mobilitaets-Atlas. Der Ort bleibt
 zusaetzlich als rico:hasOrHadLocation am Record erhalten (kein Index-Regress).
 
@@ -16,27 +16,39 @@ Spec: data.md Abschnitt 4/10, architecture-decisions.md E-97.
 
 from _helpers import ensure_list
 
+# Nach der Zusammenfuehrung im Vokabular tragen die Aspektpaare denselben
+# Begriff: absendeort ist absendung, empfangsort empfangnahme, abreiseort
+# abreise.
 MOBILITY_PLACE_ROLES = {
-    "zielort", "absendeort", "abreiseort", "empfangsort", "vertragsort",
+    "zielort", "absendung", "abreise", "empfangnahme", "vertragsort",
 }
 
 
+def _role_label(node):
+    role = node.get("role")
+    if isinstance(role, dict):
+        return role.get("skos:prefLabel", "")
+    return role or ""
+
+
 def _stes(graph):
+    """Verortungen: Annotationsknoten, die einen Ort tragen."""
     return [n for n in graph if isinstance(n, dict)
-            and n.get("@type") == "m3gim:SpatiotemporalEvent"]
+            and n.get("@type") == "m3gim-ontology:Annotation"
+            and n.get("m3gim-ontology:atPlace")]
 
 
 def _mobility_stes(graph):
     return [n for n in _stes(graph)
-            if n.get("m3gim:eventRole") in MOBILITY_PLACE_ROLES]
+            if _role_label(n) in MOBILITY_PLACE_ROLES]
 
 
 # --- Datengedeckter Kern (E-97) -------------------------------------------
 
 def test_mobility_place_role_emits_wellformed_ste(graph, records):
-    """Jede Mobilitaets-Ortsrolle erzeugt eine wohlgeformte
-    m3gim:SpatiotemporalEvent: atPlace mit name, eventRole aus dem Mobilitaets-
-    Vokabular, Self-Provenance auf einen existierenden Record.
+    """Jede Mobilitaets-Ortsrolle erzeugt einen wohlgeformten
+    m3gim-ontology:Annotation-Knoten: atPlace mit name, Rolle aus dem
+    Mobilitaets-Vokabular, Self-Provenance auf einen existierenden Record.
 
     Datenform tieferer Export (E-97 erweitert): die meisten Mobilitaets-Ortsrollen
     stammen aus reinen `ort`-Zeilen und bleiben DATUMSLOS. Einige (z.B.
@@ -50,10 +62,10 @@ def test_mobility_place_role_emits_wellformed_ste(graph, records):
     assert len(mob) >= 10, f"Nur {len(mob)} Mobilitaets-STE — Routing greift nicht"
     offenders = []
     for ev in mob:
-        date = ev.get("m3gim:atDate")
+        date = ev.get("m3gim-ontology:atDate")
         if date is not None and not is_iso_date(date):
             offenders.append((ev.get("@id"), "atDate nicht ISO", date))
-        place = ev.get("m3gim:atPlace")
+        place = ev.get("m3gim-ontology:atPlace")
         place_name = (place.get("name") if isinstance(place, dict) else "") or ""
         if not place_name.strip():
             offenders.append((ev.get("@id"), "atPlace", place))
@@ -72,7 +84,7 @@ def test_pure_ort_mobility_stes_stay_dateless(graph, records):
     relevante Zahl DATUMSLOSER Mobilitaets-STE (aus reinen `ort`-Zeilen,
     Quelle: zielort/absendeort/abreiseort ohne Datum). Sichert, dass der
     dateless-Pfad nicht versehentlich zugunsten datierter STE wegfaellt."""
-    dateless = [ev for ev in _mobility_stes(graph) if "m3gim:atDate" not in ev]
+    dateless = [ev for ev in _mobility_stes(graph) if "m3gim-ontology:atDate" not in ev]
     assert len(dateless) >= 10, (
         f"Nur {len(dateless)} datumslose Mobilitaets-STE — der E-97-Kern "
         f"(reine ort-Zeilen) ist verloren gegangen"
@@ -91,7 +103,7 @@ def test_mobility_place_retained_as_location(graph, records):
         rec = rec_by_id.get(rid)
         if not rec:
             continue
-        place_name = (ev.get("m3gim:atPlace") or {}).get("name")
+        place_name = (ev.get("m3gim-ontology:atPlace") or {}).get("name")
         loc_names = {
             (loc or {}).get("name")
             for loc in ensure_list(rec.get("rico:hasOrHadLocation"))
@@ -107,19 +119,21 @@ def test_mobility_place_retained_as_location(graph, records):
 # --- Regression-Guards / Abgrenzung (kein xfail) --------------------------
 
 def test_dated_ste_unaffected(graph):
-    """Die bestehenden Komposit-ort,datum-STEs (MIT atDate) bleiben unberuehrt;
-    mindestens 40 datierte STE im Graph (Baseline 46)."""
-    dated = [n for n in _stes(graph) if "m3gim:atDate" in n]
-    assert len(dated) >= 40, f"Nur {len(dated)} datierte STE — Komposit-Pfad regressiert"
+    """Die bestehenden Komposit-ort,datum-Verortungen (MIT atDate) bleiben
+    unberuehrt; mindestens 40 datierte Verortungen im Graph (Baseline 46)."""
+    dated = [n for n in _stes(graph) if "m3gim-ontology:atDate" in n]
+    assert len(dated) >= 40, (
+        f"Nur {len(dated)} datierte Verortungen — Komposit-Pfad regressiert"
+    )
 
 
 def test_wohnort_not_a_point_event(graph):
-    """wohnort ist ein Zustand, kein Punktereignis: kein STE traegt eventRole
-    'wohnort' (E-97-Abgrenzung; die Zustands-Modellierung mit Validity ist
+    """wohnort ist ein Zustand, kein Punktereignis: keine Verortung traegt die
+    Rolle 'wohnort' (E-97-Abgrenzung; die Zustands-Modellierung mit Validity ist
     mangels Datendeckung bewusst zurueckgestellt)."""
     offenders = [n.get("@id") for n in _stes(graph)
-                 if n.get("m3gim:eventRole") == "wohnort"]
+                 if _role_label(n) == "wohnort"]
     assert not offenders, (
-        f"{len(offenders)} STE mit eventRole 'wohnort' — als Punktereignis "
+        f"{len(offenders)} Verortungen mit Rolle 'wohnort' — als Punktereignis "
         f"fehlmodelliert: {offenders[:5]}"
     )

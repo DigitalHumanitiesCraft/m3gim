@@ -1,15 +1,16 @@
-"""Datenqualitaets-Flags und Datums-Routing (E-102).
+"""Datenqualitaets-Flags und Datums-Routing (E-102, E-136).
 
 Drei Invarianten:
-  1. Das generische m3gim:eventDate ist abgeschafft. Datumsrollen ohne
-     typisierte Property landen in m3gim:hasDatedEvent (Klasse m3gim:DatedEvent,
-     dateValue/dateRole), das auch klammer-/fragezeichen-unsichere Datierungen
-     traegt. Kein stiller Datenverlust beim Drop.
-  2. m3gim:dataQualityFlag zieht aus einem kontrollierten Vokabular, abgeleitet
-     aus Unsicherheitssignalen im anmerkung-Feld. m3gim:qualityConfidence wird
+  1. Das generische m3gim:eventDate ist abgeschafft, die typisierte
+     Datumsfamilie ebenfalls. Jede Datierung landet in einem
+     m3gim-ontology:Annotation-Knoten mit atDate und der erfassten Rolle, der
+     auch klammer-/fragezeichen-unsichere Datierungen traegt. Kein stiller
+     Datenverlust beim Drop.
+  2. m3gim-ontology:dataQualityFlag zieht aus einem kontrollierten Vokabular, abgeleitet
+     aus Unsicherheitssignalen im anmerkung-Feld. m3gim-ontology:qualityConfidence wird
      nicht fabriziert (Leitplanke "Konfidenz nicht erfinden").
-  3. m3gim:bearbeitungsnotiz traegt den Freitext-Anhang des Objekt-
-     Bearbeitungsstands, der canonische Status bleibt in m3gim:bearbeitungsstand.
+  3. m3gim-ontology:processingNote traegt den Freitext-Anhang des Objekt-
+     Bearbeitungsstands, der canonische Status bleibt in m3gim-ontology:processingStatus.
 
 Spec: data.md Abschnitt 6/7, architecture-decisions.md E-100/E-102.
 """
@@ -22,17 +23,13 @@ QUALITY_FLAG_VOCAB = {
     "rolle-unsicher",
     "quelle-tippfehler",
     # Malformter Quell-Datumswert (kein ISO, z.B. "06-09" ohne Jahr): nicht in
-    # rico:date verwertbar, verlustfrei im DatedEvent-Fallback (convert_objekt).
+    # rico:date verwertbar, bleibt im Wortlaut am Annotationsknoten stehen.
     "datierung-malformed",
 }
 
-TYPED_DATE_PROPS = {
-    "m3gim:absendedatum", "m3gim:empfangsdatum", "m3gim:ausstellungsdatum",
-    "m3gim:erscheinungsdatum", "m3gim:abreisedatum", "m3gim:auftrittsdatum",
-    "m3gim:auffuehrungsdatum", "m3gim:probendatum", "m3gim:probenbeginn",
-    "m3gim:premieredatum", "m3gim:ausstrahlungsdatum", "m3gim:spielzeitVon",
-    "m3gim:spielzeitBis", "m3gim:ueberweisungsdatum", "m3gim:erstelldatum",
-}
+# Die Property, auf der die Entstehungsdatierung am Dokument steht. Sie ist die
+# einzige Datierung, die kein eigener Knoten traegt.
+RECORD_DATE_PROPS = {"rico:date", "rico:creationDate"}
 
 
 def _walk(node):
@@ -63,96 +60,131 @@ def test_generic_event_date_retired(graph):
     )
 
 
-def test_dated_events_wellformed(records):
-    """Jeder m3gim:hasDatedEvent-Eintrag ist eine wohlgeformte m3gim:DatedEvent
-    mit nicht-leerem dateValue und dateRole. Mindestens 10 erwartet (das frueher
-    nach eventDate geleitete Volumen)."""
+def _annotations_by_id(graph):
+    return {n["@id"]: n for n in graph
+            if n.get("@type") == "m3gim-ontology:Annotation"}
+
+
+def _annotations_of(record, annotations):
+    for ref in ensure_list(record.get("m3gim-ontology:hasAnnotation")):
+        if isinstance(ref, dict) and ref.get("@id") in annotations:
+            yield annotations[ref["@id"]]
+
+
+def test_dated_events_wellformed(records, graph):
+    """Jede ueber hasAnnotation erreichbare Datierung ist wohlgeformt.
+
+    Der Knoten traegt einen nicht-leeren atDate-Wert und, wo die Quelle eine
+    fuehrt, seine Rolle als Verweis auf ein Concept. Mindestens 10 erwartet,
+    das frueher nach eventDate geleitete Volumen."""
+    annotations = _annotations_by_id(graph)
     total = 0
     offenders = []
     for r in records:
-        for de in ensure_list(r.get("m3gim:hasDatedEvent")):
+        for node in _annotations_of(r, annotations):
+            value = node.get("m3gim-ontology:atDate")
+            if value is None:
+                continue
             total += 1
-            if not isinstance(de, dict):
-                offenders.append((r["@id"], de)); continue
-            if de.get("@type") != "m3gim:DatedEvent":
-                offenders.append((r["@id"], "type", de.get("@type")))
-            val = de.get("m3gim:dateValue")
-            if not isinstance(val, str) or not val.strip():
-                offenders.append((r["@id"], "dateValue", val))
-            if not isinstance(de.get("m3gim:dateRole"), str):
-                offenders.append((r["@id"], "dateRole", de.get("m3gim:dateRole")))
-    assert total >= 10, f"Nur {total} DatedEvents — Routing greift nicht"
-    assert not offenders, f"Fehlgeformte DatedEvents: {offenders[:5]}"
+            if not isinstance(value, str) or not value.strip():
+                offenders.append((r["@id"], "atDate", value))
+            role = node.get("role")
+            if role is not None and not isinstance(role, (dict, str)):
+                offenders.append((r["@id"], "role", role))
+    assert total >= 10, f"Nur {total} datierte Annotationen — Routing greift nicht"
+    assert not offenders, f"Fehlgeformte Datierungen: {offenders[:5]}"
+
+
+def _role_id(node):
+    role = node.get("role")
+    return role.get("@id") if isinstance(role, dict) else role
+
+
+def _source_cell(node):
+    """Blatt und Zeile der Ursprungszelle, als Vergleichsschluessel.
+
+    Zwei Knoten mit demselben Datum und derselben Rolle aus zwei verschiedenen
+    Zellen sind zwei erfasste Aussagen und keine Dublette. Nur die Zelle
+    unterscheidet den Erfassungsfall vom Pipeline-Artefakt, das ein Komposit
+    zweimal repraesentiert.
+    """
+    source = node.get("m3gim-ontology:xlsxSource")
+    if not isinstance(source, dict):
+        return None
+    return (source.get("m3gim-ontology:xlsxSheet"),
+            source.get("m3gim-ontology:xlsxRow"))
 
 
 def test_dated_event_does_not_duplicate_ste(records, graph):
     """Ein ort,datum-Komposit wird in GENAU EINE Repraesentation aufgeloest
-    (data.md § 4): das SpatiotemporalEvent traegt Ort + Datum. Der Datums-Teil
-    darf nicht zusaetzlich als DatedEvent am selben Record erscheinen — sonst
-    zaehlt jede Datums-Aggregation das Datum doppelt (Audit-Befund zu E-102)."""
-    # STE atDate+eventRole je Record (ueber die Self-Provenance).
-    ste_by_rec = {}
-    for n in graph:
-        if isinstance(n, dict) and n.get("@type") == "m3gim:SpatiotemporalEvent":
-            prov = n.get("agrelon:metadataProvenance")
-            rid = prov.get("@id") if isinstance(prov, dict) else None
-            if rid:
-                ste_by_rec.setdefault(rid, set()).add(
-                    (n.get("m3gim:atDate"), n.get("m3gim:eventRole"))
-                )
+    (data.md § 4): der Annotationsknoten traegt Ort und Datum. Der Datums-Teil
+    darf nicht zusaetzlich als eigene Datumsannotation am selben Record
+    erscheinen — sonst zaehlt jede Datums-Aggregation das Datum doppelt
+    (Audit-Befund zu E-102)."""
+    annotations = _annotations_by_id(graph)
     dupes = []
     for r in records:
-        stes = ste_by_rec.get(r["@id"], set())
-        for de in ensure_list(r.get("m3gim:hasDatedEvent")):
-            if not isinstance(de, dict):
+        located = {
+            (n.get("m3gim-ontology:atDate"), _role_id(n), _source_cell(n))
+            for n in _annotations_of(r, annotations)
+            if n.get("m3gim-ontology:atPlace")
+        }
+        for node in _annotations_of(r, annotations):
+            if node.get("m3gim-ontology:atPlace"):
                 continue
-            pair = (de.get("m3gim:dateValue"), de.get("m3gim:dateRole"))
-            if pair in stes:
-                dupes.append((r["@id"], pair))
+            key = (node.get("m3gim-ontology:atDate"), _role_id(node),
+                   _source_cell(node))
+            if key[0] is not None and key in located:
+                dupes.append((r["@id"], key))
     assert not dupes, (
-        f"{len(dupes)} DatedEvents duplizieren ein STE atDate+role am selben "
-        f"Record (ort,datum doppelt repraesentiert, data.md § 4): {dupes[:5]}"
+        f"{len(dupes)} Datumsannotationen duplizieren eine Verortung aus "
+        f"derselben Quellzelle mit demselben Datum und derselben Rolle "
+        f"(ort,datum doppelt repraesentiert, data.md § 4): {dupes[:5]}"
     )
 
 
-def test_uncertain_datings_routed_to_dated_event(records):
-    """Klammer-/Fragezeichen-unsichere oder Freitext-Datierungen landen im
-    DatedEvent (dateValue), nicht in einer typisierten Datumsproperty oder
-    rico:date. Die typisierten Properties bleiben rein ISO/qualifiziert."""
+def test_uncertain_datings_routed_to_dated_event(records, graph):
+    """Klammer-/Fragezeichen-unsichere oder Freitext-Datierungen landen am
+    Annotationsknoten, nicht an rico:date oder rico:creationDate. Die beiden
+    Record-Properties bleiben rein ISO/qualifiziert."""
     import re
     iso_or_qual = re.compile(
         r"^(circa:|vor:|nach:)?\d{4}(-\d{2}(-\d{2})?)?(/\d{4}(-\d{2}(-\d{2})?)?)?$"
     )
-    typed_offenders = []
+    record_offenders = []
     for r in records:
-        for prop in TYPED_DATE_PROPS:
+        for prop in RECORD_DATE_PROPS:
             for val in ensure_list(r.get(prop)):
                 if isinstance(val, str) and not iso_or_qual.match(val):
-                    typed_offenders.append((r["@id"], prop, val))
-    assert not typed_offenders, (
-        f"Unsichere/Freitext-Datierung in typisierter Property statt DatedEvent: "
-        f"{typed_offenders[:5]}"
+                    record_offenders.append((r["@id"], prop, val))
+    assert not record_offenders, (
+        f"Unsichere/Freitext-Datierung am Dokument statt am Annotationsknoten: "
+        f"{record_offenders[:5]}"
     )
-    # Mindestens eine DatedEvent traegt einen nicht-ISO-Wert (Beleg, dass die
-    # unsicheren Faelle hier ankommen).
+    # Mindestens eine Annotation traegt einen nicht-ISO-Wert (Beleg, dass die
+    # unsicheren Faelle hier ankommen) und ist dafuer als malformed markiert.
+    annotations = _annotations_by_id(graph)
     nonsiso = []
     for r in records:
-        for de in ensure_list(r.get("m3gim:hasDatedEvent")):
-            if isinstance(de, dict):
-                val = de.get("m3gim:dateValue", "")
-                if isinstance(val, str) and not iso_or_qual.match(val):
-                    nonsiso.append(val)
-    assert nonsiso, "Keine nicht-ISO-Datierung im DatedEvent — Klammerfall verloren?"
+        for node in _annotations_of(r, annotations):
+            val = node.get("m3gim-ontology:atDate", "")
+            if isinstance(val, str) and val and not iso_or_qual.match(val):
+                assert "datierung-malformed" in ensure_list(
+                    node.get("m3gim-ontology:dataQualityFlag")), (
+                    f"{node['@id']}: nicht-ISO-Datierung ohne Flag: {val!r}"
+                )
+                nonsiso.append(val)
+    assert nonsiso, "Keine nicht-ISO-Datierung am Annotationsknoten — Klammerfall verloren?"
 
 
 # --- 2. Datenqualitaets-Flags ---------------------------------------------
 
 def test_data_quality_flags_vocab(graph):
-    """Jeder m3gim:dataQualityFlag-Wert stammt aus dem kontrollierten Vokabular;
+    """Jeder m3gim-ontology:dataQualityFlag-Wert stammt aus dem kontrollierten Vokabular;
     mindestens 10 Flags aus den anmerkung-Signalen vorhanden."""
     values = []
     for n in _all_nodes(graph):
-        values.extend(ensure_list(n.get("m3gim:dataQualityFlag")))
+        values.extend(ensure_list(n.get("m3gim-ontology:dataQualityFlag")))
     assert len(values) >= 10, f"Nur {len(values)} dataQualityFlags — Ableitung greift nicht"
     offenders = sorted({v for v in values if v not in QUALITY_FLAG_VOCAB})
     assert not offenders, (
@@ -162,11 +194,11 @@ def test_data_quality_flags_vocab(graph):
 
 
 def test_quality_confidence_not_fabricated(graph):
-    """m3gim:qualityConfidence wird nicht fabriziert: die Pipeline emittiert
+    """m3gim-ontology:qualityConfidence wird nicht fabriziert: die Pipeline emittiert
     keinen geratenen Zahlenwert fuer die Flag-Konfidenz (Leitplanke 'Konfidenz
     nicht erfinden'). Die Property bleibt fuer belegbare Werte reserviert."""
     offenders = [n.get("@id") for n in _all_nodes(graph)
-                 if "m3gim:qualityConfidence" in n]
+                 if "m3gim-ontology:qualityConfidence" in n]
     assert not offenders, (
         f"{len(offenders)} Knoten tragen eine fabrizierte qualityConfidence: "
         f"{offenders[:5]}"
@@ -176,20 +208,20 @@ def test_quality_confidence_not_fabricated(graph):
 # --- 3. Bearbeitungsnotiz --------------------------------------------------
 
 def test_bearbeitungsnotiz_split(records):
-    """Mindestens ein Record traegt eine m3gim:bearbeitungsnotiz (Freitext-Anhang
+    """Mindestens ein Record traegt eine m3gim-ontology:processingNote (Freitext-Anhang
     des Bearbeitungsstands), und der canonische Status bleibt davon getrennt in
-    m3gim:bearbeitungsstand."""
+    m3gim-ontology:processingStatus."""
     canonical = {"abgeschlossen", "begonnen", "zurueckgestellt"}
-    with_notiz = [r for r in records if r.get("m3gim:bearbeitungsnotiz")]
-    assert with_notiz, "Kein Record mit m3gim:bearbeitungsnotiz — Split greift nicht"
+    with_notiz = [r for r in records if r.get("m3gim-ontology:processingNote")]
+    assert with_notiz, "Kein Record mit m3gim-ontology:processingNote — Split greift nicht"
     for r in with_notiz:
-        notiz = r["m3gim:bearbeitungsnotiz"]
+        notiz = r["m3gim-ontology:processingNote"]
         assert isinstance(notiz, str) and notiz.strip()
         # Notiz ist Freitext, kein blosser canonischer Status.
         assert notiz.strip().lower() not in canonical, (
             f"{r['@id']}: bearbeitungsnotiz ist nur der Status: {notiz}"
         )
         # Der canonische Status bleibt erhalten und getrennt.
-        assert r.get("m3gim:bearbeitungsstand") in canonical, (
+        assert r.get("m3gim-ontology:processingStatus") in canonical, (
             f"{r['@id']}: bearbeitungsstand fehlt oder nicht canonisch"
         )

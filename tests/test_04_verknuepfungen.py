@@ -1,20 +1,34 @@
 """Verknüpfungs-Typ-Mapping: XLSX-typ → RiC-O/m3gim-Property.
 
 transform.py-Mapping (add_relations_to_records):
-  person       → m3gim:hasAssociatedAgent (@type rico:Person)
+  person       → m3gim-ontology:hasAssociatedAgent (@type rico:Person)
                  außer Rolle 'erwähnt' → rico:hasOrHadSubject
-  institution  → m3gim:hasAssociatedAgent (@type rico:CorporateBody)
-  ensemble     → m3gim:hasAssociatedAgent (@type rico:Group)
+  institution  → m3gim-ontology:hasAssociatedAgent (@type rico:CorporateBody)
+  ensemble     → m3gim-ontology:hasAssociatedAgent (@type rico:Group)
   ort          → rico:hasOrHadLocation (@type rico:Place)
-  werk         → rico:hasOrHadSubject (@type m3gim:MusicalWork)
-  ereignis     → rico:hasOrHadSubject (@type m3gim:PerformanceEvent)
-  rolle        → m3gim:hasPerformance (m3gim:Performance + m3gim:StageRole, E-96)
-  datum        → m3gim:eventDate
+  werk         → rico:hasOrHadSubject (@type m3gim-ontology:MusicalWork)
+  ereignis     → rico:hasOrHadSubject (@type m3gim-ontology:FramingEvent)
+  rolle        → m3gim-ontology:hasPerformance (m3gim-ontology:Performance + m3gim-ontology:StageRole, E-96)
+  datum        → m3gim-ontology:hasAnnotation (Annotation mit atDate)
 """
 
 import pytest
 
 from _helpers import ensure_list
+
+
+def role_label(entity):
+    """Anzeigetext der Rolle eines Knotens.
+
+    Die Rolle steht seit dem Umbau als Verweis auf ein Concept des Vokabulars
+    und fuehrt dessen skos:prefLabel mit. Ein blosser String kommt nur noch
+    beim Vertragsstatus vor, den das Vokabular begruendet nicht als Begriff
+    fuehrt.
+    """
+    role = entity.get("role")
+    if isinstance(role, dict):
+        return role.get("skos:prefLabel", "")
+    return role or ""
 
 
 def _collect_entities(records, prop, type_filter=None):
@@ -31,14 +45,13 @@ def _collect_entities(records, prop, type_filter=None):
 
 
 _RELATIONAL_PROPS = (
-    "m3gim:hasAssociatedAgent",
+    "m3gim-ontology:hasAssociatedAgent",
     "rico:hasOrHadLocation",
     "rico:hasOrHadSubject",
-    "m3gim:hasPerformance",
-    "m3gim:eventDate",
-    "m3gim:hasSpatiotemporalEvent",
+    "m3gim-ontology:hasPerformance",
+    "m3gim-ontology:hasAnnotation",
+    "m3gim-ontology:hasDetail",
     "agrelon:hasRelation",
-    "m3gim:hasDetailAnnotation",
 )
 
 
@@ -46,11 +59,9 @@ def _has_any_relation(record):
     for prop in _RELATIONAL_PROPS:
         if ensure_list(record.get(prop)):
             return True
-    # Typisierte Datumsproperties (m3gim:absendedatum etc.) auch zaehlen
-    for key in record:
-        if key.startswith("m3gim:") and key.endswith("datum"):
-            return True
-    return False
+    # Die Entstehungsdatierung am Dokument ist ebenfalls eine Relation
+    # zur Verknuepfungszeile, auch wenn sie keinen eigenen Knoten hat.
+    return bool(record.get("rico:creationDate"))
 
 
 @pytest.mark.xfail(
@@ -115,7 +126,7 @@ def test_verknuepfungen_every_referenced_record_has_relations(
 
 
 def test_person_typ_in_agents(records):
-    agents = _collect_entities(records, "m3gim:hasAssociatedAgent", "rico:Person")
+    agents = _collect_entities(records, "m3gim-ontology:hasAssociatedAgent", "rico:Person")
     assert len(agents) > 0, "Keine Person-Agents gefunden"
 
 
@@ -125,12 +136,12 @@ def test_ort_typ_in_locations(records):
 
 
 def test_werk_typ_in_subjects(records):
-    works = _collect_entities(records, "rico:hasOrHadSubject", "m3gim:MusicalWork")
+    works = _collect_entities(records, "rico:hasOrHadSubject", "m3gim-ontology:MusicalWork")
     assert len(works) > 0, "Keine Werk-Subjects gefunden"
 
 
 def test_institution_typ_in_agents(records):
-    orgs = _collect_entities(records, "m3gim:hasAssociatedAgent", "rico:CorporateBody")
+    orgs = _collect_entities(records, "m3gim-ontology:hasAssociatedAgent", "rico:CorporateBody")
     assert len(orgs) > 0, "Keine Institution-Agents gefunden"
 
 
@@ -138,12 +149,12 @@ def test_mentioned_persons_in_subjects_not_agents(records):
     """Personen mit Rolle 'erwähnt' landen in rico:hasOrHadSubject, NICHT in Agents.
     transform.py sortiert nur rico:Person um (Institutionen mit 'erwähnt' bleiben in Agents)."""
     for r in records:
-        for ent in ensure_list(r.get("m3gim:hasAssociatedAgent")):
+        for ent in ensure_list(r.get("m3gim-ontology:hasAssociatedAgent")):
             if not isinstance(ent, dict):
                 continue
             if ent.get("@type") != "rico:Person":
                 continue  # nur Personen werden in transform.py umsortiert
-            role = (ent.get("role") or "").lower()
+            role = role_label(ent).lower()
             assert role not in ("erwähnt", "erwaehnt"), (
                 f"{r['@id']}: 'erwähnt'-Person in Agents: {ent.get('name')}"
             )
@@ -153,7 +164,7 @@ def test_agents_have_name(records):
     """Jedes Agent-Entity hat name."""
     offenders = []
     for r in records:
-        for ent in ensure_list(r.get("m3gim:hasAssociatedAgent")):
+        for ent in ensure_list(r.get("m3gim-ontology:hasAssociatedAgent")):
             if isinstance(ent, dict) and not ent.get("name"):
                 offenders.append((r["@id"], ent))
     assert not offenders, f"Agents ohne name: {offenders[:3]}"
@@ -169,15 +180,15 @@ def test_locations_have_name(records):
 
 
 def test_performance_references_resolvable(records, graph):
-    """Jede record-referenzierte m3gim:Performance ist im Graph auflösbar und
-    trägt eine hasStageRole-Referenz auf eine m3gim:StageRole (E-96/E-98)."""
-    perfs = {n["@id"]: n for n in graph if n.get("@type") == "m3gim:Performance"}
-    stage_roles = {n["@id"] for n in graph if n.get("@type") == "m3gim:StageRole"}
+    """Jede record-referenzierte m3gim-ontology:Performance ist im Graph auflösbar und
+    trägt eine hasStageRole-Referenz auf eine m3gim-ontology:StageRole (E-96/E-98)."""
+    perfs = {n["@id"]: n for n in graph if n.get("@type") == "m3gim-ontology:Performance"}
+    stage_roles = {n["@id"] for n in graph if n.get("@type") == "m3gim-ontology:StageRole"}
     for r in records:
-        for ref in ensure_list(r.get("m3gim:hasPerformance")):
+        for ref in ensure_list(r.get("m3gim-ontology:hasPerformance")):
             pid = ref.get("@id") if isinstance(ref, dict) else None
             assert pid in perfs, f"{r['@id']}: hasPerformance-Ref {pid} fehlt im Graph"
-            sr = perfs[pid].get("m3gim:hasStageRole")
+            sr = perfs[pid].get("m3gim-ontology:hasStageRole")
             if isinstance(sr, dict):
                 assert sr.get("@id") in stage_roles, (
                     f"{pid}: hasStageRole zeigt auf nicht-existente StageRole"
@@ -185,16 +196,28 @@ def test_performance_references_resolvable(records, graph):
 
 
 def test_event_date_retired(records):
-    """Das generische m3gim:eventDate ist nach E-102 abgeschafft: Datumsrollen
-    ohne typisierte Property laufen jetzt in m3gim:hasDatedEvent (DatedEvent),
-    Freitext-/Klammer-Datierungen inklusive. Die ISO-Reinheit der typisierten
-    Properties und die Wohlgeformtheit der DatedEvents prueft test_30; hier nur
-    der Regressionsschutz, dass eventDate nicht zurueckkehrt.
+    """Kein Record traegt eine projekteigene Datums-Property.
+
+    Das generische m3gim:eventDate war der erste abgeschaffte Term dieser Art
+    (E-102), die sechzehn typisierten Datumsproperties sind mit dem Zielmodell
+    gefolgt. Jede Datierung haengt jetzt an einem Annotationsknoten, die
+    Entstehungsdatierung am Dokument auf rico:creationDate. Die
+    Wohlgeformtheit der Knoten prueft test_30, hier nur der
+    Regressionsschutz gegen die Rueckkehr eines Property-Namens, der eine
+    Rolle ausdrueckt.
     """
-    offenders = [r["@id"] for r in records if "m3gim:eventDate" in r]
+    from test_18_typed_dates import RETIRED_DATE_PROPS
+
+    offenders = [
+        (r["@id"], key)
+        for r in records
+        for key in r
+        if key in RETIRED_DATE_PROPS
+        or (key.startswith("m3gim-ontology:") and key.endswith("datum"))
+    ]
     assert not offenders, (
-        f"{len(offenders)} Records tragen noch das abgeschaffte m3gim:eventDate "
-        f"(E-102, Routing nach m3gim:hasDatedEvent): {offenders[:5]}"
+        f"{len(offenders)} Records tragen eine Datums-Property, die ihre Rolle "
+        f"im Namen fuehrt: {offenders[:5]}"
     )
 
 
@@ -207,13 +230,13 @@ def test_roles_gender_neutral(records):
     """
     offenders = []
     for r in records:
-        for prop in ("m3gim:hasAssociatedAgent", "rico:hasOrHadLocation",
+        for prop in ("m3gim-ontology:hasAssociatedAgent", "rico:hasOrHadLocation",
                      "rico:hasOrHadSubject"):
             for ent in ensure_list(r.get(prop)):
                 if not isinstance(ent, dict):
                     continue
-                role = ent.get("role")
-                if isinstance(role, str) and (role.endswith(":in") or role.endswith(":innen")):
+                role = role_label(ent)
+                if role.endswith(":in") or role.endswith(":innen"):
                     offenders.append((r["@id"], role))
     assert not offenders, (
         f"{len(offenders)} Rollen mit Gender-Suffix im Output: {offenders[:5]}"

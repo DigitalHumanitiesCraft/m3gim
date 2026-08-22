@@ -2,9 +2,9 @@
 knowledge/architecture-decisions.md.
 
 Rule 1 (E-129): a relation whose object is the fonds creator herself
-    is suppressed; the role stays recorded as m3gim:hasAssociatedAgent.
+    is suppressed; the role stays recorded as m3gim-ontology:hasAssociatedAgent.
 Rule 2 (E-130): the source value `fotografie` maps to
-    m3gim-dft:fotografie and carries a display label.
+    m3gim-vocab:photograph and carries a display label.
 Rule 3 (E-131): `programm` is the canonical concept labelled
     "Programm"; `programmheft` and `konzertprogramm` are source-value synonyms
     resolving to it.
@@ -21,7 +21,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
 
 from _helpers import ensure_list
 
-DFT_PREFIX = "m3gim-dft:"
+DFT_PREFIX = "m3gim-vocab:"
 
 # Records carrying a self-referential HasCorrespondent relation in the export
 # of 2026-08-21 (decision template § 1). They double as the no-loss control.
@@ -45,8 +45,8 @@ def _row(**cols) -> pd.Series:
 # ---------------------------------------------------------------------------
 
 def test_no_self_referential_agent_relations_and_roles_kept(records):
-    """No m3gim:agentRelation points from the fonds creator to herself, and the
-    anchor records still carry her as m3gim:hasAssociatedAgent — the
+    """No m3gim-ontology:hasAgentRelation points from the fonds creator to herself, and the
+    anchor records still carry her as m3gim-ontology:hasAssociatedAgent — the
     suppression must not drop the role assignment."""
     by_ident = {r.get("rico:identifier"): r for r in records}
 
@@ -54,17 +54,17 @@ def test_no_self_referential_agent_relations_and_roles_kept(records):
         rec = by_ident.get(ident)
         assert rec is not None, f"Anker-Record {ident} fehlt im Export"
         agents = [
-            a for a in ensure_list(rec.get("m3gim:hasAssociatedAgent"))
+            a for a in ensure_list(rec.get("m3gim-ontology:hasAssociatedAgent"))
             if isinstance(a, dict) and a.get("@id") == "wd:Q94208"
         ]
         assert agents, (
-            f"{ident}: Malaniuk nicht mehr als m3gim:hasAssociatedAgent — "
+            f"{ident}: Malaniuk nicht mehr als m3gim-ontology:hasAssociatedAgent — "
             f"die Rollenzuordnung darf durch die Unterdrueckung nicht verloren gehen"
         )
 
     offenders = []
     for r in records:
-        for rel in ensure_list(r.get("m3gim:agentRelation")):
+        for rel in ensure_list(r.get("m3gim-ontology:hasAgentRelation")):
             if not isinstance(rel, dict):
                 continue
             subj = rel.get("agrelon:hasSubject") or {}
@@ -85,15 +85,15 @@ def test_maybe_add_agrelon_skips_fonds_subject_by_id():
     same role still produces a relation for a different agent."""
     from transform import MALANIUK_SUBJECT, _maybe_add_agrelon
 
-    record = {"@id": "m3gim:TEST_1"}
+    record = {"@id": "m3gim-data:TEST_1"}
     _maybe_add_agrelon(record, "person", "adressat", dict(MALANIUK_SUBJECT))
-    assert "m3gim:agentRelation" not in record, (
+    assert "m3gim-ontology:hasAgentRelation" not in record, (
         "Selbstbezug erzeugt weiterhin eine Beziehung"
     )
 
     other = {"name": "Barth, Herbert", "@id": "wd:Q1587046"}
     _maybe_add_agrelon(record, "person", "adressat", other)
-    rels = record.get("m3gim:agentRelation", [])
+    rels = record.get("m3gim-ontology:hasAgentRelation", [])
     assert len(rels) == 1 and rels[0]["@type"] == "agrelon:HasCorrespondent", (
         "Beziehung zu einem anderen Agent wird faelschlich unterdrueckt"
     )
@@ -104,10 +104,10 @@ def test_maybe_add_agrelon_skips_fonds_subject_by_name_without_id():
     Wikidata id, so the id check alone would let the self-reference through."""
     from transform import MALANIUK_SUBJECT, _maybe_add_agrelon
 
-    record = {"@id": "m3gim:TEST_2"}
+    record = {"@id": "m3gim-data:TEST_2"}
     _maybe_add_agrelon(record, "person", "auftraggeber",
                        {"name": MALANIUK_SUBJECT["name"]})
-    assert "m3gim:agentRelation" not in record, (
+    assert "m3gim-ontology:hasAgentRelation" not in record, (
         "Selbstbezug ohne Wikidata-Kennung erzeugt weiterhin eine Beziehung"
     )
 
@@ -122,15 +122,15 @@ def test_fotografie_is_mapped_and_labelled():
     from transform import (DFT_LABELS, DOKUMENTTYP_TO_DFT, build_dft_concepts,
                            convert_objekt)
 
-    assert DOKUMENTTYP_TO_DFT.get("fotografie") == "m3gim-dft:fotografie"
-    assert DFT_LABELS.get("fotografie") == "Fotografie"
+    assert DOKUMENTTYP_TO_DFT.get("fotografie") == "m3gim-vocab:photograph"
+    assert DFT_LABELS.get("photograph") == "Fotografie"
 
     record = convert_objekt(_row(dokumenttyp="Fotografie"))
-    assert record.get("rico:hasDocumentaryFormType") == {"@id": "m3gim-dft:fotografie"}
+    assert record.get("rico:hasDocumentaryFormType") == {"@id": "m3gim-vocab:photograph"}
 
     concepts = build_dft_concepts([record])
     by_id = {c["@id"]: c for c in concepts}
-    assert by_id["m3gim-dft:fotografie"]["skos:prefLabel"] == "Fotografie"
+    assert by_id["m3gim-vocab:photograph"]["skos:prefLabel"] == "Fotografie"
 
 
 # ---------------------------------------------------------------------------
@@ -142,13 +142,13 @@ def test_programm_is_canonical_concept_with_synonyms():
     konzertprogramm stay accepted source values resolving to it."""
     from transform import DFT_BROADER, DFT_LABELS, DOKUMENTTYP_TO_DFT, convert_objekt
 
-    assert DFT_LABELS.get("programm") == "Programm"
+    assert DFT_LABELS.get("program") == "Programm"
     for source_value in ("programm", "programmheft", "konzertprogramm"):
-        assert DOKUMENTTYP_TO_DFT.get(source_value) == "m3gim-dft:programm", (
+        assert DOKUMENTTYP_TO_DFT.get(source_value) == "m3gim-vocab:program", (
             f"Quellwert {source_value!r} loest nicht auf den kanonischen Begriff auf"
         )
         record = convert_objekt(_row(dokumenttyp=source_value))
-        assert record.get("rico:hasDocumentaryFormType") == {"@id": "m3gim-dft:programm"}
+        assert record.get("rico:hasDocumentaryFormType") == {"@id": "m3gim-vocab:program"}
 
     assert "programmheft" not in DFT_BROADER, (
         "programmheft ist kein eigenes Konzept mehr und braucht keinen Oberbegriff"
@@ -156,7 +156,7 @@ def test_programm_is_canonical_concept_with_synonyms():
     assert "programmheft" not in DFT_LABELS, (
         "programmheft ist kein eigenes Konzept mehr und braucht kein Label"
     )
-    assert "m3gim-dft:programmheft" not in set(DOKUMENTTYP_TO_DFT.values())
+    assert "m3gim-vocab:programmheft" not in set(DOKUMENTTYP_TO_DFT.values())
 
 
 def test_programm_concept_in_export_is_labelled_programm(graph):
@@ -167,11 +167,11 @@ def test_programm_concept_in_export_is_labelled_programm(graph):
         if n.get("@type") == "skos:Concept"
         and isinstance(n.get("@id"), str) and n["@id"].startswith(DFT_PREFIX)
     }
-    assert "m3gim-dft:programm" in concepts, "programm-Concept fehlt im Export"
-    assert concepts["m3gim-dft:programm"]["skos:prefLabel"] == "Programm", (
+    assert "m3gim-vocab:program" in concepts, "programm-Concept fehlt im Export"
+    assert concepts["m3gim-vocab:program"]["skos:prefLabel"] == "Programm", (
         "Der Oberbegriff traegt weiterhin das Label seines Unterfalls"
     )
-    assert "m3gim-dft:programmheft" not in concepts
+    assert "m3gim-vocab:programmheft" not in concepts
 
 
 # ---------------------------------------------------------------------------

@@ -1,14 +1,14 @@
 """E-96-Nachzug in Ansichtserzeugung und Datenaudit.
 
 ``scripts/build-views.py`` und ``scripts/audit-data.py`` lasen die mit E-96
-abgeloeste Property ``m3gim:hasPerformanceRole``. Sie kommt im erzeugten
+abgeloeste Property ``m3gim-ontology:hasPerformanceRole``. Sie kommt im erzeugten
 Datensatz kein einziges Mal vor, weshalb die Lesestellen still leere Listen
 lieferten, ohne einen Fehler zu melden: Auftritts-Partien, Gattungserkennung
 und Rollenzaehlung im Kosmos blieben leer.
 
-Das heutige Modell fuehrt Auffuehrungsknoten ``m3gim:Performance``, die ueber
-``m3gim:hasStageRole`` auf ``m3gim:StageRole`` zeigen; der Record verweist
-ueber ``m3gim:hasPerformance`` auf die Auffuehrung (data.md § 4/§ 7).
+Das heutige Modell fuehrt Auffuehrungsknoten ``m3gim-ontology:Performance``, die ueber
+``m3gim-ontology:hasStageRole`` auf ``m3gim-ontology:StageRole`` zeigen; der Record verweist
+ueber ``m3gim-ontology:hasPerformance`` auf die Auffuehrung (data.md § 4/§ 7).
 
 Zwei Absicherungen:
 
@@ -74,7 +74,7 @@ def stage_role_labels(graph) -> set:
     return {
         n["rico:name"]
         for n in graph
-        if n.get("@type") == "m3gim:StageRole" and n.get("rico:name")
+        if n.get("@type") == "m3gim-ontology:StageRole" and n.get("rico:name")
     }
 
 
@@ -163,7 +163,7 @@ def test_auftritte_carry_stage_role(auftritte, stage_role_labels):
 
     Die Schwelle ist niedrig, weil nur eindeutige Records eine Partie liefern
     (siehe test_auftritt_rolle_only_from_unambiguous_record). Sie sichert allein,
-    dass der Zugriff ueber m3gim:hasPerformance ueberhaupt traegt.
+    dass der Zugriff ueber m3gim-ontology:hasPerformance ueberhaupt traegt.
     """
     mit_rolle = [a for a in auftritte if a.get("rolle")]
     assert len(mit_rolle) >= 8, (
@@ -192,8 +192,16 @@ def test_auftritt_rolle_only_from_unambiguous_record(graph, records):
 
 
 def test_auftritte_with_stage_role_are_opera(auftritte):
-    """Eine besetzte Partie zieht die Gattung oper nach sich (has_character_role)."""
-    mit_rolle = [a for a in auftritte if a.get("rolle")]
+    """Eine besetzte Partie zieht die Gattung oper nach sich (has_character_role).
+
+    Ausgenommen sind die Eintraege der Partie-Spalte, die keine Buehnenrolle
+    benennen, sondern die Besetzung eines Konzerts. Die Liste steht in
+    build-views selbst, damit Auswertung und Test nicht auseinanderlaufen.
+    """
+    mit_rolle = [
+        a for a in auftritte
+        if a.get("rolle") and a["rolle"] not in build_views.CONCERT_BILLINGS
+    ]
     assert mit_rolle, "Keine Auftritte mit Partie — Vorbedingung verletzt"
     offenders = [(a["rolle"], a.get("gattung")) for a in mit_rolle if a.get("gattung") != "oper"]
     assert not offenders, f"Auftritte mit Partie ohne Gattung oper: {offenders[:5]}"
@@ -203,7 +211,7 @@ def test_records_with_named_stage_role_are_opera(graph, records):
     """Auch ohne Opern-Stichwort im Titel gilt ein Record mit benannter Partie als Oper.
 
     Prueft die Lesestelle in _extract_werk_from_record direkt: ohne den Zugriff
-    ueber m3gim:hasPerformance faellt die Gattung auf konzert oder None zurueck.
+    ueber m3gim-ontology:hasPerformance faellt die Gattung auf konzert oder None zurueck.
     """
     perf_index = build_views.build_performance_index(graph)
     candidates = [
@@ -261,6 +269,6 @@ def test_audit_counts_performance_links(capsys, xlsx_verknuepfungen, graph):
 
 def test_audit_link_check_follows_performance():
     """Ein Record, der nur eine Auffuehrung traegt, gilt als verknuepft."""
-    assert audit_data.has_links({"m3gim:hasPerformance": [{"@id": "m3gim:perf_x_1"}]})
-    assert not audit_data.has_links({"m3gim:hasPerformanceRole": [{"name": "Fricka"}]})
+    assert audit_data.has_links({"m3gim-ontology:hasPerformance": [{"@id": "m3gim-data:perf_x_1"}]})
+    assert not audit_data.has_links({"m3gim-ontology:hasPerformanceRole": [{"name": "Fricka"}]})
     assert not audit_data.has_links({})

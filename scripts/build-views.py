@@ -319,7 +319,7 @@ def get_dokumenttyp(record):
     dft = record.get('rico:hasDocumentaryFormType', {})
     if isinstance(dft, dict):
         type_id = dft.get('@id', '')
-        return type_id.replace('m3gim-dft:', '')
+        return type_id.replace('m3gim-vocab:', '')
     return 'Unknown'
 
 
@@ -356,25 +356,40 @@ def ensure_list(value):
     return [value]
 
 
+def role_label(node):
+    """Anzeigetext der Rolle eines Knotens.
+
+    Die Rolle steht als Verweis auf ein Concept des Vokabulars und fuehrt
+    dessen skos:prefLabel mit, sodass der Anzeigetext ohne Nachschlagen da
+    ist. Ein blosser String kommt nur beim Vertragsstatus vor, den das
+    Vokabular begruendet nicht als Begriff fuehrt.
+    """
+    role = node.get('role')
+    if isinstance(role, dict):
+        return role.get('skos:prefLabel', '')
+    return role or ''
+
+
 def build_performance_index(nodes):
-    """Map m3gim:Performance @id to its stage role labels.
+    """Map m3gim-ontology:Performance @id to its stage role labels.
 
     E-96 replaced the record attribute m3gim:hasPerformanceRole with
-    m3gim:Performance and m3gim:StageRole as top-level graph entities. A record
-    reaches its stage roles only via m3gim:hasPerformance -> Performance ->
-    m3gim:hasStageRole -> StageRole.rico:name.
+    m3gim-ontology:Performance and m3gim-ontology:StageRole as top-level graph
+    entities. A record reaches its stage roles only via
+    m3gim-ontology:hasPerformance -> Performance ->
+    m3gim-ontology:hasStageRole -> StageRole.rico:name.
     """
     role_labels = {
         n.get('@id'): n.get('rico:name')
         for n in nodes
-        if isinstance(n, dict) and n.get('@type') == 'm3gim:StageRole'
+        if isinstance(n, dict) and n.get('@type') == 'm3gim-ontology:StageRole'
     }
     index = {}
     for node in nodes:
-        if not isinstance(node, dict) or node.get('@type') != 'm3gim:Performance':
+        if not isinstance(node, dict) or node.get('@type') != 'm3gim-ontology:Performance':
             continue
         labels = []
-        for ref in ensure_list(node.get('m3gim:hasStageRole')):
+        for ref in ensure_list(node.get('m3gim-ontology:hasStageRole')):
             label = role_labels.get(ref.get('@id')) if isinstance(ref, dict) else None
             if label:
                 labels.append(label)
@@ -385,7 +400,7 @@ def build_performance_index(nodes):
 def stage_role_names(record, perf_index):
     """Stage role labels a record points to, in record order, duplicates kept."""
     names = []
-    for ref in ensure_list(record.get('m3gim:hasPerformance')):
+    for ref in ensure_list(record.get('m3gim-ontology:hasPerformance')):
         if isinstance(ref, dict):
             names.extend(perf_index.get(ref.get('@id'), []))
     return names
@@ -455,17 +470,17 @@ def _extract_ort_from_record(record):
     locations = ensure_list(record.get('rico:hasOrHadLocation'))
     for loc in locations:
         if isinstance(loc, dict):
-            role = (loc.get('role') or '').lower()
+            role = role_label(loc).lower()
             if role in ('auffuehrungsort', 'gastspiel', 'aufführung', 'spielzeit'):
                 ort = loc.get('name', '')
                 break
 
     # 2. Check agents with role auffuehrungsort (institutions as venues)
     if not ort:
-        agents = ensure_list(record.get('m3gim:hasAssociatedAgent'))
+        agents = ensure_list(record.get('m3gim-ontology:hasAssociatedAgent'))
         for agent in agents:
             if isinstance(agent, dict):
-                role = (agent.get('role') or '').lower()
+                role = role_label(agent).lower()
                 if role == 'auffuehrungsort':
                     name = agent.get('name', '')
                     # Map institution → city
@@ -487,12 +502,17 @@ def _extract_ort_from_record(record):
     if not ort:
         for loc in locations:
             if isinstance(loc, dict):
-                role = (loc.get('role') or '').lower()
-                if role in ('entstehungsort', 'erscheinungsdatum'):
+                role = role_label(loc).lower()
+                if role in ('entstehung', 'erscheinungsdatum'):
                     ort = loc.get('name', '')
                     break
 
     return ort, ort_detail
+
+
+# Eintraege der Partie-Spalte, die keine Buehnenrolle benennen, sondern die
+# Besetzung eines Konzerts. Sie ziehen die Gattung oper nicht nach sich.
+CONCERT_BILLINGS = ('Alt Solo',)
 
 
 def _extract_werk_from_record(record, perf_index):
@@ -501,12 +521,12 @@ def _extract_werk_from_record(record, perf_index):
     komponist = None
     gattung = None
 
-    # 1. Structured: rico:hasOrHadSubject with @type m3gim:MusicalWork
+    # 1. Structured: rico:hasOrHadSubject with @type m3gim-ontology:MusicalWork
     subjects = ensure_list(record.get('rico:hasOrHadSubject'))
     for subj in subjects:
-        if isinstance(subj, dict) and subj.get('@type') == 'm3gim:MusicalWork':
+        if isinstance(subj, dict) and subj.get('@type') == 'm3gim-ontology:MusicalWork':
             werk = subj.get('name', '')
-            komponist = normalize_komponist(subj.get('komponist', ''))
+            komponist = normalize_komponist(subj.get('composer', ''))
             break
 
     # 2. Fallback: title-matching
@@ -515,9 +535,9 @@ def _extract_werk_from_record(record, perf_index):
 
     # Determine gattung
     title_lower = (record.get('rico:title') or '').lower()
-    # A named stage part marks an opera; "Alt Solo" is a concert billing.
+    # A named stage part marks an opera; a concert billing does not.
     has_character_role = any(
-        name and name not in ('Alt Solo',)
+        name and name not in CONCERT_BILLINGS
         for name in stage_role_names(record, perf_index)
     )
 
@@ -582,7 +602,7 @@ def extract_auftritte(records):
     Extract performance events from archive records.
 
     Three-pass extraction:
-    - Pass 1: Structured data (DatedEvent/STE date + location + work)
+    - Pass 1: Structured data (Annotation date + location + work)
     - Pass 2: Programmhefte + Plakate (title parsing)
     - Pass 3: Rezensionen with performance context
 
@@ -591,15 +611,14 @@ def extract_auftritte(records):
     raw_auftritte = []
     seen_records = set()
 
-    # E-102: ort,datum-Daten leben (dedupliziert) im SpatiotemporalEvent, nicht
-    # mehr in einem record-seitigen Datumsfeld. Lookup, um deren atDate als
-    # Datumsquelle der Auftritte aufzuloesen.
-    ste_by_id = {
+    # Jede Datierung haengt an einem Annotationsknoten. Lookup, um deren
+    # atDate als Datumsquelle der Auftritte aufzuloesen.
+    annotation_by_id = {
         n['@id']: n for n in records
-        if isinstance(n, dict) and n.get('@type') == 'm3gim:SpatiotemporalEvent'
+        if isinstance(n, dict) and n.get('@type') == 'm3gim-ontology:Annotation'
     }
 
-    # E-96: stage roles reach the record through m3gim:Performance.
+    # E-96: stage roles reach the record through m3gim-ontology:Performance.
     perf_index = build_performance_index(records)
 
     for record in records:
@@ -611,21 +630,16 @@ def extract_auftritte(records):
         title = record.get('rico:title', '')
         doc_type = get_dokumenttyp(record)
 
-        # Extract year from DatedEvent dateValue (preferred) or rico:date.
-        # E-102: das fruehere generische m3gim:eventDate ist in der Fallback-
-        # Klasse m3gim:hasDatedEvent (dateValue) aufgegangen.
+        # Extract year from the annotation datings (preferred) or rico:date.
+        # Ein Konsument erreicht alle Datierungen eines Dokuments ueber eine
+        # Schleife ueber m3gim-ontology:hasAnnotation.
         jahr = None
         datum = None
-        event_dates = [
-            de.get('m3gim:dateValue')
-            for de in ensure_list(record.get('m3gim:hasDatedEvent'))
-            if isinstance(de, dict) and isinstance(de.get('m3gim:dateValue'), str)
-        ]
-        # ort,datum-Daten aus den referenzierten SpatiotemporalEvents nachziehen.
-        for ref in ensure_list(record.get('m3gim:hasSpatiotemporalEvent')):
-            ste = ste_by_id.get(ref.get('@id')) if isinstance(ref, dict) else None
-            if ste and isinstance(ste.get('m3gim:atDate'), str):
-                event_dates.append(ste['m3gim:atDate'])
+        event_dates = []
+        for ref in ensure_list(record.get('m3gim-ontology:hasAnnotation')):
+            node = annotation_by_id.get(ref.get('@id')) if isinstance(ref, dict) else None
+            if node and isinstance(node.get('m3gim-ontology:atDate'), str):
+                event_dates.append(node['m3gim-ontology:atDate'])
         for ed in event_dates:
             if isinstance(ed, str):
                 j = extract_year(ed)
@@ -648,7 +662,7 @@ def extract_auftritte(records):
         werk, komponist, gattung = _extract_werk_from_record(record, perf_index)
         rolle = _extract_rolle_from_record(record, perf_index)
 
-        # Pass 1: Structured data (DatedEvent/STE date + location/agent auffuehrungsort)
+        # Pass 1: Structured data (Annotation date + location/agent auffuehrungsort)
         has_event_date = len(event_dates) > 0
         has_perf_context = ort is not None or werk is not None
 
@@ -956,9 +970,9 @@ def build_matrix(records):
             'weight': intensity_weight
         }
 
-        # Method 1: Extract from structured data (m3gim:hasAssociatedAgent + mentioned persons in subjects)
+        # Method 1: Extract from structured data (m3gim-ontology:hasAssociatedAgent + mentioned persons in subjects)
         seen_names = set()
-        for agent in ensure_list(record.get('m3gim:hasAssociatedAgent')):
+        for agent in ensure_list(record.get('m3gim-ontology:hasAssociatedAgent')):
             if isinstance(agent, dict):
                 name = agent.get('name', '')
                 if name and name not in seen_names:
@@ -1041,7 +1055,7 @@ def build_kosmos(records):
     """
     print('Building kosmos.json...')
 
-    # E-96: stage roles reach the record through m3gim:Performance.
+    # E-96: stage roles reach the record through m3gim-ontology:Performance.
     perf_index = build_performance_index(records)
 
     # Aggregate by composer with location tracking
@@ -1126,9 +1140,9 @@ def build_kosmos(records):
         # Method 1: Structured data — Werke aus rico:hasOrHadSubject
         subjects = ensure_list(record.get('rico:hasOrHadSubject'))
         for subj in subjects:
-            if isinstance(subj, dict) and subj.get('@type') == 'm3gim:MusicalWork':
+            if isinstance(subj, dict) and subj.get('@type') == 'm3gim-ontology:MusicalWork':
                 werk_name = subj.get('name', '')
-                komp = normalize_komponist(subj.get('komponist', ''))
+                komp = normalize_komponist(subj.get('composer', ''))
                 if komp:
                     komponisten_data[komp]['dokumente'] += 1
                     werk_data = komponisten_data[komp]['werke'][werk_name]

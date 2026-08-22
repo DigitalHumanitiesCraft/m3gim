@@ -1,7 +1,7 @@
 """XLSX-Provenance-Spec: Phase 7 / Session 1.
 
 Jeder Record und jede aus Verknuepfungen abgeleitete Entitaet traegt
-m3gim:xlsxSource mit {m3gim:xlsxSheet, m3gim:xlsxRow[, m3gim:datenpunktId]}.
+m3gim-ontology:xlsxSource mit {m3gim-ontology:xlsxSheet, m3gim-ontology:xlsxRow[, m3gim-ontology:dataPointId]}.
 
 Zweck:
   1. Strict-Assertions fuer 3 kuratierte Anker-Records -- die Fixture-Werte
@@ -29,13 +29,13 @@ ANCHOR_RECORDS = {
     # entfernte eine Zeile davor (gegen die echte XLSX verifiziert).
     "UAKUG/NIM_007 5_1": {
         "xlsx_row": 122,
-        "expected_doc_type": "m3gim-dft:notiz",
+        "expected_doc_type": "m3gim-vocab:note",
         "min_finance_details": 5,
     },
     # Rezension: Dokumenttyp + Ort-/Datum-Kompositum (SpatiotemporalEvent)
     "UAKUG/NIM_004 3": {
         "xlsx_row": 44,
-        "expected_doc_type": "m3gim-dft:rezension",
+        "expected_doc_type": "m3gim-vocab:review",
         "has_spatiotemporal": True,
     },
     # Musikinstitut-Konvolut: AgRelOn HasIsMember
@@ -51,16 +51,16 @@ def _records_by_signatur(records):
 
 
 def _xlsx_row(source):
-    """Extrahiert m3gim:xlsxRow aus einem xlsxSource-Objekt (dict oder None)."""
+    """Extrahiert m3gim-ontology:xlsxRow aus einem xlsxSource-Objekt (dict oder None)."""
     if not isinstance(source, dict):
         return None
-    return source.get("m3gim:xlsxRow")
+    return source.get("m3gim-ontology:xlsxRow")
 
 
 def _xlsx_sheet(source):
     if not isinstance(source, dict):
         return None
-    return source.get("m3gim:xlsxSheet")
+    return source.get("m3gim-ontology:xlsxSheet")
 
 
 # ---------------------------------------------------------------------------
@@ -77,9 +77,9 @@ def test_anchor_record_has_xlsx_source(records, signatur, expected):
         f"Anker-Record {signatur!r} nicht im Graph. "
         f"Fixture aktualisieren oder Pipeline-Regression pruefen."
     )
-    src = rec.get("m3gim:xlsxSource")
+    src = rec.get("m3gim-ontology:xlsxSource")
     assert isinstance(src, dict), (
-        f"{signatur}: m3gim:xlsxSource fehlt oder ist kein Objekt. "
+        f"{signatur}: m3gim-ontology:xlsxSource fehlt oder ist kein Objekt. "
         f"Pipeline setzt ihn in convert_objekt()."
     )
     assert _xlsx_sheet(src) == "Objekte", (
@@ -128,16 +128,16 @@ def test_anchor_nested_entities_have_source(records, signatur, expected):
 
     nested_without_source = []
 
-    details = [d for d in ensure_list(rec.get("m3gim:hasDetail"))
-               if isinstance(d, dict) and d.get("@type") == "m3gim:DetailAnnotation"]
+    details = [d for d in ensure_list(rec.get("m3gim-ontology:hasDetail"))
+               if isinstance(d, dict) and d.get("@type") == "m3gim-ontology:Annotation"]
     for detail in details:
-        if not isinstance(detail.get("m3gim:xlsxSource"), dict):
-            nested_without_source.append(("detail", detail.get("m3gim:detailField")))
+        if not isinstance(detail.get("m3gim-ontology:xlsxSource"), dict):
+            nested_without_source.append(("detail", detail.get("m3gim-ontology:detailField")))
 
-    agent_rels = [r for r in ensure_list(rec.get("m3gim:agentRelation"))
+    agent_rels = [r for r in ensure_list(rec.get("m3gim-ontology:hasAgentRelation"))
                   if isinstance(r, dict)]
     for rel in agent_rels:
-        if not isinstance(rel.get("m3gim:xlsxSource"), dict):
+        if not isinstance(rel.get("m3gim-ontology:xlsxSource"), dict):
             nested_without_source.append(("agentRelation", rel.get("@type")))
 
     assert not nested_without_source, (
@@ -148,7 +148,7 @@ def test_anchor_nested_entities_have_source(records, signatur, expected):
     if "min_finance_details" in expected:
         finance_count = sum(
             1 for d in details
-            if d.get("m3gim:detailField") in {"ausgaben", "einnahmen", "summe"}
+            if d.get("m3gim-ontology:detailField") in {"ausgaben", "einnahmen", "summe"}
         )
         assert finance_count >= expected["min_finance_details"], (
             f"{signatur}: {finance_count} Finanz-Details gefunden, "
@@ -165,9 +165,9 @@ def test_anchor_nested_entities_have_source(records, signatur, expected):
 
     # Fachliche Erwartung: SpatiotemporalEvent-Referenz vorhanden
     if expected.get("has_spatiotemporal"):
-        ste_refs = ensure_list(rec.get("m3gim:hasSpatiotemporalEvent"))
+        ste_refs = ensure_list(rec.get("m3gim-ontology:hasAnnotation"))
         assert ste_refs, (
-            f"{signatur}: kein m3gim:hasSpatiotemporalEvent-Ref gefunden"
+            f"{signatur}: kein m3gim-ontology:hasAnnotation-Ref gefunden"
         )
 
 
@@ -192,7 +192,7 @@ def test_anchors_cover_v2_feature_breadth():
 
 
 def test_xlsx_source_coverage_records(records):
-    """Soft: Mind. 99 % der Records haben m3gim:xlsxSource.
+    """Soft: Mind. 99 % der Records haben m3gim-ontology:xlsxSource.
     Folios sind zulaessige Ausnahmen (sie sind Metadaten-Platzhalter)."""
     total = 0
     with_source = 0
@@ -200,7 +200,7 @@ def test_xlsx_source_coverage_records(records):
         if rec.get("@id", "").endswith("_Folio"):
             continue
         total += 1
-        if isinstance(rec.get("m3gim:xlsxSource"), dict):
+        if isinstance(rec.get("m3gim-ontology:xlsxSource"), dict):
             with_source += 1
     coverage = with_source / total if total else 0.0
     # Strict-Schwelle: 99 %. Der Default-Lauf muss 100 % treffen.
@@ -221,20 +221,20 @@ def test_xlsx_source_coverage_nested_entities(records):
     for rec in records:
         rec_id = rec.get("@id", "")
 
-        for detail in ensure_list(rec.get("m3gim:hasDetail")):
+        for detail in ensure_list(rec.get("m3gim-ontology:hasDetail")):
             if not isinstance(detail, dict):
                 continue
             total += 1
-            if isinstance(detail.get("m3gim:xlsxSource"), dict):
+            if isinstance(detail.get("m3gim-ontology:xlsxSource"), dict):
                 with_source += 1
             elif len(missing_examples) < 5:
-                missing_examples.append((rec_id, "detail", detail.get("m3gim:detailField")))
+                missing_examples.append((rec_id, "detail", detail.get("m3gim-ontology:detailField")))
 
-        for rel in ensure_list(rec.get("m3gim:agentRelation")):
+        for rel in ensure_list(rec.get("m3gim-ontology:hasAgentRelation")):
             if not isinstance(rel, dict):
                 continue
             total += 1
-            if isinstance(rel.get("m3gim:xlsxSource"), dict):
+            if isinstance(rel.get("m3gim-ontology:xlsxSource"), dict):
                 with_source += 1
             elif len(missing_examples) < 5:
                 missing_examples.append((rec_id, "agentRelation", rel.get("@type")))
@@ -251,11 +251,11 @@ def test_xlsx_source_coverage_nested_entities(records):
 
 def test_xlsx_source_coverage_spatiotemporal_events(graph):
     """Soft: Alle Top-Level-SpatiotemporalEvents tragen xlsxSource."""
-    events = [n for n in graph if n.get("@type") == "m3gim:SpatiotemporalEvent"]
+    events = [n for n in graph if n.get("@type") == "m3gim-ontology:Annotation"]
     if not events:
         pytest.skip("Keine SpatiotemporalEvents im Graph")
     missing = [e.get("@id") for e in events
-               if not isinstance(e.get("m3gim:xlsxSource"), dict)]
+               if not isinstance(e.get("m3gim-ontology:xlsxSource"), dict)]
     assert not missing, (
         f"{len(missing)}/{len(events)} STE ohne xlsxSource: {missing[:5]}"
     )
@@ -265,21 +265,21 @@ def test_xlsx_source_row_is_positive_int(records, graph):
     """Wenn xlsxSource vorhanden ist, muss xlsxRow ein positiver int sein."""
     offenders = []
     for n in graph:
-        src = n.get("m3gim:xlsxSource")
+        src = n.get("m3gim-ontology:xlsxSource")
         if not isinstance(src, dict):
             continue
-        row = src.get("m3gim:xlsxRow")
+        row = src.get("m3gim-ontology:xlsxRow")
         if not isinstance(row, int) or row < 2:
             offenders.append((n.get("@id"), row))
 
         # Nested durchsuchen
-        for detail in ensure_list(n.get("m3gim:hasDetail")):
+        for detail in ensure_list(n.get("m3gim-ontology:hasDetail")):
             if not isinstance(detail, dict):
                 continue
-            sub_src = detail.get("m3gim:xlsxSource")
+            sub_src = detail.get("m3gim-ontology:xlsxSource")
             if not isinstance(sub_src, dict):
                 continue
-            sub_row = sub_src.get("m3gim:xlsxRow")
+            sub_row = sub_src.get("m3gim-ontology:xlsxRow")
             if not isinstance(sub_row, int) or sub_row < 2:
                 offenders.append((n.get("@id"), "detail", sub_row))
 

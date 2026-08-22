@@ -5,7 +5,7 @@ komponist durch (build_index_lookup -> process_verknuepfungen). Alle anderen
 redaktionell gepflegten Spalten gingen verloren: Org-Sitz (ort), Werk-Partie
 (rolle_stimme), Personen-Beruf (anmerkung), Lebensdaten, assoziierte Person.
 
-Dieser Test sichert, dass die kuratierten Felder als m3gim:-Properties an der
+Dieser Test sichert, dass die kuratierten Felder als m3gim-ontology:-Properties an der
 jeweiligen Entitaet im Output ankommen. Soll-Quelle ist der KANONISCHE Index
 ueber den echten Pipeline-Reader load_index (mit Header-Shift-Korrektur, E-95) —
 nicht der Roh-XLSX-Header, der den geleakten 'Graz'/'Rossini'-Wert traegt.
@@ -52,7 +52,7 @@ def _agents_of_type(graph: list, atype: str) -> list:
     for rec in graph:
         if rec.get("@type") != "rico:Record":
             continue
-        ag = rec.get("m3gim:hasAssociatedAgent")
+        ag = rec.get("m3gim-ontology:hasAssociatedAgent")
         ag = ag if isinstance(ag, list) else ([ag] if ag else [])
         for a in ag:
             if isinstance(a, dict) and a.get("@type") == atype:
@@ -105,16 +105,16 @@ def _coverage(entities: list, field_map: dict, prop: str):
 
 
 # ---------------------------------------------------------------------------
-# Org-Sitz (Spalte 'ort' im Organisationsindex) -> m3gim:sitz
+# Org-Sitz (Spalte 'ort' im Organisationsindex) -> m3gim-ontology:headquarters
 # ---------------------------------------------------------------------------
 
 def test_org_sitz_reaches_jsonld(graph):
     sitz_map = _index_field_map("Organisationsindex", "ort")
     assert len(sitz_map) >= 40, f"Nur {len(sitz_map)} Org-Sitze im Index — Reader kaputt."
 
-    present, wrong = _coverage(_agents_of_type(graph, "rico:CorporateBody"), sitz_map, "m3gim:sitz")
+    present, wrong = _coverage(_agents_of_type(graph, "rico:CorporateBody"), sitz_map, "m3gim-ontology:headquarters")
     assert not wrong, (
-        f"{len(wrong)} Institution(en) mit falschem m3gim:sitz. Erste 10:\n  "
+        f"{len(wrong)} Institution(en) mit falschem m3gim-ontology:headquarters. Erste 10:\n  "
         + "\n  ".join(f"{n}: {got!r} != {want!r}" for n, got, want in wrong[:10])
     )
     assert len(present) >= 15, (
@@ -129,21 +129,21 @@ def test_org_sitz_anchor_bayreuther_festspiele(graph):
     festspiele = [a for a in orgs
                   if (normalize_str(a.get("name")) or "").lower() == "bayreuther festspiele"]
     assert festspiele, "Bayreuther Festspiele nicht als CorporateBody im Graph."
-    vals = {a.get("m3gim:sitz") for a in festspiele if a.get("m3gim:sitz")}
+    vals = {a.get("m3gim-ontology:headquarters") for a in festspiele if a.get("m3gim-ontology:headquarters")}
     assert vals == {"Bayreuth"}, f"Bayreuther-Festspiele-Sitz unerwartet: {vals}"
 
 
 # ---------------------------------------------------------------------------
-# Werk-Partie (Spalte 'rolle_stimme' im Werkindex) -> m3gim:partie
+# Werk-Partie (Spalte 'rolle_stimme' im Werkindex) -> m3gim-ontology:sungPart
 # ---------------------------------------------------------------------------
 
 def test_werk_partie_reaches_jsonld(graph):
     partie_map = _index_field_map("Werkindex", "rolle_stimme")
     assert len(partie_map) >= 55, f"Nur {len(partie_map)} Werk-Partien im Index — Reader kaputt."
 
-    present, wrong = _coverage(_subjects_of_type(graph, "m3gim:MusicalWork"), partie_map, "m3gim:partie")
+    present, wrong = _coverage(_subjects_of_type(graph, "m3gim-ontology:MusicalWork"), partie_map, "m3gim-ontology:sungPart")
     assert not wrong, (
-        f"{len(wrong)} Werk(e) mit falscher m3gim:partie. Erste 10:\n  "
+        f"{len(wrong)} Werk(e) mit falscher m3gim-ontology:sungPart. Erste 10:\n  "
         + "\n  ".join(f"{n}: {got!r} != {want!r}" for n, got, want in wrong[:10])
     )
     assert len(present) >= 15, (
@@ -154,25 +154,25 @@ def test_werk_partie_reaches_jsonld(graph):
 
 def test_werk_partie_anchor_tristan(graph):
     """Anker: Tristan und Isolde -> Brangaene (Malaniuks Bayreuth-Partie)."""
-    works = _subjects_of_type(graph, "m3gim:MusicalWork")
+    works = _subjects_of_type(graph, "m3gim-ontology:MusicalWork")
     tristan = [w for w in works
                if (normalize_str(w.get("name")) or "").lower() == "tristan und isolde"]
     assert tristan, "Tristan und Isolde nicht als MusicalWork im Graph."
-    vals = {w.get("m3gim:partie") for w in tristan if w.get("m3gim:partie")}
+    vals = {w.get("m3gim-ontology:sungPart") for w in tristan if w.get("m3gim-ontology:sungPart")}
     assert "Brangäne" in vals, f"Tristan-Partie unerwartet: {vals}"
 
 
 # ---------------------------------------------------------------------------
-# Personen-Beruf (Spalte 'anmerkung' im Personenindex) -> m3gim:editorialNote
+# Personen-Beruf (Spalte 'anmerkung' im Personenindex) -> m3gim-ontology:indexNote
 # ---------------------------------------------------------------------------
 
 def test_person_beruf_reaches_jsonld(graph):
     beruf_map = _index_field_map("Personenindex", "anmerkung")
     assert len(beruf_map) >= 250, f"Nur {len(beruf_map)} Personen-Anmerkungen im Index — Reader kaputt."
 
-    present, wrong = _coverage(_persons(graph), beruf_map, "m3gim:editorialNote")
+    present, wrong = _coverage(_persons(graph), beruf_map, "m3gim-ontology:indexNote")
     assert not wrong, (
-        f"{len(wrong)} Person(en) mit falscher m3gim:editorialNote. Erste 10:\n  "
+        f"{len(wrong)} Person(en) mit falscher m3gim-ontology:indexNote. Erste 10:\n  "
         + "\n  ".join(f"{n}: {got!r} != {want!r}" for n, got, want in wrong[:10])
     )
     assert len(present) >= 50, (
@@ -182,13 +182,13 @@ def test_person_beruf_reaches_jsonld(graph):
 
 
 # ---------------------------------------------------------------------------
-# Personen-Lebensdaten -> m3gim:lifespan
+# Personen-Lebensdaten -> m3gim-ontology:lifespan
 # ---------------------------------------------------------------------------
 
 def test_person_lifespan_reaches_jsonld(graph):
     span_map = _index_field_map("Personenindex", "lebensdaten")
     assert len(span_map) >= 15, f"Nur {len(span_map)} Lebensdaten im Index — Reader kaputt."
 
-    present, wrong = _coverage(_persons(graph), span_map, "m3gim:lifespan")
-    assert not wrong, f"Falsche m3gim:lifespan-Werte: {wrong[:10]}"
+    present, wrong = _coverage(_persons(graph), span_map, "m3gim-ontology:lifespan")
+    assert not wrong, f"Falsche m3gim-ontology:lifespan-Werte: {wrong[:10]}"
     assert len(present) >= 3, f"Nur {len(present)} Personen mit Index-Lebensdaten im Graph."

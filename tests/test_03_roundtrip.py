@@ -47,14 +47,14 @@ def test_bearbeitungsstand_normalized(records):
     valid = {"abgeschlossen", "begonnen", "zurueckgestellt"}
     offenders = []
     for r in records:
-        bs = r.get("m3gim:bearbeitungsstand")
+        bs = r.get("m3gim-ontology:processingStatus")
         if bs is not None and bs not in valid:
             offenders.append((r["@id"], bs))
     assert not offenders, f"Ungültige bearbeitungsstand-Werte: {offenders}"
 
 
 def test_dokumenttyp_has_valid_prefix(records):
-    """Alle rico:hasDocumentaryFormType-@id beginnen mit m3gim-dft:."""
+    """Alle rico:hasDocumentaryFormType-@id beginnen mit m3gim-vocab:."""
     offenders = []
     for r in records:
         dft = r.get("rico:hasDocumentaryFormType")
@@ -62,7 +62,7 @@ def test_dokumenttyp_has_valid_prefix(records):
             continue
         if isinstance(dft, dict):
             aid = dft.get("@id", "")
-            if not aid.startswith("m3gim-dft:"):
+            if not aid.startswith("m3gim-vocab:"):
                 offenders.append((r["@id"], aid))
     assert not offenders, f"Fremdes dokumenttyp-Prefix: {offenders[:5]}"
 

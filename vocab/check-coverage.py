@@ -6,9 +6,10 @@
 
 Datenfluss: vocab/m3gim.ttl (Vokabular) plus data/output/m3gim.jsonld (Daten)
 in einen Konsolenreport und einen Exit-Code. Geprüft wird, ob jede im Datensatz
-verwendete Klasse und Property des m3gim-Namespace im Vokabular definiert ist,
-ob jeder Dokumenttyp ein SKOS-Concept hat, ob jedes Rollenliteral auf ein
-Concept trifft und ob alle skos:member- und skos:broader-Verweise auflösen.
+verwendete Klasse und Property des Namensraums m3gim-ontology im Vokabular
+definiert ist, ob jeder Dokumenttyp ein SKOS-Concept hat, ob jeder Rollenwert
+auf ein Concept verweist und dessen Anzeigetext unverfälscht mitführt und ob
+alle skos:member- und skos:broader-Verweise auflösen.
 
 Usage:
     uv run vocab/check-coverage.py [--vocab PFAD] [--data PFAD]
@@ -28,23 +29,26 @@ import sys
 from collections.abc import Iterator
 from pathlib import Path
 
-from rdflib import Graph
+from rdflib import Graph, URIRef
 from rdflib.namespace import RDF, RDFS, SKOS
 
 REPO = Path(__file__).resolve().parent.parent
-VOCAB_NS = "https://dhcraft.org/m3gim/vocab#"
-ROLE_NS = "https://dhcraft.org/m3gim/roles#"
-DFT_NS = "https://dhcraft.org/m3gim/documentaryFormTypes#"
+ONTOLOGY_NS = "https://dhcraft.org/m3gim/ontology#"
+DATA_NS = "https://dhcraft.org/m3gim/data#"
+VOCAB_NS = "https://dhcraft.org/m3gim/vocabulary#"
+
+DFT_SCHEME = VOCAB_NS + "documentaryFormTypes"
 
 # Aliase des JSON-LD-@context auf ihre qualifizierten Terme.
 CONTEXT_ALIASES = {
     "name": "rico:name",
-    "role": "m3gim:role",
-    "komponist": "m3gim:komponist",
+    "role": "m3gim-ontology:role",
+    "composer": "m3gim-ontology:composer",
 }
 
-# Properties, die Werte des Rollenvokabulars tragen (domain-ontology.md § 5).
-ROLE_KEYS = frozenset({"role", "m3gim:eventRole", "m3gim:dateRole", "m3gim:detailRole"})
+# Property, die Werte des Rollenvokabulars traegt (domain-ontology.md § 5).
+# Die vier frueheren Rollenproperties sind auf diese eine zusammengefallen.
+ROLE_KEYS = frozenset({"role"})
 
 # Vertragsstatus in der Rollenspalte, im Schema begründet kein Rollenbegriff.
 KNOWN_NON_ROLES = frozenset({"nicht eingehalten"})
@@ -55,7 +59,11 @@ KNOWN_NON_ROLES = frozenset({"nicht eingehalten"})
 # Term selbst steht und mit ihm wandert.
 VACANCY_MARKER = "unused:"
 
-PREFIXES = {"m3gim:": VOCAB_NS, "m3gim-role:": ROLE_NS, "m3gim-dft:": DFT_NS}
+PREFIXES = {
+    "m3gim-ontology:": ONTOLOGY_NS,
+    "m3gim-data:": DATA_NS,
+    "m3gim-vocab:": VOCAB_NS,
+}
 
 
 def expand(curie: str) -> str:
@@ -80,14 +88,23 @@ def as_list(value: object) -> list:
     return value if isinstance(value, list) else [value]
 
 
-def collect_from_data(path: Path) -> tuple[set[str], set[str], set[str], set[str]]:
-    """Sammelt Properties, Klassen, Rollenliterale und Dokumenttypen aus dem Datensatz."""
+def collect_from_data(
+    path: Path,
+) -> tuple[set[str], set[str], list[object], set[str]]:
+    """Sammelt Properties, Klassen, Rollenwerte und Dokumenttypen aus dem Datensatz.
+
+    Ein Rollenwert ist seit der Umstellung ein Verweisknoten auf ein Concept,
+    also ein dict mit @id und dem mitgeführten skos:prefLabel. Er wird als
+    ganzer Knoten zurückgegeben, damit die Prüfung Kennung und Anzeigetext
+    gegen das Vokabular halten kann. Ein String tritt nur noch dort auf, wo die
+    Quelle einen Wert führt, den das Vokabular bewusst nicht als Concept kennt.
+    """
     with path.open(encoding="utf-8") as handle:
         doc = json.load(handle)
 
     properties: set[str] = set()
     classes: set[str] = set()
-    roles: set[str] = set()
+    roles: list[object] = []
     dft: set[str] = set()
 
     nodes = list(walk(doc.get("@graph", [])))
@@ -102,7 +119,7 @@ def collect_from_data(path: Path) -> tuple[set[str], set[str], set[str], set[str
                 continue
             properties.add(CONTEXT_ALIASES.get(key, key))
             if key in ROLE_KEYS:
-                roles.update(item for item in as_list(value) if isinstance(item, str))
+                roles.extend(as_list(value))
             if key == "rico:hasDocumentaryFormType":
                 dft.update(
                     item["@id"]
@@ -110,6 +127,31 @@ def collect_from_data(path: Path) -> tuple[set[str], set[str], set[str], set[str
                     if isinstance(item, dict) and "@id" in item
                 )
     return properties, classes, roles, dft
+
+
+def check_roles(roles: list[object], concepts: set[str], pref_labels: dict[str, str]) -> list[str]:
+    """Prüft jeden Rollenwert auf ein aufgelöstes Concept und den richtigen Anzeigetext."""
+    findings: list[str] = []
+    for value in roles:
+        if isinstance(value, str):
+            if value not in KNOWN_NON_ROLES:
+                findings.append(f"Rollenwert ohne Concept-Verweis: {value}")
+            continue
+        if not isinstance(value, dict) or "@id" not in value:
+            findings.append(f"Rollenwert ohne Kennung: {value!r}")
+            continue
+        iri = expand(value["@id"])
+        if iri not in concepts:
+            findings.append(f"Rollenkennung ohne Concept: {value['@id']}")
+            continue
+        carried = value.get("skos:prefLabel")
+        expected = pref_labels.get(iri)
+        if carried != expected:
+            findings.append(
+                f"Mitgeführtes Label weicht vom Vokabular ab: {value['@id']} "
+                f"trägt {carried!r} statt {expected!r}"
+            )
+    return sorted(set(findings))
 
 
 def report_vacancy(
@@ -132,7 +174,7 @@ def report_vacancy(
     vacant = sorted(
         iri
         for iri in defined
-        if iri.startswith(VOCAB_NS) and iri not in used_iris and iri not in excused
+        if iri.startswith(ONTOLOGY_NS) and iri not in used_iris and iri not in excused
     )
 
     print(f"OK Vokabular geparst, {len(graph)} Tripel aus {vocab_path.name}")
@@ -172,12 +214,15 @@ def main() -> int:
 
     defined = {str(subject) for subject in graph.subjects(RDFS.isDefinedBy, None)}
     concepts = {str(subject) for subject in graph.subjects(RDF.type, SKOS.Concept)}
-    role_concepts = {iri for iri in concepts if iri.startswith(ROLE_NS)}
-    labels = {
-        str(label)
-        for predicate in (SKOS.prefLabel, SKOS.altLabel)
-        for subject, label in graph.subject_objects(predicate)
-        if str(subject) in role_concepts
+    dft_concepts = {
+        str(subject)
+        for subject in graph.subjects(SKOS.inScheme, URIRef(DFT_SCHEME))
+    }
+    role_concepts = concepts - dft_concepts
+    pref_labels = {
+        str(subject): str(label)
+        for subject, label in graph.subject_objects(SKOS.prefLabel)
+        if str(subject) in concepts and label.language == "de"
     }
 
     properties, classes, roles, dft = collect_from_data(args.data)
@@ -189,22 +234,18 @@ def main() -> int:
     findings += [
         f"Property ohne Definition: {term}"
         for term in sorted(properties)
-        if term.startswith("m3gim:") and expand(term) not in defined
+        if term.startswith("m3gim-ontology:") and expand(term) not in defined
     ]
     findings += [
         f"Klasse ohne Definition: {term}"
         for term in sorted(classes)
-        if term.startswith("m3gim:") and expand(term) not in defined
+        if term.startswith("m3gim-ontology:") and expand(term) not in defined
     ]
-    findings += [
-        f"Rollenliteral ohne Concept: {value}"
-        for value in sorted(roles)
-        if value not in labels and value not in KNOWN_NON_ROLES
-    ]
+    findings += check_roles(roles, concepts, pref_labels)
     findings += [
         f"Dokumenttyp ohne Concept: {value}"
         for value in sorted(dft)
-        if expand(value) not in concepts
+        if expand(value) not in dft_concepts
     ]
     findings += [
         f"skos:member ohne Concept: {target}"

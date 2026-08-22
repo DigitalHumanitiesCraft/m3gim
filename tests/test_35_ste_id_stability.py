@@ -1,12 +1,13 @@
-"""Lock fuer das inhaltsbasierte STE-@id-Schema (Refactoring 2026-06-21, E-115).
+"""Lock fuer das inhaltsbasierte Annotations-@id-Schema (Refactoring 2026-06-21, E-115).
 
-Die @id eines m3gim:SpatiotemporalEvent ist
+Die @id eines m3gim-ontology:Annotation-Knotens ist
 
-    m3gim:ste_<record-local-id>_<sha1(ort\\x1frolle\\x1fdatum)[:8]>
+    m3gim-data:ev_<record-local-id>_<sha1(ort\x1frolle\x1fdatum)[:8]>
 
 optional mit Ordinal-Suffix ``-N`` bei echten Inhaltsdubletten auf demselben
-Record. Das loest den frueheren globalen Zaehler ab, dessen Verschiebung bei
-jeder STE-Aenderung wiederkehrend test_22 brach. Dieser Test verankert die
+Record. Gehasht wird der erfasste Rollenwert, nicht das Concept, auf das er
+im Vokabular fuehrt. Das loest den frueheren globalen Zaehler ab, dessen
+Verschiebung bei jeder Aenderung wiederkehrend test_22 brach. Dieser Test verankert die
 Invariante: die @id ist eine reine Funktion ihres Inhalts, nicht der
 Verarbeitungsreihenfolge. Eine Rueckkehr zum Zaehler bricht ihn.
 """
@@ -17,46 +18,51 @@ import pytest
 
 
 def _expected_base(ste: dict) -> str:
-    """Rekonstruiert die erwartete @id-Basis aus dem STE-Inhalt, spiegelt
-    scripts.transform._ste_id."""
+    """Rekonstruiert die erwartete @id-Basis aus dem Knoteninhalt, spiegelt
+    scripts.transform._annotation_id."""
     prov = ste.get("agrelon:metadataProvenance")
     rec = prov.get("@id") if isinstance(prov, dict) else None
     rec_local = rec.split(":", 1)[-1] if rec else ""
-    place = ste.get("m3gim:atPlace")
+    place = ste.get("m3gim-ontology:atPlace")
     ort = place.get("name", "") if isinstance(place, dict) else ""
-    rolle = ste.get("m3gim:eventRole", "")
-    datum = ste.get("m3gim:atDate", "")
+    role = ste.get("role")
+    # Gehasht ist der erfasste Wert: der Ursprungswert, wo die
+    # Zusammenfuehrung einen hinterlassen hat, sonst das prefLabel.
+    rolle = ste.get("m3gim-ontology:derivedFromRole") or (
+        role.get("skos:prefLabel", "") if isinstance(role, dict) else (role or "")
+    )
+    datum = ste.get("m3gim-ontology:atDate", "")
     raw = "\x1f".join((ort or "", rolle or "", datum or ""))
     h = hashlib.sha1(raw.encode("utf-8")).hexdigest()[:8]
-    return f"m3gim:ste_{rec_local}_{h}"
+    return f"m3gim-data:ev_{rec_local}_{h}"
 
 
 @pytest.fixture(scope="session")
 def stes(graph) -> list:
-    return [n for n in graph if n.get("@type") == "m3gim:SpatiotemporalEvent"]
+    return [n for n in graph if n.get("@type") == "m3gim-ontology:Annotation"]
 
 
 def test_ste_present(stes):
-    assert stes, "keine SpatiotemporalEvents im Graph (Fixture oder Pipeline pruefen)"
+    assert stes, "keine Annotationen im Graph (Fixture oder Pipeline pruefen)"
 
 
 def test_ste_ids_are_content_derived(stes):
-    """Jede STE-@id leitet sich aus (Record, Ort, Rolle, Datum) ab, nicht aus
-    einem laufenden Zaehler."""
+    """Jede Annotations-@id leitet sich aus (Record, Ort, Rolle, Datum) ab,
+    nicht aus einem laufenden Zaehler."""
     bad = []
     for ste in stes:
         base = _expected_base(ste)
         sid = ste.get("@id", "")
         if not (sid == base or sid.startswith(base + "-")):
             bad.append((sid, base))
-    assert not bad, "STE-@id nicht inhaltsabgeleitet: " + "; ".join(
+    assert not bad, "Annotations-@id nicht inhaltsabgeleitet: " + "; ".join(
         f"{s!r} erwartet Basis {b!r}" for s, b in bad[:5])
 
 
 def test_ste_ids_unique(stes):
     ids = [n["@id"] for n in stes]
     dupes = sorted({i for i in ids if ids.count(i) > 1})
-    assert not dupes, f"doppelte STE-@ids: {dupes}"
+    assert not dupes, f"doppelte Annotations-@ids: {dupes}"
 
 
 def test_ste_id_suffix_is_hash_not_counter(stes):

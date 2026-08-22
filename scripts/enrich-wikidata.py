@@ -6,7 +6,7 @@ Liest wikidata-reconciliation.json, holt ausgewählte Properties
 aus der Wikidata API und schreibt wikidata-enrichment.json.
 
 Die Enrichment-Daten werden von transform.py in die JSON-LD-Ausgabe
-injiziert (owl:sameAs, m3gim:occupation, m3gim:birthDate etc.).
+injiziert (owl:sameAs, gndo:professionOrOccupationAsLiteral, schema:birthDate etc.).
 
 Verwendung:
     python scripts/enrich-wikidata.py [--force] [--type person|org|location|work]

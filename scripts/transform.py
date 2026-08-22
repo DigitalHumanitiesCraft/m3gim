@@ -11,7 +11,7 @@ Normalisierungsschritte:
     2. Header-Shift-Korrektur: 3 Indizes (Org, Ort, Werk) haben verschobene Header
     3. String-Werte: .strip() (Leerzeichen), .lower() fuer Vokabularfelder
     4. Datumsfelder: Excel-Artefakte entfernen ("1958-04-18 00:00:00" → "1958-04-18")
-    5. Dokumenttyp: Mapping deutsch → m3gim-dft SKOS-Konzept (25 Typen)
+    5. Dokumenttyp: Mapping deutsch → m3gim-vocab SKOS-Konzept (25 Typen)
     6. Bearbeitungsstand: Varianten normalisieren (vollstaendig/Erledigt → abgeschlossen)
     7. Komposit-Typen: "ort,datum" decomponieren in separate Relationen
     8. Komposit-Werte: "Muenchen, 1952-12-17" → Ort + Datum getrennt
@@ -37,6 +37,7 @@ from _common import (
     default_currency_for,
     extract_bearbeitungsnotiz,
     is_approved_match,
+    load_role_concepts,
     normalize_bearbeitungsstand,
     strip_zero_date_padding,
     INDEX_HEADER_SHIFTS,
@@ -61,9 +62,9 @@ OUTPUT_DIR = Path(os.environ.get("M3GIM_OUTPUT_DIR", BASE_DIR / "data" / "output
 CONTEXT = {
     "rico": "https://www.ica.org/standards/RiC/ontology#",
     "ric-rst": "https://www.ica.org/standards/RiC/vocabularies/recordSetTypes#",
-    "m3gim": "https://dhcraft.org/m3gim/vocab#",
-    "m3gim-dft": "https://dhcraft.org/m3gim/documentaryFormTypes#",
-    "m3gim-role": "https://dhcraft.org/m3gim/roles#",
+    "m3gim-ontology": "https://dhcraft.org/m3gim/ontology#",
+    "m3gim-data": "https://dhcraft.org/m3gim/data#",
+    "m3gim-vocab": "https://dhcraft.org/m3gim/vocabulary#",
     "agrelon": "https://d-nb.info/standards/elementset/agrelon#",
     "schema": "https://schema.org/",
     "gndo": "https://d-nb.info/standards/elementset/gnd#",
@@ -74,9 +75,15 @@ CONTEXT = {
     "xsd": "http://www.w3.org/2001/XMLSchema#",
     # Inline-Property-Aliase: bare keys → qualifizierte URIs
     "name": "rico:name",
-    "role": "m3gim:role",
-    "komponist": "m3gim:komponist"
+    "role": "m3gim-ontology:role",
+    "composer": "m3gim-ontology:composer"
 }
+
+# Rollenbegriffe des formalen Vokabulars, deutsches Label → (CURIE, prefLabel).
+# Das Vokabular steht in der Spec-Hierarchie ueber der Pipeline (E-133), der
+# Rollenwert wird also von dort gelesen und nicht hier zweitgefuehrt.
+VOCAB_PATH = Path(os.environ.get("M3GIM_VOCAB_PATH", BASE_DIR / "vocab" / "m3gim.ttl"))
+ROLE_CONCEPTS = load_role_concepts(VOCAB_PATH)
 
 # Mapping (typ, rolle) → AgRelOn-Klasse + -Property (data.md § 8.3, Phase 4.8).
 # Die Pipeline erzeugt zusaetzlich zur normalen Agent-Relation eine agrelon-
@@ -105,36 +112,47 @@ MALANIUK_SUBJECT = {
 }
 
 
-# Mapping Datumsrolle → typisierte m3gim-Property (data.md § 7, Phase 4.7).
-# Rollen ohne Eintrag landen in der Fallback-Klasse m3gim:DatedEvent (E-102),
-# nicht mehr im abgeschafften generischen m3gim:eventDate.
-DATUMSROLLE_TO_PROPERTY = {
-    "erstelldatum": "m3gim:erstelldatum",
-    "absendedatum": "m3gim:absendedatum",
-    "empfangsdatum": "m3gim:empfangsdatum",
-    "ausstellungsdatum": "m3gim:ausstellungsdatum",
-    "erscheinungsdatum": "m3gim:erscheinungsdatum",
-    "abreisedatum": "m3gim:abreisedatum",
-    "auftritt": "m3gim:auftrittsdatum",
-    "auftrittsdatum": "m3gim:auftrittsdatum",
-    "aufführung": "m3gim:auffuehrungsdatum",
-    "auffuehrungsdatum": "m3gim:auffuehrungsdatum",
-    "probe": "m3gim:probendatum",
-    "probendatum": "m3gim:probendatum",
-    "probenbeginn": "m3gim:probenbeginn",
-    "premiere": "m3gim:premieredatum",
-    "premieredatum": "m3gim:premieredatum",
-    "ausstrahlung": "m3gim:ausstrahlungsdatum",
-    "ausstrahlungsdatum": "m3gim:ausstrahlungsdatum",
-    "spielzeit": "m3gim:spielzeitVon",
-    "überweisung": "m3gim:ueberweisungsdatum",
-    "ueberweisungsdatum": "m3gim:ueberweisungsdatum",
-    "gespräch": "m3gim:gespraechsdatum",
-    "gespraechsdatum": "m3gim:gespraechsdatum",
-}
+# Rollen, die die Erfassung an einer Datierung fuehrt. Die frueher hier
+# angehaengte Abbildung auf eine typisierte Datums-Property ist mit dem
+# Zielmodell entfallen; jeder Datumswert wird ein Annotationsknoten mit
+# m3gim-ontology:atDate und seiner Rolle. Die Menge bleibt, weil ein
+# Komposit "ort,datum" seine Rolle an beide Haelften vererbt und eine
+# Datumsrolle am Ortsteil nichts aussagt (siehe ort-Zweig).
+DATE_ONLY_ROLES = frozenset({
+    "erstelldatum",
+    "absendedatum",
+    "empfangsdatum",
+    "ausstellungsdatum",
+    "erscheinungsdatum",
+    "abreisedatum",
+    "auftritt",
+    "auftrittsdatum",
+    "aufführung",
+    "auffuehrungsdatum",
+    "probe",
+    "probendatum",
+    "probenbeginn",
+    "premiere",
+    "premieredatum",
+    "ausstrahlung",
+    "ausstrahlungsdatum",
+    "spielzeit",
+    "überweisung",
+    "ueberweisungsdatum",
+    "gespräch",
+    "gespraechsdatum",
+})
+
+# Die eine Datumsrolle, die am Dokument keinen Annotationsknoten erzeugt: die
+# Entstehungsdatierung steht dort auf dem RiC-O-Term rico:creationDate.
+CREATION_DATE_ROLE = "erstelldatum"
+
+# Pipeline-interner Zwischenspeicher am Record, nie serialisiert. Er haelt eine
+# malformte Entstehungsdatierung, bis die @id-Kollisionsaufloesung gelaufen ist.
+PENDING_CREATION_DATE = "_malformed_creation_date"
 
 # Mobilitaets-Ortsrollen (E-97): jede erzeugt eine datumslose
-# m3gim:SpatiotemporalEvent (First-Class-Mobilitaetsereignis fuer den
+# m3gim-ontology:Annotation (First-Class-Mobilitaetsereignis fuer den
 # Mobilitaets-Atlas). Vokabular-Vollstaendigkeit aus data.md § 4/§ 10 — im
 # aktuellen Export sind zielort/absendeort/abreiseort belegt, empfangsort/
 # vertragsort scaffolden fuer einen tieferen Export. wohnort ist KEIN
@@ -147,133 +165,133 @@ MOBILITY_PLACE_ROLES = {
 # Vertrag ueber die rolle-Spalte als "nicht eingehalten" markiert, dabei
 # spaltenweit ueber den ganzen Vertragsblock (z.B. NIM_023) durchgereicht. Das
 # ist KEINE Ereignis-/Ortsrolle: ein Ort oder ein ort,datum-Ereignis kann nicht
-# "nicht eingehalten" sein. Wir filtern den Status daher als eventRole heraus,
-# damit kein Schein-eventRole entsteht (Routing-Fix). Die contractStatus-
-# Modellierung (m3gim:realized=false am Vertrags-Record) ist mangels Test-/
+# "nicht eingehalten" sein. Wir filtern den Status daher als Rolle heraus,
+# damit keine Scheinrolle entsteht (Routing-Fix). Die contractStatus-
+# Modellierung (contractStatus/realized am Vertrags-Record) ist mangels Test-/
 # Frontend-Bedarf noch nicht ausgebaut und mit dem Erschliessungsteam zu klaeren.
 CONTRACT_STATUS_ROLES = {"nicht eingehalten"}
 
 # ---------------------------------------------------------------------------
-# Dokumenttyp-Mapping (deutsch → m3gim-dft)
+# Dokumenttyp-Mapping (deutsch → m3gim-vocab)
 # ---------------------------------------------------------------------------
 
 DOKUMENTTYP_TO_DFT = {
     # Korrespondenz-Hierarchie
-    "korrespondenz": "m3gim-dft:korrespondenz",
-    "brief": "m3gim-dft:brief",
-    "postkarte": "m3gim-dft:postkarte",
-    "telegramm": "m3gim-dft:telegramm",
+    "korrespondenz": "m3gim-vocab:correspondence",
+    "brief": "m3gim-vocab:letter",
+    "postkarte": "m3gim-vocab:postcard",
+    "telegramm": "m3gim-vocab:telegram",
     # Presse-Hierarchie
-    "presse": "m3gim-dft:presse",
-    "zeitungsausschnitt": "m3gim-dft:zeitungsausschnitt",
-    "kritik": "m3gim-dft:kritik",
-    "rezension": "m3gim-dft:rezension",
+    "presse": "m3gim-vocab:press",
+    "zeitungsausschnitt": "m3gim-vocab:newspaperClipping",
+    "kritik": "m3gim-vocab:critique",
+    "rezension": "m3gim-vocab:review",
     # Programm-Hierarchie: one canonical concept, the finer genre names stay
     # accepted source values as synonyms (decision template § 3).
-    "programm": "m3gim-dft:programm",
-    "programmheft": "m3gim-dft:programm",
-    "konzertprogramm": "m3gim-dft:programm",
+    "programm": "m3gim-vocab:program",
+    "programmheft": "m3gim-vocab:program",
+    "konzertprogramm": "m3gim-vocab:program",
     # Biographisch-Hierarchie
-    "biographisch": "m3gim-dft:biographisch",
-    "biographie": "m3gim-dft:biographie",
-    "autobiografie": "m3gim-dft:autobiografie",
-    "lebenslauf": "m3gim-dft:lebenslauf",
+    "biographisch": "m3gim-vocab:biographical",
+    "biographie": "m3gim-vocab:biography",
+    "autobiografie": "m3gim-vocab:autobiography",
+    "lebenslauf": "m3gim-vocab:curriculumVitae",
     # Identitaetsdokument-Hierarchie
-    "identitaetsdokument": "m3gim-dft:identitaetsdokument",
-    "ausweis": "m3gim-dft:ausweis",
+    "identitaetsdokument": "m3gim-vocab:identityDocument",
+    "ausweis": "m3gim-vocab:identityCard",
     # Konvolut-Aggregate
-    "sammlung": "m3gim-dft:sammlung",
-    "konvolut": "m3gim-dft:konvolut",
+    "sammlung": "m3gim-vocab:collection",
+    "konvolut": "m3gim-vocab:bundle",
     # Flache Typen
-    "vertrag": "m3gim-dft:vertrag",
-    "plakat": "m3gim-dft:plakat",
-    "tontraeger": "m3gim-dft:tontraeger",
-    "studienunterlagen": "m3gim-dft:dokument",
-    "repertoire": "m3gim-dft:repertoireliste",
-    "repertoireliste": "m3gim-dft:repertoireliste",
-    "tagebuch": "m3gim-dft:tagebuch",
-    "notizbuch": "m3gim-dft:notiz",
-    "notiz": "m3gim-dft:notiz",
-    "urkunde": "m3gim-dft:urkunde",
-    "zeugnis": "m3gim-dft:urkunde",
-    "widmung": "m3gim-dft:dokument",
-    "fotografie": "m3gim-dft:fotografie",
-    "photokopie": "m3gim-dft:photokopie",
-    "quittung": "m3gim-dft:quittung",
-    "typoskript": "m3gim-dft:typoskript",
-    "visitenkarte": "m3gim-dft:visitenkarte",
-    "noten": "m3gim-dft:noten",
+    "vertrag": "m3gim-vocab:contract",
+    "plakat": "m3gim-vocab:poster",
+    "tontraeger": "m3gim-vocab:soundCarrier",
+    "studienunterlagen": "m3gim-vocab:document",
+    "repertoire": "m3gim-vocab:repertoireList",
+    "repertoireliste": "m3gim-vocab:repertoireList",
+    "tagebuch": "m3gim-vocab:diary",
+    "notizbuch": "m3gim-vocab:note",
+    "notiz": "m3gim-vocab:note",
+    "urkunde": "m3gim-vocab:certificate",
+    "zeugnis": "m3gim-vocab:certificate",
+    "widmung": "m3gim-vocab:document",
+    "fotografie": "m3gim-vocab:photograph",
+    "photokopie": "m3gim-vocab:photocopy",
+    "quittung": "m3gim-vocab:receipt",
+    "typoskript": "m3gim-vocab:typescript",
+    "visitenkarte": "m3gim-vocab:businessCard",
+    "noten": "m3gim-vocab:sheetMusic",
     # E-101: neue Konzepte (aktiv mit dem tieferen Export, April-Daten kennen sie nicht)
-    "briefumschlag": "m3gim-dft:briefumschlag",
-    "musikzeitschrift": "m3gim-dft:musikzeitschrift",
-    "chronik": "m3gim-dft:chronik",
-    "verzeichnis": "m3gim-dft:verzeichnis",
-    "dokument": "m3gim-dft:dokument",
-    "sonstiges": "m3gim-dft:sonstiges",
+    "briefumschlag": "m3gim-vocab:envelope",
+    "musikzeitschrift": "m3gim-vocab:musicPeriodical",
+    "chronik": "m3gim-vocab:chronicle",
+    "verzeichnis": "m3gim-vocab:inventory",
+    "dokument": "m3gim-vocab:document",
+    "sonstiges": "m3gim-vocab:other",
 }
 
-# SKOS-Hierarchie fuer m3gim-dft (data.md Abschnitt 12).
+# SKOS-Hierarchie der Dokumenttypen (data.md Abschnitt 12).
 # Jeder Key ist ein Konzept, der Wert sein direkter Oberbegriff (skos:broader).
 # Konzepte ohne Eintrag sind Top-Level (broader = dokument).
 DFT_BROADER = {
-    "brief": "korrespondenz",
-    "postkarte": "korrespondenz",
-    "telegramm": "korrespondenz",
-    "briefumschlag": "korrespondenz",  # E-101
-    "zeitungsausschnitt": "presse",
-    "kritik": "presse",
-    "rezension": "presse",
-    "musikzeitschrift": "presse",  # E-101
-    "biographie": "biographisch",
-    "autobiografie": "biographisch",
-    "lebenslauf": "biographisch",
-    "chronik": "biographisch",  # E-101
-    "ausweis": "identitaetsdokument",
+    "letter": "correspondence",
+    "postcard": "correspondence",
+    "telegram": "correspondence",
+    "envelope": "correspondence",  # E-101
+    "newspaperClipping": "press",
+    "critique": "press",
+    "review": "press",
+    "musicPeriodical": "press",  # E-101
+    "biography": "biographical",
+    "autobiography": "biographical",
+    "curriculumVitae": "biographical",
+    "chronicle": "biographical",  # E-101
+    "identityCard": "identityDocument",
 }
 # E-101: 'sammlung' und 'verzeichnis' bleiben bewusst ohne broader (top-level /
 # eigenständig; die is-a-Beziehung von sammlung zu konvolut wird nicht
 # vorentschieden, data.md § 12).
 
-# Lesbare deutsche Labels für skos:prefLabel der dft-Concepts (E-101). Löst die
+# Lesbare deutsche Labels für skos:prefLabel der Dokumenttyp-Concepts (E-101). Löst die
 # Frontend-Handtabelle DOKUMENTTYP_LABELS ab; die Werte sind mit ihr deckungs-
 # gleich, damit der Frontend-Umbau die Anzeige nicht verändert.
 DFT_LABELS = {
-    "dokument": "Dokument",
-    "konvolut": "Konvolut",
-    "sammlung": "Sammlung",
-    "korrespondenz": "Korrespondenz",
-    "brief": "Brief",
-    "postkarte": "Postkarte",
-    "telegramm": "Telegramm",
-    "briefumschlag": "Briefumschlag",
-    "presse": "Presse",
-    "zeitungsausschnitt": "Zeitungsausschnitt",
-    "kritik": "Kritik",
-    "rezension": "Rezension",
-    "musikzeitschrift": "Musikzeitschrift",
-    "programm": "Programm",
-    "vertrag": "Vertrag",
-    "plakat": "Plakat",
-    "fotografie": "Fotografie",
-    "notiz": "Notiz",
-    "typoskript": "Typoskript",
-    "photokopie": "Photokopie",
-    "urkunde": "Urkunde",
-    "visitenkarte": "Visitenkarte",
-    "quittung": "Quittung",
-    "noten": "Noten",
-    "repertoireliste": "Repertoireliste",
-    "biographisch": "Biographisch",
-    "biographie": "Biographie",
-    "autobiografie": "Autobiografie",
-    "lebenslauf": "Lebenslauf",
-    "chronik": "Chronik",
-    "identitaetsdokument": "Identitätsdokument",
-    "ausweis": "Ausweis",
-    "verzeichnis": "Verzeichnis",
-    "tagebuch": "Tagebuch",
-    "tontraeger": "Tonträger",
-    "sonstiges": "Sonstiges",
+    "document": "Dokument",
+    "bundle": "Konvolut",
+    "collection": "Sammlung",
+    "correspondence": "Korrespondenz",
+    "letter": "Brief",
+    "postcard": "Postkarte",
+    "telegram": "Telegramm",
+    "envelope": "Briefumschlag",
+    "press": "Presse",
+    "newspaperClipping": "Zeitungsausschnitt",
+    "critique": "Kritik",
+    "review": "Rezension",
+    "musicPeriodical": "Musikzeitschrift",
+    "program": "Programm",
+    "contract": "Vertrag",
+    "poster": "Plakat",
+    "photograph": "Fotografie",
+    "note": "Notiz",
+    "typescript": "Typoskript",
+    "photocopy": "Photokopie",
+    "certificate": "Urkunde",
+    "businessCard": "Visitenkarte",
+    "receipt": "Quittung",
+    "sheetMusic": "Noten",
+    "repertoireList": "Repertoireliste",
+    "biographical": "Biographisch",
+    "biography": "Biographie",
+    "autobiography": "Autobiografie",
+    "curriculumVitae": "Lebenslauf",
+    "chronicle": "Chronik",
+    "identityDocument": "Identitätsdokument",
+    "identityCard": "Ausweis",
+    "inventory": "Verzeichnis",
+    "diary": "Tagebuch",
+    "soundCarrier": "Tonträger",
+    "other": "Sonstiges",
 }
 
 # Header-Shift-Korrekturen und Waehrungs-/Bearbeitungsstand-Defaults
@@ -300,7 +318,7 @@ def normalize_lower(value) -> str | None:
 
 
 def build_dft_concepts(records: list) -> list:
-    """Erzeugt SKOS-Concept-Knoten fuer alle tatsaechlich genutzten m3gim-dft-Begriffe.
+    """Erzeugt SKOS-Concept-Knoten fuer alle tatsaechlich genutzten Dokumenttyp-Begriffe.
 
     Fuegt skos:broader-Relation gemaess data.md Abschnitt 12 hinzu.
     Nur verwendete Konzepte werden emittiert (sparsamer Graph).
@@ -312,7 +330,7 @@ def build_dft_concepts(records: list) -> list:
         dft = r.get("rico:hasDocumentaryFormType")
         if isinstance(dft, dict):
             ident = dft.get("@id", "")
-            if ident.startswith("m3gim-dft:"):
+            if ident.startswith("m3gim-vocab:"):
                 used.add(ident.split(":", 1)[1])
 
     # Transitiv Elternbegriffe ergaenzen
@@ -327,13 +345,13 @@ def build_dft_concepts(records: list) -> list:
     concepts = []
     for concept in sorted(used):
         node = {
-            "@id": f"m3gim-dft:{concept}",
+            "@id": f"m3gim-vocab:{concept}",
             "@type": "skos:Concept",
             # E-101: lesbares deutsches Label statt des nackten Slugs.
             "skos:prefLabel": DFT_LABELS.get(concept, concept),
         }
         if concept in DFT_BROADER:
-            node["skos:broader"] = {"@id": f"m3gim-dft:{DFT_BROADER[concept]}"}
+            node["skos:broader"] = {"@id": f"m3gim-vocab:{DFT_BROADER[concept]}"}
         concepts.append(node)
     return concepts
 
@@ -354,6 +372,35 @@ def normalize_role(value) -> str | None:
             v = v[: -len(suffix)]
             break
     return v
+
+
+def attach_role(target: dict, value) -> None:
+    """Setzt die Rolle eines Knotens als Verweis auf ihr Concept im Vokabular.
+
+    Der Verweisknoten fuehrt das skos:prefLabel des Concepts mit, damit ein
+    Konsument den Anzeigetext ohne Nachschlagen hat. Ist der erfasste Wert im
+    Vokabular auf ein anderes Concept gefuehrt, bleibt er in
+    m3gim-ontology:derivedFromRole stehen, sodass die Zusammenfuehrung
+    umkehrbar bleibt. Fuehrt die Quelle keine Rolle, traegt der Knoten keine.
+
+    Ein Wert ausserhalb des Vokabulars bleibt als Literal stehen. Das betrifft
+    den Vertragsstatus "nicht eingehalten", der in der Rollenspalte steht und
+    laut Vokabular ausdruecklich kein Rollenbegriff ist; seine Modellierung ist
+    mit dem Erschliessungsteam offen (data.md § 11).
+    """
+    if not value:
+        return
+    key = str(value).strip().lower()
+    if not key:
+        return
+    concept = ROLE_CONCEPTS.get(key)
+    if concept is None:
+        target["role"] = key
+        return
+    curie, pref_label = concept
+    target["role"] = {"@id": curie, "skos:prefLabel": pref_label}
+    if key != pref_label:
+        target["m3gim-ontology:derivedFromRole"] = key
 
 
 # "Kein Datum"-Platzhalter: "ohne Datum" (belegt) sowie die etablierte
@@ -398,9 +445,9 @@ def is_iso_date(value) -> bool:
 
 
 # Datums-Routing-Normalisierung (data.md § 6, E-102). Fuehrt Textnotationen auf
-# ISO-Repraesentationen, bevor das Routing typisierte Property vs. DatedEvent
-# entscheidet. Verlustfrei: nicht erkannte Notationen bleiben unveraendert und
-# landen so im DatedEvent-Fallback.
+# ISO-Repraesentationen, bevor die Annotation ihren Wert bekommt.
+# Verlustfrei: nicht erkannte Notationen bleiben unveraendert stehen und
+# tragen dafuer das Flag datierung-malformed.
 _RANGE_BIS = re.compile(r"^(.+?)\s+bis\s+(.+)$", re.IGNORECASE)
 _FREITEXT_BEGINN = re.compile(
     r"^(?:ab|seit)\s+(\d{4}(?:-\d{2}(?:-\d{2})?)?)$", re.IGNORECASE
@@ -453,13 +500,13 @@ def quality_flags(anmerkung) -> list[str]:
 
 def create_record_id(signatur: str, folio: str = None) -> str:
     """Erzeugt URI aus Signatur (+ Folio)"""
-    # UAKUG/NIM_028 → m3gim:NIM_028
-    # UAKUG/NIM_003 + 1_1 → m3gim:NIM_003_1_1
-    # UAKUG/NIM/PL_07 → m3gim:NIM_PL_07
+    # UAKUG/NIM_028 → m3gim-data:NIM_028
+    # UAKUG/NIM_003 + 1_1 → m3gim-data:NIM_003_1_1
+    # UAKUG/NIM/PL_07 → m3gim-data:NIM_PL_07
     clean = signatur.replace("UAKUG/", "").replace("/", "_")
     if folio:
         clean = f"{clean}_{folio.replace(' ', '_')}"
-    return f"m3gim:{clean}"
+    return f"m3gim-data:{clean}"
 
 
 def normalize_signatur(sig: str) -> str:
@@ -569,7 +616,7 @@ def convert_objekt(row: pd.Series, folio_col: str = None,
     """Konvertiert ein Objekt zu JSON-LD Record.
 
     xlsx_row: 1-basierte XLSX-Zeilennummer inkl. Header (= pandas idx + 2),
-              wird als m3gim:xlsxSource angehaengt.
+              wird als m3gim-ontology:xlsxSource angehaengt.
     """
     sig = str(row['archivsignatur']).strip()
     folio_raw = row.get(folio_col) if folio_col else None
@@ -582,7 +629,7 @@ def convert_objekt(row: pd.Series, folio_col: str = None,
     }
 
     if xlsx_row is not None:
-        record["m3gim:xlsxSource"] = build_xlsx_source("Objekte", xlsx_row)
+        record["m3gim-ontology:xlsxSource"] = build_xlsx_source("Objekte", xlsx_row)
 
     # Titel
     titel = normalize_str(row.get('titel'))
@@ -592,19 +639,16 @@ def convert_objekt(row: pd.Series, folio_col: str = None,
     # Datum (bereinigt). rico:date ist im JSON-Schema ISO-typisiert; ein
     # malformter Quellwert (z.B. "06-09" ohne Jahr) darf dort nicht landen
     # (bricht das Schema). ISO-Werte gehen in rico:date, nicht-ISO bleibt
-    # verlustfrei als m3gim:hasDatedEvent (Fallback, E-102) mit dateRole
-    # "entstehungsdatum" erhalten und ist als Quell-Datenfehler markiert.
+    # verlustfrei als Annotationsknoten mit der Rolle entstehungsdatum
+    # erhalten und ist als Quell-Datenfehler markiert. Der Knoten entsteht
+    # erst nach der @id-Kollisionsaufloesung in build_konvolut_hierarchy,
+    # weil seine Kennung die des Dokuments traegt.
     date_val = clean_date(row.get('entstehungsdatum'))
     if date_val:
         if is_iso_date(date_val):
             record["rico:date"] = date_val
         else:
-            record["m3gim:hasDatedEvent"] = {
-                "@type": "m3gim:DatedEvent",
-                "m3gim:dateValue": date_val,
-                "m3gim:dateRole": "entstehungsdatum",
-                "m3gim:dataQualityFlag": "datierung-malformed",
-            }
+            record[PENDING_CREATION_DATE] = date_val
 
     # Datierungsevidenz wird bewusst NICHT serialisiert (E-106, ersetzt E-100).
     # Die frueheren agrelon:metadataConfidence-Dezimalwerte (1.0/0.8/0.6) waren
@@ -615,7 +659,7 @@ def convert_objekt(row: pd.Series, folio_col: str = None,
     # Selbstverweis. Falls die Datierungsevidenz spaeter gebraucht wird, kehrt
     # sie als kategorialer Wert zurueck (nicht als Dezimalzahl). data.md § 9.
 
-    # Dokumenttyp → m3gim-dft
+    # Dokumenttyp → m3gim-vocab
     dokumenttyp = normalize_lower(row.get('dokumenttyp'))
     if dokumenttyp:
         dft = DOKUMENTTYP_TO_DFT.get(dokumenttyp)
@@ -646,23 +690,23 @@ def convert_objekt(row: pd.Series, folio_col: str = None,
         record["rico:scopeAndContent"] = beschreibung
 
     # Bearbeitungsstand (m3gim-Extension) — Mapping in _common.py.
-    # E-102: Freitext-Anhang als separate m3gim:bearbeitungsnotiz herausloesen,
-    # der canonische Status bleibt in m3gim:bearbeitungsstand.
+    # E-102: Freitext-Anhang als separate Bearbeitungsnotiz herausloesen,
+    # der canonische Status bleibt in m3gim-ontology:processingStatus.
     bearbeitungsstand = normalize_bearbeitungsstand(row.get('bearbeitungsstand'))
     if bearbeitungsstand:
-        record["m3gim:bearbeitungsstand"] = bearbeitungsstand
+        record["m3gim-ontology:processingStatus"] = bearbeitungsstand
     bearbeitungsnotiz = extract_bearbeitungsnotiz(row.get('bearbeitungsstand'))
     if bearbeitungsnotiz:
-        record["m3gim:bearbeitungsnotiz"] = bearbeitungsnotiz
+        record["m3gim-ontology:processingNote"] = bearbeitungsnotiz
 
     # Zugangs- und Scan-Status
     zugaenglichkeit = normalize_lower(row.get('zugaenglichkeit'))
     if zugaenglichkeit:
-        record["m3gim:accessStatus"] = zugaenglichkeit
+        record["m3gim-ontology:accessStatus"] = zugaenglichkeit
 
     scan_status = normalize_lower(row.get('scan_status'))
     if scan_status:
-        record["m3gim:digitizationStatus"] = scan_status
+        record["m3gim-ontology:digitizationStatus"] = scan_status
 
     return record
 
@@ -671,13 +715,23 @@ def convert_objekt(row: pd.Series, folio_col: str = None,
 # Konvolut-Hierarchie
 # ---------------------------------------------------------------------------
 
-def build_konvolut_hierarchy(df: pd.DataFrame, folio_col: str = None) -> tuple[list, list]:
+def build_konvolut_hierarchy(df: pd.DataFrame, folio_col: str = None,
+                             annotation_seen: dict | None = None
+                             ) -> tuple[list, list, list]:
     """Erkennt Konvolute und baut Hierarchie.
+
+    Args:
+        annotation_seen: geteiltes Register der vergebenen Annotations-@ids,
+            damit die hier und die in add_relations_to_records erzeugten
+            Knoten sich nicht auf dieselbe Kennung setzen.
 
     Returns:
         records: Liste aller Records (Einzelobjekte + Folios)
         konvolute: Liste der Konvolut-RecordSets
+        annotations: Annotationsknoten aus malformten Entstehungsdatierungen
     """
+    if annotation_seen is None:
+        annotation_seen = {}
     records = []
     konvolut_members = {}  # {signatur: [record_ids]}
 
@@ -734,13 +788,30 @@ def build_konvolut_hierarchy(df: pd.DataFrame, folio_col: str = None) -> tuple[l
     for rec in records:
         if rec["@id"] in konvolut_ids and rec.get("@type") == "rico:Record":
             old_id = rec["@id"]
-            new_id = f"{old_id}_sammlung"
+            new_id = f"{old_id}_collection"
             rec["@id"] = new_id
             # Dem Konvolut als Meta-Member anfuegen
             konv = next(k for k in konvolute if k["@id"] == old_id)
             konv["rico:hasOrHadPart"].append({"@id": new_id})
 
-    return records, konvolute
+    # Malformte Entstehungsdatierungen als Annotationsknoten materialisieren.
+    # Erst hier, weil die @id des Knotens die des Dokuments traegt und diese
+    # oben noch gewechselt haben kann.
+    annotations = []
+    for rec in records:
+        date_val = rec.pop(PENDING_CREATION_DATE, None)
+        if not date_val:
+            continue
+        node = build_annotation(rec, annotation_seen, date=date_val,
+                                role="entstehungsdatum")
+        node["m3gim-ontology:dataQualityFlag"] = "datierung-malformed"
+        # Die Ursprungszelle ist die Datumsspalte derselben Objektzeile.
+        source = rec.get("m3gim-ontology:xlsxSource")
+        if source:
+            node["m3gim-ontology:xlsxSource"] = source
+        annotations.append(node)
+
+    return records, konvolute, annotations
 
 
 # ---------------------------------------------------------------------------
@@ -921,17 +992,17 @@ def _stage_role_slug(name: str) -> str:
 
 
 def _make_stage_role(stage_roles: dict, role_name: str) -> str:
-    """Dedupliziert eine m3gim:StageRole-Entität und gibt ihre @id zurück (E-96).
+    """Dedupliziert eine m3gim-ontology:StageRole-Entität und gibt ihre @id zurück (E-96).
 
     Das geteilte ``stage_roles``-Registry stellt sicher, dass dieselbe Bühnenrolle
     (etwa *Brangäne*) genau einen Knoten mit deterministischer Slug-@id bekommt.
     """
     slug = _stage_role_slug(role_name)
-    sid = f"m3gim:role_{slug}"
+    sid = f"m3gim-data:stagerole_{slug}"
     if sid not in stage_roles:
         stage_roles[sid] = {
             "@id": sid,
-            "@type": "m3gim:StageRole",
+            "@type": "m3gim-ontology:StageRole",
             "rico:name": role_name.strip(),
         }
     return sid
@@ -1081,8 +1152,8 @@ def process_verknuepfungen(df: pd.DataFrame, indices: dict) -> dict:
         # Komposit-Werte decomponieren (z.B. "München, 1952-12-17" → Ort + Datum)
         decomposed = decompose_komposit_value(name, typen) if len(typen) > 1 else {}
 
-        # Komposit ort,datum: zusaetzlich eine SpatiotemporalEvent-Relation emittieren
-        # (data.md § 4, § 10, Phase 4.4). Die Event-Instanz wird in add_relations
+        # Komposit ort,datum: zusaetzlich eine Annotations-Relation emittieren
+        # (data.md § 4, § 10). Der Annotationsknoten wird in add_relations
         # als Top-Level-Entity gebaut.
         ortdatum_ste_emitted = False
         if 'ort' in typen and 'datum' in typen:
@@ -1099,7 +1170,7 @@ def process_verknuepfungen(df: pd.DataFrame, indices: dict) -> dict:
                     "anmerkung": anmerkung,
                     "_source": source_info,
                 }
-                # Ortsindex-Lookup, damit der STE-Zweig in add_relations_to_records
+                # Ortsindex-Lookup, damit der Annotations-Zweig in add_relations_to_records
                 # Wikidata-Enrichment (Koordinaten, Land) auf das atPlace-Subobjekt
                 # anwenden kann (Mobilitaets-Atlas-Vorarbeit).
                 ort_lookup = indices.get("ort", {}).get(ort_val.strip().lower())
@@ -1107,11 +1178,11 @@ def process_verknuepfungen(df: pd.DataFrame, indices: dict) -> dict:
                     ste_rel["wikidata_id"] = ort_lookup["wikidata_id"]
                 relations.setdefault(objekt_id, []).append(ste_rel)
 
-        # Reine ort-Zeile mit Mobilitaets-Rolle -> datumslose SpatiotemporalEvent
+        # Reine ort-Zeile mit Mobilitaets-Rolle -> datumslose Annotation
         # (E-97). Additiv zur flachen rico:hasOrHadLocation (kein Index-Regress):
         # der ort-Zweig in add_relations_to_records emittiert den Ort weiterhin
         # als Location, dieser Block ergaenzt das Mobilitaetsereignis. Greift nur
-        # ohne Datum — mit Datum traegt bereits der Komposit-ort,datum-STE oben.
+        # ohne Datum — mit Datum traegt bereits die Komposit-ort,datum-Annotation oben.
         if typen == ['ort'] and (rolle or '').strip().lower() in MOBILITY_PLACE_ROLES:
             mob_ort = name.strip() if name else ''
             if mob_ort:
@@ -1128,7 +1199,7 @@ def process_verknuepfungen(df: pd.DataFrame, indices: dict) -> dict:
                     mob_rel["wikidata_id"] = mob_lookup["wikidata_id"]
                 relations.setdefault(objekt_id, []).append(mob_rel)
 
-        # Komposit rolle,person -> m3gim:Performance (Bühnenrolle + Interpret:in),
+        # Komposit rolle,person -> m3gim-ontology:Performance (Bühnenrolle + Interpret:in),
         # E-96. Die Performance wird in add_relations als Top-Level-Entity gebaut.
         is_roleperson = 'rolle' in typen and 'person' in typen
         if is_roleperson:
@@ -1148,7 +1219,7 @@ def process_verknuepfungen(df: pd.DataFrame, indices: dict) -> dict:
                     perf_rel["performer_wikidata_id"] = p_lookup["wikidata_id"]
                 relations.setdefault(objekt_id, []).append(perf_rel)
 
-        # Komposit datum,werk -> m3gim:Performance (Aufführung eines Werks), E-98.
+        # Komposit datum,werk -> m3gim-ontology:Performance (Aufführung eines Werks), E-98.
         # Werk nur über den Index, nie literale Q-ID/Rohstring. Komponist-statt-
         # Werk-Zeilen (kein führendes Jahr) fallen am is_iso_date-Gate raus.
         is_datumwerk = 'datum' in typen and 'werk' in typen
@@ -1176,10 +1247,10 @@ def process_verknuepfungen(df: pd.DataFrame, indices: dict) -> dict:
                 continue
             if is_datumwerk and t in ('datum', 'werk'):
                 continue
-            # ort,datum: der Datums-Teil ist bereits im SpatiotemporalEvent
-            # (atDate) repraesentiert — nicht zusaetzlich als DatedEvent
-            # emittieren (data.md § 4: eine Repraesentation). Der Orts-Teil
-            # bleibt als rico:hasOrHadLocation erhalten.
+            # ort,datum: der Datums-Teil ist bereits im Annotationsknoten
+            # (atDate) repraesentiert — nicht zusaetzlich als eigene
+            # Datumsannotation emittieren (data.md § 4: eine Repraesentation).
+            # Der Orts-Teil bleibt als rico:hasOrHadLocation erhalten.
             if ortdatum_ste_emitted and t == 'datum':
                 continue
             rel_name = decomposed.get(t, name) if decomposed else name
@@ -1233,9 +1304,9 @@ def _maybe_add_agrelon(record: dict, typ: str, rolle: str, agent_entry: dict,
                        rel: dict | None = None):
     """Emittiert eine agrelon:*-Relation, wenn (typ, rolle) in AGRELON_MAPPING.
 
-    Die Relation haengt am Record (m3gim:agentRelation) und traegt als
+    Die Relation haengt am Record (m3gim-ontology:hasAgentRelation) und traegt als
     Provenance die Record-URI selbst. Der optionale ``rel``-Parameter ist die
-    Quell-Verknuepfungszeile — sein ``_source`` wird als ``m3gim:xlsxSource``
+    Quell-Verknuepfungszeile — sein ``_source`` wird als ``m3gim-ontology:xlsxSource``
     durchgereicht (technische Provenance).
     """
     mapping = AGRELON_MAPPING.get((typ, rolle))
@@ -1245,7 +1316,7 @@ def _maybe_add_agrelon(record: dict, typ: str, rolle: str, agent_entry: dict,
         # Subject and object would be the same person ("Malaniuk corresponded
         # with Malaniuk"): semantically empty and below the minQualifiedCardi-
         # nality of rico:CorrespondenceRelation. The role stays recorded as
-        # m3gim:hasAssociatedAgent, so no information is lost.
+        # m3gim-ontology:hasAssociatedAgent, so no information is lost.
         return
     agrelon_class, _prop = mapping
     rel_entry = {
@@ -1264,31 +1335,67 @@ def _maybe_add_agrelon(record: dict, typ: str, rolle: str, agent_entry: dict,
         }
     if rel is not None:
         attach_xlsx_source(rel_entry, rel)
-    record.setdefault("m3gim:agentRelation", []).append(rel_entry)
+    record.setdefault("m3gim-ontology:hasAgentRelation", []).append(rel_entry)
 
 
-def _ste_id(rec_local_id: str, ort: str, rolle: str, datum: str, seen: dict) -> str:
-    """Stabile, inhaltsbasierte STE-@id: Hash ueber (Ort, Rolle, Datum) je
-    Record statt eines globalen Zaehlers. Das Einfuegen oder Aendern eines
-    Events verschiebt damit keine anderen @ids mehr (frueher globaler Zaehler,
-    wiederkehrender test_22-Bruch). Echte Inhaltsdubletten auf demselben Record
-    bekommen ein stabiles Ordinal-Suffix in Auftrittsreihenfolge."""
+def _annotation_id(rec_local_id: str, ort: str, rolle: str, datum: str,
+                   seen: dict) -> str:
+    """Stabile, inhaltsbasierte Annotations-@id: Hash ueber (Ort, Rolle, Datum)
+    je Record statt eines globalen Zaehlers. Das Einfuegen oder Aendern einer
+    Annotation verschiebt damit keine anderen @ids mehr (frueher globaler
+    Zaehler, wiederkehrender test_22-Bruch). Echte Inhaltsdubletten auf
+    demselben Record bekommen ein stabiles Ordinal-Suffix in
+    Auftrittsreihenfolge.
+
+    Gehasht wird der erfasste Rollenwert und nicht das Concept, auf das er im
+    Vokabular fuehrt. Sonst verschoebe jede Zusammenfuehrung im Vokabular die
+    Kennungen der Knoten, die sie gar nicht betrifft.
+    """
     raw = "\x1f".join((ort or "", rolle or "", datum or ""))
     h = hashlib.sha1(raw.encode("utf-8")).hexdigest()[:8]
-    base = f"m3gim:ste_{rec_local_id}_{h}"
+    base = f"m3gim-data:ev_{rec_local_id}_{h}"
     n = seen.get(base, 0) + 1
     seen[base] = n
     return base if n == 1 else f"{base}-{n}"
 
 
+def build_annotation(record: dict, seen: dict, place: dict | None = None,
+                     date: str | None = None, role=None) -> dict:
+    """Baut einen Annotationsknoten und haengt ihn an das Dokument.
+
+    Der Knoten traegt seinen Wert in m3gim-ontology:atPlace, in
+    m3gim-ontology:atDate oder in beiden und seine erfasste Rolle in
+    m3gim-ontology:role. Fehlt der Ort, ist es eine reine Datierung; fehlt das
+    Datum, eine reine Verortung. Der Rueckverweis auf das Dokument ist
+    Provenienz: das Dokument bezeugt die Annotation.
+
+    Der Aufrufer haengt den Knoten in die Graph-Liste; hier entsteht nur die
+    Kante am Dokument, damit @id-Vergabe und Kante nicht auseinanderlaufen.
+    """
+    rec_local_id = record["@id"].split(":", 1)[-1]
+    place_name = place.get("name") if place else None
+    node = {
+        "@id": _annotation_id(rec_local_id, place_name, role, date, seen),
+        "@type": "m3gim-ontology:Annotation",
+        "agrelon:metadataProvenance": {"@id": record["@id"]},
+    }
+    if place:
+        node["m3gim-ontology:atPlace"] = place
+    if date:
+        node["m3gim-ontology:atDate"] = date
+    attach_role(node, role)
+    record.setdefault("m3gim-ontology:hasAnnotation", []).append({"@id": node["@id"]})
+    return node
+
+
 def _attach_index_fields(entry: dict, rel: dict, typ: str):
-    """Haengt kuratierte Indexfelder (rel['_index']) als m3gim:-Properties an
+    """Haengt kuratierte Indexfelder (rel['_index']) als m3gim-ontology:-Properties an
     die Entitaet. Eigener Namespace, additiv zum Loader; getrennt vom
     Verknuepfungs-anmerkung. data.md § Index-Durchreichung (M1).
 
-    person: anmerkung -> editorialNote (Beruf), lebensdaten -> lifespan.
-    institution: ort -> sitz, assoziierte_person -> keyContact, anmerkung -> editorialNote.
-    werk: rolle_stimme -> partie (von Malaniuk gesungene Partie), anmerkung -> editorialNote.
+    person: anmerkung -> indexNote (Beruf), lebensdaten -> lifespan.
+    institution: ort -> headquarters, assoziierte_person -> keyContact, anmerkung -> indexNote.
+    werk: rolle_stimme -> sungPart (von Malaniuk gesungene Partie), anmerkung -> indexNote.
     """
     idx = rel.get("_index")
     if not idx:
@@ -1296,41 +1403,44 @@ def _attach_index_fields(entry: dict, rel: dict, typ: str):
     note = idx.get("anmerkung")
     if typ == "person":
         if note:
-            entry["m3gim:editorialNote"] = note
+            entry["m3gim-ontology:indexNote"] = note
         if idx.get("lebensdaten"):
-            entry["m3gim:lifespan"] = idx["lebensdaten"]
+            entry["m3gim-ontology:lifespan"] = idx["lebensdaten"]
     elif typ == "institution":
         if idx.get("ort"):
-            entry["m3gim:sitz"] = idx["ort"]
+            entry["m3gim-ontology:headquarters"] = idx["ort"]
         if idx.get("assoziierte_person"):
-            entry["m3gim:keyContact"] = idx["assoziierte_person"]
+            entry["m3gim-ontology:keyContact"] = idx["assoziierte_person"]
         if note:
-            entry["m3gim:editorialNote"] = note
+            entry["m3gim-ontology:indexNote"] = note
     elif typ == "werk":
         if idx.get("rolle_stimme"):
-            entry["m3gim:partie"] = idx["rolle_stimme"]
+            entry["m3gim-ontology:sungPart"] = idx["rolle_stimme"]
         if note:
-            entry["m3gim:editorialNote"] = note
+            entry["m3gim-ontology:indexNote"] = note
 
 
 def add_relations_to_records(records: list, relations: dict,
                              enrichment_data: dict | None = None,
-                             stage_roles: dict | None = None) -> tuple[list, list]:
+                             stage_roles: dict | None = None,
+                             annotation_seen: dict | None = None) -> tuple[list, list]:
     """Fuegt Verknuepfungen als RiC-O/m3gim Properties zu Records hinzu.
 
     Returns:
-        (spatiotemporal_events, performances): Top-Level-Entities, die dem Graph
+        (annotations, performances): Top-Level-Entities, die dem Graph
         hinzugefuegt werden. StageRole-Entitäten werden in das geteilte
-        ``stage_roles``-Registry dedupliziert (E-96/E-98).
+        ``stage_roles``-Registry dedupliziert (E-96/E-98), Annotations-@ids in
+        das geteilte ``annotation_seen``-Registry.
     """
     if enrichment_data is None:
         enrichment_data = {}
     if stage_roles is None:
         stage_roles = {}
-    spatiotemporal_events = []
+    if annotation_seen is None:
+        annotation_seen = {}
+    annotations = []
     performances = []
-    ste_seen = {}  # full-@id -> Auftrittszahl, fuer inhaltsbasierte STE-@ids
-    perf_counter = 0  # Performance-@ids bleiben (Scope: nur STE stabilisiert)
+    perf_counter = 0  # Performance-@ids bleiben (Scope: nur Annotationen stabilisiert)
     for record in records:
         identifier = record.get("rico:identifier")
         if not identifier or identifier not in relations:
@@ -1339,8 +1449,7 @@ def add_relations_to_records(records: list, relations: dict,
         agents = []
         locations = []
         subjects = []
-        dated_events = []  # E-102: Fallback m3gim:DatedEvent statt eventDate
-        typed_dates = {}  # property-URI -> list[str]
+        creation_dates = []  # Entstehungsdatierung -> rico:creationDate
         mentions = []
 
         for rel in relations[identifier]:
@@ -1359,14 +1468,13 @@ def add_relations_to_records(records: list, relations: dict,
                 enrich = enrichment_data.get(wid, {}).get("properties", {})
                 if enrich:
                     _inject_enrichment(entry, enrich)
-            if rel.get("rolle"):
-                entry["role"] = rel["rolle"]
+            attach_role(entry, rel.get("rolle"))
             attach_xlsx_source(entry, rel)
             # E-102: Datenqualitaets-Flag aus anmerkung-Signal an die Entitaet,
             # auf die sich die Unsicherheit bezieht (person/institution/ort/werk).
             _qf = quality_flags(rel.get("anmerkung"))
             if _qf:
-                entry["m3gim:dataQualityFlag"] = _qf if len(_qf) > 1 else _qf[0]
+                entry["m3gim-ontology:dataQualityFlag"] = _qf if len(_qf) > 1 else _qf[0]
 
             if t == "person":
                 rolle_lower = (rel.get("rolle") or "").lower()
@@ -1398,45 +1506,46 @@ def add_relations_to_records(records: list, relations: dict,
                 # semantisch nur zum Datum-Teil — am Ort produziert sie im UI
                 # Etiketten wie "Muenchen (erscheinungsdatum)". Hier strippen,
                 # damit die Rolle nur dort erscheint, wo sie aussagekraeftig ist.
-                if (entry.get("role") or "").strip().lower() in DATUMSROLLE_TO_PROPERTY:
+                if (rel.get("rolle") or "").strip().lower() in DATE_ONLY_ROLES:
                     entry.pop("role", None)
+                    entry.pop("m3gim-ontology:derivedFromRole", None)
                 locations.append(entry)
 
             elif t == "werk":
-                entry["@type"] = "m3gim:MusicalWork"
+                entry["@type"] = "m3gim-ontology:MusicalWork"
                 if rel.get("komponist"):
-                    entry["komponist"] = rel["komponist"]
+                    entry["composer"] = rel["komponist"]
                 _attach_index_fields(entry, rel, "werk")
                 subjects.append(entry)
 
             elif t == "ereignis":
-                entry["@type"] = "m3gim:PerformanceEvent"
+                entry["@type"] = "m3gim-ontology:FramingEvent"
                 if rel.get("datum"):
                     entry["date"] = rel["datum"]
-                if not entry.get("role"):
-                    entry["role"] = "rahmenveranstaltung"
+                if "role" not in entry:
+                    attach_role(entry, "rahmenveranstaltung")
                 subjects.append(entry)
 
             elif t == "rolle":
-                # Standalone-Bühnenrolle (ohne Interpret:in) -> m3gim:Performance
+                # Standalone-Bühnenrolle (ohne Interpret:in) -> m3gim-ontology:Performance
                 # mit nur hasStageRole; löst das alte Attribut hasPerformanceRole
                 # ab (E-96).
                 perf_counter += 1
                 rec_local_id = record["@id"].split(":", 1)[-1]
-                perf_id = f"m3gim:perf_{rec_local_id}_{perf_counter}"
+                perf_id = f"m3gim-data:perf_{rec_local_id}_{perf_counter}"
                 perf = {
                     "@id": perf_id,
-                    "@type": "m3gim:Performance",
-                    "m3gim:hasStageRole": {"@id": _make_stage_role(stage_roles, name)},
+                    "@type": "m3gim-ontology:Performance",
+                    "m3gim-ontology:hasStageRole": {"@id": _make_stage_role(stage_roles, name)},
                 }
                 if rel.get("anmerkung"):
                     perf["rico:generalDescription"] = rel["anmerkung"]
                 _qf = quality_flags(rel.get("anmerkung"))
                 if _qf:
-                    perf["m3gim:dataQualityFlag"] = _qf if len(_qf) > 1 else _qf[0]
+                    perf["m3gim-ontology:dataQualityFlag"] = _qf if len(_qf) > 1 else _qf[0]
                 attach_xlsx_source(perf, rel)
                 performances.append(perf)
-                record.setdefault("m3gim:hasPerformance", []).append({"@id": perf_id})
+                record.setdefault("m3gim-ontology:hasPerformance", []).append({"@id": perf_id})
 
             elif t == "datum":
                 date_val = clean_date(rel.get("datum") or name)
@@ -1446,55 +1555,56 @@ def add_relations_to_records(records: list, relations: dict,
                 # ISO normalisieren ("X bis Y" → TimeSpan, "ab/seit X" → nach:).
                 date_val = normalize_dating(date_val)
                 rolle_key = (rel.get("rolle") or "").strip().lower()
-                prop = DATUMSROLLE_TO_PROPERTY.get(rolle_key)
-                if prop and is_iso_date(date_val):
-                    # ISO-Wert mit bekannter Rolle → typisierte Property.
-                    typed_dates.setdefault(prop, []).append(date_val)
-                else:
-                    # Fallback m3gim:DatedEvent: Rolle ohne typisierte Property
-                    # oder klammer-/fragezeichen-unsichere Datierung. Verlustfrei,
-                    # die Rolle bleibt in dateRole erhalten.
-                    dated_entry = {
-                        "@type": "m3gim:DatedEvent",
-                        "m3gim:dateValue": date_val,
-                        "m3gim:dateRole": rolle_key or "datum",
-                    }
-                    if rel.get("anmerkung"):
-                        dated_entry["rico:generalDescription"] = rel["anmerkung"]
-                    qf = quality_flags(rel.get("anmerkung"))
-                    if qf:
-                        dated_entry["m3gim:dataQualityFlag"] = qf if len(qf) > 1 else qf[0]
-                    attach_xlsx_source(dated_entry, rel)
-                    dated_events.append(dated_entry)
+                if rolle_key == CREATION_DATE_ROLE and is_iso_date(date_val):
+                    # Die reine Entstehungsdatierung des Dokuments steht am
+                    # Dokument selbst, auf dem RiC-O-Term rico:creationDate.
+                    creation_dates.append(date_val)
+                    continue
+                # Jeder andere Datumswert wird ein Annotationsknoten mit
+                # m3gim-ontology:atDate und seiner erfassten Rolle. Kein
+                # Property-Name traegt mehr eine Rolle.
+                annotation = build_annotation(record, annotation_seen,
+                                              date=date_val, role=rolle_key or None)
+                if rel.get("anmerkung"):
+                    annotation["rico:generalDescription"] = rel["anmerkung"]
+                qf = quality_flags(rel.get("anmerkung"))
+                # Eine Notation, die kein ISO-Datum ergibt, wird markiert statt
+                # eine eigene Bauform zu erzwingen. Der Wert bleibt im Wortlaut
+                # der Quelle stehen und geht ins Fehlerregister.
+                if not is_iso_date(date_val):
+                    qf = qf + ["datierung-malformed"]
+                if qf:
+                    annotation["m3gim-ontology:dataQualityFlag"] = (
+                        qf if len(qf) > 1 else qf[0]
+                    )
+                attach_xlsx_source(annotation, rel)
+                annotations.append(annotation)
 
             elif t == "detail":
                 # Schicht-3-Detail als strukturiertes Objekt
                 detail_entry = {
-                    "@type": "m3gim:DetailAnnotation",
-                    "m3gim:detailField": name
+                    "@type": "m3gim-ontology:Annotation",
+                    "m3gim-ontology:detailField": name
                 }
                 if rel.get("rolle"):
-                    detail_entry["m3gim:detailValue"] = rel["rolle"]
+                    detail_entry["m3gim-ontology:detailValue"] = rel["rolle"]
                 if rel.get("anmerkung"):
                     detail_entry["rico:generalDescription"] = rel["anmerkung"]
                 attach_xlsx_source(detail_entry, rel)
-                if "m3gim:hasDetail" not in record:
-                    record["m3gim:hasDetail"] = []
-                record["m3gim:hasDetail"].append(detail_entry)
+                if "m3gim-ontology:hasDetail" not in record:
+                    record["m3gim-ontology:hasDetail"] = []
+                record["m3gim-ontology:hasDetail"].append(detail_entry)
 
             elif t == "spatiotemporal":
-                # Phase 4.4: Komposit ort,datum -> m3gim:SpatiotemporalEvent
-                # als Top-Level Graph-Entity mit Rueckverweis.
-                rec_local_id = record["@id"].split(":", 1)[-1]
-                # Vertragsstatus ("nicht eingehalten") ist keine eventRole,
+                # Komposit ort,datum bzw. datumslose Mobilitaets-Ortsrolle
+                # (E-97) als Annotationsknoten mit Rueckverweis.
+                # Vertragsstatus ("nicht eingehalten") ist keine Rolle,
                 # sondern eine spaltenweit durchgereichte Vertragsmarkierung
-                # (data.md § 11). Vor @id-Hash UND eventRole herausfiltern, damit
+                # (data.md § 11). Vor @id-Hash UND Rolle herausfiltern, damit
                 # beide konsistent bleiben (test_35 leitet die @id aus dem Output ab).
                 ste_role = rel.get("rolle")
                 if ste_role and ste_role.strip().lower() in CONTRACT_STATUS_ROLES:
                     ste_role = None
-                ev_id = _ste_id(rec_local_id, rel["ort"], ste_role,
-                                rel.get("datum"), ste_seen)
                 # atPlace: wie reguläre rico:Place-Entries mit Q-ID + Enrichment
                 # anreichern, sobald Reconciliation einen Treffer liefert.
                 place_entry = {"name": rel["ort"]}
@@ -1505,35 +1615,25 @@ def add_relations_to_records(records: list, relations: dict,
                     enrich = enrichment_data.get(wid, {}).get("properties", {})
                     if enrich:
                         _inject_enrichment(place_entry, enrich)
-                ev = {
-                    "@id": ev_id,
-                    "@type": "m3gim:SpatiotemporalEvent",
-                    "m3gim:atPlace": place_entry,
-                    # STE→Record-Bezug ist Provenienz (Record dokumentiert das
-                    # Ereignis); rico:isAssociatedWithRecord existiert in RiC-O 1.1
-                    # nicht (E-103). data.md § 10.
-                    "agrelon:metadataProvenance": {"@id": record["@id"]},
-                }
-                # Datumslose Mobilitaets-STE (E-97) tragen kein atDate.
-                if rel.get("datum"):
-                    ev["m3gim:atDate"] = rel["datum"]
-                if ste_role:
-                    ev["m3gim:eventRole"] = ste_role
+                # Der Rueckverweis auf den Record ist Provenienz (der Record
+                # dokumentiert die Annotation); rico:isAssociatedWithRecord
+                # existiert in RiC-O 1.1 nicht (E-103). data.md § 10.
+                ev = build_annotation(record, annotation_seen, place=place_entry,
+                                      date=rel.get("datum"), role=ste_role)
                 if rel.get("anmerkung"):
                     ev["rico:generalDescription"] = rel["anmerkung"]
                 attach_xlsx_source(ev, rel)
-                spatiotemporal_events.append(ev)
-                record.setdefault("m3gim:hasSpatiotemporalEvent", []).append({"@id": ev_id})
+                annotations.append(ev)
 
             elif t == "performance":
-                # n-äre m3gim:Performance aus rolle,person (E-96) bzw. datum,werk
+                # n-äre m3gim-ontology:Performance aus rolle,person (E-96) bzw. datum,werk
                 # (E-98) als Top-Level-Entity mit Rückverweis am Record.
                 perf_counter += 1
                 rec_local_id = record["@id"].split(":", 1)[-1]
-                perf_id = f"m3gim:perf_{rec_local_id}_{perf_counter}"
-                perf = {"@id": perf_id, "@type": "m3gim:Performance"}
+                perf_id = f"m3gim-data:perf_{rec_local_id}_{perf_counter}"
+                perf = {"@id": perf_id, "@type": "m3gim-ontology:Performance"}
                 if rel.get("stageRole"):
-                    perf["m3gim:hasStageRole"] = {
+                    perf["m3gim-ontology:hasStageRole"] = {
                         "@id": _make_stage_role(stage_roles, rel["stageRole"])
                     }
                 if rel.get("performer"):
@@ -1545,50 +1645,49 @@ def add_relations_to_records(records: list, relations: dict,
                         pen = enrichment_data.get(pwid, {}).get("properties", {})
                         if pen:
                             _inject_enrichment(performer, pen)
-                    perf["m3gim:hasPerformer"] = performer
+                    perf["m3gim-ontology:hasPerformer"] = performer
                 if rel.get("performanceOf"):
-                    work = {"name": rel["performanceOf"], "@type": "m3gim:MusicalWork"}
+                    work = {"name": rel["performanceOf"], "@type": "m3gim-ontology:MusicalWork"}
                     wwid = rel.get("work_wikidata_id", "")
                     if wwid and re.match(r'^Q\d+$', wwid):
                         work["@id"] = f"wd:{wwid}"
                         work["owl:sameAs"] = f"http://www.wikidata.org/entity/{wwid}"
-                    perf["m3gim:performanceOf"] = work
+                    perf["m3gim-ontology:performanceOf"] = work
                 if rel.get("auffuehrungsdatum"):
-                    perf["m3gim:auffuehrungsdatum"] = rel["auffuehrungsdatum"]
+                    perf["m3gim-ontology:atDate"] = rel["auffuehrungsdatum"]
                 if rel.get("anmerkung"):
                     perf["rico:generalDescription"] = rel["anmerkung"]
                 attach_xlsx_source(perf, rel)
                 performances.append(perf)
-                record.setdefault("m3gim:hasPerformance", []).append({"@id": perf_id})
+                record.setdefault("m3gim-ontology:hasPerformance", []).append({"@id": perf_id})
 
             elif t in ["ausgaben", "einnahmen", "summe"]:
-                # Finanz-Informationen als DetailAnnotation (data.md Abschnitt 11).
-                # Doppelbetrag ('25, DM/45, DM') -> zwei DetailAnnotations mit
+                # Finanz-Informationen als Detailangabe (data.md Abschnitt 11).
+                # Doppelbetrag ('25, DM/45, DM') -> zwei Detailangaben mit
                 # gleichem detailField (parse_monetary_values).
                 for amount, currency in parse_monetary_values(name):
                     if currency is None and amount is not None:
                         currency = default_currency_for(
                             record.get("rico:identifier", ""))
                     detail_entry = {
-                        "@type": "m3gim:DetailAnnotation",
-                        "m3gim:detailField": t,
-                        "m3gim:detailValue": name,
+                        "@type": "m3gim-ontology:Annotation",
+                        "m3gim-ontology:detailField": t,
+                        "m3gim-ontology:detailValue": name,
                     }
-                    if rel.get("rolle"):
-                        detail_entry["m3gim:detailRole"] = rel["rolle"]
+                    attach_role(detail_entry, rel.get("rolle"))
                     if amount is not None:
-                        detail_entry["m3gim:monetaryAmount"] = {
+                        detail_entry["m3gim-ontology:monetaryAmount"] = {
                             "@value": amount,
                             "@type": "xsd:decimal",
                         }
                     if currency:
-                        detail_entry["m3gim:currency"] = currency
+                        detail_entry["m3gim-ontology:currency"] = currency
                     attach_xlsx_source(detail_entry, rel)
-                    if "m3gim:hasDetail" not in record:
-                        record["m3gim:hasDetail"] = []
-                    record["m3gim:hasDetail"].append(detail_entry)
+                    if "m3gim-ontology:hasDetail" not in record:
+                        record["m3gim-ontology:hasDetail"] = []
+                    record["m3gim-ontology:hasDetail"].append(detail_entry)
 
-        # Erwähnte Personen → rico:hasOrHadSubject (statt m3gim:mentions)
+        # Erwähnte Personen → rico:hasOrHadSubject (statt einer eigenen Kante)
         # Sie werden als rico:Person mit role "erwähnt" modelliert
         for m in mentions:
             m["@type"] = "rico:Person"
@@ -1596,36 +1695,34 @@ def add_relations_to_records(records: list, relations: dict,
 
         # Properties setzen (nur wenn nicht leer)
         if agents:
-            record["m3gim:hasAssociatedAgent"] = agents if len(agents) > 1 else agents[0]
+            record["m3gim-ontology:hasAssociatedAgent"] = (
+                agents if len(agents) > 1 else agents[0]
+            )
         if locations:
             record["rico:hasOrHadLocation"] = locations if len(locations) > 1 else locations[0]
         if subjects:
             record["rico:hasOrHadSubject"] = subjects if len(subjects) > 1 else subjects[0]
-        # E-102: Datumsrollen ohne typisierte Property als m3gim:DatedEvent
-        # (Fallback-Klasse), das abgeschaffte generische m3gim:eventDate ersetzend.
-        if dated_events:
-            record["m3gim:hasDatedEvent"] = (
-                dated_events if len(dated_events) > 1 else dated_events[0]
+        if creation_dates:
+            record["rico:creationDate"] = (
+                creation_dates if len(creation_dates) > 1 else creation_dates[0]
             )
-        # Typisierte Datumsproperties (data.md § 7, Phase 4.7)
-        for prop, vals in typed_dates.items():
-            record[prop] = vals if len(vals) > 1 else vals[0]
 
-        # Normalize detail arrays (single → unwrap)
-        if "m3gim:hasDetail" in record:
-            details = record["m3gim:hasDetail"]
-            if len(details) == 1:
-                record["m3gim:hasDetail"] = details[0]
-        if "m3gim:hasSpatiotemporalEvent" in record:
-            evs = record["m3gim:hasSpatiotemporalEvent"]
-            if len(evs) == 1:
-                record["m3gim:hasSpatiotemporalEvent"] = evs[0]
-        if "m3gim:hasPerformance" in record:
-            ps = record["m3gim:hasPerformance"]
-            if len(ps) == 1:
-                record["m3gim:hasPerformance"] = ps[0]
+    return annotations, performances
 
-    return spatiotemporal_events, performances
+
+def normalize_containers(records: list) -> None:
+    """Einelementige Sammelkanten auf ihren einzigen Wert zurueckfuehren.
+
+    Laeuft ueber alle Records und Konvolute in einem Durchgang, weil die
+    Annotationen eines Dokuments aus zwei Quellen kommen, den Objektzeilen und
+    den Verknuepfungszeilen.
+    """
+    for record in records:
+        for prop in ("m3gim-ontology:hasDetail", "m3gim-ontology:hasAnnotation",
+                     "m3gim-ontology:hasPerformance"):
+            values = record.get(prop)
+            if isinstance(values, list) and len(values) == 1:
+                record[prop] = values[0]
 
 
 # ---------------------------------------------------------------------------
@@ -1648,9 +1745,9 @@ def _inject_enrichment(entry: dict, props: dict):
     if "voiceType" in props:
         items = props["voiceType"]
         if isinstance(items, list) and items:
-            entry["m3gim:voiceType"] = items[0].get("label", "") if isinstance(items[0], dict) else str(items[0])
+            entry["m3gim-ontology:voiceType"] = items[0].get("label", "") if isinstance(items[0], dict) else str(items[0])
         elif isinstance(items, dict):
-            entry["m3gim:voiceType"] = items.get("label", "")
+            entry["m3gim-ontology:voiceType"] = items.get("label", "")
     if "birthDate" in props:
         entry["schema:birthDate"] = strip_zero_date_padding(props["birthDate"])
     if "deathDate" in props:
@@ -1673,31 +1770,31 @@ def _inject_enrichment(entry: dict, props: dict):
     if "country" in props:
         c = props["country"]
         if isinstance(c, dict):
-            entry["m3gim:country"] = c.get("label", c.get("qid", ""))
+            entry["m3gim-ontology:country"] = c.get("label", c.get("qid", ""))
 
     # Werke
     if "composer" in props:
         c = props["composer"]
         if isinstance(c, dict):
-            entry["m3gim:wdComposer"] = c.get("label", c.get("qid", ""))
+            entry["m3gim-ontology:wdComposer"] = c.get("label", c.get("qid", ""))
     if "genre" in props:
         items = props["genre"]
         if isinstance(items, list) and items:
-            entry["m3gim:wdGenre"] = [g.get("label", "") for g in items if isinstance(g, dict)]
+            entry["m3gim-ontology:wdGenre"] = [g.get("label", "") for g in items if isinstance(g, dict)]
         elif isinstance(items, dict):
-            entry["m3gim:wdGenre"] = items.get("label", "")
+            entry["m3gim-ontology:wdGenre"] = items.get("label", "")
     if "premiereDate" in props:
-        entry["m3gim:wdPremiereDate"] = strip_zero_date_padding(props["premiereDate"])
+        entry["m3gim-ontology:wdPremiereDate"] = strip_zero_date_padding(props["premiereDate"])
     elif "publicationDate" in props:
-        entry["m3gim:wdPremiereDate"] = strip_zero_date_padding(props["publicationDate"])
+        entry["m3gim-ontology:wdPremiereDate"] = strip_zero_date_padding(props["publicationDate"])
 
     # Organisationen
     if "location" in props:
         loc = props["location"]
         if isinstance(loc, dict):
-            entry["m3gim:wdLocation"] = loc.get("label", loc.get("qid", ""))
+            entry["m3gim-ontology:wdLocation"] = loc.get("label", loc.get("qid", ""))
     if "inception" in props:
-        entry["m3gim:inception"] = strip_zero_date_padding(props["inception"])
+        entry["m3gim-ontology:wdInception"] = strip_zero_date_padding(props["inception"])
 
 
 # ---------------------------------------------------------------------------
@@ -1791,8 +1888,12 @@ def main():
     if folio_col:
         print(f"  Folio-Spalte erkannt: '{folio_col}'")
 
-    # Konvolut-Hierarchie bauen
-    records, konvolute = build_konvolut_hierarchy(df_objekte, folio_col)
+    # Konvolut-Hierarchie bauen. annotation_seen ist ueber alle Erzeugungs-
+    # stellen geteilt, damit zwei Annotationen desselben Dokuments nie
+    # dieselbe @id bekommen.
+    annotation_seen = {}
+    records, konvolute, annotations = build_konvolut_hierarchy(
+        df_objekte, folio_col, annotation_seen)
     print(f"  {len(records)} Records, {len(konvolute)} Konvolute")
 
     # Verknuepfungen laden
@@ -1815,18 +1916,20 @@ def main():
     # Relations zu Records hinzufuegen (mit Enrichment-Daten). stage_roles ist
     # ein über beide Aufrufe geteiltes Dedup-Registry für StageRole-Entitäten (E-96).
     stage_roles = {}
-    ste_events, performances = add_relations_to_records(
-        records, relations, enrichment_data, stage_roles)
+    record_annotations, performances = add_relations_to_records(
+        records, relations, enrichment_data, stage_roles, annotation_seen)
     # Relations auch zu Konvolut-Records (falls Verknuepfungen am Konvolut haengen)
-    ste_events_k, performances_k = add_relations_to_records(
-        konvolute, relations, enrichment_data, stage_roles)
-    ste_events = list(ste_events) + list(ste_events_k)
+    konvolut_annotations, performances_k = add_relations_to_records(
+        konvolute, relations, enrichment_data, stage_roles, annotation_seen)
+    annotations = (list(annotations) + list(record_annotations)
+                   + list(konvolut_annotations))
     performances = list(performances) + list(performances_k)
     stage_role_nodes = list(stage_roles.values())
+    normalize_containers(records + konvolute)
 
     # Gesamtbestand als Fonds
     fonds = {
-        "@id": "m3gim:UAKUG_NIM",
+        "@id": "m3gim-data:UAKUG_NIM",
         "@type": "rico:RecordSet",
         "rico:hasRecordSetType": {"@id": "ric-rst:Fonds"},
         "rico:identifier": "UAKUG/NIM",
@@ -1853,16 +1956,16 @@ def main():
 
     # JSON-LD Dokument
     graph = ([fonds] + konvolute + records + dft_concepts
-             + ste_events + performances + stage_role_nodes)
+             + annotations + performances + stage_role_nodes)
 
     jsonld = {
         "@context": CONTEXT,
         "@graph": graph,
-        "m3gim:exportDate": datetime.now().isoformat(),
-        "m3gim:recordCount": len(records),
-        "m3gim:konvolutCount": len(konvolute),
-        "m3gim:approvedManualMatches": recon_count,
-        "m3gim:lowConfidenceSkipped": recon_low_skipped,
+        "m3gim-ontology:exportDate": datetime.now().isoformat(),
+        "m3gim-ontology:recordCount": len(records),
+        "m3gim-ontology:recordSetCount": len(konvolute),
+        "m3gim-ontology:approvedManualMatches": recon_count,
+        "m3gim-ontology:lowConfidenceSkipped": recon_low_skipped,
     }
 
     # Speichern

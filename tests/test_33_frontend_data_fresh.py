@@ -29,9 +29,22 @@ DOCS_JSONLD = REPO_ROOT / "docs" / "data" / "m3gim.jsonld"
 # output<->docs relationship is meaningless there.
 _STAGING = bool(os.environ.get("M3GIM_JSONLD_PATH") or os.environ.get("M3GIM_OUTPUT_DIR"))
 
-pytestmark = pytest.mark.skipif(
-    _STAGING, reason="Staging-Lauf (ENV-Override aktiv) — Produktions-Frische nicht anwendbar"
-)
+pytestmark = [
+    pytest.mark.skipif(
+        _STAGING,
+        reason="Staging-Lauf (ENV-Override aktiv) — Produktions-Frische nicht anwendbar",
+    ),
+    # Der Datenumbau auf das Zielmodell (E-136) laeuft in zwei Schritten. Die
+    # Pipeline steht, das Frontend liest noch die alten Terme. Solange es das
+    # tut, traegt docs/data bewusst den alten Datenstand, damit die
+    # ausgelieferte Seite lauffaehig bleibt. Der Marker ist strikt: sobald der
+    # Frontend-Schritt docs/data neu erzeugt, schlaegt der Test als XPASS an
+    # und verlangt, dass der Marker gezogen wird.
+    pytest.mark.xfail(
+        strict=True,
+        reason="Frontend-Schritt des Modellumbaus offen, docs/data haelt den alten Stand",
+    ),
+]
 
 
 def _graph(path: Path) -> list:
@@ -39,12 +52,12 @@ def _graph(path: Path) -> list:
         return json.load(f)["@graph"]
 
 
-def _count_ste(graph: list) -> int:
+def _count_annotations(graph: list) -> int:
     n = 0
     for node in graph:
         t = node.get("@type")
         types = t if isinstance(t, list) else [t]
-        if "m3gim:SpatiotemporalEvent" in types:
+        if "m3gim-ontology:Annotation" in types:
             n += 1
     return n
 
@@ -72,11 +85,11 @@ def test_docs_data_node_count_matches_output(output_graph, docs_graph):
 
 
 def test_docs_data_ste_count_matches_output(output_graph, docs_graph):
-    """STE-Zahl identisch — die konkrete Bug-Klasse aus Session 50."""
-    out_ste = _count_ste(output_graph)
-    docs_ste = _count_ste(docs_graph)
+    """Annotationszahl identisch — die konkrete Bug-Klasse aus Session 50."""
+    out_ste = _count_annotations(output_graph)
+    docs_ste = _count_annotations(docs_graph)
     assert docs_ste == out_ste, (
-        f"Frontend zeigt {docs_ste} SpatiotemporalEvents, Pipeline-Output {out_ste}. "
+        f"Frontend zeigt {docs_ste} Annotationen, Pipeline-Output {out_ste}. "
         "Mobilitaets-Events fehlen im Frontend — 'python scripts/build-views.py' ausfuehren."
     )
 

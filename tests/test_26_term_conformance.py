@@ -23,7 +23,8 @@ import pytest
 ALLOWLIST_PATH = Path(__file__).parent / "fixtures" / "rico_agrelon_allowlist.json"
 
 # Nur diese Namespaces beanspruchen externe Konformitaet und werden geprueft.
-# m3gim: (eigen), geo:/owl:/skos:/xsd:/wd: (Standard, unstrittig) sind ausgenommen.
+# Die drei Projekt-Namensraeume (eigen) und geo:/owl:/skos:/xsd:/wd:
+# (Standard, unstrittig) sind ausgenommen.
 VALIDATED_PREFIXES = ("rico:", "ric-rst:", "agrelon:", "schema:", "gndo:")
 
 

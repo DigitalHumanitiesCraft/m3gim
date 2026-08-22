@@ -150,14 +150,37 @@ def test_every_xlsx_dokumenttyp_is_mapped(xlsx_objekte):
 # Rollen im Output entsprechen den belegten Rollen
 # ---------------------------------------------------------------------------
 
+def _recorded_role(entity):
+    """Der erfasste Rollenwert eines Knotens.
+
+    Die Rolle steht als Verweis auf ihr Concept und fuehrt dessen prefLabel
+    mit. Wo das Vokabular den erfassten Wert auf ein anderes Concept gefuehrt
+    hat, steht der Ursprungswert in m3gim-ontology:derivedFromRole. Der
+    erfasste Wert ist damit der Ursprungswert, wo einer steht, sonst das
+    mitgefuehrte prefLabel.
+    """
+    role = entity.get("role")
+    if role is None:
+        return None
+    origin = entity.get("m3gim-ontology:derivedFromRole")
+    if origin:
+        return origin
+    if isinstance(role, dict):
+        return role.get("skos:prefLabel")
+    return role
+
+
 def _collect_output_roles(records):
     roles = Counter()
     for r in records:
-        for prop in ("m3gim:hasAssociatedAgent", "rico:hasOrHadLocation",
+        for prop in ("m3gim-ontology:hasAssociatedAgent", "rico:hasOrHadLocation",
                      "rico:hasOrHadSubject"):
             for ent in ensure_list(r.get(prop)):
-                if isinstance(ent, dict) and ent.get("role"):
-                    roles[ent["role"]] += 1
+                if not isinstance(ent, dict):
+                    continue
+                recorded = _recorded_role(ent)
+                if recorded:
+                    roles[recorded] += 1
     return roles
 
 

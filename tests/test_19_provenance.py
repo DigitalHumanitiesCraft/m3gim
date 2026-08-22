@@ -65,12 +65,12 @@ def test_record_has_no_dating_self_provenance(records):
 
 def test_agrelon_relation_provenance_intact(graph):
     """Positivkontrolle: die legitime agrelon:metadataProvenance auf den
-    AgRelOn-Relationen (m3gim:agentRelation, Rueckverweis auf den Record)
+    AgRelOn-Relationen (m3gim-ontology:hasAgentRelation, Rueckverweis auf den Record)
     existiert weiterhin — die Konfidenz-Entfernung hat sie nicht versehentlich
     mitgenommen."""
     seen = 0
     for n in graph:
-        for rel in ensure_list(n.get("m3gim:agentRelation")):
+        for rel in ensure_list(n.get("m3gim-ontology:hasAgentRelation")):
             if isinstance(rel, dict) and "agrelon:metadataProvenance" in rel:
                 seen += 1
     assert seen >= 1, (

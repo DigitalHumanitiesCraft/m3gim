@@ -61,12 +61,12 @@ def normalize(val):
     return str(val).strip()
 
 # Record-side link properties. Since E-96 a stage role reaches the record as
-# an m3gim:Performance node instead of an attribute.
+# an m3gim-ontology:Performance node instead of an attribute.
 LINK_PROPERTIES = (
-    "m3gim:hasAssociatedAgent",
+    "m3gim-ontology:hasAssociatedAgent",
     "rico:hasOrHadLocation",
     "rico:hasOrHadSubject",
-    "m3gim:hasPerformance",
+    "m3gim-ontology:hasPerformance",
 )
 
 
@@ -183,7 +183,7 @@ def audit_verknuepfungen(df_verk, graph):
     for node in graph:
         if node.get("@type") not in ("rico:Record",):
             continue
-        agents = node.get("m3gim:hasAssociatedAgent", [])
+        agents = node.get("m3gim-ontology:hasAssociatedAgent", [])
         if isinstance(agents, dict):
             agents = [agents]
         jsonld_agents += len(agents)
@@ -198,28 +198,28 @@ def audit_verknuepfungen(df_verk, graph):
             subjs = [subjs]
         jsonld_subjects += len(subjs)
         for s in subjs:
-            if s.get("@type") == "m3gim:PerformanceEvent":
+            if s.get("@type") == "m3gim-ontology:FramingEvent":
                 jsonld_events += 1
             elif s.get("@type") == "rico:Person":
                 jsonld_mentions += 1
 
-        # E-102: das generische m3gim:eventDate ist in m3gim:hasDatedEvent
-        # (DatedEvent-Fallback) aufgegangen.
-        dts = node.get("m3gim:hasDatedEvent", [])
+        # Jede Datierung haengt an einem Annotationsknoten unter
+        # m3gim-ontology:hasAnnotation.
+        dts = node.get("m3gim-ontology:hasAnnotation", [])
         if isinstance(dts, (str,)):
             dts = [dts]
         elif isinstance(dts, dict):
             dts = [dts]
         jsonld_dates += len(dts)
 
-        # E-96: rolle links became m3gim:Performance nodes; the record points
-        # at them via m3gim:hasPerformance.
-        perfs = node.get("m3gim:hasPerformance", [])
+        # E-96: rolle links became m3gim-ontology:Performance nodes; the record
+        # points at them via m3gim-ontology:hasPerformance.
+        perfs = node.get("m3gim-ontology:hasPerformance", [])
         if isinstance(perfs, dict):
             perfs = [perfs]
         jsonld_performances += len(perfs)
 
-        dtls = node.get("m3gim:hasDetail", [])
+        dtls = node.get("m3gim-ontology:hasDetail", [])
         if isinstance(dtls, dict):
             dtls = [dtls]
         jsonld_details += len(dtls)
@@ -379,7 +379,7 @@ def audit_quality(df_objekte, graph):
     for node in graph:
         if node.get("@type") != "rico:Record":
             continue
-        agents = node.get("m3gim:hasAssociatedAgent", [])
+        agents = node.get("m3gim-ontology:hasAssociatedAgent", [])
         if isinstance(agents, dict):
             agents = [agents]
         for a in agents:
@@ -396,7 +396,7 @@ def audit_quality(df_objekte, graph):
         if isinstance(subjs, dict):
             subjs = [subjs]
         for s in subjs:
-            if s.get("@type") == "m3gim:MusicalWork":
+            if s.get("@type") == "m3gim-ontology:MusicalWork":
                 total_works += 1
                 if s.get("@id", "").startswith("wd:"):
                     wd_works += 1
@@ -411,7 +411,7 @@ def audit_quality(df_objekte, graph):
     for node in graph:
         if node.get("@type") != "rico:Record":
             continue
-        bs = node.get("m3gim:bearbeitungsstand", "nicht_gesetzt")
+        bs = node.get("m3gim-ontology:processingStatus", "nicht_gesetzt")
         status_counts[bs] += 1
 
     print(f"\n  Erfassungsstatus:")

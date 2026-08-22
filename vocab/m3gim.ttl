@@ -218,7 +218,7 @@ m3gim-ontology:derivedFromRole
     rdfs:isDefinedBy <https://dhcraft.org/m3gim/ontology> ;
     skos:editorialNote "Ohne rdfs:domain, weil die zusammengeführten Rollen an Annotationsknoten und an Entitätsreferenzen gleichermaßen stehen."@de ;
     skos:editorialNote "Der Term ist mit der Zusammenführung von auftritt auf aufführung sowie von erstelldatum und entstehungsort auf entstehung aufgenommen. Ohne ihn ist die Zusammenführung irreversibel, sobald die Quelle nicht mehr befragt wird. Er ist in knowledge/data.md § 7 für genau diesen Zweck deklariert."@de ;
-    skos:editorialNote "unused: Deklariert mit der Zusammenführungsentscheidung und noch ohne Träger, weil die Pipeline die Zusammenführung erst ausführt. Die ersten Träger sind die Werte, die heute die Rollen auftritt, erstelldatum und entstehungsort tragen."@de .
+    skos:editorialNote "Die Pipeline setzt den Term überall dort, wo der erfasste Wert nicht das prefLabel des Concepts ist, auf das er im Vokabular führt. Er steht damit an jedem Knoten, dessen Rolle beim Umbau eine andere Schreibung bekommen hat."@de .
 
 
 # ---------------------------------------------------------------------------
@@ -904,9 +904,11 @@ m3gim-vocab:repertoire a skos:Concept ;
 
 m3gim-vocab:creation a skos:Concept ;
     skos:prefLabel "entstehung"@de ;
-    skos:altLabel "entstehungsort"@de , "erstelldatum"@de , "creation"@en ;
+    skos:altLabel "entstehungsort"@de , "erstelldatum"@de , "entstehungsdatum"@de ,
+        "creation"@en ;
     skos:definition "Bezug einer Orts- oder Datumsangabe auf die Entstehung des Dokuments."@de ;
     skos:editorialNote "Die drei Begriffe entstehung, entstehungsort und erstelldatum sind zu einem Begriff zusammengefallen. Sie bezeichneten im Bestand denselben Sachverhalt in drei einander ausschließenden Bauformen, und welche griff, hing allein vom Verknüpfungstyp der Erfassungszeile ab."@de ;
+    skos:editorialNote "Der vierte Wert entstehungsdatum kommt nicht aus der Rollenspalte, sondern ist der Name der Datumsspalte des Objektblatts. Die Pipeline führt ihn als Rolle, wo die dortige Datierung die Form von rico:date verfehlt und deshalb als Annotationsknoten stehen bleibt."@de ;
     skos:editorialNote "Die Definition des aufgegangenen Begriffs entstehungsort lautete: Ort, an dem das Dokument entstanden ist. Die des aufgegangenen Begriffs erstelldatum lautete: Datierung der Entstehung eines Dokuments."@de ;
     skos:editorialNote "Die Datierung der Entstehung wird am Dokument auf den RiC-O-Term rico:creationDate geführt. Die projekteigene Property m3gim:erstelldatum war eine nackte Unterproperty dieses Terms mit derselben Domain und derselben Bedeutung."@de ;
     skos:editorialNote "Die Ursprungsrolle bleibt über m3gim-ontology:derivedFromRole erhalten."@de ;

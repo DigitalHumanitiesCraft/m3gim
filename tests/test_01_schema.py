@@ -62,6 +62,6 @@ def test_dft_references_are_resolvable(graph, records):
         dft = r.get("rico:hasDocumentaryFormType")
         if isinstance(dft, dict):
             dft_id = dft.get("@id", "")
-            if dft_id.startswith("m3gim-dft:") and dft_id not in concepts:
+            if dft_id.startswith("m3gim-vocab:") and dft_id not in concepts:
                 missing.add(dft_id)
     assert not missing, f"DFT-Referenzen ohne Konzept im Graph: {sorted(missing)[:5]}"

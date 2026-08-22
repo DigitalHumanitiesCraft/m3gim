@@ -1,14 +1,14 @@
 """Koordinaten-Patch fuer SpatiotemporalEvents (Session 33, Milestone Mobilitaets-Atlas).
 
-Vorbedingung fuer den Mobilitaets-Atlas-Tab: jeder m3gim:SpatiotemporalEvent,
+Vorbedingung fuer den Mobilitaets-Atlas-Tab: jede Verortung,
 dessen Ort gegen den Ortsindex aufloesbar ist, traegt in seinem
-m3gim:atPlace-Subobjekt
+m3gim-ontology:atPlace-Subobjekt
 
     @id       : wd:Qxxx
     owl:sameAs: http://www.wikidata.org/entity/Qxxx
     geo:lat   : <float>
     geo:long  : <float>
-    m3gim:country: <Label>   (falls in der Wikidata-Property P17 vorhanden)
+    m3gim-ontology:country: <Label>   (falls in der Wikidata-Property P17 vorhanden)
 
 Analog zur Anreicherung regulaerer rico:Place-Eintraege in
 scripts/transform.py (_inject_enrichment, Z. 954-962).
@@ -28,8 +28,8 @@ ANCHOR_STES = [
     # einen GLOBALEN Zaehler, der bei jeder STE-Aenderung springt (zuletzt E-97
     # Mobilitaets-STE) — daher ueber (Record-Praefix, Ortsname) ankern statt
     # ueber die exakte @id, sonst bricht der Test bei jedem STE-Zuwachs.
-    ("m3gim:ste_NIM_004_24_", "wd:Q72",    "Zürich"),
-    ("m3gim:ste_NIM_004_24_", "wd:Q34713", "Salzburg"),
+    ("m3gim-data:ev_NIM_004_24_", "wd:Q72",    "Zürich"),
+    ("m3gim-data:ev_NIM_004_24_", "wd:Q34713", "Salzburg"),
 ]
 
 
@@ -37,16 +37,16 @@ def _anchor_ste(graph, id_prefix, expected_name):
     """Findet den STE auf dem Anker-Record (@id-Praefix), dessen atPlace-Name
     passt — stabil gegen Verschiebungen des globalen STE-Zaehlers."""
     for n in graph:
-        if (n.get("@type") == "m3gim:SpatiotemporalEvent"
+        if (n.get("@type") == "m3gim-ontology:Annotation"
                 and str(n.get("@id", "")).startswith(id_prefix)):
-            p = n.get("m3gim:atPlace")
+            p = n.get("m3gim-ontology:atPlace")
             if isinstance(p, dict) and p.get("name") == expected_name:
                 return n
     return None
 
 
 def _at_place(ste):
-    p = ste.get("m3gim:atPlace")
+    p = ste.get("m3gim-ontology:atPlace")
     return p if isinstance(p, dict) else None
 
 
@@ -64,7 +64,7 @@ def test_anchor_ste_has_wikidata_id(graph, id_prefix, expected_qid, expected_nam
         f"Pipeline-Regression oder Fixture pflegen."
     )
     place = _at_place(ste)
-    assert place is not None, f"{ste_id}: m3gim:atPlace fehlt oder ist kein Objekt"
+    assert place is not None, f"{ste_id}: m3gim-ontology:atPlace fehlt oder ist kein Objekt"
     assert place.get("name") == expected_name, (
         f"{ste_id}: Ort={place.get('name')!r}, erwartet {expected_name!r}"
     )
@@ -83,7 +83,7 @@ def test_anchor_ste_has_coordinates(graph, id_prefix, expected_qid, expected_nam
     ste = _anchor_ste(graph, id_prefix, expected_name)
     assert ste is not None, f"Anker-STE {expected_name!r} auf {id_prefix!r} fehlt"
     place = _at_place(ste)
-    assert place is not None, f"{expected_name}: m3gim:atPlace fehlt"
+    assert place is not None, f"{expected_name}: m3gim-ontology:atPlace fehlt"
 
     lat = place.get("geo:lat")
     lon = place.get("geo:long")
@@ -108,7 +108,7 @@ def test_ste_place_wd_id_shape(graph):
     import re
     qid_pattern = re.compile(r"^wd:Q\d+$")
     offenders = []
-    for ste in (n for n in graph if n.get("@type") == "m3gim:SpatiotemporalEvent"):
+    for ste in (n for n in graph if n.get("@type") == "m3gim-ontology:Annotation"):
         place = _at_place(ste)
         if not place:
             continue
@@ -135,7 +135,7 @@ def test_ste_geo_coverage_soft(graph):
     Zuerich, Salzburg, Stuttgart, Berlin, Paris, New York, Basel, Linz, Rom, ...).
     Steigende Reconciliation soll die Zahl mit der Zeit wachsen lassen;
     sinkt sie unter 10, ist ein Regress im Patch wahrscheinlich."""
-    stes = [n for n in graph if n.get("@type") == "m3gim:SpatiotemporalEvent"]
+    stes = [n for n in graph if n.get("@type") == "m3gim-ontology:Annotation"]
     if not stes:
         pytest.skip("Keine SpatiotemporalEvents im Graph")
 

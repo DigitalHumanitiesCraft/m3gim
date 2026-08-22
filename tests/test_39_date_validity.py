@@ -12,20 +12,21 @@ Genau das erzeugt die Wikidata-Anreicherung, solange sie das Feld
 als ``+1841-00-00T00:00:00Z`` serialisiert und landet als ``1841-00-00`` im
 Datensatz (Befund AF-04, Entscheidungsvorlage vom 2026-08-21, Frage 4).
 Betroffen sind ``schema:birthDate``, ``schema:deathDate``,
-``m3gim:wdPremiereDate`` und ``m3gim:inception``.
+``m3gim-ontology:wdPremiereDate`` und ``m3gim-ontology:wdInception``.
 
 Die geprueften Properties werden aus dem Datensatz ermittelt statt gelistet:
 datumstragend ist eine Property, deren lokaler Name auf ``date``/``datum``
 endet oder deren saemtliche Zeichenkettenwerte die Gestalt einer Datierung
 haben. Kuenftige Datumsproperties fallen damit von selbst in die Pruefung,
-waehrend ``m3gim:lifespan`` (``1888-1965``), Titel und Betraege draussen
+waehrend ``m3gim-ontology:lifespan`` (``1888-1965``), Titel und Betraege draussen
 bleiben.
 
-Die Fallback-Klasse ``m3gim:DatedEvent`` mit ``m3gim:dateValue`` traegt laut
-data.md § 6 bewusst die nicht routbaren Rohdatierungen (``06-09``,
-``1957-[05-27?]``). Das sind Quellbefunde des Erfassungsteams und Sache des
-Registers in data-errors.md, keine Pipeline-Fehler; die Gestaltregel haelt
-die Property draussen, weil solche Werte keine Datierungsgestalt haben.
+Der Annotationsknoten traegt laut data.md § 6 bewusst die nicht routbaren
+Rohdatierungen (``06-09``, ``1957-[05-27?]``). Das sind Quellbefunde des
+Erfassungsteams und Sache des Registers in data-errors.md, keine
+Pipeline-Fehler. Seit dem Umbau stehen sie in derselben Property wie jede
+andere Datierung; sie tragen dafuer das Flag ``datierung-malformed`` und
+bleiben mit ihm aus der kalendarischen Pruefung draussen.
 """
 
 from __future__ import annotations
@@ -211,10 +212,40 @@ def _valid_date_value(value: str) -> bool:
     return all(_valid_token(QUALIFIER.sub("", part)) for part in parts)
 
 
+def _flagged_malformed_values(graph: list) -> set[str]:
+    """Datumswerte, die ihr Knoten selbst als Quellbefund markiert.
+
+    Eine Notationsabweichung der Quelle bleibt im Wortlaut stehen und traegt
+    dafuer ``datierung-malformed``. Sie ist ein Befund fuer data-errors.md und
+    kein Kalenderfehler der Pipeline.
+    """
+    flagged: set[str] = set()
+
+    def visit(node):
+        if isinstance(node, dict):
+            flags = node.get("m3gim-ontology:dataQualityFlag")
+            flags = flags if isinstance(flags, list) else [flags]
+            if "datierung-malformed" in flags:
+                value = node.get("m3gim-ontology:atDate")
+                if isinstance(value, str):
+                    flagged.add(value)
+            for val in node.values():
+                visit(val)
+        elif isinstance(node, list):
+            for item in node:
+                visit(item)
+
+    visit(graph)
+    return flagged
+
+
 def _offenders(graph: list) -> list[tuple[str, str]]:
+    excused = _flagged_malformed_values(graph)
     found = []
     for prop, vals in sorted(_date_bearing(graph).items()):
         for val in vals:
+            if val in excused:
+                continue
             if not _valid_date_value(val):
                 found.append((prop, val))
     return found
@@ -223,8 +254,8 @@ def _offenders(graph: list) -> list[tuple[str, str]]:
 ENRICHED_DATE_PROPS = {
     "schema:birthDate",
     "schema:deathDate",
-    "m3gim:wdPremiereDate",
-    "m3gim:inception",
+    "m3gim-ontology:wdPremiereDate",
+    "m3gim-ontology:wdInception",
 }
 
 
@@ -232,14 +263,15 @@ def test_date_bearing_properties_are_discovered(graph):
     """Die Ermittlung greift, deckt die angereicherten Zeitwerte ab und zieht
     weder Lebensspannen noch Titel oder Betraege herein."""
     discovered = _date_bearing(graph)
-    assert len(discovered) >= 15, (
+    assert len(discovered) >= 6, (
         f"Nur {len(discovered)} datumstragende Properties ermittelt — "
         "die Ermittlung greift nicht mehr"
     )
-    assert "rico:date" in discovered, "rico:date nicht als datumstragend erkannt"
+    for required in ("rico:date", "rico:creationDate", "m3gim-ontology:atDate"):
+        assert required in discovered, f"{required} nicht als datumstragend erkannt"
     missing = ENRICHED_DATE_PROPS - set(discovered)
     assert not missing, f"Angereicherte Zeitwerte nicht in der Pruefung: {sorted(missing)}"
-    for false_positive in ("m3gim:lifespan", "rico:title", "m3gim:monetaryAmount"):
+    for false_positive in ("m3gim-ontology:lifespan", "rico:title", "m3gim-ontology:monetaryAmount"):
         assert false_positive not in discovered, (
             f"{false_positive} faelschlich als datumstragend erkannt"
         )

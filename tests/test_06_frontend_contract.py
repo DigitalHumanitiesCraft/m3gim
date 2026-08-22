@@ -87,13 +87,13 @@ def test_every_konvolut_has_at_most_one_folio_child(konvolute):
 def test_context_declares_v2_namespaces(jsonld):
     """loader.js muss skos:broader und agrelon:* auflösen — @context pflicht."""
     ctx = jsonld.get("@context", {})
-    for prefix in ("skos", "agrelon", "m3gim-dft"):
+    for prefix in ("skos", "agrelon", "m3gim-vocab"):
         assert prefix in ctx, f"Prefix {prefix!r} fehlt im @context (v2-Pflicht)"
 
 
 def test_agents_always_object_or_list_of_objects(records):
     """Niemals String oder null in den 3 ensureArray-Properties."""
-    ensure_props = ("m3gim:hasAssociatedAgent", "rico:hasOrHadLocation", "rico:hasOrHadSubject")
+    ensure_props = ("m3gim-ontology:hasAssociatedAgent", "rico:hasOrHadLocation", "rico:hasOrHadSubject")
     offenders = []
     for r in records:
         for prop in ensure_props:
@@ -121,61 +121,67 @@ def test_agents_always_object_or_list_of_objects(records):
 # ---------------------------------------------------------------------------
 
 
-def test_spatiotemporal_events_are_top_level(graph):
+def test_annotations_are_top_level(graph):
     """store.mobilityEvents soll aus Top-Level-Knoten im @graph aufgebaut werden."""
-    ste_nodes = [n for n in graph if n.get("@type") == "m3gim:SpatiotemporalEvent"]
-    assert len(ste_nodes) >= 30, f"Zu wenige SpatiotemporalEvents im @graph: {len(ste_nodes)}"
-    missing_id = [n for n in ste_nodes if not n.get("@id", "").startswith("m3gim:ste_")]
-    assert not missing_id, f"SpatiotemporalEvent ohne m3gim:ste_-ID: {missing_id[:3]}"
+    nodes = [n for n in graph if n.get("@type") == "m3gim-ontology:Annotation"]
+    assert len(nodes) >= 30, f"Zu wenige Annotationen im @graph: {len(nodes)}"
+    missing_id = [n for n in nodes if not n.get("@id", "").startswith("m3gim-data:ev_")]
+    assert not missing_id, f"Annotation ohne m3gim-data:ev_-Kennung: {missing_id[:3]}"
 
 
-MOBILITY_PLACE_ROLES = {
-    "zielort", "absendeort", "abreiseort", "empfangsort", "vertragsort",
-}
+def test_annotations_carry_a_value(graph):
+    """Jeder Annotationsknoten traegt eine Verortung, eine Datierung oder beides.
 
-
-def test_spatiotemporal_events_have_required_fields(graph):
-    """loader.js-Indexierung braucht atPlace pro Event; atDate (ISO oder
-    ISO/ISO-Range) ist Pflicht fuer datierte STE. Datumslose Mobilitaets-STE
-    (E-97, eventRole aus MOBILITY_PLACE_ROLES) tragen bewusst kein atDate — der
-    Loader indexiert sie mit date=null."""
-    ste_nodes = [n for n in graph if n.get("@type") == "m3gim:SpatiotemporalEvent"]
+    Fehlt der Ort, ist es eine reine Datierung; fehlt das Datum, eine reine
+    Verortung. Ein Knoten ohne beides waere leer und haette keinen Gegenstand.
+    Die Datierung parst als ISO-Wert, als ISO/ISO-Spanne oder mit einem
+    Qualifier (data.md § 6).
+    """
+    nodes = [n for n in graph if n.get("@type") == "m3gim-ontology:Annotation"]
     offenders = []
-    for n in ste_nodes:
-        place = n.get("m3gim:atPlace")
-        date = n.get("m3gim:atDate")
-        if not (isinstance(place, dict) and place.get("name")):
-            offenders.append((n.get("@id"), "atPlace"))
+    for n in nodes:
+        place = n.get("m3gim-ontology:atPlace")
+        date = n.get("m3gim-ontology:atDate")
+        if place is None and date is None:
+            offenders.append((n.get("@id"), "weder atPlace noch atDate"))
             continue
-        if date is None and n.get("m3gim:eventRole") in MOBILITY_PLACE_ROLES:
-            continue  # datumslose Mobilitaets-STE (E-97)
+        if place is not None and not (isinstance(place, dict) and place.get("name")):
+            offenders.append((n.get("@id"), "atPlace ohne name"))
+        if date is None:
+            continue
         if not isinstance(date, str):
             offenders.append((n.get("@id"), f"atDate Typ={type(date).__name__}"))
             continue
-        # Range (ISO/ISO) zulassen — Spielzeit-Events wie 1947/1952; Qualifier
-        # (nach:/vor:/circa:) zulassen — Freitext-Beginn wie "nach:1956".
         parts = date.split("/") if "/" in date else [date]
-        if not all(ISO_OR_QUALIFIED_PATTERN.match(p) for p in parts):
-            offenders.append((n.get("@id"), f"atDate={date!r}"))
-    assert not offenders, f"SpatiotemporalEvent-Pflichtfelder fehlen: {offenders[:5]}"
+        if all(ISO_OR_QUALIFIED_PATTERN.match(p) for p in parts):
+            continue
+        # Eine Notationsabweichung der Quelle bleibt im Wortlaut stehen und
+        # traegt dafuer das Flag, statt eine eigene Bauform zu erzwingen.
+        if "datierung-malformed" in ensure_list(
+                n.get("m3gim-ontology:dataQualityFlag")):
+            continue
+        offenders.append((n.get("@id"), f"atDate={date!r} ohne Flag"))
+    assert not offenders, f"Annotationsknoten ohne Gegenstand: {offenders[:5]}"
 
 
-def test_hasSpatiotemporalEvent_refs_resolve(records, graph):
-    """store.recordToEvents erwartet auflösbare @id-Referenzen auf STE-Knoten."""
-    ste_ids = {n["@id"] for n in graph if n.get("@type") == "m3gim:SpatiotemporalEvent"}
-    assert ste_ids, "Keine SpatiotemporalEvents im Graph — Baseline verletzt"
+def test_hasAnnotation_refs_resolve(records, graph):
+    """store.recordToEvents erwartet auflösbare @id-Referenzen auf Annotationen."""
+    annotation_ids = {
+        n["@id"] for n in graph if n.get("@type") == "m3gim-ontology:Annotation"
+    }
+    assert annotation_ids, "Keine Annotationen im Graph — Baseline verletzt"
     unresolved = []
     ref_count = 0
     for r in records:
-        for ref in ensure_list(r.get("m3gim:hasSpatiotemporalEvent")):
+        for ref in ensure_list(r.get("m3gim-ontology:hasAnnotation")):
             if not isinstance(ref, dict):
                 unresolved.append((r["@id"], f"nicht-dict: {type(ref).__name__}"))
                 continue
             ref_count += 1
-            if ref.get("@id") not in ste_ids:
+            if ref.get("@id") not in annotation_ids:
                 unresolved.append((r["@id"], ref.get("@id")))
-    assert ref_count >= 10, f"Zu wenige hasSpatiotemporalEvent-Referenzen: {ref_count}"
-    assert not unresolved, f"Unauflösbare STE-Referenzen: {unresolved[:5]}"
+    assert ref_count >= 10, f"Zu wenige hasAnnotation-Referenzen: {ref_count}"
+    assert not unresolved, f"Unauflösbare Annotations-Referenzen: {unresolved[:5]}"
 
 
 def test_agent_relations_have_type_and_object(records):
@@ -183,7 +189,7 @@ def test_agent_relations_have_type_and_object(records):
     offenders = []
     total = 0
     for r in records:
-        for rel in ensure_list(r.get("m3gim:agentRelation")):
+        for rel in ensure_list(r.get("m3gim-ontology:hasAgentRelation")):
             if not isinstance(rel, dict):
                 offenders.append((r["@id"], f"rel ist {type(rel).__name__}"))
                 continue
@@ -200,38 +206,38 @@ def test_agent_relations_have_type_and_object(records):
 
 
 def test_finance_details_have_amount_structure(records):
-    """store.finances braucht monetaryAmount als typisiertes Literal + detailRole.
+    """store.finances braucht monetaryAmount als typisiertes Literal + Rolle.
     Currency kann fehlen (Bug, siehe test_finance_details_have_currency)."""
     offenders = []
     finance_count = 0
     for r in records:
-        for det in ensure_list(r.get("m3gim:hasDetail")):
+        for det in ensure_list(r.get("m3gim-ontology:hasDetail")):
             if not isinstance(det, dict):
                 continue
-            if det.get("@type") != "m3gim:DetailAnnotation":
+            if det.get("@type") != "m3gim-ontology:Annotation":
                 continue
-            amount = det.get("m3gim:monetaryAmount")
+            amount = det.get("m3gim-ontology:monetaryAmount")
             if amount is None:
                 continue
             finance_count += 1
             if not (isinstance(amount, dict) and amount.get("@value") and amount.get("@type") == "xsd:decimal"):
                 offenders.append((r["@id"], f"monetaryAmount malformed: {amount!r}"))
-            if not det.get("m3gim:detailRole"):
-                offenders.append((r["@id"], "detailRole fehlt"))
+            if not det.get("role"):
+                offenders.append((r["@id"], "role fehlt"))
     assert finance_count >= 10, f"Zu wenige Finanz-Details: {finance_count}"
     assert not offenders, f"Malformed Finanz-Details: {offenders[:5]}"
 
 
 def test_finance_details_have_currency(records):
-    """Jedes monetaryAmount im Output braucht m3gim:currency für die UI-Darstellung.
+    """Jedes monetaryAmount im Output braucht m3gim-ontology:currency für die UI-Darstellung.
     Fehlt die Währung in der Quelle, greift FINANCE_CURRENCY_DEFAULTS in transform.py."""
     offenders = []
     for r in records:
-        for det in ensure_list(r.get("m3gim:hasDetail")):
+        for det in ensure_list(r.get("m3gim-ontology:hasDetail")):
             if not isinstance(det, dict):
                 continue
-            if det.get("m3gim:monetaryAmount") is not None and not det.get("m3gim:currency"):
-                offenders.append((r["@id"], det.get("m3gim:detailField"), det.get("m3gim:detailValue")))
+            if det.get("m3gim-ontology:monetaryAmount") is not None and not det.get("m3gim-ontology:currency"):
+                offenders.append((r["@id"], det.get("m3gim-ontology:detailField"), det.get("m3gim-ontology:detailValue")))
     assert not offenders, f"Finanz-Details ohne currency: {offenders[:5]}"
 
 
@@ -266,22 +272,16 @@ def test_dft_hierarchy_concepts_resolve(graph, records):
     )
 
 
-def test_typed_date_properties_usable_for_indexByYear(records):
-    """indexByYear soll typisierte Daten nutzen, wenn rico:date fehlt.
+def test_annotation_dates_usable_for_indexByYear(graph, records):
+    """indexByYear soll die Annotationsdaten nutzen, wenn rico:date fehlt.
 
-    loader.js muss mit 3 Formen rechnen:
+    Der Loader erreicht jede Datierung eines Dokuments jetzt ueber eine
+    Schleife statt ueber ein Register typisierter Property-Namen. Er muss
+    mit zwei Formen rechnen:
       - Einzelwert (String): ISO oder qualifiziert (circa:/vor:/nach:)
       - Range-String: "ISO/ISO" (z.B. Spielzeit, Zwei-Tages-Event)
-      - Liste: mehrere der obigen (Mehrfach-Auftritte in einem Dokument)
+    Mehrere Datierungen desselben Dokuments stehen in mehreren Knoten.
     """
-    typed_props = (
-        "m3gim:absendedatum", "m3gim:auffuehrungsdatum", "m3gim:premieredatum",
-        "m3gim:erscheinungsdatum", "m3gim:auftrittsdatum", "m3gim:ausstellungsdatum",
-        "m3gim:empfangsdatum", "m3gim:gespraechsdatum", "m3gim:probendatum",
-        "m3gim:probenbeginn", "m3gim:spielzeitVon", "m3gim:ueberweisungsdatum",
-        "m3gim:ausstrahlungsdatum", "m3gim:abreisedatum",
-    )
-
     def _valid_single(s):
         if not isinstance(s, str):
             return False
@@ -293,17 +293,28 @@ def test_typed_date_properties_usable_for_indexByYear(records):
         parts = bare.split("/") if "/" in bare else [bare]
         return all(ISO_DATE_PATTERN.match(p) for p in parts)
 
+    annotations = {
+        n["@id"]: n for n in graph
+        if n.get("@type") == "m3gim-ontology:Annotation"
+    }
     offenders = []
     total = 0
     for r in records:
-        for prop in typed_props:
-            v = r.get(prop)
-            if v is None:
+        for ref in ensure_list(r.get("m3gim-ontology:hasAnnotation")):
+            node = annotations.get(ref.get("@id")) if isinstance(ref, dict) else None
+            if node is None:
+                continue
+            value = node.get("m3gim-ontology:atDate")
+            if value is None:
                 continue
             total += 1
-            values = v if isinstance(v, list) else [v]
-            for val in values:
-                if not _valid_single(val):
-                    offenders.append((r["@id"], prop, val))
-    assert total >= 20, f"Zu wenige typisierte Datumswerte: {total}"
-    assert not offenders, f"Nicht-parsbare typisierte Daten: {offenders[:5]}"
+            if _valid_single(value):
+                continue
+            if "datierung-malformed" in ensure_list(
+                    node.get("m3gim-ontology:dataQualityFlag")):
+                continue
+            offenders.append((r["@id"], node["@id"], value))
+    creation = [r for r in records if r.get("rico:creationDate")]
+    assert total >= 20, f"Zu wenige Datierungen an Annotationen: {total}"
+    assert creation, "Kein Dokument traegt eine Entstehungsdatierung"
+    assert not offenders, f"Nicht-parsbare Annotationsdaten: {offenders[:5]}"

@@ -23,7 +23,7 @@ def iter_strings(obj):
 
 def iter_entities_with_id(record):
     """Gibt alle Sub-Entities aus einem Record zurueck (Agents, Subjects, Locations)."""
-    for prop in ("m3gim:hasAssociatedAgent", "rico:hasOrHadLocation", "rico:hasOrHadSubject"):
+    for prop in ("m3gim-ontology:hasAssociatedAgent", "rico:hasOrHadLocation", "rico:hasOrHadSubject"):
         for ent in ensure_list(record.get(prop)):
             if isinstance(ent, dict):
                 yield ent

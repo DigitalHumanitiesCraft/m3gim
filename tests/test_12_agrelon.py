@@ -67,7 +67,7 @@ def test_has_employer_relations_from_arbeitgeber(records, xlsx_verknuepfungen):
 
     actual = sum(
         1 for r in records
-        for rel in ensure_list(r.get("m3gim:agentRelation"))
+        for rel in ensure_list(r.get("m3gim-ontology:hasAgentRelation"))
         if isinstance(rel, dict) and rel.get("@type") == "agrelon:HasEmployeeEmployer"
     )
     assert actual >= matchable, (
@@ -82,7 +82,7 @@ def test_correspondence_relations_have_provenance(records):
     """
     corr_rels = []
     for r in records:
-        for rel in ensure_list(r.get("m3gim:agentRelation")):
+        for rel in ensure_list(r.get("m3gim-ontology:hasAgentRelation")):
             if isinstance(rel, dict) and rel.get("@type") == "agrelon:HasCorrespondent":
                 corr_rels.append(rel)
     assert corr_rels, "Keine HasCorrespondent-Relation im Output"
@@ -110,7 +110,7 @@ def test_validity_period_well_formed(records, xlsx_verknuepfungen):
 
     checked = 0
     for r in records:
-        for rel in ensure_list(r.get("m3gim:agentRelation")):
+        for rel in ensure_list(r.get("m3gim-ontology:hasAgentRelation")):
             if not isinstance(rel, dict):
                 continue
             vp = rel.get("agrelon:metadataPeriod")

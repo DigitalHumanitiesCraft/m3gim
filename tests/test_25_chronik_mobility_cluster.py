@@ -9,6 +9,11 @@ Dieser Test liest die JS-Konstante via Regex (kein JS-Runtime noetig) und
 prueft: jede im aktuellen Datenstand vorkommende `eventRole` hat einen
 expliziten Eintrag. Neue eventRoles in den Daten -> bewusste Entscheidung
 im Constants-File.
+
+Der Test liest bewusst die Frontend-Datenquelle `docs/data/m3gim.jsonld` und
+nicht den Pipeline-Output: er prueft die Konstante gegen genau die Daten, die
+das Frontend laedt. Beide wandern mit dem Frontend-Schritt des Modellumbaus
+gemeinsam auf die neuen Terme.
 """
 
 from __future__ import annotations

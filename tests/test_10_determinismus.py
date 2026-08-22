@@ -59,6 +59,6 @@ def test_transform_deterministic(tmp_path):
 
     # Timestamps rausrechnen
     for d in runs:
-        d.pop("m3gim:exportDate", None)
+        d.pop("m3gim-ontology:exportDate", None)
 
     assert runs[0] == runs[1], "transform.py nicht deterministisch"

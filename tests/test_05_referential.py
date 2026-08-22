@@ -66,7 +66,7 @@ def test_folio_records_have_konvolut_parent(records, konvolute):
     orphan_folios = []
     for r in records:
         rid = r["@id"]
-        m = re.match(r"^(m3gim:[\w_]+)_\d+(_\d+)?$", rid)
+        m = re.match(r"^(m3gim-data:[\w_]+)_\d+(_\d+)?$", rid)
         if not m:
             continue
         parent = m.group(1)

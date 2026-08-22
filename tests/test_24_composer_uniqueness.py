@@ -27,7 +27,7 @@ import pytest
 
 
 def _iter_works(graph: list) -> list:
-    """Gibt alle Roh-Komponistennamen aus m3gim:MusicalWork-Subjects zurueck."""
+    """Gibt alle Roh-Komponistennamen aus m3gim-ontology:MusicalWork-Subjects zurueck."""
     out = []
     for node in graph:
         subjects = node.get("rico:hasOrHadSubject")
@@ -38,9 +38,9 @@ def _iter_works(graph: list) -> list:
         for subj in subjects:
             if not isinstance(subj, dict):
                 continue
-            if subj.get("@type") != "m3gim:MusicalWork":
+            if subj.get("@type") != "m3gim-ontology:MusicalWork":
                 continue
-            komponist = (subj.get("komponist") or "").strip()
+            komponist = (subj.get("composer") or "").strip()
             if komponist:
                 out.append(komponist)
     return out

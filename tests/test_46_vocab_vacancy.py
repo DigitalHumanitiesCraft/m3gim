@@ -15,9 +15,10 @@ Der Test läuft über denselben Einstiegspunkt wie der Handbefehl, also
 laufen können. Die Begründung für den eigenen Prozess steht in
 `tests/test_40_vocab_gate.py`.
 
-Der xfail-Marker ist strikt. Sobald Phase 4 des Implementierungsplans die vier
-Terme füllt, entfernt oder mit ihrer Notiz versieht, schlägt der Test als XPASS
-an und verlangt, dass der Marker gezogen wird.
+Der Test lief zunächst als strikter xfail, weil vier Properties deklariert und
+unbefüllt waren. Mit dem Umbau der Pipeline auf das Zielmodell trägt jeder
+deklarierte Term Daten oder nennt den Grund seiner Leere; der Marker ist
+deshalb gezogen und der Test ist ein reguläres Gate.
 """
 
 import os
@@ -25,16 +26,11 @@ import subprocess
 import sys
 from pathlib import Path
 
-import pytest
-
 REPO_ROOT = Path(__file__).parent.parent
 CHECKER = REPO_ROOT / "vocab" / "check-coverage.py"
 VOCAB_PATH = Path(os.environ.get("M3GIM_VOCAB_PATH", REPO_ROOT / "vocab" / "m3gim.ttl"))
 
 
-@pytest.mark.xfail(
-    reason="Phase 4 des Implementierungsplans nicht umgesetzt", strict=True
-)
 def test_no_declared_term_without_data(jsonld_path):
     """Jeder deklarierte m3gim-Term trägt Daten oder nennt den Grund seiner Leere."""
     assert CHECKER.exists(), f"Abdeckungspruefer fehlt: {CHECKER}"

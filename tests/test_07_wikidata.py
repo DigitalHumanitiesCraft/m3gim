@@ -58,11 +58,11 @@ def test_enrichment_properties_well_typed(records):
 
 
 def test_voice_type_is_string_not_list_object(records):
-    """m3gim:voiceType wird in transform.py auf erstes label reduziert — kein dict/list im Output."""
+    """m3gim-ontology:voiceType wird in transform.py auf erstes label reduziert — kein dict/list im Output."""
     offenders = []
     for r in records:
         for ent in iter_entities_with_id(r):
-            vt = ent.get("m3gim:voiceType")
+            vt = ent.get("m3gim-ontology:voiceType")
             if vt is not None and not isinstance(vt, str):
                 offenders.append((r["@id"], vt))
     assert not offenders, f"voiceType nicht als String: {offenders[:3]}"

@@ -19,12 +19,11 @@ def _count_unique_names_by_type(records, prop, type_filter):
 def _count_relations(records):
     total = 0
     for r in records:
-        for prop in ("m3gim:hasAssociatedAgent", "rico:hasOrHadLocation",
-                     "rico:hasOrHadSubject", "m3gim:hasPerformance",
-                     # E-102: das abgeschaffte m3gim:eventDate ist in
-                     # m3gim:hasDatedEvent (DatedEvent-Fallback) aufgegangen;
-                     # ort,datum-Daten leben (dedupliziert) im STE.
-                     "m3gim:hasDatedEvent", "m3gim:hasSpatiotemporalEvent"):
+        for prop in ("m3gim-ontology:hasAssociatedAgent", "rico:hasOrHadLocation",
+                     "rico:hasOrHadSubject", "m3gim-ontology:hasPerformance",
+                     # Datierungen und Verortungen haengen seit dem Umbau
+                     # gemeinsam an m3gim-ontology:hasAnnotation.
+                     "m3gim-ontology:hasAnnotation"):
             total += len(ensure_list(r.get(prop)))
     return total
 
@@ -51,7 +50,7 @@ def test_persons_count_baseline(records, baseline):
     # Personen kommen aus Agents UND Subjects (erwähnt)
     names = set()
     for r in records:
-        for ent in ensure_list(r.get("m3gim:hasAssociatedAgent")):
+        for ent in ensure_list(r.get("m3gim-ontology:hasAssociatedAgent")):
             if isinstance(ent, dict) and ent.get("@type") == "rico:Person":
                 if ent.get("name"):
                     names.add(ent["name"])
@@ -67,7 +66,7 @@ def test_persons_count_baseline(records, baseline):
 def test_organizations_count_baseline(records, baseline):
     names = set()
     for r in records:
-        for ent in ensure_list(r.get("m3gim:hasAssociatedAgent")):
+        for ent in ensure_list(r.get("m3gim-ontology:hasAssociatedAgent")):
             if isinstance(ent, dict) and ent.get("@type") in ("rico:CorporateBody", "rico:Group"):
                 if ent.get("name"):
                     names.add(ent["name"])
@@ -80,7 +79,7 @@ def test_locations_count_baseline(records, baseline):
 
 
 def test_works_count_baseline(records, baseline):
-    n = _count_unique_names_by_type(records, "rico:hasOrHadSubject", "m3gim:MusicalWork")
+    n = _count_unique_names_by_type(records, "rico:hasOrHadSubject", "m3gim-ontology:MusicalWork")
     assert n >= baseline["works_min"]
 
 

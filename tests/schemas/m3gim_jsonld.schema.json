@@ -7,16 +7,16 @@
   "properties": {
     "@context": {
       "type": "object",
-      "required": ["rico", "m3gim", "m3gim-dft", "m3gim-role", "wd", "owl", "geo", "skos", "xsd"]
+      "required": ["rico", "m3gim-ontology", "m3gim-data", "m3gim-vocab", "wd", "owl", "geo", "skos", "xsd"]
     },
     "@graph": {
       "type": "array",
       "minItems": 1,
       "items": { "$ref": "#/$defs/graphNode" }
     },
-    "m3gim:exportDate": { "type": "string" },
-    "m3gim:recordCount": { "type": "integer", "minimum": 0 },
-    "m3gim:konvolutCount": { "type": "integer", "minimum": 0 }
+    "m3gim-ontology:exportDate": { "type": "string" },
+    "m3gim-ontology:recordCount": { "type": "integer", "minimum": 0 },
+    "m3gim-ontology:recordSetCount": { "type": "integer", "minimum": 0 }
   },
   "$defs": {
     "graphNode": {
@@ -25,11 +25,11 @@
       "properties": {
         "@id": {
           "type": "string",
-          "pattern": "^(m3gim|m3gim-dft|m3gim-role|wd):[\\w/_.-]+$"
+          "pattern": "^(m3gim-data|m3gim-vocab|wd):[\\w/_.-]+$"
         },
         "@type": {
           "type": "string",
-          "enum": ["rico:Record", "rico:RecordSet", "skos:Concept", "m3gim:SpatiotemporalEvent", "m3gim:Performance", "m3gim:StageRole"]
+          "enum": ["rico:Record", "rico:RecordSet", "skos:Concept", "m3gim-ontology:Annotation", "m3gim-ontology:Performance", "m3gim-ontology:StageRole"]
         },
         "rico:identifier": { "type": "string" },
         "rico:title": { "type": "string" },
@@ -37,21 +37,31 @@
           "type": "string",
           "pattern": "^\\d{4}(-\\d{2}(-\\d{2})?)?(/\\d{4}(-\\d{2}(-\\d{2})?)?)?$"
         },
+        "rico:creationDate": {
+          "type": "string",
+          "pattern": "^\\d{4}(-\\d{2}(-\\d{2})?)?(/\\d{4}(-\\d{2}(-\\d{2})?)?)?$"
+        },
         "rico:hasDocumentaryFormType": { "type": "object" },
         "rico:hasOrHadLanguage": { "type": "string" },
         "rico:hasExtent": { "type": "string" },
         "rico:scopeAndContent": { "type": "string" },
-        "m3gim:bearbeitungsstand": {
+        "m3gim-ontology:processingStatus": {
           "type": "string",
           "enum": ["abgeschlossen", "begonnen", "zurueckgestellt"]
         },
-        "m3gim:dateEvidence": {
-          "type": "string",
-          "enum": ["aus_dokument", "erschlossen", "extern", "unbekannt"]
+        "m3gim-ontology:accessStatus": { "type": "string" },
+        "m3gim-ontology:digitizationStatus": { "type": "string" },
+        "m3gim-ontology:atDate": { "type": "string" },
+        "m3gim-ontology:atPlace": { "$ref": "#/$defs/entityRef" },
+        "role": { "$ref": "#/$defs/roleRef" },
+        "m3gim-ontology:derivedFromRole": { "type": "string" },
+        "m3gim-ontology:hasAnnotation": {
+          "oneOf": [
+            { "$ref": "#/$defs/idRef" },
+            { "type": "array", "items": { "$ref": "#/$defs/idRef" } }
+          ]
         },
-        "m3gim:accessStatus": { "type": "string" },
-        "m3gim:digitizationStatus": { "type": "string" },
-        "m3gim:hasAssociatedAgent": {
+        "m3gim-ontology:hasAssociatedAgent": {
           "oneOf": [
             { "$ref": "#/$defs/entityRef" },
             { "type": "array", "items": { "$ref": "#/$defs/entityRef" } }
@@ -87,8 +97,9 @@
         },
         "@type": { "type": "string" },
         "name": { "type": "string", "minLength": 1 },
-        "role": { "type": "string" },
-        "komponist": { "type": "string" },
+        "role": { "$ref": "#/$defs/roleRef" },
+        "m3gim-ontology:derivedFromRole": { "type": "string" },
+        "composer": { "type": "string" },
         "owl:sameAs": { "type": "string" },
         "schema:birthDate": {
           "type": "string",
@@ -98,16 +109,30 @@
           "type": "string",
           "pattern": "^\\d{4}(-\\d{2}(-\\d{2})?)?"
         },
-        "m3gim:wdPremiereDate": { "type": "string" },
+        "m3gim-ontology:wdPremiereDate": { "type": "string" },
         "geo:lat": { "type": "number", "minimum": -90, "maximum": 90 },
         "geo:long": { "type": "number", "minimum": -180, "maximum": 180 }
       }
+    },
+    "roleRef": {
+      "description": "Verweis auf ein Concept des Rollenvokabulars, mit dem mitgefuehrten Anzeigetext. Ein blosser String bleibt zugelassen fuer den einen Wert der Rollenspalte, den das Vokabular begruendet nicht als Begriff fuehrt (Vertragsstatus, data.md § 11).",
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["@id", "skos:prefLabel"],
+          "properties": {
+            "@id": { "type": "string", "pattern": "^m3gim-vocab:[A-Za-z]\\w*$" },
+            "skos:prefLabel": { "type": "string", "minLength": 1 }
+          }
+        },
+        { "type": "string", "minLength": 1 }
+      ]
     },
     "idRef": {
       "type": "object",
       "required": ["@id"],
       "properties": {
-        "@id": { "type": "string", "pattern": "^m3gim:[\\w/_.-]+$" }
+        "@id": { "type": "string", "pattern": "^m3gim-data:[\\w/_.-]+$" }
       }
     }
   }

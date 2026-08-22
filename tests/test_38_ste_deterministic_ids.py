@@ -1,4 +1,4 @@
-"""Unit-Lock fuer die STE-@id-Vergabe (`scripts.transform._ste_id`, E-115).
+"""Unit-Lock fuer die Annotations-@id-Vergabe (`scripts.transform._annotation_id`, E-115).
 
 test_35 verankert die Invariante auf dem gebauten Graphen (Output). Dieser Test
 sichert dieselbe Eigenschaft eine Ebene tiefer auf der reinen Funktion und deckt
@@ -15,7 +15,7 @@ from pathlib import Path
 import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
-from transform import _ste_id  # noqa: E402
+from transform import _annotation_id  # noqa: E402
 
 
 # (rec_local_id, ort, rolle, datum) — bewusst mit einer echten Inhaltsdublette
@@ -30,7 +30,7 @@ SAMPLE = [
     ("NIM_011_02", "Stuttgart", "spielzeit", ""),
 ]
 
-ID_PATTERN = re.compile(r"^m3gim:[\w/_.\-]+$")
+ID_PATTERN = re.compile(r"^m3gim-data:[\w/_.\-]+$")
 
 
 def _ids_by_tuple(tuples: list) -> dict:
@@ -42,7 +42,7 @@ def _ids_by_tuple(tuples: list) -> dict:
     seen: dict = {}
     out: dict = {}
     for rec, ort, rolle, datum in tuples:
-        sid = _ste_id(rec, ort, rolle, datum, seen)
+        sid = _annotation_id(rec, ort, rolle, datum, seen)
         out.setdefault((rec, ort, rolle, datum), []).append(sid)
     return {k: sorted(v) for k, v in out.items()}
 
@@ -62,7 +62,7 @@ def test_order_independence():
                  [SAMPLE[3], SAMPLE[0], SAMPLE[6], SAMPLE[1], SAMPLE[4], SAMPLE[2], SAMPLE[5]]):
         perm_map = _ids_by_tuple(perm)
         assert perm_map == forward_map, (
-            "STE-@id haengt von der Eingabereihenfolge ab (Zaehler-Regress?): "
+            "Annotations-@id haengt von der Eingabereihenfolge ab (Zaehler-Regress?): "
             f"{perm_map} != {forward_map}"
         )
 
@@ -71,9 +71,9 @@ def test_collision_gets_ordinal_suffix():
     """Zwei identische Tupel auf demselben Record deduplizieren nicht, sondern
     bekommen ein stabiles Ordinal-Suffix -N in Auftrittsreihenfolge."""
     seen: dict = {}
-    first = _ste_id("NIM_009_01", "Bayreuth", "gastspiel", "1951/1953", seen)
-    second = _ste_id("NIM_009_01", "Bayreuth", "gastspiel", "1951/1953", seen)
-    third = _ste_id("NIM_009_01", "Bayreuth", "gastspiel", "1951/1953", seen)
+    first = _annotation_id("NIM_009_01", "Bayreuth", "gastspiel", "1951/1953", seen)
+    second = _annotation_id("NIM_009_01", "Bayreuth", "gastspiel", "1951/1953", seen)
+    third = _annotation_id("NIM_009_01", "Bayreuth", "gastspiel", "1951/1953", seen)
     assert second == f"{first}-2"
     assert third == f"{first}-3"
 
@@ -82,8 +82,8 @@ def test_same_tuple_different_record_no_collision():
     """Gleiches (Ort, Rolle, Datum) auf verschiedenen Records kollidiert nicht,
     weil der Record-Teil in die @id-Basis eingeht."""
     seen: dict = {}
-    a = _ste_id("NIM_004_24", "Wien", "zielort", "", seen)
-    b = _ste_id("NIM_007_03", "Wien", "zielort", "", seen)
+    a = _annotation_id("NIM_004_24", "Wien", "zielort", "", seen)
+    b = _annotation_id("NIM_007_03", "Wien", "zielort", "", seen)
     assert a != b
     assert "-" not in a.rsplit("_", 1)[-1] and "-" not in b.rsplit("_", 1)[-1]
 
@@ -99,13 +99,13 @@ def test_ids_match_schema_pattern_and_ascii():
 
 
 @pytest.mark.parametrize("rec,ort,rolle,datum,expected", [
-    ("NIM_004_24", "Zürich", "spielzeit", "1947/1952", "m3gim:ste_NIM_004_24_67319b11"),
-    ("NIM_004_24", "Salzburg", "gastspiel", "1956", "m3gim:ste_NIM_004_24_ed272696"),
+    ("NIM_004_24", "Zürich", "spielzeit", "1947/1952", "m3gim-data:ev_NIM_004_24_67319b11"),
+    ("NIM_004_24", "Salzburg", "gastspiel", "1956", "m3gim-data:ev_NIM_004_24_ed272696"),
 ])
 def test_anchor_ids(rec, ort, rolle, datum, expected):
-    """Konkrete Anker (die Zuerich-/Salzburg-STE aus test_22): der Hash ist
+    """Konkrete Anker (die Zuerich-/Salzburg-Annotation aus test_22): der Hash ist
     sha1(ort\\x1frolle\\x1fdatum)[:8] in utf-8. Pinnt Separator und Encoding."""
-    assert _ste_id(rec, ort, rolle, datum, {}) == expected
+    assert _annotation_id(rec, ort, rolle, datum, {}) == expected
     raw = "\x1f".join((ort, rolle, datum))
     h = hashlib.sha1(raw.encode("utf-8")).hexdigest()[:8]
     assert expected.endswith("_" + h)

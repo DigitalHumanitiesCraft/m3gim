@@ -20,8 +20,23 @@ SCRIPTS = Path(__file__).parent.parent / "scripts"
 if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
-from transform import parse_monetary_value, normalize_role  # noqa: E402
+from transform import ROLE_CONCEPTS, parse_monetary_value, normalize_role  # noqa: E402
 from _helpers import ensure_list  # noqa: E402
+
+
+def _role_matches(detail, expected):
+    """Traegt die Detailangabe die Rolle, die die Quellzeile fuehrt?
+
+    Der Knoten verweist auf ein Concept des Vokabulars, die Quellzeile fuehrt
+    ein Literal. Verglichen wird deshalb ueber die Kennung des Concepts, auf
+    das der Quellwert aufloest; so trifft der Vergleich auch dort, wo mehrere
+    erfasste Werte auf einen Begriff zusammengefallen sind.
+    """
+    role = detail.get("role")
+    concept = ROLE_CONCEPTS.get(expected)
+    if isinstance(role, dict):
+        return concept is not None and role.get("@id") == concept[0]
+    return role == expected
 
 
 FIN_PREFIXES = ("ausgaben", "einnahmen", "summe")
@@ -79,8 +94,8 @@ def test_finance_row_count_in_output_matches_xlsx(xlsx_finance_rows, records):
     """
     output_count = 0
     for r in records:
-        for det in ensure_list(r.get("m3gim:hasDetail")):
-            if isinstance(det, dict) and det.get("m3gim:detailField") in FIN_PREFIXES:
+        for det in ensure_list(r.get("m3gim-ontology:hasDetail")):
+            if isinstance(det, dict) and det.get("m3gim-ontology:detailField") in FIN_PREFIXES:
                 output_count += 1
 
     # Manche Rows haben keine Signatur-Zuordnung (unverknuepfte Einträge).
@@ -114,21 +129,22 @@ def test_each_finance_row_reachable_in_output(xlsx_finance_rows, records):
         expected_amount, expected_currency = parse_monetary_value(row["name"])
         expected_role = normalize_role(row["rolle"])
         found = False
-        for det in ensure_list(record.get("m3gim:hasDetail")):
+        for det in ensure_list(record.get("m3gim-ontology:hasDetail")):
             if not isinstance(det, dict):
                 continue
-            if det.get("m3gim:detailField") != row["base_typ"]:
+            if det.get("m3gim-ontology:detailField") != row["base_typ"]:
                 continue
-            # Role match (falls beide gesetzt)
-            if expected_role and det.get("m3gim:detailRole") != expected_role:
+            # Role match (falls beide gesetzt): der Knoten traegt die Rolle
+            # als Verweis auf ihr Concept, der Quellwert ist ein Literal.
+            if expected_role and not _role_matches(det, expected_role):
                 continue
             # Amount match (falls parsbar)
             if expected_amount is not None:
-                ma = det.get("m3gim:monetaryAmount")
+                ma = det.get("m3gim-ontology:monetaryAmount")
                 if not isinstance(ma, dict) or ma.get("@value") != expected_amount:
                     continue
             if expected_currency:
-                if det.get("m3gim:currency") != expected_currency:
+                if det.get("m3gim-ontology:currency") != expected_currency:
                     continue
             found = True
             break
@@ -151,9 +167,9 @@ def test_finance_output_has_no_extra_currencies(records):
     sonst halluzinieren wir Werte. (Schutz gegen Pipeline-Bugs.)"""
     output_currencies = set()
     for r in records:
-        for det in ensure_list(r.get("m3gim:hasDetail")):
-            if isinstance(det, dict) and det.get("m3gim:currency"):
-                output_currencies.add(det["m3gim:currency"])
+        for det in ensure_list(r.get("m3gim-ontology:hasDetail")):
+            if isinstance(det, dict) and det.get("m3gim-ontology:currency"):
+                output_currencies.add(det["m3gim-ontology:currency"])
     # Aus data.md § 11 belegtes Set
     from test_13_finanzen import ALLOWED_CURRENCIES
     extras = output_currencies - ALLOWED_CURRENCIES
