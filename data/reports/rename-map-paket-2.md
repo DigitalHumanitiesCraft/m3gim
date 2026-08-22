@@ -13,7 +13,7 @@ language: de
 version: 0.1
 authors: [Christopher Pollin]
 generated-with: Claude Code
-related: [data, domain-ontology, architecture-decisions, vocabulary-derivation-findings, frontend-architecture, testing]
+related: [data, data-model, architecture-decisions,  frontend-architecture, testing]
 ---
 
 # Umbenennungskarte Paket 2
@@ -606,7 +606,7 @@ Zwei Testartefakte tragen strukturelle Annahmen über den Namespace.
 
 Die erzeugten Artefakte `data/output/m3gim.jsonld` und `docs/data/m3gim.jsonld` sowie die drei Derivate entstehen aus einem Pipeline-Lauf neu und sind kein eigener Arbeitsschritt. `data/output/wikidata-reconciliation.json` und `wikidata-enrichment.json` tragen keine Projektterme und bleiben unberührt.
 
-Zehn Wissensdokumente führen Terme im Fließtext, an der Spitze `knowledge/data.md`, `knowledge/domain-ontology.md`, `knowledge/architecture-decisions.md`, `knowledge/testing.md` und `knowledge/pipeline-architecture.md`. Sieben Berichte unter `data/reports/` ebenfalls; sie sind datierte Momentaufnahmen und werden nach der üblichen Konvention nicht rückwirkend umgeschrieben.
+Zehn Wissensdokumente führen Terme im Fließtext, an der Spitze `knowledge/data.md`, `knowledge/data-model.md`, `knowledge/architecture-decisions.md`, `knowledge/testing.md` und `knowledge/pipeline-architecture.md`. Sieben Berichte unter `data/reports/` ebenfalls; sie sind datierte Momentaufnahmen und werden nach der üblichen Konvention nicht rückwirkend umgeschrieben.
 
 ### 7.5 Reihenfolge
 

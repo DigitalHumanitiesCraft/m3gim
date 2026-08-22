@@ -13,7 +13,7 @@ language: de
 version: 0.1
 authors: [Christopher Pollin]
 generated-with: Claude Code
-related: [frontend-architecture, design, data, domain-ontology, architecture-decisions, testing]
+related: [frontend-architecture, design, data, data-model, architecture-decisions, testing]
 ---
 
 # Frontend-Vertrag für Datierungen und Rollen

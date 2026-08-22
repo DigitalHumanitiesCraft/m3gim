@@ -13,7 +13,7 @@ language: de
 version: 0.1
 authors: [Christopher Pollin]
 generated-with: Claude Code
-related: [data, domain-ontology, architecture-decisions, frontend-architecture, testing]
+related: [data, data-model, architecture-decisions, frontend-architecture, testing]
 ---
 
 # Datums- und Rollenmodell

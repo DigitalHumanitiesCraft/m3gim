@@ -18,7 +18,7 @@ language: de
 version: 0.4
 authors: [Christopher Pollin]
 generated-with: Claude Code
-related: [specification, data, domain-ontology, data-entry-guidelines, research-framework, pipeline-architecture, frontend-architecture, design, architecture-decisions, testing, data-errors, vocabulary-derivation-findings, handoff, journal]
+related: [specification, data, data-model, data-entry-guidelines, research-framework, pipeline-architecture, frontend-architecture, design, architecture-decisions, testing, data-errors, handoff, journal]
 ---
 
 # M³GIM Knowledge Base
@@ -31,8 +31,8 @@ Diese Seite ist der Einstiegspunkt in die Wissensbasis des Projekts. Sie ordnet 
 |---|---|---|---|
 | [INDEX.md](INDEX.md) | Navigation | Was liegt hier, wie lese ich, welche Begriffe sind konstitutiv? | bei jeder Änderung des Ordnerinhalts |
 | [specification.md](specification.md) | Charter und Specification | Was ist das Projekt, was soll die Anwendung leisten, und wo steht die Arbeit? | bei Änderung von Identität, Anforderungen, Funktionsumfang oder Arbeitsstand |
-| [data.md](data.md) | Material | Woraus besteht die Datengrundlage, und wie ist sie modelliert? | bei neuem Datenexport oder Modelländerung |
-| [domain-ontology.md](domain-ontology.md) | Domain Knowledge | Welche Klassen, Beziehungen und Vokabulare trägt das formale Projektvokabular? | bei Änderung an [`vocab/m3gim.ttl`](../vocab/m3gim.ttl) |
+| [data.md](data.md) | Material | Woraus besteht das Quellmaterial, wie ist es erfasst, was ist daran fehlerhaft? | bei neuem Datenexport oder geänderter Erfassung |
+| [data-model.md](data-model.md) | Domain Knowledge | Wie ist das Material formal modelliert, welche Klassen, Properties und Vokabulare trägt es? | bei Änderung an [`vocab/m3gim.ttl`](../vocab/m3gim.ttl) oder am Modell |
 | [data-entry-guidelines.md](data-entry-guidelines.md) | Domain Knowledge | Wie wird nach den Soll-Konventionen erfasst? | bei Änderung der Erfassungskonvention |
 | [research-framework.md](research-framework.md) | Domain Knowledge | Welche Theorie, Forschungsfragen und Anwendungsfälle tragen das Projekt? | bei Schärfung der Forschungsfragen, Personas oder Use Cases |
 | [architecture-decisions.md](architecture-decisions.md) | Specification, ausgelagerte Entscheidungsschicht | Warum wurde etwas so entschieden, und was ist noch offen? | bei jeder getroffenen oder revidierten Entscheidung |
@@ -41,7 +41,6 @@ Diese Seite ist der Einstiegspunkt in die Wissensbasis des Projekts. Sie ordnet 
 | [design.md](design.md) | Design | Wie sieht die Anwendung aus, und wie verhält sie sich? | bei Änderung von Designhaltung oder Designsystem |
 | [testing.md](testing.md) | Quality Assurance | Was wird garantiert, und wie wird es geprüft? | bei Änderung der Testsuite oder des TDD-Workflows |
 | [data-errors.md](data-errors.md) | Material, Fehlerregister | Welche Quell- und Abgleichfehler sind bekannt, wo liegen sie, wie ist ihr Status? | bei jedem neuen, weitergeleiteten oder behobenen Befund |
-| [vocabulary-derivation-findings.md](vocabulary-derivation-findings.md) | Befund zum Stichtag | Was hat die Formalisierung des Projektvokabulars über das Modell sichtbar gemacht? | nicht fortgeschrieben, Nachträge nur als Verweis auf die kanonische Adresse |
 | [handoff.md](handoff.md) | Handoff | Welche geprüften Übergabepunkte warten auf Integration oder Verwerfung? | bei Eingang oder Verarbeitung eines Punkts |
 | [journal.md](journal.md) | Provenance | Wie sind wir hierhin gekommen? | nach sachlich zusammengehörigen Übergängen |
 
@@ -51,13 +50,13 @@ Diese Seite ist der Einstiegspunkt in die Wissensbasis des Projekts. Sie ordnet 
 - `data/google-spreadsheet/` trägt das übernommene Quellmaterial, die versionierten XLSX-Exporte der archivischen Erfassung.
 - `data/reports/` trägt zwei Klassen. Die Kurationsbelege der Normdaten-Zuordnung sind dauerhaft, weil `data/output/wikidata-reconciliation.json` sie je manuell freigegebener Kennung als Grundlage zitiert. Der bei jedem Pipeline-Lauf erzeugte Quality-Snapshot ist zugleich die Stand-Kommunikation für Dritte; die beiden übrigen erzeugten Reports sind nicht versioniert, weil ein Lauf sie aus den versionierten XLSX reproduziert.
 - `data/output/` und `docs/data/` tragen die reproduzierbar erzeugten Artefakte der Pipeline.
-- `vocab/` trägt das formale Projektvokabular als Turtle-Datei samt Abdeckungsprüfer; [domain-ontology.md](domain-ontology.md) ist die daraus abgeleitete Lesesicht.
+- `vocab/` trägt das formale Projektvokabular als Turtle-Datei samt Abdeckungsprüfer; [data-model.md](data-model.md) beschreibt das Modell, das die Datei formalisiert.
 
 ## Lesepfade
 
 - Sessionstart: [`../CLAUDE.md`](../CLAUDE.md) → [INDEX.md](INDEX.md) → [handoff.md](handoff.md) → [specification.md](specification.md) → aufgabenrelevantes Dokument. Der Action-Layer regelt das Verhalten, die Inbox das noch Offene, die Spezifikation den Rahmen.
-- Datenmodell verstehen oder ändern: [data.md](data.md) → [domain-ontology.md](domain-ontology.md) → [architecture-decisions.md](architecture-decisions.md). Die Modelländerung wird zuerst in `data.md` verankert, Pipeline, Tests und Frontend folgen.
-- Mit dem erzeugten Datensatz arbeiten, ohne die Pipeline zu kennen: [domain-ontology.md](domain-ontology.md) → [data-errors.md](data-errors.md). Erst die Gestalt des Graphen, dann die bekannten Fehlstellen.
+- Datenmodell verstehen oder ändern: [data.md](data.md) → [data-model.md](data-model.md) → [architecture-decisions.md](architecture-decisions.md). Erst das Quellmaterial, dann seine Formalisierung; die Modelländerung wird in `data-model.md` verankert, Vokabular, Pipeline, Tests und Frontend folgen.
+- Mit dem erzeugten Datensatz arbeiten, ohne die Pipeline zu kennen: [data-model.md](data-model.md) → [data-errors.md](data-errors.md). Erst die Gestalt des Graphen, dann die bekannten Fehlstellen.
 - Pipeline ausführen oder debuggen: [`../CLAUDE.md`](../CLAUDE.md) § Kern-Commands → [pipeline-architecture.md](pipeline-architecture.md) → [testing.md](testing.md) → [data-errors.md](data-errors.md). Die Befehlsfolge eines vollständigen Laufs steht im Action-Layer, die Architektur und die bekannten Fallen im Wissensdokument.
 - Frontend anpassen: [frontend-architecture.md](frontend-architecture.md) → [design.md](design.md) → [architecture-decisions.md](architecture-decisions.md).
 - Daten erfassen: [data-entry-guidelines.md](data-entry-guidelines.md) → [data.md](data.md).

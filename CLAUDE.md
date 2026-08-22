@@ -22,7 +22,7 @@ Nach dieser Datei wird [`knowledge/INDEX.md`](knowledge/INDEX.md) als Einstieg i
 
 Weitere Dokumente siehe [`knowledge/INDEX.md`](knowledge/INDEX.md).
 
-Das formale Projektvokabular ist ein gepflegtes Artefakt und steht seit der Entscheidung der Projektleitung vom 2026-08-21 in dieser Hierarchie (E-133 in [`knowledge/architecture-decisions.md`](knowledge/architecture-decisions.md), löst die frühere offene Frage 10 in [`knowledge/vocabulary-derivation-findings.md`](knowledge/vocabulary-derivation-findings.md)). Die Spec-first-Reihenfolge lautet damit `data.md`, Vokabular, Test, Pipeline; der Abdeckungsprüfer `vocab/check-coverage.py` läuft als verbindliches Test-Gate mit (siehe § Vokabular-Abdeckung prüfen). Die aus dem Vokabular abgeleitete Lesesicht auf den Datensatz führt [`knowledge/domain-ontology.md`](knowledge/domain-ontology.md).
+Das formale Projektvokabular ist ein gepflegtes Artefakt und steht seit der Entscheidung der Projektleitung vom 2026-08-21 in dieser Hierarchie (E-133 in [`knowledge/architecture-decisions.md`](knowledge/architecture-decisions.md), löst die frühere offene Frage 10 in [`knowledge/data-model.md`](knowledge/data-model.md)). Die Spec-first-Reihenfolge lautet damit `data.md`, Vokabular, Test, Pipeline; der Abdeckungsprüfer `vocab/check-coverage.py` läuft als verbindliches Test-Gate mit (siehe § Vokabular-Abdeckung prüfen). Die aus dem Vokabular abgeleitete Lesesicht auf den Datensatz führt [`knowledge/data-model.md`](knowledge/data-model.md).
 
 ## Kern-Commands
 

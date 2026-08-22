@@ -46,7 +46,7 @@ CONTEXT_ALIASES = {
     "composer": "m3gim-ontology:composer",
 }
 
-# Property, die Werte des Rollenvokabulars traegt (domain-ontology.md § 5).
+# Property, die Werte des Rollenvokabulars traegt (data-model.md § 7).
 # Die vier frueheren Rollenproperties sind auf diese eine zusammengefallen.
 ROLE_KEYS = frozenset({"role"})
 

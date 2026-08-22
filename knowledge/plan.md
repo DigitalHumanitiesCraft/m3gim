@@ -14,7 +14,7 @@ version: 0.1
 authors: [Christopher Pollin]
 generated-with: Claude Code
 query-topics: [implementierungsplan, datenmodell-umbau, annotationsknoten, namensraum-dreiteilung, wissensbasis-refactoring, datenmodell-seite]
-related: [INDEX, data, domain-ontology, architecture-decisions, pipeline-architecture, frontend-architecture, testing, handoff]
+related: [INDEX, data, data-model, architecture-decisions, pipeline-architecture, frontend-architecture, testing, handoff]
 ---
 
 # Implementierungsplan
@@ -127,7 +127,7 @@ Grundlage ist der Frontend-Vertrag mit seinen vier Anforderungen. Die Hand-Map `
 
 ### Phase 7, Wissensbasis
 
-Vier Agents nach Zieldatei. `data.md` wird per Skript entlang der Abschnittsgrenzen geteilt, der Modellteil geht nach `data-model.md`, `domain-ontology.md` geht darin auf. Die E-Nummern werden nach Gegenstand aufgelöst, die offenen Entscheidungen laufen zu einer Liste in `specification.md` zusammen. `data-errors.md` geht in `data.md` auf, `vocabulary-derivation-findings.md` in `data-model.md`. Zielbild sind zwölf Dokumente.
+Vier Agents nach Zieldatei. `data.md` wird per Skript entlang der Abschnittsgrenzen geteilt, der Modellteil geht nach `data-model.md`, `data-model.md` geht darin auf. Die E-Nummern werden nach Gegenstand aufgelöst, die offenen Entscheidungen laufen zu einer Liste in `specification.md` zusammen. `data-errors.md` geht in `data.md` auf, `data-model.md` in `data-model.md`. Zielbild sind zwölf Dokumente.
 
 ### Phase 8, Datenmodell-Spezifikationsseite
 
