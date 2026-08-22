@@ -23,6 +23,10 @@ import { roleLabel } from '../utils/format.js';
 import { applyArchivFilter, navigateToView } from '../ui/router.js';
 import { createSidebar, viewShell } from '../ui/sidebar.js';
 import { coverageText } from '../ui/coverage.js';
+import { getFilter, setFilter, subscribe } from '../ui/filter-state.js';
+import {
+  zeitfensterToYearRange, yearRangeToZeitfenster, makeSyncGuard,
+} from '../ui/filter-sync.js';
 import {
   SICHTEN, SICHT_COLOR,
   facetInventory, filterStore,
@@ -74,6 +78,11 @@ const SECTIONS = [
 
 const SECTION_BY_ID = new Map(SECTIONS.map(s => [s.id, s]));
 
+// Abmeldefunktion und Loop-Guard modulweit, damit ein zweites Render der
+// Ansicht keinen zweiten Subscriber stapelt.
+let _unsubscribeFilter = null;
+const _syncGuard = makeSyncGuard();
+
 export function renderStatistik(store, container) {
   clear(container);
 
@@ -86,7 +95,17 @@ export function renderStatistik(store, container) {
   // State: genau eine aktive Ansicht plus Zeitfenster plus zwei Event-Facetten.
   // sichtSel/landSel = null bedeutet "alle" (kein Schnitt).
   let active = 'wohin-wann';
-  let lo = minYear, hi = maxYear;
+  // Zeitfenster aus dem geteilten Filter, auf die Spanne dieser Ansicht
+  // geklemmt. Wer aus Chronik oder Karte herwechselt, findet denselben
+  // Schnitt vor (Cross-View-Filter, E-117).
+  const spanOf = (zf) => {
+    const { yearFrom, yearTo } = zeitfensterToYearRange(zf);
+    return [
+      Math.max(minYear, yearFrom ?? minYear),
+      Math.min(maxYear, yearTo ?? maxYear),
+    ];
+  };
+  let [lo, hi] = spanOf(getFilter().zeitfenster);
   let sichtSel = null;   // Set<string> | null
   let landSel = null;    // Set<string> | null
 
@@ -203,7 +222,13 @@ export function renderStatistik(store, container) {
         controls: [
           { kind: 'range', min: minYear, max: maxYear,
             from: () => lo, to: () => hi, fullLabel: true,
-            onChange: (a, b) => { lo = a; hi = b; scheduleRebuild(); } },
+            onChange: (a, b) => {
+              lo = a; hi = b;
+              _syncGuard.run(() => setFilter({
+                zeitfenster: yearRangeToZeitfenster(lo, hi, { min: minYear, max: maxYear }),
+              }));
+              scheduleRebuild();
+            } },
           { kind: 'custom', node: noteEl },
         ],
       },
@@ -256,6 +281,19 @@ export function renderStatistik(store, container) {
   mountSidebar();
   container.appendChild(shell);
   rebuild();
+
+  // Geteilter Filter: ein Schnitt aus einer anderen Ansicht zieht die Regler
+  // hier nach. Die Sidebar liest lo/hi beim Bau, daher neu bauen statt nur
+  // die Buehne zu rechnen.
+  if (_unsubscribeFilter) _unsubscribeFilter();
+  _unsubscribeFilter = subscribe((shared) => {
+    if (_syncGuard.isActive()) return;
+    const [a, b] = spanOf(shared.zeitfenster);
+    if (a === lo && b === hi) return;
+    lo = a; hi = b;
+    mountSidebar();
+    rebuild();
+  }, { immediate: false });
 
   logStamp('statistik', [
     ['records', store.allRecords.length],

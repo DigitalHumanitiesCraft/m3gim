@@ -19527,6 +19527,24 @@
       ],
       "m3gim-ontology:hasAgentRelation": [
         {
+          "@type": "agrelon:HasCorrespondent",
+          "agrelon:hasSubject": {
+            "name": "Malaniuk, Ira",
+            "@id": "wd:Q94208",
+            "owl:sameAs": "http://www.wikidata.org/entity/Q94208"
+          },
+          "agrelon:hasObject": {
+            "name": "Ballhausen, Felix"
+          },
+          "agrelon:metadataProvenance": {
+            "@id": "m3gim-data:NIM_007_1"
+          },
+          "m3gim-ontology:xlsxSource": {
+            "m3gim-ontology:xlsxSheet": "Box_01",
+            "m3gim-ontology:xlsxRow": 1063
+          }
+        },
+        {
           "@type": "agrelon:HasProfessionalContact",
           "agrelon:hasSubject": {
             "name": "Malaniuk, Ira",
@@ -19669,6 +19687,26 @@
         },
         {
           "@id": "m3gim-data:ev_NIM_007_2_2d8cb340"
+        }
+      ],
+      "m3gim-ontology:hasAgentRelation": [
+        {
+          "@type": "agrelon:HasCorrespondent",
+          "agrelon:hasSubject": {
+            "name": "Malaniuk, Ira",
+            "@id": "wd:Q94208",
+            "owl:sameAs": "http://www.wikidata.org/entity/Q94208"
+          },
+          "agrelon:hasObject": {
+            "name": "Taubmann, Martin Hugo"
+          },
+          "agrelon:metadataProvenance": {
+            "@id": "m3gim-data:NIM_007_2"
+          },
+          "m3gim-ontology:xlsxSource": {
+            "m3gim-ontology:xlsxSheet": "Box_01",
+            "m3gim-ontology:xlsxRow": 1079
+          }
         }
       ],
       "m3gim-ontology:hasPerformance": [
@@ -20181,6 +20219,24 @@
         }
       ],
       "m3gim-ontology:hasAgentRelation": [
+        {
+          "@type": "agrelon:HasCorrespondent",
+          "agrelon:hasSubject": {
+            "name": "Malaniuk, Ira",
+            "@id": "wd:Q94208",
+            "owl:sameAs": "http://www.wikidata.org/entity/Q94208"
+          },
+          "agrelon:hasObject": {
+            "name": "Kühnly, Ernst"
+          },
+          "agrelon:metadataProvenance": {
+            "@id": "m3gim-data:NIM_007_4"
+          },
+          "m3gim-ontology:xlsxSource": {
+            "m3gim-ontology:xlsxSheet": "Box_01",
+            "m3gim-ontology:xlsxRow": 1116
+          }
+        },
         {
           "@type": "agrelon:HasProfessionalContact",
           "agrelon:hasSubject": {
@@ -21974,6 +22030,45 @@
           "@id": "m3gim-data:ev_NIM_007_7_e11b2771"
         }
       ],
+      "m3gim-ontology:hasAgentRelation": [
+        {
+          "@type": "agrelon:HasCorrespondent",
+          "agrelon:hasSubject": {
+            "name": "Malaniuk, Ira",
+            "@id": "wd:Q94208",
+            "owl:sameAs": "http://www.wikidata.org/entity/Q94208"
+          },
+          "agrelon:hasObject": {
+            "name": "Bayerische Staatsoper",
+            "@id": "wd:Q681931"
+          },
+          "agrelon:metadataProvenance": {
+            "@id": "m3gim-data:NIM_007_7"
+          },
+          "m3gim-ontology:xlsxSource": {
+            "m3gim-ontology:xlsxSheet": "Box_01",
+            "m3gim-ontology:xlsxRow": 1138
+          }
+        },
+        {
+          "@type": "agrelon:HasCorrespondent",
+          "agrelon:hasSubject": {
+            "name": "Malaniuk, Ira",
+            "@id": "wd:Q94208",
+            "owl:sameAs": "http://www.wikidata.org/entity/Q94208"
+          },
+          "agrelon:hasObject": {
+            "name": "Schwab"
+          },
+          "agrelon:metadataProvenance": {
+            "@id": "m3gim-data:NIM_007_7"
+          },
+          "m3gim-ontology:xlsxSource": {
+            "m3gim-ontology:xlsxSheet": "Box_01",
+            "m3gim-ontology:xlsxRow": 1141
+          }
+        }
+      ],
       "m3gim-ontology:hasAssociatedAgent": [
         {
           "name": "Bayerische Staatsoper",
@@ -22812,6 +22907,26 @@
           "m3gim-ontology:xlsxRow": 1194
         }
       },
+      "m3gim-ontology:hasAgentRelation": [
+        {
+          "@type": "agrelon:HasCorrespondent",
+          "agrelon:hasSubject": {
+            "name": "Malaniuk, Ira",
+            "@id": "wd:Q94208",
+            "owl:sameAs": "http://www.wikidata.org/entity/Q94208"
+          },
+          "agrelon:hasObject": {
+            "name": "Jucker, Emil"
+          },
+          "agrelon:metadataProvenance": {
+            "@id": "m3gim-data:NIM_007_9"
+          },
+          "m3gim-ontology:xlsxSource": {
+            "m3gim-ontology:xlsxSheet": "Box_01",
+            "m3gim-ontology:xlsxRow": 1198
+          }
+        }
+      ],
       "m3gim-ontology:hasPerformance": {
         "@id": "m3gim-data:perf_NIM_007_9_198"
       },
@@ -22975,6 +23090,27 @@
           "@id": "m3gim-data:ev_NIM_007_10_b91c6e11"
         }
       ],
+      "m3gim-ontology:hasAgentRelation": [
+        {
+          "@type": "agrelon:HasCorrespondent",
+          "agrelon:hasSubject": {
+            "name": "Malaniuk, Ira",
+            "@id": "wd:Q94208",
+            "owl:sameAs": "http://www.wikidata.org/entity/Q94208"
+          },
+          "agrelon:hasObject": {
+            "name": "Bayerische Staatsoper",
+            "@id": "wd:Q681931"
+          },
+          "agrelon:metadataProvenance": {
+            "@id": "m3gim-data:NIM_007_10"
+          },
+          "m3gim-ontology:xlsxSource": {
+            "m3gim-ontology:xlsxSheet": "Box_01",
+            "m3gim-ontology:xlsxRow": 1206
+          }
+        }
+      ],
       "m3gim-ontology:hasAssociatedAgent": [
         {
           "name": "Bayerische Staatsoper",
@@ -23121,6 +23257,26 @@
         },
         {
           "@id": "m3gim-data:ev_NIM_007_11_0cd1fd62"
+        }
+      ],
+      "m3gim-ontology:hasAgentRelation": [
+        {
+          "@type": "agrelon:HasCorrespondent",
+          "agrelon:hasSubject": {
+            "name": "Malaniuk, Ira",
+            "@id": "wd:Q94208",
+            "owl:sameAs": "http://www.wikidata.org/entity/Q94208"
+          },
+          "agrelon:hasObject": {
+            "name": "Sekretär der Tonhalle-Gesellschaft Zürich"
+          },
+          "agrelon:metadataProvenance": {
+            "@id": "m3gim-data:NIM_007_11"
+          },
+          "m3gim-ontology:xlsxSource": {
+            "m3gim-ontology:xlsxSheet": "Box_01",
+            "m3gim-ontology:xlsxRow": 1226
+          }
         }
       ],
       "m3gim-ontology:hasAssociatedAgent": [
@@ -26626,6 +26782,26 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim-ontology:processingStatus": "abgeschlossen",
+      "m3gim-ontology:hasAgentRelation": [
+        {
+          "@type": "agrelon:HasCorrespondent",
+          "agrelon:hasSubject": {
+            "name": "Malaniuk, Ira",
+            "@id": "wd:Q94208",
+            "owl:sameAs": "http://www.wikidata.org/entity/Q94208"
+          },
+          "agrelon:hasObject": {
+            "name": "Gruder-Guntram,"
+          },
+          "agrelon:metadataProvenance": {
+            "@id": "m3gim-data:NIM_011_1"
+          },
+          "m3gim-ontology:xlsxSource": {
+            "m3gim-ontology:xlsxSheet": "Box_01",
+            "m3gim-ontology:xlsxRow": 1485
+          }
+        }
+      ],
       "m3gim-ontology:hasAnnotation": [
         {
           "@id": "m3gim-data:ev_NIM_011_1_ca29bf09"
@@ -26803,6 +26979,27 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim-ontology:processingStatus": "abgeschlossen",
+      "m3gim-ontology:hasAgentRelation": [
+        {
+          "@type": "agrelon:HasCorrespondent",
+          "agrelon:hasSubject": {
+            "name": "Malaniuk, Ira",
+            "@id": "wd:Q94208",
+            "owl:sameAs": "http://www.wikidata.org/entity/Q94208"
+          },
+          "agrelon:hasObject": {
+            "name": "Wagner, Wieland",
+            "@id": "wd:Q60465"
+          },
+          "agrelon:metadataProvenance": {
+            "@id": "m3gim-data:NIM_011_2"
+          },
+          "m3gim-ontology:xlsxSource": {
+            "m3gim-ontology:xlsxSheet": "Box_01",
+            "m3gim-ontology:xlsxRow": 1497
+          }
+        }
+      ],
       "m3gim-ontology:hasAnnotation": [
         {
           "@id": "m3gim-data:ev_NIM_011_2_0c1120b3"
@@ -26981,15 +27178,25 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim-ontology:processingStatus": "abgeschlossen",
-      "m3gim-ontology:hasAnnotation": [
-        {
-          "@id": "m3gim-data:ev_NIM_011_3_ab9424a0"
-        },
-        {
-          "@id": "m3gim-data:ev_NIM_011_3_0a9d7fe4"
-        }
-      ],
       "m3gim-ontology:hasAgentRelation": [
+        {
+          "@type": "agrelon:HasCorrespondent",
+          "agrelon:hasSubject": {
+            "name": "Malaniuk, Ira",
+            "@id": "wd:Q94208",
+            "owl:sameAs": "http://www.wikidata.org/entity/Q94208"
+          },
+          "agrelon:hasObject": {
+            "name": "Klebe, Carl-Heinz"
+          },
+          "agrelon:metadataProvenance": {
+            "@id": "m3gim-data:NIM_011_3"
+          },
+          "m3gim-ontology:xlsxSource": {
+            "m3gim-ontology:xlsxSheet": "Box_01",
+            "m3gim-ontology:xlsxRow": 1509
+          }
+        },
         {
           "@type": "agrelon:HasEmployeeEmployer",
           "agrelon:hasSubject": {
@@ -27011,6 +27218,14 @@
             "m3gim-ontology:xlsxSheet": "Box_01",
             "m3gim-ontology:xlsxRow": 1515
           }
+        }
+      ],
+      "m3gim-ontology:hasAnnotation": [
+        {
+          "@id": "m3gim-data:ev_NIM_011_3_ab9424a0"
+        },
+        {
+          "@id": "m3gim-data:ev_NIM_011_3_0a9d7fe4"
         }
       ],
       "m3gim-ontology:hasAssociatedAgent": [
@@ -27149,6 +27364,26 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim-ontology:processingStatus": "abgeschlossen",
+      "m3gim-ontology:hasAgentRelation": [
+        {
+          "@type": "agrelon:HasCorrespondent",
+          "agrelon:hasSubject": {
+            "name": "Malaniuk, Ira",
+            "@id": "wd:Q94208",
+            "owl:sameAs": "http://www.wikidata.org/entity/Q94208"
+          },
+          "agrelon:hasObject": {
+            "name": "Barth, Herbert"
+          },
+          "agrelon:metadataProvenance": {
+            "@id": "m3gim-data:NIM_011_4"
+          },
+          "m3gim-ontology:xlsxSource": {
+            "m3gim-ontology:xlsxSheet": "Box_01",
+            "m3gim-ontology:xlsxRow": 1517
+          }
+        }
+      ],
       "m3gim-ontology:hasAnnotation": {
         "@id": "m3gim-data:ev_NIM_011_4_ab9424a0"
       },
@@ -27260,6 +27495,27 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim-ontology:processingStatus": "abgeschlossen",
+      "m3gim-ontology:hasAgentRelation": [
+        {
+          "@type": "agrelon:HasCorrespondent",
+          "agrelon:hasSubject": {
+            "name": "Malaniuk, Ira",
+            "@id": "wd:Q94208",
+            "owl:sameAs": "http://www.wikidata.org/entity/Q94208"
+          },
+          "agrelon:hasObject": {
+            "name": "Wagner, Wieland",
+            "@id": "wd:Q60465"
+          },
+          "agrelon:metadataProvenance": {
+            "@id": "m3gim-data:NIM_011_5"
+          },
+          "m3gim-ontology:xlsxSource": {
+            "m3gim-ontology:xlsxSheet": "Box_01",
+            "m3gim-ontology:xlsxRow": 1524
+          }
+        }
+      ],
       "m3gim-ontology:hasAnnotation": {
         "@id": "m3gim-data:ev_NIM_011_5_ab9424a0"
       },
@@ -27651,6 +27907,26 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim-ontology:processingStatus": "abgeschlossen",
+      "m3gim-ontology:hasAgentRelation": [
+        {
+          "@type": "agrelon:HasCorrespondent",
+          "agrelon:hasSubject": {
+            "name": "Malaniuk, Ira",
+            "@id": "wd:Q94208",
+            "owl:sameAs": "http://www.wikidata.org/entity/Q94208"
+          },
+          "agrelon:hasObject": {
+            "name": "Barth, Herbert"
+          },
+          "agrelon:metadataProvenance": {
+            "@id": "m3gim-data:NIM_011_7"
+          },
+          "m3gim-ontology:xlsxSource": {
+            "m3gim-ontology:xlsxSheet": "Box_01",
+            "m3gim-ontology:xlsxRow": 1555
+          }
+        }
+      ],
       "m3gim-ontology:hasAnnotation": [
         {
           "@id": "m3gim-data:ev_NIM_011_7_71f88ccd"
@@ -27760,6 +28036,25 @@
           "m3gim-ontology:xlsxSource": {
             "m3gim-ontology:xlsxSheet": "Box_01",
             "m3gim-ontology:xlsxRow": 1561
+          }
+        },
+        {
+          "@type": "agrelon:HasCorrespondent",
+          "agrelon:hasSubject": {
+            "name": "Malaniuk, Ira",
+            "@id": "wd:Q94208",
+            "owl:sameAs": "http://www.wikidata.org/entity/Q94208"
+          },
+          "agrelon:hasObject": {
+            "name": "Bayreuther Festspiele",
+            "@id": "wd:Q157596"
+          },
+          "agrelon:metadataProvenance": {
+            "@id": "m3gim-data:NIM_011_8"
+          },
+          "m3gim-ontology:xlsxSource": {
+            "m3gim-ontology:xlsxSheet": "Box_01",
+            "m3gim-ontology:xlsxRow": 1569
           }
         }
       ],
@@ -27946,6 +28241,26 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim-ontology:processingStatus": "abgeschlossen",
+      "m3gim-ontology:hasAgentRelation": [
+        {
+          "@type": "agrelon:HasCorrespondent",
+          "agrelon:hasSubject": {
+            "name": "Malaniuk, Ira",
+            "@id": "wd:Q94208",
+            "owl:sameAs": "http://www.wikidata.org/entity/Q94208"
+          },
+          "agrelon:hasObject": {
+            "name": "Klebe, Carl-Heinz"
+          },
+          "agrelon:metadataProvenance": {
+            "@id": "m3gim-data:NIM_011_9"
+          },
+          "m3gim-ontology:xlsxSource": {
+            "m3gim-ontology:xlsxSheet": "Box_01",
+            "m3gim-ontology:xlsxRow": 1573
+          }
+        }
+      ],
       "m3gim-ontology:hasAnnotation": {
         "@id": "m3gim-data:ev_NIM_011_9_ab9424a0"
       },
@@ -28122,6 +28437,24 @@
             "owl:sameAs": "http://www.wikidata.org/entity/Q94208"
           },
           "agrelon:hasObject": {
+            "name": "Maklaniuk, Ira"
+          },
+          "agrelon:metadataProvenance": {
+            "@id": "m3gim-data:NIM_011_10"
+          },
+          "m3gim-ontology:xlsxSource": {
+            "m3gim-ontology:xlsxSheet": "Box_01",
+            "m3gim-ontology:xlsxRow": 1584
+          }
+        },
+        {
+          "@type": "agrelon:HasCorrespondent",
+          "agrelon:hasSubject": {
+            "name": "Malaniuk, Ira",
+            "@id": "wd:Q94208",
+            "owl:sameAs": "http://www.wikidata.org/entity/Q94208"
+          },
+          "agrelon:hasObject": {
             "name": "Klebe, Carl-Heinz"
           },
           "agrelon:metadataProvenance": {
@@ -28229,6 +28562,26 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim-ontology:processingStatus": "abgeschlossen",
+      "m3gim-ontology:hasAgentRelation": [
+        {
+          "@type": "agrelon:HasCorrespondent",
+          "agrelon:hasSubject": {
+            "name": "Malaniuk, Ira",
+            "@id": "wd:Q94208",
+            "owl:sameAs": "http://www.wikidata.org/entity/Q94208"
+          },
+          "agrelon:hasObject": {
+            "name": "Klebe, Carl-Heinz"
+          },
+          "agrelon:metadataProvenance": {
+            "@id": "m3gim-data:NIM_011_11"
+          },
+          "m3gim-ontology:xlsxSource": {
+            "m3gim-ontology:xlsxSheet": "Box_01",
+            "m3gim-ontology:xlsxRow": 1599
+          }
+        }
+      ],
       "m3gim-ontology:hasAnnotation": [
         {
           "@id": "m3gim-data:ev_NIM_011_11_5743442b"
@@ -29706,6 +30059,26 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim-ontology:processingStatus": "abgeschlossen",
+      "m3gim-ontology:hasAgentRelation": [
+        {
+          "@type": "agrelon:HasCorrespondent",
+          "agrelon:hasSubject": {
+            "name": "Malaniuk, Ira",
+            "@id": "wd:Q94208",
+            "owl:sameAs": "http://www.wikidata.org/entity/Q94208"
+          },
+          "agrelon:hasObject": {
+            "name": "Klebe, Carl-Heinz"
+          },
+          "agrelon:metadataProvenance": {
+            "@id": "m3gim-data:NIM_011_13"
+          },
+          "m3gim-ontology:xlsxSource": {
+            "m3gim-ontology:xlsxSheet": "Box_01",
+            "m3gim-ontology:xlsxRow": 1667
+          }
+        }
+      ],
       "m3gim-ontology:hasAnnotation": [
         {
           "@id": "m3gim-data:ev_NIM_011_13_7799c83d"
@@ -30353,6 +30726,26 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 2 Seiten",
       "m3gim-ontology:processingStatus": "abgeschlossen",
+      "m3gim-ontology:hasAgentRelation": [
+        {
+          "@type": "agrelon:HasCorrespondent",
+          "agrelon:hasSubject": {
+            "name": "Malaniuk, Ira",
+            "@id": "wd:Q94208",
+            "owl:sameAs": "http://www.wikidata.org/entity/Q94208"
+          },
+          "agrelon:hasObject": {
+            "name": "Angerer, Dorothea"
+          },
+          "agrelon:metadataProvenance": {
+            "@id": "m3gim-data:NIM_011_16"
+          },
+          "m3gim-ontology:xlsxSource": {
+            "m3gim-ontology:xlsxSheet": "Box_01",
+            "m3gim-ontology:xlsxRow": 1699
+          }
+        }
+      ],
       "m3gim-ontology:hasAnnotation": [
         {
           "@id": "m3gim-data:ev_NIM_011_16_7bb42397"
@@ -30591,6 +30984,25 @@
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim-ontology:processingStatus": "abgeschlossen",
       "m3gim-ontology:hasAgentRelation": [
+        {
+          "@type": "agrelon:HasCorrespondent",
+          "agrelon:hasSubject": {
+            "name": "Malaniuk, Ira",
+            "@id": "wd:Q94208",
+            "owl:sameAs": "http://www.wikidata.org/entity/Q94208"
+          },
+          "agrelon:hasObject": {
+            "name": "Wagner, Wieland",
+            "@id": "wd:Q60465"
+          },
+          "agrelon:metadataProvenance": {
+            "@id": "m3gim-data:NIM_011_18"
+          },
+          "m3gim-ontology:xlsxSource": {
+            "m3gim-ontology:xlsxSheet": "Box_01",
+            "m3gim-ontology:xlsxRow": 1714
+          }
+        },
         {
           "@type": "agrelon:HasProfessionalContact",
           "agrelon:hasSubject": {
@@ -31055,6 +31467,26 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim-ontology:processingStatus": "abgeschlossen",
+      "m3gim-ontology:hasAgentRelation": [
+        {
+          "@type": "agrelon:HasCorrespondent",
+          "agrelon:hasSubject": {
+            "name": "Malaniuk, Ira",
+            "@id": "wd:Q94208",
+            "owl:sameAs": "http://www.wikidata.org/entity/Q94208"
+          },
+          "agrelon:hasObject": {
+            "name": "Rollwagen, Hans"
+          },
+          "agrelon:metadataProvenance": {
+            "@id": "m3gim-data:NIM_011_20"
+          },
+          "m3gim-ontology:xlsxSource": {
+            "m3gim-ontology:xlsxSheet": "Box_01",
+            "m3gim-ontology:xlsxRow": 1737
+          }
+        }
+      ],
       "m3gim-ontology:hasAnnotation": [
         {
           "@id": "m3gim-data:ev_NIM_011_20_9fb1de7c"
@@ -55051,6 +55483,45 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 4 Seiten",
       "m3gim-ontology:processingStatus": "abgeschlossen",
+      "m3gim-ontology:hasAgentRelation": [
+        {
+          "@type": "agrelon:HasCorrespondent",
+          "agrelon:hasSubject": {
+            "name": "Malaniuk, Ira",
+            "@id": "wd:Q94208",
+            "owl:sameAs": "http://www.wikidata.org/entity/Q94208"
+          },
+          "agrelon:hasObject": {
+            "name": "Wagner, Wieland",
+            "@id": "wd:Q60465"
+          },
+          "agrelon:metadataProvenance": {
+            "@id": "m3gim-data:NIM_142_20"
+          },
+          "m3gim-ontology:xlsxSource": {
+            "m3gim-ontology:xlsxSheet": "Box 6",
+            "m3gim-ontology:xlsxRow": 251
+          }
+        },
+        {
+          "@type": "agrelon:HasCorrespondent",
+          "agrelon:hasSubject": {
+            "name": "Malaniuk, Ira",
+            "@id": "wd:Q94208",
+            "owl:sameAs": "http://www.wikidata.org/entity/Q94208"
+          },
+          "agrelon:hasObject": {
+            "name": "Wagner, Gertrud"
+          },
+          "agrelon:metadataProvenance": {
+            "@id": "m3gim-data:NIM_142_20"
+          },
+          "m3gim-ontology:xlsxSource": {
+            "m3gim-ontology:xlsxSheet": "Box 6",
+            "m3gim-ontology:xlsxRow": 252
+          }
+        }
+      ],
       "m3gim-ontology:hasAssociatedAgent": [
         {
           "name": "Malaniuk, Ira",
@@ -57114,6 +57585,26 @@
       "rico:hasOrHadLanguage": "fr",
       "rico:hasExtent": "2 Blatt, 2 Seite",
       "m3gim-ontology:processingStatus": "abgeschlossen",
+      "m3gim-ontology:hasAgentRelation": [
+        {
+          "@type": "agrelon:HasCorrespondent",
+          "agrelon:hasSubject": {
+            "name": "Malaniuk, Ira",
+            "@id": "wd:Q94208",
+            "owl:sameAs": "http://www.wikidata.org/entity/Q94208"
+          },
+          "agrelon:hasObject": {
+            "name": "Hirsch, Robert"
+          },
+          "agrelon:metadataProvenance": {
+            "@id": "m3gim-data:NIM_142_28"
+          },
+          "m3gim-ontology:xlsxSource": {
+            "m3gim-ontology:xlsxSheet": "Box 6",
+            "m3gim-ontology:xlsxRow": 386
+          }
+        }
+      ],
       "m3gim-ontology:hasAnnotation": {
         "@id": "m3gim-data:ev_NIM_142_28_244546ef"
       },
@@ -75439,7 +75930,7 @@
       "rico:name": "Matelot"
     }
   ],
-  "m3gim-ontology:exportDate": "2026-08-22T19:43:31.989914",
+  "m3gim-ontology:exportDate": "2026-08-22T21:28:01.928944",
   "m3gim-ontology:recordCount": 895,
   "m3gim-ontology:recordSetCount": 17,
   "m3gim-ontology:approvedManualMatches": 385,

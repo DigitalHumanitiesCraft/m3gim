@@ -102,6 +102,20 @@ AGRELON_MAPPING = {
     ("institution", "ausbildungsstätte"): ("agrelon:HasIsMember",    "agrelon:isMemberOf"),
 }
 
+# Rollen, die eine AgRelOn-Relation nur an einem bestimmten Dokumenttyp tragen.
+# Die Absenderseite der Korrespondenz steht im Bestand unter "verfasser"; der
+# deklarierte Wert "absender" kommt in den Daten nicht vor. Ohne die Bindung an
+# den Dokumenttyp wuerde derselbe Rollenwert auch am Kritiker einer Rezension
+# und am Autor eines Presseartikels eine Korrespondenz behaupten.
+AGRELON_MAPPING_BY_DFT = {
+    ("person", "verfasser"): {
+        "korrespondenz": ("agrelon:HasCorrespondent", "agrelon:hasCorrespondent"),
+    },
+    ("institution", "verfasser"): {
+        "korrespondenz": ("agrelon:HasCorrespondent", "agrelon:hasCorrespondent"),
+    },
+}
+
 # Nachlass-Subjekt aller AgRelOn-Relationen: Ira Malaniuk, Wikidata Q94208
 # (Label + Lebensdaten 2026-06-18 gegen Wikidata verifiziert, nicht geraten).
 # Die n-äre Reifikation trägt sie als agrelon:hasSubject; das Gegenüber als
@@ -1350,6 +1364,36 @@ def _is_fonds_subject(agent_entry: dict) -> bool:
     return agent_entry.get("name") == MALANIUK_SUBJECT["name"]
 
 
+def _dft_scoped_mapping(record: dict, typ: str, rolle: str):
+    """AgRelOn-Abbildung, die am Dokumenttyp des Records haengt.
+
+    Liefert None, wenn die Rolle keine dokumenttyp-gebundene Abbildung hat oder
+    der Typ des Records nicht dazu passt. Der Vergleich laeuft ueber den
+    erfassten deutschen Typwert, den build_record als Concept-CURIE an
+    rico:hasDocumentaryFormType haengt.
+    """
+    by_dft = AGRELON_MAPPING_BY_DFT.get((typ, rolle))
+    if not by_dft:
+        return None
+    dft = record.get("rico:hasDocumentaryFormType")
+    curie = dft.get("@id") if isinstance(dft, dict) else dft
+    if not isinstance(curie, str) or not curie.startswith("m3gim-vocab:"):
+        return None
+    # Der Dokumenttyp erbt nach oben: ein Brief ist Korrespondenz, eine
+    # Rezension nicht. Ohne den Aufstieg griffe die Bindung nur am Oberbegriff.
+    chain = [curie.split(":", 1)[1]]
+    while chain[-1] in DFT_BROADER:
+        parent = DFT_BROADER[chain[-1]]
+        if parent in chain:
+            break
+        chain.append(parent)
+    for raw, mapping in by_dft.items():
+        target = DOKUMENTTYP_TO_DFT.get(raw, "")
+        if target and target.split(":", 1)[1] in chain:
+            return mapping
+    return None
+
+
 def _maybe_add_agrelon(record: dict, typ: str, rolle: str, agent_entry: dict,
                        rel: dict | None = None):
     """Emittiert eine agrelon:*-Relation, wenn (typ, rolle) in AGRELON_MAPPING.
@@ -1360,6 +1404,8 @@ def _maybe_add_agrelon(record: dict, typ: str, rolle: str, agent_entry: dict,
     durchgereicht (technische Provenance).
     """
     mapping = AGRELON_MAPPING.get((typ, rolle))
+    if not mapping:
+        mapping = _dft_scoped_mapping(record, typ, rolle)
     if not mapping:
         return
     if _is_fonds_subject(agent_entry):

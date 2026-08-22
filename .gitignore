@@ -223,6 +223,7 @@ yarn.lock
 # snapshot stays tracked, it is the status communication for third parties.
 data/reports/validation-report.md
 data/reports/exploration-report.md
+data/reports/link-proposals.md
 
 # Testing outputs
 tests/outputs/

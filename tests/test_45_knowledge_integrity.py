@@ -65,6 +65,7 @@ WRITTEN_NOT_CITED = {
     "backup-log.md": "schreibt scripts/backup.py in das ignorierte data/backup/",
     "validation-report.md": "schreibt scripts/validate.py in das ignorierte data/reports/",
     "exploration-report.md": "schreibt scripts/explore.py in das ignorierte data/reports/",
+    "link-proposals.md": "schreibt scripts/propose-links.py in das ignorierte data/reports/",
 }
 
 
