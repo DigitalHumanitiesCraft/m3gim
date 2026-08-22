@@ -115,7 +115,7 @@
       }
     },
     "roleRef": {
-      "description": "Verweis auf ein Concept des Rollenvokabulars, mit dem mitgefuehrten Anzeigetext. Ein blosser String bleibt zugelassen fuer den einen Wert der Rollenspalte, den das Vokabular begruendet nicht als Begriff fuehrt (Vertragsstatus, data.md § 11).",
+      "description": "Verweis auf ein Concept des Rollenvokabulars, mit dem mitgefuehrten Anzeigetext. Ein blosser String bleibt zugelassen fuer den einen Wert der Rollenspalte, den das Vokabular begruendet nicht als Begriff fuehrt (Vertragsstatus, data-model.md § 11).",
       "oneOf": [
         {
           "type": "object",

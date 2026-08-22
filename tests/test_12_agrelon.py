@@ -4,7 +4,7 @@ STATUS: aktiv, sichert den Phase-4.8-Output (seit Session 28). Tests greifen,
 wenn die Pipeline Rollen wie 'arbeitgeber', 'absender' etc. nicht mehr zu
 agrelon:*-Relationen transformiert.
 
-Mapping aus data.md § 8.3:
+Mapping aus data-model.md § 8.3:
   arbeitgeber (institution)        -> agrelon:hasEmployer
   ausbildungsstätte (institution)  -> agrelon:isMemberOf (+ Lehrkraft hasTeacher)
   agent, vermittler (person)       -> agrelon:hasProfessionalContact

@@ -2,7 +2,7 @@
 
 Das Frontend (docs/js/data/constants.js) haelt ein Mapping
 `EVENT_ROLE_TO_MOBILITY_CLUSTER`, das jede empirisch belegte `m3gim:eventRole`
-genau einer der fuenf Sichten aus data.md § 10 zuordnet (oder
+genau einer der fuenf Sichten aus data-model.md § 10 zuordnet (oder
 explizit auf `null` setzt, wenn neutral).
 
 Dieser Test liest die JS-Konstante via Regex (kein JS-Runtime noetig) und

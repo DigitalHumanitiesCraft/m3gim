@@ -13,7 +13,7 @@ FINANCE_FIELDS = {"ausgaben", "einnahmen", "summe"}
 # RM=Reichsmark, DM=Deutsche Mark, ATS/S=Oesterr. Schilling, CHF, FRF (Fr),
 # ESC (portugiesischer Escudo, 'Esc'), USD, Lire (italienische Lira),
 # Belgische Francs. Historische/uneindeutige Codes behalten ihren Originalcode
-# (keine spekulative ISO-4217-Normalisierung, data.md § 11).
+# (keine spekulative ISO-4217-Normalisierung, data-model.md § 11).
 ALLOWED_CURRENCIES = {
     "RM", "DM", "ATS", "S", "CHF", "FRF", "Fr", "ESC", "Esc", "USD",
     "Lire", "Belgische Francs",
@@ -66,6 +66,6 @@ def test_finance_currency_in_known_set(records):
         if currency and currency not in ALLOWED_CURRENCIES:
             unknown.append((rid, currency))
     assert not unknown, (
-        f"Unbekannte Waehrungscodes (data.md § 11 erweitern oder Eintrag korrigieren): "
+        f"Unbekannte Waehrungscodes (data-model.md § 11 erweitern oder Eintrag korrigieren): "
         f"{unknown[:5]}"
     )

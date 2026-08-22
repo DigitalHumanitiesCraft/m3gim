@@ -46,7 +46,7 @@
   --color-mob-lebensstil: #6B4E8C;
   --color-mob-national: #4A6E96;
 
-  /* Semantic: Mobilitaetssichten (data.md § 10) --
+  /* Semantic: Mobilitaetssichten (data-model.md § 10) --
      analytische Perspektiven auf die Daten, orthogonal zu den Typen oben.
      Werden an STE-eventRole-Chips angebracht (Session 36, M3). */
   --color-sicht-performativ:    #3F5C8E;

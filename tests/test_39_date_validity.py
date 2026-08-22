@@ -1,6 +1,6 @@
 """Kalendarische Gueltigkeit der Datumswerte im erzeugten Datensatz.
 
-Datierungen liegen im Datensatz durchgaengig als Zeichenkette vor (data.md
+Datierungen liegen im Datensatz durchgaengig als Zeichenkette vor (data-model.md
 § 7: "Alle Properties vom Typ xsd:string, weil historische Datierung die
 ISO-Schema-Strenge von xsd:date regelmaessig ueberschreitet"). Zulaessig sind
 nach data.md § 6 die Formen ``YYYY``, ``YYYY-MM`` und ``YYYY-MM-DD``,

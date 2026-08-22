@@ -85,7 +85,7 @@ CONTEXT = {
 VOCAB_PATH = Path(os.environ.get("M3GIM_VOCAB_PATH", BASE_DIR / "vocab" / "m3gim.ttl"))
 ROLE_CONCEPTS = load_role_concepts(VOCAB_PATH)
 
-# Mapping (typ, rolle) → AgRelOn-Klasse + -Property (data.md § 8.3, Phase 4.8).
+# Mapping (typ, rolle) → AgRelOn-Klasse + -Property (data-model.md § 8.3, Phase 4.8).
 # Die Pipeline erzeugt zusaetzlich zur normalen Agent-Relation eine agrelon-
 # Relation mit Provenance auf den Record.
 AGRELON_MAPPING = {
@@ -161,7 +161,7 @@ MOBILITY_PLACE_ROLES = {
     "zielort", "absendeort", "abreiseort", "empfangsort", "vertragsort",
 }
 
-# Vertragsstatus (data.md § 11, E-99): in der Quelle wird ein unerfuellter
+# Vertragsstatus (data-model.md § 11, E-99): in der Quelle wird ein unerfuellter
 # Vertrag ueber die rolle-Spalte als "nicht eingehalten" markiert, dabei
 # spaltenweit ueber den ganzen Vertragsblock (z.B. NIM_023) durchgereicht. Das
 # ist KEINE Ereignis-/Ortsrolle: ein Ort oder ein ort,datum-Ereignis kann nicht
@@ -250,7 +250,7 @@ DFT_BROADER = {
 }
 # E-101: 'sammlung' und 'verzeichnis' bleiben bewusst ohne broader (top-level /
 # eigenständig; die is-a-Beziehung von sammlung zu konvolut wird nicht
-# vorentschieden, data.md § 12).
+# vorentschieden, data-model.md § 12).
 
 # Lesbare deutsche Labels für skos:prefLabel der Dokumenttyp-Concepts (E-101). Löst die
 # Frontend-Handtabelle DOKUMENTTYP_LABELS ab; die Werte sind mit ihr deckungs-
@@ -386,7 +386,7 @@ def attach_role(target: dict, value) -> None:
     Ein Wert ausserhalb des Vokabulars bleibt als Literal stehen. Das betrifft
     den Vertragsstatus "nicht eingehalten", der in der Rollenspalte steht und
     laut Vokabular ausdruecklich kein Rollenbegriff ist; seine Modellierung ist
-    mit dem Erschliessungsteam offen (data.md § 11).
+    mit dem Erschliessungsteam offen (data-model.md § 11).
     """
     if not value:
         return
@@ -473,7 +473,7 @@ def normalize_dating(value: str) -> str:
     return s
 
 
-# Datenqualitaets-Flags aus anmerkung-Signalen (data.md § 7, E-102). Das
+# Datenqualitaets-Flags aus anmerkung-Signalen (data-model.md § 7, E-102). Das
 # Vokabular ist aus den tatsaechlichen anmerkung-Eintraegen abgeleitet, nicht
 # extrapoliert (Leitplanke 'Fremdterme verifizieren'): "Name nicht eindeutig
 # auffindbar", "Vorname fehlt"/"ohne Vornamen", "Rolle Unsicher: ..."/"(??)",
@@ -657,7 +657,7 @@ def convert_objekt(row: pd.Series, folio_col: str = None,
     # Leitplanke "Konfidenz nicht erfinden". Nichts im Frontend/Report las sie.
     # Die record-seitige Self-Provenance war ohne den Konfidenzwert ein leerer
     # Selbstverweis. Falls die Datierungsevidenz spaeter gebraucht wird, kehrt
-    # sie als kategorialer Wert zurueck (nicht als Dezimalzahl). data.md § 9.
+    # sie als kategorialer Wert zurueck (nicht als Dezimalzahl). data-model.md § 9.
 
     # Dokumenttyp → m3gim-vocab
     dokumenttyp = normalize_lower(row.get('dokumenttyp'))
@@ -831,7 +831,7 @@ _AMOUNT_HEAD = re.compile(r"^\s*([\d.,]+)")
 def _parse_amount_token(token: str) -> str | None:
     """Wandelt einen numerischen Roh-Token in einen xsd:decimal-String.
 
-    Konvention (data.md § 11, europaeisch): '.' ist Tausendertrenner, ',' ist
+    Konvention (data-model.md § 11, europaeisch): '.' ist Tausendertrenner, ',' ist
     Dezimaltrenner. Ein abschliessendes Komma vor der Waehrung ist hier bereits
     abgetrennt; ein verbleibendes ',NN' ist eine echte Nachkommastelle.
     """
@@ -868,7 +868,7 @@ def _parse_single_monetary(segment: str) -> tuple[str | None, str | None]:
 def parse_monetary_values(name: str) -> list[tuple[str | None, str | None]]:
     """Zerlegt einen Finanz-Rohwert in eine Liste von (amount, currency).
 
-    Robust gegen die in der Quelle gemischten Notationen (data.md § 11):
+    Robust gegen die in der Quelle gemischten Notationen (data-model.md § 11):
       - 'AMOUNT, CURRENCY'     : '4000, Esc', '1.200, DM'  (Komma+Space-Trenner)
       - 'AMOUNT,DEC, CURRENCY' : '631,50, Fr.'             (Dezimalkomma DANN Trenn-Komma)
       - 'AMOUNT,DEC CURRENCY'  : '1500,00 DM', '200,00 Belgische Francs'
@@ -887,7 +887,7 @@ def parse_monetary_values(name: str) -> list[tuple[str | None, str | None]]:
     s = str(name).strip()
     if not s:
         return [(None, None)]
-    # Doppelbetrag am '/' trennen (data.md § 11): jeder Teil wird ein eigener
+    # Doppelbetrag am '/' trennen (data-model.md § 11): jeder Teil wird ein eigener
     # Eintrag mit gleichem detailField. Nur Segmente mit numerischem Kopf zaehlen.
     segments = [seg for seg in s.split("/") if seg.strip()]
     parsed = [_parse_single_monetary(seg) for seg in segments]
@@ -1600,7 +1600,7 @@ def add_relations_to_records(records: list, relations: dict,
                 # (E-97) als Annotationsknoten mit Rueckverweis.
                 # Vertragsstatus ("nicht eingehalten") ist keine Rolle,
                 # sondern eine spaltenweit durchgereichte Vertragsmarkierung
-                # (data.md § 11). Vor @id-Hash UND Rolle herausfiltern, damit
+                # (data-model.md § 11). Vor @id-Hash UND Rolle herausfiltern, damit
                 # beide konsistent bleiben (test_35 leitet die @id aus dem Output ab).
                 ste_role = rel.get("rolle")
                 if ste_role and ste_role.strip().lower() in CONTRACT_STATUS_ROLES:
@@ -1617,7 +1617,7 @@ def add_relations_to_records(records: list, relations: dict,
                         _inject_enrichment(place_entry, enrich)
                 # Der Rueckverweis auf den Record ist Provenienz (der Record
                 # dokumentiert die Annotation); rico:isAssociatedWithRecord
-                # existiert in RiC-O 1.1 nicht (E-103). data.md § 10.
+                # existiert in RiC-O 1.1 nicht (E-103). data-model.md § 10.
                 ev = build_annotation(record, annotation_seen, place=place_entry,
                                       date=rel.get("datum"), role=ste_role)
                 if rel.get("anmerkung"):

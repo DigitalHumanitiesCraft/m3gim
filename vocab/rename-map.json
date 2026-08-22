@@ -367,7 +367,7 @@
     "m3gim:ueberweisungsdatum": "Typisierte Datumsproperty entfällt. Der Wert wandert in einen Knoten m3gim-ontology:Annotation mit m3gim-ontology:atDate und der Rolle m3gim-vocab:transferDate."
   },
   "added": {
-    "m3gim-ontology:derivedFromRole": "Hält den Rollenwert der Quelle fest, wo mehrere erfasste Rollen im Vokabular zu einem Concept zusammengeführt sind. Ohne den Term ist die Zusammenführung von auftritt auf aufführung sowie von erstelldatum und entstehungsort auf entstehung irreversibel, sobald die Quelle nicht mehr befragt wird. Der Term ist in knowledge/data.md § 7 für genau diesen Zweck deklariert und war bisher nicht ins Vokabular aufgenommen, weil die Pipeline ihn nicht erzeugt hat.",
+    "m3gim-ontology:derivedFromRole": "Hält den Rollenwert der Quelle fest, wo mehrere erfasste Rollen im Vokabular zu einem Concept zusammengeführt sind. Ohne den Term ist die Zusammenführung von auftritt auf aufführung sowie von erstelldatum und entstehungsort auf entstehung irreversibel, sobald die Quelle nicht mehr befragt wird. Der Term ist in knowledge/data-model.md § 7 für genau diesen Zweck deklariert und war bisher nicht ins Vokabular aufgenommen, weil die Pipeline ihn nicht erzeugt hat.",
     "m3gim-vocab:agentRoles": "Sortenreines Scheme aus der Zerlegung des Sammelschemes m3gim-role:scheme.",
     "m3gim-vocab:annotationRoles": "Sortenreines Scheme aus der Zerlegung des Sammelschemes m3gim-role:scheme. Es vereinigt die getrennt vorgeschlagenen Schemes eventTypes, placeRoles und dateRoles, weil derselbe Begriff am einheitlichen Annotationsknoten wahlweise eine Datierung, eine Verortung oder beides trägt.",
     "m3gim-vocab:financialItemTypes": "Sortenreines Scheme aus der Zerlegung des Sammelschemes m3gim-role:scheme.",

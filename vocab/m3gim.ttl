@@ -59,7 +59,7 @@ m3gim-ontology:Performance
     rdfs:comment "Ereignis, in dem ein musikalisches Werk realisiert wird. Die Klasse ist zugleich der Reifikationsknoten für die Komposite aus Bühnenrolle und Interpret sowie aus Datum und Werk."@de ;
     rdfs:subClassOf rico:Event ;
     rdfs:isDefinedBy <https://dhcraft.org/m3gim/ontology> ;
-    skos:editorialNote "Im erzeugten Datensatz entsteht je Verknüpfungszeile eine eigene Instanz, sodass eine Aufführung in mehrere Knoten zerfällt, die nicht miteinander verbunden sind. Das Zielmodell (data.md § 7, E-128) sieht eine Instanz je Aktivität mit der vollständigen Besetzung vor."@de ;
+    skos:editorialNote "Im erzeugten Datensatz entsteht je Verknüpfungszeile eine eigene Instanz, sodass eine Aufführung in mehrere Knoten zerfällt, die nicht miteinander verbunden sind. Das Zielmodell (data-model.md § 7, E-128) sieht eine Instanz je Aktivität mit der vollständigen Besetzung vor."@de ;
     skos:editorialNote "Die Aufführung trägt ihre Datierung weiterhin unmittelbar, jetzt als m3gim-ontology:atDate. An diesem Knoten ist das Datum die Datierung des Ereignisses selbst; eine Rollenangabe hätte dort keinen Gegenstand."@de .
 
 m3gim-ontology:FramingEvent
@@ -217,7 +217,7 @@ m3gim-ontology:derivedFromRole
     rdfs:range xsd:string ;
     rdfs:isDefinedBy <https://dhcraft.org/m3gim/ontology> ;
     skos:editorialNote "Ohne rdfs:domain, weil die zusammengeführten Rollen an Annotationsknoten und an Entitätsreferenzen gleichermaßen stehen."@de ;
-    skos:editorialNote "Der Term ist mit der Zusammenführung von auftritt auf aufführung sowie von erstelldatum und entstehungsort auf entstehung aufgenommen. Ohne ihn ist die Zusammenführung irreversibel, sobald die Quelle nicht mehr befragt wird. Er ist in knowledge/data.md § 7 für genau diesen Zweck deklariert."@de ;
+    skos:editorialNote "Der Term ist mit der Zusammenführung von auftritt auf aufführung sowie von erstelldatum und entstehungsort auf entstehung aufgenommen. Ohne ihn ist die Zusammenführung irreversibel, sobald die Quelle nicht mehr befragt wird. Er ist in knowledge/data-model.md § 7 für genau diesen Zweck deklariert."@de ;
     skos:editorialNote "Die Pipeline setzt den Term überall dort, wo der erfasste Wert nicht das prefLabel des Concepts ist, auf das er im Vokabular führt. Er steht damit an jedem Knoten, dessen Rolle beim Umbau eine andere Schreibung bekommen hat."@de .
 
 
@@ -421,7 +421,7 @@ m3gim-ontology:country
     rdfs:range xsd:string ;
     rdfs:isDefinedBy <https://dhcraft.org/m3gim/ontology> ;
     skos:editorialNote "Die angereicherten Ortsknoten unterhalb von m3gim-ontology:atPlace tragen keinen eigenen Typ. Für diese Knoten ist die Domain nur aus der Position im Graphen erschließbar."@de ;
-    skos:editorialNote "Bewusst ohne den wd-Marker der Familie, weil der Term in knowledge/data.md § 7 als Place-Property definiert ist."@de .
+    skos:editorialNote "Bewusst ohne den wd-Marker der Familie, weil der Term in knowledge/data-model.md § 7 als Place-Property definiert ist."@de .
 
 m3gim-ontology:wdComposer
     a owl:DatatypeProperty ;
@@ -478,7 +478,7 @@ m3gim-ontology:xlsxSheet
     rdfs:comment "Name des Blatts der Erfassungstabelle, aus dem eine Entität stammt."@de ;
     rdfs:range xsd:string ;
     rdfs:isDefinedBy <https://dhcraft.org/m3gim/ontology> ;
-    skos:editorialNote "Objektzeilen tragen den festen Wert Objekte, Verknüpfungszeilen den Namen des jeweiligen Box-Blatts, weil die Verknüpfungstabelle über mehrere Blätter verteilt ist. knowledge/data.md § 9 ist auf diesen Wertebereich nachgezogen."@de .
+    skos:editorialNote "Objektzeilen tragen den festen Wert Objekte, Verknüpfungszeilen den Namen des jeweiligen Box-Blatts, weil die Verknüpfungstabelle über mehrere Blätter verteilt ist. knowledge/data-model.md § 9 ist auf diesen Wertebereich nachgezogen."@de .
 
 m3gim-ontology:xlsxRow
     a owl:DatatypeProperty ;
@@ -559,7 +559,7 @@ m3gim-vocab:annotationRoles
     rdfs:comment "Rolle, in der eine Datierung, eine Verortung oder eine Entitätsreferenz zu ihrem Dokument steht, also die Art des Vorkommnisses, des Zustands oder des Umstands, auf den sie sich bezieht."@de ;
     skos:editorialNote "Das Scheme vereinigt die in der Umbenennungskarte getrennt vorgeschlagenen Schemes eventTypes, placeRoles und dateRoles. Mit dem einheitlichen Annotationsknoten trägt derselbe Begriff wahlweise eine Datierung, eine Verortung oder beides, sodass eine Trennung nach Datums- und Ortsrollen keinen Gegenstand mehr hat."@de ;
     skos:editorialNote "Wo eine Datumsrolle und eine Ortsrolle denselben Aspekt bezeichnet haben, sind sie zu einem Begriff zusammengefallen, weil der Aspekt in der Wertproperty steht und der Rollenname ihn nur wiederholt hat. Die Endung der zusammengefallenen Namen ist entfallen; wo ein Begriff nur auf einer der beiden Seiten vorkommt, trägt er seinen Namen unverändert weiter."@de ;
-    skos:editorialNote "Der Wert nicht eingehalten kommt in der Rollenspalte vor, bezeichnet dort aber den Status eines nicht erfüllten Vertrags. Eine Rolle ist er nicht. Er ist hier bewusst nicht als Concept geführt. Das Zielfeld ist contractStatus zusammen mit realized am Vertragsdokument (data.md § 11); die Modellierung ist mit dem Erschließungsteam zu klären und bleibt vorerst unverändert."@de .
+    skos:editorialNote "Der Wert nicht eingehalten kommt in der Rollenspalte vor, bezeichnet dort aber den Status eines nicht erfüllten Vertrags. Eine Rolle ist er nicht. Er ist hier bewusst nicht als Concept geführt. Das Zielfeld ist contractStatus zusammen mit realized am Vertragsdokument (data-model.md § 11); die Modellierung ist mit dem Erschließungsteam zu klären und bleibt vorerst unverändert."@de .
 
 m3gim-vocab:financialItemTypes
     a skos:ConceptScheme ;
@@ -582,7 +582,7 @@ m3gim-vocab:documentaryFormTypes
     rdfs:comment "Hierarchisches Vokabular der Dokumenttypen des Bestands. Die Hierarchie erlaubt es, wahlweise granular nach Brief oder aggregiert nach Korrespondenz zu filtern."@de ;
     skos:hasTopConcept m3gim-vocab:document ;
     skos:editorialNote "Die Werte werden über rico:hasDocumentaryFormType referenziert. RiC-O 1.1 erwartet dort ein Individuum der Klasse rico:DocumentaryFormType. Die Concepts tragen bislang nur skos:Concept. Ob sie zusätzlich als rico:DocumentaryFormType typisiert werden, ist eine offene Frage an das Projekt."@de ;
-    skos:editorialNote "Die Kanten der ersten Ebene auf m3gim-vocab:document folgen der Baumdarstellung in knowledge/data.md § 12. Die Pipeline erzeugt nur die Kanten der zweiten Ebene, sodass die Wurzel im Datensatz nicht erreichbar ist."@de .
+    skos:editorialNote "Die Kanten der ersten Ebene auf m3gim-vocab:document folgen der Baumdarstellung in knowledge/data-model.md § 12. Die Pipeline erzeugt nur die Kanten der zweiten Ebene, sodass die Wurzel im Datensatz nicht erreichbar ist."@de .
 
 
 # ---------------------------------------------------------------------------

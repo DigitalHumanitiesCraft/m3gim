@@ -1,4 +1,4 @@
-"""Datierungs-Meta-Contract (data.md § 9, E-106 ersetzt die E-100/E-104-Konfidenz).
+"""Datierungs-Meta-Contract (data-model.md § 9, E-106 ersetzt die E-100/E-104-Konfidenz).
 
 Die Datierungsevidenz (datierungsevidenz-Spalte) wird NICHT serialisiert: weder
 als altes m3gim:dateEvidence noch als erfundener agrelon:metadataConfidence-

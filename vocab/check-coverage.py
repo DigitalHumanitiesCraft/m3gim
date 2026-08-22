@@ -18,7 +18,7 @@ Der Lauf ist read-only. Er ergänzt den Term-Konformitäts-Lock aus
 tests/test_26_term_conformance.py, der den eigenen Namespace ausnimmt, weil es
 bis zur Vokabulardatei keine Quelle gab, gegen die er prüfen konnte. Bewusste
 Ausnahme ist der Wert `nicht eingehalten`, ein Vertragsstatus in der
-Rollenspalte, der im Schema ausdrücklich kein Rollenbegriff ist (data.md § 11).
+Rollenspalte, der im Schema ausdrücklich kein Rollenbegriff ist (data-model.md § 11).
 """
 
 from __future__ import annotations

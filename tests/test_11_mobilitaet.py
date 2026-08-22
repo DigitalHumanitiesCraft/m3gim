@@ -4,7 +4,7 @@ Mobilitaetssichten aus data.md Abschnitt 10.
 STATUS: aktiv. Tests greifen, wenn die Pipeline den Komposittyp `ort, datum`
 nicht mehr als Annotation emittiert oder die Mindest-Invarianten unterschreitet.
 
-Ziel-Invarianten (aus data.md § 10):
+Ziel-Invarianten (aus data-model.md § 10):
 - Jede XLSX-Zeile mit typ='ort, datum' erzeugt genau eine Verortung
 - Eine Verortung ist ein m3gim-ontology:Annotation-Knoten mit
   m3gim-ontology:atPlace und, wo die Quelle eines hergibt,
@@ -119,7 +119,7 @@ def test_every_ort_datum_row_produces_event(xlsx_verknuepfungen, graph):
 
 
 # ---------------------------------------------------------------------------
-# 5 Mobilitaetssichten aus data.md § 10 — SPARQL-aehnliche Pattern in Python
+# 5 Mobilitaetssichten aus data-model.md § 10 — SPARQL-aehnliche Pattern in Python
 # ---------------------------------------------------------------------------
 
 # auftritt ist im Vokabular auf aufführung gefuehrt; der erfasste Wert steht

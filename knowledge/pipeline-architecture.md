@@ -72,13 +72,13 @@ Explorieren, validieren, transformieren, Ansichten bauen, auditieren, Snapshot s
    2c. **Enrichment** (`enrich-wikidata.py`) → `wikidata-enrichment.json` (WD-Properties fuer gematchte Entitaeten)
 3. **Modelltransformation** (`transform.py`) → `$M3GIM_OUTPUT_DIR/m3gim.jsonld` mit:
    - `owl:sameAs` + WD-Enrichment-Properties (fuzzy_low nur bei `manual_review: "approved"`, E-74)
-   - Skos:Concept-Knoten fuer hierarchische Dokumenttypen (data.md § 12)
-   - `m3gim:SpatiotemporalEvent` als Top-Level Graph-Entities (data.md § 10)
-   - `agrelon:*`-Relationen fuer Agent-Agent-Beziehungen (data.md § 8)
-   - `agrelon:metadataProvenance` an AgRelOn-Relationen und STEs; Datierungsevidenz wird seit E-106 nicht mehr serialisiert (data.md § 9)
-   - Typisierte Datumsproperties `m3gim:absendedatum` etc. (data.md § 7)
-   - `m3gim:DetailAnnotation` mit `monetaryAmount`/`currency`/`detailRole` (data.md § 11)
-   - `m3gim:xlsxSource` pro Record + Nested Entity (technische Quellreferenz auf Sheet + Zeile, data.md § 9, E-73)
+   - Skos:Concept-Knoten fuer hierarchische Dokumenttypen (data-model.md § 12)
+   - `m3gim:SpatiotemporalEvent` als Top-Level Graph-Entities (data-model.md § 10)
+   - `agrelon:*`-Relationen fuer Agent-Agent-Beziehungen (data-model.md § 8)
+   - `agrelon:metadataProvenance` an AgRelOn-Relationen und STEs; Datierungsevidenz wird seit E-106 nicht mehr serialisiert (data-model.md § 9)
+   - Typisierte Datumsproperties `m3gim:absendedatum` etc. (data-model.md § 7)
+   - `m3gim:DetailAnnotation` mit `monetaryAmount`/`currency`/`detailRole` (data-model.md § 11)
+   - `m3gim:xlsxSource` pro Record + Nested Entity (technische Quellreferenz auf Sheet + Zeile, data-model.md § 9, E-73)
 4. **View-Aggregation** (`build-views.py`) → `$M3GIM_OUTPUT_DIR/views/partitur.json` und matrix/kosmos/sankey
 5. **Bereitstellung**: `build-views.py` kopiert im Default-Lauf **`m3gim.jsonld` (primäre Datenquelle)** + die Derivate `partitur.json`, `matrix.json`, `kosmos.json` automatisch nach `docs/data/`.
 

@@ -310,7 +310,7 @@ export function roleClusterFor(prefix) {
 // =========================================================================
 // Mobilitaetssichten (Session 36, M3): `m3gim:eventRole` an STE-Events +
 // Datumsrollen gruppiert nach den fuenf Mobilitaetstypen aus
-// `research-framework.md § Mobilitaetstypen` und `data.md § 10`.
+// `research-framework.md § Mobilitaetstypen` und `data-model.md § 10`.
 // Orthogonal zu ROLE_CLUSTER (dort: Chip-Farbe pro Rolle-Kategorie);
 // hier: thematisches Cluster pro Mobilitaets-Sicht.
 // =========================================================================

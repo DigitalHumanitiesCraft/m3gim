@@ -39,7 +39,7 @@ function loadDocsData() {
   return JSON.parse(readFileSync(url, 'utf-8'));
 }
 
-// Datums-Routing aus knowledge/data.md § 7: ISO-Datum, TimeSpan (YYYY/YYYY),
+// Datums-Routing aus knowledge/data-model.md § 7: ISO-Datum, TimeSpan (YYYY/YYYY),
 // jeweils optional mit circa:/vor:/nach:-Qualifier.
 const DATE_SHAPE =
   /^(circa:|vor:|nach:)?\d{4}(-\d{2}(-\d{2})?)?(\/\d{4}(-\d{2}(-\d{2})?)?)?$/;

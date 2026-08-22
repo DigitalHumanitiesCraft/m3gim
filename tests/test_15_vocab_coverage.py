@@ -282,7 +282,7 @@ def test_xlsx_roles_all_in_frontend_cluster(xlsx_verknuepfungen):
 
 def test_xlsx_currencies_all_allowed(xlsx_verknuepfungen):
     """Jede belegte Waehrung aus XLSX-Finanzzeilen ist in ALLOWED_CURRENCIES.
-    Bei neuer Waehrung: data.md § 11 und tests/test_13_finanzen.py aktualisieren.
+    Bei neuer Waehrung: data-model.md § 11 und tests/test_13_finanzen.py aktualisieren.
     """
     import sys
     from pathlib import Path

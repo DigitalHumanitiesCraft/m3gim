@@ -170,7 +170,7 @@ def test_finance_output_has_no_extra_currencies(records):
         for det in ensure_list(r.get("m3gim-ontology:hasDetail")):
             if isinstance(det, dict) and det.get("m3gim-ontology:currency"):
                 output_currencies.add(det["m3gim-ontology:currency"])
-    # Aus data.md § 11 belegtes Set
+    # Aus data-model.md § 11 belegtes Set
     from test_13_finanzen import ALLOWED_CURRENCIES
     extras = output_currencies - ALLOWED_CURRENCIES
     assert not extras, f"Waehrungen im Output, die nicht erwartet sind: {extras}"
