@@ -24,18 +24,12 @@
   <link rel="stylesheet" href="css/statistics.css">
   <link rel="stylesheet" href="css/mobility.css">
   <link rel="stylesheet" href="css/basket.css">
-  <link rel="stylesheet" href="css/mobility-atlas.css">
-  <link rel="stylesheet" href="css/repertoire.css">
-  <link rel="stylesheet" href="css/biogram.css">
   <link rel="stylesheet" href="css/network.css">
   <link rel="stylesheet" href="css/verknuepfungen.css">
   <link rel="stylesheet" href="css/pages.css">
 
   <!-- D3.js -->
   <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
-
-  <!-- Leaflet wird erst geladen, wenn der Mobilitaets-Atlas-Tab reaktiviert
-       wird (aktuell `hidden`, siehe router.js VISIBLE_TABS). -->
 
   <!-- App -->
   <script type="module" src="js/main.js"></script>
@@ -87,27 +81,6 @@
       </svg>
       Karte
     </button>
-    <!-- Tabs Mobilitaets-Atlas / Repertoire / Biogramm / Netzwerk
-         sind temporaer ausgeblendet (per `hidden`). Sie werden spaeter
-         ueberarbeitet; Code und Container bleiben im Repo. -->
-    <button class="tab-bar__tab" data-tab="mobilitaets-atlas" role="tab" aria-selected="false" aria-controls="tab-mobilitaets-atlas" id="btn-mobilitaets-atlas" hidden>
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5 8 12 8 12s8-7 8-12a8 8 0 0 0-8-8z"/>
-      </svg>
-      Mobilitäts-Atlas
-    </button>
-    <button class="tab-bar__tab" data-tab="repertoire" role="tab" aria-selected="false" aria-controls="tab-repertoire" id="btn-repertoire" hidden>
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>
-      </svg>
-      Repertoire
-    </button>
-    <button class="tab-bar__tab" data-tab="biogramm" role="tab" aria-selected="false" aria-controls="tab-biogramm" id="btn-biogramm" hidden>
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <path d="M12 2v20"/><path d="M2 12h20"/><circle cx="12" cy="12" r="4"/>
-      </svg>
-      Biogramm
-    </button>
     <button class="tab-bar__tab" data-tab="netzwerk" role="tab" aria-selected="false" aria-controls="tab-netzwerk" id="btn-netzwerk">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <circle cx="5" cy="5" r="2"/><circle cx="19" cy="5" r="2"/><circle cx="19" cy="19" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="12" cy="12" r="2"/><path d="M6.5 6.5 10.5 10.5"/><path d="M17.5 6.5 13.5 10.5"/><path d="M6.5 17.5 10.5 13.5"/><path d="M17.5 17.5 13.5 13.5"/>
@@ -143,9 +116,6 @@
     <section id="tab-statistik" class="tab-content" role="tabpanel" aria-labelledby="btn-statistik"></section>
     <section id="tab-indizes" class="tab-content" role="tabpanel" aria-labelledby="btn-indizes"></section>
     <section id="tab-karte" class="tab-content" role="tabpanel" aria-labelledby="btn-karte"></section>
-    <section id="tab-mobilitaets-atlas" class="tab-content" role="tabpanel" aria-labelledby="btn-mobilitaets-atlas"></section>
-    <section id="tab-repertoire" class="tab-content" role="tabpanel" aria-labelledby="btn-repertoire"></section>
-    <section id="tab-biogramm" class="tab-content" role="tabpanel" aria-labelledby="btn-biogramm"></section>
     <section id="tab-netzwerk" class="tab-content" role="tabpanel" aria-labelledby="btn-netzwerk"></section>
     <section id="tab-verknuepfungen" class="tab-content" role="tabpanel" aria-labelledby="btn-verknuepfungen"></section>
     <section id="tab-korb" class="tab-content" role="tabpanel" aria-labelledby="korb-tab-btn"></section>

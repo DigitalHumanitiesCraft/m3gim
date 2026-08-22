@@ -11,10 +11,7 @@ import { renderChronik } from './views/archive-timeline.js';
 import { renderStatistik } from './views/statistics.js';
 import { renderIndizes, expandEntry } from './views/indexes.js';
 import { renderKorb } from './views/basket.js';
-import { renderMobilitaetsAtlas } from './views/mobility-atlas.js';
 import { renderMobilitaet } from './views/mobility.js';
-import { renderRepertoire, repertoireAggregate } from './views/repertoire.js';
-import { renderBiogramm, biogrammData } from './views/biogram.js';
 import { renderNetzwerk, netzwerkAggregate } from './views/network.js';
 import { renderVerknuepfungen, verknuepfungenAggregate } from './views/verknuepfungen.js';
 import { ensureArray } from './utils/format.js';
@@ -31,9 +28,6 @@ const TAB_RENDERERS = new Map([
   ['statistik',          (s, c) => renderStatistik(s, c)],
   ['indizes',            (s, c) => renderIndizes(s, c)],
   ['karte',              (s, c) => renderMobilitaet(s, c)],
-  ['mobilitaets-atlas',  (s, c) => renderMobilitaetsAtlas(s, c)],
-  ['repertoire',         (s, c) => renderRepertoire(s, c)],
-  ['biogramm',           (s, c) => renderBiogramm(s, c)],
   ['netzwerk',           (s, c) => renderNetzwerk(s, c)],
   ['verknuepfungen',     (s, c) => renderVerknuepfungen(s, c)],
   ['korb',               (s, c) => renderKorb(s, c)],
@@ -121,19 +115,6 @@ function logTabActivation(tab, s) {
     karte:               () => {
       const all = [...s.mobilityEvents.values()];
       return { events: all.length, datiert: all.filter(e => /\d{4}/.test(String(e.date || ''))).length, verortet: all.filter(e => typeof e.placeLat === 'number').length };
-    },
-    'mobilitaets-atlas': () => {
-      const all = [...s.mobilityEvents.values()];
-      const withGeo = all.filter(e => typeof e.placeLat === 'number' && typeof e.placeLon === 'number');
-      return { events: all.length, withGeo: withGeo.length, unverortet: all.length - withGeo.length };
-    },
-    repertoire: () => {
-      const agg = repertoireAggregate();
-      return { works: agg?.works.length || 0, composers: agg?.composers.length || 0 };
-    },
-    biogramm: () => {
-      const bio = biogrammData();
-      return { orte: bio?.orte.length || 0, belege: bio?.belege.length || 0 };
     },
     netzwerk: () => {
       const agg = netzwerkAggregate();
@@ -323,20 +304,6 @@ function exposeDebug(s) {
       }));
       console.table(rows);
       return rows;
-    },
-    repertoireAggregate() {
-      const agg = repertoireAggregate();
-      if (!agg) return null;
-      console.log('Werke:'); console.table(agg.works);
-      console.log('Komponisten:'); console.table(agg.composers);
-      return agg;
-    },
-    biogrammData() {
-      const bio = biogrammData();
-      if (!bio) return null;
-      console.log('Orte:'); console.table(bio.orte);
-      console.log('Belege:'); console.table(bio.belege.slice(0, 20));
-      return bio;
     },
     netzwerkAggregate() {
       const agg = netzwerkAggregate();

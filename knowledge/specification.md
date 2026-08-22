@@ -163,17 +163,9 @@ Provenance und Normdatenanschluss durchziehen alle Sichten.
 - Als Forscher:in möchte ich die Konfidenz und Erschließungsevidenz eines Datenpunkts erkennen, um erschlossene von dokumentarisch belegten Angaben zu unterscheiden.
 - Als Forscher:in möchte ich von einer normierten Entität direkt zu ihrem Wikidata-Eintrag gelangen, um den Normdatenanschluss nachzuvollziehen.
 
-### Epic Perspektiv-Tabs (verborgen, in Reaktivierung)
-
-Annahme: Die folgenden Stories beschreiben den in vorigen Sessions gebauten, derzeit verborgenen Funktionsstand der Perspektiv-Tabs Mobilitäts-Atlas, Repertoire und Biogramm. Sie sind als Zielbild der iterativen Reaktivierung zu verstehen, nicht als aktuell ausgelieferter Funktionsumfang.
-
-- Als Forscher:in möchte ich die verorteten Ereignisse auf einer Karte mit Zeitstrahl-Filter sehen (Mobilitäts-Atlas), um die räumliche Mobilität Malaniuks nachzuvollziehen.
-- Als Forscher:in möchte ich das Bühnenrepertoire und die Komponisten als Aggregat-Tabellen mit Belegaufschlüsselung sehen (Repertoire), um den künstlerischen Schwerpunkt zu erfassen.
-- Als Forscher:in möchte ich die Lebensstationen und Belege auf einem biografischen Zeitstrahl sehen (Biogramm), um den Lebenslauf entlang der Quellen zu lesen.
-
 ## Funktionsumfang und Abgrenzung
 
-Im Funktionsumfang sind die sichtbaren Tabs Bestand, Chronik, Statistik, Indizes, Karte, Netzwerk und der Wissenskorb als Werkzeug, jeweils mit Provenance- und Normdatenanschluss. Die Perspektiv-Tabs Mobilitäts-Atlas, Repertoire und Biogramm sind als Code, CSS und Store-Maps vorhanden, aber verborgen und werden iterativ reaktiviert.
+Im Funktionsumfang sind die Tabs Bestand, Chronik, Statistik, Indizes, Karte, Netzwerk, Verknüpfungen und der Wissenskorb als Werkzeug, jeweils mit Provenance- und Normdatenanschluss. Verborgene Tabs gibt es seit E-140 nicht mehr; eine neue Ansicht entsteht gegen die Forschungsfrage und die belegte Datenlage, statt einen vorhandenen Prototyp zu reaktivieren. Die Perspektiv-Tabs Mobilitäts-Atlas, Repertoire und Biogramm sind als Code, CSS und Store-Maps vorhanden, aber verborgen und werden iterativ reaktiviert.
 
 Bewusst nicht im Funktionsumfang sind:
 
@@ -227,10 +219,8 @@ Der Vertrag in [frontend-date-contract.md](../data/reports/frontend-date-contrac
 
 ### Sichten und Funktionsumfang
 
-- **Verborgene Perspektiv-Tabs.** Der Mobilitäts-Atlas ist stillzulegen oder als zweite Sicht zu reaktivieren; fachlich ist er durch die entitätszentrierte Karte (E-126) überholt, eine Reaktivierung erfordert die Leaflet-Einbindung. Dazu kommt aus dem Frontend-Vertrag die Frage, ob die drei verborgenen Tabs Mobilitäts-Atlas, Repertoire und Biogramm im Umbau mitgezogen oder entfernt werden; sie tragen zusammen sechs Lesestellen auf Datierungen und keinen einzigen Test. Am 2026-08-22 gegen `docs/index.html` geprüft, die drei Tabs stehen unverändert als `hidden`, und Leaflet wird nicht geladen. Grundlage in [frontend-architecture.md](frontend-architecture.md) und in [frontend-date-contract.md](../data/reports/frontend-date-contract.md) § 5.
 - **Default-Modus des Bestands und Forschungsscope.** Offen sind der Default-Modus des Bestands, erschlossen gegen alle (E-116), und der Forschungsscope-Ausschluss der Plakate und Tonträger (`EXCLUDED_DFT`). Am 2026-08-22 gegen `docs/js/views/archive-holdings.js` geprüft, der Default zeigt die erschlossenen Einheiten und `EXCLUDED_DFT` greift in beiden Modi. Solange offen, entscheidet eine Voreinstellung darüber, welchen Erschließungsstand ein Erstbesuch sieht. Grundlage in E-116.
 - **Bewegungstypen als zweite Mobilitätsachse.** Die Konstante `EVENT_ROLE_TO_MOBILITY_CLUSTER` in `docs/js/data/constants.js` trägt die fünf Ereigniskategorien performativ, institutionell, korrespondenz, diskursiv und biografisch, während [research-framework.md](research-framework.md) fünf theoretische Bewegungstypen führt, nationale und geografische Mobilität, erzwungene Migration, Bildungs- und Lebensstil-Mobilität. Zu entscheiden ist, ob die Ereignis-Cluster bleiben und die Bewegungstypen als zweite Achse hinzukommen oder ob beide zusammengeführt werden. Am 2026-08-22 gegen `constants.js` geprüft, eine zweite Achse existiert nicht. Solange offen, bleibt die theoretische Typologie des Forschungsrahmens ohne Entsprechung im Interface. Grundlage in [architecture-decisions.md](architecture-decisions.md) § Offene Entscheidungen.
-- **Nicht konsumierte Derivate.** Zu entscheiden sind Verfallsdatum und Archivierung der Legacy-Teile von `scripts/build-views.py` samt der zugehörigen Tests und der `docs/data/`-Kopien, oder eine verbindliche Viz-Roadmap, die `partitur.json`, `matrix.json` und `kosmos.json` konsumiert; der Projekt-Review hält fest, „der unbefristete Deferred-Zustand ist die teuerste Option". Die Richtung ist gesetzt (Juli 2026), das darin kodierte kuratierte Wissen (Lebensphasen-Periodisierung, Engagement-Zeiträume, Personen-Kategorien) wird gesichert und fließt in eine neu konzipierte View ein, die Heuristik-Fallbacks über Titel-Keyword-Matching werden nicht übernommen; der Abschluss steht aus. Am 2026-08-22 geprüft, `build-views.py` baut die Derivate unverändert, `loadPartitur()` steht im Loader, und kein aktiver Tab liest eines der drei. Zur selben Aufräumentscheidung gehört das CSS der drei verborgenen Tabs, das immer mitgeladen wird. Grundlage in [architecture-decisions.md](architecture-decisions.md) § Offene Entscheidungen und § Technische Schulden.
 
 ### Repository
 
@@ -264,18 +254,15 @@ Datenstufen darauf aufbauend: Stufe 1 ohne Erfassungsänderung (Partner-Reconcil
 
 ### Interface-Ausbau
 
-1. Reaktivierung und Redesign der verborgenen Perspektiv-Tabs Repertoire und Biogramm; pro Tab Daten-Kontrakt gegen den Store, Rolle-Prefix-Chip-Muster, Meta-Fresh-Check vor dem Enable. Reihenfolge offen.
 2. Den geteilten Filter auf die Statistik ausdehnen. Milestone 4 ist am 2026-06-23 gebaut, `filter-state.js` hält den Schnitt und fünf Ansichten abonnieren ihn ([frontend-architecture.md](frontend-architecture.md) § Cross-View-Filter); die Statistik führt weiterhin ihren eigenen Zeitregler (E-122).
 3. Facetten- und Filter-Funktion ausbauen. Heute je Facette Single-Select mit UND-Verknüpfung (E-117); offen sind Mehrfachauswahl beziehungsweise ODER innerhalb einer Facette und eine einheitliche Filter-UX über die Views.
 4. AgRelOn-Granularität schärfen, sobald die Entscheidung dazu gefallen ist (§ Offene Entscheidungen, Granularität der Korrespondenz-Beziehung).
 5. Im Statistik-Tab den Durchstich vom Aggregat zur Quelle ergänzen, analog zum Aggregat→Quelle-Muster der Chronik (E-124).
 6. Karte: Werk als wählbare Entität, feinere Werk- und Personen-Ebene pro Ort, fehlende Stadt-Koordinaten über die Reconciliation-Pipeline (siehe E-126 „Offen“).
 7. Indizes-Seite optimieren; konkrete Punkte noch zu schärfen.
-8. Die Netzwerk-Spur im Biogramm ergänzen, sobald die AgRelOn-Relationen Validity-Dates tragen (blockiert).
 
 ### Deferred
 
-- Die Derivate `partitur.json`, `matrix.json`, `kosmos.json` samt `loadPartitur()` und `test_08_partitur.py` werden weiter gebaut, aber von keinem aktiven Tab konsumiert; Entfernung hängt an der Entscheidung zu den nicht konsumierten Derivaten (§ Offene Entscheidungen).
 - `scripts/build-views.py` und `scripts/audit-data.py` lesen noch das durch E-96 entfernte `m3gim:hasPerformanceRole` und liefern für diese Spuren leere Listen, bis sie auf `m3gim-ontology:hasPerformance`/`m3gim-ontology:StageRole` umgestellt werden. <!-- vocab-exempt: nennt das mit E-96 entfernte Attribut -->
 - Eine leichtgewichtige Reifikation über `m3gim:Statement` wird nur dort ergänzt, wo die Provenance nicht bereits aus der Record-URI folgt. <!-- vocab-exempt: nennt ein vorgeschlagenes, nicht gebautes Muster -->
 - Zenodo-Archivierung und EAD-Export gehören zum Betriebsmodell und werden später angegangen.
@@ -293,10 +280,7 @@ Nur offene, blockierte und zurückgestellte Pakete; Erledigtes steht in [journal
 | Erfassungsschema v2, Pipeline-Umstellung | wartet | auf den menschlichen Durchgang des Erschließungsteams; Modellentscheidung E-128 liegt vor |
 | Auftritts-Occurrence, Pipeline-Gruppierung | offen | `(archivsignatur, folio, datenpunkt_id)` → `m3gim-ontology:Occurrence`, testgetrieben |
 | Geteilter Filter in der Statistik | offen | Milestone 4 ist gebaut, die Statistik führt weiter ihren eigenen Zeitregler |
-| Reaktivierung Repertoire, Biogramm | offen | pro Tab Daten-Kontrakt, Chip-Muster, Meta-Fresh-Check |
-| Mobilitäts-Atlas | operator-offen | siehe § Offene Entscheidungen, Verborgene Perspektiv-Tabs |
 | AgRelOn-Granularität | offen | siehe § Offene Entscheidungen, Granularität der Korrespondenz-Beziehung |
-| Biogramm-Netzwerk-Spur | blockiert | wartet auf AgRelOn-Validity-Dates |
 | Weitere Reconciliation-Runde | optional | Unmatched-Restliste, nicht blockierend |
 | Test-Regression NIM_168 | quellseitig offen | `test_04` mit xfail strict gelockt, Folio-Granularität zwischen den Quelltabellen, siehe Datenfehler-Register QF-07 |
 | Nächste Datenstufe Forschungsdaten | offen | Stufen 1 bis 3, siehe oben |

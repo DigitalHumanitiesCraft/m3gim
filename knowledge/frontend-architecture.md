@@ -86,7 +86,7 @@ Content-Seiten (`about.html`, `projekt.html`, `datenmodell.html`, `impressum.htm
 
 ## Routing
 
-- Hash-basiert in `ui/router.js`. Der Katalog `TABS` listet alle registrierten Tabs (Bestand, Chronik, Statistik, Indizes, Mobilität, Mobilitäts-Atlas, Repertoire, Biogramm, Netzwerk, Korb). Sichtbar in der Tab-Bar sind die Einträge im `VISIBLE_TABS`-Set (aktuell Bestand · Chronik · Statistik · Indizes · Mobilität · Netzwerk · Korb); die verbleibenden Perspektiv-Tabs Mobilitäts-Atlas/Repertoire/Biogramm bleiben per `hidden` ausgeblendet (E-81, präzisiert durch E-93 für Netzwerk). Mobilität (`mobilitaet`, E-109/E-111) und Mobilitäts-Atlas (`mobilitaets-atlas`) sind getrennte Tabs: der sichtbare ist die D3-geo-Karte, der verborgene der ältere Leaflet-Atlas. Hash-URLs auf versteckte Tabs werden in `parseHash` auf `bestand` umgebogen. `archiv` bleibt als Legacy-Alias für alte Bookmarks auf `bestand` gemappt.
+- Hash-basiert in `ui/router.js`. Der Katalog `TABS` listet alle registrierten Tabs (Bestand, Chronik, Statistik, Indizes, Karte, Netzwerk, Verknüpfungen, Korb). Verborgene Tabs gibt es seit E-140 nicht mehr; jeder registrierte Tab ist sichtbar.
 - Deep Links: `#bestand/UAKUG/NIM_003%20Folio%2001` für Datensatzkontext
 - Info-Seiten als eigenständige HTML-Dateien (normale Links, kein Hash-Routing)
 - `navigateToIndex(gridType, entityName)` für Cross-Tab-Navigation, `navigateToView(tab, {recordId})` für Sprung aus anderen Views ins Bestand-Tab
@@ -124,7 +124,7 @@ store = {
 }
 ```
 
-Alle Tabs lesen direkt aus `m3gim.jsonld` (über Store), nicht aus separaten View-JSONs. Die Derivate `partitur.json`, `matrix.json`, `kosmos.json` sind nicht mehr angebunden.
+Alle Tabs lesen direkt aus `m3gim.jsonld` (über Store). Vorverdichtete View-JSONs gibt es seit E-140 nicht mehr.
 
 ### Phase-6-Store-Maps im Überblick
 
@@ -187,33 +187,6 @@ Die Invarianten werden als Kontrakttests in [test_06_frontend_contract.py](../te
 - **Keine Verbindungslinien** — die biografische Trajektorie aus E-111 (gerichtete Pfeile, Zeitregler) ist entfernt; die räumliche Verteilung einer Entität ist die Aussage, nicht der Weg
 - Verortungs-Sicherheit visuell kodiert (Ring-Stil + Legende): `secured` durchgezogen, `city` (Adresse auf die Stadtkoordinate hochgerollt) gestrichelt, `far` (Fehlmatch-Verdacht AF-01, [data-errors.md](data-errors.md)) gestrichelt-warnfarben, `unlocatable` als eingeklappte Liste statt Kartenpunkt
 - Hover-Tooltip (Proportionsbalken) und Klick-Detail (Zuordnungen nach Sicht + alle verknüpften Dokumente); Zoom und Pan per `d3.zoom`, `non-scaling-stroke` hält Linien und Ringe beim Zoomen konstant (E-114-Erbe)
-
-### Mobilitäts-Atlas
-
-Der ältere, verborgene Karten-Tab (`mobilitaets-atlas`), durch den Mobilitäts-Tab (E-111) überholt; Stilllegung ist operator-offen.
-
-- Leaflet-Karte mit OpenStreetMap-Tiles (CDN, kein API-Key); Canvas-Renderer
-- Ein Marker pro Ort, Größe skaliert mit Event-Zahl pro Ort, Signal-Grün markiert Auswahl
-- D3-Zeitstrahl (Brush) unter der Karte, bi-direktional gekoppelt über Closure-State (`selectedPlace`, `selectedRange`, `unverortetMode`)
-- Detailpanel rechts mit Chips je Event, Klick → Sprung ins Archiv
-- Badge „N unverortet" öffnet Liste der Events ohne Koordinaten
-- Voraussetzung: Koordinaten-Patch (E-76) liefert `geo:lat`/`geo:long` an `store.mobilityEvents`
-- Leaflet (`window.L`) ist aus `index.html` entfernt, solange der Tab `hidden` ist (E-81). Bei Reaktivierung muss das Leaflet-CDN wieder in `index.html` eingebunden werden. Der Hinweis steht als Kommentar an der Auslassstelle in `index.html` und in `mobility-atlas.js`.
-
-### Repertoire
-
-- Parallele Aggregat-Tabellen, Bühnenrepertoire breiter neben Komponisten
-- Jede Zeile: Name + Inline-Breakdown `ERW · AUFF · REP → Summe`
-- Aggregation frontend-seitig aus `store.works` + DFT-Typ der Records
-- Klick → Belegliste chronologisch im Detail-Panel; Klick auf Beleg → Sprung ins Archiv
-
-### Biogramm
-
-- Chronologische Gesamtsicht 1919–2009 als D3-Zeitstrahl
-- Parallele Spuren, Orte (aus `store.mobilityEvents` nach Land) und Belege (alle Records mit Datum, leichter Jitter)
-- Phasen-Quickselect: Jugend (≤1944) · Nachkriegs-Graz · Europäische Karriere · Lehrtätigkeit
-- Vertikaler Signal-Rot-Marker für Flucht 1944
-- Klick auf Beleg-Punkt → Detail-Panel, Sprung ins Archiv via CTA
 
 ### Netzwerk
 

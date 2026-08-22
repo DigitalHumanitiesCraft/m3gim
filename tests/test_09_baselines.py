@@ -89,15 +89,3 @@ def test_verknuepfungen_count_baseline(records, baseline):
 
 def test_wd_matches_count_baseline(records, baseline):
     assert _count_wd_matches(records) >= baseline["wd_matches_min"]
-
-
-def test_partitur_auftritte_count_baseline(partitur, baseline):
-    assert len(partitur["auftritte"]) >= baseline["partitur_auftritte_min"]
-
-
-def test_partitur_lebensphasen_count_exact(partitur, baseline):
-    assert len(partitur["lebensphasen"]) == baseline["partitur_lebensphasen_exact"]
-
-
-def test_partitur_mobilitaet_count_baseline(partitur, baseline):
-    assert len(partitur["mobilitaet"]) >= baseline["partitur_mobilitaet_min"]

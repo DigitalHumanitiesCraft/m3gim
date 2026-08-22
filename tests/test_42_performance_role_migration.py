@@ -1,22 +1,17 @@
-"""E-96-Nachzug in Ansichtserzeugung und Datenaudit.
+"""Lesestellen der Auswertungsskripte gegen den erzeugten Datensatz.
 
-``scripts/build-views.py`` und ``scripts/audit-data.py`` lasen die mit E-96
-abgeloeste Property ``m3gim-ontology:hasPerformanceRole``. Sie kommt im erzeugten
-Datensatz kein einziges Mal vor, weshalb die Lesestellen still leere Listen
-lieferten, ohne einen Fehler zu melden: Auftritts-Partien, Gattungserkennung
-und Rollenzaehlung im Kosmos blieben leer.
+Der stille Defekt, gegen den diese Datei steht: eine Modellentscheidung loest
+eine Property ab, ein lesendes Skript behaelt sie, bekommt nichts zurueck und
+meldet nichts. Aufgefallen ist das mit E-96, als die Auswertung der
+Buehnenrollen still leere Listen lieferte.
 
-Das heutige Modell fuehrt Auffuehrungsknoten ``m3gim-ontology:Performance``, die ueber
-``m3gim-ontology:hasStageRole`` auf ``m3gim-ontology:StageRole`` zeigen; der Record verweist
-ueber ``m3gim-ontology:hasPerformance`` auf die Auffuehrung (data.md § 4/§ 7).
+Der erste Test haelt jeden Vokabular-Term, den ein auswertendes Skript als
+String-Literal aus dem Graph liest, gegen die Terme, die der Datensatz
+tatsaechlich fuehrt. Die beiden uebrigen sichern die Auffuehrungszaehlung und
+die Verknuepfungspruefung des Datenaudits.
 
-Zwei Absicherungen:
-
-1. Die betroffenen Auswertungen tragen wieder Daten, mit Mindestvorkommen
-   statt "leere Liste ist ok".
-2. Eine erneute Abloesung dieser Art faellt auf: jeder Vokabular-Term, den die
-   beiden Skripte als String-Literal aus dem Graph lesen, muss im Datensatz
-   vorkommen.
+Die Tests zu den vorverdichteten Derivaten sind mit deren Stilllegung
+entfallen; ihr Gegenstand existiert nicht mehr.
 """
 
 from __future__ import annotations
@@ -32,7 +27,13 @@ import pytest
 REPO_ROOT = Path(__file__).parent.parent
 SCRIPTS = REPO_ROOT / "scripts"
 
-VIEW_SCRIPTS = (SCRIPTS / "build-views.py", SCRIPTS / "audit-data.py")
+# Skripte, die den erzeugten Graphen auswerten. build-views.py steht nicht
+# mehr darin, es kopiert nur noch und liest keinen Term.
+GRAPH_READING_SCRIPTS = (
+    SCRIPTS / "audit-data.py",
+    SCRIPTS / "report-quality.py",
+    SCRIPTS / "scout-coverage.py",
+)
 
 # Prefixed terms of the modelling vocabularies the two scripts read from the
 # graph. Aliases from @context (name, role, komponist) carry no prefix and are
@@ -50,7 +51,6 @@ def _load_script(module_name: str, filename: str):
     return module
 
 
-build_views = _load_script("build_views", "build-views.py")
 audit_data = _load_script("audit_data", "audit-data.py")
 
 
@@ -140,7 +140,7 @@ def test_view_scripts_read_only_terms_the_dataset_carries(jsonld):
     """
     present = _terms_in_dataset(jsonld)
     offenders = {}
-    for script in VIEW_SCRIPTS:
+    for script in GRAPH_READING_SCRIPTS:
         used = _terms_in_string_literals(script)
         assert len(used) >= 5, f"{script.name}: Term-Scan greift nicht ({used})"
         missing = sorted(used - present)
@@ -151,104 +151,6 @@ def test_view_scripts_read_only_terms_the_dataset_carries(jsonld):
         "Entweder ist eine Property abgeloest worden (dann Lesestelle nachziehen) "
         "oder die Pipeline emittiert sie nicht mehr."
     )
-
-
-# ---------------------------------------------------------------------------
-# build-views.py: Partie, Gattung, Rollenzaehlung
-# ---------------------------------------------------------------------------
-
-
-def test_auftritte_carry_stage_role(auftritte, stage_role_labels):
-    """Die Partie am Auftritt ist besetzt und stammt aus dem StageRole-Bestand.
-
-    Die Schwelle ist niedrig, weil nur eindeutige Records eine Partie liefern
-    (siehe test_auftritt_rolle_only_from_unambiguous_record). Sie sichert allein,
-    dass der Zugriff ueber m3gim-ontology:hasPerformance ueberhaupt traegt.
-    """
-    mit_rolle = [a for a in auftritte if a.get("rolle")]
-    assert len(mit_rolle) >= 8, (
-        f"Nur {len(mit_rolle)} von {len(auftritte)} Auftritten tragen eine Partie "
-        "— die Buehnenrollen erreichen die Ansicht nicht."
-    )
-    unknown = sorted({a["rolle"] for a in mit_rolle if a["rolle"] not in stage_role_labels})
-    assert not unknown, f"Partien ohne StageRole-Entsprechung im Graph: {unknown[:5]}"
-
-
-def test_auftritt_rolle_only_from_unambiguous_record(graph, records):
-    """Nennt ein Record mehrere Partien, wird keine als die der Nachlassbildnerin ausgewiesen.
-
-    Seit E-96 fehlt der Rollenqualifikator, der die Partie der Nachlassbildnerin
-    kenntlich machte. Die erste Partie eines Besetzungszettels zu waehlen erzeugt
-    Zuschreibungen ausserhalb ihres Stimmfachs, etwa Hans Sachs oder Tristan.
-    """
-    perf_index = build_views.build_performance_index(graph)
-    for record in records:
-        names = build_views.stage_role_names(record, perf_index)
-        if len(names) > 1:
-            assert build_views._extract_rolle_from_record(record, perf_index) is None, (
-                f"{record.get('rico:identifier')} nennt {len(names)} Partien und weist "
-                "trotzdem eine als Partie des Auftritts aus."
-            )
-
-
-def test_auftritte_with_stage_role_are_opera(auftritte):
-    """Eine besetzte Partie zieht die Gattung oper nach sich (has_character_role).
-
-    Ausgenommen sind die Eintraege der Partie-Spalte, die keine Buehnenrolle
-    benennen, sondern die Besetzung eines Konzerts. Die Liste steht in
-    build-views selbst, damit Auswertung und Test nicht auseinanderlaufen.
-    """
-    mit_rolle = [
-        a for a in auftritte
-        if a.get("rolle") and a["rolle"] not in build_views.CONCERT_BILLINGS
-    ]
-    assert mit_rolle, "Keine Auftritte mit Partie — Vorbedingung verletzt"
-    offenders = [(a["rolle"], a.get("gattung")) for a in mit_rolle if a.get("gattung") != "oper"]
-    assert not offenders, f"Auftritte mit Partie ohne Gattung oper: {offenders[:5]}"
-
-
-def test_records_with_named_stage_role_are_opera(graph, records):
-    """Auch ohne Opern-Stichwort im Titel gilt ein Record mit benannter Partie als Oper.
-
-    Prueft die Lesestelle in _extract_werk_from_record direkt: ohne den Zugriff
-    ueber m3gim-ontology:hasPerformance faellt die Gattung auf konzert oder None zurueck.
-    """
-    perf_index = build_views.build_performance_index(graph)
-    candidates = [
-        r
-        for r in records
-        if any(
-            name and name not in ("Alt Solo",)
-            for name in build_views.stage_role_names(r, perf_index)
-        )
-        and not any(
-            kw in (r.get("rico:title") or "").lower() for kw in build_views.OPER_KEYWORDS
-        )
-    ]
-    assert len(candidates) >= 20, (
-        f"Nur {len(candidates)} Records mit benannter Partie ohne Opern-Stichwort "
-        "— Vorbedingung des Tests verletzt"
-    )
-    offenders = [
-        r.get("rico:identifier")
-        for r in candidates
-        if build_views._extract_werk_from_record(r, perf_index)[2] != "oper"
-    ]
-    assert not offenders, f"Records mit Partie, aber Gattung != oper: {offenders[:5]}"
-
-
-def test_kosmos_werke_carry_stage_roles(kosmos, stage_role_labels):
-    """Die Rollenzaehlung je Werk im Kosmos ist wieder besetzt."""
-    werke = [w for k in kosmos.get("komponisten", []) for w in k.get("werke", [])]
-    assert werke, "Kosmos ohne Werke — Vorbedingung verletzt"
-    mit_rollen = [w for w in werke if w.get("rollen")]
-    assert len(mit_rollen) >= 10, (
-        f"Nur {len(mit_rollen)} von {len(werke)} Werken tragen Rollen "
-        "— die Buehnenrollen erreichen den Kosmos nicht."
-    )
-    labels = {r["name"] for w in mit_rollen for r in w["rollen"]}
-    unknown = sorted(labels - stage_role_labels)
-    assert not unknown, f"Kosmos-Rollen ohne StageRole-Entsprechung: {unknown[:5]}"
 
 
 # ---------------------------------------------------------------------------

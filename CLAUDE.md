@@ -38,7 +38,7 @@ Sechs Schritte in dieser Reihenfolge, jeder einzeln aufrufbar:
 python scripts/explore.py         # Strukturdiagnose der XLSX  -> data/reports/exploration-report.md
 python scripts/validate.py        # Quellprüfung der XLSX      -> data/reports/validation-report.md
 python scripts/transform.py       # XLSX nach JSON-LD          -> data/output/m3gim.jsonld
-python scripts/build-views.py     # Derivate aus dem JSON-LD   -> data/output/views/*.json, Kopie nach docs/data/
+python scripts/build-views.py     # Veroeffentlichung          -> Kopie von m3gim.jsonld nach docs/data/
 python scripts/audit-data.py      # Abgleich XLSX / JSON-LD / Views, nur Konsolenreport
 python scripts/report-quality.py  # laufende Zählstände        -> data/reports/quality-snapshot.md
 python scripts/build-model-page.py # Modellseite aus dem Vokabular -> docs/datenmodell.html
@@ -50,7 +50,7 @@ python scripts/build-model-page.py # Modellseite aus dem Vokabular -> docs/daten
 
 Die ENV-Overrides greifen bei `explore.py`, `validate.py`, `transform.py` und `build-views.py`. `audit-data.py` und `report-quality.py` lesen die Default-Pfade fest. Wer `M3GIM_OUTPUT_DIR` auf ein leeres Verzeichnis zeigt oder das Ausgabeverzeichnis leert, verliert die Normdatenanreicherung stillschweigend; die Falle ist in [`knowledge/pipeline-architecture.md`](knowledge/pipeline-architecture.md) § ENV-Overrides beschrieben.
 
-`build-views.py` schreibt `m3gim.jsonld` + Derivate (`partitur.json`, `matrix.json`, `kosmos.json`) nach `docs/data/`. **`m3gim.jsonld` ist die einzige primäre Datenquelle für das Frontend**. Die drei Derivate werden seit Session 32 von keinem aktiven Tab mehr konsumiert (sie wurden für die entfernten D3-Prototypen gebaut) und stehen im Deferred-Block von `knowledge/specification.md` § Stand; ihr Verfall oder Weiterbau ist eine offene Operator-Entscheidung.
+`build-views.py` schreibt `m3gim.jsonld` nach `docs/data/`. **`m3gim.jsonld` ist die einzige primäre Datenquelle für das Frontend**. Die drei Derivate werden seit Session 32 von keinem aktiven Tab mehr konsumiert (sie wurden für die entfernten D3-Prototypen gebaut) und stehen im Deferred-Block von `knowledge/specification.md` § Stand; ihr Verfall oder Weiterbau ist eine offene Operator-Entscheidung.
 
 ### Tests
 
@@ -150,7 +150,7 @@ data/
 
 **Datenfluss:** `data/google-spreadsheet/` → Pipeline → `data/output/m3gim.jsonld` → `docs/data/m3gim.jsonld` → Frontend-Loader.
 
-Das Frontend konsumiert ausschließlich `docs/data/m3gim.jsonld`. Die Derivate `partitur.json`, `matrix.json`, `kosmos.json` werden von `build-views.py` weiterhin gebaut, aber von keinem aktiven Tab mehr gelesen (Deferred-Block in `specification.md` § Stand).
+Das Frontend konsumiert ausschließlich `docs/data/m3gim.jsonld`. Vorverdichtete Derivate gibt es seit E-140 nicht mehr.
 
 ## Wegweiser
 

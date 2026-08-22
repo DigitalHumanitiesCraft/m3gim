@@ -643,43 +643,6 @@ RiC-O 1.1 erwartet an `rico:hasDocumentaryFormType` ein Individuum der Klasse `r
 
 Der Verknüpfungstyp `dokument` (ein Record nennt einen Dokumenttyp wie „Vertrag" oder „Plakate") beschreibt, **wovon** ein Record handelt. Was er enthält, sagt er damit nicht. Er wird deshalb nicht als `rico:hasOrHadSubject` serialisiert, sondern als `rico:scopeAndContent` oder über einen record-lokalen Blank-Node, der das geteilte SKOS-Concept nur referenziert. Auf den geteilten Concept-Knoten werden keine record-spezifischen Daten gepfropft.
 
-## 13. partitur.json-Schema
-
-Von `scripts/build-views.py` erzeugtes Derivat für eine Mobilitäts-Ansicht. Es wird derzeit von keinem aktiven Tab mehr konsumiert (der frühere Konsument `mobilitaet.js` wurde entfernt) und steht im Deferred-Aufräumblock als potenzieller Baustein für eine künftige Visualisierung. Das Schema bleibt hier als Referenz für eine Reaktivierung dokumentiert.
-
-```json
-{
-  "lebensphasen": [
-    { "id": "LP1", "label": "", "von": 0, "bis": 0, "ort": "", "beschreibung": "" }
-  ],
-  "orte": [
-    { "ort": "", "typ": "wohnort|auffuehrungsort", "von": 0, "bis": 0 }
-  ],
-  "mobilitaet": [
-    { "von": "", "nach": "", "jahr": 0, "form": "", "beschreibung": "", "kontext": "" }
-  ],
-  "auftritte": [
-    { "ort": "", "ort_detail": "", "kategorie": "", "werk": "", "komponist": "",
-      "rolle": "", "jahr": 0, "datum": "", "phase": "", "gattung": "", "titel": "",
-      "dokumente": [] }
-  ],
-  "netzwerk": [
-    { "periode": "", "intensitaet": 0 }
-  ],
-  "repertoire": [
-    { "komponist": "", "farbe": "", "von": 0, "bis": 0, "dokumente": 0, "dokumente_liste": [] }
-  ],
-  "dokumente": [
-    { "jahr": 0, "anzahl": 0 }
-  ],
-  "_meta": { "generated": "", "source_records": 0 }
-}
-```
-
-Nur ein Teil der Eigenschaften stammt aus dem Modell. `auftritte` wird in drei Durchgängen aus den Annotationsknoten des Dokuments (`hasAnnotation` mit `atDate`), aus dem Aufführungsindex und aus der Titelauswertung von Programmheften, Plakaten und Rezensionen gebildet. `repertoire` und `dokumente` werden aus `rico:title` und `rico:date` der Records aggregiert, `netzwerk` aus der Dokumentzahl je Periode. `lebensphasen`, `orte` und `mobilitaet` sind biographische Konstanten im Generator und werden nicht aus dem Datensatz abgeleitet.
-
-Gastspiel-Daten kommen zur Laufzeit aus `store.locations`. Aus partitur.json werden sie nicht bezogen.
-
 ## 16. JSON-LD Context
 
 ### Prefixe

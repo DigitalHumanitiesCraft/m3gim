@@ -1,4 +1,4 @@
-"""JSON-Schema-Validierung für m3gim.jsonld und partitur.json."""
+"""JSON-Schema-Validierung für m3gim.jsonld."""
 
 import json
 from pathlib import Path
@@ -15,18 +15,8 @@ def jsonld_schema():
         return json.load(f)
 
 
-@pytest.fixture(scope="module")
-def partitur_schema():
-    with open(SCHEMA_DIR / "partitur.schema.json", encoding="utf-8") as f:
-        return json.load(f)
-
-
 def test_jsonld_valid_against_schema(jsonld, jsonld_schema):
     jsonschema.validate(jsonld, jsonld_schema)
-
-
-def test_partitur_valid_against_schema(partitur, partitur_schema):
-    jsonschema.validate(partitur, partitur_schema)
 
 
 def test_dft_hierarchy_well_formed(graph):

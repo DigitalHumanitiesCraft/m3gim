@@ -7,8 +7,5 @@
   "locations_min": 40,
   "works_min": 95,
   "verknuepfungen_min": 1200,
-  "wd_matches_min": 200,
-  "partitur_auftritte_min": 35,
-  "partitur_lebensphasen_exact": 7,
-  "partitur_mobilitaet_min": 5
+  "wd_matches_min": 200
 }

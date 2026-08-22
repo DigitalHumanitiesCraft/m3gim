@@ -3,7 +3,6 @@ M3GIM Test Fixtures — session-scoped loaders.
 
 Paths are overridable via ENV for v2 pipeline runs:
   M3GIM_JSONLD_PATH       — default: data/output/m3gim.jsonld
-  M3GIM_PARTITUR_PATH     — default: data/output/views/partitur.json
   M3GIM_SHEETS_DIR        — default: data/google-spreadsheet
   M3GIM_ENRICHMENT_PATH   — default: data/output/wikidata-enrichment.json
   M3GIM_RECONCILIATION_PATH — default: data/output/wikidata-reconciliation.json
@@ -26,11 +25,6 @@ def _path(env_var: str, default_rel: str) -> Path:
 @pytest.fixture(scope="session")
 def jsonld_path() -> Path:
     return _path("M3GIM_JSONLD_PATH", "data/output/m3gim.jsonld")
-
-
-@pytest.fixture(scope="session")
-def partitur_path() -> Path:
-    return _path("M3GIM_PARTITUR_PATH", "data/output/views/partitur.json")
 
 
 @pytest.fixture(scope="session")
@@ -85,17 +79,6 @@ def fonds(graph: list) -> dict:
         if isinstance(st, dict) and st.get("@id") == "ric-rst:Fonds":
             return n
     raise RuntimeError("Kein Fonds im Graph")
-
-
-@pytest.fixture(scope="session")
-def partitur(partitur_path: Path) -> dict:
-    # Die Derivate sind deferred (kein aktiver Tab konsumiert sie,
-    # specification.md § Stand). Fehlt das Artefakt, werden die
-    # Partitur-Tests uebersprungen statt als Error zu scheitern.
-    if not partitur_path.exists():
-        pytest.skip(f"partitur.json nicht gebaut ({partitur_path}) — Derivate deferred")
-    with open(partitur_path, encoding="utf-8") as f:
-        return json.load(f)
 
 
 @pytest.fixture(scope="session")

@@ -39,7 +39,6 @@ tests/
 ├── _helpers.py                    # ensure_list, iter_strings, iter_entities_with_id
 ├── schemas/
 │   ├── m3gim_jsonld.schema.json   # JSON-Schema Draft 2020-12
-│   └── partitur.schema.json
 ├── fixtures/
 │   └── baseline_counts.json       # Regression-Mindestwerte
 ├── tools/
@@ -51,7 +50,6 @@ tests/
 ├── test_05_referential.py         # Referentielle Integrität, @id-Eindeutigkeit
 ├── test_06_frontend_contract.py   # loader.js-Store-Shape-Annahmen
 ├── test_07_wikidata.py            # WD-Enrichment-Integrität
-├── test_08_partitur.py            # Partitur-Invarianten (Derivat, nicht mehr konsumiert)
 ├── test_09_baselines.py           # Regression-Zahlen (>=)
 ├── test_10_determinismus.py       # Pipeline 2× laufen (slow)
 ├── test_11_mobilitaet.py          # SpatiotemporalEvent + Mobilitätssichten
@@ -97,7 +95,7 @@ Leitsatz: jeder Test prüft eine nicht-triviale, nicht-redundante Invariante und
 ## Teststufen
 
 ### 1. Schema-Validierung (test_01)
-JSON-Schemas (Draft 2020-12) validieren `m3gim.jsonld` und `partitur.json` strukturell. DFT-Hierarchie-Tests: `skos:Concept`-Knoten haben `prefLabel` und optional `broader`, alle Referenzen aus Records sind auflösbar.
+Ein JSON-Schema (Draft 2020-12) validiert `m3gim.jsonld` strukturell. DFT-Hierarchie-Tests: `skos:Concept`-Knoten haben `prefLabel` und optional `broader`, alle Referenzen aus Records sind auflösbar.
 
 ### 2. String-Integrität (test_02)
 Keine pandas/Excel-Artefakte (`NaT`, `nan`, `None` als Strings), keine Mojibake (`Ã¼`, `Ã¶`), kein Zeitrest (`00:00:00`), ISO-8601-Datumsformate, gestrippte Strings.
@@ -121,9 +119,6 @@ Implizite Annahmen aus `loader.js` (`aggregator.js` wurde Session 32 entfernt):
 
 ### 7. Wikidata-Integrität (test_07)
 Jede Q-ID im Output stammt aus `wikidata-reconciliation.json`, Enrichment-Werte sind korrekt getypt (`geo:lat/long` Float mit Range, `schema:birthDate` ISO), `m3gim-ontology:voiceType` String (nicht Liste), `gndo:professionOrOccupationAsLiteral` Liste von Strings.
-
-### 8. Partitur-Invarianten (test_08)
-Lebensphasen lückenlos (`LP(i).bis == LP(i+1).von`), decken 1919–2009 ab, unique IDs. Mobilitäts-Jahre innerhalb Lebensspanne, `form` im Enum. Auftritt-Jahre liegen im Phasen-Fenster, dokumente-Referenzen auflösbar.
 
 ### 9. Regression-Baselines (test_09)
 Mindestwerte aus `fixtures/baseline_counts.json` pro Entitätstyp (records, persons, orgs, locations, works, verknuepfungen, wd_matches). Alle Checks `>=`, nicht `==` — Wachstum erlaubt, Schrumpfung verboten. Baselines werden bei substanziellen Datenständen nach oben nachgezogen.
@@ -281,7 +276,6 @@ Pfade sind für Ausnahmefälle (z.B. Experimente mit alternativen Datenständen)
 | ENV | Default |
 |---|---|
 | `M3GIM_JSONLD_PATH` | `data/output/m3gim.jsonld` |
-| `M3GIM_PARTITUR_PATH` | `data/output/views/partitur.json` |
 | `M3GIM_SHEETS_DIR` | `data/google-spreadsheet` |
 | `M3GIM_ENRICHMENT_PATH` | `data/output/wikidata-enrichment.json` |
 | `M3GIM_RECONCILIATION_PATH` | `data/output/wikidata-reconciliation.json` |
@@ -345,7 +339,6 @@ Wartung:
 ## Bekannte Ausnahmen
 
 - `test_verknuepfungen_every_referenced_record_has_relations` — **xfail (strict)**. Folio-Granularitäts-Inkonsistenz NIM_168 zwischen Objekt- und Verknüpfungstabelle (Datenfehler-Register QF-07). Nach dem Source-Fix bricht XPASS die Suite, dann Marker entfernen.
-- Partitur-Tests (`test_01`-Schema, `test_08`, `test_09`-Baselines) — **skip**, wenn `partitur.json` nicht gebaut ist. Die Derivate sind deferred (kein aktiver Tab konsumiert sie); die Fixture überspringt statt mit `FileNotFoundError` zu scheitern.
 - `test_has_employer_relations_from_arbeitgeber` — **skip**. Die einzige arbeitgeber-Zeile hat Signatur `UAKUG/NIM_11`, die keinem Record zugeordnet werden kann (verwaist).
 - `test_no_declared_term_without_data` (test_46), **xfail (strict)**. Deklarierte Vokabular-Terme ohne Belegung im Datensatz. Sobald sie gefüllt, entfernt oder mit einer `skos:editorialNote unused:` versehen sind, bricht XPASS die Suite, dann Marker entfernen.
 - Junk-Namen im Personen-Index (`[Organi]`, kurze Initialen) werden als Warnung geloggt, nicht gefailed — Frontend filtert via `isJunkName`.

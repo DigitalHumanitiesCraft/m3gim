@@ -1,0 +1,164 @@
+{
+  "meta": {
+    "zweck": "Kuratiertes Wissen aus dem Generator der stillgelegten Derivate. Nicht aus den Quelldaten ableitbar, deshalb hier gesichert.",
+    "herkunft": "scripts/build-views.py, Stand vor der Stilllegung der nicht konsumierten Derivate",
+    "gesichert_am": "2026-08-22",
+    "hinweis_personenkategorien": "Durch die Wikidata-Anreicherung ueberholt. Die Anreicherung fuehrt Berufsangaben fuer deutlich mehr Personen und ohne Substring-Vergleich auf dem Namen. Hier nur zur Nachvollziehbarkeit aufbewahrt.",
+    "nicht_uebernommen": "Die Zuordnung Komponist aus Werktitel ueber Stichwortvergleich (KOMPONISTEN_MAPPING) ist eine Heuristik und wird bewusst nicht weitergefuehrt."
+  },
+  "lebensphasen": [
+    {
+      "id": "LP1",
+      "label": "Kindheit & Jugend",
+      "von": 1919,
+      "bis": 1937,
+      "ort": "Lemberg",
+      "beschreibung": "Aufgewachsen in der Ukraine (Lemberg/Lwiw)"
+    },
+    {
+      "id": "LP2",
+      "label": "Studium",
+      "von": 1937,
+      "bis": 1944,
+      "ort": "Lemberg",
+      "beschreibung": "Gesangsstudium am Konservatorium Lemberg"
+    },
+    {
+      "id": "LP3",
+      "label": "Flucht & Neuanfang",
+      "von": 1944,
+      "bis": 1945,
+      "ort": "Wien",
+      "beschreibung": "Flucht vor der Roten Armee, Ankunft in Österreich"
+    },
+    {
+      "id": "LP4",
+      "label": "Erste Engagements",
+      "von": 1945,
+      "bis": 1950,
+      "ort": "Graz",
+      "beschreibung": "Engagement an der Grazer Oper, erste Erfolge"
+    },
+    {
+      "id": "LP5",
+      "label": "Aufstieg",
+      "von": 1950,
+      "bis": 1955,
+      "ort": "Wien",
+      "beschreibung": "Wiener Staatsoper, erste internationale Auftritte"
+    },
+    {
+      "id": "LP6",
+      "label": "Internationale Karriere",
+      "von": 1955,
+      "bis": 1970,
+      "ort": "Wien/Bayreuth",
+      "beschreibung": "Bayreuther Festspiele, Salzburg, internationale Gastspiele"
+    },
+    {
+      "id": "LP7",
+      "label": "Spätphase & Ruhestand",
+      "von": 1970,
+      "bis": 2009,
+      "ort": "Zürich",
+      "beschreibung": "Rückzug aus dem Bühnenleben, Leben in Zürich"
+    }
+  ],
+  "karrierephasen": [
+    {
+      "id": "anfaenge",
+      "label": "Anfänge",
+      "von": 1940,
+      "bis": 1950
+    },
+    {
+      "id": "aufstieg",
+      "label": "Aufstieg",
+      "von": 1950,
+      "bis": 1955
+    },
+    {
+      "id": "hoehepunkt",
+      "label": "Höhepunkt",
+      "von": 1955,
+      "bis": 1968
+    },
+    {
+      "id": "spaetphase",
+      "label": "Spätphase",
+      "von": 1968,
+      "bis": 1975
+    }
+  ],
+  "engagementZeitraeume": {
+    "Graz": [
+      1945,
+      1950
+    ],
+    "Wien": [
+      1950,
+      1970
+    ]
+  },
+  "personenKategorien": {
+    "karajan": "Dirigent",
+    "böhm": "Dirigent",
+    "knappertsbusch": "Dirigent",
+    "furtwängler": "Dirigent",
+    "krauss": "Dirigent",
+    "solti": "Dirigent",
+    "kempe": "Dirigent",
+    "hindemith": "Dirigent",
+    "kolessa": "Dirigent",
+    "wieland wagner": "Regisseur",
+    "wolfgang wagner": "Regisseur",
+    "felsenstein": "Regisseur",
+    "hartmann": "Regisseur",
+    "werba": "Korrepetitor",
+    "taubman": "Vermittler",
+    "baumgartner": "Korrepetitor",
+    "ludwig": "Kollege",
+    "jurinac": "Kollege",
+    "della casa": "Kollege",
+    "nilsson": "Kollege",
+    "vickers": "Kollege",
+    "windgassen": "Kollege",
+    "hotter": "Kollege",
+    "rehfuss": "Kollege",
+    "callas": "Kollege",
+    "kojetinsky": "Institution",
+    "gasser": "Korrespondenz",
+    "speck": "Korrespondenz"
+  },
+  "komponistenNormalisierung": {
+    "wagner, richard": "Wagner",
+    "wagner": "Wagner",
+    "verdi, giuseppe": "Verdi",
+    "verdi, guiseppe": "Verdi",
+    "verdi": "Verdi",
+    "strauss, richard": "Strauss",
+    "strauss": "Strauss",
+    "gluck, christoph willibald": "Gluck/Händel",
+    "gluck": "Gluck/Händel",
+    "händel": "Gluck/Händel",
+    "beethoven, ludwig van": "Beethoven",
+    "beethoven, ludwig von": "Beethoven",
+    "beethoven": "Beethoven",
+    "mozart, wolfgang amadeus": "Mozart",
+    "mozart": "Mozart",
+    "wolf, hugo": "Wolf",
+    "wolf": "Wolf",
+    "brahms, johannes": "Brahms",
+    "brahms": "Brahms",
+    "schubert, franz": "Schubert",
+    "schubert": "Schubert",
+    "bizet, georges": "Bizet",
+    "bizet": "Bizet",
+    "hindemith, paul": "Hindemith",
+    "hindemith": "Hindemith",
+    "lortzing, albert": "Lortzing",
+    "lortzing": "Lortzing",
+    "rossini, gioachino": "Rossini",
+    "rossini": "Rossini"
+  }
+}

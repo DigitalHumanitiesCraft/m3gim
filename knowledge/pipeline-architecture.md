@@ -32,7 +32,7 @@ related: [data, frontend-architecture, testing, architecture-decisions]
 | `scripts/explore.py` | Datenexploration, Strukturdiagnostik | `$M3GIM_SHEETS_DIR` | `$M3GIM_REPORTS_DIR/exploration-report.md` |
 | `scripts/validate.py` | Validierung, Qualitaetschecks. Liest die Verknuepfungstabelle ueber denselben Multi-Sheet-Loader wie die Transformation (`load_verknuepfungen`, E-95) und deckt damit alle Box-Blaetter ab. Exitcode 1, sobald ERROR-Befunde im Report stehen, was dem Regelfall entspricht (siehe [CLAUDE.md § Kern-Commands](../CLAUDE.md)). | `$M3GIM_SHEETS_DIR` | `$M3GIM_REPORTS_DIR/validation-report.md` |
 | `scripts/transform.py` | Transformation nach JSON-LD (RiC-O + m3gim + agrelon) | `$M3GIM_SHEETS_DIR` | `$M3GIM_OUTPUT_DIR/m3gim.jsonld` |
-| `scripts/build-views.py` | View-spezifische Aggregationen, partitur.json | `$M3GIM_OUTPUT_DIR/m3gim.jsonld` | `$M3GIM_OUTPUT_DIR/views/*.json` |
+| `scripts/build-views.py` | Veroeffentlichung: kopiert das Ergebnis in die Frontend-Datenquelle (E-140) | `$M3GIM_OUTPUT_DIR/m3gim.jsonld` | `docs/data/m3gim.jsonld` |
 | `scripts/reconcile.py` | Wikidata-Reconciliation (Fuzzy-Matching, P31-Verifikation, Caching, Confidence-Level exact/fuzzy_high/fuzzy_low) | XLSX-Indizes | `data/output/wikidata-reconciliation.json` |
 | `scripts/enrich-wikidata.py` | Wikidata-Property-Enrichment (P106, P412, P569/570, P625, P1191 etc.). Filtert fuzzy_low ohne `manual_review: "approved"` aus (E-74). | wikidata-reconciliation.json | `data/output/wikidata-enrichment.json` |
 | `scripts/export-wikidata-csv.py` | Wikidata-CSVs fuer Google-Sheets-Import | wikidata-reconciliation.json | `data/output/wikidata-csvs/*.csv` |
@@ -52,7 +52,7 @@ Die Pipeline-Skripte respektieren folgende Umgebungsvariablen für Ausnahmefäll
 
 Die Overrides greifen bei `explore.py`, `validate.py`, `transform.py` und `build-views.py`. `audit-data.py` und `report-quality.py` lesen ihre Pfade fest aus dem Repository-Wurzelverzeichnis und ignorieren die Variablen.
 
-`build-views.py` kopiert die Frontend-Artefakte (`m3gim.jsonld`, `partitur.json`, `matrix.json`, `kosmos.json`) nur dann nach `docs/data/`, wenn `M3GIM_OUTPUT_DIR` auf den Default zeigt.
+`build-views.py` kopiert `m3gim.jsonld` nur dann nach `docs/data/`, wenn `M3GIM_OUTPUT_DIR` auf den Default zeigt.
 
 ### Falle, leeres Ausgabeverzeichnis kostet die Normdaten stillschweigend
 
@@ -78,8 +78,7 @@ Explorieren, validieren, transformieren, Ansichten bauen, auditieren, Snapshot s
    - `agrelon:metadataProvenance` an AgRelOn-Relationen und STEs; Datierungsevidenz wird seit E-106 nicht mehr serialisiert (data-model.md § 9)
    - `m3gim-ontology:Annotation` mit `monetaryAmount`/`currency`/`detailRole` (data-model.md § 11)
    - `m3gim-ontology:xlsxSource` pro Record + Nested Entity (technische Quellreferenz auf Sheet + Zeile, data-model.md § 9, E-73)
-4. **View-Aggregation** (`build-views.py`) → `$M3GIM_OUTPUT_DIR/views/partitur.json` und matrix/kosmos/sankey
-5. **Bereitstellung**: `build-views.py` kopiert im Default-Lauf **`m3gim.jsonld` (primäre Datenquelle)** + die Derivate `partitur.json`, `matrix.json`, `kosmos.json` automatisch nach `docs/data/`.
+4. **Bereitstellung** (`build-views.py`): kopiert im Default-Lauf `m3gim.jsonld` als alleinige Frontend-Datenquelle nach `docs/data/`.
 
 ### Reproduzierbarkeit
 
@@ -191,7 +190,6 @@ Strukturelle Transformationen (keine Datenfehler-Kaschierung): Spalten-Lowercase
 | Datei | Format | Status |
 |-------|--------|--------|
 | `m3gim.jsonld` | JSON-LD | **Alleinige primäre Datenquelle** für das Frontend. Enthält Records + SpatiotemporalEvents + SKOS-Concepts + AgRelOn-Relationen + Finanz-Details + technische Provenance. |
-| `partitur.json` / `matrix.json` / `kosmos.json` | JSON | Derivate der entfernten D3-Prototypen. Von keinem aktiven Tab mehr konsumiert; werden von `build-views.py` weiterhin gebaut (Deferred-Block in [specification.md](specification.md) § Stand, Entfernung, sobald sicher ist, dass keine künftige Viz sie doch noch braucht). |
 
 ## Datenstand
 
