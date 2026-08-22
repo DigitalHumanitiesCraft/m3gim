@@ -109,7 +109,7 @@ function updateChronikView() {
   // Geteilte On-Top-Facetten (M4): Zeitfenster + Schaerfegrad. Records sind
   // hier nackt -> getRecord ist Identitaet.
   const shared = getFilter();
-  records = applyZeitfenster(records, shared.zeitfenster, (r) => r);
+  records = applyZeitfenster(records, shared.zeitfenster, (r) => r, store);
   let engInfo = null;
   if (shared.schaerfe === 'eng') {
     const res = applySchaerfeEng(records, store, (r) => r);

@@ -10,7 +10,7 @@
  * ohne Guard wuerde dessen Subscriber erneut setFilter rufen.
  */
 
-import { extractYear } from '../utils/date-parser.js';
+import { primaryYear } from '../data/loader.js';
 
 /**
  * Projiziert den geteilten Filter auf die Bestand/Chronik-Toolbar-Facetten.
@@ -79,15 +79,14 @@ export function applySchaerfeEng(items, store, getRecord) {
  * Liest das Jahr eines Records (kanonisch rico:date). Liefert null, wenn
  * undatiert.
  *
- * `rico:date` bleibt nach der Zusammenfuehrung der einwertige Zeitanker
- * (Frontend-Vertrag A4, erste Variante), deshalb bleibt diese Aufloesung
- * unveraendert. Wer die abgeleitete Datierung mitnehmen will, nimmt
- * primaryYear(store, record) aus data/loader.js; das ist die eine Funktion,
- * auf die sich alle Jahresaufloesungen zusammenfuehren lassen, sobald die
- * zweite Variante entschieden ist.
+ * Die Aufloesung ist `primaryYear` der Datenschicht (Frontend-Vertrag A4):
+ * `rico:date` hat Vorrang, fehlt es, datiert die ranghoechste ankernde
+ * Datierung. Eine eigene Aufloesung an dieser Stelle wuerde Records ohne
+ * `rico:date` im Zeitfilter als undatiert durchfallen lassen, waehrend Chronik
+ * und Netzwerk sie datiert zeigen.
  */
-export function recordYear(record) {
-  const y = extractYear(record && record['rico:date']);
+export function recordYear(store, record) {
+  const y = primaryYear(store, record).year;
   return (typeof y === 'number' && Number.isFinite(y)) ? y : null;
 }
 
@@ -101,14 +100,14 @@ export function recordYear(record) {
  * @param {(item:any)=>object} getRecord
  * @returns {Array}
  */
-export function applyZeitfenster(items, zeitfenster, getRecord) {
+export function applyZeitfenster(items, zeitfenster, getRecord, store) {
   if (!Array.isArray(zeitfenster)) return items;
   const [von, bis] = zeitfenster;
   if (von == null && bis == null) return items;
   const lo = von ?? -Infinity;
   const hi = bis ?? Infinity;
   return items.filter(it => {
-    const y = recordYear(getRecord(it));
+    const y = recordYear(store, getRecord(it));
     return y == null || (y >= lo && y <= hi);
   });
 }

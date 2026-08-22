@@ -5,7 +5,8 @@
 
 import { el, clear } from '../utils/dom.js';
 import { formatSignatur, formatChildSignatur, getDocTypeId, countLinks, truncate, ensureArray, dftLabel } from '../utils/format.js';
-import { extractYear, formatDate } from '../utils/date-parser.js';
+import { formatDate } from '../utils/date-parser.js';
+import { primaryYear } from '../data/loader.js';
 import { bookmarkIcon } from '../data/constants.js';
 import { buildInlineDetail } from './archive-inline-detail.js';
 import { filterByToolbarState, isToolbarFiltered, searchMatchBestand } from './_archive-filter.js';
@@ -129,7 +130,7 @@ function updateBestandView(filters) {
   // (M4). person/ort/werk stecken bereits via Sync in der Toolbar-Pipeline.
   const shared = getFilter();
   const getRecord = (item) => item.record;
-  items = applyZeitfenster(items, shared.zeitfenster, getRecord);
+  items = applyZeitfenster(items, shared.zeitfenster, getRecord, store);
   let engInfo = null;
   if (shared.schaerfe === 'eng') {
     const r = applySchaerfeEng(items, store, getRecord);
@@ -146,7 +147,7 @@ function updateBestandView(filters) {
   //     Key sortiert. Standalone-Records ausserhalb der Konvolute bleiben
   //     zwischen den Konvoluten an ihrer Signaturposition.
   if (isFiltered) {
-    items.sort((a, b) => sortFn(a.record, b.record, currentSortKey) * sortDir);
+    items.sort((a, b) => sortFn(store, a.record, b.record, currentSortKey) * sortDir);
   } else if (currentSortKey !== 'signatur' || sortDir !== 1) {
     items = sortChildrenWithinKonvolute(items);
   }
@@ -302,7 +303,7 @@ function getOrderedItems(showAll = false) {
   return items;
 }
 
-function sortFn(a, b, sort) {
+function sortFn(store, a, b, sort) {
   switch (sort) {
     case 'titel': {
       const ta = (a['rico:title'] || '').toLowerCase();
@@ -310,8 +311,8 @@ function sortFn(a, b, sort) {
       return ta.localeCompare(tb, 'de');
     }
     case 'datum': {
-      const ya = extractYear(a['rico:date']) || 9999;
-      const yb = extractYear(b['rico:date']) || 9999;
+      const ya = primaryYear(store, a).year ?? 9999;
+      const yb = primaryYear(store, b).year ?? 9999;
       return ya - yb;
     }
     case 'typ': {
@@ -349,7 +350,7 @@ function renderRows(items) {
     const r = item.record;
     const sig = formatSignatur(r['rico:identifier']);
     const links = countLinks(r);
-    const year = extractYear(r['rico:date']);
+    const year = primaryYear(store, r).year;
     const docType = getDocTypeId(r);
     const docLabel = dftLabel(store, docType) || '';
     const recordId = r['@id'];
@@ -624,7 +625,7 @@ function sortChildrenWithinKonvolute(items) {
       children.push(items[i]);
       i++;
     }
-    children.sort((a, b) => sortFn(a.record, b.record, currentSortKey) * sortDir);
+    children.sort((a, b) => sortFn(store, a.record, b.record, currentSortKey) * sortDir);
     result.push(...children);
   }
   return result;

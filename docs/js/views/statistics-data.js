@@ -9,7 +9,7 @@
  */
 
 import { getDocTypeId, dftLabel, cityOf } from '../utils/format.js';
-import { extractYear } from '../utils/date-parser.js';
+import { primaryYear } from '../data/loader.js';
 
 // ---------------------------------------------------------------------------
 // Mobilitaetssichten — geteilt mit der Karte
@@ -43,9 +43,9 @@ export const SICHT_COLOR = {
 // Inventar + Filterung
 // ---------------------------------------------------------------------------
 
-/** Jahr-Primitive: kanonisch aus rico:date (wie die Chronik, E-88); null = undatiert. */
-function recordYear(rec) {
-  return extractYear(rec['rico:date']);
+/** Jahr-Primitive: der Zeitanker der Datenschicht; null = undatiert. */
+function yearOf(store, rec) {
+  return primaryYear(store, rec).year;
 }
 
 /**
@@ -55,7 +55,7 @@ function recordYear(rec) {
 export function facetInventory(store) {
   const years = [];
   for (const rec of store.allRecords) {
-    const y = recordYear(rec);
+    const y = yearOf(store, rec);
     if (y != null) years.push(y);
   }
   const minYear = years.length ? Math.min(...years) : 1900;
@@ -95,7 +95,7 @@ export function facetInventory(store) {
 export function filterStore(store, { lo, hi, sichten = null, laender = null } = {}) {
   const years = [];
   for (const rec of store.allRecords) {
-    const y = recordYear(rec);
+    const y = yearOf(store, rec);
     if (y != null) years.push(y);
   }
   const minYear = years.length ? Math.min(...years) : lo;
@@ -117,7 +117,7 @@ export function filterStore(store, { lo, hi, sichten = null, laender = null } = 
   } else {
     const keep = new Set();
     for (const rec of store.allRecords) {
-      const y = recordYear(rec);
+      const y = yearOf(store, rec);
       if (y != null && y >= lo && y <= hi) keep.add(rec['@id']);
     }
     const pick = (map, hasKey) => {

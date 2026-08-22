@@ -61,16 +61,25 @@ describe('applyZeitfenster (undatierte bleiben sichtbar)', () => {
     { '@id': 'b', 'rico:date': '1960' },
     { '@id': 'c' }, // undatiert
   ];
+  // Die Jahresaufloesung liegt seit dem Zeitanker-Nachzug in der Datenschicht.
+  // Ein Stub-Store ohne Datierungen laesst genau den rico:date-Pfad uebrig.
+  const stub = { recordDatings: new Map() };
   test('null-Fenster laesst alles durch', () => {
-    assert.equal(applyZeitfenster(items, null, (it) => it).length, 3);
+    assert.equal(applyZeitfenster(items, null, (it) => it, stub).length, 3);
   });
   test('Fenster filtert datierte aus, undatierte bleiben (E-88)', () => {
-    const out = applyZeitfenster(items, [1950, 1953], (it) => it).map(i => i['@id']);
+    const out = applyZeitfenster(items, [1950, 1953], (it) => it, stub).map(i => i['@id']);
     assert.deepEqual(out, ['a', 'c']);
   });
-  test('recordYear liest rico:date, null bei undatiert', () => {
-    assert.equal(recordYear({ 'rico:date': '1952-01' }), 1952);
-    assert.equal(recordYear({}), null);
+  test('recordYear nimmt rico:date, null bei undatiert', () => {
+    assert.equal(recordYear(stub, { 'rico:date': '1952-01' }), 1952);
+    assert.equal(recordYear(stub, {}), null);
+  });
+  test('recordYear nimmt die ankernde Datierung, wenn rico:date fehlt', () => {
+    const withDating = {
+      recordDatings: new Map([['x', [{ year: 1949, scope: 'attested', rank: 1 }]]]),
+    };
+    assert.equal(recordYear(withDating, { '@id': 'x' }), 1949);
   });
 });
 

@@ -19,6 +19,7 @@
 import { ensureArray, cityOf, roleIdOf, roleToken, roleLabel } from '../utils/format.js';
 import { mobilityClusterFor } from '../data/constants.js';
 import { extractXlsxSource } from '../utils/provenance.js';
+import { primaryYear } from '../data/loader.js';
 
 /**
  * Waehlbare Entitaeten: Organisationen + Personen, je mit ihrer Record-Menge.
@@ -109,9 +110,14 @@ export function buildOccurrences(store) {
 
   // Record-Orte (rico:hasOrHadLocation). Das Datum des Belegs ist das
   // Record-Datum (Orte tragen selbst keins), damit der Zeitfilter greift.
+  // Fehlt rico:date, tritt der Zeitanker der Datenschicht ein; sonst faellt
+  // der Beleg auf der Karte als undatiert durch, waehrend Chronik und
+  // Netzwerk denselben Record datiert fuehren.
   for (const rec of store.allRecords) {
     const rid = rec['@id'];
-    const recDate = rec['rico:date'] || null;
+    const anchor = primaryYear(store, rec);
+    const recDate = rec['rico:date']
+      || (anchor.year != null ? String(anchor.year) : null);
     for (const loc of ensureArray(rec['rico:hasOrHadLocation'])) {
       const name = loc.name || loc['skos:prefLabel'];
       if (!name) continue;

@@ -44,7 +44,7 @@ const STORE_MAP_FOR_TYPE = {
  * Bezugsebene. Loest die Invertierung von store.byYear ab, die einen Record
  * nur dann kannte, wenn der Loader-Index ihn gerade fuehrte.
  */
-function recordYear(store, id) {
+function yearOfRecordId(store, id) {
   const record = store.records.get(id);
   if (!record) return null;
   return primaryYear(store, record).year;
@@ -132,7 +132,7 @@ export function buildGraph(store, opts = {}) {
   if (Array.isArray(filter.zeitfenster)) {
     const [from, to] = filter.zeitfenster;
     records = new Set([...records].filter(id => {
-      const y = recordYear(store, id);
+      const y = yearOfRecordId(store, id);
       return y != null && y >= from && y <= to;
     }));
   }
