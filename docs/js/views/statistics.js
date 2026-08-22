@@ -426,7 +426,11 @@ function buildMitWem(store) {
         label: p.name,
         value,
         color: typeColor.get(dominant) || KUG_BLUE,
-        hrefTitle: p.byType.map(t => `${t.label} (${t.count})`).join(' · '),
+        // Durchstich vom Aggregat zur Quelle: der Name fuehrt in den Bestand,
+        // gefiltert auf diese Person (E-144).
+        onClick: () => applyArchivFilter('person', p.name),
+        hrefTitle: p.byType.map(t => `${t.label} (${t.count})`).join(' · ')
+          + ' — Klick zeigt die Dokumente im Bestand',
       };
     })));
   };
@@ -500,6 +504,8 @@ function buildRepertoireSection(store) {
     `Top 10 Komponisten (von ${composers.length})`));
   subWrap.appendChild(buildHorizontalBars(top.map(c => ({
     label: c.komponist,
+    onClick: () => applyArchivFilter('werk', c.komponist),
+    hrefTitle: 'Klick zeigt die Dokumente im Bestand',
     value: c.count,
     color: KUG_BLUE,
   }))));
