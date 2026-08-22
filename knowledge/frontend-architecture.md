@@ -120,6 +120,7 @@ store = {
   finances:       Map<recordId, [{field, role, rawValue, amount:Number, currency, xlsxSource}]>,
   stageRoles:     Map<stageRoleId, name>,         // m3gim:StageRole (E-96/E-98)
   performances:   Map<performanceId, Performance-Node>,
+  recordToPerformances: Map<recordId, Performance-Node[]>,  // traegt den engen Schaerfegrad mit
 }
 ```
 
@@ -226,6 +227,22 @@ Konzentrische Personen-Visualisierung um Malaniuk (E-93, Session 46; Session-47-
 - **Zoom + Pan** via `d3.zoom()`, ScaleExtent `[0.5, 4]`, Controls `+/−/⊙` oben links im Canvas. Labels bekommen einen weißen Text-Halo (`paint-order: stroke fill` + `stroke: var(--color-paper)` + `stroke-width: 3px`), damit sie im Kantenwirrwarr lesbar bleiben. Ring-1-Labels und Ring-2-Labels für Personen mit `records.size ≥ 3` sind permanent sichtbar, der Rest nur on-hover/pin/neighbour.
 - **Telemetrie.** Log-Stempel `[netzwerk] total:N | ring1:N₁ | ring2:N₂ | agrelon:N` pro Render — die Zähler lassen sich aus der Konsole und aus dem Playwright-Smoke lesen (stamp_expectation `["total", "ring1", "ring2", "agrelon"]`).
 
+### Verknüpfungen
+
+Heterogener (multivariater) Graph über Person, Ort, Werk und Institution um eine Fokus-Entität, gebaut am 2026-06-23 als Milestone M3 der Partner-Runde Juni und im selben Zug an den geteilten Filter gekoppelt (M4). Der Tab beantwortet „Malaniuk 1952 in Bayreuth, welche Werke, wer war beteiligt" als generalisierten, filterbaren Schnitt, womit Bayreuth ein Filterergebnis wird und kein eigener Bereich ([architecture-decisions.md](architecture-decisions.md), Bayreuth als filterbarer Schnitt). Der Tab ist in [`_verknuepfungen-geometry.js`](../docs/js/views/_verknuepfungen-geometry.js) (Graphaufbau und Layout als reine Funktionen, unit-getestet über `tests/frontend/verknuepfungen-geometry.test.mjs`) und [`verknuepfungen.js`](../docs/js/views/verknuepfungen.js) (Controls, SVG-Rendering, Detail-Panel) gesplittet.
+
+- **Zwei Schärfegrade, sichtbar getrennt.** `weit` heißt im selben Dokument genannt, also Ko-Okkurrenz und ausdrücklich kein Auftrittsnachweis; `eng` schränkt auf die Records ein, die ein `m3gim:SpatiotemporalEvent` oder eine `m3gim:Performance` tragen. Die Caption über dem Graph nennt im weiten Modus, wie viele der Dokumente im Fokus einen raumzeitlichen oder Aufführungs-Beleg tragen, und im engen Modus, wie viele Records von der weiten Menge übrig bleiben. Die Differenz wird damit benannt und bleibt ungeglättet.
+- **Geteilt gegen lokal.** Der View abonniert `subscribe` beim Render und zeichnet auf eine externe Filteränderung neu, wobei die Controls aus dem geteilten State nachgezogen werden. Geprüft ist die Aufteilung in der Browser-Verifikation vom 2026-06-23.
+  - Schärfegrad weit/eng: schaltet den Record-Satz um, Differenz wird benannt (recordsEng/recordsWeit).
+  - Ort- und Zeitfenster-Facetten: geteilter Filter-State (`filter-state.js`), wirken auf den Graph.
+  - Knotentyp-Toggles: jeder Typ einzeln abschaltbar (wörtliche Partnervorgabe).
+  - Fokus-Wechsel (Person/Ort): lokaler View-State.
+  - Knoten-Klick: Detail-Panel mit datengetriebenen Chips (kein redaktionelles Deuten).
+- **Determinismus.** Positionen aus reinen Funktionen in `_verknuepfungen-geometry.js` (unit-getestet), keine Force-Simulation. Vier Typ-Sektoren aus festen Winkeln, zwei Ringe gegen Gedränge, Knotenradius aus der Zahl der geteilten Dokumente.
+- **Kappung wird ausgewiesen.** Je Knotentyp rendert der Graph nur die stärksten Nachbarn (`TOP_N`); die Caption nennt pro Typ, wie viele Knoten dabei weggefallen sind, statt die Kappung stumm zu lassen.
+- **Detail-Panel.** Die Chips folgen dem Rolle-Prefix-Muster und ziehen ihre Werte aus `nodeMeta`, je Typ die datengedeckten Felder (Institution Sitz und Kontakt, Person Lebensspanne und Stimmfach, Werk Partie und Komponist, dazu die Rollen). Die Partie kommt aus der kuratierten Werkindex-Spalte `rolle/stimme`, die die Pipeline vor M1 fallen ließ.
+- **Telemetrie.** Log-Stempel `[verknuepfungen]` pro Render mit Fokus, Schärfegrad, Ort, Zeitfenster, Knotenzahl je Typ, `recordsWeit`, `recordsEng` und der Kappungssumme.
+
 ### Wissenskorb
 
 - Bookmark-Icons in Bestand, Indizes-Detail und Archiv-Inline-Detail; `toggleKorb(id)` + `onKorbChange`-Callback für Re-Render
@@ -251,7 +268,7 @@ Die freigegebene Modell-Erweiterung ([architecture-decisions.md](architecture-de
 
 ## Cross-View-Filter
 
-Der view-übergreifende einheitliche Filter (Entwurf E-117, order-m3gim Milestone 3; vormals eigenes Dokument `filter-modell.md`). Ein gesetzter Schnitt nach Ort, Person, Werk, Rolle, Zeitfenster oder Mobilitätssicht soll synchron in allen filterbaren Views wirken, statt in jedem Tab getrennt gesetzt zu werden. Der Filter ist ein neutraler gekoppelter Schnitt mit den sichtbar getrennten Schärfegraden `weit` und `eng`; Bayreuth 1951 bis 1953 wird damit ein reines Filterergebnis, kein eigener View (Entscheidung in [architecture-decisions.md](architecture-decisions.md), Bayreuth als filterbarer Schnitt). Der Bau ist Milestone 4 und operator-gated; erster realer Baustein ist der Statistik-Zeitfilter (E-122).
+Der view-übergreifende einheitliche Filter (Entwurf E-117, order-m3gim Milestone 3; vormals eigenes Dokument `filter-modell.md`). Ein gesetzter Schnitt nach Ort, Person, Werk, Rolle, Zeitfenster oder Mobilitätssicht soll synchron in allen filterbaren Views wirken, statt in jedem Tab getrennt gesetzt zu werden. Der Filter ist ein neutraler gekoppelter Schnitt mit den sichtbar getrennten Schärfegraden `weit` und `eng`; Bayreuth 1951 bis 1953 wird damit ein reines Filterergebnis, kein eigener View (Entscheidung in [architecture-decisions.md](architecture-decisions.md), Bayreuth als filterbarer Schnitt). Erster realer Baustein war der Statistik-Zeitfilter (E-122); Milestone 4 ist am 2026-06-23 gebaut, mit `filter-state.js` als Halter, `filter-sync.js` als DOM-freier Projektionsschicht und fünf abonnierenden Views (Bestand, Chronik, Karte, Netzwerk, Verknüpfungen).
 
 ### Ausgangslage
 
@@ -278,11 +295,27 @@ Ein einziges Filter-State-Objekt ist die Quelle, alle Views lesen daraus und sch
 Ein Ort, eine Person, ein Werk koppeln an Daten auf unterschiedlich scharfen Ebenen, und der Filter darf die unscharfe nicht als die scharfe ausgeben.
 
 - `schaerfe = 'weit'`, Record-Bezug. Ein Treffer ist ein Record, der die Entität führt, etwa über `rico:hasOrHadLocation`. Weit und unscharf, weil Sammeldokumente mehrere Orte und Zeiten bündeln; das Vorhandensein im selben Record ist kein Nachweis, dass das Ereignis an diesem Ort stattfand.
-- `schaerfe = 'eng'`, Ereignis-Verortung. Ein Treffer ist ein `m3gim:SpatiotemporalEvent` mit `atPlace`, Datum und Koordinaten. Raumzeitlich exakt.
+- `schaerfe = 'eng'`, Ereignis-Verortung. Ein Treffer ist ein `m3gim:SpatiotemporalEvent` mit `atPlace`, Datum und Koordinaten. Raumzeitlich exakt. Umgesetzt ist der enge Grad als Record-Menge. `engRecordSet(store)` in [`filter-sync.js`](../docs/js/ui/filter-sync.js) und `eventAnchoredRecords(store)` in [`_verknuepfungen-geometry.js`](../docs/js/views/_verknuepfungen-geometry.js) sammeln die Records, die mindestens ein `m3gim:SpatiotemporalEvent` **oder** eine `m3gim:Performance` tragen, also raumzeitlich oder über eine Aufführung belegt sind. Die Aufführungsbelegung ist gegenüber dem Entwurf hinzugekommen, weil eine belegte Aufführung dieselbe Schärfe stiftet wie ein verortetes Ereignis.
 
 Der Modus schaltet die Auflösung der `ort`- und `zeitfenster`-Facette um, weit über die Record-Menge, eng über die Event-Menge. Default ist `weit`; jeder View zeigt den aktiven Schärfegrad an und nennt im engen Modus die Differenz, wie viele der record-bezogenen Treffer raumzeitlich belegt sind (Erschließungsspiegel-Prinzip E-87 auf den Filter angewendet). Die Karte ist intrinsisch `eng`, das Netzwerk intrinsisch `weit`.
 
-Die `sicht`-Facette nutzt `mobilityClusterFor` als alleinige Quelle und faltet dessen `null`-Rückgabe in eine explizite Option `kontext`, wie `mobility.js` es bereits tut; der view-lokale `ROLE_TO_TYPE` wird im Bau durch denselben kanonischen Pfad ersetzt.
+Herkunft der Unterscheidung ist der Bayreuth-Befund vom 2026-06-20, der sie am konkreten Fall durchgearbeitet hat. Seine Definitionen gelten unverändert für jede Entität.
+
+- Bayreuth-Bezug (Record-Ebene). Ein Dokument, das Bayreuth als Ort führt (`rico:hasOrHadLocation`, Stadt-Ebene Bayreuth). Weite, unscharfe Kopplung.
+- Bayreuth-Verortung (Ereignis-Ebene). Ein `m3gim:SpatiotemporalEvent` mit `atPlace` Bayreuth, mit Datum und Koordinaten. Enge, raumzeitlich exakte Kopplung.
+- Zwei Schärfegrade. Im selben Record wie Bayreuth (weit) gegen nachweislich in Bayreuth (eng).
+
+Die Achsenzahlen beruhen auf der Kopplung Person, Rolle oder Werk steht im selben Record wie ein Bayreuth-Ort, nicht auf nachweislich in Bayreuth. Die Bayreuth-Records sind teils Sammeldokumente (Lebenslauf, Rollenverzeichnis), die mehrere Orte und Spielstätten bündeln. Eine ehrliche Visualisierung muss diese zwei Schärfegrade auseinanderhalten und darf die Record-Kopplung nicht als Bayreuth-Auftrittsnachweis ausgeben. Das ist die Anwendung des Erschließungsspiegel-Prinzips (E-87, E-88) auf den Bayreuth-Fokus.
+
+Drei Personen-Begriffe hängen an derselben Unterscheidung und binden die Netzwerk-artigen Views.
+
+- Akteur. Eine Person über `m3gim:hasAssociatedAgent`, also belegt mitwirkend (Sänger, Dirigent, Regie, Korrespondenzpartner).
+- Erwähnte Subjekt-Person. Eine Person über `rico:hasOrHadSubject` mit `@type rico:Person`, also genannt oder besprochen, oft Komponist. Kein Beleg für eine direkte Zusammenarbeit.
+- Annotierte Beziehung gegen Ko-Okkurrenz. Annotiert heißt explizit als AgRelOn-Relation erfasst. Ko-Okkurrenz heißt aus der gemeinsamen Nennung in einem Dokument abgeleitet.
+
+Für eine Netzwerk-Ansicht zählt primär die Akteurs-Achse, die Subjekt-Achse ist Kontext, kein Kontaktnetz.
+
+Die `sicht`-Facette nutzt `mobilityClusterFor` als alleinige Quelle und faltet dessen `null`-Rückgabe in eine explizite Option `kontext`, wie `mobility.js` es bereits tut; der view-lokale `ROLE_TO_TYPE` ist im Bau durch denselben kanonischen Pfad ersetzt worden und existiert nicht mehr.
 
 ### Verteilung über die bestehende Mechanik
 
@@ -293,11 +326,11 @@ Kein neuer Apparat; Event-Bus und generische Toolbar werden erweitert.
 - `buildToolbar` (`_toolbar.js`) wird zur Sicht auf den geteilten State, `setFacet` schreibt über `setFilter`, die Toolbar abonniert und spiegelt externe Änderungen (ein Klick auf einen Kartenknoten setzt `ort`, die Ort-Combobox im Bestand zieht nach).
 - `onViewNavigate` bleibt unverändert für den orthogonalen Sprung „öffne diesen Record und scrolle hin“.
 
-### Milestone-4-Scope und Grün-Kriterium
+### Milestone-4-Stand
 
-`filter-state.js` mit `m3gim:filter`-Kanal; `buildToolbar` rückverdrahtet und Bestand/Chronik umgestellt; Netzwerk-Zeitfenster und Karten-Filter an denselben State gekoppelt; `ROLE_TO_TYPE` ersetzt; Schärfegrad-Schalter als geteiltes Control mit Anzeige und Differenznennung pro View. Grün über einen neuen Smoke-Canary (geteilter Filter gesetzt, synchrone Wirkung in Bestand, Chronik, Netzwerk, Karte), JS-Suite und pytest frontend-contract, Screenshot-Spur für die operator-gated Live-Sicht.
+Gebaut sind `filter-state.js` mit dem `m3gim:filter`-Kanal, `buildToolbar` rückverdrahtet und Bestand und Chronik umgestellt, Netzwerk-Zeitfenster und Karten-Filter am selben State, der view-lokale `ROLE_TO_TYPE` durch `mobilityClusterFor` ersetzt, und der Schärfegrad als geteiltes Control mit Differenznennung. Bestand und Chronik führen die Differenz über ein eigenes Banner (`updateSchaerfeBanner`), der Verknüpfungen-Tab über seine Caption. Abgesichert ist die Kopplung durch den Smoke-Canary `m4:cross-view-filter` (Ort im Graph gesetzt, Bestand synchron gefiltert), durch `tests/frontend/filter-sync.test.mjs` für die Projektionen und den Loop-Guard und durch den logStamp-Vertrag des Verknüpfungen-Tabs.
 
-Offen: Default-Schärfegrad pro View (Vorschlag, die Karte erzwingt `eng`); Persistenz des Filters über Tab-Wechsel (Vorschlag ja, das ist der Sinn).
+Die Persistenz über Tab-Wechsel ist erfüllt, weil der State im Modul lebt und die Views beim einmaligen Render abonniert bleiben. Offen bleibt der Default-Schärfegrad pro View; geteilter Default ist `weit`, und kein View erzwingt heute `eng`.
 
 ## Schnittstellenvertrag
 
