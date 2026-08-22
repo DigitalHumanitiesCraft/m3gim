@@ -63,6 +63,8 @@ DOC_TOKEN = re.compile(r"\b([a-z0-9][a-z0-9._-]*\.md)\b", re.I)
 # den Grund, damit die Ausnahme nicht zur stillen Luecke wird.
 WRITTEN_NOT_CITED = {
     "backup-log.md": "schreibt scripts/backup.py in das ignorierte data/backup/",
+    "validation-report.md": "schreibt scripts/validate.py in das ignorierte data/reports/",
+    "exploration-report.md": "schreibt scripts/explore.py in das ignorierte data/reports/",
 }
 
 
@@ -243,4 +245,44 @@ def test_section_references_resolve():
     assert not wrong, (
         "Abschnittsverweise, die im genannten Dokument nicht existieren: "
         f"{ {k: v[:3] for k, v in sorted(wrong.items())} }"
+    )
+
+
+def test_written_not_cited_entries_stay_honest():
+    """Jede Ausnahme der Erzeugt-statt-zitiert-Liste ist noch begruendet.
+
+    Die Liste entschaerft den Totverweis-Waechter. Zwei Wege machen sie
+    unehrlich. Ein Eintrag wird stehen gelassen, obwohl kein Skript den Namen
+    mehr schreibt, dann traegt die Liste eine Ausnahme ohne Gegenstand. Oder
+    ein Name wird eingetragen, den ein Wissensdokument sehr wohl zitiert, dann
+    verdeckt die Ausnahme genau den toten Verweis, den der Waechter meldet.
+    """
+    written = defaultdict(list)
+    for path in sorted((REPO_ROOT / "scripts").rglob("*.py")):
+        try:
+            text = path.read_text(encoding="utf-8")
+        except (UnicodeDecodeError, OSError):
+            continue
+        for name in WRITTEN_NOT_CITED:
+            if name in text:
+                written[name].append(path.name)
+
+    stale = sorted(name for name in WRITTEN_NOT_CITED if name not in written)
+    assert not stale, (
+        "Ausnahmen ohne schreibendes Skript. Der Eintrag ist zu entfernen, "
+        f"sonst deckt er kuenftig einen echten Totverweis: {stale}"
+    )
+
+    linked = defaultdict(list)
+    for path in sorted((REPO_ROOT / "knowledge").rglob("*.md")):
+        text = path.read_text(encoding="utf-8")
+        for lineno, line in enumerate(text.splitlines(), start=1):
+            for target in MD_LINK.findall(line):
+                name = target.rsplit("/", 1)[-1]
+                if name in WRITTEN_NOT_CITED:
+                    linked[name].append(f"{path.name}:{lineno}")
+    assert not linked, (
+        "Ein Wissensdokument verlinkt einen als erzeugt gefuehrten Namen. Der "
+        "Link zeigt ins Leere, und die Ausnahme verdeckt ihn: "
+        f"{dict(sorted(linked.items()))}"
     )
