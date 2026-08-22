@@ -48,7 +48,7 @@ export function toolbarStateToShared(toolbarState) {
 
 /**
  * Records, die mind. ein SpatiotemporalEvent ODER eine Performance tragen —
- * die enge (raumzeitlich/auffuehrungs-belegte) Menge (visualisierung-bayreuth.md).
+ * die enge (raumzeitlich/auffuehrungs-belegte) Menge (knowledge/frontend-architecture.md, Abschnitt Schaerfegrade).
  * @param {object} store
  * @returns {Set<string>} Record-@ids
  */

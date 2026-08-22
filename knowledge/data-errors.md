@@ -18,7 +18,7 @@ related: [specification, data, pipeline-architecture, architecture-decisions]
 
 # Datenfehler-Register
 
-> Gesammelte, laufend gepflegte Liste von allem, was quellseitig zu beheben ist, getrennt nach Quellfehler, Abgleichfehler und strukturellen Quell-Fixes, jeder Eintrag mit Fundstelle und Status. Dies ist die kanonische Adresse für Datenfehler; [specification.md](specification.md) § Stand und der Sichtprüfungs-Report (`data/reports/frontend-sichtpruefung-2026-06-21.md`) verweisen hierher.
+> Gesammelte, laufend gepflegte Liste von allem, was quellseitig zu beheben ist, getrennt nach Quellfehler, Abgleichfehler und strukturellen Quell-Fixes, jeder Eintrag mit Fundstelle und Status. Dies ist die kanonische Adresse für Datenfehler; [specification.md](specification.md) § Stand verweist hierher.
 
 ## Grundsatz
 

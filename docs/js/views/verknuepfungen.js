@@ -4,7 +4,7 @@
  * beteiligt" als generalisierten, filterbaren Schnitt: Fokus-Entitaet plus
  * geteilte Facetten (Ort/Zeit/Schaerfe) plus lokale Knotentyp-Toggles.
  *
- * Zwei Schaerfegrade sichtbar getrennt (visualisierung-bayreuth.md):
+ * Zwei Schaerfegrade sichtbar getrennt (knowledge/frontend-architecture.md, Abschnitt Schaerfegrade):
  *   weit = im selben Dokument genannt (Ko-Okkurrenz, KEIN Auftrittsnachweis),
  *   eng  = nur ereignis-/auffuehrungs-belegte Records (raumzeitlich/Performance).
  * Die Differenz wird benannt, nicht geglaettet.

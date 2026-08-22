@@ -1,14 +1,14 @@
-"""Modelling rules confirmed by the operator on the basis of
-data/reports/vocabulary-decisions-2026-08-21.md.
+"""Modelling rules confirmed by the operator, recorded as E-129 to E-132 in
+knowledge/architecture-decisions.md.
 
-Rule 1 (§ 1, option A): a relation whose object is the fonds creator herself
+Rule 1 (E-129): a relation whose object is the fonds creator herself
     is suppressed; the role stays recorded as m3gim:hasAssociatedAgent.
-Rule 2 (§ 2, option A): the source value `fotografie` maps to
+Rule 2 (E-130): the source value `fotografie` maps to
     m3gim-dft:fotografie and carries a display label.
-Rule 3 (§ 3, options A+B): `programm` is the canonical concept labelled
+Rule 3 (E-131): `programm` is the canonical concept labelled
     "Programm"; `programmheft` and `konzertprogramm` are source-value synonyms
     resolving to it.
-Warning (§ 2, appendix): an unmapped dokumenttyp names value and source cell
+Warning (E-130, appendix): an unmapped dokumenttyp names value and source cell
     instead of vanishing silently.
 """
 

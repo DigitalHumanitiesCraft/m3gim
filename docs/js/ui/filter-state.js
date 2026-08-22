@@ -5,7 +5,7 @@
  * zieht ihre Werte aus store.* (keine redaktionellen Listen). Leerwert =
  * Facette inaktiv. Der `schaerfe`-Modus ist kein Entitaetsfilter, sondern der
  * Schalter weit (Record-Bezug) / eng (Ereignis-Verortung) aus
- * visualisierung-bayreuth.md.
+ * knowledge/frontend-architecture.md, Abschnitt Schaerfegrade als Filtersemantik.
  *
  * Mechanik: setFilter(patch) merged den Patch und dispatcht ein
  * `m3gim:filter`-CustomEvent ueber denselben window-Kanal, den events.js

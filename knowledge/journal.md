@@ -24,7 +24,7 @@ related: [architecture-decisions, specification]
 
 Dieses Dokument ist die chronologische Genese des Projekts als komprimierte Session-Dokumentation. Entscheidungen und Erkenntnisse stehen vollständig, Dateilisten und CSS-Details sind entfernt. Die jüngeren Meilensteine ab Session 40 sind aus dem früheren Status-Dokument zusammengeführt.
 
-Die Sessions 1 bis 47 (Februar bis April 2026) sind nach [_archive/journal-sessions-01-47.md](_archive/journal-sessions-01-47.md) ausgelagert.
+Die Sessions 1 bis 47 (Februar bis April 2026) liegen in der Git-Historie; ihre tragenden Entscheidungen führt [architecture-decisions.md](architecture-decisions.md) als E-01 fortlaufend.
 
 ---
 
@@ -251,7 +251,7 @@ Als zugesicherte Eigenschaft dokumentiert ist schließlich der Nicht-Determinism
 
 Die Projektleitung hat am 2026-08-21 fünf Modellierungsregeln bestätigt, die bis dahin nur außerhalb des Repositorys festgehalten waren. Diese Runde bringt Entscheidungslog, Datenfehler-Register, formales Vokabular, Modell-Spezifikation und Repo-Anleitung damit in Übereinstimmung. Skripte, Tests, Frontend und die erzeugten Artefakte sind unberührt geblieben, an ihnen arbeitet eine zweite Instanz.
 
-Das Entscheidungslog führt die Regeln als E-129 bis E-133, je mit Gegenstand, Begründung und Auswirkung; die ausführliche Herleitung bleibt in der Entscheidungsvorlage `data/reports/vocabulary-decisions-2026-08-21.md`. E-129 unterdrückt die bedeutungslosen Selbstbeziehungen, E-130 legt Zuordnung und Anzeigelabel für den Dokumenttyp Fotografie an, E-131 macht `programm` zum kanonischen Begriff seines Astes mit `programmheft` und `konzertprogramm` als Synonymen, E-132 normalisiert die angereicherten Zeitwerte auf ihre belegte Präzision, und E-133 stellt das formale Vokabular in die Spec-Hierarchie und setzt den Abdeckungsprüfer als Test-Gate. Die Leitplanke Spec-first nennt das Vokabular jetzt als eigene Stufe zwischen [data.md](data.md) und dem Test.
+Das Entscheidungslog führt die Regeln als E-129 bis E-133, je mit Gegenstand, Begründung und Auswirkung. E-129 unterdrückt die bedeutungslosen Selbstbeziehungen, E-130 legt Zuordnung und Anzeigelabel für den Dokumenttyp Fotografie an, E-131 macht `programm` zum kanonischen Begriff seines Astes mit `programmheft` und `konzertprogramm` als Synonymen, E-132 normalisiert die angereicherten Zeitwerte auf ihre belegte Präzision, und E-133 stellt das formale Vokabular in die Spec-Hierarchie und setzt den Abdeckungsprüfer als Test-Gate. Die Leitplanke Spec-first nennt das Vokabular jetzt als eigene Stufe zwischen [data.md](data.md) und dem Test.
 
 Der Handoff-Punkt zu den vier fachlichen Entscheidungen ist erledigt und aus der Process Inbox entfernt. Gegenstand waren die vier offenen Fragen der Vokabular-Formalisierung, Quelle die Entscheidungsvorlage vom 2026-08-21, Ziel Entscheidungslog, Datenfehler-Register, Vokabular und Modell-Spezifikation. Ergebnis sind die fünf Einträge E-129 bis E-133 samt Nachzug in den genannten Dokumenten. Der zweite Punkt der Inbox, der Referenznachzug der umbenannten Wissensdokumente in Kommentaren und Docstrings, bleibt offen.
 

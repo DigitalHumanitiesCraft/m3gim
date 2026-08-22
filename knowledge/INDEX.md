@@ -48,9 +48,8 @@ Diese Seite ist der Einstiegspunkt in die Wissensbasis des Projekts. Sie ordnet 
 ## Ablagezonen
 
 - `knowledge/` trägt die dauerhaft gepflegten Promptotyping Documents einschließlich der Process Inbox [handoff.md](handoff.md).
-- `knowledge/_archive/` trägt die ausgelagerten Journal-Sessions 1 bis 47 ([journal-sessions-01-47.md](_archive/journal-sessions-01-47.md)); der laufende Teil ab Session 48 steht in [journal.md](journal.md).
 - `data/google-spreadsheet/` trägt das übernommene Quellmaterial, die versionierten XLSX-Exporte der archivischen Erfassung.
-- `data/reports/` trägt die datierten Momentaufnahmen (Sichtprüfungen, Visualisierungsanalysen, Reviews) und den bei jedem Pipeline-Lauf generierten Quality-Snapshot. Dieser Snapshot ist zugleich die Stand-Kommunikation für Dritte.
+- `data/reports/` trägt zwei Klassen. Die Kurationsbelege der Normdaten-Zuordnung sind dauerhaft, weil `data/output/wikidata-reconciliation.json` sie je manuell freigegebener Kennung als Grundlage zitiert. Der bei jedem Pipeline-Lauf erzeugte Quality-Snapshot ist zugleich die Stand-Kommunikation für Dritte; die beiden übrigen erzeugten Reports sind nicht versioniert, weil ein Lauf sie aus den versionierten XLSX reproduziert.
 - `data/output/` und `docs/data/` tragen die reproduzierbar erzeugten Artefakte der Pipeline.
 - `vocab/` trägt das formale Projektvokabular als Turtle-Datei samt Abdeckungsprüfer; [domain-ontology.md](domain-ontology.md) ist die daraus abgeleitete Lesesicht.
 

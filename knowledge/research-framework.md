@@ -76,7 +76,7 @@ Die ukrainisch-österreichische Mezzosopranistin Ira Malaniuk (1919–2009) ist 
 | 1970–2000 | Graz | Professorin für Liedinterpretation an der KUG |
 | 2009 | Zirl (Tirol) | Gestorben |
 
-Die Bayreuther Spanne 1951–1958 ist ein Wert aus der Sekundärliteratur. Die Datengrundlage des Teilnachlasses (UAKUG/NIM) belegt für Bayreuth nur 1951–1953; zur Auflösung dieser Diskrepanz siehe den Befund-Report [visualisierung-bayreuth.md](../data/reports/visualisierung-bayreuth.md).
+Die Bayreuther Spanne 1951–1958 ist ein Wert aus der Sekundärliteratur. Die Datengrundlage des Teilnachlasses (UAKUG/NIM) belegt für Bayreuth nur 1951–1953; in den Bayreuth-Records gibt es kein Datum nach 1953, das einzige 1954 ist das Sterbedatum einer erwähnten Person. Die Festspieljahre bis 1958 sind im Teilnachlass weder als Record noch als Ereignis belegt (feldgenau verifiziert am 2026-06-20). Die Anwendung zeigt Bayreuth deshalb als 1951–1953 und weist die Spanne 1954–1958 als Erschließungslücke aus, statt die Spanne der Literatur vorzutäuschen.
 
 Internationale Gastspiel-Stationen umfassen das Teatro Colón Buenos Aires, das Royal Opera House London, die Mailänder Scala, Lissabon und Paris.
 
