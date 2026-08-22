@@ -14,6 +14,7 @@ Verwendung:
 
 import sys
 import json
+import re
 import time
 import argparse
 import urllib.request
@@ -152,13 +153,23 @@ def extract_claim_value(claim: dict) -> dict | str | None:
         return {"qid": qid} if qid else None
 
     elif vtype == "time":
-        # Format: +1919-01-29T00:00:00Z → 1919-01-29
+        # Wikidata pads unattested month and day with zeros and carries the
+        # real granularity in `precision` (9 year, 10 month, 11 day and finer,
+        # Help:Dates). Truncating to that granularity keeps the value a valid
+        # ISO 8601 / EDTF level 0 date instead of 1841-00-00.
         time_str = value.get("time", "")
-        if time_str:
-            # Strip leading +/- and trailing T00:00:00Z
-            clean = time_str.lstrip("+-").split("T")[0]
-            return clean
-        return None
+        if not time_str:
+            return None
+        # Strip leading +/- and trailing T00:00:00Z
+        clean = time_str.lstrip("+-").split("T")[0]
+        precision = value.get("precision")
+        if precision is not None:
+            if precision <= 9:
+                clean = clean[:4]
+            elif precision == 10:
+                clean = clean[:7]
+        # Guard for a value without precision: no zero month or day survives.
+        return re.sub(r"(-00)+$", "", clean)
 
     elif vtype == "globecoordinate":
         return {

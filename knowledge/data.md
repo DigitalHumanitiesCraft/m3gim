@@ -7,7 +7,7 @@ status: complete
 language: de
 version: 0.4
 created: 2026-02-19
-updated: 2026-08-21
+updated: 2026-08-22
 authors: [Christopher Pollin]
 generated-with: Claude Code
 method:
@@ -517,6 +517,8 @@ Die aus dem Wikidata-Enrichment injizierten Personen-, Orts- und Werk-Normdaten 
 | `m3gim:wdLocation` | xsd:string | CorporateBody | Sitz laut Wikidata |
 | `m3gim:inception` | xsd:string | CorporateBody | Gründungsdatum laut Wikidata |
 
+Die vier Zeitwerte dieser Familie, `schema:birthDate`, `schema:deathDate`, `m3gim:wdPremiereDate` und `m3gim:inception`, werden bei der Anreicherung auf die in Wikidata belegte Präzision geschnitten und tragen damit die Formen von EDTF Level 0, also Jahr, Jahr und Monat oder vollständiges Datum (E-132). Die Präzisionsstufe selbst wird nicht als eigener Term mitgeführt, sie steht implizit in der Länge des Werts. Der Zeichenkettentyp bleibt aus demselben Grund wie bei den übrigen Datumsproperties.
+
 ### Kuratierte Index-Properties (M1, Index-Durchreichung)
 
 Die Indextabellen (Personen-, Organisations-, Orts- und Werkindex) pflegen Felder, die die Pipeline zuvor nach `build_index_lookup` verlor (nur `wikidata_id`/`komponist` wurden durchgereicht). M1 reicht sie als eigene `m3gim:`-Properties an die jeweilige Entität durch — getrennt von den Wikidata-Normdaten oben (kuratiert gegen angereichert) und vom Verknüpfungs-`anmerkung`. Quelle ist die Index-Spalte, nicht das Wikidata-Enrichment; damit erreichen Beruf, Sitz und Partie auch ungematchte Entitäten ohne Q-ID.
@@ -807,7 +809,6 @@ dokument
 │   ├── rezension
 │   └── musikzeitschrift
 ├── programm
-│   └── programmheft
 ├── vertrag
 ├── plakat
 ├── fotografie
@@ -836,10 +837,10 @@ Gegenüber der Vorfassung ergänzt sind korrespondenz, presse, programm, autobio
 
 Jedes emittierte dft-Concept trägt ein lesbares deutsches `skos:prefLabel` (Pipeline-Map `DFT_LABELS`, E-101) statt des nackten Slugs. Das Frontend löst Dokumenttyp-Labels seit E-101 direkt über `skos:prefLabel` aus dem Store auf (`dftLabel(store, id)` über `store.dftHierarchy`); die frühere Frontend-Handtabelle `DOKUMENTTYP_LABELS` ist entfallen.
 
-Zwei Abweichungen zwischen diesem Baum und der Pipeline sind offen. Beide hätten Datenwirkung, weshalb sie hier verzeichnet bleiben und eine Entscheidung brauchen.
+Zwei frühere Abweichungen zwischen diesem Baum und der Pipeline sind am 2026-08-21 entschieden und umgesetzt.
 
-- `fotografie` steht im Baum, hat in der Zuordnungstabelle `DOKUMENTTYP_TO_DFT` aber keinen Eintrag. Ein Quellwert dieses Namens erzeugte kein `rico:hasDocumentaryFormType`. Der aktuelle Objekt-Export führt den Wert nicht, ein nachgetragener Eintrag bliebe im heutigen Stand also folgenlos.
-- `programm` und `programmheft` tragen in `DFT_LABELS` beide das Label Programmheft, obwohl `programm` der Oberbegriff von `programmheft` ist. In der Anzeige sind die beiden Stufen dadurch nicht unterscheidbar. `programm` ist der häufigste erfasste Dokumenttyp, eine Label-Änderung schlägt deshalb bis in den erzeugten Datensatz und ins Interface durch.
+- `fotografie` hat in der Zuordnungstabelle `DOKUMENTTYP_TO_DFT` einen Eintrag und in `DFT_LABELS` das Anzeigelabel Fotografie (E-130). Der aktuelle Objekt-Export führt den Quellwert nicht, der Eintrag bleibt im heutigen Stand also folgenlos und greift, sobald Fotografien erfasst werden. Ein Quellwert ohne Eintrag in der Zuordnungstabelle wird seit derselben Änderung mit Wert und Quellzelle gemeldet.
+- `programm` ist der kanonische Begriff dieses Astes und trägt das Anzeigelabel Programm (E-131). Das Konzept `programmheft` ist entfallen; die Quellwerte `programmheft` und `konzertprogramm` bleiben zulässig und lösen in `DOKUMENTTYP_TO_DFT` auf `m3gim-dft:programm` auf, im Vokabular als `skos:altLabel` geführt.
 
 ### Verknüpfungstyp `dokument` als Aboutness
 

@@ -13,15 +13,16 @@ Nach dieser Datei wird [`knowledge/INDEX.md`](knowledge/INDEX.md) als Einstieg i
 ## Spec-Hierarchie
 
 1. **`knowledge/data.md`** — Datengrundlage und Modell-Spezifikation. Bei jeder geplanten Modelländerung zuerst lesen und dort verankern, bevor Pipeline/Tests/Frontend angefasst werden.
-2. **`knowledge/specification.md`** — Projektidentität, Funktionsumfang und der volatile Abschnitt „Stand und nächste Schritte" (inklusive Status-Tracker und offener Operator-Entscheidungen).
-3. **`knowledge/testing.md`** — Teststrategie + TDD-Workflow.
-4. **`knowledge/pipeline-architecture.md`** — Pipeline-Referenz.
-5. **`knowledge/frontend-architecture.md`** + **`knowledge/design.md`** — Frontend-Architektur und Designsystem.
-6. **`knowledge/architecture-decisions.md`** — historische Architekturentscheidungen (E-01 aufwärts, laufend ergänzt).
+2. **`vocab/m3gim.ttl`** — das formale Projektvokabular in Turtle, die maschinenlesbare Fassung des Modells (Klassen, Properties, Domain, Range, SKOS-Schemata). Jede in `data.md` verankerte Modelländerung wird hier nachgezogen, bevor die Pipeline folgt.
+3. **`knowledge/specification.md`** — Projektidentität, Funktionsumfang und der volatile Abschnitt „Stand und nächste Schritte" (inklusive Status-Tracker und offener Operator-Entscheidungen).
+4. **`knowledge/testing.md`** — Teststrategie + TDD-Workflow.
+5. **`knowledge/pipeline-architecture.md`** — Pipeline-Referenz.
+6. **`knowledge/frontend-architecture.md`** + **`knowledge/design.md`** — Frontend-Architektur und Designsystem.
+7. **`knowledge/architecture-decisions.md`** — historische Architekturentscheidungen (E-01 aufwärts, laufend ergänzt).
 
 Weitere Dokumente siehe [`knowledge/INDEX.md`](knowledge/INDEX.md).
 
-Das formale Projektvokabular `vocab/m3gim.ttl` steht noch nicht in dieser Hierarchie. Ob es ein gepflegtes Artefakt wird und damit in die Spec-first-Reihenfolge einrückt, ist offene Frage 10 in [`knowledge/vocabulary-derivation-findings.md`](knowledge/vocabulary-derivation-findings.md) und wartet auf eine Entscheidung der Projektleitung. Die daraus abgeleitete Lesesicht auf den Datensatz führt [`knowledge/domain-ontology.md`](knowledge/domain-ontology.md).
+Das formale Projektvokabular ist ein gepflegtes Artefakt und steht seit der Entscheidung der Projektleitung vom 2026-08-21 in dieser Hierarchie (E-133 in [`knowledge/architecture-decisions.md`](knowledge/architecture-decisions.md), löst die frühere offene Frage 10 in [`knowledge/vocabulary-derivation-findings.md`](knowledge/vocabulary-derivation-findings.md)). Die Spec-first-Reihenfolge lautet damit `data.md`, Vokabular, Test, Pipeline; der Abdeckungsprüfer `vocab/check-coverage.py` läuft als verbindliches Test-Gate mit (siehe § Vokabular-Abdeckung prüfen). Die aus dem Vokabular abgeleitete Lesesicht auf den Datensatz führt [`knowledge/domain-ontology.md`](knowledge/domain-ontology.md).
 
 ## Kern-Commands
 
@@ -69,6 +70,8 @@ python vocab/check-coverage.py
 ```
 
 Prüft read-only, ob jeder im Datensatz verwendete `m3gim`-Term in `vocab/m3gim.ttl` definiert ist. Der Docstring des Skripts nennt `uv run`; `uv` ist keine Projektvoraussetzung, der normale Interpreter genügt. Die einzige Abhängigkeit rdflib steht in `requirements-test.txt`.
+
+Die Prüfung läuft zusätzlich als verbindliches Test-Gate. `tests/test_40_vocab_gate.py` startet dasselbe Skript als eigenen Prozess, läuft damit im Standardlauf `pytest tests/` mit und übernimmt den Befund des Skripts in die Fehlermeldung des Tests. So fällt auch eine Vokabularänderung ohne unmittelbare Datenwirkung auf. Die Namenskonvention des Vokabulars (Klassen groß, Properties und SKOS-Concepts klein) sichert `tests/test_41_naming_convention.py`. Der Handbefehl bleibt der direkte Weg zum vollständigen Konsolenreport.
 
 ### Snapshot-Diff (bei Daten-Updates)
 

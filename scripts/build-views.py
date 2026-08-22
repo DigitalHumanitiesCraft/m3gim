@@ -356,6 +356,41 @@ def ensure_list(value):
     return [value]
 
 
+def build_performance_index(nodes):
+    """Map m3gim:Performance @id to its stage role labels.
+
+    E-96 replaced the record attribute m3gim:hasPerformanceRole with
+    m3gim:Performance and m3gim:StageRole as top-level graph entities. A record
+    reaches its stage roles only via m3gim:hasPerformance -> Performance ->
+    m3gim:hasStageRole -> StageRole.rico:name.
+    """
+    role_labels = {
+        n.get('@id'): n.get('rico:name')
+        for n in nodes
+        if isinstance(n, dict) and n.get('@type') == 'm3gim:StageRole'
+    }
+    index = {}
+    for node in nodes:
+        if not isinstance(node, dict) or node.get('@type') != 'm3gim:Performance':
+            continue
+        labels = []
+        for ref in ensure_list(node.get('m3gim:hasStageRole')):
+            label = role_labels.get(ref.get('@id')) if isinstance(ref, dict) else None
+            if label:
+                labels.append(label)
+        index[node.get('@id')] = labels
+    return index
+
+
+def stage_role_names(record, perf_index):
+    """Stage role labels a record points to, in record order, duplicates kept."""
+    names = []
+    for ref in ensure_list(record.get('m3gim:hasPerformance')):
+        if isinstance(ref, dict):
+            names.extend(perf_index.get(ref.get('@id'), []))
+    return names
+
+
 # Normalisierung: "Wagner, Richard" → "Wagner" (Kurzform fuer Farb-Zuordnung)
 KOMPONISTEN_NORMALISIERUNG = {
     'wagner, richard': 'Wagner',
@@ -460,7 +495,7 @@ def _extract_ort_from_record(record):
     return ort, ort_detail
 
 
-def _extract_werk_from_record(record):
+def _extract_werk_from_record(record, perf_index):
     """Extract musical work + composer from record."""
     werk = None
     komponist = None
@@ -480,10 +515,10 @@ def _extract_werk_from_record(record):
 
     # Determine gattung
     title_lower = (record.get('rico:title') or '').lower()
-    roles = ensure_list(record.get('m3gim:hasPerformanceRole'))
+    # A named stage part marks an opera; "Alt Solo" is a concert billing.
     has_character_role = any(
-        isinstance(r, dict) and r.get('name', '') and r.get('name', '') not in ('Alt Solo',)
-        for r in roles
+        name and name not in ('Alt Solo',)
+        for name in stage_role_names(record, perf_index)
     )
 
     if any(kw in title_lower for kw in OPER_KEYWORDS) or has_character_role:
@@ -498,21 +533,21 @@ def _extract_werk_from_record(record):
     return werk, komponist, gattung
 
 
-def _extract_rolle_from_record(record):
-    """Extract Malaniuk's performance role from record."""
-    roles = ensure_list(record.get('m3gim:hasPerformanceRole'))
-    for role in roles:
-        if isinstance(role, dict):
-            role_type = (role.get('role') or '').lower()
-            if role_type in ('aufführung', 'interpret:in', 'premiere', 'auftritt'):
-                return role.get('name')
-    # First role as fallback
-    if roles and isinstance(roles[0], dict):
-        return roles[0].get('name')
-    return None
+def _extract_rolle_from_record(record, perf_index):
+    """The one stage part a record attests, or None when it is ambiguous.
+
+    E-96 dropped the XLSX role qualifier (auffuehrung, interpret:in, erwaehnt,
+    repertoire) that once told which part belonged to the estate creator. A
+    record naming several parts, typically a cast sheet, therefore no longer
+    identifies hers, and picking the first yields parts outside her voice type.
+    Only a record naming exactly one part is reported until the Participation
+    model (E-128) binds person, part and performance again.
+    """
+    names = stage_role_names(record, perf_index)
+    return names[0] if len(names) == 1 else None
 
 
-def _categorize_auftritt(ort, jahr, title, roles_raw):
+def _categorize_auftritt(ort, jahr, title):
     """Determine auftritt category: engagement, festspiel, gastspiel, konzert."""
     title_lower = (title or '').lower()
 
@@ -524,27 +559,21 @@ def _categorize_auftritt(ort, jahr, title, roles_raw):
     if any(kw in title_lower for kw in FESTSPIEL_KEYWORDS):
         return 'festspiel'
 
-    # 3. Gastspiel role in performance roles
-    roles = ensure_list(roles_raw)
-    for r in roles:
-        if isinstance(r, dict) and (r.get('role') or '').lower() == 'gastspiel':
-            return 'gastspiel'
-
-    # 4. Engagement: known city within engagement period
+    # 3. Engagement: known city within engagement period
     if ort and jahr and ort in ENGAGEMENT_ZEITRAEUME:
         von, bis = ENGAGEMENT_ZEITRAEUME[ort]
         if von <= jahr <= bis:
             return 'engagement'
 
-    # 5. Konzert-Keywords
+    # 4. Konzert-Keywords
     if any(kw in title_lower for kw in KONZERT_KEYWORDS):
         return 'konzert'
 
-    # 6. Main city outside engagement period → engagement (broader sense)
+    # 5. Main city outside engagement period → engagement (broader sense)
     if ort in LOCATION_ORDER:
         return 'engagement'
 
-    # 7. Fallback
+    # 6. Fallback
     return 'gastspiel'
 
 
@@ -569,6 +598,9 @@ def extract_auftritte(records):
         n['@id']: n for n in records
         if isinstance(n, dict) and n.get('@type') == 'm3gim:SpatiotemporalEvent'
     }
+
+    # E-96: stage roles reach the record through m3gim:Performance.
+    perf_index = build_performance_index(records)
 
     for record in records:
         if record.get('@type') == 'rico:RecordSet':
@@ -613,8 +645,8 @@ def extract_auftritte(records):
 
         # Extract components
         ort, ort_detail = _extract_ort_from_record(record)
-        werk, komponist, gattung = _extract_werk_from_record(record)
-        rolle = _extract_rolle_from_record(record)
+        werk, komponist, gattung = _extract_werk_from_record(record, perf_index)
+        rolle = _extract_rolle_from_record(record, perf_index)
 
         # Pass 1: Structured data (DatedEvent/STE date + location/agent auffuehrungsort)
         has_event_date = len(event_dates) > 0
@@ -663,7 +695,7 @@ def extract_auftritte(records):
                         ort_detail = venue.title()
                         break
 
-        kategorie = _categorize_auftritt(ort, jahr, title, record.get('m3gim:hasPerformanceRole'))
+        kategorie = _categorize_auftritt(ort, jahr, title)
 
         raw_auftritte.append({
             'ort': ort,
@@ -1009,6 +1041,9 @@ def build_kosmos(records):
     """
     print('Building kosmos.json...')
 
+    # E-96: stage roles reach the record through m3gim:Performance.
+    perf_index = build_performance_index(records)
+
     # Aggregate by composer with location tracking
     komponisten_data = defaultdict(lambda: {
         'dokumente': 0,
@@ -1107,12 +1142,8 @@ def build_kosmos(records):
                             if loc_name:
                                 werk_data['orte'][loc_name] += 1
                     # Roles from structured data
-                    perf_roles = ensure_list(record.get('m3gim:hasPerformanceRole'))
-                    for pr in perf_roles:
-                        if isinstance(pr, dict):
-                            rolle_name = pr.get('name', '')
-                            if rolle_name:
-                                werk_data['rollen'][rolle_name] += 1
+                    for rolle_name in stage_role_names(record, perf_index):
+                        werk_data['rollen'][rolle_name] += 1
 
         # Method 2: Fallback title matching (Iteration 1 approach)
         komponist = get_komponist_from_title(title)

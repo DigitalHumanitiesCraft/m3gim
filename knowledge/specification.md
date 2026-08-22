@@ -7,7 +7,7 @@ status: reviewed
 language: de
 version: 0.4
 created: 2026-06-17
-updated: 2026-08-21
+updated: 2026-08-22
 authors: [Christopher Pollin]
 generated-with: Claude Code
 method:
@@ -264,4 +264,5 @@ Nur offene, blockierte und zurückgestellte Pakete; Erledigtes steht in [journal
 | Weitere Reconciliation-Runde | optional | Unmatched-Restliste, nicht blockierend |
 | Test-Regression NIM_168 | quellseitig offen | `test_04` mit xfail strict gelockt, Folio-Granularität zwischen den Quelltabellen, siehe Datenfehler-Register QF-07 |
 | Nächste Datenstufe Forschungsdaten | offen | Stufen 1 bis 3, siehe oben |
+| Anreicherungslauf nach der Präzisions-Normalisierung | offen | `enrich-wikidata.py --force` plus Transformationslauf; bis dahin trägt der Datensatz die Wikidata-Nullform, `test_39` hält das mit xfail strict, siehe Datenfehler-Register AF-04 und E-132 |
 | Deferred Aufräumarbeiten und Modell-Erweiterungen | zurückgestellt | siehe § Deferred |

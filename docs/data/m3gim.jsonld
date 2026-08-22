@@ -4467,27 +4467,6 @@
       "rico:hasOrHadLanguage": "en, fr",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "m3gim:agentRelation": [
-        {
-          "@type": "agrelon:HasCorrespondent",
-          "agrelon:hasSubject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208",
-            "owl:sameAs": "http://www.wikidata.org/entity/Q94208"
-          },
-          "agrelon:hasObject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208"
-          },
-          "agrelon:metadataProvenance": {
-            "@id": "m3gim:NIM_004_1"
-          },
-          "m3gim:xlsxSource": {
-            "m3gim:xlsxSheet": "Box_01",
-            "m3gim:xlsxRow": 37
-          }
-        }
-      ],
       "m3gim:hasSpatiotemporalEvent": [
         {
           "@id": "m3gim:ste_NIM_004_1_902c53c1"
@@ -10617,25 +10596,6 @@
             "owl:sameAs": "http://www.wikidata.org/entity/Q94208"
           },
           "agrelon:hasObject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208"
-          },
-          "agrelon:metadataProvenance": {
-            "@id": "m3gim:NIM_004_23"
-          },
-          "m3gim:xlsxSource": {
-            "m3gim:xlsxSheet": "Box_01",
-            "m3gim:xlsxRow": 541
-          }
-        },
-        {
-          "@type": "agrelon:HasCorrespondent",
-          "agrelon:hasSubject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208",
-            "owl:sameAs": "http://www.wikidata.org/entity/Q94208"
-          },
-          "agrelon:hasObject": {
             "name": "Warren, Cox"
           },
           "agrelon:metadataProvenance": {
@@ -11725,27 +11685,6 @@
       "rico:hasOrHadLanguage": "en",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "m3gim:agentRelation": [
-        {
-          "@type": "agrelon:HasCorrespondent",
-          "agrelon:hasSubject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208",
-            "owl:sameAs": "http://www.wikidata.org/entity/Q94208"
-          },
-          "agrelon:hasObject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208"
-          },
-          "agrelon:metadataProvenance": {
-            "@id": "m3gim:NIM_004_27"
-          },
-          "m3gim:xlsxSource": {
-            "m3gim:xlsxSheet": "Box_01",
-            "m3gim:xlsxRow": 624
-          }
-        }
-      ],
       "m3gim:hasSpatiotemporalEvent": [
         {
           "@id": "m3gim:ste_NIM_004_27_4f6233fc"
@@ -16349,25 +16288,6 @@
             "m3gim:xlsxSheet": "Box_01",
             "m3gim:xlsxRow": 1064
           }
-        },
-        {
-          "@type": "agrelon:HasCorrespondent",
-          "agrelon:hasSubject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208",
-            "owl:sameAs": "http://www.wikidata.org/entity/Q94208"
-          },
-          "agrelon:hasObject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208"
-          },
-          "agrelon:metadataProvenance": {
-            "@id": "m3gim:NIM_007_1"
-          },
-          "m3gim:xlsxSource": {
-            "m3gim:xlsxSheet": "Box_01",
-            "m3gim:xlsxRow": 1065
-          }
         }
       ],
       "m3gim:hasAssociatedAgent": [
@@ -16458,27 +16378,6 @@
         },
         {
           "@id": "m3gim:ste_NIM_007_2_2d8cb340"
-        }
-      ],
-      "m3gim:agentRelation": [
-        {
-          "@type": "agrelon:HasCorrespondent",
-          "agrelon:hasSubject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208",
-            "owl:sameAs": "http://www.wikidata.org/entity/Q94208"
-          },
-          "agrelon:hasObject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208"
-          },
-          "agrelon:metadataProvenance": {
-            "@id": "m3gim:NIM_007_2"
-          },
-          "m3gim:xlsxSource": {
-            "m3gim:xlsxSheet": "Box_01",
-            "m3gim:xlsxRow": 1080
-          }
         }
       ],
       "m3gim:hasPerformance": [
@@ -17458,27 +17357,6 @@
           "@id": "m3gim:ste_NIM_007_5_2_0d94cdf3"
         }
       ],
-      "m3gim:agentRelation": [
-        {
-          "@type": "agrelon:IsHasPatron",
-          "agrelon:hasSubject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208",
-            "owl:sameAs": "http://www.wikidata.org/entity/Q94208"
-          },
-          "agrelon:hasObject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208"
-          },
-          "agrelon:metadataProvenance": {
-            "@id": "m3gim:NIM_007_5_2"
-          },
-          "m3gim:xlsxSource": {
-            "m3gim:xlsxSheet": "Box_01",
-            "m3gim:xlsxRow": 1433
-          }
-        }
-      ],
       "m3gim:hasAssociatedAgent": [
         {
           "name": "Konzertdirektion",
@@ -17611,27 +17489,6 @@
       "m3gim:hasSpatiotemporalEvent": {
         "@id": "m3gim:ste_NIM_007_5_3_f715b813"
       },
-      "m3gim:agentRelation": [
-        {
-          "@type": "agrelon:IsHasPatron",
-          "agrelon:hasSubject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208",
-            "owl:sameAs": "http://www.wikidata.org/entity/Q94208"
-          },
-          "agrelon:hasObject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208"
-          },
-          "agrelon:metadataProvenance": {
-            "@id": "m3gim:NIM_007_5_3"
-          },
-          "m3gim:xlsxSource": {
-            "m3gim:xlsxSheet": "Box_01",
-            "m3gim:xlsxRow": 1440
-          }
-        }
-      ],
       "m3gim:hasAssociatedAgent": [
         {
           "name": "Konzertdirektion",
@@ -17740,27 +17597,6 @@
         },
         {
           "@id": "m3gim:ste_NIM_007_5_4_a57f4b11"
-        }
-      ],
-      "m3gim:agentRelation": [
-        {
-          "@type": "agrelon:IsHasPatron",
-          "agrelon:hasSubject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208",
-            "owl:sameAs": "http://www.wikidata.org/entity/Q94208"
-          },
-          "agrelon:hasObject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208"
-          },
-          "agrelon:metadataProvenance": {
-            "@id": "m3gim:NIM_007_5_4"
-          },
-          "m3gim:xlsxSource": {
-            "m3gim:xlsxSheet": "Box_01",
-            "m3gim:xlsxRow": 1451
-          }
         }
       ],
       "m3gim:hasAssociatedAgent": [
@@ -17900,27 +17736,6 @@
           "@id": "m3gim:ste_NIM_007_5_5_a8a33388"
         }
       ],
-      "m3gim:agentRelation": [
-        {
-          "@type": "agrelon:IsHasPatron",
-          "agrelon:hasSubject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208",
-            "owl:sameAs": "http://www.wikidata.org/entity/Q94208"
-          },
-          "agrelon:hasObject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208"
-          },
-          "agrelon:metadataProvenance": {
-            "@id": "m3gim:NIM_007_5_5"
-          },
-          "m3gim:xlsxSource": {
-            "m3gim:xlsxSheet": "Box_01",
-            "m3gim:xlsxRow": 1460
-          }
-        }
-      ],
       "m3gim:hasAssociatedAgent": [
         {
           "name": "Wiener Staatsoper",
@@ -18039,27 +17854,6 @@
         },
         {
           "@id": "m3gim:ste_NIM_007_5_6_56c6eac6"
-        }
-      ],
-      "m3gim:agentRelation": [
-        {
-          "@type": "agrelon:IsHasPatron",
-          "agrelon:hasSubject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208",
-            "owl:sameAs": "http://www.wikidata.org/entity/Q94208"
-          },
-          "agrelon:hasObject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208"
-          },
-          "agrelon:metadataProvenance": {
-            "@id": "m3gim:NIM_007_5_6"
-          },
-          "m3gim:xlsxSource": {
-            "m3gim:xlsxSheet": "Box_01",
-            "m3gim:xlsxRow": 1469
-          }
         }
       ],
       "m3gim:hasAssociatedAgent": [
@@ -18184,27 +17978,6 @@
         },
         {
           "@id": "m3gim:ste_NIM_007_5_7_f63653b8"
-        }
-      ],
-      "m3gim:agentRelation": [
-        {
-          "@type": "agrelon:IsHasPatron",
-          "agrelon:hasSubject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208",
-            "owl:sameAs": "http://www.wikidata.org/entity/Q94208"
-          },
-          "agrelon:hasObject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208"
-          },
-          "agrelon:metadataProvenance": {
-            "@id": "m3gim:NIM_007_5_7"
-          },
-          "m3gim:xlsxSource": {
-            "m3gim:xlsxSheet": "Box_01",
-            "m3gim:xlsxRow": 1477
-          }
         }
       ],
       "m3gim:hasAssociatedAgent": [
@@ -18442,27 +18215,6 @@
       "m3gim:hasSpatiotemporalEvent": {
         "@id": "m3gim:ste_NIM_007_6_018697b4"
       },
-      "m3gim:agentRelation": [
-        {
-          "@type": "agrelon:HasCorrespondent",
-          "agrelon:hasSubject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208",
-            "owl:sameAs": "http://www.wikidata.org/entity/Q94208"
-          },
-          "agrelon:hasObject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208"
-          },
-          "agrelon:metadataProvenance": {
-            "@id": "m3gim:NIM_007_6"
-          },
-          "m3gim:xlsxSource": {
-            "m3gim:xlsxSheet": "Box_01",
-            "m3gim:xlsxRow": 1134
-          }
-        }
-      ],
       "m3gim:hasPerformance": {
         "@id": "m3gim:perf_NIM_007_6_197"
       },
@@ -18537,27 +18289,6 @@
       "m3gim:hasSpatiotemporalEvent": {
         "@id": "m3gim:ste_NIM_007_7_e11b2771"
       },
-      "m3gim:agentRelation": [
-        {
-          "@type": "agrelon:HasCorrespondent",
-          "agrelon:hasSubject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208",
-            "owl:sameAs": "http://www.wikidata.org/entity/Q94208"
-          },
-          "agrelon:hasObject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208"
-          },
-          "agrelon:metadataProvenance": {
-            "@id": "m3gim:NIM_007_7"
-          },
-          "m3gim:xlsxSource": {
-            "m3gim:xlsxSheet": "Box_01",
-            "m3gim:xlsxRow": 1140
-          }
-        }
-      ],
       "m3gim:hasAssociatedAgent": [
         {
           "name": "Bayerische Staatsoper",
@@ -19200,27 +18931,6 @@
           "@id": "m3gim:ste_NIM_007_9_06846c91"
         }
       ],
-      "m3gim:agentRelation": [
-        {
-          "@type": "agrelon:HasCorrespondent",
-          "agrelon:hasSubject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208",
-            "owl:sameAs": "http://www.wikidata.org/entity/Q94208"
-          },
-          "agrelon:hasObject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208"
-          },
-          "agrelon:metadataProvenance": {
-            "@id": "m3gim:NIM_007_9"
-          },
-          "m3gim:xlsxSource": {
-            "m3gim:xlsxSheet": "Box_01",
-            "m3gim:xlsxRow": 1197
-          }
-        }
-      ],
       "m3gim:hasPerformance": {
         "@id": "m3gim:perf_NIM_007_9_198"
       },
@@ -19361,27 +19071,6 @@
           "@id": "m3gim:ste_NIM_007_10_b91c6e11"
         }
       ],
-      "m3gim:agentRelation": [
-        {
-          "@type": "agrelon:HasCorrespondent",
-          "agrelon:hasSubject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208",
-            "owl:sameAs": "http://www.wikidata.org/entity/Q94208"
-          },
-          "agrelon:hasObject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208"
-          },
-          "agrelon:metadataProvenance": {
-            "@id": "m3gim:NIM_007_10"
-          },
-          "m3gim:xlsxSource": {
-            "m3gim:xlsxSheet": "Box_01",
-            "m3gim:xlsxRow": 1209
-          }
-        }
-      ],
       "m3gim:hasAssociatedAgent": [
         {
           "name": "Bayerische Staatsoper",
@@ -19469,27 +19158,6 @@
       "m3gim:hasSpatiotemporalEvent": {
         "@id": "m3gim:ste_NIM_007_11_0cd1fd62"
       },
-      "m3gim:agentRelation": [
-        {
-          "@type": "agrelon:HasCorrespondent",
-          "agrelon:hasSubject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208",
-            "owl:sameAs": "http://www.wikidata.org/entity/Q94208"
-          },
-          "agrelon:hasObject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208"
-          },
-          "agrelon:metadataProvenance": {
-            "@id": "m3gim:NIM_007_11"
-          },
-          "m3gim:xlsxSource": {
-            "m3gim:xlsxSheet": "Box_01",
-            "m3gim:xlsxRow": 1229
-          }
-        }
-      ],
       "m3gim:hasAssociatedAgent": [
         {
           "name": "Sekretär der Tonhalle-Gesellschaft Zürich",
@@ -22305,27 +21973,6 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "m3gim:agentRelation": [
-        {
-          "@type": "agrelon:HasCorrespondent",
-          "agrelon:hasSubject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208",
-            "owl:sameAs": "http://www.wikidata.org/entity/Q94208"
-          },
-          "agrelon:hasObject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208"
-          },
-          "agrelon:metadataProvenance": {
-            "@id": "m3gim:NIM_011_1"
-          },
-          "m3gim:xlsxSource": {
-            "m3gim:xlsxSheet": "Box_01",
-            "m3gim:xlsxRow": 1486
-          }
-        }
-      ],
       "m3gim:hasSpatiotemporalEvent": [
         {
           "@id": "m3gim:ste_NIM_011_1_527789f9"
@@ -22453,27 +22100,6 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "m3gim:agentRelation": [
-        {
-          "@type": "agrelon:HasCorrespondent",
-          "agrelon:hasSubject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208",
-            "owl:sameAs": "http://www.wikidata.org/entity/Q94208"
-          },
-          "agrelon:hasObject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208"
-          },
-          "agrelon:metadataProvenance": {
-            "@id": "m3gim:NIM_011_2"
-          },
-          "m3gim:xlsxSource": {
-            "m3gim:xlsxSheet": "Box_01",
-            "m3gim:xlsxRow": 1498
-          }
-        }
-      ],
       "m3gim:hasSpatiotemporalEvent": {
         "@id": "m3gim:ste_NIM_011_2_ab9424a0"
       },
@@ -22619,26 +22245,15 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "m3gim:agentRelation": [
+      "m3gim:hasSpatiotemporalEvent": [
         {
-          "@type": "agrelon:HasCorrespondent",
-          "agrelon:hasSubject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208",
-            "owl:sameAs": "http://www.wikidata.org/entity/Q94208"
-          },
-          "agrelon:hasObject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208"
-          },
-          "agrelon:metadataProvenance": {
-            "@id": "m3gim:NIM_011_3"
-          },
-          "m3gim:xlsxSource": {
-            "m3gim:xlsxSheet": "Box_01",
-            "m3gim:xlsxRow": 1510
-          }
+          "@id": "m3gim:ste_NIM_011_3_ab9424a0"
         },
+        {
+          "@id": "m3gim:ste_NIM_011_3_0a9d7fe4"
+        }
+      ],
+      "m3gim:agentRelation": [
         {
           "@type": "agrelon:HasEmployeeEmployer",
           "agrelon:hasSubject": {
@@ -22660,14 +22275,6 @@
             "m3gim:xlsxSheet": "Box_01",
             "m3gim:xlsxRow": 1515
           }
-        }
-      ],
-      "m3gim:hasSpatiotemporalEvent": [
-        {
-          "@id": "m3gim:ste_NIM_011_3_ab9424a0"
-        },
-        {
-          "@id": "m3gim:ste_NIM_011_3_0a9d7fe4"
         }
       ],
       "m3gim:hasAssociatedAgent": [
@@ -22782,27 +22389,6 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "m3gim:agentRelation": [
-        {
-          "@type": "agrelon:HasCorrespondent",
-          "agrelon:hasSubject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208",
-            "owl:sameAs": "http://www.wikidata.org/entity/Q94208"
-          },
-          "agrelon:hasObject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208"
-          },
-          "agrelon:metadataProvenance": {
-            "@id": "m3gim:NIM_011_4"
-          },
-          "m3gim:xlsxSource": {
-            "m3gim:xlsxSheet": "Box_01",
-            "m3gim:xlsxRow": 1518
-          }
-        }
-      ],
       "m3gim:hasSpatiotemporalEvent": {
         "@id": "m3gim:ste_NIM_011_4_ab9424a0"
       },
@@ -22895,27 +22481,6 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "m3gim:agentRelation": [
-        {
-          "@type": "agrelon:HasCorrespondent",
-          "agrelon:hasSubject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208",
-            "owl:sameAs": "http://www.wikidata.org/entity/Q94208"
-          },
-          "agrelon:hasObject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208"
-          },
-          "agrelon:metadataProvenance": {
-            "@id": "m3gim:NIM_011_5"
-          },
-          "m3gim:xlsxSource": {
-            "m3gim:xlsxSheet": "Box_01",
-            "m3gim:xlsxRow": 1525
-          }
-        }
-      ],
       "m3gim:hasSpatiotemporalEvent": {
         "@id": "m3gim:ste_NIM_011_5_ab9424a0"
       },
@@ -23227,27 +22792,6 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "m3gim:agentRelation": [
-        {
-          "@type": "agrelon:HasCorrespondent",
-          "agrelon:hasSubject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208",
-            "owl:sameAs": "http://www.wikidata.org/entity/Q94208"
-          },
-          "agrelon:hasObject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208"
-          },
-          "agrelon:metadataProvenance": {
-            "@id": "m3gim:NIM_011_7"
-          },
-          "m3gim:xlsxSource": {
-            "m3gim:xlsxSheet": "Box_01",
-            "m3gim:xlsxRow": 1556
-          }
-        }
-      ],
       "m3gim:hasSpatiotemporalEvent": {
         "@id": "m3gim:ste_NIM_011_7_ab9424a0"
       },
@@ -23502,27 +23046,6 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "m3gim:agentRelation": [
-        {
-          "@type": "agrelon:HasCorrespondent",
-          "agrelon:hasSubject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208",
-            "owl:sameAs": "http://www.wikidata.org/entity/Q94208"
-          },
-          "agrelon:hasObject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208"
-          },
-          "agrelon:metadataProvenance": {
-            "@id": "m3gim:NIM_011_9"
-          },
-          "m3gim:xlsxSource": {
-            "m3gim:xlsxSheet": "Box_01",
-            "m3gim:xlsxRow": 1574
-          }
-        }
-      ],
       "m3gim:hasSpatiotemporalEvent": {
         "@id": "m3gim:ste_NIM_011_9_ab9424a0"
       },
@@ -23763,27 +23286,6 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "m3gim:agentRelation": [
-        {
-          "@type": "agrelon:HasCorrespondent",
-          "agrelon:hasSubject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208",
-            "owl:sameAs": "http://www.wikidata.org/entity/Q94208"
-          },
-          "agrelon:hasObject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208"
-          },
-          "agrelon:metadataProvenance": {
-            "@id": "m3gim:NIM_011_11"
-          },
-          "m3gim:xlsxSource": {
-            "m3gim:xlsxSheet": "Box_01",
-            "m3gim:xlsxRow": 1598
-          }
-        }
-      ],
       "m3gim:hasSpatiotemporalEvent": [
         {
           "@id": "m3gim:ste_NIM_011_11_5743442b"
@@ -24737,27 +24239,6 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "m3gim:agentRelation": [
-        {
-          "@type": "agrelon:HasCorrespondent",
-          "agrelon:hasSubject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208",
-            "owl:sameAs": "http://www.wikidata.org/entity/Q94208"
-          },
-          "agrelon:hasObject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208"
-          },
-          "agrelon:metadataProvenance": {
-            "@id": "m3gim:NIM_011_13"
-          },
-          "m3gim:xlsxSource": {
-            "m3gim:xlsxSheet": "Box_01",
-            "m3gim:xlsxRow": 1666
-          }
-        }
-      ],
       "m3gim:hasSpatiotemporalEvent": {
         "@id": "m3gim:ste_NIM_011_13_7799c83d"
       },
@@ -25290,27 +24771,6 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 2 Seiten",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "m3gim:agentRelation": [
-        {
-          "@type": "agrelon:HasCorrespondent",
-          "agrelon:hasSubject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208",
-            "owl:sameAs": "http://www.wikidata.org/entity/Q94208"
-          },
-          "agrelon:hasObject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208"
-          },
-          "agrelon:metadataProvenance": {
-            "@id": "m3gim:NIM_011_16"
-          },
-          "m3gim:xlsxSource": {
-            "m3gim:xlsxSheet": "Box_01",
-            "m3gim:xlsxRow": 1698
-          }
-        }
-      ],
       "m3gim:hasSpatiotemporalEvent": [
         {
           "@id": "m3gim:ste_NIM_011_16_7bb42397"
@@ -25501,25 +24961,6 @@
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
       "m3gim:agentRelation": [
-        {
-          "@type": "agrelon:HasCorrespondent",
-          "agrelon:hasSubject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208",
-            "owl:sameAs": "http://www.wikidata.org/entity/Q94208"
-          },
-          "agrelon:hasObject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208"
-          },
-          "agrelon:metadataProvenance": {
-            "@id": "m3gim:NIM_011_18"
-          },
-          "m3gim:xlsxSource": {
-            "m3gim:xlsxSheet": "Box_01",
-            "m3gim:xlsxRow": 1713
-          }
-        },
         {
           "@type": "agrelon:HasProfessionalContact",
           "agrelon:hasSubject": {
@@ -25926,27 +25367,6 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "m3gim:agentRelation": [
-        {
-          "@type": "agrelon:HasCorrespondent",
-          "agrelon:hasSubject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208",
-            "owl:sameAs": "http://www.wikidata.org/entity/Q94208"
-          },
-          "agrelon:hasObject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208"
-          },
-          "agrelon:metadataProvenance": {
-            "@id": "m3gim:NIM_011_20"
-          },
-          "m3gim:xlsxSource": {
-            "m3gim:xlsxSheet": "Box_01",
-            "m3gim:xlsxRow": 1738
-          }
-        }
-      ],
       "m3gim:hasSpatiotemporalEvent": [
         {
           "@id": "m3gim:ste_NIM_011_20_9fb1de7c"
@@ -26686,27 +26106,6 @@
       "rico:hasOrHadLanguage": "it",
       "rico:hasExtent": "1 Blatt, 1 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "m3gim:agentRelation": [
-        {
-          "@type": "agrelon:HasCorrespondent",
-          "agrelon:hasSubject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208",
-            "owl:sameAs": "http://www.wikidata.org/entity/Q94208"
-          },
-          "agrelon:hasObject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208"
-          },
-          "agrelon:metadataProvenance": {
-            "@id": "m3gim:NIM_022_3"
-          },
-          "m3gim:xlsxSource": {
-            "m3gim:xlsxSheet": "Box_02",
-            "m3gim:xlsxRow": 37
-          }
-        }
-      ],
       "m3gim:hasSpatiotemporalEvent": {
         "@id": "m3gim:ste_NIM_022_3_f1191a3a"
       },
@@ -27293,27 +26692,6 @@
         },
         {
           "@id": "m3gim:ste_NIM_023_2_9dfdd9dc"
-        }
-      ],
-      "m3gim:agentRelation": [
-        {
-          "@type": "agrelon:HasCorrespondent",
-          "agrelon:hasSubject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208",
-            "owl:sameAs": "http://www.wikidata.org/entity/Q94208"
-          },
-          "agrelon:hasObject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208"
-          },
-          "agrelon:metadataProvenance": {
-            "@id": "m3gim:NIM_023_2"
-          },
-          "m3gim:xlsxSource": {
-            "m3gim:xlsxSheet": "Box_02",
-            "m3gim:xlsxRow": 91
-          }
         }
       ],
       "m3gim:hasPerformance": [
@@ -44810,27 +44188,6 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 2 Seiten",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "m3gim:agentRelation": [
-        {
-          "@type": "agrelon:HasCorrespondent",
-          "agrelon:hasSubject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208",
-            "owl:sameAs": "http://www.wikidata.org/entity/Q94208"
-          },
-          "agrelon:hasObject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208"
-          },
-          "agrelon:metadataProvenance": {
-            "@id": "m3gim:NIM_139_110"
-          },
-          "m3gim:xlsxSource": {
-            "m3gim:xlsxSheet": "Box 6",
-            "m3gim:xlsxRow": 84
-          }
-        }
-      ],
       "m3gim:hasSpatiotemporalEvent": [
         {
           "@id": "m3gim:ste_NIM_139_110_599b54dd"
@@ -46999,27 +46356,6 @@
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 4 Seiten",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "m3gim:agentRelation": [
-        {
-          "@type": "agrelon:HasCorrespondent",
-          "agrelon:hasSubject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208",
-            "owl:sameAs": "http://www.wikidata.org/entity/Q94208"
-          },
-          "agrelon:hasObject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208"
-          },
-          "agrelon:metadataProvenance": {
-            "@id": "m3gim:NIM_142_20"
-          },
-          "m3gim:xlsxSource": {
-            "m3gim:xlsxSheet": "Box 6",
-            "m3gim:xlsxRow": 250
-          }
-        }
-      ],
       "m3gim:hasAssociatedAgent": [
         {
           "name": "Malaniuk, Ira",
@@ -48872,27 +48208,6 @@
       "rico:hasOrHadLanguage": "fr",
       "rico:hasExtent": "2 Blatt, 2 Seite",
       "m3gim:bearbeitungsstand": "abgeschlossen",
-      "m3gim:agentRelation": [
-        {
-          "@type": "agrelon:HasCorrespondent",
-          "agrelon:hasSubject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208",
-            "owl:sameAs": "http://www.wikidata.org/entity/Q94208"
-          },
-          "agrelon:hasObject": {
-            "name": "Malaniuk, Ira",
-            "@id": "wd:Q94208"
-          },
-          "agrelon:metadataProvenance": {
-            "@id": "m3gim:NIM_142_28"
-          },
-          "m3gim:xlsxSource": {
-            "m3gim:xlsxSheet": "Box 6",
-            "m3gim:xlsxRow": 387
-          }
-        }
-      ],
       "m3gim:hasAssociatedAgent": [
         {
           "name": "Hirsch, Robert",
@@ -49657,7 +48972,7 @@
     {
       "@id": "m3gim-dft:programm",
       "@type": "skos:Concept",
-      "skos:prefLabel": "Programmheft"
+      "skos:prefLabel": "Programm"
     },
     {
       "@id": "m3gim-dft:quittung",
@@ -61975,7 +61290,7 @@
       "rico:name": "Matelot"
     }
   ],
-  "m3gim:exportDate": "2026-06-23T09:16:59.622663",
+  "m3gim:exportDate": "2026-08-22T08:47:25.387466",
   "m3gim:recordCount": 895,
   "m3gim:konvolutCount": 17,
   "m3gim:approvedManualMatches": 261,

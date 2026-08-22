@@ -167,10 +167,11 @@ DOKUMENTTYP_TO_DFT = {
     "zeitungsausschnitt": "m3gim-dft:zeitungsausschnitt",
     "kritik": "m3gim-dft:kritik",
     "rezension": "m3gim-dft:rezension",
-    # Programm-Hierarchie
+    # Programm-Hierarchie: one canonical concept, the finer genre names stay
+    # accepted source values as synonyms (decision template § 3).
     "programm": "m3gim-dft:programm",
-    "programmheft": "m3gim-dft:programmheft",
-    "konzertprogramm": "m3gim-dft:programmheft",
+    "programmheft": "m3gim-dft:programm",
+    "konzertprogramm": "m3gim-dft:programm",
     # Biographisch-Hierarchie
     "biographisch": "m3gim-dft:biographisch",
     "biographie": "m3gim-dft:biographie",
@@ -195,6 +196,7 @@ DOKUMENTTYP_TO_DFT = {
     "urkunde": "m3gim-dft:urkunde",
     "zeugnis": "m3gim-dft:urkunde",
     "widmung": "m3gim-dft:dokument",
+    "fotografie": "m3gim-dft:fotografie",
     "photokopie": "m3gim-dft:photokopie",
     "quittung": "m3gim-dft:quittung",
     "typoskript": "m3gim-dft:typoskript",
@@ -221,7 +223,6 @@ DFT_BROADER = {
     "kritik": "presse",
     "rezension": "presse",
     "musikzeitschrift": "presse",  # E-101
-    "programmheft": "programm",
     "biographie": "biographisch",
     "autobiografie": "biographisch",
     "lebenslauf": "biographisch",
@@ -249,10 +250,10 @@ DFT_LABELS = {
     "kritik": "Kritik",
     "rezension": "Rezension",
     "musikzeitschrift": "Musikzeitschrift",
-    "programm": "Programmheft",
-    "programmheft": "Programmheft",
+    "programm": "Programm",
     "vertrag": "Vertrag",
     "plakat": "Plakat",
+    "fotografie": "Fotografie",
     "notiz": "Notiz",
     "typoskript": "Typoskript",
     "photokopie": "Photokopie",
@@ -619,6 +620,14 @@ def convert_objekt(row: pd.Series, folio_col: str = None,
         dft = DOKUMENTTYP_TO_DFT.get(dokumenttyp)
         if dft:
             record["rico:hasDocumentaryFormType"] = {"@id": dft}
+        else:
+            # Without this the record silently loses its type and drops out of
+            # every type-based view; name value and source cell instead.
+            where = record["rico:identifier"]
+            if xlsx_row is not None:
+                where += f", Objekte.xlsx Zeile {xlsx_row}"
+            print(f"  WARNUNG: Dokumenttyp '{dokumenttyp}' ohne Eintrag in "
+                  f"DOKUMENTTYP_TO_DFT — {where}")
 
     # Sprache
     sprache = normalize_str(row.get('sprache'))
@@ -1209,6 +1218,16 @@ def process_verknuepfungen(df: pd.DataFrame, indices: dict) -> dict:
     return relations
 
 
+def _is_fonds_subject(agent_entry: dict) -> bool:
+    """True if the linked agent is the fonds creator herself. The Wikidata id
+    decides; the name is the fallback because a share of the linked agents
+    carries no id at all."""
+    agent_id = agent_entry.get("@id")
+    if agent_id:
+        return agent_id == MALANIUK_SUBJECT["@id"]
+    return agent_entry.get("name") == MALANIUK_SUBJECT["name"]
+
+
 def _maybe_add_agrelon(record: dict, typ: str, rolle: str, agent_entry: dict,
                        rel: dict | None = None):
     """Emittiert eine agrelon:*-Relation, wenn (typ, rolle) in AGRELON_MAPPING.
@@ -1220,6 +1239,12 @@ def _maybe_add_agrelon(record: dict, typ: str, rolle: str, agent_entry: dict,
     """
     mapping = AGRELON_MAPPING.get((typ, rolle))
     if not mapping:
+        return
+    if _is_fonds_subject(agent_entry):
+        # Subject and object would be the same person ("Malaniuk corresponded
+        # with Malaniuk"): semantically empty and below the minQualifiedCardi-
+        # nality of rico:CorrespondenceRelation. The role stays recorded as
+        # m3gim:hasAssociatedAgent, so no information is lost.
         return
     agrelon_class, _prop = mapping
     rel_entry = {

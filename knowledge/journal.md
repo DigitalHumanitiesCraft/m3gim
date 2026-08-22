@@ -7,7 +7,7 @@ status: active
 language: de
 version: 0.4
 created: 2026-02-19
-updated: 2026-08-21
+updated: 2026-08-22
 authors: [Christopher Pollin]
 generated-with: Claude Code
 method:
@@ -232,3 +232,23 @@ In [testing.md](testing.md) steht der Browserteil als optionales Extra mit Insta
 Als zugesicherte Eigenschaft dokumentiert ist schließlich der Nicht-Determinismus mit Ansage. Ein Rerun erzeugt bitgleiche Artefakte bis auf `m3gim:exportDate` im Hauptartefakt und das Feld `generated` in den abgeleiteten Ansichten; der Doppellauf aus zwei unabhängigen frischen Klonen in der Verifikation hat das belegt, die beiden Felder sind am Code nachgeprüft. Ein Diff, der über diese Zeilen hinausgeht, ist eine echte Änderung.
 
 **Verifikation.** `python -m pytest tests/` grün (inklusive Determinismus- und Smoke-Test, da Playwright in dieser Umgebung installiert ist), `node --test tests/frontend/*.test.mjs` grün, `python vocab/check-coverage.py` meldet volle Abdeckung, `python scripts/audit-data.py` meldet keine Fehler. Alle gesetzten Markdown-Links maschinell gegen den Dateibestand geprüft.
+
+---
+
+## Session 63 (2026-08-22): Nachzug auf die fünf bestätigten Modellierungsregeln
+
+Die Projektleitung hat am 2026-08-21 fünf Modellierungsregeln bestätigt, die bis dahin nur außerhalb des Repositorys festgehalten waren. Diese Runde bringt Entscheidungslog, Datenfehler-Register, formales Vokabular, Modell-Spezifikation und Repo-Anleitung damit in Übereinstimmung. Skripte, Tests, Frontend und die erzeugten Artefakte sind unberührt geblieben, an ihnen arbeitet eine zweite Instanz.
+
+Das Entscheidungslog führt die Regeln als E-129 bis E-133, je mit Gegenstand, Begründung und Auswirkung; die ausführliche Herleitung bleibt in der Entscheidungsvorlage `data/reports/vocabulary-decisions-2026-08-21.md`. E-129 unterdrückt die bedeutungslosen Selbstbeziehungen, E-130 legt Zuordnung und Anzeigelabel für den Dokumenttyp Fotografie an, E-131 macht `programm` zum kanonischen Begriff seines Astes mit `programmheft` und `konzertprogramm` als Synonymen, E-132 normalisiert die angereicherten Zeitwerte auf ihre belegte Präzision, und E-133 stellt das formale Vokabular in die Spec-Hierarchie und setzt den Abdeckungsprüfer als Test-Gate. Die Leitplanke Spec-first nennt das Vokabular jetzt als eigene Stufe zwischen [data.md](data.md) und dem Test.
+
+Der Handoff-Punkt zu den vier fachlichen Entscheidungen ist erledigt und aus der Process Inbox entfernt. Gegenstand waren die vier offenen Fragen der Vokabular-Formalisierung, Quelle die Entscheidungsvorlage vom 2026-08-21, Ziel Entscheidungslog, Datenfehler-Register, Vokabular und Modell-Spezifikation. Ergebnis sind die fünf Einträge E-129 bis E-133 samt Nachzug in den genannten Dokumenten. Der zweite Punkt der Inbox, der Referenznachzug der umbenannten Wissensdokumente in Kommentaren und Docstrings, bleibt offen.
+
+Im [Datenfehler-Register](data-errors.md) steht AF-04 jetzt in seinem tatsächlichen Umfang. Die Nullform der Zeitwerte betraf Geburts-, Sterbe- und Uraufführungsdaten gleichermaßen, weil alle vier Properties aus derselben Codestelle stammen; der bisherige Eintrag nannte allein die Gründungsdaten der Institutionen. Die Ursache ist behoben, der erzeugte Datensatz trägt die Nullform weiter, solange der Anreicherungscache aus dem Lauf vor der Änderung stammt, was ein strikter xfail-Marker in `tests/test_39_date_validity.py` festhält; der ausstehende Anreicherungslauf steht als Zeile im Status-Tracker von [specification.md](specification.md). Der Pipeline-Befund zu den Selbstbezügen unter den verwandten Befunden ist auf E-129 nachgezogen. Die beiden Quellfehler QF-18 und QF-19 sind gegen den Datensatz geprüft und von den Entscheidungen unberührt, der Jahrhundertdreher im Erstelldatum und die Personenrolle in der Finanzspalte stehen unverändert am Record `UAKUG/NIM_011 7` und bleiben beim Erschließungsteam.
+
+Im Vokabular trägt `m3gim-dft:programm` das Label Programm und führt Programmheft und Konzertprogramm als `skos:altLabel`, das eigene Konzept `m3gim-dft:programmheft` ist entfallen. Die redaktionelle Notiz an `m3gim-dft:fotografie` ist gestrichen, weil die Zuordnung besteht; die Notiz an `m3gim:inception` benennt jetzt EDTF Level 0 als Wertform, während der Zeichenkettentyp bleibt, weil die Werte je nach Präzision unterschiedlich lang sind. In [data.md](data.md) ist der Vokabularbaum in § 12 einstufig, die beiden dort geführten Abweichungen sind als entschieden vermerkt, und der Abschnitt zu den Normdaten-Properties nennt die Wertform der angereicherten Zeitwerte. Die [Erfassungsrichtlinie](data-entry-guidelines.md) brauchte keinen Eingriff, ihre Titelmustertabelle führte Fotografie und Programm bereits unter diesen Namen, und ihr Abschnitt zu den Datumsangaben regelt die manuelle Erfassung, die von der Anreicherungsregel nicht berührt ist.
+
+[`../CLAUDE.md`](../CLAUDE.md) führt das Vokabular als zweiten Punkt der Spec-Hierarchie, der Absatz darunter nennt die getroffene Entscheidung statt der früheren offenen Frage. In [vocabulary-derivation-findings.md](vocabulary-derivation-findings.md) sind Frage 10 und die Empfehlung zur Absicherung als beantwortet markiert, jeweils als Verweis auf die kanonische Adresse, wie es die Rolle des Dokuments als Stichtagsbefund vorsieht.
+
+Zwei Punkte sind beim Abgleich der Regeln gegen den echten Stand von Code, Vokabular und Datensatz aufgefallen. Der erzeugte Datensatz trägt die Nullform der Zeitwerte weiter, obwohl die Anreicherung die Präzisionsstufe auswertet, weil der Cache noch aus dem Lauf davor stammt. Und `scripts/transform.py` meldet seit derselben Runde jeden Dokumenttyp ohne Eintrag in der Zuordnungstabelle mit Wert und Quellzelle; die Entscheidungsvorlage führt diese Meldung als eigene, noch nicht gestellte Frage, weshalb sie in E-130 als Begleitänderung vermerkt ist.
+
+Verifikation. `pytest tests/` einschließlich des als slow markierten Determinismus-Tests grün, `node --test tests/frontend/*.test.mjs` grün, `python vocab/check-coverage.py` meldet volle Abdeckung. Der Lauf ohne die parallel entstandene Testdatei zur Bühnenrollen-Migration deckt sich Test für Test mit dem Stand vor dem Nachzug.

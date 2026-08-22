@@ -7,7 +7,7 @@ status: snapshot
 language: de
 version: 0.4
 created: 2026-07-24
-updated: 2026-08-21
+updated: 2026-08-22
 authors: [Christopher Pollin]
 generated-with: Claude Code
 method:
@@ -103,7 +103,7 @@ Ein zweiter Gewinn ist Prüfbarkeit. Der Abgleich des Vokabulars gegen den Daten
 
 Diese Punkte fielen beim Erheben der Wertebereiche auf.
 
-Nachtrag 2026-08-21: alle vier sind inzwischen ins [Datenfehler-Register](data-errors.md) übernommen, die ersten beiden als Quellfehler QF-18 und QF-19, das Gründungsdatum als Abgleichfehler AF-04, die selbstbezüglichen Beziehungen als Pipeline-Befund mit Datenwirkung unter den verwandten Befunden.
+Nachtrag 2026-08-21: alle vier sind inzwischen ins [Datenfehler-Register](data-errors.md) übernommen, die ersten beiden als Quellfehler QF-18 und QF-19, das Gründungsdatum als Abgleichfehler AF-04, die selbstbezüglichen Beziehungen als Pipeline-Befund mit Datenwirkung unter den verwandten Befunden. Zweiter Nachtrag desselben Tages, die Projektleitung hat die beiden Pipeline-Befunde entschieden, die Selbstbezüge als E-129 und die Wertform der angereicherten Zeitwerte als E-132, dort auch der über die Gründungsdaten hinausgehende Umfang. Kanonische Adresse ist [architecture-decisions.md](architecture-decisions.md); die beiden Quellfehler bleiben beim Erschließungsteam. Ebenso entschieden sind die beiden Abweichungen aus Abschnitt 4 zwischen Spezifikation und Datensatz, der Dokumenttyp `fotografie` als E-130 und die Etikettendublette am Ast `programm` als E-131.
 
 - `UAKUG/NIM_011 7` trägt als Erstelldatum `1055-08-24`, während das Dokumentdatum `1955-08-24` lautet. Vermutlich eine vertippte Jahrhundertstelle in der Verknüpfungszeile.
 - Dasselbe Dokument trägt an einer Ausgabe von 15,00 DM die Detailrolle `interpret`. Eine Personenrolle in der Finanzspalte.
@@ -121,11 +121,11 @@ Nachtrag 2026-08-21: alle vier sind inzwischen ins [Datenfehler-Register](data-e
 7. Welche Lesart von `detailField` und `detailValue` gilt, bevor der zweite Zweig Daten führt?
 8. Erhalten die Dokumenttyp-Concepts zusätzlich den Typ `rico:DocumentaryFormType`, und werden Sprache und Umfang auf die von RiC-O erwarteten Wertformen gebracht?
 9. Wird die Partie am Werk mit der Bühnenrollen-Entität verbunden, und bekommt die Bühnenrolle eine Werkbindung?
-10. Wird die Vokabulardatei ein gepflegtes Artefakt des Projekts? Dann gehört sie in die Spec-first-Reihenfolge, also Änderung zuerst in [data.md](data.md), dann im Vokabular, dann in der Pipeline.
+10. ~~Wird die Vokabulardatei ein gepflegtes Artefakt des Projekts?~~ Beantwortet am 2026-08-21. Die Datei ist ein gepflegtes Artefakt und steht in der Spec-Hierarchie, die Reihenfolge lautet [data.md](data.md), Vokabular, Test, Pipeline. Kanonische Adresse ist E-133 in [architecture-decisions.md](architecture-decisions.md), die Betriebssicht steht in [`../CLAUDE.md`](../CLAUDE.md) § Spec-Hierarchie.
 
 ## 7. Empfehlung zur Absicherung
 
-Der Konformitätstest `test_26` nimmt den eigenen Namespace aus, weil es bislang keine Quelle gab, gegen die er hätte prüfen können. Mit der Vokabulardatei gibt es sie. Der Prüflauf liegt als [`vocab/check-coverage.py`](../vocab/check-coverage.py) im Repository und hält, dass jeder im Datensatz verwendete `m3gim`-Term im Vokabular definiert ist, dass jeder Dokumenttyp ein Concept hat, dass jedes Rollenliteral auf ein Concept trifft und dass alle Verweise innerhalb der Schemata auflösen. Er läuft read-only, meldet Abweichungen zeilenweise und endet mit einem Exit-Code, sodass er sich ohne Umbau in die Testsuite ziehen lässt. Ob er dort als Gate geführt wird, entscheidet die Projektleitung.
+Der Konformitätstest `test_26` nimmt den eigenen Namespace aus, weil es bislang keine Quelle gab, gegen die er hätte prüfen können. Mit der Vokabulardatei gibt es sie. Der Prüflauf liegt als [`vocab/check-coverage.py`](../vocab/check-coverage.py) im Repository und hält, dass jeder im Datensatz verwendete `m3gim`-Term im Vokabular definiert ist, dass jeder Dokumenttyp ein Concept hat, dass jedes Rollenliteral auf ein Concept trifft und dass alle Verweise innerhalb der Schemata auflösen. Er läuft read-only, meldet Abweichungen zeilenweise und endet mit einem Exit-Code, sodass er sich ohne Umbau in die Testsuite ziehen lässt. Nachtrag 2026-08-21, die Projektleitung hat ihn als verbindliches Test-Gate gesetzt, es läuft über `tests/test_40_vocab_gate.py` im Standardlauf mit, die Namenskonvention des Vokabulars sichert `tests/test_41_naming_convention.py` (E-133).
 
 ## 8. Related
 

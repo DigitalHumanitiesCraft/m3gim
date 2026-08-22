@@ -631,7 +631,7 @@ m3gim:inception
     rdfs:domain rico:CorporateBody ;
     rdfs:range xsd:string ;
     rdfs:isDefinedBy <https://dhcraft.org/m3gim/vocab> ;
-    skos:editorialNote "Die Werte kommen in der Form 1715-00-00 vor, wenn nur das Jahr bekannt ist. Das ist kein gültiges ISO-Datum, weshalb die Property eine Zeichenkette führt."@de .
+    skos:editorialNote "Die Werte folgen EDTF Level 0, also der vierstelligen Jahresform, der Jahr-Monat-Form oder dem vollständigen Datum, je nach der in Wikidata belegten Präzision (E-132). Der Zeichenkettentyp bleibt, weil die Werte damit unterschiedlich lang sind."@de .
 
 
 # ---------------------------------------------------------------------------
@@ -930,8 +930,7 @@ m3gim-dft:kritik a skos:Concept ; skos:prefLabel "Kritik"@de ; skos:broader m3gi
 m3gim-dft:rezension a skos:Concept ; skos:prefLabel "Rezension"@de ; skos:broader m3gim-dft:presse ; skos:inScheme m3gim-dft:scheme .
 m3gim-dft:musikzeitschrift a skos:Concept ; skos:prefLabel "Musikzeitschrift"@de ; skos:broader m3gim-dft:presse ; skos:inScheme m3gim-dft:scheme .
 
-m3gim-dft:programm a skos:Concept ; skos:prefLabel "Programmheft"@de ; skos:definition "Drucksache zu einer Veranstaltung, die Besetzung und Ablauf verzeichnet."@de ; skos:broader m3gim-dft:dokument ; skos:inScheme m3gim-dft:scheme ; skos:editorialNote "Der Begriff trägt das Label Programmheft und ist zugleich Oberbegriff des Konzepts programmheft. Die Dublette ist aufzulösen, entweder durch ein eigenes Label für die Oberklasse oder durch Zusammenlegung."@de .
-m3gim-dft:programmheft a skos:Concept ; skos:prefLabel "Programmheft"@de ; skos:broader m3gim-dft:programm ; skos:inScheme m3gim-dft:scheme .
+m3gim-dft:programm a skos:Concept ; skos:prefLabel "Programm"@de ; skos:altLabel "Programmheft"@de , "Konzertprogramm"@de ; skos:definition "Drucksache zu einer Veranstaltung, die Besetzung und Ablauf verzeichnet."@de ; skos:broader m3gim-dft:dokument ; skos:inScheme m3gim-dft:scheme ; skos:editorialNote "Kanonischer Begriff des Astes (E-131). Die Gattungsnamen Programmheft und Konzertprogramm bleiben zulässige Quellwerte der Erfassung und lösen in der Zuordnungstabelle der Pipeline auf diesen Begriff auf."@de .
 
 m3gim-dft:biographisch a skos:Concept ; skos:prefLabel "Biographisch"@de ; skos:definition "Dokument, das den Lebenslauf der Nachlassbildnerin darstellt."@de ; skos:broader m3gim-dft:dokument ; skos:inScheme m3gim-dft:scheme .
 m3gim-dft:biographie a skos:Concept ; skos:prefLabel "Biographie"@de ; skos:broader m3gim-dft:biographisch ; skos:inScheme m3gim-dft:scheme .
@@ -944,7 +943,7 @@ m3gim-dft:ausweis a skos:Concept ; skos:prefLabel "Ausweis"@de ; skos:broader m3
 
 m3gim-dft:vertrag a skos:Concept ; skos:prefLabel "Vertrag"@de ; skos:definition "Vereinbarung über ein Engagement, eine Aufnahme oder eine Vermittlung."@de ; skos:broader m3gim-dft:dokument ; skos:inScheme m3gim-dft:scheme .
 m3gim-dft:plakat a skos:Concept ; skos:prefLabel "Plakat"@de ; skos:broader m3gim-dft:dokument ; skos:inScheme m3gim-dft:scheme .
-m3gim-dft:fotografie a skos:Concept ; skos:prefLabel "Fotografie"@de ; skos:broader m3gim-dft:dokument ; skos:inScheme m3gim-dft:scheme ; skos:editorialNote "In knowledge/data.md § 12 geführt, in der Zuordnungstabelle der Pipeline aber nicht angelegt. Ein Quellwert Fotografie liefe deshalb ins Leere."@de .
+m3gim-dft:fotografie a skos:Concept ; skos:prefLabel "Fotografie"@de ; skos:broader m3gim-dft:dokument ; skos:inScheme m3gim-dft:scheme .
 m3gim-dft:notiz a skos:Concept ; skos:prefLabel "Notiz"@de ; skos:broader m3gim-dft:dokument ; skos:inScheme m3gim-dft:scheme .
 m3gim-dft:typoskript a skos:Concept ; skos:prefLabel "Typoskript"@de ; skos:broader m3gim-dft:dokument ; skos:inScheme m3gim-dft:scheme .
 m3gim-dft:photokopie a skos:Concept ; skos:prefLabel "Photokopie"@de ; skos:broader m3gim-dft:dokument ; skos:inScheme m3gim-dft:scheme ; skos:editorialNote "Der Wert bezeichnet die Vervielfältigungsform. Die Dokumentgattung bleibt damit unbestimmt. In RiC-O gehört diese Unterscheidung in die Instanziierung. Die Einordnung ist zu prüfen."@de .

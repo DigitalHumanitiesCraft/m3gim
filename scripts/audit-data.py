@@ -60,6 +60,20 @@ def normalize(val):
         return None
     return str(val).strip()
 
+# Record-side link properties. Since E-96 a stage role reaches the record as
+# an m3gim:Performance node instead of an attribute.
+LINK_PROPERTIES = (
+    "m3gim:hasAssociatedAgent",
+    "rico:hasOrHadLocation",
+    "rico:hasOrHadSubject",
+    "m3gim:hasPerformance",
+)
+
+
+def has_links(node):
+    """Traegt der Record mindestens eine Verknuepfung?"""
+    return any(node.get(prop) for prop in LINK_PROPERTIES)
+
 # ---------------------------------------------------------------------------
 # Audit 1: XLSX → JSON-LD Record-Vollstaendigkeit
 # ---------------------------------------------------------------------------
@@ -162,7 +176,7 @@ def audit_verknuepfungen(df_verk, graph):
     jsonld_subjects = 0
     jsonld_mentions = 0
     jsonld_dates = 0
-    jsonld_roles = 0
+    jsonld_performances = 0
     jsonld_details = 0
     jsonld_events = 0
 
@@ -198,10 +212,12 @@ def audit_verknuepfungen(df_verk, graph):
             dts = [dts]
         jsonld_dates += len(dts)
 
-        rls = node.get("m3gim:hasPerformanceRole", [])
-        if isinstance(rls, dict):
-            rls = [rls]
-        jsonld_roles += len(rls)
+        # E-96: rolle links became m3gim:Performance nodes; the record points
+        # at them via m3gim:hasPerformance.
+        perfs = node.get("m3gim:hasPerformance", [])
+        if isinstance(perfs, dict):
+            perfs = [perfs]
+        jsonld_performances += len(perfs)
 
         dtls = node.get("m3gim:hasDetail", [])
         if isinstance(dtls, dict):
@@ -219,7 +235,7 @@ def audit_verknuepfungen(df_verk, graph):
     print(f"      davon Events:              {jsonld_events}")
     print(f"    Mentions:                    {jsonld_mentions}")
     print(f"    Dates:                       {jsonld_dates}")
-    print(f"    Performance Roles:           {jsonld_roles}")
+    print(f"    Performances (Rollen):       {jsonld_performances}")
     print(f"    Details (Schicht 3):         {jsonld_details}")
 
     # Handreichungs-Rollen pruefen
@@ -344,14 +360,7 @@ def audit_quality(df_objekte, graph):
     for node in graph:
         if node.get("@type") != "rico:Record":
             continue
-        has_links = any(
-            node.get(prop) for prop in [
-                "m3gim:hasAssociatedAgent", "rico:hasOrHadLocation",
-                "rico:hasOrHadSubject",
-                "m3gim:hasPerformanceRole"
-            ]
-        )
-        if has_links:
+        if has_links(node):
             linked += 1
         else:
             unlinked += 1

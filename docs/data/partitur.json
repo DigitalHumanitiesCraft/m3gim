@@ -194,7 +194,7 @@
       "dokumente": [
         "UAKUG/NIM_005 15"
       ],
-      "gattung": null,
+      "gattung": "oper",
       "titel": "Tätigkeitsliste 1939 bis 1949"
     },
     {
@@ -403,14 +403,14 @@
       "kategorie": "konzert",
       "werk": "Siegfried",
       "komponist": null,
-      "rolle": null,
+      "rolle": "Waltraute",
       "jahr": 1952,
       "datum": "1952-11-12",
       "phase": "LP5",
       "dokumente": [
         "UAKUG/NIM_011 16"
       ],
-      "gattung": "konzert",
+      "gattung": "oper",
       "titel": "Brief von Dorothea Angerer an Ira Malaniuk bezügliche einer Konzertanfrage für d"
     },
     {
@@ -435,7 +435,7 @@
       "kategorie": "festspiel",
       "werk": "Die Walküre",
       "komponist": "Wagner",
-      "rolle": null,
+      "rolle": "Waltraute",
       "jahr": 1952,
       "datum": "1952-11-09",
       "phase": "LP5",
@@ -458,7 +458,7 @@
       "dokumente": [
         "UAKUG/NIM_011 19"
       ],
-      "gattung": null,
+      "gattung": "oper",
       "titel": "Brief von Ira Malaniuk an Wieland Wagner zu ihrem Auftritt als Fricka in Bayreut"
     },
     {
@@ -532,14 +532,14 @@
       "kategorie": "engagement",
       "werk": null,
       "komponist": "Wagner",
-      "rolle": null,
+      "rolle": "Fricka",
       "jahr": 1952,
       "datum": "1952-10-23",
       "phase": "LP5",
       "dokumente": [
         "UAKUG/NIM_011 18"
       ],
-      "gattung": null,
+      "gattung": "oper",
       "titel": "Brief von Wieland Wagner an Ira Malaniuk zu Malaniuks Absage als Fricka in Bayre"
     },
     {
@@ -555,7 +555,7 @@
       "dokumente": [
         "UAKUG/NIM_007 2"
       ],
-      "gattung": null,
+      "gattung": "oper",
       "titel": "Brief von Martin H. Taubman zu Verträgen mit Buenos Aires, Neapel, Wien"
     },
     {
@@ -612,7 +612,7 @@
       "kategorie": "gastspiel",
       "werk": "Der Troubadour",
       "komponist": null,
-      "rolle": null,
+      "rolle": "Azucena",
       "jahr": 1953,
       "datum": "1953-03-19",
       "phase": "LP5",
@@ -620,7 +620,7 @@
         "UAKUG/NIM_023 7",
         "UAKUG/NIM_023 8"
       ],
-      "gattung": null,
+      "gattung": "oper",
       "titel": "Verpflichtungsschein zur Aufnahme von \"Der Troubadour\" von Nordwestdeutscher Run"
     },
     {
@@ -629,14 +629,14 @@
       "kategorie": "gastspiel",
       "werk": "cosi fan tutte",
       "komponist": null,
-      "rolle": null,
+      "rolle": "Dorabella",
       "jahr": 1953,
       "datum": "1953-01-20",
       "phase": "LP5",
       "dokumente": [
         "UAKUG/NIM_023 10"
       ],
-      "gattung": null,
+      "gattung": "oper",
       "titel": "Verpflichtungsschein zur Aufnahme \"Cosi fan tutte\"  von Nordwestdeutscher Rundru"
     },
     {
@@ -645,7 +645,7 @@
       "kategorie": "gastspiel",
       "werk": "Tristan und Isolde",
       "komponist": "Wagner",
-      "rolle": null,
+      "rolle": "Brangäne",
       "jahr": 1953,
       "datum": "1953-05-19",
       "phase": "LP5",
@@ -700,7 +700,7 @@
       "dokumente": [
         "UAKUG/NIM_073 30_1"
       ],
-      "gattung": null,
+      "gattung": "oper",
       "titel": "Programmsflyer zu Bayreuther Richard-Wagner-Festspiele 1953"
     },
     {
@@ -741,7 +741,7 @@
       "kategorie": "gastspiel",
       "werk": "Tristan und Isolde",
       "komponist": "Wagner",
-      "rolle": null,
+      "rolle": "Brangäne",
       "jahr": 1953,
       "datum": "1953-08-12",
       "phase": "LP5",
@@ -822,14 +822,14 @@
       "kategorie": "festspiel",
       "werk": "Sinfonien, Nr. 9, op. 125 (d-Moll)",
       "komponist": "Beethoven",
-      "rolle": null,
+      "rolle": "Altsolo",
       "jahr": 1954,
       "datum": "1954-06-30",
       "phase": "LP5",
       "dokumente": [
         "UAKUG/NIM_011 11"
       ],
-      "gattung": "konzert",
+      "gattung": "oper",
       "titel": "Anfrage von Carl-Heinz Klebe an Ira Malaniuk, Altsolo neunte Sinfonie Beethoven "
     },
     {
@@ -1051,14 +1051,14 @@
       "kategorie": "gastspiel",
       "werk": "Paradies und Peri",
       "komponist": null,
-      "rolle": null,
+      "rolle": "\"Engel\"",
       "jahr": 1959,
       "datum": "1959-05-09",
       "phase": "LP6",
       "dokumente": [
         "UAKUG/NIM_007 6"
       ],
-      "gattung": null,
+      "gattung": "oper",
       "titel": "Mittelung über Honorar für Sendung Paradies und Peri 1959 von Nord- und Westdeut"
     },
     {
@@ -1122,7 +1122,7 @@
       "dokumente": [
         "UAKUG/NIM_007 13"
       ],
-      "gattung": null,
+      "gattung": "oper",
       "titel": "Rezension von Karl Löbl zu Der Wildschütz o.D."
     },
     {
@@ -1181,7 +1181,7 @@
       "kategorie": "engagement",
       "werk": "Tristan und Isolde",
       "komponist": "Wagner",
-      "rolle": null,
+      "rolle": "Brangäne",
       "jahr": 1963,
       "datum": "1963-03-08",
       "phase": "LP6",
@@ -1206,7 +1206,7 @@
         "UAKUG/NIM_007 14",
         "UAKUG/NIM_007 17"
       ],
-      "gattung": null,
+      "gattung": "oper",
       "titel": "Rezension von Gerhard Bauer zu Der Wildschütz (Arbeiter Zeitung)"
     },
     {
@@ -1710,7 +1710,7 @@
     }
   ],
   "_meta": {
-    "generated": "2026-06-23T09:16:59.837686",
+    "generated": "2026-08-22T09:18:02.955303",
     "source_records": 1974
   }
 }
