@@ -19,23 +19,55 @@
  * abonnieren beim (lazy, einmaligen) Render und bleiben abonniert.
  */
 
+// Facetten, die mehrere Werte zugleich tragen. Innerhalb einer Facette wirken
+// sie als ODER, zwischen Facetten bleibt es UND (E-151). Eine leere Liste
+// heisst Facette inaktiv.
+const LIST_FACETS = new Set(['ort', 'person', 'werk', 'rolle', 'sicht']);
+
 const EMPTY = Object.freeze({
-  ort: '',          // Stadtname (store.locations, cityOf-konsolidiert)
-  person: '',       // Name (store.persons)
-  werk: '',         // Name (store.works)
-  rolle: '',        // Akteursrolle (store.persons[].roles)
+  ort: [],          // Stadtnamen (store.locations, cityOf-konsolidiert)
+  person: [],       // Namen (store.persons)
+  werk: [],         // Namen (store.works)
+  rolle: [],        // Akteursrollen (store.persons[].roles)
   zeitfenster: null, // [vonJahr, bisJahr] oder null = volle Spanne
-  sicht: '',        // Mobilitaetssicht (mobilityClusterFor) oder 'kontext'
+  sicht: [],        // Mobilitaetssichten (mobilityClusterFor) oder 'kontext'
   schaerfe: 'weit', // 'weit' | 'eng' — Modus, kein Entitaetsfilter
 });
 
-const state = { ...EMPTY };
+const state = {};
+for (const key of Object.keys(EMPTY)) {
+  state[key] = Array.isArray(EMPTY[key]) ? [] : EMPTY[key];
+}
+
+/**
+ * Bringt einen Facettenwert auf die Listenform. Ein String bleibt zulaessig,
+ * damit jede bestehende Schreibstelle weiter funktioniert; er wird zur
+ * einelementigen Liste. Leerwerte werden zur leeren Liste, Dubletten fallen in
+ * Auftrittsreihenfolge weg.
+ */
+function toList(value) {
+  if (value == null || value === '') return [];
+  const raw = Array.isArray(value) ? value : [value];
+  const out = [];
+  for (const v of raw) {
+    if (v == null || v === '') continue;
+    if (!out.includes(v)) out.push(v);
+  }
+  return out;
+}
+
+/** Die Werte einer Facette als Liste, unabhaengig davon, wie sie gesetzt wurde. */
+export function facetValues(filterState, key) {
+  return toList(filterState && filterState[key]);
+}
 
 const CHANNEL = 'm3gim:filter';
 
 /** Aktuellen Filter-State als flache Kopie. */
 export function getFilter() {
-  return { ...state };
+  const out = { ...state };
+  for (const key of LIST_FACETS) out[key] = [...state[key]];
+  return out;
 }
 
 /**
@@ -47,7 +79,7 @@ export function setFilter(patch) {
   let changed = false;
   for (const key of Object.keys(patch)) {
     if (!(key in EMPTY)) continue;
-    const next = patch[key];
+    const next = LIST_FACETS.has(key) ? toList(patch[key]) : patch[key];
     if (!shallowEqual(state[key], next)) {
       state[key] = next;
       changed = true;
@@ -60,8 +92,9 @@ export function setFilter(patch) {
 export function resetFilter() {
   let changed = false;
   for (const key of Object.keys(EMPTY)) {
-    if (!shallowEqual(state[key], EMPTY[key])) {
-      state[key] = EMPTY[key];
+    const empty = LIST_FACETS.has(key) ? [] : EMPTY[key];
+    if (!shallowEqual(state[key], empty)) {
+      state[key] = empty;
       changed = true;
     }
   }
@@ -90,7 +123,8 @@ export function subscribe(fn, { immediate = true } = {}) {
 /** True, wenn mindestens eine Facette vom Leerwert abweicht. */
 export function isFilterActive() {
   for (const key of Object.keys(EMPTY)) {
-    if (!shallowEqual(state[key], EMPTY[key])) return true;
+    const empty = LIST_FACETS.has(key) ? [] : EMPTY[key];
+    if (!shallowEqual(state[key], empty)) return true;
   }
   return false;
 }
