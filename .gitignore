@@ -60,9 +60,9 @@ dmypy.json
 *.xlsx
 *.xls
 *.csv
-!data/source/*.xlsx        # Keep source Excel spreadsheet for reproducibility
-!data/source-v2/*.xlsx     # v2-Parallel: keep new Excel exports for reproducibility
-!data/vocabularies/*.json  # Keep vocabulary files
+# The archival capture lives here and must stay versioned; every report and
+# every dataset is reproducible from it.
+!data/google-spreadsheet/*.xlsx
 
 # PDF scans (too large for Git)
 *.pdf
@@ -219,9 +219,10 @@ yarn.lock
 # ==========================================
 # Project-Specific
 # ==========================================
-# Old prototype files (if moved out of archive_development/)
-# Uncomment if cleanup removes these from tracking
-# archive_development/
+# Reports a pipeline run reproduces from the versioned XLSX. The quality
+# snapshot stays tracked, it is the status communication for third parties.
+data/reports/validation-report.md
+data/reports/exploration-report.md
 
 # Testing outputs
 tests/outputs/
@@ -230,29 +231,10 @@ tests/*.html
 # ==========================================
 # Comments & Notes
 # ==========================================
-# This .gitignore is designed for the M³GIM project
+# Tracked: scripts, tests, documentation, the knowledge base, the vocabulary,
+# the source XLSX under data/google-spreadsheet/, and the published artefacts
+# under docs/ that GitHub Pages serves.
 #
-# What we DO track:
-# - All Python scripts (preprocessing/, scripts/)
-# - All documentation (docs/, *.md)
-# - Processed JSON data (data/*.json)
-# - HTML catalog (archive_catalog.html)
-# - Templates (templates/)
-# - Tests (tests/)
-# - GitHub Actions workflows (.github/workflows/)
-# - Controlled vocabularies (data/vocabularies/*.json)
-#
-# What we DON'T track:
-# - Large source files (*.xlsx, *.pdf)
-# - Generated files (__pycache__, *.pyc)
-# - Credentials (.env, secrets.json)
-# - IDE settings (.vscode/, .idea/)
-# - OS files (.DS_Store, Thumbs.db)
-# - Virtual environments (venv/)
-#
-# For sensitive data:
-# - Source Excel file should remain on Google Sheets
-# - PDF scans hosted externally (university server)
-# - Credentials stored in GitHub Secrets
-#
-# See STRUCTURE.md for full folder organization
+# Not tracked: credentials, IDE and OS files, virtual environments, the raw
+# Google Drive backups under data/backup/ (they may carry personal data), and
+# any report a pipeline run reproduces.
