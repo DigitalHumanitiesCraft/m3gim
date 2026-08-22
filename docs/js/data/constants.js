@@ -284,7 +284,8 @@ export const ROLE_CLUSTER = {
   'ABREISEDATUM':       'datum',
 
   // === PENDING: neuer Datenstand Lane 1 (G1/G2/G3/G8). Aktivieren nach Promote +
-  // Lane-1-Bestaetigung der Rollennamen; siehe lane-2-frontend-datenstand.md §1.
+  // Lane-1-Bestaetigung der Rollennamen; siehe frontend-architecture.md
+  // § Erweiterung fuer den neuen Datenstand.
   // Unmapped faellt auf 'neutral' (grau) -- kein Crash, aber Designregel 3 bricht.
   // 'EMPFANGSORT':       'ort',          // G1
   // 'VERTRAGSORT':       'ort',          // G1
@@ -309,7 +310,7 @@ export function roleClusterFor(prefix) {
 // =========================================================================
 // Mobilitaetssichten (Session 36, M3): `m3gim:eventRole` an STE-Events +
 // Datumsrollen gruppiert nach den fuenf Mobilitaetstypen aus
-// `forschungsrahmen.md § Fuenf Mobilitaetstypen` und `datenmodell.md § 10`.
+// `research-framework.md § Mobilitaetstypen` und `data.md § 10`.
 // Orthogonal zu ROLE_CLUSTER (dort: Chip-Farbe pro Rolle-Kategorie);
 // hier: thematisches Cluster pro Mobilitaets-Sicht.
 // =========================================================================
@@ -356,12 +357,12 @@ export const EVENT_ROLE_TO_MOBILITY_CLUSTER = {
   'erwähnt':           null,
   'erwaehnt':          null,
 
-  // Klaerungsbedarf: nicht in datenmodell.md § 5 als Mobilitaets-Rolle
+  // Klaerungsbedarf: nicht in data.md § 5 als Mobilitaets-Rolle
   // belegt -- bewusst auf null statt willkuerlich einzuordnen.
   // TODO M3.5-Review (Session 36): mit Erschliessungsteam klaeren.
   'auftrag':           null,  // Werks-/Vertrags-/Auftritts-Auftrag? Unklar.
   'entstehung':        null,  // Werk- oder Dokumententstehung? Unklar.
-  // Finanzrolle (datenmodell.md § 5 Finanzrollen) -- gehoert nicht in
+  // Finanzrolle (data.md § 5 Finanzrollen) -- gehoert nicht in
   // Mobilitaetssichten. Hier fuer den Test explizit als nicht-Mobilitaet
   // markiert; die Darstellung erfolgt ueber das Finanzen-Cluster.
   'ueberweisung':      null,
@@ -369,9 +370,9 @@ export const EVENT_ROLE_TO_MOBILITY_CLUSTER = {
 
   // Mobilitaets-Ortsrollen (E-97): erzeugen datumslose SpatiotemporalEvents.
   // Zugeordnet zum Cluster 'korrespondenz' (buendelt Reise + Korrespondenz, s.o.)
-  // nach datenmodell.md § Ortsrollen: zielort/abreiseort = Reisemobilitaet,
+  // nach data.md § Ortsrollen: zielort/abreiseort = Reisemobilitaet,
   // empfangsort = Korrespondenzmobilitaet, absendeort = beides, vertragsort =
-  // Mobilitaets-Ortsrolle der Reise/Korrespondenz-Spur (§ 10, Z. 624).
+  // Mobilitaets-Ortsrolle der Reise/Korrespondenz-Spur (§ 10).
   // Datumslosigkeit ist hier der Normalfall, kein Defekt: die Sicht-Zuordnung
   // erfolgt ueber die Rolle, nicht ueber ein Datum (kein Datum wird geraten,
   // § 8 Konfidenz). Entscheidung E-110, order-m3gim 2026-06-21 Punkt 1.
@@ -450,8 +451,9 @@ export const ROLE_TO_SECTION = {
   'erwaehnt':          'erwaehnt',
 
   // === PENDING: neuer Datenstand Lane 1 (G2/G8). Aktivieren nach Promote +
-  // Lane-1-Bestaetigung; siehe lane-2-frontend-datenstand.md §1. Sonst landen
-  // diese Rollen im Default-Bucket "Weitere" statt in Produktion/Erwaehnt.
+  // Lane-1-Bestaetigung; siehe frontend-architecture.md § Erweiterung fuer den
+  // neuen Datenstand. Sonst landen diese Rollen im Default-Bucket "Weitere"
+  // statt in Produktion/Erwaehnt.
   // 'beleuchter':        'produktion',  // G2
   // 'maskenbildner':     'produktion',  // G2
   // 'repetitor':         'produktion',  // G2

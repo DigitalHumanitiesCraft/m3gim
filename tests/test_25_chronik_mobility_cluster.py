@@ -2,7 +2,7 @@
 
 Das Frontend (docs/js/data/constants.js) haelt ein Mapping
 `EVENT_ROLE_TO_MOBILITY_CLUSTER`, das jede empirisch belegte `m3gim:eventRole`
-genau einer der fuenf Sichten aus datenmodell.md § 10 zuordnet (oder
+genau einer der fuenf Sichten aus data.md § 10 zuordnet (oder
 explizit auf `null` setzt, wenn neutral).
 
 Dieser Test liest die JS-Konstante via Regex (kein JS-Runtime noetig) und
@@ -108,7 +108,7 @@ def test_every_empirical_event_role_is_mapped() -> None:
 def test_place_roles_count_as_reise_korrespondenz() -> None:
     """Die fuenf Mobilitaets-Ortsrollen (E-97, MOBILITY_PLACE_ROLES) zaehlen als
     Reise-/Korrespondenzmobilitaet und mappen auf den Cluster 'korrespondenz'
-    (datenmodell.md § Ortsrollen/§ 10, Entscheidung E-110, order-m3gim
+    (data.md § Ortsrollen/§ 10, Entscheidung E-110, order-m3gim
     2026-06-21 Punkt 1). Lockt die Angleichung gegen stilles Regressieren auf
     'null' ('Nicht klassifiziert')."""
     mapping = _load_event_role_map()
@@ -121,7 +121,7 @@ def test_place_roles_count_as_reise_korrespondenz() -> None:
 
 
 def test_mapping_covers_datenmodell_spec_datumsrollen() -> None:
-    """Die in datenmodell.md § 5 als Datumsrollen spezifizierten Werte
+    """Die in data.md § 5 als Datumsrollen spezifizierten Werte
     sind entweder gemappt oder sollten gemappt sein. Soft-Check: nur die
     empirisch aussichtsreichsten werden hart gefordert."""
     mapping = _load_event_role_map()
@@ -136,7 +136,7 @@ def test_mapping_covers_datenmodell_spec_datumsrollen() -> None:
     }
     missing = must_have - set(mapping.keys())
     assert not missing, (
-        "Datumsrollen aus datenmodell.md § 5 nicht gemappt: "
+        "Datumsrollen aus data.md § 5 nicht gemappt: "
         + ", ".join(sorted(missing))
     )
 

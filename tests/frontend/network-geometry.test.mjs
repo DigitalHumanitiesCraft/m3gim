@@ -12,7 +12,7 @@
  * und die `"type":"module"`-Markierung in `docs/js/package.json`.
  *
  * Bewusst KEIN Browser, kein DOM, kein D3: die getestete Modul-Ebene ist
- * per Design dom-frei (frontend.md § Netzwerk, E-93).
+ * per Design dom-frei (frontend-architecture.md § Netzwerk, E-93).
  */
 
 import { test } from 'node:test';

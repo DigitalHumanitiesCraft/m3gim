@@ -11,9 +11,9 @@
  *   Ring 2 (mitte) — wiederkehrendes Umfeld: >=2 Docs ODER kategorisierte Rolle
  *   Ring 3 (aussen) — einmalige Nennungen
  *
- * Determinismus (frontend.md § 196): Winkel alphabetisch pro Ring,
- * Positionen analytisch aus Sinus/Kosinus — gleiche Daten, gleiche Grafik.
- * KEINE Force-Simulation.
+ * Determinismus (design.md § Lektionen aus den entfernten Visualisierungen):
+ * Winkel alphabetisch pro Ring, Positionen analytisch aus Sinus/Kosinus —
+ * gleiche Daten, gleiche Grafik. KEINE Force-Simulation.
  */
 
 import { KOMPONISTEN_NAMEN } from '../data/constants.js';

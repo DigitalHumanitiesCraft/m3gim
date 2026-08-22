@@ -51,6 +51,20 @@ NEVER_ASSIGNED = {
 
 MD_LINK = re.compile(r"\[[^\]]*\]\(([^)#\s]+)(?:#[^)\s]*)?\)")
 
+# Kommentare und Docstrings nennen Wissensdokumente beim Dateinamen, um die
+# Herleitung einer Regel adressierbar zu halten. Wird das Dokument umbenannt
+# oder aufgeloest, zeigt der Name ins Leere, ohne dass etwas bricht; die
+# Herleitung ist dann faktisch verloren.
+CODE_ROOTS = ["scripts", "docs", "tests", "vocab"]
+CODE_SUFFIXES = {".py", ".js", ".mjs", ".css", ".json", ".ttl", ".html"}
+DOC_TOKEN = re.compile(r"\b([a-z0-9][a-z0-9._-]*\.md)\b", re.I)
+
+# Dateinamen, die ein Skript erzeugt statt sie zu zitieren. Der Eintrag nennt
+# den Grund, damit die Ausnahme nicht zur stillen Luecke wird.
+WRITTEN_NOT_CITED = {
+    "backup-log.md": "schreibt scripts/backup.py in das ignorierte data/backup/",
+}
+
 
 def _citation_files():
     seen = []
@@ -144,3 +158,29 @@ def test_relative_markdown_links_resolve():
                         f"{path.relative_to(REPO_ROOT)}:{lineno} -> {target}"
                     )
     assert not broken, f"Relative Links ohne Ziel: {broken}"
+
+
+def test_no_dead_document_references_in_code():
+    """Jeder in Code oder Fixture genannte Dokumentname existiert im Repo."""
+    existing = {p.name for p in REPO_ROOT.rglob("*.md") if ".git" not in str(p)}
+    dead = defaultdict(list)
+    for rel in CODE_ROOTS:
+        root = REPO_ROOT / rel
+        if not root.exists():
+            continue
+        for path in sorted(root.rglob("*")):
+            if not path.is_file() or path.suffix not in CODE_SUFFIXES:
+                continue
+            try:
+                text = path.read_text(encoding="utf-8")
+            except (UnicodeDecodeError, OSError):
+                continue
+            for lineno, line in enumerate(text.splitlines(), start=1):
+                for name in DOC_TOKEN.findall(line):
+                    if name in existing or name in WRITTEN_NOT_CITED:
+                        continue
+                    dead[name].append(f"{path.relative_to(REPO_ROOT)}:{lineno}")
+    assert not dead, (
+        "Dokumentnamen in Code ohne existierende Datei. Die zitierte Herleitung "
+        f"ist damit unerreichbar: {dict(sorted(dead.items()))}"
+    )

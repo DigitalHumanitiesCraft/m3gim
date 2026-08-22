@@ -1,5 +1,5 @@
 {
-  "_comment": "Mindestwerte (>=) nach v2-Konsolidierung (2026-04-17). Aktualisieren nach erfolgreichem Datenupdate. Siehe knowledge/tests.md.",
+  "_comment": "Mindestwerte (>=) nach v2-Konsolidierung (2026-04-17). Aktualisieren nach erfolgreichem Datenupdate. Siehe knowledge/testing.md § Regression-Baselines.",
   "records_min": 380,
   "konvolute_min": 7,
   "persons_min": 320,

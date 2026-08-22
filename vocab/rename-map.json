@@ -1,0 +1,376 @@
+{
+  "meta": {
+    "about": "Abbildung der Bezeichner des M3GIM-Vokabulars auf ihre Zielform. Schlüssel sind die heutigen qualifizierten Namen, Werte die künftigen.",
+    "vocabulary": "vocab/m3gim.ttl",
+    "conventions": [
+      "Die Abschnitte sind nach der Art des Nachfolgers gegliedert. Ein Term, der beim Umbau die Art wechselt, steht deshalb im Abschnitt seines Nachfolgers und zusätzlich in kindChanges.",
+      "Ein Wert außerhalb der drei Projekt-Namensräume bezeichnet einen Fremdterm, der den Projektterm ersetzt.",
+      "Mehrere Schlüssel mit demselben Wert bezeichnen eine Zusammenführung.",
+      "Der Abschnitt schemes bildet auf eine Liste ab, weil ein Sammelscheme in mehrere sortenreine Schemes zerfällt.",
+      "Der Abschnitt typedDateProperties nennt die Nachfolgekonstruktion der Terme, die in removed stehen."
+    ]
+  },
+  "namespaces": {
+    "old": {
+      "m3gim": "https://dhcraft.org/m3gim/vocab#",
+      "m3gim-dft": "https://dhcraft.org/m3gim/documentaryFormTypes#",
+      "m3gim-role": "https://dhcraft.org/m3gim/roles#"
+    },
+    "new": {
+      "m3gim-ontology": "https://dhcraft.org/m3gim/ontology#",
+      "m3gim-data": "https://dhcraft.org/m3gim/data#",
+      "m3gim-vocab": "https://dhcraft.org/m3gim/vocabulary#"
+    },
+    "ontologyIri": {
+      "https://dhcraft.org/m3gim/vocab": "https://dhcraft.org/m3gim/ontology"
+    }
+  },
+  "classes": {
+    "m3gim:DatedEvent": "m3gim-ontology:Annotation",
+    "m3gim:DetailAnnotation": "m3gim-ontology:Annotation",
+    "m3gim:MusicalWork": "m3gim-ontology:MusicalWork",
+    "m3gim:Performance": "m3gim-ontology:Performance",
+    "m3gim:PerformanceEvent": "m3gim-ontology:FramingEvent",
+    "m3gim:SpatiotemporalEvent": "m3gim-ontology:Annotation",
+    "m3gim:StageRole": "m3gim-ontology:StageRole"
+  },
+  "objectProperties": {
+    "m3gim:agentRelation": "m3gim-ontology:hasAgentRelation",
+    "m3gim:atPlace": "m3gim-ontology:atPlace",
+    "m3gim:dateRole": "m3gim-ontology:role",
+    "m3gim:detailRole": "m3gim-ontology:role",
+    "m3gim:eventRole": "m3gim-ontology:role",
+    "m3gim:hasAssociatedAgent": "m3gim-ontology:hasAssociatedAgent",
+    "m3gim:hasDatedEvent": "m3gim-ontology:hasAnnotation",
+    "m3gim:hasDetail": "m3gim-ontology:hasDetail",
+    "m3gim:hasPerformance": "m3gim-ontology:hasPerformance",
+    "m3gim:hasPerformer": "m3gim-ontology:hasPerformer",
+    "m3gim:hasSpatiotemporalEvent": "m3gim-ontology:hasAnnotation",
+    "m3gim:hasStageRole": "m3gim-ontology:hasStageRole",
+    "m3gim:performanceOf": "m3gim-ontology:performanceOf",
+    "m3gim:role": "m3gim-ontology:role",
+    "m3gim:xlsxSource": "m3gim-ontology:xlsxSource"
+  },
+  "datatypeProperties": {
+    "m3gim:accessStatus": "m3gim-ontology:accessStatus",
+    "m3gim:approvedManualMatches": "m3gim-ontology:approvedManualMatches",
+    "m3gim:atDate": "m3gim-ontology:atDate",
+    "m3gim:bearbeitungsnotiz": "m3gim-ontology:processingNote",
+    "m3gim:bearbeitungsstand": "m3gim-ontology:processingStatus",
+    "m3gim:country": "m3gim-ontology:country",
+    "m3gim:currency": "m3gim-ontology:currency",
+    "m3gim:dataQualityFlag": "m3gim-ontology:dataQualityFlag",
+    "m3gim:dateValue": "m3gim-ontology:atDate",
+    "m3gim:datenpunktId": "m3gim-ontology:dataPointId",
+    "m3gim:detailField": "m3gim-ontology:detailField",
+    "m3gim:detailValue": "m3gim-ontology:detailValue",
+    "m3gim:digitizationStatus": "m3gim-ontology:digitizationStatus",
+    "m3gim:editorialNote": "m3gim-ontology:indexNote",
+    "m3gim:erstelldatum": "rico:creationDate",
+    "m3gim:exportDate": "m3gim-ontology:exportDate",
+    "m3gim:inception": "m3gim-ontology:wdInception",
+    "m3gim:keyContact": "m3gim-ontology:keyContact",
+    "m3gim:komponist": "m3gim-ontology:composer",
+    "m3gim:konvolutCount": "m3gim-ontology:recordSetCount",
+    "m3gim:lifespan": "m3gim-ontology:lifespan",
+    "m3gim:lowConfidenceSkipped": "m3gim-ontology:lowConfidenceSkipped",
+    "m3gim:monetaryAmount": "m3gim-ontology:monetaryAmount",
+    "m3gim:partie": "m3gim-ontology:sungPart",
+    "m3gim:qualityConfidence": "m3gim-ontology:qualityConfidence",
+    "m3gim:recordCount": "m3gim-ontology:recordCount",
+    "m3gim:sitz": "m3gim-ontology:headquarters",
+    "m3gim:voiceType": "m3gim-ontology:voiceType",
+    "m3gim:wdComposer": "m3gim-ontology:wdComposer",
+    "m3gim:wdGenre": "m3gim-ontology:wdGenre",
+    "m3gim:wdLocation": "m3gim-ontology:wdLocation",
+    "m3gim:wdPremiereDate": "m3gim-ontology:wdPremiereDate",
+    "m3gim:xlsxRow": "m3gim-ontology:xlsxRow",
+    "m3gim:xlsxSheet": "m3gim-ontology:xlsxSheet"
+  },
+  "concepts": {
+    "m3gim-dft:ausweis": "m3gim-vocab:identityCard",
+    "m3gim-dft:autobiografie": "m3gim-vocab:autobiography",
+    "m3gim-dft:biographie": "m3gim-vocab:biography",
+    "m3gim-dft:biographisch": "m3gim-vocab:biographical",
+    "m3gim-dft:brief": "m3gim-vocab:letter",
+    "m3gim-dft:briefumschlag": "m3gim-vocab:envelope",
+    "m3gim-dft:chronik": "m3gim-vocab:chronicle",
+    "m3gim-dft:dokument": "m3gim-vocab:document",
+    "m3gim-dft:fotografie": "m3gim-vocab:photograph",
+    "m3gim-dft:identitaetsdokument": "m3gim-vocab:identityDocument",
+    "m3gim-dft:konvolut": "m3gim-vocab:bundle",
+    "m3gim-dft:korrespondenz": "m3gim-vocab:correspondence",
+    "m3gim-dft:kritik": "m3gim-vocab:critique",
+    "m3gim-dft:lebenslauf": "m3gim-vocab:curriculumVitae",
+    "m3gim-dft:musikzeitschrift": "m3gim-vocab:musicPeriodical",
+    "m3gim-dft:noten": "m3gim-vocab:sheetMusic",
+    "m3gim-dft:notiz": "m3gim-vocab:note",
+    "m3gim-dft:photokopie": "m3gim-vocab:photocopy",
+    "m3gim-dft:plakat": "m3gim-vocab:poster",
+    "m3gim-dft:postkarte": "m3gim-vocab:postcard",
+    "m3gim-dft:presse": "m3gim-vocab:press",
+    "m3gim-dft:programm": "m3gim-vocab:program",
+    "m3gim-dft:quittung": "m3gim-vocab:receipt",
+    "m3gim-dft:repertoireliste": "m3gim-vocab:repertoireList",
+    "m3gim-dft:rezension": "m3gim-vocab:review",
+    "m3gim-dft:sammlung": "m3gim-vocab:collection",
+    "m3gim-dft:sonstiges": "m3gim-vocab:other",
+    "m3gim-dft:tagebuch": "m3gim-vocab:diary",
+    "m3gim-dft:telegramm": "m3gim-vocab:telegram",
+    "m3gim-dft:tontraeger": "m3gim-vocab:soundCarrier",
+    "m3gim-dft:typoskript": "m3gim-vocab:typescript",
+    "m3gim-dft:urkunde": "m3gim-vocab:certificate",
+    "m3gim-dft:vertrag": "m3gim-vocab:contract",
+    "m3gim-dft:verzeichnis": "m3gim-vocab:inventory",
+    "m3gim-dft:visitenkarte": "m3gim-vocab:businessCard",
+    "m3gim-dft:zeitungsausschnitt": "m3gim-vocab:newspaperClipping",
+    "m3gim-role:abendgage": "m3gim-vocab:performanceFee",
+    "m3gim-role:abgebildet": "m3gim-vocab:depicted",
+    "m3gim-role:abreisedatum": "m3gim-vocab:departure",
+    "m3gim-role:abreiseort": "m3gim-vocab:departure",
+    "m3gim-role:absendedatum": "m3gim-vocab:dispatch",
+    "m3gim-role:absendeort": "m3gim-vocab:dispatch",
+    "m3gim-role:absender": "m3gim-vocab:sender",
+    "m3gim-role:adressat": "m3gim-vocab:addressee",
+    "m3gim-role:agent": "m3gim-vocab:artistAgent",
+    "m3gim-role:arbeitgeber": "m3gim-vocab:employer",
+    "m3gim-role:arrangeur": "m3gim-vocab:arranger",
+    "m3gim-role:auffuehrung": "m3gim-vocab:performance",
+    "m3gim-role:auffuehrungsort": "m3gim-vocab:performancePlace",
+    "m3gim-role:aufnahme": "m3gim-vocab:recording",
+    "m3gim-role:auftrag": "m3gim-vocab:assignment",
+    "m3gim-role:auftraggeber": "m3gim-vocab:commissioner",
+    "m3gim-role:auftritt": "m3gim-vocab:performance",
+    "m3gim-role:ausbildungsstaette": "m3gim-vocab:educationalInstitution",
+    "m3gim-role:ausstatter": "m3gim-vocab:productionDesigner",
+    "m3gim-role:ausstellungsdatum": "m3gim-vocab:issueDate",
+    "m3gim-role:ausstrahlung": "m3gim-vocab:broadcastDate",
+    "m3gim-role:beleuchter": "m3gim-vocab:lightingTechnician",
+    "m3gim-role:buehnenbildner": "m3gim-vocab:setDesigner",
+    "m3gim-role:buehnenleiter": "m3gim-vocab:stageManager",
+    "m3gim-role:choreograph": "m3gim-vocab:choreographer",
+    "m3gim-role:chorleiter": "m3gim-vocab:chorusMaster",
+    "m3gim-role:dirigent": "m3gim-vocab:conductor",
+    "m3gim-role:empfaenger": "m3gim-vocab:recipient",
+    "m3gim-role:empfang": "m3gim-vocab:reception",
+    "m3gim-role:empfangsdatum": "m3gim-vocab:receiving",
+    "m3gim-role:empfangsort": "m3gim-vocab:receiving",
+    "m3gim-role:entstehung": "m3gim-vocab:creation",
+    "m3gim-role:entstehungsort": "m3gim-vocab:creation",
+    "m3gim-role:erscheinungsdatum": "m3gim-vocab:publicationDate",
+    "m3gim-role:erstelldatum": "m3gim-vocab:creation",
+    "m3gim-role:erwaehnt": "m3gim-vocab:mentioned",
+    "m3gim-role:festvorstellung": "m3gim-vocab:galaPerformance",
+    "m3gim-role:fluggesellschaft": "m3gim-vocab:airline",
+    "m3gim-role:fotograf": "m3gim-vocab:photographer",
+    "m3gim-role:gastspiel": "m3gim-vocab:guestPerformance",
+    "m3gim-role:generalprobe": "m3gim-vocab:dressRehearsal",
+    "m3gim-role:gesamtverguetung": "m3gim-vocab:totalRemuneration",
+    "m3gim-role:gespraech": "m3gim-vocab:conversationDate",
+    "m3gim-role:herausgeber": "m3gim-vocab:publisher",
+    "m3gim-role:implizit": "m3gim-vocab:implicit",
+    "m3gim-role:inhaber": "m3gim-vocab:holder",
+    "m3gim-role:interpret": "m3gim-vocab:performer",
+    "m3gim-role:komponist": "m3gim-vocab:composer",
+    "m3gim-role:kostuembildner": "m3gim-vocab:costumeDesigner",
+    "m3gim-role:leitung": "m3gim-vocab:unspecifiedDirection",
+    "m3gim-role:librettist": "m3gim-vocab:librettist",
+    "m3gim-role:lohnbestaetigung": "m3gim-vocab:wageConfirmationDate",
+    "m3gim-role:maskenbidner": "m3gim-vocab:makeupArtist",
+    "m3gim-role:premiere": "m3gim-vocab:premiere",
+    "m3gim-role:probe": "m3gim-vocab:rehearsal",
+    "m3gim-role:probenbeginn": "m3gim-vocab:rehearsalStartDate",
+    "m3gim-role:protagonist": "m3gim-vocab:protagonist",
+    "m3gim-role:provision": "m3gim-vocab:commission",
+    "m3gim-role:publikum": "m3gim-vocab:audienceMember",
+    "m3gim-role:rahmenveranstaltung": "m3gim-vocab:framingEvent",
+    "m3gim-role:ratenzahlung": "m3gim-vocab:installmentPeriod",
+    "m3gim-role:regieassistent": "m3gim-vocab:assistantDirector",
+    "m3gim-role:regisseur": "m3gim-vocab:director",
+    "m3gim-role:reisekosten": "m3gim-vocab:travelExpenses",
+    "m3gim-role:repertoire": "m3gim-vocab:repertoire",
+    "m3gim-role:repetitor": "m3gim-vocab:repetiteur",
+    "m3gim-role:rundfunkshonorar": "m3gim-vocab:broadcastFee",
+    "m3gim-role:saenger": "m3gim-vocab:singer",
+    "m3gim-role:spielzeit": "m3gim-vocab:season",
+    "m3gim-role:technische_leitung": "m3gim-vocab:technicalDirector",
+    "m3gim-role:uebersetzer": "m3gim-vocab:translator",
+    "m3gim-role:ueberweisung": "m3gim-vocab:transferDate",
+    "m3gim-role:unterzeichner": "m3gim-vocab:signatory",
+    "m3gim-role:veranstalter": "m3gim-vocab:organizer",
+    "m3gim-role:verfasser": "m3gim-vocab:author",
+    "m3gim-role:vermittler": "m3gim-vocab:intermediary",
+    "m3gim-role:vertragsort": "m3gim-vocab:contractPlace",
+    "m3gim-role:vertragspartner": "m3gim-vocab:contractingParty",
+    "m3gim-role:widmungsempfaenger": "m3gim-vocab:dedicatee",
+    "m3gim-role:wiederaufnahme": "m3gim-vocab:revival",
+    "m3gim-role:wohnort": "m3gim-vocab:residencePlace",
+    "m3gim-role:zielort": "m3gim-vocab:destinationPlace"
+  },
+  "schemes": {
+    "m3gim-role:scheme": [
+      "m3gim-vocab:agentRoles",
+      "m3gim-vocab:annotationRoles",
+      "m3gim-vocab:financialItemTypes",
+      "m3gim-vocab:relationQualifiers"
+    ],
+    "m3gim-dft:scheme": [
+      "m3gim-vocab:documentaryFormTypes"
+    ]
+  },
+  "collections": {
+    "m3gim-role:datumsrollen": "m3gim-vocab:rolesAtDates",
+    "m3gim-role:ensemblerollen": "m3gim-vocab:rolesAtGroups",
+    "m3gim-role:ereignisrollen": "m3gim-vocab:rolesAtFramingEvents",
+    "m3gim-role:finanzrollen": "m3gim-vocab:rolesAtFinancialDetails",
+    "m3gim-role:institutionsrollen": "m3gim-vocab:rolesAtCorporateBodies",
+    "m3gim-role:mobilitaetsortsrollen": "m3gim-vocab:mobilityPlaceRoles",
+    "m3gim-role:ortsrollen": "m3gim-vocab:rolesAtPlaces",
+    "m3gim-role:personenrollen": "m3gim-vocab:rolesAtPersons",
+    "m3gim-role:werkrollen": "m3gim-vocab:rolesAtWorks"
+  },
+  "instancePrefixes": {
+    "m3gim:NIM_011_5": {
+      "to": "m3gim-data:NIM_011_5",
+      "reason": "Der lokale Name bleibt die Archivsignatur. Ein zusätzlicher Typmarker brächte keine Unterscheidungsleistung und bräche jeden Bookmark ein zweites Mal, weil die Record-Kennung in den URL-Hash der Anwendung wandert."
+    },
+    "m3gim:NIM_003_sammlung": {
+      "to": "m3gim-data:NIM_003_collection",
+      "reason": "Das Suffix ist ein Pipeline-Artefakt gegen die @id-Kollision aus Sammel-Zeile und Folios und trägt als einziger Teil einer Instanzkennung ein deutsches Wort."
+    },
+    "m3gim:perf_": {
+      "to": "m3gim-data:perf_",
+      "reason": "Der Typmarker bleibt unverändert."
+    },
+    "m3gim:ste_": {
+      "to": "m3gim-data:ev_",
+      "reason": "Der Typmarker ste stand für das raumzeitliche Ereignis. Mit der Zusammenführung auf die Klasse Annotation trägt jeder Aspektknoten denselben Marker; ev folgt der Schreibweise der Vorher-Nachher-Beispiele des Zielmodells."
+    },
+    "m3gim:role_": {
+      "to": "m3gim-data:stagerole_",
+      "reason": "Der Präfix role legte eine Zugehörigkeit zum Rollenvokabular nahe, die nicht besteht. Der neue Marker ist aus dem Klassennamen StageRole abgeleitet."
+    }
+  },
+  "kindChanges": {
+    "m3gim:role": "Aus owl:DatatypeProperty wird owl:ObjectProperty mit rdfs:range skos:Concept. Der Rollenwert steht künftig als Verweis auf ein Concept des Vokabulars m3gim-vocab, und der Verweisknoten führt dessen skos:prefLabel mit.",
+    "m3gim:eventRole": "Geht in m3gim-ontology:role auf und wechselt damit von owl:DatatypeProperty auf owl:ObjectProperty.",
+    "m3gim:dateRole": "Geht in m3gim-ontology:role auf und wechselt damit von owl:DatatypeProperty auf owl:ObjectProperty.",
+    "m3gim:detailRole": "Geht in m3gim-ontology:role auf und wechselt damit von owl:DatatypeProperty auf owl:ObjectProperty."
+  },
+  "typedDateProperties": {
+    "m3gim:absendedatum": {
+      "node": "m3gim-ontology:Annotation",
+      "valueProperty": "m3gim-ontology:atDate",
+      "role": "m3gim-vocab:dispatch",
+      "remark": null
+    },
+    "m3gim:empfangsdatum": {
+      "node": "m3gim-ontology:Annotation",
+      "valueProperty": "m3gim-ontology:atDate",
+      "role": "m3gim-vocab:receiving",
+      "remark": null
+    },
+    "m3gim:ausstellungsdatum": {
+      "node": "m3gim-ontology:Annotation",
+      "valueProperty": "m3gim-ontology:atDate",
+      "role": "m3gim-vocab:issueDate",
+      "remark": null
+    },
+    "m3gim:erscheinungsdatum": {
+      "node": "m3gim-ontology:Annotation",
+      "valueProperty": "m3gim-ontology:atDate",
+      "role": "m3gim-vocab:publicationDate",
+      "remark": null
+    },
+    "m3gim:abreisedatum": {
+      "node": "m3gim-ontology:Annotation",
+      "valueProperty": "m3gim-ontology:atDate",
+      "role": "m3gim-vocab:departure",
+      "remark": null
+    },
+    "m3gim:auftrittsdatum": {
+      "node": "m3gim-ontology:Annotation",
+      "valueProperty": "m3gim-ontology:atDate",
+      "role": "m3gim-vocab:performance",
+      "remark": "Die Rolle auftritt ist auf aufführung geführt; der Ursprungswert steht in m3gim-ontology:derivedFromRole."
+    },
+    "m3gim:auffuehrungsdatum": {
+      "node": "m3gim-ontology:Annotation",
+      "valueProperty": "m3gim-ontology:atDate",
+      "role": "m3gim-vocab:performance",
+      "remark": "Nur die Vorkommen am Dokument werden zu Annotationsknoten. Die Vorkommen am Aufführungsknoten bleiben dort und heißen m3gim-ontology:atDate ohne Rollenangabe."
+    },
+    "m3gim:probendatum": {
+      "node": "m3gim-ontology:Annotation",
+      "valueProperty": "m3gim-ontology:atDate",
+      "role": "m3gim-vocab:rehearsal",
+      "remark": null
+    },
+    "m3gim:probenbeginn": {
+      "node": "m3gim-ontology:Annotation",
+      "valueProperty": "m3gim-ontology:atDate",
+      "role": "m3gim-vocab:rehearsalStartDate",
+      "remark": "Die frühere Unterproperty-Kante auf rico:beginningDate entfällt; sie behauptete am Dokument den Beginn seiner Laufzeit."
+    },
+    "m3gim:premieredatum": {
+      "node": "m3gim-ontology:Annotation",
+      "valueProperty": "m3gim-ontology:atDate",
+      "role": "m3gim-vocab:premiere",
+      "remark": null
+    },
+    "m3gim:ausstrahlungsdatum": {
+      "node": "m3gim-ontology:Annotation",
+      "valueProperty": "m3gim-ontology:atDate",
+      "role": "m3gim-vocab:broadcastDate",
+      "remark": null
+    },
+    "m3gim:spielzeitVon": {
+      "node": "m3gim-ontology:Annotation",
+      "valueProperty": "m3gim-ontology:atDate",
+      "role": "m3gim-vocab:season",
+      "remark": "Ein einziger Term trägt die Spanne."
+    },
+    "m3gim:spielzeitBis": {
+      "node": "m3gim-ontology:Annotation",
+      "valueProperty": "m3gim-ontology:atDate",
+      "role": null,
+      "remark": "Deklariert und von der Pipeline nie befüllt. Die Spanne trägt m3gim-vocab:season in einem Wert."
+    },
+    "m3gim:ueberweisungsdatum": {
+      "node": "m3gim-ontology:Annotation",
+      "valueProperty": "m3gim-ontology:atDate",
+      "role": "m3gim-vocab:transferDate",
+      "remark": null
+    },
+    "m3gim:gespraechsdatum": {
+      "node": "m3gim-ontology:Annotation",
+      "valueProperty": "m3gim-ontology:atDate",
+      "role": "m3gim-vocab:conversationDate",
+      "remark": null
+    }
+  },
+  "removed": {
+    "m3gim:abreisedatum": "Typisierte Datumsproperty entfällt. Der Wert wandert in einen Knoten m3gim-ontology:Annotation mit m3gim-ontology:atDate und der Rolle m3gim-vocab:departure.",
+    "m3gim:absendedatum": "Typisierte Datumsproperty entfällt. Der Wert wandert in einen Knoten m3gim-ontology:Annotation mit m3gim-ontology:atDate und der Rolle m3gim-vocab:dispatch.",
+    "m3gim:auffuehrungsdatum": "Typisierte Datumsproperty entfällt. Der Wert wandert in einen Knoten m3gim-ontology:Annotation mit m3gim-ontology:atDate und der Rolle m3gim-vocab:performance. Nur die Vorkommen am Dokument werden zu Annotationsknoten. Die Vorkommen am Aufführungsknoten bleiben dort und heißen m3gim-ontology:atDate ohne Rollenangabe.",
+    "m3gim:auftrittsdatum": "Typisierte Datumsproperty entfällt. Der Wert wandert in einen Knoten m3gim-ontology:Annotation mit m3gim-ontology:atDate und der Rolle m3gim-vocab:performance. Die Rolle auftritt ist auf aufführung geführt; der Ursprungswert steht in m3gim-ontology:derivedFromRole.",
+    "m3gim:ausstellungsdatum": "Typisierte Datumsproperty entfällt. Der Wert wandert in einen Knoten m3gim-ontology:Annotation mit m3gim-ontology:atDate und der Rolle m3gim-vocab:issueDate.",
+    "m3gim:ausstrahlungsdatum": "Typisierte Datumsproperty entfällt. Der Wert wandert in einen Knoten m3gim-ontology:Annotation mit m3gim-ontology:atDate und der Rolle m3gim-vocab:broadcastDate.",
+    "m3gim:empfangsdatum": "Typisierte Datumsproperty entfällt. Der Wert wandert in einen Knoten m3gim-ontology:Annotation mit m3gim-ontology:atDate und der Rolle m3gim-vocab:receiving.",
+    "m3gim:erscheinungsdatum": "Typisierte Datumsproperty entfällt. Der Wert wandert in einen Knoten m3gim-ontology:Annotation mit m3gim-ontology:atDate und der Rolle m3gim-vocab:publicationDate.",
+    "m3gim:gespraechsdatum": "Typisierte Datumsproperty entfällt. Der Wert wandert in einen Knoten m3gim-ontology:Annotation mit m3gim-ontology:atDate und der Rolle m3gim-vocab:conversationDate.",
+    "m3gim:premieredatum": "Typisierte Datumsproperty entfällt. Der Wert wandert in einen Knoten m3gim-ontology:Annotation mit m3gim-ontology:atDate und der Rolle m3gim-vocab:premiere.",
+    "m3gim:probenbeginn": "Typisierte Datumsproperty entfällt. Der Wert wandert in einen Knoten m3gim-ontology:Annotation mit m3gim-ontology:atDate und der Rolle m3gim-vocab:rehearsalStartDate. Die frühere Unterproperty-Kante auf rico:beginningDate entfällt; sie behauptete am Dokument den Beginn seiner Laufzeit.",
+    "m3gim:probendatum": "Typisierte Datumsproperty entfällt. Der Wert wandert in einen Knoten m3gim-ontology:Annotation mit m3gim-ontology:atDate und der Rolle m3gim-vocab:rehearsal.",
+    "m3gim:spielzeitBis": "Typisierte Datumsproperty entfällt ersatzlos. Deklariert und von der Pipeline nie befüllt. Die Spanne trägt m3gim-vocab:season in einem Wert.",
+    "m3gim:spielzeitVon": "Typisierte Datumsproperty entfällt. Der Wert wandert in einen Knoten m3gim-ontology:Annotation mit m3gim-ontology:atDate und der Rolle m3gim-vocab:season. Ein einziger Term trägt die Spanne.",
+    "m3gim:ueberweisungsdatum": "Typisierte Datumsproperty entfällt. Der Wert wandert in einen Knoten m3gim-ontology:Annotation mit m3gim-ontology:atDate und der Rolle m3gim-vocab:transferDate."
+  },
+  "added": {
+    "m3gim-ontology:derivedFromRole": "Hält den Rollenwert der Quelle fest, wo mehrere erfasste Rollen im Vokabular zu einem Concept zusammengeführt sind. Ohne den Term ist die Zusammenführung von auftritt auf aufführung sowie von erstelldatum und entstehungsort auf entstehung irreversibel, sobald die Quelle nicht mehr befragt wird. Der Term ist in knowledge/data.md § 7 für genau diesen Zweck deklariert und war bisher nicht ins Vokabular aufgenommen, weil die Pipeline ihn nicht erzeugt hat.",
+    "m3gim-vocab:agentRoles": "Sortenreines Scheme aus der Zerlegung des Sammelschemes m3gim-role:scheme.",
+    "m3gim-vocab:annotationRoles": "Sortenreines Scheme aus der Zerlegung des Sammelschemes m3gim-role:scheme. Es vereinigt die getrennt vorgeschlagenen Schemes eventTypes, placeRoles und dateRoles, weil derselbe Begriff am einheitlichen Annotationsknoten wahlweise eine Datierung, eine Verortung oder beides trägt.",
+    "m3gim-vocab:financialItemTypes": "Sortenreines Scheme aus der Zerlegung des Sammelschemes m3gim-role:scheme.",
+    "m3gim-vocab:relationQualifiers": "Sortenreines Scheme aus der Zerlegung des Sammelschemes m3gim-role:scheme. Es hält die Querlage der Begriffe erwähnt und implizit fest, die an jedem Zieltyp stehen können."
+  }
+}

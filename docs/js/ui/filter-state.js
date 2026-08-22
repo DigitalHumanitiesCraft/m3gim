@@ -1,5 +1,6 @@
 /**
- * Geteilter Filter-State (filter-modell.md, Milestone 4 / E-117).
+ * Geteilter Filter-State (frontend-architecture.md § Cross-View-Filter,
+ * Milestone 4 / E-117).
  *
  * EIN Filter-State-Objekt als Quelle fuer alle filterbaren Views. Jede Facette
  * zieht ihre Werte aus store.* (keine redaktionellen Listen). Leerwert =

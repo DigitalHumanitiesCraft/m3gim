@@ -1,7 +1,7 @@
 /*
  * M3GIM Repertoire-Tab — parallele Aggregat-Tabellen.
- * Designgrundlage: knowledge/interface-konzept.md § Parallele Facet-Tabellen
- * + § Inline-Breakdown statt Drilldown-Panel.
+ * Designgrundlage: knowledge/design.md § Parallele Facet-Tabellen statt
+ * Umschalter + § Inline-Breakdown statt Drilldown-Panel.
  */
 
 #tab-repertoire {

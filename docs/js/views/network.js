@@ -4,8 +4,9 @@
  * welchen Personen stand Malaniuk in Beziehung?".
  *
  * Datenquelle: store.persons (inkl. Pass-2.5-Backlinks aus agentRelations).
- * Layout: deterministisch, polar-analytisch — frontend.md § 196
- * "Determinismus vor Schoenheit, KEINE Force-Simulation".
+ * Layout: deterministisch, polar-analytisch — design.md § Lektionen aus den
+ * entfernten Visualisierungen, "Determinismus vor Schoenheit, KEINE
+ * Force-Simulation".
  * Vorbild: alte Kosmos-View (git show 2856daa^:docs/js/views/kosmos.js).
  *
  * Drei Ringe nach Evidenzstaerke (siehe _network-geometry.js):

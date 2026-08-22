@@ -185,7 +185,7 @@ def test_output_roles_subset_of_data_md(records):
 
 # Rollen, die bewusst im Frontend als 'neutral' rendern sollen (z.B. reine
 # Datumsmarker, die in der Repertoire-/Biogramm-Ansicht keine Farbfamilie
-# brauchen). Erweitern nur nach Absprache mit interface-konzept.md.
+# brauchen). Erweitern nur nach Absprache mit design.md § Rolle-Prefix-Chips.
 FRONTEND_NEUTRAL_IGNORELIST = {
     "empfänger", "widmungsempfänger",
     # Bühnenrollen (nur in PerformanceRole-Chips)
@@ -230,7 +230,7 @@ def test_xlsx_roles_all_in_frontend_cluster(xlsx_verknuepfungen):
     im UI als 'neutral' — stille Datenqualitaets-Luecke.
 
     Source-Fix: Rolle zu docs/js/data/constants.js::ROLE_CLUSTER
-    hinzufuegen (interface-konzept.md beachten).
+    hinzufuegen (design.md § Rolle-Prefix-Chips beachten).
     """
     df = xlsx_verknuepfungen
     assert "rolle" in df.columns

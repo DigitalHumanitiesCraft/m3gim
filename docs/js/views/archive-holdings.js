@@ -30,7 +30,7 @@ let sortDir = 1; // 1 = ascending, -1 = descending
 let currentSortKey = 'signatur';
 
 // Plakate + Tontraeger werden pauschal ausgeblendet -- Forschungs-Fokus
-// liegt auf Schriftgut-Belegen, siehe knowledge/interface-konzept.md.
+// liegt auf Schriftgut-Belegen, siehe knowledge/design.md § Tab-Architektur.
 const EXCLUDED_DFT = new Set(['plakat', 'tontraeger']);
 
 /**

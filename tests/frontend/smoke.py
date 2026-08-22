@@ -284,7 +284,8 @@ def main() -> int:
             results.append(("FAIL", "karte:render               ",
                             f"Karte nicht gezeichnet: {str(e)[:90]}"))
 
-        # --- Canary M4: geteilter Cross-View-Filter (filter-modell.md). Im
+        # --- Canary M4: geteilter Cross-View-Filter
+        #     (frontend-architecture.md § Cross-View-Filter). Im
         #     Verknuepfungen-Graph Ort=Bayreuth setzen -> der Graph fokussiert
         #     Bayreuth (Stempel ort:Bayreuth) UND der bereits gerenderte Bestand
         #     filtert synchron auf die Bayreuth-Records (Stempel gefiltert:ja).
