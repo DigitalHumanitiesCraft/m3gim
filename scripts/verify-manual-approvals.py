@@ -44,17 +44,31 @@ USER_AGENT = "M3GIM-Pipeline/1.0 (office@dhcraft.org)"
 BATCH = 50
 
 # Heuristische Typ-Signale im Description-Text.
+# Signals are matched against the normalised description, so every entry is
+# normalised the same way at import time; a raw "saenger" would never match.
 TYPE_SIGNALS = {
     "location":    ["stadt", "town", "city", "settlement", "gemeinde",
                     "ortschaft", "municipality", "village"],
     "person":      ["person", "saenger", "sänger", "komponist", "dirigent",
                     "singer", "composer", "conductor", "kuenstler",
                     "sopran", "mezzo", "alt ", "tenor", "bariton", "bass",
-                    "maler", "dichter", "schriftsteller", "regisseur"],
+                    "maler", "dichter", "schriftsteller", "regisseur",
+                    "dramatiker", "architekt", "violinist", "pianist",
+                    "librettist", "intendant", "buehnenbildner", "bühnenbildner",
+                    "musiker", "naturforscher", "naturwissenschaftler",
+                    "botanik", "taxonom", "gesangspaedagoge",
+                    "gesangspädagoge", "schauspieler", "operndirektor",
+                    "spielleiter"],
     "org":         ["organization", "organisation", "unternehmen", "institution",
-                    "company", "verein", "verband", "universit", "hochschule"],
+                    "company", "verein", "verband", "universit", "hochschule",
+                    "opernhaus", "theater", "orchester", "festival",
+                    "festspiel", "musiklabel", "label", "rundfunk",
+                    "fluggesellschaft", "verlag", "agentur", "konservatorium",
+                    "orchestra", "opera house", "record label"],
     "work":        ["oper", "opera", "werk", "lied", "song", "sinfonie",
-                    "symphony", "theaterst", "komposition", "music"],
+                    "symphony", "theaterst", "komposition", "music",
+                    "oratorium", "passion", "messe", "mass", "requiem",
+                    "kantate", "operette", "ballett", "zyklus", "arie"],
 }
 
 
@@ -63,6 +77,12 @@ def _normalize(s: str) -> str:
     s = (s or "").lower().strip()
     return (s.replace("ä", "a").replace("ö", "o").replace("ü", "u")
              .replace("ß", "ss").replace("-", " "))
+
+
+# Normalise the signal vocabulary once, so it lives in the same string space
+# as the descriptions it is matched against.
+TYPE_SIGNALS = {k: sorted({_normalize(v) for v in vals})
+                for k, vals in TYPE_SIGNALS.items()}
 
 
 def _tokens(s: str) -> set:

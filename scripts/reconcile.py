@@ -8,13 +8,20 @@ Ergebnisse werden als JSON-Datei gespeichert, die von transform.py
 bei der naechsten Pipeline-Ausfuehrung uebernommen wird.
 
 Strategie:
-  - Exakte Matches (Label == Name, case-insensitive) bevorzugt
-  - Fuzzy-Matching als Fallback (thefuzz token_set_ratio)
-  - Personen: zusaetzlich Filterung auf instance-of human (Q5)
+  - Exakte Label-Treffer bevorzugt, Alias-Treffer eine Stufe darunter
+  - Fuzzy-Matching als Fallback (thefuzz token_set_ratio), Aliase
+    werden mitverglichen
+  - Personen: beide Namensformen werden abgefragt und die Trefferlisten
+    vereinigt, Filterung auf instance-of human (Q5); bei Punktgleichstand
+    zweier Entitaeten entsteht kein Treffer
   - Organisationen: Filterung auf organisation/institution
   - Orte: Filterung auf geographic entity
-  - Werke: Suche mit "Komponist + Titel", P86-Validierung
-  - Confidence-Level: exact (100), fuzzy_high (>=90), fuzzy_low (>=80)
+  - Werke: P31-Typfilter plus bindende P86-Pruefung gegen den im
+    Werkindex gefuehrten Komponisten
+  - Kennungen, die schon in den Indizes stehen, werden geprueft statt
+    uebersprungen
+  - Confidence-Level: exact (100), alias (95), fuzzy_high (>=90),
+    fuzzy_low (>=80)
 
 Verwendung:
     python scripts/reconcile.py [--dry-run] [--type person|org|location|work]
@@ -23,8 +30,10 @@ Verwendung:
 
 import sys
 import json
+import re
 import time
 import argparse
+import unicodedata
 import urllib.request
 import urllib.parse
 import urllib.error
@@ -52,12 +61,22 @@ OUTPUT_FILE = BASE_DIR / "data" / "output" / "wikidata-reconciliation.json"
 # ---------------------------------------------------------------------------
 
 WIKIDATA_API = "https://www.wikidata.org/w/api.php"
+USER_AGENT = "m3gim-research/1.0 (https://dhcraft.org/m3gim; office@dhcraft.org)"
 REQUEST_DELAY = 0.5  # Sekunden zwischen Anfragen (Rate Limiting)
 MIN_NAME_LENGTH = 3  # Kurze Namen (Kuerzel, Initialien) ueberspringen
+
+QID_PATTERN = re.compile(r"^Q\d+$")
 
 # Fuzzy-Matching Schwellenwerte
 FUZZY_HIGH_THRESHOLD = 90
 FUZZY_LOW_THRESHOLD = 80
+ALIAS_MATCH_SCORE = 95  # Alias-Treffer bleibt unter dem exakten Labeltreffer
+
+# Komponistenabgleich: token_sort_ratio, weil token_set_ratio einen
+# blossen Nachnamen-Alias ("Strauss") als volle Uebereinstimmung wertet.
+# Kalibriert am belegten Bestand: niedrigster richtiger Wert 91,
+# hoechster falscher 72.
+COMPOSER_MATCH_THRESHOLD = 85
 
 # Instance-of (P31) Werte fuer Filterung
 Q_HUMAN = "Q5"
@@ -71,69 +90,113 @@ Q_ORGANIZATION = {"Q43229", "Q4830453", "Q3918", "Q7075", "Q31855",
 # Q31855=research institute, Q2385804=musical ensemble,
 # Q24354=theater, Q57660343=opera house
 
-Q_MUSICAL_WORK = {"Q105543609", "Q7725634", "Q1344", "Q7366", "Q9730",
-                   "Q482994", "Q188451"}
-# Q105543609=musical work/composition, Q7725634=literary work,
-# Q1344=opera, Q7366=song, Q9730=classical music composition,
-# Q482994=musical composition, Q188451=musical work
+Q_MUSICAL_WORK = {"Q58483083", "Q105543609", "Q785522", "Q781815",
+                   "Q15079786", "Q58483088", "Q1344", "Q7366", "Q9730"}
+# Empirisch aus den P31-Werten der belegten Werkentitaeten
+# (data/reports/identifier-proposals-works.md, ueber wbgetentities geprueft):
+# Q58483083=dramatisch-musikalisches Werk (traegt praktisch jede Oper),
+# Q105543609=musikalisches Werk/Komposition, Q785522=italienische Oper,
+# Q781815=Passion, Q15079786=Ballett, Q58483088=choreografisches Werk.
+# Q1344=Oper, Q7366=Lied, Q9730=klassische Musik bleiben als seltene,
+# nicht widerlegte Werkklassen stehen.
+# Entfernt, weil belegt fehlzuordnend: Q7725634=literarisches Werk (Vorlage
+# statt Vertonung), Q482994=Album (Tonaufnahme statt Werk),
+# Q188451=Musikgenre (Gattung statt Werk).
+
+
+_CLAIMS_CACHE: dict = {}
+_NAMES_CACHE: dict = {}
+
+
+def clear_caches() -> None:
+    """Leert die Entitaets-Caches (Tests, wiederholte Laeufe)."""
+    _CLAIMS_CACHE.clear()
+    _NAMES_CACHE.clear()
+
+
+def _api_request(params: dict) -> dict:
+    """Eine Wikidata-Anfrage mit Projekt-Kennung und Rate-Limit-Pause."""
+    url = f"{WIKIDATA_API}?{urllib.parse.urlencode(params)}"
+    req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
+    time.sleep(REQUEST_DELAY)
+    with urllib.request.urlopen(req, timeout=10) as resp:
+        return json.loads(resp.read().decode("utf-8"))
 
 
 def search_wikidata(query: str, language: str = "de", limit: int = 5) -> list:
     """Sucht Entitaeten ueber die Wikidata Search API."""
-    params = {
-        "action": "wbsearchentities",
-        "search": query,
-        "language": language,
-        "limit": str(limit),
-        "format": "json",
-    }
-    url = f"{WIKIDATA_API}?{urllib.parse.urlencode(params)}"
-
     try:
-        req = urllib.request.Request(url, headers={
-            "User-Agent": "M3GIM-Reconcile/1.0 (DH research project; mailto:pollin@dhcraft.org)"
+        data = _api_request({
+            "action": "wbsearchentities",
+            "search": query,
+            "language": language,
+            "limit": str(limit),
+            "format": "json",
         })
-        with urllib.request.urlopen(req, timeout=10) as resp:
-            data = json.loads(resp.read().decode("utf-8"))
-            return data.get("search", [])
+        return data.get("search", [])
     except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError) as e:
         print(f"  [WARN] API-Fehler fuer '{query}': {e}")
         return []
 
 
 def get_entity_claims(qid: str) -> dict:
-    """Holt die Claims (P31 etc.) fuer eine Entitaet."""
-    params = {
-        "action": "wbgetentities",
-        "ids": qid,
-        "props": "claims",
-        "format": "json",
-    }
-    url = f"{WIKIDATA_API}?{urllib.parse.urlencode(params)}"
-
+    """Holt die Claims (P31, P86 etc.) fuer eine Entitaet."""
+    if qid in _CLAIMS_CACHE:
+        return _CLAIMS_CACHE[qid]
     try:
-        req = urllib.request.Request(url, headers={
-            "User-Agent": "M3GIM-Reconcile/1.0 (DH research project; mailto:pollin@dhcraft.org)"
+        data = _api_request({
+            "action": "wbgetentities",
+            "ids": qid,
+            "props": "claims",
+            "format": "json",
         })
-        with urllib.request.urlopen(req, timeout=10) as resp:
-            data = json.loads(resp.read().decode("utf-8"))
-            entity = data.get("entities", {}).get(qid, {})
-            return entity.get("claims", {})
     except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError):
-        return {}
+        return {}  # Fehlschlag nicht cachen
+    claims = data.get("entities", {}).get(qid, {}).get("claims", {})
+    _CLAIMS_CACHE[qid] = claims
+    return claims
+
+
+def get_entity_names(qid: str) -> list:
+    """Labels und Aliase einer Entitaet in allen Sprachen.
+
+    Ohne Sprachfilter, weil der Komponistenabgleich auf die
+    Transliterationsvarianten angewiesen ist, die je nach Person in
+    unterschiedlichen Sprachen als Alias gepflegt sind.
+    """
+    if qid in _NAMES_CACHE:
+        return _NAMES_CACHE[qid]
+    try:
+        data = _api_request({
+            "action": "wbgetentities",
+            "ids": qid,
+            "props": "labels|aliases",
+            "format": "json",
+        })
+    except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError):
+        return []
+    entity = data.get("entities", {}).get(qid, {})
+    names = {v["value"] for v in entity.get("labels", {}).values()}
+    for alias_group in entity.get("aliases", {}).values():
+        names |= {a["value"] for a in alias_group}
+    result = sorted(names)
+    _NAMES_CACHE[qid] = result
+    return result
+
+
+def get_claim_ids(claims: dict, prop: str) -> list:
+    """Extrahiert die Entitaets-Q-IDs einer Property aus Claims."""
+    result = []
+    for claim in claims.get(prop, []):
+        value = claim.get("mainsnak", {}).get("datavalue", {}).get("value", {})
+        if isinstance(value, dict) and "id" in value:
+            result.append(value["id"])
+    return result
 
 
 def get_instance_of(claims: dict) -> set:
     """Extrahiert alle P31 (instance-of) Q-IDs aus Claims."""
-    p31 = claims.get("P31", [])
-    result = set()
-    for claim in p31:
-        mainsnak = claim.get("mainsnak", {})
-        datavalue = mainsnak.get("datavalue", {})
-        value = datavalue.get("value", {})
-        if isinstance(value, dict) and "id" in value:
-            result.add(value["id"])
-    return result
+    return set(get_claim_ids(claims, "P31"))
 
 
 def is_exact_match(search_name: str, result_label: str) -> bool:
@@ -141,19 +204,49 @@ def is_exact_match(search_name: str, result_label: str) -> bool:
     return search_name.strip().lower() == result_label.strip().lower()
 
 
+def result_names(result: dict) -> tuple[str, list]:
+    """Label und Namensvarianten eines wbsearchentities-Treffers.
+
+    Bei einem Alias-Treffer liefert die API die getroffene Aliasform im
+    Label-Feld, sobald die Entitaet in der Abfragesprache kein Label hat;
+    nur ``match.type`` unterscheidet Alias und Ansetzung zuverlaessig.
+    """
+    match = result.get("match") or {}
+    matched_text = (match.get("text") or "").strip()
+    label = (result.get("label") or "").strip()
+    variants = [a.strip() for a in (result.get("aliases") or []) if a]
+    if matched_text:
+        variants.append(matched_text)
+    if (match.get("type") == "alias" and matched_text
+            and is_exact_match(label, matched_text)):
+        label = ""
+    return label, variants
+
+
 def compute_match_level(search_name: str, result_label: str,
-                        min_confidence: int = FUZZY_LOW_THRESHOLD
-                        ) -> tuple[str | None, int]:
-    """Bewertet Match-Qualitaet zwischen Suchname und WD-Label.
+                        min_confidence: int = FUZZY_LOW_THRESHOLD,
+                        aliases=()) -> tuple[str | None, int]:
+    """Bewertet Match-Qualitaet zwischen Suchname, WD-Label und Aliasformen.
 
     Returns: (level, score)
-      level: 'exact', 'fuzzy_high', 'fuzzy_low', oder None
+      level: 'exact', 'alias', 'fuzzy_high', 'fuzzy_low', oder None
       score: 0-100 Aehnlichkeitswert
     """
-    if is_exact_match(search_name, result_label):
+    if result_label and is_exact_match(search_name, result_label):
         return ('exact', 100)
 
-    score = fuzz.token_set_ratio(search_name.lower(), result_label.lower())
+    for alias in aliases:
+        if alias and is_exact_match(search_name, alias):
+            return ('alias', ALIAS_MATCH_SCORE)
+
+    needle = search_name.lower()
+    score = fuzz.token_set_ratio(needle, result_label.lower()) if result_label else 0
+    # Aliase mit token_sort_ratio: Aliaslisten fuehren zusammengesetzte
+    # Formen ("Werk. Incipit"), deren Wortobermenge mit token_set_ratio
+    # 100 ergaebe und das gesuchte Werk verdraengte.
+    for alias in aliases:
+        if alias:
+            score = max(score, fuzz.token_sort_ratio(needle, alias.lower()))
 
     if score >= FUZZY_HIGH_THRESHOLD:
         return ('fuzzy_high', score)
@@ -162,129 +255,175 @@ def compute_match_level(search_name: str, result_label: str,
     return (None, score)
 
 
-def check_type(qid: str, expected_types: set) -> bool:
+def check_type(qid: str, expected_types) -> bool:
     """Prueft ob eine Entitaet den erwarteten P31-Typ hat."""
-    time.sleep(REQUEST_DELAY)
-    claims = get_entity_claims(qid)
-    instances = get_instance_of(claims)
+    instances = get_instance_of(get_entity_claims(qid))
     if isinstance(expected_types, str):
         return expected_types in instances
     return bool(instances & expected_types)
+
+
+def normalize_name(name: str) -> str:
+    """Diakritika-freie Kleinschreibung fuer den Namensvergleich."""
+    decomposed = unicodedata.normalize("NFKD", name or "")
+    stripped = "".join(c for c in decomposed if not unicodedata.combining(c))
+    return re.sub(r"[^a-z0-9 ]+", " ", stripped.replace("ß", "ss").lower()).strip()
+
+
+def invert_name(name: str) -> str:
+    """'Nachname, Vorname' zur natuerlichen Namensfolge."""
+    parts = (name or "").split(",", 1)
+    if len(parts) == 2:
+        return f"{parts[1].strip()} {parts[0].strip()}"
+    return (name or "").strip()
+
+
+def composer_matches(qid: str, komponist: str) -> bool:
+    """Prueft P86 der Entitaet gegen den im Werkindex gefuehrten Komponisten.
+
+    Verbindlich, sobald der Index einen Komponisten fuehrt: eine Entitaet
+    ohne P86 oder mit abweichendem Komponisten gilt als nicht bestaetigt.
+    """
+    if not komponist:
+        return True
+    composers = get_claim_ids(get_entity_claims(qid), "P86")
+    if not composers:
+        return False
+    wanted = normalize_name(invert_name(komponist))
+    for composer_qid in composers:
+        for variant in get_entity_names(composer_qid):
+            if fuzz.token_sort_ratio(wanted, normalize_name(variant)) >= \
+                    COMPOSER_MATCH_THRESHOLD:
+                return True
+    return False
 
 
 # ---------------------------------------------------------------------------
 # Reconciliation-Funktionen pro Typ
 # ---------------------------------------------------------------------------
 
+def search_all(queries: list) -> list:
+    """Vereinigt die Trefferlisten mehrerer Suchanfragen, ohne Dubletten."""
+    results = []
+    seen = set()
+    for query in queries:
+        for r in search_wikidata(query, language="de"):
+            qid = r.get("id", "")
+            if qid and qid not in seen:
+                seen.add(qid)
+                results.append(r)
+    return results
+
+
+def select_match(results: list, names: list, expected_types,
+                 min_confidence: int = FUZZY_LOW_THRESHOLD,
+                 confirm=None) -> dict | None:
+    """Waehlt den Treffer mit der hoechsten Punktzahl, der alle Pruefungen besteht.
+
+    Geprueft wird von der hoechsten Punktzahl abwaerts, damit nur die
+    aussichtsreichen Kandidaten Abfragen kosten. Bestehen mehrere
+    Entitaeten derselben Punktzahl alle Pruefungen, entsteht kein Treffer:
+    die Reihenfolge der Wikidata-Suche wuerde sonst die prominentere
+    Namensgleiche waehlen.
+    """
+    scored = []
+    for r in results:
+        qid = r.get("id", "")
+        label, variants = result_names(r)
+        best_level, best_score = None, 0
+        for name in names:
+            level, score = compute_match_level(name, label, min_confidence,
+                                               variants)
+            if level and score > best_score:
+                best_level, best_score = level, score
+        if best_level:
+            display = label or (variants[0] if variants else "")
+            scored.append((best_score, best_level, qid, display))
+
+    for score in sorted({entry[0] for entry in scored}, reverse=True):
+        tier = [e for e in scored if e[0] == score]
+        confirmed = [
+            e for e in tier
+            if check_type(e[2], expected_types)
+            and (confirm is None or confirm(e[2]))
+        ]
+        if len(confirmed) == 1:
+            _, level, qid, display = confirmed[0]
+            return {"qid": qid, "label": display,
+                    "match": level, "confidence": score}
+        if len(confirmed) > 1:
+            print(f"  [AMBIG {score}: {', '.join(e[2] for e in confirmed)}]",
+                  end=" ")
+            return None
+    return None
+
+
 def reconcile_person(name: str, min_confidence: int = FUZZY_LOW_THRESHOLD,
                      **_) -> dict | None:
-    """Reconciliation fuer Personen: Name → Q-ID mit Fuzzy-Matching + Q5."""
-    # Namenskandidaten: Original + umgekehrte Form ("Nachname, Vorname")
+    """Reconciliation fuer Personen: Name → Q-ID mit Fuzzy-Matching + Q5.
+
+    Beide Namensformen werden abgefragt und die Trefferlisten vereinigt.
+    Die Komma-Form trifft bei kanonischen Personen die Lexikonartikel,
+    die Person selbst steht nur in der invertierten Form.
+    """
     candidates = [name]
-    parts = name.split(",", 1)
-    if len(parts) == 2:
-        candidates.append(f"{parts[1].strip()} {parts[0].strip()}")
+    inverted = invert_name(name)
+    if inverted and inverted != name:
+        candidates.append(inverted)
 
-    # Alle Suchvarianten ausprobieren
-    all_results = []
-    for query in candidates:
-        results = search_wikidata(query, language="de")
-        if results:
-            all_results.extend(results)
-            break  # Erster erfolgreicher Query reicht
-
-    best_match = None
-    best_score = 0
-
-    for r in all_results:
-        label = r.get("label", "")
-        qid = r.get("id", "")
-
-        # Gegen alle Namenskandidaten pruefen
-        for candidate in candidates:
-            level, score = compute_match_level(candidate, label, min_confidence)
-            if level and score > best_score:
-                if check_type(qid, Q_HUMAN):
-                    best_match = {
-                        "qid": qid, "label": label,
-                        "match": level, "confidence": score,
-                    }
-                    best_score = score
-                    if level == 'exact':
-                        return best_match  # Short-circuit bei exaktem Match
-
-    return best_match
+    return select_match(search_all(candidates), candidates, Q_HUMAN,
+                        min_confidence)
 
 
 def reconcile_simple(name: str, expected_types: set,
                      min_confidence: int = FUZZY_LOW_THRESHOLD,
                      **_) -> dict | None:
     """Generische Reconciliation mit Fuzzy-Matching + P31-Typfilter."""
-    results = search_wikidata(name, language="de")
-
-    best_match = None
-    best_score = 0
-
-    for r in results:
-        label = r.get("label", "")
-        qid = r.get("id", "")
-        level, score = compute_match_level(name, label, min_confidence)
-        if level and score > best_score:
-            if check_type(qid, expected_types):
-                best_match = {
-                    "qid": qid, "label": label,
-                    "match": level, "confidence": score,
-                }
-                best_score = score
-                if level == 'exact':
-                    return best_match
-
-    return best_match
+    return select_match(search_wikidata(name, language="de"), [name],
+                        expected_types, min_confidence)
 
 
 def reconcile_work(name: str, komponist: str = None,
                    min_confidence: int = FUZZY_LOW_THRESHOLD,
                    **_) -> dict | None:
-    """Reconciliation fuer Werke. Composer-aware mit P86-Validierung."""
+    """Reconciliation fuer Werke: P31-Typfilter + bindende P86-Pruefung.
+
+    Fuehrt der Werkindex einen Komponisten, muss die Entitaet ihn als P86
+    ausweisen; sonst bleibt der Titel ohne Identifikator. Damit scheiden
+    gleichnamige Werke fremder Komponisten aus.
+    """
     queries = []
     if komponist:
         queries.append(f"{name} {komponist}")
     queries.append(name)
 
-    best_match = None
-    best_score = 0
+    confirm = (lambda qid: composer_matches(qid, komponist)) if komponist else None
+    return select_match(search_all(queries), [name], Q_MUSICAL_WORK,
+                        min_confidence, confirm=confirm)
 
-    for query in queries:
-        results = search_wikidata(query, language="de")
-        for r in results:
-            label = r.get("label", "")
-            qid = r.get("id", "")
 
-            level, score = compute_match_level(name, label, min_confidence)
-            if not level:
-                continue
+def verify_existing_qid(qid: str, expected_types, komponist: str = None) -> dict:
+    """Prueft eine schon im Index stehende Kennung gegen Wikidata.
 
-            if not check_type(qid, Q_MUSICAL_WORK):
-                continue
+    Returns: {"verified": bool, "reason": str}
+    """
+    value = (qid or "").strip()
+    if not QID_PATTERN.match(value):
+        return {"verified": False, "reason": "keine Q-ID"}
 
-            # Bonus fuer Composer-bestaetigung via P86
-            if komponist and score < 100:
-                time.sleep(REQUEST_DELAY)
-                claims = get_entity_claims(qid)
-                p86 = claims.get("P86", [])
-                if p86:  # Hat Composer-Claim → vertrauenswuerdiger
-                    score = min(score + 5, 100)
+    claims = get_entity_claims(value)
+    if not claims:
+        return {"verified": False, "reason": "Entitaet nicht abrufbar"}
 
-            if score > best_score:
-                best_match = {
-                    "qid": qid, "label": label,
-                    "match": level, "confidence": score,
-                }
-                best_score = score
-                if level == 'exact':
-                    return best_match
+    if not check_type(value, expected_types):
+        instances = ", ".join(sorted(get_instance_of(claims))) or "fehlt"
+        return {"verified": False, "reason": f"Typ passt nicht (P31 {instances})"}
 
-    return best_match
+    if komponist and not composer_matches(value, komponist):
+        return {"verified": False,
+                "reason": f"Komponist nicht bestaetigt ({komponist})"}
+
+    return {"verified": True, "reason": ""}
 
 
 # ---------------------------------------------------------------------------
@@ -300,6 +439,7 @@ INDEX_CONFIG = [
         "filename": "M3GIM-Personenindex.xlsx",
         "shift_key": None,
         "reconcile_fn": reconcile_person,
+        "expected_types": Q_HUMAN,
         "extra_fields": [],
     },
     {
@@ -308,6 +448,7 @@ INDEX_CONFIG = [
         "filename": "M3GIM-Organisationsindex.xlsx",
         "shift_key": "organisationsindex",
         "reconcile_fn": lambda name, min_confidence=FUZZY_LOW_THRESHOLD, **kw: reconcile_simple(name, Q_ORGANIZATION, min_confidence=min_confidence),
+        "expected_types": Q_ORGANIZATION,
         "extra_fields": [],
     },
     {
@@ -316,6 +457,7 @@ INDEX_CONFIG = [
         "filename": "M3GIM-Ortsindex.xlsx",
         "shift_key": "ortsindex",
         "reconcile_fn": lambda name, min_confidence=FUZZY_LOW_THRESHOLD, **kw: reconcile_simple(name, Q_GEOGRAPHIC, min_confidence=min_confidence),
+        "expected_types": Q_GEOGRAPHIC,
         "extra_fields": [],
     },
     {
@@ -324,6 +466,7 @@ INDEX_CONFIG = [
         "filename": "M3GIM-Werkindex.xlsx",
         "shift_key": "werkindex",
         "reconcile_fn": reconcile_work,
+        "expected_types": Q_MUSICAL_WORK,
         "extra_fields": ["komponist"],
     },
 ]
@@ -451,13 +594,28 @@ def run_reconciliation(entity_types: list, dry_run: bool = False,
             if not name or name == "nan":
                 continue
 
-            # Bereits im Google Sheet verknuepft
+            # Extra-Felder sammeln (z.B. komponist fuer Werke)
+            extra = {}
+            for field in cfg["extra_fields"]:
+                val = str(row.get(field, "")).strip()
+                extra[field] = val if val != "nan" else None
+
+            # Bereits im Index verknuepft: keine Suche, aber eine Pruefung
+            # der vorhandenen Kennung
             if existing_wd and existing_wd != "nan" and existing_wd != "":
-                results["skipped"].append({
-                    "type": etype, "name": name,
-                    "existing_qid": existing_wd
-                })
-                print(f"  [SKIP] {name} — bereits {existing_wd}")
+                entry = {"type": etype, "name": name,
+                         "existing_qid": existing_wd}
+                if not dry_run:
+                    entry["verification"] = verify_existing_qid(
+                        existing_wd, cfg["expected_types"],
+                        komponist=extra.get("komponist"))
+                results["skipped"].append(entry)
+                verdict = entry.get("verification") or {}
+                if verdict.get("verified", True):
+                    print(f"  [SKIP] {name} — bereits {existing_wd}")
+                else:
+                    print(f"  [PRUEF] {name} — {existing_wd} fraglich: "
+                          f"{verdict['reason']}")
                 continue
 
             # Mindestlaenge pruefen (verhindert False Positives bei Kuerzeln)
@@ -483,12 +641,6 @@ def run_reconciliation(entity_types: list, dry_run: bool = False,
                 cached_count += 1
                 print(f"  [CACHE] {name} → kein Match")
                 continue
-
-            # Extra-Felder sammeln (z.B. komponist fuer Werke)
-            extra = {}
-            for field in cfg["extra_fields"]:
-                val = str(row.get(field, "")).strip()
-                extra[field] = val if val != "nan" else None
 
             # Anzeige
             display = name
@@ -532,10 +684,20 @@ def run_reconciliation(entity_types: list, dry_run: bool = False,
     if not dry_run:
         print(f"\nGespeichert: {OUTPUT_FILE}")
 
+    unverified = [s for s in results["skipped"]
+                  if s.get("verification") and not s["verification"]["verified"]]
+    if unverified:
+        print(f"\n  Fragliche vorhandene Kennungen: {len(unverified)}")
+        for s in unverified:
+            print(f"    {s['type']}: {s['name']} — {s['existing_qid']} "
+                  f"({s['verification']['reason']})")
+
     if not dry_run and results["matched"]:
         print(f"\nNaechster Schritt:")
         print(f"  Pipeline neu ausfuehren: python scripts/transform.py")
         print(f"  (transform.py liest {OUTPUT_FILE.name} automatisch)")
+
+    return results
 
 
 def main():

@@ -8,6 +8,16 @@
       "exact": 100,
       "fuzzy_high": 90,
       "fuzzy_low": 80
+    },
+    "manual_curation": {
+      "date": "2026-08-22",
+      "basis": [
+        "identifier-proposals-persons.md",
+        "identifier-proposals-works.md",
+        "identifier-proposals-orgs-places.md"
+      ],
+      "scope": "Stufe gesichert",
+      "log": "data/reports/reconciliation-application-log.md"
     }
   },
   "matched": [
@@ -112,18 +122,22 @@
     {
       "type": "person",
       "name": "Böhme, Kurt",
-      "qid": "Q10314824",
+      "qid": "Q658343",
       "label": "Kurt Böhme",
-      "match": "fuzzy_high",
-      "confidence": 100
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: Fehlzuordnung Q10314824 (Kurt Böhme, Deutscher Marineoffizier und U-Boot-Kommandant im Zweiten Weltkrieg) korrigiert nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q658343, Kurt Böhme, deutscher Bassist; Bassbariton; 1908–1989."
     },
     {
       "type": "person",
       "name": "Böhme, Kurt",
-      "qid": "Q10314824",
+      "qid": "Q658343",
       "label": "Kurt Böhme",
-      "match": "fuzzy_high",
-      "confidence": 100
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: Fehlzuordnung Q10314824 (Kurt Böhme, Deutscher Marineoffizier und U-Boot-Kommandant im Zweiten Weltkrieg) korrigiert nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q658343, Kurt Böhme, deutscher Bassist; Bassbariton; 1908–1989."
     },
     {
       "type": "person",
@@ -138,14 +152,6 @@
       "name": "Calzabigi, Ranieri de",
       "qid": "Q1310912",
       "label": "Ranieri de' Calzabigi",
-      "match": "fuzzy_high",
-      "confidence": 100
-    },
-    {
-      "type": "person",
-      "name": "Campese",
-      "qid": "Q5028328",
-      "label": "Campese Ma'afu",
       "match": "fuzzy_high",
       "confidence": 100
     },
@@ -184,10 +190,12 @@
     {
       "type": "person",
       "name": "Dermota, Anton",
-      "qid": "Q12784779",
+      "qid": "Q588808",
       "label": "Anton Dermota",
-      "match": "fuzzy_high",
-      "confidence": 100
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: Fehlzuordnung Q12784779 (Anton Dermota, slowenischer Jurist, Politiker und Übersetzer) korrigiert nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q588808, Anton Dermota, jugoslawischer Tenor; Tenor; 1910–1989."
     },
     {
       "type": "person",
@@ -215,14 +223,6 @@
     },
     {
       "type": "person",
-      "name": "Eberhardt, Paul",
-      "qid": "Q94761352",
-      "label": "Paul Eberhardt",
-      "match": "fuzzy_high",
-      "confidence": 100
-    },
-    {
-      "type": "person",
       "name": "Elfriede Ott",
       "qid": "Q1328656",
       "label": "Elfriede Ott",
@@ -236,14 +236,6 @@
       "label": "Herbert Erlenwein",
       "match": "fuzzy_high",
       "confidence": 100
-    },
-    {
-      "type": "person",
-      "name": "Ernest, Wilhelm",
-      "qid": "Q2572555",
-      "label": "Wilhelm Ernst",
-      "match": "fuzzy_high",
-      "confidence": 96
     },
     {
       "type": "person",
@@ -384,18 +376,22 @@
     {
       "type": "person",
       "name": "Hartmann, Rudolf",
-      "qid": "Q124351",
+      "qid": "Q2172861",
       "label": "Rudolf Hartmann",
-      "match": "fuzzy_high",
-      "confidence": 100
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: Fehlzuordnung Q124351 (Rudolf Hartmann, niederdeutscher Schriftsteller und kommunistischer Politiker) korrigiert nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q2172861, Rudolf Hartmann, deutscher Opernregisseur und Intendant; 1900–1988."
     },
     {
       "type": "person",
       "name": "Hartmann, Rudolf",
-      "qid": "Q124351",
+      "qid": "Q2172861",
       "label": "Rudolf Hartmann",
-      "match": "fuzzy_high",
-      "confidence": 100
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: Fehlzuordnung Q124351 (Rudolf Hartmann, niederdeutscher Schriftsteller und kommunistischer Politiker) korrigiert nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q2172861, Rudolf Hartmann, deutscher Opernregisseur und Intendant; 1900–1988."
     },
     {
       "type": "person",
@@ -432,18 +428,22 @@
     {
       "type": "person",
       "name": "Holm, Richard",
-      "qid": "Q19273665",
-      "label": "Richard William Holm",
-      "match": "fuzzy_high",
-      "confidence": 100
+      "qid": "Q96387",
+      "label": "Richard Holm",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: Fehlzuordnung Q19273665 (Richard William Holm, botanist) korrigiert nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q96387, Richard Holm, deutscher Opernsänger (Tenor); Tenor; 1912–1988."
     },
     {
       "type": "person",
       "name": "Holm, Richard",
-      "qid": "Q19273665",
-      "label": "Richard William Holm",
-      "match": "fuzzy_high",
-      "confidence": 100
+      "qid": "Q96387",
+      "label": "Richard Holm",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: Fehlzuordnung Q19273665 (Richard William Holm, botanist) korrigiert nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q96387, Richard Holm, deutscher Opernsänger (Tenor); Tenor; 1912–1988."
     },
     {
       "type": "person",
@@ -568,10 +568,12 @@
     {
       "type": "person",
       "name": "Klein, Peter",
-      "qid": "Q102360758",
+      "qid": "Q87612",
       "label": "Peter Klein",
-      "match": "fuzzy_high",
-      "confidence": 100
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: Fehlzuordnung Q102360758 (Peter Klein, deutscher Informatiker (1966- )) korrigiert nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q87612, Peter Klein, deutsch-österreichischer Tenor und Musikpädagoge; Tenor; 1907–1992."
     },
     {
       "type": "person",
@@ -695,25 +697,9 @@
     },
     {
       "type": "person",
-      "name": "Leder, Alfred",
-      "qid": "Q27732662",
-      "label": "Alfred Leder",
-      "match": "fuzzy_high",
-      "confidence": 100
-    },
-    {
-      "type": "person",
       "name": "Leimer, Karl",
       "qid": "Q1664629",
       "label": "Karl Leimer",
-      "match": "fuzzy_high",
-      "confidence": 100
-    },
-    {
-      "type": "person",
-      "name": "Leopold III.",
-      "qid": "Q349086",
-      "label": "Leopold III",
       "match": "fuzzy_high",
       "confidence": 100
     },
@@ -728,10 +714,12 @@
     {
       "type": "person",
       "name": "Lohmann, Paul",
-      "qid": "Q2061025",
+      "qid": "Q5962517",
       "label": "Paul Lohmann",
-      "match": "fuzzy_high",
-      "confidence": 100
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: Fehlzuordnung Q2061025 (Paul Lohmann, deutscher Politiker (SPD), MdL) korrigiert nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q5962517, Paul Lohmann, Deutscher Konzert- und Oratoriensänger (Bariton) und Gesangspädagoge; 1894–1981."
     },
     {
       "type": "person",
@@ -1010,10 +998,12 @@
     {
       "type": "person",
       "name": "Preys, Hermann",
-      "qid": "Q1612378",
-      "label": "Hermann Preysing",
-      "match": "fuzzy_high",
-      "confidence": 90
+      "qid": "Q61080",
+      "label": "Hermann Prey",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: Fehlzuordnung Q1612378 (Hermann Preysing, deutscher Hals-Nasen-Ohren-Arzt und Hochschullehrer) korrigiert nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q61080, Hermann Prey, deutscher Bariton; Bariton; 1929–1998."
     },
     {
       "type": "person",
@@ -1146,10 +1136,12 @@
     {
       "type": "person",
       "name": "Schmidt, Franz",
-      "qid": "Q95295060",
+      "qid": "Q434601",
       "label": "Franz Schmidt",
-      "match": "fuzzy_high",
-      "confidence": 100
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: Fehlzuordnung Q95295060 (Franz Schmidt, deutscher Bibliothekar, Philosoph und Literaturwissenschaftler (1895–1972)) korrigiert nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q434601, Franz Schmidt, österreichischer Komponist; 1874–1939."
     },
     {
       "type": "person",
@@ -1182,14 +1174,6 @@
       "label": "Harald Serafin",
       "match": "fuzzy_high",
       "confidence": 100
-    },
-    {
-      "type": "person",
-      "name": "Simon, Théo",
-      "qid": "Q20243266",
-      "label": "Theo Simon",
-      "match": "fuzzy_high",
-      "confidence": 95
     },
     {
       "type": "person",
@@ -1283,22 +1267,6 @@
     },
     {
       "type": "person",
-      "name": "Thiel, Fred",
-      "qid": "Q78170333",
-      "label": "Fred Thiel",
-      "match": "fuzzy_high",
-      "confidence": 100
-    },
-    {
-      "type": "person",
-      "name": "Tinel, Paul",
-      "qid": "Q110850252",
-      "label": "Paul Tinel",
-      "match": "fuzzy_high",
-      "confidence": 100
-    },
-    {
-      "type": "person",
       "name": "Tizian",
       "qid": "Q47551",
       "label": "Titian",
@@ -1306,16 +1274,6 @@
       "confidence": 100,
       "manual_review": "approved",
       "note": "2026-04-18: fuzzy_low 83 verifiziert — DE/EN-Schreibweise (Tizian/Titian)."
-    },
-    {
-      "type": "person",
-      "name": "Traute, Elisabeth",
-      "qid": "Q55676977",
-      "label": "Elisabeth Trauterbul",
-      "match": "fuzzy_low",
-      "confidence": 89,
-      "manual_review": "rejected",
-      "note": "2026-04-18: fuzzy_low 89 REJECTED — Labels weichen stark ab (\"Traute, Elisabeth\" vs. \"Elisabeth Trauterbul\"), Kontext des Belegs nicht rekonstruierbar. Bleibt unmatched."
     },
     {
       "type": "person",
@@ -1368,10 +1326,12 @@
     {
       "type": "person",
       "name": "Wächter, Eberhard",
-      "qid": "Q481471",
-      "label": "Eberhard Georg Friedrich von Wächter",
-      "match": "fuzzy_high",
-      "confidence": 100
+      "qid": "Q78976",
+      "label": "Eberhard Waechter",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: Fehlzuordnung Q481471 (Eberhard von Wächter, deutscher Maler) korrigiert nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q78976, Eberhard Waechter, österreichischer Sänger und Operndirektor; Bariton; 1929–1992. Nachtrag nach der Korrektur des Signalvokabulars in scripts/verify-manual-approvals.py."
     },
     {
       "type": "person",
@@ -1400,10 +1360,12 @@
     {
       "type": "person",
       "name": "Weber, Ludwig",
-      "qid": "Q136748514",
-      "label": "Weber, Ludwig",
-      "match": "exact",
-      "confidence": 100
+      "qid": "Q79010",
+      "label": "Ludwig Weber",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: Fehlzuordnung Q136748514 (Ludwig Weber, verfolgter Sozialdemokrat) korrigiert nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q79010, Ludwig Weber, österreichischer Opernsänger (Bass); Bass; 1899–1974."
     },
     {
       "type": "person",
@@ -1448,10 +1410,12 @@
     {
       "type": "person",
       "name": "Wiener, Otto",
-      "qid": "Q86610",
+      "qid": "Q89123",
       "label": "Otto Wiener",
-      "match": "fuzzy_high",
-      "confidence": 100
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: Fehlzuordnung Q86610 (Otto Wiener, deutscher Physiker) korrigiert nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q89123, Otto Wiener, österreichischer Opernsänger (Bariton); Bariton; 1911–2000."
     },
     {
       "type": "person",
@@ -1487,25 +1451,9 @@
     },
     {
       "type": "person",
-      "name": "Witte, Wolfgang",
-      "qid": "Q2591797",
-      "label": "Wolfgang Witte",
-      "match": "fuzzy_high",
-      "confidence": 100
-    },
-    {
-      "type": "person",
       "name": "Wolf, Hugo",
       "qid": "Q215747",
       "label": "Hugo Wolf",
-      "match": "fuzzy_high",
-      "confidence": 100
-    },
-    {
-      "type": "person",
-      "name": "Wolf, Winfried",
-      "qid": "Q2584346",
-      "label": "Winfried Wolf",
       "match": "fuzzy_high",
       "confidence": 100
     },
@@ -1599,14 +1547,6 @@
     },
     {
       "type": "person",
-      "name": "Weber",
-      "qid": "Q63875",
-      "label": "Georg Heinrich Weber",
-      "match": "fuzzy_high",
-      "confidence": 100
-    },
-    {
-      "type": "person",
       "name": "Barth, Irmgard",
       "qid": "Q94777017",
       "label": "Irmgard Barth",
@@ -1664,10 +1604,12 @@
     {
       "type": "org",
       "name": "Teatro Colón",
-      "qid": "Q11951072",
+      "qid": "Q827401",
       "label": "Teatro Colón",
-      "match": "exact",
-      "confidence": 100
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: Fehlzuordnung Q11951072 (Teatro Colón, Theater in A Coruña, Spanien) korrigiert nach identifier-proposals-orgs-places.md, Stufe gesichert; Beleg Special:EntityData/Q827401, Teatro Colón, Opernhaus an der Plaza Lavalle in Buenos Aires, Argentinien."
     },
     {
       "type": "org",
@@ -1754,10 +1696,12 @@
     {
       "type": "location",
       "name": "New York",
-      "qid": "Q1384",
-      "label": "New York",
-      "match": "exact",
-      "confidence": 100
+      "qid": "Q60",
+      "label": "New York City",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: Fehlzuordnung Q1384 (New York, Bundesstaat der Vereinigten Staaten von Amerika) korrigiert nach identifier-proposals-orgs-places.md, Stufe gesichert; Beleg Special:EntityData/Q60, New York City, bevölkerungsreichste Stadt der Vereinigten Staaten."
     },
     {
       "type": "location",
@@ -1866,37 +1810,45 @@
       "type": "work",
       "name": "Carmen",
       "komponist": "Bizet, Georges",
-      "qid": "Q674832",
+      "qid": "Q185968",
       "label": "Carmen",
-      "match": "exact",
-      "confidence": 100
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: Fehlzuordnung Q674832 (Carmen, Novelle von Prosper Mérimée) korrigiert nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q185968, Carmen, Oper von Georges Bizet; Komponist Georges Bizet."
     },
     {
       "type": "work",
       "name": "Der Rosenkavalier",
       "komponist": "Strauss, Richard",
-      "qid": "Q85756466",
-      "label": "Richard Strauss – Der Rosenkavalier",
-      "match": "fuzzy_high",
-      "confidence": 100
+      "qid": "Q471240",
+      "label": "Der Rosenkavalier",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: Fehlzuordnung Q85756466 (Der Rosenkavalier, 1977 studio album by Lear, Von Stade, Welting, Bastin, Carreras, Hammond Stroud, Philharmonie de Rotterdam conducted by Edo de Waart) korrigiert nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q471240, Der Rosenkavalier, Oper von Richard Strauss; Komponist Richard Strauss."
     },
     {
       "type": "work",
       "name": "Don Giovanni",
       "komponist": "Mozart, Wolfgang Amadeus",
-      "qid": "Q3510792",
+      "qid": "Q192039",
       "label": "Don Giovanni",
-      "match": "exact",
-      "confidence": 100
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: Fehlzuordnung Q3510792 (Don Giovanni, Album von Lucio Battisti) korrigiert nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q192039, Don Giovanni, italienische Oper von W. A. Mozart und Lorenzo Da Ponte; Komponist Wolfgang Amadeus Mozart."
     },
     {
       "type": "work",
       "name": "La Gioconda",
       "komponist": "Ponchielli, Amilcare",
-      "qid": "Q25218531",
+      "qid": "Q748840",
       "label": "La Gioconda",
-      "match": "exact",
-      "confidence": 100
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: Fehlzuordnung Q25218531 (La Gioconda, play written by Gabriele D'Annunzio) korrigiert nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q748840, La Gioconda, Oper von Amilcare Ponchielli; Komponist Amilcare Ponchielli."
     },
     {
       "type": "work",
@@ -1911,10 +1863,12 @@
       "type": "work",
       "name": "Le chant de la Terre",
       "komponist": "Mahler, Gustav",
-      "qid": "Q3221001",
-      "label": "Le chant de la terre",
-      "match": "exact",
-      "confidence": 100
+      "qid": "Q846646",
+      "label": "Das Lied von der Erde",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: Fehlzuordnung Q3221001 (Le chant de la terre, Klavierstück von Déodat de Séverac) korrigiert nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q846646, Das Lied von der Erde, sinfonischer Liederzyklus von Gustav Mahler; Komponist Gustav Mahler."
     },
     {
       "type": "work",
@@ -1929,37 +1883,23 @@
       "type": "work",
       "name": "Le nozze di Figaro",
       "komponist": "Mozart, Wolfgang Amadeus",
-      "qid": "Q85776062",
+      "qid": "Q201873",
       "label": "Le nozze di Figaro",
-      "match": "exact",
-      "confidence": 100
-    },
-    {
-      "type": "work",
-      "name": "Lied der Mignon",
-      "komponist": "Beethoven, Ludwig von",
-      "qid": "Q110953165",
-      "label": "Lied der Mignon",
-      "match": "exact",
-      "confidence": 100
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: Fehlzuordnung Q85776062 (Le nozze di Figaro, 1982 studio album by Georg Solti) korrigiert nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q201873, Le nozze di Figaro, Oper von Wolfgang Amadeus Mozart und Lorenzo Da Ponte (1786); Komponist Wolfgang Amadeus Mozart."
     },
     {
       "type": "work",
       "name": "Lohengrin",
       "komponist": "Wagner, Richard",
-      "qid": "Q51806381",
+      "qid": "Q23085",
       "label": "Lohengrin",
-      "match": "exact",
-      "confidence": 100
-    },
-    {
-      "type": "work",
-      "name": "Nachtstück",
-      "komponist": "Schubert, Franz",
-      "qid": "Q33056195",
-      "label": "Nachtstück",
-      "match": "exact",
-      "confidence": 100
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: Fehlzuordnung Q51806381 (Lohengrin, poem by Nouhuwius) korrigiert nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q23085, Lohengrin, Oper von Richard Wagner; Komponist Richard Wagner."
     },
     {
       "type": "work",
@@ -1967,15 +1907,6 @@
       "komponist": "Schubert, Franz",
       "qid": "Q7295275",
       "label": "Rastlose Liebe",
-      "match": "exact",
-      "confidence": 100
-    },
-    {
-      "type": "work",
-      "name": "Regentropfen",
-      "komponist": null,
-      "qid": "Q60992362",
-      "label": "Regentropfen",
       "match": "exact",
       "confidence": 100
     },
@@ -1990,30 +1921,25 @@
     },
     {
       "type": "work",
-      "name": "Stabat mater",
-      "komponist": null,
-      "qid": "Q210080",
-      "label": "Stabat Mater",
-      "match": "exact",
-      "confidence": 100
-    },
-    {
-      "type": "work",
       "name": "Tristan und Isolde",
       "komponist": "Wagner, Richard",
-      "qid": "Q115127657",
+      "qid": "Q1324254",
       "label": "Tristan und Isolde",
-      "match": "exact",
-      "confidence": 100
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: Fehlzuordnung Q115127657 (Tristan und Isolde, 1982 opera recording conducted by Carlos Kleiber) korrigiert nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q1324254, Tristan und Isolde, Oper von Richard Wagner; Komponist Richard Wagner."
     },
     {
       "type": "work",
       "name": "Un ballo in maschera",
       "komponist": "Verdi, Giuseppe",
-      "qid": "Q64732249",
+      "qid": "Q221757",
       "label": "Un ballo in maschera",
-      "match": "exact",
-      "confidence": 100
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: Fehlzuordnung Q64732249 (Un ballo in maschera, Quadrille von Johann Strauss Sohn (op. 272)) korrigiert nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q221757, Un ballo in maschera, Oper von Giuseppe Verdi; Komponist Giuseppe Verdi."
     },
     {
       "type": "work",
@@ -2048,10 +1974,12 @@
       "type": "work",
       "name": "Johannespassion",
       "komponist": "Bach, Johann Sebastian",
-      "qid": "Q106280609",
-      "label": "Johannespassion / Passio Salvatoris et Domini Nostri Jesu Christi",
-      "match": "fuzzy_high",
-      "confidence": 100
+      "qid": "Q865333",
+      "label": "Johannes-Passion",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: Fehlzuordnung Q106280609 (Johannespassion / Passio Salvatoris et Domini Nostri Jesu Christi, Swedish musical work by unknown composer) korrigiert nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q865333, Johannes-Passion, vollständig erhaltene authentische Passion von Johann Sebastian Bach; Komponist Johann Sebastian Bach."
     },
     {
       "type": "work",
@@ -2075,10 +2003,12 @@
       "type": "work",
       "name": "Die Jahreszeiten",
       "komponist": "Haydn, Joseph",
-      "qid": "Q1213668",
+      "qid": "Q970337",
       "label": "Die Jahreszeiten",
-      "match": "exact",
-      "confidence": 100
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: Fehlzuordnung Q1213668 (Die Jahreszeiten, Roman von Peter Bichsel) korrigiert nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q970337, Die Jahreszeiten, Musikwerk von Joseph Haydn; Komponist Joseph Haydn."
     },
     {
       "type": "work",
@@ -2086,15 +2016,6 @@
       "komponist": "Haydn, Joseph",
       "qid": "Q1438716",
       "label": "Theresienmesse",
-      "match": "exact",
-      "confidence": 100
-    },
-    {
-      "type": "work",
-      "name": "Die junge Magd",
-      "komponist": "Hindemith, Paul",
-      "qid": "Q19183563",
-      "label": "Die junge Magd",
       "match": "exact",
       "confidence": 100
     },
@@ -2120,28 +2041,34 @@
       "type": "work",
       "name": "Stabat mater",
       "komponist": "Pergolesi, Giovanni Battista",
-      "qid": "Q210080",
+      "qid": "Q643347",
       "label": "Stabat Mater",
-      "match": "exact",
-      "confidence": 100
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: Fehlzuordnung Q210080 (Stabat mater, Anfang eines mittelalterlichen Gedichts: ‚Es stand die Mutter schmerzerfüllt‘) korrigiert nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q643347, Stabat Mater, Werk von Giovanni Battista Pergolesi; Komponist Giovanni Battista Pergolesi."
     },
     {
       "type": "work",
       "name": "Stabat mater",
       "komponist": "Rossini, Gioachino",
-      "qid": "Q210080",
+      "qid": "Q778788",
       "label": "Stabat Mater",
-      "match": "exact",
-      "confidence": 100
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: Fehlzuordnung Q210080 (Stabat mater, Anfang eines mittelalterlichen Gedichts: ‚Es stand die Mutter schmerzerfüllt‘) korrigiert nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q778788, Stabat Mater, Komposition von Gioachino Rossini; Komponist Gioachino Rossini."
     },
     {
       "type": "work",
       "name": "Pulcinella",
       "komponist": "Stravinsky, Igor",
-      "qid": "Q86670408",
+      "qid": "Q2630833",
       "label": "Pulcinella",
-      "match": "exact",
-      "confidence": 100
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: Fehlzuordnung Q86670408 (Pulcinella, 1965 studio album by Santo & Johnny) korrigiert nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q2630833, Pulcinella, Komposition von Igor Fjodorowitsch Strawinski; Komponist Igor Strawinsky."
     },
     {
       "type": "work",
@@ -2156,10 +2083,12 @@
       "type": "work",
       "name": "Requiem",
       "komponist": "Verdi, Giuseppe",
-      "qid": "Q6941842",
-      "label": "music for the Requiem Mass",
-      "match": "fuzzy_high",
-      "confidence": 100
+      "qid": "Q1356210",
+      "label": "Messa da Requiem",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: Fehlzuordnung Q6941842 (Requiem, musikalische Form für die liturgische Totenmesse) korrigiert nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q1356210, Messa da Requiem, Vertonung des Textes der Totenmesse (Requiem) durch den Komponisten Giuseppe Verdi aus dem Jahr 1874; Komponist Giuseppe Verdi."
     },
     {
       "type": "location",
@@ -2260,28 +2189,1467 @@
       "confidence": 100,
       "manual_review": "approved",
       "note": "Top-10 Malaniuk-Stadt. API lieferte kein Kandidat; Q-ID manuell verifiziert. | 2026-04-17: Q-ID korrigiert Q200491 (US-Game-Publisher) → Q156726 (Iwano-Frankiwsk)."
+    },
+    {
+      "type": "person",
+      "name": "Alighieri, Dante",
+      "qid": "Q1067",
+      "label": "Dante Alighieri",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q1067, Dante Alighieri, florentinischer Dichter und Philosoph (1265–1321)."
+    },
+    {
+      "type": "person",
+      "name": "Appia, Adolphe",
+      "qid": "Q124077",
+      "label": "Adolphe Appia",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q124077, Adolphe Appia, Schweizer Architekt; 1862–1928. Nachtrag nach der Korrektur des Signalvokabulars in scripts/verify-manual-approvals.py."
+    },
+    {
+      "type": "person",
+      "name": "Arnold, Heinz",
+      "qid": "Q18019730",
+      "label": "Heinz Arnold",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q18019730, Heinz Arnold, deutscher Operndirektor und -spielleiter; 1906–1994. Dritte Etappe, nach dem Schließen der letzten Lücken im Signalvokabular von scripts/verify-manual-approvals.py."
+    },
+    {
+      "type": "person",
+      "name": "Bach, Johann Sebastian",
+      "qid": "Q1339",
+      "label": "Johann Sebastian Bach",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q1339, Johann Sebastian Bach, deutscher Komponist des Barocks (1685–1750)."
+    },
+    {
+      "type": "person",
+      "name": "Barber, Samuel",
+      "qid": "Q216870",
+      "label": "Samuel Barber",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q216870, Samuel Barber, amerikanischer Komponist; 1910–1981."
+    },
+    {
+      "type": "person",
+      "name": "Barlach, Ernst",
+      "qid": "Q156890",
+      "label": "Ernst Barlach",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q156890, Ernst Barlach, deutscher Bildhauer, Schriftsteller und Zeichner (1870–1938)."
+    },
+    {
+      "type": "person",
+      "name": "Bartók, Béla",
+      "qid": "Q83326",
+      "label": "Béla Bartók",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q83326, Béla Bartók, ungarischer Komponist und Pianist; 1881–1945."
+    },
+    {
+      "type": "person",
+      "name": "Beethoven, Ludwig van",
+      "qid": "Q255",
+      "label": "Ludwig van Beethoven",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q255, Ludwig van Beethoven, deutscher Komponist (1770–1827)."
+    },
+    {
+      "type": "person",
+      "name": "Bizet, Georges",
+      "qid": "Q56158",
+      "label": "Georges Bizet",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q56158, Georges Bizet, französischer Komponist; 1838–1875."
+    },
+    {
+      "type": "person",
+      "name": "Brahms, Johannes",
+      "qid": "Q7294",
+      "label": "Johannes Brahms",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q7294, Johannes Brahms, deutscher Komponist, Pianist und Dirigent; 1833–1897."
+    },
+    {
+      "type": "person",
+      "name": "Braun, Hans",
+      "qid": "Q1578818",
+      "label": "Hans Braun",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q1578818, Hans Braun, österreichischer Opernsänger mit der Stimmlage Bariton; Bariton; 1917–1992."
+    },
+    {
+      "type": "person",
+      "name": "Bruckner, Anton",
+      "qid": "Q81752",
+      "label": "Anton Bruckner",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q81752, Anton Bruckner, österreichischer Komponist; 1824–1896."
+    },
+    {
+      "type": "person",
+      "name": "Čajkovskij, Pëtr Ilʹič",
+      "qid": "Q7315",
+      "label": "Pjotr Iljitsch Tschaikowski",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q7315, Pjotr Iljitsch Tschaikowski, russischer Komponist; 1840–1893."
+    },
+    {
+      "type": "person",
+      "name": "Caridis, Militades",
+      "qid": "Q638521",
+      "label": "Miltiades Caridis",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q638521, Miltiades Caridis, deutsch-griechischer Komponist; 1923–1998."
+    },
+    {
+      "type": "person",
+      "name": "Cesare, curzi",
+      "qid": "Q1056774",
+      "label": "Cesare Curzi",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q1056774, Cesare Curzi, amerikanischer Opernsänger; Tenor; 1926–2023. Nachtrag nach der Korrektur des Signalvokabulars in scripts/verify-manual-approvals.py."
+    },
+    {
+      "type": "person",
+      "name": "Dermotas, Anton",
+      "qid": "Q588808",
+      "label": "Anton Dermota",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q588808, Anton Dermota, jugoslawischer Tenor; Tenor; 1910–1989."
+    },
+    {
+      "type": "person",
+      "name": "Dönch, Carl",
+      "qid": "Q1730779",
+      "label": "Karl Dönch",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q1730779, Karl Dönch, deutsch-österreichischer Sänger und Schauspieler; Bassbariton; 1915–1994. Nachtrag nach der Korrektur des Signalvokabulars in scripts/verify-manual-approvals.py."
+    },
+    {
+      "type": "person",
+      "name": "Dvořák, Antonín",
+      "qid": "Q7298",
+      "label": "Antonín Dvořák",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q7298, Antonín Dvořák, tschechischer Komponist; 1841–1904."
+    },
+    {
+      "type": "person",
+      "name": "Felberma-Yers, Anny",
+      "qid": "Q18216386",
+      "label": "Anny Felbermayer",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q18216386, Anny Felbermayer, österreichische Lieder-, Oratorien- und Opernsängerin (lyrischer Sopran); Sopran; 1924–2014."
+    },
+    {
+      "type": "person",
+      "name": "Gostič, Josip",
+      "qid": "Q6279811",
+      "label": "Josef Gostic",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q6279811, Josef Gostic, Slovenian opera singer (1900-1963); Tenor."
+    },
+    {
+      "type": "person",
+      "name": "Grillparzer, Franz",
+      "qid": "Q154438",
+      "label": "Franz Grillparzer",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q154438, Franz Grillparzer, österreichischer Dramatiker; 1791–1872. Nachtrag nach der Korrektur des Signalvokabulars in scripts/verify-manual-approvals.py."
+    },
+    {
+      "type": "person",
+      "name": "Händel, Georg Friedrich",
+      "qid": "Q7302",
+      "label": "Georg Friedrich Händel",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q7302, Georg Friedrich Händel, deutsch-britischer Komponist des Barocks (1685–1759)."
+    },
+    {
+      "type": "person",
+      "name": "Hasse, Johann Asolph",
+      "qid": "Q164732",
+      "label": "Johann Adolph Hasse",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q164732, Johann Adolph Hasse, deutscher Komponist des Barocks; Tenor; 1699–1783."
+    },
+    {
+      "type": "person",
+      "name": "Hindemith, Paul",
+      "qid": "Q57244",
+      "label": "Paul Hindemith",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q57244, Paul Hindemith, deutscher Komponist der Moderne; 1895–1963."
+    },
+    {
+      "type": "person",
+      "name": "Honegger, Arthur",
+      "qid": "Q123164",
+      "label": "Arthur Honegger",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q123164, Arthur Honegger, französisch-schweizerischer Komponist der Groupe des Six; 1892–1955."
+    },
+    {
+      "type": "person",
+      "name": "Honolka, Kurt Dr.",
+      "qid": "Q1447751",
+      "label": "Kurt Honolka",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q1447751, Kurt Honolka, deutscher Musik- und Kulturkritiker, Schriftsteller, Autor; 1913–1988."
+    },
+    {
+      "type": "person",
+      "name": "Janáček, Leoš",
+      "qid": "Q184933",
+      "label": "Leoš Janáček",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q184933, Leoš Janáček, tschechischer Komponist; 1854–1928."
+    },
+    {
+      "type": "person",
+      "name": "Jommelli, Niccolò",
+      "qid": "Q312891",
+      "label": "Niccolò Jommelli",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q312891, Niccolò Jommelli, italienischer Komponist der Vorklassik; 1714–1774."
+    },
+    {
+      "type": "person",
+      "name": "Klemperer, Otto",
+      "qid": "Q155136",
+      "label": "Otto Klemperer",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q155136, Otto Klemperer, deutscher Dirigent und Komponist; 1885–1973."
+    },
+    {
+      "type": "person",
+      "name": "Kmett, Waldemar",
+      "qid": "Q88847",
+      "label": "Waldemar Kmentt",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q88847, Waldemar Kmentt, österreichischer Tenor; Tenor; 1929–2015."
+    },
+    {
+      "type": "person",
+      "name": "Kodály, Zoltán",
+      "qid": "Q153008",
+      "label": "Zoltán Kodály",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q153008, Zoltán Kodály, ungarischer Komponist; 1882–1967."
+    },
+    {
+      "type": "person",
+      "name": "Linné, Carl von",
+      "qid": "Q1043",
+      "label": "Carl von Linné",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q1043, Carl von Linné, schwedischer Naturwissenschaftler, der die Grundlagen der modernen Taxonomie entwickelte; 1707–1778. Dritte Etappe, nach dem Schließen der letzten Lücken im Signalvokabular von scripts/verify-manual-approvals.py. Die Entität ist eindeutig, der Sachbezug im Bestand ist offen; warum der schwedische Naturforscher in einer Tannhäuser-Rezension erwähnt wird, klärt das Erfassungsteam (QF-22 im Datenfehler-Register)."
+    },
+    {
+      "type": "person",
+      "name": "Lortzing, Albert",
+      "qid": "Q154203",
+      "label": "Albert Lortzing",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q154203, Albert Lortzing, deutscher Komponist, Schauspieler und Sänger; Tenor; 1801–1851."
+    },
+    {
+      "type": "person",
+      "name": "Mahler, Gustav",
+      "qid": "Q7304",
+      "label": "Gustav Mahler",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q7304, Gustav Mahler, österreichischer Komponist und Dirigent (1860-1911)."
+    },
+    {
+      "type": "person",
+      "name": "Maykut, Erich",
+      "qid": "Q59531271",
+      "label": "Erich Majkut",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q59531271, Erich Majkut, österreichischer Opern- und Konzertsänger; 1907–1976. Nachtrag nach der Korrektur des Signalvokabulars in scripts/verify-manual-approvals.py."
+    },
+    {
+      "type": "person",
+      "name": "Metastasio, Pietro",
+      "qid": "Q29473",
+      "label": "Pietro Metastasio",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q29473, Pietro Metastasio, italienischer Librettist, Textdichter und Autor (1698–1782)."
+    },
+    {
+      "type": "person",
+      "name": "Mitropoulos, Dimitri",
+      "qid": "Q319741",
+      "label": "Dimitri Mitropoulos",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q319741, Dimitri Mitropoulos, griechischer Dirigent; 1896–1960."
+    },
+    {
+      "type": "person",
+      "name": "Mozart, Wolfgang Amadeus",
+      "qid": "Q254",
+      "label": "Wolfgang Amadeus Mozart",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q254, Wolfgang Amadeus Mozart, Musiker und Komponist der Wiener Klassik; 1756–1791."
+    },
+    {
+      "type": "person",
+      "name": "Offenbach, Jacques",
+      "qid": "Q41555",
+      "label": "Jacques Offenbach",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q41555, Jacques Offenbach, deutsch-französischer Komponist und Cellist (1819–1880)."
+    },
+    {
+      "type": "person",
+      "name": "Orff, Carl",
+      "qid": "Q44086",
+      "label": "Carl Orff",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q44086, Carl Orff, deutscher Komponist und Musikpädagoge (1895–1982)."
+    },
+    {
+      "type": "person",
+      "name": "Otto van Rohr",
+      "qid": "Q2041291",
+      "label": "Otto von Rohr",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q2041291, Otto von Rohr, deutscher Opernsänger; Bass; 1914–1982. Nachtrag nach der Korrektur des Signalvokabulars in scripts/verify-manual-approvals.py."
+    },
+    {
+      "type": "person",
+      "name": "Pirchan, Emil",
+      "qid": "Q1336659",
+      "label": "Emil Pirchan",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q1336659, Emil Pirchan, österreichischer Bühnenbildner, Architekt und Autor (1884-1957). Nachtrag nach der Korrektur des Signalvokabulars in scripts/verify-manual-approvals.py."
+    },
+    {
+      "type": "person",
+      "name": "Prihoda, Vasa",
+      "qid": "Q679555",
+      "label": "Váša Příhoda",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q679555, Váša Příhoda, tschechischer Violinist; 1900–1960. Nachtrag nach der Korrektur des Signalvokabulars in scripts/verify-manual-approvals.py."
+    },
+    {
+      "type": "person",
+      "name": "Raimund, Ferdinand",
+      "qid": "Q45025",
+      "label": "Ferdinand Raimund",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q45025, Ferdinand Raimund, österreichischer Dramatiker; 1790–1836. Nachtrag nach der Korrektur des Signalvokabulars in scripts/verify-manual-approvals.py."
+    },
+    {
+      "type": "person",
+      "name": "Rodzinski, Artur",
+      "qid": "Q554610",
+      "label": "Artur Rodziński",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q554610, Artur Rodziński, polnischer Dirigent; 1892–1958."
+    },
+    {
+      "type": "person",
+      "name": "Rogatschewsky, Joseph",
+      "qid": "Q3185573",
+      "label": "Joseph Rogatchewsky",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q3185573, Joseph Rogatchewsky, Opera singer (1891–1985); Tenor."
+    },
+    {
+      "type": "person",
+      "name": "Rossini, Gioachino",
+      "qid": "Q9726",
+      "label": "Gioachino Rossini",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q9726, Gioachino Rossini, italienischer Komponist; 1792–1868."
+    },
+    {
+      "type": "person",
+      "name": "Schubert, Franz",
+      "qid": "Q7312",
+      "label": "Franz Schubert",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q7312, Franz Schubert, österreichischer Komponist; 1797–1828."
+    },
+    {
+      "type": "person",
+      "name": "Schumann, Robert",
+      "qid": "Q7351",
+      "label": "Robert Schumann",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q7351, Robert Schumann, Komponist, Musikkritiker und Dirigent; 1810–1856."
+    },
+    {
+      "type": "person",
+      "name": "Stravinsky, Igor",
+      "qid": "Q7314",
+      "label": "Igor Strawinsky",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q7314, Igor Strawinsky, russisch-französisch-US-amerikanischer Komponist (1882–1971)."
+    },
+    {
+      "type": "person",
+      "name": "Traetta, Tommaso",
+      "qid": "Q266084",
+      "label": "Tommaso Traetta",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q266084, Tommaso Traetta, italienischer Komponist; 1727–1779."
+    },
+    {
+      "type": "person",
+      "name": "Uhde, Hermann",
+      "qid": "Q68473",
+      "label": "Hermann Uhde",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q68473, Hermann Uhde, deutscher Heldenbariton; Bassbariton; 1914–1965."
+    },
+    {
+      "type": "person",
+      "name": "Verdi, Giuseppe",
+      "qid": "Q7317",
+      "label": "Giuseppe Verdi",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q7317, Giuseppe Verdi, italienischer Komponist der Romantik (1813–1901)."
+    },
+    {
+      "type": "person",
+      "name": "Walter, Bruno",
+      "qid": "Q156910",
+      "label": "Bruno Walter",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-persons.md, Stufe gesichert; Beleg Special:EntityData/Q156910, Bruno Walter, deutsch-österreichischer Dirigent, Pianist und Komponist; 1876–1962."
+    },
+    {
+      "type": "work",
+      "name": "3. Symphonie",
+      "komponist": "Brahms, Johannes",
+      "qid": "Q223502",
+      "label": "3. Sinfonie",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q223502, 3. Sinfonie, Werk von Johannes Brahms; Komponist Johannes Brahms."
+    },
+    {
+      "type": "work",
+      "name": "8. Symphonie",
+      "komponist": "Beethoven, Ludwig van",
+      "qid": "Q270785",
+      "label": "8. Sinfonie",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q270785, 8. Sinfonie, Sinfonie von Ludwig van Beethoven; Komponist Ludwig van Beethoven."
+    },
+    {
+      "type": "work",
+      "name": "Aida",
+      "komponist": "Verdi, Giuseppe",
+      "qid": "Q171277",
+      "label": "Aida",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q171277, Aida, Oper von Giuseppe Verdi; Komponist Giuseppe Verdi."
+    },
+    {
+      "type": "work",
+      "name": "Arabella",
+      "komponist": "Strauss, Richard",
+      "qid": "Q390779",
+      "label": "Arabella",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q390779, Arabella, Oper von Richard Strauss; Komponist Richard Strauss."
+    },
+    {
+      "type": "work",
+      "name": "Boris Godunov",
+      "komponist": "Musorgskij, Modest Petrovič",
+      "qid": "Q386846",
+      "label": "Boris Godunow",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q386846, Boris Godunow, Oper in vier Akten mit Prolog von Modest Mussorgski; Komponist Modest Petrowitsch Mussorgski."
+    },
+    {
+      "type": "work",
+      "name": "Chovanščina",
+      "komponist": "Musorgskij, Modest Petrovič",
+      "qid": "Q917711",
+      "label": "Chowanschtschina",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q917711, Chowanschtschina, Oper von Modest Mussorgski; Komponist Modest Petrowitsch Mussorgski, Nikolai Andrejewitsch Rimski-Korsakow."
+    },
+    {
+      "type": "work",
+      "name": "Così fan tutte",
+      "komponist": "Mozart, Wolfgang Amadeus",
+      "qid": "Q207410",
+      "label": "Così fan tutte",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q207410, Così fan tutte, Oper von Wolfgang Amadeus Mozart; Komponist Wolfgang Amadeus Mozart."
+    },
+    {
+      "type": "work",
+      "name": "Daphne",
+      "komponist": "Strauss, Richard",
+      "qid": "Q1165496",
+      "label": "Daphne",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q1165496, Daphne, Oper von Richard Strauss; Komponist Richard Strauss."
+    },
+    {
+      "type": "work",
+      "name": "Der Evangelimann",
+      "komponist": "Kienzl, Wilhelm",
+      "qid": "Q1193192",
+      "label": "Der Evangelimann",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q1193192, Der Evangelimann, Oper von Wilhelm Kienzl; Komponist Wilhelm Kienzl."
+    },
+    {
+      "type": "work",
+      "name": "Der Wildschütz oder Die Stimme der Natur",
+      "komponist": "Lortzing, Albert",
+      "qid": "Q253376",
+      "label": "Der Wildschütz",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q253376, Der Wildschütz, Komische Oper von Albert Lortzing; Komponist Albert Lortzing."
+    },
+    {
+      "type": "work",
+      "name": "Die Geschöpfe des Prometheus",
+      "komponist": "Beethoven, Ludwig van",
+      "qid": "Q1157012",
+      "label": "Die Geschöpfe des Prometheus",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q1157012, Die Geschöpfe des Prometheus, Ballett von Beethoven und Viganò; Komponist Ludwig van Beethoven."
+    },
+    {
+      "type": "work",
+      "name": "Die Meistersinger von Nürnberg",
+      "komponist": "Wagner, Richard",
+      "qid": "Q465540",
+      "label": "Die Meistersinger von Nürnberg",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q465540, Die Meistersinger von Nürnberg, Oper von Richard Wagner; Komponist Richard Wagner."
+    },
+    {
+      "type": "work",
+      "name": "Die Walküre",
+      "komponist": "Wagner, Richard",
+      "qid": "Q324319",
+      "label": "Die Walküre",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q324319, Die Walküre, Oper von Richard Wagner (1870); Komponist Richard Wagner."
+    },
+    {
+      "type": "work",
+      "name": "Die Zauberflöte",
+      "komponist": "Mozart, Wolfgang Amadeus",
+      "qid": "Q5064",
+      "label": "Die Zauberflöte",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q5064, Die Zauberflöte, Oper von Wolfgang Amadeus Mozart (Musik) und Emanuel Schikaneder (Libretto); Komponist Wolfgang Amadeus Mozart."
+    },
+    {
+      "type": "work",
+      "name": "Elektra",
+      "komponist": "Strauss, Richard",
+      "qid": "Q731927",
+      "label": "Elektra",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q731927, Elektra, Oper von Richard Strauss; Komponist Richard Strauss."
+    },
+    {
+      "type": "work",
+      "name": "Elias, op. 70, MWV A 25",
+      "komponist": "Mendelssohn Bartholdy, Felix",
+      "qid": "Q1329006",
+      "label": "Elias",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q1329006, Elias, Oratorium von Mendelssohn-Bartholdy; Komponist Felix Mendelssohn Bartholdy. Nachtrag nach der Korrektur des Signalvokabulars in scripts/verify-manual-approvals.py."
+    },
+    {
+      "type": "work",
+      "name": "Evgenij Onegin",
+      "komponist": "Čajkovskij, Pëtr Ilʹič",
+      "qid": "Q50956",
+      "label": "Eugen Onegin",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q50956, Eugen Onegin, Oper von Pjotr Iljitsch Tschaikowski; Komponist Pjotr Iljitsch Tschaikowski."
+    },
+    {
+      "type": "work",
+      "name": "Falstaff",
+      "komponist": "Verdi, Giuseppe",
+      "qid": "Q318455",
+      "label": "Falstaff",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q318455, Falstaff, Oper von Giuseppe Verdi; Komponist Giuseppe Verdi."
+    },
+    {
+      "type": "work",
+      "name": "Ganymed",
+      "komponist": "Schubert, Franz",
+      "qid": "Q11296115",
+      "label": "Ganymed",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q11296115, Ganymed, Lied von Franz Schubert; Komponist Franz Schubert."
+    },
+    {
+      "type": "work",
+      "name": "Götterdämmerung",
+      "komponist": "Wagner, Richard",
+      "qid": "Q272029",
+      "label": "Götterdämmerung",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q272029, Götterdämmerung, Oper von Richard Wagner; Komponist Richard Wagner."
+    },
+    {
+      "type": "work",
+      "name": "die Götterdämmerung",
+      "komponist": "Wagner, Richard",
+      "qid": "Q272029",
+      "label": "Götterdämmerung",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q272029, Götterdämmerung, Oper von Richard Wagner; Komponist Richard Wagner."
+    },
+    {
+      "type": "work",
+      "name": "Herzog Blaubart's Burg",
+      "qid": "Q249749",
+      "label": "Herzog Blaubarts Burg",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q249749, Herzog Blaubarts Burg, Oper von Béla Bartók; Komponist Béla Bartók."
+    },
+    {
+      "type": "work",
+      "name": "Il Trovatore",
+      "komponist": "Verdi, Giuseppe",
+      "qid": "Q203470",
+      "label": "Il trovatore",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q203470, Il trovatore, Oper von Giuseppe Verdi; Komponist Giuseppe Verdi."
+    },
+    {
+      "type": "work",
+      "name": "Kát'a Kabanová",
+      "komponist": "Janáček, Leoš",
+      "qid": "Q1322339",
+      "label": "Katja Kabanowa",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q1322339, Katja Kabanowa, Oper von Leoš Janáček; Komponist Leoš Janáček."
+    },
+    {
+      "type": "work",
+      "name": "La clemenza di Tito",
+      "komponist": "Mozart, Wolfgang Amadeus",
+      "qid": "Q578526",
+      "label": "La clemenza di Tito",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q578526, La clemenza di Tito, Oper von Wolfgang Amadeus Mozart; Komponist Wolfgang Amadeus Mozart."
+    },
+    {
+      "type": "work",
+      "name": "La Traviata",
+      "komponist": "Verdi, Giuseppe",
+      "qid": "Q186162",
+      "label": "La traviata",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q186162, La traviata, Oper von Giuseppe Verdi; Komponist Giuseppe Verdi."
+    },
+    {
+      "type": "work",
+      "name": "Macbeth",
+      "komponist": "Verdi, Giuseppe",
+      "qid": "Q320363",
+      "label": "Macbeth",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q320363, Macbeth, Oper von Giuseppe Verdi; Komponist Giuseppe Verdi."
+    },
+    {
+      "type": "work",
+      "name": "Madama Butterfly",
+      "komponist": "Puccini, Giacomo",
+      "qid": "Q19005",
+      "label": "Madama Butterfly",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q19005, Madama Butterfly, Oper von Giacomo Puccini; Komponist Giacomo Puccini."
+    },
+    {
+      "type": "work",
+      "name": "Matthäuspassion",
+      "komponist": "Bach, Johann Sebastian",
+      "qid": "Q379111",
+      "label": "Matthäus-Passion",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q379111, Matthäus-Passion, Passion von Johann Sebastian Bach; Komponist Johann Sebastian Bach. Nachtrag nach der Korrektur des Signalvokabulars in scripts/verify-manual-approvals.py."
+    },
+    {
+      "type": "work",
+      "name": "Messen, KV 317",
+      "komponist": "Mozart, Wolfgang Amadeus",
+      "qid": "Q1543168",
+      "label": "Krönungsmesse",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q1543168, Krönungsmesse, Lateinische Messe komponiert von Wolfgang Amadeus Mozart; Komponist Wolfgang Amadeus Mozart. Nachtrag nach der Korrektur des Signalvokabulars in scripts/verify-manual-approvals.py."
+    },
+    {
+      "type": "work",
+      "name": "Messen, WAB 28 (f-Moll)",
+      "komponist": "Bruckner, Anton",
+      "qid": "Q1472748",
+      "label": "Messe f-Moll",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q1472748, Messe f-Moll, musikalisches Werk des österreichischen Komponisten Anton Bruckner; Komponist Anton Bruckner."
+    },
+    {
+      "type": "work",
+      "name": "Messen, op. 123 (D-Dur)",
+      "komponist": "Beethoven, Ludwig van",
+      "qid": "Q723790",
+      "label": "Missa Solemnis",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q723790, Missa Solemnis, Werk von Beethoven; Komponist Ludwig van Beethoven."
+    },
+    {
+      "type": "work",
+      "name": "Missa in angustijs",
+      "komponist": "Haydn, Joseph",
+      "qid": "Q660836",
+      "label": "Missa in angustiis",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q660836, Missa in angustiis, Messkomposition; Komponist Joseph Haydn."
+    },
+    {
+      "type": "work",
+      "name": "Orpheus und Eurydike",
+      "komponist": "Gluck, Christoph Willibald",
+      "qid": "Q723776",
+      "label": "Orfeo ed Euridice",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q723776, Orfeo ed Euridice, Oper von Christoph Willibald Gluck; Komponist Christoph Willibald Gluck."
+    },
+    {
+      "type": "work",
+      "name": "Paradies und Peri",
+      "qid": "Q1170035",
+      "label": "Das Paradies und die Peri",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q1170035, Das Paradies und die Peri, weltliches Oratorium von Robert Schumann (1843); Komponist Robert Schumann. Nachtrag nach der Korrektur des Signalvokabulars in scripts/verify-manual-approvals.py."
+    },
+    {
+      "type": "work",
+      "name": "Parsifal",
+      "komponist": "Wagner, Richard",
+      "qid": "Q220340",
+      "label": "Parsifal",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q220340, Parsifal, Oper von Richard Wagner; Komponist Richard Wagner."
+    },
+    {
+      "type": "work",
+      "name": "Pikovaja dama",
+      "komponist": "Čajkovskij, Pëtr Ilʹič",
+      "qid": "Q221047",
+      "label": "Pique Dame",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q221047, Pique Dame, Oper von Peter Tschaikowski; Komponist Pjotr Iljitsch Tschaikowski."
+    },
+    {
+      "type": "work",
+      "name": "Requium",
+      "komponist": "Mozart, Wolfgang Amadeus",
+      "qid": "Q207875",
+      "label": "Requiem",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q207875, Requiem, Werk von Wolfgang Amadeus Mozart; Komponist Wolfgang Amadeus Mozart, Franz Xaver Süßmayr."
+    },
+    {
+      "type": "work",
+      "name": "Rhapsodien, Alt, Männerchor, Orchester, op. 53",
+      "komponist": "Brahms, Johannes",
+      "qid": "Q432984",
+      "label": "Alt-Rhapsodie",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q432984, Alt-Rhapsodie, Chorwerk von Johannes Brahms nach einem Text von Johann Wolfgang von Goethe; Komponist Johannes Brahms."
+    },
+    {
+      "type": "work",
+      "name": "Rigoletto",
+      "komponist": "Verdi, Giuseppe",
+      "qid": "Q189234",
+      "label": "Rigoletto",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q189234, Rigoletto, Oper von Giuseppe Verdi; Komponist Giuseppe Verdi."
+    },
+    {
+      "type": "work",
+      "name": "Sinfonien, Nr. 9, op. 125 (d-Moll)",
+      "komponist": "Beethoven, Ludwig van",
+      "qid": "Q11989",
+      "label": "9. Sinfonie",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q11989, 9. Sinfonie, Sinfonie von Ludwig van Beethoven; Komponist Ludwig van Beethoven."
+    },
+    {
+      "type": "work",
+      "name": "Sinfonien, Nr. 9, op. 125 (d-Moll)",
+      "komponist": "Beethoven, Ludwig von",
+      "qid": "Q11989",
+      "label": "9. Sinfonie",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q11989, 9. Sinfonie, Sinfonie von Ludwig van Beethoven; Komponist Ludwig van Beethoven."
+    },
+    {
+      "type": "work",
+      "name": "Svadebka",
+      "komponist": "Stravinsky, Igor",
+      "qid": "Q2521679",
+      "label": "Les Noces",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q2521679, Les Noces, Komposition von Igor Strawinsky; Komponist Igor Strawinsky."
+    },
+    {
+      "type": "work",
+      "name": "Székely fonó",
+      "komponist": "Kodály, Zoltán",
+      "qid": "Q527447",
+      "label": "Spinnstube",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q527447, Spinnstube, opera by Zoltán Kodály (1932); Komponist Zoltán Kodály."
+    },
+    {
+      "type": "work",
+      "name": "Tannhäuser und der Sängerkrieg auf Wartburg",
+      "komponist": "Wagner, Richard",
+      "qid": "Q560619",
+      "label": "Tannhäuser",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q560619, Tannhäuser, Oper von Richard Wagner; Komponist Richard Wagner."
+    },
+    {
+      "type": "work",
+      "name": "Vanessa",
+      "komponist": "Barber, Samuel",
+      "qid": "Q1545849",
+      "label": "Vanessa",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q1545849, Vanessa, englischsprachige Oper von Samuel Barber (1958); Komponist Samuel Barber."
+    },
+    {
+      "type": "work",
+      "name": "Weihnachts-Oratorium",
+      "komponist": "Bach, Johann Sebastian",
+      "qid": "Q642010",
+      "label": "Weihnachts-Oratorium",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q642010, Weihnachts-Oratorium, Komposition von Johann Sebastian Bach; Komponist Johann Sebastian Bach."
+    },
+    {
+      "type": "org",
+      "name": "Abendzeitung",
+      "qid": "Q225076",
+      "label": "Abendzeitung",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-orgs-places.md, Stufe gesichert; Beleg Special:EntityData/Q225076, Abendzeitung, Münchner Boulevardzeitung."
+    },
+    {
+      "type": "org",
+      "name": "Aktiengesellschaft Leu & Co.",
+      "qid": "Q806636",
+      "label": "Bank Leu",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-orgs-places.md, Stufe gesichert; Beleg Special:EntityData/Q806636, Bank Leu, Organisation."
+    },
+    {
+      "type": "org",
+      "name": "Arbeiter Zeitung",
+      "qid": "Q627083",
+      "label": "Arbeiter-Zeitung",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-orgs-places.md, Stufe gesichert; Beleg Special:EntityData/Q627083, Arbeiter-Zeitung, österreichische Tageszeitung."
+    },
+    {
+      "type": "org",
+      "name": "Deutsche Oper Berlin",
+      "qid": "Q637834",
+      "label": "Deutsche Oper Berlin",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-orgs-places.md, Stufe gesichert; Beleg Special:EntityData/Q637834, Deutsche Oper Berlin, Opernhaus."
+    },
+    {
+      "type": "org",
+      "name": "Epic Records",
+      "qid": "Q216364",
+      "label": "Epic Records",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-orgs-places.md, Stufe gesichert; Beleg Special:EntityData/Q216364, Epic Records, US-amerikanisches Musiklabel."
+    },
+    {
+      "type": "org",
+      "name": "Fränkische Presse",
+      "qid": "Q23787475",
+      "label": "Fränkische Presse",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-orgs-places.md, Stufe gesichert; Beleg Special:EntityData/Q23787475, Fränkische Presse, regionale Tageszeitung in Bayreuth."
+    },
+    {
+      "type": "org",
+      "name": "Hochschule für Musik und darstellende Kunst Graz",
+      "qid": "Q875147",
+      "label": "Universität für Musik und darstellende Kunst Graz",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-orgs-places.md, Stufe gesichert; Beleg Special:EntityData/Q875147, Universität für Musik und darstellende Kunst Graz, Universität in Österreich."
+    },
+    {
+      "type": "org",
+      "name": "Indiana University School of Music",
+      "qid": "Q6119774",
+      "label": "Jacobs School of Music",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-orgs-places.md, Stufe gesichert; Beleg Special:EntityData/Q6119774, Jacobs School of Music, constituent school of Indiana University."
+    },
+    {
+      "type": "org",
+      "name": "Landestheater (Hannover)",
+      "qid": "Q1524804",
+      "label": "Niedersächsische Staatstheater Hannover",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-orgs-places.md, Stufe gesichert; Beleg Special:EntityData/Q1524804, Niedersächsische Staatstheater Hannover, Mehrspartentheater. Nachtrag nach der Korrektur des Signalvokabulars in scripts/verify-manual-approvals.py."
+    },
+    {
+      "type": "org",
+      "name": "Le Monde",
+      "qid": "Q12461",
+      "label": "Le Monde",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-orgs-places.md, Stufe gesichert; Beleg Special:EntityData/Q12461, Le Monde, französische Tageszeitung."
+    },
+    {
+      "type": "org",
+      "name": "Markgräfliches Opernhaus",
+      "qid": "Q278908",
+      "label": "Markgräfliches Opernhaus",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-orgs-places.md, Stufe gesichert; Beleg Special:EntityData/Q278908, Markgräfliches Opernhaus, Theatergebäude und Weltkulturerbe in Bayreuth, Bayern."
+    },
+    {
+      "type": "org",
+      "name": "Mozart-Sängerknaben",
+      "qid": "Q993642",
+      "label": "Mozart Knabenchor Wien",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-orgs-places.md, Stufe gesichert; Beleg Special:EntityData/Q993642, Mozart Knabenchor Wien, österreichischer Knabenchor."
+    },
+    {
+      "type": "org",
+      "name": "Münchner Merkur",
+      "qid": "Q279832",
+      "label": "Münchner Merkur",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-orgs-places.md, Stufe gesichert; Beleg Special:EntityData/Q279832, Münchner Merkur, bayerische Abonnement-Zeitung."
+    },
+    {
+      "type": "org",
+      "name": "Münchner Opern-Festspiele",
+      "qid": "Q822390",
+      "label": "Münchner Opernfestspiele",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-orgs-places.md, Stufe gesichert; Beleg Special:EntityData/Q822390, Münchner Opernfestspiele, music festival. Nachtrag nach der Korrektur des Signalvokabulars in scripts/verify-manual-approvals.py."
+    },
+    {
+      "type": "org",
+      "name": "Musikakademie in Lemberg",
+      "qid": "Q1992023",
+      "label": "Nationale Musikakademie Lwiw \"Mykoly Lyssenka\"",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-orgs-places.md, Stufe gesichert; Beleg Special:EntityData/Q1992023, Nationale Musikakademie Lwiw \"Mykoly Lyssenka\", Universität in Ukraine."
+    },
+    {
+      "type": "org",
+      "name": "Musikverein Graz",
+      "qid": "Q1955271",
+      "label": "Musikverein für Steiermark",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-orgs-places.md, Stufe gesichert; Beleg Special:EntityData/Q1955271, Musikverein für Steiermark, österreichischer Musikverein in Graz (1815–)."
+    },
+    {
+      "type": "org",
+      "name": "Musikverein für Steiermark",
+      "qid": "Q1955271",
+      "label": "Musikverein für Steiermark",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-orgs-places.md, Stufe gesichert; Beleg Special:EntityData/Q1955271, Musikverein für Steiermark, österreichischer Musikverein in Graz (1815–)."
+    },
+    {
+      "type": "org",
+      "name": "Neues Österreich",
+      "qid": "Q1440644",
+      "label": "Neues Österreich",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-orgs-places.md, Stufe gesichert; Beleg Special:EntityData/Q1440644, Neues Österreich, Österreichische Tageszeitung."
+    },
+    {
+      "type": "org",
+      "name": "Opéra de Monte-Carlo",
+      "qid": "Q1577048",
+      "label": "Opéra de Monaco",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-orgs-places.md, Stufe gesichert; Beleg Special:EntityData/Q1577048, Opéra de Monaco, Opernhaus im Fürstentum Monaco."
+    },
+    {
+      "type": "org",
+      "name": "Opéra de Monte-Carlo. Orchestre national",
+      "qid": "Q2914921",
+      "label": "Orchestre philharmonique de Monte-Carlo",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-orgs-places.md, Stufe gesichert; Beleg Special:EntityData/Q2914921, Orchestre philharmonique de Monte-Carlo, symphonic orchestra in Monaco. Dritte Etappe, nach dem Schließen der letzten Lücken im Signalvokabular von scripts/verify-manual-approvals.py."
+    },
+    {
+      "type": "org",
+      "name": "Opernhaus Zürich",
+      "qid": "Q670406",
+      "label": "Opernhaus Zürich",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-orgs-places.md, Stufe gesichert; Beleg Special:EntityData/Q670406, Opernhaus Zürich, Musiktheater der Stadt Zürich."
+    },
+    {
+      "type": "org",
+      "name": "Stadttheater Zürich",
+      "qid": "Q670406",
+      "label": "Opernhaus Zürich",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-orgs-places.md, Stufe gesichert; Beleg Special:EntityData/Q670406, Opernhaus Zürich, Musiktheater der Stadt Zürich."
+    },
+    {
+      "type": "org",
+      "name": "orchestre municipal (Strasbourg)",
+      "qid": "Q472844",
+      "label": "Straßburger Philharmoniker",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-orgs-places.md, Stufe gesichert; Beleg Special:EntityData/Q472844, Straßburger Philharmoniker, Sinfonie- und Opernorchester der Stadt Straßburg. Nachtrag nach der Korrektur des Signalvokabulars in scripts/verify-manual-approvals.py."
+    },
+    {
+      "type": "org",
+      "name": "Plattenevrlag Decca",
+      "qid": "Q557632",
+      "label": "Decca Records",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-orgs-places.md, Stufe gesichert; Beleg Special:EntityData/Q557632, Decca Records, britisches Musiklabel. Nachtrag nach der Korrektur des Signalvokabulars in scripts/verify-manual-approvals.py."
+    },
+    {
+      "type": "org",
+      "name": "R.C.A.-Victor",
+      "qid": "Q3415083",
+      "label": "RCA Victor",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-orgs-places.md, Stufe gesichert; Beleg Special:EntityData/Q3415083, RCA Victor, US international record label. Nachtrag nach der Korrektur des Signalvokabulars in scripts/verify-manual-approvals.py."
+    },
+    {
+      "type": "org",
+      "name": "Salzburger Festspiele",
+      "qid": "Q256443",
+      "label": "Salzburger Festspiele",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-orgs-places.md, Stufe gesichert; Beleg Special:EntityData/Q256443, Salzburger Festspiele, internationales Kulturfest in Salzburg."
+    },
+    {
+      "type": "org",
+      "name": "SAS  Scandinavian Airlines",
+      "qid": "Q187854",
+      "label": "SAS Scandinavian Airlines",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-orgs-places.md, Stufe gesichert; Beleg Special:EntityData/Q187854, SAS Scandinavian Airlines, skandinavische Fluggesellschaft. Nachtrag nach der Korrektur des Signalvokabulars in scripts/verify-manual-approvals.py."
+    },
+    {
+      "type": "org",
+      "name": "Staatsoper Wien",
+      "qid": "Q209937",
+      "label": "Wiener Staatsoper",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-orgs-places.md, Stufe gesichert; Beleg Special:EntityData/Q209937, Wiener Staatsoper, Opernhaus in Wien."
+    },
+    {
+      "type": "org",
+      "name": "Wiener Staatsoper",
+      "qid": "Q209937",
+      "label": "Wiener Staatsoper",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-orgs-places.md, Stufe gesichert; Beleg Special:EntityData/Q209937, Wiener Staatsoper, Opernhaus in Wien."
+    },
+    {
+      "type": "org",
+      "name": "Stadttheater Graz",
+      "qid": "Q618239",
+      "label": "Opernhaus Graz",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-orgs-places.md, Stufe gesichert; Beleg Special:EntityData/Q618239, Opernhaus Graz, Opernhaus in Graz, Steiermark, Österreich. Nachtrag nach der Korrektur des Signalvokabulars in scripts/verify-manual-approvals.py."
+    },
+    {
+      "type": "org",
+      "name": "Stuttgarter Nachrichten",
+      "qid": "Q2359571",
+      "label": "Stuttgarter Nachrichten",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-orgs-places.md, Stufe gesichert; Beleg Special:EntityData/Q2359571, Stuttgarter Nachrichten, deutsche Tageszeitung mit Sitz in Stuttgart."
+    },
+    {
+      "type": "org",
+      "name": "Stuttgarter Staatsoper",
+      "qid": "Q467147",
+      "label": "Staatsoper Stuttgart",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-orgs-places.md, Stufe gesichert; Beleg Special:EntityData/Q467147, Staatsoper Stuttgart, Opernhaus in Stuttgart."
+    },
+    {
+      "type": "org",
+      "name": "Süddeutsche Zeitung",
+      "qid": "Q158870",
+      "label": "Süddeutsche Zeitung",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-orgs-places.md, Stufe gesichert; Beleg Special:EntityData/Q158870, Süddeutsche Zeitung, deutsche überregionale Tageszeitung."
+    },
+    {
+      "type": "org",
+      "name": "Südost-Tagespost",
+      "qid": "Q2381148",
+      "label": "Südost Tagespost",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-orgs-places.md, Stufe gesichert; Beleg Special:EntityData/Q2381148, Südost Tagespost, steirische Tageszeitung."
+    },
+    {
+      "type": "org",
+      "name": "Teatro di San Carlo",
+      "qid": "Q628491",
+      "label": "Teatro San Carlo",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-orgs-places.md, Stufe gesichert; Beleg Special:EntityData/Q628491, Teatro San Carlo, Opernhaus in Neapel."
+    },
+    {
+      "type": "org",
+      "name": "Volksoper Wien",
+      "qid": "Q694747",
+      "label": "Volksoper Wien",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-orgs-places.md, Stufe gesichert; Beleg Special:EntityData/Q694747, Volksoper Wien, Opernhaus in Wien."
+    },
+    {
+      "type": "org",
+      "name": "Wiener Philharmoniker",
+      "qid": "Q154685",
+      "label": "Wiener Philharmoniker",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-orgs-places.md, Stufe gesichert; Beleg Special:EntityData/Q154685, Wiener Philharmoniker, österreichisches Sinfonieorchester."
+    },
+    {
+      "type": "org",
+      "name": "Wiener Symphoniker",
+      "qid": "Q686887",
+      "label": "Wiener Symphoniker",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-orgs-places.md, Stufe gesichert; Beleg Special:EntityData/Q686887, Wiener Symphoniker, Orchester."
+    },
+    {
+      "type": "org",
+      "name": "Wiener Zeitung",
+      "qid": "Q697173",
+      "label": "Wiener Zeitung",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-orgs-places.md, Stufe gesichert; Beleg Special:EntityData/Q697173, Wiener Zeitung, österreichische Tageszeitung."
+    },
+    {
+      "type": "location",
+      "name": "Bloomington, Indiana",
+      "qid": "Q490385",
+      "label": "Bloomington",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-orgs-places.md, Stufe gesichert; Beleg Special:EntityData/Q490385, Bloomington, Stadt im US-Bundesstaat Indiana."
     }
   ],
   "unmatched": [
     {
       "type": "person",
-      "name": "Alighieri, Dante"
-    },
-    {
-      "type": "person",
-      "name": "Appia, Adolphe"
-    },
-    {
-      "type": "person",
-      "name": "Arnold, Heinz"
-    },
-    {
-      "type": "person",
       "name": "Baasch, Dr. med. Ernst"
-    },
-    {
-      "type": "person",
-      "name": "Bach, Johann Sebastian"
     },
     {
       "type": "person",
@@ -2289,39 +3657,7 @@
     },
     {
       "type": "person",
-      "name": "Barber, Samuel"
-    },
-    {
-      "type": "person",
-      "name": "Barlach, Ernst"
-    },
-    {
-      "type": "person",
-      "name": "Bartók, Béla"
-    },
-    {
-      "type": "person",
-      "name": "Beethoven, Ludwig van"
-    },
-    {
-      "type": "person",
       "name": "Bergfeld, Dr. Johann"
-    },
-    {
-      "type": "person",
-      "name": "Bizet, Georges"
-    },
-    {
-      "type": "person",
-      "name": "Brahms, Johannes"
-    },
-    {
-      "type": "person",
-      "name": "Braun, Hans"
-    },
-    {
-      "type": "person",
-      "name": "Čajkovskij, Pëtr Ilʹič"
     },
     {
       "type": "person",
@@ -2329,31 +3665,11 @@
     },
     {
       "type": "person",
-      "name": "Caridis, Militades"
-    },
-    {
-      "type": "person",
-      "name": "Cesare, curzi"
-    },
-    {
-      "type": "person",
       "name": "Crampe, Fernand"
     },
     {
       "type": "person",
-      "name": "Dermotas, Anton"
-    },
-    {
-      "type": "person",
       "name": "Di Costanzo, Pasquale"
-    },
-    {
-      "type": "person",
-      "name": "Dönch, Carl"
-    },
-    {
-      "type": "person",
-      "name": "Felberma-Yers, Anny"
     },
     {
       "type": "person",
@@ -2365,31 +3681,11 @@
     },
     {
       "type": "person",
-      "name": "Gostič, Josip"
-    },
-    {
-      "type": "person",
-      "name": "Grillparzer, Franz"
-    },
-    {
-      "type": "person",
       "name": "Guthrie, Frederick"
     },
     {
       "type": "person",
-      "name": "Händel, Georg Friedrich"
-    },
-    {
-      "type": "person",
       "name": "Hartmann, Prof."
-    },
-    {
-      "type": "person",
-      "name": "Hasse, Johann Asolph"
-    },
-    {
-      "type": "person",
-      "name": "Hindemith, Paul"
     },
     {
       "type": "person",
@@ -2398,14 +3694,6 @@
     {
       "type": "person",
       "name": "Hirsch, Robert"
-    },
-    {
-      "type": "person",
-      "name": "Honegger, Arthur"
-    },
-    {
-      "type": "person",
-      "name": "Honolka, Kurt Dr."
     },
     {
       "type": "person",
@@ -2421,31 +3709,11 @@
     },
     {
       "type": "person",
-      "name": "Janáček, Leoš"
-    },
-    {
-      "type": "person",
-      "name": "Jommelli, Niccolò"
-    },
-    {
-      "type": "person",
       "name": "Jucker, Emil"
     },
     {
       "type": "person",
       "name": "Kaufmann, Hans-Joachim"
-    },
-    {
-      "type": "person",
-      "name": "Klemperer, Otto"
-    },
-    {
-      "type": "person",
-      "name": "Kmett, Waldemar"
-    },
-    {
-      "type": "person",
-      "name": "Kodály, Zoltán"
     },
     {
       "type": "person",
@@ -2473,23 +3741,11 @@
     },
     {
       "type": "person",
-      "name": "Linné, Carl von"
-    },
-    {
-      "type": "person",
       "name": "Lobasa, Monique"
     },
     {
       "type": "person",
-      "name": "Lortzing, Albert"
-    },
-    {
-      "type": "person",
       "name": "Lustigs, Rudolf"
-    },
-    {
-      "type": "person",
-      "name": "Mahler, Gustav"
     },
     {
       "type": "person",
@@ -2501,15 +3757,7 @@
     },
     {
       "type": "person",
-      "name": "Maykut, Erich"
-    },
-    {
-      "type": "person",
       "name": "Meiner"
-    },
-    {
-      "type": "person",
-      "name": "Metastasio, Pietro"
     },
     {
       "type": "person",
@@ -2517,43 +3765,11 @@
     },
     {
       "type": "person",
-      "name": "Mitropoulos, Dimitri"
-    },
-    {
-      "type": "person",
-      "name": "Mozart, Wolfgang Amadeus"
-    },
-    {
-      "type": "person",
       "name": "Neumann-Spallart, Gottfried"
     },
     {
       "type": "person",
-      "name": "Offenbach, Jacques"
-    },
-    {
-      "type": "person",
-      "name": "Orff, Carl"
-    },
-    {
-      "type": "person",
-      "name": "Otto van Rohr"
-    },
-    {
-      "type": "person",
       "name": "Pfeiffer, Mme"
-    },
-    {
-      "type": "person",
-      "name": "Pirchan, Emil"
-    },
-    {
-      "type": "person",
-      "name": "Prihoda, Vasa"
-    },
-    {
-      "type": "person",
-      "name": "Raimund, Ferdinand"
     },
     {
       "type": "person",
@@ -2569,19 +3785,7 @@
     },
     {
       "type": "person",
-      "name": "Rodzinski, Artur"
-    },
-    {
-      "type": "person",
-      "name": "Rogatschewsky, Joseph"
-    },
-    {
-      "type": "person",
       "name": "Rogatschewsky, Mme"
-    },
-    {
-      "type": "person",
-      "name": "Rossini, Gioachino"
     },
     {
       "type": "person",
@@ -2609,15 +3813,7 @@
     },
     {
       "type": "person",
-      "name": "Schubert, Franz"
-    },
-    {
-      "type": "person",
       "name": "Schumann, Karl"
-    },
-    {
-      "type": "person",
-      "name": "Schumann, Robert"
     },
     {
       "type": "person",
@@ -2645,10 +3841,6 @@
     },
     {
       "type": "person",
-      "name": "Stravinsky, Igor"
-    },
-    {
-      "type": "person",
       "name": "Szemere"
     },
     {
@@ -2665,19 +3857,7 @@
     },
     {
       "type": "person",
-      "name": "Traetta, Tommaso"
-    },
-    {
-      "type": "person",
-      "name": "Uhde, Hermann"
-    },
-    {
-      "type": "person",
       "name": "Uva"
-    },
-    {
-      "type": "person",
-      "name": "Verdi, Giuseppe"
     },
     {
       "type": "person",
@@ -2701,10 +3881,6 @@
     },
     {
       "type": "person",
-      "name": "Walter, Bruno"
-    },
-    {
-      "type": "person",
       "name": "Warren, Cox"
     },
     {
@@ -2714,14 +3890,6 @@
     {
       "type": "person",
       "name": "Wissner, Otto"
-    },
-    {
-      "type": "person",
-      "name": "Bruckner, Anton"
-    },
-    {
-      "type": "person",
-      "name": "Dvořák, Antonín"
     },
     {
       "type": "person",
@@ -2737,19 +3905,7 @@
     },
     {
       "type": "org",
-      "name": "Abendzeitung"
-    },
-    {
-      "type": "org",
       "name": "Académie nationale de musique"
-    },
-    {
-      "type": "org",
-      "name": "Aktiengesellschaft Leu & Co."
-    },
-    {
-      "type": "org",
-      "name": "Arbeiter Zeitung"
     },
     {
       "type": "org",
@@ -2761,10 +3917,6 @@
     },
     {
       "type": "org",
-      "name": "Deutsche Oper Berlin"
-    },
-    {
-      "type": "org",
       "name": "Deutsches Musikinstitut für Ausländer"
     },
     {
@@ -2773,47 +3925,11 @@
     },
     {
       "type": "org",
-      "name": "Epic Records"
-    },
-    {
-      "type": "org",
       "name": "Ernst Kühnly Bühnenvermittlung Inland und Ausland"
     },
     {
       "type": "org",
-      "name": "Fränkische Presse"
-    },
-    {
-      "type": "org",
       "name": "Konzertgesellschaft Zürich"
-    },
-    {
-      "type": "org",
-      "name": "Landestheater (Hannover)"
-    },
-    {
-      "type": "org",
-      "name": "Le Monde"
-    },
-    {
-      "type": "org",
-      "name": "Mozart-Sängerknaben"
-    },
-    {
-      "type": "org",
-      "name": "Münchner Merkur"
-    },
-    {
-      "type": "org",
-      "name": "Münchner Opern-Festspiele"
-    },
-    {
-      "type": "org",
-      "name": "Musikakademie in Lemberg"
-    },
-    {
-      "type": "org",
-      "name": "Musikverein Graz"
     },
     {
       "type": "org",
@@ -2829,26 +3945,6 @@
     },
     {
       "type": "org",
-      "name": "Neues Österreich"
-    },
-    {
-      "type": "org",
-      "name": "Opéra de Monte-Carlo"
-    },
-    {
-      "type": "org",
-      "name": "Opéra de Monte-Carlo. Orchestre national"
-    },
-    {
-      "type": "org",
-      "name": "Opernhaus Zürich"
-    },
-    {
-      "type": "org",
-      "name": "orchestre municipal (Strasbourg)"
-    },
-    {
-      "type": "org",
       "name": "Österreichische neue Tageszeitung"
     },
     {
@@ -2857,23 +3953,7 @@
     },
     {
       "type": "org",
-      "name": "Plattenevrlag Decca"
-    },
-    {
-      "type": "org",
       "name": "Plattenverlag Philipps"
-    },
-    {
-      "type": "org",
-      "name": "R.C.A.-Victor"
-    },
-    {
-      "type": "org",
-      "name": "Salzburger Festspiele"
-    },
-    {
-      "type": "org",
-      "name": "SAS  Scandinavian Airlines"
     },
     {
       "type": "org",
@@ -2881,43 +3961,7 @@
     },
     {
       "type": "org",
-      "name": "Staatsoper Wien"
-    },
-    {
-      "type": "org",
-      "name": "Stadttheater Graz"
-    },
-    {
-      "type": "org",
-      "name": "Stadttheater Zürich"
-    },
-    {
-      "type": "org",
-      "name": "Stuttgarter Nachrichten"
-    },
-    {
-      "type": "org",
-      "name": "Stuttgarter Staatsoper"
-    },
-    {
-      "type": "org",
-      "name": "Süddeutsche Zeitung"
-    },
-    {
-      "type": "org",
-      "name": "Teatro di San Carlo"
-    },
-    {
-      "type": "org",
       "name": "Tonhalle-Gesellschaft Zürich"
-    },
-    {
-      "type": "org",
-      "name": "Volksoper Wien"
-    },
-    {
-      "type": "org",
-      "name": "Wiener Philharmoniker"
     },
     {
       "type": "org",
@@ -2925,39 +3969,7 @@
     },
     {
       "type": "org",
-      "name": "Wiener Staatsoper"
-    },
-    {
-      "type": "org",
-      "name": "Wiener Symphoniker"
-    },
-    {
-      "type": "org",
-      "name": "Wiener Zeitung"
-    },
-    {
-      "type": "org",
       "name": "Zürcher Tagblatt"
-    },
-    {
-      "type": "org",
-      "name": "Indiana University School of Music"
-    },
-    {
-      "type": "org",
-      "name": "Hochschule für Musik und darstellende Kunst Graz"
-    },
-    {
-      "type": "org",
-      "name": "Südost-Tagespost"
-    },
-    {
-      "type": "org",
-      "name": "Musikverein für Steiermark"
-    },
-    {
-      "type": "org",
-      "name": "Markgräfliches Opernhaus"
     },
     {
       "type": "org",
@@ -2968,28 +3980,9 @@
       "name": "Richard-Wagner-Stipendienstiftung"
     },
     {
-      "type": "location",
-      "name": "Bloomington, Indiana"
-    },
-    {
-      "type": "work",
-      "name": "3. Symphonie",
-      "komponist": "Brahms, Johannes"
-    },
-    {
-      "type": "work",
-      "name": "8. Symphonie",
-      "komponist": "Beethoven, Ludwig van"
-    },
-    {
       "type": "work",
       "name": "Ach, des Knaben Augen",
       "komponist": "Wolf, Hugo"
-    },
-    {
-      "type": "work",
-      "name": "Aida",
-      "komponist": "Verdi, Giuseppe"
     },
     {
       "type": "work",
@@ -3003,11 +3996,6 @@
     },
     {
       "type": "work",
-      "name": "Arabella",
-      "komponist": "Strauss, Richard"
-    },
-    {
-      "type": "work",
       "name": "Auf dem grünen Balkon mein Mädchen schaut",
       "komponist": "Wolf, Hugo"
     },
@@ -3018,33 +4006,8 @@
     },
     {
       "type": "work",
-      "name": "Boris Godunov",
-      "komponist": "Musorgskij, Modest Petrovič"
-    },
-    {
-      "type": "work",
       "name": "Capriccio",
       "komponist": null
-    },
-    {
-      "type": "work",
-      "name": "Chovanščina",
-      "komponist": "Musorgskij, Modest Petrovič"
-    },
-    {
-      "type": "work",
-      "name": "Così fan tutte",
-      "komponist": "Mozart, Wolfgang Amadeus"
-    },
-    {
-      "type": "work",
-      "name": "Daphne",
-      "komponist": "Strauss, Richard"
-    },
-    {
-      "type": "work",
-      "name": "Der Evangelimann",
-      "komponist": "Kienzl, Wilhelm"
     },
     {
       "type": "work",
@@ -3053,43 +4016,13 @@
     },
     {
       "type": "work",
-      "name": "Der Wildschütz oder Die Stimme der Natur",
-      "komponist": "Lortzing, Albert"
-    },
-    {
-      "type": "work",
-      "name": "Die Geschöpfe des Prometheus",
-      "komponist": "Beethoven, Ludwig van"
-    },
-    {
-      "type": "work",
       "name": "Die ihr schwebet um diese Palmen",
       "komponist": "Wolf, Hugo"
     },
     {
       "type": "work",
-      "name": "Die Meistersinger von Nürnberg",
-      "komponist": "Wagner, Richard"
-    },
-    {
-      "type": "work",
-      "name": "Die Walküre",
-      "komponist": "Wagner, Richard"
-    },
-    {
-      "type": "work",
-      "name": "Die Zauberflöte",
-      "komponist": "Mozart, Wolfgang Amadeus"
-    },
-    {
-      "type": "work",
       "name": "Ein kleines Haus",
       "komponist": "Haydn, Joseph"
-    },
-    {
-      "type": "work",
-      "name": "Elektra",
-      "komponist": "Strauss, Richard"
     },
     {
       "type": "work",
@@ -3103,23 +4036,8 @@
     },
     {
       "type": "work",
-      "name": "Evgenij Onegin",
-      "komponist": "Čajkovskij, Pëtr Ilʹič"
-    },
-    {
-      "type": "work",
-      "name": "Falstaff",
-      "komponist": "Verdi, Giuseppe"
-    },
-    {
-      "type": "work",
       "name": "Führ mich, Kind, nach Bethlehem",
       "komponist": "Wolf, Hugo"
-    },
-    {
-      "type": "work",
-      "name": "Ganymed",
-      "komponist": "Schubert, Franz"
     },
     {
       "type": "work",
@@ -3138,28 +4056,13 @@
     },
     {
       "type": "work",
-      "name": "Götterdämmerung",
-      "komponist": "Wagner, Richard"
-    },
-    {
-      "type": "work",
       "name": "Herr, was trägt der Boden hier",
       "komponist": "Wolf, Hugo"
     },
     {
       "type": "work",
-      "name": "Herzog Blaubart's Burg",
-      "komponist": null
-    },
-    {
-      "type": "work",
       "name": "Ich liebe dich",
       "komponist": "Beethoven, Ludwig von"
-    },
-    {
-      "type": "work",
-      "name": "Il Trovatore",
-      "komponist": "Verdi, Giuseppe"
     },
     {
       "type": "work",
@@ -3170,31 +4073,6 @@
       "type": "work",
       "name": "Judith",
       "komponist": "Honegger, Arthur"
-    },
-    {
-      "type": "work",
-      "name": "Kát'a Kabanová",
-      "komponist": "Janáček, Leoš"
-    },
-    {
-      "type": "work",
-      "name": "La clemenza di Tito",
-      "komponist": "Mozart, Wolfgang Amadeus"
-    },
-    {
-      "type": "work",
-      "name": "La Traviata",
-      "komponist": "Verdi, Giuseppe"
-    },
-    {
-      "type": "work",
-      "name": "Macbeth",
-      "komponist": "Verdi, Giuseppe"
-    },
-    {
-      "type": "work",
-      "name": "Madama Butterfly",
-      "komponist": "Puccini, Giacomo"
     },
     {
       "type": "work",
@@ -3223,26 +4101,6 @@
     },
     {
       "type": "work",
-      "name": "Orpheus und Eurydike",
-      "komponist": "Gluck, Christoph Willibald"
-    },
-    {
-      "type": "work",
-      "name": "Paradies und Peri",
-      "komponist": null
-    },
-    {
-      "type": "work",
-      "name": "Parsifal",
-      "komponist": "Wagner, Richard"
-    },
-    {
-      "type": "work",
-      "name": "Pikovaja dama",
-      "komponist": "Čajkovskij, Pëtr Ilʹič"
-    },
-    {
-      "type": "work",
       "name": "Pupilette",
       "komponist": "Busatti, Cherubino"
     },
@@ -3250,11 +4108,6 @@
       "type": "work",
       "name": "Quintett für Klavier und Schteichquartett, G-Dur",
       "komponist": "Schmidt, Franz"
-    },
-    {
-      "type": "work",
-      "name": "Rigoletto",
-      "komponist": "Verdi, Giuseppe"
     },
     {
       "type": "work",
@@ -3268,38 +4121,13 @@
     },
     {
       "type": "work",
-      "name": "Sinfonien, Nr. 9, op. 125 (d-Moll)",
-      "komponist": "Beethoven, Ludwig von"
-    },
-    {
-      "type": "work",
       "name": "Stets barg, die Liebe sie",
       "komponist": "Haydn, Joseph"
     },
     {
       "type": "work",
-      "name": "Svadebka",
-      "komponist": "Stravinsky, Igor"
-    },
-    {
-      "type": "work",
-      "name": "Székely fonó",
-      "komponist": "Kodály, Zoltán"
-    },
-    {
-      "type": "work",
-      "name": "Tannhäuser und der Sängerkrieg auf Wartburg",
-      "komponist": "Wagner, Richard"
-    },
-    {
-      "type": "work",
       "name": "Traurigkeit",
       "komponist": "Barwinsky, Wolodymyr"
-    },
-    {
-      "type": "work",
-      "name": "Vanessa",
-      "komponist": "Barber, Samuel"
     },
     {
       "type": "work",
@@ -3328,58 +4156,8 @@
     },
     {
       "type": "work",
-      "name": "Requium",
-      "komponist": "Mozart, Wolfgang Amadeus"
-    },
-    {
-      "type": "work",
-      "name": "Sinfonien, Nr. 9, op. 125 (d-Moll)",
-      "komponist": "Beethoven, Ludwig van"
-    },
-    {
-      "type": "work",
-      "name": "Matthäuspassion",
-      "komponist": "Bach, Johann Sebastian"
-    },
-    {
-      "type": "work",
-      "name": "Weihnachts-Oratorium",
-      "komponist": "Bach, Johann Sebastian"
-    },
-    {
-      "type": "work",
-      "name": "Messen, op. 123 (D-Dur)",
-      "komponist": "Beethoven, Ludwig van"
-    },
-    {
-      "type": "work",
-      "name": "Rhapsodien, Alt, Männerchor, Orchester, op. 53",
-      "komponist": "Brahms, Johannes"
-    },
-    {
-      "type": "work",
-      "name": "Messen, WAB 28 (f-Moll)",
-      "komponist": "Bruckner, Anton"
-    },
-    {
-      "type": "work",
-      "name": "Missa in angustijs",
-      "komponist": "Haydn, Joseph"
-    },
-    {
-      "type": "work",
       "name": "Marienlieder",
       "komponist": "Hindemith, Paul"
-    },
-    {
-      "type": "work",
-      "name": "Elias, op. 70, MWV A 25",
-      "komponist": "Mendelssohn Bartholdy, Felix"
-    },
-    {
-      "type": "work",
-      "name": "Messen, KV 317",
-      "komponist": "Mozart, Wolfgang Amadeus"
     },
     {
       "type": "work",
@@ -3397,9 +4175,75 @@
       "komponist": "Requiem"
     },
     {
+      "type": "person",
+      "name": "Campese"
+    },
+    {
+      "type": "person",
+      "name": "Wolf, Winfried"
+    },
+    {
+      "type": "person",
+      "name": "Witte, Wolfgang"
+    },
+    {
+      "type": "person",
+      "name": "Thiel, Fred"
+    },
+    {
+      "type": "person",
+      "name": "Simon, Théo"
+    },
+    {
+      "type": "person",
+      "name": "Leder, Alfred"
+    },
+    {
+      "type": "person",
+      "name": "Eberhardt, Paul"
+    },
+    {
+      "type": "person",
+      "name": "Ernest, Wilhelm"
+    },
+    {
+      "type": "person",
+      "name": "Tinel, Paul"
+    },
+    {
+      "type": "person",
+      "name": "Traute, Elisabeth"
+    },
+    {
+      "type": "person",
+      "name": "Weber"
+    },
+    {
+      "type": "person",
+      "name": "Leopold III."
+    },
+    {
       "type": "work",
-      "name": "die Götterdämmerung",
-      "komponist": "Wagner, Richard"
+      "name": "Stabat mater"
+    },
+    {
+      "type": "work",
+      "name": "Nachtstück",
+      "komponist": "Schubert, Franz"
+    },
+    {
+      "type": "work",
+      "name": "Die junge Magd",
+      "komponist": "Hindemith, Paul"
+    },
+    {
+      "type": "work",
+      "name": "Lied der Mignon",
+      "komponist": "Beethoven, Ludwig von"
+    },
+    {
+      "type": "work",
+      "name": "Regentropfen"
     }
   ],
   "skipped": [
