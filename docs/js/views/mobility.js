@@ -24,6 +24,7 @@ import { createSidebar, viewShell } from '../ui/sidebar.js';
 import { buildRoleChip } from './archive-inline-detail.js';
 import { cityOf } from '../utils/format.js';
 import { formatDate, extractYear } from '../utils/date-parser.js';
+import { coverageNote } from '../ui/coverage.js';
 import { logStamp } from '../utils/env.js';
 import { getFilter, setFilter, subscribe } from '../ui/filter-state.js';
 import {
@@ -79,6 +80,10 @@ export function renderMobilitaet(store, container) {
       el('div', { className: 'mob-empty' }, 'D3 ist nicht geladen, die Karte kann nicht gezeichnet werden.')));
     return;
   }
+
+  // Die Karte laeuft auf dem verknuepften Teil des Bestands. Ohne die Angabe
+  // liest sich das Bild als Aussage ueber den ganzen Nachlass.
+  container.appendChild(coverageNote(store, allOcc.map(o => o.recordId), 'Dokumenten'));
 
   const withGeo = allOcc.filter(hasGeo);
   const datedYears = allOcc.map(o => extractYear(o.date)).filter(y => y != null);

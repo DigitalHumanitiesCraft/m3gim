@@ -45,6 +45,7 @@ import {
 } from './_network-canvas.js';
 import { getFilter, setFilter, subscribe } from '../ui/filter-state.js';
 import { zeitfensterToYearRange, makeSyncGuard } from '../ui/filter-sync.js';
+import { coverageNote } from '../ui/coverage.js';
 
 // ---------------------------------------------------------------------------
 // Modul-State (bewusst modul-lokal, analog zu anderen Views).
@@ -231,6 +232,15 @@ function draw() {
   main.appendChild(renderDetailSlot());
   shell.appendChild(main);
   _container.appendChild(shell);
+
+  // Das Netzwerk laeuft auf dem verknuepften Teil des Bestands. Die Angabe
+  // haelt fest, wie viele Dokumente es traegt, damit das Bild nicht als
+  // Aussage ueber den ganzen Nachlass gelesen wird.
+  const netzRecords = [];
+  for (const entry of _store.persons.values()) {
+    if (entry && entry.records) netzRecords.push(...entry.records);
+  }
+  _container.appendChild(coverageNote(_store, netzRecords, 'Dokumenten'));
 
   // Jetzt ist der Canvas-Slot im DOM — echte Dimensionen lesen, neu rechnen.
   computeLayoutForCanvas();

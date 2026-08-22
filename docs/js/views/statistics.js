@@ -22,6 +22,7 @@ import { ortColor } from '../data/constants.js';
 import { roleLabel } from '../utils/format.js';
 import { applyArchivFilter, navigateToView } from '../ui/router.js';
 import { createSidebar, viewShell } from '../ui/sidebar.js';
+import { coverageText } from '../ui/coverage.js';
 import {
   SICHTEN, SICHT_COLOR,
   facetInventory, filterStore,
@@ -120,6 +121,13 @@ export function renderStatistik(store, container) {
       if (sichtSel) f.push(`Sicht: ${sichtSel.size} gewählt`);
       if (landSel) f.push(`Land: ${landSel.size} gewählt`);
       parts.push(`${f.join(' · ')} (schneidet Ereignisse, nicht Dokumente)`);
+    }
+    // Ereignisgetriebene Ansichten laufen auf dem verknuepften Teil des
+    // Bestands; ohne die Angabe liest sich das Aggregat als Aussage ueber
+    // alle Dokumente.
+    if (isEventView()) {
+      const ids = [...fs.mobilityEvents.values()].map(e => e.recordId);
+      parts.push(coverageText(store, ids, 'Dokumenten'));
     }
     noteEl.textContent = parts.join(' — ');
   };
