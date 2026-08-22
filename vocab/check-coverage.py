@@ -49,6 +49,12 @@ ROLE_KEYS = frozenset({"role", "m3gim:eventRole", "m3gim:dateRole", "m3gim:detai
 # Vertragsstatus in der Rollenspalte, im Schema begründet kein Rollenbegriff.
 KNOWN_NON_ROLES = frozenset({"nicht eingehalten"})
 
+# Marker, mit dem eine skos:editorialNote einen dauerhaft leeren Term
+# entschuldigt. Ein deklarierter Term ohne Vorkommen im Datensatz ist entweder
+# ein Rest oder eine Vorwegnahme; beides ist zulässig, solange der Grund am
+# Term selbst steht und mit ihm wandert.
+VACANCY_MARKER = "unused:"
+
 PREFIXES = {"m3gim:": VOCAB_NS, "m3gim-role:": ROLE_NS, "m3gim-dft:": DFT_NS}
 
 
@@ -106,11 +112,53 @@ def collect_from_data(path: Path) -> tuple[set[str], set[str], set[str], set[str
     return properties, classes, roles, dft
 
 
+def report_vacancy(
+    graph: Graph, defined: set[str], used_terms: set[str], vocab_path: Path
+) -> int:
+    """Meldet deklarierte Terme, die im Datensatz nicht vorkommen.
+
+    Die Abdeckungsprüfung sichert die eine Richtung, dass kein verwendeter Term
+    undeklariert bleibt. Die Gegenrichtung bleibt sonst blind: ein Term kann
+    deklariert werden, nie Daten tragen und trotzdem in Modell, Doku und
+    Frontend mitgeführt werden. Entschuldigt ist ein leerer Term durch eine
+    skos:editorialNote, die mit dem Marker beginnt und den Grund nennt.
+    """
+    used_iris = {expand(term) for term in used_terms}
+    excused = {
+        str(subject)
+        for subject, note in graph.subject_objects(SKOS.editorialNote)
+        if str(note).strip().lower().startswith(VACANCY_MARKER)
+    }
+    vacant = sorted(
+        iri
+        for iri in defined
+        if iri.startswith(VOCAB_NS) and iri not in used_iris and iri not in excused
+    )
+
+    print(f"OK Vokabular geparst, {len(graph)} Tripel aus {vocab_path.name}")
+    if vacant:
+        for iri in vacant:
+            print(
+                f"FEHLER Deklariert, im Datensatz ohne Vorkommen und ohne Notiz: "
+                f"{iri.rsplit('#', 1)[-1]}",
+                file=sys.stderr,
+            )
+        print(f"FEHLER {len(vacant)} unbelegte Terme", file=sys.stderr)
+        return 1
+    print("OK Jeder deklarierte Term trägt Daten oder nennt den Grund seiner Leere")
+    return 0
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--vocab", type=Path, default=REPO / "vocab" / "m3gim.ttl")
     parser.add_argument(
         "--data", type=Path, default=REPO / "data" / "output" / "m3gim.jsonld"
+    )
+    parser.add_argument(
+        "--vacancy",
+        action="store_true",
+        help="Gegenrichtung prüfen: deklarierte Terme ohne Vorkommen im Datensatz",
     )
     args = parser.parse_args()
 
@@ -133,6 +181,9 @@ def main() -> int:
     }
 
     properties, classes, roles, dft = collect_from_data(args.data)
+
+    if args.vacancy:
+        return report_vacancy(graph, defined, properties | classes, args.vocab)
 
     findings: list[str] = []
     findings += [
