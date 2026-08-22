@@ -13,6 +13,11 @@
  * buildRecordBlocks selbst erzeugt DOM (el()) und ist daher hier nicht
  * direkt testbar -- die Chip-Ebene deckt der Playwright-Smoke (Inline-Detail-
  * Anker NIM_004_1) ab.
+ *
+ * Die Fixtures dieses Tests tragen noch die abgeloesten Property- und Klassen-
+ * namen, weil partitionRecord sie liest. Sie ziehen mit dem Umbau von
+ * views/archive-inline-detail.js auf die Terme des zusammengefuehrten Modells
+ * nach; die Datenschicht ist dort bereits umgestellt.
  */
 
 import { test } from 'node:test';

@@ -112,13 +112,13 @@ test('formatChildSignatur: ohne Parent faellt auf formatSignatur zurueck', () =>
 // ---------------------------------------------------------------------------
 
 test('getDocTypeId: aus Objekt- und String-Form', () => {
-  assert.equal(getDocTypeId({ 'rico:hasDocumentaryFormType': { '@id': 'm3gim-dft:brief' } }), 'brief');
-  assert.equal(getDocTypeId({ 'rico:hasDocumentaryFormType': 'm3gim-dft:brief' }), 'brief');
+  assert.equal(getDocTypeId({ 'rico:hasDocumentaryFormType': { '@id': 'm3gim-vocab:letter' } }), 'letter');
+  assert.equal(getDocTypeId({ 'rico:hasDocumentaryFormType': 'm3gim-vocab:letter' }), 'letter');
   assert.equal(getDocTypeId({}), null);
 });
 
 test('formatDocType: unbekannter Typ faellt auf die ID zurueck', () => {
-  assert.equal(formatDocType({ 'rico:hasDocumentaryFormType': 'm3gim-dft:xyztype' }), 'xyztype');
+  assert.equal(formatDocType({ 'rico:hasDocumentaryFormType': 'm3gim-vocab:xyztype' }), 'xyztype');
   assert.equal(formatDocType({}), '');
 });
 
@@ -135,11 +135,11 @@ test('ensureArray: normalisiert null/Skalar/Array', () => {
 
 test('countLinks: summiert ueber alle Verknuepfungs-Felder', () => {
   const record = {
-    'm3gim:hasAssociatedAgent': [{}, {}],
+    'm3gim-ontology:hasAssociatedAgent': [{}, {}],
     'rico:hasOrHadLocation': {},          // Skalar -> 1
     'rico:hasOrHadSubject': [{}],
-    'm3gim:hasDatedEvent': [],
-    'm3gim:hasPerformance': [{}, {}],
+    'm3gim-ontology:hasAnnotation': [],
+    'm3gim-ontology:hasPerformance': [{}, {}],
   };
   assert.equal(countLinks(record), 6);
   assert.equal(countLinks({}), 0);
@@ -192,21 +192,21 @@ test('resolveRecords: loest IDs auf, filtert Fehlende', () => {
 test('expandDftFilter: ohne Hierarchie -> nur die Eingabe', () => {
   assert.deepEqual([...expandDftFilter(null, 'brief')], ['brief']);
   assert.deepEqual([...expandDftFilter({}, 'brief')], ['brief']);
-  assert.deepEqual([...expandDftFilter({ dftHierarchy: new Map() }, 'brief')], ['brief']);
+  assert.deepEqual([...expandDftFilter({ dftHierarchy: new Map() }, 'letter')], ['letter']);
 });
 
 test('expandDftFilter: Oberbegriff matcht transitiv die Kinder', () => {
   const store = {
     dftHierarchy: new Map([
-      ['m3gim-dft:korrespondenz', { prefLabel: 'Korrespondenz', children: ['m3gim-dft:brief', 'm3gim-dft:postkarte'] }],
-      ['m3gim-dft:brief', { prefLabel: 'Brief', children: [] }],
-      ['m3gim-dft:postkarte', { prefLabel: 'Postkarte', children: [] }],
+      ['m3gim-vocab:correspondence', { prefLabel: 'Korrespondenz', children: ['m3gim-vocab:letter', 'm3gim-vocab:postcard'] }],
+      ['m3gim-vocab:letter', { prefLabel: 'Brief', children: [] }],
+      ['m3gim-vocab:postcard', { prefLabel: 'Postkarte', children: [] }],
     ]),
   };
-  const out = expandDftFilter(store, 'korrespondenz');
-  assert.ok(out.has('korrespondenz'));
-  assert.ok(out.has('brief'));
-  assert.ok(out.has('postkarte'));
+  const out = expandDftFilter(store, 'correspondence');
+  assert.ok(out.has('correspondence'));
+  assert.ok(out.has('letter'));
+  assert.ok(out.has('postcard'));
   assert.equal(out.size, 3);
 });
 

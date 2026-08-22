@@ -392,9 +392,17 @@ export const EVENT_ROLE_TO_MOBILITY_CLUSTER = {
   'rahmenveranstaltung': null,
 };
 
+/**
+ * Mobilitaetssicht einer Rolle. Nimmt die Concept-Id des zusammengefuehrten
+ * Modells (ANNOTATION_ROLE_CLUSTER, massgeblich) und ebenso den Rollen-Rohwert
+ * des abgeloesten Modells (EVENT_ROLE_TO_MOBILITY_CLUSTER), solange die
+ * ausgelieferte Datei unter docs/data/ noch das alte Modell traegt.
+ */
 export function mobilityClusterFor(eventRole) {
   if (!eventRole) return null;
-  const key = String(eventRole).trim().toLowerCase();
+  const raw = String(eventRole).trim();
+  if (raw in ANNOTATION_ROLE_CLUSTER) return ANNOTATION_ROLE_CLUSTER[raw];
+  const key = raw.toLowerCase();
   if (!(key in EVENT_ROLE_TO_MOBILITY_CLUSTER)) return null;
   return EVENT_ROLE_TO_MOBILITY_CLUSTER[key];
 }
@@ -496,4 +504,189 @@ export function steChipPrefix(eventRole) {
   const key = String(eventRole).trim().toLowerCase();
   return STE_ROLE_DISPLAY[key] || String(eventRole).toUpperCase();
 }
+
+// =========================================================================
+// Annotationsrollen des zusammengefuehrten Modells.
+//
+// Die Klasse m3gim-ontology:Annotation traegt jede Datierung und jede
+// Verortung. Ihre Rolle ist ein Verweis auf ein Concept des Vokabulars
+// m3gim-vocab und fuehrt dessen skos:prefLabel im Verweisknoten mit. Die
+// Anzeigeform steht damit in den Daten und nicht mehr im Code; die Tabellen
+// hier halten nur die drei Entscheidungen, die die Daten nicht treffen.
+// Geschluesselt wird durchweg mit der stabilen Concept-Id, nicht mit dem
+// Anzeigetext.
+// =========================================================================
+
+/**
+ * Bezugsebene je Annotationsrolle (Frontend-Vertrag A3). Sie sagt, worauf sich
+ * eine Datierung bezieht; die Rolle sagt, was fuer ein Zeitpunkt gemeint ist.
+ * Vor der Zusammenfuehrung steckte diese Unterscheidung in der Formzugehoerig-
+ * keit (typisierte Property gegen DatedEvent), die nach Parsbarkeit vergeben
+ * wurde und damit Datenqualitaet kodierte statt Bedeutung.
+ *
+ *   object       Das Dokument selbst ist dann entstanden, ausgestellt,
+ *                erschienen, abgesendet oder empfangen worden.
+ *   attested     Das Dokument belegt ein Ereignis, das dann stattfand. Nur
+ *                diese Ebene und `object` speisen den Zeitstrahl.
+ *   mentioned    Das Datum steht im Dokument und gehoert nicht in die
+ *                Lebenslinie (Beleg: eine genannte Jahreszahl 1872 auf einer
+ *                Lebenslinie von 1919 bis 2009).
+ *   framing      Rahmenveranstaltung, ein Zeitraum, der deutlich weiter ist
+ *                als das Dokument selbst (Festspielsaison).
+ *   unfulfilled  Vertragsstatus `nicht eingehalten`, ein Termin, der gerade
+ *                nicht stattgefunden hat. Kein Begriff des Vokabulars, deshalb
+ *                als Literal geschluesselt.
+ *
+ * Eine Annotation ohne Rolle traegt die Bezugsebene `unclassified`; sie ist
+ * nicht entscheidbar und datiert deshalb nicht. Der Wert steht nicht in dieser
+ * Tabelle, weil es keine Rolle gibt, an der er haengen koennte.
+ *
+ * Ohne Eintrag faellt eine Datierung aus jeder Auswahl nach Bezugsebene
+ * heraus; `tests/frontend/typed-dates.test.mjs` haelt die Tabelle deshalb
+ * gegen den Datenstand.
+ */
+export const ANNOTATION_ROLE_SCOPE = {
+  // Datierung des Objekts
+  'm3gim-vocab:creation':             'object',
+  'm3gim-vocab:publicationDate':      'object',
+  'm3gim-vocab:issueDate':            'object',
+  'm3gim-vocab:dispatch':             'object',
+  'm3gim-vocab:receiving':            'object',
+  'm3gim-vocab:contractPlace':        'object',
+  'm3gim-vocab:wageConfirmationDate': 'object',
+
+  // Datierung eines bezeugten Ereignisses
+  'm3gim-vocab:performance':          'attested',
+  'm3gim-vocab:premiere':             'attested',
+  'm3gim-vocab:guestPerformance':     'attested',
+  'm3gim-vocab:dressRehearsal':       'attested',
+  'm3gim-vocab:rehearsal':            'attested',
+  'm3gim-vocab:rehearsalStartDate':   'attested',
+  'm3gim-vocab:recording':            'attested',
+  'm3gim-vocab:broadcastDate':        'attested',
+  'm3gim-vocab:season':               'attested',
+  'm3gim-vocab:departure':            'attested',
+  'm3gim-vocab:destinationPlace':     'attested',
+  'm3gim-vocab:reception':            'attested',
+  'm3gim-vocab:conversationDate':     'attested',
+  'm3gim-vocab:transferDate':         'attested',
+  'm3gim-vocab:installmentPeriod':    'attested',
+  'm3gim-vocab:assignment':           'attested',
+
+  // Datierung einer Erwaehnung
+  'm3gim-vocab:mentioned':            'mentioned',
+
+  // Umfassender Zeitraum
+  'm3gim-vocab:framingEvent':         'framing',
+
+  // Negierte Behauptung
+  'nicht eingehalten':                'unfulfilled',
+};
+
+/**
+ * Die Bezugsebenen, die einen Record datieren duerfen (Frontend-Vertrag A4).
+ * Jede andere Ebene bleibt lesbar, datiert den Record aber nicht.
+ */
+export const ANCHORING_SCOPES = new Set(['object', 'attested']);
+
+/**
+ * Rang der Annotationsrollen (Frontend-Vertrag A2). Die Listenreihenfolge ist
+ * die Prioritaet der abgeleiteten Datierung, wenn ein Record mehrere traegt.
+ *
+ * Der vordere Block uebernimmt die Reihenfolge der abgeloesten Liste
+ * TYPED_DATE_PROPS unveraendert; sie folgte dem Auffuehrungsbezug. Die beiden
+ * zusammengefallenen Terme stehen an der Stelle ihres Zusammenschlusses
+ * (auftrittsdatum in aufführung, erstelldatum in entstehung). Der hintere
+ * Block haelt die Rollen, die das Frontend vor der Zusammenfuehrung nur ueber
+ * die raumzeitlichen Ereignisse erreichte, wo keine Prioritaet zwischen Rollen
+ * bestand; ihre Reihenfolge folgt derselben Logik wie der vordere Block.
+ *
+ * Rollen ohne Eintrag sortieren hinter jeden Eintrag der Liste, in
+ * Quellreihenfolge. Eine Rolle, die im Datenstand datiert und hier fehlt,
+ * meldet `tests/frontend/typed-dates.test.mjs`.
+ */
+export const ANNOTATION_ROLE_RANK = [
+  'm3gim-vocab:performance',          // auffuehrungsdatum, auftrittsdatum
+  'm3gim-vocab:premiere',             // premieredatum
+  'm3gim-vocab:dispatch',             // absendedatum
+  'm3gim-vocab:receiving',            // empfangsdatum
+  'm3gim-vocab:conversationDate',     // gespraechsdatum
+  'm3gim-vocab:publicationDate',      // erscheinungsdatum
+  'm3gim-vocab:issueDate',            // ausstellungsdatum
+  'm3gim-vocab:broadcastDate',        // ausstrahlungsdatum
+  'm3gim-vocab:rehearsalStartDate',   // probenbeginn
+  'm3gim-vocab:rehearsal',            // probendatum
+  'm3gim-vocab:season',               // spielzeitVon
+  'm3gim-vocab:transferDate',         // ueberweisungsdatum
+  'm3gim-vocab:departure',            // abreisedatum
+  'm3gim-vocab:creation',             // erstelldatum, entstehungsdatum
+  'm3gim-vocab:guestPerformance',
+  'm3gim-vocab:dressRehearsal',
+  'm3gim-vocab:recording',
+  'm3gim-vocab:reception',
+  'm3gim-vocab:contractPlace',
+  'm3gim-vocab:assignment',
+  'm3gim-vocab:installmentPeriod',
+  'm3gim-vocab:wageConfirmationDate',
+];
+
+const RANK_BY_ROLE = new Map(ANNOTATION_ROLE_RANK.map((id, i) => [id, i]));
+
+/** Rang einer Rolle; ohne Eintrag hinter jeden gefuehrten Rang. */
+export function rankForRole(roleId) {
+  const rank = RANK_BY_ROLE.get(roleId);
+  return rank === undefined ? ANNOTATION_ROLE_RANK.length : rank;
+}
+
+/** Bezugsebene einer Rolle; null, wenn die Rolle nicht gefuehrt ist. */
+export function scopeForRole(roleId) {
+  return (roleId && ANNOTATION_ROLE_SCOPE[roleId]) || null;
+}
+
+/**
+ * Mobilitaetssicht je Annotationsrolle, nach Concept-Id. Loest die
+ * Zeichenketten-Heuristik auf dem Rollennamen ab, die aus der Endung "datum"
+ * ein Farbcluster ableitete; ein Begriff wie `aufführung` traegt die Endung
+ * nicht mehr. Die Zuordnungen sind unveraendert aus
+ * EVENT_ROLE_TO_MOBILITY_CLUSTER uebernommen, `null` heisst wie dort
+ * ausdruecklich "keine Sicht" und nicht "nicht eingetragen".
+ */
+export const ANNOTATION_ROLE_CLUSTER = {
+  'm3gim-vocab:performance':          'performativ',
+  'm3gim-vocab:guestPerformance':     'performativ',
+  'm3gim-vocab:premiere':             'performativ',
+  'm3gim-vocab:revival':              'performativ',
+  'm3gim-vocab:galaPerformance':      'performativ',
+  'm3gim-vocab:rehearsal':            'performativ',
+  'm3gim-vocab:rehearsalStartDate':   'performativ',
+  'm3gim-vocab:dressRehearsal':       'performativ',
+  'm3gim-vocab:performancePlace':     'performativ',
+
+  'm3gim-vocab:season':               'institutionell',
+
+  'm3gim-vocab:dispatch':             'korrespondenz',
+  'm3gim-vocab:receiving':            'korrespondenz',
+  'm3gim-vocab:departure':            'korrespondenz',
+  'm3gim-vocab:destinationPlace':     'korrespondenz',
+  'm3gim-vocab:contractPlace':        'korrespondenz',
+
+  'm3gim-vocab:publicationDate':      'diskursiv',
+  'm3gim-vocab:broadcastDate':        'diskursiv',
+  'm3gim-vocab:recording':            'diskursiv',
+
+  'm3gim-vocab:issueDate':            'biografisch',
+  'm3gim-vocab:residencePlace':       'biografisch',
+  'm3gim-vocab:conversationDate':     'biografisch',
+
+  // Ausdruecklich ohne Sicht (Klaerungsbedarf oder nicht-mobiler Vorgang).
+  'm3gim-vocab:mentioned':            null,
+  'm3gim-vocab:framingEvent':         null,
+  'm3gim-vocab:assignment':           null,
+  'm3gim-vocab:creation':             null,
+  'm3gim-vocab:transferDate':         null,
+  'm3gim-vocab:installmentPeriod':    null,
+  'm3gim-vocab:wageConfirmationDate': null,
+  'm3gim-vocab:reception':            null,
+  'nicht eingehalten':                null,
+};
 

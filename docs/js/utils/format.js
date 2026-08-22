@@ -2,17 +2,70 @@
  * M³GIM Display Formatting Utilities
  */
 
+/** Namensraum der kontrollierten Begriffe (Dokumenttypen und Rollen). */
+export const VOCAB_PREFIX = 'm3gim-vocab:';
+
 /**
  * Lesbares Label eines Dokumenttyps aus dem Store (skos:prefLabel der
- * dft-Concepts, von der Pipeline geliefert — E-101). Loest die frühere
+ * Concepts, von der Pipeline geliefert — E-101). Loest die frühere
  * Hand-Map DOKUMENTTYP_LABELS ab. Fallback auf die Short-Id, wenn kein
  * Concept vorliegt (oder kein Store übergeben wird).
  */
 export function dftLabel(store, shortId) {
   if (!shortId) return '';
   const concept = store && store.dftHierarchy
-    && store.dftHierarchy.get('m3gim-dft:' + shortId);
+    && store.dftHierarchy.get(VOCAB_PREFIX + shortId);
   return (concept && concept.prefLabel) || shortId;
+}
+
+/**
+ * Concept-Id eines Rollenwerts. Die Rolle steht im zusammengefuehrten Modell
+ * als Verweisknoten mit `@id`; der Vertragsstatus `nicht eingehalten` bleibt
+ * ein Literal und hat deshalb keine Id.
+ * @param {Object|string|null} role - Verweisknoten, Id oder Literal
+ * @returns {?string}
+ */
+export function roleIdOf(role) {
+  if (!role) return null;
+  if (typeof role === 'object') return role['@id'] || null;
+  return String(role).startsWith(VOCAB_PREFIX) ? String(role) : null;
+}
+
+/**
+ * Rohform eines Rollenwerts, also der Wert, wie ihn die Erschliessung gesetzt
+ * hat. Die Statistik nennt unklassifizierte Rollen namentlich und braucht
+ * dafür die Rohform, nicht die Anzeigeform.
+ * @param {Object|string|null} role
+ * @returns {?string}
+ */
+export function roleToken(role) {
+  if (!role) return null;
+  if (typeof role === 'object') {
+    return role['skos:prefLabel'] || (role['@id'] || '').split(':').pop() || null;
+  }
+  const s = String(role);
+  return s.startsWith(VOCAB_PREFIX) ? s.slice(VOCAB_PREFIX.length) : s;
+}
+
+/**
+ * Anzeigeform einer Rolle. Das Label kommt aus den Daten: die Pipeline führt
+ * `skos:prefLabel` am Rollen-Verweisknoten mit, der Loader legt es in
+ * `store.roleVocab` ab. Damit entfällt jede Hand-Map für Rollennamen im Code,
+ * wie E-101 sie für die Dokumenttypen bereits abgelöst hat.
+ *
+ * Nimmt den Verweisknoten, die blosse Id oder ein Literal. Fallback ist der
+ * lokale Name der Id; ein Literal ist seine eigene Anzeigeform.
+ * @param {Object} store
+ * @param {Object|string|null} role
+ * @returns {string}
+ */
+export function roleLabel(store, role) {
+  if (!role) return '';
+  const id = roleIdOf(role);
+  if (!id) return roleToken(role) || '';
+  const entry = store && store.roleVocab && store.roleVocab.get(id);
+  if (entry && entry.label) return entry.label;
+  return roleToken(role) || id;
 }
 
 /** Extract the short part of a signatur (e.g. "UAKUG/NIM_003 1_1" → "NIM_003 1_1"). */
@@ -53,7 +106,7 @@ export function getDocTypeId(record) {
   const dft = record['rico:hasDocumentaryFormType'];
   if (!dft) return null;
   const id = typeof dft === 'object' ? dft['@id'] : dft;
-  return id ? id.replace('m3gim-dft:', '') : null;
+  return id ? id.replace(VOCAB_PREFIX, '') : null;
 }
 
 /** Get human-readable label for a document type (store-backed prefLabel). */
@@ -103,20 +156,21 @@ export function resolveRecords(store, ids) {
 /** Count linked entities on a record. */
 export function countLinks(record) {
   let count = 0;
-  count += ensureArray(record['m3gim:hasAssociatedAgent']).length;
+  count += ensureArray(record['m3gim-ontology:hasAssociatedAgent']).length;
   count += ensureArray(record['rico:hasOrHadLocation']).length;
   count += ensureArray(record['rico:hasOrHadSubject']).length;
-  count += ensureArray(record['m3gim:hasDatedEvent']).length;
-  count += ensureArray(record['m3gim:hasPerformance']).length;
+  count += ensureArray(record['m3gim-ontology:hasAnnotation']).length;
+  count += ensureArray(record['m3gim-ontology:hasPerformance']).length;
   return count;
 }
 
 /**
  * Extrahiert den Short-Id aus einer Concept-ID (strippt das Prefix).
- * Beispiel: "m3gim-dft:brief" -> "brief".
+ * Beispiel: "m3gim-vocab:letter" -> "letter".
  */
 function stripConceptPrefix(id) {
-  return typeof id === 'string' ? id.replace(/^m3gim-dft:/, '') : id;
+  return typeof id === 'string' && id.startsWith(VOCAB_PREFIX)
+    ? id.slice(VOCAB_PREFIX.length) : id;
 }
 
 /**
@@ -126,7 +180,7 @@ function stripConceptPrefix(id) {
  * (Gruppe { id, label, children: [{id, label}, ...] }). Concepts ohne
  * Broader + ohne Kinder sowie alle byDocType-Schluessel, die gar nicht
  * in dftHierarchy auftauchen, landen in einer abschliessenden Gruppe
- * "Sonstige". Short-Form-IDs (ohne m3gim-dft:-Prefix) bleiben konsistent
+ * "Sonstige". Short-Form-IDs (ohne m3gim-vocab:-Prefix) bleiben konsistent
  * zu getDocTypeId().
  */
 export function buildDftTree(store) {
@@ -185,7 +239,7 @@ export function expandDftFilter(store, shortId) {
   if (!shortId) return out;
   out.add(shortId);
   if (!store || !store.dftHierarchy) return out;
-  const fullId = shortId.startsWith('m3gim-dft:') ? shortId : `m3gim-dft:${shortId}`;
+  const fullId = shortId.startsWith(VOCAB_PREFIX) ? shortId : `${VOCAB_PREFIX}${shortId}`;
   const queue = [fullId];
   while (queue.length > 0) {
     const cur = queue.shift();

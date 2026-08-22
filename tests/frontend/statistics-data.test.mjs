@@ -21,30 +21,30 @@ function makeStore(records, concepts) {
 }
 
 const RECORDS = [
-  { 'rico:hasDocumentaryFormType': { '@id': 'm3gim-dft:programm' } },
-  { 'rico:hasDocumentaryFormType': { '@id': 'm3gim-dft:programm' } },
-  { 'rico:hasDocumentaryFormType': { '@id': 'm3gim-dft:rezension' } },
+  { 'rico:hasDocumentaryFormType': { '@id': 'm3gim-vocab:program' } },
+  { 'rico:hasDocumentaryFormType': { '@id': 'm3gim-vocab:program' } },
+  { 'rico:hasDocumentaryFormType': { '@id': 'm3gim-vocab:review' } },
   {},
 ];
 
 const CONCEPTS = [
-  { id: 'm3gim-dft:programm', prefLabel: 'Programm' },
-  { id: 'm3gim-dft:rezension', prefLabel: 'Rezension' },
+  { id: 'm3gim-vocab:program', prefLabel: 'Programm' },
+  { id: 'm3gim-vocab:review', prefLabel: 'Rezension' },
 ];
 
 test('aggregateDocTypes liefert das Anzeigelabel statt der technischen Kennung', () => {
   const rows = aggregateDocTypes(makeStore(RECORDS, CONCEPTS));
-  const programm = rows.find((r) => r.id === 'programm');
+  const programm = rows.find((r) => r.id === 'program');
   assert.equal(programm.label, 'Programm');
   assert.equal(programm.count, 2);
-  const rezension = rows.find((r) => r.id === 'rezension');
+  const rezension = rows.find((r) => r.id === 'review');
   assert.equal(rezension.label, 'Rezension');
 });
 
 test('aggregateDocTypes faellt nur dort auf die Kennung zurueck, wo kein Concept existiert', () => {
   const rows = aggregateDocTypes(makeStore(RECORDS, [CONCEPTS[0]]));
-  assert.equal(rows.find((r) => r.id === 'programm').label, 'Programm');
-  assert.equal(rows.find((r) => r.id === 'rezension').label, 'rezension');
+  assert.equal(rows.find((r) => r.id === 'program').label, 'Programm');
+  assert.equal(rows.find((r) => r.id === 'review').label, 'review');
 });
 
 test('aggregateDocTypes zaehlt Records ohne Dokumenttyp gesondert', () => {

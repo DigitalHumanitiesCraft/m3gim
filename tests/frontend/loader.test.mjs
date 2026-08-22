@@ -8,10 +8,12 @@
  *
  * Zwei Strecken:
  *   A) Synthetische Fixture — deterministische Loader-Logik, unabhaengig vom
- *      Datenstand. Deckt auch die E-97-Datumslosigkeit ab, die in docs/data
- *      bis zum Promote noch fehlt.
- *   B) Echte docs/data — robuste strukturelle Anker (>=-Schwellen, kein harter
- *      Count), faengt Drift/Regress im realen Ankommen ab.
+ *      Datenstand. Deckt auch die E-97-Datumslosigkeit ab.
+ *   B) Echter Datenstand data/output/m3gim.jsonld — robuste strukturelle Anker
+ *      (>=-Schwellen, kein harter Count), faengt Drift/Regress im realen
+ *      Ankommen ab. Die ausgelieferte Datei unter docs/data/ traegt bis zum
+ *      Abschluss aller drei Frontend-Schritte noch das abgeloeste Modell und
+ *      ist deshalb nicht die Quelle dieser Pruefung.
  *
  * Lauf ueber den tests/frontend-Glob (siehe package.json / CI-Kommando).
  */
@@ -41,52 +43,59 @@ async function storeFrom(jsonld) {
 
 const FIXTURE = {
   '@graph': [
-    { '@id': 'm3gim:UAKUG_NIM', '@type': 'rico:RecordSet',
+    { '@id': 'm3gim-data:UAKUG_NIM', '@type': 'rico:RecordSet',
       'rico:hasRecordSetType': { '@id': 'ric-rst:Fonds' } },
-    { '@id': 'm3gim-dft:korrespondenz', '@type': 'skos:Concept',
+    { '@id': 'm3gim-vocab:correspondence', '@type': 'skos:Concept',
       'skos:prefLabel': 'Korrespondenz' },
-    { '@id': 'm3gim:TEST_1', '@type': 'rico:Record',
+    { '@id': 'm3gim-data:TEST_1', '@type': 'rico:Record',
       'rico:identifier': 'TEST/1', 'rico:title': 'Testbrief', 'rico:date': '1956',
-      'rico:hasDocumentaryFormType': { '@id': 'm3gim-dft:korrespondenz' },
+      'rico:hasDocumentaryFormType': { '@id': 'm3gim-vocab:correspondence' },
       'rico:hasOrHadLocation': { name: 'New York', '@id': 'wd:Q1384' },
-      'm3gim:hasSpatiotemporalEvent': { '@id': 'm3gim:ste_TEST_1' },
-      'm3gim:hasAssociatedAgent': [
-        { name: 'Malaniuk, Ira', '@type': 'rico:Person', role: 'sänger',
-          'm3gim:editorialNote': 'Mezzosopranistin', 'm3gim:lifespan': '1919-2009' },
-        { name: 'Metropolitan Opera', '@type': 'rico:CorporateBody', role: 'veranstalter',
-          'm3gim:sitz': 'New York', 'm3gim:keyContact': 'Bing, Rudolf' },
+      'm3gim-ontology:hasAnnotation': { '@id': 'm3gim-data:ev_TEST_1' },
+      'm3gim-ontology:hasAssociatedAgent': [
+        { name: 'Malaniuk, Ira', '@type': 'rico:Person',
+          role: { '@id': 'm3gim-vocab:singer', 'skos:prefLabel': 'sänger' },
+          'm3gim-ontology:indexNote': 'Mezzosopranistin',
+          'm3gim-ontology:lifespan': '1919-2009' },
+        { name: 'Metropolitan Opera', '@type': 'rico:CorporateBody',
+          role: { '@id': 'm3gim-vocab:organizer', 'skos:prefLabel': 'veranstalter' },
+          'm3gim-ontology:headquarters': 'New York',
+          'm3gim-ontology:keyContact': 'Bing, Rudolf' },
       ],
       'rico:hasOrHadSubject': [
-        { name: 'Aida', '@type': 'm3gim:MusicalWork', komponist: 'Verdi, Giuseppe',
-          'm3gim:partie': 'Amneris' },
+        { name: 'Aida', '@type': 'm3gim-ontology:MusicalWork', composer: 'Verdi, Giuseppe',
+          'm3gim-ontology:sungPart': 'Amneris' },
       ],
-      'm3gim:hasPerformance': [{ '@id': 'm3gim:perf_TEST_1' }],
-      'm3gim:agentRelation': [{
+      'm3gim-ontology:hasPerformance': [{ '@id': 'm3gim-data:perf_TEST_1' }],
+      'm3gim-ontology:hasAgentRelation': [{
         '@type': 'agrelon:HasCorrespondent',
         'agrelon:hasObject': { name: 'Wieland Wagner', '@id': 'wd:Q61058' },
-        'agrelon:metadataProvenance': { '@id': 'm3gim:TEST_1' },
+        'agrelon:metadataProvenance': { '@id': 'm3gim-data:TEST_1' },
       }],
-      'm3gim:hasDetail': [{
-        '@type': 'm3gim:DetailAnnotation',
-        'm3gim:detailField': 'einnahmen', 'm3gim:detailRole': 'abendgage',
-        'm3gim:detailValue': '4000, Esc',
-        'm3gim:monetaryAmount': { '@value': '4000', '@type': 'xsd:decimal' },
-        'm3gim:currency': 'Esc',
+      'm3gim-ontology:hasDetail': [{
+        '@type': 'm3gim-ontology:Annotation',
+        'm3gim-ontology:detailField': 'einnahmen',
+        role: { '@id': 'm3gim-vocab:performanceFee', 'skos:prefLabel': 'abendgage' },
+        'm3gim-ontology:detailValue': '4000, Esc',
+        'm3gim-ontology:monetaryAmount': { '@value': '4000', '@type': 'xsd:decimal' },
+        'm3gim-ontology:currency': 'Esc',
       }],
     },
-    // Datumslose Mobilitaets-STE (E-97): kein m3gim:atDate.
-    { '@id': 'm3gim:ste_TEST_1', '@type': 'm3gim:SpatiotemporalEvent',
-      'm3gim:atPlace': { name: 'New York', '@id': 'wd:Q1384',
+    // Datumslose Mobilitaets-Annotation (E-97): kein atDate.
+    { '@id': 'm3gim-data:ev_TEST_1', '@type': 'm3gim-ontology:Annotation',
+      'm3gim-ontology:atPlace': { name: 'New York', '@id': 'wd:Q1384',
         'geo:lat': 40.7, 'geo:long': -74 },
-      'm3gim:eventRole': 'zielort',
-      'agrelon:metadataProvenance': { '@id': 'm3gim:TEST_1' } },
+      role: { '@id': 'm3gim-vocab:destinationPlace', 'skos:prefLabel': 'zielort' },
+      'agrelon:metadataProvenance': { '@id': 'm3gim-data:TEST_1' } },
     // M2: StageRole + Performance fuer die Performance-Kette.
-    { '@id': 'm3gim:role_amneris', '@type': 'm3gim:StageRole', 'rico:name': 'Amneris' },
-    { '@id': 'm3gim:perf_TEST_1', '@type': 'm3gim:Performance',
-      'm3gim:hasStageRole': { '@id': 'm3gim:role_amneris' },
-      'm3gim:hasPerformer': { name: 'Malaniuk, Ira', '@type': 'rico:Person' },
-      'm3gim:performanceOf': { name: 'Aida', '@type': 'm3gim:MusicalWork', '@id': 'wd:Q200702' },
-      'm3gim:auffuehrungsdatum': '1956-05-01' },
+    { '@id': 'm3gim-data:stagerole_amneris', '@type': 'm3gim-ontology:StageRole',
+      'rico:name': 'Amneris' },
+    { '@id': 'm3gim-data:perf_TEST_1', '@type': 'm3gim-ontology:Performance',
+      'm3gim-ontology:hasStageRole': { '@id': 'm3gim-data:stagerole_amneris' },
+      'm3gim-ontology:hasPerformer': { name: 'Malaniuk, Ira', '@type': 'rico:Person' },
+      'm3gim-ontology:performanceOf': { name: 'Aida',
+        '@type': 'm3gim-ontology:MusicalWork', '@id': 'wd:Q200702' },
+      'm3gim-ontology:atDate': '1956-05-01' },
   ],
 };
 
@@ -94,53 +103,55 @@ describe('Loader gegen synthetische Fixture', () => {
   test('Grundstruktur: Fonds, Record, Signatur-Index', async () => {
     const store = await storeFrom(FIXTURE);
     assert.ok(store.fonds, 'Fonds nicht erkannt');
-    assert.ok(store.records.has('m3gim:TEST_1'), 'Record nicht im Index');
-    assert.equal(store.bySignatur.get('TEST/1')?.['@id'], 'm3gim:TEST_1');
+    assert.ok(store.records.has('m3gim-data:TEST_1'), 'Record nicht im Index');
+    assert.equal(store.bySignatur.get('TEST/1')?.['@id'], 'm3gim-data:TEST_1');
   });
 
   test('DFT-prefLabel kommt im Store an und loest ueber dftLabel auf', async () => {
     const store = await storeFrom(FIXTURE);
-    assert.equal(store.dftHierarchy.get('m3gim-dft:korrespondenz')?.prefLabel,
+    assert.equal(store.dftHierarchy.get('m3gim-vocab:correspondence')?.prefLabel,
       'Korrespondenz');
-    assert.equal(dftLabel(store, 'korrespondenz'), 'Korrespondenz');
+    assert.equal(dftLabel(store, 'correspondence'), 'Korrespondenz');
     // End-to-end ueber den Record: docType -> lesbares Label.
-    const rec = store.records.get('m3gim:TEST_1');
+    const rec = store.records.get('m3gim-data:TEST_1');
     assert.equal(dftLabel(store, getDocTypeId(rec)), 'Korrespondenz');
   });
 
-  test('datumslose Mobilitaets-STE (E-97) korrekt indexiert', async () => {
+  test('datumslose Mobilitaets-Annotation (E-97) korrekt indexiert', async () => {
     const store = await storeFrom(FIXTURE);
-    const ev = store.mobilityEvents.get('m3gim:ste_TEST_1');
-    assert.ok(ev, 'Mobilitaets-STE fehlt im Store');
-    assert.equal(ev.date, null, 'datumslose STE darf kein Datum tragen');
+    const ev = store.mobilityEvents.get('m3gim-data:ev_TEST_1');
+    assert.ok(ev, 'verortete Annotation fehlt im Store');
+    assert.equal(ev.date, null, 'eine datumslose Verortung darf kein Datum tragen');
     assert.equal(ev.role, 'zielort');
+    assert.equal(ev.roleId, 'm3gim-vocab:destinationPlace');
     assert.equal(ev.place, 'New York');
     assert.equal(ev.placeWikidata, 'wd:Q1384');
     assert.equal(ev.placeLat, 40.7);
-    assert.equal(ev.recordId, 'm3gim:TEST_1');
-    // Record -> Event-Verknuepfung aufloesbar.
-    assert.ok(store.recordToEvents.get('m3gim:TEST_1')?.includes('m3gim:ste_TEST_1'));
+    assert.equal(ev.recordId, 'm3gim-data:TEST_1');
+    // Record -> Annotations-Verknuepfung aufloesbar.
+    assert.ok(store.recordToEvents.get('m3gim-data:TEST_1')
+      ?.includes('m3gim-data:ev_TEST_1'));
   });
 
   test('Mobilitaets-Ort bleibt zusaetzlich als Location (kein Index-Regress)', async () => {
     const store = await storeFrom(FIXTURE);
     assert.ok(store.locations.has('New York'), 'Ort nicht im Locations-Index');
-    assert.ok(store.locations.get('New York').records.has('m3gim:TEST_1'));
+    assert.ok(store.locations.get('New York').records.has('m3gim-data:TEST_1'));
   });
 
   test('AgRelOn-Relation kommt flach im Store an', async () => {
     const store = await storeFrom(FIXTURE);
-    const rels = store.agentRelations.get('m3gim:TEST_1');
+    const rels = store.agentRelations.get('m3gim-data:TEST_1');
     assert.equal(rels?.length, 1);
     assert.equal(rels[0].type, 'agrelon:HasCorrespondent');
     assert.equal(rels[0].objectName, 'Wieland Wagner');
     assert.equal(rels[0].objectWikidata, 'wd:Q61058');
-    assert.equal(rels[0].provenance, 'm3gim:TEST_1');
+    assert.equal(rels[0].provenance, 'm3gim-data:TEST_1');
   });
 
-  test('Finanz-DetailAnnotation kommt mit Betrag + Waehrung an', async () => {
+  test('Finanzposten kommt mit Betrag + Waehrung an', async () => {
     const store = await storeFrom(FIXTURE);
-    const fin = store.finances.get('m3gim:TEST_1');
+    const fin = store.finances.get('m3gim-data:TEST_1');
     assert.equal(fin?.length, 1);
     assert.equal(fin[0].amount, 4000);
     assert.equal(fin[0].currency, 'Esc');
@@ -174,7 +185,7 @@ describe('M2: kuratierte Index-Felder + Performance-Kette (synthetisch)', () => 
 
   test('Performance-Kette: Record -> Werk + Performer + Buehnenrolle aufgeloest', async () => {
     const store = await storeFrom(FIXTURE);
-    const perfs = store.recordToPerformances.get('m3gim:TEST_1');
+    const perfs = store.recordToPerformances.get('m3gim-data:TEST_1');
     assert.ok(perfs && perfs.length === 1, 'Performance nicht aufgeloest');
     const p = perfs[0];
     assert.equal(p.work?.name, 'Aida');
@@ -186,15 +197,15 @@ describe('M2: kuratierte Index-Felder + Performance-Kette (synthetisch)', () => 
 });
 
 // ---------------------------------------------------------------------------
-// B) Echte docs/data — robuste strukturelle Anker (echtes Ankommen)
+// B) Echter Datenstand — robuste strukturelle Anker (echtes Ankommen)
 // ---------------------------------------------------------------------------
 
 function loadDocsData() {
-  const url = new URL('../../docs/data/m3gim.jsonld', import.meta.url);
+  const url = new URL('../../data/output/m3gim.jsonld', import.meta.url);
   return JSON.parse(readFileSync(url, 'utf-8'));
 }
 
-describe('Loader gegen echte docs/data', () => {
+describe('Loader gegen den echten Datenstand', () => {
   test('Kern-Indizes sind befuellt', async () => {
     const store = await storeFrom(loadDocsData());
     assert.ok(store.fonds, 'kein Fonds');
@@ -211,7 +222,7 @@ describe('Loader gegen echte docs/data', () => {
       assert.ok(concept.prefLabel && concept.prefLabel.trim(),
         `Concept ${id} ohne prefLabel`);
       // Round-trip ueber die Funktion, die die Views nutzen.
-      const shortId = id.replace(/^m3gim-dft:/, '');
+      const shortId = id.replace(/^m3gim-vocab:/, '');
       assert.equal(dftLabel(store, shortId), concept.prefLabel,
         `dftLabel('${shortId}') weicht vom prefLabel ab`);
     }
@@ -236,12 +247,12 @@ describe('Loader gegen echte docs/data', () => {
     assert.ok(fin, 'kein Finanz-Eintrag mit Betrag + Waehrung');
   });
 
-  test('recordToEvents referenziert nur aufloesbare STE (referenzielle Integritaet)', async () => {
+  test('recordToEvents referenziert nur aufloesbare Annotationen', async () => {
     const store = await storeFrom(loadDocsData());
     for (const [recId, eventIds] of store.recordToEvents) {
       for (const eid of eventIds) {
         assert.ok(store.mobilityEvents.has(eid),
-          `Record ${recId} verweist auf unaufloesbares STE ${eid}`);
+          `Record ${recId} verweist auf unaufloesbare Annotation ${eid}`);
       }
     }
   });
@@ -268,9 +279,12 @@ describe('Loader gegen echte docs/data', () => {
   // Sichert das reale Ankommen ab (gruene pytest != End-to-End-Store).
   test('E-97/E-107: die 4 Anker-Briefe tragen datumslose Ortsrollen-Events', async () => {
     const store = await storeFrom(loadDocsData());
-    const MOBILITY_ROLES = new Set(['zielort', 'absendeort', 'abreiseort']);
-    const ANCHORS = ['m3gim:NIM_004_1', 'm3gim:NIM_007_1',
-                     'm3gim:NIM_007_20', 'm3gim:NIM_007_21'];
+    // Nach der Zusammenfuehrung tragen Absende- und Abreiseort dieselbe Rolle
+    // wie ihre Datierung; der urspruenglich erfasste Wert steht in
+    // derivedFromRole.
+    const MOBILITY_ROLES = new Set(['zielort', 'absendung', 'abreise']);
+    const ANCHORS = ['m3gim-data:NIM_004_1', 'm3gim-data:NIM_007_1',
+                     'm3gim-data:NIM_007_20', 'm3gim-data:NIM_007_21'];
     for (const recId of ANCHORS) {
       const eventIds = store.recordToEvents.get(recId) || [];
       const events = eventIds.map(id => store.mobilityEvents.get(id)).filter(Boolean);

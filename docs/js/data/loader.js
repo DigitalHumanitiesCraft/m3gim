@@ -3,10 +3,15 @@
  * Fetches m3gim.jsonld, parses the @graph, builds in-memory indexes.
  */
 
-import { extractYear } from '../utils/date-parser.js';
-import { ensureArray, getDocTypeId, countLinks, cityOf } from '../utils/format.js';
+import { extractYear, splitQualifier } from '../utils/date-parser.js';
+import {
+  ensureArray, getDocTypeId, countLinks, cityOf, roleIdOf, roleToken, roleLabel,
+} from '../utils/format.js';
 import { normalizePerson, getPersonKategorie } from '../utils/normalize.js';
 import { extractXlsxSource } from '../utils/provenance.js';
+import {
+  scopeForRole, rankForRole, mobilityClusterFor, ANCHORING_SCOPES,
+} from './constants.js';
 
 /**
  * Load and parse the archive JSON-LD, build the Store.
@@ -51,18 +56,52 @@ export async function loadArchive(url = './data/m3gim.jsonld') {
  * @property {string} provenance         @id des Records, das die Relation trägt
  * @property {{sheet: string, row: number, datenpunkt: ?number}} xlsxSource
  *
- * @typedef {Object} MobilityEvent       Eintrag in store.mobilityEvents
- * @property {string} id                 @id des SpatiotemporalEvent
- * @property {?{name: string, wikidata: ?string}} place
- * @property {?string} date              ISO-Datum oder Jahresangabe
- * @property {?string} role              z. B. "auffuehrungsort"
+ * @typedef {Object} Annotation          Eintrag in store.annotations
+ *   Ein Aspektknoten des Records: Datierung, Verortung oder beides. Die
+ *   verorteten Annotationen sind zugleich store.mobilityEvents -- dieselben
+ *   Objekte unter zwei Zugaengen.
+ * @property {string} id                 @id des Annotationsknotens
+ * @property {?string} place             Ortsname
+ * @property {?string} placeWikidata     Q-ID mit wd:-Praefix oder null
+ * @property {?number} placeLat
+ * @property {?number} placeLon
+ * @property {?string} placeCountry
+ * @property {?string} date              Datumswert ohne Qualifier
+ * @property {?string} rawDate           Datumswert wie in den Daten
+ * @property {?string} qualifier         'circa' | 'vor' | 'nach' | null
+ * @property {?number} year              Jahr aus date, null wenn unparsbar
+ * @property {?string} role              Rohform der Rolle, z. B. "zielort"
+ * @property {?string} roleId            Concept-Id, null beim Literal
+ * @property {string} roleLabel          Anzeigeform aus den Daten
+ * @property {?string} derivedFromRole   urspruenglich erfasster Rollenwert
+ * @property {?string} scope             Bezugsebene (siehe constants.js)
+ * @property {number} rank               Prioritaet der Rolle (constants.js)
+ * @property {?string} cluster           Mobilitaetssicht der Rolle
+ * @property {string} origin             'annotation' | 'creationDate'
  * @property {?string} description       freier Text
+ * @property {?string} qualityFlag       m3gim-ontology:dataQualityFlag
  * @property {?string} recordId          @id des Ursprungs-Records
+ * @property {?Object} xlsxSource        Herkunft, siehe utils/provenance.js
+ *
+ * @typedef {{year: ?number, source: ?string, roleId: ?string, label: ?string}} Anchor
+ *   Ergebnis von primaryYear(): das Jahr des Records und die benannte Stelle,
+ *   aus der es stammt.
  *
  * @typedef {Object} FinanceEntry        Eintrag in store.finances
  * @property {?number} amount            numerisch (MonetaryAmount hasValue)
  * @property {?string} currency          ISO 4217 oder Roh-Code (z. B. "S" = Schilling)
  * @property {?string} description       z. B. "Honorar", "Reisekosten"
+ *
+ * @typedef {Object} RoleEntry           Eintrag in store.roleVocab
+ * @property {string} id                 Concept-Id oder Literal
+ * @property {boolean} literal           true, wenn die Rolle kein Concept ist
+ * @property {?string} label             Anzeigeform aus den Daten
+ * @property {?string} scope             Bezugsebene, null wenn nicht gefuehrt
+ * @property {number} rank               Prioritaet der Rolle
+ * @property {?string} cluster           Mobilitaetssicht der Rolle
+ * @property {boolean} onAnnotation      Rolle steht an mind. einem Annotations-
+ *   knoten des Graphen und braucht deshalb eine Bezugsebene. Finanzposten
+ *   unter hasDetail zaehlen nicht dazu, sie tragen weder Datum noch Ort.
  *
  * @typedef {Object} DftConcept          Eintrag in store.dftHierarchy
  * @property {string} id                 @id ohne Präfix
@@ -86,18 +125,26 @@ function buildStore(jsonld) {
     locations: new Map(),
     works: new Map(),
     konvolutChildren: new Map(),
-    recordCount: jsonld['m3gim:recordCount'] || 0,
-    konvolutCount: jsonld['m3gim:konvolutCount'] || 0,
-    exportDate: jsonld['m3gim:exportDate'] || '',
+    recordCount: jsonld['m3gim-ontology:recordCount'] || 0,
+    konvolutCount: jsonld['m3gim-ontology:recordSetCount'] || 0,
+    exportDate: jsonld['m3gim-ontology:exportDate'] || '',
     qualityMeta: {
-      approvedManualMatches: jsonld['m3gim:approvedManualMatches'] ?? 0,
-      lowConfidenceSkipped: jsonld['m3gim:lowConfidenceSkipped'] ?? 0,
+      approvedManualMatches: jsonld['m3gim-ontology:approvedManualMatches'] ?? 0,
+      lowConfidenceSkipped: jsonld['m3gim-ontology:lowConfidenceSkipped'] ?? 0,
     },
     childToKonvolut: new Map(),
     // v2-Strukturen (Phase 6). Shapes: siehe JSDoc oberhalb buildStore().
     /** @type {Map<string, DftConcept>} */
     dftHierarchy: new Map(),
-    /** @type {Map<string, MobilityEvent>} */
+    /** @type {Map<string, RoleEntry>} roleId → Rollenbegriff */
+    roleVocab: new Map(),
+    /** @type {Map<string, Annotation>} alle Annotationen, verortet oder nicht */
+    annotations: new Map(),
+    /** @type {Map<string, string[]>} recordId → annotationId[], Quellreihenfolge */
+    recordToAnnotations: new Map(),
+    /** @type {Map<string, Annotation[]>} recordId → Datierungen, Quellreihenfolge */
+    recordDatings: new Map(),
+    /** @type {Map<string, Annotation>} die verorteten Annotationen */
     mobilityEvents: new Map(),
     /** @type {Map<string, string[]>} recordId → eventId[] */
     recordToEvents: new Map(),
@@ -139,11 +186,11 @@ function buildStore(jsonld) {
       }
     } else if (nodeType === 'skos:Concept') {
       indexConcept(store, node);
-    } else if (nodeType === 'm3gim:SpatiotemporalEvent') {
-      indexMobilityEvent(store, node);
-    } else if (nodeType === 'm3gim:StageRole') {
+    } else if (nodeType === 'm3gim-ontology:Annotation') {
+      indexAnnotation(store, node);
+    } else if (nodeType === 'm3gim-ontology:StageRole') {
       store.stageRoles.set(node['@id'], node['rico:name'] || node['@id']);
-    } else if (nodeType === 'm3gim:Performance') {
+    } else if (nodeType === 'm3gim-ontology:Performance') {
       store.performances.set(node['@id'], node);
     }
   }
@@ -157,12 +204,13 @@ function buildStore(jsonld) {
 
   // Pass 2: Build derived indexes
   for (const record of store.allRecords) {
+    indexRecordAnnotations(store, record);
+    indexDatings(store, record);
     indexByYear(store, record);
     indexByDocType(store, record);
     indexAgents(store, record);
     indexLocations(store, record);
     indexWorks(store, record);
-    indexRecordToEvents(store, record);
     indexAgentRelations(store, record);
     indexFinances(store, record);
     indexPerformances(store, record);
@@ -219,7 +267,7 @@ function buildStore(jsonld) {
       processedCount++;
       const dft = getDocTypeId(child);
       if (dft) docTypeCounts.set(dft, (docTypeCounts.get(dft) || 0) + 1);
-      const status = child['m3gim:bearbeitungsstand'];
+      const status = child['m3gim-ontology:processingStatus'];
       if (status) statusCounts.set(status, (statusCounts.get(status) || 0) + 1);
     }
 
@@ -269,35 +317,92 @@ function buildStore(jsonld) {
   return store;
 }
 
-// Typisierte Datumsproperties aus Phase 4.7 — fallback fuer indexByYear,
-// wenn rico:date fehlt. Reihenfolge entspricht dem Auffuehrungsbezug und ist
-// zugleich die Prioritaet der Sekundaer-Datierung in views/chronik-data.js.
-export const TYPED_DATE_PROPS = [
-  'm3gim:auffuehrungsdatum', 'm3gim:premieredatum', 'm3gim:auftrittsdatum',
-  'm3gim:absendedatum', 'm3gim:empfangsdatum', 'm3gim:gespraechsdatum',
-  'm3gim:erscheinungsdatum', 'm3gim:ausstellungsdatum', 'm3gim:ausstrahlungsdatum',
-  'm3gim:probenbeginn', 'm3gim:probendatum', 'm3gim:spielzeitVon',
-  'm3gim:ueberweisungsdatum', 'm3gim:abreisedatum', 'm3gim:erstelldatum',
-];
+/* ------------------------------------------------------------------ */
+/*  Zugriffsschicht auf Datierungen und Verortungen                     */
+/*                                                                      */
+/*  Vier Funktionen loesen die flache typisierte Datumsfamilie ab. Eine  */
+/*  Ansicht liest eine Datierung ueber sie, ohne einen Property-Namen zu */
+/*  kennen: die Rolle steht als Verweis auf einen Vokabularbegriff am    */
+/*  Knoten und fuehrt ihre Anzeigeform mit, die Bezugsebene sagt, worauf */
+/*  sich die Datierung bezieht, und der Rang ordnet mehrere gegen-       */
+/*  einander. Belegt in data/reports/frontend-date-contract.md, A1--A4.  */
+/* ------------------------------------------------------------------ */
 
-function firstTypedYear(record) {
-  for (const prop of TYPED_DATE_PROPS) {
-    const v = record[prop];
-    if (!v) continue;
-    const values = Array.isArray(v) ? v : [v];
-    for (const val of values) {
-      if (typeof val !== 'string') continue;
-      // circa:/vor:/nach: Praefix strippen
-      const bare = val.replace(/^(circa|vor|nach):/, '');
-      const y = extractYear(bare);
-      if (y) return y;
-    }
+/**
+ * Alle Annotationen eines Records in Quellreihenfolge, verortete wie
+ * unverortete, datierte wie undatierte.
+ * @param {Object} store
+ * @param {Object} record
+ * @returns {Annotation[]}
+ */
+export function annotationsOf(store, record) {
+  if (!store || !record) return [];
+  const ids = store.recordToAnnotations.get(record['@id']) || [];
+  return ids.map(id => store.annotations.get(id)).filter(Boolean);
+}
+
+/**
+ * Alle Datierungen eines Records in Quellreihenfolge. Der Loader sortiert
+ * nicht um, damit die Reihenfolge der Erfassungstabelle sichtbar bleibt
+ * (Vertrag A2, zweite Ordnung); wer nach Prioritaet auswaehlen will, nimmt
+ * das Feld `rank`. Die Entstehungsdatierung aus `rico:creationDate` steht als
+ * Datierung mit der Rolle `m3gim-vocab:creation` am Ende der Liste; sie hat
+ * keine Position in der Quellreihenfolge, weil sie am Record selbst steht.
+ * @param {Object} store
+ * @param {Object} record
+ * @returns {Annotation[]}
+ */
+export function datingsOf(store, record) {
+  if (!store || !record) return [];
+  return store.recordDatings.get(record['@id']) || [];
+}
+
+/**
+ * Die Datierungen einer Bezugsebene (Vertrag A3). Zugang fuer jede Ansicht,
+ * die nur eine Ebene sehen darf, etwa der Zeitstrahl, der Erwaehnungen
+ * ausschliesst.
+ * @param {Object} store
+ * @param {Object} record
+ * @param {string} scope - 'object' | 'attested' | 'mentioned' | 'framing'
+ *   | 'unfulfilled' | 'unclassified'
+ * @returns {Annotation[]}
+ */
+export function datingsByScope(store, record, scope) {
+  return datingsOf(store, record).filter(d => d.scope === scope);
+}
+
+/**
+ * Das Jahr eines Records und die Stelle, aus der es stammt (Vertrag A4).
+ * `rico:date` bleibt der einwertige Zeitanker und hat Vorrang; fehlt er,
+ * gewinnt die ranghoechste Datierung einer ankernden Bezugsebene. Erwaehnung,
+ * Rahmenveranstaltung und der Vertragsstatus `nicht eingehalten` datieren
+ * nie. Loest firstTypedYear und secondaryYearForRecord in einem ab.
+ * @param {Object} store
+ * @param {Object} record
+ * @returns {Anchor}
+ */
+export function primaryYear(store, record) {
+  const none = { year: null, source: null, roleId: null, label: null };
+  if (!record) return none;
+  const anchor = extractYear(record['rico:date']);
+  if (anchor) return { year: anchor, source: 'rico:date', roleId: null, label: null };
+  let best = null;
+  for (const d of datingsOf(store, record)) {
+    if (d.year == null) continue;
+    if (!ANCHORING_SCOPES.has(d.scope)) continue;
+    if (best === null || d.rank < best.rank) best = d;
   }
-  return null;
+  if (!best) return none;
+  return {
+    year: best.year,
+    source: best.origin === 'creationDate' ? 'rico:creationDate' : best.roleId,
+    roleId: best.roleId,
+    label: best.roleLabel,
+  };
 }
 
 function indexByYear(store, record) {
-  const year = extractYear(record['rico:date']) || firstTypedYear(record);
+  const { year } = primaryYear(store, record);
   if (year) {
     if (!store.byYear.has(year)) store.byYear.set(year, []);
     store.byYear.get(year).push(record);
@@ -320,7 +425,7 @@ function isJunkName(name) {
 }
 
 function indexAgents(store, record) {
-  const agents = ensureArray(record['m3gim:hasAssociatedAgent']);
+  const agents = ensureArray(record['m3gim-ontology:hasAssociatedAgent']);
 
   for (const agent of agents) {
     const rawName = agent.name || agent['skos:prefLabel'] || '';
@@ -334,14 +439,15 @@ function indexAgents(store, record) {
       }
       const entry = store.organizations.get(rawName);
       entry.records.add(record['@id']);
-      if (agent.role) entry.roles.add(agent.role);
+      const orgRole = registerRole(store, agent.role);
+      if (orgRole) entry.roles.add(orgRole);
       if (wikidata && !entry.wikidata) entry.wikidata = wikidata;
       // M2: kuratierter Sitz (Index) mit Vorrang vor Wikidata-Sitz (oft nur
       // Stadtteil); traegt die "auswaerts/am Haus"-Achse. + Schluesselkontakt + Notiz.
-      if (agent['m3gim:sitz'] && !entry.sitz) entry.sitz = agent['m3gim:sitz'];
-      else if (agent['m3gim:wdLocation'] && !entry.sitz) entry.sitz = agent['m3gim:wdLocation'];
-      if (agent['m3gim:keyContact'] && !entry.keyContact) entry.keyContact = agent['m3gim:keyContact'];
-      if (agent['m3gim:editorialNote'] && !entry.note) entry.note = agent['m3gim:editorialNote'];
+      if (agent['m3gim-ontology:headquarters'] && !entry.sitz) entry.sitz = agent['m3gim-ontology:headquarters'];
+      else if (agent['m3gim-ontology:wdLocation'] && !entry.sitz) entry.sitz = agent['m3gim-ontology:wdLocation'];
+      if (agent['m3gim-ontology:keyContact'] && !entry.keyContact) entry.keyContact = agent['m3gim-ontology:keyContact'];
+      if (agent['m3gim-ontology:indexNote'] && !entry.note) entry.note = agent['m3gim-ontology:indexNote'];
     } else {
       const name = normalizePerson(rawName);
       if (isJunkName(name)) continue;
@@ -350,16 +456,17 @@ function indexAgents(store, record) {
       }
       const entry = store.persons.get(name);
       entry.records.add(record['@id']);
-      if (agent.role) entry.roles.add(agent.role);
+      const agentRole = registerRole(store, agent.role);
+      if (agentRole) entry.roles.add(agentRole);
       if (wikidata && !entry.wikidata) entry.wikidata = wikidata;
       // WD-Enrichment-Properties
       if (agent['gndo:professionOrOccupationAsLiteral'] && !entry.occupation) entry.occupation = agent['gndo:professionOrOccupationAsLiteral'];
-      if (agent['m3gim:voiceType'] && !entry.voiceType) entry.voiceType = agent['m3gim:voiceType'];
+      if (agent['m3gim-ontology:voiceType'] && !entry.voiceType) entry.voiceType = agent['m3gim-ontology:voiceType'];
       if (agent['schema:birthDate'] && !entry.birthDate) entry.birthDate = agent['schema:birthDate'];
       if (agent['schema:deathDate'] && !entry.deathDate) entry.deathDate = agent['schema:deathDate'];
       // M2: kuratierte Index-Felder (Beruf-Notiz + Lebensdaten)
-      if (agent['m3gim:editorialNote'] && !entry.note) entry.note = agent['m3gim:editorialNote'];
-      if (agent['m3gim:lifespan'] && !entry.lifespan) entry.lifespan = agent['m3gim:lifespan'];
+      if (agent['m3gim-ontology:indexNote'] && !entry.note) entry.note = agent['m3gim-ontology:indexNote'];
+      if (agent['m3gim-ontology:lifespan'] && !entry.lifespan) entry.lifespan = agent['m3gim-ontology:lifespan'];
     }
   }
 
@@ -377,11 +484,12 @@ function indexAgents(store, record) {
     }
     const entry = store.persons.get(name);
     entry.records.add(record['@id']);
-    if (subj.role) entry.roles.add(subj.role);
+    const subjRole = registerRole(store, subj.role);
+    if (subjRole) entry.roles.add(subjRole);
     if (wikidata && !entry.wikidata) entry.wikidata = wikidata;
     // M2: kuratierte Index-Felder auch fuer erwaehnte Subjekt-Personen
-    if (subj['m3gim:editorialNote'] && !entry.note) entry.note = subj['m3gim:editorialNote'];
-    if (subj['m3gim:lifespan'] && !entry.lifespan) entry.lifespan = subj['m3gim:lifespan'];
+    if (subj['m3gim-ontology:indexNote'] && !entry.note) entry.note = subj['m3gim-ontology:indexNote'];
+    if (subj['m3gim-ontology:lifespan'] && !entry.lifespan) entry.lifespan = subj['m3gim-ontology:lifespan'];
   }
 }
 
@@ -398,7 +506,8 @@ function indexLocations(store, record) {
     }
     const entry = store.locations.get(name);
     entry.records.add(record['@id']);
-    if (loc.role) entry.roles.add(loc.role);
+    const locRole = registerRole(store, loc.role);
+    if (locRole) entry.roles.add(locRole);
     if (wikidata && !entry.wikidata) entry.wikidata = wikidata;
   }
 }
@@ -423,20 +532,20 @@ function consolidateCityLocations(store) {
 function indexWorks(store, record) {
   const subjects = ensureArray(record['rico:hasOrHadSubject']);
   for (const subj of subjects) {
-    if (subj['@type'] !== 'm3gim:MusicalWork') continue;
+    if (subj['@type'] !== 'm3gim-ontology:MusicalWork') continue;
     const name = subj.name || subj['skos:prefLabel'] || '';
     if (!name) continue;
     if (!store.works.has(name)) {
-      store.works.set(name, { records: new Set(), komponist: subj.komponist || null, wikidata: subj['@id'] || null });
+      store.works.set(name, { records: new Set(), komponist: subj.composer || null, wikidata: subj['@id'] || null });
     }
     const wEntry = store.works.get(name);
     wEntry.records.add(record['@id']);
     // WD-Enrichment: Premiere date
-    if (subj['m3gim:wdPremiereDate'] && !wEntry.premiereDate) wEntry.premiereDate = subj['m3gim:wdPremiereDate'];
-    if (subj['m3gim:wdGenre'] && !wEntry.wdGenre) wEntry.wdGenre = subj['m3gim:wdGenre'];
+    if (subj['m3gim-ontology:wdPremiereDate'] && !wEntry.premiereDate) wEntry.premiereDate = subj['m3gim-ontology:wdPremiereDate'];
+    if (subj['m3gim-ontology:wdGenre'] && !wEntry.wdGenre) wEntry.wdGenre = subj['m3gim-ontology:wdGenre'];
     // M2: kuratierte Index-Felder — die von Malaniuk gesungene Partie + Notiz
-    if (subj['m3gim:partie'] && !wEntry.partie) wEntry.partie = subj['m3gim:partie'];
-    if (subj['m3gim:editorialNote'] && !wEntry.note) wEntry.note = subj['m3gim:editorialNote'];
+    if (subj['m3gim-ontology:sungPart'] && !wEntry.partie) wEntry.partie = subj['m3gim-ontology:sungPart'];
+    if (subj['m3gim-ontology:indexNote'] && !wEntry.note) wEntry.note = subj['m3gim-ontology:indexNote'];
   }
 }
 
@@ -444,7 +553,12 @@ function indexWorks(store, record) {
 /*  v2-Store-Maps (Phase 6)                                            */
 /* ------------------------------------------------------------------ */
 
-/** SKOS-Concept (DFT-Hierarchie). Pass 1 legt nur Einzelknoten an, Parent→Children folgt in Pass 1.5. */
+/**
+ * SKOS-Concept (DFT-Hierarchie). Pass 1 legt nur Einzelknoten an,
+ * Parent→Children folgt in Pass 1.5. Dokumenttypen und Rollen teilen sich seit
+ * der Zusammenfuehrung den Namensraum m3gim-vocab; ausgeliefert werden bisher
+ * ausschliesslich Dokumenttyp-Concepts.
+ */
 function indexConcept(store, node) {
   const id = node['@id'];
   if (!id) return;
@@ -457,72 +571,187 @@ function indexConcept(store, node) {
   });
 }
 
-/** Top-Level-SpatiotemporalEvent zu store.mobilityEvents. */
-function indexMobilityEvent(store, node) {
+/**
+ * Rollenwert im Rollenregister vermerken und seine Rohform zurueckgeben.
+ * Das Anzeigelabel kommt aus den Daten (skos:prefLabel am Verweisknoten); die
+ * Bezugsebene, der Rang und die Mobilitaetssicht kommen aus constants.js und
+ * haengen an der stabilen Concept-Id. Der Vertragsstatus `nicht eingehalten`
+ * ist kein Concept und wird unter seinem Literal gefuehrt.
+ * @returns {?string} Rohform der Rolle
+ */
+function registerRole(store, role, onAnnotation = false) {
+  if (!role) return null;
+  const id = roleIdOf(role);
+  const token = roleToken(role);
+  const key = id || token;
+  if (!key) return null;
+  let entry = store.roleVocab.get(key);
+  if (!entry) {
+    entry = {
+      id: key,
+      literal: !id,
+      label: id ? null : token,
+      scope: scopeForRole(key),
+      rank: rankForRole(key),
+      cluster: mobilityClusterFor(key),
+      onAnnotation: false,
+    };
+    store.roleVocab.set(key, entry);
+  }
+  if (id && !entry.label && typeof role === 'object' && role['skos:prefLabel']) {
+    entry.label = role['skos:prefLabel'];
+  }
+  if (onAnnotation) entry.onAnnotation = true;
+  return token;
+}
+
+/**
+ * Top-Level-Annotation normalisieren. Ein Knoten traegt eine Datierung, eine
+ * Verortung oder beides; die verorteten landen zusaetzlich in
+ * store.mobilityEvents und sind dort dieselben Objekte, keine Kopien.
+ */
+function indexAnnotation(store, node) {
   const id = node['@id'];
   if (!id) return;
-  const place = node['m3gim:atPlace'];
+  const place = node['m3gim-ontology:atPlace'];
   const placeName = place && (place.name || place['skos:prefLabel']) || null;
   const placeQid = place && place['@id'] && String(place['@id']).startsWith('wd:') ? place['@id'] : null;
   const placeLat = place && typeof place['geo:lat'] === 'number' ? place['geo:lat'] : null;
   const placeLon = place && typeof place['geo:long'] === 'number' ? place['geo:long'] : null;
-  const placeCountry = place && place['m3gim:country'] || null;
+  const placeCountry = place && place['m3gim-ontology:country'] || null;
   const recordRef = node['agrelon:metadataProvenance'];
-  const recordId = recordRef && recordRef['@id'] || null;
-  store.mobilityEvents.set(id, {
+  const rawDate = node['m3gim-ontology:atDate'] || null;
+  const { qualifier, value } = splitQualifier(rawDate);
+  const role = node.role;
+  const roleId = roleIdOf(role);
+  const entry = {
     id,
     place: placeName,
     placeWikidata: placeQid,
     placeLat,
     placeLon,
     placeCountry,
-    date: node['m3gim:atDate'] || null,
-    role: node['m3gim:eventRole'] || null,
+    date: value,
+    rawDate,
+    qualifier,
+    year: extractYear(value),
+    role: registerRole(store, role, true),
+    roleId,
+    roleLabel: roleLabel(store, role),
+    derivedFromRole: node['m3gim-ontology:derivedFromRole'] || null,
+    // Eine Annotation ohne Rolle ist in ihrer Bezugsebene nicht entscheidbar
+    // und datiert deshalb nicht. Der Wert benennt den Zustand, statt ihn zu
+    // verschweigen.
+    scope: role
+      ? scopeForRole(roleId || (typeof role === 'string' ? role : null))
+      : 'unclassified',
+    rank: rankForRole(roleId),
+    cluster: mobilityClusterFor(roleId || (typeof role === 'string' ? role : null)),
+    origin: 'annotation',
     description: node['rico:generalDescription'] || null,
-    recordId,
+    qualityFlag: node['m3gim-ontology:dataQualityFlag'] || null,
+    recordId: recordRef && recordRef['@id'] || null,
     xlsxSource: extractXlsxSource(node),
-  });
+  };
+  store.annotations.set(id, entry);
+  if (placeName) store.mobilityEvents.set(id, entry);
 }
 
-/** Record → Event-IDs (aus m3gim:hasSpatiotemporalEvent am Record). */
-function indexRecordToEvents(store, record) {
-  const refs = ensureArray(record['m3gim:hasSpatiotemporalEvent']);
+/**
+ * Record → Annotations-IDs in Quellreihenfolge. Die verorteten davon fuehrt
+ * store.recordToEvents weiter; sie sind die raumzeitliche Spur, an der die
+ * Karte, die Sicht-Ableitung der Chronik und der enge Schaerfegrad haengen.
+ */
+function indexRecordAnnotations(store, record) {
+  const refs = ensureArray(record['m3gim-ontology:hasAnnotation']);
   if (refs.length === 0) return;
+  const ids = [];
   const eventIds = [];
   for (const ref of refs) {
-    const eid = ref && ref['@id'];
-    if (eid && store.mobilityEvents.has(eid)) eventIds.push(eid);
+    const aid = ref && ref['@id'];
+    if (!aid || !store.annotations.has(aid)) continue;
+    ids.push(aid);
+    if (store.mobilityEvents.has(aid)) eventIds.push(aid);
   }
+  if (ids.length > 0) store.recordToAnnotations.set(record['@id'], ids);
   if (eventIds.length > 0) store.recordToEvents.set(record['@id'], eventIds);
+}
+
+/**
+ * Die Datierungen eines Records sammeln: die datierten Annotationen in
+ * Quellreihenfolge, danach die Entstehungsdatierung aus `rico:creationDate`,
+ * die am Record selbst steht und deshalb keine Position in der Quell-
+ * reihenfolge hat.
+ */
+function indexDatings(store, record) {
+  const list = [];
+  for (const annotation of annotationsOf(store, record)) {
+    if (annotation.date) list.push(annotation);
+  }
+  const creation = record['rico:creationDate'];
+  if (creation) {
+    const { qualifier, value } = splitQualifier(creation);
+    // Die Rolle steht der Property nicht bei, sie ist durch die Property
+    // bestimmt. Registriert wird sie trotzdem, damit die Rollenpruefung sie
+    // sieht: ohne einen Rollenverweis irgendwo im Datenstand hat auch diese
+    // Datierung keine Anzeigeform.
+    const roleId = 'm3gim-vocab:creation';
+    registerRole(store, roleId);
+    list.push({
+      id: null,
+      place: null,
+      placeWikidata: null,
+      placeLat: null,
+      placeLon: null,
+      placeCountry: null,
+      date: value,
+      rawDate: creation,
+      qualifier,
+      year: extractYear(value),
+      role: roleLabel(store, roleId),
+      roleId,
+      roleLabel: roleLabel(store, roleId),
+      derivedFromRole: null,
+      scope: scopeForRole(roleId),
+      rank: rankForRole(roleId),
+      cluster: mobilityClusterFor(roleId),
+      origin: 'creationDate',
+      description: null,
+      qualityFlag: null,
+      recordId: record['@id'],
+      xlsxSource: extractXlsxSource(record),
+    });
+  }
+  if (list.length > 0) store.recordDatings.set(record['@id'], list);
 }
 
 
 /**
- * Performance-Kette aufloesen (M2): Record -> m3gim:hasPerformance -> Performance
+ * Performance-Kette aufloesen (M2): Record -> m3gim-ontology:hasPerformance -> Performance
  * -> {performanceOf (Werk, inline), hasPerformer (Person, inline),
- *     hasStageRole (Ref auf store.stageRoles), auffuehrungsdatum}.
+ *     hasStageRole (Ref auf store.stageRoles), atDate}.
  * Materialisiert das Rueckgrat des engen Schaerfegrads im Verknuepfungen-Graph:
  * pro Record die belegten Auffuehrungen mit Werk, Mitwirkenden und Buehnenrolle.
  * Die einzelnen Performance-Knoten sind fragmentarisch (entweder Rolle, oder
  * Rolle+Performer, oder Werk+Datum) — hier zusammengefuehrt, nicht erfunden.
  */
 function indexPerformances(store, record) {
-  const refs = ensureArray(record['m3gim:hasPerformance']);
+  const refs = ensureArray(record['m3gim-ontology:hasPerformance']);
   if (refs.length === 0) return;
   const resolved = [];
   for (const ref of refs) {
     const pid = ref && ref['@id'];
     const perf = pid && store.performances.get(pid);
     if (!perf) continue;
-    const wof = perf['m3gim:performanceOf'];
+    const wof = perf['m3gim-ontology:performanceOf'];
     const work = wof
       ? { name: wof.name || wof['skos:prefLabel'] || null,
           wikidata: (wof['@id'] && String(wof['@id']).startsWith('wd:')) ? wof['@id'] : null }
       : null;
-    const stageRoles = ensureArray(perf['m3gim:hasStageRole'])
+    const stageRoles = ensureArray(perf['m3gim-ontology:hasStageRole'])
       .map(r => r && r['@id'] && store.stageRoles.get(r['@id']))
       .filter(Boolean);
-    const performers = ensureArray(perf['m3gim:hasPerformer'])
+    const performers = ensureArray(perf['m3gim-ontology:hasPerformer'])
       .map(p => p && (p.name || p['skos:prefLabel']))
       .filter(Boolean);
     resolved.push({
@@ -530,7 +759,7 @@ function indexPerformances(store, record) {
       work,
       stageRoles,
       performers,
-      date: perf['m3gim:auffuehrungsdatum'] || null,
+      date: perf['m3gim-ontology:atDate'] || null,
     });
   }
   if (resolved.length > 0) store.recordToPerformances.set(record['@id'], resolved);
@@ -539,7 +768,7 @@ function indexPerformances(store, record) {
 
 /** AgRelOn-Relationen am Record. */
 function indexAgentRelations(store, record) {
-  const rels = ensureArray(record['m3gim:agentRelation']);
+  const rels = ensureArray(record['m3gim-ontology:hasAgentRelation']);
   if (rels.length === 0) return;
   const entries = [];
   for (const rel of rels) {
@@ -559,24 +788,24 @@ function indexAgentRelations(store, record) {
   if (entries.length > 0) store.agentRelations.set(record['@id'], entries);
 }
 
-/** Finanz-DetailAnnotations (nur mit monetaryAmount). */
+/** Finanzposten am Record (Annotation unter hasDetail, nur mit monetaryAmount). */
 function indexFinances(store, record) {
-  const details = ensureArray(record['m3gim:hasDetail']);
+  const details = ensureArray(record['m3gim-ontology:hasDetail']);
   if (details.length === 0) return;
   const entries = [];
   for (const det of details) {
     if (!det || typeof det !== 'object') continue;
-    if (det['@type'] !== 'm3gim:DetailAnnotation') continue;
-    const amount = det['m3gim:monetaryAmount'];
+    if (det['@type'] !== 'm3gim-ontology:Annotation') continue;
+    const amount = det['m3gim-ontology:monetaryAmount'];
     if (!amount || typeof amount !== 'object') continue;
     const raw = amount['@value'];
     const value = raw != null ? Number(raw) : null;
     entries.push({
-      field: det['m3gim:detailField'] || null,
-      role: det['m3gim:detailRole'] || null,
-      rawValue: det['m3gim:detailValue'] || null,
+      field: det['m3gim-ontology:detailField'] || null,
+      role: registerRole(store, det.role),
+      rawValue: det['m3gim-ontology:detailValue'] || null,
       amount: Number.isFinite(value) ? value : null,
-      currency: det['m3gim:currency'] || null,
+      currency: det['m3gim-ontology:currency'] || null,
       xlsxSource: extractXlsxSource(det),
     });
   }

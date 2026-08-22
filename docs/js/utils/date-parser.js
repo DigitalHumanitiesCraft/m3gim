@@ -2,6 +2,24 @@
  * M³GIM Date Parsing Utilities
  */
 
+// Unsicherheitsqualifier, den die Quelle einem Datumswert voranstellt.
+const QUALIFIER = /^(circa|vor|nach):/;
+
+/**
+ * Trennt den Qualifier vom Datumswert. Frueher schnitten zwei Lesestellen ihn
+ * unabhaengig voneinander weg und werteten ihn nirgends aus; seit der
+ * Zusammenfuehrung fuehrt die Datierung ihn als eigenes Feld.
+ * @param {?string} dateStr
+ * @returns {{qualifier: ?string, value: ?string}}
+ */
+export function splitQualifier(dateStr) {
+  if (!dateStr) return { qualifier: null, value: dateStr == null ? null : dateStr };
+  const s = String(dateStr);
+  const m = s.match(QUALIFIER);
+  if (!m) return { qualifier: null, value: s };
+  return { qualifier: m[1], value: s.slice(m[0].length) };
+}
+
 /** Extract the first year (4-digit number) from a date string. */
 export function extractYear(dateStr) {
   if (!dateStr) return null;

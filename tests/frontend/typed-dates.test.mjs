@@ -1,28 +1,42 @@
 /**
- * Typisierte Datumsproperties: das Namensregister des Frontends gegen den
- * Datenstand.
+ * Rollenabdeckung: das Rollenregister des Frontends gegen den Datenstand.
  *
- * `TYPED_DATE_PROPS` in `data/loader.js` ist der einzige Zugang des Frontends
- * zur flachen typisierten Datumsfamilie. Eine Property, die im Datenstand
- * vorkommt und in der Liste fehlt, ist fuer das Frontend nicht vorhanden, ohne
- * Fehler und ohne Anzeige. Genau so ist `m3gim:erstelldatum` seit seiner
- * Einfuehrung durchgefallen, unsichtbar deshalb, weil alle Traeger-Records
- * zusaetzlich ein `rico:date` haben und der typisierte Fallback nie greift.
+ * Nachfolger des Abgleichs von `TYPED_DATE_PROPS` gegen die Daten. Die flache
+ * typisierte Datumsfamilie ist ersatzlos entfallen; jede Datierung steht als
+ * Annotationsknoten mit einer Rolle. Damit verschiebt sich die Gefahr, bleibt
+ * aber dieselbe: eine im Datenstand vorkommende Rolle, die das Frontend nicht
+ * kennt, verschwindet in der Anzeige, ohne Fehler und ohne Meldung. Genau so
+ * ist `m3gim:erstelldatum` seinerzeit durch die alte Liste gefallen.
+ *
+ * Drei Pruefungen decken den Weg einer Rolle vom Datenstand bis zur Anzeige:
+ *
+ *   1  Anzeigeform. Jeder Rollenverweis fuehrt sein `skos:prefLabel` mit, und
+ *      der Store legt es ab. Ein Verweis ohne Label hat keine Anzeigeform.
+ *   2  Bezugsebene. Jede Rolle, die an einer Annotation steht, hat einen
+ *      ausdruecklichen Eintrag in `ANNOTATION_ROLE_SCOPE`. Ohne ihn faellt die
+ *      Datierung aus jeder Auswahl nach Bezugsebene heraus.
+ *   3  Rang. Jede Rolle, die im Datenstand eine Datierung traegt und einen
+ *      Record datieren darf, hat einen ausdruecklichen Rang. Ohne ihn wird die
+ *      Auswahl der abgeleiteten Datierung von der Quellreihenfolge bestimmt.
+ *
+ * Jede Pruefung wird durch eine eingespielte Verletzung bewiesen: ein
+ * synthetischer Datenstand mit genau dem Defekt muss den Befund ausloesen.
+ * Die Pruefungen selbst sind reine Funktionen ueber `store.roleVocab`, damit
+ * derselbe Code auf den echten und auf den praeparierten Stand laeuft.
  *
  * Gegenstueck zu `tests/test_25_chronik_mobility_cluster.py`, das dasselbe fuer
- * die Rollen von `EVENT_ROLE_TO_MOBILITY_CLUSTER` leistet. Die erwartete Menge
- * leitet der Abgleich hier aus dem Datenstand selbst ab. Sie umfasst jede
- * Record-Property im `m3gim:`-Namensraum, deren saemtliche Werte datumsfoermig
- * sind (ISO, TimeSpan, oder mit circa:/vor:/nach: qualifiziert). Damit
- * schlaegt der Test beim naechsten Modellumbau in beide Richtungen an, sowohl
- * wenn eine Property verschwindet als auch wenn eine hinzukommt.
+ * die Mobilitaetssichten leistet. Gelesen wird `data/output/m3gim.jsonld`,
+ * der Stand des zusammengefuehrten Modells.
  */
 
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
-import { loadArchive, TYPED_DATE_PROPS } from '../../docs/js/data/loader.js';
+import { loadArchive, primaryYear } from '../../docs/js/data/loader.js';
+import {
+  ANNOTATION_ROLE_SCOPE, ANNOTATION_ROLE_RANK, ANCHORING_SCOPES,
+} from '../../docs/js/data/constants.js';
 
 async function storeFrom(jsonld) {
   const prevFetch = globalThis.fetch;
@@ -34,91 +48,137 @@ async function storeFrom(jsonld) {
   }
 }
 
-function loadDocsData() {
-  const url = new URL('../../docs/data/m3gim.jsonld', import.meta.url);
-  return JSON.parse(readFileSync(url, 'utf-8'));
+let outputStore = null;
+async function realStore() {
+  if (!outputStore) {
+    const url = new URL('../../data/output/m3gim.jsonld', import.meta.url);
+    outputStore = await storeFrom(JSON.parse(readFileSync(url, 'utf-8')));
+  }
+  return outputStore;
 }
 
-// Datums-Routing aus knowledge/data-model.md § 7: ISO-Datum, TimeSpan (YYYY/YYYY),
-// jeweils optional mit circa:/vor:/nach:-Qualifier.
-const DATE_SHAPE =
-  /^(circa:|vor:|nach:)?\d{4}(-\d{2}(-\d{2})?)?(\/\d{4}(-\d{2}(-\d{2})?)?)?$/;
+/* --- die drei Befunde, als reine Funktionen ueber den Store -------------- */
 
-/**
- * Die im Datenstand tatsaechlich belegten typisierten Datumsproperties.
- * Namensunabhaengig abgeleitet (keine Endungs-Heuristik auf "datum"), damit
- * eine umbenannte oder neu eingefuehrte Property mitgefunden wird.
- * `rico:date` bleibt aussen vor, es ist der einwertige Zeitanker und gehoert
- * der typisierten Familie nicht an.
- */
-function typedDatePropsInData(jsonld) {
-  const found = new Set();
-  for (const node of jsonld['@graph'] || []) {
-    if (node['@type'] !== 'rico:Record') continue;
-    for (const [key, value] of Object.entries(node)) {
-      if (!key.startsWith('m3gim:')) continue;
-      const values = Array.isArray(value) ? value : [value];
-      if (values.length === 0) continue;
-      if (values.every(v => typeof v === 'string' && DATE_SHAPE.test(v))) found.add(key);
+/** Rollen, die im Datenstand vorkommen und keine Anzeigeform mitbringen. */
+function rolesWithoutDisplayForm(store) {
+  return [...store.roleVocab.values()].filter(r => !r.label).map(r => r.id).sort();
+}
+
+/** Rollen an Annotationen ohne ausdrueckliche Bezugsebene. */
+function annotationRolesWithoutScope(store) {
+  return [...store.roleVocab.values()]
+    .filter(r => r.onAnnotation && !r.scope).map(r => r.id).sort();
+}
+
+/** Datierende Rollen ohne ausdruecklichen Rang. */
+function datingRolesWithoutRank(store) {
+  const ranked = new Set(ANNOTATION_ROLE_RANK);
+  const out = new Set();
+  for (const list of store.recordDatings.values()) {
+    for (const d of list) {
+      if (!ANCHORING_SCOPES.has(d.scope)) continue;
+      if (d.roleId && !ranked.has(d.roleId)) out.add(d.roleId);
     }
   }
-  return found;
+  return [...out].sort();
 }
 
-describe('TYPED_DATE_PROPS gegen den Datenstand', () => {
-  test('die Liste ist wohlgeformt (praefigiert, dublettenfrei)', () => {
-    for (const prop of TYPED_DATE_PROPS) {
-      assert.ok(prop.startsWith('m3gim:'), `${prop} traegt kein m3gim:-Praefix`);
-    }
-    assert.equal(new Set(TYPED_DATE_PROPS).size, TYPED_DATE_PROPS.length,
-      'Dublette in TYPED_DATE_PROPS');
-  });
+/** Ein Datenstand mit genau einer Annotation, deren Rolle frei gesetzt wird. */
+function graphWithRole(role) {
+  return {
+    '@graph': [
+      { '@id': 'm3gim-data:TEST_ROLE', '@type': 'rico:Record',
+        'rico:identifier': 'TEST/ROLE',
+        'm3gim-ontology:hasAnnotation': { '@id': 'm3gim-data:ev_TEST_ROLE' } },
+      { '@id': 'm3gim-data:ev_TEST_ROLE', '@type': 'm3gim-ontology:Annotation',
+        'agrelon:metadataProvenance': { '@id': 'm3gim-data:TEST_ROLE' },
+        'm3gim-ontology:atDate': '1957-04-11',
+        role },
+    ],
+  };
+}
 
-  test('keine im Datenstand belegte Datumsproperty fehlt in der Liste', () => {
-    const inData = typedDatePropsInData(loadDocsData());
-    const known = new Set(TYPED_DATE_PROPS);
-    const missing = [...inData].filter(p => !known.has(p)).sort();
+// ---------------------------------------------------------------------------
+
+describe('1 Anzeigeform', () => {
+  test('kein Rollenverweis des Datenstands bleibt ohne Anzeigeform', async () => {
+    const missing = rolesWithoutDisplayForm(await realStore());
     assert.deepEqual(missing, [],
-      `im Datenstand belegt, im Frontend unsichtbar: ${missing.join(', ')}`);
+      `im Datenstand belegt, ohne Anzeigeform: ${missing.join(', ')}`);
   });
 
-  test('keine Property der Liste ist im Datenstand verschwunden', () => {
-    const inData = typedDatePropsInData(loadDocsData());
-    const stale = TYPED_DATE_PROPS.filter(p => !inData.has(p)).sort();
-    assert.deepEqual(stale, [],
-      `in der Liste gefuehrt, im Datenstand nicht mehr belegt: ${stale.join(', ')}`);
+  test('eingespielte Verletzung: Verweis ohne prefLabel wird gemeldet', async () => {
+    const store = await storeFrom(graphWithRole({ '@id': 'm3gim-vocab:performance' }));
+    assert.deepEqual(rolesWithoutDisplayForm(store), ['m3gim-vocab:performance'],
+      'ein Rollenverweis ohne prefLabel bleibt unbemerkt');
   });
 });
 
-describe('typisierter Fallback des Jahresindex', () => {
-  // Ein Record ohne rico:date, dessen einzige Datierung eine typisierte
-  // Property ist. Genau dieser Fall bringt eine fehlende Property ans Licht.
-  const FIXTURE = {
-    '@graph': [
-      { '@id': 'm3gim:TEST_ERSTELL', '@type': 'rico:Record',
-        'rico:identifier': 'TEST/ERSTELL', 'rico:title': 'Nur Erstelldatum',
-        'm3gim:erstelldatum': '1954-11-02' },
-    ],
-  };
-
-  test('m3gim:erstelldatum traegt den Jahresindex, wenn rico:date fehlt', async () => {
-    const store = await storeFrom(FIXTURE);
-    const record = store.records.get('m3gim:TEST_ERSTELL');
-    assert.ok(record, 'Record nicht im Store');
-    assert.ok(store.byYear.has(1954),
-      'kein Jahresindex-Eintrag 1954 aus m3gim:erstelldatum');
-    assert.ok(store.byYear.get(1954).includes(record),
-      'Record haengt nicht am Jahr seines Erstelldatums');
+describe('2 Bezugsebene', () => {
+  test('keine Annotationsrolle des Datenstands ohne Bezugsebene', async () => {
+    const missing = annotationRolesWithoutScope(await realStore());
+    assert.deepEqual(missing, [],
+      'ohne Eintrag in ANNOTATION_ROLE_SCOPE faellt die Datierung aus jeder '
+      + `Auswahl nach Bezugsebene: ${missing.join(', ')}`);
   });
 
-  test('jede gefuehrte Property traegt den Jahresindex allein', async () => {
-    for (const prop of TYPED_DATE_PROPS) {
-      const store = await storeFrom({
-        '@graph': [
-          { '@id': 'm3gim:TEST_SOLO', '@type': 'rico:Record', [prop]: '1961-03-04' },
-        ],
-      });
-      assert.ok(store.byYear.has(1961), `${prop} erreicht den Jahresindex nicht`);
+  test('eingespielte Verletzung: unbekannte Rolle wird gemeldet', async () => {
+    const store = await storeFrom(graphWithRole(
+      { '@id': 'm3gim-vocab:erfundeneRolle', 'skos:prefLabel': 'erfunden' }));
+    assert.deepEqual(annotationRolesWithoutScope(store), ['m3gim-vocab:erfundeneRolle'],
+      'eine unbekannte Annotationsrolle bleibt unbemerkt');
+  });
+
+  test('jede Bezugsebene der Tabelle ist ein gueltiger Wert', () => {
+    const VALID = new Set(['object', 'attested', 'mentioned', 'framing', 'unfulfilled']);
+    for (const [roleId, scope] of Object.entries(ANNOTATION_ROLE_SCOPE)) {
+      assert.ok(VALID.has(scope), `${roleId} -> Bezugsebene '${scope}' ist ungueltig`);
+    }
+    for (const scope of ANCHORING_SCOPES) {
+      assert.ok(VALID.has(scope), `ankernde Bezugsebene '${scope}' ist ungueltig`);
+    }
+  });
+});
+
+describe('3 Rang', () => {
+  test('keine datierende Rolle des Datenstands ohne Rang', async () => {
+    const missing = datingRolesWithoutRank(await realStore());
+    assert.deepEqual(missing, [],
+      'ohne Rang entscheidet die Quellreihenfolge ueber die abgeleitete '
+      + `Datierung: ${missing.join(', ')}`);
+  });
+
+  test('eingespielte Verletzung: datierende Rolle ohne Rang wird gemeldet', async () => {
+    // `zielort` traegt im Datenstand nie ein Datum und steht deshalb in keiner
+    // Rangfolge; die Bezugsebene hat er sehr wohl. Traegt er eines, fehlt die
+    // Priorisierung — genau der Fall, den die Pruefung melden soll.
+    const store = await storeFrom(graphWithRole(
+      { '@id': 'm3gim-vocab:destinationPlace', 'skos:prefLabel': 'zielort' }));
+    assert.deepEqual(datingRolesWithoutRank(store), ['m3gim-vocab:destinationPlace'],
+      'eine datierende Rolle ohne Rang bleibt unbemerkt');
+  });
+
+  test('die Rangliste ist wohlgeformt (praefigiert, dublettenfrei)', () => {
+    for (const roleId of ANNOTATION_ROLE_RANK) {
+      assert.ok(roleId.startsWith('m3gim-vocab:'),
+        `${roleId} traegt kein m3gim-vocab:-Praefix`);
+      assert.ok(ANNOTATION_ROLE_SCOPE[roleId],
+        `${roleId} steht im Rang, hat aber keine Bezugsebene`);
+      assert.ok(ANCHORING_SCOPES.has(ANNOTATION_ROLE_SCOPE[roleId]),
+        `${roleId} steht im Rang, darf aber gar nicht datieren`);
+    }
+    assert.equal(new Set(ANNOTATION_ROLE_RANK).size, ANNOTATION_ROLE_RANK.length,
+      'Dublette in ANNOTATION_ROLE_RANK');
+  });
+
+  test('jede gefuehrte Rolle traegt den Jahresindex allein', async () => {
+    for (const roleId of ANNOTATION_ROLE_RANK) {
+      const store = await storeFrom(graphWithRole(
+        { '@id': roleId, 'skos:prefLabel': roleId.split(':').pop() }));
+      const rec = store.records.get('m3gim-data:TEST_ROLE');
+      assert.equal(primaryYear(store, rec).year, 1957,
+        `${roleId} erreicht den Jahresindex nicht`);
+      assert.ok(store.byYear.has(1957), `${roleId} fehlt im Jahresindex des Stores`);
     }
   });
 });

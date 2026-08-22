@@ -47,8 +47,10 @@ export function toolbarStateToShared(toolbarState) {
 }
 
 /**
- * Records, die mind. ein SpatiotemporalEvent ODER eine Performance tragen —
+ * Records, die mind. eine verortete Annotation ODER eine Performance tragen —
  * die enge (raumzeitlich/auffuehrungs-belegte) Menge (knowledge/frontend-architecture.md, Abschnitt Schaerfegrade).
+ * store.recordToEvents fuehrt genau die verorteten Annotationen; eine reine
+ * Datierung ohne Ort engt den Schaerfegrad nicht.
  * @param {object} store
  * @returns {Set<string>} Record-@ids
  */
@@ -76,6 +78,13 @@ export function applySchaerfeEng(items, store, getRecord) {
 /**
  * Liest das Jahr eines Records (kanonisch rico:date). Liefert null, wenn
  * undatiert.
+ *
+ * `rico:date` bleibt nach der Zusammenfuehrung der einwertige Zeitanker
+ * (Frontend-Vertrag A4, erste Variante), deshalb bleibt diese Aufloesung
+ * unveraendert. Wer die abgeleitete Datierung mitnehmen will, nimmt
+ * primaryYear(store, record) aus data/loader.js; das ist die eine Funktion,
+ * auf die sich alle Jahresaufloesungen zusammenfuehren lassen, sobald die
+ * zweite Variante entschieden ist.
  */
 export function recordYear(record) {
   const y = extractYear(record && record['rico:date']);
