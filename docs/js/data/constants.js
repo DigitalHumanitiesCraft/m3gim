@@ -564,103 +564,40 @@ export function steChipPrefix(eventRole) {
  * heraus; `tests/frontend/typed-dates.test.mjs` haelt die Tabelle deshalb
  * gegen den Datenstand.
  */
-export const ANNOTATION_ROLE_SCOPE = {
-  // Datierung des Objekts
-  'm3gim-vocab:creation':             'object',
-  'm3gim-vocab:publicationDate':      'object',
-  'm3gim-vocab:issueDate':            'object',
-  'm3gim-vocab:dispatch':             'object',
-  'm3gim-vocab:receiving':            'object',
-  'm3gim-vocab:contractPlace':        'object',
-  'm3gim-vocab:wageConfirmationDate': 'object',
-
-  // Datierung eines bezeugten Ereignisses
-  'm3gim-vocab:performance':          'attested',
-  'm3gim-vocab:premiere':             'attested',
-  'm3gim-vocab:guestPerformance':     'attested',
-  'm3gim-vocab:dressRehearsal':       'attested',
-  'm3gim-vocab:rehearsal':            'attested',
-  'm3gim-vocab:rehearsalStartDate':   'attested',
-  'm3gim-vocab:recording':            'attested',
-  'm3gim-vocab:broadcastDate':        'attested',
-  'm3gim-vocab:season':               'attested',
-  'm3gim-vocab:departure':            'attested',
-  'm3gim-vocab:destinationPlace':     'attested',
-  'm3gim-vocab:reception':            'attested',
-  'm3gim-vocab:conversationDate':     'attested',
-  'm3gim-vocab:transferDate':         'attested',
-  'm3gim-vocab:installmentPeriod':    'attested',
-  'm3gim-vocab:assignment':           'attested',
-
-  // Datierung einer Erwaehnung
-  'm3gim-vocab:mentioned':            'mentioned',
-
-  // Umfassender Zeitraum
-  'm3gim-vocab:framingEvent':         'framing',
-
-  // Negierte Behauptung
-  'nicht eingehalten':                'unfulfilled',
-};
+/**
+ * Die fuenf Bezugsebenen einer Datierung, als Begriffe des Schemas
+ * `m3gim-vocab:datingScopes`. Welche Rolle welche Ebene traegt, steht seit
+ * E-150 im Vokabular und kommt ueber den Datensatz in den Store; hier stehen
+ * nur die Kennungen, damit ein Vergleich im Code lesbar bleibt.
+ */
+export const DATING_SCOPE = Object.freeze({
+  object: 'm3gim-vocab:objectDating',
+  attested: 'm3gim-vocab:attestedDating',
+  mentioned: 'm3gim-vocab:mentionedDating',
+  framing: 'm3gim-vocab:framingDating',
+  unfulfilled: 'm3gim-vocab:unfulfilledDating',
+});
 
 /**
  * Die Bezugsebenen, die einen Record datieren duerfen (Frontend-Vertrag A4).
- * Jede andere Ebene bleibt lesbar, datiert den Record aber nicht.
+ * Jede andere Ebene bleibt lesbar, datiert den Record aber nicht. Die Regel
+ * steht als redaktionelle Notiz an `m3gim-ontology:datingScope` im Vokabular
+ * und ist dort nicht maschinenlesbar; `tests/frontend/typed-dates.test.mjs`
+ * haelt beide Seiten zusammen.
  */
-export const ANCHORING_SCOPES = new Set(['object', 'attested']);
+export const ANCHORING_SCOPES = new Set([DATING_SCOPE.object, DATING_SCOPE.attested]);
 
 /**
- * Rang der Annotationsrollen (Frontend-Vertrag A2). Die Listenreihenfolge ist
- * die Prioritaet der abgeleiteten Datierung, wenn ein Record mehrere traegt.
- *
- * Der vordere Block uebernimmt die Reihenfolge der abgeloesten Liste
- * TYPED_DATE_PROPS unveraendert; sie folgte dem Auffuehrungsbezug. Die beiden
- * zusammengefallenen Terme stehen an der Stelle ihres Zusammenschlusses
- * (auftrittsdatum in aufführung, erstelldatum in entstehung). Der hintere
- * Block haelt die Rollen, die das Frontend vor der Zusammenfuehrung nur ueber
- * die raumzeitlichen Ereignisse erreichte, wo keine Prioritaet zwischen Rollen
- * bestand; ihre Reihenfolge folgt derselben Logik wie der vordere Block.
- *
- * Rollen ohne Eintrag sortieren hinter jeden Eintrag der Liste, in
- * Quellreihenfolge. Eine Rolle, die im Datenstand datiert und hier fehlt,
- * meldet `tests/frontend/typed-dates.test.mjs`.
+ * Die eine Rollenstelle, die kein Vokabularbegriff ist. Der Vertragsstatus
+ * `nicht eingehalten` steht in der Rollenspalte der Quelle, und das Vokabular
+ * fuehrt ihn ausdruecklich nicht als Rollenbegriff, weil seine Modellierung mit
+ * dem Erschliessungsteam offen ist (data-model.md § 11). Bis dahin haelt dieser
+ * Eintrag ihn lesbar und zugleich aus dem Zeitanker heraus. Er entfaellt mit
+ * der Entscheidung.
  */
-export const ANNOTATION_ROLE_RANK = [
-  'm3gim-vocab:performance',          // auffuehrungsdatum, auftrittsdatum
-  'm3gim-vocab:premiere',             // premieredatum
-  'm3gim-vocab:dispatch',             // absendedatum
-  'm3gim-vocab:receiving',            // empfangsdatum
-  'm3gim-vocab:conversationDate',     // gespraechsdatum
-  'm3gim-vocab:publicationDate',      // erscheinungsdatum
-  'm3gim-vocab:issueDate',            // ausstellungsdatum
-  'm3gim-vocab:broadcastDate',        // ausstrahlungsdatum
-  'm3gim-vocab:rehearsalStartDate',   // probenbeginn
-  'm3gim-vocab:rehearsal',            // probendatum
-  'm3gim-vocab:season',               // spielzeitVon
-  'm3gim-vocab:transferDate',         // ueberweisungsdatum
-  'm3gim-vocab:departure',            // abreisedatum
-  'm3gim-vocab:creation',             // erstelldatum, entstehungsdatum
-  'm3gim-vocab:guestPerformance',
-  'm3gim-vocab:dressRehearsal',
-  'm3gim-vocab:recording',
-  'm3gim-vocab:reception',
-  'm3gim-vocab:contractPlace',
-  'm3gim-vocab:assignment',
-  'm3gim-vocab:installmentPeriod',
-  'm3gim-vocab:wageConfirmationDate',
-];
-
-const RANK_BY_ROLE = new Map(ANNOTATION_ROLE_RANK.map((id, i) => [id, i]));
-
-/** Rang einer Rolle; ohne Eintrag hinter jeden gefuehrten Rang. */
-export function rankForRole(roleId) {
-  const rank = RANK_BY_ROLE.get(roleId);
-  return rank === undefined ? ANNOTATION_ROLE_RANK.length : rank;
-}
-
-/** Bezugsebene einer Rolle; null, wenn die Rolle nicht gefuehrt ist. */
-export function scopeForRole(roleId) {
-  return (roleId && ANNOTATION_ROLE_SCOPE[roleId]) || null;
-}
+export const LITERAL_ROLE_SCOPE = Object.freeze({
+  'nicht eingehalten': DATING_SCOPE.unfulfilled,
+});
 
 /**
  * Mobilitaetssicht je Annotationsrolle, nach Concept-Id. Loest die

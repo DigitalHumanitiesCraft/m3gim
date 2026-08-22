@@ -35,10 +35,15 @@ import {
 } from '../../docs/js/data/loader.js';
 import { roleLabel, roleIdOf, roleToken } from '../../docs/js/utils/format.js';
 import { splitQualifier } from '../../docs/js/utils/date-parser.js';
+import { withConcepts } from './_concepts.mjs';
+import { DATING_SCOPE, ANCHORING_SCOPES } from '../../docs/js/data/constants.js';
 
-async function storeFrom(jsonld) {
+async function storeFrom(jsonld, { bare = false } = {}) {
+  // Bezugsebene und Rang stehen seit E-150 an den Begriffsknoten des
+  // Datensatzes. Ein Fixture ohne sie haette keine Bezugsebene mehr.
+  const payload = bare ? jsonld : withConcepts(jsonld);
   const prevFetch = globalThis.fetch;
-  globalThis.fetch = async () => ({ status: 200, ok: true, json: async () => jsonld });
+  globalThis.fetch = async () => ({ status: 200, ok: true, json: async () => payload });
   try {
     return await loadArchive('mock://data');
   } finally {
@@ -50,7 +55,7 @@ let outputStore = null;
 async function realStore() {
   if (!outputStore) {
     const url = new URL('../../data/output/m3gim.jsonld', import.meta.url);
-    outputStore = await storeFrom(JSON.parse(readFileSync(url, 'utf-8')));
+    outputStore = await storeFrom(JSON.parse(readFileSync(url, 'utf-8')), { bare: true });
   }
   return outputStore;
 }
@@ -121,7 +126,7 @@ describe('A1 Anzeigeform der Rolle', () => {
   });
 
   test('ohne Concept im Store faellt roleLabel auf den lokalen Namen', async () => {
-    const store = await storeFrom({ '@graph': [] });
+    const store = await storeFrom({ '@graph': [] }, { bare: true });
     assert.equal(roleLabel(store, 'm3gim-vocab:publicationDate'), 'publicationDate');
   });
 
@@ -239,11 +244,11 @@ describe('A3 Bezugsebene je Datierung', () => {
   test('die Erwaehnung bleibt lesbar, sie ist nur anders eingeordnet', async () => {
     const store = await storeFrom(MENTION_ONLY);
     const rec = store.records.get('m3gim-data:R_MENTION');
-    const mentions = datingsByScope(store, rec, 'mentioned');
+    const mentions = datingsByScope(store, rec, DATING_SCOPE.mentioned);
     assert.equal(mentions.length, 1, 'die Erwaehnung ist verschwunden statt eingeordnet');
     assert.equal(mentions[0].date, '1872');
-    assert.equal(mentions[0].scope, 'mentioned');
-    assert.deepEqual(datingsByScope(store, rec, 'attested'), []);
+    assert.equal(mentions[0].scope, DATING_SCOPE.mentioned);
+    assert.deepEqual(datingsByScope(store, rec, DATING_SCOPE.attested), []);
   });
 
   test('der Vertragsstatus `nicht eingehalten` datiert nicht', async () => {
@@ -259,7 +264,7 @@ describe('A3 Bezugsebene je Datierung', () => {
     const rec = store.records.get('m3gim-data:R_UNFULFILLED');
     assert.equal(primaryYear(store, rec).year, null,
       'ein nicht eingehaltener Termin erzeugt einen Phantompunkt');
-    assert.equal(datingsByScope(store, rec, 'unfulfilled').length, 1);
+    assert.equal(datingsByScope(store, rec, DATING_SCOPE.unfulfilled).length, 1);
   });
 
   test('die Rahmenveranstaltung datiert nicht', async () => {
@@ -275,7 +280,7 @@ describe('A3 Bezugsebene je Datierung', () => {
     const rec = store.records.get('m3gim-data:R_FRAMING');
     assert.equal(primaryYear(store, rec).year, null,
       'die Festspielsaison datiert den Record mit');
-    assert.equal(datingsByScope(store, rec, 'framing').length, 1);
+    assert.equal(datingsByScope(store, rec, DATING_SCOPE.framing).length, 1);
   });
 });
 
@@ -309,7 +314,7 @@ describe('A4 Zeitanker am Record', () => {
     assert.ok(d, 'die Entstehungsdatierung erscheint nicht in der Datierungsliste');
     assert.equal(d.date, '1954-11-02');
     assert.equal(d.roleId, 'm3gim-vocab:creation');
-    assert.equal(d.scope, 'object');
+    assert.equal(d.scope, DATING_SCOPE.object);
     assert.equal(primaryYear(store, rec).year, 1954);
     assert.equal(primaryYear(store, rec).source, 'rico:creationDate');
     assert.ok(store.byYear.get(1954)?.includes(rec));
@@ -413,8 +418,7 @@ describe('Datenstand data/output/m3gim.jsonld', () => {
 
   test('jede Datierung traegt Bezugsebene, Rang und Anzeigeform', async () => {
     const store = await realStore();
-    const SCOPES = new Set(['object', 'attested', 'mentioned', 'framing',
-      'unfulfilled', 'unclassified']);
+    const SCOPES = new Set([...Object.values(DATING_SCOPE), 'unclassified']);
     for (const rec of store.allRecords) {
       for (const d of datingsOf(store, rec)) {
         assert.ok(SCOPES.has(d.scope),
@@ -451,7 +455,7 @@ describe('Datenstand data/output/m3gim.jsonld', () => {
       const anchor = primaryYear(store, rec);
       if (!anchor.roleId) continue;
       const scope = store.roleVocab.get(anchor.roleId)?.scope;
-      assert.ok(scope === 'object' || scope === 'attested',
+      assert.ok(ANCHORING_SCOPES.has(scope),
         `${rec['@id']}: datiert ueber die Bezugsebene ${scope}`);
     }
   });

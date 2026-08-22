@@ -10,7 +10,7 @@ import {
 import { normalizePerson, getPersonKategorie } from '../utils/normalize.js';
 import { extractXlsxSource } from '../utils/provenance.js';
 import {
-  scopeForRole, rankForRole, mobilityClusterFor, ANCHORING_SCOPES,
+  mobilityClusterFor, ANCHORING_SCOPES, LITERAL_ROLE_SCOPE,
 } from './constants.js';
 
 /**
@@ -44,13 +44,18 @@ export async function loadArchive(url = './data/m3gim.jsonld') {
  * Store-Maps transformieren JSON-LD-Subobjekte zum Teil in ein flaches
  * Lookup-Format -- damit Consumer nicht durch verschachtelte Strukturen
  * navigieren muessen. Das hat den Preis, dass *JSON-LD-Keys wie
- * `agrelon:hasObject` in den Store-Entries NICHT mehr existieren*.
+ * `agrelon:hasObject` in den Store-Entries NICHT mehr existieren*. Die
+ * Gegenseite kommt aus counterpartOf() und deckt beide Bauformen ab.
  * Bei Erweiterungen: immer die JSDoc-Shapes unten zur Hand nehmen.
  *
  * @typedef {Object} RelationEntry       Eintrag in store.agentRelations
  * @property {string} type               AgRelOn-Prädikat ("agrelon:HasCorrespondent" u. a.)
  * @property {string|null} objectName    Entity-Name des Beziehungs-Partners
  * @property {string|null} objectWikidata  Q-ID mit wd:-Präfix oder null
+ * @property {string|null} objectRole    Concept-CURIE der erfassten Rolle der
+ *   Gegenseite, oder null. Bei einer symmetrischen Beziehung traegt der Begriff
+ *   keine Richtung; diese Rolle haelt sie fest (E-149).
+ * @property {string|null} objectRoleLabel  Anzeigeform ebendieser Rolle
  * @property {string|null} validityBegin
  * @property {string|null} validityEnd
  * @property {string} provenance         @id des Records, das die Relation trägt
@@ -137,6 +142,10 @@ function buildStore(jsonld) {
     /** @type {Map<string, DftConcept>} */
     dftHierarchy: new Map(),
     conceptDefinitions: new Map(),
+    /** @type {Map<string, string>} roleId → Bezugsebene (Concept-CURIE), aus dem Vokabular (E-150) */
+    roleScope: new Map(),
+    /** @type {Map<string, number>} roleId → Rang der Datierung, aus dem Vokabular (E-150) */
+    roleRank: new Map(),
     /** @type {Map<string, RoleEntry>} roleId → Rollenbegriff */
     roleVocab: new Map(),
     /** @type {Map<string, Annotation>} alle Annotationen, verortet oder nicht */
@@ -162,6 +171,13 @@ function buildStore(jsonld) {
     recordToPerformances: new Map(),
   };
 
+  // Pass 0: Begriffe zuerst. Eine Annotation liest die Bezugsebene ihrer Rolle
+  // beim Aufbau; stuende der Begriff spaeter im Graphen, faende sie keine und
+  // fiele stumm aus dem Zeitanker.
+  for (const node of graph) {
+    if (node['@type'] === 'skos:Concept') indexConcept(store, node);
+  }
+
   // Pass 1: Classify nodes
   for (const node of graph) {
     const nodeType = node['@type'];
@@ -186,7 +202,7 @@ function buildStore(jsonld) {
         store.bySignatur.set(node['rico:identifier'], node);
       }
     } else if (nodeType === 'skos:Concept') {
-      indexConcept(store, node);
+      // in Pass 0 erledigt
     } else if (nodeType === 'm3gim-ontology:Annotation') {
       indexAnnotation(store, node);
     } else if (nodeType === 'm3gim-ontology:StageRole') {
@@ -572,6 +588,14 @@ function indexConcept(store, node) {
   const definition = node['skos:definition'] || null;
   if (definition) store.conceptDefinitions.set(id, { id, label, definition });
 
+  // Bezugsebene und Rang einer Datierung stehen seit E-150 am Rollenbegriff
+  // und kommen von dort in den Store; das Frontend fuehrt dazu keine Tabelle.
+  const scope = node['m3gim-ontology:datingScope'];
+  const scopeId = scope && typeof scope === 'object' ? scope['@id'] : scope;
+  if (scopeId) store.roleScope.set(id, scopeId);
+  const rank = node['m3gim-ontology:datingRank'];
+  if (typeof rank === 'number') store.roleRank.set(id, rank);
+
   const scheme = node['skos:inScheme'] && node['skos:inScheme']['@id'] || null;
   // Ohne Schemaangabe gilt der Bestandsfall: bis E-143 trug der Datensatz
   // ausschliesslich Dokumenttyp-Concepts.
@@ -589,6 +613,24 @@ function indexConcept(store, node) {
  * ist kein Concept und wird unter seinem Literal gefuehrt.
  * @returns {?string} Rohform der Rolle
  */
+/**
+ * Bezugsebene einer Rolle, aus dem Vokabular ueber den Datensatz (E-150).
+ * null, wenn der Begriff keine fuehrt.
+ */
+function scopeForRole(store, roleId) {
+  if (!roleId) return null;
+  return store.roleScope.get(roleId) || LITERAL_ROLE_SCOPE[roleId] || null;
+}
+
+/**
+ * Rang einer Rolle. Ein Begriff ohne Rang sortiert hinter jeden mit Rang,
+ * deshalb liefert die Funktion dort einen Wert oberhalb jedes vergebenen.
+ */
+function rankForRole(store, roleId) {
+  const rank = roleId != null ? store.roleRank.get(roleId) : undefined;
+  return rank === undefined ? Number.MAX_SAFE_INTEGER : rank;
+}
+
 function registerRole(store, role, onAnnotation = false) {
   if (!role) return null;
   const id = roleIdOf(role);
@@ -601,8 +643,8 @@ function registerRole(store, role, onAnnotation = false) {
       id: key,
       literal: !id,
       label: id ? null : token,
-      scope: scopeForRole(key),
-      rank: rankForRole(key),
+      scope: scopeForRole(store, key),
+      rank: rankForRole(store, key),
       cluster: mobilityClusterFor(key),
       onAnnotation: false,
     };
@@ -653,9 +695,9 @@ function indexAnnotation(store, node) {
     // und datiert deshalb nicht. Der Wert benennt den Zustand, statt ihn zu
     // verschweigen.
     scope: role
-      ? scopeForRole(roleId || (typeof role === 'string' ? role : null))
+      ? scopeForRole(store, roleId || (typeof role === 'string' ? role : null))
       : 'unclassified',
-    rank: rankForRole(roleId),
+    rank: rankForRole(store, roleId),
     cluster: mobilityClusterFor(roleId || (typeof role === 'string' ? role : null)),
     origin: 'annotation',
     description: node['rico:generalDescription'] || null,
@@ -722,8 +764,8 @@ function indexDatings(store, record) {
       roleId,
       roleLabel: roleLabel(store, roleId),
       derivedFromRole: null,
-      scope: scopeForRole(roleId),
-      rank: rankForRole(roleId),
+      scope: scopeForRole(store, roleId),
+      rank: rankForRole(store, roleId),
       cluster: mobilityClusterFor(roleId),
       origin: 'creationDate',
       description: null,
@@ -776,6 +818,29 @@ function indexPerformances(store, record) {
 }
 
 
+// Kennung der Nachlassbildnerin, die an jeder AgRelOn-Relation eine Seite
+// besetzt. Bei der symmetrischen Bauform ist die andere Seite der Partner.
+const FONDS_SUBJECT_ID = 'wd:Q94208';
+const FONDS_SUBJECT_NAME = 'Malaniuk, Ira';
+
+/**
+ * Die Gegenseite einer AgRelOn-Relation, unabhaengig von ihrer Bauform.
+ *
+ * Ein gerichteter n-aerer Begriff traegt `agrelon:hasSubject` und
+ * `agrelon:hasObject`, ein symmetrischer wie `HasCorrespondent` beide Seiten
+ * als `agrelon:hasSubjectObject` (E-149). Wer nur die gerichtete Form liest,
+ * bekommt fuer die gesamte Korrespondenz keinen Partner.
+ */
+function counterpartOf(rel) {
+  const both = ensureArray(rel['agrelon:hasSubjectObject']);
+  if (both.length > 0) {
+    const other = both.find(p => p && typeof p === 'object'
+      && p['@id'] !== FONDS_SUBJECT_ID && p.name !== FONDS_SUBJECT_NAME);
+    return other || both[0] || {};
+  }
+  return rel['agrelon:hasObject'] || {};
+}
+
 /** AgRelOn-Relationen am Record. */
 function indexAgentRelations(store, record) {
   const rels = ensureArray(record['m3gim-ontology:hasAgentRelation']);
@@ -783,12 +848,15 @@ function indexAgentRelations(store, record) {
   const entries = [];
   for (const rel of rels) {
     if (!rel || typeof rel !== 'object') continue;
-    const obj = rel['agrelon:hasObject'] || {};
+    const obj = counterpartOf(rel);
+    const objRole = obj.role && typeof obj.role === 'object' ? obj.role : null;
     const validity = rel['agrelon:metadataPeriod'];
     entries.push({
       type: rel['@type'] || null,
       objectName: obj.name || null,
       objectWikidata: obj['@id'] && String(obj['@id']).startsWith('wd:') ? obj['@id'] : null,
+      objectRole: objRole ? (objRole['@id'] || null) : null,
+      objectRoleLabel: objRole ? (objRole['skos:prefLabel'] || null) : null,
       validityBegin: validity && validity['agrelon:hasBeginDate'] || null,
       validityEnd: validity && validity['agrelon:hasEndDate'] || null,
       provenance: rel['agrelon:metadataProvenance'] && rel['agrelon:metadataProvenance']['@id'] || null,

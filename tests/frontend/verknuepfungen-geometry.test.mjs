@@ -12,6 +12,7 @@ import {
 import {
   getFilter, setFilter, resetFilter, subscribe, isFilterActive,
 } from '../../docs/js/ui/filter-state.js';
+import { DATING_SCOPE } from '../../docs/js/data/constants.js';
 
 // --- Synthetischer Store --------------------------------------------------
 
@@ -58,7 +59,7 @@ function annotationDating(year) {
   return {
     id: null, place: null, date: String(year), rawDate: String(year), qualifier: null,
     year, role: 'aufführung', roleId: 'm3gim-vocab:performance',
-    roleLabel: 'aufführung', scope: 'attested', rank: 0,
+    roleLabel: 'aufführung', scope: DATING_SCOPE.attested, rank: 0,
     cluster: 'performativ', origin: 'annotation',
   };
 }

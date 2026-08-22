@@ -35,6 +35,7 @@ import {
   personYearsIndex,
   personInTimeRange,
 } from '../../docs/js/views/network.js';
+import { DATING_SCOPE } from '../../docs/js/data/constants.js';
 
 // ---------------------------------------------------------------------------
 // Mini-Faktory fuer Person-Entries (spiegelt die im Loader gebaute Shape).
@@ -450,11 +451,11 @@ function yearStore() {
       ['rBeides', { '@id': 'rBeides', 'rico:date': '1955' }],
     ]),
     recordDatings: new Map([
-      ['rAbgeleitet', [dating({ year: 1958, scope: 'attested' })]],
+      ['rAbgeleitet', [dating({ year: 1958, scope: DATING_SCOPE.attested })]],
       ['rErwaehnt', [dating({
-        year: 1872, scope: 'mentioned', roleId: 'm3gim-vocab:mentioned', label: 'erwähnt',
+        year: 1872, scope: DATING_SCOPE.mentioned, roleId: 'm3gim-vocab:mentioned', label: 'erwähnt',
       })]],
-      ['rBeides', [dating({ year: 1961, scope: 'attested' })]],
+      ['rBeides', [dating({ year: 1961, scope: DATING_SCOPE.attested })]],
     ]),
     persons: new Map([
       ['Anker, A', person({ records: ['rAnker'] })],

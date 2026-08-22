@@ -326,6 +326,14 @@ Datum ist als First-Class-Typ erfasst, Rollen typisieren den Datumsbezug.
 | gespräch | ● ★ | |
 | erwähnt | ● ★ | |
 
+### Bezugsebene und Rang einer Datierung
+
+Zwei Eigenschaften am Rollenbegriff sagen, was eine Datierung datiert und welche zählt, wenn ein Dokument mehrere trägt. Beide standen bis 2026-08-22 als Handtabelle im Frontend und wandern mit E-150 an den Begriff, damit Datensatz und Oberfläche dieselbe Aussage führen.
+
+`m3gim-ontology:datingScope` benennt die Bezugsebene. Sie ist ein Begriff des Schemas `m3gim-vocab:datingScopes` mit fünf Werten. `objectDating` datiert das Objekt selbst, `attestedDating` ein vom Objekt bezeugtes Ereignis, `mentionedDating` eine bloße Erwähnung, `framingDating` einen umfassenden Zeitraum, `unfulfilledDating` eine negierte Behauptung. Nur die ersten beiden dürfen ein Dokument datieren; die übrigen bleiben lesbar, ohne den Zeitanker zu setzen.
+
+`m3gim-ontology:datingRank` ist eine ganze Zahl und entscheidet die Reihenfolge, wenn ein Dokument mehrere ankernde Datierungen trägt. Der kleinere Wert hat Vorrang. Ein Rollenbegriff ohne Rang sortiert hinter jeden mit Rang, in Quellreihenfolge.
+
 ### Finanzrollen (Typ `ausgaben, währung` / `einnahmen, währung` / `summe, währung`)
 
 | Rolle | Status | Bemerkung |

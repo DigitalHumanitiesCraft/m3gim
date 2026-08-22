@@ -34,13 +34,15 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
 import { loadArchive, primaryYear } from '../../docs/js/data/loader.js';
-import {
-  ANNOTATION_ROLE_SCOPE, ANNOTATION_ROLE_RANK, ANCHORING_SCOPES,
-} from '../../docs/js/data/constants.js';
+import { DATING_SCOPE, ANCHORING_SCOPES } from '../../docs/js/data/constants.js';
+import { withConcepts } from './_concepts.mjs';
 
-async function storeFrom(jsonld) {
+async function storeFrom(jsonld, { bare = false } = {}) {
+  // Bezugsebene und Rang kommen seit E-150 von den Begriffsknoten des
+  // Datensatzes; ein nacktes Fixture haette beides nicht.
+  const payload = bare ? jsonld : withConcepts(jsonld);
   const prevFetch = globalThis.fetch;
-  globalThis.fetch = async () => ({ status: 200, ok: true, json: async () => jsonld });
+  globalThis.fetch = async () => ({ status: 200, ok: true, json: async () => payload });
   try {
     return await loadArchive('mock://data');
   } finally {
@@ -52,7 +54,7 @@ let outputStore = null;
 async function realStore() {
   if (!outputStore) {
     const url = new URL('../../data/output/m3gim.jsonld', import.meta.url);
-    outputStore = await storeFrom(JSON.parse(readFileSync(url, 'utf-8')));
+    outputStore = await storeFrom(JSON.parse(readFileSync(url, 'utf-8')), { bare: true });
   }
   return outputStore;
 }
@@ -72,12 +74,11 @@ function annotationRolesWithoutScope(store) {
 
 /** Datierende Rollen ohne ausdruecklichen Rang. */
 function datingRolesWithoutRank(store) {
-  const ranked = new Set(ANNOTATION_ROLE_RANK);
   const out = new Set();
   for (const list of store.recordDatings.values()) {
     for (const d of list) {
       if (!ANCHORING_SCOPES.has(d.scope)) continue;
-      if (d.roleId && !ranked.has(d.roleId)) out.add(d.roleId);
+      if (d.roleId && !store.roleRank.has(d.roleId)) out.add(d.roleId);
     }
   }
   return [...out].sort();
@@ -129,10 +130,12 @@ describe('2 Bezugsebene', () => {
       'eine unbekannte Annotationsrolle bleibt unbemerkt');
   });
 
-  test('jede Bezugsebene der Tabelle ist ein gueltiger Wert', () => {
-    const VALID = new Set(['object', 'attested', 'mentioned', 'framing', 'unfulfilled']);
-    for (const [roleId, scope] of Object.entries(ANNOTATION_ROLE_SCOPE)) {
-      assert.ok(VALID.has(scope), `${roleId} -> Bezugsebene '${scope}' ist ungueltig`);
+  test('jede Bezugsebene des Datenstands ist ein Wert des Schemas', async () => {
+    const store = await realStore();
+    const VALID = new Set(Object.values(DATING_SCOPE));
+    for (const [roleId, scope] of store.roleScope) {
+      assert.ok(VALID.has(scope),
+        `${roleId} traegt die Bezugsebene '${scope}', die es im Schema nicht gibt`);
     }
     for (const scope of ANCHORING_SCOPES) {
       assert.ok(VALID.has(scope), `ankernde Bezugsebene '${scope}' ist ungueltig`);
@@ -149,30 +152,42 @@ describe('3 Rang', () => {
   });
 
   test('eingespielte Verletzung: datierende Rolle ohne Rang wird gemeldet', async () => {
-    // `zielort` traegt im Datenstand nie ein Datum und steht deshalb in keiner
-    // Rangfolge; die Bezugsebene hat er sehr wohl. Traegt er eines, fehlt die
-    // Priorisierung — genau der Fall, den die Pruefung melden soll.
-    const store = await storeFrom(graphWithRole(
-      { '@id': 'm3gim-vocab:destinationPlace', 'skos:prefLabel': 'zielort' }));
-    assert.deepEqual(datingRolesWithoutRank(store), ['m3gim-vocab:destinationPlace'],
+    // Ein Begriff, der datieren darf und keinen Rang traegt. Der Fall wird hier
+    // ausdruecklich eingespielt statt aus dem Bestand geborgt, damit die
+    // Pruefung ihren Gegenstand behaelt, sobald das Vokabular vollstaendig ist.
+    const graph = graphWithRole(
+      { '@id': 'm3gim-vocab:ohneRang', 'skos:prefLabel': 'ohne rang' });
+    graph['@graph'].push({
+      '@id': 'm3gim-vocab:ohneRang',
+      '@type': 'skos:Concept',
+      'skos:prefLabel': 'ohne rang',
+      'm3gim-ontology:datingScope': { '@id': DATING_SCOPE.attested },
+    });
+    const store = await storeFrom(graph, { bare: true });
+    assert.deepEqual(datingRolesWithoutRank(store), ['m3gim-vocab:ohneRang'],
       'eine datierende Rolle ohne Rang bleibt unbemerkt');
   });
 
-  test('die Rangliste ist wohlgeformt (praefigiert, dublettenfrei)', () => {
-    for (const roleId of ANNOTATION_ROLE_RANK) {
+  test('die Rangfolge des Datenstands ist wohlgeformt', async () => {
+    const store = await realStore();
+    const seen = new Map();
+    for (const [roleId, rank] of store.roleRank) {
       assert.ok(roleId.startsWith('m3gim-vocab:'),
         `${roleId} traegt kein m3gim-vocab:-Praefix`);
-      assert.ok(ANNOTATION_ROLE_SCOPE[roleId],
-        `${roleId} steht im Rang, hat aber keine Bezugsebene`);
-      assert.ok(ANCHORING_SCOPES.has(ANNOTATION_ROLE_SCOPE[roleId]),
+      const scope = store.roleScope.get(roleId);
+      assert.ok(scope, `${roleId} steht im Rang, hat aber keine Bezugsebene`);
+      assert.ok(ANCHORING_SCOPES.has(scope),
         `${roleId} steht im Rang, darf aber gar nicht datieren`);
+      assert.ok(!seen.has(rank),
+        `Rang ${rank} doppelt vergeben: ${seen.get(rank)} und ${roleId}`);
+      seen.set(rank, roleId);
     }
-    assert.equal(new Set(ANNOTATION_ROLE_RANK).size, ANNOTATION_ROLE_RANK.length,
-      'Dublette in ANNOTATION_ROLE_RANK');
+    assert.ok(seen.size > 0, 'Der Datenstand fuehrt keinen einzigen Rang');
   });
 
   test('jede gefuehrte Rolle traegt den Jahresindex allein', async () => {
-    for (const roleId of ANNOTATION_ROLE_RANK) {
+    const ranked = [...(await realStore()).roleRank.keys()];
+    for (const roleId of ranked) {
       const store = await storeFrom(graphWithRole(
         { '@id': roleId, 'skos:prefLabel': roleId.split(':').pop() }));
       const rec = store.records.get('m3gim-data:TEST_ROLE');

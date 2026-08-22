@@ -87,6 +87,7 @@
         <desc id="graph-desc">Die Klassen des Modells als Knoten, die Object Properties als beschriftete Kanten. Die Spalten schichten die Klassen nach ihrem Abstand von den Klassen ohne eingehende Kante.</desc>
         <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--color-text-tertiary)"/></marker></defs>
         <path class="model-graph__edge" d="M 444.0 139.0 C 499.4 139.0 520.6 95.0 576.0 95.0" marker-end="url(#arrow)"/>
+        <path class="model-graph__edge" d="M 1000.0 227.0 C 938.7 227.0 915.3 227.0 854.0 227.0" marker-end="url(#arrow)"/>
         <path class="model-graph__edge" d="M 166.0 315.0 C 221.4 315.0 242.6 139.0 298.0 139.0" marker-end="url(#arrow)"/>
         <path class="model-graph__edge" d="M 166.0 403.0 C 221.4 403.0 242.6 139.0 298.0 139.0" marker-end="url(#arrow)"/>
         <path class="model-graph__edge" d="M 166.0 315.0 C 221.4 315.0 242.6 315.0 298.0 315.0" marker-end="url(#arrow)"/>
@@ -106,6 +107,8 @@
         <path class="model-graph__edge" d="M 722.0 95.0 C 777.4 95.0 798.6 227.0 854.0 227.0" marker-end="url(#arrow)"/>
         <rect class="model-graph__labelbox" x="485.4" y="102.0" width="49.3" height="14" rx="2"/>
         <text class="model-graph__edgelabel" x="510.0" y="112.0" text-anchor="middle">atPlace</text>
+        <rect class="model-graph__labelbox" x="890.5" y="212.0" width="72.9" height="14" rx="2"/>
+        <text class="model-graph__edgelabel" x="927.0" y="222.0" text-anchor="middle">datingScope</text>
         <rect class="model-graph__labelbox" x="189.7" y="212.0" width="84.7" height="14" rx="2"/>
         <text class="model-graph__edgelabel" x="232.0" y="222.0" text-anchor="middle">hasAnnotation</text>
         <rect class="model-graph__labelbox" x="189.7" y="256.0" width="84.7" height="14" rx="2"/>
@@ -396,6 +399,20 @@
           <p class="term__definition">Verbindet eine aus der Erfassungstabelle abgeleitete Entität mit der Adresse ihrer Ursprungszeile. Die Angabe ist technische Rückverfolgbarkeit für Pipeline und Review, keine wissenschaftliche Quellenangabe.</p>
           <p class="term__note">Ohne rdfs:domain, weil die Property an Dokumenten, Annotationen, Aufführungen, Beziehungen und an allen aus einer Verknüpfungszeile abgeleiteten Entitätsknoten steht. Ohne rdfs:range, weil der Container ein typloser Knoten ist. Eine eigene Klasse für den Container würde ihn adressierbar und validierbar machen.</p>
         </div>
+        <div class="term">
+          <h4 class="term__head">
+            <code>m3gim-ontology:datingScope</code>
+            <span class="term__label">Bezugsebene der Datierung</span>
+            <span class="term__gloss">dating scope</span>
+          </h4>
+          <p class="term__definition">Was eine Datierung datiert: das Objekt selbst, ein von ihm bezeugtes Ereignis, eine bloße Erwähnung, einen umfassenden Zeitraum oder eine negierte Behauptung. Steht am Rollenbegriff und gilt damit für jede Datierung, die diese Rolle trägt.</p>
+          <dl class="term__facets">
+            <dt>Domain</dt><dd><code>skos:Concept</code></dd>
+            <dt>Range</dt><dd><code>skos:Concept</code></dd>
+          </dl>
+          <p class="term__note">Nur objectDating und attestedDating dürfen ein Dokument datieren (Frontend-Vertrag A4). Die übrigen Ebenen bleiben lesbar, ohne den Zeitanker zu setzen; ohne die Trennung wanderte ein bloß erwähntes Datum in den Zeitstrahl, der die bezeugten Ereignisse zeigt.</p>
+          <p class="term__note">Die Eigenschaft löst die Handtabelle ANNOTATION_ROLE_SCOPE im Frontend ab (E-150). Zwei Werte waren dort offen und sind mit der Übernahme entschieden: rahmenveranstaltung führt framingDating und der Vertragsstatus nicht eingehalten führt unfulfilledDating, beide also einen eigenen Wert statt der Erwähnung.</p>
+        </div>
       </section>
       <section class="page__section">
         <h2>Datatype Properties</h2>
@@ -430,6 +447,19 @@
         </div>
         <h3>Datierung</h3>
         <p>Alle Datumswerte sind Literale vom Typ xsd:string, weil historische Datierung die Strenge von xsd:date regelmäßig überschreitet: Zeitspannen (1952/1953), unvollständige Datierungen und die Qualifier circa:, vor: und nach:.</p>
+        <div class="term">
+          <h4 class="term__head">
+            <code>m3gim-ontology:datingRank</code>
+            <span class="term__label">Rang der Datierung</span>
+            <span class="term__gloss">dating rank</span>
+          </h4>
+          <p class="term__definition">Reihenfolge der ankernden Datierungen, wenn ein Dokument mehrere trägt. Der kleinere Wert hat Vorrang. Ein Rollenbegriff ohne Rang sortiert hinter jeden mit Rang, in Quellreihenfolge.</p>
+          <dl class="term__facets">
+            <dt>Domain</dt><dd><code>skos:Concept</code></dd>
+            <dt>Range</dt><dd><code>xsd:integer</code></dd>
+          </dl>
+          <p class="term__note">Die Eigenschaft löst die Handtabelle ANNOTATION_ROLE_RANK im Frontend ab (E-150). Die Werte übernehmen deren Reihenfolge unverändert, damit die Übernahme keine Datierung verschiebt.</p>
+        </div>
         <div class="term">
           <h4 class="term__head">
             <code>m3gim-ontology:atDate</code>
@@ -887,6 +917,18 @@
         <tr><td><code>m3gim-vocab:airline</code></td><td>fluggesellschaft</td><td>airline</td><td>Institution, die eine Flugreise durchgeführt hat. Der Wert belegt die Reiseart.</td></tr>
         </tbody></table>
         </div><!--/wide-->
+        <h3>Bezugsebenen der Datierung <span class="term__gloss">Dating scopes</span> <code>m3gim-vocab:datingScopes</code></h3>
+        <p>Geschlossenes Vokabular für m3gim-ontology:datingScope. Es sagt, worauf sich eine Datierung bezieht, und entscheidet damit, ob sie ein Dokument datieren darf.</p>
+        <div class="page__wide">
+        <table class="page__table page__table--concepts">
+        <thead><tr><th>Begriff</th><th>Anzeigelabel</th><th>Englisch</th><th>Definition</th></tr></thead><tbody>
+        <tr><td><code>m3gim-vocab:objectDating</code></td><td>Datierung des Objekts</td><td>object dating</td><td>Die Datierung gilt dem Dokument selbst, also seiner Entstehung, Absendung, Ausstellung oder Veröffentlichung.</td></tr>
+        <tr><td><code>m3gim-vocab:attestedDating</code></td><td>Datierung eines bezeugten Ereignisses</td><td>attested dating</td><td>Die Datierung gilt einem Ereignis, das das Dokument bezeugt, etwa einer Aufführung, einer Probe oder einer Abreise.</td></tr>
+        <tr><td><code>m3gim-vocab:mentionedDating</code></td><td>Datierung einer Erwähnung</td><td>mentioned dating</td><td>Die Datierung gilt einer bloßen Erwähnung im Dokument, ohne dass das Dokument das Ereignis bezeugt.</td></tr>
+        <tr><td><code>m3gim-vocab:framingDating</code></td><td>Datierung eines umfassenden Zeitraums</td><td>framing dating</td><td>Die Datierung gilt einer Rahmenveranstaltung oder einem übergreifenden Zeitraum, in dem das eigentliche Ereignis liegt.</td></tr>
+        <tr><td><code>m3gim-vocab:unfulfilledDating</code></td><td>Datierung einer negierten Behauptung</td><td>unfulfilled dating</td><td>Die Datierung gehört zu einer Angabe, die ausdrücklich nicht eingetreten ist, etwa einem nicht eingehaltenen Vertragstermin.<span class="cell__note">Der Wert hängt an der Statusmarkierung nicht eingehalten, deren Modellierung mit dem Erschließungsteam offen ist (data-model.md § 11). Solange sie in der Rollenspalte steht, hält dieser Begriff sie aus dem Zeitanker heraus.</span></td></tr>
+        </tbody></table>
+        </div><!--/wide-->
         <h3>Annotationsrollen <span class="term__gloss">Annotation roles</span> <code>m3gim-vocab:annotationRoles</code></h3>
         <p>Rolle, in der eine Datierung, eine Verortung oder eine Entitätsreferenz zu ihrem Dokument steht, also die Art des Vorkommnisses, des Zustands oder des Umstands, auf den sie sich bezieht.</p>
         <p class="term__note">Das Scheme vereinigt die in der Umbenennungskarte getrennt vorgeschlagenen Schemes eventTypes, placeRoles und dateRoles. Mit dem einheitlichen Annotationsknoten trägt derselbe Begriff wahlweise eine Datierung, eine Verortung oder beides, sodass eine Trennung nach Datums- und Ortsrollen keinen Gegenstand mehr hat.</p>
@@ -911,7 +953,7 @@
         <tr><td><code>m3gim-vocab:receiving</code></td><td>empfangnahme<span class="cell__alt">empfangsdatum, empfangsort</span></td><td>receiving</td><td>Bezug einer Orts- oder Datumsangabe auf den Empfang eines Korrespondenzstücks.<span class="cell__note">Die Begriffe empfangsdatum und empfangsort sind zu einem Begriff zusammengefallen, weil der Aspekt in der Wertproperty steht und der Rollenname ihn nur wiederholt hat.</span><span class="cell__note">Die Definitionen der aufgegangenen Begriffe lauteten: Datierung des Empfangs eines Korrespondenzstücks. Ort, an dem ein Korrespondenzstück empfangen wurde.</span><span class="cell__note">Der Name lautet receiving und nicht receipt, weil receipt im selben Namensraum an den Dokumenttyp Quittung vergeben ist.</span><span class="cell__note">Das deutsche Anzeigelabel lautet empfangnahme und nicht empfang, weil empfang bereits das Anzeigelabel des Begriffs reception trägt und ein Quellwert sonst nicht mehr eindeutig auf einen Begriff abbildbar wäre.</span></td></tr>
         <tr><td><code>m3gim-vocab:departure</code></td><td>abreise<span class="cell__alt">abreisedatum, abreiseort</span></td><td>departure</td><td>Bezug einer Orts- oder Datumsangabe auf den Antritt einer Reise.<span class="cell__note">Die Begriffe abreisedatum und abreiseort sind zu einem Begriff zusammengefallen, weil der Aspekt in der Wertproperty steht und der Rollenname ihn nur wiederholt hat.</span><span class="cell__note">Die Definitionen der aufgegangenen Begriffe lauteten: Datierung des Reiseantritts. Ort, von dem aus eine Reise angetreten wurde.</span></td></tr>
         <tr><td><code>m3gim-vocab:performancePlace</code></td><td>auffuehrungsort</td><td>performance place</td><td>Ort, an dem eine Aufführung stattfand. Der Wert steht auch an Institutionen, die dann als Ortsvertreter dienen.<span class="cell__note">Der Name behält die Ortsendung, weil der Begriff keinen Datumszwilling hat, mit dem er zusammenfallen könnte, und weil performance bereits vergeben ist.</span></td></tr>
-        <tr><td><code>m3gim-vocab:destinationPlace</code></td><td>zielort</td><td>destination place</td><td>Ort, zu dem eine Reise führt.</td></tr>
+        <tr><td><code>m3gim-vocab:destinationPlace</code></td><td>zielort</td><td>destination place</td><td>Ort, zu dem eine Reise führt.<span class="cell__note">Der Rang steht am Ende der Reihe, weil die abgeloeste Handtabelle des Frontends fuer diesen Begriff keinen fuehrte und er dort hinter jedem gefuehrten Rang sortierte. Die Uebernahme haelt das Verhalten fest, statt eine Reihenfolge zu setzen, die niemand entschieden hat.</span></td></tr>
         <tr><td><code>m3gim-vocab:contractPlace</code></td><td>vertragsort</td><td>contract place</td><td>Ort, an dem ein Vertrag geschlossen wurde.<span class="cell__note">Der Name behält die Ortsendung, weil contract bereits an den Dokumenttyp vergeben ist.</span></td></tr>
         <tr><td><code>m3gim-vocab:residencePlace</code></td><td>wohnort</td><td>residence place</td><td>Ort, an dem eine Person gewohnt hat.<span class="cell__note">Bewusst kein Mobilitätsereignis, weil ein Wohnort ein Zustand mit Gültigkeitsperiode ist und kein Punktereignis.</span></td></tr>
         <tr><td><code>m3gim-vocab:assignment</code></td><td>auftrag</td><td>assignment</td><td><span class="cell__note">Der Wert kommt an Orten und an raumzeitlichen Ereignissen vor, steht aber in keiner Rollenliste der Spezifikation. Seine Bedeutung ist aus den Daten nicht bestimmbar und mit dem Erschließungsteam zu klären.</span><span class="cell__note">Die Übersetzung steht unter dieser Klärung. Der naheliegende Name commission ist an provision vergeben.</span></td></tr>

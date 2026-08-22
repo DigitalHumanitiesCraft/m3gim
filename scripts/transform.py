@@ -39,6 +39,7 @@ from _common import (
     is_approved_match,
     load_concept_meta,
     load_role_concepts,
+    load_role_meta,
     normalize_bearbeitungsstand,
     strip_zero_date_padding,
     INDEX_HEADER_SHIFTS,
@@ -86,6 +87,7 @@ CONTEXT = {
 VOCAB_PATH = Path(os.environ.get("M3GIM_VOCAB_PATH", BASE_DIR / "vocab" / "m3gim.ttl"))
 ROLE_CONCEPTS = load_role_concepts(VOCAB_PATH)
 CONCEPT_META = load_concept_meta(VOCAB_PATH)
+ROLE_META = load_role_meta(VOCAB_PATH)
 
 # Mapping (typ, rolle) → AgRelOn-Klasse + -Property (data-model.md § 8.3, Phase 4.8).
 # Die Pipeline erzeugt zusaetzlich zur normalen Agent-Relation eine agrelon-
@@ -115,6 +117,20 @@ AGRELON_MAPPING_BY_DFT = {
         "korrespondenz": ("agrelon:HasCorrespondent", "agrelon:hasCorrespondent"),
     },
 }
+
+# n-aere AgRelOn-Begriffe, deren Property als owl:SymmetricProperty deklariert
+# ist. Fuer sie sieht AgRelOn agrelon:hasSubjectObject vor, weil beide Seiten
+# dieselbe Rolle tragen; hasSubject und hasObject behaupteten eine Richtung, die
+# der Begriff nicht kennt. Am 2026-08-22 gegen die AgRelOn-RDF der Deutschen
+# Nationalbibliothek geprueft.
+SYMMETRIC_AGRELON_CLASSES = frozenset({"agrelon:HasCorrespondent"})
+
+# Begriffe, deren Subjektstelle nicht die Nachlassbildnerin traegt. IsHasPatron
+# ist der n-aere Begriff zu isPatronOf/hasPatron, und isPatronOf traegt die
+# correspondsTo-Richtung; nach dem AgRelOn-Kommentar zu hasSubjectObject folgt
+# die Subjektstelle diesem ersten Namensteil. Subjekt ist damit der Foerdernde,
+# also der Auftraggeber, und die Gefoerderte steht an der Objektstelle.
+FONDS_AT_OBJECT_CLASSES = frozenset({"agrelon:IsHasPatron"})
 
 # Nachlass-Subjekt aller AgRelOn-Relationen: Ira Malaniuk, Wikidata Q94208
 # (Label + Lebensdaten 2026-06-18 gegen Wikidata verifiziert, nicht geraten).
@@ -406,16 +422,27 @@ def build_role_concepts(nodes: list) -> list:
     concepts = []
     for ident in sorted(used):
         meta = CONCEPT_META.get(ident, {})
-        if not meta.get("definition"):
+        role_meta = ROLE_META.get(ident, {})
+        # Ein Begriff ohne Definition wird trotzdem emittiert, sobald er
+        # Bezugsebene oder Rang traegt: beides ist strukturell und wird
+        # gebraucht, waehrend der Erklaertext fehlen darf (E-150).
+        if not meta.get("definition") and not role_meta:
             continue
         node = {
             "@id": ident,
             "@type": "skos:Concept",
             "skos:prefLabel": used[ident] or ident.split(":", 1)[1],
-            "skos:definition": meta["definition"],
         }
+        if meta.get("definition"):
+            node["skos:definition"] = meta["definition"]
         if meta.get("scheme"):
             node["skos:inScheme"] = {"@id": meta["scheme"]}
+        # Bezugsebene und Rang stehen am Begriff, damit die Oberflaeche sie
+        # nicht als zweite Tabelle fuehren muss (E-150).
+        if role_meta.get("scope"):
+            node["m3gim-ontology:datingScope"] = {"@id": role_meta["scope"]}
+        if role_meta.get("rank") is not None:
+            node["m3gim-ontology:datingRank"] = role_meta["rank"]
         concepts.append(node)
     return concepts
 
@@ -1364,6 +1391,31 @@ def _is_fonds_subject(agent_entry: dict) -> bool:
     return agent_entry.get("name") == MALANIUK_SUBJECT["name"]
 
 
+def _fonds_role_on(record: dict):
+    """Die am selben Dokument erfasste Rolle der Nachlassbildnerin.
+
+    Bei einer symmetrischen Beziehung traegt jede Seite ihre eigene Rolle. Fuer
+    das Gegenueber steht sie in der Verknuepfungszeile, fuer die
+    Nachlassbildnerin in der Agentenliste desselben Dokuments. Gibt es dort
+    keine, bleibt ihre Seite ohne Rolle; eine aus der Gegenseite abgeleitete
+    Rolle waere geraten.
+    """
+    agents = record.get("m3gim-ontology:hasAssociatedAgent")
+    if agents is None:
+        return None
+    for agent in (agents if isinstance(agents, list) else [agents]):
+        if not isinstance(agent, dict) or not _is_fonds_subject(agent):
+            continue
+        role = agent.get("role")
+        if isinstance(role, dict):
+            label = role.get("skos:prefLabel")
+            if label:
+                return label
+        elif isinstance(role, str):
+            return role
+    return None
+
+
 def _dft_scoped_mapping(record: dict, typ: str, rolle: str):
     """AgRelOn-Abbildung, die am Dokumenttyp des Records haengt.
 
@@ -1415,15 +1467,29 @@ def _maybe_add_agrelon(record: dict, typ: str, rolle: str, agent_entry: dict,
         # m3gim-ontology:hasAssociatedAgent, so no information is lost.
         return
     agrelon_class, _prop = mapping
-    rel_entry = {
-        "@type": agrelon_class,
-        "agrelon:hasSubject": MALANIUK_SUBJECT,
-        "agrelon:hasObject": {"name": agent_entry.get("name")},
-        "agrelon:metadataProvenance": {"@id": record["@id"]},
-    }
+    partner = {"name": agent_entry.get("name")}
     # Agent-@id (wd:) durchreichen, falls vorhanden
     if agent_entry.get("@id"):
-        rel_entry["agrelon:hasObject"]["@id"] = agent_entry["@id"]
+        partner["@id"] = agent_entry["@id"]
+
+    rel_entry = {
+        "@type": agrelon_class,
+        "agrelon:metadataProvenance": {"@id": record["@id"]},
+    }
+    if agrelon_class in SYMMETRIC_AGRELON_CLASSES:
+        # Beide Seiten stehen gleichrangig. Die tatsaechliche Richtung, also wer
+        # geschrieben und wer empfangen hat, ist eine Aussage ueber das Dokument
+        # und steht als erfasste Rolle an der jeweiligen Seite.
+        attach_role(partner, rolle)
+        fonds_side = dict(MALANIUK_SUBJECT)
+        attach_role(fonds_side, _fonds_role_on(record))
+        rel_entry["agrelon:hasSubjectObject"] = [fonds_side, partner]
+    elif agrelon_class in FONDS_AT_OBJECT_CLASSES:
+        rel_entry["agrelon:hasSubject"] = partner
+        rel_entry["agrelon:hasObject"] = MALANIUK_SUBJECT
+    else:
+        rel_entry["agrelon:hasSubject"] = MALANIUK_SUBJECT
+        rel_entry["agrelon:hasObject"] = partner
     # Validity aus rico:date des Records als Heuristik (nur fuer HasEmployeeEmployer)
     if agrelon_class == "agrelon:HasEmployeeEmployer" and record.get("rico:date"):
         rel_entry["agrelon:metadataPeriod"] = {

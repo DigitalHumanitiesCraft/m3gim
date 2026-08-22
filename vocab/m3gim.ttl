@@ -228,6 +228,25 @@ m3gim-ontology:derivedFromRole
 # die Strenge von xsd:date regelmäßig überschreitet: Zeitspannen (1952/1953),
 # unvollständige Datierungen und die Qualifier circa:, vor: und nach:.
 
+m3gim-ontology:datingScope
+    a owl:ObjectProperty ;
+    rdfs:label "Bezugsebene der Datierung"@de , "dating scope"@en ;
+    rdfs:comment "Was eine Datierung datiert: das Objekt selbst, ein von ihm bezeugtes Ereignis, eine bloße Erwähnung, einen umfassenden Zeitraum oder eine negierte Behauptung. Steht am Rollenbegriff und gilt damit für jede Datierung, die diese Rolle trägt."@de ;
+    rdfs:domain skos:Concept ;
+    rdfs:range skos:Concept ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/ontology> ;
+    skos:editorialNote "Nur objectDating und attestedDating dürfen ein Dokument datieren (Frontend-Vertrag A4). Die übrigen Ebenen bleiben lesbar, ohne den Zeitanker zu setzen; ohne die Trennung wanderte ein bloß erwähntes Datum in den Zeitstrahl, der die bezeugten Ereignisse zeigt."@de ;
+    skos:editorialNote "Die Eigenschaft löst die Handtabelle ANNOTATION_ROLE_SCOPE im Frontend ab (E-150). Zwei Werte waren dort offen und sind mit der Übernahme entschieden: rahmenveranstaltung führt framingDating und der Vertragsstatus nicht eingehalten führt unfulfilledDating, beide also einen eigenen Wert statt der Erwähnung."@de .
+
+m3gim-ontology:datingRank
+    a owl:DatatypeProperty ;
+    rdfs:label "Rang der Datierung"@de , "dating rank"@en ;
+    rdfs:comment "Reihenfolge der ankernden Datierungen, wenn ein Dokument mehrere trägt. Der kleinere Wert hat Vorrang. Ein Rollenbegriff ohne Rang sortiert hinter jeden mit Rang, in Quellreihenfolge."@de ;
+    rdfs:domain skos:Concept ;
+    rdfs:range xsd:integer ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/ontology> ;
+    skos:editorialNote "Die Eigenschaft löst die Handtabelle ANNOTATION_ROLE_RANK im Frontend ab (E-150). Die Werte übernehmen deren Reihenfolge unverändert, damit die Übernahme keine Datierung verschiebt."@de .
+
 m3gim-ontology:atDate
     a owl:DatatypeProperty ;
     rdfs:label "zum Datum"@de , "at date"@en ;
@@ -552,6 +571,43 @@ m3gim-vocab:agentRoles
     rdfs:comment "Funktion, die eine Person, eine Körperschaft oder eine Gruppe in einem Dokument einnimmt."@de ;
     skos:editorialNote "Die Werte sind nach der Normalisierung geschlechtsneutral, weil die Pipeline die Endungen :in und :innen entfernt."@de .
 
+m3gim-vocab:datingScopes
+    a skos:ConceptScheme ;
+    rdfs:label "Bezugsebenen der Datierung"@de , "Dating scopes"@en ;
+    skos:prefLabel "Bezugsebenen der Datierung"@de ;
+    rdfs:comment "Geschlossenes Vokabular für m3gim-ontology:datingScope. Es sagt, worauf sich eine Datierung bezieht, und entscheidet damit, ob sie ein Dokument datieren darf."@de .
+
+m3gim-vocab:objectDating a skos:Concept ;
+    skos:prefLabel "Datierung des Objekts"@de ;
+    skos:altLabel "object dating"@en ;
+    skos:definition "Die Datierung gilt dem Dokument selbst, also seiner Entstehung, Absendung, Ausstellung oder Veröffentlichung."@de ;
+    skos:inScheme m3gim-vocab:datingScopes .
+
+m3gim-vocab:attestedDating a skos:Concept ;
+    skos:prefLabel "Datierung eines bezeugten Ereignisses"@de ;
+    skos:altLabel "attested dating"@en ;
+    skos:definition "Die Datierung gilt einem Ereignis, das das Dokument bezeugt, etwa einer Aufführung, einer Probe oder einer Abreise."@de ;
+    skos:inScheme m3gim-vocab:datingScopes .
+
+m3gim-vocab:mentionedDating a skos:Concept ;
+    skos:prefLabel "Datierung einer Erwähnung"@de ;
+    skos:altLabel "mentioned dating"@en ;
+    skos:definition "Die Datierung gilt einer bloßen Erwähnung im Dokument, ohne dass das Dokument das Ereignis bezeugt."@de ;
+    skos:inScheme m3gim-vocab:datingScopes .
+
+m3gim-vocab:framingDating a skos:Concept ;
+    skos:prefLabel "Datierung eines umfassenden Zeitraums"@de ;
+    skos:altLabel "framing dating"@en ;
+    skos:definition "Die Datierung gilt einer Rahmenveranstaltung oder einem übergreifenden Zeitraum, in dem das eigentliche Ereignis liegt."@de ;
+    skos:inScheme m3gim-vocab:datingScopes .
+
+m3gim-vocab:unfulfilledDating a skos:Concept ;
+    skos:prefLabel "Datierung einer negierten Behauptung"@de ;
+    skos:altLabel "unfulfilled dating"@en ;
+    skos:definition "Die Datierung gehört zu einer Angabe, die ausdrücklich nicht eingetreten ist, etwa einem nicht eingehaltenen Vertragstermin."@de ;
+    skos:editorialNote "Der Wert hängt an der Statusmarkierung nicht eingehalten, deren Modellierung mit dem Erschließungsteam offen ist (data-model.md § 11). Solange sie in der Rollenspalte steht, hält dieser Begriff sie aus dem Zeitanker heraus."@de ;
+    skos:inScheme m3gim-vocab:datingScopes .
+
 m3gim-vocab:annotationRoles
     a skos:ConceptScheme ;
     rdfs:label "Annotationsrollen"@de , "Annotation roles"@en ;
@@ -832,6 +888,8 @@ m3gim-vocab:airline a skos:Concept ;
 # ---------------------------------------------------------------------------
 
 m3gim-vocab:performance a skos:Concept ;
+    m3gim-ontology:datingScope m3gim-vocab:attestedDating ;
+    m3gim-ontology:datingRank 0 ;
     skos:prefLabel "aufführung"@de ;
     skos:altLabel "auftritt"@de , "performance"@en ;
     skos:definition "Bezug auf eine Aufführung, als Ereignis, als Werkbezug oder als Datierung."@de ;
@@ -841,6 +899,8 @@ m3gim-vocab:performance a skos:Concept ;
     skos:inScheme m3gim-vocab:annotationRoles .
 
 m3gim-vocab:premiere a skos:Concept ;
+    m3gim-ontology:datingScope m3gim-vocab:attestedDating ;
+    m3gim-ontology:datingRank 1 ;
     skos:prefLabel "premiere"@de ;
     skos:altLabel "premiere"@en ;
     skos:definition "Erste Vorstellung einer Produktion."@de ;
@@ -859,11 +919,15 @@ m3gim-vocab:galaPerformance a skos:Concept ;
     skos:inScheme m3gim-vocab:annotationRoles .
 
 m3gim-vocab:rehearsal a skos:Concept ;
+    m3gim-ontology:datingScope m3gim-vocab:attestedDating ;
+    m3gim-ontology:datingRank 9 ;
     skos:prefLabel "probe"@de ;
     skos:altLabel "rehearsal"@en ;
     skos:inScheme m3gim-vocab:annotationRoles .
 
 m3gim-vocab:dressRehearsal a skos:Concept ;
+    m3gim-ontology:datingScope m3gim-vocab:attestedDating ;
+    m3gim-ontology:datingRank 15 ;
     skos:prefLabel "generalprobe"@de ;
     skos:altLabel "dress rehearsal"@en ;
     skos:definition "Letzte Probe unter Aufführungsbedingungen."@de ;
@@ -871,18 +935,24 @@ m3gim-vocab:dressRehearsal a skos:Concept ;
     skos:inScheme m3gim-vocab:annotationRoles .
 
 m3gim-vocab:recording a skos:Concept ;
+    m3gim-ontology:datingScope m3gim-vocab:attestedDating ;
+    m3gim-ontology:datingRank 16 ;
     skos:prefLabel "aufnahme"@de ;
     skos:altLabel "recording"@en ;
     skos:definition "Rundfunk- oder Tonaufnahme. Sie zählt zur diskursiven Mobilität, weil sie die Stimme über den Aufführungsort hinaus verbreitet."@de ;
     skos:inScheme m3gim-vocab:annotationRoles .
 
 m3gim-vocab:reception a skos:Concept ;
+    m3gim-ontology:datingScope m3gim-vocab:attestedDating ;
+    m3gim-ontology:datingRank 17 ;
     skos:prefLabel "empfang"@de ;
     skos:altLabel "reception"@en ;
     skos:definition "Gesellschaftlicher Empfang im Umfeld einer Aufführung. Im Modell auf die Rahmenveranstaltung geführt."@de ;
     skos:inScheme m3gim-vocab:annotationRoles .
 
 m3gim-vocab:guestPerformance a skos:Concept ;
+    m3gim-ontology:datingScope m3gim-vocab:attestedDating ;
+    m3gim-ontology:datingRank 14 ;
     skos:prefLabel "gastspiel"@de ;
     skos:altLabel "guest performance"@en ;
     skos:definition "Auftritt außerhalb des Hauses, an dem ein Engagement besteht."@de ;
@@ -890,6 +960,7 @@ m3gim-vocab:guestPerformance a skos:Concept ;
     skos:inScheme m3gim-vocab:annotationRoles .
 
 m3gim-vocab:framingEvent a skos:Concept ;
+    m3gim-ontology:datingScope m3gim-vocab:framingDating ;
     skos:prefLabel "rahmenveranstaltung"@de ;
     skos:altLabel "framing event"@en ;
     skos:definition "Übergeordnete Veranstaltung, in deren Rahmen ein Ereignis stattfindet."@de ;
@@ -903,6 +974,8 @@ m3gim-vocab:repertoire a skos:Concept ;
     skos:inScheme m3gim-vocab:annotationRoles .
 
 m3gim-vocab:creation a skos:Concept ;
+    m3gim-ontology:datingScope m3gim-vocab:objectDating ;
+    m3gim-ontology:datingRank 13 ;
     skos:prefLabel "entstehung"@de ;
     skos:altLabel "entstehungsort"@de , "erstelldatum"@de , "entstehungsdatum"@de ,
         "creation"@en ;
@@ -915,6 +988,8 @@ m3gim-vocab:creation a skos:Concept ;
     skos:inScheme m3gim-vocab:annotationRoles .
 
 m3gim-vocab:dispatch a skos:Concept ;
+    m3gim-ontology:datingScope m3gim-vocab:objectDating ;
+    m3gim-ontology:datingRank 2 ;
     skos:prefLabel "absendung"@de ;
     skos:altLabel "absendedatum"@de , "absendeort"@de , "dispatch"@en ;
     skos:definition "Bezug einer Orts- oder Datumsangabe auf das Absenden eines Korrespondenzstücks."@de ;
@@ -923,6 +998,8 @@ m3gim-vocab:dispatch a skos:Concept ;
     skos:inScheme m3gim-vocab:annotationRoles .
 
 m3gim-vocab:receiving a skos:Concept ;
+    m3gim-ontology:datingScope m3gim-vocab:objectDating ;
+    m3gim-ontology:datingRank 3 ;
     skos:prefLabel "empfangnahme"@de ;
     skos:altLabel "empfangsdatum"@de , "empfangsort"@de , "receiving"@en ;
     skos:definition "Bezug einer Orts- oder Datumsangabe auf den Empfang eines Korrespondenzstücks."@de ;
@@ -933,6 +1010,8 @@ m3gim-vocab:receiving a skos:Concept ;
     skos:inScheme m3gim-vocab:annotationRoles .
 
 m3gim-vocab:departure a skos:Concept ;
+    m3gim-ontology:datingScope m3gim-vocab:attestedDating ;
+    m3gim-ontology:datingRank 12 ;
     skos:prefLabel "abreise"@de ;
     skos:altLabel "abreisedatum"@de , "abreiseort"@de , "departure"@en ;
     skos:definition "Bezug einer Orts- oder Datumsangabe auf den Antritt einer Reise."@de ;
@@ -948,12 +1027,17 @@ m3gim-vocab:performancePlace a skos:Concept ;
     skos:inScheme m3gim-vocab:annotationRoles .
 
 m3gim-vocab:destinationPlace a skos:Concept ;
+    m3gim-ontology:datingScope m3gim-vocab:attestedDating ;
+    m3gim-ontology:datingRank 22 ;
+    skos:editorialNote "Der Rang steht am Ende der Reihe, weil die abgeloeste Handtabelle des Frontends fuer diesen Begriff keinen fuehrte und er dort hinter jedem gefuehrten Rang sortierte. Die Uebernahme haelt das Verhalten fest, statt eine Reihenfolge zu setzen, die niemand entschieden hat."@de ;
     skos:prefLabel "zielort"@de ;
     skos:altLabel "destination place"@en ;
     skos:definition "Ort, zu dem eine Reise führt."@de ;
     skos:inScheme m3gim-vocab:annotationRoles .
 
 m3gim-vocab:contractPlace a skos:Concept ;
+    m3gim-ontology:datingScope m3gim-vocab:objectDating ;
+    m3gim-ontology:datingRank 18 ;
     skos:prefLabel "vertragsort"@de ;
     skos:altLabel "contract place"@en ;
     skos:definition "Ort, an dem ein Vertrag geschlossen wurde."@de ;
@@ -968,6 +1052,8 @@ m3gim-vocab:residencePlace a skos:Concept ;
     skos:inScheme m3gim-vocab:annotationRoles .
 
 m3gim-vocab:assignment a skos:Concept ;
+    m3gim-ontology:datingScope m3gim-vocab:attestedDating ;
+    m3gim-ontology:datingRank 19 ;
     skos:prefLabel "auftrag"@de ;
     skos:altLabel "assignment"@en ;
     skos:editorialNote "Der Wert kommt an Orten und an raumzeitlichen Ereignissen vor, steht aber in keiner Rollenliste der Spezifikation. Seine Bedeutung ist aus den Daten nicht bestimmbar und mit dem Erschließungsteam zu klären."@de ;
@@ -975,18 +1061,24 @@ m3gim-vocab:assignment a skos:Concept ;
     skos:inScheme m3gim-vocab:annotationRoles .
 
 m3gim-vocab:issueDate a skos:Concept ;
+    m3gim-ontology:datingScope m3gim-vocab:objectDating ;
+    m3gim-ontology:datingRank 6 ;
     skos:prefLabel "ausstellungsdatum"@de ;
     skos:altLabel "issue date"@en ;
     skos:definition "Datierung der Ausstellung eines Vertrags, Ausweises oder einer Urkunde."@de ;
     skos:inScheme m3gim-vocab:annotationRoles .
 
 m3gim-vocab:publicationDate a skos:Concept ;
+    m3gim-ontology:datingScope m3gim-vocab:objectDating ;
+    m3gim-ontology:datingRank 5 ;
     skos:prefLabel "erscheinungsdatum"@de ;
     skos:altLabel "publication date"@en ;
     skos:definition "Datierung des Erscheinens einer Publikation."@de ;
     skos:inScheme m3gim-vocab:annotationRoles .
 
 m3gim-vocab:broadcastDate a skos:Concept ;
+    m3gim-ontology:datingScope m3gim-vocab:attestedDating ;
+    m3gim-ontology:datingRank 7 ;
     skos:prefLabel "ausstrahlung"@de ;
     skos:altLabel "broadcast date"@en ;
     skos:definition "Datierung der Sendung einer Rundfunkaufnahme."@de ;
@@ -994,30 +1086,40 @@ m3gim-vocab:broadcastDate a skos:Concept ;
     skos:inScheme m3gim-vocab:annotationRoles .
 
 m3gim-vocab:transferDate a skos:Concept ;
+    m3gim-ontology:datingScope m3gim-vocab:attestedDating ;
+    m3gim-ontology:datingRank 11 ;
     skos:prefLabel "überweisung"@de ;
     skos:altLabel "transfer date"@en ;
     skos:definition "Datierung einer Zahlung."@de ;
     skos:inScheme m3gim-vocab:annotationRoles .
 
 m3gim-vocab:conversationDate a skos:Concept ;
+    m3gim-ontology:datingScope m3gim-vocab:attestedDating ;
+    m3gim-ontology:datingRank 4 ;
     skos:prefLabel "gespräch"@de ;
     skos:altLabel "conversation date"@en ;
     skos:definition "Datierung eines im Dokument belegten Gesprächs."@de ;
     skos:inScheme m3gim-vocab:annotationRoles .
 
 m3gim-vocab:wageConfirmationDate a skos:Concept ;
+    m3gim-ontology:datingScope m3gim-vocab:objectDating ;
+    m3gim-ontology:datingRank 21 ;
     skos:prefLabel "lohnbestätigung"@de ;
     skos:altLabel "wage confirmation date"@en ;
     skos:definition "Datierung der Bestätigung einer Vergütung."@de ;
     skos:inScheme m3gim-vocab:annotationRoles .
 
 m3gim-vocab:installmentPeriod a skos:Concept ;
+    m3gim-ontology:datingScope m3gim-vocab:attestedDating ;
+    m3gim-ontology:datingRank 20 ;
     skos:prefLabel "ratenzahlung"@de ;
     skos:altLabel "installment period"@en ;
     skos:definition "Zeitraum einer in Raten geleisteten Zahlung."@de ;
     skos:inScheme m3gim-vocab:annotationRoles .
 
 m3gim-vocab:season a skos:Concept ;
+    m3gim-ontology:datingScope m3gim-vocab:attestedDating ;
+    m3gim-ontology:datingRank 10 ;
     skos:prefLabel "spielzeit"@de ;
     skos:altLabel "season"@en ;
     skos:definition "Zeitraum eines Engagements an einem Haus, als Spielzeit bezeichnet."@de ;
@@ -1025,6 +1127,8 @@ m3gim-vocab:season a skos:Concept ;
     skos:inScheme m3gim-vocab:annotationRoles .
 
 m3gim-vocab:rehearsalStartDate a skos:Concept ;
+    m3gim-ontology:datingScope m3gim-vocab:attestedDating ;
+    m3gim-ontology:datingRank 8 ;
     skos:prefLabel "probenbeginn"@de ;
     skos:altLabel "rehearsal start date"@en ;
     skos:definition "Datierung des Probenbeginns einer Produktion."@de ;
@@ -1074,6 +1178,7 @@ m3gim-vocab:broadcastFee a skos:Concept ;
 # ---------------------------------------------------------------------------
 
 m3gim-vocab:mentioned a skos:Concept ;
+    m3gim-ontology:datingScope m3gim-vocab:mentionedDating ;
     skos:prefLabel "erwähnt"@de ;
     skos:altLabel "mentioned"@en ;
     skos:definition "Entität, die im Dokument genannt wird, ohne dass eine bestimmtere Rolle erschließbar ist."@de ;

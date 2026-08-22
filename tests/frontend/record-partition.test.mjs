@@ -26,6 +26,8 @@ import { readFileSync } from 'node:fs';
 
 import { partitionRecord } from '../../docs/js/views/archive-inline-detail.js';
 import { loadArchive } from '../../docs/js/data/loader.js';
+import { withConcepts } from './_concepts.mjs';
+import { DATING_SCOPE } from '../../docs/js/data/constants.js';
 
 /** Verweisknoten einer Rolle, wie die Pipeline ihn schreibt. */
 function role(id, prefLabel) {
@@ -34,7 +36,7 @@ function role(id, prefLabel) {
 
 async function storeFrom(jsonld) {
   const prevFetch = globalThis.fetch;
-  globalThis.fetch = async () => ({ status: 200, ok: true, json: async () => jsonld });
+  globalThis.fetch = async () => ({ status: 200, ok: true, json: async () => withConcepts(jsonld) });
   try {
     return await loadArchive('mock://data');
   } finally {
@@ -220,8 +222,8 @@ test('partitionRecord: am Datenstand kommt keine verortete Annotation in den Dat
       assert.equal(d.place, null, `verortete Annotation in der Datierungsliste: ${d.id}`);
       assert.ok(d.date, `Datierung ohne Datum: ${d.id}`);
     }
-    for (const d of mentionedDatings) assert.equal(d.scope, 'mentioned');
-    for (const d of eventDatings) assert.notEqual(d.scope, 'mentioned');
+    for (const d of mentionedDatings) assert.equal(d.scope, DATING_SCOPE.mentioned);
+    for (const d of eventDatings) assert.notEqual(d.scope, DATING_SCOPE.mentioned);
     seenMentioned += mentionedDatings.length;
     seenEvent += eventDatings.length;
   }

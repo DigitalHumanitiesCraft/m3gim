@@ -24,12 +24,13 @@ import { readFileSync } from 'node:fs';
 
 import { loadArchive } from '../../docs/js/data/loader.js';
 import { dftLabel, getDocTypeId, ensureArray } from '../../docs/js/utils/format.js';
+import { withConcepts } from './_concepts.mjs';
 
 // Baut den Store ueber den ECHTEN loadArchive-Pfad; fetch wird auf das
 // uebergebene Objekt umgelenkt und danach wiederhergestellt.
 async function storeFrom(jsonld) {
   const prevFetch = globalThis.fetch;
-  globalThis.fetch = async () => ({ status: 200, ok: true, json: async () => jsonld });
+  globalThis.fetch = async () => ({ status: 200, ok: true, json: async () => withConcepts(jsonld) });
   try {
     return await loadArchive('mock://data');
   } finally {

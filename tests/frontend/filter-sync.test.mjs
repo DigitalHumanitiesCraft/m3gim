@@ -18,6 +18,7 @@ import {
   applyZeitfenster, recordYear, makeSyncGuard, sichtToActiveSet, activeSetToSicht,
   zeitfensterToYearRange, yearRangeToZeitfenster,
 } from '../../docs/js/ui/filter-sync.js';
+import { DATING_SCOPE } from '../../docs/js/data/constants.js';
 
 // --- Schicht 1: reine Projektionen ----------------------------------------
 
@@ -77,7 +78,7 @@ describe('applyZeitfenster (undatierte bleiben sichtbar)', () => {
   });
   test('recordYear nimmt die ankernde Datierung, wenn rico:date fehlt', () => {
     const withDating = {
-      recordDatings: new Map([['x', [{ year: 1949, scope: 'attested', rank: 1 }]]]),
+      recordDatings: new Map([['x', [{ year: 1949, scope: DATING_SCOPE.attested, rank: 1 }]]]),
     };
     assert.equal(recordYear(withDating, { '@id': 'x' }), 1949);
   });

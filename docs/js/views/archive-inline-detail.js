@@ -18,7 +18,7 @@ import { formatDate } from '../utils/date-parser.js';
 import { navigateToIndex, applyArchivFilter } from '../ui/router.js';
 import { extractXlsxSource } from '../utils/provenance.js';
 import { toggleKorb, isInKorb } from '../ui/basket.js';
-import { WIKIDATA_ICON_SVG, AGRELON_LABELS, roleClusterFor, sectionForRole, formatLanguage, bookmarkIcon } from '../data/constants.js';
+import { WIKIDATA_ICON_SVG, AGRELON_LABELS, roleClusterFor, sectionForRole, formatLanguage, bookmarkIcon, DATING_SCOPE } from '../data/constants.js';
 import { datingsOf, datingsByScope } from '../data/loader.js';
 
 // Mapping Indizes-Grid -> Toolbar-Filter-Facet (E-91). Grids ohne
@@ -232,9 +232,9 @@ export function partitionRecord(record, store) {
   //                     laufen mit, statt aus der Ansicht zu fallen.
   const hasDatings = Boolean(store && store.recordDatings);
   const mentionedDatings = hasDatings
-    ? datingsByScope(store, record, 'mentioned').filter(d => !d.place) : [];
+    ? datingsByScope(store, record, DATING_SCOPE.mentioned).filter(d => !d.place) : [];
   const eventDatings = hasDatings
-    ? datingsOf(store, record).filter(d => !d.place && d.scope !== 'mentioned') : [];
+    ? datingsOf(store, record).filter(d => !d.place && d.scope !== DATING_SCOPE.mentioned) : [];
 
   // Agents, die schon ueber eine AgRelOn-Beziehung sichtbar sind, unterdruecken.
   const agrelonAgentKeys = new Set();
@@ -388,7 +388,11 @@ function eventChipEls(store, events, locations, eventDatings) {
 /** AgRelOn-Beziehungen (aus store.agentRelations) -> Chips. */
 function relationChipEls(relations) {
   return relations.map(r => {
-    const label = AGRELON_LABELS[r.type] || (r.type || '').replace(/^agrelon:Has/, '');
+    // Bei einer symmetrischen Beziehung sagt der Begriff nichts ueber die
+    // Richtung; die erfasste Rolle der Gegenseite tut es (E-149). Ohne sie
+    // stuenden Absender und Adressat als zwei gleich beschriftete Chips da.
+    const base = AGRELON_LABELS[r.type] || (r.type || '').replace(/^agrelon:Has/, '');
+    const label = r.objectRoleLabel ? `${base} · ${r.objectRoleLabel}` : base;
     const validity = r.validityBegin
       ? ` ${r.validityBegin}${r.validityEnd ? '–' + r.validityEnd : ''}`
       : '';

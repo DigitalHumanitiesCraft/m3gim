@@ -1,5 +1,5 @@
 {
-  "_provenance": "Verifiziert im Modellierungs-Audit 2026-06-18 (architecture-decisions.md E-103/E-104/E-105). Quellen: RiC-O 1.1 ICA-EGAD CSV-Komponentenlisten (github.com/ICA-EGAD/RiC-O, ontology/current-version), recordSetTypes-Vokabular (modularized-version/RiC_RecordSetTypes_vocabulary.rdf), AgRelOn DNB-RDF (d-nb.info/standards/elementset/agrelon), schema.org, GND-Ontologie (d-nb.info/standards/elementset/gnd). REGEL: nur gegen die offizielle Quelle nachpflegen, nie aus der Benennungskonvention raten (Leitplanke 'Fremdterme verifizieren').",
+  "_provenance": "Verifiziert im Modellierungs-Audit 2026-06-18 (architecture-decisions.md E-103/E-104/E-105). Quellen: RiC-O 1.1 ICA-EGAD CSV-Komponentenlisten (github.com/ICA-EGAD/RiC-O, ontology/current-version), recordSetTypes-Vokabular (modularized-version/RiC_RecordSetTypes_vocabulary.rdf), AgRelOn DNB-RDF (d-nb.info/standards/elementset/agrelon), schema.org, GND-Ontologie (d-nb.info/standards/elementset/gnd). REGEL: nur gegen die offizielle Quelle nachpflegen, nie aus der Benennungskonvention raten (Leitplanke 'Fremdterme verifizieren'). Nachgepflegt 2026-08-22: agrelon:hasSubjectObject, belegt als owl:ObjectProperty in der AgRelOn-RDF (d-nb.info/standards/elementset/agrelon), vorgesehen fuer die Seiten eines symmetrischen n-aeren Begriffs wie HasCorrespondent (E-149).",
   "rico": [
     "rico:Record",
     "rico:RecordSet",
@@ -28,20 +28,21 @@
     "ric-rst:File"
   ],
   "agrelon": [
-    "agrelon:HasEmployeeEmployer",
-    "agrelon:HasCorrespondent",
-    "agrelon:HasProfessionalContact",
     "agrelon:HasColleague",
+    "agrelon:HasCorrespondent",
+    "agrelon:HasEmployeeEmployer",
+    "agrelon:HasIsMember",
+    "agrelon:HasProfessionalContact",
     "agrelon:HasStudentTeacher",
     "agrelon:IsHasPatron",
-    "agrelon:HasIsMember",
-    "agrelon:hasSubject",
+    "agrelon:hasBeginDate",
+    "agrelon:hasEndDate",
     "agrelon:hasObject",
-    "agrelon:metadataProvenance",
+    "agrelon:hasSubject",
+    "agrelon:hasSubjectObject",
     "agrelon:metadataConfidence",
     "agrelon:metadataPeriod",
-    "agrelon:hasBeginDate",
-    "agrelon:hasEndDate"
+    "agrelon:metadataProvenance"
   ],
   "schema": [
     "schema:birthDate",

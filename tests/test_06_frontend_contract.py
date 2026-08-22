@@ -8,7 +8,7 @@ agentRelations, finances, typisierte Datumsfelder."""
 import re
 
 
-from _helpers import ensure_list, iter_entities_with_id
+from _helpers import ensure_list, iter_entities_with_id, relation_parties
 
 
 WD_ID_PATTERN = re.compile(r"^wd:Q\d+$")
@@ -198,9 +198,12 @@ def test_agent_relations_have_type_and_object(records):
             if not AGRELON_TYPE_PATTERN.match(rel_type):
                 offenders.append((r["@id"], f"@type={rel_type!r}"))
                 continue
-            obj = rel.get("agrelon:hasObject")
-            if not (isinstance(obj, dict) and obj.get("name")):
-                offenders.append((r["@id"], f"{rel_type}: hasObject ohne name"))
+            # Gerichtete Relationen tragen hasSubject/hasObject, symmetrische
+            # beide Seiten als hasSubjectObject (E-149). Beide Formen muessen
+            # eine benannte Gegenseite liefern.
+            parties = relation_parties(rel)
+            if len(parties) != 2 or not all(p.get("name") for p in parties):
+                offenders.append((r["@id"], f"{rel_type}: Seiten ohne Namen"))
     assert total >= 10, f"Zu wenige agentRelation-Einträge: {total}"
     assert not offenders, f"Malformed agentRelation: {offenders[:5]}"
 

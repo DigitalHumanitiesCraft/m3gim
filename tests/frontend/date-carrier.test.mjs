@@ -43,6 +43,7 @@ import { loadArchive } from '../../docs/js/data/loader.js';
 import { countLinks } from '../../docs/js/utils/format.js';
 import { buildOccurrences } from '../../docs/js/views/entity-map-data.js';
 import { personYearsIndex, personInTimeRange } from '../../docs/js/views/network.js';
+import { withConcepts } from './_concepts.mjs';
 
 // archive-holdings.js zieht ueber ui/events.js einen window-Listener auf
 // Modulebene. Der Stub haelt den Import in Node offen, ohne die View zu
@@ -57,7 +58,7 @@ before(async () => {
 
 async function storeFrom(jsonld) {
   const prevFetch = globalThis.fetch;
-  globalThis.fetch = async () => ({ status: 200, ok: true, json: async () => jsonld });
+  globalThis.fetch = async () => ({ status: 200, ok: true, json: async () => withConcepts(jsonld) });
   try {
     return await loadArchive('mock://data');
   } finally {

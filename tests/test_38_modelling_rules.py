@@ -19,7 +19,7 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
 
-from _helpers import ensure_list
+from _helpers import ensure_list, relation_parties
 
 DFT_PREFIX = "m3gim-vocab:"
 
@@ -67,8 +67,12 @@ def test_no_self_referential_agent_relations_and_roles_kept(records):
         for rel in ensure_list(r.get("m3gim-ontology:hasAgentRelation")):
             if not isinstance(rel, dict):
                 continue
-            subj = rel.get("agrelon:hasSubject") or {}
-            obj = rel.get("agrelon:hasObject") or {}
+            # Beide Formen pruefen: gerichtet ueber hasSubject/hasObject,
+            # symmetrisch ueber die beiden hasSubjectObject-Seiten (E-149).
+            parties = relation_parties(rel)
+            if len(parties) != 2:
+                continue
+            subj, obj = parties
             same_id = subj.get("@id") and subj.get("@id") == obj.get("@id")
             same_name = not obj.get("@id") and subj.get("name") == obj.get("name")
             if same_id or same_name:

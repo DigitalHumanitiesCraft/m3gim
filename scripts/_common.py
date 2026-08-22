@@ -302,6 +302,37 @@ def load_concept_meta(vocab_path: Path) -> dict[str, dict[str, str]]:
     return meta
 
 
+def load_role_meta(vocab_path: Path) -> dict[str, dict]:
+    """Liest Bezugsebene und Rang der Rollenbegriffe aus dem Vokabular.
+
+    Rueckgabe: {CURIE: {"scope": CURIE|None, "rank": int|None}}. Beides stand
+    bis 2026-08-22 als Handtabelle im Frontend (E-150). Die Bezugsebene sagt,
+    was eine Datierung datiert, der Rang entscheidet zwischen mehreren
+    ankernden Datierungen desselben Dokuments.
+    """
+    meta: dict[str, dict] = {}
+    for statement in _turtle_statements(Path(vocab_path).read_text(encoding="utf-8")):
+        subject, _, body = statement.partition(" ")
+        if not subject.startswith(VOCAB_PREFIX) or not _IS_CONCEPT.match(body):
+            continue
+        scope = None
+        for obj in _predicate_objects(body, "m3gim-ontology:datingScope"):
+            candidate = obj.strip().rstrip(" .;,")
+            if candidate.startswith(VOCAB_PREFIX):
+                scope = candidate
+                break
+        rank = None
+        for obj in _predicate_objects(body, "m3gim-ontology:datingRank"):
+            digits = obj.strip().rstrip(" .;,")
+            if digits.isdigit():
+                rank = int(digits)
+                break
+        if scope is None and rank is None:
+            continue
+        meta[subject] = {"scope": scope, "rank": rank}
+    return meta
+
+
 def load_role_concepts(vocab_path: Path) -> dict[str, tuple[str, str]]:
     """Liest die Rollenbegriffe des Vokabulars als deutsches Label auf Concept.
 

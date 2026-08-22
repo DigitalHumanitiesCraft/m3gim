@@ -13,6 +13,8 @@ Korrespondenz, die es nie gab. Beide Richtungen sind hier festgehalten.
 Lauf: pytest tests/test_49_correspondence_author.py
 """
 
+from _helpers import relation_counterparts
+
 CORRESPONDENCE = "m3gim-vocab:correspondence"
 AUTHOR = "m3gim-vocab:author"
 # Nachlassbildnerin: als Verfasserin ihres eigenen Briefes waere sie Subjekt und
@@ -54,9 +56,11 @@ def _correspondent_names(record):
             continue
         if rel.get("@type") != "agrelon:HasCorrespondent":
             continue
-        obj = rel.get("agrelon:hasObject") or {}
-        if isinstance(obj, dict) and obj.get("name"):
-            out.add(obj["name"])
+        # Symmetrische Relationen fuehren beide Seiten als hasSubjectObject
+        # (E-149); die Gegenseite ist die ohne die Nachlassbildnerin.
+        for party in relation_counterparts(rel):
+            if party.get("name"):
+                out.add(party["name"])
     return out
 
 
