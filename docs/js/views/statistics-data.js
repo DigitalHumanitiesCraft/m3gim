@@ -8,7 +8,7 @@
  * Labels hinaus.
  */
 
-import { getDocTypeId, cityOf } from '../utils/format.js';
+import { getDocTypeId, dftLabel, cityOf } from '../utils/format.js';
 import { mobilityClusterFor } from '../data/constants.js';
 import { extractYear } from '../utils/date-parser.js';
 
@@ -173,11 +173,9 @@ export function aggregateDocTypes(store) {
     counts.set(id, (counts.get(id) || 0) + 1);
   }
   const rows = [...counts.entries()]
-    .map(([id, count]) => {
-      const concept = store.dftHierarchy.get(id);
-      const label = concept?.prefLabel || id;
-      return { id, count, label };
-    })
+    // dftLabel prefixes the short id before the lookup; a bare id never hits
+    // store.dftHierarchy and would silently fall back to the technical key.
+    .map(([id, count]) => ({ id, count, label: dftLabel(store, id) }))
     .sort((a, b) => b.count - a.count);
   if (ohneTyp > 0) {
     rows.push({ id: null, count: ohneTyp, label: 'ohne Typ' });
