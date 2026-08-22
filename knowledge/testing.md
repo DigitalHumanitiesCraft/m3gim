@@ -7,7 +7,7 @@ status: complete
 language: de
 version: 0.4
 created: 2026-02-19
-updated: 2026-08-21
+updated: 2026-08-22
 authors: [Christopher Pollin]
 generated-with: Claude Code
 method:
@@ -76,10 +76,21 @@ tests/
 ├── test_33_frontend_data_fresh.py # docs/data == data/output (Frontend-Staleness-Guard, E-107)
 ├── test_34_rawdata_crosscheck.py  # JSON-LD-Wert zellgenau gegen XLSX-Rohzelle über (Sheet, Zeile) (E-108)
 ├── test_35_ste_id_stability.py    # inhaltsbasiertes STE-@id-Schema (E-115)
-└── test_36_index_completeness.py  # kuratierte Index-Spalten erreichen das JSON-LD (M1)
+├── test_36_index_completeness.py  # kuratierte Index-Spalten erreichen das JSON-LD (M1)
+├── test_37_dropdown_export.py     # Komposit-Trenner "_" + Sheet-Filter nach dem Dropdown-Umbau
+├── test_38_modelling_rules.py     # bestätigte Modellierungsregeln (E-129 bis E-132)
+├── test_38_ste_deterministic_ids.py  # Unit-Lock für _ste_id, Reihenfolge-Unabhängigkeit (E-115)
+├── test_39_date_validity.py       # kalendarische Gültigkeit der Datumswerte (AF-04)
+├── test_40_vocab_gate.py          # check-coverage.py als verbindliches Gate
+├── test_41_naming_convention.py   # Namenskonvention des Vokabulars (Klassen groß, Rest klein)
+├── test_42_performance_role_migration.py  # E-96-Nachzug in build-views.py und audit-data.py
+├── test_43_reconciliation_logic.py   # Unit-Tests der Reconciliation-Logik, offline
+├── test_44_approval_signals.py    # Signalvokabular der Approval-Prüfung
+├── test_45_knowledge_integrity.py # E-/AF-/QF-Zitate und relative Links der Wissensbasis
+└── test_46_vocab_vacancy.py       # Gegenrichtung, kein deklarierter Term ohne Belegung
 ```
 
-Die Nummerierung hat historische Lücken (test_17, test_21 wurden nicht vergeben). Das ist bewusst — die Zahlen sind stabile IDs, kein durchgängiger Index.
+Die Nummerierung hat historische Lücken (test_17, test_21 wurden nicht vergeben). Das ist bewusst — die Zahlen sind stabile IDs, kein durchgängiger Index. Die 38 ist doppelt vergeben, `test_38_modelling_rules` und `test_38_ste_deterministic_ids` teilen sie; der Dateiname unterscheidet die beiden Module, die Nummer allein reicht als Verweis nicht.
 
 Leitsatz: jeder Test prüft eine nicht-triviale, nicht-redundante Invariante und kann failen. Soft-Warnings gehören in `validate.py`, nicht in pytest.
 
@@ -206,6 +217,50 @@ Lock für das inhaltsbasierte STE-@id-Schema `m3gim:ste_<record>_<sha1(ort,rolle
 
 Sichert, dass die kuratierten Spalten der vier Index-XLSX (Org-Sitz, Werk-Partie, Personen-Beruf, Lebensdaten, assoziierte Person) als `m3gim:`-Properties an der jeweiligen Entität im Output ankommen. Soll-Quelle ist der kanonische Index über den echten Pipeline-Reader `load_index` mit Header-Shift-Korrektur, nicht der Roh-XLSX-Header.
 
+### 37. Dropdown-Umbau der Verknüpfungstabelle (test_37)
+
+Absorbiert die Team-Änderung von 2026-07, mit der die Spalten `typ` und `rolle` auf abhängige Google-Sheets-Dropdowns umgestellt wurden. Zwei Export-Folgen muss die Pipeline tragen. Ein Dropdown-Wert kann kein Komma enthalten, weshalb der Komposit-Typ „Datum, Ort" im Export „Datum_Ort" heißt; der Unterstrich gilt als gleichwertiger Komposit-Trenner, sonst verliert der `ort,datum`-Zweig alle neuen Zeilen still. Und der Export enthält zusätzlich versteckte Hilfsblätter sowie das Blatt „Typ-Rollen", weshalb `load_verknuepfungen` jedes Blatt ohne die Verknüpfungs-Spaltensignatur (`typ` und `name`) überspringt.
+
+### 38. Bestätigte Modellierungsregeln (test_38_modelling_rules, E-129 bis E-131)
+
+Lock für die von der Projektleitung bestätigten Modellierungsregeln. Eine Relation, deren Objekt die Bestandsbildnerin selbst ist, wird unterdrückt, die Rolle bleibt als `m3gim:hasAssociatedAgent` erhalten (E-129). Der Quellwert `fotografie` bildet auf `m3gim-dft:fotografie` ab und trägt ein Anzeigelabel (E-130). `programm` ist das kanonische Concept mit dem Label „Programm", `programmheft` und `konzertprogramm` lösen als Quellwert-Synonyme darauf auf (E-131). Ein nicht gemappter Dokumenttyp nennt Wert und Quellzelle, statt still zu verschwinden (Anhang zu E-130). Die Anker-Records mit selbstbezüglicher HasCorrespondent-Relation dienen zugleich als Verlustfrei-Kontrolle. Die vierte Regel der Runde, die Präzisionsnormalisierung angereicherter Zeitwerte (E-132), ist über test_39 abgesichert.
+
+### 38. Determinismus der STE-@id-Vergabe (test_38_ste_deterministic_ids, E-115)
+
+Unit-Lock für `scripts.transform._ste_id`, eine Ebene unter dem Output-Test test_35. Deckt den einen Punkt ab, den ein Output-Test strukturell nicht zeigen kann, die Reihenfolge-Unabhängigkeit. Ein globaler oder record-lokaler Laufzähler (früherer Zustand, wiederkehrender test_22-Bruch) würde bei umgeordnetem Input denselben Inhalts-Tupeln andere @ids zuweisen, der Content-Hash tut das nicht. Die Fixture führt bewusst eine echte Inhaltsdublette mit, damit auch das Ordinal-Suffix geprüft wird.
+
+### 39. Kalendarische Datumsgültigkeit (test_39, AF-04/E-132)
+
+Prüft, dass kein Datumswert im erzeugten Datensatz einen Monat oder Tag außerhalb des Kalenders trägt. Zulässig sind nach [data.md](data.md) § 6 die Formen `YYYY`, `YYYY-MM` und `YYYY-MM-DD`, Zeitspannen als `.../...` sowie die Qualifier `circa:`, `vor:` und `nach:`. Der Anlass ist die Wikidata-Anreicherung, solange sie das Feld `precision` verwirft; eine jahresgenau geführte Angabe kommt von Wikidata als `+1841-00-00T00:00:00Z` und landet als `1841-00-00` im Datensatz (Befund AF-04). Betroffen sind `schema:birthDate`, `schema:deathDate`, `m3gim:wdPremiereDate` und `m3gim:inception`. Die geprüften Properties ermittelt der Test aus dem Datensatz statt aus einer Liste; datumstragend ist eine Property, deren lokaler Name auf `date` oder `datum` endet oder deren sämtliche Zeichenkettenwerte die Gestalt einer Datierung haben. Künftige Datumsproperties fallen damit von selbst in die Prüfung, während `m3gim:lifespan`, Titel und Beträge draußen bleiben. Die Fallback-Klasse `m3gim:DatedEvent` mit `m3gim:dateValue` trägt laut data.md § 6 bewusst die nicht routbaren Rohdatierungen und bleibt über dieselbe Gestaltregel außen vor.
+
+### 40. Vokabular-Gate (test_40)
+
+Führt `vocab/check-coverage.py` aus und failt, sobald der Prüfer eine Abweichung meldet. Damit läuft die Abdeckung des formalen Vokabulars gegen den erzeugten Datensatz im Standardlauf mit, statt nur als Handbefehl verfügbar zu sein. Die Einbindung als eigener Prozess hat drei Gründe. Das Skript exportiert keine aufrufbare Prüf-Funktion, seinen Befund baut `main()` intern zusammen und gibt ihn über Konsole und Exit-Code aus. Der Dateiname trägt einen Bindestrich und ist damit kein importierbarer Modulname. Und der Handbefehl aus `CLAUDE.md` und dieses Gate laufen so über denselben Einstiegspunkt, können also nicht auseinanderlaufen. Die vollständige Ausgabe des Skripts wandert in die Assertion, sodass ein roter Lauf den fehlenden Term benennt. Pfad-Overrides sind `M3GIM_JSONLD_PATH` über die conftest-Fixture und `M3GIM_VOCAB_PATH`.
+
+### 41. Namenskonvention des Vokabulars (test_41)
+
+Lock für die Konvention der Projektleitung, dass ein als `owl:Class` deklarierter Bezeichner mit einem Großbuchstaben beginnt und ein als `owl:ObjectProperty`, `owl:DatatypeProperty` oder `skos:Concept` deklarierter mit einem Kleinbuchstaben. Gelesen wird mit rdflib statt mit einem Textmuster, weil die Deklaration in der Turtle-Datei üblicherweise in der Zeile nach dem Bezeichner steht und ein zeilenweiser Abgleich sie dem Subjekt nicht zuordnet. Anonyme Klassenausdrücke sind Blank Nodes, tragen keinen Namen und bleiben außerhalb der Prüfung. Pfad-Override `M3GIM_VOCAB_PATH`.
+
+### 42. E-96-Nachzug in Ansichtserzeugung und Datenaudit (test_42)
+
+`scripts/build-views.py` und `scripts/audit-data.py` lasen die mit E-96 abgelöste Property `m3gim:hasPerformanceRole`, die im erzeugten Datensatz nicht mehr vorkommt; die Lesestellen lieferten still leere Listen, ohne einen Fehler zu melden, womit Auftritts-Partien, Gattungserkennung und Rollenzählung im Kosmos leer blieben. Das heutige Modell führt Aufführungsknoten `m3gim:Performance`, die über `m3gim:hasStageRole` auf `m3gim:StageRole` zeigen, während der Record über `m3gim:hasPerformance` auf die Aufführung verweist (data.md § 4 und § 7). Zwei Absicherungen greifen. Die betroffenen Auswertungen tragen wieder Daten, mit Mindestvorkommen statt „leere Liste ist ok". Und jeder Vokabular-Term, den die beiden Skripte als String-Literal aus dem Graph lesen, muss im Datensatz vorkommen, womit eine erneute Ablösung dieser Art auffällt.
+
+### 43. Reconciliation-Logik (test_43)
+
+Unit-Tests für `scripts/reconcile.py` entlang der fünf Ursachen der systematischen Fehlzuordnungen, die die Identifier-Vorschlagsberichte unter `data/reports/` belegen. Betroffen sind der Typfilter der Werke ohne die Opernklasse, die angekündigte und nie bindende Komponistenprüfung, der Alias-Vergleich, der nur das Label verglich und den Alias als Label las, die vorhandenen Kennungen, die übersprungen und nie geprüft wurden, sowie die Personensuche mit ihrem Abbruch nach der Komma-Form samt Rangfolge bei Gleichstand. Das Modul läuft offline, alle Wikidata-Antworten darin sind Aufzeichnungen und kein Test greift auf das Netz zu.
+
+### 44. Signalvokabular der Approval-Prüfung (test_44)
+
+Die Prüfung in `scripts/verify-manual-approvals.py` vergleicht Wikidata-Descriptions gegen eine Liste von Typsignalen. Beide Seiten müssen im selben String-Raum liegen, sonst fällt eine korrekte Zuordnung als MISMATCH durch. Der konkrete Anlass ist die Umlautentschärfung, die „saenger" auf „sanger" abbildet, während die Signalliste nur die Schreibweisen mit Umlaut und mit ae führte; damit traf das häufigste Berufssignal dieses Projekts nie und eine belegte Korrektur wurde zurückgewiesen. Der Test prüft die Signaltabelle und die Urteilsfunktion gegen festgehaltene Beschreibungen und läuft ohne Netzzugriff.
+
+### 45. Verweis- und Linkintegrität der Wissensbasis (test_45)
+
+Die Wissensbasis trägt zwei Zitiersysteme, die aus Code, Tests, Vokabular und Action-Layer heraus angesprochen werden. E-Nummern benennen Architektur- und Modellentscheidungen, AF- und QF-Nummern benennen Abgleich- und Quellfehler. Sobald ein Umbau die Definitionen nach Gegenstand verteilt, kann eine Nummer unbemerkt verschwinden oder doppelt entstehen, und das Zitat im Code zeigt danach ins Leere, ohne dass etwas bricht. Der Test verlangt deshalb nur, dass jede zitierte Nummer irgendwo in `knowledge/` genau eine Definition hat, ohne an ein bestimmtes Dokument zu binden; damit überlebt er eine Verteilung der Register. Ein zweiter Teil sichert die relativen Markdown-Links der Wissensbasis und des Action-Layers gegen lautlose Brüche durch Umbenennung oder Löschung.
+
+### 46. Vokabular-Leerstand (test_46, xfail strict)
+
+Gegenrichtung zu test_40. Jener sichert, dass kein im Datensatz verwendeter Term undeklariert bleibt; dieser sichert, dass kein deklarierter Term ohne Belegung mitgeführt wird. Ein leerer Term ist durch eine `skos:editorialNote` entschuldigt, die mit dem Marker `unused:` beginnt und den Grund nennt, womit der Grund am Term selbst steht und mit ihm wandert, statt in einer Ausnahmeliste im Testcode zu leben. Der Test läuft über denselben Einstiegspunkt wie der Handbefehl, also `vocab/check-coverage.py --vacancy`. Der xfail-Marker ist strikt und schlägt als XPASS an, sobald die offenen Terme gefüllt, entfernt oder mit ihrer Notiz versehen sind.
+
 ```bash
 # Dependencies (einmalig)
 pip install -r requirements-test.txt
@@ -292,6 +347,7 @@ Wartung:
 - `test_verknuepfungen_every_referenced_record_has_relations` — **xfail (strict)**. Folio-Granularitäts-Inkonsistenz NIM_168 zwischen Objekt- und Verknüpfungstabelle (Datenfehler-Register QF-07). Nach dem Source-Fix bricht XPASS die Suite, dann Marker entfernen.
 - Partitur-Tests (`test_01`-Schema, `test_08`, `test_09`-Baselines) — **skip**, wenn `partitur.json` nicht gebaut ist. Die Derivate sind deferred (kein aktiver Tab konsumiert sie); die Fixture überspringt statt mit `FileNotFoundError` zu scheitern.
 - `test_has_employer_relations_from_arbeitgeber` — **skip**. Die einzige arbeitgeber-Zeile hat Signatur `UAKUG/NIM_11`, die keinem Record zugeordnet werden kann (verwaist).
+- `test_no_declared_term_without_data` (test_46), **xfail (strict)**. Deklarierte Vokabular-Terme ohne Belegung im Datensatz. Sobald sie gefüllt, entfernt oder mit einer `skos:editorialNote unused:` versehen sind, bricht XPASS die Suite, dann Marker entfernen.
 - Junk-Namen im Personen-Index (`[Organi]`, kurze Initialen) werden als Warnung geloggt, nicht gefailed — Frontend filtert via `isJunkName`.
 - Freitext in Datumsspalte (`"Wien, ab 1956"`, `"1944-05 bis 1944-09"`): `is_iso_date()` lässt sie nicht in typisierte Datumsproperties durch, landen stattdessen im Fallback `m3gim:hasDatedEvent` (inline DatedEvent mit `dateValue`/`dateRole`, E-102). Das generische `m3gim:eventDate` ist abgeschafft (test_18 assertet `generic_count == 0`).
 
@@ -360,6 +416,16 @@ playwright install chromium
 ```
 
 Ohne das Extra prüft die Suite weiterhin die Pipeline-Artefakte, den Frontend-Kontrakt aus den Daten heraus (test_06, test_33) und über `node --test` die dom-freien Frontend-Funktionen. Ungeprüft bleibt allein, was erst im gerenderten Dokument entsteht, also Tab-Durchlauf, logStamp-Keys, Zeitstrahl- und Karten-Canary sowie die Anker-Titel im DOM.
+
+## Screenshot-Spur und Sichtprüfung
+
+Die Konvention der Screenshot-Spur unter [`reports/screens/`](../reports/screens/) steht hier. Das dortige README führt seither nur noch, was die einzelnen Bilder zeigen und ob ihr Zustand heute erreichbar ist.
+
+Wörtlich aus dem früheren README: „Prüfbare visuelle Belege der Frontend-Arbeit, damit der Stand ohne eigenen Lauf gesichtet werden kann. Erzeugt headless über Playwright gegen `docs/` auf `localhost:8765`. Dateiname `YYYY-MM-DD-bereich-zustand.png`."
+
+Geprüfter Stand am 2026-08-22. Port und Vorgehen stimmen mit dem vorhandenen Smoke-Test überein. `tests/frontend/smoke.py` liest seine `BASE_URL` aus `M3GIM_SMOKE_URL` mit dem Default `http://localhost:8765/`, und sein Docstring nennt denselben Serverbefehl `python -m http.server 8765` gegen `docs/`. Das Ad-hoc-Skript `reports/screens/_show_alldata.py`, aus dem die beiden `demo-bestand-*`-Bilder stammen, fährt ebenfalls gegen 8765. Der pytest-Wrapper `tests/frontend/test_smoke.py` weicht bewusst ab und startet einen eigenen Server auf einem freien Port, weil er die Fixture selbst hält; für die Screenshot-Spur bleibt 8765 der Bezugspunkt. Beim Dateinamensmuster weicht der Bestand an zwei Stellen ab. Ein Paar trägt zusätzlich die Uhrzeit (`2026-06-21-2159-bestand-*`), und die vier `demo-*`-Bilder tragen gar kein Datum. Für neue Bilder gilt das Muster unverändert.
+
+Methodenregel aus der Frontend-Sichtprüfung vom 2026-06-21, festgehalten in [journal.md](journal.md) unter dem Eintrag „Frontend-Sichtprüfung am laufenden Interface", wörtlich: „Methodisch zentral ist die Regel, dass bei einem Widerspruch zwischen Bildlesung und DOM-Lesung das DOM gilt. Der gegen den breiten Render skalierte Screenshot war zweimal irreführend, eine vermeintliche Chip-Beschriftung FRIEDHOF war im DOM ERWÄHNT und eine vermeintliche Datumsspanne bis 2826 war im DOM 2026. Zahlen und Beschriftungen stammen seither aus Store-Abfrage oder DOM, die Screenshot-Spur begleitet visuell."
 
 ## JS-Unit-Tests (Node, seit Session 47)
 
