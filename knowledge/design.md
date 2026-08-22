@@ -93,7 +93,7 @@ Frühere Fassungen zeigten die Datierungs-Konfidenz als farbigen Micro-Dot mit n
 
 ### 6. Provenance-Pille am Datenpunkt
 
-`m3gim:xlsxSource` wird als kompakte Pille pro Finanz-, Beziehungs- und Ereignis-Datenpunkt im Inline-Detail sichtbar. Klick führt zur XLSX-Zeilenreferenz (Sheet + Zeile). Provenance ist verpflichtender Teil der UI, nicht Debug-Beigabe.
+`m3gim-ontology:xlsxSource` wird als kompakte Pille pro Finanz-, Beziehungs- und Ereignis-Datenpunkt im Inline-Detail sichtbar. Klick führt zur XLSX-Zeilenreferenz (Sheet + Zeile). Provenance ist verpflichtender Teil der UI, nicht Debug-Beigabe.
 
 ### 7. Selection durch Kontur, nicht Flächenfarbe
 
@@ -111,7 +111,7 @@ Sektionen im Hauptbereich tragen dezente Überschriften nach dem Muster `BÜHNEN
 
 Tippfehler, Dubletten, Normalisierungslücken (etwa „Verdi, Guiseppe" neben „Verdi, Giuseppe") erscheinen im UI so, wie sie im Bestand liegen. Das Interface ist ein Erschließungsspiegel. Der Markdown-Report `data/reports/quality-snapshot.md` listet solche Funde systematisch für die Team-Arbeit.
 
-**Explizite Qualitäts- und Statusmarker.** Wo das Modell Qualität ausdrücklich trägt, zeigt das UI das mit eigenen Markern statt es zu verschweigen. Ein `m3gim:dataQualityFlag` (etwa „Name nicht eindeutig") liegt derzeit nur in den Daten und wird (noch) nicht im UI gerendert. Die Haltung bleibt dieselbe wie für die übrige Datenqualität — sichtbar, nicht gemergt.
+**Explizite Qualitäts- und Statusmarker.** Wo das Modell Qualität ausdrücklich trägt, zeigt das UI das mit eigenen Markern statt es zu verschweigen. Ein `m3gim-ontology:dataQualityFlag` (etwa „Name nicht eindeutig") liegt derzeit nur in den Daten und wird (noch) nicht im UI gerendert. Die Haltung bleibt dieselbe wie für die übrige Datenqualität — sichtbar, nicht gemergt.
 
 **Leere Zeitfenster bleiben sichtbar.** Die Chronik zeigt jedes Jahr der Lebensspanne einzeln (Session 41, M5 — ersetzt das frühere Perioden-Akkordeon). Jahre ohne bearbeitetes Material bekommen einen Umriss-Dot und gedimmtes Label, Jahre mit Records einen gefüllten Dot, dessen Größe mit der Record-Dichte skaliert. Erschließungslücken bleiben dadurch sichtbar, ohne dass ein redaktioneller Hinweis nötig wäre — die Form selbst ist das Signal.
 

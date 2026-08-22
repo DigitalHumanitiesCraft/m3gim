@@ -286,3 +286,103 @@ def test_written_not_cited_entries_stay_honest():
         "Link zeigt ins Leere, und die Ausnahme verdeckt ihn: "
         f"{dict(sorted(linked.items()))}"
     )
+
+
+# Vokabularnamen, wie die Wissensbasis sie schreibt, in Backticks und mit
+# einem der m3gim-Praefixe.
+VOCAB_TERM = re.compile(r"`(m3gim[a-z-]*:[A-Za-z_][A-Za-z0-9_]*)`")
+
+# Dokumente, die festhalten, was einmal entschieden oder getan wurde. Ihre
+# Terme tragen die Namen ihrer Zeit; ein Nachzug wuerde den Datensatz der
+# Entscheidung verfaelschen.
+HISTORICAL_DOCS = {"architecture-decisions.md", "journal.md"}
+
+# Kanalnamen der DOM-CustomEvents. Sie sehen wie ein Vokabularterm aus und
+# sind keiner; ihre Definition steht in docs/js/ui/.
+EVENT_CHANNELS = {
+    "m3gim:navigate": "Navigationskanal in docs/js/ui/events.js",
+    "m3gim:filter": "Filterkanal in docs/js/ui/filter-state.js",
+    "m3gim:archiv-filter": "Bestandsfilter-Kanal in docs/js/ui/events.js",
+}
+
+# Marke fuer Passagen, die absichtlich Namen ausserhalb des heutigen
+# Vokabulars fuehren, also Entfallenes und beschlossene Zielzustaende. Sie
+# nennt ihren Grund im Dokument, statt ihn in eine Liste im Testcode
+# auszulagern, und kennt zwei Reichweiten. Allein auf einer Zeile gilt sie bis
+# zur naechsten Ueberschrift, an eine Textzeile angehaengt nur fuer diese.
+VOCAB_EXEMPT = re.compile(r"<!--\s*vocab-exempt:\s*(.+?)\s*-->")
+HEADING = re.compile(r"^#{1,6}\s")
+
+
+# Das Vokabular fuehrt die entschiedenen, aber noch nicht angelegten Terme
+# des Zielmodells in einer redaktionellen Notiz. Sie ist damit deren einzige
+# Adresse, und die Wissensbasis darf sie nennen, solange sie dort steht.
+TARGET_REGISTER = re.compile(r"Nicht aufgenommen sind.*?\(([^)]*)\)", re.S)
+
+
+def _target_terms() -> set:
+    ttl = (REPO_ROOT / "vocab" / "m3gim.ttl").read_text(encoding="utf-8")
+    match = TARGET_REGISTER.search(ttl)
+    if not match:
+        return set()
+    return {
+        f"m3gim-ontology:{name.strip()}"
+        for name in match.group(1).split(",")
+        if name.strip()
+    }
+
+
+def _declared_terms() -> set:
+    ttl = (REPO_ROOT / "vocab" / "m3gim.ttl").read_text(encoding="utf-8")
+    return set(re.findall(r"^(m3gim[a-z-]*:[A-Za-z_][A-Za-z0-9_]*)\s", ttl, re.M))
+
+
+def test_knowledge_names_only_declared_vocabulary():
+    """Jeder Vokabularname der Wissensbasis existiert im Vokabular.
+
+    Der Modellumbau hat Vokabular, Pipeline, Datensatz, Tests und Frontend
+    gezogen. Die beschreibenden Dokumente sind stellenweise zurueckgeblieben,
+    und nichts hat es gemeldet, weil der Abdeckungspruefer den Datensatz gegen
+    das Vokabular haelt und die Wissensbasis in keiner Richtung vorkommt. Ein
+    Dokument, das heutiges Verhalten unter einem abgeschafften Namen
+    beschreibt, ist schlimmer als eine Luecke, weil es gelesen und geglaubt
+    wird.
+
+    Ausgenommen sind die historischen Dokumente, die Instanz-IDs des
+    Datennamensraums, die DOM-Kanalnamen und jede Passage, die mit der Marke
+    ``<!-- vocab-exempt: Grund -->`` ausdruecklich Entfallenes oder einen
+    beschlossenen Zielzustand fuehrt.
+    """
+    declared = _declared_terms()
+    assert len(declared) > 100, f"Vokabular unerwartet klein geparst: {len(declared)}"
+    target = _target_terms()
+    assert target, "Das Zielmodell-Register des Vokabulars ist nicht auffindbar"
+    known = declared | target
+
+    stale = defaultdict(list)
+    for path in sorted((REPO_ROOT / "knowledge").glob("*.md")):
+        if path.name in HISTORICAL_DOCS:
+            continue
+        exempt = False
+        for lineno, line in enumerate(path.read_text(encoding="utf-8").split("\n"), 1):
+            if HEADING.match(line):
+                exempt = False
+            mark = VOCAB_EXEMPT.search(line)
+            if mark:
+                if not VOCAB_EXEMPT.sub("", line).strip():
+                    exempt = True
+                continue
+            if exempt:
+                continue
+            for term in VOCAB_TERM.findall(line):
+                if term.startswith("m3gim-data:") or term in known:
+                    continue
+                if term in EVENT_CHANNELS:
+                    continue
+                stale[term].append(f"{path.name}:{lineno}")
+    assert not stale, (
+        "Wissensdokumente nennen Vokabularterme, die das Vokabular nicht "
+        "fuehrt. Entweder ist der Name nachzuziehen, oder die Passage "
+        "beschreibt Entfallenes oder einen Zielzustand und braucht die Marke "
+        f"<!-- vocab-exempt: Grund -->: {dict(sorted(stale.items()))}"
+    )

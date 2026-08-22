@@ -64,7 +64,7 @@ Zeichengleiche Namen in verschiedenen Namensräumen sind zulässig und bezeichne
 
 Hierarchie. `rico:RecordSet` (Konvolut, Fonds) mit `rico:Record` (Einzelstück), verbunden über `rico:hasOrHadPart`. Der Typ eines RecordSet steht als `rico:hasRecordSetType` mit einem Wert aus `ric-rst:`, im Bestand `ric-rst:Fonds` für den Gesamtbestand und `ric-rst:File` für die Konvolute. Agenten-Typen `rico:Person`, `rico:CorporateBody`, `rico:Group`, Orte `rico:Place`. Beschreibungs-Properties `rico:identifier`, `rico:title`, `rico:date`, `rico:creationDate`, `rico:hasExtent`, `rico:hasOrHadLanguage`, `rico:generalDescription`, `rico:name`. Relationen `rico:hasOrHadLocation`, `rico:hasOrHadSubject`, `rico:hasDocumentaryFormType`.
 
-`rico:date` bleibt am Dokument und trägt die archivische Datierung der Einheit. Die reine Entstehungsdatierung eines Dokuments steht daneben auf `rico:creationDate`; die frühere projekteigene Property `m3gim:erstelldatum` war eine nackte Unterproperty dieses Terms mit derselben Domain und derselben Bedeutung und ist entfallen.
+`rico:date` bleibt am Dokument und trägt die archivische Datierung der Einheit. Die reine Entstehungsdatierung eines Dokuments steht daneben auf `rico:creationDate`; die frühere projekteigene Property `m3gim:erstelldatum` war eine nackte Unterproperty dieses Terms mit derselben Domain und derselben Bedeutung und ist entfallen. <!-- vocab-exempt: nennt die mit E-139 abgeloeste Property -->
 
 **Anschlusskanten.** Vier Kanten verbinden die projekteigenen Aussagen mit RiC-O und sind gegen die offiziellen Komponentenlisten von RiC-O 1.1 belegt (ICA-EGAD, `ontology/current-version/CSV_lists_of_components`).
 
@@ -73,7 +73,7 @@ Hierarchie. `rico:RecordSet` (Konvolut, Fonds) mit `rico:Record` (Einzelstück),
 - `m3gim-ontology:hasPerformer` ist `rdfs:subPropertyOf rico:hasOrHadParticipant`.
 - `m3gim-ontology:atDate` ist `rdfs:subPropertyOf rico:date`.
 
-Wer nur die RiC-O-Ebene abfragt, erhält damit die projekteigenen Aussagen mit. Zwei früher gesetzte Kanten sind mit E-136 entfallen. `m3gim-ontology:hasAnnotation` trägt keine Unterproperty-Kante auf `rico:isAssociatedWithEvent` mehr, weil der Zielknoten jetzt auch Finanzposten trägt, die kein Ereignis sind. Die Kante auf `rico:beginningDate` ist mit der typisierten Property `m3gim:probenbeginn` entfallen; sie behauptete am Dokument den Beginn seiner Laufzeit.
+Wer nur die RiC-O-Ebene abfragt, erhält damit die projekteigenen Aussagen mit. Zwei früher gesetzte Kanten sind mit E-136 entfallen. `m3gim-ontology:hasAnnotation` trägt keine Unterproperty-Kante auf `rico:isAssociatedWithEvent` mehr, weil der Zielknoten jetzt auch Finanzposten trägt, die kein Ereignis sind. Die Kante auf `rico:beginningDate` ist mit der typisierten Property `m3gim:probenbeginn` entfallen; sie behauptete am Dokument den Beginn seiner Laufzeit. <!-- vocab-exempt: nennt mit E-136 entfallene Properties -->
 
 **Konformitäts-Korrektur (E-103).** Der Web-Audit gegen RiC-O 1.1 hat im damaligen Output emittierte Terme als nicht konform belegt. (1) `rico:isAssociatedWithRecord` existiert nicht; die `isAssociatedWith*`-Familie kennt nur `Date/Event/Place/Rule`. Record-Bezüge laufen über `rico:hasOrHadPart`/`isOrWasPartOf` oder eine konkrete RecordResource-Relation, ein Event-zu-Record-Bezug über `rico:isAssociatedWithEvent` von der Record-Seite. (2)/(3) `rico:File` und `rico:Fonds` sind keine Klassen und stehen nicht im `rico:`-Namensraum, sondern sind Werte des Vokabulars `ric-rst:`; ein Fonds oder eine File ist ein `rico:RecordSet` mit `rico:hasRecordSetType`. Alle drei Korrekturen sind umgesetzt, der Datensatz führt die genannten Fehlformen nicht mehr.
 
@@ -97,19 +97,19 @@ Wer nur die RiC-O-Ebene abfragt, erhält damit die projekteigenen Aussagen mit. 
 
 ### Begründung der Klassen
 
-`m3gim-ontology:Annotation` ist die tragende Änderung aus E-136. Jede Datierung, Verortung und Detailangabe hängt als eigener Annotationsknoten am Subjekt, trägt ihren Wert in einer festen Wertproperty und ihre erfasste Rolle in einer einzigen Rollenproperty aus dem gemeinsamen Vokabular, sodass kein Property-Name mehr eine Rolle ausdrückt und ein Konsument alle Datierungen eines Dokuments über eine Schleife erreicht. Fehlt der Ort, ist es eine reine Datierung; fehlt das Datum, eine reine Verortung. Die Klasse tritt an die Stelle von `m3gim:SpatiotemporalEvent`, `m3gim:DatedEvent` und `m3gim:DetailAnnotation`.
+`m3gim-ontology:Annotation` ist die tragende Änderung aus E-136. Jede Datierung, Verortung und Detailangabe hängt als eigener Annotationsknoten am Subjekt, trägt ihren Wert in einer festen Wertproperty und ihre erfasste Rolle in einer einzigen Rollenproperty aus dem gemeinsamen Vokabular, sodass kein Property-Name mehr eine Rolle ausdrückt und ein Konsument alle Datierungen eines Dokuments über eine Schleife erreicht. Fehlt der Ort, ist es eine reine Datierung; fehlt das Datum, eine reine Verortung. Die Klasse tritt an die Stelle von `m3gim-ontology:Annotation`, `m3gim-ontology:Annotation` und `m3gim-ontology:Annotation`.
 
 Für `m3gim-ontology:Annotation` ist keine Oberklasse festgelegt. Die beiden Vorgängerklassen `SpatiotemporalEvent` und `DatedEvent` trugen `rdfs:subClassOf rico:Event`; diese Kante entfällt, weil die Klasse jetzt auch Finanzposten trägt, die kein Ereignis sind. RiC-O 1.1 bietet keine passende Aufhängung, weil die Detailangabe weder Ereignis noch Beschreibungselement einer Ressource ist. Ob sie als Reifikation einer Aussage modelliert werden soll, ist offen.
 
 Eine Datumszeile und eine Ortszeile derselben Rolle werden nicht zu einem Knoten zusammengeführt (E-139). Die Zusammenführung würde eine Zusammengehörigkeit behaupten, die die Erfassung so nicht erfasst hat; die Ableitung bleibt dem Frontend überlassen. Damit bleibt `m3gim-ontology:xlsxSource` je Knoten einwertig.
 
-`m3gim-ontology:FramingEvent` heißt seit E-139 so. Der frühere Name `m3gim:PerformanceEvent` sagte Aufführungsereignis und meinte die übergeordnete Veranstaltung, was ihn gegen `m3gim-ontology:Performance` austauschbar erscheinen ließ; der neue Name folgt dem englischen Label des Terms.
+`m3gim-ontology:FramingEvent` heißt seit E-139 so. Der frühere Name `m3gim-ontology:FramingEvent` sagte Aufführungsereignis und meinte die übergeordnete Veranstaltung, was ihn gegen `m3gim-ontology:Performance` austauschbar erscheinen ließ; der neue Name folgt dem englischen Label des Terms.
 
 `m3gim-ontology:StageRole` trägt der Tatsache Rechnung, dass Bühnenrollen im Datenbestand als eigenständige Entität geführt werden sollten und nicht als String-Attribut. Partien wie *Waltraute*, *Brangäne*, *2. Norn* oder *Alt Solo* sind wiederkehrende referenzierbare Rollen mit Stimmfach und Werkzugehörigkeit.
 
 ### Rollen als eine einzige Property (E-137)
 
-Die Erfassung führt eine einzige Rollenspalte. Vor dem Umbau verteilte die Pipeline deren Werte je nach Verknüpfungstyp auf `m3gim:role`, `m3gim:eventRole`, `m3gim:dateRole` und `m3gim:detailRole`. Die vier zogen bereits aus einem einzigen Vokabular und fallen deshalb zu `m3gim-ontology:role` zusammen.
+Die Erfassung führt eine einzige Rollenspalte. Vor dem Umbau verteilte die Pipeline deren Werte je nach Verknüpfungstyp auf `m3gim-ontology:role`, `m3gim-ontology:role`, `m3gim-ontology:role` und `m3gim-ontology:role`. Die vier zogen bereits aus einem einzigen Vokabular und fallen deshalb zu `m3gim-ontology:role` zusammen.
 
 Die Property ist `owl:ObjectProperty` mit `rdfs:range skos:Concept`. Der Rollenwert steht als Verweis auf ein Concept des Vokabulars `m3gim-vocab`, und der Verweisknoten führt dessen `skos:prefLabel` mit, damit der Anzeigetext ohne Nachschlagen im Vokabular verfügbar ist. Damit sind die Bezeichner des Vokabulars in den Daten sichtbar, die Werte über die IRI maschinell auswertbar, und das Frontend braucht keine Handtabelle für die Anzeigeform.
 
@@ -247,9 +247,11 @@ Die Indextabellen (Personen-, Organisations-, Orts- und Werkindex) pflegen Felde
 
 Loader-seitig landen sie additiv in `store.organizations[]`, `store.works[]` und `store.persons[]`. Abgesichert durch `tests/test_36_index_completeness.py` (Index-Zelle gegen Entitäts-Property, mit Mindestvorkommen) und die synthetischen Loader-Tests.
 
-Drei Punkte hängen an dieser Familie. `headquarters` und `keyContact` tragen Literale und sind nicht mit dem Orts- beziehungsweise Personenindex verknüpft, sodass dieselbe Person als Akteur und als Schlüsselkontakt unverbunden nebeneinander stehen kann. `indexNote` führt bei Personen faktisch eine Berufsangabe und überschneidet sich mit `gndo:professionOrOccupationAsLiteral` aus der Anreicherung; ob die kuratierte Angabe dorthin geführt werden soll, ist offen. Die frühere Benennung `m3gim:editorialNote` fiel mit `skos:editorialNote` zusammen und meinte etwas anderes, nämlich ein kuratiertes Quellfeld statt einer Anmerkung an der Modellierung.
+Drei Punkte hängen an dieser Familie. `headquarters` und `keyContact` tragen Literale und sind nicht mit dem Orts- beziehungsweise Personenindex verknüpft, sodass dieselbe Person als Akteur und als Schlüsselkontakt unverbunden nebeneinander stehen kann. `indexNote` führt bei Personen faktisch eine Berufsangabe und überschneidet sich mit `gndo:professionOrOccupationAsLiteral` aus der Anreicherung; ob die kuratierte Angabe dorthin geführt werden soll, ist offen. Die frühere Benennung `m3gim-ontology:indexNote` fiel mit `skos:editorialNote` zusammen und meinte etwas anderes, nämlich ein kuratiertes Quellfeld statt einer Anmerkung an der Modellierung.
 
 ### Typisierte Datumsproperty-Familie
+
+<!-- vocab-exempt: fuehrt die mit E-136 entfallenen Properties unter ihren damaligen Namen -->
 
 Dieser Abschnitt ist mit E-136 gegenstandslos geworden. Die sechzehn typisierten Datumsproperties am Dokument (`m3gim:absendedatum`, `m3gim:empfangsdatum`, `m3gim:ausstellungsdatum`, `m3gim:erscheinungsdatum`, `m3gim:abreisedatum`, `m3gim:auftrittsdatum`, `m3gim:auffuehrungsdatum`, `m3gim:probendatum`, `m3gim:probenbeginn`, `m3gim:premieredatum`, `m3gim:ausstrahlungsdatum`, `m3gim:spielzeitVon`, `m3gim:spielzeitBis`, `m3gim:ueberweisungsdatum`, `m3gim:erstelldatum`, `m3gim:gespraechsdatum`) sind ersatzlos entfallen, ebenso die Auffangklasse `m3gim:DatedEvent` mit `m3gim:dateValue` und `m3gim:dateRole`.
 
@@ -259,11 +261,11 @@ Zwei Zusammenlegungen der Rollenwerte hängen an dieser Umstellung (E-139). `spi
 
 ### Erwähnung
 
-Inhaltlich erwähnte Personen und Institutionen werden als `rico:hasOrHadSubject` mit `@type: rico:Person` beziehungsweise `rico:CorporateBody` serialisiert, statt über eine custom-Property `m3gim:mentions`. Damit bleibt das Modell RiC-O-konform. Der Rollenwert `m3gim-vocab:mentioned` trennt dabei den Fall erfasste Nennung von dem Fall keine Rolle erfasst.
+Inhaltlich erwähnte Personen und Institutionen werden als `rico:hasOrHadSubject` mit `@type: rico:Person` beziehungsweise `rico:CorporateBody` serialisiert, statt über eine custom-Property `m3gim:mentions`. Damit bleibt das Modell RiC-O-konform. Der Rollenwert `m3gim-vocab:mentioned` trennt dabei den Fall erfasste Nennung von dem Fall keine Rolle erfasst. <!-- vocab-exempt: nennt die verworfene Alternative -->
 
 ### Kontrollierte Vokabulare als SKOS
 
-Das Vokabular `m3gim-vocab` führt fünf Concept Schemes. Das frühere Sammelscheme `m3gim-role:scheme` ist in vier sortenreine Schemes zerlegt.
+Das Vokabular `m3gim-vocab` führt fünf Concept Schemes. Das frühere Sammelscheme `m3gim-role:scheme` ist in vier sortenreine Schemes zerlegt. <!-- vocab-exempt: nennt das abgeloeste Sammelscheme -->
 
 | Scheme | Gegenstand |
 |---|---|
@@ -423,9 +425,9 @@ Keine Aussage trägt einen Konfidenzwert.
 
 ### Datierungsevidenz wird nicht serialisiert (E-106)
 
-Die `datierungsevidenz`-Spalte (`aus_dokument`/`erschlossen`/`extern`/`unbekannt`) wird **nicht** in den Output übernommen, weder als altes `m3gim:dateEvidence` noch als `agrelon:metadataConfidence`-Dezimalwert. Der frühere Mapping-Schritt (aus_dokument→1.0, extern→0.8, erschlossen→0.6) war eine **erfundene Projektion** der kategorialen Evidenz auf eine Zahl, also kein gemessener Wert und gegen die Leitplanke „Konfidenz nicht erfinden". Kein aktives Feature las den Wert. Mit der Konfidenz entfällt auch die record-seitige Datierungs-**Self-Provenance**, die ohne den Konfidenzwert ein leerer Selbstverweis war.
+Die `datierungsevidenz`-Spalte (`aus_dokument`/`erschlossen`/`extern`/`unbekannt`) wird **nicht** in den Output übernommen, weder als altes `m3gim:dateEvidence` noch als `agrelon:metadataConfidence`-Dezimalwert. Der frühere Mapping-Schritt (aus_dokument→1.0, extern→0.8, erschlossen→0.6) war eine **erfundene Projektion** der kategorialen Evidenz auf eine Zahl, also kein gemessener Wert und gegen die Leitplanke „Konfidenz nicht erfinden". Kein aktives Feature las den Wert. Mit der Konfidenz entfällt auch die record-seitige Datierungs-**Self-Provenance**, die ohne den Konfidenzwert ein leerer Selbstverweis war. <!-- vocab-exempt: nennt eine nicht uebernommene Property -->
 
-Falls die Datierungsevidenz später gebraucht wird, kehrt sie als **kategorialer Wert** zurück, entweder als `agrelon:metadataConfidence`-String-Stufenwert (`"aus_dokument"`/`"erschlossen"`/`"extern"`; der Wertebereich oben erlaubt das ausdrücklich) oder als wiederbelebtes `m3gim:dateEvidence`-Literal. Eine Dezimalzahl wird nicht reaktiviert.
+Falls die Datierungsevidenz später gebraucht wird, kehrt sie als **kategorialer Wert** zurück, entweder als `agrelon:metadataConfidence`-String-Stufenwert (`"aus_dokument"`/`"erschlossen"`/`"extern"`; der Wertebereich oben erlaubt das ausdrücklich) oder als wiederbelebtes `m3gim:dateEvidence`-Literal. Eine Dezimalzahl wird nicht reaktiviert. <!-- vocab-exempt: nennt eine Property, die erst mit ihrer Wiederbelebung entstuende -->
 
 Der Bearbeitungsstand `m3gim-ontology:processingStatus` bleibt als datensatzinterner Projektstatus erhalten und ist nicht Teil der Meta-Statement-Schicht.
 
@@ -472,7 +474,7 @@ Die Kontrakttests in `tests/test_20_xlsx_provenance.py` halten die volle xlsxSou
 
 ### Anwendung in Reifikation
 
-Für nicht-agentische Relationen, bei denen das n-äre Reifikationsmuster nicht aus AgRelOn stammt, sieht [specification.md](specification.md) eine leichtgewichtige Reifikation über ein Muster `m3gim:Statement` vor, angewendet nur dort, wo die Provenienz nicht bereits aus der Record-URI folgt. Das Muster ist nicht ins Vokabular aufgenommen und kommt im Datensatz nicht vor; [pipeline-architecture.md](pipeline-architecture.md) führt es als späte, optionale Phase.
+Für nicht-agentische Relationen, bei denen das n-äre Reifikationsmuster nicht aus AgRelOn stammt, sieht [specification.md](specification.md) eine leichtgewichtige Reifikation über ein Muster `m3gim:Statement` vor, angewendet nur dort, wo die Provenienz nicht bereits aus der Record-URI folgt. Das Muster ist nicht ins Vokabular aufgenommen und kommt im Datensatz nicht vor; [pipeline-architecture.md](pipeline-architecture.md) führt es als späte, optionale Phase. <!-- vocab-exempt: nennt ein vorgeschlagenes, nicht gebautes Muster -->
 
 ## 10. Mobilitätsmodell
 

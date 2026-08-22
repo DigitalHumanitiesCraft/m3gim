@@ -120,7 +120,7 @@ Implizite Annahmen aus `loader.js` (`aggregator.js` wurde Session 32 entfernt):
 - Max. 1 `_Folio`-Kind pro Konvolut
 
 ### 7. Wikidata-Integrität (test_07)
-Jede Q-ID im Output stammt aus `wikidata-reconciliation.json`, Enrichment-Werte sind korrekt getypt (`geo:lat/long` Float mit Range, `m3gim:birthDate` ISO), `m3gim:voiceType` String (nicht Liste), `m3gim:occupation` Liste von Strings.
+Jede Q-ID im Output stammt aus `wikidata-reconciliation.json`, Enrichment-Werte sind korrekt getypt (`geo:lat/long` Float mit Range, `schema:birthDate` ISO), `m3gim-ontology:voiceType` String (nicht Liste), `gndo:professionOrOccupationAsLiteral` Liste von Strings.
 
 ### 8. Partitur-Invarianten (test_08)
 Lebensphasen lückenlos (`LP(i).bis == LP(i+1).von`), decken 1919–2009 ab, unique IDs. Mobilitäts-Jahre innerhalb Lebensspanne, `form` im Enum. Auftritt-Jahre liegen im Phasen-Fenster, dokumente-Referenzen auflösbar.
@@ -129,7 +129,7 @@ Lebensphasen lückenlos (`LP(i).bis == LP(i+1).von`), decken 1919–2009 ab, uni
 Mindestwerte aus `fixtures/baseline_counts.json` pro Entitätstyp (records, persons, orgs, locations, works, verknuepfungen, wd_matches). Alle Checks `>=`, nicht `==` — Wachstum erlaubt, Schrumpfung verboten. Baselines werden bei substanziellen Datenständen nach oben nachgezogen.
 
 ### 10. Determinismus (test_10, slow)
-Lässt `transform.py` zweimal laufen, vergleicht Output (ohne `m3gim:exportDate`). Fängt versehentliche Set-Iteration / Dict-Ordnungsabhängigkeiten. Der Marker `slow` schließt ihn aus dem Lauf `pytest -m "not slow"` aus, im unmarkierten `pytest tests/` läuft er mit. Welche Felder ein Rerun zulässig verändert, steht in [pipeline-architecture.md](pipeline-architecture.md) § Reproduzierbarkeit.
+Lässt `transform.py` zweimal laufen, vergleicht Output (ohne `m3gim-ontology:exportDate`). Fängt versehentliche Set-Iteration / Dict-Ordnungsabhängigkeiten. Der Marker `slow` schließt ihn aus dem Lauf `pytest -m "not slow"` aus, im unmarkierten `pytest tests/` läuft er mit. Welche Felder ein Rerun zulässig verändert, steht in [pipeline-architecture.md](pipeline-architecture.md) § Reproduzierbarkeit.
 
 ### 11. Mobilität (test_11, Phase 4.4 + 4.8)
 SpatiotemporalEvent-Existenz, `atPlace` Pflicht; `atDate` nur für datierte STE (datumslose Mobilitäts-STE aus Ortsrollen tragen bewusst kein `atDate`, E-97). Rollen-Vokabular, Anzahl skaliert mit XLSX-Komposit-Rows. Die Mobilitätssichten aus [data-model.md § 10](data.md) als SPARQL-ähnliche Python-Queries: performative, institutionelle, Korrespondenz-, biographische, diskursive Mobilität.
@@ -151,21 +151,21 @@ Jede in der XLSX belegte Rolle (nach Normalisierung) steht in `data.md § 5`, je
 ### 16. Finanz-Roundtrip (test_16, Phase 4.6)
 Für jede XLSX-Finanzzeile: der zugehörige Record (über `rico:identifier`) enthält eine DetailAnnotation mit exaktem `monetaryAmount` + `currency` + `detailRole`. Kein Silent-Drop.
 
-### 18. Typisierte Datumsproperties (test_18, Phase 4.7)
-Das generische `m3gim:eventDate` ist abgeschafft (E-102): kein Record trägt es mehr, rollenlose/nicht-ISO Datierungen laufen in `m3gim:hasDatedEvent`. Mindestens ein Record nutzt eine typisierte Property; alle Werte sind ISO, TimeSpan oder qualifiziert (`circa:`/`vor:`/`nach:`).
+### 18. Datierung am Annotationsknoten (test_18, Phase 4.7)
+Der Test heisst nach der Phase, die er sicherte, und sichert seit E-136 ihr Gegenteil. Die sechzehn typisierten Datumsproperties sind entfallen; jede Datierung haengt an einem `m3gim-ontology:Annotation`-Knoten mit `m3gim-ontology:atDate` und der erfassten Rolle. Zwei Ausnahmen bleiben, die Entstehungsdatierung des Dokuments auf `rico:creationDate` und die Datierung einer Auffuehrung am Auffuehrungsknoten ohne Rollenangabe. Der Test greift, wenn ein Property-Name zurueckkehrt, der eine Rolle ausdrueckt, wenn eine Datierung ihre Rolle verliert oder wenn der Zugriffspfad vom Dokument zu seinen Datierungen bricht. Alle Werte sind ISO, TimeSpan oder qualifiziert (`circa:`/`vor:`/`nach:`).
 
 ### 19. Datierungs-Meta-Contract (test_19, E-106)
-Die `datierungsevidenz` wird nicht serialisiert: kein `m3gim:dateEvidence`, **kein** `agrelon:metadataConfidence` (nirgends im Graph), keine record-seitige Datierungs-Self-Provenance. Die erfundene Dezimalkonfidenz ist entfernt (E-106, löst E-100 ab). Positivkontrolle: die legitime `agrelon:metadataProvenance` auf den AgRelOn-Relationen (`m3gim:agentRelation`) bleibt erhalten. test_29 (Konfidenz-Hygiene) entfiel mit der Konsolidierung.
+Die `datierungsevidenz` wird nicht serialisiert: kein `m3gim:dateEvidence`, **kein** `agrelon:metadataConfidence` (nirgends im Graph), keine record-seitige Datierungs-Self-Provenance. Die erfundene Dezimalkonfidenz ist entfernt (E-106, löst E-100 ab). Positivkontrolle: die legitime `agrelon:metadataProvenance` auf den AgRelOn-Relationen (`m3gim-ontology:hasAgentRelation`) bleibt erhalten. test_29 (Konfidenz-Hygiene) entfiel mit der Konsolidierung. <!-- vocab-exempt: nennt eine nicht serialisierte Property -->
 
 ### 30. Datums-Routing + Datenqualitäts-Flags (test_30, E-102)
-DatedEvent-Fallback wohlgeformt (`dateValue`/`dateRole`), kein `m3gim:eventDate` mehr, klammer-/freitext-unsichere Datierungen landen im DatedEvent (nicht in typisierten Properties). Ein DatedEvent dupliziert nie ein STE `atDate`+`eventRole` am selben Record (`ort,datum` wird in *eine* Repräsentation aufgelöst, data.md § 4). `dataQualityFlag`-Werte stammen aus dem kontrollierten Vokabular; `m3gim:qualityConfidence` wird nicht fabriziert; `m3gim:bearbeitungsnotiz` trägt den Freitext-Anhang getrennt vom canonischen Status.
+Klammer- und freitextunsichere Datierungen landen im Annotationsknoten statt in einem Datumswert am Dokument. Ein Annotationsknoten dupliziert nie eine bereits am selben Record gefuehrte Kombination aus `m3gim-ontology:atDate` und Rolle` am selben Record (`ort,datum` wird in *eine* Repräsentation aufgelöst, data.md § 4). `dataQualityFlag`-Werte stammen aus dem kontrollierten Vokabular; `m3gim-ontology:qualityConfidence` wird nicht fabriziert; `m3gim-ontology:processingNote` trägt den Freitext-Anhang getrennt vom canonischen Status.
 
 ### 31. Dokumentvokabular (test_31, E-101)
-`sammlung` ist ein eigenständiges Concept `m3gim-dft:sammlung` ohne `skos:broader` (Records zeigen darauf). Jedes dft-Concept trägt ein lesbares deutsches `skos:prefLabel` (bekannte Konzepte exakt, nicht der Slug). Coverage: kein stiller Typ-Drop bei `hasDocumentaryFormType`. Die neuen Konzepte (briefumschlag/musikzeitschrift/chronik/verzeichnis) sind in `DFT_BROADER`/`DOKUMENTTYP_TO_DFT` strukturell gerüstet. Aboutness-Guard: ein dft-Concept erscheint nie als `rico:hasOrHadSubject`.
+`sammlung` ist ein eigenständiges Concept `m3gim-vocab:collection` ohne `skos:broader` (Records zeigen darauf). Jedes dft-Concept trägt ein lesbares deutsches `skos:prefLabel` (bekannte Konzepte exakt, nicht der Slug). Coverage: kein stiller Typ-Drop bei `hasDocumentaryFormType`. Die neuen Konzepte (briefumschlag/musikzeitschrift/chronik/verzeichnis) sind in `DFT_BROADER`/`DOKUMENTTYP_TO_DFT` strukturell gerüstet. Aboutness-Guard: ein dft-Concept erscheint nie als `rico:hasOrHadSubject`.
 
 ### 20. XLSX-Provenance + Anker-Records (test_20)
 
-Prüft `m3gim:xlsxSource` an Records + DetailAnnotations + AgRelOn-Relationen + SpatiotemporalEvents. Zwei Testebenen:
+Prüft `m3gim-ontology:xlsxSource` an Records + DetailAnnotations + AgRelOn-Relationen + SpatiotemporalEvents. Zwei Testebenen:
 
 
 
@@ -177,7 +177,7 @@ Das Modul ist damit gleichzeitig Kontrakttest und **lesbare XLSX → JSON-LD-Abb
 
 ### 22. SpatiotemporalEvent-Koordinaten (test_22, Session 33)
 
-TDD-Spec für den Koordinaten-Patch: jedes ortsindex-auflösbare `m3gim:SpatiotemporalEvent` trägt im `atPlace`-Subobjekt `@id` (`wd:Qxxx`), `owl:sameAs`, `geo:lat`, `geo:long` und — falls Wikidata P17 das liefert — `m3gim:country`. Anker: `ste_NIM_004_24_7` (Zürich Q72), `ste_NIM_004_24_10` (Salzburg Q34713). Soft-Coverage über die STE mit Koordinaten, Werte im Quality-Snapshot.
+TDD-Spec für den Koordinaten-Patch: jedes ortsindex-auflösbare `m3gim-ontology:Annotation` trägt im `atPlace`-Subobjekt `@id` (`wd:Qxxx`), `owl:sameAs`, `geo:lat`, `geo:long` und — falls Wikidata P17 das liefert — `m3gim-ontology:country`. Anker: `ste_NIM_004_24_7` (Zürich Q72), `ste_NIM_004_24_10` (Salzburg Q34713). Soft-Coverage über die STE mit Koordinaten, Werte im Quality-Snapshot.
 
 ### 23. Rollen-Hygiene an Orten (test_23, Session 34)
 
@@ -185,11 +185,11 @@ Regression-Test für einen Pipeline-Bug: im Komposit `ort,datum` der Verknüpfun
 
 ### 24. Komponisten-Unikat-Check im Werkindex (test_24, Session 38)
 
-Fuzzy-Detektor (Levenshtein-Ratio ≥ 92) über alle Komponistennamen in `m3gim:MusicalWork`-Subjects. Findet Schreibweise-Varianten desselben Komponisten („Beethoven, Ludwig van/von"), die durch Tippfehler im Werkindex-XLSX entstehen. `strict-xfail` bis zum Source-Fix durch das Archivteam — nach Fix wird XPASS und bricht die Suite, damit der Marker entfernt wird. Bewusst **kein** `normalize_composer()` in der Pipeline (siehe [data.md § Datenqualität](data.md)): das wäre ein Sonderfall-Workaround, der künftige Tippfehler still kaschiert.
+Fuzzy-Detektor (Levenshtein-Ratio ≥ 92) über alle Komponistennamen in `m3gim-ontology:MusicalWork`-Subjects. Findet Schreibweise-Varianten desselben Komponisten („Beethoven, Ludwig van/von"), die durch Tippfehler im Werkindex-XLSX entstehen. `strict-xfail` bis zum Source-Fix durch das Archivteam — nach Fix wird XPASS und bricht die Suite, damit der Marker entfernt wird. Bewusst **kein** `normalize_composer()` in der Pipeline (siehe [data.md § Datenqualität](data.md)): das wäre ein Sonderfall-Workaround, der künftige Tippfehler still kaschiert.
 
 ### 25. Chronik-Mobilitätscluster (test_25, Session 36)
 
-Lock für die `EVENT_ROLE_TO_MOBILITY_CLUSTER`-Mapping-Tabelle im Frontend (`docs/js/data/constants.js`). Prüft, dass jede `m3gim:eventRole`, die im JSON-LD vorkommt, entweder einer der Sichten (`performativ`/`institutionell`/`korrespondenz`/`diskursiv`/`biografisch`) zugeordnet ist oder explizit auf `null` steht (bewusste Nicht-Einordnung wie `auftrag`, `entstehung`, `ueberweisung`). Fängt stille Mapping-Drift ein, wenn neue Rollen eingeführt werden, ohne die Cluster-Zuordnung mitzuziehen.
+Lock für die `EVENT_ROLE_TO_MOBILITY_CLUSTER`-Mapping-Tabelle im Frontend (`docs/js/data/constants.js`). Prüft, dass jede `m3gim-ontology:role`, die im JSON-LD vorkommt, entweder einer der Sichten (`performativ`/`institutionell`/`korrespondenz`/`diskursiv`/`biografisch`) zugeordnet ist oder explizit auf `null` steht (bewusste Nicht-Einordnung wie `auftrag`, `entstehung`, `ueberweisung`). Fängt stille Mapping-Drift ein, wenn neue Rollen eingeführt werden, ohne die Cluster-Zuordnung mitzuziehen.
 
 ### 26. Term-Validierung gegen RiC-O 1.1 und AgRelOn (test_26)
 
@@ -199,15 +199,15 @@ Der Test lockt die Term-Konformität gegen die Allowlist dauerhaft und verifizie
 
 ### 27. StageRole-Entität (test_27, E-96)
 
-Sichert, dass `m3gim:hasPerformanceRole` vollständig abgelöst ist (kein Record trägt es mehr), dass `m3gim:StageRole`-Entitäten existieren, eine ASCII-Slug-`@id` (`^m3gim:role_[a-z0-9_]+$`) und `rico:name` tragen, und dass ihre `@id`s eindeutig sind (Dedup-Registry). ASCII-Slug ist Pflicht, weil das JSON-LD-@id-Pattern keine Umlaute matcht.
+Sichert, dass `m3gim:hasPerformanceRole` vollständig abgelöst ist (kein Record trägt es mehr), dass `m3gim-ontology:StageRole`-Entitäten existieren, eine ASCII-Slug-`@id` (`^m3gim-data:stagerole_[a-z0-9_]+$`) und `rico:name` tragen, und dass ihre `@id`s eindeutig sind (Dedup-Registry). ASCII-Slug ist Pflicht, weil das JSON-LD-@id-Pattern keine Umlaute matcht. <!-- vocab-exempt: nennt das mit E-96 abgeloeste Attribut -->
 
 ### 28. Performance-Reifikation (test_28, E-96/E-98)
 
-`m3gim:Performance`-Entitäten existieren, jede record-seitige `m3gim:hasPerformance`-Referenz ist im Graph auflösbar, und `m3gim:performanceOf` zeigt stets auf ein `m3gim:MusicalWork` mit `name` (nie literale Q-ID). Die `hasPerformer`/`performanceOf`-Pfade sind datenadaptiv zulässig leer, solange der April-Stand keine `rolle,person`/`datum,werk`-Komposite enthält — sie aktivieren sich mit dem tieferen Box-Export. Begleitend migriert: test_04 (rolle → Performance statt hasPerformanceRole), test_09/test_15 (Relations-Zählung auf `hasPerformance`), die JS-Fixtures `record-partition`/`utils`.
+`m3gim-ontology:Performance`-Entitäten existieren, jede record-seitige `m3gim-ontology:hasPerformance`-Referenz ist im Graph auflösbar, und `m3gim-ontology:performanceOf` zeigt stets auf ein `m3gim-ontology:MusicalWork` mit `name` (nie literale Q-ID). Die `hasPerformer`/`performanceOf`-Pfade sind datenadaptiv zulässig leer, solange der April-Stand keine `rolle,person`/`datum,werk`-Komposite enthält — sie aktivieren sich mit dem tieferen Box-Export. Begleitend migriert: test_04 (rolle → Performance statt hasPerformanceRole), test_09/test_15 (Relations-Zählung auf `hasPerformance`), die JS-Fixtures `record-partition`/`utils`.
 
 ### 34. Rohdaten-Gegencheck (test_34, E-108)
 
-Zellgenauer Gegencheck JSON-LD-Wert gegen die per `m3gim:xlsxSource` (`{Sheet, Row}`) adressierte XLSX-Rohzelle, für Objekt-Records gegen `M3GIM-Objekte.xlsx` (Join über `xlsxRow`) und für SpatiotemporalEvents gegen `M3GIM-Verknüpfungen.xlsx` (Join über sheet-lokale `(Sheet, Row)` via demselben Multi-Sheet-Loader wie die Pipeline). Bestätigt zugleich die Provenienz-Pille im UI: sie zeigt nicht nur eine Zeilennummer, sondern die richtige. Ersetzt den zellgenauen Teil von `audit-data.py`.
+Zellgenauer Gegencheck JSON-LD-Wert gegen die per `m3gim-ontology:xlsxSource` (`{Sheet, Row}`) adressierte XLSX-Rohzelle, für Objekt-Records gegen `M3GIM-Objekte.xlsx` (Join über `xlsxRow`) und für SpatiotemporalEvents gegen `M3GIM-Verknüpfungen.xlsx` (Join über sheet-lokale `(Sheet, Row)` via demselben Multi-Sheet-Loader wie die Pipeline). Bestätigt zugleich die Provenienz-Pille im UI: sie zeigt nicht nur eine Zeilennummer, sondern die richtige. Ersetzt den zellgenauen Teil von `audit-data.py`.
 
 ### 35. STE-@id-Stabilität (test_35, E-115)
 
@@ -223,7 +223,7 @@ Absorbiert die Team-Änderung von 2026-07, mit der die Spalten `typ` und `rolle`
 
 ### 38. Bestätigte Modellierungsregeln (test_38_modelling_rules, E-129 bis E-131)
 
-Lock für die von der Projektleitung bestätigten Modellierungsregeln. Eine Relation, deren Objekt die Bestandsbildnerin selbst ist, wird unterdrückt, die Rolle bleibt als `m3gim:hasAssociatedAgent` erhalten (E-129). Der Quellwert `fotografie` bildet auf `m3gim-dft:fotografie` ab und trägt ein Anzeigelabel (E-130). `programm` ist das kanonische Concept mit dem Label „Programm", `programmheft` und `konzertprogramm` lösen als Quellwert-Synonyme darauf auf (E-131). Ein nicht gemappter Dokumenttyp nennt Wert und Quellzelle, statt still zu verschwinden (Anhang zu E-130). Die Anker-Records mit selbstbezüglicher HasCorrespondent-Relation dienen zugleich als Verlustfrei-Kontrolle. Die vierte Regel der Runde, die Präzisionsnormalisierung angereicherter Zeitwerte (E-132), ist über test_39 abgesichert.
+Lock für die von der Projektleitung bestätigten Modellierungsregeln. Eine Relation, deren Objekt die Bestandsbildnerin selbst ist, wird unterdrückt, die Rolle bleibt als `m3gim-ontology:hasAssociatedAgent` erhalten (E-129). Der Quellwert `fotografie` bildet auf `m3gim-vocab:photograph` ab und trägt ein Anzeigelabel (E-130). `programm` ist das kanonische Concept mit dem Label „Programm", `programmheft` und `konzertprogramm` lösen als Quellwert-Synonyme darauf auf (E-131). Ein nicht gemappter Dokumenttyp nennt Wert und Quellzelle, statt still zu verschwinden (Anhang zu E-130). Die Anker-Records mit selbstbezüglicher HasCorrespondent-Relation dienen zugleich als Verlustfrei-Kontrolle. Die vierte Regel der Runde, die Präzisionsnormalisierung angereicherter Zeitwerte (E-132), ist über test_39 abgesichert.
 
 ### 38. Determinismus der STE-@id-Vergabe (test_38_ste_deterministic_ids, E-115)
 
@@ -231,7 +231,7 @@ Unit-Lock für `scripts.transform._ste_id`, eine Ebene unter dem Output-Test tes
 
 ### 39. Kalendarische Datumsgültigkeit (test_39, AF-04/E-132)
 
-Prüft, dass kein Datumswert im erzeugten Datensatz einen Monat oder Tag außerhalb des Kalenders trägt. Zulässig sind nach [data.md](data.md) § 6 die Formen `YYYY`, `YYYY-MM` und `YYYY-MM-DD`, Zeitspannen als `.../...` sowie die Qualifier `circa:`, `vor:` und `nach:`. Der Anlass ist die Wikidata-Anreicherung, solange sie das Feld `precision` verwirft; eine jahresgenau geführte Angabe kommt von Wikidata als `+1841-00-00T00:00:00Z` und landet als `1841-00-00` im Datensatz (Befund AF-04). Betroffen sind `schema:birthDate`, `schema:deathDate`, `m3gim:wdPremiereDate` und `m3gim:inception`. Die geprüften Properties ermittelt der Test aus dem Datensatz statt aus einer Liste; datumstragend ist eine Property, deren lokaler Name auf `date` oder `datum` endet oder deren sämtliche Zeichenkettenwerte die Gestalt einer Datierung haben. Künftige Datumsproperties fallen damit von selbst in die Prüfung, während `m3gim:lifespan`, Titel und Beträge draußen bleiben. Die Fallback-Klasse `m3gim:DatedEvent` mit `m3gim:dateValue` trägt laut data.md § 6 bewusst die nicht routbaren Rohdatierungen und bleibt über dieselbe Gestaltregel außen vor.
+Prüft, dass kein Datumswert im erzeugten Datensatz einen Monat oder Tag außerhalb des Kalenders trägt. Zulässig sind nach [data.md](data.md) § 6 die Formen `YYYY`, `YYYY-MM` und `YYYY-MM-DD`, Zeitspannen als `.../...` sowie die Qualifier `circa:`, `vor:` und `nach:`. Der Anlass ist die Wikidata-Anreicherung, solange sie das Feld `precision` verwirft; eine jahresgenau geführte Angabe kommt von Wikidata als `+1841-00-00T00:00:00Z` und landet als `1841-00-00` im Datensatz (Befund AF-04). Betroffen sind `schema:birthDate`, `schema:deathDate`, `m3gim-ontology:wdPremiereDate` und `m3gim-ontology:wdInception`. Die geprüften Properties ermittelt der Test aus dem Datensatz statt aus einer Liste; datumstragend ist eine Property, deren lokaler Name auf `date` oder `datum` endet oder deren sämtliche Zeichenkettenwerte die Gestalt einer Datierung haben. Künftige Datumsproperties fallen damit von selbst in die Prüfung, während `m3gim-ontology:lifespan`, Titel und Beträge draußen bleiben. Die Fallback-Klasse `m3gim-ontology:Annotation` mit `m3gim-ontology:atDate` trägt laut data.md § 6 bewusst die nicht routbaren Rohdatierungen und bleibt über dieselbe Gestaltregel außen vor.
 
 ### 40. Vokabular-Gate (test_40)
 
@@ -243,7 +243,7 @@ Lock für die Konvention der Projektleitung, dass ein als `owl:Class` deklariert
 
 ### 42. E-96-Nachzug in Ansichtserzeugung und Datenaudit (test_42)
 
-`scripts/build-views.py` und `scripts/audit-data.py` lasen die mit E-96 abgelöste Property `m3gim:hasPerformanceRole`, die im erzeugten Datensatz nicht mehr vorkommt; die Lesestellen lieferten still leere Listen, ohne einen Fehler zu melden, womit Auftritts-Partien, Gattungserkennung und Rollenzählung im Kosmos leer blieben. Das heutige Modell führt Aufführungsknoten `m3gim:Performance`, die über `m3gim:hasStageRole` auf `m3gim:StageRole` zeigen, während der Record über `m3gim:hasPerformance` auf die Aufführung verweist (data.md § 4 und § 7). Zwei Absicherungen greifen. Die betroffenen Auswertungen tragen wieder Daten, mit Mindestvorkommen statt „leere Liste ist ok". Und jeder Vokabular-Term, den die beiden Skripte als String-Literal aus dem Graph lesen, muss im Datensatz vorkommen, womit eine erneute Ablösung dieser Art auffällt.
+`scripts/build-views.py` und `scripts/audit-data.py` lasen die mit E-96 abgelöste Property `m3gim:hasPerformanceRole`, die im erzeugten Datensatz nicht mehr vorkommt; die Lesestellen lieferten still leere Listen, ohne einen Fehler zu melden, womit Auftritts-Partien, Gattungserkennung und Rollenzählung im Kosmos leer blieben. Das heutige Modell führt Aufführungsknoten `m3gim-ontology:Performance`, die über `m3gim-ontology:hasStageRole` auf `m3gim-ontology:StageRole` zeigen, während der Record über `m3gim-ontology:hasPerformance` auf die Aufführung verweist (data.md § 4 und § 7). Zwei Absicherungen greifen. Die betroffenen Auswertungen tragen wieder Daten, mit Mindestvorkommen statt „leere Liste ist ok". Und jeder Vokabular-Term, den die beiden Skripte als String-Literal aus dem Graph lesen, muss im Datensatz vorkommen, womit eine erneute Ablösung dieser Art auffällt. <!-- vocab-exempt: nennt das mit E-96 abgeloeste Attribut -->
 
 ### 43. Reconciliation-Logik (test_43)
 
@@ -313,7 +313,7 @@ Die Trennlinie folgt der Durchreich-Policy: ein **struktureller** Blocker gehör
 - Untergrenzen zur Laufzeit aus der Quelle ableiten, nicht als feste Zahl an die Größe des neuen Exports binden — sonst werden harte Tests gegen den bisherigen Stand rot.
 - Vorbedingungen, die nur für den neuen Export gelten, sind ein Skip, kein Assert.
 - Ein noch nicht implementiertes Feature ist xfail, nicht hart.
-- Manche Invarianten sind ohne einen Pipeline-Herkunftsmarker (`m3gim:derivedFromRole`) gar nicht aus dem Graph berechenbar — der Marker muss dann Teil des Features sein.
+- Manche Invarianten sind ohne einen Pipeline-Herkunftsmarker (`m3gim-ontology:derivedFromRole`) gar nicht aus dem Graph berechenbar — der Marker muss dann Teil des Features sein.
 - Der Frontend-Vokabular-Parser in den Kopplungstests muss Kommentare strippen, sonst zählt er auskommentierte Einträge als gemappt.
 - Die Datierungs-Konfidenz ist ganz entfernt (E-106); `agrelon:metadataConfidence` taucht nirgends im Graph auf.
 - Jeder xfail-Grund zeigt auf den `data.md`-Anker, der zuerst existieren muss.
@@ -349,7 +349,7 @@ Wartung:
 - `test_has_employer_relations_from_arbeitgeber` — **skip**. Die einzige arbeitgeber-Zeile hat Signatur `UAKUG/NIM_11`, die keinem Record zugeordnet werden kann (verwaist).
 - `test_no_declared_term_without_data` (test_46), **xfail (strict)**. Deklarierte Vokabular-Terme ohne Belegung im Datensatz. Sobald sie gefüllt, entfernt oder mit einer `skos:editorialNote unused:` versehen sind, bricht XPASS die Suite, dann Marker entfernen.
 - Junk-Namen im Personen-Index (`[Organi]`, kurze Initialen) werden als Warnung geloggt, nicht gefailed — Frontend filtert via `isJunkName`.
-- Freitext in Datumsspalte (`"Wien, ab 1956"`, `"1944-05 bis 1944-09"`): `is_iso_date()` lässt sie nicht in typisierte Datumsproperties durch, landen stattdessen im Fallback `m3gim:hasDatedEvent` (inline DatedEvent mit `dateValue`/`dateRole`, E-102). Das generische `m3gim:eventDate` ist abgeschafft (test_18 assertet `generic_count == 0`).
+- Freitext in Datumsspalte (`"Wien, ab 1956"`, `"1944-05 bis 1944-09"`): `is_iso_date()` trennt sie vom ISO-Wert; sie landen im Annotationsknoten unter `m3gim-ontology:hasAnnotation` mit ihrem Rohwert. Das generische `m3gim:eventDate` ist abgeschafft (test_18 assertet `generic_count == 0`). <!-- vocab-exempt: nennt die mit E-102 abgeschaffte generische Datumsproperty -->
 
 ## Stand
 
@@ -392,7 +392,7 @@ Playwright ist bewusst **nicht** enthalten und bleibt ein optionales Extra, sieh
 4. **Anker-Titel im DOM**: `Rezension von Karl Schumann zu Macbeth` (NIM_004/3), `Handschriftliche Notiz` (NIM_007/5_1). Bricht der Check, ist entweder der Record ausgefiltert worden oder die Render-Logik kaputt.
 5. **Anker-Record NIM_004_1 voll aufgeklappt**: Sprach-Label aufgelöst (`en, fr` → „Englisch, Französisch") und AgRelOn-Dedup greift (Malaniuk erscheint genau einmal).
 6. **Konvolut-Meta-Chips sichtbar**: `.archiv-konvolut-meta .chip--compact` + `.archiv-konvolut-status` zählbar > 0 — Absicherung gegen Regression, die die Meta-Aggregation im Loader leer lässt.
-7. **Duplicate `@id` im JSON-LD-Graph**: bekannte Kollisionen (`m3gim:NIM_PL_07`) sind in `KNOWN_COLLISIONS` aufgeführt und werden toleriert; neue Kollisionen fail'n sofort.
+7. **Duplicate `@id` im JSON-LD-Graph**: bekannte Kollisionen (`m3gim-data:NIM_PL_07`) sind in `KNOWN_COLLISIONS` aufgeführt und werden toleriert; neue Kollisionen fail'n sofort.
 8. **Karten-Canary** (E-113, neu gefasst mit E-126): nach dem Klick auf den Karten-Tab wartet der Check auf den asynchronen Geometrie-Load (`loadCountries().then(...)`) und prüft, dass die entitätszentrierte D3-geo-Karte real zeichnet — Stadt-Knoten (`.mob-nodes g.mob-node` vorhanden), **keine** Verbindungslinien (`.mob-arcs path` == 0, da die Trajektorie mit E-126 entfiel), eine befüllte Entitäts-Auswahl (`.mob-entity__list .mob-entity__item` vorhanden) und Ländergeometrie (`.mob-land path` vorhanden), ohne neue Konsolenfehler. Zusätzlich wählt der Canary „Bayreuther Festspiele" und verifiziert, dass die Knotenmenge auf deren Orte schrumpft. Harter FAIL, nicht WARN: eine still leer rendernde Karte (fehlende Geometrie, d3-Ausfall, Projektions-Bug) ist genau die Regression, die der logStamp-Check verfehlt, weil der Stempel synchron vor dem Async-Draw geschrieben wird.
 
 Aufruf:

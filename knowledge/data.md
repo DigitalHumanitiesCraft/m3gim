@@ -75,7 +75,7 @@ Das Modell ist in die fachlichen Schichten Kernmetadaten, Verknüpfungen und Erw
 
 **Schicht 2 (Verknüpfungen).** Person, Ort, Institution, Werk, Bühnenrolle, Datum, Ereignis, Ensemble. Relationale Anreicherung der Records über die Verknüpfungstabelle.
 
-**Schicht 3 (Erweiterung).** Finanzielle und vertragliche Detailangaben (Honorare, Provisionen, Währungsbeträge). Getragen von `m3gim:DetailAnnotation`.
+**Schicht 3 (Erweiterung).** Finanzielle und vertragliche Detailangaben (Honorare, Provisionen, Währungsbeträge). Getragen von `m3gim-ontology:Annotation`.
 
 **Querschnittsebene (Meta).** Gültigkeitsperiode, Konfidenz und Provenienz jeder Aussage. Nach dem Muster von AgRelOn realisiert, wirksam für alle fachlichen Schichten (siehe Abschnitt 9).
 
@@ -113,51 +113,51 @@ Die Zuordnung einer Verknüpfungszeile zu einem Indexeintrag erfolgt über Strin
 | person | Personenindex → `rico:Person` | implementiert |
 | institution | Organisationsindex → `rico:CorporateBody` | implementiert |
 | ort | Ortsindex → `rico:Place` | implementiert |
-| werk | Werkindex → `m3gim:MusicalWork` | implementiert |
-| rolle | Bühnenrollen → `m3gim:StageRole` | Rollenindex ausstehend |
+| werk | Werkindex → `m3gim-ontology:MusicalWork` | implementiert |
+| rolle | Bühnenrollen → `m3gim-ontology:StageRole` | Rollenindex ausstehend |
 | datum | direkte Datumsproperty | implementiert |
-| ort, datum | Komposit → `m3gim:SpatiotemporalEvent` | implementiert (E-96) |
-| datum, werk | Komposit → `m3gim:Performance` | implementiert (E-98) |
-| rolle, person | Komposit → `m3gim:Performance` (Bühnenrolle + Interpret:in) | implementiert (E-96) |
-| ort (Mobilitätsrolle) | → `rico:Place` + `m3gim:SpatiotemporalEvent` (ohne Datum) | implementiert (E-97) |
-| ereignis | → `m3gim:PerformanceEvent` | implementiert |
-| ausgaben, währung | → `m3gim:DetailAnnotation` | implementiert |
-| einnahmen, währung | → `m3gim:DetailAnnotation` | implementiert |
-| summe, währung | → `m3gim:DetailAnnotation` | implementiert |
+| ort, datum | Komposit → `m3gim-ontology:Annotation` | implementiert (E-96) |
+| datum, werk | Komposit → `m3gim-ontology:Performance` | implementiert (E-98) |
+| rolle, person | Komposit → `m3gim-ontology:Performance` (Bühnenrolle + Interpret:in) | implementiert (E-96) |
+| ort (Mobilitätsrolle) | → `rico:Place` + `m3gim-ontology:Annotation` (ohne Datum) | implementiert (E-97) |
+| ereignis | → `m3gim-ontology:FramingEvent` | implementiert |
+| ausgaben, währung | → `m3gim-ontology:Annotation` | implementiert |
+| einnahmen, währung | → `m3gim-ontology:Annotation` | implementiert |
+| summe, währung | → `m3gim-ontology:Annotation` | implementiert |
 | ensemble | direkte Kontextverarbeitung | niedrige Priorität |
 
 Seit dem Dropdown-Umbau der Erfassungstabelle (Juli 2026) erzwingen abhängige Dropdowns die Wertelisten für `typ` und `rolle` an der Quelle; das Blatt „Typ-Rollen“ im Workbook dokumentiert die Zuordnung. Google-Sheets-Dropdowns tragen kein Komma im Wert, der Komposittyp heißt im Export deshalb `Datum_Ort`; die Pipeline akzeptiert den Unterstrich als gleichwertigen Komposit-Trenner. Die versteckten Dropdown-Hilfsblätter des Workbooks werden beim Laden übersprungen.
 
 ### Dekomposition des Komposittyps `ort, datum`
 
-Der Komposittyp trägt in einem Feld sowohl Ortsreferenz als auch Zeitangabe. In der Pipeline wird er in eine Instanz von `m3gim:SpatiotemporalEvent` aufgelöst, mit `m3gim:atPlace` (Ortsreferenz) und `m3gim:atDate` (ISO-8601 oder TimeSpan). Dieser Typ ist der Mobilitätskern des Modells und wird in Abschnitt 10 ausführlich behandelt.
+Der Komposittyp trägt in einem Feld sowohl Ortsreferenz als auch Zeitangabe. In der Pipeline wird er in eine Instanz von `m3gim-ontology:Annotation` aufgelöst, mit `m3gim-ontology:atPlace` (Ortsreferenz) und `m3gim-ontology:atDate` (ISO-8601 oder TimeSpan). Dieser Typ ist der Mobilitätskern des Modells und wird in Abschnitt 10 ausführlich behandelt.
 
 ### Dekomposition des Komposittyps `datum, werk`
 
-Der Typ verbindet Aufführungsdatum und Werktitel (etwa `1953-07-23, Lohengrin`). Er wird in eine `m3gim:Performance` aufgelöst, mit `m3gim:performanceOf` auf das über den Werkindex gematchte `m3gim:MusicalWork` und `m3gim:auffuehrungsdatum` an der Performance. Das Werk-Ziel wird ausschließlich über den Index aufgelöst; ein roher Komposit-String oder eine literale Q-ID landet nie als Werktitel. Zeilen, deren Werthälfte kein führendes Jahr trägt (Komponist statt Werk, etwa eine reine `Beethoven`-Zeile), werden ausgefiltert und nur im Quality-Snapshot gezählt, nicht modelliert.
+Der Typ verbindet Aufführungsdatum und Werktitel (etwa `1953-07-23, Lohengrin`). Er wird in eine `m3gim-ontology:Performance` aufgelöst, mit `m3gim-ontology:performanceOf` auf das über den Werkindex gematchte `m3gim-ontology:MusicalWork` und `m3gim-ontology:atDate` ohne Rollenangabe an der Performance. Das Werk-Ziel wird ausschließlich über den Index aufgelöst; ein roher Komposit-String oder eine literale Q-ID landet nie als Werktitel. Zeilen, deren Werthälfte kein führendes Jahr trägt (Komponist statt Werk, etwa eine reine `Beethoven`-Zeile), werden ausgefiltert und nur im Quality-Snapshot gezählt, nicht modelliert.
 
 ### Dekomposition der Komposittypen `rolle, person`
 
-Beide Schreibvarianten (`Rolle, Person` und `rolle, … Sänger*in`) verbinden Bühnenrolle und Interpret:in. Sie werden in eine n-äre `m3gim:Performance` aufgelöst, die über `m3gim:hasStageRole` die Bühnenrolle (Abschnitt 7) und über `m3gim:hasPerformer` die gegen den Personenindex aufgelöste Person trägt.
+Beide Schreibvarianten (`Rolle, Person` und `rolle, … Sänger*in`) verbinden Bühnenrolle und Interpret:in. Sie werden in eine n-äre `m3gim-ontology:Performance` aufgelöst, die über `m3gim-ontology:hasStageRole` die Bühnenrolle (Abschnitt 7) und über `m3gim-ontology:hasPerformer` die gegen den Personenindex aufgelöste Person trägt.
 
-Eine **Standalone-Bühnenrolle** (Typ `rolle` ohne Interpret:in) erzeugt ebenfalls eine `m3gim:Performance`, dann nur mit `m3gim:hasStageRole` — so trägt jede Bühnenrolle dieselbe Entitätsstruktur, und das frühere Attribut `m3gim:hasPerformanceRole` entfällt vollständig (E-96). Die StageRole-`@id` ist ein deterministischer ASCII-Slug `m3gim:role_<slug>` (Umlaut-Transliteration, weil das @id-Pattern keine Umlaute erlaubt); gleiche Rollennamen werden dedupliziert.
+Eine **Standalone-Bühnenrolle** (Typ `rolle` ohne Interpret:in) erzeugt ebenfalls eine `m3gim-ontology:Performance`, dann nur mit `m3gim-ontology:hasStageRole` — so trägt jede Bühnenrolle dieselbe Entitätsstruktur, und das frühere Attribut `m3gim:hasPerformanceRole` entfällt vollständig (E-96). Die Form der StageRole-`@id` und ihre Deduplizierung stehen in [data-model.md](data-model.md) § 7. <!-- vocab-exempt: nennt das mit E-96 entfallene Attribut -->
 
 ### Mobilitäts-Ortsrollen ohne Datum
 
-Die einfache `ort`-Verknüpfung erzeugt zusätzlich zur `rico:Place`-Referenz eine `m3gim:SpatiotemporalEvent`, wenn ihre Rolle zu den Mobilitäts-Ortsrollen gehört (`MOBILITY_PLACE_ROLES` = zielort, absendeort, abreiseort, empfangsort, vertragsort). Diese Variante trägt nur `m3gim:atPlace` und `m3gim:eventRole`, **kein** `m3gim:atDate` — ein Datum wird nicht geraten (Abschnitt 8, Konfidenz). `wohnort` ist davon ausgenommen und als Zustand mit Gültigkeitsperiode modelliert (Abschnitt 10).
+Die einfache `ort`-Verknüpfung erzeugt zusätzlich zur `rico:Place`-Referenz eine `m3gim-ontology:Annotation`, wenn ihre Rolle zu den Mobilitäts-Ortsrollen gehört (`MOBILITY_PLACE_ROLES` = zielort, absendeort, abreiseort, empfangsort, vertragsort). Diese Variante trägt nur `m3gim-ontology:atPlace` und `m3gim-ontology:role`, **kein** `m3gim-ontology:atDate` — ein Datum wird nicht geraten (Abschnitt 8, Konfidenz). `wohnort` ist davon ausgenommen und als Zustand mit Gültigkeitsperiode modelliert (Abschnitt 10).
 
 ### Auftrittsbündelung über `datenpunkt_id`
 
 Eine Verknüpfungszeile trägt je eine Aussage, etwa eine Person, einen Ort, ein Werk, eine Partie oder einen Betrag. Beschreibt ein Dokument mehrere Auftritte, verteilen sich deren Aussagen flach über den Record, und welche Person, welche Partie, welcher Ort und welcher Betrag zu welchem Auftritt gehören, ist nicht mehr rekonstruierbar. Die Annotation ist dann dokumentzentriert, sie belegt „kommt im Dokument vor", nicht „wer hat was getan".
 
-Die Spalte `datenpunkt_id` hebt diese Bündelung auf eine eigene Ebene. Sie ist die Identität eines **Vorkommnisses** (`m3gim:Occurrence`, Abschnitt 7), an dem die zusammengehörigen Aussagen eines Auftritts zusammenlaufen.
+Die Spalte `datenpunkt_id` hebt diese Bündelung auf eine eigene Ebene. Sie ist die Identität eines **Vorkommnisses** (`m3gim-ontology:Occurrence`, Abschnitt 7), an dem die zusammengehörigen Aussagen eines Auftritts zusammenlaufen.
 
 - Eine **leere** `datenpunkt_id` ist der Default und bezeichnet die Dokument-Ebene. Hierher gehören Aussagen über das Dokument selbst (Verfasser, Adressat, Absendeort, Erstelldatum) sowie Aussagen, deren Auftritts-Zuordnung die Quelle nicht hergibt.
 - Eine **fortlaufende Nummer** (1, 2, 3 …) bündelt alle Zeilen eines Auftritts innerhalb des Folios zu einer Occurrence.
 
-Die Pipeline gruppiert die Zeilen nach `(archivsignatur, folio, datenpunkt_id)` und erzeugt je Gruppe eine Occurrence. Die bestehenden Aspekt-Klassen werden zu ihren Facetten — `m3gim:SpatiotemporalEvent` trägt Ort und Zeit, `m3gim:Performance` Werk und Partie, `m3gim:DetailAnnotation` den Betrag. Der Record bezeugt die Occurrence über `m3gim:attests` (Abschnitt 7), statt sie zu enthalten, damit dieselbe Occurrence später aus mehreren Dokumenten belegt werden kann.
+Die Pipeline gruppiert die Zeilen nach `(archivsignatur, folio, datenpunkt_id)` und erzeugt je Gruppe eine Occurrence. Die bestehenden Aspekt-Klassen werden zu ihren Facetten — `m3gim-ontology:Annotation` trägt Ort und Zeit, `m3gim-ontology:Performance` Werk und Partie, `m3gim-ontology:Annotation` den Betrag. Der Record bezeugt die Occurrence über `m3gim-ontology:attests` (Abschnitt 7), statt sie zu enthalten, damit dieselbe Occurrence später aus mehreren Dokumenten belegt werden kann.
 
-Der Auftrittsmodus (Gastspiel, Tournee) gehört über `m3gim:mode` an die Occurrence, nicht als konkurrierender Rollenwert an die einzelne Orts-, Werk- oder Institutionszeile. Die Unterscheidung auswärts gegen am Haus folgt zusätzlich aus dem Vergleich von `m3gim:atPlace` mit dem Institutionssitz (`m3gim:sitz`) und wird nicht eigens erfasst. Die konkrete Erfassungskonvention steht in [data-entry-guidelines.md](data-entry-guidelines.md).
+Der Auftrittsmodus (Gastspiel, Tournee) gehört über `m3gim-ontology:mode` an die Occurrence, nicht als konkurrierender Rollenwert an die einzelne Orts-, Werk- oder Institutionszeile. Die Unterscheidung auswärts gegen am Haus folgt zusätzlich aus dem Vergleich von `m3gim-ontology:atPlace` mit dem Institutionssitz (`m3gim-ontology:headquarters`) und wird nicht eigens erfasst. Die konkrete Erfassungskonvention steht in [data-entry-guidelines.md](data-entry-guidelines.md).
 
 Seit E-127 ist diese Identität zweistufig verfeinert: die Erfassungsspalte heißt `aktivitaet_id`, eine Ganzzahl bündelt die Aktivität (Occurrence), eine zweistellige Dezimale `1.01` ff. die einzelne Beteiligung daran. Die einstufige `datenpunkt_id` (eine Nummer je Auftritt) bleibt als Lesepfad gültig, bis die Pipeline umgestellt ist; das Beteiligungs- und Besetzungsmodell steht in Abschnitt 7 (Zielmodell v2).
 
@@ -237,7 +237,7 @@ Gliederung nach Handreichungslogik in archivalisch, künstlerisch und institutio
 | wohnort | ● ★ | Zustand mit Gültigkeitsperiode, kein Punktereignis (Abschnitt 10) |
 | erwähnt | ● | |
 
-Die mit *ort-only STE* markierten Rollen (`MOBILITY_PLACE_ROLES`) erzeugen neben der `rico:Place`-Referenz eine `m3gim:SpatiotemporalEvent` ohne Datum (Abschnitt 4). `wohnort` ist davon ausgenommen.
+Die mit *ort-only STE* markierten Rollen (`MOBILITY_PLACE_ROLES`) erzeugen neben der `rico:Place`-Referenz eine `m3gim-ontology:Annotation` ohne Datum (Abschnitt 4). `wohnort` ist davon ausgenommen.
 
 ### Institutionenrollen
 
@@ -343,7 +343,7 @@ Die Quelle nutzt die `rolle`-Spalte vereinzelt für einen Vertragsstatus statt f
 
 | Wert | Status | Bemerkung |
 |---|---|---|
-| nicht eingehalten | ● ★ | Vertragsstatus, keine Ereignis-/Ortsrolle (Abschnitt 11); wird im STE-Bau **nicht** als `m3gim:eventRole` emittiert. Zielmodellierung `m3gim:contractStatus`/`m3gim:realized = false` am Vertrags-Record ist mit dem Erschließungsteam zu klären (Treffen 2026-06-23). |
+| nicht eingehalten | ● ★ | Vertragsstatus, keine Ereignis-/Ortsrolle (Abschnitt 11); wird im STE-Bau **nicht** als `m3gim-ontology:role` emittiert. Zielmodellierung `m3gim-ontology:contractStatus`/`m3gim:realized = false` am Vertrags-Record ist mit dem Erschließungsteam zu klären (Treffen 2026-06-23). |
 
 ## 6. Datumskonventionen
 
@@ -374,7 +374,7 @@ Eine Datierung wird nach ihrer Notation auf eine der folgenden Repräsentationen
 |---|---|
 | vollständiges oder partielles ISO-Datum | typisierte Datumsproperty (Abschnitt 7) |
 | Bereich (`von … bis`, `YYYY/YYYY`) | TimeSpan-Wert |
-| Klammer-/Fragezeichen-Unsicherheit (`1957-[05-27?]`) | `m3gim:DatedEvent` mit `dateValue`/`dateRole` |
+| Klammer-/Fragezeichen-Unsicherheit (`1957-[05-27?]`) | `m3gim-ontology:Annotation` mit `dateValue`/`dateRole` |
 | Freitext-Beginn (`ab …`, `seit …`) | Qualifier `nach:` |
 
 ### Datierungsevidenz
@@ -386,7 +386,7 @@ Eine Datierung wird nach ihrer Notation auf eine der folgenden Repräsentationen
 | extern | Datum aus anderer Quelle ermittelt |
 | unbekannt | keine Datierung möglich |
 
-Datierungsevidenz wird im Meta-Statement-Modell als `agrelon:metadataProvenance`-Wert auf die Datumsproperty angewendet, nicht mehr als separate `m3gim:dateEvidence`-Property. Siehe Abschnitt 9.
+Datierungsevidenz wird im Meta-Statement-Modell als `agrelon:metadataProvenance`-Wert auf die Datumsproperty angewendet, nicht mehr als separate `m3gim:dateEvidence`-Property. Siehe Abschnitt 9. <!-- vocab-exempt: nennt eine nicht uebernommene Property -->
 
 ## 14. Kontrollierte Vokabulare und Normalisierung
 
@@ -447,8 +447,8 @@ Die kompensierten Eigenheiten fallen in die Kategorien Spec, Workaround, Policy 
 | Finanzwerte ohne Währungssuffix in NIM_007 Folio 5_1 | Policy | `FINANCE_CURRENCY_DEFAULTS` setzt „S" (Schilling) |
 | Finanzwerte ohne Währungssuffix in NIM_011 Folio 5 (Brüssel-Gastspiel) | Policy | `FINANCE_CURRENCY_DEFAULTS` setzt „Belgische Francs" (Folio-9-Pendant + Vertragsort Brüssel); mit Erschließungsteam zu bestätigen |
 | Datums-Platzhalter „ohne Datum"/„o. D." in `entstehungsdatum` | Workaround | `clean_date()` bildet die Platzhalter auf `None` ab (kein Schein-`rico:date`) |
-| Malformter Datumswert ohne Jahr (z. B. „06-09") in `entstehungsdatum` | Workaround | nicht-ISO Wert läuft verlustfrei in `m3gim:hasDatedEvent` (`dataQualityFlag` „datierung-malformed"), nicht in `rico:date`; Quell-Fix offen |
-| Vertragsstatus „nicht eingehalten" spaltenweit in der Rollenspalte (NIM_023) | Workaround | im STE-Bau nicht als `m3gim:eventRole` emittiert (`CONTRACT_STATUS_ROLES`); `contractStatus`-Modellierung mit Erschließungsteam offen |
+| Malformter Datumswert ohne Jahr (z. B. „06-09") in `entstehungsdatum` | Workaround | nicht-ISO Wert läuft verlustfrei in `m3gim-ontology:hasAnnotation` (`dataQualityFlag` „datierung-malformed"), nicht in `rico:date`; Quell-Fix offen |
+| Vertragsstatus „nicht eingehalten" spaltenweit in der Rollenspalte (NIM_023) | Workaround | im STE-Bau nicht als `m3gim-ontology:role` emittiert (`CONTRACT_STATUS_ROLES`); `contractStatus`-Modellierung mit Erschließungsteam offen |
 | Gemischte Finanz-Betragsnotation (Dezimalkomma vs. Komma-Währungstrenner, Tausenderpunkt, Doppelbetrag `25, DM/45, DM`) | Workaround | `parse_monetary_values()` löst Betrag/Währung robust auf und splittet Doppelbeträge in zwei DetailAnnotations |
 | Bearbeitungsstand in uneinheitlicher Schreibung und Synonymen | Workaround | `normalize_bearbeitungsstand()` mappt auf die kanonischen Werte |
 | Datumsrolle wird im Komposit `ort, datum` an beide Hälften vererbt | Workaround | Role-Strip im Ort-Zweig für Datumsrollen |

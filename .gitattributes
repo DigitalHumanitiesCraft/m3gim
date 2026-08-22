@@ -1,0 +1,8 @@
+# Generated artifacts are written with LF by the pipeline scripts. Without this
+# a checkout under core.autocrlf=true reports every regenerated file as
+# modified, which destroys the clean-worktree signal after a pipeline run.
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.xlsx binary
+*.pdf binary
