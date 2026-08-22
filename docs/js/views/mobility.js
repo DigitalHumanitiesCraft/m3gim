@@ -14,9 +14,9 @@
  * verschwiegen (Linie "Stand nicht kaschieren").
  *
  * Die Orte einer Entitaet werden in entity-map-data.js aus zwei Quellen
- * zusammengezogen (Record-Orte + STE). Knoten sind nach dominanter
- * Mobilitaetssicht (mobilityClusterFor, E-110) eingefaerbt, die Groesse traegt
- * die Belegzahl im Zeitfenster.
+ * zusammengezogen (Record-Orte + verortete Annotationen). Knoten sind nach
+ * dominanter Mobilitaetssicht eingefaerbt, die jeder Beleg aus der Datenschicht
+ * mitbringt; die Groesse traegt die Belegzahl im Zeitfenster.
  */
 
 import { el, clear } from '../utils/dom.js';
@@ -25,7 +25,6 @@ import { buildRoleChip } from './archive-inline-detail.js';
 import { cityOf } from '../utils/format.js';
 import { formatDate, extractYear } from '../utils/date-parser.js';
 import { logStamp } from '../utils/env.js';
-import { mobilityClusterFor } from '../data/constants.js';
 import { getFilter, setFilter, subscribe } from '../ui/filter-state.js';
 import {
   zeitfensterToYearRange, yearRangeToZeitfenster, makeSyncGuard,
@@ -53,7 +52,10 @@ const SICHTEN = [
 ];
 const TYPE_BY_ID = new Map(SICHTEN.map(t => [t.id, t]));
 
-const sichtOf = o => mobilityClusterFor(o.role) || KONTEXT_ID;
+// Die Sicht steht am Beleg: die Datenschicht loest sie aus der Concept-Id der
+// Rolle auf. Ohne Sicht (Entstehung, Erwaehnung, Auftrag) faellt der Beleg in
+// den Kontext-Eimer.
+const sichtOf = o => o.cluster || KONTEXT_ID;
 const colorOf = id => (TYPE_BY_ID.get(id) || TYPE_BY_ID.get(KONTEXT_ID)).color;
 const hasGeo = o => typeof o.placeLat === 'number' && typeof o.placeLon === 'number';
 
@@ -654,7 +656,7 @@ function buildOccChip(o) {
     : o.placement === 'unlocatable' ? (o.placeWikidata ? 'Q-ID ohne Koordinaten' : 'ohne Koordinate')
     : null;
   return buildRoleChip({
-    prefix: o.role || (o.source === 'ste' ? 'EREIGNIS' : 'ORT'),
+    prefix: o.roleLabel || (o.source === 'ste' ? 'EREIGNIS' : 'ORT'),
     value: `${place} · ${date}${note ? ' · ' + note : ''}`,
     xlsxSource: o.xlsxSource,
     wikidata: o.placeWikidata,

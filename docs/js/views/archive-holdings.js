@@ -31,7 +31,7 @@ let currentSortKey = 'signatur';
 
 // Plakate + Tontraeger werden pauschal ausgeblendet -- Forschungs-Fokus
 // liegt auf Schriftgut-Belegen, siehe knowledge/design.md § Tab-Architektur.
-const EXCLUDED_DFT = new Set(['plakat', 'tontraeger']);
+const EXCLUDED_DFT = new Set(['poster', 'soundCarrier']);
 
 /**
  * Render the Bestand view into the container.
@@ -554,7 +554,7 @@ function buildKonvolutChips(meta, visibleChildCount) {
   // Wenn mehr als 3 Typen existieren, wird ein "+N weitere"-Chip angehaengt.
   if (meta.docTypeCounts && meta.docTypeCounts.size > 0) {
     const all = [...meta.docTypeCounts.entries()]
-      .filter(([dft]) => !['plakat', 'tontraeger'].includes(dft))
+      .filter(([dft]) => !EXCLUDED_DFT.has(dft))
       .sort((a, b) => b[1] - a[1]);
     const top = all.slice(0, 3);
     for (const [dft, count] of top) {
@@ -654,7 +654,7 @@ function getFolioHint(record, konvolutId) {
   if (dupes.length <= 1) return null;
 
   // Try agents, then mentioned persons (in subjects), then locations
-  const agents = ensureArray(record['m3gim:hasAssociatedAgent']);
+  const agents = ensureArray(record['m3gim-ontology:hasAssociatedAgent']);
   if (agents.length > 0) {
     const name = agents[0].name || agents[0]['skos:prefLabel'] || '';
     if (name) return name;
@@ -674,10 +674,10 @@ function getFolioHint(record, konvolutId) {
 }
 
 function buildRecordTooltip(record) {
-  const agents = ensureArray(record['m3gim:hasAssociatedAgent']);
+  const agents = ensureArray(record['m3gim-ontology:hasAssociatedAgent']);
   const subjects = ensureArray(record['rico:hasOrHadSubject']);
   const mentionedPersons = subjects.filter(s => s['@type'] === 'rico:Person');
-  const works = subjects.filter(s => s['@type'] === 'm3gim:MusicalWork');
+  const works = subjects.filter(s => s['@type'] === 'm3gim-ontology:MusicalWork');
   const locs = ensureArray(record['rico:hasOrHadLocation'])
     .filter(l => !/^\d{4}/.test(l.name || l['skos:prefLabel'] || ''));
   const parts = [];
@@ -696,7 +696,7 @@ function buildKonvolutTooltip(konvolutId) {
   for (const cid of childIds) {
     const child = store.records.get(cid);
     if (!child) continue;
-    for (const agent of ensureArray(child['m3gim:hasAssociatedAgent'])) {
+    for (const agent of ensureArray(child['m3gim-ontology:hasAssociatedAgent'])) {
       const name = agent.name || agent['skos:prefLabel'] || '';
       if (name) agentCounts.set(name, (agentCounts.get(name) || 0) + 1);
     }

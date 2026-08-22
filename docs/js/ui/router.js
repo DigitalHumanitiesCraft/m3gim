@@ -96,6 +96,20 @@ export function getState() {
   return { ...state };
 }
 
+// Instanzen trugen bis zur Namensraum-Dreiteilung (E-138) den Praefix
+// `m3gim:`. Geteilte Links und Bookmarks aus der Zeit davor nennen ihn weiter;
+// ohne Aufloesung oeffnet ein solcher Link die Anwendung und zeigt nichts an,
+// ohne einen Fehler zu melden.
+const LEGACY_ID_PREFIX = 'm3gim:';
+const ID_PREFIX = 'm3gim-data:';
+
+export function resolveRecordId(id) {
+  if (typeof id !== 'string') return id;
+  return id.startsWith(LEGACY_ID_PREFIX)
+    ? ID_PREFIX + id.slice(LEGACY_ID_PREFIX.length)
+    : id;
+}
+
 function parseHash() {
   const hash = window.location.hash.slice(1);
   if (!hash) return;
@@ -109,7 +123,7 @@ function parseHash() {
   if (TABS.includes(t) && !VISIBLE_TABS.has(t)) t = 'bestand';
   if (TABS.includes(t)) state.activeTab = t;
   if (parts[1] && ALL_VIEWS.includes(parts[0])) {
-    state.selectedRecord = decodeURIComponent(parts[1]);
+    state.selectedRecord = resolveRecordId(decodeURIComponent(parts[1]));
   }
 }
 

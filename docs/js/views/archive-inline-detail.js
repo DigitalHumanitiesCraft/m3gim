@@ -10,12 +10,15 @@
  */
 
 import { el } from '../utils/dom.js';
-import { formatSignatur, formatDocType, ensureArray, entityName, asWikidataId } from '../utils/format.js';
+import {
+  formatSignatur, formatDocType, ensureArray, entityName, asWikidataId, roleLabel, roleToken,
+} from '../utils/format.js';
 import { formatDate } from '../utils/date-parser.js';
 import { navigateToIndex, applyArchivFilter } from '../ui/router.js';
 import { extractXlsxSource } from '../utils/provenance.js';
 import { toggleKorb, isInKorb } from '../ui/basket.js';
-import { WIKIDATA_ICON_SVG, AGRELON_LABELS, roleClusterFor, sectionForRole, steChipPrefix, formatLanguage, bookmarkIcon } from '../data/constants.js';
+import { WIKIDATA_ICON_SVG, AGRELON_LABELS, roleClusterFor, sectionForRole, formatLanguage, bookmarkIcon } from '../data/constants.js';
+import { datingsOf, datingsByScope } from '../data/loader.js';
 
 // Mapping Indizes-Grid -> Toolbar-Filter-Facet (E-91). Grids ohne
 // Toolbar-Equivalent (organisationen) navigieren weiterhin in den Index.
@@ -119,7 +122,7 @@ export function buildInlineDetail(record, store, { onClose } = {}) {
   if (lang) meta.push(['Sprache', formatLanguage(lang)]);
   const extent = record['rico:hasExtent'];
   if (extent) meta.push(['Umfang', typeof extent === 'string' ? extent : String(extent)]);
-  const status = record['m3gim:bearbeitungsstand'];
+  const status = record['m3gim-ontology:processingStatus'];
   if (status) meta.push(['Status', status]);
 
   if (meta.length) {
@@ -192,34 +195,45 @@ function renderMetaGrid(pairs) {
 /**
  * Partitioniert einen Record in seine funktionalen Bestandteile (dom-frei,
  * daher unit-testbar): Agent-Buckets (produktion/mitwirkende/erwaehnt/weitere)
- * mit AgRelOn-Dedup, plus die rohen Werk-/Event-/Orts-/Beziehungs-/Finanz-
- * Listen. Erzeugt KEINE DOM-Knoten -- das tut erst buildRecordBlocks.
+ * mit AgRelOn-Dedup, plus die rohen Werk-/Annotations-/Orts-/Beziehungs-/
+ * Finanz-Listen. Erzeugt KEINE DOM-Knoten -- das tut erst buildRecordBlocks.
  */
 export function partitionRecord(record, store) {
   const recordId = record['@id'];
-  const allAgents = ensureArray(record['m3gim:hasAssociatedAgent']);
+  const allAgents = ensureArray(record['m3gim-ontology:hasAssociatedAgent']);
   const subjects = ensureArray(record['rico:hasOrHadSubject']);
-  const works = subjects.filter(s => s['@type'] === 'm3gim:MusicalWork' || s['@type'] === 'm3gim:PerformanceEvent');
+  const works = subjects.filter(s => s['@type'] === 'm3gim-ontology:MusicalWork' || s['@type'] === 'm3gim-ontology:FramingEvent');
   const mentionedPersons = subjects.filter(s => s['@type'] === 'rico:Person');
-  // Bühnenrollen aus den referenzierten m3gim:Performance-Entitäten auflösen
+  // Bühnenrollen aus den referenzierten Performance-Entitäten auflösen
   // (E-96, löst das frühere Attribut hasPerformanceRole ab).
   const performanceRoles = [];
-  for (const ref of ensureArray(record['m3gim:hasPerformance'])) {
+  for (const ref of ensureArray(record['m3gim-ontology:hasPerformance'])) {
     const perf = store.performances?.get(ref && ref['@id']);
     if (!perf) continue;
-    const srId = perf['m3gim:hasStageRole'] && perf['m3gim:hasStageRole']['@id'];
-    const name = srId && store.stageRoles?.get(srId);
-    // dataQualityFlag sitzt auf der Performance-Entitaet, nicht der StageRole.
-    if (name) performanceRoles.push({ name, qualityFlag: perf['m3gim:dataQualityFlag'] });
+    for (const sr of ensureArray(perf['m3gim-ontology:hasStageRole'])) {
+      const name = sr && sr['@id'] && store.stageRoles?.get(sr['@id']);
+      // dataQualityFlag sitzt auf der Performance-Entitaet, nicht der StageRole.
+      if (name) performanceRoles.push({ name, qualityFlag: perf['m3gim-ontology:dataQualityFlag'] });
+    }
   }
   const locations = ensureArray(record['rico:hasOrHadLocation']);
   const eventIds = store.recordToEvents?.get(recordId) || [];
   const events = eventIds.map(eid => store.mobilityEvents.get(eid)).filter(Boolean);
   const agentRelations = store.agentRelations?.get(recordId) || [];
   const finances = store.finances?.get(recordId) || [];
-  // m3gim:hasDatedEvent: im Dokument GENANNTE Datierungen (dateRole "erwaehnt"),
-  // KEINE biografischen Ereignisse — daher hier am Record, nicht im Zeitstrahl.
-  const datedEvents = ensureArray(record['m3gim:hasDatedEvent']);
+  // Ortlose Datierungen. Die verorteten stehen schon im Ort-und-Ereignis-Block
+  // und bleiben hier aussen vor, damit kein Chip doppelt erscheint.
+  //   mentionedDatings  im Dokument GENANNTE Datierungen, KEINE biografischen
+  //                     Ereignisse -- daher hier am Record, nicht im Zeitstrahl.
+  //   eventDatings      jede andere Bezugsebene, allen voran die bezeugten
+  //                     Ereignisse; Rahmenveranstaltung, Vertragsstatus
+  //                     `nicht eingehalten` und die Datierung des Objekts
+  //                     laufen mit, statt aus der Ansicht zu fallen.
+  const hasDatings = Boolean(store && store.recordDatings);
+  const mentionedDatings = hasDatings
+    ? datingsByScope(store, record, 'mentioned').filter(d => !d.place) : [];
+  const eventDatings = hasDatings
+    ? datingsOf(store, record).filter(d => !d.place && d.scope !== 'mentioned') : [];
 
   // Agents, die schon ueber eine AgRelOn-Beziehung sichtbar sind, unterdruecken.
   const agrelonAgentKeys = new Set();
@@ -230,17 +244,23 @@ export function partitionRecord(record, store) {
 
   const bucket = { produktion: [], mitwirkende: [], erwaehnt: [], weitere: [] };
   for (const a of allAgents) {
-    const roleKey = (a.role || '').toLowerCase();
+    // Die Rolle steht als Verweisknoten am Agenten; Sektions- und Dedup-Tabelle
+    // schluesseln auf die Rohform.
+    const token = roleToken(a.role);
+    const roleKey = (token || '').toLowerCase();
     if (AGRELON_ROLES.has(roleKey)) {
       const agentKey = a['@id'] || (a.name || '').toLowerCase();
       if (agentKey && agrelonAgentKeys.has(agentKey)) continue; // schon in Beziehungen
     }
-    const section = sectionForRole(a.role) || 'weitere';
+    const section = sectionForRole(token) || 'weitere';
     bucket[section].push(a);
   }
   for (const p of mentionedPersons) bucket.erwaehnt.push(p);
 
-  return { bucket, works, performanceRoles, events, locations, agentRelations, finances, datedEvents };
+  return {
+    bucket, works, performanceRoles, events, locations, agentRelations, finances,
+    mentionedDatings, eventDatings,
+  };
 }
 
 /**
@@ -251,32 +271,35 @@ export function partitionRecord(record, store) {
  * weitere, beziehungen, finanzen.
  */
 export function buildRecordBlocks(record, store) {
-  const { bucket, works, performanceRoles, events, locations, agentRelations, finances, datedEvents } = partitionRecord(record, store);
+  const {
+    bucket, works, performanceRoles, events, locations, agentRelations, finances,
+    mentionedDatings, eventDatings,
+  } = partitionRecord(record, store);
 
   const blocks = [];
   const push = (key, title, chips) => {
     if (chips.length) blocks.push({ key, title, count: chips.length, chips });
   };
-  push('produktion', 'Produktion', agentChipEls(bucket.produktion));
-  push('mitwirkende', 'Mitwirkende', agentChipEls(bucket.mitwirkende));
+  push('produktion', 'Produktion', agentChipEls(store, bucket.produktion));
+  push('mitwirkende', 'Mitwirkende', agentChipEls(store, bucket.mitwirkende));
   push('werk', 'Werk & Repertoire', workChipEls(works, performanceRoles));
-  push('ort', 'Ort & Ereignis', eventChipEls(events, locations));
-  push('genannte-daten', 'Im Dokument genannte Daten', datedEventChipEls(datedEvents));
-  push('erwaehnt', 'Erwähnt', agentChipEls(bucket.erwaehnt));
-  push('weitere', 'Weitere', agentChipEls(bucket.weitere));
+  push('ort', 'Ort & Ereignis', eventChipEls(store, events, locations, eventDatings));
+  push('genannte-daten', 'Im Dokument genannte Daten', datingChipEls(mentionedDatings));
+  push('erwaehnt', 'Erwähnt', agentChipEls(store, bucket.erwaehnt));
+  push('weitere', 'Weitere', agentChipEls(store, bucket.weitere));
   push('beziehungen', 'Beziehungen', relationChipEls(agentRelations));
   push('finanzen', 'Finanzen', financeChipEls(finances));
   return blocks;
 }
 
 /** Agent-Subobjekte -> Rollen-Prefix-Chips (Personen-Facette). */
-function agentChipEls(entities) {
+function agentChipEls(store, entities) {
   return entities.map(entity => buildRoleChip({
-    prefix: entity.role || 'AGENT',
+    prefix: roleLabel(store, entity.role) || 'AGENT',
     value: entityName(entity, entity['@id'] || '?'),
     xlsxSource: extractXlsxSource(entity),
     wikidata: asWikidataId(entity['@id']),
-    qualityFlag: entity['m3gim:dataQualityFlag'],
+    qualityFlag: entity['m3gim-ontology:dataQualityFlag'],
     tip: 'Als Filter setzen',
     onClick: chipClickFor('personen', entityName(entity, entity['@id'] || '?')),
   }));
@@ -289,12 +312,12 @@ function workChipEls(works, performanceRoles) {
     const name = entityName(w, '?');
     const komponist = w.komponist || '';
     chips.push(buildRoleChip({
-      prefix: w['@type'] === 'm3gim:PerformanceEvent' ? 'EREIGNIS' : 'WERK',
+      prefix: w['@type'] === 'm3gim-ontology:FramingEvent' ? 'EREIGNIS' : 'WERK',
       value: komponist ? `${name} (${komponist})` : name,
-      cluster: w['@type'] === 'm3gim:PerformanceEvent' ? 'ort' : 'rolle',
+      cluster: w['@type'] === 'm3gim-ontology:FramingEvent' ? 'ort' : 'rolle',
       xlsxSource: extractXlsxSource(w),
       wikidata: asWikidataId(w['@id']),
-      qualityFlag: w['m3gim:dataQualityFlag'],
+      qualityFlag: w['m3gim-ontology:dataQualityFlag'],
       tip: 'Als Filter setzen',
       onClick: chipClickFor('werke', name),
     }));
@@ -311,29 +334,44 @@ function workChipEls(works, performanceRoles) {
   return chips;
 }
 
-/** SpatiotemporalEvents (mit Datum) + Places ohne Event-Verknuepfung -> Chips. */
-function eventChipEls(events, locations) {
+/** Datumswert einer Annotation samt Unsicherheitsqualifier. */
+function dateText(annotation) {
+  const value = annotation.date ? formatDate(annotation.date) : '';
+  if (!value) return '';
+  return annotation.qualifier ? `${annotation.qualifier} ${value}` : value;
+}
+
+/**
+ * Verortete Annotationen, ortlose Ereignis-Datierungen und Places ohne
+ * Annotation -> Chips. Das Rollen-Prefix ist die Anzeigeform aus den Daten;
+ * eine Hand-Map, die eine Datumsrolle auf eine Ortsrolle umschreibt, hat im
+ * zusammengefuehrten Modell keinen Gegenstand mehr, weil Absendung,
+ * Empfangnahme und Abreise Ort und Datum unter einem Begriff fuehren.
+ */
+function eventChipEls(store, events, locations, eventDatings) {
   const chips = [];
-  // Events zuerst — tragen mehr Kontext (Ort + Datum).
+  // Verortete Annotationen zuerst — tragen mehr Kontext (Ort + Datum).
   for (const ev of events) {
-    const dateDisplay = ev.date ? formatDate(ev.date) : '—';
+    const dateDisplay = dateText(ev) || '—';
     chips.push(buildRoleChip({
-      prefix: steChipPrefix(ev.role),
+      prefix: ev.roleLabel || 'EREIGNIS',
       value: `${ev.place || '?'} · ${dateDisplay}`,
-      cluster: 'ort',  // STE-Chips immer ort-Farbfamilie
+      cluster: 'ort',  // verortete Annotationen immer ort-Farbfamilie
       xlsxSource: ev.xlsxSource,
       wikidata: ev.placeWikidata,
       tip: ev.place ? 'Als Filter setzen' : null,
       onClick: ev.place ? chipClickFor('orte', ev.place) : null,
     }));
   }
-  // Orte, die nicht schon ueber ein STE dargestellt sind.
+  // Ereignisse ohne Ort: dieselbe Sektion, aber Datums-Farbfamilie.
+  chips.push(...datingChipEls(eventDatings));
+  // Orte, die nicht schon ueber eine Annotation dargestellt sind.
   const eventPlaces = new Set(events.map(e => (e.place || '').toLowerCase()));
   for (const loc of locations) {
     const name = entityName(loc, '?');
     if (eventPlaces.has(name.toLowerCase())) continue;
     chips.push(buildRoleChip({
-      prefix: (loc.role || 'ORT').toUpperCase(),
+      prefix: (roleLabel(store, loc.role) || 'ORT').toUpperCase(),
       value: name,
       cluster: 'ort',
       xlsxSource: extractXlsxSource(loc),
@@ -379,17 +417,18 @@ function financeChipEls(entries) {
 }
 
 /**
- * m3gim:hasDatedEvent -> Datums-Chips. Diese Datierungen werden IM Dokument
- * genannt (dateRole "erwaehnt"), sind also Eigenschaft des Dokuments, nicht
- * Malaniuks Biografie — deshalb hier am Record und bewusst NICHT im
- * Chronik-Zeitstrahl (sonst stuende z. B. ein 1872-Punkt auf ihrer Lebenslinie).
+ * Ortlose Datierungen -> Datums-Chips. Der Block "Im Dokument genannte Daten"
+ * bekommt darueber die Bezugsebene `mentioned`; diese Datierungen werden IM
+ * Dokument genannt und sind Eigenschaft des Dokuments, nicht Malaniuks
+ * Biografie — deshalb hier am Record und bewusst NICHT im Chronik-Zeitstrahl
+ * (sonst stuende z. B. ein 1872-Punkt auf ihrer Lebenslinie).
  */
-function datedEventChipEls(datedEvents) {
-  return datedEvents.map(d => buildRoleChip({
-    prefix: d['m3gim:dateRole'] || 'genannt',
-    value: formatDate(d['m3gim:dateValue']) || d['m3gim:dateValue'] || '?',
+function datingChipEls(datings) {
+  return datings.map(d => buildRoleChip({
+    prefix: d.roleLabel || 'genannt',
+    value: dateText(d) || d.rawDate || '?',
     cluster: 'datum',
-    xlsxSource: extractXlsxSource(d),
+    xlsxSource: d.xlsxSource,
   }));
 }
 
@@ -466,7 +505,7 @@ export function buildRoleChip({ prefix, value, cluster, xlsxSource, wikidata, ti
   if (hasQuality) {
     // Datengetriebener Marker: der Flag-Wert (z. B. "rolle-unsicher") steht
     // verbatim im Tooltip — keine redaktionelle Deutung, nur das modellierte
-    // m3gim:dataQualityFlag sichtbar gemacht.
+    // m3gim-ontology:dataQualityFlag sichtbar gemacht.
     parts.push(el('span', {
       className: 'quality-flag',
       dataset: { tip: `Datenqualität: ${qualityFlag}` },

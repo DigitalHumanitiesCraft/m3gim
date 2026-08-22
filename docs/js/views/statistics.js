@@ -19,6 +19,7 @@
 import { clear, el } from '../utils/dom.js';
 import { logStamp } from '../utils/env.js';
 import { ortColor } from '../data/constants.js';
+import { roleLabel } from '../utils/format.js';
 import { applyArchivFilter, navigateToView } from '../ui/router.js';
 import { createSidebar, viewShell } from '../ui/sidebar.js';
 import {
@@ -586,7 +587,7 @@ function buildFinanzenSection(store) {
       'Detail-Rollen'));
     // Rollen-Bars monochrom KUG-Blau.
     roleWrap.appendChild(buildHorizontalBars(fin.roles.map(r => ({
-      label: r.role,
+      label: roleLabel(store, r.role) || r.role,
       value: r.count,
       color: KUG_BLUE,
     }))));

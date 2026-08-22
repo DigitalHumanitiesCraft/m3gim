@@ -214,6 +214,25 @@ export const ROLE_CLUSTER = {
   // Aus dem tieferen Export ergaenzte Ereignisrollen (Treffen 2026-06-23).
   'AUFNAHME':         'ort',
   'EMPFANG':          'ort',
+  // Die zusammengefuehrten Begriffe (E-136). Ort und Datum derselben Rolle
+  // stehen seither unter einem Namen, weshalb die Ortsform des Namens hier
+  // keinen Treffer mehr erzeugt und der Chip ohne diese Zeilen grau bliebe.
+  'ABSENDUNG':        'ort',
+  'ABREISE':          'ort',
+  'EMPFANGNAHME':     'ort',
+  'VERTRAGSORT':      'ort',
+  'RAHMENVERANSTALTUNG': 'ort',
+  'PUBLIKUM':         'person',
+  'VERTRAGSPARTNER':  'person',
+  'ABGEBILDET':       'person',
+  'BELEUCHTER':       'person',
+  'REPETITOR':        'person',
+  'REGIEASSISTENT':   'person',
+  'FOTOGRAF':         'person',
+  'AUSBILDUNGSSTAETTE': 'beziehung',
+  'AUSBILDUNGSSTÄTTE': 'beziehung',
+  'INHABER':          'beziehung',
+  'FLUGGESELLSCHAFT': 'beziehung',
 
   // Personen in Produktionsrollen
   'KOMPONIST':        'person',

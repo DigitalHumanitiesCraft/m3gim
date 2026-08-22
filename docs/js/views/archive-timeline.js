@@ -2,22 +2,23 @@
  * M³GIM Mobilitäts-Chronik — scrollender Jahres-Zeitstrahl.
  * Records hängen als Chips an der Jahresachse; ein linker Akzent kodiert die
  * dominante Mobilitätssicht (geteilte SICHT_COLOR, Karte/Statistik). Records
- * ohne SpatiotemporalEvent bleiben monochrom — die Monochromie IST das Signal
+ * ohne verortete Annotation bleiben monochrom — die Monochromie IST das Signal
  * "keine Sicht erschlossen". Leere Jahre bleiben sichtbar (Erschließungsspiegel,
- * E-88), undatierte landen am Ende; einige lassen sich sekundär datieren (typi-
- * siertes Feld / STE.atDate) und wandern markiert in ihre Jahreszeile. Ein
+ * E-88), undatierte landen am Ende; einige lassen sich sekundär datieren (über
+ * die ranghöchste ankernde Datierung) und wandern markiert in ihre Jahreszeile. Ein
  * kollabierbarer Dekaden×Sicht-Header zeigt die zeitliche Entwicklung als
  * Aggregat, das per Klick auf seine belegenden Chips auflöst.
  */
 
 import { el, clear } from '../utils/dom.js';
 import { formatSignatur, getDocTypeId, ensureArray, dftLabel } from '../utils/format.js';
-import { extractYear, formatDate } from '../utils/date-parser.js';
+import { formatDate } from '../utils/date-parser.js';
+import { primaryYear } from '../data/loader.js';
 import { ortColor } from '../data/constants.js';
 import { buildFilterToolbar, updateSchaerfeBanner } from './_archive-toolbar.js';
 import { filterByToolbarState, isToolbarFiltered, searchMatchChronik } from './_archive-filter.js';
 import {
-  sichtForRecord, secondaryYearForRecord, aggregateDecadeStacks, SICHTEN, SICHT_COLOR,
+  sichtForRecord, aggregateDecadeStacks, SICHTEN, SICHT_COLOR,
 } from './chronik-data.js';
 import { logStamp } from '../utils/env.js';
 import { selectRecord } from '../ui/router.js';
@@ -117,19 +118,16 @@ function updateChronikView() {
   }
   updateSchaerfeBanner('chronik-schaerfe', shared.schaerfe, engInfo);
 
-  // Pro Record einmal annotieren: Sicht (aus STE) + Anzeigejahr. Das Anzeigejahr
-  // ist kanonisch rico:date (E-88); fehlt es, versuchen wir eine SEKUNDAERE
-  // Datierung (typisiertes Feld / STE.atDate), die sichtbar markiert bleibt und
-  // nie mit rico:date gleichgesetzt wird ("ein Record = ein Punkt").
+  // Pro Record einmal annotieren: Sicht (aus den verorteten Annotationen) +
+  // Anzeigejahr. Der Zeitanker ist kanonisch rico:date (E-88); fehlt er, nennt
+  // primaryYear die ranghoechste ankernde Datierung als SEKUNDAERE Herkunft,
+  // die sichtbar markiert bleibt und nie mit rico:date gleichgesetzt wird
+  // ("ein Record = ein Punkt").
   const annotated = records.map(r => {
     const sichtInfo = sichtForRecord(store, r['@id']);
-    const primaryYear = extractYear(r['rico:date']);
-    let year = (typeof primaryYear === 'number' && Number.isFinite(primaryYear)) ? primaryYear : null;
-    let secondary = null;
-    if (year == null) {
-      secondary = secondaryYearForRecord(store, r);
-      if (secondary) year = secondary.year;
-    }
+    const anchor = primaryYear(store, r);
+    const year = Number.isFinite(anchor.year) ? anchor.year : null;
+    const secondary = (year != null && anchor.source !== 'rico:date') ? anchor : null;
     return { record: r, sichtInfo, year, secondary };
   });
 
@@ -376,7 +374,8 @@ function renderRecordPoint(annot) {
   const dateDisplay = formatDate(record['rico:date']) || '';
   const showDate = dateDisplay && year != null && dateDisplay !== String(year);
 
-  // Primaer-Ort: STE-Ort, sonst erster rico:hasOrHadLocation. Label roh (ehrlich,
+  // Primaer-Ort: Ort der ersten verorteten Annotation, sonst erster
+  // rico:hasOrHadLocation. Label roh (ehrlich,
   // QF-16), Farbe ueber ortColor fuer wiederkehrende Staedte.
   let place = '';
   const eventIds = store.recordToEvents?.get(rid) || [];

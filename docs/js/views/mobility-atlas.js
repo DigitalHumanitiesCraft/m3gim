@@ -1,7 +1,8 @@
 /**
  * M³GIM Mobilitäts-Atlas
  *
- * Dreiteilige gekoppelte Ansicht fuer store.mobilityEvents:
+ * Dreiteilige gekoppelte Ansicht fuer die verorteten Annotationen
+ * (store.mobilityEvents):
  *   - Karte (Leaflet + OpenStreetMap-Tiles)
  *   - Zeitstrahl (D3, horizontal mit Brush)
  *   - Detailpanel (Chip-Pattern, Klick-Durchstich zum Archiv)
@@ -13,6 +14,7 @@
 import { el, clear } from '../utils/dom.js';
 import { buildRoleChip } from './archive-inline-detail.js';
 import { formatDate, extractYear } from '../utils/date-parser.js';
+import { SICHT_COLOR } from './statistics-data.js';
 
 // Leaflet (window.L) muss bei Reaktivierung dieses Tabs wieder via CDN in
 // index.html eingebunden werden — wurde entfernt, solange der Tab hidden ist.
@@ -20,15 +22,12 @@ import { formatDate, extractYear } from '../utils/date-parser.js';
 
 const MARKER_COLOR = '#004A8F';       // KUG-Blau
 const MARKER_COLOR_SELECTED = '#2E7D4F'; // Signal-Grün
-const ROLE_PALETTE = {
-  ort:       '#4A7A9C',
-  datum:     '#8A7F6F',
-  person:    '#5C6C88',
-  rolle:     '#9A6A5F',
-  beziehung: '#6B7E55',
-  finanz:    '#7A6F55',
-  neutral:   '#8A7F6F',
-};
+
+// Punktfarbe im Zeitstrahl: die Mobilitaetssicht, die jede Annotation aus der
+// Datenschicht mitbringt. Die Farbtabelle ist die geteilte (SICHT_COLOR), damit
+// Atlas, Karte, Statistik und Chronik dieselbe Sicht gleich einfaerben. Eine
+// Annotation ohne Sicht bekommt den neutralen Ton.
+const sichtColorOf = (annotation) => SICHT_COLOR[annotation.cluster] || SICHT_COLOR.neutral;
 
 /**
  * Haupteinstieg. Wird von main.js/TAB_RENDERERS beim ersten Aktivieren
@@ -48,7 +47,7 @@ export function renderMobilitaetsAtlas(store, container) {
   const header = el('header', { className: 'atlas-header' },
     el('h2', { className: 'atlas-title' }, 'Mobilitäts-Atlas'),
     el('div', { className: 'atlas-subtitle' },
-      'Raumzeitliche Aktivität aus SpatiotemporalEvents · '),
+      'Raumzeitliche Aktivität aus den verorteten Annotationen · '),
     el('div', { className: 'atlas-badges' },
       makeBadge(`${withGeo.length} verortet`, 'atlas-badge--ok'),
       makeBadge(`${unverortet.length} unverortet`, 'atlas-badge--warn', () => {
@@ -61,7 +60,7 @@ export function renderMobilitaetsAtlas(store, container) {
 
   if (events.length === 0) {
     container.appendChild(el('div', { className: 'atlas-empty' },
-      'Keine SpatiotemporalEvents im Graph. Pipeline und Reconciliation pruefen.'));
+      'Keine verorteten Annotationen im Graph. Pipeline und Reconciliation pruefen.'));
     return;
   }
 
@@ -187,7 +186,7 @@ export function renderMobilitaetsAtlas(store, container) {
         .attr('cx', d => x(extractYear(d.date)))
         .attr('cy', eventY)
         .attr('r', d => state.selectedPlace && (d.placeWikidata || d.place) === state.selectedPlace ? 5 : 3.5)
-        .attr('fill', d => ROLE_PALETTE[clusterForEvent(d)] || ROLE_PALETTE.neutral)
+        .style('fill', sichtColorOf)
         .attr('fill-opacity', 0.75)
         .attr('stroke', d => state.selectedPlace && (d.placeWikidata || d.place) === state.selectedPlace ? MARKER_COLOR_SELECTED : 'transparent')
         .attr('stroke-width', 1.5)
@@ -195,7 +194,7 @@ export function renderMobilitaetsAtlas(store, container) {
           const key = d.placeWikidata || d.place;
           setState({ selectedPlace: key, selectedRange: null, unverortetMode: false });
         })
-      .append('title').text(d => `${d.place || '?'} · ${d.date} · ${d.role || ''}`);
+      .append('title').text(d => `${d.place || '?'} · ${d.date} · ${d.roleLabel || ''}`);
 
     // Brush
     const brush = d3.brushX()
@@ -288,7 +287,7 @@ export function renderMobilitaetsAtlas(store, container) {
     const placeLabel = ev.place || 'unbekannt';
     const reason = typeof ev.placeLat !== 'number' ? reasonForUnverortet(ev) : null;
     return buildRoleChip({
-      prefix: (ev.role || 'EVENT'),
+      prefix: (ev.roleLabel || 'EVENT'),
       value: `${placeLabel} · ${date}${reason ? ' · ' + reason : ''}`,
       xlsxSource: ev.xlsxSource,
       wikidata: ev.placeWikidata,
@@ -312,17 +311,6 @@ function makeBadge(label, cls, onClick) {
     attrs.tabindex = '0';
   }
   return el('span', attrs, label);
-}
-
-function clusterForEvent(ev) {
-  const role = (ev.role || '').toLowerCase();
-  if (/datum$/.test(role)) return 'datum';
-  if (role.includes('auffuehrung') || role.includes('aufführung')
-      || role.includes('gastspiel') || role.includes('premiere')
-      || role.includes('spielzeit') || role.includes('wiederaufnahme')) {
-    return 'ort';
-  }
-  return 'neutral';
 }
 
 function reasonForUnverortet(ev) {

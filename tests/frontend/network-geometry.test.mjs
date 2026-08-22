@@ -31,6 +31,10 @@ import {
   NETZWERK_KATEGORIEN,
   RING_THRESHOLDS,
 } from '../../docs/js/views/_network-geometry.js';
+import {
+  personYearsIndex,
+  personInTimeRange,
+} from '../../docs/js/views/network.js';
 
 // ---------------------------------------------------------------------------
 // Mini-Faktory fuer Person-Entries (spiegelt die im Loader gebaute Shape).
@@ -418,4 +422,95 @@ test('labelGeometry: gap-Parameter wirkt additiv auf dx-Betrag', () => {
   const gSmall = labelGeometry(Math.PI / 2, 10, 2);
   const gBig = labelGeometry(Math.PI / 2, 10, 10);
   assert.ok(Math.abs(gBig.dx) > Math.abs(gSmall.dx));
+});
+
+// ---------------------------------------------------------------------------
+// personYearsIndex / personInTimeRange — Zeitanker des Netzwerk-Tabs
+//
+// Die Jahre kommen aus primaryYear(store, record) der Datenschicht:
+// `rico:date` hat Vorrang, sonst datiert die ranghoechste Datierung einer
+// ankernden Bezugsebene. Ein Record, der sein Jahr nur ueber eine Annotation
+// traegt, blieb der frueheren Regex auf `rico:date` unsichtbar.
+// ---------------------------------------------------------------------------
+
+function dating({ year, scope, rank = 0, roleId = 'm3gim-vocab:performance', label = 'aufführung' }) {
+  return {
+    id: null, place: null, date: String(year), rawDate: String(year), qualifier: null,
+    year, role: label, roleId, roleLabel: label, derivedFromRole: null,
+    scope, rank, cluster: null, origin: 'annotation',
+  };
+}
+
+function yearStore() {
+  return {
+    records: new Map([
+      ['rAnker', { '@id': 'rAnker', 'rico:date': '1952-08-26' }],
+      ['rAbgeleitet', { '@id': 'rAbgeleitet' }],
+      ['rErwaehnt', { '@id': 'rErwaehnt' }],
+      ['rBeides', { '@id': 'rBeides', 'rico:date': '1955' }],
+    ]),
+    recordDatings: new Map([
+      ['rAbgeleitet', [dating({ year: 1958, scope: 'attested' })]],
+      ['rErwaehnt', [dating({
+        year: 1872, scope: 'mentioned', roleId: 'm3gim-vocab:mentioned', label: 'erwähnt',
+      })]],
+      ['rBeides', [dating({ year: 1961, scope: 'attested' })]],
+    ]),
+    persons: new Map([
+      ['Anker, A', person({ records: ['rAnker'] })],
+      ['Abgeleitet, B', person({ records: ['rAbgeleitet'] })],
+      ['Erwaehnt, C', person({ records: ['rErwaehnt'] })],
+      ['Beides, D', person({ records: ['rBeides'] })],
+    ]),
+  };
+}
+
+test('personYearsIndex: rico:date traegt das Jahr der Person', () => {
+  const { personYears } = personYearsIndex(yearStore());
+  assert.deepEqual([...personYears.get('Anker, A')], [1952]);
+});
+
+test('personYearsIndex: Record ohne rico:date datiert ueber seine ankernde Annotation', () => {
+  const { personYears } = personYearsIndex(yearStore());
+  assert.deepEqual([...personYears.get('Abgeleitet, B')], [1958]);
+});
+
+test('personYearsIndex: eine Erwaehnung datiert den Record nicht', () => {
+  const { personYears } = personYearsIndex(yearStore());
+  assert.equal(personYears.has('Erwaehnt, C'), false);
+});
+
+test('personYearsIndex: rico:date hat Vorrang vor der abgeleiteten Datierung', () => {
+  const { personYears } = personYearsIndex(yearStore());
+  assert.deepEqual([...personYears.get('Beides, D')], [1955]);
+});
+
+test('personYearsIndex: Gesamtspanne umfasst auch die abgeleiteten Jahre', () => {
+  const { yearRange } = personYearsIndex(yearStore());
+  assert.deepEqual(yearRange, { min: 1952, max: 1958 });
+});
+
+test('personYearsIndex: Store ohne datierte Records liefert keine Spanne', () => {
+  const empty = { records: new Map(), recordDatings: new Map(), persons: new Map() };
+  const { personYears, yearRange } = personYearsIndex(empty);
+  assert.equal(personYears.size, 0);
+  assert.equal(yearRange, null);
+});
+
+test('personInTimeRange: ohne Fenster ist jede Person sichtbar', () => {
+  const { personYears, yearRange } = personYearsIndex(yearStore());
+  assert.equal(personInTimeRange(personYears, yearRange, 'Erwaehnt, C', {}), true);
+});
+
+test('personInTimeRange: abgeleitet datierte Person liegt im passenden Fenster', () => {
+  const { personYears, yearRange } = personYearsIndex(yearStore());
+  const fenster = { yearFrom: 1957, yearTo: 1959 };
+  assert.equal(personInTimeRange(personYears, yearRange, 'Abgeleitet, B', fenster), true);
+  assert.equal(personInTimeRange(personYears, yearRange, 'Anker, A', fenster), false);
+});
+
+test('personInTimeRange: undatierte Person faellt bei aktivem Fenster heraus', () => {
+  const { personYears, yearRange } = personYearsIndex(yearStore());
+  const fenster = { yearFrom: 1800, yearTo: 2000 };
+  assert.equal(personInTimeRange(personYears, yearRange, 'Erwaehnt, C', fenster), false);
 });

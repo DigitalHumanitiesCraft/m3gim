@@ -34,6 +34,12 @@ function makeStore() {
     locations: new Map([
       ['Bayreuth', { records: S('r1', 'r2'), roles: S('auffuehrungsort') }],
     ]),
+    records: new Map([
+      ['r1', { '@id': 'r1', 'rico:date': '1952-07-25' }],
+      ['r2', { '@id': 'r2', 'rico:date': '1953' }],
+      ['r3', { '@id': 'r3', 'rico:date': '1960' }],
+    ]),
+    recordDatings: new Map(),
     byYear: new Map([
       [1952, [{ '@id': 'r1' }]],
       [1953, [{ '@id': 'r2' }]],
@@ -41,6 +47,19 @@ function makeStore() {
     ]),
     recordToEvents: new Map([['r1', ['ste_r1']]]),
     recordToPerformances: new Map([['r1', [{ id: 'p1', work: { name: 'Tristan und Isolde' } }]]]),
+  };
+}
+
+/**
+ * Datierung, wie der Loader sie ablegt: ankernde Bezugsebene, damit
+ * primaryYear sie als Zeitanker des Records nimmt.
+ */
+function annotationDating(year) {
+  return {
+    id: null, place: null, date: String(year), rawDate: String(year), qualifier: null,
+    year, role: 'aufführung', roleId: 'm3gim-vocab:performance',
+    roleLabel: 'aufführung', scope: 'attested', rank: 0,
+    cluster: 'performativ', origin: 'annotation',
   };
 }
 
@@ -80,6 +99,23 @@ describe('buildGraph (weit/eng, Fokus, Filter)', () => {
     const cut = buildGraph(makeStore(), { filter: { zeitfenster: [1950, 1955] } });
     assert.ok(!cut.nodes.some(n => n.name === 'Spaetling, Egon'),
       'Person nur aus 1960 darf im Fenster 1950-1955 nicht erscheinen');
+  });
+
+  test('Zeitfenster nimmt den Zeitanker der Datenschicht (Annotation datiert den Record)', () => {
+    const store = makeStore();
+    // r2 traegt sein Jahr nur ueber eine ankernde Annotation, nicht ueber
+    // rico:date; der Jahres-Index store.byYear kennt es deshalb nicht.
+    store.records.set('r2', { '@id': 'r2' });
+    store.recordDatings.set('r2', [annotationDating(1953)]);
+    store.byYear = new Map([
+      [1952, [{ '@id': 'r1' }]],
+      [1960, [{ '@id': 'r3' }]],
+    ]);
+    const g = buildGraph(store, { filter: { zeitfenster: [1953, 1953] } });
+    const names = g.nodes.map(n => n.name);
+    assert.ok(names.includes('Bayreuther Festspiele'),
+      'Institution nur aus r2 muss im Fenster 1953 erscheinen');
+    assert.ok(!names.includes('Spaetling, Egon'));
   });
 
   test('Ort-Filter schraenkt auf Records des Orts ein', () => {

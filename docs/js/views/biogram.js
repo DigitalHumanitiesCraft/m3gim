@@ -4,8 +4,8 @@
  * Vier visuelle Ebenen (Designgrundlage: interface-konzept § 2 + § Daten-
  * Praesentations-Muster):
  *   1. Lebensphasen-Band (1919–2009, gestrichelt unterteilt)
- *   2. Orte-Spur (aus store.mobilityEvents, horizontal nach Datum,
- *      vertikal nach Land)
+ *   2. Orte-Spur (aus den verorteten Annotationen in store.mobilityEvents,
+ *      horizontal nach Datum, vertikal nach Land)
  *   3. Belege-Spur (Records mit rico:date, farbig nach DFT-Typ)
  *   4. Flucht-Marker (vertikale Linie 1944, Signal-Rot)
  *
@@ -14,7 +14,7 @@
  */
 
 import { el, clear } from '../utils/dom.js';
-import { formatSignatur } from '../utils/format.js';
+import { formatSignatur, getDocTypeId, dftLabel } from '../utils/format.js';
 import { extractYear } from '../utils/date-parser.js';
 import { buildRoleChip } from './archive-inline-detail.js';
 import { navigateToView } from '../ui/router.js';
@@ -51,6 +51,7 @@ function extractBiogrammData(store) {
       place: ev.place || '?',
       country: ev.placeCountry || 'Unbekannt',
       role: ev.role,
+      roleLabel: ev.roleLabel || '',
       recordId: ev.recordId,
       xlsxSource: ev.xlsxSource,
     });
@@ -63,8 +64,9 @@ function extractBiogrammData(store) {
     if (rec['@type'] === 'rico:RecordSet') continue;
     const year = extractYear(rec['rico:date']);
     if (!year) continue;
-    const dft = rec['rico:hasDocumentaryFormType'];
-    const dftId = (dft && dft['@id']) || (typeof dft === 'string' ? dft : null);
+    // Der Dokumenttyp steht als Concept-Verweis; seine Anzeigeform kommt aus
+    // dem skos:prefLabel im Store, nicht aus dem lokalen Namen der Id.
+    const dftId = getDocTypeId(rec);
     belege.push({
       id: rec['@id'],
       year,
@@ -72,6 +74,7 @@ function extractBiogrammData(store) {
       title: rec['rico:title'] || '(ohne Titel)',
       signatur: rec['rico:identifier'] || '',
       dft: dftId,
+      dftLabel: dftId ? dftLabel(store, dftId) : '',
     });
   }
   belege.sort((a, b) => a.year - b.year);
@@ -240,7 +243,7 @@ function drawChart(wrap) {
     .attr('stroke-width', 0.8)
     .on('mouseenter', function (ev, o) {
       D3.select(this).attr('r', 6).attr('fill-opacity', 1);
-      showTooltip(ev, `${o.place}, ${o.date}${o.role ? ' · ' + o.role : ''}`);
+      showTooltip(ev, `${o.place}, ${o.date}${o.roleLabel ? ' · ' + o.roleLabel : ''}`);
     })
     .on('mouseleave', function () {
       D3.select(this).attr('r', 4).attr('fill-opacity', 0.6);
@@ -321,7 +324,7 @@ function drawDetailPanel(panel) {
   panel.appendChild(el('div', { className: 'biogramm__detail-meta' },
     el('span', { className: 'biogramm__detail-sig' }, formatSignatur(b.signatur)),
     el('span', { className: 'biogramm__detail-date' }, b.date),
-    b.dft ? el('span', { className: 'biogramm__detail-dft' }, b.dft.replace('m3gim-dft:', '')) : null,
+    b.dftLabel ? el('span', { className: 'biogramm__detail-dft' }, b.dftLabel) : null,
   ));
   panel.appendChild(el('button', {
     className: 'biogramm__detail-cta',

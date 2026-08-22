@@ -22,6 +22,7 @@
 
 import { el, clear } from '../utils/dom.js';
 import { formatSignatur } from '../utils/format.js';
+import { primaryYear } from '../data/loader.js';
 import { logStamp } from '../utils/env.js';
 import { navigateToView } from '../ui/router.js';
 import { buildRoleChip } from './archive-inline-detail.js';
@@ -244,9 +245,12 @@ function draw() {
 
 /**
  * Pro-Person-Jahresmenge aus den Records. Reine Funktion, damit der Zeitanker
- * pruefbar bleibt. Die Jahre kommen ausschliesslich aus `rico:date` am Record.
- * Faellt dieser Traeger weg, liefert die Funktion eine leere Map und keine
- * Jahresspanne, und der Tab liefe bei aktivem Zeitfilter stumm leer.
+ * pruefbar bleibt. Das Jahr eines Records liefert `primaryYear` der
+ * Datenschicht: `rico:date` hat Vorrang, sonst datiert die ranghoechste
+ * Datierung einer ankernden Bezugsebene. Ein Record ohne jede ankernde
+ * Datierung traegt kein Jahr bei; kennt der Datenstand ueberhaupt keines,
+ * liefert die Funktion eine leere Map und keine Jahresspanne, und der Tab
+ * liefe bei aktivem Zeitfilter stumm leer.
  * @param {object} store
  * @returns {{personYears: Map<string, Set<number>>, yearRange: ?{min:number,max:number}}}
  */
@@ -257,14 +261,12 @@ export function personYearsIndex(store) {
     const years = new Set();
     for (const rid of entry.records) {
       const rec = store.records.get(rid);
-      if (!rec || !rec['rico:date']) continue;
-      const m = /(\d{4})/.exec(String(rec['rico:date']));
-      if (m) {
-        const y = parseInt(m[1], 10);
-        years.add(y);
-        if (y < minY) minY = y;
-        if (y > maxY) maxY = y;
-      }
+      if (!rec) continue;
+      const { year } = primaryYear(store, rec);
+      if (year == null) continue;
+      years.add(year);
+      if (year < minY) minY = year;
+      if (year > maxY) maxY = year;
     }
     if (years.size > 0) personYears.set(name, years);
   }

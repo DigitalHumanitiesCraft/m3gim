@@ -9,10 +9,13 @@
  * institution. Zwei Schaerfegrade:
  *   - weit  (Record-Bezug): Entitaeten, die mit dem Fokus im selben Dokument
  *           genannt sind. Unscharf — Ko-Okkurrenz, KEIN Auftrittsnachweis.
- *   - eng   (Ereignis-Verortung): nur Records, die ein m3gim:SpatiotemporalEvent
- *           oder eine m3gim:Performance tragen (raumzeitlich/auffuehrungs-belegt).
+ *   - eng   (Ereignis-Verortung): nur Records, die eine verortete Annotation
+ *           (m3gim-ontology:Annotation mit atPlace) oder eine
+ *           m3gim-ontology:Performance tragen (raumzeitlich/auffuehrungs-belegt).
  * Die Differenz (eng von weit) wird als Kennzahl ausgewiesen, nicht geglaettet.
  */
+
+import { primaryYear } from '../data/loader.js';
 
 export const NODE_TYPES = ['person', 'werk', 'institution', 'ort'];
 
@@ -35,17 +38,20 @@ const STORE_MAP_FOR_TYPE = {
 };
 
 /**
- * recordId -> Jahr (aus store.byYear invertiert). Fuer die Zeitfenster-Facette.
+ * Jahr eines Records fuer die Zeitfenster-Facette. Der Zeitanker kommt aus
+ * primaryYear der Datenschicht, nicht aus einer eigenen Aufloesung: `rico:date`
+ * hat Vorrang, sonst datiert die ranghoechste Datierung einer ankernden
+ * Bezugsebene. Loest die Invertierung von store.byYear ab, die einen Record
+ * nur dann kannte, wenn der Loader-Index ihn gerade fuehrte.
  */
-function recordYearIndex(store) {
-  const idx = new Map();
-  for (const [year, recs] of store.byYear) {
-    for (const r of recs) idx.set(r['@id'], year);
-  }
-  return idx;
+function recordYear(store, id) {
+  const record = store.records.get(id);
+  if (!record) return null;
+  return primaryYear(store, record).year;
 }
 
-/** Records, die mind. ein STE ODER eine Performance tragen (enger Schaerfegrad). */
+/** Records, die mind. eine verortete Annotation ODER eine Performance tragen
+ *  (enger Schaerfegrad). */
 function eventAnchoredRecords(store) {
   const set = new Set();
   for (const id of store.recordToEvents.keys()) set.add(id);
@@ -125,9 +131,8 @@ export function buildGraph(store, opts = {}) {
   }
   if (Array.isArray(filter.zeitfenster)) {
     const [from, to] = filter.zeitfenster;
-    const yIdx = recordYearIndex(store);
     records = new Set([...records].filter(id => {
-      const y = yIdx.get(id);
+      const y = recordYear(store, id);
       return y != null && y >= from && y <= to;
     }));
   }

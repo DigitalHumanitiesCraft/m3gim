@@ -9,7 +9,6 @@
  */
 
 import { getDocTypeId, dftLabel, cityOf } from '../utils/format.js';
-import { mobilityClusterFor } from '../data/constants.js';
 import { extractYear } from '../utils/date-parser.js';
 
 // ---------------------------------------------------------------------------
@@ -148,7 +147,7 @@ export function filterStore(store, { lo, hi, sichten = null, laender = null } = 
   const events = new Map();
   for (const [id, ev] of sub.mobilityEvents) {
     if (sichtenActive) {
-      const cluster = mobilityClusterFor(ev.role) || 'neutral';
+      const cluster = ev.cluster || 'neutral';
       if (!sichten.has(cluster)) continue;
     }
     if (laenderActive) {
@@ -194,7 +193,7 @@ export function aggregateSichten(store) {
   // role lists drift out of sync with the export.
   const unklassifiziertRollen = new Map();
   for (const ev of store.mobilityEvents.values()) {
-    const cluster = mobilityClusterFor(ev.role);
+    const cluster = ev.cluster;
     if (cluster && buckets.has(cluster)) {
       buckets.get(cluster).count++;
     } else {
@@ -219,21 +218,23 @@ export function aggregateSichten(store) {
 }
 
 /**
- * Ereignis-Rollen einzeln, jede einer Sicht zugeordnet (mobilityClusterFor,
- * Fallback "neutral"). count-absteigend.
+ * Ereignis-Rollen einzeln, jede der Sicht ihres Annotationsknotens zugeordnet
+ * (Fallback "neutral"). count-absteigend.
  */
 export function aggregateEventRoles(store) {
-  const counts = new Map();
+  const rows = new Map();
   for (const ev of store.mobilityEvents.values()) {
+    // Aggregiert wird auf der Rohform der Rolle; Anzeigeform und Sicht kommen
+    // vom Knoten mit, statt aus der Rohform abgeleitet zu werden.
     const role = ev.role || '(ohne Rolle)';
-    counts.set(role, (counts.get(role) || 0) + 1);
+    let row = rows.get(role);
+    if (!row) {
+      row = { role, label: ev.roleLabel || role, sicht: ev.cluster || 'neutral', count: 0 };
+      rows.set(role, row);
+    }
+    row.count++;
   }
-  return [...counts.entries()]
-    .map(([role, count]) => {
-      const sicht = mobilityClusterFor(role) || 'neutral';
-      return { role, label: role, sicht, count };
-    })
-    .sort((a, b) => b.count - a.count);
+  return [...rows.values()].sort((a, b) => b.count - a.count);
 }
 
 /**
@@ -251,7 +252,7 @@ export function aggregateDecadesBySicht(store) {
     if (!Number.isFinite(y)) continue;
     dated++;
     const decade = Math.floor(y / 10) * 10;
-    const sicht = mobilityClusterFor(ev.role) || 'neutral';
+    const sicht = ev.cluster || 'neutral';
     if (!buckets.has(decade)) buckets.set(decade, new Map());
     const bs = buckets.get(decade);
     bs.set(sicht, (bs.get(sicht) || 0) + 1);

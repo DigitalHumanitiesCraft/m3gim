@@ -34,16 +34,6 @@ pytestmark = [
         _STAGING,
         reason="Staging-Lauf (ENV-Override aktiv) — Produktions-Frische nicht anwendbar",
     ),
-    # Der Datenumbau auf das Zielmodell (E-136) laeuft in zwei Schritten. Die
-    # Pipeline steht, das Frontend liest noch die alten Terme. Solange es das
-    # tut, traegt docs/data bewusst den alten Datenstand, damit die
-    # ausgelieferte Seite lauffaehig bleibt. Der Marker ist strikt: sobald der
-    # Frontend-Schritt docs/data neu erzeugt, schlaegt der Test als XPASS an
-    # und verlangt, dass der Marker gezogen wird.
-    pytest.mark.xfail(
-        strict=True,
-        reason="Frontend-Schritt des Modellumbaus offen, docs/data haelt den alten Stand",
-    ),
 ]
 
 

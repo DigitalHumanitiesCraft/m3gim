@@ -6,13 +6,18 @@
  * Orte einer Entitaet liegen an zwei Stellen im Graph und werden hier
  * zusammengezogen:
  *   1. an den Records selbst (`rico:hasOrHadLocation`) — der Hauptteil,
- *   2. in den raumzeitlichen Ereignissen (STE, `store.mobilityEvents`).
+ *   2. in den verorteten Annotationen (`store.mobilityEvents`).
  *
  * Das Ergebnis ist eine flache Liste von Orts-Belegen (occurrences), die der
- * View nach gewaehlter Entitaet filtert und zu Stadt-Knoten gruppiert.
+ * View nach gewaehlter Entitaet filtert und zu Stadt-Knoten gruppiert. Jeder
+ * Beleg fuehrt seine Rolle in drei Formen mit: die Rohform als Dedup-Schluessel,
+ * die Anzeigeform aus den Daten und die Mobilitaetssicht, nach der die Karte
+ * einfaerbt. Damit muss keine Ansicht mehr aus einem Rollennamen ableiten,
+ * was er bedeutet.
  */
 
-import { ensureArray, cityOf } from '../utils/format.js';
+import { ensureArray, cityOf, roleIdOf, roleToken, roleLabel } from '../utils/format.js';
+import { mobilityClusterFor } from '../data/constants.js';
 import { extractXlsxSource } from '../utils/provenance.js';
 
 /**
@@ -39,7 +44,7 @@ const looksDateLike = s => /^\d/.test(String(s).trim());
 
 /**
  * Alle Orts-Belege des Bestands, ein Eintrag je (Record, Stadt, Rolle, Datum,
- * Quelle), dedupliziert. Aus Record-Orten und STE.
+ * Quelle), dedupliziert. Aus Record-Orten und verorteten Annotationen.
  * @returns {Array<Occurrence>}
  * @typedef {Object} Occurrence
  * @property {string} place         Roher Ortsname (ggf. adressgenau)
@@ -47,7 +52,10 @@ const looksDateLike = s => /^\d/.test(String(s).trim());
  * @property {?number} placeLon
  * @property {?string} placeWikidata  wd:-Q-ID oder null
  * @property {?string} date         ISO-Datum / Jahr
- * @property {?string} role         Rolle (auffuehrungsort, zielort, …)
+ * @property {?string} role         Rohform der Rolle (auffuehrungsort, zielort, …)
+ * @property {?string} roleId       Concept-Id der Rolle, null beim Literal
+ * @property {string} roleLabel     Anzeigeform der Rolle aus den Daten
+ * @property {?string} cluster      Mobilitaetssicht der Rolle
  * @property {?string} recordId
  * @property {'loc'|'ste'} source
  * @property {?object} xlsxSource
@@ -107,13 +115,20 @@ export function buildOccurrences(store) {
     for (const loc of ensureArray(rec['rico:hasOrHadLocation'])) {
       const name = loc.name || loc['skos:prefLabel'];
       if (!name) continue;
+      // Die Rolle steht als Verweisknoten am Ort. Roh in den Dedup-Schluessel,
+      // sonst landete dort ein Objekt und jeder Beleg waere derselbe.
+      const role = loc.role;
+      const roleId = roleIdOf(role);
       push({
         place: name,
         placeLat: typeof loc['geo:lat'] === 'number' ? loc['geo:lat'] : null,
         placeLon: typeof loc['geo:long'] === 'number' ? loc['geo:long'] : null,
         placeWikidata: loc['@id'] && String(loc['@id']).startsWith('wd:') ? loc['@id'] : null,
         date: recDate,
-        role: loc.role || null,
+        role: roleToken(role),
+        roleId,
+        roleLabel: roleLabel(store, role),
+        cluster: mobilityClusterFor(roleId || (typeof role === 'string' ? role : null)),
         recordId: rid,
         source: 'loc',
         xlsxSource: extractXlsxSource(loc) || extractXlsxSource(rec) || null,
@@ -121,7 +136,8 @@ export function buildOccurrences(store) {
     }
   }
 
-  // Raumzeitliche Ereignisse (STE), bereits flach im Store.
+  // Verortete Annotationen, bereits flach im Store; Rolle, Anzeigeform und
+  // Mobilitaetssicht liegen dort fertig vor.
   for (const ev of store.mobilityEvents.values()) {
     if (!ev.place) continue;
     push({
@@ -131,6 +147,9 @@ export function buildOccurrences(store) {
       placeWikidata: ev.placeWikidata || null,
       date: ev.date || null,
       role: ev.role || null,
+      roleId: ev.roleId || null,
+      roleLabel: ev.roleLabel || '',
+      cluster: ev.cluster || null,
       recordId: ev.recordId || null,
       source: 'ste',
       xlsxSource: ev.xlsxSource || null,

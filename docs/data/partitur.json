@@ -166,22 +166,6 @@
   ],
   "auftritte": [
     {
-      "ort": "Bayreuth",
-      "ort_detail": null,
-      "kategorie": "festspiel",
-      "werk": "9. Symphonie",
-      "komponist": null,
-      "rolle": null,
-      "jahr": 1935,
-      "datum": "1935",
-      "phase": "LP1",
-      "dokumente": [
-        "UAKUG/NIM_137 1"
-      ],
-      "gattung": null,
-      "titel": "Zeitungsausschnitt \"Die 'Neunte' unter Hindemith\" in: Die Neue Zeitung 1953"
-    },
-    {
       "ort": null,
       "ort_detail": null,
       "kategorie": "gastspiel",
@@ -196,77 +180,6 @@
       ],
       "gattung": "oper",
       "titel": "Tätigkeitsliste 1939 bis 1949"
-    },
-    {
-      "ort": null,
-      "ort_detail": null,
-      "kategorie": "gastspiel",
-      "werk": null,
-      "komponist": null,
-      "rolle": null,
-      "jahr": 1940,
-      "datum": "1940-12-20/1940-12-31",
-      "phase": "LP2",
-      "dokumente": [
-        "UAKUG/NIM/PL_03",
-        "UAKUG/NIM/PL_12"
-      ],
-      "gattung": null,
-      "titel": "\"BOHÈME\" / \"MADAMA BUTTERFLY\" / \"DON QUICHOTTE\""
-    },
-    {
-      "ort": null,
-      "ort_detail": null,
-      "kategorie": "gastspiel",
-      "werk": null,
-      "komponist": null,
-      "rolle": null,
-      "jahr": 1941,
-      "datum": "1941-06-01/1941-06-14",
-      "phase": "LP2",
-      "dokumente": [
-        "UAKUG/NIM/PL_10",
-        "UAKUG/NIM/PL_11",
-        "UAKUG/NIM/PL_13"
-      ],
-      "gattung": null,
-      "titel": "\"CARMEN\" / \"DER ROTE MOHN\""
-    },
-    {
-      "ort": null,
-      "ort_detail": null,
-      "kategorie": "konzert",
-      "werk": null,
-      "komponist": "Beethoven",
-      "rolle": null,
-      "jahr": 1942,
-      "datum": "1942-04-26",
-      "phase": "LP2",
-      "dokumente": [
-        "UAKUG/NIM/PL_04"
-      ],
-      "gattung": "konzert",
-      "titel": "SINFONISCHES ORCHESTER / in Stanislau / Konzertsaal Armenierstrasse 18. / Zum Ab"
-    },
-    {
-      "ort": null,
-      "ort_detail": null,
-      "kategorie": "gastspiel",
-      "werk": null,
-      "komponist": "Verdi",
-      "rolle": null,
-      "jahr": 1943,
-      "datum": "1943-03-03/1943-03-14",
-      "phase": "LP2",
-      "dokumente": [
-        "UAKUG/NIM/PL_05",
-        "UAKUG/NIM/PL_06",
-        "UAKUG/NIM/PL_07",
-        "UAKUG/NIM/PL_08",
-        "UAKUG/NIM/PL_14"
-      ],
-      "gattung": null,
-      "titel": "\"BALLETTABEND\" / \"PAGANINI\" / \"AIDA\""
     },
     {
       "ort": "Potsdam",
@@ -302,22 +215,6 @@
       "titel": "Kurzbiografie  von Ira Malaniuk als Typoscript (vermutlich als Anhang eines Brie"
     },
     {
-      "ort": "Italien",
-      "ort_detail": null,
-      "kategorie": "gastspiel",
-      "werk": "Tristan und Isolde",
-      "komponist": "Wagner",
-      "rolle": null,
-      "jahr": 1950,
-      "datum": "1950",
-      "phase": "LP4",
-      "dokumente": [
-        "UAKUG/NIM_004 9"
-      ],
-      "gattung": "oper",
-      "titel": "Rezension von A. Parente zu Tristan und Isolde in Neapel"
-    },
-    {
       "ort": "Bayreuth",
       "ort_detail": null,
       "kategorie": "festspiel",
@@ -344,42 +241,11 @@
       "datum": "1951-08-05",
       "phase": "LP5",
       "dokumente": [
-        "UAKUG/NIM_135 13_28"
+        "UAKUG/NIM_135 13_28",
+        "UAKUG/NIM_135 14_28"
       ],
       "gattung": "oper",
       "titel": "Programmheft der Bayreuther Festspiele 1951 zu \"Die Meistersinger von Nürnberg\" "
-    },
-    {
-      "ort": "Neapel",
-      "ort_detail": null,
-      "kategorie": "gastspiel",
-      "werk": "Das Rheingold",
-      "komponist": "Wagner",
-      "rolle": null,
-      "jahr": 1951,
-      "datum": "1951",
-      "phase": "LP5",
-      "dokumente": [
-        "UAKUG/NIM_022 3"
-      ],
-      "gattung": "oper",
-      "titel": "Vertrag zwischen Ira Malaniuk und der Ente Autonomo del Teatro di San Carlo, Nea"
-    },
-    {
-      "ort": null,
-      "ort_detail": null,
-      "kategorie": "gastspiel",
-      "werk": null,
-      "komponist": null,
-      "rolle": null,
-      "jahr": 1952,
-      "datum": "1952-12-28/1953-01-06",
-      "phase": "LP5",
-      "dokumente": [
-        "UAKUG/NIM/PL_15"
-      ],
-      "gattung": null,
-      "titel": "Spielplan der Bayrischen Staatstheater / für die Zeit vom 28. Dezember 1952 bis "
     },
     {
       "ort": null,
@@ -399,8 +265,24 @@
     },
     {
       "ort": null,
+      "ort_detail": null,
+      "kategorie": "gastspiel",
+      "werk": "Der Troubadour",
+      "komponist": null,
+      "rolle": "Azucena",
+      "jahr": 1952,
+      "datum": "1952-10-24",
+      "phase": "LP5",
+      "dokumente": [
+        "UAKUG/NIM_023 7"
+      ],
+      "gattung": "oper",
+      "titel": "Verpflichtungsschein zur Aufnahme von \"Der Troubadour\" von Nordwestdeutscher Run"
+    },
+    {
+      "ort": "Bayreuth",
       "ort_detail": "Markgräfliches Opernhaus",
-      "kategorie": "konzert",
+      "kategorie": "festspiel",
       "werk": "Siegfried",
       "komponist": null,
       "rolle": "Waltraute",
@@ -414,38 +296,6 @@
       "titel": "Brief von Dorothea Angerer an Ira Malaniuk bezügliche einer Konzertanfrage für d"
     },
     {
-      "ort": null,
-      "ort_detail": null,
-      "kategorie": "gastspiel",
-      "werk": "Die Götterdämmerung",
-      "komponist": "Wagner",
-      "rolle": null,
-      "jahr": 1952,
-      "datum": "1952",
-      "phase": "LP5",
-      "dokumente": [
-        "UAKUG/NIM_023 4"
-      ],
-      "gattung": "oper",
-      "titel": "Vertrag zwischen Ira Malaniuk und der Ente Autonomo del Teatro di San Carlo, Nea"
-    },
-    {
-      "ort": "Bayreuth",
-      "ort_detail": null,
-      "kategorie": "festspiel",
-      "werk": "Die Walküre",
-      "komponist": "Wagner",
-      "rolle": "Waltraute",
-      "jahr": 1952,
-      "datum": "1952-11-09",
-      "phase": "LP5",
-      "dokumente": [
-        "UAKUG/NIM_011 15"
-      ],
-      "gattung": "oper",
-      "titel": "Korrespondenz von Ira Malaniuk an Wieland Wagner zu Proben in Bayreuth"
-    },
-    {
       "ort": "Bayreuth",
       "ort_detail": null,
       "kategorie": "festspiel",
@@ -453,10 +303,11 @@
       "komponist": "Wagner",
       "rolle": null,
       "jahr": 1952,
-      "datum": "1952-10-23",
+      "datum": "1952-10-27",
       "phase": "LP5",
       "dokumente": [
-        "UAKUG/NIM_011 19"
+        "UAKUG/NIM_011 19",
+        "UAKUG/NIM_011 20"
       ],
       "gattung": "oper",
       "titel": "Brief von Ira Malaniuk an Wieland Wagner zu ihrem Auftritt als Fricka in Bayreut"
@@ -489,10 +340,29 @@
       "phase": "LP5",
       "dokumente": [
         "UAKUG/NIM_073 9",
+        "UAKUG/NIM_073 19",
+        "UAKUG/NIM_073 33_1_2",
+        "UAKUG/NIM_073 33_1_3",
         "UAKUG/NIM_136 95"
       ],
       "gattung": "oper",
       "titel": "Zeitungsartikel zu Bayreuther Besetzung 1952 für \"Tristan und Isolde\", \"Meisters"
+    },
+    {
+      "ort": "Bayreuth",
+      "ort_detail": null,
+      "kategorie": "festspiel",
+      "werk": "Walküre",
+      "komponist": null,
+      "rolle": null,
+      "jahr": 1952,
+      "datum": "1952-05",
+      "phase": "LP5",
+      "dokumente": [
+        "UAKUG/NIM_136 100_25"
+      ],
+      "gattung": "oper",
+      "titel": "Das Musikleben. Monatszeitschrift Mai 1952 Bericht \"Bayreuth in Neapel\", \"Musikl"
     },
     {
       "ort": "München",
@@ -530,6 +400,22 @@
       "ort": "München",
       "ort_detail": null,
       "kategorie": "engagement",
+      "werk": "Die Walküre",
+      "komponist": "Wagner",
+      "rolle": "Waltraute",
+      "jahr": 1952,
+      "datum": "1952-11-09",
+      "phase": "LP5",
+      "dokumente": [
+        "UAKUG/NIM_011 15"
+      ],
+      "gattung": "oper",
+      "titel": "Korrespondenz von Ira Malaniuk an Wieland Wagner zu Proben in Bayreuth"
+    },
+    {
+      "ort": "München",
+      "ort_detail": null,
+      "kategorie": "engagement",
       "werk": null,
       "komponist": "Wagner",
       "rolle": "Fricka",
@@ -543,6 +429,54 @@
       "titel": "Brief von Wieland Wagner an Ira Malaniuk zu Malaniuks Absage als Fricka in Bayre"
     },
     {
+      "ort": "München, Martiusstrasse 3",
+      "ort_detail": null,
+      "kategorie": "gastspiel",
+      "werk": null,
+      "komponist": null,
+      "rolle": null,
+      "jahr": 1952,
+      "datum": "1952-03-18",
+      "phase": "LP5",
+      "dokumente": [
+        "UAKUG/NIM_007 1"
+      ],
+      "gattung": "oper",
+      "titel": "Brief von Felix Ballhausen zu Dienstverträgen Staatsoper München"
+    },
+    {
+      "ort": "Neapel",
+      "ort_detail": null,
+      "kategorie": "gastspiel",
+      "werk": "Das Rheingold",
+      "komponist": "Wagner",
+      "rolle": null,
+      "jahr": 1952,
+      "datum": "1952-12-12",
+      "phase": "LP5",
+      "dokumente": [
+        "UAKUG/NIM_022 3"
+      ],
+      "gattung": "oper",
+      "titel": "Vertrag zwischen Ira Malaniuk und der Ente Autonomo del Teatro di San Carlo, Nea"
+    },
+    {
+      "ort": "Neapel",
+      "ort_detail": null,
+      "kategorie": "gastspiel",
+      "werk": "Die Götterdämmerung",
+      "komponist": "Wagner",
+      "rolle": null,
+      "jahr": 1952,
+      "datum": "1952-11-29",
+      "phase": "LP5",
+      "dokumente": [
+        "UAKUG/NIM_023 4"
+      ],
+      "gattung": "oper",
+      "titel": "Vertrag zwischen Ira Malaniuk und der Ente Autonomo del Teatro di San Carlo, Nea"
+    },
+    {
       "ort": "Wien",
       "ort_detail": "Teatro Colon",
       "kategorie": "engagement",
@@ -550,7 +484,7 @@
       "komponist": null,
       "rolle": null,
       "jahr": 1952,
-      "datum": "1952-08-26",
+      "datum": "1952-05-27",
       "phase": "LP5",
       "dokumente": [
         "UAKUG/NIM_007 2"
@@ -562,49 +496,18 @@
       "ort": null,
       "ort_detail": null,
       "kategorie": "gastspiel",
-      "werk": null,
-      "komponist": "Wagner",
-      "rolle": null,
-      "jahr": 1953,
-      "datum": "1953-05-18",
-      "phase": "LP5",
-      "dokumente": [
-        "UAKUG/NIM/PL_16"
-      ],
-      "gattung": null,
-      "titel": "TRISTANO / E / ISOTTA"
-    },
-    {
-      "ort": null,
-      "ort_detail": null,
-      "kategorie": "gastspiel",
       "werk": "Orpheus und Eurydike",
       "komponist": "Gluck/Händel",
       "rolle": null,
       "jahr": 1953,
-      "datum": "1953-03-06",
+      "datum": "1953-03-05",
       "phase": "LP5",
       "dokumente": [
+        "UAKUG/NIM_004 5",
         "UAKUG/NIM_004 8"
       ],
       "gattung": "oper",
-      "titel": "Rezension von Helmut Schmidt-Garre"
-    },
-    {
-      "ort": null,
-      "ort_detail": "Radio Audizioni Italia",
-      "kategorie": "gastspiel",
-      "werk": "Das Rheingold",
-      "komponist": "Wagner",
-      "rolle": null,
-      "jahr": 1953,
-      "datum": "1953-04-15",
-      "phase": "LP5",
-      "dokumente": [
-        "UAKUG/NIM_023 2"
-      ],
-      "gattung": "oper",
-      "titel": "Vertrag mit der RAI für Radioaufnahmen von Rheingold und Walküre im Oktober bezi"
+      "titel": "Rezension von K.H. Ruppel zu Orpheus und Eurydike in der Süddeutschen Zeitung"
     },
     {
       "ort": null,
@@ -614,14 +517,13 @@
       "komponist": null,
       "rolle": "Azucena",
       "jahr": 1953,
-      "datum": "1953-03-19",
+      "datum": "1953-05-12",
       "phase": "LP5",
       "dokumente": [
-        "UAKUG/NIM_023 7",
         "UAKUG/NIM_023 8"
       ],
       "gattung": "oper",
-      "titel": "Verpflichtungsschein zur Aufnahme von \"Der Troubadour\" von Nordwestdeutscher Run"
+      "titel": "Verpflichtungsschein zur Nachaufnahme \"Der Troubadour\"  von Nordwestdeutscher Ru"
     },
     {
       "ort": null,
@@ -647,13 +549,29 @@
       "komponist": "Wagner",
       "rolle": "Brangäne",
       "jahr": 1953,
-      "datum": "1953-05-19",
+      "datum": "1953-02-20",
       "phase": "LP5",
       "dokumente": [
         "UAKUG/NIM_023 11"
       ],
       "gattung": "oper",
       "titel": "Vertrag zwischen Ira Malaniuk und dem Teheatre municipal de Lausanne zur Aufführ"
+    },
+    {
+      "ort": "Bayreuth",
+      "ort_detail": null,
+      "kategorie": "festspiel",
+      "werk": "Sinfonien, Nr. 9, op. 125 (d-Moll)",
+      "komponist": "Beethoven",
+      "rolle": "Alt Solo",
+      "jahr": 1953,
+      "datum": "1953-08-13",
+      "phase": "LP5",
+      "dokumente": [
+        "UAKUG/NIM_004 7"
+      ],
+      "gattung": "konzert",
+      "titel": "Rezension von Dr. Joachim Bergfeld (Fränkische Presse) zur IX. Symphonie Beethov"
     },
     {
       "ort": "Bayreuth",
@@ -682,7 +600,8 @@
       "datum": "1953-06-24",
       "phase": "LP5",
       "dokumente": [
-        "UAKUG/NIM_023 1_1"
+        "UAKUG/NIM_023 1_1",
+        "UAKUG/NIM_137"
       ],
       "gattung": "oper",
       "titel": "Vertrag Bayreuther Festspiele 1953"
@@ -707,6 +626,22 @@
       "ort": "Bayreuth",
       "ort_detail": null,
       "kategorie": "festspiel",
+      "werk": "9. Symphonie",
+      "komponist": null,
+      "rolle": null,
+      "jahr": 1953,
+      "datum": "1953-08-13",
+      "phase": "LP5",
+      "dokumente": [
+        "UAKUG/NIM_137 1"
+      ],
+      "gattung": null,
+      "titel": "Zeitungsausschnitt \"Die 'Neunte' unter Hindemith\" in: Die Neue Zeitung 1953"
+    },
+    {
+      "ort": "Bayreuth",
+      "ort_detail": null,
+      "kategorie": "festspiel",
       "werk": "Neunte Symphonie",
       "komponist": "Beethoven",
       "rolle": null,
@@ -714,7 +649,8 @@
       "datum": "1953",
       "phase": "LP5",
       "dokumente": [
-        "UAKUG/NIM_137 3_1"
+        "UAKUG/NIM_137 3_1",
+        "UAKUG/NIM_137 3_22"
       ],
       "gattung": "konzert",
       "titel": "Programmheft zu Beethovens \"Neunte Symphonie\" bei den Bayreuther Festspiele 1953"
@@ -736,6 +672,54 @@
       "titel": "Heft: \"Die Mitwirkenden der Bayreuther Festspiele 1953"
     },
     {
+      "ort": "Bayreuth",
+      "ort_detail": null,
+      "kategorie": "festspiel",
+      "werk": "Der Ring des Nibelungen",
+      "komponist": null,
+      "rolle": null,
+      "jahr": 1953,
+      "datum": "1953-07-26",
+      "phase": "LP5",
+      "dokumente": [
+        "UAKUG/NIM_137 15_3"
+      ],
+      "gattung": "oper",
+      "titel": "Aufführungsankündigung in Festspiel Nachrichten \"Bayreuther Tagblatt\""
+    },
+    {
+      "ort": "Lissabon",
+      "ort_detail": null,
+      "kategorie": "gastspiel",
+      "werk": "Die Meistersinger von Nürnberg",
+      "komponist": "Wagner",
+      "rolle": null,
+      "jahr": 1953,
+      "datum": "1953-09-29",
+      "phase": "LP5",
+      "dokumente": [
+        "UAKUG/NIM_007 4"
+      ],
+      "gattung": "oper",
+      "titel": "Brief von Ernst Kühnly zu Gastspiel in Lissabon an Martin H. Taubman"
+    },
+    {
+      "ort": "München",
+      "ort_detail": null,
+      "kategorie": "engagement",
+      "werk": "Les Noces",
+      "komponist": null,
+      "rolle": null,
+      "jahr": 1953,
+      "datum": "1953-07-03",
+      "phase": "LP5",
+      "dokumente": [
+        "UAKUG/NIM_023 6"
+      ],
+      "gattung": null,
+      "titel": "Abschlussschein zur Aufführung von Stravinskys Les Noces in München"
+    },
+    {
       "ort": "Neapel",
       "ort_detail": null,
       "kategorie": "gastspiel",
@@ -750,6 +734,38 @@
       ],
       "gattung": "oper",
       "titel": "Vertrag zwischen Ira Malaniuk und der Ente Autonomo del Teatro di San Carlo, Nea"
+    },
+    {
+      "ort": "Rom",
+      "ort_detail": "Radio Audizioni Italia",
+      "kategorie": "gastspiel",
+      "werk": "Das Rheingold",
+      "komponist": "Wagner",
+      "rolle": null,
+      "jahr": 1953,
+      "datum": "1953-04-15",
+      "phase": "LP5",
+      "dokumente": [
+        "UAKUG/NIM_023 2"
+      ],
+      "gattung": "oper",
+      "titel": "Vertrag mit der RAI für Radioaufnahmen von Rheingold und Walküre im Oktober bezi"
+    },
+    {
+      "ort": "Wien",
+      "ort_detail": null,
+      "kategorie": "engagement",
+      "werk": "Ring des Nibelungen",
+      "komponist": "Wagner",
+      "rolle": null,
+      "jahr": 1953,
+      "datum": "1953-07-29",
+      "phase": "LP5",
+      "dokumente": [
+        "UAKUG/NIM_137 14"
+      ],
+      "gattung": "oper",
+      "titel": "Zeitungsausschnitt \"Der erste 'Ring'-Zyklus in Bayreuth hat begonnen in: Wiener "
     },
     {
       "ort": "Wuppertal",
@@ -771,17 +787,17 @@
       "ort": null,
       "ort_detail": null,
       "kategorie": "gastspiel",
-      "werk": null,
-      "komponist": null,
+      "werk": "Gesang an die Hoffnung",
+      "komponist": "Hindemith",
       "rolle": null,
       "jahr": 1954,
-      "datum": "1954-03-08",
+      "datum": "1954-03-31",
       "phase": "LP5",
       "dokumente": [
-        "UAKUG/NIM/PL_18"
+        "UAKUG/NIM_004 11"
       ],
-      "gattung": null,
-      "titel": "IL CREPUSCOLO / DEGLI DEI"
+      "gattung": "oper",
+      "titel": "Rezension zu Paul Hindemith in Köln"
     },
     {
       "ort": null,
@@ -833,20 +849,53 @@
       "titel": "Anfrage von Carl-Heinz Klebe an Ira Malaniuk, Altsolo neunte Sinfonie Beethoven "
     },
     {
-      "ort": "Lissabon",
+      "ort": "Bayreuth",
       "ort_detail": null,
-      "kategorie": "gastspiel",
-      "werk": "Die Meistersinger von Nürnberg",
+      "kategorie": "festspiel",
+      "werk": null,
+      "komponist": null,
+      "rolle": null,
+      "jahr": 1954,
+      "datum": "1954-06-09",
+      "phase": "LP5",
+      "dokumente": [
+        "UAKUG/NIM_011 13"
+      ],
+      "gattung": null,
+      "titel": "Korrespondenz von Carl-Heiz Klebe an Ira Malaniuk zu Verträgen"
+    },
+    {
+      "ort": "Bayreuth",
+      "ort_detail": "Theatre Royale de la Monnaie",
+      "kategorie": "festspiel",
+      "werk": "Tristan und Isolde",
       "komponist": "Wagner",
       "rolle": null,
       "jahr": 1954,
-      "datum": "1954-01-23",
+      "datum": "1954-12-01",
       "phase": "LP5",
       "dokumente": [
-        "UAKUG/NIM_007 4"
+        "UAKUG/NIM_142 22_18"
       ],
       "gattung": "oper",
-      "titel": "Brief von Ernst Kühnly zu Gastspiel in Lissabon an Martin H. Taubman"
+      "titel": "Belgische Kulturzeitung Programmhinweis Bayreuther Festspiele"
+    },
+    {
+      "ort": "Brüssel",
+      "ort_detail": null,
+      "kategorie": "gastspiel",
+      "werk": "Tristan und Isolde",
+      "komponist": "Wagner",
+      "rolle": null,
+      "jahr": 1954,
+      "datum": "1954-11-28",
+      "phase": "LP5",
+      "dokumente": [
+        "UAKUG/NIM_011 6",
+        "UAKUG/NIM_142 22_4"
+      ],
+      "gattung": "oper",
+      "titel": "Anhang zum Brief Wieland Wagner an Ira Malaniuk vom 03.05.1954"
     },
     {
       "ort": "München",
@@ -882,22 +931,6 @@
     },
     {
       "ort": null,
-      "ort_detail": null,
-      "kategorie": "gastspiel",
-      "werk": null,
-      "komponist": null,
-      "rolle": null,
-      "jahr": 1955,
-      "datum": "1955-01-12",
-      "phase": "LP5",
-      "dokumente": [
-        "UAKUG/NIM/PL_17"
-      ],
-      "gattung": null,
-      "titel": "Direttore / PAUL HINDEMITH / Mezzosoprano / IRA MALANIUK"
-    },
-    {
-      "ort": null,
       "ort_detail": "Opéra Garnier",
       "kategorie": "gastspiel",
       "werk": "Tristan und Isolde",
@@ -908,10 +941,63 @@
       "phase": "LP6",
       "dokumente": [
         "UAKUG/NIM_004 19",
-        "UAKUG/NIM_139 109_2"
+        "UAKUG/NIM_139 109_2",
+        "UAKUG/NIM_139 125",
+        "UAKUG/NIM_139 126",
+        "UAKUG/NIM_139 127",
+        "UAKUG/NIM_139 129"
       ],
       "gattung": "oper",
       "titel": "Rezension von René Dumesnil zu Tristan und Isolde in Paris"
+    },
+    {
+      "ort": null,
+      "ort_detail": null,
+      "kategorie": "gastspiel",
+      "werk": "Così fan tutte",
+      "komponist": "Mozart",
+      "rolle": null,
+      "jahr": 1956,
+      "datum": "1956-08-16",
+      "phase": "LP6",
+      "dokumente": [
+        "UAKUG/NIM_011 1"
+      ],
+      "gattung": "oper",
+      "titel": "Begleitbrief zu Originalvertrag Genf von Direktor Gruder-Guntram an Ira Malaniuk"
+    },
+    {
+      "ort": "Paris",
+      "ort_detail": null,
+      "kategorie": "gastspiel",
+      "werk": "Tristan und Isolde",
+      "komponist": "Wagner",
+      "rolle": null,
+      "jahr": 1956,
+      "datum": "1956-04-08",
+      "phase": "LP6",
+      "dokumente": [
+        "UAKUG/NIM_011 2",
+        "UAKUG/NIM_139 128"
+      ],
+      "gattung": "oper",
+      "titel": "Brief Wieland Wagner an Ira Malaniuk vom 22.03.1955"
+    },
+    {
+      "ort": "Turin",
+      "ort_detail": null,
+      "kategorie": "gastspiel",
+      "werk": "Tristan und Isolde",
+      "komponist": "Wagner",
+      "rolle": null,
+      "jahr": 1956,
+      "datum": "1956-01-20",
+      "phase": "LP6",
+      "dokumente": [
+        "UAKUG/NIM_139 104"
+      ],
+      "gattung": "oper",
+      "titel": "Programmflyer zur Aufführung von Tristan und Isolde der RAI am 20. Januar 1956"
     },
     {
       "ort": "Wien",
@@ -937,7 +1023,7 @@
       "komponist": "Verdi",
       "rolle": null,
       "jahr": 1956,
-      "datum": "1956-11",
+      "datum": "1956-05-01",
       "phase": "LP6",
       "dokumente": [
         "UAKUG/NIM_004 16",
@@ -970,7 +1056,7 @@
       "komponist": null,
       "rolle": null,
       "jahr": 1957,
-      "datum": "1957-11-10",
+      "datum": "1957-12-05",
       "phase": "LP6",
       "dokumente": [
         "UAKUG/NIM_007 5_6"
@@ -986,7 +1072,7 @@
       "komponist": null,
       "rolle": null,
       "jahr": 1957,
-      "datum": "1957-06-07",
+      "datum": "1957-06-24",
       "phase": "LP6",
       "dokumente": [
         "UAKUG/NIM_007 5_3"
@@ -1002,48 +1088,64 @@
       "komponist": null,
       "rolle": null,
       "jahr": 1957,
-      "datum": "1957-01-04",
+      "datum": "1957-11-26",
       "phase": "LP6",
       "dokumente": [
+        "UAKUG/NIM_004 23",
         "UAKUG/NIM_007 5_2",
         "UAKUG/NIM_007 5_4",
-        "UAKUG/NIM_007 5_5",
-        "UAKUG/NIM_007 5_7"
+        "UAKUG/NIM_007 5_5"
       ],
       "gattung": "konzert",
-      "titel": "Kassa-Eingang, Einzahlungsnachweis der Konzertdirektion, 1957-05-01"
+      "titel": "Brief von Ira Malaniuk an Cox vom 26.11.1957"
     },
     {
-      "ort": null,
+      "ort": "Zürich",
       "ort_detail": null,
-      "kategorie": "gastspiel",
+      "kategorie": "engagement",
+      "werk": null,
+      "komponist": null,
+      "rolle": null,
+      "jahr": 1957,
+      "datum": "1957-05-15",
+      "phase": "LP6",
+      "dokumente": [
+        "UAKUG/NIM_007 5_8"
+      ],
+      "gattung": null,
+      "titel": "Einzahlungsbestätigung (?) Dr. Baasch an Martin Hugo Taubman, 1957-05-15"
+    },
+    {
+      "ort": "Salzburg",
+      "ort_detail": null,
+      "kategorie": "festspiel",
+      "werk": "Vanessa",
+      "komponist": "Barber, Samuel",
+      "rolle": null,
+      "jahr": 1958,
+      "datum": "1958-04-09",
+      "phase": "LP6",
+      "dokumente": [
+        "UAKUG/NIM_004 25"
+      ],
+      "gattung": "oper",
+      "titel": "NCAC Newsletter über Künstler:innen (Ira Malaniuk - Hugh Thompson)"
+    },
+    {
+      "ort": "Wien",
+      "ort_detail": null,
+      "kategorie": "engagement",
       "werk": null,
       "komponist": null,
       "rolle": null,
       "jahr": 1958,
-      "datum": "1958-11-07/1958-11-19",
+      "datum": "1958-03-13",
       "phase": "LP6",
       "dokumente": [
-        "UAKUG/NIM/PL_23"
+        "UAKUG/NIM_007 5_7"
       ],
-      "gattung": null,
-      "titel": "Württembergische Staatstheater 07.11. - 19.11.1958"
-    },
-    {
-      "ort": null,
-      "ort_detail": null,
-      "kategorie": "gastspiel",
-      "werk": "Mozarts Requium",
-      "komponist": null,
-      "rolle": null,
-      "jahr": 1959,
-      "datum": "1959-01-02",
-      "phase": "LP6",
-      "dokumente": [
-        "UAKUG/NIM_004 26"
-      ],
-      "gattung": null,
-      "titel": "Rezension von Herbert Kupferberg zu Mozarts Requiem und Schuberts Messe in Es-Du"
+      "gattung": "konzert",
+      "titel": "Kassa-Eingang, Einzahlungsnachweis der Konzertdirektion, 1957-03-13"
     },
     {
       "ort": null,
@@ -1053,7 +1155,7 @@
       "komponist": null,
       "rolle": "\"Engel\"",
       "jahr": 1959,
-      "datum": "1959-05-09",
+      "datum": "1959-11-18",
       "phase": "LP6",
       "dokumente": [
         "UAKUG/NIM_007 6"
@@ -1062,52 +1164,20 @@
       "titel": "Mittelung über Honorar für Sendung Paradies und Peri 1959 von Nord- und Westdeut"
     },
     {
-      "ort": "Wien",
+      "ort": "New York",
       "ort_detail": null,
-      "kategorie": "festspiel",
-      "werk": null,
-      "komponist": "Gluck/Händel",
-      "rolle": null,
-      "jahr": 1959,
-      "datum": "1959-01-21",
-      "phase": "LP6",
-      "dokumente": [
-        "UAKUG/NIM/PL_02"
-      ],
-      "gattung": "oper",
-      "titel": "SALZBURGER MOZART-WOCHE 1959 / Mittwoch, den 21. Jänner 1959 - Mozarteum, Großer"
-    },
-    {
-      "ort": null,
-      "ort_detail": null,
-      "kategorie": "konzert",
-      "werk": null,
-      "komponist": "Beethoven",
-      "rolle": null,
-      "jahr": 1960,
-      "datum": "1960-01-08",
-      "phase": "LP6",
-      "dokumente": [
-        "UAKUG/NIM/PL_22"
-      ],
-      "gattung": "konzert",
-      "titel": "Ira Malaniuk / singt Lieder von HAYDN, MOZART, BEETHOVEN, / SCHUBERT, BRAHMS, R."
-    },
-    {
-      "ort": "Wien",
-      "ort_detail": null,
-      "kategorie": "engagement",
+      "kategorie": "gastspiel",
       "werk": null,
       "komponist": null,
       "rolle": null,
-      "jahr": 1960,
-      "datum": "1960-12-14",
+      "jahr": 1959,
+      "datum": "1959-10-27",
       "phase": "LP6",
       "dokumente": [
-        "UAKUG/NIM/PL_01"
+        "UAKUG/NIM_004 27"
       ],
-      "gattung": "oper",
-      "titel": "Liederabend / IRA / MALANIUK / Alt / (Staatsoper Wien und München) / am Flügel: "
+      "gattung": null,
+      "titel": "Brief von Margaret Snider an Ira Malaniuk vom 27.10.1959"
     },
     {
       "ort": "Wien",
@@ -1126,38 +1196,20 @@
       "titel": "Rezension von Karl Löbl zu Der Wildschütz o.D."
     },
     {
-      "ort": null,
+      "ort": "München",
       "ort_detail": null,
-      "kategorie": "konzert",
+      "kategorie": "engagement",
       "werk": null,
       "komponist": null,
       "rolle": null,
-      "jahr": 1962,
-      "datum": "1962-06-04/1962-06-07",
+      "jahr": 1961,
+      "datum": "1961",
       "phase": "LP6",
       "dokumente": [
-        "UAKUG/NIM/PL_19",
-        "UAKUG/NIM/PL_20",
-        "UAKUG/NIM/PL_21"
-      ],
-      "gattung": "konzert",
-      "titel": "Musikverein für Steiermark, Konzertsaison 1961/62"
-    },
-    {
-      "ort": null,
-      "ort_detail": null,
-      "kategorie": "gastspiel",
-      "werk": "Orpheus und Eurydike",
-      "komponist": "Gluck/Händel",
-      "rolle": null,
-      "jahr": 1963,
-      "datum": "1963-03-06",
-      "phase": "LP6",
-      "dokumente": [
-        "UAKUG/NIM_004 5"
+        "UAKUG/NIM_007 7"
       ],
       "gattung": "oper",
-      "titel": "Rezension von K.H. Ruppel zu Orpheus und Eurydike in der Süddeutschen Zeitung"
+      "titel": "Brief von Intendanz der Bayerischen Staatsoper zu Gastspielvertrag und Schiedsve"
     },
     {
       "ort": "Palais Pallavicini",
@@ -1167,7 +1219,7 @@
       "komponist": "Durante, Francesco",
       "rolle": null,
       "jahr": 1963,
-      "datum": "1963-08-29",
+      "datum": "1963-08-28",
       "phase": "LP6",
       "dokumente": [
         "UAKUG/NIM_007 8"
@@ -1183,13 +1235,29 @@
       "komponist": "Wagner",
       "rolle": "Brangäne",
       "jahr": 1963,
-      "datum": "1963-03-08",
+      "datum": "1963-05-23",
       "phase": "LP6",
       "dokumente": [
         "UAKUG/NIM_007 9"
       ],
       "gattung": "oper",
       "titel": "Brief von Emil Jucker an Ira Malaniuk über ein Gastspiel in Zürich"
+    },
+    {
+      "ort": "Italien",
+      "ort_detail": null,
+      "kategorie": "gastspiel",
+      "werk": "Tristan und Isolde",
+      "komponist": "Wagner",
+      "rolle": null,
+      "jahr": 1964,
+      "datum": "1964-01-08",
+      "phase": "LP6",
+      "dokumente": [
+        "UAKUG/NIM_004 9"
+      ],
+      "gattung": "oper",
+      "titel": "Rezension von A. Parente zu Tristan und Isolde in Neapel"
     },
     {
       "ort": "Wien",
@@ -1208,22 +1276,6 @@
       ],
       "gattung": "oper",
       "titel": "Rezension von Gerhard Bauer zu Der Wildschütz (Arbeiter Zeitung)"
-    },
-    {
-      "ort": "Graz",
-      "ort_detail": null,
-      "kategorie": "konzert",
-      "werk": null,
-      "komponist": null,
-      "rolle": null,
-      "jahr": 1970,
-      "datum": "1970-06-17/1970-06-27",
-      "phase": "LP6",
-      "dokumente": [
-        "UAKUG/NIM/PL_24"
-      ],
-      "gattung": "konzert",
-      "titel": "Konzertprogramm der Akademie für Musik und darstellende Kunst Graz vom 17. bis 2"
     }
   ],
   "netzwerk": [
@@ -1267,102 +1319,102 @@
         {
           "signatur": "UAKUG/NIM/PL_16",
           "titel": "TRISTANO / E / ISOTTA",
-          "typ": "plakat"
+          "typ": "poster"
         },
         {
           "signatur": "UAKUG/NIM_004 9",
           "titel": "Rezension von A. Parente zu Tristan und Isolde in Neapel",
-          "typ": "rezension"
+          "typ": "review"
         },
         {
           "signatur": "UAKUG/NIM_004 10",
           "titel": "Rezensionen aus der Fränkischen Presse zu \"Die Götterdämmerung\" und \"Tristan und Isolde\"",
-          "typ": "rezension"
+          "typ": "review"
         },
         {
           "signatur": "UAKUG/NIM_004 13",
           "titel": "Rezension zur Festvorstellung Meistersinger aus dem Münchner Merkur",
-          "typ": "rezension"
+          "typ": "review"
         },
         {
           "signatur": "UAKUG/NIM_004 15",
           "titel": "Rezension von Y. zu Tannhäuser",
-          "typ": "rezension"
+          "typ": "review"
         },
         {
           "signatur": "UAKUG/NIM_004 19",
           "titel": "Rezension von René Dumesnil zu Tristan und Isolde in Paris",
-          "typ": "rezension"
+          "typ": "review"
         },
         {
           "signatur": "UAKUG/NIM_011 18",
           "titel": "Brief von Wieland Wagner an Ira Malaniuk zu Malaniuks Absage als Fricka in Bayreuth",
-          "typ": "korrespondenz"
+          "typ": "correspondence"
         },
         {
           "signatur": "UAKUG/NIM_011 19",
           "titel": "Brief von Ira Malaniuk an Wieland Wagner zu ihrem Auftritt als Fricka in Bayreuth",
-          "typ": "korrespondenz"
+          "typ": "correspondence"
         },
         {
           "signatur": "UAKUG/NIM_022 3",
           "titel": "Vertrag zwischen Ira Malaniuk und der Ente Autonomo del Teatro di San Carlo, Neapel für Auftritte im",
-          "typ": "vertrag"
+          "typ": "contract"
         },
         {
           "signatur": "UAKUG/NIM_023 2",
           "titel": "Vertrag mit der RAI für Radioaufnahmen von Rheingold und Walküre im Oktober beziehungsweise November",
-          "typ": "vertrag"
+          "typ": "contract"
         },
         {
           "signatur": "UAKUG/NIM_023 3",
           "titel": "Vertrag zwischen Ira Malaniuk und der Ente Autonomo del Teatro di San Carlo, Neapel für Auftritte in",
-          "typ": "vertrag"
+          "typ": "contract"
         },
         {
           "signatur": "UAKUG/NIM_023 4",
           "titel": "Vertrag zwischen Ira Malaniuk und der Ente Autonomo del Teatro di San Carlo, Neapel für Auftritte in",
-          "typ": "vertrag"
+          "typ": "contract"
         },
         {
           "signatur": "UAKUG/NIM_023 11",
           "titel": "Vertrag zwischen Ira Malaniuk und dem Teheatre municipal de Lausanne zur Aufführung Tristan und Isol",
-          "typ": "vertrag"
+          "typ": "contract"
         },
         {
           "signatur": "UAKUG/NIM_043 2",
           "titel": "Zeitungsartiekl zu \"Tristan und Isolde\" Premiere im Stadttheater von 7.11.1952",
-          "typ": "presse"
+          "typ": "press"
         },
         {
           "signatur": "UAKUG/NIM_051",
           "titel": "\"Paris Mai 55 (Ring)\"",
-          "typ": "presse"
+          "typ": "press"
         },
         {
           "signatur": "UAKUG/NIM_073 33_3_1",
           "titel": "Bayreuther Tagblatt 26. Juli 1952 über \"Die Walküre\"",
-          "typ": "presse"
+          "typ": "press"
         },
         {
           "signatur": "UAKUG/NIM_119",
           "titel": "Programmheft zu einer Aufführung von \"Tristan und Isolde\" (Wagner) an der Wiener Staatsoper",
-          "typ": "programm"
+          "typ": "program"
         },
         {
           "signatur": "UAKUG/NIM_120",
           "titel": "Programmheft zu einer Aufführung von \"Tannhäuser\" (Wagner) an der Wiener Staatsoper",
-          "typ": "programm"
+          "typ": "program"
         },
         {
           "signatur": "UAKUG/NIM_135 2",
           "titel": "Programmheft der Bayreuther Festspiele 1951 zu \"Götterdämmerung\"",
-          "typ": "programm"
+          "typ": "program"
         },
         {
           "signatur": "UAKUG/NIM_135 2_1",
           "titel": "Programmheft der Bayreuther Festspiele 1951 zu \"Götterdämmerung\" Deckblatt",
-          "typ": "programm"
+          "typ": "program"
         }
       ]
     },
@@ -1376,52 +1428,52 @@
         {
           "signatur": "UAKUG/NIM/PL_04",
           "titel": "SINFONISCHES ORCHESTER / in Stanislau / Konzertsaal Armenierstrasse 18. / Zum Abschluss der Wintersa",
-          "typ": "plakat"
+          "typ": "poster"
         },
         {
           "signatur": "UAKUG/NIM/PL_22",
           "titel": "Ira Malaniuk / singt Lieder von HAYDN, MOZART, BEETHOVEN, / SCHUBERT, BRAHMS, R. STRAUSS / und ukrai",
-          "typ": "plakat"
+          "typ": "poster"
         },
         {
           "signatur": "UAKUG/NIM_004 7",
           "titel": "Rezension von Dr. Joachim Bergfeld (Fränkische Presse) zur IX. Symphonie Beethovens",
-          "typ": "rezension"
+          "typ": "review"
         },
         {
           "signatur": "UAKUG/NIM_011 11",
           "titel": "Anfrage von Carl-Heinz Klebe an Ira Malaniuk, Altsolo neunte Sinfonie Beethoven in Bayreuth",
-          "typ": "korrespondenz"
+          "typ": "correspondence"
         },
         {
           "signatur": "UAKUG/NIM_136 100_6",
           "titel": "Das Musikleben. Monatszeitschrift Mai 1952. Artikel \"Die Dualität Mozart - Beethoven\"",
-          "typ": "musikzeitschrift"
+          "typ": "musicPeriodical"
         },
         {
           "signatur": "UAKUG/NIM_136 100_7",
           "titel": "Das Musikleben. Monatszeitschrift Mai 1952. Artikel \"Die Dualität Mozart - Beethoven\"",
-          "typ": "musikzeitschrift"
+          "typ": "musicPeriodical"
         },
         {
           "signatur": "UAKUG/NIM_136 100_8",
           "titel": "Das Musikleben. Monatszeitschrift Mai 1952. Artikel \"Die Dualität Mozart - Beethoven\", \"Der Tonmeist",
-          "typ": "musikzeitschrift"
+          "typ": "musicPeriodical"
         },
         {
           "signatur": "UAKUG/NIM_137 3",
           "titel": "Programmheft zu Beethovens \"Neunte Symphonie\" bei den Bayreuther Festspiele 1953",
-          "typ": "programm"
+          "typ": "program"
         },
         {
           "signatur": "UAKUG/NIM_137 3_1",
           "titel": "Programmheft zu Beethovens \"Neunte Symphonie\" bei den Bayreuther Festspiele 1953",
-          "typ": "programm"
+          "typ": "program"
         },
         {
           "signatur": "UAKUG/NIM_137 3_22",
           "titel": "Programmheft zu Beethovens \"Neunte Symphonie\" bei den Bayreuther Festspiele 1953",
-          "typ": "programm"
+          "typ": "program"
         }
       ]
     },
@@ -1435,42 +1487,42 @@
         {
           "signatur": "UAKUG/NIM/PL_05",
           "titel": "\"BALLETTABEND\" / \"PAGANINI\" / \"AIDA\"",
-          "typ": "plakat"
+          "typ": "poster"
         },
         {
           "signatur": "UAKUG/NIM/PL_08",
           "titel": "\"BALLETTABEND\" / \"PAGANINI\" / \"AIDA\"",
-          "typ": "plakat"
+          "typ": "poster"
         },
         {
           "signatur": "UAKUG/NIM/PL_11",
           "titel": "\"TRAVIATA\" / \"AIDA\" / \"BOHÈME\"",
-          "typ": "plakat"
+          "typ": "poster"
         },
         {
           "signatur": "UAKUG/NIM_004 16",
           "titel": "Rezension von Y. zu Aida an der Wiener Staatsoper",
-          "typ": "rezension"
+          "typ": "review"
         },
         {
           "signatur": "UAKUG/NIM_004 17",
           "titel": "Rezension von ibe zu Aida an der Wiener Staatsoper",
-          "typ": "rezension"
+          "typ": "review"
         },
         {
           "signatur": "UAKUG/NIM_063",
           "titel": "Programmblatt zu einer Aufführung von \"Aida\" (Verdi) am 14. November 1953 in der Bayrischen Staatsop",
-          "typ": "sammlung"
+          "typ": "collection"
         },
         {
           "signatur": "UAKUG/NIM_087",
           "titel": "Programmheft zu einer Aufführung von \"Aida\" (Verdi) in der Wiener Staatsoper am 28.04.1956",
-          "typ": "sammlung"
+          "typ": "collection"
         },
         {
           "signatur": "UAKUG/NIM_089",
           "titel": "Programmheft zu einer Aufführung von \"Don Carlos\" (Verdi) in der Wiener Staatsoper am 11.09.1956",
-          "typ": "sammlung"
+          "typ": "collection"
         }
       ]
     },
@@ -1484,17 +1536,17 @@
         {
           "signatur": "UAKUG/NIM/PL_02",
           "titel": "SALZBURGER MOZART-WOCHE 1959 / Mittwoch, den 21. Jänner 1959 - Mozarteum, Großer Saal, 19.30 / 3. So",
-          "typ": "plakat"
+          "typ": "poster"
         },
         {
           "signatur": "UAKUG/NIM_004 5",
           "titel": "Rezension von K.H. Ruppel zu Orpheus und Eurydike in der Süddeutschen Zeitung",
-          "typ": "rezension"
+          "typ": "review"
         },
         {
           "signatur": "UAKUG/NIM_062",
           "titel": "Programmheft zu einer Aufführung von \"Jephta\" (Georg Friedrich Händel) am 19.03.1950 in der Tonhalle",
-          "typ": "sammlung"
+          "typ": "collection"
         }
       ]
     }
@@ -1710,7 +1762,7 @@
     }
   ],
   "_meta": {
-    "generated": "2026-08-22T11:31:24.807273",
-    "source_records": 1974
+    "generated": "2026-08-22T16:43:58.851920",
+    "source_records": 2234
   }
 }

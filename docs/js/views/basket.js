@@ -1,13 +1,15 @@
 /**
  * M³GIM Wissenskorb View — bookmarked records with full metadata, relations,
- * finances and spatiotemporal events. Cards reuse buildRecordBlocks() from the
+ * finances and located annotations. Cards reuse buildRecordBlocks() from the
  * Archiv-Inline-Detail (E-77) so the korb tab shares the exact block logic and
  * design language of the main interface (single-column, no count suffix).
  */
 
 import { el, clear } from '../utils/dom.js';
 import { logStamp } from '../utils/env.js';
-import { formatSignatur, formatDocType, getDocTypeId, ensureArray, dftLabel } from '../utils/format.js';
+import {
+  formatSignatur, formatDocType, getDocTypeId, ensureArray, dftLabel, roleLabel, roleToken,
+} from '../utils/format.js';
 import { formatDate } from '../utils/date-parser.js';
 import { AGRELON_LABELS, formatLanguage } from '../data/constants.js';
 import { buildRecordBlocks } from './archive-inline-detail.js';
@@ -163,7 +165,7 @@ function renderMetaLine(record) {
   if (lang) parts.push(formatLanguage(lang));
   const extent = record['rico:hasExtent'];
   if (extent) parts.push(typeof extent === 'string' ? extent : String(extent));
-  const status = record['m3gim:bearbeitungsstand'];
+  const status = record['m3gim-ontology:processingStatus'];
   if (status) parts.push(status);
   if (!parts.length) return null;
   return el('div', { className: 'korb-card__meta' }, parts.join(' \u00b7 '));
@@ -216,10 +218,13 @@ function exportCSV(ids) {
     const konvolutId = store.childToKonvolut?.get(rid);
     const konvolut = konvolutId ? (store.konvolute.get(konvolutId)?.['rico:identifier'] || '') : '';
 
-    const agents = ensureArray(r['m3gim:hasAssociatedAgent']);
+    const agents = ensureArray(r['m3gim-ontology:hasAssociatedAgent']);
     const persons = agents
       .filter(a => a['@type'] === 'rico:Person' || !a['@type'])
-      .map(a => (a.role ? `${a.role}: ${a.name || ''}` : (a.name || '')))
+      .map(a => {
+        const rolle = roleLabel(store, a.role);
+        return rolle ? `${rolle}: ${a.name || ''}` : (a.name || '');
+      })
       .filter(Boolean)
       .join('; ');
 
@@ -227,14 +232,13 @@ function exportCSV(ids) {
     const events = eventIds.map(eid => store.mobilityEvents.get(eid)).filter(Boolean);
     const eventStrings = events.map(ev => {
       const d = ev.date ? formatDate(ev.date) : '';
-      const role = ev.role || '';
-      return [role, ev.place, d].filter(Boolean).join(' ');
+      return [ev.roleLabel || '', ev.place, d].filter(Boolean).join(' ');
     });
     const recordLocations = ensureArray(r['rico:hasOrHadLocation']).map(l => l.name || '').filter(Boolean);
     const places = [...eventStrings, ...recordLocations].join('; ');
 
     const works = ensureArray(r['rico:hasOrHadSubject'])
-      .filter(s => s['@type'] === 'm3gim:MusicalWork')
+      .filter(s => s['@type'] === 'm3gim-ontology:MusicalWork')
       .map(s => s.komponist ? `${s.name || ''} (${s.komponist})` : (s.name || ''))
       .filter(Boolean)
       .join('; ');
@@ -274,10 +278,13 @@ function exportBibTeX(ids) {
     const title = r['rico:title'] || 'Ohne Titel';
     const date = formatDate(r['rico:date']) || '';
     const year = date.match(/\d{4}/)?.[0] || '';
-    const agents = ensureArray(r['m3gim:hasAssociatedAgent']);
+    const agents = ensureArray(r['m3gim-ontology:hasAssociatedAgent']);
 
     let author = agents
-      .filter(a => a.role === 'verfasser:in' || a.role === 'verfasser')
+      .filter(a => {
+        const rolle = roleToken(a.role);
+        return rolle === 'verfasser:in' || rolle === 'verfasser';
+      })
       .map(a => a.name || '')
       .filter(Boolean)
       .join(' and ');

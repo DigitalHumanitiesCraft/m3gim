@@ -8,33 +8,61 @@
  * deckt damit den ansonsten ungetesteten Korb-Pfad ab (views/basket.js rendert
  * ueber dieselbe Partition). Getestet: Agent-Bucketing nach Rolle, AgRelOn-
  * Dedup (kein Doppel-Agent in Bucket + Beziehung), Erwaehnt-Personen aus
- * Subjects, Werk-Erkennung, Event-Aufloesung aus dem Store.
+ * Subjects, Werk-Erkennung, Aufloesung der Annotationen aus dem Store und die
+ * Aufteilung der ortlosen Datierungen auf die beiden Chip-Bloecke.
  *
  * buildRecordBlocks selbst erzeugt DOM (el()) und ist daher hier nicht
  * direkt testbar -- die Chip-Ebene deckt der Playwright-Smoke (Inline-Detail-
  * Anker NIM_004_1) ab.
  *
- * Die Fixtures dieses Tests tragen noch die abgeloesten Property- und Klassen-
- * namen, weil partitionRecord sie liest. Sie ziehen mit dem Umbau von
- * views/archive-inline-detail.js auf die Terme des zusammengefuehrten Modells
- * nach; die Datenschicht ist dort bereits umgestellt.
+ * Zwei Strecken wie in datings.test.mjs: synthetische Fixtures fuer die
+ * deterministische Logik, ein Anker am Datenstand `data/output/m3gim.jsonld`
+ * fuer das reale Ankommen.
  */
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 
 import { partitionRecord } from '../../docs/js/views/archive-inline-detail.js';
-import { steChipPrefix } from '../../docs/js/data/constants.js';
+import { loadArchive } from '../../docs/js/data/loader.js';
+
+/** Verweisknoten einer Rolle, wie die Pipeline ihn schreibt. */
+function role(id, prefLabel) {
+  return { '@id': `m3gim-vocab:${id}`, 'skos:prefLabel': prefLabel };
+}
+
+async function storeFrom(jsonld) {
+  const prevFetch = globalThis.fetch;
+  globalThis.fetch = async () => ({ status: 200, ok: true, json: async () => jsonld });
+  try {
+    return await loadArchive('mock://data');
+  } finally {
+    globalThis.fetch = prevFetch;
+  }
+}
+
+let outputStore = null;
+async function realStore() {
+  if (!outputStore) {
+    const url = new URL('../../data/output/m3gim.jsonld', import.meta.url);
+    outputStore = await storeFrom(JSON.parse(readFileSync(url, 'utf-8')));
+  }
+  return outputStore;
+}
 
 test('partitionRecord: Agenten landen rollenbasiert in Buckets, Erwaehnte aus Subjects', () => {
   const record = {
-    '@id': 'r1',
-    'm3gim:hasAssociatedAgent': [
-      { name: 'Karajan', role: 'dirigent' },   // -> produktion (ROLE_TO_SECTION)
-      { name: 'Fotograf X', role: 'fotograf' }, // unbekannte Rolle -> weitere
+    '@id': 'm3gim-data:r1',
+    'm3gim-ontology:hasAssociatedAgent': [
+      // Die Rolle ist ein Verweisknoten. Wer ihn ungefiltert als Schluessel
+      // nimmt, bekommt "[object Object]" und schiebt jeden Agenten nach
+      // "Weitere" -- deshalb steht der Dirigent hier als Gate.
+      { name: 'Karajan', role: role('conductor', 'dirigent') },
+      { name: 'Fotograf X', role: role('photographer', 'fotograf') },
     ],
     'rico:hasOrHadSubject': [
-      { name: 'Macbeth', '@type': 'm3gim:MusicalWork' },
+      { name: 'Macbeth', '@type': 'm3gim-ontology:MusicalWork' },
       { name: 'Schumann, Karl', '@type': 'rico:Person' },
     ],
   };
@@ -47,14 +75,27 @@ test('partitionRecord: Agenten landen rollenbasiert in Buckets, Erwaehnte aus Su
   assert.deepEqual(works.map(w => w.name), ['Macbeth']);
 });
 
+test('partitionRecord: Rahmenveranstaltung zaehlt wie das abgeloeste PerformanceEvent zum Werk-Block', () => {
+  const record = {
+    '@id': 'm3gim-data:r1',
+    'rico:hasOrHadSubject': [
+      { name: 'Salzburger Festspiele', '@type': 'm3gim-ontology:FramingEvent' },
+    ],
+  };
+  const { works } = partitionRecord(record, {});
+  assert.deepEqual(works.map(w => w.name), ['Salzburger Festspiele']);
+});
+
 test('partitionRecord: AgRelOn-Dedup unterdrueckt Agent, der schon als Beziehung sichtbar ist', () => {
   const record = {
-    '@id': 'r1',
-    'm3gim:hasAssociatedAgent': [{ name: 'Böhm', role: 'absender' }],
+    '@id': 'm3gim-data:r1',
+    'm3gim-ontology:hasAssociatedAgent': [
+      { name: 'Böhm', role: role('sender', 'absender') },
+    ],
   };
   const store = {
     agentRelations: new Map([
-      ['r1', [{ type: 'agrelon:HasCorrespondent', objectName: 'Böhm' }]],
+      ['m3gim-data:r1', [{ type: 'agrelon:HasCorrespondent', objectName: 'Böhm' }]],
     ]),
   };
   const { bucket, agentRelations } = partitionRecord(record, store);
@@ -69,8 +110,10 @@ test('partitionRecord: AgRelOn-Dedup unterdrueckt Agent, der schon als Beziehung
 
 test('partitionRecord: AgRelOn-Rolle OHNE passende Beziehung wird NICHT unterdrueckt', () => {
   const record = {
-    '@id': 'r1',
-    'm3gim:hasAssociatedAgent': [{ name: 'Unbekannt', role: 'absender' }],
+    '@id': 'm3gim-data:r1',
+    'm3gim-ontology:hasAssociatedAgent': [
+      { name: 'Unbekannt', role: role('sender', 'absender') },
+    ],
   };
   // Keine agentRelations -> kein Dedup. 'absender' ist in ROLE_TO_SECTION als
   // 'mitwirkende' gemappt -> der Agent bleibt dort sichtbar (wird NICHT
@@ -80,10 +123,10 @@ test('partitionRecord: AgRelOn-Rolle OHNE passende Beziehung wird NICHT unterdru
   assert.deepEqual(bucket.weitere, []);
 });
 
-test('partitionRecord: Events werden aus recordToEvents + mobilityEvents aufgeloest', () => {
-  const record = { '@id': 'r2' };
+test('partitionRecord: verortete Annotationen werden aus recordToEvents + mobilityEvents aufgeloest', () => {
+  const record = { '@id': 'm3gim-data:r2' };
   const store = {
-    recordToEvents: new Map([['r2', ['e1', 'e_missing']]]),
+    recordToEvents: new Map([['m3gim-data:r2', ['e1', 'e_missing']]]),
     mobilityEvents: new Map([['e1', { place: 'Wien', date: '1950' }]]),
   };
   const { events } = partitionRecord(record, store);
@@ -91,22 +134,116 @@ test('partitionRecord: Events werden aus recordToEvents + mobilityEvents aufgelo
   assert.equal(events[0].place, 'Wien');
 });
 
-test('steChipPrefix: E-97-Mobilitaets-Ortsrollen werden zum Uppercase-Prefix', () => {
-  // Diese drei sind nicht in STE_ROLE_DISPLAY gelistet -> Fallback Uppercase.
-  // Sichert den ZIELORT/ABSENDEORT/ABREISEORT-Prefix der datumslosen Chips ab.
-  assert.equal(steChipPrefix('zielort'), 'ZIELORT');
-  assert.equal(steChipPrefix('absendeort'), 'ABSENDEORT');
-  assert.equal(steChipPrefix('abreiseort'), 'ABREISEORT');
-  // Datumsrollen werden hingegen auf Orts-/Ereignisrollen gemappt.
-  assert.equal(steChipPrefix('absendedatum'), 'ABSENDEORT');
-  assert.equal(steChipPrefix('auffuehrungsdatum'), 'AUFFÜHRUNG');
-  // Leerwert faellt auf den generischen EREIGNIS-Prefix.
-  assert.equal(steChipPrefix(null), 'EREIGNIS');
+test('partitionRecord: Buehnenrollen kommen ueber die Performance-Kette, mit ihrem Qualitaetsflag', () => {
+  const record = {
+    '@id': 'm3gim-data:r3',
+    'm3gim-ontology:hasPerformance': { '@id': 'm3gim-data:perf1' },
+  };
+  const store = {
+    performances: new Map([['m3gim-data:perf1', {
+      'm3gim-ontology:hasStageRole': { '@id': 'm3gim-data:sr1' },
+      'm3gim-ontology:dataQualityFlag': 'quelle-tippfehler',
+    }]]),
+    stageRoles: new Map([['m3gim-data:sr1', 'Waltraude']]),
+  };
+  const { performanceRoles } = partitionRecord(record, store);
+  assert.deepEqual(performanceRoles, [{ name: 'Waltraude', qualityFlag: 'quelle-tippfehler' }]);
+});
+
+test('partitionRecord: ortlose Datierungen teilen sich auf Erwaehnung und Ereignis auf', async () => {
+  const store = await storeFrom({
+    '@graph': [
+      {
+        '@id': 'm3gim-data:r4',
+        '@type': 'rico:Record',
+        'rico:identifier': 'UAKUG/NIM_x 1',
+        'm3gim-ontology:hasAnnotation': [
+          { '@id': 'm3gim-data:a_mentioned' },
+          { '@id': 'm3gim-data:a_performance' },
+          { '@id': 'm3gim-data:a_unfulfilled' },
+          { '@id': 'm3gim-data:a_placed' },
+        ],
+      },
+      {
+        '@id': 'm3gim-data:a_mentioned',
+        '@type': 'm3gim-ontology:Annotation',
+        'agrelon:metadataProvenance': { '@id': 'm3gim-data:r4' },
+        'm3gim-ontology:atDate': '1872',
+        role: role('mentioned', 'erwähnt'),
+      },
+      {
+        '@id': 'm3gim-data:a_performance',
+        '@type': 'm3gim-ontology:Annotation',
+        'agrelon:metadataProvenance': { '@id': 'm3gim-data:r4' },
+        'm3gim-ontology:atDate': '1951-07-30',
+        role: role('performance', 'aufführung'),
+      },
+      {
+        // Der Vertragsstatus ist kein Begriff des Vokabulars und traegt die
+        // Bezugsebene `unfulfilled`. Er darf nicht stillschweigend wegfallen.
+        '@id': 'm3gim-data:a_unfulfilled',
+        '@type': 'm3gim-ontology:Annotation',
+        'agrelon:metadataProvenance': { '@id': 'm3gim-data:r4' },
+        'm3gim-ontology:atDate': '1955-03-01',
+        role: 'nicht eingehalten',
+      },
+      {
+        // Verortet -> steht schon im Ort-und-Ereignis-Block, deshalb in keiner
+        // der beiden Datierungslisten.
+        '@id': 'm3gim-data:a_placed',
+        '@type': 'm3gim-ontology:Annotation',
+        'agrelon:metadataProvenance': { '@id': 'm3gim-data:r4' },
+        'm3gim-ontology:atDate': '1959-10-28',
+        'm3gim-ontology:atPlace': { name: 'New York' },
+        role: role('dispatch', 'absendung'),
+      },
+    ],
+  });
+  const record = store.records.get('m3gim-data:r4');
+  const { mentionedDatings, eventDatings, events } = partitionRecord(record, store);
+
+  assert.deepEqual(mentionedDatings.map(d => d.date), ['1872']);
+  assert.deepEqual(eventDatings.map(d => d.date), ['1951-07-30', '1955-03-01']);
+  assert.deepEqual(events.map(e => e.place), ['New York']);
+  // Keine Datierung steht in beiden Listen.
+  const ids = new Set(mentionedDatings.map(d => d.id));
+  assert.ok(eventDatings.every(d => !ids.has(d.id)));
+});
+
+test('partitionRecord: am Datenstand kommt keine verortete Annotation in den Datierungslisten an', async () => {
+  const store = await realStore();
+  let seenMentioned = 0;
+  let seenEvent = 0;
+  for (const record of store.allRecords) {
+    const { mentionedDatings, eventDatings } = partitionRecord(record, store);
+    for (const d of [...mentionedDatings, ...eventDatings]) {
+      assert.equal(d.place, null, `verortete Annotation in der Datierungsliste: ${d.id}`);
+      assert.ok(d.date, `Datierung ohne Datum: ${d.id}`);
+    }
+    for (const d of mentionedDatings) assert.equal(d.scope, 'mentioned');
+    for (const d of eventDatings) assert.notEqual(d.scope, 'mentioned');
+    seenMentioned += mentionedDatings.length;
+    seenEvent += eventDatings.length;
+  }
+  assert.ok(seenMentioned > 0, 'keine erwaehnte Datierung im Datenstand angekommen');
+  assert.ok(seenEvent > 0, 'keine Ereignis-Datierung im Datenstand angekommen');
+});
+
+test('partitionRecord: am Datenstand tragen Agenten-Buckets ihre Rollen-Sektion', async () => {
+  const store = await realStore();
+  const record = store.bySignatur.get('UAKUG/NIM_003 1_1');
+  const { bucket } = partitionRecord(record, store);
+  // Der Herausgeber ist eine Produktionsrolle; landete er in "Weitere", waere
+  // die Rolle als Verweisknoten ungefiltert durchgereicht worden.
+  assert.deepEqual(bucket.produktion.map(a => a.name),
+    ['Deutsches Musikinstitut für Ausländer']);
 });
 
 test('partitionRecord: leerer Record liefert leere, aber wohlgeformte Struktur', () => {
-  const { bucket, works, performanceRoles, events, locations, agentRelations, finances } =
-    partitionRecord({ '@id': 'x' }, {});
+  const {
+    bucket, works, performanceRoles, events, locations, agentRelations, finances,
+    mentionedDatings, eventDatings,
+  } = partitionRecord({ '@id': 'x' }, {});
   assert.deepEqual(bucket, { produktion: [], mitwirkende: [], erwaehnt: [], weitere: [] });
   assert.deepEqual(works, []);
   assert.deepEqual(performanceRoles, []);
@@ -114,4 +251,6 @@ test('partitionRecord: leerer Record liefert leere, aber wohlgeformte Struktur',
   assert.deepEqual(locations, []);
   assert.deepEqual(agentRelations, []);
   assert.deepEqual(finances, []);
+  assert.deepEqual(mentionedDatings, []);
+  assert.deepEqual(eventDatings, []);
 });

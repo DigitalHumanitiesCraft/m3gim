@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Datenmodell — M³GIM</title>
+  <meta name="description" content="Das Datenmodell des Teilnachlasses Ira Malaniuk (UAKUG/NIM): eingebundene Ontologien, Projekterweiterung und kontrollierte Vokabulare, erzeugt aus dem Projektvokabular.">
+
+  <!-- Favicon (Inline-SVG, kein externes Asset) -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='10' fill='%231a1a1a'/%3E%3Ctext x='50%25' y='58%25' text-anchor='middle' font-family='Georgia,serif' font-size='36' font-weight='700' fill='%23f5f1e8'%3EM%3C/text%3E%3Ctext x='78%25' y='38%25' text-anchor='middle' font-family='Georgia,serif' font-size='18' font-weight='700' fill='%23c9a961'%3E3%3C/text%3E%3C/svg%3E">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap">
+
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/pages.css">
+</head>
+<body class="info-page">
+
+  <header class="app-header">
+    <a href="index.html" class="app-header__brand">M³GIM</a>
+    <div class="app-header__subtitle">Teilnachlass Ira Malaniuk — UAKUG/NIM</div>
+    <a href="projekt.html" class="app-header__badge">Research Preview</a>
+    <div class="app-header__spacer"></div>
+    <nav class="app-header__nav" aria-label="Informationsseiten">
+      <a href="about.html">Über</a>
+      <a href="projekt.html">Projekt</a>
+      <a href="datenmodell.html" class="active">Datenmodell</a>
+    </nav>
+  </header>
+
+  <main class="info-main">
+    <article class="page page--model">
+
+      <header class="page__header">
+        <h1 class="page__title">Datenmodell</h1>
+        <p class="page__lead">Projekteigene Erweiterung zu RiC-O 1.1 und AgRelOn für die Erschließung des Teilnachlasses UAKUG/NIM am Universitätsarchiv der Kunstuniversität Graz. Das Vokabular deckt Werke, Aufführungen, Bühnenrollen, Annotationen mit Datierung, Verortung und Finanzposten sowie die technische Rückverfolgbarkeit in die Erfassungstabelle.</p>
+        <dl class="page__stats">
+          <dt>Vokabular</dt><dd>M3GIM-Vokabular</dd>
+          <dt>Version</dt><dd>0.2</dd>
+          <dt>Angelegt</dt><dd>2026-07-24</dd>
+          <dt>Lizenz</dt><dd><a class="page__link" href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">https://creativecommons.org/licenses/by/4.0/</a></dd>
+          <dt>Quelle</dt><dd><a class="page__link" href="https://github.com/DigitalHumanitiesCraft/m3gim" target="_blank" rel="noopener">https://github.com/DigitalHumanitiesCraft/m3gim</a></dd>
+        </dl>
+        <p class="page__note">Diese Seite ist aus <code>vocab/m3gim.ttl</code> erzeugt und nicht geschrieben. Jede Definition, jede Kante und jede Anmerkung steht hier im Wortlaut des Vokabulars.</p>
+      </header>
+      <section class="page__section">
+        <h2>Namensräume</h2>
+        <p>Die Datei führt drei Namensräume nach der Art der benannten Sache. Klassen und Properties stehen in m3gim-ontology, kontrollierte Begriffe, Schemes und Collections in m3gim-vocab, die Instanzen des Bestands in m3gim-data. Der Instanz-Namensraum trägt keine benannten Vokabularbezeichner und ist hier nur deklariert.</p>
+        <p>Die Anschlusskanten auf RiC-O sind gegen die offiziellen Komponentenlisten von RiC-O 1.1 belegt (ICA-EGAD, ontology/current-version/CSV_lists_of_components), entsprechend der Leitplanke Fremdterme verifizieren, nicht extrapolieren (architecture-decisions.md E-103).</p>
+        <p>Offene Fragen an das Projekt stehen als skos:editorialNote am jeweiligen Term. Die Abbildung der früheren auf die heutigen Bezeichner steht in vocab/rename-map.json.</p>
+        <h3>Eigene Namensräume</h3>
+        <div class="page__wide">
+        <table class="page__table">
+        <thead><tr><th>Präfix</th><th>Namensraum</th></tr></thead><tbody>
+        <tr><td><code>m3gim-ontology:</code></td><td><code>https://dhcraft.org/m3gim/ontology#</code></td></tr>
+        <tr><td><code>m3gim-data:</code></td><td><code>https://dhcraft.org/m3gim/data#</code></td></tr>
+        <tr><td><code>m3gim-vocab:</code></td><td><code>https://dhcraft.org/m3gim/vocabulary#</code></td></tr>
+        </tbody></table>
+        </div><!--/wide-->
+        <h3>Eingebundene externe Namensräume</h3>
+        <div class="page__wide">
+        <table class="page__table page__table--namespaces">
+        <thead><tr><th>Präfix</th><th>Namensraum</th><th>Verwendete Terme</th></tr></thead><tbody>
+        <tr><td><code>agrelon:</code></td><td><code>https://d-nb.info/standards/elementset/agrelon#</code></td><td><code>agrelon:HasCorrespondent</code> <code>agrelon:HasEmployeeEmployer</code> <code>agrelon:HasIsMember</code> <code>agrelon:HasProfessionalContact</code> <code>agrelon:IsHasPatron</code> <code>agrelon:hasBeginDate</code> <code>agrelon:hasObject</code> <code>agrelon:hasSubject</code> <code>agrelon:metadataPeriod</code> <code>agrelon:metadataProvenance</code></td></tr>
+        <tr><td><code>geo:</code></td><td><code>http://www.w3.org/2003/01/geo/wgs84_pos#</code></td><td><code>geo:lat</code> <code>geo:long</code></td></tr>
+        <tr><td><code>gndo:</code></td><td><code>https://d-nb.info/standards/elementset/gnd#</code></td><td><code>gndo:professionOrOccupationAsLiteral</code></td></tr>
+        <tr><td><code>owl:</code></td><td><code>http://www.w3.org/2002/07/owl#</code></td><td><code>owl:sameAs</code></td></tr>
+        <tr><td><code>ric-rst:</code></td><td><code>https://www.ica.org/standards/RiC/vocabularies/recordSetTypes#</code></td><td><code>ric-rst:File</code> <code>ric-rst:Fonds</code></td></tr>
+        <tr><td><code>rico:</code></td><td><code>https://www.ica.org/standards/RiC/ontology#</code></td><td><code>rico:Agent</code> <code>rico:CorporateBody</code> <code>rico:Event</code> <code>rico:Group</code> <code>rico:Person</code> <code>rico:Place</code> <code>rico:Record</code> <code>rico:RecordSet</code> <code>rico:Thing</code> <code>rico:creationDate</code> <code>rico:date</code> <code>rico:generalDescription</code> <code>rico:hasDocumentaryFormType</code> <code>rico:hasExtent</code> <code>rico:hasOrHadLanguage</code> <code>rico:hasOrHadLocation</code> <code>rico:hasOrHadPart</code> <code>rico:hasOrHadParticipant</code> <code>rico:hasOrHadSubject</code> <code>rico:hasRecordSetType</code> <code>rico:identifier</code> <code>rico:isAssociatedWithEvent</code> <code>rico:name</code> <code>rico:title</code></td></tr>
+        <tr><td><code>schema:</code></td><td><code>https://schema.org/</code></td><td><code>schema:birthDate</code> <code>schema:birthPlace</code> <code>schema:deathDate</code> <code>schema:deathPlace</code></td></tr>
+        <tr><td><code>skos:</code></td><td><code>http://www.w3.org/2004/02/skos/core#</code></td><td><code>skos:Concept</code> <code>skos:broader</code> <code>skos:prefLabel</code></td></tr>
+        <tr><td><code>wd:</code></td><td><code>http://www.wikidata.org/entity/</code></td><td>Identifikatoren einzelner Entitäten</td></tr>
+        <tr><td><code>xsd:</code></td><td><code>http://www.w3.org/2001/XMLSchema#</code></td><td><code>xsd:decimal</code> <code>xsd:integer</code> <code>xsd:string</code></td></tr>
+        </tbody></table>
+        </div><!--/wide-->
+      </section>
+      <section class="page__section">
+        <h2>Modellgestalt</h2>
+        <p>Die Klassen stehen als Knoten, die Object Properties als beschriftete Kanten. Die Spalten schichten die Klassen nach ihrem Abstand von den Klassen ohne eingehende Kante, sodass jede Kante nach rechts läuft. Die Zeichnung ist im Erzeugungslauf berechnet und bei gleichem Vokabular zeichengleich dieselbe.</p>
+        <div class="page__wide">
+        <svg class="model-graph" viewBox="0 0 1028 454" width="1028" height="454" role="img" aria-labelledby="graph-title graph-desc" xmlns="http://www.w3.org/2000/svg">
+        <title id="graph-title">Modellgestalt</title>
+        <desc id="graph-desc">Die Klassen des Modells als Knoten, die Object Properties als beschriftete Kanten. Die Spalten schichten die Klassen nach ihrem Abstand von den Klassen ohne eingehende Kante.</desc>
+        <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--color-text-tertiary)"/></marker></defs>
+        <path class="model-graph__edge" d="M 444.0 139.0 C 499.4 139.0 520.6 95.0 576.0 95.0" marker-end="url(#arrow)"/>
+        <path class="model-graph__edge" d="M 166.0 315.0 C 221.4 315.0 242.6 139.0 298.0 139.0" marker-end="url(#arrow)"/>
+        <path class="model-graph__edge" d="M 166.0 403.0 C 221.4 403.0 242.6 139.0 298.0 139.0" marker-end="url(#arrow)"/>
+        <path class="model-graph__edge" d="M 166.0 315.0 C 221.4 315.0 242.6 315.0 298.0 315.0" marker-end="url(#arrow)"/>
+        <path class="model-graph__edge" d="M 166.0 403.0 C 221.4 403.0 242.6 315.0 298.0 315.0" marker-end="url(#arrow)"/>
+        <path class="model-graph__edge" d="M 166.0 315.0 C 221.4 315.0 242.6 139.0 298.0 139.0" marker-end="url(#arrow)"/>
+        <path class="model-graph__edge" d="M 166.0 315.0 C 221.4 315.0 242.6 227.0 298.0 227.0" marker-end="url(#arrow)"/>
+        <path class="model-graph__edge" d="M 166.0 403.0 C 221.4 403.0 242.6 227.0 298.0 227.0" marker-end="url(#arrow)"/>
+        <path class="model-graph__edge" d="M 444.0 227.0 C 499.4 227.0 520.6 359.0 576.0 359.0" marker-end="url(#arrow)"/>
+        <path class="model-graph__edge" d="M 444.0 227.0 C 499.4 227.0 520.6 271.0 576.0 271.0" marker-end="url(#arrow)"/>
+        <path class="model-graph__edge" d="M 444.0 227.0 C 499.4 227.0 520.6 183.0 576.0 183.0" marker-end="url(#arrow)"/>
+        <path class="model-graph__edge" d="M 444.0 139.0 C 616.2 139.0 681.8 227.0 854.0 227.0" marker-end="url(#arrow)"/>
+        <path class="model-graph__edge" d="M 166.0 51.0 C 455.0 51.0 565.0 227.0 854.0 227.0" marker-end="url(#arrow)"/>
+        <path class="model-graph__edge" d="M 722.0 183.0 C 777.4 183.0 798.6 227.0 854.0 227.0" marker-end="url(#arrow)"/>
+        <path class="model-graph__edge" d="M 166.0 139.0 C 455.0 139.0 565.0 227.0 854.0 227.0" marker-end="url(#arrow)"/>
+        <path class="model-graph__edge" d="M 166.0 227.0 C 455.0 227.0 565.0 227.0 854.0 227.0" marker-end="url(#arrow)"/>
+        <path class="model-graph__edge" d="M 722.0 359.0 C 777.4 359.0 798.6 227.0 854.0 227.0" marker-end="url(#arrow)"/>
+        <path class="model-graph__edge" d="M 722.0 95.0 C 777.4 95.0 798.6 227.0 854.0 227.0" marker-end="url(#arrow)"/>
+        <rect class="model-graph__labelbox" x="485.4" y="102.0" width="49.3" height="14" rx="2"/>
+        <text class="model-graph__edgelabel" x="510.0" y="112.0" text-anchor="middle">atPlace</text>
+        <rect class="model-graph__labelbox" x="189.7" y="212.0" width="84.7" height="14" rx="2"/>
+        <text class="model-graph__edgelabel" x="232.0" y="222.0" text-anchor="middle">hasAnnotation</text>
+        <rect class="model-graph__labelbox" x="189.7" y="256.0" width="84.7" height="14" rx="2"/>
+        <text class="model-graph__edgelabel" x="232.0" y="266.0" text-anchor="middle">hasAnnotation</text>
+        <rect class="model-graph__labelbox" x="174.9" y="300.0" width="114.2" height="14" rx="2"/>
+        <text class="model-graph__edgelabel" x="232.0" y="310.0" text-anchor="middle">hasAssociatedAgent</text>
+        <rect class="model-graph__labelbox" x="174.9" y="344.0" width="114.2" height="14" rx="2"/>
+        <text class="model-graph__edgelabel" x="232.0" y="354.0" text-anchor="middle">hasAssociatedAgent</text>
+        <rect class="model-graph__labelbox" x="201.4" y="225.0" width="61.1" height="14" rx="2"/>
+        <text class="model-graph__edgelabel" x="232.0" y="235.0" text-anchor="middle">hasDetail</text>
+        <rect class="model-graph__labelbox" x="186.7" y="269.0" width="90.6" height="14" rx="2"/>
+        <text class="model-graph__edgelabel" x="232.0" y="279.0" text-anchor="middle">hasPerformance</text>
+        <rect class="model-graph__labelbox" x="186.7" y="313.0" width="90.6" height="14" rx="2"/>
+        <text class="model-graph__edgelabel" x="232.0" y="323.0" text-anchor="middle">hasPerformance</text>
+        <rect class="model-graph__labelbox" x="470.6" y="278.0" width="78.8" height="14" rx="2"/>
+        <text class="model-graph__edgelabel" x="510.0" y="288.0" text-anchor="middle">hasPerformer</text>
+        <rect class="model-graph__labelbox" x="470.6" y="234.0" width="78.8" height="14" rx="2"/>
+        <text class="model-graph__edgelabel" x="510.0" y="244.0" text-anchor="middle">hasStageRole</text>
+        <rect class="model-graph__labelbox" x="467.6" y="190.0" width="84.7" height="14" rx="2"/>
+        <text class="model-graph__edgelabel" x="510.0" y="200.0" text-anchor="middle">performanceOf</text>
+        <rect class="model-graph__labelbox" x="528.6" y="134.9" width="31.6" height="14" rx="2"/>
+        <text class="model-graph__edgelabel" x="544.4" y="144.9" text-anchor="middle">role</text>
+        <rect class="model-graph__labelbox" x="318.7" y="57.8" width="31.6" height="14" rx="2"/>
+        <text class="model-graph__edgelabel" x="334.5" y="67.8" text-anchor="middle">role</text>
+        <rect class="model-graph__labelbox" x="772.2" y="190.0" width="31.6" height="14" rx="2"/>
+        <text class="model-graph__edgelabel" x="788.0" y="200.0" text-anchor="middle">role</text>
+        <rect class="model-graph__labelbox" x="318.7" y="134.9" width="31.6" height="14" rx="2"/>
+        <text class="model-graph__edgelabel" x="334.5" y="144.9" text-anchor="middle">role</text>
+        <rect class="model-graph__labelbox" x="318.7" y="212.0" width="31.6" height="14" rx="2"/>
+        <text class="model-graph__edgelabel" x="334.5" y="222.0" text-anchor="middle">role</text>
+        <rect class="model-graph__labelbox" x="772.2" y="278.0" width="31.6" height="14" rx="2"/>
+        <text class="model-graph__edgelabel" x="788.0" y="288.0" text-anchor="middle">role</text>
+        <rect class="model-graph__labelbox" x="772.2" y="146.0" width="31.6" height="14" rx="2"/>
+        <text class="model-graph__edgelabel" x="788.0" y="156.0" text-anchor="middle">role</text>
+        <g class="model-graph__node model-graph__node--own"><rect x="306" y="116" width="138" height="46" rx="4"/>
+        <text class="model-graph__name" x="375" y="136" text-anchor="middle">Annotation</text><text class="model-graph__gloss" x="375" y="151" text-anchor="middle">Annotation</text>
+        </g>
+        <g class="model-graph__node model-graph__node--own"><rect x="28" y="28" width="138" height="46" rx="4"/>
+        <text class="model-graph__name" x="97" y="48" text-anchor="middle">FramingEvent</text><text class="model-graph__gloss" x="97" y="63" text-anchor="middle">Rahmenveranstaltung</text>
+        </g>
+        <g class="model-graph__node model-graph__node--own"><rect x="584" y="160" width="138" height="46" rx="4"/>
+        <text class="model-graph__name" x="653" y="180" text-anchor="middle">MusicalWork</text><text class="model-graph__gloss" x="653" y="195" text-anchor="middle">Musikalisches Werk</text>
+        </g>
+        <g class="model-graph__node model-graph__node--own"><rect x="306" y="204" width="138" height="46" rx="4"/>
+        <text class="model-graph__name" x="375" y="224" text-anchor="middle">Performance</text><text class="model-graph__gloss" x="375" y="239" text-anchor="middle">Aufführung</text>
+        </g>
+        <g class="model-graph__node model-graph__node--own"><rect x="584" y="248" width="138" height="46" rx="4"/>
+        <text class="model-graph__name" x="653" y="268" text-anchor="middle">StageRole</text><text class="model-graph__gloss" x="653" y="283" text-anchor="middle">Bühnenrolle</text>
+        </g>
+        <g class="model-graph__node model-graph__node--external"><rect x="306" y="292" width="138" height="46" rx="4"/>
+        <text class="model-graph__name" x="375" y="312" text-anchor="middle">Agent</text><text class="model-graph__gloss" x="375" y="327" text-anchor="middle">rico:</text>
+        </g>
+        <g class="model-graph__node model-graph__node--external"><rect x="28" y="116" width="138" height="46" rx="4"/>
+        <text class="model-graph__name" x="97" y="136" text-anchor="middle">CorporateBody</text><text class="model-graph__gloss" x="97" y="151" text-anchor="middle">rico:</text>
+        </g>
+        <g class="model-graph__node model-graph__node--external"><rect x="28" y="204" width="138" height="46" rx="4"/>
+        <text class="model-graph__name" x="97" y="224" text-anchor="middle">Group</text><text class="model-graph__gloss" x="97" y="239" text-anchor="middle">rico:</text>
+        </g>
+        <g class="model-graph__node model-graph__node--external"><rect x="584" y="336" width="138" height="46" rx="4"/>
+        <text class="model-graph__name" x="653" y="356" text-anchor="middle">Person</text><text class="model-graph__gloss" x="653" y="371" text-anchor="middle">rico:</text>
+        </g>
+        <g class="model-graph__node model-graph__node--external"><rect x="584" y="72" width="138" height="46" rx="4"/>
+        <text class="model-graph__name" x="653" y="92" text-anchor="middle">Place</text><text class="model-graph__gloss" x="653" y="107" text-anchor="middle">rico:</text>
+        </g>
+        <g class="model-graph__node model-graph__node--external"><rect x="28" y="292" width="138" height="46" rx="4"/>
+        <text class="model-graph__name" x="97" y="312" text-anchor="middle">Record</text><text class="model-graph__gloss" x="97" y="327" text-anchor="middle">rico:</text>
+        </g>
+        <g class="model-graph__node model-graph__node--external"><rect x="28" y="380" width="138" height="46" rx="4"/>
+        <text class="model-graph__name" x="97" y="400" text-anchor="middle">RecordSet</text><text class="model-graph__gloss" x="97" y="415" text-anchor="middle">rico:</text>
+        </g>
+        <g class="model-graph__node model-graph__node--external"><rect x="862" y="204" width="138" height="46" rx="4"/>
+        <text class="model-graph__name" x="931" y="224" text-anchor="middle">Concept</text><text class="model-graph__gloss" x="931" y="239" text-anchor="middle">skos:</text>
+        </g>
+        </svg>
+        </div><!--/wide-->
+        <ul class="graph-legend">
+          <li><span class="graph-legend__swatch graph-legend__swatch--own"></span>Klasse der Projekterweiterung</li>
+          <li><span class="graph-legend__swatch graph-legend__swatch--external"></span>Klasse eines eingebundenen Namensraums</li>
+        </ul>
+        <p class="page__note">Ohne Kante in der Zeichnung, weil Domain oder Range fehlt: <code>m3gim-ontology:hasAgentRelation</code> <code>m3gim-ontology:xlsxSource</code>.</p>
+      </section>
+      <section class="page__section">
+        <h2>Klassen</h2>
+        <div class="term">
+          <h4 class="term__head">
+            <code>m3gim-ontology:MusicalWork</code>
+            <span class="term__label">Musikalisches Werk</span>
+            <span class="term__gloss">Musical work</span>
+          </h4>
+          <p class="term__definition">Musikalisches Werk, das im Bestand nachgewiesen ist, etwa eine Oper, ein Lied, ein Oratorium oder ein Konzert. Es wird über den Werkindex identifiziert und trägt den Komponisten als Zusatzangabe.</p>
+          <dl class="term__facets">
+            <dt>Oberklasse</dt><dd><code>rico:Thing</code></dd>
+          </dl>
+        </div>
+        <div class="term">
+          <h4 class="term__head">
+            <code>m3gim-ontology:Performance</code>
+            <span class="term__label">Aufführung</span>
+            <span class="term__gloss">Performance</span>
+          </h4>
+          <p class="term__definition">Ereignis, in dem ein musikalisches Werk realisiert wird. Die Klasse ist zugleich der Reifikationsknoten für die Komposite aus Bühnenrolle und Interpret sowie aus Datum und Werk.</p>
+          <dl class="term__facets">
+            <dt>Oberklasse</dt><dd><code>rico:Event</code></dd>
+          </dl>
+          <p class="term__note">Im erzeugten Datensatz entsteht je Verknüpfungszeile eine eigene Instanz, sodass eine Aufführung in mehrere Knoten zerfällt, die nicht miteinander verbunden sind. Das Zielmodell (data-model.md § 7, E-128) sieht eine Instanz je Aktivität mit der vollständigen Besetzung vor.</p>
+          <p class="term__note">Die Aufführung trägt ihre Datierung weiterhin unmittelbar, jetzt als m3gim-ontology:atDate. An diesem Knoten ist das Datum die Datierung des Ereignisses selbst; eine Rollenangabe hätte dort keinen Gegenstand.</p>
+        </div>
+        <div class="term">
+          <h4 class="term__head">
+            <code>m3gim-ontology:FramingEvent</code>
+            <span class="term__label">Rahmenveranstaltung</span>
+            <span class="term__gloss">Framing event</span>
+          </h4>
+          <p class="term__definition">Übergeordnete Veranstaltung, in deren Rahmen einzelne Aufführungen stattfinden, etwa Festspiele, eine Konzertreihe oder eine Spielzeit.</p>
+          <dl class="term__facets">
+            <dt>Oberklasse</dt><dd><code>rico:Event</code></dd>
+          </dl>
+          <p class="term__note">Der frühere Name m3gim:PerformanceEvent sagte Aufführungsereignis und meinte die übergeordnete Veranstaltung, was ihn gegen m3gim-ontology:Performance austauschbar erscheinen ließ. Der neue Name folgt dem englischen Label des Terms.</p>
+        </div>
+        <div class="term">
+          <h4 class="term__head">
+            <code>m3gim-ontology:Annotation</code>
+            <span class="term__label">Annotation</span>
+            <span class="term__gloss">Annotation</span>
+          </h4>
+          <p class="term__definition">Jede Datierung, Verortung und Detailangabe hängt als eigener Annotationsknoten am Subjekt, trägt ihren Wert in einer festen Wertproperty und ihre erfasste Rolle in einer einzigen Rollenproperty aus dem gemeinsamen Vokabular, sodass kein Property-Name mehr eine Rolle ausdrückt und ein Konsument alle Datierungen eines Dokuments über eine Schleife erreicht.</p>
+          <p class="term__note">Fehlt der Ort, ist es eine reine Datierung; fehlt das Datum, eine reine Verortung.</p>
+          <p class="term__note">Die Klasse tritt an die Stelle von m3gim:SpatiotemporalEvent, m3gim:DatedEvent und m3gim:DetailAnnotation. Die beiden ersten trugen rdfs:subClassOf rico:Event. Diese Kante entfällt, weil die Klasse jetzt auch Finanzposten trägt, die kein Ereignis sind. Die Anschlusskanten auf RiC-O bleiben auf Property-Ebene bestehen, m3gim-ontology:atDate als rdfs:subPropertyOf rico:date und m3gim-ontology:atPlace als rdfs:subPropertyOf rico:hasOrHadLocation.</p>
+          <p class="term__note">Für die Klasse ist keine Oberklasse festgelegt. RiC-O 1.1 bietet keine passende Aufhängung, weil die Detailangabe weder Ereignis noch Beschreibungselement einer Ressource ist. Ob sie als Reifikation einer Aussage modelliert werden soll, ist offen.</p>
+          <p class="term__note">Eine Datumszeile und eine Ortszeile derselben Rolle werden nicht zu einem Knoten zusammengeführt. Die Zusammenführung würde eine Zusammengehörigkeit behaupten, die die Erfassung nicht ausdrücklich erfasst hat. Damit bleibt m3gim-ontology:xlsxSource je Knoten einwertig.</p>
+          <p class="term__note">Wo die Quelle keine Rolle führt, trägt der Knoten keine. Eine aus der Stellung erschlossene Rolle entsteht an keiner Stelle.</p>
+        </div>
+        <div class="term">
+          <h4 class="term__head">
+            <code>m3gim-ontology:StageRole</code>
+            <span class="term__label">Bühnenrolle</span>
+            <span class="term__gloss">Stage role</span>
+          </h4>
+          <p class="term__definition">Partie eines musikalischen Werks als eigenständige, wiederverwendete Entität. Die Identität ist ein deterministischer ASCII-Slug, gleichnamige Partien werden dedupliziert.</p>
+          <dl class="term__facets">
+            <dt>Oberklasse</dt><dd><code>rico:Thing</code></dd>
+          </dl>
+          <p class="term__note">Die Instanzen tragen im erzeugten Datensatz nur einen Namen. Weder die Zugehörigkeit zum Werk noch das Stimmfach ist gesetzt, und die im Werkindex geführte Partie (m3gim-ontology:sungPart) bleibt ein Literal am Werk statt einer Referenz auf die Bühnenrolle. Ob die Deduplikation über den Namen ohne Werkbindung tragfähig ist, ist mit dem Erschließungsteam zu klären, weil gleichnamige Partien verschiedener Werke zusammenfallen.</p>
+        </div>
+      </section>
+      <section class="page__section">
+        <h2>Object Properties</h2>
+        <div class="term">
+          <h4 class="term__head">
+            <code>m3gim-ontology:hasAssociatedAgent</code>
+            <span class="term__label">hat beteiligten Akteur</span>
+            <span class="term__gloss">has associated agent</span>
+          </h4>
+          <p class="term__definition">Verbindet eine Archivressource mit einer Person, einer Körperschaft oder einem Ensemble, das in ihr eine Rolle einnimmt. Die Art der Beteiligung steht als Wert von m3gim-ontology:role am verbundenen Knoten.</p>
+          <dl class="term__facets">
+            <dt>Domain</dt><dd><code>rico:Record</code> <code>rico:RecordSet</code></dd>
+            <dt>Range</dt><dd><code>rico:Agent</code></dd>
+          </dl>
+          <p class="term__note">Bewusst ohne rdfs:subPropertyOf. RiC-O 1.1 führt für mehrere der hier gebündelten Rollen eigene Object Properties, nämlich rico:hasCreator, rico:hasAddressee, rico:hasSender, rico:hasReceiver und rico:hasPublisher. Ob die Rollenwerte verfasser, adressat, absender, empfänger und herausgeber auf diese abgebildet werden sollen, ist eine offene Frage an das Projekt; eine Sammelkante kann keine von ihnen korrekt spezialisieren.</p>
+        </div>
+        <div class="term">
+          <h4 class="term__head">
+            <code>m3gim-ontology:hasPerformance</code>
+            <span class="term__label">hat Aufführung</span>
+            <span class="term__gloss">has performance</span>
+          </h4>
+          <p class="term__definition">Verbindet eine Archivressource mit einer Aufführung, die sie bezeugt.</p>
+          <dl class="term__facets">
+            <dt>Domain</dt><dd><code>rico:Record</code> <code>rico:RecordSet</code></dd>
+            <dt>Range</dt><dd><code>m3gim-ontology:Performance</code></dd>
+            <dt>Unterproperty von</dt><dd><code>rico:isAssociatedWithEvent</code></dd>
+          </dl>
+        </div>
+        <div class="term">
+          <h4 class="term__head">
+            <code>m3gim-ontology:hasAnnotation</code>
+            <span class="term__label">hat Annotation</span>
+            <span class="term__gloss">has annotation</span>
+          </h4>
+          <p class="term__definition">Verbindet eine Archivressource mit einem Annotationsknoten, der eine Datierung, eine Verortung, eine Detailangabe oder einen Finanzposten trägt, den sie bezeugt.</p>
+          <dl class="term__facets">
+            <dt>Domain</dt><dd><code>rico:Record</code> <code>rico:RecordSet</code></dd>
+            <dt>Range</dt><dd><code>m3gim-ontology:Annotation</code></dd>
+          </dl>
+          <p class="term__note">Die Property tritt an die Stelle von m3gim:hasSpatiotemporalEvent und m3gim:hasDatedEvent. Beide waren rdfs:subPropertyOf rico:isAssociatedWithEvent. Diese Kante entfällt mit der Oberklasse rico:Event des Zielknotens, weil der Annotationsknoten jetzt auch Finanzposten trägt.</p>
+          <p class="term__note">Ein Konsument liest alle Datierungen eines Dokuments über eine Schleife über diese Kante und nimmt Wert und Rolle ab.</p>
+        </div>
+        <div class="term">
+          <h4 class="term__head">
+            <code>m3gim-ontology:hasDetail</code>
+            <span class="term__label">hat Detailangabe</span>
+            <span class="term__gloss">has detail</span>
+          </h4>
+          <p class="term__definition">Verbindet ein Dokument mit einer Detailangabe der dritten Erschließungsschicht.</p>
+          <dl class="term__facets">
+            <dt>Domain</dt><dd><code>rico:Record</code></dd>
+            <dt>Range</dt><dd><code>m3gim-ontology:Annotation</code></dd>
+            <dt>Unterproperty von</dt><dd><code>m3gim-ontology:hasAnnotation</code></dd>
+          </dl>
+          <p class="term__note">knowledge/data.md nennt zusätzlich die Aufführung als Domain, damit ein Honorar an der Aufführung statt am Dokument hängen kann. Im erzeugten Datensatz hängen alle Detailangaben am Dokument. Die Bindung an die Beteiligung ist für das Zielmodell entschieden (E-128, hasFee).</p>
+          <p class="term__note">Die Kante bleibt als Unterproperty von m3gim-ontology:hasAnnotation erhalten, obwohl Zielknoten und Aspektknoten jetzt dieselbe Klasse tragen. Sie hält den Finanzposten in einem Tripel adressierbar und erhält den Zugriffspfad, den das Frontend heute liest.</p>
+        </div>
+        <div class="term">
+          <h4 class="term__head">
+            <code>m3gim-ontology:hasPerformer</code>
+            <span class="term__label">hat Mitwirkende</span>
+            <span class="term__gloss">has performer</span>
+          </h4>
+          <p class="term__definition">Verbindet eine Aufführung mit einer Person, die an ihr mitwirkt.</p>
+          <dl class="term__facets">
+            <dt>Domain</dt><dd><code>m3gim-ontology:Performance</code></dd>
+            <dt>Range</dt><dd><code>rico:Person</code></dd>
+            <dt>Unterproperty von</dt><dd><code>rico:hasOrHadParticipant</code></dd>
+          </dl>
+          <p class="term__note">Die Funktion der Mitwirkung, also Gesang, Dirigat oder Regie, ist an dieser Kante nicht ausgedrückt. Sie steht am Personenknoten in m3gim-ontology:role und gilt damit im Dokumentkontext. Der Aufführung ist sie nicht zugeordnet.</p>
+        </div>
+        <div class="term">
+          <h4 class="term__head">
+            <code>m3gim-ontology:performanceOf</code>
+            <span class="term__label">ist Aufführung von</span>
+            <span class="term__gloss">is performance of</span>
+          </h4>
+          <p class="term__definition">Verbindet eine Aufführung mit dem musikalischen Werk, das in ihr realisiert wird.</p>
+          <dl class="term__facets">
+            <dt>Domain</dt><dd><code>m3gim-ontology:Performance</code></dd>
+            <dt>Range</dt><dd><code>m3gim-ontology:MusicalWork</code></dd>
+          </dl>
+        </div>
+        <div class="term">
+          <h4 class="term__head">
+            <code>m3gim-ontology:hasStageRole</code>
+            <span class="term__label">hat Bühnenrolle</span>
+            <span class="term__gloss">has stage role</span>
+          </h4>
+          <p class="term__definition">Verbindet eine Aufführung mit einer in ihr besetzten Partie.</p>
+          <dl class="term__facets">
+            <dt>Domain</dt><dd><code>m3gim-ontology:Performance</code></dd>
+            <dt>Range</dt><dd><code>m3gim-ontology:StageRole</code></dd>
+          </dl>
+        </div>
+        <div class="term">
+          <h4 class="term__head">
+            <code>m3gim-ontology:atPlace</code>
+            <span class="term__label">am Ort</span>
+            <span class="term__gloss">at place</span>
+          </h4>
+          <p class="term__definition">Verortet einen Annotationsknoten. Fehlt die Angabe, trägt der Knoten eine reine Datierung oder einen reinen Finanzposten.</p>
+          <dl class="term__facets">
+            <dt>Domain</dt><dd><code>m3gim-ontology:Annotation</code></dd>
+            <dt>Range</dt><dd><code>rico:Place</code></dd>
+            <dt>Unterproperty von</dt><dd><code>rico:hasOrHadLocation</code></dd>
+          </dl>
+        </div>
+        <div class="term">
+          <h4 class="term__head">
+            <code>m3gim-ontology:role</code>
+            <span class="term__label">Rolle</span>
+            <span class="term__gloss">role</span>
+          </h4>
+          <p class="term__definition">Rolle, in der die verbundene Entität oder der Annotationsknoten in dem Dokument steht, aus dem die Verknüpfung stammt. Der Wert stammt aus dem Vokabular m3gim-vocab.</p>
+          <dl class="term__facets">
+            <dt>Domain</dt><dd><code>rico:Person</code> <code>rico:CorporateBody</code> <code>rico:Group</code> <code>rico:Place</code> <code>m3gim-ontology:MusicalWork</code> <code>m3gim-ontology:FramingEvent</code> <code>m3gim-ontology:Annotation</code></dd>
+            <dt>Range</dt><dd><code>skos:Concept</code></dd>
+          </dl>
+          <p class="term__note">Die Property tritt an die Stelle von m3gim:role, m3gim:eventRole, m3gim:dateRole und m3gim:detailRole. Die vier zogen bereits aus einem einzigen Vokabular, weil eine einzige Spalte der Erfassungstabelle ihre Werte trägt und die Pipeline sie nur nach Verknüpfungstyp verteilt hat.</p>
+          <p class="term__note">Der Wert ist ein Verweis auf ein Concept des Vokabulars m3gim-vocab. Der Verweisknoten führt das skos:prefLabel des Concepts mit, damit der Anzeigetext ohne Nachschlagen im Vokabular verfügbar ist.</p>
+          <p class="term__note">Die Rolle gilt nur im Kontext des jeweiligen Dokuments, hängt aber am Entitätsknoten. Trägt dieser Knoten eine Wikidata-IRI, geht der Dokumentkontext beim Zusammenführen zu RDF verloren, und dieselbe global identifizierte Entität erhält einander ausschließende Rollen. Wie die Rolle an das Dokument gebunden wird, ist mit dem Projekt zu klären.</p>
+        </div>
+        <div class="term">
+          <h4 class="term__head">
+            <code>m3gim-ontology:hasAgentRelation</code>
+            <span class="term__label">hat Akteursbeziehung</span>
+            <span class="term__gloss">has agent relation</span>
+          </h4>
+          <p class="term__definition">Verbindet eine Archivressource mit einer n-är reifizierten AgRelOn-Beziehung zwischen der Nachlassbildnerin und einem zweiten Akteur, für die diese Ressource der Beleg ist.</p>
+          <dl class="term__facets">
+            <dt>Domain</dt><dd><code>rico:Record</code> <code>rico:RecordSet</code></dd>
+          </dl>
+          <p class="term__note">Ohne rdfs:range, weil AgRelOn die Beziehungsklassen nicht unter einer gemeinsamen Oberklasse führt, die hier belegt wäre. Verwendet werden agrelon:HasCorrespondent, agrelon:HasProfessionalContact, agrelon:HasEmployeeEmployer, agrelon:IsHasPatron und agrelon:HasIsMember.</p>
+          <p class="term__note">Die Beziehung ist am belegenden Dokument aufgehängt und trägt dieses zugleich als agrelon:metadataProvenance. Damit ist die Provenienz ein Selbstverweis. Ob die Beziehungen stattdessen als eigene Graphknoten mit Verweis auf ihre Belege geführt werden sollen, ist offen.</p>
+        </div>
+        <div class="term">
+          <h4 class="term__head">
+            <code>m3gim-ontology:xlsxSource</code>
+            <span class="term__label">hat Quellzelle</span>
+            <span class="term__gloss">has source cell</span>
+          </h4>
+          <p class="term__definition">Verbindet eine aus der Erfassungstabelle abgeleitete Entität mit der Adresse ihrer Ursprungszeile. Die Angabe ist technische Rückverfolgbarkeit für Pipeline und Review, keine wissenschaftliche Quellenangabe.</p>
+          <p class="term__note">Ohne rdfs:domain, weil die Property an Dokumenten, Annotationen, Aufführungen, Beziehungen und an allen aus einer Verknüpfungszeile abgeleiteten Entitätsknoten steht. Ohne rdfs:range, weil der Container ein typloser Knoten ist. Eine eigene Klasse für den Container würde ihn adressierbar und validierbar machen.</p>
+        </div>
+      </section>
+      <section class="page__section">
+        <h2>Datatype Properties</h2>
+        <h3>Beschreibung und Rollen</h3>
+        <div class="term">
+          <h4 class="term__head">
+            <code>m3gim-ontology:composer</code>
+            <span class="term__label">Komponist</span>
+            <span class="term__gloss">composer</span>
+          </h4>
+          <p class="term__definition">Kuratierte Komponistenangabe aus dem Werkindex in der Ansetzungsform Nachname, Vorname.</p>
+          <dl class="term__facets">
+            <dt>Domain</dt><dd><code>m3gim-ontology:MusicalWork</code></dd>
+            <dt>Range</dt><dd><code>xsd:string</code></dd>
+          </dl>
+          <p class="term__note">Das angereicherte Gegenstück ist m3gim-ontology:wdComposer. Beide können am selben Werk stehen und abweichen; ein Abgleich findet nicht statt.</p>
+          <p class="term__note">Der Name ist mit dem Concept m3gim-vocab:composer zeichengleich. Beide stehen in verschiedenen Namensräumen und bezeichnen verschiedene Sachen, eine Property des Werks gegen einen Rollenwert.</p>
+        </div>
+        <div class="term">
+          <h4 class="term__head">
+            <code>m3gim-ontology:derivedFromRole</code>
+            <span class="term__label">abgeleitet aus Rolle</span>
+            <span class="term__gloss">derived from role</span>
+          </h4>
+          <p class="term__definition">Rollenwert der Quelle, aus dem die am Knoten stehende Rolle abgeleitet ist. Die Property hält den Ursprungswert fest, wo mehrere erfasste Rollen im Vokabular zu einem Concept zusammengeführt sind.</p>
+          <dl class="term__facets">
+            <dt>Range</dt><dd><code>xsd:string</code></dd>
+          </dl>
+          <p class="term__note">Ohne rdfs:domain, weil die zusammengeführten Rollen an Annotationsknoten und an Entitätsreferenzen gleichermaßen stehen.</p>
+          <p class="term__note">Der Term ist mit der Zusammenführung von auftritt auf aufführung sowie von erstelldatum und entstehungsort auf entstehung aufgenommen. Ohne ihn ist die Zusammenführung irreversibel, sobald die Quelle nicht mehr befragt wird. Er ist in knowledge/data-model.md § 7 für genau diesen Zweck deklariert.</p>
+          <p class="term__note">Die Pipeline setzt den Term überall dort, wo der erfasste Wert nicht das prefLabel des Concepts ist, auf das er im Vokabular führt. Er steht damit an jedem Knoten, dessen Rolle beim Umbau eine andere Schreibung bekommen hat.</p>
+        </div>
+        <h3>Datierung</h3>
+        <p>Alle Datumswerte sind Literale vom Typ xsd:string, weil historische Datierung die Strenge von xsd:date regelmäßig überschreitet: Zeitspannen (1952/1953), unvollständige Datierungen und die Qualifier circa:, vor: und nach:.</p>
+        <div class="term">
+          <h4 class="term__head">
+            <code>m3gim-ontology:atDate</code>
+            <span class="term__label">zum Datum</span>
+            <span class="term__gloss">at date</span>
+          </h4>
+          <p class="term__definition">Datierung eines Annotationsknotens oder einer Aufführung, im Wortlaut der normalisierten Quelle. Fehlt sie am Annotationsknoten, ist dieser bewusst undatiert, weil die Quelle kein Datum hergibt.</p>
+          <dl class="term__facets">
+            <dt>Domain</dt><dd><code>m3gim-ontology:Annotation</code> <code>m3gim-ontology:Performance</code></dd>
+            <dt>Range</dt><dd><code>xsd:string</code></dd>
+            <dt>Unterproperty von</dt><dd><code>rico:date</code></dd>
+          </dl>
+          <p class="term__note">Die Property tritt an die Stelle von m3gim:dateValue und der sechzehn typisierten Datumsproperties am Dokument. Nach der Umstellung existiert kein Property-Name mehr, der eine Rolle ausdrückt; die Rolle steht in m3gim-ontology:role am selben Knoten.</p>
+          <p class="term__note">Am Aufführungsknoten bleibt die Datierung, wo sie heute steht. Dort ist das Datum die Datierung des Ereignisses selbst, und keine Aufführung des Bestands trägt zwei Datierungen.</p>
+          <p class="term__note">rico:date bleibt am Dokument und trägt die archivische Datierung der Einheit. Die Umstellung entfernt nur die projekteigene Familie, die daneben stand.</p>
+          <p class="term__note">Die Datierung der Entstehung eines Dokuments wird am Dokument auf rico:creationDate geführt und nicht auf diese Property.</p>
+        </div>
+        <h3>Finanzschicht</h3>
+        <div class="term">
+          <h4 class="term__head">
+            <code>m3gim-ontology:detailField</code>
+            <span class="term__label">Detailfeld</span>
+            <span class="term__gloss">detail field</span>
+          </h4>
+          <p class="term__definition">Benennt die Art des Postens, den eine Detailangabe trägt. Belegt sind die Finanzfelder ausgaben, einnahmen und summe.</p>
+          <dl class="term__facets">
+            <dt>Domain</dt><dd><code>m3gim-ontology:Annotation</code></dd>
+            <dt>Range</dt><dd><code>xsd:string</code></dd>
+          </dl>
+          <p class="term__note">Die Pipeline kennt einen zweiten Emissionspfad über den Verknüpfungstyp detail, in dem detailField die Bezeichnung der Angabe und detailValue die Rolle trägt. Die beiden Pfade belegen dasselbe Paar von Properties gegenläufig. Welche Lesart gilt, ist zu klären, bevor der zweite Pfad Daten führt.</p>
+          <p class="term__note">Die Property bleibt neben m3gim-ontology:role bestehen, weil sie die Richtung des Geldflusses trägt und damit eine von der Rolle unabhängige Angabe ist.</p>
+        </div>
+        <div class="term">
+          <h4 class="term__head">
+            <code>m3gim-ontology:detailValue</code>
+            <span class="term__label">Detailwert</span>
+            <span class="term__gloss">detail value</span>
+          </h4>
+          <p class="term__definition">Unveränderter Zellwert der Quelle, aus dem Betrag und Währung geparst werden. Er bleibt erhalten, damit die Parsung nachprüfbar ist.</p>
+          <dl class="term__facets">
+            <dt>Domain</dt><dd><code>m3gim-ontology:Annotation</code></dd>
+            <dt>Range</dt><dd><code>xsd:string</code></dd>
+          </dl>
+        </div>
+        <div class="term">
+          <h4 class="term__head">
+            <code>m3gim-ontology:monetaryAmount</code>
+            <span class="term__label">Geldbetrag</span>
+            <span class="term__gloss">monetary amount</span>
+          </h4>
+          <p class="term__definition">Numerischer Betrag einer Finanzangabe, aus dem Zellwert geparst. Ein Doppelbetrag in einer Zelle wird in zwei Detailangaben aufgelöst, damit kein belegter Betrag verloren geht.</p>
+          <dl class="term__facets">
+            <dt>Domain</dt><dd><code>m3gim-ontology:Annotation</code></dd>
+            <dt>Range</dt><dd><code>xsd:decimal</code></dd>
+          </dl>
+        </div>
+        <div class="term">
+          <h4 class="term__head">
+            <code>m3gim-ontology:currency</code>
+            <span class="term__label">Währung</span>
+            <span class="term__gloss">currency</span>
+          </h4>
+          <p class="term__definition">Währung eines Betrags. Wo die Quelle eindeutig ist, steht der ISO-4217-Code, sonst der Originalcode der Quelle, damit keine spekulative Normalisierung entsteht.</p>
+          <dl class="term__facets">
+            <dt>Domain</dt><dd><code>m3gim-ontology:Annotation</code></dd>
+            <dt>Range</dt><dd><code>xsd:string</code></dd>
+          </dl>
+          <p class="term__note">Der Wertebereich mischt ISO-Codes und Quellschreibungen, etwa DM neben Belgische Francs. Für maschinelle Auswertung wäre ein zweites Feld mit dem normalisierten Code nötig; ob es angelegt wird, ist offen.</p>
+          <p class="term__note">Fehlt die Währung in der Quelle, setzt die Pipeline für zwei Fundstellen einen redaktionell begründeten Vorgabewert. Dieser abgeleitete Charakter ist im Datum nicht markiert, der Wert steht wie ein erfasster da.</p>
+        </div>
+        <h3>Bearbeitungsstand und Datenqualität</h3>
+        <div class="term">
+          <h4 class="term__head">
+            <code>m3gim-ontology:processingStatus</code>
+            <span class="term__label">Bearbeitungsstand</span>
+            <span class="term__gloss">processing status</span>
+          </h4>
+          <p class="term__definition">Projektinterner Erschließungsstand eines Objekts. Die Pipeline normalisiert die Schreibvarianten der Quelle auf die Werte begonnen, abgeschlossen und zurueckgestellt.</p>
+          <dl class="term__facets">
+            <dt>Domain</dt><dd><code>rico:Record</code></dd>
+            <dt>Range</dt><dd><code>xsd:string</code></dd>
+          </dl>
+          <p class="term__note">knowledge/data.md § 15 führt ein zweites, abweichendes Wertesystem aus der Erfassungshandreichung mit den Stufen in_bearbeitung, schicht1_fertig, schicht2_fertig und abgeschlossen, das den Schichtfortschritt abbildet. Welches System gilt, ist zu entscheiden; erst dann lässt sich der Erschließungsgrad pro Schicht messen.</p>
+          <p class="term__note">Die Werte bleiben deutsch und normalisiert.</p>
+        </div>
+        <div class="term">
+          <h4 class="term__head">
+            <code>m3gim-ontology:processingNote</code>
+            <span class="term__label">Bearbeitungsnotiz</span>
+            <span class="term__gloss">processing note</span>
+          </h4>
+          <p class="term__definition">Redaktionelle Anmerkung zum Bearbeitungsstand eines Objekts, aus dem Klammeranhang der Statusspalte.</p>
+          <dl class="term__facets">
+            <dt>Domain</dt><dd><code>rico:Record</code></dd>
+            <dt>Range</dt><dd><code>xsd:string</code></dd>
+          </dl>
+        </div>
+        <div class="term">
+          <h4 class="term__head">
+            <code>m3gim-ontology:accessStatus</code>
+            <span class="term__label">Zugänglichkeit</span>
+            <span class="term__gloss">access status</span>
+          </h4>
+          <p class="term__definition">Benutzungsrechtlicher Zugangsstatus eines Objekts, aus der Quellspalte zugaenglichkeit. Das Erfassungsvokabular führt die Werte offen, eingeschraenkt und gesperrt.</p>
+          <dl class="term__facets">
+            <dt>Domain</dt><dd><code>rico:Record</code></dd>
+            <dt>Range</dt><dd><code>xsd:string</code></dd>
+          </dl>
+          <p class="term__note">unused: Bedingt emittiert. scripts/transform.py setzt die Property nur, wenn die Quellspalte zugaenglichkeit belegt ist. Der aktuelle Objekt-Export führt diese Spalte nicht, weshalb der Term im Datensatz nicht vorkommt.</p>
+        </div>
+        <div class="term">
+          <h4 class="term__head">
+            <code>m3gim-ontology:digitizationStatus</code>
+            <span class="term__label">Digitalisierungsstand</span>
+            <span class="term__gloss">digitization status</span>
+          </h4>
+          <p class="term__definition">Stand der Digitalisierung eines Objekts, aus der Quellspalte scan_status. Das Erfassungsvokabular führt die Werte nicht_gescannt, gescannt und online.</p>
+          <dl class="term__facets">
+            <dt>Domain</dt><dd><code>rico:Record</code></dd>
+            <dt>Range</dt><dd><code>xsd:string</code></dd>
+          </dl>
+          <p class="term__note">unused: Bedingt emittiert. scripts/transform.py setzt die Property nur, wenn die Quellspalte scan_status belegt ist. Der aktuelle Objekt-Export führt diese Spalte nicht, weshalb der Term im Datensatz nicht vorkommt.</p>
+        </div>
+        <div class="term">
+          <h4 class="term__head">
+            <code>m3gim-ontology:dataQualityFlag</code>
+            <span class="term__label">Datenqualitäts-Flag</span>
+            <span class="term__gloss">data quality flag</span>
+          </h4>
+          <p class="term__definition">Kontrolliertes Signal für eine Unsicherheit in der Erfassung, abgeleitet aus dem Anmerkungsfeld der Quellzeile. Belegte Werte sind name-nicht-eindeutig, vorname-fehlt, rolle-unsicher, quelle-tippfehler und datierung-malformed.</p>
+          <dl class="term__facets">
+            <dt>Range</dt><dd><code>xsd:string</code></dd>
+          </dl>
+          <p class="term__note">Ohne rdfs:domain, weil das Flag an jede aus einer Verknüpfungszeile abgeleitete Entität wandern kann, auf die sich die Unsicherheit bezieht.</p>
+          <p class="term__note">knowledge/data.md typisiert die Property als Zeichenkette mit dem Zusatz SKOS. Die Werte stehen als Literale ohne Concept-IRI, ein Schema für sie existiert nicht. Ob eines angelegt wird, ist offen.</p>
+          <p class="term__note">Das Flag nimmt die Notationsabweichungen der Quelle auf, die bisher die Modellgestalt bestimmt haben. Eine Datierung, deren Notation kein ISO-Datum ergibt, wird mit datierung-malformed markiert, statt eine eigene Bauform zu erzwingen.</p>
+        </div>
+        <div class="term">
+          <h4 class="term__head">
+            <code>m3gim-ontology:qualityConfidence</code>
+            <span class="term__label">Konfidenz des Qualitäts-Flags</span>
+            <span class="term__gloss">confidence of the quality flag</span>
+          </h4>
+          <p class="term__definition">Konfidenz eines Datenqualitäts-Flags, getrennt von der Konfidenz der inhaltlichen Aussage.</p>
+          <dl class="term__facets">
+            <dt>Range</dt><dd><code>xsd:decimal</code></dd>
+          </dl>
+          <p class="term__note">unused: Deklariert und bewusst unbefüllt. Die Anmerkungsfreitexte der Quelle liefern kein quantifizierbares Konfidenzsignal, und ein gesetzter Zahlenwert wäre eine erfundene Konfidenz (architecture-decisions.md E-102 und E-106). Das Flag selbst ist das Unsicherheitssignal. Die Property ist für eine künftige belegbare Quelle reserviert.</p>
+        </div>
+        <h3>kuratierte Indexfelder</h3>
+        <div class="term">
+          <h4 class="term__head">
+            <code>m3gim-ontology:headquarters</code>
+            <span class="term__label">Sitz</span>
+            <span class="term__gloss">headquarters</span>
+          </h4>
+          <p class="term__definition">Kuratierter Sitz einer Institution aus dem Organisationsindex. Er trägt die Unterscheidung zwischen einem Auftritt am eigenen Haus und einem auswärtigen Auftritt.</p>
+          <dl class="term__facets">
+            <dt>Domain</dt><dd><code>rico:CorporateBody</code></dd>
+            <dt>Range</dt><dd><code>xsd:string</code></dd>
+          </dl>
+          <p class="term__note">Hat Vorrang vor m3gim-ontology:wdLocation, das aus Wikidata oft nur einen Stadtteil oder einen Saal liefert. Der Wert ist ein Ortsname als Literal, keine Referenz auf einen Ortsknoten.</p>
+          <p class="term__note">Das frühere englische Label seat meint im Englischen zuerst den Sitzplatz. Gemeint ist der Verwaltungssitz, wofür der Name jetzt an Wikidata P159 anschließt. Die Wahl ist fachlich zu bestätigen.</p>
+        </div>
+        <div class="term">
+          <h4 class="term__head">
+            <code>m3gim-ontology:keyContact</code>
+            <span class="term__label">Schlüsselkontakt</span>
+            <span class="term__gloss">key contact</span>
+          </h4>
+          <p class="term__definition">Im Organisationsindex vermerkte Person, über die der Kontakt zu einer Institution lief.</p>
+          <dl class="term__facets">
+            <dt>Domain</dt><dd><code>rico:CorporateBody</code></dd>
+            <dt>Range</dt><dd><code>xsd:string</code></dd>
+          </dl>
+          <p class="term__note">Der Wert ist ein Personenname als Literal und nicht mit dem Personenindex verknüpft. Dieselbe Person kann daher als Akteur und als Schlüsselkontakt unverbunden nebeneinander stehen.</p>
+        </div>
+        <div class="term">
+          <h4 class="term__head">
+            <code>m3gim-ontology:sungPart</code>
+            <span class="term__label">Partie</span>
+            <span class="term__gloss">sung part</span>
+          </h4>
+          <p class="term__definition">Partie, die die Nachlassbildnerin in diesem Werk gesungen hat, aus dem Werkindex. Sie bildet den Kern des dokumentierten Repertoires.</p>
+          <dl class="term__facets">
+            <dt>Domain</dt><dd><code>m3gim-ontology:MusicalWork</code></dd>
+            <dt>Range</dt><dd><code>xsd:string</code></dd>
+          </dl>
+          <p class="term__note">Dieselbe Partie existiert als m3gim-ontology:StageRole mit eigener Identität. Die Verbindung zwischen Literal und Entität ist nicht gesetzt, belongsToWork bleibt unbelegt. Damit stehen zwei Repräsentationen derselben Sache nebeneinander.</p>
+          <p class="term__note">Der frühere Name partie trug das englische Label part. Ein Term dieses Namens ist im archivischen Kontext gefährlich, weil rico:hasOrHadPart den mereologischen Teil meint.</p>
+        </div>
+        <div class="term">
+          <h4 class="term__head">
+            <code>m3gim-ontology:lifespan</code>
+            <span class="term__label">Lebensspanne</span>
+            <span class="term__gloss">lifespan</span>
+          </h4>
+          <p class="term__definition">Kuratierte Lebensdaten einer Person aus dem Personenindex, in der Schreibung der Quelle.</p>
+          <dl class="term__facets">
+            <dt>Domain</dt><dd><code>rico:Person</code></dd>
+            <dt>Range</dt><dd><code>xsd:string</code></dd>
+          </dl>
+          <p class="term__note">Bewusst getrennt von schema:birthDate und schema:deathDate, die aus Wikidata stammen. Beide Angaben können an derselben Person stehen und abweichen; ein Abgleich findet nicht statt.</p>
+        </div>
+        <div class="term">
+          <h4 class="term__head">
+            <code>m3gim-ontology:indexNote</code>
+            <span class="term__label">Redaktionelle Anmerkung</span>
+            <span class="term__gloss">index note</span>
+          </h4>
+          <p class="term__definition">Anmerkung aus der Anmerkungsspalte eines Indexblatts. Sie trägt bei Personen Beruf oder Funktion, bei Institutionen den Typ und bei Werken die Werkgruppe.</p>
+          <dl class="term__facets">
+            <dt>Domain</dt><dd><code>rico:Person</code> <code>rico:CorporateBody</code> <code>m3gim-ontology:MusicalWork</code></dd>
+            <dt>Range</dt><dd><code>xsd:string</code></dd>
+          </dl>
+          <p class="term__note">Der frühere Name m3gim:editorialNote fiel mit skos:editorialNote zusammen und meinte etwas anderes, ein kuratiertes Quellfeld statt einer Anmerkung an der Modellierung. Der neue Name nennt die Quelle, das Indexblatt.</p>
+          <p class="term__note">Das Feld führt bei Personen faktisch eine Berufsangabe und überschneidet sich mit gndo:professionOrOccupationAsLiteral aus der Anreicherung. Ob die kuratierte Angabe dorthin geführt werden soll, ist offen.</p>
+        </div>
+        <div class="term">
+          <h4 class="term__head">
+            <code>m3gim-ontology:voiceType</code>
+            <span class="term__label">Stimmfach</span>
+            <span class="term__gloss">voice type</span>
+          </h4>
+          <p class="term__definition">Stimmfach einer Person, aus der Wikidata-Anreicherung.</p>
+          <dl class="term__facets">
+            <dt>Domain</dt><dd><code>rico:Person</code></dd>
+            <dt>Range</dt><dd><code>xsd:string</code></dd>
+          </dl>
+          <p class="term__note">knowledge/data.md sieht die Property auch an der Bühnenrolle vor, um das Stimmfach einer Partie zu führen. Dort ist sie unbelegt. Solange beide Verwendungen offen sind, bleibt unklar, ob ein Wert das Fach der Person oder das der Partie bezeichnet.</p>
+        </div>
+        <h3>Wikidata-Anreicherung</h3>
+        <p>Diese Properties tragen Werte, die aus Wikidata injiziert sind. Wo ein etabliertes Vokabular trägt, nutzt das Modell dieses (schema:birthDate, schema:deathDate, schema:birthPlace, schema:deathPlace, geo:lat, geo:long, gndo:professionOrOccupationAsLiteral). Nur wo keines passt, bleibt der Term unter m3gim-ontology:.</p>
+        <div class="term">
+          <h4 class="term__head">
+            <code>m3gim-ontology:country</code>
+            <span class="term__label">Land</span>
+            <span class="term__gloss">country</span>
+          </h4>
+          <p class="term__definition">Land, in dem ein Ort liegt, als Label aus Wikidata.</p>
+          <dl class="term__facets">
+            <dt>Domain</dt><dd><code>rico:Place</code></dd>
+            <dt>Range</dt><dd><code>xsd:string</code></dd>
+          </dl>
+          <p class="term__note">Die angereicherten Ortsknoten unterhalb von m3gim-ontology:atPlace tragen keinen eigenen Typ. Für diese Knoten ist die Domain nur aus der Position im Graphen erschließbar.</p>
+          <p class="term__note">Bewusst ohne den wd-Marker der Familie, weil der Term in knowledge/data-model.md § 7 als Place-Property definiert ist.</p>
+        </div>
+        <div class="term">
+          <h4 class="term__head">
+            <code>m3gim-ontology:wdComposer</code>
+            <span class="term__label">Komponist laut Wikidata</span>
+            <span class="term__gloss">composer according to Wikidata</span>
+          </h4>
+          <p class="term__definition">Komponist eines Werks als Label aus Wikidata.</p>
+          <dl class="term__facets">
+            <dt>Domain</dt><dd><code>m3gim-ontology:MusicalWork</code></dd>
+            <dt>Range</dt><dd><code>xsd:string</code></dd>
+          </dl>
+        </div>
+        <div class="term">
+          <h4 class="term__head">
+            <code>m3gim-ontology:wdGenre</code>
+            <span class="term__label">Gattung laut Wikidata</span>
+            <span class="term__gloss">genre according to Wikidata</span>
+          </h4>
+          <p class="term__definition">Gattung eines Werks als Label aus Wikidata. Ein Werk kann mehrere Werte tragen.</p>
+          <dl class="term__facets">
+            <dt>Domain</dt><dd><code>m3gim-ontology:MusicalWork</code></dd>
+            <dt>Range</dt><dd><code>xsd:string</code></dd>
+          </dl>
+        </div>
+        <div class="term">
+          <h4 class="term__head">
+            <code>m3gim-ontology:wdPremiereDate</code>
+            <span class="term__label">Uraufführungsdatum laut Wikidata</span>
+            <span class="term__gloss">premiere date according to Wikidata</span>
+          </h4>
+          <p class="term__definition">Datum der Uraufführung eines Werks laut Wikidata.</p>
+          <dl class="term__facets">
+            <dt>Domain</dt><dd><code>m3gim-ontology:MusicalWork</code></dd>
+            <dt>Range</dt><dd><code>xsd:string</code></dd>
+          </dl>
+          <p class="term__note">Liegt in Wikidata kein Uraufführungsdatum vor, füllt die Anreicherung den Wert ersatzweise aus dem Publikationsdatum. Welche der beiden Quellen einem Wert zugrunde liegt, ist am Datum nicht erkennbar.</p>
+        </div>
+        <div class="term">
+          <h4 class="term__head">
+            <code>m3gim-ontology:wdLocation</code>
+            <span class="term__label">Ort laut Wikidata</span>
+            <span class="term__gloss">location according to Wikidata</span>
+          </h4>
+          <p class="term__definition">Ortsangabe zu einer Institution laut Wikidata.</p>
+          <dl class="term__facets">
+            <dt>Domain</dt><dd><code>rico:CorporateBody</code></dd>
+            <dt>Range</dt><dd><code>xsd:string</code></dd>
+          </dl>
+          <p class="term__note">Die Angabe bezeichnet häufig einen Stadtteil oder ein Gebäude statt der Stadt. Für die Auswertung ist der kuratierte m3gim-ontology:headquarters vorzuziehen.</p>
+        </div>
+        <div class="term">
+          <h4 class="term__head">
+            <code>m3gim-ontology:wdInception</code>
+            <span class="term__label">Gründungsdatum</span>
+            <span class="term__gloss">inception</span>
+          </h4>
+          <p class="term__definition">Gründungsdatum einer Institution laut Wikidata.</p>
+          <dl class="term__facets">
+            <dt>Domain</dt><dd><code>rico:CorporateBody</code></dd>
+            <dt>Range</dt><dd><code>xsd:string</code></dd>
+          </dl>
+          <p class="term__note">Die Werte folgen EDTF Level 0, also der vierstelligen Jahresform, der Jahr-Monat-Form oder dem vollständigen Datum, je nach der in Wikidata belegten Präzision (E-132). Der Zeichenkettentyp bleibt, weil die Werte damit unterschiedlich lang sind.</p>
+          <p class="term__note">Der Name trägt jetzt den wd-Marker der Familie, weil der Wert aus Wikidata stammt.</p>
+        </div>
+        <h3>technische Herkunft</h3>
+        <div class="term">
+          <h4 class="term__head">
+            <code>m3gim-ontology:xlsxSheet</code>
+            <span class="term__label">Quellblatt</span>
+            <span class="term__gloss">source sheet</span>
+          </h4>
+          <p class="term__definition">Name des Blatts der Erfassungstabelle, aus dem eine Entität stammt.</p>
+          <dl class="term__facets">
+            <dt>Range</dt><dd><code>xsd:string</code></dd>
+          </dl>
+          <p class="term__note">Objektzeilen tragen den festen Wert Objekte, Verknüpfungszeilen den Namen des jeweiligen Box-Blatts, weil die Verknüpfungstabelle über mehrere Blätter verteilt ist. knowledge/data-model.md § 9 ist auf diesen Wertebereich nachgezogen.</p>
+        </div>
+        <div class="term">
+          <h4 class="term__head">
+            <code>m3gim-ontology:xlsxRow</code>
+            <span class="term__label">Quellzeile</span>
+            <span class="term__gloss">source row</span>
+          </h4>
+          <p class="term__definition">Zeilennummer in der Erfassungstabelle, einschließlich der Kopfzeile gezählt.</p>
+          <dl class="term__facets">
+            <dt>Range</dt><dd><code>xsd:integer</code></dd>
+          </dl>
+        </div>
+        <div class="term">
+          <h4 class="term__head">
+            <code>m3gim-ontology:dataPointId</code>
+            <span class="term__label">Datenpunkt-Kennung</span>
+            <span class="term__gloss">data point identifier</span>
+          </h4>
+          <p class="term__definition">Kennung, die die Aussagen eines einzelnen Vorkommnisses innerhalb eines Dokuments bündelt. Leer bedeutet die Dokumentebene.</p>
+          <dl class="term__facets">
+            <dt>Range</dt><dd><code>xsd:integer</code></dd>
+          </dl>
+          <p class="term__note">Die Spalte ist in der Quelle nahezu nie gefüllt, weshalb das darauf aufbauende Vorkommnis-Modell nicht wirksam ist. Die Nachfolgekonvention ist die zweistufige Aktivitätskennung aus architecture-decisions.md E-127.</p>
+          <p class="term__note">Die Kennung sitzt im Container der technischen Herkunft, trägt seit E-125 aber eine fachliche Bündelung und keine Herkunftsangabe. Sie gehört an die bezeugte Entität statt an die Quellzellenadresse.</p>
+        </div>
+        <h3>Kennzahlen des Exports</h3>
+        <p>Diese Properties stehen am Wurzelknoten der Serialisierung, der keinen Typ trägt. Eine Domain lässt sich deshalb nicht angeben. Ein eigener Knoten für den Datensatz würde die Angaben adressierbar machen.</p>
+        <div class="term">
+          <h4 class="term__head">
+            <code>m3gim-ontology:exportDate</code>
+            <span class="term__label">Exportzeitpunkt</span>
+            <span class="term__gloss">export date</span>
+          </h4>
+          <p class="term__definition">Zeitpunkt, zu dem der Datensatz erzeugt wurde.</p>
+          <dl class="term__facets">
+            <dt>Range</dt><dd><code>xsd:string</code></dd>
+          </dl>
+        </div>
+        <div class="term">
+          <h4 class="term__head">
+            <code>m3gim-ontology:recordCount</code>
+            <span class="term__label">Anzahl der Dokumente</span>
+            <span class="term__gloss">number of records</span>
+          </h4>
+          <p class="term__definition">Anzahl der Dokumente im Datensatz zum Zeitpunkt des Exports.</p>
+          <dl class="term__facets">
+            <dt>Range</dt><dd><code>xsd:integer</code></dd>
+          </dl>
+        </div>
+        <div class="term">
+          <h4 class="term__head">
+            <code>m3gim-ontology:recordSetCount</code>
+            <span class="term__label">Anzahl der Konvolute</span>
+            <span class="term__gloss">number of aggregations</span>
+          </h4>
+          <p class="term__definition">Anzahl der aggregierenden Archiveinheiten im Datensatz zum Zeitpunkt des Exports.</p>
+          <dl class="term__facets">
+            <dt>Range</dt><dd><code>xsd:integer</code></dd>
+          </dl>
+          <p class="term__note">Der frühere Name war deutsch-englisch gemischt. Gezählt wird genau die Klasse rico:RecordSet, und der Name benennt sie.</p>
+        </div>
+        <div class="term">
+          <h4 class="term__head">
+            <code>m3gim-ontology:approvedManualMatches</code>
+            <span class="term__label">Freigegebene manuelle Zuordnungen</span>
+            <span class="term__gloss">approved manual matches</span>
+          </h4>
+          <p class="term__definition">Anzahl der von Hand geprüften und freigegebenen Wikidata-Zuordnungen, die in den Export eingegangen sind.</p>
+          <dl class="term__facets">
+            <dt>Range</dt><dd><code>xsd:integer</code></dd>
+          </dl>
+        </div>
+        <div class="term">
+          <h4 class="term__head">
+            <code>m3gim-ontology:lowConfidenceSkipped</code>
+            <span class="term__label">Übergangene unsichere Zuordnungen</span>
+            <span class="term__gloss">skipped low confidence matches</span>
+          </h4>
+          <p class="term__definition">Anzahl der Wikidata-Zuordnungen, die wegen zu geringer Trefferqualität und fehlender Freigabe nicht in den Export eingegangen sind.</p>
+          <dl class="term__facets">
+            <dt>Range</dt><dd><code>xsd:integer</code></dd>
+          </dl>
+        </div>
+      </section>
+      <section class="page__section">
+        <h2>Kontrollierte Vokabulare</h2>
+        <h3>Akteursrollen <span class="term__gloss">Agent roles</span> <code>m3gim-vocab:agentRoles</code></h3>
+        <p>Funktion, die eine Person, eine Körperschaft oder eine Gruppe in einem Dokument einnimmt.</p>
+        <p class="term__note">Die Werte sind nach der Normalisierung geschlechtsneutral, weil die Pipeline die Endungen :in und :innen entfernt.</p>
+        <div class="page__wide">
+        <table class="page__table page__table--concepts">
+        <thead><tr><th>Begriff</th><th>Anzeigelabel</th><th>Englisch</th><th>Definition</th></tr></thead><tbody>
+        <tr><td><code>m3gim-vocab:author</code></td><td>verfasser</td><td>author</td><td>Person oder Institution, die das Dokument verfasst hat.</td></tr>
+        <tr><td><code>m3gim-vocab:addressee</code></td><td>adressat</td><td>addressee</td><td>Person oder Institution, an die das Dokument gerichtet ist.</td></tr>
+        <tr><td><code>m3gim-vocab:sender</code></td><td>absender</td><td>sender</td><td>Person, die ein Korrespondenzstück abgesendet hat.</td></tr>
+        <tr><td><code>m3gim-vocab:recipient</code></td><td>empfänger</td><td>recipient</td><td>Person oder Institution, die ein Korrespondenzstück empfangen hat.</td></tr>
+        <tr><td><code>m3gim-vocab:signatory</code></td><td>unterzeichner</td><td>signatory</td><td>Person, die das Dokument unterschrieben hat.</td></tr>
+        <tr><td><code>m3gim-vocab:depicted</code></td><td>abgebildet</td><td>depicted</td><td>Person, die auf einer Fotografie oder einem Plakat abgebildet ist.</td></tr>
+        <tr><td><code>m3gim-vocab:artistAgent</code></td><td>agent</td><td>artist agent</td><td>Person, die als Künstleragentur oder Agent die Karriere vermittelt.<span class="cell__note">Der nackte Name agent kollidiert im Lesen mit rico:Agent, das jeden Akteur meint. Gemeint ist die Künstleragentur.</span></td></tr>
+        <tr><td><code>m3gim-vocab:intermediary</code></td><td>vermittler</td><td>intermediary</td><td>Person oder Institution, die ein Engagement oder einen Kontakt vermittelt hat.</td></tr>
+        <tr><td><code>m3gim-vocab:commissioner</code></td><td>auftraggeber</td><td>commissioner</td><td>Person oder Institution, die einen Auftrag erteilt oder eine Tätigkeit finanziert hat.</td></tr>
+        <tr><td><code>m3gim-vocab:dedicatee</code></td><td>widmungsempfänger</td><td>dedicatee</td><td>Person, der ein Dokument oder ein Werk gewidmet ist.</td></tr>
+        <tr><td><code>m3gim-vocab:holder</code></td><td>inhaber</td><td>holder</td><td>Person, die Inhaberin eines Rechts, eines Amtes oder eines Betriebs ist.</td></tr>
+        <tr><td><code>m3gim-vocab:publisher</code></td><td>herausgeber</td><td>publisher</td><td>Person oder Institution, die eine Publikation herausgibt. Bei Presseerzeugnissen ist es meist die Institution.<span class="cell__note">Das deutsche Wort trägt auch die Bedeutung Editor, die hier ausgeschlossen ist. Der Name folgt der Definition und der Anmerkung an m3gim-ontology:hasAssociatedAgent, die auf rico:hasPublisher verweist.</span></td></tr>
+        <tr><td><code>m3gim-vocab:contractingParty</code></td><td>vertragspartner</td><td>contracting party</td><td>Gegenpartei eines Vertrags.<span class="cell__note">Wird im Modell als AgRelOn-Beziehung geführt statt als Rolle am Personenknoten. Weil vertragspartner und arbeitgeber auf dieselbe AgRelOn-Klasse abbilden, ist die Herkunft ohne einen Marker nicht mehr unterscheidbar.</span></td></tr>
+        <tr><td><code>m3gim-vocab:singer</code></td><td>sänger</td><td>singer</td><td>Person, die in einer Aufführung singt.</td></tr>
+        <tr><td><code>m3gim-vocab:conductor</code></td><td>dirigent</td><td>conductor</td><td></td></tr>
+        <tr><td><code>m3gim-vocab:director</code></td><td>regisseur</td><td>director</td><td></td></tr>
+        <tr><td><code>m3gim-vocab:composer</code></td><td>komponist</td><td>composer</td><td><span class="cell__note">Namensgleich mit der Ontologie-Property m3gim-ontology:composer, in einem anderen Namensraum und damit zulässig.</span></td></tr>
+        <tr><td><code>m3gim-vocab:librettist</code></td><td>librettist</td><td>librettist</td><td></td></tr>
+        <tr><td><code>m3gim-vocab:translator</code></td><td>übersetzer</td><td>translator</td><td></td></tr>
+        <tr><td><code>m3gim-vocab:arranger</code></td><td>arrangeur</td><td>arranger</td><td></td></tr>
+        <tr><td><code>m3gim-vocab:chorusMaster</code></td><td>chorleiter</td><td>chorus master</td><td></td></tr>
+        <tr><td><code>m3gim-vocab:choreographer</code></td><td>choreograph</td><td>choreographer</td><td></td></tr>
+        <tr><td><code>m3gim-vocab:setDesigner</code></td><td>bühnenbildner</td><td>set designer</td><td></td></tr>
+        <tr><td><code>m3gim-vocab:costumeDesigner</code></td><td>kostümbildner</td><td>costume designer</td><td></td></tr>
+        <tr><td><code>m3gim-vocab:productionDesigner</code></td><td>ausstatter</td><td>production designer</td><td>Person, die Bühnenbild und Kostüm gemeinsam verantwortet.</td></tr>
+        <tr><td><code>m3gim-vocab:stageManager</code></td><td>bühnenleiter</td><td>stage manager</td><td><span class="cell__note">Ohne Definition im Vokabular. Der deutsche Begriff kann die technische Leitung der Bühne oder die künstlerische Leitung des Hauses meinen. Die Übersetzung ist fachlich strittig.</span></td></tr>
+        <tr><td><code>m3gim-vocab:technicalDirector</code></td><td>technische leitung</td><td>technical director</td><td><span class="cell__note">Gegen den nackten Wert leitung abzugrenzen. Die Unterscheidung ist mit dem Erschließungsteam zu klären.</span></td></tr>
+        <tr><td><code>m3gim-vocab:unspecifiedDirection</code></td><td>leitung</td><td>unspecified direction</td><td><span class="cell__note">Der Wert ist unbestimmt und kann musikalische, szenische oder technische Leitung meinen. Klärungsbedarf.</span><span class="cell__note">Der Name hält die Unbestimmtheit fest, die die Alternativen direction und management verlieren würden.</span></td></tr>
+        <tr><td><code>m3gim-vocab:lightingTechnician</code></td><td>beleuchter</td><td>lighting technician</td><td><span class="cell__note">Die Alternative lightingDesigner unterstellt eine gestalterische Funktion, die die Quelle nicht belegt.</span></td></tr>
+        <tr><td><code>m3gim-vocab:makeupArtist</code></td><td>maskenbidner<span class="cell__alt">maskenbildner</span></td><td>makeup artist</td><td><span class="cell__note">Die Quelle führt die Tippform maskenbidner, die unverändert durchgereicht wird. Der Quell-Fix ist im Datenfehler-Register vermerkt.</span><span class="cell__note">Die Umbenennung löst die IRI vom Quellfehler; skos:prefLabel behält die Quellform, skos:altLabel die korrekte.</span></td></tr>
+        <tr><td><code>m3gim-vocab:repetiteur</code></td><td>repetitor</td><td>repetiteur</td><td>Person, die Sängerinnen und Sänger am Klavier einstudiert.</td></tr>
+        <tr><td><code>m3gim-vocab:assistantDirector</code></td><td>regieassistent</td><td>assistant director</td><td></td></tr>
+        <tr><td><code>m3gim-vocab:photographer</code></td><td>fotograf</td><td>photographer</td><td></td></tr>
+        <tr><td><code>m3gim-vocab:performer</code></td><td>interpret</td><td>performer</td><td>Oberbegriff für eine mitwirkende Person, wenn Stimmfach oder Funktion nicht bestimmbar sind.<span class="cell__note">Der Wert kommt auch als Rolle einer Detailangabe vor, wo er keine Art des Finanzpostens bezeichnet. Diese Verwendung ist zu prüfen und begründet die Zuordnung zu agentRoles.</span></td></tr>
+        <tr><td><code>m3gim-vocab:protagonist</code></td><td>protagonist</td><td>protagonist</td><td><span class="cell__note">Vermutlich ein Erfassungsfehler, weil der Wert eine Bühnenrolle bezeichnet und damit in den Typ rolle gehört. Als offene Modellentscheidung geführt.</span></td></tr>
+        <tr><td><code>m3gim-vocab:audienceMember</code></td><td>publikum</td><td>audience member</td><td>Person, die als Zuschauerin oder Zuschauer anwesend war.<span class="cell__note">Ob solche Personen als Akteur oder als Gegenstand des Dokuments zu führen sind, ist mit dem Erschließungsteam zu klären.</span></td></tr>
+        <tr><td><code>m3gim-vocab:employer</code></td><td>arbeitgeber</td><td>employer</td><td>Institution, bei der ein Engagement bestand.</td></tr>
+        <tr><td><code>m3gim-vocab:organizer</code></td><td>veranstalter</td><td>organizer</td><td>Institution, die eine Veranstaltung ausrichtet.</td></tr>
+        <tr><td><code>m3gim-vocab:educationalInstitution</code></td><td>ausbildungsstätte</td><td>educational institution</td><td>Institution, an der eine Ausbildung stattfand.</td></tr>
+        <tr><td><code>m3gim-vocab:airline</code></td><td>fluggesellschaft</td><td>airline</td><td>Institution, die eine Flugreise durchgeführt hat. Der Wert belegt die Reiseart.</td></tr>
+        </tbody></table>
+        </div><!--/wide-->
+        <h3>Annotationsrollen <span class="term__gloss">Annotation roles</span> <code>m3gim-vocab:annotationRoles</code></h3>
+        <p>Rolle, in der eine Datierung, eine Verortung oder eine Entitätsreferenz zu ihrem Dokument steht, also die Art des Vorkommnisses, des Zustands oder des Umstands, auf den sie sich bezieht.</p>
+        <p class="term__note">Das Scheme vereinigt die in der Umbenennungskarte getrennt vorgeschlagenen Schemes eventTypes, placeRoles und dateRoles. Mit dem einheitlichen Annotationsknoten trägt derselbe Begriff wahlweise eine Datierung, eine Verortung oder beides, sodass eine Trennung nach Datums- und Ortsrollen keinen Gegenstand mehr hat.</p>
+        <p class="term__note">Wo eine Datumsrolle und eine Ortsrolle denselben Aspekt bezeichnet haben, sind sie zu einem Begriff zusammengefallen, weil der Aspekt in der Wertproperty steht und der Rollenname ihn nur wiederholt hat. Die Endung der zusammengefallenen Namen ist entfallen; wo ein Begriff nur auf einer der beiden Seiten vorkommt, trägt er seinen Namen unverändert weiter.</p>
+        <p class="term__note">Der Wert nicht eingehalten kommt in der Rollenspalte vor, bezeichnet dort aber den Status eines nicht erfüllten Vertrags. Eine Rolle ist er nicht. Er ist hier bewusst nicht als Concept geführt. Das Zielfeld ist contractStatus zusammen mit realized am Vertragsdokument (data-model.md § 11); die Modellierung ist mit dem Erschließungsteam zu klären und bleibt vorerst unverändert.</p>
+        <div class="page__wide">
+        <table class="page__table page__table--concepts">
+        <thead><tr><th>Begriff</th><th>Anzeigelabel</th><th>Englisch</th><th>Definition</th></tr></thead><tbody>
+        <tr><td><code>m3gim-vocab:performance</code></td><td>aufführung<span class="cell__alt">auftritt</span></td><td>performance</td><td>Bezug auf eine Aufführung, als Ereignis, als Werkbezug oder als Datierung.<span class="cell__note">Die Begriffe aufführung und auftritt sind zu einem Begriff zusammengefallen. Die frühere Abgrenzung folgte allein der Rollenspalte der Quelle; eine inhaltliche Unterscheidung lag ihr nicht zugrunde.</span><span class="cell__note">Die Definition des aufgegangenen Begriffs auftritt lautete: Bezug auf einen Auftritt der Nachlassbildnerin.</span><span class="cell__note">Die Ursprungsrolle bleibt über m3gim-ontology:derivedFromRole erhalten.</span></td></tr>
+        <tr><td><code>m3gim-vocab:premiere</code></td><td>premiere</td><td>premiere</td><td>Erste Vorstellung einer Produktion.</td></tr>
+        <tr><td><code>m3gim-vocab:revival</code></td><td>wiederaufnahme</td><td>revival</td><td>Erneute Aufnahme einer Produktion in den Spielplan.</td></tr>
+        <tr><td><code>m3gim-vocab:galaPerformance</code></td><td>festvorstellung</td><td>gala performance</td><td>Vorstellung zu einem festlichen Anlass.</td></tr>
+        <tr><td><code>m3gim-vocab:rehearsal</code></td><td>probe</td><td>rehearsal</td><td></td></tr>
+        <tr><td><code>m3gim-vocab:dressRehearsal</code></td><td>generalprobe</td><td>dress rehearsal</td><td>Letzte Probe unter Aufführungsbedingungen.<span class="cell__note">Der Begriff bleibt eine eigene Rolle. Die Alternative wäre probe zusammen mit einer Property rehearsalType gewesen, die im Vokabular nicht geführt und im Datensatz nie befüllt ist.</span></td></tr>
+        <tr><td><code>m3gim-vocab:recording</code></td><td>aufnahme</td><td>recording</td><td>Rundfunk- oder Tonaufnahme. Sie zählt zur diskursiven Mobilität, weil sie die Stimme über den Aufführungsort hinaus verbreitet.</td></tr>
+        <tr><td><code>m3gim-vocab:reception</code></td><td>empfang</td><td>reception</td><td>Gesellschaftlicher Empfang im Umfeld einer Aufführung. Im Modell auf die Rahmenveranstaltung geführt.</td></tr>
+        <tr><td><code>m3gim-vocab:guestPerformance</code></td><td>gastspiel</td><td>guest performance</td><td>Auftritt außerhalb des Hauses, an dem ein Engagement besteht.<span class="cell__note">Nach data.md § 4 gehört der Auftrittsmodus als mode an das Vorkommnis. Als konkurrierender Rollenwert an Ort, Werk oder Institution ist er dort abgelehnt. Solange das Vorkommnis-Modell nicht umgesetzt ist, bleibt der Wert eine Rolle.</span></td></tr>
+        <tr><td><code>m3gim-vocab:framingEvent</code></td><td>rahmenveranstaltung</td><td>framing event</td><td>Übergeordnete Veranstaltung, in deren Rahmen ein Ereignis stattfindet.<span class="cell__note">Namensgleich mit der Klasse m3gim-ontology:FramingEvent, unterschieden durch Groß- und Kleinschreibung und durch den Namensraum.</span></td></tr>
+        <tr><td><code>m3gim-vocab:repertoire</code></td><td>repertoire</td><td>repertoire</td><td>Werk als Bestandteil des einstudierten Repertoires, ohne Bezug auf eine bestimmte Aufführung.</td></tr>
+        <tr><td><code>m3gim-vocab:creation</code></td><td>entstehung<span class="cell__alt">erstelldatum, entstehungsort, entstehungsdatum</span></td><td>creation</td><td>Bezug einer Orts- oder Datumsangabe auf die Entstehung des Dokuments.<span class="cell__note">Die Ursprungsrolle bleibt über m3gim-ontology:derivedFromRole erhalten.</span><span class="cell__note">Die drei Begriffe entstehung, entstehungsort und erstelldatum sind zu einem Begriff zusammengefallen. Sie bezeichneten im Bestand denselben Sachverhalt in drei einander ausschließenden Bauformen, und welche griff, hing allein vom Verknüpfungstyp der Erfassungszeile ab.</span><span class="cell__note">Der vierte Wert entstehungsdatum kommt nicht aus der Rollenspalte, sondern ist der Name der Datumsspalte des Objektblatts. Die Pipeline führt ihn als Rolle, wo die dortige Datierung die Form von rico:date verfehlt und deshalb als Annotationsknoten stehen bleibt.</span><span class="cell__note">Die Definition des aufgegangenen Begriffs entstehungsort lautete: Ort, an dem das Dokument entstanden ist. Die des aufgegangenen Begriffs erstelldatum lautete: Datierung der Entstehung eines Dokuments.</span><span class="cell__note">Die Datierung der Entstehung wird am Dokument auf den RiC-O-Term rico:creationDate geführt. Die projekteigene Property m3gim:erstelldatum war eine nackte Unterproperty dieses Terms mit derselben Domain und derselben Bedeutung.</span></td></tr>
+        <tr><td><code>m3gim-vocab:dispatch</code></td><td>absendung<span class="cell__alt">absendedatum, absendeort</span></td><td>dispatch</td><td>Bezug einer Orts- oder Datumsangabe auf das Absenden eines Korrespondenzstücks.<span class="cell__note">Die Begriffe absendedatum und absendeort sind zu einem Begriff zusammengefallen, weil der Aspekt in der Wertproperty steht und der Rollenname ihn nur wiederholt hat.</span><span class="cell__note">Die Definitionen der aufgegangenen Begriffe lauteten: Datierung des Absendens eines Korrespondenzstücks. Ort, an dem ein Korrespondenzstück abgesendet wurde.</span></td></tr>
+        <tr><td><code>m3gim-vocab:receiving</code></td><td>empfangnahme<span class="cell__alt">empfangsdatum, empfangsort</span></td><td>receiving</td><td>Bezug einer Orts- oder Datumsangabe auf den Empfang eines Korrespondenzstücks.<span class="cell__note">Die Begriffe empfangsdatum und empfangsort sind zu einem Begriff zusammengefallen, weil der Aspekt in der Wertproperty steht und der Rollenname ihn nur wiederholt hat.</span><span class="cell__note">Die Definitionen der aufgegangenen Begriffe lauteten: Datierung des Empfangs eines Korrespondenzstücks. Ort, an dem ein Korrespondenzstück empfangen wurde.</span><span class="cell__note">Der Name lautet receiving und nicht receipt, weil receipt im selben Namensraum an den Dokumenttyp Quittung vergeben ist.</span><span class="cell__note">Das deutsche Anzeigelabel lautet empfangnahme und nicht empfang, weil empfang bereits das Anzeigelabel des Begriffs reception trägt und ein Quellwert sonst nicht mehr eindeutig auf einen Begriff abbildbar wäre.</span></td></tr>
+        <tr><td><code>m3gim-vocab:departure</code></td><td>abreise<span class="cell__alt">abreisedatum, abreiseort</span></td><td>departure</td><td>Bezug einer Orts- oder Datumsangabe auf den Antritt einer Reise.<span class="cell__note">Die Begriffe abreisedatum und abreiseort sind zu einem Begriff zusammengefallen, weil der Aspekt in der Wertproperty steht und der Rollenname ihn nur wiederholt hat.</span><span class="cell__note">Die Definitionen der aufgegangenen Begriffe lauteten: Datierung des Reiseantritts. Ort, von dem aus eine Reise angetreten wurde.</span></td></tr>
+        <tr><td><code>m3gim-vocab:performancePlace</code></td><td>auffuehrungsort</td><td>performance place</td><td>Ort, an dem eine Aufführung stattfand. Der Wert steht auch an Institutionen, die dann als Ortsvertreter dienen.<span class="cell__note">Der Name behält die Ortsendung, weil der Begriff keinen Datumszwilling hat, mit dem er zusammenfallen könnte, und weil performance bereits vergeben ist.</span></td></tr>
+        <tr><td><code>m3gim-vocab:destinationPlace</code></td><td>zielort</td><td>destination place</td><td>Ort, zu dem eine Reise führt.</td></tr>
+        <tr><td><code>m3gim-vocab:contractPlace</code></td><td>vertragsort</td><td>contract place</td><td>Ort, an dem ein Vertrag geschlossen wurde.<span class="cell__note">Der Name behält die Ortsendung, weil contract bereits an den Dokumenttyp vergeben ist.</span></td></tr>
+        <tr><td><code>m3gim-vocab:residencePlace</code></td><td>wohnort</td><td>residence place</td><td>Ort, an dem eine Person gewohnt hat.<span class="cell__note">Bewusst kein Mobilitätsereignis, weil ein Wohnort ein Zustand mit Gültigkeitsperiode ist und kein Punktereignis.</span></td></tr>
+        <tr><td><code>m3gim-vocab:assignment</code></td><td>auftrag</td><td>assignment</td><td><span class="cell__note">Der Wert kommt an Orten und an raumzeitlichen Ereignissen vor, steht aber in keiner Rollenliste der Spezifikation. Seine Bedeutung ist aus den Daten nicht bestimmbar und mit dem Erschließungsteam zu klären.</span><span class="cell__note">Die Übersetzung steht unter dieser Klärung. Der naheliegende Name commission ist an provision vergeben.</span></td></tr>
+        <tr><td><code>m3gim-vocab:issueDate</code></td><td>ausstellungsdatum</td><td>issue date</td><td>Datierung der Ausstellung eines Vertrags, Ausweises oder einer Urkunde.</td></tr>
+        <tr><td><code>m3gim-vocab:publicationDate</code></td><td>erscheinungsdatum</td><td>publication date</td><td>Datierung des Erscheinens einer Publikation.</td></tr>
+        <tr><td><code>m3gim-vocab:broadcastDate</code></td><td>ausstrahlung</td><td>broadcast date</td><td>Datierung der Sendung einer Rundfunkaufnahme.<span class="cell__note">Der deutsche Name trägt anders als seine Geschwister keine Datumsendung. Der englische Name gleicht das an.</span></td></tr>
+        <tr><td><code>m3gim-vocab:transferDate</code></td><td>überweisung</td><td>transfer date</td><td>Datierung einer Zahlung.</td></tr>
+        <tr><td><code>m3gim-vocab:conversationDate</code></td><td>gespräch</td><td>conversation date</td><td>Datierung eines im Dokument belegten Gesprächs.</td></tr>
+        <tr><td><code>m3gim-vocab:wageConfirmationDate</code></td><td>lohnbestätigung</td><td>wage confirmation date</td><td>Datierung der Bestätigung einer Vergütung.</td></tr>
+        <tr><td><code>m3gim-vocab:installmentPeriod</code></td><td>ratenzahlung</td><td>installment period</td><td>Zeitraum einer in Raten geleisteten Zahlung.</td></tr>
+        <tr><td><code>m3gim-vocab:season</code></td><td>spielzeit</td><td>season</td><td>Zeitraum eines Engagements an einem Haus, als Spielzeit bezeichnet.<span class="cell__note">Ein einziger Term trägt die Spanne. Die frühere Zerlegung in einen Beginn und ein Ende ist aufgegeben, weil die Quelle die Spanne als einen Wert führt.</span></td></tr>
+        <tr><td><code>m3gim-vocab:rehearsalStartDate</code></td><td>probenbeginn</td><td>rehearsal start date</td><td>Datierung des Probenbeginns einer Produktion.</td></tr>
+        </tbody></table>
+        </div><!--/wide-->
+        <h3>Finanzposten <span class="term__gloss">Financial item types</span> <code>m3gim-vocab:financialItemTypes</code></h3>
+        <p>Art eines Geldbetrags, den eine Detailangabe der dritten Erschließungsschicht trägt.</p>
+        <p class="term__note">Das Scheme bleibt neben annotationRoles bestehen, weil kein Wert der Finanzschicht im Bestand als Datums- oder Ortsrolle auftritt und umgekehrt. Die beiden Ausnahmen sind erwähnt, das im eigenen Scheme relationQualifiers steht, und interpret, das als Rolle einer Detailangabe keinen Finanzposten bezeichnet und als Erfassungsfehler zu prüfen ist.</p>
+        <div class="page__wide">
+        <table class="page__table page__table--concepts">
+        <thead><tr><th>Begriff</th><th>Anzeigelabel</th><th>Englisch</th><th>Definition</th></tr></thead><tbody>
+        <tr><td><code>m3gim-vocab:performanceFee</code></td><td>abendgage</td><td>performance fee</td><td>Honorar für einen einzelnen Auftritt.</td></tr>
+        <tr><td><code>m3gim-vocab:commission</code></td><td>provision</td><td>commission</td><td>Anteil der Agentur oder der Vermittlung an einer Vergütung.</td></tr>
+        <tr><td><code>m3gim-vocab:totalRemuneration</code></td><td>gesamtvergütung</td><td>total remuneration</td><td>Summe der Vergütung eines Engagements oder eines Vertrags.</td></tr>
+        <tr><td><code>m3gim-vocab:travelExpenses</code></td><td>reisekosten</td><td>travel expenses</td><td>Erstattete oder vereinbarte Kosten einer Reise.</td></tr>
+        <tr><td><code>m3gim-vocab:broadcastFee</code></td><td>rundfunkshonorar<span class="cell__alt">rundfunkhonorar</span></td><td>broadcast fee</td><td>Honorar für eine Rundfunkaufnahme oder eine Sendung.<span class="cell__note">Die Quelle führt die Tippform rundfunkshonorar, die unverändert durchgereicht wird. Die Umbenennung löst die IRI vom Tippfehler.</span></td></tr>
+        </tbody></table>
+        </div><!--/wide-->
+        <h3>Beziehungsqualifikatoren <span class="term__gloss">Relation qualifiers</span> <code>m3gim-vocab:relationQualifiers</code></h3>
+        <p>Bestimmtheitsgrad einer Aussage, unabhängig von der Art des Zielknotens.</p>
+        <p class="term__note">Die beiden Begriffe sagen nichts über die Art der Beziehung und alles über ihren Bestimmtheitsgrad. Sie treten an jedem Zieltyp auf; ein eigenes Scheme hält diese Querlage fest, statt sie einem der Sachschemes zuzuschlagen.</p>
+        <div class="page__wide">
+        <table class="page__table page__table--concepts">
+        <thead><tr><th>Begriff</th><th>Anzeigelabel</th><th>Englisch</th><th>Definition</th></tr></thead><tbody>
+        <tr><td><code>m3gim-vocab:mentioned</code></td><td>erwähnt</td><td>mentioned</td><td>Entität, die im Dokument genannt wird, ohne dass eine bestimmtere Rolle erschließbar ist.<span class="cell__note">Der Wert trennt den Fall erfasste Nennung von dem Fall keine Rolle erfasst. Wo die Quelle keine Rolle führt, bleibt der Knoten rollenlos.</span></td></tr>
+        <tr><td><code>m3gim-vocab:implicit</code></td><td>implizit</td><td>implicit</td><td>Bezug, der im Dokument nicht ausgesprochen, aber erschließbar ist.</td></tr>
+        </tbody></table>
+        </div><!--/wide-->
+        <h3>Dokumenttypen <span class="term__gloss">Documentary form types</span> <code>m3gim-vocab:documentaryFormTypes</code></h3>
+        <p>Hierarchisches Vokabular der Dokumenttypen des Bestands. Die Hierarchie erlaubt es, wahlweise granular nach Brief oder aggregiert nach Korrespondenz zu filtern.</p>
+        <p class="term__note">Die Werte werden über rico:hasDocumentaryFormType referenziert. RiC-O 1.1 erwartet dort ein Individuum der Klasse rico:DocumentaryFormType. Die Concepts tragen bislang nur skos:Concept. Ob sie zusätzlich als rico:DocumentaryFormType typisiert werden, ist eine offene Frage an das Projekt.</p>
+        <p class="term__note">Die Kanten der ersten Ebene auf m3gim-vocab:document folgen der Baumdarstellung in knowledge/data-model.md § 12. Die Pipeline erzeugt nur die Kanten der zweiten Ebene, sodass die Wurzel im Datensatz nicht erreichbar ist.</p>
+        <div class="page__wide">
+        <ul class="dft-tree"><li><span class="dft-tree__term"><span class="dft-tree__label">Dokument</span><code>m3gim-vocab:document</code><span class="term__gloss">document</span></span><span class="dft-tree__definition">Oberbegriff aller Dokumenttypen des Bestands.</span><ul><li><span class="dft-tree__term"><span class="dft-tree__label">Konvolut</span><code>m3gim-vocab:bundle</code><span class="term__gloss">bundle</span></span><span class="dft-tree__definition">Aggregierende Archiveinheit, deren Kinder auf Folioebene erschlossen sind.</span><span class="cell__note">Archivischer Fachterminus ohne festes englisches Gegenstück. Die Alternativen file und convolute sind mehrfach belegt beziehungsweise im englischen Archivwesen unüblich.</span></li><li><span class="dft-tree__term"><span class="dft-tree__label">Sammlung</span><code>m3gim-vocab:collection</code><span class="term__gloss">collection</span></span><span class="dft-tree__definition">Zusammenstellung mehrerer Dokumente unter einer Signatur.</span><span class="cell__note">Bewusst ohne skos:broader auf bundle, weil die Abgrenzung offen ist. Möglicherweise bezeichnet Konvolut den physischen Umschlag und Sammlung die thematische Zusammenstellung.</span></li><li><span class="dft-tree__term"><span class="dft-tree__label">Korrespondenz</span><code>m3gim-vocab:correspondence</code><span class="term__gloss">correspondence</span></span><span class="dft-tree__definition">Schriftwechsel zwischen zwei Parteien.</span><ul><li><span class="dft-tree__term"><span class="dft-tree__label">Brief</span><code>m3gim-vocab:letter</code><span class="term__gloss">letter</span></span></li><li><span class="dft-tree__term"><span class="dft-tree__label">Postkarte</span><code>m3gim-vocab:postcard</code><span class="term__gloss">postcard</span></span></li><li><span class="dft-tree__term"><span class="dft-tree__label">Telegramm</span><code>m3gim-vocab:telegram</code><span class="term__gloss">telegram</span></span></li><li><span class="dft-tree__term"><span class="dft-tree__label">Briefumschlag</span><code>m3gim-vocab:envelope</code><span class="term__gloss">envelope</span></span><span class="dft-tree__definition">Umschlag eines Korrespondenzstücks, der als eigenes Objekt erhalten ist und Absender oder Poststempel trägt.</span></li></ul></li><li><span class="dft-tree__term"><span class="dft-tree__label">Presse</span><code>m3gim-vocab:press</code><span class="term__gloss">press</span></span><span class="dft-tree__definition">Erzeugnis der Publizistik, das über die Nachlassbildnerin oder ihr Umfeld berichtet.</span><ul><li><span class="dft-tree__term"><span class="dft-tree__label">Zeitungsausschnitt</span><code>m3gim-vocab:newspaperClipping</code><span class="term__gloss">newspaper clipping</span></span></li><li><span class="dft-tree__term"><span class="dft-tree__label">Kritik</span><code>m3gim-vocab:critique</code><span class="term__gloss">critique</span></span><span class="cell__note">Kritik und Rezension tragen beide keine Definition und fallen im Englischen auf review zusammen. Ob die beiden Begriffe dasselbe meinen, lässt die Quelle offen; die Übersetzung ist fachlich strittig.</span></li><li><span class="dft-tree__term"><span class="dft-tree__label">Rezension</span><code>m3gim-vocab:review</code><span class="term__gloss">review</span></span></li><li><span class="dft-tree__term"><span class="dft-tree__label">Musikzeitschrift</span><code>m3gim-vocab:musicPeriodical</code><span class="term__gloss">music periodical</span></span></li></ul></li><li><span class="dft-tree__term"><span class="dft-tree__label">Programm</span><code>m3gim-vocab:program</code><span class="term__gloss">program</span></span><span class="dft-tree__definition">Drucksache zu einer Veranstaltung, die Besetzung und Ablauf verzeichnet.</span><span class="cell__note">Kanonischer Begriff des Astes (E-131). Die Gattungsnamen Programmheft und Konzertprogramm bleiben zulässige Quellwerte der Erfassung und lösen in der Zuordnungstabelle der Pipeline auf diesen Begriff auf.</span></li><li><span class="dft-tree__term"><span class="dft-tree__label">Biographisch</span><code>m3gim-vocab:biographical</code><span class="term__gloss">biographical</span></span><span class="dft-tree__definition">Dokument, das den Lebenslauf der Nachlassbildnerin darstellt.</span><ul><li><span class="dft-tree__term"><span class="dft-tree__label">Biographie</span><code>m3gim-vocab:biography</code><span class="term__gloss">biography</span></span></li><li><span class="dft-tree__term"><span class="dft-tree__label">Autobiografie</span><code>m3gim-vocab:autobiography</code><span class="term__gloss">autobiography</span></span></li><li><span class="dft-tree__term"><span class="dft-tree__label">Lebenslauf</span><code>m3gim-vocab:curriculumVitae</code><span class="term__gloss">curriculum vitae</span></span></li><li><span class="dft-tree__term"><span class="dft-tree__label">Chronik</span><code>m3gim-vocab:chronicle</code><span class="term__gloss">chronicle</span></span></li></ul></li><li><span class="dft-tree__term"><span class="dft-tree__label">Identitätsdokument</span><code>m3gim-vocab:identityDocument</code><span class="term__gloss">identity document</span></span><span class="dft-tree__definition">Dokument, das die Person ausweist, etwa für Reisen und Grenzübertritte.</span><ul><li><span class="dft-tree__term"><span class="dft-tree__label">Ausweis</span><code>m3gim-vocab:identityCard</code><span class="term__gloss">identity card</span></span></li></ul></li><li><span class="dft-tree__term"><span class="dft-tree__label">Vertrag</span><code>m3gim-vocab:contract</code><span class="term__gloss">contract</span></span><span class="dft-tree__definition">Vereinbarung über ein Engagement, eine Aufnahme oder eine Vermittlung.</span></li><li><span class="dft-tree__term"><span class="dft-tree__label">Plakat</span><code>m3gim-vocab:poster</code><span class="term__gloss">poster</span></span></li><li><span class="dft-tree__term"><span class="dft-tree__label">Fotografie</span><code>m3gim-vocab:photograph</code><span class="term__gloss">photograph</span></span></li><li><span class="dft-tree__term"><span class="dft-tree__label">Notiz</span><code>m3gim-vocab:note</code><span class="term__gloss">note</span></span></li><li><span class="dft-tree__term"><span class="dft-tree__label">Typoskript</span><code>m3gim-vocab:typescript</code><span class="term__gloss">typescript</span></span></li><li><span class="dft-tree__term"><span class="dft-tree__label">Photokopie</span><code>m3gim-vocab:photocopy</code><span class="term__gloss">photocopy</span></span><span class="cell__note">Der Wert bezeichnet die Vervielfältigungsform. Die Dokumentgattung bleibt damit unbestimmt. In RiC-O gehört diese Unterscheidung in die Instanziierung. Die Einordnung ist zu prüfen.</span></li><li><span class="dft-tree__term"><span class="dft-tree__label">Urkunde</span><code>m3gim-vocab:certificate</code><span class="term__gloss">certificate</span></span><span class="dft-tree__definition">Beglaubigtes Dokument, etwa ein Zeugnis oder eine Auszeichnung.</span></li><li><span class="dft-tree__term"><span class="dft-tree__label">Visitenkarte</span><code>m3gim-vocab:businessCard</code><span class="term__gloss">business card</span></span></li><li><span class="dft-tree__term"><span class="dft-tree__label">Quittung</span><code>m3gim-vocab:receipt</code><span class="term__gloss">receipt</span></span></li><li><span class="dft-tree__term"><span class="dft-tree__label">Noten</span><code>m3gim-vocab:sheetMusic</code><span class="term__gloss">sheet music</span></span><span class="dft-tree__definition">Notenmaterial eines Werks.</span></li><li><span class="dft-tree__term"><span class="dft-tree__label">Repertoireliste</span><code>m3gim-vocab:repertoireList</code><span class="term__gloss">repertoire list</span></span><span class="dft-tree__definition">Aufstellung der einstudierten Partien und Werke.</span></li><li><span class="dft-tree__term"><span class="dft-tree__label">Verzeichnis</span><code>m3gim-vocab:inventory</code><span class="term__gloss">inventory</span></span><span class="dft-tree__definition">Aufstellung von Objekten oder Personen, die kein Repertoire verzeichnet.</span></li><li><span class="dft-tree__term"><span class="dft-tree__label">Tagebuch</span><code>m3gim-vocab:diary</code><span class="term__gloss">diary</span></span></li><li><span class="dft-tree__term"><span class="dft-tree__label">Tonträger</span><code>m3gim-vocab:soundCarrier</code><span class="term__gloss">sound carrier</span></span><span class="dft-tree__definition">Physischer Träger einer Aufnahme, etwa eine Schellackplatte.</span></li><li><span class="dft-tree__term"><span class="dft-tree__label">Sonstiges</span><code>m3gim-vocab:other</code><span class="term__gloss">other</span></span><span class="dft-tree__definition">Auffangwert für Dokumente, die keinem der geführten Typen entsprechen.</span></li></ul></li></ul>
+        </div><!--/wide-->
+      </section>
+      <section class="page__section">
+        <h2>Collections</h2>
+        <p>Sammlungen nach dem Ziel, an dem eine Rolle im Datensatz auftritt. Eine Rolle kann in mehreren Sammlungen stehen, weil dieselbe Spalte verschiedene Zieltypen bedient.</p>
+        <div class="term">
+          <h4 class="term__head"><code>m3gim-vocab:rolesAtPersons</code><span class="term__label">Rollen an Personen</span><span class="term__gloss">roles at persons</span></h4>
+          <p class="term__definition">Rollen, die im Datensatz an einer Person stehen.</p>
+          <p class="term__members"><code>m3gim-vocab:author</code> <code>m3gim-vocab:addressee</code> <code>m3gim-vocab:sender</code> <code>m3gim-vocab:recipient</code> <code>m3gim-vocab:signatory</code> <code>m3gim-vocab:depicted</code> <code>m3gim-vocab:artistAgent</code> <code>m3gim-vocab:commissioner</code> <code>m3gim-vocab:dedicatee</code> <code>m3gim-vocab:holder</code> <code>m3gim-vocab:publisher</code> <code>m3gim-vocab:contractingParty</code> <code>m3gim-vocab:singer</code> <code>m3gim-vocab:conductor</code> <code>m3gim-vocab:director</code> <code>m3gim-vocab:composer</code> <code>m3gim-vocab:librettist</code> <code>m3gim-vocab:translator</code> <code>m3gim-vocab:arranger</code> <code>m3gim-vocab:chorusMaster</code> <code>m3gim-vocab:choreographer</code> <code>m3gim-vocab:setDesigner</code> <code>m3gim-vocab:costumeDesigner</code> <code>m3gim-vocab:productionDesigner</code> <code>m3gim-vocab:stageManager</code> <code>m3gim-vocab:technicalDirector</code> <code>m3gim-vocab:unspecifiedDirection</code> <code>m3gim-vocab:lightingTechnician</code> <code>m3gim-vocab:makeupArtist</code> <code>m3gim-vocab:repetiteur</code> <code>m3gim-vocab:assistantDirector</code> <code>m3gim-vocab:photographer</code> <code>m3gim-vocab:performer</code> <code>m3gim-vocab:protagonist</code> <code>m3gim-vocab:audienceMember</code> <code>m3gim-vocab:organizer</code> <code>m3gim-vocab:performance</code> <code>m3gim-vocab:mentioned</code></p>
+        </div>
+        <div class="term">
+          <h4 class="term__head"><code>m3gim-vocab:rolesAtCorporateBodies</code><span class="term__label">Rollen an Institutionen</span><span class="term__gloss">roles at corporate bodies</span></h4>
+          <p class="term__definition">Rollen, die im Datensatz an einer Körperschaft stehen.</p>
+          <p class="term__members"><code>m3gim-vocab:author</code> <code>m3gim-vocab:addressee</code> <code>m3gim-vocab:recipient</code> <code>m3gim-vocab:intermediary</code> <code>m3gim-vocab:publisher</code> <code>m3gim-vocab:contractingParty</code> <code>m3gim-vocab:employer</code> <code>m3gim-vocab:organizer</code> <code>m3gim-vocab:educationalInstitution</code> <code>m3gim-vocab:airline</code> <code>m3gim-vocab:performance</code> <code>m3gim-vocab:guestPerformance</code> <code>m3gim-vocab:framingEvent</code> <code>m3gim-vocab:receiving</code> <code>m3gim-vocab:performancePlace</code> <code>m3gim-vocab:destinationPlace</code> <code>m3gim-vocab:mentioned</code></p>
+        </div>
+        <div class="term">
+          <h4 class="term__head"><code>m3gim-vocab:rolesAtGroups</code><span class="term__label">Rollen an Ensembles</span><span class="term__gloss">roles at groups</span></h4>
+          <p class="term__definition">Rollen, die im Datensatz an einer Gruppe stehen.</p>
+          <p class="term__members"><code>m3gim-vocab:singer</code> <code>m3gim-vocab:performer</code> <code>m3gim-vocab:performance</code> <code>m3gim-vocab:guestPerformance</code> <code>m3gim-vocab:mentioned</code></p>
+        </div>
+        <div class="term">
+          <h4 class="term__head"><code>m3gim-vocab:rolesAtPlaces</code><span class="term__label">Rollen an Orten</span><span class="term__gloss">roles at places</span></h4>
+          <p class="term__definition">Rollen, die im Datensatz an einer Verortung stehen.</p>
+          <p class="term__note">Verortung und Datierung hängen seit der Zusammenführung an derselben Klasse. Die beiden Sammlungen unterscheiden sich jetzt danach, welche Wertproperty am Annotationsknoten belegt ist, m3gim-ontology:atPlace gegen m3gim-ontology:atDate.</p>
+          <p class="term__members"><code>m3gim-vocab:dressRehearsal</code> <code>m3gim-vocab:recording</code> <code>m3gim-vocab:reception</code> <code>m3gim-vocab:guestPerformance</code> <code>m3gim-vocab:framingEvent</code> <code>m3gim-vocab:creation</code> <code>m3gim-vocab:dispatch</code> <code>m3gim-vocab:receiving</code> <code>m3gim-vocab:departure</code> <code>m3gim-vocab:performancePlace</code> <code>m3gim-vocab:destinationPlace</code> <code>m3gim-vocab:contractPlace</code> <code>m3gim-vocab:residencePlace</code> <code>m3gim-vocab:assignment</code> <code>m3gim-vocab:mentioned</code></p>
+        </div>
+        <div class="term">
+          <h4 class="term__head"><code>m3gim-vocab:mobilityPlaceRoles</code><span class="term__label">Mobilitäts-Ortsrollen</span><span class="term__gloss">mobility place roles</span></h4>
+          <p class="term__definition">Ortsrollen, die für sich genommen ein Mobilitätsereignis belegen. Sie erzeugen zusätzlich zur Ortsreferenz einen Annotationsknoten ohne Datum, weil die Quelle keines hergibt und keines geraten wird.</p>
+          <p class="term__note">Einzige Sammlung, die die Pipeline liest.</p>
+          <p class="term__members"><code>m3gim-vocab:dispatch</code> <code>m3gim-vocab:receiving</code> <code>m3gim-vocab:departure</code> <code>m3gim-vocab:destinationPlace</code> <code>m3gim-vocab:contractPlace</code></p>
+        </div>
+        <div class="term">
+          <h4 class="term__head"><code>m3gim-vocab:rolesAtWorks</code><span class="term__label">Rollen an Werken</span><span class="term__gloss">roles at works</span></h4>
+          <p class="term__definition">Rollen, die im Datensatz an einem musikalischen Werk stehen.</p>
+          <p class="term__members"><code>m3gim-vocab:performance</code> <code>m3gim-vocab:premiere</code> <code>m3gim-vocab:revival</code> <code>m3gim-vocab:galaPerformance</code> <code>m3gim-vocab:rehearsal</code> <code>m3gim-vocab:recording</code> <code>m3gim-vocab:guestPerformance</code> <code>m3gim-vocab:repertoire</code> <code>m3gim-vocab:mentioned</code></p>
+        </div>
+        <div class="term">
+          <h4 class="term__head"><code>m3gim-vocab:rolesAtFramingEvents</code><span class="term__label">Rollen an Rahmenveranstaltungen</span><span class="term__gloss">roles at framing events</span></h4>
+          <p class="term__definition">Rollen, die im Datensatz an einer Rahmenveranstaltung stehen.</p>
+          <p class="term__members"><code>m3gim-vocab:organizer</code> <code>m3gim-vocab:performance</code> <code>m3gim-vocab:recording</code> <code>m3gim-vocab:framingEvent</code> <code>m3gim-vocab:performancePlace</code> <code>m3gim-vocab:mentioned</code></p>
+        </div>
+        <div class="term">
+          <h4 class="term__head"><code>m3gim-vocab:rolesAtDates</code><span class="term__label">Datumsrollen</span><span class="term__gloss">roles at dates</span></h4>
+          <p class="term__definition">Rollen, die im Datensatz an einer Datierung stehen.</p>
+          <p class="term__note">Die frühere Aufteilung dieser Rollen auf typisierte Datumsproperties und eine Auffangklasse ist entfallen. Jede Datierung hängt jetzt als Annotationsknoten am Dokument und trägt ihre Rolle in m3gim-ontology:role.</p>
+          <p class="term__members"><code>m3gim-vocab:performance</code> <code>m3gim-vocab:premiere</code> <code>m3gim-vocab:rehearsal</code> <code>m3gim-vocab:dressRehearsal</code> <code>m3gim-vocab:recording</code> <code>m3gim-vocab:reception</code> <code>m3gim-vocab:framingEvent</code> <code>m3gim-vocab:creation</code> <code>m3gim-vocab:dispatch</code> <code>m3gim-vocab:receiving</code> <code>m3gim-vocab:departure</code> <code>m3gim-vocab:issueDate</code> <code>m3gim-vocab:publicationDate</code> <code>m3gim-vocab:broadcastDate</code> <code>m3gim-vocab:transferDate</code> <code>m3gim-vocab:conversationDate</code> <code>m3gim-vocab:wageConfirmationDate</code> <code>m3gim-vocab:installmentPeriod</code> <code>m3gim-vocab:season</code> <code>m3gim-vocab:rehearsalStartDate</code> <code>m3gim-vocab:mentioned</code></p>
+        </div>
+        <div class="term">
+          <h4 class="term__head"><code>m3gim-vocab:rolesAtFinancialDetails</code><span class="term__label">Finanzrollen</span><span class="term__gloss">roles at financial details</span></h4>
+          <p class="term__definition">Rollen, die die Art eines Finanzpostens bezeichnen.</p>
+          <p class="term__members"><code>m3gim-vocab:performer</code> <code>m3gim-vocab:performanceFee</code> <code>m3gim-vocab:commission</code> <code>m3gim-vocab:totalRemuneration</code> <code>m3gim-vocab:travelExpenses</code> <code>m3gim-vocab:broadcastFee</code> <code>m3gim-vocab:mentioned</code></p>
+        </div>
+      </section>
+
+    </article>
+  </main>
+
+  <footer class="app-footer">
+    <a href="https://www.kug.ac.at" target="_blank" rel="noopener">KUG Graz</a>
+    <span>·</span>
+    <a href="impressum.html">Impressum</a>
+    <span>·</span>
+    <a href="https://github.com/DigitalHumanitiesCraft/m3gim" target="_blank" rel="noopener">GitHub</a>
+    <span>·</span>
+    <a href="https://lisa.gerda-henkel-stiftung.de/digitale_geschichte_pollin" target="_blank" rel="noopener">Promptotype</a>
+  </footer>
+
+</body>
+</html>

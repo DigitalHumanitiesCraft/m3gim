@@ -2,13 +2,13 @@
  * M3GIM Repertoire Tab — parallele Aggregat-Tabellen: Werke x Komponisten.
  *
  * Inline-Breakdown "ERW · AUFF · REP → Summe" pro Zeile. Records sind
- * gruppiert nach Rolle am Werk (erwaehnt vs. performance-ish) plus DFT-Typ
- * "repertoireliste". Klick auf eine Zeile oeffnet die Belegliste im Detail-
- * Panel rechts.
+ * gruppiert nach Rolle am Werk (erwaehnt vs. performance-ish) plus dem
+ * Dokumenttyp Repertoireliste. Klick auf eine Zeile oeffnet die Belegliste im
+ * Detail-Panel rechts.
  */
 
 import { el, clear } from '../utils/dom.js';
-import { formatSignatur, ensureArray } from '../utils/format.js';
+import { formatSignatur, ensureArray, roleIdOf } from '../utils/format.js';
 import { buildRoleChip } from './archive-inline-detail.js';
 import { navigateToView } from '../ui/router.js';
 
@@ -16,25 +16,27 @@ import { navigateToView } from '../ui/router.js';
 // Rollen-Partition
 // ---------------------------------------------------------------------------
 
-// Alle Performance-Rollen am Werk (Komposit: aufgefuehrt / auftritt / premiere etc.)
+// Alle Auffuehrungsrollen am Werk, geschluesselt mit der stabilen Concept-Id
+// des Vokabulars. Die abgeloeste Namensliste fuehrte auffuehrung, auftritt,
+// premiere, festvorstellung und wiederaufnahme; auffuehrung und auftritt sind
+// im zusammengefuehrten Modell ein Begriff.
 const PERFORMANCE_ROLES = new Set([
-  'auffuehrung', 'aufführung',
-  'premiere',
-  'festvorstellung',
-  'wiederaufnahme',
-  'auftritt',
+  'm3gim-vocab:performance',      // auffuehrung, auftritt
+  'm3gim-vocab:premiere',
+  'm3gim-vocab:galaPerformance',  // festvorstellung
+  'm3gim-vocab:revival',          // wiederaufnahme
 ]);
 
-const MENTION_ROLE = 'erwähnt';
+const MENTION_ROLE = 'm3gim-vocab:mentioned';
 
-// DFT-Typ, der einen Record als Repertoire-Eintrag kennzeichnet
-const REPERTOIRE_DFT = 'm3gim-dft:repertoireliste';
+// Dokumenttyp, der einen Record als Repertoire-Eintrag kennzeichnet
+const REPERTOIRE_DFT = 'm3gim-vocab:repertoireList';
 
 function roleCategory(role) {
-  const r = (role || '').trim().toLowerCase();
-  if (!r) return null;
-  if (r === MENTION_ROLE || r === 'erwaehnt') return 'erwaehnt';
-  if (PERFORMANCE_ROLES.has(r)) return 'auffuehrung';
+  const id = roleIdOf(role);
+  if (!id) return null;
+  if (id === MENTION_ROLE) return 'erwaehnt';
+  if (PERFORMANCE_ROLES.has(id)) return 'auffuehrung';
   return null;
 }
 
@@ -81,10 +83,10 @@ function aggregate(store) {
     const isRep = recordIsRepertoire(record);
 
     for (const subj of subjects) {
-      if (!subj || subj['@type'] !== 'm3gim:MusicalWork') continue;
+      if (!subj || subj['@type'] !== 'm3gim-ontology:MusicalWork') continue;
       const workName = subj.name || subj['skos:prefLabel'] || '';
       if (!workName) continue;
-      const komponist = subj.komponist || null;
+      const komponist = subj.composer || null;
       const category = roleCategory(subj.role);
 
       const workTally = ensureTally(works, workName);

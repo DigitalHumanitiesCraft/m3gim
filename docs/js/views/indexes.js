@@ -451,7 +451,7 @@ function buildRelationBadges(relations) {
     const label = AGRELON_LABELS[type] || type.replace(/^agrelon:Has/, '');
     const count = rels.length;
     const first = rels[0];
-    const tipParts = [`Beleg: ${first.recordId.replace(/^m3gim:/, '')}`];
+    const tipParts = [`Beleg: ${first.recordId.replace(/^m3gim-data:/, '')}`];
     if (first.xlsxSource && first.xlsxSource.row) {
       tipParts.push(`Quelle: ${first.xlsxSource.sheet || 'XLSX'} Zeile ${first.xlsxSource.row}`);
     }

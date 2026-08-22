@@ -381,7 +381,7 @@ def main() -> int:
                                      has_text="Ort & Ereignis")
                 ).first
                 ort_text = ort_block.inner_text() if ort_block.count() else ""
-                has_zielort = "ZIELORT" in ort_text or "ABSENDEORT" in ort_text
+                has_zielort = "ZIELORT" in ort_text or "ABSENDUNG" in ort_text
                 has_dash = "—" in ort_text   # em dash fuer datumslos
                 if has_zielort and has_dash:
                     results.append(("OK", "anchor:NIM_004_1:ortsrolle-chip  ",

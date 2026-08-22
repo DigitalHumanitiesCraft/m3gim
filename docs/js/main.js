@@ -17,6 +17,8 @@ import { renderRepertoire, repertoireAggregate } from './views/repertoire.js';
 import { renderBiogramm, biogrammData } from './views/biogram.js';
 import { renderNetzwerk, netzwerkAggregate } from './views/network.js';
 import { renderVerknuepfungen, verknuepfungenAggregate } from './views/verknuepfungen.js';
+import { ensureArray } from './utils/format.js';
+import { extractXlsxSource } from './utils/provenance.js';
 import { IS_DEV } from './utils/env.js';
 
 let store = null;
@@ -226,24 +228,21 @@ function logStoreSummary(s) {
   const wdP = wdCount(s.persons), wdO = wdCount(s.organizations);
   const wdL = wdCount(s.locations), wdW = wdCount(s.works);
 
-  // Provenance-Coverage
+  // Provenance-Coverage. Die Zeilenherkunft liest ueberall extractXlsxSource,
+  // damit das Format nur an einer Stelle festgelegt ist.
   let recProv = 0, nestedTotal = 0, nestedProv = 0;
   for (const rec of s.allRecords) {
-    if (rec['m3gim:xlsxSource']) recProv++;
-    const details = rec['m3gim:hasDetail'];
-    const detailList = Array.isArray(details) ? details : (details ? [details] : []);
-    for (const d of detailList) {
-      if (d && d['@type'] === 'm3gim:DetailAnnotation') {
+    if (extractXlsxSource(rec)) recProv++;
+    for (const d of ensureArray(rec['m3gim-ontology:hasDetail'])) {
+      if (d && d['@type'] === 'm3gim-ontology:Annotation') {
         nestedTotal++;
-        if (d['m3gim:xlsxSource']) nestedProv++;
+        if (extractXlsxSource(d)) nestedProv++;
       }
     }
-    const rels = rec['m3gim:agentRelation'];
-    const relList = Array.isArray(rels) ? rels : (rels ? [rels] : []);
-    for (const r of relList) {
+    for (const r of ensureArray(rec['m3gim-ontology:hasAgentRelation'])) {
       if (r) {
         nestedTotal++;
-        if (r['m3gim:xlsxSource']) nestedProv++;
+        if (extractXlsxSource(r)) nestedProv++;
       }
     }
   }
@@ -265,14 +264,15 @@ function logStoreSummary(s) {
   console.group('%cv2-Store-Maps (Phase 6)', 'color: #8B3A3A; font-weight: bold');
   console.table({
     'dftHierarchy':      { size: s.dftHierarchy.size,   beschreibung: 'SKOS-Concepts mit broader+children' },
-    'mobilityEvents':    { size: s.mobilityEvents.size, beschreibung: 'SpatiotemporalEvents (Top-Level)' },
-    'recordToEvents':    { size: s.recordToEvents.size, beschreibung: 'Records mit STE-Refs' },
+    'annotations':       { size: s.annotations.size,    beschreibung: 'Annotationen: Datierung, Verortung oder beides' },
+    'mobilityEvents':    { size: s.mobilityEvents.size, beschreibung: 'davon verortet' },
+    'recordToEvents':    { size: s.recordToEvents.size, beschreibung: 'Records mit verorteten Annotationen' },
     'agentRelations':    { size: s.agentRelations.size, beschreibung: 'Records mit AgRelOn-Einträgen' },
     'finances':          { size: s.finances.size,       beschreibung: 'Records mit Finanz-Details' },
   });
   console.groupEnd();
   console.log('%cTipp: window.m3gim.store greift auf alle Daten zu', 'color: gray; font-style: italic');
-  console.log('%c     window.m3gim.inspect("m3gim:NIM_007_5_1") zeigt Record-Details', 'color: gray; font-style: italic');
+  console.log('%c     window.m3gim.inspect("m3gim-data:NIM_007_5_1") zeigt Record-Details', 'color: gray; font-style: italic');
   console.groupEnd();
 }
 
@@ -280,10 +280,10 @@ function logStoreSummary(s) {
  * Exponiert den Store + Inspektionsfunktionen auf window — nur im DEV-Modus.
  * Ermöglicht manuelle Prüfung in der DevTools-Konsole:
  *   window.m3gim.store                   → kompletter Store
- *   window.m3gim.inspect('m3gim:NIM_007_5_1')  → Record mit allen v2-Maps
+ *   window.m3gim.inspect('m3gim-data:NIM_007_5_1')  → Record mit allen v2-Maps
  *   window.m3gim.finances()              → Alle Finanz-Einträge
  *   window.m3gim.agentRelations()        → Alle AgRelOn-Beziehungen
- *   window.m3gim.mobilityEvents()        → Alle SpatiotemporalEvents
+ *   window.m3gim.mobilityEvents()        → Alle verorteten Annotationen
  *   window.m3gim.dftTree()               → DFT-Hierarchie als Baum
  */
 function exposeDebug(s) {
@@ -318,7 +318,8 @@ function exposeDebug(s) {
     },
     mobilityEvents() {
       const rows = [...s.mobilityEvents.values()].map(e => ({
-        event: e.id, record: e.recordId, place: e.place, date: e.date, role: e.role,
+        annotation: e.id, record: e.recordId, place: e.place, date: e.date,
+        rolle: e.roleLabel, sicht: e.cluster || '', bezugsebene: e.scope || '',
       }));
       console.table(rows);
       return rows;
@@ -347,7 +348,7 @@ function exposeDebug(s) {
       const rows = [...s.mobilityEvents.values()]
         .filter(e => typeof e.placeLat === 'number' && typeof e.placeLon === 'number')
         .map(e => ({
-          event: e.id, record: e.recordId, place: e.place, date: e.date,
+          annotation: e.id, record: e.recordId, place: e.place, date: e.date,
           lat: e.placeLat, lon: e.placeLon, country: e.placeCountry || '',
         }));
       console.table(rows);
@@ -375,17 +376,21 @@ function exposeDebug(s) {
       const rec = s.records.get(recordId) || s.bySignatur.get(recordId);
       if (!rec) return { error: `Kein Record ${recordId}` };
       const rows = [];
-      const src = rec['m3gim:xlsxSource'];
-      if (src) rows.push({ field: 'record', sheet: src['m3gim:xlsxSheet'], row: src['m3gim:xlsxRow'], datenpunkt: src['m3gim:datenpunktId'] || '' });
-      const details = Array.isArray(rec['m3gim:hasDetail']) ? rec['m3gim:hasDetail'] : (rec['m3gim:hasDetail'] ? [rec['m3gim:hasDetail']] : []);
-      for (const d of details) {
-        const s2 = d && d['m3gim:xlsxSource'];
-        if (s2) rows.push({ field: `detail:${d['m3gim:detailField'] || '?'}`, sheet: s2['m3gim:xlsxSheet'], row: s2['m3gim:xlsxRow'], datenpunkt: s2['m3gim:datenpunktId'] || '' });
+      const row = (field, src) => {
+        if (src) rows.push({ field, sheet: src.sheet || '', row: src.row, datenpunkt: src.datenpunkt || '' });
+      };
+      row('record', extractXlsxSource(rec));
+      for (const d of ensureArray(rec['m3gim-ontology:hasDetail'])) {
+        row(`detail:${(d && d['m3gim-ontology:detailField']) || '?'}`, extractXlsxSource(d));
       }
-      const rels = Array.isArray(rec['m3gim:agentRelation']) ? rec['m3gim:agentRelation'] : (rec['m3gim:agentRelation'] ? [rec['m3gim:agentRelation']] : []);
-      for (const r of rels) {
-        const s2 = r && r['m3gim:xlsxSource'];
-        if (s2) rows.push({ field: `agrelon:${r['@type'] || '?'}`, sheet: s2['m3gim:xlsxSheet'], row: s2['m3gim:xlsxRow'], datenpunkt: s2['m3gim:datenpunktId'] || '' });
+      for (const r of ensureArray(rec['m3gim-ontology:hasAgentRelation'])) {
+        row(`agrelon:${(r && r['@type']) || '?'}`, extractXlsxSource(r));
+      }
+      // Die Annotationen haengen als eigene Knoten am Graph; ihre Herkunft
+      // liegt im Store bereits normalisiert vor.
+      for (const aid of (s.recordToAnnotations.get(rec['@id']) || [])) {
+        const a = s.annotations.get(aid);
+        if (a) row(`annotation:${a.roleLabel || '?'}`, a.xlsxSource);
       }
       console.table(rows);
       return rows;
