@@ -192,7 +192,7 @@ Für die Designhaltung hinter diesen Sichten (Rolle-Prefix-Chips als universelle
 
 ## Offene Entscheidungen
 
-Dieses Kapitel ist die einzige Adresse für Entscheidungen, die noch offen sind. [architecture-decisions.md](architecture-decisions.md) führt die getroffenen Entscheidungen und verweist für die offenen hierher. Jeder Punkt nennt den Gegenstand, den geprüften Stand, die Folge der Offenheit und die Stelle, an der die ausführliche Grundlage steht. Die vier Wurzelentscheidungen vom 2026-08-22 ([plan.md](plan.md) § 1) stehen hier nicht mehr, weil alles, was sie beantworten, entschieden ist. Jeder Punkt ist am 2026-08-22 gegen Code, Vokabular oder den ausgelieferten Datensatz geprüft.
+Dieses Kapitel ist die einzige Adresse für Entscheidungen, die noch offen sind. [architecture-decisions.md](architecture-decisions.md) führt die getroffenen Entscheidungen und verweist für die offenen hierher. Jeder Punkt nennt den Gegenstand, den geprüften Stand, die Folge der Offenheit und die Stelle, an der die ausführliche Grundlage steht. Die vier Wurzelentscheidungen vom 2026-08-22 (E-136 bis E-139) stehen hier nicht mehr, weil alles, was sie beantworten, entschieden ist. Jeder Punkt ist am 2026-08-22 gegen Code, Vokabular oder den ausgelieferten Datensatz geprüft.
 
 ### Datenmodell und Vokabular
 
@@ -234,7 +234,7 @@ Der Vertrag in [frontend-date-contract.md](../data/reports/frontend-date-contrac
 
 ### Repository
 
-- **Unversionierte Bestände in `data/_archive/`.** Der Ordner bleibt vorerst stehen, weil Dateien darin unversioniert sind, darunter die Originaldateien der Institution; über sie entscheidet die Projektleitung gesondert. Am 2026-08-22 geprüft, git-getrackte und ignorierte Teile liegen dort nebeneinander. Solange offen, liegt Material außerhalb der Versionierung im Arbeitsverzeichnis, dessen Wiederbeschaffbarkeit nicht festgehalten ist. Grundlage in [plan.md](plan.md) § 3.
+- **Unversionierte Bestände in `data/_archive/`.** Der Ordner bleibt vorerst stehen, weil Dateien darin unversioniert sind, darunter die Originaldateien der Institution; über sie entscheidet die Projektleitung gesondert. Am 2026-08-22 geprüft, git-getrackte und ignorierte Teile liegen dort nebeneinander. Solange offen, liegt Material außerhalb der Versionierung im Arbeitsverzeichnis, dessen Wiederbeschaffbarkeit nicht festgehalten ist.
 
 ## Stand und nächste Schritte
 
