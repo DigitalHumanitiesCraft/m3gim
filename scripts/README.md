@@ -9,6 +9,9 @@ Google Sheets (XLSX in data/google-spreadsheet/)
   -> transform.py    -> data/output/m3gim.jsonld
   -> reconcile.py    -> data/output/wikidata-reconciliation.json
   -> build-views.py  -> data/output/views/*.json
+
+vocab/m3gim.ttl
+  -> build-model-page.py -> docs/datenmodell.html
 ```
 
 ## Abhaengigkeiten

@@ -161,9 +161,9 @@ Das Feld `typ` wird immer zuerst gewählt, es bestimmt, welche Rollen verfügbar
 | ereignis | rahmenveranstaltung, premiere, auftritt, probe, implizit |
 | werk | interpret, gastspiel, aufführung |
 | ort, datum | gastspiel, probe, generalprobe |
-| einnahmen, währung | abendgage, provision, gesamtvergütung, reisekosten, rundfunkhonorar, dépôt, transfer (vollständiger detailRole-Katalog in [data.md](data.md) § 11) |
-| ausgaben, währung | abendgage, provision, gesamtvergütung, reisekosten, rundfunkhonorar, dépôt, transfer (vollständiger detailRole-Katalog in [data.md](data.md) § 11) |
-| summe, währung | abendgage, provision, gesamtvergütung, reisekosten, rundfunkhonorar, dépôt, transfer (vollständiger detailRole-Katalog in [data.md](data.md) § 11) |
+| einnahmen, währung | abendgage, provision, gesamtvergütung, reisekosten, rundfunkhonorar, dépôt, transfer (vollständiger detailRole-Katalog in [data-model.md](data-model.md) § 11) |
+| ausgaben, währung | abendgage, provision, gesamtvergütung, reisekosten, rundfunkhonorar, dépôt, transfer (vollständiger detailRole-Katalog in [data-model.md](data-model.md) § 11) |
+| summe, währung | abendgage, provision, gesamtvergütung, reisekosten, rundfunkhonorar, dépôt, transfer (vollständiger detailRole-Katalog in [data-model.md](data-model.md) § 11) |
 | detail | Feldname frei wählbar (Schicht 3) |
 
 Beim Werk steht `aufführung` für die eigenständige Aufführung eines Werkes und `gastspiel` für die in der Quelle ausdrücklich als Gastspiel bezeichnete Aufführung mit festem Ensemble. Eine Gruppe von mehr als zwei musizierenden Personen wird über den Typ `ensemble` erfasst. Eine Bühnenrolle wird zusammen mit ihrer interpretierenden Person geführt.
@@ -172,7 +172,7 @@ Das vollständige, im Modell ausdifferenzierte Rollenvokabular mit seinem Belegs
 
 ### Auftritte bündeln (`datenpunkt_id`)
 
-Beschreibt ein Dokument mehrere Auftritte, gehören seine Zeilen nicht alle gleichberechtigt zum Dokument, sondern je zu einem Auftritt. Die Spalte `datenpunkt_id` hält diese Zugehörigkeit fest, damit rekonstruierbar bleibt, wer was in welchem Auftritt getan hat, und nicht nur, dass etwas im Dokument vorkommt. Das Modell bildet jede so gebündelte Gruppe als ein Vorkommnis ab (`m3gim:Occurrence`, [data.md](data.md) § 4 und 7).
+Beschreibt ein Dokument mehrere Auftritte, gehören seine Zeilen nicht alle gleichberechtigt zum Dokument, sondern je zu einem Auftritt. Die Spalte `datenpunkt_id` hält diese Zugehörigkeit fest, damit rekonstruierbar bleibt, wer was in welchem Auftritt getan hat, und nicht nur, dass etwas im Dokument vorkommt. Das Modell bildet jede so gebündelte Gruppe heute als eine Aufführung ab (`m3gim-ontology:Performance`, [data-model.md](data-model.md) § 7); der eigene Vorkommnis-Term ist mit E-125 entschieden und noch nicht umgesetzt, siehe [data.md](data.md) § 4.
 
 Die Konvention kennt die folgenden Werte.
 

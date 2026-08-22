@@ -41,6 +41,7 @@ python scripts/transform.py       # XLSX nach JSON-LD          -> data/output/m3
 python scripts/build-views.py     # Derivate aus dem JSON-LD   -> data/output/views/*.json, Kopie nach docs/data/
 python scripts/audit-data.py      # Abgleich XLSX / JSON-LD / Views, nur Konsolenreport
 python scripts/report-quality.py  # laufende Zählstände        -> data/reports/quality-snapshot.md
+python scripts/build-model-page.py # Modellseite aus dem Vokabular -> docs/datenmodell.html
 ```
 
 `reconcile.py` und `enrich-wikidata.py` stehen außerhalb dieses Laufs. Sie brauchen Netzzugriff, schreiben `wikidata-reconciliation.json` und `wikidata-enrichment.json` nach `data/output/` und laufen nur, wenn der Wikidata-Abgleich neu gezogen wird. Beide Ergebnisdateien sind git-getrackt und im normalen Klon vorhanden.

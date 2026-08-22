@@ -82,7 +82,7 @@ CSS-Dateien unter `docs/css/`: `variables`, `base`, `components`, `archiv`, `ind
 
 ### Info-Seiten (statisches HTML)
 
-Content-Seiten (`about.html`, `projekt.html`, `modell.html`, `hilfe.html`, `impressum.html`). Einheitliches Template: `info-header`, `info-nav`, `info-main`, `info-footer`. Lesebreite 720px, Source Serif 4 für Titel.
+Content-Seiten (`about.html`, `projekt.html`, `datenmodell.html`, `impressum.html`); `datenmodell.html` wird von `scripts/build-model-page.py` aus dem Vokabular erzeugt und nie von Hand geschrieben. Einheitliches Template: `info-header`, `info-nav`, `info-main`, `info-footer`. Lesebreite 720px, Source Serif 4 für Titel.
 
 ## Routing
 

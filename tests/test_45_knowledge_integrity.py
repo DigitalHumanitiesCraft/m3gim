@@ -190,7 +190,14 @@ def test_no_dead_document_references_in_code():
 # Wissensdokument. Wird der Abschnitt in ein anderes Dokument verschoben oder
 # umnummeriert, zeigt der Verweis auf einen Abschnitt, den es dort nicht gibt.
 # Der Dateiname existiert weiterhin, der vorige Test greift also nicht.
-SECTION_REF = re.compile(r"\b([a-z0-9][a-z0-9._-]*\.md)\s*§\s*(\d{1,2})\b", re.I)
+# Die zusammengesetzte Form "Paragraph 4 und 7" nennt zwei Abschnitte in
+# einem Verweis. Ohne die Fortsetzung wird nur der erste geprueft, und der
+# zweite kann unbemerkt ins Leere zeigen.
+SECTION_REF = re.compile(
+    r"\b([a-z0-9][a-z0-9._-]*\.md)[)\]`]*\s*§+\s*(\d{1,2})"
+    r"((?:\s*(?:,|und|and|bis)\s*\d{1,2})*)",
+    re.I,
+)
 
 
 def _sections_by_document():
@@ -224,13 +231,15 @@ def test_section_references_resolve():
         except (UnicodeDecodeError, OSError):
             continue
         for lineno, line in enumerate(text.splitlines(), start=1):
-            for doc, number in SECTION_REF.findall(line):
+            for doc, first, more in SECTION_REF.findall(line):
                 if doc not in sections:
                     continue
-                if int(number) not in sections[doc]:
-                    wrong[f"{doc} § {number}"].append(
-                        f"{path.relative_to(REPO_ROOT)}:{lineno}"
-                    )
+                numbers = [int(first)] + [int(n) for n in re.findall(r"\d{1,2}", more)]
+                for number in numbers:
+                    if number not in sections[doc]:
+                        wrong[f"{doc} § {number}"].append(
+                            f"{path.relative_to(REPO_ROOT)}:{lineno}"
+                        )
     assert not wrong, (
         "Abschnittsverweise, die im genannten Dokument nicht existieren: "
         f"{ {k: v[:3] for k, v in sorted(wrong.items())} }"
