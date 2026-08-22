@@ -34,6 +34,7 @@ import {
   aggregatePlaces, aggregateCountries,
   aggregateDocTypes, aggregateAgentRelations, aggregateRelationPartners,
   aggregatePersonRollen, aggregateComposers, aggregateFinances,
+  aggregateCatalogueGaps,
 } from './statistics-data.js';
 
 // KUG-Blau als monochrome Leitfarbe; sequenzielle Abstufung fuer Long-Tail-Bars.
@@ -74,6 +75,7 @@ const SECTIONS = [
   { id: 'personen',      group: 'Werk & Bestand', label: 'Personen',           events: false, build: buildPersonenSection },
   { id: 'dokumenttypen', group: 'Werk & Bestand', label: 'Dokumenttypen',      events: false, build: buildBestandSection },
   { id: 'finanzen',      group: 'Werk & Bestand', label: 'Finanzen',           events: false, build: buildFinanzenSection },
+  { id: 'erschliessung', group: 'Werk & Bestand', label: 'Erschließungsstand', events: false, build: buildErschliessungSection },
 ];
 
 const SECTION_BY_ID = new Map(SECTIONS.map(s => [s.id, s]));
@@ -854,6 +856,58 @@ function buildLegendItem(d, idx, total, setActive) {
  * Horizontale Bar-Liste. rows: [{label, value, href?, color?, onClick?, extraHref?}].
  * Keine Prozent, kein Bearbeitungsstand-Vokabular.
  */
+// ---------------------------------------------------------------------------
+// § Werk & Bestand — Erschliessungsstand
+// ---------------------------------------------------------------------------
+
+/**
+ * Was am Bestand erschlossen ist und was nicht, als Arbeitsliste.
+ *
+ * Der Forschungsrahmen fuehrt diesen Use Case fuer die Erschliessungs-Persona.
+ * Die Sicht zeigt beide Seiten derselben Zahl: den Balken der belegten
+ * Dokumente und daneben die Zahl der fehlenden, weil erst die zweite Zahl
+ * sagt, wo Arbeit liegt. Der Aufriss nach Konvolut macht daraus ein
+ * Arbeitspaket, das duennste Konvolut steht oben.
+ */
+function buildErschliessungSection(store) {
+  const section = el('section', { className: 'stat-section' });
+  section.appendChild(el('h3', { className: 'stat-section__title' }, 'Erschließungsstand'));
+
+  const gaps = aggregateCatalogueGaps(store);
+  section.appendChild(el('p', { className: 'stat-subsection__note' },
+    `${gaps.total} Dokumente · ${gaps.none} ohne jede Erschließungsachse`));
+
+  const axisWrap = el('div', { className: 'stat-subsection' });
+  axisWrap.appendChild(el('h4', { className: 'stat-subsection__title' },
+    'Belegte Achsen'));
+  // Die Gegenzahl steht neben dem Balken: ein Balken allein liest sich als
+  // Erfolg, waehrend die offene Zahl die Arbeitsmenge ist.
+  axisWrap.appendChild(buildHorizontalBars(gaps.axes.map((a, i) => ({
+    label: a.label,
+    value: a.filled,
+    countText: `${a.filled} · ${a.missing} offen`,
+    color: blueShade(i, gaps.axes.length),
+    hrefTitle: `${a.missing} Dokumente ohne ${a.label}`,
+  }))));
+  section.appendChild(axisWrap);
+
+  const konvWrap = el('div', { className: 'stat-subsection' });
+  konvWrap.appendChild(el('h4', { className: 'stat-subsection__title' },
+    'Konvolute nach Erschließungsgrad'));
+  konvWrap.appendChild(el('p', { className: 'stat-subsection__note' },
+    'Aufsteigend: das am duennsten erschlossene Konvolut steht oben.'));
+  konvWrap.appendChild(buildHorizontalBars(gaps.byKonvolut.slice(0, 15).map(k => ({
+    label: `${k.label} (${k.total})`,
+    value: Math.round(k.share * 100),
+    countText: `${Math.round(k.share * 100)} %`,
+    color: 'var(--color-text-tertiary)',
+    hrefTitle: `${Math.round(k.share * 100)} % der möglichen Achsen belegt`,
+  }))));
+  section.appendChild(konvWrap);
+
+  return section;
+}
+
 function buildHorizontalBars(rows) {
   const list = el('ul', { className: 'stat-bars' });
   const max = rows.reduce((m, r) => Math.max(m, r.value), 0) || 1;
@@ -895,7 +949,10 @@ function buildHorizontalBars(rows) {
 
     li.appendChild(label);
     li.appendChild(track);
-    li.appendChild(el('span', { className: 'stat-bars__count' }, ext, String(row.value)));
+    // countText erlaubt einer Zeile, neben dem Balkenwert die Gegenzahl zu
+    // nennen; ein Balken allein liest sich als Erfolg.
+    li.appendChild(el('span', { className: 'stat-bars__count' }, ext,
+      row.countText != null ? String(row.countText) : String(row.value)));
     list.appendChild(li);
   }
   return list;

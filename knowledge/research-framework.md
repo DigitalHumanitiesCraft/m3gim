@@ -141,19 +141,22 @@ Wen bedient das Tool? Vorläufig aus FF1–FF4 und der Partner-Konstellation abg
 
 - **Kontext:** KUG-Forschungsteam, arbeitet an Mobilität und Wissensproduktion von Sängerinnen.
 - **Ziel:** Malaniuks Bewegungen, Auftrittsformen und Netzwerke als Evidenz für FF1/FF4 lesen und einzelne Befunde bis zur Quelle zurückverfolgen.
-- **Braucht:** Differenzierung der Auftrittsarten (Gastspiel vs. Engagement vs. Reise), räumlich-zeitliche Übersicht, Rücksprung in den belegenden Bestand. *(ausarbeiten: konkrete Aufgaben/Erwartungen aus der Partner-Rückmeldung)*
+- **Braucht:** Differenzierung der Auftrittsarten (Gastspiel vs. Engagement vs. Reise), räumlich-zeitliche Übersicht, Rücksprung in den belegenden Bestand.
+- **Aufgaben:** die Aufgaben 1 bis 5 im Abschnitt [Evaluation](#evaluation). Was die Partner-Rückmeldung an eigenen Erwartungen ergibt, kommt dort hinzu.
 
 ### P2 — DH-Methodikerin / Modelliererin
 
 - **Kontext:** Erschließung und Modellierung (RiC-O + m3gim + AgRelOn), prüft Praktikabilität und Skalierung (Machbarkeitsfrage oben).
 - **Ziel:** Erschließungsgrad, Datenlücken und Modell-Tragfähigkeit sichtbar machen.
-- **Braucht:** ehrliche Deckungsanzeigen (datiert/verortet/undatiert), Erschließungsspiegel, Provenienz. *(ausarbeiten)*
+- **Braucht:** ehrliche Deckungsanzeigen (datiert/verortet/undatiert), Erschließungsspiegel, Provenienz.
+- **Aufgaben:** die Aufgaben 6 bis 8 im Abschnitt [Evaluation](#evaluation).
 
 ### P3 — Erschließung / studentische Hilfskraft
 
 - **Kontext:** befüllt und korrigiert die Quell-Spreadsheets.
 - **Ziel:** sieht, welche Felder fehlen oder inkonsistent sind (z. B. fehlende `datenpunkt_id`, Namensvarianten).
-- **Braucht:** Rückmeldung aus dem Tool über Datenqualitätssignale. *(ausarbeiten)*
+- **Braucht:** Rückmeldung aus dem Tool über Datenqualitätssignale; die Erschließungssicht der Statistik und die Vorschlagsliste aus `scripts/propose-links.py` sind die beiden Stellen, an denen sie ankommt.
+- **Aufgaben:** die Aufgaben 9 und 10 im Abschnitt [Evaluation](#evaluation).
 
 ### P4 — Externe Nachnutzung / FWF-Folgestudie *(optional, ausarbeiten)*
 
@@ -209,14 +212,51 @@ Schema je Use Case: **FF-Bezug · Frage · benötigte Daten · UI-Baustein (Stan
 
 *(ausarbeiten: weitere UCs der Personas P2/P3, z. B. „Erschließungslücken finden", „Datenqualität prüfen".)*
 
-## Evaluation (ausarbeiten)
+## Evaluation
 
-Leitfrage: Macht das Tool die Forschungsfragen *beantwortbar*, und für wen?
+Leitfrage: Macht das Tool die Forschungsfragen *beantwortbar*, und für wen? Die Antwort fällt je Use Case, nicht für das Tool im Ganzen. Ein Use Case gilt als beantwortbar, wenn die Person aus der zugehörigen Persona ihre Aufgabe ohne Hilfestellung löst und den Befund bis zum belegenden Dokument zurückverfolgen kann.
 
-- **Methoden (Optionen):** aufgabenbasierter Walkthrough mit P1 (je UC eine Aufgabe, gelingt/scheitert), Think-aloud, kurzes Experten-Feedback zur Partner-Runde; für P2/P3 Erschließungs- und Datenqualitäts-Checks.
-- **Kriterien (Optionen):** Aufgabenerfolg je UC; Nachvollziehbarkeit (führt der Befund zur Quelle?); Ehrlichkeit (werden Lücken sichtbar statt kaschiert?); Datendeckung je UC (verortet/datiert/benannt).
-- **Datengetriebene Checks:** Deckungsquoten je UC aus dem Live-Store (teilweise als Captions sichtbar); Smoke-Stempel als maschinenlesbarer Zustand.
-- *(ausarbeiten: Aufgabenset je Persona, Erfolgsmaße, wann/mit wem evaluiert.)*
+### Aufgabenset
+
+Jede Aufgabe ist so formuliert, dass sie gelingt oder scheitert, ohne Zwischenstufe. Die Beobachtung hält fest, ob sie gelöst wurde, wie viele Fehlwege dabei entstanden und an welcher Stelle die Person stockte.
+
+Für die musikwissenschaftliche Forscherin (P1):
+
+1. Nenne die Orte, an denen ein Auftritt zwischen 1950 und 1955 belegt ist, und öffne für einen davon das belegende Dokument (UC-1).
+2. Zeige nur die Gastspiele und sage, wie viele der Auftrittsbelege damit wegfallen (UC-2).
+3. Nenne die Länder, in denen der Bestand Auftritte belegt, und sage, welches davon am dünnsten belegt ist (UC-3).
+4. Nenne eine benannte Beziehungsperson und das Dokument, das die Beziehung belegt (UC-4).
+5. Nenne drei Werke des Repertoires und sage, ob der Bestand für eines davon einen Ort nennt (UC-5).
+
+Für die Modelliererin (P2):
+
+6. Sage für eine beliebige Sicht, wie viele Dokumente des Bestands ihre Auswertung tragen, und wo diese Angabe steht.
+7. Finde ein Dokument, dessen Jahr nicht aus seinem eigenen Entstehungsdatum stammt, und sage, woher es kommt.
+8. Sage, welcher Rollenwert im Interface ohne eigenen Vokabularbegriff geführt wird.
+
+Für die Erschließung (P3):
+
+9. Nenne die drei am dünnsten erschlossenen Konvolute und die Achse, die dort am häufigsten fehlt.
+10. Nenne ein Dokument, dessen Titel einen Ort nennt, der nicht als Verknüpfung erfasst ist.
+
+### Erfolgsmaße
+
+- **Aufgabenerfolg.** Anteil der ohne Hilfestellung gelösten Aufgaben je Persona. Eine Aufgabe, die zwei von drei Personen scheitern lässt, benennt einen Interface-Mangel und keinen Einzelfall.
+- **Rücksprung zur Quelle.** Für jeden Befund, den eine Aufgabe erzeugt, muss der Weg zum belegenden Dokument in der Anwendung selbst liegen. Scheitert der Rücksprung, ist der Befund für eine Publikation unbrauchbar.
+- **Ehrlichkeit der Anzeige.** Nennt die Person von sich aus, dass eine Aussage auf einem Teil des Bestands beruht? Die Deckungsangabe an den entitätsgetriebenen Sichten und die Erschließungssicht sind die Stellen, an denen das ablesbar ist.
+- **Fehldeutung.** Jede Stelle, an der eine Person eine Zahl für eine Aussage über den Gesamtbestand hält, obwohl sie den erschlossenen Teil meint, zählt als Befund gegen die Anzeige.
+
+### Datengetriebene Vorprüfung
+
+Vor jedem Durchgang mit Personen läuft die maschinelle Prüfung, damit eine gescheiterte Aufgabe nicht auf einen Datenstand zurückgeht, der die Frage gar nicht tragen kann.
+
+- Die Deckung je Achse steht in der Erschließungssicht der Statistik; UC-1 bis UC-3 setzen eine belegte Zeit- und Ortsachse voraus, UC-4 eine benannte Beziehung, UC-5 einen Werkbezug.
+- Der Smoke-Stempel je Sicht hält den Zustand maschinenlesbar fest und ist die Abbruchbedingung: bricht eine Sicht, wird ihre Aufgabe nicht getestet.
+- Die aktuellen Zahlen stehen im [Quality-Snapshot](../data/reports/quality-snapshot.md), nicht in diesem Dokument.
+
+### Offen
+
+Zeitpunkt und Besetzung der Durchgänge sind Sache der Projektleitung. Ebenso offen ist, ob P4 (externe Nachnutzung) mit eigenen Aufgaben antritt oder erst mit der Folgestudie entsteht.
 
 ## Quellen
 
