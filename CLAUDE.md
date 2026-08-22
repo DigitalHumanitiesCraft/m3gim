@@ -141,8 +141,10 @@ Vollständiger Katalog der Pipeline-Workarounds (Header-Shifts, Finance-Currency
 data/
 ├── google-spreadsheet/   # Quelle (XLSX, git-tracked — 6 Dateien, ü-Umlaut)
 ├── output/               # Pipeline-Output (m3gim.jsonld, wikidata-*.json, views/)
-├── reports/              # exploration + validation reports
-└── _archive/             # historische Stände (v1-Snapshots, obsolete Dirs) — Stand: 2026-04-17
+├── reports/              # Kurationsbelege der Normdaten, Quality-Snapshot, offene
+│                         #   Entscheidungsvorlagen; die erzeugten Reports sind
+│                         #   nicht versioniert, ein Lauf stellt sie her
+└── _archive/             # historische Stände; die XLSX darin sind unversioniert
 ```
 
 **Datenfluss:** `data/google-spreadsheet/` → Pipeline → `data/output/m3gim.jsonld` → `docs/data/m3gim.jsonld` → Frontend-Loader.

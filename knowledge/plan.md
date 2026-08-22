@@ -81,6 +81,8 @@ Vor dem ersten Eingriff geschrieben, gegen den heutigen Stand laufen gelassen, d
 
 ## 3. Phasen
 
+Stand am 2026-08-22. Die Phasen 0 bis 3 sind abgeschlossen und gepusht. Zwei Abweichungen vom Plan haben sich beim Durchführen ergeben. Die vier Reconciliation-Unterlagen bleiben erhalten, weil `data/output/wikidata-reconciliation.json` sie je manuell freigegebener Kennung als Grundlage zitiert; sie sind Kurationsprovenienz der Forschungsdaten. Und `data/_archive/` bleibt vorerst stehen, weil siebzehn Dateien darin unversioniert sind, darunter die Originaldateien der Institution; über sie entscheidet die Projektleitung gesondert.
+
 ### Phase 0, Absicherung
 
 Ohne Agent. Die fünf Prüfungen aus Abschnitt 2 schreiben, die ersten drei sofort laufen lassen.
