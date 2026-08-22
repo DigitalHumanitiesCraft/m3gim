@@ -326,6 +326,19 @@ function sortFn(a, b, sort) {
   }
 }
 
+/**
+ * Undatiert-Markierung einer Bestandszeile. Reine Funktion, damit der
+ * Zeitanker pruefbar bleibt. Die Markierung haengt allein an `rico:date` am
+ * Record. Faellt dieser Traeger weg, gilt jeder Record als undatiert und die
+ * Datum-Spalte zeigt durchgehend "o. D.". Konvolut-Header tragen die
+ * Markierung nie, ihre Datumsspanne kommt aus konvolutMeta.
+ * @param {{record: object, isKonvolut?: boolean}} item
+ * @returns {boolean}
+ */
+export function isUndatedItem(item) {
+  return !item.isKonvolut && !item.record['rico:date'];
+}
+
 function renderRows(items) {
   currentItems = items;
   const tbody = document.getElementById('bestand-tbody');
@@ -405,7 +418,7 @@ function renderRows(items) {
     const displayDate = item.isKonvolut
       ? (meta?.dateDisplay || '')
       : (formatDate(r['rico:date']) || 'o.\u2009D.');
-    const isUndated = !item.isKonvolut && !r['rico:date'];
+    const isUndated = isUndatedItem(item);
 
     // Links: Konvolute show total with tooltip summary, Records show count or dash
     let linksDisplay, hasLinks, linksTooltip = '';

@@ -242,16 +242,20 @@ function draw() {
 }
 
 /**
- * Pro-Person-Jahresmenge aus den Records extrahieren. Wird einmal pro
- * renderNetzwerk() aufgebaut, damit der Zeitfilter schnell ist.
+ * Pro-Person-Jahresmenge aus den Records. Reine Funktion, damit der Zeitanker
+ * pruefbar bleibt. Die Jahre kommen ausschliesslich aus `rico:date` am Record.
+ * Faellt dieser Traeger weg, liefert die Funktion eine leere Map und keine
+ * Jahresspanne, und der Tab liefe bei aktivem Zeitfilter stumm leer.
+ * @param {object} store
+ * @returns {{personYears: Map<string, Set<number>>, yearRange: ?{min:number,max:number}}}
  */
-function buildPersonYearsIndex() {
-  _personYears = new Map();
+export function personYearsIndex(store) {
+  const personYears = new Map();
   let minY = Infinity, maxY = -Infinity;
-  for (const [name, entry] of _store.persons) {
+  for (const [name, entry] of store.persons) {
     const years = new Set();
     for (const rid of entry.records) {
-      const rec = _store.records.get(rid);
+      const rec = store.records.get(rid);
       if (!rec || !rec['rico:date']) continue;
       const m = /(\d{4})/.exec(String(rec['rico:date']));
       if (m) {
@@ -261,22 +265,42 @@ function buildPersonYearsIndex() {
         if (y > maxY) maxY = y;
       }
     }
-    if (years.size > 0) _personYears.set(name, years);
+    if (years.size > 0) personYears.set(name, years);
   }
-  if (Number.isFinite(minY) && Number.isFinite(maxY)) {
-    _yearRange = { min: minY, max: maxY };
-  }
+  const yearRange = (Number.isFinite(minY) && Number.isFinite(maxY))
+    ? { min: minY, max: maxY }
+    : null;
+  return { personYears, yearRange };
 }
 
-/** Liegt mindestens ein Record-Jahr der Person im Filter-Zeitfenster? */
-function personInTimeRange(name) {
-  if (_filters.yearFrom == null && _filters.yearTo == null) return true;
-  const ys = _personYears.get(name);
+/**
+ * Liegt mindestens ein Record-Jahr der Person im Zeitfenster? Rein, mit dem
+ * Index und der Gesamtspanne als Parameter.
+ * @param {Map<string, Set<number>>} personYears
+ * @param {{min:number,max:number}} yearRange - Gesamtspanne fuer offene Grenzen
+ * @param {string} name
+ * @param {{yearFrom: ?number, yearTo: ?number}} fenster
+ */
+export function personInTimeRange(personYears, yearRange, name, fenster) {
+  const { yearFrom = null, yearTo = null } = fenster || {};
+  if (yearFrom == null && yearTo == null) return true;
+  const ys = personYears.get(name);
   if (!ys) return false; // Keine datierten Records → bei aktivem Zeitfilter ausblenden
-  const from = _filters.yearFrom ?? _yearRange.min;
-  const to = _filters.yearTo ?? _yearRange.max;
+  const from = yearFrom ?? yearRange.min;
+  const to = yearTo ?? yearRange.max;
   for (const y of ys) if (y >= from && y <= to) return true;
   return false;
+}
+
+/**
+ * Modul-Bruecke: baut den Index einmal pro renderNetzwerk(), damit der
+ * Zeitfilter schnell ist. Die Gesamtspanne bleibt unveraendert, wenn der
+ * Datenstand keine liefert.
+ */
+function buildPersonYearsIndex() {
+  const { personYears, yearRange } = personYearsIndex(_store);
+  _personYears = personYears;
+  if (yearRange) _yearRange = yearRange;
 }
 
 /** Gemeinsamer Rechenkern, wird von layoutFor() und computeLayoutForCanvas() genutzt. */
@@ -368,7 +392,7 @@ function applyFilters() {
 function passesFilter(node) {
   const e = node.entry;
   if (e.records.size < _filters.minRecords) return false;
-  if (!personInTimeRange(node.name)) return false;
+  if (!personInTimeRange(_personYears, _yearRange, node.name, _filters)) return false;
   if (_filters.onlyWikidata && !(e.wikidata && String(e.wikidata).startsWith('wd:'))) return false;
   if (_filters.onlyAgRelOn && !(e.relations && e.relations.length > 0)) return false;
   if (_filters.hiddenCategories.size > 0) {

@@ -277,7 +277,7 @@ export const TYPED_DATE_PROPS = [
   'm3gim:absendedatum', 'm3gim:empfangsdatum', 'm3gim:gespraechsdatum',
   'm3gim:erscheinungsdatum', 'm3gim:ausstellungsdatum', 'm3gim:ausstrahlungsdatum',
   'm3gim:probenbeginn', 'm3gim:probendatum', 'm3gim:spielzeitVon',
-  'm3gim:ueberweisungsdatum', 'm3gim:abreisedatum',
+  'm3gim:ueberweisungsdatum', 'm3gim:abreisedatum', 'm3gim:erstelldatum',
 ];
 
 function firstTypedYear(record) {
