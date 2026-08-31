@@ -1,6 +1,5 @@
 """Referentielle Integrität innerhalb des JSON-LD-Graphen."""
 
-import re
 from collections import Counter
 
 
@@ -61,21 +60,62 @@ def test_no_orphan_records(records, konvolute, fonds):
 
 
 def test_folio_records_have_konvolut_parent(records, konvolute):
-    """Records mit _N_M-Suffix (Folios) haben einen Konvolut-Parent mit passender @id."""
-    konvolut_ids = {k["@id"] for k in konvolute}
-    orphan_folios = []
-    for r in records:
-        rid = r["@id"]
-        m = re.match(r"^(m3gim-data:[\w_]+)_\d+(_\d+)?$", rid)
-        if not m:
-            continue
-        parent = m.group(1)
-        # Kleiner Kunstgriff: manche Folios enden auf _N_M, manche auf _N
-        # Teste: es existiert ein Konvolut mit einer ID, die Präfix ist
-        if not any(rid.startswith(kid + "_") for kid in konvolut_ids):
-            # Nicht jeder _N ist ein Folio — nur flaggen wenn Parent existiert sollte
-            pass
-    # Soft-Test: wenn Konvolute existieren, haben sie Kinder
+    """Jeder Folio-Record haengt an dem Konvolut, dessen Signatur er traegt.
+
+    Die Objekt-ID eines Folios ist `archivsignatur + " " + folio`
+    (knowledge/data.md, Konvolut-Hierarchie). Ein Record, dessen
+    rico:identifier eine Folio-Angabe fuehrt, muss deshalb als
+    rico:hasOrHadPart an genau dem Konvolut haengen, das die blosse
+    Signatur traegt. Bricht der Test, haengt ein Folio am falschen oder an
+    keinem Konvolut, und die Bestandshierarchie im Frontend verliert es.
+    """
+    konvolut_by_ident = {}
     for k in konvolute:
-        parts = ensure_list(k.get("rico:hasOrHadPart"))
-        assert len(parts) > 0, f"Konvolut {k['@id']} ohne Kinder"
+        ident = str(k.get("rico:identifier") or "").strip()
+        if ident:
+            konvolut_by_ident[ident] = k["@id"]
+
+    parent_of = {}
+    for k in konvolute:
+        for part in ensure_list(k.get("rico:hasOrHadPart")):
+            if isinstance(part, dict) and part.get("@id"):
+                parent_of[part["@id"]] = k["@id"]
+
+    folio_records = [
+        r for r in records
+        if " " in str(r.get("rico:identifier") or "").strip()
+    ]
+    # Mindestvorkommen: der Bestand ist ueberwiegend folioweise erschlossen.
+    # Faellt der Anteil unter die Haelfte, prueft der Test nichts mehr.
+    assert len(folio_records) >= len(records) * 0.5, (
+        f"Nur {len(folio_records)} von {len(records)} Records tragen eine "
+        f"Folio-Signatur. Die Konvolut-Hierarchie ist eingebrochen, der "
+        f"Test liefe leer."
+    )
+
+    offenders = []
+    for r in folio_records:
+        signatur = str(r["rico:identifier"]).split()[0]
+        expected = konvolut_by_ident.get(signatur)
+        if expected is None:
+            offenders.append((r["@id"], f"kein Konvolut mit Signatur {signatur}"))
+        elif parent_of.get(r["@id"]) != expected:
+            offenders.append(
+                (r["@id"], f"Parent {parent_of.get(r['@id'])} statt {expected}")
+            )
+    assert not offenders, (
+        f"{len(offenders)} von {len(folio_records)} Folio-Records ohne "
+        f"passenden Konvolut-Parent: {offenders[:5]}"
+    )
+
+
+def test_konvolute_have_children(konvolute):
+    """Kein Konvolut ist leer.
+
+    Stand frueher als einziger wirksamer Assert im Rumpf von
+    test_folio_records_have_konvolut_parent und traegt jetzt seinen
+    eigenen Namen.
+    """
+    assert konvolute, "Keine Konvolute im Graph"
+    empty = [k["@id"] for k in konvolute if not ensure_list(k.get("rico:hasOrHadPart"))]
+    assert not empty, f"Konvolute ohne Kinder: {empty[:5]}"

@@ -25,6 +25,7 @@ import { readFileSync } from 'node:fs';
 import { loadArchive } from '../../docs/js/data/loader.js';
 import { dftLabel, getDocTypeId, ensureArray } from '../../docs/js/utils/format.js';
 import { withConcepts } from './_concepts.mjs';
+import { storeFromShipped } from './_shipped.mjs';
 
 // Baut den Store ueber den ECHTEN loadArchive-Pfad; fetch wird auf das
 // uebergebene Objekt umgelenkt und danach wiederhergestellt.
@@ -299,5 +300,99 @@ describe('Loader gegen den echten Datenstand', () => {
           `${recId}: Ortsrolle ${ev.role} ohne place`);
       }
     }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// C) Ausgeliefertes docs/data/m3gim.jsonld — Befunde aus der Frontend-Sichtung
+// ---------------------------------------------------------------------------
+
+describe('Konvolut-Titel aus der Sammel-Zeile', () => {
+  test('jedes Konvolut mit Sammel-Record traegt dessen Titel', async () => {
+    const store = await storeFromShipped();
+    const sammelIds = [...store.records.keys()].filter((id) => id.endsWith('_collection'));
+    assert.ok(sammelIds.length >= 10,
+      `nur ${sammelIds.length} Sammel-Records im Datenstand — Suffix geprueft?`);
+    const ohneTitel = [];
+    for (const sid of sammelIds) {
+      const kid = store.childToKonvolut.get(sid);
+      assert.ok(kid, `Sammel-Record ${sid} haengt an keinem Konvolut`);
+      const meta = store.konvolutMeta.get(kid);
+      const erwartet = store.records.get(sid)['rico:title'];
+      if (!erwartet) continue;  // Sammel-Zeile ohne eigenen Titel
+      if (meta.title !== erwartet) ohneTitel.push(`${kid}: '${meta.title}' statt '${erwartet}'`);
+    }
+    assert.deepEqual(ohneTitel, [],
+      'Konvolute ohne den Titel ihrer Sammel-Zeile: ' + ohneTitel.join(' | '));
+  });
+
+  test('die deutliche Mehrheit der Konvolute traegt einen Titel', async () => {
+    const store = await storeFromShipped();
+    const mitTitel = [...store.konvolutMeta.values()].filter((m) => m.title).length;
+    assert.ok(mitTitel >= 15,
+      `nur ${mitTitel} von ${store.konvolutMeta.size} Konvoluten mit Titel`);
+  });
+});
+
+describe('Doppelt vergebene Q-ID im Personen-Index', () => {
+  function qidGruppen(store) {
+    const byQid = new Map();
+    for (const [name, entry] of store.persons) {
+      const q = entry.wikidata;
+      if (!q || !String(q).startsWith('wd:')) continue;
+      if (!byQid.has(q)) byQid.set(q, []);
+      byQid.get(q).push({ name, entry });
+    }
+    return [...byQid].filter(([, gruppe]) => gruppe.length > 1);
+  }
+
+  test('Relationen landen am belegstaerksten Eintrag der Q-ID', async () => {
+    const store = await storeFromShipped();
+    const kollisionen = qidGruppen(store);
+    assert.ok(kollisionen.length > 0,
+      'Kein Datenstand mit doppelt vergebener Q-ID — der Test verliert seinen Gegenstand.');
+    const alleRelationen = [...store.agentRelations.values()].flat();
+    const verfehlt = [];
+    for (const [qid, gruppe] of kollisionen) {
+      const erwartet = alleRelationen.filter((r) => r.objectWikidata === qid).length;
+      if (erwartet === 0) continue;
+      const staerkster = gruppe.reduce((a, b) => (b.entry.records.size > a.entry.records.size ? b : a));
+      const belegt = (staerkster.entry.relations || []).length;
+      if (belegt < erwartet) {
+        verfehlt.push(`${qid}: '${staerkster.name}' (${staerkster.entry.records.size} Records) `
+          + `haelt ${belegt} von ${erwartet} Relationen`);
+      }
+    }
+    assert.deepEqual(verfehlt, [],
+      'Relationen liegen am schwaecher belegten Namensdublett: ' + verfehlt.join(' | '));
+  });
+
+  test('Anker: Wieland Wagner haelt seine Beziehungen unter der kanonischen Schreibweise', async () => {
+    const store = await storeFromShipped();
+    const kanonisch = store.persons.get('Wagner, Wieland');
+    const tippfehler = store.persons.get('Wagner, WIeland');
+    assert.ok(kanonisch && tippfehler,
+      'Anker-Namen fehlen im Datenstand — Fixture pruefen');
+    assert.ok(kanonisch.records.size > tippfehler.records.size,
+      'Anker setzt voraus, dass die kanonische Schreibweise belegstaerker ist');
+    assert.ok((kanonisch.relations || []).length >= 8,
+      `'Wagner, Wieland' haelt nur ${(kanonisch.relations || []).length} Relationen`);
+    assert.equal((tippfehler.relations || []).length, 0,
+      'die Tippfehlervariante zieht Relationen von der kanonischen Schreibweise ab');
+  });
+});
+
+describe('Datumsartefakte im Ortsindex', () => {
+  // Der Loader wirft Datumswerte aus dem Ortsindex, prueft dafuer aber auf
+  // vier fuehrende Ziffern. Die Monats-Tages-Angabe "06-09" aus NIM_004_34
+  // kam damit als Ort durch und stand im Orte-Index, in der Ortsauswahl der
+  // Toolbar und in der Liste der unverorteten Orte auf der Karte.
+  test('kein Ortsname ohne einen einzigen Buchstaben', async () => {
+    const store = await storeFromShipped();
+    assert.ok(store.locations.size >= 40,
+      `nur ${store.locations.size} Orte im Index — der Filter greift zu weit`);
+    const artefakte = [...store.locations.keys()].filter((n) => !/\p{L}/u.test(n));
+    assert.deepEqual(artefakte, [],
+      'Datumsartefakte im Ortsindex: ' + artefakte.join(', '));
   });
 });

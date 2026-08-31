@@ -3,8 +3,12 @@
  * generische `buildToolbar` (siehe `_toolbar.js`), der die Archiv-Facetten
  * deklariert und die gewohnte API (setPerson/setLocation/setWerk) erhält.
  *
+ * Die drei Entitaetsfacetten halten seit E-151 Listen; setPerson/setLocation/
+ * setWerk ersetzen die Auswahl, addFacet/removeFacet aendern sie schrittweise.
+ *
  * API: buildFilterToolbar(store, { initial, onChange })
- *   -> { element, setPerson, setLocation, setWerk, setCount, getState }
+ *   -> { element, setPerson, setLocation, setWerk, setDocType, setCount,
+ *        getState, applyFacet, addFacet, removeFacet }
  */
 
 import { el, clear } from '../utils/dom.js';
@@ -30,6 +34,10 @@ export function updateSchaerfeBanner(bannerId, schaerfe, engInfo) {
   banner.appendChild(el('span', { className: 'archiv-schaerfe__diff' },
     `${engInfo.eng} von ${engInfo.total} raumzeitlich/Aufführungs-belegt`));
 }
+
+
+// Die Facettenschluessel, die von aussen adressierbar sind.
+const ARCHIV_FACETS = new Set(['person', 'location', 'werk', 'docType']);
 
 
 export function buildFilterToolbar(store, { initial = {}, onChange } = {}) {
@@ -75,11 +83,17 @@ export function buildFilterToolbar(store, { initial = {}, onChange } = {}) {
     getState()        { return toolbar.getState(); },
     // Cross-View-Filter: eine Facette {facet,value} auf die Toolbar anwenden.
     // Bestand und Chronik teilen sich dieselbe Zuordnung (vorher dupliziert).
+    // `value` darf ein Wert oder eine Liste sein (E-151).
     applyFacet(facet, value) {
-      if (facet === 'person') toolbar.setFacet('person', value);
-      else if (facet === 'location') toolbar.setFacet('location', value);
-      else if (facet === 'werk') toolbar.setFacet('werk', value);
-      else if (facet === 'docType') toolbar.setFacet('docType', value);
+      if (ARCHIV_FACETS.has(facet)) toolbar.setFacet(facet, value);
+    },
+    /** Einen Wert an eine Entitaetsfacette anhaengen, ohne die uebrigen zu
+     *  verlieren (Chip-Klick aus einem Detail). */
+    addFacet(facet, value) {
+      if (ARCHIV_FACETS.has(facet)) toolbar.addFacet(facet, value);
+    },
+    removeFacet(facet, value) {
+      if (ARCHIV_FACETS.has(facet)) toolbar.removeFacet(facet, value);
     },
   };
 }

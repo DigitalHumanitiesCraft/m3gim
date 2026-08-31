@@ -26,7 +26,7 @@ import { cityOf } from '../utils/format.js';
 import { formatDate, extractYear } from '../utils/date-parser.js';
 import { coverageNote } from '../ui/coverage.js';
 import { logStamp } from '../utils/env.js';
-import { getFilter, setFilter, subscribe } from '../ui/filter-state.js';
+import { getFilter, setFilter, subscribe, facetValues } from '../ui/filter-state.js';
 import {
   zeitfensterToYearRange, yearRangeToZeitfenster, makeSyncGuard,
 } from '../ui/filter-sync.js';
@@ -97,17 +97,17 @@ export function renderMobilitaet(store, container) {
     entityQuery: '',       // Freitextsuche der Auswahlliste
     yearFrom: minYear,
     yearTo: maxYear,
-    selectedCity: null,
+    selectedCities: [],
   };
 
   // Geteilten Filter (M4) initial nachziehen: zeitfenster -> Jahresfenster,
-  // ort -> selectedCity. Die Sicht-Facette spielt in der Entitaets-Karte keine
+  // ort -> selectedCities. Die Sicht-Facette spielt in der Entitaets-Karte keine
   // Rolle (keine Sicht-Legende) und wird ignoriert.
   function pullSharedIntoState(shared) {
     const { yearFrom, yearTo } = zeitfensterToYearRange(shared.zeitfenster);
     state.yearFrom = yearFrom == null ? minYear : Math.max(minYear, yearFrom);
     state.yearTo = yearTo == null ? maxYear : Math.min(maxYear, yearTo);
-    state.selectedCity = shared.ort || null;
+    state.selectedCities = facetValues(shared, 'ort');
   }
   pullSharedIntoState(getFilter());
 
@@ -129,7 +129,7 @@ export function renderMobilitaet(store, container) {
         controls: [{
           kind: 'custom', className: 'mob-entity',
           build: region => buildEntityPicker(region, entities, state, () => {
-            state.selectedCity = null;
+            state.selectedCities = [];
             redraw();
           }),
           update: region => refreshEntityPicker(region, entities, state),
@@ -193,15 +193,21 @@ export function renderMobilitaet(store, container) {
       detailRegion.appendChild(el('div', { className: 'mob-entity__active' },
         el('span', { className: 'mob-entity__activename' }, state.entity.name),
         el('button', { className: 'mob-detail__clear', type: 'button',
-          onClick: () => { state.entity = null; state.selectedCity = null; redraw(); } }, 'Auswahl lösen')));
+          onClick: () => { state.entity = null; state.selectedCities = []; redraw(); } }, 'Auswahl lösen')));
     }
 
-    if (state.selectedCity) {
-      const list = currentAll().filter(o => cityOf(o.place) === state.selectedCity);
+    // Mehrfachauswahl (E-151): jeder gewaehlte Ort bekommt seinen Block. Bei
+    // genau einem Ort ist die Ausgabe dieselbe wie vor der Listenform.
+    for (const city of state.selectedCities) {
+      const list = currentAll().filter(o => cityOf(o.place) === city);
       detailRegion.appendChild(el('div', { className: 'mob-detail__head' },
-        el('h3', { className: 'mob-detail__title' }, state.selectedCity),
+        el('h3', { className: 'mob-detail__title' }, city),
         el('button', { className: 'mob-detail__clear', type: 'button',
-          onClick: () => { state.selectedCity = null; redraw(); } }, 'Ort lösen')));
+          onClick: () => {
+            state.selectedCities = state.selectedCities.filter(c => c !== city);
+            _syncGuard.run(() => setFilter({ ort: state.selectedCities }));
+            redraw();
+          } }, 'Ort lösen')));
 
       // Zuordnungen: Anteile nach Sicht (gestapelter Balken + Zeilen mit Zahl).
       const bd = breakdownByView(list);
@@ -230,8 +236,8 @@ export function renderMobilitaet(store, container) {
       const chips = el('div', { className: 'mob-chips' });
       for (const o of sortOcc(list)) chips.appendChild(buildOccChip(o));
       detailRegion.appendChild(chips);
-      return;
     }
+    if (state.selectedCities.length > 0) return;
 
     // Ohne Ortsauswahl: nicht verortbare Belege ehrlich ausweisen (kein
     // Kartenpunkt moeglich). Kompakt und eingeklappt, entitaetsbezogen.
@@ -255,8 +261,10 @@ export function renderMobilitaet(store, container) {
     const map = buildMap(mapCell, countries, withGeo, state, {
       inEntity, inWindow,
       onSelectCity: city => {
-        state.selectedCity = state.selectedCity === city ? null : city;
-        _syncGuard.run(() => setFilter({ ort: state.selectedCity || '' }));
+        state.selectedCities = state.selectedCities.includes(city)
+          ? state.selectedCities.filter(c => c !== city)
+          : [...state.selectedCities, city];
+        _syncGuard.run(() => setFilter({ ort: state.selectedCities }));
         redraw();
       },
     });
@@ -372,6 +380,8 @@ function loadCountries() {
 
 function buildMap(mapCell, countries, withGeo, state, opts) {
   clear(mapCell);
+  // Ortsauswahl ist seit E-151 eine Liste; die Hervorhebung gilt jedem Wert.
+  const isSelectedCity = (city) => state.selectedCities.includes(city);
   const width = Math.max(320, mapCell.clientWidth || 960);
   const height = Math.max(440, mapCell.clientHeight || 600);
 
@@ -491,7 +501,7 @@ function buildMap(mapCell, countries, withGeo, state, opts) {
       .style('stroke-width', haloPx)
       .attr('opacity', d => {
         if (!sichtbar(d)) return 0;
-        if (state.selectedCity === d.city) return 1;
+        if (isSelectedCity(d.city)) return 1;
         return d.shown >= cutoff ? 1 : 0;
       });
   }
@@ -580,7 +590,7 @@ function buildMap(mapCell, countries, withGeo, state, opts) {
     // pruefen (Fehlmatch-Verdacht). Auswahl uebersteuert mit KUG-blauem Ring.
     // non-scaling-stroke haelt die Ringstaerke beim Zoomen konstant.
     const ringStroke = d => {
-      if (state.selectedCity === d.city) return 'var(--color-kug-blau)';
+      if (isSelectedCity(d.city)) return 'var(--color-kug-blau)';
       if (d.far) return '#A6552F';
       if (d.approx) return 'var(--color-sand)';
       return d.shown === 0 ? '#fff' : 'rgba(40,30,20,0.25)';
@@ -591,9 +601,9 @@ function buildMap(mapCell, countries, withGeo, state, opts) {
       .style('fill', d => d.shown === 0 ? colorOf(d.dom) : 'none')
       .attr('fill-opacity', d => d.shown === 0 ? 0.5 : 0)
       .style('stroke', ringStroke)
-      .attr('stroke-width', d => state.selectedCity === d.city ? 3
+      .attr('stroke-width', d => isSelectedCity(d.city) ? 3
         : (d.far || d.approx ? 1.5 : (d.shown === 0 ? 1 : 0.8)))
-      .attr('stroke-dasharray', d => (state.selectedCity !== d.city && (d.far || d.approx)) ? '3 2' : null);
+      .attr('stroke-dasharray', d => (!isSelectedCity(d.city) && (d.far || d.approx)) ? '3 2' : null);
     merged.select('text')
       .text(d => d.city)
       .attr('x', d => radiusOf(d) + 3)

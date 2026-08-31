@@ -60,16 +60,6 @@ audit_data = _load_script("audit_data", "audit-data.py")
 
 
 @pytest.fixture(scope="module")
-def auftritte(graph):
-    return build_views.extract_auftritte(graph)
-
-
-@pytest.fixture(scope="module")
-def kosmos(graph):
-    return build_views.build_kosmos(graph)
-
-
-@pytest.fixture(scope="module")
 def stage_role_labels(graph) -> set:
     return {
         n["rico:name"]

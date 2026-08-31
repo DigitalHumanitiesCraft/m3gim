@@ -11,6 +11,7 @@ import {
   formatSignatur, formatDocType, getDocTypeId, ensureArray, dftLabel, roleLabel, roleToken,
 } from '../utils/format.js';
 import { formatDate } from '../utils/date-parser.js';
+import { primaryYear } from '../data/loader.js';
 import { AGRELON_LABELS, formatLanguage } from '../data/constants.js';
 import { buildRecordBlocks } from './archive-inline-detail.js';
 import { getKorbItems, removeFromKorb, clearKorb, onKorbChange } from '../ui/basket.js';
@@ -268,7 +269,18 @@ function csvEscape(value) {
 }
 
 function exportBibTeX(ids) {
-  const records = ids.map(id => store.records.get(id)).filter(Boolean);
+  downloadFile(buildBibTeX(ids, store), 'm3gim-korb.bib', 'application/x-bibtex');
+}
+
+/**
+ * Der BibTeX-Text zu einer Auswahl von Records. Vom Download getrennt, damit
+ * die Feldbelegung ohne DOM pruefbar ist.
+ * @param {string[]} ids
+ * @param {Object} storeRef
+ * @returns {string}
+ */
+export function buildBibTeX(ids, storeRef) {
+  const records = ids.map(id => storeRef.records.get(id)).filter(Boolean);
   const entries = [];
 
   for (const r of records) {
@@ -276,8 +288,9 @@ function exportBibTeX(ids) {
     const sig = r['rico:identifier'] || 'unknown';
     const key = sig.replace(/[^a-zA-Z0-9]/g, '_');
     const title = r['rico:title'] || 'Ohne Titel';
-    const date = formatDate(r['rico:date']) || '';
-    const year = date.match(/\d{4}/)?.[0] || '';
+    // Der Zeitanker des Records, nicht das gerenderte Anzeigedatum: ein
+    // Record ohne rico:date fuehrt sein Jahr an einer ankernden Datierung.
+    const year = primaryYear(storeRef, r).year ?? '';
     const agents = ensureArray(r['m3gim-ontology:hasAssociatedAgent']);
 
     let author = agents
@@ -290,7 +303,7 @@ function exportBibTeX(ids) {
       .join(' and ');
 
     if (!author) {
-      const senderRel = (store.agentRelations?.get(rid) || [])
+      const senderRel = (storeRef.agentRelations?.get(rid) || [])
         .find(rel => rel.type === 'agrelon:HasCorrespondent' && rel.objectName);
       if (senderRel) author = senderRel.objectName;
     }
@@ -305,7 +318,7 @@ function exportBibTeX(ids) {
     entries.push(`@misc{${key},\n${fields.join(',\n')}\n}`);
   }
 
-  downloadFile(entries.join('\n\n'), 'm3gim-korb.bib', 'application/x-bibtex');
+  return entries.join('\n\n');
 }
 
 function bibtexEscape(s) {

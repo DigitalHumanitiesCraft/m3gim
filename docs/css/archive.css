@@ -1052,7 +1052,6 @@ tr.archiv-row--konvolut:hover .konvolut-toggle {
 .archiv-combobox__input {
   width: 100%;
   padding: var(--space-2) var(--space-3);
-  padding-right: var(--space-8);
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
   font-family: var(--font-ui);
@@ -1065,23 +1064,6 @@ tr.archiv-row--konvolut:hover .konvolut-toggle {
   outline: none;
   border-color: var(--color-kug-blau);
   box-shadow: 0 0 0 2px rgba(0, 74, 143, 0.15);
-}
-
-.archiv-combobox__clear {
-  position: absolute;
-  right: var(--space-2);
-  top: 50%;
-  transform: translateY(-50%);
-  border: none;
-  background: none;
-  padding: 2px;
-  cursor: pointer;
-  color: var(--color-text-tertiary);
-  line-height: 1;
-}
-
-.archiv-combobox__clear:hover {
-  color: var(--color-text-primary);
 }
 
 .archiv-combobox__dropdown {
@@ -1129,4 +1111,47 @@ tr.archiv-row--konvolut:hover .konvolut-toggle {
   color: var(--color-text-tertiary);
   font-style: italic;
 }
+
+/* Mehrfachauswahl (E-151): die gewaehlten Werte stehen als entfernbare Chips
+   unter dem Eingabefeld, damit sichtbar bleibt, worauf der Bestand geschnitten
+   ist. Das Eingabefeld bleibt frei fuer den naechsten Wert. */
+.archiv-combobox__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  margin-top: var(--space-1);
+}
+
+.archiv-combobox__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  max-width: 100%;
+  padding: 1px 3px 1px 7px;
+  background: var(--color-kug-blau);
+  color: var(--color-text-inverse);
+  border-radius: 10px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.archiv-combobox__chip-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.archiv-combobox__chip-remove {
+  border: none;
+  background: none;
+  color: inherit;
+  font-family: inherit;
+  font-size: 13px;
+  line-height: 1;
+  padding: 0 3px;
+  cursor: pointer;
+  opacity: 0.75;
+}
+
+.archiv-combobox__chip-remove:hover { opacity: 1; }
 

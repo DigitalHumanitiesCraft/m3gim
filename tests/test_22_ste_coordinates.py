@@ -63,6 +63,7 @@ def test_anchor_ste_has_wikidata_id(graph, id_prefix, expected_qid, expected_nam
         f"Anker-STE {expected_name!r} auf {id_prefix!r} fehlt im Graph. "
         f"Pipeline-Regression oder Fixture pflegen."
     )
+    ste_id = ste.get("@id")
     place = _at_place(ste)
     assert place is not None, f"{ste_id}: m3gim-ontology:atPlace fehlt oder ist kein Objekt"
     assert place.get("name") == expected_name, (

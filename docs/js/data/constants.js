@@ -18,8 +18,11 @@ export const PERSONEN_KATEGORIEN = {
   'furtwängler': 'Dirigent', 'krauss': 'Dirigent', 'krauß': 'Dirigent',
   'solti': 'Dirigent', 'kempe': 'Dirigent', 'kolessa': 'Dirigent',
   'hindemith': 'Dirigent',
-  // Regisseure — specific names before generic 'wagner'
-  'wieland wagner': 'Regisseur', 'wolfgang wagner': 'Regisseur',
+  // Regisseure — specific names before generic 'wagner'.
+  // Keys carry the dataset spelling "Nachname, Vorname"; getPersonKategorie
+  // compares with includes() on the lowercased name, so 'wieland wagner'
+  // never matched and both directors fell through to 'Komponist'.
+  'wagner, wieland': 'Regisseur', 'wagner, wolfgang': 'Regisseur',
   'wagner, siegfried': 'Regisseur',
   'felsenstein': 'Regisseur', 'hartmann': 'Regisseur',
   // Now Wagner/Strauss/Gluck/Händel as Komponist (after specific Wagner family members)

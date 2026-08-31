@@ -86,9 +86,13 @@ DATA_MD_ROLES = {
     "auffuehrungsdatum", "premieredatum",
     "abreisedatum", "probenbeginn", "ausstrahlung", "spielzeit", "überweisung",
     "gespräch", "erstelldatum", "lohnbestätigung", "ratenzahlung",
+    # Datumsrollen der Lieferung 2026-08-31 (E-152, data.md § 5)
+    "unterschriftsdatum", "reisedatum", "aufnahmedatum",
     # Finanz
     "abendgage", "provision", "gesamtvergütung", "reisekosten",
     "rundfunkhonorar", "rundfunkshonorar",
+    # Finanzrollen der Lieferung 2026-08-31 (E-152, data.md § 5)
+    "abspielhonorar", "gage", "summe",
     # Vertragsstatus in der Rollenspalte (§ 5/§ 11, keine echte Rolle)
     "nicht eingehalten",
     # Zusaetzlich aus Datenbestand v2: Komposit-Rollen
@@ -217,8 +221,10 @@ FRONTEND_NEUTRAL_IGNORELIST = {
     # Chip-Prefix erscheinen
     "ausstrahlung", "gespräch", "probenbeginn", "spielzeit", "überweisung",
     "erstelldatum", "lohnbestätigung", "ratenzahlung",
+    "unterschriftsdatum", "reisedatum", "aufnahmedatum",
     # Finanz-Sub-Rollen ohne eigenes Cluster
     "abendgage", "vertragspartner", "inhaber",
+    "abspielhonorar", "gage", "summe",
     # Komposit-Markierungen ohne Chip
     "implizit", "rahmenveranstaltung", "fluggesellschaft", "abgebildet",
     "ausbildungsstätte",

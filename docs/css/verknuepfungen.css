@@ -7,63 +7,21 @@
   color: var(--color-text, #2b2722);
 }
 
-/* --- Controls --- */
-.vk-controls {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  gap: 14px 18px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--color-border, #e2dccf);
+/* --- Fokus-Auswahl in der Sidebar --- */
+.vk-select {
+  width: 100%;
+  font-family: inherit; font-size: var(--text-sm);
+  padding: 4px 7px; border: 1px solid var(--border-color);
+  border-radius: var(--border-radius); background: var(--color-text-inverse);
+  color: var(--color-text-primary);
 }
-.vk-field { display: flex; flex-direction: column; gap: 4px; }
-.vk-field-label {
-  font-size: 0.68rem; letter-spacing: 0.05em; text-transform: uppercase;
-  color: var(--color-text-muted, #7a7266); font-weight: 600;
-}
-.vk-select, .vk-year {
-  font-family: inherit; font-size: 0.85rem;
-  padding: 5px 8px; border: 1px solid var(--color-border, #d8d0c0);
-  border-radius: 5px; background: #fff; color: inherit;
-}
-.vk-select { min-width: 180px; }
-.vk-zf { display: flex; align-items: center; gap: 6px; }
-.vk-year { width: 68px; }
-.vk-zf-dash { color: var(--color-text-muted, #9a9183); }
 
-.vk-toggles { display: flex; flex-wrap: wrap; gap: 8px; }
-.vk-toggle {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 4px 9px; border: 1px solid var(--color-border, #d8d0c0);
-  border-radius: 14px; cursor: pointer; font-size: 0.8rem; user-select: none;
-  background: #fff;
+/* --- Buehne: SVG + Detail (rechte Spalte der view-shell) --- */
+.vk-main {
+  display: flex; gap: 18px; align-items: flex-start;
+  padding: var(--space-4) var(--space-5);
+  overflow-y: auto;
 }
-.vk-toggle input { position: absolute; opacity: 0; width: 0; height: 0; }
-.vk-toggle-dot { width: 11px; height: 11px; border-radius: 50%; flex: none; }
-.vk-toggle--person .vk-toggle-dot { background: var(--vk-node-person); }
-.vk-toggle--werk .vk-toggle-dot { background: var(--vk-node-werk); }
-.vk-toggle--institution .vk-toggle-dot { background: var(--vk-node-institution); }
-.vk-toggle--ort .vk-toggle-dot { background: var(--vk-node-ort); }
-.vk-toggle:has(input:not(:checked)) { opacity: 0.4; }
-
-.vk-reset {
-  font-family: inherit; font-size: 0.8rem; cursor: pointer;
-  padding: 6px 12px; border: 1px solid var(--color-border, #d8d0c0);
-  border-radius: 5px; background: #fff; color: var(--color-text-muted, #7a7266);
-}
-.vk-reset:hover { border-color: var(--vk-node-focus); color: var(--vk-node-focus); }
-
-/* --- Caption (Differenznennung) --- */
-.vk-caption {
-  margin: 10px 0 4px; font-size: 0.86rem; line-height: 1.5;
-  color: var(--color-text, #3a352e);
-  font-family: var(--font-serif, 'Source Serif 4', serif);
-}
-.vk-caption strong { color: var(--vk-node-focus); }
-.vk-trunc { color: var(--color-text-muted, #8a8275); font-style: italic; }
-
-/* --- Stage: SVG + Detail --- */
-.vk-stage { display: flex; gap: 18px; align-items: flex-start; margin-top: 8px; }
 .vk-svg-wrap { flex: 1 1 auto; min-width: 0; display: flex; justify-content: center; }
 .vk-svg {
   display: block; height: 72vh; max-height: 680px; width: auto; max-width: 100%;
@@ -139,7 +97,17 @@
 .vk-legend-dot--ort { background: var(--vk-node-ort); }
 .vk-legend-dot--focus { background: var(--vk-node-focus); }
 
+/* Knoten als Facette uebernehmen (Detail-Panel). */
+.vk-addfacet {
+  width: 100%; margin: 8px 0 2px; padding: 5px 8px;
+  font-family: inherit; font-size: var(--text-xs);
+  color: var(--color-kug-blau); background: var(--color-text-inverse);
+  border: 1px solid var(--border-color); border-radius: var(--border-radius);
+  cursor: pointer;
+}
+.vk-addfacet:hover { border-color: var(--color-kug-blau); }
+
 @media (max-width: 768px) {
-  .vk-stage { flex-direction: column; }
+  .vk-main { flex-direction: column; }
   .vk-detail { flex-basis: auto; width: 100%; }
 }

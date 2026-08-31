@@ -10,12 +10,20 @@
  */
 
 import { getDocTypeId, expandDftFilter, dftLabel } from '../utils/format.js';
+import { facetValues } from '../ui/filter-state.js';
+import { recordsFor } from '../data/records-for.js';
 
-/** Ob mindestens eine der fuenf Facetten aktiv ist. */
+/** Ob mindestens eine der fuenf Facetten aktiv ist. Die drei Entitaetsfacetten
+ *  halten seit E-151 Listen; eine leere Liste heisst inaktiv. */
 export function isToolbarFiltered(state) {
-  const { search = '', docType = '', person = '', location = '', werk = '' } = state || {};
-  return !!(search || docType || person || location || werk);
+  const { search = '', docType = '' } = state || {};
+  if (search || docType) return true;
+  for (const key of ['person', 'location', 'werk']) {
+    if (facetValues(state, key).length > 0) return true;
+  }
+  return false;
 }
+
 
 /** Bestand-Suche: Signatur, Titel, Typ-Label, Datum. Der Store liefert das
  *  Typ-Label (skos:prefLabel); ohne Store entfällt nur die Label-Teilsuche. */
@@ -46,7 +54,7 @@ export function searchMatchChronik(record, q) {
  * @param {Function} opts.searchMatch - (record, qLower) -> boolean.
  */
 export function filterByToolbarState(store, items, state, { getRecord, searchMatch }) {
-  const { search = '', docType = '', person = '', location = '', werk = '' } = state || {};
+  const { search = '', docType = '' } = state || {};
   let out = items;
 
   if (search) {
@@ -60,17 +68,18 @@ export function filterByToolbarState(store, items, state, { getRecord, searchMat
     const allowed = expandDftFilter(store, docType);
     out = out.filter(it => allowed.has(getDocTypeId(getRecord(it))));
   }
-  if (person) {
-    const data = store.persons.get(person);
-    if (data) out = out.filter(it => data.records.has(getRecord(it)['@id']));
-  }
-  if (location) {
-    const data = store.locations.get(location);
-    if (data) out = out.filter(it => data.records.has(getRecord(it)['@id']));
-  }
-  if (werk) {
-    const data = store.works.get(werk);
-    if (data) out = out.filter(it => data.records.has(getRecord(it)['@id']));
+  // Die drei Entitaetsfacetten loest recordsFor auf, die eine Stelle im
+  // Frontend, an der Filter zu Dokumentmenge wird. Suche und Dokumenttyp
+  // bleiben hier, sie sind Toolbar-lokal und kein geteilter Schnitt.
+  const entityFilter = {
+    person: facetValues(state, 'person'),
+    ort: facetValues(state, 'location'),
+    werk: facetValues(state, 'werk'),
+  };
+  if (Object.values(entityFilter).some(v => v.length > 0)) {
+    const base = new Set(out.map(it => getRecord(it)['@id']));
+    const { ids } = recordsFor(store, entityFilter, { base });
+    out = out.filter(it => ids.has(getRecord(it)['@id']));
   }
   return out;
 }

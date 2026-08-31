@@ -235,10 +235,12 @@ test('partitionRecord: am Datenstand tragen Agenten-Buckets ihre Rollen-Sektion'
   const store = await realStore();
   const record = store.bySignatur.get('UAKUG/NIM_003 1_1');
   const { bucket } = partitionRecord(record, store);
-  // Der Herausgeber ist eine Produktionsrolle; landete er in "Weitere", waere
-  // die Rolle als Verweisknoten ungefiltert durchgereicht worden.
-  assert.deepEqual(bucket.produktion.map(a => a.name),
-    ['Deutsches Musikinstitut für Ausländer']);
+  // Der Absender ist eine Mitwirkenden-Rolle (Quelle seit E-152: Absender:in
+  // statt herausgeber); landete er in "Weitere", waere die Rolle als
+  // Verweisknoten ungefiltert durchgereicht worden.
+  const namen = bucket.mitwirkende.map(a => a.name);
+  assert.ok(namen.includes('Deutsches Musikinstitut für Ausländer'),
+    `Absender fehlt im Mitwirkenden-Bucket: ${namen.join(', ')}`);
 });
 
 test('partitionRecord: leerer Record liefert leere, aber wohlgeformte Struktur', () => {

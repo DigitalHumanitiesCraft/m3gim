@@ -5,23 +5,17 @@ Komposite rolle,person und datum,werk lösen sich in eine m3gim-ontology:Perform
 rolle erzeugt eine Performance mit nur hasStageRole. Records verweisen via
 m3gim-ontology:hasPerformance. Die Performer-/Werk-Pfade aktivieren sich mit dem tieferen
 Box-Export; gegen den aktuellen Stand sind sie zulässig leer.
-"""
 
-from _helpers import ensure_list
+Die Aufloesbarkeit der record-seitigen hasPerformance-Referenz stand hier ein
+zweites Mal und liegt allein in
+test_04_verknuepfungen.test_performance_references_resolvable, das zusaetzlich
+die hasStageRole-Referenz gegen die StageRole-Knoten prueft.
+"""
 
 
 def test_performances_exist(graph):
     perfs = [n for n in graph if n.get("@type") == "m3gim-ontology:Performance"]
     assert perfs, "Keine m3gim-ontology:Performance im Graph (E-96 nicht aktiv)"
-
-
-def test_performance_record_refs_resolvable(records, graph):
-    """Jede m3gim-ontology:hasPerformance-Referenz eines Records ist im Graph auflösbar."""
-    perf_ids = {n["@id"] for n in graph if n.get("@type") == "m3gim-ontology:Performance"}
-    for r in records:
-        for ref in ensure_list(r.get("m3gim-ontology:hasPerformance")):
-            pid = ref.get("@id") if isinstance(ref, dict) else None
-            assert pid in perf_ids, f"{r['@id']}: hasPerformance {pid} nicht im Graph"
 
 
 def test_performance_of_is_indexed_work(graph):

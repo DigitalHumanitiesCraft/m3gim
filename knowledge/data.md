@@ -84,11 +84,29 @@ Das Modell ist in die fachlichen Schichten Kernmetadaten, Verknüpfungen und Erw
 | Tabelle | Funktion |
 |---|---|
 | M3GIM-Objekte | Primäre Record-Metadaten (Schicht 1) |
-| M3GIM-Verknüpfungen | Kontext- und Entitätsrelationen (Schicht 2 + 3) |
+| M3GIM-Verknüpfungen | Kontext- und Entitätsrelationen (Schicht 2 + 3), seit 2026-08-31 als CSV-Ausfuhr je Blatt |
 | Personenindex | Personen-Normdaten (Name, Lebensdaten, Wikidata-ID) |
 | Organisationsindex | Organisations-Normdaten |
 | Ortsindex | Ortsdaten |
 | Werkindex | Werknachweise (Titel, Komponist, Wikidata-ID) |
+
+### Quellformat
+
+Fünf der sechs Tabellen liegen als Arbeitsmappe im XLSX-Format vor. Die Verknüpfungstabelle liegt seit der Lieferung vom 2026-08-31 als CSV-Ausfuhr je Blatt unter `data/google-spreadsheet/verknuepfungen/`, eine Datei je Box und dazu die Wertliste `Typ-Rolle.csv` (E-152). Grund ist der in Abschnitt 6 beschriebene Befund, dass der XLSX-Export der Tabellenkalkulation Datums-, Folio- und Kennungsspalten in Zelltypen umwandelt und dabei Angaben erfindet, die die Erfassung nicht trägt; die CSV-Ausfuhr gibt den erfassten Text unverändert weiter. Die Dateinamen tragen die Blattbezeichnung mit Unterstrich, `Box_1.csv` bis `Box_9.csv`; der Blattname der Provenienz bleibt die Schreibung der Quelle, also `Box 1`.
+
+Ein Blatt ohne auswertbare Datenzeile wird nicht mitgeführt. In der Lieferung vom 2026-08-31 sind das Box 3, Box 8 und Box 10. Box 3 trägt eine Zeile mit Signatur und Typ `dokument` ohne Namen, Box 8 und Box 10 je eine Zeile mit dem Signaturstumpf `UAKUG/NIM_`. Alle drei sind im [Datenfehler-Register](data-errors.md) vermerkt und kommen mit dem Quell-Fix zurück.
+
+### Identität und Vorrang in den Indextabellen
+
+Ein Index kann denselben Namen mehrfach führen, teils als versehentliche Doppelerfassung, teils als echte Homonymie. Die Übernahme folgt deshalb drei Regeln, die deterministisch sind und keinen Fall stillschweigend auflösen.
+
+**Identität.** Führt eine Indexzeile eine `m3gim_id`, ist diese die Identität. Zeilen mit derselben `m3gim_id` bezeichnen dieselbe Entität und werden verdichtet. Fehlt die `m3gim_id`, entscheidet der getrimmte Name. Tragen zwei Zeilen denselben Namen und verschiedene `m3gim_id`, ist das eine Namenskollision und keine Dublette.
+
+**Verdichtung.** Innerhalb einer Identität gewinnt je Feld der erste nicht leere Wert in Quellreihenfolge. Ein gefülltes Feld wird nie von einem leeren überschrieben. `assoziierte_person` ist mehrwertig und sammelt alle Werte der Gruppe.
+
+**Kollision.** Tragen zwei Zeilen derselben Identität in demselben Feld verschiedene nicht leere Werte, gewinnt der erste, und der Fall geht mit beiden Werten in den Validierungsreport. Ein Flag am Knoten des Datensatzes entsteht dabei nicht. Der Konflikt betrifft im Bestand ausschließlich die Anmerkungsspalte, sagt also nichts über die Entität im Dokument aus, und er träfe je Vorkommen denselben Knoten erneut. Ob eine spätere Runde ihn als Flag führt, entscheidet sich mit der Frage, wie die Oberfläche Erschließungsbefunde von Aussageunsicherheiten trennt.
+
+Im Werkindex ist der Titel allein keine Identität, weil verschiedene Werke ihn teilen. Der Schlüssel ist das Paar aus Titel und Komponist. Eine Verknüpfungszeile, die nur einen Titel nennt und auf mehr als einen Indexeintrag passt, wird nicht aufgelöst; das Werk erscheint mit Titel, ohne Komponistenangabe und mit dem Flag `name-nicht-eindeutig`, und die Mehrdeutigkeit geht in den Validierungsreport.
 
 ### Konvolut- und Objektlogik
 
@@ -96,7 +114,7 @@ Objektidentität wird durch `archivsignatur` plus optionales Folio gebildet. Kon
 
 ### Bestand
 
-Teilnachlass UAKUG/NIM in den Bestandsgruppen Hauptbestand, Plakate und Tonträger. Feinerschlossen mit einzelnen Folio-Einträgen sind die Konvolute um NIM_003, NIM_004, NIM_005, NIM_006, NIM_007 und NIM_011. Die Verknüpfungstabelle trägt den Großteil der Schicht-2- und Schicht-3-Relationen.
+Teilnachlass UAKUG/NIM in den Bestandsgruppen Hauptbestand, Plakate und Tonträger. Feinerschlossen mit einzelnen Folio-Einträgen ist eine wachsende Auswahl der Konvolute; die Lieferung vom 2026-08-31 hat NIM_016 und NIM_134 hinzugenommen. Welche Konvolute Folien tragen, steht im Quality-Snapshot. Die Verknüpfungstabelle trägt den Großteil der Schicht-2- und Schicht-3-Relationen.
 
 Aktuelle Zählstände pro Bestandsgruppe, Feldabdeckung und Verknüpfungsrate stehen im Quality-Snapshot (`data/reports/quality-snapshot.md`) und werden bei jedem Pipeline-Lauf neu generiert — dieses Modelldokument hält keine laufenden Zahlen vor.
 
@@ -126,7 +144,11 @@ Die Zuordnung einer Verknüpfungszeile zu einem Indexeintrag erfolgt über Strin
 | summe, währung | → `m3gim-ontology:Annotation` | implementiert |
 | ensemble | direkte Kontextverarbeitung | niedrige Priorität |
 
-Seit dem Dropdown-Umbau der Erfassungstabelle (Juli 2026) erzwingen abhängige Dropdowns die Wertelisten für `typ` und `rolle` an der Quelle; das Blatt „Typ-Rollen“ im Workbook dokumentiert die Zuordnung. Google-Sheets-Dropdowns tragen kein Komma im Wert, der Komposittyp heißt im Export deshalb `Datum_Ort`; die Pipeline akzeptiert den Unterstrich als gleichwertigen Komposit-Trenner. Die versteckten Dropdown-Hilfsblätter des Workbooks werden beim Laden übersprungen.
+Seit dem Dropdown-Umbau der Erfassungstabelle (Juli 2026) erzwingen abhängige Dropdowns die Wertelisten für `typ` und `rolle` an der Quelle. Die Zuordnung dokumentiert das Blatt `Typ-Rolle`, das als eigene Datei `Typ-Rolle.csv` neben den Box-Dateien liegt. Die frühere Schreibung `Typ-Rollen` gab es nie; sie stand bis 2026-08-31 hier und in Abschnitt 17.
+
+Google-Sheets-Dropdowns tragen kein Komma im Wert, weshalb ein Komposittyp im Export auch mit Unterstrich stehen kann. Belegt sind `einnahmen_währung`, `ausgaben_währung`, `summe_währung` und `ort_datum`; die vielfach genannte Form `Datum_Ort` kommt im Bestand nicht vor. Die Pipeline akzeptiert den Unterstrich als gleichwertigen Komposit-Trenner und behandelt beide Schreibungen gleich.
+
+Zwei Typwerte haben keinen Zielzweig in der Serialisierung und fallen heute still weg, `Aktivität` und `dokument`. Beide sind belegt, beide stehen als eigene Modellierungsrunde aus, und beide sind bis dahin im [Datenfehler-Register](data-errors.md) geführt.
 
 ### Dekomposition des Komposittyps `ort, datum`
 
@@ -158,6 +180,8 @@ Die Spalte `datenpunkt_id` hebt diese Bündelung auf eine eigene Ebene. Sie ist 
 Die Pipeline gruppiert die Zeilen nach `(archivsignatur, folio, datenpunkt_id)` und erzeugt je Gruppe eine Occurrence. Die bestehenden Aspekt-Klassen werden zu ihren Facetten — `m3gim-ontology:Annotation` trägt Ort und Zeit, `m3gim-ontology:Performance` Werk und Partie, `m3gim-ontology:Annotation` den Betrag. Der Record bezeugt die Occurrence über `m3gim-ontology:attests` (Abschnitt 7), statt sie zu enthalten, damit dieselbe Occurrence später aus mehreren Dokumenten belegt werden kann.
 
 Der Auftrittsmodus (Gastspiel, Tournee) gehört über `m3gim-ontology:mode` an die Occurrence, nicht als konkurrierender Rollenwert an die einzelne Orts-, Werk- oder Institutionszeile. Die Unterscheidung auswärts gegen am Haus folgt zusätzlich aus dem Vergleich von `m3gim-ontology:atPlace` mit dem Institutionssitz (`m3gim-ontology:headquarters`) und wird nicht eigens erfasst. Die konkrete Erfassungskonvention steht in [data-entry-guidelines.md](data-entry-guidelines.md).
+
+Die Spalte trägt in einem Teil der Blätter den Namen `data_id` statt `datenpunkt_id`. Beide bezeichnen dieselbe Angabe; der Lesepfad führt sie zusammen, statt eine der beiden Schreibungen still fallen zu lassen.
 
 Seit E-127 ist diese Identität zweistufig verfeinert: die Erfassungsspalte heißt `aktivitaet_id`, eine Ganzzahl bündelt die Aktivität (Occurrence), eine zweistellige Dezimale `1.01` ff. die einzelne Beteiligung daran. Die einstufige `datenpunkt_id` (eine Nummer je Auftritt) bleibt als Lesepfad gültig, bis die Pipeline umgestellt ist; das Beteiligungs- und Besetzungsmodell steht in Abschnitt 7 (Zielmodell v2).
 
@@ -249,6 +273,7 @@ Die mit *ort-only STE* markierten Rollen (`MOBILITY_PLACE_ROLES`) erzeugen neben
 | vermittler | ● | |
 | adressat | ○ | |
 | empfänger | ● ★ | |
+| absender | ● ★ | Korrespondenzrolle auch bei Institutionen, häufig bei Rundfunkanstalten |
 | verfasser | ● ★ | |
 | herausgeber | ● ★ | häufig bei Presse |
 | auffuehrungsort | ● ★ | Institution als Ort-Proxy |
@@ -322,7 +347,10 @@ Datum ist als First-Class-Typ erfasst, Rollen typisieren den Datumsbezug.
 | überweisung | ● ★ | Finanzdatum |
 | erstelldatum | ● ★ | Entstehung eines Dokuments |
 | lohnbestätigung | ● ★ | Finanzdatum (Bestätigung der Vergütung) |
-| ratenzahlung | ● ★ | Finanzdatum (Ratenzahlungs-Zeitraum) |
+| ratenzahlung | ○ | seit der Lieferung 2026-08-31 nicht mehr belegt, der Beleg trägt jetzt `spielzeit` |
+| unterschriftsdatum | ● ★ | Datierung der Unterzeichnung, Gegenstück zur Akteursrolle `unterzeichner` |
+| reisedatum | ● ★ | Reisemobilität ohne Richtungsangabe, gegen `abreisedatum` abzugrenzen |
+| aufnahmedatum | ● ★ | fällt mit der Werkrolle `aufnahme` auf einen Begriff zusammen, Ursprungswert in `derivedFromRole` |
 | gespräch | ● ★ | |
 | erwähnt | ● ★ | |
 
@@ -334,6 +362,8 @@ Zwei Eigenschaften am Rollenbegriff sagen, was eine Datierung datiert und welche
 
 `m3gim-ontology:datingRank` ist eine ganze Zahl und entscheidet die Reihenfolge, wenn ein Dokument mehrere ankernde Datierungen trägt. Der kleinere Wert hat Vorrang. Ein Rollenbegriff ohne Rang sortiert hinter jeden mit Rang, in Quellreihenfolge.
 
+Ein neu aufgenommener Rollenbegriff bekommt einen Rang am Ende der bestehenden Reihe. Die Reihenfolge der bereits vergebenen Ränge bleibt unverändert, weil eine Umsortierung eine Datierung verschiebt, die heute ankert. Eine Umsortierung ist eine eigene Entscheidung und keine Nebenwirkung einer Ergänzung.
+
 ### Finanzrollen (Typ `ausgaben, währung` / `einnahmen, währung` / `summe, währung`)
 
 | Rolle | Status | Bemerkung |
@@ -342,12 +372,15 @@ Zwei Eigenschaften am Rollenbegriff sagen, was eine Datierung datiert und welche
 | provision | ● ★ | Agentenvergütung |
 | gesamtvergütung | ● ★ | Umlaut bleibt erhalten, keine ASCII-Transliteration |
 | reisekosten | ● ★ | |
-| rundfunkhonorar | ● ★ | Quelle führt Tippform „rundfunkshonorar", durchgereicht |
+| rundfunkhonorar | ○ | seit der Lieferung 2026-08-31 nicht mehr belegt, die drei Belege tragen jetzt `gesamtvergütung`; Quelle führte die Tippform „rundfunkshonorar" |
+| abspielhonorar | ● ★ | Vergütung für die Ausstrahlung einer vorhandenen Aufnahme, gegen `rundfunkhonorar` (Herstellung) abzugrenzen |
+| gage | ● ★ | Abendsumme über mehrere Partien, gegen `abendgage` (je Partie) abzugrenzen |
+| summe | ● ★ | die Rolle wiederholt das Detailfeld `summe`; als Begriff geführt, damit kein Literal in der Rollenproperty steht |
 | erwähnt | ● | |
 
 ### Statusmarkierungen in der Rollenspalte
 
-Die Quelle nutzt die `rolle`-Spalte vereinzelt für einen Vertragsstatus statt für eine echte Rolle. Dieser wird spaltenweit über einen ganzen Vertragsblock durchgereicht (z. B. NIM_023).
+Die Quelle nutzte die `rolle`-Spalte vereinzelt für einen Vertragsstatus statt für eine echte Rolle. Mit der Lieferung vom 2026-08-31 steht der Wert in der Anmerkungsspalte als `Vertrag nicht eingehalten` und die betroffenen Zeilen tragen eine echte Rolle. Der Rollenwert `nicht eingehalten` ist damit nicht mehr belegt. Die Modellierung als `m3gim-ontology:contractStatus` am Vorkommnis ist damit nicht mehr extern blockiert und steht als eigene Runde aus.
 
 | Wert | Status | Bemerkung |
 |---|---|---|
@@ -364,6 +397,17 @@ Die Quelle nutzt die `rolle`-Spalte vereinzelt für einen Vertragsstatus statt f
 | Nur Jahr | YYYY | 1958 |
 | Zeitspanne | YYYY-MM-DD/YYYY-MM-DD | 1958-08-10/1958-09-09 |
 | Zeitspanne nur Jahre | YYYY/YYYY | 1945/1947 |
+| Spielzeit in der Quellschreibung | YYYY-YYYY | 1947-1952 |
+
+### Quellformat und Autokonvertierung
+
+Die Datumswerte der Verknüpfungstabelle sind Text. Der XLSX-Export der Tabellenkalkulation liest sie als Kalenderwerte zurück und schreibt sie als Zeitstempel der Form `YYYY-MM-DD 00:00:00`. Dabei wird eine Monatsangabe `1956-11` auf den Monatsersten aufgefüllt und die jahrlose Angabe `06-09` zu `2026-09-06`. Der Datensatz behauptete damit eine Genauigkeit, die die Quelle nicht trägt. Dasselbe trifft die Folio-Spalte, wo `15-1` zu `2026-01-15` wird, und die Bündelungsspalte, wo `01.01` zu `2026-01-01` wird.
+
+Daraus folgt die Quellformat-Regel aus Abschnitt 3: die Verknüpfungstabelle wird als CSV gelesen, nicht als XLSX. Ein Wert der Form `YYYY-MM-DD 00:00:00` ist damit kein zulässiges Quellformat mehr. Trifft er trotzdem ein, belegt er eine Autokonvertierung; er geht als Warnung in den Validierungsreport und wird nicht als tagesgenaues Datum übernommen.
+
+Nicht aufgefüllte Monats- und Tagesstellen (`1956-5-13`, `1954-11-8`) sind ein Quellfehler und gehen als Befund in den Report. Die Pipeline füllt sie nicht auf, weil das Auffüllen genau die Behauptung erzeugt, die der Wechsel auf die CSV-Quelle beseitigt hat.
+
+Die Spielzeitform mit Bindestrich ist die Schreibung der Quelle; `clean_date()` normalisiert sie auf `YYYY/YYYY`. Sie bleibt zulaessig, weil die Umsetzung verlustfrei ist und die Erfassung sie durchgaengig so fuehrt.
 
 ### Qualifier
 
@@ -471,9 +515,17 @@ Die kompensierten Eigenheiten fallen in die Kategorien Spec, Workaround, Policy 
 | Personenindex ohne sauberen Namensspaltenkopf | Workaround | Header-Shift auch für den Personenindex, sonst Totalverlust der Personen-Normdaten |
 | gleiche `archivsignatur` für Sammel-Zeile und Folio-Zeilen | Workaround | `build_konvolut_hierarchy()` vergibt `_sammlung`-Suffix auf der @id |
 | Muster-/Template-Zeile im Erfassungsblatt | Policy | Zeilen mit `archivsignatur = "beispiel"` werden übersprungen |
-| Komposit-Typ `Datum_Ort` statt `Datum, Ort` (Dropdown-Werte können kein Komma tragen) | Spec | `decompose_komposit_typ()` akzeptiert Unterstrich als gleichwertigen Komposit-Trenner |
-| versteckte Dropdown-Hilfsblätter und Blatt „Typ-Rollen“ im Verknüpfungs-Export | Spec | `load_verknuepfungen()` überspringt Sheets ohne `typ`- und `name`-Spalte |
+| Komposit-Typ mit Unterstrich statt Komma (Dropdown-Werte können kein Komma tragen), belegt `einnahmen_währung`, `ausgaben_währung`, `summe_währung`, `ort_datum` | Spec | `decompose_komposit_typ()` akzeptiert Unterstrich als gleichwertigen Komposit-Trenner |
+| versteckte Dropdown-Hilfsblätter und Wertlistenblatt im Verknüpfungs-Export | Spec | im XLSX-Pfad überspringt `load_verknuepfungen()` Sheets ohne `typ`- und `name`-Spalte; im CSV-Pfad entfällt der Fall, weil nur die Box-Dateien gelesen werden |
+| Autokonvertierung von Datums-, Folio- und Bündelungsspalten im XLSX-Export | Workaround | Quellformat der Verknüpfungen ist die CSV-Ausfuhr je Blatt (E-152); ein Zeitstempelmuster im Datumswert geht als Warnung in den Report |
+| Bündelungsspalte heißt je nach Blatt `datenpunkt_id` oder `data_id` | Workaround | `load_verknuepfungen()` führt beide Schreibungen auf `datenpunkt_id` zusammen |
+| mehrfach erfasster Name in einem Index, Nachzüglerzeile ohne `m3gim_id` und ohne Normdaten | Workaround | feldweise Verdichtung nach Identität statt Überschreiben durch die letzte Zeile; ohne sie verliert unter anderem die Nachlassbildnerin ihre Wikidata-Kennung, der Feldkonflikt geht in den Validierungsreport |
+| gleicher Werktitel bei verschiedenen Komponisten (`Requiem`, `Stabat mater`) | Workaround | Werkindex-Schlüssel ist das Paar aus Titel und Komponist; eine Verknüpfung, die nur den Titel nennt, bleibt unaufgelöst und trägt `name-nicht-eindeutig` |
+| Indexkopfzelle mit einem Datenwert überschrieben (`Turin` statt `m3gim_id` im Ortsindex) | Workaround | Kennungsspalte positionsbasiert erkannt statt über den Kopfnamen; der geleakte Wert geht in den Report |
+| Verknüpfungszeile mit `name` und `rolle`, aber ohne `typ` | Workaround | Zeile wird gezählt und mit Fundstelle in den Validierungsreport geschrieben, statt still verworfen zu werden; ein Typ wird nicht geraten |
 | früherer ASCII-Fallback für den Verknüpfungen-Dateinamen | Dead | entfernt, Pipeline wirft jetzt `FileNotFoundError` |
+
+Eine Zeile ohne Typangabe trägt keine auswertbare Aussage, weil der Typ den Zielkontext steuert und der `name` allein nicht sagt, ob er eine Person, einen Ort, ein Werk oder ein Dokument bezeichnet. Solche Zeilen werden nicht modelliert. Sie werden gezählt, mit Blatt, Zeile, Signatur, Folio, Name und Rolle in den Validierungsreport geschrieben und über das [Datenfehler-Register](data-errors.md) an das Erschließungsteam gegeben. Ein Vorschlag für den fehlenden Typ entsteht getrennt davon nach dem Muster von `scripts/propose-links.py` (E-147), also als Vorlage in der Spaltenform der Verknüpfungstabelle, die weder die Tabelle noch den Datensatz schreibt.
 
 Einzelne Instanz-Befunde (Quellfehler und Abgleichfehler mit Fundstelle und Status) stehen kanonisch im [Datenfehler-Register](data-errors.md) und werden hier nicht dupliziert; vor Bearbeitung gegen den aktuellen Quality-Snapshot (`data/reports/quality-snapshot.md`) verifizieren.
 
@@ -485,6 +537,6 @@ Datengrundlage ist der Teilnachlass UAKUG/NIM am Universitätsarchiv der KUG Gra
 - **Plakate** NIM/PL_01–PL_26.
 - **Tonträger** NIM/TT_01 mit Schellackplatten und Aufnahmen.
 
-Der Quellenzeitraum reicht von 1934 bis 2009. Feinerschlossen mit einzelnen Folio-Einträgen sind bislang die Konvolute um NIM_003, NIM_004, NIM_005, NIM_006, NIM_007 und NIM_011. Bestandszahlen pro Gruppe, Feinerschließungstiefe und Abdeckungsgrade stehen im Quality-Snapshot (`data/reports/quality-snapshot.md`).
+Der Quellenzeitraum reicht von 1919 bis 2010. Die früheste Datierung trägt ein Plakat, die späteste eine Ausstellung nach dem Tod der Nachlassbildnerin; die bis 2026-08-31 hier geführte Spanne 1934 bis 2009 war an beiden Enden zu eng. Ein Wert außerhalb dieser Spanne ist ein Quellfehler und steht im [Datenfehler-Register](data-errors.md). Welche Konvolute mit einzelnen Folio-Einträgen feinerschlossen sind, steht im Quality-Snapshot. Bestandszahlen pro Gruppe, Feinerschließungstiefe und Abdeckungsgrade stehen im Quality-Snapshot (`data/reports/quality-snapshot.md`).
 
 Zu Ira Malaniuk existiert keine eigenständige wissenschaftliche Literatur. Das Projekt leistet die ersten archivgestützten Erschließungsarbeiten. Die Einordnung in den Forschungskontext führt [research-framework.md](research-framework.md).

@@ -4,7 +4,8 @@
  */
 
 import { loadArchive } from './data/loader.js';
-import { initRouter, getState } from './ui/router.js';
+import { initRouter, getState, syncHashToFilter } from './ui/router.js';
+import { subscribe as subscribeFilter } from './ui/filter-state.js';
 import { initKorb, onKorbChange, getKorbCount, getKorbItems } from './ui/basket.js';
 import { renderBestand, selectArchivRecord } from './views/archive-holdings.js';
 import { renderChronik } from './views/archive-timeline.js';
@@ -17,6 +18,7 @@ import { renderVerknuepfungen, verknuepfungenAggregate } from './views/verknuepf
 import { ensureArray } from './utils/format.js';
 import { extractXlsxSource } from './utils/provenance.js';
 import { IS_DEV } from './utils/env.js';
+import { extractYear } from './utils/date-parser.js';
 
 let store = null;
 const renderedTabs = new Set();
@@ -73,6 +75,12 @@ async function init() {
       },
     });
 
+    // Der Schnitt gehoert in die Adresszeile: jede Filteraenderung schreibt
+    // den Query-Teil nach, damit ein Befund zitierbar bleibt und den Reload
+    // ueberlebt. initRouter hat den Filter aus dem Hash bereits gesetzt.
+    subscribeFilter(() => syncHashToFilter(), { immediate: false });
+    syncHashToFilter();
+
     // Render initial tab
     renderTab(getState().activeTab);
 
@@ -114,7 +122,7 @@ function logTabActivation(tab, s) {
     indizes:             () => ({ persons: s.persons.size, orgs: s.organizations.size, locs: s.locations.size, works: s.works.size, agentRel: s.agentRelations.size, relResolved: s.agentRelationResolvedCount || 0 }),
     karte:               () => {
       const all = [...s.mobilityEvents.values()];
-      return { events: all.length, datiert: all.filter(e => /\d{4}/.test(String(e.date || ''))).length, verortet: all.filter(e => typeof e.placeLat === 'number').length };
+      return { events: all.length, datiert: all.filter(e => extractYear(e.date) !== null).length, verortet: all.filter(e => typeof e.placeLat === 'number').length };
     },
     netzwerk: () => {
       const agg = netzwerkAggregate();
@@ -122,7 +130,7 @@ function logTabActivation(tab, s) {
     },
     verknuepfungen: () => {
       const g = verknuepfungenAggregate();
-      return g ? { knoten: g.nodes.length, recordsWeit: g.stats.recordsWeit, recordsEng: g.stats.recordsEng } : {};
+      return g ? { knoten: g.nodes.length, records: g.stats.records, eng: g.stats.eng } : {};
     },
     korb: () => {
       const ids = getKorbItems();

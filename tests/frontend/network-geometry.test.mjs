@@ -36,6 +36,8 @@ import {
   personInTimeRange,
 } from '../../docs/js/views/network.js';
 import { DATING_SCOPE } from '../../docs/js/data/constants.js';
+import { getPersonKategorie } from '../../docs/js/utils/normalize.js';
+import { storeFromShipped } from './_shipped.mjs';
 
 // ---------------------------------------------------------------------------
 // Mini-Faktory fuer Person-Entries (spiegelt die im Loader gebaute Shape).
@@ -514,4 +516,111 @@ test('personInTimeRange: undatierte Person faellt bei aktivem Fenster heraus', (
   const { personYears, yearRange } = personYearsIndex(yearStore());
   const fenster = { yearFrom: 1800, yearTo: 2000 };
   assert.equal(personInTimeRange(personYears, yearRange, 'Erwaehnt, C', fenster), false);
+});
+
+// ---------------------------------------------------------------------------
+// Echte Kette getPersonKategorie -> isPureComposer
+//
+// Die Tests weiter oben setzen `kategorie` von Hand und pruefen damit nur die
+// Filterlogik, nicht ihre Speisung. Genau dort sass der Defekt: die Ausnahmen
+// der Wagner-Familie standen in PERSONEN_KATEGORIEN in der Form
+// "wieland wagner", waehrend der Datensatz "Wagner, Wieland" fuehrt. Der
+// includes-Vergleich in getPersonKategorie traf nie, beide Regisseure wurden
+// "Komponist" und fielen aus dem Netzwerk. Die folgenden Tests fuehren die
+// Kette in der Reihenfolge, in der der Loader sie fuehrt.
+// ---------------------------------------------------------------------------
+
+const NAMEN_AUS_DEM_DATENSATZ = {
+  regie: ['Wagner, Wieland', 'Wagner, Wolfgang', 'Wagner, WIeland', 'Wagner, Wieland Gottfried'],
+  komponist: ['Wagner, Richard', 'Strauss, Richard'],
+};
+
+test('Kette: Regie-Ausnahmen der Wagner-Familie bleiben im Netzwerk', () => {
+  for (const name of NAMEN_AUS_DEM_DATENSATZ.regie) {
+    const entry = { kategorie: getPersonKategorie(name), records: new Set(['r1']), roles: new Set(['regisseur']) };
+    assert.equal(entry.kategorie, 'Regisseur',
+      `getPersonKategorie('${name}') liefert '${entry.kategorie}' statt 'Regisseur'`);
+    assert.equal(isPureComposer(name, entry), false,
+      `'${name}' wird als reiner Komponist aus dem Netzwerk gefiltert`);
+  }
+});
+
+test('Kette: Werk-Komponisten bleiben gefiltert', () => {
+  for (const name of NAMEN_AUS_DEM_DATENSATZ.komponist) {
+    const entry = { kategorie: getPersonKategorie(name), records: new Set(['r1']), roles: new Set(['komponist']) };
+    assert.equal(entry.kategorie, 'Komponist',
+      `getPersonKategorie('${name}') liefert '${entry.kategorie}' statt 'Komponist'`);
+    assert.equal(isPureComposer(name, entry), true,
+      `'${name}' bleibt faelschlich im Personen-Netzwerk`);
+  }
+});
+
+test('Kette am erzeugten Datensatz: Wieland und Wolfgang Wagner sind Knoten, Richard nicht', async () => {
+  const store = await storeFromShipped();
+  const layout = computeLayout(store.persons, { cx: 0, cy: 0, radii: [100, 200] });
+  const namen = new Set(layout.nodes.map((n) => n.name));
+  for (const name of ['Wagner, Wieland', 'Wagner, Wolfgang']) {
+    assert.ok(store.persons.has(name), `'${name}' fehlt im Personen-Index`);
+    assert.ok(namen.has(name), `'${name}' fehlt als Knoten im Netzwerk-Layout`);
+  }
+  assert.equal(namen.has('Wagner, Richard'), false,
+    'Richard Wagner ist reiner Werk-Komponist und gehoert nicht ins Personen-Netzwerk');
+});
+
+// Zweite Ursache derselben Ausblendung: isPureComposer verglich mit includes
+// ohne Wortgrenze. Der Listeneintrag 'wolf' traf damit jedes 'Wolfgang' und
+// 'Wolfram', 'verdi' das 'Monteverdi'. Und ein geteilter Nachname genuegte:
+// die Saenger 'Weber, Ludiwig' und 'Schubert, Erika' fielen aus dem Netzwerk,
+// obwohl sie im Bestand nie als Komponist auftreten. Der Rollenbeleg der
+// Person entscheidet, sobald er vorliegt.
+
+test('isPureComposer: Vorname Wolfgang ist kein Komponisten-Nachname', () => {
+  const entry = { kategorie: 'Andere', records: new Set(['r1']), roles: new Set(['sänger']) };
+  assert.equal(isPureComposer('Witte, Wolfgang', entry), false);
+  assert.equal(isPureComposer('Zimmermann, Wolfram', entry), false);
+});
+
+test('isPureComposer: geteilter Nachname ohne Komponisten-Rolle bleibt drin', () => {
+  const saenger = { kategorie: 'Andere', records: new Set(['r1']), roles: new Set(['sänger']) };
+  assert.equal(isPureComposer('Weber, Ludiwig', saenger), false);
+  assert.equal(isPureComposer('Schubert, Erika', saenger), false);
+});
+
+test('isPureComposer: derselbe Nachname mit Komponisten-Rolle faellt heraus', () => {
+  const komponist = { kategorie: 'Komponist', records: new Set(['r1']), roles: new Set(['komponist', 'erwähnt']) };
+  assert.equal(isPureComposer('Schubert, Franz', komponist), true);
+  assert.equal(isPureComposer('Wagner, Richard', komponist), true);
+});
+
+test('Kette am erzeugten Datensatz: nur belegte Komponisten fallen aus dem Netzwerk', async () => {
+  const store = await storeFromShipped();
+  const zuUnrecht = [];
+  for (const [name, entry] of store.persons) {
+    if (isMalaniuk(name, entry)) continue;
+    if (!isPureComposer(name, entry)) continue;
+    const rollen = [...entry.roles].map((r) => String(r).toLowerCase().trim());
+    if (rollen.includes('komponist')) continue;
+    zuUnrecht.push(`${name} (${entry.records.size} Records, ${rollen.join('/') || 'ohne Rolle'})`);
+  }
+  assert.deepEqual(zuUnrecht, [],
+    'ohne Komponisten-Rolle aus dem Netzwerk gefiltert: ' + zuUnrecht.join(' | '));
+});
+
+test('isPureComposer: kuratierte Nicht-Komponisten-Kategorie schuetzt trotz Komponisten-Rolle', () => {
+  // Hindemith dirigierte im Bestand und komponierte; die kuratierte
+  // Kategorie 'Dirigent' haelt ihn im Netzwerk.
+  const entry = { kategorie: 'Dirigent', records: new Set(['r1']), roles: new Set(['dirigent', 'komponist']) };
+  assert.equal(isPureComposer('Hindemith, Paul', entry), false);
+});
+
+test('Kette am erzeugten Datensatz: kuratierte Kategorien bleiben im Netzwerk', async () => {
+  const store = await storeFromShipped();
+  const KURATIERT = new Set(['Dirigent', 'Regisseur', 'Kollege', 'Korrepetitor', 'Vermittler', 'Archivsubjekt']);
+  const verloren = [];
+  for (const [name, entry] of store.persons) {
+    if (!KURATIERT.has(entry.kategorie)) continue;
+    if (isPureComposer(name, entry)) verloren.push(`${name} (${entry.kategorie})`);
+  }
+  assert.deepEqual(verloren, [],
+    'kuratierte Nicht-Komponisten aus dem Netzwerk gefiltert: ' + verloren.join(' | '));
 });

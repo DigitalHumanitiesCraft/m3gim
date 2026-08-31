@@ -1,4 +1,11 @@
-"""JSON-Schema-Validierung für m3gim.jsonld."""
+"""JSON-Schema-Validierung für m3gim.jsonld.
+
+Die Wohlgeformtheit und Aufloesbarkeit der Dokumenttyp-Hierarchie stand
+hier ein zweites Mal und liegt seither allein in
+test_06_frontend_contract.test_dft_hierarchy_concepts_resolve, das die
+gleichen Aussagen schaerfer fasst (Mindestzahl der Concepts, broader auch
+als Nicht-Dict beanstandet, Record-Referenzen ohne Praefixfilter).
+"""
 
 import json
 from pathlib import Path
@@ -17,41 +24,3 @@ def jsonld_schema():
 
 def test_jsonld_valid_against_schema(jsonld, jsonld_schema):
     jsonschema.validate(jsonld, jsonld_schema)
-
-
-def test_dft_hierarchy_well_formed(graph):
-    """skos:Concept-Knoten fuer m3gim-dft haben prefLabel, optional broader,
-    und broader zeigt auf einen ebenfalls im Graph vorhandenen skos:Concept.
-
-    Implementiert data.md Abschnitt 12 (hierarchische Dokumenttypen).
-    """
-    concepts = {n["@id"]: n for n in graph if n.get("@type") == "skos:Concept"}
-    assert concepts, "Kein skos:Concept im Graph — dft-Hierarchie fehlt"
-
-    missing_label = [cid for cid, n in concepts.items() if not n.get("skos:prefLabel")]
-    assert not missing_label, f"skos:Concept ohne prefLabel: {missing_label[:5]}"
-
-    unresolved = []
-    for cid, n in concepts.items():
-        broader = n.get("skos:broader")
-        if not broader:
-            continue
-        bid = broader.get("@id") if isinstance(broader, dict) else broader
-        if bid not in concepts:
-            unresolved.append((cid, bid))
-    assert not unresolved, f"skos:broader zeigt auf nicht-existente Konzepte: {unresolved[:5]}"
-
-
-def test_dft_references_are_resolvable(graph, records):
-    """Jeder rico:hasDocumentaryFormType eines Records verweist auf einen
-    skos:Concept, der im Graph existiert. Sichert referentielle Integritaet
-    der Dokumenttyp-Hierarchie."""
-    concepts = {n["@id"] for n in graph if n.get("@type") == "skos:Concept"}
-    missing = set()
-    for r in records:
-        dft = r.get("rico:hasDocumentaryFormType")
-        if isinstance(dft, dict):
-            dft_id = dft.get("@id", "")
-            if dft_id.startswith("m3gim-vocab:") and dft_id not in concepts:
-                missing.add(dft_id)
-    assert not missing, f"DFT-Referenzen ohne Konzept im Graph: {sorted(missing)[:5]}"

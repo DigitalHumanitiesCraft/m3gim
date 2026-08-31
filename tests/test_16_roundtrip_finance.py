@@ -11,6 +11,7 @@ Sichert dass die Finanzschicht nicht nur strukturell grun ist, sondern auch
 jede Datenzeile tatsaechlich im Output erscheint. Phase 4.6 Invariante.
 """
 
+import re
 import sys
 from pathlib import Path
 
@@ -50,7 +51,15 @@ def _is_finance_typ(raw_typ: str) -> bool:
 
 
 def _finance_base_typ(raw_typ: str) -> str:
-    return raw_typ.strip().lower().split(",")[0].strip()
+    """Grundtyp einer Finanzzeile ohne den Waehrungsteil des Komposits.
+
+    Komma und Unterstrich sind gleichwertige Komposit-Trenner (E-Umbau der
+    Dropdowns, test_37): ein Dropdown-Wert kann kein Komma tragen, weshalb
+    der Export `einnahmen, waehrung` als `einnahmen_waehrung` liefert. Ohne
+    den Unterstrich blieb der Grundtyp ungetrennt, traf kein detailField und
+    meldete jede Zeile des neuen Exports als fehlend.
+    """
+    return re.split(r"[,_]", raw_typ.strip().lower())[0].strip()
 
 
 @pytest.fixture(scope="module")

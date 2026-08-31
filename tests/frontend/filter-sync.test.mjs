@@ -23,17 +23,24 @@ import { DATING_SCOPE } from '../../docs/js/data/constants.js';
 // --- Schicht 1: reine Projektionen ----------------------------------------
 
 describe('sharedToToolbarState / toolbarStateToShared (ort<->location)', () => {
+  // Seit E-151 haelt jede Entitaetsfacette eine Liste. Ein Einzelwert aus einer
+  // Altstelle bleibt zulaessig und wird zur einelementigen Liste; keine lesende
+  // Stelle darf danach noch einen String erwarten.
   test('shared.ort projiziert auf toolbar.location, person/werk 1:1', () => {
     const t = sharedToToolbarState({ ort: 'Bayreuth', person: 'Malaniuk, Ira', werk: 'Tristan' });
-    assert.deepEqual(t, { person: 'Malaniuk, Ira', location: 'Bayreuth', werk: 'Tristan' });
+    assert.deepEqual(t, { person: ['Malaniuk, Ira'], location: ['Bayreuth'], werk: ['Tristan'] });
+  });
+  test('mehrere Werte kommen vollstaendig an', () => {
+    const t = sharedToToolbarState({ ort: ['Bayreuth', 'Wien'], person: [], werk: [] });
+    assert.deepEqual(t, { person: [], location: ['Bayreuth', 'Wien'], werk: [] });
   });
   test('Leerwerte bleiben leer (Facette inaktiv)', () => {
-    assert.deepEqual(sharedToToolbarState({}), { person: '', location: '', werk: '' });
+    assert.deepEqual(sharedToToolbarState({}), { person: [], location: [], werk: [] });
   });
   test('Rueckprojektion location -> ort, Roundtrip stabil', () => {
-    const shared = { ort: 'Wien', person: 'X', werk: '' };
+    const shared = { ort: ['Wien'], person: ['X'], werk: [] };
     const back = toolbarStateToShared(sharedToToolbarState(shared));
-    assert.deepEqual(back, { person: 'X', ort: 'Wien', werk: '' });
+    assert.deepEqual(back, { person: ['X'], ort: ['Wien'], werk: [] });
   });
 });
 
@@ -93,10 +100,15 @@ describe('sicht <-> active-Set (Karte)', () => {
     const set = sichtToActiveSet('performativ', ids);
     assert.deepEqual([...set], ['performativ']);
   });
-  test('activeSetToSicht: genau eine aktiv => Id, alle aktiv => leer', () => {
-    assert.equal(activeSetToSicht(new Set(['diskursiv']), ids), 'diskursiv');
-    assert.equal(activeSetToSicht(new Set(ids), ids), '');
-    assert.equal(activeSetToSicht(new Set(['a', 'b']), ids), '');
+  test('zwei gesetzte Sichten => genau diese beiden', () => {
+    const set = sichtToActiveSet(['performativ', 'diskursiv'], ids);
+    assert.deepEqual([...set].sort(), ['diskursiv', 'performativ']);
+  });
+  test('activeSetToSicht: Teilauswahl => Liste, alle aktiv => leere Liste', () => {
+    assert.deepEqual(activeSetToSicht(new Set(['diskursiv']), ids), ['diskursiv']);
+    assert.deepEqual(activeSetToSicht(new Set(ids), ids), []);
+    assert.deepEqual(activeSetToSicht(new Set(['performativ', 'diskursiv']), ids),
+      ['performativ', 'diskursiv']);
   });
 });
 
@@ -178,7 +190,7 @@ describe('filter-state Dispatch + Loop-Guard (window gemockt)', () => {
     // Simuliert einen View: subscribe spiegelt den geteilten ort in einen
     // lokalen "Toolbar"-State und schreibt ihn — innerhalb des Guards — zurueck.
     // Ohne Guard riefe der Rueckschreib-setFilter den Subscriber erneut.
-    const toolbar = { location: '' };
+    const toolbar = { location: [] };
     let writeBacks = 0;
     const unsub = subscribe((shared) => {
       if (guard.isActive()) return;
@@ -192,9 +204,9 @@ describe('filter-state Dispatch + Loop-Guard (window gemockt)', () => {
     }, { immediate: false });
 
     setFilter({ ort: 'Wien' });
-    assert.equal(toolbar.location, 'Wien', 'View hat den geteilten Wert gespiegelt');
+    assert.deepEqual(toolbar.location, ['Wien'], 'View hat den geteilten Wert gespiegelt');
     assert.equal(writeBacks, 1, 'genau ein Write-Back, keine Schleife');
-    assert.equal(getFilter().ort, 'Wien');
+    assert.deepEqual(getFilter().ort, ['Wien']);
 
     unsub();
     resetFilter();
@@ -209,7 +221,7 @@ describe('filter-state Dispatch + Loop-Guard (window gemockt)', () => {
     let total = 0;
     const makeView = () => {
       const g = makeSyncGuard();
-      const local = { location: '' };
+      const local = { location: [] };
       return subscribe((shared) => {
         if (g.isActive()) return;
         g.run(() => {
@@ -224,7 +236,7 @@ describe('filter-state Dispatch + Loop-Guard (window gemockt)', () => {
 
     setFilter({ ort: 'Bayreuth' });
     // Beide Views reagieren genau einmal; setFilter terminiert (No-Op-Konvergenz).
-    assert.equal(getFilter().ort, 'Bayreuth');
+    assert.deepEqual(getFilter().ort, ['Bayreuth']);
     assert.ok(total <= 4, `Dispatch konvergiert, kein Lauf (total=${total})`);
 
     u1(); u2();

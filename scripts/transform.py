@@ -657,43 +657,171 @@ def load_index(name: str) -> pd.DataFrame | None:
                 first_row = pd.DataFrame([old_headers], columns=df.columns)
                 df = pd.concat([first_row, df], ignore_index=True)
 
+    # (c) Kennungsspalte mit einem Datenwert ueberschrieben — Ortsindex der
+    # Lieferung 2026-08-31 traegt an Position 0 den Ortsnamen "Turin" statt
+    # "m3gim_id". Keiner der beiden Zweige oben greift, weil Position 0 nicht
+    # "m3gim_id" heisst und Position 1 auf der Ausnahmeliste steht. Hier wird
+    # allein Spalte 0 positionell zurueckbenannt, wenn ihre Werte wie
+    # Index-Kennungen aussehen; die uebrigen Koepfe bleiben unberuehrt, damit
+    # keine Notizspalte faelschlich zur wikidata_id wird (E-152).
+    if len(df.columns) and str(df.columns[0]).strip().lower() != "m3gim_id":
+        col0 = df.columns[0]
+        sample = df[col0].dropna().astype(str).str.strip().head(10)
+        if len(sample) and all(re.match(r"^[A-Za-z]\d+$", s) for s in sample):
+            print(f"  {name}: Kopfzelle der Kennungsspalte traegt '{col0}', "
+                  "positionell auf 'm3gim_id' zurueckbenannt")
+            df = df.rename(columns={col0: "m3gim_id"})
+
     return df
 
 
+# Felder, die je Identitaet genau einen Wert tragen, und das eine mehrwertige.
+# M1: kuratierte Index-Felder durchreichen, damit ALLE gepflegten Daten das
+# Frontend erreichen. Pro Index-Typ existiert nur die jeweils passende Spalte
+# (org: ort/Sitz + assoziierte_person; person: lebensdaten; werk: rolle_stimme).
+_INDEX_SCALAR_FIELDS = (
+    "wikidata_id", "gnd_id", "anmerkung", "komponist",
+    "lebensdaten", "ort", "rolle_stimme",
+)
+_INDEX_MULTI_FIELDS = ("assoziierte_person",)
+
+
+def _index_row_values(row: pd.Series, columns) -> dict:
+    """Die nicht leeren Indexfelder einer Zeile als getrimmte Strings."""
+    values = {}
+    for col in _INDEX_SCALAR_FIELDS + _INDEX_MULTI_FIELDS:
+        if col not in columns:
+            continue
+        raw = row.get(col)
+        if pd.isna(raw):
+            continue
+        val = str(raw).strip()
+        if val:
+            values[col] = val
+    return values
+
+
 def build_index_lookup(df: pd.DataFrame) -> dict:
-    """Baut Lookup-Dictionary: name → {wikidata_id, ...}"""
-    lookup = {}
+    """Baut Lookup-Dictionary: name → {wikidata_id, ...} (data.md § 3).
+
+    Die frühere Fassung schrieb je Namen einen Eintrag in Quellreihenfolge, bei
+    gleichem Namen gewann die letzte Zeile vollstaendig. Die Lieferung vom
+    2026-08-31 fuehrt die Nachlassbildnerin zweimal im Personenindex, die
+    zweite Zeile ohne Kennung und ohne Lebensdaten; sie kostete damit die
+    zentrale Person des Bestands ihre Wikidata-Kennung samt Anreicherung.
+
+    Drei Regeln loesen das deterministisch (E-152).
+
+    Identitaet. Eine ``m3gim_id`` ist die Identitaet. Eine Zeile ohne Kennung
+    schliesst sich der Gruppe an, die denselben Namen unter einer Kennung
+    fuehrt, sonst bildet der getrimmte Name die Identitaet.
+
+    Verdichtung. Je Feld gewinnt der erste nicht leere Wert in
+    Quellreihenfolge; ein gefuelltes Feld wird nie von einem leeren
+    ueberschrieben. ``assoziierte_person`` ist mehrwertig und sammelt.
+
+    Kollision. Verschiedene nicht leere Werte im selben Feld setzen
+    ``index_conflict``; der erste Wert gewinnt, und der Fall geht ueber
+    ``validate.py`` in den Report. Zwei Zeilen mit demselben Namen und
+    verschiedenen Kennungen sind eine Namenskollision; im Werkindex bleibt sie
+    unaufgeloest, weil ``Requiem`` und ``Stabat mater`` je drei verschiedene
+    Werke bezeichnen.
+    """
+    lookup: dict = {}
+    if df is None:
+        return lookup
     name_col = 'name' if 'name' in df.columns else 'titel'
     if name_col not in df.columns:
         return lookup
+    columns = set(df.columns)
+    has_id = 'm3gim_id' in columns
+    is_work_index = 'komponist' in columns
 
+    # Vorlauf: erste Kennung je Name, damit eine Nachzueglerzeile ohne Kennung
+    # in die Gruppe der gepflegten Zeile faellt statt eine eigene zu bilden.
+    first_id_for_name: dict = {}
+    if has_id:
+        for _, row in df.iterrows():
+            name = normalize_str(row.get(name_col))
+            ident = row.get('m3gim_id')
+            if name is None or pd.isna(ident):
+                continue
+            key = str(ident).strip()
+            if key:
+                first_id_for_name.setdefault(name.lower(), key)
+
+    groups: dict = {}
+    order: list = []
     for _, row in df.iterrows():
         name = normalize_str(row.get(name_col))
         if name is None:
             continue
-        entry = {"name": name}
-        if pd.notna(row.get('wikidata_id')):
-            wid = str(row['wikidata_id']).strip()
-            if wid:
-                entry["wikidata_id"] = wid
-        if pd.notna(row.get('gnd_id')):
-            gid = str(row['gnd_id']).strip()
-            if gid:
-                entry["gnd_id"] = gid
-        if pd.notna(row.get('anmerkung')):
-            entry["anmerkung"] = str(row['anmerkung']).strip()
-        if pd.notna(row.get('komponist')):
-            entry["komponist"] = str(row['komponist']).strip()
-        # M1: kuratierte Index-Felder durchreichen, damit ALLE gepflegten Daten
-        # das Frontend erreichen (zuvor fielen sie nach build_index_lookup weg).
-        # Pro Index-Typ nur die jeweils vorhandene Spalte (org: ort/Sitz +
-        # assoziierte_person; person: lebensdaten; werk: rolle_stimme).
-        for col in ('lebensdaten', 'ort', 'assoziierte_person', 'rolle_stimme'):
-            if col in df.columns and pd.notna(row.get(col)):
-                val = str(row[col]).strip()
-                if val:
-                    entry[col] = val
-        lookup[name.lower()] = entry
+        low = name.lower()
+        ident = None
+        if has_id and pd.notna(row.get('m3gim_id')):
+            raw_id = str(row['m3gim_id']).strip()
+            if raw_id:
+                ident = ("id", raw_id)
+        if ident is None:
+            ident = ("id", first_id_for_name[low]) if low in first_id_for_name else ("name", low)
+
+        group = groups.get(ident)
+        if group is None:
+            group = {"name": name, "scalar": {}, "multi": {}, "conflicts": {}}
+            groups[ident] = group
+            order.append(ident)
+
+        for field, value in _index_row_values(row, columns).items():
+            if field in _INDEX_MULTI_FIELDS:
+                bucket = group["multi"].setdefault(field, [])
+                if value not in bucket:
+                    bucket.append(value)
+                continue
+            previous = group["scalar"].get(field)
+            if previous is None:
+                group["scalar"][field] = value
+            elif previous != value:
+                clash = group["conflicts"].setdefault(field, [previous])
+                if value not in clash:
+                    clash.append(value)
+
+    by_name: dict = {}
+    for ident in order:
+        group = groups[ident]
+        entry = {"name": group["name"]}
+        entry.update(group["scalar"])
+        for field, values in group["multi"].items():
+            entry[field] = "; ".join(values)
+        if group["conflicts"]:
+            entry["index_conflict"] = True
+            entry["index_conflict_fields"] = {k: list(v) for k, v in group["conflicts"].items()}
+        if ident[0] == "id":
+            entry["m3gim_id"] = ident[1]
+        by_name.setdefault(group["name"].lower(), []).append(entry)
+
+    for low, entries in by_name.items():
+        if len(entries) == 1:
+            lookup[low] = entries[0]
+            continue
+        # Namenskollision: der Name bezeichnet mehr als eine Identitaet.
+        if is_work_index:
+            # Der Titel allein ist keine Identitaet. Ohne Komponisten in der
+            # Verknuepfungszeile bleibt die Zuordnung offen; ein geratener
+            # Komponist waere eine erfundene Aussage.
+            lookup[low] = {
+                "name": entries[0]["name"],
+                "ambiguous": True,
+                "candidates": [
+                    {k: v for k, v in e.items()
+                     if k in ("name", "komponist", "wikidata_id", "m3gim_id")}
+                    for e in entries
+                ],
+            }
+            continue
+        winner = dict(entries[0])
+        winner["name_collision"] = True
+        winner["collision_candidates"] = [e.get("m3gim_id") for e in entries]
+        lookup[low] = winner
 
     return lookup
 
@@ -1099,77 +1227,150 @@ def _make_stage_role(stage_roles: dict, role_name: str) -> str:
     return sid
 
 
-def load_verknuepfungen(path: Path) -> pd.DataFrame:
-    """Laedt die Verknuepfungstabelle als EINE DataFrame ueber alle Sheets (E-95).
+VERKNUEPFUNGEN_CSV_DIR = "verknuepfungen"
 
-    Der Box-Export verteilt die Verknuepfungen auf mehrere, inkonsistent
-    benannte Sheets (Box_01, Box_02, Box_4, Box 5, Box 6, Box 9). Der
-    Produktions-Workbook hat genau ein Sheet "Verknuepfungen". Diese Funktion
-    absorbiert beide Faelle:
 
-    - Spalte 0 ist die Archivsignatur, im Box-Export OHNE Header (pandas liest
-      sie als " " bzw. "Unnamed: 0"). Sie wird positionell erkannt, auf
-      "archivsignatur" umbenannt und pro Sheet forward-gefuellt (viele
-      Folgezeilen lassen die Signatur leer).
-    - Die uebrigen Spalten werden per (lowercased) Name angeglichen; Box 6
-      ohne datenpunkt_id wird toleriert.
-    - Provenance (Sheet-Name + 1-basierte XLSX-Zeile) wandert in die
-      Hilfsspalten ``_xlsx_sheet`` / ``_xlsx_row``, damit
-      ``process_verknuepfungen`` die Herkunftszeile sheet-genau aufzeichnet.
+def resolve_verknuepfungen_source(base: Path) -> Path:
+    """Bestimmt die Quelle der Verknuepfungen unter einem Quellverzeichnis.
 
-    Rueckwaerts-kompatibel: beim Single-Sheet-Workbook mit echtem
-    "archivsignatur"-Header liefert die Funktion genau die bisherige
-    Spaltenstruktur (plus die beiden Provenance-Hilfsspalten).
+    Seit E-152 ist das Quellformat die CSV-Ausfuhr je Blatt, weil der
+    XLSX-Export Datums-, Folio- und Buendelungsspalten in Zelltypen umwandelt
+    und dabei Genauigkeit erfindet (data.md § 3 Quellformat). Das
+    CSV-Verzeichnis gewinnt; fehlt es, greift der bisherige XLSX-Pfad, damit
+    ein archivierter Stand lesbar bleibt. Ein direkt uebergebener Dateipfad
+    wird unveraendert durchgereicht.
     """
-    xl = pd.ExcelFile(path)
-    frames: list[pd.DataFrame] = []
+    base = Path(base)
+    if not base.is_dir():
+        return base
+    csv_dir = base if base.name == VERKNUEPFUNGEN_CSV_DIR else base / VERKNUEPFUNGEN_CSV_DIR
+    if csv_dir.is_dir() and any(csv_dir.glob("Box_*.csv")):
+        return csv_dir
+    candidates = sorted(base.glob("M3GIM-Verkn*pfungen*.xlsx"))
+    if candidates:
+        return candidates[0]
+    raise FileNotFoundError(
+        f"Keine Verknuepfungsquelle unter {base}. Erwartet wird "
+        f"{VERKNUEPFUNGEN_CSV_DIR}/Box_*.csv oder eine Verknuepfungs-XLSX."
+    )
 
+
+def _box_order(path: Path) -> tuple:
+    """Sortiert Box_2 vor Box_10, statt lexikografisch."""
+    digits = re.findall(r"\d+", path.stem)
+    return (int(digits[0]) if digits else 0, path.stem)
+
+
+def _normalize_verknuepfungen_columns(df: pd.DataFrame) -> pd.DataFrame:
+    """Bringt die Spaltenkoepfe eines Blattes auf den Kanon.
+
+    Spalte 0 ist immer die Archivsignatur, positionell erkannt, weil ihr
+    Header in der Quelle leer ist oder nur ein Leerzeichen traegt. Die uebrigen
+    Koepfe werden getrimmt und kleingeschrieben; nicht-textuelle Koepfe bleiben
+    unveraendert und fallen unten durch die Spaltenpruefung.
+
+    ``data_id`` und ``datenpunkt_id`` bezeichnen dieselbe Angabe und werden
+    zusammengefuehrt. Vier Blaetter der Lieferung 2026-08-31 tragen die zweite
+    Schreibung; ohne die Zusammenfuehrung liest ``process_verknuepfungen`` sie
+    nie, und die Kennung verfaellt ohne Meldung (E-152).
+    """
+    rename: dict = {}
+    for pos, col in enumerate(df.columns):
+        if pos == 0:
+            rename[col] = "archivsignatur"
+        elif isinstance(col, str):
+            rename[col] = col.strip().lower()
+    df = df.rename(columns=rename)
+    if "data_id" in df.columns:
+        if "datenpunkt_id" in df.columns:
+            df["datenpunkt_id"] = df["datenpunkt_id"].fillna(df["data_id"])
+            df = df.drop(columns=["data_id"])
+        else:
+            df = df.rename(columns={"data_id": "datenpunkt_id"})
+    return df
+
+
+def _finish_verknuepfungen_sheet(df: pd.DataFrame, sheet: str) -> pd.DataFrame:
+    """Forward-Fill der Signatur plus Provenienz je Blatt."""
+    if "archivsignatur" in df.columns:
+        df["archivsignatur"] = df["archivsignatur"].ffill()
+        df["archivsignatur"] = df["archivsignatur"].map(
+            lambda s: normalize_signatur(s) if isinstance(s, str) else s)
+    df["_xlsx_sheet"] = sheet
+    df["_xlsx_row"] = [int(i) + 2 for i in range(len(df))]
+    return df
+
+
+def _load_verknuepfungen_csv(directory: Path) -> list[pd.DataFrame]:
+    """Liest je Blatt eine CSV-Datei als Text, ohne Typinferenz.
+
+    ``dtype=str`` ist die tragende Zusage dieses Pfades: eine Folio ``15-1``,
+    eine Kennung ``1.1`` und eine Monatsangabe ``1956-11`` bleiben der Text,
+    den die Erfassung geschrieben hat.
+    """
+    frames = []
+    for path in sorted(directory.glob("Box_*.csv"), key=_box_order):
+        df = pd.read_csv(path, dtype=str, encoding="utf-8-sig")
+        if df.empty:
+            continue
+        df = _normalize_verknuepfungen_columns(df)
+        # Leere Anhangspalten der Ausfuhr verwerfen.
+        drop = [c for c in df.columns
+                if isinstance(c, str) and c.startswith("unnamed:") and df[c].isna().all()]
+        if drop:
+            df = df.drop(columns=drop)
+        if not {"typ", "name"}.issubset(df.columns):
+            print(f"  Datei '{path.name}' uebersprungen (keine Verknuepfungs-Spalten)")
+            continue
+        frames.append(_finish_verknuepfungen_sheet(df, path.stem.replace("_", " ")))
+    return frames
+
+
+def _load_verknuepfungen_xlsx(path: Path) -> list[pd.DataFrame]:
+    """Liest die Mehrblatt-Arbeitsmappe (Altpfad vor E-152)."""
+    frames = []
+    xl = pd.ExcelFile(path)
     for sheet in xl.sheet_names:
         df = pd.read_excel(path, sheet_name=sheet)
         if df.empty:
             continue
-
-        # Spalten lowercasen/strippen; nicht-textuelle Header tolerieren.
-        rename: dict = {}
-        cols = list(df.columns)
-        for pos, col in enumerate(cols):
-            if pos == 0:
-                # Spalte 0 ist immer die Archivsignatur — positionell,
-                # unabhaengig vom (oft leeren/ungesetzten) Header.
-                rename[col] = "archivsignatur"
-            elif isinstance(col, str):
-                rename[col] = col.strip().lower()
-            # nicht-textuelle Header bleiben unveraendert (werden unten ignoriert)
-        df = df.rename(columns=rename)
-
+        df = _normalize_verknuepfungen_columns(df)
         # Sheets ohne Verknuepfungs-Signatur ueberspringen: der Dropdown-Umbau
         # des Erschliessungsteams fuegt dem Workbook versteckte Hilfsblaetter
-        # und das Blatt "Typ-Rollen" hinzu. Eine Verknuepfungszeile braucht
+        # und das Wertlistenblatt hinzu. Eine Verknuepfungszeile braucht
         # mindestens typ + name (Spalte 0 ist positionell die Signatur).
         if not {"typ", "name"}.issubset(df.columns):
             print(f"  Sheet '{sheet}' uebersprungen (keine Verknuepfungs-Spalten)")
             continue
+        frames.append(_finish_verknuepfungen_sheet(df, sheet))
+    return frames
 
-        # Signatur forward-fillen (viele Folgezeilen lassen sie leer) und die
-        # NIM-Konvolutnummer auf drei Stellen normalisieren, damit zweistellig
-        # erfasste Signaturen (NIM_11) ihren dreistelligen Record treffen.
-        if "archivsignatur" in df.columns:
-            df["archivsignatur"] = df["archivsignatur"].ffill()
-            df["archivsignatur"] = df["archivsignatur"].map(
-                lambda s: normalize_signatur(s) if isinstance(s, str) else s)
 
-        # Provenance: originale XLSX-Zeile (1-basiert inkl. Header) + Sheet.
-        df["_xlsx_sheet"] = sheet
-        df["_xlsx_row"] = [int(i) + 2 for i in range(len(df))]
+def load_verknuepfungen(path: Path) -> pd.DataFrame:
+    """Laedt die Verknuepfungstabelle als EINE DataFrame ueber alle Blaetter.
 
-        frames.append(df)
+    Die Funktion absorbiert drei Quellformen. Ein Quellverzeichnis mit
+    ``verknuepfungen/Box_*.csv`` wird als CSV gelesen (E-152, der Regelfall
+    seit 2026-08-31), ein Quellverzeichnis ohne dieses Unterverzeichnis ueber
+    die Verknuepfungs-XLSX, und ein direkt uebergebener Dateipfad als
+    Arbeitsmappe. Der Box-Export verteilt die Verknuepfungen auf mehrere,
+    inkonsistent benannte Blaetter (E-95); alle werden geladen und
+    zusammengefuehrt.
+
+    Die Provenienz ist in allen Faellen dieselbe. ``_xlsx_sheet`` traegt den
+    Blattnamen der Quelle, ``_xlsx_row`` die 1-basierte Zeile inklusive
+    Kopfzeile, damit ``process_verknuepfungen`` die Herkunftszeile blattgenau
+    aufzeichnet.
+    """
+    source = resolve_verknuepfungen_source(path)
+    frames = (_load_verknuepfungen_csv(source) if source.is_dir()
+              else _load_verknuepfungen_xlsx(source))
 
     if not frames:
         return pd.DataFrame(columns=["archivsignatur", "_xlsx_sheet", "_xlsx_row"])
 
-    # Union der Spalten ueber alle Sheets (Box 6 fehlt datenpunkt_id -> NaN).
-    combined = pd.concat(frames, ignore_index=True, sort=False)
-    return combined
+    # Union der Spalten ueber alle Blaetter.
+    return pd.concat(frames, ignore_index=True, sort=False)
 
 
 def process_verknuepfungen(df: pd.DataFrame, indices: dict) -> dict:
@@ -1364,6 +1565,12 @@ def process_verknuepfungen(df: pd.DataFrame, indices: dict) -> dict:
             if t in index_map and name:
                 lookup = indices.get(index_map[t], {})
                 match = lookup.get(name.strip().lower())
+                if match and match.get("ambiguous"):
+                    # Der Titel trifft mehrere Indexeintraege. Weder Q-ID noch
+                    # Komponist duerfen gesetzt werden, weil beide dann von
+                    # einem beliebigen der Kandidaten kaemen (E-152).
+                    rel["name_ambiguous"] = True
+                    match = None
                 if match and 'wikidata_id' in match:
                     rel["wikidata_id"] = match["wikidata_id"]
                 if match and 'komponist' in match:
@@ -1635,6 +1842,14 @@ def add_relations_to_records(records: list, relations: dict,
             # E-102: Datenqualitaets-Flag aus anmerkung-Signal an die Entitaet,
             # auf die sich die Unsicherheit bezieht (person/institution/ort/werk).
             _qf = quality_flags(rel.get("anmerkung"))
+            # E-152: Ein im Index mehrdeutiger Name ist eine Unsicherheit ueber
+            # die Entitaet und steht an derselben Property wie die aus der
+            # Anmerkung abgeleiteten Signale. Der Feldkonflikt der
+            # Indexverdichtung steht nicht hier, sondern im Validierungsreport;
+            # er betrifft im Bestand ausschliesslich die Anmerkungsspalte und
+            # sagt nichts ueber die Entitaet im Dokument aus.
+            if rel.get("name_ambiguous") and "name-nicht-eindeutig" not in _qf:
+                _qf = _qf + ["name-nicht-eindeutig"]
             if _qf:
                 entry["m3gim-ontology:dataQualityFlag"] = _qf if len(_qf) > 1 else _qf[0]
 
@@ -2058,13 +2273,8 @@ def main():
         df_objekte, folio_col, annotation_seen)
     print(f"  {len(records)} Records, {len(konvolute)} Konvolute")
 
-    # Verknuepfungen laden
-    verk_path = SHEETS_DIR / "M3GIM-Verknüpfungen.xlsx"
-    if not verk_path.exists():
-        raise FileNotFoundError(
-            f"Verknuepfungstabelle fehlt: {verk_path}. "
-            "Erwartet wird genau dieser Dateiname mit Umlaut."
-        )
+    # Verknuepfungen laden (CSV-Verzeichnis bevorzugt, E-152)
+    verk_path = resolve_verknuepfungen_source(SHEETS_DIR)
 
     print(f"\nLade {verk_path.name}...")
     df_verk = load_verknuepfungen(verk_path)

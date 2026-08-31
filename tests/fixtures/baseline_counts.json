@@ -1,11 +1,11 @@
 {
-  "_comment": "Mindestwerte (>=) nach v2-Konsolidierung (2026-04-17). Aktualisieren nach erfolgreichem Datenupdate. Siehe knowledge/testing.md § Regression-Baselines.",
-  "records_min": 380,
-  "konvolute_min": 7,
-  "persons_min": 320,
-  "organizations_min": 65,
-  "locations_min": 40,
-  "works_min": 95,
-  "verknuepfungen_min": 1200,
-  "wd_matches_min": 200
+  "_comment": "Mindestwerte (>=), gesetzt auf rund 90 Prozent des Ist nach der Datenuebernahme vom 2026-08-31 (E-152). Politik und Vorgehen in knowledge/testing.md, Teststufe 9 Regression-Baselines.",
+  "records_min": 900,
+  "konvolute_min": 17,
+  "persons_min": 469,
+  "organizations_min": 197,
+  "locations_min": 79,
+  "works_min": 153,
+  "verknuepfungen_min": 3961,
+  "wd_matches_min": 295
 }

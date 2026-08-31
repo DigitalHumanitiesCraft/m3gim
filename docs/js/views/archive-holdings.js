@@ -16,7 +16,7 @@ import { onViewNavigate } from '../ui/events.js';
 import { logStamp } from '../utils/env.js';
 import { getFilter, setFilter, subscribe } from '../ui/filter-state.js';
 import {
-  sharedToToolbarState, applySchaerfeEng, applyZeitfenster, makeSyncGuard,
+  sharedToToolbarState, toolbarStateToShared, applySchaerfeEng, applyZeitfenster, makeSyncGuard,
 } from '../ui/filter-sync.js';
 
 let store = null;
@@ -50,8 +50,7 @@ export function renderBestand(storeRef, containerEl) {
       // Toolbar-Aenderung -> geteilte Facetten zurueckschieben (innerhalb des
       // Guards, damit der eigene subscribe-Callback nicht erneut setzt).
       syncGuard.run(() => {
-        const s = toolbar.getState();
-        setFilter({ person: s.person || '', ort: s.location || '', werk: s.werk || '' });
+        setFilter(toolbarStateToShared(toolbar.getState()));
       });
       updateBestandView();
     },

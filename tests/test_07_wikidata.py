@@ -1,12 +1,25 @@
 """Wikidata-Enrichment-Integrität."""
 
 import re
+import sys
+from pathlib import Path
 
+import pytest
 
-from _helpers import iter_entities_with_id
+SCRIPTS = Path(__file__).parent.parent / "scripts"
+if str(SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(SCRIPTS))
+
+from transform import load_index  # noqa: E402
+
+from _helpers import iter_entities_with_id  # noqa: E402
 
 
 Q_PATTERN = re.compile(r"^Q\d+$")
+
+# Die zweite zulaessige Herkunft neben der Reconciliation: kuratierte Q-IDs,
+# die das Erschliessungsteam direkt in die Index-Arbeitsmappen eintraegt.
+INDEX_NAMES = ("Personenindex", "Organisationsindex", "Ortsindex", "Werkindex")
 
 
 def _collect_used_qids(records):
@@ -21,20 +34,54 @@ def _collect_used_qids(records):
     return qids
 
 
-def test_every_wd_id_in_output_stems_from_reconciliation(records, reconciliation):
-    """Jede Q-ID im Output kommt aus wikidata-reconciliation.json ODER direkt
-    aus Indizes. Nach einem regulaeren Pipeline-Lauf existiert die Datei
-    immer; Fehlen ist ein Fehler, kein Skip-Grund.
+@pytest.fixture(scope="module")
+def index_qids() -> set:
+    """Kuratierte Q-IDs aus den Index-Arbeitsmappen, ueber den kanonischen
+    Pipeline-Reader gelesen (Header-Shift-Korrektur, E-95)."""
+    qids = set()
+    for name in INDEX_NAMES:
+        df = load_index(name)
+        if df is None:
+            continue
+        for col in df.columns:
+            if not isinstance(col, str) or "wikidata" not in col.lower():
+                continue
+            for val in df[col].dropna():
+                qid = str(val).strip().removeprefix("wd:")
+                if Q_PATTERN.match(qid):
+                    qids.add(qid)
+    return qids
+
+
+def test_every_wd_id_in_output_stems_from_reconciliation(
+    records, reconciliation, index_qids
+):
+    """Jede Q-ID im Output hat eine benannte Herkunft: entweder ein Treffer in
+    wikidata-reconciliation.json oder eine kuratierte wikidata_id-Zelle eines
+    Index-XLSX. Eine Q-ID ohne beides ist erfunden.
+
+    Frueher pruefte der Test nur, dass die Schnittmenge nicht leer ist; eine
+    Q-ID im Output, die in keiner Quelle steht, fiel damit nicht auf. Genau
+    diese Fehlerklasse hat in Session 34 tragende Datenfehler erzeugt
+    (CLAUDE.md, Manuelle Wikidata-Approvals).
     """
     assert reconciliation is not None, (
         "wikidata-reconciliation.json fehlt. Pipeline vollstaendig ausfuehren: "
         "`python scripts/reconcile.py` (oder transform.py mit vorhandener Datei)."
     )
     recon_qids = {m.get("qid") for m in reconciliation.get("matched", []) if m.get("qid")}
-    used_qids = _collect_used_qids(records)
-    overlap = used_qids & recon_qids
     assert recon_qids, "reconciliation.matched ist leer — Pipeline-Regress."
-    assert overlap, "Keine Q-IDs aus reconciliation im Output — Enrichment hat nichts gezogen."
+    used_qids = _collect_used_qids(records)
+    assert len(used_qids) >= 100, (
+        f"Nur {len(used_qids)} Q-IDs im Output — Enrichment hat nichts gezogen."
+    )
+    unsourced = sorted(used_qids - recon_qids - index_qids)
+    assert not unsourced, (
+        f"{len(unsourced)} Q-IDs im Output ohne Herkunft in Reconciliation oder "
+        f"Index-XLSX: {unsourced[:10]}. Entweder ein manuelles Approval ist "
+        f"nicht in wikidata-reconciliation.json gelandet, oder die Q-ID ist "
+        f"erfunden (siehe scripts/verify-manual-approvals.py)."
+    )
 
 
 def test_enrichment_properties_well_typed(records):

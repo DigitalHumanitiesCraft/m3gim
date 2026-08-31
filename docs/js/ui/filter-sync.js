@@ -11,6 +11,7 @@
  */
 
 import { primaryYear } from '../data/loader.js';
+import { facetValues } from './filter-state.js';
 
 /**
  * Projiziert den geteilten Filter auf die Bestand/Chronik-Toolbar-Facetten.
@@ -18,15 +19,19 @@ import { primaryYear } from '../data/loader.js';
  * als eigenen Eintrag (consolidateCityLocations), daher mappt ort -> location
  * 1:1 ohne weitere Uebersetzung. zeitfenster/sicht/rolle wirken NICHT ueber die
  * Toolbar-Pipeline (zeitfenster via applyZeitfenster, schaerfe via applySchaerfe).
+ *
+ * Seit E-151 haelt jede Entitaetsfacette eine Liste (ODER innerhalb, UND
+ * zwischen den Facetten). Ein String aus einer Altstelle wird zur
+ * einelementigen Liste, damit keine lesende Stelle still einen String erwartet,
+ * wenn der State Listen haelt.
  * @param {object} shared - getFilter()-Ergebnis
- * @returns {{person:string, location:string, werk:string}}
+ * @returns {{person:string[], location:string[], werk:string[]}}
  */
 export function sharedToToolbarState(shared) {
-  const s = shared || {};
   return {
-    person: s.person || '',
-    location: s.ort || '',
-    werk: s.werk || '',
+    person: facetValues(shared, 'person'),
+    location: facetValues(shared, 'ort'),
+    werk: facetValues(shared, 'werk'),
   };
 }
 
@@ -35,14 +40,14 @@ export function sharedToToolbarState(shared) {
  * Nur die geteilten Facetten (person/ort/werk) wandern zurueck; view-lokale
  * Facetten (search, docType, zeigeUnerschlossen) bleiben aussen vor.
  * @param {object} toolbarState - toolbar.getState()
- * @returns {{person:string, ort:string, werk:string}}
+ * @returns {{person:string[], ort:string[], werk:string[]}}
  */
 export function toolbarStateToShared(toolbarState) {
   const t = toolbarState || {};
   return {
-    person: t.person || '',
-    ort: t.location || '',
-    werk: t.werk || '',
+    person: facetValues(t, 'person'),
+    ort: facetValues(t, 'location'),
+    werk: facetValues(t, 'werk'),
   };
 }
 
@@ -132,29 +137,28 @@ export function makeSyncGuard() {
 }
 
 /**
- * Sicht-Facette -> Karten-`state.active`-Set. Leerwert => alle Sichten aktiv
- * (Facette inaktiv); ein gesetzter Sicht-Wert => genau diese eine Sicht.
- * @param {string} sicht - '' | mobilityClusterFor-Cluster | 'kontext'
+ * Sicht-Facette -> Karten-`state.active`-Set. Leere Auswahl => alle Sichten
+ * aktiv (Facette inaktiv); gesetzte Werte => genau die bekannten davon.
+ * @param {string|string[]} sicht - '' | [] | Cluster-Ids | 'kontext'
  * @param {string[]} allTypeIds - alle bekannten Sicht-Ids (inkl. 'kontext')
  * @returns {Set<string>}
  */
 export function sichtToActiveSet(sicht, allTypeIds) {
-  if (!sicht) return new Set(allTypeIds);
-  if (allTypeIds.includes(sicht)) return new Set([sicht]);
-  return new Set(allTypeIds);
+  const wanted = facetValues({ sicht }, 'sicht').filter(v => allTypeIds.includes(v));
+  if (wanted.length === 0) return new Set(allTypeIds);
+  return new Set(wanted);
 }
 
 /**
- * Karten-`state.active`-Set -> Sicht-Facette. Genau eine aktive Sicht => deren
- * Id; alle aktiv oder keine eindeutige Auswahl => '' (Facette inaktiv).
+ * Karten-`state.active`-Set -> Sicht-Facette. Alle aktiv => leere Liste
+ * (Facette inaktiv), sonst die aktiven Ids in der Reihenfolge von allTypeIds.
  * @param {Set<string>} active
  * @param {string[]} allTypeIds
- * @returns {string}
+ * @returns {string[]}
  */
 export function activeSetToSicht(active, allTypeIds) {
-  if (!active || active.size === allTypeIds.length) return '';
-  if (active.size === 1) return [...active][0];
-  return '';
+  if (!active || active.size === allTypeIds.length) return [];
+  return allTypeIds.filter(id => active.has(id));
 }
 
 /**

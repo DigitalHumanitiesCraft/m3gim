@@ -35,6 +35,10 @@ def test_has_employer_relations_from_arbeitgeber(records, xlsx_verknuepfungen):
     """Fuer jede XLSX-Zeile typ=institution, rolle=arbeitgeber, die einem
     Record zugeordnet werden kann, existiert eine HasEmployeeEmployer-Relation.
     Verwaiste Rows (Signatur/Folio nicht matchbar) sind ausgenommen.
+
+    Ohne matchbare Zeile hat der Vergleich keinen Gegenstand; der Test
+    ueberspringt sich dann sichtbar, statt als gruener Test ohne
+    ausgefuehrten Assert durchzulaufen.
     """
     df = xlsx_verknuepfungen
     assert "typ" in df.columns and "rolle" in df.columns, (
@@ -65,6 +69,14 @@ def test_has_employer_relations_from_arbeitgeber(records, xlsx_verknuepfungen):
         if ident in by_ident or sig in by_ident:
             matchable += 1
 
+    if matchable == 0:
+        pytest.skip(
+            f"Die Quelle fuehrt {int(mask.sum())} Zeilen typ=institution/"
+            f"rolle=arbeitgeber, davon keine mit einer Signatur, die einem "
+            f"Record zugeordnet werden kann (verwaist, data.md § 17). Der "
+            f"Vergleich haette keinen Gegenstand."
+        )
+
     actual = sum(
         1 for r in records
         for rel in ensure_list(r.get("m3gim-ontology:hasAgentRelation"))
@@ -93,10 +105,13 @@ def test_correspondence_relations_have_provenance(records):
 
 
 def test_validity_period_well_formed(records, xlsx_verknuepfungen):
-    """Struktur-Check fuer hasValidityPeriod (falls vorhanden): BlankNode mit
-    Begin/End als ISO-String. Kein Zwang auf Existenz — v1 hat keine, v2 nur 1
-    arbeitgeber-Zeile. Datenadaptiv: Mindestens so viele ValidityPeriods wie
-    arbeitgeber-Zeilen in XLSX (Heuristik aus rico:date des Records)."""
+    """Struktur-Check fuer agrelon:metadataPeriod: BlankNode mit Begin/End als
+    ISO-String.
+
+    Kein Zwang auf Existenz, der Gueltigkeitszeitraum haengt an der
+    Abdeckung der arbeitgeber-Zeilen. Traegt keine Relation einen Zeitraum,
+    ueberspringt sich der Test sichtbar, statt gruen ohne ausgefuehrten
+    Assert durchzulaufen."""
     import re
     iso_pat = re.compile(r"^\d{4}(-\d{2}(-\d{2})?)?$")
     df = xlsx_verknuepfungen
@@ -126,12 +141,10 @@ def test_validity_period_well_formed(records, xlsx_verknuepfungen):
                     assert iso_pat.match(str(val)), (
                         f"ValidityPeriod {label} nicht ISO: {val}"
                     )
-    # Datenadaptiv: checked darf 0 sein, wenn keine matchbare arbeitgeber-Row
-    # (verwaiste Signaturen sind moeglich — siehe exploration-report).
-    # Strict-Check nur wenn Test-Invariante auf >= expected_min wirklich hart sein soll.
-    # Hier: strukturelle Korrektheit ist oben gepraeft; Zaehlung ist info.
-    if expected_min > 0 and checked == 0:
+    if checked == 0:
         pytest.skip(
-            f"XLSX hat {expected_min} arbeitgeber-Zeilen, aber keine matchbaren "
-            f"Records — evtl. verwaiste Signaturen"
+            f"Keine Relation im Output traegt agrelon:metadataPeriod "
+            f"({expected_min} arbeitgeber-Zeilen in der Quelle, davon keine "
+            f"mit datierbarem Record). Die Struktur-Asserts oben hatten "
+            f"keinen Gegenstand."
         )

@@ -56,7 +56,13 @@ def _collect_terms(node, used: set):
 
 
 def test_all_external_terms_in_allowlist(graph, allowlist):
-    """Jeder verwendete rico:/ric-rst:/agrelon:/schema:/gndo:-Term ist belegt."""
+    """Jeder verwendete rico:/ric-rst:/agrelon:/schema:/gndo:-Term ist belegt.
+
+    Deckt die bekannten Fehlterme des Audits mit ab: keiner von ihnen steht in
+    der Allowlist, ihre Rueckkehr faellt hier also zwingend auf. Der frueher
+    danebenstehende test_known_wrong_terms_absent konnte deshalb nie rot
+    werden, ohne dass dieser Test bereits rot war.
+    """
     used = set()
     _collect_terms(graph, used)
     offenders = sorted(t for t in used if t not in allowlist)
@@ -67,15 +73,3 @@ def test_all_external_terms_in_allowlist(graph, allowlist):
         "nie aus der Benennungskonvention raten (E-103/E-104)."
     )
 
-
-def test_known_wrong_terms_absent(graph):
-    """Die im Audit gefundenen Fehlterme duerfen nicht zurueckkehren."""
-    used = set()
-    _collect_terms(graph, used)
-    forbidden = {
-        "rico:isAssociatedWithRecord", "rico:File", "rico:Fonds",
-        "agrelon:hasProvenance", "agrelon:hasConfidenceValue",
-        "agrelon:hasValidityPeriod", "agrelon:HasIsPatron",
-    }
-    present = sorted(forbidden & used)
-    assert not present, f"Bekannte Fehlterme wieder im Output: {present}"

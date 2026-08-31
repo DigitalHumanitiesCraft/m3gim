@@ -226,6 +226,12 @@ Der Vertrag in [frontend-date-contract.md](../data/reports/frontend-date-contrac
 
 Dieser Abschnitt ist volatil und wird je Session fortgeschrieben; alles oberhalb ist der durable Kern der Spezifikation. Erledigte Arbeitspakete wandern von hier in [journal.md](journal.md) und [architecture-decisions.md](architecture-decisions.md), quellseitige Datenpunkte ins [Datenfehler-Register](data-errors.md).
 
+### Datenstand vom 2026-08-31
+
+Der Export des Erschließungsteams vom 2026-08-31 ist übernommen (E-152). Die Verknüpfungstabelle liegt seit dieser Lieferung als CSV-Ausfuhr je Blatt vor, die übrigen fünf Arbeitsmappen bleiben XLSX; die Pipeline trägt Schutzregeln gegen die Index-Defekte des Exports, und `validate.py` hat die zwei nie nachgezogenen Absorptionen aus `transform.py` bekommen. Neu feinerschlossen sind NIM_016 und NIM_134.
+
+Aus der Übernahme bleiben vier Stränge offen. Erstens die Modellierungsrunden 2 bis 4 aus dem Entwurf zu den neu hinzugekommenen Datenpunkten, also Seiten-Hierarchie, Vorkommnis und Beteiligung sowie Aboutness; Runde 1 mit den fünf neuen Rollenbegriffen ist gebaut. Zweitens `m3gim-ontology:contractStatus` am Vorkommnis, dessen externe Blockade entfallen ist, weil die Quelle den Vertragsstatus jetzt in der Anmerkungsspalte führt. Drittens die beiden Typwerte `Aktivität` und `dokument`, die belegt sind und keinen Zielzweig haben. Viertens die Quellfehler der Lieferung, die im [Datenfehler-Register](data-errors.md) stehen.
+
 ### Erfassungsschema v2 und Migration des Altbestands (E-127)
 
 Das Erfassungsschema ist auf das Long-Format mit zweistufiger `aktivitaet_id` verfeinert (E-127, operationalisiert das Occurrence-Modell E-125). Die Modellentscheidung zur Abbildung auf Performance und Participation ist mit E-128 getroffen ([architecture-decisions.md](architecture-decisions.md)). Der Altbestand ist migriert (`scripts/migrate-v2.py`, integrationsfertige Arbeitsmappe in `data/migration/`), die Pipeline-Umstellung steht aus.
@@ -279,4 +285,6 @@ Nur offene, blockierte und zurückgestellte Pakete; Erledigtes steht in [journal
 | Mehrfachauswahl in den Facetten | angefangen | entschieden am 2026-08-22, ODER innerhalb einer Facette; der geteilte Filter hält bereits Listen, Branch `facet-multiselect` trägt Reihenfolge und Merge-Bedingung (E-151) |
 | Test-Regression NIM_168 | quellseitig offen | `test_04` mit xfail strict gelockt, Folio-Granularität zwischen den Quelltabellen, siehe Datenfehler-Register QF-07 |
 | Nächste Datenstufe Forschungsdaten | offen | Stufen 1 bis 3, siehe oben |
+| Modellierungsrunden 2 bis 4 zum Stand 2026-08-31 | offen | Seiten-Hierarchie, Vorkommnis und Beteiligung, Aboutness; Runde 1 (Rollenbegriffe) ist gebaut |
+| Typwerte `Aktivität` und `dokument` ohne Zielzweig | offen | belegt in der Quelle, fallen heute still weg |
 | Deferred Aufräumarbeiten und Modell-Erweiterungen | zurückgestellt | siehe § Deferred |

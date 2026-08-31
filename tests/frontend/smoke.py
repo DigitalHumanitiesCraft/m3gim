@@ -151,7 +151,13 @@ def main() -> int:
             "indizes":    ["personen", "organisationen", "orte", "werke"],
             "karte":      ["entitaeten", "orte", "belege", "unverortet", "jahre"],
             "netzwerk":   ["total", "ring1", "ring2", "agrelon"],
-            "verknuepfungen": ["fokus", "schaerfe", "knoten", "recordsWeit", "recordsEng"],
+            # Der Verknuepfungen-Tab traegt seit dem Umbau auf die geteilte
+            # Filterspalte die aktiven Facetten im Stempel; die Knotenzahlen je
+            # Typ heissen dort jetzt k-<typ>, damit die Facettenschluessel frei
+            # sind.
+            "verknuepfungen": ["fokus", "schaerfe", "facetten", "person", "ort",
+                               "werk", "institution", "rolle", "knoten",
+                               "recordsWeit", "recordsEng"],
             "korb":       ["eintraege", "aufgeloest", "events", "finanzen"],
         }
         for view, required in stamp_expectations.items():
@@ -290,11 +296,16 @@ def main() -> int:
         #     Bayreuth (Stempel ort:Bayreuth) UND der bereits gerenderte Bestand
         #     filtert synchron auf die Bayreuth-Records (Stempel gefiltert:ja).
         #     Harter Schutz fuer die Synchronitaet ueber den geteilten filter-state.
+        #     Der Ort steht seit dem Sidebar-Umbau als Facette in der linken
+        #     Spalte: Suchfeld eingrenzen, dann den Wert anklicken.
         try:
             page.locator('[data-tab="verknuepfungen"]').first.click()
             page.wait_for_timeout(500)
             errs_before = len(global_errors)
-            page.select_option('#tab-verknuepfungen [data-facet="ort"]', 'Bayreuth')
+            ort_facet = page.locator('#tab-verknuepfungen .fs-facet[data-facet="ort"]')
+            ort_facet.locator(".fs-search").fill("Bayreuth")
+            page.wait_for_timeout(200)
+            ort_facet.get_by_text("Bayreuth", exact=True).first.click()
             page.wait_for_timeout(500)
             vk_stamp = stamps.get('verknuepfungen', '')
             page.locator('[data-tab="bestand"]').first.click()
@@ -312,6 +323,35 @@ def main() -> int:
                     results.append(("  ", " " * 24, e[:120]))
         except Exception as e:
             results.append(("WARN", "m4:cross-view-filter        ",
+                            f"check uebersprungen: {e}"))
+
+        # --- Canary: der Schnitt steht in der URL und ueberlebt den Reload.
+        #     Hash-Grammatik #<tab>[/<recordId>][?<query>] (ui/filter-url.js).
+        #     Ohne diesen Weg ist ein Befund nicht zitierbar: der geteilte Link
+        #     oeffnet die Anwendung im vollen Bestand, ohne dass etwas darauf
+        #     hinweist.
+        try:
+            errs_before = len(global_errors)
+            hash_before = page.evaluate("() => window.location.hash")
+            page.reload(wait_until="networkidle", timeout=20000)
+            page.wait_for_timeout(800)
+            hash_after = page.evaluate("() => window.location.hash")
+            page.locator('[data-tab="verknuepfungen"]').first.click()
+            page.wait_for_timeout(600)
+            vk_after = stamps.get('verknuepfungen', '')
+            new_errs = expect_no_new_errors(global_errors, errs_before)
+            if ("ort=Bayreuth" in hash_before and "ort=Bayreuth" in hash_after
+                    and "ort:Bayreuth" in vk_after and not new_errs):
+                results.append(("OK", "filter:url-roundtrip        ",
+                                "Ort im Hash, nach Reload weiterhin gefiltert"))
+            else:
+                results.append(("FAIL", "filter:url-roundtrip        ",
+                                f"vorher={hash_before!r} nachher={hash_after!r} "
+                                f"vk={vk_after[-40:]!r} errs={len(new_errs)}"))
+                for e in new_errs[:2]:
+                    results.append(("  ", " " * 24, e[:120]))
+        except Exception as e:
+            results.append(("WARN", "filter:url-roundtrip        ",
                             f"check uebersprungen: {e}"))
 
         # Reset des geteilten Filters: der Cross-View-Canary oben setzt

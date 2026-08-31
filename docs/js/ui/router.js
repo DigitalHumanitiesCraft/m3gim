@@ -1,7 +1,16 @@
 /**
  * M³GIM Router — Tab switching and URL hash state.
  * Info pages (about, projekt, impressum) are standalone HTML files.
+ *
+ * Hash-Grammatik `#<tab>[/<recordId>][?<query>]`. Der Query-Teil traegt den
+ * geteilten Filter (filter-url.js) und wird abgetrennt, bevor der Pfad an `/`
+ * aufgeteilt wird; die bestehenden Deep-Links auf einen Datensatz bleiben
+ * dadurch unveraendert gueltig. Geschrieben wird mit replaceState, damit ein
+ * Sliderschritt keinen History-Eintrag erzeugt.
  */
+
+import { splitHash, buildHash, parseFilterQuery } from './filter-url.js';
+import { getFilter, setFilter } from './filter-state.js';
 
 // Vollstaendiger Katalog -- alle Tabs bleiben im TAB_RENDERERS registriert,
 // damit Hash-URLs und Code-Pfade nicht brechen.
@@ -111,9 +120,12 @@ export function resolveRecordId(id) {
 }
 
 function parseHash() {
-  const hash = window.location.hash.slice(1);
-  if (!hash) return;
-  const parts = hash.split('/');
+  const { path, query } = splitHash(window.location.hash);
+  // Der Filter kommt aus der URL, bevor die Views rendern; ein geteilter Link
+  // zeigt sonst kurz den vollen Bestand und springt dann.
+  applyFilterFromQuery(query);
+  if (!path) return;
+  const parts = path.split('/');
   let t = parts[0];
   if (t === 'archiv') t = 'bestand'; // Legacy-Alias
   // Legacy-Alias: der Tab heisst jetzt 'karte'; alte mobilitaet/-atlas-Bookmarks
@@ -127,15 +139,30 @@ function parseHash() {
   }
 }
 
+/**
+ * Filter aus dem Query-Teil uebernehmen. Ein leerer Query loest den Filter
+ * nicht auf: er heisst "dieser Link nennt keinen Schnitt", nicht "kein
+ * Schnitt", und ein Tab-Wechsel darf den gesetzten Filter nicht wegwischen.
+ */
+function applyFilterFromQuery(query) {
+  const patch = parseFilterQuery(query);
+  if (Object.keys(patch).length > 0) setFilter(patch);
+}
+
 function updateHash() {
-  const parts = [state.activeTab];
-  if (state.selectedRecord) {
-    parts.push(encodeURIComponent(state.selectedRecord));
-  }
-  const newHash = '#' + parts.join('/');
+  const newHash = buildHash(state.activeTab, state.selectedRecord, getFilter());
   if (window.location.hash !== newHash) {
     history.replaceState(null, '', newHash);
   }
+}
+
+/**
+ * Den Hash an den aktuellen Filter angleichen. Der Filter-Halter ruft das ueber
+ * main.js bei jeder Aenderung; der Router bleibt die einzige Stelle, die in die
+ * Adresszeile schreibt.
+ */
+export function syncHashToFilter() {
+  updateHash();
 }
 
 function applyState() {

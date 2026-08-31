@@ -5,9 +5,9 @@ project:
   repository: https://github.com/DigitalHumanitiesCraft/m3gim
 status: complete
 language: de
-version: 0.4
+version: 0.5
 created: 2026-02-19
-updated: 2026-08-21
+updated: 2026-08-31
 authors: [Christopher Pollin]
 generated-with: Claude Code
 method:
@@ -54,7 +54,10 @@ related: [design, pipeline-architecture, data, architecture-decisions, specifica
 | Pfad | Zweck |
 |------|-------|
 | `main.js` | Einstiegspunkt, `TAB_RENDERERS`-Registry, Lazy-Tab-Rendering, Error Boundaries pro Tab, DEV-Debug-Helper (`window.m3gim.*`) |
-| `data/loader.js` | JSON-LD-Ladeschicht, Store-Aufbau inkl. Phase-6-Maps, Koordinaten-Patch-aware STE-Indizierung |
+| `data/loader.js` | JSON-LD-Ladeschicht, Store-Aufbau inkl. Phase-6-Maps, Koordinaten-Patch-aware STE-Indizierung, Facetten-Indizes `eventsByRole`, `recordsByAgentRole` und `ensembles` |
+| `data/records-for.js` | Filter zu Dokumentmenge, die einzige Aufloesung im Frontend: `recordsFor`, `facetIndex`, `facetInventory`. Rein, ohne DOM und ohne d3 |
+| `ui/filter-url.js` | Filterzustand im URL-Hash: `serializeFilter`, `parseFilterQuery`, `splitHash`, `buildHash`. Rein |
+| `views/_facet-sidebar.js` | Die geteilte linke Filterspalte: Status- und Legendenblock, Facetten mit Mehrfachauswahl, Zeitfenster, Schaerfegrad, Zuruecksetzen |
 | `utils/provenance.js` | `extractXlsxSource(obj)` — Provenance-Shape-Extraktion, geteilter Helper für Loader, Inline-Detail und Korb (E-91) |
 | `data/constants.js` | `ROLE_CLUSTER`, `ROLE_TO_SECTION`, `AGRELON_LABELS`, `EVENT_ROLE_TO_MOBILITY_CLUSTER` (Session 36), `WIKIDATA_ICON_SVG`, Komponisten-/Personen-Kategorien |
 | `ui/router.js` | Hash-Routing, `navigateToView`/`navigateToIndex`, ARIA-State |
@@ -66,9 +69,6 @@ related: [design, pipeline-architecture, data, architecture-decisions, specifica
 | `views/_archive-toolbar.js` | Geteilte Toolbar (Suche, Dokumenttyp-Filter, Person-Filter, Count-Anzeige) für Bestand + Chronik |
 | `views/indexes.js` | Grid-Explorer über Personen, Organisationen, Orte und Werke mit Beziehungsbadges (AgRelOn), nur Einträge mit `records.size > 0` |
 | `views/mobility.js` | Karten-Tab (sichtbar, **entitätszentriert seit E-126**): man wählt eine Entität (Organisation/Person) und sieht ihre Orte als Knoten, je Ort ein Tortendiagramm nach Mobilitätssicht. **Keine** Verbindungslinien (die Trajektorie aus E-111 entfiel). Datenschicht `views/entity-map-data.js` zieht die Orte aus Record-Orten (`rico:hasOrHadLocation`) + STE zusammen und vergibt Verortungs-Stufen (`secured`/`city`/`far`/`unlocatable`, Adressen auf die Stadt hochgerollt). Sidebar: Entitäts-Auswahl, Zeitraum, Farb- und Verortungs-Legende, Klick-Detail (Zuordnungen + alle Dokumente). Basemap lokal: Ozean (SVG-Hintergrund) + Gradnetz, Ländergeometrie `docs/data/geo/countries-110m.geo.json` (Natural Earth 110m), kein Kartenserver, kein Leaflet. |
-| `views/mobility-atlas.js` | Leaflet-Karte + D3-Zeitstrahl + Detailpanel (Tab `mobilitaets-atlas` aktuell `hidden`, E-81; durch `views/mobility.js` (E-111) überholt, Stilllegung operator-offen; Leaflet ist nicht in `index.html` eingebunden und bei einer Reaktivierung wieder einzubinden) |
-| `views/repertoire.js` | Parallele Aggregat-Tabellen Werke × Komponisten (Tab aktuell `hidden`, E-81) |
-| `views/biogram.js` | Chronologischer D3-Zeitstrahl 1919–2009 (Tab aktuell `hidden`, E-81) |
 | `views/network.js` | Orchestrator des Netzwerk-Tabs (E-93, E-94): State-Eigentum, `draw`, Filter-Anwendung, Detail-Panel, Telemetrie, Zeitfenster-Index. Delegiert Sidebar an `_network-sidebar.js` und Canvas-Rendering an `_network-canvas.js`. Im Session-47-Split deutlich verschlankt. |
 | `views/_network-geometry.js` | Reine Layout-Funktionen für den Netzwerk-Tab (E-93): `computeLayout`, `computeCoOccurrence`, `classifyRing`, `nodeColor`, `derivePersonKategorie`, `labelGeometry`. Keine DOM-/D3-Aufrufe, deterministisch, mit Node-Unit-Tests abgedeckt (E-94). |
 | `views/_network-sidebar.js` | Sidebar-UI des Netzwerk-Tabs (E-94): Suche, Filter-Slider, Toggles (Ko-Okkurrenz + AgRelOn getrennt), Zeitfenster, Kategorie-Chips, Legende, Reset. Reine UI-Produktion mit `state`/`actions`-Vertrag — keine direkte State-Mutation. |
@@ -78,7 +78,7 @@ related: [design, pipeline-architecture, data, architecture-decisions, specifica
 
 `data/aggregator.js` und `utils/viz-components.js` wurden Session 32 mit den D3-Prototypen entfernt.
 
-CSS-Dateien unter `docs/css/`: `variables`, `base`, `components`, `archiv`, `indizes`, `korb`, `mobility`, `mobility-atlas`, `repertoire`, `biogramm`, `netzwerk`, `pages`. Design-Tokens (Farben, Spacing, Text-Sizes, Transitions) zentral in `variables.css`; alle Tab-CSS nutzen diese Tokens (Session 34).
+CSS-Dateien unter `docs/css/`: `variables`, `base`, `components`, `sidebar`, `facets`, `archive`, `indexes`, `basket`, `mobility`, `network`, `statistics`, `verknuepfungen`, `pages`. Design-Tokens (Farben, Spacing, Text-Sizes, Transitions) zentral in `variables.css`; alle Tab-CSS nutzen diese Tokens.
 
 ### Info-Seiten (statisches HTML)
 
@@ -87,6 +87,7 @@ Content-Seiten (`about.html`, `projekt.html`, `datenmodell.html`, `impressum.htm
 ## Routing
 
 - Hash-basiert in `ui/router.js`. Der Katalog `TABS` listet alle registrierten Tabs (Bestand, Chronik, Statistik, Indizes, Karte, Netzwerk, Verknüpfungen, Korb). Verborgene Tabs gibt es seit E-140 nicht mehr; jeder registrierte Tab ist sichtbar.
+- Grammatik `#<tab>[/<recordId>][?<query>]`. Der Query-Teil trägt den geteilten Filter und wird in `splitHash` abgetrennt, bevor der Pfad an `/` zerlegt wird; jeder bestehende Deep-Link auf einen Datensatz bleibt dadurch gültig. Geschrieben wird mit `replaceState`, damit ein Sliderschritt keinen History-Eintrag erzeugt.
 - Deep Links: `#bestand/UAKUG/NIM_003%20Folio%2001` für Datensatzkontext
 - Info-Seiten als eigenständige HTML-Dateien (normale Links, kein Hash-Routing)
 - `navigateToIndex(gridType, entityName)` für Cross-Tab-Navigation, `navigateToView(tab, {recordId})` für Sprung aus anderen Views ins Bestand-Tab
@@ -202,19 +203,19 @@ Konzentrische Personen-Visualisierung um Malaniuk (E-93, Session 46; Session-47-
 
 ### Verknüpfungen
 
-Heterogener (multivariater) Graph über Person, Ort, Werk und Institution um eine Fokus-Entität, gebaut am 2026-06-23 als Milestone M3 der Partner-Runde Juni und im selben Zug an den geteilten Filter gekoppelt (M4). Der Tab beantwortet „Malaniuk 1952 in Bayreuth, welche Werke, wer war beteiligt" als generalisierten, filterbaren Schnitt, womit Bayreuth ein Filterergebnis wird und kein eigener Bereich ([architecture-decisions.md](architecture-decisions.md), Bayreuth als filterbarer Schnitt). Der Tab ist in [`_verknuepfungen-geometry.js`](../docs/js/views/_verknuepfungen-geometry.js) (Graphaufbau und Layout als reine Funktionen, unit-getestet über `tests/frontend/verknuepfungen-geometry.test.mjs`) und [`verknuepfungen.js`](../docs/js/views/verknuepfungen.js) (Controls, SVG-Rendering, Detail-Panel) gesplittet.
+Heterogener (multivariater) Graph über Person, Ort, Werk und Institution um eine Fokus-Entität, gebaut am 2026-06-23 als Milestone M3 der Partner-Runde Juni und im selben Zug an den geteilten Filter gekoppelt (M4). Der Tab beantwortet „Malaniuk 1952 in Bayreuth, welche Werke, wer war beteiligt" als generalisierten, filterbaren Schnitt, womit Bayreuth ein Filterergebnis wird und kein eigener Bereich ([architecture-decisions.md](architecture-decisions.md), Bayreuth als filterbarer Schnitt). Der Tab ist in [`_verknuepfungen-geometry.js`](../docs/js/views/_verknuepfungen-geometry.js) (Graphaufbau und Layout als reine Funktionen, unit-getestet über `tests/frontend/verknuepfungen-geometry.test.mjs`) und [`verknuepfungen.js`](../docs/js/views/verknuepfungen.js) (SVG-Rendering, Detail-Panel, view-eigene Sidebar-Sektionen) gesplittet; die Filterspalte kommt aus [`_facet-sidebar.js`](../docs/js/views/_facet-sidebar.js).
 
-- **Zwei Schärfegrade, sichtbar getrennt.** `weit` heißt im selben Dokument genannt, also Ko-Okkurrenz und ausdrücklich kein Auftrittsnachweis; `eng` schränkt auf die Records ein, die ein `m3gim-ontology:Annotation` oder eine `m3gim-ontology:Performance` tragen. Die Caption über dem Graph nennt im weiten Modus, wie viele der Dokumente im Fokus einen raumzeitlichen oder Aufführungs-Beleg tragen, und im engen Modus, wie viele Records von der weiten Menge übrig bleiben. Die Differenz wird damit benannt und bleibt ungeglättet.
-- **Geteilt gegen lokal.** Der View abonniert `subscribe` beim Render und zeichnet auf eine externe Filteränderung neu, wobei die Controls aus dem geteilten State nachgezogen werden. Geprüft ist die Aufteilung in der Browser-Verifikation vom 2026-06-23.
+- **Zwei Schärfegrade, sichtbar getrennt.** `weit` heißt im selben Dokument genannt, also Ko-Okkurrenz und ausdrücklich kein Auftrittsnachweis; `eng` schränkt auf die Records ein, die ein `m3gim-ontology:Annotation` oder eine `m3gim-ontology:Performance` tragen. Der Statusblock der Sidebar nennt in beiden Modi, wie viele der Dokumente im Schnitt einen raumzeitlichen oder Aufführungs-Beleg tragen. Die Differenz wird damit benannt und bleibt ungeglättet.
+- **Geteilt gegen lokal.** Seit dem 2026-08-31 trägt der Tab die geteilte linke Filterspalte statt der Controls-Zeile über dem Bild; die Fließtext-Caption ist durch den strukturierten Status- und Legendenblock der Spalte abgelöst, ihre Aussagen bleiben vollständig. Die Kappung je Knotentyp steht als Bezifferung am jeweiligen Toggle, das den Typ nennt und daneben die Zahl der gezeigten und der vorhandenen Kandidaten (etwa 12 von 195). Der Schnitt kommt aus `recordsFor` mit dem Record-Satz der Fokus-Entität als Startmenge, sodass Zählstand, Deckung und Bild dieselbe Menge meinen.
   - Schärfegrad weit/eng: schaltet den Record-Satz um, Differenz wird benannt (recordsEng/recordsWeit).
-  - Ort- und Zeitfenster-Facetten: geteilter Filter-State (`filter-state.js`), wirken auf den Graph.
+  - Die Facetten Person, Ort, Werk, Institution und Rolle sowie das Zeitfenster: geteilter Filter-State (`filter-state.js`), wirken auf den Graph.
   - Knotentyp-Toggles: jeder Typ einzeln abschaltbar (wörtliche Partnervorgabe).
   - Fokus-Wechsel (Person/Ort): lokaler View-State.
   - Knoten-Klick: Detail-Panel mit datengetriebenen Chips (kein redaktionelles Deuten).
 - **Determinismus.** Positionen aus reinen Funktionen in `_verknuepfungen-geometry.js` (unit-getestet), keine Force-Simulation. Vier Typ-Sektoren aus festen Winkeln, zwei Ringe gegen Gedränge, Knotenradius aus der Zahl der geteilten Dokumente.
-- **Kappung wird ausgewiesen.** Je Knotentyp rendert der Graph nur die stärksten Nachbarn (`TOP_N`); die Caption nennt pro Typ, wie viele Knoten dabei weggefallen sind, statt die Kappung stumm zu lassen.
+- **Kappung wird ausgewiesen.** Je Knotentyp rendert der Graph nur die stärksten Nachbarn (`TOP_N`). `stats.candidates` nennt pro Typ die Zahl vor der Kappung, das Toggle in der Sidebar zeigt sie an, und der Statusblock führt die Summe der weggefallenen Knoten, statt die Kappung stumm zu lassen.
 - **Detail-Panel.** Die Chips folgen dem Rolle-Prefix-Muster und ziehen ihre Werte aus `nodeMeta`, je Typ die datengedeckten Felder (Institution Sitz und Kontakt, Person Lebensspanne und Stimmfach, Werk Partie und Komponist, dazu die Rollen). Die Partie kommt aus der kuratierten Werkindex-Spalte `rolle/stimme`, die die Pipeline vor M1 fallen ließ.
-- **Telemetrie.** Log-Stempel `[verknuepfungen]` pro Render mit Fokus, Schärfegrad, Ort, Zeitfenster, Knotenzahl je Typ, `recordsWeit`, `recordsEng` und der Kappungssumme.
+- **Telemetrie.** Log-Stempel `[verknuepfungen]` pro Render mit Fokus, Schärfegrad, Zahl der aktiven Facetten, den Werten jeder Facette, Zeitfenster, Knotenzahl gesamt und je Typ (`k-person` und Geschwister), `recordsWeit`, `recordsEng` und der Kappungssumme.
 
 ### Wissenskorb
 
@@ -253,13 +254,18 @@ Ein einziges Filter-State-Objekt ist die Quelle, alle Views lesen daraus und sch
 
 | Facette | Wert-Typ | Quelle im Store | Leerwert |
 |---|---|---|---|
-| `ort` | String (Stadtname) | `store.locations`, Stadt-konsolidiert über `cityOf` (E-108) | `''` |
-| `person` | String (Name) | `store.persons` | `''` |
-| `werk` | String (Name) | `store.works` | `''` |
-| `rolle` | String (Rollen-Id) | distinkte Rollen über `store.persons[].roles` (Akteursrolle) | `''` |
+| `ort` | Liste von Stadtnamen | `store.locations`, Stadt-konsolidiert über `cityOf` (E-108) | `[]` |
+| `person` | Liste von Namen | `store.persons` | `[]` |
+| `werk` | Liste von Namen | `store.works` | `[]` |
+| `institution` | Liste von Namen | `store.organizations` | `[]` |
+| `rolle` | Liste von Rollen-Ids | `store.recordsByAgentRole` (Akteursrolle) | `[]` |
 | `zeitfenster` | `[vonJahr, bisJahr]` | aus `rico:date` der Records und den Event-Daten | `null` (volle Spanne) |
-| `sicht` | Sicht-Id | `mobilityClusterFor(eventRole)`, `null` → Bucket `kontext` | `''` |
+| `sicht` | Liste von Sicht-Ids | `mobilityClusterFor(eventRole)`, `null` → Bucket `kontext` | `[]` |
 | `schaerfe` | `'weit'` \| `'eng'` | Modus, kein Entitätsfilter | `'weit'` |
+
+Jede Entitätsfacette hält seit E-151 eine Liste. Mehrere Werte einer Facette wirken als ODER, verschiedene Facetten als UND. Ein Wert ohne Entsprechung im Bestand betrifft nur sich selbst; treffen alle Werte einer Facette nichts, bleibt die Menge leer. `facetValues(state, key)` in [`filter-state.js`](../docs/js/ui/filter-state.js) bringt jeden Wert auf die Listenform, sodass ein Aufrufer weiterhin einen einzelnen String setzen darf.
+
+Ensemble (`rico:Group`), Ereignisrolle und Währung sind in [`records-for.js`](../docs/js/data/records-for.js) als Achsen gebaut, stehen aber nach der Entscheidung der Projektleitung vom 2026-08-31 noch nicht im geteilten State. Die Ensemble-Deckung ist zu dünn, und die Finanzachse trägt heute nur Vorhandensein und Währung, weil `detailRole` in allen Belegen leer ist.
 
 `rolle` ist die Akteursrolle, nicht die `eventRole`; die `eventRole` speist ausschließlich die `sicht`-Facette. Die bestand-lokale Erschließungs-Umschaltung (E-116, `zeigeUnerschlossen`) bleibt view-lokal, sie ist eine Darstellungsfrage des Bestands, kein view-übergreifender Datenschnitt.
 
@@ -270,7 +276,7 @@ Ein Ort, eine Person, ein Werk koppeln an Daten auf unterschiedlich scharfen Ebe
 - `schaerfe = 'weit'`, Record-Bezug. Ein Treffer ist ein Record, der die Entität führt, etwa über `rico:hasOrHadLocation`. Weit und unscharf, weil Sammeldokumente mehrere Orte und Zeiten bündeln; das Vorhandensein im selben Record ist kein Nachweis, dass das Ereignis an diesem Ort stattfand.
 - `schaerfe = 'eng'`, Ereignis-Verortung. Ein Treffer ist ein `m3gim-ontology:Annotation` mit `atPlace`, Datum und Koordinaten. Raumzeitlich exakt. Umgesetzt ist der enge Grad als Record-Menge. `engRecordSet(store)` in [`filter-sync.js`](../docs/js/ui/filter-sync.js) und `eventAnchoredRecords(store)` in [`_verknuepfungen-geometry.js`](../docs/js/views/_verknuepfungen-geometry.js) sammeln die Records, die mindestens ein `m3gim-ontology:Annotation` **oder** eine `m3gim-ontology:Performance` tragen, also raumzeitlich oder über eine Aufführung belegt sind. Die Aufführungsbelegung ist gegenüber dem Entwurf hinzugekommen, weil eine belegte Aufführung dieselbe Schärfe stiftet wie ein verortetes Ereignis.
 
-Der Modus schaltet die Auflösung der `ort`- und `zeitfenster`-Facette um, weit über die Record-Menge, eng über die Event-Menge. Default ist `weit`; jeder View zeigt den aktiven Schärfegrad an und nennt im engen Modus die Differenz, wie viele der record-bezogenen Treffer raumzeitlich belegt sind (Erschließungsspiegel-Prinzip E-87 auf den Filter angewendet). Die Karte ist intrinsisch `eng`, das Netzwerk intrinsisch `weit`.
+Der Modus engt die Dokumentmenge ein, die `recordsFor` liefert, und wirkt damit hinter allen Facetten zugleich. Default ist `weit`; jeder View zeigt den aktiven Schärfegrad an und nennt im engen Modus die Differenz, wie viele der record-bezogenen Treffer raumzeitlich belegt sind (Erschließungsspiegel-Prinzip E-87 auf den Filter angewendet). Die Karte ist intrinsisch `eng`, das Netzwerk intrinsisch `weit`.
 
 Herkunft der Unterscheidung ist der Bayreuth-Befund vom 2026-06-20, der sie am konkreten Fall durchgearbeitet hat. Seine Definitionen gelten unverändert für jede Entität.
 
@@ -303,7 +309,33 @@ Kein neuer Apparat; Event-Bus und generische Toolbar werden erweitert.
 
 Gebaut sind `filter-state.js` mit dem `m3gim:filter`-Kanal, `buildToolbar` rückverdrahtet und Bestand und Chronik umgestellt, Netzwerk-Zeitfenster und Karten-Filter am selben State, der view-lokale `ROLE_TO_TYPE` durch `mobilityClusterFor` ersetzt, und der Schärfegrad als geteiltes Control mit Differenznennung. Bestand und Chronik führen die Differenz über ein eigenes Banner (`updateSchaerfeBanner`), der Verknüpfungen-Tab über seine Caption. Abgesichert ist die Kopplung durch den Smoke-Canary `m4:cross-view-filter` (Ort im Graph gesetzt, Bestand synchron gefiltert), durch `tests/frontend/filter-sync.test.mjs` für die Projektionen und den Loop-Guard und durch den logStamp-Vertrag des Verknüpfungen-Tabs.
 
-Die Persistenz über Tab-Wechsel ist erfüllt, weil der State im Modul lebt und die Views beim einmaligen Render abonniert bleiben. Offen bleibt der Default-Schärfegrad pro View; geteilter Default ist `weit`, und kein View erzwingt heute `eng`.
+Die Persistenz über Tab-Wechsel ist erfüllt, weil der State im Modul lebt und die Views beim einmaligen Render abonniert bleiben.
+
+### Fundament vom 2026-08-31
+
+Fünf Bausteine lösen die verstreute Filterlogik ab und tragen die Umrüstung der übrigen Ansichten.
+
+#### Listenform durch jede lesende Stelle
+
+Der Zustandshalter hält je Entitätsfacette eine Liste, und jede lesende Stelle ist mitgezogen. Betroffen waren die beiden Projektionen in `filter-sync.js`, die Toolbar-Pipeline in `_archive-filter.js`, die Facetten-Comboboxen in `_toolbar.js` (jetzt mit `addFacet`/`removeFacet` und entfernbaren Chips), der Personenfilter des Netzwerks (`sharedPersons`) und die Ortsauswahl der Karte (`selectedCities`). Der Merge-Vorbehalt aus E-151 ist damit eingelöst; keine Ansicht erwartet noch einen String, während der State Listen hält.
+
+#### `recordsFor` als einzige Auflösung
+
+Aus Store und Filter entsteht in [`docs/js/data/records-for.js`](../docs/js/data/records-for.js) genau eine Dokumentmenge, an der jede Ansicht schneidet. `recordsFor(store, filter, {base})` liefert `ids`, `weit`, `eng`, `undatiert` und `byFacet`, sodass jede Ansicht die Differenz zwischen weitem und engem Grad nennen kann, ohne sie selbst zu rechnen. `facetIndex(store, key)` gibt den Wertindex einer Achse, `facetInventory(store, key)` die wählbaren Werte mit Belegzahl. Ein lexikalischer Gate in `tests/frontend/records-for.test.mjs` hält die fünf früheren Eigenauflösungen fern. Kein Modul unter `docs/js/views/` darf eine Entitätsfacette noch selbst über `store.persons.get(` und Geschwister auflösen. `buildGraph` im Verknüpfungen-Tab nimmt die Menge seither über `opts.records` entgegen, statt sie zu bauen.
+
+#### Die einheitliche linke Filterspalte
+
+[`_facet-sidebar.js`](../docs/js/views/_facet-sidebar.js) baut auf dem Gerüst von `createSidebar`/`viewShell` die Spalte, die jede Visualisierung tragen soll (Vorgabe der Projektleitung nach der Sichtprüfung vom 2026-08-31). Von oben stehen dort ein Status- und Legendenblock, die Facetten Person, Ort, Werk, Institution und Rolle mit Mehrfachauswahl und entfernbaren Chips, das Zeitfenster, der Schärfegrad und am Fuß das Zurücksetzen. Der Statusblock bleibt beim Scrollen stehen und nennt den Zählstand der gefilterten Dokumentmenge, die Deckungsangabe aus `ui/coverage.js`, den Schärfegrad als Badge mit erklärendem Tooltip und die belegte Teilmenge. Die Werte der Facetten kommen ausschließlich aus `facetInventory` und damit aus dem Datensatz. Eine redaktionelle Werteliste im Code bleibt ausgeschlossen (E-87). Über `leadSections` und `sections` hängt eine Ansicht ihre eigenen Regler in dieselbe Spalte. Die Spalte abonniert den geteilten Filter selbst und meldet jede Änderung, eigene wie fremde, als einen einzigen `onChange`-Aufruf; die Ansicht zeichnet daraufhin neu und ruft `update()`.
+
+#### Filterzustand in der URL
+
+Die Grammatik lautet `#<tab>[/<recordId>][?<query>]`, die Kodierung `ort=Bayreuth,Wien&person=Malaniuk%2C%20Ira&jahr=1951-1953&schaerfe=eng`. Das Komma trennt die Werte einer Facette, ein Komma im Wert wird prozentkodiert. Leerwerte erscheinen nicht, also weder eine leere Auswahl noch ein zur vollen Spanne gefaltetes Zeitfenster noch der Default-Schärfegrad. Der Router liest den Query-Teil in `parseHash`, bevor die Views rendern, und `main.js` hängt `syncHashToFilter` an den Filter-Halter. Ein Schnitt ist damit zitierbar und überlebt den Reload; der Smoke-Canary `filter:url-roundtrip` sichert beides.
+
+#### Voreinstellung je Ansicht
+
+`applyViewDefault(patch)` setzt nur Facetten, die seit dem letzten Zurücksetzen unberührt sind, und lässt eine getroffene Wahl stehen. Damit bringt jede Ansicht beim Abonnieren ihren passenden Schärfegrad mit, ohne den geteilten Schnitt zu überschreiben. Der Verknüpfungen-Tab nutzt den Mechanismus mit `weit`; Zeitstrahl und Karte bekommen ihren engen Default in der nächsten Welle.
+
+Umgerüstet ist bisher der Verknüpfungen-Tab. Bestand, Chronik, Karte, Netzwerk und Statistik lesen die Listenform korrekt und hängen unverändert am geteilten Filter, tragen ihre Regler aber weiterhin an ihrer bisherigen Stelle.
 
 ## Schnittstellenvertrag
 

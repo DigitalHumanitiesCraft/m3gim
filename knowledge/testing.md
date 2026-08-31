@@ -5,9 +5,9 @@ project:
   repository: https://github.com/DigitalHumanitiesCraft/m3gim
 status: complete
 language: de
-version: 0.4
+version: 0.5
 created: 2026-02-19
-updated: 2026-08-22
+updated: 2026-08-31
 authors: [Christopher Pollin]
 generated-with: Claude Code
 method:
@@ -40,7 +40,8 @@ tests/
 ├── schemas/
 │   ├── m3gim_jsonld.schema.json   # JSON-Schema Draft 2020-12
 ├── fixtures/
-│   └── baseline_counts.json       # Regression-Mindestwerte
+│   ├── baseline_counts.json       # Regression-Mindestwerte
+│   └── rico_agrelon_allowlist.json # verifizierte externe Terme mit Quellenangabe
 ├── tools/
 │   └── snapshot_diff.py           # CLI: diff zwei m3gim.jsonld-Versionen
 ├── test_01_schema.py              # JSON-Schema + DFT-Hierarchie
@@ -85,7 +86,13 @@ tests/
 ├── test_43_reconciliation_logic.py   # Unit-Tests der Reconciliation-Logik, offline
 ├── test_44_approval_signals.py    # Signalvokabular der Approval-Prüfung
 ├── test_45_knowledge_integrity.py # E-/AF-/QF-Zitate und relative Links der Wissensbasis
-└── test_46_vocab_vacancy.py       # Gegenrichtung, kein deklarierter Term ohne Belegung
+├── test_46_vocab_vacancy.py       # Gegenrichtung, kein deklarierter Term ohne Belegung
+├── test_47_vocab_reader.py        # enger Turtle-Leser der Pipeline gegen rdflib
+├── test_48_model_page.py          # docs/datenmodell.html ist die Ausgabe des Generators
+├── test_49_correspondence_author.py # Absenderseite eines Briefes im Beziehungsnetz
+├── test_50_link_proposals.py      # Verknuepfungsvorschlaege aus Titeln, Wortgrenzen
+├── test_51_agrelon_roles.py       # Rollenstellen einer AgRelOn-Relation
+└── test_52_dating_scope_and_rank.py # Bezugsebene und Rang stehen im Vokabular
 ```
 
 Die Nummerierung hat historische Lücken (test_17, test_21 wurden nicht vergeben). Das ist bewusst — die Zahlen sind stabile IDs, kein durchgängiger Index. Die 38 ist doppelt vergeben, `test_38_modelling_rules` und `test_38_ste_deterministic_ids` teilen sie; der Dateiname unterscheidet die beiden Module, die Nummer allein reicht als Verweis nicht.
@@ -95,7 +102,7 @@ Leitsatz: jeder Test prüft eine nicht-triviale, nicht-redundante Invariante und
 ## Teststufen
 
 ### 1. Schema-Validierung (test_01)
-Ein JSON-Schema (Draft 2020-12) validiert `m3gim.jsonld` strukturell. DFT-Hierarchie-Tests: `skos:Concept`-Knoten haben `prefLabel` und optional `broader`, alle Referenzen aus Records sind auflösbar.
+Ein JSON-Schema (Draft 2020-12) validiert `m3gim.jsonld` strukturell. Die Wohlgeformtheit und Auflösbarkeit der Dokumenttyp-Hierarchie stand hier ein zweites Mal und liegt seit dem 2026-08-31 allein in test_06. Dessen Fassung ist die schärfere, weil sie eine Mindestzahl an Concepts fordert, ein `skos:broader` auch dann beanstandet, wenn es kein Objekt ist, und die Record-Referenzen ohne Präfixfilter prüft.
 
 ### 2. String-Integrität (test_02)
 Keine pandas/Excel-Artefakte (`NaT`, `nan`, `None` als Strings), keine Mojibake (`Ã¼`, `Ã¶`), kein Zeitrest (`00:00:00`), ISO-8601-Datumsformate, gestrippte Strings.
@@ -104,10 +111,10 @@ Keine pandas/Excel-Artefakte (`NaT`, `nan`, `None` als Strings), keine Mojibake 
 Lädt die Rohdaten (`M3GIM-Objekte.xlsx`) direkt mit pandas und verifiziert: jede gültige XLSX-Signatur ist als Record im Graph, Titel stimmen überein, Dokumenttyp-Mapping greift. Parametrisierte Einzelfall-Tests für die Referenzobjekte PL_01, PL_02, PL_04.
 
 ### 4. Verknüpfungs-Mapping (test_04)
-Jeder Basis-Typ (person, institution, ensemble, ort, werk, ereignis, rolle, datum) hat einen Test, der die korrekte RiC-O-Property prüft. Plus: erwähnte Personen landen in `rico:hasOrHadSubject`, alle Agents haben `name`, Event-Daten im ISO-Format. Zusätzlich: **keine Rolle im Output endet auf `:in`/`:innen`** (Phase 4.1).
+Ein parametrisierter Test führt die vier mengenstarken Basis-Typen (person, institution, ort, werk) auf die Property und den `@type`, die sie im Output erzeugen. Seine Untergrenze bildet sich zur Laufzeit aus der Zeilenzahl der Quelle und liegt bei sechzig Prozent, sodass auch ein Teilverlust auffällt. Die Vorgängerfassung prüfte je Typ nur Nichtleere und fing allein den vollständigen Ausfall eines Zweigs (geschärft am 2026-08-31). Weiter geprüft werden die Umsortierung erwähnter Personen nach `rico:hasOrHadSubject`, der `name` an jedem Agent, die Auflösbarkeit der `hasPerformance`-Referenz samt ihrer StageRole und die Regel, dass keine Rolle im Output auf `:in` oder `:innen` endet (Phase 4.1).
 
 ### 5. Referentielle Integrität (test_05)
-Fonds existiert genau einmal, `hasOrHadPart`-Referenzen sind alle im Graph auflösbar, keine Waisen-Records, alle `@id` eindeutig. Das PL_07-Quellduplikat (Datenfehler-Register QF-04) kompensiert die Pipeline auf einen Record; `test_all_record_ids_unique` läuft ohne Marker und wacht über Regressionen.
+Fonds existiert genau einmal, `hasOrHadPart`-Referenzen sind alle im Graph auflösbar, keine Waisen-Records, alle `@id` eindeutig. Das PL_07-Quellduplikat (Datenfehler-Register QF-04) kompensiert die Pipeline auf einen Record; `test_all_record_ids_unique` läuft ohne Marker und wacht über Regressionen. Dazu die Konvolut-Hierarchie: ein Record, dessen `rico:identifier` eine Folio-Angabe führt, hängt als `rico:hasOrHadPart` an genau dem Konvolut mit der bloßen Signatur. Diese Prüfung stand bis zum 2026-08-31 als toter Rumpf in der Datei, weil ihre @id-Regex auch Konvolut-Kennungen traf und der Befundzweig mit `pass` endete.
 
 ### 6. Frontend-Kontrakt (test_06)
 Implizite Annahmen aus `loader.js` (`aggregator.js` wurde Session 32 entfernt):
@@ -118,19 +125,23 @@ Implizite Annahmen aus `loader.js` (`aggregator.js` wurde Session 32 entfernt):
 - Max. 1 `_Folio`-Kind pro Konvolut
 
 ### 7. Wikidata-Integrität (test_07)
-Jede Q-ID im Output stammt aus `wikidata-reconciliation.json`, Enrichment-Werte sind korrekt getypt (`geo:lat/long` Float mit Range, `schema:birthDate` ISO), `m3gim-ontology:voiceType` String (nicht Liste), `gndo:professionOrOccupationAsLiteral` Liste von Strings.
+Jede Q-ID im Output hat eine benannte Herkunft, entweder einen Treffer in `wikidata-reconciliation.json` oder eine kuratierte `wikidata_id`-Zelle einer Index-Arbeitsmappe, gelesen über den kanonischen Pipeline-Reader `load_index`. Eine Q-ID ohne beides ist erfunden und failt. Bis zum 2026-08-31 prüfte der Test nur, dass die Schnittmenge nicht leer ist, womit genau die Fehlerklasse durchfiel, die in Session 34 tragende Datenfehler erzeugt hat. Daneben stehen die Typprüfungen: Enrichment-Werte sind korrekt getypt (`geo:lat/long` Float mit Range, `schema:birthDate` ISO), `m3gim-ontology:voiceType` String (nicht Liste), `gndo:professionOrOccupationAsLiteral` Liste von Strings.
 
 ### 9. Regression-Baselines (test_09)
-Mindestwerte aus `fixtures/baseline_counts.json` pro Entitätstyp (records, persons, orgs, locations, works, verknuepfungen, wd_matches). Alle Checks `>=`, nicht `==` — Wachstum erlaubt, Schrumpfung verboten. Baselines werden bei substanziellen Datenständen nach oben nachgezogen.
+Mindestwerte aus `fixtures/baseline_counts.json` je Entitätstyp (records, konvolute, persons, organizations, locations, works, verknuepfungen, wd_matches). Alle Prüfungen vergleichen mit `>=`, sodass Wachstum erlaubt und Schrumpfung verboten ist.
+
+Die Projektleitung hat am 2026-08-31 entschieden, dass die Mindestwerte nach jedem Datenupdate auf etwa neunzig Prozent des dann erreichten Ist nachgezogen werden. Der Puffer von zehn Prozent trägt die normale Schwankung eines neuen Exports, ein Verlust darüber hinaus schlägt an. Ohne das Nachziehen wachsen die Ist-Werte lautlos von den Mindestwerten weg, und die Schrumpfungssperre fängt selbst den Verlust der Hälfte eines Bestands nicht mehr. Der Handgriff gehört in Schritt 8 des Workflows bei Daten-Updates. Der Test bleibt dabei unverändert, die Fixture trägt die Aussage.
 
 ### 10. Determinismus (test_10, slow)
 Lässt `transform.py` zweimal laufen, vergleicht Output (ohne `m3gim-ontology:exportDate`). Fängt versehentliche Set-Iteration / Dict-Ordnungsabhängigkeiten. Der Marker `slow` schließt ihn aus dem Lauf `pytest -m "not slow"` aus, im unmarkierten `pytest tests/` läuft er mit. Welche Felder ein Rerun zulässig verändert, steht in [pipeline-architecture.md](pipeline-architecture.md) § Reproduzierbarkeit.
 
 ### 11. Mobilität (test_11, Phase 4.4 + 4.8)
-SpatiotemporalEvent-Existenz, `atPlace` Pflicht; `atDate` nur für datierte STE (datumslose Mobilitäts-STE aus Ortsrollen tragen bewusst kein `atDate`, E-97). Rollen-Vokabular, Anzahl skaliert mit XLSX-Komposit-Rows. Die Mobilitätssichten aus [data-model.md § 10](data.md) als SPARQL-ähnliche Python-Queries: performative, institutionelle, Korrespondenz-, biographische, diskursive Mobilität.
+SpatiotemporalEvent-Existenz, `atPlace` Pflicht; `atDate` nur für datierte STE (datumslose Mobilitäts-STE aus Ortsrollen tragen bewusst kein `atDate`, E-97). Rollen-Vokabular, Anzahl skaliert mit XLSX-Komposit-Rows. Die Existenz der Verortungen und ihre Ausbeute gegen die Quelle standen als zwei zeichengleiche Tests nebeneinander und sind am 2026-08-31 in `test_every_ort_datum_row_produces_event` zusammengeführt, das den absoluten Boden `max(5, ...)` mitübernommen hat. Die Mobilitätssichten aus [data-model.md § 10](data.md) als SPARQL-ähnliche Python-Queries: performative, institutionelle, Korrespondenz-, biographische, diskursive Mobilität.
 
 ### 12. AgRelOn (test_12, Phase 4.8)
-`agrelon:`-Namespace im Context, HasEmployeeEmployer-Relationen skalieren mit XLSX-arbeitgeber-Zeilen, HasCorrespondent-Relationen haben Provenance, `hasValidityPeriod` ist well-formed (Begin/End als ISO-String).
+`agrelon:`-Namespace im Context, HasEmployeeEmployer-Relationen skalieren mit XLSX-arbeitgeber-Zeilen, HasCorrespondent-Relationen haben Provenance, `agrelon:metadataPeriod` ist well-formed (Begin/End als ISO-String).
+
+Zwei der vier Tests konnten leerlaufen, sobald die Quelle keine matchbare arbeitgeber-Zeile führt oder keine Relation einen Zeitraum trägt; sie blieben dann grün ohne ausgeführten Assert. Seit dem 2026-08-31 überspringen sie sich in diesem Fall sichtbar und nennen die fehlende Vorbedingung. Am Datenstand vom 2026-08-31 haben beide einen Gegenstand und laufen als reguläre Tests.
 
 **Hinweis (E-104).** Die AgRelOn-Termkorrektur ist erledigt: test_12 prüft die korrigierten Terme `agrelon:metadataPeriod`/`metadataProvenance`, und der Term-Validierungs-Test (test_26) lockt die Konformität dauerhaft. Verbliebene Altterme stehen nur noch kosmetisch in der Modul-Docstring von test_12.
 
@@ -144,7 +155,7 @@ Unit-Tests für `parse_monetary_value`, `normalize_role`, `normalize_lower`, `de
 Jede in der XLSX belegte Rolle (nach Normalisierung) steht in `data.md § 5`, jeder Dokumenttyp ist im `DOKUMENTTYP_TO_DFT`-Mapping, jede Währung in `ALLOWED_CURRENCIES`. Output-Rollen sind Teilmenge des data.md-Vokabulars.
 
 ### 16. Finanz-Roundtrip (test_16, Phase 4.6)
-Für jede XLSX-Finanzzeile: der zugehörige Record (über `rico:identifier`) enthält eine DetailAnnotation mit exaktem `monetaryAmount` + `currency` + `detailRole`. Kein Silent-Drop.
+Zu jeder Finanzzeile der Quelle enthält der über `rico:identifier` zugeordnete Record eine DetailAnnotation mit exaktem `monetaryAmount`, `currency` und `detailRole`, sodass keine Zeile still verlorengehen kann. Der Grundtyp einer Zeile wird an Komma und Unterstrich gleichermaßen abgetrennt, weil der Dropdown-Export den Komposittyp als `einnahmen_währung` liefert (test_37). Ohne den Unterstrich als Trenner meldete der Test jede Finanzzeile des neuen Exports als fehlend.
 
 ### 18. Datierung am Annotationsknoten (test_18, Phase 4.7)
 Der Test heisst nach der Phase, die er sicherte, und sichert seit E-136 ihr Gegenteil. Die sechzehn typisierten Datumsproperties sind entfallen; jede Datierung haengt an einem `m3gim-ontology:Annotation`-Knoten mit `m3gim-ontology:atDate` und der erfassten Rolle. Zwei Ausnahmen bleiben, die Entstehungsdatierung des Dokuments auf `rico:creationDate` und die Datierung einer Auffuehrung am Auffuehrungsknoten ohne Rollenangabe. Der Test greift, wenn ein Property-Name zurueckkehrt, der eine Rolle ausdrueckt, wenn eine Datierung ihre Rolle verliert oder wenn der Zugriffspfad vom Dokument zu seinen Datierungen bricht. Alle Werte sind ISO, TimeSpan oder qualifiziert (`circa:`/`vor:`/`nach:`).
@@ -190,7 +201,7 @@ Lock für die `EVENT_ROLE_TO_MOBILITY_CLUSTER`-Mapping-Tabelle im Frontend (`doc
 
 Konformitäts-Lock aus dem Modellierungs-Audit ([architecture-decisions.md](architecture-decisions.md) E-103/E-104). Sammelt jeden im Output verwendeten `rico:`- und `agrelon:`-Term (als `@type` und als Property-Key) und prüft ihn gegen eine im Repo hinterlegte Allowlist der offiziellen Termlisten — RiC-O 1.1 aus den ICA-EGAD-CSV-Komponentenlisten, AgRelOn aus der DNB-RDF. Ein nicht gelisteter Term failt hart. Deckt die bekannten Fehlterme (`rico:isAssociatedWithRecord`, `rico:File`/`rico:Fonds` als Klasse, `agrelon:hasProvenance`/`hasConfidenceValue`/`hasValidityPeriod`, `agrelon:HasIsPatron`) sofort als rot auf und sichert dauerhaft gegen Regression — die Fehlerklasse „Term aus der Benennungskonvention extrapoliert" ([Leitplanke „Fremdterme verifizieren"](architecture-decisions.md)) wird damit maschinell unmöglich.
 
-Der Test lockt die Term-Konformität gegen die Allowlist dauerhaft und verifiziert die mit der Konformitäts-Korrektur nachgezogenen Module test_12/test_19. Ein leichtgewichtiger Vorläufer der weiter unten genannten SHACL-Validierung — er prüft Term-Existenz, nicht Shape-Konformität.
+Der Test lockt die Term-Konformität gegen die Allowlist dauerhaft und verifiziert die mit der Konformitäts-Korrektur nachgezogenen Module test_12/test_19. Die sieben bekannten Fehlterme standen zusätzlich als eigener Test daneben; da keiner von ihnen in der Allowlist steht, konnte dieser nie rot werden, ohne dass der Allowlist-Test bereits rot war, und ist am 2026-08-31 entfallen. Ein leichtgewichtiger Vorläufer der weiter unten genannten SHACL-Validierung — er prüft Term-Existenz, nicht Shape-Konformität.
 
 ### 27. StageRole-Entität (test_27, E-96)
 
@@ -198,7 +209,7 @@ Sichert, dass `m3gim:hasPerformanceRole` vollständig abgelöst ist (kein Record
 
 ### 28. Performance-Reifikation (test_28, E-96/E-98)
 
-`m3gim-ontology:Performance`-Entitäten existieren, jede record-seitige `m3gim-ontology:hasPerformance`-Referenz ist im Graph auflösbar, und `m3gim-ontology:performanceOf` zeigt stets auf ein `m3gim-ontology:MusicalWork` mit `name` (nie literale Q-ID). Die `hasPerformer`/`performanceOf`-Pfade sind datenadaptiv zulässig leer, solange der April-Stand keine `rolle,person`/`datum,werk`-Komposite enthält — sie aktivieren sich mit dem tieferen Box-Export. Begleitend migriert: test_04 (rolle → Performance statt hasPerformanceRole), test_09/test_15 (Relations-Zählung auf `hasPerformance`), die JS-Fixtures `record-partition`/`utils`.
+`m3gim-ontology:Performance`-Entitäten existieren, und `m3gim-ontology:performanceOf` zeigt stets auf ein `m3gim-ontology:MusicalWork` mit `name` (nie literale Q-ID). Die `hasPerformer`/`performanceOf`-Pfade sind datenadaptiv zulässig leer, solange der April-Stand keine `rolle,person`/`datum,werk`-Komposite enthält — sie aktivieren sich mit dem tieferen Box-Export. Begleitend migriert wurden test_04 (rolle → Performance statt hasPerformanceRole), test_09/test_15 (Relations-Zählung auf `hasPerformance`) und die JS-Fixtures `record-partition`/`utils`. Die Auflösbarkeit der record-seitigen `hasPerformance`-Referenz stand hier ein zweites Mal und liegt seit dem 2026-08-31 allein in `test_04.test_performance_references_resolvable`, das zusätzlich die `hasStageRole`-Referenz gegen die StageRole-Knoten prüft.
 
 ### 34. Rohdaten-Gegencheck (test_34, E-108)
 
@@ -252,9 +263,73 @@ Die Prüfung in `scripts/verify-manual-approvals.py` vergleicht Wikidata-Descrip
 
 Die Wissensbasis trägt zwei Zitiersysteme, die aus Code, Tests, Vokabular und Action-Layer heraus angesprochen werden. E-Nummern benennen Architektur- und Modellentscheidungen, AF- und QF-Nummern benennen Abgleich- und Quellfehler. Sobald ein Umbau die Definitionen nach Gegenstand verteilt, kann eine Nummer unbemerkt verschwinden oder doppelt entstehen, und das Zitat im Code zeigt danach ins Leere, ohne dass etwas bricht. Der Test verlangt deshalb nur, dass jede zitierte Nummer irgendwo in `knowledge/` genau eine Definition hat, ohne an ein bestimmtes Dokument zu binden; damit überlebt er eine Verteilung der Register. Ein zweiter Teil sichert die relativen Markdown-Links der Wissensbasis und des Action-Layers gegen lautlose Brüche durch Umbenennung oder Löschung.
 
-### 46. Vokabular-Leerstand (test_46, xfail strict)
+### 46. Vokabular-Leerstand (test_46)
 
-Gegenrichtung zu test_40. Jener sichert, dass kein im Datensatz verwendeter Term undeklariert bleibt; dieser sichert, dass kein deklarierter Term ohne Belegung mitgeführt wird. Ein leerer Term ist durch eine `skos:editorialNote` entschuldigt, die mit dem Marker `unused:` beginnt und den Grund nennt, womit der Grund am Term selbst steht und mit ihm wandert, statt in einer Ausnahmeliste im Testcode zu leben. Der Test läuft über denselben Einstiegspunkt wie der Handbefehl, also `vocab/check-coverage.py --vacancy`. Der xfail-Marker ist strikt und schlägt als XPASS an, sobald die offenen Terme gefüllt, entfernt oder mit ihrer Notiz versehen sind.
+Gegenrichtung zu test_40. Jener sichert, dass kein im Datensatz verwendeter Term undeklariert bleibt; dieser sichert, dass kein deklarierter Term ohne Belegung mitgeführt wird. Ein leerer Term ist durch eine `skos:editorialNote` entschuldigt, die mit dem Marker `unused:` beginnt und den Grund nennt, womit der Grund am Term selbst steht und mit ihm wandert, statt in einer Ausnahmeliste im Testcode zu leben. Der Test läuft über denselben Einstiegspunkt wie der Handbefehl, also `vocab/check-coverage.py --vacancy`. Der Test lief zunächst als strikter xfail, weil vier Properties deklariert und unbelegt waren. Mit dem Umbau der Pipeline auf das Zielmodell trägt jeder deklarierte Term Daten oder nennt den Grund seiner Leere; der Marker ist gezogen und der Test ist ein reguläres Gate.
+
+### 47. Vokabular-Leser der Pipeline (test_47)
+
+Die Pipeline braucht zur Laufzeit die Abbildung eines erfassten Rollenwerts auf
+sein Concept im Vokabular. rdflib steht nur in `requirements-test.txt`, ein
+Import in `scripts/transform.py` erweiterte die Laufzeitumgebung um eine
+Abhängigkeit, die sie heute nicht hat; deshalb liest die Pipeline `vocab/m3gim.ttl`
+mit einem eigenen, engen Leser. Der Test baut dieselbe Abbildung ein zweites Mal
+mit rdflib und vergleicht beide Ergebnisse Eintrag für Eintrag, in beide
+Richtungen und einschließlich der Auflösungsgleichheit. Fällt er, ist entweder
+der Leser zu eng oder das Vokabular hat eine Form angenommen, die er nicht kennt.
+
+### 48. Modellseite gegen das Vokabular (test_48)
+
+`docs/datenmodell.html` ist erzeugt und nicht geschrieben. Der Test lässt
+`scripts/build-model-page.py` erneut laufen und vergleicht das Ergebnis Zeichen
+für Zeichen mit der ausgelieferten Datei; eine veraltete Seite kommt damit mit
+einem Lauf des Generators wieder in Deckung. Die übrigen Fälle sichern, dass ein
+leerer oder verkürzter Generator nicht trivial besteht, indem jede Klasse, jede
+Property, jedes Scheme und jeder Begriff des Vokabulars auf der Seite vorkommen
+muss und die Zeichnung deterministisch und ohne Laufzeitbibliothek entsteht.
+
+### 49. Absenderseite der Korrespondenz (test_49)
+
+Der Bestand führt die Absenderseite unter der Rolle `verfasser`; der im
+Vokabular deklarierte Wert `absender` kommt in den Daten nicht vor. Solange
+`verfasser` ohne AgRelOn-Zuordnung bleibt, zeigt die Korrespondenz-Sektion nur
+den Adressaten. Die Zuordnung gilt allein am Dokumenttyp Korrespondenz, weil an
+einer Rezension der `verfasser` der Kritiker ist und eine pauschale Abbildung
+dort eine Korrespondenz erzeugte, die es nie gab. Beide Richtungen sind geprüft,
+mit einem Wächter gegen den Verlust des Gegenstands.
+
+### 50. Verknüpfungsvorschläge aus Titeln (test_50)
+
+`scripts/propose-links.py` liest die Titel des unverknüpften Bestands und legt
+Vorschläge vor; in die Daten geht nur, was das Erschließungsteam bestätigt. Der
+Test steht gegen vier Gestalten desselben stillen Defekts, nämlich einen
+Vorschlag, der plausibel aussieht und falsch ist. Geprüft werden der Teiltreffer
+im Wortinneren („Wien“ in „Wiener Neustadt“), die Mehrdeutigkeit eines Namens,
+der auf zwei Indexeinträge zugleich passt, die Erkennung einer Person an einem
+einzelnen Nachnamen und die Regel, dass kein Vorschlag eine Rolle trägt, die
+niemand erfasst hat.
+
+### 51. Rollenstellen einer AgRelOn-Relation (test_51)
+
+Zwei Befunde aus der offiziellen AgRelOn-RDF der Deutschen Nationalbibliothek,
+beide am 2026-08-22 gegen die Quelle geprüft. `agrelon:hasCorrespondent` ist eine
+`owl:SymmetricProperty`, weshalb die Ontologie für den n-ären Begriff
+`agrelon:hasSubjectObject` vorsieht; `hasSubject` und `hasObject` behaupteten
+dort eine Richtung, die der Begriff nicht kennt. Und `IsHasPatron` folgt der
+Lesart des ersten Namensteils `isPatronOf`, womit Subjekt der Fördernde ist. Die
+Pipeline setzte die Nachlassbildnerin als Subjekt und drehte die Beziehung damit
+um.
+
+### 52. Bezugsebene und Rang einer Datierung (test_52)
+
+Der Frontend-Vertrag verlangt Rang und Bezugsebene jeder Datierung. Bis zum
+2026-08-22 lagen beide als Handtabellen in `docs/js/data/constants.js`, während
+der Datensatz sie an keiner Stelle führte; die Oberfläche trug damit eine Aussage
+über die Daten, die in den Daten nicht stand. Der Test verankert beide am Begriff
+im Vokabular und enthält den lexikalischen Nachweis, dass das Frontend keine
+zweite Tabelle führt. Ein neuer Rollenbegriff ohne Bezugsebene und eine Rolle mit
+einer Ebene außerhalb des Schemas fallen damit auf, statt still aus der
+Auswertung zu fallen.
 
 ```bash
 # Dependencies (einmalig)
@@ -334,19 +409,20 @@ Wartung:
 5. Tests: `pytest -m "not slow"`
 6. Snapshot-Diff als Review-Report: `python tests/tools/snapshot_diff.py data/_archive/pre-update.jsonld data/output/m3gim.jsonld`
 7. Bei allen Tests grün + akzeptablem Diff: `docs/data/` wurde von `build-views.py` bereits aktualisiert — committen.
-8. Baselines in `tests/fixtures/baseline_counts.json` ggf. nach oben anpassen, wenn neue Daten deutlich mehr Inhalte bringen.
+8. Baselines in `tests/fixtures/baseline_counts.json` auf etwa neunzig Prozent der neuen Ist-Werte nachziehen (Entscheidung der Projektleitung vom 2026-08-31, siehe § 9). Der Schritt ist verbindlich, sonst wachsen die Ist-Werte lautlos von den Mindestwerten weg.
 
 ## Bekannte Ausnahmen
 
 - `test_verknuepfungen_every_referenced_record_has_relations` — **xfail (strict)**. Folio-Granularitäts-Inkonsistenz NIM_168 zwischen Objekt- und Verknüpfungstabelle (Datenfehler-Register QF-07). Nach dem Source-Fix bricht XPASS die Suite, dann Marker entfernen.
-- `test_has_employer_relations_from_arbeitgeber` — **skip**. Die einzige arbeitgeber-Zeile hat Signatur `UAKUG/NIM_11`, die keinem Record zugeordnet werden kann (verwaist).
-- `test_no_declared_term_without_data` (test_46), **xfail (strict)**. Deklarierte Vokabular-Terme ohne Belegung im Datensatz. Sobald sie gefüllt, entfernt oder mit einer `skos:editorialNote unused:` versehen sind, bricht XPASS die Suite, dann Marker entfernen.
+- `test_komponisten_ohne_fuzzy_duplikate` (test_24) — **xfail (strict)**. Schreibvarianten desselben Komponisten im Werkindex (Beethoven „van/von“), Source-Fix beim Archivteam offen.
+- Die beiden AgRelOn-Tests in test_12 überspringen sich sichtbar, wenn die Quelle keine matchbare arbeitgeber-Zeile führt oder keine Relation einen Gültigkeitszeitraum trägt. Am Datenstand vom 2026-08-31 tritt das nicht ein, beide laufen als reguläre Tests.
+- `pytest.importorskip("playwright")` in `tests/frontend/test_smoke.py` ist der einzige Skip-Pfad, der in einer browserlosen Umgebung regelmäßig greift. Die übrigen `pytest.skip`-Aufrufe der Suite sind Vorbedingungswächter und werden am aktuellen Stand nicht erreicht.
 - Junk-Namen im Personen-Index (`[Organi]`, kurze Initialen) werden als Warnung geloggt, nicht gefailed — Frontend filtert via `isJunkName`.
 - Freitext in Datumsspalte (`"Wien, ab 1956"`, `"1944-05 bis 1944-09"`): `is_iso_date()` trennt sie vom ISO-Wert; sie landen im Annotationsknoten unter `m3gim-ontology:hasAnnotation` mit ihrem Rohwert. Das generische `m3gim:eventDate` ist abgeschafft (test_18 assertet `generic_count == 0`). <!-- vocab-exempt: nennt die mit E-102 abgeschaffte generische Datumsproperty -->
 
 ## Stand
 
-Suite durchgängig grün bis auf die dokumentierten Ausnahmen (`NIM_168` xfail strict, `NIM_11` skip, Partitur-Skips bei fehlendem Derivat). Die Module `test_19_provenance` (semantische Provenance) und `test_20_xlsx_provenance` (technische XLSX-Quellreferenz) bilden zusammen den **Provenance-Kontrakt** des Projekts.
+Suite durchgängig grün bis auf die beiden strikten xfail-Marker (`NIM_168` in test_04, Beethoven-Schreibvariante in test_24), die beide auf einen offenen Source-Fix zeigen. Die Module `test_19_provenance` (semantische Provenance) und `test_20_xlsx_provenance` (technische XLSX-Quellreferenz) bilden zusammen den Provenance-Kontrakt des Projekts.
 
 Laufzeit im Regelbetrieb überschaubar; der Determinismus-Test (Marker `slow`) dominiert die Gesamtdauer und ist aus der Standard-Suite ausgeschlossen.
 
@@ -379,8 +455,8 @@ Playwright ist bewusst **nicht** enthalten und bleibt ein optionales Extra, sieh
 
 `tests/frontend/smoke.py` fährt die SPA headless (Chromium, lokaler `python -m http.server 8765`) und prüft:
 
-1. **Tab-Durchlauf** über alle sichtbaren Tabs = der reale `VISIBLE_TABS`-Satz (`bestand`, `chronik`, `statistik`, `indizes`, `mobilitaet`, `netzwerk`, `korb`) — keine JS-Errors, DOM rendert nicht-leer. Der seit E-109/E-111 sichtbare Mobilitäts-Tab (D3-geo-Karte) und der Korb sind seit E-113 im Loop; der Mobilitäts-Tab trägt zusätzlich einen eigenen Karten-Canary (Punkt 8). Versteckte Perspektiv-Tabs (Mobilitäts-Atlas, Repertoire, Biogramm) werden bewusst nicht angesteuert (E-81).
-2. **logStamp-Keys pro Tab** (State-Stempel): `bestand` → `konvolute, records, sort`; `chronik` → `records, jahre-belegt, undatiert, spanne` (Scroll-Zeitstrahl, E-88); `statistik` → `records, konvolute, events, personen, sektionen`; `indizes` → `personen, organisationen, orte, werke`; `mobilitaet` → `events, verortet, unverortet, datiert, jahre`; `netzwerk` → `total, ring1, ring2, agrelon` (konzentrische Personen-Viz, E-93); `korb` → `eintraege, aufgeloest, events, finanzen`.
+1. **Tab-Durchlauf** über die reale `VISIBLE_TABS`-Menge aus `docs/js/ui/router.js` (`bestand`, `chronik`, `statistik`, `indizes`, `karte`, `netzwerk`, `verknuepfungen`, `korb`). Geprüft wird, dass das DOM nicht-leer rendert; ein neuer Konsolenfehler auf einem Tab wird heute als WARN geführt und bricht den Lauf nicht. Der seit E-109/E-111 sichtbare Mobilitäts-Tab (D3-geo-Karte) und der Korb sind seit E-113 im Loop; der Mobilitäts-Tab trägt zusätzlich einen eigenen Karten-Canary (Punkt 8). Versteckte Perspektiv-Tabs (Mobilitäts-Atlas, Repertoire, Biogramm) werden bewusst nicht angesteuert (E-81).
+2. **logStamp-Keys pro Tab** (State-Stempel), wie sie `stamp_expectations` in `tests/frontend/smoke.py` fordert: `bestand` → `konvolute, records, sort`; `chronik` → `records, jahre-belegt, datiert, undatiert, sicht-gedeckt, spanne` (Scroll-Zeitstrahl, E-88); `statistik` → `records, events, personen, ansichten, aktiv`; `indizes` → `personen, organisationen, orte, werke`; `karte` → `entitaeten, orte, belege, unverortet, jahre`; `netzwerk` → `total, ring1, ring2, agrelon` (konzentrische Personen-Viz, E-93); `verknuepfungen` → `fokus, schaerfe, knoten, recordsWeit, recordsEng`; `korb` → `eintraege, aufgeloest, events, finanzen`.
 3. **Chronik-Zeitstrahl-Canary** (seit Session 44, E-91): `#tab-chronik .chronik-year` deckt die Lebensspanne 1919–2009 als durchgehende Jahres-Zeilen ab, leere Jahre sichtbar aber ohne Records-in-leer. Klick auf `chronik-point` dispatcht `selectRecord` und springt in Bestand mit offenem Inline-Detail; fehlerfrei in der Konsole.
 4. **Anker-Titel im DOM**: `Rezension von Karl Schumann zu Macbeth` (NIM_004/3), `Handschriftliche Notiz` (NIM_007/5_1). Bricht der Check, ist entweder der Record ausgefiltert worden oder die Render-Logik kaputt.
 5. **Anker-Record NIM_004_1 voll aufgeklappt**: Sprach-Label aufgelöst (`en, fr` → „Englisch, Französisch") und AgRelOn-Dedup greift (Malaniuk erscheint genau einmal).
@@ -398,6 +474,8 @@ pytest -m frontend tests/frontend/
 ```
 
 Der pytest-Wrapper (`tests/frontend/test_smoke.py`, Marker `@pytest.mark.frontend`) startet den Server als Fixture.
+
+Sieben der Prüfungen fangen jede Ausnahme ihrer eigenen Ausführung ab und melden dann WARN statt FAIL, betroffen sind der Chronik-Jahresraster, die Aggregat-Auflösung, der Cross-View-Filter, der Anker-Record NIM_004_1, die Konvolut-Meta-Chips, der Erschließungs-Toggle und die Duplikat-Prüfung der `@id`. Nur ein FAIL setzt den Exit-Code, den der Wrapper auswertet. Ein kaputt gehender Selektor lässt den Durchlauf damit still grün werden. Ob diese Prüfungen den Lauf brechen sollen, ist eine offene Operator-Entscheidung; sie bestimmt, ob der Smoke-Durchlauf ein Gate oder ein Bericht ist.
 
 **Der Browserteil ist ein optionales Extra.** Playwright steht in keiner Requirements-Datei, weil die Testumgebung sonst einen Browser-Download mitzöge. Der Wrapper prüft die Verfügbarkeit beim Import (`pytest.importorskip("playwright")`) und überspringt sich selbst, wenn das Paket fehlt; ein Standardlauf in einer browserlosen Umgebung bleibt dadurch grün. Ist Playwright installiert, läuft der Smoke-Test auch im unmarkierten `pytest tests/` mit, weil `pytest.ini` den Marker nicht ausschließt.
 
@@ -422,14 +500,32 @@ Methodenregel aus der Frontend-Sichtprüfung vom 2026-06-21, festgehalten in [jo
 
 ## JS-Unit-Tests (Node, seit Session 47)
 
-Die JS-Unit-Tests decken die dom-/d3-freien Pure-Functions des Frontends ab, über sechs Dateien:
+Die JS-Unit-Tests decken die dom-/d3-freien Pure-Functions des Frontends ab. Die
+Sammlung ist seit Session 47 gewachsen; der Stand vom 2026-08-31 umfasst diese
+Dateien unter `tests/frontend/`:
 
-- `tests/frontend/network-geometry.test.mjs` für die Geometrie aus [`_network-geometry.js`](../docs/js/views/_network-geometry.js) (E-94): `classifyRing`, `isMalaniuk`, `isPureComposer`, `derivePersonKategorie`, `nodeEvidence`, `nodeColor`, `computeLayout` (Determinismus-Property, alphabetische Winkel-Reihenfolge, Umlaut-Normalisierung im SortKey, Radius-Cap), `computeCoOccurrence` (Malaniuk- und Komponisten-Filter, minShared-Threshold, maxEdges-Cap, Tie-breaker-Determinismus) und `labelGeometry`.
-- `tests/frontend/utils.test.mjs` für `date-parser` und `format`.
-- `tests/frontend/record-partition.test.mjs` für `partitionRecord`, also den Korb- und Inline-Detail-Pfad.
-- `tests/frontend/loader.test.mjs` für die Strecke JSON-LD → `loadArchive()` → store (synthetische Fixture + Anker gegen `docs/data`; deckt u.a. die E-97-Datumslosigkeit und die DFT-prefLabel-Auflösung). Anders als die übrigen Module ist dies eine Integrationsstrecke, keine reine Pure-Function.
-- `tests/frontend/verknuepfungen-geometry.test.mjs` für `buildGraph`, `computeLayout` und `nodeId` aus [`_verknuepfungen-geometry.js`](../docs/js/views/_verknuepfungen-geometry.js), gegen einen synthetischen Store.
-- `tests/frontend/filter-sync.test.mjs` für die Cross-View-Filter-Kopplung (E-117), also die Projektion zwischen geteiltem und View-eigenem Filterzustand und den Loop-Guard gegen die Endlosschleife zwischen `setFacet` und `setFilter`.
+- `catalogue-gaps.test.mjs` für `aggregateCatalogueGaps`, jede Erschließungsachse einzeln und die Summe gegen den Gesamtbestand, damit kein Teilbeleg als voller Beleg zählt.
+- `coverage.test.mjs` für die Rechnung hinter der Erschließungsgrad-Angabe an jeder Auswertung.
+- `date-carrier.test.mjs` für die vier Stellen, die die Anwesenheit des Zeitankers `rico:date` und des Datierungsträgers `m3gim-ontology:hasAnnotation` prüfen.
+- `datings.test.mjs` für die vier Zugänge des Stores zu Datierungen, `annotationsOf`, `datingsOf`, `datingsByScope` und `primaryYear`.
+- `event-year-count.test.mjs` für den einen Zählweg datierter Ereignisse, gegen die beiden Stellen, die das Jahr an `primaryYear` vorbei ein zweites Mal bestimmen.
+- `filter-sync.test.mjs` für die Cross-View-Filter-Kopplung (E-117), also die Projektion zwischen geteiltem und View-eigenem Filterzustand und den Loop-Guard gegen die Endlosschleife zwischen `setFacet` und `setFilter`.
+- `gloss.test.mjs` für die Begriffserklärungen, die aus dem Vokabular ins Frontend wandern, samt Trennung der Begriffsschemata.
+- `loader.test.mjs` für die Strecke JSON-LD → `loadArchive()` → Store, mit synthetischer Fixture und Ankern gegen `docs/data`. Anders als die übrigen Module ist dies eine Integrationsstrecke.
+- `network-geometry.test.mjs` für die Geometrie aus [`_network-geometry.js`](../docs/js/views/_network-geometry.js) (E-94), also `classifyRing`, `isMalaniuk`, `isPureComposer`, `derivePersonKategorie`, `nodeEvidence`, `nodeColor`, `computeLayout`, `computeCoOccurrence` und `labelGeometry`.
+- `record-partition.test.mjs` für `partitionRecord`, also den Korb- und Inline-Detail-Pfad.
+- `relation-shape.test.mjs` für beide Bauformen einer AgRelOn-Relation, die gerichtete mit `hasSubject`/`hasObject` und die symmetrische mit `hasSubjectObject` (E-149).
+- `router.test.mjs` für den Legacy-Präfix `m3gim:` im URL-Hash nach der Namensraum-Dreiteilung (E-138).
+- `shared-filter-reach.test.mjs` als lexikalisches Gate, dass jede Sidebar-Sektion `Zeitraum` am geteilten Filterzustand hängt.
+- `statistics-data.test.mjs` für die Dokumenttyp-Aggregation und drei weitere Aggregationen der Statistik-Datenschicht.
+- `typed-dates.test.mjs` für das Rollenregister des Frontends gegen den Datenstand, jede Prüfung durch eine eingespielte Verletzung nachgewiesen.
+- `utils.test.mjs` für `date-parser` und `format`.
+- `verknuepfungen-geometry.test.mjs` für `buildGraph`, `computeLayout` und `nodeId` aus [`_verknuepfungen-geometry.js`](../docs/js/views/_verknuepfungen-geometry.js), gegen einen synthetischen Store.
+- `year-anchor.test.mjs` für den einen Zeitanker je Record, in jeder Ansicht derselbe (Frontend-Vertrag A4).
+
+Die Fixture-Hilfe `_concepts.mjs` stellt synthetischen Fixtures die echten
+Begriffsknoten des Datensatzes voran und verhindert damit eine zweite, im
+Testcode geführte Vokabulartabelle.
 
 Lauf:
 

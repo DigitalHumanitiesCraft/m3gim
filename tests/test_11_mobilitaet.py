@@ -40,21 +40,6 @@ def places(graph):
 # Verortungen als Annotationsknoten
 # ---------------------------------------------------------------------------
 
-def test_spatiotemporal_events_exist(graph, xlsx_verknuepfungen):
-    """Verortungen existieren im Graph. Untergrenze skaliert mit
-    der XLSX-Anzahl `ort, datum`-Rows, toleriert aber Verluste fuer Artefakte
-    und verwaiste Signaturen (60%-Schwelle, konsistent mit
-    test_every_ort_datum_row_produces_event)."""
-    events = places(graph)
-    row_count = 0
-    if "typ" in xlsx_verknuepfungen.columns:
-        typ_col = xlsx_verknuepfungen["typ"].fillna("").astype(str).str.strip().str.lower()
-        row_count = (typ_col == "ort, datum").sum()
-    assert len(events) >= max(5, row_count * 0.6), (
-        f"Nur {len(events)} Verortungen fuer {row_count} XLSX-Zeilen"
-    )
-
-
 # Nach der Zusammenfuehrung im Vokabular tragen die Aspektpaare denselben
 # Begriff, weil der Aspekt in der Wertproperty steht: absendeort und
 # absendedatum sind absendung, empfangsort und empfangsdatum empfangnahme,
@@ -104,16 +89,23 @@ def test_spatiotemporal_event_roles_known(graph):
 
 
 def test_every_ort_datum_row_produces_event(xlsx_verknuepfungen, graph):
-    """Mindestens 60% der XLSX-Zeilen mit typ='ort, datum' erzeugen eine Verortung.
+    """Mindestens 60% der XLSX-Zeilen mit typ='ort, datum' erzeugen eine
+    Verortung, und mindestens fuenf Verortungen existieren ueberhaupt.
+
     Verluste entstehen durch:
     - Artefakte (Datetime-Leaks, Freitext wie 'Wien, ab 1956') ~5%
     - Rows ohne matching Record (Folio stimmt nicht mit Objekt-Record ueberein) ~20%
-    Daher Toleranz 60% als Untergrenze."""
+    Daher Toleranz 60% als Untergrenze. Der absolute Boden aus max(5, ...)
+    stammt aus dem frueheren, zeichengleichen test_spatiotemporal_events_exist
+    und haelt die Aussage, wenn die Quelle keine Komposit-Zeilen mehr fuehrt.
+    """
     df = xlsx_verknuepfungen
-    typ_col = df["typ"].fillna("").astype(str).str.strip().str.lower()
-    row_count = (typ_col == "ort, datum").sum()
+    row_count = 0
+    if "typ" in df.columns:
+        typ_col = df["typ"].fillna("").astype(str).str.strip().str.lower()
+        row_count = int((typ_col == "ort, datum").sum())
     events = places(graph)
-    assert len(events) >= row_count * 0.6, (
+    assert len(events) >= max(5, row_count * 0.6), (
         f"{len(events)} Verortungen fuer {row_count} XLSX-Zeilen"
     )
 

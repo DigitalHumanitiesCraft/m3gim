@@ -10,13 +10,19 @@
  *   - { kind: 'select', key, label, options: [{value,label}] }
  *   - { kind: 'toggle', key, label }
  *
+ * Die entityCombobox haelt seit E-151 eine Werteliste: mehrere Werte wirken
+ * innerhalb der Facette als ODER, zwischen Facetten bleibt es UND. Gewaehlte
+ * Werte stehen als entfernbare Chips unter dem Eingabefeld.
+ *
  * API:
  *   buildToolbar(store, { facets, initial?, onChange?, showReset?, showCount?, className? })
- *   -> { element, setFacet(key, value), getState(), setCount(text) }
+ *   -> { element, setFacet(key, value), addFacet(key, value), removeFacet(key, value),
+ *        getState(), setCount(text) }
  */
 
 import { el, clear } from '../utils/dom.js';
 import { buildDftTree } from '../utils/format.js';
+import { facetValues } from '../ui/filter-state.js';
 
 
 const ENTITY_MAP_RESOLVERS = {
@@ -38,13 +44,16 @@ export function buildToolbar(store, {
   const state = {};
   for (const facet of facets) {
     if (!facet.key) continue;
-    state[facet.key] = initial[facet.key] != null
-      ? initial[facet.key]
-      : (facet.kind === 'toggle' ? false : '');
+    state[facet.key] = emptyFor(facet);
+    if (initial[facet.key] != null) {
+      state[facet.key] = facet.kind === 'entityCombobox'
+        ? facetValues(initial, facet.key)
+        : initial[facet.key];
+    }
   }
 
-  const emit = () => onChange && onChange({ ...state });
-  const isAnyActive = () => facets.some(f => f.key && state[f.key]);
+  const emit = () => onChange && onChange(snapshot(facets, state));
+  const isAnyActive = () => facets.some(f => f.key && isFacetActive(f, state[f.key]));
 
   const controls = {};  // key -> { element, reset, setValue }
   const children = [];
@@ -88,9 +97,24 @@ export function buildToolbar(store, {
   function resetAll() {
     for (const facet of facets) {
       if (!facet.key) continue;
-      state[facet.key] = facet.kind === 'toggle' ? false : '';
+      state[facet.key] = emptyFor(facet);
       controls[facet.key]?.reset();
     }
+    updateResetVisibility();
+    emit();
+  }
+
+  function facetByKey(key) { return facets.find(f => f.key === key) || null; }
+
+  /** Schreibt eine Facette und meldet die Aenderung. mutate erhaelt die
+   *  bisherige Auswahl und liefert die neue. */
+  function writeFacet(key, mutate) {
+    const facet = facetByKey(key);
+    const control = controls[key];
+    if (!facet || !control) return;
+    const next = mutate(state[key]);
+    state[key] = next;
+    control.setValue(next);
     updateResetVisibility();
     emit();
   }
@@ -103,19 +127,54 @@ export function buildToolbar(store, {
 
   return {
     element,
+    /** Ersetzt die Auswahl einer Facette. Listenfacetten nehmen String oder
+     *  Liste entgegen, damit jede Altstelle weiter funktioniert. */
     setFacet(key, value) {
-      const control = controls[key];
-      if (!control) return;
-      state[key] = value || (facets.find(f => f.key === key)?.kind === 'toggle' ? false : '');
-      control.setValue(value);
-      updateResetVisibility();
-      emit();
+      const facet = facetByKey(key);
+      if (!facet) return;
+      writeFacet(key, () => (facet.kind === 'entityCombobox'
+        ? facetValues({ [key]: value }, key)
+        : (value || emptyFor(facet))));
+    },
+    /** Haengt einen Wert an eine Listenfacette an (Mehrfachauswahl). */
+    addFacet(key, value) {
+      const facet = facetByKey(key);
+      if (!facet || facet.kind !== 'entityCombobox' || !value) return;
+      writeFacet(key, (cur) => (cur.includes(value) ? cur : [...cur, value]));
+    },
+    /** Entfernt einen Wert aus einer Listenfacette. */
+    removeFacet(key, value) {
+      const facet = facetByKey(key);
+      if (!facet || facet.kind !== 'entityCombobox') return;
+      writeFacet(key, (cur) => cur.filter(v => v !== value));
     },
     setCount(text) {
       if (countEl) countEl.textContent = text;
     },
-    getState() { return { ...state }; },
+    getState() { return snapshot(facets, state); },
   };
+}
+
+/** Leerwert einer Facette: Liste, Boolean oder leerer String. */
+function emptyFor(facet) {
+  if (facet.kind === 'entityCombobox') return [];
+  if (facet.kind === 'toggle') return false;
+  return '';
+}
+
+function isFacetActive(facet, value) {
+  if (facet.kind === 'entityCombobox') return Array.isArray(value) && value.length > 0;
+  return !!value;
+}
+
+/** Kopie des States; Listen werden mitkopiert, damit kein Aufrufer den
+ *  internen Zustand von aussen mutiert. */
+function snapshot(facets, state) {
+  const out = { ...state };
+  for (const facet of facets) {
+    if (facet.key && facet.kind === 'entityCombobox') out[facet.key] = [...state[facet.key]];
+  }
+  return out;
 }
 
 
@@ -234,7 +293,7 @@ function buildEntityCombobox(store, facet, state, notify) {
     .filter(e => e.count > 0)
     .sort((a, b) => b.count - a.count);
 
-  let current = state[facet.key] || '';
+  const selected = () => (Array.isArray(state[facet.key]) ? state[facet.key] : []);
 
   const wrapper = el('div', { className: 'archiv-combobox' });
   const input = el('input', {
@@ -242,41 +301,51 @@ function buildEntityCombobox(store, facet, state, notify) {
     type: 'text',
     placeholder: facet.placeholder || '',
     title: facet.title || '',
-    value: current,
   });
-
-  const clearBtn = el('button', {
-    className: 'archiv-combobox__clear',
-    html: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
-    title: 'Filter zur\u00fccksetzen',
-    onClick: (e) => {
-      e.stopPropagation();
-      input.value = '';
-      clearBtn.style.display = 'none';
-      current = '';
-      state[facet.key] = '';
-      dropdown.style.display = 'none';
-      notify();
-    },
-  });
-  clearBtn.style.display = current ? '' : 'none';
-
+  const chipBox = el('div', { className: 'archiv-combobox__chips' });
   const dropdown = el('div', { className: 'archiv-combobox__dropdown' });
   dropdown.style.display = 'none';
 
+  /** Auswahl schreiben und den View benachrichtigen. */
+  function commit(values) {
+    state[facet.key] = values;
+    renderChips();
+    notify();
+  }
+
+  function renderChips() {
+    clear(chipBox);
+    for (const name of selected()) {
+      chipBox.appendChild(el('span', { className: 'archiv-combobox__chip' },
+        el('span', { className: 'archiv-combobox__chip-label' }, name),
+        el('button', {
+          className: 'archiv-combobox__chip-remove',
+          type: 'button',
+          title: `${name} aus dem Filter nehmen`,
+          'aria-label': `${name} aus dem Filter nehmen`,
+          onClick: (e) => {
+            e.stopPropagation();
+            commit(selected().filter(v => v !== name));
+          },
+        }, '×')));
+    }
+    chipBox.hidden = selected().length === 0;
+  }
+
   function renderDropdownItems(filtered) {
     clear(dropdown);
+    const active = new Set(selected());
     for (const p of filtered.slice(0, 30)) {
+      const on = active.has(p.name);
       const item = el('div', {
-        className: `archiv-combobox__item ${current === p.name ? 'archiv-combobox__item--active' : ''}`,
+        className: `archiv-combobox__item ${on ? 'archiv-combobox__item--active' : ''}`,
         onClick: (e) => {
           e.stopPropagation();
-          input.value = p.name;
-          current = p.name;
-          state[facet.key] = p.name;
-          clearBtn.style.display = '';
+          // Ein zweiter Klick nimmt den Wert wieder heraus; so ist die
+          // Mehrfachauswahl ohne zweites Bedienelement umkehrbar.
+          commit(on ? selected().filter(v => v !== p.name) : [...selected(), p.name]);
+          input.value = '';
           dropdown.style.display = 'none';
-          notify();
         },
       },
         el('span', {}, p.name),
@@ -286,26 +355,23 @@ function buildEntityCombobox(store, facet, state, notify) {
     }
     if (filtered.length > 30) {
       dropdown.appendChild(el('div', { className: 'archiv-combobox__more' },
-        `\u2026 ${filtered.length - 30} weitere`));
+        `… ${filtered.length - 30} weitere`));
     }
   }
 
-  input.addEventListener('input', () => {
+  function matching() {
     const q = input.value.toLowerCase();
-    const filtered = q ? entries.filter(e => e.name.toLowerCase().includes(q)) : entries;
+    return q ? entries.filter(e => e.name.toLowerCase().includes(q)) : entries;
+  }
+
+  input.addEventListener('input', () => {
+    const filtered = matching();
     renderDropdownItems(filtered);
     dropdown.style.display = filtered.length ? '' : 'none';
-    if (!q && current) {
-      current = '';
-      state[facet.key] = '';
-      clearBtn.style.display = 'none';
-      notify();
-    }
   });
 
   input.addEventListener('focus', () => {
-    const q = input.value.toLowerCase();
-    const filtered = q ? entries.filter(e => e.name.toLowerCase().includes(q)) : entries;
+    const filtered = matching();
     renderDropdownItems(filtered);
     if (filtered.length) dropdown.style.display = '';
   });
@@ -314,6 +380,18 @@ function buildEntityCombobox(store, facet, state, notify) {
     if (e.key === 'Escape') {
       dropdown.style.display = 'none';
       input.blur();
+      return;
+    }
+    // Enter uebernimmt den ersten Treffer; ohne das braeuchte jede Auswahl
+    // die Maus.
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const first = matching()[0];
+      if (first && !selected().includes(first.name)) {
+        commit([...selected(), first.name]);
+        input.value = '';
+        dropdown.style.display = 'none';
+      }
     }
   });
 
@@ -328,23 +406,22 @@ function buildEntityCombobox(store, facet, state, notify) {
   }
 
   wrapper.appendChild(input);
-  wrapper.appendChild(clearBtn);
+  wrapper.appendChild(chipBox);
   wrapper.appendChild(dropdown);
+  renderChips();
 
   return {
     element: wrapper,
     reset() {
       input.value = '';
-      clearBtn.style.display = 'none';
-      current = '';
-      state[facet.key] = '';
+      state[facet.key] = [];
+      renderChips();
       dropdown.style.display = 'none';
     },
-    setValue(name) {
-      input.value = name || '';
-      clearBtn.style.display = name ? '' : 'none';
-      current = name || '';
-      state[facet.key] = name || '';
+    setValue(values) {
+      state[facet.key] = facetValues({ [facet.key]: values }, facet.key);
+      input.value = '';
+      renderChips();
     },
   };
 }

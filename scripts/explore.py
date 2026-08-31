@@ -24,6 +24,9 @@ if sys.stdout.encoding != "utf-8":
 
 import pandas as pd
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from transform import load_verknuepfungen, resolve_verknuepfungen_source  # noqa: E402
+
 # ---------------------------------------------------------------------------
 # Konfiguration
 # ---------------------------------------------------------------------------
@@ -135,8 +138,14 @@ def match_tables(xlsx_files: list[Path]) -> dict[str, Path | None]:
 # Tabellen-Analyse
 # ---------------------------------------------------------------------------
 
-def analyze_table(path: Path, name: str) -> dict:
-    """Analysiert eine einzelne XLSX-Datei."""
+def analyze_table(path: Path, name: str, frame: pd.DataFrame | None = None) -> dict:
+    """Analysiert eine einzelne Quelltabelle.
+
+    ``frame`` erlaubt es, eine bereits geladene Tabelle zu uebergeben. Die
+    Verknuepfungen kommen so ueber denselben Loader wie Transformation und
+    Validierung; vorher las diese Funktion nur das erste Blatt der Mappe und
+    unterzeichnete den Bestand um rund die Haelfte (E-95, E-152).
+    """
     result = {
         "path": path,
         "name": name,
@@ -149,11 +158,18 @@ def analyze_table(path: Path, name: str) -> dict:
     }
 
     try:
-        xls = pd.ExcelFile(path, engine="openpyxl")
-        result["sheets"] = xls.sheet_names
+        if frame is not None:
+            df = frame.copy()
+            if "_xlsx_sheet" in df.columns:
+                result["sheets"] = sorted(df["_xlsx_sheet"].dropna().unique().tolist())
+                df = df.drop(columns=[c for c in ("_xlsx_sheet", "_xlsx_row")
+                                      if c in df.columns])
+        else:
+            xls = pd.ExcelFile(path, engine="openpyxl")
+            result["sheets"] = xls.sheet_names
 
-        # Erste Sheet lesen (Google Sheets Export hat typisch nur eine)
-        df = pd.read_excel(path, engine="openpyxl")
+            # Erste Sheet lesen (Google Sheets Export hat typisch nur eine)
+            df = pd.read_excel(path, engine="openpyxl")
 
         # Leere Zeilen entfernen
         df = df.dropna(how="all")
@@ -388,8 +404,14 @@ def _analyze_index(df: pd.DataFrame, name: str) -> dict:
 # Cross-Table-Analyse
 # ---------------------------------------------------------------------------
 
-def cross_table_analysis(tables: dict[str, dict]) -> list[dict]:
-    """PrÃ¼ft referentielle IntegritÃ¤t zwischen Tabellen."""
+def cross_table_analysis(tables: dict[str, dict],
+                         verk_frame: pd.DataFrame | None = None) -> list[dict]:
+    """PrÃ¼ft referentielle IntegritÃ¤t zwischen Tabellen.
+
+    ``verk_frame`` ist die ueber den Pipeline-Loader geladene
+    Verknuepfungstabelle. Ohne sie las die Pruefung nur das erste Blatt der
+    Mappe, seit E-152 waere ihr Pfad ausserdem ein Verzeichnis.
+    """
     checks = []
 
     objekte = tables.get("objekte")
@@ -403,7 +425,10 @@ def cross_table_analysis(tables: dict[str, dict]) -> list[dict]:
 
     try:
         df_obj = pd.read_excel(obj_path, engine="openpyxl").dropna(how="all")
-        df_verk = pd.read_excel(verk_path, engine="openpyxl").dropna(how="all")
+        if verk_frame is not None:
+            df_verk = verk_frame.dropna(how="all")
+        else:
+            df_verk = pd.read_excel(verk_path, engine="openpyxl").dropna(how="all")
 
         # Template-Zeilen filtern
         if "archivsignatur" in df_obj.columns:
@@ -733,6 +758,18 @@ def main():
 
     # Matching
     matched, unmatched = match_tables(xlsx_files)
+    # Verknuepfungen kommen aus dem CSV-Verzeichnis oder der Mappe, in beiden
+    # Faellen ueber den Pipeline-Loader (E-152, Audit-Punkt 11).
+    verk_frame = None
+    verk_source = None
+    if source.is_dir():
+        try:
+            verk_source = resolve_verknuepfungen_source(source)
+            verk_frame = load_verknuepfungen(verk_source)
+            matched["verknuepfungen"] = verk_source
+        except FileNotFoundError as exc:
+            print(f"  WARNUNG: {exc}")
+
     print(f"\nZugeordnet: {sum(1 for v in matched.values() if v)}/{len(EXPECTED_TABLES)}")
     for name, path in matched.items():
         status = f"â†’ {path.name}" if path else "FEHLT"
@@ -744,11 +781,12 @@ def main():
     for name, path in matched.items():
         if path:
             print(f"  {name}...")
-            tables[name] = analyze_table(path, name)
+            frame = verk_frame if name == "verknuepfungen" else None
+            tables[name] = analyze_table(path, name, frame)
 
     # Cross-Table
     print("Cross-Table-Checks...")
-    cross_checks = cross_table_analysis(tables)
+    cross_checks = cross_table_analysis(tables, verk_frame)
 
     # Report
     REPORT_DIR.mkdir(parents=True, exist_ok=True)

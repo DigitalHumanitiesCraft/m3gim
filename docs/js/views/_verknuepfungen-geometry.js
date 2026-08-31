@@ -13,9 +13,12 @@
  *           (m3gim-ontology:Annotation mit atPlace) oder eine
  *           m3gim-ontology:Performance tragen (raumzeitlich/auffuehrungs-belegt).
  * Die Differenz (eng von weit) wird als Kennzahl ausgewiesen, nicht geglaettet.
+ *
+ * Den Schnitt loest dieses Modul nicht mehr selbst: `buildGraph` nimmt die
+ * fertige Dokumentmenge ueber `opts.records` entgegen, die `recordsFor`
+ * (docs/js/data/records-for.js) aus dem geteilten Filter gebildet hat. Vorher
+ * lag hier eine zweite Facettenaufloesung neben der des Bestands.
  */
-
-import { primaryYear } from '../data/loader.js';
 
 export const NODE_TYPES = ['person', 'werk', 'institution', 'ort'];
 
@@ -36,19 +39,6 @@ const STORE_MAP_FOR_TYPE = {
   institution: 'organizations',
   ort: 'locations',
 };
-
-/**
- * Jahr eines Records fuer die Zeitfenster-Facette. Der Zeitanker kommt aus
- * primaryYear der Datenschicht, nicht aus einer eigenen Aufloesung: `rico:date`
- * hat Vorrang, sonst datiert die ranghoechste Datierung einer ankernden
- * Bezugsebene. Loest die Invertierung von store.byYear ab, die einen Record
- * nur dann kannte, wenn der Loader-Index ihn gerade fuehrte.
- */
-function yearOfRecordId(store, id) {
-  const record = store.records.get(id);
-  if (!record) return null;
-  return primaryYear(store, record).year;
-}
 
 /** Records, die mind. eine verortete Annotation ODER eine Performance tragen
  *  (enger Schaerfegrad). */
@@ -80,6 +70,19 @@ function resolveFocus(store, focus) {
   return null;
 }
 
+/**
+ * Der Record-Satz der Fokus-Entitaet, also die Startmenge, auf der der Schnitt
+ * der Ansicht rechnet. Leeres Set, wenn der Fokus nicht im Bestand steht.
+ * Der View braucht dieselbe Aufloesung wie buildGraph (inklusive der
+ * toleranten Malaniuk-Suche); eine zweite waere die naechste Quelle fuer
+ * abweichende Zahlen zwischen Bild und Zaehlstand.
+ * @returns {Set<string>}
+ */
+export function focusRecords(store, focus) {
+  const resolved = resolveFocus(store, focus || DEFAULT_FOCUS);
+  return resolved ? resolved.records : new Set();
+}
+
 /** Zusatz-Metadaten je Entitaetstyp fuer Tooltip/Detail (datengedeckt, kein Deuten). */
 function nodeMeta(type, entry) {
   if (type === 'institution') {
@@ -103,50 +106,28 @@ function nodeMeta(type, entry) {
  * @param {object} store
  * @param {object} opts
  * @param {{type,name}} [opts.focus]      Fokus-Entitaet (Default Malaniuk)
- * @param {'weit'|'eng'} [opts.schaerfe]
- * @param {{ort?:string, zeitfenster?:[number,number]}} [opts.filter]
+ * @param {?Set<string>} [opts.records]   Dokumentmenge aus recordsFor; ohne
+ *   Angabe bleibt der Record-Satz des Fokus unbeschnitten
  * @param {Object<string,boolean>} [opts.types]  Knotentyp-Toggles (Default alle an)
  * @param {number} [opts.topN]            max. Knoten je Typ (Lesbarkeits-Cap)
  * @returns {{center, nodes, edges, stats}}
  */
 export function buildGraph(store, opts = {}) {
   const focus = opts.focus || DEFAULT_FOCUS;
-  const schaerfe = opts.schaerfe === 'eng' ? 'eng' : 'weit';
-  const filter = opts.filter || {};
   const typeOn = { person: true, werk: true, institution: true, ort: true, ...(opts.types || {}) };
   const topN = Number.isFinite(opts.topN) ? opts.topN : 12;
 
   const resolved = resolveFocus(store, focus);
   const empty = { center: null, nodes: [], edges: [],
-                  stats: { focus: focus.name, recordsWeit: 0, recordsEng: 0, total: 0, truncated: {} } };
+                  stats: { focus: focus.name, recordsBase: 0, records: 0, total: 0, truncated: {} } };
   if (!resolved) return empty;
 
-  // Record-Satz des Fokus, dann Filter anwenden.
-  let records = new Set(resolved.records);
-  const recordsWeitBase = records.size;
-
-  if (filter.ort && store.locations.has(filter.ort)) {
-    const ortRecs = store.locations.get(filter.ort).records;
-    records = new Set([...records].filter(id => ortRecs.has(id)));
+  // Record-Satz des Fokus, geschnitten mit der vorgegebenen Dokumentmenge.
+  const scope = opts.records instanceof Set ? opts.records : null;
+  const effective = new Set();
+  for (const id of resolved.records) {
+    if (!scope || scope.has(id)) effective.add(id);
   }
-  if (Array.isArray(filter.zeitfenster)) {
-    const [from, to] = filter.zeitfenster;
-    records = new Set([...records].filter(id => {
-      const y = yearOfRecordId(store, id);
-      return y != null && y >= from && y <= to;
-    }));
-  }
-
-  const recordsWeit = records.size;
-
-  // Enger Schaerfegrad: nur ereignis-/auffuehrungs-belegte Records.
-  let effective = records;
-  if (schaerfe === 'eng') {
-    const anchored = eventAnchoredRecords(store);
-    effective = new Set([...records].filter(id => anchored.has(id)));
-  }
-  const recordsEng = schaerfe === 'eng' ? effective.size
-    : [...records].filter(id => store.recordToEvents.has(id) || store.recordToPerformances.has(id)).length;
 
   // Nachbarn je Typ: shared = |entity.records ∩ effective|.
   const byType = {};
@@ -178,18 +159,26 @@ export function buildGraph(store, opts = {}) {
     records: resolved.records, meta: nodeMeta(resolved.type, store[STORE_MAP_FOR_TYPE[resolved.type]].get(resolved.name) || {}),
   };
 
+  const anchored = eventAnchoredRecords(store);
+  let engCount = 0;
+  for (const id of effective) if (anchored.has(id)) engCount++;
+
   return {
     center,
     nodes,
     edges,
     stats: {
       focus: resolved.name,
-      recordsWeitBase,   // Fokus-Records vor Filter
-      recordsWeit,       // nach Ort/Zeit-Filter (weit)
-      recordsEng,        // ereignis-/auffuehrungs-belegt
+      recordsBase: resolved.records.size,  // Fokus-Records vor dem Schnitt
+      records: effective.size,             // Fokus-Records im aktuellen Schnitt
+      eng: engCount,                       // davon raumzeitlich/auffuehrungs-belegt
       total: nodes.length,
-      truncated,         // {type: anzahl uebersprungen}
+      truncated,                           // {type: anzahl uebersprungen}
       byType: Object.fromEntries(NODE_TYPES.map(t => [t, (byType[t] || []).length])),
+      // Zahl der Kandidaten je Typ vor der Kappung, damit die Sidebar
+      // "12 von 436" beziffern kann statt die Kappung stumm zu lassen.
+      candidates: Object.fromEntries(NODE_TYPES.map(t =>
+        [t, (byType[t] || []).length + (truncated[t] || 0)])),
     },
   };
 }

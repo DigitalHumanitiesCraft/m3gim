@@ -29,7 +29,7 @@ related: [data, frontend-architecture, testing, architecture-decisions]
 
 | Script | Zweck | Input | Output |
 |---|---|---|---|
-| `scripts/explore.py` | Datenexploration, Strukturdiagnostik | `$M3GIM_SHEETS_DIR` | `$M3GIM_REPORTS_DIR/exploration-report.md` |
+| `scripts/explore.py` | Datenexploration, Strukturdiagnostik. Liest die Verknüpfungen seit 2026-08-31 über denselben Loader wie Transformation und Validierung und deckt damit alle Blätter ab; vorher sah der Report nur das erste. | `$M3GIM_SHEETS_DIR` | `$M3GIM_REPORTS_DIR/exploration-report.md` |
 | `scripts/validate.py` | Validierung, Qualitaetschecks. Liest die Verknuepfungstabelle ueber denselben Multi-Sheet-Loader wie die Transformation (`load_verknuepfungen`, E-95) und deckt damit alle Box-Blaetter ab. Exitcode 1, sobald ERROR-Befunde im Report stehen, was dem Regelfall entspricht (siehe [CLAUDE.md § Kern-Commands](../CLAUDE.md)). | `$M3GIM_SHEETS_DIR` | `$M3GIM_REPORTS_DIR/validation-report.md` |
 | `scripts/transform.py` | Transformation nach JSON-LD (RiC-O + m3gim + agrelon) | `$M3GIM_SHEETS_DIR` | `$M3GIM_OUTPUT_DIR/m3gim.jsonld` |
 | `scripts/build-views.py` | Veroeffentlichung: kopiert das Ergebnis in die Frontend-Datenquelle (E-140) | `$M3GIM_OUTPUT_DIR/m3gim.jsonld` | `docs/data/m3gim.jsonld` |
@@ -52,6 +52,24 @@ Die Pipeline-Skripte respektieren folgende Umgebungsvariablen für Ausnahmefäll
 
 Die Overrides greifen bei `explore.py`, `validate.py`, `transform.py` und `build-views.py`. `audit-data.py` und `report-quality.py` lesen ihre Pfade fest aus dem Repository-Wurzelverzeichnis und ignorieren die Variablen.
 
+### Quelllayout unter `$M3GIM_SHEETS_DIR`
+
+```
+$M3GIM_SHEETS_DIR/
+├── M3GIM-Objekte.xlsx
+├── M3GIM-Personenindex.xlsx
+├── M3GIM-Organisationsindex.xlsx
+├── M3GIM-Ortsindex.xlsx
+├── M3GIM-Werkindex.xlsx
+└── verknuepfungen/
+    ├── Box_1.csv … Box_9.csv     # je Blatt eine Datei, Blattname der Provenienz ist "Box 1"
+    └── Typ-Rolle.csv             # Wertliste, keine Verknuepfungszeilen
+```
+
+Die fünf Indextabellen und die Objekttabelle bleiben XLSX. Die Verknüpfungstabelle liegt seit der Lieferung vom 2026-08-31 als CSV-Ausfuhr je Blatt vor (E-152, [data.md](data.md) § 3 Quellformat), weil der XLSX-Export Datums-, Folio- und Bündelungsspalten in Zelltypen umwandelt und dabei Genauigkeit erfindet.
+
+`load_verknuepfungen` in `scripts/transform.py` nimmt beide Quellen an. Der Aufrufer übergibt das Quellverzeichnis oder einen Pfad; existiert darin `verknuepfungen/` mit mindestens einer `Box_*.csv`, gewinnt das CSV-Verzeichnis, sonst greift der XLSX-Pfad mit dem bekannten Dateinamen. Die Provenienz ist in beiden Fällen dieselbe, `_xlsx_sheet` trägt den Blattnamen der Quelle und `_xlsx_row` die 1-basierte Zeile inklusive Kopfzeile. `Typ-Rolle.csv` wird nicht als Verknüpfungsblatt gelesen, sondern als Wertliste für die Kreuzprüfung in `validate.py`.
+
 `build-views.py` kopiert `m3gim.jsonld` nur dann nach `docs/data/`, wenn `M3GIM_OUTPUT_DIR` auf den Default zeigt.
 
 ### Falle, leeres Ausgabeverzeichnis kostet die Normdaten stillschweigend
@@ -66,7 +84,7 @@ Explorieren, validieren, transformieren, Ansichten bauen, auditieren, Snapshot s
 
 ## Datenfluss
 
-1. **XLSX-Export** aus Google Sheets nach `$M3GIM_SHEETS_DIR` (git-getrackt fuer Reproduzierbarkeit)
+1. **Export** aus Google Sheets nach `$M3GIM_SHEETS_DIR` (git-getrackt fuer Reproduzierbarkeit): Objekt- und Indextabellen als XLSX, die Verknuepfungstabelle als CSV je Blatt unter `verknuepfungen/` (E-152)
 2. **Exploration + Validierung** (`explore.py`, `validate.py`) → Reports
    2b. **Reconciliation** (`reconcile.py`) → `wikidata-reconciliation.json` (Fuzzy-Matching, Confidence-Level exact/fuzzy_high/fuzzy_low)
    2c. **Enrichment** (`enrich-wikidata.py`) → `wikidata-enrichment.json` (WD-Properties fuer gematchte Entitaeten)
@@ -115,6 +133,16 @@ Die neue Export-Struktur erzeugt ohne Eingriff stillen Totalverlust bzw. einen A
 - Nicht-textuelle Spaltenkoepfe und Literal-`Folio`-Zellwerte werden abgefangen, statt die Folio-Erkennung abbrechen zu lassen.
 
 Diese Faelle sind nicht durchreichbar; die quellseitige Bereinigung ist als Source-Fix-Ticket im [Datenfehler-Register](data-errors.md § Strukturelle Quell-Fixes) vermerkt.
+
+### Schutzregeln der Index-Uebernahme (E-152)
+
+`build_index_lookup` schrieb je Namen einen Eintrag in Quellreihenfolge; bei gleichem Namen gewann die letzte Zeile vollstaendig, auch mit leeren Feldern gegen gefuellte. Die Lieferung vom 2026-08-31 fuehrt die Nachlassbildnerin zweimal im Personenindex, die zweite Zeile ohne Kennung und ohne Lebensdaten, womit die zentrale Person des Bestands ihre Wikidata-Kennung samt Anreicherung verlor.
+
+Die Uebernahme verdichtet jetzt feldweise. Identitaet ist die `m3gim_id`, ersatzweise der getrimmte Name; je Feld gewinnt der erste nicht leere Wert; ein gefuelltes Feld wird nie von einem leeren ueberschrieben; `assoziierte_person` sammelt alle Werte der Gruppe. Tragen zwei Zeilen derselben Identitaet in demselben Feld verschiedene nicht leere Werte, gewinnt der erste, und der Fall geht in den Validierungsreport; ein Flag am Knoten des Datensatzes entsteht nicht, weil der Konflikt im Bestand ausschliesslich die Anmerkungsspalte betrifft. Der Schluessel des Werkindex ist das Paar aus Titel und Komponist, weil `Requiem` und `Stabat mater` je drei verschiedene Werke bezeichnen; eine Verknuepfungszeile mit blossem Titel bleibt unaufgeloest und traegt `name-nicht-eindeutig`. Die Regel steht in [data.md](data.md) § 3 unter Identitaet und Vorrang in den Indextabellen.
+
+### Pruefschicht der CSV-Quelle (E-152)
+
+`validate.py` prueft die Verknuepfungszeilen zusaetzlich gegen die Formatregeln der Quelle und meldet jeden Befund mit Tabelle, Blatt und Zeile. Geprueft werden das Datumsformat gegen [data.md](data.md) § 6 einschliesslich der Warnklasse fuer Zeitstempelmuster aus einer Autokonvertierung, das Muster der Buendelungskennung, das Folio-Muster mit der Bindestrichform als Befund, die Kreuzpruefung von `typ` und `rolle` gegen `Typ-Rolle.csv`, Zeilen mit `name` und ohne `typ` sowie Signaturstuempfe ohne Konvolutnummer. Kein Befund dieser Schicht veraendert Daten; jeder geht ueber das [Datenfehler-Register](data-errors.md) an das Erschliessungsteam.
 
 ### Neue Modell-Features in transform.py
 
@@ -195,7 +223,7 @@ Strukturelle Transformationen (keine Datenfehler-Kaschierung): Spalten-Lowercase
 
 Aktuelle Zahlen zum Bestand, Abdeckung, Verknüpfungsrate und Wikidata-Coverage stehen im **Quality-Snapshot** (`data/reports/quality-snapshot.md`). Der Snapshot wird bei jedem Pipeline-Lauf neu generiert und ist der Single Source of Truth für Zahlen gegenüber dem Erschließungsteam; knowledge-Dokumente halten keine laufenden Zählstände vor, weil die bei jedem Rerun veralten.
 
-Aktuelle Korpus-Struktur qualitativ: Teilnachlass UAKUG/NIM mit den Bestandsgruppen Hauptbestand, Plakate und Tonträger, feinerschlossen auf Folio-Ebene sind mehrere Konvolute um NIM_003–007 und NIM_011. Frühere Stände liegen unter `data/_archive/` als Referenz.
+Aktuelle Korpus-Struktur qualitativ: Teilnachlass UAKUG/NIM mit den Bestandsgruppen Hauptbestand, Plakate und Tonträger, feinerschlossen auf Folio-Ebene ist eine wachsende Auswahl der Konvolute. Welche das sind, steht im Quality-Snapshot. Frühere Stände liegen unter `data/_archive/` als Referenz.
 
 ## Datenqualität
 

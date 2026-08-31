@@ -503,15 +503,14 @@ def main():
                           for c in df_objekte.columns]
     print(f"  Objekte-XLSX: {len(df_objekte)} Zeilen")
 
-    verk_path = SHEETS_DIR / "M3GIM-Verknüpfungen.xlsx"
-    if not verk_path.exists():
-        verk_path = SHEETS_DIR / "M3GIM-Verknuepfungen.xlsx"
-    # Multi-Sheet-Loader der Pipeline (Box-Export verteilt auf mehrere Sheets),
-    # statt single-sheet pd.read_excel — sonst driften die Aggregat-Zahlen.
+    # Loader der Pipeline: CSV-Verzeichnis bevorzugt (E-152), sonst die
+    # Mehrblatt-Mappe. Ein eigener single-sheet-Lesepfad liesse die
+    # Aggregat-Zahlen gegen den transformierten Stand driften.
     sys.path.insert(0, str(BASE_DIR / "scripts"))
-    from transform import load_verknuepfungen
+    from transform import load_verknuepfungen, resolve_verknuepfungen_source
+    verk_path = resolve_verknuepfungen_source(SHEETS_DIR)
     df_verk = load_verknuepfungen(verk_path)
-    print(f"  Verknuepfungen-XLSX: {len(df_verk)} Zeilen")
+    print(f"  Verknuepfungen: {len(df_verk)} Zeilen aus {verk_path.name}")
 
     # Audits ausfuehren
     total_errors = 0

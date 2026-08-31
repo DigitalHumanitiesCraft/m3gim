@@ -34,7 +34,13 @@ from transform import load_index, normalize_str  # noqa: E402
 # ---------------------------------------------------------------------------
 
 def _index_field_map(index_name: str, field: str) -> dict:
-    """name.lower() -> getrimmter Feldwert, ueber den kanonischen Reader."""
+    """name.lower() -> getrimmter Feldwert, ueber den kanonischen Reader.
+
+    Bei mehrfach erfasstem Namen gewinnt der erste nicht leere Wert, wie in
+    ``build_index_lookup`` seit E-152. Die frühere Fassung liess die letzte
+    Zeile gewinnen und erwartete damit genau das Ueberschreiben, das die
+    Nachlassbildnerin ihre gepflegte Anmerkung gekostet hat.
+    """
     df = load_index(index_name)
     out = {}
     if df is None or "name" not in df.columns or field not in df.columns:
@@ -43,7 +49,7 @@ def _index_field_map(index_name: str, field: str) -> dict:
         name = normalize_str(row.get("name"))
         val = row.get(field)
         if name and pd.notna(val) and str(val).strip():
-            out[name.lower()] = str(val).strip()
+            out.setdefault(name.lower(), str(val).strip())
     return out
 
 

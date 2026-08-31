@@ -280,6 +280,12 @@ def test_date_bearing_properties_are_discovered(graph):
     assert checked >= 500, f"Nur {checked} Datumswerte in der Pruefung"
 
 
+@pytest.mark.xfail(
+    reason="QF-36: drei unmoegliche Kalenderdaten in UAKUG/NIM_005 "
+           "(1951-02-29, 1959-31-08, 1959-02-30). Quellfehler, siehe "
+           "knowledge/data-errors.md",
+    strict=True,
+)
 def test_dataset_dates_are_valid_calendar_dates(graph):
     """Jeder Datumswert ist ein gueltiges Kalenderdatum oder eine belegte
     Verkuerzung auf Jahr oder Jahr und Monat."""

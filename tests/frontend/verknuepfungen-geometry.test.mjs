@@ -1,6 +1,11 @@
 /**
  * Unit-Tests fuer das Verknuepfungen-Geometrie-Modul (reine Funktionen) und den
  * geteilten Filter-State. Kein DOM, kein Datenstand — synthetischer Store.
+ *
+ * Seit der Zusammenfuehrung der Facettenaufloesung baut `buildGraph` den
+ * Schnitt nicht mehr selbst; die Dokumentmenge kommt aus `recordsFor` und wird
+ * als `opts.records` uebergeben. Die Faelle Ort, Zeitfenster und Schaerfegrad
+ * bleiben deshalb als Zusammenspiel der beiden Module geprueft.
  */
 
 import { test, describe } from 'node:test';
@@ -13,6 +18,7 @@ import {
   getFilter, setFilter, resetFilter, subscribe, isFilterActive,
 } from '../../docs/js/ui/filter-state.js';
 import { DATING_SCOPE } from '../../docs/js/data/constants.js';
+import { recordsFor } from '../../docs/js/data/records-for.js';
 
 // --- Synthetischer Store --------------------------------------------------
 
@@ -40,6 +46,11 @@ function makeStore() {
       ['r2', { '@id': 'r2', 'rico:date': '1953' }],
       ['r3', { '@id': 'r3', 'rico:date': '1960' }],
     ]),
+    allRecords: [
+      { '@id': 'r1', 'rico:date': '1952-07-25' },
+      { '@id': 'r2', 'rico:date': '1953' },
+      { '@id': 'r3', 'rico:date': '1960' },
+    ],
     recordDatings: new Map(),
     byYear: new Map([
       [1952, [{ '@id': 'r1' }]],
@@ -55,6 +66,11 @@ function makeStore() {
  * Datierung, wie der Loader sie ablegt: ankernde Bezugsebene, damit
  * primaryYear sie als Zeitanker des Records nimmt.
  */
+/** Die Dokumentmenge, wie der View sie dem Graph reicht. */
+function scopeFor(store, filter) {
+  return recordsFor(store, filter).ids;
+}
+
 function annotationDating(year) {
   return {
     id: null, place: null, date: String(year), rawDate: String(year), qualifier: null,
@@ -97,7 +113,8 @@ describe('buildGraph (weit/eng, Fokus, Filter)', () => {
   test('Zeitfenster filtert Records (1960er-Person faellt raus)', () => {
     const wide = buildGraph(makeStore());
     assert.ok(wide.nodes.some(n => n.name === 'Spaetling, Egon'));
-    const cut = buildGraph(makeStore(), { filter: { zeitfenster: [1950, 1955] } });
+    const store = makeStore();
+    const cut = buildGraph(store, { records: scopeFor(store, { zeitfenster: [1950, 1955] }) });
     assert.ok(!cut.nodes.some(n => n.name === 'Spaetling, Egon'),
       'Person nur aus 1960 darf im Fenster 1950-1955 nicht erscheinen');
   });
@@ -112,7 +129,8 @@ describe('buildGraph (weit/eng, Fokus, Filter)', () => {
       [1952, [{ '@id': 'r1' }]],
       [1960, [{ '@id': 'r3' }]],
     ]);
-    const g = buildGraph(store, { filter: { zeitfenster: [1953, 1953] } });
+    store.allRecords = [...store.records.values()];
+    const g = buildGraph(store, { records: scopeFor(store, { zeitfenster: [1953, 1953] }) });
     const names = g.nodes.map(n => n.name);
     assert.ok(names.includes('Bayreuther Festspiele'),
       'Institution nur aus r2 muss im Fenster 1953 erscheinen');
@@ -120,14 +138,24 @@ describe('buildGraph (weit/eng, Fokus, Filter)', () => {
   });
 
   test('Ort-Filter schraenkt auf Records des Orts ein', () => {
-    const g = buildGraph(makeStore(), { filter: { ort: 'Bayreuth' } });
+    const store = makeStore();
+    const g = buildGraph(store, { records: scopeFor(store, { ort: ['Bayreuth'] }) });
     // Bayreuth deckt r1,r2 — Spaetling (nur r3) faellt raus.
     assert.ok(!g.nodes.some(n => n.name === 'Spaetling, Egon'));
     assert.ok(g.nodes.some(n => n.name === 'Wagner, Wieland'));
   });
 
+  test('zwei Orte vereinigen ihre Dokumente (ODER innerhalb der Facette)', () => {
+    const store = makeStore();
+    store.locations.set('Wien', { records: S('r3'), roles: S() });
+    const g = buildGraph(store, { records: scopeFor(store, { ort: ['Bayreuth', 'Wien'] }) });
+    assert.ok(g.nodes.some(n => n.name === 'Spaetling, Egon'),
+      'Der zweite Ort muss seine Dokumente hinzufuegen, nicht wegnehmen.');
+  });
+
   test('Enger Schaerfegrad: nur ereignis-/auffuehrungs-belegte Records (r1)', () => {
-    const g = buildGraph(makeStore(), { schaerfe: 'eng' });
+    const store = makeStore();
+    const g = buildGraph(store, { records: scopeFor(store, { schaerfe: 'eng' }) });
     // Nur r1 ist STE/Performance-belegt. Wagner ist in r1 -> bleibt;
     // Bayreuther Festspiele nur in r2 -> faellt weg.
     const names = g.nodes.map(n => n.name);
@@ -135,7 +163,23 @@ describe('buildGraph (weit/eng, Fokus, Filter)', () => {
     assert.ok(names.includes('Tristan und Isolde'));
     assert.ok(!names.includes('Bayreuther Festspiele'),
       'eng: Institution nur aus r2 (ohne Event) darf nicht erscheinen');
-    assert.ok(g.stats.recordsEng <= g.stats.recordsWeit);
+    assert.ok(g.stats.eng <= g.stats.records);
+  });
+
+  test('stats beziffern den Schnitt, ohne ihn zu glaetten', () => {
+    const store = makeStore();
+    const g = buildGraph(store, { records: scopeFor(store, { ort: ['Bayreuth'] }) });
+    assert.equal(g.stats.recordsBase, 3, 'Fokus-Records vor dem Schnitt');
+    assert.equal(g.stats.records, 2, 'Fokus-Records im Schnitt');
+    assert.equal(g.stats.eng, 1, 'davon raumzeitlich/auffuehrungs-belegt');
+  });
+
+  test('candidates nennt die Zahl vor der Kappung', () => {
+    const g = buildGraph(makeStore(), { topN: 1 });
+    assert.equal(g.stats.byType.person, 1, 'gezeigt wird nur der staerkste');
+    assert.equal(g.stats.candidates.person, 2,
+      'die Kappung nennt, wie viele Kandidaten es gab, statt stumm zu bleiben');
+    assert.equal(g.stats.truncated.person, 1);
   });
 
   test('Knotentyp-Toggle blendet einen Typ aus', () => {
@@ -200,7 +244,7 @@ describe('filter-state (geteilter Schnitt)', () => {
     resetFilter();
     const f = getFilter();
     assert.equal(f.schaerfe, 'weit');
-    assert.equal(f.ort, '');
+    assert.deepEqual(f.ort, []);
     assert.equal(f.zeitfenster, null);
     assert.equal(isFilterActive(), false);
   });
@@ -208,7 +252,8 @@ describe('filter-state (geteilter Schnitt)', () => {
   test('setFilter merged Patch, isFilterActive erkennt Aktivitaet', () => {
     resetFilter();
     setFilter({ ort: 'Bayreuth' });
-    assert.equal(getFilter().ort, 'Bayreuth');
+    assert.deepEqual(getFilter().ort, ['Bayreuth'],
+      'Ein einzelner Wert wird zur einelementigen Liste (E-151).');
     assert.equal(isFilterActive(), true);
     resetFilter();
     assert.equal(isFilterActive(), false);
@@ -224,7 +269,7 @@ describe('filter-state (geteilter Schnitt)', () => {
       const off = subscribe((s) => { calls++; last = s; }, { immediate: false });
       setFilter({ person: 'Wagner, Wieland' });
       assert.equal(calls, 1);
-      assert.equal(last.person, 'Wagner, Wieland');
+      assert.deepEqual(last.person, ['Wagner, Wieland']);
       off();
       setFilter({ person: 'X' });
       assert.equal(calls, 1, 'nach Abmeldung keine weitere Benachrichtigung');

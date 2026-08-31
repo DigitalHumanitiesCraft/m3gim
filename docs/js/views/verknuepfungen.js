@@ -1,13 +1,19 @@
 /**
  * Verknuepfungen — heterogener (multivariater) Graph ueber Person/Ort/Werk/
  * Institution. Beantwortet "Malaniuk 1952 in Bayreuth, welche Werke, wer war
- * beteiligt" als generalisierten, filterbaren Schnitt: Fokus-Entitaet plus
- * geteilte Facetten (Ort/Zeit/Schaerfe) plus lokale Knotentyp-Toggles.
+ * beteiligt" als generalisierten, filterbaren Schnitt: Fokus-Entitaet plus die
+ * geteilten Facetten plus lokale Knotentyp-Toggles.
  *
  * Zwei Schaerfegrade sichtbar getrennt (knowledge/frontend-architecture.md, Abschnitt Schaerfegrade):
  *   weit = im selben Dokument genannt (Ko-Okkurrenz, KEIN Auftrittsnachweis),
  *   eng  = nur ereignis-/auffuehrungs-belegte Records (raumzeitlich/Performance).
  * Die Differenz wird benannt, nicht geglaettet.
+ *
+ * Bedienung. Seit dem 2026-08-31 traegt der Tab die geteilte linke
+ * Filterspalte (`_facet-sidebar.js`) statt der Controls-Zeile ueber dem Bild.
+ * Zaehlstand, Deckung, Schaerfegrad und die Kappung je Knotentyp stehen dort
+ * als strukturierte Zeilen; die frueher darueber laufende Fliesstext-Caption
+ * ist damit abgeloest, ihre Aussagen bleiben vollstaendig erhalten.
  *
  * Determinismus: Positionen aus _verknuepfungen-geometry.js (reine Funktionen,
  * keine Force-Simulation). Erst statisch lesbar, dann Interaktion (design.md).
@@ -17,23 +23,37 @@ import { el, clear } from '../utils/dom.js';
 import { truncate } from '../utils/format.js';
 import { logStamp } from '../utils/env.js';
 import {
-  buildGraph, computeLayout, NODE_TYPES, NODE_TYPE_META, DEFAULT_FOCUS,
+  buildGraph, computeLayout, focusRecords, NODE_TYPES, NODE_TYPE_META, DEFAULT_FOCUS,
 } from './_verknuepfungen-geometry.js';
-import { getFilter, setFilter, subscribe } from '../ui/filter-state.js';
+import { buildFacetSidebar } from './_facet-sidebar.js';
+import { viewShell } from '../ui/sidebar.js';
+import { recordsFor } from '../data/records-for.js';
+import {
+  getFilter, setFilter, facetValues, applyViewDefault,
+} from '../ui/filter-state.js';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 const WIDTH = 920;
 const HEIGHT = 660;
 const TOP_N = 12;
 
+/** Facetten der Spalte, in der Reihenfolge der Vorgabe. */
+const FACETS = ['person', 'ort', 'werk', 'institution', 'rolle'];
+
+/** Der Graph ist eine Ko-Okkurrenz-Ansicht und damit intrinsisch weit. */
+const VIEW_DEFAULTS = { schaerfe: 'weit' };
+
 let _store = null;
-let _unsubscribe = null;
+let _sidebar = null;
 // Lokaler View-State (nicht im geteilten Filter): Fokus + Knotentyp-Toggles.
 const local = {
   focus: { ...DEFAULT_FOCUS },
   types: { person: true, werk: true, institution: true, ort: true },
 };
 let _selectedNodeId = null;
+// Letzter gezeichneter Stand, damit Sidebar-Status und Log-Stempel dieselben
+// Zahlen nennen wie das Bild.
+let _last = { result: null, graph: null };
 
 function svgEl(tag, attrs = {}, ...children) {
   const node = document.createElementNS(SVG_NS, tag);
@@ -52,31 +72,37 @@ function svgEl(tag, attrs = {}, ...children) {
 export function renderVerknuepfungen(store, container) {
   _store = store;
   clear(container);
+  applyViewDefault(VIEW_DEFAULTS);
 
-  const root = el('div', { className: 'vk-root' });
-
-  const controls = el('div', { className: 'vk-controls' });
-  const caption = el('div', { className: 'vk-caption' });
-  const stage = el('div', { className: 'vk-stage' });
   const svgWrap = el('div', { className: 'vk-svg-wrap' });
   const detail = el('div', { className: 'vk-detail' });
+  const main = el('div', { className: 'view-main vk-main' }, svgWrap, detail);
 
-  stage.append(svgWrap, detail);
-  root.append(controls, caption, stage);
-  container.appendChild(root);
+  if (_sidebar) _sidebar.destroy();
+  const sidebar = buildFacetSidebar(store, {
+    facets: FACETS,
+    yearSpan: yearBounds(store),
+    getResult: () => _last.result,
+    statusRows: () => statusRows(),
+    leadSections: [focusSection()],
+    sections: [typeSection()],
+    onChange: () => redraw(),
+  });
 
-  buildControls(controls);
-  draw(svgWrap, caption, detail);
+  _sidebar = sidebar;
+  container.appendChild(viewShell(sidebar.element, main));
 
-  // Geteilter Filter (M4): externe Aenderung (z. B. Ort-Klick anderswo) zeichnet neu.
-  if (_unsubscribe) _unsubscribe();
-  _unsubscribe = subscribe(() => {
-    syncControlsFromFilter(controls);
-    draw(svgWrap, caption, detail);
-  }, { immediate: false });
+  // Ein Weg fuer alles: die Spalte meldet jede Filteraenderung (eigene wie
+  // fremde, etwa einen Ort-Klick in der Karte) ueber onChange, die lokalen
+  // Controls rufen redraw direkt.
+  _redraw = () => {
+    drawGraph(svgWrap, detail);
+    sidebar.update();
+  };
+  _redraw();
 }
 
-// --- Controls -------------------------------------------------------------
+// --- View-eigene Sidebar-Sektionen ----------------------------------------
 
 function topEntities(map, n) {
   return [...map.entries()]
@@ -92,95 +118,99 @@ function yearBounds(store) {
     if (y < min) min = y;
     if (y > max) max = y;
   }
-  return [min === Infinity ? 1900 : min, max === -Infinity ? 2009 : max];
+  return { min: min === Infinity ? 1900 : min, max: max === -Infinity ? 2009 : max };
 }
 
-function buildControls(controls) {
-  clear(controls);
-  const f = getFilter();
-
-  // Fokus-Entitaet (lokal): Top-Personen + Top-Orte (deckt die Bayreuth-Leitfrage).
-  const focusSel = el('select', {
-    className: 'vk-select',
-    onChange: (e) => {
-      const [type, ...rest] = e.target.value.split('|');
-      local.focus = { type, name: rest.join('|') };
-      redraw();
-    },
-  });
-  focusSel.append(optgroupFor('Person', 'person', topEntities(_store.persons, 14)));
-  focusSel.append(optgroupFor('Ort', 'ort', topEntities(_store.locations, 10)));
-  for (const opt of focusSel.querySelectorAll('option')) {
-    if (opt.value === `${local.focus.type}|${local.focus.name}`) opt.selected = true;
-  }
-  controls.append(labeled('Fokus', focusSel));
-
-  // Schaerfegrad (geteilt): weit / eng.
-  const schaerfeSel = el('select', {
-    className: 'vk-select', dataset: { facet: 'schaerfe' },
-    onChange: (e) => setFilter({ schaerfe: e.target.value }),
-  },
-    el('option', { value: 'weit' }, 'weit — im Dokument genannt'),
-    el('option', { value: 'eng' }, 'eng — raumzeitlich/Auffuehrung belegt'),
-  );
-  schaerfeSel.value = f.schaerfe;
-  controls.append(labeled('Schärfegrad', schaerfeSel));
-
-  // Ort-Filter (geteilt), Stadt-konsolidiert.
-  const ortSel = el('select', {
-    className: 'vk-select', dataset: { facet: 'ort' },
-    onChange: (e) => setFilter({ ort: e.target.value }),
-  }, el('option', { value: '' }, '— alle Orte —'));
-  for (const o of topEntities(_store.locations, 18)) {
-    ortSel.append(el('option', { value: o.name }, `${o.name} (${o.count})`));
-  }
-  ortSel.value = f.ort || '';
-  controls.append(labeled('Ort', ortSel));
-
-  // Zeitfenster (geteilt).
-  const [ymin, ymax] = yearBounds(_store);
-  const zf = Array.isArray(f.zeitfenster) ? f.zeitfenster : [ymin, ymax];
-  const vonInput = el('input', { className: 'vk-year', type: 'number', min: ymin, max: ymax, value: zf[0], dataset: { facet: 'zf-von' } });
-  const bisInput = el('input', { className: 'vk-year', type: 'number', min: ymin, max: ymax, value: zf[1], dataset: { facet: 'zf-bis' } });
-  const onZf = () => {
-    const von = parseInt(vonInput.value, 10);
-    const bis = parseInt(bisInput.value, 10);
-    if (Number.isFinite(von) && Number.isFinite(bis) && (von > ymin || bis < ymax)) {
-      setFilter({ zeitfenster: [Math.min(von, bis), Math.max(von, bis)] });
-    } else {
-      setFilter({ zeitfenster: null });
-    }
+/** Fokus-Entitaet: view-lokal, weil sie den Graph verankert und keinen
+ *  Dokumentschnitt setzt. */
+function focusSection() {
+  return {
+    title: 'Fokus',
+    controls: [{
+      kind: 'custom', className: 'vk-focus',
+      build: region => {
+        const select = el('select', {
+          className: 'vk-select', dataset: { facet: 'fokus' },
+          onChange: (e) => {
+            const [type, ...rest] = e.target.value.split('|');
+            local.focus = { type, name: rest.join('|') };
+            _selectedNodeId = null;
+            redraw();
+          },
+        });
+        select.append(optgroupFor('Person', 'person', topEntities(_store.persons, 14)));
+        select.append(optgroupFor('Ort', 'ort', topEntities(_store.locations, 10)));
+        for (const opt of select.querySelectorAll('option')) {
+          if (opt.value === `${local.focus.type}|${local.focus.name}`) opt.selected = true;
+        }
+        region.appendChild(select);
+      },
+    }],
   };
-  vonInput.addEventListener('change', onZf);
-  bisInput.addEventListener('change', onZf);
-  const zfBox = el('div', { className: 'vk-zf' }, vonInput, el('span', { className: 'vk-zf-dash' }, '–'), bisInput);
-  controls.append(labeled('Zeitfenster', zfBox));
+}
 
-  // Knotentyp-Toggles (lokal): Einzelansichten einzeln abschaltbar (Partnervorgabe).
-  const toggleBox = el('div', { className: 'vk-toggles' });
+/**
+ * Knotentypen als Toggle-Zeilen. Jede Zeile beziffert, wie viele der
+ * Kandidaten gezeigt werden ("12 von 436"); die Kappung steht damit am Ort
+ * ihrer Wirkung statt in einem Satz unter dem Bild.
+ */
+function typeSection() {
+  return {
+    title: 'Knotentypen',
+    controls: [{
+      kind: 'custom', className: 'vk-types',
+      build: region => paintTypes(region),
+      update: region => paintTypes(region),
+    }],
+  };
+}
+
+function paintTypes(region) {
+  clear(region);
+  const stats = _last.graph ? _last.graph.stats : null;
   for (const t of NODE_TYPES) {
-    const cb = el('input', {
-      type: 'checkbox',
-      onChange: (e) => { local.types[t] = e.target.checked; redraw(); },
-    });
-    cb.checked = local.types[t];
-    const chip = el('label', { className: `vk-toggle vk-toggle--${t}` },
-      cb, el('span', { className: 'vk-toggle-dot' }), el('span', {}, NODE_TYPE_META[t].label));
-    toggleBox.append(chip);
-  }
-  controls.append(labeled('Knotentypen', toggleBox));
-
-  // Reset
-  controls.append(el('button', {
-    className: 'vk-reset',
-    onClick: () => {
-      local.focus = { ...DEFAULT_FOCUS };
-      local.types = { person: true, werk: true, institution: true, ort: true };
-      setFilter({ ort: '', zeitfenster: null, schaerfe: 'weit' });
-      // setFilter loest re-draw via subscribe aus; Controls dort neu gesynct.
-      redraw();
+    const on = local.types[t];
+    const shown = stats && stats.byType ? (stats.byType[t] || 0) : 0;
+    const total = stats && stats.candidates ? (stats.candidates[t] || 0) : 0;
+    const dot = el('span', { className: 'fs-typerow__dot' });
+    dot.style.background = NODE_TYPE_META[t].color;
+    const row = el('button', {
+      className: 'fs-typerow' + (on ? '' : ' fs-typerow--off'),
+      type: 'button',
+      'aria-pressed': String(on),
+      dataset: {
+        type: t,
+        tip: on
+          ? `Gezeigt werden die ${shown} staerksten von ${total} Kandidaten dieses Typs.`
+          : 'Dieser Knotentyp ist ausgeblendet.',
+        tipWrap: '',
+      },
+      onClick: () => { local.types[t] = !local.types[t]; redraw(); },
     },
-  }, '× Zurücksetzen'));
+      dot,
+      el('span', { className: 'fs-typerow__label' }, NODE_TYPE_META[t].label),
+      el('span', { className: 'fs-typerow__count' }, on ? `${shown} von ${total}` : 'aus'));
+    region.appendChild(row);
+  }
+}
+
+/** Zusatzzeilen des Status-Schlitzes: Fokus und Kappungssumme. */
+function statusRows() {
+  const stats = _last.graph ? _last.graph.stats : null;
+  if (!stats) return [];
+  const gekappt = Object.values(stats.truncated || {}).reduce((a, b) => a + b, 0);
+  const rows = [
+    { label: 'Fokus', value: truncate(stats.focus || local.focus.name, 22),
+      tip: 'Die Entitaet, deren Nachbarschaft der Graph zeigt.' },
+    { label: 'Knoten', value: String(stats.total),
+      tip: 'Gezeigte Nachbarn ueber alle eingeschalteten Knotentypen.' },
+  ];
+  if (gekappt > 0) {
+    rows.push({ label: 'gekappt', value: String(gekappt),
+      tip: `Je Knotentyp rendert der Graph nur die ${TOP_N} staerksten Nachbarn. `
+        + 'Die Zahl nennt, wie viele darueber hinaus vorhanden sind.' });
+  }
+  return rows;
 }
 
 function optgroupFor(label, type, entries) {
@@ -192,53 +222,45 @@ function optgroupFor(label, type, entries) {
   return og;
 }
 
-function labeled(label, control) {
-  return el('div', { className: 'vk-field' },
-    el('span', { className: 'vk-field-label' }, label), control);
-}
-
-/** Controls an den (extern geaenderten) geteilten Filter angleichen. */
-function syncControlsFromFilter(controls) {
-  const f = getFilter();
-  const set = (sel, val) => { const c = controls.querySelector(sel); if (c) c.value = val; };
-  set('[data-facet="schaerfe"]', f.schaerfe);
-  set('[data-facet="ort"]', f.ort || '');
-  const [ymin, ymax] = yearBounds(_store);
-  const zf = Array.isArray(f.zeitfenster) ? f.zeitfenster : [ymin, ymax];
-  set('[data-facet="zf-von"]', zf[0]);
-  set('[data-facet="zf-bis"]', zf[1]);
-}
-
 // Re-Draw-Helfer, die die DOM-Referenzen aus dem Render-Closure brauchen.
 let _redraw = () => {};
 function redraw() { _redraw(); }
 
 // --- Zeichnen -------------------------------------------------------------
 
-function draw(svgWrap, caption, detail) {
-  _redraw = () => draw(svgWrap, caption, detail);
+/**
+ * Der Schnitt der Ansicht: die Dokumentmenge des Fokus, durch den geteilten
+ * Filter beschnitten. `opts.base` macht die Zaehlung fokusrelativ, sodass
+ * Zaehlstand und Deckung dasselbe meinen wie das Bild.
+ */
+function resolveResult(filter) {
+  return recordsFor(_store, filter, { base: focusRecords(_store, local.focus) });
+}
+
+function drawGraph(svgWrap, detail) {
   const f = getFilter();
+  const result = resolveResult(f);
   const graph = buildGraph(_store, {
     focus: local.focus,
-    schaerfe: f.schaerfe,
-    filter: { ort: f.ort || null, zeitfenster: f.zeitfenster || null },
+    records: result.ids,
     types: local.types,
     topN: TOP_N,
   });
+  _last = { result, graph };
+
   const layout = computeLayout(graph, { cx: WIDTH / 2, cy: HEIGHT / 2 + 8, radius: 200 });
 
   clear(svgWrap);
   if (!layout.center) {
     svgWrap.append(el('div', { className: 'vk-empty' },
       `Kein Fokus "${local.focus.name}" in den Daten gefunden.`));
-    renderCaption(caption, graph, f);
+    stamp(graph, result, f);
     return;
   }
   svgWrap.append(renderSvg(layout, detail));
-  renderCaption(caption, graph, f);
   renderDetail(detail, layout, _selectedNodeId);
 
-  stamp(graph, f);
+  stamp(graph, result, f);
 }
 
 function renderSvg(layout, detail) {
@@ -303,32 +325,6 @@ function renderCenter(c) {
   return g;
 }
 
-function renderCaption(caption, graph, f) {
-  clear(caption);
-  const s = graph.stats;
-  const schaerfeLabel = f.schaerfe === 'eng'
-    ? 'eng (raumzeitlich/Aufführung belegt)'
-    : 'weit (im Dokument genannt)';
-  const bits = [
-    el('strong', {}, s.focus || local.focus.name),
-    document.createTextNode(` — Schärfegrad ${schaerfeLabel}. `),
-  ];
-  // Differenznennung weit vs. eng — die zentrale Ehrlichkeits-Geste.
-  if (f.schaerfe === 'eng') {
-    bits.push(document.createTextNode(
-      `${s.recordsEng} von ${s.recordsWeit} Records sind raumzeitlich/Aufführungs-belegt; nur diese tragen den engen Graph.`));
-  } else {
-    bits.push(document.createTextNode(
-      `${s.recordsWeit} Dokumente im Fokus, davon ${s.recordsEng} mit raumzeitlichem/Aufführungs-Beleg. Kanten heißen „im selben Dokument genannt", nicht „zusammen aufgetreten".`));
-  }
-  const trunc = Object.entries(s.truncated || {});
-  if (trunc.length) {
-    bits.push(el('span', { className: 'vk-trunc' },
-      ' Gekappt (Top ' + TOP_N + '/Typ): ' + trunc.map(([t, n]) => `${NODE_TYPE_META[t].label} +${n}`).join(', ') + '.'));
-  }
-  caption.append(...bits);
-}
-
 function renderDetail(detail, layout, selId) {
   clear(detail);
   const node = selId ? layout.nodes.find(n => n.id === selId) : null;
@@ -354,7 +350,26 @@ function renderDetail(detail, layout, selId) {
   for (const r of (m.roles || []).slice(0, 6)) chips.append(chip('ROLLE', r));
   detail.append(chips);
   if (m.note) detail.append(el('div', { className: 'vk-detail-note' }, m.note));
+  // Ein Knoten laesst sich als Facette uebernehmen; der Schnitt wandert damit
+  // in jede andere Ansicht mit.
+  if (FACET_FOR_NODE[node.type]) detail.append(buildAddFacet(node));
   detail.append(buildLegend());
+}
+
+/** Knotentyp -> Facette des geteilten Filters. */
+const FACET_FOR_NODE = { person: 'person', ort: 'ort', werk: 'werk', institution: 'institution' };
+
+function buildAddFacet(node) {
+  const key = FACET_FOR_NODE[node.type];
+  const active = facetValues(getFilter(), key).includes(node.name);
+  return el('button', {
+    className: 'vk-addfacet', type: 'button',
+    onClick: () => {
+      const cur = facetValues(getFilter(), key);
+      setFilter({ [key]: active ? cur.filter(v => v !== node.name) : [...cur, node.name] });
+      redraw();
+    },
+  }, active ? '× Aus dem Filter nehmen' : '+ In den Filter aufnehmen');
 }
 
 function buildLegend() {
@@ -377,19 +392,33 @@ function chip(prefix, value) {
     el('span', { className: 'vk-chip-value' }, String(value)));
 }
 
-function stamp(graph, f) {
+/** Facettenwerte kompakt fuer den Log-Stempel; '—' heisst Facette inaktiv. */
+function stampFacet(filter, key) {
+  const values = facetValues(filter, key);
+  return values.length ? values.join('+') : '—';
+}
+
+function stamp(graph, result, f) {
   const s = graph.stats;
   const bt = s.byType || {};
   const truncN = Object.values(s.truncated || {}).reduce((a, b) => a + b, 0);
+  const aktiv = FACETS.filter(k => facetValues(f, k).length > 0).length
+    + (Array.isArray(f.zeitfenster) ? 1 : 0);
   logStamp('verknuepfungen', [
     ['fokus', s.focus || local.focus.name],
     ['schaerfe', f.schaerfe],
-    ['ort', f.ort || '—'],
+    ['facetten', aktiv],
+    ['person', stampFacet(f, 'person')],
+    ['ort', stampFacet(f, 'ort')],
+    ['werk', stampFacet(f, 'werk')],
+    ['institution', stampFacet(f, 'institution')],
+    ['rolle', stampFacet(f, 'rolle')],
     ['zeit', Array.isArray(f.zeitfenster) ? f.zeitfenster.join('-') : 'alle'],
     ['knoten', s.total],
-    ['person', bt.person], ['werk', bt.werk], ['institution', bt.institution], ['ort_n', bt.ort],
-    ['recordsWeit', s.recordsWeit],
-    ['recordsEng', s.recordsEng],
+    ['k-person', bt.person], ['k-werk', bt.werk],
+    ['k-institution', bt.institution], ['k-ort', bt.ort],
+    ['recordsWeit', result.weit],
+    ['recordsEng', result.eng],
     ['gekappt', truncN],
   ]);
 }

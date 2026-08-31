@@ -7,7 +7,7 @@ status: complete
 language: de
 version: 0.4
 created: 2026-02-19
-updated: 2026-08-22
+updated: 2026-08-31
 authors: [Christopher Pollin]
 generated-with: Claude Code
 method:
@@ -561,7 +561,7 @@ Jede Mobilitätsauswertung muss den derzeitigen Erschließungsstand mitführen. 
 
 Der Rohwert bleibt erhalten, damit die Parsung nachprüfbar ist. `detailField` bleibt neben `role` bestehen, weil es die Richtung des Geldflusses trägt und damit eine von der Rolle unabhängige Angabe ist; ein Dokument kann denselben Betrag einmal als `einnahmen` mit der Rolle `gesamtvergütung` und einmal als `summe` mit der Rolle `erwähnt` führen.
 
-Das Rollenvokabular für die Finanzschicht bleibt offen erweiterbar. Die Concepts des Schemes sind `performanceFee` (abendgage), `commission` (provision), `totalRemuneration` (gesamtvergütung), `travelExpenses` (reisekosten) und `broadcastFee` (rundfunkshonorar). Umlaute bleiben in den Anzeigelabels erhalten, eine ASCII-Transliteration findet nicht statt. Der Quellwert `rundfunkshonorar` trägt eine Tippform, die unverändert durchgereicht wird; die Umbenennung des Concepts löst die IRI vom Tippfehler, das korrekte `rundfunkhonorar` steht als `skos:altLabel`.
+Das Rollenvokabular für die Finanzschicht bleibt offen erweiterbar. Die Concepts des Schemes sind `performanceFee` (abendgage), `commission` (provision), `totalRemuneration` (gesamtvergütung), `travelExpenses` (reisekosten), `fee` (gage), `total` (summe), `playbackFee` (abspielhonorar) und `broadcastFee` (rundfunkshonorar); `broadcastFee` trägt seit E-152 eine `unused:`-Notiz, weil sein Quellwert im aktuellen Bestand auf `totalRemuneration` umgeschrieben wurde und die Rückfrage beim Erschließungsteam offen ist. Umlaute bleiben in den Anzeigelabels erhalten, eine ASCII-Transliteration findet nicht statt. Der Quellwert `rundfunkshonorar` trägt eine Tippform, die unverändert durchgereicht wird; die Umbenennung des Concepts löst die IRI vom Tippfehler, das korrekte `rundfunkhonorar` steht als `skos:altLabel`.
 
 **Zwei gegenläufige Belegungen.** Die Pipeline kennt einen zweiten Emissionspfad über den Verknüpfungstyp `detail`, in dem `detailField` die Bezeichnung der Angabe und `detailValue` die Rolle trägt. Die beiden Pfade belegen dasselbe Paar von Properties gegenläufig. Der zweite Pfad führt im aktuellen Stand keine Daten, weshalb die Kollision folgenlos bleibt; welche Lesart gilt, ist zu klären, bevor er Daten führt.
 

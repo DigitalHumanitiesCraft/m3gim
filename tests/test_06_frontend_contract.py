@@ -245,9 +245,17 @@ def test_finance_details_have_currency(records):
 
 
 def test_dft_hierarchy_concepts_resolve(graph, records):
-    """store.dftHierarchy erwartet auflösbare skos:broader-Referenzen + Record-Referenzen."""
+    """store.dftHierarchy erwartet auflösbare skos:broader-Referenzen + Record-Referenzen.
+
+    Die kanonische Stelle fuer die Wohlgeformtheit und Aufloesbarkeit der
+    Dokumenttyp-Hierarchie; test_01 fuehrte dieselben Aussagen ein zweites
+    Mal und beschraenkt sich seither auf die Schemavalidierung.
+    """
     concepts = {n["@id"]: n for n in graph if n.get("@type") == "skos:Concept"}
     assert len(concepts) >= 10, f"Zu wenige skos:Concepts: {len(concepts)}"
+
+    missing_label = [cid for cid, c in concepts.items() if not c.get("skos:prefLabel")]
+    assert not missing_label, f"skos:Concept ohne prefLabel: {missing_label[:5]}"
 
     broken_broader = []
     for cid, c in concepts.items():

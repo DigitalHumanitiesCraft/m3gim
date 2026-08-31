@@ -1,0 +1,296 @@
+/* Geteilte Facetten-Sidebar (docs/js/views/_facet-sidebar.js).
+
+   Baut auf dem Geruest der View-Sidebar (sidebar.css) auf und ergaenzt die
+   Facetten-Controls: Suchfeld, Werteliste mit Belegzahl, gewaehlte Werte als
+   entfernbare Chips, Status- und Legendenblock, Schaerfegrad-Segment.
+   Alle Farben, Abstaende und Textgroessen aus variables.css. */
+
+.facet-sidebar {
+  gap: 12px;
+}
+
+/* --- Status- und Legendenblock ------------------------------------------ */
+
+/* Der Block bleibt beim Scrollen der Spalte stehen: er traegt Zaehlstand,
+   Deckung und Schaerfegrad und wuerde sonst genau dann verschwinden, wenn
+   man weiter unten an den Facetten arbeitet. */
+.facet-sidebar > .vs-section:first-child {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--color-paper);
+  padding: var(--space-2) 0 var(--space-2);
+  border-bottom: 1px solid var(--border-color-light);
+}
+
+.fs-status {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fs-figure {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  padding-bottom: var(--space-1);
+}
+
+.fs-figure__n {
+  font-family: var(--font-title);
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-semibold);
+  color: var(--color-kug-blau);
+  line-height: 1;
+}
+
+.fs-figure__unit {
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+}
+
+.fs-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+  font-size: var(--text-xs);
+}
+
+.fs-row__label {
+  color: var(--color-text-tertiary);
+}
+
+.fs-row__value {
+  color: var(--color-text-primary);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-align: right;
+}
+
+.fs-badge {
+  display: inline-block;
+  padding: 1px 7px;
+  border-radius: 10px;
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: var(--weight-medium);
+  letter-spacing: 0.02em;
+  border: 1px solid transparent;
+}
+
+.fs-badge--weit {
+  background: var(--color-parchment);
+  border-color: var(--color-sand);
+  color: var(--color-text-primary);
+}
+
+.fs-badge--eng {
+  background: var(--color-kug-blau);
+  border-color: var(--color-kug-blau-dark);
+  color: var(--color-text-inverse);
+}
+
+/* --- Facette ------------------------------------------------------------- */
+
+.fs-facet {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.fs-search {
+  width: 100%;
+  padding: 4px 7px;
+  font-family: inherit;
+  font-size: var(--text-sm);
+  color: var(--color-text-primary);
+  background: var(--color-text-inverse);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+}
+
+.fs-search:focus {
+  outline: none;
+  border-color: var(--color-kug-blau);
+}
+
+.fs-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+}
+
+.fs-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 100%;
+  padding: 2px 5px 2px 7px;
+  font-family: inherit;
+  font-size: 11px;
+  color: var(--color-text-inverse);
+  background: var(--color-kug-blau);
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.fs-chip:hover { background: var(--color-kug-blau-dark); }
+
+.fs-chip__label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fs-chip__x {
+  font-size: 13px;
+  line-height: 1;
+  opacity: 0.75;
+}
+
+.fs-options {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  max-height: 148px;
+  overflow-y: auto;
+}
+
+.fs-option {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+  width: 100%;
+  padding: 2px 6px;
+  font-family: inherit;
+  font-size: var(--text-xs);
+  color: var(--color-text-primary);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  text-align: left;
+}
+
+.fs-option:hover {
+  background: var(--color-cream);
+  border-color: var(--border-color-light);
+}
+
+.fs-option--on {
+  background: var(--color-gold-light);
+  border-color: var(--color-gold-medium);
+}
+
+.fs-option__label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fs-option__count {
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--color-text-tertiary);
+}
+
+.fs-more {
+  font-size: 10px;
+  color: var(--color-text-tertiary);
+  padding: 2px 6px;
+}
+
+/* --- Schaerfegrad -------------------------------------------------------- */
+
+.fs-schaerfe {
+  display: flex;
+  gap: 3px;
+}
+
+.fs-seg {
+  flex: 1 1 0;
+  padding: 4px 6px;
+  font-family: inherit;
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  background: var(--color-text-inverse);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.fs-seg--on {
+  background: var(--color-kug-blau);
+  border-color: var(--color-kug-blau-dark);
+  color: var(--color-text-inverse);
+  font-weight: var(--weight-medium);
+}
+
+/* --- Zuruecksetzen ------------------------------------------------------- */
+
+.fs-clear {
+  width: 100%;
+  padding: 5px 8px;
+  font-family: inherit;
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  background: var(--color-text-inverse);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+}
+
+.fs-clear:hover:not(:disabled) {
+  border-color: var(--color-kug-blau);
+  color: var(--color-kug-blau);
+}
+
+.fs-clear:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+/* --- View-eigene Zeilen im Sidebar-Kontext ------------------------------- */
+
+/* Knotentyp-Toggle mit ehrlicher Bezifferung der Kappung: das Label nennt den
+   Typ, der Zaehler daneben, wie viele der Kandidaten gezeigt werden. */
+.fs-typerow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  padding: 3px 6px;
+  font-family: inherit;
+  font-size: var(--text-xs);
+  color: var(--color-text-primary);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  text-align: left;
+}
+
+.fs-typerow:hover { background: var(--color-cream); }
+
+.fs-typerow--off { opacity: 0.4; }
+
+.fs-typerow__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex: none;
+}
+
+.fs-typerow__label { flex: 1 1 auto; }
+
+.fs-typerow__count {
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--color-text-tertiary);
+}

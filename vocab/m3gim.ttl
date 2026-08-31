@@ -606,6 +606,7 @@ m3gim-vocab:unfulfilledDating a skos:Concept ;
     skos:altLabel "unfulfilled dating"@en ;
     skos:definition "Die Datierung gehört zu einer Angabe, die ausdrücklich nicht eingetreten ist, etwa einem nicht eingehaltenen Vertragstermin."@de ;
     skos:editorialNote "Der Wert hängt an der Statusmarkierung nicht eingehalten, deren Modellierung mit dem Erschließungsteam offen ist (data-model.md § 11). Solange sie in der Rollenspalte steht, hält dieser Begriff sie aus dem Zeitanker heraus."@de ;
+    skos:editorialNote "unused: Der Anker war der Vertragsstatus in der Rollenspalte, der seit der Lieferung 2026-08-31 in der Anmerkungsspalte steht. Der Begriff bleibt, solange nicht entschieden ist, ob eine Datierung an einem nicht eingetretenen Vorkommnis eine eigene Bezugsebene braucht."@de ;
     skos:inScheme m3gim-vocab:datingScopes .
 
 m3gim-vocab:annotationRoles
@@ -938,7 +939,8 @@ m3gim-vocab:recording a skos:Concept ;
     m3gim-ontology:datingScope m3gim-vocab:attestedDating ;
     m3gim-ontology:datingRank 16 ;
     skos:prefLabel "aufnahme"@de ;
-    skos:altLabel "recording"@en ;
+    skos:altLabel "aufnahmedatum"@de , "recording"@en ;
+    skos:editorialNote "Die Quellschreibung aufnahmedatum bezeichnet denselben Aspekt und fällt hier zusammen, wie absendedatum und absendeort mit E-139. Der Aspekt steht in der Wertproperty, der Rollenname wiederholt ihn nur; die Quellschreibung bleibt über m3gim-ontology:derivedFromRole erhalten."@de ;
     skos:definition "Rundfunk- oder Tonaufnahme. Sie zählt zur diskursiven Mobilität, weil sie die Stimme über den Aufführungsort hinaus verbreitet."@de ;
     skos:inScheme m3gim-vocab:annotationRoles .
 
@@ -1115,6 +1117,7 @@ m3gim-vocab:installmentPeriod a skos:Concept ;
     skos:prefLabel "ratenzahlung"@de ;
     skos:altLabel "installment period"@en ;
     skos:definition "Zeitraum einer in Raten geleisteten Zahlung."@de ;
+    skos:editorialNote "unused: Der einzige Beleg trägt seit der Lieferung 2026-08-31 die Rolle spielzeit. Die Aussage über die Ratenzahlung ist ersatzlos entfallen; der Begriff bleibt als Nachweis des Verlusts."@de ;
     skos:inScheme m3gim-vocab:annotationRoles .
 
 m3gim-vocab:season a skos:Concept ;
@@ -1135,6 +1138,24 @@ m3gim-vocab:rehearsalStartDate a skos:Concept ;
     skos:inScheme m3gim-vocab:annotationRoles .
 
 
+
+m3gim-vocab:signatureDate a skos:Concept ;
+    m3gim-ontology:datingScope m3gim-vocab:objectDating ;
+    m3gim-ontology:datingRank 23 ;
+    skos:prefLabel "unterschriftsdatum"@de ;
+    skos:altLabel "signature date"@en ;
+    skos:definition "Datum, an dem ein Vertrag oder eine Erklärung unterzeichnet wurde."@de ;
+    skos:editorialNote "Gegenstück zur Akteursrolle m3gim-vocab:signatory. Ob der Begriff mit m3gim-vocab:issueDate zusammenfällt, ist offen; die beiden kommen im Bestand auf keinem gemeinsamen Folio vor."@de ;
+    skos:inScheme m3gim-vocab:annotationRoles .
+
+m3gim-vocab:travelDate a skos:Concept ;
+    m3gim-ontology:datingScope m3gim-vocab:attestedDating ;
+    m3gim-ontology:datingRank 24 ;
+    skos:prefLabel "reisedatum"@de ;
+    skos:altLabel "travel date"@en ;
+    skos:definition "Datum einer Reisebewegung ohne Angabe der Richtung, also weder Abreise noch Ankunft am Zielort ausdrücklich benannt."@de ;
+    skos:editorialNote "Ein einziger Beleg, eine Rückkehr aus dem Urlaub. Gegen m3gim-vocab:departure abzugrenzen, das die Abreise benennt."@de ;
+    skos:inScheme m3gim-vocab:annotationRoles .
 
 # ---------------------------------------------------------------------------
 # Concepts, Finanzposten (m3gim-vocab:financialItemTypes)
@@ -1169,6 +1190,28 @@ m3gim-vocab:broadcastFee a skos:Concept ;
     skos:altLabel "rundfunkhonorar"@de , "broadcast fee"@en ;
     skos:definition "Honorar für eine Rundfunkaufnahme oder eine Sendung."@de ;
     skos:editorialNote "Die Quelle führt die Tippform rundfunkshonorar, die unverändert durchgereicht wird. Die Umbenennung löst die IRI vom Tippfehler."@de ;
+    skos:editorialNote "unused: Die drei Belege sind mit der Lieferung 2026-08-31 auf gesamtvergütung umgeschrieben. Der Begriff bleibt, weil er eine Unterscheidung festhält, die die Quelle aufgegeben hat, nämlich das Honorar für die Herstellung einer Rundfunkaufnahme gegen die allgemeine Gesamtvergütung."@de ;
+    skos:inScheme m3gim-vocab:financialItemTypes .
+
+m3gim-vocab:playbackFee a skos:Concept ;
+    skos:prefLabel "abspielhonorar"@de ;
+    skos:altLabel "playback fee"@en ;
+    skos:definition "Vergütung für die Ausstrahlung einer bereits vorhandenen Aufnahme."@de ;
+    skos:editorialNote "Gegen m3gim-vocab:broadcastFee abzugrenzen, das die Herstellung einer Rundfunkaufnahme honoriert. Ein Zusammenfall würde zwei verschiedene Akte in einem Begriff führen."@de ;
+    skos:inScheme m3gim-vocab:financialItemTypes .
+
+m3gim-vocab:fee a skos:Concept ;
+    skos:prefLabel "gage"@de ;
+    skos:altLabel "fee"@en ;
+    skos:definition "Vergütung eines Auftrittsabends, gegebenenfalls über mehrere Partien summiert."@de ;
+    skos:editorialNote "Gegen m3gim-vocab:performanceFee abzugrenzen, das die Abendgage je Partie benennt. Beide stehen im Bestand im selben Folio mit verschiedenen Beträgen nebeneinander (UAKUG/NIM_023 Folio 4)."@de ;
+    skos:inScheme m3gim-vocab:financialItemTypes .
+
+m3gim-vocab:total a skos:Concept ;
+    skos:prefLabel "summe"@de ;
+    skos:altLabel "total"@en ;
+    skos:definition "Zusammenfassender Betrag ohne Angabe der Zahlungsart."@de ;
+    skos:editorialNote "Der Wert wiederholt in der Rollenspalte, was m3gim-ontology:detailField bereits trägt. Er steht hier, damit die Rollenproperty kein Literal ausserhalb des Vokabulars führen muss; ob die Quelle ihn weiter vergeben soll, ist mit dem Erschliessungsteam zu klären."@de ;
     skos:inScheme m3gim-vocab:financialItemTypes .
 
 

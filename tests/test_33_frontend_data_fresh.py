@@ -66,28 +66,19 @@ def docs_graph() -> list:
     return _graph(DOCS_JSONLD)
 
 
-def test_docs_data_node_count_matches_output(output_graph, docs_graph):
-    """Knotenzahl Frontend == Pipeline-Output."""
-    assert len(docs_graph) == len(output_graph), (
-        f"docs/data hat {len(docs_graph)} Knoten, data/output {len(output_graph)}. "
-        "docs/data ist stale — 'python scripts/build-views.py' ausfuehren."
-    )
-
-
-def test_docs_data_ste_count_matches_output(output_graph, docs_graph):
-    """Annotationszahl identisch — die konkrete Bug-Klasse aus Session 50."""
-    out_ste = _count_annotations(output_graph)
-    docs_ste = _count_annotations(docs_graph)
-    assert docs_ste == out_ste, (
-        f"Frontend zeigt {docs_ste} Annotationen, Pipeline-Output {out_ste}. "
-        "Mobilitaets-Events fehlen im Frontend — 'python scripts/build-views.py' ausfuehren."
-    )
-
-
 def test_docs_data_graph_equals_output(output_graph, docs_graph):
-    """Vollstaendige @graph-Gleichheit: build-views.py ist ein reiner Copy."""
+    """Vollstaendige @graph-Gleichheit: build-views.py ist ein reiner Copy.
+
+    Subsumiert die frueher danebenstehende Knotenzahl und die
+    Annotationszahl (Bug-Klasse aus Session 50) vollstaendig; die Meldung
+    nennt beide Groessen weiterhin, damit ein roter Lauf sofort zeigt, ob
+    Knoten fehlen oder nur Werte abweichen.
+    """
     assert docs_graph == output_graph, (
-        "docs/data/m3gim.jsonld weicht von data/output/m3gim.jsonld ab. "
+        f"docs/data/m3gim.jsonld weicht von data/output/m3gim.jsonld ab "
+        f"(Frontend {len(docs_graph)} Knoten / "
+        f"{_count_annotations(docs_graph)} Annotationen, Pipeline-Output "
+        f"{len(output_graph)} / {_count_annotations(output_graph)}). "
         "build-views.py kopiert ungefiltert; eine Abweichung heisst, der Copy "
         "lief nach der letzten Output-Regeneration nicht. "
         "'python scripts/build-views.py' ausfuehren."

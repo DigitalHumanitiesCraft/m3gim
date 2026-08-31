@@ -125,24 +125,45 @@ def test_verknuepfungen_every_referenced_record_has_relations(
     )
 
 
-def test_person_typ_in_agents(records):
-    agents = _collect_entities(records, "m3gim-ontology:hasAssociatedAgent", "rico:Person")
-    assert len(agents) > 0, "Keine Person-Agents gefunden"
+# (XLSX-typ, Record-Property, @type der erzeugten Entity)
+_TYP_TO_OUTPUT = [
+    ("person", "m3gim-ontology:hasAssociatedAgent", "rico:Person"),
+    ("institution", "m3gim-ontology:hasAssociatedAgent", "rico:CorporateBody"),
+    ("ort", "rico:hasOrHadLocation", "rico:Place"),
+    ("werk", "rico:hasOrHadSubject", "m3gim-ontology:MusicalWork"),
+]
+
+# Anteil der Quellzeilen eines Typs, der den Output erreichen muss. Verluste
+# entstehen durch verwaiste Signaturen und Folio-Granularitaet (data.md § 17)
+# sowie, beim Typ person, durch die Umsortierung der Rolle 'erwaehnt' nach
+# rico:hasOrHadSubject. Dieselbe Schwelle fuehrt test_11 fuer die Verortungen.
+_MIN_YIELD = 0.6
 
 
-def test_ort_typ_in_locations(records):
-    locs = _collect_entities(records, "rico:hasOrHadLocation", "rico:Place")
-    assert len(locs) > 0, "Keine Ort-Locations gefunden"
+@pytest.mark.parametrize("typ,prop,entity_type", _TYP_TO_OUTPUT)
+def test_typ_reaches_output(records, xlsx_verknuepfungen, typ, prop, entity_type):
+    """Ein Basis-Typ der Quelle erreicht den Output mit einer aus der Quelle
+    abgeleiteten Untergrenze.
 
-
-def test_werk_typ_in_subjects(records):
-    works = _collect_entities(records, "rico:hasOrHadSubject", "m3gim-ontology:MusicalWork")
-    assert len(works) > 0, "Keine Werk-Subjects gefunden"
-
-
-def test_institution_typ_in_agents(records):
-    orgs = _collect_entities(records, "m3gim-ontology:hasAssociatedAgent", "rico:CorporateBody")
-    assert len(orgs) > 0, "Keine Institution-Agents gefunden"
+    Die vier Vorgaenger prueften nur `len(...) > 0` und fingen damit allein
+    den vollstaendigen Ausfall eines Typzweigs. Die Untergrenze wird zur
+    Laufzeit aus der Zeilenzahl der Quelle gebildet (Autoren-Regel in
+    knowledge/testing.md), sodass auch ein Teilverlust auffaellt und der
+    Test einen neuen Datenstand ohne Korrektur mittraegt.
+    """
+    typ_col = (
+        xlsx_verknuepfungen["typ"].fillna("").astype(str).str.strip().str.lower()
+    )
+    row_count = int((typ_col == typ).sum())
+    assert row_count >= 10, (
+        f"Quelle fuehrt nur {row_count} Zeilen mit typ={typ!r}, der Test "
+        f"liefe leer. Spaltenbelegung oder Export pruefen."
+    )
+    found = _collect_entities(records, prop, entity_type)
+    assert len(found) >= row_count * _MIN_YIELD, (
+        f"typ={typ!r}: nur {len(found)} {entity_type}-Entities an {prop} fuer "
+        f"{row_count} Quellzeilen (unter {_MIN_YIELD:.0%})."
+    )
 
 
 def test_mentioned_persons_in_subjects_not_agents(records):

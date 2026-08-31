@@ -10,6 +10,7 @@
 
 import { getDocTypeId, dftLabel, cityOf } from '../utils/format.js';
 import { primaryYear } from '../data/loader.js';
+import { extractYear } from '../utils/date-parser.js';
 
 // ---------------------------------------------------------------------------
 // Mobilitaetssichten — geteilt mit der Karte
@@ -247,9 +248,11 @@ export function aggregateDecadesBySicht(store) {
   let total = 0;
   for (const ev of store.mobilityEvents.values()) {
     total++;
-    if (typeof ev.date !== 'string' || ev.date.length < 4) continue;
-    const y = parseInt(ev.date.slice(0, 4), 10);
-    if (!Number.isFinite(y)) continue;
+    // extractYear ist die eine Jahresaufloesung. Der Abschnitt der ersten
+    // vier Zeichen las aus "06-09" die Jahreszahl 6 und liess die
+    // Jahrzehnt-Achse bei 0 beginnen.
+    const y = extractYear(ev.date);
+    if (y == null) continue;
     dated++;
     const decade = Math.floor(y / 10) * 10;
     const sicht = ev.cluster || 'neutral';

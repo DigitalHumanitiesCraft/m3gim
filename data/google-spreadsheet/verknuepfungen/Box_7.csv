@@ -1,0 +1,31 @@
+ ,Folio,data_id,typ,name,rolle,anmerkung
+,,,,,,
+UAKUG/NIM_016,1,,ort,Zürich,absendeort,Absendeort des Briefes.
+UAKUG/NIM_016,1,,Datum,1962-08-31,absendedatum,Datum von '31/8/62' auf das Format XXXX-YY-ZZ vereinheitlicht.
+UAKUG/NIM_016,1,,ort,"Zürich, Zürichbergstraße 104",wohnort,Adresse von Ira Malaniuk; Abkürzung 'Str.' zu 'Straße' ausgeschrieben.
+UAKUG/NIM_016,1,,institution,Bayerischer Rundfunk,veranstalter:in,Empfangende Institution des Briefes.
+UAKUG/NIM_016,1,,ort,"München, Rundfunkplatz 1",empfangsort,Adresse des Bayerischen Rundfunks; Tippfehler 'Munchen' im Text zu 'München' korrigiert.
+UAKUG/NIM_016,1,,Datum,1962-08-29,Erstelldatum,Datum des im Text erwähnten Briefes des BR; von '29.8.62' auf das Format XXXX-YY-ZZ vereinheitlicht.
+UAKUG/NIM_016,1,,person,"Malaniuk, Ira",erwähnt,"Gattin des Absenders, im Text mit dem Titel 'Kammersängerin' genannt; Name im Stil Nachname, Vorname vereinheitlicht."
+UAKUG/NIM_016,1,,person,"Borkh, Inge",erwähnt,"Im Text fälschlich als 'Inge Borith' bzw. 'Frau Borkh' genannt; historisch korrekt zu 'Borkh, Inge' korrigiert und im Stil Nachname, Vorname vereinheitlicht."
+UAKUG/NIM_016,1,,person,"Malaniuk, Ira (Ehemann von)",verfasser:in,"Der Name des Ehemanns wird im Text nicht genannt ('meine Gattin'), er tritt hier als Verfasser des Schreibens auf."
+UAKUG/NIM_016,2,,institution,Bayerischer Rundfunk,veranstalter:in,Absendende Institution des Briefes.
+UAKUG/NIM_016,2,,ort,"München, Rundfunkplatz 1",absendeort,Adresse des Bayerischen Rundfunks.
+UAKUG/NIM_016,2,,person,"Malaniuk, Ira",adressat:in,"Empfängerin des Briefes; Name im Stil Nachname, Vorname vereinheitlicht."
+UAKUG/NIM_016,2,,ort,"München, Prinzregententheater",empfangsort,Temporärer Aufenthaltsort bzw. Adresse der Adressatin ('z.Zt. Prinzregententheater').
+UAKUG/NIM_016,2,,Datum,1962-09-03,absendedatum,Datum des Briefes; von '3.9.1962' auf das Format XXXX-YY-ZZ vereinheitlicht.
+UAKUG/NIM_016,2,,institution,Radio Monte Carlo,veranstalter:in,"In der Nachricht erwähnte Rundfunkanstalt, die um ein Interview bittet."
+UAKUG/NIM_016,2,,person,"Jaumonet, Leopold",erwähnt,"Journalist von Radio Monte Carlo; Name im Stil Nachname, Vorname vereinheitlicht."
+UAKUG/NIM_016,2,,werk,Opéra Magazine,Aufführung,Name der erwähnten Radiosendung / des kulturellen Dienstes (Eigenname belassen).
+UAKUG/NIM_016,2,,ort,Südfrankreich,auffuehrungsort,Erwähntes Sendegebiet der Radiosendung.
+UAKUG/NIM_016,2,,ort,Norditalien,auffuehrungsort,Erwähntes Sendegebiet der Radiosendung.
+UAKUG/NIM_016,2,,Datum,1962-09-07,Ausstrahlung,"Vorgeschlagener Interviewtermin (Freitag, den 7.9.); Jahr 1962 aus dem Kontext ergänzt und ins Format XXXX-YY-ZZ gebracht."
+UAKUG/NIM_016,2,,Datum,1962-09-10,Ausstrahlung,"Vorgeschlagener Interviewtermin (Montag, den 10.9.); Jahr 1962 aus dem Kontext ergänzt und ins Format XXXX-YY-ZZ gebracht."
+UAKUG/NIM_016,2,,ereignis,Staatsbesuch von Charles de Gaulle,rahmenveranstaltung,Im Text erwähnte historische Rahmenveranstaltung ('Staatsbesuches de Gaulle').
+UAKUG/NIM_016,2,,person,"de Gaulle, Charles",erwähnt,"Der Vorname 'Charles' wurde im historischen Kontext ergänzt; Name im Stil Nachname, Vorname vereinheitlicht."
+UAKUG/NIM_016,2,,person,"Wint, Karl Andreas",unterzeichner:in,"Name des Unterzeichners; im Stil Nachname, Vorname vereinheitlicht."
+UAKUG/NIM_016,2,,person,"Wirz, (Dr.)",verfasser:in,Name in Klammern unter der Unterschrift und im Diktatzeichen ('Dr.Wz') genannt; Vorname im Text nicht genannt.
+UAKUG/NIM_016,2,,person,Me,erwähnt,Kürzel der Protokollantin/Sekretärin im Diktatzeichen 'Dr.Wz/Me'.
+UAKUG/NIM_016,2,,institution,Bayerische Staatsbank,veranstalter:in,Im Fußtext des Briefbogens genannte Bankverbindung.
+UAKUG/NIM_016,2,,institution,Bayerische Gemeindebank,veranstalter:in,Im Fußtext des Briefbogens genannte Bankverbindung.
+UAKUG/NIM_016,2,,institution,"Bankhaus Merck, Finck & Co.",veranstalter:in,Im Fußtext des Briefbogens genannte Bankverbindung.

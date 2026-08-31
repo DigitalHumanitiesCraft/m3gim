@@ -35,9 +35,9 @@ Python 3.11+, dann `pip install -r requirements-test.txt`. Die Datei bindet `req
 Sechs Schritte in dieser Reihenfolge, jeder einzeln aufrufbar:
 
 ```bash
-python scripts/explore.py         # Strukturdiagnose der XLSX  -> data/reports/exploration-report.md
-python scripts/validate.py        # Quellprüfung der XLSX      -> data/reports/validation-report.md
-python scripts/transform.py       # XLSX nach JSON-LD          -> data/output/m3gim.jsonld
+python scripts/explore.py         # Strukturdiagnose der Quelle -> data/reports/exploration-report.md
+python scripts/validate.py        # Quellprüfung               -> data/reports/validation-report.md
+python scripts/transform.py       # Quelle nach JSON-LD        -> data/output/m3gim.jsonld
 python scripts/build-views.py     # Veroeffentlichung          -> Kopie von m3gim.jsonld nach docs/data/
 python scripts/audit-data.py      # Abgleich XLSX / JSON-LD / Views, nur Konsolenreport
 python scripts/report-quality.py  # laufende Zählstände        -> data/reports/quality-snapshot.md
@@ -123,7 +123,7 @@ Die Dateien in `docs/data/*.json` + `docs/data/m3gim.jsonld` werden ausschließl
 
 ### Plakate/Dateinamen-Eigenheiten
 
-- `M3GIM-Verknüpfungen.xlsx` — Dateiname enthält das `ü`, nicht `ue`. Beim Schreiben von Skripten immer das `ü`; die Pipeline wirft `FileNotFoundError` bei Abweichungen.
+- Quellformat der Verknüpfungen sind seit 2026-08-31 die CSV-Ausfuhren je Blatt unter `data/google-spreadsheet/verknuepfungen/` (`Box_1.csv` bis `Box_9.csv` plus `Typ-Rolle.csv`, E-152). `load_verknuepfungen` nimmt daneben weiter eine `M3GIM-Verknüpfungen.xlsx` an, deren Dateiname das `ü` trägt, nicht `ue`; ohne beides wirft `resolve_verknuepfungen_source` `FileNotFoundError`.
 - Plakate-IDs: `UAKUG/NIM/PL_XX` (mit Slash), nicht `UAKUG/NIM_PL_XX`.
 - Konvolut-Hierarchie: Objekt-ID = `archivsignatur + " " + folio`. Die Folio-Spalte im aktuellen Objekte-XLSX heißt `folio nr` (früher `folio` oder `Unnamed: 2`). Pipeline akzeptiert aktuell alle Varianten.
 
@@ -140,7 +140,7 @@ Vollständiger Katalog der Pipeline-Workarounds (Header-Shifts, Finance-Currency
 
 ```
 data/
-├── google-spreadsheet/   # Quelle (XLSX, git-tracked — 6 Dateien, ü-Umlaut)
+├── google-spreadsheet/   # Quelle, git-tracked: fünf XLSX plus verknuepfungen/*.csv
 ├── output/               # Pipeline-Output (m3gim.jsonld, wikidata-*.json, views/)
 ├── reports/              # Kurationsbelege der Normdaten, Quality-Snapshot, offene
 │                         #   Entscheidungsvorlagen; die erzeugten Reports sind

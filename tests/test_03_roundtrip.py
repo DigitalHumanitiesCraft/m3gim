@@ -30,6 +30,12 @@ def test_record_count_reasonable(records, xlsx_objekte):
     )
 
 
+@pytest.mark.xfail(
+    reason="QF-35: Objektzeile UAKUG/NIM_138 traegt ausser der Signatur keine "
+           "einzige Angabe, weshalb die Pipeline keinen Record dazu bildet. "
+           "Quellfehler, siehe knowledge/data-errors.md",
+    strict=True,
+)
 def test_every_xlsx_signatur_in_graph(records, xlsx_objekte):
     xlsx_sigs = _signatur_from_xlsx(xlsx_objekte)
     graph_sigs = set()

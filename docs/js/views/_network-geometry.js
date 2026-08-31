@@ -113,29 +113,52 @@ export function isMalaniuk(name, entry) {
   return false;
 }
 
+// Namensbestandteile als Menge, an Nicht-Buchstaben getrennt. Ein Vergleich
+// per includes() traf jede Teilzeichenkette: 'wolf' passte auf "Wolfgang"
+// und "Wolfram", 'verdi' auf "Monteverdi".
+function nameTokens(name) {
+  return new Set(String(name).toLowerCase().split(/[^\p{L}]+/u).filter(Boolean));
+}
+
+/** Traegt der Name den Nachnamen eines gelisteten Werk-Komponisten? */
+function hasComposerSurname(name) {
+  const tokens = nameTokens(name);
+  for (const composer of KOMPONISTEN_NAMEN) {
+    if (tokens.has(composer)) return true;
+  }
+  return false;
+}
+
+const COMPOSER_ROLE = 'komponist';
+
 /**
  * Soll die Person ueberhaupt im Personen-Netzwerk auftauchen? Reine
  * Werk-Komponisten (Wagner R., Strauss, Mozart, Beethoven) landen als
  * Repertoire-Signatur im Repertoire-Tab und bleiben hier draussen.
- * Ausnahmen: Wieland/Wolfgang Wagner (Regisseure) — ihre Kategorie ist
- * bereits "Regisseur" aus PERSONEN_KATEGORIEN und sie bleiben drin.
+ *
+ * Zwei Bedingungen muessen zusammenkommen. Der Name traegt den Nachnamen
+ * eines gelisteten Komponisten, und die Person tritt im Bestand tatsaechlich
+ * als Komponist auf. Ein geteilter Nachname allein genuegt nicht, sonst
+ * fallen der Bassist "Weber, Ludiwig" und die Saengerin "Schubert, Erika"
+ * aus dem Netzwerk. Ohne Rollenbeleg entscheidet wie bisher die Kategorie.
+ * Ausnahme bleibt jede kuratierte Nicht-Komponisten-Kategorie aus
+ * PERSONEN_KATEGORIEN, also Regie, Dirigat, Kollegium und die uebrigen.
  */
 export function isPureComposer(name, entry) {
   if (!name) return false;
-  if (entry && entry.kategorie === 'Regisseur') return false;
-  const lower = name.toLowerCase();
-  // Auf Nachnamen-Token matchen, damit "Wagner, Richard" greift, aber
-  // "Wieland Wagner" NICHT (der hat kategorie=Regisseur → oben abgefangen).
-  for (const composer of KOMPONISTEN_NAMEN) {
-    if (lower.includes(composer)) {
-      // Nur rausfiltern, wenn die Person NICHT manuell als anderer Typ
-      // kategorisiert wurde.
-      if (!entry || entry.kategorie === 'Komponist' || entry.kategorie === 'Andere') {
-        return true;
-      }
+  // Eine kuratierte Nicht-Komponisten-Kategorie schliesst die Ausfilterung
+  // aus: Regie (Wieland und Wolfgang Wagner) ebenso wie Dirigat (Hindemith
+  // dirigierte im Bestand und komponierte).
+  const kat = entry && entry.kategorie;
+  if (kat && kat !== 'Komponist' && kat !== 'Andere') return false;
+  if (!hasComposerSurname(name)) return false;
+  if (entry && entry.roles && entry.roles.size > 0) {
+    for (const role of entry.roles) {
+      if (String(role || '').toLowerCase().trim() === COMPOSER_ROLE) return true;
     }
+    return false;
   }
-  return false;
+  return true;
 }
 
 /**

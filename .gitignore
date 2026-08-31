@@ -61,8 +61,13 @@ dmypy.json
 *.xls
 *.csv
 # The archival capture lives here and must stay versioned; every report and
-# every dataset is reproducible from it.
+# every dataset is reproducible from it. The linking table is a CSV export per
+# sheet since 2026-08-31 (E-152), because the XLSX export coerces date, folio
+# and grouping columns into cell types and invents precision the record does
+# not carry.
 !data/google-spreadsheet/*.xlsx
+!data/google-spreadsheet/verknuepfungen/
+!data/google-spreadsheet/verknuepfungen/*.csv
 
 # PDF scans (too large for Git)
 *.pdf

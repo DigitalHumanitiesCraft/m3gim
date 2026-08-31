@@ -169,6 +169,16 @@ function buildStore(jsonld) {
     /** @type {Map<string, Array>} recordId → aufgeloeste Performances (M2):
      *  [{ id, work:{name,wikidata}|null, performers:[name], stageRoles:[name], date }] */
     recordToPerformances: new Map(),
+    // Facetten-Indizes des geteilten Filters. Sie tragen die Achsen, die
+    // recordsFor sonst bei jedem Schnitt neu ueber den Graphen suchen muesste.
+    /** @type {Map<string, Set<string>>} Annotationsrolle → Record-@ids */
+    eventsByRole: new Map(),
+    /** @type {Map<string, Set<string>>} Akteursrolle → Record-@ids */
+    recordsByAgentRole: new Map(),
+    /** @type {Map<string, {records: Set<string>, wikidata: ?string}>} rico:Group.
+     *  Ensembles bleiben zusaetzlich in store.organizations, damit Karte,
+     *  Verknuepfungen und Indizes unveraendert weiterlaufen. */
+    ensembles: new Map(),
   };
 
   // Pass 0: Begriffe zuerst. Eine Annotation liest die Bezugsebene ihrer Rolle
@@ -288,11 +298,11 @@ function buildStore(jsonld) {
       if (status) statusCounts.set(status, (statusCounts.get(status) || 0) + 1);
     }
 
-    // Konvolut-Titel: bevorzugt aus Folio-Record, sonst aus Sammel-Record
-    // (Sammel-Zeilen ohne Folio bekommen _sammlung-Suffix, siehe
-    // knowledge/data.md § 17 -- ihr Titel beschreibt das Konvolut
-    // inhaltlich, z. B. "Diverse Zeitungsausschnitte" fuer NIM_006).
-    const sammelChildId = realChildIds.find(cid => cid.endsWith('_sammlung'));
+    // Konvolut-Titel: bevorzugt aus Folio-Record, sonst aus Sammel-Record.
+    // Das Suffix der Sammel-Zeile vergibt scripts/transform.py als
+    // _collection, siehe knowledge/data.md § 17 -- ihr Titel beschreibt das
+    // Konvolut inhaltlich, z. B. "Diverse Zeitungsausschnitte" fuer NIM_006.
+    const sammelChildId = realChildIds.find(cid => cid.endsWith('_collection'));
     const sammelRecord = sammelChildId ? store.records.get(sammelChildId) : null;
     const title = (folioRecord && folioRecord['rico:title'])
       || (sammelRecord && sammelRecord['rico:title'])
@@ -441,6 +451,28 @@ function isJunkName(name) {
   return false;
 }
 
+/**
+ * Akteursrolle → Records. Der Schluessel ist derselbe, unter dem
+ * store.roleVocab den Begriff fuehrt (Concept-Id, sonst Literal), damit die
+ * Facette ihre Anzeigeform ohne zweite Zuordnung findet.
+ */
+function indexAgentRole(store, role, recordId) {
+  if (!role || !recordId) return;
+  const key = roleIdOf(role) || roleToken(role);
+  if (!key) return;
+  let ids = store.recordsByAgentRole.get(key);
+  if (!ids) { ids = new Set(); store.recordsByAgentRole.set(key, ids); }
+  ids.add(recordId);
+}
+
+/** rico:Group als eigene Achse neben der Institution (Ensemble). */
+function indexEnsemble(store, name, recordId, wikidata) {
+  let entry = store.ensembles.get(name);
+  if (!entry) { entry = { records: new Set(), wikidata: wikidata || null }; store.ensembles.set(name, entry); }
+  entry.records.add(recordId);
+  if (wikidata && !entry.wikidata) entry.wikidata = wikidata;
+}
+
 function indexAgents(store, record) {
   const agents = ensureArray(record['m3gim-ontology:hasAssociatedAgent']);
 
@@ -456,7 +488,9 @@ function indexAgents(store, record) {
       }
       const entry = store.organizations.get(rawName);
       entry.records.add(record['@id']);
+      if (type === 'rico:Group') indexEnsemble(store, rawName, record['@id'], wikidata);
       const orgRole = registerRole(store, agent.role);
+      indexAgentRole(store, agent.role, record['@id']);
       if (orgRole) entry.roles.add(orgRole);
       if (wikidata && !entry.wikidata) entry.wikidata = wikidata;
       // M2: kuratierter Sitz (Index) mit Vorrang vor Wikidata-Sitz (oft nur
@@ -474,6 +508,7 @@ function indexAgents(store, record) {
       const entry = store.persons.get(name);
       entry.records.add(record['@id']);
       const agentRole = registerRole(store, agent.role);
+      indexAgentRole(store, agent.role, record['@id']);
       if (agentRole) entry.roles.add(agentRole);
       if (wikidata && !entry.wikidata) entry.wikidata = wikidata;
       // WD-Enrichment-Properties
@@ -502,6 +537,7 @@ function indexAgents(store, record) {
     const entry = store.persons.get(name);
     entry.records.add(record['@id']);
     const subjRole = registerRole(store, subj.role);
+    indexAgentRole(store, subj.role, record['@id']);
     if (subjRole) entry.roles.add(subjRole);
     if (wikidata && !entry.wikidata) entry.wikidata = wikidata;
     // M2: kuratierte Index-Felder auch fuer erwaehnte Subjekt-Personen
@@ -515,7 +551,10 @@ function indexLocations(store, record) {
   for (const loc of locs) {
     const name = loc.name || loc['skos:prefLabel'] || '';
     if (!name) continue;
-    // Skip date-like strings that leaked into locations
+    // Datumswerte, die in die Ortsspalte gerutscht sind. Die Pruefung auf
+    // vier fuehrende Ziffern liess die Monats-Tages-Form "06-09" durch; ein
+    // Ortsname traegt immer mindestens einen Buchstaben.
+    if (!/\p{L}/u.test(name)) continue;
     if (/^\d{4}(-\d{2}){0,2}/.test(name)) continue;
     const wikidata = loc['@id'] || null;
     if (!store.locations.has(name)) {
@@ -727,6 +766,16 @@ function indexRecordAnnotations(store, record) {
   }
   if (ids.length > 0) store.recordToAnnotations.set(record['@id'], ids);
   if (eventIds.length > 0) store.recordToEvents.set(record['@id'], eventIds);
+
+  // Ereignisrolle → Records. Der Schluessel folgt store.roleVocab, wie bei der
+  // Akteursrolle; eine Annotation ohne Rolle traegt keine Achse.
+  for (const aid of ids) {
+    const key = store.annotations.get(aid).roleId;
+    if (!key) continue;
+    let set = store.eventsByRole.get(key);
+    if (!set) { set = new Set(); store.eventsByRole.set(key, set); }
+    set.add(record['@id']);
+  }
 }
 
 /**
@@ -898,11 +947,15 @@ function indexFinances(store, record) {
  * store.agentRelationResolvedCount + store.agentRelationTotalCount.
  */
 function resolveAgentRelationsToPersons(store) {
+  // Dieselbe Q-ID kann an zwei Namensvarianten haengen (Tippfehler im
+  // Personen-Index). Ohne Vorrangregel gewinnt der zuletzt gesehene Eintrag
+  // und zieht alle Relationen von der kanonischen Schreibweise ab.
   const personsByQid = new Map();
   for (const entry of store.persons.values()) {
-    if (entry.wikidata && String(entry.wikidata).startsWith('wd:')) {
-      personsByQid.set(entry.wikidata, entry);
-    }
+    if (!entry.wikidata || !String(entry.wikidata).startsWith('wd:')) continue;
+    const bisher = personsByQid.get(entry.wikidata);
+    if (bisher && bisher.records.size >= entry.records.size) continue;
+    personsByQid.set(entry.wikidata, entry);
   }
 
   let total = 0;

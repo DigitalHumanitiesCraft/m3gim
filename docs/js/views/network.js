@@ -43,7 +43,7 @@ import {
   drawCanvas,
   applyHighlight,
 } from './_network-canvas.js';
-import { getFilter, setFilter, subscribe } from '../ui/filter-state.js';
+import { getFilter, setFilter, subscribe, facetValues } from '../ui/filter-state.js';
 import { zeitfensterToYearRange, makeSyncGuard } from '../ui/filter-sync.js';
 import { coverageNote } from '../ui/coverage.js';
 
@@ -63,7 +63,7 @@ let _filters = {
   onlyWikidata: false,
   onlyAgRelOn: false,
   search: '',
-  sharedPerson: '',            // M4: exakter Name aus dem geteilten person-Filter
+  sharedPersons: [],           // M4/E-151: Namen aus dem geteilten person-Filter (ODER)
   hiddenCategories: new Set(),      // leer = alle zugelassen
   showCoOccurrence: true,      // geschwungene Ko-Okkurrenz-Baender
   showAgRelOn: true,           // gerade AgRelOn-Radials zum Zentrum
@@ -97,7 +97,7 @@ export function renderNetzwerk(store, container) {
     onlyWikidata: false,
     onlyAgRelOn: false,
     search: '',
-    sharedPerson: '',
+    sharedPersons: [],
     hiddenCategories: new Set(),
     showCoOccurrence: true,
     showAgRelOn: true,
@@ -127,7 +127,7 @@ export function renderNetzwerk(store, container) {
 
 /** Geteilte Facetten (person, zeitfenster) in die lokale _filters-Shape ziehen. */
 function applySharedToFilters(shared) {
-  _filters.sharedPerson = shared.person || '';
+  _filters.sharedPersons = facetValues(shared, 'person');
   const { yearFrom, yearTo } = zeitfensterToYearRange(shared.zeitfenster);
   _filters.yearFrom = yearFrom;
   _filters.yearTo = yearTo;
@@ -216,12 +216,12 @@ function draw() {
       onResetFilters: () => {
         _filters = {
           minRecords: 1, onlyWikidata: false, onlyAgRelOn: false,
-          search: '', sharedPerson: '', hiddenCategories: new Set(),
+          search: '', sharedPersons: [], hiddenCategories: new Set(),
           showCoOccurrence: true, showAgRelOn: true, minShared: 2,
           yearFrom: null, yearTo: null,
         };
         // Geteilte Facetten, die das Netzwerk traegt, ebenfalls loesen (M4).
-        _syncGuard.run(() => setFilter({ person: '', zeitfenster: null }));
+        _syncGuard.run(() => setFilter({ person: [], zeitfenster: null }));
         draw();
       },
     },
@@ -417,8 +417,8 @@ function passesFilter(node) {
   }
   // Geteilter person-Filter (M4): exakter Name. Malaniuk (Zentrum) bleibt immer
   // sichtbar, damit die gefilterte Person nicht im Leeren steht.
-  if (_filters.sharedPerson) {
-    if (node.name !== _filters.sharedPerson && !isMalaniuk(node.name)) return false;
+  if (_filters.sharedPersons.length > 0) {
+    if (!_filters.sharedPersons.includes(node.name) && !isMalaniuk(node.name)) return false;
   }
   return true;
 }

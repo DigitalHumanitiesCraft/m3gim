@@ -9,6 +9,7 @@ Verwendung:
     python scripts/validate.py
 """
 
+import csv
 import os
 import sys
 import re
@@ -17,8 +18,13 @@ from pathlib import Path
 from datetime import datetime
 from dataclasses import dataclass
 
-from _common import INDEX_HEADER_SHIFTS
-from transform import load_verknuepfungen
+from transform import (
+    build_index_lookup,
+    load_index as _load_index,
+    load_verknuepfungen,
+    normalize_role,
+    resolve_verknuepfungen_source,
+)
 
 # Windows-Konsole: UTF-8 erzwingen
 if sys.stdout.encoding != "utf-8":
@@ -109,7 +115,12 @@ DATE_PATTERN = re.compile(
 
 @dataclass
 class ValidationIssue:
-    """Ein Validierungsproblem"""
+    """Ein Validierungsproblem.
+
+    ``sheet`` benennt das Quellblatt. Die Verknuepfungen verteilen sich seit
+    E-95 auf mehrere Blaetter, weshalb eine Zeilennummer ohne Blattangabe im
+    Report nicht auffindbar ist.
+    """
     level: str  # ERROR oder WARNING
     code: str
     table: str
@@ -117,6 +128,7 @@ class ValidationIssue:
     field: str
     value: str
     message: str
+    sheet: str = ""
 
 
 def normalize_str(value) -> str | None:
@@ -193,34 +205,237 @@ def is_empty_row(row: pd.Series, key_fields: list) -> bool:
 
 
 def load_index(name: str) -> pd.DataFrame | None:
-    """Laedt einen Index mit Header-Shift-Korrektur"""
-    path = SHEETS_DIR / f"M3GIM-{name}.xlsx"
+    """Laedt einen Index ueber den Loader der Pipeline.
+
+    Die eigene Kopie dieser Funktion kannte nur den Legacy-Zweig der
+    Header-Shift-Korrektur; sie liess dem Personenindex die kopflose
+    Namensspalte und dem Ortsindex die mit einem Ortsnamen ueberschriebene
+    Kennungsspalte. Die Validierung sah damit andere Spalten als die
+    Transformation, und die Befunde der Index-Verdichtung fielen aus (E-152).
+    """
+    return _load_index(name)
+
+
+# ---------------------------------------------------------------------------
+# Pruefschicht der CSV-Quelle (E-152)
+# ---------------------------------------------------------------------------
+
+# Zulaessige Datumsnotationen der Verknuepfungstabelle nach data.md § 6:
+# volles ISO-Datum, Monat, Jahr, Zeitspanne mit "/", die belegte Freitextform
+# "bis" sowie die Klammer-/Fragezeichen-Unsicherheit und die drei Qualifier.
+_ISO_DATE_PART = r'\d{4}(?:-\d{2}(?:-\d{2})?)?'
+_SOURCE_DATE_OK = re.compile(
+    r'^(?:'
+    rf'(?:circa:|vor:|nach:)?{_ISO_DATE_PART}(?:/{_ISO_DATE_PART})?'
+    rf'|{_ISO_DATE_PART}\s+bis\s+{_ISO_DATE_PART}'
+    r'|\d{4}-\d{4}'                        # Spielzeitform, clean_date macht YYYY/YYYY daraus
+    r'|\d{4}-\[[^\]]+\]'
+    r')$'
+)
+_TIMESTAMP_PATTERN = re.compile(r'^\d{4}-\d{2}-\d{2}[ T]00:00:00$')
+
+# Buendelungskennung: ganze Zahl (Aktivitaet) oder zweistellige Dezimale
+# (Beteiligung, E-127). Eine einstellige Dezimale ist zwischen Beteiligung 01
+# und 10 nicht entscheidbar.
+_ID_ACTIVITY = re.compile(r'^\d+$')
+_ID_PARTICIPATION = re.compile(r'^\d+\.\d{2}$')
+_ID_AMBIGUOUS = re.compile(r'^\d+\.\d$')
+
+# Folio-Formen der Quelle. Die Bindestrichform trifft keinen Objektsatz, weil
+# die Objekttabelle dieselben Folios mit Unterstrich fuehrt.
+_FOLIO_OK = re.compile(r'^\d+(?:_\d+){0,2}$')
+_FOLIO_HYPHEN = re.compile(r'^\d+-\d+$')
+
+_SIGNATUR_OK = re.compile(r'^UAKUG/NIM(?:_\d{1,3}|/PL_\d{2}|_TT_\d{2})$')
+
+_DATE_TYPES = {"datum", "ort, datum", "ort_datum", "datum, werk", "datum_werk"}
+
+
+def _source_position(row, idx: int) -> tuple[int, str]:
+    """Fundstelle einer Verknuepfungszeile aus der Provenienz des Loaders."""
+    sheet = ""
+    if "_xlsx_sheet" in row.index and pd.notna(row.get("_xlsx_sheet")):
+        sheet = str(row.get("_xlsx_sheet"))
+    if "_xlsx_row" in row.index and pd.notna(row.get("_xlsx_row")):
+        return int(row.get("_xlsx_row")), sheet
+    return int(idx) + 2, sheet
+
+
+def load_typ_rolle(sheets_dir: Path) -> dict[str, set[str]]:
+    """Liest die Wertliste `Typ-Rolle.csv` als {typ: {rolle}}.
+
+    Die Datei ist kein Verknuepfungsblatt, sondern die an der Quelle
+    hinterlegte Dropdown-Zuordnung. Fehlt sie, entfaellt die Kreuzpruefung.
+    """
+    path = Path(sheets_dir) / "verknuepfungen" / "Typ-Rolle.csv"
     if not path.exists():
-        # Versuche alternative Schreibweisen
-        alt = SHEETS_DIR / f"{name}.xlsx"
-        if alt.exists():
-            path = alt
-        else:
-            return None
+        return {}
+    allowed: dict[str, set[str]] = {}
+    with path.open(encoding="utf-8-sig", newline="") as handle:
+        rows = list(csv.reader(handle))
+    for raw in rows[1:]:
+        if not raw:
+            continue
+        typ = (raw[0] or "").strip().lower()
+        if not typ:
+            continue
+        bucket = allowed.setdefault(typ, set())
+        for cell in raw[1:]:
+            rolle = normalize_role(cell)
+            if rolle:
+                bucket.add(rolle)
+    return allowed
 
-    df = pd.read_excel(path)
 
-    # Header-Shift-Korrektur: wenn ein bekannter Datenwert als Header steht
-    canonical = name.lower().replace("m3gim-", "")
-    if canonical in INDEX_HEADER_SHIFTS:
-        expected = INDEX_HEADER_SHIFTS[canonical]
-        if len(df.columns) == len(expected):
-            # Pruefen ob erste Zeile wie ein Datenwert aussieht (nicht wie ein Header)
-            first_val = str(df.columns[1]) if len(df.columns) > 1 else ""
-            if first_val and first_val not in ["name", "titel", "ort", "m3gim_id"]:
-                # Header ist verschoben â€” erste Zeile ist eigentlich Daten
-                old_headers = list(df.columns)
-                df.columns = expected[:len(df.columns)]
-                # Alte Header als erste Datenzeile einfuegen
-                first_row = pd.DataFrame([old_headers], columns=df.columns)
-                df = pd.concat([first_row, df], ignore_index=True)
+def validate_verknuepfungen_source(df: pd.DataFrame,
+                                   typ_rolle: dict | None = None
+                                   ) -> list[ValidationIssue]:
+    """Prueft die Verknuepfungszeilen gegen die Formatregeln der Quelle.
 
-    return df
+    Die Schicht meldet und repariert nichts. Jeder Befund traegt Blatt und
+    Zeile, damit das Erschliessungsteam ihn in der Tabelle findet
+    (data.md § 3, § 6, § 17; pipeline-architecture.md § Pruefschicht).
+    """
+    issues: list[ValidationIssue] = []
+    combos: dict = {}
+
+    for idx, row in df.iterrows():
+        excel_row, sheet = _source_position(row, idx)
+        typ_raw = row.get('typ')
+        typ = str(typ_raw).strip().lower() if pd.notna(typ_raw) else ""
+        name_raw = row.get('name')
+        name = str(name_raw).strip() if pd.notna(name_raw) else ""
+        rolle = normalize_role(row.get('rolle')) or ""
+
+        # --- Signaturstumpf ------------------------------------------------
+        sig_raw = row.get('archivsignatur')
+        sig = str(sig_raw).strip() if pd.notna(sig_raw) else ""
+        if sig and sig.lower() != "beispiel" and not _SIGNATUR_OK.match(sig):
+            issues.append(ValidationIssue(
+                level="ERROR", code="E014", table="Verknuepfungen", row=excel_row,
+                sheet=sheet, field="archivsignatur", value=sig,
+                message="Signatur ohne Konvolutnummer, bezeichnet kein Objekt",
+            ))
+
+        # --- Datumsformat ---------------------------------------------------
+        if typ in _DATE_TYPES and name:
+            candidate = name
+            if typ in {"ort, datum", "ort_datum", "datum, werk", "datum_werk"}:
+                # Komposit: nur die Datumshaelfte pruefen, wenn sie abtrennbar ist.
+                parts = [p.strip() for p in name.split(",")]
+                candidate = next(
+                    (p for p in parts if re.match(r'^\d{4}', p)), ""
+                )
+            if candidate:
+                if _TIMESTAMP_PATTERN.match(candidate):
+                    issues.append(ValidationIssue(
+                        level="WARNING", code="W010", table="Verknuepfungen",
+                        row=excel_row, sheet=sheet, field="name", value=candidate,
+                        message=("Zeitstempelmuster: der Wert ist durch eine "
+                                 "Autokonvertierung der Tabellenkalkulation "
+                                 "gelaufen und behauptet Tagesgenauigkeit"),
+                    ))
+                elif not _SOURCE_DATE_OK.match(candidate):
+                    issues.append(ValidationIssue(
+                        level="ERROR", code="E010", table="Verknuepfungen",
+                        row=excel_row, sheet=sheet, field="name", value=candidate,
+                        message="Datumsnotation ausserhalb von data.md § 6",
+                    ))
+
+        # --- Buendelungskennung ---------------------------------------------
+        dp_raw = row.get('datenpunkt_id') if 'datenpunkt_id' in df.columns else None
+        dp = str(dp_raw).strip() if pd.notna(dp_raw) else ""
+        if dp:
+            if _ID_AMBIGUOUS.match(dp):
+                issues.append(ValidationIssue(
+                    level="WARNING", code="W011", table="Verknuepfungen",
+                    row=excel_row, sheet=sheet, field="datenpunkt_id", value=dp,
+                    message=("Beteiligungskennung mit einstelliger Dezimale, "
+                             "zwischen 01 und 10 nicht entscheidbar"),
+                ))
+            elif not (_ID_ACTIVITY.match(dp) or _ID_PARTICIPATION.match(dp)):
+                issues.append(ValidationIssue(
+                    level="ERROR", code="E011", table="Verknuepfungen",
+                    row=excel_row, sheet=sheet, field="datenpunkt_id", value=dp,
+                    message="Kennung ausserhalb der Muster n und n.mm",
+                ))
+
+        # --- Folio -----------------------------------------------------------
+        folio_raw = row.get('folio') if 'folio' in df.columns else None
+        folio = str(folio_raw).strip() if pd.notna(folio_raw) else ""
+        if folio and folio.lower() != "folio" and not _FOLIO_OK.match(folio):
+            code = "E012" if _FOLIO_HYPHEN.match(folio) else "E015"
+            message = ("Folio in Bindestrichform; die Objekttabelle fuehrt "
+                       "dieselbe Folio mit Unterstrich"
+                       if code == "E012" else "Folio ausserhalb der Quellmuster")
+            issues.append(ValidationIssue(
+                level="ERROR", code=code, table="Verknuepfungen", row=excel_row,
+                sheet=sheet, field="folio", value=folio, message=message,
+            ))
+
+        # --- Zeile ohne Typ ---------------------------------------------------
+        if not typ and name:
+            issues.append(ValidationIssue(
+                level="ERROR", code="E013", table="Verknuepfungen", row=excel_row,
+                sheet=sheet, field="typ",
+                value=f"{sig} | {folio} | {name} | {rolle}",
+                message=("Zeile mit Name und Rolle ohne Typ; ohne Typ ist der "
+                         "Zielkontext unbestimmt und die Zeile wird nicht modelliert"),
+            ))
+
+        # --- Kreuzpruefung typ x rolle ---------------------------------------
+        if typ_rolle and typ:
+            if rolle not in typ_rolle.get(typ, set()):
+                key = (typ, rolle)
+                if key not in combos:
+                    combos[key] = [excel_row, sheet, 0]
+                combos[key][2] += 1
+
+    for (typ, rolle), (first_row, first_sheet, count) in combos.items():
+        issues.append(ValidationIssue(
+            level="WARNING", code="W012", table="Verknuepfungen", row=first_row,
+            sheet=first_sheet, field="typ/rolle", value=f"{typ} / {rolle}",
+            message=(f"Kombination steht nicht in Typ-Rolle.csv, {count} Zeile(n); "
+                     "entweder fehlt sie in der Wertliste oder der Wert ist falsch"),
+        ))
+
+    return issues
+
+
+def validate_index_identities(name: str, lookup: dict) -> list[ValidationIssue]:
+    """Meldet die Befunde der Index-Verdichtung (data.md § 3).
+
+    Ein Feldkonflikt innerhalb einer Identitaet, eine Namenskollision zwischen
+    zwei Kennungen und ein im Werkindex mehrdeutiger Titel sind Quellbefunde;
+    die Pipeline loest sie deterministisch auf, ohne sie zu verschweigen.
+    """
+    issues: list[ValidationIssue] = []
+    for key in sorted(lookup):
+        entry = lookup[key]
+        if entry.get("index_conflict"):
+            fields = entry.get("index_conflict_fields", {})
+            issues.append(ValidationIssue(
+                level="WARNING", code="W013", table=name, row=0, sheet=name,
+                field=", ".join(sorted(fields)), value=entry.get("name", key),
+                message=("Mehrfach erfasste Identitaet mit verschiedenen Werten; "
+                         f"der erste gewinnt: {fields}"),
+            ))
+        if entry.get("name_collision"):
+            issues.append(ValidationIssue(
+                level="WARNING", code="W014", table=name, row=0, sheet=name,
+                field="m3gim_id", value=entry.get("name", key),
+                message=("Derselbe Name unter mehreren Kennungen: "
+                         f"{entry.get('collision_candidates')}"),
+            ))
+        if entry.get("ambiguous"):
+            issues.append(ValidationIssue(
+                level="WARNING", code="W015", table=name, row=0, sheet=name,
+                field="titel", value=entry.get("name", key),
+                message=("Titel bezeichnet mehrere Werke; ohne Komponisten in der "
+                         "Verknuepfungszeile bleibt die Zuordnung offen: "
+                         f"{[c.get('komponist') for c in entry.get('candidates', [])]}"),
+            ))
+    return issues
 
 
 # ---------------------------------------------------------------------------
@@ -234,9 +449,16 @@ def validate_objekte(df: pd.DataFrame) -> list[ValidationIssue]:
     # Eindeutigkeit Signaturen â€” Konvolute duerfen gleiche archivsignatur haben
     # (unterschieden durch Folio-Spalte). Nur echte Duplikate (gleiche Signatur
     # UND gleiche Folio) sind Fehler.
+    # Nachzug aus transform.py (E-95/E-152): nicht-textuelle Kopfzellen
+    # ueberspringen, statt an .lower() zu scheitern — im Box-Export traegt
+    # Spalte 0 statt "box_nr" den int 1. Und dieselbe Namensliste wie
+    # transform.py verwenden; ohne "folio nr" fand die Validierung die
+    # Folio-Spalte nicht und meldete jede Folio eines Konvoluts als Duplikat.
     folio_col = None
     for col in df.columns:
-        if col.lower() in ['folio', 'unnamed: 2']:
+        if not isinstance(col, str):
+            continue
+        if col.lower() in ['folio', 'folio nr', 'folio_nr', 'unnamed: 2']:
             folio_col = col
             break
 
@@ -352,7 +574,7 @@ def validate_verknuepfungen(df: pd.DataFrame, valid_signaturen: set,
         if is_empty_row(row, ['archivsignatur', 'typ', 'name']):
             continue
 
-        excel_row = idx + 2
+        excel_row, sheet = _source_position(row, idx)
 
         # Template-Zeilen ueberspringen
         sig = row.get('archivsignatur')
@@ -364,7 +586,7 @@ def validate_verknuepfungen(df: pd.DataFrame, valid_signaturen: set,
             sig_str = str(sig).strip()
             if sig_str not in valid_signaturen:
                 issues.append(ValidationIssue(
-                    level="ERROR", code="E005", table="Verknuepfungen", row=excel_row,
+                    level="ERROR", code="E005", table="Verknuepfungen", row=excel_row, sheet=sheet,
                     field="archivsignatur", value=sig_str,
                     message="Signatur existiert nicht in Objekte"
                 ))
@@ -374,7 +596,7 @@ def validate_verknuepfungen(df: pd.DataFrame, valid_signaturen: set,
         if typ is not None:
             if not validate_vocab(typ, 'verknuepfung_typ') and not is_komposit_typ(typ):
                 issues.append(ValidationIssue(
-                    level="ERROR", code="E004", table="Verknuepfungen", row=excel_row,
+                    level="ERROR", code="E004", table="Verknuepfungen", row=excel_row, sheet=sheet,
                     field="typ", value=str(row.get('typ')),
                     message="Ungueltiger Verknuepfungstyp"
                 ))
@@ -402,7 +624,7 @@ def validate_verknuepfungen(df: pd.DataFrame, valid_signaturen: set,
                         index_names = index_df[name_col].dropna().astype(str).str.strip().str.lower().tolist()
                         if name_str.lower() not in index_names:
                             issues.append(ValidationIssue(
-                                level="WARNING", code="W004", table="Verknuepfungen", row=excel_row,
+                                level="WARNING", code="W004", table="Verknuepfungen", row=excel_row, sheet=sheet,
                                 field="name", value=name_str,
                                 message=f"Name nicht im {index_map[base_typ]} gefunden"
                             ))
@@ -482,7 +704,9 @@ def generate_report(issues: list[ValidationIssue], stats: dict) -> str:
         lines.append("")
         for issue in errors:
             lines.append(
-                f"- **{issue.code} {issue.table} Zeile {issue.row}:** "
+                f"- **{issue.code} {issue.table}"
+                + (f" [{issue.sheet}]" if issue.sheet else "")
+                + f" Zeile {issue.row}:** "
                 f"{issue.field} = `{issue.value}` -> {issue.message}"
             )
 
@@ -503,7 +727,9 @@ def generate_report(issues: list[ValidationIssue], stats: dict) -> str:
     if errors:
         for issue in errors:
             lines.append(
-                f"- **{issue.code} {issue.table} Zeile {issue.row}:** "
+                f"- **{issue.code} {issue.table}"
+                + (f" [{issue.sheet}]" if issue.sheet else "")
+                + f" Zeile {issue.row}:** "
                 f"{issue.field} = `{issue.value}` -> {issue.message}"
             )
     else:
@@ -515,7 +741,9 @@ def generate_report(issues: list[ValidationIssue], stats: dict) -> str:
     if warnings:
         for issue in warnings:
             lines.append(
-                f"- **{issue.code} {issue.table} Zeile {issue.row}:** "
+                f"- **{issue.code} {issue.table}"
+                + (f" [{issue.sheet}]" if issue.sheet else "")
+                + f" Zeile {issue.row}:** "
                 f"{issue.field} = `{issue.value}` -> {issue.message}"
             )
     else:
@@ -568,25 +796,29 @@ def main():
     else:
         print(f"\n  WARNUNG: {objekte_path.name} nicht gefunden")
 
-    # Verknuepfungen laden und validieren
-    # Versuche beide Schreibweisen (mit und ohne Umlaut)
-    verk_candidates = sorted(
-        set(
-            list(SHEETS_DIR.glob("M3GIM-Verkn*pfungen.xlsx"))
-            + list(SHEETS_DIR.glob("M3GIM-*Verkn*pfungen*.xlsx"))
-        )
-    )
-    verk_path = verk_candidates[0] if verk_candidates else SHEETS_DIR / "M3GIM-Verknuepfungen.xlsx"
-    if verk_path.exists():
+    # Verknuepfungen laden und validieren. Quelle ist seit E-152 das
+    # CSV-Verzeichnis; derselbe Loader wie in transform.py, damit die
+    # Validierung genau die Zeilen sieht, die transformiert werden (E-95).
+    try:
+        verk_path = resolve_verknuepfungen_source(SHEETS_DIR)
+    except FileNotFoundError as exc:
+        verk_path = None
+        print(f"  WARNUNG: {exc}")
+    if verk_path is not None:
         print(f"Validiere {verk_path.name}...")
-        # Multi-sheet workbook since E-95; reuse the pipeline loader so that
-        # validation covers the same rows transform.py processes.
         df_verk = load_verknuepfungen(verk_path)
         stats['verknuepfungen'] = len(df_verk)
         all_issues.extend(validate_verknuepfungen(df_verk, valid_signaturen, indices))
+        all_issues.extend(
+            validate_verknuepfungen_source(df_verk, load_typ_rolle(SHEETS_DIR))
+        )
         print(f"  {len(df_verk)} Verknuepfungen geladen")
-    else:
-        print(f"  WARNUNG: M3GIM-Verknuepfungen.xlsx nicht gefunden")
+
+    # Befunde der Index-Verdichtung (data.md § 3)
+    for canonical, index_df in indices.items():
+        all_issues.extend(
+            validate_index_identities(canonical, build_index_lookup(index_df))
+        )
 
     # Report generieren
     report = generate_report(all_issues, stats)
