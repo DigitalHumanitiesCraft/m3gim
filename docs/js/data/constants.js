@@ -306,7 +306,7 @@ export const ROLE_CLUSTER = {
   'ABREISEDATUM':       'datum',
 
   // === PENDING: neuer Datenstand Lane 1 (G1/G2/G3/G8). Aktivieren nach Promote +
-  // Lane-1-Bestaetigung der Rollennamen; siehe frontend-architecture.md
+  // Lane-1-Bestaetigung der Rollennamen; siehe architecture.md
   // § Erweiterung fuer den neuen Datenstand.
   // Unmapped faellt auf 'neutral' (grau) -- kein Crash, aber Designregel 3 bricht.
   // 'EMPFANGSORT':       'ort',          // G1
@@ -481,7 +481,7 @@ export const ROLE_TO_SECTION = {
   'erwaehnt':          'erwaehnt',
 
   // === PENDING: neuer Datenstand Lane 1 (G2/G8). Aktivieren nach Promote +
-  // Lane-1-Bestaetigung; siehe frontend-architecture.md § Erweiterung fuer den
+  // Lane-1-Bestaetigung; siehe architecture.md § Erweiterung fuer den
   // neuen Datenstand. Sonst landen diese Rollen im Default-Bucket "Weitere"
   // statt in Produktion/Erwaehnt.
   // 'beleuchter':        'produktion',  // G2

@@ -24,6 +24,7 @@ Rollenspalte, der im Schema ausdrücklich kein Rollenbegriff ist (data-model.md 
 from __future__ import annotations
 
 import argparse
+import csv
 import json
 import sys
 from collections.abc import Iterator
@@ -52,6 +53,14 @@ ROLE_KEYS = frozenset({"role"})
 
 # Vertragsstatus in der Rollenspalte, im Schema begründet kein Rollenbegriff.
 KNOWN_NON_ROLES = frozenset({"nicht eingehalten"})
+
+# Die an der Quelle hinterlegte Dropdown-Wertliste (Typ-Rolle.csv) ist der
+# Kontrakt zwischen Invariante und Datenspiegel. Ein erfasster Rollenwert, der
+# nicht in ihr steht (etwa die abgeschnittene Rolle "v" in NIM_005), ist ein
+# Datenbefund, den tests/test_60_csv_source.py als Quellfehler mit Fundstelle
+# fuehrt. Er ist keine Vokabularluecke, denn das Modell kann keinen Term fuer
+# einen Wert vorhalten, den die Erfassung selbst nicht kennt.
+TYP_ROLLE_CSV = REPO / "data" / "google-spreadsheet" / "verknuepfungen" / "Typ-Rolle.csv"
 
 # Marker, mit dem eine skos:editorialNote einen dauerhaft leeren Term
 # entschuldigt. Ein deklarierter Term ohne Vorkommen im Datensatz ist entweder
@@ -129,12 +138,56 @@ def collect_from_data(
     return properties, classes, roles, dft
 
 
-def check_roles(roles: list[object], concepts: set[str], pref_labels: dict[str, str]) -> list[str]:
-    """Prüft jeden Rollenwert auf ein aufgelöstes Concept und den richtigen Anzeigetext."""
+def load_value_list(path: Path) -> set[str]:
+    """Liest die erlaubten Rollenwerte aus Typ-Rolle.csv, normalisiert.
+
+    Normalisierung wie in der Pipeline (`normalize_role`): kleingeschrieben,
+    ohne die Genderendungen `:in`/`:innen`. Fehlt die Datei, bleibt die Menge
+    leer und die Wertlisten-Unterscheidung entfaellt.
+    """
+    if not path.exists():
+        return set()
+    allowed: set[str] = set()
+    with path.open(encoding="utf-8-sig", newline="") as handle:
+        rows = list(csv.reader(handle))
+    for raw in rows[1:]:
+        for cell in raw[1:]:
+            value = (cell or "").strip().lower()
+            for suffix in (":innen", ":in"):
+                if value.endswith(suffix):
+                    value = value[: -len(suffix)]
+                    break
+            if value:
+                allowed.add(value)
+    return allowed
+
+
+def check_roles(
+    roles: list[object],
+    concepts: set[str],
+    pref_labels: dict[str, str],
+    value_list: set[str],
+) -> tuple[list[str], list[str]]:
+    """Prüft jeden Rollenwert auf ein aufgelöstes Concept und den richtigen Anzeigetext.
+
+    Rueckgabe ist ein Paar (Vokabularabweichungen, Datenbefunde). Ein erfasster
+    Rollenwert ohne Concept-Verweis ist ein Datenbefund, wenn er nicht in der
+    Quellwertliste steht, sonst eine Vokabularluecke. So haengt ein
+    abgeschnittener Quellwert nicht laenger das Vokabular-Gate rot.
+    """
     findings: list[str] = []
+    data_findings: list[str] = []
     for value in roles:
         if isinstance(value, str):
-            if value not in KNOWN_NON_ROLES:
+            if value in KNOWN_NON_ROLES:
+                continue
+            norm = value.strip().lower()
+            if value_list and norm not in value_list:
+                data_findings.append(
+                    f"Erfasster Rollenwert ausserhalb der Quellwertliste "
+                    f"Typ-Rolle.csv: {value!r} (Quellbefund, siehe test_60)"
+                )
+            else:
                 findings.append(f"Rollenwert ohne Concept-Verweis: {value}")
             continue
         if not isinstance(value, dict) or "@id" not in value:
@@ -151,7 +204,7 @@ def check_roles(roles: list[object], concepts: set[str], pref_labels: dict[str, 
                 f"Mitgeführtes Label weicht vom Vokabular ab: {value['@id']} "
                 f"trägt {carried!r} statt {expected!r}"
             )
-    return sorted(set(findings))
+    return sorted(set(findings)), sorted(set(data_findings))
 
 
 def report_vacancy(
@@ -230,6 +283,11 @@ def main() -> int:
     if args.vacancy:
         return report_vacancy(graph, defined, properties | classes, args.vocab)
 
+    value_list = load_value_list(TYP_ROLLE_CSV)
+    role_findings, role_data_findings = check_roles(
+        roles, concepts, pref_labels, value_list
+    )
+
     findings: list[str] = []
     findings += [
         f"Property ohne Definition: {term}"
@@ -241,7 +299,7 @@ def main() -> int:
         for term in sorted(classes)
         if term.startswith("m3gim-ontology:") and expand(term) not in defined
     ]
-    findings += check_roles(roles, concepts, pref_labels)
+    findings += role_findings
     findings += [
         f"Dokumenttyp ohne Concept: {value}"
         for value in sorted(dft)

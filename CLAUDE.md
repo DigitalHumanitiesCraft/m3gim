@@ -16,13 +16,12 @@ Nach dieser Datei wird [`knowledge/INDEX.md`](knowledge/INDEX.md) als Einstieg i
 2. **`vocab/m3gim.ttl`** — das formale Projektvokabular in Turtle, die maschinenlesbare Fassung des Modells (Klassen, Properties, Domain, Range, SKOS-Schemata). Jede in `data.md` verankerte Modelländerung wird hier nachgezogen, bevor die Pipeline folgt.
 3. **`knowledge/specification.md`** — Projektidentität, Funktionsumfang und der volatile Abschnitt „Stand und nächste Schritte" (inklusive Status-Tracker und offener Operator-Entscheidungen).
 4. **`knowledge/testing.md`** — Teststrategie + TDD-Workflow.
-5. **`knowledge/pipeline-architecture.md`** — Pipeline-Referenz.
-6. **`knowledge/frontend-architecture.md`** + **`knowledge/design.md`** — Frontend-Architektur und Designsystem.
-7. **`knowledge/architecture-decisions.md`** — historische Architekturentscheidungen (E-01 aufwärts, laufend ergänzt).
+5. **`knowledge/architecture.md`** — Architektur-Referenz mit Pipeline-Teil (Datenfluss XLSX nach JSON-LD) und Frontend-Teil (statische SPA, Store, Ansichten). Das Designsystem führt `knowledge/design.md`.
+6. **`knowledge/journal.md`** — Provenance: Sessionverlauf plus Entscheidungsregister (E-01 aufwärts, laufend ergänzt).
 
 Weitere Dokumente siehe [`knowledge/INDEX.md`](knowledge/INDEX.md).
 
-Das formale Projektvokabular ist ein gepflegtes Artefakt und steht seit der Entscheidung der Projektleitung vom 2026-08-21 in dieser Hierarchie (E-133 in [`knowledge/architecture-decisions.md`](knowledge/architecture-decisions.md), löst die frühere offene Frage 10 in [`knowledge/data-model.md`](knowledge/data-model.md)). Die Spec-first-Reihenfolge lautet damit `data.md`, Vokabular, Test, Pipeline; der Abdeckungsprüfer `vocab/check-coverage.py` läuft als verbindliches Test-Gate mit (siehe § Vokabular-Abdeckung prüfen). Die aus dem Vokabular abgeleitete Lesesicht auf den Datensatz führt [`knowledge/data-model.md`](knowledge/data-model.md).
+Das formale Projektvokabular ist ein gepflegtes Artefakt und steht seit der Entscheidung der Projektleitung vom 2026-08-21 in dieser Hierarchie (E-133 in [`knowledge/journal.md`](knowledge/journal.md), löst die frühere offene Frage 10 in [`knowledge/data-model.md`](knowledge/data-model.md)). Die Spec-first-Reihenfolge lautet damit `data.md`, Vokabular, Test, Pipeline; der Abdeckungsprüfer `vocab/check-coverage.py` läuft als verbindliches Test-Gate mit (siehe § Vokabular-Abdeckung prüfen). Die aus dem Vokabular abgeleitete Lesesicht auf den Datensatz führt [`knowledge/data-model.md`](knowledge/data-model.md).
 
 ## Kern-Commands
 
@@ -46,21 +45,23 @@ python scripts/build-model-page.py # Modellseite aus dem Vokabular -> docs/daten
 
 `reconcile.py` und `enrich-wikidata.py` stehen außerhalb dieses Laufs. Sie brauchen Netzzugriff, schreiben `wikidata-reconciliation.json` und `wikidata-enrichment.json` nach `data/output/` und laufen nur, wenn der Wikidata-Abgleich neu gezogen wird. Beide Ergebnisdateien sind git-getrackt und im normalen Klon vorhanden.
 
-**`validate.py` endet mit Exit 1, sobald der Report ERROR-Befunde führt.** Das ist der erwartete Zustand am aktuellen Datenstand. Die Befunde sind Quellfehler, die über das Register in [`knowledge/data-errors.md`](knowledge/data-errors.md) ans Erschließungsteam gehen; der Lauf hat geleistet, was er soll, sobald der Report geschrieben ist. `audit-data.py` folgt derselben Konvention und meldet am aktuellen Stand 0 Fehler.
+**`validate.py` endet mit Exit 1, sobald der Report ERROR-Befunde führt.** Das ist der erwartete Zustand am aktuellen Datenstand. Die Befunde sind Quellfehler, die über die Partner-Übergabeliste [`data/reports/source-errors-handover-2026-09-01.md`](data/reports/source-errors-handover-2026-09-01.md) ans Erschließungsteam gehen; der Lauf hat geleistet, was er soll, sobald der Report geschrieben ist. `audit-data.py` folgt derselben Konvention und meldet am aktuellen Stand 0 Fehler.
 
-Die ENV-Overrides greifen bei `explore.py`, `validate.py`, `transform.py` und `build-views.py`. `audit-data.py` und `report-quality.py` lesen die Default-Pfade fest. Wer `M3GIM_OUTPUT_DIR` auf ein leeres Verzeichnis zeigt oder das Ausgabeverzeichnis leert, verliert die Normdatenanreicherung stillschweigend; die Falle ist in [`knowledge/pipeline-architecture.md`](knowledge/pipeline-architecture.md) § ENV-Overrides beschrieben.
+Die ENV-Overrides greifen bei `explore.py`, `validate.py`, `transform.py` und `build-views.py`. `audit-data.py` und `report-quality.py` lesen die Default-Pfade fest. Wer `M3GIM_OUTPUT_DIR` auf ein leeres Verzeichnis zeigt oder das Ausgabeverzeichnis leert, verliert die Normdatenanreicherung stillschweigend; die Falle ist in [`knowledge/architecture.md`](knowledge/architecture.md) § ENV-Overrides beschrieben.
 
 `build-views.py` schreibt `m3gim.jsonld` nach `docs/data/`. **`m3gim.jsonld` ist die einzige primäre Datenquelle für das Frontend**. Die drei Derivate werden seit Session 32 von keinem aktiven Tab mehr konsumiert (sie wurden für die entfernten D3-Prototypen gebaut) und stehen im Deferred-Block von `knowledge/specification.md` § Stand; ihr Verfall oder Weiterbau ist eine offene Operator-Entscheidung.
 
 ### Tests
 
 ```bash
-pytest tests/ -m "not slow"             # Standard-Lauf ohne Determinismus-Test
-pytest tests/                           # inkl. Determinismus-Test (slow)
-node --test tests/frontend/*.test.mjs   # JS-Unit-Tests des Frontends
+pytest tests/ -m "not slow and not data_quality"  # Invarianten-Lauf, muss immer gruen sein
+pytest tests/ -m data_quality                     # Datenspiegel: absichtlich rot, solange die Quelle Fehler traegt
+pytest tests/ -m "not slow"                       # beides zusammen ohne Determinismus-Test
+pytest tests/                                     # inkl. Determinismus-Test (slow)
+node --test tests/frontend/*.test.mjs             # JS-Unit-Tests des Frontends
 ```
 
-Keine ENV-Overrides mehr nötig — es gibt nur einen Datenstand.
+Keine ENV-Overrides mehr nötig — es gibt nur einen Datenstand. Die Suite ist zweischichtig: Invarianten prüfen Modell, Pipeline und Frontend-Kontrakt und müssen grün sein; der Datenspiegel (`data_quality`) behauptet die Sauberkeit der Quelle, ist absichtlich rot, solange bekannte Quellfehler bestehen, und seine Fehlermeldungen sind die Befundliste ans Erschließungsteam. Rot im Datenspiegel ist der erwartete Zustand, Rot in den Invarianten ist ein Bug.
 
 Der Browser-Smoke-Test `tests/frontend/test_smoke.py` ist ein optionales Extra. Playwright steht in keiner Requirements-Datei; fehlt das Paket, überspringt sich der Test, und der Standardlauf prüft weiterhin die Pipeline-Artefakte samt Frontend-Kontrakt aus den Daten heraus, ohne die gerenderte Oberfläche. Wer den Browserteil will, installiert ihn mit `pip install playwright` und `playwright install chromium`; danach läuft er in `pytest tests/` mit und lässt sich mit `pytest -m frontend tests/frontend/` einzeln ansteuern. Umfang des Smoke-Durchlaufs in [`knowledge/testing.md`](knowledge/testing.md) § Frontend-Smoke.
 
@@ -140,7 +141,8 @@ Vollständiger Katalog der Pipeline-Workarounds (Header-Shifts, Finance-Currency
 
 ```
 data/
-├── google-spreadsheet/   # Quelle, git-tracked: fünf XLSX plus verknuepfungen/*.csv
+├── google-spreadsheet/   # Quelle, git-tracked: Objekte als CSV (+XLSX-Fallback),
+│                         #   vier Index-XLSX, verknuepfungen/*.csv
 ├── output/               # Pipeline-Output (m3gim.jsonld, wikidata-*.json, views/)
 ├── reports/              # Kurationsbelege der Normdaten, Quality-Snapshot, offene
 │                         #   Entscheidungsvorlagen; die erzeugten Reports sind

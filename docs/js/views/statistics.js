@@ -610,7 +610,7 @@ function buildFinanzenSection(store) {
 
   // Codes mit Ziffern ("00 DM") sind Erfassungsartefakte, keine Waehrungen — als
   // eine gedaempfte Sammelgruppe buendeln statt als gleichrangige Waehrung zeigen
-  // (Ehrlichkeitsprinzip, siehe data-errors.md). Betraege werden NIE summiert,
+  // (Ehrlichkeitsprinzip, siehe data/reports/reconciliation-register.md). Betraege werden NIE summiert,
   // nur Nennungen gezaehlt.
   const validCur = fin.currencies.filter(c => !/\d/.test(c.code));
   const suspectCur = fin.currencies.filter(c => /\d/.test(c.code));

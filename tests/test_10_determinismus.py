@@ -22,7 +22,7 @@ REPO_ROOT = Path(__file__).parent.parent
 
 # transform.py liest die Wikidata-Normdaten aus seinem eigenen Ausgabe-
 # verzeichnis. Fehlen sie dort, laeuft es still ohne Anreicherung weiter
-# (pipeline-architecture.md § ENV-Overrides), und der Vergleich liefe auf einem
+# (architecture.md § ENV-Overrides), und der Vergleich liefe auf einem
 # verarmten Datensatz. Deshalb vorher hinueberkopieren.
 NORMDATA_FILES = ("wikidata-reconciliation.json", "wikidata-enrichment.json")
 

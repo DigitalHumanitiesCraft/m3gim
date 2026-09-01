@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-M3GIM Data Audit — Validiert Alignment zwischen Quelldaten, JSON-LD und Frontend-Views.
+M3GIM Data Audit — Validiert Alignment zwischen Quelldaten, JSON-LD und Frontend-Kopie.
 
 Prueft:
 1. Quelldaten (XLSX) → JSON-LD: Sind alle Records und Verknuepfungen korrekt transformiert?
-2. JSON-LD → View-JSONs: Sind alle Entitaeten in den Views repraesentiert?
+2. JSON-LD → docs/data: Stimmt die Frontend-Kopie mit dem Pipeline-Output ueberein?
 3. Handreichungs-Compliance: Werden alle definierten Typen und Rollen verarbeitet?
 4. Antrag-Alignment: Stimmen die Zahlen mit dem Ist-Stand ueberein?
 
@@ -45,14 +45,6 @@ def load_jsonld():
     with open(path, 'r', encoding='utf-8') as f:
         data = json.load(f)
     return data
-
-def load_view(name):
-    """Laedt ein View-JSON aus docs/data/"""
-    path = DOCS_DIR / name
-    if not path.exists():
-        return None
-    with open(path, 'r', encoding='utf-8') as f:
-        return json.load(f)
 
 def normalize(val):
     """Normalisiert String fuer Vergleich"""
@@ -263,42 +255,14 @@ def audit_verknuepfungen(df_verk, graph):
     return errors
 
 # ---------------------------------------------------------------------------
-# Audit 3: JSON-LD → View-JSONs Konsistenz
+# Audit 3: JSON-LD → docs/data Synchronitaet
 # ---------------------------------------------------------------------------
 
 def audit_views(graph):
-    """Prueft ob View-JSONs konsistent mit JSON-LD sind"""
-    print("\n--- Audit 3: JSON-LD → View-JSONs ---")
+    """Prueft ob die Frontend-Kopie mit dem Pipeline-Output uebereinstimmt"""
+    print("\n--- Audit 3: JSON-LD → docs/data ---")
 
     errors = 0
-
-    # Partitur: Lebensphasen-Ansicht
-    partitur = load_view("partitur.json")
-    if partitur:
-        lebensphasen = partitur.get("lebensphasen", [])
-        print(f"  partitur.json: {len(lebensphasen)} Lebensphasen")
-    else:
-        print(f"  WARNUNG: partitur.json nicht gefunden")
-
-    # Matrix: Personen × Zeitraeume × Kategorien
-    matrix = load_view("matrix.json")
-    if matrix:
-        zeitraeume = matrix.get("zeitraeume", [])
-        kategorien = matrix.get("kategorien", [])
-        personen = matrix.get("personen", [])
-        print(f"  matrix.json: {len(personen)} Personen, {len(zeitraeume)} Zeitraeume, {len(kategorien)} Kategorien")
-    else:
-        print(f"  WARNUNG: matrix.json nicht gefunden")
-
-    # Kosmos: Zentrum + Komponisten/Werke
-    kosmos = load_view("kosmos.json")
-    if kosmos:
-        zentrum = kosmos.get("zentrum", {})
-        komponisten = kosmos.get("komponisten", [])
-        werke_total = sum(len(k.get("werke", [])) for k in komponisten)
-        print(f"  kosmos.json: {len(komponisten)} Komponisten, {werke_total} Werke (Zentrum: {zentrum.get('name', '?')})")
-    else:
-        print(f"  WARNUNG: kosmos.json nicht gefunden")
 
     # Frontend JSON-LD Kopie
     frontend_jsonld = DOCS_DIR / "m3gim.jsonld"
@@ -496,12 +460,13 @@ def main():
     graph = data.get("@graph", [])
     print(f"  JSON-LD: {len(graph)} Graph-Knoten")
 
-    # XLSX laden
-    objekte_path = SHEETS_DIR / "M3GIM-Objekte.xlsx"
-    df_objekte = pd.read_excel(objekte_path)
-    df_objekte.columns = [c.lower().strip() if isinstance(c, str) else c
-                          for c in df_objekte.columns]
-    print(f"  Objekte-XLSX: {len(df_objekte)} Zeilen")
+    # Objektquelle laden, CSV bevorzugt (data.md § 3) — dieselbe Quelle
+    # wie transform.py, sonst vergleicht der Audit XLSX-Datumsartefakte
+    # gegen den CSV-basierten Datensatz und meldet Scheinfehler.
+    from _common import load_objekte, resolve_objekte_source
+    objekte_path = resolve_objekte_source(SHEETS_DIR)
+    df_objekte = load_objekte(SHEETS_DIR)
+    print(f"  Objektquelle {objekte_path.name}: {len(df_objekte)} Zeilen")
 
     # Loader der Pipeline: CSV-Verzeichnis bevorzugt (E-152), sonst die
     # Mehrblatt-Mappe. Ein eigener single-sheet-Lesepfad liesse die

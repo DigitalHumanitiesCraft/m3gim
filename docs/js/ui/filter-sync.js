@@ -53,7 +53,7 @@ export function toolbarStateToShared(toolbarState) {
 
 /**
  * Records, die mind. eine verortete Annotation ODER eine Performance tragen —
- * die enge (raumzeitlich/auffuehrungs-belegte) Menge (knowledge/frontend-architecture.md, Abschnitt Schaerfegrade).
+ * die enge (raumzeitlich/auffuehrungs-belegte) Menge (knowledge/architecture.md, Abschnitt Schaerfegrade).
  * store.recordToEvents fuehrt genau die verorteten Annotationen; eine reine
  * Datierung ohne Ort engt den Schaerfegrad nicht.
  * @param {object} store

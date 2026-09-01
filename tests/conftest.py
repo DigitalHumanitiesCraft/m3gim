@@ -83,9 +83,17 @@ def fonds(graph: list) -> dict:
 
 @pytest.fixture(scope="session")
 def xlsx_objekte(sheets_dir: Path) -> pd.DataFrame:
-    df = pd.read_excel(sheets_dir / "M3GIM-Objekte.xlsx")
-    df.columns = [c.lower().strip() if isinstance(c, str) else c for c in df.columns]
-    return df
+    """Die Objekttabelle ueber den Loader der Pipeline, CSV bevorzugt.
+
+    Der Fixture-Name bleibt trotz CSV-Quellformat, weil ihn mehrere
+    Testdateien adressieren; er benennt die Tabelle, nicht ihr Dateiformat
+    (gleiches Muster wie xlsx_verknuepfungen).
+    """
+    import sys
+    sys.path.insert(0, str(REPO_ROOT / "scripts"))
+    from _common import load_objekte  # noqa: WPS433
+
+    return load_objekte(sheets_dir)
 
 
 @pytest.fixture(scope="session")

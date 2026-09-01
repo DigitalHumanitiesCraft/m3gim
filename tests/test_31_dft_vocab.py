@@ -3,7 +3,7 @@ skos:broader, lesbare deutsche skos:prefLabel auf den dft-Concepts (löst die
 Frontend-Handtabelle DOKUMENTTYP_LABELS ab), und die neuen Konzepte
 (briefumschlag/musikzeitschrift/chronik/verzeichnis) im Modell gerüstet.
 
-Spec: data-model.md § 12, architecture-decisions.md E-101. Der Verknüpfungstyp `dokument` als
+Spec: data-model.md § 12, journal.md E-101. Der Verknüpfungstyp `dokument` als
 Aboutness ist vertagt, bis der tiefere Export den Typ liefert (April-Daten
 kennen ihn nicht).
 """

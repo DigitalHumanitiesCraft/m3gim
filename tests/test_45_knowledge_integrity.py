@@ -84,9 +84,19 @@ def _citation_files():
 
 
 def _definitions():
-    """Nummer -> Liste der Fundstellen, gesammelt ueber die ganze Wissensbasis."""
+    """Nummer -> Liste der Fundstellen.
+
+    Definitionsadressen sind die Wissensbasis (E-Nummern im Entscheidungs-
+    register des Journals) und das Reconciliation-Register unter
+    data/reports/ (AF-Nummern, seit der Aufloesung des Datenfehler-Registers
+    am 2026-09-01, E-155).
+    """
     found = defaultdict(list)
-    for path in sorted(KNOWLEDGE.rglob("*.md")):
+    sources = sorted(KNOWLEDGE.rglob("*.md"))
+    register = REPO_ROOT / "data" / "reports" / "reconciliation-register.md"
+    if register.exists():
+        sources.append(register)
+    for path in sources:
         for lineno, line in enumerate(
             path.read_text(encoding="utf-8").splitlines(), start=1
         ):
@@ -98,9 +108,17 @@ def _definitions():
 
 
 def _citations():
-    """Nummer -> Menge der zitierenden Dateien."""
+    """Nummer -> Menge der zitierenden Dateien.
+
+    Das Journal zaehlt nicht als Zitierstelle: es ist Provenance, seine
+    Eintraege nennen die Kennungen ihrer Zeit (auch die mit der Partner-
+    Uebergabeliste abgeschafften QF-Nummern), und ein Nachzug wuerde den
+    historischen Wortlaut verfaelschen.
+    """
     found = defaultdict(set)
     for path in _citation_files():
+        if path.name == "journal.md":
+            continue
         try:
             text = path.read_text(encoding="utf-8")
         except (UnicodeDecodeError, OSError):
@@ -296,7 +314,7 @@ VOCAB_TERM = re.compile(r"`(m3gim[a-z-]*:[A-Za-z_][A-Za-z0-9_]*)`")
 # Dokumente, die festhalten, was einmal entschieden oder getan wurde. Ihre
 # Terme tragen die Namen ihrer Zeit; ein Nachzug wuerde den Datensatz der
 # Entscheidung verfaelschen.
-HISTORICAL_DOCS = {"architecture-decisions.md", "journal.md"}
+HISTORICAL_DOCS = {"journal.md", "journal.md"}
 
 # Kanalnamen der DOM-CustomEvents. Sie sehen wie ein Vokabularterm aus und
 # sind keiner; ihre Definition steht in docs/js/ui/.

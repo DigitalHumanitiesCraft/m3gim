@@ -50,8 +50,8 @@ python -m http.server 8000 --directory docs   # Frontend unter http://localhost:
 
 Der vollstaendige Lauf mit allen sechs Pipeline-Schritten, die Testbefehle und der Vokabular-Abdeckungspruefer stehen in [`CLAUDE.md`](CLAUDE.md) § Kern-Commands. Drei Punkte, die in einem frischen Klon leicht in die Irre fuehren:
 
-- `scripts/validate.py` endet mit Exit 1, sobald der Validierungsreport ERROR-Befunde fuehrt. Das ist am aktuellen Datenstand der erwartete Zustand, die Befunde sind Quellfehler aus der Erfassung und stehen im Register [`knowledge/data-errors.md`](knowledge/data-errors.md).
-- Die Normdatendateien `wikidata-reconciliation.json` und `wikidata-enrichment.json` liegen git-getrackt in `data/output/` und werden von der Transformation aus dem Ausgabeverzeichnis gelesen. Ein leeres Ausgabeverzeichnis erzeugt einen Datensatz ganz ohne Wikidata-Anreicherung, und der Lauf endet trotzdem mit Exit 0. Die Falle ist in [`knowledge/pipeline-architecture.md`](knowledge/pipeline-architecture.md) beschrieben.
+- `scripts/validate.py` endet mit Exit 1, sobald der Validierungsreport ERROR-Befunde fuehrt. Das ist am aktuellen Datenstand der erwartete Zustand, die Befunde sind Quellfehler aus der Erfassung und stehen im Register [`knowledge/data/reports/reconciliation-register.md`](knowledge/data/reports/reconciliation-register.md).
+- Die Normdatendateien `wikidata-reconciliation.json` und `wikidata-enrichment.json` liegen git-getrackt in `data/output/` und werden von der Transformation aus dem Ausgabeverzeichnis gelesen. Ein leeres Ausgabeverzeichnis erzeugt einen Datensatz ganz ohne Wikidata-Anreicherung, und der Lauf endet trotzdem mit Exit 0. Die Falle ist in [`knowledge/architecture.md`](knowledge/architecture.md) beschrieben.
 - Der Browser-Smoke-Test ist ein optionales Extra. Ohne Playwright ueberspringt er sich und der uebrige Lauf bleibt gruen, siehe [`knowledge/testing.md`](knowledge/testing.md).
 
 ## Dokumentation
@@ -59,8 +59,8 @@ Der vollstaendige Lauf mit allen sechs Pipeline-Schritten, die Testbefehle und d
 - Einstieg in die KB: [`knowledge/INDEX.md`](knowledge/INDEX.md)
 - Aktueller Stand + nächste Schritte: [`knowledge/specification.md`](knowledge/specification.md) § Stand und nächste Schritte
 - Offene Uebergabepunkte: [`knowledge/handoff.md`](knowledge/handoff.md)
-- Architekturentscheidungen: [`knowledge/architecture-decisions.md`](knowledge/architecture-decisions.md)
-- Pipeline: [`knowledge/pipeline-architecture.md`](knowledge/pipeline-architecture.md)
+- Architekturentscheidungen: [`knowledge/journal.md`](knowledge/journal.md)
+- Architektur (Pipeline und Frontend): [`knowledge/architecture.md`](knowledge/architecture.md)
 - Workflow-Regeln fuer Claude-Code-Sessions: [`CLAUDE.md`](CLAUDE.md)
 
 ## Licence

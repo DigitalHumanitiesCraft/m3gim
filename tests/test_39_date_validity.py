@@ -23,7 +23,7 @@ bleiben.
 
 Der Annotationsknoten traegt laut data.md § 6 bewusst die nicht routbaren
 Rohdatierungen (``06-09``, ``1957-[05-27?]``). Das sind Quellbefunde des
-Erfassungsteams und Sache des Registers in data-errors.md, keine
+Erfassungsteams und Sache des Registers in data/reports/reconciliation-register.md, keine
 Pipeline-Fehler. Seit dem Umbau stehen sie in derselben Property wie jede
 andere Datierung; sie tragen dafuer das Flag ``datierung-malformed`` und
 bleiben mit ihm aus der kalendarischen Pruefung draussen.
@@ -216,7 +216,7 @@ def _flagged_malformed_values(graph: list) -> set[str]:
     """Datumswerte, die ihr Knoten selbst als Quellbefund markiert.
 
     Eine Notationsabweichung der Quelle bleibt im Wortlaut stehen und traegt
-    dafuer ``datierung-malformed``. Sie ist ein Befund fuer data-errors.md und
+    dafuer ``datierung-malformed``. Sie ist ein Befund fuer data/reports/reconciliation-register.md und
     kein Kalenderfehler der Pipeline.
     """
     flagged: set[str] = set()
@@ -281,9 +281,9 @@ def test_date_bearing_properties_are_discovered(graph):
 
 
 @pytest.mark.xfail(
-    reason="QF-36: drei unmoegliche Kalenderdaten in UAKUG/NIM_005 "
+    reason="Quellfehler (Partner-Uebergabeliste): drei unmoegliche Kalenderdaten in UAKUG/NIM_005 "
            "(1951-02-29, 1959-31-08, 1959-02-30). Quellfehler, siehe "
-           "knowledge/data-errors.md",
+           "knowledge/data/reports/reconciliation-register.md",
     strict=True,
 )
 def test_dataset_dates_are_valid_calendar_dates(graph):

@@ -94,6 +94,11 @@ export function facetInventory(store, key) {
     if (count === 0) continue;
     const label = needsVocabLabel ? vocabLabel(store, value) : String(value);
     if (!label) continue;
+    // Vokabular-Facetten fuehren nur Begriffe mit echter Anzeigeform (E-143).
+    // Ein Rohwert, dessen Label auf sich selbst zurueckfaellt (etwa der
+    // abgeschnittene Quellwert "v"), gehoert nicht ins Inventar; er ist ein
+    // Datenspiegel-Befund, keine Facette.
+    if (needsVocabLabel && label === String(value)) continue;
     out.push({ value, label, count });
   }
   out.sort((a, b) => (b.count - a.count) || a.label.localeCompare(b.label, 'de'));

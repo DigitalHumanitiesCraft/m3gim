@@ -18,7 +18,7 @@ template:
   version: 0.1
   url: https://dhcraft.org/Promptotyping/promptotyping-document/testing
 topics: ["[[Test-Driven Development]]", "[[Data Validation]]"]
-related: [pipeline-architecture, data, architecture-decisions]
+related: [architecture, data, journal]
 ---
 
 # Tests
@@ -114,7 +114,7 @@ Lädt die Rohdaten (`M3GIM-Objekte.xlsx`) direkt mit pandas und verifiziert: jed
 Ein parametrisierter Test führt die vier mengenstarken Basis-Typen (person, institution, ort, werk) auf die Property und den `@type`, die sie im Output erzeugen. Seine Untergrenze bildet sich zur Laufzeit aus der Zeilenzahl der Quelle und liegt bei sechzig Prozent, sodass auch ein Teilverlust auffällt. Die Vorgängerfassung prüfte je Typ nur Nichtleere und fing allein den vollständigen Ausfall eines Zweigs (geschärft am 2026-08-31). Weiter geprüft werden die Umsortierung erwähnter Personen nach `rico:hasOrHadSubject`, der `name` an jedem Agent, die Auflösbarkeit der `hasPerformance`-Referenz samt ihrer StageRole und die Regel, dass keine Rolle im Output auf `:in` oder `:innen` endet (Phase 4.1).
 
 ### 5. Referentielle Integrität (test_05)
-Fonds existiert genau einmal, `hasOrHadPart`-Referenzen sind alle im Graph auflösbar, keine Waisen-Records, alle `@id` eindeutig. Das PL_07-Quellduplikat (Datenfehler-Register QF-04) kompensiert die Pipeline auf einen Record; `test_all_record_ids_unique` läuft ohne Marker und wacht über Regressionen. Dazu die Konvolut-Hierarchie: ein Record, dessen `rico:identifier` eine Folio-Angabe führt, hängt als `rico:hasOrHadPart` an genau dem Konvolut mit der bloßen Signatur. Diese Prüfung stand bis zum 2026-08-31 als toter Rumpf in der Datei, weil ihre @id-Regex auch Konvolut-Kennungen traf und der Befundzweig mit `pass` endete.
+Fonds existiert genau einmal, `hasOrHadPart`-Referenzen sind alle im Graph auflösbar, keine Waisen-Records, alle `@id` eindeutig. Das PL_07-Quellduplikat (Partner-Übergabeliste) kompensiert die Pipeline auf einen Record; `test_all_record_ids_unique` läuft ohne Marker und wacht über Regressionen. Dazu die Konvolut-Hierarchie: ein Record, dessen `rico:identifier` eine Folio-Angabe führt, hängt als `rico:hasOrHadPart` an genau dem Konvolut mit der bloßen Signatur. Diese Prüfung stand bis zum 2026-08-31 als toter Rumpf in der Datei, weil ihre @id-Regex auch Konvolut-Kennungen traf und der Befundzweig mit `pass` endete.
 
 ### 6. Frontend-Kontrakt (test_06)
 Implizite Annahmen aus `loader.js` (`aggregator.js` wurde Session 32 entfernt):
@@ -133,7 +133,7 @@ Mindestwerte aus `fixtures/baseline_counts.json` je Entitätstyp (records, konvo
 Die Projektleitung hat am 2026-08-31 entschieden, dass die Mindestwerte nach jedem Datenupdate auf etwa neunzig Prozent des dann erreichten Ist nachgezogen werden. Der Puffer von zehn Prozent trägt die normale Schwankung eines neuen Exports, ein Verlust darüber hinaus schlägt an. Ohne das Nachziehen wachsen die Ist-Werte lautlos von den Mindestwerten weg, und die Schrumpfungssperre fängt selbst den Verlust der Hälfte eines Bestands nicht mehr. Der Handgriff gehört in Schritt 8 des Workflows bei Daten-Updates. Der Test bleibt dabei unverändert, die Fixture trägt die Aussage.
 
 ### 10. Determinismus (test_10, slow)
-Lässt `transform.py` zweimal laufen, vergleicht Output (ohne `m3gim-ontology:exportDate`). Fängt versehentliche Set-Iteration / Dict-Ordnungsabhängigkeiten. Der Marker `slow` schließt ihn aus dem Lauf `pytest -m "not slow"` aus, im unmarkierten `pytest tests/` läuft er mit. Welche Felder ein Rerun zulässig verändert, steht in [pipeline-architecture.md](pipeline-architecture.md) § Reproduzierbarkeit.
+Lässt `transform.py` zweimal laufen, vergleicht Output (ohne `m3gim-ontology:exportDate`). Fängt versehentliche Set-Iteration / Dict-Ordnungsabhängigkeiten. Der Marker `slow` schließt ihn aus dem Lauf `pytest -m "not slow"` aus, im unmarkierten `pytest tests/` läuft er mit. Welche Felder ein Rerun zulässig verändert, steht in [architecture.md](architecture.md) § Reproduzierbarkeit.
 
 ### 11. Mobilität (test_11, Phase 4.4 + 4.8)
 SpatiotemporalEvent-Existenz, `atPlace` Pflicht; `atDate` nur für datierte STE (datumslose Mobilitäts-STE aus Ortsrollen tragen bewusst kein `atDate`, E-97). Rollen-Vokabular, Anzahl skaliert mit XLSX-Komposit-Rows. Die Existenz der Verortungen und ihre Ausbeute gegen die Quelle standen als zwei zeichengleiche Tests nebeneinander und sind am 2026-08-31 in `test_every_ort_datum_row_produces_event` zusammengeführt, das den absoluten Boden `max(5, ...)` mitübernommen hat. Die Mobilitätssichten aus [data-model.md § 10](data.md) als SPARQL-ähnliche Python-Queries: performative, institutionelle, Korrespondenz-, biographische, diskursive Mobilität.
@@ -199,7 +199,7 @@ Lock für die `EVENT_ROLE_TO_MOBILITY_CLUSTER`-Mapping-Tabelle im Frontend (`doc
 
 ### 26. Term-Validierung gegen RiC-O 1.1 und AgRelOn (test_26)
 
-Konformitäts-Lock aus dem Modellierungs-Audit ([architecture-decisions.md](architecture-decisions.md) E-103/E-104). Sammelt jeden im Output verwendeten `rico:`- und `agrelon:`-Term (als `@type` und als Property-Key) und prüft ihn gegen eine im Repo hinterlegte Allowlist der offiziellen Termlisten — RiC-O 1.1 aus den ICA-EGAD-CSV-Komponentenlisten, AgRelOn aus der DNB-RDF. Ein nicht gelisteter Term failt hart. Deckt die bekannten Fehlterme (`rico:isAssociatedWithRecord`, `rico:File`/`rico:Fonds` als Klasse, `agrelon:hasProvenance`/`hasConfidenceValue`/`hasValidityPeriod`, `agrelon:HasIsPatron`) sofort als rot auf und sichert dauerhaft gegen Regression — die Fehlerklasse „Term aus der Benennungskonvention extrapoliert" ([Leitplanke „Fremdterme verifizieren"](architecture-decisions.md)) wird damit maschinell unmöglich.
+Konformitäts-Lock aus dem Modellierungs-Audit ([journal.md](journal.md) E-103/E-104). Sammelt jeden im Output verwendeten `rico:`- und `agrelon:`-Term (als `@type` und als Property-Key) und prüft ihn gegen eine im Repo hinterlegte Allowlist der offiziellen Termlisten — RiC-O 1.1 aus den ICA-EGAD-CSV-Komponentenlisten, AgRelOn aus der DNB-RDF. Ein nicht gelisteter Term failt hart. Deckt die bekannten Fehlterme (`rico:isAssociatedWithRecord`, `rico:File`/`rico:Fonds` als Klasse, `agrelon:hasProvenance`/`hasConfidenceValue`/`hasValidityPeriod`, `agrelon:HasIsPatron`) sofort als rot auf und sichert dauerhaft gegen Regression — die Fehlerklasse „Term aus der Benennungskonvention extrapoliert" ([Leitplanke „Fremdterme verifizieren"](journal.md)) wird damit maschinell unmöglich.
 
 Der Test lockt die Term-Konformität gegen die Allowlist dauerhaft und verifiziert die mit der Konformitäts-Korrektur nachgezogenen Module test_12/test_19. Die sieben bekannten Fehlterme standen zusätzlich als eigener Test daneben; da keiner von ihnen in der Allowlist steht, konnte dieser nie rot werden, ohne dass der Allowlist-Test bereits rot war, und ist am 2026-08-31 entfallen. Ein leichtgewichtiger Vorläufer der weiter unten genannten SHACL-Validierung — er prüft Term-Existenz, nicht Shape-Konformität.
 
@@ -365,7 +365,7 @@ Bei neuen Features aus [data.md](data.md):
 4. **Implementieren** in `scripts/transform.py`, bis xfail → XPASS → xfail-Marker entfernt.
 5. **Bei Datenadaptivität**: Tests datenadaptiv formulieren (skalieren mit XLSX-Count) statt hartcodierter Zahlen, damit neue Datenstände ohne Testkorrektur laufen.
 
-Dieses Muster wurde in Phase 4.1–4.8 (Session 28) erfolgreich angewendet, ebenso beim Koordinaten-Patch (Session 33, test_22) und beim ORTE-Rollen-Fix (Session 34, test_23). Siehe [specification.md](specification.md) § Stand und [pipeline-architecture.md](pipeline-architecture.md).
+Dieses Muster wurde in Phase 4.1–4.8 (Session 28) erfolgreich angewendet, ebenso beim Koordinaten-Patch (Session 33, test_22) und beim ORTE-Rollen-Fix (Session 34, test_23). Siehe [specification.md](specification.md) § Stand und [architecture.md](architecture.md) § Pipeline.
 
 ### Drei Testmodi und die Durchreich-Policy
 
@@ -413,7 +413,7 @@ Wartung:
 
 ## Bekannte Ausnahmen
 
-- `test_verknuepfungen_every_referenced_record_has_relations` — **xfail (strict)**. Folio-Granularitäts-Inkonsistenz NIM_168 zwischen Objekt- und Verknüpfungstabelle (Datenfehler-Register QF-07). Nach dem Source-Fix bricht XPASS die Suite, dann Marker entfernen.
+- `test_verknuepfungen_every_referenced_record_has_relations` — **xfail (strict)**. Folio-Granularitäts-Inkonsistenz NIM_168 zwischen Objekt- und Verknüpfungstabelle (Partner-Übergabeliste). Nach dem Source-Fix bricht XPASS die Suite, dann Marker entfernen.
 - `test_komponisten_ohne_fuzzy_duplikate` (test_24) — **xfail (strict)**. Schreibvarianten desselben Komponisten im Werkindex (Beethoven „van/von“), Source-Fix beim Archivteam offen.
 - Die beiden AgRelOn-Tests in test_12 überspringen sich sichtbar, wenn die Quelle keine matchbare arbeitgeber-Zeile führt oder keine Relation einen Gültigkeitszeitraum trägt. Am Datenstand vom 2026-08-31 tritt das nicht ein, beide laufen als reguläre Tests.
 - `pytest.importorskip("playwright")` in `tests/frontend/test_smoke.py` ist der einzige Skip-Pfad, der in einer browserlosen Umgebung regelmäßig greift. Die übrigen `pytest.skip`-Aufrufe der Suite sind Vorbedingungswächter und werden am aktuellen Stand nicht erreicht.
@@ -449,7 +449,7 @@ Playwright ist bewusst **nicht** enthalten und bleibt ein optionales Extra, sieh
 
 **Was später dazukommen kann**:
 - SHACL-Validierung gegen RiC-O-Shapes (`pyshacl`) — semantisch schärfer als JSON-Schema
-- CI-Integration (aktuell keine, siehe [pipeline-architecture.md](pipeline-architecture.md))
+- CI-Integration (aktuell keine, siehe [architecture.md](architecture.md) § CI/CD)
 
 ## Frontend-Smoke (Playwright, seit Session 35)
 
@@ -488,15 +488,21 @@ playwright install chromium
 
 Ohne das Extra prüft die Suite weiterhin die Pipeline-Artefakte, den Frontend-Kontrakt aus den Daten heraus (test_06, test_33) und über `node --test` die dom-freien Frontend-Funktionen. Ungeprüft bleibt allein, was erst im gerenderten Dokument entsteht, also Tab-Durchlauf, logStamp-Keys, Zeitstrahl- und Karten-Canary sowie die Anker-Titel im DOM.
 
-## Screenshot-Spur und Sichtprüfung
+## Sichtprüfung
 
-Die Konvention der Screenshot-Spur unter [`reports/screens/`](../reports/screens/) steht hier. Das dortige README führt seither nur noch, was die einzelnen Bilder zeigen und ob ihr Zustand heute erreichbar ist.
+Die frühere Screenshot-Ablage `reports/screens/` ist am 2026-09-01 entfernt (E-155). Eine Sichtprüfung liest die laufende Oberfläche direkt, `python -m http.server 8765` gegen `docs/`, denselben Bezugspunkt nutzt `tests/frontend/smoke.py` über `M3GIM_SMOKE_URL` mit dem Default `http://localhost:8765/`. Der pytest-Wrapper `tests/frontend/test_smoke.py` startet bewusst einen eigenen Server auf einem freien Port, weil er die Fixture selbst hält.
 
-Wörtlich aus dem früheren README: „Prüfbare visuelle Belege der Frontend-Arbeit, damit der Stand ohne eigenen Lauf gesichtet werden kann. Erzeugt headless über Playwright gegen `docs/` auf `localhost:8765`. Dateiname `YYYY-MM-DD-bereich-zustand.png`."
+Methodenregel aus der Frontend-Sichtprüfung vom 2026-06-21: bei einem Widerspruch zwischen Bildlesung und DOM-Lesung gilt das DOM. Der gegen den breiten Render skalierte Screenshot war zweimal irreführend, eine vermeintliche Chip-Beschriftung FRIEDHOF war im DOM ERWÄHNT und eine vermeintliche Datumsspanne bis 2826 war im DOM 2026. Zahlen und Beschriftungen stammen seither aus Store-Abfrage oder DOM.
 
-Geprüfter Stand am 2026-08-22. Port und Vorgehen stimmen mit dem vorhandenen Smoke-Test überein. `tests/frontend/smoke.py` liest seine `BASE_URL` aus `M3GIM_SMOKE_URL` mit dem Default `http://localhost:8765/`, und sein Docstring nennt denselben Serverbefehl `python -m http.server 8765` gegen `docs/`. Das Ad-hoc-Skript `reports/screens/_show_alldata.py`, aus dem die beiden `demo-bestand-*`-Bilder stammen, fährt ebenfalls gegen 8765. Der pytest-Wrapper `tests/frontend/test_smoke.py` weicht bewusst ab und startet einen eigenen Server auf einem freien Port, weil er die Fixture selbst hält; für die Screenshot-Spur bleibt 8765 der Bezugspunkt. Beim Dateinamensmuster weicht der Bestand an zwei Stellen ab. Ein Paar trägt zusätzlich die Uhrzeit (`2026-06-21-2159-bestand-*`), und die vier `demo-*`-Bilder tragen gar kein Datum. Für neue Bilder gilt das Muster unverändert.
+## Zwei-Schichten-Modell der Suite
 
-Methodenregel aus der Frontend-Sichtprüfung vom 2026-06-21, festgehalten in [journal.md](journal.md) unter dem Eintrag „Frontend-Sichtprüfung am laufenden Interface", wörtlich: „Methodisch zentral ist die Regel, dass bei einem Widerspruch zwischen Bildlesung und DOM-Lesung das DOM gilt. Der gegen den breiten Render skalierte Screenshot war zweimal irreführend, eine vermeintliche Chip-Beschriftung FRIEDHOF war im DOM ERWÄHNT und eine vermeintliche Datumsspanne bis 2826 war im DOM 2026. Zahlen und Beschriftungen stammen seither aus Store-Abfrage oder DOM, die Screenshot-Spur begleitet visuell."
+Die Suite trennt seit dem 2026-09-01 zwei Aussagearten, weil der Bestand laufend neue Lieferungen bekommt und ein Rot zwei verschiedene Dinge bedeuten kann.
+
+**Invarianten** prüfen Modell, Pipeline, Serialisierung und Frontend-Kontrakt, unabhängig davon, welche Fehler die Quelle gerade trägt. Sie laufen als `pytest -m "not data_quality and not slow"` und müssen immer grün sein. Ein Rot hier heißt, wir haben etwas kaputt gemacht.
+
+**Datenspiegel** (Marker `data_quality`) behauptet, dass die Quelle sauber ist, etwa dass jede Verknüpfungszeile ein Objekt trifft (`test_61_orphan_links.py`). Diese Tests sind absichtlich rot, solange bekannte Quellfehler bestehen, ihre Fehlermeldung ist die Befundliste mit Fundstellen, direkt als Arbeitsauftrag ans Erschließungsteam lesbar. Sie tragen keine hartkodierten Erwartungslisten und werden mit einer sauberen Lieferung von selbst grün, ohne dass jemand den Test anfasst. Sie laufen als `pytest -m data_quality`.
+
+Der Kontrakt zwischen beiden Schichten ist die Werteliste `Typ-Rolle.csv`. Ein erfasster Wert außerhalb der Werteliste ist ein Datenspiegel-Befund; ein Wert, der in der Werteliste steht, aber im Vokabular fehlt, ist ein Invarianten-Befund, weil dann das Modell hinterherhinkt.
 
 ## JS-Unit-Tests (Node, seit Session 47)
 

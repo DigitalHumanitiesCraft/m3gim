@@ -18,7 +18,7 @@ template:
   version: 0.1
   url: https://dhcraft.org/Promptotyping/promptotyping-document/domain-knowledge
 topics: ["[[Mobility Studies]]", "[[Music History]]", "[[Gender Studies]]", "[[Biography]]"]
-related: [specification, data, data-entry-guidelines, design, frontend-architecture, architecture-decisions]
+related: [specification, data, data-model, design, architecture, journal]
 ---
 
 # Forschungsrahmen
@@ -162,7 +162,7 @@ Wen bedient das Tool? Vorläufig aus FF1–FF4 und der Partner-Konstellation abg
 
 ## Use Cases (aus den Forschungsfragen)
 
-Schema je Use Case: **FF-Bezug · Frage · benötigte Daten · UI-Baustein (Stand) · Datendeckung · offen**. Der Stand bezieht sich auf das Statistik-Dashboard (E-123) und die Mobilitäts-Chronik (E-124); querschnittlich greift der geplante Cross-View-Filter ([frontend-architecture.md](frontend-architecture.md) § Cross-View-Filter, Milestone 4). Exakte Deckungszahlen sind dem [Quality-Snapshot](../data/reports/quality-snapshot.md) zu entnehmen, nicht diesem Text; hier nur die Größenordnung und die ehrliche Grenze.
+Schema je Use Case: **FF-Bezug · Frage · benötigte Daten · UI-Baustein (Stand) · Datendeckung · offen**. Der Stand bezieht sich auf das Statistik-Dashboard (E-123) und die Mobilitäts-Chronik (E-124); querschnittlich greift der geplante Cross-View-Filter ([architecture.md](architecture.md) § Cross-View-Filter, Milestone 4). Exakte Deckungszahlen sind dem [Quality-Snapshot](../data/reports/quality-snapshot.md) zu entnehmen, nicht diesem Text; hier nur die Größenordnung und die ehrliche Grenze.
 
 ### UC-1 — Wohin und wann bewegte sie sich? (FF4)
 
@@ -185,7 +185,7 @@ Schema je Use Case: **FF-Bezug · Frage · benötigte Daten · UI-Baustein (Stan
 - **Frage:** Geografische Reichweite und Schwerpunktverschiebung über die Zeit.
 - **Daten:** `placeCountry`/`atPlace` (Q-IDs) über Events; Records mit Ort und `rico:date`.
 - **UI (Stand):** Statistik „Wohin & Wann" → Reichweite (Länder); Chronik → Top-Orte je Dekade über Q-ID (E-124, Ort-Label aus aufgelöstem Q-ID, nicht rohem `.name`).
-- **Deckung:** Orte sind upstream zu Wikidata-Q-IDs rekonziliert (Doppel-Anker Wikidata plus Archiv); ein kleiner unrekonzilierter Rest (QF-16) bleibt. Schwerpunktwechsel stützt sich auf die breiten 1950er; die spätere Basis ist zu dünn für eine belastbare Verschiebungs-Aussage.
+- **Deckung:** Orte sind upstream zu Wikidata-Q-IDs rekonziliert (Doppel-Anker Wikidata plus Archiv); ein kleiner unrekonzilierter Rest (Orts-Casing-Varianten, Partner-Übergabeliste) bleibt. Schwerpunktwechsel stützt sich auf die breiten 1950er; die spätere Basis ist zu dünn für eine belastbare Verschiebungs-Aussage.
 - **Offen:** Land×Zeit als eigener Schnitt; Institution pro Ereignis fehlt (siehe UC-2).
 
 ### UC-4 — Mit wem war sie verbunden? (FF1/FF3)
@@ -193,7 +193,7 @@ Schema je Use Case: **FF-Bezug · Frage · benötigte Daten · UI-Baustein (Stan
 - **Frage:** Beziehungsgeflecht und prägende Kontakte.
 - **Daten:** AgRelOn-Relationen (Typ plus benannter Partner).
 - **UI (Stand):** Statistik „Mit wem" (Typ-Donut ↔ benannte Partner mit Typ-Drill), Netzwerk-Tab.
-- **Deckung:** dünn, wenige Relationen mit benanntem Gegenüber; Normalisierungs-Dubletten (QF-15).
+- **Deckung:** dünn, wenige Relationen mit benanntem Gegenüber; Normalisierungs-Dubletten der Partnernamen (Partner-Übergabeliste).
 - **Offen:** Verknüpfung Beziehung↔Ereignis/Ort fehlt; reichere Variante wäre Ko-Okkurrenz (erschlossenes Umfeldnetz, klar zu etikettieren). Keine belastbare zeitliche Achse (Relationen sind record-, nicht ereignisbasiert), daher nicht in die Chronik gezogen.
 
 ### UC-5 — Welches Repertoire sang sie, wo? (FF2/FF3), niedrige Priorität für eine zeitliche Aussage

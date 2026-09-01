@@ -8,7 +8,7 @@ Google Sheets (XLSX in data/google-spreadsheet/)
   -> validate.py     -> data/reports/validation-report.md
   -> transform.py    -> data/output/m3gim.jsonld
   -> reconcile.py    -> data/output/wikidata-reconciliation.json
-  -> build-views.py  -> data/output/views/*.json
+  -> build-views.py  -> docs/data/m3gim.jsonld (Kopie)
 
 vocab/m3gim.ttl
   -> build-model-page.py -> docs/datenmodell.html
@@ -55,17 +55,17 @@ Output: `data/output/m3gim.jsonld`
 
 ### `build-views.py`
 
-Erzeugt View-spezifische JSON-Dateien aus JSON-LD.
+Kopiert den Pipeline-Output in das Frontend-Datenverzeichnis. Die frueher erzeugten vorverdichteten Derivate sind seit E-140 abgeschafft, das Frontend liest ausschliesslich `docs/data/m3gim.jsonld`.
 
 ```bash
 python scripts/build-views.py
 ```
 
-Output: `data/output/views/partitur.json`, `matrix.json`, `kosmos.json`, `sankey.json`
+Output: `docs/data/m3gim.jsonld` (Kopie von `data/output/m3gim.jsonld`)
 
 ### `audit-data.py`
 
-Validiert Alignment zwischen Quelldaten (XLSX), JSON-LD und Frontend-Views. Prueft Record-Vollstaendigkeit, Verknuepfungstypen, View-Konsistenz, Datenqualitaet und Handreichungs-Compliance.
+Validiert Alignment zwischen Quelldaten (XLSX), JSON-LD und Frontend-Kopie. Prueft Record-Vollstaendigkeit, Verknuepfungstypen, docs/data-Synchronitaet, Datenqualitaet und Handreichungs-Compliance.
 
 ```bash
 python scripts/audit-data.py

@@ -294,7 +294,7 @@ def validate_verknuepfungen_source(df: pd.DataFrame,
 
     Die Schicht meldet und repariert nichts. Jeder Befund traegt Blatt und
     Zeile, damit das Erschliessungsteam ihn in der Tabelle findet
-    (data.md § 3, § 6, § 17; pipeline-architecture.md § Pruefschicht).
+    (data.md § 3, § 6, § 17; architecture.md § Pruefschicht).
     """
     issues: list[ValidationIssue] = []
     combos: dict = {}
@@ -779,14 +779,17 @@ def main():
             print(f"  WARNUNG: {name} nicht gefunden")
     stats['indices_loaded'] = indices_loaded
 
-    # Objekte laden und validieren
-    objekte_path = SHEETS_DIR / "M3GIM-Objekte.xlsx"
-    if objekte_path.exists():
+    # Objekte laden und validieren, CSV bevorzugt (data.md § 3) — dieselbe
+    # Quelle wie transform.py, damit die Validierung den Text prueft, den
+    # die Pipeline verarbeitet.
+    from _common import load_objekte, resolve_objekte_source
+    try:
+        objekte_path = resolve_objekte_source(SHEETS_DIR)
+    except FileNotFoundError:
+        objekte_path = None
+    if objekte_path is not None:
         print(f"\nValidiere {objekte_path.name}...")
-        df_objekte = pd.read_excel(objekte_path)
-        # Spaltennamen normalisieren (Excel hat gemischte Gross-/Kleinschreibung)
-        df_objekte.columns = [c.lower().strip() if isinstance(c, str) else c
-                              for c in df_objekte.columns]
+        df_objekte = load_objekte(SHEETS_DIR)
         stats['objekte'] = len(df_objekte)
         all_issues.extend(validate_objekte(df_objekte))
         valid_signaturen.update(

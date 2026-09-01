@@ -12,7 +12,7 @@
  * und die `"type":"module"`-Markierung in `docs/js/package.json`.
  *
  * Bewusst KEIN Browser, kein DOM, kein D3: die getestete Modul-Ebene ist
- * per Design dom-frei (frontend-architecture.md § Netzwerk, E-93).
+ * per Design dom-frei (architecture.md § Netzwerk, E-93).
  */
 
 import { test } from 'node:test';
@@ -128,7 +128,9 @@ test('isMalaniuk: andere Person mit anderer Q-ID → false', () => {
 // ---------------------------------------------------------------------------
 
 test('isPureComposer: Wagner, Richard (kategorie Komponist) → true', () => {
-  assert.equal(isPureComposer('Wagner, Richard', { kategorie: 'Komponist' }), true);
+  // Seit der NIM_005-Feinerschliessung braucht die Ausfilterung Rollen-
+  // Evidenz: die Kategorie allein ist eine Namensheuristik, kein Beleg.
+  assert.equal(isPureComposer('Wagner, Richard', { kategorie: 'Komponist', roles: new Set(['komponist']) }), true);
 });
 
 test('isPureComposer: Wagner, Wieland (kategorie Regisseur) → false', () => {
@@ -236,7 +238,7 @@ test('computeLayout: Malaniuk landet ins Zentrum, Rest auf Ringen', () => {
 test('computeLayout: reine Werk-Komponisten werden ausgefiltert', () => {
   const persons = new Map([
     ['Malaniuk, Ira', person({ wikidata: 'wd:Q94208' })],
-    ['Wagner, Richard', person({ records: ['r1', 'r2'], kategorie: 'Komponist' })],
+    ['Wagner, Richard', person({ records: ['r1', 'r2'], kategorie: 'Komponist', roles: ['komponist'] })],
     ['Meier, Anna', person({ records: ['r1', 'r2'] })],
   ]);
   const layout = computeLayout(persons.entries(), {
@@ -357,7 +359,7 @@ test('computeCoOccurrence: Malaniuk ist KEIN Endpunkt (wird ausgefiltert)', () =
 
 test('computeCoOccurrence: reine Komponisten werden ausgefiltert', () => {
   const persons = new Map([
-    ['Wagner, Richard', person({ records: ['r1'], kategorie: 'Komponist' })],
+    ['Wagner, Richard', person({ records: ['r1'], kategorie: 'Komponist', roles: ['komponist'] })],
     ['A', person({ records: ['r1'] })],
   ]);
   const pairs = computeCoOccurrence(persons.entries(), { minShared: 1, maxEdges: 10 });

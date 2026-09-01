@@ -1,5 +1,5 @@
 """Modelling rules confirmed by the operator, recorded as E-129 to E-132 in
-knowledge/architecture-decisions.md.
+knowledge/journal.md.
 
 Rule 1 (E-129): a relation whose object is the fonds creator herself
     is suppressed; the role stays recorded as m3gim-ontology:hasAssociatedAgent.

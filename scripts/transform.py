@@ -38,6 +38,7 @@ from _common import (
     extract_bearbeitungsnotiz,
     is_approved_match,
     load_concept_meta,
+    load_objekte,
     load_role_concepts,
     load_role_meta,
     normalize_bearbeitungsstand,
@@ -2235,17 +2236,16 @@ def main():
     else:
         print(f"  Enrichment: {enrichment_path.name} nicht vorhanden (uebersprungen)")
 
-    # Objekte laden
-    objekte_path = SHEETS_DIR / "M3GIM-Objekte.xlsx"
-    if not objekte_path.exists():
-        print(f"\nFEHLER: {objekte_path} nicht gefunden")
+    # Objekte laden, CSV bevorzugt (data.md § 3, Quellformat)
+    try:
+        from _common import resolve_objekte_source
+        objekte_path = resolve_objekte_source(SHEETS_DIR)
+    except FileNotFoundError as exc:
+        print(f"\nFEHLER: {exc}")
         return 1
 
     print(f"\nLade {objekte_path.name}...")
-    df_objekte = pd.read_excel(objekte_path)
-    # Spaltennamen normalisieren (Excel hat gemischte Gross-/Kleinschreibung)
-    df_objekte.columns = [c.lower().strip() if isinstance(c, str) else c
-                          for c in df_objekte.columns]
+    df_objekte = load_objekte(SHEETS_DIR)
 
     # Folio-Spalte erkennen
     folio_col = None
@@ -2284,6 +2284,26 @@ def main():
     relations = process_verknuepfungen(df_verk, indices)
     total_rels = sum(len(v) for v in relations.values())
     print(f"  {total_rels} Verknuepfungen fuer {len(relations)} Objekte")
+
+    # Folio-Join-Reparatur: Bindestrich- gegen Unterstrich-Notation.
+    # Deterministisch ohne Ermessen — repariert wird nur, wenn die
+    # Unterstrichform ein existierendes Objekt trifft UND die Bindestrich-
+    # form keines. Spannenwerte wie "1-29" fallen nicht darunter, weil
+    # "1_29" kein Objekt trifft; sie bleiben Befund fuer das Team. Die
+    # Reparatur wird je Paar gemeldet und erlischt von selbst, sobald die
+    # Quelle einheitlich schreibt.
+    known_ids = {r.get("rico:identifier") for r in records}
+    known_ids.update(k.get("rico:identifier") for k in konvolute)
+    repaired = {}
+    for objekt_id in list(relations.keys()):
+        if objekt_id in known_ids or "-" not in objekt_id:
+            continue
+        candidate = objekt_id.replace("-", "_")
+        if candidate in known_ids:
+            relations.setdefault(candidate, []).extend(relations.pop(objekt_id))
+            repaired[objekt_id] = candidate
+    for old, new in sorted(repaired.items()):
+        print(f"  Folio-Join repariert: {old} -> {new}")
 
     # Relations zu Records hinzufuegen (mit Enrichment-Daten). stage_roles ist
     # ein über beide Aufrufe geteiltes Dedup-Registry für StageRole-Entitäten (E-96).

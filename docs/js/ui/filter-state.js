@@ -1,12 +1,12 @@
 /**
- * Geteilter Filter-State (frontend-architecture.md § Cross-View-Filter,
+ * Geteilter Filter-State (architecture.md § Cross-View-Filter,
  * Milestone 4 / E-117).
  *
  * EIN Filter-State-Objekt als Quelle fuer alle filterbaren Views. Jede Facette
  * zieht ihre Werte aus store.* (keine redaktionellen Listen). Leerwert =
  * Facette inaktiv. Der `schaerfe`-Modus ist kein Entitaetsfilter, sondern der
  * Schalter weit (Record-Bezug) / eng (Ereignis-Verortung) aus
- * knowledge/frontend-architecture.md, Abschnitt Schaerfegrade als Filtersemantik.
+ * knowledge/architecture.md, Abschnitt Schaerfegrade als Filtersemantik.
  *
  * Mechanik: setFilter(patch) merged den Patch und dispatcht ein
  * `m3gim:filter`-CustomEvent ueber denselben window-Kanal, den events.js

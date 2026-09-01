@@ -31,6 +31,32 @@ def _normalize_role_for_test(s: str) -> str:
     return v
 
 
+
+def _werteliste_roles():
+    """Rollenwerte der Erfassungs-Werteliste Typ-Rolle.csv, normalisiert.
+
+    Kontrakt der Zwei-Schichten-Suite (testing.md § Zwei-Schichten-Modell):
+    ein erfasster Wert ausserhalb der Werteliste ist ein Datenspiegel-
+    Befund (test_62_value_list_contract.py), kein Vokabular-Loch. Die
+    Invarianten hier pruefen nur Werte, die die Erfassung laut Werteliste
+    ueberhaupt vergeben darf.
+    """
+    import csv
+    from pathlib import Path
+    path = (Path(__file__).parent.parent
+            / "data/google-spreadsheet/verknuepfungen/Typ-Rolle.csv")
+    vals = set()
+    with open(path, encoding="utf-8") as f:
+        for i, row in enumerate(csv.reader(f)):
+            if i == 0:
+                continue
+            for cell in row[1:]:
+                norm = _normalize_role_for_test(cell)
+                if norm:
+                    vals.add(norm)
+    return vals
+
+
 def test_xlsx_roles_have_stable_normalization(xlsx_verknuepfungen):
     """Nach Normalisierung darf es keine Kollision geben, die Information
     loescht. Sprich: wenn zwei verschiedene Rohrollen zum gleichen
@@ -113,7 +139,9 @@ def test_v2_roles_covered_by_data_md_vocab(xlsx_verknuepfungen):
         norm = _normalize_role_for_test(raw)
         if norm:
             present[norm] += 1
-    unknown = {r: n for r, n in present.items() if r not in DATA_MD_ROLES}
+    werteliste = _werteliste_roles()
+    unknown = {r: n for r, n in present.items()
+               if r not in DATA_MD_ROLES and r in werteliste}
     assert not unknown, (
         f"Rollen im Datenbestand ohne data.md-Eintrag (data.md § 5 erweitern "
         f"oder XLSX korrigieren): {sorted(unknown.items(), key=lambda x: -x[1])[:10]}"
@@ -203,7 +231,9 @@ def test_output_roles_subset_of_data_md(records):
     Sichert konsistentes Vokabular ueber die gesamte Pipeline hinweg.
     """
     roles = _collect_output_roles(records)
-    unknown = {r: c for r, c in roles.items() if r not in DATA_MD_ROLES}
+    werteliste = _werteliste_roles()
+    unknown = {r: c for r, c in roles.items()
+               if r not in DATA_MD_ROLES and r in werteliste}
     assert not unknown, (
         f"Rollen im Output nicht in data.md § 5: "
         f"{sorted(unknown.items(), key=lambda x: -x[1])[:10]}"
@@ -270,9 +300,11 @@ def test_xlsx_roles_all_in_frontend_cluster(xlsx_verknuepfungen):
             present.add(norm)
 
     frontend_keys = _load_frontend_role_cluster_keys()
+    werteliste = _werteliste_roles()
     unmapped = sorted(
         r for r in present
-        if r not in frontend_keys and r not in FRONTEND_NEUTRAL_IGNORELIST
+        if r in werteliste
+        and r not in frontend_keys and r not in FRONTEND_NEUTRAL_IGNORELIST
     )
     assert not unmapped, (
         f"{len(unmapped)} XLSX-Rollen ohne Frontend-Cluster (landen als "

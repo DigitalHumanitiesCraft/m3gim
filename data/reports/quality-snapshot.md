@@ -1,12 +1,12 @@
 # M³GIM Quality-Snapshot
 
-_Generiert: 2026-08-31T19:37_
+_Generiert: 2026-09-01T09:17_
 
 Grundlage: `data\output\m3gim.jsonld` + `data\output\wikidata-reconciliation.json`.
 
 ## Verknüpfungsrate
 
-- **177/997** Records mit mindestens einer Verknüpfung = **18%**
+- **186/997** Records mit mindestens einer Verknüpfung = **19%**
 
 ### Konvolute mit mehreren Folios
 
@@ -14,7 +14,7 @@ Grundlage: `data\output\m3gim.jsonld` + `data\output\wikidata-reconciliation.jso
 |---|---:|---:|---:|
 | UAKUG/NIM_003 | 10 | 3 | 30% |
 | UAKUG/NIM_004 | 34 | 32 | 94% |
-| UAKUG/NIM_005 | 30 | 9 | 30% |
+| UAKUG/NIM_005 | 30 | 16 | 53% |
 | UAKUG/NIM_006 | 10 | 0 | 0% |
 | UAKUG/NIM_007 | 29 | 28 | 97% |
 | UAKUG/NIM_008 | 41 | 0 | 0% |
@@ -27,7 +27,7 @@ Grundlage: `data\output\m3gim.jsonld` + `data\output\wikidata-reconciliation.jso
 | UAKUG/NIM_134 | 86 | 4 | 5% |
 | UAKUG/NIM_135 | 149 | 4 | 3% |
 | UAKUG/NIM_136 | 38 | 3 | 8% |
-| UAKUG/NIM_137 | 59 | 15 | 25% |
+| UAKUG/NIM_137 | 59 | 17 | 29% |
 | UAKUG/NIM_139 | 158 | 11 | 7% |
 | UAKUG/NIM_142 | 37 | 7 | 19% |
 | UAKUG/NIM_168 | 2 | 0 | 0% |
@@ -67,8 +67,8 @@ _Keine Low-Confidence-Matches in diesem Lauf._
 ## Provenance-Coverage
 
 - Records mit `m3gim-ontology:xlsxSource`: **997/997** (100%)
-- Records mit provenienz-belegten Ereignissen (`agrelon:metadataProvenance` auf Annotation/AgRelOn): **143/997** (14%)
-- Nested Entities (Details + AgRelOn) mit `xlsxSource`: **126/126** (100%)
+- Records mit provenienz-belegten Ereignissen (`agrelon:metadataProvenance` auf Annotation/AgRelOn): **151/997** (15%)
+- Nested Entities (Details + AgRelOn) mit `xlsxSource`: **127/127** (100%)
 
 ## Externe Blocker (zur Klärung mit Erschließungsteam)
 

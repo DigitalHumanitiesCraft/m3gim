@@ -375,7 +375,7 @@ function renderRecordPoint(annot) {
 
   // Primaer-Ort: Ort der ersten verorteten Annotation, sonst erster
   // rico:hasOrHadLocation. Label roh (ehrlich,
-  // QF-16), Farbe ueber ortColor fuer wiederkehrende Staedte.
+  // Orts-Casing-Befund, Partner-Uebergabeliste), Farbe ueber ortColor fuer wiederkehrende Staedte.
   let place = '';
   const eventIds = store.recordToEvents?.get(rid) || [];
   if (eventIds.length > 0) {

@@ -27,7 +27,7 @@ from pathlib import Path
 # Spalte 0 ("m3gim_id" = echte Kopfzeile vorhanden) und benennt die Spalten
 # auf den Kanon um, statt eine echte Datenzeile als Header zu konsumieren.
 # Zentral, damit transform.py, validate.py und reconcile.py denselben Kanon
-# nutzen. Siehe knowledge/data.md § 17 und architecture-decisions.md E-95.
+# nutzen. Siehe knowledge/data.md § 17 und journal.md E-95.
 INDEX_HEADER_SHIFTS: dict[str, list[str]] = {
     "personenindex": [
         "m3gim_id", "name", "wikidata_id",
@@ -58,6 +58,42 @@ FINANCE_CURRENCY_DEFAULTS: dict[str, str] = {
     "UAKUG/NIM_007": "S",
     "UAKUG/NIM_011": "Belgische Francs",
 }
+
+
+def resolve_objekte_source(sheets_dir: Path) -> Path:
+    """Quellauswahl fuer die Objekttabelle, CSV bevorzugt (data.md § 3).
+
+    Die CSV-Ausfuhr bewahrt den erfassten Text; die XLSX traegt in der
+    Datumsspalte die Autokonvertierung der Tabellenkalkulation und bleibt
+    nur als Fallback zulaessig. Fehlt beides, FileNotFoundError.
+    """
+    csv_path = sheets_dir / "M3GIM-Objekte.csv"
+    if csv_path.exists():
+        return csv_path
+    xlsx_path = sheets_dir / "M3GIM-Objekte.xlsx"
+    if xlsx_path.exists():
+        return xlsx_path
+    raise FileNotFoundError(
+        f"Objekttabelle nicht gefunden: weder {csv_path} noch {xlsx_path}")
+
+
+def load_objekte(sheets_dir: Path):
+    """Laedt die Objekttabelle als DataFrame, Spaltennamen normalisiert.
+
+    CSV wird mit dtype=str gelesen, damit Datumswerte als erfasster Text
+    ankommen statt als Kalenderwert. Der XLSX-Fallback bleibt unveraendert,
+    inklusive seiner bekannten Datums-Artefakte (data.md § 6).
+    """
+    import pandas as pd  # lazy, damit _common ohne pandas importierbar bleibt
+
+    path = resolve_objekte_source(sheets_dir)
+    if path.suffix.lower() == ".csv":
+        df = pd.read_csv(path, dtype=str)
+    else:
+        df = pd.read_excel(path)
+    df.columns = [c.lower().strip() if isinstance(c, str) else c
+                  for c in df.columns]
+    return df
 
 
 def default_currency_for(signatur: str | None) -> str | None:

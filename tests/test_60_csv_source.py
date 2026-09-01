@@ -88,15 +88,23 @@ def test_csv_preserves_the_recorded_text():
     rows = _raw_rows()
     assert len(rows) >= 5600, f"Nur {len(rows)} Quellzeilen geladen"
 
-    names = {(r["_sheet"], r["_row"]): (r.get("name") or "").strip() for r in rows}
-    folios = {(r["_sheet"], r["_row"]): (r.get("folio") or "").strip() for r in rows}
-    ids = {(r["_sheet"], r["_row"]): r["_id"] for r in rows}
+    # Lieferfest ueber Wert-Existenz statt Zellkoordinate: die Zeilennummern
+    # verschieben sich mit jeder Lieferung, der erfasste Text muss aber in
+    # jeder Lieferung unkonvertiert ankommen. Jeder Wert unten ist eine
+    # Form, die der XLSX-Weg nachweislich zerstoert hat (E-152/E-153).
+    names = {(r.get("name") or "").strip() for r in rows}
+    folios = {(r.get("folio") or "").strip() for r in rows}
+    ids = {str(r["_id"]).strip() for r in rows if r.get("_id")}
 
-    assert names[("Box 1", 436)] == "1956-11", "Monatsangabe auf den Monatsersten aufgefuellt"
-    assert names[("Box 1", 867)] == "06-09", "Jahrlose Angabe zu einem Kalenderdatum gemacht"
-    assert names[("Box 1", 2685)] == "36.000", "Tausenderpunkt im Betrag verloren"
-    assert folios[("Box 5", 1272)] == "15-1", "Folio in ein Datum umgewandelt"
-    assert ids[("Box 2", 6)] == "1.1", "Buendelungskennung in ein Datum umgewandelt"
+    assert "1956-11" in names, "Monatsangabe auf den Monatsersten aufgefuellt"
+    assert "06-09" in names, "Jahrlose Angabe zu einem Kalenderdatum gemacht"
+    assert "36.000" in names, "Tausenderpunkt im Betrag verloren"
+    assert "15-1" in folios, "Bindestrich-Folio in ein Datum umgewandelt"
+    assert "1.1" in ids, "Buendelungskennung in ein Datum umgewandelt"
+    assert not any("00:00:00" in n for n in names), (
+        "Zeitstempelmuster in der CSV-Quelle, die Quelle ist durch die "
+        "Tabellenkalkulation gelaufen"
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -158,15 +166,15 @@ def test_date_format_findings_are_reported():
     """Nicht aufgefuellte Monats- und Tagesstellen sind ein gemeldeter Befund."""
     issues = _source_issues()
     dates = [i for i in issues if i.code == "E010"]
-    assert len(dates) >= 4, (
-        f"Nur {len(dates)} Datumsformat-Befunde; erwartet sind mindestens die "
-        "vier nicht aufgefuellten Werte der Lieferung 2026-08-31"
-    )
+    # Lieferfest: solange die Quelle mindestens einen nicht aufgefuellten
+    # Wert traegt, muss der Validator ihn mit Blatt und Zeile melden. Die
+    # frueheren Pins auf konkrete Werte einer Lieferung sind entfallen,
+    # welche Werte offen sind, zeigt der Datenspiegel-Lauf.
+    assert len(dates) >= 1, "Kein Datumsformat-Befund gemeldet, Erkennung tot"
     for issue in dates:
         assert issue.sheet in BOX_SHEETS, f"Befund ohne Blattangabe: {issue}"
         assert issue.row >= 2, f"Befund ohne Zeilenangabe: {issue}"
-    values = {i.value for i in dates}
-    assert "1954-11-8" in values and "1956-5-13" in values, sorted(values)
+        assert issue.value, f"Befund ohne Wert: {issue}"
 
 
 def test_timestamp_pattern_is_its_own_warning_class():
@@ -213,10 +221,20 @@ def test_participation_id_ambiguity_is_reported():
 
 
 def test_hyphen_folio_is_reported():
-    """Die Bindestrichform `15-1` trifft keinen Objektsatz und ist ein Befund."""
+    """Eine Bindestrich- oder Spannenform in der Folio-Spalte ist ein Befund.
+
+    Lieferfest: geprueft wird, dass der Validator jede solche Form mit
+    Blatt und Zeile meldet, nicht welche Formen die aktuelle Lieferung
+    traegt. Ob eine Form ein Objekt verfehlt, zeigt der Orphan-Test des
+    Datenspiegels (test_61); die Bindestrichformen mit eindeutigem
+    Unterstrich-Treffer repariert die Pipeline deterministisch (E-154).
+    """
     folios = [i for i in _source_issues() if i.code == "E012"]
-    assert len(folios) >= 40, f"Nur {len(folios)} Bindestrich-Folios gemeldet"
-    assert {i.value for i in folios} <= {"15-1", "15-2"}, sorted({i.value for i in folios})
+    assert len(folios) >= 1, "Kein Folio-Format-Befund gemeldet, Erkennung tot"
+    for issue in folios:
+        assert issue.sheet in BOX_SHEETS, f"Befund ohne Blattangabe: {issue}"
+        assert issue.row >= 2, f"Befund ohne Zeilenangabe: {issue}"
+        assert "-" in str(issue.value), f"Befund ohne Bindestrichwert: {issue}"
 
 
 def test_signature_stub_is_an_error():

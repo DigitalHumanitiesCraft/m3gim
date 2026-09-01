@@ -152,13 +152,16 @@ export function isPureComposer(name, entry) {
   const kat = entry && entry.kategorie;
   if (kat && kat !== 'Komponist' && kat !== 'Andere') return false;
   if (!hasComposerSurname(name)) return false;
+  // Ausgefiltert wird nur mit belegter Komponisten-Rolle. Ein blosser
+  // Komponisten-Nachname ohne jede Rolle ist keine Evidenz — die
+  // NIM_005-Feinerschliessung brachte Brahms- und Puccini-Nennungen ohne
+  // Rolle, die sonst stumm aus dem Netzwerk fielen.
   if (entry && entry.roles && entry.roles.size > 0) {
     for (const role of entry.roles) {
       if (String(role || '').toLowerCase().trim() === COMPOSER_ROLE) return true;
     }
-    return false;
   }
-  return true;
+  return false;
 }
 
 /**

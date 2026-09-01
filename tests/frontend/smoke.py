@@ -36,7 +36,7 @@ ANCHOR_TITLES = [
     "Handschriftliche Notiz",                        # NIM_007/5_1 (Finanz-Anker)
 ]
 
-# Bekannte, dokumentierte @id-Kollisionen (siehe knowledge/data-errors.md).
+# Bekannte, dokumentierte @id-Kollisionen (siehe knowledge/data/reports/reconciliation-register.md).
 # Aktuell leer — das PL_07-Quellduplikat wird von der Pipeline kompensiert.
 # Jeder Eintrag hier ist ein tolerierter Regressions-Alarm.
 KNOWN_COLLISIONS = set()
@@ -291,7 +291,7 @@ def main() -> int:
                             f"Karte nicht gezeichnet: {str(e)[:90]}"))
 
         # --- Canary M4: geteilter Cross-View-Filter
-        #     (frontend-architecture.md § Cross-View-Filter). Im
+        #     (architecture.md § Cross-View-Filter). Im
         #     Verknuepfungen-Graph Ort=Bayreuth setzen -> der Graph fokussiert
         #     Bayreuth (Stempel ort:Bayreuth) UND der bereits gerenderte Bestand
         #     filtert synchron auf die Bayreuth-Records (Stempel gefiltert:ja).
