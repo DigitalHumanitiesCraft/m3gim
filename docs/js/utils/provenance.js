@@ -1,15 +1,14 @@
 /**
- * Provenienz-Helper: kompakte xlsxSource-Extraktion fuer JSON-LD-Knoten.
+ * Provenance helper: compact xlsxSource extraction for JSON-LD nodes.
  *
- * Jeder Record + jede geschachtelte Entity (AgRelOn, Annotation, Finanzposten)
- * traegt ein `m3gim-ontology:xlsxSource`-Subobjekt mit Sheet, Zeile und
- * optionaler Datenpunkt-ID. Store, Inline-Detail und Korb lesen diese Herkunft
- * aus — alle drei durch dieselbe Funktion, damit das Format an nur einer
- * Stelle definiert wird.
+ * Every record and every nested entity (AgRelOn, annotation, finance item)
+ * carries an `m3gim-ontology:xlsxSource` subobject with sheet, row and optional
+ * data-point id. Store, inline detail and Korb read this provenance through the
+ * same function, so the format is defined in only one place.
  *
- * @param {Object|null|undefined} obj - JSON-LD-Entity mit `m3gim-ontology:xlsxSource`
+ * @param {Object|null|undefined} obj - JSON-LD entity with `m3gim-ontology:xlsxSource`
  * @returns {{sheet: ?string, row: number, datenpunkt: ?number}|null}
- *   kompaktes Shape oder null, wenn keine Zeilen-Herkunft vorhanden ist.
+ *   compact shape or null when no row provenance is present.
  */
 export function extractXlsxSource(obj) {
   const src = obj && obj['m3gim-ontology:xlsxSource'];

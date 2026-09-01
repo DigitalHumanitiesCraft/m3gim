@@ -10,6 +10,17 @@
 
 Nach dieser Datei wird [`knowledge/INDEX.md`](knowledge/INDEX.md) als Einstieg in die Wissensbasis gelesen, danach [`knowledge/handoff.md`](knowledge/handoff.md) als Process Inbox mit den offenen Übergabepunkten, danach das aufgabenrelevante Dokument aus der Spec-Hierarchie.
 
+## Lanes und Delegation
+
+Bei parallelen Sessions arbeitet jede Instanz in genau einer Lane (Frontend, Backend, Knowledge) und fasst nur deren Dateien an. Die Lane-Zuweisung kommt von der Projektleitung, die Koordination läuft schriftlich über [`knowledge/handoff.md`](knowledge/handoff.md) (Lane nennen, gehaltene Dateien auflisten, Übergaben als eigene Punkte, Erledigtes austragen). Umsetzungsarbeit wird an Opus-Subagenten delegiert; parallel laufende Subagenten bekommen disjunkte Dateimengen zugewiesen und die verbindlichen Regeln aus § Verbindliche Konventionen in den Prompt.
+
+## Verbindliche Konventionen (Projektleitung, 2026-09-01)
+
+- **Code-Kommentare auf Englisch**, nur wenn wirklich konstruktiv (das Warum, Constraints, bewusste Entscheidungen mit E-Nummer), und kompakt. Deutsche Projekt-Fachwörter (Konvolut, Folio, Verknüpfungen, Datenspiegel) bleiben im englischen Satz. String-Literale bleiben deutsch, das UI und die Befundtexte des Datenspiegels sind deutschsprachig.
+- **Kein dauerhaft sichtbarer Erklärtext im UI.** Information über Struktur, Symbole, Icons und Tooltips; Text nur, wo keine andere Form trägt. Captions und Aufschlüsselungszeilen wandern in Tooltips.
+- **Alle Filter aller Views in der einen linken Sidebar.** Keine Top-Filterleisten.
+- **Dateinamen erzeugter Dateien auf Englisch**, auch bei deutschem Inhalt. Wissensdokumente selbst bleiben deutsch.
+
 ## Spec-Hierarchie
 
 1. **`knowledge/data.md`** — Datengrundlage und Modell-Spezifikation. Bei jeder geplanten Modelländerung zuerst lesen und dort verankern, bevor Pipeline/Tests/Frontend angefasst werden.

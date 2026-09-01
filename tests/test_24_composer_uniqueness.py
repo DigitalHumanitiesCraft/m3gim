@@ -1,24 +1,23 @@
-"""Komponisten-Schreibweise-Varianten im Werkindex (Session 38).
+"""Composer spelling variants in the Werkindex (session 38).
 
-Der Statistik-Tab listet Komponisten aus dem Werkindex als Top-N. Ein Tippfehler
-im Quell-XLSX fuehrt dazu, dass derselbe Komponist unter zwei Roh-Strings
-auftaucht (z.B. "Beethoven, Ludwig van" vs. "Beethoven, Ludwig von") und in
-der Top-10-Liste doppelt erscheint.
+The statistics tab lists composers from the Werkindex as top-N. A typo in the
+source XLSX causes the same composer to appear under two raw strings (e.g.
+"Beethoven, Ludwig van" vs. "Beethoven, Ludwig von") and to show up twice in the
+top-10 list.
 
-Regel aus ``knowledge/data.md § 17`` (Documents as Source of Truth,
-"Pipeline-Workarounds sind Schulden, nicht Features"): Schreibfehler gehoeren
-an der Quelle gefixt. Die Pipeline bekommt dafuer **keinen** Sonderfall-
-Normalisierer (kein ``normalize_composer``), weil das kuenftige Tippfehler
-stillschweigend zukleistern wuerde.
+Rule from ``knowledge/data.md § 17`` (documents as source of truth, "pipeline
+workarounds are debt, not features"): spelling errors are fixed at the source.
+The pipeline gets **no** special-case normalizer (no ``normalize_composer``) for
+this, because that would silently paper over future typos.
 
-Stattdessen detektiert dieser Test Fuzzy-aehnliche Komponistennamen und bleibt
-``xfail(strict=True)``, solange solche Paare existieren. Nach XLSX-Fix wird der
-Test ``XPASS`` → strict bricht die Suite → xfail-Marker entfernen, Eintrag in
-data.md § 17 streichen.
+Instead this test detects fuzzy-similar composer names and stays
+``xfail(strict=True)`` as long as such pairs exist. After the XLSX fix the test
+becomes ``XPASS`` → strict breaks the suite → remove the xfail marker, delete the
+entry in data.md § 17.
 
-Schwelle: Levenshtein-Ratio >= 92. Beethoven van/von liegt typischerweise bei
-96. Mozart vs. Brahms bei ~20. Die Schwelle trifft Tippfehler und echte
-Varianten, nicht legitim aehnliche Namen.
+Threshold: Levenshtein ratio >= 92. Beethoven van/von is typically around 96.
+Mozart vs. Brahms around 20. The threshold catches typos and true variants, not
+legitimately similar names.
 """
 
 from __future__ import annotations
@@ -27,7 +26,7 @@ import pytest
 
 
 def _iter_works(graph: list) -> list:
-    """Gibt alle Roh-Komponistennamen aus m3gim-ontology:MusicalWork-Subjects zurueck."""
+    """Return all raw composer names from m3gim-ontology:MusicalWork subjects."""
     out = []
     for node in graph:
         subjects = node.get("rico:hasOrHadSubject")
@@ -51,7 +50,7 @@ def _iter_works(graph: list) -> list:
     strict=True,
 )
 def test_komponisten_ohne_fuzzy_duplikate(graph):
-    """Keine zwei Komponisten-Rohstrings duerfen fuzzy-aehnlich (>= 92) sein."""
+    """No two composer raw strings may be fuzzy-similar (>= 92)."""
     try:
         from thefuzz import fuzz  # type: ignore
     except ImportError:

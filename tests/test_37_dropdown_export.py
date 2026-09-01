@@ -1,16 +1,15 @@
-"""Absorption des Dropdown-Umbaus der Verknuepfungstabelle (Team-Aenderung 2026-07).
+"""Absorbing the dropdown rebuild of the Verknuepfungen table (team change 2026-07).
 
-Das Erschliessungsteam stellt die Spalten typ/rolle auf abhaengige
-Google-Sheets-Dropdowns um. Zwei Export-Folgen muss die Pipeline tragen:
+The cataloguing team moves the typ/rolle columns to dependent Google-Sheets
+dropdowns. The pipeline must carry two export consequences:
 
-1. Dropdown-Werte koennen kein Komma enthalten; der Komposit-Typ
-   "Datum, Ort" heisst im Export jetzt "Datum_Ort". Der Unterstrich ist
-   als gleichwertiger Komposit-Trenner zu akzeptieren, sonst verliert
-   der ort,datum-Zweig (SpatiotemporalEvent) alle neuen Zeilen still.
-2. Der XLSX-Export enthaelt zusaetzlich versteckte Hilfsblaetter und das
-   Blatt "Typ-Rollen". load_verknuepfungen liest bislang ALLE Sheets;
-   Blaetter ohne Verknuepfungs-Spaltensignatur (typ + name) muessen
-   uebersprungen werden.
+1. Dropdown values cannot contain a comma, so the composite type
+   "Datum, Ort" now reads "Datum_Ort" in the export. The underscore must be
+   accepted as an equivalent composite separator, otherwise the ort,datum
+   branch (SpatiotemporalEvent) silently loses every new row.
+2. The XLSX export also carries hidden helper sheets and the "Typ-Rollen"
+   sheet. load_verknuepfungen so far reads ALL sheets; sheets without the
+   Verknuepfungen column signature (typ + name) must be skipped.
 """
 
 import sys
@@ -30,20 +29,19 @@ from transform import (  # noqa: E402
 
 
 # ---------------------------------------------------------------------------
-# 1. Unterstrich als Komposit-Trenner
+# 1. Underscore as composite separator
 # ---------------------------------------------------------------------------
 
 def test_decompose_underscore_komposit():
     assert decompose_komposit_typ("Datum_Ort") == ["datum", "ort"]
     assert decompose_komposit_typ("datum_ort") == ["datum", "ort"]
-    # Kommaform bleibt unveraendert gueltig (Bestandsdaten)
+    # Comma form stays valid (existing data)
     assert decompose_komposit_typ("ort, datum") == ["ort", "datum"]
-    # Einzeltypen unveraendert
     assert decompose_komposit_typ("person") == ["person"]
 
 
 def test_datum_ort_underscore_emits_spatiotemporal():
-    """Eine Datum_Ort-Zeile muss denselben STE-Pfad nehmen wie 'ort, datum'."""
+    """A Datum_Ort row must take the same STE path as 'ort, datum'."""
     df = pd.DataFrame([{
         "archivsignatur": "NIM_003",
         "typ": "Datum_Ort",
@@ -62,9 +60,9 @@ def test_datum_ort_underscore_emits_spatiotemporal():
 
 
 def test_bare_waehrung_typ_emits_no_relation():
-    """Ein nackter Typ 'währung' (ohne Komposit) ist kein eigener Typwert und
-    darf keine Relation erzeugen. Der bedingungslose decompose-Aufruf filtert
-    ihn zur leeren Liste, statt ihn als Generic-Relation durchzulassen."""
+    """A bare type 'währung' (no composite) is not a type value of its own and
+    must not create a relation. The unconditional decompose call filters it to
+    an empty list instead of letting it through as a generic relation."""
     df = pd.DataFrame([{
         "archivsignatur": "NIM_003",
         "typ": "währung",
@@ -81,7 +79,7 @@ def test_bare_waehrung_typ_emits_no_relation():
 
 
 # ---------------------------------------------------------------------------
-# 2. Hilfsblaetter im Export werden nicht als Verknuepfungen gelesen
+# 2. Helper sheets in the export are not read as Verknuepfungen
 # ---------------------------------------------------------------------------
 
 def test_helper_sheets_are_skipped(tmp_path):
@@ -91,7 +89,7 @@ def test_helper_sheets_are_skipped(tmp_path):
          "Typ": "person", "Name": "Karajan, Herbert von",
          "Rolle": "Dirigent:in", "Anmerkung": None},
     ])
-    # Gefaehrlichster Fall: Hilfsblatt mit typ- UND rolle-artigen Spalten
+    # Worst case: helper sheet with both typ- and rolle-like columns
     typ_rollen = pd.DataFrame([
         {"Typ": "person", "Rollen": "Adressat, Empfänger, Dirigent"},
         {"Typ": "ort", "Rollen": "Aufführungsort, Zielort"},

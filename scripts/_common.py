@@ -1,10 +1,9 @@
-"""Gemeinsame Utilities fuer die M3GIM-Pipeline-Scripts.
+"""Shared utilities for the M3GIM pipeline scripts.
 
-Enthaelt schlanke Helpers, die in mehreren Scripts identisch gebraucht
-werden. Kein Framework, keine Abstraktion auf Vorrat — nur konkret
-dedupliziertes Wissen.
+Lean helpers used identically across several scripts. No framework, no
+speculative abstraction, only concretely deduplicated knowledge.
 
-Zentralisierte XLSX-Workaround-Konstanten siehe knowledge/data.md § 17.
+Centralised XLSX workaround constants, see knowledge/data.md § 17.
 """
 
 from __future__ import annotations
@@ -15,19 +14,19 @@ from pathlib import Path
 
 
 # ---------------------------------------------------------------------------
-# XLSX-Workaround-Konstanten (siehe knowledge/data.md § 17)
+# XLSX workaround constants (see knowledge/data.md § 17)
 # ---------------------------------------------------------------------------
 
-# Header-Shift-Korrektur fuer Personen-/Org-/Ort-/Werkindex: in mehreren
-# Indizes ist die XLSX-Kopfzeile nicht sauber gesetzt — entweder laeuft die
-# erste Datenzeile als Header durch (Org/Werk: Position 1 traegt einen
-# geleakten Datenwert wie "Graz"/"Rossini, Gioachino" statt "name"), oder die
-# name-Spalte hat gar keinen Header (Personenindex: Position 1 ist leer und
-# wird von pandas zu "Unnamed: 1"). Pipeline erkennt das positionell an
-# Spalte 0 ("m3gim_id" = echte Kopfzeile vorhanden) und benennt die Spalten
-# auf den Kanon um, statt eine echte Datenzeile als Header zu konsumieren.
-# Zentral, damit transform.py, validate.py und reconcile.py denselben Kanon
-# nutzen. Siehe knowledge/data.md § 17 und journal.md E-95.
+# Header-shift correction for the person/org/place/work index. In several
+# indices the XLSX header row is not set cleanly: either the first data row
+# runs through as the header (org/work: position 1 carries a leaked data value
+# like "Graz"/"Rossini, Gioachino" instead of "name"), or the name column has
+# no header at all (person index: position 1 is empty and pandas turns it into
+# "Unnamed: 1"). The pipeline detects this positionally via column 0
+# ("m3gim_id" = a real header is present) and renames the columns to the canon
+# instead of consuming a real data row as the header. Centralised so
+# transform.py, validate.py and reconcile.py share the same canon.
+# See knowledge/data.md § 17 and journal.md E-95.
 INDEX_HEADER_SHIFTS: dict[str, list[str]] = {
     "personenindex": [
         "m3gim_id", "name", "wikidata_id",
@@ -44,16 +43,16 @@ INDEX_HEADER_SHIFTS: dict[str, list[str]] = {
     ],
 }
 
-# Finanz-Waehrungs-Defaults pro Konvolut-Signatur. NIM_007 "Aufstellung 1966"
-# Folio 5_1 hat fuenf Zahlen ohne Waehrung; benachbarte Folien 5_2..5_8 sind
-# konsistent in Schilling ausgewiesen, daher "S" als Default.
-# NIM_011 Folio 5 (Bruessel-Gastspiel Tristan, Theatre Royal de la Monnaie):
-# zwei Abendgage-Zeilen "1200" ohne Waehrung; das Folio-9-Pendant desselben
-# Vertragsblocks ist in "Belgische Francs" ausgewiesen und der Vertragsort ist
-# Bruessel. Daher "Belgische Francs" als Default (gleiche folio-nachbarschafts-
-# Heuristik wie NIM_007). Mit dem Erschliessungsteam zu bestaetigen (Treffen
-# 2026-06-23) — Barcelona ist ein sekundaerer Gastspiel-Ort im selben Block,
-# keine zweite Waehrung.
+# Finance currency defaults per Konvolut signature. NIM_007 "Aufstellung 1966"
+# folio 5_1 has five numbers without a currency; neighbouring folios 5_2..5_8
+# are consistently stated in Schilling, hence "S" as the default.
+# NIM_011 folio 5 (Brussels Tristan guest performance, Theatre Royal de la
+# Monnaie): two fee lines "1200" without a currency; the folio 9 counterpart of
+# the same contract block is stated in "Belgische Francs" and the contract place
+# is Brussels. Hence "Belgische Francs" as the default (same folio-neighbourhood
+# heuristic as NIM_007). To be confirmed with the Erschliessungsteam (meeting
+# 2026-06-23); Barcelona is a secondary guest venue in the same block, not a
+# second currency.
 FINANCE_CURRENCY_DEFAULTS: dict[str, str] = {
     "UAKUG/NIM_007": "S",
     "UAKUG/NIM_011": "Belgische Francs",
@@ -61,11 +60,11 @@ FINANCE_CURRENCY_DEFAULTS: dict[str, str] = {
 
 
 def resolve_objekte_source(sheets_dir: Path) -> Path:
-    """Quellauswahl fuer die Objekttabelle, CSV bevorzugt (data.md § 3).
+    """Source selection for the object table, CSV preferred (data.md § 3).
 
-    Die CSV-Ausfuhr bewahrt den erfassten Text; die XLSX traegt in der
-    Datumsspalte die Autokonvertierung der Tabellenkalkulation und bleibt
-    nur als Fallback zulaessig. Fehlt beides, FileNotFoundError.
+    The CSV export preserves the captured text; the XLSX carries the
+    spreadsheet's autoconversion in the date column and stays admissible only as
+    a fallback. If both are missing, FileNotFoundError.
     """
     csv_path = sheets_dir / "M3GIM-Objekte.csv"
     if csv_path.exists():
@@ -78,13 +77,13 @@ def resolve_objekte_source(sheets_dir: Path) -> Path:
 
 
 def load_objekte(sheets_dir: Path):
-    """Laedt die Objekttabelle als DataFrame, Spaltennamen normalisiert.
+    """Load the object table as a DataFrame with normalised column names.
 
-    CSV wird mit dtype=str gelesen, damit Datumswerte als erfasster Text
-    ankommen statt als Kalenderwert. Der XLSX-Fallback bleibt unveraendert,
-    inklusive seiner bekannten Datums-Artefakte (data.md § 6).
+    CSV is read with dtype=str so date values arrive as captured text instead of
+    a calendar value. The XLSX fallback stays unchanged, including its known date
+    artefacts (data.md § 6).
     """
-    import pandas as pd  # lazy, damit _common ohne pandas importierbar bleibt
+    import pandas as pd  # lazy so _common stays importable without pandas
 
     path = resolve_objekte_source(sheets_dir)
     if path.suffix.lower() == ".csv":
@@ -97,7 +96,7 @@ def load_objekte(sheets_dir: Path):
 
 
 def default_currency_for(signatur: str | None) -> str | None:
-    """Default-Waehrung, wenn die Archivsignatur ein bekanntes Praefix hat."""
+    """Default currency when the archive signature has a known prefix."""
     if not signatur:
         return None
     for prefix, curr in FINANCE_CURRENCY_DEFAULTS.items():
@@ -106,19 +105,19 @@ def default_currency_for(signatur: str | None) -> str | None:
     return None
 
 
-# Kontrolliertes Bearbeitungsstand-Vokabular: "abgeschlossen", "begonnen",
-# "zurueckgestellt". XLSX schreibt Varianten wie "Vollständig", "erledigt",
-# "zurückgestellt". Source-Fix: Dropdown in Google Sheets.
+# Controlled Bearbeitungsstand vocabulary: "abgeschlossen", "begonnen",
+# "zurueckgestellt". The XLSX writes variants like "Vollständig", "erledigt",
+# "zurückgestellt". Source fix: dropdown in Google Sheets.
 
 
 def normalize_bearbeitungsstand(value) -> str | None:
-    """Mappt Freitext-Varianten auf kanonische Werte.
+    """Map free-text variants onto the canonical values.
 
-    Akzeptiert pandas-NaN (Float) und None; liefert in dem Fall None zurueck.
-    Rueckgabe sonst: einer der drei kanonischen Werte oder der lower-strip-
-    Wert unveraendert, wenn kein Muster greift (dann schlaegt test_03 an).
+    Accepts pandas NaN (float) and None, returning None in that case.
+    Otherwise returns one of the three canonical values, or the lower-stripped
+    value unchanged if no pattern matches (then test_03 fires).
     """
-    if value is None or value != value:  # None oder NaN (NaN != NaN)
+    if value is None or value != value:  # None or NaN (NaN != NaN)
         return None
     bs = str(value).strip().lower()
     if not bs or bs == "nan":
@@ -133,15 +132,15 @@ def normalize_bearbeitungsstand(value) -> str | None:
 
 
 def extract_bearbeitungsnotiz(value) -> str | None:
-    """Extrahiert den Freitext-Anhang des Bearbeitungsstands als Notiz (E-102).
+    """Extract the free-text addition of the Bearbeitungsstand as a note (E-102).
 
-    Der canonische Status (``normalize_bearbeitungsstand``) verwirft den
-    Klammer-Zusatz; hier wird er als ``m3gim-ontology:processingNote`` herausgeloest,
-    z. B. "Erledigt (Ira Malaniuk betreffend. Rest zurueckgestellt)" →
-    "Ira Malaniuk betreffend. Rest zurueckgestellt". Rueckgabe None, wenn kein
-    Klammer-Zusatz vorhanden ist.
+    The canonical status (``normalize_bearbeitungsstand``) discards the
+    parenthetical addition; here it is lifted out as ``m3gim-ontology:processingNote``,
+    e.g. "Erledigt (Ira Malaniuk betreffend. Rest zurueckgestellt)" →
+    "Ira Malaniuk betreffend. Rest zurueckgestellt". Returns None when there is
+    no parenthetical addition.
     """
-    if value is None or value != value:  # None oder NaN
+    if value is None or value != value:  # None or NaN
         return None
     s = str(value).strip()
     m = re.search(r"\(([^)]+)\)", s)
@@ -152,14 +151,14 @@ def extract_bearbeitungsnotiz(value) -> str | None:
 
 
 def is_approved_match(match_entry: dict) -> bool:
-    """Darf dieses Reconciliation-Match ans Enrichment/JSON-LD durchgereicht werden?
+    """May this reconciliation match pass through to enrichment/JSON-LD?
 
-    Konservative Low-Confidence-Policy (siehe E-74):
-    - ``exact`` und ``fuzzy_high`` (Score >= 90) sind automatisch freigegeben.
-    - ``fuzzy_low`` (Score 80-89) nur, wenn redaktionell ``manual_review:
-      "approved"`` gesetzt wurde. Alles andere wird uebergangen.
+    Conservative low-confidence policy (see E-74):
+    - ``exact`` and ``fuzzy_high`` (score >= 90) are released automatically.
+    - ``fuzzy_low`` (score 80-89) only when ``manual_review: "approved"`` was set
+      editorially. Everything else is skipped.
 
-    Funktion ist idempotent, Seiteneffekte null.
+    Idempotent, no side effects.
     """
     level = match_entry.get("match")
     if level != "fuzzy_low":
@@ -169,7 +168,7 @@ def is_approved_match(match_entry: dict) -> bool:
 
 def build_xlsx_source(sheet: str, row: int,
                       datenpunkt_id: int | str | None = None) -> dict:
-    """Erzeugt das Provenance-Sidecar-Objekt fuer m3gim-ontology:xlsxSource (E-73).
+    """Build the provenance sidecar object for m3gim-ontology:xlsxSource (E-73).
 
     Shape:
         {
@@ -178,7 +177,7 @@ def build_xlsx_source(sheet: str, row: int,
             "m3gim-ontology:dataPointId": <optional, nur falls gesetzt>,
         }
 
-    Aufruf-Muster:
+    Call pattern:
         record["m3gim-ontology:xlsxSource"] = build_xlsx_source("Objekte", row_idx + 2)
     """
     source = {
@@ -191,12 +190,11 @@ def build_xlsx_source(sheet: str, row: int,
 
 
 def attach_xlsx_source(target: dict, rel: dict, key: str = "_source") -> None:
-    """Haengt ``rel[key]`` als ``m3gim-ontology:xlsxSource`` an ``target``.
+    """Attach ``rel[key]`` as ``m3gim-ontology:xlsxSource`` to ``target``.
 
-    No-op, wenn in ``rel`` keine Quellreferenz vorliegt. Soll in
-    ``transform.py`` an jeder Stelle verwendet werden, an der aus einer
-    Verknuepfungszeile eine nested entity gebaut wird (Agent, Location,
-    Subject, Annotation, AgRelOn).
+    No-op when ``rel`` carries no source reference. Meant for use in
+    ``transform.py`` wherever a nested entity is built from a Verknuepfung row
+    (Agent, Location, Subject, Annotation, AgRelOn).
     """
     source = rel.get(key)
     if source:
@@ -220,15 +218,15 @@ def strip_zero_date_padding(value):
 
 
 # ---------------------------------------------------------------------------
-# Vokabular-Leser
+# Vocabulary reader
 # ---------------------------------------------------------------------------
-# Die Pipeline braucht zur Laufzeit die Abbildung eines erfassten Rollenwerts
-# auf sein Concept in vocab/m3gim.ttl. Diese Datei steht in der Spec-Hierarchie
-# ueber der Pipeline (E-133), sie ist die Quelle und keine Kopie. rdflib liegt
-# nur in requirements-test.txt; ein Import haette die Laufzeitumgebung um eine
-# Abhaengigkeit erweitert, die sie nicht hat. Der Leser hier deckt genau die
-# Turtle-Form ab, die das Vokabular verwendet, und wird von
-# tests/test_47_vocab_reader.py gegen einen echten Parser gehalten.
+# At runtime the pipeline needs the mapping from a captured role value onto its
+# concept in vocab/m3gim.ttl. That file sits above the pipeline in the spec
+# hierarchy (E-133), it is the source and not a copy. rdflib lives only in
+# requirements-test.txt; importing it would add a dependency the runtime
+# environment does not have. This reader covers exactly the Turtle form the
+# vocabulary uses and is held against a real parser by
+# tests/test_47_vocab_reader.py.
 
 VOCAB_PREFIX = "m3gim-vocab:"
 DFT_SCHEME = VOCAB_PREFIX + "documentaryFormTypes"
@@ -238,10 +236,10 @@ _IS_CONCEPT = re.compile(r"^\s*a\s+skos:Concept(?:\s|;|$)")
 
 
 def _turtle_statements(text: str) -> Iterator[str]:
-    """Zerlegt Turtle in seine Aussagen, ohne den abschliessenden Punkt.
+    """Split Turtle into its statements, without the trailing period.
 
-    Anfuehrungszeichen und spitze Klammern werden mitgefuehrt, damit ein Punkt
-    innerhalb eines Literals oder einer IRI nicht trennt. Kommentare fallen weg.
+    Quotes and angle brackets are tracked so a period inside a literal or an IRI
+    does not split. Comments are dropped.
     """
     buffer: list[str] = []
     in_string = in_iri = in_comment = escaped = False
@@ -282,7 +280,7 @@ def _turtle_statements(text: str) -> Iterator[str]:
 
 
 def _predicate_objects(statement: str, predicate: str) -> list[str]:
-    """Objektteil jeder Nennung von ``predicate`` in einer Turtle-Aussage."""
+    """Object part of every mention of ``predicate`` in a Turtle statement."""
     parts: list[str] = []
     buffer: list[str] = []
     in_string = escaped = False
@@ -309,13 +307,13 @@ def _predicate_objects(statement: str, predicate: str) -> list[str]:
 
 
 def load_concept_meta(vocab_path: Path) -> dict[str, dict[str, str]]:
-    """Liest Definition und Begriffsschema der Vokabularbegriffe.
+    """Read definition and concept scheme of the vocabulary concepts.
 
-    Rueckgabe: {CURIE: {"definition": str|None, "scheme": CURIE|None}}. Die
-    Definition ist der erklaerende Satz, den die Oberflaeche an einem
-    Fachbegriff zeigt; sie steht im Vokabular und wird nicht im Frontend
-    zweitgefuehrt. Das Schema trennt Dokumenttypen von Rollen, die sich seit
-    der Namensraum-Dreiteilung denselben Praefix teilen.
+    Returns {CURIE: {"definition": str|None, "scheme": CURIE|None}}. The
+    definition is the explanatory sentence the UI shows on a Fachbegriff; it
+    lives in the vocabulary and is not duplicated in the frontend. The scheme
+    separates document types from roles, which share the same prefix since the
+    namespace tripartition.
     """
     meta: dict[str, dict[str, str]] = {}
     for statement in _turtle_statements(Path(vocab_path).read_text(encoding="utf-8")):
@@ -339,12 +337,12 @@ def load_concept_meta(vocab_path: Path) -> dict[str, dict[str, str]]:
 
 
 def load_role_meta(vocab_path: Path) -> dict[str, dict]:
-    """Liest Bezugsebene und Rang der Rollenbegriffe aus dem Vokabular.
+    """Read dating scope and rank of the role concepts from the vocabulary.
 
-    Rueckgabe: {CURIE: {"scope": CURIE|None, "rank": int|None}}. Beides stand
-    bis 2026-08-22 als Handtabelle im Frontend (E-150). Die Bezugsebene sagt,
-    was eine Datierung datiert, der Rang entscheidet zwischen mehreren
-    ankernden Datierungen desselben Dokuments.
+    Returns {CURIE: {"scope": CURIE|None, "rank": int|None}}. Both lived as a
+    hand table in the frontend until 2026-08-22 (E-150). The scope says what a
+    dating dates, the rank decides between several anchoring datings of the same
+    document.
     """
     meta: dict[str, dict] = {}
     for statement in _turtle_statements(Path(vocab_path).read_text(encoding="utf-8")):
@@ -370,13 +368,12 @@ def load_role_meta(vocab_path: Path) -> dict[str, dict]:
 
 
 def load_role_concepts(vocab_path: Path) -> dict[str, tuple[str, str]]:
-    """Liest die Rollenbegriffe des Vokabulars als deutsches Label auf Concept.
+    """Read the vocabulary's role concepts as German label onto concept.
 
-    Rueckgabe: {Label: (CURIE, prefLabel)}. Schluessel sind das prefLabel und
-    jedes deutsche altLabel, sodass auch ein aufgegangener Begriff aufloest; der
-    Wert traegt immer das prefLabel des aufnehmenden Concepts. Dokumenttypen
-    bleiben aussen vor, weil ihre Anzeigetexte mit Rollenwerten kollidieren
-    wuerden.
+    Returns {Label: (CURIE, prefLabel)}. Keys are the prefLabel and every German
+    altLabel, so a merged term also resolves; the value always carries the
+    prefLabel of the absorbing concept. Document types stay out because their
+    display texts would collide with role values.
     """
     mapping: dict[str, tuple[str, str]] = {}
     for statement in _turtle_statements(Path(vocab_path).read_text(encoding="utf-8")):

@@ -1,22 +1,22 @@
-"""Datierungs-Meta-Contract (data-model.md § 9, E-106 ersetzt die E-100/E-104-Konfidenz).
+"""Dating meta-contract (data-model.md § 9, E-106 replaces the E-100/E-104 confidence).
 
-Die Datierungsevidenz (datierungsevidenz-Spalte) wird NICHT serialisiert: weder
-als altes m3gim:dateEvidence noch als erfundener agrelon:metadataConfidence-
-Dezimalwert. Letzterer war eine nicht gemessene Projektion der kategorialen
-Evidenz (aus_dokument/erschlossen/extern) und wurde von keinem aktiven Feature
-gelesen — entfernt gemaess Leitplanke "Konfidenz nicht erfinden". Damit
-entfaellt auch die record-seitige Datierungs-Self-Provenance.
+The dating evidence (datierungsevidenz column) is NOT serialized, neither as the
+old m3gim:dateEvidence nor as an invented agrelon:metadataConfidence decimal. The
+latter was an unmeasured projection of the categorial evidence
+(aus_dokument/erschlossen/extern) that no active feature read, removed under the
+guardrail "do not invent confidence". This also drops the record-side dating
+self-provenance.
 
-Legitime agrelon:metadataProvenance bleibt unberuehrt: auf AgRelOn-Relationen
-(nested in agrelon:hasRelation) und auf SpatiotemporalEvents als Rueckverweis
-auf den dokumentierenden Record.
+Legitimate agrelon:metadataProvenance stays intact, on AgRelOn relations (nested
+in agrelon:hasRelation) and on SpatiotemporalEvents as a back-reference to the
+documenting record.
 """
 
 from _helpers import ensure_list
 
 
 def test_date_evidence_property_removed(records):
-    """Kein altes m3gim:dateEvidence im Output (Migration aus Phase 4.3)."""
+    """No old m3gim:dateEvidence in the output (migration from phase 4.3)."""
     offenders = [r["@id"] for r in records if "m3gim:dateEvidence" in r]
     assert not offenders, (
         f"m3gim:dateEvidence noch vorhanden bei {len(offenders)} Records "
@@ -35,8 +35,8 @@ def _walk(node):
 
 
 def test_no_date_confidence_anywhere(graph):
-    """agrelon:metadataConfidence wird nirgends mehr emittiert (E-106): die
-    erfundene Dezimal-Konfidenz aus datierungsevidenz ist vollstaendig entfernt."""
+    """agrelon:metadataConfidence is no longer emitted anywhere (E-106): the
+    invented decimal confidence derived from datierungsevidenz is fully removed."""
     offenders = []
     for n in graph:
         for node in _walk(n):
@@ -49,10 +49,10 @@ def test_no_date_confidence_anywhere(graph):
 
 
 def test_record_has_no_dating_self_provenance(records):
-    """Kein Record traegt eine DIREKTE agrelon:metadataProvenance/-Confidence:
-    die Datierungs-Self-Provenance ist mit der Konfidenz entfallen (E-106). Die
-    legitime Provenance auf nested AgRelOn-Relationen bleibt davon unberuehrt
-    (sie ist kein direkter Record-Key)."""
+    """No record carries a DIRECT agrelon:metadataProvenance/-Confidence: the
+    dating self-provenance dropped together with the confidence (E-106). The
+    legitimate provenance on nested AgRelOn relations stays intact (it is not a
+    direct record key)."""
     offenders = [
         r["@id"] for r in records
         if "agrelon:metadataProvenance" in r or "agrelon:metadataConfidence" in r
@@ -64,10 +64,9 @@ def test_record_has_no_dating_self_provenance(records):
 
 
 def test_agrelon_relation_provenance_intact(graph):
-    """Positivkontrolle: die legitime agrelon:metadataProvenance auf den
-    AgRelOn-Relationen (m3gim-ontology:hasAgentRelation, Rueckverweis auf den Record)
-    existiert weiterhin — die Konfidenz-Entfernung hat sie nicht versehentlich
-    mitgenommen."""
+    """Positive control: the legitimate agrelon:metadataProvenance on the AgRelOn
+    relations (m3gim-ontology:hasAgentRelation, back-reference to the record) still
+    exists, the confidence removal did not take it along by accident."""
     seen = 0
     for n in graph:
         for rel in ensure_list(n.get("m3gim-ontology:hasAgentRelation")):

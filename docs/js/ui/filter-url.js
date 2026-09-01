@@ -22,12 +22,13 @@
 import { facetValues } from './filter-state.js';
 
 /** Facetten mit Werteliste, in der Reihenfolge, in der sie in der URL stehen. */
-const LIST_KEYS = ['ort', 'person', 'werk', 'institution', 'rolle', 'sicht'];
+const LIST_KEYS = ['docType', 'ort', 'person', 'werk', 'institution', 'rolle', 'sicht'];
 
 /** Query-Schluessel des Zeitfensters; der State-Schluessel heisst zeitfenster. */
 const YEAR_KEY = 'jahr';
 
 const SCHAERFE_VALUES = new Set(['weit', 'eng']);
+const SCOPE_VALUES = new Set(['fein', 'gesamt']);
 
 /**
  * Der Filter als Query-Teil, ohne fuehrendes Fragezeichen.
@@ -47,6 +48,11 @@ export function serializeFilter(filter) {
     if (Number.isFinite(von) && Number.isFinite(bis)) parts.push(`${YEAR_KEY}=${von}-${bis}`);
   }
   if (f.schaerfe === 'eng') parts.push('schaerfe=eng');
+  // Nur der Nicht-Default-Scope steht in der URL; 'fein' bleibt aussen vor,
+  // damit die Startansicht keine Scope-Behauptung im Link fuehrt.
+  if (f.scope === 'gesamt') parts.push('scope=gesamt');
+  const search = (f.search || '').trim();
+  if (search) parts.push(`suche=${encodeURIComponent(search)}`);
   return parts.join('&');
 }
 
@@ -81,6 +87,11 @@ export function parseFilterQuery(query) {
       continue;
     }
     if (key === 'schaerfe' && SCHAERFE_VALUES.has(value)) patch.schaerfe = value;
+    else if (key === 'scope' && SCOPE_VALUES.has(value)) patch.scope = value;
+    else if (key === 'suche') {
+      const s = safeDecode(value).trim();
+      if (s) patch.search = s;
+    }
   }
   return patch;
 }

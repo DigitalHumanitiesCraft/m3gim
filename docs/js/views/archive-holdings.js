@@ -7,32 +7,76 @@ import { el, clear } from '../utils/dom.js';
 import { formatSignatur, formatChildSignatur, getDocTypeId, countLinks, truncate, ensureArray, dftLabel, glossOf } from '../utils/format.js';
 import { formatDate } from '../utils/date-parser.js';
 import { primaryYear } from '../data/loader.js';
-import { bookmarkIcon } from '../data/constants.js';
-import { buildInlineDetail } from './archive-inline-detail.js';
-import { filterByToolbarState, isToolbarFiltered, searchMatchBestand } from './_archive-filter.js';
+import { bookmarkIcon, CONTENT_FAMILIES } from '../data/constants.js';
+import { buildInlineDetail, partitionRecord } from './archive-inline-detail.js';
+import { filterBySharedState, isSharedFiltered, searchMatchBestand, sharedFacetsActive } from './_archive-filter.js';
 import { toggleKorb, isInKorb } from '../ui/basket.js';
-import { buildFilterToolbar, updateSchaerfeBanner } from './_archive-toolbar.js';
+import { buildFacetSidebar } from './_facet-sidebar.js';
+import { viewShell } from '../ui/sidebar.js';
 import { onViewNavigate } from '../ui/events.js';
 import { logStamp } from '../utils/env.js';
-import { getFilter, setFilter, subscribe } from '../ui/filter-state.js';
-import {
-  sharedToToolbarState, toolbarStateToShared, applySchaerfeEng, applyZeitfenster, makeSyncGuard,
-} from '../ui/filter-sync.js';
+import { getFilter, setFilter, applyViewDefault } from '../ui/filter-state.js';
+import { recordsFor } from '../data/records-for.js';
+import { applySchaerfeEng, applyZeitfenster } from '../ui/filter-sync.js';
 
 let store = null;
 let container = null;
-let toolbar = null;  // { element, setPerson, setCount, getState }
-let unsubscribeFilter = null;
-const syncGuard = makeSyncGuard();  // loop guard: setFacet<->setFilter
-let expandedKonvolute = new Set();
+let sidebar = null;
 let expandedRecord = null; // only one at a time
 let currentItems = []; // kept in sync so closures never go stale
 let sortDir = 1; // 1 = ascending, -1 = descending
 let currentSortKey = 'signatur';
+let lastResult = null;  // recordsFor result of the current cut (Sidebar-Status)
 
-// Plakate + Tontraeger werden pauschal ausgeblendet -- Forschungs-Fokus
-// liegt auf Schriftgut-Belegen, siehe knowledge/design.md § Tab-Architektur.
+// Posters and sound carriers are out of the research focus on written records
+// (design.md § Tab-Architektur). The exclusion holds in the fein scope only;
+// the gesamt scope leaves nothing unreachable (E-157).
 const EXCLUDED_DFT = new Set(['poster', 'soundCarrier']);
+
+/** Scope rule on a document type id, the single place the exclusion lives. */
+function dftOutOfScope(dft, gesamt) {
+  return !gesamt && EXCLUDED_DFT.has(dft);
+}
+
+/**
+ * Whether a record falls out of the current scope (E-157).
+ * @param {object} record
+ * @param {boolean} gesamt
+ * @returns {boolean}
+ */
+export function isOutOfScope(record, gesamt) {
+  return dftOutOfScope(getDocTypeId(record), gesamt);
+}
+
+/**
+ * Content families of a record in CONTENT_FAMILIES order, from the same
+ * partition the inline detail renders. DOM-free so the typed display of the
+ * table stays testable.
+ * @param {object} record
+ * @param {object} store
+ * @returns {Array<{key: string, label: string, count: number}>}
+ */
+export function familiesForRecord(record, store) {
+  const p = partitionRecord(record, store);
+  // Same de-duplication as eventChipEls: a location already carried by an event
+  // is not counted twice.
+  const eventPlaces = new Set(p.events.map(e => (e.place || '').toLowerCase()));
+  const extraLocations = p.locations.filter(loc =>
+    !eventPlaces.has(String(loc.name || loc['skos:prefLabel'] || '').toLowerCase()));
+  const counts = {
+    person: p.bucket.produktion.length + p.bucket.mitwirkende.length
+      + p.bucket.erwaehnt.length + p.bucket.weitere.length,
+    rolle: p.works.length + p.performanceRoles.length,
+    ort: p.performances.length + p.events.length + p.eventDatings.length + extraLocations.length,
+    datum: p.mentionedDatings.length,
+    beziehung: p.agentRelations.length,
+    finanz: p.finances.length,
+  };
+  return CONTENT_FAMILIES.map(f => ({ key: f.key, label: f.label, count: counts[f.key] }));
+}
+
+/** The Bestand is a record-centred view and therefore intrinsically weit. */
+const VIEW_DEFAULTS = { schaerfe: 'weit' };
 
 /**
  * Render the Bestand view into the container.
@@ -44,107 +88,110 @@ export function renderBestand(storeRef, containerEl) {
   container = containerEl;
 
   clear(container);
-  toolbar = buildFilterToolbar(store, {
-    initial: sharedToToolbarState(getFilter()),
-    onChange: () => {
-      // Toolbar-Aenderung -> geteilte Facetten zurueckschieben (innerhalb des
-      // Guards, damit der eigene subscribe-Callback nicht erneut setzt).
-      syncGuard.run(() => {
-        setFilter(toolbarStateToShared(toolbar.getState()));
-      });
-      updateBestandView();
-    },
-  });
-  container.appendChild(toolbar.element);
-  container.appendChild(buildSchaerfeBanner());
-  container.appendChild(buildTable());
-  updateBestandView();
+  applyViewDefault(VIEW_DEFAULTS);
 
-  // Geteilter Filter (M4): externe Aenderung (Ort-Klick anderswo, Zeitfenster,
-  // Schaerfe) zieht die Toolbar nach und zeichnet neu. Loop-Guard verhindert,
-  // dass das Zuruecksetzen der Toolbar erneut auf den geteilten State schreibt.
-  if (unsubscribeFilter) unsubscribeFilter();
-  unsubscribeFilter = subscribe((shared) => {
-    if (syncGuard.isActive()) return;
-    syncGuard.run(() => {
-      const proj = sharedToToolbarState(shared);
-      toolbar.applyFacet('person', proj.person);
-      toolbar.applyFacet('location', proj.location);
-      toolbar.applyFacet('werk', proj.werk);
-    });
-    updateBestandView();
-  }, { immediate: false });
+  // No caption and no Schaerfe banner above the table (E-156), the sidebar
+  // status block carries the counts and the table carries the structure.
+  const main = el('div', { className: 'view-main archiv-main' });
+  main.appendChild(buildTable());
+
+  if (sidebar) sidebar.destroy();
+  sidebar = buildFacetSidebar(store, {
+    facets: ['docType', 'person', 'ort', 'werk', 'rolle'],
+    yearSpan: yearBounds(store),
+    getResult: () => lastResult,
+    showSearch: true,
+    scope: { counts: () => scopeCounts() },
+    onChange: () => updateBestandView(),
+  });
+  container.appendChild(viewShell(sidebar.element, main));
+  updateBestandView();
 
   // Cross-navigation: Indizes "Alle im Archiv anzeigen", Korb-Klick,
   // Chip-Klick aus Inline-Detail (applyArchivFilter) oder Chronik-Punkt.
   onViewNavigate('bestand', (detail) => {
     const { type, name, recordId, filter } = detail || {};
-    if (type === 'personen' && name) toolbar.setPerson(name);
-    if (filter && filter.value) applyToolbarFilter(filter);
+    if (type === 'personen' && name) addSharedFacet('person', name);
+    if (filter && filter.value) addSharedFacet(filter.facet, filter.value);
     if (recordId) expandRecord(recordId);
   });
 }
 
-/** Schaerfegrad-Banner: nennt den aktiven Modus und im engen Modus die
- *  Differenz (X von Y raumzeitlich/auffuehrungs-belegt). Inhalt von
- *  updateBestandView gefuellt. */
-function buildSchaerfeBanner() {
-  return el('div', { className: 'archiv-schaerfe', id: 'bestand-schaerfe', hidden: true });
+/** Cross-navigation facets write into the shared state. `facet` still arrives
+ *  in the former toolbar naming (person/location/werk); location -> ort. */
+function addSharedFacet(facet, value) {
+  const key = facet === 'location' ? 'ort' : facet;
+  if (!['person', 'ort', 'werk', 'rolle', 'institution', 'docType'].includes(key)) return;
+  const values = Array.isArray(value) ? value : [value];
+  const current = facetOf(key);
+  const merged = [...current];
+  for (const v of values) if (v && !merged.includes(v)) merged.push(v);
+  setFilter({ [key]: merged });
 }
 
-function applyToolbarFilter({ facet, value }) {
-  if (toolbar) toolbar.applyFacet(facet, value);
+function facetOf(key) {
+  const f = getFilter();
+  return Array.isArray(f[key]) ? f[key] : [];
+}
+
+/** Counts behind the sidebar scope switch (E-116/E-157): how many units the
+ *  current non-scope cut carries in either scope. Counts top-level units
+ *  (Konvolute plus standalone records), not Folios. */
+function scopeCounts() {
+  const feinItems = getOrderedItems(false).filter(i => !i.isChild);
+  const gesamtItems = getOrderedItems(true).filter(i => !i.isChild);
+  return { fein: feinItems.length, gesamt: gesamtItems.length };
+}
+
+/** Year span of the holdings, for the sidebar time slider. */
+function yearBounds(store) {
+  let min = Infinity, max = -Infinity;
+  if (store && store.byYear) {
+    for (const y of store.byYear.keys()) {
+      if (y < min) min = y;
+      if (y > max) max = y;
+    }
+  }
+  return { min: min === Infinity ? 1919 : min, max: max === -Infinity ? 2009 : max };
 }
 
 /**
- * Re-render rows; reads current filter state from the toolbar.
+ * Re-render rows; reads the whole cut from the shared filter state.
  */
-function updateBestandView(filters) {
-  const state = filters || (toolbar ? toolbar.getState() : {});
-  const sharedF = getFilter();
-  // Geteilte On-Top-Facetten (Zeitfenster/eng) flachen die Hierarchie ebenso ab
-  // wie eine Toolbar-Facette: sie filtern Kinder weg, leere Konvolut-Header
-  // sollen dann nicht stehenbleiben.
-  const sharedActive = Array.isArray(sharedF.zeitfenster) || sharedF.schaerfe === 'eng';
-  const isFiltered = isToolbarFiltered(state) || sharedActive;
-  const showAll = !!state.zeigeUnerschlossen;  // E-116: auch nicht erschlossene
-  let items = getOrderedItems(showAll);
+function updateBestandView() {
+  const shared = getFilter();
+  const gesamt = shared.scope === 'gesamt';
+  // Shared facets, Zeitfenster or the enge Schaerfe flatten the hierarchy: they
+  // cut children away, and an emptied Konvolut head must not stay behind.
+  const sharedActive = Array.isArray(shared.zeitfenster) || shared.schaerfe === 'eng'
+    || isSharedFiltered(shared) || sharedFacetsActive(shared);
+  const isFiltered = sharedActive;
+  let items = getOrderedItems(gesamt);
 
-  // When filtering, flatten: remove Konvolut headers, show children as standalone
+  // When filtering, flatten: remove Konvolut headers, keep children flagged so
+  // renderRows still resolves their real doc-type badge (nicht Standalone).
   if (isFiltered) {
-    items = items
-      .filter(item => !item.isKonvolut)
-      .map(item => item.isChild ? { record: item.record, konvolutId: item.konvolutId } : item);
+    items = flattenForFilter(items);
   }
 
-  // Fuenf Toolbar-Facetten (geteilte Pipeline mit Chronik, Tier 2.6).
-  // Bestand-Items sind gewrappt -> getRecord entpackt; Suche umfasst zusaetzlich
-  // Typ-Label + Datum (searchMatchBestand).
-  items = filterByToolbarState(store, items, state, {
+  // Every entity and shared facet plus full text and document type resolves
+  // through recordsFor, the single place in the frontend. Bestand items are
+  // wrapped, so getRecord unwraps them.
+  items = filterBySharedState(store, items, shared, {
     getRecord: (item) => item.record,
     searchMatch: (record, q) => searchMatchBestand(record, q, store),
   });
 
-  // Geteilte Facetten ueber die Toolbar hinaus: Zeitfenster + Schaerfegrad
-  // (M4). person/ort/werk stecken bereits via Sync in der Toolbar-Pipeline.
-  const shared = getFilter();
+  // Zeitfenster and Schaerfegrad act on top as plain item filters.
   const getRecord = (item) => item.record;
   items = applyZeitfenster(items, shared.zeitfenster, getRecord, store);
-  let engInfo = null;
   if (shared.schaerfe === 'eng') {
-    const r = applySchaerfeEng(items, store, getRecord);
-    items = r.items;
-    engInfo = { total: r.total, eng: r.eng };
+    items = applySchaerfeEng(items, store, getRecord).items;
   }
-  updateSchaerfeBanner('bestand-schaerfe', shared.schaerfe, engInfo);
 
-  // Sortierung:
-  //   - Bei aktivem Filter: flach sortieren (die Hierarchie ist bereits
-  //     aufgeloest).
-  //   - Bei strukturellem View: Konvolute bleiben Signatur-sortiert, ihre
-  //     Kinder werden *innerhalb* des jeweiligen Konvoluts nach dem gewaehlten
-  //     Key sortiert. Standalone-Records ausserhalb der Konvolute bleiben
-  //     zwischen den Konvoluten an ihrer Signaturposition.
+  // Under an active filter the hierarchy is already dissolved, so sort flat.
+  // In the structural view Konvolute keep their Signatur order and only their
+  // children are sorted within the Konvolut, which preserves archival order.
   if (isFiltered) {
     items.sort((a, b) => sortFn(store, a.record, b.record, currentSortKey) * sortDir);
   } else if (currentSortKey !== 'signatur' || sortDir !== 1) {
@@ -153,38 +200,26 @@ function updateBestandView(filters) {
 
   renderRows(items);
 
-  // Count-Anzeige aktualisieren. EXCLUDED_DFT (Plakate/Tontraeger) konsistent
-  // rausrechnen -- sonst driftet der Toolbar-Zaehler gegen die sichtbaren Zeilen.
   const recordItems = items.filter(i => !i.isKonvolut);
   const recordCount = recordItems.length;
   const konvolutCount = items.filter(i => i.isKonvolut).length;
   const unerschlossenCount = recordItems.filter(
     i => store.unprocessedIds.has(i.record['@id'])).length;
-  if (toolbar) {
-    const totalBearbeitet = store.allRecords.filter(
-      r => !store.unprocessedIds.has(r['@id'])
-        && !EXCLUDED_DFT.has(getDocTypeId(r))
-    ).length;
-    let countText;
-    if (showAll) {
-      const erschlossen = recordCount - unerschlossenCount;
-      countText = `${recordCount} Einheiten (${erschlossen} erschlossen, ${unerschlossenCount} nicht erschlossen)`;
-    } else if (isFiltered) {
-      countText = `${recordCount} von ${totalBearbeitet} bearbeiteten Einheiten`;
-    } else {
-      countText = `${totalBearbeitet} bearbeitete Einheiten`;
-    }
-    toolbar.setCount(countText);
-  }
 
-  // Kompakter State-Stempel fuer Playwright + manuelles Debugging.
+  // Sidebar status from the visible record items: the weite set is what is on
+  // screen, the enge one its spatio-temporally attested subset.
+  const visibleIds = new Set(recordItems.map(i => i.record['@id']));
+  lastResult = recordsFor(store, {}, { base: visibleIds });
+  if (sidebar) sidebar.update();
+
+  // Compact state stamp for Playwright and manual debugging.
   logStamp('bestand', [
     ['konvolute', konvolutCount],
     ['records', recordCount],
     ['sort', `${currentSortKey}${sortDir === -1 ? '-desc' : ''}`],
     ['gefiltert', isFiltered ? 'ja' : ''],
-    ['erschliessung', showAll ? 'alle' : 'erschlossen'],
-    ['nicht-erschlossen', showAll ? unerschlossenCount : ''],
+    ['erschliessung', gesamt ? 'alle' : 'erschlossen'],
+    ['nicht-erschlossen', gesamt ? unerschlossenCount : ''],
   ]);
 
   return recordCount;
@@ -198,7 +233,9 @@ function buildTable() {
     { key: 'titel', label: 'Titel', className: 'archiv-col-titel', title: 'Sortieren nach Titel' },
     { key: 'typ', label: 'Typ', className: 'archiv-col-typ', title: 'Sortieren nach Dokumenttyp' },
     { key: 'datum', label: 'Datum', className: 'archiv-col-datum', title: 'Sortieren nach Datum' },
-    { key: 'links', label: 'Verknüpfungen', className: 'archiv-col-links', title: 'Verknüpfungen zu Personen, Orten, Werken, Ereignissen' },
+    // The column shows the typed Erschliessungsanzeige (E-158); the sort key
+    // stays the link count, which is what the dots aggregate.
+    { key: 'links', label: 'Erschließung', className: 'archiv-col-links', title: 'Erschlossene Inhaltstypen; Sortierung nach Zahl der Verknüpfungen' },
   ];
 
   const headerRow = el('tr');
@@ -221,6 +258,9 @@ function buildTable() {
     }, col.label + arrow);
     headerRow.appendChild(th);
   }
+  // Korb sits in its own narrow column so the bookmark is not read as part of
+  // the Erschliessungsanzeige (E-158). Not sortable, label lives in the title.
+  headerRow.appendChild(el('th', { className: 'archiv-col-korb', title: 'Wissenskorb' }));
 
   const thead = el('thead', {}, headerRow);
   table.appendChild(thead);
@@ -232,8 +272,8 @@ function buildTable() {
 
 function updateHeaderIndicators(headerRow, columns) {
   const ths = headerRow.querySelectorAll('th');
-  ths.forEach((th, i) => {
-    const col = columns[i];
+  columns.forEach((col, i) => {
+    const th = ths[i];
     const isActive = currentSortKey === col.key;
     const arrow = isActive ? (sortDir === 1 ? ' \u25B2' : ' \u25BC') : '';
     th.textContent = col.label + arrow;
@@ -248,13 +288,13 @@ function getOrderedItems(showAll = false) {
     for (const cid of children) childIds.add(cid);
   }
 
-  // Standalone records (not children of any Konvolut). Default nur bearbeitete;
-  // im "alle"-Modus (E-116) auch die nicht erschlossenen, ohne EXCLUDED_DFT
-  // anzutasten (Plakate/Tontraeger bleiben Scope-Entscheidung, nicht hier).
+  // Standalone records (not children of any Konvolut). The fein scope keeps the
+  // processed ones only; gesamt adds the unprocessed plus posters and sound
+  // carriers (E-116/E-157).
   const standalone = store.allRecords.filter(r =>
     !childIds.has(r['@id'])
     && (showAll || !store.unprocessedIds.has(r['@id']))
-    && !EXCLUDED_DFT.has(getDocTypeId(r))
+    && !isOutOfScope(r, showAll)
   );
 
   // Merge standalone records + Konvolut RecordSets into one sorted list
@@ -267,29 +307,29 @@ function getOrderedItems(showAll = false) {
   }
   topEntries.sort((a, b) => naturalSort(a.sig, b.sig));
 
-  // Build flat list: Konvolute get their children injected after them.
-  // Default: Leitprinzip "nur bearbeitet" gilt auch innerhalb von Konvoluten,
-  // Folios ohne Verknuepfungen (unprocessedIds) werden ausgeblendet, ein
-  // dadurch leeres Konvolut verschwindet samt Header. Im "alle"-Modus (E-116)
-  // erscheinen auch die unerschlossenen Kinder und Konvolute, in renderRows
-  // ausgegraut markiert -- der Erschliessungsstand bleibt sichtbar statt
-  // kaschiert. Folios (reine Metadaten-Records) bleiben in beiden Modi raus.
+  // Build flat list: Konvolute get their children injected after them. The
+  // "processed only" principle also holds inside a Konvolut, and a Konvolut left
+  // without children disappears with its head. The gesamt scope shows the
+  // unprocessed children and Konvolute too, greyed out in renderRows, so the
+  // Erschliessungsstand stays visible instead of hidden. Folios (pure metadata
+  // records) stay out in both scopes.
   for (const entry of topEntries) {
     if (entry.type === 'konvolut') {
       const meta = store.konvolutMeta.get(entry.konvolutId);
-      if (!showAll && (meta?.totalLinks ?? 0) === 0) continue;  // leere Konvolute nur im Default raus
+      if (!showAll && (meta?.totalLinks ?? 0) === 0) continue;  // empty Konvolute drop in the fein scope
       const children = (store.konvolutChildren.get(entry.konvolutId) || [])
         .filter(cid => !store.folioIds.has(cid))
         .filter(cid => showAll || !store.unprocessedIds.has(cid))
         .map(cid => store.records.get(cid))
         .filter(Boolean)
         .sort((a, b) => naturalSort(a['rico:identifier'] || '', b['rico:identifier'] || ''));
-      if (children.length === 0) continue;  // keine darstellbaren Kinder -> raus
+      if (children.length === 0) continue;  // nothing displayable left
       items.push({
         record: entry.record,
         isKonvolut: true,
         konvolutId: entry.konvolutId,
         visibleChildCount: children.length,
+        linkedChildCount: children.filter(c => countLinks(c) > 0).length,
       });
       for (const child of children) {
         items.push({ record: child, isChild: true, konvolutId: entry.konvolutId });
@@ -327,11 +367,9 @@ function sortFn(store, a, b, sort) {
 }
 
 /**
- * Undatiert-Markierung einer Bestandszeile. Reine Funktion, damit der
- * Zeitanker pruefbar bleibt. Die Markierung haengt allein an `rico:date` am
- * Record. Faellt dieser Traeger weg, gilt jeder Record als undatiert und die
- * Datum-Spalte zeigt durchgehend "o. D.". Konvolut-Header tragen die
- * Markierung nie, ihre Datumsspanne kommt aus konvolutMeta.
+ * Undated marker of a row. Pure so the time anchor stays testable. The marker
+ * hangs on `rico:date` alone; without that carrier every record counts as
+ * undated. Konvolut heads never carry it, their span comes from konvolutMeta.
  * @param {{record: object, isKonvolut?: boolean}} item
  * @returns {boolean}
  */
@@ -339,17 +377,33 @@ export function isUndatedItem(item) {
   return !item.isKonvolut && !item.record['rico:date'];
 }
 
+/** Document type badge of a row, built from the DOM-free badge decision. */
+function buildDocTypeBadge(item, record, docType, docLabel, docGloss, childCount) {
+  const kind = badgeKindForItem(item, record, docLabel, isStandaloneKonvolut);
+  switch (kind) {
+    case 'konvolut-struct':
+      return item.isKonvolut
+        ? el('span', { className: 'badge badge--konvolut-struct', dataset: { tip: `Enthält ${childCount} Objekte` } }, `Konvolut (${childCount})`)
+        : el('span', { className: 'badge badge--konvolut-struct', dataset: { tip: 'Noch nicht in Einzelobjekte aufgelöst' } }, 'Konvolut');
+    case 'standalone-konvolut':
+      return el('span', { className: 'badge badge--konvolut-struct', dataset: { tip: 'Noch nicht in Einzelobjekte aufgelöst' } }, 'Konvolut');
+    case 'doctype':
+      return el('span', { className: `badge badge--${docType || ''}${docGloss ? ' badge--glossed' : ''}`, title: docGloss }, docLabel);
+    default:
+      return el('span', { className: 'badge badge--unclassified' }, 'Nicht klassifiziert');
+  }
+}
+
 function renderRows(items) {
   currentItems = items;
   const tbody = document.getElementById('bestand-tbody');
   if (!tbody) return;
   clear(tbody);
+  const gesamt = getFilter().scope === 'gesamt';
 
   for (const item of items) {
     const r = item.record;
     const sig = formatSignatur(r['rico:identifier']);
-    const links = countLinks(r);
-    const year = primaryYear(store, r).year;
     const docType = getDocTypeId(r);
     const docLabel = dftLabel(store, docType) || '';
     const docGloss = glossOf(store, docType);
@@ -357,15 +411,11 @@ function renderRows(items) {
 
     let rowClass = '';
     if (item.isKonvolut) rowClass = 'archiv-row--konvolut';
-    else if (item.isChild) {
-      rowClass = 'archiv-row--child';
-      if (!expandedKonvolute.has(item.konvolutId)) rowClass += ' archiv-row--hidden';
-    }
+    else if (item.isChild) rowClass = 'archiv-row--child';
 
-    // "Nicht erschlossen" = keine Verknuepfungen. Im Default-Modus nie praesent
-    // (vorher rausgefiltert), nur im "alle"-Modus (E-116) sichtbar und dort
-    // ausgegraut. Ein Konvolut-Header gilt als unerschlossen, wenn sein
-    // gesamter Link-Saldo 0 ist (komplett unbearbeitetes Konvolut).
+    // "nicht erschlossen" means no Verknuepfungen. Only reachable in the gesamt
+    // scope (E-116), where the row is greyed out. A Konvolut head counts as
+    // unprocessed when its whole link balance is zero.
     const unerschlossen = item.isKonvolut
       ? ((store.konvolutMeta.get(item.konvolutId)?.totalLinks ?? 0) === 0)
       : store.unprocessedIds.has(recordId);
@@ -373,37 +423,20 @@ function renderRows(items) {
 
     if (expandedRecord === recordId) rowClass += ' archiv-row--active';
 
-    const sigContent = [];
-    if (item.isKonvolut) {
-      const expanded = expandedKonvolute.has(item.konvolutId);
-      const toggle = el('button', {
-        className: `konvolut-toggle ${expanded ? '' : 'collapsed'}`,
-        'aria-label': expanded ? 'Objekte einklappen' : 'Objekte aufklappen',
-        'aria-expanded': String(expanded),
-        onClick: (e) => {
-          e.stopPropagation();
-          toggleKonvolut(item.konvolutId);
-        },
-        html: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>',
-      });
-      sigContent.push(toggle);
-    }
-
     const meta = item.isKonvolut ? store.konvolutMeta.get(item.konvolutId) : null;
-    // Badge zeigt die Anzahl *sichtbarer* bearbeiteter Kinder, nicht die
-    // rohe meta.childCount -- sonst driftet Badge vs. Tabellenzeilen.
+    // The badge counts the visible children, not the raw meta.childCount, or it
+    // drifts against the rows actually rendered.
     const childCount = item.visibleChildCount ?? (meta ? meta.childCount : 0);
 
-    // Signatur: children show only folio part
-    const displaySig = item.isChild
+    // Children show the Folio part only; in the flattened filter mode the
+    // Konvolut head is missing as context, so the full Signatur is shown.
+    const displaySig = (item.isChild && !item.flattened)
       ? formatChildSignatur(r['rico:identifier'], store.konvolute.get(item.konvolutId)?.['rico:identifier'])
       : sig;
 
-    // Title: Konvolute use derived title from Folio record.
-    // Kinder, deren Titel identisch zum Konvolut-Titel ist (typisch bei
-    // Programmheft-Konvoluten mit geerbtem Sammeltitel), zeigen leere
-    // Titel-Zelle -- semantisches Rauschen vermeiden, der Kontext steht
-    // im Konvolut-Header.
+    // Konvolute use the title derived from their Folio record. A child whose
+    // title merely repeats the Konvolut title (inherited collective title) keeps
+    // an empty cell, the context already stands in the head.
     let displayTitle;
     if (item.isKonvolut) {
       displayTitle = meta?.title || r['rico:identifier'] || '';
@@ -421,30 +454,15 @@ function renderRows(items) {
       : (formatDate(r['rico:date']) || 'o.\u2009D.');
     const isUndated = isUndatedItem(item);
 
-    // Links: Konvolute show total with tooltip summary, Records show count or dash
-    let linksDisplay, hasLinks, linksTooltip = '';
-    if (item.isKonvolut) {
-      const totalLinks = meta?.totalLinks || 0;
-      linksDisplay = String(totalLinks);
-      hasLinks = totalLinks > 0;
-      linksTooltip = buildKonvolutTooltip(item.konvolutId);
-    } else {
-      linksDisplay = links > 0 ? String(links) : '\u00b7';
-      hasLinks = links > 0;
-      if (links > 0) linksTooltip = buildRecordTooltip(r);
-    }
-
-    const trProps = {
-      className: rowClass,
-      onClick: () => item.isKonvolut ? toggleKonvolut(item.konvolutId) : toggleRecordInline(recordId),
-    };
-    // Datasets fuer gezielte DOM-Mutation beim Konvolut-Auf/Zuklappen
-    // (toggleKonvolut mutiert nur diese Zeilen statt der ganzen Tabelle).
+    const trProps = { className: rowClass };
+    // Konvolut heads are permanent group heads (E-158); the record detail is the
+    // only collapse left in the table.
+    if (!item.isKonvolut) trProps.onClick = () => toggleRecordInline(recordId);
+    // The datasets stay, the DOM verification tool reads the hierarchy from them.
     if (item.isKonvolut) trProps.dataset = { konvolutHeader: item.konvolutId };
     else if (item.isChild) trProps.dataset = { konvolutChild: item.konvolutId };
     const tr = el('tr', trProps,
       el('td', { className: 'archiv-col-signatur' },
-        ...sigContent,
         el('span', { className: 'archiv-signatur' }, displaySig)
       ),
       el('td', { className: 'archiv-col-titel' },
@@ -456,20 +474,20 @@ function renderRows(items) {
           const hint = getFolioHint(r, item.konvolutId);
           return hint ? el('span', { className: 'archiv-folio-hint' }, hint) : null;
         })() : null,
-        item.isKonvolut ? buildKonvolutChips(meta, item.visibleChildCount) : null,
+        // In flat mode the Konvolut head is gone, so a quiet provenance hint
+        // names the Konvolut the child row comes from.
+        item.flattened ? (() => {
+          const kTitle = store.konvolutMeta.get(item.konvolutId)?.title
+            || store.konvolute.get(item.konvolutId)?.['rico:identifier'] || '';
+          return kTitle ? el('span', {
+            className: 'archiv-folio-hint archiv-folio-hint--konvolut',
+            dataset: { tip: `Aus Konvolut: ${kTitle}` },
+          }, `aus: ${truncate(kTitle, 40)}`) : null;
+        })() : null,
+        item.isKonvolut ? buildKonvolutChips(meta, gesamt) : null,
       ),
       el('td', { className: 'archiv-col-typ' },
-        item.isKonvolut
-          ? el('span', { className: 'badge badge--konvolut-struct', dataset: { tip: `Enth\u00e4lt ${childCount} Objekte` } }, `Konvolut (${childCount})`)
-          : item.isChild
-            ? (docLabel && docType !== 'konvolut'
-              ? el('span', { className: `badge badge--${docType || ''}${docGloss ? ' badge--glossed' : ''}`, title: docGloss }, docLabel)
-              : el('span', { className: 'badge badge--unclassified' }, 'Nicht klassifiziert'))
-            : isStandaloneKonvolut(r)
-              ? el('span', { className: 'badge badge--konvolut-struct', dataset: { tip: 'Noch nicht in Einzelobjekte aufgel\u00f6st' } }, 'Konvolut')
-              : (docLabel
-                ? el('span', { className: `badge badge--${docType || ''}${docGloss ? ' badge--glossed' : ''}`, title: docGloss }, docLabel)
-                : el('span', { className: 'badge badge--unclassified' }, 'Nicht klassifiziert')),
+        buildDocTypeBadge(item, r, docType, docLabel, docGloss, childCount),
         (!item.isKonvolut && unerschlossen)
           ? el('span', {
               className: 'badge badge--unerschlossen',
@@ -484,10 +502,9 @@ function renderRows(items) {
         }, displayDate)
       ),
       el('td', { className: 'archiv-col-links' },
-        el('span', {
-          className: `archiv-links ${hasLinks ? 'archiv-links--has-links' : 'archiv-links--zero'}`,
-          dataset: linksTooltip ? { tip: linksTooltip, tipWrap: '' } : {},
-        }, linksDisplay),
+        item.isKonvolut ? buildKonvolutErschliessung(item) : buildErschliessung(r),
+      ),
+      el('td', { className: 'archiv-col-korb' },
         !item.isKonvolut ? buildBookmarkBtn(recordId) : null,
       ),
     );
@@ -496,7 +513,7 @@ function renderRows(items) {
     // Inline detail expansion
     if (expandedRecord === recordId) {
       const detailTr = el('tr', { className: 'archiv-row--detail' });
-      const detailTd = el('td', { colspan: '5' });
+      const detailTd = el('td', { colspan: '6' });
       detailTd.appendChild(buildInlineDetail(r, store, {
         onClose: () => { expandedRecord = null; renderRows(currentItems); },
       }));
@@ -511,51 +528,45 @@ function toggleRecordInline(recordId) {
   renderRows(currentItems);
 }
 
-function toggleKonvolut(konvolutId) {
-  const willExpand = !expandedKonvolute.has(konvolutId);
-  if (willExpand) expandedKonvolute.add(konvolutId);
-  else expandedKonvolute.delete(konvolutId);
+/**
+ * Typed Erschliessungsanzeige of a record row: one dot per content family,
+ * filled or empty. The family colours are the ones the inline detail carries on
+ * its block titles, so the legend arises from proximity rather than from text
+ * (E-158). The breakdown lives in the tooltip.
+ */
+function buildErschliessung(record) {
+  const families = familiesForRecord(record, store);
+  const belegt = families.filter(f => f.count > 0);
+  const tip = belegt.length
+    ? belegt.map(f => `${f.label} ${f.count}`).join(' · ')
+    : 'keine Verknüpfungen';
+  return el('span', { className: 'archiv-ersch', dataset: { tip, tipWrap: '' } },
+    ...families.map(f => el('span', {
+      className: `ersch-dot ersch-dot--${f.key} ${f.count > 0 ? 'ersch-dot--on' : 'ersch-dot--off'}`,
+    })));
+}
 
-  const tbody = document.getElementById('bestand-tbody');
-  if (!tbody) return;
-
-  // Gezielte DOM-Mutation statt voller Tabellen-Rebuild: Header-Toggle-Button
-  // + Sichtbarkeit der Kindzeilen. Detail-Zeilen (ohne data-konvolut-child)
-  // bleiben unberuehrt -- identisches Verhalten zum bisherigen Rebuild.
-  let mutated = false;
-  for (const row of tbody.children) {
-    if (row.dataset.konvolutHeader === konvolutId) {
-      const toggle = row.querySelector('.konvolut-toggle');
-      if (toggle) {
-        toggle.classList.toggle('collapsed', !willExpand);
-        toggle.setAttribute('aria-expanded', String(willExpand));
-        toggle.setAttribute('aria-label', willExpand ? 'Objekte einklappen' : 'Objekte aufklappen');
-      }
-      mutated = true;
-    } else if (row.dataset.konvolutChild === konvolutId) {
-      row.classList.toggle('archiv-row--hidden', !willExpand);
-      mutated = true;
-    }
-  }
-  // Fallback (z. B. gefilterte Ansicht ohne Konvolut-Header): voller Rebuild.
-  if (!mutated) renderRows(currentItems);
+/** Konvolut head: how many of the visible children carry Verknuepfungen. */
+function buildKonvolutErschliessung(item) {
+  return el('span', {
+    className: 'archiv-ersch archiv-ersch--konvolut',
+    dataset: { tip: buildKonvolutTooltip(item.konvolutId), tipWrap: '' },
+  }, `${item.linkedChildCount ?? 0} von ${item.visibleChildCount ?? 0}`);
 }
 
 /**
- * Meta-Chips unter dem Konvolut-Titel: Top-3-Dokumenttypen + Status-Mix.
- * Gibt die aggregierten Statistiken aus store.konvolutMeta direkt sichtbar,
- * ohne dass die Konvolut-Zeile aufgeklappt werden muss.
+ * Meta chips under the Konvolut title: top three document types plus status mix,
+ * read from store.konvolutMeta.
  */
-function buildKonvolutChips(meta, visibleChildCount) {
+function buildKonvolutChips(meta, gesamt) {
   if (!meta) return null;
   const chips = [];
 
-  // Top-3-DocType-Chips (absteigend nach Count, Plakat/Tontraeger werden
-  // im Bestand-Tab sowieso ausgeblendet -> hier nicht mit abgebildet).
-  // Wenn mehr als 3 Typen existieren, wird ein "+N weitere"-Chip angehaengt.
+  // Posters and sound carriers only appear in the gesamt scope, otherwise the
+  // chips drift against the rows. Beyond three types a "+N weitere" chip follows.
   if (meta.docTypeCounts && meta.docTypeCounts.size > 0) {
     const all = [...meta.docTypeCounts.entries()]
-      .filter(([dft]) => !EXCLUDED_DFT.has(dft))
+      .filter(([dft]) => !dftOutOfScope(dft, gesamt))
       .sort((a, b) => b[1] - a[1]);
     const top = all.slice(0, 3);
     for (const [dft, count] of top) {
@@ -578,7 +589,7 @@ function buildKonvolutChips(meta, visibleChildCount) {
     }
   }
 
-  // Status-Mix als dezenter Untertitel (nur wenn mehrere Stufen).
+  // Status mix as a quiet subtitle.
   const statusParts = [];
   if (meta.statusCounts && meta.statusCounts.size > 0) {
     const ordered = ['abgeschlossen', 'begonnen', 'zurueckgestellt'];
@@ -603,9 +614,8 @@ function naturalSort(a, b) {
 }
 
 /**
- * Sortiert Kinder innerhalb jedes Konvoluts nach currentSortKey/sortDir,
- * laesst Konvolut-Header und Standalone-Records an ihrer Position.
- * Das bewahrt die archivische Hierarchie auch bei Sortierung.
+ * Sorts children within each Konvolut, leaving heads and standalone records in
+ * place, so sorting never tears the archival hierarchy apart.
  */
 function sortChildrenWithinKonvolute(items) {
   const result = [];
@@ -619,7 +629,7 @@ function sortChildrenWithinKonvolute(items) {
     }
     result.push(item);
     i++;
-    // Sammle alle Kinder direkt nach dem Konvolut-Header.
+    // Collect the children that follow this head.
     const children = [];
     while (i < items.length && items[i].isChild && items[i].konvolutId === item.konvolutId) {
       children.push(items[i]);
@@ -637,6 +647,42 @@ function isStandaloneKonvolut(record) {
   const sig = record['rico:identifier'] || '';
   if (sig.includes('/PL_') || sig.includes('_TT_')) return false;
   return true;
+}
+
+/**
+ * Flattens the hierarchy for the filtered mode: Konvolut heads drop out, child
+ * rows keep their `isChild`/`konvolutId` marks. Without the marks renderRows
+ * treats children as standalone records and the Konvolut badge displaces their
+ * real document type. Pure, so the badge decision stays testable.
+ * @param {Array<{isKonvolut?:boolean, isChild?:boolean}>} items
+ * @returns {Array}
+ */
+export function flattenForFilter(items) {
+  return items
+    .filter(item => !item.isKonvolut)
+    .map(item => item.isChild ? { ...item, flattened: true } : item);
+}
+
+/**
+ * Which badge a row carries, decided from the item alone so the rule is testable
+ * without a DOM.
+ *   - konvolut-struct     : Konvolut head
+ *   - doctype             : real document type badge
+ *   - unclassified        : child without a type, or typed 'konvolut'
+ *   - standalone-konvolut : top-level collective row not yet resolved
+ * @param {{isKonvolut?:boolean, isChild?:boolean}} item
+ * @param {object} record
+ * @param {string} docLabel
+ * @param {(r:object)=>boolean} isStandalone
+ * @returns {'konvolut-struct'|'doctype'|'unclassified'|'standalone-konvolut'}
+ */
+export function badgeKindForItem(item, record, docLabel, isStandalone) {
+  if (item.isKonvolut) return 'konvolut-struct';
+  if (item.isChild) {
+    return (docLabel && getDocTypeId(record) !== 'konvolut') ? 'doctype' : 'unclassified';
+  }
+  if (isStandalone(record)) return 'standalone-konvolut';
+  return docLabel ? 'doctype' : 'unclassified';
 }
 
 /**
@@ -672,21 +718,6 @@ function getFolioHint(record, konvolutId) {
     if (name) return name;
   }
   return null;
-}
-
-function buildRecordTooltip(record) {
-  const agents = ensureArray(record['m3gim-ontology:hasAssociatedAgent']);
-  const subjects = ensureArray(record['rico:hasOrHadSubject']);
-  const mentionedPersons = subjects.filter(s => s['@type'] === 'rico:Person');
-  const works = subjects.filter(s => s['@type'] === 'm3gim-ontology:MusicalWork');
-  const locs = ensureArray(record['rico:hasOrHadLocation'])
-    .filter(l => !/^\d{4}/.test(l.name || l['skos:prefLabel'] || ''));
-  const parts = [];
-  const personCount = agents.length + mentionedPersons.length;
-  if (personCount > 0) parts.push(`${personCount} Person${personCount > 1 ? 'en' : ''}`);
-  if (locs.length > 0) parts.push(`${locs.length} Ort${locs.length > 1 ? 'e' : ''}`);
-  if (works.length > 0) parts.push(`${works.length} Werk${works.length > 1 ? 'e' : ''}`);
-  return parts.join(', ');
 }
 
 function buildKonvolutTooltip(konvolutId) {
@@ -728,14 +759,14 @@ function buildBookmarkBtn(recordId) {
     onClick: (e) => {
       e.stopPropagation();
       toggleKorb(recordId);
-      // Button in-place aktualisieren statt die ganze Tabelle neu zu zeichnen.
+      // Update the button in place instead of redrawing the whole table.
       const btn = e.currentTarget;
       const nowActive = isInKorb(recordId);
       btn.classList.toggle('bookmark-btn--active', nowActive);
       btn.title = nowActive ? 'Aus Wissenskorb entfernen' : 'Zum Wissenskorb hinzuf\u00fcgen';
       btn.innerHTML = bookmarkIcon(14, nowActive);
-      // Nur wenn dasselbe Record als Inline-Detail offen ist, muss dessen
-      // zweite Korb-Darstellung mitgezogen werden -> dann voller Rebuild.
+      // Only when the same record is expanded does its second Korb control need
+      // to follow, which takes a full rebuild.
       if (expandedRecord === recordId) renderRows(currentItems);
     },
   });

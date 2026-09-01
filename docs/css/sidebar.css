@@ -13,7 +13,9 @@
 .view-shell {
   display: grid;
   grid-template-columns: var(--view-sidebar-w) 1fr;
-  height: calc(100vh - 130px);
+  /* Header, tab bar and footer are fixed-height tokens; the shell fills the
+     rest so the sidebar foot (reset) never slides under the footer. */
+  height: calc(100vh - var(--header-height) - var(--tab-bar-height) - var(--footer-height));
   min-height: 560px;
 }
 

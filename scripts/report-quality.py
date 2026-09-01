@@ -1,20 +1,20 @@
 #!/usr/bin/env python3
-"""M³GIM Quality-Snapshot — Report für das Erschließungsteam.
+"""M³GIM Quality-Snapshot — report for the Erschließungsteam.
 
-Liest m3gim.jsonld + wikidata-reconciliation.json und schreibt einen
-kompakten Markdown-Report mit:
+Reads m3gim.jsonld + wikidata-reconciliation.json and writes a compact
+Markdown report with:
 
-  - Verknuepfungsrate (Records mit mind. einer Verknuepfung)
-  - Bearbeitungsstand-Verteilung
-  - Wikidata-Coverage pro Index + Liste der low-confidence Matches
-    fuer manuelle Freigabe
-  - Provenance-Coverage (xlsxSource, agrelon:metadataProvenance)
-  - Externe Blocker (PL_07, NIM_11, Header-Shifts)
+  - Verknüpfung rate (records carrying at least one Verknüpfung)
+  - Bearbeitungsstand distribution
+  - Wikidata coverage per index plus the list of low-confidence matches
+    for manual approval
+  - Provenance coverage (xlsxSource, agrelon:metadataProvenance)
+  - External blockers (PL_07, NIM_11, header shifts)
 
-Verwendung:
+Usage:
     python scripts/report-quality.py
 
-Ausgabe: data/reports/quality-snapshot.md
+Output: data/reports/quality-snapshot.md
 """
 
 import json
@@ -51,7 +51,7 @@ def ensure_list(v):
 
 
 def count_links_on_record(rec):
-    """Zaehlt "effektive" Property-Eintraege eines Records."""
+    """Counts the effective property entries of a record."""
     count = 0
     for key in (
         "m3gim-ontology:hasAssociatedAgent", "rico:hasOrHadLocation",
@@ -71,15 +71,14 @@ def main():
 
     print(f"  {len(records_real)} echte Records (ohne Folio-Platzhalter)")
 
-    # --- Verknuepfungsrate
     with_links = [r for r in records_real if count_links_on_record(r) > 0]
     link_rate = len(with_links) / len(records_real) if records_real else 0.0
 
-    # Breakdown pro Konvolut
+    # Breakdown per Konvolut
     konvolut_stats = {}
     for r in records_real:
         sig = r.get("rico:identifier", "")
-        # Konvolut = archivsignatur ohne folio-Suffix
+        # Konvolut = archivsignatur without folio suffix
         parts = sig.rsplit(" ", 1)
         konvolut = parts[0] if len(parts) == 2 else sig
         ks = konvolut_stats.setdefault(konvolut, {"total": 0, "linked": 0})
@@ -87,30 +86,27 @@ def main():
         if count_links_on_record(r) > 0:
             ks["linked"] += 1
 
-    # --- Bearbeitungsstand
     bs_counter = Counter()
     for r in records_real:
         bs_counter[r.get("m3gim-ontology:processingStatus", "(leer)")] += 1
 
-    # --- Wikidata-Coverage
     recon = load_recon() or {}
     matched = recon.get("matched", [])
     unmatched = recon.get("unmatched", [])
     skipped = recon.get("skipped", [])
 
-    # Pro Index-Typ
+    # Per index type
     by_type = {}
     for m in matched:
         t = m.get("type", "?")
         by_type.setdefault(t, {"high": 0, "low": 0, "exact": 0}).setdefault(m.get("match", "?"), 0)
         by_type[t][m.get("match", "?")] = by_type[t].get(m.get("match", "?"), 0) + 1
 
-    # Low-Confidence Manual-Review-Liste — nur ungeprueft (weder approved noch rejected)
+    # Low-confidence manual-review list, only unchecked (neither approved nor rejected)
     low_conf = [m for m in matched
                 if m.get("match") == "fuzzy_low"
                 and m.get("manual_review") not in ("approved", "rejected")]
 
-    # --- Provenance-Coverage
     prov_total = len(records_real)
     prov_with_xlsx = sum(1 for r in records_real if isinstance(r.get("m3gim-ontology:xlsxSource"), dict))
     # E-103: agrelon:metadataProvenance migrated off the record onto its
@@ -138,7 +134,6 @@ def main():
                 if isinstance(rel.get("m3gim-ontology:xlsxSource"), dict):
                     nested_with_xlsx += 1
 
-    # --- Markdown schreiben
     lines = []
     lines.append(f"# M³GIM Quality-Snapshot")
     lines.append("")
@@ -152,9 +147,8 @@ def main():
     lines.append(f"- **{len(with_links)}/{len(records_real)}** Records mit "
                  f"mindestens einer Verknüpfung = **{link_rate:.0%}**")
     lines.append("")
-    # Konvolute mit mehr als einem Folio sind die eigentlich interessanten.
-    # Einzelobjekte (records == 1) werden aggregiert, damit der Report
-    # lesbar bleibt.
+    # Konvolute with more than one Folio are the interesting ones. Single
+    # objects (records == 1) are aggregated to keep the report readable.
     multi = {k: v for k, v in konvolut_stats.items() if v["total"] > 1}
     single = {k: v for k, v in konvolut_stats.items() if v["total"] == 1}
     single_total = sum(v["total"] for v in single.values())

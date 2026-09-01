@@ -116,6 +116,26 @@ Zu Malaniuk besteht keine eigenständige wissenschaftliche Literatur. Das Projek
 2. die Verfahren auf größere Datensätze skalieren,
 3. der Transfer auf eine FWF-Folgestudie (Sängerinnen an europäischen Kulturmetropolen, 19./20. Jh.) möglich ist.
 
+## Vortragsabstract und Datenlage
+
+Das Vortragsabstract der Projektleitung (2026-09-01) präzisiert FF4 zur konkreten Vortragsperspektive. Es versteht Mobilität als mehrdimensionale Kategorie, fragt nach der Verschränkung von erzwungener Migration, Ausbildungs- und Berufsmobilität und künstlerischer Beweglichkeit und formuliert die These der Sängerin als Trägerin, Vermittlerin und Transformatorin von Rollen-, Repertoire- und Aufführungswissen zwischen Graz, Zürich, München, Wien und Bayreuth. Der folgende Abgleich hält je Aussage fest, welche Datenstruktur sie braucht und was der Datensatz trägt, mit Belegbeispielen aus dem ausgelieferten Stand.
+
+**Karrierestationen und Engagementwechsel.** Gebraucht wird die Folge datierter Bindungen an Institutionen. Der Datensatz trägt Auftrittsorte mit Datum, aber keine Institution am Ereignis. Die Gastspiel-Annotation an `UAKUG/NIM_004 24` zeigt den Stand exemplarisch, sie verortet nach Bayreuth (`wd:Q3923`, mit Koordinaten) und datiert als Spanne, das ausrichtende Haus, die Festspiele, ist nicht als Entität am Ereignis erfasst. Ein Engagementwechsel ist damit noch keine Datenaussage. Die Institution je Auftritt kommt mit der Occurrence-Bündelung über `datenpunkt_id` (Datenstufe 2, [specification.md](specification.md) § Auftritts-Occurrence).
+
+**Ausbildung und Flucht.** Die biografische Mobilitätssicht ist im Datensatz nahezu leer, die frühen Lebensjahrzehnte sind kaum belegt. Ein seltener Beleg der Ausbildungszeit ist `UAKUG/NIM_003 1_1`, das Programmheft eines Sommerkurses des Deutschen Musikinstituts für Ausländer mit einer Ausgaben-Angabe in Reichsmark. Flucht und Studium existieren als kuratierte Stationenliste in diesem Dokument, nicht als erschlossene Ereignisse. Wenn der Vortrag sie datengestützt zeigen soll, braucht es entweder Feinerschließung der frühen Konvolute oder eine ausdrücklich als kuratiert markierte biografische Ereignisschicht, getrennt vom archivischen Beleg.
+
+**Mehrdimensionale Mobilität.** Die Ereignisrollen des Datensatzes (Aufführung, Gastspiel, Spielzeit, Absendung, Entstehung und weitere) sind eine Erfassungssystematik. Die fünf theoretischen Bewegungstypen dieses Dokuments haben keine Entsprechung im Vokabular, das ist die offene Entscheidung zur zweiten Mobilitätsachse in [specification.md](specification.md) § Offene Entscheidungen. Nationale Mobilität, die Staatsbürgerschaft durch Heirat, ist nirgends repräsentiert.
+
+**Quellenbasis.** Die im Abstract genannten Gattungen sind als Dokumenttypen erfasst und in der Statistik aggregiert. Verträge tragen Ortsannotationen (`m3gim-vocab:contractPlace` gehört zu den häufigsten Rollen) und Finanzangaben, der Vertragsstatus wartet auf die Umsetzung von `contractStatus`. Ob die Autobiografie als erschlossenes Objekt im Teilnachlass liegt, ist zu prüfen, im Abstract ist sie Leitquelle.
+
+**Wissenszirkulation und These.** Gebraucht wird die Kette Person, Partie, Werk, Ort und Zeit über Institutionen hinweg. Der Datensatz belegt Teilstücke. `UAKUG/NIM_004 2`, die Rezension zur Lady-Macbeth-Premiere an der Staatsoper (1952-12-16), trägt Performance-Entitäten mit Bühnenrollen wie `stagerole_lady_macbeth` samt Zellprovenienz (Box 1, Zeile 58), aber die Performances erben das Dokumentdatum, die Bühnenrollen tragen weder Werkbindung noch Stimmfach (fehlender Rollenindex), und Werk mal Ort ist nicht am Ereignis verknüpft. Kooperationen sind über AgRelOn nur dünn und ohne Ort-Zeit-Anker belegt, etwa `agrelon:HasCorrespondent` zwischen Malaniuk (`wd:Q94208`) und einer Korrespondenzpartnerin an `UAKUG/NIM_003 1_1`. Belastbar wird die These erst mit Datenstufe 3, Werk und Partie am Auftritt. Der vorführbare Kernfall ist die feinerschlossene Bayreuth-Serie 1953.
+
+**Mapping und relationales Gefüge.** Orte sind zu Wikidata rekonziliert und tragen mehrheitlich Koordinaten, einzelne Städte fehlen (E-126). Die Karte ist entitätszentriert, eine Trajektorien-Darstellung existiert nicht, sie entstünde laut [specification.md](specification.md) gegen genau diese Vortragsperspektive.
+
+**Reflexion der Leerstellen.** Der Reflexionsteil des Abstracts ist aus dem Bestand heraus bereits bedienbar und dessen stärkster Beleg. Die ausgewiesene Bayreuth-Lücke 1954 bis 1958, die Monochromie sichtloser Chronik-Chips und die Zellprovenienz jedes Datenpunkts zeigen Überlieferungsdichte statt Aktivität.
+
+Die fehlenden Stücke konvergieren auf eine Kette, `datenpunkt_id` füllen, Occurrence-Gruppierung, Institution und Partie am Auftritt. Extern anzustoßen sind der Erfassungs-Rollout der `datenpunkt_id`, der Rollenindex und die Klärung der Autobiografie.
+
 ## Forschungskontext: Oper Graz
 
 Das Grazer Opernhaus (Fokus 1945–1969) dient als Nukleus der Mobilitätsanalyse. Malaniuk verkörpert das Narrativ „Graz als Sprungbrett".
@@ -135,7 +155,7 @@ Das Grazer Opernhaus (Fokus 1945–1969) dient als Nukleus der Mobilitätsanalys
 
 ## Personas (ausarbeiten)
 
-Wen bedient das Tool? Vorläufig aus FF1–FF4 und der Partner-Konstellation abgeleitet; mit den realen Bedürfnissen aus der Partner-Rückmeldung zu schärfen.
+Wen bedient das Tool? Vorläufig aus FF1–FF4 und der Partner-Konstellation abgeleitet; mit den realen Bedürfnissen aus der Partner-Rückmeldung zu schärfen. Seit E-156 ist entschieden, dass die Anwendung Werkzeug zum Selberfinden ist und primär die Forschenden (P1, P2) und das Erschließungsteam (P3) bedient; P4 bleibt nachgelagert.
 
 ### P1 — Musikwissenschaftliche Forscherin (Kern-Persona)
 
@@ -169,7 +189,7 @@ Schema je Use Case: **FF-Bezug · Frage · benötigte Daten · UI-Baustein (Stan
 - **Frage:** Räumlich-zeitliches Bewegungsprofil über die Karriere.
 - **Daten:** SpatiotemporalEvents mit `atPlace`/`placeCountry`/`atDate`; Records mit `rico:date`.
 - **UI (Stand):** Chronik als temporale Achse (E-124: Sicht-gefärbter Jahres-Zeitstrahl plus kollabierbarer Dekaden-Sicht-Header), Karte als räumliche Achse (entitätszentriert, E-126), Statistik „Wohin & Wann" als Aggregat.
-- **Deckung:** Die Masse des datierten Materials klumpt in den 1950ern; nur wenige Lebensdekaden sind überhaupt belegt. Die Chronik ist damit ehrlich eine Erschließungs-Momentaufnahme der München-/Bayreuth-Jahre, kein Karriere-Bogen über die Lebensspanne. Dichte = Überlieferung, nicht Aktivität, als Caption ausgewiesen.
+- **Deckung:** Die Masse des datierten Materials klumpt in den 1950ern; nur wenige Lebensdekaden sind überhaupt belegt. Die Chronik ist damit ehrlich eine Erschließungs-Momentaufnahme der München-/Bayreuth-Jahre, kein Karriere-Bogen über die Lebensspanne. Dichte = Überlieferung, nicht Aktivität; der Hinweis liegt nach der Erklärtext-Regel (E-156, [design.md](design.md) Regel 11) im Tooltip statt als sichtbare Caption.
 - **Offen:** Ort×Zeit und Karte noch nicht gekoppelt; der Cross-View-Filter würde Chronik, Karte und Statistik auf denselben Schnitt bringen.
 
 ### UC-2 — Welche Art von Mobilität? Gastspiel vs. Engagement vs. Reise (FF1/FF4)

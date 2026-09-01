@@ -152,6 +152,52 @@ test('partitionRecord: Buehnenrollen kommen ueber die Performance-Kette, mit ihr
   assert.deepEqual(performanceRoles, [{ name: 'Waltraude', qualityFlag: 'quelle-tippfehler' }]);
 });
 
+test('partitionRecord: datierte Auffuehrungen und undatierte Standalone-Rollen trennen sich', () => {
+  const record = {
+    '@id': 'm3gim-data:r_split',
+    'm3gim-ontology:hasPerformance': [
+      { '@id': 'm3gim-data:perf_dated' },
+      { '@id': 'm3gim-data:perf_role' },
+    ],
+  };
+  const store = {
+    performances: new Map([
+      ['m3gim-data:perf_dated', {
+        'm3gim-ontology:atDate': '1953-07-30',
+        'm3gim-ontology:performanceOf': { name: 'Tristan und Isolde', '@id': 'wd:Q123' },
+      }],
+      ['m3gim-data:perf_role', {
+        'm3gim-ontology:hasStageRole': { '@id': 'm3gim-data:sr_isolde' },
+      }],
+    ]),
+    stageRoles: new Map([['m3gim-data:sr_isolde', 'Isolde']]),
+  };
+  const { performances, performanceRoles } = partitionRecord(record, store);
+
+  // Datierte Auffuehrung -> eigene Sektion, mit Datum, Werk, Wikidata.
+  assert.equal(performances.length, 1);
+  assert.equal(performances[0].date, '1953-07-30');
+  assert.equal(performances[0].work, 'Tristan und Isolde');
+  assert.equal(performances[0].workWikidata, 'wd:Q123');
+  // Undatierte Standalone-Rolle bleibt in Werk & Repertoire, erscheint NICHT
+  // ein zweites Mal unter den datierten Auffuehrungen.
+  assert.deepEqual(performanceRoles, [{ name: 'Isolde', qualityFlag: undefined }]);
+});
+
+test('partitionRecord: am Datenstand traegt NIM_073 30_1 die datierte Bayreuth-Serie 1953', async () => {
+  const store = await realStore();
+  const record = store.bySignatur.get('UAKUG/NIM_073 30_1');
+  assert.ok(record, 'Anker-Record UAKUG/NIM_073 30_1 nicht im Store');
+  const { performances, performanceRoles } = partitionRecord(record, store);
+  // Datierte Serie: mehrere Auffuehrungen mit Datum, mindestens eine im Jahr 1953.
+  assert.ok(performances.length >= 5, `zu wenige datierte Auffuehrungen: ${performances.length}`);
+  assert.ok(performances.every(p => p.date), 'datierte Auffuehrung ohne Datum');
+  assert.ok(performances.some(p => String(p.date).startsWith('1953')), 'kein 1953-Beleg');
+  // Undatierte Standalone-Rollen bleiben erhalten und getrennt.
+  assert.ok(performanceRoles.length > 0, 'keine undatierten Standalone-Rollen erhalten');
+  assert.ok(performanceRoles.every(r => r.name), 'Standalone-Rolle ohne Namen');
+});
+
 test('partitionRecord: ortlose Datierungen teilen sich auf Erwaehnung und Ereignis auf', async () => {
   const store = await storeFrom({
     '@graph': [
@@ -245,12 +291,13 @@ test('partitionRecord: am Datenstand tragen Agenten-Buckets ihre Rollen-Sektion'
 
 test('partitionRecord: leerer Record liefert leere, aber wohlgeformte Struktur', () => {
   const {
-    bucket, works, performanceRoles, events, locations, agentRelations, finances,
+    bucket, works, performanceRoles, performances, events, locations, agentRelations, finances,
     mentionedDatings, eventDatings,
   } = partitionRecord({ '@id': 'x' }, {});
   assert.deepEqual(bucket, { produktion: [], mitwirkende: [], erwaehnt: [], weitere: [] });
   assert.deepEqual(works, []);
   assert.deepEqual(performanceRoles, []);
+  assert.deepEqual(performances, []);
   assert.deepEqual(events, []);
   assert.deepEqual(locations, []);
   assert.deepEqual(agentRelations, []);

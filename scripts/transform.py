@@ -1,24 +1,24 @@
 #!/usr/bin/env python3
 """
-M³GIM Transform — Step 3 der Pipeline.
+M³GIM transform — step 3 of the pipeline.
 
-Erzeugt JSON-LD im RiC-O 1.1 Format mit m3gim-Erweiterungen.
-Liest Google Sheets Exporte, normalisiert Daten, baut Konvolut-Hierarchie,
-matched Verknuepfungen gegen Indizes.
+Produces JSON-LD in RiC-O 1.1 format with m3gim extensions.
+Reads the Google Sheets exports, normalizes the data, builds the Konvolut
+hierarchy, and matches Verknuepfungen against the indices.
 
-Normalisierungsschritte:
-    1. Spaltennamen: .lower().strip() (Excel hat gemischte Gross-/Kleinschreibung)
-    2. Header-Shift-Korrektur: 3 Indizes (Org, Ort, Werk) haben verschobene Header
-    3. String-Werte: .strip() (Leerzeichen), .lower() fuer Vokabularfelder
-    4. Datumsfelder: Excel-Artefakte entfernen ("1958-04-18 00:00:00" → "1958-04-18")
-    5. Dokumenttyp: Mapping deutsch → m3gim-vocab SKOS-Konzept (25 Typen)
-    6. Bearbeitungsstand: Varianten normalisieren (vollstaendig/Erledigt → abgeschlossen)
-    7. Komposit-Typen: "ort,datum" decomponieren in separate Relationen
-    8. Komposit-Werte: "Muenchen, 1952-12-17" → Ort + Datum getrennt
-    9. Rollen: .lower() fuer konsistente Kleinschreibung
-   10. Wikidata-IDs: Regex-Validierung ^Q\d+$ (verhindert falsche URIs)
+Normalization steps:
+    1. Column names: .lower().strip() (Excel has mixed casing)
+    2. Header-shift correction: three indices (Org, Ort, Werk) ship shifted headers
+    3. String values: .strip(), .lower() for vocabulary fields
+    4. Date fields: remove Excel artefacts ("1958-04-18 00:00:00" → "1958-04-18")
+    5. Document type: mapping German → m3gim-vocab SKOS concept
+    6. Bearbeitungsstand: normalize variants (vollstaendig/Erledigt → abgeschlossen)
+    7. Composite types: decompose "ort,datum" into separate relations
+    8. Composite values: "Muenchen, 1952-12-17" → place + date split
+    9. Roles: .lower() for consistent casing
+   10. Wikidata ids: regex validation ^Q\d+$ (prevents malformed URIs)
 
-Verwendung:
+Usage:
     python scripts/transform.py
 """
 
@@ -46,21 +46,13 @@ from _common import (
     INDEX_HEADER_SHIFTS,
 )
 
-# Windows-Konsole: UTF-8 erzwingen
+# Windows console defaults to cp1252; force UTF-8
 if sys.stdout.encoding != "utf-8":
     sys.stdout.reconfigure(encoding="utf-8")
-
-# ---------------------------------------------------------------------------
-# Pfade
-# ---------------------------------------------------------------------------
 
 BASE_DIR = Path(__file__).parent.parent
 SHEETS_DIR = Path(os.environ.get("M3GIM_SHEETS_DIR", BASE_DIR / "data" / "google-spreadsheet"))
 OUTPUT_DIR = Path(os.environ.get("M3GIM_OUTPUT_DIR", BASE_DIR / "data" / "output"))
-
-# ---------------------------------------------------------------------------
-# JSON-LD Context
-# ---------------------------------------------------------------------------
 
 CONTEXT = {
     "rico": "https://www.ica.org/standards/RiC/ontology#",
@@ -76,23 +68,23 @@ CONTEXT = {
     "geo": "http://www.w3.org/2003/01/geo/wgs84_pos#",
     "skos": "http://www.w3.org/2004/02/skos/core#",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
-    # Inline-Property-Aliase: bare keys → qualifizierte URIs
+    # Inline property aliases: bare keys → qualified URIs
     "name": "rico:name",
     "role": "m3gim-ontology:role",
     "composer": "m3gim-ontology:composer"
 }
 
-# Rollenbegriffe des formalen Vokabulars, deutsches Label → (CURIE, prefLabel).
-# Das Vokabular steht in der Spec-Hierarchie ueber der Pipeline (E-133), der
-# Rollenwert wird also von dort gelesen und nicht hier zweitgefuehrt.
+# Role concepts of the formal vocabulary, German label → (CURIE, prefLabel).
+# The vocabulary ranks above the pipeline in the spec hierarchy (E-133), so
+# role values are read from there instead of being duplicated here.
 VOCAB_PATH = Path(os.environ.get("M3GIM_VOCAB_PATH", BASE_DIR / "vocab" / "m3gim.ttl"))
 ROLE_CONCEPTS = load_role_concepts(VOCAB_PATH)
 CONCEPT_META = load_concept_meta(VOCAB_PATH)
 ROLE_META = load_role_meta(VOCAB_PATH)
 
-# Mapping (typ, rolle) → AgRelOn-Klasse + -Property (data-model.md § 8.3, Phase 4.8).
-# Die Pipeline erzeugt zusaetzlich zur normalen Agent-Relation eine agrelon-
-# Relation mit Provenance auf den Record.
+# Mapping (typ, rolle) → AgRelOn class + property (data-model.md § 8.3, phase 4.8).
+# The pipeline emits an agrelon relation with provenance on the record in
+# addition to the plain agent relation.
 AGRELON_MAPPING = {
     # (typ, rolle) -> (agrelon_class, agrelon_property_on_subject)
     ("institution", "arbeitgeber"): ("agrelon:HasEmployeeEmployer", "agrelon:hasEmployer"),
@@ -105,11 +97,11 @@ AGRELON_MAPPING = {
     ("institution", "ausbildungsstätte"): ("agrelon:HasIsMember",    "agrelon:isMemberOf"),
 }
 
-# Rollen, die eine AgRelOn-Relation nur an einem bestimmten Dokumenttyp tragen.
-# Die Absenderseite der Korrespondenz steht im Bestand unter "verfasser"; der
-# deklarierte Wert "absender" kommt in den Daten nicht vor. Ohne die Bindung an
-# den Dokumenttyp wuerde derselbe Rollenwert auch am Kritiker einer Rezension
-# und am Autor eines Presseartikels eine Korrespondenz behaupten.
+# Roles that carry an AgRelOn relation only on a specific document type.
+# The sender side of correspondence is recorded as "verfasser" in the fonds;
+# the declared value "absender" never occurs in the data. Without the binding
+# to the document type, the same role value would also claim a correspondence
+# for the critic of a review or the author of a press article.
 AGRELON_MAPPING_BY_DFT = {
     ("person", "verfasser"): {
         "korrespondenz": ("agrelon:HasCorrespondent", "agrelon:hasCorrespondent"),
@@ -119,25 +111,25 @@ AGRELON_MAPPING_BY_DFT = {
     },
 }
 
-# n-aere AgRelOn-Begriffe, deren Property als owl:SymmetricProperty deklariert
-# ist. Fuer sie sieht AgRelOn agrelon:hasSubjectObject vor, weil beide Seiten
-# dieselbe Rolle tragen; hasSubject und hasObject behaupteten eine Richtung, die
-# der Begriff nicht kennt. Am 2026-08-22 gegen die AgRelOn-RDF der Deutschen
-# Nationalbibliothek geprueft.
+# N-ary AgRelOn concepts whose property is declared owl:SymmetricProperty.
+# AgRelOn prescribes agrelon:hasSubjectObject for them because both sides carry
+# the same role; hasSubject/hasObject would assert a direction the concept does
+# not know. Verified 2026-08-22 against the AgRelOn RDF of the German National
+# Library.
 SYMMETRIC_AGRELON_CLASSES = frozenset({"agrelon:HasCorrespondent"})
 
-# Begriffe, deren Subjektstelle nicht die Nachlassbildnerin traegt. IsHasPatron
-# ist der n-aere Begriff zu isPatronOf/hasPatron, und isPatronOf traegt die
-# correspondsTo-Richtung; nach dem AgRelOn-Kommentar zu hasSubjectObject folgt
-# die Subjektstelle diesem ersten Namensteil. Subjekt ist damit der Foerdernde,
-# also der Auftraggeber, und die Gefoerderte steht an der Objektstelle.
+# Concepts whose subject position is not the fonds creator. IsHasPatron is the
+# n-ary concept for isPatronOf/hasPatron, and isPatronOf carries the
+# correspondsTo direction; per the AgRelOn comment on hasSubjectObject the
+# subject position follows that first name part. The subject is thus the
+# patron (Auftraggeber), the patronized person sits at the object position.
 FONDS_AT_OBJECT_CLASSES = frozenset({"agrelon:IsHasPatron"})
 
-# Nachlass-Subjekt aller AgRelOn-Relationen: Ira Malaniuk, Wikidata Q94208
-# (Label + Lebensdaten 2026-06-18 gegen Wikidata verifiziert, nicht geraten).
-# Die n-äre Reifikation trägt sie als agrelon:hasSubject; das Gegenüber als
-# hasObject (E-104). Referenziert die kanonische WD-Entität direkt, statt einen
-# lokalen Knoten zu prägen (das Schema lässt Person nicht als Top-Level-@type).
+# Fonds subject of all AgRelOn relations: Ira Malaniuk, Wikidata Q94208
+# (label + life dates verified against Wikidata 2026-06-18, not guessed).
+# The n-ary reification carries her as agrelon:hasSubject, the counterpart as
+# hasObject (E-104). References the canonical WD entity directly instead of
+# minting a local node (the schema does not allow Person as top-level @type).
 MALANIUK_SUBJECT = {
     "name": "Malaniuk, Ira",
     "@id": "wd:Q94208",
@@ -145,12 +137,11 @@ MALANIUK_SUBJECT = {
 }
 
 
-# Rollen, die die Erfassung an einer Datierung fuehrt. Die frueher hier
-# angehaengte Abbildung auf eine typisierte Datums-Property ist mit dem
-# Zielmodell entfallen; jeder Datumswert wird ein Annotationsknoten mit
-# m3gim-ontology:atDate und seiner Rolle. Die Menge bleibt, weil ein
-# Komposit "ort,datum" seine Rolle an beide Haelften vererbt und eine
-# Datumsrolle am Ortsteil nichts aussagt (siehe ort-Zweig).
+# Roles the cataloguing attaches to a dating. The former mapping to typed date
+# properties is gone with the target model; every date value becomes an
+# annotation node with m3gim-ontology:atDate and its role. The set remains
+# because an "ort,datum" composite inherits its role to both halves and a date
+# role on the place half says nothing (see the ort branch).
 DATE_ONLY_ROLES = frozenset({
     "erstelldatum",
     "absendedatum",
@@ -176,66 +167,56 @@ DATE_ONLY_ROLES = frozenset({
     "gespraechsdatum",
 })
 
-# Die eine Datumsrolle, die am Dokument keinen Annotationsknoten erzeugt: die
-# Entstehungsdatierung steht dort auf dem RiC-O-Term rico:creationDate.
+# The one date role that produces no annotation node on the document: the
+# creation dating lives on the RiC-O term rico:creationDate there.
 CREATION_DATE_ROLE = "erstelldatum"
 
-# Pipeline-interner Zwischenspeicher am Record, nie serialisiert. Er haelt eine
-# malformte Entstehungsdatierung, bis die @id-Kollisionsaufloesung gelaufen ist.
+# Pipeline-internal scratch key on the record, never serialized. Holds a
+# malformed creation dating until @id collision resolution has run.
 PENDING_CREATION_DATE = "_malformed_creation_date"
 
-# Mobilitaets-Ortsrollen (E-97): jede erzeugt eine datumslose
-# m3gim-ontology:Annotation (First-Class-Mobilitaetsereignis fuer den
-# Mobilitaets-Atlas). Vokabular-Vollstaendigkeit aus data.md § 4/§ 10 — im
-# aktuellen Export sind zielort/absendeort/abreiseort belegt, empfangsort/
-# vertragsort scaffolden fuer einen tieferen Export. wohnort ist KEIN
-# Punktereignis (Zustand mit Validity) und steht bewusst nicht in dieser Menge.
+# Mobility place roles (E-97): each produces a dateless m3gim-ontology:Annotation
+# (first-class mobility event for the mobility atlas). Vocabulary completeness
+# per data.md § 4/§ 10 — the current export uses zielort/absendeort/abreiseort;
+# empfangsort/vertragsort scaffold for a deeper export. wohnort is NOT a point
+# event (a state with validity) and is deliberately absent from this set.
 MOBILITY_PLACE_ROLES = {
     "zielort", "absendeort", "abreiseort", "empfangsort", "vertragsort",
 }
 
-# Vertragsstatus (data-model.md § 11, E-99): in der Quelle wird ein unerfuellter
-# Vertrag ueber die rolle-Spalte als "nicht eingehalten" markiert, dabei
-# spaltenweit ueber den ganzen Vertragsblock (z.B. NIM_023) durchgereicht. Das
-# ist KEINE Ereignis-/Ortsrolle: ein Ort oder ein ort,datum-Ereignis kann nicht
-# "nicht eingehalten" sein. Wir filtern den Status daher als Rolle heraus,
-# damit keine Scheinrolle entsteht (Routing-Fix). Die contractStatus-
-# Modellierung (contractStatus/realized am Vertrags-Record) ist mangels Test-/
-# Frontend-Bedarf noch nicht ausgebaut und mit dem Erschliessungsteam zu klaeren.
+# Contract status (data-model.md § 11, E-99): the source marks an unfulfilled
+# contract via the rolle column as "nicht eingehalten", propagated column-wide
+# across the whole contract block (e.g. NIM_023). This is NOT an event/place
+# role: a place or an ort,datum event cannot be "nicht eingehalten". We filter
+# the status out as a role so no pseudo-role arises (routing fix). The
+# contractStatus modelling (contractStatus/realized on the contract record) is
+# not built out for lack of test/frontend demand and remains to be settled with
+# the cataloguing team.
 CONTRACT_STATUS_ROLES = {"nicht eingehalten"}
 
-# ---------------------------------------------------------------------------
-# Dokumenttyp-Mapping (deutsch → m3gim-vocab)
-# ---------------------------------------------------------------------------
-
+# Document type mapping (German → m3gim-vocab)
 DOKUMENTTYP_TO_DFT = {
-    # Korrespondenz-Hierarchie
     "korrespondenz": "m3gim-vocab:correspondence",
     "brief": "m3gim-vocab:letter",
     "postkarte": "m3gim-vocab:postcard",
     "telegramm": "m3gim-vocab:telegram",
-    # Presse-Hierarchie
     "presse": "m3gim-vocab:press",
     "zeitungsausschnitt": "m3gim-vocab:newspaperClipping",
     "kritik": "m3gim-vocab:critique",
     "rezension": "m3gim-vocab:review",
-    # Programm-Hierarchie: one canonical concept, the finer genre names stay
+    # Program hierarchy: one canonical concept, the finer genre names stay
     # accepted source values as synonyms (decision template § 3).
     "programm": "m3gim-vocab:program",
     "programmheft": "m3gim-vocab:program",
     "konzertprogramm": "m3gim-vocab:program",
-    # Biographisch-Hierarchie
     "biographisch": "m3gim-vocab:biographical",
     "biographie": "m3gim-vocab:biography",
     "autobiografie": "m3gim-vocab:autobiography",
     "lebenslauf": "m3gim-vocab:curriculumVitae",
-    # Identitaetsdokument-Hierarchie
     "identitaetsdokument": "m3gim-vocab:identityDocument",
     "ausweis": "m3gim-vocab:identityCard",
-    # Konvolut-Aggregate
     "sammlung": "m3gim-vocab:collection",
     "konvolut": "m3gim-vocab:bundle",
-    # Flache Typen
     "vertrag": "m3gim-vocab:contract",
     "plakat": "m3gim-vocab:poster",
     "tontraeger": "m3gim-vocab:soundCarrier",
@@ -254,7 +235,7 @@ DOKUMENTTYP_TO_DFT = {
     "typoskript": "m3gim-vocab:typescript",
     "visitenkarte": "m3gim-vocab:businessCard",
     "noten": "m3gim-vocab:sheetMusic",
-    # E-101: neue Konzepte (aktiv mit dem tieferen Export, April-Daten kennen sie nicht)
+    # E-101: new concepts (active with the deeper export; April data lacks them)
     "briefumschlag": "m3gim-vocab:envelope",
     "musikzeitschrift": "m3gim-vocab:musicPeriodical",
     "chronik": "m3gim-vocab:chronicle",
@@ -263,9 +244,9 @@ DOKUMENTTYP_TO_DFT = {
     "sonstiges": "m3gim-vocab:other",
 }
 
-# SKOS-Hierarchie der Dokumenttypen (data.md Abschnitt 12).
-# Jeder Key ist ein Konzept, der Wert sein direkter Oberbegriff (skos:broader).
-# Konzepte ohne Eintrag sind Top-Level (broader = dokument).
+# SKOS hierarchy of document types (DFT scheme in vocab/m3gim.ttl). Key is a
+# concept, value its direct broader concept (skos:broader). Concepts without
+# an entry are top-level.
 DFT_BROADER = {
     "letter": "correspondence",
     "postcard": "correspondence",
@@ -281,13 +262,12 @@ DFT_BROADER = {
     "chronicle": "biographical",  # E-101
     "identityCard": "identityDocument",
 }
-# E-101: 'sammlung' und 'verzeichnis' bleiben bewusst ohne broader (top-level /
-# eigenständig; die is-a-Beziehung von sammlung zu konvolut wird nicht
-# vorentschieden, data-model.md § 12).
+# E-101: 'sammlung' and 'verzeichnis' deliberately stay without broader (the
+# is-a relation of sammlung to konvolut is not prejudged, data-model.md § 12).
 
-# Lesbare deutsche Labels für skos:prefLabel der Dokumenttyp-Concepts (E-101). Löst die
-# Frontend-Handtabelle DOKUMENTTYP_LABELS ab; die Werte sind mit ihr deckungs-
-# gleich, damit der Frontend-Umbau die Anzeige nicht verändert.
+# Readable German labels for skos:prefLabel of the document type concepts
+# (E-101). Replaces the frontend hand table DOKUMENTTYP_LABELS; values are
+# identical to it so the frontend rebuild does not change the display.
 DFT_LABELS = {
     "document": "Dokument",
     "bundle": "Konvolut",
@@ -327,36 +307,31 @@ DFT_LABELS = {
     "other": "Sonstiges",
 }
 
-# Header-Shift-Korrekturen und Waehrungs-/Bearbeitungsstand-Defaults
-# kommen aus _common.py (INDEX_HEADER_SHIFTS, FINANCE_CURRENCY_DEFAULTS,
-# normalize_bearbeitungsstand). Siehe knowledge/data.md § 17.
+# Header-shift corrections and currency/Bearbeitungsstand defaults come from
+# _common.py (INDEX_HEADER_SHIFTS, FINANCE_CURRENCY_DEFAULTS,
+# normalize_bearbeitungsstand). See knowledge/data.md § 17.
 
-
-# ---------------------------------------------------------------------------
-# Hilfsfunktionen
-# ---------------------------------------------------------------------------
 
 def normalize_str(value) -> str | None:
-    """Normalisiert String-Wert: strip, lower fuer Vokabularfelder"""
+    """Trimmed string or None for empty/NaN values."""
     if pd.isna(value) or str(value).strip() == "":
         return None
     return str(value).strip()
 
 
 def normalize_lower(value) -> str | None:
-    """Normalisiert String-Wert: strip + lower"""
+    """Trimmed lowercase string or None for empty/NaN values."""
     if pd.isna(value) or str(value).strip() == "":
         return None
     return str(value).strip().lower()
 
 
 def build_dft_concepts(records: list) -> list:
-    """Erzeugt SKOS-Concept-Knoten fuer alle tatsaechlich genutzten Dokumenttyp-Begriffe.
+    """SKOS concept nodes for all document type concepts actually in use.
 
-    Fuegt skos:broader-Relation gemaess data.md Abschnitt 12 hinzu.
-    Nur verwendete Konzepte werden emittiert (sparsamer Graph).
-    Transitive Elternbegriffe werden mitgenommen (z.B. "brief" zieht
-    "korrespondenz" mit ein).
+    Adds skos:broader per the DFT scheme in vocab/m3gim.ttl. Only used
+    concepts are emitted (sparse graph); transitive parents are pulled in
+    ("brief" brings "korrespondenz").
     """
     used = set()
     for r in records:
@@ -366,7 +341,6 @@ def build_dft_concepts(records: list) -> list:
             if ident.startswith("m3gim-vocab:"):
                 used.add(ident.split(":", 1)[1])
 
-    # Transitiv Elternbegriffe ergaenzen
     to_process = list(used)
     while to_process:
         concept = to_process.pop()
@@ -380,7 +354,7 @@ def build_dft_concepts(records: list) -> list:
         node = {
             "@id": f"m3gim-vocab:{concept}",
             "@type": "skos:Concept",
-            # E-101: lesbares deutsches Label statt des nackten Slugs.
+            # E-101: readable German label instead of the bare slug.
             "skos:prefLabel": DFT_LABELS.get(concept, concept),
         }
         if concept in DFT_BROADER:
@@ -395,12 +369,12 @@ def build_dft_concepts(records: list) -> list:
 
 
 def build_role_concepts(nodes: list) -> list:
-    """Erzeugt SKOS-Concept-Knoten fuer jede im Graph verwendete Rolle.
+    """SKOS concept nodes for every role used in the graph.
 
-    Die Rolle steht an ihrer Verwendungsstelle als IRI mit eingebettetem Label
-    (E-137). Ihre Definition gehoert nicht an jede der tausenden Stellen,
-    sondern einmal an den Begriff; die Oberflaeche erklaert den Fachbegriff
-    daraus, ohne einen zweiten Erklaertext zu fuehren (E-143).
+    At its usage site the role is an IRI with an embedded label (E-137). Its
+    definition belongs once at the concept, not at each of the thousands of
+    sites; the UI explains the term from there without a second explanatory
+    text (E-143).
     """
     used: dict[str, str] = {}
 
@@ -410,8 +384,8 @@ def build_role_concepts(nodes: list) -> list:
             if isinstance(role, dict):
                 ident = role.get("@id", "")
                 if ident.startswith("m3gim-vocab:"):
-                    # Das Label kommt von der Verwendungsstelle, damit Knoten
-                    # und Anzeige nicht auseinanderlaufen koennen.
+                    # Label comes from the usage site so node and display
+                    # cannot drift apart.
                     used.setdefault(ident, role.get("skos:prefLabel") or "")
             for value in node.values():
                 walk(value)
@@ -424,9 +398,9 @@ def build_role_concepts(nodes: list) -> list:
     for ident in sorted(used):
         meta = CONCEPT_META.get(ident, {})
         role_meta = ROLE_META.get(ident, {})
-        # Ein Begriff ohne Definition wird trotzdem emittiert, sobald er
-        # Bezugsebene oder Rang traegt: beides ist strukturell und wird
-        # gebraucht, waehrend der Erklaertext fehlen darf (E-150).
+        # A concept without a definition is still emitted once it carries a
+        # dating scope or rank: both are structural and needed, while the
+        # explanatory text may be absent (E-150).
         if not meta.get("definition") and not role_meta:
             continue
         node = {
@@ -438,8 +412,8 @@ def build_role_concepts(nodes: list) -> list:
             node["skos:definition"] = meta["definition"]
         if meta.get("scheme"):
             node["skos:inScheme"] = {"@id": meta["scheme"]}
-        # Bezugsebene und Rang stehen am Begriff, damit die Oberflaeche sie
-        # nicht als zweite Tabelle fuehren muss (E-150).
+        # Scope and rank live on the concept so the UI does not have to keep
+        # them as a second table (E-150).
         if role_meta.get("scope"):
             node["m3gim-ontology:datingScope"] = {"@id": role_meta["scope"]}
         if role_meta.get("rank") is not None:
@@ -449,12 +423,11 @@ def build_role_concepts(nodes: list) -> list:
 
 
 def normalize_role(value) -> str | None:
-    """Normalisiert Rollenbezeichner: lower + strip + Gender-Suffix entfernen.
+    """Normalizes role labels: lower + strip + remove gender suffix.
 
-    Strippt :innen und :in (z.B. saenger:in -> saenger, dirigent:innen -> dirigent).
-    Finales 'in' ohne Doppelpunkt wird nicht generell entfernt, da mehrdeutig
-    (interpret, verfassen...); bei Bedarf ueber Stem-Allowlist erweiterbar.
-    Siehe data.md Abschnitt 5.
+    Strips :innen and :in (saenger:in -> saenger). A final 'in' without colon
+    is not removed generally because it is ambiguous (interpret, ...);
+    extendable via a stem allowlist if needed. See data.md § 5.
     """
     v = normalize_lower(value)
     if v is None:
@@ -467,18 +440,18 @@ def normalize_role(value) -> str | None:
 
 
 def attach_role(target: dict, value) -> None:
-    """Setzt die Rolle eines Knotens als Verweis auf ihr Concept im Vokabular.
+    """Sets a node's role as a reference to its concept in the vocabulary.
 
-    Der Verweisknoten fuehrt das skos:prefLabel des Concepts mit, damit ein
-    Konsument den Anzeigetext ohne Nachschlagen hat. Ist der erfasste Wert im
-    Vokabular auf ein anderes Concept gefuehrt, bleibt er in
-    m3gim-ontology:derivedFromRole stehen, sodass die Zusammenfuehrung
-    umkehrbar bleibt. Fuehrt die Quelle keine Rolle, traegt der Knoten keine.
+    The reference node carries the concept's skos:prefLabel so a consumer has
+    the display text without a lookup. If the recorded value maps to a
+    different concept in the vocabulary, it stays in
+    m3gim-ontology:derivedFromRole so the merge remains reversible. If the
+    source records no role, the node carries none.
 
-    Ein Wert ausserhalb des Vokabulars bleibt als Literal stehen. Das betrifft
-    den Vertragsstatus "nicht eingehalten", der in der Rollenspalte steht und
-    laut Vokabular ausdruecklich kein Rollenbegriff ist; seine Modellierung ist
-    mit dem Erschliessungsteam offen (data-model.md § 11).
+    A value outside the vocabulary stays as a literal. This covers the
+    contract status "nicht eingehalten", which sits in the role column and is
+    explicitly not a role concept per the vocabulary; its modelling is open
+    with the cataloguing team (data-model.md § 11).
     """
     if not value:
         return
@@ -495,20 +468,19 @@ def attach_role(target: dict, value) -> None:
         target["m3gim-ontology:derivedFromRole"] = key
 
 
-# "Kein Datum"-Platzhalter: "ohne Datum" (belegt) sowie die etablierte
-# Archiv-Kurzform "o. D."/"o.d." (case-insensitive, beliebige Innen-Whitespace).
+# "No date" placeholders: "ohne Datum" (attested) plus the established archival
+# short form "o. D."/"o.d." (case-insensitive, arbitrary inner whitespace).
 _NO_DATE_PLACEHOLDER = re.compile(
     r"^(?:ohne\s+datum|o\.?\s*d\.?)$", re.IGNORECASE
 )
 
 
 def clean_date(value) -> str | None:
-    """Bereinigt Datumsartefakte (Excel 00:00:00) + normalisiert Zeitspannen.
+    """Removes date artefacts (Excel 00:00:00) and normalizes spans.
 
-    YYYY-YYYY (Spielzeit) wird zu YYYY/YYYY (ISO-8601 TimeSpan, data.md § 6).
-    Freitext-Werte wie 'Wien, ab 1956' bleiben unveraendert — werden in der
-    Pipeline per Pattern-Match herausgefiltert, bevor sie in typisierte
-    Datumsproperties gelangen.
+    YYYY-YYYY (a season) becomes YYYY/YYYY (ISO-8601 time span, data.md § 6).
+    Free-text values like 'Wien, ab 1956' stay unchanged — the pipeline filters
+    them out by pattern match before they reach typed date properties.
     """
     if pd.isna(value):
         return None
@@ -516,17 +488,16 @@ def clean_date(value) -> str | None:
     s = re.sub(r'\s+00:00:00$', '', s)
     if s == "":
         return None
-    # "Kein Datum"-Platzhalter (data.md § 6): die etablierte Konvention "ohne
-    # Datum"/"o. D." ist KEIN Datum und darf nicht in rico:date landen (bricht
-    # das JSON-LD-Schema). Auf None abbilden. Belegt im Export: "ohne Datum".
+    # "No date" placeholders (data.md § 6): "ohne Datum"/"o. D." is NOT a date
+    # and must not land in rico:date (breaks the JSON-LD schema). Map to None.
     if _NO_DATE_PLACEHOLDER.match(s):
         return None
-    # YYYY-YYYY -> YYYY/YYYY (ISO-Konvention fuer Zeitspannen nur Jahre)
+    # YYYY-YYYY -> YYYY/YYYY (ISO convention for year-only spans)
     s = re.sub(r'^(\d{4})-(\d{4})$', r'\1/\2', s)
     return s
 
 
-# Pattern fuer akzeptierte typisierte Datumswerte: ISO-8601 + Zeitspanne + Qualifier
+# Accepted typed date values: ISO-8601 + time span + qualifier
 ISO_DATE_PATTERN = re.compile(
     r"^(circa:|vor:|nach:)?\d{4}(-\d{2}(-\d{2})?)?(/\d{4}(-\d{2}(-\d{2})?)?)?$"
 )
@@ -536,10 +507,9 @@ def is_iso_date(value) -> bool:
     return isinstance(value, str) and bool(ISO_DATE_PATTERN.match(value))
 
 
-# Datums-Routing-Normalisierung (data.md § 6, E-102). Fuehrt Textnotationen auf
-# ISO-Repraesentationen, bevor die Annotation ihren Wert bekommt.
-# Verlustfrei: nicht erkannte Notationen bleiben unveraendert stehen und
-# tragen dafuer das Flag datierung-malformed.
+# Date routing normalization (data.md § 6, E-102). Maps text notations to ISO
+# representations before the annotation gets its value. Lossless: unrecognized
+# notations stay unchanged and carry the datierung-malformed flag instead.
 _RANGE_BIS = re.compile(r"^(.+?)\s+bis\s+(.+)$", re.IGNORECASE)
 _FREITEXT_BEGINN = re.compile(
     r"^(?:ab|seit)\s+(\d{4}(?:-\d{2}(?:-\d{2})?)?)$", re.IGNORECASE
@@ -547,11 +517,11 @@ _FREITEXT_BEGINN = re.compile(
 
 
 def normalize_dating(value: str) -> str:
-    """Normalisiert Datumsnotationen gemaess Routing-Tabelle (data.md § 6).
+    """Normalizes date notations per the routing table (data.md § 6).
 
-    - "X bis Y" → ISO-TimeSpan "X/Y" (nur wenn beide Seiten ISO sind)
-    - "ab/seit YYYY" → Qualifier "nach:YYYY"
-    sonst unveraendert.
+    - "X bis Y" → ISO time span "X/Y" (only if both sides are ISO)
+    - "ab/seit YYYY" → qualifier "nach:YYYY"
+    otherwise unchanged.
     """
     if not isinstance(value, str):
         return value
@@ -565,10 +535,10 @@ def normalize_dating(value: str) -> str:
     return s
 
 
-# Datenqualitaets-Flags aus anmerkung-Signalen (data-model.md § 7, E-102). Das
-# Vokabular ist aus den tatsaechlichen anmerkung-Eintraegen abgeleitet, nicht
-# extrapoliert (Leitplanke 'Fremdterme verifizieren'): "Name nicht eindeutig
-# auffindbar", "Vorname fehlt"/"ohne Vornamen", "Rolle Unsicher: ..."/"(??)",
+# Data quality flags from anmerkung signals (data-model.md § 7, E-102). The
+# vocabulary is derived from the actual anmerkung entries, not extrapolated
+# (guardrail 'verify foreign terms'): "Name nicht eindeutig auffindbar",
+# "Vorname fehlt"/"ohne Vornamen", "Rolle Unsicher: ..."/"(??)",
 # "Tippfehler uebernommen".
 _QUALITY_FLAG_SIGNALS = [
     (re.compile(r"name nicht eindeutig", re.IGNORECASE), "name-nicht-eindeutig"),
@@ -579,19 +549,19 @@ _QUALITY_FLAG_SIGNALS = [
 
 
 def quality_flags(anmerkung) -> list[str]:
-    """Leitet kontrollierte Datenqualitaets-Flags aus einem anmerkung-Freitext
-    ab. Liefert eine deduplizierte, stabil sortierte Liste (leer, wenn kein
-    Signal greift). Keine fabrizierte Konfidenz — das Flag ist das Signal."""
+    """Derives controlled data quality flags from an anmerkung free text.
+    Returns a deduplicated, stably ordered list (empty if no signal matches).
+    No fabricated confidence — the flag is the signal."""
     if not isinstance(anmerkung, str) or not anmerkung.strip():
         return []
     found = [flag for rx, flag in _QUALITY_FLAG_SIGNALS if rx.search(anmerkung)]
-    # Reihenfolge der Signalliste als stabile Ausgabeordnung beibehalten.
+    # Keep the signal list order as the stable output order.
     seen = set()
     return [f for f in found if not (f in seen or seen.add(f))]
 
 
 def create_record_id(signatur: str, folio: str = None) -> str:
-    """Erzeugt URI aus Signatur (+ Folio)"""
+    """URI from Signatur (+ Folio)."""
     # UAKUG/NIM_028 → m3gim-data:NIM_028
     # UAKUG/NIM_003 + 1_1 → m3gim-data:NIM_003_1_1
     # UAKUG/NIM/PL_07 → m3gim-data:NIM_PL_07
@@ -602,33 +572,33 @@ def create_record_id(signatur: str, folio: str = None) -> str:
 
 
 def normalize_signatur(sig: str) -> str:
-    """Nullt die NIM-Konvolutnummer auf drei Stellen (NIM_11 -> NIM_011).
+    """Zero-pads the NIM Konvolut number to three digits (NIM_11 -> NIM_011).
 
-    Die Verknuepfungstabelle fuehrt ein Konvolut zweistellig, die Objekte-
-    Tabelle dreistellig; ohne Angleich treffen die Verknuepfungen ihren
-    Record nicht und verfallen. PL_xx und andere Formen bleiben unberuehrt.
+    The Verknuepfungen table records a Konvolut with two digits, the Objekte
+    table with three; without alignment the Verknuepfungen miss their record
+    and are lost. PL_xx and other forms stay untouched.
     """
     return re.sub(r'NIM_(\d{1,3})\b',
                   lambda m: f"NIM_{int(m.group(1)):03d}", sig)
 
 
 def load_index(name: str) -> pd.DataFrame | None:
-    """Laedt einen Index mit Header-Shift-Korrektur.
+    """Loads an index with header-shift correction.
 
-    Zwei Fehlbild-Klassen aus dem Box-Export (E-95):
+    Two malformation classes from the box export (E-95):
 
-    (a) name-Spalte ohne Kopf — Personenindex: Position 0 traegt den echten
-        Header "m3gim_id", aber die name-Spalte (Position 1) ist leer und
-        wird von pandas zu "Unnamed: 1". Hier ist Zeile 0 eine echte
-        Kopfzeile; es darf KEINE Datenzeile als Header konsumiert werden. Wir
-        benennen die Spalten positionell auf den Kanon um.
+    (a) name column without header — person index: position 0 carries the real
+        header "m3gim_id", but the name column (position 1) is empty and
+        becomes "Unnamed: 1" in pandas. Row 0 is a genuine header row; NO data
+        row may be consumed as header. Columns are renamed positionally to the
+        canon.
 
-    (b) geleakter Datenwert in der Kopfzeile — Org/Werk: Position 1 (bzw. 3)
-        traegt einen Datenwert wie "Graz"/"Rossini, Gioachino" statt eines
-        echten Headers. Position 0 bleibt aber "m3gim_id", d.h. Zeile 0 ist
-        weiterhin eine (verunreinigte) Kopfzeile, keine verlorene Datenzeile.
-        Daher ebenfalls nur Spalten umbenennen — die geleakten Einzelzellen
-        gehen verloren (durchreichen; gleiches Verhalten wie im Prod-Export).
+    (b) leaked data value in the header row — Org/Werk: position 1 (or 3)
+        carries a data value like "Graz"/"Rossini, Gioachino" instead of a
+        real header. Position 0 is still "m3gim_id", i.e. row 0 remains a
+        (contaminated) header row, not a lost data row. So again only rename
+        columns — the leaked single cells are lost (passed through; same
+        behaviour as the prod export).
     """
     path = SHEETS_DIR / f"M3GIM-{name}.xlsx"
     if not path.exists():
@@ -641,16 +611,16 @@ def load_index(name: str) -> pd.DataFrame | None:
         expected = INDEX_HEADER_SHIFTS[canonical]
         col0 = str(df.columns[0]).strip().lower() if len(df.columns) else ""
         if col0 == "m3gim_id":
-            # Zeile 0 ist eine echte (ggf. verunreinigte) Kopfzeile: nur die
-            # Spalten positionell auf den Kanon umbenennen, keine Datenzeile
-            # als Header konsumieren. Erhaelt etwaige Zusatzspalten am Ende.
+            # Row 0 is a genuine (possibly contaminated) header row: only
+            # rename columns positionally to the canon, consume no data row as
+            # header. Preserves any extra trailing columns.
             new_cols = list(expected[:len(df.columns)])
             if len(df.columns) > len(expected):
                 new_cols += list(df.columns[len(expected):])
             df.columns = new_cols
         elif len(df.columns) == len(expected):
-            # Legacy-Fall: Zeile 0 ist eine verschobene Datenzeile, die pandas
-            # als Header gelesen hat (Position 0 != "m3gim_id"). Zurueckschieben.
+            # Legacy case: row 0 is a shifted data row that pandas read as
+            # header (position 0 != "m3gim_id"). Push it back into the data.
             first_val = str(df.columns[1]) if len(df.columns) > 1 else ""
             if first_val and first_val not in ["name", "titel", "ort", "m3gim_id"]:
                 old_headers = list(df.columns)
@@ -658,13 +628,13 @@ def load_index(name: str) -> pd.DataFrame | None:
                 first_row = pd.DataFrame([old_headers], columns=df.columns)
                 df = pd.concat([first_row, df], ignore_index=True)
 
-    # (c) Kennungsspalte mit einem Datenwert ueberschrieben — Ortsindex der
-    # Lieferung 2026-08-31 traegt an Position 0 den Ortsnamen "Turin" statt
-    # "m3gim_id". Keiner der beiden Zweige oben greift, weil Position 0 nicht
-    # "m3gim_id" heisst und Position 1 auf der Ausnahmeliste steht. Hier wird
-    # allein Spalte 0 positionell zurueckbenannt, wenn ihre Werte wie
-    # Index-Kennungen aussehen; die uebrigen Koepfe bleiben unberuehrt, damit
-    # keine Notizspalte faelschlich zur wikidata_id wird (E-152).
+    # (c) id column overwritten with a data value — the Ortsindex of the
+    # 2026-08-31 delivery carries the place name "Turin" at position 0 instead
+    # of "m3gim_id". Neither branch above fires, because position 0 is not
+    # "m3gim_id" and position 1 is on the exception list. Only column 0 is
+    # renamed back positionally, and only if its values look like index ids;
+    # the remaining headers stay untouched so no note column mistakenly
+    # becomes wikidata_id (E-152).
     if len(df.columns) and str(df.columns[0]).strip().lower() != "m3gim_id":
         col0 = df.columns[0]
         sample = df[col0].dropna().astype(str).str.strip().head(10)
@@ -676,10 +646,10 @@ def load_index(name: str) -> pd.DataFrame | None:
     return df
 
 
-# Felder, die je Identitaet genau einen Wert tragen, und das eine mehrwertige.
-# M1: kuratierte Index-Felder durchreichen, damit ALLE gepflegten Daten das
-# Frontend erreichen. Pro Index-Typ existiert nur die jeweils passende Spalte
-# (org: ort/Sitz + assoziierte_person; person: lebensdaten; werk: rolle_stimme).
+# Fields carrying exactly one value per identity, plus the one multi-valued
+# field. M1: pass curated index fields through so ALL maintained data reaches
+# the frontend. Each index type only has its own applicable columns
+# (org: ort + assoziierte_person; person: lebensdaten; werk: rolle_stimme).
 _INDEX_SCALAR_FIELDS = (
     "wikidata_id", "gnd_id", "anmerkung", "komponist",
     "lebensdaten", "ort", "rolle_stimme",
@@ -688,7 +658,7 @@ _INDEX_MULTI_FIELDS = ("assoziierte_person",)
 
 
 def _index_row_values(row: pd.Series, columns) -> dict:
-    """Die nicht leeren Indexfelder einer Zeile als getrimmte Strings."""
+    """Non-empty index fields of a row as trimmed strings."""
     values = {}
     for col in _INDEX_SCALAR_FIELDS + _INDEX_MULTI_FIELDS:
         if col not in columns:
@@ -703,30 +673,29 @@ def _index_row_values(row: pd.Series, columns) -> dict:
 
 
 def build_index_lookup(df: pd.DataFrame) -> dict:
-    """Baut Lookup-Dictionary: name → {wikidata_id, ...} (data.md § 3).
+    """Builds the lookup dictionary: name → {wikidata_id, ...} (data.md § 3).
 
-    Die frühere Fassung schrieb je Namen einen Eintrag in Quellreihenfolge, bei
-    gleichem Namen gewann die letzte Zeile vollstaendig. Die Lieferung vom
-    2026-08-31 fuehrt die Nachlassbildnerin zweimal im Personenindex, die
-    zweite Zeile ohne Kennung und ohne Lebensdaten; sie kostete damit die
-    zentrale Person des Bestands ihre Wikidata-Kennung samt Anreicherung.
+    The earlier version wrote one entry per name in source order; on equal
+    names the last row won entirely. The 2026-08-31 delivery lists the fonds
+    creator twice in the person index, the second row without id and without
+    life dates; it thus cost the central person of the fonds her Wikidata id
+    including enrichment.
 
-    Drei Regeln loesen das deterministisch (E-152).
+    Three rules resolve this deterministically (E-152).
 
-    Identitaet. Eine ``m3gim_id`` ist die Identitaet. Eine Zeile ohne Kennung
-    schliesst sich der Gruppe an, die denselben Namen unter einer Kennung
-    fuehrt, sonst bildet der getrimmte Name die Identitaet.
+    Identity. An ``m3gim_id`` is the identity. A row without id joins the
+    group that records the same name under an id, otherwise the trimmed name
+    is the identity.
 
-    Verdichtung. Je Feld gewinnt der erste nicht leere Wert in
-    Quellreihenfolge; ein gefuelltes Feld wird nie von einem leeren
-    ueberschrieben. ``assoziierte_person`` ist mehrwertig und sammelt.
+    Consolidation. Per field the first non-empty value in source order wins; a
+    filled field is never overwritten by an empty one. ``assoziierte_person``
+    is multi-valued and accumulates.
 
-    Kollision. Verschiedene nicht leere Werte im selben Feld setzen
-    ``index_conflict``; der erste Wert gewinnt, und der Fall geht ueber
-    ``validate.py`` in den Report. Zwei Zeilen mit demselben Namen und
-    verschiedenen Kennungen sind eine Namenskollision; im Werkindex bleibt sie
-    unaufgeloest, weil ``Requiem`` und ``Stabat mater`` je drei verschiedene
-    Werke bezeichnen.
+    Collision. Different non-empty values in the same field set
+    ``index_conflict``; the first value wins and the case reaches the report
+    via ``validate.py``. Two rows with the same name and different ids are a
+    name collision; in the Werkindex it stays unresolved because ``Requiem``
+    and ``Stabat mater`` each denote three different works.
     """
     lookup: dict = {}
     if df is None:
@@ -738,8 +707,8 @@ def build_index_lookup(df: pd.DataFrame) -> dict:
     has_id = 'm3gim_id' in columns
     is_work_index = 'komponist' in columns
 
-    # Vorlauf: erste Kennung je Name, damit eine Nachzueglerzeile ohne Kennung
-    # in die Gruppe der gepflegten Zeile faellt statt eine eigene zu bilden.
+    # Pre-pass: first id per name, so a straggler row without id joins the
+    # maintained row's group instead of forming its own.
     first_id_for_name: dict = {}
     if has_id:
         for _, row in df.iterrows():
@@ -804,11 +773,11 @@ def build_index_lookup(df: pd.DataFrame) -> dict:
         if len(entries) == 1:
             lookup[low] = entries[0]
             continue
-        # Namenskollision: der Name bezeichnet mehr als eine Identitaet.
+        # Name collision: the name denotes more than one identity.
         if is_work_index:
-            # Der Titel allein ist keine Identitaet. Ohne Komponisten in der
-            # Verknuepfungszeile bleibt die Zuordnung offen; ein geratener
-            # Komponist waere eine erfundene Aussage.
+            # The title alone is no identity. Without a composer in the
+            # Verknuepfungen row the assignment stays open; a guessed composer
+            # would be a fabricated statement.
             lookup[low] = {
                 "name": entries[0]["name"],
                 "ambiguous": True,
@@ -827,16 +796,12 @@ def build_index_lookup(df: pd.DataFrame) -> dict:
     return lookup
 
 
-# ---------------------------------------------------------------------------
-# Objekte → Records
-# ---------------------------------------------------------------------------
-
 def convert_objekt(row: pd.Series, folio_col: str = None,
                    xlsx_row: int | None = None) -> dict:
-    """Konvertiert ein Objekt zu JSON-LD Record.
+    """Converts an Objekt row to a JSON-LD record.
 
-    xlsx_row: 1-basierte XLSX-Zeilennummer inkl. Header (= pandas idx + 2),
-              wird als m3gim-ontology:xlsxSource angehaengt.
+    xlsx_row: 1-based XLSX row number incl. header (= pandas idx + 2),
+              attached as m3gim-ontology:xlsxSource.
     """
     sig = str(row['archivsignatur']).strip()
     folio_raw = row.get(folio_col) if folio_col else None
@@ -851,18 +816,16 @@ def convert_objekt(row: pd.Series, folio_col: str = None,
     if xlsx_row is not None:
         record["m3gim-ontology:xlsxSource"] = build_xlsx_source("Objekte", xlsx_row)
 
-    # Titel
     titel = normalize_str(row.get('titel'))
     if titel:
         record["rico:title"] = titel
 
-    # Datum (bereinigt). rico:date ist im JSON-Schema ISO-typisiert; ein
-    # malformter Quellwert (z.B. "06-09" ohne Jahr) darf dort nicht landen
-    # (bricht das Schema). ISO-Werte gehen in rico:date, nicht-ISO bleibt
-    # verlustfrei als Annotationsknoten mit der Rolle entstehungsdatum
-    # erhalten und ist als Quell-Datenfehler markiert. Der Knoten entsteht
-    # erst nach der @id-Kollisionsaufloesung in build_konvolut_hierarchy,
-    # weil seine Kennung die des Dokuments traegt.
+    # rico:date is ISO-typed in the JSON schema; a malformed source value
+    # (e.g. "06-09" without year) must not land there. ISO values go to
+    # rico:date, non-ISO is kept losslessly as an annotation node with role
+    # entstehungsdatum and marked as a source data error. The node is built
+    # only after @id collision resolution in build_konvolut_hierarchy, because
+    # its id carries the document's.
     date_val = clean_date(row.get('entstehungsdatum'))
     if date_val:
         if is_iso_date(date_val):
@@ -870,16 +833,14 @@ def convert_objekt(row: pd.Series, folio_col: str = None,
         else:
             record[PENDING_CREATION_DATE] = date_val
 
-    # Datierungsevidenz wird bewusst NICHT serialisiert (E-106, ersetzt E-100).
-    # Die frueheren agrelon:metadataConfidence-Dezimalwerte (1.0/0.8/0.6) waren
-    # eine erfundene Projektion der kategorialen datierungsevidenz-Spalte
-    # (aus_dokument/erschlossen/extern) — kein gemessener Wert, gegen die
-    # Leitplanke "Konfidenz nicht erfinden". Nichts im Frontend/Report las sie.
-    # Die record-seitige Self-Provenance war ohne den Konfidenzwert ein leerer
-    # Selbstverweis. Falls die Datierungsevidenz spaeter gebraucht wird, kehrt
-    # sie als kategorialer Wert zurueck (nicht als Dezimalzahl). data-model.md § 9.
+    # Dating evidence is deliberately NOT serialized (E-106, replaces E-100).
+    # The former agrelon:metadataConfidence decimals (1.0/0.8/0.6) were a
+    # fabricated projection of the categorical datierungsevidenz column
+    # (aus_dokument/erschlossen/extern) — no measured value, against the
+    # guardrail "do not fabricate confidence". Nothing in frontend/report read
+    # them. If dating evidence is needed later it returns as a categorical
+    # value, not a decimal. data-model.md § 9.
 
-    # Dokumenttyp → m3gim-vocab
     dokumenttyp = normalize_lower(row.get('dokumenttyp'))
     if dokumenttyp:
         dft = DOKUMENTTYP_TO_DFT.get(dokumenttyp)
@@ -894,24 +855,21 @@ def convert_objekt(row: pd.Series, folio_col: str = None,
             print(f"  WARNUNG: Dokumenttyp '{dokumenttyp}' ohne Eintrag in "
                   f"DOKUMENTTYP_TO_DFT — {where}")
 
-    # Sprache
     sprache = normalize_str(row.get('sprache'))
     if sprache:
         record["rico:hasOrHadLanguage"] = sprache
 
-    # Umfang
     umfang = normalize_str(row.get('umfang'))
     if umfang:
         record["rico:hasExtent"] = umfang
 
-    # Beschreibung
     beschreibung = normalize_str(row.get('beschreibung'))
     if beschreibung:
         record["rico:scopeAndContent"] = beschreibung
 
-    # Bearbeitungsstand (m3gim-Extension) — Mapping in _common.py.
-    # E-102: Freitext-Anhang als separate Bearbeitungsnotiz herausloesen,
-    # der canonische Status bleibt in m3gim-ontology:processingStatus.
+    # Bearbeitungsstand (m3gim extension) — mapping in _common.py.
+    # E-102: split the free-text suffix into a separate processing note,
+    # the canonical status stays in m3gim-ontology:processingStatus.
     bearbeitungsstand = normalize_bearbeitungsstand(row.get('bearbeitungsstand'))
     if bearbeitungsstand:
         record["m3gim-ontology:processingStatus"] = bearbeitungsstand
@@ -919,7 +877,6 @@ def convert_objekt(row: pd.Series, folio_col: str = None,
     if bearbeitungsnotiz:
         record["m3gim-ontology:processingNote"] = bearbeitungsnotiz
 
-    # Zugangs- und Scan-Status
     zugaenglichkeit = normalize_lower(row.get('zugaenglichkeit'))
     if zugaenglichkeit:
         record["m3gim-ontology:accessStatus"] = zugaenglichkeit
@@ -931,24 +888,20 @@ def convert_objekt(row: pd.Series, folio_col: str = None,
     return record
 
 
-# ---------------------------------------------------------------------------
-# Konvolut-Hierarchie
-# ---------------------------------------------------------------------------
-
 def build_konvolut_hierarchy(df: pd.DataFrame, folio_col: str = None,
                              annotation_seen: dict | None = None
                              ) -> tuple[list, list, list]:
-    """Erkennt Konvolute und baut Hierarchie.
+    """Detects Konvolute and builds the hierarchy.
 
     Args:
-        annotation_seen: geteiltes Register der vergebenen Annotations-@ids,
-            damit die hier und die in add_relations_to_records erzeugten
-            Knoten sich nicht auf dieselbe Kennung setzen.
+        annotation_seen: shared registry of assigned annotation @ids, so the
+            nodes built here and those built in add_relations_to_records never
+            settle on the same id.
 
     Returns:
-        records: Liste aller Records (Einzelobjekte + Folios)
-        konvolute: Liste der Konvolut-RecordSets
-        annotations: Annotationsknoten aus malformten Entstehungsdatierungen
+        records: all records (single objects + folios)
+        konvolute: Konvolut record sets
+        annotations: annotation nodes from malformed creation datings
     """
     if annotation_seen is None:
         annotation_seen = {}
@@ -958,7 +911,7 @@ def build_konvolut_hierarchy(df: pd.DataFrame, folio_col: str = None,
     for idx, row in df.iterrows():
         if pd.isna(row.get('archivsignatur')) or str(row['archivsignatur']).strip() == "":
             continue
-        # Template-Zeilen ueberspringen
+        # Skip template rows
         if str(row['archivsignatur']).strip().lower() == "beispiel":
             continue
 
@@ -966,10 +919,10 @@ def build_konvolut_hierarchy(df: pd.DataFrame, folio_col: str = None,
         folio_raw = row.get(folio_col) if folio_col else None
         folio = str(folio_raw).strip() if pd.notna(folio_raw) and str(folio_raw).strip() else None
 
-        # Leere Platzhalterzeile (nur Signatur/box_nr, kein Folio und kein
-        # Inhalt) ueberspringen: solche Zeilen sind kein Objekt und fielen
-        # ohne Folio alle auf dieselbe Sammlungs-@id (Quellartefakt, z.B.
-        # NIM_137). Eine Zeile mit Folio oder mit Titel/Typ/Datum/Stand bleibt.
+        # Skip empty placeholder rows (only Signatur/box_nr, no Folio, no
+        # content): they are no object and, lacking a Folio, would all land on
+        # the same collection @id (source artefact, e.g. NIM_137). A row with
+        # Folio or with title/type/date/status stays.
         if not folio:
             _content_cols = ('titel', 'dokumenttyp', 'entstehungsdatum',
                              'Bearbeitungsstand')
@@ -977,17 +930,15 @@ def build_konvolut_hierarchy(df: pd.DataFrame, folio_col: str = None,
                        for c in _content_cols):
                 continue
 
-        # XLSX-Zeilennummer: pandas-Idx ist 0-basiert, XLSX hat Header in Zeile 1
+        # XLSX row number: pandas idx is 0-based, XLSX header is row 1
         record = convert_objekt(row, folio_col, xlsx_row=int(idx) + 2)
         records.append(record)
 
-        # Track Konvolut-Zugehoerigkeit
         if folio:
             if sig not in konvolut_members:
                 konvolut_members[sig] = []
             konvolut_members[sig].append(record["@id"])
 
-    # Konvolut-RecordSets erzeugen
     konvolute = []
     for sig, member_ids in konvolut_members.items():
         konvolut = {
@@ -999,24 +950,22 @@ def build_konvolut_hierarchy(df: pd.DataFrame, folio_col: str = None,
         }
         konvolute.append(konvolut)
 
-    # --- Kollisions-Aufloesung (siehe knowledge/data.md § 17) ---
-    # Wenn eine Signatur sowohl eine Sammel-Zeile (ohne Folio) als auch
-    # Folio-Zeilen hat, hat der Sammel-Record die gleiche @id wie das
-    # RecordSet. Wir geben der Sammel-Zeile ein _sammlung-Suffix und
-    # haengen sie als Meta-Member an das Konvolut.
+    # Collision resolution (see knowledge/data.md § 17): if a Signatur has
+    # both a collection row (no Folio) and Folio rows, the collection record
+    # shares its @id with the record set. The collection row gets a
+    # _collection suffix and is attached to the Konvolut as meta member.
     konvolut_ids = {k["@id"] for k in konvolute}
     for rec in records:
         if rec["@id"] in konvolut_ids and rec.get("@type") == "rico:Record":
             old_id = rec["@id"]
             new_id = f"{old_id}_collection"
             rec["@id"] = new_id
-            # Dem Konvolut als Meta-Member anfuegen
             konv = next(k for k in konvolute if k["@id"] == old_id)
             konv["rico:hasOrHadPart"].append({"@id": new_id})
 
-    # Malformte Entstehungsdatierungen als Annotationsknoten materialisieren.
-    # Erst hier, weil die @id des Knotens die des Dokuments traegt und diese
-    # oben noch gewechselt haben kann.
+    # Materialize malformed creation datings as annotation nodes. Only here,
+    # because the node's @id carries the document's, which may have changed
+    # above.
     annotations = []
     for rec in records:
         date_val = rec.pop(PENDING_CREATION_DATE, None)
@@ -1025,7 +974,7 @@ def build_konvolut_hierarchy(df: pd.DataFrame, folio_col: str = None,
         node = build_annotation(rec, annotation_seen, date=date_val,
                                 role="entstehungsdatum")
         node["m3gim-ontology:dataQualityFlag"] = "datierung-malformed"
-        # Die Ursprungszelle ist die Datumsspalte derselben Objektzeile.
+        # The source cell is the date column of the same Objekte row.
         source = rec.get("m3gim-ontology:xlsxSource")
         if source:
             node["m3gim-ontology:xlsxSource"] = source
@@ -1034,26 +983,22 @@ def build_konvolut_hierarchy(df: pd.DataFrame, folio_col: str = None,
     return records, konvolute, annotations
 
 
-# ---------------------------------------------------------------------------
-# Verknuepfungen → RiC-O Relations
-# ---------------------------------------------------------------------------
-
-# Fallback-Waehrung pro Archivsignatur-Praefix lebt in _common.py
-# (FINANCE_CURRENCY_DEFAULTS + default_currency_for). Siehe
-# knowledge/data.md § 17 fuer die redaktionellen Annahmen.
+# Fallback currency per Archivsignatur prefix lives in _common.py
+# (FINANCE_CURRENCY_DEFAULTS + default_currency_for). See knowledge/data.md
+# § 17 for the editorial assumptions.
 
 
-# Numerischer Kopf eines Finanz-Rohwerts: fuehrende Ziffern mit '.' (Tausender)
-# und ',' (Dezimal). Erfasst "1.200", "631,50", "200,00", "50000".
+# Numeric head of a raw finance value: leading digits with '.' (thousands)
+# and ',' (decimal). Matches "1.200", "631,50", "200,00", "50000".
 _AMOUNT_HEAD = re.compile(r"^\s*([\d.,]+)")
 
 
 def _parse_amount_token(token: str) -> str | None:
-    """Wandelt einen numerischen Roh-Token in einen xsd:decimal-String.
+    """Converts a raw numeric token to an xsd:decimal string.
 
-    Konvention (data-model.md § 11, europaeisch): '.' ist Tausendertrenner, ',' ist
-    Dezimaltrenner. Ein abschliessendes Komma vor der Waehrung ist hier bereits
-    abgetrennt; ein verbleibendes ',NN' ist eine echte Nachkommastelle.
+    Convention (data-model.md § 11, European): '.' is the thousands separator,
+    ',' the decimal separator. A trailing comma before the currency is already
+    stripped here; a remaining ',NN' is a genuine decimal fraction.
     """
     token = token.strip().rstrip(",").strip()
     if not token:
@@ -1069,46 +1014,46 @@ def _parse_amount_token(token: str) -> str | None:
 
 
 def _parse_single_monetary(segment: str) -> tuple[str | None, str | None]:
-    """Zerlegt EIN Betrag-Segment (kein Doppelbetrag) in (amount, currency)."""
+    """Splits ONE amount segment (no double amount) into (amount, currency)."""
     s = segment.strip()
     if not s:
         return None, None
     head = _AMOUNT_HEAD.match(s)
     if not head:
-        # Kein numerischer Kopf -> nicht parsbar als Betrag.
+        # No numeric head -> not parseable as amount.
         return None, None
     num_token = head.group(1)
     rest = s[head.end():].strip()
-    # 'rest' beginnt ggf. mit dem Waehrungstrenner (Komma) -> abschneiden.
+    # 'rest' may start with the currency separator (comma) -> strip it.
     rest = rest.lstrip(",").strip()
     currency = rest.rstrip(".").strip() or None
     return _parse_amount_token(num_token), currency
 
 
 def parse_monetary_values(name: str) -> list[tuple[str | None, str | None]]:
-    """Zerlegt einen Finanz-Rohwert in eine Liste von (amount, currency).
+    """Splits a raw finance value into a list of (amount, currency).
 
-    Robust gegen die in der Quelle gemischten Notationen (data-model.md § 11):
-      - 'AMOUNT, CURRENCY'     : '4000, Esc', '1.200, DM'  (Komma+Space-Trenner)
-      - 'AMOUNT,DEC, CURRENCY' : '631,50, Fr.'             (Dezimalkomma DANN Trenn-Komma)
+    Robust against the mixed notations in the source (data-model.md § 11):
+      - 'AMOUNT, CURRENCY'     : '4000, Esc', '1.200, DM'  (comma+space separator)
+      - 'AMOUNT,DEC, CURRENCY' : '631,50, Fr.'             (decimal comma THEN separator comma)
       - 'AMOUNT,DEC CURRENCY'  : '1500,00 DM', '200,00 Belgische Francs'
-                                                           (Dezimalkomma, Space, Waehrung)
-      - 'AMOUNT,CURRENCY'      : '153,DM'                  (Komma ohne Space als Trenner)
-      - 'AMOUNT CURRENCY'      : '50000 Lire'              (Space-Trenner ohne Komma)
-      - 'AMOUNT'               : '36000', '18.000'         (keine Waehrung)
-      - Doppelbetrag '25, DM/45, DM' -> zwei eigenstaendige Eintraege.
+                                                           (decimal comma, space, currency)
+      - 'AMOUNT,CURRENCY'      : '153,DM'                  (comma without space as separator)
+      - 'AMOUNT CURRENCY'      : '50000 Lire'              (space separator without comma)
+      - 'AMOUNT'               : '36000', '18.000'         (no currency)
+      - double amount '25, DM/45, DM' -> two independent entries.
 
-    Strategie pro Segment: den numerischen Kopf (Ziffern + '.'/',') vom Rest
-    abloesen, den Rest als Waehrung lesen. Ein ',NN'-Suffix im Kopf ist eine
-    echte Nachkommastelle und bleibt Teil des Betrags; '.'-Gruppen sind Tausender.
+    Per-segment strategy: detach the numeric head (digits + '.'/',') from the
+    rest, read the rest as currency. A ',NN' suffix in the head is a genuine
+    decimal fraction and stays part of the amount; '.' groups are thousands.
     """
     if not name:
         return [(None, None)]
     s = str(name).strip()
     if not s:
         return [(None, None)]
-    # Doppelbetrag am '/' trennen (data-model.md § 11): jeder Teil wird ein eigener
-    # Eintrag mit gleichem detailField. Nur Segmente mit numerischem Kopf zaehlen.
+    # Split double amounts at '/' (data-model.md § 11): each part becomes its
+    # own entry with the same detailField. Only segments with a numeric head count.
     segments = [seg for seg in s.split("/") if seg.strip()]
     parsed = [_parse_single_monetary(seg) for seg in segments]
     parsed = [p for p in parsed if p[0] is not None]
@@ -1116,61 +1061,60 @@ def parse_monetary_values(name: str) -> list[tuple[str | None, str | None]]:
 
 
 def parse_monetary_value(name: str) -> tuple[str | None, str | None]:
-    """Erster (amount, currency)-Eintrag eines Finanz-Rohwerts.
+    """First (amount, currency) entry of a raw finance value.
 
-    Duenne Huelle um parse_monetary_values fuer Aufrufer/Tests, die einen
-    einzelnen Betrag erwarten (Doppelbetraege liefern den ersten Teil).
+    Thin wrapper around parse_monetary_values for callers/tests expecting a
+    single amount (double amounts yield the first part).
     """
     return parse_monetary_values(name)[0]
 
 
 def decompose_komposit_typ(typ: str) -> list[str]:
-    """Zerlegt Komposit-Typ in Einzeltypen: 'ort, datum' → ['ort', 'datum'].
+    """Decomposes a composite type: 'ort, datum' → ['ort', 'datum'].
 
-    E-95-Normalisierung: der typ "rolle, Vorname Nachname Saenger*in"
-    (~230 Zeilen, v.a. Box 5) ist eine durchgesickerte Erfassungs-Anweisung,
-    kein echter Typwert. Seine name-Werte sind reale Rolle,Person-Paare
-    (z.B. "Siegfried, Bernd Aldenoff"). Wir mappen ihn auf das kanonische
-    Komposit "rolle, person", damit die Zeilen denselben Decompose-Pfad wie
-    echte rolle,person-Kompositen nehmen (Vorarbeit fuer E-96
-    Performance/StageRole). Strukturelle Absorption, keine Inhaltsaenderung.
+    E-95 normalization: the typ "rolle, Vorname Nachname Saenger*in" (mostly
+    Box 5) is a leaked cataloguing instruction, not a real type value. Its
+    name values are real role,person pairs (e.g. "Siegfried, Bernd Aldenoff").
+    We map it to the canonical composite "rolle, person" so those rows take
+    the same decompose path as genuine rolle,person composites (groundwork for
+    E-96 Performance/StageRole). Structural absorption, no content change.
 
-    Unterstrich ist gleichwertiger Komposit-Trenner: Google-Sheets-Dropdowns
-    koennen kein Komma im Wert tragen, der Dropdown-Umbau des Erschliessungs-
-    teams exportiert "Datum, Ort" deshalb als "Datum_Ort".
+    Underscore is an equivalent composite separator: Google Sheets dropdowns
+    cannot carry a comma in the value, so the cataloguing team's dropdown
+    rebuild exports "Datum, Ort" as "Datum_Ort".
     """
     parts = [t.strip().lower() for t in re.split(r"[,_]", typ)]
-    # Durchgesickerte Erfassungs-Anweisung -> kanonisches "rolle, person".
+    # Leaked cataloguing instruction -> canonical "rolle, person".
     if (len(parts) == 2 and parts[0] == "rolle"
             and "nger" in parts[1] and parts[1].split()[:2] == ["vorname", "nachname"]):
         return ["rolle", "person"]
-    # "waehrung" / "währung" ist kein eigener Typ, gehoert zum vorherigen
+    # "waehrung"/"währung" is no type of its own, it belongs to the previous one
     return [p for p in parts if p not in ["waehrung", "währung"]]
 
 
 def decompose_komposit_value(name: str, typen: list[str]) -> dict[str, str]:
-    """Zerlegt einen Komposit-Wert in Einzelwerte fuer die Typen.
+    """Decomposes a composite value into per-type values.
 
-    Bei 'ort,datum'-Kompositen wie 'München, 1952-12-17':
+    For 'ort,datum' composites like 'München, 1952-12-17':
     → {'ort': 'München', 'datum': '1952-12-17'}
 
-    Fallback: gleicher Wert fuer alle Typen.
+    Fallback: same value for all types.
     """
     result = {t: name for t in typen}
     if not name or len(typen) < 2:
         return result
 
-    # Pattern: "Ortsname, YYYY..." (Ort + Datum)
+    # Pattern: "place name, YYYY..." (place + date)
     if 'ort' in typen and 'datum' in typen:
         m = re.match(r'^(.+?),\s*(\d{4}.*)$', name)
         if m:
             result['ort'] = m.group(1).strip()
             result['datum'] = clean_date(m.group(2).strip())
         else:
-            # Freitext-Beginn nach dem Komma ("Wien, ab 1956"): am ersten Komma
-            # trennen und das Datum normalisieren ("ab 1956" → "nach:1956",
-            # data.md § 6). Nur uebernehmen, wenn daraus ein ISO-Wert wird —
-            # sonst kein Ort-Leak ins Datumsfeld (Audit-Befund zu E-102).
+            # Free-text start after the comma ("Wien, ab 1956"): split at the
+            # first comma and normalize the date ("ab 1956" → "nach:1956",
+            # data.md § 6). Adopt only if this yields an ISO value — otherwise
+            # no place leak into the date field (audit finding on E-102).
             m2 = re.match(r'^(.+?),\s*(.+)$', name)
             if m2:
                 cand = normalize_dating(m2.group(2).strip())
@@ -1178,17 +1122,18 @@ def decompose_komposit_value(name: str, typen: list[str]) -> dict[str, str]:
                     result['ort'] = m2.group(1).strip()
                     result['datum'] = cand
 
-    # Pattern: "Buehnenrolle, Personname" (E-96, rolle,person -> Performance).
-    # Erstes Komma trennt die Bühnenrolle vom Interpret:innen-Namen.
+    # Pattern: "stage role, person name" (E-96, rolle,person -> Performance).
+    # The first comma separates the stage role from the performer name.
     if 'rolle' in typen and 'person' in typen:
         m = re.match(r'^(.+?),\s*(.+)$', name)
         if m:
             result['rolle'] = m.group(1).strip()
             result['person'] = m.group(2).strip()
 
-    # Pattern: "YYYY..., Werktitel" (E-98, datum,werk -> Performance). Datum
-    # mit führendem Jahr vor dem Komma; ohne führendes Jahr (Komponist-statt-
-    # Werk-Zeile) bleibt 'datum' der Rohwert und scheitert am is_iso_date-Gate.
+    # Pattern: "YYYY..., work title" (E-98, datum,werk -> Performance). Date
+    # with leading year before the comma; without a leading year (composer-
+    # instead-of-work row) 'datum' stays the raw value and fails the
+    # is_iso_date gate.
     if 'datum' in typen and 'werk' in typen:
         m = re.match(r'^(\d{4}[^,]*),\s*(.+)$', name)
         if m:
@@ -1199,10 +1144,10 @@ def decompose_komposit_value(name: str, typen: list[str]) -> dict[str, str]:
 
 
 def _stage_role_slug(name: str) -> str:
-    """Deterministischer ASCII-Slug für die StageRole-@id (E-96).
+    """Deterministic ASCII slug for the StageRole @id (E-96).
 
-    ASCII, weil das JSON-LD-@id-Pattern nur [\\w/_.-] erlaubt und JSON-Schema-\\w
-    keine Umlaute matcht. ä/ö/ü/ß werden transliteriert.
+    ASCII because the JSON-LD @id pattern only allows [\\w/_.-] and
+    JSON-Schema \\w does not match umlauts. ä/ö/ü/ß are transliterated.
     """
     s = name.strip().lower()
     for a, b in [("ä", "ae"), ("ö", "oe"), ("ü", "ue"), ("ß", "ss")]:
@@ -1212,10 +1157,10 @@ def _stage_role_slug(name: str) -> str:
 
 
 def _make_stage_role(stage_roles: dict, role_name: str) -> str:
-    """Dedupliziert eine m3gim-ontology:StageRole-Entität und gibt ihre @id zurück (E-96).
+    """Deduplicates an m3gim-ontology:StageRole entity, returns its @id (E-96).
 
-    Das geteilte ``stage_roles``-Registry stellt sicher, dass dieselbe Bühnenrolle
-    (etwa *Brangäne*) genau einen Knoten mit deterministischer Slug-@id bekommt.
+    The shared ``stage_roles`` registry ensures the same stage role (say
+    *Brangäne*) gets exactly one node with a deterministic slug @id.
     """
     slug = _stage_role_slug(role_name)
     sid = f"m3gim-data:stagerole_{slug}"
@@ -1232,14 +1177,14 @@ VERKNUEPFUNGEN_CSV_DIR = "verknuepfungen"
 
 
 def resolve_verknuepfungen_source(base: Path) -> Path:
-    """Bestimmt die Quelle der Verknuepfungen unter einem Quellverzeichnis.
+    """Determines the Verknuepfungen source under a source directory.
 
-    Seit E-152 ist das Quellformat die CSV-Ausfuhr je Blatt, weil der
-    XLSX-Export Datums-, Folio- und Buendelungsspalten in Zelltypen umwandelt
-    und dabei Genauigkeit erfindet (data.md § 3 Quellformat). Das
-    CSV-Verzeichnis gewinnt; fehlt es, greift der bisherige XLSX-Pfad, damit
-    ein archivierter Stand lesbar bleibt. Ein direkt uebergebener Dateipfad
-    wird unveraendert durchgereicht.
+    Since E-152 the source format is the per-sheet CSV export, because the
+    XLSX export converts date, Folio and bundling columns into cell types and
+    fabricates precision in the process (data.md § 3 source format). The CSV
+    directory wins; if absent, the previous XLSX path applies so an archived
+    state remains readable. A directly passed file path is passed through
+    unchanged.
     """
     base = Path(base)
     if not base.is_dir():
@@ -1257,23 +1202,23 @@ def resolve_verknuepfungen_source(base: Path) -> Path:
 
 
 def _box_order(path: Path) -> tuple:
-    """Sortiert Box_2 vor Box_10, statt lexikografisch."""
+    """Sorts Box_2 before Box_10 instead of lexicographically."""
     digits = re.findall(r"\d+", path.stem)
     return (int(digits[0]) if digits else 0, path.stem)
 
 
 def _normalize_verknuepfungen_columns(df: pd.DataFrame) -> pd.DataFrame:
-    """Bringt die Spaltenkoepfe eines Blattes auf den Kanon.
+    """Brings the column headers of a sheet onto the canon.
 
-    Spalte 0 ist immer die Archivsignatur, positionell erkannt, weil ihr
-    Header in der Quelle leer ist oder nur ein Leerzeichen traegt. Die uebrigen
-    Koepfe werden getrimmt und kleingeschrieben; nicht-textuelle Koepfe bleiben
-    unveraendert und fallen unten durch die Spaltenpruefung.
+    Column 0 is always the Archivsignatur, recognized positionally because its
+    header in the source is empty or a single space. The other headers are
+    trimmed and lowercased; non-textual headers stay unchanged and fall
+    through the column check below.
 
-    ``data_id`` und ``datenpunkt_id`` bezeichnen dieselbe Angabe und werden
-    zusammengefuehrt. Vier Blaetter der Lieferung 2026-08-31 tragen die zweite
-    Schreibung; ohne die Zusammenfuehrung liest ``process_verknuepfungen`` sie
-    nie, und die Kennung verfaellt ohne Meldung (E-152).
+    ``data_id`` and ``datenpunkt_id`` denote the same datum and are merged.
+    Four sheets of the 2026-08-31 delivery carry the second spelling; without
+    the merge ``process_verknuepfungen`` never reads them and the id is lost
+    silently (E-152).
     """
     rename: dict = {}
     for pos, col in enumerate(df.columns):
@@ -1292,7 +1237,7 @@ def _normalize_verknuepfungen_columns(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def _finish_verknuepfungen_sheet(df: pd.DataFrame, sheet: str) -> pd.DataFrame:
-    """Forward-Fill der Signatur plus Provenienz je Blatt."""
+    """Forward-fills the Signatur and adds per-sheet provenance."""
     if "archivsignatur" in df.columns:
         df["archivsignatur"] = df["archivsignatur"].ffill()
         df["archivsignatur"] = df["archivsignatur"].map(
@@ -1303,11 +1248,11 @@ def _finish_verknuepfungen_sheet(df: pd.DataFrame, sheet: str) -> pd.DataFrame:
 
 
 def _load_verknuepfungen_csv(directory: Path) -> list[pd.DataFrame]:
-    """Liest je Blatt eine CSV-Datei als Text, ohne Typinferenz.
+    """Reads one CSV file per sheet as text, without type inference.
 
-    ``dtype=str`` ist die tragende Zusage dieses Pfades: eine Folio ``15-1``,
-    eine Kennung ``1.1`` und eine Monatsangabe ``1956-11`` bleiben der Text,
-    den die Erfassung geschrieben hat.
+    ``dtype=str`` is the load-bearing promise of this path: a Folio ``15-1``,
+    an id ``1.1`` and a month value ``1956-11`` stay the text the cataloguing
+    wrote.
     """
     frames = []
     for path in sorted(directory.glob("Box_*.csv"), key=_box_order):

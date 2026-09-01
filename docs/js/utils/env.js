@@ -1,18 +1,17 @@
 /**
- * Environment-Helper: unterscheidet Lokal-Dev von Produktion.
+ * Environment helper distinguishing local dev from production.
  *
- * Single source of truth fuer "logge nur lokal". Auf dhcraft.org keine
- * Konsolen-Ausgabe -- Store-Report, Stempel, Debug-Helper sind stumm.
+ * Single source of truth for "log only locally". No console output on
+ * dhcraft.org -- store report, stamps, debug helpers stay silent.
  */
 
 export const IS_DEV = typeof location !== 'undefined'
   && (location.hostname === 'localhost' || location.hostname === '127.0.0.1');
 
 /**
- * Kompakter State-Log-Stempel fuer Tab-Views.
- * Format: `[viewName] key:val | key:val | ...` mit fester Key-Reihenfolge.
- * Schreibt nur in DEV. Parts als Array `[[key, val], ...]` damit die
- * Reihenfolge auf Aufrufer-Seite bewusst gesetzt wird.
+ * Compact state-log stamp for tab views. DEV only.
+ * Format: `[viewName] key:val | key:val | ...` with fixed key order.
+ * Parts as array `[[key, val], ...]` so the caller sets the order deliberately.
  */
 export function logStamp(viewName, parts) {
   if (!IS_DEV) return;

@@ -15,26 +15,28 @@ import { formatSignatur, getDocTypeId, ensureArray, dftLabel } from '../utils/fo
 import { formatDate } from '../utils/date-parser.js';
 import { primaryYear } from '../data/loader.js';
 import { ortColor } from '../data/constants.js';
-import { buildFilterToolbar, updateSchaerfeBanner } from './_archive-toolbar.js';
-import { filterByToolbarState, isToolbarFiltered, searchMatchChronik } from './_archive-filter.js';
+import { buildFacetSidebar } from './_facet-sidebar.js';
+import { viewShell } from '../ui/sidebar.js';
+import { filterBySharedState, isSharedFiltered, searchMatchChronik, sharedFacetsActive } from './_archive-filter.js';
 import {
   sichtForRecord, aggregateDecadeStacks, SICHTEN, SICHT_COLOR,
 } from './chronik-data.js';
 import { logStamp } from '../utils/env.js';
 import { selectRecord } from '../ui/router.js';
 import { onViewNavigate } from '../ui/events.js';
-import { getFilter, setFilter, subscribe } from '../ui/filter-state.js';
-import {
-  sharedToToolbarState, toolbarStateToShared, applySchaerfeEng, applyZeitfenster, makeSyncGuard,
-} from '../ui/filter-sync.js';
+import { getFilter, setFilter, applyViewDefault } from '../ui/filter-state.js';
+import { recordsFor } from '../data/records-for.js';
+import { applySchaerfeEng, applyZeitfenster } from '../ui/filter-sync.js';
 
 let store = null;
 let container = null;
-let toolbar = null;
+let sidebar = null;
 let viewContainer = null;
-let unsubscribeFilter = null;
-const syncGuard = makeSyncGuard();  // loop guard: setFacet<->setFilter
+let lastResult = null;
 let activeSegment = null;  // "decade|sicht" des aktiven Header-Segments
+
+/** Die Chronik ist eine Record-Bezugssicht und damit intrinsisch weit. */
+const VIEW_DEFAULTS = { schaerfe: 'weit' };
 
 /** Ira Malaniuks Lebensspanne. Records davor/danach werden trotzdem gerendert
  *  (als zusaetzliche Jahresblocke vor/nach dem Band), damit der Nachlass-Stand
@@ -51,71 +53,93 @@ export function renderChronik(storeRef, containerEl) {
   store = storeRef;
   container = containerEl;
   clear(container);
+  applyViewDefault(VIEW_DEFAULTS);
 
-  toolbar = buildFilterToolbar(store, {
-    initial: sharedToToolbarState(getFilter()),
-    onChange: () => {
-      syncGuard.run(() => {
-        setFilter(toolbarStateToShared(toolbar.getState()));
-      });
-      updateChronikView();
-    },
-  });
-  container.appendChild(toolbar.element);
-
-  container.appendChild(el('div', { className: 'archiv-schaerfe', id: 'chronik-schaerfe', hidden: true }));
-
+  const main = el('div', { className: 'view-main archiv-main' });
   viewContainer = el('div', { className: 'chronik-timeline-container' });
-  container.appendChild(viewContainer);
+  main.appendChild(viewContainer);
+
+  if (sidebar) sidebar.destroy();
+  sidebar = buildFacetSidebar(store, {
+    // Identisch zum Bestand: dieselbe Spalte an derselben Stelle. Der Scope
+    // gilt im Zeitstrahl als Anzeige der nicht erschlossenen Undatierten mit.
+    facets: ['docType', 'person', 'ort', 'werk', 'rolle'],
+    yearSpan: yearBounds(store),
+    getResult: () => lastResult,
+    showSearch: true,
+    scope: { counts: () => scopeCounts() },
+    onChange: () => updateChronikView(),
+  });
+  container.appendChild(viewShell(sidebar.element, main));
 
   updateChronikView();
 
-  // Geteilter Filter (M4): externe Aenderung zieht die Toolbar nach + zeichnet neu.
-  if (unsubscribeFilter) unsubscribeFilter();
-  unsubscribeFilter = subscribe((shared) => {
-    if (syncGuard.isActive()) return;
-    syncGuard.run(() => {
-      const proj = sharedToToolbarState(shared);
-      toolbar.applyFacet('person', proj.person);
-      toolbar.applyFacet('location', proj.location);
-      toolbar.applyFacet('werk', proj.werk);
-    });
-    updateChronikView();
-  }, { immediate: false });
-
-  // Chip-Klick in Inline-Detail dispatcht `filter` -> Toolbar hier setzen.
+  // Chip-Klick in Inline-Detail dispatcht `filter` -> geteilten State setzen.
   onViewNavigate('chronik', (detail) => {
     const { filter } = detail || {};
-    if (filter && filter.value) toolbar.applyFacet(filter.facet, filter.value);
+    if (filter && filter.value) addSharedFacet(filter.facet, filter.value);
   });
 }
 
+/** Jahresspanne des Bestands fuer den Zeitregler. */
+function yearBounds(store) {
+  let min = Infinity, max = -Infinity;
+  if (store && store.byYear) {
+    for (const y of store.byYear.keys()) {
+      if (y < min) min = y;
+      if (y > max) max = y;
+    }
+  }
+  return { min: min === Infinity ? YEAR_MIN : min, max: max === -Infinity ? YEAR_MAX : max };
+}
+
+/** Cross-Navigation-Facette in den geteilten State schreiben (location -> ort). */
+function addSharedFacet(facet, value) {
+  const key = facet === 'location' ? 'ort' : facet;
+  if (!['person', 'ort', 'werk', 'rolle', 'institution', 'docType'].includes(key)) return;
+  const f = getFilter();
+  const current = Array.isArray(f[key]) ? f[key] : [];
+  const values = Array.isArray(value) ? value : [value];
+  const merged = [...current];
+  for (const v of values) if (v && !merged.includes(v)) merged.push(v);
+  setFilter({ [key]: merged });
+}
+
+/** Scope-Zaehlwerte: erschlossene vs. alle bearbeitbaren Records (E-116). Der
+ *  Zeitstrahl zeigt ohnehin nur bearbeitete Records; Gesamt schliesst die
+ *  unerschlossenen mit ein. */
+function scopeCounts() {
+  const fein = store.allRecords.filter(r => !store.unprocessedIds.has(r['@id'])).length;
+  const gesamt = store.allRecords.length;
+  return { fein, gesamt };
+}
+
 function updateChronikView() {
-  const state = toolbar ? toolbar.getState() : {};
   clear(viewContainer);
   activeSegment = null;
 
-  // Bearbeitete Records (die unverknuepften Massenrecords waeren als Punkte
-  // nicht ansprechbar und wuerden den Zeitstrahl mit Platzhaltern fluten).
-  let records = store.allRecords.filter(r => !store.unprocessedIds.has(r['@id']));
+  const shared = getFilter();
+  const gesamt = shared.scope === 'gesamt';
 
-  // Fuenf Toolbar-Facetten (geteilte Pipeline mit Bestand, Tier 2.6).
-  records = filterByToolbarState(store, records, state, {
+  // Default zeigt bearbeitete Records; im Gesamt-Scope kommen die unerschlossenen
+  // hinzu (E-116). Sie tragen keine Verknuepfungen und landen meist undatiert.
+  let records = gesamt
+    ? store.allRecords.slice()
+    : store.allRecords.filter(r => !store.unprocessedIds.has(r['@id']));
+
+  // Alle schneidenden Facetten (inkl. Dokumenttyp) plus Freitext.
+  records = filterBySharedState(store, records, shared, {
     getRecord: (r) => r,
     searchMatch: searchMatchChronik,
   });
 
-  // Geteilte On-Top-Facetten (M4): Zeitfenster + Schaerfegrad. Records sind
-  // hier nackt -> getRecord ist Identitaet.
-  const shared = getFilter();
+  // On-Top-Facetten: Zeitfenster + Schaerfegrad. Records sind nackt.
   records = applyZeitfenster(records, shared.zeitfenster, (r) => r, store);
-  let engInfo = null;
   if (shared.schaerfe === 'eng') {
-    const res = applySchaerfeEng(records, store, (r) => r);
-    records = res.items;
-    engInfo = { total: res.total, eng: res.eng };
+    records = applySchaerfeEng(records, store, (r) => r).items;
   }
-  updateSchaerfeBanner('chronik-schaerfe', shared.schaerfe, engInfo);
+  lastResult = recordsFor(store, {}, { base: new Set(records.map(r => r['@id'])) });
+  if (sidebar) sidebar.update();
 
   // Pro Record einmal annotieren: Sicht (aus den verorteten Annotationen) +
   // Anzeigejahr. Der Zeitanker ist kanonisch rico:date (E-88); fehlt er, nennt
@@ -153,10 +177,8 @@ function updateChronikView() {
     if (arr.length > maxPerYear) maxPerYear = arr.length;
   }
 
-  const isFiltered = isToolbarFiltered(state);
-
-  // --- Achsenkopf: ehrliche Deckungs-Caption + Dekaden×Sicht-Header ----------
-  viewContainer.appendChild(renderCoverageHead(annotated.length, datedCount, secondaryCount, undated.length, sichtCovered));
+  const isFiltered = isSharedFiltered(shared) || sharedFacetsActive(shared)
+    || Array.isArray(shared.zeitfenster) || shared.schaerfe === 'eng';
 
   const stacks = aggregateDecadeStacks(annotated.map(a => ({ year: a.year, sicht: a.sichtInfo.sicht })));
   const header = renderDecadeHeader(stacks);
@@ -177,13 +199,6 @@ function updateChronikView() {
 
   viewContainer.appendChild(timeline);
 
-  const total = store.allRecords.filter(r => !store.unprocessedIds.has(r['@id'])).length;
-  if (toolbar) {
-    toolbar.setCount(isFiltered
-      ? `${records.length} von ${total} Einheiten (gefiltert)`
-      : `${total} Einheiten`);
-  }
-
   logStamp('chronik', [
     ['records', records.length],
     ['jahre-belegt', byYear.size],
@@ -194,23 +209,6 @@ function updateChronikView() {
     ['spanne', `${min}–${max}`],
     ['gefiltert', isFiltered ? 'ja' : ''],
   ]);
-}
-
-/** Fixe Caption am Achsenkopf: Dichte = Ueberlieferung, nicht Aktivitaet. */
-function renderCoverageHead(total, dated, secondary, undated, sichtCovered) {
-  const head = el('div', { className: 'chronik-head' });
-  head.appendChild(el('p', { className: 'chronik-head__line' },
-    el('strong', {}, `${dated} von ${total}`),
-    ` datiert`,
-    secondary > 0 ? el('span', { className: 'chronik-head__sub' }, ` (davon ${secondary} sekundär)`) : null,
-    `, ${undated} undatiert · `,
-    el('strong', {}, `${sichtCovered}`),
-    ` mit Mobilitätssicht`,
-  ));
-  head.appendChild(el('p', { className: 'chronik-head__hint' },
-    'Dichte zeigt den Erschließungsstand, nicht die Aktivität — leere Jahre heißen „nicht erschlossen".',
-  ));
-  return head;
 }
 
 /** Kollabierbarer Dekaden×Sicht-Stapel: zeitliche Entwicklung als Aggregat,

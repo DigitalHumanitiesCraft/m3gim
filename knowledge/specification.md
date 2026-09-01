@@ -5,9 +5,9 @@ project:
   repository: https://github.com/DigitalHumanitiesCraft/m3gim
 status: reviewed
 language: de
-version: 0.4
+version: 0.6
 created: 2026-06-17
-updated: 2026-08-22
+updated: 2026-09-01
 authors: [Christopher Pollin]
 generated-with: Claude Code
 method:
@@ -68,23 +68,7 @@ Technisch ist M³GIM eine statische Single-Page-Application ohne Backend, ausgel
 
 ### Funktionale Anforderungen
 
-Die Anwendung präsentiert den erschlossenen Bestand in mehreren komplementären Perspektiven auf denselben zugrunde liegenden Graphen, ohne dass beim Wechsel der Perspektive ein Feature- oder Datenmodellwechsel stattfindet.
-
-Sie macht den archivischen Bestand in seiner hierarchischen Konvolut-Struktur durchsuch- und filterbar und erlaubt das Aufklappen einzelner Objekte zu einem Detailbild mit allen erfassten Verknüpfungen, Finanzangaben, Beziehungen und raum-zeitlichen Ereignissen.
-
-Sie ordnet die datierten Objekte zeitlich an und macht die Karrierechronologie samt ihrer Erschließungslücken sichtbar.
-
-Sie aggregiert den Bestand zu einer visuellen Zusammenschau, die zeigt, was die Daten sind und was mit ihnen möglich wird.
-
-Sie erschließt die Normdatenindizes Personen, Organisationen, Orte und Werke als eigenständige Einstiege mit Wikidata-Anreicherung und Querverweisen in den Bestand.
-
-Sie stellt das Personennetzwerk um Malaniuk dar und unterscheidet explizit annotierte Beziehungen von aus Ko-Präsenz abgeleiteten Verbindungen.
-
-Sie erlaubt das Sammeln ausgewählter Objekte in einem Wissenskorb und deren Export in zitierfähige Formate.
-
-Sie führt jeden angezeigten Datenpunkt über eine Provenance-Angabe auf seine Quellzelle in den XLSX-Erfassungstabellen zurück und macht Konfidenz und Erschließungsevidenz transparent.
-
-Sie verknüpft normierte Entitäten mit Wikidata-Q-IDs und zeigt die daraus gewonnene Anreicherung (Beruf, Stimmfach, Lebensdaten, Koordinaten) an.
+Die Anwendung präsentiert den erschlossenen Bestand in komplementären Perspektiven auf denselben zugrunde liegenden Graphen, ohne Feature- oder Datenmodellwechsel beim Perspektivwechsel, jede Sicht mit Provenance- und Normdatenanschluss. Die Anforderungen je Sicht sind vollständig als Epics und User Stories ausformuliert (§ Epics und User Stories) und werden hier nicht dupliziert.
 
 ### Nicht-funktionale Anforderungen
 
@@ -102,15 +86,27 @@ Annahme: Die Anwendung adressiert ohne weitere Tuning-Maßnahmen den aktuellen B
 
 ## Epics und User Stories
 
-Die folgenden Epics decken die aktiven Funktionsbereiche ab. Die Tabs Bestand, Chronik, Statistik, Indizes, Karte, Netzwerk und Wissenskorb sind sichtbar; die Perspektiv-Tabs Mobilitäts-Atlas, Repertoire und Biogramm sind aktuell verborgen und werden iterativ reaktiviert. Die Stories spiegeln den belegten Funktionsumfang wider.
+Die folgenden Epics decken die aktiven Funktionsbereiche ab; welche Tabs sichtbar sind, führt § Funktionsumfang und Abgrenzung an einer Stelle. Die Stories spiegeln den belegten Funktionsumfang wider.
 
 ### Epic Bestand
 
-Der Bestand ist die archivische Grundsicht auf die Objekte in ihrer Konvolut-Hierarchie.
+Der Bestand ist die archivische Grundsicht auf die Objekte in ihrer Konvolut-Hierarchie und der Provenienz-Anker der Anwendung (Operator-Entscheidung 2026-09-01). Daraus folgen drei Grundsätze. Der Bestand macht jedes Objekt des Datensatzes auffindbar, die Startansicht darf gewichten, aber nichts ist unerreichbar, auch Plakate und Tonträger nicht. Das aufgeklappte Detail stellt den vollständigen erfassten Datensatz eines Eintrags dar, jeder Datenpunkt des JSON-LD-Records ist dort sichtbar oder erreichbar. Jeder Datenpunkt einer anderen Sicht führt per Rücksprung auf genau diesen aufgeklappten Eintrag.
+
+- Als Forscher:in möchte ich im aufgeklappten Detail jeden erfassten Datenpunkt des Eintrags sehen oder erreichen, um das Detail als vollständige Belegstelle zu nutzen, ohne die Quelltabellen zu öffnen.
 
 - Als Forscher:in möchte ich den Bestand nach Volltext, Dokumenttyp, Person, Ort und Werk filtern, um gezielt die für meine Frage relevanten Objekte einzugrenzen.
 - Als Forscher:in möchte ich ein Objekt aufklappen und sein vollständiges Detailbild mit Verknüpfungen, Finanzen, Beziehungen und Ereignissen in funktionalen Blöcken sehen, um den erschlossenen Kontext eines Stücks zu erfassen.
 - Als Forscher:in möchte ich Konvolute als Einheit mit ihren aggregierten Metadaten erkennen und ihre Kinder innerhalb der Hierarchie sortieren, um die archivische Ordnung nicht zu zerreißen.
+
+Zielbild Bestand, Operator-Entscheidungen vom 2026-09-01. Die Anwendung ist Werkzeug, nicht Erzählung; primäre Adressaten sind Forschende und das Erschließungsteam. Leitprinzip der Umsetzung: das Interface erzeugt Erklärung durch Struktur, nicht durch erklärenden Text. Ein klickbarer Wireframe liegt als Referenz unter `C:\tmp\m3gim-wireframe\bestand-wireframe.html`; er zeigt die Zielstruktur, die visuelle Umsetzung folgt dem bestehenden Designsystem ([design.md](design.md)).
+
+- Als Forscher:in möchte ich Suche und alle Filter in einer einheitlichen Seitenleiste bedienen, die in jeder Ansicht identisch ist, um nicht je Ansicht neue Filterorte und Bedienlogiken zu lernen. Die Facetten folgen einem gemeinsamen Muster (Eingabefeld mit Vorschlägen und entfernbaren Chips), die Tab-Leiste bleibt im Seitenkopf.
+- Als Forscher:in möchte ich zwischen Feinerschlossen und Gesamtbestand über einen Umschalter mit sichtbaren Zählwerten wechseln, um ohne Erklärtext zu verstehen, was die Startansicht zeigt und was nicht. Im Gesamt-Modus ist nichts unerreichbar, auch Plakate und Tonträger nicht.
+- Als Forscher:in möchte ich Konvolute als dauerhaft sichtbare Gruppenköpfe mit Signatur, Titel, Zeitspanne und Typ-Mix sehen, statt sie erst aufzuklappen, um mit einem einzigen Aufklapp-Schritt (dem Objekt-Detail) auszukommen.
+- Als Forscher:in möchte ich je Objektzeile eine typisierte Erschließungsanzeige in den Familienfarben sehen (je ein Element pro Inhaltstyp, gefüllt oder leer), um Art und Tiefe der Erschließung vor dem Aufklappen zu erkennen; die Aufschlüsselung je Familie liegt im Tooltip, die Spalte sortiert nach der Zahl der Verknüpfungen, und dieselben Farben tragen im Detail die Blocktitel, sodass die Legende aus Nähe entsteht statt aus Text.
+- Als Forscher:in möchte ich das Detail über die volle Breite lesen, beginnend mit einer Metadaten-Kopfzeile und der inhaltlichen Beschreibung, gefolgt vom Blockraster einschließlich der Aufführungen mit Werk und Datum, mit gebündelter Quellenangabe und zuklappbaren Verwaltungsangaben am Fuß, um den vollständigen Datensatz eines Eintrags an einem Ort zu erfassen. Das ausrichtende Haus je Aufführung kommt erst mit der Occurrence-Datenstufe in den Datensatz (§ Auftritts-Occurrence) und erscheint in der Sektion, sobald es dort steht; vorher zeigt die Anwendung es nicht, um keine Institution zu erfinden.
+- Als Forscher:in möchte ich Signatur und Titel im aufgeklappten Detail nicht doppelt lesen und gleich gestaltete, gleich große Aktionsschaltflächen für Wissenskorb und Schließen vorfinden.
+- Der Korb erhält eine eigene schmale Spalte, damit das Lesezeichen-Symbol nicht als Teil der Inhalts- oder Verknüpfungsanzeige gelesen wird.
 
 ### Epic Chronik
 
@@ -165,7 +161,7 @@ Provenance und Normdatenanschluss durchziehen alle Sichten.
 
 ## Funktionsumfang und Abgrenzung
 
-Im Funktionsumfang sind die Tabs Bestand, Chronik, Statistik, Indizes, Karte, Netzwerk, Verknüpfungen und der Wissenskorb als Werkzeug, jeweils mit Provenance- und Normdatenanschluss. Verborgene Tabs gibt es seit E-140 nicht mehr; eine neue Ansicht entsteht gegen die Forschungsfrage und die belegte Datenlage, statt einen vorhandenen Prototyp zu reaktivieren. Die Perspektiv-Tabs Mobilitäts-Atlas, Repertoire und Biogramm sind als Code, CSS und Store-Maps vorhanden, aber verborgen und werden iterativ reaktiviert.
+Im Funktionsumfang sind die Tabs Bestand, Chronik, Statistik, Indizes, Karte, Netzwerk, Verknüpfungen und der Wissenskorb als Werkzeug, jeweils mit Provenance- und Normdatenanschluss. Verborgene Tabs gibt es seit E-140 nicht mehr; eine neue Ansicht entsteht gegen die Forschungsfrage und die belegte Datenlage, statt einen vorhandenen Prototyp zu reaktivieren. Der Code der früheren Perspektiv-Tabs Mobilitäts-Atlas, Repertoire und Biogramm liegt noch im Baum, ist aber kein Funktionsversprechen; über Verfall oder Wiederverwendung entscheidet dieselbe Regel.
 
 Bewusst nicht im Funktionsumfang sind:
 
@@ -215,7 +211,6 @@ Der Vertrag in [frontend-date-contract.md](../data/reports/frontend-date-contrac
 
 ### Sichten und Funktionsumfang
 
-- **Default-Modus des Bestands und Forschungsscope.** Offen sind der Default-Modus des Bestands, erschlossen gegen alle (E-116), und der Forschungsscope-Ausschluss der Plakate und Tonträger (`EXCLUDED_DFT`). Am 2026-08-22 gegen `docs/js/views/archive-holdings.js` geprüft, der Default zeigt die erschlossenen Einheiten und `EXCLUDED_DFT` greift in beiden Modi. Solange offen, entscheidet eine Voreinstellung darüber, welchen Erschließungsstand ein Erstbesuch sieht. Grundlage in E-116.
 - **Bewegungstypen als zweite Mobilitätsachse.** Die Konstante `EVENT_ROLE_TO_MOBILITY_CLUSTER` in `docs/js/data/constants.js` trägt die fünf Ereigniskategorien performativ, institutionell, korrespondenz, diskursiv und biografisch, während [research-framework.md](research-framework.md) fünf theoretische Bewegungstypen führt, nationale und geografische Mobilität, erzwungene Migration, Bildungs- und Lebensstil-Mobilität. Zu entscheiden ist, ob die Ereignis-Cluster bleiben und die Bewegungstypen als zweite Achse hinzukommen oder ob beide zusammengeführt werden. Am 2026-08-22 gegen `constants.js` geprüft, eine zweite Achse existiert nicht. Solange offen, bleibt die theoretische Typologie des Forschungsrahmens ohne Entsprechung im Interface. Grundlage in [journal.md](journal.md) § Offene Entscheidungen.
 
 ### Repository
@@ -224,7 +219,7 @@ Der Vertrag in [frontend-date-contract.md](../data/reports/frontend-date-contrac
 
 ## Stand und nächste Schritte
 
-Dieser Abschnitt ist volatil und wird je Session fortgeschrieben; alles oberhalb ist der durable Kern der Spezifikation. Erledigte Arbeitspakete wandern von hier in [journal.md](journal.md) und [journal.md](journal.md), quellseitige Datenpunkte ins [Datenfehler-Register](../data/reports/reconciliation-register.md).
+Dieser Abschnitt ist volatil und wird je Session fortgeschrieben; alles oberhalb ist der durable Kern der Spezifikation. Erledigte Arbeitspakete wandern von hier in [journal.md](journal.md), quellseitige Datenpunkte ins [Datenfehler-Register](../data/reports/reconciliation-register.md).
 
 ### Datenstand vom 2026-08-31
 
@@ -256,11 +251,12 @@ Datenstufen darauf aufbauend: Stufe 1 ohne Erfassungsänderung (Partner-Reconcil
 
 ### Interface-Ausbau
 
-2. Den geteilten Filter auf die Statistik ausdehnen. Milestone 4 ist am 2026-06-23 gebaut, `filter-state.js` hält den Schnitt und fünf Ansichten abonnieren ihn ([architecture.md](architecture.md) § Cross-View-Filter); die Statistik führt weiterhin ihren eigenen Zeitregler (E-122).
-3. Facetten- und Filter-Funktion ausbauen. Heute je Facette Single-Select mit UND-Verknüpfung (E-117); offen sind Mehrfachauswahl beziehungsweise ODER innerhalb einer Facette und eine einheitliche Filter-UX über die Views.
-4. Auftritts-Occurrence umsetzen, sobald die Spalte `datenpunkt_id` gefüllt ist (§ Offene Entscheidungen, Umsetzung des Occurrence-Modells).
-6. Karte: Werk als wählbare Entität, feinere Werk- und Personen-Ebene pro Ort, fehlende Stadt-Koordinaten über die Reconciliation-Pipeline (siehe E-126 „Offen“).
-7. Indizes-Seite optimieren; konkrete Punkte noch zu schärfen.
+- Die Sidebar-Vereinheitlichung auf Chronik, Karte, Netzwerk und Statistik ausdehnen (E-158). Der Bestand ist umgestellt, die genannten Ansichten tragen ihre Regler noch an ihrer bisherigen Stelle. Mit dem Umzug fällt der dort verbliebene Erklärtext (Chronik-Caption, Schärfe-Banner) in die Struktur und in Tooltips (E-156).
+- `m3gim-ontology:dataQualityFlag` an den Record-Ebenen rendern, an denen er heute nur in den Daten liegt; im Chip ist er umgesetzt ([design.md](design.md) Regel 10).
+- Den geteilten Filter auf die Statistik ausdehnen; `filter-state.js` hält den Schnitt und mehrere Ansichten abonnieren ihn ([architecture.md](architecture.md) § Cross-View-Filter), die Statistik führt noch ihren eigenen Zeitregler (E-122). Die einheitliche Filter-Sidebar (E-158) ist der Rahmen dafür.
+- Auftritts-Occurrence umsetzen, sobald die Spalte `datenpunkt_id` gefüllt ist (§ Auftritts-Occurrence und Forschungsdatenstufe).
+- Karte: Werk als wählbare Entität, feinere Werk- und Personen-Ebene pro Ort, fehlende Stadt-Koordinaten über die Reconciliation-Pipeline (siehe E-126 „Offen").
+- Indizes-Seite optimieren; konkrete Punkte noch zu schärfen.
 
 ### Deferred
 
@@ -274,7 +270,7 @@ Instanzbezogene Datenfehler, Abgleichfehler und die strukturellen Quell-Fixes st
 
 ### Status-Tracker
 
-Nur offene, blockierte und zurückgestellte Pakete; Erledigtes steht in [journal.md](journal.md) und [journal.md](journal.md).
+Nur offene, blockierte und zurückgestellte Pakete; Erledigtes steht in [journal.md](journal.md).
 
 | Arbeitspaket | Status | Notiz |
 |---|---|---|

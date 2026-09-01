@@ -1,24 +1,24 @@
 # /// script
 # requires-python = ">=3.11"
 # ///
-"""Inhaltserhalt bei der Teilung und Zusammenführung von Wissensdokumenten.
+"""Content preservation when splitting and merging knowledge documents.
 
-Ein Dokument in zwei zu zerlegen ist eine reine Verschiebeoperation, und ihr
-Versagensmuster ist stiller Verlust. Ein Abschnitt verschwindet, ein zweiter
-wird beim Verschieben umgeschrieben, und nichts meldet einen Fehler.
+Splitting one document into two is a pure move operation, and its failure mode
+is silent loss. A section disappears, a second is rewritten during the move, and
+nothing reports an error.
 
-Datenfluss: eine Momentaufnahme vor dem Eingriff nach der Teilung gegen die
-Zieldokumente gehalten, als Konsolenreport und Exit-Code.
+Data flow: a snapshot taken before the change is held against the target
+documents after the split, as a console report and an exit code.
 
 Usage:
     python scripts/check-doc-split.py snapshot AUFNAHME QUELLE...
     python scripts/check-doc-split.py verify   AUFNAHME ZIEL...
 
-Die Aufnahme hält je Abschnitt seine Überschrift und einen Hash des Rumpfes.
-Die Prüfung meldet drei Klassen: ein Abschnitt fehlt in allen Zielen (Verlust),
-ein Abschnitt steht in mehr als einem Ziel (Dublette), ein Abschnitt steht mit
-verändertem Rumpf da (Umschreibung beim Verschieben). Ein bewusst geänderter
-Rumpf wird durch eine neue Aufnahme quittiert.
+The snapshot holds, per section, its heading and a hash of the body. The check
+reports three classes: a section missing from all targets (loss), a section
+present in more than one target (duplicate), a section with a changed body
+(rewrite during the move). A deliberately changed body is acknowledged by a new
+snapshot.
 """
 
 from __future__ import annotations
@@ -33,7 +33,7 @@ HEADING = re.compile(r"^(#{2,6})\s+(.*?)\s*$")
 
 
 def sections(path: Path) -> dict[str, str]:
-    """Überschrift -> Hash des Rumpfes bis zur nächsten Überschrift."""
+    """Heading -> hash of the body up to the next heading."""
     found: dict[str, str] = {}
     current: str | None = None
     body: list[str] = []

@@ -26,10 +26,7 @@ import {
   applyViewDefault, isFacetTouched,
 } from '../../docs/js/ui/filter-state.js';
 import {
-  sharedToToolbarState, toolbarStateToShared,
-} from '../../docs/js/ui/filter-sync.js';
-import {
-  filterByToolbarState, isToolbarFiltered,
+  filterBySharedState, isSharedFiltered,
 } from '../../docs/js/views/_archive-filter.js';
 
 describe('Geteilter Filter haelt Listen', () => {
@@ -73,23 +70,6 @@ describe('Geteilter Filter haelt Listen', () => {
   });
 });
 
-describe('Projektion auf die Toolbar', () => {
-  test('mehrere Werte kommen als Liste in der Toolbar an', () => {
-    const projected = sharedToToolbarState({ ort: ['Graz', 'Wien'], person: [], werk: [] });
-    assert.deepEqual(projected.location, ['Graz', 'Wien']);
-  });
-
-  test('der Rueckweg erhaelt die Liste', () => {
-    const back = toolbarStateToShared({ location: ['Graz', 'Wien'], person: [], werk: [] });
-    assert.deepEqual(back.ort, ['Graz', 'Wien']);
-  });
-
-  test('ein String aus einer Altstelle ueberlebt beide Richtungen', () => {
-    assert.deepEqual(sharedToToolbarState({ ort: 'Graz' }).location, ['Graz']);
-    assert.deepEqual(toolbarStateToShared({ location: 'Graz' }).ort, ['Graz']);
-  });
-});
-
 describe('ODER innerhalb einer Facette', () => {
   const store = {
     persons: new Map([
@@ -104,7 +84,7 @@ describe('ODER innerhalb einer Facette', () => {
   const opts = { getRecord: (it) => it, searchMatch: () => true };
 
   test('zwei Personen vereinigen ihre Dokumente', () => {
-    const out = filterByToolbarState(store, items, { person: ['A', 'B'] }, opts);
+    const out = filterBySharedState(store, items, { person: ['A', 'B'] }, opts);
     assert.deepEqual(out.map(i => i['@id']), ['r1', 'r2', 'r3'], (
       'Die Mehrfachauswahl schneidet statt zu vereinigen; zwei Werte ergaeben '
       + 'dann weniger als jeder einzelne.'
@@ -112,27 +92,27 @@ describe('ODER innerhalb einer Facette', () => {
   });
 
   test('eine Person allein bleibt wie zuvor', () => {
-    const out = filterByToolbarState(store, items, { person: ['B'] }, opts);
+    const out = filterBySharedState(store, items, { person: ['B'] }, opts);
     assert.deepEqual(out.map(i => i['@id']), ['r3']);
   });
 
   test('zwei verschiedene Facetten bleiben UND-verknuepft', () => {
-    const out = filterByToolbarState(store, items,
-      { person: ['A', 'B'], location: ['Graz'] }, opts);
+    const out = filterBySharedState(store, items,
+      { person: ['A', 'B'], ort: ['Graz'] }, opts);
     assert.deepEqual(out.map(i => i['@id']), ['r1'], (
       'Das ODER gilt innerhalb einer Facette; zwischen Facetten bleibt es UND.'
     ));
   });
 
   test('ein unbekannter Wert entwertet die Facette nicht', () => {
-    const out = filterByToolbarState(store, items, { person: ['B', 'Unbekannt'] }, opts);
+    const out = filterBySharedState(store, items, { person: ['B', 'Unbekannt'] }, opts);
     assert.deepEqual(out.map(i => i['@id']), ['r3'], (
       'Ein Wert ohne Entsprechung im Bestand darf nur sich selbst betreffen.'
     ));
   });
 
   test('nur unbekannte Werte ergeben eine leere Menge', () => {
-    const out = filterByToolbarState(store, items, { person: ['Unbekannt'] }, opts);
+    const out = filterBySharedState(store, items, { person: ['Unbekannt'] }, opts);
     assert.deepEqual(out.map(i => i['@id']), [], (
       'Eine Facette, deren Werte nichts treffen, muss leer liefern statt alles '
       + 'durchzulassen.'
@@ -140,7 +120,7 @@ describe('ODER innerhalb einer Facette', () => {
   });
 
   test('ein String aus einer Altstelle wirkt weiterhin', () => {
-    const out = filterByToolbarState(store, items, { person: 'A' }, opts);
+    const out = filterBySharedState(store, items, { person: 'A' }, opts);
     assert.deepEqual(out.map(i => i['@id']), ['r1', 'r2']);
   });
 });
@@ -155,12 +135,12 @@ describe('Leerformen kippen keine lesende Stelle', () => {
   });
 
   test('eine leere Facettenliste zaehlt nicht als aktiver Filter', () => {
-    assert.equal(isToolbarFiltered({ person: [] }), false, (
+    assert.equal(isSharedFiltered({ person: [] }), false, (
       'Eine leere Liste ist der Leerwert; sonst blieben Reset-Knopf und '
       + 'Hierarchie-Abflachung dauerhaft an.'
     ));
-    assert.equal(isToolbarFiltered({ person: ['A'] }), true);
-    assert.equal(isToolbarFiltered({}), false);
+    assert.equal(isSharedFiltered({ person: ['A'] }), true);
+    assert.equal(isSharedFiltered({}), false);
   });
 });
 

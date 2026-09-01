@@ -1,18 +1,18 @@
-"""Unit-Tests fuer die Reconciliation-Logik aus scripts/reconcile.py.
+"""Unit tests for the reconciliation logic in scripts/reconcile.py.
 
-Deckt die fuenf Ursachen der systematischen Fehlzuordnungen ab, die
-data/reports/identifier-proposals-works.md und
-data/reports/identifier-proposals-persons.md belegen:
+Covers the five causes of the systematic misassignments documented in
+data/reports/identifier-proposals-works.md and
+data/reports/identifier-proposals-persons.md:
 
-  1. Typfilter der Werke (Q_MUSICAL_WORK ohne die Opernklasse)
-  2. Komponistenpruefung (angekuendigt, nie bindend)
-  3. Alias-Vergleich (nur Label verglichen, Alias als Label gelesen)
-  4. Vorhandene Kennungen (uebersprungen, nie geprueft)
-  5. Personensuche (Abbruch nach der Komma-Form, Rangfolge bei Gleichstand)
+  1. Type filter of the works (Q_MUSICAL_WORK without the opera class)
+  2. Composer check (announced, never binding)
+  3. Alias comparison (only label compared, alias read as label)
+  4. Existing identifiers (skipped, never checked)
+  5. Person search (abort after the comma form, ranking on a tie)
 
-Offline. Alle Wikidata-Antworten in diesem Modul sind Aufzeichnungen vom
-2026-08-22, abgerufen ueber wbsearchentities und wbgetentities mit der
-Projekt-Kennung. Kein Test greift auf das Netz zu.
+Offline. All Wikidata responses in this module are recordings of 2026-08-22,
+fetched via wbsearchentities and wbgetentities with the project user agent. No
+test touches the network.
 """
 
 import sys
@@ -20,7 +20,7 @@ from pathlib import Path
 
 import pytest
 
-# scripts/reconcile.py importierbar machen
+# make scripts/reconcile.py importable
 SCRIPTS = Path(__file__).parent.parent / "scripts"
 if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
@@ -34,11 +34,11 @@ PROJECT_USER_AGENT = (
 
 
 # ---------------------------------------------------------------------------
-# Aufzeichnung 1: P31 der belegten Werk-Entitaeten
+# Recording 1: P31 of the attested work entities
 #
-# Quelle: die als "gesichert"/"wahrscheinlich" belegten Vorschlaege und die
-# belegten Ersatz-Identifikatoren aus identifier-proposals-works.md, jeweils
-# ueber wbgetentities abgerufen. (P31-Liste, Label).
+# Source: the proposals documented as "gesichert"/"wahrscheinlich" and the
+# documented replacement identifiers from identifier-proposals-works.md, each
+# fetched via wbgetentities. (P31 list, label).
 # ---------------------------------------------------------------------------
 
 CONFIRMED_WORK_TYPES = {
@@ -112,8 +112,8 @@ CONFIRMED_WORK_TYPES = {
     "Q11493224": ([], "Vergin, tutto amor"),
 }
 
-# Belegte Fehlzuordnungen, die allein am Typ scheitern: literarische
-# Vorlage, Tonaufnahme, Gattungsbegriff und thematisch Fremdes.
+# Documented misassignments that fail on type alone: literary source, sound
+# recording, genre term and thematically unrelated entities.
 TYPE_FALSE_POSITIVES = {
     "Q729645": (['Q482994'], "Clarity"),
     "Q1213668": (['Q7725634'], "Die Jahreszeiten"),
@@ -134,9 +134,8 @@ TYPE_FALSE_POSITIVES = {
     "Q674832": (['Q7725634'], "Carmen"),
 }
 
-# Belegte Fehlzuordnungen, die der Typfilter nicht fangen kann: echte
-# musikalische Werke des falschen Komponisten. Sie gehoeren zur
-# Komponistenpruefung, nicht zum Typfilter.
+# Documented misassignments the type filter cannot catch: genuine musical works
+# by the wrong composer. They belong to the composer check, not the type filter.
 COMPOSER_FALSE_POSITIVES = {
     "Q790310": (['Q105543609'], "Ave Maria"),
     "Q3221001": (['Q105543609'], "Le chant de la terre"),
@@ -147,7 +146,7 @@ COMPOSER_FALSE_POSITIVES = {
 
 
 # ---------------------------------------------------------------------------
-# Aufzeichnung 2: wbsearchentities-Antworten (language=de, limit=5)
+# Recording 2: wbsearchentities responses (language=de, limit=5)
 # ---------------------------------------------------------------------------
 
 RECORDED_SEARCH = {
@@ -214,7 +213,7 @@ RECORDED_SEARCH = {
          'match': {'type': 'label', 'language': 'de', 'text': 'Johann Sebastian Bach'},
          'aliases': ['Johann Sebastian Bach']},
     ],
-    # Die Komma-Form liefert fuer Dermota gar nichts.
+    # The comma form returns nothing at all for Dermota.
     'Dermota, Anton': [],
     'Anton Dermota': [
         {'id': 'Q12784779', 'label': 'Anton Dermota', 'description': 'Slovene politician',
@@ -224,8 +223,8 @@ RECORDED_SEARCH = {
         {'id': 'Q12784780', 'label': 'Anton Dermota', 'description': 'Wikimedia disambiguation page',
          'match': {'type': 'label', 'language': 'de', 'text': 'Anton Dermota'}},
     ],
-    # Titel + Komponist findet nichts; wbsearchentities sucht auf Labels
-    # und Aliassen, nicht im Volltext.
+    # Title + composer finds nothing; wbsearchentities searches on labels and
+    # aliases, not full text.
     'Un ballo in maschera Verdi, Giuseppe': [],
     'Un ballo in maschera': [
         {'id': 'Q221757', 'label': 'Un ballo in maschera', 'description': 'opera by Giuseppe Verdi',
@@ -242,8 +241,8 @@ RECORDED_SEARCH = {
         {'id': 'Q47088443', 'label': 'Un ballo in maschera',
          'match': {'type': 'label', 'language': 'it', 'text': 'Un ballo in maschera'}},
     ],
-    # Der Werktitel steht bei der Oper nur als Alias, waehrend eine Arie
-    # ihn als Bestandteil eines laengeren Alias fuehrt.
+    # The work title sits on the opera only as an alias, while an aria carries
+    # it as part of a longer alias.
     'Le nozze di Figaro Mozart, Wolfgang Amadeus': [],
     'Le nozze di Figaro': [
         {'id': 'Q201873', 'label': 'The Marriage of Figaro',
@@ -285,7 +284,7 @@ RECORDED_SEARCH = {
 
 
 # ---------------------------------------------------------------------------
-# Aufzeichnung 3: Claims (P31, P86) der beteiligten Entitaeten
+# Recording 3: claims (P31, P86) of the entities involved
 # ---------------------------------------------------------------------------
 
 RECORDED_CLAIMS = {
@@ -328,9 +327,9 @@ RECORDED_CLAIMS = {
     'Q75278': {'P31': ['Q105543609'], 'P86': ['Q1339']},
 }
 
-# Labels und Aliase der beteiligten Komponisten-Entitaeten (Auszug der
-# lateinschriftlichen Formen). Q83309 traegt den blossen Nachnamen
-# "Strauss" als Alias — daran haengt die Kalibrierung des Vergleichs.
+# Labels and aliases of the composer entities involved (excerpt of the
+# Latin-script forms). Q83309 carries the bare surname "Strauss" as an alias,
+# on which the calibration of the comparison depends.
 RECORDED_NAMES = {
     'Q7317': ['Giuseppe Verdi', 'Giuseppe Fortunino Francesco Verdi', 'Verdi',
               'Cuzeppe Verdi', 'Iosephus Verdi'],
@@ -346,7 +345,7 @@ RECORDED_NAMES = {
 
 
 def _as_claims(simple: dict) -> dict:
-    """Baut die wbgetentities-Claim-Struktur aus der kompakten Aufzeichnung."""
+    """Builds the wbgetentities claim structure from the compact recording."""
     return {
         prop: [{"mainsnak": {"datavalue": {"value": {"id": qid}}}} for qid in qids]
         for prop, qids in simple.items()
@@ -355,7 +354,7 @@ def _as_claims(simple: dict) -> dict:
 
 @pytest.fixture
 def offline(monkeypatch):
-    """Ersetzt jeden Netzweg durch die Aufzeichnung, ohne Rate-Limit-Pause."""
+    """Replaces every network path with the recording, without rate-limit pause."""
     monkeypatch.setattr(reconcile.time, "sleep", lambda *_: None)
 
     def _search(query, language="de", limit=5):
@@ -368,8 +367,8 @@ def offline(monkeypatch):
 
     monkeypatch.setattr(reconcile, "search_wikidata", _search)
     monkeypatch.setattr(reconcile, "get_entity_claims", _claims)
-    # raising=False: vor der Reparatur gibt es get_entity_names noch nicht,
-    # der Test soll am Defekt scheitern und nicht am Fixture.
+    # raising=False: before the fix get_entity_names does not exist yet, the
+    # test should fail on the defect and not on the fixture.
     monkeypatch.setattr(reconcile, "get_entity_names",
                         lambda qid: list(RECORDED_NAMES.get(qid, [])),
                         raising=False)
@@ -381,11 +380,11 @@ def offline(monkeypatch):
 
 
 # ---------------------------------------------------------------------------
-# Kennung der Abfragen
+# User agent of the requests
 # ---------------------------------------------------------------------------
 
 def test_requests_carry_the_project_user_agent(monkeypatch):
-    """Jede Wikidata-Abfrage traegt die vereinbarte Projekt-Kennung."""
+    """Every Wikidata request carries the agreed project user agent."""
     seen = []
 
     class _Resp:
@@ -411,11 +410,11 @@ def test_requests_carry_the_project_user_agent(monkeypatch):
 
 
 # ---------------------------------------------------------------------------
-# Ursache 1: Typfilter der Werke
+# Cause 1: type filter of the works
 # ---------------------------------------------------------------------------
 
 def test_work_type_filter_accepts_every_confirmed_work_class():
-    """Jede belegte Werkentitaet passiert den Typfilter."""
+    """Every documented work entity passes the type filter."""
     rejected = [
         (qid, label, p31)
         for qid, (p31, label) in CONFIRMED_WORK_TYPES.items()
@@ -428,7 +427,7 @@ def test_work_type_filter_accepts_every_confirmed_work_class():
 
 
 def test_work_type_filter_rejects_source_recording_and_genre():
-    """Vorlage, Tonaufnahme und Gattungsbegriff passieren den Typfilter nicht."""
+    """Source, sound recording and genre term do not pass the type filter."""
     accepted = [
         (qid, label, p31)
         for qid, (p31, label) in TYPE_FALSE_POSITIVES.items()
@@ -441,11 +440,11 @@ def test_work_type_filter_rejects_source_recording_and_genre():
 
 
 # ---------------------------------------------------------------------------
-# Ursache 2: Komponistenpruefung
+# Cause 2: composer check
 # ---------------------------------------------------------------------------
 
 def test_work_rejects_exact_title_hit_with_wrong_composer(offline):
-    """Ein exakter Titeltreffer des falschen Komponisten wird abgewiesen."""
+    """An exact title hit by the wrong composer is rejected."""
     match = reconcile.reconcile_work("Un ballo in maschera",
                                      komponist="Verdi, Giuseppe")
     assert match is None or match["qid"] != "Q64732249", (

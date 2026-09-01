@@ -1,28 +1,28 @@
 #!/usr/bin/env python3
-"""Verifiziert alle ``match: "manual"``-Eintraege in der Reconciliation-JSON
-gegen die Live-Labels auf Wikidata.
+"""Verifies every ``match: "manual"`` entry in the reconciliation JSON against
+the live labels on Wikidata.
 
-Hintergrund (Session 34): Zwei manuelle Q-ID-Approvals waren falsch —
-Bayreuth Q2861 war Rostock, Stanislau Q200491 ein US-Videospiel-Publisher.
-Solche stillen Datenfehler produzieren plausibel aussehende, aber faktisch
-falsche Atlas-Marker und Country-Zuordnungen.
+Background (Session 34): two manual Q-ID approvals were wrong. Bayreuth Q2861
+was Rostock, Stanislau Q200491 a US video game publisher. Such silent data
+errors produce plausible-looking but factually wrong Atlas markers and country
+assignments.
 
-Aufruf::
+Usage::
 
     python scripts/verify-manual-approvals.py
 
-Prueft fuer jeden ``match: "manual"``-Eintrag:
+Checks for each ``match: "manual"`` entry:
 
-  1. Lebt die Q-ID ueberhaupt?
-  2. Passt das Label zum erwarteten Namen (fuzzy, ueber DE/EN + Aliases)?
-  3. Passt der Typ zum Eintrag (location -> "city"/"town"/"settlement"
-     im Description-Feld; person -> "Person"; org -> "organization"; ...)?
+  1. Does the Q-ID exist at all?
+  2. Does the label match the expected name (fuzzy, across DE/EN + aliases)?
+  3. Does the type match the entry (location -> "city"/"town"/"settlement"
+     in the description field; person -> "Person"; org -> "organization"; ...)?
 
-Exitcode 0 = alles OK, Exitcode 1 = mind. eine Diskrepanz. Kann im
-Pre-Commit oder in CI laufen.
+Exit code 0 = all OK, exit code 1 = at least one discrepancy. Can run in a
+pre-commit hook or in CI.
 
-Netzwerk-Abhaengigkeit: eine REST-Anfrage pro Batch (50 Q-IDs). Laeuft
-typischerweise unter einer Sekunde. Fuer Offline-Runs::
+Network dependency: one REST request per batch (50 Q-IDs), typically under a
+second. For offline runs::
 
     SKIP_VERIFY_MANUAL=1 python scripts/verify-manual-approvals.py
 """
@@ -43,7 +43,7 @@ RECONCILIATION = BASE / "data" / "output" / "wikidata-reconciliation.json"
 USER_AGENT = "M3GIM-Pipeline/1.0 (office@dhcraft.org)"
 BATCH = 50
 
-# Heuristische Typ-Signale im Description-Text.
+# Heuristic type signals in the description text.
 # Signals are matched against the normalised description, so every entry is
 # normalised the same way at import time; a raw "saenger" would never match.
 TYPE_SIGNALS = {
@@ -73,7 +73,7 @@ TYPE_SIGNALS = {
 
 
 def _normalize(s: str) -> str:
-    """Lowercase + einfache Umlaut-Entschaerfung fuer fuzzy-Vergleich."""
+    """Lowercase plus simple umlaut folding for the fuzzy comparison."""
     s = (s or "").lower().strip()
     return (s.replace("ä", "a").replace("ö", "o").replace("ü", "u")
              .replace("ß", "ss").replace("-", " "))
@@ -90,7 +90,7 @@ def _tokens(s: str) -> set:
 
 
 def fetch_entities(qids: list) -> dict:
-    """Holt Labels, Aliases und Beschreibungen in DE+EN fuer eine QID-Liste."""
+    """Fetches labels, aliases and descriptions in DE+EN for a QID list."""
     url = ("https://www.wikidata.org/w/api.php?action=wbgetentities"
            f"&ids={'|'.join(qids)}"
            "&props=labels|aliases|descriptions"
@@ -101,10 +101,10 @@ def fetch_entities(qids: list) -> dict:
 
 
 def verify_entry(entry: dict, wd: dict) -> tuple[str, str]:
-    """Vergleicht einen Eintrag gegen die Live-WD-Daten.
+    """Compares one entry against the live WD data.
 
-    Rueckgabe: (status, comment).
-    Status: "OK" | "MISMATCH" | "MISSING" | "TYPE-WARN".
+    Returns (status, comment) with status one of
+    "OK" | "MISMATCH" | "MISSING" | "TYPE-WARN".
     """
     qid = entry.get("qid", "")
     name = entry.get("name", "")
@@ -130,11 +130,10 @@ def verify_entry(entry: dict, wd: dict) -> tuple[str, str]:
     name_norm = _normalize(name)
     cand_norms = {_normalize(c) for c in candidates}
 
-    # Direkte Treffer
     if name_norm in cand_norms:
         return "OK", f"{wd_label_de} — {wd_desc_de[:60]}"
 
-    # Token-basierter Jaccard ueber Labels+Aliases
+    # Token-based Jaccard over labels + aliases
     name_tokens = _tokens(name)
     best = 0.0
     for c in candidates:
@@ -145,7 +144,7 @@ def verify_entry(entry: dict, wd: dict) -> tuple[str, str]:
         if j > best:
             best = j
 
-    # Typ-Signal aus Description
+    # Type signal from the description
     desc_norm = _normalize(wd_desc_de)
     signals = TYPE_SIGNALS.get(etype, [])
     type_hit = any(sig in desc_norm for sig in signals)
@@ -191,7 +190,6 @@ def main() -> int:
         status, comment = verify_entry(m, wd)
         statuses.setdefault(status, []).append((m, comment))
 
-    # Ausgabe
     for status in ("OK", "TYPE-WARN", "MISMATCH", "MISSING"):
         items = statuses.get(status, [])
         if not items:

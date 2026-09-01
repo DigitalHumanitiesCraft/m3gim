@@ -1,32 +1,31 @@
-"""Kalendarische Gueltigkeit der Datumswerte im erzeugten Datensatz.
+"""Calendar validity of the date values in the generated dataset.
 
-Datierungen liegen im Datensatz durchgaengig als Zeichenkette vor (data-model.md
-§ 7: "Alle Properties vom Typ xsd:string, weil historische Datierung die
-ISO-Schema-Strenge von xsd:date regelmaessig ueberschreitet"). Zulaessig sind
-nach data.md § 6 die Formen ``YYYY``, ``YYYY-MM`` und ``YYYY-MM-DD``,
-Zeitspannen als ``.../...`` sowie die Qualifier ``circa:``, ``vor:`` und
-``nach:``. Nicht zulaessig ist ein Monat oder Tag ausserhalb des Kalenders.
+Datierungen are stored throughout as strings (data-model.md § 7: "Alle
+Properties vom Typ xsd:string, weil historische Datierung die ISO-Schema-Strenge
+von xsd:date regelmaessig ueberschreitet"). Per data.md § 6 the admissible forms
+are ``YYYY``, ``YYYY-MM`` and ``YYYY-MM-DD``, spans as ``.../...`` and the
+qualifiers ``circa:``, ``vor:`` and ``nach:``. A month or day outside the
+calendar is not admissible.
 
-Genau das erzeugt die Wikidata-Anreicherung, solange sie das Feld
-``precision`` verwirft: eine jahresgenau gefuehrte Angabe wird von Wikidata
-als ``+1841-00-00T00:00:00Z`` serialisiert und landet als ``1841-00-00`` im
-Datensatz (Befund AF-04, Entscheidungsvorlage vom 2026-08-21, Frage 4).
-Betroffen sind ``schema:birthDate``, ``schema:deathDate``,
-``m3gim-ontology:wdPremiereDate`` und ``m3gim-ontology:wdInception``.
+That is exactly what the Wikidata enrichment produces while it discards the
+``precision`` field: a year-precision value is serialized by Wikidata as
+``+1841-00-00T00:00:00Z`` and lands as ``1841-00-00`` in the dataset (finding
+AF-04, decision template of 2026-08-21, question 4). Affected are
+``schema:birthDate``, ``schema:deathDate``, ``m3gim-ontology:wdPremiereDate``
+and ``m3gim-ontology:wdInception``.
 
-Die geprueften Properties werden aus dem Datensatz ermittelt statt gelistet:
-datumstragend ist eine Property, deren lokaler Name auf ``date``/``datum``
-endet oder deren saemtliche Zeichenkettenwerte die Gestalt einer Datierung
-haben. Kuenftige Datumsproperties fallen damit von selbst in die Pruefung,
-waehrend ``m3gim-ontology:lifespan`` (``1888-1965``), Titel und Betraege draussen
-bleiben.
+The checked properties are discovered from the dataset rather than listed: a
+property is date-bearing if its local name ends in ``date``/``datum`` or if all
+its string values have the shape of a Datierung. Future date properties thus
+fall into the check on their own, while ``m3gim-ontology:lifespan``
+(``1888-1965``), titles and amounts stay out.
 
-Der Annotationsknoten traegt laut data.md § 6 bewusst die nicht routbaren
-Rohdatierungen (``06-09``, ``1957-[05-27?]``). Das sind Quellbefunde des
-Erfassungsteams und Sache des Registers in data/reports/reconciliation-register.md, keine
-Pipeline-Fehler. Seit dem Umbau stehen sie in derselben Property wie jede
-andere Datierung; sie tragen dafuer das Flag ``datierung-malformed`` und
-bleiben mit ihm aus der kalendarischen Pruefung draussen.
+Per data.md § 6 the annotation node deliberately carries the non-routable raw
+Datierungen (``06-09``, ``1957-[05-27?]``). These are source findings of the
+cataloguing team and a matter for the register in
+data/reports/reconciliation-register.md, not pipeline errors. Since the rebuild
+they sit in the same property as any other Datierung; they carry the flag
+``datierung-malformed`` and stay out of the calendar check with it.
 """
 
 from __future__ import annotations
@@ -44,12 +43,12 @@ SCRIPTS = REPO_ROOT / "scripts"
 
 
 # ---------------------------------------------------------------------------
-# Teil 1: Extraktion der Wikidata-Zeitwerte
+# Part 1: extracting the Wikidata time values
 # ---------------------------------------------------------------------------
 
 
 def _load_enrich_module():
-    """Laedt scripts/enrich-wikidata.py; der Bindestrich verbietet den Import."""
+    """Loads scripts/enrich-wikidata.py; the hyphen forbids a plain import."""
     if str(SCRIPTS) not in sys.path:
         sys.path.insert(0, str(SCRIPTS))
     spec = importlib.util.spec_from_file_location(
@@ -64,7 +63,7 @@ enrich = _load_enrich_module()
 
 
 def _time_claim(literal: str, precision: int | None) -> dict:
-    """Wikidata-Claim mit Zeitwert, Aufbau wie in der wbgetentities-Antwort."""
+    """Wikidata claim with a time value, shaped like the wbgetentities response."""
     value = {
         "time": literal,
         "timezone": 0,
@@ -86,31 +85,31 @@ def _time_claim(literal: str, precision: int | None) -> dict:
 @pytest.mark.parametrize(
     ("literal", "precision", "expected"),
     [
-        # Universitaet Mozarteum Salzburg (Q871369), P571, jahresgenau gefuehrt.
+        # Universitaet Mozarteum Salzburg (Q871369), P571, year precision.
         ("+1841-00-00T00:00:00Z", 9, "1841"),
         # Théâtre National de l'Opéra-Comique (Q872222), P571.
         ("+1715-00-00T00:00:00Z", 9, "1715"),
-        # Lebensdaten aus dem Personenindex, dieselbe Codestelle.
+        # Life dates from the person index, same code path.
         ("+1914-00-00T00:00:00Z", 9, "1914"),
         ("+2005-00-00T00:00:00Z", 9, "2005"),
-        # Monatsgenau und tagesgenau bleiben in ihrer Praezision.
+        # Month and day precision keep their precision.
         ("+1957-05-00T00:00:00Z", 10, "1957-05"),
         ("+1919-01-29T00:00:00Z", 11, "1919-01-29"),
         ("+1901-01-01T00:00:00Z", 11, "1901-01-01"),
-        # Groeber als Jahr (Jahrzehnt, Jahrhundert): Jahresform ist die
-        # kuerzeste vom Modell getragene Darstellung.
+        # Coarser than year (decade, century): the year form is the shortest
+        # representation the model carries.
         ("+1980-00-00T00:00:00Z", 8, "1980"),
-        # Ohne Praezisionsfeld bleibt kein Nullmonat und kein Nulltag stehen.
+        # Without a precision field no zero month and no zero day remains.
         ("+1841-00-00T00:00:00Z", None, "1841"),
     ],
 )
 def test_extract_claim_value_normalizes_time_to_precision(literal, precision, expected):
-    """Zeitwerte werden auf ihre belegte Praezision normalisiert (AF-04)."""
+    """Time values are normalized to their attested precision (AF-04)."""
     assert enrich.extract_claim_value(_time_claim(literal, precision)) == expected
 
 
 def test_extract_claim_value_keeps_non_time_branches():
-    """Die Nachbarzweige der Funktion bleiben unberuehrt."""
+    """The neighbouring branches of the function stay untouched."""
     entity_claim = {
         "mainsnak": {
             "snaktype": "value",
@@ -134,14 +133,14 @@ def test_extract_claim_value_keeps_non_time_branches():
 
 
 # ---------------------------------------------------------------------------
-# Teil 2: Datumswerte im erzeugten Datensatz
+# Part 2: date values in the generated dataset
 # ---------------------------------------------------------------------------
 
 QUALIFIER = re.compile(r"^(?:circa:|vor:|nach:)")
 
-# Gestalt einer Datierung: Jahr, optional Monat und Tag, optional als Spanne.
-# Bewusst ohne Wertebereich fuer Monat und Tag, damit die Nullform als
-# Datierung erkannt und anschliessend als ungueltig gemeldet wird.
+# Shape of a Datierung: year, optionally month and day, optionally a span.
+# Deliberately without a value range for month and day, so the zero form is
+# recognized as a Datierung and then reported as invalid.
 DATE_SHAPE = re.compile(
     r"^(?:circa:|vor:|nach:)?\d{4}(?:-\d{2}(?:-\d{2})?)?"
     r"(?:/(?:circa:|vor:|nach:)?\d{4}(?:-\d{2}(?:-\d{2})?)?)?$"
@@ -151,11 +150,11 @@ TOKEN = re.compile(r"^(\d{4})(?:-(\d{2})(?:-(\d{2}))?)?$")
 
 
 def _collect_string_values(graph: list) -> dict[str, list[str]]:
-    """Sammelt je Property alle Zeichenkettenwerte des Graphen.
+    """Collects all string values of the graph per property.
 
-    Ein typisierter Literalknoten (``{"@value": ..., "@type": ...}``) wird der
-    umgebenden Property zugerechnet, damit eine spaeter typisiert serialisierte
-    Datumsproperty nicht aus der Pruefung faellt.
+    A typed literal node (``{"@value": ..., "@type": ...}``) is attributed to
+    its surrounding property, so a later typed-serialized date property does not
+    fall out of the check.
     """
     values: dict[str, list[str]] = {}
 
@@ -205,7 +204,7 @@ def _valid_token(token: str) -> bool:
 
 
 def _valid_date_value(value: str) -> bool:
-    """ISO-Datum, verkuerzte Form oder Zeitspanne, je mit Qualifier."""
+    """ISO date, shortened form or span, each with an optional qualifier."""
     parts = value.split("/")
     if len(parts) > 2:
         return False
@@ -213,11 +212,12 @@ def _valid_date_value(value: str) -> bool:
 
 
 def _flagged_malformed_values(graph: list) -> set[str]:
-    """Datumswerte, die ihr Knoten selbst als Quellbefund markiert.
+    """Date values that their own node marks as a source finding.
 
-    Eine Notationsabweichung der Quelle bleibt im Wortlaut stehen und traegt
-    dafuer ``datierung-malformed``. Sie ist ein Befund fuer data/reports/reconciliation-register.md und
-    kein Kalenderfehler der Pipeline.
+    A notation deviation of the source stays verbatim and carries
+    ``datierung-malformed`` for it. It is a finding for
+    data/reports/reconciliation-register.md and not a calendar error of the
+    pipeline.
     """
     flagged: set[str] = set()
 
@@ -260,8 +260,8 @@ ENRICHED_DATE_PROPS = {
 
 
 def test_date_bearing_properties_are_discovered(graph):
-    """Die Ermittlung greift, deckt die angereicherten Zeitwerte ab und zieht
-    weder Lebensspannen noch Titel oder Betraege herein."""
+    """The discovery works, covers the enriched time values and pulls in
+    neither lifespans nor titles or amounts."""
     discovered = _date_bearing(graph)
     assert len(discovered) >= 6, (
         f"Nur {len(discovered)} datumstragende Properties ermittelt — "
@@ -287,8 +287,8 @@ def test_date_bearing_properties_are_discovered(graph):
     strict=True,
 )
 def test_dataset_dates_are_valid_calendar_dates(graph):
-    """Jeder Datumswert ist ein gueltiges Kalenderdatum oder eine belegte
-    Verkuerzung auf Jahr oder Jahr und Monat."""
+    """Every date value is a valid calendar date or an attested shortening to
+    year, or year and month."""
     offenders = _offenders(graph)
     assert not offenders, (
         f"{len(offenders)} ungueltige Datumswerte, "

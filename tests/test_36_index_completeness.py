@@ -1,21 +1,21 @@
-"""Index-Feld-Vollstaendigkeit: kuratierte Index-Spalten erreichen das JSON-LD.
+"""Index field completeness: curated index columns reach the JSON-LD.
 
-Vor M1 reichte die Pipeline aus den vier Index-XLSX nur wikidata_id und
-komponist durch (build_index_lookup -> process_verknuepfungen). Alle anderen
-redaktionell gepflegten Spalten gingen verloren: Org-Sitz (ort), Werk-Partie
-(rolle_stimme), Personen-Beruf (anmerkung), Lebensdaten, assoziierte Person.
+Before M1 the pipeline passed through only wikidata_id and komponist from the
+four index XLSX (build_index_lookup -> process_verknuepfungen). All other
+editorially maintained columns were lost: org seat (ort), work part
+(rolle_stimme), person profession (anmerkung), Lebensdaten, associated person.
 
-Dieser Test sichert, dass die kuratierten Felder als m3gim-ontology:-Properties an der
-jeweiligen Entitaet im Output ankommen. Soll-Quelle ist der KANONISCHE Index
-ueber den echten Pipeline-Reader load_index (mit Header-Shift-Korrektur, E-95) —
-nicht der Roh-XLSX-Header, der den geleakten 'Graz'/'Rossini'-Wert traegt.
+This test ensures the curated fields arrive as m3gim-ontology: properties on the
+respective entity in the output. The expected source is the CANONICAL index
+through the real pipeline reader load_index (with header-shift correction, E-95),
+not the raw XLSX header that carries the leaked 'Graz'/'Rossini' value.
 
-Frontend-Semantik (gegen False Positives): Der Loader dedupliziert Entitaeten
-nach Name (store.persons/organizations/works als Map name->entry). Der
-Index-Match in der Pipeline haengt aber am ROHEN Verknuepfungs-Namen; tippfehler-
-behaftete Vorkommen matchen nicht. Massgeblich ist daher pro Entitaet (nach
-Name): mindestens EIN Vorkommen traegt den korrekten Wert, und KEIN Vorkommen
-traegt einen falschen. Mindestvorkommen verhindern triviales Gruen.
+Frontend semantics (against false positives): the loader deduplicates entities by
+name (store.persons/organizations/works as a map name->entry). The index match in
+the pipeline hangs on the RAW Verknuepfungen name though; typo-laden occurrences
+do not match. Decisive per entity (by name) is therefore: at least ONE occurrence
+carries the correct value, and NO occurrence carries a wrong one. Minimum
+occurrences prevent trivial green.
 """
 
 import sys
@@ -30,16 +30,16 @@ from transform import load_index, normalize_str  # noqa: E402
 
 
 # ---------------------------------------------------------------------------
-# Helfer
+# Helpers
 # ---------------------------------------------------------------------------
 
 def _index_field_map(index_name: str, field: str) -> dict:
-    """name.lower() -> getrimmter Feldwert, ueber den kanonischen Reader.
+    """name.lower() -> trimmed field value, through the canonical reader.
 
-    Bei mehrfach erfasstem Namen gewinnt der erste nicht leere Wert, wie in
-    ``build_index_lookup`` seit E-152. Die frühere Fassung liess die letzte
-    Zeile gewinnen und erwartete damit genau das Ueberschreiben, das die
-    Nachlassbildnerin ihre gepflegte Anmerkung gekostet hat.
+    For a name recorded multiple times the first non-empty value wins, as in
+    ``build_index_lookup`` since E-152. The earlier version let the last row win
+    and thereby expected exactly the overwrite that cost the Nachlassbildnerin her
+    maintained annotation.
     """
     df = load_index(index_name)
     out = {}
@@ -80,16 +80,16 @@ def _subjects_of_type(graph: list, atype: str) -> list:
 
 
 def _persons(graph: list) -> list:
-    """Personen als Akteure UND als erwaehnte Subjekte."""
+    """Persons as agents AND as mentioned subjects."""
     return _agents_of_type(graph, "rico:Person") + _subjects_of_type(graph, "rico:Person")
 
 
 def _coverage(entities: list, field_map: dict, prop: str):
-    """Frontend-Semantik (Dedup nach Name): liefert (present, wrong).
+    """Frontend semantics (dedup by name): returns (present, wrong).
 
-    present = Namen, fuer die mind. ein Vorkommen den korrekten Wert traegt.
-    wrong   = Vorkommen mit einem von Index ABWEICHENDEN, nicht-leeren Wert.
-    Fehlender Wert an einzelnen Vorkommen ist kein Fehler (Roh-Namensvariante).
+    present = names for which at least one occurrence carries the correct value.
+    wrong   = occurrences with a non-empty value DIVERGING from the index.
+    A missing value on individual occurrences is not an error (raw name variant).
     """
     present = set()
     wrong = []
@@ -111,7 +111,7 @@ def _coverage(entities: list, field_map: dict, prop: str):
 
 
 # ---------------------------------------------------------------------------
-# Org-Sitz (Spalte 'ort' im Organisationsindex) -> m3gim-ontology:headquarters
+# Org seat (column 'ort' in the Organisationsindex) -> m3gim-ontology:headquarters
 # ---------------------------------------------------------------------------
 
 def test_org_sitz_reaches_jsonld(graph):
@@ -130,7 +130,7 @@ def test_org_sitz_reaches_jsonld(graph):
 
 
 def test_org_sitz_anchor_bayreuther_festspiele(graph):
-    """Menschlich lesbarer Anker: Bayreuther Festspiele -> Bayreuth."""
+    """Human-readable anchor: Bayreuther Festspiele -> Bayreuth."""
     orgs = _agents_of_type(graph, "rico:CorporateBody")
     festspiele = [a for a in orgs
                   if (normalize_str(a.get("name")) or "").lower() == "bayreuther festspiele"]
@@ -140,7 +140,7 @@ def test_org_sitz_anchor_bayreuther_festspiele(graph):
 
 
 # ---------------------------------------------------------------------------
-# Werk-Partie (Spalte 'rolle_stimme' im Werkindex) -> m3gim-ontology:sungPart
+# Work part (column 'rolle_stimme' in the Werkindex) -> m3gim-ontology:sungPart
 # ---------------------------------------------------------------------------
 
 def test_werk_partie_reaches_jsonld(graph):
@@ -159,7 +159,7 @@ def test_werk_partie_reaches_jsonld(graph):
 
 
 def test_werk_partie_anchor_tristan(graph):
-    """Anker: Tristan und Isolde -> Brangaene (Malaniuks Bayreuth-Partie)."""
+    """Anchor: Tristan und Isolde -> Brangaene (Malaniuk's Bayreuth part)."""
     works = _subjects_of_type(graph, "m3gim-ontology:MusicalWork")
     tristan = [w for w in works
                if (normalize_str(w.get("name")) or "").lower() == "tristan und isolde"]
@@ -169,7 +169,7 @@ def test_werk_partie_anchor_tristan(graph):
 
 
 # ---------------------------------------------------------------------------
-# Personen-Beruf (Spalte 'anmerkung' im Personenindex) -> m3gim-ontology:indexNote
+# Person profession (column 'anmerkung' in the Personenindex) -> m3gim-ontology:indexNote
 # ---------------------------------------------------------------------------
 
 def test_person_beruf_reaches_jsonld(graph):
@@ -188,7 +188,7 @@ def test_person_beruf_reaches_jsonld(graph):
 
 
 # ---------------------------------------------------------------------------
-# Personen-Lebensdaten -> m3gim-ontology:lifespan
+# Person Lebensdaten -> m3gim-ontology:lifespan
 # ---------------------------------------------------------------------------
 
 def test_person_lifespan_reaches_jsonld(graph):

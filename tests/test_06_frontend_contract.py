@@ -1,9 +1,9 @@
-"""Frontend-Kontrakt: Annahmen aus loader.js, aggregator.js.
+"""Frontend contract: assumptions from loader.js, aggregator.js.
 
-Diese Tests sichern ab, dass der Output die impliziten Annahmen der
-JS-Module erfüllt, damit keine Regressionen beim Datenupdate entstehen.
-Inkl. v2-Store-Invarianten (Phase 6): dftHierarchy, mobilityEvents,
-agentRelations, finances, typisierte Datumsfelder."""
+These tests ensure the output satisfies the implicit assumptions of the JS
+modules so no regressions arise on a data update. Includes v2 store
+invariants (Phase 6): dftHierarchy, mobilityEvents, agentRelations, finances,
+typed date fields."""
 
 import re
 
@@ -14,15 +14,15 @@ from _helpers import ensure_list, iter_entities_with_id, relation_parties
 WD_ID_PATTERN = re.compile(r"^wd:Q\d+$")
 DATE_LIKE_PATTERN = re.compile(r"^\d{4}(-\d{2}){0,2}")
 ISO_DATE_PATTERN = re.compile(r"^\d{4}(-\d{2}(-\d{2})?)?$")
-# STE atDate darf zusaetzlich einen Qualifier tragen (data.md § 6): "Wien, ab
-# 1956" wird zu atDate="nach:1956" (E-102). extractYear in date-parser.js greift
-# die Jahreszahl unabhaengig vom Praefix.
+# STE atDate may additionally carry a qualifier (data.md § 6): "Wien, ab 1956"
+# becomes atDate="nach:1956" (E-102). extractYear in date-parser.js picks up
+# the year regardless of the prefix.
 ISO_OR_QUALIFIED_PATTERN = re.compile(r"^(circa:|vor:|nach:)?\d{4}(-\d{2}(-\d{2})?)?$")
 AGRELON_TYPE_PATTERN = re.compile(r"^agrelon:(Has|Is)[A-Z]\w+$")
 
 
 def test_hasOrHadPart_never_string(graph):
-    """loader.js macht ensureArray() — muss object oder array sein, nie String."""
+    """loader.js does ensureArray(), must be object or array, never a string."""
     offenders = []
     for n in graph:
         parts = n.get("rico:hasOrHadPart")
@@ -34,7 +34,7 @@ def test_hasOrHadPart_never_string(graph):
 
 
 def test_location_names_not_dates(records):
-    """loader.js filtert Date-Leakage, aber Output sollte sauber sein."""
+    """loader.js filters date leakage, but the output should already be clean."""
     offenders = []
     for r in records:
         for loc in ensure_list(r.get("rico:hasOrHadLocation")):
@@ -47,7 +47,7 @@ def test_location_names_not_dates(records):
 
 
 def test_wikidata_ids_well_formed(records):
-    """Alle wd:Qxxx-IDs matchen Pattern."""
+    """All wd:Qxxx IDs match the pattern."""
     offenders = []
     for r in records:
         for ent in iter_entities_with_id(r):
@@ -58,7 +58,7 @@ def test_wikidata_ids_well_formed(records):
 
 
 def test_owl_sameAs_matches_wd_id(records):
-    """Wenn @id: wd:Qxxx, dann owl:sameAs voll qualifiziert."""
+    """If @id is wd:Qxxx, then owl:sameAs is fully qualified."""
     offenders = []
     for r in records:
         for ent in iter_entities_with_id(r):
@@ -72,7 +72,7 @@ def test_owl_sameAs_matches_wd_id(records):
 
 
 def test_every_konvolut_has_at_most_one_folio_child(konvolute):
-    """loader.js:99 sucht _Folio-Kind — max. 1 pro Konvolut."""
+    """loader.js:99 looks for a _Folio child, at most 1 per Konvolut."""
     offenders = []
     for k in konvolute:
         folio_children = [
@@ -85,7 +85,7 @@ def test_every_konvolut_has_at_most_one_folio_child(konvolute):
 
 
 def test_context_declares_v2_namespaces(jsonld):
-    """loader.js muss skos:broader und agrelon:* auflösen — @context pflicht."""
+    """loader.js must resolve skos:broader and agrelon:*, @context required."""
     ctx = jsonld.get("@context", {})
     for prefix in ("skos", "agrelon", "m3gim-vocab"):
         assert prefix in ctx, f"Prefix {prefix!r} fehlt im @context (v2-Pflicht)"

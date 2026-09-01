@@ -1,15 +1,16 @@
-"""m3gim-ontology:Performance als n-äre Reifikation (E-96/E-98).
+"""m3gim-ontology:Performance as an n-ary reification (E-96/E-98).
 
-Komposite rolle,person und datum,werk lösen sich in eine m3gim-ontology:Performance auf
-(hasStageRole/hasPerformer bzw. performanceOf/auffuehrungsdatum); Standalone-
-rolle erzeugt eine Performance mit nur hasStageRole. Records verweisen via
-m3gim-ontology:hasPerformance. Die Performer-/Werk-Pfade aktivieren sich mit dem tieferen
-Box-Export; gegen den aktuellen Stand sind sie zulässig leer.
+The composites rolle,person and datum,werk resolve into a
+m3gim-ontology:Performance (hasStageRole/hasPerformer resp.
+performanceOf/auffuehrungsdatum); a standalone rolle produces a Performance with
+only hasStageRole. Records reference it via m3gim-ontology:hasPerformance. The
+performer/work paths activate with the deeper Box export; against the current
+state they are admissibly empty.
 
-Die Aufloesbarkeit der record-seitigen hasPerformance-Referenz stand hier ein
-zweites Mal und liegt allein in
-test_04_verknuepfungen.test_performance_references_resolvable, das zusaetzlich
-die hasStageRole-Referenz gegen die StageRole-Knoten prueft.
+The resolvability of the record-side hasPerformance reference used to stand here
+a second time and lives solely in
+test_04_verknuepfungen.test_performance_references_resolvable, which also checks
+the hasStageRole reference against the StageRole nodes.
 """
 
 
@@ -19,8 +20,8 @@ def test_performances_exist(graph):
 
 
 def test_performance_of_is_indexed_work(graph):
-    """performanceOf trägt nie eine literale Q-ID/Rohstring als Werktitel —
-    das Ziel ist ein m3gim-ontology:MusicalWork mit name (E-98)."""
+    """performanceOf never carries a literal Q-ID/raw string as the work title,
+    the target is a m3gim-ontology:MusicalWork with name (E-98)."""
     for n in graph:
         if n.get("@type") != "m3gim-ontology:Performance":
             continue

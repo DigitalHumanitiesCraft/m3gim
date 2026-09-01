@@ -1,16 +1,17 @@
-"""String-Integrität: Keine Artefakte aus pandas/Excel-Import, saubere Encodings.
+"""String integrity: no artifacts from the pandas/Excel import, clean encodings.
 
-Ergaenzend zum JSON-Schema (test_01): deckt alle String-Werte rekursiv ab,
-nicht nur die im Schema benannten Felder. Faengt Mojibake, NaT-Durchschlag
-und Whitespace-Drift in beliebigen Sub-Entities (Agents, Locations, Works)."""
+Complements the JSON schema (test_01) by covering every string value
+recursively, not only the fields named in the schema. Catches mojibake, NaT
+leakage and whitespace drift in arbitrary sub-entities (Agents, Locations,
+Works)."""
 
 
 NAT_ARTIFACTS = {"NaT", "nan", "None", "NaN", "null"}
 
 MOJIBAKE_PATTERNS = [
-    "Ã¤", "Ã¶", "Ã¼", "Ã\x9f",   # ae/oe/ue/ß doppelt UTF-8
+    "Ã¤", "Ã¶", "Ã¼", "Ã\x9f",   # ae/oe/ue/ß double UTF-8
     "â€™", "â€œ", "â€",           # smart quotes
-    "Ã©", "Ã¨", "Ã¢",             # franz. Umlaute doppelt kodiert
+    "Ã©", "Ã¨", "Ã¢",             # French umlauts double-encoded
 ]
 
 
@@ -24,13 +25,13 @@ def test_no_nat_artifacts(records, helpers):
 
 
 def test_no_leading_trailing_whitespace(records, helpers):
-    """Alle String-Werte sind gestrippt. Zeilenumbrüche in Mehrzeilen-Feldern sind ok."""
+    """All string values are stripped. Newlines in multi-line fields are fine."""
     offenders = []
     for rec in records:
         for s in helpers.iter_strings(rec):
-            # Ignoriere Zeilenumbrüche am Anfang/Ende (mehrzeilige Titel sind real)
+            # Leading/trailing newlines are real (multi-line titles), only
+            # flag genuine edge spaces.
             if s != s.strip() and not s.startswith("\n") and not s.endswith("\n"):
-                # nur flaggen wenn echte Leerzeichen am Rand
                 if s.startswith(" ") or s.endswith(" "):
                     offenders.append((rec.get("@id"), repr(s[:50])))
     assert not offenders, f"Ungetrippte Strings: {offenders[:5]}"

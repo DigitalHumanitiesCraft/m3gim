@@ -1,18 +1,19 @@
-"""Datenqualitaets-Flags und Datums-Routing (E-102, E-136).
+"""Data-quality flags and date routing (E-102, E-136).
 
-Drei Invarianten:
-  1. Das generische m3gim:eventDate ist abgeschafft, die typisierte
-     Datumsfamilie ebenfalls. Jede Datierung landet in einem
-     m3gim-ontology:Annotation-Knoten mit atDate und der erfassten Rolle, der
-     auch klammer-/fragezeichen-unsichere Datierungen traegt. Kein stiller
-     Datenverlust beim Drop.
-  2. m3gim-ontology:dataQualityFlag zieht aus einem kontrollierten Vokabular, abgeleitet
-     aus Unsicherheitssignalen im anmerkung-Feld. m3gim-ontology:qualityConfidence wird
-     nicht fabriziert (Leitplanke "Konfidenz nicht erfinden").
-  3. m3gim-ontology:processingNote traegt den Freitext-Anhang des Objekt-
-     Bearbeitungsstands, der canonische Status bleibt in m3gim-ontology:processingStatus.
+Three invariants:
+  1. The generic m3gim:eventDate is abolished, and so is the typed date family.
+     Every dating lands in a m3gim-ontology:Annotation node with atDate and the
+     recorded role, which also carries bracket-/question-mark-uncertain datings.
+     No silent data loss on the drop.
+  2. m3gim-ontology:dataQualityFlag draws from a controlled vocabulary, derived
+     from uncertainty signals in the anmerkung field.
+     m3gim-ontology:qualityConfidence is not fabricated (guardrail "do not invent
+     confidence").
+  3. m3gim-ontology:processingNote carries the free-text appendix of the object
+     Bearbeitungsstand, the canonical status stays in
+     m3gim-ontology:processingStatus.
 
-Spec: data.md Abschnitt 6/7, journal.md E-100/E-102.
+Spec: data.md section 6/7, journal.md E-100/E-102.
 """
 
 from _helpers import ensure_list
@@ -22,18 +23,18 @@ QUALITY_FLAG_VOCAB = {
     "vorname-fehlt",
     "rolle-unsicher",
     "quelle-tippfehler",
-    # Malformter Quell-Datumswert (kein ISO, z.B. "06-09" ohne Jahr): nicht in
-    # rico:date verwertbar, bleibt im Wortlaut am Annotationsknoten stehen.
+    # Malformed source date value (not ISO, e.g. "06-09" without a year): not
+    # usable in rico:date, stays verbatim on the annotation node.
     "datierung-malformed",
 }
 
-# Die Property, auf der die Entstehungsdatierung am Dokument steht. Sie ist die
-# einzige Datierung, die kein eigener Knoten traegt.
+# The property carrying the creation dating on the document. It is the only
+# dating that does not get its own node.
 RECORD_DATE_PROPS = {"rico:date", "rico:creationDate"}
 
 
 def _walk(node):
-    """Alle dict-Knoten im Baum (inkl. verschachtelt)."""
+    """All dict nodes in the tree (including nested)."""
     if isinstance(node, dict):
         yield node
         for v in node.values():
@@ -48,11 +49,11 @@ def _all_nodes(graph):
         yield from _walk(n)
 
 
-# --- 1. Datums-Routing / eventDate-Drop -----------------------------------
+# --- 1. Date routing / eventDate drop -------------------------------------
 
 def test_generic_event_date_retired(graph):
-    """m3gim:eventDate kommt nirgends mehr vor (E-102, atomarer Ersatz durch
-    DatedEvent-Routing)."""
+    """m3gim:eventDate no longer occurs anywhere (E-102, atomic replacement by
+    DatedEvent routing)."""
     offenders = [n.get("@id") for n in _all_nodes(graph) if "m3gim:eventDate" in n]
     assert not offenders, (
         f"{len(offenders)} Knoten tragen noch das abgeschaffte m3gim:eventDate: "
@@ -72,11 +73,11 @@ def _annotations_of(record, annotations):
 
 
 def test_dated_events_wellformed(records, graph):
-    """Jede ueber hasAnnotation erreichbare Datierung ist wohlgeformt.
+    """Every dating reachable via hasAnnotation is well-formed.
 
-    Der Knoten traegt einen nicht-leeren atDate-Wert und, wo die Quelle eine
-    fuehrt, seine Rolle als Verweis auf ein Concept. Mindestens 10 erwartet,
-    das frueher nach eventDate geleitete Volumen."""
+    The node carries a non-empty atDate value and, where the source has one, its
+    role as a reference to a concept. At least 10 expected, the volume formerly
+    routed to eventDate."""
     annotations = _annotations_by_id(graph)
     total = 0
     offenders = []
@@ -101,12 +102,11 @@ def _role_id(node):
 
 
 def _source_cell(node):
-    """Blatt und Zeile der Ursprungszelle, als Vergleichsschluessel.
+    """Sheet and row of the origin cell, as a comparison key.
 
-    Zwei Knoten mit demselben Datum und derselben Rolle aus zwei verschiedenen
-    Zellen sind zwei erfasste Aussagen und keine Dublette. Nur die Zelle
-    unterscheidet den Erfassungsfall vom Pipeline-Artefakt, das ein Komposit
-    zweimal repraesentiert.
+    Two nodes with the same date and the same role from two different cells are
+    two recorded statements and not a duplicate. Only the cell distinguishes the
+    recording case from the pipeline artifact that represents a composite twice.
     """
     source = node.get("m3gim-ontology:xlsxSource")
     if not isinstance(source, dict):
@@ -116,11 +116,11 @@ def _source_cell(node):
 
 
 def test_dated_event_does_not_duplicate_ste(records, graph):
-    """Ein ort,datum-Komposit wird in GENAU EINE Repraesentation aufgeloest
-    (data.md § 4): der Annotationsknoten traegt Ort und Datum. Der Datums-Teil
-    darf nicht zusaetzlich als eigene Datumsannotation am selben Record
-    erscheinen — sonst zaehlt jede Datums-Aggregation das Datum doppelt
-    (Audit-Befund zu E-102)."""
+    """An ort,datum composite resolves into EXACTLY ONE representation
+    (data.md § 4): the annotation node carries place and date. The date part must
+    not additionally appear as its own date annotation on the same record,
+    otherwise every date aggregation counts the date twice (audit finding on
+    E-102)."""
     annotations = _annotations_by_id(graph)
     dupes = []
     for r in records:
@@ -144,9 +144,9 @@ def test_dated_event_does_not_duplicate_ste(records, graph):
 
 
 def test_uncertain_datings_routed_to_dated_event(records, graph):
-    """Klammer-/Fragezeichen-unsichere oder Freitext-Datierungen landen am
-    Annotationsknoten, nicht an rico:date oder rico:creationDate. Die beiden
-    Record-Properties bleiben rein ISO/qualifiziert."""
+    """Bracket-/question-mark-uncertain or free-text datings land on the
+    annotation node, not on rico:date or rico:creationDate. The two record
+    properties stay purely ISO/qualified."""
     import re
     iso_or_qual = re.compile(
         r"^(circa:|vor:|nach:)?\d{4}(-\d{2}(-\d{2})?)?(/\d{4}(-\d{2}(-\d{2})?)?)?$"
@@ -161,8 +161,8 @@ def test_uncertain_datings_routed_to_dated_event(records, graph):
         f"Unsichere/Freitext-Datierung am Dokument statt am Annotationsknoten: "
         f"{record_offenders[:5]}"
     )
-    # Mindestens eine Annotation traegt einen nicht-ISO-Wert (Beleg, dass die
-    # unsicheren Faelle hier ankommen) und ist dafuer als malformed markiert.
+    # At least one annotation carries a non-ISO value (evidence that the
+    # uncertain cases arrive here) and is marked malformed for it.
     annotations = _annotations_by_id(graph)
     nonsiso = []
     for r in records:
@@ -177,11 +177,11 @@ def test_uncertain_datings_routed_to_dated_event(records, graph):
     assert nonsiso, "Keine nicht-ISO-Datierung am Annotationsknoten — Klammerfall verloren?"
 
 
-# --- 2. Datenqualitaets-Flags ---------------------------------------------
+# --- 2. Data-quality flags ------------------------------------------------
 
 def test_data_quality_flags_vocab(graph):
-    """Jeder m3gim-ontology:dataQualityFlag-Wert stammt aus dem kontrollierten Vokabular;
-    mindestens 10 Flags aus den anmerkung-Signalen vorhanden."""
+    """Every m3gim-ontology:dataQualityFlag value comes from the controlled
+    vocabulary; at least 10 flags derived from the anmerkung signals present."""
     values = []
     for n in _all_nodes(graph):
         values.extend(ensure_list(n.get("m3gim-ontology:dataQualityFlag")))
@@ -194,9 +194,9 @@ def test_data_quality_flags_vocab(graph):
 
 
 def test_quality_confidence_not_fabricated(graph):
-    """m3gim-ontology:qualityConfidence wird nicht fabriziert: die Pipeline emittiert
-    keinen geratenen Zahlenwert fuer die Flag-Konfidenz (Leitplanke 'Konfidenz
-    nicht erfinden'). Die Property bleibt fuer belegbare Werte reserviert."""
+    """m3gim-ontology:qualityConfidence is not fabricated: the pipeline emits no
+    guessed numeric value for the flag confidence (guardrail 'do not invent
+    confidence'). The property stays reserved for provable values."""
     offenders = [n.get("@id") for n in _all_nodes(graph)
                  if "m3gim-ontology:qualityConfidence" in n]
     assert not offenders, (
@@ -208,20 +208,20 @@ def test_quality_confidence_not_fabricated(graph):
 # --- 3. Bearbeitungsnotiz --------------------------------------------------
 
 def test_bearbeitungsnotiz_split(records):
-    """Mindestens ein Record traegt eine m3gim-ontology:processingNote (Freitext-Anhang
-    des Bearbeitungsstands), und der canonische Status bleibt davon getrennt in
-    m3gim-ontology:processingStatus."""
+    """At least one record carries a m3gim-ontology:processingNote (free-text
+    appendix of the Bearbeitungsstand), and the canonical status stays separate
+    in m3gim-ontology:processingStatus."""
     canonical = {"abgeschlossen", "begonnen", "zurueckgestellt"}
     with_notiz = [r for r in records if r.get("m3gim-ontology:processingNote")]
     assert with_notiz, "Kein Record mit m3gim-ontology:processingNote — Split greift nicht"
     for r in with_notiz:
         notiz = r["m3gim-ontology:processingNote"]
         assert isinstance(notiz, str) and notiz.strip()
-        # Notiz ist Freitext, kein blosser canonischer Status.
+        # Note is free text, not a mere canonical status.
         assert notiz.strip().lower() not in canonical, (
             f"{r['@id']}: bearbeitungsnotiz ist nur der Status: {notiz}"
         )
-        # Der canonische Status bleibt erhalten und getrennt.
+        # The canonical status is kept and separate.
         assert r.get("m3gim-ontology:processingStatus") in canonical, (
             f"{r['@id']}: bearbeitungsstand fehlt oder nicht canonisch"
         )

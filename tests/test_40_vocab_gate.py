@@ -1,20 +1,19 @@
-"""Vokabular-Abdeckung als verbindliches Test-Gate.
+"""Vocabulary coverage as a binding test gate.
 
-Fuehrt `vocab/check-coverage.py` aus und failt, sobald der Pruefer eine
-Abweichung meldet. Damit wird die Abdeckung des formalen Vokabulars gegen den
-erzeugten Datensatz im Standardlauf mitgeprueft, statt nur als Handbefehl
-verfuegbar zu sein.
+Runs `vocab/check-coverage.py` and fails as soon as the checker reports a
+deviation. This checks the coverage of the formal vocabulary against the
+generated dataset in the standard run, instead of only being available as a
+manual command.
 
-Einbindung als eigener Prozess, aus drei Gruenden. Das Skript exportiert keine
-aufrufbare Pruef-Funktion; seinen Befund baut `main()` intern zusammen und gibt
-ihn ueber Konsole und Exit-Code aus. Der Dateiname traegt einen Bindestrich und
-ist damit kein importierbarer Modulname. Und der Handbefehl aus `CLAUDE.md` und
-dieses Gate laufen so ueber denselben Einstiegspunkt, koennen also nicht
-auseinanderlaufen. Die vollstaendige Ausgabe des Skripts wandert in die
-Assertion, sodass ein roter Lauf den fehlenden Term benennt.
+Wired in as a separate process, for three reasons. The script exports no
+callable check function; `main()` assembles its finding internally and emits it
+via console and exit code. The filename carries a hyphen and is therefore not an
+importable module name. And the manual command from `CLAUDE.md` and this gate
+thus run through the same entry point, so they cannot diverge. The script's full
+output goes into the assertion, so a red run names the missing term.
 
-Pfad-Overrides: `--data` folgt der conftest-Fixture (`M3GIM_JSONLD_PATH`),
-`--vocab` folgt `M3GIM_VOCAB_PATH`.
+Path overrides: `--data` follows the conftest fixture (`M3GIM_JSONLD_PATH`),
+`--vocab` follows `M3GIM_VOCAB_PATH`.
 """
 
 import os
@@ -28,7 +27,7 @@ VOCAB_PATH = Path(os.environ.get("M3GIM_VOCAB_PATH", REPO_ROOT / "vocab" / "m3gi
 
 
 def test_vocab_coverage_gate(jsonld_path):
-    """Jeder im Datensatz verwendete m3gim-Term ist im Vokabular definiert."""
+    """Every m3gim term used in the dataset is defined in the vocabulary."""
     assert CHECKER.exists(), f"Abdeckungspruefer fehlt: {CHECKER}"
 
     result = subprocess.run(

@@ -85,6 +85,35 @@
   --color-ort-bayreuth:  #B5862A; /* amber */
   --color-ort-salzburg:  #6E4E8C; /* violett */
 
+  /* Chip-Farbfamilien der Rolle-Prefix-Chips (design.md § 3, Story
+     "Chip-Farbfamilien"). Sechs semantische Familien, warm-gedeckt gehalten,
+     aber im Farbton klar getrennt: person=Pflaume, ort=Wald, rolle=Terrakotta,
+     beziehung=Petrol, finanz=Gold, datum=Schiefer. KUG-Blau (Interaktion) und
+     Signal-Rot (Flucht 1944) bleiben ausgespart. Jede Familie als Trio
+     Hintergrund/Rand/Text; die Legende im Inline-Detail liest dieselben Tokens.
+     Neutral traegt die farbfreie Restklasse. */
+  --chip-c-person-bg:     #efe6f1;
+  --chip-c-person-border: #cbb0cd;
+  --chip-c-person-text:   #5a3260;
+  --chip-c-ort-bg:        #e3efe6;
+  --chip-c-ort-border:    #b7d2bb;
+  --chip-c-ort-text:      #2b5836;
+  --chip-c-rolle-bg:      #f4e6dc;
+  --chip-c-rolle-border:  #dcb9a3;
+  --chip-c-rolle-text:    #7a3c1c;
+  --chip-c-beziehung-bg:     #dfeef0;
+  --chip-c-beziehung-border: #aad0d3;
+  --chip-c-beziehung-text:   #21585d;
+  --chip-c-finanz-bg:     #f3e8cf;
+  --chip-c-finanz-border: #d8c288;
+  --chip-c-finanz-text:   #6b5019;
+  --chip-c-datum-bg:      #e6e9f0;
+  --chip-c-datum-border:  #bac2d3;
+  --chip-c-datum-text:    #3c4863;
+  --chip-c-neutral-bg:     #f1ede6;
+  --chip-c-neutral-border: #d4ccbd;
+  --chip-c-neutral-text:   #5c5651;
+
   /* Verknuepfungen-Tab: heterogener Graph, Farbe pro Knotentyp. Orthogonal zu
      den Ort-Farben oben (dort: einzelne Staedte; hier: der Typ "Ort" als
      Klasse). Fokus traegt KUG-Blau (Interaktion). */

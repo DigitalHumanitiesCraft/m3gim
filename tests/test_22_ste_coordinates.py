@@ -1,41 +1,40 @@
-"""Koordinaten-Patch fuer SpatiotemporalEvents (Session 33, Milestone Mobilitaets-Atlas).
+"""Coordinate patch for SpatiotemporalEvents (session 33, milestone mobility atlas).
 
-Vorbedingung fuer den Mobilitaets-Atlas-Tab: jede Verortung,
-dessen Ort gegen den Ortsindex aufloesbar ist, traegt in seinem
-m3gim-ontology:atPlace-Subobjekt
+Precondition for the mobility-atlas tab: every Verortung whose place resolves
+against the Ortsindex carries in its m3gim-ontology:atPlace sub-object
 
     @id       : wd:Qxxx
     owl:sameAs: http://www.wikidata.org/entity/Qxxx
     geo:lat   : <float>
     geo:long  : <float>
-    m3gim-ontology:country: <Label>   (falls in der Wikidata-Property P17 vorhanden)
+    m3gim-ontology:country: <Label>   (if present in the Wikidata property P17)
 
-Analog zur Anreicherung regulaerer rico:Place-Eintraege in
-scripts/transform.py (_inject_enrichment, Z. 954-962).
+Analogous to the enrichment of regular rico:Place entries in
+scripts/transform.py (_inject_enrichment, l. 954-962).
 
-Anker: Staedte mit Q-ID aus data/output/wikidata-reconciliation.json
-(Zuerich Q72, Salzburg Q34713). Wien/Muenchen/Bayreuth sind noch
-unmatched und werden nach dem Patch weiterhin ohne Koordinaten bleiben
-(Reconciliation-Luecke, kein Pipeline-Bug).
+Anchors: cities with a Q-ID from data/output/wikidata-reconciliation.json
+(Zurich Q72, Salzburg Q34713). Vienna/Munich/Bayreuth are still unmatched and
+stay without coordinates after the patch (reconciliation gap, not a pipeline
+bug).
 """
 
 import pytest
 
 
 ANCHOR_STES = [
-    # (Record-Praefix des STE-@id, erwarteter Q-ID, erwarteter Stadtname)
-    # Anker auf das NIM_004_24-Folio (Zuerich, Salzburg). Die STE-@ids tragen
-    # einen GLOBALEN Zaehler, der bei jeder STE-Aenderung springt (zuletzt E-97
-    # Mobilitaets-STE) — daher ueber (Record-Praefix, Ortsname) ankern statt
-    # ueber die exakte @id, sonst bricht der Test bei jedem STE-Zuwachs.
+    # (record prefix of the STE @id, expected Q-ID, expected city name)
+    # Anchored on the NIM_004_24 Folio (Zurich, Salzburg). The STE @ids carry a
+    # GLOBAL counter that jumps on every STE change (most recently E-97 mobility
+    # STE), so anchor via (record prefix, place name) instead of the exact @id,
+    # otherwise the test breaks on every STE increase.
     ("m3gim-data:ev_NIM_004_24_", "wd:Q72",    "Zürich"),
     ("m3gim-data:ev_NIM_004_24_", "wd:Q34713", "Salzburg"),
 ]
 
 
 def _anchor_ste(graph, id_prefix, expected_name):
-    """Findet den STE auf dem Anker-Record (@id-Praefix), dessen atPlace-Name
-    passt — stabil gegen Verschiebungen des globalen STE-Zaehlers."""
+    """Find the STE on the anchor record (@id prefix) whose atPlace name matches,
+    stable against shifts of the global STE counter."""
     for n in graph:
         if (n.get("@type") == "m3gim-ontology:Annotation"
                 and str(n.get("@id", "")).startswith(id_prefix)):
@@ -51,13 +50,13 @@ def _at_place(ste):
 
 
 # ---------------------------------------------------------------------------
-# Anker-Asserts (sichern STE-Koordinaten-Patch aus Session 33)
+# Anchor asserts (guard the STE coordinate patch from session 33)
 # ---------------------------------------------------------------------------
 
 
 @pytest.mark.parametrize("id_prefix,expected_qid,expected_name", ANCHOR_STES)
 def test_anchor_ste_has_wikidata_id(graph, id_prefix, expected_qid, expected_name):
-    """Anker-STE traegt im atPlace-Subobjekt @id + owl:sameAs auf Wikidata."""
+    """Anchor STE carries @id + owl:sameAs to Wikidata in the atPlace sub-object."""
     ste = _anchor_ste(graph, id_prefix, expected_name)
     assert ste is not None, (
         f"Anker-STE {expected_name!r} auf {id_prefix!r} fehlt im Graph. "
@@ -80,7 +79,7 @@ def test_anchor_ste_has_wikidata_id(graph, id_prefix, expected_qid, expected_nam
 
 @pytest.mark.parametrize("id_prefix,expected_qid,expected_name", ANCHOR_STES)
 def test_anchor_ste_has_coordinates(graph, id_prefix, expected_qid, expected_name):
-    """Anker-STE traegt im atPlace-Subobjekt geo:lat + geo:long als float."""
+    """Anchor STE carries geo:lat + geo:long as float in the atPlace sub-object."""
     ste = _anchor_ste(graph, id_prefix, expected_name)
     assert ste is not None, f"Anker-STE {expected_name!r} auf {id_prefix!r} fehlt"
     place = _at_place(ste)
@@ -94,18 +93,18 @@ def test_anchor_ste_has_coordinates(graph, id_prefix, expected_qid, expected_nam
     assert isinstance(lon, (int, float)), (
         f"{expected_name}: geo:long={lon!r} (erwartet float)"
     )
-    # Plausibilitaet: Europa/nearby
+    # Plausibility: Europe/nearby
     assert -90 <= lat <= 90, f"{expected_name}: Breitengrad ausserhalb [-90, 90]: {lat}"
     assert -180 <= lon <= 180, f"{expected_name}: Laengengrad ausserhalb [-180, 180]: {lon}"
 
 
 # ---------------------------------------------------------------------------
-# Shape-Assertion
+# Shape assertion
 # ---------------------------------------------------------------------------
 
 
 def test_ste_place_wd_id_shape(graph):
-    """Wo @id in atPlace gesetzt ist, matcht es ^wd:Q\\d+$ und owl:sameAs passt."""
+    """Where @id is set in atPlace, it matches ^wd:Q\\d+$ and owl:sameAs fits."""
     import re
     qid_pattern = re.compile(r"^wd:Q\d+$")
     offenders = []
@@ -115,7 +114,7 @@ def test_ste_place_wd_id_shape(graph):
             continue
         pid = place.get("@id")
         if pid is None:
-            continue  # Orte ohne Q-ID sind erlaubt
+            continue  # places without a Q-ID are allowed
         if not qid_pattern.match(pid):
             offenders.append((ste.get("@id"), "@id", pid))
         same = place.get("owl:sameAs", "")
@@ -125,17 +124,17 @@ def test_ste_place_wd_id_shape(graph):
 
 
 # ---------------------------------------------------------------------------
-# Soft-Coverage
+# Soft coverage
 # ---------------------------------------------------------------------------
 
 
 def test_ste_geo_coverage_soft(graph):
-    """Mind. 10 STE tragen geo:lat im atPlace. Reale Coverage haengt an
-    der Reconciliation-Abdeckung des Ortsindex; die Schwelle ist bewusst
-    konservativ gewaehlt (Stadt-Q-IDs, die zum Testzeitpunkt matched sind:
-    Zuerich, Salzburg, Stuttgart, Berlin, Paris, New York, Basel, Linz, Rom, ...).
-    Steigende Reconciliation soll die Zahl mit der Zeit wachsen lassen;
-    sinkt sie unter 10, ist ein Regress im Patch wahrscheinlich."""
+    """At least 10 STE carry geo:lat in atPlace. Real coverage depends on the
+    reconciliation coverage of the Ortsindex; the threshold is deliberately
+    conservative (city Q-IDs matched at test time: Zurich, Salzburg, Stuttgart,
+    Berlin, Paris, New York, Basel, Linz, Rome, ...). Growing reconciliation
+    should let the number rise over time; if it drops below 10 a regression in
+    the patch is likely."""
     stes = [n for n in graph if n.get("@type") == "m3gim-ontology:Annotation"]
     if not stes:
         pytest.skip("Keine SpatiotemporalEvents im Graph")

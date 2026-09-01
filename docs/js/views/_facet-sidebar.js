@@ -9,9 +9,7 @@
  * sodass jede Ansicht dieselbe Spalte an derselben Stelle zeigt.
  *
  * Aufbau der Spalte, von oben:
- *   1. Status- und Legenden-Schlitz. Zaehlstand der gefilterten Dokumentmenge,
- *      Deckungsangabe (ui/coverage.js) und der Schaerfegrad als Badge mit
- *      erklaerendem Tooltip. Die Ansicht kann eigene Zeilen beisteuern.
+ *   1. Suche und Scope-Umschalter, die Zaehlwerte stehen in den Segmenten.
  *   2. Die Facetten mit Mehrfachauswahl und entfernbaren Chips. Werte kommen
  *      ausschliesslich aus store.* ueber facetInventory, nie aus einer
  *      redaktionellen Liste (E-87).
@@ -31,17 +29,18 @@
 
 import { el, clear } from '../utils/dom.js';
 import { createSidebar } from '../ui/sidebar.js';
-import { coverage } from '../ui/coverage.js';
 import {
   getFilter, setFilter, resetFilter, subscribe, facetValues, isFilterActive,
 } from '../ui/filter-state.js';
-import { facetInventory } from '../data/records-for.js';
+import { facetInventory, docTypeGroups } from '../data/records-for.js';
+import { dftLabel } from '../utils/format.js';
 
 /**
  * Anzeigeform der Facetten. Die Reihenfolge ist die der Spalte und folgt der
  * Vorgabe der Projektleitung vom 2026-08-31.
  */
 export const FACET_META = Object.freeze({
+  docType:     { title: 'Dokumenttyp', placeholder: 'Dokumenttyp suchen…' },
   person:      { title: 'Person',      placeholder: 'Person suchen…' },
   ort:         { title: 'Ort',         placeholder: 'Ort suchen…' },
   werk:        { title: 'Werk',        placeholder: 'Werk suchen…' },
@@ -51,12 +50,23 @@ export const FACET_META = Object.freeze({
 
 export const DEFAULT_FACETS = Object.freeze(['person', 'ort', 'werk', 'institution', 'rolle']);
 
+/** Suggestions shown per facet while the input has focus. The sidebar must fit
+ *  one screen without scrolling, so the lists open as dropdowns and stay short;
+ *  the long tail is reached by typing. */
+const OPTION_LIMIT = 8;
+
 /**
- * Wie viele Werte eine Facettenliste ohne Suche zeigt. Kurz gehalten, weil
- * sonst schon drei Facetten die Spalte laenger machen als das Fenster; die
- * Zeile darunter beziffert, wie viele Werte die Facette insgesamt traegt.
+ * Dropdown behaviour of a facet: suggestions appear on focus or while typing
+ * and close on blur. Returns a getter for the open state. Mousedown inside the
+ * list is swallowed so the input keeps focus while an option is toggled.
  */
-const OPTION_LIMIT = 6;
+function dropdown(search, options, repaint) {
+  let focused = false;
+  search.addEventListener('focus', () => { focused = true; repaint(); });
+  search.addEventListener('blur', () => { focused = false; repaint(); });
+  options.addEventListener('mousedown', (e) => e.preventDefault());
+  return () => focused || search.value.trim().length > 0;
+}
 
 const SCHAERFE_OPTIONS = [
   { value: 'weit', label: 'weit',
@@ -73,10 +83,15 @@ const SCHAERFE_OPTIONS = [
  * @param {() => {ids:Set<string>, weit:number, eng:number}} opts.getResult
  *   Die aktuelle Dokumentmenge der Ansicht (Ergebnis von recordsFor), fuer
  *   Zaehlstand und Deckungsangabe.
- * @param {Array<{title?:string, rows:() => Array}>} [opts.statusRows]
- *   Zusaetzliche Statuszeilen der Ansicht, im selben Schlitz.
  * @param {Array} [opts.leadSections]       View-eigene Sektionen vor den Facetten
  * @param {Array} [opts.sections]           View-eigene Sektionen nach dem Schaerfegrad
+ * @param {boolean} [opts.showSearch]       Freitext-Suchfeld ganz oben (Bestand/
+ *   Chronik). Schreibt `search` in den geteilten Filter.
+ * @param {{counts: () => {fein:number, gesamt:number}}} [opts.scope]
+ *   Blendet den Scope-Umschalter Feinerschlossen/Gesamt mit sichtbaren
+ *   Zaehlwerten ein (E-116/E-157). `counts` liefert die beiden Groessen.
+ * @param {boolean} [opts.showZeit=true]    Zeitregler zeigen.
+ * @param {boolean} [opts.showSchaerfe=true] Schaerfegrad-Segment zeigen.
  * @param {() => void} opts.onChange        nach jeder Filteraenderung, egal
  *   ob sie aus dieser Spalte oder aus einer anderen Ansicht kam
  * @returns {{element: HTMLElement, update: () => void, destroy: () => void}}
@@ -85,14 +100,23 @@ export function buildFacetSidebar(store, {
   facets = DEFAULT_FACETS,
   yearSpan,
   getResult,
-  statusRows = null,
   leadSections = [],
   sections = [],
+  showSearch = false,
+  scope = null,
+  showZeit = true,
+  showSchaerfe = true,
   onChange = () => {},
 } = {}) {
   const span = yearSpan || { min: 1900, max: 2009 };
   const inventories = new Map();
-  for (const key of facets) inventories.set(key, facetInventory(store, key));
+  for (const key of facets) {
+    // Der Dokumenttyp traegt die DFT-Baumgruppen als gruppierte Vorschlaege;
+    // die uebrigen Facetten eine flache Werteliste aus facetInventory.
+    inventories.set(key, key === 'docType'
+      ? docTypeGroups(store)
+      : facetInventory(store, key));
+  }
   // Je Facette die Zeichenfunktion, damit sidebar.update() sie ohne Umweg
   // ueber das DOM erreicht.
   const painters = new Map();
@@ -102,20 +126,34 @@ export function buildFacetSidebar(store, {
   // rendern lassen.
   const notify = () => {};
 
-  const statusSection = {
-    title: 'Schnitt',
+  // Freitext-Suche ganz oben (Bestand/Chronik). Sie schreibt `search` in den
+  // geteilten Filter; die View filtert Signatur/Titel/Typ/Datum daraus.
+  const searchSection = showSearch ? {
     controls: [{
-      kind: 'custom', className: 'fs-status',
-      build: region => renderStatus(store, region, getResult, statusRows),
-      update: region => renderStatus(store, region, getResult, statusRows),
+      kind: 'custom', className: 'fs-searchbar',
+      build: region => buildSearch(region, notify),
+      update: region => refreshSearch(region),
     }],
-  };
+  } : null;
+
+  // Scope-Umschalter mit sichtbaren Zaehlwerten im Bedienelement (E-156):
+  // Feinerschlossen zeigt nur erschlossene Bestaende, Gesamt alle (E-157).
+  const scopeSection = scope ? {
+    title: 'Umfang',
+    controls: [{
+      kind: 'custom', className: 'fs-scope',
+      build: region => buildScope(region, scope, notify),
+      update: region => refreshScope(region, scope),
+    }],
+  } : null;
 
   const facetSections = facets.map(key => ({
     title: FACET_META[key] ? FACET_META[key].title : key,
     controls: [{
       kind: 'custom', className: 'fs-facet',
-      build: region => painters.set(key, buildFacet(region, key, inventories.get(key), notify)),
+      build: region => painters.set(key, key === 'docType'
+        ? buildDocTypeFacet(region, inventories.get(key), notify, store)
+        : buildFacet(region, key, inventories.get(key), notify)),
       update: () => { const paint = painters.get(key); if (paint) paint(); },
     }],
   }));
@@ -140,8 +178,8 @@ export function buildFacetSidebar(store, {
     title: 'Schärfegrad',
     controls: [{
       kind: 'custom', className: 'fs-schaerfe',
-      build: region => buildSchaerfe(region, notify),
-      update: region => refreshSchaerfe(region),
+      build: region => buildSchaerfe(region, getResult, notify),
+      update: region => refreshSchaerfe(region, getResult),
     }],
   };
 
@@ -155,8 +193,11 @@ export function buildFacetSidebar(store, {
   };
 
   const sidebar = createSidebar({
-    sections: [statusSection, ...leadSections, ...facetSections,
-      zeitSection, schaerfeSection, ...sections, resetSection],
+    sections: [searchSection, scopeSection, ...leadSections,
+      ...facetSections,
+      showZeit ? zeitSection : null,
+      showSchaerfe ? schaerfeSection : null,
+      ...sections, resetSection],
   });
   sidebar.element.classList.add('facet-sidebar');
 
@@ -172,55 +213,151 @@ export function buildFacetSidebar(store, {
   };
 }
 
-// --- Status- und Legenden-Schlitz -----------------------------------------
+// --- Freitext-Suche -------------------------------------------------------
 
-/**
- * Zaehlstand, Deckung und Schaerfegrad als strukturierte Zeilen statt als
- * Fliesstext. Die Ehrlichkeit bleibt vollstaendig: die enge Teilmenge steht
- * neben der weiten, und die Deckung nennt, welcher Teil des Bestands die
- * Auswertung ueberhaupt traegt (E-87).
- */
-function renderStatus(store, region, getResult, statusRows) {
-  clear(region);
-  const result = getResult ? getResult() : null;
-  if (!result) return;
+function buildSearch(region, notify) {
+  const input = el('input', {
+    type: 'search', className: 'fs-search fs-search--wide',
+    placeholder: 'Suche (Signatur, Titel, Typ, Datum…)',
+    'aria-label': 'Bestand durchsuchen',
+    value: getFilter().search || '',
+  });
+  input.addEventListener('input', () => {
+    setFilter({ search: input.value });
+    notify();
+  });
+  region.appendChild(input);
+  region._input = input;
+}
 
-  region.appendChild(el('div', { className: 'fs-figure' },
-    el('span', { className: 'fs-figure__n' }, String(result.weit)),
-    el('span', { className: 'fs-figure__unit' },
-      result.weit === 1 ? 'Dokument im Schnitt' : 'Dokumente im Schnitt')));
-
-  const { used, total } = coverage(store, result.ids);
-  region.appendChild(statusRow('Deckung', `${used} von ${total}`,
-    `${used} von ${total} Dokumenten des Bestands tragen diese Auswertung.`));
-
-  const schaerfe = getFilter().schaerfe;
-  const badge = el('span', {
-    className: `fs-badge fs-badge--${schaerfe}`,
-    dataset: { tip: SCHAERFE_OPTIONS.find(o => o.value === schaerfe).tip, tipWrap: '' },
-  }, schaerfe);
-  region.appendChild(el('div', { className: 'fs-row' },
-    el('span', { className: 'fs-row__label' }, 'Schärfegrad'),
-    el('span', { className: 'fs-row__value' }, badge)));
-
-  region.appendChild(statusRow('davon belegt', `${result.eng} von ${result.weit}`,
-    'Raumzeitlich verortet oder ueber eine Auffuehrung belegt. Die Differenz '
-    + 'zum weiten Schnitt bleibt sichtbar, statt geglaettet zu werden.'));
-
-  for (const row of (statusRows ? statusRows() : [])) {
-    if (!row) continue;
-    region.appendChild(statusRow(row.label, row.value, row.tip));
+function refreshSearch(region) {
+  const input = region._input || region.querySelector('.fs-search');
+  if (input && input.value !== (getFilter().search || '')) {
+    input.value = getFilter().search || '';
   }
 }
 
-function statusRow(label, value, tip) {
-  const valueEl = el('span', { className: 'fs-row__value' }, String(value));
-  if (tip) {
-    valueEl.dataset.tip = tip;
-    valueEl.dataset.tipWrap = '';
+// --- Scope (Feinerschlossen / Gesamt) -------------------------------------
+
+const SCOPE_OPTIONS = [
+  { value: 'fein', label: 'Feinerschlossen',
+    tip: 'Nur erschlossene Einheiten (mindestens eine Verknüpfung).' },
+  { value: 'gesamt', label: 'Gesamt',
+    tip: 'Alle Bestände, auch nicht erschlossene, Plakate und Tonträger.' },
+];
+
+function buildScope(region, scope, notify) {
+  for (const opt of SCOPE_OPTIONS) {
+    region.appendChild(el('button', {
+      className: 'fs-seg fs-scope__seg', type: 'button',
+      dataset: { value: opt.value, tip: opt.tip, tipWrap: '' },
+      onClick: () => { setFilter({ scope: opt.value }); notify(); },
+    },
+      el('span', { className: 'fs-scope__label' }, opt.label),
+      el('span', { className: 'fs-scope__count' }, '')));
   }
-  return el('div', { className: 'fs-row' },
-    el('span', { className: 'fs-row__label' }, label), valueEl);
+  refreshScope(region, scope);
+}
+
+function refreshScope(region, scope) {
+  const active = getFilter().scope || 'fein';
+  const counts = scope && scope.counts ? scope.counts() : { fein: 0, gesamt: 0 };
+  for (const btn of region.querySelectorAll('.fs-scope__seg')) {
+    const on = btn.dataset.value === active;
+    btn.classList.toggle('fs-seg--on', on);
+    btn.setAttribute('aria-pressed', String(on));
+    const countEl = btn.querySelector('.fs-scope__count');
+    if (countEl) countEl.textContent = String(counts[btn.dataset.value] ?? '');
+  }
+}
+
+// --- Dokumenttyp-Facette (Baumgruppen als gruppierte Vorschlaege) ---------
+
+function buildDocTypeFacet(region, groups, notify, store) {
+  const chips = el('div', { className: 'fs-chips' });
+  const options = el('div', { className: 'fs-options' });
+  const search = el('input', {
+    type: 'search', className: 'fs-search',
+    placeholder: FACET_META.docType.placeholder,
+    'aria-label': 'Dokumenttyp filtern',
+  });
+  region.dataset.facet = 'docType';
+  region.append(search, chips, options);
+  const open = dropdown(search, options, () => paint());
+
+  const write = (values) => { setFilter({ docType: values }); notify(); };
+  const labelOf = (value) => {
+    for (const g of groups) {
+      if (g.value === value) return g.label;
+      const c = (g.children || []).find(x => x.value === value);
+      if (c) return c.label;
+    }
+    return dftLabel(store, value) || value;
+  };
+
+  search.addEventListener('input', () => paint());
+
+  function paint() {
+    const selected = facetValues(getFilter(), 'docType');
+    const q = search.value.trim().toLowerCase();
+
+    clear(chips);
+    for (const value of selected) {
+      chips.appendChild(el('button', {
+        className: 'fs-chip', type: 'button',
+        title: `${labelOf(value)} aus dem Filter nehmen`,
+        onClick: () => write(selected.filter(v => v !== value)),
+      },
+        el('span', { className: 'fs-chip__label' }, labelOf(value)),
+        el('span', { className: 'fs-chip__x' }, '×')));
+    }
+    chips.hidden = selected.length === 0;
+
+    clear(options);
+    options.hidden = !open();
+    const match = (label) => !q || label.toLowerCase().includes(q);
+    let shown = 0;
+    for (const group of groups) {
+      const kids = (group.children || []).filter(c => match(c.label));
+      const groupHits = match(group.label);
+      if (!groupHits && kids.length === 0) continue;
+      // Gruppenkopf: selektierbar, wenn der Oberbegriff selbst Belege traegt
+      // (expandDftFilter loest ihn in recordsFor auf seine Blaetter auf).
+      const groupSelectable = group.count > 0;
+      const gOn = selected.includes(group.value);
+      options.appendChild(el('button', {
+        className: 'fs-option fs-option--group' + (gOn ? ' fs-option--on' : '')
+          + (groupSelectable ? '' : ' fs-option--head'),
+        type: 'button', disabled: !groupSelectable,
+        'aria-pressed': String(gOn),
+        onClick: groupSelectable ? () => write(gOn
+          ? selected.filter(v => v !== group.value)
+          : [...selected, group.value]) : undefined,
+      },
+        el('span', { className: 'fs-option__label' }, group.label),
+        el('span', { className: 'fs-option__count' }, String(group.count || ''))));
+      shown += 1;
+      for (const child of kids) {
+        const on = selected.includes(child.value);
+        options.appendChild(el('button', {
+          className: 'fs-option fs-option--child' + (on ? ' fs-option--on' : ''),
+          type: 'button', 'aria-pressed': String(on),
+          onClick: () => write(on
+            ? selected.filter(v => v !== child.value)
+            : [...selected, child.value]),
+        },
+          el('span', { className: 'fs-option__label' }, child.label),
+          el('span', { className: 'fs-option__count' }, String(child.count))));
+        shown += 1;
+      }
+    }
+    if (shown === 0) {
+      options.appendChild(el('div', { className: 'fs-more' }, 'kein Treffer'));
+    }
+  }
+
+  paint();
+  return paint;
 }
 
 // --- Facette --------------------------------------------------------------
@@ -237,6 +374,7 @@ function buildFacet(region, key, inventory, notify) {
 
   region.dataset.facet = key;
   region.append(search, chips, options);
+  const open = dropdown(search, options, () => paint());
 
   const write = (values) => { setFilter({ [key]: values }); notify(); };
 
@@ -263,6 +401,7 @@ function buildFacet(region, key, inventory, notify) {
       ? inventory.filter(e => e.label.toLowerCase().includes(q))
       : inventory;
     clear(options);
+    options.hidden = !open();
     for (const entry of matched.slice(0, OPTION_LIMIT)) {
       const on = selected.includes(entry.value);
       options.appendChild(el('button', {
@@ -276,13 +415,9 @@ function buildFacet(region, key, inventory, notify) {
         el('span', { className: 'fs-option__label' }, entry.label),
         el('span', { className: 'fs-option__count' }, String(entry.count))));
     }
-    const rest = matched.length - Math.min(matched.length, OPTION_LIMIT);
-    // Die Kappung der Liste wird beziffert, damit die Auswahl nicht als
-    // vollstaendig gelesen wird.
-    options.appendChild(el('div', { className: 'fs-more' },
-      rest > 0
-        ? `${rest} weitere — Suchfeld eingrenzen`
-        : `${matched.length} von ${inventory.length} Werten`));
+    if (matched.length === 0) {
+      options.appendChild(el('div', { className: 'fs-more' }, 'kein Treffer'));
+    }
   }
 
   paint();
@@ -291,23 +426,32 @@ function buildFacet(region, key, inventory, notify) {
 
 // --- Schaerfegrad ---------------------------------------------------------
 
-function buildSchaerfe(region, notify) {
+function buildSchaerfe(region, getResult, notify) {
   for (const opt of SCHAERFE_OPTIONS) {
     region.appendChild(el('button', {
-      className: 'fs-seg', type: 'button',
+      className: 'fs-seg fs-scope__seg', type: 'button',
       dataset: { value: opt.value, tip: opt.tip, tipWrap: '' },
       onClick: () => { setFilter({ schaerfe: opt.value }); notify(); },
-    }, opt.label));
+    },
+      el('span', { className: 'fs-scope__label' }, opt.label),
+      el('span', { className: 'fs-scope__count' }, '')));
   }
-  refreshSchaerfe(region);
+  refreshSchaerfe(region, getResult);
 }
 
-function refreshSchaerfe(region) {
+/** The counts sit in the segments themselves (E-156): the wide count and its
+ *  spatiotemporally or performance-backed subset, so the difference between
+ *  the two degrees stays visible without a status line. */
+function refreshSchaerfe(region, getResult) {
   const active = getFilter().schaerfe;
+  const result = getResult ? getResult() : null;
+  const counts = result ? { weit: result.weit, eng: result.eng } : {};
   for (const btn of region.querySelectorAll('.fs-seg')) {
     const on = btn.dataset.value === active;
     btn.classList.toggle('fs-seg--on', on);
     btn.setAttribute('aria-pressed', String(on));
+    const countEl = btn.querySelector('.fs-scope__count');
+    if (countEl) countEl.textContent = counts[btn.dataset.value] ?? '';
   }
 }
 

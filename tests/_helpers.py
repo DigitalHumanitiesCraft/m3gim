@@ -1,4 +1,4 @@
-"""Hilfsfunktionen fuer Tests. Importierbar aus Testmodulen."""
+"""Helper functions for tests. Importable from test modules."""
 
 
 def ensure_list(v):
@@ -10,7 +10,7 @@ def ensure_list(v):
 
 
 def iter_strings(obj):
-    """Rekursiv alle String-Werte in einem dict/list ausgeben."""
+    """Yield all string values in a dict/list recursively."""
     if isinstance(obj, str):
         yield obj
     elif isinstance(obj, dict):
@@ -22,7 +22,7 @@ def iter_strings(obj):
 
 
 def iter_entities_with_id(record):
-    """Gibt alle Sub-Entities aus einem Record zurueck (Agents, Subjects, Locations)."""
+    """Return all sub-entities from a record (Agents, Subjects, Locations)."""
     for prop in ("m3gim-ontology:hasAssociatedAgent", "rico:hasOrHadLocation", "rico:hasOrHadSubject"):
         for ent in ensure_list(record.get(prop)):
             if isinstance(ent, dict):
@@ -30,12 +30,12 @@ def iter_entities_with_id(record):
 
 
 def relation_parties(rel):
-    """Die beteiligten Seiten einer AgRelOn-Relation, unabhaengig von der Form.
+    """The parties of an AgRelOn relation, independent of its form.
 
-    Ein gerichteter n-aerer Begriff traegt agrelon:hasSubject und
-    agrelon:hasObject, ein symmetrischer wie HasCorrespondent traegt beide
-    Seiten als agrelon:hasSubjectObject (E-149). Wer nur die eine Form liest,
-    haelt die Relationen der anderen fuer leer.
+    A directed n-ary term carries agrelon:hasSubject and agrelon:hasObject, a
+    symmetric one such as HasCorrespondent carries both sides as
+    agrelon:hasSubjectObject (E-149). Reading only one form leaves the
+    relations of the other looking empty.
     """
     if not isinstance(rel, dict):
         return []
@@ -51,7 +51,7 @@ def relation_parties(rel):
 
 
 def relation_counterparts(rel, fonds_id="wd:Q94208", fonds_name="Malaniuk, Ira"):
-    """Die Seiten einer Relation ohne die Nachlassbildnerin."""
+    """The parties of a relation excluding the fonds creator."""
     return [p for p in relation_parties(rel)
             if p.get("@id") != fonds_id and p.get("name") != fonds_name]
 

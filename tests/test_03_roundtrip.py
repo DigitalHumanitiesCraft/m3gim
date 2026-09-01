@@ -1,13 +1,13 @@
-"""XLSX-Rohdaten ↔ JSON-LD Roundtrip.
+"""XLSX raw data <-> JSON-LD roundtrip.
 
-Validiert, dass jede gültige XLSX-Zeile im Output ankommt und Kerninhalte
-erhalten bleiben."""
+Validates that every valid XLSX row reaches the output and that core content
+is preserved."""
 
 import pytest
 
 
 def _signatur_from_xlsx(df):
-    """Liefert alle gültigen Signaturen aus der Objekte-XLSX."""
+    """Return all valid signatures from the object XLSX."""
     sigs = set()
     for val in df["archivsignatur"].dropna():
         s = str(val).strip()
@@ -17,11 +17,10 @@ def _signatur_from_xlsx(df):
 
 
 def test_record_count_reasonable(records, xlsx_objekte):
-    """Records-Zahl muss mindestens die Zahl der XLSX-Signaturen erreichen.
+    """Record count must reach at least the number of XLSX signatures.
 
-    Jede gueltige Signatur erzeugt mindestens einen Record; Folio-Konvolute
-    erhoehen den Count zusaetzlich. Unterschreitung signalisiert stillen
-    Datenverlust in der Pipeline.
+    Every valid signature produces at least one record; Folio-Konvolute raise
+    the count further. Falling short signals silent data loss in the pipeline.
     """
     xlsx_valid = _signatur_from_xlsx(xlsx_objekte)
     assert len(records) >= len(xlsx_valid), (
@@ -41,7 +40,7 @@ def test_every_xlsx_signatur_in_graph(records, xlsx_objekte):
     graph_sigs = set()
     for r in records:
         ident = r.get("rico:identifier", "")
-        # Folio-Records haben "SIG folio" — nur Basis-Signatur extrahieren
+        # Folio records carry "SIG folio", extract only the base signature.
         base = ident.split()[0] if ident else ""
         if base:
             graph_sigs.add(base)
@@ -60,7 +59,7 @@ def test_bearbeitungsstand_normalized(records):
 
 
 def test_dokumenttyp_has_valid_prefix(records):
-    """Alle rico:hasDocumentaryFormType-@id beginnen mit m3gim-vocab:."""
+    """All rico:hasDocumentaryFormType @id values start with m3gim-vocab:."""
     offenders = []
     for r in records:
         dft = r.get("rico:hasDocumentaryFormType")
@@ -79,9 +78,11 @@ def test_dokumenttyp_has_valid_prefix(records):
     ("UAKUG/NIM/PL_04", "SINFONISCHES ORCHESTER"),
 ])
 def test_known_objekte_have_expected_title(records, signatur, expected_substring):
-    """Gezielte Einzelfall-Roundtrips — diese Datensätze stehen fest.
-    Sichert ab, dass die Pipeline Titel unveraendert durchreicht und Signaturen
-    korrekt matcht (inkl. Slash-Behandlung bei Plakaten UAKUG/NIM/PL_XX)."""
+    """Targeted single-case roundtrips, these records are fixed.
+
+    Ensures the pipeline passes titles through unchanged and matches
+    signatures correctly (including slash handling for posters UAKUG/NIM/PL_XX).
+    """
     matching = [r for r in records if r.get("rico:identifier", "").startswith(signatur)]
     assert matching, f"Kein Record mit Signatur {signatur}"
     title = matching[0].get("rico:title", "")

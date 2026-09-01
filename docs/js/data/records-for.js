@@ -1,35 +1,31 @@
 /**
- * Filter → Dokumentmenge. Die einzige Aufloesung im Frontend.
+ * Filter → document set. The single resolution in the frontend.
  *
- * Bis hierher loeste jede Ansicht ihre Facetten selbst auf: Bestand und Chronik
- * in `_archive-filter.js`, der Verknuepfungsgraph in `_verknuepfungen-geometry.js`,
- * die Statistik in `statistics-data.js`, Karte und Netzwerk je in ihrem
- * View-Modul. Fuenf Fassungen derselben Frage laufen auseinander, und der
- * Betrachter sieht zum selben Schnitt in zwei Tabs verschiedene Mengen, ohne
- * dass etwas darauf hinweist. Dieses Modul haelt die Aufloesung an einer Stelle;
- * ein lexikalischer Gate in `tests/frontend/records-for.test.mjs` haelt die
- * Eigenaufloesungen fern.
+ * Every view used to resolve its facets itself, so five versions of the same
+ * question drifted apart and the viewer saw different sets for the same cut in
+ * two tabs. This module holds the resolution in one place; a lexical gate in
+ * `tests/frontend/records-for.test.mjs` keeps the self-resolutions away.
  *
- * Reine Funktionen, kein DOM und kein d3, nach dem Vorbild von
- * `statistics-data.js` und `_network-geometry.js`.
+ * Pure functions, no DOM and no d3, following `statistics-data.js` and
+ * `_network-geometry.js`.
  *
- * Semantik (E-151): mehrere Werte einer Facette wirken als ODER, verschiedene
- * Facetten als UND. Ein Wert ohne Entsprechung im Bestand betrifft nur sich
- * selbst; treffen alle Werte einer Facette nichts, bleibt die Menge leer.
- * Undatierte Records ueberstehen das Zeitfenster (E-88), der enge Schaerfegrad
- * nennt seine Differenz statt sie zu glaetten.
+ * Semantics (E-151): several values of one facet act as OR, different facets as
+ * AND. A value without a match in the Bestand concerns only itself; if all
+ * values of a facet match nothing, the set stays empty. Undated records survive
+ * the time window (E-88), the enge Schaerfegrad names its difference rather than
+ * smoothing it away.
  */
 
 import { primaryYear } from './loader.js';
 import { facetValues } from '../ui/filter-state.js';
+import { getDocTypeId, expandDftFilter, dftLabel, buildDftTree } from '../utils/format.js';
 
-/** Die Facette, unter der ein Ereignis ohne Mobilitaetssicht gefuehrt wird. */
+/** The facet under which an event without mobility Sicht is listed. */
 const KONTEXT_SICHT = 'kontext';
 
 /**
- * Entitaetsfacetten, deren Index eine Store-Map mit `records`-Set ist.
- * Reihenfolge bestimmt die Auswertungsreihenfolge und damit nichts weiter,
- * weil der Schnitt kommutativ ist.
+ * Entity facets whose index is a store map with a `records` set. Order sets the
+ * evaluation order and nothing else, because the intersection is commutative.
  */
 const ENTITY_MAPS = Object.freeze({
   person: 'persons',
@@ -39,23 +35,24 @@ const ENTITY_MAPS = Object.freeze({
   ensemble: 'ensembles',
 });
 
-/** Facetten, deren Index bereits als Wert → Record-Ids im Store liegt. */
+/** Facets whose index already sits as value → record ids in the store. */
 const DIRECT_INDEXES = Object.freeze({
   rolle: 'recordsByAgentRole',
   ereignis: 'eventsByRole',
 });
 
-/** Alle Facetten, die eine Dokumentmenge schneiden. */
+/** All facets that cut a document set. */
 export const FACET_KEYS = Object.freeze([
-  ...Object.keys(ENTITY_MAPS), ...Object.keys(DIRECT_INDEXES), 'sicht', 'finanzen',
+  ...Object.keys(ENTITY_MAPS), ...Object.keys(DIRECT_INDEXES),
+  'docType', 'sicht', 'finanzen',
 ]);
 
 /**
- * Wertindex einer Facette.
+ * Value index of a facet.
  * @param {Object} store
- * @param {string} key  eine der FACET_KEYS
- * @returns {Map<string, Set<string>>} Wert → Record-@ids; leere Map bei
- *   unbekanntem Schluessel
+ * @param {string} key  one of FACET_KEYS
+ * @returns {Map<string, Set<string>>} value → record @ids; empty map on
+ *   unknown key
  */
 export function facetIndex(store, key) {
   if (!store) return new Map();
@@ -71,16 +68,17 @@ export function facetIndex(store, key) {
   }
   const directName = DIRECT_INDEXES[key];
   if (directName) return store[directName] instanceof Map ? store[directName] : new Map();
+  if (key === 'docType') return docTypeIndex(store);
   if (key === 'sicht') return sichtIndex(store);
   if (key === 'finanzen') return waehrungIndex(store);
   return new Map();
 }
 
 /**
- * Waehlbare Werte einer Facette mit Belegzahl, absteigend.
+ * Selectable values of a facet with occurrence count, descending.
  *
- * Rollen ohne Anzeigeform bleiben draussen (E-143): eine Rolle, die nur als
- * Concept-Id im Regler stuende, ist nicht bedienbar.
+ * Roles without a display form stay out (E-143): a role that would stand only
+ * as concept id in the control is not operable.
  * @param {Object} store
  * @param {string} key
  * @returns {Array<{value: string, label: string, count: number}>}
@@ -88,16 +86,19 @@ export function facetIndex(store, key) {
 export function facetInventory(store, key) {
   const index = facetIndex(store, key);
   const needsVocabLabel = key in DIRECT_INDEXES;
+  const isDocType = key === 'docType';
   const out = [];
   for (const [value, ids] of index) {
     const count = ids ? ids.size : 0;
     if (count === 0) continue;
-    const label = needsVocabLabel ? vocabLabel(store, value) : String(value);
+    const label = needsVocabLabel ? vocabLabel(store, value)
+      : isDocType ? dftLabel(store, value)
+      : String(value);
     if (!label) continue;
-    // Vokabular-Facetten fuehren nur Begriffe mit echter Anzeigeform (E-143).
-    // Ein Rohwert, dessen Label auf sich selbst zurueckfaellt (etwa der
-    // abgeschnittene Quellwert "v"), gehoert nicht ins Inventar; er ist ein
-    // Datenspiegel-Befund, keine Facette.
+    // Vocabulary facets carry only terms with a real display form (E-143). A
+    // raw value whose label falls back to itself (e.g. the truncated source
+    // value "v") does not belong in the inventory; it is a Datenspiegel finding,
+    // not a facet.
     if (needsVocabLabel && label === String(value)) continue;
     out.push({ value, label, count });
   }
@@ -106,16 +107,48 @@ export function facetInventory(store, key) {
 }
 
 /**
- * Die Dokumentmenge zu einem Filter.
+ * Document-type inventory as DFT tree groups with per-value counts.
+ *
+ * The docType facet follows the same operate pattern as the entity facets
+ * (search field, suggestions, removable chips); the tree groups appear as
+ * grouped suggestions. Each group carries a selectable parent value (the whole
+ * subtree via expandDftFilter) and its leaf children with their own counts.
+ * Only values that actually occur in the Bestand appear.
+ * @param {Object} store
+ * @returns {Array<{value:string, label:string, count:number,
+ *   children:Array<{value:string, label:string, count:number}>}>}
+ */
+export function docTypeGroups(store) {
+  const index = docTypeIndex(store);
+  const countLeaf = (id) => (index.get(id) ? index.get(id).size : 0);
+  const countSubtree = (id) => {
+    let n = 0;
+    for (const leaf of expandDftFilter(store, id)) n += countLeaf(leaf);
+    return n;
+  };
+  const out = [];
+  for (const group of buildDftTree(store)) {
+    const children = (group.children || [])
+      .map(c => ({ value: c.id, label: c.label, count: countSubtree(c.id) }))
+      .filter(c => c.count > 0);
+    const groupCount = countSubtree(group.id);
+    if (children.length === 0 && groupCount === 0) continue;
+    out.push({ value: group.id, label: group.label, count: groupCount, children });
+  }
+  return out;
+}
+
+/**
+ * The document set for a filter.
  *
  * @param {Object} store
- * @param {Object} filter                 getFilter()-Ergebnis
- * @param {{base?: Set<string>}} [opts]   Startmenge, Default alle Records
+ * @param {Object} filter                 getFilter() result
+ * @param {{base?: Set<string>}} [opts]   start set, default all records
  * @returns {{ids: Set<string>, weit: number, eng: number,
  *            undatiert: number, byFacet: Object<string, number>}}
- *   `weit` ist die Menge nach Entitaets- und Zeitschnitt, `eng` die Teilmenge
- *   davon mit raumzeitlichem oder Auffuehrungs-Beleg. Beide stehen immer da,
- *   damit jede Ansicht die Differenz nennen kann, ohne sie selbst zu rechnen.
+ *   `weit` is the set after entity and time cut, `eng` the subset of it with
+ *   spatiotemporal or performance evidence. Both are always present so every
+ *   view can name the difference without computing it itself.
  */
 export function recordsFor(store, filter, opts = {}) {
   const f = filter || {};
@@ -130,9 +163,15 @@ export function recordsFor(store, filter, opts = {}) {
     const index = facetIndex(store, key);
     const union = new Set();
     for (const value of values) {
-      const hit = index.get(value);
-      if (!hit) continue;
-      for (const id of hit) if (ids.has(id)) union.add(id);
+      // Dokumenttyp: ein gewaehlter Wert kann ein Oberbegriff der DFT-Hierarchie
+      // sein; expandDftFilter loest ihn auf seine Blaetter auf (ODER), damit die
+      // Baumgruppen als gruppierte Vorschlaege funktionieren.
+      const leaves = key === 'docType' ? expandDftFilter(store, value) : new Set([value]);
+      for (const leaf of leaves) {
+        const hit = index.get(leaf);
+        if (!hit) continue;
+        for (const id of hit) if (ids.has(id)) union.add(id);
+      }
     }
     byFacet[key] = union.size;
     ids = union;
@@ -167,9 +206,9 @@ export function recordsFor(store, filter, opts = {}) {
   return { ids, weit, eng, undatiert, byFacet };
 }
 
-// --- Ableitungen ----------------------------------------------------------
+// --- Derivations -----------------------------------------------------------
 
-/** Jahr eines Records ueber den einen Zeitanker der Datenschicht (Vertrag A4). */
+/** Year of a record via the single Zeitanker of the data layer (contract A4). */
 function yearOf(store, id) {
   const record = store && store.records ? store.records.get(id) : null;
   if (!record) return null;
@@ -178,9 +217,9 @@ function yearOf(store, id) {
 }
 
 /**
- * Records mit raumzeitlichem oder Auffuehrungs-Beleg (Schaerfegrad eng).
- * Dieselbe Menge, die `engRecordSet` in filter-sync.js fuehrt; hier lokal
- * gehalten, damit die Datenschicht nicht auf die Sync-Schicht zeigt.
+ * Records with spatiotemporal or performance evidence (Schaerfegrad eng). The
+ * same set `engRecordSet` holds in filter-sync.js; kept local here so the data
+ * layer does not point at the sync layer.
  */
 function engRecords(store) {
   const set = new Set();
@@ -190,8 +229,28 @@ function engRecords(store) {
 }
 
 /**
- * Mobilitaetssicht → Records. Die Sicht steht als `cluster` an der Annotation;
- * ohne Cluster faellt der Beleg in den Kontext-Eimer, wie die Karte es haelt.
+ * Document type → records, keyed by the record's leaf DFT id (getDocTypeId).
+ * A selected parent concept is expanded to its leaves in recordsFor via
+ * expandDftFilter, so the index stays flat and the tree lives in the vocabulary.
+ * Records without a classified type are dropped; the docType facet cuts among
+ * the types that exist, the Erschliessungsluecke is a Datenspiegel finding.
+ */
+function docTypeIndex(store) {
+  const out = new Map();
+  if (!store || !store.allRecords) return out;
+  for (const record of store.allRecords) {
+    const type = getDocTypeId(record);
+    if (!type) continue;
+    let ids = out.get(type);
+    if (!ids) { ids = new Set(); out.set(type, ids); }
+    ids.add(record['@id']);
+  }
+  return out;
+}
+
+/**
+ * Mobility Sicht → records. The Sicht sits as `cluster` on the annotation;
+ * without a cluster the evidence falls into the Kontext bucket, as the map does.
  */
 function sichtIndex(store) {
   const out = new Map();
@@ -210,8 +269,8 @@ function sichtIndex(store) {
 }
 
 /**
- * Waehrung → Records. Die Finanzachse traegt heute Vorhandensein und Waehrung;
- * `detailRole` ist in allen Belegen leer, eine feinere Achse waere erfunden.
+ * Currency → records. The finance axis today carries presence and currency;
+ * `detailRole` is empty in all records, a finer axis would be invented.
  */
 function waehrungIndex(store) {
   const out = new Map();
@@ -227,7 +286,7 @@ function waehrungIndex(store) {
   return out;
 }
 
-/** Anzeigeform einer Rolle aus dem Vokabular; leer, wenn der Begriff keine hat. */
+/** Display form of a role from the vocabulary; empty if the term has none. */
 function vocabLabel(store, value) {
   const entry = store && store.roleVocab ? store.roleVocab.get(value) : null;
   return (entry && entry.label) || '';

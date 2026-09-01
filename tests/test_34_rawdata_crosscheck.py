@@ -1,25 +1,24 @@
-"""Zellgenauer Rohdaten-Gegencheck: JSON-LD/Frontend-Wert <-> XLSX-Rohzelle.
+"""Cell-precise raw-data cross-check: JSON-LD/frontend value <-> XLSX raw cell.
 
-Validiert, dass die im Frontend gezeigten Werte tatsaechlich an der per
-``m3gim-ontology:xlsxSource`` ({Sheet, Row}) ausgewiesenen XLSX-Zelle stehen. Das
-bestaetigt zugleich die Provenienz-Pille im UI ("Z.40"): sie zeigt nicht nur
-*eine* Zeilennummer, sondern die *richtige*.
+Validates that the values shown in the frontend actually sit at the XLSX cell
+addressed by ``m3gim-ontology:xlsxSource`` ({Sheet, Row}). This also confirms the
+provenance pill in the UI ("Z.40"): it shows not just *a* row number but the
+*right* one.
 
-Zwei Stossrichtungen:
-  1. Objekt-Records gegen M3GIM-Objekte.xlsx (Join ueber xlsxRow = pandas-idx+2).
-  2. SpatiotemporalEvents gegen M3GIM-Verknuepfungen.xlsx (Join ueber sheet-lokale
-     (Sheet, Row) via demselben Multi-Sheet-Loader wie die Pipeline).
+Two directions:
+  1. Object records against M3GIM-Objekte.xlsx (join via xlsxRow = pandas-idx+2).
+  2. SpatiotemporalEvents against M3GIM-Verknuepfungen.xlsx (join via sheet-local
+     (Sheet, Row) through the same multi-sheet loader as the pipeline).
 
-Methode (gegen False Positives): die *echten* Pipeline-Transformationen werden
-importiert und auf den Rohwert angewendet, dann gegen den JSON-LD-Wert
-verglichen. Geprueft wird damit die Provenienz-Treue und Roundtrip-
-Vollstaendigkeit, nicht die Transformationslogik selbst (die haben die
-test_03/test_16-Roundtrips). Es ersetzt den groben, single-sheet-veralteten
-``scripts/audit-data.py`` durch einen zellgenauen Suite-Check.
+Method (against false positives): the *real* pipeline transforms are imported and
+applied to the raw value, then compared against the JSON-LD value. This checks
+provenance fidelity and roundtrip completeness, not the transform logic itself
+(the test_03/test_16 roundtrips cover that). It replaces the coarse,
+single-sheet-outdated ``scripts/audit-data.py`` with a cell-precise suite check.
 
-Quelldaten-Anomalien (z. B. zielort-Swap NIM_007_20/21) sind hier KEIN Fehler:
-die Pipeline reicht die Quelle getreu durch — der Test bestaetigt genau diese
-Treue. Solche Befunde gehoeren als Ticket nach knowledge/data.md.
+Source-data anomalies (e.g. zielort swap NIM_007_20/21) are NOT an error here:
+the pipeline passes the source through faithfully, the test confirms exactly that
+fidelity. Such findings belong as a ticket in knowledge/data.md.
 """
 
 import sys
@@ -29,7 +28,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(REPO_ROOT / "scripts"))
 
-# Echte Pipeline-Transformationen + Konstanten als Soll wiederverwenden.
+# Reuse real pipeline transforms + constants as the expected value.
 from transform import (  # noqa: E402
     normalize_str,
     normalize_lower,
@@ -43,15 +42,15 @@ from transform import (  # noqa: E402
 
 
 def _rico_date_expected(raw):
-    """Spiegelt convert_objekt: rico:date traegt nur ISO-Werte. Ein malformter
-    Quellwert (kein ISO, z.B. '06-09') landet nicht in rico:date, sondern
-    verlustfrei am Annotationsknoten -> hier als Erwartung None."""
+    """Mirrors convert_objekt: rico:date carries only ISO values. A malformed
+    source value (not ISO, e.g. '06-09') does not land in rico:date but
+    losslessly on the annotation node -> expectation None here."""
     cd = clean_date(raw)
     return cd if (cd is not None and is_iso_date(cd)) else None
 
 
 # ---------------------------------------------------------------------------
-# Helfer
+# Helpers
 # ---------------------------------------------------------------------------
 
 def _xlsx_source(node):
@@ -72,10 +71,10 @@ def _place_name(ste):
 
 
 # ---------------------------------------------------------------------------
-# Teil 1 — Objekt-Records gegen M3GIM-Objekte.xlsx
+# Part 1 — object records against M3GIM-Objekte.xlsx
 # ---------------------------------------------------------------------------
 
-# Record-Feld -> (XLSX-Spalte, Transformfunktion). Erwartung == f(roh-Zelle).
+# Record field -> (XLSX column, transform function). Expectation == f(raw cell).
 OBJEKT_FIELDS = {
     "rico:title": ("titel", normalize_str),
     "rico:date": ("entstehungsdatum", _rico_date_expected),
@@ -86,7 +85,7 @@ OBJEKT_FIELDS = {
 
 
 def _objekt_record_rows(records):
-    """(record, xlsx_row) fuer alle Records mit xlsxSource.sheet == 'Objekte'."""
+    """(record, xlsx_row) for all records with xlsxSource.sheet == 'Objekte'."""
     out = []
     for rec in records:
         src = _xlsx_source(rec)
@@ -96,7 +95,7 @@ def _objekt_record_rows(records):
 
 
 def test_objekt_records_match_xlsx_cells(records, xlsx_objekte):
-    """Jeder durchgereichte Record-Feldwert == Transform der adressierten Zelle."""
+    """Every passed-through record field value == transform of the addressed cell."""
     df = xlsx_objekte
     n_rows = len(df)
     mismatches = []
@@ -105,7 +104,7 @@ def test_objekt_records_match_xlsx_cells(records, xlsx_objekte):
     for rec, xlsx_row in _objekt_record_rows(records):
         if not isinstance(xlsx_row, int):
             continue
-        idx = xlsx_row - 2  # xlsxRow = pandas-idx + 2 (Header = Zeile 1)
+        idx = xlsx_row - 2  # xlsxRow = pandas-idx + 2 (header = row 1)
         if idx < 0 or idx >= n_rows:
             mismatches.append((rec.get("rico:identifier"), "xlsx_row", xlsx_row, "out-of-range"))
             continue
@@ -117,13 +116,13 @@ def test_objekt_records_match_xlsx_cells(records, xlsx_objekte):
                 continue
             expected = transform(row.get(col))
             actual = rec.get(field)
-            # DocType ist separat (Mapping), Sprache/Extent sind reine Strings.
+            # DocType is separate (mapping), language/extent are plain strings.
             if expected != actual:
                 mismatches.append(
                     (rec.get("rico:identifier"), field, repr(actual), repr(expected))
                 )
 
-        # Dokumenttyp ueber die echte Map.
+        # Document type via the real map.
         if "dokumenttyp" in df.columns:
             exp_dft = DOKUMENTTYP_TO_DFT.get(normalize_lower(row.get("dokumenttyp")))
             if exp_dft != _dft_id(rec):
@@ -131,7 +130,7 @@ def test_objekt_records_match_xlsx_cells(records, xlsx_objekte):
                     (rec.get("rico:identifier"), "DocType", _dft_id(rec), exp_dft)
                 )
 
-    # Nicht trivial gruen: der Bestand hat zig Objekt-Records.
+    # Not trivially green: the holdings have dozens of object records.
     assert checked >= 50, (
         f"Nur {checked} Objekt-Records gegen XLSX geprueft — Provenienz fehlt "
         f"oder Fixture leer; Test waere nicht aussagekraeftig."
@@ -145,11 +144,11 @@ def test_objekt_records_match_xlsx_cells(records, xlsx_objekte):
 
 
 # ---------------------------------------------------------------------------
-# Teil 2 — SpatiotemporalEvents gegen M3GIM-Verknuepfungen.xlsx
+# Part 2 — SpatiotemporalEvents against M3GIM-Verknuepfungen.xlsx
 # ---------------------------------------------------------------------------
 
 def _verkn_index(df):
-    """(sheet, row) -> pandas-Row, ueber die Provenance-Hilfsspalten."""
+    """(sheet, row) -> pandas row, via the provenance helper columns."""
     idx = {}
     if "_xlsx_sheet" not in df.columns or "_xlsx_row" not in df.columns:
         return idx
@@ -160,17 +159,17 @@ def _verkn_index(df):
 
 
 def _spatiotemporal_events(graph):
-    """Verortungen: Annotationsknoten, die einen Ort tragen."""
+    """Verortungen: annotation nodes that carry a place."""
     return [n for n in graph
             if n.get("@type") == "m3gim-ontology:Annotation"
             and n.get("m3gim-ontology:atPlace")]
 
 
 def _recorded_role(node):
-    """Der erfasste Rollenwert, vor der Zusammenfuehrung im Vokabular.
+    """The recorded role value, before the merge in the vocabulary.
 
-    Verglichen wird gegen die Rohzelle, deshalb zaehlt der Ursprungswert und
-    nicht das Concept, auf das er fuehrt.
+    Compared against the raw cell, so the origin value counts, not the concept it
+    resolves to.
     """
     role = node.get("role")
     if role is None:
@@ -184,8 +183,8 @@ def _recorded_role(node):
 
 
 def test_ste_provenance_points_to_ort_row(graph, xlsx_verknuepfungen):
-    """Jede Verortung zeigt auf eine 'ort'-Zeile, und ihr atPlace.name steckt im
-    Roh-name-String. Faengt falsche Zeilenzuordnung (Off-by-one, Sheet-Mix)."""
+    """Every Verortung points to an 'ort' row, and its atPlace.name sits inside
+    the raw name string. Catches wrong row assignment (off-by-one, sheet mix)."""
     vindex = _verkn_index(xlsx_verknuepfungen)
     assert vindex, "Verknuepfungs-Index leer — load_verknuepfungen-Hilfsspalten fehlen."
 
@@ -211,8 +210,8 @@ def test_ste_provenance_points_to_ort_row(graph, xlsx_verknuepfungen):
 
         place = (_place_name(ste) or "").strip().lower()
         raw_name = (normalize_str(row.get("name")) or "").lower()
-        # atPlace.name ist entweder der ganze name (reine ort-Zeile) oder der
-        # dekomponierte Ort-Teil (ort,datum-Komposit) -> Substring-Treue genuegt.
+        # atPlace.name is either the whole name (pure ort row) or the decomposed
+        # place part (ort,datum composite) -> substring fidelity suffices.
         if place and place not in raw_name:
             problems.append((ste.get("@id"), f"Ort {place!r} nicht in name {raw_name!r}"))
 
@@ -224,15 +223,15 @@ def test_ste_provenance_points_to_ort_row(graph, xlsx_verknuepfungen):
 
 
 def test_e97_ortsrollen_exact_cell_match(graph, xlsx_verknuepfungen):
-    """E-97-Mobilitaets-Ortsrollen: atPlace.name, erfasste Rolle und (falls
-    vorhanden) atDate stimmen ZELLGENAU mit der Roh-Zeile.
+    """E-97 mobility place roles: atPlace.name, recorded role and (if present)
+    atDate match the raw row CELL-PRECISELY.
 
-    Datenform tieferer Export: Mobilitaets-Ortsrollen stammen aus reinen `ort`-
-    Zeilen (datumslos, atPlace == ganze Rohzelle) ODER aus `ort, datum`-Kompositen
-    (dekomponiert: atPlace == Ort-Teil, atDate == ISO-Datums-Teil). Beide Formen
-    werden hier gegen die echte Pipeline-Dekomposition geprueft — die Provenienz-
-    Treue (kein Datum-Leak in den Ortsnamen, exakter Ort/Datum-Split) bleibt
-    scharf, nur die frueher angenommene Datumslosigkeit faellt weg."""
+    Data shape of the deeper export: mobility place roles come from pure `ort`
+    rows (dateless, atPlace == whole raw cell) OR from `ort, datum` composites
+    (decomposed: atPlace == place part, atDate == ISO date part). Both forms are
+    checked here against the real pipeline decomposition, provenance fidelity (no
+    date leak into the place name, exact place/date split) stays sharp, only the
+    formerly assumed datelessness falls away."""
     from transform import (  # noqa: PLC0415
         decompose_komposit_value, normalize_lower, normalize_dating, is_iso_date,
     )
@@ -263,8 +262,8 @@ def test_e97_ortsrollen_exact_cell_match(graph, xlsx_verknuepfungen):
         raw_name = normalize_str(row.get("name"))
         raw_typ = normalize_lower(row.get("typ")) or ""
         if "ort" in raw_typ and "datum" in raw_typ:
-            # ort,datum-Komposit -> dekomponierte Erwartung (atPlace = Ort-Teil,
-            # atDate = ISO-Datums-Teil).
+            # ort,datum composite -> decomposed expectation (atPlace = place part,
+            # atDate = ISO date part).
             dec = decompose_komposit_value(raw_name, ["ort", "datum"])
             exp_place = dec.get("ort")
             exp_date = normalize_dating(dec.get("datum") or "")
@@ -273,7 +272,7 @@ def test_e97_ortsrollen_exact_cell_match(graph, xlsx_verknuepfungen):
                 if actual_date != exp_date:
                     mismatches.append((ste.get("@id"), "atDate", actual_date, exp_date))
         else:
-            # reine ort-Zeile -> datumslos, atPlace == ganze Rohzelle.
+            # pure ort row -> dateless, atPlace == whole raw cell.
             exp_place = raw_name
             if ste.get("m3gim-ontology:atDate"):
                 mismatches.append(
@@ -282,8 +281,8 @@ def test_e97_ortsrollen_exact_cell_match(graph, xlsx_verknuepfungen):
         if exp_place != _place_name(ste):
             mismatches.append((ste.get("@id"), "atPlace.name", _place_name(ste), exp_place))
 
-    # Mindestens 15 Mobilitaets-Ortsrollen-Events erwartet (reine ort-Zeilen +
-    # ort,datum-Komposite mit Mobilitaetsrolle).
+    # At least 15 mobility place-role events expected (pure ort rows + ort,datum
+    # composites with a mobility role).
     assert e97_count >= 15, (
         f"Nur {e97_count} E-97-Ortsrollen-Events gefunden (erwartet >= 15). "
         f"Sind sie noch im Output? (E-107 hatte sie nach docs/data gehoben.)"

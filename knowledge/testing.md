@@ -488,6 +488,19 @@ playwright install chromium
 
 Ohne das Extra prüft die Suite weiterhin die Pipeline-Artefakte, den Frontend-Kontrakt aus den Daten heraus (test_06, test_33) und über `node --test` die dom-freien Frontend-Funktionen. Ungeprüft bleibt allein, was erst im gerenderten Dokument entsteht, also Tab-Durchlauf, logStamp-Keys, Zeitstrahl- und Karten-Canary sowie die Anker-Titel im DOM.
 
+## DOM-Abgleich der Bestand-Liste (seit 2026-09-01)
+
+`tests/tools/verify_bestand_display.py` schließt die Schicht, die `audit-data.py` offen lässt. Der Audit prüft Quelle gegen JSON-LD gegen `docs/data`; der DOM-Abgleich prüft zusätzlich das tatsächlich gerenderte Dokument. Er lädt die Objekte-CSV über die Pipeline-Loader, das publizierte `docs/data/m3gim.jsonld` und die Bestand-Tabelle headless im Chromium (Modus „Nicht erschlossene einblenden", E-116) und vergleicht pro Einheit Anwesenheit, Titelanzeige (samt der Regel, dass ein Kindtitel gleich dem Konvoluttitel leer erscheint), Undatiert-Markierung, Jahr und Verknüpfungszahl. Die Frontend-Konstanten (ausgeblendete Plakate und Tonträger, Folio-Ausschluss, Konvoluttitel-Ableitung) sind bewusst gespiegelt; driftet das Frontend, schlägt der Abgleich an und der Spiegel wird nachgezogen.
+
+Der Handlauf schreibt `data/reports/frontend-verification-bestand.md` und endet mit Exit 1 bei Befunden:
+
+```bash
+python -m http.server 8791 -d docs   # Port via M3GIM_VERIFY_URL aenderbar
+python tests/tools/verify_bestand_display.py
+```
+
+Als pytest-Case läuft derselbe Abgleich über `tests/frontend/test_bestand_display.py` mit Auto-Server auf freiem Port. Er trägt beide Marker `frontend` und `data_quality`: ohne Playwright überspringt er sich, mit Playwright gehört er zum Datenspiegel, weil sein Rot am aktuellen Stand Quellbefunde meldet (etwa die fast leere Objektzeile zu einem einzelnen Folio), nicht Frontend-Fehler. Der Invarianten-Lauf schließt ihn über `-m "not data_quality"` aus.
+
 ## Sichtprüfung
 
 Die frühere Screenshot-Ablage `reports/screens/` ist am 2026-09-01 entfernt (E-155). Eine Sichtprüfung liest die laufende Oberfläche direkt, `python -m http.server 8765` gegen `docs/`, denselben Bezugspunkt nutzt `tests/frontend/smoke.py` über `M3GIM_SMOKE_URL` mit dem Default `http://localhost:8765/`. Der pytest-Wrapper `tests/frontend/test_smoke.py` startet bewusst einen eigenen Server auf einem freien Port, weil er die Fixture selbst hält.
@@ -500,7 +513,7 @@ Die Suite trennt seit dem 2026-09-01 zwei Aussagearten, weil der Bestand laufend
 
 **Invarianten** prüfen Modell, Pipeline, Serialisierung und Frontend-Kontrakt, unabhängig davon, welche Fehler die Quelle gerade trägt. Sie laufen als `pytest -m "not data_quality and not slow"` und müssen immer grün sein. Ein Rot hier heißt, wir haben etwas kaputt gemacht.
 
-**Datenspiegel** (Marker `data_quality`) behauptet, dass die Quelle sauber ist, etwa dass jede Verknüpfungszeile ein Objekt trifft (`test_61_orphan_links.py`). Diese Tests sind absichtlich rot, solange bekannte Quellfehler bestehen, ihre Fehlermeldung ist die Befundliste mit Fundstellen, direkt als Arbeitsauftrag ans Erschließungsteam lesbar. Sie tragen keine hartkodierten Erwartungslisten und werden mit einer sauberen Lieferung von selbst grün, ohne dass jemand den Test anfasst. Sie laufen als `pytest -m data_quality`.
+**Datenspiegel** (Marker `data_quality`) behauptet, dass die Quelle sauber ist, etwa dass jede Verknüpfungszeile ein Objekt trifft (`test_61_orphan_links.py`). Diese Tests sind absichtlich rot, solange bekannte Quellfehler bestehen, ihre Fehlermeldung ist die Befundliste mit Fundstellen, direkt als Arbeitsauftrag ans Erschließungsteam lesbar. Sie tragen keine hartkodierten Erwartungslisten und werden mit einer sauberen Lieferung von selbst grün, ohne dass jemand den Test anfasst. Sie laufen als `pytest -m data_quality`. Mit installiertem Playwright gehört auch der DOM-Abgleich der Bestand-Liste zu dieser Schicht (§ DOM-Abgleich), die Behauptung reicht dann bis ins gerenderte Dokument.
 
 Der Kontrakt zwischen beiden Schichten ist die Werteliste `Typ-Rolle.csv`. Ein erfasster Wert außerhalb der Werteliste ist ein Datenspiegel-Befund; ein Wert, der in der Werteliste steht, aber im Vokabular fehlt, ist ein Invarianten-Befund, weil dann das Modell hinterherhinkt.
 

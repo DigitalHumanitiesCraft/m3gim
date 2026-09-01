@@ -2,23 +2,23 @@
 # requires-python = ">=3.11"
 # dependencies = ["rdflib>=7.0"]
 # ///
-"""Abdeckungsprüfung des Projektvokabulars gegen den erzeugten Datensatz.
+"""Coverage check of the project vocabulary against the generated dataset.
 
-Datenfluss: vocab/m3gim.ttl (Vokabular) plus data/output/m3gim.jsonld (Daten)
-in einen Konsolenreport und einen Exit-Code. Geprüft wird, ob jede im Datensatz
-verwendete Klasse und Property des Namensraums m3gim-ontology im Vokabular
-definiert ist, ob jeder Dokumenttyp ein SKOS-Concept hat, ob jeder Rollenwert
-auf ein Concept verweist und dessen Anzeigetext unverfälscht mitführt und ob
-alle skos:member- und skos:broader-Verweise auflösen.
+Data flow: vocab/m3gim.ttl (vocabulary) plus data/output/m3gim.jsonld (data)
+into a console report and an exit code. It checks whether every class and
+property of the m3gim-ontology namespace used in the dataset is defined in the
+vocabulary, whether every document type has a SKOS concept, whether every role
+value references a concept and carries its display text unaltered, and whether
+all skos:member and skos:broader references resolve.
 
 Usage:
-    uv run vocab/check-coverage.py [--vocab PFAD] [--data PFAD]
+    uv run vocab/check-coverage.py [--vocab PATH] [--data PATH]
 
-Der Lauf ist read-only. Er ergänzt den Term-Konformitäts-Lock aus
-tests/test_26_term_conformance.py, der den eigenen Namespace ausnimmt, weil es
-bis zur Vokabulardatei keine Quelle gab, gegen die er prüfen konnte. Bewusste
-Ausnahme ist der Wert `nicht eingehalten`, ein Vertragsstatus in der
-Rollenspalte, der im Schema ausdrücklich kein Rollenbegriff ist (data-model.md § 11).
+The run is read-only. It complements the term conformance lock from
+tests/test_26_term_conformance.py, which exempts the own namespace because
+until the vocabulary file existed there was no source to check against. A
+deliberate exception is the value `nicht eingehalten`, a contract status in the
+role column that the schema explicitly treats as no role term (data-model.md § 11).
 """
 
 from __future__ import annotations
@@ -40,32 +40,32 @@ VOCAB_NS = "https://dhcraft.org/m3gim/vocabulary#"
 
 DFT_SCHEME = VOCAB_NS + "documentaryFormTypes"
 
-# Aliase des JSON-LD-@context auf ihre qualifizierten Terme.
+# Aliases of the JSON-LD @context mapped to their qualified terms.
 CONTEXT_ALIASES = {
     "name": "rico:name",
     "role": "m3gim-ontology:role",
     "composer": "m3gim-ontology:composer",
 }
 
-# Property, die Werte des Rollenvokabulars traegt (data-model.md § 7).
-# Die vier frueheren Rollenproperties sind auf diese eine zusammengefallen.
+# Property that carries values of the role vocabulary (data-model.md § 7).
+# The four earlier role properties have collapsed into this single one.
 ROLE_KEYS = frozenset({"role"})
 
-# Vertragsstatus in der Rollenspalte, im Schema begründet kein Rollenbegriff.
+# Contract status in the role column, by schema no role term.
 KNOWN_NON_ROLES = frozenset({"nicht eingehalten"})
 
-# Die an der Quelle hinterlegte Dropdown-Wertliste (Typ-Rolle.csv) ist der
-# Kontrakt zwischen Invariante und Datenspiegel. Ein erfasster Rollenwert, der
-# nicht in ihr steht (etwa die abgeschnittene Rolle "v" in NIM_005), ist ein
-# Datenbefund, den tests/test_60_csv_source.py als Quellfehler mit Fundstelle
-# fuehrt. Er ist keine Vokabularluecke, denn das Modell kann keinen Term fuer
-# einen Wert vorhalten, den die Erfassung selbst nicht kennt.
+# The dropdown value list held at the source (Typ-Rolle.csv) is the contract
+# between invariant and Datenspiegel. A captured role value not in it (such as
+# the truncated role "v" in NIM_005) is a data finding that
+# tests/test_60_csv_source.py carries as a source error with its location. It is
+# not a vocabulary gap, since the model cannot hold a term for a value the
+# capture itself does not know.
 TYP_ROLLE_CSV = REPO / "data" / "google-spreadsheet" / "verknuepfungen" / "Typ-Rolle.csv"
 
-# Marker, mit dem eine skos:editorialNote einen dauerhaft leeren Term
-# entschuldigt. Ein deklarierter Term ohne Vorkommen im Datensatz ist entweder
-# ein Rest oder eine Vorwegnahme; beides ist zulässig, solange der Grund am
-# Term selbst steht und mit ihm wandert.
+# Marker with which a skos:editorialNote excuses a permanently empty term. A
+# declared term without occurrence in the dataset is either a leftover or an
+# anticipation; both are allowed as long as the reason sits on the term itself
+# and travels with it.
 VACANCY_MARKER = "unused:"
 
 PREFIXES = {
@@ -83,7 +83,7 @@ def expand(curie: str) -> str:
 
 
 def walk(node: object) -> Iterator[dict]:
-    """Liefert jeden Knoten des JSON-LD-Baums, verschachtelte eingeschlossen."""
+    """Yields every node of the JSON-LD tree, nested ones included."""
     if isinstance(node, dict):
         yield node
         for value in node.values():
@@ -100,13 +100,13 @@ def as_list(value: object) -> list:
 def collect_from_data(
     path: Path,
 ) -> tuple[set[str], set[str], list[object], set[str]]:
-    """Sammelt Properties, Klassen, Rollenwerte und Dokumenttypen aus dem Datensatz.
+    """Collects properties, classes, role values, and document types from the data.
 
-    Ein Rollenwert ist seit der Umstellung ein Verweisknoten auf ein Concept,
-    also ein dict mit @id und dem mitgeführten skos:prefLabel. Er wird als
-    ganzer Knoten zurückgegeben, damit die Prüfung Kennung und Anzeigetext
-    gegen das Vokabular halten kann. Ein String tritt nur noch dort auf, wo die
-    Quelle einen Wert führt, den das Vokabular bewusst nicht als Concept kennt.
+    Since the conversion a role value is a reference node to a concept, a dict
+    with @id and the carried skos:prefLabel. It is returned as a whole node so
+    the check can hold identifier and display text against the vocabulary. A
+    string only appears where the source carries a value the vocabulary
+    deliberately does not know as a concept.
     """
     with path.open(encoding="utf-8") as handle:
         doc = json.load(handle)
@@ -139,11 +139,11 @@ def collect_from_data(
 
 
 def load_value_list(path: Path) -> set[str]:
-    """Liest die erlaubten Rollenwerte aus Typ-Rolle.csv, normalisiert.
+    """Reads the allowed role values from Typ-Rolle.csv, normalized.
 
-    Normalisierung wie in der Pipeline (`normalize_role`): kleingeschrieben,
-    ohne die Genderendungen `:in`/`:innen`. Fehlt die Datei, bleibt die Menge
-    leer und die Wertlisten-Unterscheidung entfaellt.
+    Normalization as in the pipeline (`normalize_role`): lowercased, without the
+    gender endings `:in`/`:innen`. If the file is missing, the set stays empty
+    and the value-list distinction falls away.
     """
     if not path.exists():
         return set()
@@ -168,12 +168,12 @@ def check_roles(
     pref_labels: dict[str, str],
     value_list: set[str],
 ) -> tuple[list[str], list[str]]:
-    """Prüft jeden Rollenwert auf ein aufgelöstes Concept und den richtigen Anzeigetext.
+    """Checks each role value for a resolved concept and the right display text.
 
-    Rueckgabe ist ein Paar (Vokabularabweichungen, Datenbefunde). Ein erfasster
-    Rollenwert ohne Concept-Verweis ist ein Datenbefund, wenn er nicht in der
-    Quellwertliste steht, sonst eine Vokabularluecke. So haengt ein
-    abgeschnittener Quellwert nicht laenger das Vokabular-Gate rot.
+    Returns a pair (vocabulary deviations, data findings). A captured role value
+    without a concept reference is a data finding if it is not in the source
+    value list, otherwise a vocabulary gap. This way a truncated source value no
+    longer holds the vocabulary gate red.
     """
     findings: list[str] = []
     data_findings: list[str] = []
@@ -210,13 +210,13 @@ def check_roles(
 def report_vacancy(
     graph: Graph, defined: set[str], used_terms: set[str], vocab_path: Path
 ) -> int:
-    """Meldet deklarierte Terme, die im Datensatz nicht vorkommen.
+    """Reports declared terms that do not occur in the dataset.
 
-    Die Abdeckungsprüfung sichert die eine Richtung, dass kein verwendeter Term
-    undeklariert bleibt. Die Gegenrichtung bleibt sonst blind: ein Term kann
-    deklariert werden, nie Daten tragen und trotzdem in Modell, Doku und
-    Frontend mitgeführt werden. Entschuldigt ist ein leerer Term durch eine
-    skos:editorialNote, die mit dem Marker beginnt und den Grund nennt.
+    The coverage check secures one direction, that no used term stays
+    undeclared. The other direction stays blind otherwise: a term can be
+    declared, never carry data, and still be dragged through model, docs, and
+    frontend. An empty term is excused by a skos:editorialNote that begins with
+    the marker and names the reason.
     """
     used_iris = {expand(term) for term in used_terms}
     excused = {

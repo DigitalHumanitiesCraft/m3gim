@@ -44,7 +44,7 @@ OUTDIR = ROOT / "data" / "migration"
 OUT_COLS = ["archivsignatur", "Folio", "aktivitaet_id", "typ", "value",
             "anmerkung", "_block", "_prov", "_flag"]
 
-# --- controlled vocab: old rolle -> funktion (canonical, lowercased) --------
+# controlled vocab: old rolle -> funktion (canonical, lowercased).
 # Aliases fix known legacy typos; aliased rows are flagged so the fix is visible.
 FUNKTION_ALIASES = {
     "maskenbidner:in": "maskenbildner:in",
@@ -487,11 +487,9 @@ def write_report(prefix, src_rows, out, results, gold):
     return "\n".join(lines)
 
 
-# --------------------------------------------------------------------------- #
-# Vokabular-Glossar (Dropdown-Quelle + Definitionen + Ziel-Property)
-# --------------------------------------------------------------------------- #
-# ebene, term, definition, ziel-property, status. status=offen markiert noch
-# zu bestaetigende Vokabular-Entscheidungen fuer den Operator.
+# Vokabular glossary (dropdown source + definitions + target property).
+# Columns ebene, term, definition, ziel-property, status. status=offen marks
+# vocabulary decisions still to be confirmed by the operator.
 VOKABULAR = [
     ("typ", "werk", "Musikalisches oder szenisches Werk (Oper, Lied), das aufgefuehrt, erwaehnt oder dokumentiert wird.", "rico:Record / m3gim:Work", "ok"),
     ("typ", "aktivitaet", "Markerzeile einer Aktivitaet; value benennt die Art (auffuehrung, gastspiel).", "m3gim:Performance", "ok"),
@@ -546,10 +544,10 @@ def vokab_terms(ebene):
     return [t for e, t, *_ in VOKABULAR if e == ebene]
 
 
-# Handkuratiertes Vollbeispiel: Folio 7_29 (Rheingold, Bayreuth 1953-07-25),
-# wie es nach dem menschlichen Durchgang aussehen soll. aktivitaet_id vergeben,
-# Redundanz der Quelle (bare Partie + Komposit + Personenzeile) je Person zu
-# einer Beteiligung zusammengefuehrt. Keine erfundenen Werte. Tupel: (id, typ, value).
+# Hand-curated full example: Folio 7_29 (Rheingold, Bayreuth 1953-07-25) as it
+# should look after the human pass. aktivitaet_id assigned, the source
+# redundancy (bare partie + composite + person row) merged per person into one
+# participation. No invented values. Tuple: (id, typ, value).
 BEISPIEL_SIG = "UAKUG/NIM_137"
 BEISPIEL_FOLIO = "7_29"
 BEISPIEL_7_29 = [

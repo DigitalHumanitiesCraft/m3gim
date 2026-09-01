@@ -1,19 +1,18 @@
-"""Mobilitaetssichten-Cluster fuer STE-eventRoles (Session 36, M3).
+"""Mobility-view cluster for STE eventRoles (session 36, M3).
 
-Das Frontend (docs/js/data/constants.js) haelt ein Mapping
-`EVENT_ROLE_TO_MOBILITY_CLUSTER`, das jede empirisch belegte `m3gim:eventRole`
-genau einer der fuenf Sichten aus data-model.md § 10 zuordnet (oder
-explizit auf `null` setzt, wenn neutral).
+The frontend (docs/js/data/constants.js) holds a mapping
+`EVENT_ROLE_TO_MOBILITY_CLUSTER` that assigns every empirically attested
+`m3gim:eventRole` to exactly one of the five views from data-model.md § 10 (or
+explicitly sets it to `null` when neutral).
 
-Dieser Test liest die JS-Konstante via Regex (kein JS-Runtime noetig) und
-prueft: jede im aktuellen Datenstand vorkommende `eventRole` hat einen
-expliziten Eintrag. Neue eventRoles in den Daten -> bewusste Entscheidung
-im Constants-File.
+This test reads the JS constant via regex (no JS runtime needed) and checks that
+every `eventRole` occurring in the current data has an explicit entry. New
+eventRoles in the data force a deliberate decision in the constants file.
 
-Der Test liest bewusst die Frontend-Datenquelle `docs/data/m3gim.jsonld` und
-nicht den Pipeline-Output: er prueft die Konstante gegen genau die Daten, die
-das Frontend laedt. Beide wandern mit dem Frontend-Schritt des Modellumbaus
-gemeinsam auf die neuen Terme.
+The test deliberately reads the frontend data source `docs/data/m3gim.jsonld`
+and not the pipeline output: it checks the constant against exactly the data the
+frontend loads. Both move to the new terms together with the frontend step of
+the model rebuild.
 """
 
 from __future__ import annotations
@@ -41,8 +40,8 @@ VALID_CLUSTERS = {
 def _load_event_role_map() -> dict[str, str | None]:
     """Parse EVENT_ROLE_TO_MOBILITY_CLUSTER from constants.js.
 
-    Simple regex parser -- das Mapping hat immer die Form
-    `'key': 'value',` oder `'key':  null,`. Kommentare werden ignoriert.
+    Simple regex parser -- the mapping always has the form `'key': 'value',` or
+    `'key':  null,`. Comments are ignored.
     """
     source = CONSTANTS_PATH.read_text(encoding="utf-8")
     m = re.search(
@@ -97,8 +96,8 @@ def test_every_cluster_value_is_valid_or_null() -> None:
 
 
 def test_every_empirical_event_role_is_mapped() -> None:
-    """Jede im aktuellen Datenstand belegte eventRole muss in der Konstante
-    stehen. Kein stillschweigendes Fallback."""
+    """Every eventRole attested in the current data must be in the constant. No
+    silent fallback."""
     mapping = _load_event_role_map()
     empirical = _collect_event_roles()
     missing = [r for r in empirical if r not in mapping]
@@ -111,11 +110,11 @@ def test_every_empirical_event_role_is_mapped() -> None:
 
 
 def test_place_roles_count_as_reise_korrespondenz() -> None:
-    """Die fuenf Mobilitaets-Ortsrollen (E-97, MOBILITY_PLACE_ROLES) zaehlen als
-    Reise-/Korrespondenzmobilitaet und mappen auf den Cluster 'korrespondenz'
-    (data.md § Ortsrollen/§ 10, Entscheidung E-110, order-m3gim
-    2026-06-21 Punkt 1). Lockt die Angleichung gegen stilles Regressieren auf
-    'null' ('Nicht klassifiziert')."""
+    """The five mobility place roles (E-97, MOBILITY_PLACE_ROLES) count as
+    travel/correspondence mobility and map to the cluster 'korrespondenz'
+    (data.md § Ortsrollen/§ 10, decision E-110, order-m3gim 2026-06-21 point 1).
+    Locks the alignment against a silent regression to 'null' ('Nicht
+    klassifiziert')."""
     mapping = _load_event_role_map()
     place_roles = ["zielort", "absendeort", "abreiseort", "empfangsort", "vertragsort"]
     for role in place_roles:
@@ -126,12 +125,12 @@ def test_place_roles_count_as_reise_korrespondenz() -> None:
 
 
 def test_mapping_covers_datenmodell_spec_datumsrollen() -> None:
-    """Die in data.md § 5 als Datumsrollen spezifizierten Werte
-    sind entweder gemappt oder sollten gemappt sein. Soft-Check: nur die
-    empirisch aussichtsreichsten werden hart gefordert."""
+    """The values specified in data.md § 5 as date roles are either mapped or
+    should be mapped. Soft check: only the empirically most likely are required
+    hard."""
     mapping = _load_event_role_map()
-    # Must-have Datumsrollen aus § 5 (empirisch bereits belegt oder
-    # unmittelbar erwartbar).
+    # Must-have date roles from § 5 (already attested empirically or immediately
+    # expectable).
     must_have = {
         "absendedatum",
         "empfangsdatum",

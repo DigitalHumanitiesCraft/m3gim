@@ -1,29 +1,51 @@
 /**
- * Geteilte Toolbar-Filter-Pipeline fuer Bestand und Chronik (Tier 2.6).
+ * Geteilte Filter-Pipeline fuer Bestand und Chronik.
  *
- * Beide Views wenden dieselben fuenf Facetten (search, docType, person,
- * location, werk) auf eine Item-Liste an. Der einzige strukturelle Unterschied:
- * Bestand filtert gewrappte Items ({ record, ... }), Chronik nackte Records.
- * Das loest `getRecord` (Accessor). Die Such-Felder weichen ab (Bestand sucht
- * zusaetzlich in Typ-Label + Datum) -- daher das `searchMatch`-Praedikat als
- * Parameter, mit den zwei konkreten Implementierungen hier exportiert.
+ * Beide Views wenden denselben geteilten Filter (filter-state.js) auf eine
+ * Item-Liste an. Der einzige strukturelle Unterschied: Bestand filtert
+ * gewrappte Items ({ record, ... }), Chronik nackte Records. Das loest
+ * `getRecord` (Accessor). Die Such-Felder weichen ab (Bestand sucht zusaetzlich
+ * in Typ-Label + Datum) -- daher das `searchMatch`-Praedikat als Parameter, mit
+ * den zwei konkreten Implementierungen hier exportiert.
+ *
+ * Seit dem Sidebar-Umbau wohnen Suche und Dokumenttyp im geteilten Filter. Die
+ * Freitextsuche bleibt hier (view-eigenes Textmatch), Dokumenttyp und die
+ * Entitaets-/geteilten Facetten loest recordsFor auf, die eine Stelle im
+ * Frontend, an der Filter zur Dokumentmenge wird.
  */
 
-import { getDocTypeId, expandDftFilter, dftLabel } from '../utils/format.js';
+import { getDocTypeId, dftLabel } from '../utils/format.js';
 import { facetValues } from '../ui/filter-state.js';
-import { recordsFor } from '../data/records-for.js';
+import { recordsFor, FACET_KEYS } from '../data/records-for.js';
 
-/** Ob mindestens eine der fuenf Facetten aktiv ist. Die drei Entitaetsfacetten
- *  halten seit E-151 Listen; eine leere Liste heisst inaktiv. */
-export function isToolbarFiltered(state) {
-  const { search = '', docType = '' } = state || {};
-  if (search || docType) return true;
-  for (const key of ['person', 'location', 'werk']) {
-    if (facetValues(state, key).length > 0) return true;
+/** Facetten des geteilten Filters, die im Bestand/in der Chronik schneiden.
+ *  finanzen und ereignis liegen im Store, werden hier aber nicht bedient. */
+const CUT_FACETS = ['docType', 'person', 'ort', 'werk', 'institution', 'rolle', 'sicht']
+  .filter(k => FACET_KEYS.includes(k));
+
+/** Ob mindestens eine schneidende Facette oder die Suche aktiv ist. Eine leere
+ *  Liste heisst inaktiv, `scope` und `schaerfe` sind keine Facetten. */
+export function isSharedFiltered(shared) {
+  if (shared && (shared.search || '').trim()) return true;
+  for (const key of CUT_FACETS) {
+    if (facetValues(shared, key).length > 0) return true;
   }
   return false;
 }
 
+/** Die Facetten, die ueber person/ort/werk/docType hinaus die Hierarchie
+ *  abflachen (rolle/institution/sicht). zeitfenster/schaerfe wirken separat
+ *  ueber applyZeitfenster/applySchaerfeEng. */
+const FLATTEN_FACETS = ['rolle', 'institution', 'sicht'];
+
+/** Ob eine dieser Facetten gesetzt ist. Zaehlt fuer die Frage, ob die
+ *  Hierarchie abzuflachen und der gefilterte Zaehler zu zeigen ist. */
+export function sharedFacetsActive(sharedFilter) {
+  for (const key of FLATTEN_FACETS) {
+    if (facetValues(sharedFilter, key).length > 0) return true;
+  }
+  return false;
+}
 
 /** Bestand-Suche: Signatur, Titel, Typ-Label, Datum. Der Store liefert das
  *  Typ-Label (skos:prefLabel); ohne Store entfällt nur die Label-Teilsuche. */
@@ -43,42 +65,38 @@ export function searchMatchChronik(record, q) {
 }
 
 /**
- * Wendet die fuenf Toolbar-Facetten auf `items` an und gibt die gefilterte
- * Liste zurueck (nicht mutierend).
+ * Wendet den geteilten Filter auf `items` an und gibt die gefilterte Liste
+ * zurueck (nicht mutierend).
  *
  * @param {Object} store
  * @param {Array}  items   - Item-Liste (gewrappt oder nackte Records).
- * @param {Object} state   - { search, docType, person, location, werk }.
+ * @param {Object} shared  - geteilter Filterzustand (getFilter()).
  * @param {Object} opts
- * @param {Function} opts.getRecord   - item -> JSON-LD-Record.
- * @param {Function} opts.searchMatch - (record, qLower) -> boolean.
+ * @param {Function} opts.getRecord     - item -> JSON-LD-Record.
+ * @param {Function} opts.searchMatch   - (record, qLower) -> boolean.
  */
-export function filterByToolbarState(store, items, state, { getRecord, searchMatch }) {
-  const { search = '', docType = '' } = state || {};
+export function filterBySharedState(store, items, shared, { getRecord, searchMatch }) {
+  const s = shared || {};
   let out = items;
 
+  const search = (s.search || '').trim();
   if (search) {
     const q = search.toLowerCase();
     out = out.filter(it => searchMatch(getRecord(it), q));
   }
-  if (docType === '__none__') {
-    // Erschliessungsluecke begehbar: Records ohne klassifizierten Dokumenttyp.
-    out = out.filter(it => !getDocTypeId(getRecord(it)));
-  } else if (docType) {
-    const allowed = expandDftFilter(store, docType);
-    out = out.filter(it => allowed.has(getDocTypeId(getRecord(it))));
+
+  // Alle schneidenden Facetten (inkl. Dokumenttyp mit DFT-Hierarchie) loest
+  // recordsFor auf. Nur die tatsaechlich gesetzten uebergeben, damit die eine
+  // Aufloesung greift, ohne dass hier eine zweite Filterwelt entsteht.
+  const facetFilter = {};
+  let anyFacet = false;
+  for (const key of CUT_FACETS) {
+    const vals = facetValues(s, key);
+    if (vals.length > 0) { facetFilter[key] = vals; anyFacet = true; }
   }
-  // Die drei Entitaetsfacetten loest recordsFor auf, die eine Stelle im
-  // Frontend, an der Filter zu Dokumentmenge wird. Suche und Dokumenttyp
-  // bleiben hier, sie sind Toolbar-lokal und kein geteilter Schnitt.
-  const entityFilter = {
-    person: facetValues(state, 'person'),
-    ort: facetValues(state, 'location'),
-    werk: facetValues(state, 'werk'),
-  };
-  if (Object.values(entityFilter).some(v => v.length > 0)) {
+  if (anyFacet) {
     const base = new Set(out.map(it => getRecord(it)['@id']));
-    const { ids } = recordsFor(store, entityFilter, { base });
+    const { ids } = recordsFor(store, facetFilter, { base });
     out = out.filter(it => ids.has(getRecord(it)['@id']));
   }
   return out;

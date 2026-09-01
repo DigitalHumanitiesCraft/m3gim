@@ -1,29 +1,25 @@
 #!/usr/bin/env python3
 """
-M³GIM Reconcile — Wikidata-Reconciliation für Indizes.
+M³GIM Reconcile — Wikidata reconciliation for the indexes.
 
-Liest die 4 Index-Tabellen (Personen, Organisationen, Orte, Werke),
-fragt die Wikidata Search API ab und traegt Q-IDs ein.
-Ergebnisse werden als JSON-Datei gespeichert, die von transform.py
-bei der naechsten Pipeline-Ausfuehrung uebernommen wird.
+Reads the four index tables (persons, organisations, places, works), queries
+the Wikidata Search API and records Q-IDs. Results are stored as a JSON file
+that transform.py picks up on the next pipeline run.
 
-Strategie:
-  - Exakte Label-Treffer bevorzugt, Alias-Treffer eine Stufe darunter
-  - Fuzzy-Matching als Fallback (thefuzz token_set_ratio), Aliase
-    werden mitverglichen
-  - Personen: beide Namensformen werden abgefragt und die Trefferlisten
-    vereinigt, Filterung auf instance-of human (Q5); bei Punktgleichstand
-    zweier Entitaeten entsteht kein Treffer
-  - Organisationen: Filterung auf organisation/institution
-  - Orte: Filterung auf geographic entity
-  - Werke: P31-Typfilter plus bindende P86-Pruefung gegen den im
-    Werkindex gefuehrten Komponisten
-  - Kennungen, die schon in den Indizes stehen, werden geprueft statt
-    uebersprungen
-  - Confidence-Level: exact (100), alias (95), fuzzy_high (>=90),
+Strategy:
+  - Exact label matches preferred, alias matches one tier below
+  - Fuzzy matching as fallback (thefuzz token_set_ratio), aliases compared too
+  - Persons: both name forms are queried and the result lists unioned, filtered
+    to instance-of human (Q5); a score tie between two entities yields no match
+  - Organisations: filtered to organisation/institution
+  - Places: filtered to geographic entity
+  - Works: P31 type filter plus a binding P86 check against the composer named
+    in the Werkindex
+  - Identifiers already present in the indexes are verified rather than skipped
+  - Confidence levels: exact (100), alias (95), fuzzy_high (>=90),
     fuzzy_low (>=80)
 
-Verwendung:
+Usage:
     python scripts/reconcile.py [--dry-run] [--type person|org|location|work]
                                 [--force] [--min-confidence 80]
 """
@@ -44,41 +40,30 @@ from thefuzz import fuzz
 
 from _common import INDEX_HEADER_SHIFTS
 
-# Windows-Konsole: UTF-8 erzwingen
 if sys.stdout.encoding != "utf-8":
     sys.stdout.reconfigure(encoding="utf-8")
-
-# ---------------------------------------------------------------------------
-# Pfade
-# ---------------------------------------------------------------------------
 
 BASE_DIR = Path(__file__).parent.parent
 SHEETS_DIR = BASE_DIR / "data" / "google-spreadsheet"
 OUTPUT_FILE = BASE_DIR / "data" / "output" / "wikidata-reconciliation.json"
 
-# ---------------------------------------------------------------------------
-# Wikidata API
-# ---------------------------------------------------------------------------
-
 WIKIDATA_API = "https://www.wikidata.org/w/api.php"
 USER_AGENT = "m3gim-research/1.0 (https://dhcraft.org/m3gim; office@dhcraft.org)"
-REQUEST_DELAY = 0.5  # Sekunden zwischen Anfragen (Rate Limiting)
-MIN_NAME_LENGTH = 3  # Kurze Namen (Kuerzel, Initialien) ueberspringen
+REQUEST_DELAY = 0.5  # seconds between requests (rate limiting)
+MIN_NAME_LENGTH = 3  # skip short names (abbreviations, initials)
 
 QID_PATTERN = re.compile(r"^Q\d+$")
 
-# Fuzzy-Matching Schwellenwerte
 FUZZY_HIGH_THRESHOLD = 90
 FUZZY_LOW_THRESHOLD = 80
-ALIAS_MATCH_SCORE = 95  # Alias-Treffer bleibt unter dem exakten Labeltreffer
+ALIAS_MATCH_SCORE = 95  # an alias hit stays below the exact label hit
 
-# Komponistenabgleich: token_sort_ratio, weil token_set_ratio einen
-# blossen Nachnamen-Alias ("Strauss") als volle Uebereinstimmung wertet.
-# Kalibriert am belegten Bestand: niedrigster richtiger Wert 91,
-# hoechster falscher 72.
+# Composer comparison uses token_sort_ratio, because token_set_ratio would rate
+# a bare surname alias ("Strauss") as a full match. Calibrated against the
+# attested stock: lowest correct value 91, highest wrong one 72.
 COMPOSER_MATCH_THRESHOLD = 85
 
-# Instance-of (P31) Werte fuer Filterung
+# Instance-of (P31) values used for filtering
 Q_HUMAN = "Q5"
 Q_GEOGRAPHIC = {"Q515", "Q486972", "Q1549591", "Q3957", "Q6256", "Q35657"}
 # Q515=city, Q486972=human settlement, Q1549591=municipality, Q3957=town,
@@ -92,16 +77,16 @@ Q_ORGANIZATION = {"Q43229", "Q4830453", "Q3918", "Q7075", "Q31855",
 
 Q_MUSICAL_WORK = {"Q58483083", "Q105543609", "Q785522", "Q781815",
                    "Q15079786", "Q58483088", "Q1344", "Q7366", "Q9730"}
-# Empirisch aus den P31-Werten der belegten Werkentitaeten
-# (data/reports/identifier-proposals-works.md, ueber wbgetentities geprueft):
-# Q58483083=dramatisch-musikalisches Werk (traegt praktisch jede Oper),
-# Q105543609=musikalisches Werk/Komposition, Q785522=italienische Oper,
-# Q781815=Passion, Q15079786=Ballett, Q58483088=choreografisches Werk.
-# Q1344=Oper, Q7366=Lied, Q9730=klassische Musik bleiben als seltene,
-# nicht widerlegte Werkklassen stehen.
-# Entfernt, weil belegt fehlzuordnend: Q7725634=literarisches Werk (Vorlage
-# statt Vertonung), Q482994=Album (Tonaufnahme statt Werk),
-# Q188451=Musikgenre (Gattung statt Werk).
+# Derived empirically from the P31 values of the attested work entities
+# (data/reports/identifier-proposals-works.md, checked via wbgetentities):
+# Q58483083=dramatic-musical work (carries practically every opera),
+# Q105543609=musical work/composition, Q785522=Italian opera,
+# Q781815=Passion, Q15079786=ballet, Q58483088=choreographic work.
+# Q1344=opera, Q7366=song, Q9730=classical music remain as rare, not-disproven
+# work classes.
+# Removed because attested as misassigning: Q7725634=literary work (source text
+# instead of setting), Q482994=album (recording instead of work),
+# Q188451=music genre (category instead of work).
 
 
 _CLAIMS_CACHE: dict = {}
@@ -109,13 +94,13 @@ _NAMES_CACHE: dict = {}
 
 
 def clear_caches() -> None:
-    """Leert die Entitaets-Caches (Tests, wiederholte Laeufe)."""
+    """Clears the entity caches (tests, repeated runs)."""
     _CLAIMS_CACHE.clear()
     _NAMES_CACHE.clear()
 
 
 def _api_request(params: dict) -> dict:
-    """Eine Wikidata-Anfrage mit Projekt-Kennung und Rate-Limit-Pause."""
+    """One Wikidata request with the project user agent and a rate-limit pause."""
     url = f"{WIKIDATA_API}?{urllib.parse.urlencode(params)}"
     req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
     time.sleep(REQUEST_DELAY)
@@ -124,7 +109,7 @@ def _api_request(params: dict) -> dict:
 
 
 def search_wikidata(query: str, language: str = "de", limit: int = 5) -> list:
-    """Sucht Entitaeten ueber die Wikidata Search API."""
+    """Searches entities via the Wikidata Search API."""
     try:
         data = _api_request({
             "action": "wbsearchentities",
@@ -140,7 +125,7 @@ def search_wikidata(query: str, language: str = "de", limit: int = 5) -> list:
 
 
 def get_entity_claims(qid: str) -> dict:
-    """Holt die Claims (P31, P86 etc.) fuer eine Entitaet."""
+    """Fetches the claims (P31, P86 etc.) for an entity."""
     if qid in _CLAIMS_CACHE:
         return _CLAIMS_CACHE[qid]
     try:
@@ -151,18 +136,18 @@ def get_entity_claims(qid: str) -> dict:
             "format": "json",
         })
     except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError):
-        return {}  # Fehlschlag nicht cachen
+        return {}  # do not cache a failure
     claims = data.get("entities", {}).get(qid, {}).get("claims", {})
     _CLAIMS_CACHE[qid] = claims
     return claims
 
 
 def get_entity_names(qid: str) -> list:
-    """Labels und Aliase einer Entitaet in allen Sprachen.
+    """Labels and aliases of an entity across all languages.
 
-    Ohne Sprachfilter, weil der Komponistenabgleich auf die
-    Transliterationsvarianten angewiesen ist, die je nach Person in
-    unterschiedlichen Sprachen als Alias gepflegt sind.
+    No language filter, because the composer comparison depends on the
+    transliteration variants that, depending on the person, are maintained as
+    aliases in different languages.
     """
     if qid in _NAMES_CACHE:
         return _NAMES_CACHE[qid]
@@ -185,7 +170,7 @@ def get_entity_names(qid: str) -> list:
 
 
 def get_claim_ids(claims: dict, prop: str) -> list:
-    """Extrahiert die Entitaets-Q-IDs einer Property aus Claims."""
+    """Extracts the entity Q-IDs of a property from claims."""
     result = []
     for claim in claims.get(prop, []):
         value = claim.get("mainsnak", {}).get("datavalue", {}).get("value", {})
@@ -195,21 +180,21 @@ def get_claim_ids(claims: dict, prop: str) -> list:
 
 
 def get_instance_of(claims: dict) -> set:
-    """Extrahiert alle P31 (instance-of) Q-IDs aus Claims."""
+    """Extracts all P31 (instance-of) Q-IDs from claims."""
     return set(get_claim_ids(claims, "P31"))
 
 
 def is_exact_match(search_name: str, result_label: str) -> bool:
-    """Prueft ob der Name exakt uebereinstimmt (case-insensitive)."""
+    """Checks whether the name matches exactly (case-insensitive)."""
     return search_name.strip().lower() == result_label.strip().lower()
 
 
 def result_names(result: dict) -> tuple[str, list]:
-    """Label und Namensvarianten eines wbsearchentities-Treffers.
+    """Label and name variants of a wbsearchentities hit.
 
-    Bei einem Alias-Treffer liefert die API die getroffene Aliasform im
-    Label-Feld, sobald die Entitaet in der Abfragesprache kein Label hat;
-    nur ``match.type`` unterscheidet Alias und Ansetzung zuverlaessig.
+    On an alias hit the API returns the matched alias form in the label field
+    whenever the entity has no label in the query language; only ``match.type``
+    tells alias and preferred form apart reliably.
     """
     match = result.get("match") or {}
     matched_text = (match.get("text") or "").strip()
@@ -226,11 +211,11 @@ def result_names(result: dict) -> tuple[str, list]:
 def compute_match_level(search_name: str, result_label: str,
                         min_confidence: int = FUZZY_LOW_THRESHOLD,
                         aliases=()) -> tuple[str | None, int]:
-    """Bewertet Match-Qualitaet zwischen Suchname, WD-Label und Aliasformen.
+    """Rates match quality between search name, WD label and alias forms.
 
     Returns: (level, score)
-      level: 'exact', 'alias', 'fuzzy_high', 'fuzzy_low', oder None
-      score: 0-100 Aehnlichkeitswert
+      level: 'exact', 'alias', 'fuzzy_high', 'fuzzy_low', or None
+      score: 0-100 similarity value
     """
     if result_label and is_exact_match(search_name, result_label):
         return ('exact', 100)
@@ -241,9 +226,9 @@ def compute_match_level(search_name: str, result_label: str,
 
     needle = search_name.lower()
     score = fuzz.token_set_ratio(needle, result_label.lower()) if result_label else 0
-    # Aliase mit token_sort_ratio: Aliaslisten fuehren zusammengesetzte
-    # Formen ("Werk. Incipit"), deren Wortobermenge mit token_set_ratio
-    # 100 ergaebe und das gesuchte Werk verdraengte.
+    # Aliases via token_sort_ratio: alias lists carry composite forms
+    # ("Werk. Incipit") whose word superset would score 100 under
+    # token_set_ratio and crowd out the sought work.
     for alias in aliases:
         if alias:
             score = max(score, fuzz.token_sort_ratio(needle, alias.lower()))
@@ -256,7 +241,7 @@ def compute_match_level(search_name: str, result_label: str,
 
 
 def check_type(qid: str, expected_types) -> bool:
-    """Prueft ob eine Entitaet den erwarteten P31-Typ hat."""
+    """Checks whether an entity has the expected P31 type."""
     instances = get_instance_of(get_entity_claims(qid))
     if isinstance(expected_types, str):
         return expected_types in instances
@@ -264,14 +249,14 @@ def check_type(qid: str, expected_types) -> bool:
 
 
 def normalize_name(name: str) -> str:
-    """Diakritika-freie Kleinschreibung fuer den Namensvergleich."""
+    """Diacritics-free lowercase form for the name comparison."""
     decomposed = unicodedata.normalize("NFKD", name or "")
     stripped = "".join(c for c in decomposed if not unicodedata.combining(c))
     return re.sub(r"[^a-z0-9 ]+", " ", stripped.replace("ß", "ss").lower()).strip()
 
 
 def invert_name(name: str) -> str:
-    """'Nachname, Vorname' zur natuerlichen Namensfolge."""
+    """'Surname, given name' into natural name order."""
     parts = (name or "").split(",", 1)
     if len(parts) == 2:
         return f"{parts[1].strip()} {parts[0].strip()}"
@@ -279,10 +264,10 @@ def invert_name(name: str) -> str:
 
 
 def composer_matches(qid: str, komponist: str) -> bool:
-    """Prueft P86 der Entitaet gegen den im Werkindex gefuehrten Komponisten.
+    """Checks the entity's P86 against the composer named in the Werkindex.
 
-    Verbindlich, sobald der Index einen Komponisten fuehrt: eine Entitaet
-    ohne P86 oder mit abweichendem Komponisten gilt als nicht bestaetigt.
+    Binding once the index names a composer: an entity without P86 or with a
+    diverging composer counts as unconfirmed.
     """
     if not komponist:
         return True
@@ -299,11 +284,11 @@ def composer_matches(qid: str, komponist: str) -> bool:
 
 
 # ---------------------------------------------------------------------------
-# Reconciliation-Funktionen pro Typ
+# Reconciliation functions per type
 # ---------------------------------------------------------------------------
 
 def search_all(queries: list) -> list:
-    """Vereinigt die Trefferlisten mehrerer Suchanfragen, ohne Dubletten."""
+    """Unions the result lists of several searches, without duplicates."""
     results = []
     seen = set()
     for query in queries:

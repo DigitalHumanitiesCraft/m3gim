@@ -1,29 +1,25 @@
 #!/usr/bin/env python3
-"""backup.py — Backup-only-Archiv roher Google-Drive-Exporte.
+"""backup.py — backup-only archive of raw Google Drive exports.
 
-Kopiert einen Export-Ordner (wie er aus Google Drive heruntergeladen wird)
-unveraendert in ein zeitgestempeltes Snapshot-Verzeichnis unter
-``data/backup/`` und schreibt einen Logeintrag mit SHA-256-Pruefsummen.
+Copies an export folder (as downloaded from Google Drive) unchanged into a
+timestamped snapshot directory under ``data/backup/`` and writes a log entry
+with SHA-256 checksums.
 
-NUR BACKUP. Das Skript
+BACKUP ONLY. The script does not touch ``data/google-spreadsheet/`` and does
+not start the pipeline. Promoting an export into the working state is a
+separate, deliberately manual step (source files are git-tracked, every change
+should be seen).
 
-  - veraendert ``data/google-spreadsheet/`` nicht,
-  - startet die Pipeline nicht.
+DSGVO: ``data/backup/`` is fully gitignored (root .gitignore plus a
+self-ignoring .gitignore in the folder). Exports may contain DSGVO-sensitive
+files (e.g. ``Handreichung-Datenerfassung.docx``) and must not reach the public
+repo. See the red lines in ``CLAUDE.md``.
 
-Das Promoten eines Exports in den Arbeitsstand ist ein separater, bewusst
-manueller Schritt (Quelldateien sind git-getrackt, jede Aenderung will gesehen
-werden).
-
-DSGVO: ``data/backup/`` ist vollstaendig gitignored (Root-.gitignore plus ein
-selbst-ignorierendes .gitignore im Ordner). Exporte koennen DSGVO-sensible
-Dateien enthalten (z. B. ``Handreichung-Datenerfassung.docx``) und duerfen
-nicht ins oeffentliche Repo gelangen. Siehe rote Linien in ``CLAUDE.md``.
-
-Aufruf:
+Run:
 
     python scripts/backup.py "C:/Users/chris/Downloads/drive-download-..."
-    python scripts/backup.py            # neuesten drive-download-* in ~/Downloads
-    python scripts/backup.py --force <pfad>   # vorhandenen Snapshot ueberschreiben
+    python scripts/backup.py            # newest drive-download-* in ~/Downloads
+    python scripts/backup.py --force <path>   # overwrite an existing snapshot
 """
 
 from __future__ import annotations
@@ -40,16 +36,16 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 BACKUP_ROOT = REPO_ROOT / "data" / "backup"
 LOG_PATH = BACKUP_ROOT / "backup-log.md"
 
-# Drive-Exporte heissen "drive-download-YYYYMMDDTHHMMSSZ-...".
+# Drive exports are named "drive-download-YYYYMMDDTHHMMSSZ-...".
 EXPORT_GLOB = "drive-download-*"
 EXPORT_TS_RE = re.compile(r"(\d{8})T(\d{6})Z")
 
-# DSGVO-sensible Dateinamen (Substring, case-insensitive). Treffer werden im
-# Log mit dem Text-Marker [DSGVO] markiert und als Warnung ausgegeben.
+# DSGVO-sensitive filenames (substring, case-insensitive). Matches are marked
+# with the text marker [DSGVO] in the log and emitted as a warning.
 DSGVO_HINTS = ("handreichung", "antrag")
 
-# Selbst-ignorierendes .gitignore im Backup-Ordner (Defense in depth zusaetzlich
-# zum Root-.gitignore-Eintrag).
+# Self-ignoring .gitignore in the backup folder (defense in depth on top of the
+# root .gitignore entry).
 FOLDER_GITIGNORE = (
     "# Backup-only, lokal. DSGVO: NICHT committen.\n"
     "# Snapshots koennen sensible Dateien enthalten (Handreichung, Antrag).\n"
@@ -75,7 +71,7 @@ def find_latest_export(downloads: Path) -> Path | None:
 
 
 def snapshot_label(source: Path) -> str:
-    """Snapshot-Name aus dem Drive-Timestamp des Export-Ordners, sonst now()."""
+    """Snapshot name from the Drive timestamp of the export folder, else now()."""
     m = EXPORT_TS_RE.search(source.name)
     if m:
         d, t = m.group(1), m.group(2)  # 20260617, 055322
@@ -131,9 +127,8 @@ def write_log_entry(label: str, source: Path, dest: Path,
 
 
 def main(argv: list[str] | None = None) -> int:
-    # Windows-Konsole ist haeufig cp1252 -> UTF-8 erzwingen, damit nicht-ASCII-
-    # Ausgabe (z. B. der Gedankenstrich, Umlaut-Dateinamen) keinen
-    # UnicodeEncodeError ausloest.
+    # Windows console is often cp1252 -> force UTF-8 so non-ASCII output (dash,
+    # umlaut filenames) does not raise UnicodeEncodeError.
     for stream in (sys.stdout, sys.stderr):
         try:
             stream.reconfigure(encoding="utf-8")

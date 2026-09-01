@@ -1,17 +1,17 @@
-"""Baut die mehrblättrige Verknüpfungs-Arbeitsmappe aus den Box-CSV-Exporten.
+"""Assembles the multi-sheet Verknüpfungen workbook from the per-Box CSV exports.
 
-Die Google-Tabelle „M3GIM-Verknüpfungen" hat ein Tab pro Box. Werden die Tabs
-einzeln als CSV exportiert, fügt dieses Skript sie wieder zu der Arbeitsmappe
-zusammen, die ``transform.py`` (``load_verknuepfungen``, E-95) erwartet: ein
-Sheet je Box, Spalte 0 die Archivsignatur ohne echten Header, Folgespalten
-Folio/datenpunkt_id/typ/name/rolle/anmerkung.
+The Google sheet "M3GIM-Verknüpfungen" carries one tab per Box. When the tabs
+are exported individually as CSV, this script reassembles them into the workbook
+that ``transform.py`` (``load_verknuepfungen``, E-95) expects. One sheet per Box,
+column 0 the Archivsignatur without a real header, following columns
+folio/datenpunkt_id/typ/name/rolle/anmerkung.
 
-Aufruf:
-    python scripts/assemble-verknuepfungen.py [QUELL-ORDNER]
+Usage:
+    python scripts/assemble-verknuepfungen.py [SOURCE-DIR]
 
-QUELL-ORDNER defaultet auf den Downloads-Ablageordner. Ausgabe überschreibt
-``data/google-spreadsheet/M3GIM-Verknüpfungen.xlsx`` (git-versioniert, der
-Vorstand bleibt über die Historie erhalten).
+SOURCE-DIR defaults to the Downloads staging folder. Output overwrites
+``data/google-spreadsheet/M3GIM-Verknüpfungen.xlsx`` (git-tracked, so the
+history is preserved).
 """
 import glob
 import os
@@ -27,10 +27,11 @@ OUT_PATH = BASE_DIR / "data" / "google-spreadsheet" / "M3GIM-Verknüpfungen.xlsx
 
 
 def sheet_name(filename: str) -> str:
-    """Leitet den Sheet-Namen aus dem Dateinamen ab.
+    """Derives the sheet name from the filename.
 
-    "M3GIM-Verknüpfungen - Box 5.csv" -> "Box 5". Excel-Sheetnamen sind auf
-    31 Zeichen und ein Zeichen-Subset begrenzt; verbotene Zeichen werden ersetzt.
+    "M3GIM-Verknüpfungen - Box 5.csv" -> "Box 5". Excel sheet names are capped at
+    31 characters and a restricted character subset, so forbidden characters are
+    replaced.
     """
     base = os.path.splitext(os.path.basename(filename))[0]
     label = base.split(" - ")[-1].strip() or base.strip()
@@ -48,16 +49,16 @@ def main() -> None:
     with pd.ExcelWriter(OUT_PATH, engine="openpyxl") as writer:
         used: set[str] = set()
         for fn in files:
-            # Zellen verbatim als Text lesen, damit Folio-Werte ("2_24"),
-            # datenpunkt_id ("9") und Signaturen ("NIM_11") nicht numerisch
-            # verfälscht werden; leere Zellen bleiben leer (-> NaN beim
-            # Reload, worauf der ffill der Signatur im Loader baut).
+            # Read cells verbatim as text so folio values ("2_24"),
+            # datenpunkt_id ("9") and signatures ("NIM_11") are not coerced
+            # numerically. Empty cells stay empty (NaN on reload), which the
+            # loader's ffill of the Signatur relies on.
             df = pd.read_csv(fn, dtype=str, keep_default_na=False,
                              encoding="utf-8-sig")
             name = sheet_name(fn)
             n = name
             i = 2
-            while n in used:  # Sheetnamen müssen eindeutig sein
+            while n in used:  # sheet names must be unique
                 n = f"{name[:28]}_{i}"
                 i += 1
             used.add(n)

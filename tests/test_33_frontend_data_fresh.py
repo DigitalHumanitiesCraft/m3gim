@@ -1,18 +1,18 @@
-"""Frontend-Daten-Frische: docs/data spiegelt data/output.
+"""Frontend data freshness: docs/data mirrors data/output.
 
-Schliesst die Bug-Klasse, die in Session 50 aufgedeckt wurde: Commit ada6445
-(E-97) regenerierte data/output/m3gim.jsonld (+15 Mobilitaets-STE), aber
-build-views.py wurde nie erneut ausgefuehrt, sodass docs/data/m3gim.jsonld
-eine Modell-Welle zurueckhing und die 15 Events nie ins Frontend gelangten.
+Closes the bug class uncovered in session 50: commit ada6445 (E-97) regenerated
+data/output/m3gim.jsonld (+15 mobility STE), but build-views.py was never rerun,
+so docs/data/m3gim.jsonld lagged a model wave behind and the 15 events never
+reached the frontend.
 
-build-views.py kopiert m3gim.jsonld via shutil.copy2 ungefiltert von
-data/output nach docs/data. Nach einem vollstaendigen Pipeline-Lauf MUSS der
-@graph beider Dateien daher identisch sein. Weicht er ab, ist docs/data stale
-und 'python scripts/build-views.py' muss laufen.
+build-views.py copies m3gim.jsonld unfiltered from data/output to docs/data via
+shutil.copy2. After a full pipeline run the @graph of both files MUST therefore
+be identical. If it diverges, docs/data is stale and
+'python scripts/build-views.py' must run.
 
-Skippt bei Staging-Laeufen (M3GIM_JSONLD_PATH / M3GIM_OUTPUT_DIR gesetzt): dann
-zeigt data/output auf ein Temp-Verzeichnis und die Produktions-Invariante gilt
-nicht.
+Skips on staging runs (M3GIM_JSONLD_PATH / M3GIM_OUTPUT_DIR set): then
+data/output points to a temp directory and the production invariant does not
+hold.
 """
 
 import json
@@ -67,12 +67,11 @@ def docs_graph() -> list:
 
 
 def test_docs_data_graph_equals_output(output_graph, docs_graph):
-    """Vollstaendige @graph-Gleichheit: build-views.py ist ein reiner Copy.
+    """Full @graph equality: build-views.py is a pure copy.
 
-    Subsumiert die frueher danebenstehende Knotenzahl und die
-    Annotationszahl (Bug-Klasse aus Session 50) vollstaendig; die Meldung
-    nennt beide Groessen weiterhin, damit ein roter Lauf sofort zeigt, ob
-    Knoten fehlen oder nur Werte abweichen.
+    Fully subsumes the formerly adjacent node count and annotation count (bug
+    class from session 50); the message still names both sizes so a red run
+    immediately shows whether nodes are missing or only values differ.
     """
     assert docs_graph == output_graph, (
         f"docs/data/m3gim.jsonld weicht von data/output/m3gim.jsonld ab "

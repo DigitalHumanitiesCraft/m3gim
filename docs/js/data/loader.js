@@ -41,78 +41,77 @@ export async function loadArchive(url = './data/m3gim.jsonld') {
 }
 
 /**
- * Store-Maps transformieren JSON-LD-Subobjekte zum Teil in ein flaches
- * Lookup-Format -- damit Consumer nicht durch verschachtelte Strukturen
- * navigieren muessen. Das hat den Preis, dass *JSON-LD-Keys wie
- * `agrelon:hasObject` in den Store-Entries NICHT mehr existieren*. Die
- * Gegenseite kommt aus counterpartOf() und deckt beide Bauformen ab.
- * Bei Erweiterungen: immer die JSDoc-Shapes unten zur Hand nehmen.
+ * Store maps flatten JSON-LD subobjects into a lookup format so consumers do
+ * not navigate nested structures. The cost is that JSON-LD keys like
+ * `agrelon:hasObject` NO LONGER exist in the store entries. The counterpart
+ * comes from counterpartOf(), which covers both build forms. When extending,
+ * always keep the JSDoc shapes below at hand.
  *
- * @typedef {Object} RelationEntry       Eintrag in store.agentRelations
- * @property {string} type               AgRelOn-Prädikat ("agrelon:HasCorrespondent" u. a.)
- * @property {string|null} objectName    Entity-Name des Beziehungs-Partners
- * @property {string|null} objectWikidata  Q-ID mit wd:-Präfix oder null
- * @property {string|null} objectRole    Concept-CURIE der erfassten Rolle der
- *   Gegenseite, oder null. Bei einer symmetrischen Beziehung traegt der Begriff
- *   keine Richtung; diese Rolle haelt sie fest (E-149).
- * @property {string|null} objectRoleLabel  Anzeigeform ebendieser Rolle
+ * @typedef {Object} RelationEntry       entry in store.agentRelations
+ * @property {string} type               AgRelOn predicate ("agrelon:HasCorrespondent" etc.)
+ * @property {string|null} objectName    entity name of the relation partner
+ * @property {string|null} objectWikidata  Q-id with wd: prefix or null
+ * @property {string|null} objectRole    concept CURIE of the recorded role of
+ *   the counterpart, or null. A symmetric relation term carries no direction;
+ *   this role holds it (E-149).
+ * @property {string|null} objectRoleLabel  display form of that role
  * @property {string|null} validityBegin
  * @property {string|null} validityEnd
- * @property {string} provenance         @id des Records, das die Relation trägt
+ * @property {string} provenance         @id of the record carrying the relation
  * @property {{sheet: string, row: number, datenpunkt: ?number}} xlsxSource
  *
- * @typedef {Object} Annotation          Eintrag in store.annotations
- *   Ein Aspektknoten des Records: Datierung, Verortung oder beides. Die
- *   verorteten Annotationen sind zugleich store.mobilityEvents -- dieselben
- *   Objekte unter zwei Zugaengen.
- * @property {string} id                 @id des Annotationsknotens
- * @property {?string} place             Ortsname
- * @property {?string} placeWikidata     Q-ID mit wd:-Praefix oder null
+ * @typedef {Object} Annotation          entry in store.annotations
+ *   An aspect node of the record: Datierung, Verortung or both. The located
+ *   annotations are also store.mobilityEvents -- the same objects under two
+ *   access paths.
+ * @property {string} id                 @id of the annotation node
+ * @property {?string} place             place name
+ * @property {?string} placeWikidata     Q-id with wd: prefix or null
  * @property {?number} placeLat
  * @property {?number} placeLon
  * @property {?string} placeCountry
- * @property {?string} date              Datumswert ohne Qualifier
- * @property {?string} rawDate           Datumswert wie in den Daten
+ * @property {?string} date              date value without qualifier
+ * @property {?string} rawDate           date value as in the data
  * @property {?string} qualifier         'circa' | 'vor' | 'nach' | null
- * @property {?number} year              Jahr aus date, null wenn unparsbar
- * @property {?string} role              Rohform der Rolle, z. B. "zielort"
- * @property {?string} roleId            Concept-Id, null beim Literal
- * @property {string} roleLabel          Anzeigeform aus den Daten
- * @property {?string} derivedFromRole   urspruenglich erfasster Rollenwert
- * @property {?string} scope             Bezugsebene (siehe constants.js)
- * @property {number} rank               Prioritaet der Rolle (constants.js)
- * @property {?string} cluster           Mobilitaetssicht der Rolle
+ * @property {?number} year              year from date, null if unparsable
+ * @property {?string} role              raw form of the role, e.g. "zielort"
+ * @property {?string} roleId            concept id, null for a literal
+ * @property {string} roleLabel          display form from the data
+ * @property {?string} derivedFromRole   originally recorded role value
+ * @property {?string} scope             Bezugsebene (see constants.js)
+ * @property {number} rank               role priority (constants.js)
+ * @property {?string} cluster           mobility Sicht of the role
  * @property {string} origin             'annotation' | 'creationDate'
- * @property {?string} description       freier Text
+ * @property {?string} description       free text
  * @property {?string} qualityFlag       m3gim-ontology:dataQualityFlag
- * @property {?string} recordId          @id des Ursprungs-Records
- * @property {?Object} xlsxSource        Herkunft, siehe utils/provenance.js
+ * @property {?string} recordId          @id of the origin record
+ * @property {?Object} xlsxSource        provenance, see utils/provenance.js
  *
  * @typedef {{year: ?number, source: ?string, roleId: ?string, label: ?string}} Anchor
- *   Ergebnis von primaryYear(): das Jahr des Records und die benannte Stelle,
- *   aus der es stammt.
+ *   result of primaryYear(): the year of the record and the named place it
+ *   comes from.
  *
- * @typedef {Object} FinanceEntry        Eintrag in store.finances
- * @property {?number} amount            numerisch (MonetaryAmount hasValue)
- * @property {?string} currency          ISO 4217 oder Roh-Code (z. B. "S" = Schilling)
- * @property {?string} description       z. B. "Honorar", "Reisekosten"
+ * @typedef {Object} FinanceEntry        entry in store.finances
+ * @property {?number} amount            numeric (MonetaryAmount hasValue)
+ * @property {?string} currency          ISO 4217 or raw code (e.g. "S" = Schilling)
+ * @property {?string} description       e.g. "Honorar", "Reisekosten"
  *
- * @typedef {Object} RoleEntry           Eintrag in store.roleVocab
- * @property {string} id                 Concept-Id oder Literal
- * @property {boolean} literal           true, wenn die Rolle kein Concept ist
- * @property {?string} label             Anzeigeform aus den Daten
- * @property {?string} scope             Bezugsebene, null wenn nicht gefuehrt
- * @property {number} rank               Prioritaet der Rolle
- * @property {?string} cluster           Mobilitaetssicht der Rolle
- * @property {boolean} onAnnotation      Rolle steht an mind. einem Annotations-
- *   knoten des Graphen und braucht deshalb eine Bezugsebene. Finanzposten
- *   unter hasDetail zaehlen nicht dazu, sie tragen weder Datum noch Ort.
+ * @typedef {Object} RoleEntry           entry in store.roleVocab
+ * @property {string} id                 concept id or literal
+ * @property {boolean} literal           true if the role is not a concept
+ * @property {?string} label             display form from the data
+ * @property {?string} scope             Bezugsebene, null if not tracked
+ * @property {number} rank               role priority
+ * @property {?string} cluster           mobility Sicht of the role
+ * @property {boolean} onAnnotation      role sits on at least one annotation
+ *   node of the graph and thus needs a Bezugsebene. Finance items under
+ *   hasDetail do not count, they carry neither date nor place.
  *
- * @typedef {Object} DftConcept          Eintrag in store.dftHierarchy
- * @property {string} id                 @id ohne Präfix
+ * @typedef {Object} DftConcept          entry in store.dftHierarchy
+ * @property {string} id                 @id without prefix
  * @property {string} prefLabel
- * @property {?string} broader           Parent-Concept-ID oder null
- * @property {string[]} children         Kind-Concept-IDs (rückwaerts aufgeloest)
+ * @property {?string} broader           parent concept id or null
+ * @property {string[]} children         child concept ids (resolved backwards)
  */
 function buildStore(jsonld) {
   const graph = jsonld['@graph'] || [];
@@ -138,23 +137,23 @@ function buildStore(jsonld) {
       lowConfidenceSkipped: jsonld['m3gim-ontology:lowConfidenceSkipped'] ?? 0,
     },
     childToKonvolut: new Map(),
-    // v2-Strukturen (Phase 6). Shapes: siehe JSDoc oberhalb buildStore().
+    // v2 structures (Phase 6). Shapes: see JSDoc above buildStore().
     /** @type {Map<string, DftConcept>} */
     dftHierarchy: new Map(),
     conceptDefinitions: new Map(),
-    /** @type {Map<string, string>} roleId → Bezugsebene (Concept-CURIE), aus dem Vokabular (E-150) */
+    /** @type {Map<string, string>} roleId → Bezugsebene (concept CURIE), from the vocabulary (E-150) */
     roleScope: new Map(),
-    /** @type {Map<string, number>} roleId → Rang der Datierung, aus dem Vokabular (E-150) */
+    /** @type {Map<string, number>} roleId → dating rank, from the vocabulary (E-150) */
     roleRank: new Map(),
-    /** @type {Map<string, RoleEntry>} roleId → Rollenbegriff */
+    /** @type {Map<string, RoleEntry>} roleId → role term */
     roleVocab: new Map(),
-    /** @type {Map<string, Annotation>} alle Annotationen, verortet oder nicht */
+    /** @type {Map<string, Annotation>} all annotations, located or not */
     annotations: new Map(),
-    /** @type {Map<string, string[]>} recordId → annotationId[], Quellreihenfolge */
+    /** @type {Map<string, string[]>} recordId → annotationId[], source order */
     recordToAnnotations: new Map(),
-    /** @type {Map<string, Annotation[]>} recordId → Datierungen, Quellreihenfolge */
+    /** @type {Map<string, Annotation[]>} recordId → Datierungen, source order */
     recordDatings: new Map(),
-    /** @type {Map<string, Annotation>} die verorteten Annotationen */
+    /** @type {Map<string, Annotation>} the located annotations */
     mobilityEvents: new Map(),
     /** @type {Map<string, string[]>} recordId → eventId[] */
     recordToEvents: new Map(),
@@ -164,26 +163,26 @@ function buildStore(jsonld) {
     finances: new Map(),
     /** @type {Map<string, string>} stageRoleId → name (E-96) */
     stageRoles: new Map(),
-    /** @type {Map<string, object>} performanceId → Performance-Node (E-96/E-98) */
+    /** @type {Map<string, object>} performanceId → performance node (E-96/E-98) */
     performances: new Map(),
-    /** @type {Map<string, Array>} recordId → aufgeloeste Performances (M2):
+    /** @type {Map<string, Array>} recordId → resolved performances (M2):
      *  [{ id, work:{name,wikidata}|null, performers:[name], stageRoles:[name], date }] */
     recordToPerformances: new Map(),
-    // Facetten-Indizes des geteilten Filters. Sie tragen die Achsen, die
-    // recordsFor sonst bei jedem Schnitt neu ueber den Graphen suchen muesste.
-    /** @type {Map<string, Set<string>>} Annotationsrolle → Record-@ids */
+    // Facet indexes of the shared filter. They carry the axes recordsFor would
+    // otherwise re-search over the graph on every cut.
+    /** @type {Map<string, Set<string>>} annotation role → record @ids */
     eventsByRole: new Map(),
-    /** @type {Map<string, Set<string>>} Akteursrolle → Record-@ids */
+    /** @type {Map<string, Set<string>>} agent role → record @ids */
     recordsByAgentRole: new Map(),
     /** @type {Map<string, {records: Set<string>, wikidata: ?string}>} rico:Group.
-     *  Ensembles bleiben zusaetzlich in store.organizations, damit Karte,
-     *  Verknuepfungen und Indizes unveraendert weiterlaufen. */
+     *  Ensembles also stay in store.organizations, so map, Verknuepfungen and
+     *  indexes keep running unchanged. */
     ensembles: new Map(),
   };
 
-  // Pass 0: Begriffe zuerst. Eine Annotation liest die Bezugsebene ihrer Rolle
-  // beim Aufbau; stuende der Begriff spaeter im Graphen, faende sie keine und
-  // fiele stumm aus dem Zeitanker.
+  // Pass 0: terms first. An annotation reads the Bezugsebene of its role during
+  // build; if the term stood later in the graph, it would find none and fall
+  // silently out of the Zeitanker.
   for (const node of graph) {
     if (node['@type'] === 'skos:Concept') indexConcept(store, node);
   }
@@ -212,7 +211,7 @@ function buildStore(jsonld) {
         store.bySignatur.set(node['rico:identifier'], node);
       }
     } else if (nodeType === 'skos:Concept') {
-      // in Pass 0 erledigt
+      // handled in Pass 0
     } else if (nodeType === 'm3gim-ontology:Annotation') {
       indexAnnotation(store, node);
     } else if (nodeType === 'm3gim-ontology:StageRole') {
@@ -243,18 +242,18 @@ function buildStore(jsonld) {
     indexPerformances(store, record);
   }
 
-  // Pass 2.2: Adressgenaue Orte ("Stadt, Strasse") rollen ihre Records additiv
-  // zum Stadt-Eintrag hoch, sofern die Stadt eigenstaendig existiert. Schliesst
-  // den Recall-Gap im Ort-Filter (Filter "Zürich" verfehlte sonst Records, die
-  // nur adressgenau erfasst sind) und konsolidiert den Ort-Index. Die
-  // Adress-Eintraege bleiben fuer adressgenaue Recherche erhalten.
+  // Pass 2.2: address-precise places ("city, street") roll their records
+  // additively up to the city entry, provided the city exists on its own.
+  // Closes the recall gap in the place filter (filter "Zürich" otherwise missed
+  // records recorded only address-precise) and consolidates the place index.
+  // The address entries stay for address-precise research.
   consolidateCityLocations(store);
 
-  // Pass 2.5: AgRelOn-Relationen rueckwaerts auf Personen-Index aufloesen.
-  // Fuer jede Relation wird das Objekt im Personen-Index gesucht (primaer
-  // ueber Q-ID, sekundaer ueber normalizePerson(name)) und dort in
-  // personEntry.relations[] angehaengt. Liefert die Datengrundlage fuer
-  // Beziehungsbadges im Indizes-Tab.
+  // Pass 2.5: resolve AgRelOn relations backwards onto the person index. For
+  // each relation the object is looked up in the person index (primarily by
+  // Q-id, secondarily by normalizePerson(name)) and appended there in
+  // personEntry.relations[]. Provides the data for relation badges in the
+  // Indizes tab.
   resolveAgentRelationsToPersons(store);
 
   // Pass 3: Derive Konvolut display metadata + filter Folio records
@@ -271,14 +270,14 @@ function buildStore(jsonld) {
     let minYear = Infinity, maxYear = -Infinity;
     let datedCount = 0;
     let totalLinks = 0;
-    const docTypeCounts = new Map();  // DFT-Id -> Count
-    const statusCounts = new Map();   // Bearbeitungsstand -> Count
-    let processedCount = 0;           // mit mind. einer Verknuepfung
+    const docTypeCounts = new Map();  // DFT id -> count
+    const statusCounts = new Map();   // Bearbeitungsstand -> count
+    let processedCount = 0;           // with at least one Verknuepfung
 
-    // docTypeCounts / statusCounts aggregieren nur ueber die SICHTBAREN
-    // (= verknuepften) Kinder -- konsistent mit dem Leitprinzip "nur
-    // bearbeitet" und der sichtbaren Kind-Anzahl im Konvolut-Badge. Sonst
-    // entstehen bizarre Diskrepanzen wie "Konvolut (3)" + "10x Programmheft".
+    // docTypeCounts / statusCounts aggregate only over the VISIBLE
+    // (= linked) children -- consistent with the "only processed" principle and
+    // the visible child count in the Konvolut badge. Otherwise bizarre
+    // discrepancies arise like "Konvolut (3)" + "10x Programmheft".
     for (const cid of realChildIds) {
       const child = store.records.get(cid);
       if (!child) continue;
@@ -290,7 +289,7 @@ function buildStore(jsonld) {
         if (year < minYear) minYear = year;
         if (year > maxYear) maxYear = year;
       }
-      if (childLinks === 0) continue;  // nur bearbeitete Kinder aggregieren
+      if (childLinks === 0) continue;  // aggregate only processed children
       processedCount++;
       const dft = getDocTypeId(child);
       if (dft) docTypeCounts.set(dft, (docTypeCounts.get(dft) || 0) + 1);
@@ -298,10 +297,10 @@ function buildStore(jsonld) {
       if (status) statusCounts.set(status, (statusCounts.get(status) || 0) + 1);
     }
 
-    // Konvolut-Titel: bevorzugt aus Folio-Record, sonst aus Sammel-Record.
-    // Das Suffix der Sammel-Zeile vergibt scripts/transform.py als
-    // _collection, siehe knowledge/data.md § 17 -- ihr Titel beschreibt das
-    // Konvolut inhaltlich, z. B. "Diverse Zeitungsausschnitte" fuer NIM_006.
+    // Konvolut title: preferably from the Folio record, else from the
+    // collection record. scripts/transform.py assigns the collection-row suffix
+    // as _collection, see knowledge/data.md § 17 -- its title describes the
+    // Konvolut by content, e.g. "Diverse Zeitungsausschnitte" for NIM_006.
     const sammelChildId = realChildIds.find(cid => cid.endsWith('_collection'));
     const sammelRecord = sammelChildId ? store.records.get(sammelChildId) : null;
     const title = (folioRecord && folioRecord['rico:title'])
@@ -322,8 +321,8 @@ function buildStore(jsonld) {
       folioId,
       totalLinks,
       datedCount,
-      docTypeCounts,   // Map<dftId, count>, absteigend sortierbar
-      statusCounts,    // Map<bearbeitungsstand, count>
+      docTypeCounts,   // Map<dftId, count>, sortable descending
+      statusCounts,    // Map<Bearbeitungsstand, count>
     });
   }
 
@@ -345,19 +344,19 @@ function buildStore(jsonld) {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Zugriffsschicht auf Datierungen und Verortungen                     */
+/*  Access layer for Datierungen and Verortungen                        */
 /*                                                                      */
-/*  Vier Funktionen loesen die flache typisierte Datumsfamilie ab. Eine  */
-/*  Ansicht liest eine Datierung ueber sie, ohne einen Property-Namen zu */
-/*  kennen: die Rolle steht als Verweis auf einen Vokabularbegriff am    */
-/*  Knoten und fuehrt ihre Anzeigeform mit, die Bezugsebene sagt, worauf */
-/*  sich die Datierung bezieht, und der Rang ordnet mehrere gegen-       */
-/*  einander. Belegt in data/reports/frontend-date-contract.md, A1--A4.  */
+/*  Four functions replace the flat typed date family. A view reads a   */
+/*  Datierung through them without knowing a property name: the role is  */
+/*  a reference to a vocabulary term on the node and carries its display */
+/*  form, the Bezugsebene says what the Datierung refers to, and the    */
+/*  rank orders several against each other. Documented in                */
+/*  data/reports/frontend-date-contract.md, A1--A4.                     */
 /* ------------------------------------------------------------------ */
 
 /**
- * Alle Annotationen eines Records in Quellreihenfolge, verortete wie
- * unverortete, datierte wie undatierte.
+ * All annotations of a record in source order, located as well as unlocated,
+ * dated as well as undated.
  * @param {Object} store
  * @param {Object} record
  * @returns {Annotation[]}
@@ -369,12 +368,12 @@ export function annotationsOf(store, record) {
 }
 
 /**
- * Alle Datierungen eines Records in Quellreihenfolge. Der Loader sortiert
- * nicht um, damit die Reihenfolge der Erfassungstabelle sichtbar bleibt
- * (Vertrag A2, zweite Ordnung); wer nach Prioritaet auswaehlen will, nimmt
- * das Feld `rank`. Die Entstehungsdatierung aus `rico:creationDate` steht als
- * Datierung mit der Rolle `m3gim-vocab:creation` am Ende der Liste; sie hat
- * keine Position in der Quellreihenfolge, weil sie am Record selbst steht.
+ * All Datierungen of a record in source order. The loader does not re-sort, so
+ * the order of the recording table stays visible (contract A2, second order);
+ * to select by priority take the `rank` field. The creation dating from
+ * `rico:creationDate` stands as a Datierung with role `m3gim-vocab:creation` at
+ * the end of the list; it has no position in the source order because it sits
+ * on the record itself.
  * @param {Object} store
  * @param {Object} record
  * @returns {Annotation[]}
@@ -385,9 +384,8 @@ export function datingsOf(store, record) {
 }
 
 /**
- * Die Datierungen einer Bezugsebene (Vertrag A3). Zugang fuer jede Ansicht,
- * die nur eine Ebene sehen darf, etwa der Zeitstrahl, der Erwaehnungen
- * ausschliesst.
+ * The Datierungen of one Bezugsebene (contract A3). Access for any view that
+ * may see only one level, e.g. the timeline, which excludes Erwaehnungen.
  * @param {Object} store
  * @param {Object} record
  * @param {string} scope - 'object' | 'attested' | 'mentioned' | 'framing'
@@ -399,11 +397,11 @@ export function datingsByScope(store, record, scope) {
 }
 
 /**
- * Das Jahr eines Records und die Stelle, aus der es stammt (Vertrag A4).
- * `rico:date` bleibt der einwertige Zeitanker und hat Vorrang; fehlt er,
- * gewinnt die ranghoechste Datierung einer ankernden Bezugsebene. Erwaehnung,
- * Rahmenveranstaltung und der Vertragsstatus `nicht eingehalten` datieren
- * nie. Loest firstTypedYear und secondaryYearForRecord in einem ab.
+ * The year of a record and the place it comes from (contract A4). `rico:date`
+ * stays the single-valued Zeitanker and takes precedence; if absent, the
+ * highest-ranked Datierung of an anchoring Bezugsebene wins. Erwaehnung,
+ * Rahmenveranstaltung and the contract status `nicht eingehalten` never date.
+ * Replaces firstTypedYear and secondaryYearForRecord in one.
  * @param {Object} store
  * @param {Object} record
  * @returns {Anchor}
@@ -452,9 +450,9 @@ function isJunkName(name) {
 }
 
 /**
- * Akteursrolle → Records. Der Schluessel ist derselbe, unter dem
- * store.roleVocab den Begriff fuehrt (Concept-Id, sonst Literal), damit die
- * Facette ihre Anzeigeform ohne zweite Zuordnung findet.
+ * Agent role → records. The key is the same one store.roleVocab uses for the
+ * term (concept id, else literal), so the facet finds its display form without
+ * a second mapping.
  */
 function indexAgentRole(store, role, recordId) {
   if (!role || !recordId) return;
@@ -465,7 +463,7 @@ function indexAgentRole(store, role, recordId) {
   ids.add(recordId);
 }
 
-/** rico:Group als eigene Achse neben der Institution (Ensemble). */
+/** rico:Group as its own axis next to the institution (ensemble). */
 function indexEnsemble(store, name, recordId, wikidata) {
   let entry = store.ensembles.get(name);
   if (!entry) { entry = { records: new Set(), wikidata: wikidata || null }; store.ensembles.set(name, entry); }
@@ -493,8 +491,8 @@ function indexAgents(store, record) {
       indexAgentRole(store, agent.role, record['@id']);
       if (orgRole) entry.roles.add(orgRole);
       if (wikidata && !entry.wikidata) entry.wikidata = wikidata;
-      // M2: kuratierter Sitz (Index) mit Vorrang vor Wikidata-Sitz (oft nur
-      // Stadtteil); traegt die "auswaerts/am Haus"-Achse. + Schluesselkontakt + Notiz.
+      // M2: curated seat (index) takes precedence over Wikidata seat (often
+      // just a district); carries the "away/at the house" axis. + key contact + note.
       if (agent['m3gim-ontology:headquarters'] && !entry.sitz) entry.sitz = agent['m3gim-ontology:headquarters'];
       else if (agent['m3gim-ontology:wdLocation'] && !entry.sitz) entry.sitz = agent['m3gim-ontology:wdLocation'];
       if (agent['m3gim-ontology:keyContact'] && !entry.keyContact) entry.keyContact = agent['m3gim-ontology:keyContact'];
@@ -516,13 +514,13 @@ function indexAgents(store, record) {
       if (agent['m3gim-ontology:voiceType'] && !entry.voiceType) entry.voiceType = agent['m3gim-ontology:voiceType'];
       if (agent['schema:birthDate'] && !entry.birthDate) entry.birthDate = agent['schema:birthDate'];
       if (agent['schema:deathDate'] && !entry.deathDate) entry.deathDate = agent['schema:deathDate'];
-      // M2: kuratierte Index-Felder (Beruf-Notiz + Lebensdaten)
+      // M2: curated index fields (occupation note + life dates)
       if (agent['m3gim-ontology:indexNote'] && !entry.note) entry.note = agent['m3gim-ontology:indexNote'];
       if (agent['m3gim-ontology:lifespan'] && !entry.lifespan) entry.lifespan = agent['m3gim-ontology:lifespan'];
     }
   }
 
-  // Mentioned persons are now in rico:hasOrHadSubject with @type rico:Person
+  // Mentioned persons are in rico:hasOrHadSubject with @type rico:Person
   const subjects = ensureArray(record['rico:hasOrHadSubject']);
   for (const subj of subjects) {
     if (subj['@type'] !== 'rico:Person') continue;
@@ -540,7 +538,7 @@ function indexAgents(store, record) {
     indexAgentRole(store, subj.role, record['@id']);
     if (subjRole) entry.roles.add(subjRole);
     if (wikidata && !entry.wikidata) entry.wikidata = wikidata;
-    // M2: kuratierte Index-Felder auch fuer erwaehnte Subjekt-Personen
+    // M2: curated index fields also for mentioned subject persons
     if (subj['m3gim-ontology:indexNote'] && !entry.note) entry.note = subj['m3gim-ontology:indexNote'];
     if (subj['m3gim-ontology:lifespan'] && !entry.lifespan) entry.lifespan = subj['m3gim-ontology:lifespan'];
   }
@@ -551,9 +549,9 @@ function indexLocations(store, record) {
   for (const loc of locs) {
     const name = loc.name || loc['skos:prefLabel'] || '';
     if (!name) continue;
-    // Datumswerte, die in die Ortsspalte gerutscht sind. Die Pruefung auf
-    // vier fuehrende Ziffern liess die Monats-Tages-Form "06-09" durch; ein
-    // Ortsname traegt immer mindestens einen Buchstaben.
+    // Date values that slipped into the place column. The four-leading-digits
+    // check let the month-day form "06-09" through; a place name always carries
+    // at least one letter.
     if (!/\p{L}/u.test(name)) continue;
     if (/^\d{4}(-\d{2}){0,2}/.test(name)) continue;
     const wikidata = loc['@id'] || null;
@@ -569,10 +567,10 @@ function indexLocations(store, record) {
 }
 
 /**
- * Adressgenaue Orte additiv unter ihre Stadt rollen. Konservativ: nur wenn
- * cityOf(name) != name (also adressgenau) UND die Stadt bereits als eigener
- * Ort existiert (kein Erzeugen neuer Stadt-Eintraege, kein Falsch-Merge).
- * Adress-Eintraege bleiben unveraendert bestehen.
+ * Roll address-precise places additively under their city. Conservative: only
+ * when cityOf(name) != name (i.e. address-precise) AND the city already exists
+ * as its own place (no new city entries created, no false merge). Address
+ * entries stay unchanged.
  */
 function consolidateCityLocations(store) {
   for (const [name, entry] of [...store.locations]) {
@@ -596,27 +594,26 @@ function indexWorks(store, record) {
     }
     const wEntry = store.works.get(name);
     wEntry.records.add(record['@id']);
-    // WD-Enrichment: Premiere date
+    // WD enrichment: premiere date
     if (subj['m3gim-ontology:wdPremiereDate'] && !wEntry.premiereDate) wEntry.premiereDate = subj['m3gim-ontology:wdPremiereDate'];
     if (subj['m3gim-ontology:wdGenre'] && !wEntry.wdGenre) wEntry.wdGenre = subj['m3gim-ontology:wdGenre'];
-    // M2: kuratierte Index-Felder — die von Malaniuk gesungene Partie + Notiz
+    // M2: curated index fields — the Partie Malaniuk sang + note
     if (subj['m3gim-ontology:sungPart'] && !wEntry.partie) wEntry.partie = subj['m3gim-ontology:sungPart'];
     if (subj['m3gim-ontology:indexNote'] && !wEntry.note) wEntry.note = subj['m3gim-ontology:indexNote'];
   }
 }
 
 /* ------------------------------------------------------------------ */
-/*  v2-Store-Maps (Phase 6)                                            */
+/*  v2 store maps (Phase 6)                                            */
 /* ------------------------------------------------------------------ */
 
 /**
- * SKOS-Concept (DFT-Hierarchie). Pass 1 legt nur Einzelknoten an,
- * Parent→Children folgt in Pass 1.5. Dokumenttypen und Rollen teilen sich seit
- * der Namensraum-Dreiteilung den Praefix m3gim-vocab und werden ueber ihr
- * Begriffsschema getrennt; ohne die Trennung erschiene jede Rolle als
- * Dokumenttyp in der Facette. Die Definition jedes Begriffs wird unabhaengig
- * vom Schema erfasst, weil die Oberflaeche sie an jeder Beschriftung braucht
- * (E-143).
+ * SKOS concept (DFT hierarchy). Pass 1 creates only single nodes,
+ * parent→children follows in Pass 1.5. Document types and roles share the
+ * m3gim-vocab prefix since the three-way namespace split and are separated by
+ * their concept scheme; without the split every role would appear as a document
+ * type in the facet. The definition of each term is recorded independent of the
+ * scheme, because the UI needs it on every label (E-143).
  */
 const DFT_SCHEME = 'm3gim-vocab:documentaryFormTypes';
 
@@ -627,8 +624,8 @@ function indexConcept(store, node) {
   const definition = node['skos:definition'] || null;
   if (definition) store.conceptDefinitions.set(id, { id, label, definition });
 
-  // Bezugsebene und Rang einer Datierung stehen seit E-150 am Rollenbegriff
-  // und kommen von dort in den Store; das Frontend fuehrt dazu keine Tabelle.
+  // Bezugsebene and rank of a Datierung sit on the role term since E-150 and
+  // reach the store from there; the frontend keeps no table for it.
   const scope = node['m3gim-ontology:datingScope'];
   const scopeId = scope && typeof scope === 'object' ? scope['@id'] : scope;
   if (scopeId) store.roleScope.set(id, scopeId);
@@ -636,8 +633,8 @@ function indexConcept(store, node) {
   if (typeof rank === 'number') store.roleRank.set(id, rank);
 
   const scheme = node['skos:inScheme'] && node['skos:inScheme']['@id'] || null;
-  // Ohne Schemaangabe gilt der Bestandsfall: bis E-143 trug der Datensatz
-  // ausschliesslich Dokumenttyp-Concepts.
+  // Without a scheme the legacy case applies: until E-143 the dataset carried
+  // exclusively document-type concepts.
   if (scheme && scheme !== DFT_SCHEME) return;
 
   const broader = node['skos:broader'] && node['skos:broader']['@id'] || null;
@@ -645,16 +642,8 @@ function indexConcept(store, node) {
 }
 
 /**
- * Rollenwert im Rollenregister vermerken und seine Rohform zurueckgeben.
- * Das Anzeigelabel kommt aus den Daten (skos:prefLabel am Verweisknoten); die
- * Bezugsebene, der Rang und die Mobilitaetssicht kommen aus constants.js und
- * haengen an der stabilen Concept-Id. Der Vertragsstatus `nicht eingehalten`
- * ist kein Concept und wird unter seinem Literal gefuehrt.
- * @returns {?string} Rohform der Rolle
- */
-/**
- * Bezugsebene einer Rolle, aus dem Vokabular ueber den Datensatz (E-150).
- * null, wenn der Begriff keine fuehrt.
+ * Bezugsebene of a role, from the vocabulary via the dataset (E-150). null if
+ * the term carries none.
  */
 function scopeForRole(store, roleId) {
   if (!roleId) return null;
@@ -662,14 +651,22 @@ function scopeForRole(store, roleId) {
 }
 
 /**
- * Rang einer Rolle. Ein Begriff ohne Rang sortiert hinter jeden mit Rang,
- * deshalb liefert die Funktion dort einen Wert oberhalb jedes vergebenen.
+ * Rank of a role. A term without a rank sorts behind every term with one, so
+ * the function returns a value above any assigned rank there.
  */
 function rankForRole(store, roleId) {
   const rank = roleId != null ? store.roleRank.get(roleId) : undefined;
   return rank === undefined ? Number.MAX_SAFE_INTEGER : rank;
 }
 
+/**
+ * Register a role value in the role register and return its raw form. The
+ * display label comes from the data (skos:prefLabel on the reference node);
+ * Bezugsebene, rank and mobility Sicht hang on the stable concept id. The
+ * contract status `nicht eingehalten` is not a concept and is tracked under its
+ * literal.
+ * @returns {?string} raw form of the role
+ */
 function registerRole(store, role, onAnnotation = false) {
   if (!role) return null;
   const id = roleIdOf(role);
@@ -697,9 +694,9 @@ function registerRole(store, role, onAnnotation = false) {
 }
 
 /**
- * Top-Level-Annotation normalisieren. Ein Knoten traegt eine Datierung, eine
- * Verortung oder beides; die verorteten landen zusaetzlich in
- * store.mobilityEvents und sind dort dieselben Objekte, keine Kopien.
+ * Normalize a top-level annotation. A node carries a Datierung, a Verortung or
+ * both; the located ones also land in store.mobilityEvents and are the same
+ * objects there, not copies.
  */
 function indexAnnotation(store, node) {
   const id = node['@id'];
@@ -730,9 +727,8 @@ function indexAnnotation(store, node) {
     roleId,
     roleLabel: roleLabel(store, role),
     derivedFromRole: node['m3gim-ontology:derivedFromRole'] || null,
-    // Eine Annotation ohne Rolle ist in ihrer Bezugsebene nicht entscheidbar
-    // und datiert deshalb nicht. Der Wert benennt den Zustand, statt ihn zu
-    // verschweigen.
+    // An annotation without a role is undecidable in its Bezugsebene and thus
+    // does not date. The value names the state rather than hiding it.
     scope: role
       ? scopeForRole(store, roleId || (typeof role === 'string' ? role : null))
       : 'unclassified',
@@ -749,9 +745,9 @@ function indexAnnotation(store, node) {
 }
 
 /**
- * Record → Annotations-IDs in Quellreihenfolge. Die verorteten davon fuehrt
- * store.recordToEvents weiter; sie sind die raumzeitliche Spur, an der die
- * Karte, die Sicht-Ableitung der Chronik und der enge Schaerfegrad haengen.
+ * Record → annotation ids in source order. The located ones go on into
+ * store.recordToEvents; they are the spatiotemporal trace on which the map, the
+ * Sicht derivation of the Chronik and the enge Schaerfegrad hang.
  */
 function indexRecordAnnotations(store, record) {
   const refs = ensureArray(record['m3gim-ontology:hasAnnotation']);
@@ -767,8 +763,8 @@ function indexRecordAnnotations(store, record) {
   if (ids.length > 0) store.recordToAnnotations.set(record['@id'], ids);
   if (eventIds.length > 0) store.recordToEvents.set(record['@id'], eventIds);
 
-  // Ereignisrolle → Records. Der Schluessel folgt store.roleVocab, wie bei der
-  // Akteursrolle; eine Annotation ohne Rolle traegt keine Achse.
+  // Event role → records. The key follows store.roleVocab, as for the agent
+  // role; an annotation without a role carries no axis.
   for (const aid of ids) {
     const key = store.annotations.get(aid).roleId;
     if (!key) continue;
@@ -779,10 +775,9 @@ function indexRecordAnnotations(store, record) {
 }
 
 /**
- * Die Datierungen eines Records sammeln: die datierten Annotationen in
- * Quellreihenfolge, danach die Entstehungsdatierung aus `rico:creationDate`,
- * die am Record selbst steht und deshalb keine Position in der Quell-
- * reihenfolge hat.
+ * Collect a record's Datierungen: the dated annotations in source order, then
+ * the creation dating from `rico:creationDate`, which sits on the record itself
+ * and thus has no position in the source order.
  */
 function indexDatings(store, record) {
   const list = [];
@@ -792,10 +787,10 @@ function indexDatings(store, record) {
   const creation = record['rico:creationDate'];
   if (creation) {
     const { qualifier, value } = splitQualifier(creation);
-    // Die Rolle steht der Property nicht bei, sie ist durch die Property
-    // bestimmt. Registriert wird sie trotzdem, damit die Rollenpruefung sie
-    // sieht: ohne einen Rollenverweis irgendwo im Datenstand hat auch diese
-    // Datierung keine Anzeigeform.
+    // The role is not attached to the property, it is determined by the
+    // property. It is registered anyway so the role check sees it: without a
+    // role reference somewhere in the data this Datierung too has no display
+    // form.
     const roleId = 'm3gim-vocab:creation';
     registerRole(store, roleId);
     list.push({
@@ -828,13 +823,13 @@ function indexDatings(store, record) {
 
 
 /**
- * Performance-Kette aufloesen (M2): Record -> m3gim-ontology:hasPerformance -> Performance
- * -> {performanceOf (Werk, inline), hasPerformer (Person, inline),
- *     hasStageRole (Ref auf store.stageRoles), atDate}.
- * Materialisiert das Rueckgrat des engen Schaerfegrads im Verknuepfungen-Graph:
- * pro Record die belegten Auffuehrungen mit Werk, Mitwirkenden und Buehnenrolle.
- * Die einzelnen Performance-Knoten sind fragmentarisch (entweder Rolle, oder
- * Rolle+Performer, oder Werk+Datum) — hier zusammengefuehrt, nicht erfunden.
+ * Resolve the performance chain (M2): Record -> m3gim-ontology:hasPerformance
+ * -> Performance -> {performanceOf (work, inline), hasPerformer (person,
+ *     inline), hasStageRole (ref to store.stageRoles), atDate}.
+ * Materializes the backbone of the enge Schaerfegrad in the Verknuepfungen
+ * graph: per record the attested performances with work, participants and
+ * Buehnenrolle. The individual performance nodes are fragmentary (either role,
+ * or role+performer, or work+date) — merged here, not invented.
  */
 function indexPerformances(store, record) {
   const refs = ensureArray(record['m3gim-ontology:hasPerformance']);
@@ -867,18 +862,18 @@ function indexPerformances(store, record) {
 }
 
 
-// Kennung der Nachlassbildnerin, die an jeder AgRelOn-Relation eine Seite
-// besetzt. Bei der symmetrischen Bauform ist die andere Seite der Partner.
+// Identifier of the fonds subject who occupies one side of every AgRelOn
+// relation. In the symmetric build form the other side is the partner.
 const FONDS_SUBJECT_ID = 'wd:Q94208';
 const FONDS_SUBJECT_NAME = 'Malaniuk, Ira';
 
 /**
- * Die Gegenseite einer AgRelOn-Relation, unabhaengig von ihrer Bauform.
+ * The counterpart of an AgRelOn relation, independent of its build form.
  *
- * Ein gerichteter n-aerer Begriff traegt `agrelon:hasSubject` und
- * `agrelon:hasObject`, ein symmetrischer wie `HasCorrespondent` beide Seiten
- * als `agrelon:hasSubjectObject` (E-149). Wer nur die gerichtete Form liest,
- * bekommt fuer die gesamte Korrespondenz keinen Partner.
+ * A directed n-ary term carries `agrelon:hasSubject` and `agrelon:hasObject`, a
+ * symmetric one like `HasCorrespondent` both sides as
+ * `agrelon:hasSubjectObject` (E-149). Reading only the directed form yields no
+ * partner for the entire Korrespondenz.
  */
 function counterpartOf(rel) {
   const both = ensureArray(rel['agrelon:hasSubjectObject']);
@@ -890,7 +885,7 @@ function counterpartOf(rel) {
   return rel['agrelon:hasObject'] || {};
 }
 
-/** AgRelOn-Relationen am Record. */
+/** AgRelOn relations on the record. */
 function indexAgentRelations(store, record) {
   const rels = ensureArray(record['m3gim-ontology:hasAgentRelation']);
   if (rels.length === 0) return;
@@ -915,7 +910,7 @@ function indexAgentRelations(store, record) {
   if (entries.length > 0) store.agentRelations.set(record['@id'], entries);
 }
 
-/** Finanzposten am Record (Annotation unter hasDetail, nur mit monetaryAmount). */
+/** Finance items on the record (annotation under hasDetail, only with monetaryAmount). */
 function indexFinances(store, record) {
   const details = ensureArray(record['m3gim-ontology:hasDetail']);
   if (details.length === 0) return;

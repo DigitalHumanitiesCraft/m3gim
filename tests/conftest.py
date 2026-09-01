@@ -60,7 +60,7 @@ def records(graph: list) -> list:
 
 @pytest.fixture(scope="session")
 def konvolute(graph: list) -> list:
-    """Record-Sets außer dem Fonds."""
+    """Record sets other than the Fonds."""
     result = []
     for n in graph:
         if n.get("@type") != "rico:RecordSet":
@@ -83,11 +83,11 @@ def fonds(graph: list) -> dict:
 
 @pytest.fixture(scope="session")
 def xlsx_objekte(sheets_dir: Path) -> pd.DataFrame:
-    """Die Objekttabelle ueber den Loader der Pipeline, CSV bevorzugt.
+    """The object table via the pipeline loader, CSV preferred.
 
-    Der Fixture-Name bleibt trotz CSV-Quellformat, weil ihn mehrere
-    Testdateien adressieren; er benennt die Tabelle, nicht ihr Dateiformat
-    (gleiches Muster wie xlsx_verknuepfungen).
+    The fixture name stays despite the CSV source format because several test
+    files address it; it names the table, not its file format (same pattern as
+    xlsx_verknuepfungen).
     """
     import sys
     sys.path.insert(0, str(REPO_ROOT / "scripts"))
@@ -98,12 +98,12 @@ def xlsx_objekte(sheets_dir: Path) -> pd.DataFrame:
 
 @pytest.fixture(scope="session")
 def xlsx_verknuepfungen(sheets_dir: Path) -> pd.DataFrame:
-    """Die Verknuepfungstabelle ueber den Loader der Pipeline.
+    """The Verknuepfungen table via the pipeline loader.
 
-    Quellformat ist seit E-152 die CSV-Ausfuhr je Blatt unter
-    ``verknuepfungen/``; der Loader nimmt daneben weiter die Mehrblatt-Mappe
-    an (E-95). Der Fixture-Name bleibt, weil ihn ein Dutzend Testdateien
-    adressiert; er benennt die Tabelle, nicht ihr Dateiformat.
+    Source format since E-152 is the per-sheet CSV export under
+    ``verknuepfungen/``; the loader also still accepts the multi-sheet workbook
+    (E-95). The fixture name stays because a dozen test files address it; it
+    names the table, not its file format.
     """
     import sys
     sys.path.insert(0, str(REPO_ROOT / "scripts"))
@@ -142,7 +142,7 @@ def baseline() -> dict:
 
 
 # ---------------------------------------------------------------------------
-# Hilfsfunktionen via _helpers.py (importierbar aus Tests)
+# Helpers via _helpers.py (importable from tests)
 # ---------------------------------------------------------------------------
 
 from _helpers import ensure_list, iter_strings, iter_entities_with_id  # re-export
@@ -150,7 +150,7 @@ from _helpers import ensure_list, iter_strings, iter_entities_with_id  # re-expo
 
 @pytest.fixture(scope="session")
 def helpers():
-    """Hilfsmodul als Objekt, damit Tests die Funktionen nutzen koennen."""
+    """Helper module as an object so tests can use the functions."""
     class H:
         ensure_list = staticmethod(ensure_list)
         iter_strings = staticmethod(iter_strings)

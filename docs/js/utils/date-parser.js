@@ -2,13 +2,11 @@
  * M³GIM Date Parsing Utilities
  */
 
-// Unsicherheitsqualifier, den die Quelle einem Datumswert voranstellt.
+// Uncertainty qualifier the source prepends to a date value.
 const QUALIFIER = /^(circa|vor|nach):/;
 
 /**
- * Trennt den Qualifier vom Datumswert. Frueher schnitten zwei Lesestellen ihn
- * unabhaengig voneinander weg und werteten ihn nirgends aus; seit der
- * Zusammenfuehrung fuehrt die Datierung ihn als eigenes Feld.
+ * Split the qualifier from the date value; the Datierung carries it as its own field.
  * @param {?string} dateStr
  * @returns {{qualifier: ?string, value: ?string}}
  */
@@ -30,12 +28,18 @@ export function extractYear(dateStr) {
   return match ? parseInt(match[1], 10) : null;
 }
 
-const MONATE = ['J\u00e4n.', 'Feb.', 'M\u00e4r.', 'Apr.', 'Mai', 'Jun.', 'Jul.', 'Aug.', 'Sep.', 'Okt.', 'Nov.', 'Dez.'];
+// Full month names (Austrian form with Jaenner), no abbreviations
+// -- project lead decision 2026-09-01.
+const MONATE = ['J\u00e4nner', 'Februar', 'M\u00e4rz', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
 
-/** Format a single ISO date (YYYY, YYYY-MM-DD) to human-readable German. */
+/** Format a single ISO date (YYYY, YYYY-MM, YYYY-MM-DD) to human-readable German. */
 function humanDate(iso) {
   if (!iso) return '';
   if (/^\d{4}$/.test(iso)) return iso;
+  // Month-precise source values (1956-10) carry real precision, not a
+  // truncated day date -- show as "Oktober 1956", not raw.
+  const ym = iso.match(/^(\d{4})-(\d{2})$/);
+  if (ym) return `${MONATE[parseInt(ym[2], 10) - 1]} ${ym[1]}`;
   const m = iso.match(/^(\d{4})-(\d{2})-(\d{2})$/);
   if (!m) return iso;
   const [, y, mm, dd] = m;
@@ -78,9 +82,9 @@ export function formatDate(dateStr) {
   if (m1 === '01' && d1 === '01' && m2 === '12' && d2 === '31') return `${y1} \u2013 ${y2}`;
   // Full-month same month (1955-05-01/1955-05-31) → "Mai 1955"
   if (y1 === y2 && m1 === m2 && isMonthStart(st) && isMonthEnd(en)) return `${MONATE[+m1 - 1]} ${y1}`;
-  // Same month+year (1958-04-06/1958-04-12) → "6. – 12. Apr. 1958"
+  // Same month+year (1958-04-06/1958-04-12) → "6. – 12. April 1958"
   if (y1 === y2 && m1 === m2) return `${+d1}. \u2013 ${+d2}.\u2009${MONATE[+m1 - 1]} ${y1}`;
-  // Full-month different months (1959-12-01/1961-02-28) → "Dez. 1959 – Feb. 1961"
+  // Full-month different months (1959-12-01/1961-02-28) → "Dezember 1959 – Februar 1961"
   if (isMonthStart(st) && isMonthEnd(en)) return `${MONATE[+m1 - 1]} ${y1} \u2013 ${MONATE[+m2 - 1]} ${y2}`;
   // Fallback: full human dates
   return `${humanDate(st)} \u2013 ${humanDate(en)}`;

@@ -66,11 +66,22 @@ test('formatDate: reines Jahr bleibt Jahr', () => {
 });
 
 test('formatDate: ISO-Tagdatum -> deutsches Format', () => {
-  assert.equal(formatDate('1958-04-06'), '6. Apr. 1958');
+  assert.equal(formatDate('1958-04-06'), '6. April 1958');
+});
+
+test('formatDate: monatsgenaues Datum -> "Monat Jahr", kein roher ISO-Wert', () => {
+  // Die CSV-Quelle traegt echte Monatsgenauigkeit (E-152); Werte wie
+  // 1956-10 sollen lesbar erscheinen, nicht als "1956-10".
+  assert.equal(formatDate('1956-10'), 'Oktober 1956');
+  assert.equal(formatDate('1990-12'), 'Dezember 1990');
+});
+
+test('formatDate: monatsgenaue Spanne', () => {
+  assert.equal(formatDate('1953-07/1953-08'), 'Juli 1953 – August 1953');
 });
 
 test('formatDate: Excel-Zeitartefakt wird abgeschnitten', () => {
-  assert.equal(formatDate('1958-04-06 00:00:00'), '6. Apr. 1958');
+  assert.equal(formatDate('1958-04-06 00:00:00'), '6. April 1958');
 });
 
 test('formatDate: Voll-Jahr-Range (01-01/12-31) -> einzelnes Jahr', () => {
@@ -82,7 +93,7 @@ test('formatDate: Mehrjahres-Voll-Range -> "Jahr - Jahr"', () => {
 });
 
 test('formatDate: Tagesspanne im selben Monat', () => {
-  assert.equal(formatDate('1958-04-06/1958-04-12'), '6. – 12. Apr. 1958');
+  assert.equal(formatDate('1958-04-06/1958-04-12'), '6. – 12. April 1958');
 });
 
 test('formatDate: voller Monat -> "Monat Jahr"', () => {

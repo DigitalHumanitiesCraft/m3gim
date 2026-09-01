@@ -5,9 +5,9 @@ project:
   repository: https://github.com/DigitalHumanitiesCraft/m3gim
 status: complete
 language: de
-version: 0.4
+version: 0.5
 created: 2026-02-19
-updated: 2026-08-21
+updated: 2026-09-01
 authors: [Christopher Pollin]
 generated-with: Claude Code
 method:
@@ -33,11 +33,11 @@ Das Interface positioniert sich als **Forschungswerkzeug**, nicht als Dashboard.
 
 Welche Tabs tatsächlich sichtbar sind, legt `VISIBLE_TABS` fest (Definition und Reaktivierungs-Mechanik siehe [architecture.md](architecture.md) § Frontend). Aktueller Stand: sichtbar sind **Bestand · Chronik · Statistik · Indizes · Karte · Netzwerk · Verknüpfungen · Wissenskorb** (Karte als entitätszentrierte D3-geo-Karte, E-126, Route `karte` seit E-118; Netzwerk in Session 46 reaktiviert, E-93; Verknüpfungen am 2026-06-23 als Milestone M3 der Partner-Runde Juni ergänzt). Die verbleibenden Perspektiv-Tabs — Mobilitäts-Atlas (der durch die Karte abgelöste Leaflet-Vorgänger), Repertoire, Biogramm — sind per `hidden`-Attribut ausgeblendet; Code, CSS und Store-Maps bleiben erhalten, Hash-URLs auf versteckte Tabs werden auf Bestand umgebogen (E-81, präzisiert durch E-86 und E-93). Reaktivieren = `hidden` im HTML entfernen + Eintrag in `VISIBLE_TABS` ergänzen. Qualitätssicht läuft team-intern über `data/reports/quality-snapshot.md` und ist kein eigener Tab.
 
-**Leitprinzip „nur bearbeitet":** Bestand, Chronik und Indizes zeigen ausschließlich Records bzw. Einträge mit Verknüpfungen. Konvolute ohne erschlossene Folios, Records mit `countLinks === 0`, Folios ohne Links innerhalb eines Konvoluts und Index-Einträge ohne Record-Referenz werden gar nicht erst gerendert. Plakate und Tonträger sind pauschal ausgeblendet (`EXCLUDED_DFT`). Die Gesamt-Bestandszahl und Verknüpfungsrate stehen ausschließlich im Quality-Snapshot. Begründung: das Interface positioniert sich als Forschungswerkzeug für substantielles Material — Erschließungs-Platzhalter sind Rauschen, kein Inhalt.
+**Leitprinzip „nur bearbeitet":** Chronik und Indizes zeigen ausschließlich Records beziehungsweise Einträge mit Verknüpfungen; Index-Einträge ohne Record-Referenz werden gar nicht erst gerendert. Im Bestand ist dasselbe Prinzip der Default-Scope „Feinerschlossen", der Konvolute ohne erschlossene Folios, Records ohne Verknüpfungen und Folios ohne Links im Konvolut zurückhält und Plakate und Tonträger über `EXCLUDED_DFT` ausschließt. Der Scope „Gesamt" blendet nichts aus, auch Plakate und Tonträger nicht (E-157); nicht erschlossene Zeilen erscheinen dort ausgegraut und markiert statt entfernt. Die Gesamt-Bestandszahl und die Verknüpfungsrate stehen ausschließlich im Quality-Snapshot. Begründung: das Interface positioniert sich als Forschungswerkzeug für substantielles Material, Erschließungs-Platzhalter sind Rauschen im Einstieg, aber nichts darf unerreichbar sein.
 
 | Tab | Status | Gegenstand | Primäre Datenquelle im Store | Form |
 |---|---|---|---|---|
-| **Bestand** | aktiv | Einzelbelege in Konvolut-Hierarchie; Konvolut-Meta-Chips (häufigste Dokumenttypen + Status-Mix) direkt in der Zeile (E-82), Kinder werden innerhalb ihres Konvoluts sortiert (E-83), Facet-Filter (Dokumenttyp, Person), Record-Inline-Detail mit funktionalen Blöcken | `store.records`, `store.konvolutMeta` (inkl. `docTypeCounts`, `statusCounts`, `processedCount`), `store.agentRelations`, `store.finances`, `store.recordToEvents` | Record-Tabelle mit Rolle-Prefix-Chips, Konvolut-Meta-Chips, Provenance-Pill |
+| **Bestand** | aktiv | Einzelbelege in Konvolut-Hierarchie; Konvolute als dauerhafte Gruppenköpfe mit Signatur, Titel, Zeitspanne, Typ-Mix-Chips und Statuszeile (E-82, E-158), Kinder werden innerhalb ihres Konvoluts sortiert (E-83), Scope-Umschalter Feinerschlossen/Gesamt (E-157), alle Filter in der linken Sidebar, Record-Inline-Detail über volle Breite als einzige Klapp-Interaktion | `store.records`, `store.konvolutMeta` (inkl. `docTypeCounts`, `statusCounts`, `processedCount`), `store.agentRelations`, `store.finances`, `store.recordToEvents`, `store.performances` | Record-Tabelle mit typisierter Erschließungsanzeige und eigener Korb-Spalte, Konvolut-Meta-Chips, Rolle-Prefix-Chips im Detail, Provenance-Pille |
 | **Chronik** | aktiv | Mobilitäts-Chronik: scrollender Jahres-Zeitstrahl 1919–2009 (+ Ausreißer-Jahre), Records als klickbare Chips mit linkem Sicht-Akzent, kollabierbarer Dekaden×Sicht-Header (Segment-Klick löst auf die belegenden Chips auf), sekundär-datierte Undatierte markiert eingereiht, leere Jahre als Erschließungsspiegel, Achsenkopf-Caption (E-124) | `store.allRecords` (gefiltert über `unprocessedIds`), `store.recordToEvents`, `store.mobilityEvents`; Datenschicht `chronik-data.js` | Vertikale Achse, Jahres-Labels links, Dot-Dichte = Jahresbelegung, Sicht-akzentuierte Record-Chips rechts, Dekaden-Header oben |
 | **Statistik** | aktiv | Interaktives Master-Detail-Dashboard mit Mobilität als Rückgrat (E-122, Reframing E-123): geteilte Sidebar-Shell, Single-Select über genau eine Ansicht in zwei Gruppen (Mobilität: Wohin & Wann · Art der Mobilität · Mit wem / Werk & Bestand: Repertoire · Personen · Dokumenttypen · Finanzen), Multi-Facetten-Filter (Zeit + Sicht + Land); Datenschicht in `statistics-data.js` ausgelagert | gesamter Store, über `filterStore` geschnittener Sub-Store | Sidebar links, eine Ansicht über volle Breite rechts; pure-function Aggregation, DOM-Primitive Donut/Bar/Stacked-Bar |
 | **Indizes** | aktiv | Aggregierte Übersicht Personen, Organisationen, Orte, Werke; Cross-Grid-Linking | `store.persons`, `store.organizations`, `store.locations`, `store.works` (nur Einträge mit `records.size > 0`) | Parallele Grids für Personen, Organisationen, Orte und Werke, `renderNameCell()` mit Beziehungsbadges |
@@ -61,6 +61,8 @@ Die typografische Trennung zwischen ID (Mono) und Inhalt (Serif) reduziert die k
 ### 2. Warmer Papier-Hintergrund, funktionale Akzentfarben
 
 Hintergrund creme/warm. Akzentfarben sparsam und semantisch: KUG-Blau für Interaktion, Signal-Grün für Verknüpfungen, Signal-Rot ausschließlich für die Flucht 1944. Chip-Farbfamilien eng, aber differenziert — Rollen-Cluster (blau-türkis für Wer-war-beteiligt, rotbraun für Verkörperung) ohne Legende lesbar.
+
+**Unterscheidbarkeit und Legende aus Nähe (E-158).** Der Anspruch „ohne Legende lesbar" verlangt zweierlei, das der Befund vom 2026-09-01 eingefordert hat. Erstens müssen die Familien einander tatsächlich unterscheidbar sein; die Paare person/ort und datum/finanz lagen zu nah beieinander. Zweitens entsteht die Legende aus Nähe statt aus Text: der Blocktitel im Inline-Detail trägt einen Farbpunkt seiner Familie, die Chips darunter denselben Ton, und die typisierte Erschließungsanzeige der Bestand-Tabelle verwendet dieselben Familienfarben, sodass die Tabelle die Farben einführt, bevor das Detail sie ausspielt.
 
 ### 3. Rolle-Prefix-Chips als universelles Daten-Atom
 
@@ -95,9 +97,13 @@ Frühere Fassungen zeigten die Datierungs-Konfidenz als farbigen Micro-Dot mit n
 
 Ein ausgewählter Record bekommt einen dünnen farbigen Rahmen. Fläche würde den Text dämpfen; Kontur signalisiert Fokus ohne Ablenkung.
 
-### 8. Facet-Sidebar mit „TOP N" statt vollständigen Listen
+### 8. Eine Filter-Sidebar für alle Ansichten
 
-Die linke Sidebar zeigt die häufigsten Einträge pro Index (Orte, Agenten, Dokumenttypen) mit Counts. Long-Tail bleibt via Suche zugänglich; die Sidebar dient Orientierung, nicht Vollständigkeit.
+Suche und alle Facetten wohnen in einer linken Seitenleiste, die in jeder Ansicht identisch aufgebaut ist (E-158); die Tab-Leiste bleibt im Seitenkopf. Je Facette gilt ein Bedienmuster, Eingabefeld mit Vorschlägen und entfernbaren Chips; kein Dropdown neben Vorschlagsfeldern. Die Sidebar zeigt die häufigsten Einträge pro Facette mit Counts, der Long-Tail bleibt via Suche zugänglich; sie dient Orientierung, nicht Vollständigkeit. Grundlage ist der geteilte Filterzustand ([architecture.md](architecture.md) § Cross-View-Filter), es gibt keine ansichtslokalen Filterorte daneben und keine Top-Filterleisten. Der Bestand ist umgestellt, seine Toolbar über der Tabelle ist ersatzlos entfallen; Chronik, Karte, Netzwerk und Statistik tragen ihre Regler noch an ihrer bisherigen Stelle und ziehen nach.
+
+### 11. Erklärung durch Struktur, nicht durch Text
+
+Das Interface erzeugt seine Erklärung strukturell (E-156, bekräftigt durch die Projektleitung am 2026-09-01): Zählwerte stehen in den Bedienelementen selbst (Scope-Umschalter „Feinerschlossen/Gesamt" mit Zahlen), Farbbedeutung entsteht aus Nähe (Regel 2), Zustände aus Form (Umriss gegen Füllung, Regel 10). Dauerhaft sichtbarer Erklärtext ist Anti-Muster; Captions und Aufschlüsselungszeilen (etwa die Chronik-Dichte-Caption oder „n von m datiert") wandern in Tooltips. Der Tooltip ist damit der legitime Ort für vertiefende Aufschlüsselung, die primäre Zugangsinformation trägt weiterhin die Struktur. Deckt sich mit der Konvention „kein dauerhaft sichtbarer Erklärtext im UI" (CLAUDE.md); die Ehrlichkeitsanforderung aus Regel 10 bleibt unverändert, nur ihre Form ist Struktur und Tooltip statt sichtbarer Satz.
 
 ### 9. Uppercase-Letter-Spaced-Section-Header mit Gloss
 
@@ -107,7 +113,7 @@ Sektionen im Hauptbereich tragen dezente Überschriften nach dem Muster `BÜHNEN
 
 Tippfehler, Dubletten, Normalisierungslücken (etwa „Verdi, Guiseppe" neben „Verdi, Giuseppe") erscheinen im UI so, wie sie im Bestand liegen. Das Interface ist ein Erschließungsspiegel. Der Markdown-Report `data/reports/quality-snapshot.md` listet solche Funde systematisch für die Team-Arbeit.
 
-**Explizite Qualitäts- und Statusmarker.** Wo das Modell Qualität ausdrücklich trägt, zeigt das UI das mit eigenen Markern statt es zu verschweigen. Ein `m3gim-ontology:dataQualityFlag` (etwa „Name nicht eindeutig") liegt derzeit nur in den Daten und wird (noch) nicht im UI gerendert. Die Haltung bleibt dieselbe wie für die übrige Datenqualität — sichtbar, nicht gemergt.
+**Explizite Qualitäts- und Statusmarker.** Wo das Modell Qualität ausdrücklich trägt, zeigt das UI das mit eigenen Markern statt es zu verschweigen. Ein `m3gim-ontology:dataQualityFlag` (etwa „Name nicht eindeutig") erscheint am Chip als neutrales Info-Symbol, dessen Tooltip den Wert wörtlich nennt, ohne ihn redaktionell zu deuten. An den Record-Ebenen ohne Chip liegt er weiterhin nur in den Daten. Die Haltung bleibt dieselbe wie für die übrige Datenqualität, sichtbar, nicht gemergt.
 
 **Leere Zeitfenster bleiben sichtbar.** Die Chronik zeigt jedes Jahr der Lebensspanne einzeln (Session 41, M5 — ersetzt das frühere Perioden-Akkordeon). Jahre ohne bearbeitetes Material bekommen einen Umriss-Dot und gedimmtes Label, Jahre mit Records einen gefüllten Dot, dessen Größe mit der Record-Dichte skaliert. Erschließungslücken bleiben dadurch sichtbar, ohne dass ein redaktioneller Hinweis nötig wäre — die Form selbst ist das Signal.
 
@@ -142,6 +148,7 @@ Die Design-Tokens (Farben, Spacing, Text-Sizes, Transitions) liegen zentral in `
   - Warmer Hintergrund — Struktur
   - Signal-Rot — nur für Flucht 1944 (hochselektiv)
 - **Mobilitätssichten-Farbfamilie.** Die Tokens `--color-sicht-performativ|institutionell|korrespondenz|diskursiv|biografisch` in `variables.css`, getragen vom Chip-Modifier `.chip--mobility-*` als zweite Farbachse der Chronik-Stations-Chips. Seit E-119 sind diese Tokens die einzige Quelle der Sicht-Farben auch in Karte und Statistik (zuvor divergierende Paletten), ergänzt um `--color-sicht-kontext` für „Weiterer Ortsbezug".
+- **Inhaltsfamilien-Farbfamilie.** Die Tokens `--chip-c-*` in `variables.css` tragen die Familien person (Pflaume), ort (Wald), rolle (Terrakotta), beziehung (Petrol), finanz (Gold) und datum (Schiefer). Dieselben Töne stehen in der Erschließungsanzeige der Bestand-Tabelle, am Farbpunkt der Blocktitel im Inline-Detail und an den Chips darunter, womit die Legende aus Nähe entsteht (Regel 2, E-158).
 - **Ortsfarbcodierung.** Eine durchgehende Farbzuordnung für wiederkehrende Orte (Wien, Graz, München, Bayreuth, Salzburg) als `--color-ort-*`-Tokens, aufgelöst über `ortColor()` (constants.js); erster Konsument sind die Statistik-Top-Orte (E-120). Sie stiftet Orientierung über alle Sichten hinweg — die Karte selbst bleibt bei der Sicht-Farbcodierung ihrer Knoten.
 - **Knotentypen des Verknüpfungen-Graphen.** Die Tokens `--vk-node-person|werk|institution|ort` in `variables.css` tragen die vier Entitätstypen durch Sektor, Legende, Toggle-Chip und Detail-Badge; `--vk-node-focus` ist das KUG-Blau der Fokus-Entität. Ein Typ trägt damit überall dieselbe Farbe, und die Legende bleibt die einzige Erklärstelle.
 - **Typografie.** Source Serif 4 (Titel und Record-Bezeichner), UI-Sansserif-Stack (Interface), Monospace (Signaturen und IDs).

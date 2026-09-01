@@ -157,6 +157,32 @@
   background: rgba(0, 74, 143, 0.18);
 }
 
+/* Erschliessungs-Punkt (E-158): one square per content family, filled when
+   the record carries that block, outlined when it does not. The same family
+   colour marks the block title in the inline detail (legend from proximity). */
+.ersch-dot {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+  border: 1.5px solid var(--chip-c-neutral-border);
+  background: transparent;
+  vertical-align: middle;
+}
+.ersch-dot--person    { border-color: var(--chip-c-person-text); }
+.ersch-dot--rolle     { border-color: var(--chip-c-rolle-text); }
+.ersch-dot--ort       { border-color: var(--chip-c-ort-text); }
+.ersch-dot--datum     { border-color: var(--chip-c-datum-text); }
+.ersch-dot--beziehung { border-color: var(--chip-c-beziehung-text); }
+.ersch-dot--finanz    { border-color: var(--chip-c-finanz-text); }
+.ersch-dot--on.ersch-dot--person    { background: var(--chip-c-person-text); }
+.ersch-dot--on.ersch-dot--rolle     { background: var(--chip-c-rolle-text); }
+.ersch-dot--on.ersch-dot--ort       { background: var(--chip-c-ort-text); }
+.ersch-dot--on.ersch-dot--datum     { background: var(--chip-c-datum-text); }
+.ersch-dot--on.ersch-dot--beziehung { background: var(--chip-c-beziehung-text); }
+.ersch-dot--on.ersch-dot--finanz    { background: var(--chip-c-finanz-text); }
+.ersch-dot--off { opacity: 0.45; }
+
 /* Spinner */
 .spinner {
   display: flex;

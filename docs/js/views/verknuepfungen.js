@@ -83,7 +83,6 @@ export function renderVerknuepfungen(store, container) {
     facets: FACETS,
     yearSpan: yearBounds(store),
     getResult: () => _last.result,
-    statusRows: () => statusRows(),
     leadSections: [focusSection()],
     sections: [typeSection()],
     onChange: () => redraw(),
@@ -192,25 +191,6 @@ function paintTypes(region) {
       el('span', { className: 'fs-typerow__count' }, on ? `${shown} von ${total}` : 'aus'));
     region.appendChild(row);
   }
-}
-
-/** Zusatzzeilen des Status-Schlitzes: Fokus und Kappungssumme. */
-function statusRows() {
-  const stats = _last.graph ? _last.graph.stats : null;
-  if (!stats) return [];
-  const gekappt = Object.values(stats.truncated || {}).reduce((a, b) => a + b, 0);
-  const rows = [
-    { label: 'Fokus', value: truncate(stats.focus || local.focus.name, 22),
-      tip: 'Die Entitaet, deren Nachbarschaft der Graph zeigt.' },
-    { label: 'Knoten', value: String(stats.total),
-      tip: 'Gezeigte Nachbarn ueber alle eingeschalteten Knotentypen.' },
-  ];
-  if (gekappt > 0) {
-    rows.push({ label: 'gekappt', value: String(gekappt),
-      tip: `Je Knotentyp rendert der Graph nur die ${TOP_N} staerksten Nachbarn. `
-        + 'Die Zahl nennt, wie viele darueber hinaus vorhanden sind.' });
-  }
-  return rows;
 }
 
 function optgroupFor(label, type, entries) {

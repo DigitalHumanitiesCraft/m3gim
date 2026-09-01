@@ -1,22 +1,22 @@
 #!/usr/bin/env python3
 """
-M3GIM Data Audit — Validiert Alignment zwischen Quelldaten, JSON-LD und Frontend-Kopie.
+M3GIM Data Audit — validates alignment between source data, JSON-LD and frontend copy.
 
-Prueft:
-1. Quelldaten (XLSX) → JSON-LD: Sind alle Records und Verknuepfungen korrekt transformiert?
-2. JSON-LD → docs/data: Stimmt die Frontend-Kopie mit dem Pipeline-Output ueberein?
-3. Handreichungs-Compliance: Werden alle definierten Typen und Rollen verarbeitet?
-4. Antrag-Alignment: Stimmen die Zahlen mit dem Ist-Stand ueberein?
+Checks:
+1. Source data (XLSX) → JSON-LD: are all records and Verknuepfungen transformed correctly?
+2. JSON-LD → docs/data: does the frontend copy match the pipeline output?
+3. Handreichung compliance: are all defined types and roles processed?
+4. Antrag alignment: do the numbers match the actual state?
 
-Verwendung:
+Usage:
     python scripts/audit-data.py
 
-HINWEIS (Session 51): Dies ist ein grobes Aggregat-Review-Tool (Mengen- und
-Counter-Vergleiche). Der *zellgenaue* Gegencheck Wert-fuer-Wert gegen die
-adressierte XLSX-Zelle liegt jetzt im Suite-Test tests/test_34_rawdata_crosscheck.py
-(laeuft mit `pytest`). Dieses Skript bleibt als schneller Ueberblick erhalten,
-nutzt aber denselben Multi-Sheet-Loader wie die Pipeline (load_verknuepfungen),
-damit seine Zahlen beim Box-Export nicht mehr driften.
+NOTE (Session 51): this is a coarse aggregate review tool (set and counter
+comparisons). The cell-exact value-by-value crosscheck against the addressed
+XLSX cell now lives in the suite test tests/test_34_rawdata_crosscheck.py (runs
+with `pytest`). This script stays as a quick overview but uses the same
+multi-sheet loader as the pipeline (load_verknuepfungen), so its numbers no
+longer drift with the Box export.
 """
 
 import sys
@@ -26,7 +26,7 @@ import pandas as pd
 from pathlib import Path
 from collections import Counter
 
-# Windows-Konsole: UTF-8 erzwingen
+# Windows console: force UTF-8
 if sys.stdout.encoding != "utf-8":
     sys.stdout.reconfigure(encoding="utf-8")
 
@@ -36,18 +36,17 @@ OUTPUT_DIR = BASE_DIR / "data" / "output"
 DOCS_DIR = BASE_DIR / "docs" / "data"
 
 # ---------------------------------------------------------------------------
-# Hilfsfunktionen
+# Helpers
 # ---------------------------------------------------------------------------
 
 def load_jsonld():
-    """Laedt JSON-LD und gibt Graph zurueck"""
     path = OUTPUT_DIR / "m3gim.jsonld"
     with open(path, 'r', encoding='utf-8') as f:
         data = json.load(f)
     return data
 
 def normalize(val):
-    """Normalisiert String fuer Vergleich"""
+    """Normalise a string for comparison"""
     if pd.isna(val) or str(val).strip() == "":
         return None
     return str(val).strip()
@@ -63,24 +62,24 @@ LINK_PROPERTIES = (
 
 
 def has_links(node):
-    """Traegt der Record mindestens eine Verknuepfung?"""
+    """Does the record carry at least one Verknuepfung?"""
     return any(node.get(prop) for prop in LINK_PROPERTIES)
 
 # ---------------------------------------------------------------------------
-# Audit 1: XLSX → JSON-LD Record-Vollstaendigkeit
+# Audit 1: XLSX → JSON-LD record completeness
 # ---------------------------------------------------------------------------
 
 def audit_records(df_objekte, graph):
-    """Prueft ob alle XLSX-Objekte im JSON-LD landen"""
+    """Check that all XLSX objects end up in the JSON-LD"""
     print("\n--- Audit 1: XLSX → JSON-LD Record-Vollstaendigkeit ---")
 
-    # Alle Signaturen aus XLSX
     xlsx_sigs = set()
     for _, row in df_objekte.iterrows():
         sig = normalize(row.get('archivsignatur'))
         if sig and sig.lower() != 'beispiel':
-            # Folio-Spalte heisst je nach Workbook-Stand 'folio nr' (aktuell),
-            # 'folio'/'folio_nr' oder (alt) 'unnamed: 2'. Erste vorhandene nehmen.
+            # Depending on workbook state the folio column is named 'folio nr'
+            # (current), 'folio'/'folio_nr' or (old) 'unnamed: 2'. Take the first
+            # present.
             folio = None
             for fcol in ('folio nr', 'folio_nr', 'folio', 'unnamed: 2'):
                 if fcol in df_objekte.columns:
@@ -89,7 +88,6 @@ def audit_records(df_objekte, graph):
             obj_id = f"{sig} {folio}" if folio else sig
             xlsx_sigs.add(obj_id)
 
-    # Alle Identifiers aus JSON-LD
     jsonld_ids = set()
     for node in graph:
         if node.get("@type") in ("rico:Record", "rico:RecordSet"):
@@ -97,11 +95,10 @@ def audit_records(df_objekte, graph):
             if identifier:
                 jsonld_ids.add(identifier)
 
-    # Vergleich
     missing_in_jsonld = xlsx_sigs - jsonld_ids
     extra_in_jsonld = jsonld_ids - xlsx_sigs
 
-    # Fonds-ID abziehen
+    # drop the Fonds ID
     extra_in_jsonld.discard("UAKUG/NIM")
 
     errors = 0
@@ -125,10 +122,9 @@ def audit_records(df_objekte, graph):
 # ---------------------------------------------------------------------------
 
 def audit_verknuepfungen(df_verk, graph):
-    """Prueft ob alle Verknuepfungstypen verarbeitet werden"""
+    """Check that all Verknuepfung types are processed"""
     print("\n--- Audit 2: Verknuepfungstypen und Rollen ---")
 
-    # Alle Typen und Rollen aus XLSX
     xlsx_types = Counter()
     xlsx_roles = Counter()
     missing_sig = 0
@@ -153,7 +149,7 @@ def audit_verknuepfungen(df_verk, graph):
             continue
 
         typ_lower = typ.lower().strip()
-        # Komposit-Typen splitten
+        # split composite types
         for t in typ_lower.split(","):
             t = t.strip()
             if t and t not in ['waehrung', 'währung']:
@@ -162,7 +158,7 @@ def audit_verknuepfungen(df_verk, graph):
         if rolle:
             xlsx_roles[rolle.lower().strip()] += 1
 
-    # JSON-LD Typ-Verteilung
+    # JSON-LD type distribution
     jsonld_agents = 0
     jsonld_locations = 0
     jsonld_subjects = 0
@@ -195,7 +191,7 @@ def audit_verknuepfungen(df_verk, graph):
             elif s.get("@type") == "rico:Person":
                 jsonld_mentions += 1
 
-        # Jede Datierung haengt an einem Annotationsknoten unter
+        # Each dating hangs off an annotation node under
         # m3gim-ontology:hasAnnotation.
         dts = node.get("m3gim-ontology:hasAnnotation", [])
         if isinstance(dts, (str,)):
@@ -230,7 +226,6 @@ def audit_verknuepfungen(df_verk, graph):
     print(f"    Performances (Rollen):       {jsonld_performances}")
     print(f"    Details (Schicht 3):         {jsonld_details}")
 
-    # Handreichungs-Rollen pruefen
     print(f"\n  XLSX Rollen (Top 20):")
     for r, c in sorted(xlsx_roles.items(), key=lambda x: -x[1])[:20]:
         print(f"    {r:30s} {c:4d}")
@@ -241,7 +236,7 @@ def audit_verknuepfungen(df_verk, graph):
     if missing_typ > 0:
         print(f"  WARNUNG: {missing_typ} Verknuepfungen ohne Typ (nicht verarbeitbar)")
 
-    # Handreichungs-Compliance: Sind alle definierten Typen vorhanden?
+    # Handreichung compliance: are all defined types present?
     handreichung_types = {'person', 'ort', 'institution', 'ereignis', 'werk', 'detail',
                           'rolle', 'datum', 'ensemble'}
     actual_types = set(xlsx_types.keys())
@@ -259,12 +254,11 @@ def audit_verknuepfungen(df_verk, graph):
 # ---------------------------------------------------------------------------
 
 def audit_views(graph):
-    """Prueft ob die Frontend-Kopie mit dem Pipeline-Output uebereinstimmt"""
+    """Check that the frontend copy matches the pipeline output"""
     print("\n--- Audit 3: JSON-LD → docs/data ---")
 
     errors = 0
 
-    # Frontend JSON-LD Kopie
     frontend_jsonld = DOCS_DIR / "m3gim.jsonld"
     output_jsonld = OUTPUT_DIR / "m3gim.jsonld"
     if frontend_jsonld.exists() and output_jsonld.exists():
@@ -277,16 +271,16 @@ def audit_views(graph):
     return errors
 
 # ---------------------------------------------------------------------------
-# Audit 4: Datenqualitaets-Metriken
+# Audit 4: data quality metrics
 # ---------------------------------------------------------------------------
 
 def audit_quality(df_objekte, graph):
-    """Prueft Datenqualitaet und gibt Metriken aus"""
+    """Check data quality and print metrics"""
     print("\n--- Audit 4: Datenqualitaets-Metriken ---")
 
     errors = 0
 
-    # Pflichtfelder aus Handreichung
+    # mandatory fields from the Handreichung
     missing_titel = 0
     missing_typ = 0
     missing_datum = 0
@@ -318,7 +312,7 @@ def audit_quality(df_objekte, graph):
     print(f"  Mit Bearbeitungsstand: {has_bearbeitungsstand} / {total} ({100*has_bearbeitungsstand//total}%)")
     print(f"  Mit Datierungsevidenz: {has_evidenz} / {total} ({100*has_evidenz//total}%)")
 
-    # JSON-LD: Records mit Verknuepfungen
+    # JSON-LD: records with Verknuepfungen
     linked = 0
     unlinked = 0
     for node in graph:
@@ -332,7 +326,7 @@ def audit_quality(df_objekte, graph):
     print(f"\n  Verknuepft:    {linked} / {linked + unlinked} ({100*linked//(linked+unlinked)}%)")
     print(f"  Unverknuepft:  {unlinked}")
 
-    # Wikidata-Abdeckung
+    # Wikidata coverage
     wd_persons = 0
     wd_orgs = 0
     wd_works = 0
@@ -370,7 +364,7 @@ def audit_quality(df_objekte, graph):
     print(f"    Org-Agents:           {wd_orgs} / {total_orgs} mit Wikidata-ID")
     print(f"    Werk-Subjects:        {wd_works} / {total_works} mit Wikidata-ID")
 
-    # Erfassungsstatus-Verteilung
+    # processing status distribution
     status_counts = Counter()
     for node in graph:
         if node.get("@type") != "rico:Record":
@@ -389,12 +383,12 @@ def audit_quality(df_objekte, graph):
 # ---------------------------------------------------------------------------
 
 def audit_handreichung_compliance(df_verk):
-    """Prueft ob die Daten den Handreichungs-Konventionen entsprechen"""
+    """Check that the data follows the Handreichung conventions"""
     print("\n--- Audit 5: Handreichungs-Compliance ---")
 
     warnings = 0
 
-    # Datumsformat-Check
+    # date format check
     bad_dates = 0
     date_patterns = [
         r'^\d{4}-\d{2}-\d{2}$',           # YYYY-MM-DD
@@ -411,7 +405,7 @@ def audit_handreichung_compliance(df_verk):
         datum = normalize(row.get('datum'))
         if not datum:
             continue
-        # Bereinige Excel-Artefakte fuer den Check
+        # strip Excel artefacts before the check
         datum_clean = re.sub(r'\s+00:00:00$', '', datum)
         if not any(re.match(p, datum_clean) for p in date_patterns):
             bad_dates += 1
@@ -424,7 +418,7 @@ def audit_handreichung_compliance(df_verk):
         print(f"  Datumsformate: Alle konform")
     warnings += bad_dates
 
-    # Namensformat-Check (Nachname, Vorname)
+    # name format check (surname, given name)
     bad_names = 0
     for _, row in df_verk.iterrows():
         typ = normalize(row.get('typ'))
@@ -446,7 +440,7 @@ def audit_handreichung_compliance(df_verk):
     return warnings
 
 # ---------------------------------------------------------------------------
-# Hauptfunktion
+# main
 # ---------------------------------------------------------------------------
 
 def main():
@@ -454,30 +448,28 @@ def main():
     print("M3GIM Data Audit")
     print("=" * 60)
 
-    # Daten laden
     print("\nLade Daten...")
     data = load_jsonld()
     graph = data.get("@graph", [])
     print(f"  JSON-LD: {len(graph)} Graph-Knoten")
 
-    # Objektquelle laden, CSV bevorzugt (data.md § 3) — dieselbe Quelle
-    # wie transform.py, sonst vergleicht der Audit XLSX-Datumsartefakte
-    # gegen den CSV-basierten Datensatz und meldet Scheinfehler.
+    # Load the object source, CSV preferred (data.md § 3), the same source as
+    # transform.py, otherwise the audit compares XLSX date artefacts against the
+    # CSV-based dataset and reports phantom errors.
     from _common import load_objekte, resolve_objekte_source
     objekte_path = resolve_objekte_source(SHEETS_DIR)
     df_objekte = load_objekte(SHEETS_DIR)
     print(f"  Objektquelle {objekte_path.name}: {len(df_objekte)} Zeilen")
 
-    # Loader der Pipeline: CSV-Verzeichnis bevorzugt (E-152), sonst die
-    # Mehrblatt-Mappe. Ein eigener single-sheet-Lesepfad liesse die
-    # Aggregat-Zahlen gegen den transformierten Stand driften.
+    # Pipeline loader: CSV directory preferred (E-152), otherwise the
+    # multi-sheet workbook. A separate single-sheet read path would let the
+    # aggregate numbers drift against the transformed state.
     sys.path.insert(0, str(BASE_DIR / "scripts"))
     from transform import load_verknuepfungen, resolve_verknuepfungen_source
     verk_path = resolve_verknuepfungen_source(SHEETS_DIR)
     df_verk = load_verknuepfungen(verk_path)
     print(f"  Verknuepfungen: {len(df_verk)} Zeilen aus {verk_path.name}")
 
-    # Audits ausfuehren
     total_errors = 0
     total_errors += audit_records(df_objekte, graph)
     total_errors += audit_verknuepfungen(df_verk, graph)
@@ -485,7 +477,6 @@ def main():
     total_errors += audit_quality(df_objekte, graph)
     warnings = audit_handreichung_compliance(df_verk)
 
-    # Zusammenfassung
     print()
     print("=" * 60)
     print(f"ERGEBNIS: {total_errors} Fehler, {warnings} Warnungen")

@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
-M³GIM Wikidata-CSV-Export — Erzeugt Lookup-CSVs für Google Sheets.
+M³GIM Wikidata CSV export — produces lookup CSVs for Google Sheets.
 
-Liest data/output/wikidata-reconciliation.json und erzeugt 5 CSVs
-in data/output/wikidata-csvs/ für den Import per VLOOKUP.
+Reads data/output/wikidata-reconciliation.json and writes CSVs into
+data/output/wikidata-csvs/ for import via VLOOKUP.
 
-Verwendung:
+Usage:
     python scripts/export-wikidata-csv.py
 """
 
@@ -14,7 +14,6 @@ import json
 import sys
 from pathlib import Path
 
-# Windows-Konsole: UTF-8 erzwingen
 if sys.stdout.encoding != "utf-8":
     sys.stdout.reconfigure(encoding="utf-8")
 
@@ -22,7 +21,7 @@ BASE_DIR = Path(__file__).parent.parent
 INPUT_FILE = BASE_DIR / "data" / "output" / "wikidata-reconciliation.json"
 OUTPUT_DIR = BASE_DIR / "data" / "output" / "wikidata-csvs"
 
-# Typ → CSV-Dateiname
+# Type to CSV filename
 TYPE_MAP = {
     "person": "person-matches.csv",
     "org": "org-matches.csv",
@@ -51,7 +50,6 @@ def main():
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-    # Matched nach Typ gruppieren und als CSV schreiben
     by_type = {}
     for m in matched:
         t = m["type"]
@@ -77,7 +75,6 @@ def main():
         total_written += len(entries)
         print(f"  {filename}: {len(entries)} Eintraege")
 
-    # Unmatched als CSV
     unmatched_path = OUTPUT_DIR / "unmatched.csv"
     with open(unmatched_path, "w", newline="", encoding="utf-8-sig") as f:
         writer = csv.writer(f)

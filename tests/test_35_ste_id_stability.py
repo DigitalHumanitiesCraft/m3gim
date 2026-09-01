@@ -1,15 +1,15 @@
-"""Lock fuer das inhaltsbasierte Annotations-@id-Schema (Refactoring 2026-06-21, E-115).
+"""Lock for the content-based annotation @id scheme (refactoring 2026-06-21, E-115).
 
-Die @id eines m3gim-ontology:Annotation-Knotens ist
+The @id of a m3gim-ontology:Annotation node is
 
     m3gim-data:ev_<record-local-id>_<sha1(ort\x1frolle\x1fdatum)[:8]>
 
-optional mit Ordinal-Suffix ``-N`` bei echten Inhaltsdubletten auf demselben
-Record. Gehasht wird der erfasste Rollenwert, nicht das Concept, auf das er
-im Vokabular fuehrt. Das loest den frueheren globalen Zaehler ab, dessen
-Verschiebung bei jeder Aenderung wiederkehrend test_22 brach. Dieser Test verankert die
-Invariante: die @id ist eine reine Funktion ihres Inhalts, nicht der
-Verarbeitungsreihenfolge. Eine Rueckkehr zum Zaehler bricht ihn.
+optionally with an ordinal suffix ``-N`` on real content duplicates on the same
+record. The recorded role value is hashed, not the concept it resolves to in the
+vocabulary. This replaces the former global counter, whose shift on every change
+recurrently broke test_22. This test anchors the invariant: the @id is a pure
+function of its content, not of the processing order. A return to the counter
+breaks it.
 """
 import hashlib
 import re
@@ -18,7 +18,7 @@ import pytest
 
 
 def _expected_base(ste: dict) -> str:
-    """Rekonstruiert die erwartete @id-Basis aus dem Knoteninhalt, spiegelt
+    """Reconstruct the expected @id base from the node content, mirrors
     scripts.transform._annotation_id."""
     prov = ste.get("agrelon:metadataProvenance")
     rec = prov.get("@id") if isinstance(prov, dict) else None
@@ -26,8 +26,8 @@ def _expected_base(ste: dict) -> str:
     place = ste.get("m3gim-ontology:atPlace")
     ort = place.get("name", "") if isinstance(place, dict) else ""
     role = ste.get("role")
-    # Gehasht ist der erfasste Wert: der Ursprungswert, wo die
-    # Zusammenfuehrung einen hinterlassen hat, sonst das prefLabel.
+    # Hashed is the recorded value: the origin value where the merge left one,
+    # otherwise the prefLabel.
     rolle = ste.get("m3gim-ontology:derivedFromRole") or (
         role.get("skos:prefLabel", "") if isinstance(role, dict) else (role or "")
     )
@@ -47,8 +47,8 @@ def test_ste_present(stes):
 
 
 def test_ste_ids_are_content_derived(stes):
-    """Jede Annotations-@id leitet sich aus (Record, Ort, Rolle, Datum) ab,
-    nicht aus einem laufenden Zaehler."""
+    """Every annotation @id derives from (record, place, role, date), not from a
+    running counter."""
     bad = []
     for ste in stes:
         base = _expected_base(ste)
@@ -66,8 +66,8 @@ def test_ste_ids_unique(stes):
 
 
 def test_ste_id_suffix_is_hash_not_counter(stes):
-    """Strukturlock: der @id-Suffix (vor optionalem ``-N``) ist ein
-    8-stelliger Hex-Hash, kein dezimaler Zaehler."""
+    """Structural lock: the @id suffix (before an optional ``-N``) is an 8-digit
+    hex hash, not a decimal counter."""
     offenders = [
         ste["@id"] for ste in stes
         if not re.fullmatch(r"[0-9a-f]{8}", ste["@id"].rsplit("_", 1)[-1].split("-")[0])

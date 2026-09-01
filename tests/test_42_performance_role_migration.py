@@ -1,17 +1,16 @@
-"""Lesestellen der Auswertungsskripte gegen den erzeugten Datensatz.
+"""Read sites of the evaluation scripts against the generated dataset.
 
-Der stille Defekt, gegen den diese Datei steht: eine Modellentscheidung loest
-eine Property ab, ein lesendes Skript behaelt sie, bekommt nichts zurueck und
-meldet nichts. Aufgefallen ist das mit E-96, als die Auswertung der
-Buehnenrollen still leere Listen lieferte.
+The silent defect this file guards against: a modelling decision retires a
+property, a reading script keeps it, gets nothing back and reports nothing. This
+surfaced with E-96, when the evaluation of the stage roles silently returned
+empty lists.
 
-Der erste Test haelt jeden Vokabular-Term, den ein auswertendes Skript als
-String-Literal aus dem Graph liest, gegen die Terme, die der Datensatz
-tatsaechlich fuehrt. Die beiden uebrigen sichern die Auffuehrungszaehlung und
-die Verknuepfungspruefung des Datenaudits.
+The first test holds every vocabulary term a reading script reads from the graph
+as a string literal against the terms the dataset actually carries. The other
+two secure the performance count and the Verknuepfungen check of the data audit.
 
-Die Tests zu den vorverdichteten Derivaten sind mit deren Stilllegung
-entfallen; ihr Gegenstand existiert nicht mehr.
+The tests for the pre-condensed derivatives fell away with their retirement;
+their subject no longer exists.
 """
 
 from __future__ import annotations
@@ -27,8 +26,8 @@ import pytest
 REPO_ROOT = Path(__file__).parent.parent
 SCRIPTS = REPO_ROOT / "scripts"
 
-# Skripte, die den erzeugten Graphen auswerten. build-views.py steht nicht
-# mehr darin, es kopiert nur noch und liest keinen Term.
+# Scripts that evaluate the generated graph. build-views.py is no longer among
+# them, it only copies and reads no term.
 GRAPH_READING_SCRIPTS = (
     SCRIPTS / "audit-data.py",
     SCRIPTS / "report-quality.py",
@@ -42,7 +41,7 @@ TERM_PATTERN = re.compile(r"(?:m3gim(?:-[a-z]+)?|rico|ric-rst):[A-Za-z_][A-Za-z0
 
 
 def _load_script(module_name: str, filename: str):
-    """Laedt ein scripts/-Modul; der Bindestrich im Dateinamen verbietet den Import."""
+    """Loads a scripts/ module; the hyphen in the filename forbids a plain import."""
     if str(SCRIPTS) not in sys.path:
         sys.path.insert(0, str(SCRIPTS))
     spec = importlib.util.spec_from_file_location(module_name, SCRIPTS / filename)
@@ -69,7 +68,7 @@ def stage_role_labels(graph) -> set:
 
 
 # ---------------------------------------------------------------------------
-# Regressionswaechter: kein Skript liest einen abgeloesten Term
+# Regression guard: no script reads a retired term
 # ---------------------------------------------------------------------------
 
 
@@ -77,11 +76,11 @@ _DOCSTRING_OWNERS = (ast.Module, ast.FunctionDef, ast.AsyncFunctionDef, ast.Clas
 
 
 def _terms_in_string_literals(path: Path) -> set:
-    """Vokabular-Terme aus den ausgewerteten String-Literalen einer Python-Datei.
+    """Vocabulary terms from the evaluated string literals of a Python file.
 
-    Ueber den AST statt ueber den Rohtext, damit Kommentare und Docstrings nicht
-    mitzaehlen: dort wird eine Abloesung gerade dokumentiert, gelesen wird sie
-    nur ueber ein String-Literal im ausgefuehrten Code.
+    Via the AST rather than the raw text, so comments and docstrings do not
+    count, since that is exactly where a retirement gets documented, while it is
+    read only via a string literal in the executed code.
     """
     tree = ast.parse(path.read_text(encoding="utf-8"))
     docstrings = set()
@@ -123,10 +122,10 @@ def _terms_in_dataset(jsonld: dict) -> set:
 
 
 def test_view_scripts_read_only_terms_the_dataset_carries(jsonld):
-    """Jeder gelesene Vokabular-Term kommt im Datensatz vor.
+    """Every read vocabulary term occurs in the dataset.
 
-    Der stille Defekt: eine Modellentscheidung loest eine Property ab, das
-    lesende Skript behaelt sie, bekommt nichts zurueck und meldet nichts.
+    The silent defect: a modelling decision retires a property, the reading
+    script keeps it, gets nothing back and reports nothing.
     """
     present = _terms_in_dataset(jsonld)
     offenders = {}
@@ -144,12 +143,12 @@ def test_view_scripts_read_only_terms_the_dataset_carries(jsonld):
 
 
 # ---------------------------------------------------------------------------
-# audit-data.py: Auffuehrungszaehlung und Verknuepfungspruefung
+# audit-data.py: performance count and Verknuepfungen check
 # ---------------------------------------------------------------------------
 
 
 def test_audit_counts_performance_links(capsys, xlsx_verknuepfungen, graph):
-    """Audit 2 zaehlt die record-seitigen Auffuehrungsverweise, nicht null."""
+    """Audit 2 counts the record-side performance references, not zero."""
     audit_data.audit_verknuepfungen(xlsx_verknuepfungen, graph)
     out = capsys.readouterr().out
     match = re.search(r"Performances[^:\n]*:\s*(\d+)", out)
@@ -160,7 +159,7 @@ def test_audit_counts_performance_links(capsys, xlsx_verknuepfungen, graph):
 
 
 def test_audit_link_check_follows_performance():
-    """Ein Record, der nur eine Auffuehrung traegt, gilt als verknuepft."""
+    """A record that carries only a performance counts as linked."""
     assert audit_data.has_links({"m3gim-ontology:hasPerformance": [{"@id": "m3gim-data:perf_x_1"}]})
     assert not audit_data.has_links({"m3gim-ontology:hasPerformanceRole": [{"name": "Fricka"}]})
     assert not audit_data.has_links({})

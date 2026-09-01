@@ -1,13 +1,13 @@
 ﻿#!/usr/bin/env python3
-"""MÂ³GIM Data Explorer â€” Step 1 der Pipeline.
+"""M3GIM Data Explorer, step 1 of the pipeline.
 
-Analysiert Google-Sheets-Exporte (XLSX) und erzeugt einen Exploration Report.
-Zeigt Datenstruktur, FÃ¼llgrade, Vokabulare und Probleme BEVOR validiert wird.
+Analyses Google Sheets exports (XLSX) and produces an exploration report.
+Shows data structure, fill rates, vocabularies and problems BEFORE validation.
 
-Verwendung:
+Usage:
     python scripts/explore.py                                    # data/google-spreadsheet/ (default)
-    python scripts/explore.py data/google-spreadsheet/export.zip # ZIP entpacken
-    python scripts/explore.py data/google-spreadsheet/           # Ordner direkt
+    python scripts/explore.py data/google-spreadsheet/export.zip # unpack ZIP
+    python scripts/explore.py data/google-spreadsheet/           # folder directly
 """
 
 import sys
@@ -18,7 +18,7 @@ from pathlib import Path
 from datetime import datetime
 from collections import Counter
 
-# Windows-Konsole: UTF-8 erzwingen
+# Windows console: force UTF-8
 if sys.stdout.encoding != "utf-8":
     sys.stdout.reconfigure(encoding="utf-8")
 
@@ -28,14 +28,14 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from transform import load_verknuepfungen, resolve_verknuepfungen_source  # noqa: E402
 
 # ---------------------------------------------------------------------------
-# Konfiguration
+# Configuration
 # ---------------------------------------------------------------------------
 
 ROOT = Path(__file__).resolve().parent.parent
 INPUT_DIR = Path(os.environ.get("M3GIM_SHEETS_DIR", ROOT / "data" / "google-spreadsheet"))
 REPORT_DIR = Path(os.environ.get("M3GIM_REPORTS_DIR", ROOT / "data" / "reports"))
 
-# Erwartete Tabellen (flexible Zuordnung: SchlÃ¼ssel = kanonischer Name)
+# Expected tables (flexible matching, key = canonical name)
 EXPECTED_TABLES = {
     "objekte": {
         "patterns": ["objekte", "objects"],
@@ -63,20 +63,20 @@ EXPECTED_TABLES = {
     },
 }
 
-# Spalten die kontrollierte Vokabulare enthalten
+# columns holding controlled vocabularies
 VOCAB_COLUMNS = [
     "dokumenttyp", "sprache", "zugaenglichkeit", "scan_status",
     "datierungsevidenz", "typ", "rolle", "bearbeitungsstand",
 ]
 
-# Signaturmuster
+# signature patterns
 SIGNATUR_PATTERNS = {
     "hauptbestand": r"^UAKUG/NIM_\d{3}$",
     "plakate": r"^UAKUG/NIM/PL_\d{2}$",
     "tontraeger": r"^UAKUG/NIM_TT_\d{2}$",
 }
 
-# Datumsformate
+# date formats
 DATE_ISO = re.compile(r"^\d{4}(-\d{2}(-\d{2})?)?$")
 DATE_RANGE = re.compile(r"^\d{4}.*[/â€“-].*\d{4}")
 DATE_QUALIFIER = re.compile(r"^(circa|vor|nach|um):")
@@ -84,11 +84,11 @@ DATE_EXCEL_ARTIFACT = re.compile(r"^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$")
 
 
 # ---------------------------------------------------------------------------
-# ZIP-Handling
+# ZIP handling
 # ---------------------------------------------------------------------------
 
 def extract_zip(zip_path: Path, target_dir: Path) -> list[Path]:
-    """Entpackt ZIP nach target_dir, gibt Liste der XLSX-Dateien zurÃ¼ck."""
+    """Unpack ZIP into target_dir, return the list of XLSX files."""
     target_dir.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(zip_path, "r") as zf:
         zf.extractall(target_dir)
@@ -96,11 +96,11 @@ def extract_zip(zip_path: Path, target_dir: Path) -> list[Path]:
 
 
 # ---------------------------------------------------------------------------
-# Datei-Matching
+# File matching
 # ---------------------------------------------------------------------------
 
 def match_tables(xlsx_files: list[Path]) -> dict[str, Path | None]:
-    """Ordnet gefundene XLSX-Dateien den erwarteten Tabellen zu."""
+    """Match found XLSX files to the expected tables."""
     def normalize_token(value: str) -> str:
         return (
             value.lower()
@@ -135,16 +135,16 @@ def match_tables(xlsx_files: list[Path]) -> dict[str, Path | None]:
 
 
 # ---------------------------------------------------------------------------
-# Tabellen-Analyse
+# Table analysis
 # ---------------------------------------------------------------------------
 
 def analyze_table(path: Path, name: str, frame: pd.DataFrame | None = None) -> dict:
-    """Analysiert eine einzelne Quelltabelle.
+    """Analyse a single source table.
 
-    ``frame`` erlaubt es, eine bereits geladene Tabelle zu uebergeben. Die
-    Verknuepfungen kommen so ueber denselben Loader wie Transformation und
-    Validierung; vorher las diese Funktion nur das erste Blatt der Mappe und
-    unterzeichnete den Bestand um rund die Haelfte (E-95, E-152).
+    ``frame`` allows passing an already loaded table. The Verknuepfungen thus
+    come through the same loader as transformation and validation; previously
+    this function read only the first sheet of the workbook and undercounted the
+    holdings by roughly half (E-95, E-152).
     """
     result = {
         "path": path,
@@ -168,13 +168,12 @@ def analyze_table(path: Path, name: str, frame: pd.DataFrame | None = None) -> d
             xls = pd.ExcelFile(path, engine="openpyxl")
             result["sheets"] = xls.sheet_names
 
-            # Erste Sheet lesen (Google Sheets Export hat typisch nur eine)
+            # read the first sheet (a Google Sheets export typically has one)
             df = pd.read_excel(path, engine="openpyxl")
 
-        # Leere Zeilen entfernen
         df = df.dropna(how="all")
 
-        # Template-Zeilen erkennen und entfernen
+        # detect and drop template rows
         if "archivsignatur" in df.columns:
             template_mask = df["archivsignatur"].astype(str).str.lower() == "beispiel"
             template_count = template_mask.sum()
@@ -188,13 +187,11 @@ def analyze_table(path: Path, name: str, frame: pd.DataFrame | None = None) -> d
         result["row_count"] = len(df)
         result["column_count"] = len(df.columns)
 
-        # Spaltenanalyse
         for col in df.columns:
             series = df[col]
             non_null = series.notna().sum()
             fill_rate = non_null / len(df) * 100 if len(df) > 0 else 0
 
-            # Typ erkennen
             col_type = _detect_column_type(series)
 
             col_info = {
@@ -205,7 +202,7 @@ def analyze_table(path: Path, name: str, frame: pd.DataFrame | None = None) -> d
                 "total": len(df),
             }
 
-            # Vokabular-Spalten: Unique-Werte auflisten
+            # vocabulary columns: list unique values
             col_lower = str(col).lower().strip()
             if col_lower in VOCAB_COLUMNS or non_null <= 50:
                 unique_vals = sorted(
@@ -218,7 +215,7 @@ def analyze_table(path: Path, name: str, frame: pd.DataFrame | None = None) -> d
 
             result["column_analysis"].append(col_info)
 
-        # Spezifische Checks je nach Tabelle
+        # table-specific checks
         if name == "objekte":
             result.update(_analyze_objekte(df))
         elif name == "verknuepfungen":
@@ -233,7 +230,7 @@ def analyze_table(path: Path, name: str, frame: pd.DataFrame | None = None) -> d
 
 
 def _detect_column_type(series: pd.Series) -> str:
-    """Erkennt den dominanten Datentyp einer Spalte."""
+    """Detect the dominant data type of a column."""
     non_null = series.dropna()
     if len(non_null) == 0:
         return "leer"
@@ -241,7 +238,7 @@ def _detect_column_type(series: pd.Series) -> str:
         return "numerisch"
     if pd.api.types.is_datetime64_any_dtype(non_null):
         return "datum"
-    # String-basierte Datumserkennung
+    # string-based date detection
     str_vals = non_null.astype(str)
     date_count = sum(1 for v in str_vals if DATE_ISO.match(v) or DATE_RANGE.match(v))
     if date_count > len(non_null) * 0.5:
@@ -250,10 +247,9 @@ def _detect_column_type(series: pd.Series) -> str:
 
 
 def _analyze_objekte(df: pd.DataFrame) -> dict:
-    """Spezifische Analyse fÃ¼r die Objekte-Tabelle."""
+    """Specific analysis for the object table."""
     extra = {"signatur_analysis": {}, "date_analysis": {}}
 
-    # Signatur-Analyse
     if "archivsignatur" in df.columns:
         sigs = df["archivsignatur"].dropna().astype(str)
         counts = {"hauptbestand": 0, "plakate": 0, "tontraeger": 0, "unbekannt": 0}
@@ -281,7 +277,6 @@ def _analyze_objekte(df: pd.DataFrame) -> dict:
             "total": len(sigs),
         }
 
-    # Datums-Analyse
     if "entstehungsdatum" in df.columns:
         dates = df["entstehungsdatum"].dropna().astype(str)
         date_types = Counter()
@@ -295,7 +290,7 @@ def _analyze_objekte(df: pd.DataFrame) -> dict:
                 date_types["qualifiziert"] += 1
             elif DATE_ISO.match(d):
                 date_types["iso"] += 1
-                # VerdÃ¤chtige Daten (Zukunft)
+                # suspicious dates (in the future)
                 try:
                     year = int(d[:4])
                     if year > 2010:
@@ -317,25 +312,24 @@ def _analyze_objekte(df: pd.DataFrame) -> dict:
 
 
 def _analyze_verknuepfungen(df: pd.DataFrame) -> dict:
-    """Spezifische Analyse fÃ¼r die VerknÃ¼pfungen-Tabelle."""
+    """Specific analysis for the Verknuepfungen table."""
     extra = {"link_analysis": {}}
 
-    # Typ-Verteilung
     if "typ" in df.columns:
         typ_counts = df["typ"].dropna().astype(str).str.strip().str.lower()
-        # Komposit-Typen erkennen
+        # detect composite types
         composite = typ_counts[typ_counts.str.contains(",")]
 
         extra["link_analysis"]["typ_distribution"] = dict(Counter(typ_counts))
         extra["link_analysis"]["composite_count"] = len(composite)
         extra["link_analysis"]["composite_types"] = dict(Counter(composite))
 
-    # Folio-Nutzung
+    # Folio usage
     if "folio" in df.columns:
         folio_filled = df["folio"].notna().sum()
         extra["link_analysis"]["folio_usage"] = folio_filled
 
-    # Top-Objekte nach VerknÃ¼pfungsanzahl
+    # top objects by number of Verknuepfungen
     if "archivsignatur" in df.columns:
         sig_counts = Counter(df["archivsignatur"].dropna().astype(str))
         extra["link_analysis"]["top_objects"] = dict(sig_counts.most_common(10))
@@ -344,10 +338,10 @@ def _analyze_verknuepfungen(df: pd.DataFrame) -> dict:
 
 
 def _analyze_index(df: pd.DataFrame, name: str) -> dict:
-    """Spezifische Analyse fÃ¼r Index-Tabellen."""
+    """Specific analysis for index tables."""
     extra = {"index_analysis": {}}
 
-    # Spaltenheader prÃ¼fen (bekannte Shifts)
+    # check column headers (known shifts)
     expected_headers = {
         "personenindex": ["id", "name", "wikidata_id", "anmerkung"],
         "organisationsindex": ["id", "name", "wikidata_id", "ort"],

@@ -1,10 +1,10 @@
-"""JSON-Schema-Validierung für m3gim.jsonld.
+"""JSON schema validation for m3gim.jsonld.
 
-Die Wohlgeformtheit und Aufloesbarkeit der Dokumenttyp-Hierarchie stand
-hier ein zweites Mal und liegt seither allein in
-test_06_frontend_contract.test_dft_hierarchy_concepts_resolve, das die
-gleichen Aussagen schaerfer fasst (Mindestzahl der Concepts, broader auch
-als Nicht-Dict beanstandet, Record-Referenzen ohne Praefixfilter).
+Well-formedness and resolvability of the Dokumenttyp hierarchy used to be
+asserted here a second time and now lives solely in
+test_06_frontend_contract.test_dft_hierarchy_concepts_resolve, which states
+the same claims more strictly (minimum concept count, non-dict broader also
+flagged, record references without prefix filter).
 """
 
 import json

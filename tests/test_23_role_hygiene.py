@@ -1,23 +1,23 @@
-"""Rollen-Hygiene an Orten (Session 34, Phase 2 Schritt 3).
+"""Role hygiene on places (session 34, phase 2 step 3).
 
-Bug: Im Komposit ``ort,datum`` der Verknuepfungstabelle wird die Rolle
-des gesamten Verknuepfungs-Eintrags (eine Datumsrolle wie ``erscheinungsdatum``
-oder ``auffuehrungsdatum``) blind an beide Haelften vererbt. Dadurch traegt
-der ``rico:Place``-Eintrag eines Records eine Datumsrolle, obwohl die Rolle
-semantisch nur zum Datum-Teil gehoert. Folge im UI: ``Muenchen (erscheinungsdatum)``
-im Archiv-Inline-Detail.
+Bug: in the ``ort,datum`` composite of the Verknuepfungen table the role of the
+whole Verknuepfungen entry (a date role like ``erscheinungsdatum`` or
+``auffuehrungsdatum``) is blindly inherited by both halves. As a result the
+``rico:Place`` entry of a record carries a date role although the role
+semantically belongs only to the date part. UI consequence:
+``Muenchen (erscheinungsdatum)`` in the archive inline detail.
 
-Fix: In der Ort-Normalisierung (``scripts/transform.py``, ``t == "ort"``-Zweig
-von ``add_relations_to_records``) wird das ``role``-Feld entfernt, wenn die
-erfasste Rolle in ``DATE_ONLY_ROLES`` liegt. Nicht-Datumsrollen
-(``auffuehrungsort``, ``wohnort``, ``erscheinungsort`` etc.) bleiben erhalten.
+Fix: in the place normalization (``scripts/transform.py``, ``t == "ort"`` branch
+of ``add_relations_to_records``) the ``role`` field is removed when the recorded
+role is in ``DATE_ONLY_ROLES``. Non-date roles (``auffuehrungsort``,
+``wohnort``, ``erscheinungsort`` etc.) are kept.
 """
 
 
 
-# Muss mit DATE_ONLY_ROLES in scripts/transform.py synchron bleiben.
-# Geprueft wird der erfasste Wert, nicht das Concept, auf das er fuehrt:
-# die Rolle wird vor der Aufloesung entfernt.
+# Must stay in sync with DATE_ONLY_ROLES in scripts/transform.py. The recorded
+# value is checked, not the concept it resolves to: the role is removed before
+# resolution.
 DATE_ROLES = {
     "absendedatum", "empfangsdatum", "ausstellungsdatum", "erscheinungsdatum",
     "abreisedatum", "auftritt", "aufführung", "probe", "probenbeginn",
@@ -26,7 +26,7 @@ DATE_ROLES = {
 
 
 def recorded_role(entity):
-    """Der erfasste Rollenwert eines Knotens, vor der Zusammenfuehrung."""
+    """The recorded role value of a node, before the merge."""
     role = entity.get("role")
     if role is None:
         return ""
@@ -52,14 +52,14 @@ def _iter_record_locations(graph):
 
 
 # ---------------------------------------------------------------------------
-# Anker-Assert (sichert Role-Hygiene-Fix aus Session 34)
+# Anchor assert (guards the role-hygiene fix from session 34)
 # ---------------------------------------------------------------------------
 
 
 def test_anchor_location_no_date_role(graph):
-    """NIM_004_12 traegt einen Stuttgart-Ort, der im Rohdatensatz mit der
-    Komposit-Rolle ``erscheinungsdatum`` kam. Nach dem Fix darf dieses
-    ``role``-Feld nicht mehr am Place-Entry haengen."""
+    """NIM_004_12 carries a Stuttgart place that came in the raw data with the
+    composite role ``erscheinungsdatum``. After the fix this ``role`` field must
+    no longer hang on the place entry."""
     targets = [
         place for rec_id, place in _iter_record_locations(graph)
         if rec_id == "m3gim-data:NIM_004_12"
@@ -74,12 +74,12 @@ def test_anchor_location_no_date_role(graph):
 
 
 # ---------------------------------------------------------------------------
-# Shape-Assertion (nach Fix global sauber)
+# Shape assertion (globally clean after the fix)
 # ---------------------------------------------------------------------------
 
 
 def test_no_record_location_has_date_role(graph):
-    """Kein rico:Place an einem Record traegt eine Datumsrolle."""
+    """No rico:Place on a record carries a date role."""
     offenders = [
         (rec_id, p.get("name"), recorded_role(p))
         for rec_id, p in _iter_record_locations(graph)

@@ -1,18 +1,17 @@
-"""Namenskonvention der Ontologie, festgehalten als Lock.
+"""Naming convention of the ontology, held as a lock.
 
-Konvention der Projektleitung: was als `owl:Class` deklariert ist, beginnt mit
-einem Grossbuchstaben; was als `owl:ObjectProperty`, `owl:DatatypeProperty` oder
-`skos:Concept` deklariert ist, beginnt mit einem Kleinbuchstaben. Der Stand
-haelt die Konvention bereits vollstaendig ein, der Test sichert sie gegen
-Erosion.
+Project convention: what is declared as `owl:Class` starts with an uppercase
+letter; what is declared as `owl:ObjectProperty`, `owl:DatatypeProperty` or
+`skos:Concept` starts with a lowercase letter. The current state fully keeps the
+convention already, the test secures it against erosion.
 
-Gelesen wird mit rdflib statt mit einem Textmuster, weil die Deklaration in der
-Turtle-Datei ueblicherweise in der Zeile nach dem Bezeichner steht und ein
-zeilenweiser Abgleich sie dem Subjekt nicht zuordnet. Anonyme Klassenausdruecke
-(`rdfs:domain [ a owl:Class ; owl:unionOf ( ... ) ]`) sind Blank Nodes, tragen
-keinen Namen und bleiben ausserhalb der Pruefung.
+Read with rdflib rather than a text pattern, because the declaration in the
+Turtle file usually sits on the line after the identifier and a line-wise match
+does not attribute it to the subject. Anonymous class expressions
+(`rdfs:domain [ a owl:Class ; owl:unionOf ( ... ) ]`) are blank nodes, carry no
+name and stay outside the check.
 
-Pfad-Override: `M3GIM_VOCAB_PATH`.
+Path override: `M3GIM_VOCAB_PATH`.
 """
 
 import os
@@ -34,7 +33,7 @@ def vocab_graph() -> Graph:
 
 
 def local_names(graph: Graph, declared_type) -> list[str]:
-    """Lokale Namen aller benannten Deklarationen eines Typs, Blank Nodes ausgenommen."""
+    """Local names of all named declarations of a type, blank nodes excluded."""
     names = []
     for subject in graph.subjects(RDF.type, declared_type):
         if not isinstance(subject, URIRef):
@@ -46,7 +45,7 @@ def local_names(graph: Graph, declared_type) -> list[str]:
 
 
 def test_classes_start_uppercase(vocab_graph):
-    """Jede benannte owl:Class beginnt mit einem Grossbuchstaben."""
+    """Every named owl:Class starts with an uppercase letter."""
     names = local_names(vocab_graph, OWL.Class)
     assert names, f"Keine benannte owl:Class in {VOCAB_PATH.name} gefunden"
 
@@ -55,7 +54,7 @@ def test_classes_start_uppercase(vocab_graph):
 
 
 def test_properties_start_lowercase(vocab_graph):
-    """Jede benannte Object- und Datatype-Property beginnt mit einem Kleinbuchstaben."""
+    """Every named object and datatype property starts with a lowercase letter."""
     names = sorted(
         local_names(vocab_graph, OWL.ObjectProperty)
         + local_names(vocab_graph, OWL.DatatypeProperty)
@@ -67,7 +66,7 @@ def test_properties_start_lowercase(vocab_graph):
 
 
 def test_concepts_start_lowercase(vocab_graph):
-    """Jedes benannte skos:Concept beginnt mit einem Kleinbuchstaben."""
+    """Every named skos:Concept starts with a lowercase letter."""
     names = local_names(vocab_graph, SKOS.Concept)
     assert names, f"Kein benanntes skos:Concept in {VOCAB_PATH.name} gefunden"
 

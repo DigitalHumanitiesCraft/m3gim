@@ -1,4 +1,4 @@
-"""Referentielle Integrität innerhalb des JSON-LD-Graphen."""
+"""Referential integrity within the JSON-LD graph."""
 
 from collections import Counter
 
@@ -45,7 +45,7 @@ def test_konvolut_children_exist(konvolute, records):
 
 
 def test_no_orphan_records(records, konvolute, fonds):
-    """Jeder Record ist entweder direkt im Fonds oder in einem Konvolut referenziert."""
+    """Every record is referenced either directly in the Fonds or in a Konvolut."""
     referenced = set()
     for part in ensure_list(fonds.get("rico:hasOrHadPart")):
         if isinstance(part, dict):
@@ -60,14 +60,13 @@ def test_no_orphan_records(records, konvolute, fonds):
 
 
 def test_folio_records_have_konvolut_parent(records, konvolute):
-    """Jeder Folio-Record haengt an dem Konvolut, dessen Signatur er traegt.
+    """Every Folio record hangs on the Konvolut whose signature it carries.
 
-    Die Objekt-ID eines Folios ist `archivsignatur + " " + folio`
-    (knowledge/data.md, Konvolut-Hierarchie). Ein Record, dessen
-    rico:identifier eine Folio-Angabe fuehrt, muss deshalb als
-    rico:hasOrHadPart an genau dem Konvolut haengen, das die blosse
-    Signatur traegt. Bricht der Test, haengt ein Folio am falschen oder an
-    keinem Konvolut, und die Bestandshierarchie im Frontend verliert es.
+    A Folio's object ID is `archivsignatur + " " + folio` (knowledge/data.md,
+    Konvolut hierarchy). A record whose rico:identifier carries a Folio value
+    must therefore hang as rico:hasOrHadPart on exactly the Konvolut that
+    carries the bare signature. If the test breaks, a Folio hangs on the wrong
+    Konvolut or none, and the holdings hierarchy in the frontend loses it.
     """
     konvolut_by_ident = {}
     for k in konvolute:
@@ -85,8 +84,8 @@ def test_folio_records_have_konvolut_parent(records, konvolute):
         r for r in records
         if " " in str(r.get("rico:identifier") or "").strip()
     ]
-    # Mindestvorkommen: der Bestand ist ueberwiegend folioweise erschlossen.
-    # Faellt der Anteil unter die Haelfte, prueft der Test nichts mehr.
+    # Minimum occurrence: the holdings are mostly catalogued per Folio. If the
+    # share drops below half, the test no longer checks anything.
     assert len(folio_records) >= len(records) * 0.5, (
         f"Nur {len(folio_records)} von {len(records)} Records tragen eine "
         f"Folio-Signatur. Die Konvolut-Hierarchie ist eingebrochen, der "
@@ -110,11 +109,10 @@ def test_folio_records_have_konvolut_parent(records, konvolute):
 
 
 def test_konvolute_have_children(konvolute):
-    """Kein Konvolut ist leer.
+    """No Konvolut is empty.
 
-    Stand frueher als einziger wirksamer Assert im Rumpf von
-    test_folio_records_have_konvolut_parent und traegt jetzt seinen
-    eigenen Namen.
+    Used to be the only effective assert in the body of
+    test_folio_records_have_konvolut_parent and now carries its own name.
     """
     assert konvolute, "Keine Konvolute im Graph"
     empty = [k["@id"] for k in konvolute if not ensure_list(k.get("rico:hasOrHadPart"))]

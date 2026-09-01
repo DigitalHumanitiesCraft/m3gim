@@ -1,30 +1,30 @@
 #!/usr/bin/env python3
-"""M3GIM Coverage-Scout — beziffert die Datendeckung eines Orts-Fokus.
+"""M3GIM coverage scout — quantifies the data coverage of a place focus.
 
-Grundsatz: erst scouten, dann implementieren. Bevor eine Frontend-Ansicht auf
-einen Orts-Fokus (z. B. Bayreuth) gebaut wird, misst dieses Skript read-only,
-welche Daten den Fokus tatsaechlich tragen. Es spiegelt die Mappings des
-JS-Loaders (docs/js/data/loader.js), damit die Zahlen dem entsprechen, was das
-Frontend im Store sieht:
+Principle: scout first, implement later. Before a frontend view is built on a
+place focus (e.g. Bayreuth), this script measures read-only which data actually
+carry the focus. It mirrors the mappings of the JS loader
+(docs/js/data/loader.js) so the numbers match what the frontend sees in the
+store:
 
-- Orte aus rico:hasOrHadLocation an den Records, Stadt-konsolidiert via cityOf
-  (utils/format.js), Datums-Strings als Ort herausgefiltert.
-- Mobilitaet aus den Top-Level-Annotationen mit Ort
-  (m3gim-ontology:atPlace / m3gim-ontology:atDate / role / geo-Koordinaten).
-- Netzwerk, Rollen, Werke aus den Fokus-Records. Personen werden strukturell
-  getrennt in Akteure (m3gim-ontology:hasAssociatedAgent) und erwaehnte Subjekte
-  (rico:hasOrHadSubject @type rico:Person), weil nur Erstere belegte
-  Mitwirkende sind und Letztere oft Komponisten oder Genannte.
+- Places from rico:hasOrHadLocation on the Records, city-consolidated via cityOf
+  (utils/format.js), date strings filtered out as places.
+- Mobility from the top-level annotations with a place
+  (m3gim-ontology:atPlace / m3gim-ontology:atDate / role / geo coordinates).
+- Network, roles, works from the focus Records. People are structurally split
+  into actors (m3gim-ontology:hasAssociatedAgent) and mentioned subjects
+  (rico:hasOrHadSubject @type rico:Person), because only the former are attested
+  contributors and the latter are often composers or merely named.
 
-Schreibt nichts; reiner Konsolenreport. Die Kopplung "Person/Rolle steht im
-selben Record wie der Ort" ist nicht identisch mit "nachweislich an dem Ort":
-die raumzeitlich exakte Verortung liegt auf den Annotationsknoten, die
-Record-Achsen buendeln den weiteren Dokumentkontext.
+Writes nothing; console report only. The coupling "person/role is in the same
+Record as the place" is not identical to "attested at that place": the exact
+spatiotemporal placement sits on the annotation nodes, the Record axes bundle
+the wider document context.
 
-Verwendung:
-    python scripts/scout-coverage.py                  # Default-Fokus: Bayreuth
-    python scripts/scout-coverage.py "Wien"           # anderer Ort (Stadt-Ebene)
-    python scripts/scout-coverage.py --data PATH      # andere JSON-LD-Quelle
+Usage:
+    python scripts/scout-coverage.py                  # default focus: Bayreuth
+    python scripts/scout-coverage.py "Wien"           # other place (city level)
+    python scripts/scout-coverage.py --data PATH      # other JSON-LD source
 """
 
 from __future__ import annotations
@@ -34,7 +34,7 @@ import sys
 from collections import Counter
 from pathlib import Path
 
-# Windows-Konsole: UTF-8 erzwingen (analog explore.py)
+# Windows console: force UTF-8 (as in explore.py)
 if sys.stdout.encoding != "utf-8":
     sys.stdout.reconfigure(encoding="utf-8")
 
@@ -44,7 +44,7 @@ DEFAULT_FOCUS = "Bayreuth"
 
 
 def ensure_list(value):
-    """Wert immer als Liste, analog utils/format.js ensureArray."""
+    """Value always as a list, like utils/format.js ensureArray."""
     if value is None:
         return []
     return value if isinstance(value, list) else [value]
@@ -56,7 +56,7 @@ def node_type(node):
 
 
 def role_label(node):
-    """Anzeigetext der Rolle eines Knotens, aus dem mitgefuehrten prefLabel."""
+    """Display text of a node's role, from the carried prefLabel."""
     role = node.get("role")
     if isinstance(role, dict):
         return role.get("skos:prefLabel", "")
@@ -64,7 +64,7 @@ def role_label(node):
 
 
 def city_of(name):
-    """Stadt-Ebene wie utils/format.js cityOf: Teil vor dem ersten Komma."""
+    """City level like utils/format.js cityOf, the part before the first comma."""
     if not name:
         return name
     s = str(name)
@@ -73,7 +73,7 @@ def city_of(name):
 
 
 def is_date_like(name):
-    """Loader skippt Orte, deren Name mit vier Ziffern beginnt (\\d{4}...)."""
+    """Loader skips places whose name starts with four digits (\\d{4}...)."""
     return len(str(name)) >= 4 and str(name)[:4].isdigit()
 
 
@@ -83,7 +83,7 @@ def load_graph(path):
 
 
 def build_mobility_events(graph):
-    """Spiegelt loader.js indexMobilityEvent (Top-Level-Annotationen)."""
+    """Mirrors loader.js indexMobilityEvent (top-level annotations)."""
     events = {}
     for node in graph:
         if node_type(node) != "m3gim-ontology:Annotation":
@@ -103,7 +103,7 @@ def build_mobility_events(graph):
 
 
 def build_locations(graph):
-    """Spiegelt loader.js indexLocations (rico:hasOrHadLocation an Records)."""
+    """Mirrors loader.js indexLocations (rico:hasOrHadLocation on Records)."""
     locations = {}
     for node in graph:
         if node_type(node) != "rico:Record":
@@ -122,7 +122,7 @@ def build_locations(graph):
 
 
 def collect_focus_records(records, focus):
-    """Record-IDs mit einem Ort, dessen Stadt-Ebene dem Fokus entspricht."""
+    """Record IDs with a place whose city level matches the focus."""
     focus_lower = focus.lower()
     ids = set()
     for rid, rec in records.items():
@@ -135,7 +135,7 @@ def collect_focus_records(records, focus):
 
 
 def measure_axes(focus_ids, records, performances, stage_roles):
-    """Netzwerk-, Rollen-, Werk- und Beziehungsachsen ueber die Fokus-Records."""
+    """Network, role, work, and relation axes over the focus Records."""
     actors, subjects, orgs = Counter(), Counter(), Counter()
     works, roles, relations = Counter(), Counter(), Counter()
     for rid in focus_ids:

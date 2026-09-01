@@ -9,91 +9,8 @@
   gap: 12px;
 }
 
-/* --- Status- und Legendenblock ------------------------------------------ */
-
-/* Der Block bleibt beim Scrollen der Spalte stehen: er traegt Zaehlstand,
-   Deckung und Schaerfegrad und wuerde sonst genau dann verschwinden, wenn
-   man weiter unten an den Facetten arbeitet. */
-.facet-sidebar > .vs-section:first-child {
-  position: sticky;
-  top: 0;
-  z-index: 2;
-  background: var(--color-paper);
-  padding: var(--space-2) 0 var(--space-2);
-  border-bottom: 1px solid var(--border-color-light);
-}
-
-.fs-status {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.fs-figure {
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-2);
-  padding-bottom: var(--space-1);
-}
-
-.fs-figure__n {
-  font-family: var(--font-title);
-  font-size: var(--text-2xl);
-  font-weight: var(--weight-semibold);
-  color: var(--color-kug-blau);
-  line-height: 1;
-}
-
-.fs-figure__unit {
-  font-size: var(--text-xs);
-  color: var(--color-text-secondary);
-}
-
-.fs-row {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--space-2);
-  font-size: var(--text-xs);
-}
-
-.fs-row__label {
-  color: var(--color-text-tertiary);
-}
-
-.fs-row__value {
-  color: var(--color-text-primary);
-  font-family: var(--font-mono);
-  font-size: 11px;
-  text-align: right;
-}
-
-.fs-badge {
-  display: inline-block;
-  padding: 1px 7px;
-  border-radius: 10px;
-  font-family: var(--font-ui);
-  font-size: 11px;
-  font-weight: var(--weight-medium);
-  letter-spacing: 0.02em;
-  border: 1px solid transparent;
-}
-
-.fs-badge--weit {
-  background: var(--color-parchment);
-  border-color: var(--color-sand);
-  color: var(--color-text-primary);
-}
-
-.fs-badge--eng {
-  background: var(--color-kug-blau);
-  border-color: var(--color-kug-blau-dark);
-  color: var(--color-text-inverse);
-}
-
-/* --- Facette ------------------------------------------------------------- */
-
 .fs-facet {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 5px;
@@ -150,13 +67,25 @@
   opacity: 0.75;
 }
 
+/* Suggestions as a dropdown under the input, so a closed facet is one line. */
 .fs-options {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 5;
   display: flex;
   flex-direction: column;
   gap: 1px;
-  max-height: 148px;
+  max-height: 220px;
   overflow-y: auto;
+  padding: 3px;
+  background: var(--color-text-inverse);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-md);
 }
+.fs-options[hidden] { display: none; }
 
 .fs-option {
   display: flex;
@@ -203,6 +132,23 @@
   color: var(--color-text-tertiary);
   padding: 2px 6px;
 }
+
+/* --- Dokumenttyp: Baumgruppen als gruppierte Vorschlaege ----------------- */
+
+/* Gruppenkopf (Oberbegriff der DFT-Hierarchie): staerker gesetzt als seine
+   Blaetter, damit die Gruppierung ohne Einrueckungslinien lesbar ist. */
+.fs-option--group .fs-option__label {
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.01em;
+}
+/* Ein Gruppenkopf ohne eigene Belege (etwa "Sonstige") ist nur Ueberschrift. */
+.fs-option--head {
+  cursor: default;
+  color: var(--color-text-tertiary);
+}
+.fs-option--head:hover { background: transparent; border-color: transparent; }
+/* Blattwerte einer Gruppe leicht eingerueckt. */
+.fs-option--child { padding-left: 16px; }
 
 /* --- Schaerfegrad -------------------------------------------------------- */
 

@@ -1,15 +1,15 @@
-"""Verknüpfungs-Typ-Mapping: XLSX-typ → RiC-O/m3gim-Property.
+"""Verknuepfungen type mapping: XLSX typ -> RiC-O/m3gim property.
 
-transform.py-Mapping (add_relations_to_records):
-  person       → m3gim-ontology:hasAssociatedAgent (@type rico:Person)
-                 außer Rolle 'erwähnt' → rico:hasOrHadSubject
-  institution  → m3gim-ontology:hasAssociatedAgent (@type rico:CorporateBody)
-  ensemble     → m3gim-ontology:hasAssociatedAgent (@type rico:Group)
-  ort          → rico:hasOrHadLocation (@type rico:Place)
-  werk         → rico:hasOrHadSubject (@type m3gim-ontology:MusicalWork)
-  ereignis     → rico:hasOrHadSubject (@type m3gim-ontology:FramingEvent)
-  rolle        → m3gim-ontology:hasPerformance (m3gim-ontology:Performance + m3gim-ontology:StageRole, E-96)
-  datum        → m3gim-ontology:hasAnnotation (Annotation mit atDate)
+transform.py mapping (add_relations_to_records):
+  person       -> m3gim-ontology:hasAssociatedAgent (@type rico:Person)
+                 except role 'erwähnt' -> rico:hasOrHadSubject
+  institution  -> m3gim-ontology:hasAssociatedAgent (@type rico:CorporateBody)
+  ensemble     -> m3gim-ontology:hasAssociatedAgent (@type rico:Group)
+  ort          -> rico:hasOrHadLocation (@type rico:Place)
+  werk         -> rico:hasOrHadSubject (@type m3gim-ontology:MusicalWork)
+  ereignis     -> rico:hasOrHadSubject (@type m3gim-ontology:FramingEvent)
+  rolle        -> m3gim-ontology:hasPerformance (m3gim-ontology:Performance + m3gim-ontology:StageRole, E-96)
+  datum        -> m3gim-ontology:hasAnnotation (Annotation with atDate)
 """
 
 import pytest
@@ -18,12 +18,11 @@ from _helpers import ensure_list
 
 
 def role_label(entity):
-    """Anzeigetext der Rolle eines Knotens.
+    """Display text of a node's role.
 
-    Die Rolle steht seit dem Umbau als Verweis auf ein Concept des Vokabulars
-    und fuehrt dessen skos:prefLabel mit. Ein blosser String kommt nur noch
-    beim Vertragsstatus vor, den das Vokabular begruendet nicht als Begriff
-    fuehrt.
+    Since the rework the role is a reference to a vocabulary concept and
+    carries its skos:prefLabel. A bare string only remains for the contract
+    status, which the vocabulary deliberately does not carry as a concept.
     """
     role = entity.get("role")
     if isinstance(role, dict):
@@ -32,7 +31,7 @@ def role_label(entity):
 
 
 def _collect_entities(records, prop, type_filter=None):
-    """Gibt alle Entities für eine Property zurück, optional nach @type gefiltert."""
+    """Return all entities for a property, optionally filtered by @type."""
     result = []
     for r in records:
         for ent in ensure_list(r.get(prop)):
@@ -59,8 +58,8 @@ def _has_any_relation(record):
     for prop in _RELATIONAL_PROPS:
         if ensure_list(record.get(prop)):
             return True
-    # Die Entstehungsdatierung am Dokument ist ebenfalls eine Relation
-    # zur Verknuepfungszeile, auch wenn sie keinen eigenen Knoten hat.
+    # The creation date on the document is also a relation to the
+    # Verknuepfungen row, even though it has no node of its own.
     return bool(record.get("rico:creationDate"))
 
 
@@ -94,7 +93,6 @@ def test_verknuepfungen_every_referenced_record_has_relations(
     xfail(strict=True); nach dem Source-Fix bricht XPASS die Suite und der
     Marker wird entfernt.
     """
-    # Index: Signatur -> Record(s)
     by_sig = {}
     for r in records:
         ident = r.get("rico:identifier", "")
@@ -102,7 +100,6 @@ def test_verknuepfungen_every_referenced_record_has_relations(
         if base:
             by_sig.setdefault(base, []).append(r)
 
-    # Alle Signaturen, die in valid_xlsx als Ziel auftreten
     valid = xlsx_verknuepfungen[
         xlsx_verknuepfungen["archivsignatur"].notna()
         & xlsx_verknuepfungen["typ"].notna()
@@ -112,9 +109,8 @@ def test_verknuepfungen_every_referenced_record_has_relations(
     unlinked = []
     for sig in sorted(referenced_sigs):
         if sig not in by_sig:
-            continue  # Orphan — siehe data.md § 17
-        # Mindestens einer der Records dieser Signatur (Konvolut oder Folio)
-        # traegt eine Relation
+            continue  # Orphan, see data.md § 17
+        # At least one record of this signature (Konvolut or Folio) carries a relation.
         if not any(_has_any_relation(r) for r in by_sig[sig]):
             unlinked.append(sig)
 
@@ -133,23 +129,23 @@ _TYP_TO_OUTPUT = [
     ("werk", "rico:hasOrHadSubject", "m3gim-ontology:MusicalWork"),
 ]
 
-# Anteil der Quellzeilen eines Typs, der den Output erreichen muss. Verluste
-# entstehen durch verwaiste Signaturen und Folio-Granularitaet (data.md § 17)
-# sowie, beim Typ person, durch die Umsortierung der Rolle 'erwaehnt' nach
-# rico:hasOrHadSubject. Dieselbe Schwelle fuehrt test_11 fuer die Verortungen.
+# Share of a type's source rows that must reach the output. Losses come from
+# orphan signatures and Folio granularity (data.md § 17) and, for type person,
+# from re-sorting the role 'erwaehnt' into rico:hasOrHadSubject. test_11 uses
+# the same threshold for the Verortungen.
 _MIN_YIELD = 0.6
 
 
 @pytest.mark.parametrize("typ,prop,entity_type", _TYP_TO_OUTPUT)
 def test_typ_reaches_output(records, xlsx_verknuepfungen, typ, prop, entity_type):
-    """Ein Basis-Typ der Quelle erreicht den Output mit einer aus der Quelle
-    abgeleiteten Untergrenze.
+    """A base type of the source reaches the output with a lower bound derived
+    from the source.
 
-    Die vier Vorgaenger prueften nur `len(...) > 0` und fingen damit allein
-    den vollstaendigen Ausfall eines Typzweigs. Die Untergrenze wird zur
-    Laufzeit aus der Zeilenzahl der Quelle gebildet (Autoren-Regel in
-    knowledge/testing.md), sodass auch ein Teilverlust auffaellt und der
-    Test einen neuen Datenstand ohne Korrektur mittraegt.
+    The four predecessors checked only `len(...) > 0` and thus caught only the
+    complete failure of a type branch. The lower bound is formed at runtime
+    from the source row count (author rule in knowledge/testing.md), so a
+    partial loss shows up too and the test carries a new data state without
+    correction.
     """
     typ_col = (
         xlsx_verknuepfungen["typ"].fillna("").astype(str).str.strip().str.lower()
@@ -167,14 +163,14 @@ def test_typ_reaches_output(records, xlsx_verknuepfungen, typ, prop, entity_type
 
 
 def test_mentioned_persons_in_subjects_not_agents(records):
-    """Personen mit Rolle 'erwähnt' landen in rico:hasOrHadSubject, NICHT in Agents.
-    transform.py sortiert nur rico:Person um (Institutionen mit 'erwähnt' bleiben in Agents)."""
+    """Persons with role 'erwähnt' land in rico:hasOrHadSubject, NOT in Agents.
+    transform.py re-sorts only rico:Person (institutions with 'erwähnt' stay in Agents)."""
     for r in records:
         for ent in ensure_list(r.get("m3gim-ontology:hasAssociatedAgent")):
             if not isinstance(ent, dict):
                 continue
             if ent.get("@type") != "rico:Person":
-                continue  # nur Personen werden in transform.py umsortiert
+                continue  # only persons get re-sorted in transform.py
             role = role_label(ent).lower()
             assert role not in ("erwähnt", "erwaehnt"), (
                 f"{r['@id']}: 'erwähnt'-Person in Agents: {ent.get('name')}"
@@ -182,7 +178,7 @@ def test_mentioned_persons_in_subjects_not_agents(records):
 
 
 def test_agents_have_name(records):
-    """Jedes Agent-Entity hat name."""
+    """Every agent entity has a name."""
     offenders = []
     for r in records:
         for ent in ensure_list(r.get("m3gim-ontology:hasAssociatedAgent")):
@@ -201,8 +197,8 @@ def test_locations_have_name(records):
 
 
 def test_performance_references_resolvable(records, graph):
-    """Jede record-referenzierte m3gim-ontology:Performance ist im Graph auflösbar und
-    trägt eine hasStageRole-Referenz auf eine m3gim-ontology:StageRole (E-96/E-98)."""
+    """Every record-referenced m3gim-ontology:Performance resolves in the graph and
+    carries a hasStageRole reference to a m3gim-ontology:StageRole (E-96/E-98)."""
     perfs = {n["@id"]: n for n in graph if n.get("@type") == "m3gim-ontology:Performance"}
     stage_roles = {n["@id"] for n in graph if n.get("@type") == "m3gim-ontology:StageRole"}
     for r in records:
@@ -217,15 +213,14 @@ def test_performance_references_resolvable(records, graph):
 
 
 def test_event_date_retired(records):
-    """Kein Record traegt eine projekteigene Datums-Property.
+    """No record carries a project-specific date property.
 
-    Das generische m3gim:eventDate war der erste abgeschaffte Term dieser Art
-    (E-102), die sechzehn typisierten Datumsproperties sind mit dem Zielmodell
-    gefolgt. Jede Datierung haengt jetzt an einem Annotationsknoten, die
-    Entstehungsdatierung am Dokument auf rico:creationDate. Die
-    Wohlgeformtheit der Knoten prueft test_30, hier nur der
-    Regressionsschutz gegen die Rueckkehr eines Property-Namens, der eine
-    Rolle ausdrueckt.
+    The generic m3gim:eventDate was the first term of this kind to be retired
+    (E-102), the sixteen typed date properties followed with the target model.
+    Every dating now hangs on an annotation node, the creation date on the
+    document on rico:creationDate. Node well-formedness is checked by test_30,
+    here only the regression guard against the return of a property name that
+    expresses a role.
     """
     from test_18_typed_dates import RETIRED_DATE_PROPS
 
@@ -243,11 +238,11 @@ def test_event_date_retired(records):
 
 
 def test_roles_gender_neutral(records):
-    """Keine Rolle im Output endet auf :in oder :innen (data.md Abschnitt 5).
+    """No role in the output ends in :in or :innen (data.md section 5).
 
-    Die Pipeline normalisiert Rollen bei der Ingestion (transform.py
-    normalize_role). Dieser Test sichert die Invariante, dass kein Gender-Suffix
-    in den JSON-LD-Output gelangt, unabhaengig davon wie es in XLSX erfasst wird.
+    The pipeline normalizes roles at ingestion (transform.py normalize_role).
+    This test guards the invariant that no gender suffix reaches the JSON-LD
+    output, regardless of how it is recorded in XLSX.
     """
     offenders = []
     for r in records:

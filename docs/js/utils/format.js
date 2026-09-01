@@ -2,14 +2,13 @@
  * M³GIM Display Formatting Utilities
  */
 
-/** Namensraum der kontrollierten Begriffe (Dokumenttypen und Rollen). */
+/** Namespace of the controlled terms (document types and roles). */
 export const VOCAB_PREFIX = 'm3gim-vocab:';
 
 /**
- * Lesbares Label eines Dokumenttyps aus dem Store (skos:prefLabel der
- * Concepts, von der Pipeline geliefert — E-101). Loest die frühere
- * Hand-Map DOKUMENTTYP_LABELS ab. Fallback auf die Short-Id, wenn kein
- * Concept vorliegt (oder kein Store übergeben wird).
+ * Readable label of a document type from the store (skos:prefLabel of the
+ * concepts, supplied by the pipeline — E-101). Falls back to the short id
+ * when no concept exists (or no store is passed).
  */
 export function dftLabel(store, shortId) {
   if (!shortId) return '';
@@ -19,10 +18,10 @@ export function dftLabel(store, shortId) {
 }
 
 /**
- * Concept-Id eines Rollenwerts. Die Rolle steht im zusammengefuehrten Modell
- * als Verweisknoten mit `@id`; der Vertragsstatus `nicht eingehalten` bleibt
- * ein Literal und hat deshalb keine Id.
- * @param {Object|string|null} role - Verweisknoten, Id oder Literal
+ * Concept id of a role value. The role sits in the model as a reference node
+ * with `@id`; the contract status `nicht eingehalten` stays a literal and thus
+ * has no id.
+ * @param {Object|string|null} role - reference node, id or literal
  * @returns {?string}
  */
 export function roleIdOf(role) {
@@ -32,9 +31,8 @@ export function roleIdOf(role) {
 }
 
 /**
- * Rohform eines Rollenwerts, also der Wert, wie ihn die Erschliessung gesetzt
- * hat. Die Statistik nennt unklassifizierte Rollen namentlich und braucht
- * dafür die Rohform, nicht die Anzeigeform.
+ * Raw form of a role value, as the Erschliessung set it. Statistics names
+ * unclassified roles by name and needs the raw form, not the display form.
  * @param {Object|string|null} role
  * @returns {?string}
  */
@@ -48,13 +46,13 @@ export function roleToken(role) {
 }
 
 /**
- * Anzeigeform einer Rolle. Das Label kommt aus den Daten: die Pipeline führt
- * `skos:prefLabel` am Rollen-Verweisknoten mit, der Loader legt es in
- * `store.roleVocab` ab. Damit entfällt jede Hand-Map für Rollennamen im Code,
- * wie E-101 sie für die Dokumenttypen bereits abgelöst hat.
+ * Display form of a role. The label comes from the data: the pipeline carries
+ * `skos:prefLabel` on the role reference node, the loader stores it in
+ * `store.roleVocab`. No hand-map for role names in code, as E-101 already
+ * removed it for document types.
  *
- * Nimmt den Verweisknoten, die blosse Id oder ein Literal. Fallback ist der
- * lokale Name der Id; ein Literal ist seine eigene Anzeigeform.
+ * Takes the reference node, the bare id or a literal. Falls back to the local
+ * name of the id; a literal is its own display form.
  * @param {Object} store
  * @param {Object|string|null} role
  * @returns {string}
@@ -75,12 +73,12 @@ export function formatSignatur(identifier) {
 }
 
 /**
- * Stadt-Ebene eines (ggf. adressgenauen) Ortsnamens: der Teil vor dem ersten
- * Komma. "Zürich, Zürichbergstrasse 104" → "Zürich"; "Wien" → "Wien".
- * Dient der konservativen Stadt-Gruppierung gegen Ortsnamen-Fragmentierung
- * (adressgenaue Strings aus den E-97-Ortsrollen, die sonst Filter-Recall und
- * Top-Orte-Zaehlung zersplittern). Reine Anzeige-/Index-Hilfe — die Wurzel
- * (Ortsindex ohne Stadt/Q-ID-Ebene) bleibt ein Datenticket.
+ * City level of an (optionally address-precise) place name: the part before
+ * the first comma. "Zürich, Zürichbergstrasse 104" → "Zürich"; "Wien" → "Wien".
+ * Serves conservative city grouping against place-name fragmentation
+ * (address-precise strings from the E-97 place roles, which otherwise split
+ * filter recall and top-place counts). Display/index helper only — the root
+ * (place index without city/Q-id level) stays a data ticket.
  */
 export function cityOf(name) {
   if (!name) return name;
@@ -123,27 +121,27 @@ export function ensureArray(value) {
   return [value];
 }
 
-/** Wikidata-Q-ID aus einem Wert ziehen ("wd:Q42" -> "wd:Q42", sonst null). */
+/** Pull a Wikidata Q-id from a value ("wd:Q42" -> "wd:Q42", else null). */
 export function asWikidataId(value) {
   return value && String(value).startsWith('wd:') ? value : null;
 }
 
-/** Ob ein Wert eine Wikidata-Q-ID ("wd:...") ist. */
+/** Whether a value is a Wikidata Q-id ("wd:..."). */
 export function isWikidataId(value) {
   return !!value && String(value).startsWith('wd:');
 }
 
 /**
- * Anzeigename eines JSON-LD-Subobjekts: name -> skos:prefLabel -> fallback.
- * @id wird bewusst NICHT automatisch eingereiht; Call-Sites, die ihn als
- * Fallback wollen, uebergeben ihn als fallback-Argument.
+ * Display name of a JSON-LD subobject: name -> skos:prefLabel -> fallback.
+ * @id is deliberately NOT included automatically; call sites that want it as
+ * fallback pass it as the fallback argument.
  */
 export function entityName(obj, fallback = '') {
   if (!obj) return fallback;
   return obj.name || obj['skos:prefLabel'] || fallback;
 }
 
-/** IDs -> Records aus dem Store aufloesen, fehlende ausfiltern. */
+/** Resolve ids -> records from the store, filtering out missing ones. */
 export function resolveRecords(store, ids) {
   const out = [];
   for (const id of ids) {
@@ -164,24 +162,19 @@ export function countLinks(record) {
   return count;
 }
 
-/**
- * Extrahiert den Short-Id aus einer Concept-ID (strippt das Prefix).
- * Beispiel: "m3gim-vocab:letter" -> "letter".
- */
+/** Strip the prefix from a concept id ("m3gim-vocab:letter" -> "letter"). */
 function stripConceptPrefix(id) {
   return typeof id === 'string' && id.startsWith(VOCAB_PREFIX)
     ? id.slice(VOCAB_PREFIX.length) : id;
 }
 
 /**
- * Baut den DFT-Filterbaum fuer das Archiv-Dropdown.
- * Rueckgabe: Array von Gruppen.
- * Top-Level-Concepts werden mit ihren Kindern als eigene Gruppe ausgeliefert
- * (Gruppe { id, label, children: [{id, label}, ...] }). Concepts ohne
- * Broader + ohne Kinder sowie alle byDocType-Schluessel, die gar nicht
- * in dftHierarchy auftauchen, landen in einer abschliessenden Gruppe
- * "Sonstige". Short-Form-IDs (ohne m3gim-vocab:-Prefix) bleiben konsistent
- * zu getDocTypeId().
+ * Build the DFT filter tree for the archive dropdown.
+ * Returns an array of groups { id, label, children: [{id, label}, ...] }.
+ * Top-level concepts ship as their own group with their children. Concepts
+ * without broader and without children, plus any byDocType key absent from
+ * dftHierarchy, land in a trailing "Sonstige" group. Short-form ids (without
+ * the m3gim-vocab: prefix) stay consistent with getDocTypeId().
  */
 export function buildDftTree(store) {
   if (!store || !store.dftHierarchy) return [];
@@ -229,10 +222,9 @@ export function buildDftTree(store) {
 }
 
 /**
- * Gibt ein Set aller Short-Ids zurueck, die fuer den gegebenen Filter
- * passend sind. Enthaelt den gesuchten Concept selbst und alle transitiv
- * erreichbaren Kinder. Wenn der Concept nicht in dftHierarchy existiert,
- * wird nur die Eingabe zurueckgegeben (Fallback fuer alte Freitext-Typen).
+ * Return a set of all short ids matching the given filter: the concept itself
+ * and all transitively reachable children. If the concept is absent from
+ * dftHierarchy, only the input is returned (fallback for old free-text types).
  */
 export function expandDftFilter(store, shortId) {
   const out = new Set();
@@ -260,11 +252,11 @@ export function truncate(str, maxLen = 80) {
 }
 
 /**
- * Erklaerender Satz zu einem Vokabularbegriff, als title-Text der Oberflaeche.
- * Quelle ist das Vokabular ueber den Datensatz (E-143); leer, wenn der Begriff
- * keine Definition traegt.
+ * Explanatory sentence for a vocabulary term, used as UI title text. Sourced
+ * from the vocabulary via the dataset (E-143); empty if the term carries no
+ * definition.
  * @param {Object} store
- * @param {?string} shortIdOrCurie  'program' oder 'm3gim-vocab:program'
+ * @param {?string} shortIdOrCurie  'program' or 'm3gim-vocab:program'
  * @returns {string}
  */
 export function glossOf(store, shortIdOrCurie) {

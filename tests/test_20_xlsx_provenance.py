@@ -1,21 +1,20 @@
-"""XLSX-Provenance-Spec: Phase 7 / Session 1.
+"""XLSX provenance spec: phase 7 / session 1.
 
-Jeder Record und jede aus Verknuepfungen abgeleitete Entitaet traegt
-m3gim-ontology:xlsxSource mit {m3gim-ontology:xlsxSheet, m3gim-ontology:xlsxRow[, m3gim-ontology:dataPointId]}.
+Every record and every entity derived from Verknuepfungen carries
+m3gim-ontology:xlsxSource with {m3gim-ontology:xlsxSheet, m3gim-ontology:xlsxRow[, m3gim-ontology:dataPointId]}.
 
-Zweck:
-  1. Strict-Assertions fuer 3 kuratierte Anker-Records -- die Fixture-Werte
-     sind bewusst gepflegt, XPASS/FAIL signalisiert Datenaenderung oder
-     Pipeline-Regression.
-  2. Soft-Coverage-Report fuer alle uebrigen Records: warnt, wenn die
-     xlsxSource-Rate unter einen Schwellenwert faellt, bricht die Suite
-     aber nicht ab. So bleibt der Lauf gruen, waehrend die Pipeline
-     fehlenden Provenance-Daten nachzieht.
+Purpose:
+  1. Strict assertions for 3 curated anchor records. The fixture values are
+     deliberately maintained, XPASS/FAIL signals a data change or a pipeline
+     regression.
+  2. Soft coverage report for all remaining records: warns when the xlsxSource
+     rate falls below a threshold but does not abort the suite. This keeps the
+     run green while the pipeline catches up on missing provenance data.
 
-Sheet-Werte im xlsxSource:
-  "Objekte"         -- aus M3GIM-Objekte.xlsx (direkt am Record).
-  "Verknuepfungen"  -- aus M3GIM-Verknuepfungen.xlsx (an Relationen,
-                       DetailAnnotations, SpatiotemporalEvents, AgRelOn).
+Sheet values in xlsxSource:
+  "Objekte"         from M3GIM-Objekte.xlsx (directly on the record).
+  "Verknuepfungen"  from M3GIM-Verknuepfungen.xlsx (on relations,
+                    DetailAnnotations, SpatiotemporalEvents, AgRelOn).
 """
 
 import pytest
@@ -24,21 +23,21 @@ from _helpers import ensure_list, iter_entities_with_id  # noqa: F401
 
 
 ANCHOR_RECORDS = {
-    # Finanz-Konvolut: 5 Detail-Eintraege (Ausgaben/Einnahmen/Summe) in Schilling.
-    # Zeile 123->122 nachgezogen: der Leerzeilen-Filter des tieferen Exports
-    # entfernte eine Zeile davor (gegen die echte XLSX verifiziert).
+    # Finance Konvolut: 5 detail entries (Ausgaben/Einnahmen/Summe) in Schilling.
+    # Row 123->122 adjusted: the blank-row filter of the deeper export removed a
+    # row before it (verified against the actual XLSX).
     "UAKUG/NIM_007 5_1": {
         "xlsx_row": 122,
         "expected_doc_type": "m3gim-vocab:note",
         "min_finance_details": 5,
     },
-    # Rezension: Dokumenttyp + Ort-/Datum-Kompositum (SpatiotemporalEvent)
+    # Review: document type + place/date composite (SpatiotemporalEvent)
     "UAKUG/NIM_004 3": {
         "xlsx_row": 44,
         "expected_doc_type": "m3gim-vocab:review",
         "has_spatiotemporal": True,
     },
-    # Musikinstitut-Konvolut: AgRelOn HasIsMember
+    # Music-institute Konvolut: AgRelOn HasIsMember
     "UAKUG/NIM_003 1_8": {
         "xlsx_row": 38,
         "has_agent_relation_type": "agrelon:HasIsMember",
@@ -51,7 +50,7 @@ def _records_by_signatur(records):
 
 
 def _xlsx_row(source):
-    """Extrahiert m3gim-ontology:xlsxRow aus einem xlsxSource-Objekt (dict oder None)."""
+    """Extract m3gim-ontology:xlsxRow from an xlsxSource object (dict or None)."""
     if not isinstance(source, dict):
         return None
     return source.get("m3gim-ontology:xlsxRow")
@@ -64,13 +63,13 @@ def _xlsx_sheet(source):
 
 
 # ---------------------------------------------------------------------------
-# Anker-Record-Asserts (strict)
+# Anchor record asserts (strict)
 # ---------------------------------------------------------------------------
 
 
 @pytest.mark.parametrize("signatur,expected", list(ANCHOR_RECORDS.items()))
 def test_anchor_record_has_xlsx_source(records, signatur, expected):
-    """Anker-Record existiert + xlsxSource zeigt auf erwartete Objekte-Zeile."""
+    """Anchor record exists and xlsxSource points to the expected Objekte row."""
     by_sig = _records_by_signatur(records)
     rec = by_sig.get(signatur)
     assert rec is not None, (
@@ -93,12 +92,12 @@ def test_anchor_record_has_xlsx_source(records, signatur, expected):
 
 @pytest.mark.parametrize("signatur,expected", list(ANCHOR_RECORDS.items()))
 def test_anchor_record_structural_shape(records, signatur, expected):
-    """Strukturelle Record-Eigenschaften aus der XLSX-Rohzeile passen.
+    """Structural record properties from the raw XLSX row match.
 
-    Bewusst keine Title-Substring-Assertion: Titel sind in der XLSX textuell
-    frei und aenderungsgefaehrdet. Wir pruefen stattdessen den Dokumenttyp
-    (aus der mapped `DOKUMENTTYP_TO_DFT`-Spalte) und das Vorhandensein eines
-    nicht-leeren Titels als Smoke-Check.
+    Deliberately no title substring assertion: titles are free text in the XLSX
+    and prone to change. Instead we check the document type (from the mapped
+    `DOKUMENTTYP_TO_DFT` column) and the presence of a non-empty title as a smoke
+    check.
     """
     by_sig = _records_by_signatur(records)
     rec = by_sig.get(signatur)
@@ -120,8 +119,8 @@ def test_anchor_record_structural_shape(records, signatur, expected):
 
 @pytest.mark.parametrize("signatur,expected", list(ANCHOR_RECORDS.items()))
 def test_anchor_nested_entities_have_source(records, signatur, expected):
-    """Alle Relations-abgeleiteten Entities im Anker-Record tragen xlsxSource
-    und die fachlich erwarteten Strukturen (Finanzen, AgRelOn, STE)."""
+    """All relation-derived entities in the anchor record carry xlsxSource and
+    the domain-expected structures (finance, AgRelOn, STE)."""
     by_sig = _records_by_signatur(records)
     rec = by_sig.get(signatur)
     assert rec is not None, f"Anker {signatur} fehlt"
@@ -144,7 +143,7 @@ def test_anchor_nested_entities_have_source(records, signatur, expected):
         f"{signatur}: nested entities ohne xlsxSource: {nested_without_source}"
     )
 
-    # Fachliche Erwartung: Mindestanzahl Finanz-Details
+    # Domain expectation: minimum number of finance details
     if "min_finance_details" in expected:
         finance_count = sum(
             1 for d in details
@@ -155,7 +154,7 @@ def test_anchor_nested_entities_have_source(records, signatur, expected):
             f"erwartet >= {expected['min_finance_details']}"
         )
 
-    # Fachliche Erwartung: bestimmter AgRelOn-Typ vorhanden
+    # Domain expectation: a specific AgRelOn type is present
     if "has_agent_relation_type" in expected:
         found_types = {r.get("@type") for r in agent_rels}
         assert expected["has_agent_relation_type"] in found_types, (
@@ -163,7 +162,7 @@ def test_anchor_nested_entities_have_source(records, signatur, expected):
             f"erwartet {expected['has_agent_relation_type']!r}"
         )
 
-    # Fachliche Erwartung: SpatiotemporalEvent-Referenz vorhanden
+    # Domain expectation: a SpatiotemporalEvent reference is present
     if expected.get("has_spatiotemporal"):
         ste_refs = ensure_list(rec.get("m3gim-ontology:hasAnnotation"))
         assert ste_refs, (
@@ -172,10 +171,10 @@ def test_anchor_nested_entities_have_source(records, signatur, expected):
 
 
 def test_anchors_cover_v2_feature_breadth():
-    """Meta-Test: die gewaehlten Anker decken zusammen die Breite der v2-Features
-    ab (Finanzen, AgRelOn, SpatiotemporalEvent, typisierter Dokumenttyp).
-    Sichert, dass ein Austausch eines Ankers nicht versehentlich eine Dimension
-    aus der Living Documentation streicht."""
+    """Meta test: the chosen anchors together cover the breadth of the v2
+    features (finance, AgRelOn, SpatiotemporalEvent, typed document type).
+    Ensures that swapping an anchor does not accidentally drop a dimension from
+    the living documentation."""
     has_finance = any("min_finance_details" in v for v in ANCHOR_RECORDS.values())
     has_agrelon = any("has_agent_relation_type" in v for v in ANCHOR_RECORDS.values())
     has_ste = any(v.get("has_spatiotemporal") for v in ANCHOR_RECORDS.values())
@@ -187,13 +186,13 @@ def test_anchors_cover_v2_feature_breadth():
 
 
 # ---------------------------------------------------------------------------
-# Soft-Coverage-Report
+# Soft coverage report
 # ---------------------------------------------------------------------------
 
 
 def test_xlsx_source_coverage_records(records):
-    """Soft: Mind. 99 % der Records haben m3gim-ontology:xlsxSource.
-    Folios sind zulaessige Ausnahmen (sie sind Metadaten-Platzhalter)."""
+    """Soft: at least 99 % of records have m3gim-ontology:xlsxSource. Folios are
+    admissible exceptions (they are metadata placeholders)."""
     total = 0
     with_source = 0
     for rec in records:
@@ -203,7 +202,7 @@ def test_xlsx_source_coverage_records(records):
         if isinstance(rec.get("m3gim-ontology:xlsxSource"), dict):
             with_source += 1
     coverage = with_source / total if total else 0.0
-    # Strict-Schwelle: 99 %. Der Default-Lauf muss 100 % treffen.
+    # Strict threshold: 99 %. The default run must hit 100 %.
     assert coverage >= 0.99, (
         f"xlsxSource-Coverage an Records: {with_source}/{total} "
         f"= {coverage:.1%} (erwartet >= 99 %)"
@@ -211,9 +210,9 @@ def test_xlsx_source_coverage_records(records):
 
 
 def test_xlsx_source_coverage_nested_entities(records):
-    """Soft: Mind. 95 % der Nested Entities (Details, AgRelOn, STE) tragen
-    xlsxSource. STE werden oberhalb im Graph separat gepflegt, daher hier
-    nur Record-interne Entities."""
+    """Soft: at least 95 % of nested entities (details, AgRelOn, STE) carry
+    xlsxSource. STE are maintained separately at the top of the graph, so this
+    covers only record-internal entities."""
     total = 0
     with_source = 0
     missing_examples = []
@@ -250,7 +249,7 @@ def test_xlsx_source_coverage_nested_entities(records):
 
 
 def test_xlsx_source_coverage_spatiotemporal_events(graph):
-    """Soft: Alle Top-Level-SpatiotemporalEvents tragen xlsxSource."""
+    """Soft: all top-level SpatiotemporalEvents carry xlsxSource."""
     events = [n for n in graph if n.get("@type") == "m3gim-ontology:Annotation"]
     if not events:
         pytest.skip("Keine SpatiotemporalEvents im Graph")
@@ -262,7 +261,7 @@ def test_xlsx_source_coverage_spatiotemporal_events(graph):
 
 
 def test_xlsx_source_row_is_positive_int(records, graph):
-    """Wenn xlsxSource vorhanden ist, muss xlsxRow ein positiver int sein."""
+    """When xlsxSource is present, xlsxRow must be a positive int."""
     offenders = []
     for n in graph:
         src = n.get("m3gim-ontology:xlsxSource")
@@ -272,7 +271,7 @@ def test_xlsx_source_row_is_positive_int(records, graph):
         if not isinstance(row, int) or row < 2:
             offenders.append((n.get("@id"), row))
 
-        # Nested durchsuchen
+        # Search nested
         for detail in ensure_list(n.get("m3gim-ontology:hasDetail")):
             if not isinstance(detail, dict):
                 continue

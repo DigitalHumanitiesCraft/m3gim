@@ -22,7 +22,7 @@
 // Facetten, die mehrere Werte zugleich tragen. Innerhalb einer Facette wirken
 // sie als ODER, zwischen Facetten bleibt es UND (E-151). Eine leere Liste
 // heisst Facette inaktiv.
-const LIST_FACETS = new Set(['ort', 'person', 'werk', 'institution', 'rolle', 'sicht']);
+const LIST_FACETS = new Set(['ort', 'person', 'werk', 'institution', 'rolle', 'docType', 'sicht']);
 
 const EMPTY = Object.freeze({
   ort: [],          // Stadtnamen (store.locations, cityOf-konsolidiert)
@@ -30,9 +30,13 @@ const EMPTY = Object.freeze({
   werk: [],         // Namen (store.works)
   institution: [],  // Namen (store.organizations)
   rolle: [],        // Akteursrollen (store.recordsByAgentRole)
+  docType: [],      // Dokumenttyp-Kurz-Ids (DFT-Hierarchie, expandDftFilter)
   zeitfenster: null, // [vonJahr, bisJahr] oder null = volle Spanne
   sicht: [],        // Mobilitaetssichten (mobilityClusterFor) oder 'kontext'
   schaerfe: 'weit', // 'weit' | 'eng' — Modus, kein Entitaetsfilter
+  search: '',       // Freitext (Bestand/Chronik) — Toolbar-lokal war es frueher
+  scope: 'fein',    // 'fein' | 'gesamt' — Erschliessungs-Scope (E-116/E-157),
+                    // steuert, ob nur erschlossene oder alle Bestaende erscheinen
 });
 
 // Ensemble, Ereignisrolle und Waehrung sind in records-for.js als Achsen
