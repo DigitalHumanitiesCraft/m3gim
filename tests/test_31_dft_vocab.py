@@ -3,7 +3,7 @@ skos:broader, readable German skos:prefLabel on the dft concepts (replaces the
 frontend hand table DOKUMENTTYP_LABELS), and the new concepts
 (briefumschlag/musikzeitschrift/chronik/verzeichnis) scaffolded in the model.
 
-Spec: data-model.md § 12, journal.md E-101. The Verknuepfungen type `dokument` as
+Spec: data-model.md § Dokumenttypen-Vokabular, journal.md E-101. The Verknuepfungen type `dokument` as
 aboutness is deferred until the deeper export delivers the type (the April data
 do not know it).
 """
@@ -39,14 +39,14 @@ def _dft_concepts(graph):
 def test_sammlung_is_own_concept_without_broader(records, graph):
     """`sammlung` is a standalone concept (no longer mapped to `konvolut`) and
     carries no `skos:broader`, the is-a relation to konvolut is not pre-decided
-    (data-model.md § 12)."""
+    (data-model.md § Dokumenttypen-Vokabular)."""
     concepts = _dft_concepts(graph)
     assert "m3gim-vocab:collection" in concepts, (
         "m3gim-vocab:collection fehlt im Graph — sammlung-Records mappen noch auf "
         "konvolut statt auf ein eigenes Concept (E-101)."
     )
     assert "skos:broader" not in concepts["m3gim-vocab:collection"], (
-        "sammlung darf kein skos:broader tragen (data-model.md § 12)."
+        "sammlung darf kein skos:broader tragen (data-model.md § Dokumenttypen-Vokabular)."
     )
     # data-backed: the sammlung records (most frequent type) point to the concept.
     refs = [
@@ -88,7 +88,7 @@ def test_every_record_dokumenttyp_resolves(records):
 
 
 def test_new_concepts_scaffolded():
-    """The new concepts are scaffolded in the model (data-model.md § 12): placed
+    """The new concepts are scaffolded in the model (data-model.md § Dokumenttypen-Vokabular): placed
     correctly in the broader hierarchy resp. deliberately top-level. They only
     become active with the deeper export; here just the structural spec."""
     from transform import DFT_BROADER, DOKUMENTTYP_TO_DFT

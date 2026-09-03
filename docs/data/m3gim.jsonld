@@ -3945,7 +3945,8 @@
         "@id": "m3gim-vocab:typescript"
       },
       "rico:hasOrHadLanguage": "de",
-      "m3gim-ontology:processingStatus": "begonnen"
+      "m3gim-ontology:processingStatus": "begonnen",
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_002",
@@ -3960,7 +3961,8 @@
         "@id": "m3gim-vocab:autobiography"
       },
       "rico:hasOrHadLanguage": "de",
-      "m3gim-ontology:processingStatus": "begonnen"
+      "m3gim-ontology:processingStatus": "begonnen",
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_003_Folio",
@@ -41380,7 +41382,8 @@
       "rico:date": "1934-01-01/1939-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:identityDocument"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_010",
@@ -41394,7 +41397,8 @@
       "rico:date": "1940-01-01/1969-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:contract"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_011_collection",
@@ -46414,7 +46418,8 @@
       "rico:date": "1969-01-01/1973-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:contract"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_013",
@@ -46428,7 +46433,8 @@
       "rico:date": "1969-01-01/1971-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:correspondence"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_014",
@@ -46442,7 +46448,8 @@
       "rico:date": "1971-01-01/1971-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:correspondence"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_015",
@@ -46456,7 +46463,8 @@
       "rico:date": "1951-01-01/1951-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_016_collection",
@@ -50055,7 +50063,8 @@
       "rico:date": "1950-01-01/1979-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:contract"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_018",
@@ -50069,7 +50078,8 @@
       "rico:date": "1955-01-01/1955-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_019",
@@ -50083,7 +50093,8 @@
       "rico:date": "1955-01-01/1964-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_020",
@@ -50097,7 +50108,8 @@
       "rico:date": "1969-01-01/1970-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_021",
@@ -50111,7 +50123,8 @@
       "rico:date": "1969-01-01/1970-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:correspondence"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_022_collection",
@@ -52971,7 +52984,8 @@
       "rico:date": "1953-01-01/1954-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:contract"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_025",
@@ -52985,7 +52999,8 @@
       "rico:date": "1954-01-01/1955-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:contract"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_026",
@@ -52999,7 +53014,8 @@
       "rico:date": "1955-01-01/1956-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:contract"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_027",
@@ -53013,7 +53029,8 @@
       "rico:date": "1956-01-01/1957-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:contract"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_028",
@@ -53027,7 +53044,8 @@
       "rico:date": "1957-01-01/1958-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:contract"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_029",
@@ -53041,7 +53059,8 @@
       "rico:date": "1958-01-01/1959-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:contract"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_030",
@@ -53055,7 +53074,8 @@
       "rico:date": "1960-01-01/1960-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:program"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_031",
@@ -53069,7 +53089,8 @@
       "rico:date": "1961-01-01/1961-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:program"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_032",
@@ -53083,7 +53104,8 @@
       "rico:date": "1962-01-01/1962-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_033",
@@ -53097,7 +53119,8 @@
       "rico:date": "1963-01-01/1963-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_034",
@@ -53111,7 +53134,8 @@
       "rico:date": "1963-01-01/1964-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_035",
@@ -53125,7 +53149,8 @@
       "rico:date": "1964-01-01/1965-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_036",
@@ -53139,7 +53164,8 @@
       "rico:date": "1966-01-01/1966-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_037",
@@ -53153,7 +53179,8 @@
       "rico:date": "1967-01-01/1967-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:program"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_038",
@@ -53167,7 +53194,8 @@
       "rico:date": "1968-01-01/1968-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_039",
@@ -53181,7 +53209,8 @@
       "rico:date": "1963-01-01/1963-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:correspondence"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_041",
@@ -53195,7 +53224,8 @@
       "rico:date": "1953-01-01/1953-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:press"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_042",
@@ -53209,7 +53239,8 @@
       "rico:date": "1959-06-01/1959-06-30",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:press"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_043_collection",
@@ -53370,7 +53401,8 @@
       "rico:date": "1963-01-01/1963-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_045",
@@ -53384,7 +53416,8 @@
       "rico:date": "1963-01-01/1963-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_046",
@@ -53398,7 +53431,8 @@
       "rico:date": "1960-12-14",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:program"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_047",
@@ -53412,7 +53446,8 @@
       "rico:date": "1961-09-30",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_048",
@@ -53426,7 +53461,8 @@
       "rico:date": "1961-11-12",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_049",
@@ -53440,7 +53476,8 @@
       "rico:date": "1949-01-01/1965-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:press"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_050",
@@ -53454,7 +53491,8 @@
       "rico:date": "1949-01-01/1965-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:press"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_051",
@@ -53468,7 +53506,8 @@
       "rico:date": "1955-05-01/1955-05-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:press"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_052",
@@ -53482,7 +53521,8 @@
       "rico:date": "1955-03-16",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:correspondence"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_053",
@@ -53496,7 +53536,8 @@
       "rico:date": "1960-01-20",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_054",
@@ -53510,7 +53551,8 @@
       "rico:date": "1965-12-09",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_055",
@@ -53524,7 +53566,8 @@
       "rico:date": "1960-03-10",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_056",
@@ -53538,7 +53581,8 @@
       "rico:date": "1959-01-01/1959-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:press"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_057",
@@ -53552,7 +53596,8 @@
       "rico:date": "1959-12-01/1961-02-28",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:press"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_058",
@@ -53566,7 +53611,8 @@
       "rico:date": "1952-01-01/1952-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:contract"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_059",
@@ -53580,7 +53626,8 @@
       "rico:date": "1959-05-01/1959-06-30",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:correspondence"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_060",
@@ -53594,7 +53641,8 @@
       "rico:date": "1952-05-26",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_061",
@@ -53608,7 +53656,8 @@
       "rico:date": "1951-01-01/1952-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_062",
@@ -53622,7 +53671,8 @@
       "rico:date": "1950-03-19",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_063",
@@ -53636,7 +53686,8 @@
       "rico:date": "1953-11-14",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_064",
@@ -53650,7 +53701,8 @@
       "rico:date": "1953-11-14",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:press"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_065",
@@ -53664,7 +53716,8 @@
       "rico:date": "1957-01-01/1957-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_066",
@@ -53678,7 +53731,8 @@
       "rico:date": "1965-07-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_067",
@@ -53692,7 +53746,8 @@
       "rico:date": "1953-01-01/1963-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:press"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_068",
@@ -53706,7 +53761,8 @@
       "rico:date": "1960-01-01/1967-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:program"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_069",
@@ -53720,7 +53776,8 @@
       "rico:date": "1960-01-01/1967-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:press"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_070",
@@ -53734,7 +53791,8 @@
       "rico:date": "1963-10-01/1963-11-30",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_071",
@@ -53748,7 +53806,8 @@
       "rico:date": "1956-01-01/1957-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_072",
@@ -53762,7 +53821,8 @@
       "rico:date": "1956-01-01/1957-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:program"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_073_collection",
@@ -58707,7 +58767,8 @@
       "rico:date": "1942-01-19",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:program"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_075",
@@ -58721,7 +58782,8 @@
       "rico:date": "1941-03-16/1941-04-01",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:program"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_076",
@@ -58735,7 +58797,8 @@
       "rico:date": "1941-03-01/1941-03-15",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:program"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_077",
@@ -58749,7 +58812,8 @@
       "rico:date": "1941-02-16/1941-03-01",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:program"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_078",
@@ -58763,7 +58827,8 @@
       "rico:date": "1941-01-01/1944-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:program"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_079",
@@ -58777,7 +58842,8 @@
       "rico:date": "1940-01-01/1941-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:program"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_080",
@@ -58790,7 +58856,8 @@
       "rico:title": "[Zeitungsausschnitt:] Die Rivalin der Meneghini-Callas singt in Wien / [handschriftlich eingetragen] Wie ich dieses Bild sah, bekam ich einen Lachkrampf.",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_081",
@@ -58804,7 +58871,8 @@
       "rico:date": "1959-03-27",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:correspondence"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_082",
@@ -58818,7 +58886,8 @@
       "rico:date": "1958-10-08",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:correspondence"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_083",
@@ -58831,7 +58900,8 @@
       "rico:title": "1 Glückwunschbillet zum Neuen Jahr an Ira Malaniuk",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:correspondence"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_084",
@@ -58845,7 +58915,8 @@
       "rico:date": "1957-09-28",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:correspondence"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_085",
@@ -58859,7 +58930,8 @@
       "rico:date": "1941-01-01/1944-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_086",
@@ -58873,7 +58945,8 @@
       "rico:date": "1996-09-04",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_087",
@@ -58887,7 +58960,8 @@
       "rico:date": "1956-04-28",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_088",
@@ -58900,7 +58974,8 @@
       "rico:title": "Programmblatt zu einem Liederabend Ira Malaniuks im Salle du Conservatoire (Paris???)",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_089",
@@ -58914,7 +58989,8 @@
       "rico:date": "1956-09-11",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_090",
@@ -58928,7 +59004,8 @@
       "rico:date": "1950-05-10",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_091",
@@ -58942,7 +59019,8 @@
       "rico:date": "1989-12-19/1998-08-25",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:correspondence"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_092",
@@ -58956,7 +59034,8 @@
       "rico:date": "1989-12-19/1998-08-25",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_093",
@@ -58970,7 +59049,8 @@
       "rico:date": "1999-05-01/1999-05-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_094",
@@ -58984,7 +59064,8 @@
       "rico:date": "1999-05-06",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_095",
@@ -58998,7 +59079,8 @@
       "rico:date": "1943-03-17",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:press"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_096",
@@ -59012,7 +59094,8 @@
       "rico:date": "1962-05-10",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:correspondence"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_097",
@@ -59026,7 +59109,8 @@
       "rico:date": "1998-05-01/1999-05-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:press"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_098",
@@ -59040,7 +59124,8 @@
       "rico:date": "1999-05-01/1999-05-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_099",
@@ -59054,7 +59139,8 @@
       "rico:date": "1999-05-01/1999-05-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:correspondence"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_100",
@@ -59068,7 +59154,8 @@
       "rico:date": "1998-12-01/1998-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:correspondence"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_101",
@@ -59082,7 +59169,8 @@
       "rico:date": "1999-06-07",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:correspondence"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_102",
@@ -59096,7 +59184,8 @@
       "rico:date": "1999-01-01/1999-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_103",
@@ -59110,7 +59199,8 @@
       "rico:date": "1999-03-28",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:correspondence"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_104",
@@ -59124,7 +59214,8 @@
       "rico:date": "1999-03-28",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_105",
@@ -59137,7 +59228,8 @@
       "rico:title": "Fotoumschlag des \"Grand Hotel Terme Caesar\" (Padua)",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_106",
@@ -59151,7 +59243,8 @@
       "rico:date": "1998-01-01/1998-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_107",
@@ -59165,7 +59258,8 @@
       "rico:date": "1998-05-15/1999-02-23",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:contract"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_108",
@@ -59179,7 +59273,8 @@
       "rico:date": "1998-05-09",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:contract"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_109",
@@ -59192,7 +59287,8 @@
       "rico:title": "Ira Malaniuk, Stammbaum",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:autobiography"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_110",
@@ -59205,7 +59301,8 @@
       "rico:title": "Visitenkarte von Paula Brugmans",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:correspondence"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_111",
@@ -59218,7 +59315,8 @@
       "rico:title": "Briefkuvert ohne Inhalt",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_112",
@@ -59231,7 +59329,8 @@
       "rico:title": "Ausgabe von \"Gondroms Festspielmagazin\"",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_113",
@@ -59245,7 +59344,8 @@
       "rico:date": "1999-10-22",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:correspondence"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_114",
@@ -59259,7 +59359,8 @@
       "rico:date": "1999-09-10/1999-09-12",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_115",
@@ -59273,7 +59374,8 @@
       "rico:date": "2000-01-01/2000-01-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:correspondence"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_116",
@@ -59286,7 +59388,8 @@
       "rico:title": "Repertoireliste von Ira Malaniuk",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:repertoireList"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_117",
@@ -59300,7 +59403,8 @@
       "rico:date": "2000-06-29",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:correspondence"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_118",
@@ -59313,7 +59417,8 @@
       "rico:title": "Programmblätter zu einem Liederabend Ira Malaniuks im Salle du Conservatoire",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:program"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_119",
@@ -59327,7 +59432,8 @@
       "rico:date": "1956-02-18",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:program"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_120",
@@ -59341,7 +59447,8 @@
       "rico:date": "1956-10-19",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:program"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_121",
@@ -59355,7 +59462,8 @@
       "rico:date": "1962-01-29",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:correspondence"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_122",
@@ -59368,7 +59476,8 @@
       "rico:title": "Visitenkarte von Marina Baag (Bayreuth)",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:correspondence"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_123",
@@ -59382,7 +59491,8 @@
       "rico:date": "1953-01-01/1953-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:program"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_124",
@@ -59396,7 +59506,8 @@
       "rico:date": "2000-03-17",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_125",
@@ -59410,7 +59521,8 @@
       "rico:date": "2000-12-14",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:correspondence"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_126",
@@ -59424,7 +59536,8 @@
       "rico:date": "2000-12-15",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:correspondence"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_127",
@@ -59438,7 +59551,8 @@
       "rico:date": "1999-02-18",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_128",
@@ -59452,7 +59566,8 @@
       "rico:date": "1958-03-28",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:correspondence"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_129",
@@ -59466,7 +59581,8 @@
       "rico:date": "1999-02-01/1999-02-28",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_130",
@@ -59480,7 +59596,8 @@
       "rico:date": "1999-06-01",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:correspondence"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_131",
@@ -59494,7 +59611,8 @@
       "rico:date": "1999-06-01",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:press"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_132",
@@ -59508,7 +59626,8 @@
       "rico:date": "1999-06-01",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:correspondence"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_133",
@@ -59522,7 +59641,8 @@
       "rico:date": "1947-01-01/1948-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:program"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_134_collection",
@@ -75754,7 +75874,8 @@
       "rico:date": "1955-01-01/1955-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_141",
@@ -75768,7 +75889,8 @@
       "rico:date": "1954-01-01/1954-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_142_collection",
@@ -78662,7 +78784,8 @@
       "rico:date": "1948-01-01/1991-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_144",
@@ -78676,7 +78799,8 @@
       "rico:date": "1972-01-01/1989-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:program"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_145",
@@ -78690,7 +78814,8 @@
       "rico:date": "1970-01-01/1970-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:press"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_146",
@@ -78704,7 +78829,8 @@
       "rico:date": "1969-01-01/1969-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:press"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_147",
@@ -78718,7 +78844,8 @@
       "rico:date": "1968-01-01/1968-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:press"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_148",
@@ -78732,7 +78859,8 @@
       "rico:date": "1967-01-01/1967-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:program"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_149",
@@ -78746,7 +78874,8 @@
       "rico:date": "1966-01-01/1966-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:press"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_150",
@@ -78760,7 +78889,8 @@
       "rico:date": "1965-01-01/1965-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:program"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_151",
@@ -78774,7 +78904,8 @@
       "rico:date": "1964-01-01/1964-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:program"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_152",
@@ -78788,7 +78919,8 @@
       "rico:date": "1963-01-01/1963-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:program"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_153",
@@ -78802,7 +78934,8 @@
       "rico:date": "1962-01-01/1962-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:press"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_154",
@@ -78816,7 +78949,8 @@
       "rico:date": "1961-01-01/1961-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:program"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_155",
@@ -78830,7 +78964,8 @@
       "rico:date": "1960-01-01/1960-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:program"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_156",
@@ -78844,7 +78979,8 @@
       "rico:date": "1959-01-01/1959-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:press"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_157",
@@ -78858,7 +78994,8 @@
       "rico:date": "1958-01-01/1958-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:program"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_158",
@@ -78872,7 +79009,8 @@
       "rico:date": "1958-04-06/1958-04-12",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:correspondence"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_159",
@@ -78886,7 +79024,8 @@
       "rico:date": "1957-01-01/1957-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:program"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_160",
@@ -78900,7 +79039,8 @@
       "rico:date": "2010-01-01/2010-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_161",
@@ -78914,7 +79054,8 @@
       "rico:date": "1954-06-30/1970-01-12",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:correspondence"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_162",
@@ -78928,7 +79069,8 @@
       "rico:date": "2009-02-25",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_163",
@@ -78942,7 +79084,8 @@
       "rico:date": "1957-01-01/1961-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:press"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_164",
@@ -78956,7 +79099,8 @@
       "rico:date": "1949-01-01/1972-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_165",
@@ -78970,7 +79114,8 @@
       "rico:date": "1970-06-26/1977-12-15",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:program"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_166",
@@ -78984,7 +79129,8 @@
       "rico:date": "1994-01-01/1994-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_167",
@@ -78998,7 +79144,8 @@
       "rico:date": "1999-09-11",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_168_1",
@@ -79045,7 +79192,8 @@
       "rico:date": "1999-09-11",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_170",
@@ -79059,7 +79207,8 @@
       "rico:date": "1973-10-29/1973-11-09",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_171",
@@ -79073,7 +79222,8 @@
       "rico:date": "1998-04-29",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:identityDocument"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_172",
@@ -79087,7 +79237,8 @@
       "rico:date": "1965-03-16",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_173",
@@ -79101,7 +79252,8 @@
       "rico:date": "1951-01-01/1951-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_174",
@@ -79114,7 +79266,8 @@
       "rico:title": "Satinschleife der der Volksbühne München e. V.",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_175",
@@ -79128,7 +79281,8 @@
       "rico:date": "1947-01-01/1947-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_176",
@@ -79141,7 +79295,8 @@
       "rico:title": "Goldgelbe Satinschleife",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_177",
@@ -79154,7 +79309,8 @@
       "rico:title": "Satinschleife des Musikvereins für Steiermark",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_178",
@@ -79168,7 +79324,8 @@
       "rico:date": "1991-01-01/1991-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_179",
@@ -79182,7 +79339,8 @@
       "rico:date": "1990-01-01/1990-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_180",
@@ -79196,7 +79354,8 @@
       "rico:date": "1999-01-01/1999-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_181",
@@ -79210,7 +79369,8 @@
       "rico:date": "1999-01-01/1999-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_182",
@@ -79224,7 +79384,8 @@
       "rico:date": "1994-01-01/1994-12-31",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_183",
@@ -79238,7 +79399,8 @@
       "rico:date": "1965-03-11",
       "rico:hasDocumentaryFormType": {
         "@id": "m3gim-vocab:collection"
-      }
+      },
+      "m3gim-ontology:unresolvedAggregate": true
     },
     {
       "@id": "m3gim-data:NIM_TT_01",
@@ -115479,7 +115641,7 @@
       "rico:name": "Matelot"
     }
   ],
-  "m3gim-ontology:exportDate": "2026-09-01T09:14:49.476949",
+  "m3gim-ontology:exportDate": "2026-09-03T12:16:22.599595",
   "m3gim-ontology:recordCount": 1000,
   "m3gim-ontology:recordSetCount": 19,
   "m3gim-ontology:approvedManualMatches": 368,

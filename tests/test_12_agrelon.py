@@ -1,10 +1,10 @@
-"""AgRelOn-Spec: Phase 4.8 — Agent-Agent-Relationen aus data.md Abschnitt 8.
+"""AgRelOn-Spec: Phase 4.8 — Agent-Agent-Relationen aus data-model.md § AgRelOn-Integration.
 
 STATUS: aktiv, sichert den Phase-4.8-Output (seit Session 28). Tests greifen,
 wenn die Pipeline Rollen wie 'arbeitgeber', 'absender' etc. nicht mehr zu
 agrelon:*-Relationen transformiert.
 
-Mapping aus data-model.md § 8.3:
+Mapping aus data-model.md § AgRelOn-Integration, Mapping M³GIM-Rolle → AgRelOn:
   arbeitgeber (institution)        -> agrelon:hasEmployer
   ausbildungsstätte (institution)  -> agrelon:isMemberOf (+ Lehrkraft hasTeacher)
   agent, vermittler (person)       -> agrelon:hasProfessionalContact
@@ -43,7 +43,7 @@ def test_has_employer_relations_from_arbeitgeber(records, xlsx_verknuepfungen):
     df = xlsx_verknuepfungen
     assert "typ" in df.columns and "rolle" in df.columns, (
         "Verknuepfungs-XLSX hat keine typ/rolle-Spalten — Struktur-Regress "
-        "(siehe knowledge/data.md § 17)."
+        "(siehe knowledge/data.md § Datenqualität)."
     )
     # Record-Identifier-Index aufbauen
     by_ident = {}
@@ -73,7 +73,7 @@ def test_has_employer_relations_from_arbeitgeber(records, xlsx_verknuepfungen):
         pytest.skip(
             f"Die Quelle fuehrt {int(mask.sum())} Zeilen typ=institution/"
             f"rolle=arbeitgeber, davon keine mit einer Signatur, die einem "
-            f"Record zugeordnet werden kann (verwaist, data.md § 17). Der "
+            f"Record zugeordnet werden kann (verwaist, data.md § Datenqualität). Der "
             f"Vergleich haette keinen Gegenstand."
         )
 

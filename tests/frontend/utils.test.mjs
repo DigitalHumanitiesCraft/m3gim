@@ -5,9 +5,8 @@
  *   node --test tests/frontend/utils.test.mjs
  *
  * Deckt die zuvor ungetestete Logik in docs/js/utils/date-parser.js und
- * docs/js/utils/format.js ab (inkl. der in dieser Refactor-Runde neu
- * hinzugekommenen Helfer asWikidataId / isWikidataId / entityName /
- * resolveRecords). Dom-frei: ausschliesslich node:test + node:assert/strict.
+ * docs/js/utils/format.js ab. Dom-frei: ausschliesslich node:test +
+ * node:assert/strict.
  */
 
 import { test } from 'node:test';
@@ -23,9 +22,7 @@ import {
   countLinks,
   truncate,
   asWikidataId,
-  isWikidataId,
   entityName,
-  resolveRecords,
   expandDftFilter,
 } from '../../docs/js/utils/format.js';
 
@@ -111,7 +108,7 @@ test('formatSignatur: strippt UAKUG/-Prefix', () => {
 });
 
 test('formatChildSignatur: zeigt nur die Stueck-Nummer', () => {
-  assert.equal(formatChildSignatur('UAKUG/NIM_003 1_1', 'UAKUG/NIM_003'), 'Nr. 1.1');
+  assert.equal(formatChildSignatur('UAKUG/NIM_003 1_1', 'UAKUG/NIM_003'), '1.1');
 });
 
 test('formatChildSignatur: ohne Parent faellt auf formatSignatur zurueck', () => {
@@ -166,7 +163,7 @@ test('truncate: kuerzt mit Ellipsis, laesst Kurztext unveraendert', () => {
 });
 
 // ---------------------------------------------------------------------------
-// asWikidataId / isWikidataId / entityName / resolveRecords (neue Helfer)
+// asWikidataId / entityName
 // ---------------------------------------------------------------------------
 
 test('asWikidataId: nur wd:-Praefix wird durchgereicht', () => {
@@ -175,25 +172,12 @@ test('asWikidataId: nur wd:-Praefix wird durchgereicht', () => {
   assert.equal(asWikidataId(null), null);
 });
 
-test('isWikidataId: boolesche Variante', () => {
-  assert.equal(isWikidataId('wd:Q1'), true);
-  assert.equal(isWikidataId(''), false);
-  assert.equal(isWikidataId(undefined), false);
-});
-
 test('entityName: name -> prefLabel -> fallback (kein @id automatisch)', () => {
   assert.equal(entityName({ name: 'A' }), 'A');
   assert.equal(entityName({ 'skos:prefLabel': 'P' }), 'P');
   assert.equal(entityName({ '@id': 'wd:Q1' }), '');
   assert.equal(entityName({ '@id': 'wd:Q1' }, '?'), '?');
   assert.equal(entityName(null, 'fb'), 'fb');
-});
-
-test('resolveRecords: loest IDs auf, filtert Fehlende', () => {
-  const store = { records: new Map([['a', { '@id': 'a' }], ['b', { '@id': 'b' }]]) };
-  const out = resolveRecords(store, ['a', 'fehlt', 'b']);
-  assert.equal(out.length, 2);
-  assert.deepEqual(out.map(r => r['@id']), ['a', 'b']);
 });
 
 // ---------------------------------------------------------------------------

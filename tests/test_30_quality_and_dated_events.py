@@ -117,7 +117,7 @@ def _source_cell(node):
 
 def test_dated_event_does_not_duplicate_ste(records, graph):
     """An ort,datum composite resolves into EXACTLY ONE representation
-    (data.md § 4): the annotation node carries place and date. The date part must
+    (data.md § Verknüpfungsmechanismus): the annotation node carries place and date. The date part must
     not additionally appear as its own date annotation on the same record,
     otherwise every date aggregation counts the date twice (audit finding on
     E-102)."""
@@ -139,7 +139,7 @@ def test_dated_event_does_not_duplicate_ste(records, graph):
     assert not dupes, (
         f"{len(dupes)} Datumsannotationen duplizieren eine Verortung aus "
         f"derselben Quellzelle mit demselben Datum und derselben Rolle "
-        f"(ort,datum doppelt repraesentiert, data.md § 4): {dupes[:5]}"
+        f"(ort,datum doppelt repraesentiert, data.md § Verknüpfungsmechanismus): {dupes[:5]}"
     )
 
 

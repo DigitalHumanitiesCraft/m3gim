@@ -38,14 +38,12 @@ from datetime import datetime
 from pathlib import Path
 from thefuzz import fuzz
 
-from _common import INDEX_HEADER_SHIFTS
+from _common import OUTPUT_DIR, SHEETS_DIR, load_index
 
 if sys.stdout.encoding != "utf-8":
     sys.stdout.reconfigure(encoding="utf-8")
 
-BASE_DIR = Path(__file__).parent.parent
-SHEETS_DIR = BASE_DIR / "data" / "google-spreadsheet"
-OUTPUT_FILE = BASE_DIR / "data" / "output" / "wikidata-reconciliation.json"
+OUTPUT_FILE = OUTPUT_DIR / "wikidata-reconciliation.json"
 
 WIKIDATA_API = "https://www.wikidata.org/w/api.php"
 USER_AGENT = "m3gim-research/1.0 (https://dhcraft.org/m3gim; office@dhcraft.org)"
@@ -421,8 +419,7 @@ INDEX_CONFIG = [
     {
         "type": "person",
         "label": "Personenindex",
-        "filename": "M3GIM-Personenindex.xlsx",
-        "shift_key": None,
+        "index_name": "Personenindex",
         "reconcile_fn": reconcile_person,
         "expected_types": Q_HUMAN,
         "extra_fields": [],
@@ -430,8 +427,7 @@ INDEX_CONFIG = [
     {
         "type": "org",
         "label": "Organisationsindex",
-        "filename": "M3GIM-Organisationsindex.xlsx",
-        "shift_key": "organisationsindex",
+        "index_name": "Organisationsindex",
         "reconcile_fn": lambda name, min_confidence=FUZZY_LOW_THRESHOLD, **kw: reconcile_simple(name, Q_ORGANIZATION, min_confidence=min_confidence),
         "expected_types": Q_ORGANIZATION,
         "extra_fields": [],
@@ -439,8 +435,7 @@ INDEX_CONFIG = [
     {
         "type": "location",
         "label": "Ortsindex",
-        "filename": "M3GIM-Ortsindex.xlsx",
-        "shift_key": "ortsindex",
+        "index_name": "Ortsindex",
         "reconcile_fn": lambda name, min_confidence=FUZZY_LOW_THRESHOLD, **kw: reconcile_simple(name, Q_GEOGRAPHIC, min_confidence=min_confidence),
         "expected_types": Q_GEOGRAPHIC,
         "extra_fields": [],
@@ -448,33 +443,12 @@ INDEX_CONFIG = [
     {
         "type": "work",
         "label": "Werkindex",
-        "filename": "M3GIM-Werkindex.xlsx",
-        "shift_key": "werkindex",
+        "index_name": "Werkindex",
         "reconcile_fn": reconcile_work,
         "expected_types": Q_MUSICAL_WORK,
         "extra_fields": ["komponist"],
     },
 ]
-
-
-def load_index(filename: str, shift_key: str = None) -> pd.DataFrame:
-    """Laedt eine Index-Tabelle mit optionaler Header-Shift-Korrektur."""
-    path = SHEETS_DIR / filename
-    if not path.exists():
-        print(f"  [SKIP] {filename} nicht gefunden")
-        return pd.DataFrame()
-
-    df = pd.read_excel(path)
-
-    if shift_key and shift_key in INDEX_HEADER_SHIFTS:
-        expected = INDEX_HEADER_SHIFTS[shift_key]
-        if len(df.columns) >= len(expected):
-            first_row = df.iloc[0].tolist()
-            df.columns = expected + list(df.columns[len(expected):])
-            first_df = pd.DataFrame([first_row], columns=df.columns)
-            df = pd.concat([first_df, df.iloc[1:]], ignore_index=True)
-
-    return df
 
 
 # ---------------------------------------------------------------------------
@@ -564,8 +538,9 @@ def run_reconciliation(entity_types: list, dry_run: bool = False,
             continue
 
         print(f"\n=== {cfg['label']} ===")
-        df = load_index(cfg["filename"], shift_key=cfg["shift_key"])
-        if df.empty:
+        df = load_index(SHEETS_DIR, cfg["index_name"])
+        if df is None or df.empty:
+            print(f"  [SKIP] {cfg['index_name']} nicht gefunden")
             continue
 
         # Spaltennamen ermitteln

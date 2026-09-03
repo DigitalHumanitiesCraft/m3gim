@@ -4,7 +4,7 @@
  * Die Klasse `m3gim-ontology:Annotation` traegt jede Datierung und jede
  * Verortung. Der Store legt sie normalisiert ab und bietet den Ansichten vier
  * Zugaenge, mit denen sie eine Datierung lesen, auswaehlen und ordnen koennen,
- * ohne einen Property-Namen zu kennen: `annotationsOf`, `datingsOf`,
+ * ohne einen Property-Namen zu kennen: `datingsOf`,
  * `datingsByScope` und `primaryYear`.
  *
  * Geprueft werden die vier Anforderungen aus
@@ -31,7 +31,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
 import {
-  loadArchive, annotationsOf, datingsOf, datingsByScope, primaryYear,
+  loadArchive, datingsOf, datingsByScope, primaryYear,
 } from '../../docs/js/data/loader.js';
 import { roleLabel, roleIdOf, roleToken } from '../../docs/js/utils/format.js';
 import { splitQualifier } from '../../docs/js/utils/date-parser.js';
@@ -394,10 +394,10 @@ describe('Verortete Annotationen bleiben die Mobilitaets-Ereignisse', () => {
       ['m3gim-data:ev_R_PLACE_ziel']);
   });
 
-  test('annotationsOf liefert beide, datingsOf nur die datierte', async () => {
+  test('der Record traegt beide Annotationen, datingsOf nur die datierte', async () => {
     const store = await storeFrom(FIXTURE);
     const rec = store.records.get('m3gim-data:R_PLACE');
-    assert.equal(annotationsOf(store, rec).length, 2);
+    assert.equal(store.recordToAnnotations.get('m3gim-data:R_PLACE').length, 2);
     assert.deepEqual(datingsOf(store, rec).map(d => d.roleLabel), ['erwähnt']);
   });
 });

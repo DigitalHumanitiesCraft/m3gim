@@ -26,7 +26,7 @@ BASE_URL = os.environ.get("M3GIM_SMOKE_URL", "http://localhost:8765/")
 # Karte, E-111) und der Korb sind seit E-109/E-111 sichtbar und jetzt im Loop;
 # die verborgenen Perspektiv-Tabs (mobilitaets-atlas, repertoire, biogramm)
 # bleiben per `hidden` ausgeblendet und werden spaeter ueberarbeitet (E-81).
-TABS = ["bestand", "chronik", "statistik", "indizes", "karte", "netzwerk", "verknuepfungen", "korb"]
+TABS = ["bestand", "chronik", "statistik", "indizes", "karte", "netzwerk", "korb"]
 
 # Anker-Records: Titel-Snippets, die im Bestand-Tab-DOM erreichbar sein muessen.
 # Nur Records mit Verknuepfungen (sonst werden sie durch den "nur bearbeitet"-
@@ -101,7 +101,7 @@ def main() -> int:
             if text.startswith("[") and "]" in text:
                 tag = text[1:text.index("]")]
                 if tag in ("chronik", "bestand", "indizes", "statistik",
-                           "karte", "netzwerk", "verknuepfungen", "korb"):
+                           "karte", "netzwerk", "korb"):
                     stamps[tag] = text
 
         page.on("console", on_console)
@@ -145,19 +145,18 @@ def main() -> int:
         #     ein View still ins Nichts rendert (siehe currentFilters-
         #     Regression) oder ein Key beim Refactor still wegfliegt.
         stamp_expectations = {
-            "bestand":    ["konvolute", "records", "sort"],
+            "bestand":    ["konvolute", "records", "stand"],
             "chronik":    ["records", "jahre-belegt", "datiert", "undatiert", "sicht-gedeckt", "spanne"],
-            "statistik":  ["records", "events", "personen", "ansichten", "aktiv"],
+            "statistik":  ["records", "ansichten", "aktiv", "spanne"],
             "indizes":    ["personen", "organisationen", "orte", "werke"],
             "karte":      ["entitaeten", "orte", "belege", "unverortet", "jahre"],
-            "netzwerk":   ["total", "ring1", "ring2", "agrelon"],
-            # Der Verknuepfungen-Tab traegt seit dem Umbau auf die geteilte
-            # Filterspalte die aktiven Facetten im Stempel; die Knotenzahlen je
-            # Typ heissen dort jetzt k-<typ>, damit die Facettenschluessel frei
-            # sind.
-            "verknuepfungen": ["fokus", "schaerfe", "facetten", "person", "ort",
-                               "werk", "institution", "rolle", "knoten",
-                               "recordsWeit", "recordsEng"],
+            # Das Netzwerk fuehrt seit E-160 Fokus, Knotentypen und beide
+            # Evidenzmasse in einem Stempel: die Knotenzahlen je Typ heissen
+            # k-<typ>, damit die Facettenschluessel frei bleiben.
+            "netzwerk":   ["fokus", "facetten", "person", "ort", "werk",
+                           "institution", "stand", "knoten",
+                           "k-person", "k-werk", "ring1", "ring2", "agrelon",
+                           "recordsWeit", "recordsEng"],
             "korb":       ["eintraege", "aufgeloest", "events", "finanzen"],
         }
         for view, required in stamp_expectations.items():
@@ -258,31 +257,34 @@ def main() -> int:
                 state="attached", timeout=8000)
             nodes_all = page.locator('#tab-karte .mob-nodes g.mob-node').count()
             arcs = page.locator('#tab-karte .mob-arcs path').count()
-            picker = page.locator('#tab-karte .mob-entity__list .mob-entity__item').count()
             land = page.locator('#tab-karte .mob-land path').count()
 
             # Eine konkrete Entitaet waehlen (Bayreuther Festspiele) und pruefen,
-            # dass die Knotenmenge auf ihre Orte schrumpft.
+            # dass die Knotenmenge auf ihre Orte schrumpft. Die Wahl laeuft seit
+            # dem Sidebar-Umbau ueber dasselbe Facetten-Muster wie jeder Filter.
+            entity_facet = page.locator('#tab-karte .fs-facet[data-facet="entitaet"]')
+            entity_facet.locator('.fs-search').fill("Bayreuther Festspiele")
+            page.wait_for_timeout(200)
+            picker = entity_facet.locator('.fs-option').count()
             nodes_entity = None
-            target = page.locator(
-                '#tab-karte .mob-entity__item:has-text("Bayreuther Festspiele")').first
+            target = entity_facet.locator('.fs-option').first
             if target.count() > 0:
                 target.click()
-                page.wait_for_timeout(300)
+                page.wait_for_timeout(400)
                 nodes_entity = page.locator('#tab-karte .mob-nodes g.mob-node').count()
             new_errs = expect_no_new_errors(global_errors, errs_before)
             # Erwartung: Gesamt-Geografie mit mehreren Knoten, KEINE Pfeile, eine
             # befuellte Entitaets-Auswahl, Laendergeometrie, Entitaetswahl
             # liefert Knoten, keine Konsolenfehler.
-            ok = (nodes_all >= 5 and arcs == 0 and picker >= 5 and land >= 50
+            ok = (nodes_all >= 1 and arcs == 0 and picker >= 1 and land >= 50
                   and (nodes_entity is None or nodes_entity >= 1) and not new_errs)
             if ok:
                 results.append(("OK", "karte:render               ",
-                                f"{nodes_all} Knoten gesamt, 0 Linien, {picker} Entitaeten, "
+                                f"{nodes_all} Knoten (Malaniuk), 0 Linien, {picker} Vorschlaege, "
                                 f"Bayreuther Festspiele -> {nodes_entity} Orte, {land} Laender"))
             else:
                 results.append(("FAIL", "karte:render               ",
-                                f"Knoten={nodes_all}, Linien={arcs}, Auswahl={picker}, "
+                                f"Knoten={nodes_all}, Linien={arcs}, Vorschlaege={picker}, "
                                 f"Entitaet-Knoten={nodes_entity}, Laender={land}, errs={len(new_errs)}"))
                 for e in new_errs[:2]:
                     results.append(("  ", " " * 24, e[:120]))
@@ -292,22 +294,22 @@ def main() -> int:
 
         # --- Canary M4: geteilter Cross-View-Filter
         #     (architecture.md § Cross-View-Filter). Im
-        #     Verknuepfungen-Graph Ort=Bayreuth setzen -> der Graph fokussiert
+        #     Netzwerk-Graph Ort=Bayreuth setzen -> der Graph fokussiert
         #     Bayreuth (Stempel ort:Bayreuth) UND der bereits gerenderte Bestand
         #     filtert synchron auf die Bayreuth-Records (Stempel gefiltert:ja).
         #     Harter Schutz fuer die Synchronitaet ueber den geteilten filter-state.
         #     Der Ort steht seit dem Sidebar-Umbau als Facette in der linken
         #     Spalte: Suchfeld eingrenzen, dann den Wert anklicken.
         try:
-            page.locator('[data-tab="verknuepfungen"]').first.click()
+            page.locator('[data-tab="netzwerk"]').first.click()
             page.wait_for_timeout(500)
             errs_before = len(global_errors)
-            ort_facet = page.locator('#tab-verknuepfungen .fs-facet[data-facet="ort"]')
+            ort_facet = page.locator('#tab-netzwerk .fs-facet[data-facet="ort"]')
             ort_facet.locator(".fs-search").fill("Bayreuth")
             page.wait_for_timeout(200)
             ort_facet.get_by_text("Bayreuth", exact=True).first.click()
             page.wait_for_timeout(500)
-            vk_stamp = stamps.get('verknuepfungen', '')
+            vk_stamp = stamps.get('netzwerk', '')
             page.locator('[data-tab="bestand"]').first.click()
             page.wait_for_timeout(600)
             bestand_stamp = stamps.get('bestand', '')
@@ -336,9 +338,9 @@ def main() -> int:
             page.reload(wait_until="networkidle", timeout=20000)
             page.wait_for_timeout(800)
             hash_after = page.evaluate("() => window.location.hash")
-            page.locator('[data-tab="verknuepfungen"]').first.click()
+            page.locator('[data-tab="netzwerk"]').first.click()
             page.wait_for_timeout(600)
-            vk_after = stamps.get('verknuepfungen', '')
+            vk_after = stamps.get('netzwerk', '')
             new_errs = expect_no_new_errors(global_errors, errs_before)
             if ("ort=Bayreuth" in hash_before and "ort=Bayreuth" in hash_after
                     and "ort:Bayreuth" in vk_after and not new_errs):
@@ -362,12 +364,15 @@ def main() -> int:
         page.wait_for_timeout(400)
 
         # --- Anker-Titel: im DOM erreichbar? ---
-        # (Kein Klick, weil Konvolute im Archiv-Tab ggf. eingeklappt sind und
-        # Virtual-Scrolling die Zeilen lazy rendert. Reicht fuer Smoke: ist
-        # der Titel als DOM-Text anwesend -> Daten sind durchgereicht.)
+        # Konvolute oeffnen geschlossen (Projektleitung, 2026-09-03), also erst
+        # jeden Kopf aufklappen, dann ist jeder Kindtitel als DOM-Text da.
         try:
             page.locator('[data-tab="bestand"]').first.click()
             page.wait_for_timeout(400)
+            heads = page.locator('#tab-bestand .archiv-row--konvolut')
+            for i in range(heads.count()):
+                heads.nth(i).click()
+                page.wait_for_timeout(60)
         except Exception:
             pass
 
@@ -434,53 +439,66 @@ def main() -> int:
             results.append(("WARN", "anchor:NIM_004_1                 ",
                             f"check uebersprungen: {e}"))
 
-        # --- Konvolut-Meta-Chips: direkt in der Bestand-Tabelle sichtbar? ---
+        # --- Typ-Chips des eingeklappten Konvolut-Kopfs: inline neben dem Titel
+        #     in derselben Titelzeile, der Erschliessungsstand ausschliesslich
+        #     im Kopf-Tooltip (E-181). ---
         try:
             page.goto(BASE_URL, wait_until="networkidle", timeout=10000)
             page.wait_for_timeout(800)
             page.locator('[data-tab="bestand"]').first.click()
             page.wait_for_timeout(400)
-            chips = page.locator(".archiv-konvolut-meta .chip--compact").count()
-            status = page.locator(".archiv-konvolut-status").count()
-            if chips > 0 and status > 0:
+            chips = page.locator(
+                ".archiv-row--konvolut .archiv-titel-zeile"
+                " .archiv-konvolut-meta .chip--compact").count()
+            row_text = " ".join(page.locator(".archiv-row--konvolut").all_inner_texts())
+            stand_in_zeile = "Erschließungsstand" in row_text
+            heads = page.locator(".archiv-row--konvolut .archiv-titel")
+            tips = [heads.nth(i).get_attribute("data-tip") or ""
+                    for i in range(heads.count())]
+            status_in_tip = any("Erschließungsstand:" in tip for tip in tips)
+            if chips > 0 and not stand_in_zeile and status_in_tip:
                 results.append(("OK", "konvolut-meta-chips              ",
-                                f"{chips} Typ-Chips, {status} Status-Zeilen"))
+                                f"{chips} Typ-Chips inline am Titel, "
+                                f"Stand im Kopf-Tooltip"))
             else:
                 results.append(("FAIL", "konvolut-meta-chips              ",
-                                f"chips={chips}, status={status}"))
+                                f"chips={chips}, stand-in-zeile={stand_in_zeile}, "
+                                f"stand-im-tooltip={status_in_tip}"))
         except Exception as e:
             results.append(("WARN", "konvolut-meta-chips              ",
                             f"check uebersprungen: {e}"))
 
-        # --- Erschliessungs-Toggle (E-116): der "alle"-Modus blendet die nicht
-        #     erschlossenen Bestaende ein, ausgegraut markiert; der Default zeigt
-        #     nur erschlossene. Sichert, dass alle Daten erreichbar sind, ohne
-        #     den Erschliessungsstand zu kaschieren (Zielbild Linie 3). ---
+        # --- Erschliessungsstand (E-162, Basis nach E-165, Facette nach E-204):
+        #     der Bestand oeffnet auf abgeschlossen + begonnen. Die Wahl steht
+        #     als Facette in der Spalte und als Gruppe in der Chip-Zeile; wer
+        #     beide Chips entfernt, sieht die Grundmenge. Die Dokumentbasis ist
+        #     die Verknuepfung, also gibt es keinen ausgegrauten Rest. ---
         try:
             page.goto(BASE_URL, wait_until="networkidle", timeout=10000)
             page.wait_for_timeout(600)
             page.locator('[data-tab="bestand"]').first.click()
             page.wait_for_timeout(400)
+            group = page.locator('#tab-bestand .filter-strip .filter-strip__group',
+                                 has_text="Erschließungsstand")
+            n_chip = group.locator('.fs-chip').count()
+            facet_rows = page.locator('#tab-bestand .vs-section',
+                                      has_text="Erschließungsstand").locator('.fs-option').count()
             rows_default = page.locator('#tab-bestand tbody tr').count()
-            un_default = page.locator(
-                '#tab-bestand .archiv-row--unerschlossen').count()
-            page.locator('#tab-bestand .archiv-toggle__input').first.check()
-            page.wait_for_timeout(500)
+            for _ in range(n_chip):
+                group.locator('.fs-chip').first.click()
+                page.wait_for_timeout(250)
             rows_all = page.locator('#tab-bestand tbody tr').count()
-            un_all = page.locator(
-                '#tab-bestand .archiv-row--unerschlossen').count()
-            # Erwartung: mehr Zeilen im "alle"-Modus, im Default keine ausgegraute
-            # Zeile, im "alle"-Modus mindestens eine als nicht erschlossen markiert.
-            if rows_all > rows_default and un_default == 0 and un_all > 0:
-                results.append(("OK", "bestand:erschliessung-toggle     ",
-                                f"erschlossen {rows_default} -> alle {rows_all} Zeilen, "
-                                f"{un_all} nicht erschlossen markiert"))
+            un_all = page.locator('#tab-bestand .archiv-row--unerschlossen').count()
+            if n_chip == 2 and facet_rows == 4 and rows_all > rows_default and un_all == 0:
+                results.append(("OK", "bestand:erschliessungsstand      ",
+                                f"Facette 4 Werte, 2 Default-Chips, {rows_default} -> "
+                                f"ohne Chips {rows_all} Zeilen"))
             else:
-                results.append(("FAIL", "bestand:erschliessung-toggle     ",
-                                f"default={rows_default}/un{un_default}, "
-                                f"alle={rows_all}/un{un_all}"))
+                results.append(("FAIL", "bestand:erschliessungsstand      ",
+                                f"chips={n_chip}, facette={facet_rows}, "
+                                f"default={rows_default}, offen={rows_all}, un={un_all}"))
         except Exception as e:
-            results.append(("WARN", "bestand:erschliessung-toggle     ",
+            results.append(("WARN", "bestand:erschliessungsstand      ",
                             f"check uebersprungen: {e}"))
 
         # --- Spezial-Check: duplicate @id im JSON-LD (Frontend-Store) ---
@@ -516,7 +534,7 @@ def main() -> int:
                                 f"nur bekannte Kollisionen ({len(known)})"))
                 for d in known:
                     results.append(("  ", " " * 34,
-                                    f"{d['id']} (known, siehe data.md § 17)"))
+                                    f"{d['id']} (known, siehe data.md § Datenqualität)"))
             else:
                 results.append(("OK", "graph:duplicate-@id             ",
                                 "keine kollidierenden @ids im Graph"))

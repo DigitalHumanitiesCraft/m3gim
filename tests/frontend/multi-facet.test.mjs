@@ -23,11 +23,11 @@ import assert from 'node:assert/strict';
 
 import {
   getFilter, setFilter, resetFilter, isFilterActive, facetValues,
-  applyViewDefault, isFacetTouched,
+  applyViewDefault, addFacetValue,
 } from '../../docs/js/ui/filter-state.js';
 import {
   filterBySharedState, isSharedFiltered,
-} from '../../docs/js/views/_archive-filter.js';
+} from '../../docs/js/views/_bestand-filter.js';
 
 describe('Geteilter Filter haelt Listen', () => {
   beforeEach(() => resetFilter());
@@ -144,24 +144,47 @@ describe('Leerformen kippen keine lesende Stelle', () => {
   });
 });
 
+describe('addFacetValue (Cross-Navigation verengt, ersetzt nicht)', () => {
+  beforeEach(() => resetFilter());
+
+  test('haengt an, ohne den vorhandenen Wert zu verwerfen', () => {
+    setFilter({ ort: ['Bayreuth'] });
+    addFacetValue('ort', 'Wien');
+    assert.deepEqual(getFilter().ort, ['Bayreuth', 'Wien']);
+  });
+
+  test('ein doppelter Wert bleibt einmal drin', () => {
+    addFacetValue('person', 'Malaniuk, Ira');
+    addFacetValue('person', 'Malaniuk, Ira');
+    assert.deepEqual(getFilter().person, ['Malaniuk, Ira']);
+  });
+
+  test('ein Schluessel ausserhalb der Facettenachsen wirkt nicht', () => {
+    addFacetValue('search', 'Bayreuth');
+    addFacetValue('gibtsnicht', 'x');
+    assert.equal(getFilter().search, '');
+    assert.equal(isFilterActive(), false);
+  });
+});
+
 describe('Voreinstellung je Ansicht', () => {
   test('eine unberuehrte Facette nimmt den View-Default an', () => {
     resetFilter();
-    applyViewDefault({ schaerfe: 'eng' });
-    assert.equal(getFilter().schaerfe, 'eng');
-    assert.equal(isFacetTouched('schaerfe'), false, (
-      'Die Voreinstellung ist keine Wahl des Nutzers; sonst koennte die '
-      + 'naechste Ansicht ihren eigenen Default nicht mehr setzen.'
-    ));
+    applyViewDefault({ stand: ['abgeschlossen'] });
+    assert.deepEqual(getFilter().stand, ['abgeschlossen']);
+    // Die Voreinstellung ist keine Wahl des Nutzers; sonst koennte die
+    // naechste Ansicht ihren eigenen Default nicht mehr setzen.
+    applyViewDefault({ stand: ['begonnen'] });
+    assert.deepEqual(getFilter().stand, ['begonnen']);
     resetFilter();
   });
 
   test('eine gewaehlte Facette ueberschreibt der View-Default nicht', () => {
     resetFilter();
-    setFilter({ schaerfe: 'eng' });
-    applyViewDefault({ schaerfe: 'weit' });
-    assert.equal(getFilter().schaerfe, 'eng', (
-      'Ein Tab-Wechsel darf den bewusst gesetzten Schaerfegrad nicht kippen.'
+    setFilter({ stand: ['zurueckgestellt'] });
+    applyViewDefault({ stand: ['abgeschlossen'] });
+    assert.deepEqual(getFilter().stand, ['zurueckgestellt'], (
+      'Ein Tab-Wechsel darf den bewusst gesetzten Erschliessungsstand nicht kippen.'
     ));
     resetFilter();
   });
@@ -169,8 +192,11 @@ describe('Voreinstellung je Ansicht', () => {
   test('Zuruecksetzen loest den Vermerk wieder', () => {
     resetFilter();
     setFilter({ ort: ['Wien'] });
-    assert.equal(isFacetTouched('ort'), true);
+    applyViewDefault({ ort: ['Graz'] });
+    assert.deepEqual(getFilter().ort, ['Wien'], 'gewaehlt schlaegt Default');
     resetFilter();
-    assert.equal(isFacetTouched('ort'), false);
+    applyViewDefault({ ort: ['Graz'] });
+    assert.deepEqual(getFilter().ort, ['Graz'], 'nach dem Reset greift der Default wieder');
+    resetFilter();
   });
 });

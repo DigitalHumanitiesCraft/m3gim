@@ -26,10 +26,13 @@ from pathlib import Path
 if sys.stdout.encoding != "utf-8":
     sys.stdout.reconfigure(encoding="utf-8")
 
-BASE = Path(__file__).parent.parent
-JSONLD = BASE / "data" / "output" / "m3gim.jsonld"
-RECON = BASE / "data" / "output" / "wikidata-reconciliation.json"
-OUTPUT = BASE / "data" / "reports" / "quality-snapshot.md"
+sys.path.insert(0, str(Path(__file__).parent))
+from _common import OUTPUT_DIR, REPO_ROOT, REPORTS_DIR  # noqa: E402
+
+BASE = REPO_ROOT
+JSONLD = OUTPUT_DIR / "m3gim.jsonld"
+RECON = OUTPUT_DIR / "wikidata-reconciliation.json"
+OUTPUT = REPORTS_DIR / "quality-snapshot.md"
 
 
 def load_jsonld():

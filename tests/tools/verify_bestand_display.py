@@ -83,7 +83,7 @@ def load_graph():
 
 
 def expected_display_set(records, konvolute, konvolut_children):
-    """Repliziert getOrderedItems(showAll=True) aus archive-holdings.js.
+    """Repliziert getOrderedItems(showAll=True) aus bestand.js.
 
     Der Umfang "Gesamt" blendet nichts mehr aus (E-157), einzig die
     Folio-Metadaten-Records bleiben in beiden Umfaengen aussen vor.
@@ -194,9 +194,11 @@ def main():
         page.on("pageerror", lambda e: errors.append(str(e)))
         page.goto(BASE_URL, wait_until="networkidle")
         page.wait_for_selector("#bestand-tbody tr", timeout=15000)
-        # Der Umfang steht seit E-156 als Segment in der linken Sidebar.
-        page.click(".fs-scope__seg[data-value=gesamt]")
-        page.wait_for_timeout(500)
+        # The Bestand default hides unprocessed records as a regular filter
+        # chip (E-170); the reset link in the filter strip yields the full set.
+        if page.query_selector(".vs-status__reset"):
+            page.click(".vs-status__reset")
+            page.wait_for_timeout(500)
         rows = dom_rows(page)
         browser.close()
 

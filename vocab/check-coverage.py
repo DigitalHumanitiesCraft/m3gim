@@ -18,7 +18,7 @@ The run is read-only. It complements the term conformance lock from
 tests/test_26_term_conformance.py, which exempts the own namespace because
 until the vocabulary file existed there was no source to check against. A
 deliberate exception is the value `nicht eingehalten`, a contract status in the
-role column that the schema explicitly treats as no role term (data-model.md § 11).
+role column that the schema explicitly treats as no role term (data-model.md § Finanzschicht).
 """
 
 from __future__ import annotations
@@ -47,7 +47,7 @@ CONTEXT_ALIASES = {
     "composer": "m3gim-ontology:composer",
 }
 
-# Property that carries values of the role vocabulary (data-model.md § 7).
+# Property that carries values of the role vocabulary (data-model.md § RiC-O-Kern und m3gim-Erweiterung).
 # The four earlier role properties have collapsed into this single one.
 ROLE_KEYS = frozenset({"role"})
 

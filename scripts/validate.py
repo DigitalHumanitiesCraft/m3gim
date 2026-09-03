@@ -18,9 +18,9 @@ from pathlib import Path
 from datetime import datetime
 from dataclasses import dataclass
 
+from _common import load_index as _load_index
 from transform import (
     build_index_lookup,
-    load_index as _load_index,
     load_verknuepfungen,
     normalize_role,
     resolve_verknuepfungen_source,
@@ -205,7 +205,7 @@ def is_empty_row(row: pd.Series, key_fields: list) -> bool:
 
 
 def load_index(name: str) -> pd.DataFrame | None:
-    """Laedt einen Index ueber den Loader der Pipeline.
+    """Laedt einen Index ueber den gemeinsamen Loader in _common.py.
 
     Die eigene Kopie dieser Funktion kannte nur den Legacy-Zweig der
     Header-Shift-Korrektur; sie liess dem Personenindex die kopflose
@@ -213,14 +213,14 @@ def load_index(name: str) -> pd.DataFrame | None:
     Kennungsspalte. Die Validierung sah damit andere Spalten als die
     Transformation, und die Befunde der Index-Verdichtung fielen aus (E-152).
     """
-    return _load_index(name)
+    return _load_index(SHEETS_DIR, name)
 
 
 # ---------------------------------------------------------------------------
 # Pruefschicht der CSV-Quelle (E-152)
 # ---------------------------------------------------------------------------
 
-# Zulaessige Datumsnotationen der Verknuepfungstabelle nach data.md § 6:
+# Zulaessige Datumsnotationen der Verknuepfungstabelle nach data.md § Datumskonventionen:
 # volles ISO-Datum, Monat, Jahr, Zeitspanne mit "/", die belegte Freitextform
 # "bis" sowie die Klammer-/Fragezeichen-Unsicherheit und die drei Qualifier.
 _ISO_DATE_PART = r'\d{4}(?:-\d{2}(?:-\d{2})?)?'
@@ -294,7 +294,7 @@ def validate_verknuepfungen_source(df: pd.DataFrame,
 
     Die Schicht meldet und repariert nichts. Jeder Befund traegt Blatt und
     Zeile, damit das Erschliessungsteam ihn in der Tabelle findet
-    (data.md § 3, § 6, § 17; architecture.md § Pruefschicht).
+    (data.md § Tabellenmodell, § Datumskonventionen, § Datenqualität; architecture.md § Pruefschicht).
     """
     issues: list[ValidationIssue] = []
     combos: dict = {}
@@ -339,7 +339,7 @@ def validate_verknuepfungen_source(df: pd.DataFrame,
                     issues.append(ValidationIssue(
                         level="ERROR", code="E010", table="Verknuepfungen",
                         row=excel_row, sheet=sheet, field="name", value=candidate,
-                        message="Datumsnotation ausserhalb von data.md § 6",
+                        message="Datumsnotation ausserhalb von data.md § Datumskonventionen",
                     ))
 
         # --- Buendelungskennung ---------------------------------------------
@@ -403,7 +403,7 @@ def validate_verknuepfungen_source(df: pd.DataFrame,
 
 
 def validate_index_identities(name: str, lookup: dict) -> list[ValidationIssue]:
-    """Meldet die Befunde der Index-Verdichtung (data.md § 3).
+    """Meldet die Befunde der Index-Verdichtung (data.md § Tabellenmodell).
 
     Ein Feldkonflikt innerhalb einer Identitaet, eine Namenskollision zwischen
     zwei Kennungen und ein im Werkindex mehrdeutiger Titel sind Quellbefunde;
@@ -779,7 +779,7 @@ def main():
             print(f"  WARNUNG: {name} nicht gefunden")
     stats['indices_loaded'] = indices_loaded
 
-    # Objekte laden und validieren, CSV bevorzugt (data.md § 3) — dieselbe
+    # Objekte laden und validieren, CSV bevorzugt (data.md § Tabellenmodell) — dieselbe
     # Quelle wie transform.py, damit die Validierung den Text prueft, den
     # die Pipeline verarbeitet.
     from _common import load_objekte, resolve_objekte_source
@@ -817,7 +817,7 @@ def main():
         )
         print(f"  {len(df_verk)} Verknuepfungen geladen")
 
-    # Befunde der Index-Verdichtung (data.md § 3)
+    # Befunde der Index-Verdichtung (data.md § Tabellenmodell)
     for canonical, index_df in indices.items():
         all_issues.extend(
             validate_index_identities(canonical, build_index_lookup(index_df))

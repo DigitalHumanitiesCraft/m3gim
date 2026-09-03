@@ -3,18 +3,36 @@
 Lean helpers used identically across several scripts. No framework, no
 speculative abstraction, only concretely deduplicated knowledge.
 
-Centralised XLSX workaround constants, see knowledge/data.md § 17.
+Centralised XLSX workaround constants, see knowledge/data.md § Datenqualität.
 """
 
 from __future__ import annotations
 
+import os
 import re
 from collections.abc import Iterator
 from pathlib import Path
 
+# ---------------------------------------------------------------------------
+# Pipeline paths
+# ---------------------------------------------------------------------------
+# One resolution of the three M3GIM ENV overrides for every pipeline script.
+# audit-data.py and report-quality.py used to read fixed paths, so a run
+# against an alternative data state silently audited the default one
+# (Refactoring 2026-09-01). Resolved at import; the scripts are separate
+# processes, so the environment is fixed for the run.
+
+REPO_ROOT = Path(__file__).resolve().parent.parent
+SHEETS_DIR = Path(os.environ.get(
+    "M3GIM_SHEETS_DIR", REPO_ROOT / "data" / "google-spreadsheet"))
+OUTPUT_DIR = Path(os.environ.get(
+    "M3GIM_OUTPUT_DIR", REPO_ROOT / "data" / "output"))
+REPORTS_DIR = Path(os.environ.get(
+    "M3GIM_REPORTS_DIR", REPO_ROOT / "data" / "reports"))
+
 
 # ---------------------------------------------------------------------------
-# XLSX workaround constants (see knowledge/data.md § 17)
+# XLSX workaround constants (see knowledge/data.md § Datenqualität)
 # ---------------------------------------------------------------------------
 
 # Header-shift correction for the person/org/place/work index. In several
@@ -26,7 +44,7 @@ from pathlib import Path
 # ("m3gim_id" = a real header is present) and renames the columns to the canon
 # instead of consuming a real data row as the header. Centralised so
 # transform.py, validate.py and reconcile.py share the same canon.
-# See knowledge/data.md § 17 and journal.md E-95.
+# See knowledge/data.md § Datenqualität and journal.md E-95.
 INDEX_HEADER_SHIFTS: dict[str, list[str]] = {
     "personenindex": [
         "m3gim_id", "name", "wikidata_id",
@@ -60,7 +78,7 @@ FINANCE_CURRENCY_DEFAULTS: dict[str, str] = {
 
 
 def resolve_objekte_source(sheets_dir: Path) -> Path:
-    """Source selection for the object table, CSV preferred (data.md § 3).
+    """Source selection for the object table, CSV preferred (data.md § Tabellenmodell).
 
     The CSV export preserves the captured text; the XLSX carries the
     spreadsheet's autoconversion in the date column and stays admissible only as
@@ -81,7 +99,7 @@ def load_objekte(sheets_dir: Path):
 
     CSV is read with dtype=str so date values arrive as captured text instead of
     a calendar value. The XLSX fallback stays unchanged, including its known date
-    artefacts (data.md § 6).
+    artefacts (data.md § Datumskonventionen).
     """
     import pandas as pd  # lazy so _common stays importable without pandas
 
@@ -92,6 +110,78 @@ def load_objekte(sheets_dir: Path):
         df = pd.read_excel(path)
     df.columns = [c.lower().strip() if isinstance(c, str) else c
                   for c in df.columns]
+    return df
+
+
+def load_index(sheets_dir: Path, name: str):
+    """Load an index table with header-shift correction.
+
+    One implementation for transform.py, validate.py and reconcile.py. The
+    three used to carry their own copy with diverging shift logic, so a changed
+    box export broke validate and reconcile differently from transform (Review
+    2026-07-18, point 2). ``name`` is the index name without the file prefix,
+    e.g. "Personenindex".
+
+    Three malformation classes from the box export (E-95, E-152):
+
+    (a) name column without header — person index: position 0 carries the real
+        header "m3gim_id", but the name column (position 1) is empty and
+        becomes "Unnamed: 1" in pandas. Row 0 is a genuine header row; NO data
+        row may be consumed as header. Columns are renamed positionally to the
+        canon.
+
+    (b) leaked data value in the header row — Org/Werk: position 1 (or 3)
+        carries a data value like "Graz"/"Rossini, Gioachino" instead of a
+        real header. Position 0 is still "m3gim_id", i.e. row 0 remains a
+        (contaminated) header row, not a lost data row. So again only rename
+        columns — the leaked single cells are lost (passed through; same
+        behaviour as the prod export).
+
+    (c) id column overwritten with a data value — the Ortsindex of the
+        2026-08-31 delivery carries the place name "Turin" at position 0
+        instead of "m3gim_id". Neither branch above fires, because position 0
+        is not "m3gim_id" and position 1 is on the exception list. Only column
+        0 is renamed back positionally, and only if its values look like index
+        ids; the remaining headers stay untouched so no note column mistakenly
+        becomes wikidata_id.
+
+    Returns None when the file is absent.
+    """
+    import pandas as pd  # lazy so _common stays importable without pandas
+
+    path = Path(sheets_dir) / f"M3GIM-{name}.xlsx"
+    if not path.exists():
+        return None
+
+    df = pd.read_excel(path)
+    canonical = name.lower()
+
+    if canonical in INDEX_HEADER_SHIFTS:
+        expected = INDEX_HEADER_SHIFTS[canonical]
+        col0 = str(df.columns[0]).strip().lower() if len(df.columns) else ""
+        if col0 == "m3gim_id":
+            new_cols = list(expected[:len(df.columns)])
+            if len(df.columns) > len(expected):
+                new_cols += list(df.columns[len(expected):])
+            df.columns = new_cols
+        elif len(df.columns) == len(expected):
+            # Legacy case: row 0 is a shifted data row that pandas read as
+            # header (position 0 != "m3gim_id"). Push it back into the data.
+            first_val = str(df.columns[1]) if len(df.columns) > 1 else ""
+            if first_val and first_val not in ["name", "titel", "ort", "m3gim_id"]:
+                old_headers = list(df.columns)
+                df.columns = expected[:len(df.columns)]
+                first_row = pd.DataFrame([old_headers], columns=df.columns)
+                df = pd.concat([first_row, df], ignore_index=True)
+
+    if len(df.columns) and str(df.columns[0]).strip().lower() != "m3gim_id":
+        col0 = df.columns[0]
+        sample = df[col0].dropna().astype(str).str.strip().head(10)
+        if len(sample) and all(re.match(r"^[A-Za-z]\d+$", s) for s in sample):
+            print(f"  {name}: Kopfzelle der Kennungsspalte traegt '{col0}', "
+                  "positionell auf 'm3gim_id' zurueckbenannt")
+            df = df.rename(columns={col0: "m3gim_id"})
+
     return df
 
 

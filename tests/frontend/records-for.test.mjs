@@ -10,7 +10,8 @@
  *   * Die Mehrfachauswahl schneidet statt zu vereinigen.
  *   * Das Zeitfenster tilgt die undatierten Dokumente, statt sie stehen zu
  *     lassen (E-88).
- *   * Der enge Schaerfegrad wird angewendet, ohne die Differenz zu nennen.
+ *   * Die raumzeitlich belegte Teilmenge wird als Schnitt angewendet, statt
+ *     bloss beziffert zu werden (der Umschalter ist mit E-163 entfallen).
  *
  * Der lexikalische Gate am Ende haelt die fuenf Eigenaufloesungen fern: kein
  * Modul unter `docs/js/views/` darf eine Entitaetsfacette noch selbst ueber
@@ -25,7 +26,9 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
-import { recordsFor, facetIndex, facetInventory } from '../../docs/js/data/records-for.js';
+import {
+  recordsFor, facetInventory, yearBounds, yearOf, baseRecords,
+} from '../../docs/js/data/records-for.js';
 import { storeFromShipped } from './_shipped.mjs';
 
 // --- Miniatur-Store -------------------------------------------------------
@@ -37,7 +40,12 @@ function S(...ids) { return new Set(ids); }
  * Bayreuth), r3 (1960, Wien), r4 (undatiert, ohne Entitaet).
  */
 function makeStore() {
-  const rec = (id, date) => (date ? { '@id': id, 'rico:date': date } : { '@id': id });
+  // Jeder Fixture-Record traegt einen Erschliessungsstand, damit die Facette
+  // etwas zu schneiden hat; die Dokumentbasis selbst haengt seit E-165 an der
+  // Verknuepfung, also an unprocessedIds.
+  const rec = (id, date) => (date
+    ? { '@id': id, 'rico:date': date, 'm3gim-ontology:processingStatus': 'abgeschlossen' }
+    : { '@id': id, 'm3gim-ontology:processingStatus': 'abgeschlossen' });
   const records = new Map([
     ['r1', rec('r1', '1952-07-25')],
     ['r2', rec('r2', '1953')],
@@ -47,6 +55,7 @@ function makeStore() {
   return {
     records,
     allRecords: [...records.values()],
+    unprocessedIds: new Set(),
     recordDatings: new Map(),
     persons: new Map([
       ['Malaniuk, Ira', { records: S('r1', 'r2', 'r3'), roles: S() }],
@@ -137,13 +146,46 @@ describe('recordsFor (eine Auflösung fuer alle Ansichten)', () => {
     assert.equal(r.undatiert, 1, 'die undatierte Menge wird beziffert, nicht getilgt');
   });
 
-  test('schaerfe eng schneidet auf die belegten Records und nennt die Differenz', () => {
-    const weit = recordsFor(makeStore(), {});
-    assert.equal(weit.eng, 1, 'auch im weiten Modus steht die enge Zahl daneben');
-    const eng = recordsFor(makeStore(), { schaerfe: 'eng' });
-    assert.deepEqual(idsOf(eng), ['r1']);
-    assert.equal(eng.weit, 4);
-    assert.equal(eng.eng, 1);
+  test('die belegte Teilmenge wird beziffert, nicht geschnitten', () => {
+    const r = recordsFor(makeStore(), {});
+    assert.equal(r.weit, 4);
+    assert.equal(r.eng, 1, 'die raumzeitlich belegte Zahl steht daneben');
+    assert.deepEqual(idsOf(r), ['r1', 'r2', 'r3', 'r4'], (
+      'Seit E-163 engt der Schaerfegrad nichts mehr ein; er bleibt eine Angabe.'
+    ));
+  });
+
+  test('der Erschliessungsstand schneidet ueber den Bearbeitungsstand', () => {
+    const store = makeStore();
+    store.records.get('r2')['m3gim-ontology:processingStatus'] = 'begonnen';
+    store.records.get('r3')['m3gim-ontology:processingStatus'] = 'zurueckgestellt';
+    assert.deepEqual(idsOf(recordsFor(store, { stand: ['abgeschlossen', 'begonnen'] })),
+      ['r1', 'r2', 'r4']);
+    assert.deepEqual(idsOf(recordsFor(store, { stand: ['zurueckgestellt'] })), ['r3']);
+  });
+
+  test('ein Record ohne Verknuepfung liegt ausserhalb jeder Dokumentmenge', () => {
+    // E-165: die Basis ist die Verknuepfung. Ein Record ohne jede Verknuepfung
+    // wird nicht ausgegraut gezeigt, er kommt in keiner Ansicht und in keinem
+    // Zaehlstand vor.
+    const store = makeStore();
+    store.unprocessedIds = new Set(['r3']);
+    assert.deepEqual(idsOf(recordsFor(store, {})), ['r1', 'r2', 'r4']);
+    assert.deepEqual(baseRecords(store).map(r => r['@id']), ['r1', 'r2', 'r4']);
+    assert.ok(!facetInventory(store, 'ort').some(e => e.value === 'Wien'), (
+      'Ein Wert, den nur ein Record ausserhalb der Basis traegt, ist keine Facette.'
+    ));
+  });
+
+  test('ein Record ohne Bearbeitungsstand bleibt in der Basis und erreichbar', () => {
+    // Sonst laege er in jedem Zaehlstand, waere aber ueber keine Checkbox der
+    // Facette zu erreichen.
+    const store = makeStore();
+    delete store.records.get('r3')['m3gim-ontology:processingStatus'];
+    assert.deepEqual(idsOf(recordsFor(store, {})), ['r1', 'r2', 'r3', 'r4']);
+    assert.deepEqual(idsOf(recordsFor(store, { stand: ['ohne-angabe'] })), ['r3']);
+    const inv = facetInventory(store, 'stand');
+    assert.equal(inv.find(e => e.value === 'ohne-angabe').label, 'ohne Angabe');
   });
 
   test('opts.base engt die Startmenge ein', () => {
@@ -158,9 +200,7 @@ describe('recordsFor (eine Auflösung fuer alle Ansichten)', () => {
     assert.equal(r.byFacet.person, undefined, 'inaktive Facetten erscheinen nicht');
   });
 
-  test('Rolle und Ereignis schneiden ueber die neuen Indizes', () => {
-    assert.deepEqual(idsOf(recordsFor(makeStore(), { rolle: ['m3gim-vocab:singer'] })),
-      ['r1', 'r2']);
+  test('Ereignis, Institution, Ensemble und Sicht schneiden ueber ihre Indizes', () => {
     assert.deepEqual(idsOf(recordsFor(makeStore(), { ereignis: ['m3gim-vocab:performance'] })),
       ['r1']);
     assert.deepEqual(idsOf(recordsFor(makeStore(), { institution: ['Bayreuther Festspiele'] })),
@@ -171,15 +211,57 @@ describe('recordsFor (eine Auflösung fuer alle Ansichten)', () => {
   });
 });
 
-describe('facetIndex / facetInventory', () => {
-  test('facetIndex liefert Wert -> Record-Ids', () => {
-    const idx = facetIndex(makeStore(), 'ort');
-    assert.deepEqual([...idx.get('Bayreuth')].sort(), ['r1', 'r2']);
+describe('yearBounds / yearOf', () => {
+  test('die Spanne weitet die Lebensspanne um Ausreisser der Basis', () => {
+    const store = makeStore();
+    store.byYear = new Map([
+      [1912, [store.records.get('r1')]],
+      [1952, [store.records.get('r2')]],
+    ]);
+    assert.deepEqual(yearBounds(store), { min: 1912, max: 2009 });
   });
 
-  test('eine unbekannte Facette liefert eine leere Map statt zu werfen', () => {
-    assert.equal(facetIndex(makeStore(), 'gibtsnicht').size, 0);
+  test('ein Jahr ausserhalb der Dokumentbasis weitet die Spanne nicht', () => {
+    // Sonst reichte der Regler bis zu einem Jahr, fuer das nichts zu sehen ist.
+    const store = makeStore();
+    const fremd = { '@id': 'rX' };
+    store.allRecords = [...store.allRecords, fremd];
+    store.unprocessedIds = new Set(['rX']);
+    store.byYear = new Map([[2010, [fremd]]]);
+    assert.deepEqual(yearBounds(store), { min: 1919, max: 2009 });
+  });
+
+  test('ohne datierte Records faellt die Spanne auf Malaniuks Lebensspanne', () => {
+    // Der Fallback ist die Projektkonstante, damit die drei Zeitregler nicht
+    // ueber verschiedene Achsen laufen.
+    assert.deepEqual(yearBounds({ byYear: new Map() }), { min: 1919, max: 2009 });
+    assert.deepEqual(yearBounds(null), { min: 1919, max: 2009 });
+  });
+
+  test('yearOf nimmt rico:date, null bei undatiert und ohne Record', () => {
+    const store = makeStore();
+    assert.equal(yearOf(store, store.records.get('r1')), 1952);
+    assert.equal(yearOf(store, store.records.get('r4')), null);
+    assert.equal(yearOf(store, null), null);
+  });
+});
+
+describe('facetInventory', () => {
+  test('ein Wert traegt die Zahl seiner Records', () => {
+    const bayreuth = facetInventory(makeStore(), 'ort').find(e => e.value === 'Bayreuth');
+    assert.equal(bayreuth.count, 2);
+  });
+
+  test('eine unbekannte Facette liefert eine leere Liste statt zu werfen', () => {
     assert.deepEqual(facetInventory(makeStore(), 'gibtsnicht'), []);
+  });
+
+  test('der Erschliessungsstand traegt seine Anzeigeform und nur seine drei Werte', () => {
+    const store = makeStore();
+    store.records.get('r1')['m3gim-ontology:processingStatus'] = 'zurueckgestellt';
+    const inv = facetInventory(store, 'stand');
+    assert.equal(inv.find(e => e.value === 'zurueckgestellt').label, 'zurückgestellt');
+    assert.deepEqual(inv.map(e => e.value).sort(), ['abgeschlossen', 'zurueckgestellt']);
   });
 
   test('facetInventory sortiert absteigend und zaehlt groesser null', () => {
@@ -189,16 +271,40 @@ describe('facetIndex / facetInventory', () => {
     assert.ok(inv.every(e => typeof e.label === 'string' && e.label.length > 0));
   });
 
-  test('Rollen tragen ihr Anzeigelabel aus dem Vokabular (E-143)', () => {
-    const inv = facetInventory(makeStore(), 'rolle');
-    const singer = inv.find(e => e.value === 'm3gim-vocab:singer');
-    assert.equal(singer.label, 'sänger');
+  test('Vokabular-Facetten tragen ihr Anzeigelabel mit grossem Anfang, das Vokabular bleibt roh', () => {
+    const store = makeStore();
+    const inv = facetInventory(store, 'ereignis');
+    const auffuehrung = inv.find(e => e.value === 'm3gim-vocab:performance');
+    assert.equal(auffuehrung.label, 'Aufführung');
+    assert.equal(store.roleVocab.get('m3gim-vocab:performance').label, 'aufführung');
   });
 });
 
 // --- Fixture-Strecke ------------------------------------------------------
 
 describe('recordsFor am ausgelieferten Datensatz', () => {
+  test('die Basis ist genau die Menge der verknuepften Objekte', async () => {
+    const store = await storeFromShipped();
+    const erwartet = store.allRecords.filter(r => !store.unprocessedIds.has(r['@id']));
+    assert.ok(erwartet.length > 100, 'Datenstand unplausibel klein, Lauf pruefen');
+    assert.equal(baseRecords(store).length, erwartet.length);
+    assert.equal(recordsFor(store, {}).ids.size, erwartet.length);
+  });
+
+  test('die Vorbelegung des Bestands liegt innerhalb der Basis', async () => {
+    // abgeschlossen + begonnen ist ein Schnitt auf der Basis, nicht die Basis:
+    // Objekte ohne Bearbeitungsstand bleiben erreichbar.
+    const store = await storeFromShipped();
+    const basis = recordsFor(store, {}).ids.size;
+    const vorbelegt = recordsFor(store, { stand: ['abgeschlossen', 'begonnen'] }).ids.size;
+    const ohneAngabe = recordsFor(store, { stand: ['ohne-angabe'] }).ids.size;
+    assert.ok(vorbelegt > 0 && vorbelegt < basis);
+    assert.ok(ohneAngabe > 0, (
+      'Ohne Records ohne Bearbeitungsstand traegt die vierte Ankreuzzeile nichts '
+      + 'und gehoert entfernt.'
+    ));
+  });
+
   test('1954 und Bayreuth und Tristan liefert den Beispielschnitt', async () => {
     const store = await storeFromShipped();
     const cut = recordsFor(store, {

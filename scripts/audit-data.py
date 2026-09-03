@@ -30,9 +30,10 @@ from collections import Counter
 if sys.stdout.encoding != "utf-8":
     sys.stdout.reconfigure(encoding="utf-8")
 
-BASE_DIR = Path(__file__).parent.parent
-SHEETS_DIR = BASE_DIR / "data" / "google-spreadsheet"
-OUTPUT_DIR = BASE_DIR / "data" / "output"
+sys.path.insert(0, str(Path(__file__).parent))
+from _common import OUTPUT_DIR, REPO_ROOT, SHEETS_DIR  # noqa: E402
+
+BASE_DIR = REPO_ROOT
 DOCS_DIR = BASE_DIR / "docs" / "data"
 
 # ---------------------------------------------------------------------------
@@ -453,7 +454,7 @@ def main():
     graph = data.get("@graph", [])
     print(f"  JSON-LD: {len(graph)} Graph-Knoten")
 
-    # Load the object source, CSV preferred (data.md § 3), the same source as
+    # Load the object source, CSV preferred (data.md § Tabellenmodell), the same source as
     # transform.py, otherwise the audit compares XLSX date artefacts against the
     # CSV-based dataset and reports phantom errors.
     from _common import load_objekte, resolve_objekte_source

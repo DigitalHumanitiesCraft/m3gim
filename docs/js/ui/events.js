@@ -1,7 +1,9 @@
 /**
  * M³GIM Cross-View Event Bus
- * Centralized listener for m3gim:navigate and m3gim:archiv-filter events.
+ * Centralized listener for m3gim:navigate — the record-jump channel.
  * Queues events for views that haven't rendered yet — replays on subscribe.
+ * The shared filter has its own channel in filter-state.js; a facet is written
+ * there directly and never travels as a navigation detail.
  */
 
 const handlers = new Map();  // tab → handler function
@@ -10,7 +12,7 @@ const pending = new Map();   // tab → last queued detail (for not-yet-rendered
 /**
  * Register a handler for cross-view navigation into a specific tab.
  * If an event arrived before registration, the handler is called immediately.
- * @param {string} tab - target tab name (e.g. 'kosmos', 'zeitfluss', 'archiv')
+ * @param {string} tab - target tab name (e.g. 'bestand', 'chronik')
  * @param {Function} handler - callback(detail) — receives the event detail object
  */
 export function onViewNavigate(tab, handler) {
@@ -36,15 +38,5 @@ window.addEventListener('m3gim:navigate', (event) => {
   } else {
     // View not yet rendered — queue for later replay
     pending.set(tab, detail);
-  }
-});
-
-window.addEventListener('m3gim:archiv-filter', (event) => {
-  const detail = event.detail || {};
-  const handler = handlers.get('archiv');
-  if (handler) {
-    handler(detail);
-  } else {
-    pending.set('archiv', detail);
   }
 });

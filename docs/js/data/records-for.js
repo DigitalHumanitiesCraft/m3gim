@@ -6,8 +6,8 @@
  * two tabs. This module holds the resolution in one place; a lexical gate in
  * `tests/frontend/records-for.test.mjs` keeps the self-resolutions away.
  *
- * Pure functions, no DOM and no d3, following `statistics-data.js` and
- * `_network-geometry.js`.
+ * Pure functions, no DOM and no d3, following `statistik-data.js` and
+ * `_netzwerk-geometry.js`.
  *
  * Semantics (E-151): several values of one facet act as OR, different facets as
  * AND. A value without a match in the Bestand concerns only itself; if all
@@ -24,6 +24,14 @@ import { getDocTypeId, expandDftFilter, dftLabel, buildDftTree } from '../utils/
 const KONTEXT_SICHT = 'kontext';
 
 /**
+ * Ira Malaniuk's life span. It is the fallback of the year axis: a Bestand
+ * without a single dated record still gets the span the project is about,
+ * instead of a per-view invention.
+ */
+export const YEAR_MIN = 1919;
+export const YEAR_MAX = 2009;
+
+/**
  * Entity facets whose index is a store map with a `records` set. Order sets the
  * evaluation order and nothing else, because the intersection is commutative.
  */
@@ -37,15 +45,81 @@ const ENTITY_MAPS = Object.freeze({
 
 /** Facets whose index already sits as value → record ids in the store. */
 const DIRECT_INDEXES = Object.freeze({
-  rolle: 'recordsByAgentRole',
   ereignis: 'eventsByRole',
 });
 
 /** All facets that cut a document set. */
 export const FACET_KEYS = Object.freeze([
   ...Object.keys(ENTITY_MAPS), ...Object.keys(DIRECT_INDEXES),
-  'docType', 'sicht', 'finanzen',
+  'docType', 'sicht', 'finanzen', 'stand',
 ]);
+
+/** The Erschliessungsstand as the source writes it, in reading order. */
+const SOURCE_STAND = Object.freeze(['abgeschlossen', 'begonnen', 'zurueckgestellt']);
+
+/**
+ * Value under which a base record without any Bearbeitungsstand stays
+ * selectable. The base is the Verknuepfung and not the Bearbeitungsstand
+ * (E-165), so such a record belongs to the Bestand while matching none of the
+ * three source values; without this fourth value it would sit in the base and
+ * answer to no checkbox.
+ */
+const STAND_NONE = 'ohne-angabe';
+
+/** The values of the Erschliessungsstand facet, in reading order. */
+export const STAND_VALUES = Object.freeze([...SOURCE_STAND, STAND_NONE]);
+
+/** Display forms of the Erschliessungsstand. The source writes the umlaut as
+ *  `ue`; the label restores it, the value stays the raw source term. */
+const STAND_LABELS = Object.freeze({
+  abgeschlossen: 'abgeschlossen',
+  begonnen: 'begonnen',
+  zurueckgestellt: 'zurückgestellt',
+  [STAND_NONE]: 'ohne Angabe',
+});
+
+/** What the Bestand preselects on first open (E-162): the two states that mean
+ *  the object has been worked on. Removable like any other chip. */
+export const STAND_DEFAULT = Object.freeze(['abgeschlossen', 'begonnen']);
+
+/** Record property carrying the Erschliessungsstand. */
+const STATUS_PROP = 'm3gim-ontology:processingStatus';
+
+const baseCache = new WeakMap();
+
+/**
+ * The document base of the whole frontend: every record carrying at least one
+ * Verknuepfung (E-165). A record without any is out of every view and out of
+ * every count — it is neither cut away by a facet nor greyed out, it does not
+ * exist for the interface, and the Findmittel to the whole Teilnachlass stays
+ * the archive. The Bearbeitungsstand is a facet on this base, not its
+ * definition: a record can be verknuepft without carrying one.
+ *
+ * A store without `unprocessedIds` (test fixtures) puts every record in the
+ * base rather than none, so a fixture states its exclusions explicitly.
+ * @param {Object} store
+ * @returns {Set<string>} record @ids
+ */
+export function baseIds(store) {
+  if (!store || !Array.isArray(store.allRecords)) return new Set();
+  const hit = baseCache.get(store);
+  if (hit) return hit;
+  const unprocessed = store.unprocessedIds instanceof Set ? store.unprocessedIds : null;
+  const out = new Set();
+  for (const record of store.allRecords) {
+    const id = record['@id'];
+    if (unprocessed && unprocessed.has(id)) continue;
+    out.add(id);
+  }
+  baseCache.set(store, out);
+  return out;
+}
+
+/** The base as records, in the order of `store.allRecords`. */
+export function baseRecords(store) {
+  const ids = baseIds(store);
+  return (store && store.allRecords ? store.allRecords : []).filter(r => ids.has(r['@id']));
+}
 
 /**
  * Value index of a facet.
@@ -54,7 +128,7 @@ export const FACET_KEYS = Object.freeze([
  * @returns {Map<string, Set<string>>} value → record @ids; empty map on
  *   unknown key
  */
-export function facetIndex(store, key) {
+function facetIndex(store, key) {
   if (!store) return new Map();
   const mapName = ENTITY_MAPS[key];
   if (mapName) {
@@ -71,6 +145,7 @@ export function facetIndex(store, key) {
   if (key === 'docType') return docTypeIndex(store);
   if (key === 'sicht') return sichtIndex(store);
   if (key === 'finanzen') return waehrungIndex(store);
+  if (key === 'stand') return standIndex(store);
   return new Map();
 }
 
@@ -85,14 +160,17 @@ export function facetIndex(store, key) {
  */
 export function facetInventory(store, key) {
   const index = facetIndex(store, key);
+  const base = baseIds(store);
   const needsVocabLabel = key in DIRECT_INDEXES;
   const isDocType = key === 'docType';
   const out = [];
   for (const [value, ids] of index) {
-    const count = ids ? ids.size : 0;
+    // A value that occurs only outside the base is not a facet of this Bestand.
+    const count = countIn(ids, base);
     if (count === 0) continue;
     const label = needsVocabLabel ? vocabLabel(store, value)
       : isDocType ? dftLabel(store, value)
+      : key === 'stand' ? (STAND_LABELS[value] || String(value))
       : String(value);
     if (!label) continue;
     // Vocabulary facets carry only terms with a real display form (E-143). A
@@ -120,7 +198,8 @@ export function facetInventory(store, key) {
  */
 export function docTypeGroups(store) {
   const index = docTypeIndex(store);
-  const countLeaf = (id) => (index.get(id) ? index.get(id).size : 0);
+  const base = baseIds(store);
+  const countLeaf = (id) => countIn(index.get(id), base);
   const countSubtree = (id) => {
     let n = 0;
     for (const leaf of expandDftFilter(store, id)) n += countLeaf(leaf);
@@ -146,15 +225,14 @@ export function docTypeGroups(store) {
  * @param {{base?: Set<string>}} [opts]   start set, default all records
  * @returns {{ids: Set<string>, weit: number, eng: number,
  *            undatiert: number, byFacet: Object<string, number>}}
- *   `weit` is the set after entity and time cut, `eng` the subset of it with
- *   spatiotemporal or performance evidence. Both are always present so every
- *   view can name the difference without computing it itself.
+ *   `weit` is the size of the resulting set, `eng` the subset of it with
+ *   spatiotemporal or performance evidence. The two are counted, never used to
+ *   cut: the Schaerfegrad-Umschalter is gone (E-163), the difference stays a
+ *   figure a view may name.
  */
 export function recordsFor(store, filter, opts = {}) {
   const f = filter || {};
-  let ids = opts.base instanceof Set
-    ? new Set(opts.base)
-    : new Set((store && store.allRecords ? store.allRecords : []).map(r => r['@id']));
+  let ids = opts.base instanceof Set ? new Set(opts.base) : new Set(baseIds(store));
 
   const byFacet = {};
   for (const key of FACET_KEYS) {
@@ -184,42 +262,130 @@ export function recordsFor(store, filter, opts = {}) {
     const hi = bis == null ? Infinity : bis;
     const kept = new Set();
     for (const id of ids) {
-      const year = yearOf(store, id);
+      const year = yearOfId(store, id);
       if (year == null) { undatiert += 1; kept.add(id); continue; }
       if (year >= lo && year <= hi) kept.add(id);
     }
     ids = kept;
   } else {
-    for (const id of ids) if (yearOf(store, id) == null) undatiert += 1;
+    for (const id of ids) if (yearOfId(store, id) == null) undatiert += 1;
   }
 
   const weit = ids.size;
   const anchored = engRecords(store);
   let eng = 0;
   for (const id of ids) if (anchored.has(id)) eng += 1;
-  if (f.schaerfe === 'eng') {
-    const kept = new Set();
-    for (const id of ids) if (anchored.has(id)) kept.add(id);
-    ids = kept;
-  }
 
   return { ids, weit, eng, undatiert, byFacet };
 }
 
-// --- Derivations -----------------------------------------------------------
+/**
+ * Year span of the Bestand, for every time slider. One definition, so the three
+ * views do not slide over different axes.
+ *
+ * The span is Malaniuk's life span, widened by outliers that the base actually
+ * carries. Widening instead of replacing keeps the axis at 1919–2009 for a cut
+ * whose latest document is older, and it keeps records outside the base — an
+ * uncatalogued 2010 clipping among them — from stretching the slider past the
+ * years anything is shown for.
+ * @param {Object} store
+ * @returns {{min: number, max: number}}
+ */
+export function yearBounds(store) {
+  let min = YEAR_MIN, max = YEAR_MAX;
+  const base = baseIds(store);
+  if (store && store.byYear) {
+    for (const [year, records] of store.byYear) {
+      if (!records.some(r => base.has(r['@id']))) continue;
+      if (year < min) min = year;
+      if (year > max) max = year;
+    }
+  }
+  return { min, max };
+}
 
-/** Year of a record via the single Zeitanker of the data layer (contract A4). */
-function yearOf(store, id) {
-  const record = store && store.records ? store.records.get(id) : null;
+/**
+ * Belegzahlen of a facet's values in the current cut: how many documents remain
+ * when that value is added to the filter. The other facets stay as they are and
+ * this facet's own selection drops out, so the counts of a multi-value facet
+ * (OR within the facet) do not shrink each other away.
+ * @param {Object} store
+ * @param {Object} filter        the current cut
+ * @param {string} key           facet whose values are counted
+ * @param {Iterable<string>} values
+ * @returns {Map<string, number>}
+ */
+export function facetCounts(store, filter, key, values) {
+  const rest = { ...(filter || {}) };
+  delete rest[key];
+  const { ids } = recordsFor(store, rest);
+  const index = facetIndex(store, key);
+  const out = new Map();
+  for (const value of values) {
+    const leaves = key === 'docType' ? expandDftFilter(store, value) : [value];
+    const seen = new Set();
+    for (const leaf of leaves) {
+      const hit = index.get(leaf);
+      if (!hit) continue;
+      for (const id of hit) if (ids.has(id)) seen.add(id);
+    }
+    out.set(value, seen.size);
+  }
+  return out;
+}
+
+/** Size of the intersection of a record-id set with the base. */
+function countIn(ids, base) {
+  if (!ids) return 0;
+  let n = 0;
+  for (const id of ids) if (base.has(id)) n += 1;
+  return n;
+}
+
+/**
+ * Year of a record via the single Zeitanker of the data layer (contract A4).
+ * `rico:date` first, else the highest-ranking anchoring Datierung; null when
+ * undated. The one resolution, so a record without `rico:date` does not count
+ * as dated in one view and undated in the next.
+ * @param {Object} store
+ * @param {Object} record
+ * @returns {?number}
+ */
+export function yearOf(store, record) {
   if (!record) return null;
   const { year } = primaryYear(store, record);
   return typeof year === 'number' && Number.isFinite(year) ? year : null;
 }
 
+// --- Derivations -----------------------------------------------------------
+
+/** Year of the record behind an @id. */
+function yearOfId(store, id) {
+  const record = store && store.records ? store.records.get(id) : null;
+  return yearOf(store, record);
+}
+
 /**
- * Records with spatiotemporal or performance evidence (Schaerfegrad eng). The
- * same set `engRecordSet` holds in filter-sync.js; kept local here so the data
- * layer does not point at the sync layer.
+ * Erschliessungsstand → records (E-162). The Bearbeitungsstand of the source,
+ * nothing derived; a record whose value is missing or unknown falls under
+ * STAND_NONE, so the facet reaches every record of the base.
+ */
+function standIndex(store) {
+  const out = new Map();
+  if (!store || !store.allRecords) return out;
+  for (const record of store.allRecords) {
+    const status = record[STATUS_PROP];
+    const value = SOURCE_STAND.includes(status) ? status : STAND_NONE;
+    let ids = out.get(value);
+    if (!ids) { ids = new Set(); out.set(value, ids); }
+    ids.add(record['@id']);
+  }
+  return out;
+}
+
+/**
+ * Records with spatiotemporal or performance evidence. Counted, not cut; kept
+ * local here so the data layer does not point at the sync layer.
  */
 function engRecords(store) {
   const set = new Set();
@@ -289,5 +455,6 @@ function waehrungIndex(store) {
 /** Display form of a role from the vocabulary; empty if the term has none. */
 function vocabLabel(store, value) {
   const entry = store && store.roleVocab ? store.roleVocab.get(value) : null;
-  return (entry && entry.label) || '';
+  const label = (entry && entry.label) || '';
+  return label ? label[0].toLocaleUpperCase('de-DE') + label.slice(1) : '';
 }

@@ -1,11 +1,11 @@
 /**
- * Unit-Tests fuer partitionRecord() aus docs/js/views/archive-inline-detail.js.
+ * Unit-Tests fuer partitionRecord() aus docs/js/views/record-detail.js.
  *
  * Lauf:
  *   node --test tests/frontend/record-partition.test.mjs
  *
  * partitionRecord ist die dom-freie Kern-Logik hinter buildRecordBlocks und
- * deckt damit den ansonsten ungetesteten Korb-Pfad ab (views/basket.js rendert
+ * deckt damit den ansonsten ungetesteten Korb-Pfad ab (views/korb.js rendert
  * ueber dieselbe Partition). Getestet: Agent-Bucketing nach Rolle, AgRelOn-
  * Dedup (kein Doppel-Agent in Bucket + Beziehung), Erwaehnt-Personen aus
  * Subjects, Werk-Erkennung, Aufloesung der Annotationen aus dem Store und die
@@ -24,7 +24,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
-import { partitionRecord } from '../../docs/js/views/archive-inline-detail.js';
+import { partitionRecord } from '../../docs/js/views/record-detail-data.js';
 import { loadArchive } from '../../docs/js/data/loader.js';
 import { withConcepts } from './_concepts.mjs';
 import { DATING_SCOPE } from '../../docs/js/data/constants.js';
@@ -281,12 +281,14 @@ test('partitionRecord: am Datenstand tragen Agenten-Buckets ihre Rollen-Sektion'
   const store = await realStore();
   const record = store.bySignatur.get('UAKUG/NIM_003 1_1');
   const { bucket } = partitionRecord(record, store);
-  // Der Absender ist eine Mitwirkenden-Rolle (Quelle seit E-152: Absender:in
-  // statt herausgeber); landete er in "Weitere", waere die Rolle als
-  // Verweisknoten ungefiltert durchgereicht worden.
-  const namen = bucket.mitwirkende.map(a => a.name);
+  // Der Absender ist hier eine Koerperschaft und steht deshalb im
+  // Institutionen-Bucket, das die Rollen-Sektionen ueberstimmt: die Institution
+  // ist eine der vier Inhaltsfamilien und braucht ihren eigenen Block.
+  const namen = bucket.institutionen.map(a => a.name);
   assert.ok(namen.includes('Deutsches Musikinstitut für Ausländer'),
-    `Absender fehlt im Mitwirkenden-Bucket: ${namen.join(', ')}`);
+    `Absender fehlt im Institutionen-Bucket: ${namen.join(', ')}`);
+  assert.ok(bucket.mitwirkende.every(a => a['@type'] !== 'rico:CorporateBody'),
+    'keine Koerperschaft bleibt zwischen den Mitwirkenden stehen');
 });
 
 test('partitionRecord: leerer Record liefert leere, aber wohlgeformte Struktur', () => {
@@ -294,7 +296,9 @@ test('partitionRecord: leerer Record liefert leere, aber wohlgeformte Struktur',
     bucket, works, performanceRoles, performances, events, locations, agentRelations, finances,
     mentionedDatings, eventDatings,
   } = partitionRecord({ '@id': 'x' }, {});
-  assert.deepEqual(bucket, { produktion: [], mitwirkende: [], erwaehnt: [], weitere: [] });
+  assert.deepEqual(bucket, {
+    produktion: [], mitwirkende: [], institutionen: [], erwaehnt: [], weitere: [],
+  });
   assert.deepEqual(works, []);
   assert.deepEqual(performanceRoles, []);
   assert.deepEqual(performances, []);

@@ -5,9 +5,9 @@ project:
   repository: https://github.com/DigitalHumanitiesCraft/m3gim
 status: complete
 language: de
-version: 0.5
+version: 0.6
 created: 2026-02-19
-updated: 2026-09-01
+updated: 2026-09-03
 authors: [Christopher Pollin]
 generated-with: Claude Code
 method:
@@ -23,186 +23,97 @@ related: [architecture, research-framework, journal, data-model]
 
 # Design
 
-> Designhaltung, Tab-Architektur, Designregeln, Interaktions- und Daten-Präsentations-Muster, das Designsystem mit seinen Design-Tokens sowie die destillierten Lektionen aus den entfernten D3-Visualisierungen. Wie das Frontend technisch gebaut ist (Laufzeitmodell, Module, Store, Routing), steht in [architecture.md](architecture.md) § Frontend. Diese Fassung basiert auf den Mockup-Ansichten Archiv und Repertoire und den Erfahrungen aus den entfernten D3-Prototypen.
-
 ## Grundhaltung
 
-Das Interface positioniert sich als **Forschungswerkzeug**, nicht als Dashboard. Es zeigt den Archivbestand wie eine Edition ihre Quellen — mit sichtbarer Provenienz, ehrlichem Erschließungsstand und einer Typografie, die zur Lesehaltung passt. Datenqualität wird nicht kaschiert; Lücken und Duplikate stehen so da, wie sie im Bestand sind.
+Das Interface ist ein Forschungswerkzeug für Forschung und Erschließung, kein Dashboard (E-156). Es zeigt den Archivbestand wie eine Edition ihre Quellen, mit sichtbarer Provenienz, ehrlichem Erschließungsstand und einer Typografie, die zur Lesehaltung passt. Lücken und Dubletten stehen so da, wie sie im Bestand liegen.
+
+## Bereiche
+
+Jede Ansicht ist aus denselben Bereichen gebaut.
+
+- Eine einzeilige Kopfleiste, ein Markenband über die volle Breite in KUG-Blau (E-185, E-196). Links steht die weiße Wortmarke mit dem Badge, rechts stehen die Links zu den Infoseiten in `--accent-soft`. Dazwischen liegen die Tabs derselben Zeile in den drei sichtbaren Gruppen Material, Perspektiven und Werkzeug (E-160), in `--accent-soft`, aktiv und bei Hover weiß mit weißer Unterlinie an der Bandkante. Der Markenblock nimmt die Breite der Sidebar-Spalte ein, sodass der erste Tab an der linken Kante der Arbeitsfläche und damit über der Tabelle beginnt. Der Untertitel steht auf den Infoseiten und in der Anwendung im Tooltip der Marke. Die Infoseiten tragen dasselbe Band ohne Tabs.
+- Linke Sidebar mit Suche und allen Facetten, auf dem warmen Cremeton der zweiten Fläche.
+- Arbeitsfläche der Ansicht in reinem Weiß, die einzige Fläche, auf der Inhalt steht.
+- Fuß mit Lizenz-, Projekt- und Versionsangaben, neutral und ohne Akzentfarbe.
 
 ## Tab-Architektur
 
-Welche Tabs tatsächlich sichtbar sind, legt `VISIBLE_TABS` fest (Definition und Reaktivierungs-Mechanik siehe [architecture.md](architecture.md) § Frontend). Aktueller Stand: sichtbar sind **Bestand · Chronik · Statistik · Indizes · Karte · Netzwerk · Verknüpfungen · Wissenskorb** (Karte als entitätszentrierte D3-geo-Karte, E-126, Route `karte` seit E-118; Netzwerk in Session 46 reaktiviert, E-93; Verknüpfungen am 2026-06-23 als Milestone M3 der Partner-Runde Juni ergänzt). Die verbleibenden Perspektiv-Tabs — Mobilitäts-Atlas (der durch die Karte abgelöste Leaflet-Vorgänger), Repertoire, Biogramm — sind per `hidden`-Attribut ausgeblendet; Code, CSS und Store-Maps bleiben erhalten, Hash-URLs auf versteckte Tabs werden auf Bestand umgebogen (E-81, präzisiert durch E-86 und E-93). Reaktivieren = `hidden` im HTML entfernen + Eintrag in `VISIBLE_TABS` ergänzen. Qualitätssicht läuft team-intern über `data/reports/quality-snapshot.md` und ist kein eigener Tab.
+Sieben Tabs stehen in drei Gruppen, jeder registrierte Tab ist sichtbar (E-140, E-160). Tab-Namen benennen den Gegenstand.
 
-**Leitprinzip „nur bearbeitet":** Chronik und Indizes zeigen ausschließlich Records beziehungsweise Einträge mit Verknüpfungen; Index-Einträge ohne Record-Referenz werden gar nicht erst gerendert. Im Bestand ist dasselbe Prinzip der Default-Scope „Feinerschlossen", der Konvolute ohne erschlossene Folios, Records ohne Verknüpfungen und Folios ohne Links im Konvolut zurückhält und Plakate und Tonträger über `EXCLUDED_DFT` ausschließt. Der Scope „Gesamt" blendet nichts aus, auch Plakate und Tonträger nicht (E-157); nicht erschlossene Zeilen erscheinen dort ausgegraut und markiert statt entfernt. Die Gesamt-Bestandszahl und die Verknüpfungsrate stehen ausschließlich im Quality-Snapshot. Begründung: das Interface positioniert sich als Forschungswerkzeug für substantielles Material, Erschließungs-Platzhalter sind Rauschen im Einstieg, aber nichts darf unerreichbar sein.
+- Bestand, Material. Einzelbelege in der Konvolut-Hierarchie mit Konvoluten als Gruppenköpfen und ihren Kindern in Signaturfolge (E-82, E-158, E-203). Ein Konvolut öffnet geschlossen, der Chevron am Kopf klappt es auf, der geöffnete Kopf haftet oben an der scrollenden Fläche, ein Direktlink auf ein Kind öffnet sein Konvolut (E-175). Form ist eine rahmenlose Record-Tabelle über die volle Breite, die Zeilen weiß mit warmer Haarlinie, der getönte Ton allein an Hover, Spaltenkopf und haftendem offenen Konvolut-Kopf, der Spaltenkopf mit der Chip-Zeile über den Daten ein Band (E-191, E-198). Die Kopfzeile eines Konvoluts steht wie jede andere Zeile auf Weiß. Der Spaltenkopf ist eine reine Beschriftungszeile, die Tabelle hat keine Sortierung, weil eine Hierarchie sich nicht flach ordnen lässt und Datum wie Typ von Chronik und Facette bedient werden (E-203). Der Konvolut-Kopf trägt Signatur, Titel, die Datumsspanne und eingeklappt die Typenverteilung als kleine Chips mit ihren Zahlen, inline nach dem Titel und links umbrechend. Seine Typ-Zelle bleibt leer, einen Badge trägt er nicht (E-197). Gesamtzahl, Erschließungsstand, Zahlen je Inhaltsfamilie und der Hinweis auf das Aufklappen stehen ausschließlich im Tooltip seines Titels (E-190, E-197). Ein Kind zeigt die Folio-Nummer ohne Präfix, lässt das Datum leer, wenn es dem Konvolut gleicht, und ersetzt einen ererbten Sammeltitel durch den ersten Beteiligten mit dem Punkt seiner Familie (E-177). Der Typ einer Zeile ist Text, die Erschließungsanzeige typisiert, dazu die Korb-Spalte und das Inline-Detail über volle Breite.
+- Indizes, Material. Personen, Institutionen, Orte und Werke als aggregierte Übersicht. Form sind parallele Grids mit Beziehungsbadges und Cross-Grid-Linking.
+- Chronik, Perspektive. Mobilität über die Lebensspanne. Form ist ein Jahres-Zeitstrahl mit Dot-Dichte je Jahr, Record-Chips mit Sicht-Akzent und kollabierbarem Dekaden-Header.
+- Karte, Perspektive. Orte einer gewählten Person oder Institution samt Länder-Reichweite. Form ist eine Stummkarte aus lokaler Geometrie mit Anteils-Knoten je Ort, ohne Reisepfeile (E-126).
+- Netzwerk, Perspektive. Umfeld einer Fokus-Entität über die Knotentypen Person, Institution, Ort und Werk, die als Sektoren um das Zentrum liegen, dazu die Ringe nach Evidenzstärke im reinen Personenbild (E-93). Form ist ein SVG-Graph, in dem die Linienart die Evidenz trägt, gerade Radialen für annotierte Beziehungen und geschwungene Kanten für Ko-Okkurrenz. Ein Klick auf einen Knoten macht ihn zur neuen Fokus-Entität, das Bild ist damit begehbar statt auswählbar.
+- Statistik, Perspektive. Der Bestand in Zahlen über Dokumenttypen, Erschließungsstand, Repertoire, Personen und Institutionen. Form ist genau eine gewählte Ansicht über die volle Breite, gebaut aus Ranglisten mit DOM-Balken.
+- Korb, Werkzeug. Querschnitts-Merkliste mit CSV- und BibTeX-Export. Form ist eine Card-Liste im Chip-Muster des Inline-Details.
 
-| Tab | Status | Gegenstand | Primäre Datenquelle im Store | Form |
-|---|---|---|---|---|
-| **Bestand** | aktiv | Einzelbelege in Konvolut-Hierarchie; Konvolute als dauerhafte Gruppenköpfe mit Signatur, Titel, Zeitspanne, Typ-Mix-Chips und Statuszeile (E-82, E-158), Kinder werden innerhalb ihres Konvoluts sortiert (E-83), Scope-Umschalter Feinerschlossen/Gesamt (E-157), alle Filter in der linken Sidebar, Record-Inline-Detail über volle Breite als einzige Klapp-Interaktion | `store.records`, `store.konvolutMeta` (inkl. `docTypeCounts`, `statusCounts`, `processedCount`), `store.agentRelations`, `store.finances`, `store.recordToEvents`, `store.performances` | Record-Tabelle mit typisierter Erschließungsanzeige und eigener Korb-Spalte, Konvolut-Meta-Chips, Rolle-Prefix-Chips im Detail, Provenance-Pille |
-| **Chronik** | aktiv | Mobilitäts-Chronik: scrollender Jahres-Zeitstrahl 1919–2009 (+ Ausreißer-Jahre), Records als klickbare Chips mit linkem Sicht-Akzent, kollabierbarer Dekaden×Sicht-Header (Segment-Klick löst auf die belegenden Chips auf), sekundär-datierte Undatierte markiert eingereiht, leere Jahre als Erschließungsspiegel, Achsenkopf-Caption (E-124) | `store.allRecords` (gefiltert über `unprocessedIds`), `store.recordToEvents`, `store.mobilityEvents`; Datenschicht `chronik-data.js` | Vertikale Achse, Jahres-Labels links, Dot-Dichte = Jahresbelegung, Sicht-akzentuierte Record-Chips rechts, Dekaden-Header oben |
-| **Statistik** | aktiv | Interaktives Master-Detail-Dashboard mit Mobilität als Rückgrat (E-122, Reframing E-123): geteilte Sidebar-Shell, Single-Select über genau eine Ansicht in zwei Gruppen (Mobilität: Wohin & Wann · Art der Mobilität · Mit wem / Werk & Bestand: Repertoire · Personen · Dokumenttypen · Finanzen), Multi-Facetten-Filter (Zeit + Sicht + Land); Datenschicht in `statistics-data.js` ausgelagert | gesamter Store, über `filterStore` geschnittener Sub-Store | Sidebar links, eine Ansicht über volle Breite rechts; pure-function Aggregation, DOM-Primitive Donut/Bar/Stacked-Bar |
-| **Indizes** | aktiv | Aggregierte Übersicht Personen, Organisationen, Orte, Werke; Cross-Grid-Linking | `store.persons`, `store.organizations`, `store.locations`, `store.works` (nur Einträge mit `records.size > 0`) | Parallele Grids für Personen, Organisationen, Orte und Werke, `renderNameCell()` mit Beziehungsbadges |
-| **Karte** | aktiv | Entitätszentrierte D3-geo-Karte (E-126, Route `karte` seit E-118): Auswahl einer Organisation/Person zeigt deren Orte als Knoten, je Ort ein Tortendiagramm nach Mobilitätssicht; **keine** Reisepfeile (Trajektorie aus E-111 entfiel). Verortungs-Stufen visuell kodiert (gesichert/stadtgenau/weit·prüfen), Klick-Detail mit Zuordnungen + allen Dokumenten | Record-Orte (`rico:hasOrHadLocation`) + `store.mobilityEvents` über `entity-map-data.js`, lokale Ländergeometrie | Stummkarte (lokal, kein Kartenserver) + Anteils-Knoten |
-| **Netzwerk** | aktiv | Konzentrische Personen-Visualisierung um Malaniuk (E-93): Ringe nach Evidenzstärke (harte Beziehung / Umfeld), Rolle als Füllfarbe, Linientypen explizit unterschieden — gerade Radial = `agrelon:*` (explizit annotiert), geschwungene Bezier = Ko-Okkurrenz (aus Dokumenten abgeleitet), beide mit SVG-`<title>`-Tooltips + eigenem Sichtbarkeits-Toggle | `store.persons`, `store.agentRelations`, `store.records` | D3-SVG-Viz mit Filter-Sidebar, Zoom/Pan, Zeitfenster, Detail-Panel |
-| **Verknüpfungen** | aktiv | Heterogener (multivariater) Graph über Person, Ort, Werk und Institution um eine Fokus-Entität; zwei Schärfegrade sichtbar getrennt (weit = im selben Dokument genannt, Ko-Okkurrenz und kein Auftrittsnachweis; eng = nur ereignis- oder aufführungs-belegte Records), die Differenz wird benannt statt geglättet; Knotentyp-Toggles je Typ, Fokus-Wechsel, Detail-Panel mit datengetriebenen Chips | `store.persons`, `store.works`, `store.organizations`, `store.locations`, `store.records`; `store.recordToEvents` + `store.recordToPerformances` für den engen Schärfegrad | Malaniuk zentriert (KUG-Blau), Nachbarn in vier Typ-Sektoren: Person (oben, blau), Werk (rechts, gold), Ort (links, grün), Institution (unten, teal). Legende rechts, Differenznennung-Caption über dem Graph. Positionen aus reinen Funktionen, keine Force-Simulation |
-| **Wissenskorb** | aktiv | Querschnitts-Merkliste mit CSV-/BibTeX-Export; Cards im Rolle-Prefix-Chip-Muster mit AgRelOn + Finanzen + STE-Events | `store.records` gefiltert durch Korb-IDs + `store.agentRelations`, `store.finances`, `store.recordToEvents` | Card-Liste, Werkzeug-Tab; localStorage-Persistenz |
-
-Tab-Namen sind inhaltlich (keine „Charts"/„Views"-Floskeln).
+Der Erschließungsstand ist ein Filter, kein Modus (E-162), mit den Werten abgeschlossen, begonnen, zurückgestellt und ohne Angabe; im Bestand sind die ersten beiden voreingestellt, sichtbar als Chip über den Daten (E-170). Als Facette steht er nicht mehr in der Seitenleiste, weil er ein Kurationsmerkmal und keine Forschungsfrage ist (E-178); erreichbar bleibt er über den Chip und die URL. Objekte ohne Verknüpfung erscheinen in keiner Ansicht (E-165), das Findmittel zum vollständigen Teilnachlass bleibt das Archiv. Ein Konvolut-Kopf steht nur, solange er ein sichtbares Kind hat, und Indizes zeigen nur Einträge mit Record-Referenz, weil ein Eintrag ohne Beleg keinen Einstieg bietet. Laufende Zahlen führt ausschließlich `data/reports/quality-snapshot.md`. Der Schärfegrad als Umschalter ist entfallen (E-163), die Unterscheidung zwischen Nennung und raumzeitlichem Beleg trägt das Netzwerk als Linienart und kehrt mit der Auftrittsbündelung als Facette Belegart zurück.
 
 ## Designregeln
 
 ### 1. Typografie als Bedeutungsträger
 
-- **Source Serif 4** für Titel und Record-Bezeichner — signalisiert Textarbeit, nicht Admin-Tool.
-- **Monospace** für Signaturen und technische IDs — farblich leicht abgesetzt, so dass die ID als Anker beim Scannen sofort erkennbar ist.
-- **UI-Sansserif** für Chips, Meta-Zeilen, Navigation.
+Die Schriftfamilie sagt, welcher Art ein Wert ist (E-187). Monospace trägt ausschließlich Bezeichner, also Signatur, Folio, Termkennung, Q-ID und Provenance-Pille, und macht sie beim Scannen einer Record-Liste als Adresse erkennbar. Source Serif 4 bleibt der Wortmarke und den Überschriften der Infoseiten vorbehalten. Alles übrige, Titel innerhalb der Ansichten eingeschlossen, steht im UI-Sansserif-Stack, Zahlenkolonnen mit Tabellenziffern. Die Infolinks der Kopfleiste teilen die Größe der Tab-Beschriftung und unterscheiden sich nur in Farbe und Gewicht.
 
-Die typografische Trennung zwischen ID (Mono) und Inhalt (Serif) reduziert die kognitive Last beim Scannen einer Record-Liste.
+### 2. Warme Flächen, ein kühler Akzent, vier Entitätsfarben
 
-### 2. Warmer Papier-Hintergrund, funktionale Akzentfarben
+Die Flächen sind warm, der Akzent ist kühl, und die beiden werden nicht gemischt (E-186). Die Arbeitsfläche ist reines Weiß, `--surface-2` das Creme `#F5F0E8` der Seitenleiste, `--surface-3` das Pergament `#EDE5D8` als tiefere Stufe, und Linien und Textwerte gehören derselben warmen Familie an. Das KUG-Blau `#004A8F` ist der einzige Akzent, es trägt Marke, Markenband, Link, aktiven Tab, Fokusring und Kontur, dazu `--accent-soft` für Auswahl und Hover. Ein warmer Ton übernimmt keinen interaktiven Zustand, und ein warmer Tokenname zeigt nicht auf den Akzent, weshalb die beiden Gold-Aliasse gelöscht sind. Dazu ein Rot für Fehler und ein Grün für den Wikidata-Match.
 
-Hintergrund creme/warm. Akzentfarben sparsam und semantisch: KUG-Blau für Interaktion, Signal-Grün für Verknüpfungen, Signal-Rot ausschließlich für die Flucht 1944. Chip-Farbfamilien eng, aber differenziert — Rollen-Cluster (blau-türkis für Wer-war-beteiligt, rotbraun für Verkörperung) ohne Legende lesbar.
-
-**Unterscheidbarkeit und Legende aus Nähe (E-158).** Der Anspruch „ohne Legende lesbar" verlangt zweierlei, das der Befund vom 2026-09-01 eingefordert hat. Erstens müssen die Familien einander tatsächlich unterscheidbar sein; die Paare person/ort und datum/finanz lagen zu nah beieinander. Zweitens entsteht die Legende aus Nähe statt aus Text: der Blocktitel im Inline-Detail trägt einen Farbpunkt seiner Familie, die Chips darunter denselben Ton, und die typisierte Erschließungsanzeige der Bestand-Tabelle verwendet dieselben Familienfarben, sodass die Tabelle die Farben einführt, bevor das Detail sie ausspielt.
+Die vier Inhaltsfamilien sind die vier Entitätstypen, Personen (Pflaume `#6B3F80`), Institutionen (Gold `#7A6000`), Orte (Wald `#2C6B4A`) und Werke (Terrakotta `#BF4A18`), jede mindestens 4,5 zu 1 gegen Weiß und in Farbton und Helligkeit abgesetzt. Sie erscheinen als Quadrat in der Erschließungsanzeige einer Objektzeile, als Punkt am Blocktitel des Details und als Punkt am Titel der vier Entitätsfacetten in der Seitenleiste (E-171), die Chips bleiben neutral, womit die Legende aus Nähe entsteht (E-158). Der Konvolut-Kopf wiederholt die Quadrate nicht; seine Familienzahlen liegen im Tooltip (E-190). Die Rollenfacette folgt unmittelbar auf Person und trägt ein hohles Personenquadrat: Sie gehört zur Person, bildet aber keine fünfte Familie (E-184). Beziehungen zählen zu den Personen, Finanzen und genannte Daten tragen keinen Marker. Sechs weitere Töne tragen Mobilitätssichten, Netzwerkkategorien und Knotentypen.
 
 ### 3. Rolle-Prefix-Chips als universelles Daten-Atom
 
-Jeder semantische Datenpunkt wird als Chip mit Uppercase-Rollenbezeichner und Wert gezeigt: `AUFFUEHRUNGSORT München`, `KOMPONIST Beethoven, Ludwig van`, `DIRIGENT Hindemith, Paul`. Dasselbe Chip-Muster trägt:
-
-- Einzelbelege im Archiv-Inline-Detail (konkrete Werte)
-- Aggregatverteilungen im Repertoire und Netzwerk (mit Count: `AUFFÜHRUNG 5`, `KORRESP 10`)
-- AgRelOn-Beziehungen im Archiv-Inline-Detail
-
-Implementiert als `buildRoleChip({prefix, value, cluster, xlsxSource, wikidata, tip, onClick, compact})` in `docs/js/views/archive-inline-detail.js`.
-
-Visuell dieselbe Primitive, semantisch kontextabhängig. Ein einziges robustes Muster statt mehrerer getrennter Darstellungsformen.
-
-**Sicht-Akzent als Mobilitäts-Farbachse der Chronik (Session 36 spezifiziert, E-124 realisiert).** Chronik-Chips tragen einen linken Akzent-Balken in einer der Mobilitätssichten-Farben (`--color-sicht-performativ|institutionell|korrespondenz|diskursiv|biografisch`), abgeleitet aus der dominanten Sicht der SpatiotemporalEvents des Records (`sichtForRecord` → `mobilityClusterFor`, constants.js). Der Chip-Grundton bleibt monochrom: kein Event → kein Akzent (das Form-ist-Signal „keine Sicht erschlossen"), Event ohne Cluster → neutral-grau, divergierende Sichten → Mehrfach-Verlauf. Die Sicht ist damit die einzige kategoriale Farbachse der Chronik; Dokumenttyp trägt ein Badge, wiederkehrende Orte `ortColor`. Diese Achse macht die in [data-model.md § 10](data.md) spezifizierten analytischen Perspektiven direkt sichtbar.
+Jeder semantische Datenpunkt erscheint als Chip aus Uppercase-Rollenbezeichner und Wert, etwa `KOMPONIST Beethoven, Ludwig van`. Dieselbe Primitive trägt Einzelbelege im Inline-Detail, Aggregatverteilungen mit Count und AgRelOn-Beziehungen. In der Chronik kommt ein linker Akzent in der Farbe der dominanten Mobilitätssicht dazu ([data-model.md](data-model.md) § Mobilitätsmodell), ohne Ereignis bleibt der Chip ohne Akzent.
 
 ### 4. Inline-Breakdown statt Drilldown-Panel
 
-Aggregatzellen zeigen die Verteilung der Untertypen direkt in der Zelle, gefolgt von der Summe als Ranking-Anker:
-`ERWÄHNT 7 · AUFFÜHRUNG 4 · REPERTOIRE 1 → 12`
+Aggregatzellen zeigen die Verteilung der Untertypen in der Zelle, gefolgt von der Summe als Ranking-Anker. Ein eigenes Panel bleibt den Fällen vorbehalten, in denen Einzelbelege gelistet werden müssen.
 
-Das ersetzt für viele Fragen ein Modal-Panel. Drilldown bleibt für Fälle, in denen Einzelbelege gelistet werden müssen.
+### 5. Provenance-Pille am Datenpunkt
 
-### 5. Datierungs-Konfidenz (entfernt mit E-106)
+Die XLSX-Quellreferenz steht als kompakte Pille an jedem Finanz-, Beziehungs- und Ereignis-Datenpunkt des Inline-Details und führt auf Klick zu Sheet und Zeile. Provenance ist verpflichtender Teil der UI, keine Debug-Beigabe.
 
-Frühere Fassungen zeigten die Datierungs-Konfidenz als farbigen Micro-Dot mit numerischem Wert inline am Record. Dieses Feature ist mit E-106 entfernt: Die Datierungs-Konfidenz wird nicht mehr serialisiert (`agrelon:metadataConfidence` an der Datierung entfällt), und `confidenceDotProps()` ist gelöscht. Es gibt keinen Konfidenz-Dot mehr im UI.
+### 6. Selection durch Kontur, nicht Flächenfarbe
 
-### 6. Provenance-Pille am Datenpunkt
+Ein ausgewählter Record bekommt einen dünnen farbigen Rahmen. Eine Füllung würde den Text dämpfen, die Kontur signalisiert Fokus ohne Ablenkung.
 
-`m3gim-ontology:xlsxSource` wird als kompakte Pille pro Finanz-, Beziehungs- und Ereignis-Datenpunkt im Inline-Detail sichtbar. Klick führt zur XLSX-Zeilenreferenz (Sheet + Zeile). Provenance ist verpflichtender Teil der UI, nicht Debug-Beigabe.
+### 7. Eine Filter-Sidebar für alle Ansichten
 
-### 7. Selection durch Kontur, nicht Flächenfarbe
+Suche und alle Facetten wohnen in einer linken Seitenleiste, die in jeder Ansicht identisch aufgebaut ist (E-158). Der Aufbau ist von oben nach unten fest (E-166) mit Suche, Zeitraum, geteilten Facetten, ansichtsspezifischen Reglern und Legende. Die Suche nennt im Platzhalter die Felder, auf die sie in der Ansicht trifft, und fehlt in Ansichten, in denen sie nichts filtert (E-169). Die Zahl der Dokumente des Schnitts steht als Wurzelzeile des Dokumenttyp-Baums, ohne Abweichung vom Nullpunkt als bloße Zahl und mit Abweichung als Anteil an der Grundmenge, sodass Gesamtmenge und Teilmengen untereinander lesbar sind (E-170). Alle Sektionstitel der Spalte tragen dieselbe gesperrte Kapitälchenform, die Wurzelzeile Dokumente eingeschlossen, weil sie in derselben Ebene steht wie die Titel der übrigen Facetten (E-199). Die Spalte grenzt sich zur Arbeitsfläche mit der schwächsten Linie ab. Die abweichenden Werte stehen ausschließlich als entfernbare Konturchips mit Akzenttext und Akzentrahmen zusammen mit dem Link zum Zurücksetzen in einer schmalen Zeile über den Daten in der Arbeitsfläche, die Chips in der kleinsten Textgröße, damit die Zeile der Tabelle keine Höhe nimmt; die Facette wiederholt weder gewählte Wertzeilen noch eine Titelzahl (E-182, E-183, E-192). Die Chips stehen je Facette gruppiert unter dem Facettennamen in der Kapitälchenform der Sektionstitel, weil innerhalb einer Facette ein Wert genügt und zwischen den Facetten alle zutreffen müssen und die Gruppierung diese Regel zeigt, die der Tooltip des Gruppennamens ausspricht (E-204). Ein Ansichts-Default, der Dokumente ausblendet, ist ein Filter wie jeder andere, erscheint als Chips der Facette Erschließungsstand, die ihre vier Werte mit Haken und Zahl direkt nach dem Dokumenttyp führt, und das Zurücksetzen führt auf die Grundmenge (E-170, E-204). Ein mitgemeintes Blatt unter einem gewählten Oberbegriff ist Information, kein Klickziel (E-204). Der Zeitraum ist ein Regler mit zwei Griffen und den Jahreszahlen an den Enden, ohne Zahlenfelder. Die Facetten folgen in der Reihenfolge Dokumenttyp, Person, Rolle, Ort, Werk, Institution; Rolle steht als personengebundene Eigenschaft direkt unter Person und ihre Anzeigelabels beginnen mit einem Großbuchstaben, ohne das Vokabular zu verändern (E-184). Bei den offenen Facetten stehen Titel und Eingabefeld in einer Zeile, der Titel in einer schmalen festen Spalte (E-178). Dokumenttyp zeigt seine Werteliste als Baum ohne eigenes Suchfeld. Im Baum trennen sich Auswahl und Zeiger (E-193). Eine gewählte Zeile trägt den Haken und Akzenttext ohne Füllung, die Füllung gehört Hover und Fokus, der Tastaturzeiger nimmt `--surface-3`. Der Chevron ist ein eigenes Klickziel über die volle Zeilenhöhe mit `aria-expanded` und eigener Beschriftung, ein gewählter Oberbegriff zeigt seine Kinder mit gedämpftem Mitwahl-Haken, weil der Filter über die Blätter auflöst, und sein Tooltip nennt die Aufteilung direkt gegen Untertypen. Die offenen Mengen zeigen ein Eingabefeld mit Vorschlägen, die bei Fokus die häufigsten Werte und beim Tippen die Treffer nennen, mit Tastaturbedienung, Umlautausgleich und markiertem Trefferteil; ein gewählter Vorschlag bleibt in dieser temporären Liste sichtbar und trägt einen Haken (E-183). Der Platzhalter ist die feste Aufforderung „<Facette> filtern…“ in tertiärer Farbe, normalem Gewicht und leicht kleiner, weil ein realer Wert im leeren Feld als bereits gesetzter Filter gelesen wurde (E-188). Die vier Entitätsfacetten tragen den Punkt ihrer Familie (E-171), die Rollenfacette das hohle Personenquadrat, und eine Facette ohne Werte im aktuellen Schnitt ist auf ihre Titelzeile eingeklappt. Drei Linien gliedern die Spalte, vor den Facetten, vor den Ansichtsreglern und vor der Legende, innerhalb der Blöcke trennt nur Abstand. Grundlage ist der geteilte Filterzustand ([architecture.md](architecture.md) § Cross-View-Filter), daneben gibt es weder ansichtslokale Filterorte noch Top-Filterleisten.
 
-Ein ausgewählter Record bekommt einen dünnen farbigen Rahmen. Fläche würde den Text dämpfen; Kontur signalisiert Fokus ohne Ablenkung.
+### 8. Erklärung durch Struktur, nicht durch Text
 
-### 8. Eine Filter-Sidebar für alle Ansichten
-
-Suche und alle Facetten wohnen in einer linken Seitenleiste, die in jeder Ansicht identisch aufgebaut ist (E-158); die Tab-Leiste bleibt im Seitenkopf. Je Facette gilt ein Bedienmuster, Eingabefeld mit Vorschlägen und entfernbaren Chips; kein Dropdown neben Vorschlagsfeldern. Die Sidebar zeigt die häufigsten Einträge pro Facette mit Counts, der Long-Tail bleibt via Suche zugänglich; sie dient Orientierung, nicht Vollständigkeit. Grundlage ist der geteilte Filterzustand ([architecture.md](architecture.md) § Cross-View-Filter), es gibt keine ansichtslokalen Filterorte daneben und keine Top-Filterleisten. Der Bestand ist umgestellt, seine Toolbar über der Tabelle ist ersatzlos entfallen; Chronik, Karte, Netzwerk und Statistik tragen ihre Regler noch an ihrer bisherigen Stelle und ziehen nach.
-
-### 11. Erklärung durch Struktur, nicht durch Text
-
-Das Interface erzeugt seine Erklärung strukturell (E-156, bekräftigt durch die Projektleitung am 2026-09-01): Zählwerte stehen in den Bedienelementen selbst (Scope-Umschalter „Feinerschlossen/Gesamt" mit Zahlen), Farbbedeutung entsteht aus Nähe (Regel 2), Zustände aus Form (Umriss gegen Füllung, Regel 10). Dauerhaft sichtbarer Erklärtext ist Anti-Muster; Captions und Aufschlüsselungszeilen (etwa die Chronik-Dichte-Caption oder „n von m datiert") wandern in Tooltips. Der Tooltip ist damit der legitime Ort für vertiefende Aufschlüsselung, die primäre Zugangsinformation trägt weiterhin die Struktur. Deckt sich mit der Konvention „kein dauerhaft sichtbarer Erklärtext im UI" (CLAUDE.md); die Ehrlichkeitsanforderung aus Regel 10 bleibt unverändert, nur ihre Form ist Struktur und Tooltip statt sichtbarer Satz.
+Zählwerte stehen in den Bedienelementen selbst, Farbbedeutung entsteht aus Nähe (Regel 2), Zustände aus Form (Regel 10). Dauerhaft sichtbarer Erklärtext ist Anti-Muster, Captions und Aufschlüsselungszeilen wandern in Tooltips. Der Tooltip ist damit der legitime Ort der Vertiefung, die primäre Zugangsinformation trägt weiterhin die Struktur.
 
 ### 9. Uppercase-Letter-Spaced-Section-Header mit Gloss
 
-Sektionen im Hauptbereich tragen dezente Überschriften nach dem Muster `BÜHNENROLLEN (STAGE ROLES)`. Das Fachvokabular wird mit englischem Gloss erklärt, ohne ein Popup-Glossar zu verlangen.
+Sektionen im Hauptbereich tragen dezente Überschriften nach dem Muster `BÜHNENROLLEN (STAGE ROLES)`. Das Fachvokabular erklärt sich über den englischen Gloss statt über ein Popup-Glossar.
 
 ### 10. Datenqualität wird gezeigt, nicht gemergt
 
-Tippfehler, Dubletten, Normalisierungslücken (etwa „Verdi, Guiseppe" neben „Verdi, Giuseppe") erscheinen im UI so, wie sie im Bestand liegen. Das Interface ist ein Erschließungsspiegel. Der Markdown-Report `data/reports/quality-snapshot.md` listet solche Funde systematisch für die Team-Arbeit.
+Tippfehler, Dubletten und Normalisierungslücken erscheinen so, wie sie im Bestand liegen, das Interface ist ein Erschließungsspiegel. Ein Qualitätsflag des Modells zeigt ein neutrales Info-Symbol am Chip, dessen Tooltip den Wert wörtlich nennt, ohne ihn zu deuten. Jahre ohne bearbeitetes Material behalten in der Chronik ihren Platz als Umriss-Dot mit gedimmtem Label. Gerendert wird nur, was aus den Daten ableitbar ist, handverdrahtete Charakterisierungen einer Lebensphase nicht (E-87).
 
-**Explizite Qualitäts- und Statusmarker.** Wo das Modell Qualität ausdrücklich trägt, zeigt das UI das mit eigenen Markern statt es zu verschweigen. Ein `m3gim-ontology:dataQualityFlag` (etwa „Name nicht eindeutig") erscheint am Chip als neutrales Info-Symbol, dessen Tooltip den Wert wörtlich nennt, ohne ihn redaktionell zu deuten. An den Record-Ebenen ohne Chip liegt er weiterhin nur in den Daten. Die Haltung bleibt dieselbe wie für die übrige Datenqualität, sichtbar, nicht gemergt.
+### 11. Trennlinien nur, wo Abstand nicht trägt
 
-**Leere Zeitfenster bleiben sichtbar.** Die Chronik zeigt jedes Jahr der Lebensspanne einzeln (Session 41, M5 — ersetzt das frühere Perioden-Akkordeon). Jahre ohne bearbeitetes Material bekommen einen Umriss-Dot und gedimmtes Label, Jahre mit Records einen gefüllten Dot, dessen Größe mit der Record-Dichte skaliert. Erschließungslücken bleiben dadurch sichtbar, ohne dass ein redaktioneller Hinweis nötig wäre — die Form selbst ist das Signal.
+Gruppen werden zuerst durch Abstand, Überschrift und Ausrichtung getrennt. Eine Linie kommt nur dorthin, wo das Auge zwei Blöcke sonst nicht auseinanderhält, etwa zwischen Konvolut-Kopf und Objektzeilen. Sidebar-Sektionen, Listenzeilen und Legenden tragen keine Linien.
 
-**Keine redaktionelle Deutung im UI.** Alles, was gerendert wird, muss aus den Daten ableitbar sein — Aggregate aus `store.*` (Top-Dokumenttypen, Top-Orte/Personen/Werke der Periode, Counts) sind zulässig, handverdrahtete Karriere-Labels („Internationale Karriere", „Späte Karriere") nicht. Die Chronik führte solche Notizen in Session 36 ein und hat sie in Session 40 wieder entfernt (E-87); die Perioden-Summary aus Top-Typen und Top-Gruppen trägt die datengetriebene Charakterisierung alleine.
+### 12. Tabelle vor Chart für Rankings
 
-## Daten-Präsentations-Muster
+Lautet die Frage, was wie oft vorkommt, ist die Tabelle mit Inline-Breakdown überlegen, weil sie die Rangreihung als Hauptlesepfad erhält. Ein Chart ist dort begründet, wo Raum oder Zeit selbst die Information ist.
 
-### Tabelle vor Chart für Rankings
+### 13. Erst statisch lesbar, dann Interaktion
 
-Wenn die Frage „Was kommt wie oft vor?" lautet, ist die Tabelle überlegen. Eine Heatmap zerstört die Rangreihung, die der Hauptlesepfad ist. Charts sind nur dort begründet, wo Raum oder Zeit die Information ist (Atlas, Biogramm). Für Aggregationen pro Kategorie: Tabelle mit Inline-Breakdown.
+Eine Darstellung muss ohne Bedienung lesbar sein. Interaktion kommt erst dazu, wenn die sortierte Darstellung eine Frage nicht mehr beantwortet, und nie als Toolbar-Chrome neben der Grafik.
 
-### Parallele Facet-Tabellen statt Umschalter
+### 14. Pipeline-Semantik sichtbar machen
 
-Gehören zwei Sichten auf dasselbe Konzept zusammen (z. B. Repertoire = Rollen + Komponisten), stehen sie nebeneinander statt durch ein Tab-Control getrennt. Breitenverhältnis signalisiert Primat: dominanter Pivot breit, sekundärer schmal.
+Was die Pipeline semantisch unterscheidet, also Rollen-Typen, Datumsrollen, die Dokumenttypen-Hierarchie und Konfidenzstufen, erscheint auch im UI, sonst bleibt die Mühe der Differenzierung unsichtbar. Die Belegrollen-Chips sind direkt aus dem Datenmodell gerendert.
 
-### Minimalistische Interaktions-UI
+### 15. Determinismus vor Simulation
 
-Keine Viz-Toolbar, keine Layer-Chips, kein Facet-Filter, wenn die sortierte Darstellung informativ genug ist. Erst statisch lesbar machen, dann Interaktion hinzufügen. Die entfernten D3-Prototypen hatten durchgehend zu viel Toolbar-Chrome.
-
-### Pipeline-Semantik sichtbar machen
-
-Was die Pipeline semantisch unterscheidet (Rollen-Typen, Datumsrollen, DFT-Hierarchie, Konfidenzstufen), erscheint auch im UI sichtbar. Sonst ist die Mühe der Differenzierung unsichtbar. Die Chips `ERWÄHNT · AUFFÜHRUNG · INTERPRET · REPERTOIRE` sind die Belegrollen nach `normalize_role()` — direkt aus dem Datenmodell gerendert.
+Gleiche Daten ergeben gleiche Grafik. Layouts entstehen aus reinen Funktionen und, wo Streuung nötig ist, aus geseedetem Zufall, nicht aus einer unkontrollierten Force-Simulation. Nur so bleiben Wiedererkennbarkeit und Langzeitstabilität einer Ansicht gegeben.
 
 ## Designsystem
 
-Die Design-Tokens (Farben, Spacing, Text-Sizes, Transitions) liegen zentral in `docs/css/variables.css`; alle Tab-CSS nutzen diese Tokens. Die Designregeln 1 und 2 beschreiben die Haltung, dieser Abschnitt fasst die konkreten Tokens und Querschnittsregeln zusammen.
-
-- **Funktionale Farbsemantik.**
-  - KUG-Blau `#004A8F` — Interaktion, Engagement, primäre Aktion
-  - Signal-Grün — Verknüpfung, Match
-  - Neutral-Grau — Abwesenheit, unbearbeitet
-  - Warmer Hintergrund — Struktur
-  - Signal-Rot — nur für Flucht 1944 (hochselektiv)
-- **Mobilitätssichten-Farbfamilie.** Die Tokens `--color-sicht-performativ|institutionell|korrespondenz|diskursiv|biografisch` in `variables.css`, getragen vom Chip-Modifier `.chip--mobility-*` als zweite Farbachse der Chronik-Stations-Chips. Seit E-119 sind diese Tokens die einzige Quelle der Sicht-Farben auch in Karte und Statistik (zuvor divergierende Paletten), ergänzt um `--color-sicht-kontext` für „Weiterer Ortsbezug".
-- **Inhaltsfamilien-Farbfamilie.** Die Tokens `--chip-c-*` in `variables.css` tragen die Familien person (Pflaume), ort (Wald), rolle (Terrakotta), beziehung (Petrol), finanz (Gold) und datum (Schiefer). Dieselben Töne stehen in der Erschließungsanzeige der Bestand-Tabelle, am Farbpunkt der Blocktitel im Inline-Detail und an den Chips darunter, womit die Legende aus Nähe entsteht (Regel 2, E-158).
-- **Ortsfarbcodierung.** Eine durchgehende Farbzuordnung für wiederkehrende Orte (Wien, Graz, München, Bayreuth, Salzburg) als `--color-ort-*`-Tokens, aufgelöst über `ortColor()` (constants.js); erster Konsument sind die Statistik-Top-Orte (E-120). Sie stiftet Orientierung über alle Sichten hinweg — die Karte selbst bleibt bei der Sicht-Farbcodierung ihrer Knoten.
-- **Knotentypen des Verknüpfungen-Graphen.** Die Tokens `--vk-node-person|werk|institution|ort` in `variables.css` tragen die vier Entitätstypen durch Sektor, Legende, Toggle-Chip und Detail-Badge; `--vk-node-focus` ist das KUG-Blau der Fokus-Entität. Ein Typ trägt damit überall dieselbe Farbe, und die Legende bleibt die einzige Erklärstelle.
-- **Typografie.** Source Serif 4 (Titel und Record-Bezeichner), UI-Sansserif-Stack (Interface), Monospace (Signaturen und IDs).
-- **CSS Custom Properties** als Design-System.
-- **Responsive.** `@media <768px`-Breakpoints in `base.css` und `components.css` für Header, Tab-Bar, Toolbars, Legenden.
-- **Accessibility.** `role="tablist/tab/tabpanel"`, `aria-selected` dynamisch, `aria-hidden` auf SVG-Icons, `aria-label` auf der Korb-Badge.
-
-## Anti-Muster
-
-Konsolidiert aus den Designregeln und den Lektionen der entfernten Prototypen.
-
-- **Räumliche Separation zusammengehöriger Ebenen.** Wenn Datenschichten in einem gemeinsamen Koordinatensystem zusammenhängen, müssen sie auch visuell zusammen stehen. Der Gastspiel-Block in Mobilität war vom Hauptchart abgesetzt, was das Parallelen-Lesen kognitiv teuer machte.
-- **Unbegrenzter Zoom ohne State-Persistence.** Klare Zoom-Bounds setzen, State im Hash oder der Session halten. In Kosmos war der Zoom unbegrenzt und der Zustand wurde nicht gespeichert, bis Text unleserlich wurde.
-- **Inkonsistente Scales zwischen Szenen.** Ein geteiltes Scale-Objekt pro Achse über alle Szenen einer View. Die Lebensstationen-Mini-Karten hatten andere Scales als die Synthese-Sektion (Maßstabs-Dissonanz).
-- **Schmale Facetten mit Text-Quetschung.** Facetten bekommen Mindestbreite oder werden durch Interaktion (Hover-Detail) kompensiert, nicht durch Stauchung. Die Netzwerk-Facette in Lebenspartitur war zu schmal, Labels wurden unleserlich.
-- **Scrollytelling mit IntersectionObserver bei kleinen Viewports.** Sticky-Plot ist robuster. Precision-Probleme und nicht-responsive Stat-Cards haben den Flow gestört; Scrollytelling braucht sehr viel Testaufwand.
-- **Layer-Toggle-Overengineering.** Erst prüfen, ob statisch reicht, dann Interaktion bauen. Die entfernten D3-Prototypen hatten durchgehend zu viel Toolbar-Chrome.
-
-## Lektionen aus den entfernten Visualisierungen
-
-Die entfernten D3-Views (Mobilität, Matrix, Kosmos, Zeitfluss, Lebenspartitur, Lebensstationen) und die Standalone-HTMLs (`lebenspartitur.html`, `lebensstationen.html`) waren Entwürfe. Sie werden nicht rekonstruiert. Ihre Substanz ist in den neuen Tabs weiterverarbeitet (Ort-Farbcodierung im Atlas, Signal-Rot für Flucht 1944 im Biogramm, Tabelle-vor-Chart im Netzwerk und Repertoire). Die folgenden Muster gelten als Designregeln auch für künftige Arbeit. Die destruktiven Lehren aus diesen Prototypen sind oben unter § Anti-Muster zusammengeführt.
-
-### Kompositionsentscheidungen, die bleiben
-
-- **Skalenbruch als bewusste Geste.** Die Zigzag-Unterbrechung bei 1975 (in Mobilität, Lebenspartitur, Lebensstationen konsistent angewendet) macht die Pre/Post-Flucht-Asymmetrie visuell unmittelbar lesbar. Diskontinuität wird zur Kompositionsform, nicht verdeckt.
-- **Ortsfarbcodierung als Wiedererkennung.** Die durchgehende Farbzuordnung (Graz, Wien, Bayreuth, Salzburg, München) über alle Views hat Orientierung gestiftet. Ort-Farben gehören ins Designsystem, nicht in einzelne Views.
-- **Determinismus vor Schönheit.** Seeded Randomness (Zeitfluss-Jitter) und polar-analytisches Layout (Kosmos) haben garantiert, dass gleiche Daten gleiche Grafik ergeben. Pflicht für Langzeitstabilität und Wiedererkennbarkeit — keine unkontrollierte Force-Simulation.
-- **Facetten-Synchronisierung via gemeinsamer Y-Scale.** Die Spalten-Partitur aus Netzwerk, Hauptchart und Repertoire mit synchronem Hover-Highlight war das kognitiv stärkste Muster — auf einen Blick sichtbar, welche Netzwerk-Intensität und welches Repertoire zu welchem Zeitpunkt aktiv waren.
-- **Kern-/Peripherie-Dichotomie.** Die Matrix-Aufteilung in stark vernetzte (Kern) und schwach vernetzte (Peripherie als kollapsbare Gruppen) Personen hat Überladung ohne Informationsverlust verhindert. Prinzip: das Häufige zeigen, das Seltene zugänglich halten.
-- **Farbsemantik-Schema.** Engagement-Blau, Gastspiel-Gold, Signal-Rot nur für Flucht 1944 — semantisch scharf, Rot bleibt Ausnahme.
-
-### Interaktionsmuster, die etabliert sind
-
-- **Layer/Fokus/Phase-Dimming** als universelles Muster über mehrere Views bewährt — bleibt als Fade-on-Focus-Standard.
-- **Deep-Link-Hash-Routing** in SPA-Tabs + `navigateToView`-Event-Bus für Cross-View-Interaktion funktioniert.
-- **Shared Phase-Chip-Leiste** zur Jahreseingrenzung war konsistent über alle Views — als wiederverwendbares Element übernommen.
-
-### Forschungsfrage-Abdeckung der entfernten Views
-
-| FF | Stärkste frühere Annäherung | Was für die Neukonzeption bleibt |
-|---|---|---|
-| FF1 (Professionalisierung/Vernetzung) | Matrix-Heatmap (Person × Phase) + Ort-Dots in Mobilität | Kern-/Peripherie-Schnitt + Ort als strukturierende Achse |
-| FF2 (narrativ/ästhetisch) | Kosmos mit Genre-Ratio + UA-Distanz | bleibt spekulativ, nicht MVP-relevant |
-| FF3 (Wissenstransfer) | Zeitfluss (Komponist × Ort × Jahr) | Ort-Codierung über Dot-Rand war elegant — übernehmen |
-| FF4 (Mobilitätsformen) | Mobilität-Schwimmbahn + Lebenspartitur-Bump | Stärkster Hebel — hier setzt die Neukonzeption an |
-
-### Datenvorstrukturen, die unverändert bleiben
-
-- `store.mobilityEvents` (Phase 6, Session-33-Koordinaten-Patch) zentralisiert, was vorher heuristisch aus `partitur.auftritte` abgeleitet wurde — Atlas und Biogramm konsumieren die Map direkt.
-- `store.agentRelations` ist in Archiv-Inline-Detail, Indizes-Beziehungsbadges und Netzwerk-Tab integriert.
-- `store.finances` sitzt im Archiv-Inline-Detail Finanzen-Block.
-
-## Abgrenzung zur entfernten Frontend-Schicht
-
-Die D3-Views und die Standalone-HTMLs sind entfernt; ihre Lektionen stehen oben unter § Lektionen aus den entfernten Visualisierungen. Das neue Interface baut nicht auf `partitur.json`, sondern direkt auf den Phase-6-Store-Maps (`dftHierarchy`, `mobilityEvents`, `agentRelations`, `finances`) + `store.records`/`persons`/`works`/`locations` (Aufbau dieser Maps siehe [architecture.md](architecture.md) § Frontend).
-
-`utils/viz-components.js` (Phase-Chips, Zoom-Helper, Tooltip-Controller) wird je Tab neu bewertet; nicht alle Builder überleben, nicht alle werden gebraucht.
+Die Design-Tokens für Farben, Abstände, Textgrößen und Übergänge liegen zentral in `docs/css/variables.css` und sind die einzige Quelle für jedes Tab-CSS. Das KUG-Blau ist der Akzent aller Interaktion, ein Rot markiert Fehler und Datenqualität, ein Grün den Wikidata-Match. Vier Inhaltsfamilien-Töne tragen Personen, Institutionen, Orte und Werke, eine kategoriale Reihe aus sechs Tönen die Mobilitätssichten sowie Kategorien und Knotentypen des Netzwerks. Ein Tooltip an einem SVG-Element ist ein HTML-Element über der Grafik, weil SVG-Knoten keine Pseudo-Elemente tragen (E-36), und ein Hover zeigt genau einen Tooltip (E-90). Die Typografie führt Source Serif 4, einen UI-Sansserif-Stack und Monospace.

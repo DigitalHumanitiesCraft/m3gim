@@ -80,54 +80,35 @@ def test_xlsx_roles_have_stable_normalization(xlsx_verknuepfungen):
             print(f"  {k}: {v}")
 
 
-# Rollen aus data.md § 5 (kanonisches Vokabular nach Normalisierung).
-# Spiegelt § 5 inkl. der mit dem tieferen Export ergaenzten Rollen (Treffen
-# 2026-06-23). Bei Aenderung von § 5 diese Menge nachziehen.
-DATA_MD_ROLES = {
-    # Personen
-    "verfasser", "adressat", "absender", "empfänger", "unterzeichner",
-    "abgebildet", "agent", "vermittler", "auftraggeber", "widmungsempfänger",
-    "erwähnt", "sänger", "dirigent", "regisseur", "komponist", "librettist",
-    "übersetzer", "arrangeur", "chorleiter", "choreograph", "bühnenbildner",
-    "kostümbildner", "ausstatter", "bühnenleiter", "technische leitung",
-    "interpret", "protagonist",
-    # Produktionscrew (tieferer Export, § 5; maskenbidner ist die Tippform)
-    "beleuchter", "maskenbildner", "maskenbidner", "repetitor",
-    "regieassistent", "fotograf",
-    # Person-Rollen aus dem tieferen Export (§ 5, Klärungsbedarf)
-    "leitung", "publikum",
-    # Institutionell (mit Personen-Ueberlapp)
-    "vertragspartner", "inhaber", "herausgeber",
-    # Orte
-    "entstehungsort", "zielort", "absendeort", "abreiseort", "auffuehrungsort",
-    "wohnort", "vertragsort", "empfangsort",
-    # Institutionen
-    "arbeitgeber", "veranstalter", "ausbildungsstätte", "fluggesellschaft",
-    "rahmenveranstaltung",
-    # Ereignisse + Werke + Buehnenrollen
-    "premiere", "auftritt", "probe", "aufführung", "festvorstellung",
-    "wiederaufnahme", "implizit", "repertoire", "aufnahme", "empfang",
-    # Datumsrollen
-    "absendedatum", "empfangsdatum", "ausstellungsdatum", "erscheinungsdatum",
-    "auffuehrungsdatum", "premieredatum",
-    "abreisedatum", "probenbeginn", "ausstrahlung", "spielzeit", "überweisung",
-    "gespräch", "erstelldatum", "lohnbestätigung", "ratenzahlung",
-    # Datumsrollen der Lieferung 2026-08-31 (E-152, data.md § 5)
-    "unterschriftsdatum", "reisedatum", "aufnahmedatum",
-    # Finanz
-    "abendgage", "provision", "gesamtvergütung", "reisekosten",
-    "rundfunkhonorar", "rundfunkshonorar",
-    # Finanzrollen der Lieferung 2026-08-31 (E-152, data.md § 5)
-    "abspielhonorar", "gage", "summe",
-    # Vertragsstatus in der Rollenspalte (§ 5/§ 11, keine echte Rolle)
-    "nicht eingehalten",
-    # Zusaetzlich aus Datenbestand v2: Komposit-Rollen
-    "gastspiel", "generalprobe", "auftrag", "entstehung",
-}
+def _vocab_roles():
+    """Das Rollenvokabular aus vocab/m3gim.ttl, normalisiert wie die Pipeline.
+
+    Das Vokabular steht seit E-133 ueber der Pipeline in der Spec-Hierarchie
+    und ist damit die Wahrheitsquelle. Zuvor stand hier eine handgepflegte
+    Liste, die bei jeder Rollen-Ergaenzung von Hand nachzuziehen war und deren
+    Vergessen erst spaet auffiel (Review 2026-07-18, Punkt 7). prefLabel und
+    jedes deutsche altLabel zaehlen, weil ein zusammengefuehrter Begriff im
+    Bestand weiter in seiner Ursprungsform steht.
+    """
+    import sys
+    from pathlib import Path
+    SCRIPTS = Path(__file__).parent.parent / "scripts"
+    if str(SCRIPTS) not in sys.path:
+        sys.path.insert(0, str(SCRIPTS))
+    from _common import load_role_concepts
+
+    vocab_path = Path(__file__).parent.parent / "vocab" / "m3gim.ttl"
+    roles = set()
+    for label in load_role_concepts(vocab_path):
+        norm = _normalize_role_for_test(label)
+        if norm:
+            roles.add(norm)
+    assert len(roles) > 50, "Rollenvokabular unplausibel klein, Lesepfad pruefen"
+    return roles
 
 
 def test_v2_roles_covered_by_data_md_vocab(xlsx_verknuepfungen):
-    """Jede in v2 belegte Rolle (nach Normalisierung) steht in data.md § 5.
+    """Jede in v2 belegte Rolle (nach Normalisierung) steht in data.md § Rollenvokabular.
     Wenn Unbekannte auftauchen: data.md erweitern oder XLSX korrigieren.
     """
     df = xlsx_verknuepfungen
@@ -140,10 +121,11 @@ def test_v2_roles_covered_by_data_md_vocab(xlsx_verknuepfungen):
         if norm:
             present[norm] += 1
     werteliste = _werteliste_roles()
+    vocab = _vocab_roles()
     unknown = {r: n for r, n in present.items()
-               if r not in DATA_MD_ROLES and r in werteliste}
+               if r not in vocab and r in werteliste}
     assert not unknown, (
-        f"Rollen im Datenbestand ohne data.md-Eintrag (data.md § 5 erweitern "
+        f"Rollen im Datenbestand ohne data.md-Eintrag (vocab/m3gim.ttl erweitern "
         f"oder XLSX korrigieren): {sorted(unknown.items(), key=lambda x: -x[1])[:10]}"
     )
 
@@ -232,10 +214,11 @@ def test_output_roles_subset_of_data_md(records):
     """
     roles = _collect_output_roles(records)
     werteliste = _werteliste_roles()
+    vocab = _vocab_roles()
     unknown = {r: c for r, c in roles.items()
-               if r not in DATA_MD_ROLES and r in werteliste}
+               if r not in vocab and r in werteliste}
     assert not unknown, (
-        f"Rollen im Output nicht in data.md § 5: "
+        f"Rollen im Output ohne Concept in vocab/m3gim.ttl: "
         f"{sorted(unknown.items(), key=lambda x: -x[1])[:10]}"
     )
 
@@ -258,7 +241,7 @@ FRONTEND_NEUTRAL_IGNORELIST = {
     # Komposit-Markierungen ohne Chip
     "implizit", "rahmenveranstaltung", "fluggesellschaft", "abgebildet",
     "ausbildungsstätte",
-    # Vertragsstatus in der Rollenspalte (§ 11), keine Chip-Rolle
+    # Vertragsstatus in der Rollenspalte (§ Finanzschicht), keine Chip-Rolle
     "nicht eingehalten",
 }
 
@@ -320,7 +303,7 @@ def test_xlsx_roles_all_in_frontend_cluster(xlsx_verknuepfungen):
 
 def test_xlsx_currencies_all_allowed(xlsx_verknuepfungen):
     """Jede belegte Waehrung aus XLSX-Finanzzeilen ist in ALLOWED_CURRENCIES.
-    Bei neuer Waehrung: data-model.md § 11 und tests/test_13_finanzen.py aktualisieren.
+    Bei neuer Waehrung: data-model.md § Finanzschicht und tests/test_13_finanzen.py aktualisieren.
     """
     import sys
     from pathlib import Path

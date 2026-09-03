@@ -156,6 +156,48 @@ def test_decompose_ort_datum_freitext_beginn():
     assert result["datum"] == "nach:1956"
 
 
+@pytest.mark.parametrize("raw,ort,datum", [
+    # Belegte Spannenwerte der Verknuepfungstabelle (Box 1). Die Jahresspanne
+    # nach dem Komma wird zur ISO-TimeSpan, der Ort bleibt unberuehrt.
+    ("Zürich, 1947-1952", "Zürich", "1947/1952"),
+    ("München, 1952-1957", "München", "1952/1957"),
+    ("Bayreuth, 1951-1953", "Bayreuth", "1951/1953"),
+    # Monatsgenaue und jahresgenaue Datierung, ebenfalls belegt
+    ("Wien, 1957-09", "Wien", "1957-09"),
+    ("Bayreuth, 1953", "Bayreuth", "1953"),
+])
+def test_decompose_ort_datum_mehrteilige_datierungen(raw, ort, datum):
+    result = decompose_komposit_value(raw, ["ort", "datum"])
+    assert result["ort"] == ort
+    assert result["datum"] == datum
+
+
+@pytest.mark.parametrize("raw", [
+    # Belegte Ortsangaben mit Komma (Adresse bzw. Spielstaette). Sie stehen in
+    # der Quelle als reine Ortszeile, nicht als Komposit; der Wert darf nicht
+    # am Komma zerlegt werden.
+    "München, Martiusstrasse 3",
+    "München, Prinzregententheater",
+    "Zürich, Zürichbergstrasse 104",
+    "Wien, Lehargasse 1",
+])
+def test_decompose_ortsname_mit_komma_bleibt_ganz(raw):
+    assert decompose_komposit_value(raw, ["ort"]) == {"ort": raw}
+
+
+def test_decompose_ort_datum_ohne_komma_bleibt_unzerlegt():
+    """Belegter Quellfehler: eine 'ort, datum'-Zeile mit reinem Datumswert.
+
+    Box 1 fuehrt unter dem Komposittyp den Wert '1956-11-21' ohne Ortsanteil.
+    Ohne Komma greift kein Muster, beide Haelften tragen den Rohwert, und der
+    Ortszweig verwirft ihn spaeter als Datumswert. Der Befund steht in der
+    Partner-Uebergabeliste, hier ist nur das Verhalten festgehalten.
+    """
+    result = decompose_komposit_value("1956-11-21", ["ort", "datum"])
+    assert result["ort"] == "1956-11-21"
+    assert result["datum"] == "1956-11-21"
+
+
 # ---------------------------------------------------------------------------
 # clean_date — Excel-Artefakte
 # ---------------------------------------------------------------------------

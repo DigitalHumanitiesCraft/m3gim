@@ -13,7 +13,7 @@ template:
   alias: https://dhcraft.org/Promptotyping/#promptotyping-document-index
 status: complete
 created: 2026-02-19
-updated: 2026-09-01
+updated: 2026-09-03
 language: de
 version: 0.5
 authors: [Christopher Pollin]
@@ -62,7 +62,7 @@ Die Datenbefunde leben operativ unter `data/reports/`, die quellseitig behebbare
 
 ## Konvention
 
-Diese Wissensbasis folgt der Konvention für Promptotyping Documents, die Naming Contract, Frontmatter-Schema, Routing-Heuristik und Strukturprinzipien regelt. Einzelträger einer Funktion tragen den kanonischen Namen. Die Wissensbasis wurde am 2026-07-19 von achtzehn auf zwölf Dokumente konsolidiert und am 2026-09-01 weiter verdichtet, die Erfassungsrichtlinie ging in [data-model.md](data-model.md) auf, die beiden Architektur-Dokumente wurden zu [architecture.md](architecture.md), das Datenfehler-Register wanderte als operatives Registerpaar nach `data/reports/`, und das Entscheidungsregister wurde Teil von [journal.md](journal.md) (E-155). Dateinamen sind englisch, der Inhalt ist deutsch.
+Diese Wissensbasis folgt der Konvention für Promptotyping Documents, die Naming Contract, Frontmatter-Schema, Routing-Heuristik und Strukturprinzipien regelt. Einzelträger einer Funktion tragen den kanonischen Namen. Die Wissensbasis wurde am 2026-07-19 von achtzehn auf zwölf Dokumente konsolidiert und am 2026-09-01 weiter verdichtet, die Erfassungsrichtlinie ging in [data-model.md](data-model.md) auf, die beiden Architektur-Dokumente wurden zu [architecture.md](architecture.md), das Datenfehler-Register wanderte als operatives Registerpaar nach `data/reports/`, und das Entscheidungsregister wurde Teil von [journal.md](journal.md) (E-155). Dateinamen sind englisch, der Inhalt ist deutsch. Abschnitte tragen keine Nummern, ein Verweis nennt Dokument und Abschnittstitel (E-161).
 
 Modelländerungen werden zuerst in [data.md](data.md) verankert (Leitplanke Spec-first, E-133). Erledigtes wandert aus dem volatilen Abschnitt von [specification.md](specification.md) nach [journal.md](journal.md), Quellseitiges in die Partner-Übergabeliste unter `data/reports/`. Forschungsnotizen und DSGVO-sensible Quellen werden im Obsidian-Vault gepflegt, das Repo trägt das destillierte Extrakt.
 

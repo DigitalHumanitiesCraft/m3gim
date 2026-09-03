@@ -1,5 +1,5 @@
 /**
- * M³GIM Wissenskorb — localStorage-based bookmarking of records.
+ * M³GIM Korb, localStorage-based bookmarking of records.
  */
 
 const STORAGE_KEY = 'm3gim-korb';

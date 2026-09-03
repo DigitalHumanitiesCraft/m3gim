@@ -8,9 +8,10 @@
  * Statistik und sieht dort den vollen Bestand, ohne dass irgendetwas meldet,
  * dass zwei verschiedene Mengen nebeneinander stehen.
  *
- * Der Gate ist lexikalisch und ohne Ermessen entscheidbar: wer eine
- * Sidebar-Sektion `title: 'Zeitraum'` baut, muss den geteilten State lesen
- * (subscribe) und zurueckschreiben (setFilter).
+ * Seit dem Sidebar-Geruest (E-158) baut den Zeitregler genau eine Stelle,
+ * `docs/js/ui/sidebar.js`. Der Gate ist deshalb zweiteilig und ohne Ermessen
+ * entscheidbar: das Geruest liest den geteilten State (subscribe) und schreibt
+ * ihn zurueck (setFilter), und keine Ansicht baut daneben einen eigenen.
  *
  * Lauf: node --test tests/frontend/shared-filter-reach.test.mjs
  */
@@ -23,6 +24,7 @@ import { dirname, join } from 'node:path';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const VIEWS = join(HERE, '..', '..', 'docs', 'js', 'views');
+const SCAFFOLD = join(HERE, '..', '..', 'docs', 'js', 'ui', 'sidebar.js');
 
 const TIME_SECTION = /title:\s*'Zeitraum'/;
 
@@ -32,34 +34,31 @@ function viewSources() {
     .map(n => ({ name: n, text: readFileSync(join(VIEWS, n), 'utf8') }));
 }
 
-describe('Geteilter Filter erreicht jede Ansicht mit Zeitregler', () => {
-  const withTime = viewSources().filter(v => TIME_SECTION.test(v.text));
+describe('Der Zeitregler wohnt im Geruest und haengt am geteilten Filter', () => {
+  const scaffold = readFileSync(SCAFFOLD, 'utf8');
 
-  test('mindestens eine Ansicht baut einen Zeitregler', () => {
-    assert.ok(withTime.length > 0, (
-      'Keine Ansicht mit Zeitregler gefunden — der Gate verliert seinen '
+  test('das Geruest baut den Zeitregler (der Gate hat seinen Gegenstand)', () => {
+    assert.ok(TIME_SECTION.test(scaffold), (
+      'Kein Zeitregler in ui/sidebar.js gefunden — der Gate verliert seinen '
       + 'Gegenstand und ist zu pruefen.'
     ));
   });
 
-  test('jede Ansicht mit Zeitregler liest den geteilten Filter', () => {
-    const offenders = withTime
-      .filter(v => !/subscribe\s*\(/.test(v.text))
-      .map(v => v.name);
-    assert.deepEqual(offenders, [], (
-      'Diese Ansichten bauen einen Zeitregler, ohne den geteilten Filter zu '
-      + 'abonnieren. Ein Schnitt aus einer anderen Ansicht kommt dort nicht '
-      + 'an: ' + offenders.join(', ')
-    ));
+  test('das Geruest liest den geteilten Filter', () => {
+    assert.ok(/subscribe\s*\(/.test(scaffold));
   });
 
-  test('jede Ansicht mit Zeitregler schreibt ihren Schnitt zurueck', () => {
-    const offenders = withTime
-      .filter(v => !/setFilter\s*\(/.test(v.text))
+  test('das Geruest schreibt seinen Schnitt zurueck', () => {
+    assert.ok(/setFilter\s*\(/.test(scaffold));
+  });
+
+  test('keine Ansicht baut einen zweiten Zeitregler daneben', () => {
+    const offenders = viewSources()
+      .filter(v => TIME_SECTION.test(v.text))
       .map(v => v.name);
     assert.deepEqual(offenders, [], (
-      'Diese Ansichten schneiden die Zeit nur lokal. Der Schnitt bleibt im '
-      + 'Tab stehen und gilt nirgendwo sonst: ' + offenders.join(', ')
+      'Diese Ansichten bauen ihren eigenen Zeitregler neben dem Geruest. Zwei '
+      + 'Regler auf derselben Achse laufen auseinander: ' + offenders.join(', ')
     ));
   });
 });

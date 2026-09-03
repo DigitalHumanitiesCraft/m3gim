@@ -1,15 +1,15 @@
-# Test- und Dev-Abhaengigkeiten.
+# Test- und Dev-Abhaengigkeiten, gepinnt auf den Stand vom 2026-09-03.
 # Bindet die Laufzeit-Deps via Include ein, damit
 #   pip install -r requirements-test.txt
 # eine lauffaehige Testumgebung liefert — die Tests importieren pandas
 # (conftest, test_36) und thefuzz (test_24) aus requirements.txt.
 -r requirements.txt
 
-pytest>=7.0
-jsonschema>=4.0
+pytest==8.3.5
+jsonschema==4.25.0
 
 # rdflib: vocab/check-coverage.py parst vocab/m3gim.ttl.
-rdflib>=7.0
+rdflib==7.6.0
 
 # playwright ist NICHT enthalten. Der Browser-Smoke-Test unter
 # tests/frontend/test_smoke.py wird ohne ihn uebersprungen; fuer den Lauf

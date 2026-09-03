@@ -8,14 +8,14 @@
  * drei von ihnen waren vor diesem Test ueberhaupt nicht pruefbar, weil die
  * Logik im DOM-Pfad der Views eingeschlossen war.
  *
- *   A  views/network.js       Personen-zu-Jahre-Index. Ohne Traeger bleibt die
- *                             Map leer, und `personInTimeRange` blendet bei
- *                             aktivem Zeitfilter jede Person aus. Der
- *                             Netzwerk-Tab waere leer, ohne Fehlermeldung.
- *   B  views/archive-holdings.js  Undatiert-Markierung der Bestandszeile. Ohne
+ *   A  data/records-for.js    Zeitanker des Netzwerk-Schnitts. Ohne Traeger
+ *                             traegt kein Record ein Jahr, und das Zeitfenster
+ *                             des Netzwerks schneidet nur noch undatierte
+ *                             Dokumente heraus, ohne Fehlermeldung.
+ *   B  views/bestand.js  Undatiert-Markierung der Bestandszeile. Ohne
  *                             Traeger traegt jeder Record die Markierung und
  *                             die Datum-Spalte zeigt durchgehend "o. D.".
- *   C  views/entity-map-data.js   Datum eines Ortsbelegs. Ohne Traeger fallen
+ *   C  views/karte-data.js   Datum eines Ortsbelegs. Ohne Traeger fallen
  *                             die Record-Belege aus jeder Zeitfenster-Aussage
  *                             heraus, bleiben aber sichtbar, weil `inWindow`
  *                             undatierte Belege durchlaesst.
@@ -35,26 +35,17 @@
  * benannte Zusicherung fest, damit es beim Umbau als Befund sichtbar wird.
  */
 
-import { test, describe, before } from 'node:test';
+import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
 import { loadArchive } from '../../docs/js/data/loader.js';
 import { countLinks } from '../../docs/js/utils/format.js';
-import { buildOccurrences } from '../../docs/js/views/entity-map-data.js';
-import { personYearsIndex, personInTimeRange } from '../../docs/js/views/network.js';
+import { buildOccurrences } from '../../docs/js/views/karte-data.js';
+import { isUndatedItem } from '../../docs/js/views/bestand-data.js';
+import { yearOf, recordsFor } from '../../docs/js/data/records-for.js';
+import { buildGraph } from '../../docs/js/views/_netzwerk-geometry.js';
 import { withConcepts } from './_concepts.mjs';
-
-// archive-holdings.js zieht ueber ui/events.js einen window-Listener auf
-// Modulebene. Der Stub haelt den Import in Node offen, ohne die View zu
-// beruehren; das Modul wird erst nach dem Stub geladen.
-globalThis.window = globalThis.window || {
-  addEventListener() {}, removeEventListener() {}, dispatchEvent() {},
-};
-let isUndatedItem;
-before(async () => {
-  ({ isUndatedItem } = await import('../../docs/js/views/archive-holdings.js'));
-});
 
 async function storeFrom(jsonld) {
   const prevFetch = globalThis.fetch;
@@ -93,43 +84,34 @@ function graphWithDate(date) {
   return { '@graph': [record] };
 }
 
-describe('A Netzwerk: Personen-zu-Jahre-Index haengt am Record-Datum', () => {
-  test('mit rico:date traegt die Person eine Jahresmenge', async () => {
+describe('A Netzwerk: das Zeitfenster haengt am Record-Datum', () => {
+  test('mit rico:date traegt der Record sein Jahr', async () => {
     const store = await storeFrom(graphWithDate('1956-05-01'));
-    const { personYears, yearRange } = personYearsIndex(store);
-    assert.deepEqual([...(personYears.get('Malaniuk, Ira') || [])], [1956],
-      'Jahresmenge der Person kommt nicht aus rico:date');
-    assert.deepEqual(yearRange, { min: 1956, max: 1956 });
-    assert.equal(
-      personInTimeRange(personYears, yearRange, 'Malaniuk, Ira',
-        { yearFrom: 1950, yearTo: 1960 }),
-      true, 'Person faellt aus dem eigenen Zeitfenster');
+    assert.equal(yearOf(store, store.records.get('m3gim-data:TEST_1')), 1956,
+      'Jahr des Records kommt nicht aus rico:date');
   });
 
-  test('ohne rico:date bleibt die Person bei aktivem Zeitfilter unsichtbar', async () => {
+  test('ohne rico:date bleibt der Record undatiert und ueberlebt das Fenster (E-88)', async () => {
     const store = await storeFrom(graphWithDate(null));
-    const { personYears, yearRange } = personYearsIndex(store);
-    assert.equal(personYears.size, 0, 'Jahresmenge ohne Traeger nicht leer');
-    assert.equal(yearRange, null, 'Jahresspanne ohne Traeger nicht null');
-    // Das stille Ausfallverhalten, festgehalten. Ohne Jahresmenge blendet der
-    // Zeitfilter aus, ohne Zeitfilter bleibt die Person sichtbar.
-    const fallback = { min: 1919, max: 2009 };
-    assert.equal(
-      personInTimeRange(personYears, fallback, 'Malaniuk, Ira',
-        { yearFrom: 1950, yearTo: 1960 }),
-      false);
-    assert.equal(
-      personInTimeRange(personYears, fallback, 'Malaniuk, Ira',
-        { yearFrom: null, yearTo: null }),
-      true);
+    const record = store.records.get('m3gim-data:TEST_1');
+    assert.equal(yearOf(store, record), null, 'Record ohne Traeger gilt als datiert');
+    // Das stille Ausfallverhalten, festgehalten: ein undatierter Record faellt
+    // nicht aus dem Zeitfenster, er wird nur als undatiert mitgezaehlt.
+    const cut = recordsFor(store, { zeitfenster: [1950, 1960] },
+      { base: new Set(['m3gim-data:TEST_1']) });
+    assert.equal(cut.ids.has('m3gim-data:TEST_1'), true);
+    assert.equal(cut.undatiert, 1);
   });
 
-  test('Anker am Datenstand: der Index ist real befuellt', async () => {
-    const { personYears, yearRange } = personYearsIndex(await realStore());
-    assert.ok(personYears.size >= 300,
-      `nur ${personYears.size} Personen mit Jahresmenge`);
-    assert.ok(yearRange && yearRange.min < yearRange.max,
-      'keine belastbare Jahresspanne aus dem Datenstand');
+  test('Anker am Datenstand: das Zeitfenster verkleinert den Graphen wirklich', async () => {
+    const store = await realStore();
+    const weit = buildGraph(store, { records: recordsFor(store, {}).ids, topN: 500 });
+    const eng = buildGraph(store, {
+      records: recordsFor(store, { zeitfenster: [1950, 1955] }).ids, topN: 500,
+    });
+    assert.ok(weit.nodes.length > 0, 'der ungefilterte Graph ist leer');
+    assert.ok(eng.stats.records < weit.stats.records,
+      'das Zeitfenster schneidet keine Dokumente weg — der Zeitanker kommt nicht an');
   });
 });
 

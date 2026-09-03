@@ -1,12 +1,12 @@
 /**
  * Reine Datenschicht der Mobilitäts-Chronik (kein DOM, kein d3).
- * Spiegelt den statistics-data.js-Split: die View orchestriert nur,
+ * Spiegelt den statistik-data.js-Split: die View orchestriert nur,
  * Sicht-Ableitung / Dekaden-Aggregation leben hier. Die Sekundär-Datierung
  * kommt seit dem zusammengeführten Modell aus `primaryYear()` der Datenschicht.
  */
 
 // Geteilte Sichten-Konstanten weiterreichen, damit die View eine Quelle hat.
-export { SICHTEN, SICHT_COLOR } from './statistics-data.js';
+export { SICHTEN, SICHT_COLOR } from './statistik-data.js';
 
 /**
  * Dominante Mobilitätssicht eines Records aus seinen verorteten Annotationen.

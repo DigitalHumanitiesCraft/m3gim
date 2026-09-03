@@ -35,3 +35,9 @@ export function clear(element) {
     element.removeChild(element.firstChild);
   }
 }
+
+/** Escape a value for interpolation into an HTML string (tooltip markup). */
+export function escapeHtml(s) {
+  return String(s).replace(/[&<>"]/g, c =>
+    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+}

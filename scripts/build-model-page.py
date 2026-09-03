@@ -920,15 +920,14 @@ HEAD = """<!DOCTYPE html>
 </head>
 <body class="info-page">
 
-  <header class="app-header">
-    <a href="index.html" class="app-header__brand">M³GIM</a>
-    <div class="app-header__subtitle">Teilnachlass Ira Malaniuk — UAKUG/NIM</div>
-    <a href="projekt.html" class="app-header__badge">Research Preview</a>
-    <div class="app-header__spacer"></div>
-    <nav class="app-header__nav" aria-label="Informationsseiten">
+  <header class="topbar">
+    <a href="index.html" class="topbar__brand">M³GIM</a>
+    <span class="topbar__subtitle">Teilnachlass Ira Malaniuk — UAKUG/NIM</span>
+    <a href="projekt.html" class="topbar__badge">Research Preview</a>
+    <nav class="topbar__info" aria-label="Informationsseiten">
       <a href="about.html">Über</a>
       <a href="projekt.html">Projekt</a>
-      <a href="datenmodell.html" class="active">Datenmodell</a>
+      <a href="datenmodell.html" aria-current="page">Datenmodell</a>
     </nav>
   </header>
 

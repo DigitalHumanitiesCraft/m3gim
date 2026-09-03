@@ -7,7 +7,7 @@ status: complete
 language: de
 version: 0.4
 created: 2026-02-19
-updated: 2026-09-01
+updated: 2026-09-03
 authors: [Christopher Pollin]
 generated-with: Claude Code
 method:
@@ -33,11 +33,11 @@ related: [data, architecture, journal, specification, research-framework, testin
 
 # M³GIM Datenmodell
 
-Dieses Dokument führt das formale Modell, also Klassen, Properties, kontrollierte Vokabulare und Serialisierung. Das Quellmaterial dazu, also Schichtenmodell, Tabellenaufbau, Verknüpfungsmechanismus, Rollenlisten und Datumskonventionen, steht in [data.md](data.md). Beide Dokumente behalten die Abschnittsnummern, die sie vor ihrer Teilung hatten; dieses Dokument führt die Abschnitte 7 bis 13 und 16, data.md die übrigen. Die Nummerierung ist deshalb nicht fortlaufend, was eine Setzung ist und kein Versehen, weil Verweise aus Code, Tests und Vokabular an ihr hängen.
+Dieses Dokument führt das formale Modell, also Klassen, Properties, kontrollierte Vokabulare und Serialisierung. Das Quellmaterial dazu, also Schichtenmodell, Tabellenaufbau, Verknüpfungsmechanismus, Rollenlisten und Datumskonventionen, steht in [data.md](data.md). Verweise auf Abschnitte beider Dokumente nennen den Abschnittstitel. Die früheren Abschnittsnummern aus der Zeit vor der Teilung sind aufgelöst.
 
 Die formale Fassung der Terme steht in [`../vocab/m3gim.ttl`](../vocab/m3gim.ttl). Eine Modelländerung wird zuerst hier verankert, danach im Vokabular, danach im Test und zuletzt in der Pipeline (E-133). Adressiert ist auch, wer mit dem erzeugten Datensatz arbeitet, ohne die Pipeline zu kennen, also ein Agent, der Abfragen formuliert oder Aussagen interpretiert.
 
-## 7. RiC-O-Kern und m3gim-Erweiterung
+## RiC-O-Kern und m3gim-Erweiterung
 
 ### Namensräume
 
@@ -116,9 +116,9 @@ Die Erfassung führt eine einzige Rollenspalte. Vor dem Umbau verteilte die Pipe
 
 Die Property ist `owl:ObjectProperty` mit `rdfs:range skos:Concept`. Der Rollenwert steht als Verweis auf ein Concept des Vokabulars `m3gim-vocab`, und der Verweisknoten führt dessen `skos:prefLabel` mit, damit der Anzeigetext ohne Nachschlagen im Vokabular verfügbar ist. Damit sind die Bezeichner des Vokabulars in den Daten sichtbar, die Werte über die IRI maschinell auswertbar, und das Frontend braucht keine Handtabelle für die Anzeigeform.
 
-Wo die Quelle keine Rolle führt, trägt der Knoten keine. Eine aus der Stellung erschlossene Rolle entsteht an keiner Stelle. Ein Wert außerhalb des Vokabulars bleibt als Literal stehen; das betrifft im Bestand den Vertragsstatus `nicht eingehalten` (Abschnitt 11).
+Wo die Quelle keine Rolle führt, trägt der Knoten keine. Eine aus der Stellung erschlossene Rolle entsteht an keiner Stelle. Ein Wert außerhalb des Vokabulars bleibt als Literal stehen; das betrifft im Bestand den Vertragsstatus `nicht eingehalten` (§ Finanzschicht).
 
-Die Rolle gilt nur im Kontext des jeweiligen Dokuments, hängt aber am Entitätsknoten. Trägt dieser eine Wikidata-IRI, geht der Dokumentkontext beim Zusammenführen zu RDF verloren (Abschnitt 16). Wie die Rolle an das Dokument gebunden wird, ist mit dem Projekt zu klären.
+Die Rolle gilt nur im Kontext des jeweiligen Dokuments, hängt aber am Entitätsknoten. Trägt dieser eine Wikidata-IRI, geht der Dokumentkontext beim Zusammenführen zu RDF verloren (§ JSON-LD Context). Wie die Rolle an das Dokument gebunden wird, ist mit dem Projekt zu klären.
 
 ### Identität der Entitäten
 
@@ -141,8 +141,8 @@ Dokumente und Konvolute behalten die Archivsignatur als lokalen Namen (`m3gim-da
 | `m3gim-ontology:hasStageRole` | Performance → StageRole | in der Aufführung besetzte Partie |
 | `m3gim-ontology:atPlace` | Annotation → `rico:Place` | Verortung eines Annotationsknotens |
 | `m3gim-ontology:role` | Person, CorporateBody, Group, Place, MusicalWork, FramingEvent, Annotation → `skos:Concept` | erfasste Rolle im Dokumentkontext |
-| `m3gim-ontology:hasAgentRelation` | Record, RecordSet → ohne Range | n-är reifizierte AgRelOn-Beziehung, für die die Ressource der Beleg ist (Abschnitt 8) |
-| `m3gim-ontology:xlsxSource` | ohne Domain, ohne Range | technische Quellzellenadresse (Abschnitt 9) |
+| `m3gim-ontology:hasAgentRelation` | Record, RecordSet → ohne Range | n-är reifizierte AgRelOn-Beziehung, für die die Ressource der Beleg ist (§ AgRelOn-Integration) |
+| `m3gim-ontology:xlsxSource` | ohne Domain, ohne Range | technische Quellzellenadresse (§ Meta-Statement-Modell) |
 
 `m3gim-ontology:hasDetail` bleibt als Unterproperty von `hasAnnotation` erhalten, obwohl Zielknoten und Aspektknoten jetzt dieselbe Klasse tragen. Sie hält den Finanzposten in einem Tripel adressierbar und erhält den Zugriffspfad, den das Frontend liest. `hasAgentRelation` steht ohne Range, weil AgRelOn die Beziehungsklassen nicht unter einer gemeinsamen, hier belegten Oberklasse führt. `xlsxSource` steht ohne Domain, weil die Property an Dokumenten, Annotationen, Aufführungen, Beziehungen und an allen aus einer Verknüpfungszeile abgeleiteten Entitätsknoten steht, und ohne Range, weil der Container ein typloser Knoten ist.
 
@@ -195,7 +195,7 @@ Fehlt die Datierung am Annotationsknoten, ist dieser bewusst undatiert, weil die
 
 `m3gim-ontology:qualityConfidence` ist deklariert und bewusst unbefüllt (E-102, E-106). Die `anmerkung`-Freitexte liefern kein quantifizierbares Konfidenzsignal, und ein gesetzter Zahlenwert wäre genau die von der Leitplanke verbotene erfundene Konfidenz. Das Flag selbst ist das Unsicherheitssignal, die Property für eine künftige belegbare Quelle reserviert.
 
-Der Bearbeitungsstand führt ein zweites, abweichendes Wertesystem mit sich. [data.md](data.md) § 15 nennt aus der Erfassungshandreichung die Stufen `in_bearbeitung`, `schicht1_fertig`, `schicht2_fertig` und `abgeschlossen`, die den Schichtfortschritt abbilden. Welches System gilt, ist zu entscheiden; erst dann lässt sich der Erschließungsgrad pro Schicht messen.
+Der Bearbeitungsstand führt ein zweites, abweichendes Wertesystem mit sich. [data.md](data.md) § Erfassungsstatus nennt aus der Erfassungshandreichung die Stufen `in_bearbeitung`, `schicht1_fertig`, `schicht2_fertig` und `abgeschlossen`, die den Schichtfortschritt abbilden. Welches System gilt, ist zu entscheiden; erst dann lässt sich der Erschließungsgrad pro Schicht messen.
 
 **Technische Herkunft.**
 
@@ -205,9 +205,9 @@ Der Bearbeitungsstand führt ein zweites, abweichendes Wertesystem mit sich. [da
 | `m3gim-ontology:xlsxRow` | xsd:integer | Zeilennummer einschließlich der Kopfzeile |
 | `m3gim-ontology:dataPointId` | xsd:integer | Kennung, die die Aussagen eines Vorkommnisses innerhalb eines Dokuments bündelt |
 
-Einzelheiten und Anbringungsorte stehen in Abschnitt 9.
+Einzelheiten und Anbringungsorte stehen in § Meta-Statement-Modell.
 
-**Kennzahlen des Exports.** `m3gim-ontology:exportDate`, `m3gim-ontology:recordCount`, `m3gim-ontology:recordSetCount`, `m3gim-ontology:approvedManualMatches` und `m3gim-ontology:lowConfidenceSkipped` stehen am Wurzelknoten der Serialisierung (Abschnitt 16).
+**Kennzahlen des Exports.** `m3gim-ontology:exportDate`, `m3gim-ontology:recordCount`, `m3gim-ontology:recordSetCount`, `m3gim-ontology:approvedManualMatches` und `m3gim-ontology:lowConfidenceSkipped` stehen am Wurzelknoten der Serialisierung (§ JSON-LD Context).
 
 ### Normdaten-Properties aus Wikidata-Enrichment (E-105)
 
@@ -276,7 +276,7 @@ Das Vokabular `m3gim-vocab` führt fünf Concept Schemes. Das frühere Sammelsch
 | `m3gim-vocab:annotationRoles` | Rolle, in der eine Datierung, eine Verortung oder eine Entitätsreferenz zu ihrem Dokument steht |
 | `m3gim-vocab:financialItemTypes` | Art eines Geldbetrags, den eine Detailangabe der dritten Schicht trägt |
 | `m3gim-vocab:relationQualifiers` | Bestimmtheitsgrad einer Aussage, unabhängig von der Art des Zielknotens |
-| `m3gim-vocab:documentaryFormTypes` | hierarchisches Vokabular der Dokumenttypen (Abschnitt 12) |
+| `m3gim-vocab:documentaryFormTypes` | hierarchisches Vokabular der Dokumenttypen (§ Dokumenttypen-Vokabular) |
 
 `annotationRoles` vereinigt die zunächst getrennt vorgeschlagenen Schemes für Ereignis-, Orts- und Datumsrollen. Mit dem einheitlichen Annotationsknoten trägt derselbe Begriff wahlweise eine Datierung, eine Verortung oder beides, sodass eine Trennung nach Datums- und Ortsrollen keinen Gegenstand mehr hat. Wo eine Datumsrolle und eine Ortsrolle denselben Aspekt bezeichnet haben, sind sie zu einem Begriff zusammengefallen und haben ihre Aspektendung verloren, weil der Aspekt in der Wertproperty steht und der Rollenname ihn nur wiederholt hat. So tragen `absendedatum` und `absendeort` jetzt gemeinsam `m3gim-vocab:dispatch`, `empfangsdatum` und `empfangsort` gemeinsam `m3gim-vocab:receiving`, `abreisedatum` und `abreiseort` gemeinsam `m3gim-vocab:departure`, `erstelldatum` und `entstehungsort` gemeinsam `m3gim-vocab:creation`. Wo ein Begriff nur auf einer der beiden Seiten vorkommt, trägt er seinen Namen unverändert weiter. `auftritt` und `aufführung` fallen auf `m3gim-vocab:performance` zusammen, weil ihnen keine inhaltliche Unterscheidung zugrunde lag. Die jeweilige Ursprungsrolle bleibt über `m3gim-ontology:derivedFromRole` erhalten.
 
@@ -284,9 +284,9 @@ Das Vokabular `m3gim-vocab` führt fünf Concept Schemes. Das frühere Sammelsch
 
 `financialItemTypes` bleibt neben `annotationRoles` bestehen, weil kein Wert der Finanzschicht im Bestand als Datums- oder Ortsrolle auftritt und umgekehrt. Zwei Ausnahmen sind `erwähnt`, das im eigenen Scheme `relationQualifiers` steht, und `interpret`, das als Rolle einer Detailangabe keinen Finanzposten bezeichnet und als Erfassungsfehler zu prüfen ist.
 
-Daneben führt das Vokabular neun `skos:Collection`, gegliedert nach dem Ziel, an dem eine Rolle im Datensatz auftritt. Die Sammlungen heißen `rolesAtPersons`, `rolesAtCorporateBodies`, `rolesAtGroups`, `rolesAtPlaces`, `rolesAtWorks`, `rolesAtFramingEvents`, `rolesAtDates`, `rolesAtFinancialDetails` und `mobilityPlaceRoles`. Eine Rolle kann in mehreren Sammlungen stehen, weil dieselbe Spalte verschiedene Zieltypen bedient. Die Pipeline liest allein `mobilityPlaceRoles` (Abschnitt 10).
+Daneben führt das Vokabular neun `skos:Collection`, gegliedert nach dem Ziel, an dem eine Rolle im Datensatz auftritt. Die Sammlungen heißen `rolesAtPersons`, `rolesAtCorporateBodies`, `rolesAtGroups`, `rolesAtPlaces`, `rolesAtWorks`, `rolesAtFramingEvents`, `rolesAtDates`, `rolesAtFinancialDetails` und `mobilityPlaceRoles`. Eine Rolle kann in mehreren Sammlungen stehen, weil dieselbe Spalte verschiedene Zieltypen bedient. Die Pipeline liest allein `mobilityPlaceRoles` (§ Mobilitätsmodell).
 
-Alle Rollenwerte sind nach der Normalisierung geschlechtsneutral, weil die Pipeline die Endungen `:in` und `:innen` entfernt. Die vollständigen Rollenlisten mit Zuordnung zu Verknüpfungstypen stehen in [data.md](data.md) § 5.
+Alle Rollenwerte sind nach der Normalisierung geschlechtsneutral, weil die Pipeline die Endungen `:in` und `:innen` entfernt. Die vollständigen Rollenlisten mit Zuordnung zu Verknüpfungstypen stehen in [data.md](data.md) § Rollenvokabular.
 
 ### Zielmodell v2: zweistufige Identität und Besetzung (E-127/E-128)
 
@@ -294,7 +294,7 @@ Diese Sektion beschreibt einen Zielzustand, der entschieden und noch nicht umges
 
 **Zweistufige Identität.** Die Erfassungs-ID ist seit E-127 zweistufig. Eine Ganzzahl identifiziert die Aktivität (das Vorkommnis), eine zweistellige Dezimale `1.01` ff. die einzelne Beteiligung daran. Die `@id` des Vorkommnisses kommt aus `(archivsignatur, folio, aktivität)`, die der Beteiligung aus `(vorkommnis, beteiligungsnummer)`. Das löst die einstufige `datenpunkt_id` als Identitätsträger ab, deren Spalte in der Quelle nahezu nie gefüllt ist, weshalb das darauf aufbauende Vorkommnis-Modell nicht wirksam wird.
 
-**Vorkommnis als Bündelknoten.** `m3gim-ontology:Occurrence` ergänzt die dokumentzentrierte Erfassung um eine Auftritts-Ebene ([data.md](data.md) § 4). Er gruppiert die Aspektknoten eines Auftritts, also Annotation für Ort und Zeit, Performance für Werk und Partie, Annotation für den Betrag und die beteiligten Agenten. So wird „wer hat was getan" auch dort rekonstruierbar, wo ein Dokument mehrere Auftritte bündelt. Der Name Occurrence ist bewusst weiter gefasst als Event, weil nicht jedes Vorkommnis raumzeitlich ist, etwa ein Vertrag. Die Aspektknoten bleiben als Facetten erhalten, das Vorkommnis liegt eine Ebene darüber. Der Record bezeugt es über `m3gim-ontology:attests`, statt es zu enthalten, was der CIDOC-CRM-`P70`-Logik folgt und den Weg zu einer dokumentübergreifenden Auftritts-Identität offen hält.
+**Vorkommnis als Bündelknoten.** `m3gim-ontology:Occurrence` ergänzt die dokumentzentrierte Erfassung um eine Auftritts-Ebene ([data.md](data.md) § Verknüpfungsmechanismus). Er gruppiert die Aspektknoten eines Auftritts, also Annotation für Ort und Zeit, Performance für Werk und Partie, Annotation für den Betrag und die beteiligten Agenten. So wird „wer hat was getan" auch dort rekonstruierbar, wo ein Dokument mehrere Auftritte bündelt. Der Name Occurrence ist bewusst weiter gefasst als Event, weil nicht jedes Vorkommnis raumzeitlich ist, etwa ein Vertrag. Die Aspektknoten bleiben als Facetten erhalten, das Vorkommnis liegt eine Ebene darüber. Der Record bezeugt es über `m3gim-ontology:attests`, statt es zu enthalten, was der CIDOC-CRM-`P70`-Logik folgt und den Weg zu einer dokumentübergreifenden Auftritts-Identität offen hält.
 
 **CIDOC-CRM-Anschluss.** `m3gim-ontology:Occurrence` ist `rdfs:subClassOf crm:E7_Activity` neben `rico:Event`. `crm:E7_Activity` ist die etablierte Oberklasse für zielgerichtetes Geschehen (Aufführung, Gastspiel, Vertrag). Als projektnähere Alternative steht `rico:Activity` bereit, die RiC-O 1.1 als Unterklasse von `rico:Event` führt.
 
@@ -325,11 +325,11 @@ Diese Sektion beschreibt einen Zielzustand, der entschieden und noch nicht umges
 - Eine Aufführung zerfällt im Datensatz in mehrere Knoten, weil je Verknüpfungszeile einer entsteht. Wer sang welche Partie in welcher Aufführung, ist daraus nicht rekonstruierbar. Das Zielmodell oben ist entschieden und noch nicht umgesetzt.
 - Bühnenrollen sind global und tragen weder Werkbindung noch Stimmfach. Gleichnamige Partien verschiedener Werke fallen zusammen, weil die Deduplikation allein über den Namen läuft. Ob das tragfähig ist, ist mit dem Erschließungsteam zu klären.
 - Dieselbe Partie steht zweimal im Modell, als Literal `m3gim-ontology:sungPart` am Werk und als eigene Entität `m3gim-ontology:StageRole`, ohne Verbindung zwischen beiden.
-- Die Mobilitätssichten sind Abfragemuster und keine Klassen. Welcher Rollenwert zu welcher Sicht gehört, ist für einen Teil der Werte noch mit dem Erschließungsteam abzustimmen (Abschnitt 10).
+- Die Mobilitätssichten sind Abfragemuster und keine Klassen. Welcher Rollenwert zu welcher Sicht gehört, ist für einen Teil der Werte noch mit dem Erschließungsteam abzustimmen (§ Mobilitätsmodell).
 
 Die redaktionellen Anmerkungen zu den einzelnen Termen stehen als `skos:editorialNote` an ihrer Stelle in [`../vocab/m3gim.ttl`](../vocab/m3gim.ttl). Die offenen Modell- und Operator-Entscheidungen führt [specification.md](specification.md) § Offene Entscheidungen, ihre Begründungen [journal.md](journal.md).
 
-## 8. AgRelOn-Integration
+## AgRelOn-Integration
 
 ### Scope und Begründung
 
@@ -339,7 +339,7 @@ Die Integration verfolgt folgende Ziele:
 
 1. Standardvokabular für die institutionelle und die Korrespondenzschicht.
 2. GND-Anschlussfähigkeit für Bestände anderer Archive.
-3. Meta-Statement-Muster (Gültigkeit, Konfidenz, Provenienz) als einheitliche Querschnittsebene (siehe Abschnitt 9).
+3. Meta-Statement-Muster (Gültigkeit, Konfidenz, Provenienz) als einheitliche Querschnittsebene (siehe § Meta-Statement-Modell).
 
 ### Übernommene AgRelOn-Klassen und -Properties
 
@@ -406,7 +406,7 @@ Die Beziehungsknoten sind in das belegende Dokument eingebettet und tragen keine
 
 AgRelOn modelliert *nicht*: Orte, Werke, Bühnenrollen, Aufführungen, Dokumenttypen, raumzeitliche Ereignisse, Datumstypologien jenseits der Relationsgültigkeit, finanzielle Details. Für diese Bereiche bleibt das m3gim-Modell zuständig.
 
-## 9. Meta-Statement-Modell
+## Meta-Statement-Modell
 
 ### Prinzip
 
@@ -473,13 +473,13 @@ Beispiel, eine Detailangabe des Anker-Records `UAKUG/NIM_007 5_1`:
 
 Die Kontrakttests in `tests/test_20_xlsx_provenance.py` halten die volle xlsxSource-Coverage als Soft-Invariante und pflegen kuratierte Anker-Records (NIM_007 5_1, NIM_004 3, NIM_003 1_8) mit exakten Zeilenerwartungen als Fixtures.
 
-`m3gim-ontology:dataPointId` sitzt im Container der technischen Herkunft, trägt seit E-125 aber eine fachliche Bündelung und keine Herkunftsangabe. Sie gehört an die bezeugte Entität statt an die Quellzellenadresse. Die Nachfolgekonvention ist die zweistufige Aktivitätskennung aus E-127 (Abschnitt 7).
+`m3gim-ontology:dataPointId` sitzt im Container der technischen Herkunft, trägt seit E-125 aber eine fachliche Bündelung und keine Herkunftsangabe. Sie gehört an die bezeugte Entität statt an die Quellzellenadresse. Die Nachfolgekonvention ist die zweistufige Aktivitätskennung aus E-127 (§ RiC-O-Kern und m3gim-Erweiterung).
 
 ### Anwendung in Reifikation
 
 Für nicht-agentische Relationen, bei denen das n-äre Reifikationsmuster nicht aus AgRelOn stammt, sieht [specification.md](specification.md) eine leichtgewichtige Reifikation über ein Muster `m3gim:Statement` vor, angewendet nur dort, wo die Provenienz nicht bereits aus der Record-URI folgt. Das Muster ist nicht ins Vokabular aufgenommen und kommt im Datensatz nicht vor; [architecture.md](architecture.md) § Pipeline führt es als späte, optionale Phase. <!-- vocab-exempt: nennt ein vorgeschlagenes, nicht gebautes Muster -->
 
-## 10. Mobilitätsmodell
+## Mobilitätsmodell
 
 ### Motivation
 
@@ -516,7 +516,7 @@ Die UI-Anbindung dieser Sichten, etwa die Farbfamilie für Chronik-Chips, liegt 
 | aufnahme | diskursiv | mediale Spur wie `ausstrahlung` (Rundfunk- oder Tonaufnahme) |
 | rahmenveranstaltung | null | genuin unklar; `null` bedeutet keine Sicht und Klärungsbedarf, keine willkürliche Einordnung |
 
-Der Vertragsstatus `nicht eingehalten` (Abschnitt 11) ist keine Rolle und wird beim Bau der Annotationsknoten nicht als `m3gim-ontology:role` durchgereicht.
+Der Vertragsstatus `nicht eingehalten` (§ Finanzschicht) ist keine Rolle und wird beim Bau der Annotationsknoten nicht als `m3gim-ontology:role` durchgereicht.
 
 ### Der Träger der Mobilität
 
@@ -542,13 +542,13 @@ Der Vertragsstatus `nicht eingehalten` (Abschnitt 11) ist keine Rolle und wird b
 }
 ```
 
-Beide Emissionspfade, das Komposit `ort, datum` aus [data.md](data.md) § 4 und die datumslose Mobilitäts-Annotation, teilen sich denselben Helper für die `@id`-Vergabe.
+Beide Emissionspfade, das Komposit `ort, datum` aus [data.md](data.md) § Verknüpfungsmechanismus und die datumslose Mobilitäts-Annotation, teilen sich denselben Helper für die `@id`-Vergabe.
 
 ### Abdeckungsabhängigkeit
 
 Jede Mobilitätsauswertung muss den derzeitigen Erschließungsstand mitführen. Nur ein Teil der Konvolute ist bis auf die Folioebene erschlossen, der Rest bleibt auf der Ebene der Archiveinheit, und Datumsangaben wie Titel sind selektiv vorhanden. Die Daten belegen damit den Stand der Erschließung; ein Ereignis ohne Beleg im erschlossenen Teil des Bestands erscheint im Datensatz nicht, hat aber stattgefunden. Aktuelle Abdeckungszahlen stehen in [`../data/reports/quality-snapshot.md`](../data/reports/quality-snapshot.md). Mobilitätskarten sind deshalb als *Zwischenstand der Erschließung* zu kommunizieren und nicht als Rekonstruktion der Biographie. Dieser Survivorship Bias muss bei Visualisierungen textlich gekennzeichnet sein.
 
-## 11. Finanzschicht
+## Finanzschicht
 
 ### Klasse und Properties
 
@@ -586,7 +586,7 @@ Ein in der Quelle vermerkter unerfüllter Vertrag steht als Wert `nicht eingehal
 
 Finanzeinträge hängen im erzeugten Datensatz alle am Dokument, über `m3gim-ontology:hasDetail`. Inhaltlich haften sie primär an einer Aufführung (etwa die Abendgage für eine konkrete *Walküre*-Aufführung), sekundär an Verträgen (Vertragssumme) oder Reisen (Reisekosten, Provisionen). Die Bindung an die Beteiligung ist für das Zielmodell entschieden (E-128, `hasFee`).
 
-## 12. Dokumenttypen-Vokabular
+## Dokumenttypen-Vokabular
 
 ### Hierarchische SKOS-Struktur
 
@@ -631,7 +631,7 @@ document (Dokument)
 └── other (Sonstiges)
 ```
 
-`collection` bleibt ein eigenständiges Concept **ohne** `skos:broader` auf `bundle`, die is-a-Beziehung wird nicht vorentschieden. Die Abgrenzung zwischen beiden ist noch zu klären (Klärungspunkt in [journal.md](journal.md) § Offene Modellentscheidungen). Möglicherweise bezeichnet Konvolut den physischen Umschlag und Sammlung die thematische Zusammenstellung.
+`collection` bleibt ein eigenständiges Concept **ohne** `skos:broader` auf `bundle`, die is-a-Beziehung wird nicht vorentschieden. Die Abgrenzung zwischen beiden ist noch zu klären (Klärungspunkt in [specification.md](specification.md) § Offene Entscheidungen). Möglicherweise bezeichnet Konvolut den physischen Umschlag und Sammlung die thematische Zusammenstellung.
 
 Jedes emittierte Concept trägt ein lesbares deutsches `skos:prefLabel` (Pipeline-Map `DFT_LABELS`, E-101) statt des nackten Slugs. Das Frontend löst Dokumenttyp-Labels seit E-101 direkt über `skos:prefLabel` aus dem Store auf (`dftLabel(store, id)` über `store.dftHierarchy`); die frühere Frontend-Handtabelle `DOKUMENTTYP_LABELS` ist entfallen. Die Pipeline emittiert nur die Kanten der zweiten Ebene, weshalb die Wurzel `document` im Datensatz nicht erreichbar ist.
 
@@ -646,11 +646,11 @@ RiC-O 1.1 erwartet an `rico:hasDocumentaryFormType` ein Individuum der Klasse `r
 
 Der Verknüpfungstyp `dokument` (ein Record nennt einen Dokumenttyp wie „Vertrag" oder „Plakate") beschreibt, **wovon** ein Record handelt. Was er enthält, sagt er damit nicht. Er wird deshalb nicht als `rico:hasOrHadSubject` serialisiert, sondern als `rico:scopeAndContent` oder über einen record-lokalen Blank-Node, der das geteilte SKOS-Concept nur referenziert. Auf den geteilten Concept-Knoten werden keine record-spezifischen Daten gepfropft.
 
-## 16. JSON-LD Context
+## JSON-LD Context
 
 ### Prefixe
 
-Der emittierte `@context` führt `rico`, `ric-rst`, `m3gim-ontology`, `m3gim-data`, `m3gim-vocab`, `agrelon`, `schema`, `gndo`, `wd`, `owl`, `geo`, `skos` und `xsd`. Die URIs stehen in der Namensraum-Tabelle in Abschnitt 7.
+Der emittierte `@context` führt `rico`, `ric-rst`, `m3gim-ontology`, `m3gim-data`, `m3gim-vocab`, `agrelon`, `schema`, `gndo`, `wd`, `owl`, `geo`, `skos` und `xsd`. Die URIs stehen in der Namensraum-Tabelle in § RiC-O-Kern und m3gim-Erweiterung.
 
 ### Aliase
 
@@ -676,15 +676,15 @@ Die Angaben zum Export (`exportDate`, `recordCount`, `recordSetCount`, `approved
 
 ### Technische Provenance-Properties
 
-`m3gim-ontology:xlsxSource`, `m3gim-ontology:xlsxSheet` und `m3gim-ontology:xlsxRow` werden von der Pipeline gesetzt und nicht im Google-Sheet erfasst, siehe Abschnitt 9. `m3gim-ontology:dataPointId` stammt dagegen aus der erfassten Spalte `datenpunkt_id` und trägt seit E-125 die Auftritts-Bündelung ([data.md](data.md) § 4), nicht nur Provenienz.
+`m3gim-ontology:xlsxSource`, `m3gim-ontology:xlsxSheet` und `m3gim-ontology:xlsxRow` werden von der Pipeline gesetzt und nicht im Google-Sheet erfasst, siehe § Meta-Statement-Modell. `m3gim-ontology:dataPointId` stammt dagegen aus der erfassten Spalte `datenpunkt_id` und trägt seit E-125 die Auftritts-Bündelung ([data.md](data.md) § Verknüpfungsmechanismus), nicht nur Provenienz.
 
 ## Erfassung
 
 Dieser Teil trägt die Erfassungssicht des Archivteams, also nach welchen Konventionen die Tabellenfelder befüllt werden und wie mit Unsicherheit umgegangen wird. Er ist die Soll-Seite der Datenqualität. Wo der erfasste Bestand davon abweicht, ist im generierten Quality-Snapshot und in der Modell-Spezifikation dokumentiert. Er trägt keine eigene Abschnittsnummer, weil die numerierten Abschnitte an Code, Tests und Vokabular hängen.
 
-Die formalen Werttabellen, an die die Erfassung sich hält, stehen an ihrer maßgeblichen Stelle. Das Rollenvokabular führt [data.md](data.md) § 5, die Datumsformate und Qualifier [data.md](data.md) § 6, die Ansetzungs- und Namenskonventionen [data.md](data.md) § 14, die Werte der Datierungsevidenz Abschnitt 9 dieses Dokuments. Dieser Teil verweist auf sie, statt sie zu wiederholen.
+Die formalen Werttabellen, an die die Erfassung sich hält, stehen an ihrer maßgeblichen Stelle. Das Rollenvokabular führt [data.md](data.md) § Rollenvokabular, die Datumsformate und Qualifier [data.md](data.md) § Datumskonventionen, die Ansetzungs- und Namenskonventionen [data.md](data.md) § Namenskonventionen und Ortsdubletten, die Werte der Datierungsevidenz § Meta-Statement-Modell dieses Dokuments. Dieser Teil verweist auf sie, statt sie zu wiederholen.
 
-Die Verknüpfungserfassung ist auf das Long-Format mit zweistufiger `aktivitaet_id` umgestellt (Anleitung Stand 2026-06-25, E-127, verfeinert E-125). Spalten sind `archivsignatur`, `Folio`, `aktivitaet_id`, `typ`, `value`, `anmerkung`. Eine Ganzzahl identifiziert die Aktivität, eine zweistellige Dezimale `1.01` ff. die Beteiligung, `funktion` (kontrolliert) ist von `rolle` (gesungene Partie, frei) getrennt, Geld steht atomar mit eigener `währung`-Zeile, `aktivitaet` markiert die Art. Dieses Schema ist das v2-Ziel und gehört zum Zielmodell v2 in Abschnitt 7; die `aktivitaet_id`-Vergabe ist menschlicher Durchgang und im migrierten Stand bewusst leer. Bis die Pipeline umgestellt ist, gilt die im Folgenden beschriebene einstufige `datenpunkt_id`-Konvention als wirksame Erfassung. Der gereinigte Altbestand liegt als `data/migration/M3GIM-Verknuepfungen-v2.xlsx` mit Vokabular-Glossar und kuratiertem Beispiel-Blatt 7_29. Das Schichtenmodell, die Personenform und der Umgang mit Unsicherheit gelten für beide Stände unverändert.
+Die Verknüpfungserfassung ist auf das Long-Format mit zweistufiger `aktivitaet_id` umgestellt (Anleitung Stand 2026-06-25, E-127, verfeinert E-125). Spalten sind `archivsignatur`, `Folio`, `aktivitaet_id`, `typ`, `value`, `anmerkung`. Eine Ganzzahl identifiziert die Aktivität, eine zweistellige Dezimale `1.01` ff. die Beteiligung, `funktion` (kontrolliert) ist von `rolle` (gesungene Partie, frei) getrennt, Geld steht atomar mit eigener `währung`-Zeile, `aktivitaet` markiert die Art. Dieses Schema ist das v2-Ziel und gehört zum Zielmodell v2 in § RiC-O-Kern und m3gim-Erweiterung; die `aktivitaet_id`-Vergabe ist menschlicher Durchgang und im migrierten Stand bewusst leer. Bis die Pipeline umgestellt ist, gilt die im Folgenden beschriebene einstufige `datenpunkt_id`-Konvention als wirksame Erfassung. Der gereinigte Altbestand liegt als `data/migration/M3GIM-Verknuepfungen-v2.xlsx` mit Vokabular-Glossar und kuratiertem Beispiel-Blatt 7_29. Das Schichtenmodell, die Personenform und der Umgang mit Unsicherheit gelten für beide Stände unverändert.
 
 ### Schichtenmodell der Erfassung
 
@@ -715,7 +715,7 @@ Die Umfangsangabe nennt die Anzahl der Blätter. Als Seiten zählen die bedruckt
 
 ### Datumsangaben erfassen
 
-Datumsangaben folgen ISO 8601 in den in [data.md](data.md) § 6 festgelegten Granularitäten und Qualifiern. Ein undatiertes Objekt lässt das Datumsfeld leer. Ergänzend hält das Feld `datierungsevidenz` fest, woher die Datierung stammt, mit den Werten aus Abschnitt 9 dieses Dokuments.
+Datumsangaben folgen ISO 8601 in den in [data.md](data.md) § Datumskonventionen festgelegten Granularitäten und Qualifiern. Ein undatiertes Objekt lässt das Datumsfeld leer. Ergänzend hält das Feld `datierungsevidenz` fest, woher die Datierung stammt, mit den Werten aus § Meta-Statement-Modell dieses Dokuments.
 
 Die Zusammenführung von Datum und Evidenz zeigt sich an typischen Fällen.
 
@@ -729,7 +729,7 @@ Die Zusammenführung von Datum und Evidenz zeigt sich an typischen Fällen.
 
 ### Ansetzung von Namen und Titeln
 
-Die Ansetzungsformen für Personen, Orte, Institutionen und Werke folgen den Namenskonventionen in [data.md](data.md) § 14. Ergänzend gilt für die Erfassung Folgendes.
+Die Ansetzungsformen für Personen, Orte, Institutionen und Werke folgen den Namenskonventionen in [data.md](data.md) § Namenskonventionen und Ortsdubletten. Ergänzend gilt für die Erfassung Folgendes.
 
 Bei Künstlernamen gegenüber bürgerlichen Namen wird der Name verwendet, unter dem die Person im Dokumentkontext auftritt, bei Unsicherheit der bekanntere als Ansetzungsform mit Vermerk der Varianten im Anmerkungsfeld. Die Reconciliation gegen Wikidata verknüpft die Namensvarianten später. Orte tragen den gebräuchlichen historischen Namen aus der Quelle, die Wikidata-Reconciliation liefert die Verknüpfung zum heutigen Namen.
 
@@ -754,13 +754,13 @@ Der Titel ist eine Beschreibung des Objekts, kein Zitat aus der Quelle, und wird
 
 Pro Verknüpfung wird eine Zeile in der Verknüpfungstabelle angelegt, mehrere Personen kommen nicht in eine Zeile. Eine Brief-Verknüpfung mit zwei Beteiligten ergibt also zwei Zeilen, eine je Person mit ihrer Rolle.
 
-Das Feld `typ` wird immer zuerst gewählt, es bestimmt, welche Rollen verfügbar sind. Rollennamen werden kleingeschrieben erfasst, Geschlechtssuffixe wie `:in` werden bei der Verarbeitung vereinheitlicht. Welche Rolle zu welchem Verknüpfungstyp gehört, führt das Rollenvokabular in [data.md](data.md) § 5 nach Zieltyp gegliedert.
+Das Feld `typ` wird immer zuerst gewählt, es bestimmt, welche Rollen verfügbar sind. Rollennamen werden kleingeschrieben erfasst, Geschlechtssuffixe wie `:in` werden bei der Verarbeitung vereinheitlicht. Welche Rolle zu welchem Verknüpfungstyp gehört, führt das Rollenvokabular in [data.md](data.md) § Rollenvokabular nach Zieltyp gegliedert.
 
 Beim Werk steht `aufführung` für die eigenständige Aufführung eines Werkes und `gastspiel` für die in der Quelle ausdrücklich als Gastspiel bezeichnete Aufführung mit festem Ensemble. Eine Gruppe von mehr als zwei musizierenden Personen wird über den Typ `ensemble` erfasst. Eine Bühnenrolle wird zusammen mit ihrer interpretierenden Person geführt.
 
 #### Auftritte bündeln (`datenpunkt_id`)
 
-Beschreibt ein Dokument mehrere Auftritte, gehören seine Zeilen nicht alle gleichberechtigt zum Dokument, sondern je zu einem Auftritt. Die Spalte `datenpunkt_id` hält diese Zugehörigkeit fest, damit rekonstruierbar bleibt, wer was in welchem Auftritt getan hat, und nicht nur, dass etwas im Dokument vorkommt. Das Modell bildet jede so gebündelte Gruppe heute als eine Aufführung ab (`m3gim-ontology:Performance`, Abschnitt 7), der eigene Vorkommnis-Term ist mit E-125 entschieden und noch nicht umgesetzt (Zielmodell v2 in Abschnitt 7, [data.md](data.md) § 4). Diese einstufige Konvention ist die heute wirksame Erfassung, ihre Ablösung durch die zweistufige `aktivitaet_id` steht im Zielmodell v2.
+Beschreibt ein Dokument mehrere Auftritte, gehören seine Zeilen nicht alle gleichberechtigt zum Dokument, sondern je zu einem Auftritt. Die Spalte `datenpunkt_id` hält diese Zugehörigkeit fest, damit rekonstruierbar bleibt, wer was in welchem Auftritt getan hat, und nicht nur, dass etwas im Dokument vorkommt. Das Modell bildet jede so gebündelte Gruppe heute als eine Aufführung ab (`m3gim-ontology:Performance`, § RiC-O-Kern und m3gim-Erweiterung), der eigene Vorkommnis-Term ist mit E-125 entschieden und noch nicht umgesetzt (Zielmodell v2 in § RiC-O-Kern und m3gim-Erweiterung, [data.md](data.md) § Verknüpfungsmechanismus). Diese einstufige Konvention ist die heute wirksame Erfassung, ihre Ablösung durch die zweistufige `aktivitaet_id` steht im Zielmodell v2.
 
 Die Konvention kennt die folgenden Werte.
 
@@ -835,7 +835,7 @@ Gleichnamige Entitäten werden über die Zusatzfelder unterschieden, also Lebens
 
 Ein leeres Feld bedeutet, dass die Angabe in dieser Quelle nicht ermittelbar ist, nicht dass sie vergessen wurde.
 
-Der Bearbeitungsfortschritt wird im Feld `erfassungsstatus` der Objekttabelle festgehalten. Die Werte des Handreichungssystems und ihr Verhältnis zum Pipeline-System stehen in [data.md](data.md) § 15.
+Der Bearbeitungsfortschritt wird im Feld `erfassungsstatus` der Objekttabelle festgehalten. Die Werte des Handreichungssystems und ihr Verhältnis zum Pipeline-System stehen in [data.md](data.md) § Erfassungsstatus.
 
 Ein unsicheres Datum wird über die Qualifier `circa:`, `vor:` und `nach:` markiert. Eine unsichere Personenidentifikation wird mit dem ermittelten Namen erfasst, die Unsicherheit kommt in das Anmerkungsfeld.
 

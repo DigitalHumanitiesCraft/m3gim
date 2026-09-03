@@ -1,3 +1,7 @@
-pandas
-openpyxl
-thefuzz[speedup]
+# Laufzeit-Abhaengigkeiten der Pipeline, gepinnt auf den Stand vom 2026-09-03.
+# Ein Pipeline-Lauf soll auf jeder Maschine denselben Datensatz erzeugen; eine
+# offene Obergrenze macht den Determinismus-Test (tests/test_10) von der
+# Installationszeit abhaengig.
+pandas==2.2.3
+openpyxl==3.1.5
+thefuzz[speedup]==0.22.1

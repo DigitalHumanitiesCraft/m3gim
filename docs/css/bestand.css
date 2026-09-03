@@ -1,0 +1,281 @@
+/* M³GIM Bestand Tab Styles */
+
+/* =========================================================================
+   Sidebar-Shell (Bestand + Chronik)
+   Beide Ansichten haengen an der einen linken Filter-Sidebar (view-shell).
+   Das Grid stellt die Spalte links, der Hauptbereich scrollt fuer sich; ein
+   geoeffneter Konvolut-Kopf haftet oben (Projektleitung, 2026-09-03).
+   ========================================================================= */
+
+#tab-bestand.tab-content.active,
+#tab-chronik.tab-content.active {
+  overflow: hidden;
+}
+
+.archiv-main {
+  overflow-y: auto;
+  /* No top padding: the sticky Konvolut head must sit flush on the scroll edge.
+     Inline padding plus the cell padding equals the tab padding, so the column
+     head text lines up with the active tab's icon above it; the right edge
+     takes the band's padding so the table does not touch the scrollbar. */
+  padding: 0 var(--space-6) var(--space-3) var(--space-1);
+  /* Die Arbeitsflaeche ist weiss; den Grauton traegt allein die Sidebar
+     (design.md Regel 2). */
+  background: var(--surface);
+}
+
+/* Strip and column head are one band: the strip takes the padding of the main
+   area instead of its own and closes tight over the header (Projektleitung,
+   2026-09-03). */
+/* The strip keeps its height while empty, so the column head does not jump up
+   against the band when the last chip goes. */
+.archiv-main .filter-strip {
+  padding-inline: var(--space-3);
+  padding-block: var(--space-1) 3px;
+  min-block-size: 30px;
+}
+.archiv-main .filter-strip:empty { display: flex; }
+
+/* Der Zeitstrahl-Container erbt den scrollenden Hauptbereich statt eines
+   eigenen. */
+.archiv-main .chronik-timeline-container { overflow: visible; }
+
+/* =========================================================================
+   Table (shared by Bestand)
+   ========================================================================= */
+
+.archiv-table {
+  width: 100%;
+  border-collapse: collapse;
+  /* Fixed layout keeps the expanded detail row (colspan over all columns)
+     from widening the table past its container; the detail wraps instead. */
+  table-layout: fixed;
+}
+
+/* A hairline per row: at this row height padding alone stopped holding the
+   lines apart (design rule 11 admits the line where the eye needs it). Hover
+   and selection take the tinted step, the row itself stays white. */
+.archiv-table td {
+  padding: var(--space-2) var(--space-3);
+  vertical-align: top;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.archiv-table tbody tr {
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.archiv-table tbody tr:hover {
+  background: var(--surface-2);
+}
+
+.archiv-table tbody tr.selected {
+  background: var(--accent-soft);
+}
+
+/* A Konvolut head is a container: white like every row, set apart by weight, a
+   top rule and the chevron before the Signatur. Closed by default; the open
+   head sticks below the column head, where it needs an opaque ground of its own
+   so the Folio rows scroll under it. */
+.archiv-row--konvolut {
+  font-weight: var(--weight-semibold);
+}
+
+.archiv-row--konvolut-open {
+  position: sticky;
+  inset-block-start: var(--table-head-height);
+  z-index: 10;
+  background: var(--surface-2);
+}
+
+/* The head is a label row (E-203): it sticks above the Konvolut head and
+   stays quiet. */
+.archiv-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 11;
+  block-size: var(--table-head-height);
+  padding: 0 var(--space-3);
+  text-align: start;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-normal);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+  background: var(--surface-2);
+  /* inset shadow instead of a border: under border-collapse a border on a
+     sticky cell stays behind while the cell scrolls. */
+  box-shadow: inset 0 -1px 0 var(--border-color);
+}
+
+.archiv-chevron {
+  display: inline-block;
+  width: 1em;
+  color: var(--color-text-secondary);
+  transition: transform var(--transition-fast);
+}
+
+.archiv-chevron--open {
+  transform: rotate(90deg);
+}
+
+.archiv-row--konvolut td {
+  border-top: 1px solid var(--border-color);
+}
+
+.archiv-row--konvolut td:first-child {
+  position: relative;
+  padding-inline-start: var(--space-3);
+}
+
+.archiv-row--child td:first-child {
+  padding-inline-start: var(--space-8);
+}
+
+/* F-10: Child rows — hierarchy via indentation only, no background */
+.archiv-row--child {
+  font-size: var(--text-sm);
+}
+
+/* Active / expanded row */
+.archiv-row--active {
+  background: var(--accent-soft) !important;
+}
+
+.archiv-row--active td:first-child {
+  border-inline-start: 3px solid var(--accent);
+}
+
+/* Detail expansion row */
+.archiv-row--detail {
+  cursor: default;
+}
+
+.archiv-row--detail:hover {
+  background: transparent;
+}
+
+.archiv-row--detail td {
+  padding: 0;
+  border-bottom: 2px solid var(--accent);
+}
+
+/* Column Widths */
+.archiv-col-signatur { width: 160px; }
+.archiv-col-titel { width: auto; }
+.archiv-col-typ { width: 140px; text-align: start; }
+.archiv-col-datum { width: 160px; white-space: nowrap; }
+.archiv-col-links { width: 110px; text-align: center; }
+.archiv-col-korb { width: 36px; text-align: center; }
+
+.archiv-signatur {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--accent);
+}
+
+.archiv-titel {
+  /* inline-block so overflow/ellipsis apply; an inline span would spill
+     into the neighbouring column under table-layout: fixed */
+  display: inline-block;
+  max-width: 100%;
+  vertical-align: bottom;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Stand-in for an inherited collective title: the family dot says the name is
+   a linked entity, not a title, so no dash and no italic (Projektleitung,
+   2026-09-03). */
+.archiv-folio-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  /* inline-flex swallows the whitespace of the text flow, so the gap to the
+     title has to be stated. */
+  margin-inline-start: var(--space-1);
+  font-size: var(--text-sm);
+}
+
+.archiv-folio-hint--konvolut {
+  font-size: var(--text-xs);
+  color: var(--color-text-tertiary);
+}
+
+/* Title cell of the Konvolut head: title and type distribution stand side by
+   side and wrap as a group once the title fills the line. */
+.archiv-titel-zeile {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-2);
+}
+
+.archiv-titel-zeile .archiv-titel {
+  flex: 0 1 auto;
+  max-inline-size: 100%;
+}
+
+/* Type distribution of the collapsed head. */
+.archiv-konvolut-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  white-space: normal;
+  line-height: 1.4;
+}
+
+.archiv-konvolut-meta .chip--compact {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 6px;
+  font-size: 11px;
+  font-family: var(--font-ui);
+  font-weight: var(--weight-normal);
+  line-height: 1.4;
+  background: var(--surface-3);
+  color: var(--color-text-secondary);
+  border: none;
+  border-radius: 3px;
+}
+
+.archiv-datum {
+  font-family: var(--font-ui);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+/* Ü-3: Consistent absence pattern */
+.archiv-datum--undated {
+  font-style: italic;
+  color: var(--color-absent);
+}
+
+/* E-158: typed Erschliessungsanzeige, one square per content family
+   (.ersch-dot in components.css), the breakdown in the tooltip. Konvolut
+   aggregates live in the head tooltip instead of repeating the squares. */
+.archiv-ersch {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  justify-content: center;
+}
+
+/* The type of an object row is text; the outline badge is left to the
+   standalone Konvolut and the unresolved child. */
+.badge--plain {
+  padding: 0;
+  background: transparent;
+  color: var(--color-text-primary);
+  font-weight: var(--weight-normal);
+  font-size: var(--text-sm);
+}
+
+.badge--unclassified {
+  color: var(--color-absent);
+  font-style: italic;
+}

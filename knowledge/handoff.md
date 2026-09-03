@@ -8,7 +8,7 @@ method:
   url: https://lisa.gerda-henkel-stiftung.de/digitale_geschichte_pollin
 status: active
 created: 2026-08-21
-updated: 2026-09-01
+updated: 2026-09-03
 language: de
 version: 0.5
 authors: [Christopher Pollin]
@@ -22,13 +22,59 @@ Diese Process Inbox führt ausschließlich offene Übergabepunkte. Prüfe vor de
 
 ## Offene Handoff-Punkte
 
-### An die Frontend-Lane: Sidebar-Vereinheitlichung der übrigen Views (2026-09-01)
+### An die Backend-Lane: als bearbeitet geführte Objekte ohne Verknüpfung (2026-09-03)
 
-Der Bestand trägt seine Bedienung vollständig in der geteilten linken Filterspalte (E-158). Chronik, Karte, Netzwerk und Statistik stehen noch aus und führen ihre Regler an ihrer bisherigen Stelle. Mit dem Umzug fällt dort auch der verbliebene Erklärtext, die Chronik-Caption und das Schärfe-Banner, in Struktur und Tooltip (E-156). Vertrag sind die User Stories in [specification.md](specification.md) § Epic Bestand und der Eintrag in § Interface-Ausbau.
+Seit E-165 ist die Verknüpfung die Dokumentbasis des Frontends, und der Datenspiegel führt in `tests/test_61_orphan_links.py` neu die Objekte auf, die als abgeschlossen oder begonnen gelten, aber keine einzige Verknüpfung tragen und deshalb in keiner Ansicht erscheinen; die Fehlermeldung des Tests ist die Liste ihrer Signaturen für das Erschließungsteam, das entweder die Verknüpfungen nachträgt oder den Bearbeitungsstand zurückstellt.
 
-### An die Backend-Lane: zwei Refactorings der Pipeline (2026-09-01)
+### An das Erschließungsteam: Verknüpfungszeilen mit unbekanntem Typ (2026-09-03)
 
-Von der Frontend-Lane, aus dem Code-Review dieser Session, von der Projektleitung zur Weitergabe freigegeben.
+Die neue Verwurfsaufstellung des Transformationslaufs hat einen bis dahin unsichtbaren Befund freigelegt. Ein knappes Dutzend Signaturen führt Zeilen mit den Typwerten `dokument` und `aktivität`, die die Pipeline nicht abbildet. Sie erreichen den Datensatz nicht. Zu entscheiden ist, ob die Typen in das Modell aufgenommen werden oder ob die Zeilen quellseitig auf einen bestehenden Typ umzustellen sind. Für `dokument` steht der Punkt bereits als Erfassungsfehler in der [Partner-Übergabeliste](../data/reports/source-errors-handover-2026-09-01.md), `aktivität` ist neu.
 
-1. **Konvolut-Merkmal statt String-Heuristik.** Das Frontend entscheidet mit `isStandaloneKonvolut` über String-Muster (`/PL_`, `_TT_` in der Signatur), ob ein Top-Level-Record eine unaufgelöste Sammeleinheit ist. Sauberer wäre ein von der Pipeline gesetztes Merkmal am Record. Spec-first: zuerst in data.md verankern, dann Vokabular, Test, `scripts/transform.py`; das Frontend zieht nach, sobald das Merkmal im JSON-LD liegt.
-2. **ENV-Overrides vereinheitlichen.** `explore.py`, `validate.py`, `transform.py` und `build-views.py` respektieren die M3GIM-ENV-Pfade, `audit-data.py` und `report-quality.py` lesen Festpfade. Daran hängt die in architecture.md § ENV-Overrides dokumentierte Falle des stillen Verlusts der Normdatenanreicherung. Entweder alle sechs Skripte vereinheitlichen oder die Overrides bewusst entfernen und die Doku nachziehen.
+### An die Frontend-Lane: offene Punkte nach der Durchsicht vom 2026-09-03
+
+Die Fix- und Umbauliste der Durchsicht vom 2026-09-03 und der beiden abendlichen Runden ist gebaut; ihr Ergebnis führt [journal.md](journal.md) als Session 78 mit den Entscheidungen E-185 bis E-204. Erledigt sind darunter auch die Ersetzung der sechs verbliebenen Farb-Aliasse durch die Akzent- und Flächen-Tokens (E-202) und der Rückbau der Sortierung, die Tabelle steht in Signaturfolge (E-203). Offen bleiben drei Punkte.
+
+1. Commit des Tagesstands auf Wort der Projektleitung.
+2. Beim ersten ungefilterten Laden das erste Konvolut geöffnet zeigen, damit die Tabelle nicht als reine Kopfliste erscheint. Vorgeschlagen und noch nicht entschieden.
+3. Das Inline-Detail als Auftrittssicht umbauen, mit einem Pipeline-Schritt davor. Box 6 führt jede Partie zweimal, einmal als blanke `rolle`-Zeile und einmal als Komposit aus Rolle und Person, und nur das Komposit trägt `hasPerformer`. Das Frontend zeigt beide als blanke Rollen und verliert dabei die Person. Dieselbe Kindzeile schreibt außerdem „o. D.“, obwohl der abgeleitete Anker aus E-141 vorliegt, der Record also datierbar ist. Beides ist zuerst in der Pipeline zu klären, bevor die Ansicht darauf gebaut wird.
+
+Weiter offen aus [specification.md](specification.md) § Stand, nicht Teil dieser Durchsicht: Entscheidungen 8 (Detail-Panel neben Visualisierungen), 9 (eigener Tooltip statt `title`), 11 (Lade- und Fehlerzustand aus Tokens), Karte mit Werk als Entität, Export JSON-LD und GEXF, `dataQualityFlag` an den Record-Ebenen.
+
+### An das Erschließungsteam: Veranstaltung als Person geführt (2026-09-03)
+
+Der Akteur „Sommerkurse Deutsches Musikinstitut für Ausländer" an UAKUG/NIM_003 1_1 trägt im Datensatz den Typ Person, weil er im Personenindex steht. Im Bestand erscheint er deshalb mit dem Personenpunkt. Er gehört in den Organisationsindex oder, sobald das Modell sie kennt, in eine Veranstaltung. Der Fall ist ein Beispiel; ein Datenspiegel-Test, der Indexeinträge mit Veranstaltungswörtern im Personenindex auflistet, steht noch aus.
+
+### An das Erschließungsteam: Jahreszahlen als Konvolut-Titel (2026-09-03)
+
+Zusatzbefund: UAKUG/NIM_135 trägt den Titel „1951", enthält aber unter Folio 20 ein Festspielmagazin von 1991, sodass die Kopfzeile die Spanne 1950–1991 zeigt. Zu prüfen ist, ob das Objekt in dieses Konvolut gehört oder das Jahr ein Tippfehler ist.
+
+Die Konvolute UAKUG/NIM_134, NIM_135 und NIM_136 tragen als Titel nur Jahresangaben („1949 - / 1950", „1951", „1952"). Im Bestand steht damit das Datum zweimal in der Kopfzeile und ein Titel fehlt. Ein beschreibender Titel nach dem Muster der übrigen Konvolute wäre nachzutragen.
+
+### An eine Vault-Session: Prozesswissen in das Promptotyping-Methodendokument übernehmen (2026-09-03)
+
+Der folgende Abschnitt stand bis zum 2026-09-03 im Entscheidungsregister von [journal.md](journal.md). Er beschreibt die Arbeitsweise, nicht dieses Projekt, und gehört damit in das Promptotyping-Methodendokument im Obsidian-Vault. Eine im Vault gestartete Session übernimmt ihn dorthin und trägt diesen Punkt anschließend aus. Der Wortlaut steht hier unverändert.
+
+> #### Was funktioniert hat
+>
+> - Promptotyping-Dokumente als Source of Truth → Code-Generierung
+> - Synthetische Daten entkoppeln Frontend- von Datenarbeit
+> - Design-System als CSS Custom Properties vorab definiert
+> - Offline-first ueberlebt Funding-Gaps
+> - Iterative Vis-Entwicklung (Partitur → Patterns fuer Matrix/Kosmos)
+>
+> #### Iteration-2-Erkenntnisse
+>
+> - Data-first statt UI-first
+> - Modularisierung von Anfang an
+> - User Testing frueher
+> - Evaluation-driven Priorisierung (schwach abgedeckte Forschungsfragen früh benennen)
+> - Controlled Vocabulary Enforcement bei Datenerfassung
+> - Der Datenintegritätskern verträgt keinen großen autonomen Lauf. Der Lauf vom 2026-06-17 lieferte die Loader-Absorption (E-95) und blieb bei Test-Welle und Modell-Features stecken; die Empfehlung des Implementierungsplans lautet seither, seriell und human-guided umzusetzen.
+> - Agenten-Selbstberichte gelten erst nach Gegenprüfung am realen Dateistand. Ein Verify-Agent meldete für denselben Lauf einen Totalverlust der Daten, den die direkte Prüfung der Sheet-Provenance widerlegte; seine Annahme, der Record-Identifier trage kein Folio, war falsch.
+>
+> #### Positive Ueberraschungen aus Datenanalyse
+>
+> - Erschliessungstiefe bei den feinerschlossenen Konvoluten (NIM_003/004/005/006/007) uebertrifft Erwartungen
+> - Gender-inklusives Rollen-Vokabular mit substanziellem `:in`-Anteil
+> - Hoher Personen-Kategorien-Abdeckungsgrad — Matrix bekommt direkt Daten
+> - Werk-Verknuepfungen ermoeglichen substantiellen Rollen-Kosmos

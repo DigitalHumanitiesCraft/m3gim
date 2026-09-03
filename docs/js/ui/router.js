@@ -10,14 +10,12 @@
  */
 
 import { splitHash, buildHash, parseFilterQuery } from './filter-url.js';
-import { getFilter, setFilter } from './filter-state.js';
+import { getFilter, setFilter, addFacetValue, subscribe as subscribeFilter } from './filter-state.js';
+import { initTabKeyboard, setRovingTabindex } from './tabs.js';
 
 // Vollstaendiger Katalog -- alle Tabs bleiben im TAB_RENDERERS registriert,
 // damit Hash-URLs und Code-Pfade nicht brechen.
-const TABS = ['bestand', 'chronik', 'statistik', 'indizes', 'karte', 'netzwerk', 'verknuepfungen', 'korb'];
-// VISIBLE_TABS: nur diese sind aktuell in der Tab-Bar sichtbar (Rest `hidden`).
-// Hash-Navigation auf versteckte Tabs wird auf 'bestand' umgebogen.
-const VISIBLE_TABS = new Set(['bestand', 'chronik', 'statistik', 'indizes', 'karte', 'netzwerk', 'verknuepfungen', 'korb']);
+const TABS = ['bestand', 'chronik', 'statistik', 'indizes', 'karte', 'netzwerk', 'korb'];
 const ALL_VIEWS = [...TABS, 'archiv']; // 'archiv' als Legacy-Alias fuer alte Bookmarks/Hash-URLs
 
 const state = {
@@ -40,6 +38,9 @@ export function initRouter({ onTab, onRecord, onIndex } = {}) {
     if (btn) btn.addEventListener('click', () => switchTab(tab));
   }
 
+  // Arrow/Home/End across the whole tablist; the groups are visual only.
+  initTabKeyboard(document.querySelector('.tab-bar'), (tab) => switchTab(tab));
+
   // Parse initial hash
   parseHash();
   applyState();
@@ -49,6 +50,12 @@ export function initRouter({ onTab, onRecord, onIndex } = {}) {
     parseHash();
     applyState();
   });
+
+  // Der Schnitt gehoert in die Adresszeile: jede Filteraenderung schreibt den
+  // Query-Teil nach, damit ein Befund zitierbar bleibt und den Reload
+  // ueberlebt. Der Router ist die einzige Stelle, die in die Adresszeile
+  // schreibt, also abonniert er selbst, statt sich von main.js rufen zu lassen.
+  subscribeFilter(() => updateHash());
 }
 
 function switchTab(tab) {
@@ -87,18 +94,24 @@ export function navigateToView(tab, context = {}) {
 }
 
 /**
- * Setzt einen Toolbar-Filter im aktuell aktiven Record-Tab (Bestand oder
- * Chronik). Wenn ein anderer Tab aktiv ist, switcht zu Bestand. Der Filter
- * wird ueber `m3gim:navigate` an die View dispatcht, die ihrerseits
- * `toolbar.setLocation/setWerk/setPerson` aufruft (E-91, Session 44).
+ * Setzt eine Facette im geteilten Filter und wechselt in den Record-Tab, der
+ * sie zeigt (Chronik, wenn sie aktiv ist, sonst Bestand).
  *
- * @param {'person'|'location'|'werk'} facet
- * @param {string} value
+ * Der Schnitt wird hier direkt geschrieben, statt ihn als Detail eines
+ * Navigations-Events an die Ansicht zu reichen: der Umweg lief ueber einen
+ * eigenen Kanal, dessen Handler unter dem Schluessel `archiv` gesucht wurde,
+ * den keine Ansicht je registriert hat, sodass die Facette aus den Indizes nie
+ * ankam.
+ *
+ * `location` ist der Altname der Ortsfacette aus der entfallenen Toolbar; die
+ * aufrufenden Ansichten nennen ihn weiter.
+ * @param {'person'|'location'|'ort'|'werk'|'institution'|'docType'} facet
+ * @param {string|string[]} value
  */
 export function applyArchivFilter(facet, value) {
   if (!facet || !value) return;
-  const target = state.activeTab === 'chronik' ? 'chronik' : 'bestand';
-  navigateToView(target, { filter: { facet, value } });
+  addFacetValue(facet === 'location' ? 'ort' : facet, value);
+  navigateToView(state.activeTab === 'chronik' ? 'chronik' : 'bestand');
 }
 
 export function getState() {
@@ -119,7 +132,12 @@ export function resolveRecordId(id) {
     : id;
 }
 
-function parseHash() {
+/**
+ * Liest die Hash-Grammatik `#<tab>[/<recordId>][?<query>]` in den Router-State
+ * und den geteilten Filter. Exportiert, damit die Grammatik ohne Browser
+ * pruefbar ist; die Anwendung ruft sie nur ueber initRouter und hashchange.
+ */
+export function parseHash() {
   const { path, query } = splitHash(window.location.hash);
   // Der Filter kommt aus der URL, bevor die Views rendern; ein geteilter Link
   // zeigt sonst kurz den vollen Bestand und springt dann.
@@ -131,8 +149,10 @@ function parseHash() {
   // Legacy-Alias: der Tab heisst jetzt 'karte'; alte mobilitaet/-atlas-Bookmarks
   // landen auf der Karte (der Atlas war der hier abgeloeste Vorgaenger).
   if (t === 'mobilitaet' || t === 'mobilitaets-atlas') t = 'karte';
-  // Alte Bookmarks auf versteckte Tabs auf Bestand umbiegen.
-  if (TABS.includes(t) && !VISIBLE_TABS.has(t)) t = 'bestand';
+  // Legacy-Alias: Verknuepfungen ist mit E-160 im Netzwerk aufgegangen. Der
+  // Query-Teil traegt den geteilten Schnitt und ueberlebt die Umleitung, damit
+  // ein geteilter Link denselben Befund oeffnet.
+  if (t === 'verknuepfungen') t = 'netzwerk';
   if (TABS.includes(t)) state.activeTab = t;
   if (parts[1] && ALL_VIEWS.includes(parts[0])) {
     state.selectedRecord = resolveRecordId(decodeURIComponent(parts[1]));
@@ -156,15 +176,6 @@ function updateHash() {
   }
 }
 
-/**
- * Den Hash an den aktuellen Filter angleichen. Der Filter-Halter ruft das ueber
- * main.js bei jeder Aenderung; der Router bleibt die einzige Stelle, die in die
- * Adresszeile schreibt.
- */
-export function syncHashToFilter() {
-  updateHash();
-}
-
 function applyState() {
   // Switch tab visibility + ARIA state
   for (const tab of TABS) {
@@ -177,6 +188,12 @@ function applyState() {
       btn.setAttribute('aria-selected', String(isActive));
     }
   }
+
+  // Roving tabindex follows the active tab, in DOM order rather than TABS
+  // order: the bar is grouped, so the two orders differ.
+  const buttons = [...document.querySelectorAll('.tab-bar [role="tab"]')];
+  const activeIndex = buttons.findIndex(b => b.dataset.tab === state.activeTab);
+  if (activeIndex >= 0) setRovingTabindex(buttons, activeIndex);
 
   if (onTabChange) onTabChange(state.activeTab);
   if (state.selectedRecord && onRecordSelect) onRecordSelect(state.selectedRecord);

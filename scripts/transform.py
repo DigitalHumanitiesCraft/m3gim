@@ -28,6 +28,7 @@ import re
 import json
 import hashlib
 import pandas as pd
+from collections import Counter
 from pathlib import Path
 from datetime import datetime
 
@@ -38,6 +39,7 @@ from _common import (
     extract_bearbeitungsnotiz,
     is_approved_match,
     load_concept_meta,
+    load_index as _load_index,
     load_objekte,
     load_role_concepts,
     load_role_meta,
@@ -53,6 +55,44 @@ if sys.stdout.encoding != "utf-8":
 BASE_DIR = Path(__file__).parent.parent
 SHEETS_DIR = Path(os.environ.get("M3GIM_SHEETS_DIR", BASE_DIR / "data" / "google-spreadsheet"))
 OUTPUT_DIR = Path(os.environ.get("M3GIM_OUTPUT_DIR", BASE_DIR / "data" / "output"))
+
+# Opt-out for the guard against a run without the Wikidata files. Missing
+# reconciliation/enrichment silently produces a hollowed-out dataset, so the
+# default is to abort (Review 2026-07-18, point 1).
+ALLOW_NO_WIKIDATA = os.environ.get("M3GIM_ALLOW_NO_WIKIDATA") == "1"
+
+# ---------------------------------------------------------------------------
+# Drop bookkeeping
+# ---------------------------------------------------------------------------
+# Every path that discards a source row is counted and reported at the end of
+# the run. Without it a source defect looks like clean data: the row simply is
+# not in the output and nothing says so (Review 2026-07-18, point 3). The
+# samples make a finding locatable without a second run.
+DROPS: Counter = Counter()
+DROP_SAMPLES: dict[str, list[str]] = {}
+DROP_SAMPLE_LIMIT = 3
+
+
+def record_drop(reason: str, detail: str | None = None) -> None:
+    """Count one discarded source row, keeping the first few locations."""
+    DROPS[reason] += 1
+    if detail:
+        samples = DROP_SAMPLES.setdefault(reason, [])
+        if detail not in samples and len(samples) < DROP_SAMPLE_LIMIT:
+            samples.append(detail)
+
+
+def print_drop_summary() -> None:
+    """Print the drop tally, or state explicitly that nothing was discarded."""
+    print()
+    print("Verworfene Quellzeilen")
+    if not DROPS:
+        print("  keine")
+        return
+    for reason in sorted(DROPS):
+        samples = DROP_SAMPLES.get(reason, [])
+        suffix = f"  (z.B. {', '.join(samples)})" if samples else ""
+        print(f"  {reason}: {DROPS[reason]}{suffix}")
 
 CONTEXT = {
     "rico": "https://www.ica.org/standards/RiC/ontology#",
@@ -82,7 +122,7 @@ ROLE_CONCEPTS = load_role_concepts(VOCAB_PATH)
 CONCEPT_META = load_concept_meta(VOCAB_PATH)
 ROLE_META = load_role_meta(VOCAB_PATH)
 
-# Mapping (typ, rolle) → AgRelOn class + property (data-model.md § 8.3, phase 4.8).
+# Mapping (typ, rolle) → AgRelOn class + property (data-model.md § AgRelOn-Integration, Mapping M³GIM-Rolle → AgRelOn, phase 4.8).
 # The pipeline emits an agrelon relation with provenance on the record in
 # addition to the plain agent relation.
 AGRELON_MAPPING = {
@@ -177,14 +217,14 @@ PENDING_CREATION_DATE = "_malformed_creation_date"
 
 # Mobility place roles (E-97): each produces a dateless m3gim-ontology:Annotation
 # (first-class mobility event for the mobility atlas). Vocabulary completeness
-# per data.md § 4/§ 10 — the current export uses zielort/absendeort/abreiseort;
+# per data.md § Verknüpfungsmechanismus and data-model.md § Mobilitätsmodell — the current export uses zielort/absendeort/abreiseort;
 # empfangsort/vertragsort scaffold for a deeper export. wohnort is NOT a point
 # event (a state with validity) and is deliberately absent from this set.
 MOBILITY_PLACE_ROLES = {
     "zielort", "absendeort", "abreiseort", "empfangsort", "vertragsort",
 }
 
-# Contract status (data-model.md § 11, E-99): the source marks an unfulfilled
+# Contract status (data-model.md § Finanzschicht, E-99): the source marks an unfulfilled
 # contract via the rolle column as "nicht eingehalten", propagated column-wide
 # across the whole contract block (e.g. NIM_023). This is NOT an event/place
 # role: a place or an ort,datum event cannot be "nicht eingehalten". We filter
@@ -263,7 +303,7 @@ DFT_BROADER = {
     "identityCard": "identityDocument",
 }
 # E-101: 'sammlung' and 'verzeichnis' deliberately stay without broader (the
-# is-a relation of sammlung to konvolut is not prejudged, data-model.md § 12).
+# is-a relation of sammlung to konvolut is not prejudged, data-model.md § Dokumenttypen-Vokabular).
 
 # Readable German labels for skos:prefLabel of the document type concepts
 # (E-101). Replaces the frontend hand table DOKUMENTTYP_LABELS; values are
@@ -309,7 +349,7 @@ DFT_LABELS = {
 
 # Header-shift corrections and currency/Bearbeitungsstand defaults come from
 # _common.py (INDEX_HEADER_SHIFTS, FINANCE_CURRENCY_DEFAULTS,
-# normalize_bearbeitungsstand). See knowledge/data.md § 17.
+# normalize_bearbeitungsstand). See knowledge/data.md § Datenqualität.
 
 
 def normalize_str(value) -> str | None:
@@ -427,7 +467,7 @@ def normalize_role(value) -> str | None:
 
     Strips :innen and :in (saenger:in -> saenger). A final 'in' without colon
     is not removed generally because it is ambiguous (interpret, ...);
-    extendable via a stem allowlist if needed. See data.md § 5.
+    extendable via a stem allowlist if needed. See data.md § Rollenvokabular.
     """
     v = normalize_lower(value)
     if v is None:
@@ -451,7 +491,7 @@ def attach_role(target: dict, value) -> None:
     A value outside the vocabulary stays as a literal. This covers the
     contract status "nicht eingehalten", which sits in the role column and is
     explicitly not a role concept per the vocabulary; its modelling is open
-    with the cataloguing team (data-model.md § 11).
+    with the cataloguing team (data-model.md § Finanzschicht).
     """
     if not value:
         return
@@ -478,7 +518,7 @@ _NO_DATE_PLACEHOLDER = re.compile(
 def clean_date(value) -> str | None:
     """Removes date artefacts (Excel 00:00:00) and normalizes spans.
 
-    YYYY-YYYY (a season) becomes YYYY/YYYY (ISO-8601 time span, data.md § 6).
+    YYYY-YYYY (a season) becomes YYYY/YYYY (ISO-8601 time span, data.md § Datumskonventionen).
     Free-text values like 'Wien, ab 1956' stay unchanged — the pipeline filters
     them out by pattern match before they reach typed date properties.
     """
@@ -488,7 +528,7 @@ def clean_date(value) -> str | None:
     s = re.sub(r'\s+00:00:00$', '', s)
     if s == "":
         return None
-    # "No date" placeholders (data.md § 6): "ohne Datum"/"o. D." is NOT a date
+    # "No date" placeholders (data.md § Datumskonventionen): "ohne Datum"/"o. D." is NOT a date
     # and must not land in rico:date (breaks the JSON-LD schema). Map to None.
     if _NO_DATE_PLACEHOLDER.match(s):
         return None
@@ -507,7 +547,7 @@ def is_iso_date(value) -> bool:
     return isinstance(value, str) and bool(ISO_DATE_PATTERN.match(value))
 
 
-# Date routing normalization (data.md § 6, E-102). Maps text notations to ISO
+# Date routing normalization (data.md § Datumskonventionen, E-102). Maps text notations to ISO
 # representations before the annotation gets its value. Lossless: unrecognized
 # notations stay unchanged and carry the datierung-malformed flag instead.
 _RANGE_BIS = re.compile(r"^(.+?)\s+bis\s+(.+)$", re.IGNORECASE)
@@ -517,7 +557,7 @@ _FREITEXT_BEGINN = re.compile(
 
 
 def normalize_dating(value: str) -> str:
-    """Normalizes date notations per the routing table (data.md § 6).
+    """Normalizes date notations per the routing table (data.md § Datumskonventionen).
 
     - "X bis Y" → ISO time span "X/Y" (only if both sides are ISO)
     - "ab/seit YYYY" → qualifier "nach:YYYY"
@@ -535,7 +575,7 @@ def normalize_dating(value: str) -> str:
     return s
 
 
-# Data quality flags from anmerkung signals (data-model.md § 7, E-102). The
+# Data quality flags from anmerkung signals (data-model.md § RiC-O-Kern und m3gim-Erweiterung, E-102). The
 # vocabulary is derived from the actual anmerkung entries, not extrapolated
 # (guardrail 'verify foreign terms'): "Name nicht eindeutig auffindbar",
 # "Vorname fehlt"/"ohne Vornamen", "Rolle Unsicher: ..."/"(??)",
@@ -583,67 +623,8 @@ def normalize_signatur(sig: str) -> str:
 
 
 def load_index(name: str) -> pd.DataFrame | None:
-    """Loads an index with header-shift correction.
-
-    Two malformation classes from the box export (E-95):
-
-    (a) name column without header — person index: position 0 carries the real
-        header "m3gim_id", but the name column (position 1) is empty and
-        becomes "Unnamed: 1" in pandas. Row 0 is a genuine header row; NO data
-        row may be consumed as header. Columns are renamed positionally to the
-        canon.
-
-    (b) leaked data value in the header row — Org/Werk: position 1 (or 3)
-        carries a data value like "Graz"/"Rossini, Gioachino" instead of a
-        real header. Position 0 is still "m3gim_id", i.e. row 0 remains a
-        (contaminated) header row, not a lost data row. So again only rename
-        columns — the leaked single cells are lost (passed through; same
-        behaviour as the prod export).
-    """
-    path = SHEETS_DIR / f"M3GIM-{name}.xlsx"
-    if not path.exists():
-        return None
-
-    df = pd.read_excel(path)
-    canonical = name.lower()
-
-    if canonical in INDEX_HEADER_SHIFTS:
-        expected = INDEX_HEADER_SHIFTS[canonical]
-        col0 = str(df.columns[0]).strip().lower() if len(df.columns) else ""
-        if col0 == "m3gim_id":
-            # Row 0 is a genuine (possibly contaminated) header row: only
-            # rename columns positionally to the canon, consume no data row as
-            # header. Preserves any extra trailing columns.
-            new_cols = list(expected[:len(df.columns)])
-            if len(df.columns) > len(expected):
-                new_cols += list(df.columns[len(expected):])
-            df.columns = new_cols
-        elif len(df.columns) == len(expected):
-            # Legacy case: row 0 is a shifted data row that pandas read as
-            # header (position 0 != "m3gim_id"). Push it back into the data.
-            first_val = str(df.columns[1]) if len(df.columns) > 1 else ""
-            if first_val and first_val not in ["name", "titel", "ort", "m3gim_id"]:
-                old_headers = list(df.columns)
-                df.columns = expected[:len(df.columns)]
-                first_row = pd.DataFrame([old_headers], columns=df.columns)
-                df = pd.concat([first_row, df], ignore_index=True)
-
-    # (c) id column overwritten with a data value — the Ortsindex of the
-    # 2026-08-31 delivery carries the place name "Turin" at position 0 instead
-    # of "m3gim_id". Neither branch above fires, because position 0 is not
-    # "m3gim_id" and position 1 is on the exception list. Only column 0 is
-    # renamed back positionally, and only if its values look like index ids;
-    # the remaining headers stay untouched so no note column mistakenly
-    # becomes wikidata_id (E-152).
-    if len(df.columns) and str(df.columns[0]).strip().lower() != "m3gim_id":
-        col0 = df.columns[0]
-        sample = df[col0].dropna().astype(str).str.strip().head(10)
-        if len(sample) and all(re.match(r"^[A-Za-z]\d+$", s) for s in sample):
-            print(f"  {name}: Kopfzelle der Kennungsspalte traegt '{col0}', "
-                  "positionell auf 'm3gim_id' zurueckbenannt")
-            df = df.rename(columns={col0: "m3gim_id"})
-
-    return df
+    """Index loader of the pipeline, see _common.load_index."""
+    return _load_index(SHEETS_DIR, name)
 
 
 # Fields carrying exactly one value per identity, plus the one multi-valued
@@ -673,7 +654,7 @@ def _index_row_values(row: pd.Series, columns) -> dict:
 
 
 def build_index_lookup(df: pd.DataFrame) -> dict:
-    """Builds the lookup dictionary: name → {wikidata_id, ...} (data.md § 3).
+    """Builds the lookup dictionary: name → {wikidata_id, ...} (data.md § Tabellenmodell).
 
     The earlier version wrote one entry per name in source order; on equal
     names the last row won entirely. The 2026-08-31 delivery lists the fonds
@@ -839,7 +820,7 @@ def convert_objekt(row: pd.Series, folio_col: str = None,
     # (aus_dokument/erschlossen/extern) — no measured value, against the
     # guardrail "do not fabricate confidence". Nothing in frontend/report read
     # them. If dating evidence is needed later it returns as a categorical
-    # value, not a decimal. data-model.md § 9.
+    # value, not a decimal. data-model.md § Meta-Statement-Modell.
 
     dokumenttyp = normalize_lower(row.get('dokumenttyp'))
     if dokumenttyp:
@@ -910,9 +891,17 @@ def build_konvolut_hierarchy(df: pd.DataFrame, folio_col: str = None,
 
     for idx, row in df.iterrows():
         if pd.isna(row.get('archivsignatur')) or str(row['archivsignatur']).strip() == "":
+            # A row without a Signatur cannot form an object identifier. Only
+            # count it when it actually carries content, otherwise every blank
+            # spreadsheet row would show up as a finding.
+            if any(pd.notna(v) and str(v).strip() and str(v).strip().lower() != "nan"
+                   for k, v in row.items()
+                   if not str(k).startswith("_") and str(k) != "archivsignatur"):
+                record_drop("Objektzeile ohne Signatur", f"Zeile {int(idx) + 2}")
             continue
         # Skip template rows
         if str(row['archivsignatur']).strip().lower() == "beispiel":
+            record_drop("Objektzeile Vorlage 'beispiel'", f"Zeile {int(idx) + 2}")
             continue
 
         sig = str(row['archivsignatur']).strip()
@@ -928,6 +917,8 @@ def build_konvolut_hierarchy(df: pd.DataFrame, folio_col: str = None,
                              'Bearbeitungsstand')
             if not any(pd.notna(row.get(c)) and str(row.get(c)).strip()
                        for c in _content_cols):
+                record_drop("Objektzeile ohne Folio und ohne Inhalt",
+                            f"{sig} Zeile {int(idx) + 2}")
                 continue
 
         # XLSX row number: pandas idx is 0-based, XLSX header is row 1
@@ -950,7 +941,7 @@ def build_konvolut_hierarchy(df: pd.DataFrame, folio_col: str = None,
         }
         konvolute.append(konvolut)
 
-    # Collision resolution (see knowledge/data.md § 17): if a Signatur has
+    # Collision resolution (see knowledge/data.md § Datenqualität): if a Signatur has
     # both a collection row (no Folio) and Folio rows, the collection record
     # shares its @id with the record set. The collection row gets a
     # _collection suffix and is attached to the Konvolut as meta member.
@@ -980,12 +971,41 @@ def build_konvolut_hierarchy(df: pd.DataFrame, folio_col: str = None,
             node["m3gim-ontology:xlsxSource"] = source
         annotations.append(node)
 
+    _mark_unresolved_aggregates(records, konvolute)
+
     return records, konvolute, annotations
+
+
+# Signature forms of the two Bestandsgruppen that hold single items. Everything
+# else in the Hauptbestand is a Konvolut signature.
+SINGLE_ITEM_SIGNATURE_MARKS = ("/PL_", "_TT_")
+
+
+def _mark_unresolved_aggregates(records: list, konvolute: list) -> None:
+    """Set m3gim-ontology:unresolvedAggregate on the Sammeleinheiten.
+
+    A Hauptbestand record standing at top level without a Folio is no single
+    document but a collective unit whose Folio cataloguing is still pending
+    (data.md § Konvolut- und Objektlogik). The frontend decided this from
+    signature character patterns until 2026-09-03; the Bestandsgruppe is a
+    statement of the material and belongs in the dataset.
+    """
+    member_ids = set()
+    for konvolut in konvolute:
+        for part in konvolut.get("rico:hasOrHadPart", []):
+            member_ids.add(part.get("@id"))
+    for record in records:
+        if record.get("@id") in member_ids:
+            continue
+        identifier = record.get("rico:identifier") or ""
+        if any(mark in identifier for mark in SINGLE_ITEM_SIGNATURE_MARKS):
+            continue
+        record["m3gim-ontology:unresolvedAggregate"] = True
 
 
 # Fallback currency per Archivsignatur prefix lives in _common.py
 # (FINANCE_CURRENCY_DEFAULTS + default_currency_for). See knowledge/data.md
-# § 17 for the editorial assumptions.
+# § Datenqualität for the editorial assumptions.
 
 
 # Numeric head of a raw finance value: leading digits with '.' (thousands)
@@ -996,7 +1016,7 @@ _AMOUNT_HEAD = re.compile(r"^\s*([\d.,]+)")
 def _parse_amount_token(token: str) -> str | None:
     """Converts a raw numeric token to an xsd:decimal string.
 
-    Convention (data-model.md § 11, European): '.' is the thousands separator,
+    Convention (data-model.md § Finanzschicht, European): '.' is the thousands separator,
     ',' the decimal separator. A trailing comma before the currency is already
     stripped here; a remaining ',NN' is a genuine decimal fraction.
     """
@@ -1033,7 +1053,7 @@ def _parse_single_monetary(segment: str) -> tuple[str | None, str | None]:
 def parse_monetary_values(name: str) -> list[tuple[str | None, str | None]]:
     """Splits a raw finance value into a list of (amount, currency).
 
-    Robust against the mixed notations in the source (data-model.md § 11):
+    Robust against the mixed notations in the source (data-model.md § Finanzschicht):
       - 'AMOUNT, CURRENCY'     : '4000, Esc', '1.200, DM'  (comma+space separator)
       - 'AMOUNT,DEC, CURRENCY' : '631,50, Fr.'             (decimal comma THEN separator comma)
       - 'AMOUNT,DEC CURRENCY'  : '1500,00 DM', '200,00 Belgische Francs'
@@ -1052,7 +1072,7 @@ def parse_monetary_values(name: str) -> list[tuple[str | None, str | None]]:
     s = str(name).strip()
     if not s:
         return [(None, None)]
-    # Split double amounts at '/' (data-model.md § 11): each part becomes its
+    # Split double amounts at '/' (data-model.md § Finanzschicht): each part becomes its
     # own entry with the same detailField. Only segments with a numeric head count.
     segments = [seg for seg in s.split("/") if seg.strip()]
     parsed = [_parse_single_monetary(seg) for seg in segments]
@@ -1113,7 +1133,7 @@ def decompose_komposit_value(name: str, typen: list[str]) -> dict[str, str]:
         else:
             # Free-text start after the comma ("Wien, ab 1956"): split at the
             # first comma and normalize the date ("ab 1956" → "nach:1956",
-            # data.md § 6). Adopt only if this yields an ISO value — otherwise
+            # data.md § Datumskonventionen). Adopt only if this yields an ISO value — otherwise
             # no place leak into the date field (audit finding on E-102).
             m2 = re.match(r'^(.+?),\s*(.+)$', name)
             if m2:
@@ -1181,7 +1201,7 @@ def resolve_verknuepfungen_source(base: Path) -> Path:
 
     Since E-152 the source format is the per-sheet CSV export, because the
     XLSX export converts date, Folio and bundling columns into cell types and
-    fabricates precision in the process (data.md § 3 source format). The CSV
+    fabricates precision in the process (data.md § Tabellenmodell source format). The CSV
     directory wins; if absent, the previous XLSX path applies so an archived
     state remains readable. A directly passed file path is passed through
     unchanged.
@@ -1319,6 +1339,18 @@ def load_verknuepfungen(path: Path) -> pd.DataFrame:
     return pd.concat(frames, ignore_index=True, sort=False)
 
 
+def _verk_location(df: pd.DataFrame, row, idx) -> str:
+    """Sheet and row of a Verknuepfungszeile, for the drop summary."""
+    sheet = "Verknuepfungen"
+    if "_xlsx_sheet" in df.columns and pd.notna(row.get("_xlsx_sheet")):
+        sheet = str(row.get("_xlsx_sheet"))
+    if "_xlsx_row" in df.columns and pd.notna(row.get("_xlsx_row")):
+        line = int(row.get("_xlsx_row"))
+    else:
+        line = int(idx) + 2
+    return f"{sheet} Zeile {line}"
+
+
 def process_verknuepfungen(df: pd.DataFrame, indices: dict) -> dict:
     """Verarbeitet Verknuepfungen und gruppiert nach Signatur.
 
@@ -1330,9 +1362,14 @@ def process_verknuepfungen(df: pd.DataFrame, indices: dict) -> dict:
     for idx, row in df.iterrows():
         sig = row.get('archivsignatur')
         if pd.isna(sig) or str(sig).strip() == "":
+            if normalize_str(row.get('name')) or normalize_lower(row.get('typ')):
+                record_drop("Verknuepfungszeile ohne Signatur",
+                            _verk_location(df, row, idx))
             continue
         sig_str = str(sig).strip()
         if sig_str.lower() == "beispiel":
+            record_drop("Verknuepfungszeile Vorlage 'beispiel'",
+                        _verk_location(df, row, idx))
             continue
 
         # Folio-Feld pruefen (Spalte heisst oft "Folio" in Verknuepfungen).
@@ -1359,6 +1396,11 @@ def process_verknuepfungen(df: pd.DataFrame, indices: dict) -> dict:
         anmerkung = normalize_str(row.get('anmerkung'))
 
         if typ is None:
+            # Without a Typ the row has no target context; its name and role
+            # cannot be attached anywhere (data.md § Datenqualität).
+            if name or rolle:
+                record_drop("Verknuepfungszeile ohne Typ",
+                            _verk_location(df, row, idx))
             continue
 
         # Provenance: Sheet-Name + originale XLSX-Zeile + datenpunkt_id.
@@ -1391,7 +1433,7 @@ def process_verknuepfungen(df: pd.DataFrame, indices: dict) -> dict:
         decomposed = decompose_komposit_value(name, typen) if len(typen) > 1 else {}
 
         # Komposit ort,datum: zusaetzlich eine Annotations-Relation emittieren
-        # (data.md § 4, § 10). Der Annotationsknoten wird in add_relations
+        # (data.md § Verknüpfungsmechanismus, data-model.md § Mobilitätsmodell). Der Annotationsknoten wird in add_relations
         # als Top-Level-Entity gebaut.
         ortdatum_ste_emitted = False
         if 'ort' in typen and 'datum' in typen:
@@ -1487,7 +1529,7 @@ def process_verknuepfungen(df: pd.DataFrame, indices: dict) -> dict:
                 continue
             # ort,datum: der Datums-Teil ist bereits im Annotationsknoten
             # (atDate) repraesentiert — nicht zusaetzlich als eigene
-            # Datumsannotation emittieren (data.md § 4: eine Repraesentation).
+            # Datumsannotation emittieren (data.md § Verknüpfungsmechanismus: eine Repraesentation).
             # Der Orts-Teil bleibt als rico:hasOrHadLocation erhalten.
             if ortdatum_ste_emitted and t == 'datum':
                 continue
@@ -1735,6 +1777,291 @@ def _attach_index_fields(entry: dict, rel: dict, typ: str):
             entry["m3gim-ontology:indexNote"] = note
 
 
+def _rel_location(rel: dict) -> str | None:
+    """Sheet and row a relation came from, for the drop summary."""
+    source = rel.get("_source") or {}
+    sheet = source.get("m3gim-ontology:xlsxSheet")
+    line = source.get("m3gim-ontology:xlsxRow")
+    return f"{sheet} Zeile {line}" if sheet and line else None
+
+
+class _RelationContext:
+    """Zustand eines add_relations_to_records-Laufs, geteilt mit den Handlern.
+
+    Traegt die ueber alle Records geteilten Register (Annotationen,
+    Performances, StageRoles, Enrichment) und die je Record gesammelten
+    Kanten. Der Zaehler der Performance-@ids laeuft bewusst ueber den ganzen
+    Lauf und nicht je Record.
+    """
+
+    def __init__(self, enrichment_data: dict, stage_roles: dict,
+                 annotation_seen: dict):
+        self.enrichment_data = enrichment_data
+        self.stage_roles = stage_roles
+        self.annotation_seen = annotation_seen
+        self.annotations = []
+        self.performances = []
+        self.perf_counter = 0
+        self.record = None
+        self.agents = []
+        self.locations = []
+        self.subjects = []
+        self.creation_dates = []  # Entstehungsdatierung -> rico:creationDate
+        self.mentions = []
+
+    def start_record(self, record: dict) -> None:
+        self.record = record
+        self.agents = []
+        self.locations = []
+        self.subjects = []
+        self.creation_dates = []
+        self.mentions = []
+
+    def next_performance_id(self) -> str:
+        self.perf_counter += 1
+        rec_local_id = self.record["@id"].split(":", 1)[-1]
+        return f"m3gim-data:perf_{rec_local_id}_{self.perf_counter}"
+
+    def add_detail(self, detail_entry: dict) -> None:
+        self.record.setdefault("m3gim-ontology:hasDetail", []).append(detail_entry)
+
+
+def _rel_person(ctx: _RelationContext, rel: dict, entry: dict, name: str) -> None:
+    rolle_lower = (rel.get("rolle") or "").lower()
+    _attach_index_fields(entry, rel, "person")
+    if rolle_lower in ["erwähnt", "erwaehnt", "erwähnt"]:
+        ctx.mentions.append(entry)
+    else:
+        entry["@type"] = "rico:Person"
+        ctx.agents.append(entry)
+        _maybe_add_agrelon(ctx.record, "person", rolle_lower, entry, rel=rel)
+
+
+def _rel_institution(ctx: _RelationContext, rel: dict, entry: dict, name: str) -> None:
+    entry["@type"] = "rico:CorporateBody"
+    _attach_index_fields(entry, rel, "institution")
+    ctx.agents.append(entry)
+    _maybe_add_agrelon(ctx.record, "institution",
+                       (rel.get("rolle") or "").lower(), entry, rel=rel)
+
+
+def _rel_ensemble(ctx: _RelationContext, rel: dict, entry: dict, name: str) -> None:
+    entry["@type"] = "rico:Group"
+    ctx.agents.append(entry)
+
+
+def _rel_ort(ctx: _RelationContext, rel: dict, entry: dict, name: str) -> None:
+    # Skip date-like strings that leaked into locations
+    if name and re.match(r'^\d{4}(-\d{2}){0,2}', name):
+        record_drop("Ortszeile mit Datumswert", _rel_location(rel))
+        return
+    entry["@type"] = "rico:Place"
+    # Komposit "ort,datum" vererbt die Rolle an beide Haelften.
+    # Eine Datumsrolle (erscheinungsdatum, auffuehrung, ...) gehoert
+    # semantisch nur zum Datum-Teil — am Ort produziert sie im UI
+    # Etiketten wie "Muenchen (erscheinungsdatum)". Hier strippen,
+    # damit die Rolle nur dort erscheint, wo sie aussagekraeftig ist.
+    if (rel.get("rolle") or "").strip().lower() in DATE_ONLY_ROLES:
+        entry.pop("role", None)
+        entry.pop("m3gim-ontology:derivedFromRole", None)
+    ctx.locations.append(entry)
+
+
+def _rel_werk(ctx: _RelationContext, rel: dict, entry: dict, name: str) -> None:
+    entry["@type"] = "m3gim-ontology:MusicalWork"
+    if rel.get("komponist"):
+        entry["composer"] = rel["komponist"]
+    _attach_index_fields(entry, rel, "werk")
+    ctx.subjects.append(entry)
+
+
+def _rel_ereignis(ctx: _RelationContext, rel: dict, entry: dict, name: str) -> None:
+    entry["@type"] = "m3gim-ontology:FramingEvent"
+    if rel.get("datum"):
+        entry["date"] = rel["datum"]
+    if "role" not in entry:
+        attach_role(entry, "rahmenveranstaltung")
+    ctx.subjects.append(entry)
+
+
+def _rel_rolle(ctx: _RelationContext, rel: dict, entry: dict, name: str) -> None:
+    # Standalone-Bühnenrolle (ohne Interpret:in) -> m3gim-ontology:Performance
+    # mit nur hasStageRole; löst das alte Attribut hasPerformanceRole ab (E-96).
+    perf_id = ctx.next_performance_id()
+    perf = {
+        "@id": perf_id,
+        "@type": "m3gim-ontology:Performance",
+        "m3gim-ontology:hasStageRole": {"@id": _make_stage_role(ctx.stage_roles, name)},
+    }
+    if rel.get("anmerkung"):
+        perf["rico:generalDescription"] = rel["anmerkung"]
+    _qf = quality_flags(rel.get("anmerkung"))
+    if _qf:
+        perf["m3gim-ontology:dataQualityFlag"] = _qf if len(_qf) > 1 else _qf[0]
+    attach_xlsx_source(perf, rel)
+    ctx.performances.append(perf)
+    ctx.record.setdefault("m3gim-ontology:hasPerformance", []).append({"@id": perf_id})
+
+
+def _rel_datum(ctx: _RelationContext, rel: dict, entry: dict, name: str) -> None:
+    date_val = clean_date(rel.get("datum") or name)
+    if not date_val:
+        record_drop("Datumszeile ohne verwertbaren Wert", _rel_location(rel))
+        return
+    # Datums-Routing (data.md § Datumskonventionen, E-102): Textnotationen erst auf
+    # ISO normalisieren ("X bis Y" → TimeSpan, "ab/seit X" → nach:).
+    date_val = normalize_dating(date_val)
+    rolle_key = (rel.get("rolle") or "").strip().lower()
+    if rolle_key == CREATION_DATE_ROLE and is_iso_date(date_val):
+        # Die reine Entstehungsdatierung des Dokuments steht am
+        # Dokument selbst, auf dem RiC-O-Term rico:creationDate.
+        ctx.creation_dates.append(date_val)
+        return
+    # Jeder andere Datumswert wird ein Annotationsknoten mit
+    # m3gim-ontology:atDate und seiner erfassten Rolle. Kein
+    # Property-Name traegt mehr eine Rolle.
+    annotation = build_annotation(ctx.record, ctx.annotation_seen,
+                                  date=date_val, role=rolle_key or None)
+    if rel.get("anmerkung"):
+        annotation["rico:generalDescription"] = rel["anmerkung"]
+    qf = quality_flags(rel.get("anmerkung"))
+    # Eine Notation, die kein ISO-Datum ergibt, wird markiert statt
+    # eine eigene Bauform zu erzwingen. Der Wert bleibt im Wortlaut
+    # der Quelle stehen und geht ins Fehlerregister.
+    if not is_iso_date(date_val):
+        qf = qf + ["datierung-malformed"]
+    if qf:
+        annotation["m3gim-ontology:dataQualityFlag"] = qf if len(qf) > 1 else qf[0]
+    attach_xlsx_source(annotation, rel)
+    ctx.annotations.append(annotation)
+
+
+def _rel_detail(ctx: _RelationContext, rel: dict, entry: dict, name: str) -> None:
+    # Schicht-3-Detail als strukturiertes Objekt
+    detail_entry = {
+        "@type": "m3gim-ontology:Annotation",
+        "m3gim-ontology:detailField": name
+    }
+    if rel.get("rolle"):
+        detail_entry["m3gim-ontology:detailValue"] = rel["rolle"]
+    if rel.get("anmerkung"):
+        detail_entry["rico:generalDescription"] = rel["anmerkung"]
+    attach_xlsx_source(detail_entry, rel)
+    ctx.add_detail(detail_entry)
+
+
+def _rel_spatiotemporal(ctx: _RelationContext, rel: dict, entry: dict, name: str) -> None:
+    # Komposit ort,datum bzw. datumslose Mobilitaets-Ortsrolle
+    # (E-97) als Annotationsknoten mit Rueckverweis.
+    # Vertragsstatus ("nicht eingehalten") ist keine Rolle,
+    # sondern eine spaltenweit durchgereichte Vertragsmarkierung
+    # (data-model.md § Finanzschicht). Vor @id-Hash UND Rolle herausfiltern, damit
+    # beide konsistent bleiben (test_35 leitet die @id aus dem Output ab).
+    ste_role = rel.get("rolle")
+    if ste_role and ste_role.strip().lower() in CONTRACT_STATUS_ROLES:
+        ste_role = None
+    # atPlace: wie reguläre rico:Place-Entries mit Q-ID + Enrichment
+    # anreichern, sobald Reconciliation einen Treffer liefert.
+    place_entry = {"name": rel["ort"]}
+    wid = rel.get("wikidata_id", "")
+    if wid and re.match(r'^Q\d+$', wid):
+        place_entry["@id"] = f"wd:{wid}"
+        place_entry["owl:sameAs"] = f"http://www.wikidata.org/entity/{wid}"
+        enrich = ctx.enrichment_data.get(wid, {}).get("properties", {})
+        if enrich:
+            _inject_enrichment(place_entry, enrich)
+    # Der Rueckverweis auf den Record ist Provenienz (der Record
+    # dokumentiert die Annotation); rico:isAssociatedWithRecord
+    # existiert in RiC-O 1.1 nicht (E-103). data-model.md § Mobilitätsmodell.
+    ev = build_annotation(ctx.record, ctx.annotation_seen, place=place_entry,
+                          date=rel.get("datum"), role=ste_role)
+    if rel.get("anmerkung"):
+        ev["rico:generalDescription"] = rel["anmerkung"]
+    attach_xlsx_source(ev, rel)
+    ctx.annotations.append(ev)
+
+
+def _rel_performance(ctx: _RelationContext, rel: dict, entry: dict, name: str) -> None:
+    # n-äre m3gim-ontology:Performance aus rolle,person (E-96) bzw. datum,werk
+    # (E-98) als Top-Level-Entity mit Rückverweis am Record.
+    perf_id = ctx.next_performance_id()
+    perf = {"@id": perf_id, "@type": "m3gim-ontology:Performance"}
+    if rel.get("stageRole"):
+        perf["m3gim-ontology:hasStageRole"] = {
+            "@id": _make_stage_role(ctx.stage_roles, rel["stageRole"])
+        }
+    if rel.get("performer"):
+        performer = {"name": rel["performer"], "@type": "rico:Person"}
+        pwid = rel.get("performer_wikidata_id", "")
+        if pwid and re.match(r'^Q\d+$', pwid):
+            performer["@id"] = f"wd:{pwid}"
+            performer["owl:sameAs"] = f"http://www.wikidata.org/entity/{pwid}"
+            pen = ctx.enrichment_data.get(pwid, {}).get("properties", {})
+            if pen:
+                _inject_enrichment(performer, pen)
+        perf["m3gim-ontology:hasPerformer"] = performer
+    if rel.get("performanceOf"):
+        work = {"name": rel["performanceOf"], "@type": "m3gim-ontology:MusicalWork"}
+        wwid = rel.get("work_wikidata_id", "")
+        if wwid and re.match(r'^Q\d+$', wwid):
+            work["@id"] = f"wd:{wwid}"
+            work["owl:sameAs"] = f"http://www.wikidata.org/entity/{wwid}"
+        perf["m3gim-ontology:performanceOf"] = work
+    if rel.get("auffuehrungsdatum"):
+        perf["m3gim-ontology:atDate"] = rel["auffuehrungsdatum"]
+    if rel.get("anmerkung"):
+        perf["rico:generalDescription"] = rel["anmerkung"]
+    attach_xlsx_source(perf, rel)
+    ctx.performances.append(perf)
+    ctx.record.setdefault("m3gim-ontology:hasPerformance", []).append({"@id": perf_id})
+
+
+def _rel_finanz(ctx: _RelationContext, rel: dict, entry: dict, name: str) -> None:
+    # Finanz-Informationen als Detailangabe (data-model.md § Finanzschicht).
+    # Doppelbetrag ('25, DM/45, DM') -> zwei Detailangaben mit
+    # gleichem detailField (parse_monetary_values).
+    feld = rel["typ"]
+    for amount, currency in parse_monetary_values(name):
+        if currency is None and amount is not None:
+            currency = default_currency_for(ctx.record.get("rico:identifier", ""))
+        detail_entry = {
+            "@type": "m3gim-ontology:Annotation",
+            "m3gim-ontology:detailField": feld,
+            "m3gim-ontology:detailValue": name,
+        }
+        attach_role(detail_entry, rel.get("rolle"))
+        if amount is not None:
+            detail_entry["m3gim-ontology:monetaryAmount"] = {
+                "@value": amount,
+                "@type": "xsd:decimal",
+            }
+        if currency:
+            detail_entry["m3gim-ontology:currency"] = currency
+        attach_xlsx_source(detail_entry, rel)
+        ctx.add_detail(detail_entry)
+
+
+# Dispatch ueber den Relationstyp. Loest die elif-Kaskade ab, die mit jedem
+# neuen Typ laenger wurde (Review 2026-07-18, Punkt 4). Ein Typ ohne Eintrag
+# erzeugt nichts und wird als Verwurf gezaehlt.
+RELATION_HANDLERS = {
+    "person": _rel_person,
+    "institution": _rel_institution,
+    "ensemble": _rel_ensemble,
+    "ort": _rel_ort,
+    "werk": _rel_werk,
+    "ereignis": _rel_ereignis,
+    "rolle": _rel_rolle,
+    "datum": _rel_datum,
+    "detail": _rel_detail,
+    "spatiotemporal": _rel_spatiotemporal,
+    "performance": _rel_performance,
+    "ausgaben": _rel_finanz,
+    "einnahmen": _rel_finanz,
+    "summe": _rel_finanz,
+}
+
+
 def add_relations_to_records(records: list, relations: dict,
                              enrichment_data: dict | None = None,
                              stage_roles: dict | None = None,
@@ -1747,30 +2074,23 @@ def add_relations_to_records(records: list, relations: dict,
         ``stage_roles``-Registry dedupliziert (E-96/E-98), Annotations-@ids in
         das geteilte ``annotation_seen``-Registry.
     """
-    if enrichment_data is None:
-        enrichment_data = {}
-    if stage_roles is None:
-        stage_roles = {}
-    if annotation_seen is None:
-        annotation_seen = {}
-    annotations = []
-    performances = []
-    perf_counter = 0  # Performance-@ids bleiben (Scope: nur Annotationen stabilisiert)
+    ctx = _RelationContext(
+        enrichment_data if enrichment_data is not None else {},
+        stage_roles if stage_roles is not None else {},
+        annotation_seen if annotation_seen is not None else {},
+    )
     for record in records:
         identifier = record.get("rico:identifier")
         if not identifier or identifier not in relations:
             continue
 
-        agents = []
-        locations = []
-        subjects = []
-        creation_dates = []  # Entstehungsdatierung -> rico:creationDate
-        mentions = []
+        ctx.start_record(record)
 
         for rel in relations[identifier]:
             t = rel["typ"]
             name = rel.get("name")
             if not name:
+                record_drop("Verknuepfung ohne Namen", _rel_location(rel))
                 continue
 
             # Basis-Entry mit Name
@@ -1780,7 +2100,7 @@ def add_relations_to_records(records: list, relations: dict,
                 entry["@id"] = f"wd:{wid}"
                 entry["owl:sameAs"] = f"http://www.wikidata.org/entity/{wid}"
                 # Enrichment-Properties injizieren
-                enrich = enrichment_data.get(wid, {}).get("properties", {})
+                enrich = ctx.enrichment_data.get(wid, {}).get("properties", {})
                 if enrich:
                     _inject_enrichment(entry, enrich)
             attach_role(entry, rel.get("rolle"))
@@ -1799,238 +2119,38 @@ def add_relations_to_records(records: list, relations: dict,
             if _qf:
                 entry["m3gim-ontology:dataQualityFlag"] = _qf if len(_qf) > 1 else _qf[0]
 
-            if t == "person":
-                rolle_lower = (rel.get("rolle") or "").lower()
-                _attach_index_fields(entry, rel, "person")
-                if rolle_lower in ["erwähnt", "erwaehnt", "erwähnt"]:
-                    mentions.append(entry)
-                else:
-                    entry["@type"] = "rico:Person"
-                    agents.append(entry)
-                    _maybe_add_agrelon(record, t, rolle_lower, entry, rel=rel)
-
-            elif t == "institution":
-                entry["@type"] = "rico:CorporateBody"
-                _attach_index_fields(entry, rel, "institution")
-                agents.append(entry)
-                _maybe_add_agrelon(record, t, (rel.get("rolle") or "").lower(), entry, rel=rel)
-
-            elif t == "ensemble":
-                entry["@type"] = "rico:Group"
-                agents.append(entry)
-
-            elif t == "ort":
-                # Skip date-like strings that leaked into locations
-                if name and re.match(r'^\d{4}(-\d{2}){0,2}', name):
-                    continue
-                entry["@type"] = "rico:Place"
-                # Komposit "ort,datum" vererbt die Rolle an beide Haelften.
-                # Eine Datumsrolle (erscheinungsdatum, auffuehrung, ...) gehoert
-                # semantisch nur zum Datum-Teil — am Ort produziert sie im UI
-                # Etiketten wie "Muenchen (erscheinungsdatum)". Hier strippen,
-                # damit die Rolle nur dort erscheint, wo sie aussagekraeftig ist.
-                if (rel.get("rolle") or "").strip().lower() in DATE_ONLY_ROLES:
-                    entry.pop("role", None)
-                    entry.pop("m3gim-ontology:derivedFromRole", None)
-                locations.append(entry)
-
-            elif t == "werk":
-                entry["@type"] = "m3gim-ontology:MusicalWork"
-                if rel.get("komponist"):
-                    entry["composer"] = rel["komponist"]
-                _attach_index_fields(entry, rel, "werk")
-                subjects.append(entry)
-
-            elif t == "ereignis":
-                entry["@type"] = "m3gim-ontology:FramingEvent"
-                if rel.get("datum"):
-                    entry["date"] = rel["datum"]
-                if "role" not in entry:
-                    attach_role(entry, "rahmenveranstaltung")
-                subjects.append(entry)
-
-            elif t == "rolle":
-                # Standalone-Bühnenrolle (ohne Interpret:in) -> m3gim-ontology:Performance
-                # mit nur hasStageRole; löst das alte Attribut hasPerformanceRole
-                # ab (E-96).
-                perf_counter += 1
-                rec_local_id = record["@id"].split(":", 1)[-1]
-                perf_id = f"m3gim-data:perf_{rec_local_id}_{perf_counter}"
-                perf = {
-                    "@id": perf_id,
-                    "@type": "m3gim-ontology:Performance",
-                    "m3gim-ontology:hasStageRole": {"@id": _make_stage_role(stage_roles, name)},
-                }
-                if rel.get("anmerkung"):
-                    perf["rico:generalDescription"] = rel["anmerkung"]
-                _qf = quality_flags(rel.get("anmerkung"))
-                if _qf:
-                    perf["m3gim-ontology:dataQualityFlag"] = _qf if len(_qf) > 1 else _qf[0]
-                attach_xlsx_source(perf, rel)
-                performances.append(perf)
-                record.setdefault("m3gim-ontology:hasPerformance", []).append({"@id": perf_id})
-
-            elif t == "datum":
-                date_val = clean_date(rel.get("datum") or name)
-                if not date_val:
-                    continue
-                # Datums-Routing (data.md § 6, E-102): Textnotationen erst auf
-                # ISO normalisieren ("X bis Y" → TimeSpan, "ab/seit X" → nach:).
-                date_val = normalize_dating(date_val)
-                rolle_key = (rel.get("rolle") or "").strip().lower()
-                if rolle_key == CREATION_DATE_ROLE and is_iso_date(date_val):
-                    # Die reine Entstehungsdatierung des Dokuments steht am
-                    # Dokument selbst, auf dem RiC-O-Term rico:creationDate.
-                    creation_dates.append(date_val)
-                    continue
-                # Jeder andere Datumswert wird ein Annotationsknoten mit
-                # m3gim-ontology:atDate und seiner erfassten Rolle. Kein
-                # Property-Name traegt mehr eine Rolle.
-                annotation = build_annotation(record, annotation_seen,
-                                              date=date_val, role=rolle_key or None)
-                if rel.get("anmerkung"):
-                    annotation["rico:generalDescription"] = rel["anmerkung"]
-                qf = quality_flags(rel.get("anmerkung"))
-                # Eine Notation, die kein ISO-Datum ergibt, wird markiert statt
-                # eine eigene Bauform zu erzwingen. Der Wert bleibt im Wortlaut
-                # der Quelle stehen und geht ins Fehlerregister.
-                if not is_iso_date(date_val):
-                    qf = qf + ["datierung-malformed"]
-                if qf:
-                    annotation["m3gim-ontology:dataQualityFlag"] = (
-                        qf if len(qf) > 1 else qf[0]
-                    )
-                attach_xlsx_source(annotation, rel)
-                annotations.append(annotation)
-
-            elif t == "detail":
-                # Schicht-3-Detail als strukturiertes Objekt
-                detail_entry = {
-                    "@type": "m3gim-ontology:Annotation",
-                    "m3gim-ontology:detailField": name
-                }
-                if rel.get("rolle"):
-                    detail_entry["m3gim-ontology:detailValue"] = rel["rolle"]
-                if rel.get("anmerkung"):
-                    detail_entry["rico:generalDescription"] = rel["anmerkung"]
-                attach_xlsx_source(detail_entry, rel)
-                if "m3gim-ontology:hasDetail" not in record:
-                    record["m3gim-ontology:hasDetail"] = []
-                record["m3gim-ontology:hasDetail"].append(detail_entry)
-
-            elif t == "spatiotemporal":
-                # Komposit ort,datum bzw. datumslose Mobilitaets-Ortsrolle
-                # (E-97) als Annotationsknoten mit Rueckverweis.
-                # Vertragsstatus ("nicht eingehalten") ist keine Rolle,
-                # sondern eine spaltenweit durchgereichte Vertragsmarkierung
-                # (data-model.md § 11). Vor @id-Hash UND Rolle herausfiltern, damit
-                # beide konsistent bleiben (test_35 leitet die @id aus dem Output ab).
-                ste_role = rel.get("rolle")
-                if ste_role and ste_role.strip().lower() in CONTRACT_STATUS_ROLES:
-                    ste_role = None
-                # atPlace: wie reguläre rico:Place-Entries mit Q-ID + Enrichment
-                # anreichern, sobald Reconciliation einen Treffer liefert.
-                place_entry = {"name": rel["ort"]}
-                wid = rel.get("wikidata_id", "")
-                if wid and re.match(r'^Q\d+$', wid):
-                    place_entry["@id"] = f"wd:{wid}"
-                    place_entry["owl:sameAs"] = f"http://www.wikidata.org/entity/{wid}"
-                    enrich = enrichment_data.get(wid, {}).get("properties", {})
-                    if enrich:
-                        _inject_enrichment(place_entry, enrich)
-                # Der Rueckverweis auf den Record ist Provenienz (der Record
-                # dokumentiert die Annotation); rico:isAssociatedWithRecord
-                # existiert in RiC-O 1.1 nicht (E-103). data-model.md § 10.
-                ev = build_annotation(record, annotation_seen, place=place_entry,
-                                      date=rel.get("datum"), role=ste_role)
-                if rel.get("anmerkung"):
-                    ev["rico:generalDescription"] = rel["anmerkung"]
-                attach_xlsx_source(ev, rel)
-                annotations.append(ev)
-
-            elif t == "performance":
-                # n-äre m3gim-ontology:Performance aus rolle,person (E-96) bzw. datum,werk
-                # (E-98) als Top-Level-Entity mit Rückverweis am Record.
-                perf_counter += 1
-                rec_local_id = record["@id"].split(":", 1)[-1]
-                perf_id = f"m3gim-data:perf_{rec_local_id}_{perf_counter}"
-                perf = {"@id": perf_id, "@type": "m3gim-ontology:Performance"}
-                if rel.get("stageRole"):
-                    perf["m3gim-ontology:hasStageRole"] = {
-                        "@id": _make_stage_role(stage_roles, rel["stageRole"])
-                    }
-                if rel.get("performer"):
-                    performer = {"name": rel["performer"], "@type": "rico:Person"}
-                    pwid = rel.get("performer_wikidata_id", "")
-                    if pwid and re.match(r'^Q\d+$', pwid):
-                        performer["@id"] = f"wd:{pwid}"
-                        performer["owl:sameAs"] = f"http://www.wikidata.org/entity/{pwid}"
-                        pen = enrichment_data.get(pwid, {}).get("properties", {})
-                        if pen:
-                            _inject_enrichment(performer, pen)
-                    perf["m3gim-ontology:hasPerformer"] = performer
-                if rel.get("performanceOf"):
-                    work = {"name": rel["performanceOf"], "@type": "m3gim-ontology:MusicalWork"}
-                    wwid = rel.get("work_wikidata_id", "")
-                    if wwid and re.match(r'^Q\d+$', wwid):
-                        work["@id"] = f"wd:{wwid}"
-                        work["owl:sameAs"] = f"http://www.wikidata.org/entity/{wwid}"
-                    perf["m3gim-ontology:performanceOf"] = work
-                if rel.get("auffuehrungsdatum"):
-                    perf["m3gim-ontology:atDate"] = rel["auffuehrungsdatum"]
-                if rel.get("anmerkung"):
-                    perf["rico:generalDescription"] = rel["anmerkung"]
-                attach_xlsx_source(perf, rel)
-                performances.append(perf)
-                record.setdefault("m3gim-ontology:hasPerformance", []).append({"@id": perf_id})
-
-            elif t in ["ausgaben", "einnahmen", "summe"]:
-                # Finanz-Informationen als Detailangabe (data.md Abschnitt 11).
-                # Doppelbetrag ('25, DM/45, DM') -> zwei Detailangaben mit
-                # gleichem detailField (parse_monetary_values).
-                for amount, currency in parse_monetary_values(name):
-                    if currency is None and amount is not None:
-                        currency = default_currency_for(
-                            record.get("rico:identifier", ""))
-                    detail_entry = {
-                        "@type": "m3gim-ontology:Annotation",
-                        "m3gim-ontology:detailField": t,
-                        "m3gim-ontology:detailValue": name,
-                    }
-                    attach_role(detail_entry, rel.get("rolle"))
-                    if amount is not None:
-                        detail_entry["m3gim-ontology:monetaryAmount"] = {
-                            "@value": amount,
-                            "@type": "xsd:decimal",
-                        }
-                    if currency:
-                        detail_entry["m3gim-ontology:currency"] = currency
-                    attach_xlsx_source(detail_entry, rel)
-                    if "m3gim-ontology:hasDetail" not in record:
-                        record["m3gim-ontology:hasDetail"] = []
-                    record["m3gim-ontology:hasDetail"].append(detail_entry)
+            handler = RELATION_HANDLERS.get(t)
+            if handler is None:
+                record_drop("Verknuepfung mit unbekanntem Typ", f"typ={t}")
+                continue
+            handler(ctx, rel, entry, name)
 
         # Erwähnte Personen → rico:hasOrHadSubject (statt einer eigenen Kante)
         # Sie werden als rico:Person mit role "erwähnt" modelliert
-        for m in mentions:
+        for m in ctx.mentions:
             m["@type"] = "rico:Person"
-            subjects.append(m)
+            ctx.subjects.append(m)
 
         # Properties setzen (nur wenn nicht leer)
-        if agents:
+        if ctx.agents:
             record["m3gim-ontology:hasAssociatedAgent"] = (
-                agents if len(agents) > 1 else agents[0]
+                ctx.agents if len(ctx.agents) > 1 else ctx.agents[0]
             )
-        if locations:
-            record["rico:hasOrHadLocation"] = locations if len(locations) > 1 else locations[0]
-        if subjects:
-            record["rico:hasOrHadSubject"] = subjects if len(subjects) > 1 else subjects[0]
-        if creation_dates:
+        if ctx.locations:
+            record["rico:hasOrHadLocation"] = (
+                ctx.locations if len(ctx.locations) > 1 else ctx.locations[0]
+            )
+        if ctx.subjects:
+            record["rico:hasOrHadSubject"] = (
+                ctx.subjects if len(ctx.subjects) > 1 else ctx.subjects[0]
+            )
+        if ctx.creation_dates:
             record["rico:creationDate"] = (
-                creation_dates if len(creation_dates) > 1 else creation_dates[0]
+                ctx.creation_dates if len(ctx.creation_dates) > 1
+                else ctx.creation_dates[0]
             )
 
-    return annotations, performances
+    return ctx.annotations, ctx.performances
 
 
 def normalize_containers(records: list) -> None:
@@ -2145,6 +2265,20 @@ def main():
     # Reconciliation-Ergebnisse als Fallback laden.
     # Konservative Policy: fuzzy_low nur uebernehmen, wenn manuell approved.
     recon_path = OUTPUT_DIR / "wikidata-reconciliation.json"
+    enrichment_path = OUTPUT_DIR / "wikidata-enrichment.json"
+    missing_wikidata = [p for p in (recon_path, enrichment_path) if not p.exists()]
+    if missing_wikidata and not ALLOW_NO_WIKIDATA:
+        print("\nFEHLER: Normdatendateien fehlen im Ausgabeverzeichnis:")
+        for p in missing_wikidata:
+            print(f"  {p}")
+        print("Ohne sie entstehen Records ohne Wikidata-Properties, also ohne "
+              "Koordinaten, Lebensdaten und Berufe. Beide Dateien sind "
+              "git-getrackt und liegen im normalen Klon bereit; bei einem "
+              "alternativen M3GIM_OUTPUT_DIR sind sie vorher dorthin zu "
+              "kopieren. Ein bewusster Lauf ohne Normdaten braucht "
+              "M3GIM_ALLOW_NO_WIKIDATA=1.")
+        return 1
+
     recon_count = 0
     recon_low_skipped = 0
     if recon_path.exists():
@@ -2172,7 +2306,6 @@ def main():
 
     # Enrichment-Daten laden (wikidata-enrichment.json)
     enrichment_data = {}
-    enrichment_path = OUTPUT_DIR / "wikidata-enrichment.json"
     if enrichment_path.exists():
         with open(enrichment_path, "r", encoding="utf-8") as f:
             enrich_raw = json.load(f)
@@ -2181,7 +2314,7 @@ def main():
     else:
         print(f"  Enrichment: {enrichment_path.name} nicht vorhanden (uebersprungen)")
 
-    # Objekte laden, CSV bevorzugt (data.md § 3, Quellformat)
+    # Objekte laden, CSV bevorzugt (data.md § Tabellenmodell, Quellformat)
     try:
         from _common import resolve_objekte_source
         objekte_path = resolve_objekte_source(SHEETS_DIR)
@@ -2250,6 +2383,13 @@ def main():
     for old, new in sorted(repaired.items()):
         print(f"  Folio-Join repariert: {old} -> {new}")
 
+    # Verknuepfungen whose object identifier hits nothing never reach a record.
+    # add_relations_to_records simply skips them, so they are counted here.
+    for objekt_id, rels in sorted(relations.items()):
+        if objekt_id not in known_ids:
+            for _ in rels:
+                record_drop("Verknuepfung ohne Objekt", objekt_id)
+
     # Relations zu Records hinzufuegen (mit Enrichment-Daten). stage_roles ist
     # ein über beide Aufrufe geteiltes Dedup-Registry für StageRole-Entitäten (E-96).
     stage_roles = {}
@@ -2288,7 +2428,7 @@ def main():
         if r["@id"] not in konvolut_member_ids:
             fonds["rico:hasOrHadPart"].append({"@id": r["@id"]})
 
-    # SKOS-Konzepte fuer verwendete Dokumenttypen (data.md Abschnitt 12)
+    # SKOS-Konzepte fuer verwendete Dokumenttypen (data-model.md § Dokumenttypen-Vokabular)
     dft_concepts = build_dft_concepts(records)
     role_concepts = build_role_concepts(
         [fonds] + konvolute + records + annotations + performances)
@@ -2323,6 +2463,7 @@ def main():
     print(f"  Ausgabe:    {output_path}")
     size_kb = output_path.stat().st_size / 1024
     print(f"  Groesse:    {size_kb:.1f} KB")
+    print_drop_summary()
     print("=" * 60)
 
 

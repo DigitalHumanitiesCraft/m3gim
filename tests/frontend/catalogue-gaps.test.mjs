@@ -19,7 +19,7 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { aggregateCatalogueGaps } from '../../docs/js/views/statistics-data.js';
+import { aggregateCatalogueGaps } from '../../docs/js/views/statistik-data.js';
 
 /** Minimalstore: nur die Felder, die die Aggregation liest. */
 function makeStore(records, konvolute = []) {

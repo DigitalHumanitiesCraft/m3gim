@@ -299,7 +299,7 @@ function buildStore(jsonld) {
 
     // Konvolut title: preferably from the Folio record, else from the
     // collection record. scripts/transform.py assigns the collection-row suffix
-    // as _collection, see knowledge/data.md § 17 -- its title describes the
+    // as _collection, see knowledge/data.md § Datenqualität -- its title describes the
     // Konvolut by content, e.g. "Diverse Zeitungsausschnitte" for NIM_006.
     const sammelChildId = realChildIds.find(cid => cid.endsWith('_collection'));
     const sammelRecord = sammelChildId ? store.records.get(sammelChildId) : null;
@@ -316,12 +316,13 @@ function buildStore(jsonld) {
     store.konvolutMeta.set(kid, {
       title,
       dateDisplay,
+      minYear: minYear === Infinity ? null : minYear,
       childCount: realChildIds.length,
       processedCount,
       folioId,
       totalLinks,
       datedCount,
-      docTypeCounts,   // Map<dftId, count>, sortable descending
+      docTypeCounts,   // Map<dftId, count>
       statusCounts,    // Map<Bearbeitungsstand, count>
     });
   }
@@ -361,7 +362,7 @@ function buildStore(jsonld) {
  * @param {Object} record
  * @returns {Annotation[]}
  */
-export function annotationsOf(store, record) {
+function annotationsOf(store, record) {
   if (!store || !record) return [];
   const ids = store.recordToAnnotations.get(record['@id']) || [];
   return ids.map(id => store.annotations.get(id)).filter(Boolean);
@@ -976,17 +977,4 @@ function resolveAgentRelationsToPersons(store) {
   }
   store.agentRelationTotalCount = total;
   store.agentRelationResolvedCount = resolved;
-}
-
-/**
- * Der erklaerende Satz zu einem Vokabularbegriff, oder null.
- * Quelle ist das Vokabular; das Frontend fuehrt keinen zweiten Erklaertext.
- * @param {Object} store
- * @param {?string} conceptId  CURIE, etwa 'm3gim-vocab:program'
- * @returns {?string}
- */
-export function conceptDefinition(store, conceptId) {
-  if (!store || !store.conceptDefinitions || !conceptId) return null;
-  const entry = store.conceptDefinitions.get(conceptId);
-  return entry ? entry.definition : null;
 }

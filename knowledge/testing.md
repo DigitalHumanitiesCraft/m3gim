@@ -7,7 +7,7 @@ status: complete
 language: de
 version: 0.5
 created: 2026-02-19
-updated: 2026-08-31
+updated: 2026-09-03
 authors: [Christopher Pollin]
 generated-with: Claude Code
 method:
@@ -136,7 +136,7 @@ Die Projektleitung hat am 2026-08-31 entschieden, dass die Mindestwerte nach jed
 Lässt `transform.py` zweimal laufen, vergleicht Output (ohne `m3gim-ontology:exportDate`). Fängt versehentliche Set-Iteration / Dict-Ordnungsabhängigkeiten. Der Marker `slow` schließt ihn aus dem Lauf `pytest -m "not slow"` aus, im unmarkierten `pytest tests/` läuft er mit. Welche Felder ein Rerun zulässig verändert, steht in [architecture.md](architecture.md) § Reproduzierbarkeit.
 
 ### 11. Mobilität (test_11, Phase 4.4 + 4.8)
-SpatiotemporalEvent-Existenz, `atPlace` Pflicht; `atDate` nur für datierte STE (datumslose Mobilitäts-STE aus Ortsrollen tragen bewusst kein `atDate`, E-97). Rollen-Vokabular, Anzahl skaliert mit XLSX-Komposit-Rows. Die Existenz der Verortungen und ihre Ausbeute gegen die Quelle standen als zwei zeichengleiche Tests nebeneinander und sind am 2026-08-31 in `test_every_ort_datum_row_produces_event` zusammengeführt, das den absoluten Boden `max(5, ...)` mitübernommen hat. Die Mobilitätssichten aus [data-model.md § 10](data.md) als SPARQL-ähnliche Python-Queries: performative, institutionelle, Korrespondenz-, biographische, diskursive Mobilität.
+SpatiotemporalEvent-Existenz, `atPlace` Pflicht; `atDate` nur für datierte STE (datumslose Mobilitäts-STE aus Ortsrollen tragen bewusst kein `atDate`, E-97). Rollen-Vokabular, Anzahl skaliert mit XLSX-Komposit-Rows. Die Existenz der Verortungen und ihre Ausbeute gegen die Quelle standen als zwei zeichengleiche Tests nebeneinander und sind am 2026-08-31 in `test_every_ort_datum_row_produces_event` zusammengeführt, das den absoluten Boden `max(5, ...)` mitübernommen hat. Die Mobilitätssichten aus [data-model.md § Mobilitätsmodell](data-model.md) als SPARQL-ähnliche Python-Queries: performative, institutionelle, Korrespondenz-, biographische, diskursive Mobilität.
 
 ### 12. AgRelOn (test_12, Phase 4.8)
 `agrelon:`-Namespace im Context, HasEmployeeEmployer-Relationen skalieren mit XLSX-arbeitgeber-Zeilen, HasCorrespondent-Relationen haben Provenance, `agrelon:metadataPeriod` ist well-formed (Begin/End als ISO-String).
@@ -152,7 +152,7 @@ Jede Finanz-DetailAnnotation hat korrekten `@type`, `detailField`, parsbare `mon
 Unit-Tests für `parse_monetary_value`, `normalize_role`, `normalize_lower`, `decompose_komposit_typ`, `decompose_komposit_value`, `clean_date`, `is_iso_date`. Liefert schnelles Feedback bei Änderungen an den Kern-Helfern ohne Pipeline-Run.
 
 ### 15. Vokabular-Coverage (test_15)
-Jede in der XLSX belegte Rolle (nach Normalisierung) steht in `data.md § 5`, jeder Dokumenttyp ist im `DOKUMENTTYP_TO_DFT`-Mapping, jede Währung in `ALLOWED_CURRENCIES`. Output-Rollen sind Teilmenge des data.md-Vokabulars.
+Jede in der XLSX belegte Rolle (nach Normalisierung) steht in `data.md § Rollenvokabular`, jeder Dokumenttyp ist im `DOKUMENTTYP_TO_DFT`-Mapping, jede Währung in `ALLOWED_CURRENCIES`. Output-Rollen sind Teilmenge des data.md-Vokabulars.
 
 ### 16. Finanz-Roundtrip (test_16, Phase 4.6)
 Zu jeder Finanzzeile der Quelle enthält der über `rico:identifier` zugeordnete Record eine DetailAnnotation mit exaktem `monetaryAmount`, `currency` und `detailRole`, sodass keine Zeile still verlorengehen kann. Der Grundtyp einer Zeile wird an Komma und Unterstrich gleichermaßen abgetrennt, weil der Dropdown-Export den Komposittyp als `einnahmen_währung` liefert (test_37). Ohne den Unterstrich als Trenner meldete der Test jede Finanzzeile des neuen Exports als fehlend.
@@ -164,7 +164,7 @@ Der Test heisst nach der Phase, die er sicherte, und sichert seit E-136 ihr Gege
 Die `datierungsevidenz` wird nicht serialisiert: kein `m3gim:dateEvidence`, **kein** `agrelon:metadataConfidence` (nirgends im Graph), keine record-seitige Datierungs-Self-Provenance. Die erfundene Dezimalkonfidenz ist entfernt (E-106, löst E-100 ab). Positivkontrolle: die legitime `agrelon:metadataProvenance` auf den AgRelOn-Relationen (`m3gim-ontology:hasAgentRelation`) bleibt erhalten. test_29 (Konfidenz-Hygiene) entfiel mit der Konsolidierung. <!-- vocab-exempt: nennt eine nicht serialisierte Property -->
 
 ### 30. Datums-Routing + Datenqualitäts-Flags (test_30, E-102)
-Klammer- und freitextunsichere Datierungen landen im Annotationsknoten statt in einem Datumswert am Dokument. Ein Annotationsknoten dupliziert nie eine bereits am selben Record gefuehrte Kombination aus `m3gim-ontology:atDate` und Rolle` am selben Record (`ort,datum` wird in *eine* Repräsentation aufgelöst, data.md § 4). `dataQualityFlag`-Werte stammen aus dem kontrollierten Vokabular; `m3gim-ontology:qualityConfidence` wird nicht fabriziert; `m3gim-ontology:processingNote` trägt den Freitext-Anhang getrennt vom canonischen Status.
+Klammer- und freitextunsichere Datierungen landen im Annotationsknoten statt in einem Datumswert am Dokument. Ein Annotationsknoten dupliziert nie eine bereits am selben Record gefuehrte Kombination aus `m3gim-ontology:atDate` und Rolle` am selben Record (`ort,datum` wird in *eine* Repräsentation aufgelöst, data.md § Verknüpfungsmechanismus). `dataQualityFlag`-Werte stammen aus dem kontrollierten Vokabular; `m3gim-ontology:qualityConfidence` wird nicht fabriziert; `m3gim-ontology:processingNote` trägt den Freitext-Anhang getrennt vom canonischen Status.
 
 ### 31. Dokumentvokabular (test_31, E-101)
 `sammlung` ist ein eigenständiges Concept `m3gim-vocab:collection` ohne `skos:broader` (Records zeigen darauf). Jedes dft-Concept trägt ein lesbares deutsches `skos:prefLabel` (bekannte Konzepte exakt, nicht der Slug). Coverage: kein stiller Typ-Drop bei `hasDocumentaryFormType`. Die neuen Konzepte (briefumschlag/musikzeitschrift/chronik/verzeichnis) sind in `DFT_BROADER`/`DOKUMENTTYP_TO_DFT` strukturell gerüstet. Aboutness-Guard: ein dft-Concept erscheint nie als `rico:hasOrHadSubject`.
@@ -237,7 +237,7 @@ Unit-Lock für `scripts.transform._ste_id`, eine Ebene unter dem Output-Test tes
 
 ### 39. Kalendarische Datumsgültigkeit (test_39, AF-04/E-132)
 
-Prüft, dass kein Datumswert im erzeugten Datensatz einen Monat oder Tag außerhalb des Kalenders trägt. Zulässig sind nach [data.md](data.md) § 6 die Formen `YYYY`, `YYYY-MM` und `YYYY-MM-DD`, Zeitspannen als `.../...` sowie die Qualifier `circa:`, `vor:` und `nach:`. Der Anlass ist die Wikidata-Anreicherung, solange sie das Feld `precision` verwirft; eine jahresgenau geführte Angabe kommt von Wikidata als `+1841-00-00T00:00:00Z` und landet als `1841-00-00` im Datensatz (Befund AF-04). Betroffen sind `schema:birthDate`, `schema:deathDate`, `m3gim-ontology:wdPremiereDate` und `m3gim-ontology:wdInception`. Die geprüften Properties ermittelt der Test aus dem Datensatz statt aus einer Liste; datumstragend ist eine Property, deren lokaler Name auf `date` oder `datum` endet oder deren sämtliche Zeichenkettenwerte die Gestalt einer Datierung haben. Künftige Datumsproperties fallen damit von selbst in die Prüfung, während `m3gim-ontology:lifespan`, Titel und Beträge draußen bleiben. Die Fallback-Klasse `m3gim-ontology:Annotation` mit `m3gim-ontology:atDate` trägt laut data.md § 6 bewusst die nicht routbaren Rohdatierungen und bleibt über dieselbe Gestaltregel außen vor.
+Prüft, dass kein Datumswert im erzeugten Datensatz einen Monat oder Tag außerhalb des Kalenders trägt. Zulässig sind nach [data.md](data.md) § Datumskonventionen die Formen `YYYY`, `YYYY-MM` und `YYYY-MM-DD`, Zeitspannen als `.../...` sowie die Qualifier `circa:`, `vor:` und `nach:`. Der Anlass ist die Wikidata-Anreicherung, solange sie das Feld `precision` verwirft; eine jahresgenau geführte Angabe kommt von Wikidata als `+1841-00-00T00:00:00Z` und landet als `1841-00-00` im Datensatz (Befund AF-04). Betroffen sind `schema:birthDate`, `schema:deathDate`, `m3gim-ontology:wdPremiereDate` und `m3gim-ontology:wdInception`. Die geprüften Properties ermittelt der Test aus dem Datensatz statt aus einer Liste; datumstragend ist eine Property, deren lokaler Name auf `date` oder `datum` endet oder deren sämtliche Zeichenkettenwerte die Gestalt einer Datierung haben. Künftige Datumsproperties fallen damit von selbst in die Prüfung, während `m3gim-ontology:lifespan`, Titel und Beträge draußen bleiben. Die Fallback-Klasse `m3gim-ontology:Annotation` mit `m3gim-ontology:atDate` trägt laut data.md § Datumskonventionen bewusst die nicht routbaren Rohdatierungen und bleibt über dieselbe Gestaltregel außen vor.
 
 ### 40. Vokabular-Gate (test_40)
 
@@ -249,7 +249,7 @@ Lock für die Konvention der Projektleitung, dass ein als `owl:Class` deklariert
 
 ### 42. E-96-Nachzug in Ansichtserzeugung und Datenaudit (test_42)
 
-`scripts/build-views.py` und `scripts/audit-data.py` lasen die mit E-96 abgelöste Property `m3gim:hasPerformanceRole`, die im erzeugten Datensatz nicht mehr vorkommt; die Lesestellen lieferten still leere Listen, ohne einen Fehler zu melden, womit Auftritts-Partien, Gattungserkennung und Rollenzählung im Kosmos leer blieben. Das heutige Modell führt Aufführungsknoten `m3gim-ontology:Performance`, die über `m3gim-ontology:hasStageRole` auf `m3gim-ontology:StageRole` zeigen, während der Record über `m3gim-ontology:hasPerformance` auf die Aufführung verweist (data.md § 4 und § 7). Zwei Absicherungen greifen. Die betroffenen Auswertungen tragen wieder Daten, mit Mindestvorkommen statt „leere Liste ist ok". Und jeder Vokabular-Term, den die beiden Skripte als String-Literal aus dem Graph lesen, muss im Datensatz vorkommen, womit eine erneute Ablösung dieser Art auffällt. <!-- vocab-exempt: nennt das mit E-96 abgeloeste Attribut -->
+`scripts/build-views.py` und `scripts/audit-data.py` lasen die mit E-96 abgelöste Property `m3gim:hasPerformanceRole`, die im erzeugten Datensatz nicht mehr vorkommt; die Lesestellen lieferten still leere Listen, ohne einen Fehler zu melden, womit Auftritts-Partien, Gattungserkennung und Rollenzählung im Kosmos leer blieben. Das heutige Modell führt Aufführungsknoten `m3gim-ontology:Performance`, die über `m3gim-ontology:hasStageRole` auf `m3gim-ontology:StageRole` zeigen, während der Record über `m3gim-ontology:hasPerformance` auf die Aufführung verweist (data.md § Verknüpfungsmechanismus und data-model.md § RiC-O-Kern und m3gim-Erweiterung). Zwei Absicherungen greifen. Die betroffenen Auswertungen tragen wieder Daten, mit Mindestvorkommen statt „leere Liste ist ok". Und jeder Vokabular-Term, den die beiden Skripte als String-Literal aus dem Graph lesen, muss im Datensatz vorkommen, womit eine erneute Ablösung dieser Art auffällt. <!-- vocab-exempt: nennt das mit E-96 abgeloeste Attribut -->
 
 ### 43. Reconciliation-Logik (test_43)
 
@@ -442,10 +442,10 @@ Playwright ist bewusst **nicht** enthalten und bleibt ein optionales Extra, sieh
 **Was nicht getestet wird** (bewusst):
 - Pipeline-Internas (private Funktionen) — außer die in test_14 als Unit-Tests
 - Google-Sheets-Content selbst — Datenqualität ist redaktionelle Aufgabe (`explore.py`/`validate.py`)
-- Frontend-JavaScript — Browser-Validierung, nicht pytest
+- Frontend-JavaScript in pytest. Die dom-freien Funktionen deckt `node --test` ab (§ JS-Unit-Tests), das gerenderte Dokument der Browser-Smoke
 - Performance — Pipeline-Laufzeit unkritisch
 
-**Bekannte Testlücke, Korb-Export.** Die beiden Exportwege des Wissenskorbs, `exportCSV` und `exportBibTeX` in [`docs/js/views/basket.js`](../docs/js/views/basket.js), sind modulintern deklariert und tragen kein `export`-Schlüsselwort. Damit kann keine Testdatei sie importieren, und keine tut es. Der Smoke-Durchlauf betritt den Korb-Tab, klickt die beiden Knöpfe aber nicht. Ungeprüft bleiben die Feldauswahl, das CSV-Quoting in `csvEscape`, die Zeichenbehandlung in `bibtexEscape` und der Dateiname des Downloads. Eine Absicherung setzt voraus, dass beide Funktionen exportiert werden, was ein Eingriff in den Frontend-Code ist und deshalb hier nur vermerkt steht.
+**Bekannte Testlücke, Korb-Export.** Die beiden Exportwege des Korbs, `exportCSV` und `exportBibTeX` in [`docs/js/views/korb.js`](../docs/js/views/korb.js), sind modulintern deklariert und tragen kein `export`-Schlüsselwort. Damit kann keine Testdatei sie importieren, und keine tut es. Der Smoke-Durchlauf betritt den Korb-Tab, klickt die beiden Knöpfe aber nicht. Ungeprüft bleiben die Feldauswahl, das CSV-Quoting in `csvEscape`, die Zeichenbehandlung in `bibtexEscape` und der Dateiname des Downloads. Eine Absicherung setzt voraus, dass beide Funktionen exportiert werden, was ein Eingriff in den Frontend-Code ist und deshalb hier nur vermerkt steht.
 
 **Was später dazukommen kann**:
 - SHACL-Validierung gegen RiC-O-Shapes (`pyshacl`) — semantisch schärfer als JSON-Schema
@@ -455,14 +455,18 @@ Playwright ist bewusst **nicht** enthalten und bleibt ein optionales Extra, sieh
 
 `tests/frontend/smoke.py` fährt die SPA headless (Chromium, lokaler `python -m http.server 8765`) und prüft:
 
-1. **Tab-Durchlauf** über die reale `VISIBLE_TABS`-Menge aus `docs/js/ui/router.js` (`bestand`, `chronik`, `statistik`, `indizes`, `karte`, `netzwerk`, `verknuepfungen`, `korb`). Geprüft wird, dass das DOM nicht-leer rendert; ein neuer Konsolenfehler auf einem Tab wird heute als WARN geführt und bricht den Lauf nicht. Der seit E-109/E-111 sichtbare Mobilitäts-Tab (D3-geo-Karte) und der Korb sind seit E-113 im Loop; der Mobilitäts-Tab trägt zusätzlich einen eigenen Karten-Canary (Punkt 8). Versteckte Perspektiv-Tabs (Mobilitäts-Atlas, Repertoire, Biogramm) werden bewusst nicht angesteuert (E-81).
-2. **logStamp-Keys pro Tab** (State-Stempel), wie sie `stamp_expectations` in `tests/frontend/smoke.py` fordert: `bestand` → `konvolute, records, sort`; `chronik` → `records, jahre-belegt, datiert, undatiert, sicht-gedeckt, spanne` (Scroll-Zeitstrahl, E-88); `statistik` → `records, events, personen, ansichten, aktiv`; `indizes` → `personen, organisationen, orte, werke`; `karte` → `entitaeten, orte, belege, unverortet, jahre`; `netzwerk` → `total, ring1, ring2, agrelon` (konzentrische Personen-Viz, E-93); `verknuepfungen` → `fokus, schaerfe, knoten, recordsWeit, recordsEng`; `korb` → `eintraege, aufgeloest, events, finanzen`.
-3. **Chronik-Zeitstrahl-Canary** (seit Session 44, E-91): `#tab-chronik .chronik-year` deckt die Lebensspanne 1919–2009 als durchgehende Jahres-Zeilen ab, leere Jahre sichtbar aber ohne Records-in-leer. Klick auf `chronik-point` dispatcht `selectRecord` und springt in Bestand mit offenem Inline-Detail; fehlerfrei in der Konsole.
-4. **Anker-Titel im DOM**: `Rezension von Karl Schumann zu Macbeth` (NIM_004/3), `Handschriftliche Notiz` (NIM_007/5_1). Bricht der Check, ist entweder der Record ausgefiltert worden oder die Render-Logik kaputt.
-5. **Anker-Record NIM_004_1 voll aufgeklappt**: Sprach-Label aufgelöst (`en, fr` → „Englisch, Französisch") und AgRelOn-Dedup greift (Malaniuk erscheint genau einmal).
-6. **Konvolut-Meta-Chips sichtbar**: `.archiv-konvolut-meta .chip--compact` + `.archiv-konvolut-status` zählbar > 0 — Absicherung gegen Regression, die die Meta-Aggregation im Loader leer lässt.
-7. **Duplicate `@id` im JSON-LD-Graph**: bekannte Kollisionen (`m3gim-data:NIM_PL_07`) sind in `KNOWN_COLLISIONS` aufgeführt und werden toleriert; neue Kollisionen fail'n sofort.
-8. **Karten-Canary** (E-113, neu gefasst mit E-126): nach dem Klick auf den Karten-Tab wartet der Check auf den asynchronen Geometrie-Load (`loadCountries().then(...)`) und prüft, dass die entitätszentrierte D3-geo-Karte real zeichnet — Stadt-Knoten (`.mob-nodes g.mob-node` vorhanden), **keine** Verbindungslinien (`.mob-arcs path` == 0, da die Trajektorie mit E-126 entfiel), eine befüllte Entitäts-Auswahl (`.mob-entity__list .mob-entity__item` vorhanden) und Ländergeometrie (`.mob-land path` vorhanden), ohne neue Konsolenfehler. Zusätzlich wählt der Canary „Bayreuther Festspiele" und verifiziert, dass die Knotenmenge auf deren Orte schrumpft. Harter FAIL, nicht WARN: eine still leer rendernde Karte (fehlende Geometrie, d3-Ausfall, Projektions-Bug) ist genau die Regression, die der logStamp-Check verfehlt, weil der Stempel synchron vor dem Async-Draw geschrieben wird.
+1. Tab-Durchlauf über die sieben Tabs des Katalogs `TABS` in `docs/js/ui/router.js`, also `bestand`, `chronik`, `statistik`, `indizes`, `karte`, `netzwerk` und `korb`. Geprüft wird, dass das DOM nicht leer rendert. Ein neuer Konsolenfehler auf einem Tab wird heute als WARN geführt und bricht den Lauf nicht.
+2. logStamp-Keys pro Tab, wie sie `stamp_expectations` fordert. `bestand` verlangt `konvolute, records, sort, stand`, `chronik` verlangt `records, jahre-belegt, datiert, undatiert, sicht-gedeckt, spanne`, `statistik` verlangt `records, ansichten, aktiv, spanne`, `indizes` verlangt `personen, organisationen, orte, werke`, `karte` verlangt `entitaeten, orte, belege, unverortet, jahre`, `netzwerk` verlangt `fokus, facetten` samt den fünf Facettenschlüsseln, `stand`, `knoten`, die Knotenzahlen je Typ unter `k-<typ>`, `ring1`, `ring2`, `agrelon`, `recordsWeit` und `recordsEng`, und `korb` verlangt `eintraege, aufgeloest, events, finanzen`. Der Stempel schützt davor, dass eine Ansicht still ins Nichts rendert oder ein Schlüssel beim Refactor wegfliegt.
+3. Chronik-Zeitstrahl-Canary: `#tab-chronik .chronik-year` deckt die Lebensspanne als durchgehende Jahres-Zeilen ab, leere Jahre sind sichtbar und tragen keine Record-Chips (E-88). Ein Klick auf einen `chronik-point` springt in den Bestand und öffnet dort das Detail, ohne Konsolenfehler.
+4. Chronik-Aggregat-Canary (E-124): ein Klick auf ein Dekaden-Sicht-Segment hebt genau die belegenden Chips hervor (`.chronik-point--hit`) und dämpft den Rest (`.chronik-point--dim`). Bleibt die Trefferzahl null, ist der Stapelbalken eine unbelegte Zahl.
+5. Karten-Canary (E-113, neu gefasst mit E-126): nach dem Klick auf den Karten-Tab wartet der Check auf den asynchronen Geometrie-Load und prüft Stadt-Knoten (`.mob-nodes g.mob-node`), das Fehlen von Verbindungslinien (`.mob-arcs path` gleich null), eine befüllte Entitäts-Auswahl im Facettenmuster (`.fs-facet[data-facet="entitaet"] .fs-option`) und die Ländergeometrie (`.mob-land path`). Zusätzlich wählt er „Bayreuther Festspiele" und verifiziert, dass die Knotenmenge auf deren Orte schrumpft. Harter FAIL, nicht WARN, weil der Stempel synchron vor dem Async-Draw geschrieben wird und eine still leer rendernde Karte deshalb verfehlt.
+6. Cross-View-Filter-Canary `m4:cross-view-filter` ([architecture.md](architecture.md) § Cross-View-Filter): im Netzwerk wird die Ortsfacette der linken Spalte auf Bayreuth gesetzt, danach führt der Netzwerk-Stempel `ort:Bayreuth` und der bereits gerenderte Bestand meldet `gefiltert:ja`.
+7. URL-Roundtrip-Canary `filter:url-roundtrip`: der gesetzte Ort steht im Hash, überlebt einen vollen Reload und filtert danach weiterhin. Ohne diesen Weg wäre ein Befund nicht zitierbar.
+8. Anker-Titel im DOM: `Rezension von Karl Schumann zu Macbeth` (NIM_004/3) und `Handschriftliche Notiz` (NIM_007/5_1). Bricht der Check, ist entweder der Record ausgefiltert worden oder die Render-Logik kaputt.
+9. Anker-Record NIM_004_1 voll aufgeklappt: Sprach-Kürzel aufgelöst (`en, fr` wird zu „Englisch, Französisch"), AgRelOn-Dedup greift (die Nachlassbildnerin erscheint genau einmal), und der datumslose Ortsrollen-Chip rendert im Block Ort und Ereignis (E-97).
+10. Konvolut-Meta-Chips sichtbar: `.archiv-konvolut-meta .chip--compact` steht zählbar in der Titelzeile `.archiv-titel-zeile` des eingeklappten Kopfs, in der Kopfzeile selbst steht kein Erschließungsstand, und der Tooltip des Badges `.badge--konvolut-struct` führt ihn (E-190). Der Check schützt gegen eine leer laufende Meta-Aggregation im Loader und gegen ein Zurückwandern der Statuszeile in die Zeile.
+11. Erschließungsstand als Facette (E-162 auf der Basis aus E-165): die Ankreuzliste führt vier Werte, beim Öffnen sind abgeschlossen und begonnen gesetzt, ein weiterer Haken erweitert die Zeilenmenge, und es gibt keinen ausgegrauten Rest mehr, weil die Dokumentbasis die Verknüpfung ist.
+12. Duplicate `@id` im JSON-LD-Graph: bekannte Kollisionen stehen in `KNOWN_COLLISIONS` und werden toleriert, neue Kollisionen failen sofort.
 
 Aufruf:
 
@@ -475,9 +479,9 @@ pytest -m frontend tests/frontend/
 
 Der pytest-Wrapper (`tests/frontend/test_smoke.py`, Marker `@pytest.mark.frontend`) startet den Server als Fixture.
 
-Sieben der Prüfungen fangen jede Ausnahme ihrer eigenen Ausführung ab und melden dann WARN statt FAIL, betroffen sind der Chronik-Jahresraster, die Aggregat-Auflösung, der Cross-View-Filter, der Anker-Record NIM_004_1, die Konvolut-Meta-Chips, der Erschließungs-Toggle und die Duplikat-Prüfung der `@id`. Nur ein FAIL setzt den Exit-Code, den der Wrapper auswertet. Ein kaputt gehender Selektor lässt den Durchlauf damit still grün werden. Ob diese Prüfungen den Lauf brechen sollen, ist eine offene Operator-Entscheidung; sie bestimmt, ob der Smoke-Durchlauf ein Gate oder ein Bericht ist.
+Acht der Prüfungen fangen jede Ausnahme ihrer eigenen Ausführung ab und melden dann WARN statt FAIL, betroffen sind der Chronik-Jahresraster, die Aggregat-Auflösung, der Cross-View-Filter, der URL-Roundtrip, der Anker-Record NIM_004_1, die Konvolut-Meta-Chips, die Erschließungsstand-Facette und die Duplikat-Prüfung der `@id`. Nur ein FAIL setzt den Exit-Code, den der Wrapper auswertet. Ein kaputt gehender Selektor lässt den Durchlauf damit still grün werden. Ob diese Prüfungen den Lauf brechen sollen, ist eine offene Operator-Entscheidung, sie bestimmt, ob der Smoke-Durchlauf ein Gate oder ein Bericht ist.
 
-**Der Browserteil ist ein optionales Extra.** Playwright steht in keiner Requirements-Datei, weil die Testumgebung sonst einen Browser-Download mitzöge. Der Wrapper prüft die Verfügbarkeit beim Import (`pytest.importorskip("playwright")`) und überspringt sich selbst, wenn das Paket fehlt; ein Standardlauf in einer browserlosen Umgebung bleibt dadurch grün. Ist Playwright installiert, läuft der Smoke-Test auch im unmarkierten `pytest tests/` mit, weil `pytest.ini` den Marker nicht ausschließt.
+Der Browserteil ist ein optionales Extra. Playwright steht in keiner Requirements-Datei, weil die Testumgebung sonst einen Browser-Download mitzöge. Der Wrapper prüft die Verfügbarkeit beim Import (`pytest.importorskip("playwright")`) und überspringt sich selbst, wenn das Paket fehlt. Ein Standardlauf in einer browserlosen Umgebung bleibt dadurch grün. Ist Playwright installiert, läuft der Smoke-Test auch im unmarkierten `pytest tests/` mit, weil `pytest.ini` den Marker nicht ausschließt.
 
 Installation des Extras:
 
@@ -486,11 +490,13 @@ pip install playwright
 playwright install chromium
 ```
 
-Ohne das Extra prüft die Suite weiterhin die Pipeline-Artefakte, den Frontend-Kontrakt aus den Daten heraus (test_06, test_33) und über `node --test` die dom-freien Frontend-Funktionen. Ungeprüft bleibt allein, was erst im gerenderten Dokument entsteht, also Tab-Durchlauf, logStamp-Keys, Zeitstrahl- und Karten-Canary sowie die Anker-Titel im DOM.
+Ohne das Extra prüft die Suite weiterhin die Pipeline-Artefakte, den Frontend-Kontrakt aus den Daten heraus (test_06, test_33) und über `node --test` die dom-freien Frontend-Funktionen. Ungeprüft bleibt allein, was erst im gerenderten Dokument entsteht, also Tab-Durchlauf, logStamp-Keys, die Canaries und die Anker-Titel im DOM.
 
 ## DOM-Abgleich der Bestand-Liste (seit 2026-09-01)
 
-`tests/tools/verify_bestand_display.py` schließt die Schicht, die `audit-data.py` offen lässt. Der Audit prüft Quelle gegen JSON-LD gegen `docs/data`; der DOM-Abgleich prüft zusätzlich das tatsächlich gerenderte Dokument. Er lädt die Objekte-CSV über die Pipeline-Loader, das publizierte `docs/data/m3gim.jsonld` und die Bestand-Tabelle headless im Chromium (Modus „Nicht erschlossene einblenden", E-116) und vergleicht pro Einheit Anwesenheit, Titelanzeige (samt der Regel, dass ein Kindtitel gleich dem Konvoluttitel leer erscheint), Undatiert-Markierung, Jahr und Verknüpfungszahl. Die Frontend-Konstanten (ausgeblendete Plakate und Tonträger, Folio-Ausschluss, Konvoluttitel-Ableitung) sind bewusst gespiegelt; driftet das Frontend, schlägt der Abgleich an und der Spiegel wird nachgezogen.
+`tests/tools/verify_bestand_display.py` schließt die Schicht, die `audit-data.py` offen lässt. Der Audit prüft Quelle gegen JSON-LD gegen `docs/data`, der DOM-Abgleich prüft zusätzlich das tatsächlich gerenderte Dokument. Er lädt die Objekte-CSV über die Pipeline-Loader, das publizierte `docs/data/m3gim.jsonld` und die Bestand-Tabelle headless im Chromium und vergleicht pro Einheit Anwesenheit, Titelanzeige (samt der Regel, dass ein Kindtitel gleich dem Konvoluttitel leer erscheint), Undatiert-Markierung, Jahr und Verknüpfungszahl. Die Frontend-Konstanten sind bewusst gespiegelt, und driftet das Frontend, schlägt der Abgleich an und der Spiegel wird nachgezogen.
+
+Der Spiegel ist am Abend des 2026-09-03 auf die ausgelieferte Oberfläche nachgezogen (E-195). Das Werkzeug bediente bis dahin den Umfang-Umschalter der Sidebar, den es seit E-162 und E-165 nicht mehr gibt; es klickt jetzt den Zurücksetzen-Link der Chip-Zeile (`.vs-status__reset`) und erreicht darüber die Grundmenge, weil der Bestands-Default seit E-170 ein gewöhnlicher Filter mit Chip ist.
 
 Der Handlauf schreibt `data/reports/frontend-verification-bestand.md` und endet mit Exit 1 bei Befunden:
 
@@ -519,32 +525,50 @@ Der Kontrakt zwischen beiden Schichten ist die Werteliste `Typ-Rolle.csv`. Ein e
 
 ## JS-Unit-Tests (Node, seit Session 47)
 
-Die JS-Unit-Tests decken die dom-/d3-freien Pure-Functions des Frontends ab. Die
-Sammlung ist seit Session 47 gewachsen; der Stand vom 2026-08-31 umfasst diese
-Dateien unter `tests/frontend/`:
+Die JS-Unit-Tests decken die dom- und d3-freien Funktionen des Frontends ab. Jede Datei steht gegen einen benannten stillen Defekt, also gegen einen Fehler, der kein Symptom zeigt, sondern ein falsches oder leeres Ergebnis liefert. Der Stand vom 2026-09-03 umfasst diese Dateien unter `tests/frontend/`.
 
-- `catalogue-gaps.test.mjs` für `aggregateCatalogueGaps`, jede Erschließungsachse einzeln und die Summe gegen den Gesamtbestand, damit kein Teilbeleg als voller Beleg zählt.
-- `coverage.test.mjs` für die Rechnung hinter der Erschließungsgrad-Angabe an jeder Auswertung.
-- `date-carrier.test.mjs` für die vier Stellen, die die Anwesenheit des Zeitankers `rico:date` und des Datierungsträgers `m3gim-ontology:hasAnnotation` prüfen.
-- `datings.test.mjs` für die vier Zugänge des Stores zu Datierungen, `annotationsOf`, `datingsOf`, `datingsByScope` und `primaryYear`.
-- `event-year-count.test.mjs` für den einen Zählweg datierter Ereignisse, gegen die beiden Stellen, die das Jahr an `primaryYear` vorbei ein zweites Mal bestimmen.
-- `filter-sync.test.mjs` für die Cross-View-Filter-Kopplung (E-117), also die Projektion zwischen geteiltem und View-eigenem Filterzustand und den Loop-Guard gegen die Endlosschleife zwischen `setFacet` und `setFilter`.
-- `gloss.test.mjs` für die Begriffserklärungen, die aus dem Vokabular ins Frontend wandern, samt Trennung der Begriffsschemata.
-- `loader.test.mjs` für die Strecke JSON-LD → `loadArchive()` → Store, mit synthetischer Fixture und Ankern gegen `docs/data`. Anders als die übrigen Module ist dies eine Integrationsstrecke.
-- `network-geometry.test.mjs` für die Geometrie aus [`_network-geometry.js`](../docs/js/views/_network-geometry.js) (E-94), also `classifyRing`, `isMalaniuk`, `isPureComposer`, `derivePersonKategorie`, `nodeEvidence`, `nodeColor`, `computeLayout`, `computeCoOccurrence` und `labelGeometry`.
-- `record-partition.test.mjs` für `partitionRecord`, also den Korb- und Inline-Detail-Pfad.
-- `relation-shape.test.mjs` für beide Bauformen einer AgRelOn-Relation, die gerichtete mit `hasSubject`/`hasObject` und die symmetrische mit `hasSubjectObject` (E-149).
-- `router.test.mjs` für den Legacy-Präfix `m3gim:` im URL-Hash nach der Namensraum-Dreiteilung (E-138).
-- `shared-filter-reach.test.mjs` als lexikalisches Gate, dass jede Sidebar-Sektion `Zeitraum` am geteilten Filterzustand hängt.
-- `statistics-data.test.mjs` für die Dokumenttyp-Aggregation und drei weitere Aggregationen der Statistik-Datenschicht.
-- `typed-dates.test.mjs` für das Rollenregister des Frontends gegen den Datenstand, jede Prüfung durch eine eingespielte Verletzung nachgewiesen.
-- `utils.test.mjs` für `date-parser` und `format`.
-- `verknuepfungen-geometry.test.mjs` für `buildGraph`, `computeLayout` und `nodeId` aus [`_verknuepfungen-geometry.js`](../docs/js/views/_verknuepfungen-geometry.js), gegen einen synthetischen Store.
+Datenschicht und Store:
+
+- `loader.test.mjs` für die Strecke JSON-LD zu `loadArchive()` zu Store, mit synthetischer Fixture und Ankern gegen `docs/data`. Als einzige Datei eine Integrationsstrecke.
+- `datings.test.mjs` für die Zugänge des Stores zu Datierungen, `annotationsOf`, `datingsOf`, `datingsByScope` und `primaryYear`.
 - `year-anchor.test.mjs` für den einen Zeitanker je Record, in jeder Ansicht derselbe (Frontend-Vertrag A4).
+- `date-carrier.test.mjs` für die vier Stellen, die die Anwesenheit von `rico:date` und `m3gim-ontology:hasAnnotation` prüfen.
+- `event-year-count.test.mjs` für den einen Zählweg datierter Ereignisse, gegen jede zweite Jahresbestimmung an `primaryYear` vorbei.
+- `typed-dates.test.mjs` für das Rollenregister des Frontends gegen den Datenstand, jede Prüfung durch eine eingespielte Verletzung nachgewiesen.
+- `relation-shape.test.mjs` für beide Bauformen einer AgRelOn-Relation, die gerichtete und die symmetrische (E-149).
+- `provenance.test.mjs` für `extractXlsxSource`, die eine Stelle, an der das Format der Quellreferenz gelesen wird (E-91).
+- `gloss.test.mjs` für die Begriffserklärungen aus dem Vokabular und die Trennung der Begriffsschemata (E-143).
 
-Die Fixture-Hilfe `_concepts.mjs` stellt synthetischen Fixtures die echten
-Begriffsknoten des Datensatzes voran und verhindert damit eine zweite, im
-Testcode geführte Vokabulartabelle.
+Filter und Dokumentmenge:
+
+- `records-for.test.mjs` für `recordsFor` als einzige Auflösung von Filter zu Dokumentmenge, einschließlich des lexikalischen Gates gegen wiederkehrende Eigenauflösungen in den Views.
+- `multi-facet.test.mjs` dafür, dass mehrere Werte einer Facette als ODER wirken und verschiedene Facetten als UND (E-151).
+- `facet-inventory.test.mjs` für die Deckung der Achsen am ausgelieferten Datensatz, mit Mindestvorkommen statt Nulltoleranz.
+- `doctype-facet.test.mjs` für den Dokumenttyp als Facette, den Oberbegriff über `expandDftFilter` und die Baumgruppen aus `docTypeGroups`.
+- `shared-facets-holdings.test.mjs` für den Schnitt von Bestand und Chronik über `filterBySharedState`, inklusive der Facetten Rolle, Institution und Sicht.
+- `shared-filter-reach.test.mjs` als lexikalisches Gate, dass den Zeitregler genau eine Stelle baut und jede Ansicht am geteilten Zustand hängt.
+- `filter-sync.test.mjs` für die Faltung zwischen Jahresfenster und Zeitfenster-Facette und den Loop-Guard.
+- `filter-url.test.mjs` für Kodierung und Zerlegung des Hash, und `router-hash.test.mjs` für die Gegenrichtung, also was `parseHash` in Router-State und Filter überträgt.
+- `text-match.test.mjs` für den Textabgleich der Facetten-Autovervollständigung mit Umlaut- und Akzentausgleich.
+
+Ansichten:
+
+- `bestand-data.js`-Seite mit `bestand-badge.test.mjs` für den Dokumenttyp-Badge im abgeflachten Modus, `bestand-families.test.mjs` für `familiesForRecord`, die dom-freie Logik hinter der typisierten Erschließungsanzeige (E-158). Eine Sortierung hat die Tabelle seit E-203 nicht mehr, der frühere `bestand-sort.test.mjs` ist mit ihr entfallen.
+- `record-partition.test.mjs` für `partitionRecord`, also den geteilten Pfad von Inline-Detail und Korb, und `detail-foot.test.mjs` für `sourceSummary`.
+- `statistik-data.test.mjs` für die Aggregationen der Statistik und dafür, dass der geteilte Schnitt sie schneidet.
+- `catalogue-gaps.test.mjs` für `aggregateCatalogueGaps`, jede Erschließungsachse einzeln und die Summe gegen den Gesamtbestand.
+- `indizes-data.test.mjs` für Einträge, Suche, Normdaten-Filter und Cross-Grid-Schnitt der Register.
+- `netzwerk-geometry.test.mjs` für das eine reine Modul der zusammengeführten Netzwerk-Ansicht (E-94, E-160), also `buildGraph`, `computeLayout`, `computeCoOccurrence`, `nodeRing`, `nodeEvidence`, `nodeColor`, `nodeId`, `isMalaniuk`, `isPureComposer`, `derivePersonKategorie` und `labelGeometry`, gegen einen synthetischen Store und gegen den ausgelieferten Datenstand.
+
+Rahmen:
+
+- `tabs.test.mjs` für die Tastaturbewegung der Tab-Leiste als reine Funktion und für den Auszeichnungskontrakt der ausgelieferten `docs/index.html`, also `aria-controls`, genau ein `tabindex="0"` und `role="none"` an den Gruppen (E-160).
+- `router.test.mjs` für den Legacy-Präfix `m3gim:` im URL-Hash nach der Namensraum-Dreiteilung (E-138).
+- `basket.test.mjs` für den Korb, seine Spiegelung in den localStorage und das Abmelden seiner Listener.
+- `log-stamp.test.mjs` für den Zustands-Stempel, seine feste Schlüsselreihenfolge und die Unterscheidung zwischen der Null und dem leeren Wert.
+- `utils.test.mjs` für `date-parser` und `format`.
+
+Zwei Hilfsdateien tragen die Fixtures. `_concepts.mjs` stellt synthetischen Fixtures die echten Begriffsknoten des Datensatzes voran und verhindert damit eine zweite, im Testcode geführte Vokabulartabelle. `_shipped.mjs` liefert den ausgelieferten Graphen unter `docs/data/m3gim.jsonld` und den daraus über den echten Loader gebauten Store, also genau das, was der Browser bekommt.
 
 Lauf:
 
@@ -552,6 +576,6 @@ Lauf:
 node --test tests/frontend/*.test.mjs
 ```
 
-Kein npm install, keine build-tools — nutzt `node:test` + `node:assert/strict` builtin (Node 18+). Enabler: `docs/js/package.json` mit `{"type":"module"}` markiert den Baum als ES-Modul fuer Node-seitiges Loading. Browser ignorieren die Dateien.
+Kein npm install und keine Build-Tools, genutzt werden `node:test` und `node:assert/strict` aus Node 18. Die Datei `docs/js/package.json` mit `{"type":"module"}` markiert den Baum als ES-Modul für das Laden in Node, Browser ignorieren sie.
 
-Weitere JS-Views werden *nicht* aehnlich getestet, solange sie DOM- und D3-Aufrufe direkt in der Rendering-Pipeline mischen — der Aufwand waere groesser als der Wert. Getestet wird, was sich sauber von der DOM-Schicht trennen laesst.
+Wo eine Ansicht DOM- und D3-Aufrufe direkt in ihrer Zeichenlogik mischt, wird sie nicht auf diesem Weg geprüft, weil der Aufwand größer wäre als der Wert. Geprüft wird, was sich sauber von der DOM-Schicht trennen lässt, und der Schichtenschnitt der Ansichten hat diese Menge deutlich vergrößert.

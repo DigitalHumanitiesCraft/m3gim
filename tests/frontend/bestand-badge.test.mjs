@@ -4,38 +4,28 @@
  * Der stille Defekt, gegen den diese Datei steht: beim Abflachen der Hierarchie
  * (aktiver Filter) verlor `updateBestandView` das `isChild`-Kennzeichen der
  * Kindzeilen. `renderRows` behandelte sie danach als Standalone-Records, und
- * `isStandaloneKonvolut` liefert fuer jede Signatur ohne `/PL_` und `_TT_` true.
+ * `isStandaloneKonvolut` liefert fuer jeden Top-Level-Sammelrecord true.
  * Damit trugen die Rezensionen eines Konvoluts (NIM_004) in der Trefferliste den
  * Badge "Konvolut" statt "Rezension".
  *
  * `flattenForFilter` erhaelt das Kennzeichen, `badgeKindForItem` entscheidet den
- * Badge rein aus dem Item — beides ohne DOM, damit die Entscheidung pruefbar
- * bleibt.
+ * Badge rein aus dem Item — beides in bestand-data.js und ohne DOM, damit die
+ * Entscheidung pruefbar bleibt.
  *
  * Lauf: node --test tests/frontend/bestand-badge.test.mjs
  */
 
-import { test, describe, before } from 'node:test';
+import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
 
-// archive-holdings.js pulls in ui/events.js, which registers a window listener
-// at module scope. The stub keeps the import viable under Node without touching
-// the view; the module loads only after the stub is in place.
-globalThis.window = globalThis.window || {
-  addEventListener() {}, removeEventListener() {}, dispatchEvent() {},
-};
-let flattenForFilter;
-let badgeKindForItem;
-before(async () => {
-  ({ flattenForFilter, badgeKindForItem } = await import('../../docs/js/views/archive-holdings.js'));
-});
+import {
+  flattenForFilter, badgeKindForItem, isStandaloneKonvolut,
+} from '../../docs/js/views/bestand-data.js';
+import { konvolutStandTip } from '../../docs/js/views/bestand-rows.js';
 
-// isStandaloneKonvolut-Ersatz mit derselben Regel wie im View: eine Signatur
-// mit /PL_ oder _TT_ ist ein Einzelstueck, alles andere ein Top-Level-Konvolut.
-const isStandaloneKonvolut = (r) => {
-  const sig = r['rico:identifier'] || '';
-  return !(sig.includes('/PL_') || sig.includes('_TT_'));
-};
+// Sammeleinheit wie im Datensatz (E-168): die Pipeline setzt das Merkmal an
+// Top-Level-Records des Hauptbestands, Plakate und Tontraeger tragen es nicht.
+const AGG = 'm3gim-ontology:unresolvedAggregate';
 
 describe('flattenForFilter erhaelt das Kind-Kennzeichen', () => {
   const items = [
@@ -77,7 +67,7 @@ describe('badgeKindForItem trifft den echten Dokumenttyp', () => {
   });
 
   test('ein echter Top-Level-Sammelrecord bleibt Standalone-Konvolut', () => {
-    const item = { record: { '@id': 'r1', 'rico:identifier': 'UAKUG/NIM_010' } };
+    const item = { record: { '@id': 'r1', 'rico:identifier': 'UAKUG/NIM_010', [AGG]: true } };
     assert.equal(badgeKindForItem(item, item.record, '', isStandaloneKonvolut), 'standalone-konvolut');
   });
 
@@ -90,4 +80,12 @@ describe('badgeKindForItem trifft den echten Dokumenttyp', () => {
     const item = { record: { '@id': 'k1' }, isKonvolut: true };
     assert.equal(badgeKindForItem(item, item.record, '', isStandaloneKonvolut), 'konvolut-struct');
   });
+});
+
+test('der Kopf-Tooltip traegt auch einen gemischten Erschliessungsstand', () => {
+  const meta = { statusCounts: new Map([
+    ['abgeschlossen', 20], ['begonnen', 9], ['zurueckgestellt', 1],
+  ]) };
+  assert.equal(konvolutStandTip(meta),
+    'Erschließungsstand: 20 abgeschlossen · 9 begonnen · 1 zurückgestellt');
 });

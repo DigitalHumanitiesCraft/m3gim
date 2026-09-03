@@ -7,7 +7,7 @@ status: reviewed
 language: de
 version: 0.4
 created: 2026-02-19
-updated: 2026-08-21
+updated: 2026-09-03
 authors: [Christopher Pollin]
 generated-with: Claude Code
 method:
@@ -188,15 +188,15 @@ Schema je Use Case: **FF-Bezug · Frage · benötigte Daten · UI-Baustein (Stan
 
 - **Frage:** Räumlich-zeitliches Bewegungsprofil über die Karriere.
 - **Daten:** SpatiotemporalEvents mit `atPlace`/`placeCountry`/`atDate`; Records mit `rico:date`.
-- **UI (Stand):** Chronik als temporale Achse (E-124: Sicht-gefärbter Jahres-Zeitstrahl plus kollabierbarer Dekaden-Sicht-Header), Karte als räumliche Achse (entitätszentriert, E-126), Statistik „Wohin & Wann" als Aggregat.
-- **Deckung:** Die Masse des datierten Materials klumpt in den 1950ern; nur wenige Lebensdekaden sind überhaupt belegt. Die Chronik ist damit ehrlich eine Erschließungs-Momentaufnahme der München-/Bayreuth-Jahre, kein Karriere-Bogen über die Lebensspanne. Dichte = Überlieferung, nicht Aktivität; der Hinweis liegt nach der Erklärtext-Regel (E-156, [design.md](design.md) Regel 11) im Tooltip statt als sichtbare Caption.
+- **UI (Stand):** Chronik als temporale Achse (E-124: Sicht-gefärbter Jahres-Zeitstrahl plus kollabierbarer Dekaden-Sicht-Header), Karte als räumliche Achse (entitätszentriert, E-126) mit der Länder-Reichweite in der Sidebar.
+- **Deckung:** Die Masse des datierten Materials klumpt in den 1950ern; nur wenige Lebensdekaden sind überhaupt belegt. Die Chronik ist damit ehrlich eine Erschließungs-Momentaufnahme der München-/Bayreuth-Jahre, kein Karriere-Bogen über die Lebensspanne. Dichte = Überlieferung, nicht Aktivität; der Hinweis liegt nach der Erklärtext-Regel (E-156, [design.md](design.md) Regel 8) im Tooltip statt als sichtbare Caption.
 - **Offen:** Ort×Zeit und Karte noch nicht gekoppelt; der Cross-View-Filter würde Chronik, Karte und Statistik auf denselben Schnitt bringen.
 
 ### UC-2 — Welche Art von Mobilität? Gastspiel vs. Engagement vs. Reise (FF1/FF4)
 
 - **Frage:** Auftrittsformen differenziert sehen (Partnerfrage „alle Gastspiele").
 - **Daten:** `eventRole` (gastspiel/aufführung/spielzeit …), gruppiert zu den Sichten performativ, institutionell, Reise und Korrespondenz, biografisch, diskursiv (`mobilityClusterFor`).
-- **UI (Stand):** Statistik „Art der Mobilität" (Sichten plus feine Auftrittstypen), Chronik (Sicht als linker Akzentbalken am Record-Chip, E-124).
+- **UI (Stand):** Chronik (Sicht als linker Akzentbalken am Record-Chip, E-124) und Karte (Sichtanteile je Ort). Die Statistik führt seit E-160 keine Mobilitätsansicht mehr.
 - **Deckung:** `gastspiel` als eigene Rolle sichtbar. Aber nur ein Teil der Chronik-Chips trägt überhaupt eine Sicht (der Rest hat kein SpatiotemporalEvent); die sicht-losen Chips bleiben monochrom, die Monochromie ist die ehrliche Aussage „keine Sicht erschlossen". `biografisch`/`diskursiv` sind faktisch leer; eine Legende, die alle Sichten gleichberechtigt zeigt, täuscht Ausgewogenheit vor. `korrespondenz`-Dominanz teils ein E-110-Mapping-Artefakt (datumslose Ortsrollen).
 - **Offen:** Ensemble-/Institutions-Zuordnung pro Ereignis nicht erfasst, Gastspiel daher nicht nach Ensemble auswertbar (Datenstufe, siehe [specification.md](specification.md) § Stand und nächste Schritte).
 
@@ -204,7 +204,7 @@ Schema je Use Case: **FF-Bezug · Frage · benötigte Daten · UI-Baustein (Stan
 
 - **Frage:** Geografische Reichweite und Schwerpunktverschiebung über die Zeit.
 - **Daten:** `placeCountry`/`atPlace` (Q-IDs) über Events; Records mit Ort und `rico:date`.
-- **UI (Stand):** Statistik „Wohin & Wann" → Reichweite (Länder); Chronik → Top-Orte je Dekade über Q-ID (E-124, Ort-Label aus aufgelöstem Q-ID, nicht rohem `.name`).
+- **UI (Stand):** Karte → Länder-Reichweite als klickbare Liste; Chronik → Top-Orte je Dekade über Q-ID (E-124, Ort-Label aus aufgelöstem Q-ID, nicht rohem `.name`).
 - **Deckung:** Orte sind upstream zu Wikidata-Q-IDs rekonziliert (Doppel-Anker Wikidata plus Archiv); ein kleiner unrekonzilierter Rest (Orts-Casing-Varianten, Partner-Übergabeliste) bleibt. Schwerpunktwechsel stützt sich auf die breiten 1950er; die spätere Basis ist zu dünn für eine belastbare Verschiebungs-Aussage.
 - **Offen:** Land×Zeit als eigener Schnitt; Institution pro Ereignis fehlt (siehe UC-2).
 
@@ -212,7 +212,7 @@ Schema je Use Case: **FF-Bezug · Frage · benötigte Daten · UI-Baustein (Stan
 
 - **Frage:** Beziehungsgeflecht und prägende Kontakte.
 - **Daten:** AgRelOn-Relationen (Typ plus benannter Partner).
-- **UI (Stand):** Statistik „Mit wem" (Typ-Donut ↔ benannte Partner mit Typ-Drill), Netzwerk-Tab.
+- **UI (Stand):** Netzwerk (Fokus-Entität, Beziehungen als gerade Linien, Ko-Okkurrenz als geschwungene), Beziehungsblock im Detail, Statistik „Personen" und „Institutionen".
 - **Deckung:** dünn, wenige Relationen mit benanntem Gegenüber; Normalisierungs-Dubletten der Partnernamen (Partner-Übergabeliste).
 - **Offen:** Verknüpfung Beziehung↔Ereignis/Ort fehlt; reichere Variante wäre Ko-Okkurrenz (erschlossenes Umfeldnetz, klar zu etikettieren). Keine belastbare zeitliche Achse (Relationen sind record-, nicht ereignisbasiert), daher nicht in die Chronik gezogen.
 
@@ -220,14 +220,14 @@ Schema je Use Case: **FF-Bezug · Frage · benötigte Daten · UI-Baustein (Stan
 
 - **Frage:** Künstlerische Mobilität, Werke und Partien über Orte und Zeit.
 - **Daten:** Werke (`komponist`), Performances/StageRoles, Records mit Werk- und Ortsbezug.
-- **UI (Stand):** Statistik „Repertoire" (Top-Komponisten), flach. In der Chronik nur als Begleitspur am Chip denkbar, keine eigene Achse.
+- **UI (Stand):** Statistik „Repertoire" (Werke, Bühnenrollen, Komponisten), Netzwerk mit Werk als Fokus. In der Chronik nur als Begleitspur am Chip denkbar, keine eigene Achse.
 - **Offen:** Performances tragen fast nie ein eigenes Datum (sie erben das Record-Datum und damit den 1950er-Klumpen); als eigenständige zeitliche Entwicklungs-Frage trägt UC-5 kaum. Werk×Ort/Werk×Partie am Ereignis nicht verknüpft (Datenstufe).
 
 ### UC-6 — Wo und wann entstand welches Wissen? (FF3)
 
 - **Frage:** Rezeption/Wissensproduktion (Rezensionen, Rundfunk, Druck) verorten.
 - **Daten:** diskursive Sicht plus Dokumenttypen.
-- **UI (Stand):** „Art der Mobilität" (diskursive Sicht) plus „Dokumenttypen".
+- **UI (Stand):** Statistik „Dokumenttypen" und Dokumenttyp-Facette (Presse als DFT-Gruppe), Chronik mit diskursiver Sicht als Akzent.
 - **Offen:** Die diskursive Sicht ist datenseitig sehr dünn; ein eigener diskursiver Schnitt lohnt erst mit mehr Erschließung. *(ausarbeiten)*
 
 *(ausarbeiten: weitere UCs der Personas P2/P3, z. B. „Erschließungslücken finden", „Datenqualität prüfen".)*

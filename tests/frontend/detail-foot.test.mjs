@@ -1,5 +1,5 @@
 /**
- * Unit-Tests fuer sourceSummary() aus docs/js/views/archive-inline-detail.js.
+ * Unit-Tests fuer sourceSummary() aus docs/js/views/record-detail.js.
  *
  * Lauf:
  *   node --test tests/frontend/detail-foot.test.mjs
@@ -14,7 +14,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { sourceSummary } from '../../docs/js/views/archive-inline-detail.js';
+import { sourceSummary } from '../../docs/js/views/record-detail-data.js';
 import { storeFromShipped } from './_shipped.mjs';
 
 /** xlsxSource-Subobjekt, wie die Pipeline es an einen JSON-LD-Knoten schreibt. */

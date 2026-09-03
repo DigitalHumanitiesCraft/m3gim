@@ -22,7 +22,7 @@ body {
   font-weight: var(--weight-normal);
   line-height: var(--leading-normal);
   color: var(--color-text-primary);
-  background-color: var(--color-paper);
+  background-color: var(--surface);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -39,7 +39,7 @@ h3 { font-size: var(--text-xl); font-weight: var(--weight-semibold); }
 h4 { font-size: var(--text-lg); font-weight: var(--weight-medium); }
 
 a {
-  color: var(--color-kug-blau);
+  color: var(--accent);
   text-decoration: none;
 }
 
@@ -52,65 +52,138 @@ code, .mono {
   font-size: 0.9em;
 }
 
-/* App Shell */
-.app-header {
-  background: var(--color-kug-blau);
-  color: var(--color-text-inverse);
-  height: var(--header-height);
-  display: flex;
-  align-items: center;
-  padding: 0 var(--space-6);
-  gap: var(--space-6);
-  flex-shrink: 0;
-}
-
-.app-header__title,
-.app-header__brand {
-  font-family: var(--font-title);
-  font-size: var(--text-xl);
-  font-weight: var(--weight-semibold);
-  white-space: nowrap;
-  color: var(--color-text-inverse);
-  text-decoration: none;
-}
-
-.app-header__brand:hover {
-  text-decoration: none;
-  opacity: 0.9;
-}
-
-.app-header__subtitle {
-  font-size: var(--text-sm);
+/* A placeholder is a hint, not content: a step down in weight, size and tone.
+   The opacity is stated rather than inherited, because Firefox dims the
+   placeholder on its own and would compound the two. */
+input::placeholder,
+textarea::placeholder {
+  color: var(--color-text-tertiary);
+  font-weight: var(--weight-normal);
+  font-size: 0.92em;
   opacity: 0.8;
 }
 
-.app-header__spacer {
-  flex: 1;
-}
-
-.app-header__nav {
+/* App Shell — one full-width KUG-Blau band carrying brand, tabs and info links
+   (project lead, 2026-09-03, late evening). The info pages show the same band
+   without the tabs. */
+.topbar {
+  --topbar-pad: var(--space-6);
   display: flex;
-  gap: var(--space-4);
+  align-items: center;
+  gap: var(--space-3);
+  height: var(--brand-band-height);
+  padding: 0 var(--topbar-pad);
+  background: var(--accent);
+  border-bottom: 1px solid var(--line);
+  flex-shrink: 0;
 }
 
-.app-header__nav a {
+.topbar__lead {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex: 0 0 auto;
+}
+
+/* App page: the tabs share the band with brand and info links. The lead takes
+   the sidebar column width less the bar's own inline padding, so the first tab
+   starts on the work area's left edge and the tab row lines up with the table
+   below it. The doubled class outranks the narrow-width gap rule further down,
+   whose gap would push that first tab past the edge. */
+.topbar.topbar--app {
+  gap: 0;
+}
+
+.topbar--app .topbar__lead {
+  flex: 0 0 calc(var(--view-sidebar-w) - var(--topbar-pad));
+  min-inline-size: 0;
+}
+
+/* Full band height, so the active tab's underline sits on the band's edge. */
+.topbar--app .tab-bar {
+  align-self: stretch;
+}
+
+.topbar__brand {
+  display: flex;
+  align-items: center;
+  font-family: var(--font-title);
+  font-size: var(--text-xl);
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.02em;
   color: var(--color-text-inverse);
-  opacity: 0.75;
+  white-space: nowrap;
+}
+
+.topbar__brand:hover {
+  color: var(--accent-soft);
+  text-decoration: none;
+}
+
+/* Only the info pages show the subtitle; in the app it is the brand tooltip. */
+.topbar__subtitle {
+  display: flex;
+  align-items: center;
   font-size: var(--text-sm);
+  color: var(--accent-soft);
+  white-space: nowrap;
+}
+
+.topbar__badge {
+  align-self: center;
+  padding: 2px 8px;
+  font-size: 0.65rem;
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border-radius: 10px;
+  white-space: nowrap;
+  transition: background var(--transition-fast);
+}
+
+.topbar__badge:hover {
+  background: var(--surface);
+  text-decoration: none;
+}
+
+/* Info links sit right, at the tab label size but lighter and in the band's
+   pale white, so they read as a second rank rather than a fourth tab group. */
+.topbar__info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-inline-start: auto;
+  padding-inline-start: var(--space-4);
+  flex-shrink: 0;
+}
+
+.topbar__info a {
+  font-size: var(--text-sm);
+  color: var(--accent-soft);
+  transition: color var(--transition-fast);
+}
+
+.topbar__info a:hover {
+  color: var(--color-text-inverse);
+  text-decoration: none;
+}
+
+.topbar__info a[aria-current="page"] {
+  color: var(--color-text-inverse);
   font-weight: var(--weight-medium);
-  text-decoration: none;
-  transition: opacity var(--transition-fast);
 }
 
-.app-header__nav a:hover {
-  opacity: 1;
-  text-decoration: none;
-}
-
-.app-header__nav a.active {
-  opacity: 1;
-  border-bottom: 2px solid var(--color-text-inverse);
-  padding-bottom: 2px;
+/* Names the app for a screen reader without taking a line of the two-row bar;
+   the visible name is the brand, which is a link and cannot be the heading. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 #main-content {
@@ -120,7 +193,7 @@ code, .mono {
 }
 
 .app-footer {
-  background: var(--color-cream);
+  background: var(--surface-2);
   border-top: 1px solid var(--border-color);
   height: var(--footer-height);
   display: flex;
@@ -134,29 +207,6 @@ code, .mono {
 
 .app-footer a {
   color: var(--color-text-secondary);
-}
-
-/* Research Preview Badge (in header) */
-.app-header__badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 2px 10px;
-  font-size: 0.65rem;
-  font-weight: var(--weight-semibold);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.75);
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 10px;
-  text-decoration: none;
-  white-space: nowrap;
-  transition: background var(--transition-fast);
-}
-
-.app-header__badge:hover {
-  background: rgba(255, 255, 255, 0.25);
-  text-decoration: none;
 }
 
 /* Tab Content Sections — absolute fill so height: 100% resolves reliably */
@@ -178,11 +228,11 @@ code, .mono {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--color-cream);
+  background: var(--surface-2);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-sand);
+  background: var(--line-strong);
   border-radius: 4px;
 }
 
@@ -190,63 +240,73 @@ code, .mono {
   background: var(--color-text-tertiary);
 }
 
-/* Focus — keyboard accessibility */
+/* Focus — keyboard accessibility. The universal rule already covers buttons and
+   links; the link only adds a rounded outline. */
 :focus-visible {
-  outline: 2px solid var(--color-kug-blau);
-  outline-offset: 2px;
-}
-
-button:focus-visible {
-  outline: 2px solid var(--color-kug-blau);
+  outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 
 a:focus-visible {
-  outline: 2px solid var(--color-kug-blau);
-  outline-offset: 2px;
   border-radius: 2px;
 }
 
 /* Selection */
 ::selection {
-  background: var(--color-gold-light);
+  background: var(--accent-soft);
   color: var(--color-text-primary);
 }
 
 /* ---- Responsive ---- */
 
-@media (max-width: 768px) {
-  .app-header {
-    padding: 0 var(--space-3);
-    gap: var(--space-3);
-  }
-
-  .app-header__subtitle {
-    display: none;
-  }
-
-  .app-header__badge {
-    display: none;
-  }
-
-  .app-header__nav {
+/* Order of collapse: the badge and the info links go compact first, the tab
+   labels fall back to their icons only below 900px (tabs.css). */
+@media (max-width: 1199px) {
+  .topbar {
+    --topbar-pad: var(--space-3);
     gap: var(--space-2);
-    font-size: var(--text-xs);
   }
 
-  .tab-bar__tab {
-    padding: 0 var(--space-3);
-    font-size: var(--text-xs);
+  .topbar__badge {
+    display: none;
   }
 
-  .tab-bar__tab svg {
-    width: 14px;
-    height: 14px;
+  .topbar__info {
+    gap: var(--space-3);
+    padding-inline-start: var(--space-3);
+  }
+}
+
+@media (max-width: 899px) {
+  .topbar__subtitle {
+    display: none;
   }
 
+  /* Too narrow for the sidebar alignment: the lead falls back to its own width
+     and the band's gap holds brand and tabs apart again. */
+  .topbar.topbar--app {
+    gap: var(--space-2);
+  }
+
+  .topbar--app .topbar__lead {
+    flex-basis: auto;
+  }
+
+  .topbar__brand {
+    font-size: var(--text-lg);
+  }
+}
+
+@media (max-width: 768px) {
   .app-footer {
     gap: var(--space-2);
     font-size: var(--text-xs);
     padding: 0 var(--space-3);
   }
+}
+
+/* Print: the chrome contributes nothing on paper. */
+@media print {
+  .topbar,
+  .app-footer { display: none; }
 }

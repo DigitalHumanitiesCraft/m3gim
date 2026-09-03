@@ -40,23 +40,15 @@ export const PERSONEN_KATEGORIEN = {
 };
 
 // =========================================================================
-// Place colour coding — recurring places carry a constant colour across all
-// views (recognition, design.md § Ortsfarbcodierung). Values live as
-// --color-ort-* tokens in variables.css. Unlisted places return null, the
-// caller then picks its own default.
+// Place colour coding, retired by the palette decision of 2026-09-03: a place
+// is no longer a colour axis, the accent alone carries emphasis. The function
+// survives as the neutral fallback its callers already handle, until the last
+// call site (chronik.js) drops it.
 // =========================================================================
 
-const ORT_COLOR = {
-  'Wien':     'var(--color-ort-wien)',
-  'Graz':     'var(--color-ort-graz)',
-  'München':  'var(--color-ort-muenchen)',
-  'Bayreuth': 'var(--color-ort-bayreuth)',
-  'Salzburg': 'var(--color-ort-salzburg)',
-};
-
-/** Constant colour of a recurring place, else null. */
-export function ortColor(name) {
-  return ORT_COLOR[name] || null;
+/** Always null since the place colour coding was retired. */
+export function ortColor() {
+  return null;
 }
 
 // Normalize variant person names to canonical form
@@ -124,19 +116,24 @@ export const KOMPONISTEN_NAMEN = new Set([
 // Wikidata Icon (simplified barcode logo, inline SVG)
 // =========================================================================
 
-export const WIKIDATA_ICON_SVG = '<svg width="12" height="12" viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="1" width="1" height="10" fill="#990000"/><rect x="2" y="1" width="1" height="10" fill="#990000"/><rect x="4" y="1" width="1" height="10" fill="#339966"/><rect x="5.5" y="1" width="1" height="10" fill="#339966"/><rect x="7.5" y="1" width="1" height="10" fill="#006699"/><rect x="9" y="1" width="1" height="10" fill="#006699"/><rect x="10.5" y="1" width="1" height="10" fill="#006699"/></svg>';
+// Monochrome since the palette decision of 2026-09-03: the bars take
+// currentColor, which the badge sets to the one match green (--color-match).
+export const WIKIDATA_ICON_SVG = '<svg width="12" height="12" viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><rect x="0.5" y="1" width="1" height="10"/><rect x="2" y="1" width="1" height="10"/><rect x="4" y="1" width="1" height="10"/><rect x="5.5" y="1" width="1" height="10"/><rect x="7.5" y="1" width="1" height="10"/><rect x="9" y="1" width="1" height="10"/><rect x="10.5" y="1" width="1" height="10"/></svg>';
 
 // =========================================================================
-// Lesezeichen-Icon (Wissenskorb)
+// Basket icon (Korb)
 // =========================================================================
 
 /**
- * Inline SVG for Korb buttons; unifies the previously inline-duplicated
- * bookmark paths. size: 12 (index detail) | 14 (Bestand/inline detail).
- * filled = record is in the Korb.
+ * Inline SVG for Korb buttons, the same tray as the Korb tab in index.html
+ * (source of truth for that markup). size: 12 (index detail) | 14 (Bestand/
+ * inline detail) | 16 (record detail). filled = record is in the Korb.
+ *
+ * Only the tray body carries the fill; the front line stays a stroked
+ * polyline, which a fill would turn into an unreadable filled wedge.
  */
-export function bookmarkIcon(size = 14, filled = false) {
-  return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="${filled ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>`;
+export function korbIcon(size = 14, filled = false) {
+  return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path fill="${filled ? 'currentColor' : 'none'}" d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>`;
 }
 
 // Document type labels come from the data now: the pipeline writes
@@ -148,7 +145,7 @@ export function bookmarkIcon(size = 14, filled = false) {
 // Language codes (ISO 639-1) -> readable German labels
 // =========================================================================
 
-export const LANGUAGE_LABELS = {
+const LANGUAGE_LABELS = {
   'de': 'Deutsch',
   'en': 'Englisch',
   'fr': 'Französisch',
@@ -265,7 +262,7 @@ export const ROLE_CLUSTER = {
   'AGENT':            'person',
   'VERMITTLER':       'person',
   // Person roles added from the deeper export (meeting 2026-06-23).
-  // 'maskenbidner' is the passed-through typo form from the source (data.md § 5).
+  // 'maskenbidner' is the passed-through typo form from the source (data.md § Rollenvokabular).
   'LEITUNG':          'person',
   'MASKENBIDNER':     'person',
   'ADRESSAT':         'person',
@@ -306,8 +303,9 @@ export const ROLE_CLUSTER = {
 
   // === PENDING: new data state Lane 1 (G1/G2/G3/G8). Activate after promote +
   // Lane-1 confirmation of the role names; see architecture.md
-  // § Erweiterung fuer den neuen Datenstand.
-  // Unmapped falls to 'neutral' (grey) -- no crash, but design rule 3 breaks.
+  // § Erweiterung fuer den neuen Datenstand. The commented lines are not inert:
+  // tests/test_15_vocab_coverage.py reads this block as text, so a role listed
+  // here counts as mapped and is kept out of the 'neutral' finding.
   // 'EMPFANGSORT':       'ort',          // G1
   // 'VERTRAGSORT':       'ort',          // G1
   // 'BELEUCHTER':        'person',       // G2 Crew
@@ -331,7 +329,7 @@ export function roleClusterFor(prefix) {
 // =========================================================================
 // Mobilitaetssichten (Session 36, M3): `m3gim:eventRole` on STE events +
 // date roles grouped by the five mobility types from
-// `research-framework.md § Mobilitaetstypen` and `data-model.md § 10`.
+// `research-framework.md § Mobilitaetstypen` and `data-model.md § Mobilitätsmodell`.
 // Orthogonal to ROLE_CLUSTER (there: chip colour per role category);
 // here: thematic cluster per mobility Sicht.
 // =========================================================================
@@ -378,12 +376,12 @@ export const EVENT_ROLE_TO_MOBILITY_CLUSTER = {
   'erwähnt':           null,
   'erwaehnt':          null,
 
-  // Needs clarification: not attested in data.md § 5 as a mobility role
+  // Needs clarification: not attested in data.md § Rollenvokabular as a mobility role
   // -- deliberately null rather than arbitrarily classified.
   // TODO M3.5 review (Session 36): clarify with the Erschliessungsteam.
   'auftrag':           null,  // work/contract/appearance commission? Unclear.
   'entstehung':        null,  // work or document creation? Unclear.
-  // Finance role (data.md § 5 Finanzrollen) -- does not belong in mobility
+  // Finance role (data.md § Rollenvokabular, Finanzrollen) -- does not belong in mobility
   // Sichten. Marked explicitly as non-mobility here for the test; display goes
   // via the finance cluster.
   'ueberweisung':      null,
@@ -393,9 +391,9 @@ export const EVENT_ROLE_TO_MOBILITY_CLUSTER = {
   // Assigned to the 'korrespondenz' cluster (bundles travel + correspondence,
   // see above) per data.md § Ortsrollen: zielort/abreiseort = travel mobility,
   // empfangsort = correspondence mobility, absendeort = both, vertragsort =
-  // mobility place role of the travel/correspondence trace (§ 10).
+  // mobility place role of the travel/correspondence trace (data-model.md § Mobilitätsmodell).
   // Datelessness is the normal case here, not a defect: the Sicht assignment
-  // goes via the role, not via a date (no date is guessed, § 8 Konfidenz).
+  // goes via the role, not via a date (no date is guessed, data-model.md § Meta-Statement-Modell).
   // Decision E-110, order-m3gim 2026-06-21 point 1.
   'zielort':           'korrespondenz',
   'absendeort':        'korrespondenz',
@@ -477,54 +475,12 @@ export const ROLE_TO_SECTION = {
   // Erwaehnt
   'erwähnt':           'erwaehnt',
   'erwaehnt':          'erwaehnt',
-
-  // === PENDING: new data state Lane 1 (G2/G8). Activate after promote +
-  // Lane-1 confirmation; see architecture.md § Erweiterung fuer den neuen
-  // Datenstand. Otherwise these roles land in the default "Weitere" bucket
-  // instead of Produktion/Erwaehnt.
-  // 'beleuchter':        'produktion',  // G2
-  // 'maskenbildner':     'produktion',  // G2
-  // 'repetitor':         'produktion',  // G2
-  // 'regieassistent':    'produktion',  // G2
-  // 'fotograf':          'produktion',  // G2
-  // 'publikum':          'erwaehnt',    // G8
-  // 'abgebildet':        'erwaehnt',    // G8
 };
 
 export function sectionForRole(role) {
   if (!role) return null;
   return ROLE_TO_SECTION[String(role).trim().toLowerCase()] || null;
 }
-
-// =========================================================================
-// STE chip prefix: map date roles to event/place roles.
-// The pipeline emits m3gim:eventRole in the STE with the date property from
-// the XLSX (e.g. "auffuehrungsdatum"). In the place-and-event chip
-// (Ort · Datum) a place/event role reads more coherently.
-// =========================================================================
-
-export const STE_ROLE_DISPLAY = {
-  absendedatum:       'ABSENDEORT',
-  empfangsdatum:      'EMPFANGSORT',
-  erscheinungsdatum:  'ERSCHEINUNGSORT',
-  ausstellungsdatum:  'AUSSTELLUNGSORT',
-  abreisedatum:       'ABREISEORT',
-  auffuehrungsdatum:  'AUFFÜHRUNG',
-  auftrittsdatum:     'AUFTRITT',
-  premieredatum:      'PREMIERE',
-  probendatum:        'PROBE',
-  probenbeginn:       'PROBENBEGINN',
-  ausstrahlungsdatum: 'AUSSTRAHLUNG',
-  ueberweisungsdatum: 'ÜBERWEISUNG',
-  gespraechsdatum:    'GESPRÄCH',
-};
-
-export function steChipPrefix(eventRole) {
-  if (!eventRole) return 'EREIGNIS';
-  const key = String(eventRole).trim().toLowerCase();
-  return STE_ROLE_DISPLAY[key] || String(eventRole).toUpperCase();
-}
-
 // =========================================================================
 // Annotation roles of the merged model.
 //
@@ -574,7 +530,7 @@ export const ANCHORING_SCOPES = new Set([DATING_SCOPE.object, DATING_SCOPE.attes
  * The one role slot that is not a vocabulary term. The contract status
  * `nicht eingehalten` sits in the role column of the source, and the vocabulary
  * deliberately does not list it as a role term because its modelling is open
- * with the Erschliessungsteam (data-model.md § 11). Until then this entry keeps
+ * with the Erschliessungsteam (data-model.md § Finanzschicht). Until then this entry keeps
  * it readable and at the same time out of the Zeitanker. It falls away with the
  * decision.
  */
@@ -589,7 +545,7 @@ export const LITERAL_ROLE_SCOPE = Object.freeze({
  * are taken unchanged from EVENT_ROLE_TO_MOBILITY_CLUSTER; `null` means, as
  * there, explicitly "no Sicht" and not "not entered".
  */
-export const ANNOTATION_ROLE_CLUSTER = {
+const ANNOTATION_ROLE_CLUSTER = {
   'm3gim-vocab:performance':          'performativ',
   'm3gim-vocab:guestPerformance':     'performativ',
   'm3gim-vocab:premiere':             'performativ',
@@ -630,20 +586,24 @@ export const ANNOTATION_ROLE_CLUSTER = {
 
 
 // =========================================================================
-// Content families of a record (E-158). One family per functional block of
-// the inline detail; the Bestand table paints one Erschliessungs-Punkt per
-// family in the same colour the detail uses for the block title and its chips,
-// so the legend arises from proximity instead of text (design.md rule 2/11).
-// Family keys equal the .chip--c-<key> colour tokens.
+// Content families of a record (E-158). Since the decision of the project lead
+// of 2026-09-03 the families are the four entity types of the model; the
+// Bestand table paints one Erschliessungs-Punkt per family in the same colour
+// the detail uses for the block title, so the legend arises from proximity
+// instead of text (design.md rule 2/11).
+//
+// Beziehungen joins person, because roughly one in a thousand records carries a
+// relation without a person. Genannte Daten and Finanzen carry no family:
+// familyOfBlock returns 'neutral' for them and their block title stays without
+// a dot. The labels are one word each, because they are read as a legend; the
+// block titles in the detail may be longer.
 // =========================================================================
 
 export const CONTENT_FAMILIES = Object.freeze([
-  { key: 'person',    label: 'Personen',           blocks: ['produktion', 'mitwirkende', 'erwaehnt', 'weitere'] },
-  { key: 'rolle',     label: 'Werk & Repertoire',  blocks: ['werk'] },
-  { key: 'ort',       label: 'Ort & Aufführung',   blocks: ['auffuehrungen', 'ort'] },
-  { key: 'datum',     label: 'Genannte Daten',     blocks: ['genannte-daten'] },
-  { key: 'beziehung', label: 'Beziehungen',        blocks: ['beziehungen'] },
-  { key: 'finanz',    label: 'Finanzen',           blocks: ['finanzen'] },
+  { key: 'person',      label: 'Personen',      blocks: ['produktion', 'mitwirkende', 'erwaehnt', 'weitere', 'beziehungen'] },
+  { key: 'institution', label: 'Institutionen', blocks: ['institutionen'] },
+  { key: 'ort',         label: 'Orte',          blocks: ['auffuehrungen', 'ort'] },
+  { key: 'werk',        label: 'Werke',         blocks: ['werk'] },
 ]);
 
 /** Family key of a detail block key, or 'neutral' when the block has none. */

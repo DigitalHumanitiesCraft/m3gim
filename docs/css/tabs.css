@@ -1,0 +1,134 @@
+/* M³GIM Tab Bar — the tabs inside the single KUG-Blau band, grouped into
+ * Material, Perspektiven and Werkzeug (E-160). Ground, height and the hairline
+ * below belong to .topbar in base.css; on that ground the tabs are pale white
+ * and the active one goes to full white with a white underline.
+ *
+ * The groups are set apart by spacing plus a short vertical hairline. A visible
+ * group label would put three permanently readable words of explanation into
+ * the navigation, which Regel 8 rules out, and the single band has no second
+ * line to carry it. Spacing alone leaves the boundary ambiguous at eight tabs of
+ * differing width, so the hairline stands where the eye would otherwise not
+ * hold the blocks apart (Regel 11, which bars horizontal rules; the bar keeps
+ * its single bottom hairline).
+ */
+
+.tab-bar {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  /* Takes the free middle of the bar, so the info links end up on the right
+     without a spacer element. */
+  flex: 1 1 auto;
+  min-width: 0;
+  /* Contains its own sideways overflow so the page never scrolls sideways. */
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+}
+
+.tab-bar__group {
+  display: flex;
+  align-items: stretch;
+  flex-shrink: 0;
+  padding: 0 var(--space-3);
+}
+
+.tab-bar__group:first-child { padding-left: 0; }
+.tab-bar__group:last-child { padding-right: 0; }
+
+/* Group boundary: hairline between two groups, drawn short and centred so it
+   reads as a separator, not as a frame. */
+.tab-bar__group + .tab-bar__group {
+  position: relative;
+}
+
+.tab-bar__group + .tab-bar__group::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: 0;
+  top: 50%;
+  block-size: 18px;
+  border-inline-start: 1px solid color-mix(in oklch, var(--color-text-inverse) 30%, transparent);
+  transform: translateY(-50%);
+}
+
+.tab-bar__tab {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0 var(--space-4);
+  font-family: var(--font-ui);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--accent-soft);
+  background: none;
+  border: none;
+  border-block-end: 2px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.tab-bar__tab svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.tab-bar__tab:hover {
+  color: var(--color-text-inverse);
+}
+
+/* Contour, not fill (Regel 6): white text plus a 2px white bar on the band. */
+.tab-bar__tab.active {
+  color: var(--color-text-inverse);
+  border-block-end-color: var(--color-text-inverse);
+  background: none;
+}
+
+/* The accent is the ground here, so the focus ring takes the band's white. */
+.tab-bar__tab:focus-visible {
+  outline: 2px solid var(--color-text-inverse);
+  outline-offset: -2px;
+}
+
+.tab-bar__badge {
+  color: color-mix(in oklch, var(--accent-soft) 70%, transparent);
+  font-size: var(--text-xs);
+  font-variant-numeric: tabular-nums;
+}
+
+.tab-bar__tab.active .tab-bar__badge {
+  color: var(--color-text-inverse);
+}
+
+/* Below the same 900px break the sidebar uses (sidebar.css, container query on
+   view-shell): the bar cannot be a container query itself, because it sits
+   outside #main-content. It keeps one row and scrolls inside its own box. */
+@media (max-width: 899px) {
+  .tab-bar__tab {
+    padding: 0 var(--space-3);
+    font-size: var(--text-xs);
+  }
+
+  .tab-bar__group {
+    padding: 0 var(--space-2);
+  }
+
+  .tab-bar__tab svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  /* Icons carry the tabs here; the label stays in the accessibility tree,
+     because the icon is aria-hidden and would leave the button unnamed. */
+  .tab-bar__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}

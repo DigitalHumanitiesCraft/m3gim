@@ -4,7 +4,7 @@ Die Lieferung vom 2026-08-31 hat gezeigt, dass der XLSX-Export der
 Tabellenkalkulation Datums-, Folio- und Buendelungsspalten in Zelltypen
 umwandelt und dabei Genauigkeit erfindet, die die Erfassung nicht traegt.
 Quellformat der Verknuepfungen sind seither die CSV-Ausfuhren je Blatt
-(`data.md` § 3 Quellformat, § 6 Quellformat und Autokonvertierung).
+(`data.md` § Tabellenmodell Quellformat, § Datumskonventionen Quellformat und Autokonvertierung).
 
 Diese Datei sichert zwei Dinge ab. Erstens den Lesepfad: der Loader nimmt das
 CSV-Verzeichnis, fuehrt `data_id` und `datenpunkt_id` zusammen und traegt
@@ -150,7 +150,7 @@ def test_data_id_and_datenpunkt_id_are_merged():
 
 
 # ---------------------------------------------------------------------------
-# 3. Pruefschicht: Datumsformate (data.md § 6)
+# 3. Pruefschicht: Datumsformate (data.md § Datumskonventionen)
 # ---------------------------------------------------------------------------
 
 def _source_issues():
@@ -278,7 +278,7 @@ def test_rows_with_name_but_without_typ_are_counted():
 
 
 # ---------------------------------------------------------------------------
-# 6. Schutzregeln der Index-Uebernahme (data.md § 3)
+# 6. Schutzregeln der Index-Uebernahme (data.md § Tabellenmodell)
 # ---------------------------------------------------------------------------
 
 def test_index_lookup_keeps_the_curated_first_row():

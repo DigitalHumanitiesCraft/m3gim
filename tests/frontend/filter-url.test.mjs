@@ -28,7 +28,7 @@ import { resolveRecordId } from '../../docs/js/ui/router.js';
 describe('serializeFilter', () => {
   test('ein leerer Filter erzeugt keinen Query-Teil', () => {
     assert.equal(serializeFilter({}), '');
-    assert.equal(serializeFilter({ ort: [], person: [], zeitfenster: null, schaerfe: 'weit' }), '');
+    assert.equal(serializeFilter({ ort: [], person: [], stand: [], zeitfenster: null }), '');
   });
 
   test('ein gefaltetes Zeitfenster erscheint nicht in der URL', () => {
@@ -38,9 +38,14 @@ describe('serializeFilter', () => {
     assert.equal(serializeFilter({ zeitfenster: [1951, 1953] }), 'jahr=1951-1953');
   });
 
-  test('der Default-Schaerfegrad steht nicht in der URL', () => {
-    assert.equal(serializeFilter({ schaerfe: 'weit' }), '');
-    assert.equal(serializeFilter({ schaerfe: 'eng' }), 'schaerfe=eng');
+  test('der Erschliessungsstand steht als eigene Facette in der URL', () => {
+    assert.equal(serializeFilter({ stand: [] }), '');
+    assert.equal(serializeFilter({ stand: ['abgeschlossen', 'begonnen'] }),
+      'stand=abgeschlossen,begonnen');
+  });
+
+  test('der Dokumenttyp steht als typ in der URL, nicht als docType', () => {
+    assert.equal(serializeFilter({ docType: ['correspondence'] }), 'typ=correspondence');
   });
 
   test('mehrere Werte einer Facette trennt das Komma', () => {
@@ -78,9 +83,27 @@ describe('parseFilterQuery', () => {
       'verdrehte Grenzen werden geordnet, nicht verworfen');
   });
 
-  test('ein unbekannter Schaerfegrad wird verworfen', () => {
-    assert.equal('schaerfe' in parseFilterQuery('schaerfe=mittel'), false);
-    assert.equal(parseFilterQuery('schaerfe=eng').schaerfe, 'eng');
+  test('der abgeloeste Schaerfegrad wird nicht mehr gelesen (E-163)', () => {
+    assert.equal('schaerfe' in parseFilterQuery('schaerfe=eng'), false);
+    assert.equal('scope' in parseFilterQuery('scope=gesamt'), false);
+  });
+
+  test('typ und der alte Schluessel docType landen beide auf docType', () => {
+    assert.deepEqual(parseFilterQuery('typ=correspondence,poster').docType, ['correspondence', 'poster']);
+    assert.deepEqual(parseFilterQuery('docType=correspondence').docType, ['correspondence'],
+      'ein bestehender Deep-Link bleibt gueltig');
+    assert.equal('typ' in parseFilterQuery('typ=correspondence'), false,
+      'der State-Schluessel heisst weiter docType');
+  });
+
+  test('bei beiden Schluesseln gewinnt typ, gleich in welcher Reihenfolge', () => {
+    assert.deepEqual(parseFilterQuery('docType=poster&typ=correspondence').docType, ['correspondence']);
+    assert.deepEqual(parseFilterQuery('typ=correspondence&docType=poster').docType, ['correspondence']);
+  });
+
+  test('der Erschliessungsstand kommt als Werteliste an', () => {
+    assert.deepEqual(parseFilterQuery('stand=abgeschlossen,begonnen').stand,
+      ['abgeschlossen', 'begonnen']);
   });
 });
 
@@ -90,7 +113,7 @@ describe('Rundlauf ueber jede Facette', () => {
     person: ['Malaniuk, Ira'],
     werk: ['Tristan und Isolde'],
     institution: ['Bayreuther Festspiele'],
-    rolle: ['m3gim-vocab:singer'],
+    docType: ['correspondence'],
     sicht: ['performativ'],
   };
 
@@ -103,11 +126,10 @@ describe('Rundlauf ueber jede Facette', () => {
   }
 
   test('alle Facetten zusammen ueberleben den Rundlauf', () => {
-    const filter = { ...cases, zeitfenster: [1951, 1953], schaerfe: 'eng' };
+    const filter = { ...cases, zeitfenster: [1951, 1953] };
     const back = parseFilterQuery(serializeFilter(filter));
     for (const [key, values] of Object.entries(cases)) assert.deepEqual(back[key], values);
     assert.deepEqual(back.zeitfenster, [1951, 1953]);
-    assert.equal(back.schaerfe, 'eng');
   });
 });
 
@@ -140,10 +162,10 @@ describe('Hash-Grammatik #<tab>[/<recordId>][?<query>]', () => {
   });
 
   test('buildHash und splitHash sind zueinander invers', () => {
-    const hash = buildHash('verknuepfungen', null, { ort: ['Bayreuth'], schaerfe: 'eng' });
-    assert.equal(hash, '#verknuepfungen?ort=Bayreuth&schaerfe=eng');
+    const hash = buildHash('netzwerk', null, { ort: ['Bayreuth'], stand: ['begonnen'] });
+    assert.equal(hash, '#netzwerk?ort=Bayreuth&stand=begonnen');
     const parts = splitHash(hash);
-    assert.equal(parts.path, 'verknuepfungen');
+    assert.equal(parts.path, 'netzwerk');
     assert.deepEqual(parseFilterQuery(parts.query).ort, ['Bayreuth']);
   });
 });

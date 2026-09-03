@@ -5,15 +5,14 @@
  * unveraendert, damit jeder bestehende Deep-Link der Bestandsansicht weiter
  * gilt; der Query-Teil traegt den Schnitt und macht ihn zitierbar.
  *
- * Kodierung: `ort=Bayreuth,Wien&person=Malaniuk%2C%20Ira&jahr=1951-1953&schaerfe=eng`.
+ * Kodierung: `typ=correspondence&ort=Bayreuth,Wien&person=Malaniuk%2C%20Ira&jahr=1951-1953`.
  * Das Komma trennt die Werte einer Facette. Ein Komma im Wert wird
  * prozentkodiert, was bei der Namensform `Nachname, Vorname` der Regelfall ist;
  * ohne diese Kodierung zerfiele jeder Personenname in zwei Werte.
  *
- * Leerwerte erscheinen nicht: eine leere Auswahl, ein gefaltetes Zeitfenster
- * (yearRangeToZeitfenster liefert dort null) und der Default-Schaerfegrad
- * `weit` bleiben aus der URL heraus, damit ein unveraenderter Regler keinen
- * Filter behauptet.
+ * Leerwerte erscheinen nicht: eine leere Auswahl und ein gefaltetes Zeitfenster
+ * (yearRangeToZeitfenster liefert dort null) bleiben aus der URL heraus, damit
+ * ein unveraenderter Regler keinen Filter behauptet.
  *
  * Reine Funktionen, kein DOM. Das Schreiben in die Adresszeile bleibt Sache
  * des Routers.
@@ -22,13 +21,20 @@
 import { facetValues } from './filter-state.js';
 
 /** Facetten mit Werteliste, in der Reihenfolge, in der sie in der URL stehen. */
-const LIST_KEYS = ['docType', 'ort', 'person', 'werk', 'institution', 'rolle', 'sicht'];
+const LIST_KEYS = [
+  'docType', 'ort', 'person', 'werk', 'institution', 'sicht', 'stand',
+];
 
 /** Query-Schluessel des Zeitfensters; der State-Schluessel heisst zeitfenster. */
 const YEAR_KEY = 'jahr';
 
-const SCHAERFE_VALUES = new Set(['weit', 'eng']);
-const SCOPE_VALUES = new Set(['fein', 'gesamt']);
+/**
+ * The document type is serialized as `typ` so every query key is German; the
+ * state key stays docType. The old key is still read, so existing deep links
+ * keep working.
+ */
+const TYPE_KEY = 'typ';
+const TYPE_STATE_KEY = 'docType';
 
 /**
  * Der Filter als Query-Teil, ohne fuehrendes Fragezeichen.
@@ -41,16 +47,13 @@ export function serializeFilter(filter) {
   for (const key of LIST_KEYS) {
     const values = facetValues(f, key);
     if (values.length === 0) continue;
-    parts.push(`${key}=${values.map(encodeURIComponent).join(',')}`);
+    const urlKey = key === TYPE_STATE_KEY ? TYPE_KEY : key;
+    parts.push(`${urlKey}=${values.map(encodeURIComponent).join(',')}`);
   }
   if (Array.isArray(f.zeitfenster)) {
     const [von, bis] = f.zeitfenster;
     if (Number.isFinite(von) && Number.isFinite(bis)) parts.push(`${YEAR_KEY}=${von}-${bis}`);
   }
-  if (f.schaerfe === 'eng') parts.push('schaerfe=eng');
-  // Nur der Nicht-Default-Scope steht in der URL; 'fein' bleibt aussen vor,
-  // damit die Startansicht keine Scope-Behauptung im Link fuehrt.
-  if (f.scope === 'gesamt') parts.push('scope=gesamt');
   const search = (f.search || '').trim();
   if (search) parts.push(`suche=${encodeURIComponent(search)}`);
   return parts.join('&');
@@ -68,12 +71,17 @@ export function parseFilterQuery(query) {
   const raw = query.startsWith('?') ? query.slice(1) : query;
   if (!raw) return patch;
 
+  let typSeen = false;
   for (const pair of raw.split('&')) {
     if (!pair) continue;
     const eq = pair.indexOf('=');
     if (eq < 1) continue;
-    const key = pair.slice(0, eq);
+    const rawKey = pair.slice(0, eq);
     const value = pair.slice(eq + 1);
+    const key = rawKey === TYPE_KEY ? TYPE_STATE_KEY : rawKey;
+    // typ beats the docType alias regardless of the order they appear in
+    if (rawKey === TYPE_STATE_KEY && typSeen) continue;
+    if (rawKey === TYPE_KEY) typSeen = true;
     if (LIST_KEYS.includes(key)) {
       const values = value.split(',')
         .map(v => safeDecode(v))
@@ -86,9 +94,7 @@ export function parseFilterQuery(query) {
       if (window) patch.zeitfenster = window;
       continue;
     }
-    if (key === 'schaerfe' && SCHAERFE_VALUES.has(value)) patch.schaerfe = value;
-    else if (key === 'scope' && SCOPE_VALUES.has(value)) patch.scope = value;
-    else if (key === 'suche') {
+    if (key === 'suche') {
       const s = safeDecode(value).trim();
       if (s) patch.search = s;
     }

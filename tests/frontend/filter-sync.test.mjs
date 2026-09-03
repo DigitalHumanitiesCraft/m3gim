@@ -2,7 +2,7 @@
  * Unit-Tests fuer die Cross-View-Filter-Kopplung (M4, E-117).
  *
  * Zwei Schichten, beide dom-frei:
- *   1. Reine Projektions-/Faltungsfunktionen aus filter-sync.js (shared <-> view).
+ *   1. Reine Anwend-/Faltungsfunktionen aus filter-sync.js.
  *   2. Loop-Guard + filter-state-Integration mit window als gemocktem
  *      EventTarget: setFilter dispatcht genau einmal pro echter Aenderung, und
  *      der Guard verhindert die setFacet<->setFilter-Endlosschleife.
@@ -14,54 +14,13 @@ import { test, describe, before } from 'node:test';
 import assert from 'node:assert/strict';
 
 import {
-  sharedToToolbarState, toolbarStateToShared, engRecordSet, applySchaerfeEng,
-  applyZeitfenster, recordYear, makeSyncGuard, sichtToActiveSet, activeSetToSicht,
+  applyZeitfenster, makeSyncGuard,
   zeitfensterToYearRange, yearRangeToZeitfenster,
 } from '../../docs/js/ui/filter-sync.js';
+import { yearOf } from '../../docs/js/data/records-for.js';
 import { DATING_SCOPE } from '../../docs/js/data/constants.js';
 
-// --- Schicht 1: reine Projektionen ----------------------------------------
-
-describe('sharedToToolbarState / toolbarStateToShared (ort<->location)', () => {
-  // Seit E-151 haelt jede Entitaetsfacette eine Liste. Ein Einzelwert aus einer
-  // Altstelle bleibt zulaessig und wird zur einelementigen Liste; keine lesende
-  // Stelle darf danach noch einen String erwarten.
-  test('shared.ort projiziert auf toolbar.location, person/werk 1:1', () => {
-    const t = sharedToToolbarState({ ort: 'Bayreuth', person: 'Malaniuk, Ira', werk: 'Tristan' });
-    assert.deepEqual(t, { person: ['Malaniuk, Ira'], location: ['Bayreuth'], werk: ['Tristan'] });
-  });
-  test('mehrere Werte kommen vollstaendig an', () => {
-    const t = sharedToToolbarState({ ort: ['Bayreuth', 'Wien'], person: [], werk: [] });
-    assert.deepEqual(t, { person: [], location: ['Bayreuth', 'Wien'], werk: [] });
-  });
-  test('Leerwerte bleiben leer (Facette inaktiv)', () => {
-    assert.deepEqual(sharedToToolbarState({}), { person: [], location: [], werk: [] });
-  });
-  test('Rueckprojektion location -> ort, Roundtrip stabil', () => {
-    const shared = { ort: ['Wien'], person: ['X'], werk: [] };
-    const back = toolbarStateToShared(sharedToToolbarState(shared));
-    assert.deepEqual(back, { person: ['X'], ort: ['Wien'], werk: [] });
-  });
-});
-
-describe('engRecordSet / applySchaerfeEng (Schaerfegrad)', () => {
-  const store = {
-    recordToEvents: new Map([['r1', ['ste1']], ['r2', []]]),
-    recordToPerformances: new Map([['r3', [{}]]]),
-  };
-  test('eng-Menge ist Vereinigung aus STE- und Performance-Records', () => {
-    const set = engRecordSet(store);
-    assert.ok(set.has('r1') && set.has('r2') && set.has('r3'));
-    assert.equal(set.size, 3);
-  });
-  test('applySchaerfeEng filtert auf belegte Records und nennt die Differenz', () => {
-    const items = [{ '@id': 'r1' }, { '@id': 'r3' }, { '@id': 'r9' }];
-    const r = applySchaerfeEng(items, store, (it) => it);
-    assert.equal(r.total, 3);
-    assert.equal(r.eng, 2);
-    assert.deepEqual(r.items.map(i => i['@id']), ['r1', 'r3']);
-  });
-});
+// --- Schicht 1: reine Funktionen ------------------------------------------
 
 describe('applyZeitfenster (undatierte bleiben sichtbar)', () => {
   const items = [
@@ -79,36 +38,15 @@ describe('applyZeitfenster (undatierte bleiben sichtbar)', () => {
     const out = applyZeitfenster(items, [1950, 1953], (it) => it, stub).map(i => i['@id']);
     assert.deepEqual(out, ['a', 'c']);
   });
-  test('recordYear nimmt rico:date, null bei undatiert', () => {
-    assert.equal(recordYear(stub, { 'rico:date': '1952-01' }), 1952);
-    assert.equal(recordYear(stub, {}), null);
+  test('yearOf nimmt rico:date, null bei undatiert', () => {
+    assert.equal(yearOf(stub, { 'rico:date': '1952-01' }), 1952);
+    assert.equal(yearOf(stub, {}), null);
   });
-  test('recordYear nimmt die ankernde Datierung, wenn rico:date fehlt', () => {
+  test('yearOf nimmt die ankernde Datierung, wenn rico:date fehlt', () => {
     const withDating = {
       recordDatings: new Map([['x', [{ year: 1949, scope: DATING_SCOPE.attested, rank: 1 }]]]),
     };
-    assert.equal(recordYear(withDating, { '@id': 'x' }), 1949);
-  });
-});
-
-describe('sicht <-> active-Set (Karte)', () => {
-  const ids = ['performativ', 'institutionell', 'korrespondenz', 'diskursiv', 'biografisch', 'kontext'];
-  test('Leerwert => alle Sichten aktiv', () => {
-    assert.equal(sichtToActiveSet('', ids).size, ids.length);
-  });
-  test('gesetzte Sicht => genau diese eine', () => {
-    const set = sichtToActiveSet('performativ', ids);
-    assert.deepEqual([...set], ['performativ']);
-  });
-  test('zwei gesetzte Sichten => genau diese beiden', () => {
-    const set = sichtToActiveSet(['performativ', 'diskursiv'], ids);
-    assert.deepEqual([...set].sort(), ['diskursiv', 'performativ']);
-  });
-  test('activeSetToSicht: Teilauswahl => Liste, alle aktiv => leere Liste', () => {
-    assert.deepEqual(activeSetToSicht(new Set(['diskursiv']), ids), ['diskursiv']);
-    assert.deepEqual(activeSetToSicht(new Set(ids), ids), []);
-    assert.deepEqual(activeSetToSicht(new Set(['performativ', 'diskursiv']), ids),
-      ['performativ', 'diskursiv']);
+    assert.equal(yearOf(withDating, { '@id': 'x' }), 1949);
   });
 });
 
@@ -188,17 +126,17 @@ describe('filter-state Dispatch + Loop-Guard (window gemockt)', () => {
     const guard = makeSyncGuard();
 
     // Simuliert einen View: subscribe spiegelt den geteilten ort in einen
-    // lokalen "Toolbar"-State und schreibt ihn — innerhalb des Guards — zurueck.
+    // lokalen State und schreibt ihn — innerhalb des Guards — zurueck.
     // Ohne Guard riefe der Rueckschreib-setFilter den Subscriber erneut.
     const toolbar = { location: [] };
     let writeBacks = 0;
     const unsub = subscribe((shared) => {
       if (guard.isActive()) return;
       guard.run(() => {
-        toolbar.location = sharedToToolbarState(shared).location;
-        // Rueckschreiben des projizierten Werts (No-Op-Aenderung an sich, aber
-        // bei abweichender Projektion koennte es feuern -> Guard schuetzt).
-        setFilter(toolbarStateToShared(toolbar));
+        toolbar.location = [...(shared.ort || [])];
+        // Rueckschreiben des gespiegelten Werts (No-Op-Aenderung an sich, aber
+        // bei abweichender Spiegelung koennte es feuern -> Guard schuetzt).
+        setFilter({ ort: toolbar.location });
         writeBacks += 1;
       });
     }, { immediate: false });
@@ -216,7 +154,7 @@ describe('filter-state Dispatch + Loop-Guard (window gemockt)', () => {
     const { setFilter, getFilter, subscribe, resetFilter } = filterState;
     resetFilter();
     // Jeder View spiegelt ort in seinen lokalen State und schreibt den
-    // projizierten Wert per eigenem Guard zurueck. Idempotente Projektion ->
+    // gespiegelten Wert per eigenem Guard zurueck. Idempotente Spiegelung ->
     // der zweite Dispatch ist ein No-Op und stirbt, statt zu oszillieren.
     let total = 0;
     const makeView = () => {
@@ -225,9 +163,9 @@ describe('filter-state Dispatch + Loop-Guard (window gemockt)', () => {
       return subscribe((shared) => {
         if (g.isActive()) return;
         g.run(() => {
-          local.location = sharedToToolbarState(shared).location;
+          local.location = [...(shared.ort || [])];
           total += 1;
-          setFilter(toolbarStateToShared(local));
+          setFilter({ ort: local.location });
         });
       }, { immediate: false });
     };

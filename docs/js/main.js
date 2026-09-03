@@ -3,24 +3,22 @@
  * Loads archive data, initializes router, renders views on demand.
  */
 
+import { el, clear } from './utils/dom.js';
 import { loadArchive } from './data/loader.js';
-import { initRouter, getState, syncHashToFilter } from './ui/router.js';
-import { subscribe as subscribeFilter } from './ui/filter-state.js';
-import { initKorb, onKorbChange, getKorbCount, getKorbItems } from './ui/basket.js';
-import { renderBestand, selectArchivRecord } from './views/archive-holdings.js';
-import { renderChronik } from './views/archive-timeline.js';
-import { renderStatistik } from './views/statistics.js';
-import { renderIndizes, expandEntry } from './views/indexes.js';
-import { renderKorb } from './views/basket.js';
-import { renderMobilitaet } from './views/mobility.js';
-import { renderNetzwerk, netzwerkAggregate } from './views/network.js';
-import { renderVerknuepfungen, verknuepfungenAggregate } from './views/verknuepfungen.js';
-import { ensureArray } from './utils/format.js';
-import { extractXlsxSource } from './utils/provenance.js';
+import { initRouter, getState } from './ui/router.js';
+import { initKorb, onKorbChange, getKorbCount } from './ui/basket.js';
+import { renderBestand, selectArchivRecord } from './views/bestand.js';
+import { renderChronik } from './views/chronik.js';
+import { renderStatistik } from './views/statistik.js';
+import { renderIndizes, expandEntry } from './views/indizes.js';
+import { renderKorb } from './views/korb.js';
+import { renderMobilitaet } from './views/karte.js';
+import { renderNetzwerk } from './views/netzwerk.js';
 import { IS_DEV } from './utils/env.js';
-import { extractYear } from './utils/date-parser.js';
 
 let store = null;
+// Diagnose-Modul, nur auf localhost geladen (utils/dev.js).
+let dev = null;
 const renderedTabs = new Set();
 
 /** Tab renderer registry — maps tab name to render function. */
@@ -31,7 +29,6 @@ const TAB_RENDERERS = new Map([
   ['indizes',            (s, c) => renderIndizes(s, c)],
   ['karte',              (s, c) => renderMobilitaet(s, c)],
   ['netzwerk',           (s, c) => renderNetzwerk(s, c)],
-  ['verknuepfungen',     (s, c) => renderVerknuepfungen(s, c)],
   ['korb',               (s, c) => renderKorb(s, c)],
 ]);
 
@@ -43,8 +40,9 @@ async function init() {
     // Load data
     store = await loadArchive('./data/m3gim.jsonld');
     if (IS_DEV) {
-      logStoreSummary(store);
-      exposeDebug(store);
+      dev = await import('./utils/dev.js');
+      dev.logStoreSummary(store);
+      dev.exposeDebug(store);
     }
 
     // Hide loading
@@ -75,12 +73,6 @@ async function init() {
       },
     });
 
-    // Der Schnitt gehoert in die Adresszeile: jede Filteraenderung schreibt
-    // den Query-Teil nach, damit ein Befund zitierbar bleibt und den Reload
-    // ueberlebt. initRouter hat den Filter aus dem Hash bereits gesetzt.
-    subscribeFilter(() => syncHashToFilter(), { immediate: false });
-    syncHashToFilter();
-
     // Render initial tab
     renderTab(getState().activeTab);
 
@@ -101,7 +93,7 @@ function renderTab(tab) {
   const renderer = TAB_RENDERERS.get(tab);
   if (!renderer) return;
 
-  if (IS_DEV) logTabActivation(tab, store);
+  if (dev) dev.logTabActivation(tab, store);
 
   try {
     const result = renderer(store, container);
@@ -113,51 +105,21 @@ function renderTab(tab) {
   }
 }
 
-/** Kurze Diagnostik beim erstmaligen Öffnen eines Tabs: welche Datenmengen nutzt die View? */
-function logTabActivation(tab, s) {
-  const profile = {
-    bestand:             () => ({ records: s.allRecords.length, bearbeitet: s.allRecords.length - s.unprocessedIds.size, finances: s.finances.size, agentRel: s.agentRelations.size }),
-    chronik:             () => ({ records: s.allRecords.length, bearbeitet: s.allRecords.length - s.unprocessedIds.size }),
-    statistik:           () => ({ records: s.allRecords.length, konvolute: s.konvolute.size, events: s.mobilityEvents.size, personen: s.persons.size }),
-    indizes:             () => ({ persons: s.persons.size, orgs: s.organizations.size, locs: s.locations.size, works: s.works.size, agentRel: s.agentRelations.size, relResolved: s.agentRelationResolvedCount || 0 }),
-    karte:               () => {
-      const all = [...s.mobilityEvents.values()];
-      return { events: all.length, datiert: all.filter(e => extractYear(e.date) !== null).length, verortet: all.filter(e => typeof e.placeLat === 'number').length };
-    },
-    netzwerk: () => {
-      const agg = netzwerkAggregate();
-      return { agenten: agg?.length || 0 };
-    },
-    verknuepfungen: () => {
-      const g = verknuepfungenAggregate();
-      return g ? { knoten: g.nodes.length, records: g.stats.records, eng: g.stats.eng } : {};
-    },
-    korb: () => {
-      const ids = getKorbItems();
-      let relations = 0;
-      let finances = 0;
-      let events = 0;
-      for (const id of ids) {
-        relations += (s.agentRelations.get(id) || []).length;
-        finances += (s.finances.get(id) || []).length;
-        events += (s.recordToEvents.get(id) || []).length;
-      }
-      return { records: ids.length, relations, finances, events };
-    },
-  };
-  const fn = profile[tab];
-  if (!fn) return;
-  console.log(`%c[${tab}] geöffnet`, 'color: #2E7D4F; font-weight: bold', fn());
+/**
+ * Error box, built as DOM. A message may carry the text of a source value, so
+ * it must never reach the page as markup.
+ */
+function errorBox(title, message, extraStyle = '') {
+  return el('div', { style: `color: #8B3A3A; text-align: center; padding: 40px;${extraStyle}` },
+    el('p', { style: 'font-weight: 600; margin-bottom: 8px;' }, title),
+    el('p', { style: 'font-size: 0.8rem; opacity: 0.7;' }, message));
 }
 
 function showTabError(tab, container, err) {
   console.error(`[${tab}] Render-Fehler:`, err);
-  container.innerHTML = `
-    <div style="color: #8B3A3A; text-align: center; padding: 40px; font-family: var(--font-sans);">
-      <p style="font-weight: 600; margin-bottom: 8px;">Fehler in dieser Ansicht</p>
-      <p style="font-size: 0.8rem; opacity: 0.7;">${err.message || 'Unbekannter Fehler'}</p>
-    </div>
-  `;
+  clear(container);
+  container.appendChild(errorBox('Fehler in dieser Ansicht',
+    err.message || 'Unbekannter Fehler', ' font-family: var(--font-ui);'));
   // Allow re-render on next tab switch
   renderedTabs.delete(tab);
 }
@@ -171,14 +133,9 @@ function showLoading(show) {
 
 function showError(message) {
   const spinner = document.getElementById('loading-spinner');
-  if (spinner) {
-    spinner.innerHTML = `
-      <div style="color: #8B3A3A; text-align: center; padding: 40px;">
-        <p style="font-weight: 600; margin-bottom: 8px;">Fehler beim Laden</p>
-        <p style="font-size: 0.8rem;">${message}</p>
-      </div>
-    `;
-  }
+  if (!spinner) return;
+  clear(spinner);
+  spinner.appendChild(errorBox('Fehler beim Laden', message));
 }
 
 function updateKorbTabVisibility() {
@@ -194,183 +151,6 @@ function updateKorbTabVisibility() {
     const { activeTab } = getState();
     if (activeTab === 'korb') renderTab('korb');
   }
-}
-
-// ----------------------------------------------------------------------
-// DEV-Logging + Debug-Helper (localhost only, silent in production)
-// ----------------------------------------------------------------------
-
-/**
- * Strukturierter Load-Report in der Konsole: Base-Counts + alle Phase-6-Maps.
- * Gibt auf einen Blick Auskunft, ob die Daten im erwarteten Umfang ankommen.
- */
-function logStoreSummary(s) {
-  const wdCount = (map) => {
-    let n = 0;
-    for (const entry of map.values()) {
-      if (entry.wikidata && String(entry.wikidata).startsWith('wd:')) n++;
-    }
-    return n;
-  };
-  const pct = (n, t) => t > 0 ? `${Math.round(n / t * 100)} %` : '0 %';
-
-  const wdP = wdCount(s.persons), wdO = wdCount(s.organizations);
-  const wdL = wdCount(s.locations), wdW = wdCount(s.works);
-
-  // Provenance-Coverage. Die Zeilenherkunft liest ueberall extractXlsxSource,
-  // damit das Format nur an einer Stelle festgelegt ist.
-  let recProv = 0, nestedTotal = 0, nestedProv = 0;
-  for (const rec of s.allRecords) {
-    if (extractXlsxSource(rec)) recProv++;
-    for (const d of ensureArray(rec['m3gim-ontology:hasDetail'])) {
-      if (d && d['@type'] === 'm3gim-ontology:Annotation') {
-        nestedTotal++;
-        if (extractXlsxSource(d)) nestedProv++;
-      }
-    }
-    for (const r of ensureArray(rec['m3gim-ontology:hasAgentRelation'])) {
-      if (r) {
-        nestedTotal++;
-        if (extractXlsxSource(r)) nestedProv++;
-      }
-    }
-  }
-
-  console.group('%c[M³GIM] Store geladen', 'color: #004A8F; font-weight: bold; font-size: 1.1em');
-  console.log(`Export: ${s.exportDate || 'unbekannt'}`);
-  console.table({
-    Records:          { count: s.allRecords.length, wikidata: '—' },
-    Konvolute:        { count: s.konvolute.size,    wikidata: '—' },
-    Personen:         { count: s.persons.size,        wikidata: `${wdP} (${pct(wdP, s.persons.size)})` },
-    Organisationen:   { count: s.organizations.size,  wikidata: `${wdO} (${pct(wdO, s.organizations.size)})` },
-    Orte:             { count: s.locations.size,      wikidata: `${wdL} (${pct(wdL, s.locations.size)})` },
-    Werke:            { count: s.works.size,          wikidata: `${wdW} (${pct(wdW, s.works.size)})` },
-  });
-  console.log(
-    `%cProvenance: ${recProv}/${s.allRecords.length} Records + ${nestedProv}/${nestedTotal} nested entities mit xlsxSource`,
-    'color: #5C5651; font-style: italic'
-  );
-  console.group('%cv2-Store-Maps (Phase 6)', 'color: #8B3A3A; font-weight: bold');
-  console.table({
-    'dftHierarchy':      { size: s.dftHierarchy.size,   beschreibung: 'SKOS-Concepts mit broader+children' },
-    'annotations':       { size: s.annotations.size,    beschreibung: 'Annotationen: Datierung, Verortung oder beides' },
-    'mobilityEvents':    { size: s.mobilityEvents.size, beschreibung: 'davon verortet' },
-    'recordToEvents':    { size: s.recordToEvents.size, beschreibung: 'Records mit verorteten Annotationen' },
-    'agentRelations':    { size: s.agentRelations.size, beschreibung: 'Records mit AgRelOn-Einträgen' },
-    'finances':          { size: s.finances.size,       beschreibung: 'Records mit Finanz-Details' },
-  });
-  console.groupEnd();
-  console.log('%cTipp: window.m3gim.store greift auf alle Daten zu', 'color: gray; font-style: italic');
-  console.log('%c     window.m3gim.inspect("m3gim-data:NIM_007_5_1") zeigt Record-Details', 'color: gray; font-style: italic');
-  console.groupEnd();
-}
-
-/**
- * Exponiert den Store + Inspektionsfunktionen auf window — nur im DEV-Modus.
- * Ermöglicht manuelle Prüfung in der DevTools-Konsole:
- *   window.m3gim.store                   → kompletter Store
- *   window.m3gim.inspect('m3gim-data:NIM_007_5_1')  → Record mit allen v2-Maps
- *   window.m3gim.finances()              → Alle Finanz-Einträge
- *   window.m3gim.agentRelations()        → Alle AgRelOn-Beziehungen
- *   window.m3gim.mobilityEvents()        → Alle verorteten Annotationen
- *   window.m3gim.dftTree()               → DFT-Hierarchie als Baum
- */
-function exposeDebug(s) {
-  window.m3gim = {
-    store: s,
-    inspect(recordId) {
-      const record = s.records.get(recordId);
-      if (!record) return { error: `Kein Record ${recordId}` };
-      return {
-        record,
-        events: (s.recordToEvents.get(recordId) || []).map(eid => s.mobilityEvents.get(eid)),
-        agentRelations: s.agentRelations.get(recordId) || [],
-        finances: s.finances.get(recordId) || [],
-        konvolut: s.childToKonvolut.get(recordId) || null,
-      };
-    },
-    finances() {
-      const rows = [];
-      for (const [rid, entries] of s.finances) {
-        for (const e of entries) rows.push({ record: rid, ...e });
-      }
-      console.table(rows);
-      return rows;
-    },
-    agentRelations() {
-      const rows = [];
-      for (const [rid, entries] of s.agentRelations) {
-        for (const e of entries) rows.push({ record: rid, type: e.type, object: e.objectName, wd: e.objectWikidata || '' });
-      }
-      console.table(rows);
-      return rows;
-    },
-    mobilityEvents() {
-      const rows = [...s.mobilityEvents.values()].map(e => ({
-        annotation: e.id, record: e.recordId, place: e.place, date: e.date,
-        rolle: e.roleLabel, sicht: e.cluster || '', bezugsebene: e.scope || '',
-      }));
-      console.table(rows);
-      return rows;
-    },
-    netzwerkAggregate() {
-      const agg = netzwerkAggregate();
-      if (!agg) return null;
-      console.table(agg.map(e => ({ name: e.name, summe: e.summe, records: e.records.size })));
-      return agg;
-    },
-    mobilityEventsWithGeo() {
-      const rows = [...s.mobilityEvents.values()]
-        .filter(e => typeof e.placeLat === 'number' && typeof e.placeLon === 'number')
-        .map(e => ({
-          annotation: e.id, record: e.recordId, place: e.place, date: e.date,
-          lat: e.placeLat, lon: e.placeLon, country: e.placeCountry || '',
-        }));
-      console.table(rows);
-      return rows;
-    },
-    dftTree() {
-      const roots = [...s.dftHierarchy.values()].filter(c => !c.broader);
-      const render = (c, depth = 0) => {
-        console.log(`${'  '.repeat(depth)}• ${c.prefLabel} (${c.children.length} Kinder)`);
-        for (const childId of c.children) {
-          const child = s.dftHierarchy.get(childId);
-          if (child) render(child, depth + 1);
-        }
-      };
-      console.group('DFT-Hierarchie');
-      for (const r of roots) render(r);
-      console.groupEnd();
-      return roots;
-    },
-    /**
-     * Provenance-Uebersicht fuer einen Record: welche XLSX-Quellen liegen
-     * dahinter (direkt + nested). Gibt Liste mit {field, sheet, row} zurueck.
-     */
-    provenanceOf(recordId) {
-      const rec = s.records.get(recordId) || s.bySignatur.get(recordId);
-      if (!rec) return { error: `Kein Record ${recordId}` };
-      const rows = [];
-      const row = (field, src) => {
-        if (src) rows.push({ field, sheet: src.sheet || '', row: src.row, datenpunkt: src.datenpunkt || '' });
-      };
-      row('record', extractXlsxSource(rec));
-      for (const d of ensureArray(rec['m3gim-ontology:hasDetail'])) {
-        row(`detail:${(d && d['m3gim-ontology:detailField']) || '?'}`, extractXlsxSource(d));
-      }
-      for (const r of ensureArray(rec['m3gim-ontology:hasAgentRelation'])) {
-        row(`agrelon:${(r && r['@type']) || '?'}`, extractXlsxSource(r));
-      }
-      // Die Annotationen haengen als eigene Knoten am Graph; ihre Herkunft
-      // liegt im Store bereits normalisiert vor.
-      for (const aid of (s.recordToAnnotations.get(rec['@id']) || [])) {
-        const a = s.annotations.get(aid);
-        if (a) row(`annotation:${a.roleLabel || '?'}`, a.xlsxSource);
-      }
-      console.table(rows);
-      return rows;
-    },
-  };
 }
 
 // Boot

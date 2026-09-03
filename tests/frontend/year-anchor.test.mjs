@@ -24,7 +24,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
 import { loadArchive, primaryYear } from '../../docs/js/data/loader.js';
-import { recordYear } from '../../docs/js/ui/filter-sync.js';
+import { yearOf } from '../../docs/js/data/records-for.js';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, '..', '..');
@@ -72,10 +72,14 @@ describe('Jahresaufloesung nur ueber die Datenschicht', () => {
     ));
   });
 
-  test('kein Modul haelt eine eigene recordYear-Funktion', () => {
+  test('kein Modul haelt eine eigene Jahresaufloesung', () => {
+    // yearOf in docs/js/data/records-for.js ist die eine Aufloesung. Die Sperre
+    // sieht sie nicht, weil sie nur views/ und ui/ liest; dort darf weder eine
+    // recordYear- noch eine zweite yearOf-Definition stehen, gleich ob als
+    // Funktionsdeklaration oder als gebundene Arrow Function.
+    const OWN_YEAR_FN = /(?:function\s+(?:recordYear|yearOf)\s*\(|(?:const|let|var)\s+(?:recordYear|yearOf)\s*=)/;
     const offenders = moduleSources()
-      .filter(({ name, text }) => name !== 'docs/js/ui/filter-sync.js'
-        && /function\s+recordYear\s*\(/.test(text))
+      .filter(({ text }) => OWN_YEAR_FN.test(text))
       .map(({ name }) => name);
     assert.deepEqual(offenders, [], (
       'Eigene Jahresaufloesungen driften von der Datenschicht ab: ' + offenders.join(', ')
@@ -101,7 +105,7 @@ describe('Zeitanker am erzeugten Datensatz', () => {
       + 'seinen Gegenstand und ist zu pruefen.'
     ));
     const missed = derived
-      .filter(rec => recordYear(store, rec) !== primaryYear(store, rec).year)
+      .filter(rec => yearOf(store, rec) !== primaryYear(store, rec).year)
       .map(rec => rec['rico:identifier']);
     assert.deepEqual(missed, [], (
       `${missed.length} von ${derived.length} Records mit abgeleitetem Jahr fallen `

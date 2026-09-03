@@ -3,7 +3,7 @@
  */
 
 /** Namespace of the controlled terms (document types and roles). */
-export const VOCAB_PREFIX = 'm3gim-vocab:';
+const VOCAB_PREFIX = 'm3gim-vocab:';
 
 /**
  * Readable label of a document type from the store (skos:prefLabel of the
@@ -87,14 +87,15 @@ export function cityOf(name) {
   return (i === -1 ? s : s.slice(0, i)).trim();
 }
 
-/** Format a child signatur showing only the piece number (e.g. "UAKUG/NIM_003 1_1" → "Nr. 1.1"). */
+/** Folio number of a child under its Konvolut head ("UAKUG/NIM_003 1_1" → "1.1");
+ *  the head and the indent carry the context, so no prefix (Projektleitung, 2026-09-03). */
 export function formatChildSignatur(identifier, parentIdentifier) {
   if (!identifier || !parentIdentifier) return formatSignatur(identifier);
   const sig = formatSignatur(identifier);
   const parentSig = formatSignatur(parentIdentifier);
   if (sig.startsWith(parentSig + ' ')) {
     const nr = sig.slice(parentSig.length + 1).replace(/_/g, '.');
-    return 'Nr.\u2009' + nr;
+    return nr;
   }
   return sig;
 }
@@ -126,11 +127,6 @@ export function asWikidataId(value) {
   return value && String(value).startsWith('wd:') ? value : null;
 }
 
-/** Whether a value is a Wikidata Q-id ("wd:..."). */
-export function isWikidataId(value) {
-  return !!value && String(value).startsWith('wd:');
-}
-
 /**
  * Display name of a JSON-LD subobject: name -> skos:prefLabel -> fallback.
  * @id is deliberately NOT included automatically; call sites that want it as
@@ -139,16 +135,6 @@ export function isWikidataId(value) {
 export function entityName(obj, fallback = '') {
   if (!obj) return fallback;
   return obj.name || obj['skos:prefLabel'] || fallback;
-}
-
-/** Resolve ids -> records from the store, filtering out missing ones. */
-export function resolveRecords(store, ids) {
-  const out = [];
-  for (const id of ids) {
-    const r = store.records.get(id);
-    if (r) out.push(r);
-  }
-  return out;
 }
 
 /** Count linked entities on a record. */

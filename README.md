@@ -32,7 +32,7 @@ m3gim/
 - Datenmodell: RiC-O 1.1 + m3gim-Erweiterungen + AgRelOn
 - Pipeline: Python 3.11+ (`pandas`, `openpyxl`, `thefuzz[speedup]`)
 - Frontend: Vanilla JS (ES-Module), D3.js v7 als Library, kein Build-Tool
-- Tab-Architektur: Bestand · Chronik · Statistik · Indizes · Karte · Netzwerk · Verknuepfungen · Wissenskorb. Verborgene Tabs gibt es seit E-140 nicht mehr. Details in [`knowledge/design.md`](knowledge/design.md) + [`knowledge/specification.md`](knowledge/specification.md)
+- Tab-Architektur in drei Gruppen: Material (Bestand, Indizes), Perspektiven (Chronik, Karte, Netzwerk, Statistik), Werkzeug (Korb). Verborgene Tabs gibt es seit E-140 nicht mehr. Details in [`knowledge/design.md`](knowledge/design.md) + [`knowledge/specification.md`](knowledge/specification.md)
 - Hosting: GitHub Pages
 - Normdaten: Wikidata-Q-IDs (Reconciliation via `reconcile.py` + Enrichment via `enrich-wikidata.py`)
 

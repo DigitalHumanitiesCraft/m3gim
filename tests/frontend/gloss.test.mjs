@@ -16,7 +16,7 @@ import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
-import { loadArchive, conceptDefinition } from '../../docs/js/data/loader.js';
+import { loadArchive } from '../../docs/js/data/loader.js';
 import { glossOf, dftLabel } from '../../docs/js/utils/format.js';
 
 async function storeFrom(jsonld) {
@@ -52,7 +52,7 @@ describe('Begriffserklaerung', () => {
     const store = await storeFrom(FIXTURE);
     assert.equal(glossOf(store, 'program'), 'Drucksache zu einer Veranstaltung.');
     assert.equal(glossOf(store, 'm3gim-vocab:program'), 'Drucksache zu einer Veranstaltung.');
-    assert.equal(conceptDefinition(store, 'm3gim-vocab:conductor'),
+    assert.equal(glossOf(store, 'conductor'),
       'Person, die die musikalische Leitung innehatte.');
   });
 
@@ -83,7 +83,7 @@ describe('Erklaerungen im erzeugten Datensatz', () => {
     assert.ok(store.conceptDefinitions.size > 20,
       `Nur ${store.conceptDefinitions.size} erklaerte Begriffe im Datensatz`);
     const dftWithGloss = [...store.dftHierarchy.keys()]
-      .filter(id => conceptDefinition(store, id));
+      .filter(id => glossOf(store, id));
     assert.ok(dftWithGloss.length > 10,
       `Nur ${dftWithGloss.length} Dokumenttypen mit Erklaerung`);
   });

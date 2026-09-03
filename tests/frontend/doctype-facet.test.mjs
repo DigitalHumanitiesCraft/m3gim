@@ -12,14 +12,20 @@
 
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 
 import { recordsFor, docTypeGroups, facetInventory } from '../../docs/js/data/records-for.js';
+import { impliedByGroup, groupTip } from '../../docs/js/ui/sidebar.js';
 
 // Miniatur-Store mit einer DFT-Hierarchie: Oberbegriff schriftgut -> {brief,
 // rezension}, dazu ein freistehender Typ plakat. getDocTypeId liest
 // rico:hasDocumentaryFormType als Kurz-Id.
 function makeStore() {
-  const rec = (id, type) => ({ '@id': id, 'rico:hasDocumentaryFormType': { '@id': `m3gim-vocab:${type}` } });
+  const rec = (id, type) => ({
+    '@id': id,
+    'm3gim-ontology:processingStatus': 'abgeschlossen',
+    'rico:hasDocumentaryFormType': { '@id': `m3gim-vocab:${type}` },
+  });
   const records = new Map([
     ['r1', rec('r1', 'brief')],
     ['r2', rec('r2', 'brief')],
@@ -96,5 +102,54 @@ describe('facetInventory kennt docType mit Anzeigelabel', () => {
     const brief = inv.find(e => e.value === 'brief');
     assert.equal(brief.label, 'Brief');
     assert.equal(brief.count, 2);
+  });
+});
+
+describe('Der Baum zeigt, was der Schnitt mitnimmt', () => {
+  test('ein Kind eines gewaehlten Oberbegriffs traegt den mitgemeinten Haken', () => {
+    // Der Haken ist nur ehrlich, solange die Gruppe ihre Blaetter mitschneidet.
+    assert.deepEqual(idsOf(makeStore(), { docType: ['schriftgut'] }), ['r1', 'r2', 'r3']);
+    assert.equal(impliedByGroup(['schriftgut'], 'schriftgut', 'brief', false), true);
+  });
+
+  test('ein selbst gewaehltes Kind ist gewaehlt, nicht mitgemeint', () => {
+    assert.equal(impliedByGroup(['schriftgut', 'brief'], 'schriftgut', 'brief', false), false);
+    assert.equal(impliedByGroup([], 'schriftgut', 'brief', false), false);
+  });
+
+  test('eine synthetische Gruppe schreibt ihre Blaetter selbst in die Wahl', () => {
+    assert.equal(impliedByGroup(['brief'], 'sonstige', 'brief', true), false);
+  });
+
+  test('das mitgemeinte Blatt ist Information, kein Ziel', () => {
+    const src = readFileSync(new URL('../../docs/js/ui/sidebar.js', import.meta.url), 'utf-8');
+    const row = src.slice(src.indexOf('function optionRow'), src.indexOf('function optionListControl'));
+    assert.match(row, /implied \? \{ 'aria-disabled': 'true' \} : \{ onClick \}/,
+      'Ohne Klick, weil die Wahl nichts hinzufuegt, was der Oberbegriff nicht traegt.');
+    assert.match(src, /implied \? null : \(\) => toggle\(child\.value\)/);
+    const css = readFileSync(new URL('../../docs/css/sidebar.css', import.meta.url), 'utf-8');
+    assert.match(css, /\.fs-option--implied \{\s+color: var\(--color-text-tertiary\);\s+cursor: default;/);
+  });
+
+  test('der gewaehlte Oberbegriff verwirft das redundante Kind aus der Wahl', () => {
+    const src = readFileSync(new URL('../../docs/js/ui/sidebar.js', import.meta.url), 'utf-8');
+    const tree = src.slice(src.indexOf('function facetTreeControl'), src.indexOf('function optionListControl'));
+    assert.match(tree, /chosen\.filter\(v => !kidValues\.includes\(v\)\), entry\.value\]/,
+      'Sonst stuende "Autobiografie" im Streifen neben "Biographisch".');
+  });
+});
+
+describe('Tooltip der Gruppenzeile', () => {
+  test('er trennt die direkt getypten von den in Untertypen liegenden Dokumenten', () => {
+    const groups = docTypeGroups(makeStore());
+    const schriftgut = groups.find(g => g.value === 'schriftgut');
+    const kidTotal = schriftgut.children.reduce((n, c) => n + c.count, 0);
+    // Kein Datensatz ist direkt als schriftgut getypt: 3 minus 3 ist 0.
+    assert.equal(groupTip(schriftgut.count, kidTotal), '0 direkt · 3 in Untertypen');
+    assert.equal(groupTip(7, 3), '4 direkt · 3 in Untertypen');
+  });
+
+  test('er wird nie negativ, auch wenn die Zaehler auseinanderlaufen', () => {
+    assert.equal(groupTip(2, 3), '0 direkt · 3 in Untertypen');
   });
 });

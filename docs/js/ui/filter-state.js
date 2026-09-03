@@ -4,9 +4,9 @@
  *
  * EIN Filter-State-Objekt als Quelle fuer alle filterbaren Views. Jede Facette
  * zieht ihre Werte aus store.* (keine redaktionellen Listen). Leerwert =
- * Facette inaktiv. Der `schaerfe`-Modus ist kein Entitaetsfilter, sondern der
- * Schalter weit (Record-Bezug) / eng (Ereignis-Verortung) aus
- * knowledge/architecture.md, Abschnitt Schaerfegrade als Filtersemantik.
+ * Facette inaktiv. Seit E-163 gibt es keinen Modus mehr neben den Facetten:
+ * der Schaerfegrad-Umschalter ist entfallen, der Umfang-Umschalter ist in die
+ * Facette `stand` (Erschliessungsstand, E-162) uebergegangen.
  *
  * Mechanik: setFilter(patch) merged den Patch und dispatcht ein
  * `m3gim:filter`-CustomEvent ueber denselben window-Kanal, den events.js
@@ -19,24 +19,25 @@
  * abonnieren beim (lazy, einmaligen) Render und bleiben abonniert.
  */
 
+import { FACET_KEYS } from '../data/records-for.js';
+
 // Facetten, die mehrere Werte zugleich tragen. Innerhalb einer Facette wirken
 // sie als ODER, zwischen Facetten bleibt es UND (E-151). Eine leere Liste
 // heisst Facette inaktiv.
-const LIST_FACETS = new Set(['ort', 'person', 'werk', 'institution', 'rolle', 'docType', 'sicht']);
+const LIST_FACETS = new Set([
+  'ort', 'person', 'werk', 'institution', 'docType', 'sicht', 'stand',
+]);
 
 const EMPTY = Object.freeze({
   ort: [],          // Stadtnamen (store.locations, cityOf-konsolidiert)
   person: [],       // Namen (store.persons)
   werk: [],         // Namen (store.works)
   institution: [],  // Namen (store.organizations)
-  rolle: [],        // Akteursrollen (store.recordsByAgentRole)
   docType: [],      // Dokumenttyp-Kurz-Ids (DFT-Hierarchie, expandDftFilter)
+  stand: [],        // Erschliessungsstand (E-162), loest den Umfang-Umschalter ab
   zeitfenster: null, // [vonJahr, bisJahr] oder null = volle Spanne
   sicht: [],        // Mobilitaetssichten (mobilityClusterFor) oder 'kontext'
-  schaerfe: 'weit', // 'weit' | 'eng' — Modus, kein Entitaetsfilter
   search: '',       // Freitext (Bestand/Chronik) — Toolbar-lokal war es frueher
-  scope: 'fein',    // 'fein' | 'gesamt' — Erschliessungs-Scope (E-116/E-157),
-                    // steuert, ob nur erschlossene oder alle Bestaende erscheinen
 });
 
 // Ensemble, Ereignisrolle und Waehrung sind in records-for.js als Achsen
@@ -55,6 +56,21 @@ for (const key of Object.keys(EMPTY)) {
 // Ansicht: ein View darf seinen Default nur auf eine unberuehrte Facette
 // legen, sonst ueberschriebe der Tab-Wechsel eine getroffene Wahl.
 const touched = new Set();
+
+// Der Nullpunkt ist die leere Wahl, nicht die Voreinstellung einer Ansicht
+// (Projektleitung, 2026-09-03): eine Voreinstellung, die Dokumente ausschliesst,
+// muss sichtbar sein, sonst haelt der Bestand einen Teil des Bestands hinter
+// einem Filter zurueck, den die Spalte nicht nennt. Sie traegt deshalb Chip und
+// Zuruecksetzen-Link wie jede andere Wahl, und Zuruecksetzen fuehrt auf die
+// volle Grundmenge.
+function baselineOf(key) {
+  return LIST_FACETS.has(key) ? [] : EMPTY[key];
+}
+
+/** Facetten, die vom Nullpunkt abweichen — die Chips der Ergebniszeile. */
+export function deviatingKeys() {
+  return Object.keys(EMPTY).filter(key => !shallowEqual(state[key], baselineOf(key)));
+}
 
 /**
  * Bringt einen Facettenwert auf die Listenform. Ein String bleibt zulaessig,
@@ -106,23 +122,35 @@ export function setFilter(patch) {
   if (changed) dispatch();
 }
 
-/** Ob eine Facette seit dem letzten Zuruecksetzen gesetzt wurde. */
-export function isFacetTouched(key) {
-  return touched.has(key);
+/**
+ * Haengt einen Wert (oder mehrere) an eine Facette an, ohne die vorhandenen zu
+ * verwerfen. Der Weg jeder Cross-Navigation in den geteilten Schnitt: ein Klick
+ * auf einen Chip verengt, er ersetzt nicht. Ein Schluessel ausserhalb der
+ * Facettenachsen aus records-for.js wird ignoriert.
+ * @param {string} key
+ * @param {string|string[]} value
+ */
+export function addFacetValue(key, value) {
+  if (!FACET_KEYS.includes(key) || !LIST_FACETS.has(key)) return;
+  const merged = [...facetValues(state, key)];
+  for (const v of toList(value)) if (!merged.includes(v)) merged.push(v);
+  setFilter({ [key]: merged });
 }
 
 /**
  * Voreinstellung einer Ansicht. Setzt nur die Facetten, die der Nutzer noch
  * nicht angefasst hat, und laesst eine getroffene Wahl unberuehrt. Damit kann
- * jede Ansicht ihren passenden Schaerfegrad mitbringen (Zeitstrahl und Karte
- * eng, Netzwerk und Bestand weit), ohne den geteilten Schnitt zu ueberschreiben.
+ * jede Ansicht ihre Voreinstellung mitbringen (der Bestand den
+ * Erschliessungsstand), ohne den geteilten Schnitt zu ueberschreiben. Sie zaehlt
+ * danach als gewoehnliche Wahl und ist als Chip wegnehmbar.
  * @param {Object} patch
  */
 export function applyViewDefault(patch) {
   if (!patch || typeof patch !== 'object') return;
   const fresh = {};
   for (const key of Object.keys(patch)) {
-    if (!(key in EMPTY) || touched.has(key)) continue;
+    if (!(key in EMPTY)) continue;
+    if (touched.has(key)) continue;
     fresh[key] = patch[key];
   }
   if (Object.keys(fresh).length === 0) return;
@@ -133,13 +161,15 @@ export function applyViewDefault(patch) {
   for (const key of Object.keys(fresh)) touched.delete(key);
 }
 
-/** Setzt alle Facetten auf den Leerwert zurueck. */
+/** Setzt alle Facetten auf den Nullpunkt zurueck, also auf die leere Wahl: nach
+ *  dem Zuruecksetzen steht die volle Grundmenge, nicht der Ansichts-Default. */
 export function resetFilter() {
   let changed = false;
   for (const key of Object.keys(EMPTY)) {
-    const empty = LIST_FACETS.has(key) ? [] : EMPTY[key];
-    if (!shallowEqual(state[key], empty)) {
-      state[key] = empty;
+    const base = baselineOf(key);
+    const next = Array.isArray(base) ? [...base] : base;
+    if (!shallowEqual(state[key], next)) {
+      state[key] = next;
       changed = true;
     }
   }
@@ -166,13 +196,9 @@ export function subscribe(fn, { immediate = true } = {}) {
   };
 }
 
-/** True, wenn mindestens eine Facette vom Leerwert abweicht. */
+/** True, wenn mindestens eine Facette vom Nullpunkt der Ansicht abweicht. */
 export function isFilterActive() {
-  for (const key of Object.keys(EMPTY)) {
-    const empty = LIST_FACETS.has(key) ? [] : EMPTY[key];
-    if (!shallowEqual(state[key], empty)) return true;
-  }
-  return false;
+  return deviatingKeys().length > 0;
 }
 
 function dispatch() {

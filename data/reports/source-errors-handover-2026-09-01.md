@@ -15,7 +15,7 @@ Reihenfolge nach Datei, damit ein Blatt am Stück durchgearbeitet werden kann. D
 | `UAKUG/NIM_004` Folio 5 | entstehungsdatum | `1963` | Prüfen, ob 1963 gemeint ist oder 1953. Es ist der einzige 196x-Wert im Konvolut. Betrifft eine Orpheus-Rezension der Süddeutschen Zeitung, nicht ein Bayreuth-Objekt |
 | `UAKUG/NIM/PL_07` | ganze Zeile | zwei Zeilen, die zweite bis auf die Signatur leer | Die leere Doppelzeile entfernen |
 | `UAKUG/NIM_138` | ganze Zeile | nur Signatur, sonst leer | Zeile befüllen oder entfernen |
-| `UAKUG/NIM_137` Folio 11_62 | ganze Zeile | Zeile 725 trägt nur die Folio-Nummer, Signatur, Titel und Typ fehlen | Zeile vollständig befüllen. So erreicht das Objekt den Datensatz nicht, und die Verknüpfungen zu Folio 11_62 laufen weiter ins Leere |
+| `UAKUG/NIM_137` Folio 11_62 | ganze Zeile | Zeile 725 trägt nur die Folio-Nummer, Signatur, Titel und Typ fehlen | Bestätigt am 2026-09-03. Ohne Signatur kann die Pipeline keinen Objekt-Identifier bilden und verwirft die Zeile, die 114 Verknüpfungszeilen zu Folio 11_62 laufen dadurch ins Leere. Zeile vollständig befüllen, mindestens die Signatur nachtragen |
 | `UAKUG/NIM_005` Folio-Zeile, Zeile 76 | folio nr | `folio` klein statt `Folio` | Auf `Folio` korrigieren. Die kleingeschriebene Form wird nicht als Konvolut-Metadatenzeile erkannt und erscheint in der Anwendung als eigenes Objekt „Nr. folio" |
 | `UAKUG/NIM_137` Folio 7 | titel | `... "das Reihngold" ...` | Tippfehler auf `Rheingold` korrigieren |
 | `UAKUG/NIM_137` Folio 9 | titel | `... "Siegfreid" ...` | Tippfehler auf `Siegfried` korrigieren |

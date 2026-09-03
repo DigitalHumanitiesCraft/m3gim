@@ -3,22 +3,17 @@
  *
  * Der Zeitanker eines Records laeuft seit E-150 ueber primaryYear, und der
  * Loader legt zu jeder Annotation das aufgeloeste Jahr als `year` ab
- * (`extractYear` auf den qualifierfreien Wert). Zwei Stellen bestimmen das
- * Jahr daran vorbei ein zweites Mal: die Tab-Diagnostik in `docs/js/main.js`
- * prueft mit `/\d{4}/` irgendwo im Wert, die Statistik in
- * `docs/js/views/statistics-data.js` schneidet die ersten vier Zeichen ab und
- * gibt sie an parseInt.
+ * (`extractYear` auf den qualifierfreien Wert). Wer daran vorbei ein zweites
+ * Mal ein Jahr bestimmt, etwa mit einem Vierstellen-Regex irgendwo im Wert
+ * oder mit dem Abschnitt der ersten vier Zeichen, liest aus der Monats-Tages-
+ * Angabe `06-09` (NIM_004_34) die Jahreszahl 6. Genau diese beiden Muster
+ * sucht der lexikalische Gate unten in allen Frontend-Modulen.
  *
- * Der in handoff.md notierte Belegfall `nach:1956` (NIM_004_24, NIM_004_29)
- * faellt heute nicht mehr auseinander, weil `splitQualifier` im Loader den
- * Qualifier abtrennt, bevor eine Ansicht den Wert sieht. Reproduzierbar
- * bleibt der zweite Fall, die Monats-Tages-Angabe `06-09` an NIM_004_34: der
- * Abschnitt liefert `06-0`, parseInt daraus die Zahl 6, und die Statistik
- * bucht ein Jahrzehnt 0. Die Jahrzehnt-Achse fuellt die Luecken zwischen
- * kleinstem und groesstem Wert auf und traegt damit zweihundert leere Zeilen.
- * Dass die Ansicht das heute nicht zeigt, liegt allein daran, dass die beiden
- * betroffenen Annotationen keinen Ort tragen und deshalb nicht in
- * store.mobilityEvents stehen.
+ * Die frueher hier gepruefte Jahrzehnt-Achse der Statistik ist mit E-160
+ * entfallen; die Dekaden der Chronik zaehlen ueber das vom Loader aufgeloeste
+ * Jahr und leiten selbst keines mehr ab.
+ *
+ * Der zweite Teil sichert die Jahresangabe im BibTeX-Export.
  *
  * Lauf: node --test tests/frontend/event-year-count.test.mjs
  */
@@ -29,8 +24,7 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
-import { aggregateDecadesBySicht } from '../../docs/js/views/statistics-data.js';
-import { buildBibTeX } from '../../docs/js/views/basket.js';
+import { buildBibTeX } from '../../docs/js/views/korb.js';
 import { primaryYear } from '../../docs/js/data/loader.js';
 import { storeFromShipped } from './_shipped.mjs';
 
@@ -50,52 +44,6 @@ function moduleSources() {
   }
   return out;
 }
-
-describe('Jahrzehnte am ausgelieferten Datensatz', () => {
-  // aggregateDecadesBySicht liest allein `.mobilityEvents`. Geprueft wird sie
-  // hier ueber die vollstaendige Annotationsmenge desselben Ladelaufs, weil
-  // die verorteten Annotationen den jahrlosen Fall heute nicht enthalten und
-  // die Pruefung sonst an einem Zufall des Datenstands haengt.
-  test('die Statistik zaehlt genau die Datierungen mit aufgeloestem Jahr', async () => {
-    const store = await storeFromShipped();
-    const alle = [...store.annotations.values()];
-    const jahrlos = alle.filter((a) => a.date && a.year == null);
-    assert.ok(jahrlos.length > 0, (
-      'Keine Datierung ohne aufloesbares Jahr im Datenstand — der Test '
-      + 'verliert seinen Gegenstand und ist zu pruefen.'
-    ));
-    const mitJahr = alle.filter((a) => a.year != null).length;
-    const agg = aggregateDecadesBySicht({ mobilityEvents: store.annotations });
-    assert.equal(agg.dated, mitJahr, (
-      `Die Statistik zaehlt ${agg.dated} datierte Ereignisse, der Loader loest `
-      + `${mitJahr} Jahre auf. Differenz: ${jahrlos.map((a) => a.date).join(', ')}`
-    ));
-  });
-
-  // Die Achse fuellt die Luecke zwischen kleinstem und groesstem Jahrzehnt auf.
-  // Eine einzige falsch gelesene Jahreszahl verlaengert sie deshalb um alle
-  // Jahrzehnte dazwischen, statt nur eine falsche Zeile zu erzeugen.
-  test('die Jahrzehnt-Achse beginnt am kleinsten aufgeloesten Jahr', async () => {
-    const store = await storeFromShipped();
-    const jahre = [...store.annotations.values()].map((a) => a.year).filter((y) => y != null);
-    assert.ok(jahre.length > 0, 'keine aufgeloesten Jahre im Datenstand');
-    const erwartet = Math.floor(Math.min(...jahre) / 10) * 10;
-    const agg = aggregateDecadesBySicht({ mobilityEvents: store.annotations });
-    assert.equal(agg.rows[0].decade, erwartet, (
-      `Die Achse beginnt bei ${agg.rows[0].decade}, das kleinste aufgeloeste Jahr `
-      + `liegt im Jahrzehnt ${erwartet}. Eine Datierung ohne Jahr ist als `
-      + 'Jahreszahl gebucht worden.'
-    ));
-    assert.equal(agg.rows[agg.rows.length - 1].decade, Math.floor(Math.max(...jahre) / 10) * 10);
-  });
-
-  test('die verortete Teilmenge zaehlt genauso', async () => {
-    const store = await storeFromShipped();
-    const mitJahr = [...store.mobilityEvents.values()].filter((e) => e.year != null).length;
-    assert.ok(mitJahr > 0, 'keine datierten Mobilitaets-Ereignisse');
-    assert.equal(aggregateDecadesBySicht(store).dated, mitJahr);
-  });
-});
 
 describe('Jahresaufloesung an Ereignisdatierungen', () => {
   test('kein Modul leitet ein Jahr selbst aus einem Datumswert ab', () => {

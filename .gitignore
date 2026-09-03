@@ -230,6 +230,7 @@ yarn.lock
 data/reports/validation-report.md
 data/reports/exploration-report.md
 data/reports/link-proposals.md
+data/reports/frontend-verification-bestand.md
 
 # Testing outputs
 tests/outputs/

@@ -3,8 +3,8 @@
  *
  * Eine Facette ohne Deckung ist ein toter Regler: sie steht in der Sidebar,
  * liefert aber nichts, und der Betrachter haelt die leere Auswahl fuer ein
- * Datenurteil. Diese Datei misst die Deckung der vier neuen Achsen (Ereignis,
- * Akteursrolle, Sicht, Ensemble) und der Waehrungsachse gegen
+ * Datenurteil. Diese Datei misst die Deckung der neuen Achsen (Ereignis, Sicht,
+ * Ensemble) und der Waehrungsachse gegen
  * `docs/data/m3gim.jsonld`, mit Mindestvorkommen statt Nulltoleranz.
  *
  * Die duenne Ensemble-Deckung wird ausdruecklich festgehalten, damit ihr
@@ -36,11 +36,9 @@ describe('Die neuen Store-Indizes sind da', () => {
     }
   });
 
-  test('Ereignis- und Akteursrolle haben je einen Record-Index', () => {
+  test('Die Ereignisrolle hat einen Record-Index', () => {
     assert.ok(store.eventsByRole instanceof Map && store.eventsByRole.size > 0);
-    assert.ok(store.recordsByAgentRole instanceof Map && store.recordsByAgentRole.size > 0);
     for (const [, ids] of store.eventsByRole) assert.ok(ids instanceof Set && ids.size > 0);
-    for (const [, ids] of store.recordsByAgentRole) assert.ok(ids instanceof Set && ids.size > 0);
   });
 });
 
@@ -52,15 +50,8 @@ describe('facetInventory am ausgelieferten Datensatz', () => {
     assert.ok(perf && perf.count >= 30, `Auffuehrung deckt nur ${perf ? perf.count : 0} Dokumente`);
   });
 
-  test('Akteursrolle: mindestens 20 Rollen, Saenger traegt am staerksten mit', () => {
-    const inv = facetInventory(store, 'rolle');
-    assert.ok(inv.length >= 20, `nur ${inv.length} Akteursrollen`);
-    const singer = valueOf(inv, 'm3gim-vocab:singer');
-    assert.ok(singer && singer.count >= 40, `Saenger deckt nur ${singer ? singer.count : 0} Dokumente`);
-  });
-
   test('jede Rolle traegt ein Anzeigelabel aus store.roleVocab (E-143)', () => {
-    for (const key of ['rolle', 'ereignis']) {
+    for (const key of ['ereignis']) {
       for (const entry of facetInventory(store, key)) {
         assert.ok(entry.label && entry.label !== entry.value, (
           `Die Rolle ${entry.value} steht ohne Anzeigeform im Inventar der `
@@ -68,6 +59,26 @@ describe('facetInventory am ausgelieferten Datensatz', () => {
         ));
       }
     }
+  });
+
+  test('Rollenlabels erscheinen grossgeschrieben, das Vokabular bleibt unberuehrt (E-184)', () => {
+    // `facetInventory` ist die einzige Stelle, an der die Anzeigeform der
+    // Rollen entsteht; alle Anzeigepfade laufen darueber.
+    for (const key of ['ereignis']) {
+      for (const entry of facetInventory(store, key)) {
+        const first = entry.label[0];
+        assert.equal(first, first.toLocaleUpperCase('de-DE'), (
+          `Das Anzeigelabel "${entry.label}" der Facette ${key} beginnt klein.`
+        ));
+        const vocab = store.roleVocab.get(entry.value);
+        assert.equal(vocab.label.slice(1), entry.label.slice(1), (
+          `Nur der erste Buchstabe wird angehoben; "${vocab.label}" und `
+          + `"${entry.label}" weichen dahinter ab.`
+        ));
+      }
+    }
+    assert.equal(store.roleVocab.get('m3gim-vocab:conductor').label, 'dirigent',
+      'Das Vokabular selbst bleibt kleingeschrieben.');
   });
 
   test('Sicht: die fuenf Mobilitaetssichten plus der Kontext-Eimer', () => {
