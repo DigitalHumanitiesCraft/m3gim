@@ -64,6 +64,10 @@ export function partitionRecord(record, store) {
     const perf = store.performances?.get(ref && ref['@id']);
     if (!perf) continue;
     const qualityFlag = perf['m3gim-ontology:dataQualityFlag'];
+    // The Erschliessung records a caveat about the Auffuehrung as
+    // rico:generalDescription ("Vertrag nicht eingehalten", "im Original: ...").
+    // Dropping it here made the chip claim the Auffuehrung took place.
+    const description = perf['rico:generalDescription'] || null;
     const date = perf['m3gim-ontology:atDate'] || null;
     const roleNames = ensureArray(perf['m3gim-ontology:hasStageRole'])
       .map(sr => sr && sr['@id'] && store.stageRoles?.get(sr['@id']))
@@ -80,6 +84,7 @@ export function partitionRecord(record, store) {
           || firstVoiceType(store, perf['m3gim-ontology:hasStageRole']),
         xlsxSource: extractXlsxSource(perf),
         qualityFlag,
+        description,
       });
     } else {
       // dataQualityFlag sits on the Performance, not the StageRole. voiceType is
@@ -96,6 +101,7 @@ export function partitionRecord(record, store) {
         .filter(Boolean);
       for (const name of roleNames) {
         const role = { name, qualityFlag, xlsxSource };
+        if (description) role.description = description;
         if (voiceType) role.voiceType = voiceType;
         if (performers.length) role.performers = performers;
         performanceRoles.push(role);
@@ -273,6 +279,99 @@ export function groupRolesByWork(works, performanceRoles) {
     else looseRoles.push(role);
   }
   return { groups, looseRoles };
+}
+
+// =========================================================================
+// Chip content: the fields of a node that the chip itself does not print.
+// =========================================================================
+
+/**
+ * Composer of a work node.
+ *
+ * Inside a record the field arrives under the @context alias `composer`, while
+ * store.works carries the same value as `komponist`. The work chip read only
+ * the store spelling, so the composer never appeared on it (Projektleitung,
+ * 2026-09-04).
+ */
+export function workComposer(work) {
+  if (!work) return '';
+  return work.composer || work.komponist || work['m3gim-ontology:composer'] || '';
+}
+
+/** "Label: Wert" from a node field, arrays joined; null when the field is absent. */
+function fieldLine(node, key, label) {
+  const raw = node[key];
+  if (raw === undefined || raw === null || raw === '') return null;
+  const value = Array.isArray(raw) ? raw.filter(Boolean).join(', ') : String(raw);
+  return value ? `${label}: ${value}` : null;
+}
+
+/** Date and place of a life event as one line, either half alone as well. */
+function lifeEventLine(node, dateKey, placeKey, label) {
+  const parts = [node[dateKey], node[placeKey]].filter(Boolean).map(String);
+  return parts.length ? `${label}: ${parts.join(', ')}` : null;
+}
+
+/** Coordinates verbatim, in the precision the enrichment wrote them. */
+function coordinateLine(node) {
+  const lat = node['geo:lat'];
+  const lon = node['geo:long'];
+  return (lat != null && lon != null) ? `Koordinaten: ${lat}, ${lon}` : null;
+}
+
+/**
+ * Every modelled field of a node that the chip does not print, as tooltip
+ * lines in a fixed order (design rule 8: the tooltip is the place of depth, not
+ * standing text). The composer of a work is left out because the work chip
+ * prints it in its value and a tooltip never repeats visible text (E-210).
+ *
+ * What the Wikidata enrichment injected stands under its own "ergänzt:" line,
+ * the way the Indizes mark a supplemented subtitle (design rule 16); the lines
+ * above it are read from the Verknüpfungen sheets.
+ */
+export function nodeTipLines(node) {
+  if (!node || typeof node !== 'object') return [];
+  const lines = [
+    fieldLine(node, 'm3gim-ontology:indexNote', 'Indexnotiz'),
+    fieldLine(node, 'm3gim-ontology:sungPart', 'Partie'),
+    fieldLine(node, 'm3gim-ontology:lifespan', 'Lebensdaten'),
+    fieldLine(node, 'm3gim-ontology:headquarters', 'Sitz'),
+    fieldLine(node, 'm3gim-ontology:keyContact', 'Kontakt'),
+  ].filter(Boolean);
+  const derived = [
+    fieldLine(node, 'gndo:professionOrOccupationAsLiteral', 'Beruf'),
+    fieldLine(node, 'm3gim-ontology:voiceType', 'Stimmfach'),
+    lifeEventLine(node, 'schema:birthDate', 'schema:birthPlace', 'Geburt'),
+    lifeEventLine(node, 'schema:deathDate', 'schema:deathPlace', 'Tod'),
+    fieldLine(node, 'm3gim-ontology:wdComposer', 'Komponist'),
+    fieldLine(node, 'm3gim-ontology:wdGenre', 'Gattung'),
+    fieldLine(node, 'm3gim-ontology:wdPremiereDate', 'Uraufführung'),
+    fieldLine(node, 'm3gim-ontology:wdInception', 'Gegründet'),
+    fieldLine(node, 'm3gim-ontology:wdLocation', 'Sitz'),
+    fieldLine(node, 'm3gim-ontology:country', 'Land'),
+    coordinateLine(node),
+  ].filter(Boolean);
+  if (derived.length) {
+    const id = String(node['@id'] || '');
+    lines.push(id.startsWith('wd:')
+      ? `ergänzt: aus Wikidata ${id.slice(3)}`
+      : 'ergänzt: aus Wikidata');
+    lines.push(...derived);
+  }
+  return lines;
+}
+
+/**
+ * Tooltip lines of the data-quality marker: the modelled flag and the
+ * Erschließungsanmerkung `rico:generalDescription`, both verbatim. The
+ * description is what says that a contract was not honoured; without it a
+ * dated Aufführung chip reads as an event that took place.
+ */
+export function qualityTipLines(flag, note) {
+  const lines = [];
+  if (flag) lines.push(`Datenqualität: ${flag}`);
+  if (note) lines.push(`Anmerkung: ${note}`);
+  return lines;
 }
 
 /**

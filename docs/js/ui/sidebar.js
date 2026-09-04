@@ -103,6 +103,8 @@ let listSeq = 0;
  *   `false` leaves it out, which is what a view without a text cut needs
  * @param {Array} [opts.sections]      view-specific sections (d)
  * @param {Array} [opts.legend]        view-specific legend sections (e)
+ * @param {() => Array<{title:string, chips:Array<{label:string,onRemove:Function}>}>}
+ *   [opts.localChips]            view-local narrowings for the strip (E-223)
  * @param {() => void} [opts.onChange] after every filter change, own or foreign
  * @returns {{element: HTMLElement, update: () => void, destroy: () => void}}
  */
@@ -113,6 +115,7 @@ export function createSidebar(store, {
   search = true,
   sections = [],
   legend = [],
+  localChips = () => [],
   onChange = () => {},
 } = {}) {
   const inventories = new Map();
@@ -141,7 +144,7 @@ export function createSidebar(store, {
   ];
 
   const built = buildColumn(specs);
-  const strip = filterStrip(inventories);
+  const strip = filterStrip(inventories, localChips);
 
   // A cut from another view must arrive here without the consumer thinking of
   // it; otherwise the column shows a state the shared filter no longer has.
@@ -399,12 +402,16 @@ function standSection(store, inventory) {
  * because a chip that appears there would move every control under it
  * (Projektleitung, 2026-09-03); empty it takes no room.
  */
-function filterStrip(inventories) {
+function filterStrip(inventories, localChips) {
   const element = el('div', { className: 'filter-strip' });
 
   function update() {
     clear(element);
-    if (!isFilterActive()) {
+    // A view-local narrowing (the Karte's entity and country, E-223) deviates
+    // from the default like a shared facet does, so it keeps the placeholder
+    // away and belongs into the same reset.
+    const local = (localChips() || []).filter(g => g && g.chips && g.chips.length);
+    if (!isFilterActive() && local.length === 0) {
       element.appendChild(emptyHint());
       return;
     }
@@ -427,8 +434,13 @@ function filterStrip(inventories) {
     if (deviating.has('search') && q) {
       element.appendChild(stripGroup('Suche', [removeChip(q, () => setFilter({ search: '' }))]));
     }
+    for (const group of local) {
+      element.appendChild(stripGroup(group.title,
+        group.chips.map(c => removeChip(c.label, c.onRemove))));
+    }
     element.appendChild(el('button', {
-      className: 'vs-status__reset', type: 'button', onClick: () => resetFilter(),
+      className: 'vs-status__reset', type: 'button',
+      onClick: () => { for (const g of local) for (const c of g.chips) c.onRemove(); resetFilter(); },
       html: RESET_GLYPH,
     }, el('span', {}, 'alle zurücksetzen')));
   }
@@ -467,7 +479,7 @@ const RESET_GLYPH = '<svg class="vs-status__reset-icon" width="14" height="14"'
 function emptyHint() {
   return el('span', {
     className: 'filter-strip__empty',
-    dataset: { tip: 'Die Filter stehen in der linken Spalte.', tipWrap: '' },
+    dataset: { tip: 'Die Filter stehen in der linken Spalte.', tipWrap: '', tipPos: 'bottom-left' },
     html: FILTER_GLYPH,
   }, el('span', {}, 'kein Filter aktiv'));
 }
@@ -485,6 +497,9 @@ function stripGroup(title, chips) {
   return el('div', { className: 'filter-strip__group' },
     el('span', {
       className: 'filter-strip__key', 'data-tip': STRIP_TIP, 'data-tip-wrap': '',
+      // The strip sits on the top edge of the scroll area, so a tip above it
+      // would vanish under the brand band; everything in the strip tips down.
+      'data-tip-pos': 'bottom-left',
     }, title),
     ...chips);
 }
@@ -498,6 +513,7 @@ export function countLabel(n, m) {
 function removeChip(text, onRemove) {
   return el('button', {
     className: 'fs-chip', type: 'button', 'data-tip': 'Aus dem Filter nehmen',
+    'data-tip-pos': 'bottom-left',
     onClick: onRemove,
   },
     el('span', { className: 'fs-chip__label' }, text),
@@ -987,14 +1003,20 @@ function sliderControl({ label, min, max, step = 1, value, onChange, format }) {
   return { node, update };
 }
 
-/** Boolescher Schalter. */
-function toggleControl({ label, value, onChange }) {
+/** Boolescher Schalter. `label` und `tip` duerfen Funktionen sein, wo die
+ *  Beschriftung eine Zahl des aktuellen Schnitts traegt (E-227). */
+function toggleControl({ label, value, onChange, tip = null }) {
   const input = el('input', { type: 'checkbox' });
   if (value()) input.checked = true;
   input.addEventListener('change', () => onChange(input.checked));
-  const node = el('label', { className: 'vs-toggle' }, input,
-    el('span', { className: 'vs-toggle__label' }, label));
-  function update() { input.checked = !!value(); }
+  const text = el('span', { className: 'vs-toggle__label' });
+  const node = el('label', { className: 'vs-toggle' }, input, text);
+  function paint() {
+    text.textContent = typeof label === 'function' ? label() : String(label);
+    if (tip) Object.assign(node.dataset, { tip: tip(), tipWrap: '' });
+  }
+  paint();
+  function update() { input.checked = !!value(); paint(); }
   return { node, update };
 }
 

@@ -136,9 +136,9 @@ export function konvolutStandTip(meta) {
 
 /**
  * Distinguishing hint for a child that carries the collective title of its
- * Konvolut: the first linked entity plus its content family, so the icon in
- * front of the hint says where the name comes from.
- * @returns {?{name: string, family: 'person'|'institution'|'ort'}}
+ * Konvolut: the name of the first linked entity. The title cell shows no icons
+ * (E-217), so the name stands on its own.
+ * @returns {?string}
  */
 export function getFolioHint(store, record, konvolutId) {
   if (!konvolutId) return null;
@@ -153,19 +153,14 @@ export function getFolioHint(store, record, konvolutId) {
 
   const named = (obj) => obj && (obj.name || obj['skos:prefLabel'] || '');
   const agents = ensureArray(record['m3gim-ontology:hasAssociatedAgent']);
-  if (agents.length > 0 && named(agents[0])) {
-    const corporate = ['rico:CorporateBody', 'rico:Group'].includes(agents[0]['@type']);
-    return { name: named(agents[0]), family: corporate ? 'institution' : 'person' };
-  }
+  if (agents.length > 0 && named(agents[0])) return named(agents[0]);
   const mentionedPersons = ensureArray(record['rico:hasOrHadSubject'])
     .filter(s => s['@type'] === 'rico:Person');
   if (mentionedPersons.length > 0 && named(mentionedPersons[0])) {
-    return { name: named(mentionedPersons[0]), family: 'person' };
+    return named(mentionedPersons[0]);
   }
   const locs = ensureArray(record['rico:hasOrHadLocation']);
-  if (locs.length > 0 && named(locs[0])) {
-    return { name: named(locs[0]), family: 'ort' };
-  }
+  if (locs.length > 0 && named(locs[0])) return named(locs[0]);
   return null;
 }
 
@@ -196,95 +191,6 @@ export function buildKorbBtn(recordId, onExpandedToggle) {
 }
 
 /**
- * Trigger of the jump list, sitting in the Signatur column head. The glyph is
- * the row chevron turned down, so the same symbol means the same thing across
- * the table (Projektleitung, 2026-09-04).
- */
-export function buildJumpTrigger(onToggle) {
-  return el('button', {
-    type: 'button',
-    className: 'archiv-jump-btn',
-    'aria-haspopup': 'listbox',
-    'aria-expanded': 'false',
-    'aria-label': 'Konvolute des Schnitts',
-    dataset: { tip: 'Konvolute des Schnitts' },
-    onClick: (e) => { e.stopPropagation(); onToggle(); },
-  }, el('span', { className: 'archiv-chevron archiv-chevron--down', 'aria-hidden': 'true' }, '›'));
-}
-
-/** Enabled state of the jump trigger. An empty cut has nothing to jump to, so
- *  the trigger says why instead of opening an empty list (Projektleitung,
- *  2026-09-04). aria-disabled rather than `disabled`, so the reason stays
- *  reachable for the keyboard and the tooltip. */
-export function setJumpTriggerState(trigger, disabled) {
-  if (!trigger) return;
-  trigger.setAttribute('aria-disabled', String(disabled));
-  trigger.classList.toggle('archiv-jump-btn--disabled', disabled);
-  const label = disabled ? 'keine Konvolute im Schnitt' : 'Konvolute des Schnitts';
-  trigger.dataset.tip = label;
-  trigger.setAttribute('aria-label', label);
-}
-
-/**
- * The jump list itself: under the structural view the open/close action row
- * followed by every Konvolut of the cut with its open state, title and number
- * of visible children. `showToggles` false is the flattened filter mode, where
- * there are no heads to open: the chevrons and the action row fall away and the
- * list is pure navigation (Projektleitung, 2026-09-04). The container is built
- * detached; the view anchors and dismisses it.
- * @param {{entries: Array, openIds: Set<string>, currentId: ?string,
- *   allOpen: boolean, showToggles?: boolean, onJump: (id: string) => void,
- *   onToggleAll: () => void}} opts
- */
-export function buildJumpList(opts) {
-  const { entries, openIds, currentId, allOpen, onJump, onToggleAll } = opts;
-  const showToggles = opts.showToggles !== false;
-  const list = el('div', {
-    className: 'archiv-jump' + (showToggles ? '' : ' archiv-jump--flat'),
-    role: 'listbox',
-    'aria-label': 'Konvolute des Schnitts',
-  });
-  if (showToggles) {
-    list.appendChild(el('button', {
-      type: 'button',
-      className: 'archiv-jump__action',
-      role: 'option',
-      'aria-selected': 'false',
-      onClick: () => onToggleAll(),
-    }, allOpen ? 'alle zuklappen' : 'alle aufklappen'));
-  }
-
-  for (const entry of entries) {
-    const isOpen = showToggles && openIds.has(entry.konvolutId);
-    const isCurrent = entry.konvolutId === currentId;
-    const row = el('button', {
-      type: 'button',
-      className: 'archiv-jump__entry' + (isCurrent ? ' archiv-jump__entry--current' : ''),
-      role: 'option',
-      'aria-selected': String(isCurrent),
-      dataset: { konvolutJump: entry.konvolutId },
-      onClick: () => onJump(entry.konvolutId),
-    },
-      showToggles
-        ? el('span', {
-          className: 'archiv-chevron' + (isOpen ? ' archiv-chevron--open' : ''),
-          'aria-hidden': 'true',
-        }, '›')
-        : null,
-      el('span', { className: 'archiv-jump__sig' }, entry.signatur),
-      el('span', { className: 'archiv-jump__title' }, entry.title),
-      el('span', {
-        className: 'archiv-jump__count',
-        dataset: { tip: `${entry.childCount} Objekte im Schnitt` },
-      }, String(entry.childCount)),
-    );
-    if (isCurrent) row.setAttribute('aria-current', 'true');
-    list.appendChild(row);
-  }
-  return list;
-}
-
-/**
  * The four family icons as a legend in the .archiv-col-links cell of the open,
  * sticky Konvolut head: it names what the column of its rows below carries,
  * quiet and without numbers (Projektleitung, 2026-09-04).
@@ -300,17 +206,4 @@ export function buildKonvolutFamilyLegend() {
   }, ...CONTENT_FAMILIES.map(f => familyIcon(f.key, {
     size: 13, className: 'ersch-fam__icon',
   })));
-}
-
-/** Close affordance at the right end of the open, sticky Konvolut head. The
- *  whole head closes on click; this says so at the far edge, where the eye is
- *  after reading a row (Projektleitung, 2026-09-04). */
-export function buildKonvolutCloseBtn(onClose) {
-  return el('button', {
-    type: 'button',
-    className: 'archiv-konvolut-close',
-    'aria-label': 'Konvolut zuklappen',
-    dataset: { tip: 'Konvolut zuklappen', tipPos: 'bottom-right' },
-    onClick: (e) => { e.stopPropagation(); onClose(); },
-  }, el('span', { className: 'archiv-chevron archiv-chevron--up', 'aria-hidden': 'true' }, '›'));
 }

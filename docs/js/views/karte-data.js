@@ -21,6 +21,7 @@ import { mobilityClusterFor } from '../data/constants.js';
 import { extractXlsxSource } from '../utils/provenance.js';
 import { extractYear } from '../utils/date-parser.js';
 import { primaryYear } from '../data/loader.js';
+import { recordsFor } from '../data/records-for.js';
 import { SICHTEN as SHARED_SICHTEN, SICHT_COLOR } from './statistik-data.js';
 
 // Mobilitaetssichten als Farb-/Label-Schluessel der Knoten. Farben und die fuenf
@@ -187,6 +188,30 @@ export function buildOccurrences(store) {
   return assignPlacement(out);
 }
 
+/**
+ * Die Belege des geteilten Schnitts: alles, dessen Dokument nicht in der Menge
+ * aus `recordsFor` liegt, faellt weg — aus den Punkten, der Laender-Reichweite,
+ * den Zaehlstaenden und den Beleg-Listen gleichermassen.
+ *
+ * Die Karte schnitt frueher nur ueber Entitaet, Land und Zeitfenster, also stand
+ * ein Personen- oder Dokumenttyp-Schnitt als Chip in der Leiste, ohne einen
+ * einzigen Punkt zu bewegen (Frontend-Audit 2026-09-04).
+ *
+ * Das Zeitfenster bleibt aus dem Schnitt heraus: die Karte schneidet die Zeit am
+ * Datum des Belegs und nicht am Zeitanker seines Dokuments, sonst fiele eine im
+ * Fenster datierte Annotation mit ihrem ausserhalb datierten Dokument weg.
+ * @param {Object} store
+ * @param {Array<Occurrence>} occurrences
+ * @param {Object} shared  getFilter()-Ergebnis
+ * @returns {Array<Occurrence>}
+ */
+export function occurrencesInCut(store, occurrences, shared) {
+  const facets = { ...(shared || {}) };
+  delete facets.zeitfenster;
+  const { ids } = recordsFor(store, facets);
+  return (occurrences || []).filter(o => ids.has(o.recordId));
+}
+
 // ---------------------------------------------------------------------------
 // Laender-Reichweite
 // ---------------------------------------------------------------------------
@@ -216,10 +241,33 @@ export function countryByCity(store) {
   return out;
 }
 
+// E-224: Reichweite is presence, not mention. Only the performative and
+// institutional place roles put the person at the place; the correspondence
+// roles (Absendung, Zielort, Abreiseort, Empfang, Vertragsort), erwaehnt,
+// entstehung and every role without Sicht name a place without anyone being
+// there. Derived from the role register, not from a second list.
+const STAY_CLUSTERS = new Set(['performativ', 'institutionell']);
+// Two roles outside those clusters still put the person at the place: a
+// Wohnort is a state of being there by definition (residencePlace, vocab
+// editorial note), and a Vertragsort attests an engagement at the house
+// (Projektleitung, 2026-09-04).
+const STAY_ROLES = new Set(['m3gim-vocab:residencePlace', 'wohnort',
+  'm3gim-vocab:contractPlace', 'vertragsort']);
+
+/**
+ * Does this role attest a stay of the person at the place (E-224)? Only the
+ * Laender-Reichweite reads it; the map points keep every role.
+ * @param {?string} role  Concept-Id oder Rohform der Rolle
+ */
+export function isStayRole(role) {
+  return STAY_ROLES.has(role) || STAY_CLUSTERS.has(mobilityClusterFor(role));
+}
+
 /**
  * Laender-Reichweite: Laender nach der Zahl der Dokumente, absteigend.
  * Gezaehlt werden Dokumente und nicht Belege, damit die Liste dieselbe Groesse
- * misst wie die Ergebniszeile der Sidebar.
+ * misst wie die Ergebniszeile der Sidebar. Gezaehlt wird nur, was einen
+ * Aufenthalt belegt (isStayRole, E-224).
  * @param {Array<Occurrence>} occurrences  die Belege des Ausschnitts
  * @param {Map<string, string>} cityCountry
  * @returns {Array<{code:string, label:string, count:number}>}
@@ -227,6 +275,7 @@ export function countryByCity(store) {
 export function aggregateCountries(occurrences, cityCountry) {
   const perCountry = new Map();
   for (const o of occurrences || []) {
+    if (!isStayRole(o.roleId || o.role)) continue;
     const land = countryOfOcc(o, cityCountry);
     if (!land) continue;
     let set = perCountry.get(land);

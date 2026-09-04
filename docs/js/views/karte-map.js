@@ -9,6 +9,7 @@
 
 import { el, clear, escapeHtml } from '../utils/dom.js';
 import { cityOf } from '../utils/format.js';
+import { extractYear } from '../utils/date-parser.js';
 import {
   KONTEXT_ID, colorOf, breakdownByView, barSegments, firstYear, lastYear,
 } from './karte-data.js';
@@ -25,6 +26,12 @@ export function buildMap(mapCell, countries, withGeo, state, opts) {
   clear(mapCell);
   // Ortsauswahl ist seit E-151 eine Liste; die Hervorhebung gilt jedem Wert.
   const isSelectedCity = (city) => state.selectedCities.includes(city);
+  // E-225: while a Zeitfenster cuts, a Beleg without a date is carried by the
+  // window (E-88) but proves nothing about it. `winOn` says whether that
+  // difference is worth showing; `dim` collects the two muted cases, a place
+  // outside the window and a place whose window Belege are all undated.
+  let winOn = false;
+  const dim = d => d.shown === 0 || (winOn && d.dated === 0);
   const width = Math.max(320, mapCell.clientWidth || 960);
   const height = Math.max(440, mapCell.clientHeight || 600);
 
@@ -76,9 +83,12 @@ export function buildMap(mapCell, countries, withGeo, state, opts) {
     const rows = bd.map(b =>
       `<span class="mob-tip__row"><span class="mob-tip__sw" style="background:${b.color}"></span>` +
       `${b.label}<span class="mob-tip__n">${b.count}</span></span>`).join('');
+    const meta = winOn
+      ? `${d.dated} datiert · ${d.undated} undatiert · ${span}`
+      : `${d.shown} Belege · ${span}`;
     showTip(
       `<strong>${escapeHtml(d.city)}</strong>` + bar + rows +
-      `<span class="mob-tip__row mob-tip__meta">${d.shown} Belege · ${span}</span>`,
+      `<span class="mob-tip__row mob-tip__meta">${meta}</span>`,
       mx, my);
   }
 
@@ -135,7 +145,7 @@ export function buildMap(mapCell, countries, withGeo, state, opts) {
     zoomBtn('−', 'Herauszoomen', () => svg.transition().duration(200).call(zoom.scaleBy, 1 / 1.5)));
   mapCell.appendChild(zoomCtl);
 
-  const sichtbar = d => d.shown > 0;
+  const sichtbar = d => !dim(d);
   function applyLabelLayer() {
     const sel = gNodes.selectAll('g.mob-node');
     const counts = [];
@@ -178,9 +188,11 @@ export function buildMap(mapCell, countries, withGeo, state, opts) {
   }
 
   function drawMap() {
+    winOn = opts.windowActive ? opts.windowActive() : false;
     const nodeByKey = buildNodes();
     const nodes = [...nodeByKey.values()].map(n => {
       const evsWin = n.occ.filter(opts.inWindow);
+      const nDated = evsWin.filter(o => extractYear(o.date) != null).length;
       // Anteile aus den Belegen im Zeitfenster (sonst aus allen), damit der
       // Zeitfilter die Tortenstuecke mitfiltert.
       const breakdown = breakdownByView(evsWin.length ? evsWin : n.occ);
@@ -190,6 +202,7 @@ export function buildMap(mapCell, countries, withGeo, state, opts) {
       const nSecured = n.occ.filter(o => o.placement === 'secured').length;
       const nFar = n.occ.filter(o => o.placement === 'far').length;
       return { ...n, total: n.occ.length, shown: evsWin.length,
+        dated: nDated, undated: evsWin.length - nDated,
         dom: breakdown.length ? breakdown[0].id : KONTEXT_ID, breakdown,
         approx: nSecured === 0, far: nFar > 0 && nSecured === 0,
         firstYear: firstYear(n.occ), lastYear: lastYear(n.occ) };
@@ -210,18 +223,22 @@ export function buildMap(mapCell, countries, withGeo, state, opts) {
     enter.append('text');
     // Groesserer Mindestradius, damit auch Orte mit nur einem Beleg klar sichtbar
     // sind (Kritik: minimale Datensaetze kaum erkennbar). sqrt-Skala von 7 bis 24.
-    const radiusOf = d => d.shown === 0 ? 4 : 7 + Math.round(17 * Math.sqrt(d.shown / maxShown));
+    const radiusOf = d => dim(d) ? 4 : 7 + Math.round(17 * Math.sqrt(d.shown / maxShown));
+    // The filled pie carries the dated share by area, the gap to the ring the
+    // undated rest (E-225).
+    const pieRadiusOf = d => (winOn && d.shown > 0)
+      ? radiusOf(d) * Math.sqrt(d.dated / d.shown) : radiusOf(d);
     const merged = enter.merge(sel)
       .attr('transform', d => `translate(${d.x},${d.y})`)
-      .attr('opacity', d => d.shown === 0 ? 0.3 : 1);
+      .attr('opacity', d => dim(d) ? 0.3 : 1);
 
     // Tortensegmente je Sicht. shown===0 (ausserhalb des Zeitfensters) -> kein
     // Pie, nur der gedaempfte Basis-Dot ueber den Ring. vector-effect haelt die
     // Trennlinien beim Zoomen konstant duenn.
     merged.each(function (d) {
       const g = d3.select(this).select('.mob-node__pie');
-      arcGen.innerRadius(0).outerRadius(radiusOf(d));
-      const data = d.shown === 0 ? [] : pieGen(d.breakdown);
+      arcGen.innerRadius(0).outerRadius(pieRadiusOf(d));
+      const data = dim(d) ? [] : pieGen(d.breakdown);
       const slices = g.selectAll('path').data(data, s => s.data.id);
       slices.exit().remove();
       slices.enter().append('path')
@@ -242,16 +259,17 @@ export function buildMap(mapCell, countries, withGeo, state, opts) {
       if (isSelectedCity(d.city)) return 'var(--accent)';
       if (d.far) return 'var(--color-error)';
       if (d.approx) return 'var(--line-strong)';
-      return d.shown === 0 ? 'var(--surface)' : 'var(--line-strong)';
+      return dim(d) ? 'var(--surface)' : 'var(--line-strong)';
     };
+    const undatedArea = d => !dim(d) && winOn && d.undated > 0;
     merged.select('.mob-node__ring')
       .attr('r', radiusOf)
       .attr('vector-effect', 'non-scaling-stroke')
-      .style('fill', d => d.shown === 0 ? colorOf(d.dom) : 'none')
-      .attr('fill-opacity', d => d.shown === 0 ? 0.5 : 0)
+      .style('fill', d => (dim(d) || undatedArea(d)) ? colorOf(d.dom) : 'none')
+      .attr('fill-opacity', d => dim(d) ? 0.5 : (undatedArea(d) ? 0.15 : 0))
       .style('stroke', ringStroke)
       .attr('stroke-width', d => isSelectedCity(d.city) ? 3
-        : (d.far || d.approx ? 1.5 : (d.shown === 0 ? 1 : 0.8)))
+        : (d.far || d.approx ? 1.5 : (dim(d) ? 1 : 0.8)))
       .attr('stroke-dasharray', d => (!isSelectedCity(d.city) && (d.far || d.approx)) ? '3 2' : null);
     merged.select('text')
       .text(d => d.city)

@@ -232,8 +232,7 @@
 }
 
 /* Brighten on row hover */
-tr:hover .korb-btn,
-.idx-row:hover .korb-btn {
+tr:hover .korb-btn {
   opacity: 0.7;
 }
 

@@ -130,6 +130,19 @@ export function buildDokumenttypen(store, ids) {
  * sagt, wo Arbeit liegt. Der Aufriss nach Konvolut macht daraus ein
  * Arbeitspaket, das duennste Konvolut steht oben.
  */
+/**
+ * Die offenen Achsen eines Konvoluts, die groesste Luecke zuerst. Der Anteil am
+ * Balken sagt nur, wie viel fehlt, nicht was; die Frage nach der Achse
+ * beantwortet erst diese Zeile.
+ */
+function konvolutTip(k) {
+  const offen = (k.axes || []).filter((a) => a.missing > 0);
+  if (offen.length === 0) return 'Alle Achsen belegt';
+  return offen
+    .map((a, i) => (i === 0 ? `${a.label} ${a.missing} offen` : `${a.label} ${a.missing}`))
+    .join(' · ');
+}
+
 export function buildErschliessung(store, ids) {
   const node = section('Erschließungsstand');
   const gaps = aggregateCatalogueGaps(store, ids);
@@ -151,7 +164,7 @@ export function buildErschliessung(store, ids) {
     value: Math.round(k.share * 100),
     countText: `${Math.round(k.share * 100)} %`,
     color: 'var(--color-text-tertiary)',
-    tip: 'Anteil der belegten Achsen, aufsteigend sortiert',
+    tip: konvolutTip(k),
   }))));
   return node;
 }

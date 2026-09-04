@@ -623,6 +623,13 @@
   font-weight: var(--weight-semibold);
 }
 
+/* The value carries the modelled fields the chip does not print. It gets the
+   help cursor of the Provenienzpille and no underline: the dotted line is
+   reserved for a supplemented value (design rule 16). */
+.chip--role-pair .chip-wert[data-tip] {
+  cursor: help;
+}
+
 .chip--role-pair .prov-pill {
   display: inline-flex;
   align-items: center;

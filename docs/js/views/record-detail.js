@@ -240,7 +240,7 @@ export function buildRecordBlocks(record, store) {
   push('produktion', 'Produktion', agentChipEls(store, bucket.produktion));
   push('mitwirkende', 'Mitwirkende', agentChipEls(store, bucket.mitwirkende));
   push('institutionen', 'Institutionen', agentChipEls(store, bucket.institutionen));
-  push('werk', 'Werk & Repertoire', workChipEls(works, performanceRoles));
+  push('werk', 'Werk & Repertoire', workChipEls(works, performanceRoles, store));
   push('auffuehrungen', 'Aufführungen', performanceChipEls(performances));
   push('ort', 'Ort & Ereignis', eventChipEls(store, events, locations, eventDatings));
   push('genannte-daten', 'Im Dokument genannte Daten', datingChipEls(store, mentionedDatings));

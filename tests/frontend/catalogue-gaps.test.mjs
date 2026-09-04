@@ -136,6 +136,38 @@ describe('Aufriss nach Konvolut', () => {
     ));
   });
 
+  test('jedes Konvolut nennt seine offenen Achsen einzeln', () => {
+    // Der Anteil sagt nur, wie viel fehlt. Welche Achse fehlt, ist die Frage
+    // der Arbeitsliste; ohne den Aufriss je Achse steht sie nirgends.
+    const k1 = result.byKonvolut.find((k) => k.id === 'K1');
+    const byId = new Map(k1.axes.map((a) => [a.id, a]));
+    assert.equal(byId.get('typ').filled, 1);
+    assert.equal(byId.get('typ').missing, 1);
+    assert.equal(byId.get('ort').filled, 1);
+    assert.equal(byId.get('werk').filled, 0);
+    assert.equal(byId.get('werk').missing, 2);
+    for (const a of k1.axes) {
+      assert.equal(a.filled + a.missing, k1.total,
+        `Konvolut K1, Achse ${a.id}: ${a.filled} + ${a.missing} ist nicht ${k1.total}`);
+    }
+  });
+
+  test('die groesste Luecke eines Konvoluts steht vorn', () => {
+    const k1 = result.byKonvolut.find((k) => k.id === 'K1');
+    const missing = k1.axes.map((a) => a.missing);
+    assert.deepEqual(missing, [...missing].sort((a, b) => b - a),
+      'Die Achsen eines Konvoluts stehen nicht nach der Groesse der Luecke.');
+    assert.equal(k1.axes[0].missing, 2);
+  });
+
+  test('die Achsen je Konvolut summieren zu den Achsen des Bestands', () => {
+    for (const a of result.axes) {
+      const sum = result.byKonvolut.reduce(
+        (s, k) => s + k.axes.find((x) => x.id === a.id).filled, 0);
+      assert.equal(sum, a.filled, `Achse ${a.id}: ${sum} statt ${a.filled}`);
+    }
+  });
+
   test('die Konvolutsummen ergeben den Bestand', () => {
     const sum = result.byKonvolut.reduce((s, k) => s + k.total, 0);
     assert.equal(sum, result.total);

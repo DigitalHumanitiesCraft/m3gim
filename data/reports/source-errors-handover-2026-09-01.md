@@ -53,6 +53,34 @@ Die Autokonvertierung der Datumsspalte betrifft in der Objekttabelle 156 Zellen.
 | Verknüpfungstabelle | Name | `Teatro Colon` ohne Akzent | Der Index führt `Teatro Colón` mit Akzent. Schreibung angleichen, sonst greift die Normdaten-Verknüpfung nicht |
 | Verknüpfungstabelle | Ortsname | `bayreuth` (klein) und `Bayeuth` (Tippfehler) | Auf `Bayreuth` vereinheitlichen |
 
+### Werktitel in Kurzform, Dubletten im Werke-Register und fehlende Komponisten (2026-09-04)
+
+Die Verknüpfungstabelle führt dieselbe Oper unter mehreren Titeln, meist einmal ausgeschrieben mit Artikel und einmal als Kurzform ohne Artikel. Das Frontend gleicht Werknamen nicht unscharf ab, deshalb steht jede Schreibung als eigener Eintrag im Werke-Register, und die Kurzform trifft den Werkindex nicht, bleibt also ohne Komponisten und ohne Wikidata-Kennung. 188 Werknamen stehen im ausgelieferten Datensatz, 94 davon ohne Komponisten. Zehn dieser 94 lösen einen Indexeintrag auf, der selbst keinen Komponisten führt, darunter die weiter unten bereits gemeldeten Requiem- und Stabat-mater-Fälle, und 84 lösen gar keinen Indexeintrag auf. Von diesen 84 unterscheiden sich elf von der Indexform nur in Artikel, Groß- und Kleinschreibung oder Akzent, sechzehn sind Schreibvarianten oder Tippfehler dicht an einer Indexform, und 57 haben im Werkindex keine Entsprechung, darunter fünf Kurzformen eines längeren Indextitels.
+
+Die Kurzformen häufen sich in der Erschließung von `UAKUG/NIM_005` (Box 1, Zeilen 1006 bis 2904) und in einem Zeilenlauf zu `UAKUG/NIM_004` Folio 30 (Box 1, Zeilen 722 bis 738, dort Troubadour, Cosi fan Tutte, Zauberflöte, Tannhäuser, Meistersinger, Walküre). Zwei dieser Zeilen tragen in der Anmerkung `sic!` (Box 1, Zeilen 1280 und 1287), die Kurzform ist dort also bewusst nach dem Wortlaut der Vorlage erfasst.
+
+| Kurzform (Belegstelle) | Ausgeschriebene Form (Belegstelle) | Ist-Wert | Zu tun |
+|---|---|---|---|
+| `Walküre`, 12 Dokumente, Box 1 Zeilen 737, 1273, 1433, Box 5 Zeilen 323, 1372 | `Die Walküre`, 6 Dokumente, Box 1 Zeile 3562, Box 2 Zeilen 44, 71 | zwei Registereinträge, die Kurzform ohne Komponisten | Auf die Indexform `Die Walküre` vereinheitlichen |
+| `Tristan`, 11 Dokumente, Box 1 Zeilen 1280, 1330, 1384 und weitere in NIM_005 | `Tristan und Isolde`, 44 Dokumente, Box 1 Zeilen 208, 248, 496 | wie vor | Auf `Tristan und Isolde` vereinheitlichen |
+| `Rheingold`, 5 Dokumente, Box 1 Zeilen 1271, 1432, 1587 | `Das Rheingold`, 9 Dokumente, Box 2 Zeilen 24, 43, 70 | wie vor | Auf `Das Rheingold` |
+| `Meistersinger`, 6 Dokumente, Box 1 Zeilen 736, 1287, 1404 | `Die Meistersinger von Nürnberg`, 9 Dokumente, Box 1 Zeilen 349, 2992, 3242 | dazu `Die Meistersinger vin Nürnberg` in Box 5 Zeile 273 | Beide auf `Die Meistersinger von Nürnberg` |
+| `Rosenkavalier`, 3 Dokumente, Box 1 Zeilen 1755, 1845, 2315 | `Der Rosenkavalier`, 2 Dokumente, Box 1 Zeile 804, Box 5 Zeile 897 | dazu `Der Rosenkawalier` | Auf `Der Rosenkavalier` |
+| `Ring des Nibelungen`, 2 Dokumente, Box 1 Zeile 1777, Box 5 Zeile 402 | `Der Ring des Nibelungen`, 7 Dokumente, Box 4 Zeilen 41, 96, 169 | dazu `Der Ring des Niebelungen` | Auf `Der Ring des Nibelungen` |
+| `Zauberflöte`, 2 Dokumente, Box 1 Zeilen 324, 731 | `Die Zauberflöte`, 1 Dokument, Box 1 Zeile 2993 | wie vor | Auf `Die Zauberflöte` |
+| `Junge Magd`, 1 Dokument, Box 1 Zeile 2627 | `Die junge Magd`, 1 Dokument, Box 1 Zeile 3518 | wie vor | Auf `Die junge Magd` |
+| `Cosi Fan Tutte` und drei weitere Schreibungen, 9 Dokumente, Box 1 Zeilen 326, 730, 1182, Box 2 Zeile 193 | `Così fan tutte`, 1 Dokument, Box 1 Zeilen 3362, 3363 | fünf Registereinträge für ein Werk, nur die Indexform mit Komponist | Auf `Così fan tutte` |
+| `Stabat Mater` Box 1 Zeile 1695, `Stabat mater` Box 1 Zeilen 859, 3528, 3529 | drei Werke gleichen Titels im Index | zwei Registereinträge, keiner auflösbar | Groß- und Kleinschreibung vereinheitlichen und den Komponisten je Zeile mitführen |
+| `Elias`, 3 Dokumente, Box 1 Zeilen 1006, 2147, 2383 | `Elias, op. 70, MWV A 25`, 2 Dokumente, Box 1 Zeile 3523, Box 2 Zeile 295 | Kurzform trifft den Indextitel nicht | Auf die Indexform oder den Indextitel auf `Elias` kürzen und die Werkkennung führen |
+| `Orpheus`, 2 Dokumente, Box 1 Zeilen 1516, 1727 | `Orpheus und Eurydike`, 5 Dokumente, Box 1 Zeilen 124, 136, 181 | wie vor | Auf `Orpheus und Eurydike` |
+| `Troubadour`, 4 Dokumente, Box 1 Zeilen 722, 1233, 1240 | `Der Troubadour`, 2 Dokumente, Box 2 Zeilen 157, 170 | beide Formen fehlen im Werkindex | Indexzeile mit Komponist anlegen und die Schreibung vereinheitlichen |
+| `Tannhäuser`, 6 Dokumente, Box 1 Zeilen 410, 735, 1118 | Index führt `Tannhäuser und der Sängerkrieg auf Wartburg` | Kurzform trifft den Indextitel nicht | wie bei `Elias` |
+| `Der Wildschütz`, 6 Dokumente, Box 1 Zeilen 3122, 3147, 3172 | Index führt `Der Wildschütz oder Die Stimme der Natur` | wie vor | wie vor |
+
+Ohne Entsprechung im Werkindex stehen daneben unter anderem `Figaro` (5 Dokumente), `IX. Beethoven` (5), `Don Carlos` (3), `Missa Solemnis` (3), `Titus` (3) sowie die Verschreibungen `Fallstaff`, `Lohegerin`, `Parisfal`, `Mozarts Requium`, `Howantschina` und `Bluebarts Castle` neben dem vorhandenen `Herzog Blaubart's Burg`.
+
+Die dauerhafte Abhilfe ist, die Werknennung in den Boxen über die Werkkennung `m3gim_id` des Werkindex führen statt über den ausgeschriebenen Titel, so wie es der Punkt zu Organisationen und Orten unter den strukturellen Format-Fixes vorsieht. Damit fallen alle Schreibvarianten zusammen und der Komponist kommt aus dem Index. Bis dahin sind die Kurzformen an der Quelle auf die Indexform zu ziehen, für die fünf verkürzten Indextitel ist zu entscheiden, welche Ansetzung gilt, und die im Index fehlenden Werke sind dort mit Komponist anzulegen. Wo die Kurzform bewusst den Wortlaut der Vorlage wiedergibt (die beiden `sic!`-Zeilen), gehört der Wortlaut in die Anmerkung und die Ansetzungsform in die Namensspalte.
+
 ## Personenindex (`M3GIM-Personenindex.xlsx`)
 
 | Fundstelle | Feld | Ist-Wert | Zu tun |

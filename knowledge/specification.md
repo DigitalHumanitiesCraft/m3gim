@@ -132,13 +132,28 @@ Die Indizes erschließen die Normdaten-Register Personen, Organisationen, Orte u
 - Als Forscher:in möchte ich Personen, Organisationen, Orte und Werke durchsuchen und nach Wikidata-Verknüpfung filtern, um über eine normierte Entität in den Bestand einzusteigen.
 - Als Forscher:in möchte ich an einer Personenzeile die Wikidata-Anreicherung (Beruf, Stimmfach, Lebensdaten) und die annotierten Beziehungen sehen, um die Entität ohne Detailsprung einzuordnen.
 
+Umbau zu Registerseiten, Entscheidung der Projektleitung vom 2026-09-04 (E-226). Die vier gleichzeitig gezeigten Register überforderten die Lesenden, und der register-übergreifende Facetten-Chip erklärte sich nicht.
+
+- Als Forscher:in möchte ich genau ein Register auf der Seite sehen und es in der segmentierten Kopfzeile der Liste wählen, die alle vier Register mit Familiensymbol zeigt und am aktiven die Zahl der Einträge im Schnitt nennt, und die Wahl in der Adresse als `#indizes/personen` wiederfinden, um eine Registerseite zitieren zu können (E-227, löst die Sidebar-Sektion „Ansicht" ab).
+- Als Forscher:in möchte ich das Register als ruhige Liste lesen, ohne Spaltenköpfe und ohne Kategorie, ein Eintrag je Entität in einer Zeilenhöhe mit Name, kurzer Anreicherung, Belegzahl im Schnitt und einfarbiger Wikidata-Marke, damit die Zahlen der Liste mit der Sidebar übereinstimmen und die Seite nicht unruhig wirkt (E-227). Beziehungen, Rollen und Partie stehen im aufgeklappten Eintrag.
+- Als Forscher:in möchte ich Register, Familienfarbe und Familiensymbol überall identisch sehen, im Ansichtswähler, in der Registerzeile, in den Familienmarkern des Bestands und in den Blocktiteln des Details, damit ich eine Entität in jeder Sicht als dieselbe Sache erkenne.
+- Als Forscher:in möchte ich die Sortierung des Registers (Belegzahl, alphabetisch) in der Sidebar wählen, weil die Spaltenköpfe wie im Bestand stumm sind (E-203).
+- Als Forscher:in möchte ich im aufgeklappten Eintrag das Umfeld der Entität nach Familie gruppiert sehen, bei einer Person ihre Orte, Werke, Institutionen und Personen als Chips in Familienfarbe, und über einen Chip in das andere Register zu dieser Entität weitergehen, statt über einen Filter drei unsichtbare Tabellen zu schneiden.
+- Als Forscher:in möchte ich von einem Eintrag mit der Entität als Fokus in das Netzwerk und, bei Person und Organisation, als Entität in die Karte springen, weil beide Ansichten entitätszentriert sind und das Register ihr Einstieg ist.
+- Als Forscher:in möchte ich im Werke-Register Komponist und die belegten Bühnenrollen je Werk sehen, weil die Daten sie tragen.
+- Als Modelliererin möchte ich je Register die Einträge ohne Wikidata als Liste öffnen können, um die nächste Reconciliation-Runde zu planen.
+
+Erhalten bleiben Suche über das geteilte Feld, der Wikidata-Umschalter und der Prozentbadge je Register, die Anreicherung und die Beziehungs-Chips an der Personenzeile, die Belegliste im Eintrag mit Korb-Zugang, der Sprung in den gefilterten Bestand mit der Zahl des Schnitts und der geteilte Filter der Sidebar.
+
 ### Epic Karte
 
 Die Karte zeigt die räumliche Verteilung einer gewählten Entität (E-126, entitätszentriert).
 
 - Als Forscher:in möchte ich eine Organisation oder Person wählen und ihre Orte als Punkte mit Sicht-Aufschlüsselung sehen, um die räumliche Streuung einer Entität zu erfassen.
 - Als Forscher:in möchte ich die Verortungs-Sicherheit jedes Punkts erkennen und von einem Ort zu den belegenden Dokumenten gelangen, um Kartenaussagen auf ihre Quellen zurückzuführen.
-- Als Forscher:in möchte ich in der Sidebar der Karte die Reichweite nach Ländern als Liste mit Dokumentzahlen sehen und ein Land wählen können, das die Karte auf seine Orte einschränkt, um die geografische Streuung ohne Wechsel in eine andere Ansicht zu lesen (E-160, aus der Statistik übernommen).
+- Als Forscher:in möchte ich in der Sidebar der Karte die Reichweite nach Ländern als Liste mit Dokumentzahlen sehen und ein Land wählen können, das die Karte auf seine Orte einschränkt, um die geografische Streuung ohne Wechsel in eine andere Ansicht zu lesen (E-160, aus der Statistik übernommen). Die Liste zählt Dokumente mit Aufenthaltsbeleg, nicht Nennungen (E-224).
+- Als Forscher:in möchte ich die gewählte Entität und das gewählte Land als entfernbare Chips im Filterstreifen sehen, um zu erkennen, dass Karte und Länderliste darauf verengt sind (E-223).
+- Als Forscher:in möchte ich an jedem Punkt erkennen, wie viele Belege im Zeitfenster datiert und wie viele undatiert sind, damit ein Ort ohne datierten Beleg nicht als Auftrittsort im Fenster erscheint (E-225).
 
 ### Epic Netzwerk
 

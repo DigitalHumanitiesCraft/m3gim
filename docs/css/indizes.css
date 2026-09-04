@@ -1,6 +1,6 @@
-/* M3GIM Indizes: the four parallel grids */
+/* M3GIM Indizes: eine Registerseite (E-226), als Liste mit Kopfwahl (E-227) */
 
-/* Tab container override: disable outer scroll so inner grids control overflow */
+/* Tab container override: disable outer scroll so the register controls it */
 #tab-indizes.tab-content {
   overflow: hidden;
   padding: 0;
@@ -14,20 +14,18 @@
   overflow: hidden;
 }
 
-/* Grid container: 2×2 layout, fills remaining viewport */
-.idx-grids {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
-  gap: var(--space-2);
+/* One register fills the remaining viewport. */
+.idx-stage {
+  display: flex;
   flex: 1;
   min-height: 0;
   overflow: hidden;
 }
 
-/* Single grid card */
+/* Register card */
 .idx-grid {
   display: flex;
+  width: 100%;
   flex-direction: column;
   border: 1px solid var(--border-color-light);
   border-radius: var(--border-radius);
@@ -36,170 +34,154 @@
   min-height: 0;
 }
 
-/* Grid and column heads take the neutral hairline grey, not the tinted sidebar
-   step: they sit inside the white work area, where a tinted ground would read
-   as a selection rather than as a head. */
-.idx-grid__header {
+/* Registerwahl als segmentierte Kopfzeile ueber der Liste (E-227). Das aktive
+   Segment traegt seine Familienfarbe und die Zahl des Schnitts; die uebrigen
+   nur Symbol und Name. */
+.idx-chooser {
   display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-2) var(--space-3);
-  background: var(--line-soft);
   flex-shrink: 0;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--line-soft);
 }
 
-.idx-grid__icon {
+.idx-seg {
   display: flex;
+  flex: 1;
   align-items: center;
-  color: var(--color-text-secondary);
-}
-
-.idx-grid__icon svg {
-  display: block;
-}
-
-.idx-grid__title {
-  font-weight: var(--weight-semibold);
+  justify-content: center;
+  gap: var(--space-1-5);
+  min-height: 34px;
+  padding: var(--space-1-5) var(--space-2);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  font-family: inherit;
   font-size: var(--text-sm);
-  color: var(--color-text-primary);
-}
-
-.idx-grid__count {
-  font-size: var(--text-xs);
-  color: var(--color-text-tertiary);
-  font-variant-numeric: tabular-nums;
-  margin-inline-start: auto;
-}
-
-.idx-grid__wd-status {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  font-size: var(--text-2xs);
-  font-variant-numeric: tabular-nums;
-  color: var(--color-text-tertiary);
-  background: var(--surface-3);
-  padding: 2px 5px;
-  border-radius: 6px;
-  white-space: nowrap;
-  line-height: 1;
-}
-
-.idx-grid__wd-status svg {
-  width: 10px;
-  height: 10px;
-}
-
-/* Column headers */
-.idx-colheaders {
-  display: flex;
-  padding: var(--space-1) var(--space-3);
-  background: var(--line-soft);
-  border-bottom: 2px solid var(--border-color);
-  flex-shrink: 0;
-}
-
-.idx-colheader {
-  font-size: var(--text-xs);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--color-text-tertiary);
-  font-weight: var(--weight-semibold);
+  color: var(--color-text-secondary);
   cursor: pointer;
-  user-select: none;
-  padding: 2px 0;
-  transition: color var(--transition-fast);
   white-space: nowrap;
+  transition: color var(--transition-fast), background var(--transition-fast);
 }
 
-.idx-colheader:hover {
-  color: var(--color-text-primary);
+.idx-seg:hover { background: var(--surface-3); }
+
+.idx-seg__icon { display: inline-flex; align-items: center; }
+
+.idx-seg--on {
+  background: var(--surface);
+  font-weight: var(--weight-semibold);
+  border-bottom-color: currentColor;
 }
 
-.idx-colheader--active {
-  color: var(--accent);
+/* Die Familienfarbe faerbt das aktive Segment ganz; das Symbol traegt sie
+   ohnehin ueber .fam-mark. */
+.idx-seg--on.idx-seg--person      { color: var(--chip-c-person-text); }
+.idx-seg--on.idx-seg--institution { color: var(--chip-c-institution-text); }
+.idx-seg--on.idx-seg--ort         { color: var(--chip-c-ort-text); }
+.idx-seg--on.idx-seg--werk        { color: var(--chip-c-werk-text); }
+
+.idx-seg__count {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-normal);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-tertiary);
 }
 
-.idx-colheader--right {
-  text-align: right;
-}
-
-/* Scrollable body */
-.idx-grid__body {
+/* Liste statt Tabelle (E-227): keine Spaltenkoepfe, ein Eintrag eine Zeile
+   fester Hoehe. */
+.idx-list {
   overflow-y: auto;
   flex: 1;
   min-height: 0;
 }
 
-/* Rows */
-.idx-row {
-  display: flex;
-  padding: 3px var(--space-3);
+/* Vier Spalten: Name, Anreicherung, Belegzahl des Schnitts, Wikidata-Marke.
+   Die feste Hoehe ist der Punkt der Zeile; was sie sprengt, steht im
+   aufgeklappten Eintrag. */
+.idx-item {
+  display: grid;
+  grid-template-columns: minmax(0, auto) minmax(0, 1fr) 2.5rem 18px;
+  align-items: center;
+  gap: var(--space-2);
+  height: 28px;
+  padding: 0 var(--space-3);
+  border-bottom: 1px solid var(--line-soft);
+  overflow: hidden;
   cursor: pointer;
   transition: background var(--transition-fast);
-  align-items: center;
-  min-height: 26px;
 }
 
-.idx-row:hover {
-  background: var(--surface-3);
-}
+.idx-item:hover { background: var(--surface-3); }
+.idx-item--expanded { background: var(--surface-2); }
 
-.idx-row--expanded {
-  background: var(--surface-2);
-}
-
-/* Cells */
-.idx-cell {
+/* Der Name ist seit dem Frontend-Audit 2026-09-04 das Bedienelement der Zeile
+   (E-214). Als Knopf gezeichnet wie der Text, den er ersetzt. */
+button.idx-name {
+  border: none;
+  background: none;
+  padding: 0;
+  font-family: inherit;
   font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  color: var(--color-text-primary);
+  line-height: 1.3;
+  text-align: start;
+  cursor: pointer;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.idx-cell--right {
-  text-align: right;
-}
-
-/* Cell content styles */
-.idx-name {
-  font-weight: var(--weight-medium);
-  color: var(--color-text-primary);
-}
-
-.idx-count {
-  font-variant-numeric: tabular-nums;
+.idx-enrich {
   font-size: var(--text-xs);
-  color: var(--color-text-secondary);
-}
-
-.idx-kategorie {
-  font-size: var(--text-xs);
-  color: var(--color-text-secondary);
+  color: var(--color-text-tertiary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 }
 
 .idx-komponist {
-  font-size: var(--text-xs);
   color: var(--color-text-secondary);
   font-style: italic;
 }
 
-/* WD-Enrichment subtitle */
-.idx-subtitle {
+.idx-item__count {
   font-size: var(--text-xs);
-  color: var(--color-text-tertiary);
-  margin-top: 1px;
-  line-height: 1.3;
+  color: var(--color-text-secondary);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
 }
 
-/* AgRelOn relation badges (E-75) as a second subtitle line: the same
-   Rolle-Prefix chip as the inline detail, set tighter and without the
-   provenance pill, because the row is one line high. */
+/* Die Wikidata-Spalte bleibt einfarbig: die Marke sagt vorhanden oder nicht,
+   und eine zweite Farbe stuende gegen Regel 2. */
+.idx-item__wd {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.idx-wd-link {
+  display: inline-flex;
+  color: var(--color-text-tertiary);
+  line-height: 0;
+}
+.idx-wd-link:hover { color: var(--accent); }
+.idx-wd-link svg { width: 12px; height: 12px; }
+
+/* Beziehungs- und Rollen-Chips eroeffnen den aufgeklappten Eintrag (E-227);
+   an der Zeile gaben sie ihr eine eigene Hoehe. */
+.idx-detail__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-3);
+  margin-bottom: var(--space-2);
+}
+
 .idx-relations {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-1);
-  margin-top: 3px;
 }
 
 .idx-relations .chip--role-pair {
@@ -216,17 +198,10 @@
   font-size: var(--text-2xs);
 }
 
-/* Wikidata badge inline */
-.idx-name + .badge--wikidata {
-  margin-inline-start: var(--space-1);
-}
-
 /* Expanded detail panel */
 .idx-detail {
   padding: var(--space-2) var(--space-3);
   background: var(--surface-3);
-  max-height: 200px;
-  overflow-y: auto;
 }
 
 .idx-detail__header {
@@ -273,64 +248,6 @@
   white-space: nowrap;
 }
 
-/* Facet-active row (the entry driving cross-grid filter) */
-.idx-row--facet-active {
-  background: var(--surface-2);
-  border-inline-start: 3px solid var(--accent);
-  padding-inline-start: calc(var(--space-3) - 3px);
-}
-
-/* Grid that is the source of a facet filter */
-.idx-grid--filter-source {
-  border-color: var(--accent);
-}
-
-/* Cross-grid Facette: the chip below the two filters in the sidebar. */
-.idx-facet-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-}
-
-/* Chip primitive plus: wraps onto a second line, because the facet name can be
-   long and the chip sits in a narrow sidebar column. */
-.idx-facet-chip {
-  flex-wrap: wrap;
-  max-width: 100%;
-  padding: var(--space-1) var(--space-2);
-  background: var(--surface-2);
-  border: 1px solid var(--accent);
-  border-radius: var(--border-radius);
-}
-
-.idx-facet-chip__label {
-  color: var(--color-text-tertiary);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-weight: var(--weight-semibold);
-}
-
-.idx-facet-chip__name {
-  font-weight: var(--weight-semibold);
-  color: var(--accent);
-  overflow-wrap: anywhere;
-}
-
-.idx-facet-chip__close {
-  width: 18px;
-  height: 18px;
-  padding: 0;
-  margin-inline-start: var(--space-1);
-  border-radius: 50%;
-  color: var(--color-text-secondary);
-  transition: background var(--transition-fast), color var(--transition-fast);
-}
-
-.idx-facet-chip__close:hover {
-  background: var(--accent);
-  color: var(--color-text-inverse);
-}
-
 /* "Show all in Archiv" link in detail panel */
 .idx-detail__show-all {
   padding: var(--space-1);
@@ -349,12 +266,91 @@
   text-decoration: underline;
 }
 
-/* At the same threshold sidebar.css stacks the filter column above the content
-   and gives .view-main a fixed height; the four grids then scroll together. */
-@container view-shell (width < 900px) {
-  .idx-grids {
-    grid-template-columns: 1fr;
-    grid-template-rows: repeat(4, minmax(180px, 1fr));
-    overflow-y: auto;
-  }
+/* Sprungknoepfe des aufgeklappten Eintrags (Netzwerk, Karte). */
+.idx-detail__actions {
+  display: flex;
+  gap: var(--space-1);
+  justify-content: flex-end;
+}
+
+.idx-jump {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color-light);
+  background: var(--surface);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: color var(--transition-fast), border-color var(--transition-fast);
+}
+.idx-jump:hover { color: var(--accent); border-color: var(--accent); }
+
+/* Umfeld: die ko-okkurrenten Entitaeten nach Familie gruppiert. Die Chips
+   bleiben neutral (Regel 2), die Familie sagt das farbige Symbol. */
+.idx-umfeld {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin-bottom: var(--space-2);
+}
+
+.idx-umfeld__group {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: var(--space-2);
+  align-items: baseline;
+}
+
+.idx-umfeld__label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-2xs);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-tertiary);
+  cursor: help;
+}
+
+.idx-umfeld__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.idx-umfeld__mark {
+  display: inline-flex;
+  align-items: center;
+}
+
+.idx-umfeld .chip--role-pair {
+  padding: 1px var(--space-1-5);
+  font-size: var(--text-2xs);
+}
+
+/* Umfeld-Chips sind Knoepfe, damit die Tastatur sie erreicht; das Chip-Bild
+   bleibt, nur die Knopf-Vorgaben des Browsers fallen weg. */
+.idx-umfeld button.chip {
+  font-family: inherit;
+  line-height: 1.4;
+  text-align: start;
+}
+
+/* „+N weitere" holt den naechsten Stapel an Ort und Stelle; die Zahl gehoert
+   dem Rest, nicht einer Namensliste im Tooltip. */
+.idx-umfeld__more {
+  color: var(--color-text-secondary);
+}
+.idx-umfeld__more:hover {
+  color: var(--accent);
+}
+
+/* Belegliste im Eintrag: eigener Scrollbereich unter dem Umfeld. */
+.idx-detail__records {
+  max-height: 220px;
+  overflow-y: auto;
 }

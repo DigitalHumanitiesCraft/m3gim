@@ -240,7 +240,8 @@ function hasWork(record) {
  * @param {?Set<string>} ids
  * @returns {{total:number, none:number,
  *            axes:Array<{id:string,label:string,filled:number,missing:number,share:number}>,
- *            byKonvolut:Array<{id:string,label:string,total:number,filled:object,share:number}>}}
+ *            byKonvolut:Array<{id:string,label:string,total:number,filled:object,share:number,
+              axes:Array<{id:string,label:string,filled:number,missing:number}>}>}}
  */
 export function aggregateCatalogueGaps(store, ids) {
   const records = cutRecords(store, ids);
@@ -290,6 +291,14 @@ export function aggregateCatalogueGaps(store, ids) {
       // Sortierung stellt das duennste Konvolut nach oben, damit die
       // Arbeitsliste ohne eigenes Suchen lesbar ist.
       share: k.total ? sum / (k.total * GAP_AXES.length) : 0,
+      // Welche Achse hier fehlt, beantwortet der Anteil nicht; deshalb traegt
+      // jedes Konvolut seine Achsen mit der Gegenzahl, die groesste Luecke
+      // zuerst (stabile Sortierung haelt bei Gleichstand die Achsenreihenfolge).
+      axes: GAP_AXES.map((a) => ({
+        id: a.id, label: a.label,
+        filled: k.filled[a.id],
+        missing: k.total - k.filled[a.id],
+      })).sort((a, b) => b.missing - a.missing),
     };
   }).sort((a, b) => a.share - b.share || b.total - a.total);
 

@@ -1,21 +1,22 @@
 /**
  * Die Datenschicht der Indizes: Einträge, Suche, Normdaten-Filter und der
- * Cross-Grid-Schnitt.
+ * Schnitt auf die Dokumentmenge der Sidebar.
  *
- * Die vier Grids lesen aus je einer Store-Map und zeigen nur Einträge mit
- * belegten Dokumenten. Darüber liegen drei Schnitte: der Cross-Grid-Filter (ein
- * Eintrag im einen Grid schneidet die drei anderen auf die überlappenden
- * Dokumente), der Wikidata-Schalter und die Freitextsuche über die Felder des
- * jeweiligen Grids.
+ * Die vier Register lesen aus je einer Store-Map und zeigen nur Einträge mit
+ * belegten Dokumenten. Darüber liegen drei Schnitte: der geteilte Filter als
+ * Dokumentmenge, der Wikidata-Schalter und die Freitextsuche über die Felder
+ * des jeweiligen Registers. Umfeld, Sortierung und Bühnenrollen prüft
+ * `indizes-register.test.mjs`.
  *
  * Die stillen Defekte, gegen die diese Datei steht:
  *
  *   * Ein Eintrag ohne verknüpfte Dokumente steht im Index und führt beim Klick
  *     ins Leere.
- *   * Der Cross-Grid-Filter schneidet auch sein eigenes Grid und lässt dort nur
- *     noch den gewählten Eintrag stehen.
+ *   * Der Schnitt auf die Dokumentmenge lässt Einträge stehen, die kein
+ *     Dokument des Schnitts belegen.
  *   * Der Normdaten-Schalter zählt eine leere oder nicht aufgelöste Angabe als
- *     Wikidata-Treffer, und die Abdeckungsquote im Kopf des Grids wird zu hoch.
+ *     Wikidata-Treffer, und die Abdeckungsquote im Kopf des Registers wird zu
+ *     hoch.
  *   * Die AgRelOn-Beziehungen aus Pass 2.5 des Loaders werden beim Bau der
  *     Einträge nicht durchgereicht; die Beziehungsbadges im Personen-Grid
  *     bleiben dann toter Code, ohne dass etwas fehlschlägt.
@@ -27,7 +28,7 @@ import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
 
 import {
-  getGridEntries, clearEntriesCache, applyFacetFilter, filterEntries, hasWikidata,
+  getGridEntries, clearEntriesCache, entriesWithRecordsIn, filterEntries, hasWikidata,
 } from '../../docs/js/views/indizes-data.js';
 import { storeFromShipped } from './_shipped.mjs';
 
@@ -137,32 +138,24 @@ describe('Wikidata-Filter', () => {
   });
 });
 
-describe('Cross-Grid-Facette', () => {
-  const facet = { gridKey: 'orte', name: 'Bayreuth', recordIds: new Set(['r1']) };
+describe('Schnitt auf die Dokumentmenge', () => {
+  const cut = new Set(['r1']);
 
-  test('ein anderes Grid wird auf die ueberlappenden Dokumente geschnitten', () => {
+  test('nur Eintraege mit einem Dokument im Schnitt bleiben stehen', () => {
     clearEntriesCache();
-    const persons = applyFacetFilter(getGridEntries(STORE, 'personen'), 'personen', facet);
+    const persons = entriesWithRecordsIn(getGridEntries(STORE, 'personen'), cut);
     assert.deepEqual(namesOf(persons), ['Malaniuk, Ira', 'Karajan, Herbert von']);
   });
 
-  test('das Quell-Grid bleibt vollstaendig', () => {
-    clearEntriesCache();
-    const all = getGridEntries(STORE, 'orte');
-    assert.equal(applyFacetFilter(all, 'orte', facet), all,
-      'Das Grid, aus dem der Filter kommt, zeigt weiter alle Eintraege.');
-  });
-
-  test('ohne aktive Facette bleibt alles stehen', () => {
+  test('ohne Schnitt bleibt die Liste unveraendert', () => {
     clearEntriesCache();
     const all = getGridEntries(STORE, 'werke');
-    assert.equal(applyFacetFilter(all, 'werke', null), all);
+    assert.equal(entriesWithRecordsIn(all, null), all);
   });
 
-  test('eine Facette ohne Ueberschneidung leert das Grid', () => {
+  test('ein Schnitt ohne Ueberschneidung leert das Register', () => {
     clearEntriesCache();
-    const leer = { gridKey: 'orte', name: 'Lissabon', recordIds: new Set(['r9']) };
-    assert.deepEqual(applyFacetFilter(getGridEntries(STORE, 'werke'), 'werke', leer), []);
+    assert.deepEqual(entriesWithRecordsIn(getGridEntries(STORE, 'werke'), new Set(['r9'])), []);
   });
 });
 

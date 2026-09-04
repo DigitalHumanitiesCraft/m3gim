@@ -190,7 +190,7 @@ Schema je Use Case: **FF-Bezug · Frage · benötigte Daten · UI-Baustein (Stan
 - **Daten:** SpatiotemporalEvents mit `atPlace`/`placeCountry`/`atDate`; Records mit `rico:date`.
 - **UI (Stand):** Chronik als temporale Achse (E-124: Sicht-gefärbter Jahres-Zeitstrahl plus kollabierbarer Dekaden-Sicht-Header), Karte als räumliche Achse (entitätszentriert, E-126) mit der Länder-Reichweite in der Sidebar.
 - **Deckung:** Die Masse des datierten Materials klumpt in den 1950ern; nur wenige Lebensdekaden sind überhaupt belegt. Die Chronik ist damit ehrlich eine Erschließungs-Momentaufnahme der München-/Bayreuth-Jahre, kein Karriere-Bogen über die Lebensspanne. Dichte = Überlieferung, nicht Aktivität; der Hinweis liegt nach der Erklärtext-Regel (E-156, [design.md](design.md) Regel 8) im Tooltip statt als sichtbare Caption.
-- **Offen:** Ort×Zeit und Karte noch nicht gekoppelt; der Cross-View-Filter würde Chronik, Karte und Statistik auf denselben Schnitt bringen.
+- **Offen:** Ort×Zeit ist über den geteilten Filter gekoppelt, seit die Karte den vollen Schnitt liest (E-218). Offen bleibt die Politik, undatierte Belege im Zeitfenster mitzuführen, die eine Stadt ohne datierten Beleg hervorhebt.
 
 ### UC-2 — Welche Art von Mobilität? Gastspiel vs. Engagement vs. Reise (FF1/FF4)
 

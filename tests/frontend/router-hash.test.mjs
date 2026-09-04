@@ -15,6 +15,9 @@
  *     zeigt nichts an, ohne einen Fehler zu melden.
  *   * Ein Sprung auf einen Datensatz schreibt die Adresszeile an `buildHash`
  *     vorbei und verliert dabei den geteilten Schnitt.
+ *   * Der zweite Pfadteil der Indizes nennt seit E-226 das Register und keinen
+ *     Datensatz; wird er als Datensatz gelesen, versucht die Anwendung ein
+ *     Register als Signatur zu oeffnen.
  *
  * Lauf: node --test tests/frontend/router-hash.test.mjs
  */
@@ -39,7 +42,7 @@ globalThis.document = globalThis.document || {
   getElementById() { return null; },
 };
 
-const { parseHash, getState, navigateToView, selectRecord } =
+const { parseHash, getState, navigateToView, selectRecord, setIndexRegister } =
   await import('../../docs/js/ui/router.js');
 const { getFilter, resetFilter } = await import('../../docs/js/ui/filter-state.js');
 
@@ -159,5 +162,47 @@ describe('Record-Sprung', () => {
     parse('#indizes');
     navigateToView('bestand', { recordId: 'm3gim:NIM_004_1' });
     assert.equal(getState().selectedRecord, 'm3gim-data:NIM_004_1');
+  });
+});
+
+describe('Register-Teil der Indizes (E-226)', () => {
+  test('das Register kommt aus dem zweiten Pfadteil', () => {
+    parse('#indizes/werke');
+    assert.equal(getState().activeTab, 'indizes');
+    assert.equal(getState().indexRegister, 'werke');
+    assert.equal(getState().selectedRecord, null,
+      'Ein Register ist kein Datensatz und darf keinen Deep-Link oeffnen.');
+  });
+
+  test('ein Hash ohne Registerteil laesst das gewaehlte Register stehen', () => {
+    parse('#indizes/orte');
+    parse('#indizes');
+    assert.equal(getState().indexRegister, 'orte');
+  });
+
+  test('ein unbekanntes Register aendert nichts', () => {
+    parse('#indizes/orte');
+    parse('#indizes/gibtsnicht');
+    assert.equal(getState().indexRegister, 'orte');
+  });
+
+  test('jeder andere Tab liest den zweiten Pfadteil weiter als Datensatz', () => {
+    parse('#indizes/werke');
+    parse('#bestand/m3gim-data:NIM_004_10');
+    assert.equal(getState().selectedRecord, 'm3gim-data:NIM_004_10');
+  });
+
+  test('das Register wird mit dem Schnitt zurueckgeschrieben', () => {
+    parse('#indizes/personen?ort=Bayreuth');
+    setIndexRegister('orte');
+    assert.equal(window.location.hash, '#indizes/orte?ort=Bayreuth');
+  });
+
+  test('ein Sprung in ein Register nennt es im Pfad', () => {
+    parse('#bestand');
+    navigateToView('indizes', { register: 'organisationen', entry: 'Bayreuther Festspiele' });
+    assert.equal(getState().indexRegister, 'organisationen');
+    assert.equal(window.location.hash, '#indizes/organisationen',
+      'Der Eintrag reist als Navigationskontext und steht nicht im Hash.');
   });
 });

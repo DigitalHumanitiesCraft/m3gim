@@ -28,10 +28,11 @@ import { logStamp } from '../utils/env.js';
 import { getFilter, setFilter, facetValues } from '../ui/filter-state.js';
 import { zeitfensterToYearRange } from '../ui/filter-sync.js';
 import { navigateToView } from '../ui/router.js';
+import { onViewNavigate } from '../ui/events.js';
 import {
   buildEntities, buildOccurrences, SICHTEN, hasGeo,
   breakdownByView, barSegments, sortOcc,
-  countryByCity, countryOfOcc, aggregateCountries,
+  countryByCity, countryOfOcc, aggregateCountries, occurrencesInCut,
 } from './karte-data.js';
 import { entitySection } from './karte-picker.js';
 import { buildMap, loadCountries } from './karte-map.js';
@@ -39,6 +40,20 @@ import { buildMap, loadCountries } from './karte-map.js';
 /* global d3 */
 
 let _sidebar = null;
+
+// Ein Sprung aus den Indizes nennt seine Entitaet im Navigationskontext
+// (E-226). Der Name wird hier gemerkt und von renderMobilitaet anstelle der
+// Malaniuk-Voreinstellung gewaehlt; ist die Karte schon gezeichnet, setzt
+// _applyEntity ihn direkt.
+let _wantedEntity = null;
+let _applyEntity = null;
+
+onViewNavigate('karte', (detail) => {
+  const name = detail && detail.entity;
+  if (!name) return;
+  _wantedEntity = name;
+  if (_applyEntity) _applyEntity(name);
+});
 
 // ---------------------------------------------------------------------------
 // Haupteinstieg
@@ -75,38 +90,64 @@ export function renderMobilitaet(store, container) {
     selectedCities: [],
   };
 
+  // Entitaet loesen: dieselbe Wirkung fuer den Chip der Filterleiste (E-223)
+  // und den Kopf der Detail-Region.
+  const clearEntity = () => { state.entity = null; state.selectedCities = []; redraw(); };
+
   // Das Land haengt am Ereignis; ueber die Stadt erreicht es auch die
   // Record-Orte, die selbst keines fuehren.
   const cityCountry = countryByCity(store);
 
   // Malaniuk ist die Voreinstellung: die Karte beantwortet "wo war diese
   // Entitaet praesent", und ohne Wahl stuende sie auf der Gesamt-Geografie.
-  state.entity = entities.find(e => /Malaniuk/i.test(e.name)) || null;
+  // Eine per Navigation genannte Entitaet geht vor.
+  state.entity = (_wantedEntity && entities.find(e => e.name === _wantedEntity))
+    || entities.find(e => /Malaniuk/i.test(e.name)) || null;
+  _wantedEntity = null;
+  _applyEntity = (name) => {
+    const hit = entities.find(e => e.name === name);
+    if (!hit) return;
+    state.entity = hit;
+    state.selectedCities = [];
+    redraw();
+  };
 
-  // Geteilten Filter initial nachziehen: zeitfenster -> Jahresfenster,
-  // ort -> selectedCities. Die Sicht-Facette spielt in der Entitaets-Karte keine
-  // Rolle (keine Sicht-Legende) und wird ignoriert.
+  // Geteilten Filter nachziehen: der ganze Schnitt als Beleg-Menge (cutOcc),
+  // zeitfenster -> Jahresfenster, ort -> selectedCities. Die Sicht-Facette
+  // wirkt ueber cutOcc mit; eine eigene Sicht-Legende hat die Karte nicht.
+  let cutOcc = new Set();
   function pullSharedIntoState(shared) {
     const { yearFrom, yearTo } = zeitfensterToYearRange(shared.zeitfenster);
     state.yearFrom = yearFrom == null ? minYear : Math.max(minYear, yearFrom);
     state.yearTo = yearTo == null ? maxYear : Math.min(maxYear, yearTo);
     state.selectedCities = facetValues(shared, 'ort');
+    cutOcc = new Set(occurrencesInCut(store, allOcc, shared));
   }
   pullSharedIntoState(getFilter());
 
+  // Der geteilte Schnitt. Entitaets- und Landeswahl verengen ihn karten-lokal.
+  const inCut = o => cutOcc.has(o);
   const inEntity = o => !state.entity || state.entity.records.has(o.recordId);
   const inCountry = o => !state.country
     || countryOfOcc(o, cityCountry) === state.country;
-  // Was die Karte zeichnet: Entitaet und Land zusammen.
-  const inScope = o => inEntity(o) && inCountry(o);
+  // Was die Karte zeichnet: geteilter Schnitt, Entitaet und Land zusammen.
+  const inScope = o => inCut(o) && inEntity(o) && inCountry(o);
   const inWindow = o => {
     const y = extractYear(o.date);
     return y == null || (y >= state.yearFrom && y <= state.yearTo);
   };
+  // E-225: the split dated/undated is only a statement while a Zeitfenster
+  // actually cuts; at full span an undated Beleg is simply a Beleg.
+  const windowActive = () => state.yearFrom > minYear || state.yearTo < maxYear;
 
   // Belege des Ausschnitts ohne den Landesschnitt: die Reichweite-Liste soll
   // beim Klick auf ein Land nicht auf diese eine Zeile zusammenfallen.
-  const occInReach = () => allOcc.filter(inEntity).filter(inWindow);
+  const occInReach = () => allOcc.filter(o => inCut(o) && inEntity(o)).filter(inWindow);
+
+  // Die gezeichnete Beleg-Menge. Punkte, Zaehlstand und die Beleg-Liste eines
+  // Orts lesen dieselbe Menge; die Liste zeigte sonst Jahre ausserhalb des
+  // Zeitfensters, das die Punkte bereits anwenden (Frontend-Audit 2026-09-04).
+  const currentAll = () => allOcc.filter(inScope).filter(inWindow);
 
   // Ereignis-Region (Statuszeile / Ortsauswahl).
   const detailRegion = el('div', { className: 'mob-panel__detail' });
@@ -142,11 +183,9 @@ export function renderMobilitaet(store, container) {
   if (_sidebar) _sidebar.destroy();
   const sidebar = createSidebar(store, {
     yearSpan: span,
-    // Die Karte schneidet ueber Entitaet und Zeitfenster; ein Freitextfeld haette
-    // hier keine Wirkung.
+    // recordsFor wertet den Freitext nicht aus; ein Feld ohne Wirkung bleibt weg.
     search: false,
-    getCount: () => new Set(allOcc.filter(inScope).filter(inWindow)
-      .map(o => o.recordId).filter(Boolean)).size,
+    getCount: () => new Set(currentAll().map(o => o.recordId).filter(Boolean)).size,
     sections: [
       entitySection(entities, state, () => {
         state.selectedCities = [];
@@ -156,6 +195,9 @@ export function renderMobilitaet(store, container) {
       {
         title: 'Länder-Reichweite',
         titleActive: () => state.country != null,
+        // E-224: the list counts documents with a stay, not every mention.
+        tip: () => 'Dokumente mit Aufenthaltsbeleg (Auftritt, Gastspiel, Spielzeit). '
+          + 'Nennung, Korrespondenz und Entstehung zählen hier nicht mit.',
         controls: [{ kind: 'custom', className: 'vs-legend', build: paintLaender,
           update: paintLaender }],
       },
@@ -178,6 +220,20 @@ export function renderMobilitaet(store, container) {
       },
       { controls: [{ kind: 'custom', node: panelNode }] },
     ],
+    // The entity and the country narrow the Karte locally; they stand in the
+    // strip like any facet and answer to the same reset (E-223).
+    localChips: () => {
+      const groups = [];
+      if (state.entity) {
+        groups.push({ title: 'Entität',
+          chips: [{ label: state.entity.name, onRemove: clearEntity }] });
+      }
+      if (state.country) {
+        groups.push({ title: 'Land',
+          chips: [{ label: state.country, onRemove: () => { state.country = null; redraw(); } }] });
+      }
+      return groups;
+    },
     onChange: () => { pullSharedIntoState(getFilter()); redraw(); },
   });
   _sidebar = sidebar;
@@ -193,9 +249,6 @@ export function renderMobilitaet(store, container) {
   let draw = () => {};
   function redraw() { draw(); renderPanel(); sidebar.update(); }
 
-  // Aktuell sichtbare Belege (Entitaet). Fuer die Detailliste eines gewaehlten Orts.
-  const currentAll = () => allOcc.filter(inScope);
-
   // Detail-Region: nur die gewaehlte Entitaet (Kopf mit Loesen) und, bei
   // Knoten-Klick, die Belege des Orts. Keine Status-/Zaehlzeile mehr.
   function renderPanel() {
@@ -205,7 +258,7 @@ export function renderMobilitaet(store, container) {
       detailRegion.appendChild(el('div', { className: 'mob-entity__active' },
         el('span', { className: 'mob-entity__activename' }, state.entity.name),
         el('button', { className: 'mob-detail__clear', type: 'button',
-          onClick: () => { state.entity = null; state.selectedCities = []; redraw(); } }, 'Auswahl lösen')));
+          onClick: clearEntity }, 'Auswahl lösen')));
     }
 
     // Mehrfachauswahl (E-151): jeder gewaehlte Ort bekommt seinen Block. Bei
@@ -271,7 +324,7 @@ export function renderMobilitaet(store, container) {
   // Geometrie laden (gecacht), dann zeichnen
   loadCountries().then(countries => {
     const map = buildMap(mapCell, countries, withGeo, state, {
-      inEntity: inScope, inWindow,
+      inEntity: inScope, inWindow, windowActive,
       onSelectCity: city => {
         setFilter({ ort: state.selectedCities.includes(city)
           ? state.selectedCities.filter(c => c !== city)
@@ -300,16 +353,23 @@ export function renderMobilitaet(store, container) {
 // ---------------------------------------------------------------------------
 
 function buildOccChip(o) {
-  const date = o.date ? (formatDate(o.date) || o.date) : '—';
   const place = o.place || 'unbekannt';
   // Verortungs-Notiz: macht die Sicherheit der Platzierung pro Beleg sichtbar.
   const note = o.placement === 'city' ? 'stadtgenau'
     : o.placement === 'far' ? 'weit · prüfen'
     : o.placement === 'unlocatable' ? (o.placeWikidata ? 'Q-ID ohne Koordinaten' : 'ohne Koordinate')
     : null;
+  // E-225: an undated Beleg stays in the list and says so in the absence form
+  // (design rule 16), so the Zeitfenster does not silently pass it off as dated.
+  const dated = o.date ? (formatDate(o.date) || o.date) : null;
+  const tail = note ? ' · ' + note : '';
+  const value = dated
+    ? `${place} · ${dated}${tail}`
+    : el('span', {}, `${place} · `,
+        el('em', { className: 'mob-chip__undated' }, 'o. D.'), tail);
   return buildRoleChip({
     prefix: o.roleLabel || (o.source === 'ste' ? 'EREIGNIS' : 'ORT'),
-    value: `${place} · ${date}${note ? ' · ' + note : ''}`,
+    value,
     xlsxSource: o.xlsxSource,
     wikidata: o.placeWikidata,
     tip: o.recordId || '',

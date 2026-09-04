@@ -34,6 +34,7 @@ import {
   CANVAS_WIDTH, CANVAS_HEIGHT,
 } from './_netzwerk-canvas.js';
 import { createSidebar, viewShell } from '../ui/sidebar.js';
+import { onViewNavigate } from '../ui/events.js';
 import { recordsFor, baseIds, yearBounds } from '../data/records-for.js';
 import { getFilter, setFilter, facetValues } from '../ui/filter-state.js';
 
@@ -63,6 +64,17 @@ let _last = { result: null, graph: null, layout: null };
 
 // Bruecke zur Canvas-Ebene: drawCanvas setzt die Felder, die Zoom-Knoepfe lesen sie.
 const _zoomRefs = { behavior: null, svg: null };
+
+// Ein Sprung aus den Indizes nennt seine Fokus-Entitaet im Navigationskontext
+// (E-226). Der Kanal wird beim Import belegt, damit der Fokus auch dann steht,
+// wenn die Ansicht erst danach zum ersten Mal zeichnet; _redraw ist bis dahin
+// eine Leerfunktion.
+onViewNavigate('netzwerk', (detail) => {
+  const focus = detail && detail.focus;
+  if (!focus || !focus.type || !focus.name) return;
+  local.focus = { type: focus.type, name: focus.name };
+  _redraw();
+});
 
 export function renderNetzwerk(store, container) {
   _store = store;
@@ -329,6 +341,11 @@ function draw(detail) {
 // Detail-Panel — immer die Fokus-Entitaet
 // ---------------------------------------------------------------------------
 
+/** Signatur eines Datensatzes als Sortier- und Anzeigewert. */
+function sigOf(record) {
+  return record ? (formatSignatur(record['rico:identifier']) || '') : '';
+}
+
 function drawDetail(panel, center, neighbourCount) {
   clear(panel);
   const entry = center.entry || {};
@@ -373,15 +390,35 @@ function drawDetail(panel, center, neighbourCount) {
       el('h4', { className: 'netzwerk__detail-subtitle' }, 'Angaben'), chips));
   }
 
-  if (entry.relations && entry.relations.length > 0) {
-    const relCounts = new Map();
-    for (const r of entry.relations) relCounts.set(r.type, (relCounts.get(r.type) || 0) + 1);
+  // Beweiskette: eine annotierte Beziehung steht in genau einem Dokument, also
+  // traegt der Chip dessen Signatur und fuehrt dorthin. Die frueheren
+  // Zaehl-Chips (Typ x N) nannten das Dokument nicht und liessen die Belegfrage
+  // offen, waehrend die Belegliste daneben die ganze Ko-Okkurrenz zeigt.
+  const relations = entry.relations || [];
+  const relationRecordIds = new Set(relations.map(r => r.recordId).filter(Boolean));
+  if (relations.length > 0) {
+    const byType = new Map();
+    for (const r of relations) {
+      if (!byType.has(r.type)) byType.set(r.type, []);
+      byType.get(r.type).push(r);
+    }
     const wrap = el('div', { className: 'netzwerk__detail-chips' });
-    for (const [type, count] of relCounts) {
+    for (const [type, rels] of byType) {
       const label = AGRELON_LABELS[type] || String(type).replace(/^agrelon:/, '');
-      wrap.appendChild(buildRoleChip({
-        prefix: label, value: '×' + count, cluster: 'beziehung', tip: label,
-      }));
+      const sorted = rels
+        .map(rel => ({ rel, record: rel.recordId ? _store.records.get(rel.recordId) : null }))
+        .sort((a, b) => sigOf(a.record).localeCompare(sigOf(b.record), 'de'));
+      for (const { rel, record } of sorted) {
+        wrap.appendChild(buildRoleChip({
+          prefix: label,
+          value: record ? sigOf(record) : (rel.recordId || '—'),
+          cluster: 'beziehung',
+          tip: record
+            ? `${label} · ${record['rico:title'] || '(ohne Titel)'}${record['rico:date'] ? ', ' + record['rico:date'] : ''}`
+            : label,
+          onClick: record ? () => navigateToView('bestand', { recordId: record['@id'] }) : undefined,
+        }));
+      }
     }
     panel.appendChild(el('div', { className: 'netzwerk__detail-section' },
       el('h4', { className: 'netzwerk__detail-subtitle' }, 'Beziehungen'), wrap));
@@ -391,18 +428,31 @@ function drawDetail(panel, center, neighbourCount) {
 
   if (FACET_FOR_NODE[center.type]) panel.appendChild(buildAddFacet(center));
 
+  // Belegliste: die annotierten Dokumente zuerst, markiert mit demselben
+  // geraden Strich, den die Legende der AgRelOn-Kante traegt. Ohne die Marke
+  // steht der annotierte Beleg ununterscheidbar in der Ko-Okkurrenz.
   const records = [...(center.records || [])]
     .map(id => _store.records.get(id))
     .filter(Boolean)
-    .sort((a, b) => String(a['rico:date'] || '').localeCompare(String(b['rico:date'] || '')));
+    .sort((a, b) => (relationRecordIds.has(b['@id']) ? 1 : 0) - (relationRecordIds.has(a['@id']) ? 1 : 0)
+      || String(a['rico:date'] || '').localeCompare(String(b['rico:date'] || '')));
   if (records.length > 0) {
     const list = el('ul', { className: 'netzwerk__record-list' });
     for (const r of records) {
+      const annotated = relationRecordIds.has(r['@id']);
+      const mark = el('span', {
+        className: 'netzwerk__record-mark'
+          + (annotated ? ' nz-legend__line nz-legend__line--agrelon' : ''),
+        ...(annotated
+          ? { dataset: { tip: 'Beziehung hier annotiert (AgRelOn)' } }
+          : { 'aria-hidden': 'true' }),
+      });
       list.appendChild(el('li', {
         className: 'netzwerk__record',
         onClick: (ev) => { ev.stopPropagation(); navigateToView('bestand', { recordId: r['@id'] }); },
       },
-        el('span', { className: 'netzwerk__record-sig' }, formatSignatur(r['rico:identifier']) || '—'),
+        el('span', { className: 'netzwerk__record-sig' }, mark,
+          formatSignatur(r['rico:identifier']) || '—'),
         el('span', { className: 'netzwerk__record-title' }, r['rico:title'] || '(ohne Titel)'),
         el('span', { className: 'netzwerk__record-date' }, r['rico:date'] || '')));
     }

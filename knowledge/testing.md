@@ -558,6 +558,7 @@ Filter und Dokumentmenge:
 - `filter-state.test.mjs` für den Nullpunkt als leere Wahl und die Ansichts-Voreinstellung als sichtbaren Filter.
 - `filter-sync.test.mjs` für die Faltung zwischen Jahresfenster und Zeitfenster-Facette und den Loop-Guard.
 - `filter-url.test.mjs` für Kodierung und Zerlegung des Hash, und `router-hash.test.mjs` für die Gegenrichtung, also was `parseHash` in Router-State und Filter überträgt.
+- `bestand-deeplink.test.mjs` für `widenFilterForRecord`, die minimale Weitung des Schnitts um einen per ID angesteuerten Datensatz (E-219), und `router-stale-record.test.mjs` für die Reihenfolge Pfad vor Query im Router mit echter Ereignisauslieferung.
 - `text-match.test.mjs` für den Textabgleich der Facetten-Autovervollständigung mit Umlaut- und Akzentausgleich.
 
 Ansichten:
@@ -566,7 +567,12 @@ Ansichten:
 - `record-partition.test.mjs` für `partitionRecord`, also den geteilten Pfad von Inline-Detail und Korb, und `detail-foot.test.mjs` für `sourceSummary`.
 - `statistik-data.test.mjs` für die Aggregationen der Statistik und dafür, dass der geteilte Schnitt sie schneidet.
 - `catalogue-gaps.test.mjs` für `aggregateCatalogueGaps`, jede Erschließungsachse einzeln und die Summe gegen den Gesamtbestand.
-- `indizes-data.test.mjs` für Einträge, Suche, Normdaten-Filter und Cross-Grid-Schnitt der Register.
+- `test_indizes_register.py` (Marker `frontend`) für die Registerseite im Browser, ein Register, Tastaturweg über den Namensknopf, zitierbares Archiv-href, Wähler im Kopf mit Roving Tabindex, eine Zeilenhöhe und die Belegzahl gegen die Sidebar.
+- `indizes-data.test.mjs` für Einträge, Suche, Normdaten-Filter und den geteilten Schnitt der Register, und `indizes-register.test.mjs` für Sortierung, das Umfeld nach Familie, die Komplementarität von „mit“ und „ohne Wikidata“ und die Bindung der Partie an das Werk (E-226).
+- `karte-data.test.mjs` für `occurrencesInCut`, den geteilten Schnitt an der Karte ohne das Zeitfenster (E-218).
+- `netzwerk-evidence.test.mjs` für die Auflösung jeder annotierten Beziehung auf ihr belegendes Dokument und die Teilmenge der annotierten Belege in der Ko-Okkurrenz (E-220).
+- `record-chip-content.test.mjs` für Komponistenauflösung, Tooltipzeilen je Knoten und den Anmerkungsmarker (E-222), Fixtures wörtlich aus dem Datensatz.
+- `korb-export.test.mjs` für die BibTeX-Maskierung und die Richtung der Korrespondenz in der CSV-Spalte Beziehungen, und `chronik-place.test.mjs` dafür, dass kein Datumsfragment als Ortslabel steht.
 - `netzwerk-geometry.test.mjs` für das eine reine Modul der zusammengeführten Netzwerk-Ansicht (E-94, E-160), also `buildGraph`, `computeLayout`, `computeCoOccurrence`, `nodeRing`, `nodeEvidence`, `nodeColor`, `nodeId`, `isMalaniuk`, `isPureComposer`, `derivePersonKategorie` und `labelGeometry`, gegen einen synthetischen Store und gegen den ausgelieferten Datenstand.
 
 Rahmen:
@@ -576,7 +582,6 @@ Rahmen:
 - `basket.test.mjs` für den Korb, seine Spiegelung in den localStorage und das Abmelden seiner Listener.
 - `log-stamp.test.mjs` für den Zustands-Stempel, seine feste Schlüsselreihenfolge und die Unterscheidung zwischen der Null und dem leeren Wert.
 - `sidebar-column.test.mjs` für die reinen Beschriftungsfunktionen und die Sektionskonfiguration der Seitenleiste.
-- `bestand-jumplist.test.mjs` für das Modell der Sprungliste in beiden Zuständen, der Konvolut-Hierarchie und der flachen gefilterten Liste (E-214).
 - `derived-mark.test.mjs` als lexikalische Sperre, dass jede der fünf Ergänzungsstellen die Marke `mark-derived` mit einem „ergänzt:“-Tooltip trägt und die alten Einzelformen fehlen (E-216).
 - `auftritt-grouping.test.mjs` für die Datumssortierung, die Spielzeit-Gruppierung und die Rolle-zu-Werk-Zuordnung des Details (E-213).
 - `family-icons.test.mjs` für das geteilte Symbolmodul und dass Bestand und Indizes keine eigenen Familiensymbole zeichnen (E-212).

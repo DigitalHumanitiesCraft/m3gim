@@ -108,6 +108,21 @@ export const KOMPONISTEN_NAMEN = new Set([
 // currentColor, which the badge sets to the one match green (--color-match).
 export const WIKIDATA_ICON_SVG = '<svg width="12" height="12" viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><rect x="0.5" y="1" width="1" height="10"/><rect x="2" y="1" width="1" height="10"/><rect x="4" y="1" width="1" height="10"/><rect x="5.5" y="1" width="1" height="10"/><rect x="7.5" y="1" width="1" height="10"/><rect x="9" y="1" width="1" height="10"/><rect x="10.5" y="1" width="1" height="10"/></svg>';
 
+/* Jump glyphs of the Indizes (E-226): general signs like the Wikidata and Korb
+   icons, not content-family symbols, hence here and not in family-icons.js. */
+export const NETZWERK_GLYPH_SVG = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none"'
+  + ' stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">'
+  + '<line x1="6.6" y1="6.6" x2="10.4" y2="10.4"/><line x1="17.4" y1="6.6" x2="13.6" y2="10.4"/>'
+  + '<line x1="17.4" y1="17.4" x2="13.6" y2="13.6"/>'
+  + '<circle cx="12" cy="12" r="2.5"/><circle cx="5" cy="5" r="2"/><circle cx="19" cy="5" r="2"/>'
+  + '<circle cx="19" cy="19" r="2"/></svg>';
+
+export const KARTE_GLYPH_SVG = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none"'
+  + ' stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"'
+  + ' aria-hidden="true">'
+  + '<polygon points="9,3 3,6 3,21 9,18 15,21 21,18 21,3 15,6"/>'
+  + '<line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>';
+
 // =========================================================================
 // Basket icon (Korb)
 // =========================================================================

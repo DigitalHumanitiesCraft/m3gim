@@ -18,9 +18,14 @@ import { initTabKeyboard, setRovingTabindex } from './tabs.js';
 const TABS = ['bestand', 'chronik', 'statistik', 'indizes', 'karte', 'netzwerk', 'korb'];
 const ALL_VIEWS = [...TABS, 'archiv']; // 'archiv' als Legacy-Alias fuer alte Bookmarks/Hash-URLs
 
+// Die Register der Indizes; sie besetzen dort den zweiten Pfadteil, den jeder
+// andere Tab als Datensatz liest (E-226).
+const INDEX_REGISTERS = ['personen', 'organisationen', 'orte', 'werke'];
+
 const state = {
   activeTab: 'bestand',
   selectedRecord: null,
+  indexRegister: INDEX_REGISTERS[0],
 };
 
 let onTabChange = null;
@@ -44,11 +49,13 @@ export function initRouter({ onTab, onRecord, onIndex } = {}) {
   // Parse initial hash
   parseHash();
   applyState();
+  emitIndexRegister();
 
   // Listen for hash changes (back/forward)
   window.addEventListener('hashchange', () => {
     parseHash();
     applyState();
+    emitIndexRegister();
   });
 
   // Der Schnitt gehoert in die Adresszeile: jede Filteraenderung schreibt den
@@ -75,6 +82,7 @@ export function selectRecord(recordId) {
 export function navigateToIndex(gridType, entityName) {
   state.activeTab = 'indizes';
   state.selectedRecord = null;
+  if (INDEX_REGISTERS.includes(gridType)) state.indexRegister = gridType;
   updateHash();
   applyState();
   if (onIndexNavigate) onIndexNavigate(gridType, entityName);
@@ -88,6 +96,11 @@ export function navigateToView(tab, context = {}) {
   // window.location.hash themselves dropped the shared filter silently
   // (user-story audit 2026-09-03).
   state.selectedRecord = context.recordId ? resolveRecordId(context.recordId) : null;
+  // Ein Sprung in die Indizes nennt sein Register im Pfad; der Eintrag reist
+  // als Navigationskontext und bleibt aus dem geteilten Filter heraus (E-226).
+  if (tab === 'indizes' && INDEX_REGISTERS.includes(context.register)) {
+    state.indexRegister = context.register;
+  }
   updateHash();
   applyState();
   requestAnimationFrame(() => {
@@ -143,24 +156,40 @@ export function resolveRecordId(id) {
  */
 export function parseHash() {
   const { path, query } = splitHash(window.location.hash);
+  // Der Pfad wird vor dem Query gelesen: die Filteruebernahme dispatcht an die
+  // Subscriber, und der Router schreibt aus dieser Subscription die Adresszeile
+  // zurueck. Lief sie vor dem Pfad, schrieb sie den Datensatz des vorigen Hash
+  // in den neuen (Projektleitung, 2026-09-04).
+  if (path) {
+    const parts = path.split('/');
+    let t = parts[0];
+    if (t === 'archiv') t = 'bestand'; // Legacy-Alias
+    // Legacy-Alias: der Tab heisst jetzt 'karte'; alte mobilitaet/-atlas-Bookmarks
+    // landen auf der Karte (der Atlas war der hier abgeloeste Vorgaenger).
+    if (t === 'mobilitaet' || t === 'mobilitaets-atlas') t = 'karte';
+    // Legacy-Alias: Verknuepfungen ist mit E-160 im Netzwerk aufgegangen. Der
+    // Query-Teil traegt den geteilten Schnitt und ueberlebt die Umleitung, damit
+    // ein geteilter Link denselben Befund oeffnet.
+    if (t === 'verknuepfungen') t = 'netzwerk';
+    if (TABS.includes(t)) state.activeTab = t;
+    // Ein Hash ohne Datensatzteil nennt keinen offenen Datensatz. Ohne das
+    // Loeschen blieb der vorige stehen, und applyState oeffnete ihn im neuen
+    // Tab wieder. Der zweite Pfadteil ist bei den Indizes das Register, sonst
+    // der Datensatz (E-226); ein unbekanntes Register laesst das bisherige
+    // stehen.
+    if (t === 'indizes') {
+      const register = parts[1] ? decodeURIComponent(parts[1]) : '';
+      if (INDEX_REGISTERS.includes(register)) state.indexRegister = register;
+      state.selectedRecord = null;
+    } else {
+      state.selectedRecord = (parts[1] && ALL_VIEWS.includes(parts[0]))
+        ? resolveRecordId(decodeURIComponent(parts[1]))
+        : null;
+    }
+  }
   // Der Filter kommt aus der URL, bevor die Views rendern; ein geteilter Link
   // zeigt sonst kurz den vollen Bestand und springt dann.
   applyFilterFromQuery(query);
-  if (!path) return;
-  const parts = path.split('/');
-  let t = parts[0];
-  if (t === 'archiv') t = 'bestand'; // Legacy-Alias
-  // Legacy-Alias: der Tab heisst jetzt 'karte'; alte mobilitaet/-atlas-Bookmarks
-  // landen auf der Karte (der Atlas war der hier abgeloeste Vorgaenger).
-  if (t === 'mobilitaet' || t === 'mobilitaets-atlas') t = 'karte';
-  // Legacy-Alias: Verknuepfungen ist mit E-160 im Netzwerk aufgegangen. Der
-  // Query-Teil traegt den geteilten Schnitt und ueberlebt die Umleitung, damit
-  // ein geteilter Link denselben Befund oeffnet.
-  if (t === 'verknuepfungen') t = 'netzwerk';
-  if (TABS.includes(t)) state.activeTab = t;
-  if (parts[1] && ALL_VIEWS.includes(parts[0])) {
-    state.selectedRecord = resolveRecordId(decodeURIComponent(parts[1]));
-  }
 }
 
 /**
@@ -173,8 +202,28 @@ function applyFilterFromQuery(query) {
   if (Object.keys(patch).length > 0) setFilter(patch);
 }
 
+/** Setzt das Register der Indizes aus der Ansicht heraus und schreibt es in
+ *  die Adresszeile; die Ansicht zeichnet sich selbst neu. */
+export function setIndexRegister(key) {
+  if (!INDEX_REGISTERS.includes(key) || state.indexRegister === key) return;
+  state.indexRegister = key;
+  updateHash();
+}
+
+/** Ein Hashwechsel muss das Register auch an eine bereits gezeichnete Ansicht
+ *  melden; renderTab zeichnet einen Tab nur beim ersten Mal. */
+function emitIndexRegister() {
+  if (state.activeTab !== 'indizes') return;
+  window.dispatchEvent(new CustomEvent('m3gim:navigate', {
+    detail: { tab: 'indizes', register: state.indexRegister },
+  }));
+}
+
 function updateHash() {
-  const newHash = buildHash(state.activeTab, state.selectedRecord, getFilter());
+  // Der zweite Pfadteil traegt bei den Indizes das Register statt eines
+  // Datensatzes.
+  const tail = state.activeTab === 'indizes' ? state.indexRegister : state.selectedRecord;
+  const newHash = buildHash(state.activeTab, tail, getFilter());
   if (window.location.hash !== newHash) {
     history.replaceState(null, '', newHash);
   }

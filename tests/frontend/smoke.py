@@ -174,7 +174,10 @@ def main() -> int:
             "bestand":    ["konvolute", "records", "stand"],
             "chronik":    ["records", "jahre-belegt", "datiert", "undatiert", "sicht-gedeckt", "spanne"],
             "statistik":  ["records", "ansichten", "aktiv", "spanne"],
-            "indizes":    ["personen", "organisationen", "orte", "werke"],
+            # Seit E-226 zeigt die Seite genau ein Register; der Stempel nennt
+            # es und seine Zahlen statt aller vier Registerschluessel.
+            "indizes":    ["register", "eintraege", "gesamt", "sortierung",
+                           "wikidata"],
             "karte":      ["entitaeten", "orte", "belege", "unverortet", "jahre"],
             # Das Netzwerk fuehrt seit E-160 Fokus, Knotentypen und beide
             # Evidenzmasse in einem Stempel: die Knotenzahlen je Typ heissen

@@ -89,9 +89,22 @@
 
 .archiv-row--konvolut-open {
   position: sticky;
-  inset-block-start: var(--table-head-height);
+  /* One pixel under the thead so the two sticky layers overlap instead of
+     abutting; an abutting edge reads as a slit (Projektleitung, 2026-09-04). */
+  inset-block-start: calc(var(--table-head-height) - 1px);
   z-index: 10;
   background: var(--surface-2);
+}
+
+/* Thead and parked open head form one band: the head carries the bottom line,
+   the thead drops its own while a head is open, and the head has no top line. */
+.archiv-row--konvolut.archiv-row--konvolut-open td {
+  border-top: 0;
+  box-shadow: inset 0 -1px 0 var(--border-color);
+}
+
+.archiv-table:has(.archiv-row--konvolut-open) thead th {
+  box-shadow: none;
 }
 
 /* The head is a label row (E-203): it sticks above the Konvolut head and
@@ -123,6 +136,14 @@
 
 .archiv-chevron--open {
   transform: rotate(90deg);
+}
+
+/* The chevron of an object row: subordinate to the head's, so it indents by one
+   chevron width and stays a step quieter (E-217). */
+.archiv-chevron--child {
+  margin-inline-start: 1em;
+  font-size: 0.9em;
+  color: var(--color-text-tertiary);
 }
 
 .archiv-row--konvolut td {
@@ -193,10 +214,9 @@
   white-space: nowrap;
 }
 
-/* Stand-in for an inherited collective title: the family icon says the name is
-   a linked entity, not a title, so no dash and no italic (Projektleitung,
-   2026-09-03). It stays in tertiary text colour, because the colour code of the
-   Erschliessungsanzeige is not repeated here (Projektleitung, 2026-09-04). */
+/* Stand-in for an inherited collective title. The title cell carries no icons
+   (E-217), so the bare name stands there, without dash and without italic
+   (Projektleitung, 2026-09-03). */
 .archiv-folio-hint {
   display: inline-flex;
   align-items: center;
@@ -205,11 +225,6 @@
      title has to be stated. */
   margin-inline-start: var(--space-1);
   font-size: var(--text-sm);
-}
-
-.archiv-folio-hint__icon {
-  flex: 0 0 auto;
-  color: var(--color-text-tertiary);
 }
 
 .archiv-folio-hint--konvolut {
@@ -336,135 +351,6 @@
   font-style: italic;
 }
 
-/* Navigation aids of a long table (Projektleitung, 2026-09-04) */
-
-/* Jump list trigger in the Signatur column head. The glyph is the row chevron
-   turned down, so one symbol carries one meaning across the table. */
-.archiv-jump-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  margin-inline-start: var(--space-1);
-  padding: 0;
-  inline-size: 18px;
-  block-size: 18px;
-  vertical-align: middle;
-  background: none;
-  border: none;
-  border-radius: var(--border-radius);
-  color: var(--color-text-secondary);
-  cursor: pointer;
-}
-
-.archiv-jump-btn:hover { background: var(--surface-3); color: var(--accent); }
-
-/* Nothing to jump to: the trigger stays readable and says why in its tooltip. */
-.archiv-jump-btn--disabled {
-  opacity: 0.4;
-  cursor: default;
-}
-.archiv-jump-btn--disabled:hover { background: none; color: var(--color-text-secondary); }
-
-.archiv-chevron--down { transform: rotate(90deg); }
-.archiv-chevron--up { transform: rotate(-90deg); }
-
-/* The list hangs on the body in fixed position: inside .archiv-main its
-   overflow-y would clip it and it would scroll away from the sticky head it
-   belongs to. */
-.archiv-jump-anchor {
-  position: fixed;
-  z-index: 300;
-}
-
-.archiv-jump {
-  display: flex;
-  flex-direction: column;
-  inline-size: min(460px, 90vw);
-  max-block-size: min(60vh, 520px);
-  overflow-y: auto;
-  padding: var(--space-1);
-  background: var(--surface);
-  border: 1px solid var(--border-color);
-  border-radius: var(--border-radius);
-  box-shadow: var(--shadow-md);
-}
-
-.archiv-jump__action,
-.archiv-jump__entry {
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-2);
-  inline-size: 100%;
-  padding: var(--space-1) var(--space-2);
-  background: none;
-  border: none;
-  border-inline-start: 3px solid transparent;
-  font-family: var(--font-ui);
-  font-size: var(--text-sm);
-  color: var(--color-text-primary);
-  text-align: start;
-  cursor: pointer;
-}
-
-.archiv-jump__action {
-  justify-content: flex-start;
-  margin-block-end: var(--space-1);
-  padding-inline-start: calc(var(--space-2) + 1em);
-  color: var(--accent);
-  box-shadow: inset 0 -1px 0 var(--line-soft);
-}
-
-.archiv-jump__action:hover,
-.archiv-jump__entry:hover { background: var(--surface-2); }
-
-.archiv-jump__entry--current {
-  border-inline-start-color: var(--accent);
-  background: var(--accent-soft);
-}
-
-/* Flattened cut: no head to open, so no chevron column to reserve. */
-.archiv-jump--flat .archiv-jump__entry { padding-inline-start: var(--space-2); }
-
-.archiv-jump__sig {
-  flex: 0 0 auto;
-  font-family: var(--font-mono);
-  font-size: var(--text-sm);
-  color: var(--accent);
-}
-
-.archiv-jump__title {
-  flex: 1 1 auto;
-  min-inline-size: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  color: var(--color-text-secondary);
-}
-
-.archiv-jump__count {
-  flex: 0 0 auto;
-  font-variant-numeric: tabular-nums;
-  font-size: var(--text-xs);
-  color: var(--color-text-tertiary);
-}
-
-/* Close affordance at the right end of the open, sticky head. */
-.archiv-konvolut-close {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  inline-size: 22px;
-  block-size: 22px;
-  padding: 0;
-  background: none;
-  border: none;
-  border-radius: var(--border-radius);
-  color: var(--color-text-secondary);
-  cursor: pointer;
-}
-
-.archiv-konvolut-close:hover { background: var(--surface-3); color: var(--accent); }
-
 /* Konvolut head and object row are keyboard waypoints. The outline sits inside
    the row, because a row outline under border-collapse is cut off by its
    neighbours. */
@@ -517,8 +403,8 @@
 
 /* Print — the table alone */
 
-/* On paper the filter column, the strip, the jump trigger and the Korb column
-   are all ways of getting somewhere; the sheet is the destination. Opening
+/* On paper the filter column, the strip and the Korb column are all ways of
+   getting somewhere; the sheet is the destination. Opening
    every Konvolut is not a CSS matter: applyCollapse() drops the closed
    children before render, so the view has to do it (Projektleitung,
    2026-09-04). */
@@ -526,9 +412,6 @@
   .view-sidebar,
   .view-shell__sidebar-toggle,
   .filter-strip,
-  .archiv-jump-btn,
-  .archiv-jump-anchor,
-  .archiv-konvolut-close,
   .archiv-col-korb {
     display: none;
   }
@@ -562,15 +445,5 @@
 
   .archiv-table tbody tr {
     break-inside: avoid;
-  }
-}
-
-/* Touch targets: the two glyph buttons of the table head and of an open
-   Konvolut head are 18 and 22px on the pointer, too small for a finger. */
-@media (max-width: 768px) {
-  .archiv-jump-btn,
-  .archiv-konvolut-close {
-    inline-size: 24px;
-    block-size: 24px;
   }
 }

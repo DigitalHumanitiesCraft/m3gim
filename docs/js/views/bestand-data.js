@@ -10,7 +10,7 @@
  * shared filter decides what is on screen.
  */
 
-import { getDocTypeId, countLinks, formatSignatur } from '../utils/format.js';
+import { getDocTypeId, countLinks } from '../utils/format.js';
 import { primaryYear } from '../data/loader.js';
 import { CONTENT_FAMILIES } from '../data/constants.js';
 import { partitionRecord } from './record-detail-data.js';
@@ -301,97 +301,4 @@ export function konvolutIdOfRecord(store, recordId) {
     if (children.includes(recordId)) return kid;
   }
   return null;
-}
-
-/**
- * Entries of the jump list at the Signatur column head: every Konvolut of the
- * current cut in the Signatur order the table already stands in. Built from the
- * rendered items, so the counts are the ones the table shows.
- * @param {Array} items  rows as renderRows receives them
- * @param {object} store
- * @returns {Array<{konvolutId: string, signatur: string, title: string, childCount: number}>}
- */
-export function konvolutJumpEntries(items, store) {
-  return (items || []).filter(item => item.isKonvolut).map(item => {
-    const meta = store.konvolutMeta.get(item.konvolutId);
-    return {
-      konvolutId: item.konvolutId,
-      signatur: formatSignatur(item.record['rico:identifier']),
-      title: meta?.title || item.record['rico:identifier'] || '',
-      childCount: item.visibleChildCount ?? (meta ? meta.childCount : 0),
-    };
-  });
-}
-
-/**
- * The same entries for the flattened filter mode, where flattenForFilter has
- * taken the Konvolut heads out of the rows. The Konvolute are read off the rows'
- * Konvolut origin, the source the "aus: …" hint already uses, in row order and
- * counted by the rows actually on screen; standalone records belong to no
- * Konvolut and contribute none (Projektleitung, 2026-09-04).
- * @param {Array} items  rows as renderRows receives them
- * @param {object} store
- * @returns {Array<{konvolutId: string, signatur: string, title: string, childCount: number}>}
- */
-export function konvolutJumpEntriesFlat(items, store) {
-  const order = [];
-  const counts = new Map();
-  for (const item of items || []) {
-    const kid = item.konvolutId;
-    if (!kid) continue;
-    if (!counts.has(kid)) order.push(kid);
-    counts.set(kid, (counts.get(kid) || 0) + 1);
-  }
-  return order.map(kid => {
-    const konvolut = store.konvolute.get(kid);
-    const meta = store.konvolutMeta.get(kid);
-    return {
-      konvolutId: kid,
-      signatur: formatSignatur(konvolut && konvolut['rico:identifier']),
-      title: meta?.title || (konvolut && konvolut['rico:identifier']) || '',
-      childCount: counts.get(kid),
-    };
-  });
-}
-
-/**
- * What the jump list shows for a cut. In the structural view it lists the
- * Konvolut heads with their open state and the open/close action; under a
- * filter the rows lie flat, so the list only names the Konvolute represented in
- * the cut and neither chevron nor "alle auf-/zuklappen" would mean anything
- * (Projektleitung, 2026-09-04). No entries means nothing to jump to, and the
- * trigger is disabled.
- * @param {Array} items  rows as renderRows receives them
- * @param {object} store
- * @param {boolean} flat  whether the cut flattened the hierarchy
- * @returns {{flat: boolean, entries: Array, showToggles: boolean, disabled: boolean}}
- */
-export function jumpListModel(items, store, flat) {
-  const entries = flat
-    ? konvolutJumpEntriesFlat(items, store)
-    : konvolutJumpEntries(items, store);
-  return { flat, entries, showToggles: !flat, disabled: entries.length === 0 };
-}
-
-/**
- * Which Konvolut the reader currently stands in: the last head at or above the
- * line under the sticky column head. Pure over measured offsets, so the rule is
- * testable without a layout (Projektleitung, 2026-09-04).
- * @param {Array<{konvolutId: string, top: number}>} heads  document order,
- *   `top` in the scroll space of the scrolling area
- * @param {number} scrollPos  scroll offset plus the height of the sticky head
- * @returns {?string}
- */
-export function currentKonvolutFromOffsets(heads, scrollPos) {
-  if (!heads || heads.length === 0) return null;
-  // Above the first head the first one is still the answer; a jump list without
-  // a current marker would read as "nowhere".
-  let current = heads[0].konvolutId;
-  // 1 px tolerance: a head parked under the sticky head measures a fraction
-  // above or below it depending on the device pixel ratio.
-  for (const head of heads) {
-    if (head.top <= scrollPos + 1) current = head.konvolutId;
-    else break;
-  }
-  return current;
 }

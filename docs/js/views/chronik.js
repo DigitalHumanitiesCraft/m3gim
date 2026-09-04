@@ -11,13 +11,13 @@
  */
 
 import { el, clear, scrollBehavior } from '../utils/dom.js';
-import { formatSignatur, getDocTypeId, ensureArray, dftLabel } from '../utils/format.js';
+import { formatSignatur, getDocTypeId, dftLabel } from '../utils/format.js';
 import { formatDate } from '../utils/date-parser.js';
 import { primaryYear } from '../data/loader.js';
 import { createSidebar, viewShell } from '../ui/sidebar.js';
 import { filterBySharedState, isSharedFiltered, searchMatchChronik, sharedFacetsActive } from './_bestand-filter.js';
 import {
-  sichtForRecord, aggregateDecadeStacks, SICHTEN, SICHT_COLOR,
+  sichtForRecord, aggregateDecadeStacks, placeLabelFor, SICHTEN, SICHT_COLOR,
 } from './chronik-data.js';
 import { logStamp } from '../utils/env.js';
 import { selectRecord } from '../ui/router.js';
@@ -320,19 +320,9 @@ function renderRecordPoint(annot) {
   const dateDisplay = formatDate(record['rico:date']) || '';
   const showDate = dateDisplay && year != null && dateDisplay !== String(year);
 
-  // Primaer-Ort: Ort der ersten verorteten Annotation, sonst erster
-  // rico:hasOrHadLocation. Label roh (ehrlich, Orts-Casing-Befund,
-  // Partner-Uebergabeliste).
-  let place = '';
-  const eventIds = store.recordToEvents?.get(rid) || [];
-  if (eventIds.length > 0) {
-    const ev = store.mobilityEvents.get(eventIds[0]);
-    if (ev && ev.place) place = ev.place;
-  }
-  if (!place) {
-    const locs = ensureArray(record['rico:hasOrHadLocation']);
-    if (locs.length > 0) place = locs[0].name || '';
-  }
+  // Label roh (ehrlich, Orts-Casing-Befund, Partner-Uebergabeliste); die
+  // Auswahl samt Datums-Leak-Regel steht in der Datenschicht.
+  const place = placeLabelFor(store, record);
   const decade = year != null ? String(Math.floor(year / 10) * 10) : 'undated';
 
   const children = [];

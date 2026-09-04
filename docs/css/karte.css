@@ -167,6 +167,13 @@
   font-style: italic;
 }
 
+/* Absence, not a value: an undated Beleg keeps its place in the list and says
+   so in the one absence form of the application (E-225, design rule 16). */
+.mob-chip__undated {
+  font-style: italic;
+  color: var(--color-absent);
+}
+
 .mob-chips {
   display: flex;
   flex-wrap: wrap;

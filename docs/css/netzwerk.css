@@ -345,6 +345,17 @@
   color: var(--color-text-secondary);
 }
 
+/* Marke der annotierten Beziehung: derselbe gerade Strich wie in der Legende
+   der AgRelOn-Kante. Die Spur steht auch unmarkiert, damit die Signaturen
+   einer Liste in einer Flucht bleiben. */
+.netzwerk__record-mark {
+  display: inline-block;
+  width: 22px;
+  height: 10px;
+  margin-right: var(--space-1);
+  vertical-align: middle;
+}
+
 .netzwerk__record-date {
   font-variant-numeric: tabular-nums;
   font-size: var(--text-xs);

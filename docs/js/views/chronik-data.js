@@ -5,8 +5,34 @@
  * kommt seit dem zusammengeführten Modell aus `primaryYear()` der Datenschicht.
  */
 
+import { ensureArray } from '../utils/format.js';
+
 // Geteilte Sichten-Konstanten weiterreichen, damit die View eine Quelle hat.
 export { SICHTEN, SICHT_COLOR } from './statistik-data.js';
+
+/**
+ * The place label of a record chip: the place of its first located annotation,
+ * otherwise its first rico:hasOrHadLocation. A name starting with a digit is a
+ * date leaked into the place column ("06-09") and is no place; the record keeps
+ * its point, only the pseudo place stays unnamed. Same rule as the map, which
+ * skips such occurrences in karte-data.js; not imported from there because the
+ * predicate is local to that module (user-story audit 2026-09-04).
+ * @returns {string}
+ */
+export function placeLabelFor(store, record) {
+  const rid = record['@id'];
+  const eventIds = store.recordToEvents?.get(rid) || [];
+  let place = '';
+  for (const eid of eventIds) {
+    const ev = store.mobilityEvents.get(eid);
+    if (ev && ev.place) { place = ev.place; break; }
+  }
+  if (!place) {
+    const locs = ensureArray(record['rico:hasOrHadLocation']);
+    if (locs.length > 0) place = locs[0].name || '';
+  }
+  return /^\d/.test(place.trim()) ? '' : place;
+}
 
 /**
  * Dominante Mobilitätssicht eines Records aus seinen verorteten Annotationen.

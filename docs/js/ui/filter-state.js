@@ -145,6 +145,11 @@ export function addFacetValue(key, value) {
  * danach als gewoehnliche Wahl und ist als Chip wegnehmbar.
  * @param {Object} patch
  */
+/** Has the user set this facet, as opposed to a view default (E-162)? */
+export function isTouched(key) {
+  return touched.has(key);
+}
+
 export function applyViewDefault(patch) {
   if (!patch || typeof patch !== 'object') return;
   const fresh = {};

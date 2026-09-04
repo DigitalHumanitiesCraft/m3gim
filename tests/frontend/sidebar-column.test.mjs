@@ -98,7 +98,7 @@ describe('Filterstreifen ueber den Daten', () => {
     const src = read('ui/sidebar.js');
     const strip = src.slice(src.indexOf('function filterStrip'),
       src.indexOf('/** Count of the cut in the root row'));
-    assert.match(strip, /if \(!isFilterActive\(\)\) \{\s*element\.appendChild\(emptyHint\(\)\);/,
+    assert.match(strip, /if \(!isFilterActive\(\) && local\.length === 0\) \{\s*element\.appendChild\(emptyHint\(\)\);/,
       'neutral traegt er den Platzhalter statt einer leeren Zeile');
     assert.match(strip, /Object\.entries\(FACET_META\)/, 'Facettenreihenfolge');
     assert.match(strip, /stripGroup\(meta\.title, chips\)/,
@@ -132,7 +132,7 @@ describe('Filterstreifen ueber den Daten', () => {
   test('der Zuruecksetzen-Link traegt ein Zeichen und bleibt ein Textlink', () => {
     const src = read('ui/sidebar.js');
     assert.match(src, /const RESET_GLYPH = '<svg class="vs-status__reset-icon" width="14"/);
-    assert.match(src, /className: 'vs-status__reset'[\s\S]{0,120}html: RESET_GLYPH,/);
+    assert.match(src, /className: 'vs-status__reset'[\s\S]{0,220}html: RESET_GLYPH,/);
     const css = readFileSync(new URL('../../docs/css/sidebar.css', import.meta.url), 'utf-8');
     const block = css.slice(css.indexOf('.vs-status__reset {'), css.indexOf('.vs-status__reset:hover'));
     assert.doesNotMatch(block, /background: var|border: 1px/, 'kein Knopf-Aussehen');
@@ -275,5 +275,30 @@ describe('Farbpunkt der Inhaltsfamilie am Facettentitel', () => {
       'Geteiltes Symbolmodul (E-212), keine eigene Farbe.');
     assert.ok(!src.includes('ersch-dot'), 'Das Farbquadrat ist abgelöst.');
     assert.doesNotMatch(src, /#[0-9a-fA-F]{3,6}/, 'Keine Farbliterale in der Spalte.');
+  });
+});
+
+describe('Ansichtslokale Chips im Streifen (E-223)', () => {
+  test('createSidebar nimmt sie entgegen und der Streifen zeichnet sie hinter den geteilten Gruppen', () => {
+    const src = read('ui/sidebar.js');
+    assert.match(src, /localChips = \(\) => \[\],/, 'Option mit leerem Default');
+    assert.match(src, /filterStrip\(inventories, localChips\)/);
+    const strip = src.slice(src.indexOf('function filterStrip'),
+      src.indexOf('/** Count of the cut in the root row'));
+    assert.ok(strip.indexOf('stripGroup(group.title') > strip.indexOf("stripGroup('Suche'"),
+      'Die lokalen Gruppen stehen hinter Facetten, Zeitraum und Suche.');
+    assert.ok(strip.indexOf("'alle zurücksetzen'") > strip.indexOf('stripGroup(group.title'),
+      'Der Link bleibt am Ende.');
+    assert.match(strip, /for \(const g of local\) for \(const c of g\.chips\) c\.onRemove\(\)/,
+      'Zuruecksetzen loest auch die ansichtslokale Verengung.');
+  });
+
+  test('die Karte gibt Entitaet und Land als lokale Gruppen hinein', () => {
+    const src = read('views/karte.js');
+    const block = src.slice(src.indexOf('localChips: () => {'), src.indexOf('onChange: () =>'));
+    assert.match(block, /title: 'Entität',/);
+    assert.match(block, /onRemove: clearEntity/,
+      'Der Chip loest die Entitaet wie der Kopf der Detail-Region.');
+    assert.match(block, /title: 'Land',/);
   });
 });

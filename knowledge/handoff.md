@@ -38,13 +38,17 @@ Weiter offen aus [specification.md](specification.md) § Stand, nicht Teil diese
 
 ### An die Projektleitung: drei Entscheidungen aus dem Abschlussdurchgang (2026-09-04)
 
-1. Die Provenienzpille am Chip trägt das Label „Provenienz anzeigen“ und Regel 5 in [design.md](design.md) verspricht den Sprung zu Sheet und Zeile, gebaut ist kein Klick. Entweder der Sprung wird gebaut, oder Label und Regel werden auf den Tooltip zurückgenommen.
+1. Die Provenienzpille am Chip nennt seit E-221 im Label und im Tooltip Blatt, Zeile und Datenpunkt und löst keinen Klick mehr aus. Regel 5 in [design.md](design.md) beschreibt jetzt diesen Stand und verweist für die offene Frage hierher. Zu entscheiden bleibt, ob ein Sprung in das Blatt gebaut wird oder die Pille bei der Anzeige bleibt.
 2. Die Voreinstellung des Bestands auf abgeschlossen und begonnen blendet die zurückgestellten und die Objekte ohne Bearbeitungsstand aus; vorgeschlagen ist ein Start ohne Stand-Filter und ein Tooltip je Stand-Option, dessen vier Definitionen das Erschließungsteam bestätigt.
 3. Das KUG-Logo im Fuß stammt aus dem Pressebereich der KUG; die Nutzung auf der Projektseite ist mit der KUG zu bestätigen.
 
 ### An das Erschließungsteam: Rollen ohne Werkbezug und abweichende Partienschreibung (2026-09-04)
 
 Die Verknüpfungstabelle führt bei Objekten mit mehreren Werken die Werke und die Bühnenrollen als zwei getrennte Zeilenläufe, sodass eine Rolle keinem Werk zuzuordnen ist; `sungPart` nennt nur die eigene Partie der Sängerin, nie die Besetzung. Das Detail zeigt solche Rollen als freie Chips (E-213). Beispiel ist UAKUG/NIM_004 10 mit zwei Werken und fünfundzwanzig Rollen aus vier Opern. Ein Werkbezug je Rollenzeile, etwa über die geplante `datenpunkt_id`, würde die Zuordnung tragen. Zusatzbefund: UAKUG/NIM_022 1_1 schreibt die Partie am Werk als Magdalene und in der Rollenzeile als Magdalena; die Pipeline gleicht nicht unscharf ab, die Abweichung bleibt sichtbar.
+
+### An das Erschließungsteam: Werktitel in Kurzform und Werke ohne Komponisten (2026-09-04)
+
+Dieselbe Oper steht in der Verknüpfungstabelle unter mehreren Titeln, ausgeschrieben mit Artikel und als Kurzform ohne, etwa `Die Walküre` neben `Walküre` und `Tristan und Isolde` neben `Tristan`. Die Anwendung gleicht nicht unscharf ab, deshalb steht jede Schreibung als eigener Eintrag im Werke-Register, und die Kurzform trifft den Werkindex nicht, bleibt also ohne Komponisten. Von 188 Werknamen des Datenstands tragen 94 keinen Komponisten, 84 davon, weil der Name keinen Indexeintrag auflöst. Die Fundstellen mit Signaturen und Zeilen stehen als eigener Punkt in der [Partner-Übergabeliste](../data/reports/source-errors-handover-2026-09-01.md). Zu entscheiden ist dort auch, ob die Werknennung künftig über die Werkkennung des Index statt über den Titel läuft.
 
 ### An das Erschließungsteam: Veranstaltung als Person geführt (2026-09-03)
 

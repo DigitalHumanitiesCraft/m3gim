@@ -15,6 +15,7 @@ import { primaryYear } from '../data/loader.js';
 import { AGRELON_LABELS, formatLanguage } from '../data/constants.js';
 import { buildRecordBlocks } from './record-detail.js';
 import { getKorbItems, removeFromKorb, clearKorb, onKorbChange } from '../ui/basket.js';
+import { navigateToView } from '../ui/router.js';
 
 let store = null;
 let container = null;
@@ -136,10 +137,14 @@ function renderCard(record) {
 }
 
 function renderCardHeader(record, recordId, docType, docLabel) {
+  // The href stays for middle-click; the click goes through the router so the
+  // hash keeps the shared cut and the address stays citable (E-208,
+  // user-story audit 2026-09-04).
   const sigEl = el('a', {
     className: 'korb-card__sig',
     href: '#bestand/' + encodeURIComponent(recordId),
     dataset: { tip: 'Im Bestand anzeigen' },
+    onClick: (e) => { e.preventDefault(); navigateToView('bestand', { recordId }); },
   }, formatSignatur(record['rico:identifier']));
 
   const removeBtn = el('button', {
@@ -205,6 +210,19 @@ function renderKonvolutFoot(recordId) {
 /* === Exports === */
 
 function exportCSV(ids) {
+  const csv = buildCSVRows(ids, store).map(r => r.map(csvEscape).join(',')).join('\n');
+  downloadFile(csv, 'm3gim-korb.csv', 'text/csv;charset=utf-8');
+}
+
+/**
+ * The CSV as a row matrix, header first. Separated from the download so the
+ * column mapping is testable without DOM.
+ * @param {string[]} ids
+ * @param {Object} storeRef
+ * @returns {string[][]}
+ */
+export function buildCSVRows(ids, storeRef) {
+  const store = storeRef;
   const records = ids.map(id => store.records.get(id)).filter(Boolean);
   const header = [
     'Signatur', 'Titel', 'Typ', 'Datierung', 'Konvolut',
@@ -246,8 +264,12 @@ function exportCSV(ids) {
       .filter(Boolean)
       .join('; ');
 
+    // The direction sits in the role of the relation target; without it
+    // "Korrespondenz · Verfasser" becomes an undirected mention. Same form as
+    // the chip in the detail (user-story audit 2026-09-04).
     const agentRels = (store.agentRelations?.get(rid) || []).map(rel => {
-      const label = AGRELON_LABELS[rel.type] || rel.type || '';
+      const base = AGRELON_LABELS[rel.type] || rel.type || '';
+      const label = rel.objectRoleLabel ? `${base} \u00b7 ${rel.objectRoleLabel}` : base;
       return `${label}: ${rel.objectName || ''}`;
     }).join('; ');
 
@@ -261,8 +283,7 @@ function exportCSV(ids) {
     rows.push([sig, title, docType, date, konvolut, persons, places, works, agentRels, financesCol]);
   }
 
-  const csv = rows.map(r => r.map(csvEscape).join(',')).join('\n');
-  downloadFile(csv, 'm3gim-korb.csv', 'text/csv;charset=utf-8');
+  return rows;
 }
 
 function csvEscape(value) {
@@ -323,8 +344,22 @@ export function buildBibTeX(ids, storeRef) {
   return entries.join('\n\n');
 }
 
+/**
+ * LaTeX escapes for BibTeX field values. Every Signatur carries an underscore
+ * and several titles carry & or %; unescaped the file breaks when typeset
+ * (user-story audit 2026-09-04). Keys stay raw, they are already normalised to
+ * [A-Za-z0-9_]. One pass over a character class, so a replacement never gets
+ * escaped a second time.
+ */
+const BIBTEX_ESCAPES = {
+  '\\': '\\textbackslash{}',
+  '&': '\\&', '%': '\\%', '$': '\\$', '#': '\\#',
+  '_': '\\_', '{': '\\{', '}': '\\}',
+  '~': '\\textasciitilde{}', '^': '\\textasciicircum{}',
+};
+
 function bibtexEscape(s) {
-  return String(s ?? '').replace(/([{}])/g, '\\$1');
+  return String(s ?? '').replace(/[\\&%$#_{}~^]/g, c => BIBTEX_ESCAPES[c]);
 }
 
 function downloadFile(content, filename, mimeType) {
