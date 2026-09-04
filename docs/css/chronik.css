@@ -1,8 +1,6 @@
 /* M³GIM Chronik Tab Styles */
 
-/* =========================================================================
-   Chronik View — scrollender Jahres-Zeitstrahl
-   ========================================================================= */
+/* Chronik view: a scrolling year timeline */
 
 .chronik-timeline-container {
   padding: var(--space-3) var(--space-2);
@@ -55,9 +53,9 @@
   opacity: 0.5;
 }
 
-/* Dichte-adaptive Hoehe: leere Nicht-Dekaden-Jahre werden zur duennen Linie,
-   belegte Jahre behalten volle Hoehe. Lueckenstruktur bleibt sichtbar, ohne
-   endloses Scrollen durch Jahrzehnte ohne Belege (siehe E-88). */
+/* Density-adaptive height: an empty non-decade year shrinks to a thin line, a
+   year with records keeps full height. The gap structure stays visible without
+   endless scrolling through decades that hold nothing (E-88). */
 .chronik-year--empty:not(.chronik-year--decade) {
   min-height: 6px;
   padding-top: 0;
@@ -136,7 +134,7 @@
   color: var(--color-text-tertiary);
 }
 
-/* Record-Punkt: kompakter Chip an der Zeitachse. Klickbar -> selectRecord. */
+/* Record point: a compact chip on the axis, clickable into selectRecord. */
 .chronik-point {
   display: inline-flex;
   align-items: baseline;
@@ -151,7 +149,7 @@
   cursor: pointer;
   transition: border-color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast);
   text-align: left;
-  max-width: 420px;
+  max-width: min(420px, 100%);
 }
 
 .chronik-point:hover {
@@ -191,12 +189,10 @@
   flex-shrink: 0;
 }
 
-/* =========================================================================
-   Mobilitäts-Chronik: Sicht-Akzent, Achsenkopf, Dekaden-Header (E-124)
-   ========================================================================= */
+/* Mobility chronicle: Sicht accent, axis head, decade header (E-124) */
 
-/* Sicht-Akzent sitzt absolut in der linken Polsterung, damit er die
-   Baseline-Ausrichtung der Chip-Texte nicht stört. Kein Akzent = kein STE. */
+/* The Sicht accent sits absolutely in the left padding, so it does not disturb
+   the baseline alignment of the chip texts. No accent means no event. */
 .chronik-point {
   position: relative;
   padding-inline-start: calc(var(--space-2) + 7px);
@@ -210,23 +206,22 @@
   border-radius: 2px 0 0 2px;
 }
 
-/* Sekundär datierter Chip: gestrichelte Kontur + Herkunfts-Badge signalisieren
-   "Jahr nicht aus dem Hauptdatum". */
-.chronik-point--secondary { border-style: dashed; }
+/* The origin badge of a secondarily dated chip says that the year does not come
+   from the record's own date. */
 .chronik-point__secondary {
-  font-size: 10px;
+  font-size: var(--text-2xs);
   color: var(--color-text-tertiary);
   flex-shrink: 0;
 }
 
-/* Header-Segment-Highlight: Treffer hervor, Rest gedämpft. */
+/* Header segment highlight: the hits step forward, the rest is dimmed. */
 .chronik-point--hit {
   border-color: var(--accent);
   box-shadow: 0 0 0 2px color-mix(in oklch, var(--accent) 18%, transparent);
 }
 .chronik-point--dim { opacity: 0.3; }
 
-/* --- Dekaden×Sicht-Header --- */
+/* Decade by Sicht header */
 .chronik-decades {
   margin: 0 0 var(--space-5);
   padding: var(--space-3) var(--space-4) var(--space-4);
@@ -313,7 +308,7 @@
   text-align: left;
 }
 
-/* --- Undatiert-Block: Sicht-Mini-Stapel als Kopf, dann Chips --- */
+/* Undatiert-Block: Sicht-Mini-Stapel als Kopf, dann Chips */
 .chronik-year__points--undated {
   flex-direction: column;
   align-items: stretch;
@@ -334,4 +329,34 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-1);
+}
+
+/* Breakpoint */
+
+/* The year gutter takes a quarter of a 390px screen. Below 700px the labels
+   move to the axis width the numbers actually need, and a record chip gives up
+   its own measure so the row wraps instead of running past the cut edge
+   (Projektleitung, 2026-09-04). */
+@container view-shell (width < 700px) {
+  .chronik-timeline {
+    padding-inline-start: 52px;
+  }
+
+  .chronik-timeline__axis {
+    left: 52px;
+  }
+
+  .chronik-year__label {
+    left: -52px;
+    width: 44px;
+  }
+
+  .chronik-point {
+    max-width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .chronik-point__title {
+    max-width: 100%;
+  }
 }

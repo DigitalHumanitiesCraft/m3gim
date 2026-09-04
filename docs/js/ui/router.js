@@ -83,7 +83,11 @@ export function navigateToIndex(gridType, entityName) {
 export function navigateToView(tab, context = {}) {
   if (!ALL_VIEWS.includes(tab)) return;
   state.activeTab = tab;
-  state.selectedRecord = null;
+  // A jump that names a record keeps it in the hash. Every record jump goes
+  // through here so buildHash writes the query part; the sites that assigned
+  // window.location.hash themselves dropped the shared filter silently
+  // (user-story audit 2026-09-03).
+  state.selectedRecord = context.recordId ? resolveRecordId(context.recordId) : null;
   updateHash();
   applyState();
   requestAnimationFrame(() => {
@@ -103,8 +107,8 @@ export function navigateToView(tab, context = {}) {
  * den keine Ansicht je registriert hat, sodass die Facette aus den Indizes nie
  * ankam.
  *
- * `location` ist der Altname der Ortsfacette aus der entfallenen Toolbar; die
- * aufrufenden Ansichten nennen ihn weiter.
+ * `location` ist der Altname der Ortsfacette; die aufrufenden Ansichten nennen
+ * ihn weiter.
  * @param {'person'|'location'|'ort'|'werk'|'institution'|'docType'} facet
  * @param {string|string[]} value
  */

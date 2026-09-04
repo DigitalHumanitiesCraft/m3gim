@@ -34,10 +34,10 @@ const EMPTY = Object.freeze({
   werk: [],         // Namen (store.works)
   institution: [],  // Namen (store.organizations)
   docType: [],      // Dokumenttyp-Kurz-Ids (DFT-Hierarchie, expandDftFilter)
-  stand: [],        // Erschliessungsstand (E-162), loest den Umfang-Umschalter ab
+  stand: [],        // Erschliessungsstand (E-162)
   zeitfenster: null, // [vonJahr, bisJahr] oder null = volle Spanne
   sicht: [],        // Mobilitaetssichten (mobilityClusterFor) oder 'kontext'
-  search: '',       // Freitext (Bestand/Chronik) — Toolbar-lokal war es frueher
+  search: '',       // Freitext (Bestand/Chronik)
 });
 
 // Ensemble, Ereignisrolle und Waehrung sind in records-for.js als Achsen

@@ -588,14 +588,16 @@ def wide(content: str) -> str:
     return f'<div class="page__wide">\n{content}\n</div><!--/wide-->'
 
 
-def render_term(term: Term) -> str:
-    parts = ['<div class="term">', '  <h4 class="term__head">']
+def render_term(term: Term, level: int = 3) -> str:
+    """The heading level follows the outline: a term sits one step below its
+    section, which is h3 unless the section groups its terms under h3 first."""
+    parts = ['<div class="term">', f'  <h{level} class="term__head">']
     parts.append(f"    <code>{esc(term.curie)}</code>")
     if term.label_de:
         parts.append(f'    <span class="term__label">{esc(", ".join(term.label_de))}</span>')
     if term.label_en:
         parts.append(f'    <span class="term__gloss">{esc(", ".join(term.label_en))}</span>')
-    parts.append("  </h4>")
+    parts.append(f"  </h{level}>")
     if term.definition:
         parts.append(f'  <p class="term__definition">{esc(term.definition)}</p>')
     if term.facets:
@@ -828,7 +830,7 @@ def render_page(vocab_path: Path = DEFAULT_VOCAB, data_path: Path = DEFAULT_DATA
                     ("Unterproperty von", RDFS.subPropertyOf),
                 ],
             )
-            add(_indent(render_term(term), 8))
+            add(_indent(render_term(term, level=4), 8))
     add("      </section>")
 
     # -- Kontrollierte Vokabulare -------------------------------------------
@@ -874,9 +876,9 @@ def render_page(vocab_path: Path = DEFAULT_VOCAB, data_path: Path = DEFAULT_DATA
         english = ", ".join(vocab.literals(subject, SKOS.altLabel, "en"))
         add('        <div class="term">')
         add(
-            f'          <h4 class="term__head"><code>{esc(curie)}</code>'
+            f'          <h3 class="term__head"><code>{esc(curie)}</code>'
             f'<span class="term__label">{esc(label)}</span>'
-            f'<span class="term__gloss">{esc(english)}</span></h4>'
+            f'<span class="term__gloss">{esc(english)}</span></h3>'
         )
         comment = vocab.literal(subject, RDFS.comment, "de")
         if comment:
@@ -899,31 +901,99 @@ def _indent(block: str, spaces: int) -> str:
     return "\n".join(pad + line if line else line for line in block.splitlines())
 
 
-HEAD = """<!DOCTYPE html>
+# Bumped whenever a stylesheet changes, so GitHub Pages and browsers drop the
+# cached copy; tests/test_49_footer.py holds every page to this value.
+ASSET_VERSION = "2026-09-04"
+
+# The head, top bar and foot are copied verbatim into the hand-written pages
+# under docs/; tests/test_49_footer.py holds the copies to these templates.
+# A plain string, not an f-string, because the structured data carries braces.
+_HEAD = """<!DOCTYPE html>
 <html lang="de">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Datenmodell — M³GIM</title>
-  <meta name="description" content="Das Datenmodell des Teilnachlasses Ira Malaniuk (UAKUG/NIM): eingebundene Ontologien, Projekterweiterung und kontrollierte Vokabulare, erzeugt aus dem Projektvokabular.">
+  <title>Datenmodell · M³GIM</title>
+  <meta name="description" content="Klassen, Properties und kontrollierte Vokabulare der M³GIM-Erweiterung zu RiC-O 1.1, erzeugt aus dem Projektvokabular.">
+  <meta name="robots" content="index,follow">
+  <meta name="theme-color" content="#004A8F">
+  <link rel="canonical" href="https://digitalhumanitiescraft.github.io/m3gim/datenmodell.html">
 
-  <!-- Favicon (Inline-SVG, kein externes Asset) -->
+  <!-- Social cards: absolute URLs, because a scraper resolves nothing relative. -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="M³GIM">
+  <meta property="og:locale" content="de_AT">
+  <meta property="og:title" content="Datenmodell · M³GIM">
+  <meta property="og:description" content="Klassen, Properties und kontrollierte Vokabulare der M³GIM-Erweiterung zu RiC-O 1.1, erzeugt aus dem Projektvokabular.">
+  <meta property="og:url" content="https://digitalhumanitiescraft.github.io/m3gim/datenmodell.html">
+  <meta property="og:image" content="https://digitalhumanitiescraft.github.io/m3gim/img/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="M³GIM — Mapping Mobile Musicians">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Datenmodell · M³GIM">
+  <meta name="twitter:description" content="Klassen, Properties und kontrollierte Vokabulare der M³GIM-Erweiterung zu RiC-O 1.1, erzeugt aus dem Projektvokabular.">
+  <meta name="twitter:image" content="https://digitalhumanitiescraft.github.io/m3gim/img/og.png">
+
+  <!-- Favicon: inline SVG, so the page needs no external asset; the PNGs serve
+       the browsers and launchers that take no SVG. -->
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='10' fill='%231a1a1a'/%3E%3Ctext x='50%25' y='58%25' text-anchor='middle' font-family='Georgia,serif' font-size='36' font-weight='700' fill='%23f5f1e8'%3EM%3C/text%3E%3Ctext x='78%25' y='38%25' text-anchor='middle' font-family='Georgia,serif' font-size='18' font-weight='700' fill='%23c9a961'%3E3%3C/text%3E%3C/svg%3E">
+  <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="img/apple-touch-icon.png">
+  <link rel="manifest" href="site.webmanifest">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap">
 
-  <link rel="stylesheet" href="css/variables.css">
-  <link rel="stylesheet" href="css/base.css">
-  <link rel="stylesheet" href="css/pages.css">
+  <link rel="stylesheet" href="css/variables.css?v={v}">
+  <link rel="stylesheet" href="css/base.css?v={v}">
+  <link rel="stylesheet" href="css/components.css?v={v}">
+  <link rel="stylesheet" href="css/pages.css?v={v}">
+
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": "https://digitalhumanitiescraft.github.io/m3gim/#website",
+          "name": "M³GIM",
+          "alternateName": "Mapping Mobile Musicians",
+          "url": "https://digitalhumanitiescraft.github.io/m3gim/",
+          "inLanguage": "de-AT",
+          "description": "Digitale Erschließung des Teilnachlasses Ira Malaniuk (UAKUG/NIM) am Universitätsarchiv der Kunstuniversität Graz.",
+          "publisher": {
+            "@type": "Organization",
+            "name": "Universität für Musik und darstellende Kunst Graz",
+            "alternateName": "KUG",
+            "url": "https://www.kug.ac.at"
+          }
+        },
+        {
+          "@type": "WebPage",
+          "@id": "https://digitalhumanitiescraft.github.io/m3gim/datenmodell.html#webpage",
+          "name": "Datenmodell",
+          "description": "Klassen, Properties und kontrollierte Vokabulare der M³GIM-Erweiterung zu RiC-O 1.1, erzeugt aus dem Projektvokabular.",
+          "url": "https://digitalhumanitiescraft.github.io/m3gim/datenmodell.html",
+          "inLanguage": "de",
+          "isPartOf": {
+            "@id": "https://digitalhumanitiescraft.github.io/m3gim/#website"
+          },
+          "license": "https://creativecommons.org/licenses/by/4.0/"
+        }
+      ]
+    }
+  </script>
 </head>
 <body class="info-page">
 
+  <a class="skip-link" href="#main-content">Zum Inhalt springen</a>
+
   <header class="topbar">
-    <a href="index.html" class="topbar__brand">M³GIM</a>
+    <a class="topbar__brand" href="index.html">M³GIM</a>
     <span class="topbar__subtitle">Teilnachlass Ira Malaniuk — UAKUG/NIM</span>
-    <a href="projekt.html" class="topbar__badge">Research Preview</a>
+    <a class="topbar__badge" href="projekt.html">Research Preview</a>
     <nav class="topbar__info" aria-label="Informationsseiten">
       <a href="about.html">Über</a>
       <a href="projekt.html">Projekt</a>
@@ -931,22 +1001,27 @@ HEAD = """<!DOCTYPE html>
     </nav>
   </header>
 
-  <main class="info-main">
+  <main class="info-main" id="main-content">
     <article class="page page--model">
 """
+
+HEAD = _HEAD.replace("{v}", ASSET_VERSION)
 
 FOOT = """
     </article>
   </main>
 
   <footer class="app-footer">
-    <a href="https://www.kug.ac.at" target="_blank" rel="noopener">KUG Graz</a>
-    <span>·</span>
-    <a href="impressum.html">Impressum</a>
-    <span>·</span>
-    <a href="https://github.com/DigitalHumanitiesCraft/m3gim" target="_blank" rel="noopener">GitHub</a>
-    <span>·</span>
-    <a href="https://lisa.gerda-henkel-stiftung.de/digitale_geschichte_pollin" target="_blank" rel="noopener">Promptotype</a>
+    <div class="app-footer__group">
+      <a class="app-footer__kug" href="https://www.kug.ac.at" target="_blank" rel="noopener" data-tip="Universität für Musik und darstellende Kunst Graz, Universitätsarchiv"><img class="app-footer__mark" src="img/kug-logo.svg" alt="" width="14" height="14">KUG Graz</a>
+      <a href="impressum.html">Impressum</a>
+    </div>
+    <div class="app-footer__group">
+      <a href="https://github.com/DigitalHumanitiesCraft/m3gim" target="_blank" rel="noopener" data-tip="Repository auf GitHub, Code unter MIT-Lizenz">Repository</a>
+      <a href="https://github.com/DigitalHumanitiesCraft/Promptotyping" target="_blank" rel="noopener" data-tip="Promptotyping, die Methode hinter dieser Anwendung, auf GitHub">Promptotyping</a>
+      <a href="https://dhcraft.org" target="_blank" rel="noopener" data-tip="Digital Humanities Craft, Konzeption und Umsetzung">DHCraft</a>
+      <a class="app-footer__cc" href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener" data-tip="Daten, Texte und Dokumentation unter Creative Commons Attribution 4.0"><img class="app-footer__mark" src="img/cc.svg" alt="" width="14" height="14"><img class="app-footer__mark" src="img/cc-by.svg" alt="" width="14" height="14">CC BY 4.0</a>
+    </div>
   </footer>
 
 </body>

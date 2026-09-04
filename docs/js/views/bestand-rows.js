@@ -8,8 +8,9 @@
 
 import { el } from '../utils/dom.js';
 import { ensureArray, dftLabel } from '../utils/format.js';
-import { korbIcon } from '../data/constants.js';
+import { korbIcon, korbTip, CONTENT_FAMILIES } from '../data/constants.js';
 import { toggleKorb, isInKorb } from '../ui/basket.js';
+import { familyIcon } from '../ui/family-icons.js';
 import {
   badgeKindForItem, isStandaloneKonvolut, familiesForRecord,
 } from './bestand-data.js';
@@ -29,32 +30,49 @@ export function buildDocTypeBadge(item, record, docType, docLabel, docGloss) {
     case 'standalone-konvolut':
       return el('span', { className: 'badge badge--konvolut-struct', dataset: { tip: 'Noch nicht in Einzelobjekte aufgelöst' } }, 'Konvolut');
     case 'doctype':
-      return el('span', { className: 'badge badge--plain', title: docGloss || '' }, docLabel);
+      return el('span', {
+        className: 'badge badge--plain',
+        dataset: docGloss ? { tip: docGloss, tipWrap: '' } : {},
+      }, docLabel);
     default:
       return el('span', { className: 'badge badge--plain badge--unclassified' }, 'Nicht klassifiziert');
   }
 }
 
 /**
- * Typed Erschliessungsanzeige of a record row: one square per content family,
- * filled or empty. The family colours are the ones the inline detail carries on
- * its block titles, so the legend arises from proximity rather than from text
- * (E-158). The tooltip names all four families with their counts, so an empty
- * square reads as a zero rather than as a missing entry.
+ * Typed Erschliessungsanzeige of a record row: one icon per content family in
+ * family colour where the record carries evidence, a quiet outline where it
+ * does not, and the count right after a filled icon. The icons are the ones the
+ * Indizes grids carry in their heads, so a family is named by one symbol across
+ * the views (Projektleitung, 2026-09-04). The tooltip names all four families
+ * with their counts, so an empty icon reads as a zero rather than as a gap.
  */
 export function buildErschliessung(store, record) {
   const families = familiesForRecord(record, store);
-  const tip = families.some(f => f.count > 0)
+  const present = families.filter(f => f.count > 0);
+  const tip = present.length > 0
     ? families.map(f => `${f.label} ${f.count}`).join('\n')
     : 'keine Verknüpfungen';
-  return familySquares(families, tip);
+  const label = present.length > 0
+    ? `Erschließung: ${present.map(f => `${f.label} ${f.count}`).join(', ')}`
+    : 'Erschließung: keine Verknüpfungen';
+  return familyIcons(families, tip, label);
 }
 
-function familySquares(families, tip) {
-  return el('span', { className: 'archiv-ersch', dataset: { tip, tipWrap: '' } },
+function familyIcons(families, tip, label) {
+  // bottom-right: the two last columns sit at the right window edge, where a
+  // centred tooltip runs out of the viewport.
+  return el('span', {
+    className: 'archiv-ersch',
+    dataset: { tip, tipWrap: '', tipPos: 'bottom-right' },
+    'aria-label': label,
+  },
     ...families.map(f => el('span', {
-      className: `ersch-dot ersch-dot--${f.key} ${f.count > 0 ? 'ersch-dot--on' : 'ersch-dot--off'}`,
-    })));
+      className: `ersch-fam ersch-fam--${f.key}${f.count > 0 ? ' ersch-fam--on' : ''}`,
+    },
+      familyIcon(f.key, { size: 13, className: 'ersch-fam__icon' }),
+      f.count > 0 ? el('span', { className: 'ersch-fam__count' }, String(f.count)) : null,
+    )));
 }
 
 /**
@@ -118,7 +136,7 @@ export function konvolutStandTip(meta) {
 
 /**
  * Distinguishing hint for a child that carries the collective title of its
- * Konvolut: the first linked entity plus its content family, so the dot in
+ * Konvolut: the first linked entity plus its content family, so the icon in
  * front of the hint says where the name comes from.
  * @returns {?{name: string, family: 'person'|'institution'|'ort'}}
  */
@@ -151,36 +169,6 @@ export function getFolioHint(store, record, konvolutId) {
   return null;
 }
 
-export function buildKonvolutTooltip(store, konvolutId) {
-  const childIds = (store.konvolutChildren.get(konvolutId) || []).filter(cid => !store.folioIds.has(cid));
-  const agentCounts = new Map();
-  const locationCounts = new Map();
-
-  for (const cid of childIds) {
-    const child = store.records.get(cid);
-    if (!child) continue;
-    for (const agent of ensureArray(child['m3gim-ontology:hasAssociatedAgent'])) {
-      const name = agent.name || agent['skos:prefLabel'] || '';
-      if (name) agentCounts.set(name, (agentCounts.get(name) || 0) + 1);
-    }
-    for (const loc of ensureArray(child['rico:hasOrHadLocation'])) {
-      const name = loc.name || loc['skos:prefLabel'] || '';
-      if (name && !/^\d{4}/.test(name)) locationCounts.set(name, (locationCounts.get(name) || 0) + 1);
-    }
-  }
-
-  const parts = [];
-  if (agentCounts.size > 0) {
-    const top = [...agentCounts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5).map(([n]) => n);
-    parts.push(`Personen: ${top.join(', ')}`);
-  }
-  if (locationCounts.size > 0) {
-    const top = [...locationCounts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 3).map(([n]) => n);
-    parts.push(`Orte: ${top.join(', ')}`);
-  }
-  return parts.join('\n');
-}
-
 /**
  * Korb button of a row. `onExpandedToggle` lets the caller rebuild the table
  * when the same record is expanded and carries a second Korb control.
@@ -189,7 +177,8 @@ export function buildKorbBtn(recordId, onExpandedToggle) {
   const active = isInKorb(recordId);
   return el('button', {
     className: `korb-btn ${active ? 'korb-btn--active' : ''}`,
-    title: active ? 'Aus dem Korb entfernen' : 'In den Korb',
+    dataset: { tip: korbTip(active), tipPos: 'bottom-right' },
+    'aria-label': korbTip(active),
     html: korbIcon(14, active),
     onClick: (e) => {
       e.stopPropagation();
@@ -198,9 +187,130 @@ export function buildKorbBtn(recordId, onExpandedToggle) {
       const btn = e.currentTarget;
       const nowActive = isInKorb(recordId);
       btn.classList.toggle('korb-btn--active', nowActive);
-      btn.title = nowActive ? 'Aus dem Korb entfernen' : 'In den Korb';
+      btn.dataset.tip = korbTip(nowActive);
+      btn.setAttribute('aria-label', korbTip(nowActive));
       btn.innerHTML = korbIcon(14, nowActive);
       if (onExpandedToggle) onExpandedToggle(recordId);
     },
   });
+}
+
+/**
+ * Trigger of the jump list, sitting in the Signatur column head. The glyph is
+ * the row chevron turned down, so the same symbol means the same thing across
+ * the table (Projektleitung, 2026-09-04).
+ */
+export function buildJumpTrigger(onToggle) {
+  return el('button', {
+    type: 'button',
+    className: 'archiv-jump-btn',
+    'aria-haspopup': 'listbox',
+    'aria-expanded': 'false',
+    'aria-label': 'Konvolute des Schnitts',
+    dataset: { tip: 'Konvolute des Schnitts' },
+    onClick: (e) => { e.stopPropagation(); onToggle(); },
+  }, el('span', { className: 'archiv-chevron archiv-chevron--down', 'aria-hidden': 'true' }, '›'));
+}
+
+/** Enabled state of the jump trigger. An empty cut has nothing to jump to, so
+ *  the trigger says why instead of opening an empty list (Projektleitung,
+ *  2026-09-04). aria-disabled rather than `disabled`, so the reason stays
+ *  reachable for the keyboard and the tooltip. */
+export function setJumpTriggerState(trigger, disabled) {
+  if (!trigger) return;
+  trigger.setAttribute('aria-disabled', String(disabled));
+  trigger.classList.toggle('archiv-jump-btn--disabled', disabled);
+  const label = disabled ? 'keine Konvolute im Schnitt' : 'Konvolute des Schnitts';
+  trigger.dataset.tip = label;
+  trigger.setAttribute('aria-label', label);
+}
+
+/**
+ * The jump list itself: under the structural view the open/close action row
+ * followed by every Konvolut of the cut with its open state, title and number
+ * of visible children. `showToggles` false is the flattened filter mode, where
+ * there are no heads to open: the chevrons and the action row fall away and the
+ * list is pure navigation (Projektleitung, 2026-09-04). The container is built
+ * detached; the view anchors and dismisses it.
+ * @param {{entries: Array, openIds: Set<string>, currentId: ?string,
+ *   allOpen: boolean, showToggles?: boolean, onJump: (id: string) => void,
+ *   onToggleAll: () => void}} opts
+ */
+export function buildJumpList(opts) {
+  const { entries, openIds, currentId, allOpen, onJump, onToggleAll } = opts;
+  const showToggles = opts.showToggles !== false;
+  const list = el('div', {
+    className: 'archiv-jump' + (showToggles ? '' : ' archiv-jump--flat'),
+    role: 'listbox',
+    'aria-label': 'Konvolute des Schnitts',
+  });
+  if (showToggles) {
+    list.appendChild(el('button', {
+      type: 'button',
+      className: 'archiv-jump__action',
+      role: 'option',
+      'aria-selected': 'false',
+      onClick: () => onToggleAll(),
+    }, allOpen ? 'alle zuklappen' : 'alle aufklappen'));
+  }
+
+  for (const entry of entries) {
+    const isOpen = showToggles && openIds.has(entry.konvolutId);
+    const isCurrent = entry.konvolutId === currentId;
+    const row = el('button', {
+      type: 'button',
+      className: 'archiv-jump__entry' + (isCurrent ? ' archiv-jump__entry--current' : ''),
+      role: 'option',
+      'aria-selected': String(isCurrent),
+      dataset: { konvolutJump: entry.konvolutId },
+      onClick: () => onJump(entry.konvolutId),
+    },
+      showToggles
+        ? el('span', {
+          className: 'archiv-chevron' + (isOpen ? ' archiv-chevron--open' : ''),
+          'aria-hidden': 'true',
+        }, '›')
+        : null,
+      el('span', { className: 'archiv-jump__sig' }, entry.signatur),
+      el('span', { className: 'archiv-jump__title' }, entry.title),
+      el('span', {
+        className: 'archiv-jump__count',
+        dataset: { tip: `${entry.childCount} Objekte im Schnitt` },
+      }, String(entry.childCount)),
+    );
+    if (isCurrent) row.setAttribute('aria-current', 'true');
+    list.appendChild(row);
+  }
+  return list;
+}
+
+/**
+ * The four family icons as a legend in the .archiv-col-links cell of the open,
+ * sticky Konvolut head: it names what the column of its rows below carries,
+ * quiet and without numbers (Projektleitung, 2026-09-04).
+ */
+export function buildKonvolutFamilyLegend() {
+  return el('span', {
+    className: 'archiv-ersch archiv-ersch--legend',
+    dataset: {
+      tip: CONTENT_FAMILIES.map(f => f.label).join(' · '),
+      tipPos: 'bottom-right',
+    },
+    'aria-hidden': 'true',
+  }, ...CONTENT_FAMILIES.map(f => familyIcon(f.key, {
+    size: 13, className: 'ersch-fam__icon',
+  })));
+}
+
+/** Close affordance at the right end of the open, sticky Konvolut head. The
+ *  whole head closes on click; this says so at the far edge, where the eye is
+ *  after reading a row (Projektleitung, 2026-09-04). */
+export function buildKonvolutCloseBtn(onClose) {
+  return el('button', {
+    type: 'button',
+    className: 'archiv-konvolut-close',
+    'aria-label': 'Konvolut zuklappen',
+    dataset: { tip: 'Konvolut zuklappen', tipPos: 'bottom-right' },
+    onClick: (e) => { e.stopPropagation(); onClose(); },
+  }, el('span', { className: 'archiv-chevron archiv-chevron--up', 'aria-hidden': 'true' }, '›'));
 }

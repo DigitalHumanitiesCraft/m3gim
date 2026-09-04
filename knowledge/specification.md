@@ -29,7 +29,7 @@ related: [research-framework, data, data-model, architecture, design, journal, t
 
 # Spezifikation
 
-Dieses Dokument trägt die Projektidentität, den Substanz- und Funktionsumfang von M³GIM und den operativen Stand. Es beschreibt, was die Anwendung leistet und für wen, sammelt die offenen Entscheidungen des Projekts an einer Stelle und führt am Ende in einem ausdrücklich volatilen Abschnitt die nächsten Schritte. Das Datenmodell wird in [data.md](data.md) geführt, die Laufzeitarchitektur in [architecture.md](architecture.md), die Designhaltung in [design.md](design.md), die getroffenen Architektur- und Modellentscheidungen in [journal.md](journal.md), die quellseitig zu behebenden Datenpunkte im [Datenfehler-Register](../data/reports/reconciliation-register.md). Laufende Zählstände stehen ausschließlich im Quality-Snapshot (`data/reports/quality-snapshot.md`).
+Dieses Dokument trägt die Projektidentität, den Substanz- und Funktionsumfang von M³GIM und den operativen Stand. Es beschreibt, was die Anwendung leistet und für wen, sammelt die offenen Entscheidungen des Projekts an einer Stelle und führt am Ende in einem ausdrücklich volatilen Abschnitt die nächsten Schritte. Das Datenmodell wird in [data.md](data.md) geführt, die Laufzeitarchitektur in [architecture.md](architecture.md), die Designhaltung in [design.md](design.md), die getroffenen Architektur- und Modellentscheidungen in [journal.md](journal.md), die quellseitig zu behebenden Datenpunkte in der Partner-Übergabeliste [source-errors-handover-2026-09-01.md](../data/reports/source-errors-handover-2026-09-01.md). Laufende Zählstände stehen ausschließlich im Quality-Snapshot (`data/reports/quality-snapshot.md`).
 
 ## Projekt
 
@@ -228,13 +228,13 @@ Der Vertrag in [frontend-date-contract.md](../data/reports/frontend-date-contrac
 
 ## Stand und nächste Schritte
 
-Dieser Abschnitt ist volatil und wird je Session fortgeschrieben; alles oberhalb ist der durable Kern der Spezifikation. Erledigte Arbeitspakete wandern von hier in [journal.md](journal.md), quellseitige Datenpunkte ins [Datenfehler-Register](../data/reports/reconciliation-register.md).
+Dieser Abschnitt ist volatil und wird je Session fortgeschrieben; alles oberhalb ist der durable Kern der Spezifikation. Erledigte Arbeitspakete wandern von hier in [journal.md](journal.md), quellseitige Datenpunkte in die Partner-Übergabeliste [source-errors-handover-2026-09-01.md](../data/reports/source-errors-handover-2026-09-01.md).
 
 ### Datenstand vom 2026-08-31
 
 Der Export des Erschließungsteams vom 2026-08-31 ist übernommen (E-152). Die Verknüpfungstabelle liegt seit dieser Lieferung als CSV-Ausfuhr je Blatt vor, die übrigen fünf Arbeitsmappen bleiben XLSX; die Pipeline trägt Schutzregeln gegen die Index-Defekte des Exports, und `validate.py` hat die zwei nie nachgezogenen Absorptionen aus `transform.py` bekommen. Neu feinerschlossen sind NIM_016 und NIM_134.
 
-Aus der Übernahme bleiben vier Stränge offen. Erstens die Modellierungsrunden 2 bis 4 aus dem Entwurf zu den neu hinzugekommenen Datenpunkten, also Seiten-Hierarchie, Vorkommnis und Beteiligung sowie Aboutness; Runde 1 mit den fünf neuen Rollenbegriffen ist gebaut. Zweitens `m3gim-ontology:contractStatus` am Vorkommnis, dessen externe Blockade entfallen ist, weil die Quelle den Vertragsstatus jetzt in der Anmerkungsspalte führt. Drittens die beiden Typwerte `Aktivität` und `dokument`, die belegt sind und keinen Zielzweig haben. Viertens die Quellfehler der Lieferung, die im [Datenfehler-Register](../data/reports/reconciliation-register.md) stehen.
+Aus der Übernahme bleiben vier Stränge offen. Erstens die Modellierungsrunden 2 bis 4 aus dem Entwurf zu den neu hinzugekommenen Datenpunkten, also Seiten-Hierarchie, Vorkommnis und Beteiligung sowie Aboutness; Runde 1 mit den fünf neuen Rollenbegriffen ist gebaut. Zweitens `m3gim-ontology:contractStatus` am Vorkommnis, dessen externe Blockade entfallen ist, weil die Quelle den Vertragsstatus jetzt in der Anmerkungsspalte führt. Drittens die beiden Typwerte `Aktivität` und `dokument`, die belegt sind und keinen Zielzweig haben. Viertens die Quellfehler der Lieferung, die in der Partner-Übergabeliste [source-errors-handover-2026-09-01.md](../data/reports/source-errors-handover-2026-09-01.md) stehen.
 
 ### Erfassungsschema v2 und Migration des Altbestands (E-127)
 
@@ -260,12 +260,11 @@ Datenstufen darauf aufbauend: Stufe 1 ohne Erfassungsänderung (Partner-Reconcil
 
 ### Frontend-Refactoring und Interface-Ausbau (Plan vom 2026-09-03)
 
-Der Plan entstand aus drei Code-Audits über Views, CSS und HTML sowie die Kernschichten und aus der Durchsicht der Seitenstrukturen gegen die Forschungsfragen. Seine Schritte 1 bis 7 sind am 2026-09-03 umgesetzt, also die Benennung von View-Modulen und Stylesheets nach Tab-Key (E-159), der Schichtenschnitt in Orchestrator, reine Datenschicht und eigenes Zeichenmodul, das eine Sidebar-Gerüst mit fester Spaltenreihenfolge (E-166), die geteilten CSS-Primitiven samt Container Query am Gerüst, die Zusammenführung von Netzwerk und Verknüpfungen zu einer Ansicht mit Fokus-Wahl und Knotentyp-Schaltern, die Reduktion der Statistik auf den Bestand in Zahlen mit den fünf Ansichten Dokumenttypen, Erschließungsstand, Repertoire, Personen und Institutionen sowie die Tab-Leiste in drei sichtbaren Gruppen mit Pfeiltasten und Roving Tabindex (E-160). Die Länder-Reichweite trägt seither die Karten-Sidebar, die zeitliche Entwicklung der Dekaden-Header der Chronik und das Beziehungsaggregat das Netzwerk. Die Finanzansicht und die Mobilitätsansichten der Statistik sind entfallen. Den gebauten Stand führt [architecture.md](architecture.md) § Frontend, die Regeln dahinter [design.md](design.md). Die Durchsicht am laufenden Bild vom Abend des 2026-09-03 ist ebenfalls gebaut, also Markenband und weiße Tab-Zeile, die warme Flächenfamilie mit dem Blau als einzigem Akzent, die Schriftregel, der Bestand ohne Sortierung in Signaturfolge, der entschlackte Konvolut-Kopf, die Zustände des Dokumenttyp-Baums und ein Hausstil-Durchgang über die Stylesheets. Der Verlauf steht in [journal.md](journal.md) als Session 78, die Entscheidungen als E-185 bis E-204.
+Der Plan entstand aus drei Code-Audits über Views, CSS und HTML sowie die Kernschichten und aus der Durchsicht der Seitenstrukturen gegen die Forschungsfragen. Seine Schritte 1 bis 7 sind am 2026-09-03 umgesetzt, also die Benennung von View-Modulen und Stylesheets nach Tab-Key (E-159), der Schichtenschnitt in Orchestrator, reine Datenschicht und eigenes Zeichenmodul, das eine Sidebar-Gerüst mit fester Spaltenreihenfolge (E-166), die geteilten CSS-Primitiven samt Container Query am Gerüst, die Zusammenführung von Netzwerk und Verknüpfungen zu einer Ansicht mit Fokus-Wahl und Knotentyp-Schaltern, die Reduktion der Statistik auf den Bestand in Zahlen mit den fünf Ansichten Dokumenttypen, Erschließungsstand, Repertoire, Personen und Institutionen sowie die Tab-Leiste in drei sichtbaren Gruppen mit Pfeiltasten und Roving Tabindex (E-160). Die Länder-Reichweite trägt seither die Karten-Sidebar, die zeitliche Entwicklung der Dekaden-Header der Chronik und das Beziehungsaggregat das Netzwerk. Die Finanzansicht und die Mobilitätsansichten der Statistik sind entfallen. Den gebauten Stand führt [architecture.md](architecture.md) § Frontend, die Regeln dahinter [design.md](design.md). Die Durchsicht am laufenden Bild vom Abend des 2026-09-03 ist ebenfalls gebaut, also das Markenband, das die Tabs seit E-196 in seiner eigenen Zeile trägt, die warme Flächenfamilie mit dem Blau als einzigem Akzent, die Schriftregel, der Bestand ohne Sortierung in Signaturfolge, der entschlackte Konvolut-Kopf, die Zustände des Dokumenttyp-Baums und ein Hausstil-Durchgang über die Stylesheets. Der Verlauf steht in [journal.md](journal.md) als Session 78, die Entscheidungen als E-185 bis E-204; die Nacharbeit aus dem User-Story-Audit als Session 79 mit E-205 bis E-210.
 
-Offen bleiben drei UI-Bausteine, je eine Entscheidung der Projektleitung.
+Offen bleiben zwei UI-Bausteine, je eine Entscheidung der Projektleitung. Entscheidung 9, der eigene Tooltip statt nativer `title`-Attribute, ist mit E-210 geschlossen.
 
 8. Ein Detail-Panel-Baustein für Kopf, Chips und Belegliste neben Visualisierungen, während das Inline-Detail die Form im Bestand bleibt.
-9. Ein eigener leichter Tooltip per Hover und Fokus statt nativer `title`-Attribute, weil Regel 8 in [design.md](design.md) den Tooltip zum Träger der Aufschlüsselung macht.
 11. Lade- und Fehlerzustand aus Tokens statt Inline-Styles.
 
 Daneben stehen zwei Punkte an der Wissensbasis. Ob der Testkatalog in [testing.md](testing.md) künftig aus den Docstrings erzeugt wird, ist eine offene Entscheidung. Die Personas in [research-framework.md](research-framework.md) warten auf die Zulieferung der Projektleitung. Die offenen Übergaben an Frontend, Backend und Erschließungsteam führt [handoff.md](handoff.md).
@@ -276,17 +275,15 @@ Weiterhin offen aus früheren Ständen:
 - Auftritts-Occurrence umsetzen, sobald die Spalte `datenpunkt_id` gefüllt ist (§ Auftritts-Occurrence und Forschungsdatenstufe).
 - Karte: Werk als wählbare Entität, feinere Werk- und Personen-Ebene pro Ort, fehlende Stadt-Koordinaten über die Reconciliation-Pipeline (siehe E-126 „Offen").
 - Export um JSON-LD und GEXF ergänzen. CSV und BibTeX sind gebaut, die beiden übrigen Formate fehlen.
-- Das Inline-Detail zu einer Auftrittssicht umbauen, mit einem Pipeline-Schritt davor, weil Box 6 jede Partie zweimal führt, als blanke `rolle`-Zeile und als Komposit aus Rolle und Person, von denen nur das Komposit `hasPerformer` trägt. Die Kindzeile schreibt „o. D.“, obwohl der abgeleitete Anker aus E-141 vorliegt (siehe [handoff.md](handoff.md)).
 
 ### Deferred
 
-- `scripts/build-views.py` und `scripts/audit-data.py` lesen noch das durch E-96 entfernte `m3gim:hasPerformanceRole` und liefern für diese Spuren leere Listen, bis sie auf `m3gim-ontology:hasPerformance`/`m3gim-ontology:StageRole` umgestellt werden. <!-- vocab-exempt: nennt das mit E-96 entfernte Attribut -->
 - Eine leichtgewichtige Reifikation über `m3gim:Statement` wird nur dort ergänzt, wo die Provenance nicht bereits aus der Record-URI folgt. <!-- vocab-exempt: nennt ein vorgeschlagenes, nicht gebautes Muster -->
 - Zenodo-Archivierung und EAD-Export gehören zum Betriebsmodell und werden später angegangen.
 
 ### Datenqualität
 
-Instanzbezogene Datenfehler, Abgleichfehler und die strukturellen Quell-Fixes stehen kanonisch im [Datenfehler-Register](../data/reports/reconciliation-register.md); vor Bearbeitung gegen den Quality-Snapshot verifizieren. Fortlaufend im Erfassungsteam: die Verknüpfungsrate erhöhen (Schwerpunkt lag auf den Konvoluten um NIM_003, NIM_004 und NIM_007, Einzelobjekte sind weitgehend unverknüpft) und den mehrheitlich offenen Bearbeitungsstand schließen.
+Die quellseitig behebbaren Einzelfehler und die strukturellen Quell-Fixes stehen kanonisch in der Partner-Übergabeliste [source-errors-handover-2026-09-01.md](../data/reports/source-errors-handover-2026-09-01.md), die Abgleichfehler des Wikidata-Laufs im [reconciliation-register.md](../data/reports/reconciliation-register.md); vor Bearbeitung gegen den Quality-Snapshot verifizieren. Fortlaufend im Erfassungsteam: die Verknüpfungsrate erhöhen (Schwerpunkt lag auf den Konvoluten um NIM_003, NIM_004 und NIM_007, Einzelobjekte sind weitgehend unverknüpft) und den mehrheitlich offenen Bearbeitungsstand schließen.
 
 ### Status-Tracker
 

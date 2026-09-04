@@ -14,7 +14,10 @@ import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
-import { recordsFor, docTypeGroups, facetInventory } from '../../docs/js/data/records-for.js';
+import { recordsFor, docTypeGroups, facetInventory, baseIds } from '../../docs/js/data/records-for.js';
+import { aggregateDocTypes } from '../../docs/js/views/statistik-data.js';
+import { getDocTypeId } from '../../docs/js/utils/format.js';
+import { storeFromShipped } from './_shipped.mjs';
 import { impliedByGroup, groupTip } from '../../docs/js/ui/sidebar.js';
 
 // Miniatur-Store mit einer DFT-Hierarchie: Oberbegriff schriftgut -> {brief,
@@ -151,5 +154,56 @@ describe('Tooltip der Gruppenzeile', () => {
 
   test('er wird nie negativ, auch wenn die Zaehler auseinanderlaufen', () => {
     assert.equal(groupTip(2, 3), '0 direkt · 3 in Untertypen');
+  });
+});
+
+describe('Die Sammelzeile "ohne Typ" der Statistik ist kein Sprung', () => {
+  // Ein Dokument ohne klassifizierten Typ steht in keinem Eintrag des
+  // docType-Index; kein Facettenwert holt es zurueck. Die Zeile darf deshalb
+  // keinen Filter setzen, sonst zeigt der Bestand nichts (user-story audit
+  // 2026-09-03).
+  function storeMitUngetyptem() {
+    const store = makeStore();
+    store.records.set('r5', { '@id': 'r5', 'm3gim-ontology:processingStatus': 'abgeschlossen' });
+    store.allRecords = [...store.records.values()];
+    return store;
+  }
+
+  test('das Aggregat kennt die Zeile, die Facette erreicht sie nicht', () => {
+    const store = storeMitUngetyptem();
+    const ohneTyp = aggregateDocTypes(store, baseIds(store)).find(row => row.id === null);
+    assert.equal(ohneTyp.count, 1, 'die Zeile zaehlt den ungetypten Datensatz');
+    // Alle angebotenen Werte plus der frueher gesetzte Platzhalter.
+    const werte = ['schriftgut', 'brief', 'rezension', 'plakat', '__none__', 'ohne-typ'];
+    for (const wert of werte) {
+      assert.ok(!recordsFor(store, { docType: [wert] }).ids.has('r5'),
+        `docType=${wert} erreicht den ungetypten Datensatz nicht`);
+    }
+  });
+
+  test('die Zeile traegt keinen Klick und keinen Platzhalter mehr', () => {
+    const src = readFileSync(new URL('../../docs/js/views/statistik-sections.js', import.meta.url), 'utf-8');
+    assert.ok(!src.includes('__none__'), 'der Platzhalter, den recordsFor nie kannte, ist weg');
+    const start = src.indexOf('if (ohneTyp)');
+    const block = src.slice(start, src.indexOf('return node', start));
+    assert.ok(!block.includes('onClick'), 'die Sammelzeile setzt keinen Filter');
+    assert.match(block, /\btip:/, 'sie sagt im Tooltip, warum sie nirgends hinfuehrt');
+  });
+
+  test('im ausgelieferten Datensatz erreicht kein Typwert die ungetypten Dokumente', async () => {
+    const store = await storeFromShipped();
+    const ungetypt = store.allRecords.filter(r => !getDocTypeId(r)).map(r => r['@id']);
+    assert.ok(ungetypt.length >= 100,
+      `der Datensatz traegt ${ungetypt.length} Dokumente ohne Dokumenttyp`);
+    const base = baseIds(store);
+    const imBestand = new Set(ungetypt.filter(id => base.has(id)));
+    const angeboten = [];
+    for (const gruppe of docTypeGroups(store)) {
+      angeboten.push(gruppe.value, ...gruppe.children.map(k => k.value));
+    }
+    const erreicht = recordsFor(store, { docType: angeboten }).ids;
+    for (const id of imBestand) {
+      assert.ok(!erreicht.has(id), `${id} bleibt fuer jeden Typwert unerreichbar`);
+    }
   });
 });

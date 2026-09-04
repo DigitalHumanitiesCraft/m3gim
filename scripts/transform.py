@@ -1808,6 +1808,7 @@ class _RelationContext:
         self.subjects = []
         self.creation_dates = []  # Entstehungsdatierung -> rico:creationDate
         self.mentions = []
+        self.record_performances = []
 
     def start_record(self, record: dict) -> None:
         self.record = record
@@ -1816,6 +1817,7 @@ class _RelationContext:
         self.subjects = []
         self.creation_dates = []
         self.mentions = []
+        self.record_performances = []
 
     def next_performance_id(self) -> str:
         self.perf_counter += 1
@@ -1824,6 +1826,13 @@ class _RelationContext:
 
     def add_detail(self, detail_entry: dict) -> None:
         self.record.setdefault("m3gim-ontology:hasDetail", []).append(detail_entry)
+
+    def add_performance(self, perf: dict) -> None:
+        self.performances.append(perf)
+        self.record_performances.append(perf)
+        self.record.setdefault("m3gim-ontology:hasPerformance", []).append(
+            {"@id": perf["@id"]}
+        )
 
 
 def _rel_person(ctx: _RelationContext, rel: dict, entry: dict, name: str) -> None:
@@ -1899,8 +1908,7 @@ def _rel_rolle(ctx: _RelationContext, rel: dict, entry: dict, name: str) -> None
     if _qf:
         perf["m3gim-ontology:dataQualityFlag"] = _qf if len(_qf) > 1 else _qf[0]
     attach_xlsx_source(perf, rel)
-    ctx.performances.append(perf)
-    ctx.record.setdefault("m3gim-ontology:hasPerformance", []).append({"@id": perf_id})
+    ctx.add_performance(perf)
 
 
 def _rel_datum(ctx: _RelationContext, rel: dict, entry: dict, name: str) -> None:
@@ -2012,8 +2020,7 @@ def _rel_performance(ctx: _RelationContext, rel: dict, entry: dict, name: str) -
     if rel.get("anmerkung"):
         perf["rico:generalDescription"] = rel["anmerkung"]
     attach_xlsx_source(perf, rel)
-    ctx.performances.append(perf)
-    ctx.record.setdefault("m3gim-ontology:hasPerformance", []).append({"@id": perf_id})
+    ctx.add_performance(perf)
 
 
 def _rel_finanz(ctx: _RelationContext, rel: dict, entry: dict, name: str) -> None:
@@ -2060,6 +2067,49 @@ RELATION_HANDLERS = {
     "einnahmen": _rel_finanz,
     "summe": _rel_finanz,
 }
+
+
+def _dedupe_stage_role_performances(ctx: "_RelationContext") -> None:
+    """Faellt die doppelt gefuehrte Partie eines Dokuments auf die Besetzung.
+
+    The Verknuepfungen of Boxes 5 and 6 list every Partie twice, once as a bare
+    ``rolle`` row and once as the composite of role and person, and only the
+    composite carries hasPerformer. The bare twin would show the Partie without
+    its Interpret:in (finding handoff 2026-09-03). It is dropped only where it
+    adds nothing of its own, so a Bemerkung or a quality flag keeps it.
+    """
+    by_role = {}
+    for perf in ctx.record_performances:
+        role = perf.get("m3gim-ontology:hasStageRole")
+        role_id = role.get("@id") if isinstance(role, dict) else role
+        if role_id:
+            by_role.setdefault(role_id, []).append(perf)
+    redundant = []
+    for group in by_role.values():
+        if not any("m3gim-ontology:hasPerformer" in p for p in group):
+            continue
+        redundant.extend(
+            p for p in group
+            if "m3gim-ontology:hasPerformer" not in p
+            and "rico:generalDescription" not in p
+            and "m3gim-ontology:dataQualityFlag" not in p
+        )
+    if not redundant:
+        return
+    dropped = {p["@id"] for p in redundant}
+    for perf in redundant:
+        source = perf.get("m3gim-ontology:xlsxSource") or {}
+        sheet = source.get("m3gim-ontology:xlsxSheet")
+        line = source.get("m3gim-ontology:xlsxRow")
+        record_drop("Partie doppelt gefuehrt, blanke Rollenzeile",
+                    f"{sheet} Zeile {line}" if sheet and line else None)
+    ctx.performances = [p for p in ctx.performances if p["@id"] not in dropped]
+    remaining = [ref for ref in ctx.record["m3gim-ontology:hasPerformance"]
+                 if ref["@id"] not in dropped]
+    if remaining:
+        ctx.record["m3gim-ontology:hasPerformance"] = remaining
+    else:
+        del ctx.record["m3gim-ontology:hasPerformance"]
 
 
 def add_relations_to_records(records: list, relations: dict,
@@ -2124,6 +2174,8 @@ def add_relations_to_records(records: list, relations: dict,
                 record_drop("Verknuepfung mit unbekanntem Typ", f"typ={t}")
                 continue
             handler(ctx, rel, entry, name)
+
+        _dedupe_stage_role_performances(ctx)
 
         # Erwähnte Personen → rico:hasOrHadSubject (statt einer eigenen Kante)
         # Sie werden als rico:Person mit role "erwähnt" modelliert

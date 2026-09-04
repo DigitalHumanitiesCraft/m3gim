@@ -53,6 +53,30 @@ describe('familiesForRecord am ausgelieferten Datenstand', () => {
     assert.ok(person.count > 0, 'die beteiligten Personen stehen ebenfalls am Record');
   });
 
+  test('die Zahl nennt verschiedene Entitaeten, nicht Verknuepfungszeilen', () => {
+    // Von Hand geprueft am ausgelieferten Datenstand (Projektleitung,
+    // 2026-09-04). NIM_004_10, die Bayreuther Rezensionen von 1953: 25
+    // verschiedene Personennamen, eine Koerperschaft (Bayreuther Festspiele),
+    // ein Ort (Bayreuth -- die eine Datierung ohne Ort zaehlt nicht mit) und
+    // zwei Werke (Goetterdaemmerung, Tristan und Isolde). Nach der alten
+    // Zeilenzaehlung stand dort Ort 2 und Werk 27, weil jede der 25
+    // Buehnenrollen als Werk mitzaehlte.
+    const fams = familiesForRecord(store.records.get(BAYREUTH_1953), store);
+    assert.deepEqual(fams.map(f => `${f.key}=${f.count}`),
+      ['person=25', 'institution=1', 'ort=1', 'werk=2']);
+    const p = partitionRecord(store.records.get(BAYREUTH_1953), store);
+    assert.equal(p.performanceRoles.length, 25, 'die 25 Rollen bleiben im Detail stehen');
+  });
+
+  test('ein Ort aus Ereignis und hasOrHadLocation zaehlt einmal', () => {
+    // NIM_004_1, der Briefumschlag: New York und Zuerich stehen sowohl als
+    // Mobilitaets-Ereignis als auch als hasOrHadLocation am Record, dazu eine
+    // ortlose Datierung. Von Hand geprueft: zwei Orte, nicht drei.
+    const fams = familiesForRecord(store.records.get('m3gim-data:NIM_004_1'), store);
+    assert.deepEqual(fams.map(f => `${f.key}=${f.count}`),
+      ['person=1', 'institution=1', 'ort=2', 'werk=0']);
+  });
+
   test('die vier Familien sind die vier Entitaetstypen', () => {
     assert.deepEqual(CONTENT_FAMILIES.map(f => f.key), ['person', 'institution', 'ort', 'werk']);
     assert.deepEqual(CONTENT_FAMILIES.map(f => f.label),

@@ -15,13 +15,16 @@ import { formatDate } from '../utils/date-parser.js';
 import { navigateToIndex, applyArchivFilter } from '../ui/router.js';
 import { extractXlsxSource } from '../utils/provenance.js';
 import { WIKIDATA_ICON_SVG, AGRELON_LABELS, roleClusterFor } from '../data/constants.js';
+import {
+  groupRolesByWork, groupPerformanceDatings, sortDatingsByDate,
+} from './record-detail-data.js';
 
 // Indizes grid -> sidebar filter facet (E-91). Grids without a facet
 // equivalent (organisationen) still navigate into the index.
 const GRID_TO_FACET = { personen: 'person', orte: 'location', werke: 'werk' };
 
 /** Chip click: set the shared facet filter where one exists, else go to the index. */
-export function chipClickFor(gridType, name) {
+function chipClickFor(gridType, name) {
   if (!gridType || !name) return null;
   const facet = GRID_TO_FACET[gridType];
   if (facet) return () => applyArchivFilter(facet, name);
@@ -42,36 +45,55 @@ export function agentChipEls(store, entities) {
   }));
 }
 
-/** Works and undated stage roles -> chips. */
+/**
+ * Works and Buehnenrollen -> chips. A role hangs under its work as a sub-line
+ * of the work chip where the data resolves the link (groupRolesByWork); a role
+ * without a resolvable work stays a free Rolle chip (Projektleitung,
+ * 2026-09-04).
+ */
 export function workChipEls(works, performanceRoles) {
+  const { groups, looseRoles } = groupRolesByWork(works, performanceRoles);
   const chips = [];
-  for (const w of works) {
-    const name = entityName(w, '?');
-    const komponist = w.komponist || '';
-    chips.push(buildRoleChip({
-      prefix: w['@type'] === 'm3gim-ontology:FramingEvent' ? 'EREIGNIS' : 'WERK',
-      value: komponist ? `${name} (${komponist})` : name,
-      cluster: w['@type'] === 'm3gim-ontology:FramingEvent' ? 'ort' : 'rolle',
-      xlsxSource: extractXlsxSource(w),
-      wikidata: asWikidataId(w['@id']),
-      qualityFlag: w['m3gim-ontology:dataQualityFlag'],
-      tip: 'Als Filter setzen',
-      onClick: chipClickFor('werke', name),
-    }));
+  for (const { work, roles } of groups) {
+    const chip = workChipEl(work);
+    if (roles.length === 0) { chips.push(chip); continue; }
+    chips.push(el('span', { className: 'chip-group' },
+      chip,
+      el('span', { className: 'chip-group__sub' }, ...roles.map(stageRoleChipEl)),
+    ));
   }
-  for (const r of performanceRoles) {
-    const roleName = entityName(r, '?');
-    chips.push(buildRoleChip({
-      prefix: 'ROLLE',
-      // voiceType (e.g. Mezzosopran) qualifies the role when the model carries
-      // it; the data holds none yet, so this stays inert until then.
-      value: r.voiceType ? `${roleName} (${r.voiceType})` : roleName,
-      cluster: 'rolle',
-      xlsxSource: extractXlsxSource(r),
-      qualityFlag: r.qualityFlag,
-    }));
-  }
+  chips.push(...looseRoles.map(stageRoleChipEl));
   return chips;
+}
+
+function workChipEl(w) {
+  const name = entityName(w, '?');
+  const komponist = w.komponist || '';
+  return buildRoleChip({
+    prefix: w['@type'] === 'm3gim-ontology:FramingEvent' ? 'EREIGNIS' : 'WERK',
+    value: komponist ? `${name} (${komponist})` : name,
+    cluster: w['@type'] === 'm3gim-ontology:FramingEvent' ? 'ort' : 'rolle',
+    xlsxSource: extractXlsxSource(w),
+    wikidata: asWikidataId(w['@id']),
+    qualityFlag: w['m3gim-ontology:dataQualityFlag'],
+    tip: 'Als Filter setzen',
+    onClick: chipClickFor('werke', name),
+  });
+}
+
+function stageRoleChipEl(r) {
+  const roleName = entityName(r, '?');
+  // voiceType (e.g. Mezzosopran) qualifies the role when the model carries it;
+  // the performer is named wherever the Besetzung is recorded.
+  const parts = [r.voiceType ? `${roleName} (${r.voiceType})` : roleName];
+  if (r.performers && r.performers.length) parts.push(r.performers.join(', '));
+  return buildRoleChip({
+    prefix: 'ROLLE',
+    value: parts.join(' · '),
+    cluster: 'rolle',
+    xlsxSource: r.xlsxSource,
+    qualityFlag: r.qualityFlag,
+  });
 }
 
 /**
@@ -116,7 +138,7 @@ function dateText(annotation) {
  */
 export function eventChipEls(store, events, locations, eventDatings) {
   const chips = [];
-  for (const ev of events) {
+  for (const ev of sortDatingsByDate(events)) {
     const dateDisplay = dateText(ev) || '—';
     chips.push(buildRoleChip({
       prefix: ev.roleLabel || 'EREIGNIS',
@@ -128,7 +150,11 @@ export function eventChipEls(store, events, locations, eventDatings) {
       onClick: ev.place ? chipClickFor('orte', ev.place) : null,
     }));
   }
-  chips.push(...datingChipEls(store, eventDatings));
+  // Auftritt view: the Auffuehrungen of a Spielzeit stand as a date list under
+  // their Spielzeit instead of as a chip each (Projektleitung, 2026-09-04).
+  const { seasons, rest } = groupPerformanceDatings(eventDatings);
+  for (const group of seasons) chips.push(seasonChipEl(store, group));
+  chips.push(...datingChipEls(store, rest));
   // Locations not already covered by an annotation chip.
   const eventPlaces = new Set(events.map(e => (e.place || '').toLowerCase()));
   for (const loc of locations) {
@@ -145,6 +171,45 @@ export function eventChipEls(store, events, locations, eventDatings) {
     }));
   }
   return chips;
+}
+
+/**
+ * One Spielzeit as a head line with its Auffuehrungsdaten as a compact date
+ * row. Each date carries its Quellzeile in its own tooltip, so the row stays
+ * one chip and the Beleg is not lost (E-90: one tooltip per hover).
+ */
+function seasonChipEl(store, { season, dates }) {
+  const head = buildRoleChip({
+    prefix: season.roleLabel || 'SPIELZEIT',
+    gloss: glossOf(store, season.roleId),
+    value: dateText(season) || season.rawDate || '?',
+    cluster: 'ort',
+    xlsxSource: season.xlsxSource,
+  });
+  const dateEls = [];
+  dates.forEach((d, i) => {
+    if (i > 0) dateEls.push(' · ');
+    dateEls.push(el('span', {
+      className: 'chip-date',
+      dataset: { tip: provTipText(d.xlsxSource), tipWrap: '' },
+    }, dateText(d) || d.rawDate || '?'));
+  });
+  const row = el('span', { className: 'chip chip--role-pair chip--c-ort' },
+    el('span', { className: 'chip-rolle' }, (dates[0].roleLabel || 'AUFFÜHRUNG').toUpperCase()),
+    el('span', { className: 'chip-wert chip-dates' }, ...dateEls),
+  );
+  return el('span', { className: 'chip-group' }, head, row);
+}
+
+/** Sheet, Zeile and Datenpunkt of an xlsxSource as tooltip text. */
+function provTipText(xlsxSource) {
+  if (!xlsxSource || !xlsxSource.row) return 'Quelle unbekannt';
+  const lines = [
+    xlsxSource.sheet ? `Quelle: ${xlsxSource.sheet}` : 'Quelle',
+    `Zeile ${xlsxSource.row}`,
+  ];
+  if (xlsxSource.datenpunkt) lines.push(`Datenpunkt ${xlsxSource.datenpunkt}`);
+  return lines.join('\n');
 }
 
 /** AgRelOn relations from store.agentRelations -> chips. */
@@ -235,7 +300,7 @@ export function buildRoleChip({ prefix, value, cluster, xlsxSource, wikidata, ti
     className: `chip chip--role-pair chip--c-${cls}${onClick ? ' chip--clickable' : ''}${compact ? ' chip--compact' : ''}`,
   };
   // Gloss of the role term (E-143), suppressed when the chip has its own tip.
-  if (gloss && !tip && !childrenHaveTips) chipProps.title = gloss;
+  if (gloss && !tip && !childrenHaveTips) chipProps.dataset = { tip: gloss, tipWrap: '' };
   if (onClick) {
     chipProps.onClick = (e) => { e.stopPropagation(); onClick(e); };
   }
@@ -246,14 +311,9 @@ export function buildRoleChip({ prefix, value, cluster, xlsxSource, wikidata, ti
     el('span', { className: 'chip-wert' }, value || '—'),
   ];
   if (hasProv) {
-    const provTipLines = [
-      xlsxSource.sheet ? `Quelle: ${xlsxSource.sheet}` : 'Quelle',
-      `Zeile ${xlsxSource.row}`,
-    ];
-    if (xlsxSource.datenpunkt) provTipLines.push(`Datenpunkt ${xlsxSource.datenpunkt}`);
     parts.push(el('span', {
       className: 'prov-pill',
-      dataset: { tip: provTipLines.join('\n'), tipWrap: '' },
+      dataset: { tip: provTipText(xlsxSource), tipWrap: '' },
       'aria-label': 'Provenienz anzeigen',
     },
       el('span', { className: 'prov-pill__icon', html: PROV_ICON_SVG }),

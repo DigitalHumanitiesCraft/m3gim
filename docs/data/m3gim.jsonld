@@ -2672,18 +2672,6 @@
       },
       "m3gim-ontology:hasPerformance": [
         {
-          "@id": "m3gim-data:perf_NIM_137_1"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_137_2"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_137_3"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_137_4"
-        },
-        {
           "@id": "m3gim-data:perf_NIM_137_5"
         },
         {
@@ -62090,27 +62078,6 @@
       "m3gim-ontology:processingStatus": "begonnen",
       "m3gim-ontology:hasPerformance": [
         {
-          "@id": "m3gim-data:perf_NIM_135_2_24_598"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_135_2_24_599"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_135_2_24_600"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_135_2_24_601"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_135_2_24_602"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_135_2_24_603"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_135_2_24_604"
-        },
-        {
           "@id": "m3gim-data:perf_NIM_135_2_24_605"
         },
         {
@@ -62475,24 +62442,6 @@
         "@id": "m3gim-data:ev_NIM_135_2_25_c186788f"
       },
       "m3gim-ontology:hasPerformance": [
-        {
-          "@id": "m3gim-data:perf_NIM_135_2_25_612"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_135_2_25_613"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_135_2_25_614"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_135_2_25_615"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_135_2_25_616"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_135_2_25_617"
-        },
         {
           "@id": "m3gim-data:perf_NIM_135_2_25_618"
         },
@@ -63679,57 +63628,6 @@
         "@id": "m3gim-data:ev_NIM_135_13_28_137988f4"
       },
       "m3gim-ontology:hasPerformance": [
-        {
-          "@id": "m3gim-data:perf_NIM_135_13_28_647"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_135_13_28_648"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_135_13_28_649"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_135_13_28_650"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_135_13_28_651"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_135_13_28_652"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_135_13_28_653"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_135_13_28_654"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_135_13_28_655"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_135_13_28_656"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_135_13_28_657"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_135_13_28_658"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_135_13_28_659"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_135_13_28_660"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_135_13_28_661"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_135_13_28_662"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_135_13_28_663"
-        },
         {
           "@id": "m3gim-data:perf_NIM_135_13_28_664"
         },
@@ -65202,48 +65100,6 @@
       },
       "m3gim-ontology:hasPerformance": [
         {
-          "@id": "m3gim-data:perf_NIM_135_14_28_704"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_135_14_28_705"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_135_14_28_706"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_135_14_28_707"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_135_14_28_708"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_135_14_28_709"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_135_14_28_710"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_135_14_28_711"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_135_14_28_712"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_135_14_28_713"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_135_14_28_714"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_135_14_28_715"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_135_14_28_716"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_135_14_28_717"
-        },
-        {
           "@id": "m3gim-data:perf_NIM_135_14_28_718"
         },
         {
@@ -66143,51 +65999,6 @@
         }
       ],
       "m3gim-ontology:hasPerformance": [
-        {
-          "@id": "m3gim-data:perf_NIM_136_95_733"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_136_95_734"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_136_95_735"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_136_95_736"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_136_95_737"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_136_95_738"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_136_95_739"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_136_95_740"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_136_95_741"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_136_95_742"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_136_95_743"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_136_95_744"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_136_95_745"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_136_95_746"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_136_95_747"
-        },
         {
           "@id": "m3gim-data:perf_NIM_136_95_748"
         },
@@ -67558,49 +67369,25 @@
       "m3gim-ontology:processingStatus": "begonnen",
       "m3gim-ontology:hasPerformance": [
         {
-          "@id": "m3gim-data:perf_NIM_136_100_25_763"
-        },
-        {
           "@id": "m3gim-data:perf_NIM_136_100_25_764"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_136_100_25_765"
         },
         {
           "@id": "m3gim-data:perf_NIM_136_100_25_766"
         },
         {
-          "@id": "m3gim-data:perf_NIM_136_100_25_767"
-        },
-        {
           "@id": "m3gim-data:perf_NIM_136_100_25_768"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_136_100_25_769"
         },
         {
           "@id": "m3gim-data:perf_NIM_136_100_25_770"
         },
         {
-          "@id": "m3gim-data:perf_NIM_136_100_25_771"
-        },
-        {
           "@id": "m3gim-data:perf_NIM_136_100_25_772"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_136_100_25_773"
         },
         {
           "@id": "m3gim-data:perf_NIM_136_100_25_774"
         },
         {
-          "@id": "m3gim-data:perf_NIM_136_100_25_775"
-        },
-        {
           "@id": "m3gim-data:perf_NIM_136_100_25_776"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_136_100_25_777"
         },
         {
           "@id": "m3gim-data:perf_NIM_136_100_25_778"
@@ -68024,18 +67811,6 @@
         "@id": "m3gim-data:ev_NIM_137_collection_e3bb0c45"
       },
       "m3gim-ontology:hasPerformance": [
-        {
-          "@id": "m3gim-data:perf_NIM_137_collection_779"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_137_collection_780"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_137_collection_781"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_137_collection_782"
-        },
         {
           "@id": "m3gim-data:perf_NIM_137_collection_783"
         },
@@ -70084,27 +69859,6 @@
         },
         {
           "@id": "m3gim-data:perf_NIM_137_14_793"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_137_14_794"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_137_14_795"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_137_14_796"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_137_14_797"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_137_14_798"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_137_14_799"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_137_14_800"
         }
       ],
       "m3gim-ontology:hasAssociatedAgent": [
@@ -70511,21 +70265,6 @@
         },
         {
           "@id": "m3gim-data:perf_NIM_137_15_1_805"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_137_15_1_806"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_137_15_1_807"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_137_15_1_808"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_137_15_1_809"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_137_15_1_810"
         }
       ],
       "m3gim-ontology:hasAnnotation": [
@@ -70784,22 +70523,7 @@
           "@id": "m3gim-data:perf_NIM_137_15_2_818"
         },
         {
-          "@id": "m3gim-data:perf_NIM_137_15_2_819"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_137_15_2_820"
-        },
-        {
           "@id": "m3gim-data:perf_NIM_137_15_2_821"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_137_15_2_822"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_137_15_2_823"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_137_15_2_824"
         },
         {
           "@id": "m3gim-data:perf_NIM_137_15_2_825"
@@ -71026,48 +70750,6 @@
         },
         {
           "@id": "m3gim-data:perf_NIM_137_15_3_839"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_137_15_3_840"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_137_15_3_841"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_137_15_3_842"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_137_15_3_843"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_137_15_3_844"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_137_15_3_845"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_137_15_3_846"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_137_15_3_847"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_137_15_3_848"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_137_15_3_849"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_137_15_3_850"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_137_15_3_851"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_137_15_3_852"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_137_15_3_853"
         }
       ],
       "m3gim-ontology:hasAnnotation": [
@@ -72649,33 +72331,6 @@
       },
       "m3gim-ontology:hasPerformance": [
         {
-          "@id": "m3gim-data:perf_NIM_139_104_854"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_139_104_855"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_139_104_856"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_139_104_857"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_139_104_858"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_139_104_859"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_139_104_860"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_139_104_861"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_139_104_862"
-        },
-        {
           "@id": "m3gim-data:perf_NIM_139_104_863"
         },
         {
@@ -73406,12 +73061,6 @@
       "m3gim-ontology:processingStatus": "abgeschlossen",
       "m3gim-ontology:hasPerformance": [
         {
-          "@id": "m3gim-data:perf_NIM_139_109_12_872"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_139_109_12_873"
-        },
-        {
           "@id": "m3gim-data:perf_NIM_139_109_12_874"
         },
         {
@@ -73577,28 +73226,7 @@
       "m3gim-ontology:processingStatus": "abgeschlossen",
       "m3gim-ontology:hasPerformance": [
         {
-          "@id": "m3gim-data:perf_NIM_139_109_14_876"
-        },
-        {
           "@id": "m3gim-data:perf_NIM_139_109_14_877"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_139_109_14_878"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_139_109_14_879"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_139_109_14_880"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_139_109_14_881"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_139_109_14_882"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_139_109_14_883"
         },
         {
           "@id": "m3gim-data:perf_NIM_139_109_14_884"
@@ -74231,22 +73859,10 @@
       },
       "m3gim-ontology:hasPerformance": [
         {
-          "@id": "m3gim-data:perf_NIM_139_125_891"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_139_125_892"
-        },
-        {
           "@id": "m3gim-data:perf_NIM_139_125_893"
         },
         {
           "@id": "m3gim-data:perf_NIM_139_125_894"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_139_125_895"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_139_125_896"
         },
         {
           "@id": "m3gim-data:perf_NIM_139_125_897"
@@ -74611,12 +74227,6 @@
         "@id": "m3gim-data:ev_NIM_139_126_93f54369"
       },
       "m3gim-ontology:hasPerformance": [
-        {
-          "@id": "m3gim-data:perf_NIM_139_126_900"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_139_126_901"
-        },
         {
           "@id": "m3gim-data:perf_NIM_139_126_902"
         },
@@ -76739,34 +76349,10 @@
       "m3gim-ontology:processingStatus": "abgeschlossen",
       "m3gim-ontology:hasPerformance": [
         {
-          "@id": "m3gim-data:perf_NIM_142_22_4_926"
-        },
-        {
           "@id": "m3gim-data:perf_NIM_142_22_4_927"
         },
         {
-          "@id": "m3gim-data:perf_NIM_142_22_4_928"
-        },
-        {
           "@id": "m3gim-data:perf_NIM_142_22_4_929"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_142_22_4_930"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_142_22_4_931"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_142_22_4_932"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_142_22_4_933"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_142_22_4_934"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_142_22_4_935"
         },
         {
           "@id": "m3gim-data:perf_NIM_142_22_4_936"
@@ -77401,24 +76987,6 @@
       },
       "m3gim-ontology:hasPerformance": [
         {
-          "@id": "m3gim-data:perf_NIM_142_22_18_944"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_142_22_18_945"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_142_22_18_946"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_142_22_18_947"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_142_22_18_948"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_142_22_18_949"
-        },
-        {
           "@id": "m3gim-data:perf_NIM_142_22_18_950"
         },
         {
@@ -77443,13 +77011,7 @@
           "@id": "m3gim-data:perf_NIM_142_22_18_957"
         },
         {
-          "@id": "m3gim-data:perf_NIM_142_22_18_958"
-        },
-        {
           "@id": "m3gim-data:perf_NIM_142_22_18_959"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_142_22_18_960"
         },
         {
           "@id": "m3gim-data:perf_NIM_142_22_18_961"
@@ -77977,28 +77539,7 @@
       "m3gim-ontology:processingStatus": "abgeschlossen",
       "m3gim-ontology:hasPerformance": [
         {
-          "@id": "m3gim-data:perf_NIM_142_27_962"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_142_27_963"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_142_27_964"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_142_27_965"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_142_27_966"
-        },
-        {
           "@id": "m3gim-data:perf_NIM_142_27_967"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_142_27_968"
-        },
-        {
-          "@id": "m3gim-data:perf_NIM_142_27_969"
         },
         {
           "@id": "m3gim-data:perf_NIM_142_27_970"
@@ -109525,83 +109066,6 @@
       }
     },
     {
-      "@id": "m3gim-data:perf_NIM_135_2_24_598",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_siegfried"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 18
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_135_2_24_599",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_gunther"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 19
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_135_2_24_600",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_hagen"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 20
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_135_2_24_601",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_alberisch"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 21
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_135_2_24_602",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_bruennhilde"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 22
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_135_2_24_603",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_gutrune"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 23
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_135_2_24_604",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_waltraute"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 24
-      }
-    },
-    {
       "@id": "m3gim-data:perf_NIM_135_2_24_605",
       "@type": "m3gim-ontology:Performance",
       "m3gim-ontology:hasStageRole": {
@@ -109704,72 +109168,6 @@
       "m3gim-ontology:xlsxSource": {
         "m3gim-ontology:xlsxSheet": "Box 5",
         "m3gim-ontology:xlsxRow": 31
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_135_2_25_612",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_erste_norn"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 47
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_135_2_25_613",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_zweite_norn"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 48
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_135_2_25_614",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_dritte_norn"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 49
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_135_2_25_615",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_woglinde"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 50
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_135_2_25_616",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_wellgunde"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 51
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_135_2_25_617",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_flosshilde"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 52
       }
     },
     {
@@ -110191,193 +109589,6 @@
       "m3gim-ontology:xlsxSource": {
         "m3gim-ontology:xlsxSheet": "Box 5",
         "m3gim-ontology:xlsxRow": 82
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_135_13_28_647",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_hans_sachs"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 118
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_135_13_28_648",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_veit_pogner"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 119
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_135_13_28_649",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_kunz_vogelsang"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 120
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_135_13_28_650",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_konrad_nachtigall"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 121
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_135_13_28_651",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_sixtus_beckmesser"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 122
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_135_13_28_652",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_fritz_kothner"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 123
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_135_13_28_653",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_balthasar_zorn"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 124
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_135_13_28_654",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_ulrich_eisslinger"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 125
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_135_13_28_655",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_augustin_moser"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 126
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_135_13_28_656",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_hermann_ortel"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 127
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_135_13_28_657",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_hans_schwarz"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 128
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_135_13_28_658",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_hans_foltz"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 129
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_135_13_28_659",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_walter_von_stolzing"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 130
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_135_13_28_660",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_david"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 131
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_135_13_28_661",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_eva"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 132
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_135_13_28_662",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_magdalena"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 133
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_135_13_28_663",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_nachtwaechter"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 134
       }
     },
     {
@@ -110967,160 +110178,6 @@
       }
     },
     {
-      "@id": "m3gim-data:perf_NIM_135_14_28_704",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_siegmund"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 205
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_135_14_28_705",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_hunding"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 206
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_135_14_28_706",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_wotan"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 207
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_135_14_28_707",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_sieglinde"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 208
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_135_14_28_708",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_bruennhilde"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 209
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_135_14_28_709",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_fricka"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 210
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_135_14_28_710",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_gerhilde"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 211
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_135_14_28_711",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_ortlinde"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 212
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_135_14_28_712",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_waltraute"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 213
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_135_14_28_713",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_schwertleite"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 214
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_135_14_28_714",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_helmwige"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 215
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_135_14_28_715",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_siegrune"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 216
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_135_14_28_716",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_grimgerde"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 217
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_135_14_28_717",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_rossweisse"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 218
-      }
-    },
-    {
       "@id": "m3gim-data:perf_NIM_135_14_28_718",
       "@type": "m3gim-ontology:Performance",
       "m3gim-ontology:hasStageRole": {
@@ -111343,171 +110400,6 @@
       "m3gim-ontology:xlsxSource": {
         "m3gim-ontology:xlsxSheet": "Box 5",
         "m3gim-ontology:xlsxRow": 233
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_136_95_733",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_tristan"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 274
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_136_95_734",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_isolde"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 275
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_136_95_735",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_brangaene"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 276
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_136_95_736",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_koenig_marke"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 277
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_136_95_737",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_veit_pogner"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 278
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_136_95_738",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_magdalene"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 279
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_136_95_739",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_eva"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 280
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_136_95_740",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_walther_von_stolzing"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 281
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_136_95_741",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_hans_sachs"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 282
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_136_95_742",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_sixtus_beckmesser"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 283
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_136_95_743",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_kundry"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 284
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_136_95_744",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_amfortas"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 285
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_136_95_745",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_parsifal"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 286
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_136_95_746",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_gurnemanz"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 287
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_136_95_747",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_klingsor"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 288
       }
     },
     {
@@ -111736,17 +110628,6 @@
       }
     },
     {
-      "@id": "m3gim-data:perf_NIM_136_100_25_763",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_wotan"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 315
-      }
-    },
-    {
       "@id": "m3gim-data:perf_NIM_136_100_25_764",
       "@type": "m3gim-ontology:Performance",
       "m3gim-ontology:hasStageRole": {
@@ -111759,17 +110640,6 @@
       "m3gim-ontology:xlsxSource": {
         "m3gim-ontology:xlsxSheet": "Box 5",
         "m3gim-ontology:xlsxRow": 316
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_136_100_25_765",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_loge"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 318
       }
     },
     {
@@ -111788,17 +110658,6 @@
       }
     },
     {
-      "@id": "m3gim-data:perf_NIM_136_100_25_767",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_fricka"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 321
-      }
-    },
-    {
       "@id": "m3gim-data:perf_NIM_136_100_25_768",
       "@type": "m3gim-ontology:Performance",
       "m3gim-ontology:hasStageRole": {
@@ -111811,17 +110670,6 @@
       "m3gim-ontology:xlsxSource": {
         "m3gim-ontology:xlsxSheet": "Box 5",
         "m3gim-ontology:xlsxRow": 322
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_136_100_25_769",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_bruennhilde"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 325
       }
     },
     {
@@ -111840,17 +110688,6 @@
       }
     },
     {
-      "@id": "m3gim-data:perf_NIM_136_100_25_771",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_wotan"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 328
-      }
-    },
-    {
       "@id": "m3gim-data:perf_NIM_136_100_25_772",
       "@type": "m3gim-ontology:Performance",
       "m3gim-ontology:hasStageRole": {
@@ -111863,17 +110700,6 @@
       "m3gim-ontology:xlsxSource": {
         "m3gim-ontology:xlsxSheet": "Box 5",
         "m3gim-ontology:xlsxRow": 329
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_136_100_25_773",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_sieglinde"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 331
       }
     },
     {
@@ -111892,17 +110718,6 @@
       }
     },
     {
-      "@id": "m3gim-data:perf_NIM_136_100_25_775",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_siegmund"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 334
-      }
-    },
-    {
       "@id": "m3gim-data:perf_NIM_136_100_25_776",
       "@type": "m3gim-ontology:Performance",
       "m3gim-ontology:hasStageRole": {
@@ -111918,17 +110733,6 @@
       }
     },
     {
-      "@id": "m3gim-data:perf_NIM_136_100_25_777",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_hunding"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 337
-      }
-    },
-    {
       "@id": "m3gim-data:perf_NIM_136_100_25_778",
       "@type": "m3gim-ontology:Performance",
       "m3gim-ontology:hasStageRole": {
@@ -111941,50 +110745,6 @@
       "m3gim-ontology:xlsxSource": {
         "m3gim-ontology:xlsxSheet": "Box 5",
         "m3gim-ontology:xlsxRow": 338
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_137_collection_779",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_tristan"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 369
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_137_collection_780",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_isolde"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 370
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_137_collection_781",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_marke"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 371
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_137_collection_782",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_brangaene"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 372
       }
     },
     {
@@ -112153,83 +110913,6 @@
       }
     },
     {
-      "@id": "m3gim-data:perf_NIM_137_14_794",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_fricka"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 415
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_137_14_795",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_erda"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 416
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_137_14_796",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_loge"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 417
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_137_14_797",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_siegmund"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 418
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_137_14_798",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_sieglinde"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 419
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_137_14_799",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_bruennhilde"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 420
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_137_14_800",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_freia"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 421
-      }
-    },
-    {
       "@id": "m3gim-data:perf_NIM_137_15_1_801",
       "@type": "m3gim-ontology:Performance",
       "m3gim-ontology:hasStageRole": {
@@ -112302,61 +110985,6 @@
       "m3gim-ontology:xlsxSource": {
         "m3gim-ontology:xlsxSheet": "Box 5",
         "m3gim-ontology:xlsxRow": 1278
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_137_15_1_806",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_froh"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 1300
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_137_15_1_807",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_donner"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 1301
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_137_15_1_808",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_freia"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 1302
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_137_15_1_809",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_wotan"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 1303
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_137_15_1_810",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_fricka"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 1304
       }
     },
     {
@@ -112480,28 +111108,6 @@
       }
     },
     {
-      "@id": "m3gim-data:perf_NIM_137_15_2_819",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_loge"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 1305
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_137_15_2_820",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_erda"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 1306
-      }
-    },
-    {
       "@id": "m3gim-data:perf_NIM_137_15_2_821",
       "@type": "m3gim-ontology:Performance",
       "m3gim-ontology:hasStageRole": {
@@ -112510,39 +111116,6 @@
       "m3gim-ontology:xlsxSource": {
         "m3gim-ontology:xlsxSheet": "Box 5",
         "m3gim-ontology:xlsxRow": 1307
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_137_15_2_822",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_fasolt"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 1308
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_137_15_2_823",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_mime"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 1309
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_137_15_2_824",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_alberich"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 1310
       }
     },
     {
@@ -112780,259 +111353,6 @@
       }
     },
     {
-      "@id": "m3gim-data:perf_NIM_137_15_3_840",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_wotan"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 1381
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_137_15_3_841",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_fricka"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 1382
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_137_15_3_842",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_bruennhilde"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 1383
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_137_15_3_843",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_siegmund"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 1384
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_137_15_3_844",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_sieglinde"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 1385
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_137_15_3_845",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_hunding"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 1386
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_137_15_3_846",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_gerhilde"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 1387
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_137_15_3_847",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_ortlinde"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 1388
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_137_15_3_848",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_waltraute"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 1389
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_137_15_3_849",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_schwertleite"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 1390
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_137_15_3_850",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_helmwige"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 1391
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_137_15_3_851",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_siegrune"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 1392
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_137_15_3_852",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_grimgerde"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 1393
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_137_15_3_853",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_rossweisse"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 1394
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_139_104_854",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_tristan"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 6",
-        "m3gim-ontology:xlsxRow": 18
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_139_104_855",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_isolde"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 6",
-        "m3gim-ontology:xlsxRow": 19
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_139_104_856",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_koenig_marke"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 6",
-        "m3gim-ontology:xlsxRow": 20
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_139_104_857",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_kurwenal"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 6",
-        "m3gim-ontology:xlsxRow": 21
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_139_104_858",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_melot"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 6",
-        "m3gim-ontology:xlsxRow": 22
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_139_104_859",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_brangaene"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 6",
-        "m3gim-ontology:xlsxRow": 23
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_139_104_860",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_ein_hirte"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 6",
-        "m3gim-ontology:xlsxRow": 24
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_139_104_861",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_ein_steuermann"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 6",
-        "m3gim-ontology:xlsxRow": 25
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_139_104_862",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_stimme_eines_jungen_seemanns"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 6",
-        "m3gim-ontology:xlsxRow": 26
-      }
-    },
-    {
       "@id": "m3gim-data:perf_NIM_139_104_863",
       "@type": "m3gim-ontology:Performance",
       "m3gim-ontology:hasStageRole": {
@@ -113168,28 +111488,6 @@
       }
     },
     {
-      "@id": "m3gim-data:perf_NIM_139_109_12_872",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_isolde"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 6",
-        "m3gim-ontology:xlsxRow": 55
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_139_109_12_873",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_brangaene"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 6",
-        "m3gim-ontology:xlsxRow": 56
-      }
-    },
-    {
       "@id": "m3gim-data:perf_NIM_139_109_12_874",
       "@type": "m3gim-ontology:Performance",
       "m3gim-ontology:hasStageRole": {
@@ -113220,17 +111518,6 @@
       }
     },
     {
-      "@id": "m3gim-data:perf_NIM_139_109_14_876",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_tristan"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 6",
-        "m3gim-ontology:xlsxRow": 69
-      }
-    },
-    {
       "@id": "m3gim-data:perf_NIM_139_109_14_877",
       "@type": "m3gim-ontology:Performance",
       "m3gim-ontology:hasStageRole": {
@@ -113239,72 +111526,6 @@
       "m3gim-ontology:xlsxSource": {
         "m3gim-ontology:xlsxSheet": "Box 6",
         "m3gim-ontology:xlsxRow": 70
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_139_109_14_878",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_koenig_marke"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 6",
-        "m3gim-ontology:xlsxRow": 71
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_139_109_14_879",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_kurwenal"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 6",
-        "m3gim-ontology:xlsxRow": 72
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_139_109_14_880",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_melot"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 6",
-        "m3gim-ontology:xlsxRow": 73
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_139_109_14_881",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_ein_hirte"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 6",
-        "m3gim-ontology:xlsxRow": 74
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_139_109_14_882",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_ein_steuermann"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 6",
-        "m3gim-ontology:xlsxRow": 75
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_139_109_14_883",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_stimme_eines_jungen_seemanns"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 6",
-        "m3gim-ontology:xlsxRow": 76
       }
     },
     {
@@ -113413,28 +111634,6 @@
       }
     },
     {
-      "@id": "m3gim-data:perf_NIM_139_125_891",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_isolde"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 6",
-        "m3gim-ontology:xlsxRow": 101
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_139_125_892",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_tristan"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 6",
-        "m3gim-ontology:xlsxRow": 102
-      }
-    },
-    {
       "@id": "m3gim-data:perf_NIM_139_125_893",
       "@type": "m3gim-ontology:Performance",
       "m3gim-ontology:hasStageRole": {
@@ -113462,28 +111661,6 @@
       "m3gim-ontology:xlsxSource": {
         "m3gim-ontology:xlsxSheet": "Box 6",
         "m3gim-ontology:xlsxRow": 105
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_139_125_895",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_kurwenal"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 6",
-        "m3gim-ontology:xlsxRow": 106
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_139_125_896",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_koenig_marke"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 6",
-        "m3gim-ontology:xlsxRow": 107
       }
     },
     {
@@ -113529,28 +111706,6 @@
       "m3gim-ontology:xlsxSource": {
         "m3gim-ontology:xlsxSheet": "Box 6",
         "m3gim-ontology:xlsxRow": 110
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_139_126_900",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_isolde"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 6",
-        "m3gim-ontology:xlsxRow": 128
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_139_126_901",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_tristan"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 6",
-        "m3gim-ontology:xlsxRow": 129
       }
     },
     {
@@ -113826,17 +111981,6 @@
       }
     },
     {
-      "@id": "m3gim-data:perf_NIM_142_22_4_926",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_isolde"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 6",
-        "m3gim-ontology:xlsxRow": 265
-      }
-    },
-    {
       "@id": "m3gim-data:perf_NIM_142_22_4_927",
       "@type": "m3gim-ontology:Performance",
       "m3gim-ontology:hasStageRole": {
@@ -113852,17 +111996,6 @@
       }
     },
     {
-      "@id": "m3gim-data:perf_NIM_142_22_4_928",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_brangaene"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 6",
-        "m3gim-ontology:xlsxRow": 267
-      }
-    },
-    {
       "@id": "m3gim-data:perf_NIM_142_22_4_929",
       "@type": "m3gim-ontology:Performance",
       "m3gim-ontology:hasStageRole": {
@@ -113875,72 +112008,6 @@
       "m3gim-ontology:xlsxSource": {
         "m3gim-ontology:xlsxSheet": "Box 6",
         "m3gim-ontology:xlsxRow": 268
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_142_22_4_930",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_tristan"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 6",
-        "m3gim-ontology:xlsxRow": 277
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_142_22_4_931",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_koenig_marke"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 6",
-        "m3gim-ontology:xlsxRow": 278
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_142_22_4_932",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_kurwenal"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 6",
-        "m3gim-ontology:xlsxRow": 279
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_142_22_4_933",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_melot"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 6",
-        "m3gim-ontology:xlsxRow": 280
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_142_22_4_934",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_steuermann"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 6",
-        "m3gim-ontology:xlsxRow": 281
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_142_22_4_935",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_hirte"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 6",
-        "m3gim-ontology:xlsxRow": 282
       }
     },
     {
@@ -114060,72 +112127,6 @@
       }
     },
     {
-      "@id": "m3gim-data:perf_NIM_142_22_18_944",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_tristan"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 6",
-        "m3gim-ontology:xlsxRow": 300
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_142_22_18_945",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_koenig_marke"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 6",
-        "m3gim-ontology:xlsxRow": 301
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_142_22_18_946",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_kurwenal"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 6",
-        "m3gim-ontology:xlsxRow": 302
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_142_22_18_947",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_melot"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 6",
-        "m3gim-ontology:xlsxRow": 303
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_142_22_18_948",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_steuermann"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 6",
-        "m3gim-ontology:xlsxRow": 304
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_142_22_18_949",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_hirte"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 6",
-        "m3gim-ontology:xlsxRow": 305
-      }
-    },
-    {
       "@id": "m3gim-data:perf_NIM_142_22_18_950",
       "@type": "m3gim-ontology:Performance",
       "m3gim-ontology:hasStageRole": {
@@ -114242,17 +112243,6 @@
       }
     },
     {
-      "@id": "m3gim-data:perf_NIM_142_22_18_958",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_isolde"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 6",
-        "m3gim-ontology:xlsxRow": 314
-      }
-    },
-    {
       "@id": "m3gim-data:perf_NIM_142_22_18_959",
       "@type": "m3gim-ontology:Performance",
       "m3gim-ontology:hasStageRole": {
@@ -114265,17 +112255,6 @@
       "m3gim-ontology:xlsxSource": {
         "m3gim-ontology:xlsxSheet": "Box 6",
         "m3gim-ontology:xlsxRow": 315
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_142_22_18_960",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_brangaene"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 6",
-        "m3gim-ontology:xlsxRow": 316
       }
     },
     {
@@ -114294,61 +112273,6 @@
       }
     },
     {
-      "@id": "m3gim-data:perf_NIM_142_27_962",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_tristan"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 6",
-        "m3gim-ontology:xlsxRow": 368
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_142_27_963",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_koenig_marke"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 6",
-        "m3gim-ontology:xlsxRow": 369
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_142_27_964",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_kurwenal"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 6",
-        "m3gim-ontology:xlsxRow": 370
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_142_27_965",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_melot"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 6",
-        "m3gim-ontology:xlsxRow": 371
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_142_27_966",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_hirte"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 6",
-        "m3gim-ontology:xlsxRow": 372
-      }
-    },
-    {
       "@id": "m3gim-data:perf_NIM_142_27_967",
       "@type": "m3gim-ontology:Performance",
       "m3gim-ontology:hasStageRole": {
@@ -114357,28 +112281,6 @@
       "m3gim-ontology:xlsxSource": {
         "m3gim-ontology:xlsxSheet": "Box 6",
         "m3gim-ontology:xlsxRow": 373
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_142_27_968",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_isolde"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 6",
-        "m3gim-ontology:xlsxRow": 374
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_142_27_969",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_brangaene"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 6",
-        "m3gim-ontology:xlsxRow": 375
       }
     },
     {
@@ -114499,50 +112401,6 @@
       "m3gim-ontology:xlsxSource": {
         "m3gim-ontology:xlsxSheet": "Box 6",
         "m3gim-ontology:xlsxRow": 383
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_137_1",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_tristan"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 369
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_137_2",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_isolde"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 370
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_137_3",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_marke"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 371
-      }
-    },
-    {
-      "@id": "m3gim-data:perf_NIM_137_4",
-      "@type": "m3gim-ontology:Performance",
-      "m3gim-ontology:hasStageRole": {
-        "@id": "m3gim-data:stagerole_brangaene"
-      },
-      "m3gim-ontology:xlsxSource": {
-        "m3gim-ontology:xlsxSheet": "Box 5",
-        "m3gim-ontology:xlsxRow": 372
       }
     },
     {
@@ -115641,7 +113499,7 @@
       "rico:name": "Matelot"
     }
   ],
-  "m3gim-ontology:exportDate": "2026-09-03T12:16:22.599595",
+  "m3gim-ontology:exportDate": "2026-09-04T09:47:35.513388",
   "m3gim-ontology:recordCount": 1000,
   "m3gim-ontology:recordSetCount": 19,
   "m3gim-ontology:approvedManualMatches": 368,

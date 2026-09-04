@@ -1,22 +1,20 @@
-/* Statistik-Tab: der Bestand in Zahlen (E-160).
-   Links die geteilte Sidebar mit der Wahl der Ansicht, rechts genau eine
-   Ansicht ueber die volle Breite, gebaut aus DOM-Balken (Regel 12).
-   Nutzt --accent und die Tokens aus variables.css. */
+/* Statistik tab: the Bestand in numbers (E-160). The shared sidebar holds the
+   choice of view, the work area shows exactly one view over the full width,
+   built from DOM bars (design.md rule 12). */
 
-/* Huelle: linke Sidebar + scrollender Detailbereich.
-   Nutzt die geteilte .view-shell/.view-sidebar (sidebar.css) wie Karte/Netzwerk. */
+/* The scrolling work area beside the shared filter column. */
 .statistik-main {
   overflow-y: auto;
   padding: var(--space-5) var(--space-5) var(--space-8);
 }
 
-/* Buehne: nur die aktive Ansicht, links ausgerichtet, generoes breit aber
-   typografisch noch lesbar (kein Vollbild-Stretch auf Ultrawide). */
+/* The stage holds the active view alone, left-aligned and capped at a readable
+   measure so an ultrawide screen does not stretch the bars. */
 .statistik__stage {
   max-width: 1200px;
 }
 
-/* --- Sektionen ----------------------------------------------------------- */
+/* Sections */
 
 .stat-section {
   display: flex;
@@ -51,7 +49,7 @@
   margin: 0 0 var(--space-2);
 }
 
-/* --- Horizontale Balkenliste --------------------------------------------- */
+/* Horizontal bar list */
 
 .stat-bars {
   list-style: none;
@@ -73,7 +71,9 @@
   font-size: var(--text-sm);
 }
 
-@media (max-width: 768px) {
+/* The stage sits inside the shell, so it answers the shell's container, not the
+   window (architecture.md, Stylesheets). */
+@container view-shell (width < 768px) {
   .stat-bars__row {
     grid-template-columns: minmax(96px, 12ch) minmax(0, 1fr) minmax(72px, auto);
     gap: var(--space-2);

@@ -42,15 +42,19 @@ export function renderZoomControls(zoomRefs) {
     }
   };
   group.appendChild(el('button', {
-    type: 'button', className: 'nz-zoom-btn', title: 'Hineinzoomen',
+    type: 'button', className: 'nz-zoom-btn',
+    dataset: { tip: 'Hineinzoomen', tipPos: 'bottom' }, 'aria-label': 'Hineinzoomen',
     onClick: () => zoomBy(1.4),
   }, '+'));
   group.appendChild(el('button', {
-    type: 'button', className: 'nz-zoom-btn', title: 'Herauszoomen',
+    type: 'button', className: 'nz-zoom-btn',
+    dataset: { tip: 'Herauszoomen', tipPos: 'bottom' }, 'aria-label': 'Herauszoomen',
     onClick: () => zoomBy(1 / 1.4),
   }, '−'));
   group.appendChild(el('button', {
-    type: 'button', className: 'nz-zoom-btn nz-zoom-btn--reset', title: 'Zoom zurücksetzen',
+    type: 'button', className: 'nz-zoom-btn nz-zoom-btn--reset',
+    dataset: { tip: 'Zoom zurücksetzen', tipPos: 'bottom' },
+    'aria-label': 'Zoom zurücksetzen',
     onClick: () => {
       if (zoomRefs.svg && zoomRefs.behavior) {
         zoomRefs.svg.transition().duration(220).call(zoomRefs.behavior.transform, d3.zoomIdentity);
@@ -274,7 +278,7 @@ function declutterLabels(nodeSel) {
 // ---------------------------------------------------------------------------
 
 /** Hover auf einen Knoten: seine Nachbarschaft hervorheben, den Rest daempfen. */
-export function applyHighlight(node) {
+function applyHighlight(node) {
   if (!node) {
     d3.selectAll('.netzwerk-node')
       .classed('netzwerk-node--dim', false)
@@ -316,7 +320,7 @@ export function applyHighlight(node) {
  * @param {string[]} endpointIds  Knoten-Ids der Kante ('__focus__' fuer das Zentrum)
  * @param {?{a: string, b: string}} edge  gesetzt bei einer Ko-Okkurrenz-Kante
  */
-export function applyEdgeHighlight(endpointIds, edge) {
+function applyEdgeHighlight(endpointIds, edge) {
   const focusIds = new Set(endpointIds);
   d3.selectAll('.netzwerk-edge')
     .classed('netzwerk-edge--active', function () {

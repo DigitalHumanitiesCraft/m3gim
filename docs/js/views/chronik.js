@@ -10,7 +10,7 @@
  * Aggregat, das per Klick auf seine belegenden Chips auflöst.
  */
 
-import { el, clear } from '../utils/dom.js';
+import { el, clear, scrollBehavior } from '../utils/dom.js';
 import { formatSignatur, getDocTypeId, ensureArray, dftLabel } from '../utils/format.js';
 import { formatDate } from '../utils/date-parser.js';
 import { primaryYear } from '../data/loader.js';
@@ -228,7 +228,7 @@ function toggleSegment(decade, sicht) {
     p.classList.toggle('chronik-point--dim', !match);
     if (match && !first) first = p;
   });
-  if (first) first.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  if (first) first.scrollIntoView({ block: 'center', behavior: scrollBehavior() });
 }
 
 function renderYearRow(year, entriesInYear, maxPerYear, isDecadeBoundary) {
@@ -240,7 +240,12 @@ function renderYearRow(year, entriesInYear, maxPerYear, isDecadeBoundary) {
 
   row.appendChild(el('div', {
     className: 'chronik-year__label',
-    title: isEmpty ? 'Kein erschlossenes Material mit diesem Jahr — nicht „keine Mobilität"' : `${entriesInYear.length} Einheit${entriesInYear.length === 1 ? '' : 'en'}`,
+    dataset: {
+      tip: isEmpty
+        ? 'Kein erschlossenes Material mit diesem Jahr — nicht „keine Mobilität"'
+        : `${entriesInYear.length} Einheit${entriesInYear.length === 1 ? '' : 'en'}`,
+      tipWrap: '', tipPos: 'bottom',
+    },
   }, String(year)));
 
   const densityRatio = maxPerYear > 0 ? entriesInYear.length / maxPerYear : 0;
@@ -352,15 +357,18 @@ function renderRecordPoint(annot) {
   if (place) {
     children.push(el('span', { className: 'chronik-point__place' }, place));
   }
+  // The chip sits in a year row it did not get from its own date; the mark of
+  // supplemented values says so once, instead of a dashed chip plus a sign
+  // (Projektleitung, 2026-09-04).
   if (secondary) {
     children.push(el('span', {
-      className: 'chronik-point__secondary',
-      dataset: { tip: `Jahr nicht aus dem Hauptdatum, sondern aus: ${secondary.label}`, tipWrap: '' },
-    }, `≈ ${secondary.label}`));
+      className: 'chronik-point__secondary mark-derived',
+      dataset: { tip: `ergänzt: Jahr aus ${secondary.label}`, tipWrap: '' },
+    }, secondary.label));
   }
 
   return el('button', {
-    className: `chronik-point ${secondary ? 'chronik-point--secondary' : ''} ${sichtInfo.hasSte ? '' : 'chronik-point--nosicht'}`,
+    className: `chronik-point ${sichtInfo.hasSte ? '' : 'chronik-point--nosicht'}`,
     onClick: (e) => { e.stopPropagation(); selectRecord(rid); },
     dataset: {
       rid,

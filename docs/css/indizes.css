@@ -1,4 +1,4 @@
-/* M³GIM Indizes — 4-Grid Layout */
+/* M3GIM Indizes: the four parallel grids */
 
 /* Tab container override: disable outer scroll so inner grids control overflow */
 #tab-indizes.tab-content {
@@ -6,7 +6,7 @@
   padding: 0;
 }
 
-/* Hauptbereich rechts der geteilten Filter-Sidebar (view-shell). */
+/* Work area right of the shared filter column (view-shell). */
 .idx-page {
   padding: var(--space-3) var(--space-4);
   display: flex;
@@ -75,7 +75,7 @@
   display: inline-flex;
   align-items: center;
   gap: 3px;
-  font-size: 0.6rem;
+  font-size: var(--text-2xs);
   font-variant-numeric: tabular-nums;
   color: var(--color-text-tertiary);
   background: var(--surface-3);
@@ -192,19 +192,19 @@
   line-height: 1.3;
 }
 
-/* AgRelOn-Beziehungsbadges (Session 32, E-75): zweite Subtitle-Zeile.
-   Kompakte Chips im gleichen Rolle-Prefix-Pattern wie im Archiv-Inline-Detail,
-   hier aber minimalistischer (kleinere padding, keine prov-pill). */
+/* AgRelOn relation badges (E-75) as a second subtitle line: the same
+   Rolle-Prefix chip as the inline detail, set tighter and without the
+   provenance pill, because the row is one line high. */
 .idx-relations {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
+  gap: var(--space-1);
   margin-top: 3px;
 }
 
 .idx-relations .chip--role-pair {
-  padding: 1px 6px;
-  font-size: 10px;
+  padding: 1px var(--space-1-5);
+  font-size: var(--text-2xs);
   line-height: 1.3;
 }
 
@@ -213,7 +213,7 @@
 }
 
 .idx-relations .chip-wert {
-  font-size: 10px;
+  font-size: var(--text-2xs);
 }
 
 /* Wikidata badge inline */
@@ -285,7 +285,7 @@
   border-color: var(--accent);
 }
 
-/* Cross-Grid-Facette: Chip unter den beiden Filtern in der Sidebar. */
+/* Cross-grid Facette: the chip below the two filters in the sidebar. */
 .idx-facet-chips {
   display: flex;
   flex-wrap: wrap;
@@ -349,9 +349,8 @@
   text-decoration: underline;
 }
 
-/* Umbruch: an derselben Schwelle legt sidebar.css die Filterspalte ueber den
-   Inhalt und gibt .view-main eine feste Hoehe; die vier untereinander
-   stehenden Grids scrollen dann gemeinsam. */
+/* At the same threshold sidebar.css stacks the filter column above the content
+   and gives .view-main a fixed height; the four grids then scroll together. */
 @container view-shell (width < 900px) {
   .idx-grids {
     grid-template-columns: 1fr;

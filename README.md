@@ -18,10 +18,10 @@ Dieses Repository enthaelt:
 m3gim/
 |-- knowledge/                 # Kanonische KB (siehe knowledge/INDEX.md)
 |-- data/
-|   |-- google-spreadsheet/  # XLSX-Exporte (git-getrackt)
-|   |-- output/              # Generierte JSON-LD/View-Daten
+|   |-- google-spreadsheet/  # Quellexporte als CSV und XLSX (git-getrackt)
+|   |-- output/              # Generiertes JSON-LD und die Wikidata-Dateien
 |   `-- reports/             # Generierte Markdown-Reports
-|-- scripts/                  # explore/validate/reconcile/enrich-wikidata/transform/build-views/audit-data/report-quality
+|-- scripts/                  # explore/validate/reconcile/enrich-wikidata/transform/build-views/audit-data/report-quality/build-model-page
 |-- vocab/                    # Formales Projektvokabular (Turtle) + Abdeckungspruefer, siehe knowledge/data-model.md
 |-- docs/                     # GitHub Pages Frontend (Vanilla JS, keine Build-Kette)
 `-- README.md
@@ -48,10 +48,10 @@ python scripts/transform.py && python scripts/build-views.py
 python -m http.server 8000 --directory docs   # Frontend unter http://localhost:8000
 ```
 
-Der vollstaendige Lauf mit allen sechs Pipeline-Schritten, die Testbefehle und der Vokabular-Abdeckungspruefer stehen in [`CLAUDE.md`](CLAUDE.md) § Kern-Commands. Drei Punkte, die in einem frischen Klon leicht in die Irre fuehren:
+Der vollstaendige Lauf mit allen sieben Pipeline-Schritten, die Testbefehle und der Vokabular-Abdeckungspruefer stehen in [`CLAUDE.md`](CLAUDE.md) § Kern-Commands. Drei Punkte, die in einem frischen Klon leicht in die Irre fuehren:
 
-- `scripts/validate.py` endet mit Exit 1, sobald der Validierungsreport ERROR-Befunde fuehrt. Das ist am aktuellen Datenstand der erwartete Zustand, die Befunde sind Quellfehler aus der Erfassung und stehen im Register [`knowledge/data/reports/reconciliation-register.md`](knowledge/data/reports/reconciliation-register.md).
-- Die Normdatendateien `wikidata-reconciliation.json` und `wikidata-enrichment.json` liegen git-getrackt in `data/output/` und werden von der Transformation aus dem Ausgabeverzeichnis gelesen. Ein leeres Ausgabeverzeichnis erzeugt einen Datensatz ganz ohne Wikidata-Anreicherung, und der Lauf endet trotzdem mit Exit 0. Die Falle ist in [`knowledge/architecture.md`](knowledge/architecture.md) beschrieben.
+- `scripts/validate.py` endet mit Exit 1, sobald der Validierungsreport ERROR-Befunde fuehrt. Das ist am aktuellen Datenstand der erwartete Zustand, die Befunde sind Quellfehler aus der Erfassung und stehen in der Partner-Uebergabeliste [`data/reports/source-errors-handover-2026-09-01.md`](data/reports/source-errors-handover-2026-09-01.md).
+- Die Normdatendateien `wikidata-reconciliation.json` und `wikidata-enrichment.json` liegen git-getrackt in `data/output/` und werden von der Transformation aus dem Ausgabeverzeichnis gelesen. Fehlt eine der beiden Dateien im Ausgabeverzeichnis, bricht `transform.py` mit Exit 1 ab; ein bewusster Lauf ohne Normdaten braucht `M3GIM_ALLOW_NO_WIKIDATA=1` und erzeugt einen Datensatz ohne Koordinaten, Lebensdaten und Berufe. Die Falle ist in [`knowledge/architecture.md`](knowledge/architecture.md) beschrieben.
 - Der Browser-Smoke-Test ist ein optionales Extra. Ohne Playwright ueberspringt er sich und der uebrige Lauf bleibt gruen, siehe [`knowledge/testing.md`](knowledge/testing.md).
 
 ## Dokumentation

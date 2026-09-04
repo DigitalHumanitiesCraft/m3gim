@@ -1,5 +1,5 @@
-/* M3GIM Components - Detail Panel, Badges, Spinner, geteilte Primitiven.
-   Die Tab-Leiste fuehrt css/tabs.css. */
+/* M3GIM shared primitives: badges, chips, legend swatch, empty state, spinner,
+   tooltip and the inline detail. The tab bar lives in css/tabs.css. */
 
 /* Badges */
 .badge {
@@ -25,9 +25,9 @@
   font-style: normal;
 }
 
-/* Wikidata badge — das eine Match-Gruen der Palette auf neutralem Grund.
-   In Rolle-Prefix-Chips: als separater Link erkennbar (E-90):
-   Trennlinie links, eigenes Hover, eigenes data-tip. */
+/* Wikidata badge: the one match green of the palette on a neutral ground.
+   Inside a Rolle-Prefix chip it has to read as a separate link (E-90), hence
+   its own dividing line, hover and tooltip. */
 .badge--wikidata {
   display: inline-flex;
   align-items: center;
@@ -52,12 +52,12 @@
   height: 12px;
 }
 
-/* Im Rolle-Chip: eigene Abgrenzung links, damit der Link sichtbar als
-   zusaetzliche Aktion lesbar ist, nicht als Chip-Dekoration. */
+/* Inside the chip the badge keeps a boundary of its own, so it reads as an
+   additional action and not as chip decoration. */
 .chip--role-pair .badge--wikidata {
   border-inline-start: 1px solid var(--border-color-light);
   margin-inline-start: 2px;
-  padding-inline-start: 6px;
+  padding-inline-start: var(--space-1-5);
   border-radius: 0 3px 3px 0;
   background: transparent;
 }
@@ -66,8 +66,9 @@
   background: color-mix(in oklch, var(--accent) 12%, transparent);
 }
 
-/* Datenqualitaets-Marker (m3gim:dataQualityFlag). Traegt das eine Signalrot der
-   Palette, zurueckgenommen ueber die Deckkraft. Der Flag-Wert steht im Tooltip. */
+/* Data-quality marker (m3gim:dataQualityFlag). It carries the one signal red of
+   the palette, held back through opacity; the flag value stands in the
+   tooltip. */
 .quality-flag {
   display: inline-flex;
   align-items: center;
@@ -89,15 +90,12 @@
   opacity: 1;
 }
 
-/* =========================================================================
-   Chip primitive
-
+/* Chip primitive
    One inline box carrying a label and optionally a count and a remove button.
    The view-specific names share this base and keep only what genuinely differs:
    .vs-chip   sidebar legend toggle, full-width row with a colour swatch
    .fs-chip   selected facet value, inverse text on KUG-Blau
-   .idx-facet-chip  cross-grid facet, wraps and carries a round close button
-   ========================================================================= */
+   .idx-facet-chip  cross-grid facet, wraps and carries a round close button */
 
 .chip,
 .vs-chip,
@@ -106,7 +104,7 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-1);
-  padding: 2px 8px;
+  padding: 2px var(--space-2);
   border-radius: 12px;
   font-family: inherit;
   font-size: var(--text-xs);
@@ -159,15 +157,12 @@
   background: color-mix(in oklch, var(--accent) 18%, transparent);
 }
 
-/* =========================================================================
-   Legend swatch primitive
-
+/* Legend swatch primitive
    The swatch colour comes from --swatch-color; views that compute a colour at
    runtime set an inline background, which wins over the token. The fallback is
    transparent, because the ring and line markers of the Netzwerk legend draw
    themselves from borders and a background image. Size and shape stay with the
-   view: those markers are different signs, not one sign at different sizes.
-   ========================================================================= */
+   view: those markers are different signs, not one sign at different sizes. */
 
 .vs-chip__swatch,
 .vs-static__marker,
@@ -178,12 +173,35 @@
   background: var(--swatch-color, transparent);
 }
 
-/* =========================================================================
-   Empty state primitive
+/* Zoom button primitive
+   The square control that sits on a pannable stage. Karte and Netzwerk drew the
+   same 26px button twice; the shape lives here and the view files keep only
+   where their stack sits (Projektleitung, 2026-09-04). */
 
+.zoom-btn,
+.mob-zoomctl__btn,
+.nz-zoom-btn {
+  width: 26px;
+  height: 26px;
+  background: var(--surface);
+  border: 1px solid var(--border-color-light);
+  border-radius: 3px;
+  color: var(--color-text-primary);
+  font-size: var(--text-lg);
+  line-height: 1;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.zoom-btn:hover,
+.mob-zoomctl__btn:hover,
+.nz-zoom-btn:hover {
+  background: var(--surface-2);
+}
+
+/* Empty state primitive
    Quiet tertiary text where a view has nothing to show. Padding and any frame
-   stay with the view, they follow the surrounding box, not the message.
-   ========================================================================= */
+   stay with the view, they follow the surrounding box, not the message. */
 
 .empty-state,
 .korb-empty,
@@ -201,29 +219,20 @@
   font-style: italic;
 }
 
-/* Erschliessungs-Punkt (E-158): one square per content family, filled when
-   the record carries that block, outlined when it does not. The same family
-   colour marks the block title in the inline detail (legend from proximity).
-   Four families, one per entity type, so each square can afford the size it
-   needs to read as a colour rather than as a speck. */
-.ersch-dot {
+/* Family symbol (E-158, E-212): the same icon set as the Indizes heads and
+   the Bestand rows, in family colour, marks the block title of the inline
+   detail and the title of the four entity facets in the sidebar, so the
+   legend arises from proximity. */
+.fam-mark {
   display: inline-block;
-  width: 10px;
-  height: 10px;
-  border-radius: 2px;
-  border: 1.5px solid var(--chip-c-neutral-border);
-  background: transparent;
+  flex: 0 0 auto;
   vertical-align: middle;
+  stroke-width: 2;
 }
-.ersch-dot--person      { border-color: var(--chip-c-person-text); }
-.ersch-dot--institution { border-color: var(--chip-c-institution-text); }
-.ersch-dot--ort         { border-color: var(--chip-c-ort-text); }
-.ersch-dot--werk        { border-color: var(--chip-c-werk-text); }
-.ersch-dot--on.ersch-dot--person      { background: var(--chip-c-person-text); }
-.ersch-dot--on.ersch-dot--institution { background: var(--chip-c-institution-text); }
-.ersch-dot--on.ersch-dot--ort         { background: var(--chip-c-ort-text); }
-.ersch-dot--on.ersch-dot--werk        { background: var(--chip-c-werk-text); }
-.ersch-dot--off { opacity: 0.45; }
+.fam-mark--person      { color: var(--chip-c-person-text); }
+.fam-mark--institution { color: var(--chip-c-institution-text); }
+.fam-mark--ort         { color: var(--chip-c-ort-text); }
+.fam-mark--werk        { color: var(--chip-c-werk-text); }
 
 /* Spinner */
 .spinner {
@@ -254,10 +263,8 @@
   font-size: var(--text-sm);
 }
 
-/* =========================================================================
-   Tooltip — CSS-only via data-tip attribute
-   Usage: <span data-tip="Tooltip text">Element</span>
-   ========================================================================= */
+/* Tooltip — CSS-only via data-tip attribute
+   Usage: <span data-tip="Tooltip text">Element</span> */
 
 [data-tip] {
   position: relative;
@@ -276,6 +283,10 @@
   font-size: var(--text-xs);
   font-weight: var(--weight-normal);
   font-style: normal;
+  /* The tooltip is prose, whatever it hangs on: a section title in small caps
+     would otherwise pass its uppercase and letter-spacing down to it. */
+  text-transform: none;
+  letter-spacing: normal;
   line-height: var(--leading-normal);
   white-space: nowrap;
   border-radius: var(--border-radius);
@@ -286,14 +297,19 @@
   z-index: 200;
 }
 
-/* Multiline tooltips (line breaks via \a in content) */
+/* Multiline tooltips (line breaks via \a in content).
+   width: max-content, because the shrink-to-fit width of the pseudo-element is
+   the width of its anchor: on a narrow anchor (a date cell, an icon button)
+   the wrapping text would otherwise fold into a column a few characters wide. */
 [data-tip-wrap]::after {
   white-space: pre-line;
-  max-width: 280px;
+  width: max-content;
+  max-width: min(280px, 60vw);
   text-align: left;
 }
 
-[data-tip]:hover::after {
+[data-tip]:hover::after,
+[data-tip]:focus-visible::after {
   opacity: 1;
 }
 
@@ -316,6 +332,42 @@
   transform: none;
 }
 
+/* Position variant: align right edge (for elements at the right window edge,
+   the two last columns of the Bestand table) */
+[data-tip-pos="bottom-right"]::after {
+  bottom: auto;
+  top: calc(100% + 6px);
+  left: auto;
+  right: 0;
+  transform: none;
+}
+
+/* The footer's edge links sit at the window edges, where a centred tooltip
+   would run out of the viewport. The rules live here and not next to the footer
+   in base.css: they match the [data-tip]::after rule of this block in
+   specificity, and base.css is loaded first on every page, so a copy there
+   would lose the alignment again.
+
+   The cap is the root fix for the sideways page scroll: a hidden ::after is a
+   real nowrap box at opacity 0 and counts into the document width, and the
+   footer is the one place where no ancestor clips it (Projektleitung,
+   2026-09-04). */
+.app-footer [data-tip]::after {
+  white-space: pre-line;
+  width: max-content;
+  max-width: min(260px, calc(100vw - 2 * var(--space-6)));
+}
+.app-footer__kug::after {
+  left: 0;
+  transform: none;
+}
+
+.app-footer__group:last-child a:last-child::after {
+  left: auto;
+  right: 0;
+  transform: none;
+}
+
 /* Table cells: position below to avoid clipping by sticky thead */
 .archiv-table td [data-tip]::after,
 .archiv-table th [data-tip]::after {
@@ -323,9 +375,7 @@
   top: calc(100% + 4px);
 }
 
-/* =========================================================================
-   Inline Detail (Bestand, Korb, Detail-Panels)
-   ========================================================================= */
+/* Inline Detail (Bestand, Korb, Detail-Panels) */
 
 .inline-detail {
   padding: var(--space-4) var(--space-5);
@@ -333,14 +383,29 @@
   border-inline-start: 3px solid var(--accent);
 }
 
-/* Two equally sized icon buttons, right aligned. Signatur and Titel are not
-   repeated here, they stand in the table row above (E-157). */
+/* Head line: Signatur and Titel of the record, so the reference stays visible
+   while the reader scrolls inside a long detail (Projektleitung, 2026-09-04). */
+.inline-detail__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--color-text-tertiary);
+}
+
+.inline-detail__head-sig {
+  font-family: var(--font-mono);
+}
+
+/* Two equally sized icon buttons at the right end of the meta bar, so they
+   cost no row of their own (Projektleitung, 2026-09-04). */
 .inline-detail__actions {
   display: flex;
-  justify-content: flex-end;
   align-items: center;
   gap: var(--space-2);
-  margin-bottom: var(--space-3);
+  margin-inline-start: auto;
 }
 
 .inline-detail__action-btn {
@@ -378,7 +443,7 @@
   color: var(--color-text-inverse);
 }
 
-/* Metadaten-Kopfzeile: horizontal, ueber die volle Breite, dezent abgesetzt. */
+/* Metadata head line: horizontal, full width, quietly set apart. */
 .inline-detail__meta {
   display: flex;
   flex-wrap: wrap;
@@ -430,7 +495,7 @@
 .inline-detail__section-title {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-1-5);
   font-size: var(--text-xs);
   font-weight: var(--weight-semibold);
   text-transform: uppercase;
@@ -443,6 +508,40 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-1);
+}
+
+/* A chip with its dependants on a sub-line: the Buehnenrollen under their work
+   and the Auffuehrungsdaten under their Spielzeit. Used by the detail and, over
+   the shared buildRecordBlocks, by the Korb. */
+.chip-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-1);
+}
+
+.chip-group__sub {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  padding-inline-start: var(--space-3);
+}
+
+/* Dates of one Spielzeit as a compact list inside a single chip; the Quellzeile
+   of each date sits in its own tooltip instead of in a pill per date. */
+.chip-dates {
+  display: inline;
+}
+
+/* The Beleg of a single date sits in its tooltip; the row stays calm and shows
+   the affordance only under the pointer. */
+.chip-date {
+  cursor: help;
+}
+
+.chip-date:hover {
+  text-decoration: underline dotted;
+  text-underline-offset: 2px;
 }
 
 /* Foot: bundled provenance and the collapsed Verwaltung, full width, quiet. */
@@ -490,22 +589,19 @@
   color: var(--color-text-tertiary);
 }
 
-/* =========================================================================
-   Rolle-Prefix-Chip-Pattern (Session 32: E-75 Mockup-Stil)
-   Einheitliche Darstellung fuer Finanzen, AgRelOn-Beziehungen,
-   SpatiotemporalEvents. Aufbau: Uppercase-Rollenpraefix + halbfetter Wert
-   + optionale Provenance-Pille + optionales Wikidata-Badge.
+/* Rolle-Prefix chip (E-75): one form for Finanzen, AgRelOn relations and
+   spatiotemporal events, built from an uppercase role prefix, a semibold value
+   and optionally the provenance pill and the Wikidata badge.
    Chips are neutral since 2026-09-03: grey outline, near-black text, no family
    fill. The family colour lives at the Erschliessungsanzeige and at the block
    title alone. The .chip--c-<cluster> classes stay in the markup and all
-   resolve here, so a cluster name no longer paints anything.
-   ========================================================================= */
+   resolve here, so a cluster name no longer paints anything. */
 
 .chip--role-pair {
   display: inline-flex;
   align-items: baseline;
-  gap: 6px;
-  padding: 3px 8px;
+  gap: var(--space-1-5);
+  padding: 3px var(--space-2);
   border-radius: var(--border-radius);
   border: 1px solid var(--chip-c-neutral-border);
   background: var(--surface);
@@ -517,7 +613,7 @@
 /* The role prefix stays uppercase in the grey text colour, so it reads as a
    label next to the value rather than as part of it. */
 .chip--role-pair .chip-rolle {
-  font-size: 10px;
+  font-size: var(--text-2xs);
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--color-text-secondary);
@@ -532,10 +628,10 @@
   align-items: center;
   gap: 3px;
   font-family: var(--font-mono);
-  font-size: 10px;
-  padding: 2px 6px;
+  font-size: var(--text-2xs);
+  padding: 2px var(--space-1-5);
   border-radius: 3px;
-  background: rgba(0, 0, 0, 0.05);
+  background: color-mix(in oklch, var(--color-text-primary) 6%, transparent);
   color: var(--color-text-secondary);
   letter-spacing: 0.02em;
   cursor: help;
@@ -561,11 +657,11 @@
 .chip--role-pair.chip--clickable { cursor: pointer; }
 .chip--role-pair.chip--clickable:hover { filter: brightness(0.97); }
 
-/* Kompakte Variante fuer Aggregat-Tabellen (Repertoire, Netzwerk) */
+/* Compact variant for aggregate tables (Repertoire, Netzwerk) */
 .chip--role-pair.chip--compact {
-  padding: 2px 6px;
+  padding: 2px var(--space-1-5);
   font-size: 0.72rem;
-  gap: 4px;
+  gap: var(--space-1);
 }
 .chip--role-pair.chip--compact .chip-rolle { font-size: 9px; }
 
@@ -589,4 +685,25 @@
 .inline-detail__empty-state span {
   cursor: help;
   border-bottom: 1px dotted var(--color-text-tertiary);
+}
+
+/* Ergänztes ist markiert (Projektleitung, 2026-09-04)
+   Everything the pipeline or the frontend derived, inherited or supplemented
+   instead of reading it from the source row carries exactly one mark: this
+   dotted underline plus a data-tip beginning with "ergänzt: ". No second
+   colour, no icon, no italics. */
+
+.mark-derived {
+  text-decoration: underline dotted;
+  text-decoration-color: var(--color-text-secondary);
+  text-underline-offset: 2px;
+}
+
+/* Touch target: the Wikidata link is a glyph inside a text line and needs the
+   finger height it does not need under a pointer. */
+@media (max-width: 768px) {
+  .badge--wikidata {
+    min-block-size: 24px;
+    min-inline-size: 24px;
+  }
 }

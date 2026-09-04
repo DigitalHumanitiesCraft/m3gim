@@ -86,8 +86,19 @@ export function partitionRecord(record, store) {
       // attached only when the model carries it, so the common case keeps the
       // minimal { name, qualityFlag } shape.
       const voiceType = firstVoiceType(store, perf['m3gim-ontology:hasStageRole']);
+      // The Performance node carries the Quellzeile of the role and, where the
+      // Besetzung is recorded, its performer. Both were dropped here, which left
+      // the Rolle chip as the one chip of the detail without a Provenance-Pille
+      // (Projektleitung, 2026-09-04).
+      const xlsxSource = extractXlsxSource(perf);
+      const performers = ensureArray(perf['m3gim-ontology:hasPerformer'])
+        .map(p => p && (p.name || p['skos:prefLabel']))
+        .filter(Boolean);
       for (const name of roleNames) {
-        performanceRoles.push(voiceType ? { name, qualityFlag, voiceType } : { name, qualityFlag });
+        const role = { name, qualityFlag, xlsxSource };
+        if (voiceType) role.voiceType = voiceType;
+        if (performers.length) role.performers = performers;
+        performanceRoles.push(role);
       }
     }
   }
@@ -140,6 +151,128 @@ export function partitionRecord(record, store) {
     bucket, works, performanceRoles, performances, events, locations,
     agentRelations, finances, mentionedDatings, eventDatings,
   };
+}
+
+// =========================================================================
+// Auftritt: ordering and grouping of the performance data of one record.
+// All pure, so record-chips.js stays a rendering layer (Projektleitung,
+// 2026-09-04).
+// =========================================================================
+
+const SEASON_ROLE = 'm3gim-vocab:season';
+const PERFORMANCE_ROLE = 'm3gim-vocab:performance';
+
+/** Beginning of a Datierung as an ISO string, of a range its start; null when undated. */
+function datingStart(dating) {
+  const raw = String((dating && (dating.date || dating.rawDate)) || '').trim();
+  if (!raw) return null;
+  const start = raw.split('/')[0].trim();
+  return /^\d{4}/.test(start) ? start : null;
+}
+
+/** The two ends of a Datierung, only for a real ISO day range. */
+function isoRange(dating) {
+  const raw = String((dating && (dating.date || dating.rawDate)) || '').trim();
+  if (!raw.includes('/')) return null;
+  const [from, to] = raw.split('/').map(s => s.trim());
+  const iso = /^\d{4}-\d{2}-\d{2}$/;
+  return iso.test(from) && iso.test(to) ? [from, to] : null;
+}
+
+/**
+ * Datierungen by date ascending, undated last. The list arrives in source order
+ * and Array#sort is stable, so equal or missing dates keep their Quellzeile
+ * order.
+ */
+export function sortDatingsByDate(datings) {
+  return [...datings].sort((a, b) => {
+    const x = datingStart(a);
+    const y = datingStart(b);
+    if (x === y) return 0;
+    if (x === null) return 1;
+    if (y === null) return -1;
+    return x < y ? -1 : 1;
+  });
+}
+
+/**
+ * Bundle the placeless Auffuehrungs-Datierungen of a record under the Spielzeit
+ * that spans them, so a Festspielsommer stands as one head line with its dates
+ * instead of a dozen single chips. A Spielzeit without dates inside it stays a
+ * plain chip, and every other Datierung passes through untouched.
+ *
+ * @returns {{seasons: Array<{season: Object, dates: Object[]}>, rest: Object[]}}
+ */
+export function groupPerformanceDatings(datings) {
+  const seasons = [];
+  const others = [];
+  for (const d of datings) {
+    if (d.roleId === SEASON_ROLE && isoRange(d)) seasons.push({ season: d, dates: [], range: isoRange(d) });
+    else others.push(d);
+  }
+  if (seasons.length === 0) return { seasons: [], rest: sortDatingsByDate(datings) };
+
+  const loose = [];
+  for (const d of others) {
+    const start = d.roleId === PERFORMANCE_ROLE ? datingStart(d) : null;
+    const group = start
+      ? seasons.find(g => start >= g.range[0] && start <= g.range[1])
+      : null;
+    if (group) group.dates.push(d);
+    else loose.push(d);
+  }
+  // A Spielzeit that bundles nothing is just another Datierung.
+  const bundling = [];
+  for (const g of seasons) {
+    if (g.dates.length) bundling.push({ season: g.season, dates: sortDatingsByDate(g.dates) });
+    else loose.push(g.season);
+  }
+  bundling.sort((a, b) => (datingStart(a.season) || '') < (datingStart(b.season) || '') ? -1 : 1);
+  return { seasons: bundling, rest: sortDatingsByDate(loose) };
+}
+
+/** Umlaut- and diacritic-insensitive comparison key for a Partie name. */
+function partKey(value) {
+  return String(value || '').trim().toLowerCase()
+    .replace(/ä/g, 'ae').replace(/ö/g, 'oe').replace(/ü/g, 'ue').replace(/ß/g, 'ss')
+    .normalize('NFD').replace(/[̀-ͯ]/g, '');
+}
+
+/**
+ * Hang the Buehnenrollen of a record on their work.
+ *
+ * The data gives two resolvable paths and no third: a record with exactly one
+ * MusicalWork holds the whole Besetzung of that work, and a role whose name
+ * equals the `m3gim-ontology:sungPart` of a work is that work's Partie (the
+ * field may name two, separated by a slash). A record with several works and a
+ * flat Besetzung list carries no link at all, because the Verknuepfungen sheet
+ * lists works and roles as two independent runs of rows; those roles stay
+ * loose rather than being guessed onto a work (Projektleitung, 2026-09-04).
+ *
+ * @returns {{groups: Array<{work: Object, roles: Object[]}>, looseRoles: Object[]}}
+ */
+export function groupRolesByWork(works, performanceRoles) {
+  const groups = works.map(work => ({ work, roles: [] }));
+  const musical = groups.filter(g => g.work['@type'] === 'm3gim-ontology:MusicalWork');
+  const single = musical.length === 1 ? musical[0] : null;
+
+  const byPart = new Map();
+  for (const g of groups) {
+    const part = g.work['m3gim-ontology:sungPart'];
+    if (!part) continue;
+    for (const one of String(part).split('/')) {
+      const key = partKey(one);
+      if (key && !byPart.has(key)) byPart.set(key, g);
+    }
+  }
+
+  const looseRoles = [];
+  for (const role of performanceRoles) {
+    const group = single || byPart.get(partKey(role.name));
+    if (group) group.roles.push(role);
+    else looseRoles.push(role);
+  }
+  return { groups, looseRoles };
 }
 
 /**

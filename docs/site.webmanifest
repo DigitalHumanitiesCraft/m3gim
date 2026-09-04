@@ -1,0 +1,14 @@
+{
+  "name": "M³GIM — Teilnachlass Ira Malaniuk",
+  "short_name": "M³GIM",
+  "lang": "de",
+  "start_url": "./",
+  "scope": "./",
+  "display": "browser",
+  "background_color": "#FFFFFF",
+  "theme_color": "#004A8F",
+  "icons": [
+    { "src": "img/favicon-32.png", "sizes": "32x32", "type": "image/png" },
+    { "src": "img/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }
+  ]
+}

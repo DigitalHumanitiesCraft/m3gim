@@ -3,13 +3,14 @@
  * Supports cross-grid faceted filtering via activeFilter state.
  */
 
-import { el, clear } from '../utils/dom.js';
+import { el, clear, scrollBehavior } from '../utils/dom.js';
 import { formatSignatur, getDocTypeId, truncate, dftLabel } from '../utils/format.js';
-import { WIKIDATA_ICON_SVG, AGRELON_LABELS, korbIcon } from '../data/constants.js';
-import { selectRecord, applyArchivFilter } from '../ui/router.js';
+import { WIKIDATA_ICON_SVG, AGRELON_LABELS, korbIcon, korbTip } from '../data/constants.js';
+import { selectRecord, applyArchivFilter, navigateToView } from '../ui/router.js';
 import { toggleKorb, isInKorb } from '../ui/basket.js';
 import { logStamp } from '../utils/env.js';
 import { createSidebar, viewShell } from '../ui/sidebar.js';
+import { familyIconSvg } from '../ui/family-icons.js';
 import { getFilter } from '../ui/filter-state.js';
 import { recordsFor } from '../data/records-for.js';
 import {
@@ -48,7 +49,7 @@ let activeFilter = null;
 const GRID_CONFIG = {
   personen: {
     label: 'Personen',
-    icon: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+    family: 'person',
     columns: [
       { key: 'name', label: 'Name', flex: 1 },
       { key: 'kategorie', label: 'Kategorie', width: '100px' },
@@ -63,7 +64,7 @@ const GRID_CONFIG = {
   },
   organisationen: {
     label: 'Organisationen',
-    icon: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>',
+    family: 'institution',
     columns: [
       { key: 'name', label: 'Name', flex: 1 },
       { key: 'count', label: 'Dok.', width: '50px', align: 'right' },
@@ -76,7 +77,7 @@ const GRID_CONFIG = {
   },
   orte: {
     label: 'Orte',
-    icon: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>',
+    family: 'ort',
     columns: [
       { key: 'name', label: 'Name', flex: 1 },
       { key: 'count', label: 'Dok.', width: '50px', align: 'right' },
@@ -89,7 +90,7 @@ const GRID_CONFIG = {
   },
   werke: {
     label: 'Werke',
-    icon: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>',
+    family: 'werk',
     columns: [
       { key: 'name', label: 'Werk', flex: 1 },
       { key: 'komponist', label: 'Komponist', width: '120px' },
@@ -128,7 +129,7 @@ export function expandEntry(gridType, entityName) {
   // Scroll to expanded entry after render
   requestAnimationFrame(() => {
     const expanded = document.querySelector('.idx-row--expanded');
-    if (expanded) expanded.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    if (expanded) expanded.scrollIntoView({ behavior: scrollBehavior(), block: 'center' });
   });
 }
 
@@ -226,7 +227,8 @@ function renderFacetChip() {
     el('span', { className: 'idx-facet-chip__count' }, `${activeFilter.recordIds.size} Dok.`),
     el('button', {
       className: 'idx-facet-chip__close',
-      title: 'Filter entfernen',
+      dataset: { tip: 'Filter entfernen' },
+      'aria-label': 'Filter entfernen',
       onClick: (e) => { e.stopPropagation(); clearFacetFilter(); },
       html: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
     }),
@@ -263,13 +265,15 @@ function renderGrid(gridKey, config) {
   const wdPct = totalCount > 0 ? Math.round(wdCount / totalCount * 100) : 0;
 
   const header = el('div', { className: 'idx-grid__header' },
-    el('span', { className: 'idx-grid__icon', html: config.icon }),
+    el('span', { className: 'idx-grid__icon', html: familyIconSvg(config.family) }),
     el('span', { className: 'idx-grid__title' }, config.label),
     el('span', { className: 'idx-grid__count' }, countText),
     wdCount > 0
       ? el('span', {
           className: 'idx-grid__wd-status',
-          dataset: { tip: `${wdCount} von ${totalCount} mit Wikidata verkn\u00fcpft` },
+          // bottom-right: the header sits at the right edge of the grid column.
+          dataset: { tip: `${wdCount} von ${totalCount} mit Wikidata verkn\u00fcpft`,
+            tipPos: 'bottom-right' },
           html: `${WIKIDATA_ICON_SVG} ${wdPct}\u2009%`,
         })
       : null,
@@ -343,19 +347,22 @@ function renderNameCell(entry) {
   const frag = document.createDocumentFragment();
   frag.appendChild(el('span', { className: 'idx-name' }, entry.name));
   const wd = entry.wikidata ? String(entry.wikidata) : '';
-  if (wd.startsWith('wd:')) {
-    const qid = wd.replace('wd:', '');
+  const qid = wd.startsWith('wd:') ? wd.replace('wd:', '') : '';
+  if (qid) {
     frag.appendChild(el('a', {
       className: 'badge badge--wikidata',
       href: `https://www.wikidata.org/entity/${qid}`,
       target: '_blank',
       rel: 'noopener noreferrer',
-      title: wd,
+      dataset: { tip: `Wikidata ${qid}` },
+      'aria-label': `Wikidata ${qid}`,
       html: WIKIDATA_ICON_SVG,
       onClick: (e) => e.stopPropagation(),
     }));
   }
-  // WD-Enrichment subtitle (Beruf · Stimmfach · Lebensdaten)
+  // Occupation, voice type and life dates come from the Wikidata enrichment and
+  // not from the Bestand, so the subtitle carries the mark of supplemented
+  // values; the Q badge beside it stays the link (Projektleitung, 2026-09-04).
   const parts = [];
   if (entry.occupation) {
     const occ = Array.isArray(entry.occupation) ? entry.occupation : [entry.occupation];
@@ -368,7 +375,10 @@ function renderNameCell(entry) {
     parts.push(death ? `${birth}\u2013${death}` : `*${birth}`);
   }
   if (parts.length > 0) {
-    frag.appendChild(el('div', { className: 'idx-subtitle' }, parts.join(' \u00b7 ')));
+    frag.appendChild(el('div', {
+      className: 'idx-subtitle mark-derived',
+      dataset: { tip: qid ? `erg\u00e4nzt: aus Wikidata ${qid}` : 'erg\u00e4nzt: aus Wikidata', tipWrap: '' },
+    }, parts.join(' \u00b7 ')));
   }
   // AgRelOn-Beziehungsbadges (Session 32, E-75): Chips pro Beziehungstyp mit
   // Mehrfachzaehlung und Klick-Durchstich zum Beleg-Record im Archiv.
@@ -407,8 +417,10 @@ function buildRelationBadges(relations) {
       dataset: { tip: tipParts.join(' \u00b7 ') },
       onClick: (e) => {
         e.stopPropagation();
-        // Beleg-Record im Archiv oeffnen (erster Beleg dieses Typs).
-        window.location.hash = '#archiv/' + encodeURIComponent(first.recordId);
+        // Open the first Beleg of this type in the Bestand view. Through the
+        // router, so the hash keeps the shared filter (user-story audit
+        // 2026-09-03).
+        navigateToView('bestand', { recordId: first.recordId });
       },
     },
       el('span', { className: 'chip-rolle' }, label.toUpperCase()),
@@ -454,7 +466,8 @@ function renderExpandedRecords(entry, gridKey) {
       docLabel ? el('span', { className: `badge badge--${docType}` }, docLabel) : null,
       el('button', {
         className: `korb-btn ${inKorb ? 'korb-btn--active' : ''}`,
-        title: inKorb ? 'Aus dem Korb entfernen' : 'In den Korb',
+        dataset: { tip: korbTip(inKorb) },
+        'aria-label': korbTip(inKorb),
         dataset: { recordId: rid },
         html: korbIcon(12, inKorb),
         onClick: (e) => {
@@ -468,7 +481,8 @@ function renderExpandedRecords(entry, gridKey) {
           for (const b of (page ? page.querySelectorAll('.korb-btn') : [])) {
             if (b.dataset.recordId !== rid) continue;
             b.classList.toggle('korb-btn--active', nowIn);
-            b.title = nowIn ? 'Aus dem Korb entfernen' : 'In den Korb';
+            b.dataset.tip = korbTip(nowIn);
+            b.setAttribute('aria-label', korbTip(nowIn));
             b.innerHTML = korbIcon(12, nowIn);
           }
         },

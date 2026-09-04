@@ -145,11 +145,21 @@ test('partitionRecord: Buehnenrollen kommen ueber die Performance-Kette, mit ihr
     performances: new Map([['m3gim-data:perf1', {
       'm3gim-ontology:hasStageRole': { '@id': 'm3gim-data:sr1' },
       'm3gim-ontology:dataQualityFlag': 'quelle-tippfehler',
+      'm3gim-ontology:xlsxSource': {
+        'm3gim-ontology:xlsxSheet': 'Box 1',
+        'm3gim-ontology:xlsxRow': 42,
+      },
     }]]),
     stageRoles: new Map([['m3gim-data:sr1', 'Waltraude']]),
   };
   const { performanceRoles } = partitionRecord(record, store);
-  assert.deepEqual(performanceRoles, [{ name: 'Waltraude', qualityFlag: 'quelle-tippfehler' }]);
+  // Die Quellzeile des Performance-Knotens haengt an der Rolle, damit der
+  // Rollen-Chip dieselbe Provenance-Pille traegt wie jeder andere Chip.
+  assert.deepEqual(performanceRoles, [{
+    name: 'Waltraude',
+    qualityFlag: 'quelle-tippfehler',
+    xlsxSource: { sheet: 'Box 1', row: 42, datenpunkt: null },
+  }]);
 });
 
 test('partitionRecord: datierte Auffuehrungen und undatierte Standalone-Rollen trennen sich', () => {
@@ -181,7 +191,7 @@ test('partitionRecord: datierte Auffuehrungen und undatierte Standalone-Rollen t
   assert.equal(performances[0].workWikidata, 'wd:Q123');
   // Undatierte Standalone-Rolle bleibt in Werk & Repertoire, erscheint NICHT
   // ein zweites Mal unter den datierten Auffuehrungen.
-  assert.deepEqual(performanceRoles, [{ name: 'Isolde', qualityFlag: undefined }]);
+  assert.deepEqual(performanceRoles, [{ name: 'Isolde', qualityFlag: undefined, xlsxSource: null }]);
 });
 
 test('partitionRecord: am Datenstand traegt NIM_073 30_1 die datierte Bayreuth-Serie 1953', async () => {

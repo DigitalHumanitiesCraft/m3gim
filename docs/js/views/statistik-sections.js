@@ -7,8 +7,8 @@
  *
  * Wo ein Aggregat eine geteilte Facette hat, fuehrt seine Zeile in den
  * gefilterten Bestand (E-144). Wo es keine hat (Buehnenrollen, Rollen der
- * Mitwirkenden, Komponisten, Erschliessungsachsen), bleibt die Zeile statisch,
- * statt einen Filter zu setzen, den es nicht gibt.
+ * Mitwirkenden, Komponisten, Erschliessungsachsen, die Sammelzeile "ohne Typ"),
+ * bleibt die Zeile statisch, statt einen Filter zu setzen, den es nicht gibt.
  */
 
 import { el } from '../utils/dom.js';
@@ -61,7 +61,7 @@ function ranking(rows, { facet = null, color = () => KUG_BLUE } = {}) {
     value: row.count,
     color: color(i, head.length),
     onClick: facet ? () => applyArchivFilter(facet, row.value ?? row.label) : null,
-    hrefTitle: facet ? `${row.label} im Bestand zeigen` : row.label,
+    tip: facet ? 'Im Bestand zeigen' : '',
   }));
   const tail = rows.slice(BAR_TOP);
   if (tail.length) {
@@ -69,7 +69,7 @@ function ranking(rows, { facet = null, color = () => KUG_BLUE } = {}) {
       label: `Weitere (${tail.length})`,
       value: tail.reduce((s, r) => s + r.count, 0),
       color: 'var(--line-strong)',
-      hrefTitle: tail.slice(0, 20).map(r => `${r.label} (${r.count})`).join(' · '),
+      tip: tail.slice(0, 20).map(r => `${r.label} (${r.count})`).join(' · '),
     });
   }
   return buildHorizontalBars(bars);
@@ -90,7 +90,7 @@ export function buildDokumenttypen(store, ids) {
   const rows = head.map((d, i) => ({
     label: d.label, value: d.count, color: blueShade(i, head.length),
     onClick: () => applyArchivFilter('docType', d.id),
-    hrefTitle: `${d.label} im Bestand zeigen`,
+    tip: 'Im Bestand zeigen',
   }));
   const tail = typed.slice(BAR_TOP);
   if (tail.length) {
@@ -98,14 +98,19 @@ export function buildDokumenttypen(store, ids) {
       label: `Weitere (${tail.length})`,
       value: tail.reduce((s, d) => s + d.count, 0),
       color: 'var(--line-strong)',
-      hrefTitle: tail.slice(0, 20).map(d => `${d.label} (${d.count})`).join(' · '),
+      tip: tail.slice(0, 20).map(d => `${d.label} (${d.count})`).join(' · '),
     });
   }
   if (ohneTyp) {
+    // Statische Zeile, kein Sprung: der Dokumenttyp schneidet unter den Typen,
+    // die es gibt (docTypeIndex in records-for.js), ein Dokument ohne Typ traegt
+    // keinen Facettenwert und waere ueber keinen erreichbar. Der fruehere Sprung
+    // setzte einen Platzhalterwert, den recordsFor nicht kennt, und fuehrte
+    // damit in einen leeren Bestand (user-story audit 2026-09-03).
     rows.push({
       label: 'ohne Typ', value: ohneTyp.count, color: 'var(--color-text-tertiary)',
-      onClick: () => applyArchivFilter('docType', '__none__'),
-      hrefTitle: 'Dokumente ohne klassifizierten Dokumenttyp im Bestand zeigen',
+      tip: 'Ohne klassifizierten Dokumenttyp — eine Erschließungslücke, '
+        + 'kein Filterwert',
     });
   }
   wrap.appendChild(buildHorizontalBars(rows));
@@ -137,7 +142,7 @@ export function buildErschliessung(store, ids) {
     value: a.filled,
     countText: `${a.filled} · ${a.missing} offen`,
     color: blueShade(i, gaps.axes.length),
-    hrefTitle: `${a.missing} Dokumente ohne ${a.label}`,
+    tip: `${a.missing} Dokumente ohne diese Angabe`,
   }))));
 
   const konvWrap = subsection(node, `Konvolute nach Erschließungsgrad (${gaps.byKonvolut.length})`);
@@ -146,8 +151,7 @@ export function buildErschliessung(store, ids) {
     value: Math.round(k.share * 100),
     countText: `${Math.round(k.share * 100)} %`,
     color: 'var(--color-text-tertiary)',
-    hrefTitle: `${Math.round(k.share * 100)} % der möglichen Achsen belegt, `
-      + 'aufsteigend sortiert',
+    tip: 'Anteil der belegten Achsen, aufsteigend sortiert',
   }))));
   return node;
 }

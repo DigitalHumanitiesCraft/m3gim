@@ -1,4 +1,4 @@
-/* M3GIM Korb */
+/* M3GIM Korb: the cross-view collection list and its add button */
 
 /* Tab container: Korb has its own padding via .korb-page */
 #tab-korb.tab-content {
@@ -100,10 +100,10 @@
 
 .korb-card:hover {
   border-color: var(--border-color);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--shadow-sm);
 }
 
-/* Card header: Signatur, Titel, Badge, Remove */
+/* Card header: Signatur, title, badge, remove */
 .korb-card__header {
   display: flex;
   align-items: baseline;
@@ -158,14 +158,14 @@
   color: var(--color-text-primary);
 }
 
-/* Meta line: Datum, Sprache, Umfang, Status */
+/* Meta line: date, language, extent, status */
 .korb-card__meta {
   font-size: var(--text-xs);
   color: var(--color-text-secondary);
   margin-bottom: var(--space-2);
 }
 
-/* Card body: funktionale Bloecke mit Rolle-Prefix-Chips (E-77) */
+/* Card body: the functional blocks as Rolle-Prefix chips (E-77) */
 .korb-card__body {
   display: flex;
   flex-direction: column;
@@ -239,4 +239,12 @@ tr:hover .korb-btn,
 
 .korb-btn:hover {
   color: var(--accent);
+}
+
+/* Touch target: the add button sits at the right edge of a table row. */
+@media (max-width: 768px) {
+  .korb-btn {
+    width: 24px;
+    height: 24px;
+  }
 }

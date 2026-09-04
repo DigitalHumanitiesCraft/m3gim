@@ -3,26 +3,87 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Datenmodell — M³GIM</title>
-  <meta name="description" content="Das Datenmodell des Teilnachlasses Ira Malaniuk (UAKUG/NIM): eingebundene Ontologien, Projekterweiterung und kontrollierte Vokabulare, erzeugt aus dem Projektvokabular.">
+  <title>Datenmodell · M³GIM</title>
+  <meta name="description" content="Klassen, Properties und kontrollierte Vokabulare der M³GIM-Erweiterung zu RiC-O 1.1, erzeugt aus dem Projektvokabular.">
+  <meta name="robots" content="index,follow">
+  <meta name="theme-color" content="#004A8F">
+  <link rel="canonical" href="https://digitalhumanitiescraft.github.io/m3gim/datenmodell.html">
 
-  <!-- Favicon (Inline-SVG, kein externes Asset) -->
+  <!-- Social cards: absolute URLs, because a scraper resolves nothing relative. -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="M³GIM">
+  <meta property="og:locale" content="de_AT">
+  <meta property="og:title" content="Datenmodell · M³GIM">
+  <meta property="og:description" content="Klassen, Properties und kontrollierte Vokabulare der M³GIM-Erweiterung zu RiC-O 1.1, erzeugt aus dem Projektvokabular.">
+  <meta property="og:url" content="https://digitalhumanitiescraft.github.io/m3gim/datenmodell.html">
+  <meta property="og:image" content="https://digitalhumanitiescraft.github.io/m3gim/img/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="M³GIM — Mapping Mobile Musicians">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Datenmodell · M³GIM">
+  <meta name="twitter:description" content="Klassen, Properties und kontrollierte Vokabulare der M³GIM-Erweiterung zu RiC-O 1.1, erzeugt aus dem Projektvokabular.">
+  <meta name="twitter:image" content="https://digitalhumanitiescraft.github.io/m3gim/img/og.png">
+
+  <!-- Favicon: inline SVG, so the page needs no external asset; the PNGs serve
+       the browsers and launchers that take no SVG. -->
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='10' fill='%231a1a1a'/%3E%3Ctext x='50%25' y='58%25' text-anchor='middle' font-family='Georgia,serif' font-size='36' font-weight='700' fill='%23f5f1e8'%3EM%3C/text%3E%3Ctext x='78%25' y='38%25' text-anchor='middle' font-family='Georgia,serif' font-size='18' font-weight='700' fill='%23c9a961'%3E3%3C/text%3E%3C/svg%3E">
+  <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="img/apple-touch-icon.png">
+  <link rel="manifest" href="site.webmanifest">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap">
 
-  <link rel="stylesheet" href="css/variables.css">
-  <link rel="stylesheet" href="css/base.css">
-  <link rel="stylesheet" href="css/pages.css">
+  <link rel="stylesheet" href="css/variables.css?v=2026-09-04">
+  <link rel="stylesheet" href="css/base.css?v=2026-09-04">
+  <link rel="stylesheet" href="css/components.css?v=2026-09-04">
+  <link rel="stylesheet" href="css/pages.css?v=2026-09-04">
+
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": "https://digitalhumanitiescraft.github.io/m3gim/#website",
+          "name": "M³GIM",
+          "alternateName": "Mapping Mobile Musicians",
+          "url": "https://digitalhumanitiescraft.github.io/m3gim/",
+          "inLanguage": "de-AT",
+          "description": "Digitale Erschließung des Teilnachlasses Ira Malaniuk (UAKUG/NIM) am Universitätsarchiv der Kunstuniversität Graz.",
+          "publisher": {
+            "@type": "Organization",
+            "name": "Universität für Musik und darstellende Kunst Graz",
+            "alternateName": "KUG",
+            "url": "https://www.kug.ac.at"
+          }
+        },
+        {
+          "@type": "WebPage",
+          "@id": "https://digitalhumanitiescraft.github.io/m3gim/datenmodell.html#webpage",
+          "name": "Datenmodell",
+          "description": "Klassen, Properties und kontrollierte Vokabulare der M³GIM-Erweiterung zu RiC-O 1.1, erzeugt aus dem Projektvokabular.",
+          "url": "https://digitalhumanitiescraft.github.io/m3gim/datenmodell.html",
+          "inLanguage": "de",
+          "isPartOf": {
+            "@id": "https://digitalhumanitiescraft.github.io/m3gim/#website"
+          },
+          "license": "https://creativecommons.org/licenses/by/4.0/"
+        }
+      ]
+    }
+  </script>
 </head>
 <body class="info-page">
 
+  <a class="skip-link" href="#main-content">Zum Inhalt springen</a>
+
   <header class="topbar">
-    <a href="index.html" class="topbar__brand">M³GIM</a>
+    <a class="topbar__brand" href="index.html">M³GIM</a>
     <span class="topbar__subtitle">Teilnachlass Ira Malaniuk — UAKUG/NIM</span>
-    <a href="projekt.html" class="topbar__badge">Research Preview</a>
+    <a class="topbar__badge" href="projekt.html">Research Preview</a>
     <nav class="topbar__info" aria-label="Informationsseiten">
       <a href="about.html">Über</a>
       <a href="projekt.html">Projekt</a>
@@ -30,7 +91,7 @@
     </nav>
   </header>
 
-  <main class="info-main">
+  <main class="info-main" id="main-content">
     <article class="page page--model">
 
       <header class="page__header">
@@ -192,22 +253,22 @@
       <section class="page__section">
         <h2>Klassen</h2>
         <div class="term">
-          <h4 class="term__head">
+          <h3 class="term__head">
             <code>m3gim-ontology:MusicalWork</code>
             <span class="term__label">Musikalisches Werk</span>
             <span class="term__gloss">Musical work</span>
-          </h4>
+          </h3>
           <p class="term__definition">Musikalisches Werk, das im Bestand nachgewiesen ist, etwa eine Oper, ein Lied, ein Oratorium oder ein Konzert. Es wird über den Werkindex identifiziert und trägt den Komponisten als Zusatzangabe.</p>
           <dl class="term__facets">
             <dt>Oberklasse</dt><dd><code>rico:Thing</code></dd>
           </dl>
         </div>
         <div class="term">
-          <h4 class="term__head">
+          <h3 class="term__head">
             <code>m3gim-ontology:Performance</code>
             <span class="term__label">Aufführung</span>
             <span class="term__gloss">Performance</span>
-          </h4>
+          </h3>
           <p class="term__definition">Ereignis, in dem ein musikalisches Werk realisiert wird. Die Klasse ist zugleich der Reifikationsknoten für die Komposite aus Bühnenrolle und Interpret sowie aus Datum und Werk.</p>
           <dl class="term__facets">
             <dt>Oberklasse</dt><dd><code>rico:Event</code></dd>
@@ -216,11 +277,11 @@
           <p class="term__note">Die Aufführung trägt ihre Datierung weiterhin unmittelbar, jetzt als m3gim-ontology:atDate. An diesem Knoten ist das Datum die Datierung des Ereignisses selbst; eine Rollenangabe hätte dort keinen Gegenstand.</p>
         </div>
         <div class="term">
-          <h4 class="term__head">
+          <h3 class="term__head">
             <code>m3gim-ontology:FramingEvent</code>
             <span class="term__label">Rahmenveranstaltung</span>
             <span class="term__gloss">Framing event</span>
-          </h4>
+          </h3>
           <p class="term__definition">Übergeordnete Veranstaltung, in deren Rahmen einzelne Aufführungen stattfinden, etwa Festspiele, eine Konzertreihe oder eine Spielzeit.</p>
           <dl class="term__facets">
             <dt>Oberklasse</dt><dd><code>rico:Event</code></dd>
@@ -228,11 +289,11 @@
           <p class="term__note">Der frühere Name m3gim:PerformanceEvent sagte Aufführungsereignis und meinte die übergeordnete Veranstaltung, was ihn gegen m3gim-ontology:Performance austauschbar erscheinen ließ. Der neue Name folgt dem englischen Label des Terms.</p>
         </div>
         <div class="term">
-          <h4 class="term__head">
+          <h3 class="term__head">
             <code>m3gim-ontology:Annotation</code>
             <span class="term__label">Annotation</span>
             <span class="term__gloss">Annotation</span>
-          </h4>
+          </h3>
           <p class="term__definition">Jede Datierung, Verortung und Detailangabe hängt als eigener Annotationsknoten am Subjekt, trägt ihren Wert in einer festen Wertproperty und ihre erfasste Rolle in einer einzigen Rollenproperty aus dem gemeinsamen Vokabular, sodass kein Property-Name mehr eine Rolle ausdrückt und ein Konsument alle Datierungen eines Dokuments über eine Schleife erreicht.</p>
           <p class="term__note">Fehlt der Ort, ist es eine reine Datierung; fehlt das Datum, eine reine Verortung.</p>
           <p class="term__note">Die Klasse tritt an die Stelle von m3gim:SpatiotemporalEvent, m3gim:DatedEvent und m3gim:DetailAnnotation. Die beiden ersten trugen rdfs:subClassOf rico:Event. Diese Kante entfällt, weil die Klasse jetzt auch Finanzposten trägt, die kein Ereignis sind. Die Anschlusskanten auf RiC-O bleiben auf Property-Ebene bestehen, m3gim-ontology:atDate als rdfs:subPropertyOf rico:date und m3gim-ontology:atPlace als rdfs:subPropertyOf rico:hasOrHadLocation.</p>
@@ -241,11 +302,11 @@
           <p class="term__note">Wo die Quelle keine Rolle führt, trägt der Knoten keine. Eine aus der Stellung erschlossene Rolle entsteht an keiner Stelle.</p>
         </div>
         <div class="term">
-          <h4 class="term__head">
+          <h3 class="term__head">
             <code>m3gim-ontology:StageRole</code>
             <span class="term__label">Bühnenrolle</span>
             <span class="term__gloss">Stage role</span>
-          </h4>
+          </h3>
           <p class="term__definition">Partie eines musikalischen Werks als eigenständige, wiederverwendete Entität. Die Identität ist ein deterministischer ASCII-Slug, gleichnamige Partien werden dedupliziert.</p>
           <dl class="term__facets">
             <dt>Oberklasse</dt><dd><code>rico:Thing</code></dd>
@@ -256,11 +317,11 @@
       <section class="page__section">
         <h2>Object Properties</h2>
         <div class="term">
-          <h4 class="term__head">
+          <h3 class="term__head">
             <code>m3gim-ontology:hasAssociatedAgent</code>
             <span class="term__label">hat beteiligten Akteur</span>
             <span class="term__gloss">has associated agent</span>
-          </h4>
+          </h3>
           <p class="term__definition">Verbindet eine Archivressource mit einer Person, einer Körperschaft oder einem Ensemble, das in ihr eine Rolle einnimmt. Die Art der Beteiligung steht als Wert von m3gim-ontology:role am verbundenen Knoten.</p>
           <dl class="term__facets">
             <dt>Domain</dt><dd><code>rico:Record</code> <code>rico:RecordSet</code></dd>
@@ -269,11 +330,11 @@
           <p class="term__note">Bewusst ohne rdfs:subPropertyOf. RiC-O 1.1 führt für mehrere der hier gebündelten Rollen eigene Object Properties, nämlich rico:hasCreator, rico:hasAddressee, rico:hasSender, rico:hasReceiver und rico:hasPublisher. Ob die Rollenwerte verfasser, adressat, absender, empfänger und herausgeber auf diese abgebildet werden sollen, ist eine offene Frage an das Projekt; eine Sammelkante kann keine von ihnen korrekt spezialisieren.</p>
         </div>
         <div class="term">
-          <h4 class="term__head">
+          <h3 class="term__head">
             <code>m3gim-ontology:hasPerformance</code>
             <span class="term__label">hat Aufführung</span>
             <span class="term__gloss">has performance</span>
-          </h4>
+          </h3>
           <p class="term__definition">Verbindet eine Archivressource mit einer Aufführung, die sie bezeugt.</p>
           <dl class="term__facets">
             <dt>Domain</dt><dd><code>rico:Record</code> <code>rico:RecordSet</code></dd>
@@ -282,11 +343,11 @@
           </dl>
         </div>
         <div class="term">
-          <h4 class="term__head">
+          <h3 class="term__head">
             <code>m3gim-ontology:hasAnnotation</code>
             <span class="term__label">hat Annotation</span>
             <span class="term__gloss">has annotation</span>
-          </h4>
+          </h3>
           <p class="term__definition">Verbindet eine Archivressource mit einem Annotationsknoten, der eine Datierung, eine Verortung, eine Detailangabe oder einen Finanzposten trägt, den sie bezeugt.</p>
           <dl class="term__facets">
             <dt>Domain</dt><dd><code>rico:Record</code> <code>rico:RecordSet</code></dd>
@@ -296,11 +357,11 @@
           <p class="term__note">Ein Konsument liest alle Datierungen eines Dokuments über eine Schleife über diese Kante und nimmt Wert und Rolle ab.</p>
         </div>
         <div class="term">
-          <h4 class="term__head">
+          <h3 class="term__head">
             <code>m3gim-ontology:hasDetail</code>
             <span class="term__label">hat Detailangabe</span>
             <span class="term__gloss">has detail</span>
-          </h4>
+          </h3>
           <p class="term__definition">Verbindet ein Dokument mit einer Detailangabe der dritten Erschließungsschicht.</p>
           <dl class="term__facets">
             <dt>Domain</dt><dd><code>rico:Record</code></dd>
@@ -311,11 +372,11 @@
           <p class="term__note">Die Kante bleibt als Unterproperty von m3gim-ontology:hasAnnotation erhalten, obwohl Zielknoten und Aspektknoten jetzt dieselbe Klasse tragen. Sie hält den Finanzposten in einem Tripel adressierbar und erhält den Zugriffspfad, den das Frontend heute liest.</p>
         </div>
         <div class="term">
-          <h4 class="term__head">
+          <h3 class="term__head">
             <code>m3gim-ontology:hasPerformer</code>
             <span class="term__label">hat Mitwirkende</span>
             <span class="term__gloss">has performer</span>
-          </h4>
+          </h3>
           <p class="term__definition">Verbindet eine Aufführung mit einer Person, die an ihr mitwirkt.</p>
           <dl class="term__facets">
             <dt>Domain</dt><dd><code>m3gim-ontology:Performance</code></dd>
@@ -325,11 +386,11 @@
           <p class="term__note">Die Funktion der Mitwirkung, also Gesang, Dirigat oder Regie, ist an dieser Kante nicht ausgedrückt. Sie steht am Personenknoten in m3gim-ontology:role und gilt damit im Dokumentkontext. Der Aufführung ist sie nicht zugeordnet.</p>
         </div>
         <div class="term">
-          <h4 class="term__head">
+          <h3 class="term__head">
             <code>m3gim-ontology:performanceOf</code>
             <span class="term__label">ist Aufführung von</span>
             <span class="term__gloss">is performance of</span>
-          </h4>
+          </h3>
           <p class="term__definition">Verbindet eine Aufführung mit dem musikalischen Werk, das in ihr realisiert wird.</p>
           <dl class="term__facets">
             <dt>Domain</dt><dd><code>m3gim-ontology:Performance</code></dd>
@@ -337,11 +398,11 @@
           </dl>
         </div>
         <div class="term">
-          <h4 class="term__head">
+          <h3 class="term__head">
             <code>m3gim-ontology:hasStageRole</code>
             <span class="term__label">hat Bühnenrolle</span>
             <span class="term__gloss">has stage role</span>
-          </h4>
+          </h3>
           <p class="term__definition">Verbindet eine Aufführung mit einer in ihr besetzten Partie.</p>
           <dl class="term__facets">
             <dt>Domain</dt><dd><code>m3gim-ontology:Performance</code></dd>
@@ -349,11 +410,11 @@
           </dl>
         </div>
         <div class="term">
-          <h4 class="term__head">
+          <h3 class="term__head">
             <code>m3gim-ontology:atPlace</code>
             <span class="term__label">am Ort</span>
             <span class="term__gloss">at place</span>
-          </h4>
+          </h3>
           <p class="term__definition">Verortet einen Annotationsknoten. Fehlt die Angabe, trägt der Knoten eine reine Datierung oder einen reinen Finanzposten.</p>
           <dl class="term__facets">
             <dt>Domain</dt><dd><code>m3gim-ontology:Annotation</code></dd>
@@ -362,11 +423,11 @@
           </dl>
         </div>
         <div class="term">
-          <h4 class="term__head">
+          <h3 class="term__head">
             <code>m3gim-ontology:role</code>
             <span class="term__label">Rolle</span>
             <span class="term__gloss">role</span>
-          </h4>
+          </h3>
           <p class="term__definition">Rolle, in der die verbundene Entität oder der Annotationsknoten in dem Dokument steht, aus dem die Verknüpfung stammt. Der Wert stammt aus dem Vokabular m3gim-vocab.</p>
           <dl class="term__facets">
             <dt>Domain</dt><dd><code>rico:Person</code> <code>rico:CorporateBody</code> <code>rico:Group</code> <code>rico:Place</code> <code>m3gim-ontology:MusicalWork</code> <code>m3gim-ontology:FramingEvent</code> <code>m3gim-ontology:Annotation</code></dd>
@@ -377,11 +438,11 @@
           <p class="term__note">Die Rolle gilt nur im Kontext des jeweiligen Dokuments, hängt aber am Entitätsknoten. Trägt dieser Knoten eine Wikidata-IRI, geht der Dokumentkontext beim Zusammenführen zu RDF verloren, und dieselbe global identifizierte Entität erhält einander ausschließende Rollen. Wie die Rolle an das Dokument gebunden wird, ist mit dem Projekt zu klären.</p>
         </div>
         <div class="term">
-          <h4 class="term__head">
+          <h3 class="term__head">
             <code>m3gim-ontology:hasAgentRelation</code>
             <span class="term__label">hat Akteursbeziehung</span>
             <span class="term__gloss">has agent relation</span>
-          </h4>
+          </h3>
           <p class="term__definition">Verbindet eine Archivressource mit einer n-är reifizierten AgRelOn-Beziehung zwischen der Nachlassbildnerin und einem zweiten Akteur, für die diese Ressource der Beleg ist.</p>
           <dl class="term__facets">
             <dt>Domain</dt><dd><code>rico:Record</code> <code>rico:RecordSet</code></dd>
@@ -390,20 +451,20 @@
           <p class="term__note">Die Beziehung ist am belegenden Dokument aufgehängt und trägt dieses zugleich als agrelon:metadataProvenance. Damit ist die Provenienz ein Selbstverweis. Ob die Beziehungen stattdessen als eigene Graphknoten mit Verweis auf ihre Belege geführt werden sollen, ist offen.</p>
         </div>
         <div class="term">
-          <h4 class="term__head">
+          <h3 class="term__head">
             <code>m3gim-ontology:xlsxSource</code>
             <span class="term__label">hat Quellzelle</span>
             <span class="term__gloss">has source cell</span>
-          </h4>
+          </h3>
           <p class="term__definition">Verbindet eine aus der Erfassungstabelle abgeleitete Entität mit der Adresse ihrer Ursprungszeile. Die Angabe ist technische Rückverfolgbarkeit für Pipeline und Review, keine wissenschaftliche Quellenangabe.</p>
           <p class="term__note">Ohne rdfs:domain, weil die Property an Dokumenten, Annotationen, Aufführungen, Beziehungen und an allen aus einer Verknüpfungszeile abgeleiteten Entitätsknoten steht. Ohne rdfs:range, weil der Container ein typloser Knoten ist. Eine eigene Klasse für den Container würde ihn adressierbar und validierbar machen.</p>
         </div>
         <div class="term">
-          <h4 class="term__head">
+          <h3 class="term__head">
             <code>m3gim-ontology:datingScope</code>
             <span class="term__label">Bezugsebene der Datierung</span>
             <span class="term__gloss">dating scope</span>
-          </h4>
+          </h3>
           <p class="term__definition">Was eine Datierung datiert: das Objekt selbst, ein von ihm bezeugtes Ereignis, eine bloße Erwähnung, einen umfassenden Zeitraum oder eine negierte Behauptung. Steht am Rollenbegriff und gilt damit für jede Datierung, die diese Rolle trägt.</p>
           <dl class="term__facets">
             <dt>Domain</dt><dd><code>skos:Concept</code></dd>
@@ -1020,50 +1081,50 @@
         <h2>Collections</h2>
         <p>Sammlungen nach dem Ziel, an dem eine Rolle im Datensatz auftritt. Eine Rolle kann in mehreren Sammlungen stehen, weil dieselbe Spalte verschiedene Zieltypen bedient.</p>
         <div class="term">
-          <h4 class="term__head"><code>m3gim-vocab:rolesAtPersons</code><span class="term__label">Rollen an Personen</span><span class="term__gloss">roles at persons</span></h4>
+          <h3 class="term__head"><code>m3gim-vocab:rolesAtPersons</code><span class="term__label">Rollen an Personen</span><span class="term__gloss">roles at persons</span></h3>
           <p class="term__definition">Rollen, die im Datensatz an einer Person stehen.</p>
           <p class="term__members"><code>m3gim-vocab:author</code> <code>m3gim-vocab:addressee</code> <code>m3gim-vocab:sender</code> <code>m3gim-vocab:recipient</code> <code>m3gim-vocab:signatory</code> <code>m3gim-vocab:depicted</code> <code>m3gim-vocab:artistAgent</code> <code>m3gim-vocab:commissioner</code> <code>m3gim-vocab:dedicatee</code> <code>m3gim-vocab:holder</code> <code>m3gim-vocab:publisher</code> <code>m3gim-vocab:contractingParty</code> <code>m3gim-vocab:singer</code> <code>m3gim-vocab:conductor</code> <code>m3gim-vocab:director</code> <code>m3gim-vocab:composer</code> <code>m3gim-vocab:librettist</code> <code>m3gim-vocab:translator</code> <code>m3gim-vocab:arranger</code> <code>m3gim-vocab:chorusMaster</code> <code>m3gim-vocab:choreographer</code> <code>m3gim-vocab:setDesigner</code> <code>m3gim-vocab:costumeDesigner</code> <code>m3gim-vocab:productionDesigner</code> <code>m3gim-vocab:stageManager</code> <code>m3gim-vocab:technicalDirector</code> <code>m3gim-vocab:unspecifiedDirection</code> <code>m3gim-vocab:lightingTechnician</code> <code>m3gim-vocab:makeupArtist</code> <code>m3gim-vocab:repetiteur</code> <code>m3gim-vocab:assistantDirector</code> <code>m3gim-vocab:photographer</code> <code>m3gim-vocab:performer</code> <code>m3gim-vocab:protagonist</code> <code>m3gim-vocab:audienceMember</code> <code>m3gim-vocab:organizer</code> <code>m3gim-vocab:performance</code> <code>m3gim-vocab:mentioned</code></p>
         </div>
         <div class="term">
-          <h4 class="term__head"><code>m3gim-vocab:rolesAtCorporateBodies</code><span class="term__label">Rollen an Institutionen</span><span class="term__gloss">roles at corporate bodies</span></h4>
+          <h3 class="term__head"><code>m3gim-vocab:rolesAtCorporateBodies</code><span class="term__label">Rollen an Institutionen</span><span class="term__gloss">roles at corporate bodies</span></h3>
           <p class="term__definition">Rollen, die im Datensatz an einer Körperschaft stehen.</p>
           <p class="term__members"><code>m3gim-vocab:author</code> <code>m3gim-vocab:addressee</code> <code>m3gim-vocab:recipient</code> <code>m3gim-vocab:intermediary</code> <code>m3gim-vocab:publisher</code> <code>m3gim-vocab:contractingParty</code> <code>m3gim-vocab:employer</code> <code>m3gim-vocab:organizer</code> <code>m3gim-vocab:educationalInstitution</code> <code>m3gim-vocab:airline</code> <code>m3gim-vocab:performance</code> <code>m3gim-vocab:guestPerformance</code> <code>m3gim-vocab:framingEvent</code> <code>m3gim-vocab:receiving</code> <code>m3gim-vocab:performancePlace</code> <code>m3gim-vocab:destinationPlace</code> <code>m3gim-vocab:mentioned</code></p>
         </div>
         <div class="term">
-          <h4 class="term__head"><code>m3gim-vocab:rolesAtGroups</code><span class="term__label">Rollen an Ensembles</span><span class="term__gloss">roles at groups</span></h4>
+          <h3 class="term__head"><code>m3gim-vocab:rolesAtGroups</code><span class="term__label">Rollen an Ensembles</span><span class="term__gloss">roles at groups</span></h3>
           <p class="term__definition">Rollen, die im Datensatz an einer Gruppe stehen.</p>
           <p class="term__members"><code>m3gim-vocab:singer</code> <code>m3gim-vocab:performer</code> <code>m3gim-vocab:performance</code> <code>m3gim-vocab:guestPerformance</code> <code>m3gim-vocab:mentioned</code></p>
         </div>
         <div class="term">
-          <h4 class="term__head"><code>m3gim-vocab:rolesAtPlaces</code><span class="term__label">Rollen an Orten</span><span class="term__gloss">roles at places</span></h4>
+          <h3 class="term__head"><code>m3gim-vocab:rolesAtPlaces</code><span class="term__label">Rollen an Orten</span><span class="term__gloss">roles at places</span></h3>
           <p class="term__definition">Rollen, die im Datensatz an einer Verortung stehen.</p>
           <p class="term__note">Verortung und Datierung hängen seit der Zusammenführung an derselben Klasse. Die beiden Sammlungen unterscheiden sich jetzt danach, welche Wertproperty am Annotationsknoten belegt ist, m3gim-ontology:atPlace gegen m3gim-ontology:atDate.</p>
           <p class="term__members"><code>m3gim-vocab:dressRehearsal</code> <code>m3gim-vocab:recording</code> <code>m3gim-vocab:reception</code> <code>m3gim-vocab:guestPerformance</code> <code>m3gim-vocab:framingEvent</code> <code>m3gim-vocab:creation</code> <code>m3gim-vocab:dispatch</code> <code>m3gim-vocab:receiving</code> <code>m3gim-vocab:departure</code> <code>m3gim-vocab:performancePlace</code> <code>m3gim-vocab:destinationPlace</code> <code>m3gim-vocab:contractPlace</code> <code>m3gim-vocab:residencePlace</code> <code>m3gim-vocab:assignment</code> <code>m3gim-vocab:mentioned</code></p>
         </div>
         <div class="term">
-          <h4 class="term__head"><code>m3gim-vocab:mobilityPlaceRoles</code><span class="term__label">Mobilitäts-Ortsrollen</span><span class="term__gloss">mobility place roles</span></h4>
+          <h3 class="term__head"><code>m3gim-vocab:mobilityPlaceRoles</code><span class="term__label">Mobilitäts-Ortsrollen</span><span class="term__gloss">mobility place roles</span></h3>
           <p class="term__definition">Ortsrollen, die für sich genommen ein Mobilitätsereignis belegen. Sie erzeugen zusätzlich zur Ortsreferenz einen Annotationsknoten ohne Datum, weil die Quelle keines hergibt und keines geraten wird.</p>
           <p class="term__note">Einzige Sammlung, die die Pipeline liest.</p>
           <p class="term__members"><code>m3gim-vocab:dispatch</code> <code>m3gim-vocab:receiving</code> <code>m3gim-vocab:departure</code> <code>m3gim-vocab:destinationPlace</code> <code>m3gim-vocab:contractPlace</code></p>
         </div>
         <div class="term">
-          <h4 class="term__head"><code>m3gim-vocab:rolesAtWorks</code><span class="term__label">Rollen an Werken</span><span class="term__gloss">roles at works</span></h4>
+          <h3 class="term__head"><code>m3gim-vocab:rolesAtWorks</code><span class="term__label">Rollen an Werken</span><span class="term__gloss">roles at works</span></h3>
           <p class="term__definition">Rollen, die im Datensatz an einem musikalischen Werk stehen.</p>
           <p class="term__members"><code>m3gim-vocab:performance</code> <code>m3gim-vocab:premiere</code> <code>m3gim-vocab:revival</code> <code>m3gim-vocab:galaPerformance</code> <code>m3gim-vocab:rehearsal</code> <code>m3gim-vocab:recording</code> <code>m3gim-vocab:guestPerformance</code> <code>m3gim-vocab:repertoire</code> <code>m3gim-vocab:mentioned</code></p>
         </div>
         <div class="term">
-          <h4 class="term__head"><code>m3gim-vocab:rolesAtFramingEvents</code><span class="term__label">Rollen an Rahmenveranstaltungen</span><span class="term__gloss">roles at framing events</span></h4>
+          <h3 class="term__head"><code>m3gim-vocab:rolesAtFramingEvents</code><span class="term__label">Rollen an Rahmenveranstaltungen</span><span class="term__gloss">roles at framing events</span></h3>
           <p class="term__definition">Rollen, die im Datensatz an einer Rahmenveranstaltung stehen.</p>
           <p class="term__members"><code>m3gim-vocab:organizer</code> <code>m3gim-vocab:performance</code> <code>m3gim-vocab:recording</code> <code>m3gim-vocab:framingEvent</code> <code>m3gim-vocab:performancePlace</code> <code>m3gim-vocab:mentioned</code></p>
         </div>
         <div class="term">
-          <h4 class="term__head"><code>m3gim-vocab:rolesAtDates</code><span class="term__label">Datumsrollen</span><span class="term__gloss">roles at dates</span></h4>
+          <h3 class="term__head"><code>m3gim-vocab:rolesAtDates</code><span class="term__label">Datumsrollen</span><span class="term__gloss">roles at dates</span></h3>
           <p class="term__definition">Rollen, die im Datensatz an einer Datierung stehen.</p>
           <p class="term__note">Die frühere Aufteilung dieser Rollen auf typisierte Datumsproperties und eine Auffangklasse ist entfallen. Jede Datierung hängt jetzt als Annotationsknoten am Dokument und trägt ihre Rolle in m3gim-ontology:role.</p>
           <p class="term__members"><code>m3gim-vocab:performance</code> <code>m3gim-vocab:premiere</code> <code>m3gim-vocab:rehearsal</code> <code>m3gim-vocab:dressRehearsal</code> <code>m3gim-vocab:recording</code> <code>m3gim-vocab:reception</code> <code>m3gim-vocab:framingEvent</code> <code>m3gim-vocab:creation</code> <code>m3gim-vocab:dispatch</code> <code>m3gim-vocab:receiving</code> <code>m3gim-vocab:departure</code> <code>m3gim-vocab:issueDate</code> <code>m3gim-vocab:publicationDate</code> <code>m3gim-vocab:broadcastDate</code> <code>m3gim-vocab:transferDate</code> <code>m3gim-vocab:conversationDate</code> <code>m3gim-vocab:wageConfirmationDate</code> <code>m3gim-vocab:installmentPeriod</code> <code>m3gim-vocab:season</code> <code>m3gim-vocab:rehearsalStartDate</code> <code>m3gim-vocab:mentioned</code></p>
         </div>
         <div class="term">
-          <h4 class="term__head"><code>m3gim-vocab:rolesAtFinancialDetails</code><span class="term__label">Finanzrollen</span><span class="term__gloss">roles at financial details</span></h4>
+          <h3 class="term__head"><code>m3gim-vocab:rolesAtFinancialDetails</code><span class="term__label">Finanzrollen</span><span class="term__gloss">roles at financial details</span></h3>
           <p class="term__definition">Rollen, die die Art eines Finanzpostens bezeichnen.</p>
           <p class="term__members"><code>m3gim-vocab:performer</code> <code>m3gim-vocab:performanceFee</code> <code>m3gim-vocab:commission</code> <code>m3gim-vocab:totalRemuneration</code> <code>m3gim-vocab:travelExpenses</code> <code>m3gim-vocab:broadcastFee</code> <code>m3gim-vocab:mentioned</code></p>
         </div>
@@ -1073,13 +1134,16 @@
   </main>
 
   <footer class="app-footer">
-    <a href="https://www.kug.ac.at" target="_blank" rel="noopener">KUG Graz</a>
-    <span>·</span>
-    <a href="impressum.html">Impressum</a>
-    <span>·</span>
-    <a href="https://github.com/DigitalHumanitiesCraft/m3gim" target="_blank" rel="noopener">GitHub</a>
-    <span>·</span>
-    <a href="https://lisa.gerda-henkel-stiftung.de/digitale_geschichte_pollin" target="_blank" rel="noopener">Promptotype</a>
+    <div class="app-footer__group">
+      <a class="app-footer__kug" href="https://www.kug.ac.at" target="_blank" rel="noopener" data-tip="Universität für Musik und darstellende Kunst Graz, Universitätsarchiv"><img class="app-footer__mark" src="img/kug-logo.svg" alt="" width="14" height="14">KUG Graz</a>
+      <a href="impressum.html">Impressum</a>
+    </div>
+    <div class="app-footer__group">
+      <a href="https://github.com/DigitalHumanitiesCraft/m3gim" target="_blank" rel="noopener" data-tip="Repository auf GitHub, Code unter MIT-Lizenz">Repository</a>
+      <a href="https://github.com/DigitalHumanitiesCraft/Promptotyping" target="_blank" rel="noopener" data-tip="Promptotyping, die Methode hinter dieser Anwendung, auf GitHub">Promptotyping</a>
+      <a href="https://dhcraft.org" target="_blank" rel="noopener" data-tip="Digital Humanities Craft, Konzeption und Umsetzung">DHCraft</a>
+      <a class="app-footer__cc" href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener" data-tip="Daten, Texte und Dokumentation unter Creative Commons Attribution 4.0"><img class="app-footer__mark" src="img/cc.svg" alt="" width="14" height="14"><img class="app-footer__mark" src="img/cc-by.svg" alt="" width="14" height="14">CC BY 4.0</a>
+    </div>
   </footer>
 
 </body>

@@ -39,7 +39,7 @@ const TYPE_BY_ID = new Map(SICHTEN.map(t => [t.id, t]));
 // Die Sicht steht am Beleg: die Datenschicht loest sie aus der Concept-Id der
 // Rolle auf. Ohne Sicht (Entstehung, Erwaehnung, Auftrag) faellt der Beleg in
 // den Kontext-Eimer.
-export const sichtOf = o => o.cluster || KONTEXT_ID;
+const sichtOf = o => o.cluster || KONTEXT_ID;
 export const colorOf = id => (TYPE_BY_ID.get(id) || TYPE_BY_ID.get(KONTEXT_ID)).color;
 export const hasGeo = o => typeof o.placeLat === 'number' && typeof o.placeLon === 'number';
 

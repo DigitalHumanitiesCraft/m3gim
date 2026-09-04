@@ -1,15 +1,15 @@
-/* Die eine View-Sidebar: Geruest, Ergebniszeile, Facetten und die deklarativen
-   Controls, alle aus docs/js/ui/sidebar.js.
+/* The one view sidebar: shell, result line, Facetten and the declarative
+   controls, all built by docs/js/ui/sidebar.js.
 
-   Die .vs-*-Klassen stylen Geruest und Controls, die .fs-*-Klassen die Facette
-   mit ihren Chips und Vorschlaegen. Die Ergebniszeile ist kein eigener Block
-   mehr, sie ist die Wurzelzeile des Dokumenttyp-Baums. View-spezifische Visuals (Karten-SVG,
-   Netzwerk-Knoten) bleiben im jeweiligen View-CSS. Chip, Legende und
-   Leerzustand kommen als Primitive aus components.css, hier stehen nur die
-   Abweichungen. Tokens aus variables.css; Trennlinien nur, wo Abstand nicht
-   traegt (design.md Regel 11), Sidebar-Sektionen tragen deshalb keine. */
+   .vs-* carries shell and controls, .fs-* the Facette with its chips and
+   suggestions. The result line is no block of its own any more, it is the root
+   row of the Dokumenttyp tree. View-specific visuals (map SVG, Netzwerk nodes)
+   stay in their own view file. Chip, legend and empty state come from
+   components.css as primitives; only the deviations stand here. Lines only
+   where spacing does not carry (design.md rule 11), so sidebar sections have
+   none. */
 
-/* --- Geruest ------------------------------------------------------------- */
+/* Shell */
 
 /* The container sits on the parent, not on the shell: an element cannot query
    the container it establishes itself, and the shell's own column switch is
@@ -28,26 +28,79 @@
 }
 
 .view-sidebar {
-  /* Einziger getoenter Bereich der Ansicht (design.md Regel 2). Die warme
-     Haarlinie traegt die Kante zur weissen Arbeitsflaeche. */
+  /* The only tinted area of a view (design.md rule 2). */
   background: var(--surface-2);
-  border-inline-end: 1px solid var(--line-soft);
+  /* The weakest line vanished on a screen without a scrollbar, so the column no
+     longer read as its own area; one step up to --line (Projektleitung,
+     2026-09-04, raises the E-199 edge). */
+  border-inline-end: 1px solid var(--line);
   padding: var(--space-3) var(--space-3) var(--space-4);
   overflow-y: auto;
+  /* The hidden ::after of every data-tip in the column is a real, nowrap box at
+     opacity 0 and still counts into the scrollable overflow, which gave the
+     column a horizontal scrollbar of its own (Projektleitung, 2026-09-04).
+     Clipping the axis is the fix at the root; every tooltip in here carries
+     data-tip-wrap and the width cap below, so none of them is cut off. */
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
   min-width: 0;
 }
 
+/* Inside the clipped column a tooltip must fit the column, not the 280 px the
+   shared cap allows. A fixed cap, not a percentage: an inline facet title is
+   only about 96 px wide and a percentage would fold its tooltip into a column
+   a few characters wide. Every one of them is left-aligned, so the cap plus
+   the column padding stays inside the 271 px. */
+.view-sidebar [data-tip]::after {
+  max-width: 230px;
+}
+
 .view-main {
   position: relative;
-  min-width: 0; /* Grid-Overflow-Fix: Canvas darf schrumpfen */
-  /* Weisse Arbeitsflaeche in jeder Ansicht; getoent ist allein die Spalte. */
+  min-width: 0; /* grid overflow fix: the canvas may shrink */
+  /* White work area in every view; only the column is tinted. */
   background: var(--surface);
 }
 
-/* --- Sektion ------------------------------------------------------------- */
+/* Only the stacked layout below 900px shows it; beside the work area the
+   column is always open and a toggle would be a control without a purpose.
+   The button belongs to the shell, not to the column: it has to stay reachable
+   once the column is gone. */
+.view-shell__sidebar-toggle {
+  display: none;
+  align-items: center;
+  gap: var(--space-1-5);
+  grid-column: 1 / -1;
+  min-block-size: 32px;
+  padding: var(--space-1-5) var(--space-3);
+  background: var(--surface-2);
+  border: none;
+  border-block-end: 1px solid var(--line);
+  font-family: inherit;
+  font-size: var(--text-2xs);
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text-tertiary);
+  text-align: start;
+  cursor: pointer;
+}
+
+.view-shell__sidebar-toggle:hover { color: var(--accent); }
+
+.view-shell__sidebar-toggle-icon {
+  flex: 0 0 auto;
+  transition: transform var(--transition-fast);
+  transform: rotate(90deg);
+}
+
+.view-shell--sidebar-collapsed .view-shell__sidebar-toggle-icon {
+  transform: none;
+}
+
+/* Section */
 
 .vs-section {
   display: flex;
@@ -55,9 +108,9 @@
   gap: var(--space-1);
 }
 
-/* Genau drei Linien traegt die Spalte: vor den geteilten Facetten, vor den
-   ansichtseigenen Reglern und vor der Legende (design.md Regel 11). Innerhalb
-   eines Blocks trennt nur Abstand. */
+/* The column carries exactly three lines: before the shared Facetten, before
+   the view's own sliders and before the legend (design.md rule 11). Inside a
+   block only spacing separates. */
 .vs-section--rule {
   border-top: 1px solid var(--line, var(--border-color-light));
   padding-top: var(--space-3);
@@ -75,7 +128,7 @@
   align-items: center;
   gap: var(--space-1);
   width: 100%;
-  font-size: 10px;
+  font-size: var(--text-2xs);
   font-weight: var(--weight-semibold);
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -87,22 +140,13 @@
   text-align: left;
 }
 
-/* Der Titel ist zugleich das Label des Eingabefelds und traegt den Zaehlstand
-   der offenen Facetten; aktiv nimmt er die Akzentfarbe an. */
+/* The title is also the input's label and carries the count of the open
+   Facetten; active it takes the accent. */
 .vs-section__title--active { color: var(--accent); }
 
-/* Der Punkt der Inhaltsfamilie steht vor dem Titel, in derselben Form wie am
-   Blocktitel des Detail (.ersch-dot in components.css). */
-.vs-section__title .ersch-dot { flex: 0 0 auto; }
-
-/* Rolle belongs to Person but is not a fifth content family. */
-.vs-section__title .ersch-dot--on.ersch-dot--person.ersch-dot--hollow {
-  background: transparent;
-}
-
-/* Offene Facette als eine Zeile: Titel links in einer festen Spalte, breit
-   genug fuer das laengste Label ("Institution") im Titelsatz, das Eingabefeld
-   fuellt den Rest. Zeitraum und der Dokumenttyp-Baum bleiben gestapelt. */
+/* An open Facette on one line: title left in a fixed column, wide enough for
+   the longest label ("Institution") in the title setting, the input fills the
+   rest. Zeitraum and the Dokumenttyp tree stay stacked. */
 .vs-section--inline {
   display: grid;
   grid-template-columns: 96px minmax(0, 1fr);
@@ -123,7 +167,7 @@
 }
 .vs-section__title--collapsed .vs-section__chevron { transform: none; }
 
-/* --- Ergebniszeile: die Wurzel des Dokumenttyp-Baums --------------------- */
+/* Result line: the root of the Dokumenttyp tree */
 
 .vs-status {
   display: flex;
@@ -131,17 +175,17 @@
   gap: var(--space-2);
 }
 
-/* Die Zahl des Schnitts steht in der Zeilenform der Typzeilen darunter, weil
-   sie deren Wurzel ist: "Dokumente" und die vier DFT-Gruppen als seine Kinder.
-   Waehlbar ist sie nicht, deshalb kein Zeiger und keine Hover-Flaeche. */
+/* The number of the cut takes the row form of the type rows below it, because
+   it is their root: "Dokumente" with the four DFT groups as its children. It is
+   not selectable, hence no pointer and no hover field. */
 .vs-status__count {
   cursor: default;
 }
-/* Als Sektionstitel des Dokumenttyp-Blocks traegt das Wort denselben Satz wie
-   die Facettentitel (.vs-section__title); .fs-option--group setzt es sonst nur
-   fett. Die Zahl rechts bleibt, wie sie ist. */
+/* As the section title of the Dokumenttyp block the word takes the same
+   setting as the Facette titles (.vs-section__title); .fs-option--group would
+   only set it bold. The number on the right stays as it is. */
 .fs-option.vs-status__count .fs-option__label {
-  font-size: 10px;
+  font-size: var(--text-2xs);
   font-weight: var(--weight-semibold);
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -151,8 +195,8 @@
   background: transparent;
   border-color: transparent;
 }
-/* Die Zahl bricht nicht um: die Spalte darf ihre Hoehe nicht aendern, wenn ein
-   Filter aus "187" ein "161 von 187" macht. */
+/* The number does not wrap: the column must not change height when a filter
+   turns "187" into "161 von 187". */
 .vs-status__count .fs-option__count {
   flex: 0 0 auto;
   font-size: var(--text-xs);
@@ -161,16 +205,16 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* Die DFT-Gruppen ruecken unter der Wurzelzeile ein, sie sind ihre Kinder. */
+/* The DFT groups indent under the root row, they are its children. */
 .vs-section--dokumente .fs-tree { padding-inline-start: 10px; }
 
-/* --- Filterstreifen ueber den Daten ------------------------------------- */
+/* Filter strip above the data */
 
-/* Die aktiven Werte und der Weg zurueck stehen im Hauptbereich, nicht in der
-   Spalte: dort wuerden sie bei jeder Filteraenderung alles darunter
-   verschieben. Kein Grund, kein Rahmen, nur Abstand; leer nimmt der Streifen
-   keinen Platz. Der weite Spaltenabstand trennt die Facettengruppen, deren
-   Gruppierung die Semantik traegt (ODER innerhalb, UND zwischen ihnen). */
+/* Active values and the way back stand in the work area, not in the column:
+   there every filter change would shift everything below them. No ground, no
+   frame, only spacing; empty the strip takes no room. The wide column gap
+   separates the Facette groups, whose grouping carries the semantics (OR
+   within, AND between them). */
 .filter-strip {
   display: flex;
   flex: 0 0 auto;
@@ -181,19 +225,33 @@
 }
 .filter-strip:empty { display: none; }
 
-/* Eine Gruppe je abweichender Facette: der Facettenname einmal, dahinter je ein
-   wegnehmbarer Chip. */
+/* Untouched filter: one quiet line instead of an empty band. Design rule 8
+   (no standing explanation text) is waived here by the Projektleitung
+   (2026-09-04) -- an empty strip reads as a broken control. Neither chip nor
+   button: no border, no pointer, the tooltip says where the filters live. */
+.filter-strip__empty {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1-5);
+  font-size: var(--text-xs);
+  color: var(--color-text-tertiary);
+  cursor: help;
+}
+.filter-strip__empty-icon { flex: 0 0 auto; }
+
+/* One group per deviating Facette: the name once, then one removable chip per
+   value. */
 .filter-strip__group {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--space-1) 6px;
+  gap: var(--space-1) var(--space-1-5);
 }
 
-/* Derselbe Satz wie die Sektionstitel der Spalte, damit der Streifen die
-   Facette benennt, wie die Spalte sie benennt. */
+/* The same setting as the column's section titles, so the strip names a
+   Facette the way the column names it. */
 .filter-strip__key {
-  font-size: 10px;
+  font-size: var(--text-2xs);
   font-weight: var(--weight-semibold);
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -201,9 +259,9 @@
   cursor: help;
 }
 
-/* Eine Buehne, die ihre Flaeche selbst fuellt (Karte absolut, Netzwerk als
-   Zeile aus Graph und Detail), braucht einen eigenen Kasten unter dem
-   Streifen; sonst laege sie ueber ihm oder neben ihm. */
+/* A stage that fills its area itself (Karte absolute, Netzwerk as a row of
+   graph and detail) needs a box of its own below the strip; otherwise it would
+   lie over or beside it. */
 .view-main--stacked {
   display: flex;
   flex-direction: column;
@@ -216,18 +274,24 @@
 }
 
 .vs-status__reset {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
   padding: 0;
   font-family: inherit;
   font-size: var(--text-xs);
   color: var(--color-text-secondary);
   background: none;
   border: none;
-  text-decoration: underline;
   cursor: pointer;
 }
+/* The underline stays on the word: it is a text link, and an underlined glyph
+   reads as a button edge. */
+.vs-status__reset > span { text-decoration: underline; }
+.vs-status__reset-icon { flex: 0 0 auto; }
 .vs-status__reset:hover { color: var(--accent); }
 
-/* --- Legende als Filter (Toggle-Chips) ----------------------------------- */
+/* Legend as filter (toggle chips) */
 
 .vs-legend {
   display: flex;
@@ -238,9 +302,9 @@
 /* Chip primitive plus: a full-width row, so display and gap differ. */
 .vs-chip {
   display: flex;
-  gap: 8px;
+  gap: var(--space-2);
   width: 100%;
-  padding: 4px 8px;
+  padding: var(--space-1) var(--space-2);
   background: var(--surface);
   border: 1px solid var(--border-color-light);
   border-radius: 6px;
@@ -252,17 +316,19 @@
 }
 .vs-chip:hover { background: var(--accent-soft); }
 .vs-chip--off { opacity: 0.4; }
+/* sidebar.js and karte.js paint the swatch through style.background, so no
+   selector can outrank it; the off state needs !important, not more weight. */
 .vs-chip--off .vs-chip__swatch { background: var(--color-text-tertiary) !important; }
 
 .vs-chip__swatch { width: 12px; height: 12px; border-radius: 3px; }
 .vs-chip__count { font-size: var(--text-xs); }
 
-/* --- Zeit-/Wertefenster (von–bis) ---------------------------------------- */
+/* Time and value window (from-to) */
 
 .vs-range { display: flex; flex-direction: column; gap: var(--space-1); }
 
-/* Die beiden Jahreszahlen stehen an den Enden der Schiene und wandern mit den
-   Daumen; der Regler traegt seinen Zustand damit selbst (design.md Regel 8). */
+/* The two years sit at the ends of the rail and travel with the thumbs, so the
+   slider carries its own state (design.md rule 8). */
 .vs-range__row {
   display: grid;
   grid-template-columns: auto 1fr auto;
@@ -275,8 +341,8 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* Zwei Daumen auf einer Linie: zwei native Range-Inputs ueberlagert, nur die
-   Daumen sind klickbar (pointer-events), die sichtbare Schiene liegt dahinter. */
+/* Two thumbs on one line: two native range inputs stacked, only the thumbs take
+   pointer events, the visible rail lies behind them. */
 .vs-range__dual { position: relative; height: 22px; min-width: 0; }
 .vs-range__rail {
   position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%);
@@ -294,18 +360,18 @@
 .vs-range__input::-moz-range-track { height: 22px; background: transparent; }
 .vs-range__input::-webkit-slider-thumb {
   -webkit-appearance: none; appearance: none; pointer-events: auto;
-  width: 14px; height: 14px; margin-top: 4px; border-radius: 50%;
+  width: 14px; height: 14px; margin-top: var(--space-1); border-radius: 50%;
   background: var(--accent); border: 2px solid var(--surface);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25); cursor: pointer;
+  box-shadow: var(--shadow-thumb); cursor: pointer;
 }
 .vs-range__input::-moz-range-thumb {
   pointer-events: auto;
   width: 14px; height: 14px; border-radius: 50%;
   background: var(--accent); border: 2px solid var(--surface);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25); cursor: pointer;
+  box-shadow: var(--shadow-thumb); cursor: pointer;
 }
 
-/* --- Einzel-Slider ------------------------------------------------------- */
+/* Single slider */
 
 .vs-slider { display: flex; flex-direction: column; gap: 2px; }
 .vs-slider__label { font-size: 11px; color: var(--color-text-secondary); }
@@ -313,7 +379,7 @@
   display: grid;
   grid-template-columns: 1fr auto;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-1-5);
 }
 .vs-slider__input { width: 100%; accent-color: var(--accent); cursor: pointer; }
 .vs-slider__value {
@@ -324,12 +390,12 @@
   color: var(--color-text-primary);
 }
 
-/* --- Toggle -------------------------------------------------------------- */
+/* Toggle */
 
 .vs-toggle {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-1-5);
   font-size: var(--text-xs);
   color: var(--color-text-primary);
   cursor: pointer;
@@ -337,19 +403,19 @@
 }
 .vs-toggle input { margin: 0; accent-color: var(--accent); }
 
-/* --- Suche --------------------------------------------------------------- */
+/* Search */
 
 .vs-search {
   font-family: var(--font-ui);
   font-size: var(--text-sm);
-  padding: 6px 10px;
+  padding: var(--space-1-5) 10px;
   border: 1px solid var(--border-color);
   border-radius: 4px;
   width: 100%;
   box-sizing: border-box;
 }
 
-/* --- Statische Erklaer-Legende ------------------------------------------- */
+/* Static explanatory legend */
 
 .vs-static {
   display: flex;
@@ -374,14 +440,14 @@
 .vs-static__text { min-width: 0; }
 .vs-static__count {
   font-variant-numeric: tabular-nums;
-  font-size: 10px;
+  font-size: var(--text-2xs);
   color: var(--color-text-tertiary);
 }
 .vs-static__text strong { font-weight: var(--weight-semibold); color: var(--color-text-primary); }
 .vs-static__text em { font-style: italic; color: var(--color-text-secondary); }
 
-/* Facette: Eingabefeld mit Platzhalter, Vorschlaege mit Belegzahl, gewaehlte
-   Werte als entfernbare Chips. Der Sektionstitel bleibt das Label. */
+/* Facette: input with placeholder, suggestions with their record count,
+   selected values as removable chips. The section title stays the label. */
 
 .fs-facet {
   display: flex;
@@ -389,7 +455,7 @@
   gap: 5px;
 }
 
-/* Bezugspunkt der Vorschlagsliste: sie haengt am Feld, nicht an der Facette. */
+/* Anchor of the suggestion list: it hangs on the field, not on the Facette. */
 .fs-facet__field {
   position: relative;
   min-width: 0;
@@ -398,7 +464,7 @@
 .fs-search {
   width: 100%;
   box-sizing: border-box;
-  padding: 4px 7px;
+  padding: var(--space-1) 7px;
   font-family: inherit;
   font-size: var(--text-sm);
   color: var(--color-text-primary);
@@ -418,7 +484,7 @@
 .fs-chip {
   max-width: 100%;
   padding-block: 2px;
-  padding-inline: 8px 6px;
+  padding-inline: var(--space-2) var(--space-1-5);
   font-size: var(--text-xs);
   line-height: 1.4;
   color: var(--accent);
@@ -430,7 +496,7 @@
 .fs-chip:hover { background: var(--accent-soft); }
 
 .fs-chip__x {
-  font-size: 12px;
+  font-size: var(--text-xs);
   opacity: 0.75;
 }
 
@@ -460,7 +526,7 @@
   justify-content: space-between;
   gap: var(--space-2);
   width: 100%;
-  padding: 2px 6px;
+  padding: 2px var(--space-1-5);
   font-family: inherit;
   font-size: var(--text-xs);
   color: var(--color-text-primary);
@@ -471,15 +537,15 @@
   text-align: left;
 }
 
-/* Die Flaeche gehoert dem Zeiger, nicht dem Zustand: gewaehlt zeigt der Haken
-   (Regel 6, Auswahl nicht als Fuellung). */
+/* The field belongs to the pointer, not to the state: selected shows the check
+   (rule 6, selection is not a fill). */
 .fs-option:hover,
 .fs-option:focus-visible {
   background: var(--accent-soft);
   border-color: var(--border-color-light);
 }
 
-/* Tastatur-Hervorhebung der Autovervollstaendigung. */
+/* Keyboard cursor of the autocomplete. */
 .fs-option--active {
   background: var(--surface-3);
   border-color: var(--accent);
@@ -496,13 +562,13 @@
   text-align: center;
 }
 
-/* Ein Blatt unter einem gewaehlten Oberbegriff ist mitgewaehlt, nicht gewaehlt. */
+/* A leaf under a selected broader term is implied, not selected. */
 .fs-option__check--implied {
   color: var(--color-text-tertiary);
   font-weight: var(--weight-normal);
 }
 
-/* Es ist damit Information und kein Ziel: kein Zeiger, keine Hover-Flaeche. */
+/* It is information and not a target: no pointer, no hover field. */
 .fs-option--implied {
   color: var(--color-text-tertiary);
   cursor: default;
@@ -521,12 +587,12 @@
 }
 
 .fs-option__count {
-  font-size: 10px;
+  font-size: var(--text-2xs);
   color: var(--color-text-tertiary);
 }
 
-/* Der Treffer wird durch Gewicht und Akzent markiert, nicht durch eine
-   Leuchtfarbe: die Zeile bleibt Text, keine Markierung im Textmarker-Sinn. */
+/* The match is marked by weight and accent, not by a highlight colour: the row
+   stays text. */
 .fs-option mark {
   background: none;
   color: var(--accent);
@@ -534,9 +600,9 @@
 }
 
 .fs-more {
-  font-size: 10px;
+  font-size: var(--text-2xs);
   color: var(--color-text-tertiary);
-  padding: 2px 6px;
+  padding: 2px var(--space-1-5);
 }
 .fs-more--button {
   align-self: flex-start;
@@ -548,7 +614,7 @@
 }
 .fs-more--button:hover { color: var(--accent); }
 
-/* --- Dokumenttyp: der DFT-Baum steht offen ------------------------------- */
+/* Dokumenttyp: the DFT tree stands open */
 
 .fs-tree {
   display: flex;
@@ -556,19 +622,19 @@
   gap: 1px;
 }
 
-/* Gruppenkopf (Oberbegriff der DFT-Hierarchie): staerker gesetzt als seine
-   Blaetter, damit die Gruppierung ohne Einrueckungslinien lesbar ist. */
+/* Group head (broader term of the DFT hierarchy): set stronger than its
+   leaves, so the grouping reads without indent lines. */
 .fs-option--group .fs-option__label {
   font-weight: var(--weight-semibold);
   letter-spacing: 0.01em;
 }
 
-/* Der Haken steht im Baum vor der Zahl, weil links der Chevron sitzt. */
+/* In the tree the check stands before the number, because the chevron takes the left. */
 .fs-tree .fs-option__check { order: 1; }
 .fs-tree .fs-option__count { order: 2; }
 
-/* Zweites Klickziel in derselben Zeile: eigene Flaeche ueber die volle
-   Zeilenhoehe, damit der Chevron nicht als Ornament der Zeile gelesen wird. */
+/* A second click target in the same row: its own field over the full row
+   height, so the chevron does not read as an ornament. */
 .fs-tree__chevron {
   flex: 0 0 20px;
   align-self: stretch;
@@ -591,19 +657,19 @@
 .fs-tree__chevron--open { transform: rotate(90deg); }
 .fs-tree__chevron--none { visibility: hidden; cursor: default; }
 
-/* Blattwerte einer Gruppe leicht eingerueckt. */
+/* Leaf values of a group indent a step. */
 .fs-option--child { padding-inline-start: 22px; }
 
-/* --- View-eigene Zeilen im Sidebar-Kontext ------------------------------- */
+/* View-owned rows in the sidebar context */
 
-/* Knotentyp-Toggle mit ehrlicher Bezifferung der Kappung: das Label nennt den
-   Typ, der Zaehler daneben, wie viele der Kandidaten gezeigt werden. */
+/* Node-type toggle with an honest count of the cap: the label names the type,
+   the counter beside it how many of the candidates are shown. */
 .fs-typerow {
   display: flex;
   align-items: center;
   gap: var(--space-2);
   width: 100%;
-  padding: 3px 6px;
+  padding: 3px var(--space-1-5);
   font-family: inherit;
   font-size: var(--text-xs);
   color: var(--color-text-primary);
@@ -626,9 +692,9 @@
 
 .fs-typerow__label { flex: 1 1 auto; }
 
-.fs-typerow__count { font-size: 10px; }
+.fs-typerow__count { font-size: var(--text-2xs); }
 
-/* --- Umbruch ------------------------------------------------------------- */
+/* Breakpoint */
 
 /* Container query on the shell's parent instead of the former viewport media
    queries: the sidebar stacks above the main area as soon as the shell itself
@@ -644,12 +710,58 @@
 
   .view-sidebar {
     border-inline-end: none;
-    border-block-end: 1px solid var(--line-soft);
+    border-block-end: 1px solid var(--line);
     max-height: 50vh;
+  }
+
+  /* Collapsed: the filters fold away and the toggle stays as the way back. The
+     column is a top section here, so open it costs half the screen. */
+  .view-shell--sidebar-collapsed .view-sidebar {
+    display: none;
+  }
+
+  .view-shell__sidebar-toggle {
+    display: flex;
   }
 
   .view-main {
     height: 70vh;
     min-height: 480px;
+  }
+}
+
+/* Touch targets. Below this width the column is a top section on a touch
+   screen, where a 15px reset link or a 22px chevron is not reliably hittable.
+   It is a media query and not the shell container: the reason is the input
+   device, not the width of the work area (Projektleitung, 2026-09-04). */
+@media (max-width: 768px) {
+  .fs-option,
+  .fs-typerow,
+  .fs-chip,
+  .vs-chip,
+  .vs-toggle,
+  .vs-status__reset,
+  .fs-search,
+  .vs-search {
+    min-block-size: 24px;
+  }
+
+  .fs-tree__chevron {
+    min-block-size: 24px;
+    flex-basis: 24px;
+  }
+
+  .vs-range__dual,
+  .vs-range__input {
+    block-size: 26px;
+  }
+
+  .vs-slider__input {
+    block-size: 24px;
+  }
+
+  .vs-toggle input {
+    inline-size: 18px;
+    block-size: 18px;
   }
 }

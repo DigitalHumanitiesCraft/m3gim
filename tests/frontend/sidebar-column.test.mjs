@@ -98,7 +98,8 @@ describe('Filterstreifen ueber den Daten', () => {
     const src = read('ui/sidebar.js');
     const strip = src.slice(src.indexOf('function filterStrip'),
       src.indexOf('/** Count of the cut in the root row'));
-    assert.match(strip, /if \(!isFilterActive\(\)\) return;/, 'neutral bleibt er leer');
+    assert.match(strip, /if \(!isFilterActive\(\)\) \{\s*element\.appendChild\(emptyHint\(\)\);/,
+      'neutral traegt er den Platzhalter statt einer leeren Zeile');
     assert.match(strip, /Object\.entries\(FACET_META\)/, 'Facettenreihenfolge');
     assert.match(strip, /stripGroup\(meta\.title, chips\)/,
       'Der Facettenname steht einmal vor seinen Werten.');
@@ -106,6 +107,36 @@ describe('Filterstreifen ueber den Daten', () => {
     assert.match(strip, /stripGroup\('Suche',/);
     assert.ok(strip.indexOf("'alle zurücksetzen'") > strip.lastIndexOf('removeChip('),
       'Der Link steht hinter den Chips.');
+  });
+
+  test('der Platzhalter ist eine ruhige Zeile, kein Chip und kein Knopf', () => {
+    // Designregel 8 ist hier bewusst ausgesetzt (Projektleitung, 2026-09-04):
+    // ein leerer Streifen liest sich als kaputtes Bedienelement.
+    const src = read('ui/sidebar.js');
+    const hint = src.slice(src.indexOf('function emptyHint'), src.indexOf('const FILTER_GLYPH'));
+    assert.match(hint, /className: 'filter-strip__empty'/);
+    assert.match(hint, /'kein Filter aktiv'/);
+    assert.match(hint, /tip: 'Die Filter stehen in der linken Spalte\.'/,
+      'Der Hinweis auf die Spalte steht im Tooltip, nicht in der Zeile.');
+    assert.ok(hint.includes("el('span'"), 'ein span, kein button');
+    assert.ok(!hint.includes("el('button'"), 'der Platzhalter ist kein Bedienelement');
+
+    const css = readFileSync(new URL('../../docs/css/sidebar.css', import.meta.url), 'utf-8');
+    const block = css.slice(css.indexOf('.filter-strip__empty {'),
+      css.indexOf('.filter-strip__empty-icon'));
+    assert.match(block, /color: var\(--color-text-tertiary\)/);
+    assert.match(block, /font-size: var\(--text-xs\)/);
+    assert.doesNotMatch(block, /background|border/, 'kein Chip-Aussehen');
+  });
+
+  test('der Zuruecksetzen-Link traegt ein Zeichen und bleibt ein Textlink', () => {
+    const src = read('ui/sidebar.js');
+    assert.match(src, /const RESET_GLYPH = '<svg class="vs-status__reset-icon" width="14"/);
+    assert.match(src, /className: 'vs-status__reset'[\s\S]{0,120}html: RESET_GLYPH,/);
+    const css = readFileSync(new URL('../../docs/css/sidebar.css', import.meta.url), 'utf-8');
+    const block = css.slice(css.indexOf('.vs-status__reset {'), css.indexOf('.vs-status__reset:hover'));
+    assert.doesNotMatch(block, /background: var|border: 1px/, 'kein Knopf-Aussehen');
+    assert.match(css, /\.vs-status__reset > span \{ text-decoration: underline; \}/);
   });
 
   test('der Chip traegt nur den Wert, die Semantik haengt am Gruppentitel', () => {
@@ -238,12 +269,11 @@ describe('Farbpunkt der Inhaltsfamilie am Facettentitel', () => {
     }
   });
 
-  test('der Punkt ist derselbe wie am Blocktitel des Detail', () => {
+  test('das Symbol ist dasselbe wie am Blocktitel des Detail und in den Indizes', () => {
     const src = read('ui/sidebar.js');
-    assert.match(src, /ersch-dot ersch-dot--on ersch-dot--\$\{spec\.family\}/,
-      'Wiederverwendete Klasse aus components.css, keine eigene Farbe.');
-    assert.match(src, /ersch-dot--\$\{spec\.marker\}/,
-      'Eine verwandte Achse bleibt als Variante derselben Farbe markierbar.');
+    assert.match(src, /familyIcon\(spec\.family, \{ size: 14, className: `fam-mark fam-mark--\$\{spec\.family\}` \}\)/,
+      'Geteiltes Symbolmodul (E-212), keine eigene Farbe.');
+    assert.ok(!src.includes('ersch-dot'), 'Das Farbquadrat ist abgelöst.');
     assert.doesNotMatch(src, /#[0-9a-fA-F]{3,6}/, 'Keine Farbliterale in der Spalte.');
   });
 });

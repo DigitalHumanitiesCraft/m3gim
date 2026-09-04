@@ -1,11 +1,9 @@
 /* M³GIM Bestand Tab Styles */
 
-/* =========================================================================
-   Sidebar-Shell (Bestand + Chronik)
-   Beide Ansichten haengen an der einen linken Filter-Sidebar (view-shell).
-   Das Grid stellt die Spalte links, der Hauptbereich scrollt fuer sich; ein
-   geoeffneter Konvolut-Kopf haftet oben (Projektleitung, 2026-09-03).
-   ========================================================================= */
+/* Sidebar shell (Bestand and Chronik)
+   Both views hang on the one left filter column (view-shell). The grid puts the
+   column left, the work area scrolls for itself, and an open Konvolut head
+   sticks to the top (Projektleitung, 2026-09-03). */
 
 #tab-bestand.tab-content.active,
 #tab-chronik.tab-content.active {
@@ -14,6 +12,12 @@
 
 .archiv-main {
   overflow-y: auto;
+  /* The hidden ::after of every data-tip is a real box at opacity 0 and counts
+     into the scrollable width; the Entitaeten and Korb cells sit at the right
+     edge and pushed .archiv-main into a horizontal scrollbar with no visible
+     child past its edge (Projektleitung, 2026-09-04). Their tooltips open to
+     the left (tipPos bottom-right), so clipping the axis costs nothing. */
+  overflow-x: hidden;
   /* No top padding: the sticky Konvolut head must sit flush on the scroll edge.
      Inline padding plus the cell padding equals the tab padding, so the column
      head text lines up with the active tab's icon above it; the right edge
@@ -24,25 +28,24 @@
   background: var(--surface);
 }
 
-/* Strip and column head are one band: the strip takes the padding of the main
-   area instead of its own and closes tight over the header (Projektleitung,
-   2026-09-03). */
-/* The strip keeps its height while empty, so the column head does not jump up
-   against the band when the last chip goes. */
+/* Strip and column head are one band, but the strip needs air below the brand
+   band; sitting flush under it the chips read as part of the navigation
+   (Projektleitung, 2026-09-04). It is not sticky, so --table-head-height and
+   the sticky offsets of thead and open Konvolut head are untouched. The strip
+   keeps its height while empty, so the column head does not jump up against
+   the band when the last chip goes. */
 .archiv-main .filter-strip {
   padding-inline: var(--space-3);
-  padding-block: var(--space-1) 3px;
-  min-block-size: 30px;
+  padding-block: var(--space-4) var(--space-3);
+  min-block-size: 52px;
 }
 .archiv-main .filter-strip:empty { display: flex; }
 
-/* Der Zeitstrahl-Container erbt den scrollenden Hauptbereich statt eines
-   eigenen. */
+/* The timeline container inherits the scrolling work area instead of opening
+   one of its own. */
 .archiv-main .chronik-timeline-container { overflow: visible; }
 
-/* =========================================================================
-   Table (shared by Bestand)
-   ========================================================================= */
+/* Table */
 
 .archiv-table {
   width: 100%;
@@ -78,6 +81,8 @@
    top rule and the chevron before the Signatur. Closed by default; the open
    head sticks below the column head, where it needs an opaque ground of its own
    so the Folio rows scroll under it. */
+/* A head is a group boundary and gets a step more air than a Folio row
+   (Projektleitung, 2026-09-04). */
 .archiv-row--konvolut {
   font-weight: var(--weight-semibold);
 }
@@ -121,6 +126,7 @@
 }
 
 .archiv-row--konvolut td {
+  padding-block: var(--space-3);
   border-top: 1px solid var(--border-color);
 }
 
@@ -138,9 +144,10 @@
   font-size: var(--text-sm);
 }
 
-/* Active / expanded row */
-.archiv-row--active {
-  background: var(--accent-soft) !important;
+/* Active / expanded row. Carries the table prefix so it matches the hover rule
+   above in specificity and, standing later, wins over it without !important. */
+.archiv-table tbody tr.archiv-row--active {
+  background: var(--accent-soft);
 }
 
 .archiv-row--active td:first-child {
@@ -166,7 +173,7 @@
 .archiv-col-titel { width: auto; }
 .archiv-col-typ { width: 140px; text-align: start; }
 .archiv-col-datum { width: 160px; white-space: nowrap; }
-.archiv-col-links { width: 110px; text-align: center; }
+.archiv-col-links { width: 140px; text-align: center; }  /* four family icons plus their counts */
 .archiv-col-korb { width: 36px; text-align: center; }
 
 .archiv-signatur {
@@ -186,9 +193,10 @@
   white-space: nowrap;
 }
 
-/* Stand-in for an inherited collective title: the family dot says the name is
+/* Stand-in for an inherited collective title: the family icon says the name is
    a linked entity, not a title, so no dash and no italic (Projektleitung,
-   2026-09-03). */
+   2026-09-03). It stays in tertiary text colour, because the colour code of the
+   Erschliessungsanzeige is not repeated here (Projektleitung, 2026-09-04). */
 .archiv-folio-hint {
   display: inline-flex;
   align-items: center;
@@ -197,6 +205,11 @@
      title has to be stated. */
   margin-inline-start: var(--space-1);
   font-size: var(--text-sm);
+}
+
+.archiv-folio-hint__icon {
+  flex: 0 0 auto;
+  color: var(--color-text-tertiary);
 }
 
 .archiv-folio-hint--konvolut {
@@ -231,7 +244,7 @@
 .archiv-konvolut-meta .chip--compact {
   display: inline-flex;
   align-items: center;
-  padding: 1px 6px;
+  padding: 1px var(--space-1-5);
   font-size: 11px;
   font-family: var(--font-ui);
   font-weight: var(--weight-normal);
@@ -249,20 +262,63 @@
   color: var(--color-text-secondary);
 }
 
-/* Ü-3: Consistent absence pattern */
+/* Consistent absence pattern */
 .archiv-datum--undated {
   font-style: italic;
   color: var(--color-absent);
 }
 
-/* E-158: typed Erschliessungsanzeige, one square per content family
-   (.ersch-dot in components.css), the breakdown in the tooltip. Konvolut
-   aggregates live in the head tooltip instead of repeating the squares. */
+/* E-158: typed Erschliessungsanzeige, one family icon per content family with
+   its count, the full breakdown in the tooltip. Konvolut aggregates live in the
+   head tooltip instead of repeating the icons. The icons are the ones the
+   Indizes grid heads carry (Projektleitung, 2026-09-04). */
 .archiv-ersch {
   display: inline-flex;
-  gap: 4px;
+  /* Pairs need a firm gap, or the four counts read as one digit string. */
+  gap: var(--space-2);
   align-items: center;
   justify-content: center;
+}
+
+.ersch-fam {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  /* absent family: a quiet outline in the muted warm line tone, so the filled
+     icons carry the reading weight. */
+  color: var(--line-strong);
+}
+
+.ersch-fam__icon {
+  flex: 0 0 auto;
+  stroke-width: 1.25;
+}
+
+.ersch-fam--on .ersch-fam__icon { stroke-width: 2; }
+
+.ersch-fam--on.ersch-fam--person      { color: var(--chip-c-person-text); }
+.ersch-fam--on.ersch-fam--institution { color: var(--chip-c-institution-text); }
+.ersch-fam--on.ersch-fam--ort         { color: var(--chip-c-ort-text); }
+.ersch-fam--on.ersch-fam--werk        { color: var(--chip-c-werk-text); }
+
+/* Legend of the open, sticky head: the same four symbols the rows below carry,
+   quiet and without numbers, so the column says what it holds (Projektleitung,
+   2026-09-04). It reuses the row icon size, so the head keeps its height. */
+.archiv-ersch--legend {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--color-text-tertiary);
+}
+.archiv-ersch--legend .ersch-fam__icon { stroke-width: 1.5; }
+
+/* The number stays in secondary text colour: the icon already carries the
+   family colour, and a coloured digit at this size reads as noise. */
+.ersch-fam__count {
+  font-size: var(--text-2xs);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  color: var(--color-text-secondary);
 }
 
 /* The type of an object row is text; the outline badge is left to the
@@ -278,4 +334,243 @@
 .badge--unclassified {
   color: var(--color-absent);
   font-style: italic;
+}
+
+/* Navigation aids of a long table (Projektleitung, 2026-09-04) */
+
+/* Jump list trigger in the Signatur column head. The glyph is the row chevron
+   turned down, so one symbol carries one meaning across the table. */
+.archiv-jump-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-inline-start: var(--space-1);
+  padding: 0;
+  inline-size: 18px;
+  block-size: 18px;
+  vertical-align: middle;
+  background: none;
+  border: none;
+  border-radius: var(--border-radius);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+}
+
+.archiv-jump-btn:hover { background: var(--surface-3); color: var(--accent); }
+
+/* Nothing to jump to: the trigger stays readable and says why in its tooltip. */
+.archiv-jump-btn--disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.archiv-jump-btn--disabled:hover { background: none; color: var(--color-text-secondary); }
+
+.archiv-chevron--down { transform: rotate(90deg); }
+.archiv-chevron--up { transform: rotate(-90deg); }
+
+/* The list hangs on the body in fixed position: inside .archiv-main its
+   overflow-y would clip it and it would scroll away from the sticky head it
+   belongs to. */
+.archiv-jump-anchor {
+  position: fixed;
+  z-index: 300;
+}
+
+.archiv-jump {
+  display: flex;
+  flex-direction: column;
+  inline-size: min(460px, 90vw);
+  max-block-size: min(60vh, 520px);
+  overflow-y: auto;
+  padding: var(--space-1);
+  background: var(--surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-md);
+}
+
+.archiv-jump__action,
+.archiv-jump__entry {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  inline-size: 100%;
+  padding: var(--space-1) var(--space-2);
+  background: none;
+  border: none;
+  border-inline-start: 3px solid transparent;
+  font-family: var(--font-ui);
+  font-size: var(--text-sm);
+  color: var(--color-text-primary);
+  text-align: start;
+  cursor: pointer;
+}
+
+.archiv-jump__action {
+  justify-content: flex-start;
+  margin-block-end: var(--space-1);
+  padding-inline-start: calc(var(--space-2) + 1em);
+  color: var(--accent);
+  box-shadow: inset 0 -1px 0 var(--line-soft);
+}
+
+.archiv-jump__action:hover,
+.archiv-jump__entry:hover { background: var(--surface-2); }
+
+.archiv-jump__entry--current {
+  border-inline-start-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+/* Flattened cut: no head to open, so no chevron column to reserve. */
+.archiv-jump--flat .archiv-jump__entry { padding-inline-start: var(--space-2); }
+
+.archiv-jump__sig {
+  flex: 0 0 auto;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--accent);
+}
+
+.archiv-jump__title {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--color-text-secondary);
+}
+
+.archiv-jump__count {
+  flex: 0 0 auto;
+  font-variant-numeric: tabular-nums;
+  font-size: var(--text-xs);
+  color: var(--color-text-tertiary);
+}
+
+/* Close affordance at the right end of the open, sticky head. */
+.archiv-konvolut-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 22px;
+  block-size: 22px;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: var(--border-radius);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+}
+
+.archiv-konvolut-close:hover { background: var(--surface-3); color: var(--accent); }
+
+/* Konvolut head and object row are keyboard waypoints. The outline sits inside
+   the row, because a row outline under border-collapse is cut off by its
+   neighbours. */
+.archiv-row--konvolut:focus-visible,
+#bestand-tbody tr[data-record-row]:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+/* Umbruch — same container as the shell (sidebar.css) */
+
+/* Under 700px the six columns no longer fit a readable line. Typ goes first: it
+   is the one column a facet already answers (design.md, Bestand). The
+   Erschliessungsanzeige keeps its four symbols and drops the counts, which the
+   row tooltip still carries, and Datum falls back to the bare year width
+   (Projektleitung, 2026-09-04). */
+@container view-shell (width < 700px) {
+  .archiv-col-typ {
+    display: none;
+  }
+
+  .archiv-col-datum {
+    width: 92px;
+  }
+
+  .archiv-col-links {
+    width: 96px;
+  }
+
+  .ersch-fam__count {
+    display: none;
+  }
+
+  .archiv-ersch {
+    gap: var(--space-1-5);
+  }
+
+  .archiv-table td {
+    padding-inline: var(--space-2);
+  }
+
+  .archiv-table thead th {
+    padding-inline: var(--space-2);
+  }
+
+  .archiv-row--child td:first-child {
+    padding-inline-start: var(--space-5);
+  }
+}
+
+/* Print — the table alone */
+
+/* On paper the filter column, the strip, the jump trigger and the Korb column
+   are all ways of getting somewhere; the sheet is the destination. Opening
+   every Konvolut is not a CSS matter: applyCollapse() drops the closed
+   children before render, so the view has to do it (Projektleitung,
+   2026-09-04). */
+@media print {
+  .view-sidebar,
+  .view-shell__sidebar-toggle,
+  .filter-strip,
+  .archiv-jump-btn,
+  .archiv-jump-anchor,
+  .archiv-konvolut-close,
+  .archiv-col-korb {
+    display: none;
+  }
+
+  .view-shell {
+    display: block;
+    height: auto;
+    min-height: 0;
+  }
+
+  .archiv-main {
+    overflow: visible;
+    padding: 0;
+  }
+
+  /* A sticky head repeats itself over every page break in print; the table head
+     is enough. */
+  .archiv-row--konvolut-open {
+    position: static;
+    background: var(--surface);
+  }
+
+  .archiv-table thead th {
+    position: static;
+    background: var(--surface);
+  }
+
+  .archiv-row--konvolut {
+    break-after: avoid;
+  }
+
+  .archiv-table tbody tr {
+    break-inside: avoid;
+  }
+}
+
+/* Touch targets: the two glyph buttons of the table head and of an open
+   Konvolut head are 18 and 22px on the pointer, too small for a finger. */
+@media (max-width: 768px) {
+  .archiv-jump-btn,
+  .archiv-konvolut-close {
+    inline-size: 24px;
+    block-size: 24px;
+  }
 }

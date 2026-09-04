@@ -27,6 +27,7 @@ import { formatDate, extractYear } from '../utils/date-parser.js';
 import { logStamp } from '../utils/env.js';
 import { getFilter, setFilter, facetValues } from '../ui/filter-state.js';
 import { zeitfensterToYearRange } from '../ui/filter-sync.js';
+import { navigateToView } from '../ui/router.js';
 import {
   buildEntities, buildOccurrences, SICHTEN, hasGeo,
   breakdownByView, barSegments, sortOcc,
@@ -123,7 +124,7 @@ export function renderMobilitaet(store, container) {
       const chip = el('button', {
         className: 'vs-chip' + (on ? '' : ' vs-chip--off'),
         type: 'button', 'aria-pressed': String(state.country === row.code),
-        title: `${row.label}: ${row.count} Dokumente`,
+        dataset: { tip: state.country === row.code ? 'Landesschnitt lösen' : 'Nur dieses Land zeigen' },
         onClick: () => {
           state.country = state.country === row.code ? null : row.code;
           redraw();
@@ -223,7 +224,8 @@ export function renderMobilitaet(store, container) {
       const bd = breakdownByView(list);
       const bar = el('div', { className: 'mob-detail__bar' });
       for (const s of barSegments(bd)) {
-        const seg = el('span', { title: `${s.label}: ${s.count}` });
+        // No tooltip: the rows under the bar already name label and count.
+        const seg = el('span');
         seg.style.width = s.pct + '%';
         seg.style.background = s.color;
         bar.appendChild(seg);
@@ -311,6 +313,8 @@ function buildOccChip(o) {
     xlsxSource: o.xlsxSource,
     wikidata: o.placeWikidata,
     tip: o.recordId || '',
-    onClick: () => { if (o.recordId) window.location.hash = '#bestand/' + encodeURIComponent(o.recordId); },
+    // Through the router, so the hash keeps the shared filter (user-story
+    // audit 2026-09-03).
+    onClick: () => { if (o.recordId) navigateToView('bestand', { recordId: o.recordId }); },
   });
 }

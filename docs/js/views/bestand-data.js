@@ -10,40 +10,67 @@
  * shared filter decides what is on screen.
  */
 
-import { getDocTypeId, countLinks } from '../utils/format.js';
+import { getDocTypeId, countLinks, formatSignatur } from '../utils/format.js';
+import { primaryYear } from '../data/loader.js';
 import { CONTENT_FAMILIES } from '../data/constants.js';
 import { partitionRecord } from './record-detail-data.js';
+
+/** Display name of an entity node, whichever of the two carriers it uses. */
+function entityName(node) {
+  return (node && (node.name || node['skos:prefLabel'])) || '';
+}
+
+/** Number of distinct names in a list, case- and whitespace-insensitive; empty
+ *  names drop out. */
+function distinctNames(names) {
+  const seen = new Set();
+  for (const raw of names) {
+    const key = String(raw || '').trim().toLowerCase();
+    if (key) seen.add(key);
+  }
+  return seen.size;
+}
 
 /**
  * Content families of a record in CONTENT_FAMILIES order, from the same
  * partition the inline detail renders. DOM-free so the typed display of the
  * table stays testable.
+ *
+ * The number counts distinct entities, not link rows (Projektleitung,
+ * 2026-09-04): a person named in two roles is one person, and a place carried
+ * by an Ereignis and by `hasOrHadLocation` is one place. Otherwise the figure
+ * beside the family icon answers "how often" where the reader asks "how many".
  * @param {object} record
  * @param {object} store
  * @returns {Array<{key: string, label: string, count: number}>}
  */
 export function familiesForRecord(record, store) {
   const p = partitionRecord(record, store);
-  // Same de-duplication as eventChipEls: a location already carried by an event
-  // is not counted twice.
-  const eventPlaces = new Set(p.events.map(e => (e.place || '').toLowerCase()));
-  const extraLocations = p.locations.filter(loc =>
-    !eventPlaces.has(String(loc.name || loc['skos:prefLabel'] || '').toLowerCase()));
   const counts = {
     // Beziehungen count into person: a relation without a person is a
     // per-mille case, and its own dot would carry almost no information.
     // Finanzen count nowhere, they are a field group of the detail rather than
     // an entity type.
-    person: p.bucket.produktion.length + p.bucket.mitwirkende.length
-      + p.bucket.erwaehnt.length + p.bucket.weitere.length + p.agentRelations.length,
-    institution: p.bucket.institutionen.length,
-    ort: p.performances.length + p.events.length + p.eventDatings.length + extraLocations.length,
-    werk: p.works.length + p.performanceRoles.length,
+    person: distinctNames([
+      ...p.bucket.produktion, ...p.bucket.mitwirkende,
+      ...p.bucket.erwaehnt, ...p.bucket.weitere,
+    ].map(entityName).concat(p.agentRelations.map(rel => rel.objectName))),
+    institution: distinctNames(p.bucket.institutionen.map(entityName)),
+    // A Datierung without a place names no place, so eventDatings contribute
+    // nothing; the Performance node carries no place either, and is read here
+    // so it starts counting on its own once the model gives it one.
+    ort: distinctNames([
+      ...p.events.map(e => e.place),
+      ...p.performances.map(perf => perf.place),
+      ...p.locations.map(entityName),
+    ]),
+    // A Bühnenrolle is not a work, so performanceRoles count nothing.
+    werk: distinctNames(p.works.map(entityName)),
   };
   return CONTENT_FAMILIES.map(f => ({ key: f.key, label: f.label, count: counts[f.key] }));
 }
 
-export function naturalSort(a, b) {
+function naturalSort(a, b) {
   return a.localeCompare(b, 'de-DE', { numeric: true, sensitivity: 'base' });
 }
 
@@ -133,14 +160,19 @@ export function pruneEmptyKonvolute(items) {
 }
 
 /**
- * Undated marker of a row. Pure so the time anchor stays testable. The marker
- * hangs on `rico:date` alone; without that carrier every record counts as
- * undated. Konvolut heads never carry it, their span comes from konvolutMeta.
+ * Undated marker of a row. Undated means the record carries no Zeitanker at
+ * all: neither `rico:date` nor a derived anchoring Datierung (contract A4,
+ * primaryYear). Without a store only the carrier `rico:date` can be read, so
+ * the caller in the view always passes one. Konvolut heads never carry the
+ * marker, their span comes from konvolutMeta.
  * @param {{record: object, isKonvolut?: boolean}} item
+ * @param {Object} [store]
  * @returns {boolean}
  */
-export function isUndatedItem(item) {
-  return !item.isKonvolut && !item.record['rico:date'];
+export function isUndatedItem(item, store) {
+  if (item.isKonvolut) return false;
+  if (item.record['rico:date']) return false;
+  return store ? primaryYear(store, item.record).year == null : true;
 }
 
 /** A top-level Hauptbestand record without Folio resolution is an archival
@@ -199,6 +231,27 @@ export function applyCollapse(items, openIds) {
 }
 
 /**
+ * Whether the table opens its first Konvolut by itself. Without it the Bestand
+ * greets the reader as a bare list of heads with no object in sight. A filter,
+ * a free-text search or a deep link already say what to look at, so nothing
+ * opens on its own there, and once the reader has opened or closed a head, the
+ * reading state is theirs (user-story audit 2026-09-03).
+ * @param {{filtered?: boolean, search?: string, deepLink?: boolean,
+ *   userToggled?: boolean}} state
+ * @returns {boolean}
+ */
+export function shouldAutoOpenFirstKonvolut(state = {}) {
+  if (state.filtered || state.deepLink || state.userToggled) return false;
+  return String(state.search || '').trim() === '';
+}
+
+/** First Konvolut head of an item list that already stands in Signatur order. */
+export function firstKonvolutId(items) {
+  const head = (items || []).find(item => item.isKonvolut);
+  return head ? head.konvolutId : null;
+}
+
+/**
  * Tooltip lines for a Konvolut head: per content family how many of its visible
  * children carry it. Aggregating over the child rows rather than the raw meta
  * keeps the numbers aligned with the cut the table shows.
@@ -248,4 +301,97 @@ export function konvolutIdOfRecord(store, recordId) {
     if (children.includes(recordId)) return kid;
   }
   return null;
+}
+
+/**
+ * Entries of the jump list at the Signatur column head: every Konvolut of the
+ * current cut in the Signatur order the table already stands in. Built from the
+ * rendered items, so the counts are the ones the table shows.
+ * @param {Array} items  rows as renderRows receives them
+ * @param {object} store
+ * @returns {Array<{konvolutId: string, signatur: string, title: string, childCount: number}>}
+ */
+export function konvolutJumpEntries(items, store) {
+  return (items || []).filter(item => item.isKonvolut).map(item => {
+    const meta = store.konvolutMeta.get(item.konvolutId);
+    return {
+      konvolutId: item.konvolutId,
+      signatur: formatSignatur(item.record['rico:identifier']),
+      title: meta?.title || item.record['rico:identifier'] || '',
+      childCount: item.visibleChildCount ?? (meta ? meta.childCount : 0),
+    };
+  });
+}
+
+/**
+ * The same entries for the flattened filter mode, where flattenForFilter has
+ * taken the Konvolut heads out of the rows. The Konvolute are read off the rows'
+ * Konvolut origin, the source the "aus: …" hint already uses, in row order and
+ * counted by the rows actually on screen; standalone records belong to no
+ * Konvolut and contribute none (Projektleitung, 2026-09-04).
+ * @param {Array} items  rows as renderRows receives them
+ * @param {object} store
+ * @returns {Array<{konvolutId: string, signatur: string, title: string, childCount: number}>}
+ */
+export function konvolutJumpEntriesFlat(items, store) {
+  const order = [];
+  const counts = new Map();
+  for (const item of items || []) {
+    const kid = item.konvolutId;
+    if (!kid) continue;
+    if (!counts.has(kid)) order.push(kid);
+    counts.set(kid, (counts.get(kid) || 0) + 1);
+  }
+  return order.map(kid => {
+    const konvolut = store.konvolute.get(kid);
+    const meta = store.konvolutMeta.get(kid);
+    return {
+      konvolutId: kid,
+      signatur: formatSignatur(konvolut && konvolut['rico:identifier']),
+      title: meta?.title || (konvolut && konvolut['rico:identifier']) || '',
+      childCount: counts.get(kid),
+    };
+  });
+}
+
+/**
+ * What the jump list shows for a cut. In the structural view it lists the
+ * Konvolut heads with their open state and the open/close action; under a
+ * filter the rows lie flat, so the list only names the Konvolute represented in
+ * the cut and neither chevron nor "alle auf-/zuklappen" would mean anything
+ * (Projektleitung, 2026-09-04). No entries means nothing to jump to, and the
+ * trigger is disabled.
+ * @param {Array} items  rows as renderRows receives them
+ * @param {object} store
+ * @param {boolean} flat  whether the cut flattened the hierarchy
+ * @returns {{flat: boolean, entries: Array, showToggles: boolean, disabled: boolean}}
+ */
+export function jumpListModel(items, store, flat) {
+  const entries = flat
+    ? konvolutJumpEntriesFlat(items, store)
+    : konvolutJumpEntries(items, store);
+  return { flat, entries, showToggles: !flat, disabled: entries.length === 0 };
+}
+
+/**
+ * Which Konvolut the reader currently stands in: the last head at or above the
+ * line under the sticky column head. Pure over measured offsets, so the rule is
+ * testable without a layout (Projektleitung, 2026-09-04).
+ * @param {Array<{konvolutId: string, top: number}>} heads  document order,
+ *   `top` in the scroll space of the scrolling area
+ * @param {number} scrollPos  scroll offset plus the height of the sticky head
+ * @returns {?string}
+ */
+export function currentKonvolutFromOffsets(heads, scrollPos) {
+  if (!heads || heads.length === 0) return null;
+  // Above the first head the first one is still the answer; a jump list without
+  // a current marker would read as "nowhere".
+  let current = heads[0].konvolutId;
+  // 1 px tolerance: a head parked under the sticky head measures a fraction
+  // above or below it depending on the device pixel ratio.
+  for (const head of heads) {
+    if (head.top <= scrollPos + 1) current = head.konvolutId;
+    else break;
+  }
+  return current;
 }

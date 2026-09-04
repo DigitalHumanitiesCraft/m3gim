@@ -6,26 +6,32 @@
  * bestand-data.js, the cell builders in bestand-rows.js.
  */
 
-import { el, clear } from '../utils/dom.js';
+import { el, clear, scrollBehavior } from '../utils/dom.js';
 import { formatSignatur, formatChildSignatur, getDocTypeId, truncate, dftLabel, glossOf } from '../utils/format.js';
 import { formatDate } from '../utils/date-parser.js';
+import { primaryYear } from '../data/loader.js';
 import { buildInlineDetail } from './record-detail.js';
 import { filterBySharedState, isSharedFiltered, searchMatchBestand, sharedFacetsActive } from './_bestand-filter.js';
 import { createSidebar, viewShell } from '../ui/sidebar.js';
+import { familyIcon } from '../ui/family-icons.js';
 import { onViewNavigate } from '../ui/events.js';
 import { logStamp } from '../utils/env.js';
 import { getFilter, applyViewDefault, addFacetValue, facetValues } from '../ui/filter-state.js';
 import { yearBounds, baseIds, STAND_DEFAULT } from '../data/records-for.js';
 import { applyZeitfenster } from '../ui/filter-sync.js';
+import { getState } from '../ui/router.js';
 import {
   getOrderedItems,
   flattenForFilter, isUndatedItem, pruneEmptyKonvolute,
   applyCollapse, annotateKonvolutHeadTips, isRedundantChildDate,
-  konvolutIdOfRecord,
+  konvolutIdOfRecord, shouldAutoOpenFirstKonvolut, firstKonvolutId,
+  jumpListModel, currentKonvolutFromOffsets,
 } from './bestand-data.js';
 import {
   buildDocTypeBadge, buildErschliessung, buildKonvolutChips,
   konvolutStandTip, getFolioHint, buildKorbBtn,
+  buildJumpTrigger, buildJumpList, buildKonvolutCloseBtn,
+  buildKonvolutFamilyLegend, setJumpTriggerState,
 } from './bestand-rows.js';
 
 let store = null;
@@ -33,11 +39,48 @@ let container = null;
 let sidebar = null;
 let expandedRecord = null; // only one at a time
 let currentItems = []; // kept in sync so closures never go stale
-/** Open Konvolute of this session. A head starts closed, the chevron opens it;
- *  the set is deliberately neither persisted nor part of the hash, it is a
- *  reading state, not a cut (Projektleitung, 2026-09-03). */
+/** Open Konvolute of this session. Only the first head opens by itself and only
+ *  on the untouched initial view, every other one waits for its chevron; the set
+ *  is deliberately neither persisted nor part of the hash, it is a reading
+ *  state, not a cut (Projektleitung, 2026-09-03). */
 const openKonvolute = new Set();
+// Print shows every Konvolut open (the stylesheet cannot, applyCollapse drops
+// closed children before render); the reader's own state returns afterwards.
+let openBeforePrint = null;
+if (typeof window !== 'undefined' && window.addEventListener) {
+  window.addEventListener('beforeprint', () => {
+    if (!store) return;
+    openBeforePrint = new Set(openKonvolute);
+    for (const item of getOrderedItems(store)) {
+      if (item.isKonvolut) openKonvolute.add(item.konvolutId);
+    }
+    updateBestandView();
+  });
+  window.addEventListener('afterprint', () => {
+    if (!openBeforePrint) return;
+    openKonvolute.clear();
+    for (const id of openBeforePrint) openKonvolute.add(id);
+    openBeforePrint = null;
+    updateBestandView();
+  });
+}
+/** Whether the reader has worked the chevrons themselves. Once they have, the
+ *  auto-open of the first Konvolut stays out of their way. */
+let konvolutTouched = false;
 let visibleRecords = 0;  // documents on screen, for the sidebar status block
+/** Open jump list of the Signatur column head, plus the head row that keyboard
+ *  navigation must get its focus back after a re-render. */
+let jumpList = null;
+let jumpTrigger = null;
+let jumpScrollRaf = 0;
+let pendingHeadFocus = null;
+/** Where the focus goes after the next render: into the head line of a detail
+ *  that just opened, or back onto the row of one that just closed. */
+let pendingDetailFocus = false;
+let pendingRowFocus = null;
+/** Whether the current cut lies flat, i.e. flattenForFilter took the Konvolut
+ *  heads out of the rows. The jump list reads it to decide what it can offer. */
+let flatCut = false;
 
 /** The Bestand opens on the objects that have been worked on (E-162). The two
  *  chips are removable, so nothing stays unreachable. */
@@ -53,6 +96,7 @@ export function renderBestand(storeRef, containerEl) {
   container = containerEl;
 
   clear(container);
+  closeJumpList();  // the list hangs on the body and would outlive its table
   applyViewDefault(VIEW_DEFAULTS);
 
   // No caption and no Schaerfe banner above the table (E-156), the sidebar
@@ -104,6 +148,7 @@ function updateBestandView() {
   if (isFiltered) {
     items = flattenForFilter(items);
   }
+  flatCut = isFiltered;
 
   // Every entity and shared facet plus full text and document type resolves
   // through recordsFor, the single place in the frontend. Konvolut heads are
@@ -123,13 +168,27 @@ function updateBestandView() {
   const recordCount = items.filter(i => !i.isKonvolut).length;
   const konvolutCount = items.filter(i => i.isKonvolut).length;
 
-  // Family counts in the head tooltip aggregate over visible children, so they
-  // are read before collapse takes those children out of the rows.
   if (!isFiltered) {
+    // The first Konvolut opens on the untouched initial view so the table shows
+    // objects instead of nothing but heads (user-story audit 2026-09-03). It
+    // runs after pruneEmptyKonvolute, so the head that opens really has rows.
+    if (shouldAutoOpenFirstKonvolut({
+      filtered: isFiltered,
+      search: shared.search,
+      deepLink: Boolean(getState().selectedRecord) || expandedRecord != null,
+      userToggled: konvolutTouched,
+    })) {
+      const first = firstKonvolutId(items);
+      if (first) openKonvolute.add(first);
+    }
+    // Family counts in the head tooltip aggregate over visible children, so they
+    // are read before collapse takes those children out of the rows.
     items = applyCollapse(annotateKonvolutHeadTips(store, items), openKonvolute);
   }
 
   renderRows(items);
+  setJumpTriggerState(jumpTrigger, currentJumpModel().disabled);
+  if (jumpList) renderJumpList();
 
   visibleRecords = recordCount;
   if (sidebar) sidebar.update();
@@ -157,6 +216,8 @@ function buildTable() {
   const tbody = el('tbody');
   tbody.id = 'bestand-tbody';
   table.appendChild(tbody);
+  // Delegated, so it survives every rebuild of the tbody.
+  table.addEventListener('keydown', onTableKeydown);
   return table;
 }
 
@@ -165,12 +226,30 @@ function buildTable() {
  *  It sticks above the sticky Konvolut head, which offsets itself by the
  *  header height in bestand.css. */
 const HEAD_LABELS = { 'archiv-col-signatur': 'Signatur', 'archiv-col-titel': 'Titel',
-  'archiv-col-typ': 'Typ', 'archiv-col-datum': 'Datum' };
+  'archiv-col-typ': 'Typ', 'archiv-col-datum': 'Datum',
+  'archiv-col-links': 'Entitäten' };
+
+/** Only where the label alone does not say what the column carries. */
+const HEAD_TIPS = {
+  'archiv-col-links': 'Personen, Institutionen, Orte und Werke, die im Dokument vorkommen',
+};
 
 function buildHead() {
   const tr = el('tr');
   for (const cls of COLUMNS) {
-    tr.appendChild(el('th', { className: cls, scope: 'col' }, HEAD_LABELS[cls] || ''));
+    const th = el('th', {
+      className: cls, scope: 'col',
+      dataset: HEAD_TIPS[cls] ? { tip: HEAD_TIPS[cls], tipWrap: '' } : {},
+    }, HEAD_LABELS[cls] || '');
+    // The Signatur head carries the jump list: with several Konvolute open the
+    // table runs long and the Signatur is what one navigates by (Projektleitung,
+    // 2026-09-04). It is navigation, not a filter, so it stays out of the
+    // sidebar.
+    if (cls === 'archiv-col-signatur') {
+      jumpTrigger = buildJumpTrigger(toggleJumpList);
+      th.appendChild(jumpTrigger);
+    }
+    tr.appendChild(th);
   }
   return el('thead', {}, tr);
 }
@@ -224,14 +303,23 @@ function renderRows(items) {
     }
 
     // Date: a Konvolut shows the span of its children, an object row its own.
+    // Without `rico:date` the row falls back to the derived Zeitanker of the
+    // data layer (contract A4, E-141), so a record dated only through an
+    // annotated Auftritt shows its year instead of reading as undated.
+    const anchor = item.isKonvolut ? null : primaryYear(store, r);
+    const derivedYear = (!item.isKonvolut && !r['rico:date'] && anchor.year != null)
+      ? String(anchor.year) : '';
     let displayDate = item.isKonvolut
       ? (meta?.dateDisplay || '')
-      : (formatDate(r['rico:date']) || 'o. D.');
+      : (formatDate(r['rico:date']) || derivedYear || 'o. D.');
     if (item.isChild && !item.flattened
       && isRedundantChildDate(displayDate, store.konvolutMeta.get(item.konvolutId)?.dateDisplay)) {
       displayDate = '';
     }
-    const isUndated = isUndatedItem(item);
+    // Only a rendered year is marked as derived; where the redundancy rule
+    // above emptied the cell there is nothing to explain.
+    const isDerived = derivedYear !== '' && displayDate === derivedYear;
+    const isUndated = isUndatedItem(item, store);
 
     const titelEl = el('span', {
       className: 'archiv-titel',
@@ -243,11 +331,21 @@ function renderRows(items) {
     if (item.isKonvolut) {
       trProps.onClick = () => toggleKonvolut(item.konvolutId);
       trProps['aria-expanded'] = String(isOpen);
+      // Heads are the keyboard waypoints of the table: arrow keys walk them,
+      // Enter and Space toggle, Escape closes (Projektleitung, 2026-09-04).
+      trProps.tabindex = '0';
       // The datasets stay, the DOM verification tool reads the hierarchy from them.
       trProps.dataset = { konvolutHeader: item.konvolutId };
     } else {
       trProps.onClick = () => toggleRecordInline(recordId);
-      if (item.isChild) trProps.dataset = { konvolutChild: item.konvolutId };
+      // An object row is a control like the head: the arrow walk reaches it,
+      // Enter opens its detail. tabindex -1 keeps it out of the tab sequence,
+      // which would otherwise run through every row of the table
+      // (Projektleitung, 2026-09-04).
+      trProps.tabindex = '-1';
+      trProps.dataset = item.isChild
+        ? { konvolutChild: item.konvolutId, recordRow: recordId }
+        : { recordRow: recordId };
     }
 
     const headTip = item.isKonvolut
@@ -265,6 +363,9 @@ function renderRows(items) {
         tip: [displayTitle.length > 80 ? displayTitle : '', headTip].filter(Boolean).join('\n'),
         tipWrap: '', tipPos: 'bottom-left',
       });
+      // The tip is set after construction, so el() cannot keep it out of the
+      // accessible name here (Projektleitung, 2026-09-04).
+      titelEl.setAttribute('aria-label', displayTitle);
     }
     const tr = el('tr', trProps,
       el('td', { className: 'archiv-col-signatur' },
@@ -293,12 +394,23 @@ function renderRows(items) {
         // In flat mode the Konvolut head is gone, so a quiet provenance hint
         // names the Konvolut the child row comes from.
         item.flattened ? (() => {
+          const konvolut = store.konvolute.get(item.konvolutId);
           const kTitle = store.konvolutMeta.get(item.konvolutId)?.title
-            || store.konvolute.get(item.konvolutId)?.['rico:identifier'] || '';
-          return kTitle ? el('span', {
-            className: 'archiv-folio-hint archiv-folio-hint--konvolut',
-            dataset: { tip: `Aus Konvolut: ${kTitle}` },
-          }, `aus: ${truncate(kTitle, 40)}`) : null;
+            || konvolut?.['rico:identifier'] || '';
+          if (!kTitle) return null;
+          const kSig = formatSignatur(konvolut?.['rico:identifier']);
+          // The title is not the row's own, it comes from its Konvolut, so it
+          // carries the mark of supplemented values (Projektleitung,
+          // 2026-09-04).
+          return el('span', { className: 'archiv-folio-hint archiv-folio-hint--konvolut' },
+            'aus: ',
+            el('span', {
+              className: 'mark-derived',
+              dataset: {
+                tip: `ergänzt: Titel des Konvoluts ${kSig || item.konvolutId}`,
+                tipWrap: '',
+              },
+            }, truncate(kTitle, 40)));
         })() : null,
       ),
       el('td', { className: 'archiv-col-typ' },
@@ -306,15 +418,35 @@ function renderRows(items) {
       ),
       el('td', { className: 'archiv-col-datum' },
         el('span', {
-          className: `archiv-datum ${isUndated ? 'archiv-datum--undated' : ''}`,
-          dataset: isUndated ? { tip: 'Ohne Datumsangabe in der Quelle' } : {},
+          // Absence keeps its own form; a derived year carries the one mark of
+          // supplemented values (Projektleitung, 2026-09-04).
+          className: 'archiv-datum'
+            + (isUndated ? ' archiv-datum--undated' : '')
+            + (isDerived ? ' mark-derived' : ''),
+          dataset: isUndated ? { tip: 'ohne Datierung in der Quelle' }
+            : (isDerived
+              ? { tip: anchor.label
+                ? `ergänzt: Jahr aus der Datierung „${roleLabel(anchor.label)}“`
+                : 'ergänzt: Jahr aus einer Datierung des Belegs',
+              tipWrap: '' }
+              : {}),
         }, displayDate)
       ),
       el('td', { className: 'archiv-col-links' },
-        item.isKonvolut ? null : buildErschliessung(store, r),
+        // The open head legends the column for the rows it just revealed; the
+        // closed head has no rows below it and keeps the cell empty
+        // (Projektleitung, 2026-09-04).
+        item.isKonvolut
+          ? (isOpen ? buildKonvolutFamilyLegend() : null)
+          : buildErschliessung(store, r),
       ),
       el('td', { className: 'archiv-col-korb' },
-        !item.isKonvolut ? buildKorbBtn(recordId, onKorbToggled) : null,
+        item.isKonvolut
+          // Only the open head carries it: it is the one that sticks, and from
+          // deep inside a Konvolut the way back out has to be reachable at the
+          // edge one is already looking at.
+          ? (isOpen ? buildKonvolutCloseBtn(() => toggleKonvolut(item.konvolutId)) : null)
+          : buildKorbBtn(recordId, onKorbToggled),
       ),
     );
     tbody.appendChild(tr);
@@ -324,37 +456,348 @@ function renderRows(items) {
       const detailTr = el('tr', { className: 'archiv-row--detail' });
       const detailTd = el('td', { colspan: '6' });
       detailTd.appendChild(buildInlineDetail(r, store, {
-        onClose: () => { expandedRecord = null; renderRows(currentItems); },
+        onClose: () => closeDetail(recordId),
       }));
       detailTr.appendChild(detailTd);
       tbody.appendChild(detailTr);
     }
   }
+
+  // A keyboard toggle rebuilds the tbody under the focused row; without this
+  // the focus falls back to the document and the arrow walk starts over.
+  if (pendingHeadFocus) {
+    headRow(pendingHeadFocus)?.focus({ preventScroll: true });
+    pendingHeadFocus = null;
+  }
+  // The detail is the new context, so the focus follows it into its head line
+  // and comes back to the row when it closes (Projektleitung, 2026-09-04).
+  if (pendingDetailFocus) {
+    const tbodyEl = document.getElementById('bestand-tbody');
+    tbodyEl?.querySelector('.inline-detail__head')?.focus({ preventScroll: true });
+    pendingDetailFocus = false;
+  }
+  if (pendingRowFocus) {
+    recordRow(pendingRowFocus)?.focus({ preventScroll: true });
+    pendingRowFocus = null;
+  }
+}
+
+/** Display form of a vocabulary role label, which the vocabulary keeps in lower
+ *  case; the UI writes it capitalised like the Rollenfacette (E-184). */
+function roleLabel(label) {
+  return label ? label[0].toLocaleUpperCase('de-DE') + label.slice(1) : '';
 }
 
 /** Hint that tells apart children sharing the collective title of their
- *  Konvolut. The dot names the family the hint was read from, the tooltip the
- *  inherited title. */
+ *  Konvolut. The icon says a linked entity stands in for the title and stays in
+ *  tertiary text colour, so the family colour code is not repeated here; the
+ *  name itself is a stand-in and not the row's own title, so it carries the
+ *  mark of supplemented values (Projektleitung, 2026-09-04). */
 function folioHintEl(record, item) {
   const hint = getFolioHint(store, record, item.konvolutId);
   if (!hint) return null;
-  const collective = store.konvolutMeta.get(item.konvolutId)?.title || '';
-  return el('span', {
-    className: 'archiv-folio-hint',
-    dataset: collective ? { tip: `Sammeltitel: ${collective}` } : {},
-  },
+  return el('span', { className: 'archiv-folio-hint' },
+    familyIcon(hint.family, { size: 11, className: 'archiv-folio-hint__icon' }),
     el('span', {
-      className: `ersch-dot ersch-dot--on ersch-dot--${hint.family}`, 'aria-hidden': 'true',
-    }),
-    hint.name);
+      className: 'mark-derived',
+      dataset: {
+        tip: 'ergänzt: erster Beteiligter statt des ererbten Sammeltitels',
+        tipWrap: '',
+      },
+    }, hint.name));
 }
 
 /** Opening a Konvolut is a reading state; it survives no reload and appears in
- *  no URL. */
-function toggleKonvolut(konvolutId) {
-  if (openKonvolute.has(konvolutId)) openKonvolute.delete(konvolutId);
-  else openKonvolute.add(konvolutId);
+ *  no URL. The head is parked under the sticky column head afterwards, so the
+ *  rows that just appeared start at the top edge instead of below the fold.
+ *  Only a toggle the reader triggered scrolls: the auto-open of the first head
+ *  (E-206) and the deep link add to `openKonvolute` directly and keep their own
+ *  scroll behaviour. */
+function toggleKonvolut(konvolutId, { keepFocus = false } = {}) {
+  konvolutTouched = true;
+  const opening = !openKonvolute.has(konvolutId);
+  if (opening) openKonvolute.add(konvolutId);
+  else openKonvolute.delete(konvolutId);
+  if (keepFocus) pendingHeadFocus = konvolutId;
   updateBestandView();
+  // On close only when the head ran out of view: closing from the top of the
+  // table must not move the page under the reader.
+  scrollKonvolutUnderHead(konvolutId, { onlyWhenOutside: !opening });
+}
+
+/** The scrolling area of the view and the row of a Konvolut head in it. */
+function mainEl() {
+  return container ? container.querySelector('.archiv-main') : null;
+}
+
+function headRow(konvolutId) {
+  const main = mainEl();
+  return main ? main.querySelector(`tr[data-konvolut-header="${konvolutId}"]`) : null;
+}
+
+function recordRow(recordId) {
+  const main = mainEl();
+  return main ? main.querySelector(`tr[data-record-row="${CSS.escape(recordId)}"]`) : null;
+}
+
+/** The row a jump to a Konvolut parks under the sticky column head: its head in
+ *  the structural view, its first row in the flattened cut, where the heads are
+ *  gone (Projektleitung, 2026-09-04). */
+function jumpTargetRow(konvolutId) {
+  const main = mainEl();
+  if (!main) return null;
+  return headRow(konvolutId)
+    || main.querySelector(`tr[data-konvolut-child="${konvolutId}"]`);
+}
+
+/** Height of the sticky column head, the band every jump target parks below. */
+function headBand(main) {
+  const thead = main.querySelector('.archiv-table thead');
+  return thead ? thead.getBoundingClientRect().height : 0;
+}
+
+/**
+ * Position of a row in the scroll space of `.archiv-main`. Rects are useless
+ * here, because an open head is `position: sticky` and reports its parked
+ * position, not the one to scroll to. `offsetTop` is free of that, but its base
+ * is not: a static `tr` measures from the `table`, while a sticky head is
+ * positioned and measures from `.archiv-main` directly. Summing the whole
+ * offsetParent chain up to the scrolling area covers both regimes; taking the
+ * row's own offsetTop and subtracting the table's mixed the two and came out
+ * one table offset short for every row that was not sticky (Projektleitung,
+ * 2026-09-04).
+ */
+function rowTopInScrollSpace(main, row) {
+  let top = 0;
+  for (let node = row; node && node !== main; node = node.offsetParent) {
+    top += node.offsetTop;
+  }
+  return top;
+}
+
+/** Scrolls the target row of a Konvolut to sit directly under the sticky column
+ *  head. */
+function scrollKonvolutUnderHead(konvolutId, { onlyWhenOutside = false } = {}) {
+  const main = mainEl();
+  const row = jumpTargetRow(konvolutId);
+  if (!main || !row) return;
+  const band = headBand(main);
+  const top = rowTopInScrollSpace(main, row);
+  if (onlyWhenOutside
+    && top >= main.scrollTop + band && top <= main.scrollTop + main.clientHeight - row.offsetHeight) {
+    return;
+  }
+  main.scrollTo({
+    top: Math.max(0, top - band),
+    behavior: scrollBehavior(),
+  });
+}
+
+/** What the jump list can offer for the rows currently on screen. */
+function currentJumpModel() {
+  if (!store) return { flat: false, entries: [], showToggles: true, disabled: true };
+  return jumpListModel(currentItems, store, flatCut);
+}
+
+/** Jump targets with their scroll-space offsets, the input of the current
+ *  marker. Row order, so the "last one at or above the line" rule holds. */
+function jumpOffsets() {
+  const main = mainEl();
+  if (!main) return [];
+  const out = [];
+  for (const entry of currentJumpModel().entries) {
+    const row = jumpTargetRow(entry.konvolutId);
+    if (row) out.push({ konvolutId: entry.konvolutId, top: rowTopInScrollSpace(main, row) });
+  }
+  return out;
+}
+
+function currentKonvolutId() {
+  const main = mainEl();
+  if (!main) return null;
+  return currentKonvolutFromOffsets(jumpOffsets(), main.scrollTop + headBand(main));
+}
+
+/**
+ * Jump list of the Signatur column head. It hangs on the body in fixed
+ * position: inside `.archiv-main` it would be clipped by that element's
+ * `overflow-y: auto` and would scroll away from its anchor, and the sticky
+ * thead (z-index 11) would sit in the same stacking context.
+ */
+function toggleJumpList() {
+  if (jumpList) closeJumpList();
+  else if (!currentJumpModel().disabled) openJumpList();
+}
+
+function openJumpList() {
+  const main = mainEl();
+  if (!main) return;
+  jumpList = el('div', { className: 'archiv-jump-anchor' });
+  document.body.appendChild(jumpList);
+  renderJumpList();
+  positionJumpList();
+  if (jumpTrigger) jumpTrigger.setAttribute('aria-expanded', 'true');
+  document.addEventListener('pointerdown', onJumpOutside, true);
+  document.addEventListener('keydown', onJumpKeydown, true);
+  window.addEventListener('resize', closeJumpList);
+  // The current marker only has to follow while the list is on screen, so the
+  // scroll listener lives exactly as long as the list does.
+  main.addEventListener('scroll', onMainScroll, { passive: true });
+  const first = jumpList.querySelector('.archiv-jump__entry--current')
+    || jumpList.querySelector('button');
+  if (first) first.focus();
+}
+
+function closeJumpList() {
+  if (!jumpList) return;
+  const main = mainEl();
+  if (main) main.removeEventListener('scroll', onMainScroll);
+  document.removeEventListener('pointerdown', onJumpOutside, true);
+  document.removeEventListener('keydown', onJumpKeydown, true);
+  window.removeEventListener('resize', closeJumpList);
+  if (jumpScrollRaf) cancelAnimationFrame(jumpScrollRaf);
+  jumpScrollRaf = 0;
+  jumpList.remove();
+  jumpList = null;
+  if (jumpTrigger) jumpTrigger.setAttribute('aria-expanded', 'false');
+}
+
+function renderJumpList() {
+  if (!jumpList) return;
+  const { entries, showToggles } = currentJumpModel();
+  clear(jumpList);
+  jumpList.appendChild(buildJumpList({
+    entries,
+    showToggles,
+    openIds: openKonvolute,
+    currentId: currentKonvolutId(),
+    allOpen: entries.length > 0 && entries.every(e => openKonvolute.has(e.konvolutId)),
+    onJump: (konvolutId) => {
+      closeJumpList();
+      // In the flattened cut there is no head to open, only a row to scroll to.
+      if (showToggles && !openKonvolute.has(konvolutId)) toggleKonvolut(konvolutId);
+      else scrollKonvolutUnderHead(konvolutId);
+      // preventScroll: focusing the trigger scrolls it into view, and WebKit
+      // cancels the smooth scroll just started over it (Projektleitung,
+      // 2026-09-04). The trigger sits in the sticky thead and is visible anyway.
+      if (jumpTrigger) jumpTrigger.focus({ preventScroll: true });
+    },
+    onToggleAll: () => {
+      konvolutTouched = true;
+      const allOpen = entries.every(e => openKonvolute.has(e.konvolutId));
+      openKonvolute.clear();
+      if (!allOpen) for (const e of entries) openKonvolute.add(e.konvolutId);
+      updateBestandView();  // redraws the list along with the rows
+    },
+  }));
+}
+
+function positionJumpList() {
+  if (!jumpList || !jumpTrigger) return;
+  const anchor = jumpTrigger.closest('th') || jumpTrigger;
+  const rect = anchor.getBoundingClientRect();
+  jumpList.style.top = `${rect.bottom + 2}px`;
+  jumpList.style.left = `${Math.max(4, rect.left)}px`;
+}
+
+/** Only the marker follows the scroll: a full rebuild would drop the keyboard
+ *  focus out of the list on every frame. */
+function markJumpCurrent() {
+  if (!jumpList) return;
+  const current = currentKonvolutId();
+  for (const entry of jumpList.querySelectorAll('.archiv-jump__entry')) {
+    const isCurrent = entry.dataset.konvolutJump === current;
+    entry.classList.toggle('archiv-jump__entry--current', isCurrent);
+    entry.setAttribute('aria-selected', String(isCurrent));
+    if (isCurrent) entry.setAttribute('aria-current', 'true');
+    else entry.removeAttribute('aria-current');
+  }
+}
+
+function onMainScroll() {
+  if (jumpScrollRaf) return;
+  jumpScrollRaf = requestAnimationFrame(() => {
+    jumpScrollRaf = 0;
+    markJumpCurrent();
+  });
+}
+
+function onJumpOutside(e) {
+  if (!jumpList) return;
+  if (jumpList.contains(e.target) || (jumpTrigger && jumpTrigger.contains(e.target))) return;
+  closeJumpList();
+}
+
+function onJumpKeydown(e) {
+  if (!jumpList) return;
+  if (e.key === 'Escape') {
+    e.preventDefault();
+    closeJumpList();
+    if (jumpTrigger) jumpTrigger.focus({ preventScroll: true });
+    return;
+  }
+  if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+  const options = [...jumpList.querySelectorAll('button')];
+  if (options.length === 0) return;
+  e.preventDefault();
+  const i = options.indexOf(document.activeElement);
+  const step = e.key === 'ArrowDown' ? 1 : -1;
+  const next = i === -1 ? 0 : Math.min(options.length - 1, Math.max(0, i + step));
+  options[next].focus();
+}
+
+/**
+ * Keyboard walk over the rows. Arrow keys step through Konvolut heads and
+ * object rows alike, Enter and Space open what the row carries, Escape closes
+ * it again; the same three keys mean the same thing in the jump list
+ * (Projektleitung, 2026-09-04). Keys inside a form field belong to that field,
+ * and inside the open detail only Escape is the table's business.
+ */
+function onTableKeydown(e) {
+  const target = e.target;
+  if (!(target instanceof Element)) return;
+  if (target.closest('input, textarea, select, [contenteditable="true"]')) return;
+  if (target.closest('.inline-detail')) {
+    if (e.key !== 'Escape' || expandedRecord == null) return;
+    e.preventDefault();
+    closeDetail(expandedRecord);
+    return;
+  }
+
+  const row = target.closest('tr[data-konvolut-header], tr[data-record-row]');
+  if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+    const rows = [...document.querySelectorAll(
+      '#bestand-tbody tr[data-konvolut-header], #bestand-tbody tr[data-record-row]')];
+    if (rows.length === 0) return;
+    e.preventDefault();
+    const i = row ? rows.indexOf(row) : -1;
+    const step = e.key === 'ArrowDown' ? 1 : -1;
+    const next = i === -1 ? 0 : Math.min(rows.length - 1, Math.max(0, i + step));
+    rows[next].focus();
+    return;
+  }
+  if (!row) return;
+
+  const konvolutId = row.dataset.konvolutHeader;
+  if (konvolutId) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      toggleKonvolut(konvolutId, { keepFocus: true });
+    } else if (e.key === 'Escape' && openKonvolute.has(konvolutId)) {
+      e.preventDefault();
+      toggleKonvolut(konvolutId, { keepFocus: true });
+    }
+    return;
+  }
+
+  const recordId = row.dataset.recordRow;
+  if (e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault();
+    toggleRecordInline(recordId);
+  } else if (e.key === 'Escape' && expandedRecord === recordId) {
+    e.preventDefault();
+    closeDetail(recordId);
+  }
 }
 
 /** Only when the same record is expanded does its second Korb control need to
@@ -364,12 +807,20 @@ function onKorbToggled(recordId) {
 }
 
 function toggleRecordInline(recordId) {
-  expandedRecord = expandedRecord === recordId ? null : recordId;
+  if (expandedRecord === recordId) { closeDetail(recordId); return; }
+  expandedRecord = recordId;
+  pendingDetailFocus = true;
+  renderRows(currentItems);
+}
+
+function closeDetail(recordId) {
+  expandedRecord = null;
+  pendingRowFocus = recordId;
   renderRows(currentItems);
 }
 
 /** Programmatically expand a record's inline detail (used by cross-navigation). */
-export function expandRecord(recordId) {
+function expandRecord(recordId) {
   if (!recordId || !store) return;
   expandedRecord = recordId;
   // A deep link or a jump from another view must not land in a closed Konvolut,
@@ -380,7 +831,9 @@ export function expandRecord(recordId) {
   // Scroll to the expanded row
   requestAnimationFrame(() => {
     const row = document.querySelector('.archiv-row--detail');
-    if (row) row.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    if (row) {
+      row.scrollIntoView({ behavior: scrollBehavior(), block: 'nearest' });
+    }
   });
 }
 

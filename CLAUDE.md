@@ -42,25 +42,27 @@ Python 3.11+, dann `pip install -r requirements-test.txt`. Die Datei bindet `req
 
 ### Pipeline (vollständiger Lauf, Default-Pfade, kopiert nach `docs/data/`)
 
-Sechs Schritte in dieser Reihenfolge, jeder einzeln aufrufbar:
+Sieben Schritte in dieser Reihenfolge, jeder einzeln aufrufbar:
 
 ```bash
 python scripts/explore.py         # Strukturdiagnose der Quelle -> data/reports/exploration-report.md
 python scripts/validate.py        # Quellprüfung               -> data/reports/validation-report.md
 python scripts/transform.py       # Quelle nach JSON-LD        -> data/output/m3gim.jsonld
 python scripts/build-views.py     # Veroeffentlichung          -> Kopie von m3gim.jsonld nach docs/data/
-python scripts/audit-data.py      # Abgleich XLSX / JSON-LD / Views, nur Konsolenreport
+python scripts/audit-data.py      # Abgleich Quelle / JSON-LD, nur Konsolenreport
 python scripts/report-quality.py  # laufende Zählstände        -> data/reports/quality-snapshot.md
 python scripts/build-model-page.py # Modellseite aus dem Vokabular -> docs/datenmodell.html
 ```
+
+`scripts/build-social-images.py` steht ebenfalls außerhalb des Laufs und schreibt das Open-Graph-Bild und die PNG-Favicons nach `docs/img/` aus dem Akzent-Token in `variables.css`; es läuft nur, wenn Palette oder Wortmarke sich ändern, und braucht Pillow, das in keiner Requirements-Datei steht.
 
 `reconcile.py` und `enrich-wikidata.py` stehen außerhalb dieses Laufs. Sie brauchen Netzzugriff, schreiben `wikidata-reconciliation.json` und `wikidata-enrichment.json` nach `data/output/` und laufen nur, wenn der Wikidata-Abgleich neu gezogen wird. Beide Ergebnisdateien sind git-getrackt und im normalen Klon vorhanden.
 
 **`validate.py` endet mit Exit 1, sobald der Report ERROR-Befunde führt.** Das ist der erwartete Zustand am aktuellen Datenstand. Die Befunde sind Quellfehler, die über die Partner-Übergabeliste [`data/reports/source-errors-handover-2026-09-01.md`](data/reports/source-errors-handover-2026-09-01.md) ans Erschließungsteam gehen; der Lauf hat geleistet, was er soll, sobald der Report geschrieben ist. `audit-data.py` folgt derselben Konvention und meldet am aktuellen Stand einen Fehler, die bis auf die Signatur leere Objektzeile `UAKUG/NIM_138`, ebenfalls ein Quellbefund der Übergabeliste. `transform.py` schließt jeden Lauf mit einer Aufstellung der verworfenen Quellzeilen ab und bricht ohne die beiden `wikidata-*.json` mit Exit 1 ab, sofern nicht `M3GIM_ALLOW_NO_WIKIDATA=1` gesetzt ist.
 
-Die ENV-Overrides greifen bei `explore.py`, `validate.py`, `transform.py` und `build-views.py`. `audit-data.py` und `report-quality.py` lesen die Default-Pfade fest. Wer `M3GIM_OUTPUT_DIR` auf ein leeres Verzeichnis zeigt oder das Ausgabeverzeichnis leert, verliert die Normdatenanreicherung stillschweigend; die Falle ist in [`knowledge/architecture.md`](knowledge/architecture.md) § ENV-Overrides beschrieben.
+Die ENV-Overrides greifen bei `explore.py`, `validate.py`, `transform.py` und `build-views.py`. `audit-data.py` und `report-quality.py` lesen die Default-Pfade fest. Wer `M3GIM_OUTPUT_DIR` auf ein leeres Verzeichnis zeigt oder das Ausgabeverzeichnis leert, verliert die Normdatenanreicherung. Den Fall fängt der Wikidata-Guard aus dem vorigen Absatz ab, solange `M3GIM_ALLOW_NO_WIKIDATA` nicht gesetzt ist; die Falle ist in [`knowledge/architecture.md`](knowledge/architecture.md) § ENV-Overrides beschrieben.
 
-`build-views.py` schreibt `m3gim.jsonld` nach `docs/data/`. **`m3gim.jsonld` ist die einzige primäre Datenquelle für das Frontend**. Die drei Derivate werden seit Session 32 von keinem aktiven Tab mehr konsumiert (sie wurden für die entfernten D3-Prototypen gebaut) und stehen im Deferred-Block von `knowledge/specification.md` § Stand; ihr Verfall oder Weiterbau ist eine offene Operator-Entscheidung.
+`build-views.py` schreibt `m3gim.jsonld` nach `docs/data/`. **`m3gim.jsonld` ist die einzige Datenquelle für das Frontend.** Die früheren vorverdichteten Derivate sind mit E-140 entfernt.
 
 ### Tests
 
@@ -72,7 +74,7 @@ pytest tests/                                     # inkl. Determinismus-Test (sl
 node --test tests/frontend/*.test.mjs             # JS-Unit-Tests des Frontends
 ```
 
-Keine ENV-Overrides mehr nötig — es gibt nur einen Datenstand. Die Suite ist zweischichtig: Invarianten prüfen Modell, Pipeline und Frontend-Kontrakt und müssen grün sein; der Datenspiegel (`data_quality`) behauptet die Sauberkeit der Quelle, ist absichtlich rot, solange bekannte Quellfehler bestehen, und seine Fehlermeldungen sind die Befundliste ans Erschließungsteam. Rot im Datenspiegel ist der erwartete Zustand, Rot in den Invarianten ist ein Bug.
+Keine ENV-Overrides mehr nötig, es gibt nur einen Datenstand. Die Suite ist zweischichtig: Invarianten prüfen Modell, Pipeline und Frontend-Kontrakt und müssen grün sein; der Datenspiegel (`data_quality`) behauptet die Sauberkeit der Quelle, ist absichtlich rot, solange bekannte Quellfehler bestehen, und seine Fehlermeldungen sind die Befundliste ans Erschließungsteam. Rot im Datenspiegel ist der erwartete Zustand, Rot in den Invarianten ist ein Bug.
 
 Der Browser-Smoke-Test `tests/frontend/test_smoke.py` ist ein optionales Extra. Playwright steht in keiner Requirements-Datei; fehlt das Paket, überspringt sich der Test, und der Standardlauf prüft weiterhin die Pipeline-Artefakte samt Frontend-Kontrakt aus den Daten heraus, ohne die gerenderte Oberfläche. Wer den Browserteil will, installiert ihn mit `pip install playwright` und `playwright install chromium`; danach läuft er in `pytest tests/` mit und lässt sich mit `pytest -m frontend tests/frontend/` einzeln ansteuern. Umfang des Smoke-Durchlaufs in [`knowledge/testing.md`](knowledge/testing.md) § Frontend-Smoke.
 
@@ -100,7 +102,7 @@ Das Tool schaltet intern auf UTF-8, kein `PYTHONIOENCODING` mehr nötig.
 python scripts/verify-manual-approvals.py
 ```
 
-Prüft alle `match: "manual"`-Einträge in `wikidata-reconciliation.json` gegen Wikidata (Label + Alias + Typ-Signal in der Description). Pflichtlauf nach jedem manuellen Approval-Batch — Session 34 hat gezeigt, dass Q-IDs aus dem Kopf tragende Datenfehler produzieren (Q2861 war Rostock statt Bayreuth, Q200491 war ein Game-Publisher statt Iwano-Frankiwsk). Offline überspringbar via `SKIP_VERIFY_MANUAL=1`.
+Prüft alle `match: "manual"`-Einträge in `wikidata-reconciliation.json` gegen Wikidata (Label + Alias + Typ-Signal in der Description). Pflichtlauf nach jedem manuellen Approval-Batch, weil Session 34 gezeigt hat, dass Q-IDs aus dem Kopf tragende Datenfehler produzieren (Q2861 war Rostock statt Bayreuth, Q200491 war ein Game-Publisher statt Iwano-Frankiwsk). Offline überspringbar via `SKIP_VERIFY_MANUAL=1`.
 
 ## Workflow-Regeln
 
@@ -131,11 +133,11 @@ Commit-Regel aus den Projektgewohnheiten: **nie selbständig committen**. Auch n
 
 ### docs/data/ nur über Pipeline
 
-Die Dateien in `docs/data/*.json` + `docs/data/m3gim.jsonld` werden ausschließlich von `build-views.py` bzw. manuellem Kopieren aus `data/output/` geschrieben. Nicht direkt editieren — das würde bei nächstem Pipeline-Lauf überschrieben.
+`docs/data/m3gim.jsonld` wird ausschließlich von `build-views.py` bzw. manuellem Kopieren aus `data/output/` geschrieben. Nicht direkt editieren, das würde beim nächsten Pipeline-Lauf überschrieben. Daneben liegt in `docs/data/geo/` nur die mitgelieferte Weltgeometrie der Karte, die kein Pipeline-Schritt erzeugt.
 
 ### Plakate/Dateinamen-Eigenheiten
 
-- Quellformat der Verknüpfungen sind seit 2026-08-31 die CSV-Ausfuhren je Blatt unter `data/google-spreadsheet/verknuepfungen/` (`Box_1.csv` bis `Box_9.csv` plus `Typ-Rolle.csv`, E-152). `load_verknuepfungen` nimmt daneben weiter eine `M3GIM-Verknüpfungen.xlsx` an, deren Dateiname das `ü` trägt, nicht `ue`; ohne beides wirft `resolve_verknuepfungen_source` `FileNotFoundError`.
+- Quellformat der Verknüpfungen sind seit 2026-08-31 die CSV-Ausfuhren je Blatt unter `data/google-spreadsheet/verknuepfungen/` (je Box eine `Box_N.csv`, die Nummern sind nicht lückenlos, dazu `Typ-Rolle.csv`, E-152). `resolve_verknuepfungen_source` nimmt jedes `Box_*.csv` im Verzeichnis; fehlt das Verzeichnis, greift als Fallback die erste Datei, die auf `M3GIM-Verkn*pfungen*.xlsx` passt, also beide Schreibweisen `ü` und `ue`. Ohne beides wirft die Funktion `FileNotFoundError`.
 - Plakate-IDs: `UAKUG/NIM/PL_XX` (mit Slash), nicht `UAKUG/NIM_PL_XX`.
 - Konvolut-Hierarchie: Objekt-ID = `archivsignatur + " " + folio`. Die Folio-Spalte im aktuellen Objekte-XLSX heißt `folio nr` (früher `folio` oder `Unnamed: 2`). Pipeline akzeptiert aktuell alle Varianten.
 
@@ -143,7 +145,7 @@ Vollständiger Katalog der Pipeline-Workarounds (Header-Shifts, Finance-Currency
 
 ## Rote Linien
 
-- **DSGVO**: `antrag.md`, `handreichung.md` nur im Obsidian-Vault `C:\Users\Chrisi\Documents\obsidian\Projects\M³GIM\`, **nie ins Repo**. Die `.gitignore` führt entsprechende Einträge.
+- **DSGVO**: `antrag.md`, `handreichung.md` nur im Obsidian-Vault unter `Projects\M³GIM\`, **nie ins Repo**. Die `.gitignore` führt entsprechende Einträge.
 - **Keine destruktiven Git-Operationen** (`reset --hard`, `push --force`, `checkout .`) ohne explizite Nutzer-Aufforderung.
 - **Pre-commit-Hooks nicht umgehen** (`--no-verify`).
 - **Nicht direkt in `docs/data/` schreiben** (siehe oben).
@@ -154,10 +156,13 @@ Vollständiger Katalog der Pipeline-Workarounds (Header-Shifts, Finance-Currency
 data/
 ├── google-spreadsheet/   # Quelle, git-tracked: Objekte als CSV (+XLSX-Fallback),
 │                         #   vier Index-XLSX, verknuepfungen/*.csv
-├── output/               # Pipeline-Output (m3gim.jsonld, wikidata-*.json, views/)
+├── output/               # Pipeline-Output (m3gim.jsonld, wikidata-*.json)
 ├── reports/              # Kurationsbelege der Normdaten, Quality-Snapshot, offene
 │                         #   Entscheidungsvorlagen; die erzeugten Reports sind
 │                         #   nicht versioniert, ein Lauf stellt sie her
+├── curated/              # kuratierte Handzuarbeit, die die Pipeline liest
+├── backup/               # Sicherungen der Quellexporte
+├── migration/            # Zwischenstände einer Quellumstellung
 └── _archive/             # historische Stände; die XLSX darin sind unversioniert
 ```
 
@@ -168,5 +173,5 @@ Das Frontend konsumiert ausschließlich `docs/data/m3gim.jsonld`. Vorverdichtete
 ## Wegweiser
 
 - Details zu Architektur, Datenmodell, Tests, Frontend → `knowledge/` (siehe `knowledge/INDEX.md`)
-- Session-Memory (persistiert über Sessions): `.claude/projects/*/memory/`
+- Session-Memory (persistiert über Sessions): im Benutzerprofil unter `.claude/projects/*/memory/`, nicht im Repo
 - Aktueller Stand und nächste Schritte: `knowledge/specification.md` § Stand und nächste Schritte

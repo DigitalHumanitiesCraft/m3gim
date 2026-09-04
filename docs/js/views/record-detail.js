@@ -8,10 +8,11 @@
  */
 
 import { el } from '../utils/dom.js';
+import { familyIcon } from '../ui/family-icons.js';
 import { formatDocType } from '../utils/format.js';
 import { formatDate } from '../utils/date-parser.js';
 import { toggleKorb, isInKorb } from '../ui/basket.js';
-import { formatLanguage, korbIcon, familyOfBlock } from '../data/constants.js';
+import { formatLanguage, korbIcon, korbTip, familyOfBlock } from '../data/constants.js';
 import { partitionRecord, sourceSummary } from './record-detail-data.js';
 import {
   agentChipEls, workChipEls, performanceChipEls, eventChipEls,
@@ -31,17 +32,17 @@ export function buildInlineDetail(record, store, { onClose } = {}) {
   // is shown as chips in the Bestand row itself.
   const wrapper = el('div', { className: 'inline-detail' });
 
-  // Signatur and Titel already stand in the table row above (E-157), so the
-  // action bar carries only the two equally sized icon buttons, labels in the
-  // tooltip.
+  // The head line keeps Signatur and Titel of the record in view while the
+  // reader scrolls inside a long detail; the two equally sized icon buttons sit
+  // at the right end of the meta bar and no longer take a row of their own
+  // (Projektleitung, 2026-09-04).
   const recordId = record['@id'];
   const inKorb = isInKorb(recordId);
   const closeIcon = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>';
-  const korbTip = (state) => state ? 'Aus dem Korb entfernen' : 'In den Korb';
   const actions = el('div', { className: 'inline-detail__actions' },
     el('button', {
       className: `inline-detail__action-btn inline-detail__korb-btn ${inKorb ? 'inline-detail__korb-btn--active' : ''}`,
-      title: korbTip(inKorb),
+      dataset: { tip: korbTip(inKorb) },
       'aria-label': korbTip(inKorb),
       onClick: (e) => {
         e.stopPropagation();
@@ -49,7 +50,7 @@ export function buildInlineDetail(record, store, { onClose } = {}) {
         const btn = e.currentTarget;
         const nowIn = isInKorb(recordId);
         btn.classList.toggle('inline-detail__korb-btn--active', nowIn);
-        btn.title = korbTip(nowIn);
+        btn.dataset.tip = korbTip(nowIn);
         btn.setAttribute('aria-label', korbTip(nowIn));
         btn.innerHTML = korbIcon(16, nowIn);
       },
@@ -57,7 +58,7 @@ export function buildInlineDetail(record, store, { onClose } = {}) {
     }),
     el('button', {
       className: 'inline-detail__action-btn inline-detail__close',
-      title: 'Schließen',
+      dataset: { tip: 'Detail schließen' },
       'aria-label': 'Detail schließen',
       onClick: (e) => {
         e.stopPropagation();
@@ -66,10 +67,22 @@ export function buildInlineDetail(record, store, { onClose } = {}) {
       html: closeIcon,
     })
   );
-  wrapper.appendChild(actions);
+
+  const identifier = record['rico:identifier'];
+  const title = record['rico:title'];
+  if (identifier || title) {
+    // The head line is where the focus lands when the detail opens, so it is
+    // programmatically focusable without entering the tab sequence
+    // (Projektleitung, 2026-09-04).
+    wrapper.appendChild(el('div', { className: 'inline-detail__head', tabindex: '-1' },
+      identifier ? el('span', { className: 'inline-detail__head-sig' }, String(identifier)) : null,
+      title ? el('span', { className: 'inline-detail__head-title' }, String(title)) : null,
+    ));
+  }
 
   // Metadata as one narrow full-width bar; the administrative fields sit in the
-  // collapsible foot instead, so only Status remains here.
+  // collapsible foot instead. Erschliessung is the Bearbeitungsstand of the
+  // record, not a status of the document (Projektleitung, 2026-09-04).
   const meta = [];
   const docType = formatDocType(record, store);
   if (docType) meta.push(['Typ', docType]);
@@ -80,8 +93,8 @@ export function buildInlineDetail(record, store, { onClose } = {}) {
   const extent = record['rico:hasExtent'];
   if (extent) meta.push(['Umfang', typeof extent === 'string' ? extent : String(extent)]);
   const status = record['m3gim-ontology:processingStatus'];
-  if (status) meta.push(['Status', status]);
-  if (meta.length) wrapper.appendChild(renderMetaBar(meta));
+  if (status) meta.push(['Erschließung', status]);
+  wrapper.appendChild(renderMetaBar(meta, actions));
 
   // rico:scopeAndContent is the record's own content description and reads as
   // prose directly under the meta bar, not as a meta item. The data holds none
@@ -104,7 +117,11 @@ export function buildInlineDetail(record, store, { onClose } = {}) {
     const b = byKey.get(key);
     if (!b) continue;
     const chipsEl = el('div', { className: 'inline-detail__chips' }, ...b.chips);
-    body.appendChild(renderSection(`${b.title} (${b.count})`, b.family, chipsEl));
+    // No count in the title, the chips below carry the quantity and the Bestand
+    // row already shows it. "Weitere" collects the roles outside the four
+    // content families and therefore gets no family marker, like Finanzen
+    // (Projektleitung, 2026-09-04).
+    body.appendChild(renderSection(b.title, key === 'weitere' ? null : b.family, chipsEl));
   }
 
   if (body.childNodes.length > 0) {
@@ -133,7 +150,7 @@ export function buildInlineDetail(record, store, { onClose } = {}) {
  */
 function renderSection(title, family, content) {
   const marker = family && family !== 'neutral'
-    ? el('span', { className: `ersch-dot ersch-dot--on ersch-dot--${family}`, 'aria-hidden': 'true' })
+    ? familyIcon(family, { size: 14, className: `fam-mark fam-mark--${family}` })
     : null;
   return el('div', { className: 'inline-detail__section' },
     el('div', { className: 'inline-detail__section-title' }, marker, title),
@@ -141,8 +158,8 @@ function renderSection(title, family, content) {
   );
 }
 
-/** Metadata as one narrow horizontal bar across the full width. */
-function renderMetaBar(pairs) {
+/** Metadata as one narrow horizontal bar, the action buttons at its right end. */
+function renderMetaBar(pairs, actions) {
   const bar = el('div', { className: 'inline-detail__meta' });
   for (const [label, value] of pairs) {
     bar.appendChild(el('span', { className: 'inline-detail__meta-item' },
@@ -150,6 +167,7 @@ function renderMetaBar(pairs) {
       el('span', { className: 'inline-detail__meta-value' }, String(value)),
     ));
   }
+  if (actions) bar.appendChild(actions);
   return bar;
 }
 
@@ -203,7 +221,7 @@ function renderFoot(record, store) {
 }
 
 /**
- * Ordered non-empty blocks { key, title, count, family, chips } built from the
+ * Ordered non-empty blocks { key, title, family, chips } built from the
  * partition, chips being finished chip elements. The consumer (inline detail or
  * Korb) picks container class, section markup and title format.
  */
@@ -216,7 +234,7 @@ export function buildRecordBlocks(record, store) {
   const blocks = [];
   const push = (key, title, chips) => {
     if (chips.length) {
-      blocks.push({ key, title, count: chips.length, family: familyOfBlock(key), chips });
+      blocks.push({ key, title, family: familyOfBlock(key), chips });
     }
   };
   push('produktion', 'Produktion', agentChipEls(store, bucket.produktion));

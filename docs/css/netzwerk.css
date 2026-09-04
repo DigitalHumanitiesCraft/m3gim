@@ -1,19 +1,17 @@
 /*
- * Netzwerk-Tab — heterogener Graph um eine Fokus-Entitaet (E-160, vereinigt die
- * frueheren Ansichten Netzwerk und Verknuepfungen).
+ * Netzwerk tab: the heterogeneous graph around one focus entity (E-160, which
+ * merged the former Netzwerk and Verknuepfungen views).
  *
- * Geruest und Filter-Controls der Sidebar liegen in sidebar.css
- * (.view-shell/.view-sidebar/.view-main, .vs-*, .fs-*). Hier steht nur das
- * Netzwerk-Eigene: Buehne, Ringe, Knoten, Kanten, Detail-Spalte und die
- * Legenden-Marker, die die staticLegend-Zeilen ueber markerClass referenzieren.
- * Farben ausschliesslich ueber die Tokens aus variables.css.
+ * Shell and filter controls live in sidebar.css. Here stands only what is the
+ * graph's own: stage, rings, nodes, edges, detail column and the legend markers
+ * that the staticLegend rows reference through markerClass.
  */
 
 #tab-netzwerk {
   padding: 0;
 }
 
-/* -- Buehne: Graph links, Detail rechts ----------------------------------- */
+/* Stage: graph left, detail right */
 
 .netzwerk__main {
   display: flex;
@@ -43,7 +41,7 @@
   border-radius: var(--border-radius);
 }
 
-/* Zoom-Knoepfe: die einzige Bedienung, die in der Arbeitsflaeche steht. */
+/* The zoom stack is the only control that stands in the work area. */
 .netzwerk__zoom-controls {
   position: absolute;
   top: var(--space-2);
@@ -54,23 +52,8 @@
   z-index: 4;
 }
 
-.nz-zoom-btn {
-  width: 26px;
-  height: 26px;
-  background: var(--surface);
-  border: 1px solid var(--border-color-light);
-  color: var(--color-text-primary);
-  font-size: 16px;
-  line-height: 1;
-  cursor: pointer;
-  border-radius: 3px;
-  transition: background var(--transition-fast);
-}
-
-.nz-zoom-btn:hover {
-  background: var(--surface-2);
-}
-
+/* Shape and hover come from the .zoom-btn primitive in components.css; the
+   reset glyph is a character wider and takes a step down. */
 .nz-zoom-btn--reset {
   font-size: 14px;
 }
@@ -83,7 +66,7 @@
   cursor: grabbing;
 }
 
-/* -- Ringe: Evidenzstufen als Orientierungslinien ------------------------- */
+/* Rings: the evidence levels as orientation lines */
 
 .netzwerk-ring {
   fill: none;
@@ -103,10 +86,11 @@
   opacity: 0.5;
 }
 
-/* -- Kanten: die Form traegt die Evidenzart ------------------------------- */
+/* Edges: the shape carries the kind of evidence */
 
-/* Gerade Radiale — explizit annotierte AgRelOn-Beziehung. pointer-events:stroke
-   aktiviert den nativen <title>-Tooltip, ohne die Linie zum Klickziel zu machen. */
+/* A straight radial is an explicitly annotated AgRelOn relation.
+   pointer-events on the stroke alone activates the native <title> tooltip
+   without turning the line into a click target. */
 .netzwerk-link {
   stroke: var(--accent);
   stroke-opacity: 0.65;
@@ -125,7 +109,7 @@
   stroke-opacity: 0.08;
 }
 
-/* Geschwungenes Band — Ko-Okkurrenz, aus den Dokumenten abgeleitet. */
+/* A curved band is co-occurrence, derived from the documents. */
 .netzwerk-edge {
   fill: none;
   stroke: var(--color-text-secondary);
@@ -148,7 +132,7 @@
   stroke-opacity: 0.9;
 }
 
-/* -- Knoten --------------------------------------------------------------- */
+/* Nodes */
 
 .netzwerk-node {
   cursor: pointer;
@@ -165,8 +149,8 @@
   transition: stroke-width var(--transition-fast), fill-opacity var(--transition-fast);
 }
 
-/* Schwache Evidenz (Ko-Okkurrenz ohne annotierte Beziehung): geringere
-   Fuellung, kein gestrichelter Rand — der machte die Kreise diffus. */
+/* Weak evidence (co-occurrence without an annotated relation): less fill and
+   no dashed edge, which made the circles diffuse. */
 .netzwerk-node__circle--weak {
   fill-opacity: 0.62;
 }
@@ -191,13 +175,13 @@
 
 .netzwerk-label {
   font-family: var(--font-ui);
-  font-size: 10px;
+  font-size: var(--text-2xs);
   fill: var(--color-text-primary);
   pointer-events: none;
   user-select: none;
   opacity: 0;
   transition: opacity var(--transition-fast);
-  /* Heller Text-Halo, damit das Label in jedem Kantenwirrwarr lesbar bleibt. */
+  /* A light halo keeps the label readable in any tangle of edges. */
   paint-order: stroke fill;
   stroke: var(--surface);
   stroke-width: 3px;
@@ -219,7 +203,7 @@
   font-size: 9.5px;
 }
 
-/* -- Zentrum -------------------------------------------------------------- */
+/* Centre */
 
 .netzwerk-center {
   pointer-events: none;
@@ -243,7 +227,7 @@
   stroke-linejoin: round;
 }
 
-/* -- Detail-Spalte -------------------------------------------------------- */
+/* Detail column */
 
 .netzwerk__detail {
   flex: 0 0 300px;
@@ -267,7 +251,7 @@
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--color-text-inverse);
-  padding: 1px 6px;
+  padding: 1px var(--space-1-5);
   border-radius: 3px;
 }
 
@@ -306,7 +290,7 @@
 .netzwerk__detail-chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: var(--space-1-5);
   margin-top: var(--space-1);
 }
 
@@ -319,7 +303,7 @@
 .netzwerk__addfacet {
   width: 100%;
   margin: var(--space-2) 0 var(--space-3);
-  padding: 5px 8px;
+  padding: 5px var(--space-2);
   font-family: inherit;
   font-size: var(--text-xs);
   color: var(--accent);
@@ -345,7 +329,7 @@
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 2px var(--space-2);
-  padding: 4px 6px;
+  padding: var(--space-1) var(--space-1-5);
   border-radius: 3px;
   cursor: pointer;
   transition: background var(--transition-fast);
@@ -377,9 +361,9 @@
   white-space: nowrap;
 }
 
-/* -- Legenden-Marker (staticLegend, ueber markerClass referenziert) -------- */
+/* Legend markers, referenced by the staticLegend rows through markerClass */
 
-/* Ring-Swatches: leere Kreise, die den Canvas-Ringen entsprechen. */
+/* Ring swatches: empty circles matching the rings on the canvas. */
 .netzwerk__legend-dot {
   width: 14px;
   height: 14px;
@@ -395,7 +379,7 @@
   border: 1.4px dashed var(--line-strong);
 }
 
-/* Linien-Swatches: gerade und geschwungene Linie visuell unterschieden. */
+/* Line swatches: the straight and the curved line told apart. */
 .nz-legend__line {
   display: inline-block;
   width: 22px;
@@ -426,10 +410,10 @@
   flex-shrink: 0;
 }
 
-/* -- Umbruch -------------------------------------------------------------- */
+/* Breakpoint */
 
-/* Derselbe Schwellwert wie das Geruest in sidebar.css: sobald die Sidebar ueber
-   dem Graphen sitzt, hat die Detail-Spalte daneben keinen Platz mehr. */
+/* The same threshold as the shell in sidebar.css: once the filter column sits
+   above the graph, the detail column has no room beside it. */
 @container view-shell (width < 900px) {
   .netzwerk__main {
     flex-direction: column;

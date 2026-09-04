@@ -5,7 +5,7 @@
 
 import { el, clear } from './utils/dom.js';
 import { loadArchive } from './data/loader.js';
-import { initRouter, getState } from './ui/router.js';
+import { initRouter, getState, navigateToView } from './ui/router.js';
 import { initKorb, onKorbChange, getKorbCount } from './ui/basket.js';
 import { renderBestand, selectArchivRecord } from './views/bestand.js';
 import { renderChronik } from './views/chronik.js';
@@ -64,8 +64,9 @@ async function init() {
           selectArchivRecord(recordId);
           return;
         }
-        // Navigate to Bestand tab and show record inline
-        window.location.hash = '#bestand/' + encodeURIComponent(recordId);
+        // Navigate to Bestand tab and show record inline. Through the router,
+        // so the hash keeps the shared filter (user-story audit 2026-09-03).
+        navigateToView('bestand', { recordId });
       },
       onIndex: (gridType, entityName) => {
         renderTab('indizes');

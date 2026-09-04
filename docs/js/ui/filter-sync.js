@@ -2,9 +2,8 @@
  * Dom-freie Anwend- und Sync-Helfer fuer den geteilten Filter (M4, E-117).
  *
  * Die Views wenden den geteilten State auf ihre Item-Listen an, statt ihn zu
- * uebersetzen; die Toolbar-Shapes, die dieses Modul frueher projizierte, gibt
- * es seit E-158 nicht mehr, und den Schaerfegrad seit E-163 auch nicht. Reine
- * Funktionen, damit die Kopplung ohne DOM testbar bleibt. Der Loop-Guard (makeSyncGuard) verhindert
+ * uebersetzen. Reine Funktionen, damit die Kopplung ohne DOM testbar bleibt.
+ * Der Loop-Guard (makeSyncGuard) verhindert
  * die setFacet<->setFilter-Endlosschleife: schreibt ein View auf den geteilten
  * State, faecht subscribe an alle Views zurueck, inkl. den Schreiber selbst —
  * ohne Guard wuerde dessen Subscriber erneut setFilter rufen.

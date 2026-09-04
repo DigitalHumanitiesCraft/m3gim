@@ -16,6 +16,9 @@
  *     noch den gewählten Eintrag stehen.
  *   * Der Normdaten-Schalter zählt eine leere oder nicht aufgelöste Angabe als
  *     Wikidata-Treffer, und die Abdeckungsquote im Kopf des Grids wird zu hoch.
+ *   * Die AgRelOn-Beziehungen aus Pass 2.5 des Loaders werden beim Bau der
+ *     Einträge nicht durchgereicht; die Beziehungsbadges im Personen-Grid
+ *     bleiben dann toter Code, ohne dass etwas fehlschlägt.
  *
  * Lauf: node --test tests/frontend/indizes-data.test.mjs
  */
@@ -26,6 +29,7 @@ import assert from 'node:assert/strict';
 import {
   getGridEntries, clearEntriesCache, applyFacetFilter, filterEntries, hasWikidata,
 } from '../../docs/js/views/indizes-data.js';
+import { storeFromShipped } from './_shipped.mjs';
 
 // Kleine Fixture in der Form, die loader.js aufbaut: Name -> { records, … }.
 const entry = (ids, extra = {}) => ({ records: new Set(ids), ...extra });
@@ -33,7 +37,8 @@ const entry = (ids, extra = {}) => ({ records: new Set(ids), ...extra });
 const STORE = {
   persons: new Map([
     ['Malaniuk, Ira', entry(['r1', 'r2', 'r3'], { kategorie: 'Sängerin', wikidata: 'wd:Q84509' })],
-    ['Karajan, Herbert von', entry(['r1'], { kategorie: 'Dirigent', wikidata: 'wd:Q154556' })],
+    ['Karajan, Herbert von', entry(['r1'], { kategorie: 'Dirigent', wikidata: 'wd:Q154556',
+      relations: [{ type: 'agrelon:HasCorrespondent', recordId: 'r1', objectName: 'Karajan, Herbert von' }] })],
     ['Unbekannt, N.', entry(['r3'], { kategorie: 'Andere', wikidata: null })],
     ['Ohne Beleg', entry([], { kategorie: 'Andere', wikidata: 'wd:Q1' })],
   ]),
@@ -158,5 +163,35 @@ describe('Cross-Grid-Facette', () => {
     clearEntriesCache();
     const leer = { gridKey: 'orte', name: 'Lissabon', recordIds: new Set(['r9']) };
     assert.deepEqual(applyFacetFilter(getGridEntries(STORE, 'werke'), 'werke', leer), []);
+  });
+});
+
+describe('AgRelOn-Beziehungen', () => {
+  test('die Relationen des Personen-Index erreichen den Eintrag', () => {
+    clearEntriesCache();
+    const karajan = getGridEntries(STORE, 'personen').find(e => e.name === 'Karajan, Herbert von');
+    assert.equal(karajan.relations.length, 1,
+      'Ohne Durchreichen bleiben die Beziehungsbadges toter Code.');
+    assert.equal(karajan.relations[0].type, 'agrelon:HasCorrespondent');
+  });
+
+  test('eine Person ohne Beziehungen traegt null statt undefined', () => {
+    clearEntriesCache();
+    const malaniuk = getGridEntries(STORE, 'personen').find(e => e.name === 'Malaniuk, Ira');
+    assert.equal(malaniuk.relations, null);
+  });
+
+  test('im ausgelieferten Datenstand tragen Personen Beziehungen', async () => {
+    const store = await storeFromShipped();
+    clearEntriesCache();
+    const entries = getGridEntries(store, 'personen');
+    const mitRelation = entries.filter(e => e.relations && e.relations.length > 0);
+    // Der Datenstand fuehrt 35 solche Personen mit 61 Belegen; die Schwelle
+    // faengt den Totalausfall, nicht die normale Drift des Bestands.
+    assert.ok(mitRelation.length >= 20,
+      `Nur ${mitRelation.length} Personen mit Beziehungen im Datenstand.`);
+    assert.ok(mitRelation.every(e => e.relations.every(r => r.type && r.recordId)),
+      'Jede Relation braucht Typ und Beleg-Record fuer den Badge und seinen Sprung.');
+    clearEntriesCache();
   });
 });

@@ -173,9 +173,20 @@ def _broader_depth(graph: Graph, subject) -> int:
 
 
 def test_drawing_is_embedded_svg_without_runtime_library(shipped):
-    """Die Zeichnung liegt als SVG in der Seite und braucht kein Skript."""
-    assert shipped.count("<svg") == 1, "Keine oder mehr als eine Zeichnung auf der Seite"
-    assert "<script" not in shipped, "Die Seite laedt oder fuehrt Code aus"
+    """Die Zeichnung liegt als SVG in der Seite und braucht kein Skript.
+
+    Ausgenommen ist der ``application/ld+json``-Block der strukturierten Daten,
+    den kein Browser ausfuehrt.
+    """
+    # The footer carries icon SVGs; only the page body holds the drawing.
+    body = shipped.split("<footer", 1)[0]
+    assert body.count("<svg") == 1, "Keine oder mehr als eine Zeichnung auf der Seite"
+    # Structured data is a data block, not code; every other <script> would be.
+    executable = [
+        tag for tag in re.findall(r"<script[^>]*>", shipped)
+        if 'type="application/ld+json"' not in tag
+    ]
+    assert not executable, f"Die Seite laedt oder fuehrt Code aus: {executable}"
     assert 'href="css/' in shipped, "Die Seite bindet die Stylesheets der Anwendung nicht ein"
 
 
@@ -190,8 +201,9 @@ def test_drawing_shows_classes_as_nodes_and_object_properties_as_edges(shipped, 
 
 def test_wide_content_scrolls_in_its_own_container(shipped):
     """Tabellen und Zeichnung sitzen in einem eigenen Scroll-Container."""
-    for match in re.finditer(r"<(table|svg)\b", shipped):
-        before = shipped[: match.start()]
+    body = shipped.split("<footer", 1)[0]
+    for match in re.finditer(r"<(table|svg)\b", body):
+        before = body[: match.start()]
         opened = before.rfind('<div class="page__wide">')
         closed = before.rfind("</div><!--/wide-->")
         assert opened > closed, (

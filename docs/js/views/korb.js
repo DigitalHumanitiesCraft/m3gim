@@ -83,12 +83,12 @@ function renderHeader(ids) {
       ? el('div', { className: 'korb-header__actions' },
           el('button', {
             className: 'korb-export',
-            title: 'Als CSV exportieren',
+            dataset: { tip: 'Auswahl als CSV-Datei laden' },
             onClick: () => exportCSV(ids),
           }, '\u2193 CSV'),
           el('button', {
             className: 'korb-export',
-            title: 'Als BibTeX exportieren',
+            dataset: { tip: 'Auswahl als BibTeX-Datei laden' },
             onClick: () => exportBibTeX(ids),
           }, '\u2193 BibTeX'),
           el('button', {
@@ -139,12 +139,13 @@ function renderCardHeader(record, recordId, docType, docLabel) {
   const sigEl = el('a', {
     className: 'korb-card__sig',
     href: '#bestand/' + encodeURIComponent(recordId),
-    title: 'Im Bestand anzeigen',
+    dataset: { tip: 'Im Bestand anzeigen' },
   }, formatSignatur(record['rico:identifier']));
 
   const removeBtn = el('button', {
     className: 'korb-card__remove',
-    title: 'Aus Korb entfernen',
+    dataset: { tip: 'Aus dem Korb entfernen' },
+    'aria-label': 'Aus dem Korb entfernen',
     onClick: (e) => { e.stopPropagation(); removeFromKorb(recordId); },
     html: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
   });

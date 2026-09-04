@@ -81,7 +81,7 @@ function foldWithMap(value) {
 }
 
 /** The query as its whitespace-separated, folded words. */
-export function queryTerms(query) {
+function queryTerms(query) {
   return foldText(query).split(/\s+/).filter(Boolean);
 }
 

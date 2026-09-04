@@ -72,7 +72,7 @@ export function buildMap(mapCell, countries, withGeo, state, opts) {
     // Gestapelter Proportionsbalken: zeigt die Anteile auf einen Blick, bevor die
     // Detailzeilen die genauen Zahlen geben.
     const bar = `<div class="mob-tip__bar">` + barSegments(bd).map(s =>
-      `<span style="width:${s.pct.toFixed(1)}%;background:${s.color}" title="${s.label}"></span>`).join('') + `</div>`;
+      `<span style="width:${s.pct.toFixed(1)}%;background:${s.color}"></span>`).join('') + `</div>`;
     const rows = bd.map(b =>
       `<span class="mob-tip__row"><span class="mob-tip__sw" style="background:${b.color}"></span>` +
       `${b.label}<span class="mob-tip__n">${b.count}</span></span>`).join('');
@@ -123,7 +123,10 @@ export function buildMap(mapCell, countries, withGeo, state, opts) {
   // Zoom-Steuerung (oben links)
   const zoomCtl = el('div', { className: 'mob-zoomctl' });
   const zoomBtn = (label, title, onClick) => {
-    const b = el('button', { className: 'mob-zoomctl__btn', type: 'button', title, 'aria-label': title }, label);
+    const b = el('button', {
+      className: 'mob-zoomctl__btn', type: 'button',
+      dataset: { tip: title, tipPos: 'bottom' }, 'aria-label': title,
+    }, label);
     b.addEventListener('click', onClick);
     return b;
   };

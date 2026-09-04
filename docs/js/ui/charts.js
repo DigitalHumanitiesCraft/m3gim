@@ -9,14 +9,23 @@
 import { el } from '../utils/dom.js';
 
 /**
- * Horizontale Bar-Liste. rows: [{label, value, href?, color?, onClick?, countText?}].
- * Keine Prozent, kein Bearbeitungsstand-Vokabular.
+ * Horizontale Bar-Liste. rows: [{label, value, href?, color?, onClick?,
+ * countText?, tip?}]. Keine Prozent, kein Bearbeitungsstand-Vokabular.
  */
 export function buildHorizontalBars(rows) {
   const list = el('ul', { className: 'stat-bars' });
   const max = rows.reduce((m, r) => Math.max(m, r.value), 0) || 1;
   for (const row of rows) {
-    const li = el('li', { className: 'stat-bars__row' });
+    // The tooltip hangs on the row, not on the label: the label cell is an
+    // ellipsis box with overflow hidden and would clip it. The label repeats
+    // only past the width of the label column (18ch), where the ellipsis may
+    // have cut it; shorter than that it would merely restate the row.
+    const cut = String(row.label || '').length > 18 ? row.label : '';
+    const tip = [cut, row.tip].filter(Boolean).join('\n');
+    const li = el('li', {
+      className: 'stat-bars__row',
+      dataset: tip ? { tip, tipWrap: '', tipPos: 'bottom' } : {},
+    });
 
     // Label: in-App-Cross-Link (onClick) als Button, externer Link (href) als
     // Anker, sonst statischer Text.
@@ -24,17 +33,17 @@ export function buildHorizontalBars(rows) {
     if (typeof row.onClick === 'function') {
       label = el('span', {
         className: 'stat-bars__label stat-bars__label--link',
-        role: 'button', tabindex: '0', title: row.hrefTitle || '',
+        role: 'button', tabindex: '0',
         onClick: () => row.onClick(),
         onKeydown: (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); row.onClick(); } },
       }, row.label);
     } else if (row.href) {
       label = el('a', {
         className: 'stat-bars__label stat-bars__label--link',
-        href: row.href, target: '_blank', rel: 'noopener', title: row.hrefTitle || '',
+        href: row.href, target: '_blank', rel: 'noopener',
       }, row.label);
     } else {
-      label = el('span', { className: 'stat-bars__label', title: row.hrefTitle || '' }, row.label);
+      label = el('span', { className: 'stat-bars__label' }, row.label);
     }
 
     const track = el('div', { className: 'stat-bars__track' });

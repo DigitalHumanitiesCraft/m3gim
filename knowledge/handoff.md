@@ -8,7 +8,7 @@ method:
   url: https://lisa.gerda-henkel-stiftung.de/digitale_geschichte_pollin
 status: active
 created: 2026-08-21
-updated: 2026-09-03
+updated: 2026-09-04
 language: de
 version: 0.5
 authors: [Christopher Pollin]
@@ -32,13 +32,19 @@ Die neue Verwurfsaufstellung des Transformationslaufs hat einen bis dahin unsich
 
 ### An die Frontend-Lane: offene Punkte nach der Durchsicht vom 2026-09-03
 
-Die Fix- und Umbauliste der Durchsicht vom 2026-09-03 und der beiden abendlichen Runden ist gebaut; ihr Ergebnis führt [journal.md](journal.md) als Session 78 mit den Entscheidungen E-185 bis E-204. Erledigt sind darunter auch die Ersetzung der sechs verbliebenen Farb-Aliasse durch die Akzent- und Flächen-Tokens (E-202) und der Rückbau der Sortierung, die Tabelle steht in Signaturfolge (E-203). Offen bleiben drei Punkte.
+Die Fix- und Umbauliste der Durchsicht vom 2026-09-03 und der beiden abendlichen Runden ist gebaut; ihr Ergebnis führt [journal.md](journal.md) als Session 78 mit den Entscheidungen E-185 bis E-204. Erledigt sind darunter auch die Ersetzung der sechs verbliebenen Farb-Aliasse durch die Akzent- und Flächen-Tokens (E-202) und der Rückbau der Sortierung, die Tabelle steht in Signaturfolge (E-203). Der Tagesstand ist als d40fe9f committet, das erste Konvolut öffnet beim ungefilterten Laden (E-206), die doppelten Partien sind in der Pipeline zusammengeführt (E-205), das Inline-Detail ist als Auftrittssicht gebaut (E-213). Aus dieser Liste ist nichts mehr offen.
 
-1. Commit des Tagesstands auf Wort der Projektleitung.
-2. Beim ersten ungefilterten Laden das erste Konvolut geöffnet zeigen, damit die Tabelle nicht als reine Kopfliste erscheint. Vorgeschlagen und noch nicht entschieden.
-3. Das Inline-Detail als Auftrittssicht umbauen, mit einem Pipeline-Schritt davor. Box 6 führt jede Partie zweimal, einmal als blanke `rolle`-Zeile und einmal als Komposit aus Rolle und Person, und nur das Komposit trägt `hasPerformer`. Das Frontend zeigt beide als blanke Rollen und verliert dabei die Person. Dieselbe Kindzeile schreibt außerdem „o. D.“, obwohl der abgeleitete Anker aus E-141 vorliegt, der Record also datierbar ist. Beides ist zuerst in der Pipeline zu klären, bevor die Ansicht darauf gebaut wird.
+Weiter offen aus [specification.md](specification.md) § Stand, nicht Teil dieser Durchsicht: Entscheidungen 8 (Detail-Panel neben Visualisierungen), 11 (Lade- und Fehlerzustand aus Tokens), Karte mit Werk als Entität, Export JSON-LD und GEXF, `dataQualityFlag` an den Record-Ebenen.
 
-Weiter offen aus [specification.md](specification.md) § Stand, nicht Teil dieser Durchsicht: Entscheidungen 8 (Detail-Panel neben Visualisierungen), 9 (eigener Tooltip statt `title`), 11 (Lade- und Fehlerzustand aus Tokens), Karte mit Werk als Entität, Export JSON-LD und GEXF, `dataQualityFlag` an den Record-Ebenen.
+### An die Projektleitung: drei Entscheidungen aus dem Abschlussdurchgang (2026-09-04)
+
+1. Die Provenienzpille am Chip trägt das Label „Provenienz anzeigen“ und Regel 5 in [design.md](design.md) verspricht den Sprung zu Sheet und Zeile, gebaut ist kein Klick. Entweder der Sprung wird gebaut, oder Label und Regel werden auf den Tooltip zurückgenommen.
+2. Die Voreinstellung des Bestands auf abgeschlossen und begonnen blendet die zurückgestellten und die Objekte ohne Bearbeitungsstand aus; vorgeschlagen ist ein Start ohne Stand-Filter und ein Tooltip je Stand-Option, dessen vier Definitionen das Erschließungsteam bestätigt.
+3. Das KUG-Logo im Fuß stammt aus dem Pressebereich der KUG; die Nutzung auf der Projektseite ist mit der KUG zu bestätigen.
+
+### An das Erschließungsteam: Rollen ohne Werkbezug und abweichende Partienschreibung (2026-09-04)
+
+Die Verknüpfungstabelle führt bei Objekten mit mehreren Werken die Werke und die Bühnenrollen als zwei getrennte Zeilenläufe, sodass eine Rolle keinem Werk zuzuordnen ist; `sungPart` nennt nur die eigene Partie der Sängerin, nie die Besetzung. Das Detail zeigt solche Rollen als freie Chips (E-213). Beispiel ist UAKUG/NIM_004 10 mit zwei Werken und fünfundzwanzig Rollen aus vier Opern. Ein Werkbezug je Rollenzeile, etwa über die geplante `datenpunkt_id`, würde die Zuordnung tragen. Zusatzbefund: UAKUG/NIM_022 1_1 schreibt die Partie am Werk als Magdalene und in der Rollenzeile als Magdalena; die Pipeline gleicht nicht unscharf ab, die Abweichung bleibt sichtbar.
 
 ### An das Erschließungsteam: Veranstaltung als Person geführt (2026-09-03)
 

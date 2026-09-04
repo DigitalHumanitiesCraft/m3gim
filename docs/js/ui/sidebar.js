@@ -32,6 +32,7 @@
  */
 
 import { el, clear } from '../utils/dom.js';
+import { familyIcon } from './family-icons.js';
 import { matchesQuery, matchRanges } from '../utils/normalize.js';
 import {
   getFilter, setFilter, resetFilter, subscribe, facetValues, isFilterActive,
@@ -47,15 +48,28 @@ import {
 // ---------------------------------------------------------------------------
 
 export function viewShell(sidebarEl, mainEl) {
-  return el('div', { className: 'view-shell' }, sidebarEl, mainEl);
+  // Under 900px container width the column folds behind this toggle; the
+  // stylesheet hides the button above that width, so desktop pays nothing
+  // (Projektleitung, 2026-09-04).
+  const shell = el('div', { className: 'view-shell' });
+  const toggle = el('button', {
+    className: 'view-shell__sidebar-toggle', type: 'button',
+    'aria-expanded': 'true', 'aria-label': 'Filter ein- oder ausblenden',
+    onClick: () => {
+      const collapsed = shell.classList.toggle('view-shell--sidebar-collapsed');
+      toggle.setAttribute('aria-expanded', String(!collapsed));
+    },
+  });
+  toggle.innerHTML = '<svg class="view-shell__sidebar-toggle-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg>';
+  shell.append(toggle, sidebarEl, mainEl);
+  return shell;
 }
 
 /**
  * Display form of the shared facets, in column order (Projektleitung,
  * 2026-09-03). The title is the accessible label of the input. `family` names
- * the content family whose colour dot precedes the title, the same dot the
- * block titles of the inline detail carry. `marker` can distinguish a related
- * concept from a family of its own without introducing another colour.
+ * the content family whose symbol precedes the title, the same symbol the
+ * block titles of the inline detail and the Indizes heads carry (E-212).
  */
 export const FACET_META = Object.freeze({
   docType:     { title: 'Dokumenttyp' },
@@ -153,7 +167,7 @@ function withRule(spec, on) {
 }
 
 function buildColumn(specs) {
-  const aside = el('aside', { className: 'view-sidebar' });
+  const aside = el('aside', { className: 'view-sidebar', 'aria-label': 'Filter' });
   const updaters = [];
 
   for (const spec of specs) {
@@ -174,12 +188,10 @@ function buildColumn(specs) {
 
     if (spec.title != null) {
       labelEl = el('span', { className: 'vs-section__label' });
+      // The family symbol of the Indizes and the Bestand rows (E-212), so the
+      // legend is one symbol set across the application.
       const dot = spec.family
-        ? el('span', {
-            className: `ersch-dot ersch-dot--on ersch-dot--${spec.family}`
-              + (spec.marker ? ` ersch-dot--${spec.marker}` : ''),
-            'aria-hidden': 'true',
-          })
+        ? familyIcon(spec.family, { size: 14, className: `fam-mark fam-mark--${spec.family}` })
         : null;
       const id = `vs-title-${++titleSeq}`;
       if (spec.collapsible) {
@@ -192,6 +204,15 @@ function buildColumn(specs) {
       }
       spec.titleId = id;
       sec.appendChild(head);
+      if (spec.tip) {
+        // The head carries what the dot and the numbers of its rows mean. It
+        // sits there and not on the rows themselves, because the suggestion
+        // list is an overflow container that would clip a tooltip, and a
+        // second tooltip inside a row that already has one would stack (E-90).
+        // bottom-left, not centred: the head sits at the left edge of the
+        // window, where a centred tooltip runs out of the viewport.
+        Object.assign(head.dataset, { tipWrap: '', tipPos: 'bottom-left' });
+      }
     }
     sec.appendChild(body);
 
@@ -201,6 +222,13 @@ function buildColumn(specs) {
       labelEl.textContent = title == null ? '' : String(title);
       head.classList.toggle('vs-section__title--active',
         !!(spec.titleActive && spec.titleActive()));
+      if (spec.tip) {
+        head.dataset.tip = spec.tip();
+        // Without a name of its own the heading takes the generated tooltip
+        // content into its accessible name, so it read as label plus whole
+        // explanation (Projektleitung, 2026-09-04).
+        head.setAttribute('aria-label', labelEl.textContent);
+      }
       if (spec.collapsible) {
         head.classList.toggle('vs-section__title--collapsed', collapsed);
         head.setAttribute('aria-expanded', String(!collapsed));
@@ -242,6 +270,9 @@ function searchSection(placeholder) {
     controls: [{
       kind: 'search',
       ariaLabel: 'Suche',
+      // Every keystroke resolves the whole cut and recounts every facet, so the
+      // input bundles them (Projektleitung, 2026-09-04).
+      debounce: 120,
       placeholder: placeholder || '',
       value: () => getFilter().search || '',
       onChange: (v) => setFilter({ search: v }),
@@ -283,12 +314,47 @@ function dokumenteSection(store, inventories, getCount, withTree) {
   return spec;
 }
 
+let liveTimer = 0;
+
+/**
+ * Polite announcement of the cut. The count row itself is rebuilt on every
+ * repaint and would be read out again each time, so the announcement lives in
+ * its own region and is written only when the number really changed, one
+ * announcement per filter change (Projektleitung, 2026-09-04).
+ */
+function announceCut(region, n, m) {
+  let live = region.parentNode
+    ? region.parentNode.querySelector('.vs-status__live') : null;
+  if (!live) {
+    live = el('div', {
+      className: 'vs-status__live visually-hidden',
+      role: 'status', 'aria-live': 'polite', 'aria-atomic': 'true',
+    });
+    if (region.parentNode) region.parentNode.appendChild(live);
+  }
+  const text = n < m ? `${n} von ${m} Dokumenten im Schnitt`
+    : `${m} Dokumente, kein Filter aktiv`;
+  if (live.textContent === text) return;
+  clearTimeout(liveTimer);
+  liveTimer = setTimeout(() => { live.textContent = text; }, 200);
+}
+
 function paintRoot(region, labelId, total, count) {
   clear(region);
-  region.appendChild(el('div', { className: 'fs-option fs-option--group vs-status__count' },
+  const n = count();
+  const m = total();
+  announceCut(region, n, m);
+  region.appendChild(el('div', {
+    className: 'fs-option fs-option--group vs-status__count',
+    dataset: {
+      tip: n < m ? `${n} von ${m} verknüpften Dokumenten im Schnitt`
+        : 'Alle verknüpften Dokumente, kein Filter aktiv',
+      tipWrap: '', tipPos: 'bottom-left',
+    },
+  },
     el('span', { className: 'fs-tree__chevron fs-tree__chevron--none', 'aria-hidden': 'true' }),
     el('span', { className: 'fs-option__label', id: labelId }, 'Dokumente'),
-    el('span', { className: 'fs-option__count' }, countLabel(count(), total()))));
+    el('span', { className: 'fs-option__count' }, countLabel(n, m))));
 }
 
 /**
@@ -312,6 +378,7 @@ function standSection(store, inventory) {
   const selected = () => facetValues(getFilter(), 'stand');
   return {
     title: FACET_META.stand.title,
+    tip: () => countTip(selected().length > 0),
     titleActive: () => selected().length > 0,
     controls: [{
       kind: 'optionList', key: 'stand', options: () => entries,
@@ -337,7 +404,10 @@ function filterStrip(inventories) {
 
   function update() {
     clear(element);
-    if (!isFilterActive()) return;
+    if (!isFilterActive()) {
+      element.appendChild(emptyHint());
+      return;
+    }
     const filter = getFilter();
     const deviating = new Set(deviatingKeys());
     for (const [key, meta] of Object.entries(FACET_META)) {
@@ -359,12 +429,53 @@ function filterStrip(inventories) {
     }
     element.appendChild(el('button', {
       className: 'vs-status__reset', type: 'button', onClick: () => resetFilter(),
-    }, 'alle zurücksetzen'));
+      html: RESET_GLYPH,
+    }, el('span', {}, 'alle zurücksetzen')));
   }
 
   update();
   return { element, update };
 }
+
+/**
+ * What the number next to a value means. It counts against the cut of all
+ * OTHER facets (facetCounts drops the own key), so within a facet that already
+ * carries a value the number is what the value would add, and in an untouched
+ * facet what would remain.
+ */
+function countTip(hasSelection) {
+  return hasSelection
+    ? 'Die Zahl nennt die Dokumente, die dieser Wert zusätzlich in den Schnitt bringt.'
+    : 'Die Zahl nennt die Dokumente, die mit diesem Wert im Schnitt blieben.';
+}
+
+/** Circular arrow before the reset link, in the tone of the chips' close
+ *  crosses: the link keeps its text, the glyph only makes it findable at the
+ *  end of a long chip row. */
+const RESET_GLYPH = '<svg class="vs-status__reset-icon" width="14" height="14"'
+  + ' viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"'
+  + ' stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+  + '<path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>';
+
+/**
+ * The strip while no filter deviates from the default. Design rule 8 forbids
+ * standing explanatory text; the Projektleitung waives it here (2026-09-04),
+ * because an empty band above the data reads as a broken control rather than as
+ * an untouched filter. One quiet line, no chip and no button, and the tooltip
+ * carries where the filters actually live.
+ */
+function emptyHint() {
+  return el('span', {
+    className: 'filter-strip__empty',
+    dataset: { tip: 'Die Filter stehen in der linken Spalte.', tipWrap: '' },
+    html: FILTER_GLYPH,
+  }, el('span', {}, 'kein Filter aktiv'));
+}
+
+const FILTER_GLYPH = '<svg class="filter-strip__empty-icon" width="14" height="14"'
+  + ' viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"'
+  + ' stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+  + '<path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>';
 
 /** The rule the grouping encodes, on every group label. */
 const STRIP_TIP = 'Mehrere Werte: einer genügt (oder). '
@@ -386,7 +497,7 @@ export function countLabel(n, m) {
 
 function removeChip(text, onRemove) {
   return el('button', {
-    className: 'fs-chip', type: 'button', title: `${text} aus dem Filter nehmen`,
+    className: 'fs-chip', type: 'button', 'data-tip': 'Aus dem Filter nehmen',
     onClick: onRemove,
   },
     el('span', { className: 'fs-chip__label' }, text),
@@ -441,7 +552,8 @@ function sharedFacetSection(store, key, inventory) {
   return {
     title: meta.title,
     family: meta.family,
-    marker: meta.marker,
+    tip: () => [meta.family ? `Symbol: Inhaltsfamilie ${meta.title}` : '',
+      countTip(selected().length > 0)].filter(Boolean).join('\n'),
     titleActive: () => selected().length > 0,
     collapsible: empty,
     collapsed: () => empty,
@@ -765,7 +877,8 @@ function groupRow(entry, count, on, isOpen, hasKids, onToggle, onOpen, tip = '')
     : el('span', { className: 'fs-tree__chevron fs-tree__chevron--none', 'aria-hidden': 'true' });
   const row = el('div', {
     className: 'fs-option fs-option--group' + (on ? ' fs-option--on' : ''),
-    role: 'option', 'aria-selected': String(on), 'data-tip': tip, onClick: onToggle,
+    role: 'option', 'aria-selected': String(on), 'data-tip': tip,
+    'data-tip-wrap': '', 'data-tip-pos': 'bottom-left', onClick: onToggle,
   },
     chevron,
     labelNode(entry.label, ''),
@@ -799,7 +912,10 @@ function legendControl({ items = [], isActive, onToggle }) {
   const wrap = el('div', { className: 'vs-legend', role: 'group' });
   const chips = [];
   for (const it of items) {
-    const chip = el('button', { className: 'vs-chip', type: 'button', title: it.title || '' },
+    const chip = el('button', {
+      className: 'vs-chip', type: 'button',
+      dataset: it.tip ? { tip: it.tip, tipWrap: '', tipPos: 'bottom-left' } : {},
+    },
       el('span', { className: 'vs-chip__swatch' }),
       el('span', { className: 'vs-chip__label' }, it.label),
       it.count != null ? el('span', { className: 'vs-chip__count' }, String(it.count)) : null);

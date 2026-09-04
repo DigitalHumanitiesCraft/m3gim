@@ -75,6 +75,32 @@ def expect_no_new_errors(
     return errors[errs_before:]
 
 
+# Der Bestand scrollt weich; erst wenn `scrollTop` mehrere Frames still steht,
+# ist die Messung belastbar.
+SCROLL_SETTLED = """() => new Promise(done => {
+  const main = document.querySelector('.archiv-main');
+  if (!main) return done(null);
+  let last = -1, same = 0;
+  const tick = () => {
+    if (main.scrollTop === last) { if (++same > 6) return done(main.scrollTop); }
+    else { same = 0; last = main.scrollTop; }
+    requestAnimationFrame(tick);
+  };
+  tick();
+})"""
+
+# Abstand zwischen der Oberkante des Konvolut-Kopfs und der Unterkante des
+# Spaltenkopfs. Gemessen an einer `th`-Zelle: sticky sitzt auf den Zellen, das
+# `thead` selbst scrollt weg und meldet eine Box weit ausserhalb.
+HEAD_OFFSET = """(kid) => {
+  const main = document.querySelector('.archiv-main');
+  const th = main && main.querySelector('.archiv-table thead th');
+  const row = main && main.querySelector('tr[data-konvolut-header="' + kid + '"]');
+  if (!th || !row) return null;
+  return row.getBoundingClientRect().top - th.getBoundingClientRect().bottom;
+}"""
+
+
 def main() -> int:
     if sys.stdout.encoding != "utf-8":
         sys.stdout.reconfigure(encoding="utf-8")
@@ -364,14 +390,18 @@ def main() -> int:
         page.wait_for_timeout(400)
 
         # --- Anker-Titel: im DOM erreichbar? ---
-        # Konvolute oeffnen geschlossen (Projektleitung, 2026-09-03), also erst
-        # jeden Kopf aufklappen, dann ist jeder Kindtitel als DOM-Text da.
+        # Konvolute oeffnen geschlossen, nur das erste steht beim Eintreten offen
+        # (user-story audit 2026-09-03). Also nur die geschlossenen Koepfe
+        # anklicken, sonst schlaegt der Klick das erste wieder zu.
         try:
             page.locator('[data-tab="bestand"]').first.click()
             page.wait_for_timeout(400)
             heads = page.locator('#tab-bestand .archiv-row--konvolut')
             for i in range(heads.count()):
-                heads.nth(i).click()
+                head = heads.nth(i)
+                if head.get_attribute("aria-expanded") == "true":
+                    continue
+                head.click()
                 page.wait_for_timeout(60)
         except Exception:
             pass
@@ -439,6 +469,73 @@ def main() -> int:
             results.append(("WARN", "anchor:NIM_004_1                 ",
                             f"check uebersprungen: {e}"))
 
+        # --- Auftritt-Detail von NIM_022 1_1 (Projektleitung, 2026-09-04):
+        #     Kopfzeile mit Signatur und Titel, Aktionen in der Metazeile,
+        #     Blocktitel ohne Zahl, Auffuehrungen unter ihrer Spielzeit,
+        #     Buehnenrolle unter ihrem Werk. ---
+        try:
+            page.goto(f"{BASE_URL}#bestand/m3gim-data:NIM_022_1_1",
+                      wait_until="networkidle", timeout=10000)
+            page.wait_for_timeout(1500)
+            detail = page.locator(".inline-detail").first
+            head = detail.locator(".inline-detail__head").first
+            head_text = head.inner_text() if head.count() else ""
+            if "NIM_022 1_1" in head_text and "Bayreuther Festspiele" in head_text:
+                results.append(("OK", "anchor:NIM_022_1_1:kopfzeile     ",
+                                "Signatur und Titel in der Kopfzeile"))
+            else:
+                results.append(("FAIL", "anchor:NIM_022_1_1:kopfzeile     ",
+                                f"Kopfzeile {head_text[:60]!r}"))
+
+            in_meta = detail.locator(".inline-detail__meta .inline-detail__actions"
+                                     " .inline-detail__action-btn").count()
+            meta_text = detail.locator(".inline-detail__meta").first.inner_text()
+            if in_meta == 2 and "ERSCHLIESSUNG" in meta_text.upper():
+                results.append(("OK", "anchor:NIM_022_1_1:metazeile     ",
+                                "beide Aktionen in der Metazeile, Label Erschliessung"))
+            else:
+                results.append(("FAIL", "anchor:NIM_022_1_1:metazeile     ",
+                                f"aktionen={in_meta}, meta={meta_text[:60]!r}"))
+
+            titles = detail.locator(".inline-detail__section-title").all_inner_texts()
+            with_count = [t for t in titles if "(" in t]
+            weitere = detail.locator(
+                ".inline-detail__section",
+                has=page.locator(".inline-detail__section-title", has_text="Weitere")
+            ).first
+            weitere_mark = weitere.locator(".fam-mark").count() if weitere.count() else -1
+            if not with_count and weitere_mark == 0:
+                results.append(("OK", "anchor:NIM_022_1_1:blocktitel    ",
+                                "keine Zahl im Titel, Weitere ohne Familienmarker"))
+            else:
+                results.append(("FAIL", "anchor:NIM_022_1_1:blocktitel    ",
+                                f"mit-zahl={with_count}, weitere-marker={weitere_mark}"))
+
+            dates = detail.locator(".chip-group .chip-date")
+            n_dates = dates.count()
+            first_date = dates.first.inner_text() if n_dates else ""
+            tip = dates.first.get_attribute("data-tip") if n_dates else ""
+            if n_dates == 14 and first_date.startswith("23.") and "Zeile" in (tip or ""):
+                results.append(("OK", "anchor:NIM_022_1_1:spielzeit     ",
+                                "14 Auffuehrungen datumssortiert unter der Spielzeit"))
+            else:
+                results.append(("FAIL", "anchor:NIM_022_1_1:spielzeit     ",
+                                f"daten={n_dates}, erstes={first_date!r}, tip={tip!r}"))
+
+            rheingold = detail.locator(".chip-group", has_text="Das Rheingold").first
+            sub = rheingold.locator(".chip-group__sub").inner_text() if rheingold.count() else ""
+            role_pill = detail.locator(
+                ".chip-group__sub .chip .prov-pill").count()
+            if "Fricka" in sub and role_pill > 0:
+                results.append(("OK", "anchor:NIM_022_1_1:rolle-am-werk ",
+                                "Fricka unter Das Rheingold, mit Provenance-Pille"))
+            else:
+                results.append(("FAIL", "anchor:NIM_022_1_1:rolle-am-werk ",
+                                f"sub={sub[:60]!r}, pillen={role_pill}"))
+        except Exception as e:
+            results.append(("WARN", "anchor:NIM_022_1_1               ",
+                            f"check uebersprungen: {e}"))
+
         # --- Typ-Chips des eingeklappten Konvolut-Kopfs: inline neben dem Titel
         #     in derselben Titelzeile, der Erschliessungsstand ausschliesslich
         #     im Kopf-Tooltip (E-181). ---
@@ -499,6 +596,69 @@ def main() -> int:
                                 f"default={rows_default}, offen={rows_all}, un={un_all}"))
         except Exception as e:
             results.append(("WARN", "bestand:erschliessungsstand      ",
+                            f"check uebersprungen: {e}"))
+
+        # --- Konvolut aufklappen parkt den Kopf unter dem Spaltenkopf
+        #     (Projektleitung, 2026-09-04). Der Kopf haftet erst nach dem
+        #     Scrollen; misst man gegen `thead` statt gegen ein `th`, liest man
+        #     die weggescrollte Box, denn sticky sitzt auf den Zellen. Toleranz
+        #     2 px fuer Subpixel-Zeilenhoehen. ---
+        try:
+            page.goto(BASE_URL, wait_until="networkidle", timeout=10000)
+            page.wait_for_timeout(600)
+            page.locator('[data-tab="bestand"]').first.click()
+            page.wait_for_timeout(500)
+            heads = page.locator('#tab-bestand .archiv-row--konvolut')
+            target = None
+            for i in range(heads.count()):
+                if heads.nth(i).get_attribute("aria-expanded") == "false":
+                    target = heads.nth(i)
+                    break
+            if target is None:
+                results.append(("WARN", "bestand:scroll-unter-kopf        ",
+                                "kein geschlossenes Konvolut gefunden"))
+            else:
+                kid = target.get_attribute("data-konvolut-header")
+                errs_before = len(global_errors)
+                target.locator(".archiv-chevron").click()
+                page.evaluate(SCROLL_SETTLED)
+                page.wait_for_timeout(150)
+                delta = page.evaluate(HEAD_OFFSET, kid)
+                new_errs = expect_no_new_errors(global_errors, errs_before)
+                if delta is not None and abs(delta) <= 2 and not new_errs:
+                    results.append(("OK", "bestand:scroll-unter-kopf        ",
+                                    f"Kopf {delta:+.2f} px unter dem Spaltenkopf"))
+                else:
+                    results.append(("FAIL", "bestand:scroll-unter-kopf        ",
+                                    f"Versatz={delta}, errs={len(new_errs)}"))
+                    for e in new_errs[:2]:
+                        results.append(("  ", " " * 24, e[:120]))
+        except Exception as e:
+            results.append(("WARN", "bestand:scroll-unter-kopf        ",
+                            f"check uebersprungen: {e}"))
+
+        # --- Neutraler Filterstreifen traegt den Platzhalter statt einer leeren
+        #     Zeile. Designregel 8 ist hier bewusst ausgesetzt (Projektleitung,
+        #     2026-09-04): kein Chip, kein Knopf, eine ruhige Zeile. ---
+        try:
+            page.locator('#tab-bestand .vs-status__reset').click()
+            page.wait_for_timeout(500)
+            hint = page.locator('#tab-bestand .filter-strip__empty')
+            chips = page.locator('#tab-bestand .filter-strip .fs-chip').count()
+            text = hint.inner_text() if hint.count() else ""
+            tip = hint.get_attribute("data-tip") if hint.count() else ""
+            glyph = page.locator('#tab-bestand .filter-strip__empty svg').count()
+            is_button = page.locator('#tab-bestand button.filter-strip__empty').count()
+            if (hint.count() == 1 and chips == 0 and text.strip() == "kein Filter aktiv"
+                    and glyph == 1 and tip and is_button == 0):
+                results.append(("OK", "bestand:filterstreifen-leer      ",
+                                "Platzhalter mit Zeichen und Tooltip, kein Knopf"))
+            else:
+                results.append(("FAIL", "bestand:filterstreifen-leer      ",
+                                f"hint={hint.count()}, chips={chips}, text={text!r}, "
+                                f"glyph={glyph}, button={is_button}, tip={bool(tip)}"))
+        except Exception as e:
+            results.append(("WARN", "bestand:filterstreifen-leer      ",
                             f"check uebersprungen: {e}"))
 
         # --- Spezial-Check: duplicate @id im JSON-LD (Frontend-Store) ---

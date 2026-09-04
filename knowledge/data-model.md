@@ -898,5 +898,6 @@ In den Indextabellen:
 - [journal.md](journal.md) — Begründung der Modellentscheidungen und Leitplanken
 - [specification.md](specification.md) — Projektsteuerung und offene Entscheidungen
 - [architecture.md](architecture.md) § Pipeline — wie der Datensatz erzeugt wird
-- [data/reports/reconciliation-register.md](../data/reports/reconciliation-register.md) — Register der Quell- und Abgleichfehler
+- [data/reports/source-errors-handover-2026-09-01.md](../data/reports/source-errors-handover-2026-09-01.md) — Partner-Übergabeliste der quellseitig behebbaren Fehler
+- [data/reports/reconciliation-register.md](../data/reports/reconciliation-register.md) — Register der Wikidata-Abgleichfehler und der Normdaten-Pflege
 - [testing.md](testing.md) — Test-Gates, die das Modell absichern

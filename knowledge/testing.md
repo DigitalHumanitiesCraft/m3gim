@@ -90,12 +90,20 @@ tests/
 ├── test_47_vocab_reader.py        # enger Turtle-Leser der Pipeline gegen rdflib
 ├── test_48_model_page.py          # docs/datenmodell.html ist die Ausgabe des Generators
 ├── test_49_correspondence_author.py # Absenderseite eines Briefes im Beziehungsnetz
+├── test_49_footer.py              # der Fuß aller Seiten gegen die Vorlage des Generators (E-209)
 ├── test_50_link_proposals.py      # Verknuepfungsvorschlaege aus Titeln, Wortgrenzen
 ├── test_51_agrelon_roles.py       # Rollenstellen einer AgRelOn-Relation
-└── test_52_dating_scope_and_rank.py # Bezugsebene und Rang stehen im Vokabular
+├── test_51_html_hygiene.py        # Struktur, Ids, Überschriftenfolge und Meta-Sets aller Seiten
+├── test_52_dating_scope_and_rank.py # Bezugsebene und Rang stehen im Vokabular
+├── test_60_csv_source.py          # CSV-Lesepfad und Formatprüfung der Verknüpfungen (E-152)
+├── test_61_orphan_links.py        # Datenspiegel: Quellzeilen, die den Datensatz nicht erreichen
+├── test_62_value_list_contract.py # Datenspiegel: Erfassung gegen Typ-Rolle.csv
+├── test_63_unresolved_aggregate.py # unaufgelöste Sammeleinheit steht im Datensatz, nicht im Frontend
+├── test_64_pipeline_guards.py     # Verwurf-Aufstellung und Wikidata-Guard von transform.py
+└── test_65_stage_role_duplicates.py # eine Partie je Dokument, einmal und mit Interpret:in (E-205)
 ```
 
-Die Nummerierung hat historische Lücken (test_17, test_21 wurden nicht vergeben). Das ist bewusst — die Zahlen sind stabile IDs, kein durchgängiger Index. Die 38 ist doppelt vergeben, `test_38_modelling_rules` und `test_38_ste_deterministic_ids` teilen sie; der Dateiname unterscheidet die beiden Module, die Nummer allein reicht als Verweis nicht.
+Die Nummerierung hat historische Lücken (test_17, test_21 und die Fünfziger ab test_53 wurden nicht vergeben). Das ist bewusst, die Zahlen sind stabile IDs und kein durchgängiger Index. Doppelt vergeben sind die 38 und die 49, `test_38_modelling_rules` und `test_38_ste_deterministic_ids` teilen die eine, `test_49_correspondence_author` und `test_49_footer` die andere; der Dateiname unterscheidet die Module, die Nummer allein reicht als Verweis nicht.
 
 Leitsatz: jeder Test prüft eine nicht-triviale, nicht-redundante Invariante und kann failen. Soft-Warnings gehören in `validate.py`, nicht in pytest.
 
@@ -545,15 +553,16 @@ Filter und Dokumentmenge:
 - `multi-facet.test.mjs` dafür, dass mehrere Werte einer Facette als ODER wirken und verschiedene Facetten als UND (E-151).
 - `facet-inventory.test.mjs` für die Deckung der Achsen am ausgelieferten Datensatz, mit Mindestvorkommen statt Nulltoleranz.
 - `doctype-facet.test.mjs` für den Dokumenttyp als Facette, den Oberbegriff über `expandDftFilter` und die Baumgruppen aus `docTypeGroups`.
-- `shared-facets-holdings.test.mjs` für den Schnitt von Bestand und Chronik über `filterBySharedState`, inklusive der Facetten Rolle, Institution und Sicht.
+- `shared-facets-holdings.test.mjs` für den Schnitt von Bestand und Chronik über `filterBySharedState`, inklusive der Facetten Institution und Sicht.
 - `shared-filter-reach.test.mjs` als lexikalisches Gate, dass den Zeitregler genau eine Stelle baut und jede Ansicht am geteilten Zustand hängt.
+- `filter-state.test.mjs` für den Nullpunkt als leere Wahl und die Ansichts-Voreinstellung als sichtbaren Filter.
 - `filter-sync.test.mjs` für die Faltung zwischen Jahresfenster und Zeitfenster-Facette und den Loop-Guard.
 - `filter-url.test.mjs` für Kodierung und Zerlegung des Hash, und `router-hash.test.mjs` für die Gegenrichtung, also was `parseHash` in Router-State und Filter überträgt.
 - `text-match.test.mjs` für den Textabgleich der Facetten-Autovervollständigung mit Umlaut- und Akzentausgleich.
 
 Ansichten:
 
-- `bestand-data.js`-Seite mit `bestand-badge.test.mjs` für den Dokumenttyp-Badge im abgeflachten Modus, `bestand-families.test.mjs` für `familiesForRecord`, die dom-freie Logik hinter der typisierten Erschließungsanzeige (E-158). Eine Sortierung hat die Tabelle seit E-203 nicht mehr, der frühere `bestand-sort.test.mjs` ist mit ihr entfallen.
+- `bestand-data.js`-Seite mit `bestand-badge.test.mjs` für den Dokumenttyp-Badge im abgeflachten Modus, `bestand-families.test.mjs` für `familiesForRecord`, die dom-freie Logik hinter der typisierten Erschließungsanzeige (E-158), und `bestand-autoopen.test.mjs` für `shouldAutoOpenFirstKonvolut`, also das erste Konvolut beim ungefilterten Eintreten (E-206). Eine Sortierung hat die Tabelle seit E-203 nicht mehr, der frühere `bestand-sort.test.mjs` ist mit ihr entfallen.
 - `record-partition.test.mjs` für `partitionRecord`, also den geteilten Pfad von Inline-Detail und Korb, und `detail-foot.test.mjs` für `sourceSummary`.
 - `statistik-data.test.mjs` für die Aggregationen der Statistik und dafür, dass der geteilte Schnitt sie schneidet.
 - `catalogue-gaps.test.mjs` für `aggregateCatalogueGaps`, jede Erschließungsachse einzeln und die Summe gegen den Gesamtbestand.
@@ -566,6 +575,12 @@ Rahmen:
 - `router.test.mjs` für den Legacy-Präfix `m3gim:` im URL-Hash nach der Namensraum-Dreiteilung (E-138).
 - `basket.test.mjs` für den Korb, seine Spiegelung in den localStorage und das Abmelden seiner Listener.
 - `log-stamp.test.mjs` für den Zustands-Stempel, seine feste Schlüsselreihenfolge und die Unterscheidung zwischen der Null und dem leeren Wert.
+- `sidebar-column.test.mjs` für die reinen Beschriftungsfunktionen und die Sektionskonfiguration der Seitenleiste.
+- `bestand-jumplist.test.mjs` für das Modell der Sprungliste in beiden Zuständen, der Konvolut-Hierarchie und der flachen gefilterten Liste (E-214).
+- `derived-mark.test.mjs` als lexikalische Sperre, dass jede der fünf Ergänzungsstellen die Marke `mark-derived` mit einem „ergänzt:“-Tooltip trägt und die alten Einzelformen fehlen (E-216).
+- `auftritt-grouping.test.mjs` für die Datumssortierung, die Spielzeit-Gruppierung und die Rolle-zu-Werk-Zuordnung des Details (E-213).
+- `family-icons.test.mjs` für das geteilte Symbolmodul und dass Bestand und Indizes keine eigenen Familiensymbole zeichnen (E-212).
+- `tooltip-system.test.mjs` als lexikalische Sperre, dass `data-tip` das einzige Tooltip-System ist und `title` unter `docs/js` nicht vorkommt (E-210).
 - `utils.test.mjs` für `date-parser` und `format`.
 
 Zwei Hilfsdateien tragen die Fixtures. `_concepts.mjs` stellt synthetischen Fixtures die echten Begriffsknoten des Datensatzes voran und verhindert damit eine zweite, im Testcode geführte Vokabulartabelle. `_shipped.mjs` liefert den ausgelieferten Graphen unter `docs/data/m3gim.jsonld` und den daraus über den echten Loader gebauten Store, also genau das, was der Browser bekommt.

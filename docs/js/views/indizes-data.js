@@ -12,10 +12,11 @@
  * @property {number} count       number of linked records
  * @property {Set<string>} records
  * @property {?string} wikidata
+ * @property {?Array<Object>} relations  persons only, AgRelOn (loader pass 2.5)
  */
 
 /** Per-grid entry source and the fields the search runs over. */
-export const GRID_SOURCES = {
+const GRID_SOURCES = {
   personen: {
     getEntries: (s) => [...s.persons.entries()]
       .filter(([, data]) => data.records.size > 0)
@@ -23,6 +24,10 @@ export const GRID_SOURCES = {
         name, count: data.records.size, kategorie: data.kategorie, wikidata: data.wikidata, records: data.records,
         occupation: data.occupation || null, voiceType: data.voiceType || null,
         birthDate: data.birthDate || null, deathDate: data.deathDate || null,
+        // AgRelOn relations from loader pass 2.5; without this field the
+        // relation badges in indizes.js never had data (user-story audit
+        // 2026-09-03).
+        relations: data.relations || null,
       })),
     searchFields: (e) => [e.name, e.kategorie].filter(Boolean).join(' '),
   },

@@ -56,18 +56,35 @@
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  padding: 0 var(--space-4);
+  /* One token for the side padding, so the underline below spans exactly the
+     label and follows the narrower padding of the icon-only bar. */
+  --tab-pad: var(--space-4);
+  padding: 0 var(--tab-pad);
   font-family: var(--font-ui);
   font-size: var(--text-sm);
   font-weight: var(--weight-medium);
   color: var(--accent-soft);
   background: none;
   border: none;
-  border-block-end: 2px solid transparent;
   cursor: pointer;
   white-space: nowrap;
   flex-shrink: 0;
-  transition: color var(--transition-fast), border-color var(--transition-fast);
+  position: relative;
+  transition: color var(--transition-fast), background var(--transition-fast);
+}
+
+/* The underline is a pseudo-element, not the bottom border: it has to sit a few
+   pixels above the band edge, otherwise it merges with the white work area
+   below and stops reading as a marker (Projektleitung, 2026-09-04). It is
+   always present and only changes colour, so no state shifts the layout. */
+.tab-bar__tab::after {
+  content: "";
+  position: absolute;
+  inset-inline: var(--tab-pad);
+  inset-block-end: 4px;
+  block-size: 2px;
+  background: transparent;
+  transition: background var(--transition-fast);
 }
 
 .tab-bar__tab svg {
@@ -76,15 +93,22 @@
   flex-shrink: 0;
 }
 
+/* The active tab holds the full band height as a translucent white field and
+   keeps the underline inside the band. Regel 6 keeps selection to a contour on
+   the white work area; on the accent band a contour alone was not visible
+   enough (Projektleitung, 2026-09-04). Hover takes the same field, weaker. */
 .tab-bar__tab:hover {
   color: var(--color-text-inverse);
+  background: color-mix(in oklch, var(--color-text-inverse) 8%, transparent);
 }
 
-/* Contour, not fill (Regel 6): white text plus a 2px white bar on the band. */
 .tab-bar__tab.active {
   color: var(--color-text-inverse);
-  border-block-end-color: var(--color-text-inverse);
-  background: none;
+  background: color-mix(in oklch, var(--color-text-inverse) 14%, transparent);
+}
+
+.tab-bar__tab.active::after {
+  background: var(--color-text-inverse);
 }
 
 /* The accent is the ground here, so the focus ring takes the band's white. */
@@ -108,7 +132,7 @@
    outside #main-content. It keeps one row and scrolls inside its own box. */
 @media (max-width: 899px) {
   .tab-bar__tab {
-    padding: 0 var(--space-3);
+    --tab-pad: var(--space-3);
     font-size: var(--text-xs);
   }
 
@@ -120,15 +144,18 @@
     width: 15px;
     height: 15px;
   }
+}
 
-  /* Icons carry the tabs here; the label stays in the accessibility tree,
-     because the icon is aria-hidden and would leave the button unnamed. */
+/* Icons carry the tabs by default; the label is hidden through the shared
+   .visually-hidden group in base.css, so the button keeps its accessible name
+   (the icon is aria-hidden). From 900px up the label becomes visible again.
+   The restore mirrors that group property for property; both belong together. */
+@media (min-width: 900px) {
   .tab-bar__label {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip-path: none;
   }
 }

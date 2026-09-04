@@ -4,8 +4,7 @@
  * the accent is KUG-Blau, and the two never mix. Every ground, line and text
  * tone belongs to the warm family; blue appears only as accent — brand band,
  * link, active tab, focus ring, selection — never as a surface tint, and no
- * warm tone is used for an interactive state. The names at the bottom of this
- * block are aliases only, so CSS held by another lane keeps resolving.
+ * warm tone is used for an interactive state.
  */
 
 :root {
@@ -81,9 +80,7 @@
   --chip-c-institution-text: #7A6000;
   --chip-c-ort-text:         #2C6B4A;
   --chip-c-werk-text:        #BF4A18;
-  --chip-c-neutral-bg:     var(--surface-2);
   --chip-c-neutral-border: var(--line);
-  --chip-c-neutral-text:   var(--color-text-secondary);
 
   /* Legend swatch colour (components.css § Legend primitive). Transparent by
      default, because the ring and line markers draw themselves from borders and
@@ -95,6 +92,9 @@
   --font-title: 'Source Serif 4', Georgia, 'Times New Roman', serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
 
+  /* Half step below --text-xs: the smallest label size the sidebar and the
+     legend chips use for counts and swatch captions. */
+  --text-2xs: 0.625rem;
   --text-xs: 0.75rem;
   --text-sm: 0.8125rem;
   --text-base: 0.875rem;
@@ -114,6 +114,8 @@
 
   /* Spacing (8px grid) */
   --space-1: 4px;
+  /* Half step, the gap and padding used where --space-2 crowds a dense row. */
+  --space-1-5: 6px;
   --space-2: 8px;
   --space-3: 12px;
   --space-4: 16px;
@@ -136,7 +138,7 @@
   /* Height of the Bestand sort header. It is a token because two sticky layers
      stack on it: the thead itself and the open Konvolut head, which parks
      directly below it (bestand.css). */
-  --table-head-height: 28px;
+  --table-head-height: 36px;
 
   /* Borders */
   --border-radius: 4px;
@@ -147,7 +149,10 @@
   --transition-fast: 150ms ease;
   --transition-normal: 250ms ease;
 
-  /* Shadows */
+  /* Shadows. --shadow-thumb is the firmer edge a dragged control needs; the
+     slider thumb sits on a rail of its own colour and would otherwise flatten
+     into it. */
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-thumb: 0 1px 2px rgba(0, 0, 0, 0.25);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
 }

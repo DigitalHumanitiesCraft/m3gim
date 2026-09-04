@@ -172,7 +172,7 @@ function paintTypes(region) {
     region.appendChild(el('button', {
       className: 'fs-typerow' + (on ? '' : ' fs-typerow--off'),
       type: 'button', 'aria-pressed': String(on),
-      dataset: { type: t, tip, tipWrap: '' },
+      dataset: { type: t, tip, tipWrap: '', tipPos: 'bottom-left' },
       onClick: () => { local.types[t] = !local.types[t]; redraw(); },
     },
       dot,
@@ -213,7 +213,7 @@ function kategorienSection() {
     .map(([kat, count]) => ({
       id: kat, label: kat, count,
       color: NETZWERK_KATEGORIEN[kat] || NETZWERK_KATEGORIEN.Andere,
-      title: `${count} Personen dieser Kategorie im Bestand`,
+      tip: 'Personen dieser Kategorie im Bestand',
     }));
   return {
     title: 'Kategorien',

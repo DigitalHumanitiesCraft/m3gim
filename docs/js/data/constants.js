@@ -39,18 +39,6 @@ export const PERSONEN_KATEGORIEN = {
   'hotter': 'Kollege', 'rehfuss': 'Kollege', 'callas': 'Kollege',
 };
 
-// =========================================================================
-// Place colour coding, retired by the palette decision of 2026-09-03: a place
-// is no longer a colour axis, the accent alone carries emphasis. The function
-// survives as the neutral fallback its callers already handle, until the last
-// call site (chronik.js) drops it.
-// =========================================================================
-
-/** Always null since the place colour coding was retired. */
-export function ortColor() {
-  return null;
-}
-
 // Normalize variant person names to canonical form
 // Keys are lowercase, matching is done on lowercased input
 export const PERSONEN_NORMALISIERUNG = {
@@ -136,6 +124,12 @@ export function korbIcon(size = 14, filled = false) {
   return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path fill="${filled ? 'currentColor' : 'none'}" d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>`;
 }
 
+/** Label of a Korb button, tooltip and accessible name in one, so the three
+ *  places that carry the button word it identically. */
+export function korbTip(inKorb) {
+  return inKorb ? 'Aus dem Korb entfernen' : 'In den Korb';
+}
+
 // Document type labels come from the data now: the pipeline writes
 // skos:prefLabel on the m3gim-dft concepts (E-101), the loader stores them in
 // store.dftHierarchy, format.js dftLabel(store, id) resolves them. The former
@@ -185,7 +179,7 @@ export const AGRELON_LABELS = {
 // .chip--c-beziehung, .chip--c-finanz, .chip--c-datum, .chip--c-neutral.
 // =========================================================================
 
-export const ROLE_CLUSTER = {
+const ROLE_CLUSTER = {
   // Places + spatiotemporal events
   'AUFFUEHRUNGSORT':  'ort',
   'AUFFÜHRUNGSORT':   'ort',
@@ -334,7 +328,7 @@ export function roleClusterFor(prefix) {
 // here: thematic cluster per mobility Sicht.
 // =========================================================================
 
-export const EVENT_ROLE_TO_MOBILITY_CLUSTER = {
+const EVENT_ROLE_TO_MOBILITY_CLUSTER = {
   // Performative mobility (appearances, performances)
   'auftritt':          'performativ',
   'aufführung':        'performativ',

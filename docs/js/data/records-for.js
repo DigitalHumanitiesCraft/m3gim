@@ -130,6 +130,21 @@ export function baseRecords(store) {
  */
 function facetIndex(store, key) {
   if (!store) return new Map();
+  // The store is immutable once loaded, but every facet count of the sidebar
+  // asks for these indexes again, so a keystroke in the search field rebuilt
+  // them over all records once per facet (Projektleitung, 2026-09-04).
+  let cache = indexCache.get(store);
+  if (!cache) { cache = new Map(); indexCache.set(store, cache); }
+  const hit = cache.get(key);
+  if (hit) return hit;
+  const built = buildFacetIndex(store, key);
+  cache.set(key, built);
+  return built;
+}
+
+const indexCache = new WeakMap();
+
+function buildFacetIndex(store, key) {
   const mapName = ENTITY_MAPS[key];
   if (mapName) {
     const source = store[mapName];
@@ -359,11 +374,21 @@ export function yearOf(store, record) {
 
 // --- Derivations -----------------------------------------------------------
 
-/** Year of the record behind an @id. */
+/** Year of the record behind an @id. Memoised, because every cut walks its whole
+ *  set for the Zeitfenster and the count of the undated (Projektleitung,
+ *  2026-09-04). */
 function yearOfId(store, id) {
-  const record = store && store.records ? store.records.get(id) : null;
-  return yearOf(store, record);
+  if (!store) return null;
+  let years = yearCache.get(store);
+  if (!years) { years = new Map(); yearCache.set(store, years); }
+  if (years.has(id)) return years.get(id);
+  const record = store.records ? store.records.get(id) : null;
+  const year = yearOf(store, record);
+  years.set(id, year);
+  return year;
 }
+
+const yearCache = new WeakMap();
 
 /**
  * Erschliessungsstand → records (E-162). The Bearbeitungsstand of the source,
@@ -388,11 +413,17 @@ function standIndex(store) {
  * local here so the data layer does not point at the sync layer.
  */
 function engRecords(store) {
+  if (!store) return new Set();
+  const hit = engCache.get(store);
+  if (hit) return hit;
   const set = new Set();
-  if (store && store.recordToEvents) for (const id of store.recordToEvents.keys()) set.add(id);
-  if (store && store.recordToPerformances) for (const id of store.recordToPerformances.keys()) set.add(id);
+  if (store.recordToEvents) for (const id of store.recordToEvents.keys()) set.add(id);
+  if (store.recordToPerformances) for (const id of store.recordToPerformances.keys()) set.add(id);
+  engCache.set(store, set);
   return set;
 }
+
+const engCache = new WeakMap();
 
 /**
  * Document type → records, keyed by the record's leaf DFT id (getDocTypeId).

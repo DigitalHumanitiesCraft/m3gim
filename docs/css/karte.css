@@ -1,8 +1,6 @@
-/* Karten-Tab (E-111, D3-geo Trajektorie).
-   Nur das Karten-Spezifische: das SVG, die Knoten-Labels, der Tooltip und die
-   Ereignis-Region in der Sidebar. Geruest, Sektionen und Filter-Controls
-   liegen in sidebar.css (geteilte View-Sidebar). Nutzt die Tokens aus
-   variables.css. */
+/* Karte tab (E-111). Only what is the map's own: the SVG, the node labels, the
+   tooltip and the event region in the sidebar. Shell, sections and filter
+   controls live in sidebar.css. */
 
 #tab-karte { padding: 0; }
 
@@ -21,7 +19,7 @@
   color: var(--color-text-secondary);
 }
 
-/* --- Karte (fuellt den View-Hauptbereich) -------------------------------- */
+/* The map fills the view's work area */
 
 .mob-map {
   position: absolute;
@@ -32,7 +30,7 @@
 .mob-map__svg { width: 100%; height: 100%; display: block; background: var(--surface); }
 .mob-map__svg:active { cursor: grabbing; }
 
-/* Basemap: Ozean = SVG-Hintergrund, darueber das Gradnetz (lokal erzeugt) */
+/* Basemap: the ocean is the SVG ground, the graticule is drawn locally on top. */
 .mob-graticule {
   fill: none;
   stroke: var(--line-strong);
@@ -40,7 +38,7 @@
   stroke-opacity: 0.4;
 }
 
-/* Zoom-Steuerung auf der Karte (oben links) */
+/* Zoom stack, top left of the map */
 .mob-zoomctl {
   position: absolute;
   top: 8px;
@@ -50,19 +48,7 @@
   gap: 2px;
   z-index: 4;
 }
-.mob-zoomctl__btn {
-  width: 26px;
-  height: 26px;
-  background: var(--surface);
-  border: 1px solid var(--border-color-light);
-  color: var(--color-text-primary);
-  font-size: 16px;
-  line-height: 1;
-  cursor: pointer;
-  border-radius: 3px;
-  transition: background var(--transition-fast);
-}
-.mob-zoomctl__btn:hover { background: var(--surface-2); }
+/* Shape and hover come from the .zoom-btn primitive in components.css. */
 
 .mob-map__loading {
   position: absolute;
@@ -86,7 +72,7 @@
   pointer-events: none;
 }
 
-/* --- Gewaehlte Entitaet (Sidebar) ---------------------------------------- */
+/* Selected entity (sidebar) */
 
 .mob-entity__active {
   display: flex;
@@ -101,7 +87,7 @@
   color: var(--accent);
 }
 
-/* --- Knoten-Tooltip (HTML ueber dem SVG) --------------------------------- */
+/* Node tooltip: an HTML box over the SVG, because an SVG node carries no pseudo-element (E-36). */
 
 .mob-tip {
   position: absolute;
@@ -109,11 +95,11 @@
   pointer-events: none;
   min-width: 90px;
   max-width: 220px;
-  padding: 6px 9px;
+  padding: var(--space-1-5) 9px;
   background: var(--surface);
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--shadow-md);
   font-size: var(--text-xs);
   color: var(--color-text-primary);
   line-height: 1.5;
@@ -128,7 +114,7 @@
 .mob-tip__row {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-1-5);
   color: var(--color-text-secondary);
 }
 .mob-tip__sw { width: 9px; height: 9px; border-radius: 2px; flex: none; }
@@ -140,7 +126,7 @@
   color: var(--color-text-tertiary);
 }
 .mob-tip__meta { color: var(--color-text-tertiary); font-style: italic; }
-/* Gestapelter Proportionsbalken im Tooltip */
+/* Stacked proportion bar inside the tooltip */
 .mob-tip__bar {
   display: flex;
   height: 8px;
@@ -151,7 +137,7 @@
 }
 .mob-tip__bar > span { display: block; height: 100%; }
 
-/* --- Ereignis-Region in der Sidebar -------------------------------------- */
+/* Event region in the sidebar */
 
 .mob-panel { display: flex; flex-direction: column; gap: var(--space-3); }
 .mob-panel__detail { display: flex; flex-direction: column; gap: var(--space-2); }
@@ -187,7 +173,7 @@
   gap: var(--space-2);
 }
 
-/* --- Klick-Detail: Zuordnungen (Balken + Zeilen) + Dokumente ------------- */
+/* Click detail: the assignments as bar and rows, then the documents */
 
 .mob-detail__bar {
   display: flex;
@@ -218,7 +204,7 @@
   margin-top: var(--space-1);
 }
 
-/* Verortungs-Legende: Ring-Stile (gesichert / stadtgenau / weit pruefen) */
+/* Location legend: the ring styles for secured, city-level and wide. */
 .mob-vmark {
   width: 13px; height: 13px; border-radius: 50%;
   box-sizing: border-box; background: transparent;
@@ -227,7 +213,7 @@
 .mob-vmark--city { border: 1.5px dashed var(--line-strong); }
 .mob-vmark--far { border: 1.5px dashed var(--color-error); }
 
-/* Eingeklappte Liste nicht verortbarer Belege */
+/* Collapsed list of records that cannot be placed */
 .mob-unloc { margin-top: var(--space-3); }
 .mob-unloc__summary {
   cursor: pointer;
@@ -237,3 +223,13 @@
   user-select: none;
 }
 .mob-unloc__summary:hover { color: var(--color-text-primary); }
+
+/* Touch targets in the sidebar's event region. */
+@media (max-width: 768px) {
+  .mob-detail__clear,
+  .mob-unloc__summary {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: 24px;
+  }
+}

@@ -124,8 +124,8 @@ def dom_rows(page):
               sig: (tr.querySelector('.archiv-signatur') || {}).textContent || '',
               titel: (tr.querySelector('.archiv-titel') || {}).textContent || '',
               datum: (tr.querySelector('.archiv-datum') || {}).textContent || '',
-              erschDots: tr.querySelectorAll('.ersch-dot').length,
-              erschOn: tr.querySelectorAll('.ersch-dot--on').length,
+              erschDots: tr.querySelectorAll('.ersch-fam').length,
+              erschOn: tr.querySelectorAll('.ersch-fam--on').length,
               erschTip: ersch ? (ersch.dataset.tip || '') : '',
             });
           }
@@ -282,8 +282,8 @@ def main():
 
         # Erschliessungsanzeige. Only one direction is an invariant: the dots also
         # draw on store-side derivations (Finanzen, AgRelOn, Mobilitaetsereignisse,
-        # Datierungen) that no link field of the record carries, so a filled dot
-        # without countLinks is legitimate. Links without any filled dot would be
+        # Datierungen) that no link field of the record carries, so a filled icon
+        # without countLinks is legitimate. Links without any filled icon would be
         # a display gap.
         if row["erschDots"] == 0:
             findings.append(f"Erschliessungsanzeige fehlt bei {ident}.")

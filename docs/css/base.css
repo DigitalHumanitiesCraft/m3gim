@@ -1,4 +1,4 @@
-﻿/* M3GIM Base Styles - Reset, Typography, Layout */
+﻿/* M3GIM base: reset, typography, the page shell and the footer */
 
 *, *::before, *::after {
   box-sizing: border-box;
@@ -131,8 +131,8 @@ textarea::placeholder {
 
 .topbar__badge {
   align-self: center;
-  padding: 2px 8px;
-  font-size: 0.65rem;
+  padding: 2px var(--space-2);
+  font-size: var(--text-2xs);
   font-weight: var(--weight-semibold);
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -175,9 +175,13 @@ textarea::placeholder {
   font-weight: var(--weight-medium);
 }
 
-/* Names the app for a screen reader without taking a line of the two-row bar;
-   the visible name is the brand, which is a link and cannot be the heading. */
-.visually-hidden {
+/* Names the app for a screen reader without taking a line of the band; the
+   visible name is the brand, which is a link and cannot be the heading.
+   The tab label shares this one definition rather than repeating it: the bar is
+   icon-only by default and tabs.css brings the label back from 900px up, so the
+   hidden state is declared once (Projektleitung, 2026-09-04). */
+.visually-hidden,
+.tab-bar__label {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -186,30 +190,87 @@ textarea::placeholder {
   white-space: nowrap;
 }
 
+/* The first tab stop of every page. It stays off the band until focused, so it
+   costs no visible line and is still reachable by keyboard. */
+.skip-link {
+  position: absolute;
+  inset-block-start: -3rem;
+  inset-inline-start: var(--space-3);
+  z-index: 10;
+  padding: var(--space-2) var(--space-3);
+  background: var(--surface);
+  color: var(--accent);
+  transition: inset-block-start var(--transition-fast);
+}
+
+.skip-link:focus {
+  inset-block-start: var(--space-2);
+}
+
 #main-content {
   flex: 1;
   overflow: hidden;
   position: relative;
 }
 
+/* Footer (E-209, E-211): two quiet groups in one fixed-height row,
+   institution and Impressum left, repository, licence and method right. Every
+   mark is the same 16px square so the row reads as one register; the preview
+   badge stays in the top bar only. The markup is copied verbatim into every
+   page and into the FOOT template of scripts/build-model-page.py;
+   tests/test_49_footer.py holds the copies equal. */
 .app-footer {
-  background: var(--surface-2);
-  border-top: 1px solid var(--border-color);
-  height: var(--footer-height);
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   gap: var(--space-4);
-  font-size: var(--text-sm);
+  /* The row is a minimum, not a cap: at narrow widths the two groups wrap onto
+     their own lines instead of pushing the page sideways (Projektleitung,
+     2026-09-04). --footer-height stays the value sidebar.css subtracts for the
+     shell, which holds as long as the row does not wrap. */
+  flex-wrap: wrap;
+  min-block-size: var(--footer-height);
+  padding: 0 var(--space-6);
+  background: var(--surface-2);
+  border-top: 1px solid var(--border-color);
+  font-size: var(--text-xs);
   color: var(--color-text-tertiary);
+  white-space: nowrap;
   flex-shrink: 0;
 }
 
-.app-footer a {
-  color: var(--color-text-secondary);
+.app-footer__group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  min-inline-size: 0;
 }
 
-/* Tab Content Sections — absolute fill so height: 100% resolves reliably */
+.app-footer a {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1-5);
+  color: var(--color-text-tertiary);
+}
+
+.app-footer a:hover {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+/* Image marks (KUG, CC) sit a step back like the text beside them. */
+.app-footer__mark {
+  inline-size: 14px;
+  block-size: 14px;
+  flex: none;
+  opacity: 0.7;
+}
+
+.app-footer a:hover .app-footer__mark {
+  opacity: 1;
+}
+
+/* Absolute fill, so height: 100% resolves reliably inside a tab. */
 .tab-content {
   display: none;
   position: absolute;
@@ -257,7 +318,7 @@ a:focus-visible {
   color: var(--color-text-primary);
 }
 
-/* ---- Responsive ---- */
+/* Responsive */
 
 /* Order of collapse: the badge and the info links go compact first, the tab
    labels fall back to their icons only below 900px (tabs.css). */
@@ -297,16 +358,62 @@ a:focus-visible {
   }
 }
 
+/* Two rows, one group each: below this width the eight marks and links no
+   longer fit one line, and nowrap would push the page sideways. */
 @media (max-width: 768px) {
   .app-footer {
-    gap: var(--space-2);
-    font-size: var(--text-xs);
-    padding: 0 var(--space-3);
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: var(--space-1);
+    padding: var(--space-2) var(--space-3);
+    white-space: normal;
+  }
+
+  .app-footer__group {
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-3);
   }
 }
 
-/* Print: the chrome contributes nothing on paper. */
+/* Below 700px the band cannot hold brand, tabs and info links side by side. The
+   whole bar scrolls instead of only the tab list, so the info links sit past
+   the tab overflow and stay reachable without a second row (Projektleitung,
+   2026-09-04). */
+@media (max-width: 699px) {
+  .topbar {
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+  }
+
+  .topbar::-webkit-scrollbar {
+    height: 0;
+  }
+
+  /* An auto margin measures against the visible box, not the scroll width, and
+     would pin the links inside it instead of letting them overflow. */
+  .topbar__info {
+    margin-inline-start: 0;
+  }
+}
+
+/* Print: the chrome contributes nothing on paper. The views add what is theirs
+   (bestand.css). */
 @media print {
   .topbar,
-  .app-footer { display: none; }
+  .app-footer,
+  .skip-link { display: none; }
+
+  /* The shell is sized against the viewport on screen; on paper the content
+     sets the height and the sheet breaks it. */
+  #main-content {
+    overflow: visible;
+    position: static;
+  }
+
+  .tab-content {
+    position: static;
+    overflow: visible;
+  }
 }

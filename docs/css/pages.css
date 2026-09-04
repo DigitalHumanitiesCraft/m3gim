@@ -1,8 +1,6 @@
-/* M³GIM Pages — Shared content styles + Info-Page chrome */
+/* M3GIM info pages: the shared content blocks and the page chrome */
 
-/* ===================================================================
-   Reusable content blocks (used by standalone HTML info pages)
-   =================================================================== */
+/* Reusable content blocks of the standalone info pages */
 
 .page {
   font-size: var(--text-base);
@@ -195,7 +193,7 @@
   margin-top: var(--space-4);
 }
 
-/* Hervorgehobene Variante: der Research-Preview-Vorbehalt auf der Ueber-Seite. */
+/* Flagged variant: the research-preview caveat on the about page. */
 .page__note--flagged {
   border-inline-start: 3px solid var(--accent);
   padding: var(--space-3) var(--space-4);
@@ -203,9 +201,7 @@
 }
 
 
-/* ===================================================================
-   Info-Page chrome (about, projekt, datenmodell, impressum)
-   =================================================================== */
+/* Info-Page chrome (about, projekt, datenmodell, impressum) */
 
 /* Body reset */
 .info-page {
@@ -239,9 +235,6 @@
   margin: 0 auto;
 }
 
-/* Footer: Info-Seiten verwenden .app-footer aus base.css */
-/* Scrollbar, Selection, code/mono: geerbt von base.css */
-
 /* Base link style — scoped to content area, not header */
 .info-main a {
   color: var(--accent);
@@ -259,27 +252,23 @@
 }
 
 
-/* ===================================================================
-   Datenmodell-Seite (docs/datenmodell.html)
-   Die Seite ist aus vocab/m3gim.ttl erzeugt; die Klassen hier tragen
-   die Bauteile, die der Generator setzt.
-   =================================================================== */
+/* Datenmodell page (docs/datenmodell.html), generated from vocab/m3gim.ttl.
+   The classes here carry the parts the generator emits. */
 
-/* Die Modellseite fuehrt Tabellen und eine Zeichnung und braucht mehr
-   Satzbreite als der Fliesstext der uebrigen Informationsseiten. */
+/* The model page carries tables and a drawing and needs more measure than the
+   running text of the other info pages. */
 .info-main .page--model {
   max-width: 1040px;
 }
 
-/* Die Kopfangaben tragen vollstaendige IRIs; sie brechen um, statt den
-   Seitenkoerper zu weiten. */
+/* The head entries carry full IRIs; they wrap instead of widening the page. */
 .page--model .page__stats dd {
   min-width: 0;
   overflow-wrap: anywhere;
 }
 
-/* Wide Content: Tabellen und Zeichnung scrollen in einem eigenen
-   Container, damit der Seitenkoerper nie seitlich scrollt. */
+/* Tables and the drawing scroll inside a box of their own, so the page body
+   never scrolls sideways. */
 .page__wide {
   max-width: 100%;
   overflow-x: auto;
@@ -291,7 +280,7 @@
   margin: 0;
 }
 
-/* --- Term-Block: Bezeichner, Definition, Kanten, Anmerkungen --- */
+/* Term block: identifier, definition, edges, notes */
 
 .term {
   margin: var(--space-5) 0;
@@ -377,8 +366,8 @@
   margin-top: var(--space-2);
 }
 
-/* Offene Fragen an das Projekt stehen im Vokabular als skos:editorialNote.
-   Der Akzentbalken haelt sie sichtbar von der Definition getrennt. */
+/* Open questions to the project stand in the vocabulary as skos:editorialNote.
+   The accent bar keeps them visibly apart from the definition. */
 .term__note,
 .cell__note {
   font-size: var(--text-sm);
@@ -399,8 +388,8 @@
   color: var(--color-text-tertiary);
 }
 
-/* Die Ueberschrift eines Vokabulars traegt Anzeigelabel, englisches Label und
-   den Bezeichner; nur das Anzeigelabel steht im Schriftschnitt der Ueberschrift. */
+/* A vocabulary heading carries the display label, the English label and the
+   identifier; only the display label keeps the heading face. */
 .page--model .page__section h3 code {
   font-family: var(--font-mono);
   font-size: var(--text-xs);
@@ -409,7 +398,7 @@
 }
 
 
-/* --- Begriffstabellen --- */
+/* Begriffstabellen */
 
 .page__table--concepts td:first-child code,
 .page__table--namespaces td code {
@@ -432,7 +421,7 @@
   margin: 0 0.2em 0.2em 0;
 }
 
-/* --- Dokumenttypen: die Einrueckung ist die skos:broader-Kante --- */
+/* Dokumenttypen: the indentation is the skos:broader edge */
 
 .dft-tree,
 .dft-tree ul {
@@ -476,7 +465,7 @@
   color: var(--color-text-secondary);
 }
 
-/* --- Netzwerkzeichnung der Modellgestalt --- */
+/* Network drawing of the model shape */
 
 .model-graph {
   display: block;
@@ -495,19 +484,19 @@
 
 .model-graph__edgelabel {
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: var(--text-2xs);
   fill: var(--color-text-secondary);
 }
 
 .model-graph__name {
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: var(--text-xs);
   fill: var(--color-text-primary);
 }
 
 .model-graph__gloss {
   font-family: var(--font-ui);
-  font-size: 10px;
+  font-size: var(--text-2xs);
   fill: var(--color-text-tertiary);
 }
 
