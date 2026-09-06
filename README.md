@@ -38,9 +38,10 @@ Prerequisites are Python 3.11 or newer and, for the JavaScript unit tests, Node.
 
 ```bash
 pip install -r requirements-test.txt
-python scripts/transform.py && python scripts/build-views.py
-python -m http.server 8000 --directory docs   # frontend at http://localhost:8000
+python -m http.server 8000 --bind 127.0.0.1 --directory docs
 ```
+
+The shipped frontend is available at `http://localhost:8000/`. Viewing it needs no data regeneration. Use the pipeline below when source data or transformation code changes.
 
 ### Pipeline
 
@@ -87,6 +88,7 @@ The recording tables under `data/google-spreadsheet/` go through the pipeline in
 
 ## Documentation
 
+- Agent entry, [AGENTS.md](AGENTS.md) → shared [CLAUDE.md](CLAUDE.md) → [current plan](knowledge/plan.md)
 - Entry into the knowledge base, [`knowledge/INDEX.md`](knowledge/INDEX.md)
 - Project identity, requirements, epics and the state of the work, [`knowledge/specification.md`](knowledge/specification.md)
 - Source material and known defects, [`knowledge/data.md`](knowledge/data.md), with the formal model in [`knowledge/data-model.md`](knowledge/data-model.md) and the German partner-facing [`knowledge/recording-guide.md`](knowledge/recording-guide.md)
@@ -94,7 +96,6 @@ The recording tables under `data/google-spreadsheet/` go through the pipeline in
 - Test strategy, [`knowledge/testing.md`](knowledge/testing.md)
 - Decisions and their reasons, [`knowledge/journal.md`](knowledge/journal.md), superseded material in [`knowledge/journal-archive.md`](knowledge/journal-archive.md)
 - Open handover points, [`knowledge/handoff.md`](knowledge/handoff.md)
-- Workflow rules for Claude Code sessions, [`CLAUDE.md`](CLAUDE.md)
 
 ## Licence
 

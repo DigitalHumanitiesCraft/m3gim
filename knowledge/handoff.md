@@ -20,19 +20,23 @@ related: [INDEX, journal, specification, plan]
 
 This process inbox carries open points only. A point names its addressee, what is to be done and what closes it. Durable content moves into the document that owns it and leaves a line in [journal.md](journal.md) naming subject, source, target and outcome, after which the point is removed here in full.
 
-Two kinds of point live here. Assignments run inside the repository and are held by a lane. Handovers leave the repository and wait on the vault or on the project lead.
+Open inputs await verification and integration here. Accepted future work lives in [plan.md](plan.md); completed changes and their grounds live in [journal.md](journal.md).
 
 Findings the cataloguing team fixes at the source do not stand here. They are collected in [`../data/reports/source-errors-handover-2026-09-01.md`](../data/reports/source-errors-handover-2026-09-01.md), the authority findings in [`../data/reports/reconciliation-register.md`](../data/reports/reconciliation-register.md). Decisions that wait on the project lead stand in [specification.md](specification.md) § Open decisions.
 
 ## Repository work
 
-The reviewed implementation work and its evidence are maintained in [plan.md](plan.md). This inbox carries no separate repository assignment. A missing technical check remains a plan item until verified; scholarly acceptance remains with the project lead and project partners.
+The current implementation, observed user feedback, map draft and next executable step are maintained in [plan.md](plan.md). This inbox carries no duplicate session handoff. A missing technical check remains a plan item until verified; scholarly acceptance remains with the project lead and project partners.
 
 ## Open handovers to the outside
 
 ### To a vault session: process knowledge into the Promptotyping method document (2026-09-03)
 
-The block below stood in the decision register of [journal.md](journal.md) until 2026-09-03. It describes the working method rather than this project and therefore belongs in the Promptotyping method document in the Obsidian vault, which does not carry it today. A session started in the vault moves it there and removes this point afterwards. The wording stands here unchanged and stays German.
+- Received: 2026-09-03.
+- Source: the method-experience block formerly in the decision register of [journal.md](journal.md), preserved below.
+- Target: the Promptotyping method document in the Obsidian vault, resolved by a vault session.
+- Context: this is cross-project method knowledge; integration has not been verified by the repository session.
+- Next action: a vault session checks whether the content is already integrated, transfers any remaining value and then removes this point. The original German wording is preserved below.
 
 > #### Was funktioniert hat
 >

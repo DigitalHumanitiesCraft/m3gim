@@ -43,6 +43,8 @@ Two related projects exist, both confined to the early modern period.
 
 M³GIM closes the gap to the twentieth century and tests a modelling based on RiC-O 1.1 for it, described in [data.md](data.md).
 
+The current station-map and timeline proposal in [plan.md](plan.md) is an exploratory response to guided user feedback. Its evidence rules distinguish travel, chronological stations, correspondence and document co-mention. The proposal adds no inferred historical journey and has not changed the accepted model or task definitions.
+
 ## Mobility types
 
 The project distinguishes five theoretical types of movement, developed against the case study.

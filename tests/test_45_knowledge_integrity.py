@@ -29,7 +29,7 @@ KNOWLEDGE = REPO_ROOT / "knowledge"
 # Wo zitiert werden darf. Die Ordner decken Pipeline, Frontend, Tests,
 # Vokabular und die beiden Steuerdokumente ab.
 CITATION_ROOTS = ["scripts", "docs/js", "tests", "vocab", "knowledge"]
-CITATION_FILES = ["CLAUDE.md", "README.md"]
+CITATION_FILES = ["AGENTS.md", "CLAUDE.md", "README.md"]
 CITATION_SUFFIXES = {".py", ".js", ".mjs", ".md", ".ttl", ".html"}
 
 CITATION = re.compile(r"\b(E|AF|QF)-(\d{1,3})\b")
@@ -173,7 +173,7 @@ def test_relative_markdown_links_resolve():
     targets = list(KNOWLEDGE.rglob("*.md"))
     targets.extend((REPO_ROOT / "data" / "reports").rglob("*.md"))
     targets.extend((REPO_ROOT / "data" / "migration").rglob("*.md"))
-    targets.extend(REPO_ROOT / name for name in ("CLAUDE.md", "README.md"))
+    targets.extend(REPO_ROOT / name for name in CITATION_FILES)
     for path in sorted(targets):
         for lineno, line in enumerate(
             path.read_text(encoding="utf-8").splitlines(), start=1
