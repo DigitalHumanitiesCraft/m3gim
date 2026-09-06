@@ -26,6 +26,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import os
 import re
 import shutil
 import sys
@@ -88,6 +89,27 @@ def ensure_backup_root() -> None:
 
 def collect_files(source: Path) -> list[Path]:
     return sorted(p for p in source.rglob("*") if p.is_file())
+
+
+def verify_snapshot(source: Path, snapshot: Path) -> list[tuple[str, int, str, bool]]:
+    """Verify that a snapshot exactly reproduces every source file."""
+    entries = []
+    source_files = collect_files(source)
+    snapshot_files = collect_files(snapshot)
+    source_names = [path.relative_to(source) for path in source_files]
+    snapshot_names = [path.relative_to(snapshot) for path in snapshot_files]
+    if source_names != snapshot_names:
+        raise RuntimeError("Backup enthaelt nicht dieselbe Dateimenge wie die Quelle")
+    for source_file, relative in zip(source_files, source_names, strict=True):
+        target = snapshot / relative
+        source_digest = sha256(source_file)
+        target_digest = sha256(target)
+        if source_digest != target_digest:
+            raise RuntimeError(f"Pruefsumme stimmt nicht: {relative}")
+        flag = any(hint in relative.name.lower() for hint in DSGVO_HINTS)
+        entries.append((relative.as_posix(), target.stat().st_size,
+                        target_digest, flag))
+    return entries
 
 
 def write_log_entry(label: str, source: Path, dest: Path,
@@ -168,24 +190,41 @@ def main(argv: list[str] | None = None) -> int:
     label = snapshot_label(source)
     dest = BACKUP_ROOT / label
 
-    if dest.exists():
+    replacing = dest.exists()
+    if replacing:
         if not args.force:
             print(f"Snapshot existiert bereits: {dest.relative_to(REPO_ROOT)}")
             print("Bereits gesichert. --force zum Ueberschreiben.")
             return 0
-        shutil.rmtree(dest)
-
-    dest.mkdir(parents=True)
-    entries: list[tuple[str, int, str, bool]] = []
-    for f in files:
-        rel = f.relative_to(source)
-        target = dest / rel
-        target.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(f, target)
-        size = target.stat().st_size
-        digest = sha256(target)
-        flag = any(hint in rel.name.lower() for hint in DSGVO_HINTS)
-        entries.append((str(rel).replace("\\", "/"), size, digest, flag))
+    staging = BACKUP_ROOT / f".{label}.staging"
+    rollback = BACKUP_ROOT / f".{label}.previous"
+    if staging.exists() or rollback.exists():
+        print(f"FEHLER: temporaerer Backup-Pfad existiert bereits: {staging}",
+              file=sys.stderr)
+        return 2
+    try:
+        shutil.copytree(source, staging, copy_function=shutil.copy2)
+        entries = verify_snapshot(source, staging)
+        if replacing:
+            os.replace(dest, rollback)
+        try:
+            os.replace(staging, dest)
+            entries = verify_snapshot(source, dest)
+        except BaseException:
+            if replacing and rollback.exists():
+                if dest.exists():
+                    shutil.rmtree(dest)
+                os.replace(rollback, dest)
+            raise
+        if rollback.exists():
+            shutil.rmtree(rollback)
+    except (OSError, RuntimeError) as exc:
+        if staging.exists():
+            shutil.rmtree(staging)
+        if not replacing and dest.exists():
+            shutil.rmtree(dest)
+        print(f"FEHLER: Backup nicht ersetzt: {exc}", file=sys.stderr)
+        return 2
 
     write_log_entry(label, source, dest, entries)
 

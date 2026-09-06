@@ -40,6 +40,7 @@ from _common import (
     is_approved_match,
     load_concept_meta,
     load_index as _load_index,
+    atomic_write_json,
     load_objekte,
     load_role_concepts,
     load_role_meta,
@@ -1268,8 +1269,13 @@ def resolve_verknuepfungen_source(base: Path) -> Path:
     unchanged.
     """
     base = Path(base)
-    if not base.is_dir():
+    if base.is_file():
         return base
+    if not base.exists():
+        raise FileNotFoundError(
+            f"Keine Verknuepfungsquelle unter {base}. Erwartet wird "
+            f"{VERKNUEPFUNGEN_CSV_DIR}/Box_*.csv oder eine Verknuepfungs-XLSX."
+        )
     csv_dir = base if base.name == VERKNUEPFUNGEN_CSV_DIR else base / VERKNUEPFUNGEN_CSV_DIR
     if csv_dir.is_dir() and any(csv_dir.glob("Box_*.csv")):
         return csv_dir
@@ -2375,17 +2381,36 @@ def main():
     print("M³GIM Transform (RiC-O JSON-LD)")
     print("=" * 60)
 
+    # Validate the complete source boundary before constructing any output.
+    missing_indices = []
+    loaded_indices = {}
+    for name, key in [("Personenindex", "person"), ("Organisationsindex", "organisation"),
+                      ("Ortsindex", "ort"), ("Werkindex", "werk")]:
+        df = load_index(name)
+        if df is None or df.empty:
+            missing_indices.append(name)
+        else:
+            loaded_indices[key] = df
+    if missing_indices:
+        print("\nFEHLER: Pflichtindizes fehlen oder sind leer: "
+              + ", ".join(missing_indices))
+        return 1
+    try:
+        from _common import resolve_objekte_source
+        objekte_path = resolve_objekte_source(SHEETS_DIR)
+        verk_path = resolve_verknuepfungen_source(SHEETS_DIR)
+    except FileNotFoundError as exc:
+        print(f"\nFEHLER: {exc}")
+        return 1
+
     # Indizes laden
     print("\nLade Indizes...")
     indices = {}
     for name, key in [("Personenindex", "person"), ("Organisationsindex", "organisation"),
                        ("Ortsindex", "ort"), ("Werkindex", "werk")]:
-        df = load_index(name)
-        if df is not None:
-            indices[key] = build_index_lookup(df)
-            print(f"  {name}: {len(indices[key])} Eintraege")
-        else:
-            print(f"  WARNUNG: {name} nicht gefunden")
+        df = loaded_indices[key]
+        indices[key] = build_index_lookup(df)
+        print(f"  {name}: {len(indices[key])} Eintraege")
 
     # Reconciliation-Ergebnisse als Fallback laden.
     # Konservative Policy: fuzzy_low nur uebernehmen, wenn manuell approved.
@@ -2455,13 +2480,6 @@ def main():
         print(f"  Enrichment: {enrichment_path.name} nicht vorhanden (uebersprungen)")
 
     # Objekte laden, CSV bevorzugt (data.md § Tables and columns, § Source format)
-    try:
-        from _common import resolve_objekte_source
-        objekte_path = resolve_objekte_source(SHEETS_DIR)
-    except FileNotFoundError as exc:
-        print(f"\nFEHLER: {exc}")
-        return 1
-
     print(f"\nLade {objekte_path.name}...")
     df_objekte = load_objekte(SHEETS_DIR)
 
@@ -2492,8 +2510,6 @@ def main():
     print(f"  {len(records)} Records, {len(konvolute)} Konvolute")
 
     # Verknuepfungen laden (CSV-Verzeichnis bevorzugt, E-152)
-    verk_path = resolve_verknuepfungen_source(SHEETS_DIR)
-
     print(f"\nLade {verk_path.name}...")
     df_verk = load_verknuepfungen(verk_path)
     sheet_names = sorted(df_verk["_xlsx_sheet"].dropna().unique().tolist()) \
@@ -2588,10 +2604,8 @@ def main():
     }
 
     # Speichern
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     output_path = OUTPUT_DIR / "m3gim.jsonld"
-    with open(output_path, 'w', encoding='utf-8') as f:
-        json.dump(jsonld, f, ensure_ascii=False, indent=2)
+    atomic_write_json(output_path, jsonld)
 
     print()
     print("=" * 60)

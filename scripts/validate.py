@@ -778,6 +778,10 @@ def main():
             print(f"  {name}: {len(df)} Eintraege")
         else:
             print(f"  WARNUNG: {name} nicht gefunden")
+            all_issues.append(ValidationIssue(
+                "ERROR", "INPUT_MISSING", name, 0, "Datei", "",
+                f"Pflichtindex fehlt: M3GIM-{name}.xlsx",
+            ))
     stats['indices_loaded'] = indices_loaded
 
     # Objekte laden und validieren, CSV bevorzugt (data.md § Source format) — dieselbe
@@ -786,8 +790,12 @@ def main():
     from _common import load_objekte, resolve_objekte_source
     try:
         objekte_path = resolve_objekte_source(SHEETS_DIR)
-    except FileNotFoundError:
+    except FileNotFoundError as exc:
         objekte_path = None
+        print(f"\n  WARNUNG: {exc}")
+        all_issues.append(ValidationIssue(
+            "ERROR", "INPUT_MISSING", "Objekte", 0, "Datei", "", str(exc),
+        ))
     if objekte_path is not None:
         print(f"\nValidiere {objekte_path.name}...")
         df_objekte = load_objekte(SHEETS_DIR)
@@ -797,8 +805,6 @@ def main():
             df_objekte['archivsignatur'].dropna().astype(str).str.strip().tolist()
         )
         print(f"  {len(df_objekte)} Objekte geladen")
-    else:
-        print(f"\n  WARNUNG: {objekte_path.name} nicht gefunden")
 
     # Verknuepfungen laden und validieren. Quelle ist seit E-152 das
     # CSV-Verzeichnis; derselbe Loader wie in transform.py, damit die
@@ -808,6 +814,9 @@ def main():
     except FileNotFoundError as exc:
         verk_path = None
         print(f"  WARNUNG: {exc}")
+        all_issues.append(ValidationIssue(
+            "ERROR", "INPUT_MISSING", "Verknuepfungen", 0, "Datei", "", str(exc),
+        ))
     if verk_path is not None:
         print(f"Validiere {verk_path.name}...")
         df_verk = load_verknuepfungen(verk_path)
@@ -850,4 +859,3 @@ def main():
 
 if __name__ == "__main__":
     exit(main())
-

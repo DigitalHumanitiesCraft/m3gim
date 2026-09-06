@@ -1,6 +1,6 @@
 # M³GIM Quality-Snapshot
 
-_Laufzeit des Reports: 2026-09-05T21:53+02:00_
+_Laufzeit des Reports: 2026-09-06T10:34+02:00_
 
 Grundlage: `data/output/m3gim.jsonld` + `data/output/wikidata-reconciliation.json`.
 
@@ -16,7 +16,7 @@ Alle Zahlen dieses Reports beziehen sich auf **997 Records**. Der Graph führt *
 
 ## Verknüpfungsrate
 
-- **186/997** Records mit mindestens einer Verknüpfung = **19%**
+- **188/997** Records mit mindestens einer Verknüpfung = **19%**
 
 ### Konvolute mit mehreren Folios
 
@@ -35,7 +35,7 @@ Alle Zahlen dieses Reports beziehen sich auf **997 Records**. Der Graph führt *
 | UAKUG/NIM_043 | 14 | 0 | 0% |
 | UAKUG/NIM_073 | 48 | 5 | 10% |
 | UAKUG/NIM_134 | 86 | 4 | 5% |
-| UAKUG/NIM_135 | 149 | 4 | 3% |
+| UAKUG/NIM_135 | 149 | 6 | 4% |
 | UAKUG/NIM_136 | 38 | 3 | 8% |
 | UAKUG/NIM_137 | 59 | 17 | 29% |
 | UAKUG/NIM_139 | 158 | 11 | 7% |

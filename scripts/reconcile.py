@@ -39,7 +39,7 @@ from datetime import datetime
 from pathlib import Path
 from thefuzz import fuzz
 
-from _common import OUTPUT_DIR, SHEETS_DIR, load_index
+from _common import OUTPUT_DIR, SHEETS_DIR, atomic_write_json, load_index
 
 if sys.stdout.encoding != "utf-8":
     sys.stdout.reconfigure(encoding="utf-8")
@@ -49,6 +49,12 @@ OUTPUT_FILE = OUTPUT_DIR / "wikidata-reconciliation.json"
 WIKIDATA_API = "https://www.wikidata.org/w/api.php"
 USER_AGENT = "m3gim-research/1.0 (https://dhcraft.org/m3gim; office@dhcraft.org)"
 REQUEST_DELAY = 0.5  # seconds between requests (rate limiting)
+
+
+class TransientRequestError(RuntimeError):
+    """A temporary Wikidata failure that must remain eligible for retry."""
+
+
 MIN_NAME_LENGTH = 3  # skip short names (abbreviations, initials)
 
 QID_PATTERN = re.compile(r"^Q\d+$")
@@ -118,9 +124,10 @@ def search_wikidata(query: str, language: str = "de", limit: int = 5) -> list:
             "format": "json",
         })
         return data.get("search", [])
-    except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError) as e:
-        print(f"  [WARN] API-Fehler fuer '{query}': {e}")
-        return []
+    except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError) as exc:
+        raise TransientRequestError(
+            f"Wikidata-Suche fuer {query!r} voruebergehend fehlgeschlagen: {exc}"
+        ) from exc
 
 
 def get_entity_claims(qid: str) -> dict:
@@ -134,8 +141,10 @@ def get_entity_claims(qid: str) -> dict:
             "props": "claims",
             "format": "json",
         })
-    except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError):
-        return {}  # do not cache a failure
+    except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError) as exc:
+        raise TransientRequestError(
+            f"Wikidata-Claims fuer {qid} voruebergehend fehlgeschlagen: {exc}"
+        ) from exc
     claims = data.get("entities", {}).get(qid, {}).get("claims", {})
     _CLAIMS_CACHE[qid] = claims
     return claims
@@ -157,8 +166,10 @@ def get_entity_names(qid: str) -> list:
             "props": "labels|aliases",
             "format": "json",
         })
-    except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError):
-        return []
+    except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError) as exc:
+        raise TransientRequestError(
+            f"Wikidata-Namen fuer {qid} voruebergehend fehlgeschlagen: {exc}"
+        ) from exc
     entity = data.get("entities", {}).get(qid, {})
     names = {v["value"] for v in entity.get("labels", {}).values()}
     for alias_group in entity.get("aliases", {}).values():
@@ -525,6 +536,14 @@ def load_previous_results() -> dict:
         result["matched_data"][key] = m
     for u in data.get("unmatched", []):
         result["unmatched_keys"].add((u["type"], u["name"]))
+    retryable = {
+        (entry.get("type"), entry.get("name"))
+        for entry in data.get("errors", []) if entry.get("retryable") is True
+    }
+    result["matched_keys"].difference_update(retryable)
+    result["unmatched_keys"].difference_update(retryable)
+    for key in retryable:
+        result["matched_data"].pop(key, None)
 
     return result
 
@@ -559,22 +578,22 @@ def run_reconciliation(entity_types: list, dry_run: bool = False,
         "matched": [],
         "unmatched": [],
         "skipped": [],
+        "errors": [],
     }
+    previous_by_key = {}
 
-    # Vorhandene Matches aus Cache uebernehmen (damit sie nicht verloren gehen)
-    if not force and OUTPUT_FILE.exists():
+    # Keep every previous result until its selected index has been loaded and
+    # can actually replace that entity type.
+    if OUTPUT_FILE.exists():
         with open(OUTPUT_FILE, "r", encoding="utf-8") as f:
             prev = json.load(f)
-        # Nur Matches uebernehmen, die nicht im aktuellen Lauf neu abgefragt werden
-        for m in prev.get("matched", []):
-            if m["type"] not in entity_types:
-                results["matched"].append(m)
-        for u in prev.get("unmatched", []):
-            if u["type"] not in entity_types:
-                results["unmatched"].append(u)
-        for s in prev.get("skipped", []):
-            if s["type"] not in entity_types:
-                results["skipped"].append(s)
+        for section in ("matched", "unmatched", "skipped", "errors"):
+            entries = prev.get(section, [])
+            results[section].extend(entries)
+            for entry in entries:
+                key = (entry.get("type"), entry.get("name"))
+                if section != "errors" or key not in previous_by_key:
+                    previous_by_key[key] = (section, entry)
 
     for cfg in INDEX_CONFIG:
         etype = cfg["type"]
@@ -585,7 +604,17 @@ def run_reconciliation(entity_types: list, dry_run: bool = False,
         df = load_index(SHEETS_DIR, cfg["index_name"])
         if df is None or df.empty:
             print(f"  [SKIP] {cfg['index_name']} nicht gefunden")
+            results["errors"].append({
+                "type": etype, "name": cfg["index_name"],
+                "error": "Pflichtindex fehlt oder ist leer", "retryable": True,
+            })
             continue
+
+        for section in ("matched", "unmatched", "skipped", "errors"):
+            results[section] = [
+                entry for entry in results[section]
+                if entry.get("type") != etype
+            ]
 
         # Spaltennamen ermitteln
         name_col = "name" if "name" in df.columns else df.columns[1]
@@ -615,9 +644,20 @@ def run_reconciliation(entity_types: list, dry_run: bool = False,
                 entry = {"type": etype, "name": name,
                          "existing_qid": existing_wd}
                 if not dry_run:
-                    entry["verification"] = verify_existing_qid(
-                        existing_wd, cfg["expected_types"],
-                        komponist=extra.get("komponist"))
+                    try:
+                        entry["verification"] = verify_existing_qid(
+                            existing_wd, cfg["expected_types"],
+                            komponist=extra.get("komponist"))
+                    except TransientRequestError as exc:
+                        previous = previous_by_key.get((etype, name))
+                        if previous and previous[0] != "errors":
+                            results[previous[0]].append(previous[1])
+                        results["errors"].append({
+                            "type": etype, "name": name, "error": str(exc),
+                            "retryable": True,
+                        })
+                        print(f"  [WARN] {name} — {exc}")
+                        continue
                 results["skipped"].append(entry)
                 verdict = entry.get("verification") or {}
                 if verdict.get("verified", True):
@@ -661,8 +701,19 @@ def run_reconciliation(entity_types: list, dry_run: bool = False,
                 print("→ [DRY RUN]")
                 continue
 
-            match = cfg["reconcile_fn"](name, min_confidence=min_confidence,
-                                          **extra)
+            try:
+                match = cfg["reconcile_fn"](
+                    name, min_confidence=min_confidence, **extra)
+            except TransientRequestError as exc:
+                previous = previous_by_key.get(cache_key)
+                if previous and previous[0] != "errors":
+                    results[previous[0]].append(previous[1])
+                results["errors"].append({
+                    "type": etype, "name": name, "error": str(exc),
+                    "retryable": True,
+                })
+                print(f"→ [WARN] {exc}")
+                continue
             time.sleep(REQUEST_DELAY)
 
             if match:
@@ -678,9 +729,7 @@ def run_reconciliation(entity_types: list, dry_run: bool = False,
 
     # --- Ergebnis speichern (nicht im Dry-Run) ---
     if not dry_run:
-        OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
-        with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
-            json.dump(results, f, ensure_ascii=False, indent=2)
+        atomic_write_json(OUTPUT_FILE, results)
 
     # --- Zusammenfassung ---
     print(f"\n{'='*60}")
@@ -709,7 +758,7 @@ def run_reconciliation(entity_types: list, dry_run: bool = False,
     return results
 
 
-def main():
+def main() -> int:
     parser = argparse.ArgumentParser(
         description="M³GIM Wikidata-Reconciliation"
     )
@@ -743,9 +792,16 @@ def main():
     if args.force:
         print("[FORCE — Cache wird ignoriert]")
 
-    run_reconciliation(entity_types, dry_run=args.dry_run, force=args.force,
-                       min_confidence=args.min_confidence)
+    results = run_reconciliation(
+        entity_types, dry_run=args.dry_run, force=args.force,
+        min_confidence=args.min_confidence,
+    )
+    current_errors = [
+        entry for entry in results["errors"]
+        if entry.get("type") in entity_types
+    ]
+    return 1 if current_errors else 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

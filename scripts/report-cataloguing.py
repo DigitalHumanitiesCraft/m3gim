@@ -155,6 +155,8 @@ def worked_on_without_link(nodes: list) -> list:
             continue
         if str(node.get("@id", "")).endswith("_Folio"):
             continue
+        if node.get("m3gim-ontology:derivedFolioRecord") is True:
+            continue
         stand = node.get("m3gim-ontology:processingStatus")
         if stand not in WORKED_ON:
             continue

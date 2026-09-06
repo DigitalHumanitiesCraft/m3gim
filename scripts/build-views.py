@@ -22,8 +22,9 @@ Output:
 """
 
 import os
-import shutil
 from pathlib import Path
+
+from _common import atomic_copy_file
 
 SCRIPT_DIR = Path(__file__).parent
 PROJECT_ROOT = SCRIPT_DIR.parent
@@ -52,7 +53,7 @@ def main():
         print(f'\nFEHLER: {docs_data} fehlt.')
         return 1
 
-    shutil.copy2(INPUT_FILE, docs_data / 'm3gim.jsonld')
+    atomic_copy_file(INPUT_FILE, docs_data / 'm3gim.jsonld')
     print()
     print('Copying to docs/data/:')
     print('  [CP] m3gim.jsonld -> docs/data/')

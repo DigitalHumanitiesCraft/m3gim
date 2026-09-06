@@ -39,11 +39,17 @@ Each completed milestone receives one commit, with its verification recorded her
 | Milestone | Completion criterion | State |
 |---|---|---|
 | M1 Research scope | Source-aware tasks and common search/time contract recorded in specification and research framework | Complete; E-282 |
-| M2 Reliable data processing | Failure paths preserve existing data; report counts reflect the model; relevant tests and determinism pass | In progress |
+| M2 Reliable data processing | Failure paths preserve existing data; report counts reflect the model; relevant tests and determinism pass | Complete; failure-path review and isolated determinism passed |
 | M3 Consistent and usable views | Shared filters, map safety, evidence navigation and accessible static delivery verified | In progress |
 | M4 Complete research paths | All stories mapped to executed checks or named material limits; actual evidence exports verified | Pending |
 | M5 Consolidation and integrated verification | Unused code and superseded process documents resolved; full checks on one clean revision | Pending |
 | M6 Scholarly acceptance | Project lead accepts task results for 0.9; partners accept them for 1.0 | Awaiting human task runs |
+
+## Milestone verification
+
+M1 was committed as `1218a10`. The follow-up review confirms that all 19 stories remain mapped and that task wording, view subsets and human acceptance have distinct meanings. No model extension or scholarly result was inferred.
+
+M2 passed independent review after correcting four additional failure paths: missing input could report success, retryable failures with an old cached result could stop retrying, existing-QID checks could escape per-item handling, and a failed new backup could appear complete. The preservation and knowledge checks pass together (21 passed, one skipped); the agent's pipeline run had 546 passing invariants and four declared model xfails, and isolated determinism passed. Shared atomic file helpers are sufficient; no pipeline framework or packaging migration is required. Source errors remain cataloguing findings and have not been edited.
 
 ## Evidence from the reviewed revision
 

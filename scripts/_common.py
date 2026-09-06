@@ -8,8 +8,10 @@ Centralised XLSX workaround constants, see knowledge/data.md § Compensations in
 
 from __future__ import annotations
 
+import json
 import os
 import re
+import tempfile
 from collections.abc import Iterator
 from pathlib import Path
 
@@ -29,6 +31,44 @@ OUTPUT_DIR = Path(os.environ.get(
     "M3GIM_OUTPUT_DIR", REPO_ROOT / "data" / "output"))
 REPORTS_DIR = Path(os.environ.get(
     "M3GIM_REPORTS_DIR", REPO_ROOT / "data" / "reports"))
+
+
+def atomic_write_json(path: Path, data: object, *, indent: int = 2) -> None:
+    """Serialize JSON completely before atomically replacing the destination."""
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, temporary_name = tempfile.mkstemp(
+        dir=path.parent, prefix=f".{path.name}.", suffix=".tmp")
+    temporary = Path(temporary_name)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as stream:
+            json.dump(data, stream, ensure_ascii=False, indent=indent)
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.replace(temporary, path)
+    except BaseException:
+        temporary.unlink(missing_ok=True)
+        raise
+
+
+def atomic_copy_file(source: Path, destination: Path) -> None:
+    """Copy a file completely before atomically replacing the destination."""
+    source = Path(source)
+    destination = Path(destination)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    fd, temporary_name = tempfile.mkstemp(
+        dir=destination.parent, prefix=f".{destination.name}.", suffix=".tmp")
+    temporary = Path(temporary_name)
+    try:
+        with os.fdopen(fd, "wb") as target, source.open("rb") as origin:
+            while chunk := origin.read(1 << 20):
+                target.write(chunk)
+            target.flush()
+            os.fsync(target.fileno())
+        os.replace(temporary, destination)
+    except BaseException:
+        temporary.unlink(missing_ok=True)
+        raise
 
 
 def rel_to_repo(path: Path) -> str:

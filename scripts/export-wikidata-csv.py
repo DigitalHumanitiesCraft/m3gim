@@ -14,6 +14,8 @@ import json
 import sys
 from pathlib import Path
 
+from _common import is_approved_match
+
 if sys.stdout.encoding != "utf-8":
     sys.stdout.reconfigure(encoding="utf-8")
 
@@ -30,6 +32,11 @@ TYPE_MAP = {
 }
 
 
+def exportable_matches(entries: list[dict]) -> list[dict]:
+    """Apply the shared authority approval policy to CSV output."""
+    return [entry for entry in entries if is_approved_match(entry)]
+
+
 def main():
     print("=" * 60)
     print("M³GIM Wikidata-CSV-Export")
@@ -43,7 +50,7 @@ def main():
     with open(INPUT_FILE, encoding="utf-8") as f:
         data = json.load(f)
 
-    matched = data.get("matched", [])
+    matched = exportable_matches(data.get("matched", []))
     unmatched = data.get("unmatched", [])
 
     print(f"Geladen: {len(matched)} Matches, {len(unmatched)} Unmatched")

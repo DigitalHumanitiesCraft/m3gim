@@ -266,6 +266,9 @@ Cross-cutting principles that bind every model decision and are held by the test
 
 ## Sessions
 
+- **2026-09-06, milestone 2:** Pipeline failure paths now preserve previous authority results, publication files and backups. Missing mandatory inputs fail explicitly; transient authority failures remain retryable and make the CLI fail. Reports account for performance links and derived Folios. Independent review corrected further failure paths before acceptance of this implementation increment. The preservation checks and isolated determinism pass; source curation and scholarly acceptance remain open.
+
+
 - **2026-09-06, milestone 1:** The project lead authorised the improved plan and milestone commits. The stable scope and shared search/time contract now stand in [specification.md](specification.md), the source-aware task wording in [research-framework.md](research-framework.md), and execution criteria in [plan.md](plan.md). Version acceptance remains with the project lead and partners. Sol-5.6 agents implement disjoint pipeline, shared-view and map/export changes; central integration owns commits.
 
 - Planning pass (2026-09-06, proposal): the repository review and three Sol-5.6 view audits against `e18dfa7` were integrated in [plan.md](plan.md). The plan covers every story, separates implementation evidence from human acceptance, and proposes a document-centred stable scope with explicit corrections to the research task set. Reproduced data-preservation, filtering, map, basket and reporting defects remain implementation work. Source-based counterexamples show that the combined place, year and work filter establishes co-mention rather than a bound appearance. Data-state tooltips and Folio paging were observed in the browser. Application code, research data and the version definitions were unchanged; the proposed scope clarifications remain for project leadership.

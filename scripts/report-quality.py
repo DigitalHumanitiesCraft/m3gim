@@ -60,6 +60,7 @@ def count_links_on_record(rec):
         "m3gim-ontology:hasAssociatedAgent", "rico:hasOrHadLocation",
         "rico:hasOrHadSubject", "m3gim-ontology:hasDetail",
         "m3gim-ontology:hasAnnotation", "m3gim-ontology:hasAgentRelation",
+        "m3gim-ontology:hasPerformance",
     ):
         count += len(ensure_list(rec.get(key)))
     return count
