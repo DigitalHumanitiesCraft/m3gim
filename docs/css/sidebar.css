@@ -34,21 +34,17 @@
      longer read as its own area; one step up to --line (Projektleitung,
      2026-09-04, raises the E-199 edge). */
   border-inline-end: 1px solid var(--line);
-  padding: var(--space-3) var(--space-3) var(--space-4);
+  /* Inline padding equals the band's outer padding, so the filters start on the
+     brand's left edge and the column mirrors the table's right edge. */
+  padding: var(--space-3) var(--space-6) var(--space-4);
   overflow-y: auto;
-  /* The hidden ::after of every data-tip in the column is a real, nowrap box at
-     opacity 0 and still counts into the scrollable overflow, which gave the
-     column a horizontal scrollbar of its own (Projektleitung, 2026-09-04).
-     Clipping the axis is the fix at the root; every tooltip in here carries
-     data-tip-wrap and the width cap below, so none of them is cut off. */
-  overflow-x: hidden;
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
   min-width: 0;
 }
 
-/* Inside the clipped column a tooltip must fit the column, not the 280 px the
+/* Inside the column a tooltip should fit the column, not the 280 px the
    shared cap allows. A fixed cap, not a percentage: an inline facet title is
    only about 96 px wide and a percentage would fold its tooltip into a column
    a few characters wide. Every one of them is left-aligned, so the cap plus
@@ -348,6 +344,19 @@
   position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%);
   height: 4px; border-radius: 2px; background: var(--surface-3);
 }
+
+/* The part of the shared year bounds a view's own data actually reaches. The
+   rail runs over the same years everywhere so that a window set in one view
+   means the same in the next; the band keeps that from reading as a mostly
+   empty axis. Percentages come from the control as custom properties. */
+.vs-range__covered {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  left: var(--covered-from, 0%);
+  width: calc(var(--covered-to, 100%) - var(--covered-from, 0%));
+  height: 4px; border-radius: 2px;
+  background: color-mix(in oklch, var(--accent) 35%, var(--surface-3));
+}
+
 .vs-range__input {
   position: absolute; left: 0; top: 0; width: 100%; height: 100%; margin: 0;
   background: transparent; pointer-events: none;
@@ -578,6 +587,14 @@
   border-color: transparent;
 }
 
+/* The content family of a suggestion, where one list mixes several (the
+   Entitaetswahl der Karte). It sits between check and label, in the family
+   colour of the shared icon set. */
+.fs-option__fam {
+  flex: 0 0 auto;
+  align-self: center;
+}
+
 .fs-option__label {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -659,6 +676,9 @@
 
 /* Leaf values of a group indent a step. */
 .fs-option--child { padding-inline-start: 22px; }
+/* The "mehr …" of an open group stands under its leaves, so it reads as part
+   of that group and not as the one of the group list. */
+.fs-more--child { margin-inline-start: 22px; }
 
 /* View-owned rows in the sidebar context */
 
@@ -698,7 +718,7 @@
 
 /* Container query on the shell's parent instead of the former viewport media
    queries: the sidebar stacks above the main area as soon as the shell itself
-   is narrower than the point where a 272px filter column stops paying for
+   is narrower than the point where a 296px filter column stops paying for
    itself. Views answer the same query in their own files (Indizes: grids to one
    column, Netzwerk: detail panel from overlay to flow). */
 @container view-shell (width < 900px) {

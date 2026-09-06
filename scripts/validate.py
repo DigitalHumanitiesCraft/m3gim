@@ -220,7 +220,7 @@ def load_index(name: str) -> pd.DataFrame | None:
 # Pruefschicht der CSV-Quelle (E-152)
 # ---------------------------------------------------------------------------
 
-# Zulaessige Datumsnotationen der Verknuepfungstabelle nach data.md § Datumskonventionen:
+# Zulaessige Datumsnotationen der Verknuepfungstabelle nach data.md § Date notation of the source:
 # volles ISO-Datum, Monat, Jahr, Zeitspanne mit "/", die belegte Freitextform
 # "bis" sowie die Klammer-/Fragezeichen-Unsicherheit und die drei Qualifier.
 _ISO_DATE_PART = r'\d{4}(?:-\d{2}(?:-\d{2})?)?'
@@ -294,7 +294,8 @@ def validate_verknuepfungen_source(df: pd.DataFrame,
 
     Die Schicht meldet und repariert nichts. Jeder Befund traegt Blatt und
     Zeile, damit das Erschliessungsteam ihn in der Tabelle findet
-    (data.md § Tabellenmodell, § Datumskonventionen, § Datenqualität; architecture.md § Pruefschicht).
+    (data.md § Tables and columns, § Date notation of the source,
+    § Compensations in the pipeline; architecture.md § The seven steps).
     """
     issues: list[ValidationIssue] = []
     combos: dict = {}
@@ -339,7 +340,7 @@ def validate_verknuepfungen_source(df: pd.DataFrame,
                     issues.append(ValidationIssue(
                         level="ERROR", code="E010", table="Verknuepfungen",
                         row=excel_row, sheet=sheet, field="name", value=candidate,
-                        message="Datumsnotation ausserhalb von data.md § Datumskonventionen",
+                        message="Datumsnotation ausserhalb von data.md § Date notation of the source",
                     ))
 
         # --- Buendelungskennung ---------------------------------------------
@@ -403,7 +404,7 @@ def validate_verknuepfungen_source(df: pd.DataFrame,
 
 
 def validate_index_identities(name: str, lookup: dict) -> list[ValidationIssue]:
-    """Meldet die Befunde der Index-Verdichtung (data.md § Tabellenmodell).
+    """Meldet die Befunde der Index-Verdichtung (data.md § Identity and precedence in the index tables).
 
     Ein Feldkonflikt innerhalb einer Identitaet, eine Namenskollision zwischen
     zwei Kennungen und ein im Werkindex mehrdeutiger Titel sind Quellbefunde;
@@ -779,7 +780,7 @@ def main():
             print(f"  WARNUNG: {name} nicht gefunden")
     stats['indices_loaded'] = indices_loaded
 
-    # Objekte laden und validieren, CSV bevorzugt (data.md § Tabellenmodell) — dieselbe
+    # Objekte laden und validieren, CSV bevorzugt (data.md § Source format) — dieselbe
     # Quelle wie transform.py, damit die Validierung den Text prueft, den
     # die Pipeline verarbeitet.
     from _common import load_objekte, resolve_objekte_source
@@ -817,7 +818,7 @@ def main():
         )
         print(f"  {len(df_verk)} Verknuepfungen geladen")
 
-    # Befunde der Index-Verdichtung (data.md § Tabellenmodell)
+    # Befunde der Index-Verdichtung (data.md § Identity and precedence in the index tables)
     for canonical, index_df in indices.items():
         all_issues.extend(
             validate_index_identities(canonical, build_index_lookup(index_df))

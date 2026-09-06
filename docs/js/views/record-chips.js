@@ -315,8 +315,9 @@ export function datingChipEls(store, datings) {
 
 const PROV_ICON_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>';
 
-// Neutral info circle, not an alarm sign, for the data-quality marker.
-const QUALITY_ICON_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>';
+// Neutral info circle, not an alarm sign, for the data-quality marker. Exported
+// so the record detail draws the same mark; the legend arises from sameness.
+export const QUALITY_ICON_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>';
 
 /**
  * Role-prefix chip: uppercase mono prefix, serif value, optional provenance
@@ -359,6 +360,16 @@ export function buildRoleChip({ prefix, value, cluster, xlsxSource, wikidata, ti
   if (gloss && !tip && !childrenHaveTips) chipProps.dataset = { tip: gloss, tipWrap: '' };
   if (onClick) {
     chipProps.onClick = (e) => { e.stopPropagation(); onClick(e); };
+    // A clickable chip is an operable control, so it takes the keyboard the
+    // same way every other row-shaped control of the application does.
+    chipProps.tabindex = '0';
+    chipProps.role = 'button';
+    chipProps.onKeyDown = (e) => {
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      e.preventDefault();
+      e.stopPropagation();
+      onClick(e);
+    };
   }
   if (tip && !childrenHaveTips) chipProps.dataset = { tip };
 

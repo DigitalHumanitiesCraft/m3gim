@@ -18,8 +18,9 @@
  *   A3  Jede Datierung nennt ihre Bezugsebene. Nur `object` und `attested`
  *       duerfen einen Record datieren; Erwaehnung, Rahmenveranstaltung und der
  *       Vertragsstatus `nicht eingehalten` bleiben aussen vor.
- *   A4  Ein Zeitanker je Record bleibt einwertig und benannt. `rico:date`
- *       besteht fort und hat Vorrang vor jeder abgeleiteten Datierung.
+ *   A4  Ein Zeitanker je Record bleibt einwertig und benannt. Vorrang hat die
+ *       ranghoechste ankernde Datierung der Verknuepfungen, `rico:date` traegt
+ *       den Rueckfall (F3, Chronik auf Inhaltsebene).
  *
  * Zwei Strecken wie in `loader.test.mjs`: synthetische Fixtures fuer die
  * deterministische Logik, Anker am Datenstand `data/output/m3gim.jsonld` fuer
@@ -36,6 +37,7 @@ import {
 import { roleLabel, roleIdOf, roleToken } from '../../docs/js/utils/format.js';
 import { splitQualifier } from '../../docs/js/utils/date-parser.js';
 import { withConcepts } from './_concepts.mjs';
+import { storeFromShipped } from './_shipped.mjs';
 import { DATING_SCOPE, ANCHORING_SCOPES } from '../../docs/js/data/constants.js';
 
 async function storeFrom(jsonld, { bare = false } = {}) {
@@ -289,20 +291,61 @@ describe('A3 Bezugsebene je Datierung', () => {
 // ---------------------------------------------------------------------------
 
 describe('A4 Zeitanker am Record', () => {
-  test('rico:date hat Vorrang vor jeder abgeleiteten Datierung', async () => {
+  test('die ankernde Datierung hat Vorrang vor rico:date', async () => {
+    // Die Werte des Fixtures sind die von UAKUG/NIM_004 5 im ausgelieferten
+    // Stand, nur mit der Rolle aufführung statt erscheinungsdatum: die
+    // Objektdatierung liegt zehn Jahre neben der bezeugten Aufführung, und
+    // genau diese Differenz muss der Anker aufloesen.
     const store = await storeFrom({
       '@graph': [
-        record('R_ANCHOR', { 'rico:date': '1952-08-25' }, ['R_ANCHOR_1']),
+        record('R_ANCHOR', { 'rico:date': '1963-03-06' }, ['R_ANCHOR_1']),
         annotation('R_ANCHOR_1', 'R_ANCHOR', {
-          'm3gim-ontology:atDate': '1956-05-01',
+          'm3gim-ontology:atDate': '1953-03-05',
           role: role('performance', 'aufführung'),
         }),
       ],
     });
     const anchor = primaryYear(store, store.records.get('m3gim-data:R_ANCHOR'));
-    assert.equal(anchor.year, 1952);
+    assert.equal(anchor.year, 1953, 'rico:date darf den Anker nicht mehr setzen');
+    assert.equal(anchor.source, 'm3gim-vocab:performance');
+    assert.equal(anchor.roleId, 'm3gim-vocab:performance');
+    assert.equal(anchor.date, '1953-03-05', 'der Anker nennt die Datierung, aus der er stammt');
+  });
+
+  test('am ausgelieferten Stand traegt die Verknuepfungsdatierung den Anker', async () => {
+    // UAKUG/NIM_004 5, Rezension: die Objekttabelle datiert das Blatt auf
+    // 1963-03-06, die einzige ankernde Datierung der Verknuepfungszeile ist das
+    // Erscheinungsdatum 1953-03-05. Der Fall zeigt, dass der Vorrang auch fuer
+    // die Bezugsebene objectDating gilt und nicht nur fuer bezeugte Ereignisse.
+    const store = await storeFromShipped();
+    const rec = store.records.get('m3gim-data:NIM_004_5');
+    assert.ok(rec, 'Der ausgelieferte Stand fuehrt m3gim-data:NIM_004_5 nicht mehr');
+    assert.equal(rec['rico:date'], '1963-03-06',
+      'Die Quelldatierung des Testfalls hat sich geaendert, der Fall ist neu zu waehlen');
+    const anchor = primaryYear(store, rec);
+    assert.equal(anchor.year, 1953);
+    assert.equal(anchor.roleId, 'm3gim-vocab:publicationDate');
+    assert.equal(anchor.date, '1953-03-05');
+  });
+
+  test('ohne ankernde Datierung faellt der Anker auf rico:date', async () => {
+    // Dieselben Werte, nur ist die Datierung eine blosse Erwaehnung und damit
+    // aus ANCHORING_SCOPES ausgeschlossen. Ohne den Rueckfall bliebe der Record
+    // undatiert, obwohl die Objekttabelle ihn datiert.
+    const store = await storeFrom({
+      '@graph': [
+        record('R_FALLBACK', { 'rico:date': '1963-03-06' }, ['R_FALLBACK_1']),
+        annotation('R_FALLBACK_1', 'R_FALLBACK', {
+          'm3gim-ontology:atDate': '1953-03-05',
+          role: role('mentioned', 'erwähnt'),
+        }),
+      ],
+    });
+    const anchor = primaryYear(store, store.records.get('m3gim-data:R_FALLBACK'));
+    assert.equal(anchor.year, 1963);
     assert.equal(anchor.source, 'rico:date');
-    assert.equal(anchor.roleId, null, 'der Anker traegt keine Rolle');
+    assert.equal(anchor.roleId, null, 'der Rueckfall traegt keine Rolle');
+    assert.equal(anchor.date, '1963-03-06');
   });
 
   test('rico:creationDate ist als Datierung lesbar, ohne den Namen zu kennen', async () => {
@@ -323,7 +366,7 @@ describe('A4 Zeitanker am Record', () => {
   test('ein Record ohne jede Datierung bleibt ohne Jahr', async () => {
     const store = await storeFrom({ '@graph': [record('R_NONE', {})] });
     const anchor = primaryYear(store, store.records.get('m3gim-data:R_NONE'));
-    assert.deepEqual(anchor, { year: null, source: null, roleId: null, label: null });
+    assert.deepEqual(anchor, { year: null, source: null, roleId: null, label: null, date: null });
   });
 });
 

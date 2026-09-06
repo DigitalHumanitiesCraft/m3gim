@@ -12,12 +12,6 @@
 
 .archiv-main {
   overflow-y: auto;
-  /* The hidden ::after of every data-tip is a real box at opacity 0 and counts
-     into the scrollable width; the Entitaeten and Korb cells sit at the right
-     edge and pushed .archiv-main into a horizontal scrollbar with no visible
-     child past its edge (Projektleitung, 2026-09-04). Their tooltips open to
-     the left (tipPos bottom-right), so clipping the axis costs nothing. */
-  overflow-x: hidden;
   /* No top padding: the sticky Konvolut head must sit flush on the scroll edge.
      Inline padding plus the cell padding equals the tab padding, so the column
      head text lines up with the active tab's icon above it; the right edge
@@ -175,6 +169,13 @@
   border-inline-start: 3px solid var(--accent);
 }
 
+/* Row and detail row are one bracket, so the accent bar of the row and the one
+   of .inline-detail have to meet: the collapsed hairline between the two rows
+   would cut through them (Projektleitung, 2026-09-05). */
+.archiv-row--active td {
+  border-bottom: 0;
+}
+
 /* Detail expansion row */
 .archiv-row--detail {
   cursor: default;
@@ -184,16 +185,20 @@
   background: transparent;
 }
 
+/* The bar is the whole mark; an accent line under the detail would be a second
+   one for the same state. The row keeps the table hairline. */
 .archiv-row--detail td {
   padding: 0;
-  border-bottom: 2px solid var(--accent);
 }
 
 /* Column Widths */
 .archiv-col-signatur { width: 160px; }
 .archiv-col-titel { width: auto; }
 .archiv-col-typ { width: 140px; text-align: start; }
-.archiv-col-datum { width: 160px; white-space: nowrap; }
+/* A dated span ("25. Dezember 1953 – 12. Jänner 1954") is wider than the column
+   and ran under the Entitaeten icons; it breaks into a second line instead of
+   being truncated, because a cut date names a year the document does not have. */
+.archiv-col-datum { width: 160px; }
 .archiv-col-links { width: 140px; text-align: center; }  /* four family icons plus their counts */
 .archiv-col-korb { width: 36px; text-align: center; }
 
@@ -201,6 +206,15 @@
   font-family: var(--font-mono);
   font-size: var(--text-sm);
   color: var(--accent);
+}
+
+/* Page count of a Folio row, set beside the title. It states the material and
+   not a supplemented value, so it carries no derivation mark; the detail pages
+   through what it counts. */
+.archiv-pages {
+  margin-inline-start: var(--space-2);
+  white-space: nowrap;
+  vertical-align: baseline;
 }
 
 .archiv-titel {
@@ -247,7 +261,8 @@
   max-inline-size: 100%;
 }
 
-/* Type distribution of the collapsed head. */
+/* Type distribution of the collapsed head, and the page count of a Folio row:
+   the same quiet pill, because both count what the row stands for. */
 .archiv-konvolut-meta {
   display: flex;
   flex-wrap: wrap;
@@ -256,7 +271,8 @@
   line-height: 1.4;
 }
 
-.archiv-konvolut-meta .chip--compact {
+.archiv-konvolut-meta .chip--compact,
+.archiv-pages {
   display: inline-flex;
   align-items: center;
   padding: 1px var(--space-1-5);

@@ -189,10 +189,10 @@
   flex-shrink: 0;
 }
 
-/* Mobility chronicle: Sicht accent, axis head, decade header (E-124) */
+/* Mobility chronicle: dating-role accent, axis head, decade header (E-124) */
 
-/* The Sicht accent sits absolutely in the left padding, so it does not disturb
-   the baseline alignment of the chip texts. No accent means no event. */
+/* The accent sits absolutely in the left padding, so it does not disturb the
+   baseline alignment of the chip texts. No accent means no Zeitanker. */
 .chronik-point {
   position: relative;
   padding-inline-start: calc(var(--space-2) + 7px);
@@ -214,6 +214,13 @@
   flex-shrink: 0;
 }
 
+/* One hover, one tooltip (E-90). The mark of the supplemented year sits inside
+   the chip, and both carry a data-tip: hovering the mark fired the chip's box
+   too, which covered the beginning of the one that names the origin. */
+.chronik-point:has(.chronik-point__secondary:hover)::after {
+  display: none;
+}
+
 /* Header segment highlight: the hits step forward, the rest is dimmed. */
 .chronik-point--hit {
   border-color: var(--accent);
@@ -221,7 +228,7 @@
 }
 .chronik-point--dim { opacity: 0.3; }
 
-/* Decade by Sicht header */
+/* Decade by dating role header */
 .chronik-decades {
   margin: 0 0 var(--space-5);
   padding: var(--space-3) var(--space-4) var(--space-4);
@@ -308,23 +315,12 @@
   text-align: left;
 }
 
-/* Undatiert-Block: Sicht-Mini-Stapel als Kopf, dann Chips */
+/* Undatiert-Block: die Chips ohne Zeitanker */
 .chronik-year__points--undated {
   flex-direction: column;
   align-items: stretch;
   gap: var(--space-2);
 }
-.chronik-undated-mini-line { width: 100%; }
-.chronik-undated-mini {
-  display: flex;
-  width: 240px;
-  max-width: 100%;
-  height: 8px;
-  border-radius: 2px;
-  overflow: hidden;
-  background: var(--surface-3);
-}
-.chronik-undated-mini__seg { height: 100%; }
 .chronik-undated-chips {
   display: flex;
   flex-wrap: wrap;

@@ -46,7 +46,7 @@ DEFINITION = re.compile(
 # Nummern, die zitiert werden, ohne je vergeben worden zu sein. Der Eintrag
 # haelt den Grund fest, damit die Ausnahme nicht zur stillen Luecke wird.
 NEVER_ASSIGNED = {
-    "E-167": "von einer Order genannt, nie vergeben; fortlaufend wurde E-117 gesetzt",
+    "E-84": "im Archivjournal nur als Luecke gefuehrt, nie vergeben",
 }
 
 MD_LINK = re.compile(r"\[[^\]]*\]\(([^)#\s]+)(?:#[^)\s]*)?\)")
@@ -57,7 +57,12 @@ MD_LINK = re.compile(r"\[[^\]]*\]\(([^)#\s]+)(?:#[^)\s]*)?\)")
 # Herleitung ist dann faktisch verloren.
 CODE_ROOTS = ["scripts", "docs", "tests", "vocab"]
 CODE_SUFFIXES = {".py", ".js", ".mjs", ".css", ".json", ".ttl", ".html"}
-DOC_TOKEN = re.compile(r"\b([a-z0-9][a-z0-9._-]*\.md)\b", re.I)
+# Der Verweis wird mit seinen fuehrenden Pfadsegmenten gefasst, nicht nur mit
+# dem Dateinamen. Sonst laeuft ein Verweis durch, der dem Register unter
+# data/reports/ ein knowledge/-Praefix voranstellt: der Dateiname existiert,
+# der Pfad nicht, und wer dem Verweis folgt, findet nichts (Audit 2026-09-05).
+DOC_TOKEN = re.compile(
+    r"\b((?:[a-z0-9][a-z0-9._-]*/)*[a-z0-9][a-z0-9._-]*\.md)\b", re.I)
 
 # Dateinamen, die ein Skript erzeugt statt sie zu zitieren. Der Eintrag nennt
 # den Grund, damit die Ausnahme nicht zur stillen Luecke wird.
@@ -66,6 +71,7 @@ WRITTEN_NOT_CITED = {
     "validation-report.md": "schreibt scripts/validate.py in das ignorierte data/reports/",
     "exploration-report.md": "schreibt scripts/explore.py in das ignorierte data/reports/",
     "link-proposals.md": "schreibt scripts/propose-links.py in das ignorierte data/reports/",
+    "cataloguing-report.md": "schreibt scripts/report-cataloguing.py in das ignorierte data/reports/",
 }
 
 
@@ -117,7 +123,7 @@ def _citations():
     """
     found = defaultdict(set)
     for path in _citation_files():
-        if path.name == "journal.md":
+        if path.name in JOURNALS:
             continue
         try:
             text = path.read_text(encoding="utf-8")
@@ -183,7 +189,9 @@ def test_relative_markdown_links_resolve():
 
 def test_no_dead_document_references_in_code():
     """Jeder in Code oder Fixture genannte Dokumentname existiert im Repo."""
-    existing = {p.name for p in REPO_ROOT.rglob("*.md") if ".git" not in str(p)}
+    docs = [p for p in REPO_ROOT.rglob("*.md") if ".git" not in str(p)]
+    existing = {p.name for p in docs}
+    existing_paths = {p.relative_to(REPO_ROOT).as_posix() for p in docs}
     dead = defaultdict(list)
     for rel in CODE_ROOTS:
         root = REPO_ROOT / rel
@@ -197,10 +205,15 @@ def test_no_dead_document_references_in_code():
             except (UnicodeDecodeError, OSError):
                 continue
             for lineno, line in enumerate(text.splitlines(), start=1):
-                for name in DOC_TOKEN.findall(line):
-                    if name in existing or name in WRITTEN_NOT_CITED:
+                for token in DOC_TOKEN.findall(line):
+                    name = token.rsplit("/", 1)[-1]
+                    if name in WRITTEN_NOT_CITED:
                         continue
-                    dead[name].append(f"{path.relative_to(REPO_ROOT)}:{lineno}")
+                    # Ein Verweis mit Pfad muss als Pfad aufgehen, ein blosser
+                    # Dateiname nur als Name.
+                    if token in existing_paths or ("/" not in token and name in existing):
+                        continue
+                    dead[token].append(f"{path.relative_to(REPO_ROOT)}:{lineno}")
     assert not dead, (
         "Dokumentnamen in Code ohne existierende Datei. Die zitierte Herleitung "
         f"ist damit unerreichbar: {dict(sorted(dead.items()))}"
@@ -267,6 +280,76 @@ def test_section_references_resolve():
     )
 
 
+# Seit E-161 nennt ein Verweis Dokument und Abschnittstitel statt einer Nummer.
+# Der Titel steht im Fliesstext, deshalb faengt der Ausdruck den ganzen Rest der
+# Zeile und die Aufloesung entscheidet, welche Ueberschrift darin steckt. Die
+# oeffnende Klammer eines Markdown-Links beendet ihn, sonst verschluckt ein
+# Verweis den zweiten auf derselben Zeile.
+SECTION_TITLE_REF = re.compile(
+    r"([a-z0-9][a-z0-9._-]*\.md)[)\]`]*\s*§\s*([^|`\n\[]+)", re.I
+)
+
+
+def _titled_sections_by_document():
+    """Dateiname -> Menge der Abschnittstitel, die das Dokument fuehrt."""
+    found = defaultdict(set)
+    for path in KNOWLEDGE.glob("*.md"):
+        for line in path.read_text(encoding="utf-8").splitlines():
+            match = re.match(r"^#{2,6}\s+(.+?)\s*$", line)
+            if match:
+                found[path.name].add(match.group(1))
+    return found
+
+
+def _titled_reference_resolves(run: str, headings: set) -> bool:
+    """Wahr, wenn eine Ueberschrift den Verweis eroeffnet.
+
+    Der gefasste Rest der Zeile traegt hinter dem Titel oft noch Satz oder
+    Glosse. Getroffen ist der Verweis deshalb, wenn eine Ueberschrift ihn
+    eroeffnet und dort endet, wo kein Wortzeichen mehr folgt. Ein verkuerzter
+    Titel faellt damit durch, weil dann keine Ueberschrift den Anfang deckt.
+    """
+    for heading in headings:
+        if run == heading:
+            return True
+        if run.startswith(heading) and not run[len(heading):len(heading) + 1].isalnum():
+            return True
+    return False
+
+
+def test_titled_section_references_resolve():
+    """Jeder Verweis aus Dokumentname und Abschnittstitel trifft eine Ueberschrift.
+
+    Die Umstellung der Wissensbasis auf Englisch hat jeden deutschen
+    Abschnittstitel ersetzt. Der Dateiname existierte weiter, der Abschnitt
+    nicht, und die beiden vorigen Waechter greifen in diesem Fall nicht.
+
+    Geprueft wird `knowledge/` gegen `knowledge/`. Ausserhalb davon nennen
+    CLAUDE.md, README.md, Docstrings und die redaktionellen Notizen des
+    Vokabulars dieselben Verweise in der alten Fassung; sie stehen als eigener
+    Punkt in knowledge/handoff.md und gehoeren einer anderen Lane.
+    """
+    sections = _titled_sections_by_document()
+    assert sections, "Kein Wissensdokument fuehrt Abschnittstitel"
+    wrong = defaultdict(list)
+    for path in sorted(KNOWLEDGE.glob("*.md")):
+        for lineno, line in enumerate(
+            path.read_text(encoding="utf-8").splitlines(), start=1
+        ):
+            for doc, raw in SECTION_TITLE_REF.findall(line):
+                if doc not in sections:
+                    continue
+                run = raw.strip()
+                if not _titled_reference_resolves(run, sections[doc]):
+                    wrong[f"{doc} § {run[:60]}"].append(
+                        f"{path.relative_to(REPO_ROOT)}:{lineno}"
+                    )
+    assert not wrong, (
+        "Verweise auf Abschnittstitel, die das genannte Dokument nicht fuehrt: "
+        f"{ {k: v[:3] for k, v in sorted(wrong.items())} }"
+    )
+
+
 def test_written_not_cited_entries_stay_honest():
     """Jede Ausnahme der Erzeugt-statt-zitiert-Liste ist noch begruendet.
 
@@ -314,7 +397,10 @@ VOCAB_TERM = re.compile(r"`(m3gim[a-z-]*:[A-Za-z_][A-Za-z0-9_]*)`")
 # Dokumente, die festhalten, was einmal entschieden oder getan wurde. Ihre
 # Terme tragen die Namen ihrer Zeit; ein Nachzug wuerde den Datensatz der
 # Entscheidung verfaelschen.
-HISTORICAL_DOCS = {"journal.md", "journal.md"}
+# Das Journal ist seit dem 2026-09-05 in Register und Archiv geteilt; beide
+# zitieren stillgelegte Nummern im historischen Wortlaut.
+JOURNALS = {"journal.md", "journal-archive.md"}
+HISTORICAL_DOCS = set(JOURNALS)
 
 # Kanalnamen der DOM-CustomEvents. Sie sehen wie ein Vokabularterm aus und
 # sind keiner; ihre Definition steht in docs/js/ui/.

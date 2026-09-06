@@ -64,13 +64,15 @@ textarea::placeholder {
 }
 
 /* App Shell — one full-width KUG-Blau band carrying brand, tabs and info links
-   (project lead, 2026-09-03, late evening). The info pages show the same band
-   without the tabs. */
+   (project lead, 2026-09-03, late evening). Every page of the site shows the
+   same band; scripts/build-model-page.py writes it into all of them, so the bar
+   has no page variant to style (project lead, 2026-09-05). The gap is zero
+   because the lead already holds its column. */
 .topbar {
   --topbar-pad: var(--space-6);
   display: flex;
   align-items: center;
-  gap: var(--space-3);
+  gap: 0;
   height: var(--brand-band-height);
   padding: 0 var(--topbar-pad);
   background: var(--accent);
@@ -78,29 +80,19 @@ textarea::placeholder {
   flex-shrink: 0;
 }
 
+/* The lead takes the sidebar column width less the bar's own inline padding, so
+   the first tab starts on the work area's left edge and the tab row lines up
+   with the table below it. */
 .topbar__lead {
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  flex: 0 0 auto;
-}
-
-/* App page: the tabs share the band with brand and info links. The lead takes
-   the sidebar column width less the bar's own inline padding, so the first tab
-   starts on the work area's left edge and the tab row lines up with the table
-   below it. The doubled class outranks the narrow-width gap rule further down,
-   whose gap would push that first tab past the edge. */
-.topbar.topbar--app {
-  gap: 0;
-}
-
-.topbar--app .topbar__lead {
   flex: 0 0 calc(var(--view-sidebar-w) - var(--topbar-pad));
   min-inline-size: 0;
 }
 
 /* Full band height, so the active tab's underline sits on the band's edge. */
-.topbar--app .tab-bar {
+.topbar .tab-bar {
   align-self: stretch;
 }
 
@@ -118,15 +110,6 @@ textarea::placeholder {
 .topbar__brand:hover {
   color: var(--accent-soft);
   text-decoration: none;
-}
-
-/* Only the info pages show the subtitle; in the app it is the brand tooltip. */
-.topbar__subtitle {
-  display: flex;
-  align-items: center;
-  font-size: var(--text-sm);
-  color: var(--accent-soft);
-  white-space: nowrap;
 }
 
 .topbar__badge {
@@ -336,23 +319,16 @@ a:focus-visible {
     gap: var(--space-3);
     padding-inline-start: var(--space-3);
   }
+
+  /* Too narrow for the sidebar alignment: the lead falls back to its own width,
+     the freed column goes to the tabs so every label stays readable, and the
+     band's gap holds brand and tabs apart again. */
+  .topbar__lead {
+    flex-basis: auto;
+  }
 }
 
 @media (max-width: 899px) {
-  .topbar__subtitle {
-    display: none;
-  }
-
-  /* Too narrow for the sidebar alignment: the lead falls back to its own width
-     and the band's gap holds brand and tabs apart again. */
-  .topbar.topbar--app {
-    gap: var(--space-2);
-  }
-
-  .topbar--app .topbar__lead {
-    flex-basis: auto;
-  }
-
   .topbar__brand {
     font-size: var(--text-lg);
   }

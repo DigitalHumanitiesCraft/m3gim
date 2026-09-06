@@ -36,7 +36,7 @@ ANCHOR_TITLES = [
     "Handschriftliche Notiz",                        # NIM_007/5_1 (Finanz-Anker)
 ]
 
-# Bekannte, dokumentierte @id-Kollisionen (siehe knowledge/data/reports/reconciliation-register.md).
+# Bekannte, dokumentierte @id-Kollisionen (siehe data/reports/reconciliation-register.md).
 # Aktuell leer — das PL_07-Quellduplikat wird von der Pipeline kompensiert.
 # Jeder Eintrag hier ist ein tolerierter Regressions-Alarm.
 KNOWN_COLLISIONS = set()
@@ -172,12 +172,12 @@ def main() -> int:
         #     Regression) oder ein Key beim Refactor still wegfliegt.
         stamp_expectations = {
             "bestand":    ["konvolute", "records", "stand"],
-            "chronik":    ["records", "jahre-belegt", "datiert", "undatiert", "sicht-gedeckt", "spanne"],
+            "chronik":    ["records", "jahre-belegt", "datiert", "undatiert",
+                           "datierungsrollen", "spanne"],
             "statistik":  ["records", "ansichten", "aktiv", "spanne"],
             # Seit E-226 zeigt die Seite genau ein Register; der Stempel nennt
             # es und seine Zahlen statt aller vier Registerschluessel.
-            "indizes":    ["register", "eintraege", "gesamt", "sortierung",
-                           "wikidata"],
+            "indizes":    ["register", "eintraege", "gesamt", "sortierung"],
             "karte":      ["entitaeten", "orte", "belege", "unverortet", "jahre"],
             # Das Netzwerk fuehrt seit E-160 Fokus, Knotentypen und beide
             # Evidenzmasse in einem Stempel: die Knotenzahlen je Typ heissen
@@ -241,7 +241,7 @@ def main() -> int:
                             f"check uebersprungen: {e}"))
 
         # --- Canary Chronik: Aggregat -> Quelle (E-124). Klick auf ein
-        #     Dekaden-Sicht-Segment muss genau seine belegenden Chips
+        #     Dekaden-Segment muss genau seine belegenden Chips
         #     hervorheben (.chronik-point--hit) und den Rest daempfen
         #     (.chronik-point--dim). Das ist der harte Schutz fuer die
         #     Vorgabe "kein Aggregat ohne Aufloesung auf die Einzelquellen":
@@ -291,6 +291,14 @@ def main() -> int:
             # Eine konkrete Entitaet waehlen (Bayreuther Festspiele) und pruefen,
             # dass die Knotenmenge auf ihre Orte schrumpft. Die Wahl laeuft seit
             # dem Sidebar-Umbau ueber dasselbe Facetten-Muster wie jeder Filter.
+            # Die view-eigene Sektion startet zugeklappt (E-240); ihr Feld ist
+            # erst nach dem Aufklappen bedienbar.
+            entity_head = page.locator('#tab-karte .vs-section',
+                                       has_text="Entität").locator(
+                '.vs-section__title--toggle').first
+            if entity_head.get_attribute("aria-expanded") == "false":
+                entity_head.click()
+                page.wait_for_timeout(200)
             entity_facet = page.locator('#tab-karte .fs-facet[data-facet="entitaet"]')
             entity_facet.locator('.fs-search').fill("Bayreuther Festspiele")
             page.wait_for_timeout(200)
@@ -473,9 +481,10 @@ def main() -> int:
                             f"check uebersprungen: {e}"))
 
         # --- Auftritt-Detail von NIM_022 1_1 (Projektleitung, 2026-09-04):
-        #     Kopfzeile mit Signatur und Titel, Aktionen in der Metazeile,
-        #     Blocktitel ohne Zahl, Auffuehrungen unter ihrer Spielzeit,
-        #     Buehnenrolle unter ihrem Werk. ---
+        #     Signatur ohne Titel als erstes Element der Metazeile, kein
+        #     Schliessen-Knopf, keine Quellzeilen im Fuss, Blocktitel ohne Zahl,
+        #     Auffuehrungen unter ihrer Spielzeit, Buehnenrolle unter ihrem
+        #     Werk (Projektleitung, 2026-09-05). ---
         try:
             page.goto(f"{BASE_URL}#bestand/m3gim-data:NIM_022_1_1",
                       wait_until="networkidle", timeout=10000)
@@ -483,22 +492,29 @@ def main() -> int:
             detail = page.locator(".inline-detail").first
             head = detail.locator(".inline-detail__head").first
             head_text = head.inner_text() if head.count() else ""
-            if "NIM_022 1_1" in head_text and "Bayreuther Festspiele" in head_text:
+            in_meta_head = detail.locator(
+                ".inline-detail__meta > .inline-detail__head").count()
+            if ("NIM_022 1_1" in head_text and "Bayreuther Festspiele" not in head_text
+                    and in_meta_head == 1):
                 results.append(("OK", "anchor:NIM_022_1_1:kopfzeile     ",
-                                "Signatur und Titel in der Kopfzeile"))
+                                "Signatur ohne Titel, in der Metazeile"))
             else:
                 results.append(("FAIL", "anchor:NIM_022_1_1:kopfzeile     ",
-                                f"Kopfzeile {head_text[:60]!r}"))
+                                f"Kopfzeile {head_text[:60]!r}, in-meta={in_meta_head}"))
 
             in_meta = detail.locator(".inline-detail__meta .inline-detail__actions"
                                      " .inline-detail__action-btn").count()
+            n_close = detail.locator(".inline-detail__close").count()
+            n_source = detail.locator(".inline-detail__source").count()
             meta_text = detail.locator(".inline-detail__meta").first.inner_text()
-            if in_meta == 2 and "ERSCHLIESSUNG" in meta_text.upper():
+            if (in_meta == 1 and n_close == 0 and n_source == 0
+                    and "ERSCHLIESSUNG" in meta_text.upper()):
                 results.append(("OK", "anchor:NIM_022_1_1:metazeile     ",
-                                "beide Aktionen in der Metazeile, Label Erschliessung"))
+                                "nur Korb-Aktion, kein Schliessen, keine Quellzeilen"))
             else:
                 results.append(("FAIL", "anchor:NIM_022_1_1:metazeile     ",
-                                f"aktionen={in_meta}, meta={meta_text[:60]!r}"))
+                                f"aktionen={in_meta}, close={n_close}, quelle={n_source}, "
+                                f"meta={meta_text[:60]!r}"))
 
             titles = detail.locator(".inline-detail__section-title").all_inner_texts()
             with_count = [t for t in titles if "(" in t]
@@ -568,37 +584,72 @@ def main() -> int:
             results.append(("WARN", "konvolut-meta-chips              ",
                             f"check uebersprungen: {e}"))
 
-        # --- Erschliessungsstand (E-162, Basis nach E-165, Facette nach E-204):
-        #     der Bestand oeffnet auf abgeschlossen + begonnen. Die Wahl steht
-        #     als Facette in der Spalte und als Gruppe in der Chip-Zeile; wer
-        #     beide Chips entfernt, sieht die Grundmenge. Die Dokumentbasis ist
-        #     die Verknuepfung, also gibt es keinen ausgegrauten Rest. ---
+        # --- Land als geteilte Facette (F1, loest die karteneigene
+        #     Laender-Reichweite ab): sie startet zugeklappt und ohne Chip,
+        #     fuehrt ihre Werte als Zeilen mit Zahl, und eine Wahl verengt den
+        #     Bestand und erscheint als Chip. Der Erschliessungsstand ist mit
+        #     E-262 aus Spalte und Statistik heraus. ---
         try:
             page.goto(BASE_URL, wait_until="networkidle", timeout=10000)
             page.wait_for_timeout(600)
             page.locator('[data-tab="bestand"]').first.click()
             page.wait_for_timeout(400)
+            gone = page.locator('#tab-bestand .vs-section',
+                                has_text="Erschließungsstand").count()
+            facet = page.locator('#tab-bestand .vs-section',
+                                 has_text="Land").first
+            head = facet.locator('.vs-section__title--toggle')
+            folded_start = head.get_attribute("aria-expanded") == "false"
+            head.click()
+            page.wait_for_timeout(300)
+            facet_rows = facet.locator('.fs-option').count()
+            # Gegen die Ergebniszeile gemessen und nicht gegen die Tabellen-
+            # zeilen: ein Schnitt flacht die Konvolut-Hierarchie auf und zeigt
+            # dann mehr Zeilen als der zugeklappte Start.
+            root = page.locator('#tab-bestand .vs-status__count .fs-option__count')
+            docs_start = root.inner_text().strip()
+            facet.locator('.fs-option').first.click()
+            page.wait_for_timeout(400)
+            docs_cut = root.inner_text().strip()
             group = page.locator('#tab-bestand .filter-strip .filter-strip__group',
-                                 has_text="Erschließungsstand")
-            n_chip = group.locator('.fs-chip').count()
-            facet_rows = page.locator('#tab-bestand .vs-section',
-                                      has_text="Erschließungsstand").locator('.fs-option').count()
-            rows_default = page.locator('#tab-bestand tbody tr').count()
-            for _ in range(n_chip):
-                group.locator('.fs-chip').first.click()
-                page.wait_for_timeout(250)
-            rows_all = page.locator('#tab-bestand tbody tr').count()
-            un_all = page.locator('#tab-bestand .archiv-row--unerschlossen').count()
-            if n_chip == 2 and facet_rows == 4 and rows_all > rows_default and un_all == 0:
-                results.append(("OK", "bestand:erschliessungsstand      ",
-                                f"Facette 4 Werte, 2 Default-Chips, {rows_default} -> "
-                                f"ohne Chips {rows_all} Zeilen"))
+                                 has_text="Land")
+            chips_cut = group.locator('.fs-chip').count()
+            cut_smaller = " von " in docs_cut and docs_cut != docs_start
+            if (gone == 0 and folded_start and facet_rows >= 8
+                    and chips_cut == 1 and cut_smaller):
+                results.append(("OK", "bestand:land-facette             ",
+                                f"zugeklappt, {facet_rows} Laender, eine Wahl -> "
+                                f"Dokumente {docs_cut} statt {docs_start} mit Chip"))
             else:
-                results.append(("FAIL", "bestand:erschliessungsstand      ",
-                                f"chips={n_chip}, facette={facet_rows}, "
-                                f"default={rows_default}, offen={rows_all}, un={un_all}"))
+                results.append(("FAIL", "bestand:land-facette             ",
+                                f"erschliessungsstand={gone}, zugeklappt={folded_start}, "
+                                f"laender={facet_rows}, start={docs_start}, "
+                                f"gewaehlt={docs_cut}, chips={chips_cut}"))
         except Exception as e:
-            results.append(("WARN", "bestand:erschliessungsstand      ",
+            results.append(("WARN", "bestand:land-facette             ",
+                            f"check uebersprungen: {e}"))
+
+        # --- Datenstand in jeder Ansicht (F6): die Ergebniszeile der Spalte
+        #     traegt ihn im Tooltip, an derselben Stelle und in derselben Form. ---
+        try:
+            missing = []
+            for tab in TABS:
+                page.locator(f'[data-tab="{tab}"]').first.click()
+                page.wait_for_timeout(400)
+                tip = page.locator(f'#tab-{tab} .vs-status__count').first
+                if tip.count() == 0:
+                    continue
+                value = tip.get_attribute("data-tip") or ""
+                if "Datenstand" not in value:
+                    missing.append(tab)
+            if missing:
+                results.append(("FAIL", "sidebar:datenstand               ",
+                                f"ohne Datenstand: {', '.join(missing)}"))
+            else:
+                results.append(("OK", "sidebar:datenstand               ",
+                                "jede Ansicht nennt ihn im Tooltip der Ergebniszeile"))
+        except Exception as e:
+            results.append(("WARN", "sidebar:datenstand               ",
                             f"check uebersprungen: {e}"))
 
         # --- Konvolut aufklappen parkt den Kopf unter dem Spaltenkopf

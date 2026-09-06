@@ -690,6 +690,9 @@
         },
         {
           "@id": "m3gim-data:NIM_003_1_10"
+        },
+        {
+          "@id": "m3gim-data:NIM_003_1"
         }
       ]
     },
@@ -1367,6 +1370,9 @@
           "@id": "m3gim-data:NIM_022_4"
         },
         {
+          "@id": "m3gim-data:NIM_022_1"
+        },
+        {
           "@id": "m3gim-data:NIM_022_collection"
         }
       ]
@@ -1420,6 +1426,9 @@
         },
         {
           "@id": "m3gim-data:NIM_023_11"
+        },
+        {
+          "@id": "m3gim-data:NIM_023_1"
         },
         {
           "@id": "m3gim-data:NIM_023_collection"
@@ -1626,6 +1635,9 @@
         },
         {
           "@id": "m3gim-data:NIM_073_34"
+        },
+        {
+          "@id": "m3gim-data:NIM_073_30"
         },
         {
           "@id": "m3gim-data:NIM_073_collection"
@@ -2477,6 +2489,9 @@
           "@id": "m3gim-data:NIM_136_100_36"
         },
         {
+          "@id": "m3gim-data:NIM_136_100"
+        },
+        {
           "@id": "m3gim-data:NIM_136_collection"
         }
       ]
@@ -2662,6 +2677,12 @@
         },
         {
           "@id": "m3gim-data:NIM_137_20"
+        },
+        {
+          "@id": "m3gim-data:NIM_137_12"
+        },
+        {
+          "@id": "m3gim-data:NIM_137_15"
         },
         {
           "@id": "m3gim-data:NIM_137_collection"
@@ -5839,6 +5860,11 @@
       ],
       "rico:hasOrHadLocation": {
         "name": "München",
+        "@id": "wd:Q1726",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q1726",
+        "geo:lat": 48.1375,
+        "geo:long": 11.575,
+        "m3gim-ontology:country": "Deutschland",
         "m3gim-ontology:xlsxSource": {
           "m3gim-ontology:xlsxSheet": "Box 1",
           "m3gim-ontology:xlsxRow": 83
@@ -7616,6 +7642,11 @@
       ],
       "rico:hasOrHadLocation": {
         "name": "München",
+        "@id": "wd:Q1726",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q1726",
+        "geo:lat": 48.1375,
+        "geo:long": 11.575,
+        "m3gim-ontology:country": "Deutschland",
         "m3gim-ontology:xlsxSource": {
           "m3gim-ontology:xlsxSheet": "Box 1",
           "m3gim-ontology:xlsxRow": 178
@@ -8084,6 +8115,11 @@
       ],
       "rico:hasOrHadLocation": {
         "name": "Italien",
+        "@id": "wd:Q38",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q38",
+        "geo:lat": 42.5,
+        "geo:long": 12.5,
+        "m3gim-ontology:country": "Italien",
         "role": {
           "@id": "m3gim-vocab:performancePlace",
           "skos:prefLabel": "auffuehrungsort"
@@ -9708,6 +9744,11 @@
       ],
       "rico:hasOrHadLocation": {
         "name": "Stuttgart",
+        "@id": "wd:Q1022",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q1022",
+        "geo:lat": 48.7775,
+        "geo:long": 9.18,
+        "m3gim-ontology:country": "Deutschland",
         "m3gim-ontology:xlsxSource": {
           "m3gim-ontology:xlsxSheet": "Box 1",
           "m3gim-ontology:xlsxRow": 320
@@ -12805,6 +12846,11 @@
       "rico:hasOrHadLocation": [
         {
           "name": "Paris",
+          "@id": "wd:Q90",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q90",
+          "geo:lat": 48.85666666666667,
+          "geo:long": 2.352222222222222,
+          "m3gim-ontology:country": "Frankreich",
           "m3gim-ontology:xlsxSource": {
             "m3gim-ontology:xlsxSheet": "Box 1",
             "m3gim-ontology:xlsxRow": 515
@@ -12813,6 +12859,11 @@
         },
         {
           "name": "Paris",
+          "@id": "wd:Q90",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q90",
+          "geo:lat": 48.85666666666667,
+          "geo:long": 2.352222222222222,
+          "m3gim-ontology:country": "Frankreich",
           "m3gim-ontology:xlsxSource": {
             "m3gim-ontology:xlsxSheet": "Box 1",
             "m3gim-ontology:xlsxRow": 516
@@ -12956,6 +13007,11 @@
       ],
       "rico:hasOrHadLocation": {
         "name": "Wien",
+        "@id": "wd:Q1741",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q1741",
+        "geo:lat": 48.208333333333336,
+        "geo:long": 16.3725,
+        "m3gim-ontology:country": "Österreich",
         "role": {
           "@id": "m3gim-vocab:creation",
           "skos:prefLabel": "entstehung"
@@ -13065,6 +13121,11 @@
       "rico:hasOrHadLocation": [
         {
           "name": "Wien",
+          "@id": "wd:Q1741",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1741",
+          "geo:lat": 48.208333333333336,
+          "geo:long": 16.3725,
+          "m3gim-ontology:country": "Österreich",
           "role": {
             "@id": "m3gim-vocab:creation",
             "skos:prefLabel": "entstehung"
@@ -13533,6 +13594,11 @@
         },
         {
           "name": "Frankfurt",
+          "@id": "wd:Q1794",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1794",
+          "geo:lat": 50.11055555555556,
+          "geo:long": 8.682222222222222,
+          "m3gim-ontology:country": "Deutschland",
           "role": {
             "@id": "m3gim-vocab:mentioned",
             "skos:prefLabel": "erwähnt"
@@ -13630,6 +13696,11 @@
         },
         {
           "name": "Zürich",
+          "@id": "wd:Q72",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q72",
+          "geo:lat": 47.37444444444444,
+          "geo:long": 8.54111111111111,
+          "m3gim-ontology:country": "Schweiz",
           "m3gim-ontology:xlsxSource": {
             "m3gim-ontology:xlsxSheet": "Box 1",
             "m3gim-ontology:xlsxRow": 574
@@ -13638,6 +13709,11 @@
         },
         {
           "name": "München",
+          "@id": "wd:Q1726",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1726",
+          "geo:lat": 48.1375,
+          "geo:long": 11.575,
+          "m3gim-ontology:country": "Deutschland",
           "m3gim-ontology:xlsxSource": {
             "m3gim-ontology:xlsxSheet": "Box 1",
             "m3gim-ontology:xlsxRow": 575
@@ -13646,6 +13722,11 @@
         },
         {
           "name": "Wien",
+          "@id": "wd:Q1741",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1741",
+          "geo:lat": 48.208333333333336,
+          "geo:long": 16.3725,
+          "m3gim-ontology:country": "Österreich",
           "m3gim-ontology:xlsxSource": {
             "m3gim-ontology:xlsxSheet": "Box 1",
             "m3gim-ontology:xlsxRow": 576
@@ -13654,6 +13735,11 @@
         },
         {
           "name": "Bayreuth",
+          "@id": "wd:Q3923",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q3923",
+          "geo:lat": 49.948055555556,
+          "geo:long": 11.578333333333,
+          "m3gim-ontology:country": "Deutschland",
           "role": {
             "@id": "m3gim-vocab:guestPerformance",
             "skos:prefLabel": "gastspiel"
@@ -13666,6 +13752,11 @@
         },
         {
           "name": "Salzburg",
+          "@id": "wd:Q34713",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q34713",
+          "geo:lat": 47.8,
+          "geo:long": 13.045,
+          "m3gim-ontology:country": "Österreich",
           "role": {
             "@id": "m3gim-vocab:guestPerformance",
             "skos:prefLabel": "gastspiel"
@@ -14476,6 +14567,11 @@
       "rico:hasOrHadLocation": [
         {
           "name": "New York",
+          "@id": "wd:Q60",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q60",
+          "geo:lat": 40.71277777777778,
+          "geo:long": -74.00611111111111,
+          "m3gim-ontology:country": "Vereinigte Staaten",
           "role": {
             "@id": "m3gim-vocab:creation",
             "skos:prefLabel": "entstehung"
@@ -15157,6 +15253,11 @@
         },
         {
           "name": "Frankfurt",
+          "@id": "wd:Q1794",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1794",
+          "geo:lat": 50.11055555555556,
+          "geo:long": 8.682222222222222,
+          "m3gim-ontology:country": "Deutschland",
           "role": {
             "@id": "m3gim-vocab:mentioned",
             "skos:prefLabel": "erwähnt"
@@ -15254,6 +15355,11 @@
         },
         {
           "name": "Zürich",
+          "@id": "wd:Q72",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q72",
+          "geo:lat": 47.37444444444444,
+          "geo:long": 8.54111111111111,
+          "m3gim-ontology:country": "Schweiz",
           "m3gim-ontology:xlsxSource": {
             "m3gim-ontology:xlsxSheet": "Box 1",
             "m3gim-ontology:xlsxRow": 680
@@ -15262,6 +15368,11 @@
         },
         {
           "name": "München",
+          "@id": "wd:Q1726",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1726",
+          "geo:lat": 48.1375,
+          "geo:long": 11.575,
+          "m3gim-ontology:country": "Deutschland",
           "m3gim-ontology:xlsxSource": {
             "m3gim-ontology:xlsxSheet": "Box 1",
             "m3gim-ontology:xlsxRow": 681
@@ -15270,6 +15381,11 @@
         },
         {
           "name": "Wien",
+          "@id": "wd:Q1741",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1741",
+          "geo:lat": 48.208333333333336,
+          "geo:long": 16.3725,
+          "m3gim-ontology:country": "Österreich",
           "m3gim-ontology:xlsxSource": {
             "m3gim-ontology:xlsxSheet": "Box 1",
             "m3gim-ontology:xlsxRow": 682
@@ -15278,6 +15394,11 @@
         },
         {
           "name": "Bayreuth",
+          "@id": "wd:Q3923",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q3923",
+          "geo:lat": 49.948055555556,
+          "geo:long": 11.578333333333,
+          "m3gim-ontology:country": "Deutschland",
           "role": {
             "@id": "m3gim-vocab:guestPerformance",
             "skos:prefLabel": "gastspiel"
@@ -15290,6 +15411,11 @@
         },
         {
           "name": "Salzburg",
+          "@id": "wd:Q34713",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q34713",
+          "geo:lat": 47.8,
+          "geo:long": 13.045,
+          "m3gim-ontology:country": "Österreich",
           "role": {
             "@id": "m3gim-vocab:guestPerformance",
             "skos:prefLabel": "gastspiel"
@@ -19058,6 +19184,11 @@
       "rico:hasOrHadLocation": [
         {
           "name": "Warschau",
+          "@id": "wd:Q270",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q270",
+          "geo:lat": 52.23,
+          "geo:long": 21.011111111111113,
+          "m3gim-ontology:country": "Polen",
           "role": {
             "@id": "m3gim-vocab:contractPlace",
             "skos:prefLabel": "vertragsort"
@@ -19308,6 +19439,11 @@
         },
         {
           "name": "Geneve",
+          "@id": "wd:Q71",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q71",
+          "geo:lat": 46.2,
+          "geo:long": 6.15,
+          "m3gim-ontology:country": "Schweiz",
           "role": {
             "@id": "m3gim-vocab:contractPlace",
             "skos:prefLabel": "vertragsort"
@@ -19337,6 +19473,11 @@
         },
         {
           "name": "Beromünster",
+          "@id": "wd:Q7146",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q7146",
+          "geo:lat": 47.199722222222,
+          "geo:long": 8.2,
+          "m3gim-ontology:country": "Schweiz",
           "role": {
             "@id": "m3gim-vocab:contractPlace",
             "skos:prefLabel": "vertragsort"
@@ -19366,6 +19507,11 @@
         },
         {
           "name": "Geneve",
+          "@id": "wd:Q71",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q71",
+          "geo:lat": 46.2,
+          "geo:long": 6.15,
+          "m3gim-ontology:country": "Schweiz",
           "role": {
             "@id": "m3gim-vocab:contractPlace",
             "skos:prefLabel": "vertragsort"
@@ -20071,6 +20217,11 @@
       "rico:hasOrHadLocation": [
         {
           "name": "Barcelona",
+          "@id": "wd:Q1492",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1492",
+          "geo:lat": 41.3825,
+          "geo:long": 2.1769444444444,
+          "m3gim-ontology:country": "Spanien",
           "role": {
             "@id": "m3gim-vocab:contractPlace",
             "skos:prefLabel": "vertragsort"
@@ -20168,6 +20319,11 @@
         },
         {
           "name": "Brüssel",
+          "@id": "wd:Q239",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q239",
+          "geo:lat": 50.846666666666664,
+          "geo:long": 4.351666666666667,
+          "m3gim-ontology:country": "Belgien",
           "role": {
             "@id": "m3gim-vocab:contractPlace",
             "skos:prefLabel": "vertragsort"
@@ -20180,6 +20336,11 @@
         },
         {
           "name": "Beromünster",
+          "@id": "wd:Q7146",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q7146",
+          "geo:lat": 47.199722222222,
+          "geo:long": 8.2,
+          "m3gim-ontology:country": "Schweiz",
           "role": {
             "@id": "m3gim-vocab:contractPlace",
             "skos:prefLabel": "vertragsort"
@@ -20284,6 +20445,11 @@
         },
         {
           "name": "Napoli",
+          "@id": "wd:Q2634",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q2634",
+          "geo:lat": 40.83583333333333,
+          "geo:long": 14.248611111111112,
+          "m3gim-ontology:country": "Italien",
           "role": {
             "@id": "m3gim-vocab:contractPlace",
             "skos:prefLabel": "vertragsort"
@@ -20347,6 +20513,11 @@
         },
         {
           "name": "Firenze",
+          "@id": "wd:Q2044",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q2044",
+          "geo:lat": 43.771388888889,
+          "geo:long": 11.254166666667,
+          "m3gim-ontology:country": "Italien",
           "role": {
             "@id": "m3gim-vocab:contractPlace",
             "skos:prefLabel": "vertragsort"
@@ -20359,6 +20530,11 @@
         },
         {
           "name": "Napoli",
+          "@id": "wd:Q2634",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q2634",
+          "geo:lat": 40.83583333333333,
+          "geo:long": 14.248611111111112,
+          "m3gim-ontology:country": "Italien",
           "role": {
             "@id": "m3gim-vocab:contractPlace",
             "skos:prefLabel": "vertragsort"
@@ -21361,6 +21537,11 @@
         },
         {
           "name": "Napoli",
+          "@id": "wd:Q2634",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q2634",
+          "geo:lat": 40.83583333333333,
+          "geo:long": 14.248611111111112,
+          "m3gim-ontology:country": "Italien",
           "role": {
             "@id": "m3gim-vocab:contractPlace",
             "skos:prefLabel": "vertragsort"
@@ -21373,6 +21554,11 @@
         },
         {
           "name": "Wuppertal",
+          "@id": "wd:Q2107",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q2107",
+          "geo:lat": 51.266666666667,
+          "geo:long": 7.1833333333333,
+          "m3gim-ontology:country": "Deutschland",
           "role": {
             "@id": "m3gim-vocab:contractPlace",
             "skos:prefLabel": "vertragsort"
@@ -21516,6 +21702,11 @@
         },
         {
           "name": "Roma",
+          "@id": "wd:Q220",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q220",
+          "geo:lat": 41.893055555556,
+          "geo:long": 12.482777777778,
+          "m3gim-ontology:country": "Italien",
           "role": {
             "@id": "m3gim-vocab:contractPlace",
             "skos:prefLabel": "vertragsort"
@@ -21528,6 +21719,11 @@
         },
         {
           "name": "Napoli",
+          "@id": "wd:Q2634",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q2634",
+          "geo:lat": 40.83583333333333,
+          "geo:long": 14.248611111111112,
+          "m3gim-ontology:country": "Italien",
           "role": {
             "@id": "m3gim-vocab:contractPlace",
             "skos:prefLabel": "vertragsort"
@@ -21540,6 +21736,11 @@
         },
         {
           "name": "Roma",
+          "@id": "wd:Q220",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q220",
+          "geo:lat": 41.893055555556,
+          "geo:long": 12.482777777778,
+          "m3gim-ontology:country": "Italien",
           "role": {
             "@id": "m3gim-vocab:contractPlace",
             "skos:prefLabel": "vertragsort"
@@ -21552,6 +21753,11 @@
         },
         {
           "name": "Milano",
+          "@id": "wd:Q490",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q490",
+          "geo:lat": 45.466944444444,
+          "geo:long": 9.19,
+          "m3gim-ontology:country": "Italien",
           "role": {
             "@id": "m3gim-vocab:contractPlace",
             "skos:prefLabel": "vertragsort"
@@ -22477,6 +22683,11 @@
         },
         {
           "name": "Milano",
+          "@id": "wd:Q490",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q490",
+          "geo:lat": 45.466944444444,
+          "geo:long": 9.19,
+          "m3gim-ontology:country": "Italien",
           "role": {
             "@id": "m3gim-vocab:contractPlace",
             "skos:prefLabel": "vertragsort"
@@ -22632,6 +22843,11 @@
         },
         {
           "name": "Brüssel",
+          "@id": "wd:Q239",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q239",
+          "geo:lat": 50.846666666666664,
+          "geo:long": 4.351666666666667,
+          "m3gim-ontology:country": "Belgien",
           "role": {
             "@id": "m3gim-vocab:contractPlace",
             "skos:prefLabel": "vertragsort"
@@ -22644,6 +22860,11 @@
         },
         {
           "name": "Roma",
+          "@id": "wd:Q220",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q220",
+          "geo:lat": 41.893055555556,
+          "geo:long": 12.482777777778,
+          "m3gim-ontology:country": "Italien",
           "role": {
             "@id": "m3gim-vocab:contractPlace",
             "skos:prefLabel": "vertragsort"
@@ -22656,6 +22877,11 @@
         },
         {
           "name": "Milano",
+          "@id": "wd:Q490",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q490",
+          "geo:lat": 45.466944444444,
+          "geo:long": 9.19,
+          "m3gim-ontology:country": "Italien",
           "role": {
             "@id": "m3gim-vocab:contractPlace",
             "skos:prefLabel": "vertragsort"
@@ -22702,6 +22928,11 @@
         },
         {
           "name": "Lübeck",
+          "@id": "wd:Q2843",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q2843",
+          "geo:lat": 53.869722222222,
+          "geo:long": 10.686388888889,
+          "m3gim-ontology:country": "Deutschland",
           "role": {
             "@id": "m3gim-vocab:contractPlace",
             "skos:prefLabel": "vertragsort"
@@ -23793,6 +24024,11 @@
         },
         {
           "name": "Frankfurt",
+          "@id": "wd:Q1794",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1794",
+          "geo:lat": 50.11055555555556,
+          "geo:long": 8.682222222222222,
+          "m3gim-ontology:country": "Deutschland",
           "role": {
             "@id": "m3gim-vocab:contractPlace",
             "skos:prefLabel": "vertragsort"
@@ -23856,6 +24092,11 @@
         },
         {
           "name": "Torino",
+          "@id": "wd:Q495",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q495",
+          "geo:lat": 45.079166666666666,
+          "geo:long": 7.676111111111111,
+          "m3gim-ontology:country": "Italien",
           "role": {
             "@id": "m3gim-vocab:contractPlace",
             "skos:prefLabel": "vertragsort"
@@ -23885,6 +24126,11 @@
         },
         {
           "name": "Torino",
+          "@id": "wd:Q495",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q495",
+          "geo:lat": 45.079166666666666,
+          "geo:long": 7.676111111111111,
+          "m3gim-ontology:country": "Italien",
           "role": {
             "@id": "m3gim-vocab:contractPlace",
             "skos:prefLabel": "vertragsort"
@@ -23914,6 +24160,11 @@
         },
         {
           "name": "Milano",
+          "@id": "wd:Q490",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q490",
+          "geo:lat": 45.466944444444,
+          "geo:long": 9.19,
+          "m3gim-ontology:country": "Italien",
           "role": {
             "@id": "m3gim-vocab:contractPlace",
             "skos:prefLabel": "vertragsort"
@@ -23943,6 +24194,11 @@
         },
         {
           "name": "Frankfurt/Main",
+          "@id": "wd:Q1794",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1794",
+          "geo:lat": 50.11055555555556,
+          "geo:long": 8.682222222222222,
+          "m3gim-ontology:country": "Deutschland",
           "role": {
             "@id": "m3gim-vocab:contractPlace",
             "skos:prefLabel": "vertragsort"
@@ -25339,6 +25595,11 @@
         },
         {
           "name": "Geneve",
+          "@id": "wd:Q71",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q71",
+          "geo:lat": 46.2,
+          "geo:long": 6.15,
+          "m3gim-ontology:country": "Schweiz",
           "role": {
             "@id": "m3gim-vocab:contractPlace",
             "skos:prefLabel": "vertragsort"
@@ -25402,6 +25663,11 @@
         },
         {
           "name": "Roma",
+          "@id": "wd:Q220",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q220",
+          "geo:lat": 41.893055555556,
+          "geo:long": 12.482777777778,
+          "m3gim-ontology:country": "Italien",
           "role": {
             "@id": "m3gim-vocab:contractPlace",
             "skos:prefLabel": "vertragsort"
@@ -25431,6 +25697,11 @@
         },
         {
           "name": "Milano",
+          "@id": "wd:Q490",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q490",
+          "geo:lat": 45.466944444444,
+          "geo:long": 9.19,
+          "m3gim-ontology:country": "Italien",
           "role": {
             "@id": "m3gim-vocab:contractPlace",
             "skos:prefLabel": "vertragsort"
@@ -25494,6 +25765,11 @@
         },
         {
           "name": "Mainz",
+          "@id": "wd:Q1720",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1720",
+          "geo:lat": 49.99944444444444,
+          "geo:long": 8.27361111111111,
+          "m3gim-ontology:country": "Deutschland",
           "role": {
             "@id": "m3gim-vocab:contractPlace",
             "skos:prefLabel": "vertragsort"
@@ -26571,6 +26847,11 @@
         },
         {
           "name": "Barcelona",
+          "@id": "wd:Q1492",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1492",
+          "geo:lat": 41.3825,
+          "geo:long": 2.1769444444444,
+          "m3gim-ontology:country": "Spanien",
           "role": {
             "@id": "m3gim-vocab:contractPlace",
             "skos:prefLabel": "vertragsort"
@@ -26651,6 +26932,11 @@
         },
         {
           "name": "Frankfurt",
+          "@id": "wd:Q1794",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1794",
+          "geo:lat": 50.11055555555556,
+          "geo:long": 8.682222222222222,
+          "m3gim-ontology:country": "Deutschland",
           "role": {
             "@id": "m3gim-vocab:contractPlace",
             "skos:prefLabel": "vertragsort"
@@ -26828,6 +27114,11 @@
         },
         {
           "name": "Roma",
+          "@id": "wd:Q220",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q220",
+          "geo:lat": 41.893055555556,
+          "geo:long": 12.482777777778,
+          "m3gim-ontology:country": "Italien",
           "role": {
             "@id": "m3gim-vocab:contractPlace",
             "skos:prefLabel": "vertragsort"
@@ -27919,6 +28210,11 @@
         },
         {
           "name": "Frankfurt/Main",
+          "@id": "wd:Q1794",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1794",
+          "geo:lat": 50.11055555555556,
+          "geo:long": 8.682222222222222,
+          "m3gim-ontology:country": "Deutschland",
           "role": {
             "@id": "m3gim-vocab:contractPlace",
             "skos:prefLabel": "vertragsort"
@@ -27943,6 +28239,11 @@
         },
         {
           "name": "Napoli",
+          "@id": "wd:Q2634",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q2634",
+          "geo:lat": 40.83583333333333,
+          "geo:long": 14.248611111111112,
+          "m3gim-ontology:country": "Italien",
           "role": {
             "@id": "m3gim-vocab:contractPlace",
             "skos:prefLabel": "vertragsort"
@@ -29069,6 +29370,11 @@
       "rico:hasOrHadLocation": [
         {
           "name": "Metz",
+          "@id": "wd:Q22690",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q22690",
+          "geo:lat": 49.119722222222,
+          "geo:long": 6.1769444444444,
+          "m3gim-ontology:country": "Frankreich",
           "role": {
             "@id": "m3gim-vocab:contractPlace",
             "skos:prefLabel": "vertragsort"
@@ -29081,6 +29387,11 @@
         },
         {
           "name": "Strassburg",
+          "@id": "wd:Q6602",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q6602",
+          "geo:lat": 48.573333333333,
+          "geo:long": 7.7522222222222,
+          "m3gim-ontology:country": "Frankreich",
           "role": {
             "@id": "m3gim-vocab:contractPlace",
             "skos:prefLabel": "vertragsort"
@@ -29093,6 +29404,11 @@
         },
         {
           "name": "Milano",
+          "@id": "wd:Q490",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q490",
+          "geo:lat": 45.466944444444,
+          "geo:long": 9.19,
+          "m3gim-ontology:country": "Italien",
           "role": {
             "@id": "m3gim-vocab:contractPlace",
             "skos:prefLabel": "vertragsort"
@@ -29117,6 +29433,11 @@
         },
         {
           "name": "Strassburg",
+          "@id": "wd:Q6602",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q6602",
+          "geo:lat": 48.573333333333,
+          "geo:long": 7.7522222222222,
+          "m3gim-ontology:country": "Frankreich",
           "role": {
             "@id": "m3gim-vocab:contractPlace",
             "skos:prefLabel": "vertragsort"
@@ -29340,6 +29661,11 @@
         },
         {
           "name": "Bern",
+          "@id": "wd:Q70",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q70",
+          "geo:lat": 46.94798,
+          "geo:long": 7.44743,
+          "m3gim-ontology:country": "Schweiz",
           "role": {
             "@id": "m3gim-vocab:contractPlace",
             "skos:prefLabel": "vertragsort"
@@ -30504,6 +30830,11 @@
         },
         {
           "name": "Brüssel",
+          "@id": "wd:Q239",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q239",
+          "geo:lat": 50.846666666666664,
+          "geo:long": 4.351666666666667,
+          "m3gim-ontology:country": "Belgien",
           "role": {
             "@id": "m3gim-vocab:contractPlace",
             "skos:prefLabel": "vertragsort"
@@ -30625,6 +30956,11 @@
         },
         {
           "name": "Palermo",
+          "@id": "wd:Q2656",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q2656",
+          "geo:lat": 38.115658055555556,
+          "geo:long": 13.361261944444445,
+          "m3gim-ontology:country": "Italien",
           "role": {
             "@id": "m3gim-vocab:contractPlace",
             "skos:prefLabel": "vertragsort"
@@ -30824,6 +31160,11 @@
         },
         {
           "name": "Innsbruck",
+          "@id": "wd:Q1735",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1735",
+          "geo:lat": 47.268333333333,
+          "geo:long": 11.393333333333,
+          "m3gim-ontology:country": "Österreich",
           "role": {
             "@id": "m3gim-vocab:contractPlace",
             "skos:prefLabel": "vertragsort"
@@ -30836,6 +31177,11 @@
         },
         {
           "name": "Bern",
+          "@id": "wd:Q70",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q70",
+          "geo:lat": 46.94798,
+          "geo:long": 7.44743,
+          "m3gim-ontology:country": "Schweiz",
           "role": {
             "@id": "m3gim-vocab:contractPlace",
             "skos:prefLabel": "vertragsort"
@@ -31667,6 +32013,11 @@
         },
         {
           "name": "Kopenhagen",
+          "@id": "wd:Q1748",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1748",
+          "geo:lat": 55.676111111111,
+          "geo:long": 12.568888888889,
+          "m3gim-ontology:country": "Dänemark",
           "m3gim-ontology:xlsxSource": {
             "m3gim-ontology:xlsxSheet": "Box 1",
             "m3gim-ontology:xlsxRow": 2485
@@ -31858,6 +32209,11 @@
         },
         {
           "name": "Napoli",
+          "@id": "wd:Q2634",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q2634",
+          "geo:lat": 40.83583333333333,
+          "geo:long": 14.248611111111112,
+          "m3gim-ontology:country": "Italien",
           "m3gim-ontology:xlsxSource": {
             "m3gim-ontology:xlsxSheet": "Box 1",
             "m3gim-ontology:xlsxRow": 2598
@@ -32589,6 +32945,11 @@
         },
         {
           "name": "Roma",
+          "@id": "wd:Q220",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q220",
+          "geo:lat": 41.893055555556,
+          "geo:long": 12.482777777778,
+          "m3gim-ontology:country": "Italien",
           "m3gim-ontology:xlsxSource": {
             "m3gim-ontology:xlsxSheet": "Box 1",
             "m3gim-ontology:xlsxRow": 2648
@@ -32597,6 +32958,10 @@
         },
         {
           "name": "Cagliari",
+          "@id": "wd:Q1897",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1897",
+          "geo:lat": 39.216666666667,
+          "geo:long": 9.1166666666667,
           "m3gim-ontology:xlsxSource": {
             "m3gim-ontology:xlsxSheet": "Box 1",
             "m3gim-ontology:xlsxRow": 2655
@@ -32670,6 +33035,11 @@
         },
         {
           "name": "Venezia",
+          "@id": "wd:Q641",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q641",
+          "geo:lat": 45.439722222222,
+          "geo:long": 12.331944444444,
+          "m3gim-ontology:country": "Italien",
           "m3gim-ontology:xlsxSource": {
             "m3gim-ontology:xlsxSheet": "Box 1",
             "m3gim-ontology:xlsxRow": 2692
@@ -32678,6 +33048,10 @@
         },
         {
           "name": "Cagliari",
+          "@id": "wd:Q1897",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1897",
+          "geo:lat": 39.216666666667,
+          "geo:long": 9.1166666666667,
           "m3gim-ontology:xlsxSource": {
             "m3gim-ontology:xlsxSheet": "Box 1",
             "m3gim-ontology:xlsxRow": 2699
@@ -32746,6 +33120,11 @@
         },
         {
           "name": "Innsbruck",
+          "@id": "wd:Q1735",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1735",
+          "geo:lat": 47.268333333333,
+          "geo:long": 11.393333333333,
+          "m3gim-ontology:country": "Österreich",
           "m3gim-ontology:xlsxSource": {
             "m3gim-ontology:xlsxSheet": "Box 1",
             "m3gim-ontology:xlsxRow": 2741
@@ -34445,6 +34824,11 @@
         },
         {
           "name": "Bayreuth",
+          "@id": "wd:Q3923",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q3923",
+          "geo:lat": 49.948055555556,
+          "geo:long": 11.578333333333,
+          "m3gim-ontology:country": "Deutschland",
           "role": {
             "@id": "m3gim-vocab:mentioned",
             "skos:prefLabel": "erwähnt"
@@ -34673,6 +35057,11 @@
       ],
       "rico:hasOrHadLocation": {
         "name": "Bayreuth",
+        "@id": "wd:Q3923",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q3923",
+        "geo:lat": 49.948055555556,
+        "geo:long": 11.578333333333,
+        "m3gim-ontology:country": "Deutschland",
         "m3gim-ontology:xlsxSource": {
           "m3gim-ontology:xlsxSheet": "Box 1",
           "m3gim-ontology:xlsxRow": 2963
@@ -35079,6 +35468,11 @@
         },
         {
           "name": "Frankfurt",
+          "@id": "wd:Q1794",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1794",
+          "geo:lat": 50.11055555555556,
+          "geo:long": 8.682222222222222,
+          "m3gim-ontology:country": "Deutschland",
           "role": {
             "@id": "m3gim-vocab:mentioned",
             "skos:prefLabel": "erwähnt"
@@ -35108,6 +35502,11 @@
         },
         {
           "name": "Lissabon",
+          "@id": "wd:Q597",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q597",
+          "geo:lat": 38.708042,
+          "geo:long": -9.139016,
+          "m3gim-ontology:country": "Portugal",
           "role": {
             "@id": "m3gim-vocab:guestPerformance",
             "skos:prefLabel": "gastspiel"
@@ -35240,7 +35639,33 @@
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "8 Blätter, 8 Seiten",
-      "m3gim-ontology:processingStatus": "abgeschlossen"
+      "m3gim-ontology:processingStatus": "abgeschlossen",
+      "rico:hasOrHadPart": [
+        {
+          "@id": "m3gim-data:NIM_007_5_1"
+        },
+        {
+          "@id": "m3gim-data:NIM_007_5_2"
+        },
+        {
+          "@id": "m3gim-data:NIM_007_5_3"
+        },
+        {
+          "@id": "m3gim-data:NIM_007_5_4"
+        },
+        {
+          "@id": "m3gim-data:NIM_007_5_5"
+        },
+        {
+          "@id": "m3gim-data:NIM_007_5_6"
+        },
+        {
+          "@id": "m3gim-data:NIM_007_5_7"
+        },
+        {
+          "@id": "m3gim-data:NIM_007_5_8"
+        }
+      ]
     },
     {
       "@id": "m3gim-data:NIM_007_5_1",
@@ -35552,6 +35977,11 @@
         },
         {
           "name": "Wien",
+          "@id": "wd:Q1741",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1741",
+          "geo:lat": 48.208333333333336,
+          "geo:long": 16.3725,
+          "m3gim-ontology:country": "Österreich",
           "role": {
             "@id": "m3gim-vocab:guestPerformance",
             "skos:prefLabel": "gastspiel"
@@ -35564,6 +35994,11 @@
         },
         {
           "name": "Wien",
+          "@id": "wd:Q1741",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1741",
+          "geo:lat": 48.208333333333336,
+          "geo:long": 16.3725,
+          "m3gim-ontology:country": "Österreich",
           "role": {
             "@id": "m3gim-vocab:guestPerformance",
             "skos:prefLabel": "gastspiel"
@@ -35576,6 +36011,11 @@
         },
         {
           "name": "Wien",
+          "@id": "wd:Q1741",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1741",
+          "geo:lat": 48.208333333333336,
+          "geo:long": 16.3725,
+          "m3gim-ontology:country": "Österreich",
           "role": {
             "@id": "m3gim-vocab:guestPerformance",
             "skos:prefLabel": "gastspiel"
@@ -35588,6 +36028,11 @@
         },
         {
           "name": "Wien",
+          "@id": "wd:Q1741",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1741",
+          "geo:lat": 48.208333333333336,
+          "geo:long": 16.3725,
+          "m3gim-ontology:country": "Österreich",
           "role": {
             "@id": "m3gim-vocab:guestPerformance",
             "skos:prefLabel": "gastspiel"
@@ -35600,6 +36045,11 @@
         },
         {
           "name": "Stuttgart",
+          "@id": "wd:Q1022",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1022",
+          "geo:lat": 48.7775,
+          "geo:long": 9.18,
+          "m3gim-ontology:country": "Deutschland",
           "role": {
             "@id": "m3gim-vocab:guestPerformance",
             "skos:prefLabel": "gastspiel"
@@ -35719,6 +36169,11 @@
         },
         {
           "name": "Stuttgart",
+          "@id": "wd:Q1022",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1022",
+          "geo:lat": 48.7775,
+          "geo:long": 9.18,
+          "m3gim-ontology:country": "Deutschland",
           "role": {
             "@id": "m3gim-vocab:guestPerformance",
             "skos:prefLabel": "gastspiel"
@@ -35850,6 +36305,11 @@
         },
         {
           "name": "Wien",
+          "@id": "wd:Q1741",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1741",
+          "geo:lat": 48.208333333333336,
+          "geo:long": 16.3725,
+          "m3gim-ontology:country": "Österreich",
           "role": {
             "@id": "m3gim-vocab:guestPerformance",
             "skos:prefLabel": "gastspiel"
@@ -35862,6 +36322,11 @@
         },
         {
           "name": "Wien",
+          "@id": "wd:Q1741",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1741",
+          "geo:lat": 48.208333333333336,
+          "geo:long": 16.3725,
+          "m3gim-ontology:country": "Österreich",
           "role": {
             "@id": "m3gim-vocab:guestPerformance",
             "skos:prefLabel": "gastspiel"
@@ -35874,6 +36339,11 @@
         },
         {
           "name": "Wien",
+          "@id": "wd:Q1741",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1741",
+          "geo:lat": 48.208333333333336,
+          "geo:long": 16.3725,
+          "m3gim-ontology:country": "Österreich",
           "role": {
             "@id": "m3gim-vocab:guestPerformance",
             "skos:prefLabel": "gastspiel"
@@ -35886,6 +36356,11 @@
         },
         {
           "name": "Wien",
+          "@id": "wd:Q1741",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1741",
+          "geo:lat": 48.208333333333336,
+          "geo:long": 16.3725,
+          "m3gim-ontology:country": "Österreich",
           "role": {
             "@id": "m3gim-vocab:guestPerformance",
             "skos:prefLabel": "gastspiel"
@@ -35898,6 +36373,11 @@
         },
         {
           "name": "Wien",
+          "@id": "wd:Q1741",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1741",
+          "geo:lat": 48.208333333333336,
+          "geo:long": 16.3725,
+          "m3gim-ontology:country": "Österreich",
           "role": {
             "@id": "m3gim-vocab:guestPerformance",
             "skos:prefLabel": "gastspiel"
@@ -36037,6 +36517,11 @@
         },
         {
           "name": "Wien",
+          "@id": "wd:Q1741",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1741",
+          "geo:lat": 48.208333333333336,
+          "geo:long": 16.3725,
+          "m3gim-ontology:country": "Österreich",
           "role": {
             "@id": "m3gim-vocab:guestPerformance",
             "skos:prefLabel": "gastspiel"
@@ -36049,6 +36534,11 @@
         },
         {
           "name": "Wien",
+          "@id": "wd:Q1741",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1741",
+          "geo:lat": 48.208333333333336,
+          "geo:long": 16.3725,
+          "m3gim-ontology:country": "Österreich",
           "role": {
             "@id": "m3gim-vocab:guestPerformance",
             "skos:prefLabel": "gastspiel"
@@ -36188,6 +36678,11 @@
         },
         {
           "name": "Berlin",
+          "@id": "wd:Q64",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q64",
+          "geo:lat": 52.516666666667,
+          "geo:long": 13.383333333333,
+          "m3gim-ontology:country": "Deutschland",
           "role": {
             "@id": "m3gim-vocab:guestPerformance",
             "skos:prefLabel": "gastspiel"
@@ -36200,6 +36695,11 @@
         },
         {
           "name": "Berlin",
+          "@id": "wd:Q64",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q64",
+          "geo:lat": 52.516666666667,
+          "geo:long": 13.383333333333,
+          "m3gim-ontology:country": "Deutschland",
           "role": {
             "@id": "m3gim-vocab:guestPerformance",
             "skos:prefLabel": "gastspiel"
@@ -36322,6 +36822,11 @@
         },
         {
           "name": "Wien",
+          "@id": "wd:Q1741",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1741",
+          "geo:lat": 48.208333333333336,
+          "geo:long": 16.3725,
+          "m3gim-ontology:country": "Österreich",
           "role": {
             "@id": "m3gim-vocab:guestPerformance",
             "skos:prefLabel": "gastspiel"
@@ -36334,6 +36839,11 @@
         },
         {
           "name": "Wien",
+          "@id": "wd:Q1741",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1741",
+          "geo:lat": 48.208333333333336,
+          "geo:long": 16.3725,
+          "m3gim-ontology:country": "Österreich",
           "role": {
             "@id": "m3gim-vocab:guestPerformance",
             "skos:prefLabel": "gastspiel"
@@ -36479,6 +36989,11 @@
       "rico:hasOrHadLocation": [
         {
           "name": "Zürich",
+          "@id": "wd:Q72",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q72",
+          "geo:lat": 47.37444444444444,
+          "geo:long": 8.54111111111111,
+          "m3gim-ontology:country": "Schweiz",
           "role": {
             "@id": "m3gim-vocab:creation",
             "skos:prefLabel": "entstehung"
@@ -36491,6 +37006,11 @@
         },
         {
           "name": "Zürich",
+          "@id": "wd:Q72",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q72",
+          "geo:lat": 47.37444444444444,
+          "geo:long": 8.54111111111111,
+          "m3gim-ontology:country": "Schweiz",
           "role": {
             "@id": "m3gim-vocab:assignment",
             "skos:prefLabel": "auftrag"
@@ -36588,6 +37108,11 @@
       ],
       "rico:hasOrHadLocation": {
         "name": "Köln",
+        "@id": "wd:Q365",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q365",
+        "geo:lat": 50.942222222222,
+        "geo:long": 6.9577777777778,
+        "m3gim-ontology:country": "Deutschland",
         "role": {
           "@id": "m3gim-vocab:mentioned",
           "skos:prefLabel": "erwähnt"
@@ -36744,6 +37269,11 @@
       ],
       "rico:hasOrHadLocation": {
         "name": "München",
+        "@id": "wd:Q1726",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q1726",
+        "geo:lat": 48.1375,
+        "geo:long": 11.575,
+        "m3gim-ontology:country": "Deutschland",
         "role": {
           "@id": "m3gim-vocab:creation",
           "skos:prefLabel": "entstehung"
@@ -37609,6 +38139,11 @@
         },
         {
           "name": "Zürich",
+          "@id": "wd:Q72",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q72",
+          "geo:lat": 47.37444444444444,
+          "geo:long": 8.54111111111111,
+          "m3gim-ontology:country": "Schweiz",
           "role": {
             "@id": "m3gim-vocab:creation",
             "skos:prefLabel": "entstehung"
@@ -37799,6 +38334,11 @@
         },
         {
           "name": "München",
+          "@id": "wd:Q1726",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1726",
+          "geo:lat": 48.1375,
+          "geo:long": 11.575,
+          "m3gim-ontology:country": "Deutschland",
           "m3gim-ontology:xlsxSource": {
             "m3gim-ontology:xlsxSheet": "Box 1",
             "m3gim-ontology:xlsxRow": 3075
@@ -37961,6 +38501,11 @@
         },
         {
           "name": "Zürich",
+          "@id": "wd:Q72",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q72",
+          "geo:lat": 47.37444444444444,
+          "geo:long": 8.54111111111111,
+          "m3gim-ontology:country": "Schweiz",
           "m3gim-ontology:xlsxSource": {
             "m3gim-ontology:xlsxSheet": "Box 1",
             "m3gim-ontology:xlsxRow": 3095
@@ -40157,6 +40702,11 @@
       ],
       "rico:hasOrHadLocation": {
         "name": "Wien",
+        "@id": "wd:Q1741",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q1741",
+        "geo:lat": 48.208333333333336,
+        "geo:long": 16.3725,
+        "m3gim-ontology:country": "Österreich",
         "m3gim-ontology:xlsxSource": {
           "m3gim-ontology:xlsxSheet": "Box 1",
           "m3gim-ontology:xlsxRow": 3227
@@ -41533,6 +42083,11 @@
         },
         {
           "name": "Genf",
+          "@id": "wd:Q71",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q71",
+          "geo:lat": 46.2,
+          "geo:long": 6.15,
+          "m3gim-ontology:country": "Schweiz",
           "m3gim-ontology:xlsxSource": {
             "m3gim-ontology:xlsxSheet": "Box 1",
             "m3gim-ontology:xlsxRow": 3359
@@ -41967,6 +42522,11 @@
         },
         {
           "name": "Brüssel",
+          "@id": "wd:Q239",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q239",
+          "geo:lat": 50.846666666666664,
+          "geo:long": 4.351666666666667,
+          "m3gim-ontology:country": "Belgien",
           "role": {
             "@id": "m3gim-vocab:performancePlace",
             "skos:prefLabel": "auffuehrungsort"
@@ -42114,6 +42674,11 @@
         },
         {
           "name": "Brüssel",
+          "@id": "wd:Q239",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q239",
+          "geo:lat": 50.846666666666664,
+          "geo:long": 4.351666666666667,
+          "m3gim-ontology:country": "Belgien",
           "role": {
             "@id": "m3gim-vocab:mentioned",
             "skos:prefLabel": "erwähnt"
@@ -42373,6 +42938,11 @@
         },
         {
           "name": "Brüssel",
+          "@id": "wd:Q239",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q239",
+          "geo:lat": 50.846666666666664,
+          "geo:long": 4.351666666666667,
+          "m3gim-ontology:country": "Belgien",
           "role": {
             "@id": "m3gim-vocab:guestPerformance",
             "skos:prefLabel": "gastspiel"
@@ -42385,6 +42955,11 @@
         },
         {
           "name": "Barcelona",
+          "@id": "wd:Q1492",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1492",
+          "geo:lat": 41.3825,
+          "geo:long": 2.1769444444444,
+          "m3gim-ontology:country": "Spanien",
           "role": {
             "@id": "m3gim-vocab:guestPerformance",
             "skos:prefLabel": "gastspiel"
@@ -42511,6 +43086,11 @@
         },
         {
           "name": "Brüssel",
+          "@id": "wd:Q239",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q239",
+          "geo:lat": 50.846666666666664,
+          "geo:long": 4.351666666666667,
+          "m3gim-ontology:country": "Belgien",
           "role": {
             "@id": "m3gim-vocab:guestPerformance",
             "skos:prefLabel": "gastspiel"
@@ -42523,6 +43103,11 @@
         },
         {
           "name": "Barcelona",
+          "@id": "wd:Q1492",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1492",
+          "geo:lat": 41.3825,
+          "geo:long": 2.1769444444444,
+          "m3gim-ontology:country": "Spanien",
           "role": {
             "@id": "m3gim-vocab:guestPerformance",
             "skos:prefLabel": "gastspiel"
@@ -43065,6 +43650,11 @@
         },
         {
           "name": "Brüssel",
+          "@id": "wd:Q239",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q239",
+          "geo:lat": 50.846666666666664,
+          "geo:long": 4.351666666666667,
+          "m3gim-ontology:country": "Belgien",
           "role": {
             "@id": "m3gim-vocab:mentioned",
             "skos:prefLabel": "erwähnt"
@@ -43226,6 +43816,11 @@
         },
         {
           "name": "Brüssel",
+          "@id": "wd:Q239",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q239",
+          "geo:lat": 50.846666666666664,
+          "geo:long": 4.351666666666667,
+          "m3gim-ontology:country": "Belgien",
           "role": {
             "@id": "m3gim-vocab:mentioned",
             "skos:prefLabel": "erwähnt"
@@ -43422,6 +44017,11 @@
       "rico:hasOrHadLocation": [
         {
           "name": "Bayreuth",
+          "@id": "wd:Q3923",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q3923",
+          "geo:lat": 49.948055555556,
+          "geo:long": 11.578333333333,
+          "m3gim-ontology:country": "Deutschland",
           "role": {
             "@id": "m3gim-vocab:creation",
             "skos:prefLabel": "entstehung"
@@ -43434,6 +44034,11 @@
         },
         {
           "name": "Bayreuth",
+          "@id": "wd:Q3923",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q3923",
+          "geo:lat": 49.948055555556,
+          "geo:long": 11.578333333333,
+          "m3gim-ontology:country": "Deutschland",
           "m3gim-ontology:xlsxSource": {
             "m3gim-ontology:xlsxSheet": "Box 1",
             "m3gim-ontology:xlsxRow": 3470
@@ -43442,6 +44047,11 @@
         },
         {
           "name": "Bayreuth",
+          "@id": "wd:Q3923",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q3923",
+          "geo:lat": 49.948055555556,
+          "geo:long": 11.578333333333,
+          "m3gim-ontology:country": "Deutschland",
           "m3gim-ontology:xlsxSource": {
             "m3gim-ontology:xlsxSheet": "Box 1",
             "m3gim-ontology:xlsxRow": 3471
@@ -43450,6 +44060,11 @@
         },
         {
           "name": "Bayreuth",
+          "@id": "wd:Q3923",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q3923",
+          "geo:lat": 49.948055555556,
+          "geo:long": 11.578333333333,
+          "m3gim-ontology:country": "Deutschland",
           "role": {
             "@id": "m3gim-vocab:dressRehearsal",
             "skos:prefLabel": "generalprobe"
@@ -43462,6 +44077,11 @@
         },
         {
           "name": "Bayreuth",
+          "@id": "wd:Q3923",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q3923",
+          "geo:lat": 49.948055555556,
+          "geo:long": 11.578333333333,
+          "m3gim-ontology:country": "Deutschland",
           "m3gim-ontology:xlsxSource": {
             "m3gim-ontology:xlsxSheet": "Box 1",
             "m3gim-ontology:xlsxRow": 3473
@@ -44758,6 +45378,11 @@
       "rico:hasOrHadLocation": [
         {
           "name": "Bayreuth",
+          "@id": "wd:Q3923",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q3923",
+          "geo:lat": 49.948055555556,
+          "geo:long": 11.578333333333,
+          "m3gim-ontology:country": "Deutschland",
           "role": {
             "@id": "m3gim-vocab:creation",
             "skos:prefLabel": "entstehung"
@@ -44945,6 +45570,11 @@
       "rico:hasOrHadLocation": [
         {
           "name": "München",
+          "@id": "wd:Q1726",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1726",
+          "geo:lat": 48.1375,
+          "geo:long": 11.575,
+          "m3gim-ontology:country": "Deutschland",
           "role": {
             "@id": "m3gim-vocab:creation",
             "skos:prefLabel": "entstehung"
@@ -44957,6 +45587,11 @@
         },
         {
           "name": "München",
+          "@id": "wd:Q1726",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1726",
+          "geo:lat": 48.1375,
+          "geo:long": 11.575,
+          "m3gim-ontology:country": "Deutschland",
           "m3gim-ontology:xlsxSource": {
             "m3gim-ontology:xlsxSheet": "Box 1",
             "m3gim-ontology:xlsxRow": 3544
@@ -45207,6 +45842,11 @@
       "rico:hasOrHadLocation": [
         {
           "name": "München",
+          "@id": "wd:Q1726",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1726",
+          "geo:lat": 48.1375,
+          "geo:long": 11.575,
+          "m3gim-ontology:country": "Deutschland",
           "role": {
             "@id": "m3gim-vocab:creation",
             "skos:prefLabel": "entstehung"
@@ -45219,6 +45859,11 @@
         },
         {
           "name": "München",
+          "@id": "wd:Q1726",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1726",
+          "geo:lat": 48.1375,
+          "geo:long": 11.575,
+          "m3gim-ontology:country": "Deutschland",
           "role": {
             "@id": "m3gim-vocab:mentioned",
             "skos:prefLabel": "erwähnt"
@@ -45477,6 +46122,11 @@
       "rico:hasOrHadLocation": [
         {
           "name": "Bayreuth",
+          "@id": "wd:Q3923",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q3923",
+          "geo:lat": 49.948055555556,
+          "geo:long": 11.578333333333,
+          "m3gim-ontology:country": "Deutschland",
           "role": {
             "@id": "m3gim-vocab:creation",
             "skos:prefLabel": "entstehung"
@@ -45489,6 +46139,11 @@
         },
         {
           "name": "bayreuth",
+          "@id": "wd:Q3923",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q3923",
+          "geo:lat": 49.948055555556,
+          "geo:long": 11.578333333333,
+          "m3gim-ontology:country": "Deutschland",
           "m3gim-ontology:xlsxSource": {
             "m3gim-ontology:xlsxSheet": "Box 1",
             "m3gim-ontology:xlsxRow": 3569
@@ -45775,6 +46430,11 @@
       "rico:hasOrHadLocation": [
         {
           "name": "Bayreuth",
+          "@id": "wd:Q3923",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q3923",
+          "geo:lat": 49.948055555556,
+          "geo:long": 11.578333333333,
+          "m3gim-ontology:country": "Deutschland",
           "role": {
             "@id": "m3gim-vocab:creation",
             "skos:prefLabel": "entstehung"
@@ -46005,6 +46665,11 @@
       "rico:hasOrHadLocation": [
         {
           "name": "München",
+          "@id": "wd:Q1726",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1726",
+          "geo:lat": 48.1375,
+          "geo:long": 11.575,
+          "m3gim-ontology:country": "Deutschland",
           "role": {
             "@id": "m3gim-vocab:creation",
             "skos:prefLabel": "entstehung"
@@ -46203,6 +46868,11 @@
       "rico:hasOrHadLocation": [
         {
           "name": "Bayreuth",
+          "@id": "wd:Q3923",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q3923",
+          "geo:lat": 49.948055555556,
+          "geo:long": 11.578333333333,
+          "m3gim-ontology:country": "Deutschland",
           "role": {
             "@id": "m3gim-vocab:creation",
             "skos:prefLabel": "entstehung"
@@ -48514,6 +49184,11 @@
         },
         {
           "name": "Frankfurt",
+          "@id": "wd:Q1794",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1794",
+          "geo:lat": 50.11055555555556,
+          "geo:long": 8.682222222222222,
+          "m3gim-ontology:country": "Deutschland",
           "role": {
             "@id": "m3gim-vocab:dispatch",
             "skos:prefLabel": "absendung"
@@ -48997,6 +49672,11 @@
         },
         {
           "name": "Ottobeuren",
+          "@id": "wd:Q532455",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q532455",
+          "geo:lat": 47.941388888889,
+          "geo:long": 10.299444444444,
+          "m3gim-ontology:country": "Deutschland",
           "role": {
             "@id": "m3gim-vocab:destinationPlace",
             "skos:prefLabel": "zielort"
@@ -49203,6 +49883,11 @@
         },
         {
           "name": "Ottobeuren",
+          "@id": "wd:Q532455",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q532455",
+          "geo:lat": 47.941388888889,
+          "geo:long": 10.299444444444,
+          "m3gim-ontology:country": "Deutschland",
           "role": {
             "@id": "m3gim-vocab:performancePlace",
             "skos:prefLabel": "auffuehrungsort"
@@ -49414,6 +50099,11 @@
       "rico:hasOrHadLocation": [
         {
           "name": "Frankfurt am Main",
+          "@id": "wd:Q1794",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1794",
+          "geo:lat": 50.11055555555556,
+          "geo:long": 8.682222222222222,
+          "m3gim-ontology:country": "Deutschland",
           "role": {
             "@id": "m3gim-vocab:dispatch",
             "skos:prefLabel": "absendung"
@@ -51975,6 +52665,11 @@
       ],
       "rico:hasOrHadLocation": {
         "name": "Wuppertal",
+        "@id": "wd:Q2107",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q2107",
+        "geo:lat": 51.266666666667,
+        "geo:long": 7.1833333333333,
+        "m3gim-ontology:country": "Deutschland",
         "role": {
           "@id": "m3gim-vocab:performancePlace",
           "skos:prefLabel": "auffuehrungsort"
@@ -56993,6 +57688,11 @@
         },
         {
           "name": "Bayreuth",
+          "@id": "wd:Q3923",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q3923",
+          "geo:lat": 49.948055555556,
+          "geo:long": 11.578333333333,
+          "m3gim-ontology:country": "Deutschland",
           "m3gim-ontology:xlsxSource": {
             "m3gim-ontology:xlsxSheet": "Box 4",
             "m3gim-ontology:xlsxRow": 242
@@ -57128,7 +57828,21 @@
       },
       "rico:title": "Bayreuther Tagblatt Festspiel Nachrichten mit Fotos 1952",
       "rico:date": "1952-07-24/1952-08-31",
-      "rico:hasExtent": "5 Blatt, 20 Seiten"
+      "rico:hasExtent": "5 Blatt, 20 Seiten",
+      "rico:hasOrHadPart": [
+        {
+          "@id": "m3gim-data:NIM_073_33_1"
+        },
+        {
+          "@id": "m3gim-data:NIM_073_33_2"
+        },
+        {
+          "@id": "m3gim-data:NIM_073_33_3"
+        },
+        {
+          "@id": "m3gim-data:NIM_073_33_4"
+        }
+      ]
     },
     {
       "@id": "m3gim-data:NIM_073_33_1",
@@ -57144,7 +57858,21 @@
         "@id": "m3gim-vocab:press"
       },
       "rico:hasOrHadLanguage": "de",
-      "rico:hasExtent": "1 Blatt, 4 Seiten"
+      "rico:hasExtent": "1 Blatt, 4 Seiten",
+      "rico:hasOrHadPart": [
+        {
+          "@id": "m3gim-data:NIM_073_33_1_1"
+        },
+        {
+          "@id": "m3gim-data:NIM_073_33_1_2"
+        },
+        {
+          "@id": "m3gim-data:NIM_073_33_1_3"
+        },
+        {
+          "@id": "m3gim-data:NIM_073_33_1_4"
+        }
+      ]
     },
     {
       "@id": "m3gim-data:NIM_073_33_1_1",
@@ -58438,6 +59166,11 @@
         },
         {
           "name": "Dresden",
+          "@id": "wd:Q1731",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1731",
+          "geo:lat": 51.0493286,
+          "geo:long": 13.7381437,
+          "m3gim-ontology:country": "Deutschland",
           "role": {
             "@id": "m3gim-vocab:mentioned",
             "skos:prefLabel": "erwähnt"
@@ -58518,6 +59251,11 @@
         },
         {
           "name": "Belgrad",
+          "@id": "wd:Q3711",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q3711",
+          "geo:lat": 44.81777777777778,
+          "geo:long": 20.456944444444446,
+          "m3gim-ontology:country": "Serbien",
           "role": {
             "@id": "m3gim-vocab:mentioned",
             "skos:prefLabel": "erwähnt"
@@ -58530,6 +59268,11 @@
         },
         {
           "name": "Düsseldorf",
+          "@id": "wd:Q1718",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q1718",
+          "geo:lat": 51.22555555555556,
+          "geo:long": 6.776666666666666,
+          "m3gim-ontology:country": "Deutschland",
           "role": {
             "@id": "m3gim-vocab:mentioned",
             "skos:prefLabel": "erwähnt"
@@ -58644,7 +59387,21 @@
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "1 Blatt, 4 Seiten",
-      "m3gim-ontology:processingStatus": "zurueckgestellt"
+      "m3gim-ontology:processingStatus": "zurueckgestellt",
+      "rico:hasOrHadPart": [
+        {
+          "@id": "m3gim-data:NIM_073_33_3_1"
+        },
+        {
+          "@id": "m3gim-data:NIM_073_33_3_2"
+        },
+        {
+          "@id": "m3gim-data:NIM_073_33_3_3"
+        },
+        {
+          "@id": "m3gim-data:NIM_073_33_3_4"
+        }
+      ]
     },
     {
       "@id": "m3gim-data:NIM_073_33_3_1",
@@ -59661,7 +60418,45 @@
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "6 Blatt, 12 Seiten",
-      "m3gim-ontology:processingStatus": "zurueckgestellt"
+      "m3gim-ontology:processingStatus": "zurueckgestellt",
+      "rico:hasOrHadPart": [
+        {
+          "@id": "m3gim-data:NIM_134_1_1"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_1_2"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_1_3"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_1_4"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_1_5"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_1_6"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_1_7"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_1_8"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_1_9"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_1_10"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_1_11"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_1_12"
+        }
+      ]
     },
     {
       "@id": "m3gim-data:NIM_134_1_1",
@@ -59899,7 +60694,45 @@
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "6 Blatt, 12 Seiten",
-      "m3gim-ontology:processingStatus": "abgeschlossen"
+      "m3gim-ontology:processingStatus": "abgeschlossen",
+      "rico:hasOrHadPart": [
+        {
+          "@id": "m3gim-data:NIM_134_3_1"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_3_2"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_3_3"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_3_4"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_3_5"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_3_6"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_3_7"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_3_8"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_3_9"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_3_10"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_3_11"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_3_12"
+        }
+      ]
     },
     {
       "@id": "m3gim-data:NIM_134_3_1",
@@ -60501,7 +61334,141 @@
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "22 Blatt, 44 Seiten",
-      "m3gim-ontology:processingStatus": "zurueckgestellt"
+      "m3gim-ontology:processingStatus": "zurueckgestellt",
+      "rico:hasOrHadPart": [
+        {
+          "@id": "m3gim-data:NIM_134_4_1"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_4_2"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_4_3"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_4_4"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_4_5"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_4_6"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_4_7"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_4_8"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_4_9"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_4_10"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_4_11"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_4_12"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_4_13"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_4_14"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_4_15"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_4_16"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_4_17"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_4_18"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_4_19"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_4_20"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_4_21"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_4_22"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_4_23"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_4_24"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_4_25"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_4_26"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_4_27"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_4_28"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_4_29"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_4_30"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_4_31"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_4_32"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_4_33"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_4_34"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_4_35"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_4_36"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_4_37"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_4_38"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_4_39"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_4_40"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_4_41"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_4_42"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_4_43"
+        },
+        {
+          "@id": "m3gim-data:NIM_134_4_44"
+        }
+      ]
     },
     {
       "@id": "m3gim-data:NIM_134_4_1",
@@ -61667,7 +62634,150 @@
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "24 Blätter, 45 Seiten",
-      "m3gim-ontology:processingStatus": "abgeschlossen"
+      "m3gim-ontology:processingStatus": "abgeschlossen",
+      "rico:hasOrHadPart": [
+        {
+          "@id": "m3gim-data:NIM_135_2_1"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_2_2"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_2_3"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_2_4"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_2_5"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_2_6"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_2_7"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_2_8"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_2_9"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_2_10"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_2_11"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_2_12"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_2_13"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_2_14"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_2_15"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_2_16"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_2_17"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_2_18"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_2_19"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_2_20"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_2_21"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_2_22"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_2_23"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_2_24"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_2_25"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_2_26"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_2_27"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_2_28"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_2_29"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_2_30"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_2_31"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_2_32"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_2_33"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_2_34"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_2_35"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_2_36"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_2_37"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_2_38"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_2_39"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_2_40"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_2_41"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_2_42"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_2_43"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_2_44"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_2_45"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_2_46"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_2_47"
+        }
+      ]
     },
     {
       "@id": "m3gim-data:NIM_135_2_1",
@@ -63079,7 +64189,153 @@
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "24 Blatt, 48 Seite",
-      "m3gim-ontology:processingStatus": "zurueckgestellt"
+      "m3gim-ontology:processingStatus": "zurueckgestellt",
+      "rico:hasOrHadPart": [
+        {
+          "@id": "m3gim-data:NIM_135_13_1"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_13_2"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_13_3"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_13_4"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_13_5"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_13_6"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_13_7"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_13_8"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_13_9"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_13_10"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_13_11"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_13_12"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_13_13"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_13_14"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_13_15"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_13_16"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_13_17"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_13_18"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_13_19"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_13_20"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_13_21"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_13_22"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_13_23"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_13_24"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_13_25"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_13_26"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_13_27"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_13_28"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_13_29"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_13_30"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_13_31"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_13_32"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_13_33"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_13_34"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_13_35"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_13_36"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_13_37"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_13_38"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_13_39"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_13_40"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_13_41"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_13_42"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_13_43"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_13_44"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_13_45"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_13_46"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_13_47"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_13_48"
+        }
+      ]
     },
     {
       "@id": "m3gim-data:NIM_135_13_1",
@@ -64149,6 +65405,11 @@
       ],
       "rico:hasOrHadLocation": {
         "name": "Bayreuth",
+        "@id": "wd:Q3923",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q3923",
+        "geo:lat": 49.948055555556,
+        "geo:long": 11.578333333333,
+        "m3gim-ontology:country": "Deutschland",
         "m3gim-ontology:xlsxSource": {
           "m3gim-ontology:xlsxSheet": "Box 5",
           "m3gim-ontology:xlsxRow": 110
@@ -64550,7 +65811,153 @@
       },
       "rico:hasOrHadLanguage": "de",
       "rico:hasExtent": "28 Blatt, 48 Seiten",
-      "m3gim-ontology:processingStatus": "zurueckgestellt"
+      "m3gim-ontology:processingStatus": "zurueckgestellt",
+      "rico:hasOrHadPart": [
+        {
+          "@id": "m3gim-data:NIM_135_14_1"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_14_2"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_14_3"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_14_4"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_14_5"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_14_6"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_14_7"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_14_8"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_14_9"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_14_10"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_14_11"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_14_12"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_14_13"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_14_14"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_14_15"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_14_16"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_14_17"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_14_18"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_14_19"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_14_20"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_14_21"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_14_22"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_14_23"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_14_24"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_14_25"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_14_26"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_14_27"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_14_28"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_14_29"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_14_30"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_14_31"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_14_32"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_14_33"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_14_34"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_14_35"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_14_36"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_14_37"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_14_38"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_14_39"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_14_40"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_14_41"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_14_42"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_14_43"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_14_44"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_14_45"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_14_46"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_14_47"
+        },
+        {
+          "@id": "m3gim-data:NIM_135_14_48"
+        }
+      ]
     },
     {
       "@id": "m3gim-data:NIM_135_14_1",
@@ -66579,6 +67986,11 @@
       "rico:hasOrHadLocation": [
         {
           "name": "Bayreuth",
+          "@id": "wd:Q3923",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q3923",
+          "geo:lat": 49.948055555556,
+          "geo:long": 11.578333333333,
+          "m3gim-ontology:country": "Deutschland",
           "role": {
             "@id": "m3gim-vocab:framingEvent",
             "skos:prefLabel": "rahmenveranstaltung"
@@ -68332,7 +69744,15 @@
       },
       "rico:hasOrHadLanguage": "de, en, fr",
       "rico:hasExtent": "1Blatt 1 Seiten",
-      "m3gim-ontology:processingStatus": "begonnen"
+      "m3gim-ontology:processingStatus": "begonnen",
+      "rico:hasOrHadPart": [
+        {
+          "@id": "m3gim-data:NIM_137_3_1"
+        },
+        {
+          "@id": "m3gim-data:NIM_137_3_22"
+        }
+      ]
     },
     {
       "@id": "m3gim-data:NIM_137_3_1",
@@ -68743,6 +70163,11 @@
       "rico:hasOrHadLocation": [
         {
           "name": "Bayreuth",
+          "@id": "wd:Q3923",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q3923",
+          "geo:lat": 49.948055555556,
+          "geo:long": 11.578333333333,
+          "m3gim-ontology:country": "Deutschland",
           "m3gim-ontology:xlsxSource": {
             "m3gim-ontology:xlsxSheet": "Box 5",
             "m3gim-ontology:xlsxRow": 827
@@ -72578,6 +74003,11 @@
       ],
       "rico:hasOrHadLocation": {
         "name": "Turin",
+        "@id": "wd:Q495",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q495",
+        "geo:lat": 45.079166666666666,
+        "geo:long": 7.676111111111111,
+        "m3gim-ontology:country": "Italien",
         "role": {
           "@id": "m3gim-vocab:performancePlace",
           "skos:prefLabel": "auffuehrungsort"
@@ -72661,7 +74091,72 @@
       },
       "rico:hasOrHadLanguage": "fr",
       "rico:hasExtent": "12 Blätter, 21 Seiten",
-      "m3gim-ontology:processingStatus": "abgeschlossen"
+      "m3gim-ontology:processingStatus": "abgeschlossen",
+      "rico:hasOrHadPart": [
+        {
+          "@id": "m3gim-data:NIM_139_109_1"
+        },
+        {
+          "@id": "m3gim-data:NIM_139_109_2"
+        },
+        {
+          "@id": "m3gim-data:NIM_139_109_3"
+        },
+        {
+          "@id": "m3gim-data:NIM_139_109_4"
+        },
+        {
+          "@id": "m3gim-data:NIM_139_109_5"
+        },
+        {
+          "@id": "m3gim-data:NIM_139_109_6"
+        },
+        {
+          "@id": "m3gim-data:NIM_139_109_7"
+        },
+        {
+          "@id": "m3gim-data:NIM_139_109_8"
+        },
+        {
+          "@id": "m3gim-data:NIM_139_109_9"
+        },
+        {
+          "@id": "m3gim-data:NIM_139_109_10"
+        },
+        {
+          "@id": "m3gim-data:NIM_139_109_11"
+        },
+        {
+          "@id": "m3gim-data:NIM_139_109_12"
+        },
+        {
+          "@id": "m3gim-data:NIM_139_109_13"
+        },
+        {
+          "@id": "m3gim-data:NIM_139_109_14"
+        },
+        {
+          "@id": "m3gim-data:NIM_139_109_15"
+        },
+        {
+          "@id": "m3gim-data:NIM_139_109_16"
+        },
+        {
+          "@id": "m3gim-data:NIM_139_109_17"
+        },
+        {
+          "@id": "m3gim-data:NIM_139_109_18"
+        },
+        {
+          "@id": "m3gim-data:NIM_139_109_19"
+        },
+        {
+          "@id": "m3gim-data:NIM_139_109_20"
+        },
+        {
+          "@id": "m3gim-data:NIM_139_109_21"
+        }
+      ]
     },
     {
       "@id": "m3gim-data:NIM_139_109_1",
@@ -75529,7 +77024,33 @@
         "@id": "m3gim-vocab:program"
       },
       "rico:hasOrHadLanguage": "fr",
-      "rico:hasExtent": "2 Blatt, 8 Seiten"
+      "rico:hasExtent": "2 Blatt, 8 Seiten",
+      "rico:hasOrHadPart": [
+        {
+          "@id": "m3gim-data:NIM_142_19_1"
+        },
+        {
+          "@id": "m3gim-data:NIM_142_19_2"
+        },
+        {
+          "@id": "m3gim-data:NIM_142_19_3"
+        },
+        {
+          "@id": "m3gim-data:NIM_142_19_4"
+        },
+        {
+          "@id": "m3gim-data:NIM_142_19_5"
+        },
+        {
+          "@id": "m3gim-data:NIM_142_19_6"
+        },
+        {
+          "@id": "m3gim-data:NIM_142_19_7"
+        },
+        {
+          "@id": "m3gim-data:NIM_142_19_8"
+        }
+      ]
     },
     {
       "@id": "m3gim-data:NIM_142_19_1",
@@ -75667,6 +77188,11 @@
       ],
       "rico:hasOrHadLocation": {
         "name": "Brüssel",
+        "@id": "wd:Q239",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q239",
+        "geo:lat": 50.846666666666664,
+        "geo:long": 4.351666666666667,
+        "m3gim-ontology:country": "Belgien",
         "role": {
           "@id": "m3gim-vocab:performancePlace",
           "skos:prefLabel": "auffuehrungsort"
@@ -76042,6 +77568,11 @@
       ],
       "rico:hasOrHadLocation": {
         "name": "Brüssel",
+        "@id": "wd:Q239",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q239",
+        "geo:lat": 50.846666666666664,
+        "geo:long": 4.351666666666667,
+        "m3gim-ontology:country": "Belgien",
         "m3gim-ontology:xlsxSource": {
           "m3gim-ontology:xlsxSheet": "Box 6",
           "m3gim-ontology:xlsxRow": 236
@@ -76280,7 +77811,63 @@
       },
       "rico:hasOrHadLanguage": "fr",
       "rico:hasExtent": "5 Blatt, 18 Seite",
-      "m3gim-ontology:processingStatus": "zurueckgestellt"
+      "m3gim-ontology:processingStatus": "zurueckgestellt",
+      "rico:hasOrHadPart": [
+        {
+          "@id": "m3gim-data:NIM_142_22_1"
+        },
+        {
+          "@id": "m3gim-data:NIM_142_22_2"
+        },
+        {
+          "@id": "m3gim-data:NIM_142_22_3"
+        },
+        {
+          "@id": "m3gim-data:NIM_142_22_4"
+        },
+        {
+          "@id": "m3gim-data:NIM_142_22_5"
+        },
+        {
+          "@id": "m3gim-data:NIM_142_22_6"
+        },
+        {
+          "@id": "m3gim-data:NIM_142_22_7"
+        },
+        {
+          "@id": "m3gim-data:NIM_142_22_8"
+        },
+        {
+          "@id": "m3gim-data:NIM_142_22_9"
+        },
+        {
+          "@id": "m3gim-data:NIM_142_22_10"
+        },
+        {
+          "@id": "m3gim-data:NIM_142_22_11"
+        },
+        {
+          "@id": "m3gim-data:NIM_142_22_12"
+        },
+        {
+          "@id": "m3gim-data:NIM_142_22_13"
+        },
+        {
+          "@id": "m3gim-data:NIM_142_22_14"
+        },
+        {
+          "@id": "m3gim-data:NIM_142_22_15"
+        },
+        {
+          "@id": "m3gim-data:NIM_142_22_16"
+        },
+        {
+          "@id": "m3gim-data:NIM_142_22_17"
+        },
+        {
+          "@id": "m3gim-data:NIM_142_22_18"
+        }
+      ]
     },
     {
       "@id": "m3gim-data:NIM_142_22_1",
@@ -76710,6 +78297,11 @@
         },
         {
           "name": "Brüssel",
+          "@id": "wd:Q239",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q239",
+          "geo:lat": 50.846666666666664,
+          "geo:long": 4.351666666666667,
+          "m3gim-ontology:country": "Belgien",
           "role": {
             "@id": "m3gim-vocab:performancePlace",
             "skos:prefLabel": "auffuehrungsort"
@@ -77432,6 +79024,11 @@
       ],
       "rico:hasOrHadLocation": {
         "name": "Brüssel",
+        "@id": "wd:Q239",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q239",
+        "geo:lat": 50.846666666666664,
+        "geo:long": 4.351666666666667,
+        "m3gim-ontology:country": "Belgien",
         "m3gim-ontology:xlsxSource": {
           "m3gim-ontology:xlsxSheet": "Box 6",
           "m3gim-ontology:xlsxRow": 326
@@ -78097,6 +79694,11 @@
       "rico:hasOrHadLocation": [
         {
           "name": "Brüssel",
+          "@id": "wd:Q239",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q239",
+          "geo:lat": 50.846666666666664,
+          "geo:long": 4.351666666666667,
+          "m3gim-ontology:country": "Belgien",
           "role": {
             "@id": "m3gim-vocab:performancePlace",
             "skos:prefLabel": "auffuehrungsort"
@@ -78267,6 +79869,11 @@
       "rico:hasOrHadLocation": [
         {
           "name": "Brüssel",
+          "@id": "wd:Q239",
+          "owl:sameAs": "http://www.wikidata.org/entity/Q239",
+          "geo:lat": 50.846666666666664,
+          "geo:long": 4.351666666666667,
+          "m3gim-ontology:country": "Belgien",
           "role": {
             "@id": "m3gim-vocab:reception",
             "skos:prefLabel": "empfang"
@@ -78959,6 +80566,365 @@
       "rico:hasExtent": "1 days 06:00:00"
     },
     {
+      "@id": "m3gim-data:NIM_003_1",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_003 1",
+      "m3gim-ontology:derivedFolioRecord": true,
+      "rico:hasOrHadPart": [
+        {
+          "@id": "m3gim-data:NIM_003_1_1"
+        },
+        {
+          "@id": "m3gim-data:NIM_003_1_2"
+        },
+        {
+          "@id": "m3gim-data:NIM_003_1_3"
+        },
+        {
+          "@id": "m3gim-data:NIM_003_1_4"
+        },
+        {
+          "@id": "m3gim-data:NIM_003_1_5"
+        },
+        {
+          "@id": "m3gim-data:NIM_003_1_6"
+        },
+        {
+          "@id": "m3gim-data:NIM_003_1_7"
+        },
+        {
+          "@id": "m3gim-data:NIM_003_1_8"
+        },
+        {
+          "@id": "m3gim-data:NIM_003_1_9"
+        },
+        {
+          "@id": "m3gim-data:NIM_003_1_10"
+        }
+      ]
+    },
+    {
+      "@id": "m3gim-data:NIM_022_1",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_022 1",
+      "m3gim-ontology:derivedFolioRecord": true,
+      "rico:hasOrHadPart": [
+        {
+          "@id": "m3gim-data:NIM_022_1_1"
+        },
+        {
+          "@id": "m3gim-data:NIM_022_1_2"
+        },
+        {
+          "@id": "m3gim-data:NIM_022_1_3"
+        }
+      ]
+    },
+    {
+      "@id": "m3gim-data:NIM_023_1",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_023 1",
+      "m3gim-ontology:derivedFolioRecord": true,
+      "rico:hasOrHadPart": [
+        {
+          "@id": "m3gim-data:NIM_023_1_1"
+        },
+        {
+          "@id": "m3gim-data:NIM_023_1_2"
+        },
+        {
+          "@id": "m3gim-data:NIM_023_1_3"
+        },
+        {
+          "@id": "m3gim-data:NIM_023_1_4"
+        }
+      ]
+    },
+    {
+      "@id": "m3gim-data:NIM_073_30",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_073 30",
+      "m3gim-ontology:derivedFolioRecord": true,
+      "rico:hasOrHadPart": [
+        {
+          "@id": "m3gim-data:NIM_073_30_1"
+        },
+        {
+          "@id": "m3gim-data:NIM_073_30_2"
+        }
+      ]
+    },
+    {
+      "@id": "m3gim-data:NIM_136_100",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_136 100",
+      "m3gim-ontology:derivedFolioRecord": true,
+      "rico:hasOrHadPart": [
+        {
+          "@id": "m3gim-data:NIM_136_100_1"
+        },
+        {
+          "@id": "m3gim-data:NIM_136_100_2"
+        },
+        {
+          "@id": "m3gim-data:NIM_136_100_3"
+        },
+        {
+          "@id": "m3gim-data:NIM_136_100_4"
+        },
+        {
+          "@id": "m3gim-data:NIM_136_100_5"
+        },
+        {
+          "@id": "m3gim-data:NIM_136_100_6"
+        },
+        {
+          "@id": "m3gim-data:NIM_136_100_7"
+        },
+        {
+          "@id": "m3gim-data:NIM_136_100_8"
+        },
+        {
+          "@id": "m3gim-data:NIM_136_100_9"
+        },
+        {
+          "@id": "m3gim-data:NIM_136_100_10"
+        },
+        {
+          "@id": "m3gim-data:NIM_136_100_11"
+        },
+        {
+          "@id": "m3gim-data:NIM_136_100_12"
+        },
+        {
+          "@id": "m3gim-data:NIM_136_100_13"
+        },
+        {
+          "@id": "m3gim-data:NIM_136_100_14"
+        },
+        {
+          "@id": "m3gim-data:NIM_136_100_15"
+        },
+        {
+          "@id": "m3gim-data:NIM_136_100_16"
+        },
+        {
+          "@id": "m3gim-data:NIM_136_100_17"
+        },
+        {
+          "@id": "m3gim-data:NIM_136_100_18"
+        },
+        {
+          "@id": "m3gim-data:NIM_136_100_19"
+        },
+        {
+          "@id": "m3gim-data:NIM_136_100_20"
+        },
+        {
+          "@id": "m3gim-data:NIM_136_100_21"
+        },
+        {
+          "@id": "m3gim-data:NIM_136_100_22"
+        },
+        {
+          "@id": "m3gim-data:NIM_136_100_23"
+        },
+        {
+          "@id": "m3gim-data:NIM_136_100_24"
+        },
+        {
+          "@id": "m3gim-data:NIM_136_100_25"
+        },
+        {
+          "@id": "m3gim-data:NIM_136_100_26"
+        },
+        {
+          "@id": "m3gim-data:NIM_136_100_27"
+        },
+        {
+          "@id": "m3gim-data:NIM_136_100_28"
+        },
+        {
+          "@id": "m3gim-data:NIM_136_100_29"
+        },
+        {
+          "@id": "m3gim-data:NIM_136_100_30"
+        },
+        {
+          "@id": "m3gim-data:NIM_136_100_31"
+        },
+        {
+          "@id": "m3gim-data:NIM_136_100_32"
+        },
+        {
+          "@id": "m3gim-data:NIM_136_100_33"
+        },
+        {
+          "@id": "m3gim-data:NIM_136_100_34"
+        },
+        {
+          "@id": "m3gim-data:NIM_136_100_35"
+        },
+        {
+          "@id": "m3gim-data:NIM_136_100_36"
+        }
+      ]
+    },
+    {
+      "@id": "m3gim-data:NIM_137_12",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_137 12",
+      "m3gim-ontology:derivedFolioRecord": true,
+      "rico:hasOrHadPart": [
+        {
+          "@id": "m3gim-data:NIM_137_12_1"
+        },
+        {
+          "@id": "m3gim-data:NIM_137_12_2"
+        },
+        {
+          "@id": "m3gim-data:NIM_137_12_3"
+        },
+        {
+          "@id": "m3gim-data:NIM_137_12_4"
+        },
+        {
+          "@id": "m3gim-data:NIM_137_12_5"
+        },
+        {
+          "@id": "m3gim-data:NIM_137_12_6"
+        },
+        {
+          "@id": "m3gim-data:NIM_137_12_7"
+        },
+        {
+          "@id": "m3gim-data:NIM_137_12_8"
+        },
+        {
+          "@id": "m3gim-data:NIM_137_12_9"
+        },
+        {
+          "@id": "m3gim-data:NIM_137_12_10"
+        },
+        {
+          "@id": "m3gim-data:NIM_137_12_11"
+        },
+        {
+          "@id": "m3gim-data:NIM_137_12_12"
+        },
+        {
+          "@id": "m3gim-data:NIM_137_12_13"
+        },
+        {
+          "@id": "m3gim-data:NIM_137_12_14"
+        },
+        {
+          "@id": "m3gim-data:NIM_137_12_15"
+        },
+        {
+          "@id": "m3gim-data:NIM_137_12_16"
+        },
+        {
+          "@id": "m3gim-data:NIM_137_12_17"
+        },
+        {
+          "@id": "m3gim-data:NIM_137_12_18"
+        },
+        {
+          "@id": "m3gim-data:NIM_137_12_19"
+        },
+        {
+          "@id": "m3gim-data:NIM_137_12_20"
+        },
+        {
+          "@id": "m3gim-data:NIM_137_12_21"
+        },
+        {
+          "@id": "m3gim-data:NIM_137_12_22"
+        },
+        {
+          "@id": "m3gim-data:NIM_137_12_23"
+        },
+        {
+          "@id": "m3gim-data:NIM_137_12_24"
+        },
+        {
+          "@id": "m3gim-data:NIM_137_12_25"
+        },
+        {
+          "@id": "m3gim-data:NIM_137_12_26"
+        },
+        {
+          "@id": "m3gim-data:NIM_137_12_27"
+        },
+        {
+          "@id": "m3gim-data:NIM_137_12_28"
+        },
+        {
+          "@id": "m3gim-data:NIM_137_12_29"
+        },
+        {
+          "@id": "m3gim-data:NIM_137_12_30"
+        },
+        {
+          "@id": "m3gim-data:NIM_137_12_31"
+        },
+        {
+          "@id": "m3gim-data:NIM_137_12_32"
+        },
+        {
+          "@id": "m3gim-data:NIM_137_12_33"
+        },
+        {
+          "@id": "m3gim-data:NIM_137_12_34"
+        },
+        {
+          "@id": "m3gim-data:NIM_137_12_35"
+        },
+        {
+          "@id": "m3gim-data:NIM_137_12_36"
+        },
+        {
+          "@id": "m3gim-data:NIM_137_12_37"
+        },
+        {
+          "@id": "m3gim-data:NIM_137_12_38"
+        },
+        {
+          "@id": "m3gim-data:NIM_137_12_39"
+        },
+        {
+          "@id": "m3gim-data:NIM_137_12_40"
+        },
+        {
+          "@id": "m3gim-data:NIM_137_12_41"
+        },
+        {
+          "@id": "m3gim-data:NIM_137_12_42"
+        }
+      ]
+    },
+    {
+      "@id": "m3gim-data:NIM_137_15",
+      "@type": "rico:Record",
+      "rico:identifier": "UAKUG/NIM_137 15",
+      "m3gim-ontology:derivedFolioRecord": true,
+      "rico:hasOrHadPart": [
+        {
+          "@id": "m3gim-data:NIM_137_15_1"
+        },
+        {
+          "@id": "m3gim-data:NIM_137_15_2"
+        },
+        {
+          "@id": "m3gim-data:NIM_137_15_3"
+        },
+        {
+          "@id": "m3gim-data:NIM_137_15_4"
+        }
+      ]
+    },
+    {
       "@id": "m3gim-vocab:autobiography",
       "@type": "skos:Concept",
       "skos:prefLabel": "Autobiografie",
@@ -79182,6 +81148,15 @@
       }
     },
     {
+      "@id": "m3gim-vocab:arranger",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "arrangeur",
+      "skos:definition": "Person, die ein musikalisches Werk für eine andere Besetzung oder Fassung einrichtet.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:agentRoles"
+      }
+    },
+    {
       "@id": "m3gim-vocab:artistAgent",
       "@type": "skos:Concept",
       "skos:prefLabel": "agent",
@@ -79201,6 +81176,15 @@
         "@id": "m3gim-vocab:attestedDating"
       },
       "m3gim-ontology:datingRank": 19
+    },
+    {
+      "@id": "m3gim-vocab:assistantDirector",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "regieassistent",
+      "skos:definition": "Person, die die Regie einer Produktion unterstützt.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:agentRoles"
+      }
     },
     {
       "@id": "m3gim-vocab:audienceMember",
@@ -79234,6 +81218,24 @@
       "m3gim-ontology:datingRank": 7
     },
     {
+      "@id": "m3gim-vocab:choreographer",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "choreograph",
+      "skos:definition": "Person, die die tänzerischen Bewegungsabläufe einer Produktion entwirft.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:agentRoles"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:chorusMaster",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "chorleiter",
+      "skos:definition": "Person, die den Chor einer Produktion einstudiert und leitet.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:agentRoles"
+      }
+    },
+    {
       "@id": "m3gim-vocab:commission",
       "@type": "skos:Concept",
       "skos:prefLabel": "provision",
@@ -79247,6 +81249,24 @@
       "@type": "skos:Concept",
       "skos:prefLabel": "auftraggeber",
       "skos:definition": "Person oder Institution, die einen Auftrag erteilt oder eine Tätigkeit finanziert hat.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:agentRoles"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:composer",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "komponist",
+      "skos:definition": "Person, die das genannte oder aufgeführte Werk komponiert hat.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:agentRoles"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:conductor",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "dirigent",
+      "skos:definition": "Person, die die musikalische Leitung einer Aufführung innehat.",
       "skos:inScheme": {
         "@id": "m3gim-vocab:agentRoles"
       }
@@ -79285,6 +81305,15 @@
         "@id": "m3gim-vocab:attestedDating"
       },
       "m3gim-ontology:datingRank": 4
+    },
+    {
+      "@id": "m3gim-vocab:costumeDesigner",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "kostümbildner",
+      "skos:definition": "Person, die die Kostüme einer Produktion entwirft.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:agentRoles"
+      }
     },
     {
       "@id": "m3gim-vocab:creation",
@@ -79333,6 +81362,15 @@
         "@id": "m3gim-vocab:attestedDating"
       },
       "m3gim-ontology:datingRank": 22
+    },
+    {
+      "@id": "m3gim-vocab:director",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "regisseur",
+      "skos:definition": "Person, die die szenische Einrichtung einer Produktion verantwortet.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:agentRoles"
+      }
     },
     {
       "@id": "m3gim-vocab:dispatch",
@@ -79453,6 +81491,33 @@
       "m3gim-ontology:datingRank": 6
     },
     {
+      "@id": "m3gim-vocab:librettist",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "librettist",
+      "skos:definition": "Person, die den Text eines Bühnenwerks verfasst hat.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:agentRoles"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:lightingTechnician",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "beleuchter",
+      "skos:definition": "Person, die die Beleuchtung einer Produktion ausführt.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:agentRoles"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:makeupArtist",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "maskenbidner",
+      "skos:definition": "Person, die Maske und Schminke einer Produktion ausführt.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:agentRoles"
+      }
+    },
+    {
       "@id": "m3gim-vocab:mentioned",
       "@type": "skos:Concept",
       "skos:prefLabel": "erwähnt",
@@ -79514,6 +81579,15 @@
       }
     },
     {
+      "@id": "m3gim-vocab:photographer",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "fotograf",
+      "skos:definition": "Person, die eine im Dokument enthaltene oder nachgewiesene Aufnahme hergestellt hat.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:agentRoles"
+      }
+    },
+    {
       "@id": "m3gim-vocab:playbackFee",
       "@type": "skos:Concept",
       "skos:prefLabel": "abspielhonorar",
@@ -79540,6 +81614,15 @@
       "@type": "skos:Concept",
       "skos:prefLabel": "ausstatter",
       "skos:definition": "Person, die Bühnenbild und Kostüm gemeinsam verantwortet.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:agentRoles"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:protagonist",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "protagonist",
+      "skos:definition": "Erfasste Angabe der Hauptpartie einer Produktion. Der Wert bezeichnet eine Bühnenrolle und steht nur wegen der Erfassung unter den Akteursrollen.",
       "skos:inScheme": {
         "@id": "m3gim-vocab:agentRoles"
       }
@@ -79698,6 +81781,15 @@
       }
     },
     {
+      "@id": "m3gim-vocab:setDesigner",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "bühnenbildner",
+      "skos:definition": "Person, die das Bühnenbild einer Produktion entwirft.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:agentRoles"
+      }
+    },
+    {
       "@id": "m3gim-vocab:signatory",
       "@type": "skos:Concept",
       "skos:prefLabel": "unterzeichner",
@@ -79724,6 +81816,24 @@
       "@type": "skos:Concept",
       "skos:prefLabel": "sänger",
       "skos:definition": "Person, die in einer Aufführung singt.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:agentRoles"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:stageManager",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "bühnenleiter",
+      "skos:definition": "Erfasste Angabe der Bühnenleitung. Ob die technische Leitung der Bühne oder die künstlerische Leitung des Hauses gemeint ist, geht aus der Quelle nicht hervor.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:agentRoles"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:technicalDirector",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "technische leitung",
+      "skos:definition": "Person oder Stelle, die die technische Leitung eines Hauses oder einer Produktion innehat.",
       "skos:inScheme": {
         "@id": "m3gim-vocab:agentRoles"
       }
@@ -79760,6 +81870,15 @@
       "m3gim-ontology:datingRank": 11
     },
     {
+      "@id": "m3gim-vocab:translator",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "übersetzer",
+      "skos:definition": "Person, die einen Text oder ein Libretto in eine andere Sprache übertragen hat.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:agentRoles"
+      }
+    },
+    {
       "@id": "m3gim-vocab:travelDate",
       "@type": "skos:Concept",
       "skos:prefLabel": "reisedatum",
@@ -79779,6 +81898,15 @@
       "skos:definition": "Erstattete oder vereinbarte Kosten einer Reise.",
       "skos:inScheme": {
         "@id": "m3gim-vocab:financialItemTypes"
+      }
+    },
+    {
+      "@id": "m3gim-vocab:unspecifiedDirection",
+      "@type": "skos:Concept",
+      "skos:prefLabel": "leitung",
+      "skos:definition": "Erfasste Leitungsangabe ohne nähere Bestimmung. Ob musikalische, szenische oder technische Leitung gemeint ist, geht aus der Quelle nicht hervor.",
+      "skos:inScheme": {
+        "@id": "m3gim-vocab:agentRoles"
       }
     },
     {
@@ -81039,7 +83167,12 @@
         "@id": "m3gim-data:NIM_005_15"
       },
       "m3gim-ontology:atPlace": {
-        "name": "Warschau"
+        "name": "Warschau",
+        "@id": "wd:Q270",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q270",
+        "geo:lat": 52.23,
+        "geo:long": 21.011111111111113,
+        "m3gim-ontology:country": "Polen"
       },
       "role": {
         "@id": "m3gim-vocab:contractPlace",
@@ -81837,7 +83970,12 @@
         "@id": "m3gim-data:NIM_005_15"
       },
       "m3gim-ontology:atPlace": {
-        "name": "Geneve"
+        "name": "Geneve",
+        "@id": "wd:Q71",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q71",
+        "geo:lat": 46.2,
+        "geo:long": 6.15,
+        "m3gim-ontology:country": "Schweiz"
       },
       "role": {
         "@id": "m3gim-vocab:contractPlace",
@@ -81910,7 +84048,12 @@
         "@id": "m3gim-data:NIM_005_15"
       },
       "m3gim-ontology:atPlace": {
-        "name": "Beromünster"
+        "name": "Beromünster",
+        "@id": "wd:Q7146",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q7146",
+        "geo:lat": 47.199722222222,
+        "geo:long": 8.2,
+        "m3gim-ontology:country": "Schweiz"
       },
       "role": {
         "@id": "m3gim-vocab:contractPlace",
@@ -81999,7 +84142,12 @@
         "@id": "m3gim-data:NIM_005_15"
       },
       "m3gim-ontology:atPlace": {
-        "name": "Geneve"
+        "name": "Geneve",
+        "@id": "wd:Q71",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q71",
+        "geo:lat": 46.2,
+        "geo:long": 6.15,
+        "m3gim-ontology:country": "Schweiz"
       },
       "role": {
         "@id": "m3gim-vocab:contractPlace",
@@ -82065,7 +84213,12 @@
         "@id": "m3gim-data:NIM_005_16"
       },
       "m3gim-ontology:atPlace": {
-        "name": "Barcelona"
+        "name": "Barcelona",
+        "@id": "wd:Q1492",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q1492",
+        "geo:lat": 41.3825,
+        "geo:long": 2.1769444444444,
+        "m3gim-ontology:country": "Spanien"
       },
       "role": {
         "@id": "m3gim-vocab:contractPlace",
@@ -82358,7 +84511,12 @@
         "@id": "m3gim-data:NIM_005_16"
       },
       "m3gim-ontology:atPlace": {
-        "name": "Brüssel"
+        "name": "Brüssel",
+        "@id": "wd:Q239",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q239",
+        "geo:lat": 50.846666666666664,
+        "geo:long": 4.351666666666667,
+        "m3gim-ontology:country": "Belgien"
       },
       "role": {
         "@id": "m3gim-vocab:contractPlace",
@@ -82392,7 +84550,12 @@
         "@id": "m3gim-data:NIM_005_16"
       },
       "m3gim-ontology:atPlace": {
-        "name": "Beromünster"
+        "name": "Beromünster",
+        "@id": "wd:Q7146",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q7146",
+        "geo:lat": 47.199722222222,
+        "geo:long": 8.2,
+        "m3gim-ontology:country": "Schweiz"
       },
       "role": {
         "@id": "m3gim-vocab:contractPlace",
@@ -82746,7 +84909,12 @@
         "@id": "m3gim-data:NIM_005_16"
       },
       "m3gim-ontology:atPlace": {
-        "name": "Napoli"
+        "name": "Napoli",
+        "@id": "wd:Q2634",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q2634",
+        "geo:lat": 40.83583333333333,
+        "geo:long": 14.248611111111112,
+        "m3gim-ontology:country": "Italien"
       },
       "role": {
         "@id": "m3gim-vocab:contractPlace",
@@ -82945,7 +85113,12 @@
         "@id": "m3gim-data:NIM_005_16"
       },
       "m3gim-ontology:atPlace": {
-        "name": "Firenze"
+        "name": "Firenze",
+        "@id": "wd:Q2044",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q2044",
+        "geo:lat": 43.771388888889,
+        "geo:long": 11.254166666667,
+        "m3gim-ontology:country": "Italien"
       },
       "role": {
         "@id": "m3gim-vocab:contractPlace",
@@ -82995,7 +85168,12 @@
         "@id": "m3gim-data:NIM_005_16"
       },
       "m3gim-ontology:atPlace": {
-        "name": "Napoli"
+        "name": "Napoli",
+        "@id": "wd:Q2634",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q2634",
+        "geo:lat": 40.83583333333333,
+        "geo:long": 14.248611111111112,
+        "m3gim-ontology:country": "Italien"
       },
       "role": {
         "@id": "m3gim-vocab:contractPlace",
@@ -83210,7 +85388,12 @@
         "@id": "m3gim-data:NIM_005_17"
       },
       "m3gim-ontology:atPlace": {
-        "name": "Napoli"
+        "name": "Napoli",
+        "@id": "wd:Q2634",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q2634",
+        "geo:lat": 40.83583333333333,
+        "geo:long": 14.248611111111112,
+        "m3gim-ontology:country": "Italien"
       },
       "role": {
         "@id": "m3gim-vocab:contractPlace",
@@ -83260,7 +85443,12 @@
         "@id": "m3gim-data:NIM_005_17"
       },
       "m3gim-ontology:atPlace": {
-        "name": "Wuppertal"
+        "name": "Wuppertal",
+        "@id": "wd:Q2107",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q2107",
+        "geo:lat": 51.266666666667,
+        "geo:long": 7.1833333333333,
+        "m3gim-ontology:country": "Deutschland"
       },
       "role": {
         "@id": "m3gim-vocab:contractPlace",
@@ -83745,7 +85933,12 @@
         "@id": "m3gim-data:NIM_005_17"
       },
       "m3gim-ontology:atPlace": {
-        "name": "Roma"
+        "name": "Roma",
+        "@id": "wd:Q220",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q220",
+        "geo:lat": 41.893055555556,
+        "geo:long": 12.482777777778,
+        "m3gim-ontology:country": "Italien"
       },
       "role": {
         "@id": "m3gim-vocab:contractPlace",
@@ -83795,7 +85988,12 @@
         "@id": "m3gim-data:NIM_005_17"
       },
       "m3gim-ontology:atPlace": {
-        "name": "Napoli"
+        "name": "Napoli",
+        "@id": "wd:Q2634",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q2634",
+        "geo:lat": 40.83583333333333,
+        "geo:long": 14.248611111111112,
+        "m3gim-ontology:country": "Italien"
       },
       "role": {
         "@id": "m3gim-vocab:contractPlace",
@@ -83845,7 +86043,12 @@
         "@id": "m3gim-data:NIM_005_17"
       },
       "m3gim-ontology:atPlace": {
-        "name": "Roma"
+        "name": "Roma",
+        "@id": "wd:Q220",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q220",
+        "geo:lat": 41.893055555556,
+        "geo:long": 12.482777777778,
+        "m3gim-ontology:country": "Italien"
       },
       "role": {
         "@id": "m3gim-vocab:contractPlace",
@@ -83895,7 +86098,12 @@
         "@id": "m3gim-data:NIM_005_17"
       },
       "m3gim-ontology:atPlace": {
-        "name": "Milano"
+        "name": "Milano",
+        "@id": "wd:Q490",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q490",
+        "geo:lat": 45.466944444444,
+        "geo:long": 9.19,
+        "m3gim-ontology:country": "Italien"
       },
       "role": {
         "@id": "m3gim-vocab:contractPlace",
@@ -84082,7 +86290,12 @@
         "@id": "m3gim-data:NIM_005_18"
       },
       "m3gim-ontology:atPlace": {
-        "name": "Milano"
+        "name": "Milano",
+        "@id": "wd:Q490",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q490",
+        "geo:lat": 45.466944444444,
+        "geo:long": 9.19,
+        "m3gim-ontology:country": "Italien"
       },
       "role": {
         "@id": "m3gim-vocab:contractPlace",
@@ -84569,7 +86782,12 @@
         "@id": "m3gim-data:NIM_005_18"
       },
       "m3gim-ontology:atPlace": {
-        "name": "Brüssel"
+        "name": "Brüssel",
+        "@id": "wd:Q239",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q239",
+        "geo:lat": 50.846666666666664,
+        "geo:long": 4.351666666666667,
+        "m3gim-ontology:country": "Belgien"
       },
       "role": {
         "@id": "m3gim-vocab:contractPlace",
@@ -84619,7 +86837,12 @@
         "@id": "m3gim-data:NIM_005_18"
       },
       "m3gim-ontology:atPlace": {
-        "name": "Roma"
+        "name": "Roma",
+        "@id": "wd:Q220",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q220",
+        "geo:lat": 41.893055555556,
+        "geo:long": 12.482777777778,
+        "m3gim-ontology:country": "Italien"
       },
       "role": {
         "@id": "m3gim-vocab:contractPlace",
@@ -84669,7 +86892,12 @@
         "@id": "m3gim-data:NIM_005_18"
       },
       "m3gim-ontology:atPlace": {
-        "name": "Milano"
+        "name": "Milano",
+        "@id": "wd:Q490",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q490",
+        "geo:lat": 45.466944444444,
+        "geo:long": 9.19,
+        "m3gim-ontology:country": "Italien"
       },
       "role": {
         "@id": "m3gim-vocab:contractPlace",
@@ -84829,7 +87057,12 @@
         "@id": "m3gim-data:NIM_005_18"
       },
       "m3gim-ontology:atPlace": {
-        "name": "Lübeck"
+        "name": "Lübeck",
+        "@id": "wd:Q2843",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q2843",
+        "geo:lat": 53.869722222222,
+        "geo:long": 10.686388888889,
+        "m3gim-ontology:country": "Deutschland"
       },
       "role": {
         "@id": "m3gim-vocab:contractPlace",
@@ -85488,7 +87721,12 @@
         "@id": "m3gim-data:NIM_005_19"
       },
       "m3gim-ontology:atPlace": {
-        "name": "Frankfurt"
+        "name": "Frankfurt",
+        "@id": "wd:Q1794",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q1794",
+        "geo:lat": 50.11055555555556,
+        "geo:long": 8.682222222222222,
+        "m3gim-ontology:country": "Deutschland"
       },
       "role": {
         "@id": "m3gim-vocab:contractPlace",
@@ -85735,7 +87973,12 @@
         "@id": "m3gim-data:NIM_005_19"
       },
       "m3gim-ontology:atPlace": {
-        "name": "Torino"
+        "name": "Torino",
+        "@id": "wd:Q495",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q495",
+        "geo:lat": 45.079166666666666,
+        "geo:long": 7.676111111111111,
+        "m3gim-ontology:country": "Italien"
       },
       "role": {
         "@id": "m3gim-vocab:contractPlace",
@@ -85840,7 +88083,12 @@
         "@id": "m3gim-data:NIM_005_19"
       },
       "m3gim-ontology:atPlace": {
-        "name": "Torino"
+        "name": "Torino",
+        "@id": "wd:Q495",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q495",
+        "geo:lat": 45.079166666666666,
+        "geo:long": 7.676111111111111,
+        "m3gim-ontology:country": "Italien"
       },
       "role": {
         "@id": "m3gim-vocab:contractPlace",
@@ -85945,7 +88193,12 @@
         "@id": "m3gim-data:NIM_005_19"
       },
       "m3gim-ontology:atPlace": {
-        "name": "Milano"
+        "name": "Milano",
+        "@id": "wd:Q490",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q490",
+        "geo:lat": 45.466944444444,
+        "geo:long": 9.19,
+        "m3gim-ontology:country": "Italien"
       },
       "role": {
         "@id": "m3gim-vocab:contractPlace",
@@ -86050,7 +88303,12 @@
         "@id": "m3gim-data:NIM_005_19"
       },
       "m3gim-ontology:atPlace": {
-        "name": "Frankfurt/Main"
+        "name": "Frankfurt/Main",
+        "@id": "wd:Q1794",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q1794",
+        "geo:lat": 50.11055555555556,
+        "geo:long": 8.682222222222222,
+        "m3gim-ontology:country": "Deutschland"
       },
       "role": {
         "@id": "m3gim-vocab:contractPlace",
@@ -87053,7 +89311,12 @@
         "@id": "m3gim-data:NIM_005_20"
       },
       "m3gim-ontology:atPlace": {
-        "name": "Geneve"
+        "name": "Geneve",
+        "@id": "wd:Q71",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q71",
+        "geo:lat": 46.2,
+        "geo:long": 6.15,
+        "m3gim-ontology:country": "Schweiz"
       },
       "role": {
         "@id": "m3gim-vocab:contractPlace",
@@ -87268,7 +89531,12 @@
         "@id": "m3gim-data:NIM_005_20"
       },
       "m3gim-ontology:atPlace": {
-        "name": "Roma"
+        "name": "Roma",
+        "@id": "wd:Q220",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q220",
+        "geo:lat": 41.893055555556,
+        "geo:long": 12.482777777778,
+        "m3gim-ontology:country": "Italien"
       },
       "role": {
         "@id": "m3gim-vocab:contractPlace",
@@ -87373,7 +89641,12 @@
         "@id": "m3gim-data:NIM_005_20"
       },
       "m3gim-ontology:atPlace": {
-        "name": "Milano"
+        "name": "Milano",
+        "@id": "wd:Q490",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q490",
+        "geo:lat": 45.466944444444,
+        "geo:long": 9.19,
+        "m3gim-ontology:country": "Italien"
       },
       "role": {
         "@id": "m3gim-vocab:contractPlace",
@@ -87588,7 +89861,12 @@
         "@id": "m3gim-data:NIM_005_20"
       },
       "m3gim-ontology:atPlace": {
-        "name": "Mainz"
+        "name": "Mainz",
+        "@id": "wd:Q1720",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q1720",
+        "geo:lat": 49.99944444444444,
+        "geo:long": 8.27361111111111,
+        "m3gim-ontology:country": "Deutschland"
       },
       "role": {
         "@id": "m3gim-vocab:contractPlace",
@@ -87961,7 +90239,12 @@
         "@id": "m3gim-data:NIM_005_21"
       },
       "m3gim-ontology:atPlace": {
-        "name": "Barcelona"
+        "name": "Barcelona",
+        "@id": "wd:Q1492",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q1492",
+        "geo:lat": 41.3825,
+        "geo:long": 2.1769444444444,
+        "m3gim-ontology:country": "Spanien"
       },
       "role": {
         "@id": "m3gim-vocab:contractPlace",
@@ -88231,7 +90514,12 @@
         "@id": "m3gim-data:NIM_005_21"
       },
       "m3gim-ontology:atPlace": {
-        "name": "Frankfurt"
+        "name": "Frankfurt",
+        "@id": "wd:Q1794",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q1794",
+        "geo:lat": 50.11055555555556,
+        "geo:long": 8.682222222222222,
+        "m3gim-ontology:country": "Deutschland"
       },
       "role": {
         "@id": "m3gim-vocab:contractPlace",
@@ -88842,7 +91130,12 @@
         "@id": "m3gim-data:NIM_005_21"
       },
       "m3gim-ontology:atPlace": {
-        "name": "Roma"
+        "name": "Roma",
+        "@id": "wd:Q220",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q220",
+        "geo:lat": 41.893055555556,
+        "geo:long": 12.482777777778,
+        "m3gim-ontology:country": "Italien"
       },
       "role": {
         "@id": "m3gim-vocab:contractPlace",
@@ -89304,7 +91597,12 @@
         "@id": "m3gim-data:NIM_005_22"
       },
       "m3gim-ontology:atPlace": {
-        "name": "Frankfurt/Main"
+        "name": "Frankfurt/Main",
+        "@id": "wd:Q1794",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q1794",
+        "geo:lat": 50.11055555555556,
+        "geo:long": 8.682222222222222,
+        "m3gim-ontology:country": "Deutschland"
       },
       "role": {
         "@id": "m3gim-vocab:contractPlace",
@@ -89404,7 +91702,12 @@
         "@id": "m3gim-data:NIM_005_22"
       },
       "m3gim-ontology:atPlace": {
-        "name": "Napoli"
+        "name": "Napoli",
+        "@id": "wd:Q2634",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q2634",
+        "geo:lat": 40.83583333333333,
+        "geo:long": 14.248611111111112,
+        "m3gim-ontology:country": "Italien"
       },
       "role": {
         "@id": "m3gim-vocab:contractPlace",
@@ -90254,7 +92557,12 @@
         "@id": "m3gim-data:NIM_005_23"
       },
       "m3gim-ontology:atPlace": {
-        "name": "Metz"
+        "name": "Metz",
+        "@id": "wd:Q22690",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q22690",
+        "geo:lat": 49.119722222222,
+        "geo:long": 6.1769444444444,
+        "m3gim-ontology:country": "Frankreich"
       },
       "role": {
         "@id": "m3gim-vocab:contractPlace",
@@ -90304,7 +92612,12 @@
         "@id": "m3gim-data:NIM_005_23"
       },
       "m3gim-ontology:atPlace": {
-        "name": "Strassburg"
+        "name": "Strassburg",
+        "@id": "wd:Q6602",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q6602",
+        "geo:lat": 48.573333333333,
+        "geo:long": 7.7522222222222,
+        "m3gim-ontology:country": "Frankreich"
       },
       "role": {
         "@id": "m3gim-vocab:contractPlace",
@@ -90354,7 +92667,12 @@
         "@id": "m3gim-data:NIM_005_23"
       },
       "m3gim-ontology:atPlace": {
-        "name": "Milano"
+        "name": "Milano",
+        "@id": "wd:Q490",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q490",
+        "geo:lat": 45.466944444444,
+        "geo:long": 9.19,
+        "m3gim-ontology:country": "Italien"
       },
       "role": {
         "@id": "m3gim-vocab:contractPlace",
@@ -90438,7 +92756,12 @@
         "@id": "m3gim-data:NIM_005_23"
       },
       "m3gim-ontology:atPlace": {
-        "name": "Strassburg"
+        "name": "Strassburg",
+        "@id": "wd:Q6602",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q6602",
+        "geo:lat": 48.573333333333,
+        "geo:long": 7.7522222222222,
+        "m3gim-ontology:country": "Frankreich"
       },
       "role": {
         "@id": "m3gim-vocab:contractPlace",
@@ -91225,7 +93548,12 @@
         "@id": "m3gim-data:NIM_005_23"
       },
       "m3gim-ontology:atPlace": {
-        "name": "Bern"
+        "name": "Bern",
+        "@id": "wd:Q70",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q70",
+        "geo:lat": 46.94798,
+        "geo:long": 7.44743,
+        "m3gim-ontology:country": "Schweiz"
       },
       "role": {
         "@id": "m3gim-vocab:contractPlace",
@@ -91770,7 +94098,12 @@
         "@id": "m3gim-data:NIM_005_24"
       },
       "m3gim-ontology:atPlace": {
-        "name": "Brüssel"
+        "name": "Brüssel",
+        "@id": "wd:Q239",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q239",
+        "geo:lat": 50.846666666666664,
+        "geo:long": 4.351666666666667,
+        "m3gim-ontology:country": "Belgien"
       },
       "role": {
         "@id": "m3gim-vocab:contractPlace",
@@ -92195,7 +94528,12 @@
         "@id": "m3gim-data:NIM_005_24"
       },
       "m3gim-ontology:atPlace": {
-        "name": "Palermo"
+        "name": "Palermo",
+        "@id": "wd:Q2656",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q2656",
+        "geo:lat": 38.115658055555556,
+        "geo:long": 13.361261944444445,
+        "m3gim-ontology:country": "Italien"
       },
       "role": {
         "@id": "m3gim-vocab:contractPlace",
@@ -92802,7 +95140,12 @@
         "@id": "m3gim-data:NIM_005_24"
       },
       "m3gim-ontology:atPlace": {
-        "name": "Innsbruck"
+        "name": "Innsbruck",
+        "@id": "wd:Q1735",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q1735",
+        "geo:lat": 47.268333333333,
+        "geo:long": 11.393333333333,
+        "m3gim-ontology:country": "Österreich"
       },
       "role": {
         "@id": "m3gim-vocab:contractPlace",
@@ -92852,7 +95195,12 @@
         "@id": "m3gim-data:NIM_005_24"
       },
       "m3gim-ontology:atPlace": {
-        "name": "Bern"
+        "name": "Bern",
+        "@id": "wd:Q70",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q70",
+        "geo:lat": 46.94798,
+        "geo:long": 7.44743,
+        "m3gim-ontology:country": "Schweiz"
       },
       "role": {
         "@id": "m3gim-vocab:contractPlace",
@@ -98826,7 +101174,12 @@
         "@id": "m3gim-data:NIM_016_11"
       },
       "m3gim-ontology:atPlace": {
-        "name": "Frankfurt"
+        "name": "Frankfurt",
+        "@id": "wd:Q1794",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q1794",
+        "geo:lat": 50.11055555555556,
+        "geo:long": 8.682222222222222,
+        "m3gim-ontology:country": "Deutschland"
       },
       "role": {
         "@id": "m3gim-vocab:dispatch",
@@ -99035,7 +101388,12 @@
         "@id": "m3gim-data:NIM_016_14"
       },
       "m3gim-ontology:atPlace": {
-        "name": "Ottobeuren"
+        "name": "Ottobeuren",
+        "@id": "wd:Q532455",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q532455",
+        "geo:lat": 47.941388888889,
+        "geo:long": 10.299444444444,
+        "m3gim-ontology:country": "Deutschland"
       },
       "role": {
         "@id": "m3gim-vocab:destinationPlace",
@@ -99211,7 +101569,12 @@
         "@id": "m3gim-data:NIM_016_16"
       },
       "m3gim-ontology:atPlace": {
-        "name": "Frankfurt am Main"
+        "name": "Frankfurt am Main",
+        "@id": "wd:Q1794",
+        "owl:sameAs": "http://www.wikidata.org/entity/Q1794",
+        "geo:lat": 50.11055555555556,
+        "geo:long": 8.682222222222222,
+        "m3gim-ontology:country": "Deutschland"
       },
       "role": {
         "@id": "m3gim-vocab:dispatch",
@@ -113499,9 +115862,9 @@
       "rico:name": "Matelot"
     }
   ],
-  "m3gim-ontology:exportDate": "2026-09-04T09:47:35.513388",
-  "m3gim-ontology:recordCount": 1000,
+  "m3gim-ontology:exportDate": "2026-09-05T21:52:59.272421",
+  "m3gim-ontology:recordCount": 1007,
   "m3gim-ontology:recordSetCount": 19,
-  "m3gim-ontology:approvedManualMatches": 368,
+  "m3gim-ontology:approvedManualMatches": 402,
   "m3gim-ontology:lowConfidenceSkipped": 0
 }

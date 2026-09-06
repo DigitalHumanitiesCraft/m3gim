@@ -454,7 +454,7 @@ def main():
     graph = data.get("@graph", [])
     print(f"  JSON-LD: {len(graph)} Graph-Knoten")
 
-    # Load the object source, CSV preferred (data.md § Tabellenmodell), the same source as
+    # Load the object source, CSV preferred (data.md § Source format), the same source as
     # transform.py, otherwise the audit compares XLSX date artefacts against the
     # CSV-based dataset and reports phantom errors.
     from _common import load_objekte, resolve_objekte_source

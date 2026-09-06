@@ -14,7 +14,7 @@ ein gefuellter Punkt genau dann, wenn der Record Verknuepfungen traegt. Im
 Umfang "Gesamt" sind Plakate und Tontraeger eingeschlossen, nur die
 Folio-Metadaten-Records bleiben aussen vor.
 
-Aufruf (Server muss laufen, siehe testing.md § Sichtpruefung):
+Aufruf (Server muss laufen, siehe testing.md § Frontend checks):
     python -m http.server 8791 -d docs   # Port via M3GIM_VERIFY_URL aenderbar
     python tests/tools/verify_bestand_display.py
 

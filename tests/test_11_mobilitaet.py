@@ -1,10 +1,10 @@
 """Mobilitaets-Spec: Verortungen als Annotationsknoten + die 5
-Mobilitaetssichten aus data-model.md § Mobilitätsmodell.
+Mobilitaetssichten aus data-model.md § Mobility perspectives.
 
 STATUS: aktiv. Tests greifen, wenn die Pipeline den Komposittyp `ort, datum`
 nicht mehr als Annotation emittiert oder die Mindest-Invarianten unterschreitet.
 
-Ziel-Invarianten (aus data-model.md § Mobilitätsmodell):
+Ziel-Invarianten (aus data-model.md § Mobility perspectives):
 - Jede XLSX-Zeile mit typ='ort, datum' erzeugt genau eine Verortung
 - Eine Verortung ist ein m3gim-ontology:Annotation-Knoten mit
   m3gim-ontology:atPlace und, wo die Quelle eines hergibt,
@@ -67,7 +67,7 @@ def test_spatiotemporal_events_have_place_and_date(graph):
 
 
 def test_spatiotemporal_event_roles_known(graph):
-    """Rollenwerte an Verortungen gehoeren zum belegten Vokabular (data.md § Rollenvokabular
+    """Rollenwerte an Verortungen gehoeren zum belegten Vokabular (data.md § Role values
     ort-Rollen + gastspiel/generalprobe/spielzeit).
     """
     allowed = {
@@ -111,7 +111,7 @@ def test_every_ort_datum_row_produces_event(xlsx_verknuepfungen, graph):
 
 
 # ---------------------------------------------------------------------------
-# 5 Mobilitaetssichten aus data-model.md § Mobilitätsmodell — SPARQL-aehnliche Pattern in Python
+# 5 Mobilitaetssichten aus data-model.md § Mobility perspectives — SPARQL-aehnliche Pattern in Python
 # ---------------------------------------------------------------------------
 
 # auftritt ist im Vokabular auf aufführung gefuehrt; der erfasste Wert steht

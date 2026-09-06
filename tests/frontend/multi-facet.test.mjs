@@ -170,21 +170,21 @@ describe('addFacetValue (Cross-Navigation verengt, ersetzt nicht)', () => {
 describe('Voreinstellung je Ansicht', () => {
   test('eine unberuehrte Facette nimmt den View-Default an', () => {
     resetFilter();
-    applyViewDefault({ stand: ['abgeschlossen'] });
-    assert.deepEqual(getFilter().stand, ['abgeschlossen']);
+    applyViewDefault({ docType: ['m3gim-vocab:program'] });
+    assert.deepEqual(getFilter().docType, ['m3gim-vocab:program']);
     // Die Voreinstellung ist keine Wahl des Nutzers; sonst koennte die
     // naechste Ansicht ihren eigenen Default nicht mehr setzen.
-    applyViewDefault({ stand: ['begonnen'] });
-    assert.deepEqual(getFilter().stand, ['begonnen']);
+    applyViewDefault({ docType: ['m3gim-vocab:press'] });
+    assert.deepEqual(getFilter().docType, ['m3gim-vocab:press']);
     resetFilter();
   });
 
   test('eine gewaehlte Facette ueberschreibt der View-Default nicht', () => {
     resetFilter();
-    setFilter({ stand: ['zurueckgestellt'] });
-    applyViewDefault({ stand: ['abgeschlossen'] });
-    assert.deepEqual(getFilter().stand, ['zurueckgestellt'], (
-      'Ein Tab-Wechsel darf den bewusst gesetzten Erschliessungsstand nicht kippen.'
+    setFilter({ docType: ['m3gim-vocab:contract'] });
+    applyViewDefault({ docType: ['m3gim-vocab:program'] });
+    assert.deepEqual(getFilter().docType, ['m3gim-vocab:contract'], (
+      'Ein Tab-Wechsel darf die bewusst gesetzte Wahl nicht kippen.'
     ));
     resetFilter();
   });

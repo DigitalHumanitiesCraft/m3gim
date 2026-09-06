@@ -100,6 +100,9 @@
 .tab-bar__tab:hover {
   color: var(--color-text-inverse);
   background: color-mix(in oklch, var(--color-text-inverse) 8%, transparent);
+  /* On the info pages the tab is a link into the application, so the band has
+     to refuse the global underline on hover. */
+  text-decoration: none;
 }
 
 .tab-bar__tab.active {
@@ -146,6 +149,35 @@
   }
 }
 
+/* Narrow desktop: same band, same eight tabs, less air. Padding and the gap
+   between symbol and word step down one token each so the whole row fits
+   without scrolling inside the bar and without dropping a label; base.css
+   frees the matching width in the lead and the info links. */
+@media (min-width: 900px) and (max-width: 1365px) {
+  .tab-bar__tab {
+    --tab-pad: var(--space-2);
+    gap: var(--space-1-5);
+  }
+
+  .tab-bar__group {
+    padding: 0 var(--space-2);
+  }
+}
+
+/* The tightest band of all: from 900px the labels come back, but brand, seven
+   labels and the info links only just share the row, so word and symbol take
+   the same smaller step the icon-only bar below 900px uses. */
+@media (min-width: 900px) and (max-width: 1023px) {
+  .tab-bar__tab {
+    font-size: var(--text-xs);
+  }
+
+  .tab-bar__tab svg {
+    width: 15px;
+    height: 15px;
+  }
+}
+
 /* Icons carry the tabs by default; the label is hidden through the shared
    .visually-hidden group in base.css, so the button keeps its accessible name
    (the icon is aria-hidden). From 900px up the label becomes visible again.
@@ -158,4 +190,93 @@
     overflow: visible;
     clip-path: none;
   }
+}
+
+/* Register menu at the Indizes tab (E-230, cut of 2026-09-05). The element is
+   one control, not a tab with a chevron glued on. Symbol, word and chevron
+   belong together, the underline of the active tab carries them as one unit,
+   and the menu falls flush below it. The panel is fixed rather than absolute,
+   because the tab bar clips its own sideways overflow and would swallow a menu
+   positioned inside it. */
+.tab-menu {
+  display: flex;
+  align-items: stretch;
+}
+
+/* The chevron sits at the label, not at the button edge: a wider gap read as a
+   second control glued to the tab. */
+.tab-menu__name {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.tab-menu__chevron {
+  width: 11px;
+  height: 11px;
+  transition: transform var(--transition-fast);
+}
+
+.tab-menu__trigger[aria-expanded="true"] .tab-menu__chevron {
+  transform: rotate(180deg);
+}
+
+.tab-menu__panel {
+  position: fixed;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-1);
+  border: 1px solid var(--border-color-light);
+  /* The top edge takes the band colour so the panel reads as the open state of
+     the control above it instead of a card floating under the bar. */
+  border-top: 2px solid var(--accent);
+  border-radius: 0 0 var(--border-radius) var(--border-radius);
+  background: var(--surface);
+  /* No heavier than the tooltip: the panel hangs on the band, it does not
+     float above the work area. */
+  box-shadow: var(--shadow-sm);
+}
+
+.tab-menu__item {
+  display: grid;
+  grid-template-columns: 14px minmax(0, 1fr) 12px;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-1-5);
+  /* Transparent by default, so the contour of the chosen entry costs no
+     layout shift. */
+  border: 1px solid transparent;
+  border-radius: var(--border-radius);
+  background: none;
+  font-family: var(--font-ui);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-normal);
+  color: var(--color-text-primary);
+  text-align: start;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.tab-menu__item:hover { background: var(--surface-3); }
+
+/* The choice stands as contour and check (Regel 6). The family colour of the
+   symbol says which register is meant, the text stays text. */
+.tab-menu__item[aria-checked="true"] {
+  border-color: color-mix(in oklch, var(--accent) 45%, transparent);
+}
+
+.tab-menu__check {
+  width: 12px;
+  height: 12px;
+  color: var(--accent);
+  opacity: 0;
+}
+
+.tab-menu__item[aria-checked="true"] .tab-menu__check { opacity: 1; }
+
+.tab-menu__item:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
 }

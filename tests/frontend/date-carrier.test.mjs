@@ -45,7 +45,7 @@ import { countLinks } from '../../docs/js/utils/format.js';
 import { buildOccurrences } from '../../docs/js/views/karte-data.js';
 import { isUndatedItem } from '../../docs/js/views/bestand-data.js';
 import { yearOf, recordsFor } from '../../docs/js/data/records-for.js';
-import { buildGraph } from '../../docs/js/views/_netzwerk-geometry.js';
+import { buildProjection } from '../../docs/js/views/_netzwerk-geometry.js';
 import { withConcepts } from './_concepts.mjs';
 
 async function storeFrom(jsonld) {
@@ -106,11 +106,11 @@ describe('A Netzwerk: das Zeitfenster haengt am Record-Datum', () => {
 
   test('Anker am Datenstand: das Zeitfenster verkleinert den Graphen wirklich', async () => {
     const store = await realStore();
-    const weit = buildGraph(store, { records: recordsFor(store, {}).ids, topN: 500 });
-    const eng = buildGraph(store, {
-      records: recordsFor(store, { zeitfenster: [1950, 1955] }).ids, topN: 500,
+    const weit = buildProjection(store, { records: recordsFor(store, {}).ids });
+    const eng = buildProjection(store, {
+      records: recordsFor(store, { zeitfenster: [1950, 1955] }).ids,
     });
-    assert.ok(weit.nodes.length > 0, 'der ungefilterte Graph ist leer');
+    assert.ok(weit.nodes.length > 0, 'die ungefilterte Projektion ist leer');
     assert.ok(eng.stats.records < weit.stats.records,
       'das Zeitfenster schneidet keine Dokumente weg — der Zeitanker kommt nicht an');
   });

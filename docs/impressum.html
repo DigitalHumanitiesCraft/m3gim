@@ -36,10 +36,11 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap">
 
-  <link rel="stylesheet" href="css/variables.css?v=2026-09-04">
-  <link rel="stylesheet" href="css/base.css?v=2026-09-04">
-  <link rel="stylesheet" href="css/components.css?v=2026-09-04">
-  <link rel="stylesheet" href="css/pages.css?v=2026-09-04">
+  <link rel="stylesheet" href="css/variables.css?v=2026-09-05">
+  <link rel="stylesheet" href="css/base.css?v=2026-09-05">
+  <link rel="stylesheet" href="css/components.css?v=2026-09-05">
+  <link rel="stylesheet" href="css/pages.css?v=2026-09-05">
+  <link rel="stylesheet" href="css/tabs.css?v=2026-09-05">
 
   <script type="application/ld+json">
     {
@@ -81,9 +82,51 @@
   <a class="skip-link" href="#main-content">Zum Inhalt springen</a>
 
   <header class="topbar">
-    <a class="topbar__brand" href="index.html">M³GIM</a>
-    <span class="topbar__subtitle">Teilnachlass Ira Malaniuk — UAKUG/NIM</span>
-    <a class="topbar__badge" href="projekt.html">Research Preview</a>
+    <div class="topbar__lead">
+      <a class="topbar__brand" href="index.html" data-tip="Teilnachlass Ira Malaniuk — UAKUG/NIM">M³GIM</a>
+      <a class="topbar__badge" href="projekt.html">Research Preview</a>
+    </div>
+
+    <nav class="tab-bar" aria-label="Ansichten">
+      <div class="tab-bar__group" role="none" data-group="material">
+        <a class="tab-bar__tab" href="index.html#bestand">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect width="20" height="5" x="2" y="3" rx="1"/><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/><path d="M10 12h4"/></svg>
+          <span class="tab-bar__label">Bestand</span>
+        </a>
+        <a class="tab-bar__tab" href="index.html#indizes">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M16 22h2a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v3"/><path d="M14 2v5h5"/><path d="M3 15h6"/><path d="M3 19h4"/><path d="M3 11h8"/></svg>
+          <span class="tab-menu__name">
+            <span class="tab-bar__label">Indizes</span>
+            <svg class="tab-menu__chevron" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg>
+          </span>
+        </a>
+      </div>
+      <div class="tab-bar__group" role="none" data-group="perspektiven">
+        <a class="tab-bar__tab" href="index.html#chronik">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span class="tab-bar__label">Chronik</span>
+        </a>
+        <a class="tab-bar__tab" href="index.html#karte">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
+          <span class="tab-bar__label">Karte</span>
+        </a>
+        <a class="tab-bar__tab" href="index.html#netzwerk">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="5" cy="5" r="2"/><circle cx="19" cy="5" r="2"/><circle cx="19" cy="19" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="12" cy="12" r="2"/><path d="M6.5 6.5 10.5 10.5"/><path d="M17.5 6.5 13.5 10.5"/><path d="M6.5 17.5 10.5 13.5"/><path d="M17.5 17.5 13.5 13.5"/></svg>
+          <span class="tab-bar__label">Netzwerk</span>
+        </a>
+        <a class="tab-bar__tab" href="index.html#statistik">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          <span class="tab-bar__label">Statistik</span>
+        </a>
+      </div>
+      <div class="tab-bar__group" role="none" data-group="werkzeug">
+        <a class="tab-bar__tab" href="index.html#korb" data-tip="Ausgewählte Dokumente sammeln und als CSV oder BibTeX exportieren">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>
+          <span class="tab-bar__label">Korb</span>
+        </a>
+      </div>
+    </nav>
+
     <nav class="topbar__info" aria-label="Informationsseiten">
       <a href="about.html">Über</a>
       <a href="projekt.html">Projekt</a>
@@ -208,8 +251,8 @@
     </div>
     <div class="app-footer__group">
       <a href="https://github.com/DigitalHumanitiesCraft/m3gim" target="_blank" rel="noopener" data-tip="Repository auf GitHub, Code unter MIT-Lizenz">Repository</a>
-      <a href="https://github.com/DigitalHumanitiesCraft/Promptotyping" target="_blank" rel="noopener" data-tip="Promptotyping, die Methode hinter dieser Anwendung, auf GitHub">Promptotyping</a>
-      <a href="https://dhcraft.org" target="_blank" rel="noopener" data-tip="Digital Humanities Craft, Konzeption und Umsetzung">DHCraft</a>
+      <a href="https://github.com/DigitalHumanitiesCraft/Promptotyping" target="_blank" rel="noopener" data-tip="Die Anwendung ist mit generativer KI nach der Promptotyping-Methode und Agentic Engineering entstanden">Promptotyping und Agentic Engineering</a>
+      <a class="app-footer__dhcraft" href="https://dhcraft.org" target="_blank" rel="noopener" data-tip="Digital Humanities Craft, Konzeption und technische Umsetzung"><img class="app-footer__mark" src="img/dhcraft-logo.svg" alt="" width="14" height="14">Technische Umsetzung DHCraft</a>
       <a class="app-footer__cc" href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener" data-tip="Daten, Texte und Dokumentation unter Creative Commons Attribution 4.0"><img class="app-footer__mark" src="img/cc.svg" alt="" width="14" height="14"><img class="app-footer__mark" src="img/cc-by.svg" alt="" width="14" height="14">CC BY 4.0</a>
     </div>
   </footer>

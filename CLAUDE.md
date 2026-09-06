@@ -1,177 +1,126 @@
 # CLAUDE.md
 
-> Workflow-Regeln für Claude-Code-Sessions. Prozessual, nicht dokumentarisch. Für Dokumentation siehe `knowledge/`.
+> Workflow rules for Claude Code sessions. Documentation lives in `knowledge/`.
 
-## Projekt in einem Satz
+## Project in one sentence
 
-**M³GIM** (Mapping Mobile Musicians) — DH-Pilotstudie zur Mobilität und Wissensproduktion der Mezzosopranistin Ira Malaniuk (1919–2009), basierend auf dem Teilnachlass UAKUG/NIM am Universitätsarchiv der KUG Graz, modelliert in RiC-O 1.1 + m3gim-Extension + AgRelOn, als statische SPA auf GitHub Pages. Promptotyping-Methodik: Dokumente sind die Source of Truth, Code ist wegwerfbares Artefakt. Laufende Zählstände im Quality-Snapshot (`data/reports/quality-snapshot.md`), nicht hier.
+M³GIM (Mapping Mobile Musicians) is a DH pilot study on the mobility and knowledge production of a twentieth-century mezzo-soprano, based on the partial fonds UAKUG/NIM at the university archive of the KUG Graz, modelled in RiC-O 1.1 with the m3gim extension and AgRelOn, delivered as a static SPA on GitHub Pages, with Promptotyping as the context and knowledge engineering method. Running figures live in the quality snapshot `data/reports/quality-snapshot.md`, not here.
 
-## Sessionstart
+## Session start
 
-Nach dieser Datei wird [`knowledge/INDEX.md`](knowledge/INDEX.md) als Einstieg in die Wissensbasis gelesen, danach [`knowledge/handoff.md`](knowledge/handoff.md) als Process Inbox mit den offenen Übergabepunkten, danach das aufgabenrelevante Dokument aus der Spec-Hierarchie.
+Read this file, then [`knowledge/INDEX.md`](knowledge/INDEX.md) as the entry into the knowledge base, then [`knowledge/handoff.md`](knowledge/handoff.md) as the process inbox of open handover points, then the document the task calls for from the spec hierarchy.
 
-## Lanes und Delegation
+## Lanes and delegation
 
-Bei parallelen Sessions arbeitet jede Instanz in genau einer Lane (Frontend, Backend, Knowledge) und fasst nur deren Dateien an. Die Lane-Zuweisung kommt von der Projektleitung, die Koordination läuft schriftlich über [`knowledge/handoff.md`](knowledge/handoff.md) (Lane nennen, gehaltene Dateien auflisten, Übergaben als eigene Punkte, Erledigtes austragen). Umsetzungsarbeit wird an Opus-Subagenten delegiert; parallel laufende Subagenten bekommen disjunkte Dateimengen zugewiesen und die verbindlichen Regeln aus § Verbindliche Konventionen in den Prompt.
+In parallel sessions each instance works in exactly one lane (Frontend, Backend, Knowledge) and touches only that lane's files. The project lead assigns the lane. Coordination runs in writing through [`knowledge/handoff.md`](knowledge/handoff.md), where an instance names its lane, lists the files it holds, enters handovers as their own points and removes what is done. Implementation work is delegated to Opus subagents, which run on disjoint file sets and carry the binding conventions below in their prompt.
 
-## Verbindliche Konventionen (Projektleitung, 2026-09-01)
+## Binding conventions (project lead, 2026-09-01)
 
-- **Code-Kommentare auf Englisch**, nur wenn wirklich konstruktiv (das Warum, Constraints, bewusste Entscheidungen mit E-Nummer), und kompakt. Deutsche Projekt-Fachwörter (Konvolut, Folio, Verknüpfungen, Datenspiegel) bleiben im englischen Satz. String-Literale bleiben deutsch, das UI und die Befundtexte des Datenspiegels sind deutschsprachig.
-- **Kein dauerhaft sichtbarer Erklärtext im UI.** Information über Struktur, Symbole, Icons und Tooltips; Text nur, wo keine andere Form trägt. Captions und Aufschlüsselungszeilen wandern in Tooltips.
-- **Alle Filter aller Views in der einen linken Sidebar.** Keine Top-Filterleisten.
-- **Dateinamen erzeugter Dateien auf Englisch**, auch bei deutschem Inhalt. Wissensdokumente selbst bleiben deutsch.
+- **Code comments in English**, only where they carry something (the why, constraints), and compact. German project terms (Konvolut, Folio, Verknüpfungen, Datenspiegel) stay inside the English sentence. String literals stay German, because the interface and the finding texts of the Datenspiegel address German readers.
+- **No standing explanatory text in the UI.** Information rides on structure, symbols, icons and tooltips, text only where no other form carries it. Captions and breakdown lines belong in tooltips.
+- **All filters of all views in the one left sidebar.** No top filter bars.
+- **File names of generated files in English**, whatever language the content is in.
+- **Every Markdown document in `knowledge/` is English** (decision of the project lead of 2026-09-05, E-260). German project terms stay where the glossary in [`knowledge/INDEX.md`](knowledge/INDEX.md) defines them. The one declared exception is [`knowledge/journal-archive.md`](knowledge/journal-archive.md), which keeps the original German wording of the rows and narratives it took over. Outside `knowledge/` the recording guide [`data/recording-guide.md`](data/recording-guide.md) stays German, because it addresses the cataloguing team (E-267).
 
-## Spec-Hierarchie
+## Spec hierarchy
 
-1. **`knowledge/data.md`** — Datengrundlage und Modell-Spezifikation. Bei jeder geplanten Modelländerung zuerst lesen und dort verankern, bevor Pipeline/Tests/Frontend angefasst werden.
-2. **`vocab/m3gim.ttl`** — das formale Projektvokabular in Turtle, die maschinenlesbare Fassung des Modells (Klassen, Properties, Domain, Range, SKOS-Schemata). Jede in `data.md` verankerte Modelländerung wird hier nachgezogen, bevor die Pipeline folgt.
-3. **`knowledge/specification.md`** — Projektidentität, Funktionsumfang und der volatile Abschnitt „Stand und nächste Schritte" (inklusive Status-Tracker und offener Operator-Entscheidungen).
-4. **`knowledge/testing.md`** — Teststrategie + TDD-Workflow.
-5. **`knowledge/architecture.md`** — Architektur-Referenz mit Pipeline-Teil (Datenfluss XLSX nach JSON-LD) und Frontend-Teil (statische SPA, Store, Ansichten). Das Designsystem führt `knowledge/design.md`.
-6. **`knowledge/journal.md`** — Provenance: Sessionverlauf plus Entscheidungsregister (E-01 aufwärts, laufend ergänzt).
+1. [`knowledge/data.md`](knowledge/data.md), source material and model specification. Read first on any planned model change and anchor the change there before pipeline, tests or frontend are touched.
+2. [`vocab/m3gim.ttl`](vocab/m3gim.ttl), the formal project vocabulary in Turtle. Every change anchored in `data.md` is carried here before the pipeline follows.
+3. [`knowledge/specification.md`](knowledge/specification.md), project identity, scope and the volatile section on the state of the work with the open operator decisions.
+4. [`knowledge/testing.md`](knowledge/testing.md), test strategy and TDD workflow.
+5. [`knowledge/architecture.md`](knowledge/architecture.md), pipeline and frontend reference. The design system lives in [`knowledge/design.md`](knowledge/design.md).
+6. [`knowledge/journal.md`](knowledge/journal.md), provenance as a compact register of sessions and decisions (E numbers). Superseded material moves to `knowledge/journal-archive.md`.
 
-Weitere Dokumente siehe [`knowledge/INDEX.md`](knowledge/INDEX.md).
+The spec-first order is therefore `data.md`, vocabulary, test, pipeline (E-133). The reading view on the dataset derived from the vocabulary is [`knowledge/data-model.md`](knowledge/data-model.md). Further documents in [`knowledge/INDEX.md`](knowledge/INDEX.md).
 
-Das formale Projektvokabular ist ein gepflegtes Artefakt und steht seit der Entscheidung der Projektleitung vom 2026-08-21 in dieser Hierarchie (E-133 in [`knowledge/journal.md`](knowledge/journal.md), löst die frühere offene Frage 10 in [`knowledge/data-model.md`](knowledge/data-model.md)). Die Spec-first-Reihenfolge lautet damit `data.md`, Vokabular, Test, Pipeline; der Abdeckungsprüfer `vocab/check-coverage.py` läuft als verbindliches Test-Gate mit (siehe § Vokabular-Abdeckung prüfen). Die aus dem Vokabular abgeleitete Lesesicht auf den Datensatz führt [`knowledge/data-model.md`](knowledge/data-model.md).
+## Core commands
 
-## Kern-Commands
+Prerequisites are Python 3.11+ and `pip install -r requirements-test.txt`, which includes `requirements.txt` and yields runtime and test environment in one step. Node is needed only for the JS unit tests.
 
-### Voraussetzungen
-
-Python 3.11+, dann `pip install -r requirements-test.txt`. Die Datei bindet `requirements.txt` per Include ein und liefert damit Laufzeit- und Testumgebung in einem Schritt. Node wird nur für die JS-Unit-Tests gebraucht.
-
-### Pipeline (vollständiger Lauf, Default-Pfade, kopiert nach `docs/data/`)
-
-Sieben Schritte in dieser Reihenfolge, jeder einzeln aufrufbar:
+Pipeline, full run on default paths, eight steps in this order, each callable on its own:
 
 ```bash
-python scripts/explore.py         # Strukturdiagnose der Quelle -> data/reports/exploration-report.md
-python scripts/validate.py        # Quellprüfung               -> data/reports/validation-report.md
-python scripts/transform.py       # Quelle nach JSON-LD        -> data/output/m3gim.jsonld
-python scripts/build-views.py     # Veroeffentlichung          -> Kopie von m3gim.jsonld nach docs/data/
-python scripts/audit-data.py      # Abgleich Quelle / JSON-LD, nur Konsolenreport
-python scripts/report-quality.py  # laufende Zählstände        -> data/reports/quality-snapshot.md
-python scripts/build-model-page.py # Modellseite aus dem Vokabular -> docs/datenmodell.html
+python scripts/explore.py           # source structure       -> data/reports/exploration-report.md
+python scripts/validate.py          # source check           -> data/reports/validation-report.md
+python scripts/transform.py         # source to JSON-LD      -> data/output/m3gim.jsonld
+python scripts/build-views.py       # publication            -> docs/data/m3gim.jsonld
+python scripts/audit-data.py        # source against JSON-LD, console report only
+python scripts/report-quality.py    # running figures        -> data/reports/quality-snapshot.md
+python scripts/report-cataloguing.py # cataloguing worklist  -> data/reports/cataloguing-report.md (E-248)
+python scripts/build-model-page.py  # model page from the vocabulary -> docs/datenmodell.html, plus foot and info topbar in all docs/*.html
 ```
 
-`scripts/build-social-images.py` steht ebenfalls außerhalb des Laufs und schreibt das Open-Graph-Bild und die PNG-Favicons nach `docs/img/` aus dem Akzent-Token in `variables.css`; es läuft nur, wenn Palette oder Wortmarke sich ändern, und braucht Pillow, das in keiner Requirements-Datei steht.
+Outside the run stand `reconcile.py` and `enrich-wikidata.py`, which need network access and write the git-tracked `wikidata-*.json` to `data/output/`, and `build-social-images.py`, which rebuilds the Open Graph image and the PNG favicons and needs Pillow, absent from every requirements file.
 
-`reconcile.py` und `enrich-wikidata.py` stehen außerhalb dieses Laufs. Sie brauchen Netzzugriff, schreiben `wikidata-reconciliation.json` und `wikidata-enrichment.json` nach `data/output/` und laufen nur, wenn der Wikidata-Abgleich neu gezogen wird. Beide Ergebnisdateien sind git-getrackt und im normalen Klon vorhanden.
+**`validate.py` exits 1 as soon as the report carries ERROR findings**, the expected state at the current data state. Those findings are source errors and travel to the cataloguing team through [`data/reports/source-errors-handover-2026-09-01.md`](data/reports/source-errors-handover-2026-09-01.md), so the run has done its job once the report is written. `audit-data.py` follows the same convention. `transform.py` lists the discarded source rows at the end and aborts without the two `wikidata-*.json` unless `M3GIM_ALLOW_NO_WIKIDATA=1` is set.
 
-**`validate.py` endet mit Exit 1, sobald der Report ERROR-Befunde führt.** Das ist der erwartete Zustand am aktuellen Datenstand. Die Befunde sind Quellfehler, die über die Partner-Übergabeliste [`data/reports/source-errors-handover-2026-09-01.md`](data/reports/source-errors-handover-2026-09-01.md) ans Erschließungsteam gehen; der Lauf hat geleistet, was er soll, sobald der Report geschrieben ist. `audit-data.py` folgt derselben Konvention und meldet am aktuellen Stand einen Fehler, die bis auf die Signatur leere Objektzeile `UAKUG/NIM_138`, ebenfalls ein Quellbefund der Übergabeliste. `transform.py` schließt jeden Lauf mit einer Aufstellung der verworfenen Quellzeilen ab und bricht ohne die beiden `wikidata-*.json` mit Exit 1 ab, sofern nicht `M3GIM_ALLOW_NO_WIKIDATA=1` gesetzt ist.
+`M3GIM_SHEETS_DIR`, `M3GIM_OUTPUT_DIR` and `M3GIM_REPORTS_DIR` apply in every pipeline step, `audit-data.py`, `report-quality.py` and `report-cataloguing.py` included, which read them through `scripts/_common.py` (E-249). `build-views.py` also honours `M3GIM_JSONLD_PATH`, `transform.py` also `M3GIM_VOCAB_PATH`. Pointing `M3GIM_OUTPUT_DIR` at an empty directory loses the authority enrichment, a trap the Wikidata guard catches while `M3GIM_ALLOW_NO_WIKIDATA` is unset ([`knowledge/architecture.md`](knowledge/architecture.md) § ENV overrides).
 
-Die ENV-Overrides greifen bei `explore.py`, `validate.py`, `transform.py` und `build-views.py`. `audit-data.py` und `report-quality.py` lesen die Default-Pfade fest. Wer `M3GIM_OUTPUT_DIR` auf ein leeres Verzeichnis zeigt oder das Ausgabeverzeichnis leert, verliert die Normdatenanreicherung. Den Fall fängt der Wikidata-Guard aus dem vorigen Absatz ab, solange `M3GIM_ALLOW_NO_WIKIDATA` nicht gesetzt ist; die Falle ist in [`knowledge/architecture.md`](knowledge/architecture.md) § ENV-Overrides beschrieben.
-
-`build-views.py` schreibt `m3gim.jsonld` nach `docs/data/`. **`m3gim.jsonld` ist die einzige Datenquelle für das Frontend.** Die früheren vorverdichteten Derivate sind mit E-140 entfernt.
-
-### Tests
+Tests:
 
 ```bash
-pytest tests/ -m "not slow and not data_quality"  # Invarianten-Lauf, muss immer gruen sein
-pytest tests/ -m data_quality                     # Datenspiegel: absichtlich rot, solange die Quelle Fehler traegt
-pytest tests/ -m "not slow"                       # beides zusammen ohne Determinismus-Test
-pytest tests/                                     # inkl. Determinismus-Test (slow)
-node --test tests/frontend/*.test.mjs             # JS-Unit-Tests des Frontends
+pytest tests/ -m "not slow and not data_quality"  # invariants, must always be green
+pytest tests/ -m data_quality                     # Datenspiegel, red while the source carries errors
+pytest tests/ -m "not slow"                       # both without the determinism test
+pytest tests/                                     # including the determinism test (slow)
+node --test tests/frontend/*.test.mjs             # JS unit tests of the frontend
 ```
 
-Keine ENV-Overrides mehr nötig, es gibt nur einen Datenstand. Die Suite ist zweischichtig: Invarianten prüfen Modell, Pipeline und Frontend-Kontrakt und müssen grün sein; der Datenspiegel (`data_quality`) behauptet die Sauberkeit der Quelle, ist absichtlich rot, solange bekannte Quellfehler bestehen, und seine Fehlermeldungen sind die Befundliste ans Erschließungsteam. Rot im Datenspiegel ist der erwartete Zustand, Rot in den Invarianten ist ein Bug.
-
-Der Browser-Smoke-Test `tests/frontend/test_smoke.py` ist ein optionales Extra. Playwright steht in keiner Requirements-Datei; fehlt das Paket, überspringt sich der Test, und der Standardlauf prüft weiterhin die Pipeline-Artefakte samt Frontend-Kontrakt aus den Daten heraus, ohne die gerenderte Oberfläche. Wer den Browserteil will, installiert ihn mit `pip install playwright` und `playwright install chromium`; danach läuft er in `pytest tests/` mit und lässt sich mit `pytest -m frontend tests/frontend/` einzeln ansteuern. Umfang des Smoke-Durchlaufs in [`knowledge/testing.md`](knowledge/testing.md) § Frontend-Smoke.
-
-### Vokabular-Abdeckung prüfen
+The suite is two-layered. Invariants check model, pipeline and frontend contract and must be green. The Datenspiegel (`data_quality`) asserts the cleanliness of the source, is deliberately red while known source errors exist, and its failure messages are the finding list for the cataloguing team. Red in the Datenspiegel is expected, red in the invariants is a bug. The browser smoke test under `tests/frontend/` is optional and skips itself without Playwright, which stands in no requirements file. Install it with `pip install playwright` and `playwright install chromium`, then address it with `pytest -m frontend tests/frontend/`. With Playwright installed it also runs in the unmarked run, where it needs a local HTTP server against `docs/` ([`knowledge/testing.md`](knowledge/testing.md) § Frontend checks).
 
 ```bash
-python vocab/check-coverage.py
+python vocab/check-coverage.py                    # vocabulary coverage, read-only console report
+python tests/tools/snapshot_diff.py <old> <new>   # snapshot diff on a data update
+python scripts/verify-manual-approvals.py         # verify manual Wikidata approvals
 ```
 
-Prüft read-only, ob jeder im Datensatz verwendete `m3gim`-Term in `vocab/m3gim.ttl` definiert ist. Der Docstring des Skripts nennt `uv run`; `uv` ist keine Projektvoraussetzung, der normale Interpreter genügt. Die einzige Abhängigkeit rdflib steht in `requirements-test.txt`.
+The coverage check also runs as a binding test gate through `tests/test_40_vocab_gate.py`, the naming convention of the vocabulary through `tests/test_41_naming_convention.py`. `verify-manual-approvals.py` is mandatory after every batch of manual approvals, because Q-IDs written from memory have produced load-bearing data errors. It is skippable offline with `SKIP_VERIFY_MANUAL=1`.
 
-Die Prüfung läuft zusätzlich als verbindliches Test-Gate. `tests/test_40_vocab_gate.py` startet dasselbe Skript als eigenen Prozess, läuft damit im Standardlauf `pytest tests/` mit und übernimmt den Befund des Skripts in die Fehlermeldung des Tests. So fällt auch eine Vokabularänderung ohne unmittelbare Datenwirkung auf. Die Namenskonvention des Vokabulars (Klassen groß, Properties und SKOS-Concepts klein) sichert `tests/test_41_naming_convention.py`. Der Handbefehl bleibt der direkte Weg zum vollständigen Konsolenreport.
+## Workflow rules
 
-### Snapshot-Diff (bei Daten-Updates)
+TDD for model extensions, in this order:
 
-```bash
-python tests/tools/snapshot_diff.py <alt.jsonld> <neu.jsonld>
-```
+1. Formulate the invariant in `tests/test_NN_*.py` as `@pytest.mark.xfail(reason=..., strict=True)`. **`strict=True` is required**, because XPASS then fails the suite and signals that the marker is to be removed.
+2. Give the test a minimum occurrence count so it cannot pass trivially.
+3. Extend or sharpen [`knowledge/data.md`](knowledge/data.md) and `vocab/m3gim.ttl` where the change belongs there.
+4. Implement in `scripts/transform.py` until xfail turns to XPASS.
+5. Remove the xfail marker, suite green again. See [`knowledge/testing.md`](knowledge/testing.md) § TDD workflow for model changes.
 
-Das Tool schaltet intern auf UTF-8, kein `PYTHONIOENCODING` mehr nötig.
+**Never commit without the explicit word from the user**, not even when a commit belongs logically to the work. Commits then carry the Co-Authored-By trailer.
 
-### Manuelle Wikidata-Approvals verifizieren
+`docs/data/m3gim.jsonld` is written only by `build-views.py` or by copying from `data/output/`. It is **the single data source of the frontend** and is never edited directly, a next pipeline run would overwrite it. Beside it, `docs/data/geo/` carries the shipped world geometry of the map, which no pipeline step generates.
 
-```bash
-python scripts/verify-manual-approvals.py
-```
+Source format particulars:
 
-Prüft alle `match: "manual"`-Einträge in `wikidata-reconciliation.json` gegen Wikidata (Label + Alias + Typ-Signal in der Description). Pflichtlauf nach jedem manuellen Approval-Batch, weil Session 34 gezeigt hat, dass Q-IDs aus dem Kopf tragende Datenfehler produzieren (Q2861 war Rostock statt Bayreuth, Q200491 war ein Game-Publisher statt Iwano-Frankiwsk). Offline überspringbar via `SKIP_VERIFY_MANUAL=1`.
+- The Verknüpfungen come as one CSV per sheet under `data/google-spreadsheet/verknuepfungen/`, one `Box_N.csv` per box with non-contiguous numbers, plus `Typ-Rolle.csv` (E-152). `resolve_verknuepfungen_source` takes every `Box_*.csv` there, falls back to the first file matching `M3GIM-Verkn*pfungen*.xlsx`, and raises `FileNotFoundError` without either.
+- Plakate IDs read `UAKUG/NIM/PL_XX` with a slash, not `UAKUG/NIM_PL_XX`.
+- Konvolut hierarchy, the object ID is `archivsignatur + " " + folio`. The folio column is called `folio nr` today, the pipeline still accepts the older `folio` and `Unnamed: 2`.
 
-## Workflow-Regeln
+The full catalogue of pipeline workarounds with source-fix proposals stands in [`knowledge/data.md`](knowledge/data.md) § Compensations in the pipeline.
 
-### TDD-Modus für Modell-Erweiterungen
+## Red lines
 
-Bei neuen Features aus `data.md`:
+- **DSGVO**, `antrag.md` and `handreichung.md` live in the Obsidian vault under `Projects\M³GIM\` and **never in the repository**. The `.gitignore` carries the entries.
+- **No destructive git operations** (`reset --hard`, `push --force`, `checkout .`) without an explicit request.
+- **No bypassing of pre-commit hooks** (`--no-verify`).
+- **No direct writes into `docs/data/`**, see above.
 
-1. Invariante in `tests/test_NN_*.py` als `@pytest.mark.xfail(reason="Phase X nicht implementiert", strict=True)` formulieren. **strict=True** ist wichtig: XPASS failt die Suite und signalisiert, dass der xfail-Marker zu entfernen ist.
-2. Tests mit Mindestvorkommen versehen (nicht „leere Liste ist ok"), damit sie nicht trivial bestehen.
-3. Erst dann in `scripts/transform.py` implementieren, bis xfail → XPASS.
-4. xfail-Marker entfernen, Testsuite wieder grün.
-
-Siehe `knowledge/testing.md` § TDD-Workflow. In Phase 4.1–4.8 (Session 28) und erneut für den Phase-6-Frontend-Kontrakt (Session 29) durchgängig angewendet.
-
-### Modell-Erweiterungen testgetrieben in folgender Reihenfolge
-
-Falls in Zukunft weitere Phasen aus `specification.md` § Stand umgesetzt werden:
-
-1. Tests als Spec (xfail strict).
-2. `data.md` ggf. erweitern/konkretisieren.
-3. Pipeline in `scripts/transform.py` implementieren.
-4. xfail → XPASS → xfail-Marker entfernen.
-5. Testsuite wieder grün.
-
-### Keine Commits ohne explizite Aufforderung
-
-Commit-Regel aus den Projektgewohnheiten: **nie selbständig committen**. Auch nicht, wenn ein Commit logisch zur Arbeit gehört. Nur, wenn die Nutzer:in das Commit-Wort explizit nennt. Commits werden dann mit Co-Authored-By-Trailer versehen.
-
-### docs/data/ nur über Pipeline
-
-`docs/data/m3gim.jsonld` wird ausschließlich von `build-views.py` bzw. manuellem Kopieren aus `data/output/` geschrieben. Nicht direkt editieren, das würde beim nächsten Pipeline-Lauf überschrieben. Daneben liegt in `docs/data/geo/` nur die mitgelieferte Weltgeometrie der Karte, die kein Pipeline-Schritt erzeugt.
-
-### Plakate/Dateinamen-Eigenheiten
-
-- Quellformat der Verknüpfungen sind seit 2026-08-31 die CSV-Ausfuhren je Blatt unter `data/google-spreadsheet/verknuepfungen/` (je Box eine `Box_N.csv`, die Nummern sind nicht lückenlos, dazu `Typ-Rolle.csv`, E-152). `resolve_verknuepfungen_source` nimmt jedes `Box_*.csv` im Verzeichnis; fehlt das Verzeichnis, greift als Fallback die erste Datei, die auf `M3GIM-Verkn*pfungen*.xlsx` passt, also beide Schreibweisen `ü` und `ue`. Ohne beides wirft die Funktion `FileNotFoundError`.
-- Plakate-IDs: `UAKUG/NIM/PL_XX` (mit Slash), nicht `UAKUG/NIM_PL_XX`.
-- Konvolut-Hierarchie: Objekt-ID = `archivsignatur + " " + folio`. Die Folio-Spalte im aktuellen Objekte-XLSX heißt `folio nr` (früher `folio` oder `Unnamed: 2`). Pipeline akzeptiert aktuell alle Varianten.
-
-Vollständiger Katalog der Pipeline-Workarounds (Header-Shifts, Finance-Currency-Defaults, Bearbeitungsstand-Normalisierung, Role-Hygiene, Freitext-Datierungen, Orphans, Komponisten-Schreibweisen) inkl. Source-Fix-Vorschlägen und Test-Absicherung: [`knowledge/data.md`](knowledge/data.md) § Datenqualität.
-
-## Rote Linien
-
-- **DSGVO**: `antrag.md`, `handreichung.md` nur im Obsidian-Vault unter `Projects\M³GIM\`, **nie ins Repo**. Die `.gitignore` führt entsprechende Einträge.
-- **Keine destruktiven Git-Operationen** (`reset --hard`, `push --force`, `checkout .`) ohne explizite Nutzer-Aufforderung.
-- **Pre-commit-Hooks nicht umgehen** (`--no-verify`).
-- **Nicht direkt in `docs/data/` schreiben** (siehe oben).
-
-## Datenquellen-Struktur
+## Data source structure
 
 ```
 data/
-├── google-spreadsheet/   # Quelle, git-tracked: Objekte als CSV (+XLSX-Fallback),
-│                         #   vier Index-XLSX, verknuepfungen/*.csv
-├── output/               # Pipeline-Output (m3gim.jsonld, wikidata-*.json)
-├── reports/              # Kurationsbelege der Normdaten, Quality-Snapshot, offene
-│                         #   Entscheidungsvorlagen; die erzeugten Reports sind
-│                         #   nicht versioniert, ein Lauf stellt sie her
-├── curated/              # kuratierte Handzuarbeit, die die Pipeline liest
-├── backup/               # Sicherungen der Quellexporte
-├── migration/            # Zwischenstände einer Quellumstellung
-└── _archive/             # historische Stände; die XLSX darin sind unversioniert
+├── google-spreadsheet/   # source, git-tracked: objects as CSV (+XLSX fallback), four index XLSX, verknuepfungen/*.csv
+├── output/               # pipeline output (m3gim.jsonld, wikidata-*.json)
+├── reports/              # curation evidence, quality snapshot, finding registers, generated reports unversioned
+├── curated/              # curated hand work the pipeline reads
+├── backup/               # backups of the source exports
+├── migration/            # intermediate states of a source migration
+├── _archive/             # historical states, the XLSX in it are unversioned
+└── recording-guide.md    # the German recording convention of the cataloguing team (E-267)
 ```
 
-**Datenfluss:** `data/google-spreadsheet/` → Pipeline → `data/output/m3gim.jsonld` → `docs/data/m3gim.jsonld` → Frontend-Loader.
+Data flow, `data/google-spreadsheet/` to the pipeline to `data/output/m3gim.jsonld` to `docs/data/m3gim.jsonld` to the frontend loader. Pre-condensed derivatives were removed with E-140.
 
-Das Frontend konsumiert ausschließlich `docs/data/m3gim.jsonld`. Vorverdichtete Derivate gibt es seit E-140 nicht mehr.
+## Signposts
 
-## Wegweiser
-
-- Details zu Architektur, Datenmodell, Tests, Frontend → `knowledge/` (siehe `knowledge/INDEX.md`)
-- Session-Memory (persistiert über Sessions): im Benutzerprofil unter `.claude/projects/*/memory/`, nicht im Repo
-- Aktueller Stand und nächste Schritte: `knowledge/specification.md` § Stand und nächste Schritte
+Architecture, data model, tests and frontend live in `knowledge/`, reachable through [`knowledge/INDEX.md`](knowledge/INDEX.md). Current state and next steps stand in [`knowledge/specification.md`](knowledge/specification.md) § State, the decisions that wait on the project lead in § Open decisions. Session memory persists in the user profile under `.claude/projects/*/memory/`, not in the repository.

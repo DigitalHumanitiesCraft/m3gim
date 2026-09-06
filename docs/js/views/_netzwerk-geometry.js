@@ -1,541 +1,788 @@
 /**
- * Netzwerk geometry: the pure half of the view. No DOM, no d3, so the picture
- * stays reproducible in unit tests and in the dev console.
+ * Netzwerk geometry: the pure half of the view. No DOM, no d3, so the same code
+ * path serves both drawings, the GEXF export and the unit tests.
  *
- * The graph is the typed neighbourhood of a Fokus-Entitaet over the node types
- * Person, Werk, Institution and Ort. With Malaniuk as focus and the node type
- * restricted to Person it is the concentric person network of the earlier
- * Netzwerk tab; the merged form generalises it (E-160).
+ * Two forms of one dataset (F2, decided on the prototype of 2026-09-05,
+ * E-256 for the projection rule, E-257 for the two switches):
+ *   - buildTwoMode      the sources themselves. Every actor of the result set
+ *                       and every record with links is a node, every mention is
+ *                       an edge, one to one with the Verknuepfungstabelle.
+ *   - buildProjection   the person-to-person projection. Two actors share an
+ *                       edge when a record names both; this is what the
+ *                       overview falls back to once the record nodes are
+ *                       hidden, and what the neighbour list of the detail reads.
+ *   - layoutGraph       positions for either of them.
  *
- * Two things carry evidence, and they are orthogonal.
- *   - Line type. A straight line means an explicitly annotated AgRelOn
- *     relation, a curved one means Ko-Okkurrenz derived from the documents
- *     (E-163 keeps this distinction after the Schaerfegrad-Umschalter went).
- *   - Ring. The inner ring holds nodes with a structured relation or a
- *     Normdaten-anchored, document-dense tie; the outer ring the rest.
+ * The creator of the fonds is no node. She stands on nearly every record, so as
+ * a node she would join everything to everything and the picture would say
+ * nothing. Her spelling variants in the source carry no Wikidata id, so only
+ * the literal catches them.
  *
- * Determinismus (design.md Regel 15): angles from the alphabetical order inside
- * a type sector, positions analytically from sin/cos, no force simulation.
- * Winkel 0 = 12 Uhr, x = cx + R·sin(a), y = cy − R·cos(a).
+ * Determinism (E-259, a click keeps the layout still): the layout is a pure
+ * function without any random source, run to rest before the first draw. Same
+ * cut, same picture, and a highlight never moves a node.
  */
 
-import { KOMPONISTEN_NAMEN } from '../data/constants.js';
+import { roleLabel, formatDocType } from '../utils/format.js';
+import { yearOfId } from '../data/records-for.js';
+import { AGRELON_LABELS } from '../data/constants.js';
 
 // ---------------------------------------------------------------------------
-// Knotentypen
+// The creator of the fonds
 // ---------------------------------------------------------------------------
 
-export const NODE_TYPES = ['person', 'werk', 'institution', 'ort'];
+const FONDS_CREATOR_ID = 'wd:Q94208';
 
-/**
- * Display form and colour per node type. The colours are the four
- * Inhaltsfamilien of design.md Regel 2, the same tokens the Bestand uses, so a
- * Werk carries one colour across the whole interface. Person nodes are the
- * exception: they are filled by their Netzwerk-Kategorie, and the family colour
- * stays their marker in the Knotentypen control.
- */
-export const NODE_TYPE_META = {
-  person:      { label: 'Person',      color: 'var(--chip-c-person-text)' },
-  werk:        { label: 'Werk',        color: 'var(--chip-c-werk-text)' },
-  institution: { label: 'Institution', color: 'var(--chip-c-institution-text)' },
-  ort:         { label: 'Ort',         color: 'var(--chip-c-ort-text)' },
-};
+/** Source spellings of the creator's name, from the projection script of the
+ *  prototype. Each of them is a recording error and none carries a Q-id. */
+export const FONDS_CREATOR_VARIANTS = new Set([
+  'Malaniuk, Ira', 'Malnaiuk, Ira', 'Maklaniuk, Ira', 'Malaiuk, Ira', 'Malniuk, Ira',
+]);
 
-const STORE_MAP_FOR_TYPE = {
-  person: 'persons',
-  werk: 'works',
-  institution: 'organizations',
-  ort: 'locations',
-};
-
-/** Fokus-Default: das Nachlass-Subjekt. Per Q-ID stabil, Name als Fallback. */
-export const DEFAULT_FOCUS = { type: 'person', name: 'Malaniuk, Ira' };
-
-/** Knoten je Typ, solange die View keinen anderen Wert stellt. */
-export const DEFAULT_TOP_N = 12;
-
-// ---------------------------------------------------------------------------
-// Rollenbasierte Personen-Kategorisierung
-//
-// Die globale `entry.kategorie` aus `getPersonKategorie()` nutzt eine statische
-// Keyword-Liste ueber Namen; nur ein Bruchteil der Personen matcht dort. Hier
-// entsteht die Kategorie aus den tatsaechlichen `entry.roles`, also datengetragen.
-//
-// Prioritaet bei Mehrfachrollen: Produktion > Buehne > Vermittlung >
-// Korrespondenz > Presse > Erwaehnt. Wer dirigiert UND singt, ist primaer
-// Dirigent; reine Rezensions-Erwaehnungen stehen hinten an.
-// ---------------------------------------------------------------------------
-
-/**
- * Farbe je Netzwerk-Kategorie als `var(--color-netzwerk-*)`-Verweis auf die
- * kategoriale Palette in `variables.css`. Erwaehnt und Andere bleiben grau,
- * schwache Evidenz ist keine eigene Kategorie. Konsumenten setzen den Wert als
- * *style*, nicht als SVG-`fill`-Attribut, sonst loest `var()` nicht auf.
- */
-export const NETZWERK_KATEGORIEN = {
-  'Produktion':     'var(--color-netzwerk-produktion)',    // Regie/Dirigat/Komposition
-  'Bühne':          'var(--color-netzwerk-buehne)',        // Sänger:innen-Kolleg:innen
-  'Vermittlung':    'var(--color-netzwerk-vermittlung)',   // Agenten, Veranstalter
-  'Korrespondenz':  'var(--color-netzwerk-korrespondenz)', // Absender, Empfaenger
-  'Presse':         'var(--color-netzwerk-presse)',        // Verfasser:innen von Texten
-  'Erwähnt':        'var(--color-netzwerk-erwaehnt)',      // grau — nur in Dritt-Erwaehnung
-  'Andere':         'var(--color-netzwerk-andere)',        // grau — ohne Kategorie
-};
-
-const ROLE_PRIO = [
-  ['Produktion', new Set([
-    'komponist', 'dirigent', 'regisseur', 'chorleiter', 'librettist',
-    'arrangeur', 'bühnenbildner', 'buehnenbildner', 'kostümbildner',
-    'kostuembildner', 'choreograph', 'choreograf', 'ausstatter',
-    'technische leitung', 'übersetzer', 'uebersetzer', 'herausgeber',
-    'bühnenleiter', 'buehnenleiter',
-  ])],
-  ['Bühne', new Set(['sänger', 'saenger', 'sängerin', 'interpret', 'protagonist'])],
-  ['Vermittlung', new Set(['vermittler', 'agent', 'auftraggeber', 'veranstalter'])],
-  ['Korrespondenz', new Set([
-    'absender', 'empfänger', 'empfaenger', 'adressat', 'unterzeichner',
-  ])],
-  ['Presse', new Set(['verfasser'])],
-];
-
-const ERWAEHNT_RX = /^erw(?:ä|ae)hnt$/;
-
-/** Kategorie einer Person aus ihren Rollen. Liefert einen Key aus NETZWERK_KATEGORIEN. */
-export function derivePersonKategorie(entry) {
-  if (!entry || !entry.roles || entry.roles.size === 0) return 'Andere';
-  const roles = new Set();
-  for (const r of entry.roles) roles.add(String(r || '').toLowerCase().trim());
-
-  for (const [kat, set] of ROLE_PRIO) {
-    for (const r of roles) if (set.has(r)) return kat;
-  }
-  let onlyErwaehnt = true;
-  for (const r of roles) {
-    if (!ERWAEHNT_RX.test(r)) { onlyErwaehnt = false; break; }
-  }
-  if (onlyErwaehnt) return 'Erwähnt';
-  return 'Andere';
-}
-
-/** Farbe eines Personenknotens: rollenbasierte Kategorie, nicht die statische
- *  Namens-Keyword-Kategorie in entry.kategorie. */
-export function nodeColor(entry) {
-  return NETZWERK_KATEGORIEN[derivePersonKategorie(entry)] || NETZWERK_KATEGORIEN.Andere;
-}
-
-// ---------------------------------------------------------------------------
-// Evidenz
-// ---------------------------------------------------------------------------
-
-// Malaniuk-Identifikation: per Q-ID stabil, Name als Fallback.
-const MALANIUK_QID = 'wd:Q94208';
-const MALANIUK_NAME_RX = /malaniuk/i;
-
-/** Schwellen der Ringzuordnung, gebuendelt, damit sie tunebar bleiben. */
-export const RING_THRESHOLDS = {
-  HARD_MIN_RECORDS_WITH_QID: 5,  // innerer Ring, wenn Q-ID + dokumenten-dicht
-};
-
-/** Ist die Entitaet Ira Malaniuk selbst? */
+/** Is the entity Ira Malaniuk, under any of her recorded spellings? */
 export function isMalaniuk(name, entry) {
-  if (entry && entry.wikidata === MALANIUK_QID) return true;
-  if (name && MALANIUK_NAME_RX.test(name)) return true;
-  return false;
-}
-
-/**
- * 'strong' = AgRelOn-strukturierte Beziehung vorhanden, 'weak' = nur
- * Ko-Okkurrenz in Dokumenten. Orthogonal zur Ringzuordnung.
- */
-export function nodeEvidence(entry) {
-  return (entry && entry.relations && entry.relations.length > 0) ? 'strong' : 'weak';
-}
-
-/**
- * Ring eines Knotens. Innen steht, was eine strukturierte Beziehung traegt oder
- * normdaten-verankert und dokumenten-dicht am Fokus haengt; aussen der Rest.
- * @param {{evidence: string, wikidata: ?string, weight: number}} node
- * @returns {1|2}
- */
-export function nodeRing(node) {
-  if (!node) return 2;
-  if (node.evidence === 'strong') return 1;
-  const hasQid = !!(node.wikidata && String(node.wikidata).startsWith('wd:'));
-  if (hasQid && node.weight >= RING_THRESHOLDS.HARD_MIN_RECORDS_WITH_QID) return 1;
-  return 2;
-}
-
-// ---------------------------------------------------------------------------
-// Reine Werk-Komponisten
-// ---------------------------------------------------------------------------
-
-// Namensbestandteile als Menge, an Nicht-Buchstaben getrennt. Ein Vergleich per
-// includes() traf jede Teilzeichenkette: 'wolf' passte auf "Wolfgang" und
-// "Wolfram", 'verdi' auf "Monteverdi".
-function nameTokens(name) {
-  return new Set(String(name).toLowerCase().split(/[^\p{L}]+/u).filter(Boolean));
-}
-
-/** Traegt der Name den Nachnamen eines gelisteten Werk-Komponisten? */
-function hasComposerSurname(name) {
-  const tokens = nameTokens(name);
-  for (const composer of KOMPONISTEN_NAMEN) {
-    if (tokens.has(composer)) return true;
-  }
-  return false;
-}
-
-const COMPOSER_ROLE = 'komponist';
-
-/**
- * Soll die Person als Personenknoten auftauchen? Reine Werk-Komponisten
- * (Wagner R., Strauss, Mozart, Beethoven) stehen als Komponist am Werk-Knoten
- * und bleiben als Person draussen.
- *
- * Zwei Bedingungen muessen zusammenkommen. Der Name traegt den Nachnamen eines
- * gelisteten Komponisten, und die Person tritt im Bestand tatsaechlich als
- * Komponist auf. Ein geteilter Nachname allein genuegt nicht, sonst fallen der
- * Bassist "Weber, Ludiwig" und die Saengerin "Schubert, Erika" heraus. Ausnahme
- * bleibt jede kuratierte Nicht-Komponisten-Kategorie, also Regie (Wieland und
- * Wolfgang Wagner) ebenso wie Dirigat (Hindemith dirigierte und komponierte).
- */
-export function isPureComposer(name, entry) {
-  if (!name) return false;
-  const kat = entry && entry.kategorie;
-  if (kat && kat !== 'Komponist' && kat !== 'Andere') return false;
-  if (!hasComposerSurname(name)) return false;
-  if (entry && entry.roles && entry.roles.size > 0) {
-    for (const role of entry.roles) {
-      if (String(role || '').toLowerCase().trim() === COMPOSER_ROLE) return true;
-    }
-  }
+  if (entry && entry.wikidata === FONDS_CREATOR_ID) return true;
+  if (name && FONDS_CREATOR_VARIANTS.has(name)) return true;
   return false;
 }
 
 // ---------------------------------------------------------------------------
-// Fokus und Graphaufbau
+// Node kinds
 // ---------------------------------------------------------------------------
 
-/** Store-Eintrag der Fokus-Entitaet. Malaniuk wird tolerant getroffen, sie
- *  traegt im Personen-Index die kanonische Form "Malaniuk, Ira". */
-function resolveFocus(store, focus) {
-  const map = store && store[STORE_MAP_FOR_TYPE[focus.type] || 'persons'];
-  if (!map) return null;
-  if (map.has(focus.name)) {
-    const entry = map.get(focus.name);
-    return { type: focus.type, name: focus.name, entry, records: entry.records };
+/** Display form per node type. An actor carries the colour of its content
+ *  family, the same one register, Bestand marks and detail block titles use, a
+ *  record stays the accent square (Projektleitung, 2026-09-05). */
+export const NODE_TYPE_META = {
+  person:      { label: 'Person' },
+  institution: { label: 'Institution' },
+  record:      { label: 'Dokument' },
+};
+
+/** Role tokens that record a name without a function of its own. An edge that
+ *  carries nothing else is a bare mention and is drawn as such; the role sits
+ *  on the mention, never on the actor. */
+const MENTION_ONLY = new Set(['erwähnt', 'erwaehnt']);
+
+/** Is this edge a bare mention rather than an active role? */
+function isBareMention(roles) {
+  return roles.length === 0 || roles.every(r => MENTION_ONLY.has(String(r).toLowerCase()));
+}
+
+// Joins two ids into one key. Written as an escape, because a control
+// character in the source looks like an empty string in the editor.
+const SEP = '\u0000';
+
+/** Stable node identifier. */
+export function nodeId(type, name) {
+  return `${type}:${name}`;
+}
+
+// ---------------------------------------------------------------------------
+// Actors of a document set
+// ---------------------------------------------------------------------------
+
+/** Roles of an entity inside a document set, most frequent first. */
+function rolesIn(store, entry, scope) {
+  const out = [];
+  for (const [token, ids] of entry.roleRecords || []) {
+    let count = 0;
+    for (const id of ids) if (scope.has(id)) count++;
+    if (count === 0) continue;
+    out.push({ role: roleLabel(store, token) || token, count });
   }
-  if (focus.type === 'person' && MALANIUK_NAME_RX.test(focus.name)) {
-    for (const [name, entry] of map) {
-      if (MALANIUK_NAME_RX.test(name)) return { type: 'person', name, entry, records: entry.records };
-    }
+  out.sort((a, b) => b.count - a.count || a.role.localeCompare(b.role, 'de'));
+  return out;
+}
+
+/** Roles an entity carries at exactly these documents. */
+function roleNamesAt(store, entry, ids) {
+  const out = [];
+  for (const [token, recs] of entry.roleRecords || []) {
+    if (!ids.some(id => recs.has(id))) continue;
+    out.push(roleLabel(store, token) || token);
   }
-  return null;
+  out.sort((a, b) => a.localeCompare(b, 'de'));
+  return out;
 }
 
 /**
- * Der Record-Satz der Fokus-Entitaet, die Startmenge des Schnitts. Leeres Set,
- * wenn der Fokus nicht im Bestand steht. Der View braucht dieselbe Aufloesung
- * wie buildGraph, sonst weichen Bild und Zaehlstand voneinander ab.
- * @returns {Set<string>}
+ * The actors of the cut as nodes, plus the mention lists per record. This is
+ * the one place that decides who counts as an actor, so the two-mode network,
+ * the projection and the completeness test cannot drift apart.
+ * @returns {{actors: Array, byId: Map, mentionsOf: Map<string, string[]>}}
  */
-export function focusRecords(store, focus) {
-  const resolved = resolveFocus(store, focus || DEFAULT_FOCUS);
-  return resolved ? resolved.records : new Set();
-}
+function actorsOf(store, scope) {
+  const actors = [];
+  const byId = new Map();
+  const mentionsOf = new Map();
+  for (const id of scope) mentionsOf.set(id, []);
 
-/** Stabiler Knoten-Identifier (Typ + Name). */
-export function nodeId(node) {
-  return `${node.type}:${node.name}`;
-}
-
-/** Zusatzfelder je Entitaetstyp fuer Tooltip und Detail — datengedeckt, ohne Deuten. */
-function nodeMeta(type, entry) {
-  const e = entry || {};
-  if (type === 'institution') {
-    return { sitz: e.sitz || null, keyContact: e.keyContact || null,
-             note: e.note || null, roles: [...(e.roles || [])] };
-  }
-  if (type === 'person') {
-    return { note: e.note || null, lifespan: e.lifespan || null,
-             voiceType: e.voiceType || null, roles: [...(e.roles || [])] };
-  }
-  if (type === 'werk') {
-    return { partie: e.partie || null, komponist: e.komponist || null, note: e.note || null };
-  }
-  return { roles: [...(e.roles || [])] };
-}
-
-/** Eine annotierte Beziehung schlaegt jede Ko-Okkurrenz-Zahl, damit die geraden
- *  Linien die Kappung ueberleben. */
-function evidenceRank(node) {
-  return node.evidence === 'strong' ? 1 : 0;
-}
-
-/**
- * Baut die getypte Nachbarschaft des Fokus.
- *
- * @param {object} store
- * @param {object} opts
- * @param {{type,name}} [opts.focus]              Fokus-Entitaet (Default Malaniuk)
- * @param {?Set<string>} [opts.records]           Dokumentmenge aus recordsFor; ohne
- *   Angabe bleibt der Record-Satz des Fokus unbeschnitten
- * @param {Object<string,boolean>} [opts.types]   Knotentyp-Schalter (Default alle an)
- * @param {number} [opts.topN]                    max. Knoten je Typ
- * @returns {{center, nodes, edges, stats}}
- */
-export function buildGraph(store, opts = {}) {
-  const focus = opts.focus || DEFAULT_FOCUS;
-  const typeOn = { person: true, werk: true, institution: true, ort: true, ...(opts.types || {}) };
-  const topN = Number.isFinite(opts.topN) ? opts.topN : DEFAULT_TOP_N;
-
-  const resolved = resolveFocus(store, focus);
-  if (!resolved) {
-    return {
-      center: null, nodes: [], edges: [],
-      stats: { focus: focus.name, focusType: focus.type, recordsBase: 0, records: 0,
-               eng: 0, total: 0, agrelon: 0, truncated: {}, byType: {}, candidates: {} },
-    };
-  }
-
-  const scope = opts.records instanceof Set ? opts.records : null;
-  const effective = new Set();
-  for (const id of resolved.records) {
-    if (!scope || scope.has(id)) effective.add(id);
-  }
-
-  // Jede AgRelOn-Relation haengt am Nachlass-Subjekt. Eine gerade Linie kann es
-  // also nur geben, solange sie der Fokus ist; bei jedem anderen Fokus traegt
-  // der Graph reine Ko-Okkurrenz und sagt das ueber die Linienart.
-  const focusIsSubject = isMalaniuk(resolved.name, resolved.entry);
-
-  const byType = {};
-  const truncated = {};
-  for (const type of NODE_TYPES) {
-    if (!typeOn[type]) continue;
-    const map = store[STORE_MAP_FOR_TYPE[type]];
-    if (!map) continue;
-    const cand = [];
+  const collect = (type, map) => {
+    if (!map) return;
     for (const [name, entry] of map) {
       if (!entry || !entry.records) continue;
-      if (type === resolved.type && name === resolved.name) continue;
-      // Malaniuk steht im Zentrum oder gar nicht; reine Werk-Komponisten
-      // stehen am Werk-Knoten.
-      if (type === 'person' && (isMalaniuk(name, entry) || isPureComposer(name, entry))) continue;
-      let shared = 0;
-      for (const id of effective) if (entry.records.has(id)) shared++;
-      if (shared === 0) continue;
-      const evidence = (focusIsSubject && type === 'person') ? nodeEvidence(entry) : 'weak';
+      if (type === 'person' && isMalaniuk(name, entry)) continue;
+      const own = new Set();
+      for (const id of entry.records) if (scope.has(id)) own.add(id);
+      if (own.size === 0) continue;
       const node = {
-        id: `${type}:${name}`,
+        id: nodeId(type, name),
+        kind: 'actor',
         type, name, entry,
-        weight: shared,
-        records: entry.records,
-        meta: nodeMeta(type, entry),
-        evidence,
+        label: name,
+        records: own,
+        weight: own.size,
+        roles: rolesIn(store, entry, scope),
+        relations: relationsOf(store, entry),
+        hasRelation: !!(entry.relations && entry.relations.length > 0),
         wikidata: entry.wikidata || null,
-        kategorie: type === 'person' ? derivePersonKategorie(entry) : null,
-        color: type === 'person' ? nodeColor(entry) : NODE_TYPE_META[type].color,
+        degree: 0,
       };
-      node.ring = nodeRing(node);
-      cand.push(node);
+      actors.push(node);
+      byId.set(node.id, node);
+      for (const id of own) mentionsOf.get(id).push(node.id);
     }
-    cand.sort((a, b) => (evidenceRank(b) - evidenceRank(a))
-      || (b.weight - a.weight)
-      || a.name.localeCompare(b.name, 'de'));
-    if (cand.length > topN) truncated[type] = cand.length - topN;
-    byType[type] = cand.slice(0, topN);
+  };
+  collect('person', store && store.persons);
+  collect('institution', store && store.organizations);
+
+  actors.sort((a, b) => b.weight - a.weight || a.name.localeCompare(b.name, 'de'));
+  for (const list of mentionsOf.values()) list.sort();
+  return { actors, byId, mentionsOf };
+}
+
+/** The recorded relations of an entity, each with the label the detail chip
+ *  shows and the signature of the attesting record, so the GEXF export writes
+ *  the relation the drawing shows without repeating its lookup. */
+function relationsOf(store, entry) {
+  const list = (entry && entry.relations) || [];
+  return list.map(rel => ({
+    ...rel,
+    label: AGRELON_LABELS[rel.type] || String(rel.type).replace(/^agrelon:/, ''),
+    signatur: signaturOf(store && store.records ? store.records.get(rel.recordId) : null)
+      || rel.recordId || '',
+  }));
+}
+
+/** Signatur of a record without the archive prefix, its display name here. */
+function signaturOf(record) {
+  const id = (record && record['rico:identifier']) || '';
+  return id.replace('UAKUG/', '') || (record && record['@id']) || '';
+}
+
+/**
+ * Display form of a record: document type and year, the short uniform label a
+ * node and a relation chip both carry. A bare signature says nothing about the
+ * content (Projektleitung, 2026-09-05), so the signature stays in tooltip and
+ * detail column and is only the last fallback here.
+ * @param {object} store
+ * @param {object} record   record node of the dataset
+ * @param {?number} year    the resolved year, or null where none is anchored
+ */
+export function recordLabel(store, record, year) {
+  const parts = [formatDocType(record, store), year == null ? '' : String(year)];
+  return parts.filter(Boolean).join(' ') || signaturOf(record);
+}
+
+// ---------------------------------------------------------------------------
+// Two-mode network: actors and records
+// ---------------------------------------------------------------------------
+
+/**
+ * The sources themselves. Every actor and every record of the cut is a node,
+ * every mention is one edge. Nothing is capped and nothing is thresholded away.
+ *
+ * @param {object} store
+ * @param {{records: Set<string>}} opts   documents of the cut (from recordsFor)
+ * @returns {{mode, nodes, edges, byId, edgesByNode, stats}}
+ */
+export function buildTwoMode(store, { records } = {}) {
+  const scope = records instanceof Set ? records : new Set();
+  const { actors, byId, mentionsOf } = actorsOf(store, scope);
+  const nodes = [...actors];
+  const edges = [];
+
+  for (const id of [...scope].sort()) {
+    const record = store.records.get(id);
+    if (!record) continue;
+    const mentions = mentionsOf.get(id) || [];
+    const year = yearOfId(store, id);
+    const recordNode = {
+      id: `record:${id}`,
+      kind: 'record',
+      type: 'record',
+      name: signaturOf(record),
+      label: recordLabel(store, record, year),
+      typeLabel: formatDocType(record, store),
+      recordId: id,
+      record,
+      title: record['rico:title'] || '',
+      date: record['rico:date'] || '',
+      year,
+      actorIds: mentions,
+      weight: mentions.length,
+      degree: mentions.length,
+    };
+    nodes.push(recordNode);
+    byId.set(recordNode.id, recordNode);
+    for (const actorId of mentions) {
+      const actor = byId.get(actorId);
+      const roles = roleNamesAt(store, actor.entry, [id]);
+      edges.push({
+        id: actorId + SEP + recordNode.id,
+        a: actorId,
+        b: recordNode.id,
+        weight: 1,
+        recordId: id,
+        roles,
+        bare: isBareMention(roles),
+      });
+      actor.degree += 1;
+    }
   }
 
-  const nodes = NODE_TYPES.flatMap(t => byType[t] || []);
-  const edges = nodes.map(n => ({
-    a: '__focus__', b: n.id, shared: n.weight,
-    kind: n.evidence === 'strong' ? 'agrelon' : 'cooc',
-  }));
-
-  const center = {
-    id: '__focus__', type: resolved.type, name: resolved.name, entry: resolved.entry,
-    records: resolved.records, wikidata: (resolved.entry && resolved.entry.wikidata) || null,
-    kategorie: resolved.type === 'person' ? derivePersonKategorie(resolved.entry) : null,
-    meta: nodeMeta(resolved.type, resolved.entry),
-  };
-
-  const anchored = eventAnchoredRecords(store);
-  let engCount = 0;
-  for (const id of effective) if (anchored.has(id)) engCount++;
-
+  const edgesByNode = indexEdges(edges);
   return {
-    center, nodes, edges, effective,
-    stats: {
-      focus: resolved.name,
-      focusType: resolved.type,
-      recordsBase: resolved.records.size,   // Fokus-Records vor dem Schnitt
-      records: effective.size,              // Fokus-Records im aktuellen Schnitt
-      eng: engCount,                        // davon raumzeitlich/auffuehrungs-belegt
-      total: nodes.length,
-      agrelon: nodes.filter(n => n.evidence === 'strong').length,
-      truncated,
-      byType: Object.fromEntries(NODE_TYPES.map(t => [t, (byType[t] || []).length])),
-      // Kandidaten je Typ vor der Kappung, damit die Sidebar "12 von 436"
-      // beziffern kann statt die Kappung stumm zu lassen.
-      candidates: Object.fromEntries(NODE_TYPES.map(t =>
-        [t, (byType[t] || []).length + (truncated[t] || 0)])),
-      ringCounts: {
-        1: nodes.filter(n => n.ring === 1).length,
-        2: nodes.filter(n => n.ring === 2).length,
-      },
-    },
+    mode: 'twomode',
+    nodes, edges, byId, edgesByNode,
+    stats: statsOf(scope, actors, nodes, edges),
   };
 }
 
-/** Records mit verorteter Annotation oder Performance (raumzeitlich belegt). */
-function eventAnchoredRecords(store) {
-  const set = new Set();
-  if (store && store.recordToEvents) for (const id of store.recordToEvents.keys()) set.add(id);
-  if (store && store.recordToPerformances) for (const id of store.recordToPerformances.keys()) set.add(id);
-  return set;
+function indexEdges(edges) {
+  const map = new Map();
+  for (const edge of edges) {
+    for (const side of [edge.a, edge.b]) {
+      let list = map.get(side);
+      if (!list) { list = []; map.set(side, list); }
+      list.push(edge);
+    }
+  }
+  return map;
+}
+
+function statsOf(scope, actors, nodes, edges) {
+  return {
+    records: scope.size,
+    nodes: nodes.length,
+    actors: actors.length,
+    persons: actors.filter(n => n.type === 'person').length,
+    institutions: actors.filter(n => n.type === 'institution').length,
+    recordNodes: nodes.length - actors.length,
+    edges: edges.length,
+    single: actors.filter(n => n.weight === 1).length,
+    withRelation: actors.filter(n => n.hasRelation).length,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Person-to-person projection
+// ---------------------------------------------------------------------------
+
+/**
+ * Two actors share an edge as soon as one record names both, and the strength
+ * of that edge is the number of those records. This is what the overview falls
+ * back to once the record nodes are hidden, and what the neighbour list reads.
+ *
+ * @param {object} store
+ * @param {{records: Set<string>}} opts
+ * @returns {{mode, nodes, edges, byId, edgesByNode, stats}}
+ */
+export function buildProjection(store, { records } = {}) {
+  const scope = records instanceof Set ? records : new Set();
+  const { actors, byId, mentionsOf } = actorsOf(store, scope);
+
+  const pairs = new Map();
+  for (const [recordId, mentions] of mentionsOf) {
+    if (mentions.length < 2) continue;
+    for (let i = 0; i < mentions.length; i++) {
+      for (let j = i + 1; j < mentions.length; j++) {
+        const key = mentions[i] + SEP + mentions[j];
+        let hit = pairs.get(key);
+        if (!hit) { hit = []; pairs.set(key, hit); }
+        hit.push(recordId);
+      }
+    }
+  }
+
+  const edges = [];
+  for (const [key, recordIds] of pairs) {
+    const [a, b] = key.split(SEP);
+    recordIds.sort();
+    const rolesA = roleNamesAt(store, byId.get(a).entry, recordIds);
+    const rolesB = roleNamesAt(store, byId.get(b).entry, recordIds);
+    edges.push({
+      id: key, a, b,
+      weight: recordIds.length,
+      records: recordIds,
+      rolesA, rolesB,
+      bare: isBareMention([...rolesA, ...rolesB]),
+    });
+  }
+  edges.sort((x, y) => y.weight - x.weight || x.a.localeCompare(y.a, 'de')
+    || x.b.localeCompare(y.b, 'de'));
+
+  for (const node of actors) node.degree = 0;
+  const edgesByNode = indexEdges(edges);
+  for (const [id, list] of edgesByNode) {
+    const node = byId.get(id);
+    if (node) node.degree = list.length;
+  }
+
+  return {
+    mode: 'projection',
+    nodes: actors, edges, byId, edgesByNode,
+    stats: statsOf(scope, actors, actors, edges),
+  };
+}
+
+/** Neighbours of a node with the strength of the connecting edge. */
+export function neighboursOf(graph, id) {
+  const out = [];
+  for (const edge of graph.edgesByNode.get(id) || []) {
+    const other = graph.byId.get(edge.a === id ? edge.b : edge.a);
+    if (other) out.push({ node: other, edge, weight: edge.weight });
+  }
+  out.sort((a, b) => b.weight - a.weight || a.node.name.localeCompare(b.node.name, 'de'));
+  return out;
+}
+
+/** The graph reduced to the nodes whose name matches, with the edges between
+ *  them. Cuts the picture, never the counts a node carries. */
+export function narrowGraph(graph, keepFn) {
+  const nodes = graph.nodes.filter(keepFn);
+  const keep = new Set(nodes.map(n => n.id));
+  const edges = graph.edges.filter(e => keep.has(e.a) && keep.has(e.b));
+  const byId = new Map(nodes.map(n => [n.id, n]));
+  const actors = nodes.filter(n => n.kind === 'actor');
+  return {
+    mode: graph.mode,
+    nodes, edges, byId,
+    edgesByNode: indexEdges(edges),
+    stats: { ...graph.stats, ...statsOf(new Set(), actors, nodes, edges),
+             records: graph.stats.records },
+  };
 }
 
 // ---------------------------------------------------------------------------
 // Layout
 // ---------------------------------------------------------------------------
 
-/**
- * Die eingeschalteten Knotentypen teilen den Kreis unter sich auf, Person oben,
- * dann im Uhrzeigersinn Werk, Institution, Ort. Stehen alle vier, ist jeder
- * Sektor ein Quadrant; bleibt nur einer uebrig, traegt er den vollen Kreis und
- * das Bild ist das konzentrische Personennetz.
- */
-const SECTOR_GAP = 0.92;                // Luft zwischen zwei Sektoren
-// Versatz innerhalb eines Rings: jeder zweite Knoten sitzt etwas weiter aussen.
-// Ohne ihn ueberlappen die Kreise, sobald ein Sektor mehr als eine Handvoll
-// Knoten traegt; die beiden Evidenzbaender bleiben dabei getrennt lesbar.
-const STAGGER = 1.15;
-
-/** Normalisierter Sortierschluessel: "Nachname, Vorname" -> "nachname". */
-function sortKey(name) {
-  return String(name || '').split(',')[0].trim().toLowerCase()
-    .replace(/ä/g, 'a').replace(/ö/g, 'o').replace(/ü/g, 'u').replace(/ß/g, 'ss');
+/** Radius of a node from its count, bounded so a hub stays readable. */
+export function nodeRadius(weight) {
+  return Math.max(3, Math.min(16, 2.6 + Math.sqrt(weight) * 2.2));
 }
 
+const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5));
+
+// Ceiling of the relaxation, not the length of a normal run: the run ends once
+// the picture is at rest, and this only bounds a graph that never settles.
+const LAYOUT_STEPS = 150;
+// Geometric cooling, so the step size falls off on its own and rest is a
+// property of the picture instead of the end of a linear schedule.
+const LAYOUT_COOLING = 0.95;
+// At rest when the average step of a node stays under this share of k.
+const LAYOUT_REST = 0.02;
+const ORIGIN_PULL = 0.012;
+// Cells per axis of the repulsion grid, so a node that runs far cannot make the
+// buffers grow with its distance.
+const GRID_MAX = 128;
+const FIT_MARGIN = 8;
+// The force phase already lays the cloud out in the aspect of the box; what it
+// leaves over is taken by a non-uniform fit, bounded to this factor between the
+// two scales. Radii are not scaled, so a node keeps its shape.
+const FIT_DISTORTION = 1.2;
+// Passes of the collision relaxation and the gap it holds between two nodes.
+// Measured on the unfiltered fonds: more passes keep cutting the overlapping
+// pairs, and the coefficient of variation of the neighbour distance falls only
+// from 0.64 to 0.52, so the spacing stays irregular and no lattice forms.
+const SEPARATE_PASSES = 12;
+const SEPARATE_PAD = 1.5;
+
 /**
- * Deterministisches typ-partitioniertes Radial-Layout. Die eingeschalteten
- * Knotentypen teilen den Kreis unter sich auf, darin zwei Ringe nach
- * Evidenzstaerke, die Knoten alphabetisch auf dem Sektorbogen verteilt. Die
- * alphabetische Ordnung haelt die Position eines Knotens stabil, wenn ein Filter
- * die Nachbarschaft verkleinert.
+ * Deterministic relaxation, run to rest and returned as final positions. Pure:
+ * the same graph always yields the same coordinates, which is what lets a click
+ * highlight a neighbourhood without the picture moving (E-259).
  *
- * @returns {{center:{x,y,r}, nodes:Array, edges:Array, radii:{1:number,2:number}}}
+ * @param {object} graph
+ * @param {{width:number, height:number, iterations?:number}} opts
+ *        `iterations` raises or lowers the ceiling, it does not fix the count.
+ * @returns {{nodes: Array, edges: Array, byId: Map, width: number,
+ *            height: number, steps: number, rest: boolean, move: number}}
  */
-export function computeLayout(graph, { cx, cy, radius }) {
-  const ringRadius = { 1: radius, 2: radius * 1.38 };
-  const present = NODE_TYPES.filter(t => graph.nodes.some(n => n.type === t));
-  const slot = 2 * Math.PI / (present.length || 1);
-  const full = present.length === 1;
-  const laid = [];
-  for (const type of present) {
-    const sectorCenter = present.indexOf(type) * slot;
-    const span = full ? 2 * Math.PI : slot * SECTOR_GAP;
-    for (const ring of [1, 2]) {
-      const group = graph.nodes
-        .filter(n => n.type === type && n.ring === ring)
-        .sort((a, b) => sortKey(a.name).localeCompare(sortKey(b.name), 'de'));
-      const total = group.length;
-      if (total === 0) continue;
-      // Im vollen Kreis schliesst sich der Bogen, also traegt jeder Knoten
-      // seinen eigenen Schritt; in einem Sektor sitzen erster und letzter
-      // Knoten auf den Sektorgrenzen.
-      const start = full ? 0 : sectorCenter - span / 2;
-      const step = full ? span / total : (total > 1 ? span / (total - 1) : 0);
-      const R = ringRadius[ring];
-      for (let i = 0; i < total; i++) {
-        const n = group[i];
-        const angle = (!full && total === 1) ? sectorCenter : start + i * step;
-        const rr = total > 1 && i % 2 === 1 ? R * STAGGER : R;
-        laid.push({
-          ...n,
-          x: cx + rr * Math.sin(angle),
-          y: cy - rr * Math.cos(angle),
-          r: Math.max(6, Math.min(20, Math.sqrt(n.weight) * 4)),
-          angle,
-        });
-      }
-    }
+export function layoutGraph(graph, { width, height, iterations = null } = {}) {
+  const n = graph.nodes.length;
+  const xs = new Float64Array(n);
+  const ys = new Float64Array(n);
+  const rs = new Float64Array(n);
+  for (let i = 0; i < n; i++) {
+    // Golden-angle spiral: the one seed that spreads evenly without a random
+    // source, and it depends on the node order alone.
+    const angle = i * GOLDEN_ANGLE;
+    const rr = Math.sqrt(i + 0.5) * 12;
+    xs[i] = Math.cos(angle) * rr;
+    ys[i] = Math.sin(angle) * rr;
+    rs[i] = nodeRadius(graph.nodes[i].weight);
   }
 
-  return {
-    center: graph.center ? { ...graph.center, x: cx, y: cy, r: 34 } : null,
-    nodes: laid,
-    edges: graph.edges,
-    radii: ringRadius,
-  };
+  const run = n > 1
+    ? relax(graph, xs, ys, width, height, iterations || LAYOUT_STEPS)
+    : { steps: 0, rest: true, move: 0 };
+  fitToBox(xs, ys, rs, width, height);
+  separate(xs, ys, rs, width, height);
+
+  const nodes = graph.nodes.map((node, i) => ({ ...node, x: xs[i], y: ys[i], r: rs[i] }));
+  const byId = new Map(nodes.map(node => [node.id, node]));
+  const edges = graph.edges.map(edge => ({
+    ...edge, from: byId.get(edge.a), to: byId.get(edge.b),
+  })).filter(edge => edge.from && edge.to);
+  return { mode: graph.mode, nodes, edges, byId, width, height,
+           steps: run.steps, rest: run.rest, move: run.move };
 }
 
 /**
- * Textanker und Versatz eines Knoten-Labels. Winkel 0 = 12 Uhr, rechte
- * Halbebene haengt das Label rechts an, linke links.
+ * Fruchterman-Reingold with a uniform grid for the repulsion. The grid is
+ * rebuilt per iteration into reusable typed arrays; keeping it in a Map under a
+ * string key of the cell coordinates cost more than every force of the
+ * iteration together.
+ * @returns {{steps:number, rest:boolean, move:number}} steps actually run
  */
-export function labelGeometry(angle, nodeR, gap = 5) {
-  const norm = ((angle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
-  const rightHalf = norm < Math.PI;
-  return {
-    anchor: rightHalf ? 'start' : 'end',
-    dx: (rightHalf ? 1 : -1) * (nodeR + gap),
-    dy: 3,
-  };
+function relax(graph, xs, ys, width, height, ceiling) {
+  const n = xs.length;
+  const index = new Map();
+  for (let i = 0; i < n; i++) index.set(graph.nodes[i].id, i);
+  const linkA = new Int32Array(graph.edges.length);
+  const linkB = new Int32Array(graph.edges.length);
+  const linkW = new Float64Array(graph.edges.length);
+  let m = 0;
+  for (const edge of graph.edges) {
+    const ai = index.get(edge.a);
+    const bi = index.get(edge.b);
+    if (ai === undefined || bi === undefined) continue;
+    linkA[m] = ai;
+    linkB[m] = bi;
+    // The logarithm of the strength keeps a pair of thirty shared documents
+    // from pulling the picture into a knot around itself.
+    linkW[m] = Math.log(1 + (edge.weight || 1));
+    m++;
+  }
+
+  const k = Math.sqrt((width * height) / n);
+  // Cell of the repulsion grid, scanned two rings wide. One ring over a cell of
+  // 2k left a visible lattice in the dense middle, because the cutoff then ran
+  // exactly along the cell borders.
+  const cellSize = k;
+  // The pull to the origin holds the components without a shared document
+  // together. It is anisotropic in the aspect of the box, because a radially
+  // symmetric pull yields a round blob and leaves a third of a wide area empty
+  // (F2, finding 6). The two coefficients keep ORIGIN_PULL as their geometric
+  // mean and differ by the fourth power of the aspect; the free-gas estimate is
+  // the square, but the repulsion cutoff makes the cloud nearly incompressible,
+  // and the fourth power is what measured out as the aspect of the box on both
+  // forms of the unfiltered fonds.
+  const aspect = width / height;
+  const spread = aspect * aspect;
+  const pullX = ORIGIN_PULL / spread;
+  const pullY = ORIGIN_PULL * spread;
+  const restEps = k * LAYOUT_REST;
+
+  const dx = new Float64Array(n);
+  const dy = new Float64Array(n);
+  const grid = newGrid(n);
+  let temp = Math.max(width, height) / 8;
+  let move = Infinity;
+  let steps = 0;
+
+  for (let step = 0; step < ceiling; step++) {
+    let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+    for (let i = 0; i < n; i++) {
+      if (xs[i] < minX) minX = xs[i];
+      if (xs[i] > maxX) maxX = xs[i];
+      if (ys[i] < minY) minY = ys[i];
+      if (ys[i] > maxY) maxY = ys[i];
+    }
+    const cw = Math.max(cellSize, (maxX - minX) / GRID_MAX);
+    const ch = Math.max(cellSize, (maxY - minY) / GRID_MAX);
+    const nx = Math.floor((maxX - minX) / cw) + 1;
+    const ny = Math.floor((maxY - minY) / ch) + 1;
+    fillGrid(grid, xs, ys, minX, minY, cw, ch, nx, ny);
+    const starts = grid.starts;
+    const order = grid.order;
+
+    for (let i = 0; i < n; i++) {
+      const ax = xs[i];
+      const ay = ys[i];
+      const c = grid.cellOf[i];
+      const gx = c % nx;
+      const gy = (c - gx) / nx;
+      const x0 = gx > 2 ? gx - 2 : 0;
+      const x1 = gx + 2 < nx ? gx + 2 : nx - 1;
+      const y0 = gy > 2 ? gy - 2 : 0;
+      const y1 = gy + 2 < ny ? gy + 2 : ny - 1;
+      let fx = 0;
+      let fy = 0;
+      for (let cy = y0; cy <= y1; cy++) {
+        const row = cy * nx;
+        for (let cx = x0; cx <= x1; cx++) {
+          const cell = row + cx;
+          const last = starts[cell + 1];
+          for (let pos = starts[cell]; pos < last; pos++) {
+            const j = order[pos];
+            if (j === i) continue;
+            let vx = ax - xs[j];
+            let vy = ay - ys[j];
+            // Two nodes on the same spot carry no direction; the stable node
+            // order supplies one, so the step stays deterministic.
+            if (vx === 0 && vy === 0) { vx = (i - j) * 1e-3; vy = 1e-3; }
+            const force = (k * k) / (vx * vx + vy * vy);
+            fx += vx * force;
+            fy += vy * force;
+          }
+        }
+      }
+      dx[i] = fx;
+      dy[i] = fy;
+    }
+
+    for (let e = 0; e < m; e++) {
+      const ai = linkA[e];
+      const bi = linkB[e];
+      let vx = xs[ai] - xs[bi];
+      let vy = ys[ai] - ys[bi];
+      if (vx === 0 && vy === 0) { vx = 1e-3; vy = -1e-3; }
+      const force = (Math.sqrt(vx * vx + vy * vy) * linkW[e]) / k;
+      dx[ai] -= vx * force;
+      dy[ai] -= vy * force;
+      dx[bi] += vx * force;
+      dy[bi] += vy * force;
+    }
+
+    let total = 0;
+    for (let i = 0; i < n; i++) {
+      const fx = dx[i] - xs[i] * pullX;
+      const fy = dy[i] - ys[i] * pullY;
+      const len = Math.sqrt(fx * fx + fy * fy) || 1;
+      const limit = len < temp ? len : temp;
+      xs[i] += (fx / len) * limit;
+      ys[i] += (fy / len) * limit;
+      total += limit;
+    }
+    move = total / n;
+    temp *= LAYOUT_COOLING;
+    steps = step + 1;
+    if (move < restEps) break;
+  }
+  return { steps, rest: move < restEps, move };
+}
+
+function newGrid(n) {
+  return { starts: new Int32Array(1), cursor: new Int32Array(1),
+           order: new Int32Array(n), cellOf: new Int32Array(n) };
+}
+
+/** Buckets the points into a uniform grid held as flat typed arrays: the members
+ *  of cell c stand in `order` from `starts[c]` up to `starts[c + 1]`. Points
+ *  outside the grid fall into its border cells. */
+function fillGrid(grid, xs, ys, minX, minY, cw, ch, nx, ny) {
+  const n = xs.length;
+  const cells = nx * ny;
+  if (grid.starts.length < cells + 1) {
+    grid.starts = new Int32Array(cells + 1);
+    grid.cursor = new Int32Array(cells + 1);
+  }
+  const { starts, cursor, order, cellOf } = grid;
+  starts.fill(0, 0, cells + 1);
+  for (let i = 0; i < n; i++) {
+    let gx = ((xs[i] - minX) / cw) | 0;
+    let gy = ((ys[i] - minY) / ch) | 0;
+    if (gx < 0) gx = 0; else if (gx >= nx) gx = nx - 1;
+    if (gy < 0) gy = 0; else if (gy >= ny) gy = ny - 1;
+    const c = gy * nx + gx;
+    cellOf[i] = c;
+    starts[c + 1]++;
+  }
+  for (let c = 0; c < cells; c++) starts[c + 1] += starts[c];
+  for (let c = 0; c <= cells; c++) cursor[c] = starts[c];
+  for (let i = 0; i < n; i++) order[cursor[cellOf[i]]++] = i;
+}
+
+/** Scales and centres the relaxed coordinates into the drawing box. */
+function fitToBox(xs, ys, rs, width, height) {
+  const n = xs.length;
+  let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+  for (let i = 0; i < n; i++) {
+    if (xs[i] - rs[i] < minX) minX = xs[i] - rs[i];
+    if (xs[i] + rs[i] > maxX) maxX = xs[i] + rs[i];
+    if (ys[i] - rs[i] < minY) minY = ys[i] - rs[i];
+    if (ys[i] + rs[i] > maxY) maxY = ys[i] + rs[i];
+  }
+  if (!Number.isFinite(minX)) return;
+  const spanX = Math.max(maxX - minX, 1);
+  const spanY = Math.max(maxY - minY, 1);
+  let sx = (width - 2 * FIT_MARGIN) / spanX;
+  let sy = (height - 2 * FIT_MARGIN) / spanY;
+  const uniform = Math.min(sx, sy);
+  sx = Math.min(sx, uniform * FIT_DISTORTION);
+  sy = Math.min(sy, uniform * FIT_DISTORTION);
+  const cx = (minX + maxX) / 2;
+  const cy = (minY + maxY) / 2;
+  for (let i = 0; i < n; i++) {
+    xs[i] = (xs[i] - cx) * sx + width / 2;
+    ys[i] = (ys[i] - cy) * sy + height / 2;
+  }
+}
+
+/**
+ * Pushes the nodes that overlap apart, a few passes over the finished picture.
+ * The relaxation balances repulsion against attraction and leaves hundreds of
+ * touching pairs, under which a label cannot be read. Only pairs that touch
+ * move, so the spacing stays as irregular as the graph is and no lattice forms.
+ */
+function separate(xs, ys, rs, width, height) {
+  const n = xs.length;
+  if (n < 2) return;
+  let maxR = 0;
+  for (let i = 0; i < n; i++) if (rs[i] > maxR) maxR = rs[i];
+  // A cell of the largest diameter puts every touching pair inside the ring of
+  // nine, so one ring suffices here where the repulsion needs two.
+  const cell = 2 * maxR + SEPARATE_PAD;
+  const nx = Math.floor(width / cell) + 1;
+  const ny = Math.floor(height / cell) + 1;
+  const grid = newGrid(n);
+
+  for (let pass = 0; pass < SEPARATE_PASSES; pass++) {
+    fillGrid(grid, xs, ys, 0, 0, cell, cell, nx, ny);
+    const starts = grid.starts;
+    const order = grid.order;
+    let hits = 0;
+    for (let i = 0; i < n; i++) {
+      const c = grid.cellOf[i];
+      const gx = c % nx;
+      const gy = (c - gx) / nx;
+      const x0 = gx > 0 ? gx - 1 : 0;
+      const x1 = gx + 1 < nx ? gx + 1 : nx - 1;
+      const y0 = gy > 0 ? gy - 1 : 0;
+      const y1 = gy + 1 < ny ? gy + 1 : ny - 1;
+      for (let cy = y0; cy <= y1; cy++) {
+        const row = cy * nx;
+        for (let cx = x0; cx <= x1; cx++) {
+          const last = starts[row + cx + 1];
+          for (let pos = starts[row + cx]; pos < last; pos++) {
+            const j = order[pos];
+            if (j <= i) continue;
+            let vx = xs[j] - xs[i];
+            let vy = ys[j] - ys[i];
+            const min = rs[i] + rs[j] + SEPARATE_PAD;
+            if (vx * vx + vy * vy >= min * min) continue;
+            let d = Math.sqrt(vx * vx + vy * vy);
+            if (d === 0) { vx = (j - i) * 1e-3; vy = 1e-3; d = Math.sqrt(vx * vx + vy * vy); }
+            const shift = (min - d) / (2 * d);
+            xs[i] -= vx * shift;
+            ys[i] -= vy * shift;
+            xs[j] += vx * shift;
+            ys[j] += vy * shift;
+            hits++;
+          }
+        }
+      }
+    }
+    for (let i = 0; i < n; i++) {
+      const bound = rs[i] + FIT_MARGIN;
+      if (xs[i] < bound) xs[i] = bound;
+      else if (xs[i] > width - bound) xs[i] = width - bound;
+      if (ys[i] < bound) ys[i] = bound;
+      else if (ys[i] > height - bound) ys[i] = height - bound;
+    }
+    if (hits === 0) break;
+  }
 }
 
 // ---------------------------------------------------------------------------
-// Ko-Okkurrenz unter den Nachbarn
+// GEXF
 // ---------------------------------------------------------------------------
 
+const XML_ESCAPES = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' };
+
+/** Names carry ampersands and apostrophes; characters XML 1.0 forbids outright
+ *  are dropped, since an escaped C0 control is still invalid. */
+function xmlEscape(value) {
+  return String(value ?? '')
+    .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '')
+    .replace(/[&<>"']/g, c => XML_ESCAPES[c]);
+}
+
+/** The display form of an attribute is called `title` in GEXF; the pairs stand
+ *  as data so no literal title attribute reaches the source. */
+function gexfAttribute(id, type = 'string') {
+  const pairs = [['id', id], ['title', id], ['type', type]];
+  return '<attribute ' + pairs.map(([key, value]) => `${key}="${xmlEscape(value)}"`).join(' ') + '/>';
+}
+
+function edgeRoles(edge) {
+  if (edge.roles) return edge.roles;
+  return [...new Set([...(edge.rolesA || []), ...(edge.rolesB || [])])];
+}
+
 /**
- * Zwei Nachbarn sind verknuepft, wenn sie in mindestens `minShared` Dokumenten
- * des aktuellen Schnitts gemeinsam vorkommen. Das ist die Topologie jenseits
- * der Fokus-Sternstruktur: wer mit wem sang, welches Werk an welchem Ort stand.
- *
- * Implementiert ueber Record-Buckets statt paarweiser Mengenschnitte.
- * Deterministisch: gleiche Daten, gleiche Paarliste.
- *
- * @param {Array} nodes            Knoten aus buildGraph
- * @param {Set<string>} scope      Dokumentmenge des Schnitts
- * @returns {Array<{a: string, b: string, shared: number}>} Knoten-Ids, absteigend
+ * The drawn graph as a GEXF 1.3 file, in either form. Same nodes, same edges,
+ * same weights as the drawing, because both read this one object; an
+ * export that re-derived the graph would answer a different question than the
+ * picture it was loaded from.
+ * @param {object} graph
+ * @param {string} isoDate
+ * @returns {string}
  */
-export function computeCoOccurrence(nodes, scope, { minShared = 2, maxEdges = 250 } = {}) {
-  const recordToNodes = new Map();
-  for (const n of nodes) {
-    for (const id of n.records) {
-      if (scope && !scope.has(id)) continue;
-      let set = recordToNodes.get(id);
-      if (!set) { set = []; recordToNodes.set(id, set); }
-      set.push(n.id);
-    }
+export function graphToGEXF(graph, isoDate) {
+  const lines = [];
+  lines.push('<?xml version="1.0" encoding="UTF-8"?>');
+  lines.push('<gexf xmlns="http://gexf.net/1.3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://gexf.net/1.3 http://gexf.net/1.3/gexf.xsd" version="1.3">');
+  lines.push('  <meta lastmodifieddate="' + xmlEscape(isoDate) + '">');
+  lines.push('    <creator>M³GIM — Teilnachlass Ira Malaniuk, UAKUG/NIM, KUG Graz</creator>');
+  lines.push('    <description>' + (graph.mode === 'twomode'
+    ? 'Netzwerk: Akteure und Dokumente des Schnitts, jede Nennung eine Kante'
+    : 'Netzwerk: Personenprojektion des Schnitts, Kantengewicht gleich gemeinsame Dokumente')
+    + '</description>');
+  lines.push('  </meta>');
+  lines.push('  <graph defaultedgetype="undirected" mode="static">');
+  lines.push('    <attributes class="node">');
+  lines.push('      ' + gexfAttribute('family'));
+  lines.push('      ' + gexfAttribute('documents', 'integer'));
+  lines.push('      ' + gexfAttribute('roles'));
+  // The recorded relation is a mark at the node, never an edge, because in this
+  // dataset it always starts at the creator of the fonds, who is no node. The
+  // two attributes stand in one order, so entry i of the kinds belongs to entry
+  // i of the records.
+  lines.push('      ' + gexfAttribute('relations'));
+  lines.push('      ' + gexfAttribute('relationRecords'));
+  lines.push('    </attributes>');
+  lines.push('    <attributes class="edge">');
+  lines.push('      ' + gexfAttribute('roles'));
+  lines.push('    </attributes>');
+  lines.push('    <nodes>');
+  for (const node of graph.nodes) {
+    const roles = node.kind === 'actor' ? node.roles.map(r => r.role).join(', ') : '';
+    const relations = node.relations || [];
+    lines.push(`      <node id="${xmlEscape(node.id)}" label="${xmlEscape(node.name)}">`);
+    lines.push('        <attvalues>'
+      + `<attvalue for="family" value="${xmlEscape(node.type)}"/>`
+      + `<attvalue for="documents" value="${node.weight}"/>`
+      + `<attvalue for="roles" value="${xmlEscape(roles)}"/>`
+      + `<attvalue for="relations" value="${xmlEscape(relations.map(r => r.label).join(', '))}"/>`
+      + `<attvalue for="relationRecords" value="${xmlEscape(relations.map(r => r.signatur).join(', '))}"/>`
+      + '</attvalues>');
+    lines.push('      </node>');
   }
-
-  // Der Paar-Key verbindet die beiden Ids mit einem Steuerzeichen, weil es in
-  // keinem Namen vorkommen kann. Als Escape geschrieben, sonst sieht es im
-  // Editor wie eine leere Zeichenkette aus.
-  const SEP = '';
-  const pairCount = new Map();
-  for (const ids of recordToNodes.values()) {
-    if (ids.length < 2) continue;
-    const arr = [...ids].sort();
-    for (let i = 0; i < arr.length; i++) {
-      for (let j = i + 1; j < arr.length; j++) {
-        const key = arr[i] + SEP + arr[j];
-        pairCount.set(key, (pairCount.get(key) || 0) + 1);
-      }
-    }
-  }
-
-  const pairs = [];
-  for (const [key, count] of pairCount) {
-    if (count < minShared) continue;
-    const [a, b] = key.split(SEP);
-    pairs.push({ a, b, shared: count });
-  }
-  pairs.sort((x, y) => (y.shared - x.shared)
-    || x.a.localeCompare(y.a, 'de')
-    || x.b.localeCompare(y.b, 'de'));
-  return (maxEdges && pairs.length > maxEdges) ? pairs.slice(0, maxEdges) : pairs;
+  lines.push('    </nodes>');
+  lines.push('    <edges>');
+  graph.edges.forEach((edge, i) => {
+    const roles = edgeRoles(edge).join(', ');
+    lines.push(`      <edge id="e${i}" source="${xmlEscape(edge.a)}" target="${xmlEscape(edge.b)}" weight="${edge.weight}">`);
+    if (roles) lines.push(`        <attvalues><attvalue for="roles" value="${xmlEscape(roles)}"/></attvalues>`);
+    lines.push('      </edge>');
+  });
+  lines.push('    </edges>');
+  lines.push('  </graph>');
+  lines.push('</gexf>');
+  return lines.join('\n') + '\n';
 }

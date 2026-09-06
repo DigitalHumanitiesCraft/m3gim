@@ -5,8 +5,9 @@
  * EIN Filter-State-Objekt als Quelle fuer alle filterbaren Views. Jede Facette
  * zieht ihre Werte aus store.* (keine redaktionellen Listen). Leerwert =
  * Facette inaktiv. Seit E-163 gibt es keinen Modus mehr neben den Facetten:
- * der Schaerfegrad-Umschalter ist entfallen, der Umfang-Umschalter ist in die
- * Facette `stand` (Erschliessungsstand, E-162) uebergegangen.
+ * der Schaerfegrad-Umschalter ist entfallen. Der Erschliessungsstand ist mit
+ * E-262 ganz aus dem Filter genommen, er steht nur noch als Aussage im
+ * Datensatz-Detail.
  *
  * Mechanik: setFilter(patch) merged den Patch und dispatcht ein
  * `m3gim:filter`-CustomEvent ueber denselben window-Kanal, den events.js
@@ -25,7 +26,7 @@ import { FACET_KEYS } from '../data/records-for.js';
 // sie als ODER, zwischen Facetten bleibt es UND (E-151). Eine leere Liste
 // heisst Facette inaktiv.
 const LIST_FACETS = new Set([
-  'ort', 'person', 'werk', 'institution', 'docType', 'sicht', 'stand',
+  'ort', 'person', 'werk', 'institution', 'docType', 'verknuepfung', 'land',
 ]);
 
 const EMPTY = Object.freeze({
@@ -34,9 +35,9 @@ const EMPTY = Object.freeze({
   werk: [],         // Namen (store.works)
   institution: [],  // Namen (store.organizations)
   docType: [],      // Dokumenttyp-Kurz-Ids (DFT-Hierarchie, expandDftFilter)
-  stand: [],        // Erschliessungsstand (E-162)
+  land: [],         // Laender der verorteten Orte (landIndex)
+  verknuepfung: [], // Verknuepfungstyp oder `typ:rolle` (linkIndex)
   zeitfenster: null, // [vonJahr, bisJahr] oder null = volle Spanne
-  sicht: [],        // Mobilitaetssichten (mobilityClusterFor) oder 'kontext'
   search: '',       // Freitext (Bestand/Chronik)
 });
 
@@ -137,19 +138,20 @@ export function addFacetValue(key, value) {
   setFilter({ [key]: merged });
 }
 
-/**
- * Voreinstellung einer Ansicht. Setzt nur die Facetten, die der Nutzer noch
- * nicht angefasst hat, und laesst eine getroffene Wahl unberuehrt. Damit kann
- * jede Ansicht ihre Voreinstellung mitbringen (der Bestand den
- * Erschliessungsstand), ohne den geteilten Schnitt zu ueberschreiben. Sie zaehlt
- * danach als gewoehnliche Wahl und ist als Chip wegnehmbar.
- * @param {Object} patch
- */
 /** Has the user set this facet, as opposed to a view default (E-162)? */
 export function isTouched(key) {
   return touched.has(key);
 }
 
+/**
+ * Voreinstellung einer Ansicht. Setzt nur die Facetten, die der Nutzer noch
+ * nicht angefasst hat, und laesst eine getroffene Wahl unberuehrt. Damit kann
+ * jede Ansicht ihre Voreinstellung mitbringen, ohne den geteilten Schnitt zu
+ * ueberschreiben. Sie zaehlt danach als gewoehnliche Wahl und ist als Chip
+ * wegnehmbar. Seit E-253 bringt keine Ansicht mehr eine mit, die Anwendung
+ * startet ungefiltert.
+ * @param {Object} patch
+ */
 export function applyViewDefault(patch) {
   if (!patch || typeof patch !== 'object') return;
   const fresh = {};

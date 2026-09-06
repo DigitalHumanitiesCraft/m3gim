@@ -1,12 +1,13 @@
 /**
- * Bestand und Chronik schneiden ueber den einen geteilten Filter, inklusive der
- * Facetten institution und sicht.
+ * Bestand und Chronik schneiden ueber den einen geteilten Filter, die Facetten
+ * Institution, Land und Verknuepfung eingeschlossen.
  *
- * Seit dem Sidebar-Umbau nimmt `filterBySharedState` direkt den geteilten Filter
- * (person/ort/werk/docType/institution/sicht plus Freitext) entgegen und
- * reicht die schneidenden Facetten an `recordsFor`, die eine Aufloesung im
- * Frontend. `sharedFacetsActive` beziffert, ob institution/sicht die
- * Hierarchie abflacht.
+ * `filterBySharedState` nimmt den geteilten Filter entgegen und reicht jede
+ * gesetzte Achse an `recordsFor`, die eine Aufloesung im Frontend. Der stille
+ * Defekt, gegen den diese Datei steht: die Liste der schneidenden Achsen stand
+ * hier einmal als Zweitschrift, sodass eine neue Facette in der Spalte als Chip
+ * erschien, ohne im Bestand eine Zeile zu bewegen. `sharedFacetsActive`
+ * beziffert, ob die Institution die Konvolut-Hierarchie abflacht.
  *
  * Lauf: node --test tests/frontend/shared-facets-holdings.test.mjs
  */
@@ -15,15 +16,24 @@ import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
 
 import {
-  filterBySharedState, sharedFacetsActive,
+  filterBySharedState, sharedFacetsActive, isSharedFiltered,
 } from '../../docs/js/views/_bestand-filter.js';
+import { FACET_KEYS } from '../../docs/js/data/records-for.js';
 
 // Miniatur-Store nach dem Muster aus records-for.test.mjs: die drei geteilten
 // Facetten liegen als Store-Indizes.
 function makeStore() {
   const S = (...ids) => new Set(ids);
   const rec = (id) => ({ '@id': id });
+  const place = (name, role, land) => ({
+    name, '@type': 'rico:Place', role: { '@id': role },
+    'm3gim-ontology:country': land,
+  });
   const records = new Map(['r1', 'r2', 'r3', 'r4'].map(id => [id, rec(id)]));
+  records.get('r1')['rico:hasOrHadLocation'] =
+    place('Bayreuth', 'm3gim-vocab:guestPerformance', 'Deutschland');
+  records.get('r3')['rico:hasOrHadLocation'] =
+    place('Wien', 'm3gim-vocab:dispatch', 'Österreich');
   return {
     records,
     allRecords: [...records.values()],
@@ -42,8 +52,11 @@ function makeStore() {
     recordToEvents: new Map(),
     recordToPerformances: new Map(),
     finances: new Map(),
+    conceptDefinitions: new Map(),
     roleVocab: new Map([
       ['m3gim-vocab:conductor', { id: 'm3gim-vocab:conductor', label: 'dirigent' }],
+      ['m3gim-vocab:guestPerformance', { id: 'm3gim-vocab:guestPerformance', label: 'gastspiel' }],
+      ['m3gim-vocab:dispatch', { id: 'm3gim-vocab:dispatch', label: 'absendeort' }],
     ]),
   };
 }
@@ -63,17 +76,33 @@ describe('filterBySharedState schneidet ueber die geteilten Facetten', () => {
     assert.deepEqual(out.map(i => i.record['@id']), ['r1', 'r2']);
   });
 
-  test('ein Sichtfilter schneidet', () => {
+  test('die Verknuepfungsrolle schneidet', () => {
     const out = filterBySharedState(makeStore(), items,
-      { sicht: ['performativ'] }, opts);
+      { verknuepfung: ['ort:m3gim-vocab:guestPerformance'] }, opts);
     assert.deepEqual(out.map(i => i.record['@id']), ['r1']);
   });
 
-  test('zwei Facetten bleiben UND-verknuepft', () => {
-    // Institution Wiener Staatsoper (r1,r2) UND Sicht performativ (r1) -> r1.
+  test('das Land schneidet', () => {
     const out = filterBySharedState(makeStore(), items,
-      { institution: ['Wiener Staatsoper'], sicht: ['performativ'] }, opts);
+      { land: ['Österreich'] }, opts);
+    assert.deepEqual(out.map(i => i.record['@id']), ['r3']);
+  });
+
+  test('zwei Facetten bleiben UND-verknuepft', () => {
+    // Institution Wiener Staatsoper (r1,r2) UND Land Deutschland (r1) -> r1.
+    const out = filterBySharedState(makeStore(), items,
+      { institution: ['Wiener Staatsoper'], land: ['Deutschland'] }, opts);
     assert.deepEqual(out.map(i => i.record['@id']), ['r1']);
+  });
+
+  test('jede Achse des Filters schneidet hier, keine Zweitschrift', () => {
+    // Der Defekt, gegen den das steht: eine Facette in der Spalte, die im
+    // Bestand nichts bewegt, weil ihr Schluessel in einer zweiten Liste fehlt.
+    for (const key of ['land', 'verknuepfung']) {
+      assert.ok(FACET_KEYS.includes(key), `${key} fehlt in FACET_KEYS`);
+    }
+    assert.equal(isSharedFiltered({ verknuepfung: ['ort'] }), true);
+    assert.equal(isSharedFiltered({ land: ['Deutschland'] }), true);
   });
 
   test('das zeitfenster schneidet hier nicht (View-eigene Pipeline)', () => {
@@ -102,8 +131,9 @@ describe('sharedFacetsActive beziffert die neuen Facetten', () => {
     assert.equal(sharedFacetsActive({ institution: ['Wiener Staatsoper'] }), true);
   });
 
-  test('eine gesetzte Sicht ist aktiv', () => {
-    assert.equal(sharedFacetsActive({ sicht: ['performativ'] }), true);
+  test('die abgeschaffte Sicht ist keine Achse mehr', () => {
+    assert.equal(sharedFacetsActive({ sicht: ['performativ'] }), false);
+    assert.equal(isSharedFiltered({ sicht: ['performativ'] }), false);
   });
 
   test('person/ort/werk zaehlen hier nicht mit (die traegt die Toolbar-Sync)', () => {

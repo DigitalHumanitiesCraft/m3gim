@@ -1,10 +1,9 @@
 /**
  * Record detail — pure data layer.
  *
- * partitionRecord splits a record into its functional parts, sourceSummary
- * bundles the provenance of the record and of everything nested in it. No DOM
- * and no d3, so both stay unit-testable; record-chips.js turns the partition
- * into chips and record-detail.js assembles the panel.
+ * partitionRecord splits a record into its functional parts. No DOM and no d3,
+ * so it stays unit-testable; record-chips.js turns the partition into chips and
+ * record-detail.js assembles the panel.
  */
 
 import { ensureArray, roleToken } from '../utils/format.js';
@@ -374,39 +373,95 @@ export function qualityTipLines(flag, note) {
   return lines;
 }
 
-/**
- * Provenance of the record and of everything nested in it, dom-free so it is
- * unit-testable. Per-chip pills stay in place; this bundles them so the whole
- * entry can be traced back to its Verknüpfungen sheets without hovering each
- * chip (design rule 6).
- *
- * @returns {{record: ?{sheet: ?string, row: number}, linked: Array<{sheet: string, rows: number[]}>}}
- */
-export function sourceSummary(record, store) {
-  const own = extractXlsxSource(record);
-  const {
-    bucket, works, performanceRoles, performances, events, locations,
-    agentRelations, finances, mentionedDatings, eventDatings,
-  } = partitionRecord(record, store);
+/* Folio pages (B2) */
 
-  const bySheet = new Map();
-  const nested = [
-    ...bucket.produktion, ...bucket.mitwirkende, ...bucket.institutionen,
-    ...bucket.erwaehnt, ...bucket.weitere,
-    ...works, ...performanceRoles, ...performances, ...events, ...locations,
-    ...agentRelations, ...finances, ...mentionedDatings, ...eventDatings,
-  ];
-  for (const entity of nested) {
-    // Store-derived entities carry a precomputed xlsxSource, raw JSON-LD nodes
-    // do not; both shapes reach this list.
-    const src = (entity && entity.xlsxSource) || extractXlsxSource(entity);
-    if (!src || !src.sheet) continue;
-    if (!bySheet.has(src.sheet)) bySheet.set(src.sheet, new Set());
-    bySheet.get(src.sheet).add(src.row);
+/** store → Map<page @id, Folio @id>, built once per store. The Konvolut
+ *  RecordSets list the same pages again as their own parts; only the Record
+ *  level is read here, because that is the Folio a page hangs on
+ *  (tests/test_68_folio_pages.py). */
+const pageParents = new WeakMap();
+
+function parentIndex(store) {
+  const cached = pageParents.get(store);
+  if (cached) return cached;
+  const index = new Map();
+  const records = store && store.records ? store.records : new Map();
+  for (const record of records.values()) {
+    for (const part of ensureArray(record['rico:hasOrHadPart'])) {
+      const id = part && part['@id'];
+      if (id && records.has(id)) index.set(id, record['@id']);
+    }
   }
+  pageParents.set(store, index);
+  return index;
+}
 
-  const linked = [...bySheet.entries()]
-    .map(([sheet, rows]) => ({ sheet, rows: [...rows].sort((a, b) => a - b) }))
-    .sort((a, b) => a.sheet.localeCompare(b.sheet, 'de'));
-  return { record: own ? { sheet: own.sheet, row: own.row } : null, linked };
+/** Whether the record stands as a page under a Folio record. */
+export function isFolioPage(store, recordId) {
+  return parentIndex(store).has(recordId);
+}
+
+/**
+ * The Folio a page belongs to: the topmost ancestor that is no page itself, or
+ * null for a record that is no page. A page can carry pages of its own
+ * (`33_1_1` under `33_1` under `33`), so the walk does not stop at the first
+ * parent; the seen set keeps a cyclic source from hanging the browser.
+ */
+export function folioOfPage(store, recordId) {
+  const index = parentIndex(store);
+  if (!index.has(recordId)) return null;
+  let id = recordId;
+  const seen = new Set([id]);
+  while (index.has(id)) {
+    const parent = index.get(id);
+    if (seen.has(parent)) break;
+    seen.add(parent);
+    id = parent;
+  }
+  return id;
+}
+
+/**
+ * The pages of a Folio in page order, depth first: a page that carries pages of
+ * its own stands before them, so no record of the sheet drops out of the
+ * sequence. `rico:hasOrHadPart` already stands in page order, an invariant of
+ * tests/test_68_folio_pages.py. Empty for every record without pages.
+ */
+export function folioPages(store, record) {
+  const records = store && store.records ? store.records : new Map();
+  const out = [];
+  const seen = new Set();
+  const walk = (node) => {
+    for (const part of ensureArray(node && node['rico:hasOrHadPart'])) {
+      const id = part && part['@id'];
+      const child = id ? records.get(id) : null;
+      if (!child || seen.has(id)) continue;
+      seen.add(id);
+      out.push(child);
+      walk(child);
+    }
+  };
+  walk(record);
+  return out;
+}
+
+/**
+ * Position of a page in its Folio with the neighbours the paging control
+ * offers. The ends stop instead of wrapping: a Folio is a physical sheet with a
+ * first and a last page, and a wrapping step would make the position say
+ * nothing about how far the reader has come. `index` is -1 for a page outside
+ * the list.
+ * @param {Array<object>} pages
+ * @param {string} currentId
+ * @returns {{index: number, total: number, prev: ?object, next: ?object}}
+ */
+export function pageNeighbours(pages, currentId) {
+  const list = Array.isArray(pages) ? pages : [];
+  const index = list.findIndex(p => p && p['@id'] === currentId);
+  return {
+    index,
+    total: list.length,
+    prev: index > 0 ? list[index - 1] : null,
+    next: index >= 0 && index < list.length - 1 ? list[index + 1] : null,
+  };
 }

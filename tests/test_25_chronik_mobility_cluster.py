@@ -2,7 +2,7 @@
 
 The frontend (docs/js/data/constants.js) holds a mapping
 `EVENT_ROLE_TO_MOBILITY_CLUSTER` that assigns every empirically attested
-`m3gim:eventRole` to exactly one of the five views from data-model.md § Mobilitätsmodell (or
+`m3gim:eventRole` to exactly one of the five views from data-model.md § Mobility perspectives (or
 explicitly sets it to `null` when neutral).
 
 This test reads the JS constant via regex (no JS runtime needed) and checks that
@@ -112,7 +112,7 @@ def test_every_empirical_event_role_is_mapped() -> None:
 def test_place_roles_count_as_reise_korrespondenz() -> None:
     """The five mobility place roles (E-97, MOBILITY_PLACE_ROLES) count as
     travel/correspondence mobility and map to the cluster 'korrespondenz'
-    (data.md § Ortsrollen, data-model.md § Mobilitätsmodell, decision E-110, order-m3gim 2026-06-21 point 1).
+    (data.md § Role values, data-model.md § Mobility perspectives, decision E-110, order-m3gim 2026-06-21 point 1).
     Locks the alignment against a silent regression to 'null' ('Nicht
     klassifiziert')."""
     mapping = _load_event_role_map()
@@ -125,11 +125,11 @@ def test_place_roles_count_as_reise_korrespondenz() -> None:
 
 
 def test_mapping_covers_datenmodell_spec_datumsrollen() -> None:
-    """The values specified in data.md § Rollenvokabular as date roles are either mapped or
+    """The values specified in data.md § Role values as date roles are either mapped or
     should be mapped. Soft check: only the empirically most likely are required
     hard."""
     mapping = _load_event_role_map()
-    # Must-have date roles from § Rollenvokabular (already attested empirically or immediately
+    # Must-have date roles from § Role values (already attested empirically or immediately
     # expectable).
     must_have = {
         "absendedatum",
@@ -140,7 +140,7 @@ def test_mapping_covers_datenmodell_spec_datumsrollen() -> None:
     }
     missing = must_have - set(mapping.keys())
     assert not missing, (
-        "Datumsrollen aus data.md § Rollenvokabular nicht gemappt: "
+        "Datumsrollen aus data.md § Role values nicht gemappt: "
         + ", ".join(sorted(missing))
     )
 

@@ -15,16 +15,18 @@ import { filterBySharedState, isSharedFiltered, searchMatchBestand, sharedFacets
 import { createSidebar, viewShell } from '../ui/sidebar.js';
 import { onViewNavigate } from '../ui/events.js';
 import { logStamp } from '../utils/env.js';
-import { getFilter, setFilter, applyViewDefault, addFacetValue, facetValues } from '../ui/filter-state.js';
-import { yearBounds, baseIds, STAND_DEFAULT } from '../data/records-for.js';
+import { getFilter, setFilter, addFacetValue, facetValues } from '../ui/filter-state.js';
+import { yearBounds, baseIds } from '../data/records-for.js';
 import { applyZeitfenster } from '../ui/filter-sync.js';
-import { getState } from '../ui/router.js';
+import { getState, selectRecord } from '../ui/router.js';
 import {
   getOrderedItems,
   flattenForFilter, isUndatedItem, pruneEmptyKonvolute,
   applyCollapse, annotateKonvolutHeadTips, isRedundantChildDate,
   konvolutIdOfRecord, shouldAutoOpenFirstKonvolut, firstKonvolutId,
+  folioRowFacts, rowRecords,
 } from './bestand-data.js';
+import { folioOfPage } from './record-detail-data.js';
 import {
   buildDocTypeBadge, buildErschliessung, buildKonvolutChips,
   konvolutStandTip, getFolioHint, buildKorbBtn,
@@ -35,6 +37,10 @@ let store = null;
 let container = null;
 let sidebar = null;
 let expandedRecord = null; // only one at a time
+/** The page of a Folio row the open detail shows. Null on every other row. It
+ *  is no second selection: the row stays the Folio, only the detail turns
+ *  (F8, Aufgabe 7 des Aufgabensatzes). */
+let expandedPage = null;
 let currentItems = []; // kept in sync so closures never go stale
 /** Open Konvolute of this session. Only the first head opens by itself and only
  *  on the untouched initial view, every other one waits for its chevron; the set
@@ -73,10 +79,6 @@ let pendingHeadFocus = null;
 let pendingDetailFocus = false;
 let pendingRowFocus = null;
 
-/** The Bestand opens on the objects that have been worked on (E-162). The two
- *  chips are removable, so nothing stays unreachable. */
-const VIEW_DEFAULTS = { stand: [...STAND_DEFAULT] };
-
 /**
  * Render the Bestand view into the container.
  * @param {Object} storeRef
@@ -87,7 +89,9 @@ export function renderBestand(storeRef, containerEl) {
   container = containerEl;
 
   clear(container);
-  applyViewDefault(VIEW_DEFAULTS);
+  // Die Anwendung startet ungefiltert (E-253): der Erschliessungsstand ist eine
+  // Facette wie jede andere und keine Voreinstellung mehr, die einen Teil des
+  // Bestands hinter einem Filter zurueckhaelt.
 
   // No caption and no Schaerfe banner above the table (E-156), the sidebar
   // status block carries the counts and the table carries the structure.
@@ -130,8 +134,7 @@ function updateBestandView() {
   // Stand sie nicht doch wieder hereinholt; leergelaufene Konvolut-Koepfe
   // faellt pruneEmptyKonvolute weiter unten weg.
   const base = baseIds(store);
-  let items = getOrderedItems(store)
-    .filter(item => item.isKonvolut || base.has(item.record['@id']));
+  let items = getOrderedItems(store);
 
   // When filtering, flatten: remove Konvolut headers, keep children flagged so
   // renderRows still resolves their real doc-type badge (nicht Standalone).
@@ -139,22 +142,32 @@ function updateBestandView() {
     items = flattenForFilter(items);
   }
 
-  // Every entity and shared facet plus full text and document type resolves
-  // through recordsFor, the single place in the frontend. Konvolut heads are
-  // RecordSets and carry none of those axes, so the cut runs over the object
-  // rows and the heads follow their children.
-  const passing = new Set(
-    filterBySharedState(store, items.filter(i => !i.isKonvolut), shared, {
-      getRecord: (item) => item.record,
-      searchMatch: (record, q) => searchMatchBestand(record, q, store),
-    }).map(item => item.record['@id']));
-  items = items.filter(item => item.isKonvolut || passing.has(item.record['@id']));
-
+  // The whole cut runs over the documents a row stands for. Every entity and
+  // shared facet plus full text and document type resolves through recordsFor,
+  // the single place in the frontend; Konvolut heads are RecordSets, carry none
+  // of those axes and follow their children. A Folio row carries no
+  // Verknuepfung of its own but stands for its pages, so it survives exactly as
+  // long as one of its pages does -- otherwise grouping would drop the sheet
+  // out of every cut its pages are in (F8).
+  const stands = [];
+  for (const item of items) {
+    if (item.isKonvolut) continue;
+    for (const record of rowRecords(item)) stands.push({ record, item });
+  }
+  let passing = stands.filter(s => base.has(s.record['@id']));
+  passing = filterBySharedState(store, passing, shared, {
+    getRecord: (s) => s.record,
+    searchMatch: (record, q) => searchMatchBestand(record, q, store),
+  });
   // Zeitfenster acts on top as a plain item filter.
-  items = applyZeitfenster(items, shared.zeitfenster, (item) => item.record, store);
+  passing = applyZeitfenster(passing, shared.zeitfenster, (s) => s.record, store);
+  const passingRows = new Set(passing.map(s => s.item));
+  items = items.filter(item => item.isKonvolut || passingRows.has(item));
   if (!isFiltered) items = pruneEmptyKonvolute(items);
 
-  const recordCount = items.filter(i => !i.isKonvolut).length;
+  // Counted are documents, not rows: a Folio row stands for several, and the
+  // sidebar figure means the same cut in every view.
+  const recordCount = passing.length;
   const konvolutCount = items.filter(i => i.isKonvolut).length;
 
   if (!isFiltered) {
@@ -242,7 +255,9 @@ function renderRows(items) {
   for (const item of items) {
     const r = item.record;
     const sig = formatSignatur(r['rico:identifier']);
-    const docType = getDocTypeId(r);
+    // What a Folio row takes from its pages where it carries none of its own.
+    const facts = folioRowFacts(store, item);
+    const docType = getDocTypeId(r) || facts.docType;
     const docLabel = dftLabel(store, docType) || '';
     const docGloss = glossOf(store, docType);
     const recordId = r['@id'];
@@ -274,36 +289,49 @@ function renderRows(items) {
     if (item.isKonvolut) {
       displayTitle = meta?.title || r['rico:identifier'] || '';
     } else if (item.isChild) {
-      const childTitle = r['rico:title'] || '';
+      const childTitle = r['rico:title'] || facts.title || '';
       const parentTitle = store.konvolutMeta.get(item.konvolutId)?.title || '';
       displayTitle = (childTitle && childTitle === parentTitle) ? '' : (childTitle || '');
     } else {
-      displayTitle = r['rico:title'] || '(ohne Titel)';
+      displayTitle = r['rico:title'] || facts.title || '(ohne Titel)';
     }
 
-    // Date: a Konvolut shows the span of its children, an object row its own.
-    // Without `rico:date` the row falls back to the derived Zeitanker of the
-    // data layer (contract A4, E-141), so a record dated only through an
-    // annotated Auftritt shows its year instead of reading as undated.
+    // Date: a Konvolut shows the span of its children, an object row the date of
+    // its Zeitanker. Since F3 the anchor takes the ranghoechste anchoring
+    // Datierung of the Verknuepfungen first and `rico:date` only as fallback,
+    // so Bestand and Chronik name the same year for the same record; reading
+    // `rico:date` here would print a date the timeline contradicts. A Folio row
+    // without a dating of its own falls back to the one its pages agree on.
     const anchor = item.isKonvolut ? null : primaryYear(store, r);
-    const derivedYear = (!item.isKonvolut && !r['rico:date'] && anchor.year != null)
-      ? String(anchor.year) : '';
+    const fromLink = Boolean(anchor && anchor.year != null
+      && !OBJECT_OWN_SOURCES.has(anchor.source));
     let displayDate = item.isKonvolut
       ? (meta?.dateDisplay || '')
-      : (formatDate(r['rico:date']) || derivedYear || 'o. D.');
+      : (formatDate(anchor.date) || formatDate(r['rico:date'])
+        || formatDate(facts.date) || facts.dateSpan || 'o. D.');
     if (item.isChild && !item.flattened
       && isRedundantChildDate(displayDate, store.konvolutMeta.get(item.konvolutId)?.dateDisplay)) {
       displayDate = '';
     }
-    // Only a rendered year is marked as derived; where the redundancy rule
-    // above emptied the cell there is nothing to explain.
-    const isDerived = derivedYear !== '' && displayDate === derivedYear;
+    // Only a rendered date is marked as supplemented; where the redundancy rule
+    // above emptied the cell there is nothing to explain. Supplemented means
+    // either that the year comes from a Verknuepfung instead of the document's
+    // own dating, or that a Folio row took the dating of its pages.
+    const fromPages = Boolean(facts.date || facts.dateSpan)
+      && displayDate !== '' && !r['rico:date'];
+    const isDerived = displayDate !== '' && (fromLink || fromPages);
     const isUndated = isUndatedItem(item, store);
 
     const titelEl = el('span', {
-      className: 'archiv-titel',
-      dataset: displayTitle.length > 80
-        ? { tip: displayTitle, tipWrap: '', tipPos: 'bottom-left' } : {},
+      className: 'archiv-titel'
+        // A Folio title taken from its pages carries the one mark of
+        // supplemented values, like every other value the row did not record.
+        + (facts.title && displayTitle === facts.title ? ' mark-derived' : ''),
+      dataset: (facts.title && displayTitle === facts.title)
+        ? { tip: `ergänzt: Titel der ${item.pages.length} Seiten dieses Blattes`
+            + (displayTitle.length > 80 ? `\n${displayTitle}` : ''), tipWrap: '' }
+        : (displayTitle.length > 80
+          ? { tip: displayTitle, tipWrap: '', tipPos: 'bottom-left' } : {}),
     }, truncate(displayTitle, 80));
 
     const trProps = { className: rowClass };
@@ -328,9 +356,14 @@ function renderRows(items) {
         : { recordRow: recordId };
     }
 
+    // The denominator counts the rows the Konvolut would show, not the raw
+    // children of the store: since B2 the pages of a Folio hang under their
+    // sheet and are no rows, so meta.childCount would promise objects the table
+    // never shows as such.
+    const totalChildren = item.totalChildCount ?? (meta ? meta.childCount : 0);
     const headTip = item.isKonvolut
-      ? [meta && meta.childCount > childCount
-        ? `Zeigt ${childCount} von ${meta.childCount} Objekten, der Rest ist ohne Verknüpfung`
+      ? [totalChildren > childCount
+        ? `Zeigt ${childCount} von ${totalChildren} Objekten, der Rest ist ohne Verknüpfung`
         : `Enthält ${childCount} Objekte`, konvolutStandTip(meta),
         item.familyTip,
         isOpen ? 'Klick schließt das Konvolut' : 'Klick öffnet das Konvolut']
@@ -374,7 +407,8 @@ function renderRows(items) {
           ? el('div', { className: 'archiv-titel-zeile' },
             titelEl, buildKonvolutChips(store, meta, !isOpen))
           : titelEl,
-        item.isChild ? folioHintEl(r, item) : null,
+        item.isChild && item.titleShared ? folioHintEl(r, item) : null,
+        item.isKonvolut ? null : pageMarkEl(item),
         // In flat mode the Konvolut head is gone, so a quiet provenance hint
         // names the Konvolut the child row comes from.
         item.flattened ? (() => {
@@ -398,7 +432,8 @@ function renderRows(items) {
         })() : null,
       ),
       el('td', { className: 'archiv-col-typ' },
-        buildDocTypeBadge(item, r, docType, docLabel, docGloss),
+        markPageValue(buildDocTypeBadge(item, r, docType, docLabel, docGloss),
+          facts.docType && `Dokumenttyp der ${item.pages.length} Seiten dieses Blattes`),
       ),
       el('td', { className: 'archiv-col-datum' },
         el('span', {
@@ -409,10 +444,8 @@ function renderRows(items) {
             + (isDerived ? ' mark-derived' : ''),
           dataset: isUndated ? { tip: 'ohne Datierung in der Quelle' }
             : (isDerived
-              ? { tip: anchor.label
-                ? `ergänzt: Jahr aus der Datierung „${roleLabel(anchor.label)}“`
-                : 'ergänzt: Jahr aus einer Datierung des Belegs',
-              tipWrap: '' }
+              ? { tip: fromLink ? dateOriginTip(r, anchor)
+                : 'ergänzt: Datierung der Seiten dieses Blattes', tipWrap: '' }
               : {}),
         }, displayDate)
       ),
@@ -436,9 +469,7 @@ function renderRows(items) {
     if (expandedRecord === recordId) {
       const detailTr = el('tr', { className: 'archiv-row--detail' });
       const detailTd = el('td', { colspan: '6' });
-      detailTd.appendChild(buildInlineDetail(r, store, {
-        onClose: () => closeDetail(recordId),
-      }));
+      detailTd.appendChild(buildDetail(item));
       detailTr.appendChild(detailTd);
       tbody.appendChild(detailTr);
     }
@@ -467,6 +498,51 @@ function renderRows(items) {
  *  case; the UI writes it capitalised like the Rollenfacette (E-184). */
 function roleLabel(label) {
   return label ? label[0].toLocaleUpperCase('de-DE') + label.slice(1) : '';
+}
+
+// The Zeitanker either stands at the document itself or comes from one of its
+// Verknuepfungen; only the second case is marked, because only there is the
+// shown date not the document's own. Same set as in the Chronik (F3).
+const OBJECT_OWN_SOURCES = new Set(['rico:date', 'rico:creationDate']);
+
+/**
+ * Where a date taken from a Verknuepfung comes from. Since F3 such a Datierung
+ * outranks the archival dating, so the row can show a different year than
+ * `rico:date`; the source dating is then named as well, or the reader has no
+ * way to see that the document itself carries another one.
+ */
+function dateOriginTip(record, anchor) {
+  const own = formatDate(record['rico:date']);
+  return [
+    anchor.label
+      ? `ergänzt: Jahr aus der Datierung „${roleLabel(anchor.label)}“`
+      : 'ergänzt: Jahr aus einer Datierung des Belegs',
+    own ? `Quelldatierung des Objekts: ${own}` : '',
+  ].filter(Boolean).join('\n');
+}
+
+/** Marks an already built cell element as a value the row took from its pages;
+ *  `what` empty leaves it untouched, so the caller needs no branch. */
+function markPageValue(element, what) {
+  if (!element || !what) return element;
+  element.classList.add('mark-derived');
+  Object.assign(element.dataset, {
+    tip: [`ergänzt: ${what}`, element.dataset.tip].filter(Boolean).join('\n'),
+    tipWrap: '',
+  });
+  return element;
+}
+
+/** The page count of a Folio row as the compact chip the Konvolut head already
+ *  uses for its type distribution; the tooltip carries what the number affords,
+ *  the row states no prose (design.md § Components). */
+function pageMarkEl(item) {
+  const count = (item.pages || []).length;
+  if (count === 0) return null;
+  return el('span', {
+    className: 'chip chip--compact archiv-pages',
+    dataset: { tip: 'Das Detail blättert durch die Seiten dieses Blattes', tipWrap: '' },
+  }, `${count} ${count === 1 ? 'Seite' : 'Seiten'}`);
 }
 
 /** Hint that tells apart children sharing the collective title of their
@@ -583,7 +659,18 @@ function onTableKeydown(e) {
   if (!(target instanceof Element)) return;
   if (target.closest('input, textarea, select, [contenteditable="true"]')) return;
   if (target.closest('.inline-detail')) {
-    if (e.key !== 'Escape' || expandedRecord == null) return;
+    if (expandedRecord == null) return;
+    // Inside the open detail the arrow keys are free, so they turn the pages of
+    // a Folio; the buttons of the control stay in the tab order beside them.
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+      const btn = target.closest('.inline-detail')
+        .querySelector(`[data-page-step="${e.key === 'ArrowLeft' ? 'prev' : 'next'}"]`);
+      if (!btn || btn.disabled) return;
+      e.preventDefault();
+      btn.click();
+      return;
+    }
+    if (e.key !== 'Escape') return;
     e.preventDefault();
     closeDetail(expandedRecord);
     return;
@@ -631,23 +718,103 @@ function onKorbToggled(recordId) {
   if (expandedRecord === recordId) renderRows(currentItems);
 }
 
+/**
+ * The detail of a row. A Folio row shows one of its pages and gets the page
+ * control; every other row shows itself and gets none. The row does not change
+ * while the reader turns pages, so the detail stays where it stands
+ * (Aufgabe 7 des Aufgabensatzes).
+ */
+function buildDetail(item) {
+  const pages = item.pages || [];
+  if (pages.length === 0) return buildInlineDetail(item.record, store);
+  const page = pages.find(p => p['@id'] === expandedPage) || pages[0];
+  expandedPage = page['@id'];
+  return buildInlineDetail(page, store, { pages, onPage: turnPage });
+}
+
+/** The row a record is shown in: a page is shown in the row of its Folio. */
+function rowIdFor(recordId) {
+  return folioOfPage(store, recordId) || recordId;
+}
+
+/** The page the URL names for the open row, empty for a row without pages. */
+function pageOfRow(item, recordId) {
+  const pages = item ? (item.pages || []) : [];
+  if (pages.length === 0) return null;
+  return pages.some(p => p['@id'] === recordId) ? recordId : pages[0]['@id'];
+}
+
+/**
+ * Turn to a page. The address line is the one driver: it takes the page, and
+ * the record handler of the router comes back through expandRecord, which finds
+ * the row already open and only swaps the detail. So a page stays citable
+ * without a second path that could drift from the first.
+ */
+function turnPage(pageId) {
+  selectRecord(pageId);
+}
+
+/**
+ * Swap the open detail for another page of the same Folio without rebuilding
+ * the table: the row keeps its place, its scroll position and its open state.
+ * The focus follows the button that was pressed, so repeated turning works from
+ * the keyboard; at the end, where that button goes dead, it falls back to the
+ * head line of the detail.
+ */
+function showPage(pageId) {
+  if (expandedPage === pageId) return;
+  const item = currentItems.find(i => i.record['@id'] === expandedRecord);
+  const cell = container && container.querySelector('.archiv-row--detail td');
+  if (!item || !cell) { expandedPage = pageId; renderRows(currentItems); return; }
+  expandedPage = pageId;
+  const active = document.activeElement;
+  // The swap destroys the focused element. Where the focus stood in the detail
+  // it goes back to the same button, and to the head line where that button has
+  // gone dead at the end of the sheet or the arrow keys did the turning.
+  const inDetail = Boolean(active && cell.contains(active));
+  const step = inDetail && active.dataset ? active.dataset.pageStep : null;
+  clear(cell);
+  cell.appendChild(buildDetail(item));
+  if (inDetail) {
+    const next = (step && cell.querySelector(`[data-page-step="${step}"]:not([disabled])`))
+      || cell.querySelector('.inline-detail__head');
+    if (next) next.focus({ preventScroll: true });
+  }
+}
+
 function toggleRecordInline(recordId) {
   if (expandedRecord === recordId) { closeDetail(recordId); return; }
+  const item = currentItems.find(i => i.record['@id'] === recordId);
   expandedRecord = recordId;
+  expandedPage = pageOfRow(item, recordId);
   pendingDetailFocus = true;
   renderRows(currentItems);
+  // Only a Folio row writes its page into the address; every other row keeps
+  // the behaviour it had, where opening a detail is a reading state.
+  if (expandedPage) selectRecord(expandedPage);
 }
 
 function closeDetail(recordId) {
+  const wasPaged = expandedPage != null;
   expandedRecord = null;
+  expandedPage = null;
   pendingRowFocus = recordId;
   renderRows(currentItems);
+  if (wasPaged && getState().selectedRecord) selectRecord(null);
 }
 
 /** Programmatically expand a record's inline detail (used by cross-navigation). */
 function expandRecord(recordId) {
   if (!recordId || !store) return;
-  expandedRecord = recordId;
+  // A page opens in the row of its Folio, so a deep link on a page opens the
+  // sheet on that page (B2/F8). Is the row already open, only the detail turns;
+  // widening the cut and rebuilding the table again would move the page under
+  // the reader on every step.
+  const rowId = rowIdFor(recordId);
+  if (expandedRecord === rowId) { showPage(pageOfRow(
+    currentItems.find(i => i.record['@id'] === rowId), recordId)); return; }
+  expandedRecord = rowId;
+  expandedPage = recordId === rowId ? null : recordId;
   // A record named by a jump has to open, so a cut that excludes it is widened
   // minimally instead of letting the row disappear without a word; every
   // widening shows up as a chip (Projektleitung, 2026-09-04).

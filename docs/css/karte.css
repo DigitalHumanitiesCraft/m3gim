@@ -76,10 +76,15 @@
 
 .mob-entity__active {
   display: flex;
-  align-items: baseline;
+  /* The family icon sits next to the name, so the row centres instead of
+     sitting on the text baseline. */
+  align-items: center;
   gap: var(--space-2);
   flex-wrap: wrap;
   padding-bottom: var(--space-2);
+}
+.mob-entity__active .fam-mark {
+  flex: none;
 }
 .mob-entity__activename {
   font-size: var(--text-sm);
@@ -161,12 +166,6 @@
   cursor: pointer;
   text-decoration: underline;
 }
-.mob-detail__note {
-  font-size: var(--text-xs);
-  color: var(--color-text-tertiary);
-  font-style: italic;
-}
-
 /* Absence, not a value: an undated Beleg keeps its place in the list and says
    so in the one absence form of the application (E-225, design rule 16). */
 .mob-chip__undated {
@@ -215,26 +214,20 @@
 .mob-vmark {
   width: 13px; height: 13px; border-radius: 50%;
   box-sizing: border-box; background: transparent;
+  flex: none;
 }
 .mob-vmark--secured { border: 1.5px solid var(--color-text-tertiary); background: var(--line-strong); }
 .mob-vmark--city { border: 1.5px dashed var(--line-strong); }
 .mob-vmark--far { border: 1.5px dashed var(--color-error); }
-
-/* Collapsed list of records that cannot be placed */
-.mob-unloc { margin-top: var(--space-3); }
-.mob-unloc__summary {
-  cursor: pointer;
-  font-family: var(--font-ui);
-  font-size: var(--text-xs);
-  color: var(--color-text-secondary);
-  user-select: none;
-}
-.mob-unloc__summary:hover { color: var(--color-text-primary); }
+/* No point on the map at all: an open, dotted ring. The Wikidata green says the
+   place is matched and only the coordinates are missing, grey that the
+   reconciliation found nothing (F4). */
+.mob-vmark--unloc { border: 1.5px dotted var(--color-text-tertiary); }
+.mob-vmark--unloc-qid { border-color: var(--color-match); }
 
 /* Touch targets in the sidebar's event region. */
 @media (max-width: 768px) {
-  .mob-detail__clear,
-  .mob-unloc__summary {
+  .mob-detail__clear {
     display: inline-flex;
     align-items: center;
     min-block-size: 24px;

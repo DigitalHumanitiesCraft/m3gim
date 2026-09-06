@@ -1,6 +1,6 @@
 {
   "meta": {
-    "date": "2026-04-17T16:34:37.467763",
+    "date": "2026-09-05T13:48:34.752487",
     "strategy": "fuzzy_match_with_confidence",
     "min_name_length": 3,
     "min_confidence": 80,
@@ -9,16 +9,7 @@
       "fuzzy_high": 90,
       "fuzzy_low": 80
     },
-    "manual_curation": {
-      "date": "2026-08-22",
-      "basis": [
-        "identifier-proposals-persons.md",
-        "identifier-proposals-works.md",
-        "identifier-proposals-orgs-places.md"
-      ],
-      "scope": "Stufe gesichert",
-      "log": "data/reports/reconciliation-application-log.md"
-    }
+    "manual_curation": {}
   },
   "matched": [
     {
@@ -1628,176 +1619,6 @@
       "confidence": 97
     },
     {
-      "type": "location",
-      "name": "Berlin",
-      "qid": "Q64",
-      "label": "Berlin",
-      "match": "exact",
-      "confidence": 100
-    },
-    {
-      "type": "location",
-      "name": "Graz",
-      "qid": "Q13298",
-      "label": "Graz",
-      "match": "exact",
-      "confidence": 100
-    },
-    {
-      "type": "location",
-      "name": "Hamburg",
-      "qid": "Q1055",
-      "label": "Hamburg",
-      "match": "exact",
-      "confidence": 100
-    },
-    {
-      "type": "location",
-      "name": "Linz",
-      "qid": "Q41329",
-      "label": "Linz",
-      "match": "exact",
-      "confidence": 100
-    },
-    {
-      "type": "location",
-      "name": "London",
-      "qid": "Q84",
-      "label": "London",
-      "match": "exact",
-      "confidence": 100
-    },
-    {
-      "type": "location",
-      "name": "Madrid",
-      "qid": "Q116170766",
-      "label": "Madrid city",
-      "match": "fuzzy_high",
-      "confidence": 100
-    },
-    {
-      "type": "location",
-      "name": "Mailand",
-      "qid": "Q490",
-      "label": "Milan",
-      "match": "manual",
-      "confidence": 100,
-      "manual_review": "approved",
-      "note": "2026-04-18: fuzzy_low 83 verifiziert — DE/EN-Schreibweise (Mailand/Milan)."
-    },
-    {
-      "type": "location",
-      "name": "Monte Carlo",
-      "qid": "Q45240",
-      "label": "Monte Carlo",
-      "match": "exact",
-      "confidence": 100
-    },
-    {
-      "type": "location",
-      "name": "New York",
-      "qid": "Q60",
-      "label": "New York City",
-      "match": "manual",
-      "confidence": 100,
-      "manual_review": "approved",
-      "note": "2026-08-22: Fehlzuordnung Q1384 (New York, Bundesstaat der Vereinigten Staaten von Amerika) korrigiert nach identifier-proposals-orgs-places.md, Stufe gesichert; Beleg Special:EntityData/Q60, New York City, bevölkerungsreichste Stadt der Vereinigten Staaten."
-    },
-    {
-      "type": "location",
-      "name": "Paris",
-      "qid": "Q90",
-      "label": "Paris",
-      "match": "exact",
-      "confidence": 100
-    },
-    {
-      "type": "location",
-      "name": "Perchtoldsdorf",
-      "qid": "Q21880302",
-      "label": "Perchtoldsdorf",
-      "match": "exact",
-      "confidence": 100
-    },
-    {
-      "type": "location",
-      "name": "Potsdam",
-      "qid": "Q1711",
-      "label": "Potsdam",
-      "match": "exact",
-      "confidence": 100
-    },
-    {
-      "type": "location",
-      "name": "Rom",
-      "qid": "Q220",
-      "label": "Rome",
-      "match": "manual",
-      "confidence": 100,
-      "manual_review": "approved",
-      "note": "2026-04-18: fuzzy_low 86 verifiziert — DE/EN-Schreibweise (Rom/Rome)."
-    },
-    {
-      "type": "location",
-      "name": "Salzburg",
-      "qid": "Q34713",
-      "label": "Salzburg",
-      "match": "exact",
-      "confidence": 100
-    },
-    {
-      "type": "location",
-      "name": "Schottland",
-      "qid": "Q22",
-      "label": "Scotland",
-      "match": "manual",
-      "confidence": 100,
-      "manual_review": "approved",
-      "note": "2026-04-18: fuzzy_low 89 verifiziert — DE/EN-Schreibweise (Schottland/Scotland)."
-    },
-    {
-      "type": "location",
-      "name": "Straßburg",
-      "qid": "Q6602",
-      "label": "Strasbourg",
-      "match": "manual",
-      "confidence": 100,
-      "manual_review": "approved",
-      "note": "2026-04-18: fuzzy_low 89 verifiziert — DE/EN-Schreibweise (Strassburg/Strasbourg)."
-    },
-    {
-      "type": "location",
-      "name": "Stuttgart",
-      "qid": "Q1022",
-      "label": "Stuttgart",
-      "match": "exact",
-      "confidence": 100
-    },
-    {
-      "type": "location",
-      "name": "Stuttgart",
-      "qid": "Q1022",
-      "label": "Stuttgart",
-      "match": "exact",
-      "confidence": 100
-    },
-    {
-      "type": "location",
-      "name": "Zürich",
-      "qid": "Q72",
-      "label": "Zurich",
-      "match": "fuzzy_high",
-      "confidence": 91
-    },
-    {
-      "type": "location",
-      "name": "Basel",
-      "qid": "Q78",
-      "label": "Basel",
-      "match": "exact",
-      "confidence": 100
-    },
-    {
       "type": "work",
       "name": "Befreit",
       "komponist": "Strauss, Richard",
@@ -2089,106 +1910,6 @@
       "confidence": 100,
       "manual_review": "approved",
       "note": "2026-08-22: Fehlzuordnung Q6941842 (Requiem, musikalische Form für die liturgische Totenmesse) korrigiert nach identifier-proposals-works.md, Stufe gesichert; Beleg Special:EntityData/Q1356210, Messa da Requiem, Vertonung des Textes der Totenmesse (Requiem) durch den Komponisten Giuseppe Verdi aus dem Jahr 1874; Komponist Giuseppe Verdi."
-    },
-    {
-      "type": "location",
-      "name": "Wien",
-      "qid": "Q1741",
-      "label": "Vienna",
-      "match": "manual",
-      "confidence": 100,
-      "manual_review": "approved",
-      "note": "Top-10 Malaniuk-Stadt. API lieferte kein Kandidat; Q-ID manuell verifiziert."
-    },
-    {
-      "type": "location",
-      "name": "München",
-      "qid": "Q1726",
-      "label": "Munich",
-      "match": "manual",
-      "confidence": 100,
-      "manual_review": "approved",
-      "note": "Top-10 Malaniuk-Stadt. API lieferte kein Kandidat; Q-ID manuell verifiziert."
-    },
-    {
-      "type": "location",
-      "name": "Bayreuth",
-      "qid": "Q3923",
-      "label": "Bayreuth",
-      "match": "manual",
-      "confidence": 100,
-      "manual_review": "approved",
-      "note": "Top-10 Malaniuk-Stadt. API lieferte kein Kandidat; Q-ID manuell verifiziert. | 2026-04-17: Q-ID korrigiert Q2861 (Rostock) → Q3923 (Bayreuth)."
-    },
-    {
-      "type": "location",
-      "name": "Köln",
-      "qid": "Q365",
-      "label": "Cologne",
-      "match": "manual",
-      "confidence": 100,
-      "manual_review": "approved",
-      "note": "Top-10 Malaniuk-Stadt. API lieferte kein Kandidat; Q-ID manuell verifiziert."
-    },
-    {
-      "type": "location",
-      "name": "Venedig",
-      "qid": "Q641",
-      "label": "Venice",
-      "match": "manual",
-      "confidence": 100,
-      "manual_review": "approved",
-      "note": "Top-10 Malaniuk-Stadt. API lieferte kein Kandidat; Q-ID manuell verifiziert."
-    },
-    {
-      "type": "location",
-      "name": "Neapel",
-      "qid": "Q2634",
-      "label": "Naples",
-      "match": "manual",
-      "confidence": 100,
-      "manual_review": "approved",
-      "note": "Top-10 Malaniuk-Stadt. API lieferte kein Kandidat; Q-ID manuell verifiziert."
-    },
-    {
-      "type": "location",
-      "name": "Buenos Aires",
-      "qid": "Q1486",
-      "label": "Buenos Aires",
-      "match": "manual",
-      "confidence": 100,
-      "manual_review": "approved",
-      "note": "Top-10 Malaniuk-Stadt. API lieferte kein Kandidat; Q-ID manuell verifiziert."
-    },
-    {
-      "type": "location",
-      "name": "Lemberg",
-      "qid": "Q36036",
-      "label": "Lviv",
-      "match": "manual",
-      "confidence": 100,
-      "manual_review": "approved",
-      "note": "Top-10 Malaniuk-Stadt. API lieferte kein Kandidat; Q-ID manuell verifiziert."
-    },
-    {
-      "type": "location",
-      "name": "Lissabon",
-      "qid": "Q597",
-      "label": "Lisbon",
-      "match": "manual",
-      "confidence": 100,
-      "manual_review": "approved",
-      "note": "Top-10 Malaniuk-Stadt. API lieferte kein Kandidat; Q-ID manuell verifiziert."
-    },
-    {
-      "type": "location",
-      "name": "Stanislau",
-      "qid": "Q156726",
-      "label": "Ivano-Frankivsk",
-      "match": "manual",
-      "confidence": 100,
-      "manual_review": "approved",
-      "note": "Top-10 Malaniuk-Stadt. API lieferte kein Kandidat; Q-ID manuell verifiziert. | 2026-04-17: Q-ID korrigiert Q200491 (US-Game-Publisher) → Q156726 (Iwano-Frankiwsk)."
     },
     {
       "type": "person",
@@ -3637,6 +3358,276 @@
     },
     {
       "type": "location",
+      "name": "Bayreuth",
+      "qid": "Q3923",
+      "label": "Bayreuth",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "Top-10 Malaniuk-Stadt. API lieferte kein Kandidat; Q-ID manuell verifiziert. | 2026-04-17: Q-ID korrigiert Q2861 (Rostock) → Q3923 (Bayreuth)."
+    },
+    {
+      "type": "location",
+      "name": "Berlin",
+      "qid": "Q64",
+      "label": "Berlin",
+      "match": "exact",
+      "confidence": 100
+    },
+    {
+      "type": "location",
+      "name": "Buenos Aires",
+      "qid": "Q1486",
+      "label": "Buenos Aires",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "Top-10 Malaniuk-Stadt. API lieferte kein Kandidat; Q-ID manuell verifiziert."
+    },
+    {
+      "type": "location",
+      "name": "Graz",
+      "qid": "Q13298",
+      "label": "Graz",
+      "match": "exact",
+      "confidence": 100
+    },
+    {
+      "type": "location",
+      "name": "Hamburg",
+      "qid": "Q1055",
+      "label": "Hamburg",
+      "match": "exact",
+      "confidence": 100
+    },
+    {
+      "type": "location",
+      "name": "Köln",
+      "qid": "Q365",
+      "label": "Cologne",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "Top-10 Malaniuk-Stadt. API lieferte kein Kandidat; Q-ID manuell verifiziert."
+    },
+    {
+      "type": "location",
+      "name": "Lemberg",
+      "qid": "Q36036",
+      "label": "Lviv",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "Top-10 Malaniuk-Stadt. API lieferte kein Kandidat; Q-ID manuell verifiziert."
+    },
+    {
+      "type": "location",
+      "name": "Lissabon",
+      "qid": "Q597",
+      "label": "Lisbon",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "Top-10 Malaniuk-Stadt. API lieferte kein Kandidat; Q-ID manuell verifiziert."
+    },
+    {
+      "type": "location",
+      "name": "Linz",
+      "qid": "Q41329",
+      "label": "Linz",
+      "match": "exact",
+      "confidence": 100
+    },
+    {
+      "type": "location",
+      "name": "London",
+      "qid": "Q84",
+      "label": "London",
+      "match": "exact",
+      "confidence": 100
+    },
+    {
+      "type": "location",
+      "name": "Madrid",
+      "qid": "Q116170766",
+      "label": "Madrid city",
+      "match": "fuzzy_high",
+      "confidence": 100
+    },
+    {
+      "type": "location",
+      "name": "Mailand",
+      "qid": "Q490",
+      "label": "Milan",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-04-18: fuzzy_low 83 verifiziert — DE/EN-Schreibweise (Mailand/Milan)."
+    },
+    {
+      "type": "location",
+      "name": "Monte Carlo",
+      "qid": "Q45240",
+      "label": "Monte Carlo",
+      "match": "exact",
+      "confidence": 100
+    },
+    {
+      "type": "location",
+      "name": "München",
+      "qid": "Q1726",
+      "label": "Munich",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "Top-10 Malaniuk-Stadt. API lieferte kein Kandidat; Q-ID manuell verifiziert."
+    },
+    {
+      "type": "location",
+      "name": "Neapel",
+      "qid": "Q2634",
+      "label": "Naples",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "Top-10 Malaniuk-Stadt. API lieferte kein Kandidat; Q-ID manuell verifiziert."
+    },
+    {
+      "type": "location",
+      "name": "New York",
+      "qid": "Q60",
+      "label": "New York City",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-08-22: Fehlzuordnung Q1384 (New York, Bundesstaat der Vereinigten Staaten von Amerika) korrigiert nach identifier-proposals-orgs-places.md, Stufe gesichert; Beleg Special:EntityData/Q60, New York City, bevölkerungsreichste Stadt der Vereinigten Staaten."
+    },
+    {
+      "type": "location",
+      "name": "Paris",
+      "qid": "Q90",
+      "label": "Paris",
+      "match": "exact",
+      "confidence": 100
+    },
+    {
+      "type": "location",
+      "name": "Perchtoldsdorf",
+      "qid": "Q21880302",
+      "label": "Perchtoldsdorf",
+      "match": "exact",
+      "confidence": 100
+    },
+    {
+      "type": "location",
+      "name": "Potsdam",
+      "qid": "Q1711",
+      "label": "Potsdam",
+      "match": "exact",
+      "confidence": 100
+    },
+    {
+      "type": "location",
+      "name": "Rom",
+      "qid": "Q220",
+      "label": "Rome",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-04-18: fuzzy_low 86 verifiziert — DE/EN-Schreibweise (Rom/Rome)."
+    },
+    {
+      "type": "location",
+      "name": "Salzburg",
+      "qid": "Q34713",
+      "label": "Salzburg",
+      "match": "exact",
+      "confidence": 100
+    },
+    {
+      "type": "location",
+      "name": "Schottland",
+      "qid": "Q22",
+      "label": "Scotland",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-04-18: fuzzy_low 89 verifiziert — DE/EN-Schreibweise (Schottland/Scotland)."
+    },
+    {
+      "type": "location",
+      "name": "Stanislau",
+      "qid": "Q156726",
+      "label": "Ivano-Frankivsk",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "Top-10 Malaniuk-Stadt. API lieferte kein Kandidat; Q-ID manuell verifiziert. | 2026-04-17: Q-ID korrigiert Q200491 (US-Game-Publisher) → Q156726 (Iwano-Frankiwsk)."
+    },
+    {
+      "type": "location",
+      "name": "Straßburg",
+      "qid": "Q6602",
+      "label": "Strasbourg",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-04-18: fuzzy_low 89 verifiziert — DE/EN-Schreibweise (Strassburg/Strasbourg)."
+    },
+    {
+      "type": "location",
+      "name": "Stuttgart",
+      "qid": "Q1022",
+      "label": "Stuttgart",
+      "match": "exact",
+      "confidence": 100
+    },
+    {
+      "type": "location",
+      "name": "Stuttgart",
+      "qid": "Q1022",
+      "label": "Stuttgart",
+      "match": "exact",
+      "confidence": 100
+    },
+    {
+      "type": "location",
+      "name": "Venedig",
+      "qid": "Q641",
+      "label": "Venice",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "Top-10 Malaniuk-Stadt. API lieferte kein Kandidat; Q-ID manuell verifiziert."
+    },
+    {
+      "type": "location",
+      "name": "Wien",
+      "qid": "Q1741",
+      "label": "Vienna",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "Top-10 Malaniuk-Stadt. API lieferte kein Kandidat; Q-ID manuell verifiziert."
+    },
+    {
+      "type": "location",
+      "name": "Zürich",
+      "qid": "Q72",
+      "label": "Zurich",
+      "match": "fuzzy_high",
+      "confidence": 91
+    },
+    {
+      "type": "location",
+      "name": "Basel",
+      "qid": "Q78",
+      "label": "Basel",
+      "match": "exact",
+      "confidence": 100
+    },
+    {
+      "type": "location",
       "name": "Bloomington, Indiana",
       "qid": "Q490385",
       "label": "Bloomington",
@@ -3644,6 +3635,288 @@
       "confidence": 100,
       "manual_review": "approved",
       "note": "2026-08-22: redaktionell zugeordnet nach identifier-proposals-orgs-places.md, Stufe gesichert; Beleg Special:EntityData/Q490385, Bloomington, Stadt im US-Bundesstaat Indiana."
+    },
+    {
+      "type": "location",
+      "name": "Wuppertal",
+      "qid": "Q2107",
+      "label": "Wuppertal",
+      "match": "exact",
+      "confidence": 100
+    },
+    {
+      "type": "location",
+      "name": "Belgrad",
+      "qid": "Q3711",
+      "label": "Belgrade",
+      "match": "alias",
+      "confidence": 95
+    },
+    {
+      "type": "location",
+      "name": "Düsseldorf",
+      "qid": "Q1718",
+      "label": "Düsseldorf",
+      "match": "exact",
+      "confidence": 100
+    },
+    {
+      "type": "location",
+      "name": "Brüssel",
+      "qid": "Q239",
+      "label": "Brussels",
+      "match": "alias",
+      "confidence": 95
+    },
+    {
+      "type": "location",
+      "name": "Turin",
+      "qid": "Q495",
+      "label": "Turin",
+      "match": "exact",
+      "confidence": 100
+    },
+    {
+      "type": "location",
+      "name": "Barcelona",
+      "qid": "Q1492",
+      "label": "Barcelona",
+      "match": "exact",
+      "confidence": 100
+    },
+    {
+      "type": "location",
+      "name": "Bern",
+      "qid": "Q70",
+      "label": "Bern",
+      "match": "exact",
+      "confidence": 100
+    },
+    {
+      "type": "location",
+      "name": "Beromünster",
+      "qid": "Q7146",
+      "label": "Beromünster",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-09-05: Der automatische Treffer Q22398495 ('Siedlung in der Schweiz', ohne deutsches Label) stand nur deshalb vorn, weil der Typfilter die Klasse 'Gemeinde der Schweiz' (Q70208) nicht kennt. Beleg Special:EntityData/Q7146, Label de 'Beromuenster', Beschreibung 'Gemeinde im Kanton Luzern, Schweiz'."
+    },
+    {
+      "type": "location",
+      "name": "Bremen",
+      "qid": "Q24879",
+      "label": "Bremen",
+      "match": "exact",
+      "confidence": 100
+    },
+    {
+      "type": "location",
+      "name": "Cagliari",
+      "qid": "Q1897",
+      "label": "Cagliari",
+      "match": "exact",
+      "confidence": 100
+    },
+    {
+      "type": "location",
+      "name": "Firenze",
+      "qid": "Q2044",
+      "label": "Florence",
+      "match": "alias",
+      "confidence": 95
+    },
+    {
+      "type": "location",
+      "name": "Frankfurt a. M.",
+      "qid": "Q1794",
+      "label": "Frankfurt",
+      "match": "alias",
+      "confidence": 95
+    },
+    {
+      "type": "location",
+      "name": "Frankfurt am Main",
+      "qid": "Q1794",
+      "label": "Frankfurt",
+      "match": "alias",
+      "confidence": 95
+    },
+    {
+      "type": "location",
+      "name": "Frankfurt/Main",
+      "qid": "Q1794",
+      "label": "Frankfurt",
+      "match": "alias",
+      "confidence": 95
+    },
+    {
+      "type": "location",
+      "name": "Geneve",
+      "qid": "Q71",
+      "label": "Geneva",
+      "match": "fuzzy_high",
+      "confidence": 91
+    },
+    {
+      "type": "location",
+      "name": "Genf",
+      "qid": "Q71",
+      "label": "Geneva",
+      "match": "alias",
+      "confidence": 95
+    },
+    {
+      "type": "location",
+      "name": "Innsbruck",
+      "qid": "Q1735",
+      "label": "Innsbruck",
+      "match": "exact",
+      "confidence": 100
+    },
+    {
+      "type": "location",
+      "name": "Italien",
+      "qid": "Q38",
+      "label": "Italy",
+      "match": "alias",
+      "confidence": 95
+    },
+    {
+      "type": "location",
+      "name": "Koblenz",
+      "qid": "Q3104",
+      "label": "Koblenz",
+      "match": "exact",
+      "confidence": 100
+    },
+    {
+      "type": "location",
+      "name": "Kopenhagen",
+      "qid": "Q1748",
+      "label": "Copenhagen",
+      "match": "alias",
+      "confidence": 95
+    },
+    {
+      "type": "location",
+      "name": "Lübeck",
+      "qid": "Q2843",
+      "label": "Lübeck",
+      "match": "exact",
+      "confidence": 100
+    },
+    {
+      "type": "location",
+      "name": "Mainz",
+      "qid": "Q1720",
+      "label": "Mainz",
+      "match": "exact",
+      "confidence": 100
+    },
+    {
+      "type": "location",
+      "name": "Metz",
+      "qid": "Q22690",
+      "label": "Metz",
+      "match": "exact",
+      "confidence": 100
+    },
+    {
+      "type": "location",
+      "name": "Milano",
+      "qid": "Q490",
+      "label": "Milan",
+      "match": "fuzzy_high",
+      "confidence": 91
+    },
+    {
+      "type": "location",
+      "name": "Napoli",
+      "qid": "Q2634",
+      "label": "Naples",
+      "match": "alias",
+      "confidence": 95
+    },
+    {
+      "type": "location",
+      "name": "Palermo",
+      "qid": "Q2656",
+      "label": "Palermo",
+      "match": "exact",
+      "confidence": 100
+    },
+    {
+      "type": "location",
+      "name": "Roma",
+      "qid": "Q220",
+      "label": "Rom",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-09-05: Der automatische Treffer Q2063327 (Stadt in Queensland, Australien) war ein Label-Fehlmatch der Klasse AF-01/AF-05 und ist ersetzt. 'Roma' steht in UAKUG/NIM_005 als vertragsort italienischer Vertraege. Beleg Special:EntityData/Q220, Label de 'Rom', Beschreibung 'Haupt- und bevoelkerungsreichste Stadt Italiens'."
+    },
+    {
+      "type": "location",
+      "name": "Strassburg",
+      "qid": "Q6602",
+      "label": "Strasbourg",
+      "match": "fuzzy_high",
+      "confidence": 90
+    },
+    {
+      "type": "location",
+      "name": "Torino",
+      "qid": "Q495",
+      "label": "Turin",
+      "match": "alias",
+      "confidence": 95
+    },
+    {
+      "type": "location",
+      "name": "Venezia",
+      "qid": "Q641",
+      "label": "Venice",
+      "match": "alias",
+      "confidence": 95
+    },
+    {
+      "type": "location",
+      "name": "Warschau",
+      "qid": "Q270",
+      "label": "Warsaw",
+      "match": "alias",
+      "confidence": 95
+    },
+    {
+      "type": "location",
+      "name": "Frankfurt",
+      "qid": "Q1794",
+      "label": "Frankfurt am Main",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-09-05: Ortsindex L4 fuehrt in der Spalte 'Bei Erfassung hinzugefuegt' 'Frankfurt am Main'; die Reconciliation blieb bei AMBIG 100 zwischen Q1794 und Q4024 (Frankfurt (Oder)) ohne Treffer. Beleg Special:EntityData/Q1794, Label de 'Frankfurt am Main', Alias 'Frankfurt', Beschreibung 'bevoelkerungsreichste Stadt in Hessen, Deutschland'."
+    },
+    {
+      "type": "location",
+      "name": "Dresden",
+      "qid": "Q1731",
+      "label": "Dresden",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-09-05: AMBIG 100 zwischen Q1731 und Q1258446 (Ort in Ontario, Kanada). Beide Nennungen (UAKUG/NIM_073 33_1_3, UAKUG/NIM_137 11_62) stehen als 'erwaehnt' in Reihen deutschsprachiger Opernstaedte (Muenchen, Stuttgart, Berlin, Wien, Graz, Duesseldorf, Koeln, Bremen). Beleg Special:EntityData/Q1731, Label de 'Dresden', Beschreibung 'Landeshauptstadt des Freistaates Sachsen, Deutschland'."
+    },
+    {
+      "type": "location",
+      "name": "Ottobeuren",
+      "qid": "Q532455",
+      "label": "Ottobeuren",
+      "match": "manual",
+      "confidence": 100,
+      "manual_review": "approved",
+      "note": "2026-09-05: Kein automatischer Treffer, weil der Typfilter Q_GEOGRAPHIC die Klasse 'Markt in Deutschland' (Q100341898) nicht kennt. Beleg Special:EntityData/Q532455, Label de 'Ottobeuren', Beschreibung 'Gemeinde in Deutschland'. Der zweite Kandidat Q32211692 ist der Hauptort derselben Gemeinde, also dieselbe Stelle eine Granularitaetsstufe tiefer."
     }
   ],
   "unmatched": [
@@ -4244,6 +4517,134 @@
     {
       "type": "work",
       "name": "Regentropfen"
+    },
+    {
+      "type": "location",
+      "name": "Baden-Baden"
+    },
+    {
+      "type": "location",
+      "name": "Bayerische Staatsoper"
+    },
+    {
+      "type": "location",
+      "name": "Bayeuth"
+    },
+    {
+      "type": "location",
+      "name": "Bologna"
+    },
+    {
+      "type": "location",
+      "name": "Darmstadt"
+    },
+    {
+      "type": "location",
+      "name": "Gent"
+    },
+    {
+      "type": "location",
+      "name": "Hofburg"
+    },
+    {
+      "type": "location",
+      "name": "Interlaken"
+    },
+    {
+      "type": "location",
+      "name": "Kaiserslautern"
+    },
+    {
+      "type": "location",
+      "name": "Königsstein"
+    },
+    {
+      "type": "location",
+      "name": "Landshut"
+    },
+    {
+      "type": "location",
+      "name": "Lausanne"
+    },
+    {
+      "type": "location",
+      "name": "Norditalien"
+    },
+    {
+      "type": "location",
+      "name": "Olten"
+    },
+    {
+      "type": "location",
+      "name": "Ottobeuern"
+    },
+    {
+      "type": "location",
+      "name": "Palais Auersberg"
+    },
+    {
+      "type": "location",
+      "name": "Palais Lobkowitz"
+    },
+    {
+      "type": "location",
+      "name": "Palais Palffy"
+    },
+    {
+      "type": "location",
+      "name": "Palais Pallavicini"
+    },
+    {
+      "type": "location",
+      "name": "Palais Rasumofsky"
+    },
+    {
+      "type": "location",
+      "name": "Palais Schwarzenberg"
+    },
+    {
+      "type": "location",
+      "name": "Passau"
+    },
+    {
+      "type": "location",
+      "name": "Prinzregententheater"
+    },
+    {
+      "type": "location",
+      "name": "Schaffhausen"
+    },
+    {
+      "type": "location",
+      "name": "Schwanden"
+    },
+    {
+      "type": "location",
+      "name": "St. Gallen"
+    },
+    {
+      "type": "location",
+      "name": "Strasbourg"
+    },
+    {
+      "type": "location",
+      "name": "Südfrankreich"
+    },
+    {
+      "type": "location",
+      "name": "Theatre de la Monnaie"
+    },
+    {
+      "type": "location",
+      "name": "Vertrag"
+    },
+    {
+      "type": "location",
+      "name": "Vevey"
+    },
+    {
+      "type": "location",
+      "name": "Wiesbaden"
     }
   ],
   "skipped": [
@@ -4291,11 +4692,6 @@
       "type": "org",
       "name": "Felix Ballhausen Bühnenvermittlung, Ballhaus Agentur München",
       "existing_qid": "nicht verifizierbar"
-    },
-    {
-      "type": "location",
-      "name": "Frankfurt",
-      "existing_qid": "Frankfurt am Main"
     },
     {
       "type": "work",

@@ -27,7 +27,7 @@ if sys.stdout.encoding != "utf-8":
     sys.stdout.reconfigure(encoding="utf-8")
 
 sys.path.insert(0, str(Path(__file__).parent))
-from _common import OUTPUT_DIR, REPO_ROOT, REPORTS_DIR  # noqa: E402
+from _common import OUTPUT_DIR, REPO_ROOT, REPORTS_DIR, rel_to_repo  # noqa: E402
 
 BASE = REPO_ROOT
 JSONLD = OUTPUT_DIR / "m3gim.jsonld"
@@ -70,9 +70,23 @@ def main():
     data = load_jsonld()
     graph = data.get("@graph", [])
     records = [n for n in graph if n.get("@type") == "rico:Record"]
-    records_real = [r for r in records if not r.get("@id", "").endswith("_Folio")]
+    # The object table repeats its header inside a Konvolut block, so the folio
+    # column carries the literal "Folio" and the pipeline builds a record from
+    # it. Those placeholders are no archival unit and stay out of every figure;
+    # the snapshot names the exclusion so its count and the count in
+    # docs/data/m3gim.jsonld can be reconciled.
+    placeholders = [r for r in records if r.get("@id", "").endswith("_Folio")]
+    # A folio record the pipeline derives (B2) carries no cataloguing of its
+    # own; counting it would lower every coverage figure without a change in
+    # the source.
+    derived = [r for r in records
+               if r.get("m3gim-ontology:derivedFolioRecord") is True]
+    excluded = {r.get("@id") for r in placeholders + derived}
+    records_real = [r for r in records if r.get("@id") not in excluded]
 
-    print(f"  {len(records_real)} echte Records (ohne Folio-Platzhalter)")
+    print(f"  {len(records_real)} echte Records "
+          f"(ohne {len(placeholders)} Folio-Platzhalter und "
+          f"{len(derived)} abgeleitete Foliodatensaetze, {len(records)} im Graph)")
 
     with_links = [r for r in records_real if count_links_on_record(r) > 0]
     link_rate = len(with_links) / len(records_real) if records_real else 0.0
@@ -138,12 +152,39 @@ def main():
                     nested_with_xlsx += 1
 
     lines = []
-    lines.append(f"# M³GIM Quality-Snapshot")
+    lines.append("# M³GIM Quality-Snapshot")
     lines.append("")
-    lines.append(f"_Generiert: {datetime.now().isoformat(timespec='minutes')}_")
+    # Local time with its UTC offset, so a later file timestamp (a checkout
+    # touches the file without regenerating it) is distinguishable from the run.
+    run_time = datetime.now().astimezone().isoformat(timespec="minutes")
+    lines.append(f"_Laufzeit des Reports: {run_time}_")
     lines.append("")
-    lines.append(f"Grundlage: `{JSONLD.relative_to(BASE)}` + `{RECON.relative_to(BASE)}`.")
+    lines.append(f"Grundlage: `{rel_to_repo(JSONLD)}` + `{rel_to_repo(RECON)}`.")
     lines.append("")
+
+    lines.append("## Gezählte Menge")
+    lines.append("")
+    lines.append(f"Alle Zahlen dieses Reports beziehen sich auf **{len(records_real)} "
+                 "Records**. Der Graph führt "
+                 f"**{len(records)}** Knoten vom Typ `rico:Record`; die Differenz "
+                 f"von {len(placeholders) + len(derived)} sind "
+                 f"{len(placeholders)} Folio-Platzhalter, entstanden aus "
+                 "innerhalb eines Konvoluts wiederholten Kopfzeilen der "
+                 "Objekttabelle, deren Folio-Zelle den Text „Folio“ "
+                 f"trägt, und {len(derived)} Foliodatensätze, die die Pipeline "
+                 "über den Seiten eines Blattes bildet. Weder die einen noch "
+                 "die anderen tragen eine eigene Erschließung und zählen "
+                 "deshalb nicht mit.")
+    lines.append("")
+    if placeholders:
+        lines.append("| Platzhalter | Quellzeile |")
+        lines.append("|---|---:|")
+        for r in sorted(placeholders, key=lambda x: x.get("rico:identifier", "")):
+            src = r.get("m3gim-ontology:xlsxSource") or {}
+            sheet = src.get("m3gim-ontology:xlsxSheet", "?")
+            row = src.get("m3gim-ontology:xlsxRow", "?")
+            lines.append(f"| {r.get('rico:identifier', '?')} | {sheet} {row} |")
+        lines.append("")
 
     lines.append("## Verknüpfungsrate")
     lines.append("")
@@ -166,7 +207,7 @@ def main():
         rate = ks["linked"] / ks["total"] if ks["total"] else 0
         lines.append(f"| {konvolut} | {ks['total']} | {ks['linked']} | {rate:.0%} |")
     lines.append("")
-    lines.append(f"### Einzelobjekte (aggregiert)")
+    lines.append("### Einzelobjekte (aggregiert)")
     lines.append("")
     single_rate = single_linked / single_total if single_total else 0
     lines.append(f"- **{single_linked}/{single_total}** Einzelobjekte verlinkt "
@@ -247,7 +288,7 @@ def main():
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     OUTPUT.write_text("\n".join(lines) + "\n", encoding="utf-8")
     size_kb = OUTPUT.stat().st_size / 1024
-    print(f"Gespeichert: {OUTPUT.relative_to(BASE)} ({size_kb:.1f} KB)")
+    print(f"Gespeichert: {rel_to_repo(OUTPUT)} ({size_kb:.1f} KB)")
 
 
 if __name__ == "__main__":

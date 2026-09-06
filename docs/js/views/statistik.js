@@ -1,15 +1,16 @@
 /**
  * Statistik — der Bestand in Zahlen (E-160).
  *
- * Fuenf record-basierte Ansichten ueber die Dokumentmenge des geteilten
- * Schnitts: Dokumenttypen, Erschliessungsstand, Repertoire, Personen,
- * Institutionen. Die Mobilitaets- und Beziehungsaggregate liegen seit E-160 in
- * Karte, Chronik und Netzwerk; die Laender-Reichweite traegt die Karte.
+ * Vier record-basierte Ansichten ueber die Dokumentmenge des geteilten
+ * Schnitts: Dokumenttypen, Repertoire, Personen, Institutionen. Die
+ * Mobilitaets- und Beziehungsaggregate liegen seit E-160 in Karte, Chronik und
+ * Netzwerk. Der Erschliessungsstand ist mit E-262 kein Forschungsgegenstand
+ * und steht nur noch als Aussage im Datensatz-Detail; die Arbeitsliste des
+ * Erschliessungsteams schreibt `scripts/report-cataloguing.py` (E-248).
  *
  * Die Sidebar ist das geteilte Geruest (ui/sidebar.js): Suche, Ergebniszeile,
  * Zeitraum und die geteilten Facetten schneiden, dazu als einzige eigene
- * Sektion die Wahl der Ansicht. Es gibt keinen ansichtseigenen Filterort mehr,
- * also weder Sicht noch Land.
+ * Sektion die Wahl der Ansicht. Es gibt keinen ansichtseigenen Filterort mehr.
  *
  * Diese Datei ist reine View-Orchestrierung. Die Aggregationen liegen in
  * `statistik-data.js`, die Sektionen in `statistik-sections.js`, die
@@ -22,14 +23,12 @@ import { createSidebar, viewShell } from '../ui/sidebar.js';
 import { getFilter } from '../ui/filter-state.js';
 import { recordsFor, yearBounds } from '../data/records-for.js';
 import {
-  buildDokumenttypen, buildErschliessung, buildRepertoire,
-  buildPersonen, buildInstitutionen,
+  buildDokumenttypen, buildRepertoire, buildPersonen, buildInstitutionen,
 } from './statistik-sections.js';
 
 // Die Ansichten in Lesereihenfolge; Single-Select, genau eine ist aktiv.
 const SECTIONS = [
   { id: 'dokumenttypen', label: 'Dokumenttypen',      build: buildDokumenttypen },
-  { id: 'erschliessung', label: 'Erschließungsstand', build: buildErschliessung },
   { id: 'repertoire',    label: 'Repertoire',         build: buildRepertoire },
   { id: 'personen',      label: 'Personen',           build: buildPersonen },
   { id: 'institutionen', label: 'Institutionen',      build: buildInstitutionen },
@@ -46,7 +45,9 @@ export function renderStatistik(store, container) {
 
   const span = yearBounds(store);
   let active = SECTIONS[0].id;
-  let cutSize = 0;
+  // Vor dem ersten rebuild() null, dann faellt das Geruest auf seine eigene
+  // Rechnung zurueck statt eine Null zu zeigen.
+  let cutSize = null;
 
   const stage = el('div', { className: 'statistik__stage' });
   const main = el('div', { className: 'view-main statistik-main' }, stage);
@@ -69,6 +70,9 @@ export function renderStatistik(store, container) {
 
   const sidebar = createSidebar(store, {
     yearSpan: span,
+    // Der Schnitt steht schon aus rebuild(); ohne diesen Weg loeste ihn das
+    // Geruest fuer seine Wurzelzeile ein zweites Mal auf.
+    getCount: () => cutSize,
     // recordsFor wertet den Freitext nicht aus; ein Feld ohne Wirkung bleibt weg.
     search: false,
     sections: [{
@@ -92,6 +96,8 @@ export function renderStatistik(store, container) {
   main.insertBefore(sidebar.strip, main.firstChild);
   container.appendChild(viewShell(sidebar.element, main));
   rebuild();
+  // Erst jetzt steht die Schnittzahl, die die Wurzelzeile der Spalte nennt.
+  sidebar.update();
 
   logStamp('statistik', [
     ['records', cutSize],

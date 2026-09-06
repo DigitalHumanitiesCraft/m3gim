@@ -28,7 +28,7 @@ import { resolveRecordId } from '../../docs/js/ui/router.js';
 describe('serializeFilter', () => {
   test('ein leerer Filter erzeugt keinen Query-Teil', () => {
     assert.equal(serializeFilter({}), '');
-    assert.equal(serializeFilter({ ort: [], person: [], stand: [], zeitfenster: null }), '');
+    assert.equal(serializeFilter({ ort: [], person: [], land: [], zeitfenster: null }), '');
   });
 
   test('ein gefaltetes Zeitfenster erscheint nicht in der URL', () => {
@@ -38,10 +38,17 @@ describe('serializeFilter', () => {
     assert.equal(serializeFilter({ zeitfenster: [1951, 1953] }), 'jahr=1951-1953');
   });
 
-  test('der Erschliessungsstand steht als eigene Facette in der URL', () => {
-    assert.equal(serializeFilter({ stand: [] }), '');
-    assert.equal(serializeFilter({ stand: ['abgeschlossen', 'begonnen'] }),
-      'stand=abgeschlossen,begonnen');
+  test('Land und Verknuepfung stehen als eigene Facetten in der URL', () => {
+    assert.equal(serializeFilter({ land: [], verknuepfung: [] }), '');
+    assert.equal(serializeFilter({ land: ['Deutschland', 'Österreich'] }),
+      'land=Deutschland,%C3%96sterreich');
+    assert.equal(serializeFilter({ verknuepfung: ['ort:m3gim-vocab:guestPerformance'] }),
+      'verknuepfung=ort%3Am3gim-vocab%3AguestPerformance');
+  });
+
+  test('der Erschliessungsstand hat keinen Query-Schluessel mehr (E-262)', () => {
+    assert.equal(serializeFilter({ stand: ['abgeschlossen'] }), '');
+    assert.equal('stand' in parseFilterQuery('stand=abgeschlossen'), false);
   });
 
   test('der Dokumenttyp steht als typ in der URL, nicht als docType', () => {
@@ -101,9 +108,9 @@ describe('parseFilterQuery', () => {
     assert.deepEqual(parseFilterQuery('typ=correspondence&docType=poster').docType, ['correspondence']);
   });
 
-  test('der Erschliessungsstand kommt als Werteliste an', () => {
-    assert.deepEqual(parseFilterQuery('stand=abgeschlossen,begonnen').stand,
-      ['abgeschlossen', 'begonnen']);
+  test('das Land kommt als Werteliste an', () => {
+    assert.deepEqual(parseFilterQuery('land=Deutschland,Schweiz').land,
+      ['Deutschland', 'Schweiz']);
   });
 });
 
@@ -114,7 +121,8 @@ describe('Rundlauf ueber jede Facette', () => {
     werk: ['Tristan und Isolde'],
     institution: ['Bayreuther Festspiele'],
     docType: ['correspondence'],
-    sicht: ['performativ'],
+    land: ['Deutschland'],
+    verknuepfung: ['ort', 'ort:m3gim-vocab:guestPerformance'],
   };
 
   for (const [key, values] of Object.entries(cases)) {
@@ -162,8 +170,8 @@ describe('Hash-Grammatik #<tab>[/<recordId>][?<query>]', () => {
   });
 
   test('buildHash und splitHash sind zueinander invers', () => {
-    const hash = buildHash('netzwerk', null, { ort: ['Bayreuth'], stand: ['begonnen'] });
-    assert.equal(hash, '#netzwerk?ort=Bayreuth&stand=begonnen');
+    const hash = buildHash('netzwerk', null, { ort: ['Bayreuth'], land: ['Deutschland'] });
+    assert.equal(hash, '#netzwerk?ort=Bayreuth&land=Deutschland');
     const parts = splitHash(hash);
     assert.equal(parts.path, 'netzwerk');
     assert.deepEqual(parseFilterQuery(parts.query).ort, ['Bayreuth']);

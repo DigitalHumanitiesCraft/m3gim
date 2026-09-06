@@ -1,11 +1,13 @@
 /**
  * Ein Sprung, der einen Datensatz benennt, muss ihn zeigen.
  *
- * Die Bestandsansicht oeffnet mit der Stand-Voreinstellung (abgeschlossen,
- * begonnen). Ein Deep Link oder ein Sprung aus Karte, Netzwerk oder Indizes auf
- * einen zurueckgestellten Datensatz oder einen ohne Angabe fiel damit unter den
- * Schnitt: keine Zeile, kein Detail, kein Hinweis. `widenFilterForRecord`
- * weitet den Schnitt minimal, statt ihn fallenzulassen.
+ * Steht ein Schnitt, faellt ein Deep Link oder ein Sprung aus Karte, Netzwerk
+ * oder Indizes auf einen Datensatz ausserhalb dieses Schnitts ins Leere: keine
+ * Zeile, kein Detail, kein Hinweis. `widenFilterForRecord` weitet den Schnitt
+ * minimal, statt ihn fallenzulassen. Der Beispielschnitt lief bis E-262 ueber
+ * den Erschliessungsstand; er laeuft jetzt ueber die Verknuepfungsrolle, die
+ * dieselbe Eigenschaft hat, naemlich dass ein Datensatz sie tragen kann oder
+ * auch nicht.
  *
  * Lauf: node --test tests/frontend/bestand-deeplink.test.mjs
  */
@@ -15,7 +17,7 @@ import assert from 'node:assert/strict';
 
 import { widenFilterForRecord, filterBySharedState, searchMatchBestand }
   from '../../docs/js/views/_bestand-filter.js';
-import { STAND_DEFAULT, baseIds } from '../../docs/js/data/records-for.js';
+import { baseIds, recordsFor } from '../../docs/js/data/records-for.js';
 import { storeFromShipped } from './_shipped.mjs';
 
 const store = await storeFromShipped();
@@ -30,39 +32,34 @@ function visible(shared, recordId) {
   return items.length === 1;
 }
 
-/** Ein Datensatz des Bestands mit diesem Bearbeitungsstand. */
-function recordWithStand(status) {
+/** Der gewaehlte Schnitt der Beispiele: die Dokumente mit einer
+ *  Werkverknuepfung, eine geschlossene und gut belegte Achse. */
+const DEFAULT_CUT = { verknuepfung: ['werk'] };
+
+/** Ein Datensatz der Grundmenge innerhalb oder ausserhalb dieses Schnitts. */
+function recordInCut(inside) {
   const base = baseIds(store);
+  const werke = recordsFor(store, DEFAULT_CUT).ids;
   const hit = store.allRecords.find(r => base.has(r['@id'])
-    && (r['m3gim-ontology:processingStatus'] || null) === status);
-  assert.ok(hit, `der Datensatz traegt den Stand ${status}`);
+    && werke.has(r['@id']) === inside);
+  assert.ok(hit, `es gibt einen Datensatz ${inside ? 'im' : 'ausserhalb des'} Schnitts`);
   return hit['@id'];
 }
 
-const DEFAULT_CUT = { stand: [...STAND_DEFAULT] };
-
-describe('Stand-Voreinstellung', () => {
-  test('ein zurueckgestellter Datensatz wird hereingeholt', () => {
-    const id = recordWithStand('zurueckgestellt');
+describe('Gewaehlte Verknuepfungsachse', () => {
+  test('ein Datensatz ausserhalb des Schnitts wird hereingeholt', () => {
+    const id = recordInCut(false);
     assert.equal(visible(DEFAULT_CUT, id), false, 'ohne Weitung faellt er heraus');
 
     const { patch, blocked } = widenFilterForRecord(store, id, DEFAULT_CUT);
-    assert.deepEqual(patch.stand, [...STAND_DEFAULT, 'zurueckgestellt']);
     assert.deepEqual(blocked, []);
-    assert.equal(visible({ ...DEFAULT_CUT, ...patch }, id), true);
-  });
-
-  test('ein Datensatz ohne Angabe wird hereingeholt', () => {
-    const id = recordWithStand(null);
-    assert.equal(visible(DEFAULT_CUT, id), false);
-
-    const { patch } = widenFilterForRecord(store, id, DEFAULT_CUT);
-    assert.deepEqual(patch.stand, [...STAND_DEFAULT, 'ohne-angabe']);
+    assert.equal(patch.verknuepfung[0], 'werk', 'die gewaehlte Achse bleibt stehen');
+    assert.equal(patch.verknuepfung.length, 2, 'genau ein Wert kommt hinzu');
     assert.equal(visible({ ...DEFAULT_CUT, ...patch }, id), true);
   });
 
   test('ein Datensatz im Schnitt weitet nichts', () => {
-    const id = recordWithStand('abgeschlossen');
+    const id = recordInCut(true);
     const { patch, blocked } = widenFilterForRecord(store, id, DEFAULT_CUT);
     assert.deepEqual(patch, {});
     assert.deepEqual(blocked, []);
@@ -71,7 +68,7 @@ describe('Stand-Voreinstellung', () => {
 
 describe('Die uebrigen Facetten', () => {
   test('eine mitlaufende Facette faellt nicht weg', () => {
-    const id = recordWithStand('zurueckgestellt');
+    const id = recordInCut(false);
     const record = store.records.get(id);
     // Ein Ort, den der Datensatz selbst traegt: die Ortsfacette blockiert
     // nicht, sie muss trotzdem im Schnitt bleiben.
@@ -85,7 +82,7 @@ describe('Die uebrigen Facetten', () => {
   });
 
   test('eine blockierende Entitaetsfacette wird um einen eigenen Wert geweitet', () => {
-    const id = recordWithStand('zurueckgestellt');
+    const id = recordInCut(false);
     const fremd = [...store.locations.keys()].find(
       name => !store.locations.get(name).records.has(id));
     const shared = { ...DEFAULT_CUT, ort: [fremd] };
@@ -112,7 +109,7 @@ describe('Die uebrigen Facetten', () => {
   });
 
   test('das Zeitfenster wird auf das Jahr des Datensatzes ausgedehnt', () => {
-    const id = recordWithStand('zurueckgestellt');
+    const id = recordInCut(false);
     const { patch } = widenFilterForRecord(
       store, id, { ...DEFAULT_CUT, zeitfenster: [1919, 1920] });
     assert.ok(Array.isArray(patch.zeitfenster), 'das Fenster wird geweitet');

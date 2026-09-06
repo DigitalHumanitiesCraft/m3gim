@@ -5,7 +5,7 @@ source XLSX causes the same composer to appear under two raw strings (e.g.
 "Beethoven, Ludwig van" vs. "Beethoven, Ludwig von") and to show up twice in the
 top-10 list.
 
-Rule from ``knowledge/data.md § Datenqualität`` (documents as source of truth, "pipeline
+Rule from ``knowledge/data.md § Compensations in the pipeline`` (documents as source of truth, "pipeline
 workarounds are debt, not features"): spelling errors are fixed at the source.
 The pipeline gets **no** special-case normalizer (no ``normalize_composer``) for
 this, because that would silently paper over future typos.
@@ -13,7 +13,7 @@ this, because that would silently paper over future typos.
 Instead this test detects fuzzy-similar composer names and stays
 ``xfail(strict=True)`` as long as such pairs exist. After the XLSX fix the test
 becomes ``XPASS`` → strict breaks the suite → remove the xfail marker, delete the
-entry in data.md § Datenqualität.
+entry in data.md § Compensations in the pipeline.
 
 Threshold: Levenshtein ratio >= 92. Beethoven van/von is typically around 96.
 Mozart vs. Brahms around 20. The threshold catches typos and true variants, not
@@ -46,7 +46,7 @@ def _iter_works(graph: list) -> list:
 
 
 @pytest.mark.xfail(
-    reason="data.md § Datenqualität — Beethoven 'van/von' im Werkindex. Fix durch Archiv-Team.",
+    reason="data.md § Compensations in the pipeline — Beethoven 'van/von' im Werkindex. Fix durch Archiv-Team.",
     strict=True,
 )
 def test_komponisten_ohne_fuzzy_duplikate(graph):
@@ -66,6 +66,6 @@ def test_komponisten_ohne_fuzzy_duplikate(graph):
 
     assert not duplicates, (
         "Komponisten-Varianten gefunden (Levenshtein-Ratio >= 92). "
-        "Source-Fix noetig (siehe knowledge/data.md § Datenqualität):\n  "
+        "Source-Fix noetig (siehe knowledge/data.md § Compensations in the pipeline):\n  "
         + "\n  ".join(f"[{s}] '{a}'  <->  '{b}'" for s, a, b in duplicates)
     )

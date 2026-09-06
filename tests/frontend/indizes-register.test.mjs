@@ -1,8 +1,8 @@
 /**
- * Die Registerseite der Indizes (E-226): Sortierung, Reconciliation-Liste,
- * Umfeld und die belegten Bühnenrollen eines Werks.
+ * Die Registerseite der Indizes (E-226): Sortierung, Umfeld und die belegten
+ * Bühnenrollen eines Werks.
  *
- * Diese vier Stücke sind reine Funktionen über dem Store; die Ansicht setzt nur
+ * Diese drei Stücke sind reine Funktionen über dem Store; die Ansicht setzt nur
  * Symbole und Chips darauf. Geprüft wird gegen den ausgelieferten Datenstand,
  * damit die Aussagen an den echten Namen hängen und nicht an einer Fixture, die
  * sich selbst bestätigt.
@@ -14,8 +14,8 @@
  *   * Die Zeile zählt über den ganzen Teilnachlass und widerspricht der Sidebar,
  *     und die Sortierung nach Belegzahl ordnet nach einer Zahl, die nirgends
  *     steht.
- *   * Die Reconciliation-Liste zeigt dieselben Einträge wie „Nur mit Wikidata",
- *     weil beide Schalter zugleich greifen.
+ *   * Der Suchbegriff des geteilten Feldes trifft im Register andere Felder als
+ *     die Zeile zeigt.
  *   * Das Umfeld führt den Eintrag selbst als seinen eigenen Nachbarn.
  *   * Die Bühnenrollen eines Werks werden aus Dokumenten mit mehreren Rollen
  *     geraten, und ein Werk bekommt Partien aus anderen Opern zugeschrieben.
@@ -28,8 +28,10 @@ import assert from 'node:assert/strict';
 
 import {
   getGridEntries, clearEntriesCache, entriesWithRecordsIn, filterEntries, sortEntries,
-  hasWikidata, buildUmfeld, workStageRoles, REGISTER_FAMILY, cutCountOf,
+  buildUmfeld, workStageRoles, REGISTER_FAMILY, REGISTER_LABELS, REGISTER_KEYS, cutCountOf,
+  REGISTER_ENTITY_TYPE, bestandFilterFor, entryYearSpan, entryRoles,
 } from '../../docs/js/views/indizes-data.js';
+import { recordsFor, baseIds } from '../../docs/js/data/records-for.js';
 import { storeFromShipped } from './_shipped.mjs';
 
 let store = null;
@@ -106,29 +108,28 @@ describe('Belegzahl des Schnitts (E-227)', () => {
   });
 });
 
-describe('Reconciliation-Liste', () => {
-  test('ohne Wikidata ist das Gegenstueck zu mit Wikidata', () => {
-    const entries = getGridEntries(store, 'werke');
-    const mit = filterEntries(entries, 'werke', { withWikidata: true });
-    const ohne = filterEntries(entries, 'werke', { withoutWikidata: true });
-    assert.ok(ohne.length > 0, 'Der Datenstand fuehrt offene Werke; sonst prueft der Test nichts.');
-    assert.equal(mit.length + ohne.length, entries.length);
-    assert.ok(ohne.every(e => !hasWikidata(e)));
-    assert.ok(mit.every(e => hasWikidata(e)));
-  });
-
-  test('der Schalter mit Wikidata gewinnt, wenn beide gesetzt sind', () => {
-    const entries = getGridEntries(store, 'orte');
-    const out = filterEntries(entries, 'orte', { withWikidata: true, withoutWikidata: true });
-    assert.ok(out.length > 0);
-    assert.ok(out.every(e => hasWikidata(e)),
-      'Ein widerspruechliches Paar darf das Register nicht still leeren.');
-  });
-
-  test('die Suche greift auf der Reconciliation-Liste weiter', () => {
+describe('Suche im Register', () => {
+  test('die Suche trifft die Felder, die die Zeile zeigt', () => {
     const entries = getGridEntries(store, 'personen');
-    const out = filterEntries(entries, 'personen', { withoutWikidata: true, q: 'wagner' });
-    assert.ok(out.every(e => !hasWikidata(e) && /wagner/i.test(e.name + ' ' + (e.kategorie || ''))));
+    const out = filterEntries(entries, 'personen', { q: 'wagner' });
+    assert.ok(out.length > 0, 'Der Datenstand fuehrt Wagner; sonst prueft der Test nichts.');
+    assert.ok(out.every(e => /wagner/i.test(e.name + ' ' + (e.kategorie || ''))));
+  });
+
+  test('ohne Suchbegriff bleibt die Liste unangetastet', () => {
+    const entries = getGridEntries(store, 'orte');
+    assert.equal(filterEntries(entries, 'orte', {}), entries);
+  });
+});
+
+describe('Registerbeschriftungen', () => {
+  test('jedes Register traegt Beschriftung und Familie', () => {
+    // Kopfzeile der Liste und Menue am Indizes-Tab lesen dieselbe Quelle (E-230).
+    assert.deepEqual(REGISTER_KEYS, ['personen', 'organisationen', 'orte', 'werke']);
+    for (const key of REGISTER_KEYS) {
+      assert.ok(REGISTER_LABELS[key], `${key} ohne Beschriftung`);
+      assert.ok(REGISTER_FAMILY[key], `${key} ohne Familie`);
+    }
   });
 });
 
@@ -225,5 +226,96 @@ describe('Buehnenrollen je Werk', () => {
       `Nur ${mitPartie.length} Werke mit kuratierter Partie; der Werk-Index scheint nicht anzukommen.`);
     const carmen = werke.find(e => e.name === 'Carmen');
     assert.equal(carmen && carmen.partie, 'Carmen');
+  });
+});
+
+describe('Der Eintrag als Knotenpunkt (E-252)', () => {
+  test('jedes Register nennt den Entitaetstyp, den Facette und Fokus teilen', () => {
+    for (const key of REGISTER_KEYS) {
+      assert.ok(REGISTER_ENTITY_TYPE[key], `${key} ohne Entitaetstyp`);
+    }
+    // Die Facettenschluessel des geteilten Filters, nicht der Altname location.
+    assert.deepEqual(Object.values(REGISTER_ENTITY_TYPE),
+      ['person', 'institution', 'ort', 'werk']);
+  });
+
+  test('der Sprung setzt die Facette des Registers und laesst die Suche fallen', () => {
+    const filter = bestandFilterFor('orte', { ort: ['Wien'], search: 'bay' }, 'Bayreuth');
+    assert.deepEqual(filter.ort, ['Wien', 'Bayreuth'], 'der Sprung verengt, er ersetzt nicht');
+    assert.equal(filter.search, '',
+      'der Suchbegriff war das Mittel, den Eintrag zu finden, kein Schnitt fuer den Bestand');
+    assert.equal(bestandFilterFor('gibt-es-nicht', {}, 'Bayreuth'), null);
+    assert.equal(bestandFilterFor('orte', {}, ''), null);
+  });
+
+  test('die Belegzahl der Zeile ist die Zahl, die der Bestand nach dem Sprung zeigt', () => {
+    // Der Widerspruch, gegen den diese Zusicherung steht: die Zeile zaehlte im
+    // Schnitt, der Sprung fuehrte in einen anders geschnittenen Bestand.
+    const base = baseIds(store);
+    const entries = entriesWithRecordsIn(getGridEntries(store, 'orte'), base);
+    const bayreuth = entries.find(e => e.name === 'Bayreuth');
+    assert.ok(bayreuth, 'Bayreuth steht im Ortsregister.');
+    const { ids } = recordsFor(store, bestandFilterFor('orte', {}, 'Bayreuth'));
+    assert.equal(ids.size, cutCountOf(bayreuth));
+  });
+});
+
+describe('Zeitspanne der Belege (E-252)', () => {
+  test('die Spanne reicht vom ersten bis zum letzten datierten Dokument', () => {
+    const bayreuth = getGridEntries(store, 'orte').find(e => e.name === 'Bayreuth');
+    const span = entryYearSpan(store, bayreuth);
+    assert.ok(span, 'Bayreuth fuehrt datierte Belege.');
+    assert.ok(span.from <= span.to);
+    assert.ok(span.from >= 1919 && span.to <= 2009, `${span.from}-${span.to}`);
+  });
+
+  test('ein Schnitt ohne einen einzigen Beleg hat keine Spanne', () => {
+    const bayreuth = getGridEntries(store, 'orte').find(e => e.name === 'Bayreuth');
+    assert.equal(entryYearSpan(store, bayreuth, new Set(['gibt-es-nicht'])), null);
+  });
+
+  test('der Schnitt verkuerzt die Spanne hoechstens', () => {
+    const entry = getGridEntries(store, 'personen').find(e => e.name === 'Wagner, Wieland');
+    const full = entryYearSpan(store, entry);
+    const half = entryYearSpan(store, entry,
+      new Set([...entry.records].slice(0, Math.ceil(entry.records.size / 2))));
+    assert.ok(full && half);
+    assert.ok(half.from >= full.from && half.to <= full.to);
+  });
+});
+
+describe('Rollen einer Person (E-252)', () => {
+  test('die Rollen kommen aus dem Vokabular der Quelle, mit ihrer Belegzahl', () => {
+    const entry = getGridEntries(store, 'personen').find(e => e.name === 'Wagner, Wieland');
+    const roles = entryRoles(store, 'personen', entry);
+    assert.ok(roles.length > 0, 'Ohne Rollen prueft der Test nichts.');
+    for (const role of roles) {
+      assert.ok(role.name && role.count >= 1);
+      assert.ok(role.count <= entry.count,
+        `${role.name} zaehlt ${role.count} Dokumente von ${entry.count}`);
+      // Die Rolle steht so, wie die Erschliessung sie gesetzt hat.
+      assert.ok(store.persons.get(entry.name).roles.has(role.name));
+    }
+    for (let i = 1; i < roles.length; i++) {
+      assert.ok(roles[i - 1].count >= roles[i].count);
+    }
+  });
+
+  test('ausserhalb des Schnitts bleibt keine Rolle stehen', () => {
+    const entry = getGridEntries(store, 'personen').find(e => e.name === 'Wagner, Wieland');
+    assert.deepEqual(entryRoles(store, 'personen', entry, new Set(['gibt-es-nicht'])), []);
+  });
+});
+
+describe('Das Umfeld als kurze Orientierung (E-252)', () => {
+  test('hoechstens fuenf Chips je Familie, der Rest steht als rest bereit', () => {
+    const entry = getGridEntries(store, 'personen').find(e => e.name === 'Wagner, Wieland');
+    const groups = buildUmfeld(store, 'personen', entry, { limit: 5 });
+    assert.ok(groups.length > 0);
+    assert.ok(groups.some(g => g.rest.length > 0),
+      'Ohne eine abgeschnittene Gruppe prueft der Test den Rest nicht.');
+    for (const group of groups) {
+      assert.ok(group.items.length <= 5, `${group.key} zeigt ${group.items.length} Chips`);
+    }
   });
 });

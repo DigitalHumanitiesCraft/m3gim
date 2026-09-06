@@ -1,16 +1,16 @@
 /**
- * Die Beweiskette der annotierten Beziehung.
+ * The chain of evidence behind a recorded relation.
  *
- * Das Detail des Netzwerks zeigt zu einer Fokus-Person ihre AgRelOn-Beziehungen
- * und daneben die Belegliste. Die Belegliste ist die Ko-Okkurrenz, also jedes
- * Dokument, in dem die Person vorkommt; annotiert ist davon nur ein Teil. Damit
- * ein Beziehungs-Chip in genau das Dokument fuehren kann, das die Beziehung
- * traegt, muss `personEntry.relations[].recordId` auf einen vorhandenen Record
- * zeigen und dieser Record in der Belegmenge derselben Person liegen. Faellt
- * eine der beiden Bedingungen, zeigt der Chip ins Leere oder auf ein Dokument,
- * das die Liste daneben nicht fuehrt.
+ * The detail column of the Netzwerk shows the AgRelOn relations of the selected
+ * actor beside its records. The record list is the co-mention, meaning every
+ * document naming the actor; only a part of it is annotated. For a relation
+ * chip to lead into exactly the document that carries the relation,
+ * `personEntry.relations[].recordId` has to resolve to an existing record and
+ * that record has to lie in the evidence set of the same actor. Fail either
+ * condition and the chip points nowhere, or at a document the list beside it
+ * does not carry.
  *
- * Lauf: node --test tests/frontend/netzwerk-evidence.test.mjs
+ * Run: node --test tests/frontend/netzwerk-evidence.test.mjs
  */
 
 import { test, describe } from 'node:test';
@@ -43,12 +43,11 @@ describe('Beziehung und Beleg', () => {
   });
 
   test('der Beleg einer Beziehung liegt in der Belegmenge der Person', () => {
-    // Ausgenommen die Nachlassbildnerin: sie ist in fast jeder Beziehung das
-    // Subjekt und taucht nur dort als Objekt auf, wo eine dritte Person die
-    // Beziehung zu ihr traegt. In einem solchen Datensatz steht sie nicht als
-    // Beteiligte, ihre Belegmenge fuehrt ihn also nicht. Fuer jede andere
-    // Person ist die Deckung die Bedingung dafuer, dass Chip und Belegliste
-    // von demselben Dokument sprechen.
+    // The creator of the fonds is exempt: she is the subject of nearly every
+    // relation and appears as the object only where a third person carries the
+    // relation to her. In such a record she does not stand as a participant, so
+    // her evidence set does not carry it. For every other person the overlap is
+    // the condition for chip and record list to speak of the same document.
     for (const [name, entry] of personsWithRelations()) {
       if (isMalaniuk(name, entry)) continue;
       for (const rel of entry.relations) {

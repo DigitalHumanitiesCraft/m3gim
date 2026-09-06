@@ -12,7 +12,8 @@ Strategy:
   - Persons: both name forms are queried and the result lists unioned, filtered
     to instance-of human (Q5); a score tie between two entities yields no match
   - Organisations: filtered to organisation/institution
-  - Places: filtered to geographic entity
+  - Places: filtered to geographic entity; besides the Ortsindex the pass
+    covers the place strings of the Verknuepfungstabelle (AF-07)
   - Works: P31 type filter plus a binding P86 check against the composer named
     in the Werkindex
   - Identifiers already present in the indexes are verified rather than skipped
@@ -410,6 +411,49 @@ def verify_existing_qid(qid: str, expected_types, komponist: str = None) -> dict
 
 
 # ---------------------------------------------------------------------------
+# Ortsnamen der Verknuepfungstabelle
+# ---------------------------------------------------------------------------
+
+VERKNUEPFUNGEN_DIR = "verknuepfungen"
+_HAS_LETTER = re.compile(r"[^\W\d_]", re.UNICODE)
+
+
+def verknuepfungen_place_names(known: set) -> list:
+    """Place names of the link table that no Ortsindex row carries (AF-07).
+
+    The link table names its places as raw strings, so a place without an
+    index row was never reconciled. Only the segment before the first comma
+    is taken: the trailing part is a date or a street address, and Wikidata
+    carries no entity for either (AF-03). Strings without a letter are dates
+    that leaked into the place column and are dropped here rather than sent
+    to the API.
+    """
+    directory = SHEETS_DIR / VERKNUEPFUNGEN_DIR
+    if not directory.is_dir():
+        return []
+    seen = set(known)
+    names = []
+    for path in sorted(directory.glob("Box_*.csv")):
+        df = pd.read_csv(path, dtype=str, encoding="utf-8-sig")
+        columns = {str(c).strip().lower(): c for c in df.columns}
+        if "typ" not in columns or "name" not in columns:
+            continue
+        for _, row in df.iterrows():
+            typ = str(row.get(columns["typ"], "")).strip().lower()
+            if not typ.startswith("ort"):
+                continue
+            raw = str(row.get(columns["name"], "")).strip()
+            name = raw.split(",", 1)[0].strip()
+            if len(name) < MIN_NAME_LENGTH or not _HAS_LETTER.search(name):
+                continue
+            if name.lower() in seen:
+                continue
+            seen.add(name.lower())
+            names.append(name)
+    return sorted(names)
+
+
+# ---------------------------------------------------------------------------
 # Index-Konfiguration (ersetzt den Duplikat-Code)
 # ---------------------------------------------------------------------------
 
@@ -547,7 +591,12 @@ def run_reconciliation(entity_types: list, dry_run: bool = False,
         name_col = "name" if "name" in df.columns else df.columns[1]
         wd_col = "wikidata_id" if "wikidata_id" in df.columns else None
 
-        for _, row in df.iterrows():
+        rows = [row for _, row in df.iterrows()]
+        if etype == "location":
+            known = {str(r.get(name_col, "")).strip().lower() for r in rows}
+            rows += [{name_col: n} for n in verknuepfungen_place_names(known)]
+
+        for row in rows:
             name = str(row.get(name_col, "")).strip()
             existing_wd = str(row.get(wd_col, "")).strip() if wd_col else ""
 

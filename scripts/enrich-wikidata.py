@@ -20,6 +20,7 @@ import argparse
 import urllib.request
 import urllib.parse
 import urllib.error
+from http.client import IncompleteRead
 from datetime import datetime
 from pathlib import Path
 
@@ -45,7 +46,7 @@ ENRICHMENT_FILE = BASE_DIR / "data" / "output" / "wikidata-enrichment.json"
 
 WIKIDATA_API = "https://www.wikidata.org/w/api.php"
 REQUEST_DELAY = 0.5
-BATCH_SIZE = 50  # Max 50 IDs pro wbgetentities-Aufruf
+BATCH_SIZE = 50  # Max 50 IDs pro wbgetentities-Aufruf (nur Label-Aufloesung)
 USER_AGENT = "M3GIM-Enrich/1.0 (DH research project; mailto:pollin@dhcraft.org)"
 
 # ---------------------------------------------------------------------------
@@ -86,25 +87,50 @@ for props in PROPERTY_MAP.values():
 # API-Funktionen
 # ---------------------------------------------------------------------------
 
-def fetch_entities_batch(qids: list) -> dict:
-    """Holt Claims und Labels fuer eine Batch von QIDs (max 50)."""
-    params = {
-        "action": "wbgetentities",
-        "ids": "|".join(qids),
-        "props": "claims|labels",
-        "languages": "de|en",
-        "format": "json",
-    }
-    url = f"{WIKIDATA_API}?{urllib.parse.urlencode(params)}"
+def _api_get(params: dict) -> dict:
+    """One API request with the project user agent and one retry.
 
-    try:
-        req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
-        with urllib.request.urlopen(req, timeout=30) as resp:
-            data = json.loads(resp.read().decode("utf-8"))
-            return data.get("entities", {})
-    except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError) as e:
-        print(f"  [WARN] API-Fehler fuer Batch: {e}")
-        return {}
+    The retry catches the transient truncation of a response; returning an empty
+    result on the first failure would drop the enrichment of the entity without
+    a second try.
+    """
+    url = f"{WIKIDATA_API}?{urllib.parse.urlencode(params)}"
+    for attempt in (1, 2):
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
+            with urllib.request.urlopen(req, timeout=30) as resp:
+                return json.loads(resp.read().decode("utf-8"))
+        except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError,
+                IncompleteRead, ValueError) as e:
+            if attempt == 1:
+                time.sleep(2)
+                continue
+            print(f"  [WARN] API-Fehler: {e}")
+            return {}
+
+
+def fetch_entity_claims(qid: str, properties) -> dict:
+    """Claims of one entity, one request per configured property.
+
+    ``wbgetentities`` answers with the complete claims document. For a country
+    or a large city that is several megabytes, and on a slow link the response
+    stalls or breaks off mid-chunk, which cost a whole run on 2026-09-05.
+    ``wbgetclaims`` answers per property and keeps every response small, at the
+    price of one request per property of the entity type.
+    """
+    claims = {}
+    for pid in properties:
+        data = _api_get({
+            "action": "wbgetclaims",
+            "entity": qid,
+            "property": pid,
+            "format": "json",
+        })
+        found = data.get("claims", {}).get(pid)
+        if found:
+            claims[pid] = found
+        time.sleep(REQUEST_DELAY)
+    return claims
 
 
 def resolve_labels(qids: list) -> dict:
@@ -320,36 +346,29 @@ def run_enrichment(entity_types: list, force: bool = False):
     if not to_fetch:
         print("Keine neuen Entitaeten — pruefe nur Label-Luecken im Cache.")
 
-    for i in range(0, len(qid_list), BATCH_SIZE):
-        batch = qid_list[i:i + BATCH_SIZE]
-        print(f"  Batch {i // BATCH_SIZE + 1}: {len(batch)} QIDs...", end=" ",
-              flush=True)
+    for position, qid in enumerate(qid_list, start=1):
+        info = to_fetch[qid]
+        prop_config = PROPERTY_MAP.get(info["type"], {})
+        print(f"  {position}/{len(qid_list)} {qid} ({info['name']})...",
+              end=" ", flush=True)
+        claims = fetch_entity_claims(qid, prop_config)
+        props = extract_properties({"claims": claims}, prop_config)
 
-        entities = fetch_entities_batch(batch)
-        time.sleep(REQUEST_DELAY)
+        # Entity-Ref QIDs sammeln fuer Label-Aufloesung
+        for field_name, val in props.items():
+            if isinstance(val, dict) and "qid" in val:
+                pending_label_qids.add(val["qid"])
+            elif isinstance(val, list):
+                for item in val:
+                    if isinstance(item, dict) and "qid" in item:
+                        pending_label_qids.add(item["qid"])
 
-        for qid in batch:
-            info = to_fetch[qid]
-            entity = entities.get(qid, {})
-            prop_config = PROPERTY_MAP.get(info["type"], {})
-            props = extract_properties(entity, prop_config)
-
-            # Entity-Ref QIDs sammeln fuer Label-Aufloesung
-            for field_name, val in props.items():
-                if isinstance(val, dict) and "qid" in val:
-                    pending_label_qids.add(val["qid"])
-                elif isinstance(val, list):
-                    for item in val:
-                        if isinstance(item, dict) and "qid" in item:
-                            pending_label_qids.add(item["qid"])
-
-            enriched[qid] = {
-                "type": info["type"],
-                "name": info["name"],
-                "properties": props,
-            }
-
-        print(f"OK ({len(entities)} Entitaeten)")
+        enriched[qid] = {
+            "type": info["type"],
+            "name": info["name"],
+            "properties": props,
+        }
+        print(f"OK ({len(props)} Properties)")
 
     # Cache-Hits einbeziehen: auch fuer bereits gecachte Entitaeten die
     # Entity-Ref-Label nachholen, falls sie in frueheren Laeufen unaufgeloest

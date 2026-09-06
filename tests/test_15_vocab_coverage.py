@@ -35,7 +35,7 @@ def _normalize_role_for_test(s: str) -> str:
 def _werteliste_roles():
     """Rollenwerte der Erfassungs-Werteliste Typ-Rolle.csv, normalisiert.
 
-    Kontrakt der Zwei-Schichten-Suite (testing.md § Zwei-Schichten-Modell):
+    Kontrakt der Zwei-Schichten-Suite (testing.md § Two layers):
     ein erfasster Wert ausserhalb der Werteliste ist ein Datenspiegel-
     Befund (test_62_value_list_contract.py), kein Vokabular-Loch. Die
     Invarianten hier pruefen nur Werte, die die Erfassung laut Werteliste
@@ -108,7 +108,7 @@ def _vocab_roles():
 
 
 def test_v2_roles_covered_by_data_md_vocab(xlsx_verknuepfungen):
-    """Jede in v2 belegte Rolle (nach Normalisierung) steht in data.md § Rollenvokabular.
+    """Jede in v2 belegte Rolle (nach Normalisierung) steht in data.md § Role values.
     Wenn Unbekannte auftauchen: data.md erweitern oder XLSX korrigieren.
     """
     df = xlsx_verknuepfungen
@@ -225,7 +225,7 @@ def test_output_roles_subset_of_data_md(records):
 
 # Rollen, die bewusst im Frontend als 'neutral' rendern sollen (z.B. reine
 # Datumsmarker, die in der Repertoire-/Biogramm-Ansicht keine Farbfamilie
-# brauchen). Erweitern nur nach Absprache mit design.md § Rolle-Prefix-Chips.
+# brauchen). Erweitern nur nach Absprache mit design.md § Components.
 FRONTEND_NEUTRAL_IGNORELIST = {
     "empfänger", "widmungsempfänger",
     # Bühnenrollen (nur in PerformanceRole-Chips)
@@ -241,7 +241,7 @@ FRONTEND_NEUTRAL_IGNORELIST = {
     # Komposit-Markierungen ohne Chip
     "implizit", "rahmenveranstaltung", "fluggesellschaft", "abgebildet",
     "ausbildungsstätte",
-    # Vertragsstatus in der Rollenspalte (§ Finanzschicht), keine Chip-Rolle
+    # Vertragsstatus in der Rollenspalte (§ Financial layer), keine Chip-Rolle
     "nicht eingehalten",
 }
 
@@ -272,7 +272,7 @@ def test_xlsx_roles_all_in_frontend_cluster(xlsx_verknuepfungen):
     im UI als 'neutral' — stille Datenqualitaets-Luecke.
 
     Source-Fix: Rolle zu docs/js/data/constants.js::ROLE_CLUSTER
-    hinzufuegen (design.md § Rolle-Prefix-Chips beachten).
+    hinzufuegen (design.md § Components beachten).
     """
     df = xlsx_verknuepfungen
     assert "rolle" in df.columns
@@ -303,7 +303,7 @@ def test_xlsx_roles_all_in_frontend_cluster(xlsx_verknuepfungen):
 
 def test_xlsx_currencies_all_allowed(xlsx_verknuepfungen):
     """Jede belegte Waehrung aus XLSX-Finanzzeilen ist in ALLOWED_CURRENCIES.
-    Bei neuer Waehrung: data-model.md § Finanzschicht und tests/test_13_finanzen.py aktualisieren.
+    Bei neuer Waehrung: data-model.md § Financial layer und tests/test_13_finanzen.py aktualisieren.
     """
     import sys
     from pathlib import Path

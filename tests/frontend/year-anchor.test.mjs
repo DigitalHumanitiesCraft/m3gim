@@ -2,8 +2,10 @@
  * Ein Zeitanker je Record, in jeder Ansicht derselbe (Frontend-Vertrag A4).
  *
  * `primaryYear(store, record)` in der Datenschicht ist die eine Aufloesung:
- * `rico:date` hat Vorrang, fehlt es, liefert die ranghoechste ankernde
- * Datierung das Jahr und benennt sich als abgeleitet.
+ * die ranghoechste ankernde Datierung der Verknuepfungen hat Vorrang, und
+ * `rico:date` der Objekttabelle traegt nur, was sie nicht deckt (F3). Der Anker
+ * benennt seine Herkunft, damit eine Ansicht das eine vom anderen unterscheiden
+ * kann.
  *
  * Der stille Defekt, gegen den diese Datei steht: eine Ansicht liest das Jahr
  * selbst aus `rico:date`. Ein Record ohne `rico:date`, aber mit ankernder
@@ -23,8 +25,9 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
-import { loadArchive, primaryYear } from '../../docs/js/data/loader.js';
+import { loadArchive, primaryYear, datingsByScope } from '../../docs/js/data/loader.js';
 import { yearOf } from '../../docs/js/data/records-for.js';
+import { storeFromShipped } from './_shipped.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, '..', '..');
@@ -84,6 +87,51 @@ describe('Jahresaufloesung nur ueber die Datenschicht', () => {
     assert.deepEqual(offenders, [], (
       'Eigene Jahresaufloesungen driften von der Datenschicht ab: ' + offenders.join(', ')
     ));
+  });
+});
+
+describe('Vorrang der Verknuepfungsdatierung vor rico:date', () => {
+  // Der Datensatz traegt zwoelf Records, deren Jahr sich mit der Umkehrung
+  // aendert. UAKUG/NIM_007 11 ist der schaerfste von ihnen: der Brief ist am
+  // 1968-11-18 abgesendet und traegt dieses Datum als `rico:date`, bezeugt aber
+  // Auffuehrungen ab 1959. Der Test faellt sowohl bei alter Vorrangregel als
+  // auch dann, wenn der Rang die Ebenen nicht mehr trennt.
+  test('das Jahr kommt aus der ranghoechsten ankernden Datierung', async () => {
+    const store = await storeFromShipped();
+    const rec = store.records.get('m3gim-data:NIM_007_11');
+    assert.ok(rec, 'Der Datensatz fuehrt m3gim-data:NIM_007_11 nicht mehr');
+    assert.equal(rec['rico:date'], '1968-11-18',
+      'Die Quelldatierung des Testfalls hat sich geaendert, der Fall ist neu zu waehlen');
+
+    const anchor = primaryYear(store, rec);
+    assert.equal(anchor.year, 1959, 'Das Jahr faellt zurueck auf rico:date');
+    assert.notEqual(anchor.year, 1968, 'Anker und Quelldatierung duerfen hier nicht zusammenfallen');
+    assert.equal(anchor.source, 'm3gim-vocab:performance');
+    assert.equal(anchor.roleId, 'm3gim-vocab:performance');
+    assert.equal(anchor.label, 'aufführung');
+    assert.equal(anchor.date, '1959-09-05', 'Der Anker nennt die Datierung, aus der sein Jahr stammt');
+  });
+
+  test('eine Erwaehnung datiert auch dann nicht, wenn sie ranghoechste waere', async () => {
+    const store = await storeFromShipped();
+    // Derselbe Record traegt drei Erwaehnungen, darunter 1968-11-12. Sie liegen
+    // ausserhalb von ANCHORING_SCOPES und sind damit vom Anker ausgeschlossen,
+    // unabhaengig von der Vorrangregel.
+    const mentioned = datingsByScope(store, store.records.get('m3gim-data:NIM_007_11'),
+      'm3gim-vocab:mentionedDating');
+    assert.ok(mentioned.length > 0, 'Der Testfall traegt keine Erwaehnung mehr');
+    assert.equal(primaryYear(store, store.records.get('m3gim-data:NIM_007_11')).roleId,
+      'm3gim-vocab:performance');
+  });
+
+  test('ohne ankernde Datierung traegt rico:date den Anker', async () => {
+    const store = await storeFromShipped();
+    const fallback = [...store.records.values()].find(rec => rec['rico:date']
+      && primaryYear(store, rec).source === 'rico:date');
+    assert.ok(fallback, 'Kein Record faellt mehr auf rico:date zurueck');
+    const anchor = primaryYear(store, fallback);
+    assert.equal(anchor.roleId, null, 'Der Rueckfall traegt keine Rolle');
+    assert.equal(anchor.date, fallback['rico:date']);
   });
 });
 

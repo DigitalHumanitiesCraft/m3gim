@@ -7,7 +7,7 @@ sondern eine Sammeleinheit, deren Folioerschliessung aussteht. Bis zum
 gehoert in den Datensatz, deshalb setzt die Pipeline
 `m3gim-ontology:unresolvedAggregate`.
 
-Spec: knowledge/data.md § Konvolut- und Objektlogik, vocab/m3gim.ttl.
+Spec: knowledge/data.md § Convolutes, folios and record identity, vocab/m3gim.ttl.
 """
 
 PROP = "m3gim-ontology:unresolvedAggregate"

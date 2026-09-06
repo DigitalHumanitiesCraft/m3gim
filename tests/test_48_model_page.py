@@ -172,14 +172,24 @@ def _broader_depth(graph: Graph, subject) -> int:
 # ---------------------------------------------------------------------------
 
 
+def _article(shipped: str) -> str:
+    """Der erzeugte Seitenkoerper ohne die gemeinsame Huelle.
+
+    Kopfleiste und Fuss tragen eigene SVG-Symbole; nur der Artikel traegt die
+    Zeichnung und die Tabellen des Modells.
+    """
+    head, _, rest = shipped.partition('<article class="page page--model">')
+    assert rest, "Die Seite traegt keinen Artikel page--model"
+    return rest.partition("</article>")[0]
+
+
 def test_drawing_is_embedded_svg_without_runtime_library(shipped):
     """Die Zeichnung liegt als SVG in der Seite und braucht kein Skript.
 
     Ausgenommen ist der ``application/ld+json``-Block der strukturierten Daten,
     den kein Browser ausfuehrt.
     """
-    # The footer carries icon SVGs; only the page body holds the drawing.
-    body = shipped.split("<footer", 1)[0]
+    body = _article(shipped)
     assert body.count("<svg") == 1, "Keine oder mehr als eine Zeichnung auf der Seite"
     # Structured data is a data block, not code; every other <script> would be.
     executable = [
@@ -191,7 +201,7 @@ def test_drawing_is_embedded_svg_without_runtime_library(shipped):
 
 
 def test_drawing_shows_classes_as_nodes_and_object_properties_as_edges(shipped, vocab_graph):
-    drawing = shipped.split('<svg', 1)[1].split("</svg>", 1)[0]
+    drawing = _article(shipped).split("<svg", 1)[1].split("</svg>", 1)[0]
     object_properties = _curies(vocab_graph, OWL.ObjectProperty, ONTOLOGY_NS)
     drawn = [c.split(":", 1)[1] for c in object_properties if c.split(":", 1)[1] in drawing]
     assert len(drawn) >= 5, f"Zu wenige Object Properties in der Zeichnung: {drawn}"
@@ -201,7 +211,7 @@ def test_drawing_shows_classes_as_nodes_and_object_properties_as_edges(shipped, 
 
 def test_wide_content_scrolls_in_its_own_container(shipped):
     """Tabellen und Zeichnung sitzen in einem eigenen Scroll-Container."""
-    body = shipped.split("<footer", 1)[0]
+    body = _article(shipped)
     for match in re.finditer(r"<(table|svg)\b", body):
         before = body[: match.start()]
         opened = before.rfind('<div class="page__wide">')

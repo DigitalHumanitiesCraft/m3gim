@@ -12,7 +12,7 @@ never-firing code, guardrail "data-backed"). The tests test_dated_ste_unaffected
 and test_wohnort_not_a_point_event secure this delimitation as regression
 guards.
 
-Spec: data.md section 4/10, journal.md E-97.
+Spec: data.md § The link mechanism, § Role values, journal.md E-97.
 """
 
 from _helpers import ensure_list

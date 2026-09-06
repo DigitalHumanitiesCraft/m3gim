@@ -3,7 +3,7 @@
 Lean helpers used identically across several scripts. No framework, no
 speculative abstraction, only concretely deduplicated knowledge.
 
-Centralised XLSX workaround constants, see knowledge/data.md § Datenqualität.
+Centralised XLSX workaround constants, see knowledge/data.md § Compensations in the pipeline.
 """
 
 from __future__ import annotations
@@ -31,8 +31,21 @@ REPORTS_DIR = Path(os.environ.get(
     "M3GIM_REPORTS_DIR", REPO_ROOT / "data" / "reports"))
 
 
+def rel_to_repo(path: Path) -> str:
+    """Repo-relative POSIX path for a report line, absolute when outside.
+
+    The ENV overrides may point at a directory outside the repository, and
+    ``Path.relative_to`` raises there instead of falling back.
+    """
+    path = Path(path)
+    try:
+        return path.relative_to(REPO_ROOT).as_posix()
+    except ValueError:
+        return path.as_posix()
+
+
 # ---------------------------------------------------------------------------
-# XLSX workaround constants (see knowledge/data.md § Datenqualität)
+# XLSX workaround constants (see knowledge/data.md § Compensations in the pipeline)
 # ---------------------------------------------------------------------------
 
 # Header-shift correction for the person/org/place/work index. In several
@@ -44,7 +57,7 @@ REPORTS_DIR = Path(os.environ.get(
 # ("m3gim_id" = a real header is present) and renames the columns to the canon
 # instead of consuming a real data row as the header. Centralised so
 # transform.py, validate.py and reconcile.py share the same canon.
-# See knowledge/data.md § Datenqualität and journal.md E-95.
+# See knowledge/data.md § Compensations in the pipeline and journal.md E-95.
 INDEX_HEADER_SHIFTS: dict[str, list[str]] = {
     "personenindex": [
         "m3gim_id", "name", "wikidata_id",
@@ -78,7 +91,7 @@ FINANCE_CURRENCY_DEFAULTS: dict[str, str] = {
 
 
 def resolve_objekte_source(sheets_dir: Path) -> Path:
-    """Source selection for the object table, CSV preferred (data.md § Tabellenmodell).
+    """Source selection for the object table, CSV preferred (data.md § Source format).
 
     The CSV export preserves the captured text; the XLSX carries the
     spreadsheet's autoconversion in the date column and stays admissible only as
@@ -99,7 +112,7 @@ def load_objekte(sheets_dir: Path):
 
     CSV is read with dtype=str so date values arrive as captured text instead of
     a calendar value. The XLSX fallback stays unchanged, including its known date
-    artefacts (data.md § Datumskonventionen).
+    artefacts (data.md § Date notation of the source).
     """
     import pandas as pd  # lazy so _common stays importable without pandas
 

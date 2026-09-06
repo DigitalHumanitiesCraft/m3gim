@@ -67,7 +67,7 @@ def _has_any_relation(record):
     strict=True,
     reason="NIM_168 Folio-Granularitaets-Inkonsistenz zwischen Objekt- und "
     "Verknuepfungstabelle (Sub-Folios 2_1..2_3), Source-Fix beim "
-    "Erschliessungsteam offen — siehe knowledge/data/reports/reconciliation-register.md",
+    "Erschliessungsteam offen — siehe data/reports/reconciliation-register.md",
 )
 def test_verknuepfungen_every_referenced_record_has_relations(
     records, xlsx_verknuepfungen
@@ -78,7 +78,7 @@ def test_verknuepfungen_every_referenced_record_has_relations(
     Regressions-Alarm statt der frueheren 80-Prozent-Toleranz: wenn die
     Pipeline stillschweigend aufhoert, Relationen fuer ein Konvolut zu
     emittieren, schlaegt dieser Test an. Orphan-Signaturen (NIM_11 u. ae.,
-    siehe knowledge/data.md § Datenqualität) werden uebersprungen, da fuer sie
+    siehe knowledge/data.md § Compensations in the pipeline) werden uebersprungen, da fuer sie
     kein Ziel-Record existiert.
 
     BEKANNTE ECHTE DATENLUECKE (bewusst rot, Source-Fix offen): NIM_168 wird in
@@ -109,7 +109,7 @@ def test_verknuepfungen_every_referenced_record_has_relations(
     unlinked = []
     for sig in sorted(referenced_sigs):
         if sig not in by_sig:
-            continue  # Orphan, see data.md § Datenqualität
+            continue  # Orphan, see data.md § Compensations in the pipeline
         # At least one record of this signature (Konvolut or Folio) carries a relation.
         if not any(_has_any_relation(r) for r in by_sig[sig]):
             unlinked.append(sig)
@@ -130,7 +130,7 @@ _TYP_TO_OUTPUT = [
 ]
 
 # Share of a type's source rows that must reach the output. Losses come from
-# orphan signatures and Folio granularity (data.md § Datenqualität) and, for type person,
+# orphan signatures and Folio granularity (data.md § Compensations in the pipeline) and, for type person,
 # from re-sorting the role 'erwaehnt' into rico:hasOrHadSubject. test_11 uses
 # the same threshold for the Verortungen.
 _MIN_YIELD = 0.6
@@ -238,7 +238,7 @@ def test_event_date_retired(records):
 
 
 def test_roles_gender_neutral(records):
-    """No role in the output ends in :in or :innen (data.md section 5).
+    """No role in the output ends in :in or :innen (data.md § Role values).
 
     The pipeline normalizes roles at ingestion (transform.py normalize_role).
     This test guards the invariant that no gender suffix reaches the JSON-LD

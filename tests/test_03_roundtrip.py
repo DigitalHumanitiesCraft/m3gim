@@ -32,7 +32,7 @@ def test_record_count_reasonable(records, xlsx_objekte):
 @pytest.mark.xfail(
     reason="Quellfehler (Partner-Uebergabeliste): Objektzeile UAKUG/NIM_138 traegt ausser der Signatur keine "
            "einzige Angabe, weshalb die Pipeline keinen Record dazu bildet. "
-           "Quellfehler, siehe knowledge/data/reports/reconciliation-register.md",
+           "Quellfehler, siehe data/reports/reconciliation-register.md",
     strict=True,
 )
 def test_every_xlsx_signatur_in_graph(records, xlsx_objekte):

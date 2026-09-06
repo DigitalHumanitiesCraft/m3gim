@@ -1,100 +1,41 @@
-﻿# M3GIM Scripts
+# Pipeline scripts
 
-## Pipeline-Workflow
+The pipeline reads the recording tables under `data/google-spreadsheet/` and writes `docs/data/m3gim.jsonld`, the single data source of the frontend. The reference with inputs, outputs and reasons is [`../knowledge/architecture.md`](../knowledge/architecture.md) § Pipeline. This file is the short view at the folder.
+
+## The run
+
+Eight steps in this order, each callable on its own.
 
 ```text
-Google Sheets (XLSX in data/google-spreadsheet/)
-  -> explore.py      -> data/reports/exploration-report.md
-  -> validate.py     -> data/reports/validation-report.md
-  -> transform.py    -> data/output/m3gim.jsonld
-  -> reconcile.py    -> data/output/wikidata-reconciliation.json
-  -> build-views.py  -> docs/data/m3gim.jsonld (Kopie)
-
-vocab/m3gim.ttl
-  -> build-model-page.py -> docs/datenmodell.html
+explore.py            -> data/reports/exploration-report.md
+validate.py           -> data/reports/validation-report.md
+transform.py          -> data/output/m3gim.jsonld
+build-views.py        -> docs/data/m3gim.jsonld
+audit-data.py         -> console report
+report-quality.py     -> data/reports/quality-snapshot.md
+report-cataloguing.py -> data/reports/cataloguing-report.md
+build-model-page.py   -> docs/datenmodell.html and the shared page regions of docs/*.html
 ```
 
-## Abhaengigkeiten
+`transform.py` reads `vocab/m3gim.ttl` for role concepts, concept definitions and dating scopes, and the two `wikidata-*.json` from the output directory. `build-model-page.py` generates the model page from the same vocabulary and rewrites foot, info-page header and stylesheet version in every page under `docs/` (E-251).
 
-```bash
-pip install pandas openpyxl
-```
+## Outside the run
 
-## Skripte
+- `reconcile.py`, `enrich-wikidata.py`, `verify-manual-approvals.py` for the Wikidata alignment, all three needing network access
+- `export-wikidata-csv.py` for the lookup CSVs of the spreadsheet import
+- `propose-links.py` for link proposals from the object titles
+- `scout-coverage.py` for a read-only coverage measurement before a view is built
+- `assemble-verknuepfungen.py` to reassemble the per-box CSV exports into the workbook
+- `build-social-images.py` for the Open Graph image and the PNG favicons, needing Pillow, which no requirements file carries
+- `backup.py` for an unchanged snapshot of a raw export
+- `check-doc-split.py` for content preservation when a knowledge document is split or merged
 
-### `explore.py`
+`_common.py` holds the shared loaders and resolves the path overrides `M3GIM_SHEETS_DIR`, `M3GIM_OUTPUT_DIR` and `M3GIM_REPORTS_DIR` once for every script that imports it (E-249).
 
-Analysiert Struktur, Fuellgrade, Vokabulare und Auffaelligkeiten der XLSX-Exporte.
+## Two conventions that surprise
 
-```bash
-python scripts/explore.py
-python scripts/explore.py data/google-spreadsheet/export.zip
-```
+`validate.py` and `audit-data.py` exit 1 as soon as they report ERROR findings. Those are source errors from the cataloguing, not failures of the run, and they travel to the cataloguing team through the generated cataloguing report and the handover list under `data/reports/`.
 
-Output: `data/reports/exploration-report.md`
+`transform.py` aborts without `wikidata-reconciliation.json` and `wikidata-enrichment.json` in the output directory, because the dataset would otherwise lose coordinates, life dates and occupations without a symptom. `M3GIM_ALLOW_NO_WIKIDATA=1` marks such a run as deliberate.
 
-### `validate.py`
-
-Validiert Pflichtfelder, Formate und Referenzierbarkeit; erzeugt Fehler/Warnungen fuer den Erfassungsprozess.
-
-```bash
-python scripts/validate.py
-```
-
-Output: `data/reports/validation-report.md`
-
-### `transform.py`
-
-Transformiert Tabellen nach JSON-LD auf Basis RiC-O 1.1 und m3gim-Erweiterungen.
-
-```bash
-python scripts/transform.py
-```
-
-Output: `data/output/m3gim.jsonld`
-
-### `build-views.py`
-
-Kopiert den Pipeline-Output in das Frontend-Datenverzeichnis. Die frueher erzeugten vorverdichteten Derivate sind seit E-140 abgeschafft, das Frontend liest ausschliesslich `docs/data/m3gim.jsonld`.
-
-```bash
-python scripts/build-views.py
-```
-
-Output: `docs/data/m3gim.jsonld` (Kopie von `data/output/m3gim.jsonld`)
-
-### `audit-data.py`
-
-Validiert Alignment zwischen Quelldaten (XLSX), JSON-LD und Frontend-Kopie. Prueft Record-Vollstaendigkeit, Verknuepfungstypen, docs/data-Synchronitaet, Datenqualitaet und Handreichungs-Compliance.
-
-```bash
-python scripts/audit-data.py
-```
-
-Output: Konsolenreport mit Fehler/Warnungs-Zaehlung.
-
-### `reconcile.py`
-
-Wikidata-Reconciliation fuer die 4 Index-Tabellen. Sucht ueber die Wikidata Search API und traegt Q-IDs ein bei exaktem Label-Match + P31-Verifikation (Personen: Q5, Orte: geographic entities, Organisationen: organisations, Werke: musical works). Ergebnisse als JSON-Datei, die manuell geprueft und ins Google Sheet uebertragen wird.
-
-```bash
-python scripts/reconcile.py                  # alle 4 Indizes
-python scripts/reconcile.py --type person    # nur Personen
-python scripts/reconcile.py --dry-run        # nur Namen auflisten
-```
-
-Output: `data/output/wikidata-reconciliation.json`
-
-### `export-wikidata-csv.py`
-
-Exportiert die Wikidata-Reconciliation-Ergebnisse als CSVs fuer den Google-Sheets-Import (VLOOKUP).
-
-```bash
-python scripts/export-wikidata-csv.py
-```
-
-Output: `data/output/wikidata-csvs/` (5 Dateien: person-matches.csv, org-matches.csv, location-matches.csv, work-matches.csv, unmatched.csv)
-
-## Hinweise
-
-- Reports in `data/reports/` sind generiert und koennen bei erneutem Lauf ueberschrieben werden.
+Reports under `data/reports/` are regenerated by a run. Which of them are versioned and which are not is listed in [`../knowledge/architecture.md`](../knowledge/architecture.md) § Generated and versioned outputs.

@@ -125,17 +125,18 @@ describe('Der Baum zeigt, was der Schnitt mitnimmt', () => {
   });
 
   test('das mitgemeinte Blatt ist Information, kein Ziel', () => {
-    const src = readFileSync(new URL('../../docs/js/ui/sidebar.js', import.meta.url), 'utf-8');
-    const row = src.slice(src.indexOf('function optionRow'), src.indexOf('function optionListControl'));
+    const src = readFileSync(new URL('../../docs/js/ui/sidebar-options.js', import.meta.url), 'utf-8');
+    const row = src.slice(src.indexOf('function optionRow'), src.indexOf('function groupRow'));
     assert.match(row, /implied \? \{ 'aria-disabled': 'true' \} : \{ onClick \}/,
       'Ohne Klick, weil die Wahl nichts hinzufuegt, was der Oberbegriff nicht traegt.');
-    assert.match(src, /implied \? null : \(\) => toggle\(child\.value\)/);
+    const facets = readFileSync(new URL('../../docs/js/ui/sidebar-facets.js', import.meta.url), 'utf-8');
+    assert.match(facets, /implied \? null : \(\) => toggle\(child\.value\)/);
     const css = readFileSync(new URL('../../docs/css/sidebar.css', import.meta.url), 'utf-8');
     assert.match(css, /\.fs-option--implied \{\s+color: var\(--color-text-tertiary\);\s+cursor: default;/);
   });
 
   test('der gewaehlte Oberbegriff verwirft das redundante Kind aus der Wahl', () => {
-    const src = readFileSync(new URL('../../docs/js/ui/sidebar.js', import.meta.url), 'utf-8');
+    const src = readFileSync(new URL('../../docs/js/ui/sidebar-facets.js', import.meta.url), 'utf-8');
     const tree = src.slice(src.indexOf('function facetTreeControl'), src.indexOf('function optionListControl'));
     assert.match(tree, /chosen\.filter\(v => !kidValues\.includes\(v\)\), entry\.value\]/,
       'Sonst stuende "Autobiografie" im Streifen neben "Biographisch".');

@@ -36,10 +36,11 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap">
 
-  <link rel="stylesheet" href="css/variables.css?v=2026-09-04">
-  <link rel="stylesheet" href="css/base.css?v=2026-09-04">
-  <link rel="stylesheet" href="css/components.css?v=2026-09-04">
-  <link rel="stylesheet" href="css/pages.css?v=2026-09-04">
+  <link rel="stylesheet" href="css/variables.css?v=2026-09-05">
+  <link rel="stylesheet" href="css/base.css?v=2026-09-05">
+  <link rel="stylesheet" href="css/components.css?v=2026-09-05">
+  <link rel="stylesheet" href="css/pages.css?v=2026-09-05">
+  <link rel="stylesheet" href="css/tabs.css?v=2026-09-05">
 
   <script type="application/ld+json">
     {
@@ -81,9 +82,51 @@
   <a class="skip-link" href="#main-content">Zum Inhalt springen</a>
 
   <header class="topbar">
-    <a class="topbar__brand" href="index.html">M³GIM</a>
-    <span class="topbar__subtitle">Teilnachlass Ira Malaniuk — UAKUG/NIM</span>
-    <a class="topbar__badge" href="projekt.html">Research Preview</a>
+    <div class="topbar__lead">
+      <a class="topbar__brand" href="index.html" data-tip="Teilnachlass Ira Malaniuk — UAKUG/NIM">M³GIM</a>
+      <a class="topbar__badge" href="projekt.html">Research Preview</a>
+    </div>
+
+    <nav class="tab-bar" aria-label="Ansichten">
+      <div class="tab-bar__group" role="none" data-group="material">
+        <a class="tab-bar__tab" href="index.html#bestand">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect width="20" height="5" x="2" y="3" rx="1"/><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/><path d="M10 12h4"/></svg>
+          <span class="tab-bar__label">Bestand</span>
+        </a>
+        <a class="tab-bar__tab" href="index.html#indizes">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M16 22h2a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v3"/><path d="M14 2v5h5"/><path d="M3 15h6"/><path d="M3 19h4"/><path d="M3 11h8"/></svg>
+          <span class="tab-menu__name">
+            <span class="tab-bar__label">Indizes</span>
+            <svg class="tab-menu__chevron" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg>
+          </span>
+        </a>
+      </div>
+      <div class="tab-bar__group" role="none" data-group="perspektiven">
+        <a class="tab-bar__tab" href="index.html#chronik">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span class="tab-bar__label">Chronik</span>
+        </a>
+        <a class="tab-bar__tab" href="index.html#karte">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
+          <span class="tab-bar__label">Karte</span>
+        </a>
+        <a class="tab-bar__tab" href="index.html#netzwerk">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="5" cy="5" r="2"/><circle cx="19" cy="5" r="2"/><circle cx="19" cy="19" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="12" cy="12" r="2"/><path d="M6.5 6.5 10.5 10.5"/><path d="M17.5 6.5 13.5 10.5"/><path d="M6.5 17.5 10.5 13.5"/><path d="M17.5 17.5 13.5 13.5"/></svg>
+          <span class="tab-bar__label">Netzwerk</span>
+        </a>
+        <a class="tab-bar__tab" href="index.html#statistik">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          <span class="tab-bar__label">Statistik</span>
+        </a>
+      </div>
+      <div class="tab-bar__group" role="none" data-group="werkzeug">
+        <a class="tab-bar__tab" href="index.html#korb" data-tip="Ausgewählte Dokumente sammeln und als CSV oder BibTeX exportieren">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>
+          <span class="tab-bar__label">Korb</span>
+        </a>
+      </div>
+    </nav>
+
     <nav class="topbar__info" aria-label="Informationsseiten">
       <a href="about.html">Über</a>
       <a href="projekt.html">Projekt</a>
@@ -273,7 +316,7 @@
           <dl class="term__facets">
             <dt>Oberklasse</dt><dd><code>rico:Event</code></dd>
           </dl>
-          <p class="term__note">Im erzeugten Datensatz entsteht je Verknüpfungszeile eine eigene Instanz, sodass eine Aufführung in mehrere Knoten zerfällt, die nicht miteinander verbunden sind. Das Zielmodell (data-model.md § RiC-O-Kern und m3gim-Erweiterung, E-128) sieht eine Instanz je Aktivität mit der vollständigen Besetzung vor.</p>
+          <p class="term__note">Im erzeugten Datensatz entsteht je Verknüpfungszeile eine eigene Instanz, sodass eine Aufführung in mehrere Knoten zerfällt, die nicht miteinander verbunden sind. Das Zielmodell (data-model.md § Target model v2, E-128) sieht eine Instanz je Aktivität mit der vollständigen Besetzung vor.</p>
           <p class="term__note">Die Aufführung trägt ihre Datierung weiterhin unmittelbar, jetzt als m3gim-ontology:atDate. An diesem Knoten ist das Datum die Datierung des Ereignisses selbst; eine Rollenangabe hätte dort keinen Gegenstand.</p>
         </div>
         <div class="term">
@@ -502,7 +545,7 @@
             <dt>Range</dt><dd><code>xsd:string</code></dd>
           </dl>
           <p class="term__note">Ohne rdfs:domain, weil die zusammengeführten Rollen an Annotationsknoten und an Entitätsreferenzen gleichermaßen stehen.</p>
-          <p class="term__note">Der Term ist mit der Zusammenführung von auftritt auf aufführung sowie von erstelldatum und entstehungsort auf entstehung aufgenommen. Ohne ihn ist die Zusammenführung irreversibel, sobald die Quelle nicht mehr befragt wird. Er ist in knowledge/data-model.md § RiC-O-Kern und m3gim-Erweiterung für genau diesen Zweck deklariert.</p>
+          <p class="term__note">Der Term ist mit der Zusammenführung von auftritt auf aufführung sowie von erstelldatum und entstehungsort auf entstehung aufgenommen. Ohne ihn ist die Zusammenführung irreversibel, sobald die Quelle nicht mehr befragt wird. Er ist in knowledge/data-model.md § Property families für genau diesen Zweck deklariert.</p>
           <p class="term__note">Die Pipeline setzt den Term überall dort, wo der erfasste Wert nicht das prefLabel des Concepts ist, auf das er im Vokabular führt. Er steht damit an jedem Knoten, dessen Rolle beim Umbau eine andere Schreibung bekommen hat.</p>
         </div>
         <h3>Datierung</h3>
@@ -602,7 +645,7 @@
             <dt>Domain</dt><dd><code>rico:Record</code></dd>
             <dt>Range</dt><dd><code>xsd:string</code></dd>
           </dl>
-          <p class="term__note">knowledge/data.md § Erfassungsstatus führt ein zweites, abweichendes Wertesystem aus der Erfassungshandreichung mit den Stufen in_bearbeitung, schicht1_fertig, schicht2_fertig und abgeschlossen, das den Schichtfortschritt abbildet. Welches System gilt, ist zu entscheiden; erst dann lässt sich der Erschließungsgrad pro Schicht messen.</p>
+          <p class="term__note">knowledge/data.md § Processing status führt ein zweites, abweichendes Wertesystem aus der Erfassungshandreichung mit den Stufen in_bearbeitung, schicht1_fertig, schicht2_fertig und abgeschlossen, das den Schichtfortschritt abbildet. Welches System gilt, ist zu entscheiden; erst dann lässt sich der Erschließungsgrad pro Schicht messen.</p>
           <p class="term__note">Die Werte bleiben deutsch und normalisiert.</p>
         </div>
         <div class="term">
@@ -628,7 +671,20 @@
             <dt>Domain</dt><dd><code>rico:Record</code></dd>
             <dt>Range</dt><dd><code>xsd:boolean</code></dd>
           </dl>
-          <p class="term__note">knowledge/data.md § Konvolut- und Objektlogik. Das Merkmal ersetzt die Signatur-Zeichenprüfung, die das Frontend bis zum 2026-09-03 in isStandaloneKonvolut selbst vornahm.</p>
+          <p class="term__note">knowledge/data.md § Convolutes, folios and record identity. Das Merkmal ersetzt die Signatur-Zeichenprüfung, die das Frontend bis zum 2026-09-03 in isStandaloneKonvolut selbst vornahm.</p>
+        </div>
+        <div class="term">
+          <h4 class="term__head">
+            <code>m3gim-ontology:derivedFolioRecord</code>
+            <span class="term__label">abgeleiteter Foliodatensatz</span>
+            <span class="term__gloss">derived folio record</span>
+          </h4>
+          <p class="term__definition">Wahr an einem Datensatz eines Folios, den die Pipeline erzeugt, weil die Quelle nur die Seiten des Folios als Objektzeilen führt. Er bündelt die Seiten über rico:hasOrHadPart und trägt keine eigene Erschließung.</p>
+          <dl class="term__facets">
+            <dt>Domain</dt><dd><code>rico:Record</code></dd>
+            <dt>Range</dt><dd><code>xsd:boolean</code></dd>
+          </dl>
+          <p class="term__note">knowledge/data.md § Target model, decided and not built. Das Merkmal trennt den abgeleiteten Foliodatensatz von einem Folio, das die Quelle selbst als Objektzeile führt.</p>
         </div>
         <div class="term">
           <h4 class="term__head">
@@ -778,7 +834,7 @@
             <dt>Range</dt><dd><code>xsd:string</code></dd>
           </dl>
           <p class="term__note">Die angereicherten Ortsknoten unterhalb von m3gim-ontology:atPlace tragen keinen eigenen Typ. Für diese Knoten ist die Domain nur aus der Position im Graphen erschließbar.</p>
-          <p class="term__note">Bewusst ohne den wd-Marker der Familie, weil der Term in knowledge/data-model.md § RiC-O-Kern und m3gim-Erweiterung als Place-Property definiert ist.</p>
+          <p class="term__note">Bewusst ohne den wd-Marker der Familie, weil der Term in knowledge/data-model.md § Property families als Place-Property definiert ist.</p>
         </div>
         <div class="term">
           <h4 class="term__head">
@@ -855,7 +911,7 @@
           <dl class="term__facets">
             <dt>Range</dt><dd><code>xsd:string</code></dd>
           </dl>
-          <p class="term__note">Objektzeilen tragen den festen Wert Objekte, Verknüpfungszeilen den Namen des jeweiligen Box-Blatts, weil die Verknüpfungstabelle über mehrere Blätter verteilt ist. knowledge/data-model.md § Meta-Statement-Modell ist auf diesen Wertebereich nachgezogen.</p>
+          <p class="term__note">Objektzeilen tragen den festen Wert Objekte, Verknüpfungszeilen den Namen des jeweiligen Box-Blatts, weil die Verknüpfungstabelle über mehrere Blätter verteilt ist. knowledge/data-model.md § Meta-statements and provenance ist auf diesen Wertebereich nachgezogen.</p>
         </div>
         <div class="term">
           <h4 class="term__head">
@@ -962,27 +1018,27 @@
         <tr><td><code>m3gim-vocab:publisher</code></td><td>herausgeber</td><td>publisher</td><td>Person oder Institution, die eine Publikation herausgibt. Bei Presseerzeugnissen ist es meist die Institution.<span class="cell__note">Das deutsche Wort trägt auch die Bedeutung Editor, die hier ausgeschlossen ist. Der Name folgt der Definition und der Anmerkung an m3gim-ontology:hasAssociatedAgent, die auf rico:hasPublisher verweist.</span></td></tr>
         <tr><td><code>m3gim-vocab:contractingParty</code></td><td>vertragspartner</td><td>contracting party</td><td>Gegenpartei eines Vertrags.<span class="cell__note">Wird im Modell als AgRelOn-Beziehung geführt statt als Rolle am Personenknoten. Weil vertragspartner und arbeitgeber auf dieselbe AgRelOn-Klasse abbilden, ist die Herkunft ohne einen Marker nicht mehr unterscheidbar.</span></td></tr>
         <tr><td><code>m3gim-vocab:singer</code></td><td>sänger</td><td>singer</td><td>Person, die in einer Aufführung singt.</td></tr>
-        <tr><td><code>m3gim-vocab:conductor</code></td><td>dirigent</td><td>conductor</td><td></td></tr>
-        <tr><td><code>m3gim-vocab:director</code></td><td>regisseur</td><td>director</td><td></td></tr>
-        <tr><td><code>m3gim-vocab:composer</code></td><td>komponist</td><td>composer</td><td><span class="cell__note">Namensgleich mit der Ontologie-Property m3gim-ontology:composer, in einem anderen Namensraum und damit zulässig.</span></td></tr>
-        <tr><td><code>m3gim-vocab:librettist</code></td><td>librettist</td><td>librettist</td><td></td></tr>
-        <tr><td><code>m3gim-vocab:translator</code></td><td>übersetzer</td><td>translator</td><td></td></tr>
-        <tr><td><code>m3gim-vocab:arranger</code></td><td>arrangeur</td><td>arranger</td><td></td></tr>
-        <tr><td><code>m3gim-vocab:chorusMaster</code></td><td>chorleiter</td><td>chorus master</td><td></td></tr>
-        <tr><td><code>m3gim-vocab:choreographer</code></td><td>choreograph</td><td>choreographer</td><td></td></tr>
-        <tr><td><code>m3gim-vocab:setDesigner</code></td><td>bühnenbildner</td><td>set designer</td><td></td></tr>
-        <tr><td><code>m3gim-vocab:costumeDesigner</code></td><td>kostümbildner</td><td>costume designer</td><td></td></tr>
+        <tr><td><code>m3gim-vocab:conductor</code></td><td>dirigent</td><td>conductor</td><td>Person, die die musikalische Leitung einer Aufführung innehat.</td></tr>
+        <tr><td><code>m3gim-vocab:director</code></td><td>regisseur</td><td>director</td><td>Person, die die szenische Einrichtung einer Produktion verantwortet.</td></tr>
+        <tr><td><code>m3gim-vocab:composer</code></td><td>komponist</td><td>composer</td><td>Person, die das genannte oder aufgeführte Werk komponiert hat.<span class="cell__note">Namensgleich mit der Ontologie-Property m3gim-ontology:composer, in einem anderen Namensraum und damit zulässig.</span></td></tr>
+        <tr><td><code>m3gim-vocab:librettist</code></td><td>librettist</td><td>librettist</td><td>Person, die den Text eines Bühnenwerks verfasst hat.</td></tr>
+        <tr><td><code>m3gim-vocab:translator</code></td><td>übersetzer</td><td>translator</td><td>Person, die einen Text oder ein Libretto in eine andere Sprache übertragen hat.</td></tr>
+        <tr><td><code>m3gim-vocab:arranger</code></td><td>arrangeur</td><td>arranger</td><td>Person, die ein musikalisches Werk für eine andere Besetzung oder Fassung einrichtet.</td></tr>
+        <tr><td><code>m3gim-vocab:chorusMaster</code></td><td>chorleiter</td><td>chorus master</td><td>Person, die den Chor einer Produktion einstudiert und leitet.</td></tr>
+        <tr><td><code>m3gim-vocab:choreographer</code></td><td>choreograph</td><td>choreographer</td><td>Person, die die tänzerischen Bewegungsabläufe einer Produktion entwirft.</td></tr>
+        <tr><td><code>m3gim-vocab:setDesigner</code></td><td>bühnenbildner</td><td>set designer</td><td>Person, die das Bühnenbild einer Produktion entwirft.</td></tr>
+        <tr><td><code>m3gim-vocab:costumeDesigner</code></td><td>kostümbildner</td><td>costume designer</td><td>Person, die die Kostüme einer Produktion entwirft.</td></tr>
         <tr><td><code>m3gim-vocab:productionDesigner</code></td><td>ausstatter</td><td>production designer</td><td>Person, die Bühnenbild und Kostüm gemeinsam verantwortet.</td></tr>
-        <tr><td><code>m3gim-vocab:stageManager</code></td><td>bühnenleiter</td><td>stage manager</td><td><span class="cell__note">Ohne Definition im Vokabular. Der deutsche Begriff kann die technische Leitung der Bühne oder die künstlerische Leitung des Hauses meinen. Die Übersetzung ist fachlich strittig.</span></td></tr>
-        <tr><td><code>m3gim-vocab:technicalDirector</code></td><td>technische leitung</td><td>technical director</td><td><span class="cell__note">Gegen den nackten Wert leitung abzugrenzen. Die Unterscheidung ist mit dem Erschließungsteam zu klären.</span></td></tr>
-        <tr><td><code>m3gim-vocab:unspecifiedDirection</code></td><td>leitung</td><td>unspecified direction</td><td><span class="cell__note">Der Wert ist unbestimmt und kann musikalische, szenische oder technische Leitung meinen. Klärungsbedarf.</span><span class="cell__note">Der Name hält die Unbestimmtheit fest, die die Alternativen direction und management verlieren würden.</span></td></tr>
-        <tr><td><code>m3gim-vocab:lightingTechnician</code></td><td>beleuchter</td><td>lighting technician</td><td><span class="cell__note">Die Alternative lightingDesigner unterstellt eine gestalterische Funktion, die die Quelle nicht belegt.</span></td></tr>
-        <tr><td><code>m3gim-vocab:makeupArtist</code></td><td>maskenbidner<span class="cell__alt">maskenbildner</span></td><td>makeup artist</td><td><span class="cell__note">Die Quelle führt die Tippform maskenbidner, die unverändert durchgereicht wird. Der Quell-Fix ist im Datenfehler-Register vermerkt.</span><span class="cell__note">Die Umbenennung löst die IRI vom Quellfehler; skos:prefLabel behält die Quellform, skos:altLabel die korrekte.</span></td></tr>
+        <tr><td><code>m3gim-vocab:stageManager</code></td><td>bühnenleiter</td><td>stage manager</td><td>Erfasste Angabe der Bühnenleitung. Ob die technische Leitung der Bühne oder die künstlerische Leitung des Hauses gemeint ist, geht aus der Quelle nicht hervor.<span class="cell__note">Die Übersetzung ist fachlich strittig, weil der deutsche Begriff die technische Leitung der Bühne oder die künstlerische Leitung des Hauses meinen kann.</span></td></tr>
+        <tr><td><code>m3gim-vocab:technicalDirector</code></td><td>technische leitung</td><td>technical director</td><td>Person oder Stelle, die die technische Leitung eines Hauses oder einer Produktion innehat.<span class="cell__note">Gegen den nackten Wert leitung abzugrenzen. Die Unterscheidung ist mit dem Erschließungsteam zu klären.</span></td></tr>
+        <tr><td><code>m3gim-vocab:unspecifiedDirection</code></td><td>leitung</td><td>unspecified direction</td><td>Erfasste Leitungsangabe ohne nähere Bestimmung. Ob musikalische, szenische oder technische Leitung gemeint ist, geht aus der Quelle nicht hervor.<span class="cell__note">Der Wert ist unbestimmt und kann musikalische, szenische oder technische Leitung meinen. Klärungsbedarf.</span><span class="cell__note">Der Name hält die Unbestimmtheit fest, die die Alternativen direction und management verlieren würden.</span></td></tr>
+        <tr><td><code>m3gim-vocab:lightingTechnician</code></td><td>beleuchter</td><td>lighting technician</td><td>Person, die die Beleuchtung einer Produktion ausführt.<span class="cell__note">Die Alternative lightingDesigner unterstellt eine gestalterische Funktion, die die Quelle nicht belegt.</span></td></tr>
+        <tr><td><code>m3gim-vocab:makeupArtist</code></td><td>maskenbidner<span class="cell__alt">maskenbildner</span></td><td>makeup artist</td><td>Person, die Maske und Schminke einer Produktion ausführt.<span class="cell__note">Die Quelle führt die Tippform maskenbidner, die unverändert durchgereicht wird. Der Quell-Fix ist im Datenfehler-Register vermerkt.</span><span class="cell__note">Die Umbenennung löst die IRI vom Quellfehler; skos:prefLabel behält die Quellform, skos:altLabel die korrekte.</span></td></tr>
         <tr><td><code>m3gim-vocab:repetiteur</code></td><td>repetitor</td><td>repetiteur</td><td>Person, die Sängerinnen und Sänger am Klavier einstudiert.</td></tr>
-        <tr><td><code>m3gim-vocab:assistantDirector</code></td><td>regieassistent</td><td>assistant director</td><td></td></tr>
-        <tr><td><code>m3gim-vocab:photographer</code></td><td>fotograf</td><td>photographer</td><td></td></tr>
+        <tr><td><code>m3gim-vocab:assistantDirector</code></td><td>regieassistent</td><td>assistant director</td><td>Person, die die Regie einer Produktion unterstützt.</td></tr>
+        <tr><td><code>m3gim-vocab:photographer</code></td><td>fotograf</td><td>photographer</td><td>Person, die eine im Dokument enthaltene oder nachgewiesene Aufnahme hergestellt hat.</td></tr>
         <tr><td><code>m3gim-vocab:performer</code></td><td>interpret</td><td>performer</td><td>Oberbegriff für eine mitwirkende Person, wenn Stimmfach oder Funktion nicht bestimmbar sind.<span class="cell__note">Der Wert kommt auch als Rolle einer Detailangabe vor, wo er keine Art des Finanzpostens bezeichnet. Diese Verwendung ist zu prüfen und begründet die Zuordnung zu agentRoles.</span></td></tr>
-        <tr><td><code>m3gim-vocab:protagonist</code></td><td>protagonist</td><td>protagonist</td><td><span class="cell__note">Vermutlich ein Erfassungsfehler, weil der Wert eine Bühnenrolle bezeichnet und damit in den Typ rolle gehört. Als offene Modellentscheidung geführt.</span></td></tr>
+        <tr><td><code>m3gim-vocab:protagonist</code></td><td>protagonist</td><td>protagonist</td><td>Erfasste Angabe der Hauptpartie einer Produktion. Der Wert bezeichnet eine Bühnenrolle und steht nur wegen der Erfassung unter den Akteursrollen.<span class="cell__note">Vermutlich ein Erfassungsfehler, weil der Wert eine Bühnenrolle bezeichnet und damit in den Typ rolle gehört. Als offene Modellentscheidung geführt.</span></td></tr>
         <tr><td><code>m3gim-vocab:audienceMember</code></td><td>publikum</td><td>audience member</td><td>Person, die als Zuschauerin oder Zuschauer anwesend war.<span class="cell__note">Ob solche Personen als Akteur oder als Gegenstand des Dokuments zu führen sind, ist mit dem Erschließungsteam zu klären.</span></td></tr>
         <tr><td><code>m3gim-vocab:employer</code></td><td>arbeitgeber</td><td>employer</td><td>Institution, bei der ein Engagement bestand.</td></tr>
         <tr><td><code>m3gim-vocab:organizer</code></td><td>veranstalter</td><td>organizer</td><td>Institution, die eine Veranstaltung ausrichtet.</td></tr>
@@ -999,14 +1055,14 @@
         <tr><td><code>m3gim-vocab:attestedDating</code></td><td>Datierung eines bezeugten Ereignisses</td><td>attested dating</td><td>Die Datierung gilt einem Ereignis, das das Dokument bezeugt, etwa einer Aufführung, einer Probe oder einer Abreise.</td></tr>
         <tr><td><code>m3gim-vocab:mentionedDating</code></td><td>Datierung einer Erwähnung</td><td>mentioned dating</td><td>Die Datierung gilt einer bloßen Erwähnung im Dokument, ohne dass das Dokument das Ereignis bezeugt.</td></tr>
         <tr><td><code>m3gim-vocab:framingDating</code></td><td>Datierung eines umfassenden Zeitraums</td><td>framing dating</td><td>Die Datierung gilt einer Rahmenveranstaltung oder einem übergreifenden Zeitraum, in dem das eigentliche Ereignis liegt.</td></tr>
-        <tr><td><code>m3gim-vocab:unfulfilledDating</code></td><td>Datierung einer negierten Behauptung</td><td>unfulfilled dating</td><td>Die Datierung gehört zu einer Angabe, die ausdrücklich nicht eingetreten ist, etwa einem nicht eingehaltenen Vertragstermin.<span class="cell__note">Der Wert hängt an der Statusmarkierung nicht eingehalten, deren Modellierung mit dem Erschließungsteam offen ist (data-model.md § Finanzschicht). Solange sie in der Rollenspalte steht, hält dieser Begriff sie aus dem Zeitanker heraus.</span><span class="cell__note">unused: Der Anker war der Vertragsstatus in der Rollenspalte, der seit der Lieferung 2026-08-31 in der Anmerkungsspalte steht. Der Begriff bleibt, solange nicht entschieden ist, ob eine Datierung an einem nicht eingetretenen Vorkommnis eine eigene Bezugsebene braucht.</span></td></tr>
+        <tr><td><code>m3gim-vocab:unfulfilledDating</code></td><td>Datierung einer negierten Behauptung</td><td>unfulfilled dating</td><td>Die Datierung gehört zu einer Angabe, die ausdrücklich nicht eingetreten ist, etwa einem nicht eingehaltenen Vertragstermin.<span class="cell__note">Der Wert hängt an der Statusmarkierung nicht eingehalten, deren Modellierung mit dem Erschließungsteam offen ist (data-model.md § Financial layer). Solange sie in der Rollenspalte steht, hält dieser Begriff sie aus dem Zeitanker heraus.</span><span class="cell__note">unused: Der Anker war der Vertragsstatus in der Rollenspalte, der seit der Lieferung 2026-08-31 in der Anmerkungsspalte steht. Der Begriff bleibt, solange nicht entschieden ist, ob eine Datierung an einem nicht eingetretenen Vorkommnis eine eigene Bezugsebene braucht.</span></td></tr>
         </tbody></table>
         </div><!--/wide-->
         <h3>Annotationsrollen <span class="term__gloss">Annotation roles</span> <code>m3gim-vocab:annotationRoles</code></h3>
         <p>Rolle, in der eine Datierung, eine Verortung oder eine Entitätsreferenz zu ihrem Dokument steht, also die Art des Vorkommnisses, des Zustands oder des Umstands, auf den sie sich bezieht.</p>
         <p class="term__note">Das Scheme vereinigt die in der Umbenennungskarte getrennt vorgeschlagenen Schemes eventTypes, placeRoles und dateRoles. Mit dem einheitlichen Annotationsknoten trägt derselbe Begriff wahlweise eine Datierung, eine Verortung oder beides, sodass eine Trennung nach Datums- und Ortsrollen keinen Gegenstand mehr hat.</p>
         <p class="term__note">Wo eine Datumsrolle und eine Ortsrolle denselben Aspekt bezeichnet haben, sind sie zu einem Begriff zusammengefallen, weil der Aspekt in der Wertproperty steht und der Rollenname ihn nur wiederholt hat. Die Endung der zusammengefallenen Namen ist entfallen; wo ein Begriff nur auf einer der beiden Seiten vorkommt, trägt er seinen Namen unverändert weiter.</p>
-        <p class="term__note">Der Wert nicht eingehalten kommt in der Rollenspalte vor, bezeichnet dort aber den Status eines nicht erfüllten Vertrags. Eine Rolle ist er nicht. Er ist hier bewusst nicht als Concept geführt. Das Zielfeld ist contractStatus zusammen mit realized am Vertragsdokument (data-model.md § Finanzschicht); die Modellierung ist mit dem Erschließungsteam zu klären und bleibt vorerst unverändert.</p>
+        <p class="term__note">Der Wert nicht eingehalten kommt in der Rollenspalte vor, bezeichnet dort aber den Status eines nicht erfüllten Vertrags. Eine Rolle ist er nicht. Er ist hier bewusst nicht als Concept geführt. Das Zielfeld ist contractStatus zusammen mit realized am Vertragsdokument (data-model.md § Financial layer); die Modellierung ist mit dem Erschließungsteam zu klären und bleibt vorerst unverändert.</p>
         <div class="page__wide">
         <table class="page__table page__table--concepts">
         <thead><tr><th>Begriff</th><th>Anzeigelabel</th><th>Englisch</th><th>Definition</th></tr></thead><tbody>
@@ -1018,7 +1074,7 @@
         <tr><td><code>m3gim-vocab:dressRehearsal</code></td><td>generalprobe</td><td>dress rehearsal</td><td>Letzte Probe unter Aufführungsbedingungen.<span class="cell__note">Der Begriff bleibt eine eigene Rolle. Die Alternative wäre probe zusammen mit einer Property rehearsalType gewesen, die im Vokabular nicht geführt und im Datensatz nie befüllt ist.</span></td></tr>
         <tr><td><code>m3gim-vocab:recording</code></td><td>aufnahme<span class="cell__alt">aufnahmedatum</span></td><td>recording</td><td>Rundfunk- oder Tonaufnahme. Sie zählt zur diskursiven Mobilität, weil sie die Stimme über den Aufführungsort hinaus verbreitet.<span class="cell__note">Die Quellschreibung aufnahmedatum bezeichnet denselben Aspekt und fällt hier zusammen, wie absendedatum und absendeort mit E-139. Der Aspekt steht in der Wertproperty, der Rollenname wiederholt ihn nur; die Quellschreibung bleibt über m3gim-ontology:derivedFromRole erhalten.</span></td></tr>
         <tr><td><code>m3gim-vocab:reception</code></td><td>empfang</td><td>reception</td><td>Gesellschaftlicher Empfang im Umfeld einer Aufführung. Im Modell auf die Rahmenveranstaltung geführt.</td></tr>
-        <tr><td><code>m3gim-vocab:guestPerformance</code></td><td>gastspiel</td><td>guest performance</td><td>Auftritt außerhalb des Hauses, an dem ein Engagement besteht.<span class="cell__note">Nach data.md § Verknüpfungsmechanismus gehört der Auftrittsmodus als mode an das Vorkommnis. Als konkurrierender Rollenwert an Ort, Werk oder Institution ist er dort abgelehnt. Solange das Vorkommnis-Modell nicht umgesetzt ist, bleibt der Wert eine Rolle.</span></td></tr>
+        <tr><td><code>m3gim-vocab:guestPerformance</code></td><td>gastspiel</td><td>guest performance</td><td>Auftritt außerhalb des Hauses, an dem ein Engagement besteht.<span class="cell__note">Nach data.md § Target model, decided and not built gehört der Auftrittsmodus als mode an das Vorkommnis. Als konkurrierender Rollenwert an Ort, Werk oder Institution ist er dort abgelehnt. Solange das Vorkommnis-Modell nicht umgesetzt ist, bleibt der Wert eine Rolle.</span></td></tr>
         <tr><td><code>m3gim-vocab:framingEvent</code></td><td>rahmenveranstaltung</td><td>framing event</td><td>Übergeordnete Veranstaltung, in deren Rahmen ein Ereignis stattfindet.<span class="cell__note">Namensgleich mit der Klasse m3gim-ontology:FramingEvent, unterschieden durch Groß- und Kleinschreibung und durch den Namensraum.</span></td></tr>
         <tr><td><code>m3gim-vocab:repertoire</code></td><td>repertoire</td><td>repertoire</td><td>Werk als Bestandteil des einstudierten Repertoires, ohne Bezug auf eine bestimmte Aufführung.</td></tr>
         <tr><td><code>m3gim-vocab:creation</code></td><td>entstehung<span class="cell__alt">erstelldatum, entstehungsort, entstehungsdatum</span></td><td>creation</td><td>Bezug einer Orts- oder Datumsangabe auf die Entstehung des Dokuments.<span class="cell__note">Die Ursprungsrolle bleibt über m3gim-ontology:derivedFromRole erhalten.</span><span class="cell__note">Die drei Begriffe entstehung, entstehungsort und erstelldatum sind zu einem Begriff zusammengefallen. Sie bezeichneten im Bestand denselben Sachverhalt in drei einander ausschließenden Bauformen, und welche griff, hing allein vom Verknüpfungstyp der Erfassungszeile ab.</span><span class="cell__note">Der vierte Wert entstehungsdatum kommt nicht aus der Rollenspalte, sondern ist der Name der Datumsspalte des Objektblatts. Die Pipeline führt ihn als Rolle, wo die dortige Datierung die Form von rico:date verfehlt und deshalb als Annotationsknoten stehen bleibt.</span><span class="cell__note">Die Definition des aufgegangenen Begriffs entstehungsort lautete: Ort, an dem das Dokument entstanden ist. Die des aufgegangenen Begriffs erstelldatum lautete: Datierung der Entstehung eines Dokuments.</span><span class="cell__note">Die Datierung der Entstehung wird am Dokument auf den RiC-O-Term rico:creationDate geführt. Die projekteigene Property m3gim:erstelldatum war eine nackte Unterproperty dieses Terms mit derselben Domain und derselben Bedeutung.</span></td></tr>
@@ -1072,7 +1128,7 @@
         <h3>Dokumenttypen <span class="term__gloss">Documentary form types</span> <code>m3gim-vocab:documentaryFormTypes</code></h3>
         <p>Hierarchisches Vokabular der Dokumenttypen des Bestands. Die Hierarchie erlaubt es, wahlweise granular nach Brief oder aggregiert nach Korrespondenz zu filtern.</p>
         <p class="term__note">Die Werte werden über rico:hasDocumentaryFormType referenziert. RiC-O 1.1 erwartet dort ein Individuum der Klasse rico:DocumentaryFormType. Die Concepts tragen bislang nur skos:Concept. Ob sie zusätzlich als rico:DocumentaryFormType typisiert werden, ist eine offene Frage an das Projekt.</p>
-        <p class="term__note">Die Kanten der ersten Ebene auf m3gim-vocab:document folgen der Baumdarstellung in knowledge/data-model.md § Dokumenttypen-Vokabular. Die Pipeline erzeugt nur die Kanten der zweiten Ebene, sodass die Wurzel im Datensatz nicht erreichbar ist.</p>
+        <p class="term__note">Die Kanten der ersten Ebene auf m3gim-vocab:document folgen der Baumdarstellung in knowledge/data-model.md § Controlled vocabularies. Die Pipeline erzeugt nur die Kanten der zweiten Ebene, sodass die Wurzel im Datensatz nicht erreichbar ist.</p>
         <div class="page__wide">
         <ul class="dft-tree"><li><span class="dft-tree__term"><span class="dft-tree__label">Dokument</span><code>m3gim-vocab:document</code><span class="term__gloss">document</span></span><span class="dft-tree__definition">Oberbegriff aller Dokumenttypen des Bestands.</span><ul><li><span class="dft-tree__term"><span class="dft-tree__label">Konvolut</span><code>m3gim-vocab:bundle</code><span class="term__gloss">bundle</span></span><span class="dft-tree__definition">Aggregierende Archiveinheit, deren Kinder auf Folioebene erschlossen sind.</span><span class="cell__note">Archivischer Fachterminus ohne festes englisches Gegenstück. Die Alternativen file und convolute sind mehrfach belegt beziehungsweise im englischen Archivwesen unüblich.</span></li><li><span class="dft-tree__term"><span class="dft-tree__label">Sammlung</span><code>m3gim-vocab:collection</code><span class="term__gloss">collection</span></span><span class="dft-tree__definition">Zusammenstellung mehrerer Dokumente unter einer Signatur.</span><span class="cell__note">Bewusst ohne skos:broader auf bundle, weil die Abgrenzung offen ist. Möglicherweise bezeichnet Konvolut den physischen Umschlag und Sammlung die thematische Zusammenstellung.</span></li><li><span class="dft-tree__term"><span class="dft-tree__label">Korrespondenz</span><code>m3gim-vocab:correspondence</code><span class="term__gloss">correspondence</span></span><span class="dft-tree__definition">Schriftwechsel zwischen zwei Parteien.</span><ul><li><span class="dft-tree__term"><span class="dft-tree__label">Brief</span><code>m3gim-vocab:letter</code><span class="term__gloss">letter</span></span></li><li><span class="dft-tree__term"><span class="dft-tree__label">Postkarte</span><code>m3gim-vocab:postcard</code><span class="term__gloss">postcard</span></span></li><li><span class="dft-tree__term"><span class="dft-tree__label">Telegramm</span><code>m3gim-vocab:telegram</code><span class="term__gloss">telegram</span></span></li><li><span class="dft-tree__term"><span class="dft-tree__label">Briefumschlag</span><code>m3gim-vocab:envelope</code><span class="term__gloss">envelope</span></span><span class="dft-tree__definition">Umschlag eines Korrespondenzstücks, der als eigenes Objekt erhalten ist und Absender oder Poststempel trägt.</span></li></ul></li><li><span class="dft-tree__term"><span class="dft-tree__label">Presse</span><code>m3gim-vocab:press</code><span class="term__gloss">press</span></span><span class="dft-tree__definition">Erzeugnis der Publizistik, das über die Nachlassbildnerin oder ihr Umfeld berichtet.</span><ul><li><span class="dft-tree__term"><span class="dft-tree__label">Zeitungsausschnitt</span><code>m3gim-vocab:newspaperClipping</code><span class="term__gloss">newspaper clipping</span></span></li><li><span class="dft-tree__term"><span class="dft-tree__label">Kritik</span><code>m3gim-vocab:critique</code><span class="term__gloss">critique</span></span><span class="cell__note">Kritik und Rezension tragen beide keine Definition und fallen im Englischen auf review zusammen. Ob die beiden Begriffe dasselbe meinen, lässt die Quelle offen; die Übersetzung ist fachlich strittig.</span></li><li><span class="dft-tree__term"><span class="dft-tree__label">Rezension</span><code>m3gim-vocab:review</code><span class="term__gloss">review</span></span></li><li><span class="dft-tree__term"><span class="dft-tree__label">Musikzeitschrift</span><code>m3gim-vocab:musicPeriodical</code><span class="term__gloss">music periodical</span></span></li></ul></li><li><span class="dft-tree__term"><span class="dft-tree__label">Programm</span><code>m3gim-vocab:program</code><span class="term__gloss">program</span></span><span class="dft-tree__definition">Drucksache zu einer Veranstaltung, die Besetzung und Ablauf verzeichnet.</span><span class="cell__note">Kanonischer Begriff des Astes (E-131). Die Gattungsnamen Programmheft und Konzertprogramm bleiben zulässige Quellwerte der Erfassung und lösen in der Zuordnungstabelle der Pipeline auf diesen Begriff auf.</span></li><li><span class="dft-tree__term"><span class="dft-tree__label">Biographisch</span><code>m3gim-vocab:biographical</code><span class="term__gloss">biographical</span></span><span class="dft-tree__definition">Dokument, das den Lebenslauf der Nachlassbildnerin darstellt.</span><ul><li><span class="dft-tree__term"><span class="dft-tree__label">Biographie</span><code>m3gim-vocab:biography</code><span class="term__gloss">biography</span></span></li><li><span class="dft-tree__term"><span class="dft-tree__label">Autobiografie</span><code>m3gim-vocab:autobiography</code><span class="term__gloss">autobiography</span></span></li><li><span class="dft-tree__term"><span class="dft-tree__label">Lebenslauf</span><code>m3gim-vocab:curriculumVitae</code><span class="term__gloss">curriculum vitae</span></span></li><li><span class="dft-tree__term"><span class="dft-tree__label">Chronik</span><code>m3gim-vocab:chronicle</code><span class="term__gloss">chronicle</span></span></li></ul></li><li><span class="dft-tree__term"><span class="dft-tree__label">Identitätsdokument</span><code>m3gim-vocab:identityDocument</code><span class="term__gloss">identity document</span></span><span class="dft-tree__definition">Dokument, das die Person ausweist, etwa für Reisen und Grenzübertritte.</span><ul><li><span class="dft-tree__term"><span class="dft-tree__label">Ausweis</span><code>m3gim-vocab:identityCard</code><span class="term__gloss">identity card</span></span></li></ul></li><li><span class="dft-tree__term"><span class="dft-tree__label">Vertrag</span><code>m3gim-vocab:contract</code><span class="term__gloss">contract</span></span><span class="dft-tree__definition">Vereinbarung über ein Engagement, eine Aufnahme oder eine Vermittlung.</span></li><li><span class="dft-tree__term"><span class="dft-tree__label">Plakat</span><code>m3gim-vocab:poster</code><span class="term__gloss">poster</span></span></li><li><span class="dft-tree__term"><span class="dft-tree__label">Fotografie</span><code>m3gim-vocab:photograph</code><span class="term__gloss">photograph</span></span></li><li><span class="dft-tree__term"><span class="dft-tree__label">Notiz</span><code>m3gim-vocab:note</code><span class="term__gloss">note</span></span></li><li><span class="dft-tree__term"><span class="dft-tree__label">Typoskript</span><code>m3gim-vocab:typescript</code><span class="term__gloss">typescript</span></span></li><li><span class="dft-tree__term"><span class="dft-tree__label">Photokopie</span><code>m3gim-vocab:photocopy</code><span class="term__gloss">photocopy</span></span><span class="cell__note">Der Wert bezeichnet die Vervielfältigungsform. Die Dokumentgattung bleibt damit unbestimmt. In RiC-O gehört diese Unterscheidung in die Instanziierung. Die Einordnung ist zu prüfen.</span></li><li><span class="dft-tree__term"><span class="dft-tree__label">Urkunde</span><code>m3gim-vocab:certificate</code><span class="term__gloss">certificate</span></span><span class="dft-tree__definition">Beglaubigtes Dokument, etwa ein Zeugnis oder eine Auszeichnung.</span></li><li><span class="dft-tree__term"><span class="dft-tree__label">Visitenkarte</span><code>m3gim-vocab:businessCard</code><span class="term__gloss">business card</span></span></li><li><span class="dft-tree__term"><span class="dft-tree__label">Quittung</span><code>m3gim-vocab:receipt</code><span class="term__gloss">receipt</span></span></li><li><span class="dft-tree__term"><span class="dft-tree__label">Noten</span><code>m3gim-vocab:sheetMusic</code><span class="term__gloss">sheet music</span></span><span class="dft-tree__definition">Notenmaterial eines Werks.</span></li><li><span class="dft-tree__term"><span class="dft-tree__label">Repertoireliste</span><code>m3gim-vocab:repertoireList</code><span class="term__gloss">repertoire list</span></span><span class="dft-tree__definition">Aufstellung der einstudierten Partien und Werke.</span></li><li><span class="dft-tree__term"><span class="dft-tree__label">Verzeichnis</span><code>m3gim-vocab:inventory</code><span class="term__gloss">inventory</span></span><span class="dft-tree__definition">Aufstellung von Objekten oder Personen, die kein Repertoire verzeichnet.</span></li><li><span class="dft-tree__term"><span class="dft-tree__label">Tagebuch</span><code>m3gim-vocab:diary</code><span class="term__gloss">diary</span></span></li><li><span class="dft-tree__term"><span class="dft-tree__label">Tonträger</span><code>m3gim-vocab:soundCarrier</code><span class="term__gloss">sound carrier</span></span><span class="dft-tree__definition">Physischer Träger einer Aufnahme, etwa eine Schellackplatte.</span></li><li><span class="dft-tree__term"><span class="dft-tree__label">Sonstiges</span><code>m3gim-vocab:other</code><span class="term__gloss">other</span></span><span class="dft-tree__definition">Auffangwert für Dokumente, die keinem der geführten Typen entsprechen.</span></li></ul></li></ul>
         </div><!--/wide-->
@@ -1140,8 +1196,8 @@
     </div>
     <div class="app-footer__group">
       <a href="https://github.com/DigitalHumanitiesCraft/m3gim" target="_blank" rel="noopener" data-tip="Repository auf GitHub, Code unter MIT-Lizenz">Repository</a>
-      <a href="https://github.com/DigitalHumanitiesCraft/Promptotyping" target="_blank" rel="noopener" data-tip="Promptotyping, die Methode hinter dieser Anwendung, auf GitHub">Promptotyping</a>
-      <a href="https://dhcraft.org" target="_blank" rel="noopener" data-tip="Digital Humanities Craft, Konzeption und Umsetzung">DHCraft</a>
+      <a href="https://github.com/DigitalHumanitiesCraft/Promptotyping" target="_blank" rel="noopener" data-tip="Die Anwendung ist mit generativer KI nach der Promptotyping-Methode und Agentic Engineering entstanden">Promptotyping und Agentic Engineering</a>
+      <a class="app-footer__dhcraft" href="https://dhcraft.org" target="_blank" rel="noopener" data-tip="Digital Humanities Craft, Konzeption und technische Umsetzung"><img class="app-footer__mark" src="img/dhcraft-logo.svg" alt="" width="14" height="14">Technische Umsetzung DHCraft</a>
       <a class="app-footer__cc" href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener" data-tip="Daten, Texte und Dokumentation unter Creative Commons Attribution 4.0"><img class="app-footer__mark" src="img/cc.svg" alt="" width="14" height="14"><img class="app-footer__mark" src="img/cc-by.svg" alt="" width="14" height="14">CC BY 4.0</a>
     </div>
   </footer>

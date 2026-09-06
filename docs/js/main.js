@@ -6,6 +6,7 @@
 import { el, clear } from './utils/dom.js';
 import { loadArchive } from './data/loader.js';
 import { initRouter, getState, navigateToView } from './ui/router.js';
+import { initRegisterMenu } from './ui/register-menu.js';
 import { initKorb, onKorbChange, getKorbCount } from './ui/basket.js';
 import { renderBestand, selectArchivRecord } from './views/bestand.js';
 import { renderChronik } from './views/chronik.js';
@@ -15,6 +16,9 @@ import { renderKorb } from './views/korb.js';
 import { renderMobilitaet } from './views/karte.js';
 import { renderNetzwerk } from './views/netzwerk.js';
 import { IS_DEV } from './utils/env.js';
+
+/** The one data file of the frontend; the error state names it. */
+const DATA_URL = './data/m3gim.jsonld';
 
 let store = null;
 // Diagnose-Modul, nur auf localhost geladen (utils/dev.js).
@@ -38,7 +42,7 @@ async function init() {
     showLoading(true);
 
     // Load data
-    store = await loadArchive('./data/m3gim.jsonld');
+    store = await loadArchive(DATA_URL);
     if (IS_DEV) {
       dev = await import('./utils/dev.js');
       dev.logStoreSummary(store);
@@ -52,6 +56,10 @@ async function init() {
     initKorb();
     onKorbChange(() => updateKorbTabVisibility());
     updateKorbTabVisibility();
+
+    // Vor dem Router verdrahtet: der Klickhandler des Registermenues muss den
+    // Tab-Zustand von vor dem Klick sehen (E-230).
+    initRegisterMenu();
 
     // Initialize router
     initRouter({
@@ -108,35 +116,51 @@ function renderTab(tab) {
 
 /**
  * Error box, built as DOM. A message may carry the text of a source value, so
- * it must never reach the page as markup.
+ * it must never reach the page as markup. role="alert" rather than the polite
+ * region around it, because a failed load ends the session and has to reach a
+ * screen reader at once.
  */
-function errorBox(title, message, extraStyle = '') {
-  return el('div', { style: `color: #8B3A3A; text-align: center; padding: 40px;${extraStyle}` },
-    el('p', { style: 'font-weight: 600; margin-bottom: 8px;' }, title),
-    el('p', { style: 'font-size: 0.8rem; opacity: 0.7;' }, message));
+function errorBox(title, message, onRetry) {
+  const box = el('div', { className: 'load-error', role: 'alert' },
+    el('p', { className: 'load-error__title' }, title),
+    el('p', { className: 'load-error__detail' }, message));
+  if (onRetry) {
+    box.appendChild(el('button', {
+      className: 'load-error__retry',
+      type: 'button',
+      onClick: onRetry,
+    }, 'Neu laden'));
+  }
+  return box;
 }
 
 function showTabError(tab, container, err) {
   console.error(`[${tab}] Render-Fehler:`, err);
   clear(container);
-  container.appendChild(errorBox('Fehler in dieser Ansicht',
-    err.message || 'Unbekannter Fehler', ' font-family: var(--font-ui);'));
+  container.appendChild(el('div', { className: 'load-status' },
+    errorBox('Fehler in dieser Ansicht', err.message || 'Unbekannter Fehler')));
   // Allow re-render on next tab switch
   renderedTabs.delete(tab);
 }
 
 function showLoading(show) {
-  const spinner = document.getElementById('loading-spinner');
+  const status = document.getElementById('load-status');
   const main = document.getElementById('main-content');
-  if (spinner) spinner.hidden = !show;
+  if (status) {
+    status.hidden = !show;
+    status.setAttribute('aria-busy', show ? 'true' : 'false');
+  }
   if (main) main.hidden = show;
 }
 
 function showError(message) {
-  const spinner = document.getElementById('loading-spinner');
-  if (!spinner) return;
-  clear(spinner);
-  spinner.appendChild(errorBox('Fehler beim Laden', message));
+  const status = document.getElementById('load-status');
+  if (!status) return;
+  status.hidden = false;
+  status.setAttribute('aria-busy', 'false');
+  clear(status);
+  status.appendChild(errorBox('Archivdaten konnten nicht geladen werden', message,
+    () => window.location.reload()));
 }
 
 function updateKorbTabVisibility() {

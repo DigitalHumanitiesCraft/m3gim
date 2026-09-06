@@ -22,9 +22,28 @@ Erschliessungsteam lesbar. Er traegt keine hartkodierten Erwartungen und
 wird mit einer vollstaendigen Objekttabelle von selbst gruen.
 """
 
+import importlib.util
 import re
+import sys
+from pathlib import Path
 
 import pytest
+
+REPO_ROOT = Path(__file__).parent.parent
+REPORT_SCRIPT = REPO_ROOT / "scripts" / "report-cataloguing.py"
+
+
+def _report_module():
+    """Der Erschliessungsreport als Modul; sein Dateiname traegt Bindestriche."""
+    if "report_cataloguing" in sys.modules:
+        return sys.modules["report_cataloguing"]
+    sys.path.insert(0, str(REPO_ROOT / "scripts"))
+    spec = importlib.util.spec_from_file_location(
+        "report_cataloguing", REPORT_SCRIPT)
+    module = importlib.util.module_from_spec(spec)
+    sys.modules["report_cataloguing"] = module
+    spec.loader.exec_module(module)
+    return module
 
 
 def _norm(value) -> str:
@@ -151,29 +170,6 @@ def test_every_objektzeile_carries_a_signature(xlsx_objekte):
         pytest.fail("\n".join(lines))
 
 
-# Spiegel von countLinks (docs/js/utils/format.js): die fuenf Eigenschaften,
-# deren Vorkommen ein Objekt als verknuepft gelten laesst.
-LINK_PROPS = (
-    "m3gim-ontology:hasAssociatedAgent",
-    "rico:hasOrHadLocation",
-    "rico:hasOrHadSubject",
-    "m3gim-ontology:hasAnnotation",
-    "m3gim-ontology:hasPerformance",
-)
-
-WORKED_ON = {"abgeschlossen", "begonnen"}
-
-
-def _link_count(node: dict) -> int:
-    total = 0
-    for prop in LINK_PROPS:
-        value = node.get(prop)
-        if value is None:
-            continue
-        total += len(value) if isinstance(value, list) else 1
-    return total
-
-
 @pytest.mark.data_quality
 def test_worked_on_records_carry_a_verknuepfung(graph):
     """Objekte mit Bearbeitungsstand abgeschlossen oder begonnen, aber ohne
@@ -183,30 +179,25 @@ def test_worked_on_records_carry_a_verknuepfung(graph):
     keiner Ansicht zu sehen, waehrend die Erfassung sie als bearbeitet
     fuehrt. Entweder fehlen die Verknuepfungen oder der Bearbeitungsstand
     ist zu korrigieren.
+
+    Die Regel steht in ``scripts/report-cataloguing.py``, weil derselbe Befund
+    dort als Abschnitt des Erschliessungsreports ausgegeben wird; eine zweite
+    Kopie hier wuerde gegen ihn driften.
     """
-    offenders = []
-    for node in graph:
-        if not isinstance(node, dict) or node.get("@type") != "rico:Record":
-            continue
-        if str(node.get("@id", "")).endswith("_Folio"):
-            continue
-        if node.get("m3gim-ontology:processingStatus") not in WORKED_ON:
-            continue
-        if _link_count(node) > 0:
-            continue
-        offenders.append(
-            f"{node.get('rico:identifier') or node.get('@id')} "
-            f"({node['m3gim-ontology:processingStatus']})"
-        )
+    offenders = [
+        f"{f['signatur']} ({f['stand']})"
+        for f in _report_module().worked_on_without_link(graph)
+    ]
 
     if offenders:
         lines = [
             "Objekte als bearbeitet gefuehrt, aber ohne jede Verknuepfung "
             f"({len(offenders)}); sie erscheinen in keiner Ansicht:"
         ]
-        lines.extend(f"  {o}" for o in sorted(offenders))
+        lines.extend(f"  {o}" for o in offenders)
         lines.append(
             "Fix: Verknuepfungen nachtragen oder den Bearbeitungsstand "
-            "zurueckstellen."
+            "zurueckstellen. Dieselbe Liste steht im Erschliessungsreport "
+            "unter 'Bearbeitet, aber ohne Verknuepfung'."
         )
         pytest.fail("\n".join(lines))

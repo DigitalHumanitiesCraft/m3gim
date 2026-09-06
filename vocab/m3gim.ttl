@@ -37,7 +37,7 @@
     owl:versionInfo "0.2" ;
     dcterms:created "2026-07-24"^^xsd:date ;
     skos:editorialNote "Die Klassen und Properties sind aus dem erzeugten Datensatz erhoben. Die kontrollierten Vokabulare vereinigen die im Datensatz belegten Werte mit den in knowledge/data.md spezifizierten; welche Werte zu einem Zeitpunkt belegt sind, ändert sich mit dem Erschließungsstand und wird hier bewusst nicht festgehalten."@de ;
-    skos:editorialNote "Nicht aufgenommen sind die in knowledge/data.md § Verknüpfungsmechanismus und knowledge/data-model.md § RiC-O-Kern und m3gim-Erweiterung für das Zielmodell spezifizierten Terme (Occurrence, Participation, attests, hasParticipation, performedBy, inFunction, playsStageRole, hasFee, mode, contractStatus, realized, rehearsalType, belongsToWork, attachedTo). Sie sind entschieden, aber noch nicht in der Pipeline umgesetzt; ihre Aufnahme gehört in die Umsetzungsrunde, damit Spezifikation und Vokabular gemeinsam wandern. Der deutsche Name probenTyp wäre dabei als rehearsalType zu führen."@de ;
+    skos:editorialNote "Nicht aufgenommen sind die in knowledge/data.md § Target model, decided and not built und knowledge/data-model.md § Target model v2 für das Zielmodell spezifizierten Terme (Occurrence, Participation, attests, hasParticipation, performedBy, inFunction, playsStageRole, hasFee, mode, contractStatus, realized, rehearsalType, belongsToWork, attachedTo). Sie sind entschieden, aber noch nicht in der Pipeline umgesetzt; ihre Aufnahme gehört in die Umsetzungsrunde, damit Spezifikation und Vokabular gemeinsam wandern. Der deutsche Name probenTyp wäre dabei als rehearsalType zu führen."@de ;
     skos:editorialNote "Der Vertragsstatus bleibt vorerst unverändert. Der Wert nicht eingehalten steht weiterhin in der Rollenspalte und ist bewusst kein Concept; die Zielfelder contractStatus und realized sind nicht aufgenommen."@de ;
     skos:editorialNote "Die Bezeichner folgen durchgängig der amerikanischen Schreibung und der Binnenmajuskel ohne Unterstrich. Anzeigelabels bleiben deutsch, das englische Zweitlabel steht als rdfs:label beziehungsweise skos:altLabel daneben."@de .
 
@@ -59,7 +59,7 @@ m3gim-ontology:Performance
     rdfs:comment "Ereignis, in dem ein musikalisches Werk realisiert wird. Die Klasse ist zugleich der Reifikationsknoten für die Komposite aus Bühnenrolle und Interpret sowie aus Datum und Werk."@de ;
     rdfs:subClassOf rico:Event ;
     rdfs:isDefinedBy <https://dhcraft.org/m3gim/ontology> ;
-    skos:editorialNote "Im erzeugten Datensatz entsteht je Verknüpfungszeile eine eigene Instanz, sodass eine Aufführung in mehrere Knoten zerfällt, die nicht miteinander verbunden sind. Das Zielmodell (data-model.md § RiC-O-Kern und m3gim-Erweiterung, E-128) sieht eine Instanz je Aktivität mit der vollständigen Besetzung vor."@de ;
+    skos:editorialNote "Im erzeugten Datensatz entsteht je Verknüpfungszeile eine eigene Instanz, sodass eine Aufführung in mehrere Knoten zerfällt, die nicht miteinander verbunden sind. Das Zielmodell (data-model.md § Target model v2, E-128) sieht eine Instanz je Aktivität mit der vollständigen Besetzung vor."@de ;
     skos:editorialNote "Die Aufführung trägt ihre Datierung weiterhin unmittelbar, jetzt als m3gim-ontology:atDate. An diesem Knoten ist das Datum die Datierung des Ereignisses selbst; eine Rollenangabe hätte dort keinen Gegenstand."@de .
 
 m3gim-ontology:FramingEvent
@@ -217,7 +217,7 @@ m3gim-ontology:derivedFromRole
     rdfs:range xsd:string ;
     rdfs:isDefinedBy <https://dhcraft.org/m3gim/ontology> ;
     skos:editorialNote "Ohne rdfs:domain, weil die zusammengeführten Rollen an Annotationsknoten und an Entitätsreferenzen gleichermaßen stehen."@de ;
-    skos:editorialNote "Der Term ist mit der Zusammenführung von auftritt auf aufführung sowie von erstelldatum und entstehungsort auf entstehung aufgenommen. Ohne ihn ist die Zusammenführung irreversibel, sobald die Quelle nicht mehr befragt wird. Er ist in knowledge/data-model.md § RiC-O-Kern und m3gim-Erweiterung für genau diesen Zweck deklariert."@de ;
+    skos:editorialNote "Der Term ist mit der Zusammenführung von auftritt auf aufführung sowie von erstelldatum und entstehungsort auf entstehung aufgenommen. Ohne ihn ist die Zusammenführung irreversibel, sobald die Quelle nicht mehr befragt wird. Er ist in knowledge/data-model.md § Property families für genau diesen Zweck deklariert."@de ;
     skos:editorialNote "Die Pipeline setzt den Term überall dort, wo der erfasste Wert nicht das prefLabel des Concepts ist, auf das er im Vokabular führt. Er steht damit an jedem Knoten, dessen Rolle beim Umbau eine andere Schreibung bekommen hat."@de .
 
 
@@ -313,7 +313,7 @@ m3gim-ontology:processingStatus
     rdfs:domain rico:Record ;
     rdfs:range xsd:string ;
     rdfs:isDefinedBy <https://dhcraft.org/m3gim/ontology> ;
-    skos:editorialNote "knowledge/data.md § Erfassungsstatus führt ein zweites, abweichendes Wertesystem aus der Erfassungshandreichung mit den Stufen in_bearbeitung, schicht1_fertig, schicht2_fertig und abgeschlossen, das den Schichtfortschritt abbildet. Welches System gilt, ist zu entscheiden; erst dann lässt sich der Erschließungsgrad pro Schicht messen."@de ;
+    skos:editorialNote "knowledge/data.md § Processing status führt ein zweites, abweichendes Wertesystem aus der Erfassungshandreichung mit den Stufen in_bearbeitung, schicht1_fertig, schicht2_fertig und abgeschlossen, das den Schichtfortschritt abbildet. Welches System gilt, ist zu entscheiden; erst dann lässt sich der Erschließungsgrad pro Schicht messen."@de ;
     skos:editorialNote "Die Werte bleiben deutsch und normalisiert."@de .
 
 m3gim-ontology:processingNote
@@ -331,7 +331,16 @@ m3gim-ontology:unresolvedAggregate
     rdfs:domain rico:Record ;
     rdfs:range xsd:boolean ;
     rdfs:isDefinedBy <https://dhcraft.org/m3gim/ontology> ;
-    skos:editorialNote "knowledge/data.md § Konvolut- und Objektlogik. Das Merkmal ersetzt die Signatur-Zeichenprüfung, die das Frontend bis zum 2026-09-03 in isStandaloneKonvolut selbst vornahm."@de .
+    skos:editorialNote "knowledge/data.md § Convolutes, folios and record identity. Das Merkmal ersetzt die Signatur-Zeichenprüfung, die das Frontend bis zum 2026-09-03 in isStandaloneKonvolut selbst vornahm."@de .
+
+m3gim-ontology:derivedFolioRecord
+    a owl:DatatypeProperty ;
+    rdfs:label "abgeleiteter Foliodatensatz"@de , "derived folio record"@en ;
+    rdfs:comment "Wahr an einem Datensatz eines Folios, den die Pipeline erzeugt, weil die Quelle nur die Seiten des Folios als Objektzeilen führt. Er bündelt die Seiten über rico:hasOrHadPart und trägt keine eigene Erschließung."@de ;
+    rdfs:domain rico:Record ;
+    rdfs:range xsd:boolean ;
+    rdfs:isDefinedBy <https://dhcraft.org/m3gim/ontology> ;
+    skos:editorialNote "knowledge/data.md § Target model, decided and not built. Das Merkmal trennt den abgeleiteten Foliodatensatz von einem Folio, das die Quelle selbst als Objektzeile führt."@de .
 
 m3gim-ontology:accessStatus
     a owl:DatatypeProperty ;
@@ -449,7 +458,7 @@ m3gim-ontology:country
     rdfs:range xsd:string ;
     rdfs:isDefinedBy <https://dhcraft.org/m3gim/ontology> ;
     skos:editorialNote "Die angereicherten Ortsknoten unterhalb von m3gim-ontology:atPlace tragen keinen eigenen Typ. Für diese Knoten ist die Domain nur aus der Position im Graphen erschließbar."@de ;
-    skos:editorialNote "Bewusst ohne den wd-Marker der Familie, weil der Term in knowledge/data-model.md § RiC-O-Kern und m3gim-Erweiterung als Place-Property definiert ist."@de .
+    skos:editorialNote "Bewusst ohne den wd-Marker der Familie, weil der Term in knowledge/data-model.md § Property families als Place-Property definiert ist."@de .
 
 m3gim-ontology:wdComposer
     a owl:DatatypeProperty ;
@@ -506,7 +515,7 @@ m3gim-ontology:xlsxSheet
     rdfs:comment "Name des Blatts der Erfassungstabelle, aus dem eine Entität stammt."@de ;
     rdfs:range xsd:string ;
     rdfs:isDefinedBy <https://dhcraft.org/m3gim/ontology> ;
-    skos:editorialNote "Objektzeilen tragen den festen Wert Objekte, Verknüpfungszeilen den Namen des jeweiligen Box-Blatts, weil die Verknüpfungstabelle über mehrere Blätter verteilt ist. knowledge/data-model.md § Meta-Statement-Modell ist auf diesen Wertebereich nachgezogen."@de .
+    skos:editorialNote "Objektzeilen tragen den festen Wert Objekte, Verknüpfungszeilen den Namen des jeweiligen Box-Blatts, weil die Verknüpfungstabelle über mehrere Blätter verteilt ist. knowledge/data-model.md § Meta-statements and provenance ist auf diesen Wertebereich nachgezogen."@de .
 
 m3gim-ontology:xlsxRow
     a owl:DatatypeProperty ;
@@ -614,7 +623,7 @@ m3gim-vocab:unfulfilledDating a skos:Concept ;
     skos:prefLabel "Datierung einer negierten Behauptung"@de ;
     skos:altLabel "unfulfilled dating"@en ;
     skos:definition "Die Datierung gehört zu einer Angabe, die ausdrücklich nicht eingetreten ist, etwa einem nicht eingehaltenen Vertragstermin."@de ;
-    skos:editorialNote "Der Wert hängt an der Statusmarkierung nicht eingehalten, deren Modellierung mit dem Erschließungsteam offen ist (data-model.md § Finanzschicht). Solange sie in der Rollenspalte steht, hält dieser Begriff sie aus dem Zeitanker heraus."@de ;
+    skos:editorialNote "Der Wert hängt an der Statusmarkierung nicht eingehalten, deren Modellierung mit dem Erschließungsteam offen ist (data-model.md § Financial layer). Solange sie in der Rollenspalte steht, hält dieser Begriff sie aus dem Zeitanker heraus."@de ;
     skos:editorialNote "unused: Der Anker war der Vertragsstatus in der Rollenspalte, der seit der Lieferung 2026-08-31 in der Anmerkungsspalte steht. Der Begriff bleibt, solange nicht entschieden ist, ob eine Datierung an einem nicht eingetretenen Vorkommnis eine eigene Bezugsebene braucht."@de ;
     skos:inScheme m3gim-vocab:datingScopes .
 
@@ -625,7 +634,7 @@ m3gim-vocab:annotationRoles
     rdfs:comment "Rolle, in der eine Datierung, eine Verortung oder eine Entitätsreferenz zu ihrem Dokument steht, also die Art des Vorkommnisses, des Zustands oder des Umstands, auf den sie sich bezieht."@de ;
     skos:editorialNote "Das Scheme vereinigt die in der Umbenennungskarte getrennt vorgeschlagenen Schemes eventTypes, placeRoles und dateRoles. Mit dem einheitlichen Annotationsknoten trägt derselbe Begriff wahlweise eine Datierung, eine Verortung oder beides, sodass eine Trennung nach Datums- und Ortsrollen keinen Gegenstand mehr hat."@de ;
     skos:editorialNote "Wo eine Datumsrolle und eine Ortsrolle denselben Aspekt bezeichnet haben, sind sie zu einem Begriff zusammengefallen, weil der Aspekt in der Wertproperty steht und der Rollenname ihn nur wiederholt hat. Die Endung der zusammengefallenen Namen ist entfallen; wo ein Begriff nur auf einer der beiden Seiten vorkommt, trägt er seinen Namen unverändert weiter."@de ;
-    skos:editorialNote "Der Wert nicht eingehalten kommt in der Rollenspalte vor, bezeichnet dort aber den Status eines nicht erfüllten Vertrags. Eine Rolle ist er nicht. Er ist hier bewusst nicht als Concept geführt. Das Zielfeld ist contractStatus zusammen mit realized am Vertragsdokument (data-model.md § Finanzschicht); die Modellierung ist mit dem Erschließungsteam zu klären und bleibt vorerst unverändert."@de .
+    skos:editorialNote "Der Wert nicht eingehalten kommt in der Rollenspalte vor, bezeichnet dort aber den Status eines nicht erfüllten Vertrags. Eine Rolle ist er nicht. Er ist hier bewusst nicht als Concept geführt. Das Zielfeld ist contractStatus zusammen mit realized am Vertragsdokument (data-model.md § Financial layer); die Modellierung ist mit dem Erschließungsteam zu klären und bleibt vorerst unverändert."@de .
 
 m3gim-vocab:financialItemTypes
     a skos:ConceptScheme ;
@@ -648,7 +657,7 @@ m3gim-vocab:documentaryFormTypes
     rdfs:comment "Hierarchisches Vokabular der Dokumenttypen des Bestands. Die Hierarchie erlaubt es, wahlweise granular nach Brief oder aggregiert nach Korrespondenz zu filtern."@de ;
     skos:hasTopConcept m3gim-vocab:document ;
     skos:editorialNote "Die Werte werden über rico:hasDocumentaryFormType referenziert. RiC-O 1.1 erwartet dort ein Individuum der Klasse rico:DocumentaryFormType. Die Concepts tragen bislang nur skos:Concept. Ob sie zusätzlich als rico:DocumentaryFormType typisiert werden, ist eine offene Frage an das Projekt."@de ;
-    skos:editorialNote "Die Kanten der ersten Ebene auf m3gim-vocab:document folgen der Baumdarstellung in knowledge/data-model.md § Dokumenttypen-Vokabular. Die Pipeline erzeugt nur die Kanten der zweiten Ebene, sodass die Wurzel im Datensatz nicht erreichbar ist."@de .
+    skos:editorialNote "Die Kanten der ersten Ebene auf m3gim-vocab:document folgen der Baumdarstellung in knowledge/data-model.md § Controlled vocabularies. Die Pipeline erzeugt nur die Kanten der zweiten Ebene, sodass die Wurzel im Datensatz nicht erreichbar ist."@de .
 
 
 # ---------------------------------------------------------------------------
@@ -745,52 +754,62 @@ m3gim-vocab:singer a skos:Concept ;
 m3gim-vocab:conductor a skos:Concept ;
     skos:prefLabel "dirigent"@de ;
     skos:altLabel "conductor"@en ;
+    skos:definition "Person, die die musikalische Leitung einer Aufführung innehat."@de ;
     skos:inScheme m3gim-vocab:agentRoles .
 
 m3gim-vocab:director a skos:Concept ;
     skos:prefLabel "regisseur"@de ;
     skos:altLabel "director"@en ;
+    skos:definition "Person, die die szenische Einrichtung einer Produktion verantwortet."@de ;
     skos:inScheme m3gim-vocab:agentRoles .
 
 m3gim-vocab:composer a skos:Concept ;
     skos:prefLabel "komponist"@de ;
     skos:altLabel "composer"@en ;
     skos:editorialNote "Namensgleich mit der Ontologie-Property m3gim-ontology:composer, in einem anderen Namensraum und damit zulässig."@de ;
+    skos:definition "Person, die das genannte oder aufgeführte Werk komponiert hat."@de ;
     skos:inScheme m3gim-vocab:agentRoles .
 
 m3gim-vocab:librettist a skos:Concept ;
     skos:prefLabel "librettist"@de ;
     skos:altLabel "librettist"@en ;
+    skos:definition "Person, die den Text eines Bühnenwerks verfasst hat."@de ;
     skos:inScheme m3gim-vocab:agentRoles .
 
 m3gim-vocab:translator a skos:Concept ;
     skos:prefLabel "übersetzer"@de ;
     skos:altLabel "translator"@en ;
+    skos:definition "Person, die einen Text oder ein Libretto in eine andere Sprache übertragen hat."@de ;
     skos:inScheme m3gim-vocab:agentRoles .
 
 m3gim-vocab:arranger a skos:Concept ;
     skos:prefLabel "arrangeur"@de ;
     skos:altLabel "arranger"@en ;
+    skos:definition "Person, die ein musikalisches Werk für eine andere Besetzung oder Fassung einrichtet."@de ;
     skos:inScheme m3gim-vocab:agentRoles .
 
 m3gim-vocab:chorusMaster a skos:Concept ;
     skos:prefLabel "chorleiter"@de ;
     skos:altLabel "chorus master"@en ;
+    skos:definition "Person, die den Chor einer Produktion einstudiert und leitet."@de ;
     skos:inScheme m3gim-vocab:agentRoles .
 
 m3gim-vocab:choreographer a skos:Concept ;
     skos:prefLabel "choreograph"@de ;
     skos:altLabel "choreographer"@en ;
+    skos:definition "Person, die die tänzerischen Bewegungsabläufe einer Produktion entwirft."@de ;
     skos:inScheme m3gim-vocab:agentRoles .
 
 m3gim-vocab:setDesigner a skos:Concept ;
     skos:prefLabel "bühnenbildner"@de ;
     skos:altLabel "set designer"@en ;
+    skos:definition "Person, die das Bühnenbild einer Produktion entwirft."@de ;
     skos:inScheme m3gim-vocab:agentRoles .
 
 m3gim-vocab:costumeDesigner a skos:Concept ;
     skos:prefLabel "kostümbildner"@de ;
     skos:altLabel "costume designer"@en ;
+    skos:definition "Person, die die Kostüme einer Produktion entwirft."@de ;
     skos:inScheme m3gim-vocab:agentRoles .
 
 m3gim-vocab:productionDesigner a skos:Concept ;
@@ -802,13 +821,15 @@ m3gim-vocab:productionDesigner a skos:Concept ;
 m3gim-vocab:stageManager a skos:Concept ;
     skos:prefLabel "bühnenleiter"@de ;
     skos:altLabel "stage manager"@en ;
-    skos:editorialNote "Ohne Definition im Vokabular. Der deutsche Begriff kann die technische Leitung der Bühne oder die künstlerische Leitung des Hauses meinen. Die Übersetzung ist fachlich strittig."@de ;
+    skos:editorialNote "Die Übersetzung ist fachlich strittig, weil der deutsche Begriff die technische Leitung der Bühne oder die künstlerische Leitung des Hauses meinen kann."@de ;
+    skos:definition "Erfasste Angabe der Bühnenleitung. Ob die technische Leitung der Bühne oder die künstlerische Leitung des Hauses gemeint ist, geht aus der Quelle nicht hervor."@de ;
     skos:inScheme m3gim-vocab:agentRoles .
 
 m3gim-vocab:technicalDirector a skos:Concept ;
     skos:prefLabel "technische leitung"@de ;
     skos:altLabel "technical director"@en ;
     skos:editorialNote "Gegen den nackten Wert leitung abzugrenzen. Die Unterscheidung ist mit dem Erschließungsteam zu klären."@de ;
+    skos:definition "Person oder Stelle, die die technische Leitung eines Hauses oder einer Produktion innehat."@de ;
     skos:inScheme m3gim-vocab:agentRoles .
 
 m3gim-vocab:unspecifiedDirection a skos:Concept ;
@@ -816,12 +837,14 @@ m3gim-vocab:unspecifiedDirection a skos:Concept ;
     skos:altLabel "unspecified direction"@en ;
     skos:editorialNote "Der Wert ist unbestimmt und kann musikalische, szenische oder technische Leitung meinen. Klärungsbedarf."@de ;
     skos:editorialNote "Der Name hält die Unbestimmtheit fest, die die Alternativen direction und management verlieren würden."@de ;
+    skos:definition "Erfasste Leitungsangabe ohne nähere Bestimmung. Ob musikalische, szenische oder technische Leitung gemeint ist, geht aus der Quelle nicht hervor."@de ;
     skos:inScheme m3gim-vocab:agentRoles .
 
 m3gim-vocab:lightingTechnician a skos:Concept ;
     skos:prefLabel "beleuchter"@de ;
     skos:altLabel "lighting technician"@en ;
     skos:editorialNote "Die Alternative lightingDesigner unterstellt eine gestalterische Funktion, die die Quelle nicht belegt."@de ;
+    skos:definition "Person, die die Beleuchtung einer Produktion ausführt."@de ;
     skos:inScheme m3gim-vocab:agentRoles .
 
 m3gim-vocab:makeupArtist a skos:Concept ;
@@ -829,6 +852,7 @@ m3gim-vocab:makeupArtist a skos:Concept ;
     skos:altLabel "maskenbildner"@de , "makeup artist"@en ;
     skos:editorialNote "Die Quelle führt die Tippform maskenbidner, die unverändert durchgereicht wird. Der Quell-Fix ist im Datenfehler-Register vermerkt."@de ;
     skos:editorialNote "Die Umbenennung löst die IRI vom Quellfehler; skos:prefLabel behält die Quellform, skos:altLabel die korrekte."@de ;
+    skos:definition "Person, die Maske und Schminke einer Produktion ausführt."@de ;
     skos:inScheme m3gim-vocab:agentRoles .
 
 m3gim-vocab:repetiteur a skos:Concept ;
@@ -840,11 +864,13 @@ m3gim-vocab:repetiteur a skos:Concept ;
 m3gim-vocab:assistantDirector a skos:Concept ;
     skos:prefLabel "regieassistent"@de ;
     skos:altLabel "assistant director"@en ;
+    skos:definition "Person, die die Regie einer Produktion unterstützt."@de ;
     skos:inScheme m3gim-vocab:agentRoles .
 
 m3gim-vocab:photographer a skos:Concept ;
     skos:prefLabel "fotograf"@de ;
     skos:altLabel "photographer"@en ;
+    skos:definition "Person, die eine im Dokument enthaltene oder nachgewiesene Aufnahme hergestellt hat."@de ;
     skos:inScheme m3gim-vocab:agentRoles .
 
 m3gim-vocab:performer a skos:Concept ;
@@ -858,6 +884,7 @@ m3gim-vocab:protagonist a skos:Concept ;
     skos:prefLabel "protagonist"@de ;
     skos:altLabel "protagonist"@en ;
     skos:editorialNote "Vermutlich ein Erfassungsfehler, weil der Wert eine Bühnenrolle bezeichnet und damit in den Typ rolle gehört. Als offene Modellentscheidung geführt."@de ;
+    skos:definition "Erfasste Angabe der Hauptpartie einer Produktion. Der Wert bezeichnet eine Bühnenrolle und steht nur wegen der Erfassung unter den Akteursrollen."@de ;
     skos:inScheme m3gim-vocab:agentRoles .
 
 m3gim-vocab:audienceMember a skos:Concept ;
@@ -967,7 +994,7 @@ m3gim-vocab:guestPerformance a skos:Concept ;
     skos:prefLabel "gastspiel"@de ;
     skos:altLabel "guest performance"@en ;
     skos:definition "Auftritt außerhalb des Hauses, an dem ein Engagement besteht."@de ;
-    skos:editorialNote "Nach data.md § Verknüpfungsmechanismus gehört der Auftrittsmodus als mode an das Vorkommnis. Als konkurrierender Rollenwert an Ort, Werk oder Institution ist er dort abgelehnt. Solange das Vorkommnis-Modell nicht umgesetzt ist, bleibt der Wert eine Rolle."@de ;
+    skos:editorialNote "Nach data.md § Target model, decided and not built gehört der Auftrittsmodus als mode an das Vorkommnis. Als konkurrierender Rollenwert an Ort, Werk oder Institution ist er dort abgelehnt. Solange das Vorkommnis-Modell nicht umgesetzt ist, bleibt der Wert eine Rolle."@de ;
     skos:inScheme m3gim-vocab:annotationRoles .
 
 m3gim-vocab:framingEvent a skos:Concept ;

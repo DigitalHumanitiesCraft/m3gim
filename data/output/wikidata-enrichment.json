@@ -1,8 +1,8 @@
 {
   "meta": {
-    "date": "2026-08-22T21:27:55.211533",
+    "date": "2026-09-05T16:01:17.001018",
     "source": "wikidata-reconciliation.json",
-    "entity_count": 379,
+    "entity_count": 403,
     "properties_fetched": [
       "P106",
       "P1191",
@@ -10232,6 +10232,334 @@
         "country": {
           "qid": "Q30",
           "label": "Vereinigte Staaten"
+        }
+      }
+    },
+    "Q2656": {
+      "type": "location",
+      "name": "Palermo",
+      "properties": {
+        "coordinates": {
+          "lat": 38.115658055555556,
+          "lon": 13.361261944444445
+        },
+        "country": {
+          "qid": "Q38",
+          "label": "Italien"
+        }
+      }
+    },
+    "Q270": {
+      "type": "location",
+      "name": "Warschau",
+      "properties": {
+        "coordinates": {
+          "lat": 52.23,
+          "lon": 21.011111111111113
+        },
+        "country": {
+          "qid": "Q36",
+          "label": "Polen"
+        }
+      }
+    },
+    "Q1731": {
+      "type": "location",
+      "name": "Dresden",
+      "properties": {
+        "coordinates": {
+          "lat": 51.0493286,
+          "lon": 13.7381437
+        },
+        "country": {
+          "qid": "Q183",
+          "label": "Deutschland"
+        }
+      }
+    },
+    "Q532455": {
+      "type": "location",
+      "name": "Ottobeuren",
+      "properties": {
+        "coordinates": {
+          "lat": 47.941388888889,
+          "lon": 10.299444444444
+        },
+        "country": {
+          "qid": "Q183",
+          "label": "Deutschland"
+        }
+      }
+    },
+    "Q2107": {
+      "type": "location",
+      "name": "Wuppertal",
+      "properties": {
+        "coordinates": {
+          "lat": 51.266666666667,
+          "lon": 7.1833333333333
+        },
+        "country": {
+          "qid": "Q183",
+          "label": "Deutschland"
+        }
+      }
+    },
+    "Q3711": {
+      "type": "location",
+      "name": "Belgrad",
+      "properties": {
+        "coordinates": {
+          "lat": 44.81777777777778,
+          "lon": 20.456944444444446
+        },
+        "country": {
+          "qid": "Q403",
+          "label": "Serbien"
+        }
+      }
+    },
+    "Q1718": {
+      "type": "location",
+      "name": "Düsseldorf",
+      "properties": {
+        "coordinates": {
+          "lat": 51.22555555555556,
+          "lon": 6.776666666666666
+        },
+        "country": {
+          "qid": "Q183",
+          "label": "Deutschland"
+        }
+      }
+    },
+    "Q239": {
+      "type": "location",
+      "name": "Brüssel",
+      "properties": {
+        "coordinates": {
+          "lat": 50.846666666666664,
+          "lon": 4.351666666666667
+        },
+        "country": {
+          "qid": "Q31",
+          "label": "Belgien"
+        }
+      }
+    },
+    "Q495": {
+      "type": "location",
+      "name": "Torino",
+      "properties": {
+        "coordinates": {
+          "lat": 45.079166666666666,
+          "lon": 7.676111111111111
+        },
+        "country": {
+          "qid": "Q38",
+          "label": "Italien"
+        }
+      }
+    },
+    "Q1492": {
+      "type": "location",
+      "name": "Barcelona",
+      "properties": {
+        "coordinates": {
+          "lat": 41.3825,
+          "lon": 2.1769444444444
+        },
+        "country": {
+          "qid": "Q29",
+          "label": "Spanien"
+        }
+      }
+    },
+    "Q70": {
+      "type": "location",
+      "name": "Bern",
+      "properties": {
+        "coordinates": {
+          "lat": 46.94798,
+          "lon": 7.44743
+        },
+        "country": {
+          "qid": "Q39",
+          "label": "Schweiz"
+        }
+      }
+    },
+    "Q7146": {
+      "type": "location",
+      "name": "Beromünster",
+      "properties": {
+        "coordinates": {
+          "lat": 47.199722222222,
+          "lon": 8.2
+        },
+        "country": {
+          "qid": "Q39",
+          "label": "Schweiz"
+        }
+      }
+    },
+    "Q24879": {
+      "type": "location",
+      "name": "Bremen",
+      "properties": {
+        "coordinates": {
+          "lat": 53.075833333333335,
+          "lon": 8.807222222222222
+        }
+      }
+    },
+    "Q1897": {
+      "type": "location",
+      "name": "Cagliari",
+      "properties": {
+        "coordinates": {
+          "lat": 39.216666666667,
+          "lon": 9.1166666666667
+        }
+      }
+    },
+    "Q2044": {
+      "type": "location",
+      "name": "Firenze",
+      "properties": {
+        "coordinates": {
+          "lat": 43.771388888889,
+          "lon": 11.254166666667
+        },
+        "country": {
+          "qid": "Q38",
+          "label": "Italien"
+        }
+      }
+    },
+    "Q1794": {
+      "type": "location",
+      "name": "Frankfurt",
+      "properties": {
+        "coordinates": {
+          "lat": 50.11055555555556,
+          "lon": 8.682222222222222
+        },
+        "country": {
+          "qid": "Q183",
+          "label": "Deutschland"
+        }
+      }
+    },
+    "Q71": {
+      "type": "location",
+      "name": "Genf",
+      "properties": {
+        "coordinates": {
+          "lat": 46.2,
+          "lon": 6.15
+        },
+        "country": {
+          "qid": "Q39",
+          "label": "Schweiz"
+        }
+      }
+    },
+    "Q1735": {
+      "type": "location",
+      "name": "Innsbruck",
+      "properties": {
+        "coordinates": {
+          "lat": 47.268333333333,
+          "lon": 11.393333333333
+        },
+        "country": {
+          "qid": "Q40",
+          "label": "Österreich"
+        }
+      }
+    },
+    "Q38": {
+      "type": "location",
+      "name": "Italien",
+      "properties": {
+        "coordinates": {
+          "lat": 42.5,
+          "lon": 12.5
+        },
+        "country": {
+          "qid": "Q38",
+          "label": "Italien"
+        }
+      }
+    },
+    "Q3104": {
+      "type": "location",
+      "name": "Koblenz",
+      "properties": {
+        "coordinates": {
+          "lat": 50.359722222222,
+          "lon": 7.5977777777778
+        },
+        "country": {
+          "qid": "Q183",
+          "label": "Deutschland"
+        }
+      }
+    },
+    "Q1748": {
+      "type": "location",
+      "name": "Kopenhagen",
+      "properties": {
+        "coordinates": {
+          "lat": 55.676111111111,
+          "lon": 12.568888888889
+        },
+        "country": {
+          "qid": "Q35",
+          "label": "Dänemark"
+        }
+      }
+    },
+    "Q2843": {
+      "type": "location",
+      "name": "Lübeck",
+      "properties": {
+        "coordinates": {
+          "lat": 53.869722222222,
+          "lon": 10.686388888889
+        },
+        "country": {
+          "qid": "Q183",
+          "label": "Deutschland"
+        }
+      }
+    },
+    "Q1720": {
+      "type": "location",
+      "name": "Mainz",
+      "properties": {
+        "coordinates": {
+          "lat": 49.99944444444444,
+          "lon": 8.27361111111111
+        },
+        "country": {
+          "qid": "Q183",
+          "label": "Deutschland"
+        }
+      }
+    },
+    "Q22690": {
+      "type": "location",
+      "name": "Metz",
+      "properties": {
+        "coordinates": {
+          "lat": 49.119722222222,
+          "lon": 6.1769444444444
+        },
+        "country": {
+          "qid": "Q142",
+          "label": "Frankreich"
         }
       }
     }

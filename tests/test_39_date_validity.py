@@ -1,8 +1,8 @@
 """Calendar validity of the date values in the generated dataset.
 
-Datierungen are stored throughout as strings (data-model.md § RiC-O-Kern und m3gim-Erweiterung: "Alle
+Datierungen are stored throughout as strings (data-model.md § Property families: "Alle
 Properties vom Typ xsd:string, weil historische Datierung die ISO-Schema-Strenge
-von xsd:date regelmaessig ueberschreitet"). Per data.md § Datumskonventionen the admissible forms
+von xsd:date regelmaessig ueberschreitet"). Per data.md § Date notation of the source the admissible forms
 are ``YYYY``, ``YYYY-MM`` and ``YYYY-MM-DD``, spans as ``.../...`` and the
 qualifiers ``circa:``, ``vor:`` and ``nach:``. A month or day outside the
 calendar is not admissible.
@@ -20,7 +20,7 @@ its string values have the shape of a Datierung. Future date properties thus
 fall into the check on their own, while ``m3gim-ontology:lifespan``
 (``1888-1965``), titles and amounts stay out.
 
-Per data.md § Datumskonventionen the annotation node deliberately carries the non-routable raw
+Per data.md § Date notation of the source the annotation node deliberately carries the non-routable raw
 Datierungen (``06-09``, ``1957-[05-27?]``). These are source findings of the
 cataloguing team and a matter for the register in
 data/reports/reconciliation-register.md, not pipeline errors. Since the rebuild
@@ -283,7 +283,7 @@ def test_date_bearing_properties_are_discovered(graph):
 @pytest.mark.xfail(
     reason="Quellfehler (Partner-Uebergabeliste): drei unmoegliche Kalenderdaten in UAKUG/NIM_005 "
            "(1951-02-29, 1959-31-08, 1959-02-30). Quellfehler, siehe "
-           "knowledge/data/reports/reconciliation-register.md",
+           "data/reports/reconciliation-register.md",
     strict=True,
 )
 def test_dataset_dates_are_valid_calendar_dates(graph):

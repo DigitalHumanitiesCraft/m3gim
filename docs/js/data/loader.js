@@ -19,23 +19,25 @@ import {
  * @returns {Promise<Store>}
  */
 export async function loadArchive(url = './data/m3gim.jsonld') {
+  // Every failure names the file it was after: the message is what the error
+  // state shows, and a load error without its file leaves nothing to check.
   let response;
   try {
     response = await fetch(url);
   } catch (e) {
-    throw new Error('Archivdaten nicht erreichbar — bitte Netzwerkverbindung prüfen.');
+    throw new Error(`Nicht erreichbar: ${url}`);
   }
   if (response.status === 404) {
-    throw new Error(`Archivdaten nicht gefunden (${url}).`);
+    throw new Error(`Nicht gefunden: ${url}`);
   }
   if (!response.ok) {
-    throw new Error(`Fehler beim Laden der Archivdaten (HTTP ${response.status}).`);
+    throw new Error(`HTTP ${response.status}: ${url}`);
   }
   let jsonld;
   try {
     jsonld = await response.json();
   } catch (e) {
-    throw new Error('Archivdaten konnten nicht gelesen werden — ungültiges Datenformat.');
+    throw new Error(`Ungültiges Datenformat: ${url}`);
   }
   return buildStore(jsonld);
 }
@@ -87,9 +89,10 @@ export async function loadArchive(url = './data/m3gim.jsonld') {
  * @property {?string} recordId          @id of the origin record
  * @property {?Object} xlsxSource        provenance, see utils/provenance.js
  *
- * @typedef {{year: ?number, source: ?string, roleId: ?string, label: ?string}} Anchor
- *   result of primaryYear(): the year of the record and the named place it
- *   comes from.
+ * @typedef {{year: ?number, source: ?string, roleId: ?string, label: ?string,
+ *   date: ?string}} Anchor
+ *   result of primaryYear(): the year of the record, the named source it comes
+ *   from and that source's own date value.
  *
  * @typedef {Object} FinanceEntry        entry in store.finances
  * @property {?number} amount            numeric (MonetaryAmount hasValue)
@@ -117,6 +120,11 @@ function buildStore(jsonld) {
   const graph = jsonld['@graph'] || [];
 
   const store = {
+    // The Korb export cuts the shipped document itself and needs the @context
+    // plus the raw nodes the store normalises away. Both stay reachable here,
+    // so no view refetches the file the loader has already parsed.
+    '@context': jsonld['@context'] || {},
+    graph,
     fonds: null,
     konvolute: new Map(),
     records: new Map(),
@@ -398,33 +406,41 @@ export function datingsByScope(store, record, scope) {
 }
 
 /**
- * The year of a record and the place it comes from (contract A4). `rico:date`
- * stays the single-valued Zeitanker and takes precedence; if absent, the
- * highest-ranked Datierung of an anchoring Bezugsebene wins. Erwaehnung,
- * Rahmenveranstaltung and the contract status `nicht eingehalten` never date.
- * Replaces firstTypedYear and secondaryYearForRecord in one.
+ * The year of a record and the source it comes from. The Zeitanker stays
+ * single-valued and named (contract A4); its precedence is the content level:
+ * the highest-ranked anchoring Datierung wins, and `rico:date` of the object
+ * table is the fallback. The partners read the timeline as the chronology of
+ * the attested events, so the date of the Verknuepfung dates the document
+ * before the archival dating of the carrier does (F3). Erwaehnung,
+ * Rahmenveranstaltung and the contract status `nicht eingehalten` never date
+ * (ANCHORING_SCOPES). `rank` orders the anchoring roles by the priority of the
+ * aspect, not by the precision of the date value; at equal rank the source
+ * order of datingsOf decides.
  * @param {Object} store
  * @param {Object} record
  * @returns {Anchor}
  */
 export function primaryYear(store, record) {
-  const none = { year: null, source: null, roleId: null, label: null };
+  const none = { year: null, source: null, roleId: null, label: null, date: null };
   if (!record) return none;
-  const anchor = extractYear(record['rico:date']);
-  if (anchor) return { year: anchor, source: 'rico:date', roleId: null, label: null };
   let best = null;
   for (const d of datingsOf(store, record)) {
     if (d.year == null) continue;
     if (!ANCHORING_SCOPES.has(d.scope)) continue;
     if (best === null || d.rank < best.rank) best = d;
   }
-  if (!best) return none;
-  return {
-    year: best.year,
-    source: best.origin === 'creationDate' ? 'rico:creationDate' : best.roleId,
-    roleId: best.roleId,
-    label: best.roleLabel,
-  };
+  if (best) {
+    return {
+      year: best.year,
+      source: best.origin === 'creationDate' ? 'rico:creationDate' : best.roleId,
+      roleId: best.roleId,
+      label: best.roleLabel,
+      date: best.date,
+    };
+  }
+  const archival = extractYear(record['rico:date']);
+  if (!archival) return none;
+  return { year: archival, source: 'rico:date', roleId: null, label: null, date: record['rico:date'] };
 }
 
 function indexByYear(store, record) {
@@ -472,6 +488,21 @@ function indexEnsemble(store, name, recordId, wikidata) {
   if (wikidata && !entry.wikidata) entry.wikidata = wikidata;
 }
 
+/**
+ * Register a role on an entity entry: the set of role tokens and, per token,
+ * the distinct records that carry the entity in that role. The Netzwerk
+ * detail shows the role with that count as its value; a role without a value
+ * rendered as an empty chip (Projektleitung, 2026-09-04).
+ */
+function addEntityRole(entry, token, recordId) {
+  if (!token) return;
+  entry.roles.add(token);
+  if (!entry.roleRecords) entry.roleRecords = new Map();
+  let ids = entry.roleRecords.get(token);
+  if (!ids) { ids = new Set(); entry.roleRecords.set(token, ids); }
+  ids.add(recordId);
+}
+
 function indexAgents(store, record) {
   const agents = ensureArray(record['m3gim-ontology:hasAssociatedAgent']);
 
@@ -490,7 +521,7 @@ function indexAgents(store, record) {
       if (type === 'rico:Group') indexEnsemble(store, rawName, record['@id'], wikidata);
       const orgRole = registerRole(store, agent.role);
       indexAgentRole(store, agent.role, record['@id']);
-      if (orgRole) entry.roles.add(orgRole);
+      addEntityRole(entry, orgRole, record['@id']);
       if (wikidata && !entry.wikidata) entry.wikidata = wikidata;
       // M2: curated seat (index) takes precedence over Wikidata seat (often
       // just a district); carries the "away/at the house" axis. + key contact + note.
@@ -508,7 +539,7 @@ function indexAgents(store, record) {
       entry.records.add(record['@id']);
       const agentRole = registerRole(store, agent.role);
       indexAgentRole(store, agent.role, record['@id']);
-      if (agentRole) entry.roles.add(agentRole);
+      addEntityRole(entry, agentRole, record['@id']);
       if (wikidata && !entry.wikidata) entry.wikidata = wikidata;
       // WD-Enrichment-Properties
       if (agent['gndo:professionOrOccupationAsLiteral'] && !entry.occupation) entry.occupation = agent['gndo:professionOrOccupationAsLiteral'];
@@ -537,7 +568,7 @@ function indexAgents(store, record) {
     entry.records.add(record['@id']);
     const subjRole = registerRole(store, subj.role);
     indexAgentRole(store, subj.role, record['@id']);
-    if (subjRole) entry.roles.add(subjRole);
+    addEntityRole(entry, subjRole, record['@id']);
     if (wikidata && !entry.wikidata) entry.wikidata = wikidata;
     // M2: curated index fields also for mentioned subject persons
     if (subj['m3gim-ontology:indexNote'] && !entry.note) entry.note = subj['m3gim-ontology:indexNote'];
@@ -562,7 +593,7 @@ function indexLocations(store, record) {
     const entry = store.locations.get(name);
     entry.records.add(record['@id']);
     const locRole = registerRole(store, loc.role);
-    if (locRole) entry.roles.add(locRole);
+    addEntityRole(entry, locRole, record['@id']);
     if (wikidata && !entry.wikidata) entry.wikidata = wikidata;
   }
 }
@@ -580,7 +611,9 @@ function consolidateCityLocations(store) {
     const cityEntry = store.locations.get(city);
     if (!cityEntry) continue;
     for (const id of entry.records) cityEntry.records.add(id);
-    for (const r of entry.roles) cityEntry.roles.add(r);
+    for (const [r, ids] of entry.roleRecords || []) {
+      for (const id of ids) addEntityRole(cityEntry, r, id);
+    }
   }
 }
 

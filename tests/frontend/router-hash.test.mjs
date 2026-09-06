@@ -18,6 +18,9 @@
  *   * Der zweite Pfadteil der Indizes nennt seit E-226 das Register und keinen
  *     Datensatz; wird er als Datensatz gelesen, versucht die Anwendung ein
  *     Register als Signatur zu oeffnen.
+ *   * Der Query-Teil traegt neben dem geteilten Filter Ansichtsparameter, etwa
+ *     den gewaehlten Knoten des Netzwerks. Das Neuschreiben des Query verlor
+ *     sie, sobald die Adresse auch einen Schnitt nannte.
  *
  * Lauf: node --test tests/frontend/router-hash.test.mjs
  */
@@ -42,7 +45,7 @@ globalThis.document = globalThis.document || {
   getElementById() { return null; },
 };
 
-const { parseHash, getState, navigateToView, selectRecord, setIndexRegister } =
+const { initRouter, parseHash, getState, navigateToView, selectRecord, setIndexRegister } =
   await import('../../docs/js/ui/router.js');
 const { getFilter, resetFilter } = await import('../../docs/js/ui/filter-state.js');
 
@@ -107,6 +110,29 @@ describe('Query-Teil', () => {
     parse('#bestand?person=Malaniuk%2C%20Ira');
     parse('#karte');
     assert.deepEqual(getFilter().person, ['Malaniuk, Ira']);
+  });
+});
+
+describe('Ansichtsparameter im Query', () => {
+  const KNOTEN = 'knoten=person%3AWagner%2C%20Wieland';
+
+  test('ein Ansichtsparameter ueberlebt das Neuschreiben im selben Tab', () => {
+    parse(`#netzwerk?ort=Bayreuth&${KNOTEN}`);
+    navigateToView('netzwerk');
+    assert.equal(window.location.hash, `#netzwerk?ort=Bayreuth&${KNOTEN}`,
+      'Der Router schreibt den Query neu und muss den Ansichtsparameter mitnehmen.');
+  });
+
+  test('ohne Schnitt steht der Ansichtsparameter allein', () => {
+    parse(`#netzwerk?${KNOTEN}`);
+    navigateToView('netzwerk');
+    assert.equal(window.location.hash, `#netzwerk?${KNOTEN}`);
+  });
+
+  test('der Tabwechsel laesst ihn mit seiner Ansicht fallen', () => {
+    parse(`#netzwerk?ort=Bayreuth&${KNOTEN}`);
+    navigateToView('bestand');
+    assert.equal(window.location.hash, '#bestand?ort=Bayreuth');
   });
 });
 
@@ -204,5 +230,59 @@ describe('Register-Teil der Indizes (E-226)', () => {
     assert.equal(getState().indexRegister, 'organisationen');
     assert.equal(window.location.hash, '#indizes/organisationen',
       'Der Eintrag reist als Navigationskontext und steht nicht im Hash.');
+  });
+});
+
+/*
+ * Der Kanal, ueber den ein Hashwechsel im offenen Tab die gezeichnete Ansicht
+ * erreicht. Ein Tab wird nur beim ersten Mal gezeichnet, seine Ansichtsparameter
+ * liest die Ansicht also genau einmal; ohne diese Meldung waehlte ein in die
+ * offene Ansicht eingefuegter Link auf einen Netzwerkknoten nichts aus.
+ *
+ * Der Block steht am Ende der Datei: er ruft initRouter und haengt damit dauerhaft
+ * ein Filter-Abonnement ein, das die Adresszeile der spaeteren Tests mitschriebe.
+ */
+describe('Ansichtsparameter an die offene Ansicht', () => {
+  const listeners = new Map();
+  const seen = [];
+
+  const boot = () => {
+    window.addEventListener = (type, fn) => { listeners.set(type, fn); };
+    window.dispatchEvent = (event) => { seen.push(event); return true; };
+    window.location.hash = '#netzwerk';
+    initRouter({});
+    const fire = listeners.get('hashchange');
+    assert.ok(fire, 'Der Router hoert nicht auf hashchange.');
+    return fire;
+  };
+
+  test('ein Hashwechsel im offenen Tab meldet den Knoten an die Ansicht', () => {
+    const fire = boot();
+    seen.length = 0;
+    window.location.hash = '#netzwerk?knoten=person%3AWagner%2C%20Wieland';
+    fire();
+    const hit = seen.find(e => e.type === 'm3gim:navigate' && e.detail && e.detail.viewParams);
+    assert.ok(hit, 'Der Hashwechsel erreicht die gezeichnete Ansicht nicht.');
+    assert.equal(hit.detail.tab, 'netzwerk');
+    assert.equal(hit.detail.viewParams, 'knoten=person%3AWagner%2C%20Wieland');
+  });
+
+  test('ein Schnitt allein ist kein Ansichtsparameter', () => {
+    const fire = boot();
+    seen.length = 0;
+    window.location.hash = '#netzwerk?ort=Bayreuth';
+    fire();
+    assert.equal(seen.some(e => e.detail && e.detail.viewParams), false,
+      'Der geteilte Filter hat seinen eigenen Weg und faehrt hier nicht mit.');
+  });
+
+  test('neben dem Schnitt kommt der Knoten trotzdem an', () => {
+    const fire = boot();
+    seen.length = 0;
+    window.location.hash = '#netzwerk?ort=Bayreuth&knoten=institution%3ABayreuther%20Festspiele';
+    fire();
+    const hit = seen.find(e => e.detail && e.detail.viewParams);
+    assert.ok(hit);
+    assert.equal(hit.detail.viewParams, 'knoten=institution%3ABayreuther%20Festspiele');
   });
 });

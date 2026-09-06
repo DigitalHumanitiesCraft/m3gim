@@ -9,7 +9,7 @@
  * Sliderschritt keinen History-Eintrag erzeugt.
  */
 
-import { splitHash, buildHash, parseFilterQuery } from './filter-url.js';
+import { splitHash, buildHash, parseFilterQuery, viewParams } from './filter-url.js';
 import { getFilter, setFilter, addFacetValue, subscribe as subscribeFilter } from './filter-state.js';
 import { initTabKeyboard, setRovingTabindex } from './tabs.js';
 
@@ -56,6 +56,7 @@ export function initRouter({ onTab, onRecord, onIndex } = {}) {
     parseHash();
     applyState();
     emitIndexRegister();
+    emitViewParams();
   });
 
   // Der Schnitt gehoert in die Adresszeile: jede Filteraenderung schreibt den
@@ -202,12 +203,29 @@ function applyFilterFromQuery(query) {
   if (Object.keys(patch).length > 0) setFilter(patch);
 }
 
-/** Setzt das Register der Indizes aus der Ansicht heraus und schreibt es in
- *  die Adresszeile; die Ansicht zeichnet sich selbst neu. */
+/** Setzt das Register der Indizes, schreibt es in die Adresszeile und meldet es
+ *  der gezeichneten Ansicht. Seit E-230 ruft das Menue des Indizes-Tabs diese
+ *  Funktion, das Register wird also ausserhalb der Ansicht gewaehlt. */
 export function setIndexRegister(key) {
   if (!INDEX_REGISTERS.includes(key) || state.indexRegister === key) return;
   state.indexRegister = key;
   updateHash();
+  emitIndexRegister();
+}
+
+/**
+ * Meldet die Ansichtsparameter des Hash an die aktive Ansicht. Eine Ansicht
+ * wird nur beim ersten Mal gezeichnet, sie liest ihren eigenen Parameter also
+ * genau einmal; ein Hashwechsel im offenen Tab, etwa ein eingefuegter Link auf
+ * einen Netzwerkknoten, erreichte sie ohne diesen Kanal nie. Der Filter hat
+ * seinen eigenen Weg ueber applyFilterFromQuery und faehrt hier nicht mit.
+ */
+function emitViewParams() {
+  const params = viewParams(splitHash(window.location.hash).query);
+  if (!params) return;
+  window.dispatchEvent(new CustomEvent('m3gim:navigate', {
+    detail: { tab: state.activeTab, viewParams: params },
+  }));
 }
 
 /** Ein Hashwechsel muss das Register auch an eine bereits gezeichnete Ansicht
@@ -223,7 +241,13 @@ function updateHash() {
   // Der zweite Pfadteil traegt bei den Indizes das Register statt eines
   // Datensatzes.
   const tail = state.activeTab === 'indizes' ? state.indexRegister : state.selectedRecord;
-  const newHash = buildHash(state.activeTab, tail, getFilter());
+  // A view parameter such as the selected Netzwerk node lives in the same query
+  // as the shared filter. The rewrite keeps it while the tab stays the same and
+  // drops it with the view it belongs to; without that, a hash naming both a
+  // filter and a node lost the node before the view could read it.
+  const { path, query } = splitHash(window.location.hash);
+  const extra = path.split('/')[0] === state.activeTab ? viewParams(query) : '';
+  const newHash = buildHash(state.activeTab, tail, getFilter(), extra);
   if (window.location.hash !== newHash) {
     history.replaceState(null, '', newHash);
   }

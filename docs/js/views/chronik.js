@@ -1,13 +1,13 @@
 /**
  * M³GIM Mobilitäts-Chronik — scrollender Jahres-Zeitstrahl.
  * Records hängen als Chips an der Jahresachse; ein linker Akzent kodiert die
- * dominante Mobilitätssicht (geteilte SICHT_COLOR, Karte/Statistik). Records
- * ohne verortete Annotation bleiben monochrom — die Monochromie IST das Signal
- * "keine Sicht erschlossen". Leere Jahre bleiben sichtbar (Erschließungsspiegel,
- * E-88), undatierte landen am Ende; einige lassen sich sekundär datieren (über
- * die ranghöchste ankernde Datierung) und wandern markiert in ihre Jahreszeile. Ein
- * kollabierbarer Dekaden×Sicht-Header zeigt die zeitliche Entwicklung als
- * Aggregat, das per Klick auf seine belegenden Chips auflöst.
+ * Rolle der Datierung, die das Jahr trägt (Aufführung, Absendung,
+ * Erscheinungsdatum, …). Ein undatierter Record hat keinen Akzent — die
+ * Monochromie IST das Signal "kein Zeitanker". Leere Jahre bleiben sichtbar
+ * (Erschließungsspiegel, E-88), undatierte landen am Ende; ein Chip, dessen
+ * Jahr aus einer Verknüpfung statt aus der eigenen Datierung stammt, trägt die
+ * Marke des Ergänzten. Ein Dekaden×Datierungsrolle-Header zeigt die zeitliche
+ * Entwicklung als Aggregat, das per Klick auf seine belegenden Chips auflöst.
  */
 
 import { el, clear, scrollBehavior } from '../utils/dom.js';
@@ -17,7 +17,7 @@ import { primaryYear } from '../data/loader.js';
 import { createSidebar, viewShell } from '../ui/sidebar.js';
 import { filterBySharedState, isSharedFiltered, searchMatchChronik, sharedFacetsActive } from './_bestand-filter.js';
 import {
-  sichtForRecord, aggregateDecadeStacks, placeLabelFor, SICHTEN, SICHT_COLOR,
+  aggregateDecadeStacks, placeLabelFor, datingRoleScale, datingRoleKey,
 } from './chronik-data.js';
 import { logStamp } from '../utils/env.js';
 import { selectRecord } from '../ui/router.js';
@@ -30,16 +30,17 @@ let container = null;
 let sidebar = null;
 let viewContainer = null;
 let visibleRecords = 0;    // Dokumente im Bild, fuer den Statusblock der Sidebar
-let activeSegment = null;  // "decade|sicht" des aktiven Header-Segments
+let activeSegment = null;  // "decade|role" of the active header segment
+let roleScale = new Map(); // dating role -> colour, ranked over the base set
 
 // Records vor YEAR_MIN und nach YEAR_MAX werden trotzdem gerendert (als
 // zusaetzliche Jahresblocke vor/nach dem Band), damit der Nachlass-Stand
 // ehrlich bleibt.
 
-// Segment-Reihenfolge im Dekaden-Stapel: die fuenf Sichten, dann neutral.
-const SICHT_ORDER = [...SICHTEN.map(s => s.id), 'neutral'];
-const SICHT_LABEL = Object.fromEntries(SICHTEN.map(s => [s.id, s.label]));
-SICHT_LABEL.neutral = 'ohne Sicht';
+// The Zeitanker either stands at the document itself or comes from one of its
+// Verknuepfungen. Only the second case is marked, because only there does the
+// year on the axis not belong to the document's own dating (task 8).
+const OBJECT_OWN_SOURCES = new Set(['rico:date', 'rico:creationDate']);
 
 export function renderChronik(storeRef, containerEl) {
   store = storeRef;
@@ -49,6 +50,9 @@ export function renderChronik(storeRef, containerEl) {
   const main = el('div', { className: 'view-main archiv-main' });
   viewContainer = el('div', { className: 'chronik-timeline-container' });
   main.appendChild(viewContainer);
+
+  // The colour axis stands over the base set, not over the cut.
+  roleScale = datingRoleScale(store, baseRecords(store));
 
   if (sidebar) sidebar.destroy();
   sidebar = createSidebar(store, {
@@ -69,9 +73,9 @@ function updateChronikView() {
 
   const shared = getFilter();
 
-  // Der Zeitstrahl traegt den Bestand mit Erschliessungsstand; was davon
-  // erscheint, entscheidet die Erschliessungsstand-Facette der geteilten Spalte
-  // (E-162, Beschraenkung auf die drei Staende 2026-09-03).
+  // Der Zeitstrahl traegt die Grundmenge des Frontends, also jedes Dokument mit
+  // Verknuepfung (E-165); was davon erscheint, entscheiden allein die Facetten
+  // der geteilten Spalte.
   let records = baseRecords(store);
 
   // Alle schneidenden Facetten (inkl. Dokumenttyp) plus Freitext.
@@ -85,17 +89,16 @@ function updateChronikView() {
   visibleRecords = records.length;
   if (sidebar) sidebar.update();
 
-  // Pro Record einmal annotieren: Sicht (aus den verorteten Annotationen) +
-  // Anzeigejahr. Der Zeitanker ist kanonisch rico:date (E-88); fehlt er, nennt
-  // primaryYear die ranghoechste ankernde Datierung als SEKUNDAERE Herkunft,
-  // die sichtbar markiert bleibt und nie mit rico:date gleichgesetzt wird
-  // ("ein Record = ein Punkt").
+  // Pro Record einmal annotieren: Anzeigejahr und die Rolle der Datierung, die
+  // es traegt. Der Zeitanker kommt aus primaryYear und faellt seit F3 auf die
+  // ranghoechste ankernde Datierung der Verknuepfungen, `rico:date` traegt nur
+  // noch den Rest. Der Anker reist mit, weil der Chip sein Datum und seine
+  // Herkunft aus ihm nimmt ("ein Record = ein Punkt").
   const annotated = records.map(r => {
-    const sichtInfo = sichtForRecord(store, r['@id']);
     const anchor = primaryYear(store, r);
     const year = Number.isFinite(anchor.year) ? anchor.year : null;
-    const secondary = (year != null && anchor.source !== 'rico:date') ? anchor : null;
-    return { record: r, sichtInfo, year, secondary };
+    const fromLink = year != null && !OBJECT_OWN_SOURCES.has(anchor.source);
+    return { record: r, year, anchor, fromLink, role: datingRoleKey(anchor, roleScale) };
   });
 
   // Nach Jahr gruppieren; echt-undatierte (auch ohne Sekundaerjahr) ans Ende.
@@ -108,8 +111,7 @@ function updateChronikView() {
   }
 
   const datedCount = annotated.length - undated.length;
-  const secondaryCount = annotated.filter(a => a.secondary).length;
-  const sichtCovered = annotated.filter(a => a.sichtInfo.hasSte).length;
+  const fromLinkCount = annotated.filter(a => a.fromLink).length;
 
   // Jahresraster: mindestens YEAR_MIN..YEAR_MAX, plus vorhandene Aussreisser.
   const years = [...byYear.keys()];
@@ -124,7 +126,7 @@ function updateChronikView() {
   const isFiltered = isSharedFiltered(shared) || sharedFacetsActive(shared)
     || Array.isArray(shared.zeitfenster);
 
-  const stacks = aggregateDecadeStacks(annotated.map(a => ({ year: a.year, sicht: a.sichtInfo.sicht })));
+  const stacks = aggregateDecadeStacks(annotated.map(a => ({ year: a.year, role: a.role })));
   const header = renderDecadeHeader(stacks);
   if (header) viewContainer.appendChild(header);
 
@@ -147,34 +149,37 @@ function updateChronikView() {
     ['records', records.length],
     ['jahre-belegt', byYear.size],
     ['datiert', datedCount],
-    ['sekundaer', secondaryCount],
+    ['aus-verknuepfung', fromLinkCount],
     ['undatiert', undated.length],
-    ['sicht-gedeckt', sichtCovered],
+    ['datierungsrollen', roleScale.size],
     ['spanne', `${min}–${max}`],
     ['gefiltert', isFiltered ? 'ja' : ''],
   ]);
 }
 
-/** Kollabierbarer Dekaden×Sicht-Stapel: zeitliche Entwicklung als Aggregat,
- *  das per Klick auf seine belegenden Chips auflöst. */
+/** Dekaden×Datierungsrolle-Stapel: zeitliche Entwicklung als Aggregat, das per
+ *  Klick auf seine belegenden Chips auflöst. */
 function renderDecadeHeader(stacks) {
   if (!stacks.rows.length) return null;
   const maxTotal = Math.max(...stacks.rows.map(r => r.total), 1);
+  const order = [...roleScale.keys()];
+  const labelOf = key => (roleScale.get(key) || {}).label || key;
+  const colorOf = key => (roleScale.get(key) || {}).color || 'var(--color-text-tertiary)';
 
   const wrap = el('div', { className: 'chronik-decades' });
 
   const legend = el('ul', { className: 'chronik-decades__legend' });
-  for (const sid of SICHT_ORDER) {
-    // Nur Sichten zeigen, die im aktuellen Schnitt vorkommen.
-    if (!stacks.rows.some(r => r.bySicht[sid])) continue;
+  for (const key of order) {
+    // Only the roles the current cut actually carries.
+    if (!stacks.rows.some(r => r.byRole[key])) continue;
     legend.appendChild(el('li', { className: 'chronik-decades__legend-item' },
-      el('span', { className: 'chronik-decades__swatch', style: `background:${SICHT_COLOR[sid] || SICHT_COLOR.neutral};` }),
-      SICHT_LABEL[sid] || sid,
+      el('span', { className: 'chronik-decades__swatch', style: `background:${colorOf(key)};` }),
+      labelOf(key),
     ));
   }
 
   const head = el('div', { className: 'chronik-decades__head' },
-    el('span', { className: 'chronik-decades__title' }, 'Jahrzehnte nach Mobilitätssicht'),
+    el('span', { className: 'chronik-decades__title' }, 'Jahrzehnte nach Herkunft des Jahres'),
     legend,
   );
   wrap.appendChild(head);
@@ -189,15 +194,15 @@ function renderDecadeHeader(stacks) {
     } else {
       // Track-Breite proportional zur groessten Dekade (ehrliche Mengenrelation).
       track.style.width = `${Math.max(8, (row.total / maxTotal) * 100)}%`;
-      for (const sid of SICHT_ORDER) {
-        const c = row.bySicht[sid];
+      for (const key of order) {
+        const c = row.byRole[key];
         if (!c) continue;
         const seg = el('button', {
           className: 'chronik-decades__seg',
-          style: `flex:${c} 0 0; background:${SICHT_COLOR[sid] || SICHT_COLOR.neutral};`,
-          dataset: { tip: `${row.decade}er · ${SICHT_LABEL[sid] || sid}: ${c}`, tipWrap: '' },
-          'aria-label': `${row.decade}er, ${SICHT_LABEL[sid] || sid}: ${c} Einheiten`,
-          onClick: () => toggleSegment(row.decade, sid),
+          style: `flex:${c} 0 0; background:${colorOf(key)};`,
+          dataset: { tip: `${row.decade}er · ${labelOf(key)}: ${c}`, tipWrap: '' },
+          'aria-label': `${row.decade}er, ${labelOf(key)}: ${c} Einheiten`,
+          onClick: () => toggleSegment(row.decade, key),
         });
         track.appendChild(seg);
       }
@@ -212,8 +217,8 @@ function renderDecadeHeader(stacks) {
 /** Header-Segment aktivieren: scrollt zur Dekade und hebt genau die Chips
  *  hervor, die das Segment aggregiert (Aggregat -> Einzelquellen). Erneuter
  *  Klick hebt die Hervorhebung auf. */
-function toggleSegment(decade, sicht) {
-  const key = `${decade}|${sicht}`;
+function toggleSegment(decade, role) {
+  const key = `${decade}|${role}`;
   const points = viewContainer.querySelectorAll('.chronik-point');
   if (activeSegment === key) {
     activeSegment = null;
@@ -223,7 +228,7 @@ function toggleSegment(decade, sicht) {
   activeSegment = key;
   let first = null;
   points.forEach(p => {
-    const match = p.dataset.decade === String(decade) && (p.dataset.sicht || 'neutral') === sicht;
+    const match = p.dataset.decade === String(decade) && p.dataset.role === role;
     p.classList.toggle('chronik-point--hit', match);
     p.classList.toggle('chronik-point--dim', !match);
     if (match && !first) first = p;
@@ -259,7 +264,7 @@ function renderYearRow(year, entriesInYear, maxPerYear, isDecadeBoundary) {
   const pointsWrap = el('div', { className: 'chronik-year__points' });
   if (!isEmpty) {
     entriesInYear
-      .sort((a, b) => (a.record['rico:date'] || '').localeCompare(b.record['rico:date'] || ''))
+      .sort((a, b) => (a.anchor.date || '').localeCompare(b.anchor.date || ''))
       .forEach(a => pointsWrap.appendChild(renderRecordPoint(a)));
   }
   row.appendChild(pointsWrap);
@@ -273,30 +278,9 @@ function renderUndatedRow(undatedEntries) {
     el('div', { className: 'chronik-year__dot chronik-year__dot--undated' }),
   ));
 
+  // No mini stack any more: an undated record has no Zeitanker and therefore
+  // exactly one origin, so the stack would consist of a single segment.
   const body = el('div', { className: 'chronik-year__points chronik-year__points--undated' });
-
-  // Sicht-Mini-Stapel als Kopf: zeigt, dass das Datum-Loch v.a. die korrespon-
-  // denz-lastigen Ortsrollen betrifft (E-110, bewusst datumslos).
-  const counts = new Map();
-  for (const a of undatedEntries) {
-    const s = a.sichtInfo.sicht || 'neutral';
-    counts.set(s, (counts.get(s) || 0) + 1);
-  }
-  if (counts.size > 0) {
-    const miniLine = el('div', { className: 'chronik-undated-mini-line' });
-    const mini = el('div', { className: 'chronik-undated-mini', 'aria-hidden': 'true' });
-    for (const sid of SICHT_ORDER) {
-      const c = counts.get(sid);
-      if (!c) continue;
-      mini.appendChild(el('span', {
-        className: 'chronik-undated-mini__seg',
-        style: `flex:${c} 0 0; background:${SICHT_COLOR[sid] || SICHT_COLOR.neutral};`,
-        dataset: { tip: `${SICHT_LABEL[sid] || sid}: ${c}`, tipWrap: '' },
-      }));
-    }
-    miniLine.appendChild(mini);
-    body.appendChild(miniLine);
-  }
 
   const chips = el('div', { className: 'chronik-undated-chips' });
   undatedEntries
@@ -308,16 +292,18 @@ function renderUndatedRow(undatedEntries) {
 }
 
 function renderRecordPoint(annot) {
-  const { record, sichtInfo, year, secondary } = annot;
+  const { record, year, anchor, fromLink, role } = annot;
   const rid = record['@id'];
   const sig = formatSignatur(record['rico:identifier']);
   const title = record['rico:title'] || '(ohne Titel)';
   const docType = getDocTypeId(record) || '';
   const docLabel = dftLabel(store, docType) || '';
 
-  // Datum nur zeigen, wenn es ueber die (an der Achse stehende) Jahreszahl
-  // hinaus Information traegt (Tag/Monat). Reine Jahresangabe ist redundant.
-  const dateDisplay = formatDate(record['rico:date']) || '';
+  // Shown is the date the chip is standing on, that is the one of the Zeitanker.
+  // Reading `rico:date` here instead would print a date that contradicts the
+  // year row wherever a Verknuepfung dates the record. Only beyond the year
+  // (day, month, span) does the date carry anything the axis does not show.
+  const dateDisplay = formatDate(anchor.date) || '';
   const showDate = dateDisplay && year != null && dateDisplay !== String(year);
 
   // Label roh (ehrlich, Orts-Casing-Befund, Partner-Uebergabeliste); die
@@ -326,17 +312,15 @@ function renderRecordPoint(annot) {
   const decade = year != null ? String(Math.floor(year / 10) * 10) : 'undated';
 
   const children = [];
-  // Sicht-Akzent: nur wenn ein STE existiert. Divergierend -> Mehrfach-Verlauf,
-  // sonst Vollton; 'neutral' (STE ohne Sicht) -> graue Spur, kein STE -> kein Akzent.
-  if (sichtInfo.hasSte) {
-    let bg;
-    if (sichtInfo.divergent && sichtInfo.sichten.length > 1) {
-      const cols = sichtInfo.sichten.slice(0, 3).map(s => SICHT_COLOR[s] || SICHT_COLOR.neutral);
-      bg = `linear-gradient(${cols.join(', ')})`;
-    } else {
-      bg = SICHT_COLOR[sichtInfo.sicht] || SICHT_COLOR.neutral;
-    }
-    children.push(el('span', { className: 'chronik-point__accent', style: `background:${bg};`, 'aria-hidden': 'true' }));
+  // The accent takes the colour of the header segment the chip belongs to. An
+  // undated record carries none: it has no Zeitanker, and the monochrome chip
+  // says exactly that.
+  const roleEntry = role ? roleScale.get(role) : null;
+  if (roleEntry) {
+    children.push(el('span', {
+      className: 'chronik-point__accent', style: `background:${roleEntry.color};`,
+      'aria-hidden': 'true',
+    }));
   }
   children.push(el('span', { className: 'chronik-point__sig' }, sig));
   children.push(el('span', { className: 'chronik-point__title' }, title));
@@ -347,23 +331,24 @@ function renderRecordPoint(annot) {
   if (place) {
     children.push(el('span', { className: 'chronik-point__place' }, place));
   }
-  // The chip sits in a year row it did not get from its own date; the mark of
+  // The chip sits in a year row it did not get from its own dating; the mark of
   // supplemented values says so once, instead of a dashed chip plus a sign
-  // (Projektleitung, 2026-09-04).
-  if (secondary) {
+  // (Projektleitung, 2026-09-04). Together with the date beside it the chip
+  // names which Verknuepfungsdatierung carries the year (task 8).
+  if (fromLink) {
     children.push(el('span', {
       className: 'chronik-point__secondary mark-derived',
-      dataset: { tip: `ergänzt: Jahr aus ${secondary.label}`, tipWrap: '' },
-    }, secondary.label));
+      dataset: { tip: `ergänzt: Jahr aus ${anchor.label}`, tipWrap: '' },
+    }, anchor.label));
   }
 
   return el('button', {
-    className: `chronik-point ${sichtInfo.hasSte ? '' : 'chronik-point--nosicht'}`,
+    className: 'chronik-point',
     onClick: (e) => { e.stopPropagation(); selectRecord(rid); },
     dataset: {
       rid,
       decade,
-      sicht: sichtInfo.sicht || 'neutral',
+      role: role || '',
       tip: `${sig} — ${title}${place ? ' · ' + place : ''}`,
       tipWrap: '',
     },

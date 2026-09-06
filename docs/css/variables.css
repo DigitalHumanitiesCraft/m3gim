@@ -82,6 +82,17 @@
   --chip-c-werk-text:        #BF4A18;
   --chip-c-neutral-border: var(--line);
 
+  /* A muted step of the two family tones the Netzwerk draws and of the accent,
+     for a picture that carries hundreds of marks at once. At full strength the
+     families read as a colour field rather than as families, and nothing is
+     left to mark a highlight with; the muted step keeps the hue and hands the
+     full tone back to selection and hover. Mixed against the surface, at a
+     share that keeps every one of the three above 3:1 on white, the bar the
+     categorical palette holds and WCAG 1.4.11 asks of a graphical mark. */
+  --chip-c-person-muted:      color-mix(in oklch, var(--chip-c-person-text) 72%, var(--surface));
+  --chip-c-institution-muted: color-mix(in oklch, var(--chip-c-institution-text) 72%, var(--surface));
+  --accent-muted:             color-mix(in oklch, var(--accent) 72%, var(--surface));
+
   /* Legend swatch colour (components.css § Legend primitive). Transparent by
      default, because the ring and line markers draw themselves from borders and
      a background image; a view that has a colour sets it on the element. */
@@ -126,7 +137,7 @@
   --space-16: 64px;
 
   /* Layout */
-  --view-sidebar-w: 272px;
+  --view-sidebar-w: 296px;
   /* The header is one KUG-Blau band carrying brand, tabs and info links
      (project lead, 2026-09-03, late evening). sidebar.css subtracts
      --top-bar-height from the viewport for the shell height, so that token

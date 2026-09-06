@@ -1,8 +1,18 @@
 # M³GIM Quality-Snapshot
 
-_Generiert: 2026-09-04T09:51_
+_Laufzeit des Reports: 2026-09-05T21:53+02:00_
 
-Grundlage: `data\output\m3gim.jsonld` + `data\output\wikidata-reconciliation.json`.
+Grundlage: `data/output/m3gim.jsonld` + `data/output/wikidata-reconciliation.json`.
+
+## Gezählte Menge
+
+Alle Zahlen dieses Reports beziehen sich auf **997 Records**. Der Graph führt **1007** Knoten vom Typ `rico:Record`; die Differenz von 10 sind 3 Folio-Platzhalter, entstanden aus innerhalb eines Konvoluts wiederholten Kopfzeilen der Objekttabelle, deren Folio-Zelle den Text „Folio“ trägt, und 7 Foliodatensätze, die die Pipeline über den Seiten eines Blattes bildet. Weder die einen noch die anderen tragen eine eigene Erschließung und zählen deshalb nicht mit.
+
+| Platzhalter | Quellzeile |
+|---|---:|
+| UAKUG/NIM_003 Folio | Objekte 30 |
+| UAKUG/NIM_004 Folio | Objekte 41 |
+| UAKUG/NIM_007 Folio | Objekte 116 |
 
 ## Verknüpfungsrate
 
@@ -47,7 +57,7 @@ Grundlage: `data\output\m3gim.jsonld` + `data\output\wikidata-reconciliation.jso
 
 ## Wikidata-Coverage
 
-- 396 gematcht, 139 kein Match, 14 übersprungen (bereits mit Q-ID oder zu kurz)
+- 430 gematcht, 171 kein Match, 13 übersprungen (bereits mit Q-ID oder zu kurz)
 
 ### Nach Typ + Konfidenz
 
@@ -55,7 +65,7 @@ Grundlage: `data\output\m3gim.jsonld` + `data\output\wikidata-reconciliation.jso
 |---|---:|---:|---:|---:|
 | person | 4 | 166 | 0 | 170 |
 | org | 2 | 5 | 0 | 7 |
-| location | 13 | 2 | 0 | 15 |
+| location | 26 | 5 | 0 | 31 |
 | work | 10 | 3 | 0 | 13 |
 
 ### Low-Confidence-Matches (manuelle Freigabe erforderlich)

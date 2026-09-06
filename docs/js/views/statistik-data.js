@@ -7,42 +7,55 @@
  * schneiden die geteilten Facetten und der Zeitraum die Statistik, ohne dass
  * die Ansicht einen zweiten Filterweg baut.
  *
- * Seit E-160 traegt die Statistik nur noch den Bestand in Zahlen. Die
- * Mobilitaets- und Beziehungsaggregate liegen in Karte, Chronik und Netzwerk;
- * die Sichten-Konstanten bleiben hier, weil Karte und Chronik sie von hier
- * beziehen.
+ * Since E-160 the Statistik carries the fonds in numbers only. The mobility and
+ * relation aggregates live in Karte, Chronik and Netzwerk; the ranked colour
+ * scale below stays here, because those two views read it from here.
  */
 
 import { getDocTypeId, dftLabel } from '../utils/format.js';
-import { yearOf } from '../data/records-for.js';
 
 // ---------------------------------------------------------------------------
-// Mobilitaetssichten — geteilt mit Karte und Chronik
+// Farbskala der Rollen — geteilt mit Karte und Chronik
 // ---------------------------------------------------------------------------
 
-// Konkrete, zielgruppennahe Labels (projektweit einheitlich: Karte, Statistik,
-// Chronik). Der analytische Begriff steht im desc-Feld zur Erlaeuterung.
-export const SICHTEN = [
-  { id: 'performativ',    label: 'Auftritt',    desc: 'Performativ: Auftritte, Gastspiele, Premieren' },
-  { id: 'institutionell', label: 'Engagement',  desc: 'Institutionell: Spielzeit-Engagements, Ensemble-Zugehoerigkeit' },
-  { id: 'korrespondenz',  label: 'Reise & Korrespondenz', desc: 'Reisewege (Ziel-, Abreise-, Vertragsort), Korrespondenz-Orte und Briefdaten' },
-  { id: 'diskursiv',      label: 'Rezeption',   desc: 'Diskursiv: Rezensionen, Rundfunk, Druckerscheinungen' },
-  { id: 'biografisch',    label: 'Biografisch', desc: 'Ausweise, Wohnsitz, persoenliche Dokumente' },
-];
+/**
+ * The six categorical hues of `variables.css`. They are the whole colour budget
+ * for a category axis, so a set with more members than this cannot give every
+ * member a hue of its own.
+ */
+const CAT_COLORS = Object.freeze([
+  'var(--cat-1)', 'var(--cat-2)', 'var(--cat-3)',
+  'var(--cat-4)', 'var(--cat-5)', 'var(--cat-6)',
+]);
 
-// Eine Quelle fuer die Sichten-Farben: die --color-sicht-*-Tokens (variables.css).
-// Karte, Statistik und Chronik zeigen dieselbe Sicht damit in derselben Farbe.
-// 'kontext' deckt die Nicht-Cluster-Ortsrollen der Karte ab (Entstehung,
-// Erwaehnung, Auftrag).
-export const SICHT_COLOR = {
-  performativ:    'var(--color-sicht-performativ)',
-  institutionell: 'var(--color-sicht-institutionell)',
-  korrespondenz:  'var(--color-sicht-korrespondenz)',
-  diskursiv:      'var(--color-sicht-diskursiv)',
-  biografisch:    'var(--color-sicht-biografisch)',
-  kontext:        'var(--color-sicht-kontext)',
-  neutral:        'var(--color-text-tertiary)',
-};
+/** Colour of everything past the six hues: the long tail is one grey. */
+export const REST_COLOR = 'var(--color-text-tertiary)';
+
+/**
+ * A set of roles as a ranked colour scale, the most frequent first. The six
+ * leading roles take the categorical hues, everything rarer shares the grey;
+ * the display form is raised to sentence case here, as `facetInventory` does
+ * for the facets, because the vocabulary stores its labels in lower case.
+ *
+ * The ranking is taken over the whole Bestand and never over a cut, so a filter
+ * moves the sizes and not the colours.
+ * @param {Array<{key:string, label:string, count:number}>} entries
+ * @returns {Map<string, {key:string, label:string, count:number, color:string}>}
+ *   in rank order, so the same map serves as lookup and as legend
+ */
+export function rankedRoleScale(entries) {
+  const ranked = [...(entries || [])]
+    .sort((a, b) => (b.count - a.count) || a.label.localeCompare(b.label, 'de'));
+  const out = new Map();
+  ranked.forEach((e, i) => {
+    const label = e.label ? e.label[0].toLocaleUpperCase('de-DE') + e.label.slice(1) : e.key;
+    out.set(e.key, {
+      key: e.key, label, count: e.count,
+      color: i < CAT_COLORS.length ? CAT_COLORS[i] : REST_COLOR,
+    });
+  });
+  return out;
+}
 
 // ---------------------------------------------------------------------------
 // Der Schnitt als Zaehlgrundlage
@@ -179,128 +192,4 @@ export function aggregateComposers(store, ids) {
     .map(([label, set]) => ({ label, count: set.size }))
     .filter(row => row.count > 0)
     .sort(byCountDesc);
-}
-
-// ---------------------------------------------------------------------------
-// Erschliessungsstand: was fehlt, und wo
-// ---------------------------------------------------------------------------
-
-/**
- * Die Achsen, an denen ein Dokument erschlossen ist. Jede haelt einen Test,
- * der genau ihren eigenen Beleg prueft. Ein Teilbeleg zaehlt nicht: eine
- * Datierung ohne Ort belegt die Zeit und nicht den Raum, sonst liesse die
- * Arbeitsliste genau die Luecke aus, die sie finden soll.
- */
-const GAP_AXES = [
-  { id: 'typ', label: 'Dokumenttyp', test: (r) => Boolean(r['rico:hasDocumentaryFormType']) },
-  { id: 'datum', label: 'Datierung', test: (r, store) => yearOf(store, r) != null },
-  { id: 'ort', label: 'Ort', test: (r, store) => hasPlace(r, store) },
-  { id: 'person', label: 'Person', test: (r) => hasAgentOfKind(r, 'person') },
-  { id: 'institution', label: 'Institution', test: (r) => hasAgentOfKind(r, 'institution') },
-  { id: 'werk', label: 'Werk', test: (r) => hasWork(r) },
-];
-
-const CORPORATE_TYPES = new Set(['rico:CorporateBody', 'rico:Group']);
-
-function asArray(v) {
-  if (v == null) return [];
-  return Array.isArray(v) ? v : [v];
-}
-
-function hasPlace(record, store) {
-  if (asArray(record['rico:hasOrHadLocation']).some((l) => l && (l.name || l['skos:prefLabel']))) {
-    return true;
-  }
-  const events = store?.recordToEvents?.get(record['@id']);
-  return Array.isArray(events) && events.length > 0;
-}
-
-function hasAgentOfKind(record, kind) {
-  const agents = asArray(record['m3gim-ontology:hasAssociatedAgent']);
-  const subjects = asArray(record['rico:hasOrHadSubject'])
-    .filter((s) => s && s['@type'] === 'rico:Person');
-  const all = kind === 'person' ? agents.concat(subjects) : agents;
-  return all.some((a) => {
-    if (!a || !(a.name || a['skos:prefLabel'])) return false;
-    const corporate = CORPORATE_TYPES.has(a['@type']);
-    return kind === 'institution' ? corporate : !corporate;
-  });
-}
-
-function hasWork(record) {
-  return asArray(record['rico:hasOrHadSubject'])
-    .some((s) => s && s['@type'] === 'm3gim-ontology:MusicalWork'
-      && (s.name || s['skos:prefLabel']));
-}
-
-/**
- * Erschliessungsstand des Schnitts, je Achse und je Konvolut.
- *
- * @param {object} store
- * @param {?Set<string>} ids
- * @returns {{total:number, none:number,
- *            axes:Array<{id:string,label:string,filled:number,missing:number,share:number}>,
- *            byKonvolut:Array<{id:string,label:string,total:number,filled:object,share:number,
-              axes:Array<{id:string,label:string,filled:number,missing:number}>}>}}
- */
-export function aggregateCatalogueGaps(store, ids) {
-  const records = cutRecords(store, ids);
-  const total = records.length;
-  const filled = Object.fromEntries(GAP_AXES.map((a) => [a.id, 0]));
-  const perKonvolut = new Map();
-  let none = 0;
-
-  for (const record of records) {
-    const kid = store?.childToKonvolut?.get(record['@id']) || null;
-    if (!perKonvolut.has(kid)) {
-      perKonvolut.set(kid, {
-        id: kid, total: 0,
-        filled: Object.fromEntries(GAP_AXES.map((a) => [a.id, 0])),
-      });
-    }
-    const bucket = perKonvolut.get(kid);
-    bucket.total += 1;
-
-    let any = false;
-    for (const axisDef of GAP_AXES) {
-      if (!axisDef.test(record, store)) continue;
-      filled[axisDef.id] += 1;
-      bucket.filled[axisDef.id] += 1;
-      any = true;
-    }
-    if (!any) none += 1;
-  }
-
-  const axes = GAP_AXES.map((a) => ({
-    id: a.id, label: a.label,
-    filled: filled[a.id],
-    missing: total - filled[a.id],
-    share: total ? filled[a.id] / total : 0,
-  }));
-
-  const byKonvolut = [...perKonvolut.values()].map((k) => {
-    const node = k.id ? store?.konvolute?.get(k.id) : null;
-    const sum = GAP_AXES.reduce((s, a) => s + k.filled[a.id], 0);
-    return {
-      ...k,
-      // Die Archivsignatur ist der lesbare Name eines Konvoluts; die interne
-      // Kennung waere im Bericht eine nackte Id ohne Klartext.
-      label: (node && (node['rico:identifier'] || node['rico:title'] || node.name))
-        || k.id || 'ohne Konvolut',
-      // Erschliessungsgrad: belegte Achsen gegen alle moeglichen. Die
-      // Sortierung stellt das duennste Konvolut nach oben, damit die
-      // Arbeitsliste ohne eigenes Suchen lesbar ist.
-      share: k.total ? sum / (k.total * GAP_AXES.length) : 0,
-      // Welche Achse hier fehlt, beantwortet der Anteil nicht; deshalb traegt
-      // jedes Konvolut seine Achsen mit der Gegenzahl, die groesste Luecke
-      // zuerst (stabile Sortierung haelt bei Gleichstand die Achsenreihenfolge).
-      axes: GAP_AXES.map((a) => ({
-        id: a.id, label: a.label,
-        filled: k.filled[a.id],
-        missing: k.total - k.filled[a.id],
-      })).sort((a, b) => b.missing - a.missing),
-    };
-  }).sort((a, b) => a.share - b.share || b.total - a.total);
-
-  return { total, none, axes, byKonvolut };
 }

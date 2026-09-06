@@ -16,7 +16,7 @@ import { applyArchivFilter } from '../ui/router.js';
 import { buildHorizontalBars } from '../ui/charts.js';
 import {
   aggregateDocTypes, aggregateEntities, aggregateAgentRoles,
-  aggregateStageRoles, aggregateComposers, aggregateCatalogueGaps,
+  aggregateStageRoles, aggregateComposers,
 } from './statistik-data.js';
 
 // Der Akzent als monochrome Leitfarbe; sequenzielle Abstufung fuer Long-Tail-Bars.
@@ -114,58 +114,6 @@ export function buildDokumenttypen(store, ids) {
     });
   }
   wrap.appendChild(buildHorizontalBars(rows));
-  return node;
-}
-
-// ---------------------------------------------------------------------------
-// § Erschliessungsstand
-// ---------------------------------------------------------------------------
-
-/**
- * Was am Bestand erschlossen ist und was nicht, als Arbeitsliste.
- *
- * Der Forschungsrahmen fuehrt diesen Use Case fuer die Erschliessungs-Persona.
- * Die Sicht zeigt beide Seiten derselben Zahl: den Balken der belegten
- * Dokumente und daneben die Zahl der fehlenden, weil erst die zweite Zahl
- * sagt, wo Arbeit liegt. Der Aufriss nach Konvolut macht daraus ein
- * Arbeitspaket, das duennste Konvolut steht oben.
- */
-/**
- * Die offenen Achsen eines Konvoluts, die groesste Luecke zuerst. Der Anteil am
- * Balken sagt nur, wie viel fehlt, nicht was; die Frage nach der Achse
- * beantwortet erst diese Zeile.
- */
-function konvolutTip(k) {
-  const offen = (k.axes || []).filter((a) => a.missing > 0);
-  if (offen.length === 0) return 'Alle Achsen belegt';
-  return offen
-    .map((a, i) => (i === 0 ? `${a.label} ${a.missing} offen` : `${a.label} ${a.missing}`))
-    .join(' · ');
-}
-
-export function buildErschliessung(store, ids) {
-  const node = section('Erschließungsstand');
-  const gaps = aggregateCatalogueGaps(store, ids);
-
-  const axisWrap = subsection(node, `Belegte Achsen (${gaps.total} Dokumente)`);
-  // Die Gegenzahl steht neben dem Balken: ein Balken allein liest sich als
-  // Erfolg, waehrend die offene Zahl die Arbeitsmenge ist.
-  axisWrap.appendChild(buildHorizontalBars(gaps.axes.map((a, i) => ({
-    label: a.label,
-    value: a.filled,
-    countText: `${a.filled} · ${a.missing} offen`,
-    color: blueShade(i, gaps.axes.length),
-    tip: `${a.missing} Dokumente ohne diese Angabe`,
-  }))));
-
-  const konvWrap = subsection(node, `Konvolute nach Erschließungsgrad (${gaps.byKonvolut.length})`);
-  konvWrap.appendChild(buildHorizontalBars(gaps.byKonvolut.slice(0, 15).map(k => ({
-    label: `${k.label} (${k.total})`,
-    value: Math.round(k.share * 100),
-    countText: `${Math.round(k.share * 100)} %`,
-    color: 'var(--color-text-tertiary)',
-    tip: konvolutTip(k),
-  }))));
   return node;
 }
 

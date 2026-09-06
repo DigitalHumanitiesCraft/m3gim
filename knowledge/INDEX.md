@@ -11,76 +11,105 @@ template:
   version: 0.4
   url: https://dhcraft.org/Promptotyping/promptotyping-document/index
   alias: https://dhcraft.org/Promptotyping/#promptotyping-document-index
-status: complete
+status: active
 created: 2026-02-19
-updated: 2026-09-03
-language: de
-version: 0.5
+updated: 2026-09-05
+language: en
+version: 0.6
 authors: [Christopher Pollin]
 generated-with: Claude Code
-related: [specification, data, data-model, research-framework, architecture, design, journal, testing, handoff]
+related: [specification, data, data-model, research-framework, architecture, design, journal, journal-archive, testing, handoff]
 ---
 
 # M³GIM Knowledge Base
 
-Diese Seite ist der Einstiegspunkt in die Wissensbasis des Projekts. Sie ordnet die Dokumente nach ihrer Promptotyping-Funktion, benennt die Ablagezonen des Repositorys, gibt Lesepfade und erklärt die konstitutiven Begriffe. Die Wissensbasis ist die Source of Truth, der Code ist nachgeordnetes Artefakt. Laufende Zahlen stehen im generierten Quality-Snapshot unter [`data/reports/quality-snapshot.md`](../data/reports/quality-snapshot.md).
+This page is the entry point into the knowledge base of the project. It orders the documents by their Promptotyping function, names the storage zones of the repository, gives reading paths and defines the constitutive terms. The knowledge base is the source of truth, the code is the derived artefact. Running figures live in the generated quality snapshot under [`data/reports/quality-snapshot.md`](../data/reports/quality-snapshot.md).
 
-## Dokumente
+## Documents
 
-| Pfad | Funktion | Routing Question | Aktualisierung |
+| Path | Function | Routing question | Update |
 |---|---|---|---|
-| [INDEX.md](INDEX.md) | Navigation | Was liegt hier, wie lese ich, welche Begriffe sind konstitutiv? | bei jeder Änderung des Ordnerinhalts |
-| [specification.md](specification.md) | Charter und Specification | Was ist das Projekt, was soll die Anwendung leisten, und wo steht die Arbeit? | bei Änderung von Identität, Anforderungen, Funktionsumfang oder Arbeitsstand |
-| [data.md](data.md) | Material und Modell-Spezifikation | Woraus besteht das Quellmaterial, wie ist es erfasst, was ist daran fehlerhaft? | bei neuem Datenexport oder geänderter Erfassung |
-| [data-model.md](data-model.md) | Domain Knowledge | Wie ist das Material formal modelliert, und wie wird nach den Soll-Konventionen erfasst? | bei Änderung an [`vocab/m3gim.ttl`](../vocab/m3gim.ttl), am Modell oder an der Erfassungskonvention |
-| [research-framework.md](research-framework.md) | Domain Knowledge | Welche Theorie, Forschungsfragen und Anwendungsfälle tragen das Projekt? | bei Schärfung der Forschungsfragen, Personas oder Use Cases |
-| [architecture.md](architecture.md) | Architecture | Wie läuft die Datenpipeline, und wie ist die statische SPA gebaut? | bei Änderung an `scripts/`, `docs/js/` oder am Datenfluss |
-| [design.md](design.md) | Design | Wie sieht die Anwendung aus, und wie verhält sie sich? | bei Änderung von Designhaltung oder Designsystem |
-| [testing.md](testing.md) | Quality Assurance | Was wird garantiert, und wie wird es geprüft? | bei Änderung der Testsuite oder des TDD-Workflows |
-| [handoff.md](handoff.md) | Handoff | Welche geprüften Übergabepunkte warten auf Integration oder Verwerfung? | bei Eingang oder Verarbeitung eines Punkts |
-| [journal.md](journal.md) | Provenance | Wie sind wir hierhin gekommen, und warum wurde so entschieden? | nach sachlich zusammengehörigen Übergängen und bei jeder Entscheidung (Entscheidungsregister) |
+| [INDEX.md](INDEX.md) | Navigation | What lies here, how is it read, which terms are constitutive? | with every change to the contents of the folder |
+| [specification.md](specification.md) | Charter and specification | What is the project, what is the application to achieve, and where does the work stand? | with a change to identity, requirements, scope or state of work |
+| [data.md](data.md) | Source material and spec-first anchor | What is the source material, how does the cataloguing team record it, and what is defective in it? | with a new data export or a changed recording |
+| [data-model.md](data-model.md) | Domain knowledge | How is the material formally modelled, and where does the model stop? | with a change to [`vocab/m3gim.ttl`](../vocab/m3gim.ttl), to the model or to the recording convention |
+| [research-framework.md](research-framework.md) | Domain knowledge | Which theory, research questions, personas and use cases carry the project? | when research questions, personas or use cases are sharpened |
+| [architecture.md](architecture.md) | Architecture | How does the data pipeline run, and how is the static SPA built? | with a change to `scripts/`, `docs/js/` or the data flow |
+| [design.md](design.md) | Design | How does the application look, and how does it behave? | with a change to the design stance or the design system |
+| [testing.md](testing.md) | Quality assurance | What is guaranteed, and how is it checked? | with a change to the test suite or the TDD workflow |
+| [handoff.md](handoff.md) | Handoff | Which checked handover points wait for integration or rejection? | when a point arrives or is processed |
+| [journal.md](journal.md) | Provenance | How did the project arrive here, and why was it decided this way? | after transitions that belong together, and with every decision in the decision register |
+| [journal-archive.md](journal-archive.md) | Provenance archive | Which decision was superseded or lapsed, and how did a session run in full? | when a row leaves the decision register or a session narrative moves out of [journal.md](journal.md) |
 
-Die Datenbefunde leben operativ unter `data/reports/`, die quellseitig behebbaren Fehler in der Partner-Übergabeliste [`source-errors-handover-2026-09-01.md`](../data/reports/source-errors-handover-2026-09-01.md), der Wikidata-Abgleich im [`reconciliation-register.md`](../data/reports/reconciliation-register.md).
+The data findings live operationally under `data/reports/`. The errors that can be fixed at the source stand in the handover list [`source-errors-handover-2026-09-01.md`](../data/reports/source-errors-handover-2026-09-01.md), the Wikidata alignment in the [`reconciliation-register.md`](../data/reports/reconciliation-register.md).
 
-## Ablagezonen
+## Storage zones
 
-- `knowledge/` trägt die dauerhaft gepflegten Promptotyping Documents einschließlich der Process Inbox [handoff.md](handoff.md).
-- `data/google-spreadsheet/` trägt das übernommene Quellmaterial, die versionierten Exporte der archivischen Erfassung, die Verknüpfungstabelle und die Objekttabelle als CSV, die Indextabellen als XLSX.
-- `data/reports/` trägt drei Klassen. Die Kurationsbelege der Normdaten-Zuordnung sind dauerhaft, weil `data/output/wikidata-reconciliation.json` sie zitiert. Die Befundregister (Partner-Übergabeliste, Reconciliation-Register) sind die operative Fehlerverwaltung. Der bei jedem Pipeline-Lauf erzeugte Quality-Snapshot ist die Stand-Kommunikation für Dritte; die übrigen erzeugten Reports sind nicht versioniert, ein Lauf stellt sie her.
-- `data/output/` und `docs/data/` tragen die reproduzierbar erzeugten Artefakte der Pipeline.
-- `vocab/` trägt das formale Projektvokabular als Turtle-Datei samt Abdeckungsprüfer; [data-model.md](data-model.md) beschreibt das Modell, das die Datei formalisiert.
+- `knowledge/` carries the permanently maintained Promptotyping documents, including the process inbox [handoff.md](handoff.md).
+- `data/google-spreadsheet/` carries the source material taken over from the cataloguing team as versioned exports. The object table is `M3GIM-Objekte.csv`, with the workbook of the same name beside it as the fallback the loader uses only when the CSV is absent. The four index tables for persons, organizations, places and works stay XLSX. The link table lives as one CSV per box under `data/google-spreadsheet/verknuepfungen/`, named `Box_1.csv` and so on with non-contiguous numbers, together with the value list `Typ-Rolle.csv`.
+- `data/reports/` carries three classes. The curation evidence of the authority alignment is permanent, because `data/output/wikidata-reconciliation.json` cites it. The finding registers, meaning the handover list and the reconciliation register, are the operational error management. The quality snapshot generated by every pipeline run is the communication of the current state to third parties. The remaining generated reports are not versioned, a run produces them.
+- `data/output/` and `docs/data/` carry the reproducibly generated artefacts of the pipeline.
+- `vocab/` carries the formal project vocabulary as a Turtle file together with its coverage checker. [data-model.md](data-model.md) describes the model that the file formalizes.
 
-## Lesepfade
+## Reading paths
 
-- Sessionstart: [`../CLAUDE.md`](../CLAUDE.md) → [INDEX.md](INDEX.md) → [handoff.md](handoff.md) → [specification.md](specification.md) → aufgabenrelevantes Dokument.
-- Datenmodell verstehen oder ändern: [data.md](data.md) → [data-model.md](data-model.md) → [journal.md](journal.md) § Entscheidungsregister. Erst das Quellmaterial, dann seine Formalisierung; die Modelländerung wird in [data.md](data.md) verankert, Vokabular, Pipeline, Tests und Frontend folgen.
-- Mit dem erzeugten Datensatz arbeiten, ohne die Pipeline zu kennen: [data-model.md](data-model.md) → [`data/reports/reconciliation-register.md`](../data/reports/reconciliation-register.md).
-- Pipeline ausführen oder debuggen: [`../CLAUDE.md`](../CLAUDE.md) § Kern-Commands → [architecture.md](architecture.md) § Pipeline → [testing.md](testing.md).
-- Frontend anpassen: [architecture.md](architecture.md) § Frontend → [design.md](design.md).
-- Daten erfassen: [data-model.md](data-model.md) § Erfassung → [data.md](data.md).
-- Forschungsseitig einsteigen: [research-framework.md](research-framework.md) → [specification.md](specification.md).
+- Session start: [`../CLAUDE.md`](../CLAUDE.md) → [INDEX.md](INDEX.md) → [handoff.md](handoff.md) → [specification.md](specification.md) → the document the task calls for.
+- Understanding or changing the data model: [data.md](data.md) → [data-model.md](data-model.md) → [journal.md](journal.md) § Decision register. First the source material, then its formalization. The model change is anchored in [data.md](data.md), and vocabulary, pipeline, tests and frontend follow.
+- Working with the generated dataset without knowing the pipeline: [data-model.md](data-model.md) → [`data/reports/reconciliation-register.md`](../data/reports/reconciliation-register.md).
+- Running or debugging the pipeline: [`../CLAUDE.md`](../CLAUDE.md) § Core commands → [architecture.md](architecture.md) § Pipeline → [testing.md](testing.md).
+- Adapting the frontend: [architecture.md](architecture.md) § Frontend → [design.md](design.md).
+- Recording data: [`data/recording-guide.md`](../data/recording-guide.md), which is German and addressed to the cataloguing team, then [data.md](data.md).
+- Entering from the research side: [research-framework.md](research-framework.md) → [specification.md](specification.md).
 
-## Konvention
+## Conventions
 
-Diese Wissensbasis folgt der Konvention für Promptotyping Documents, die Naming Contract, Frontmatter-Schema, Routing-Heuristik und Strukturprinzipien regelt. Einzelträger einer Funktion tragen den kanonischen Namen. Die Wissensbasis wurde am 2026-07-19 von achtzehn auf zwölf Dokumente konsolidiert und am 2026-09-01 weiter verdichtet, die Erfassungsrichtlinie ging in [data-model.md](data-model.md) auf, die beiden Architektur-Dokumente wurden zu [architecture.md](architecture.md), das Datenfehler-Register wanderte als operatives Registerpaar nach `data/reports/`, und das Entscheidungsregister wurde Teil von [journal.md](journal.md) (E-155). Dateinamen sind englisch, der Inhalt ist deutsch. Abschnitte tragen keine Nummern, ein Verweis nennt Dokument und Abschnittstitel (E-161).
+This knowledge base follows the convention for Promptotyping documents, which governs naming contract, frontmatter schema, routing heuristic and structural principles. The single carrier of a function bears the canonical name. Sections carry no numbers, and a reference names document and section title (E-161).
 
-Modelländerungen werden zuerst in [data.md](data.md) verankert (Leitplanke Spec-first, E-133). Erledigtes wandert aus dem volatilen Abschnitt von [specification.md](specification.md) nach [journal.md](journal.md), Quellseitiges in die Partner-Übergabeliste unter `data/reports/`. Forschungsnotizen und DSGVO-sensible Quellen werden im Obsidian-Vault gepflegt, das Repo trägt das destillierte Extrakt.
+Every Markdown document in `knowledge/` is English, a decision of the project leadership of 2026-09-05. German project terms stay where the glossary below defines them. File names are English. The string literals of the application, its interface and the finding texts of the data mirror are German, because their readers are the cataloguing team and the users of the application. Code comments are English. [journal-archive.md](journal-archive.md) is the one exception, it keeps the original German wording of the rows and narratives it took over and declares itself German (E-260, E-266).
 
-## Begriffe
+Model changes are anchored in [data.md](data.md) first, which is the spec-first guard rail (E-133). What is done moves out of the volatile section of [specification.md](specification.md) into [journal.md](journal.md), what belongs to the source into the handover list under `data/reports/`. Research notes and sources sensitive under data protection law are maintained in the Obsidian vault, the repository carries the distilled extract.
 
-- AgRelOn, Agent Relationship Ontology der Deutschen Nationalbibliothek für Agent-Agent-Beziehungen
-- Datenspiegel, die Testschicht mit Marker `data_quality`, die Sauberkeit der Quelle behauptet und absichtlich rot bleibt, solange bekannte Quellfehler bestehen
-- DFT, Documentary Form Type, die hierarchische Dokumenttypen-Taxonomie im Namespace `m3gim-dft`
-- Konvolut, eine aggregierende Archiveinheit mit Kindern auf Folio-Ebene
-- M³GIM, Mapping Mobile Musicians, der Projektname; im Namespace und in Dateinamen als `m3gim` geschrieben
-- m3gim-Extension, die Projekterweiterung für Werke, Aufführungen, Bühnenrollen und Mobilität, formalisiert in [`vocab/m3gim.ttl`](../vocab/m3gim.ttl)
-- Mobilitätssichten, fünf Abfrageperspektiven auf dieselben Daten, performativ, institutionell, Reise und Korrespondenz, biographisch, diskursiv
-- Promptotyping, die Arbeitsweise des Projekts, in der die Dokumente die Source of Truth sind und der Code ein nachgeordnetes Artefakt
-- Provenance, die semantische Quellenangabe je Aussage und die technische Rückverfolgbarkeit zur Ursprungszelle der Erfassung
-- Quality-Snapshot, der bei jedem Pipeline-Lauf generierte Markdown-Bericht mit allen laufenden Zahlen
-- Reconciliation und Enrichment, der Abgleich der Entitäten gegen Wikidata und die Anreicherung mit Normdaten
-- RiC-O, Records in Contexts Ontology, das archivische Kernmodell in Version 1.1
-- Schichtenmodell, die drei Erschließungsschichten Kernmetadaten, Verknüpfungen und Detailerschließung plus die Meta-Querschnittsebene
-- SKOS, Simple Knowledge Organization System, die Organisationsform der kontrollierten Vokabulare
-- SpatiotemporalEvent, kurz STE, die zentrale raumzeitliche Klasse, die den Mobilitätskern trägt
-- UAKUG/NIM, die Signatur des Teilnachlasses Ira Malaniuk am Universitätsarchiv der Kunstuniversität Graz
+The knowledge base was consolidated on 2026-07-19 and condensed further on 2026-09-01. The recording guideline was absorbed into [data-model.md](data-model.md), the two architecture documents became [architecture.md](architecture.md), the data error register moved to `data/reports/` as an operational pair of registers, and the decision register became part of [journal.md](journal.md) (E-155).
+
+## Glossary
+
+Every knowledge document uses these English terms. The German column is the wording of the interface, the data and the archive team, and a document names the German term only where it quotes the interface or the source. Code identifiers are not listed here, the code carries its own names.
+
+| Term | German | Definition |
+|---|---|---|
+| result set | Treffermenge | The records that satisfy the current faceted filtering. Every view shows the same result set. |
+| faceted filtering | Facettensuche | Restricting the result set through the facets of the sidebar. Within one facet any selected value suffices, across facets all selected values must hold. |
+| facet | Facette | A feature with discrete values by which the result set is restricted: person, place, work, institution, document type, role, time. |
+| chip | Chip | A selected facet value, shown as a removable element. |
+| basket | Korb | The records a researcher collects by hand across views, for export. |
+| view | Ansicht, Tab | One page of the application: holdings, registers, chronicle, map, network, statistics, basket. |
+| holdings | Bestand | The view that lists the records in their archival order of convolutes and folios. |
+| register | Register, Index | The list of normalized entities of one family, with a page per family. |
+| family | Familie | One of the four entity kinds person, institution, place, work, each with a fixed colour and symbol. |
+| entity | Entität | An entry of a register. |
+| record | Objekt, Datensatz | One archival unit of the object table, identified by its signature. |
+| convolute | Konvolut | An aggregating archival unit whose children are folios. |
+| folio | Folio | A child of a convolute, identified by the convolute signature plus a folio number. |
+| link | Verknüpfung | One row of the link table, connecting a record to an entity or an event in a role. |
+| evidence, attested | Beleg, belegt | A record is the evidence for a statement when a link of that record carries it. A statement is attested when at least one link carries it. |
+| data point | Datenpunkt | One recorded value, that is one cell of the recording tables with sheet and row. |
+| source cell | Quellzelle, Erfassungsstelle | Sheet and row of the recording table a data point comes from. Shown at every data point in the application. |
+| role | Rolle | The function in which something stands at a record. Three kinds are distinguished and never called role alone: place role (contract place, guest performance, dispatch), event role (performance, rehearsal, premiere), agent role (conductor, sender, patron). |
+| stage part | Partie, Bühnenrolle | The part a singer performs in an opera. Never called role. |
+| event | Ereignis | A dated or located statement at a record, carrying a role. In the dataset the node is called Annotation. |
+| performance | Aufführung | The mention of a work at a record, with stage part where recorded. |
+| occurrence | Auftritt | The planned bundle of place, work, stage part, date and institution that forms one appearance. Decided as target model, not yet in the dataset. |
+| institution | Institution, Organisation, Haus | An entry of the institution register, including opera houses, festivals, broadcasters and ensembles. |
+| perspective | Sicht, Mobilitätssicht | One of the five event categories performative, institutional, correspondence, biographical, discursive. Not a view. |
+| recording | Erfassung | Entering the source material into the tables. |
+| cataloguing | Erschließung | The archival work of describing the fonds, of which recording is the part this project reads. |
+| coverage | Deckung | How many records of the result set carry the data a view needs, shown at the view. |
+| data state | Datenstand | The dated pipeline run the application is built from. |
+| creator of the fonds | Nachlassbildnerin | Ira Malaniuk as the person the fonds stems from. |
+| data mirror | Datenspiegel | The test layer that asserts the cleanliness of the source and stays red while known source errors exist. |
+| quality snapshot | Quality-Snapshot | The report generated by every pipeline run that holds all running figures. |
+| handover list | Partner-Übergabeliste | The register of source errors handed to the cataloguing team. |
+| DFT | DFT | Documentary form type, the hierarchical taxonomy of document types. |
+| RiC-O, AgRelOn, SKOS | | Records in Contexts Ontology 1.1, the Agent Relationship Ontology of the German National Library, the Simple Knowledge Organization System. |
+| m3gim extension | m3gim-Extension | The project ontology for works, performances, stage parts and mobility, formalized in `vocab/m3gim.ttl`. |
+| Promptotyping | | The working method in which the knowledge documents are the source of truth and the code a derived artefact. |

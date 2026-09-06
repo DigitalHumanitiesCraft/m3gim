@@ -11,7 +11,7 @@ import { el, clear, escapeHtml } from '../utils/dom.js';
 import { cityOf } from '../utils/format.js';
 import { extractYear } from '../utils/date-parser.js';
 import {
-  KONTEXT_ID, colorOf, breakdownByView, barSegments, firstYear, lastYear,
+  breakdownByRole, barSegments, firstYear, lastYear,
 } from './karte-data.js';
 
 const GEO_URL = 'data/geo/countries-110m.geo.json';
@@ -20,6 +20,23 @@ let COUNTRIES = null;  // module-level cache, ueber Tab-Wechsel hinweg
 export function loadCountries() {
   if (COUNTRIES) return Promise.resolve(COUNTRIES);
   return fetch(GEO_URL).then(r => r.json()).then(geo => { COUNTRIES = geo; return geo; });
+}
+
+/**
+ * Zoom transform that brings a frame of the projected base into the view.
+ * `minSpan` is the smallest frame the fit accepts: a single place has no extent
+ * of its own and would otherwise zoom into the street grid.
+ * @param {{x0:number,y0:number,x1:number,y1:number}} bounds
+ * @param {{width:number,height:number,pad:number,minSpan:number,maxK:number}} box
+ * @returns {{k:number, tx:number, ty:number}}
+ */
+export function fitTransform(bounds, { width, height, pad, minSpan, maxK }) {
+  const w = Math.max(bounds.x1 - bounds.x0, minSpan);
+  const h = Math.max(bounds.y1 - bounds.y0, minSpan);
+  const k = Math.min(maxK, (width - 2 * pad) / w, (height - 2 * pad) / h);
+  const cx = (bounds.x0 + bounds.x1) / 2;
+  const cy = (bounds.y0 + bounds.y1) / 2;
+  return { k, tx: width / 2 - k * cx, ty: height / 2 - k * cy };
 }
 
 export function buildMap(mapCell, countries, withGeo, state, opts) {
@@ -35,8 +52,11 @@ export function buildMap(mapCell, countries, withGeo, state, opts) {
   const width = Math.max(320, mapCell.clientWidth || 960);
   const height = Math.max(440, mapCell.clientHeight || 600);
 
-  // Projektion einmalig auf den europaeischen Schwerpunkt ALLER Belege einpassen
-  // (nicht pro Entitaet), damit die Karte beim Wechsel der Auswahl nicht springt.
+  // The projection stands fixed over the European centre of ALL Belege and is
+  // thus the coordinate system the nodes live in. What the viewer sees is the
+  // zoom transform above it, which fitToNodes lays on the drawn points after
+  // every cut. Without that New York and Buenos Aires sat outside the view and
+  // read as missing.
   const eur = withGeo.filter(o => o.placeLon > -15 && o.placeLon < 35 && o.placeLat > 34 && o.placeLat < 60);
   const fitPoints = {
     type: 'FeatureCollection',
@@ -49,10 +69,9 @@ export function buildMap(mapCell, countries, withGeo, state, opts) {
   projection.fitExtent([[pad, pad], [width - pad, height - pad]], fitPoints);
   const path = d3.geoPath(projection);
 
-  // Knoten als Tortendiagramm: jeder Ort zeigt die Anteile der Mobilitaetssichten
-  // (Auftritt, Engagement, Reise & Korrespondenz, Rezeption, Biografisch,
-  // Weiterer Ortsbezug) als Kreissegmente. Reihenfolge stabil (sort null) entlang
-  // der breakdown-Liste.
+  // A node is a pie: each place shows the shares of its place roles
+  // (Vertragsort, Gastspiel, Absendung, …) as segments, in the stable order of
+  // the breakdown list (sort null).
   const pieGen = d3.pie().value(s => s.count).sort(null);
   const arcGen = d3.arc();
 
@@ -122,6 +141,11 @@ export function buildMap(mapCell, countries, withGeo, state, opts) {
   let currentK = 1;
   let maxShown = 1;
   const minK = 0.3, maxK = 12;
+  // A single city has no extent of its own, so without a floor the fit would
+  // zoom into the street grid. The floor is a span of the projected base,
+  // roughly the width of a country, which keeps a place with its surroundings.
+  const MIN_FIT_SPAN = 280;
+  let fitKey = '';
   const zoom = d3.zoom().scaleExtent([minK, maxK])
     .on('zoom', (ev) => {
       currentK = ev.transform.k;
@@ -144,6 +168,32 @@ export function buildMap(mapCell, countries, withGeo, state, opts) {
     zoomBtn('+', 'Hineinzoomen', () => svg.transition().duration(200).call(zoom.scaleBy, 1.5)),
     zoomBtn('−', 'Herauszoomen', () => svg.transition().duration(200).call(zoom.scaleBy, 1 / 1.5)));
   mapCell.appendChild(zoomCtl);
+
+  /**
+   * Lay the view on the drawn nodes. Runs after every cut, but only when the
+   * frame really changed, because a repaint that changes nothing would
+   * otherwise tear away the zoom the viewer set by hand.
+   */
+  function fitToNodes(nodes) {
+    const shown = nodes.filter(d => !dim(d));
+    if (shown.length === 0) return;
+    let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+    for (const d of shown) {
+      x0 = Math.min(x0, d.x); x1 = Math.max(x1, d.x);
+      y0 = Math.min(y0, d.y); y1 = Math.max(y1, d.y);
+    }
+    const key = [shown.length, x0, y0, x1, y1].map(v => Math.round(v)).join('|');
+    if (key === fitKey) return;
+    fitKey = key;
+    const fit = fitTransform({ x0, y0, x1, y1 },
+      { width, height, pad, minSpan: MIN_FIT_SPAN, maxK });
+    // A far point (New York, Buenos Aires) needs more width than the lower
+    // zoom bound of the control allows, so the bound drops to what the fit
+    // needs; otherwise that point would stay outside the view.
+    zoom.scaleExtent([Math.min(minK, fit.k), maxK]);
+    svg.transition().duration(400).call(zoom.transform,
+      d3.zoomIdentity.translate(fit.tx, fit.ty).scale(fit.k));
+  }
 
   const sichtbar = d => !dim(d);
   function applyLabelLayer() {
@@ -195,7 +245,8 @@ export function buildMap(mapCell, countries, withGeo, state, opts) {
       const nDated = evsWin.filter(o => extractYear(o.date) != null).length;
       // Anteile aus den Belegen im Zeitfenster (sonst aus allen), damit der
       // Zeitfilter die Tortenstuecke mitfiltert.
-      const breakdown = breakdownByView(evsWin.length ? evsWin : n.occ);
+      const shownOcc = evsWin.length ? evsWin : n.occ;
+      const breakdown = breakdownByRole(shownOcc, opts.roleScale);
       // Verortungs-Stufe des Knotens (entitaetsgefiltert): approx = keine
       // gesicherte Koordinate hier (nur stadtgenau hochgerollt); far = nur weit
       // entfernte Belege (Fehlmatch-Verdacht). Steuert den Ring-Stil.
@@ -203,9 +254,12 @@ export function buildMap(mapCell, countries, withGeo, state, opts) {
       const nFar = n.occ.filter(o => o.placement === 'far').length;
       return { ...n, total: n.occ.length, shown: evsWin.length,
         dated: nDated, undated: evsWin.length - nDated,
-        dom: breakdown.length ? breakdown[0].id : KONTEXT_ID, breakdown,
+        domColor: breakdown.length ? breakdown[0].color : 'var(--color-text-tertiary)',
+        breakdown,
         approx: nSecured === 0, far: nFar > 0 && nSecured === 0,
-        firstYear: firstYear(n.occ), lastYear: lastYear(n.occ) };
+        // The tooltip's year span reads the same set as the pie segments;
+        // otherwise it named years the Zeitfenster had long cut away.
+        firstYear: firstYear(shownOcc), lastYear: lastYear(shownOcc) };
     });
     maxShown = 1;
     for (const n of nodes) maxShown = Math.max(maxShown, n.shown);
@@ -232,9 +286,9 @@ export function buildMap(mapCell, countries, withGeo, state, opts) {
       .attr('transform', d => `translate(${d.x},${d.y})`)
       .attr('opacity', d => dim(d) ? 0.3 : 1);
 
-    // Tortensegmente je Sicht. shown===0 (ausserhalb des Zeitfensters) -> kein
-    // Pie, nur der gedaempfte Basis-Dot ueber den Ring. vector-effect haelt die
-    // Trennlinien beim Zoomen konstant duenn.
+    // Pie segments per place role. shown===0 (outside the Zeitfenster) leaves no
+    // pie, only the muted base dot inside the ring. vector-effect keeps the
+    // dividing lines constantly thin while zooming.
     merged.each(function (d) {
       const g = d3.select(this).select('.mob-node__pie');
       arcGen.innerRadius(0).outerRadius(pieRadiusOf(d));
@@ -265,7 +319,7 @@ export function buildMap(mapCell, countries, withGeo, state, opts) {
     merged.select('.mob-node__ring')
       .attr('r', radiusOf)
       .attr('vector-effect', 'non-scaling-stroke')
-      .style('fill', d => (dim(d) || undatedArea(d)) ? colorOf(d.dom) : 'none')
+      .style('fill', d => (dim(d) || undatedArea(d)) ? d.domColor : 'none')
       .attr('fill-opacity', d => dim(d) ? 0.5 : (undatedArea(d) ? 0.15 : 0))
       .style('stroke', ringStroke)
       .attr('stroke-width', d => isSelectedCity(d.city) ? 3
@@ -277,6 +331,7 @@ export function buildMap(mapCell, countries, withGeo, state, opts) {
       .attr('y', 4)
       .attr('class', 'mob-node__label');
 
+    fitToNodes(nodes);
     applyLabelLayer();
   }
 

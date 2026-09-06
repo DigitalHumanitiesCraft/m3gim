@@ -13,7 +13,7 @@ Usage:
     python scripts/build-social-images.py [--css PFAD] [--out VERZEICHNIS]
 
 The colour is read from the token file and never written here, so the mark
-cannot drift from the band it sits in (knowledge/design.md, Regel 2). The
+cannot drift from the band it sits in (knowledge/design.md § Tokens). The
 wordmark is set in Georgia, the same serif the inline SVG favicon names, so the
 raster icons and the vector one show the same letterforms.
 

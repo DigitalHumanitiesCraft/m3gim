@@ -13,36 +13,37 @@ import { formatDocType } from '../utils/format.js';
 import { formatDate } from '../utils/date-parser.js';
 import { toggleKorb, isInKorb } from '../ui/basket.js';
 import { formatLanguage, korbIcon, korbTip, familyOfBlock } from '../data/constants.js';
-import { partitionRecord, sourceSummary } from './record-detail-data.js';
+import { partitionRecord, qualityTipLines, pageNeighbours } from './record-detail-data.js';
 import {
   agentChipEls, workChipEls, performanceChipEls, eventChipEls,
-  relationChipEls, financeChipEls, datingChipEls,
+  relationChipEls, financeChipEls, datingChipEls, QUALITY_ICON_SVG,
 } from './record-chips.js';
 
 /**
  * Build an inline detail DOM element for a record.
- * @param {Object} record - The JSON-LD record
+ * @param {Object} record - The JSON-LD record; for a Folio the page on show
  * @param {Object} store - The data store
- * @param {Object} [options]
- * @param {Function} [options.onClose] - Called when close button clicked
+ * @param {{pages?: Array<Object>, onPage?: (recordId: string) => void}} [paging]
+ *   the pages of the Folio this record belongs to and the handler that turns to
+ *   one; without them the detail carries no page control
  * @returns {HTMLElement}
  */
-export function buildInlineDetail(record, store, { onClose } = {}) {
+export function buildInlineDetail(record, store, paging = {}) {
   // Konvolute (rico:RecordSet) get no inline detail; their aggregated metadata
   // is shown as chips in the Bestand row itself.
   const wrapper = el('div', { className: 'inline-detail' });
 
-  // The head line keeps Signatur and Titel of the record in view while the
-  // reader scrolls inside a long detail; the two equally sized icon buttons sit
-  // at the right end of the meta bar and no longer take a row of their own
-  // (Projektleitung, 2026-09-04).
+  // Closing is the business of the row that opened the detail (chevron, row
+  // click, Escape), so the detail carries no close control of its own
+  // (Projektleitung, 2026-09-05).
   const recordId = record['@id'];
   const inKorb = isInKorb(recordId);
-  const closeIcon = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>';
   const actions = el('div', { className: 'inline-detail__actions' },
     el('button', {
       className: `inline-detail__action-btn inline-detail__korb-btn ${inKorb ? 'inline-detail__korb-btn--active' : ''}`,
-      dataset: { tip: korbTip(inKorb) },
+      // The button sits at the right edge of the table; its tooltip opens to the
+      // left so it stays inside the scroll box.
+      dataset: { tip: korbTip(inKorb), tipPos: 'bottom-right' },
       'aria-label': korbTip(inKorb),
       onClick: (e) => {
         e.stopPropagation();
@@ -56,29 +57,21 @@ export function buildInlineDetail(record, store, { onClose } = {}) {
       },
       html: korbIcon(16, inKorb),
     }),
-    el('button', {
-      className: 'inline-detail__action-btn inline-detail__close',
-      dataset: { tip: 'Detail schließen' },
-      'aria-label': 'Detail schließen',
-      onClick: (e) => {
-        e.stopPropagation();
-        if (onClose) onClose();
-      },
-      html: closeIcon,
-    })
   );
 
+  // Only the full Signatur, because the row above already carries the title and
+  // shows the folio alone, while this is the citable identifier. It leads the
+  // meta bar instead of taking a line of its own and is where the focus lands
+  // when the detail opens, programmatically focusable without entering the tab
+  // sequence (Projektleitung, 2026-09-05).
   const identifier = record['rico:identifier'];
-  const title = record['rico:title'];
-  if (identifier || title) {
-    // The head line is where the focus lands when the detail opens, so it is
-    // programmatically focusable without entering the tab sequence
-    // (Projektleitung, 2026-09-04).
-    wrapper.appendChild(el('div', { className: 'inline-detail__head', tabindex: '-1' },
+  const qualityLines = recordQualityTipLines(record);
+  const head = identifier || qualityLines.length
+    ? el('div', { className: 'inline-detail__head', tabindex: '-1' },
       identifier ? el('span', { className: 'inline-detail__head-sig' }, String(identifier)) : null,
-      title ? el('span', { className: 'inline-detail__head-title' }, String(title)) : null,
-    ));
-  }
+      qualityLines.length ? qualityFlagMark(qualityLines) : null,
+    )
+    : null;
 
   // Metadata as one narrow full-width bar; the administrative fields sit in the
   // collapsible foot instead. Erschliessung is the Bearbeitungsstand of the
@@ -94,7 +87,8 @@ export function buildInlineDetail(record, store, { onClose } = {}) {
   if (extent) meta.push(['Umfang', typeof extent === 'string' ? extent : String(extent)]);
   const status = record['m3gim-ontology:processingStatus'];
   if (status) meta.push(['Erschließung', status]);
-  wrapper.appendChild(renderMetaBar(meta, actions));
+  wrapper.appendChild(renderMetaBar(
+    meta, actions, head, renderPaging(record, paging)));
 
   // rico:scopeAndContent is the record's own content description and reads as
   // prose directly under the meta bar, not as a meta item. The data holds none
@@ -134,10 +128,36 @@ export function buildInlineDetail(record, store, { onClose } = {}) {
     ));
   }
 
-  const foot = renderFoot(record, store);
+  const foot = renderFoot(record);
   if (foot) wrapper.appendChild(foot);
 
   return wrapper;
+}
+
+/**
+ * Data-quality marker of the record itself (design rule 10). The current data
+ * carries m3gim-ontology:dataQualityFlag on Annotation, Performance and the
+ * nested entities only, never on a rico:Record or a rico:RecordSet, so this
+ * stays inert until the source puts one there; tests/frontend/record-quality-flag
+ * .test.mjs holds that observation against the shipped file.
+ */
+export function recordQualityTipLines(record) {
+  if (!record) return [];
+  return qualityTipLines(
+    record['m3gim-ontology:dataQualityFlag'],
+    record['rico:generalDescription'],
+  );
+}
+
+// Same mark and same tooltip wording as the chip flag, so the legend arises
+// from sameness rather than from text.
+function qualityFlagMark(lines) {
+  return el('span', {
+    className: 'quality-flag',
+    dataset: { tip: lines.join('\n'), tipWrap: '' },
+    'aria-label': lines.join(', '),
+    html: QUALITY_ICON_SVG,
+  });
 }
 
 /**
@@ -158,17 +178,58 @@ function renderSection(title, family, content) {
   );
 }
 
-/** Metadata as one narrow horizontal bar, the action buttons at its right end. */
-function renderMetaBar(pairs, actions) {
+/** Metadata as one narrow horizontal bar, the Signatur leading it, the page
+ *  control after the fields and the action button at its right end. */
+function renderMetaBar(pairs, actions, head, paging) {
   const bar = el('div', { className: 'inline-detail__meta' });
+  if (head) bar.appendChild(head);
   for (const [label, value] of pairs) {
     bar.appendChild(el('span', { className: 'inline-detail__meta-item' },
       el('span', { className: 'inline-detail__meta-label' }, label),
       el('span', { className: 'inline-detail__meta-value' }, String(value)),
     ));
   }
+  if (paging) bar.appendChild(paging);
   if (actions) bar.appendChild(actions);
   return bar;
+}
+
+/**
+ * The page control of a Folio: back, position, forward. It turns the page
+ * inside the open detail, so the reader stays on the row of the sheet
+ * (Aufgabe 7 des Aufgabensatzes). The ends stop instead of wrapping
+ * (pageNeighbours), and the disabled button says so without a word.
+ * @returns {?HTMLElement} null for a record that is no page of a Folio
+ */
+function renderPaging(record, { pages, onPage }) {
+  const { index, total, prev, next } = pageNeighbours(pages, record['@id']);
+  if (total < 2 || index < 0 || typeof onPage !== 'function') return null;
+  const step = (target, dir, label, glyph) => {
+    const btn = el('button', {
+      className: 'inline-detail__page-btn',
+      dataset: { tip: label, tipPos: 'bottom-right', pageStep: dir },
+      'aria-label': label,
+      onClick: (e) => { e.stopPropagation(); if (target) onPage(target['@id']); },
+    }, glyph);
+    if (!target) btn.disabled = true;
+    return btn;
+  };
+  return el('div', { className: 'inline-detail__page' },
+    step(prev, 'prev', 'Vorherige Seite', '‹'),
+    el('span', {
+      className: 'inline-detail__page-pos',
+      // Without a role the label stands on a generic box and no reader speaks
+      // it; as an image the position is read as a sentence instead of as
+      // "2 slash 12".
+      role: 'img',
+      dataset: {
+        tip: `Seite ${record['rico:identifier'] || record['@id']} des Blattes`,
+        tipWrap: '',
+      },
+      'aria-label': `Seite ${index + 1} von ${total}`,
+    }, `${index + 1} / ${total}`),
+    step(next, 'next', 'Nächste Seite', '›'),
+  );
 }
 
 // Administrative fields, shown as label/value rows in the collapsible foot.
@@ -180,26 +241,12 @@ const ADMIN_FIELDS = [
   ['m3gim-ontology:digitizationStatus', 'Digitalisierung'],
 ];
 
-/** Bundled source line plus the collapsible Verwaltung block; null when empty. */
-function renderFoot(record, store) {
+/** The collapsible Verwaltung block; null when the record carries no admin
+ *  field. The bundled source lines are gone, because the provenance pill of
+ *  every chip already names sheet and row per data point
+ *  (Projektleitung, 2026-09-05). */
+function renderFoot(record) {
   const foot = el('div', { className: 'inline-detail__foot' });
-  const { record: own, linked } = sourceSummary(record, store);
-
-  if (own) {
-    foot.appendChild(el('div', { className: 'inline-detail__source' },
-      el('span', { className: 'inline-detail__source-label' }, 'Quelle'),
-      own.sheet ? `${own.sheet}, Zeile ${own.row}` : `Zeile ${own.row}`,
-    ));
-  }
-  if (linked.length) {
-    const text = linked.map(({ sheet, rows }) =>
-      rows.length > 1 ? `${sheet}, Zeilen ${rows.join(', ')}` : `${sheet}, Zeile ${rows[0]}`
-    ).join(' · ');
-    foot.appendChild(el('div', { className: 'inline-detail__source' },
-      el('span', { className: 'inline-detail__source-label' }, 'Verknüpfungen'),
-      text,
-    ));
-  }
 
   const admin = ADMIN_FIELDS
     .map(([key, label]) => [label, record[key]])

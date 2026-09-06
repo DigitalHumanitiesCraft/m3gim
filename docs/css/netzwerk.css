@@ -1,47 +1,162 @@
 /*
- * Netzwerk tab: the heterogeneous graph around one focus entity (E-160, which
- * merged the former Netzwerk and Verknuepfungen views).
+ * Netzwerk tab: the sources of the result set as a network of actors and
+ * documents (F2, E-256, E-257, E-259).
  *
- * Shell and filter controls live in sidebar.css. Here stands only what is the
- * graph's own: stage, rings, nodes, edges, detail column and the legend markers
- * that the staticLegend rows reference through markerClass.
+ * Shell and filter controls live in sidebar.css. Here stands only what belongs
+ * to the drawing: view head, canvas edge layer, SVG nodes, the tooltip box the
+ * drawing carries above itself, and the detail column that slides in on a click.
+ *
+ * Colour: an actor carries the colour of its content family, the same one the
+ * register menu, the Bestand marks and the detail block titles use, a document
+ * is a square in the accent sized like the circle of an actor of the same
+ * weight, and the accent halo of the selection is the only strong mark.
  */
 
 #tab-netzwerk {
   padding: 0;
 }
 
-/* Stage: graph left, detail right */
+/* View head: the coverage line and the symbol legend beside it */
+
+.netzwerk__head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-5);
+  border-block-end: 1px solid var(--line);
+  flex-wrap: wrap;
+}
+
+.netzwerk__coverage {
+  flex: 1 1 auto;
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  font-variant-numeric: tabular-nums;
+  cursor: help;
+}
+
+/* Legend: one word per sign, the rest in the tooltips. It stands in the head
+   and not in the drawing, where it would take area from the picture. */
+
+.netzwerk__legend {
+  display: flex;
+  flex: 0 1 auto;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.netzwerk__legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1-5);
+  font-size: var(--text-2xs);
+  color: var(--color-text-secondary);
+  cursor: help;
+}
+
+/* Shape and size stay here: these are different signs, not one sign at
+   different sizes. Fill comes from --swatch-color through the primitive in
+   components.css. */
+.netzwerk__legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+/* The muted step, because that is what the overview shows; the full accent
+   stands at „Auswahl", which is the only strong colour of the drawing. */
+.netzwerk__legend-dot--person      { --swatch-color: var(--chip-c-person-muted); }
+.netzwerk__legend-dot--institution { --swatch-color: var(--chip-c-institution-muted); }
+
+.netzwerk__legend-dot--record {
+  --swatch-color: var(--accent-muted);
+  border-radius: 1px;
+  width: 9px;
+  height: 9px;
+}
+
+.netzwerk__legend-dot--relation {
+  border: 1.2px dashed var(--color-text-secondary);
+  width: 12px;
+  height: 12px;
+}
+
+.netzwerk__legend-dot--focus {
+  --swatch-color: var(--accent);
+  outline: 3px solid var(--accent-soft);
+}
+
+/* The two edge classes as short rules, dotted against solid. */
+.netzwerk__legend-line {
+  display: inline-block;
+  flex: none;
+  width: 16px;
+  border-block-start: 1.5px solid var(--color-text-secondary);
+}
+
+.netzwerk__legend-line--mention {
+  border-block-start-style: dotted;
+}
+
+/* Stage: the drawing fills the area, the detail column slides over its right
+   edge once something is selected. */
 
 .netzwerk__main {
+  padding: var(--space-3) var(--space-5);
+  min-height: 0;
+  overflow: hidden;
+}
+
+.netzwerk__board {
   display: flex;
-  gap: var(--space-5);
-  align-items: flex-start;
-  padding: var(--space-4) var(--space-5);
-  overflow-y: auto;
+  gap: var(--space-4);
+  align-items: stretch;
+  height: 100%;
+  min-height: 0;
 }
 
 .netzwerk__stage {
   position: relative;
   flex: 1 1 auto;
   min-width: 0;
+  min-height: 0;
+  display: flex;
 }
 
 .netzwerk__canvas {
-  width: 100%;
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
 }
 
-.netzwerk-svg {
-  display: block;
-  width: 100%;
-  height: 74vh;
-  max-height: 700px;
+/* The two layers of the graph lie on top of each other in one box: the canvas
+   carries the edges, the SVG above it the nodes and their labels. */
+.netzwerk__plot {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 100%;
+  margin-inline: auto;
   background: var(--surface);
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
+  overflow: hidden;
 }
 
-/* The zoom stack is the only control that stands in the work area. */
+.netzwerk__edges,
+.netzwerk-svg {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* The zoom stack and the export are the only controls in the work area. */
 .netzwerk__zoom-controls {
   position: absolute;
   top: var(--space-2);
@@ -58,6 +173,25 @@
   font-size: 14px;
 }
 
+.nz-export-btn {
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  z-index: 4;
+  padding: 3px var(--space-2);
+  font-family: inherit;
+  font-size: var(--text-xs);
+  color: var(--accent);
+  background: var(--surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+}
+
+.nz-export-btn:hover {
+  border-color: var(--accent);
+}
+
 .netzwerk-zoom-bg {
   cursor: grab;
 }
@@ -66,205 +200,262 @@
   cursor: grabbing;
 }
 
-/* Rings: the evidence levels as orientation lines */
-
-.netzwerk-ring {
-  fill: none;
-  pointer-events: none;
+.netzwerk-zoom-bg--over-edge {
+  cursor: pointer;
 }
 
-.netzwerk-ring--1 {
-  stroke: var(--color-text-secondary);
-  stroke-width: 1.4;
-  opacity: 0.6;
-}
-
-.netzwerk-ring--2 {
-  stroke: var(--line-strong);
-  stroke-width: 1;
-  stroke-dasharray: 3 4;
-  opacity: 0.5;
-}
-
-/* Edges: the shape carries the kind of evidence */
-
-/* A straight radial is an explicitly annotated AgRelOn relation.
-   pointer-events on the stroke alone activates the native <title> tooltip
-   without turning the line into a click target. */
-.netzwerk-link {
-  stroke: var(--accent);
-  stroke-opacity: 0.65;
-  pointer-events: stroke;
-  cursor: help;
-  transition: stroke-opacity var(--transition-fast), stroke-width var(--transition-fast);
-}
-
-.netzwerk-link:hover,
-.netzwerk-link--active {
-  stroke-opacity: 1;
-  stroke-width: 2.6;
-}
-
-.netzwerk-link--dim {
-  stroke-opacity: 0.08;
-}
-
-/* A curved band is co-occurrence, derived from the documents. */
-.netzwerk-edge {
-  fill: none;
-  stroke: var(--color-text-secondary);
-  stroke-opacity: 0.22;
-  pointer-events: stroke;
-  cursor: help;
-  transition: stroke-opacity var(--transition-fast), stroke-width var(--transition-fast);
-}
-
-.netzwerk-edge:hover {
-  stroke-opacity: 0.85;
-}
-
-.netzwerk-edge--dim {
-  stroke-opacity: 0.04;
-}
-
-.netzwerk-edge--active {
-  stroke: var(--accent);
-  stroke-opacity: 0.9;
-}
-
-/* Nodes */
+/* Nodes: an actor in the colour of its content family, a document as an accent
+   square. The fill is opaque and every shape carries a hairline in the surface
+   tone, so the edge layer below never shows through a node and the two layers
+   stay apart (Projektleitung, 2026-09-05). The strokes do not scale with the
+   zoom, otherwise the hairline becomes a ring at high magnification. */
 
 .netzwerk-node {
   cursor: pointer;
 }
 
-.netzwerk-node--dim:not(.netzwerk-node--hover) {
-  opacity: 0.14;
+/* Every node carries its tone in two steps. The overview is drawn in the muted
+   one, because at hundreds of marks the full family colour reads as a colour
+   field and leaves nothing to mark a selection with; the full tone belongs to
+   hover, focus and the highlighted neighbourhood, which is the only strong
+   colour of the drawing (Projektleitung, 2026-09-05). */
+.netzwerk-node--person {
+  --node-tone: var(--chip-c-person-text);
+  --node-tone-quiet: var(--chip-c-person-muted);
 }
 
-.netzwerk-node__circle {
-  stroke: var(--surface);
-  stroke-width: 1.5;
-  fill-opacity: 0.92;
-  transition: stroke-width var(--transition-fast), fill-opacity var(--transition-fast);
+.netzwerk-node--institution {
+  --node-tone: var(--chip-c-institution-text);
+  --node-tone-quiet: var(--chip-c-institution-muted);
 }
 
-/* Weak evidence (co-occurrence without an annotated relation): less fill and
-   no dashed edge, which made the circles diffuse. */
-.netzwerk-node__circle--weak {
-  fill-opacity: 0.62;
+.netzwerk-node--record {
+  --node-tone: var(--accent);
+  --node-tone-quiet: var(--accent-muted);
 }
 
-.netzwerk-node--hover .netzwerk-node__circle,
-.netzwerk-node:focus-visible .netzwerk-node__circle {
-  stroke: var(--accent);
-  stroke-width: 2.5;
+.netzwerk-node__circle,
+.netzwerk-node__square {
+  fill: var(--node-tone-quiet);
   fill-opacity: 1;
+  stroke: var(--surface);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+  /* The hover grows the node in place. fill-box puts the origin at the centre
+     of the shape, which is where the growth has to start. */
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform var(--transition-fast);
 }
 
-.netzwerk-node:focus-visible {
+.netzwerk-node:hover .netzwerk-node__circle,
+.netzwerk-node:hover .netzwerk-node__square {
+  fill: var(--node-tone);
+  transform: scale(1.3);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .netzwerk-node__circle,
+  .netzwerk-node__square {
+    transition: none;
+  }
+}
+
+/* An actor with a single record, and a document without a date, step back on
+   request; neither is removed, because no threshold takes an entity out of the
+   picture (E-257). */
+.netzwerk-node--faint .netzwerk-node__circle,
+.netzwerk-node--faint .netzwerk-node__square {
+  fill-opacity: 0.28;
+}
+
+.netzwerk-node--dim {
+  opacity: 0.1;
+}
+
+/* The second step of a two-mode neighbourhood, the actors at the records of the
+   selected one. It stands between the first step and the faded rest, so the two
+   distances read as one neighbourhood. */
+.netzwerk-node--far {
+  opacity: 0.5;
+}
+
+/* The selection: a soft halo and an accent hairline, not a box around node and
+   label. The first step of the neighbourhood takes the same accent stroke at
+   half the weight, so the two rings read as one neighbourhood. */
+.netzwerk-node__halo {
+  fill: var(--accent);
+  fill-opacity: 0.16;
+  stroke: none;
+  pointer-events: none;
+}
+
+.netzwerk-node--focus .netzwerk-node__circle,
+.netzwerk-node--focus .netzwerk-node__square {
+  fill: var(--node-tone);
+  fill-opacity: 1;
+  stroke: var(--accent);
+  stroke-width: 2;
+}
+
+.netzwerk-node--neighbour .netzwerk-node__circle,
+.netzwerk-node--neighbour .netzwerk-node__square {
+  fill: var(--node-tone);
+  fill-opacity: 1;
+  stroke: var(--accent);
+}
+
+/* The browser draws its focus box around the whole group, label included, which
+   is the black box the drawing had to lose. The focus mark is the node itself
+   instead: it grows as under the pointer and takes a heavier accent stroke, so
+   the keyboard cursor stands where the reader is looking. */
+.netzwerk-node:focus {
   outline: none;
 }
 
-.netzwerk-node__qid {
-  fill: var(--color-match);
-  stroke: var(--surface);
-  stroke-width: 0.5;
+.netzwerk-node:focus-visible .netzwerk-node__circle,
+.netzwerk-node:focus-visible .netzwerk-node__square {
+  fill: var(--node-tone);
+  fill-opacity: 1;
+  stroke: var(--accent);
+  stroke-width: 3;
+  transform: scale(1.3);
+}
+
+/* A recorded AgRelOn relation to the creator of the fonds: a ring around the
+   node. It is no edge, because its other end is the one entity the network
+   leaves out, and it stays quiet and thin. The node tooltip and the legend of
+   the head explain it; a hairline is no hover target. */
+.netzwerk-node__relation {
+  fill: none;
+  stroke: var(--color-text-secondary);
+  stroke-width: 1.2;
+  stroke-dasharray: 2 2;
+  vector-effect: non-scaling-stroke;
   pointer-events: none;
+}
+
+.netzwerk-node--focus .netzwerk-node__relation,
+.netzwerk-node--neighbour .netzwerk-node__relation {
+  stroke: var(--color-text-primary);
 }
 
 .netzwerk-label {
   font-family: var(--font-ui);
-  font-size: var(--text-2xs);
   fill: var(--color-text-primary);
   pointer-events: none;
   user-select: none;
-  opacity: 0;
-  transition: opacity var(--transition-fast);
-  /* A light halo keeps the label readable in any tangle of edges. */
+  display: none;
+  /* A white halo keeps the label readable in any tangle of edges; its width
+     follows the zoom, set in paintLabels beside the font size. */
   paint-order: stroke fill;
   stroke: var(--surface);
-  stroke-width: 3px;
   stroke-linejoin: round;
 }
 
-.netzwerk-label--always {
-  opacity: 1;
+.netzwerk-label--on {
+  display: block;
 }
 
-.netzwerk-node--hover .netzwerk-label,
-.netzwerk-node--neighbour .netzwerk-label {
-  opacity: 1;
-  font-weight: var(--weight-semibold);
+.netzwerk-node--focus .netzwerk-label {
+  font-weight: var(--weight-bold);
+  fill: var(--accent);
 }
 
-.netzwerk-node--ring2 .netzwerk-label {
-  fill: var(--color-text-secondary);
-  font-size: 9.5px;
-}
+/* Tooltip of the drawing. An SVG node and a canvas carry no pseudo element, so
+   the CSS tooltip of data-tip cannot sit on them (E-36). */
 
-/* Centre */
-
-.netzwerk-center {
+.netzwerk__tip {
+  position: fixed;
+  z-index: 60;
+  max-width: 280px;
+  padding: var(--space-1-5) var(--space-2);
+  font-size: var(--text-xs);
+  line-height: var(--leading-normal);
+  white-space: pre-line;
+  color: var(--color-text-inverse);
+  background: var(--color-text-primary);
+  border-radius: var(--border-radius);
   pointer-events: none;
 }
 
-.netzwerk-center__circle {
-  fill: var(--accent);
-  stroke: var(--accent-dark);
-  stroke-width: 1.5;
+/* Detail column, absent until a click */
+
+.netzwerk__detail-slot {
+  position: relative;
+  flex: 0 0 0;
+  overflow: hidden;
+  transition: flex-basis var(--transition-normal);
 }
 
-.netzwerk-center__label {
-  fill: var(--color-text-primary);
-  font-family: var(--font-ui);
-  font-weight: var(--weight-semibold);
-  font-size: 13px;
-  letter-spacing: 0.02em;
-  paint-order: stroke fill;
-  stroke: var(--surface);
-  stroke-width: 4px;
-  stroke-linejoin: round;
+.netzwerk__board--detail .netzwerk__detail-slot {
+  flex-basis: 300px;
 }
 
-/* Detail column */
+@media (prefers-reduced-motion: reduce) {
+  .netzwerk__detail-slot {
+    transition: none;
+  }
+}
 
+/* The column is taken out of the flow: in the flow its content set the height
+   of the board, so a selection with many roles pushed the drawing and the
+   primary action out of the viewport. Out of flow it is as tall as the drawing
+   beside it, and the flex column below keeps the action at its foot. */
 .netzwerk__detail {
-  flex: 0 0 300px;
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  display: flex;
+  flex-direction: column;
+  width: 300px;
   padding: var(--space-3) var(--space-4);
   background: var(--surface);
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
   font-size: var(--text-sm);
+  /* Every list in here is capped with „+N weitere", so the column has no
+     scrollbar; what is cut off is named in the tooltip of that chip. */
+  overflow: hidden;
 }
 
-.netzwerk__detail-title-row {
+
+.netzwerk__detail-head {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
   gap: var(--space-2);
-  margin-bottom: var(--space-1);
 }
 
-.netzwerk__detail-type {
+.netzwerk__detail-kind {
+  flex: 1 1 auto;
   font-size: var(--text-xs);
-  letter-spacing: 0.06em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--color-text-inverse);
-  padding: 1px var(--space-1-5);
-  border-radius: 3px;
+  color: var(--color-text-tertiary);
 }
 
-.netzwerk__detail-type--person { background: var(--chip-c-person-text); }
-.netzwerk__detail-type--werk { background: var(--chip-c-werk-text); }
-.netzwerk__detail-type--institution { background: var(--chip-c-institution-text); }
-.netzwerk__detail-type--ort { background: var(--chip-c-ort-text); }
+.netzwerk__detail-head--person .netzwerk__detail-kind { color: var(--chip-c-person-text); }
+.netzwerk__detail-head--institution .netzwerk__detail-kind { color: var(--chip-c-institution-text); }
+.netzwerk__detail-head--record .netzwerk__detail-kind { color: var(--accent); }
+
+.netzwerk__detail-close {
+  padding: 0 var(--space-1);
+  font-size: var(--text-lg);
+  line-height: 1;
+  color: var(--color-text-tertiary);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.netzwerk__detail-close:hover {
+  color: var(--accent);
+}
 
 .netzwerk__detail-title {
-  flex: 1 1 100%;
-  margin: 0;
+  margin: 0 0 var(--space-1);
   font-weight: var(--weight-semibold);
-  font-size: var(--text-xl);
+  font-size: var(--text-lg);
   color: var(--color-text-primary);
 }
 
@@ -274,8 +465,13 @@
   margin-bottom: var(--space-3);
 }
 
+/* A section gives way before the action at the foot does: it shrinks and clips
+   its own list rather than pushing „Im Bestand zeigen" out of the column. */
 .netzwerk__detail-section {
-  margin-bottom: var(--space-4);
+  flex: 0 1 auto;
+  min-block-size: 0;
+  margin-bottom: var(--space-3);
+  overflow: hidden;
 }
 
 .netzwerk__detail-subtitle {
@@ -294,66 +490,83 @@
   margin-top: var(--space-1);
 }
 
-.netzwerk__detail-note {
-  color: var(--color-text-primary);
-  line-height: var(--leading-normal);
-  margin: var(--space-2) 0;
-}
+/* Node and record lists of the column */
 
-.netzwerk__addfacet {
-  width: 100%;
-  margin: var(--space-2) 0 var(--space-3);
-  padding: 5px var(--space-2);
-  font-family: inherit;
-  font-size: var(--text-xs);
-  color: var(--accent);
-  background: var(--surface);
-  border: 1px solid var(--border-color);
-  border-radius: var(--border-radius);
-  cursor: pointer;
-}
-
-.netzwerk__addfacet:hover {
-  border-color: var(--accent);
-}
-
+.netzwerk__node-list,
 .netzwerk__record-list {
   list-style: none;
   margin: 0;
   padding: 0;
-  max-height: 320px;
-  overflow-y: auto;
+}
+
+.netzwerk__node-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1-5);
+  padding: 2px var(--space-1-5);
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.netzwerk__node-row:hover,
+.netzwerk__node-row:focus-visible {
+  background: var(--surface-2);
+  outline: none;
+}
+
+.netzwerk__node-row--more {
+  cursor: default;
+  padding-top: var(--space-1);
+}
+
+.netzwerk__node-row--more:hover {
+  background: none;
+}
+
+/* The family of a neighbour is its icon in its family colour, the same mark the
+   Bestand rows and the register heads carry, so the legend arises from sameness
+   (E-171, E-212). */
+.netzwerk__node-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.netzwerk__node-value {
+  font-variant-numeric: tabular-nums;
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
 }
 
 .netzwerk__record {
   display: grid;
   grid-template-columns: 1fr auto;
-  gap: 2px var(--space-2);
+  gap: 0 var(--space-2);
   padding: var(--space-1) var(--space-1-5);
   border-radius: 3px;
   cursor: pointer;
-  transition: background var(--transition-fast);
 }
 
-.netzwerk__record:hover {
+.netzwerk__record:hover,
+.netzwerk__record:focus-visible {
   background: var(--surface-2);
+  outline: none;
+}
+
+.netzwerk__record--more {
+  cursor: default;
+}
+
+.netzwerk__record--more:hover {
+  background: none;
 }
 
 .netzwerk__record-sig {
   font-family: var(--font-mono);
   font-size: var(--text-xs);
   color: var(--color-text-secondary);
-}
-
-/* Marke der annotierten Beziehung: derselbe gerade Strich wie in der Legende
-   der AgRelOn-Kante. Die Spur steht auch unmarkiert, damit die Signaturen
-   einer Liste in einer Flucht bleiben. */
-.netzwerk__record-mark {
-  display: inline-block;
-  width: 22px;
-  height: 10px;
-  margin-right: var(--space-1);
-  vertical-align: middle;
 }
 
 .netzwerk__record-date {
@@ -365,77 +578,68 @@
 
 .netzwerk__record-title {
   grid-column: 1 / -1;
-  font-weight: var(--weight-semibold);
   color: var(--color-text-primary);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-/* Legend markers, referenced by the staticLegend rows through markerClass */
-
-/* Ring swatches: empty circles matching the rings on the canvas. */
-.netzwerk__legend-dot {
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  justify-self: center;
+.nz-more {
+  color: var(--color-text-secondary);
 }
 
-.netzwerk__legend-dot--ring1 {
-  border: 1.8px solid var(--color-text-secondary);
+/* The one primary action of the column, in the accent-filled form the
+   application already uses for its single decisive button (.load-error__retry
+   in components.css). The export beside the drawing stays the quiet outline. */
+.netzwerk__bestand-btn {
+  flex: none;
+  width: 100%;
+  /* Pinned to the foot of the column: the sections above may clip, the one
+     action of the column may not. */
+  margin-block-start: auto;
+  padding: var(--space-1-5) var(--space-2);
+  font-family: inherit;
+  font-size: var(--text-xs);
+  color: var(--color-text-inverse);
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: background var(--transition-fast);
 }
 
-.netzwerk__legend-dot--ring2 {
-  border: 1.4px dashed var(--line-strong);
-}
-
-/* Line swatches: the straight and the curved line told apart. */
-.nz-legend__line {
-  display: inline-block;
-  width: 22px;
-  height: 10px;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: 22px 10px;
-  flex-shrink: 0;
-}
-
-.nz-legend__line--agrelon {
-  background-image: linear-gradient(var(--accent), var(--accent));
-  background-size: 22px 2px;
-}
-
-.nz-legend__line--cooc {
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 10'><path d='M 1 8 Q 11 -2 21 8' stroke='%234A5058' stroke-width='1.5' fill='none'/></svg>");
-}
-
-.nz-legend__qid {
-  display: inline-block;
-  justify-self: center;
-  width: 0;
-  height: 0;
-  border-left: 5px solid transparent;
-  border-right: 5px solid transparent;
-  border-bottom: 8px solid var(--color-match);
-  flex-shrink: 0;
+.netzwerk__bestand-btn:hover {
+  background: var(--accent-dark);
+  border-color: var(--accent-dark);
 }
 
 /* Breakpoint */
 
 /* The same threshold as the shell in sidebar.css: once the filter column sits
-   above the graph, the detail column has no room beside it. */
+   above the drawing, the detail column has no room beside it. */
 @container view-shell (width < 900px) {
-  .netzwerk__main {
+  .netzwerk__board {
     flex-direction: column;
+    height: auto;
   }
 
-  .netzwerk__detail {
+  .netzwerk__main {
+    overflow-y: auto;
+  }
+
+  .netzwerk__board--detail .netzwerk__detail-slot {
     flex-basis: auto;
     width: 100%;
   }
 
-  .netzwerk-svg {
-    height: 60vh;
+  /* Under the drawing the column has no height to be measured against, so it
+     goes back into the flow and grows with its content. */
+  .netzwerk__detail {
+    position: static;
+    width: 100%;
+  }
+
+  .netzwerk__bestand-btn {
+    margin-block-start: var(--space-2);
   }
 }

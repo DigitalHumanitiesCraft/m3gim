@@ -192,11 +192,15 @@ def test_anchors_cover_v2_feature_breadth():
 
 def test_xlsx_source_coverage_records(records):
     """Soft: at least 99 % of records have m3gim-ontology:xlsxSource. Folios are
-    admissible exceptions (they are metadata placeholders)."""
+    admissible exceptions (they are metadata placeholders), and so is a folio
+    record the pipeline derives over the pages of a sheet (B2): it stands for
+    no source row and can carry none."""
     total = 0
     with_source = 0
     for rec in records:
         if rec.get("@id", "").endswith("_Folio"):
+            continue
+        if rec.get("m3gim-ontology:derivedFolioRecord") is True:
             continue
         total += 1
         if isinstance(rec.get("m3gim-ontology:xlsxSource"), dict):

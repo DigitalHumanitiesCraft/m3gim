@@ -2,8 +2,8 @@
  * Die Karte schneidet mit dem geteilten Filter.
  *
  * Der stille Defekt, gegen den diese Datei steht: die Karte las aus dem
- * geteilten Filter nur Zeitfenster und Ort und zeichnete zu einem Personen-,
- * Dokumenttyp- oder Sicht-Schnitt unveraendert dieselben Punkte, waehrend die
+ * geteilten Filter nur Zeitfenster und Ort und zeichnete zu einem Personen-
+ * oder Dokumenttyp-Schnitt unveraendert dieselben Punkte, waehrend die
  * Filterleiste den Chip fuehrte. Die Ansicht behauptete damit einen Schnitt,
  * den sie nicht anwendete (Frontend-Audit 2026-09-04).
  *
@@ -14,8 +14,11 @@ import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
 
 import {
-  buildOccurrences, occurrencesInCut, isStayRole, aggregateCountries, sortOcc,
+  buildOccurrences, occurrencesInCut, placeRolesOf, sortOcc,
+  placeRoleScale, breakdownByRole, NO_ROLE,
 } from '../../docs/js/views/karte-data.js';
+import { REST_COLOR } from '../../docs/js/views/statistik-data.js';
+import { storeFromShipped } from './_shipped.mjs';
 
 function S(...ids) { return new Set(ids); }
 
@@ -28,7 +31,7 @@ function makeStore() {
     '@id': id,
     'rico:date': date,
     'm3gim-ontology:processingStatus': 'abgeschlossen',
-    'rico:hasOrHadLocation': [{ name: place, role: 'auffuehrungsort' }],
+    'rico:hasOrHadLocation': [{ name: place, role: { '@id': 'm3gim-vocab:performancePlace' } }],
   });
   const records = new Map([
     ['r1', rec('r1', '1952-07-25', 'Bayreuth')],
@@ -108,59 +111,57 @@ describe('occurrencesInCut', () => {
 });
 
 // ---------------------------------------------------------------------------
-// E-224: Reichweite zaehlt Aufenthalte, keine Nennungen
+// Die Ortsrollen der Verknuepfungs-Facette schneiden die Belege
 // ---------------------------------------------------------------------------
 
-describe('isStayRole', () => {
-  test('performative und institutionelle Rollen belegen einen Aufenthalt', () => {
-    for (const role of ['m3gim-vocab:performance', 'm3gim-vocab:guestPerformance',
-      'm3gim-vocab:performancePlace', 'm3gim-vocab:premiere', 'm3gim-vocab:rehearsal',
-      'm3gim-vocab:dressRehearsal', 'm3gim-vocab:season']) {
-      assert.equal(isStayRole(role), true, role);
-    }
-  });
-
-  test('Wohnort und Vertragsort zaehlen als Aufenthalt, in beiden Schreibformen', () => {
-    for (const role of ['m3gim-vocab:residencePlace', 'wohnort',
-      'm3gim-vocab:contractPlace', 'vertragsort']) {
-      assert.equal(isStayRole(role), true, role);
-    }
-  });
-
-  test('Nennung, Korrespondenz, Entstehung und rollenlose Belege nicht', () => {
-    for (const role of ['m3gim-vocab:mentioned', 'm3gim-vocab:dispatch',
-      'm3gim-vocab:receiving', 'm3gim-vocab:departure', 'm3gim-vocab:destinationPlace',
-      'm3gim-vocab:creation', 'm3gim-vocab:framingEvent',
-      'm3gim-vocab:publicationDate', null]) {
-      assert.equal(isStayRole(role), false, String(role));
-    }
+describe('placeRolesOf', () => {
+  test('nur die Ortsrollen zaehlen, der blosse Typ nennt keine', () => {
+    assert.equal(placeRolesOf({}), null);
+    assert.equal(placeRolesOf({ verknuepfung: ['ort'] }), null,
+      'Der Typ ort allein nennt keine Rolle und laesst jeden Beleg stehen.');
+    assert.equal(placeRolesOf({ verknuepfung: ['person:m3gim-vocab:singer'] }), null,
+      'Eine Personenrolle sagt nichts ueber die Orte eines Dokuments.');
+    assert.deepEqual([...placeRolesOf({ verknuepfung: [
+      'ort:m3gim-vocab:guestPerformance', 'person:m3gim-vocab:singer',
+      'ort:m3gim-vocab:dispatch'] })],
+      ['m3gim-vocab:guestPerformance', 'm3gim-vocab:dispatch']);
   });
 });
 
-describe('aggregateCountries', () => {
-  const cityCountry = new Map([['bayreuth', 'DE'], ['wien', 'AT'], ['madrid', 'ES']]);
-  const occ = [
-    { place: 'Bayreuth', recordId: 'r1', roleId: 'm3gim-vocab:guestPerformance' },
-    { place: 'Wien', recordId: 'r2', roleId: 'm3gim-vocab:season' },
-    { place: 'Madrid', recordId: 'r3', roleId: 'm3gim-vocab:mentioned' },
-    { place: 'Madrid', recordId: 'r4', roleId: 'm3gim-vocab:dispatch' },
-  ];
+describe('occurrencesInCut mit gewaehlter Ortsrolle', () => {
+  // Aufgabe 2 des Aufgabensatzes: nur die Orte mit der Rolle des Gastspiels.
+  // Ohne diesen Schnitt zeichnete die Karte zusaetzlich den Absendeort
+  // desselben Dokuments und die Aufgabe waere nicht loesbar.
+  function roleStore() {
+    const store = makeStore();
+    store.records.get('r1')['rico:hasOrHadLocation'] = [
+      { name: 'Bayreuth', role: { '@id': 'm3gim-vocab:guestPerformance' } },
+      { name: 'Wien', role: { '@id': 'm3gim-vocab:dispatch' } },
+    ];
+    store.locations.get('Wien').records.add('r1');
+    return store;
+  }
 
-  test('ein nur genanntes Land faellt aus der Reichweite', () => {
-    const codes = aggregateCountries(occ, cityCountry).map(r => r.code);
-    assert.deepEqual(codes, ['AT', 'DE'], (
-      'Erwaehnung und Absendung sind kein Aufenthalt; Spanien stuende sonst in '
-      + 'der Reichweite, ohne dass jemand dort war (E-224).'
-    ));
+  test('die gewaehlte Rolle laesst nur ihre Belege stehen', () => {
+    const store = roleStore();
+    const occ = buildOccurrences(store);
+    assert.deepEqual(placesOf(occurrencesInCut(store, occ,
+      { verknuepfung: ['ort:m3gim-vocab:guestPerformance'] })), ['Bayreuth']);
   });
 
-  test('Gastspiel und Spielzeit bleiben mit ihrer Dokumentzahl', () => {
-    const rows = aggregateCountries(occ, cityCountry);
-    assert.deepEqual(rows.map(r => [r.code, r.count]), [['AT', 1], ['DE', 1]]);
+  test('ohne Rollenwahl bleiben alle Belege der Dokumente im Schnitt', () => {
+    const store = roleStore();
+    const occ = buildOccurrences(store);
+    assert.deepEqual(placesOf(occurrencesInCut(store, occ, { verknuepfung: ['ort'] })),
+      ['Bayreuth', 'Graz', 'Wien', 'Wien']);
   });
 
-  test('ohne Aufenthaltsbeleg bleibt die Liste leer statt der Nennungen', () => {
-    assert.deepEqual(aggregateCountries(occ.slice(2), cityCountry), []);
+  test('zwei Rollen wirken als ODER', () => {
+    const store = roleStore();
+    const occ = buildOccurrences(store);
+    assert.deepEqual(placesOf(occurrencesInCut(store, occ, {
+      verknuepfung: ['ort:m3gim-vocab:guestPerformance', 'ort:m3gim-vocab:dispatch'],
+    })), ['Bayreuth', 'Wien']);
   });
 });
 
@@ -201,5 +202,83 @@ describe('datiert und undatiert im Zeitfenster', () => {
   test('die Beleg-Liste eines Orts stellt die datierten voran', () => {
     const order = sortOcc(occ.filter(o => o.place === 'Zürich')).map(o => o.recordId);
     assert.deepEqual(order, ['r1', 'r2', 'r3']);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// F3: the Zeitanker of the Datenschicht dates a place Beleg
+// ---------------------------------------------------------------------------
+
+describe('Zeitanker des Ortsbelegs am ausgelieferten Datensatz', () => {
+  test('das Verknuepfungsdatum geht der Quellendatierung vor', async () => {
+    const store = await storeFromShipped();
+    const occ = buildOccurrences(store);
+    // UAKUG/NIM_007 11 traegt die Quellendatierung 1968-11-18 und den Anker
+    // 1959-09-05. Nach rico:date datiert, schnitte die Karte den Record neun
+    // Jahre neben Chronik und Netzwerk.
+    const rec = store.records.get('m3gim-data:NIM_007_11');
+    assert.ok(rec, 'der Pruefrecord fehlt im Datenstand');
+    assert.equal(rec['rico:date'], '1968-11-18');
+    const belege = occ.filter(o => o.recordId === 'm3gim-data:NIM_007_11'
+      && o.source === 'loc');
+    assert.ok(belege.length > 0, 'der Pruefrecord traegt keinen Ortsbeleg');
+    for (const o of belege) {
+      assert.equal(String(o.date).slice(0, 4), '1959',
+        `${o.place} datiert auf ${o.date} statt auf den Anker 1959`);
+    }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// F1: der Knoten schluesselt nach Ortsrolle auf, nicht mehr nach Sicht
+// ---------------------------------------------------------------------------
+
+describe('placeRoleScale', () => {
+  test('die Rangfolge steht ueber dem ganzen Bestand, die sechs Farben vorne', async () => {
+    const store = await storeFromShipped();
+    const scale = placeRoleScale(buildOccurrences(store));
+    const coloured = [...scale.values()].filter(e => e.color !== REST_COLOR);
+    assert.equal(coloured.length, 6, 'die Tokens geben sechs Kategorienfarben her');
+    assert.equal(coloured[0].label, 'Vertragsort',
+      'die haeufigste Ortsrolle des ausgelieferten Datensatzes fuehrt die Skala an');
+    for (let i = 1; i < coloured.length; i++) {
+      assert.ok(coloured[i - 1].count >= coloured[i].count, 'die Skala ist nicht sortiert');
+    }
+    assert.equal(new Set(coloured.map(e => e.color)).size, 6,
+      'zwei Rollen in derselben Farbe waeren als dieselbe zu lesen');
+  });
+
+  test('ein Beleg ohne Rolle nimmt den Grauton, keine der sechs Farben', async () => {
+    // Abwesenheit ist keine Kategorie (Designregel 4).
+    const store = await storeFromShipped();
+    const scale = placeRoleScale(buildOccurrences(store));
+    const none = scale.get(NO_ROLE);
+    assert.ok(none && none.count > 0, 'der Test hat keinen Gegenstand');
+    assert.equal(none.color, REST_COLOR);
+    assert.equal(none.label, 'ohne Rolle');
+  });
+});
+
+describe('breakdownByRole', () => {
+  const occ = [
+    { roleId: 'm3gim-vocab:guestPerformance', roleLabel: 'gastspiel' },
+    { roleId: 'm3gim-vocab:guestPerformance', roleLabel: 'gastspiel' },
+    { roleId: 'm3gim-vocab:dispatch', roleLabel: 'absendung' },
+    { roleId: null, role: null, roleLabel: '' },
+  ];
+
+  test('jede Rolle behaelt ihre Zeile, auch jenseits der sechs Farben', () => {
+    // Aufgabe 2 fragt, welche Rollen die uebrigen Orte tragen; eine Rolle, die
+    // in einen Sammelposten faellt, waere dort nicht mehr zu benennen.
+    const scale = placeRoleScale(occ);
+    const rows = breakdownByRole(occ, scale);
+    assert.deepEqual(rows.map(r => [r.label, r.count]),
+      [['Gastspiel', 2], ['Absendung', 1], ['ohne Rolle', 1]]);
+  });
+
+  test('ohne Skala faellt jede Zeile auf den Grauton zurueck statt zu fehlen', () => {
+    const rows = breakdownByRole(occ, null);
+    assert.equal(rows.length, 3);
+    assert.ok(rows.every(r => r.color === REST_COLOR));
   });
 });

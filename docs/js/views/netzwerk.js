@@ -1,499 +1,668 @@
 /**
- * Netzwerk — das Beziehungsgeflecht um eine Fokus-Entitaet ueber die
- * Knotentypen Person, Werk, Institution und Ort (E-160, vereinigt die frueheren
- * Ansichten Netzwerk und Verknuepfungen).
+ * Netzwerk, the sources of the result set as a network (F2, decided on the
+ * prototype of 2026-09-05, E-256, E-257, E-259).
  *
- * Steht Malaniuk im Fokus und ist nur der Knotentyp Person eingeschaltet, ist
- * das Bild das alte konzentrische Personennetz: Ringe nach Evidenzstaerke,
- * gerade Radialen fuer annotierte AgRelOn-Beziehungen, geschwungene Baender
- * fuer Ko-Okkurrenz.
+ * The overview is the two-mode network: every actor of the cut and every linked
+ * record is a node, every mention an edge, one to one with the
+ * Verknüpfungstabelle. The switch in the filter column takes the record nodes
+ * away, leaving the person projection in which two actors share an edge as soon
+ * as a record names both. The creator of the fonds is no node, she stands on
+ * nearly every record and would join everything to everything. A recorded
+ * AgRelOn relation is no edge but a mark at the counterpart node, because its
+ * other end is exactly that creator.
  *
- * Bedienung. Fokus, Knotentypen, Regler und Legende stehen in der einen linken
- * Filterspalte (`ui/sidebar.js`); im Bild liegen nur die Zoom-Knoepfe. Ein Klick
- * auf einen Knoten macht ihn zum Fokus, das Detail rechts zeigt immer die
- * Fokus-Entitaet mit ihren datengedeckten Feldern und ihrer Belegliste.
+ * Operation. The click is what opens anything. The layout stays still, the node
+ * and its neighbourhood step forward, and the detail column slides in from the
+ * right. A click on empty ground or Escape closes it again.
  *
- * Determinismus: Positionen aus reinen Funktionen in `_netzwerk-geometry.js`,
- * keine Force-Simulation (design.md Regel 15).
+ * Determinism: projection and layout are pure functions in
+ * `_netzwerk-geometry.js`, run to rest before the picture is drawn, so a
+ * highlight never moves a node.
  */
 
 import { el, clear } from '../utils/dom.js';
 import { formatSignatur } from '../utils/format.js';
 import { matchesQuery } from '../utils/normalize.js';
-import { logStamp } from '../utils/env.js';
+import { logStamp, IS_DEV } from '../utils/env.js';
 import { navigateToView } from '../ui/router.js';
+import { splitHash } from '../ui/filter-url.js';
+import { familyIcon } from '../ui/family-icons.js';
 import { buildRoleChip } from './record-chips.js';
 import { AGRELON_LABELS, WIKIDATA_ICON_SVG } from '../data/constants.js';
 import {
-  buildGraph, computeLayout, computeCoOccurrence, focusRecords,
-  derivePersonKategorie, isMalaniuk, isPureComposer,
-  NODE_TYPES, NODE_TYPE_META, NETZWERK_KATEGORIEN, DEFAULT_FOCUS, DEFAULT_TOP_N,
+  buildTwoMode, buildProjection, layoutGraph, graphToGEXF,
+  neighboursOf, narrowGraph, nodeId, recordLabel, NODE_TYPE_META,
 } from './_netzwerk-geometry.js';
 import {
-  renderCanvasSlot, renderDetailSlot, renderZoomControls, drawCanvas,
-  CANVAS_WIDTH, CANVAS_HEIGHT,
+  renderCanvasSlot, renderZoomControls, drawGraph, applySelection, debugGeometry,
+  STAGE_WIDTH, STAGE_HEIGHT,
 } from './_netzwerk-canvas.js';
 import { createSidebar, viewShell } from '../ui/sidebar.js';
 import { onViewNavigate } from '../ui/events.js';
-import { recordsFor, baseIds, yearBounds } from '../data/records-for.js';
+import { recordsFor, baseIds, yearBounds, yearOfId } from '../data/records-for.js';
 import { getFilter, setFilter, facetValues } from '../ui/filter-state.js';
 
-/** Facetten, die der Log-Stempel einzeln nennt. */
+/** Facets the log stamp names one by one. */
 const FACETS = ['person', 'ort', 'werk', 'institution'];
 
-/** Knotentyp -> Facette des geteilten Filters. */
-const FACET_FOR_NODE = { person: 'person', ort: 'ort', werk: 'werk', institution: 'institution' };
+/** Node type → facet of the shared filter. */
+const FACET_FOR_NODE = { person: 'person', institution: 'institution' };
+
+/** Caps of the detail column, so it fits its area instead of scrolling (E-259).
+ *  Measured against the tallest selection of the fonds, the hub with thirty-six
+ *  documents, at the drawing height of a 900 pixel window. */
+const CAP = { roles: 6, relations: 3, neighbours: 7, actors: 8 };
+
+/** Query parameter carrying the selected node, so a finding is citable. */
+const SELECTION_PARAM = 'knoten';
 
 let _store = null;
 let _sidebar = null;
 let _redraw = () => {};
 
-// View-lokaler Zustand. Fokus, Knotentypen und Regler verankern das Bild und
-// setzen keinen Dokumentschnitt, gehoeren also nicht in den geteilten Filter.
+// View-local state. The two switches anchor the picture and cut no documents,
+// so they stay out of the shared filter.
 const local = {
-  focus: { ...DEFAULT_FOCUS },
-  types: { person: true, werk: true, institution: true, ort: true },
-  topN: DEFAULT_TOP_N,
-  minShared: 3,
-  hiddenCategories: new Set(),
+  showRecords: true,
+  fadeSingle: false,
+  selection: null,   // { kind: 'node'|'edge', id }
 };
 
-// Letzter gezeichneter Stand, damit Sidebar-Zaehlstand, Detail und Log-Stempel
-// dieselben Zahlen nennen wie das Bild.
-let _last = { result: null, graph: null, layout: null };
+let _last = { result: null, graph: null, projection: null };
 
-// Bruecke zur Canvas-Ebene: drawCanvas setzt die Felder, die Zoom-Knoepfe lesen sie.
+/** Time of the first renderNetzwerk, the start of the first-draw measurement. */
+let _t0 = 0;
+
 const _zoomRefs = { behavior: null, svg: null };
 
-// Ein Sprung aus den Indizes nennt seine Fokus-Entitaet im Navigationskontext
-// (E-226). Der Kanal wird beim Import belegt, damit der Fokus auch dann steht,
-// wenn die Ansicht erst danach zum ersten Mal zeichnet; _redraw ist bis dahin
-// eine Leerfunktion.
+// A jump from the Indizes names its entity in the navigation context (E-226);
+// here it selects that node, the view has no focus entity of its own.
+//
+// The router uses the same channel for the view parameters of a hash that
+// changed while this tab was already open. `renderNetzwerk` runs once per tab,
+// so `knoten=` would otherwise only ever be read on the first draw and a link
+// pasted into the open view would select nothing.
 onViewNavigate('netzwerk', (detail) => {
+  if (detail && detail.viewParams !== undefined) { selectFromHash(); return; }
   const focus = detail && detail.focus;
-  if (!focus || !focus.type || !focus.name) return;
-  local.focus = { type: focus.type, name: focus.name };
+  if (!focus || !focus.name) return;
+  local.selection = { kind: 'node', id: nodeId(focus.type === 'institution' ? 'institution' : 'person', focus.name) };
   _redraw();
 });
 
+/** The node named in the hash, applied to the drawn picture. Neither projection
+ *  nor layout is recomputed, so the picture stands still while the selection
+ *  moves; a node the current cut does not carry selects nothing. */
+function selectFromHash() {
+  const wanted = selectionFromHash();
+  const current = local.selection;
+  if (wanted && current && wanted.id === current.id) return;
+  if (!_last.graph) { local.selection = wanted; return; }
+  if (wanted && !_last.graph.byId.has(wanted.id)) return;
+  select(wanted);
+}
+
 export function renderNetzwerk(store, container) {
   _store = store;
+  if (!_t0) _t0 = performance.now();
   clear(container);
+  local.selection = local.selection || selectionFromHash();
 
   const stage = el('div', { className: 'netzwerk__stage' },
-    renderZoomControls(_zoomRefs), renderCanvasSlot());
-  const detail = renderDetailSlot();
-  const board = el('div', { className: 'netzwerk__main view-main__stage' }, stage, detail);
-  const main = el('div', { className: 'view-main view-main--stacked' }, board);
+    renderZoomControls(_zoomRefs), exportButton(), renderCanvasSlot());
+  const detail = el('div', { className: 'netzwerk__detail-slot', id: 'netzwerk-detail' });
+  const board = el('div', { className: 'netzwerk__board' }, stage, detail);
+  const main = el('div', { className: 'view-main view-main--stacked' },
+    viewHead(), el('div', { className: 'netzwerk__main view-main__stage' }, board));
 
   if (_sidebar) _sidebar.destroy();
   _sidebar = createSidebar(store, {
     yearSpan: yearBounds(store),
     getCount: () => (_last.result ? _last.result.ids.size : null),
     search: { placeholder: 'Name' },
-    sections: [focusSection(), typeSection(), reglerSection()],
-    legend: [kategorienSection(), legendeSection()],
-    // Ein Weg fuer alles: die Spalte meldet jede Filteraenderung, eigene wie
-    // fremde (etwa einen Ort-Klick in der Karte), ueber onChange.
-    onChange: () => redraw(),
+    sections: [knotenSection()],
+    // A filter change answers a different question than the one the open
+    // detail asked, so the selection goes with it.
+    onChange: () => { local.selection = null; _redraw(); },
   });
   main.insertBefore(_sidebar.strip, main.firstChild);
 
   container.appendChild(viewShell(_sidebar.element, main));
 
   _redraw = () => {
-    draw(detail);
+    draw();
     _sidebar.update();
+    paintHead();
   };
   _redraw();
-}
 
-function redraw() { _redraw(); }
-
-// ---------------------------------------------------------------------------
-// Sidebar-Sektionen der Ansicht
-// ---------------------------------------------------------------------------
-
-/** Alle Entitaeten mit Belegen als Vorschlagsliste, haeufigste zuerst. Der
- *  Typ steht als Praefix am Vorschlag, wie in der Entitaetswahl der Karte. */
-function focusOptions() {
-  const maps = { person: 'persons', werk: 'works', institution: 'organizations', ort: 'locations' };
-  const out = [];
-  for (const type of NODE_TYPES) {
-    const map = _store[maps[type]];
-    if (!map) continue;
-    for (const [name, entry] of map) {
-      const count = entry && entry.records ? entry.records.size : 0;
-      if (count === 0) continue;
-      if (type === 'person' && isPureComposer(name, entry)) continue;
-      out.push({ value: `${type}|${name}`, label: `${NODE_TYPE_META[type].label} · ${name}`, count });
-    }
+  // One listener for the life of the page: renderNetzwerk runs again on every
+  // tab return, and a second registration would close the detail twice.
+  if (!_escapeBound) {
+    document.addEventListener('keydown', onEscape);
+    _escapeBound = true;
   }
-  out.sort((a, b) => b.count - a.count || a.label.localeCompare(b.label, 'de'));
-  return out;
 }
 
-/** Die Fokus-Entitaet verankert den Graph und traegt genau einen Wert. */
-function focusSection() {
-  const options = focusOptions();
-  return {
-    title: 'Fokus',
-    controls: [{
-      kind: 'facet', key: 'fokus', single: true,
-      options: () => options,
-      selected: () => [`${local.focus.type}|${local.focus.name}`],
-      onSelect: (values) => {
-        const raw = values[0];
-        if (!raw) return;
-        const [type, ...rest] = raw.split('|');
-        local.focus = { type, name: rest.join('|') };
-        redraw();
-      },
-    }],
-  };
+let _escapeBound = false;
+
+function onEscape(ev) {
+  if (ev.key !== 'Escape' || !local.selection) return;
+  if (!document.getElementById('netzwerk-detail')) return;
+  select(null);
 }
+
+// ---------------------------------------------------------------------------
+// View head: the coverage line and the symbol legend
+// ---------------------------------------------------------------------------
+
+let _coverage = null;
 
 /**
- * Knotentypen als Toggle-Zeilen. Jede Zeile beziffert, wie viele der Kandidaten
- * gezeigt werden, damit die Kappung am Ort ihrer Wirkung steht.
+ * The seven signs of the drawing, one word each, the rest in the tooltips. The
+ * legend stands in the view head and not in the picture, where it would take
+ * area from the drawing (Projektleitung, 2026-09-05, superseding the rule that
+ * the tooltips alone carry it).
  */
-function typeSection() {
-  return {
-    title: 'Knotentypen',
-    controls: [{
-      kind: 'custom', className: 'netzwerk__types',
-      build: region => paintTypes(region),
-      update: region => paintTypes(region),
-    }],
-  };
-}
+const LEGEND = [
+  { mark: 'dot', kind: 'person', label: 'Person',
+    tip: 'Ein Akteur des Schnitts; die Größe ist die Zahl seiner Dokumente.' },
+  { mark: 'dot', kind: 'institution', label: 'Institution',
+    tip: 'Haus, Festival, Sender oder Ensemble, in derselben Lesart wie eine Person.' },
+  { mark: 'dot', kind: 'record', label: 'Dokument',
+    tip: 'Ein Datensatz des Schnitts; die Größe ist die Zahl seiner Beteiligten.' },
+  { mark: 'dot', kind: 'relation', label: 'Beziehung',
+    tip: 'Ring am Knoten: eine erfasste Beziehung zur Nachlassbildnerin, belegt in der Detailspalte.' },
+  { mark: 'line', kind: 'mention', label: 'Erwähnt',
+    tip: 'Nennung ohne eigene Funktion; die Rolle steht im Tooltip der Kante.' },
+  { mark: 'line', kind: 'role', label: 'Rolle',
+    tip: 'Nennung mit erfasster Rolle, etwa Sänger, Dirigent oder Veranstalter.' },
+  { mark: 'dot', kind: 'focus', label: 'Auswahl',
+    tip: 'Der angeklickte Knoten und seine Nachbarschaft; alles andere tritt zurück.' },
+];
 
-function paintTypes(region) {
-  clear(region);
-  const stats = _last.graph ? _last.graph.stats : null;
-  for (const t of NODE_TYPES) {
-    const on = local.types[t];
-    const shown = stats && stats.byType ? (stats.byType[t] || 0) : 0;
-    const total = stats && stats.candidates ? (stats.candidates[t] || 0) : 0;
-    const dot = el('span', { className: 'fs-typerow__dot' });
-    dot.style.background = NODE_TYPE_META[t].color;
-    const tip = on
-      ? `Gezeigt werden die ${shown} stärksten von ${total} Kandidaten dieses Typs.`
-        + (t === 'person' ? ' Personenknoten tragen die Farbe ihrer Kategorie.' : '')
-      : 'Dieser Knotentyp ist ausgeblendet.';
-    region.appendChild(el('button', {
-      className: 'fs-typerow' + (on ? '' : ' fs-typerow--off'),
-      type: 'button', 'aria-pressed': String(on),
-      dataset: { type: t, tip, tipWrap: '', tipPos: 'bottom-left' },
-      onClick: () => { local.types[t] = !local.types[t]; redraw(); },
+function viewHead() {
+  _coverage = el('span', { className: 'netzwerk__coverage' });
+  const legend = el('ul', { className: 'netzwerk__legend', 'aria-label': 'Zeichenerklärung' });
+  for (const item of LEGEND) {
+    legend.appendChild(el('li', {
+      className: 'netzwerk__legend-item',
+      dataset: { tip: item.tip, tipWrap: '', tipPos: 'bottom' },
     },
-      dot,
-      el('span', { className: 'fs-typerow__label' }, NODE_TYPE_META[t].label),
-      el('span', { className: 'fs-typerow__count' }, on ? `${shown} von ${total}` : 'aus')));
+      el('span', {
+        className: `netzwerk__legend-${item.mark} netzwerk__legend-${item.mark}--${item.kind}`,
+        'aria-hidden': 'true',
+      }),
+      item.label));
   }
+  return el('div', { className: 'netzwerk__head' }, _coverage, legend);
 }
 
-function reglerSection() {
+/** The coverage line counts the linked records of the cut against all records
+ *  of the fonds, never against themselves: a share of itself would say nothing
+ *  about how much of the Bestand the net can reach at all. What the net can
+ *  reach, the linked records, and the data state stand in the tooltip. */
+function paintHead() {
+  if (!_coverage) return;
+  const shown = _last.result ? _last.result.ids.size : 0;
+  const linked = baseIds(_store).size;
+  const total = _store.allRecords.length;
+  _coverage.textContent = `${shown} von ${total} Dokumenten des Bestands`;
+  Object.assign(_coverage.dataset, {
+    tip: `${linked} Dokumente des Bestands tragen eine Verknüpfung und erreichen`
+      + ` damit das Netz. Datenstand ${(_store.exportDate || '').slice(0, 10)}.`,
+    tipWrap: '',
+  });
+}
+
+// ---------------------------------------------------------------------------
+// The two view controls
+// ---------------------------------------------------------------------------
+
+/** The view section opens collapsed; its state stands in the picture, so
+ *  folding it costs no information (Projektleitung, 2026-09-05). */
+const startsCollapsed = { collapsible: true, collapsed: () => true };
+
+function knotenSection() {
+  const stats = () => (_last.graph ? _last.graph.stats : null);
   return {
-    title: 'Regler',
+    title: 'Knoten',
+    ...startsCollapsed,
+    tip: () => {
+      const s = stats();
+      if (!s) return '';
+      return `${s.actors} Akteure, ${s.recordNodes} Dokumentknoten, ${s.edges} Kanten.`;
+    },
     controls: [
-      { kind: 'slider', label: 'Knoten je Typ', min: 6, max: 48, step: 6,
-        value: () => local.topN,
-        onChange: v => { local.topN = v || DEFAULT_TOP_N; redraw(); } },
-      { kind: 'slider', label: 'Verkn. ab (gem. Dok.)', min: 2, max: 12,
-        value: () => local.minShared,
-        onChange: v => { local.minShared = v || 2; redraw(); } },
+      { kind: 'toggle',
+        label: () => {
+          const s = stats();
+          return s && local.showRecords
+            ? `Dokumente als Knoten · ${s.recordNodes}`
+            : 'Dokumente als Knoten';
+        },
+        tip: () => 'Ein Dokument steht als Quadrat im Netz, seine Größe ist die Zahl'
+          + ' seiner Beteiligten. Ohne Dokumentknoten steht die Personenprojektion,'
+          + ' in der zwei Akteure eine Kante teilen, sobald ein Dokument beide nennt.',
+        value: () => local.showRecords,
+        onChange: v => { local.showRecords = v; local.selection = null; _redraw(); } },
+      { kind: 'toggle',
+        label: () => {
+          const s = stats();
+          return s ? `Einzelbelege blass · ${s.single}` : 'Einzelbelege blass';
+        },
+        tip: () => 'Akteure mit genau einem Dokument treten zurück; entfernt wird keiner.',
+        value: () => local.fadeSingle,
+        onChange: v => { local.fadeSingle = v; _redraw(); } },
     ],
   };
 }
 
-/**
- * Personen-Kategorien als Filter. Die Zahl nennt die Personen des Bestands je
- * Kategorie, nicht die des aktuellen Schnitts: die Chipleiste steht damit
- * stabil, waehrend der Fokus wechselt.
- */
-function kategorienSection() {
-  const counts = new Map();
-  for (const [name, entry] of _store.persons) {
-    if (isMalaniuk(name, entry) || isPureComposer(name, entry)) continue;
-    if (!entry.records || entry.records.size === 0) continue;
-    const k = derivePersonKategorie(entry);
-    counts.set(k, (counts.get(k) || 0) + 1);
+function exportButton() {
+  return el('button', {
+    className: 'nz-export-btn', type: 'button',
+    dataset: { tip: 'Das gezeichnete Netz als GEXF-Datei laden', tipPos: 'bottom' },
+    'aria-label': 'Netzwerk als GEXF laden',
+    onClick: () => exportGEXF(),
+  }, '↓ GEXF');
+}
+
+function exportGEXF() {
+  if (!_last.graph) return;
+  const xml = graphToGEXF(_last.graph, _store.exportDate || '');
+  const blob = new Blob([xml], { type: 'application/gexf+xml' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `m3gim-netzwerk-${(_store.exportDate || '').slice(0, 10) || 'export'}.gexf`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ---------------------------------------------------------------------------
+// The selection in the address bar
+// ---------------------------------------------------------------------------
+
+function selectionFromHash() {
+  const { query } = splitHash(window.location.hash);
+  for (const part of query.split('&')) {
+    const eq = part.indexOf('=');
+    // The node id carries a colon and may carry a comma; only the first
+    // separator is one, everything behind it is the value.
+    if (eq > 0 && part.slice(0, eq) === SELECTION_PARAM) {
+      const value = part.slice(eq + 1);
+      if (value) return { kind: 'node', id: decodeURIComponent(value) };
+    }
   }
-  const items = [...counts.entries()]
-    .sort((a, b) => b[1] - a[1])
-    .map(([kat, count]) => ({
-      id: kat, label: kat, count,
-      color: NETZWERK_KATEGORIEN[kat] || NETZWERK_KATEGORIEN.Andere,
-      tip: 'Personen dieser Kategorie im Bestand',
-    }));
-  return {
-    title: 'Kategorien',
-    controls: [{
-      kind: 'legend', items,
-      isActive: kat => !local.hiddenCategories.has(kat),
-      onToggle: kat => {
-        if (local.hiddenCategories.has(kat)) local.hiddenCategories.delete(kat);
-        else local.hiddenCategories.add(kat);
-        redraw();
-      },
-    }],
-  };
+  return null;
 }
 
-function legendeSection() {
-  return {
-    title: 'Legende',
-    controls: [{
-      kind: 'staticLegend',
-      rows: [
-        { markerClass: 'nz-legend__line nz-legend__line--agrelon',
-          html: '<strong>gerade Linie</strong> · AgRelOn, <em>explizit annotiert</em>' },
-        { markerClass: 'nz-legend__line nz-legend__line--cooc',
-          html: '<strong>geschwungene Linie</strong> · Ko-Okkurrenz, <em>aus Dokumenten abgeleitet</em>' },
-        { markerClass: 'netzwerk__legend-dot netzwerk__legend-dot--ring1',
-          html: '<strong>innerer Ring</strong> · Beziehung annotiert oder Wikidata + ≥ 5 Dok.' },
-        { markerClass: 'netzwerk__legend-dot netzwerk__legend-dot--ring2',
-          html: '<strong>äußerer Ring</strong> · Ko-Präsenz im Dokument' },
-        { markerClass: 'nz-legend__qid', html: 'Wikidata-verknüpft (Stern am Knoten)' },
-      ],
-    }],
-  };
+/** The selected node into the query part, beside the shared filter the router
+ *  writes there. The router carries the parameter through its own rewrites
+ *  (filter-url.js, viewParams); dropping it on a filter change is this view's
+ *  decision, made in the sidebar callback, because the selection goes with the
+ *  cut it was made in. */
+function writeSelectionToHash() {
+  const { path, query } = splitHash(window.location.hash);
+  const parts = query.split('&').filter(p => p && !p.startsWith(SELECTION_PARAM + '='));
+  if (local.selection && local.selection.kind === 'node') {
+    parts.push(SELECTION_PARAM + '=' + encodeURIComponent(local.selection.id));
+  }
+  const next = '#' + path + (parts.length ? '?' + parts.join('&') : '');
+  if (window.location.hash !== next) history.replaceState(null, '', next);
 }
 
 // ---------------------------------------------------------------------------
-// Zeichnen
+// Drawing
 // ---------------------------------------------------------------------------
 
 /**
- * Der Schnitt der Ansicht: die Dokumentmenge des Fokus, beschnitten durch den
- * geteilten Filter. Die Basis ist der Schnitt der Fokus-Records mit der
- * Dokumentbasis, damit Zaehlstand und Bild dieselbe Grundmenge meinen wie jede
- * andere Ansicht.
+ * A selection recomputes neither projection nor layout. It toggles the nodes it
+ * touches, repaints the edge layer once and builds the detail column; a full
+ * rebuild cost a third of a second and made the click visibly slow.
  */
-function resolveResult(filter) {
-  const base = new Set();
-  const inBase = baseIds(_store);
-  for (const id of focusRecords(_store, local.focus)) if (inBase.has(id)) base.add(id);
-  return recordsFor(_store, filter, { base });
+function select(selection) {
+  local.selection = selection;
+  applySelection(selection);
+  drawDetail();
+  writeSelectionToHash();
 }
 
-function draw(detail) {
+const actions = {
+  selectNode: (node) => select({ kind: 'node', id: node.id }),
+  selectEdge: (edge) => select({ kind: 'edge', id: edge.id }),
+  clearSelection: () => { if (local.selection) select(null); },
+};
+
+/**
+ * The person-to-person projection of the current result set, built at the first
+ * use and kept until the result set changes. With record nodes drawn it is only
+ * the neighbour list of the detail column, so building it on every draw spent a
+ * tenth of a second on a picture that does not show it.
+ */
+function projectionOf() {
+  if (!_last.projection) {
+    _last.projection = buildProjection(_store, { records: _last.result.ids });
+  }
+  return _last.projection;
+}
+
+/**
+ * The free text thins out the picture without moving the count: it names
+ * actors, not documents. A record whose actors all fell out therefore leaves
+ * with them, otherwise it stood in the picture as an isolated square that
+ * answers nothing.
+ */
+function narrowByQuery(full, query) {
+  const named = narrowGraph(full, n => n.kind === 'record' || matchesQuery(n.name, query));
+  return narrowGraph(named,
+    n => n.kind !== 'record' || (named.edgesByNode.get(n.id) || []).length > 0);
+}
+
+function draw() {
+  const tStart = performance.now();
   const f = getFilter();
-  const result = resolveResult(f);
-  const graph = buildGraph(_store, {
-    focus: local.focus,
-    records: result.ids,
-    types: local.types,
-    topN: local.topN,
-  });
+  const result = recordsFor(_store, f, { base: baseIds(_store) });
+  const full = local.showRecords
+    ? buildTwoMode(_store, { records: result.ids })
+    : buildProjection(_store, { records: result.ids });
 
-  // Kategorie-Ausblendung und Freitext wirken auf die Knoten, nicht auf den
-  // Dokumentschnitt: sie duennen das Bild aus, ohne die Zaehlung zu bewegen.
   const query = (f.search || '').trim();
-  const visible = graph.nodes.filter(n => {
-    if (n.type === 'person' && local.hiddenCategories.has(n.kategorie)) return false;
-    if (query && !matchesQuery(n.name, query)) return false;
-    return true;
-  });
-  const shown = { ...graph, nodes: visible, edges: graph.edges.filter(e => visible.some(n => n.id === e.b)) };
+  const graph = query ? narrowByQuery(full, query) : full;
+  _last = { result, graph, projection: local.showRecords ? null : full };
 
-  const layout = computeLayout(shown, {
-    cx: CANVAS_WIDTH / 2, cy: CANVAS_HEIGHT / 2, radius: 205,
-  });
-  const coOccurrence = computeCoOccurrence(visible, graph.effective, {
-    minShared: local.minShared, maxEdges: 140,
-  });
-  // Der gezeigte Stand: Kategorie- und Freitext-Ausduennung wirken auf die
-  // Knotenzahlen, die Kandidatenzahlen bleiben die des ungefilterten Graphen,
-  // sonst behauptete die Kappungszeile eine Menge, die es nicht gab.
-  const shownStats = {
-    ...graph.stats,
-    total: visible.length,
-    byType: Object.fromEntries(NODE_TYPES.map(t => [t, visible.filter(n => n.type === t).length])),
-    ringCounts: { 1: visible.filter(n => n.ring === 1).length, 2: visible.filter(n => n.ring === 2).length },
-    agrelon: visible.filter(n => n.evidence === 'strong').length,
-  };
-  _last = { result, graph: { ...graph, stats: shownStats }, layout };
+  if (local.selection && !hasSelection(graph, local.selection)) local.selection = null;
 
   const slot = document.getElementById('netzwerk-canvas');
-  if (!layout.center) {
+  if (graph.nodes.length === 0) {
     if (slot) {
       clear(slot);
       slot.appendChild(el('div', { className: 'empty-state empty-state--italic' },
-        `Kein Fokus „${local.focus.name}“ in den Daten gefunden.`));
+        'Kein Datensatz im Schnitt nennt einen Akteur.'));
     }
-    clear(detail);
-    stamp(graph, result, f);
+    drawDetail();
+    stamp(graph, result, f, { start: tStart, layout: 0, paint: 0 });
     return;
   }
 
-  drawCanvas({
-    state: { layout, coOccurrence },
-    actions: { setFocus: (node) => { local.focus = { type: node.type, name: node.name }; redraw(); } },
-    zoomRefs: _zoomRefs,
+  const tLayout = performance.now();
+  const layout = layoutGraph(graph, { width: STAGE_WIDTH, height: STAGE_HEIGHT });
+  const tPaint = performance.now();
+  // Every draw builds a fresh SVG and a fresh zoom behaviour, so a new layout
+  // starts at the fitted view. Across a selection change nothing is redrawn,
+  // which is what keeps the zoom the reader set.
+  drawGraph({
+    layout,
+    view: { fadeSingle: local.fadeSingle },
+    selection: local.selection,
+    actions, zoomRefs: _zoomRefs,
   });
-  drawDetail(detail, layout.center, visible.length);
-  stamp(_last.graph, result, f);
+  const tDone = performance.now();
+
+  drawDetail();
+  writeSelectionToHash();
+  stamp(graph, result, f,
+    { start: tStart, layout: tPaint - tLayout, paint: tDone - tPaint });
+}
+
+function hasSelection(graph, selection) {
+  return selection.kind === 'node'
+    ? graph.byId.has(selection.id)
+    : graph.edges.some(e => e.id === selection.id);
 }
 
 // ---------------------------------------------------------------------------
-// Detail-Panel — immer die Fokus-Entitaet
+// Detail column — absent until a click
 // ---------------------------------------------------------------------------
 
-/** Signatur eines Datensatzes als Sortier- und Anzeigewert. */
-function sigOf(record) {
-  return record ? (formatSignatur(record['rico:identifier']) || '') : '';
+function drawDetail() {
+  const slot = document.getElementById('netzwerk-detail');
+  if (!slot) return;
+  clear(slot);
+  const board = slot.parentElement;
+  if (!local.selection) {
+    if (board) board.classList.remove('netzwerk__board--detail');
+    return;
+  }
+  if (board) board.classList.add('netzwerk__board--detail');
+
+  const panel = el('aside', { className: 'netzwerk__detail', 'aria-label': 'Auswahl' });
+  slot.appendChild(panel);
+
+  const graph = _last.graph;
+  if (local.selection.kind === 'node' && graph.byId.has(local.selection.id)) {
+    const node = graph.byId.get(local.selection.id);
+    if (node.kind === 'record') drawRecordDetail(panel, node);
+    else drawActorDetail(panel, node);
+    return;
+  }
+  const edge = graph.edges.find(e => e.id === local.selection.id);
+  if (edge) drawEdgeDetail(panel, graph, edge);
 }
 
-function drawDetail(panel, center, neighbourCount) {
-  clear(panel);
-  const entry = center.entry || {};
+function detailHead(panel, kicker, title, typeClass) {
+  const row = el('div', {
+    className: 'netzwerk__detail-head'
+      + (typeClass ? ` netzwerk__detail-head--${typeClass}` : ''),
+  },
+    el('span', { className: 'netzwerk__detail-kind' }, kicker),
+    el('button', {
+      className: 'netzwerk__detail-close', type: 'button', 'aria-label': 'Schließen',
+      onClick: () => select(null),
+    }, '×'));
+  panel.appendChild(row);
+  panel.appendChild(el('h3', { className: 'netzwerk__detail-title' }, title));
+  return row;
+}
 
-  const titleRow = el('div', { className: 'netzwerk__detail-title-row' },
-    el('span', { className: `netzwerk__detail-type netzwerk__detail-type--${center.type}` },
-      NODE_TYPE_META[center.type].label),
-    el('h3', { className: 'netzwerk__detail-title' }, center.name));
-  if (center.wikidata && String(center.wikidata).startsWith('wd:')) {
-    const qid = String(center.wikidata).replace('wd:', '');
-    titleRow.appendChild(el('a', {
+function section(title, body) {
+  return el('div', { className: 'netzwerk__detail-section' },
+    el('h4', { className: 'netzwerk__detail-subtitle' }, title), body);
+}
+
+/** „+N weitere" in the form the Indizes use. */
+function moreChip(count, tip) {
+  return el('span', {
+    className: 'chip chip--role-pair chip--c-neutral nz-more',
+    dataset: { tip, tipWrap: '' },
+  }, el('span', { className: 'chip-wert' }, `+${count} weitere`));
+}
+
+/** A neighbour as a row, with the family mark the register rows and the Bestand
+ *  rows carry, so one symbol set names a family everywhere (E-212). */
+function nodeRow(node, value) {
+  const row = el('li', {
+    className: `netzwerk__node-row netzwerk__node-row--${node.type}`,
+    tabindex: '0', role: 'button',
+    'aria-label': `${NODE_TYPE_META[node.type].label} ${node.name}`,
+    onClick: () => actions.selectNode(node),
+    onKeyDown: (ev) => {
+      if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); actions.selectNode(node); }
+    },
+  });
+  const mark = familyIcon(node.type, { size: 13, className: `fam-mark fam-mark--${node.type}` });
+  if (mark) row.appendChild(mark);
+  row.appendChild(el('span', { className: 'netzwerk__node-name' }, node.name));
+  row.appendChild(el('span', { className: 'netzwerk__node-value' }, String(value)));
+  return row;
+}
+
+function drawActorDetail(panel, node) {
+  const head = detailHead(panel, NODE_TYPE_META[node.type].label, node.name, node.type);
+  if (node.wikidata && String(node.wikidata).startsWith('wd:')) {
+    const qid = String(node.wikidata).replace('wd:', '');
+    head.insertBefore(el('a', {
       className: 'badge badge--wikidata',
       href: `https://www.wikidata.org/entity/${qid}`,
       target: '_blank', rel: 'noopener noreferrer',
-      dataset: { tip: `Bei Wikidata ansehen (${center.wikidata})` },
+      dataset: { tip: `Bei Wikidata ansehen (${node.wikidata})` },
       html: WIKIDATA_ICON_SVG,
+    }), head.lastChild);
+  }
+
+  if (node.roles.length > 0) {
+    const chips = el('div', { className: 'netzwerk__detail-chips' });
+    // The bare count, with its unit in the section title and in the tooltip: as
+    // „18 Dokumente" every chip took a row of its own and the column ran past
+    // the drawing beside it.
+    for (const { role, count } of node.roles.slice(0, CAP.roles)) {
+      chips.appendChild(buildRoleChip({ prefix: role, value: String(count),
+        tip: `${count} Dokument${count === 1 ? '' : 'e'} des Schnitts in dieser Rolle` }));
+    }
+    const rest = node.roles.slice(CAP.roles);
+    if (rest.length > 0) chips.appendChild(moreChip(rest.length, rest.map(r => r.role).join(', ')));
+    panel.appendChild(section(`Rollen · ${node.weight} Dokumente`, chips));
+  }
+
+  if (node.relations.length > 0) {
+    const chips = el('div', { className: 'netzwerk__detail-chips' });
+    for (const rel of node.relations.slice(0, CAP.relations)) {
+      const record = rel.recordId ? _store.records.get(rel.recordId) : null;
+      const label = AGRELON_LABELS[rel.type] || String(rel.type).replace(/^agrelon:/, '');
+      // Signature plus document type and year, the same short form the node
+      // labels carry, so the chip says what its evidence is and not only where.
+      const evidence = record
+        ? `${formatSignatur(record['rico:identifier'])} · `
+          + recordLabel(_store, record, yearOfId(_store, rel.recordId))
+        : (rel.recordId || '—');
+      chips.appendChild(buildRoleChip({
+        prefix: label,
+        value: evidence,
+        cluster: 'beziehung',
+        tip: 'Erfasste Beziehung zur Nachlassbildnerin, belegt an diesem Dokument',
+        onClick: record ? () => navigateToView('bestand', { recordId: record['@id'] }) : undefined,
+      }));
+    }
+    const rest = node.relations.length - CAP.relations;
+    if (rest > 0) chips.appendChild(moreChip(rest, 'Weitere erfasste Beziehungen an dieser Person'));
+    panel.appendChild(section('Erfasste Beziehung', chips));
+  }
+
+  // The neighbours are the person-to-person projection, also while the
+  // overview draws the record nodes: "who with whom" is the question here.
+  const neighbours = neighboursOf(projectionOf(), node.id);
+  if (neighbours.length > 0) {
+    const list = el('ul', { className: 'netzwerk__node-list' });
+    for (const n of neighbours.slice(0, CAP.neighbours)) list.appendChild(nodeRow(n.node, n.weight));
+    const rest = neighbours.length - CAP.neighbours;
+    if (rest > 0) {
+      list.appendChild(el('li', { className: 'netzwerk__node-row netzwerk__node-row--more' },
+        moreChip(rest, neighbours.slice(CAP.neighbours, CAP.neighbours + 20)
+          .map(n => n.node.name).join(', '))));
+    }
+    panel.appendChild(section(`Nachbarn · ${neighbours.length}`, list));
+  }
+
+  panel.appendChild(bestandButton(() => {
+    const key = FACET_FOR_NODE[node.type];
+    setFilter({ [key]: [node.name] });
+    navigateToView('bestand');
+  }));
+}
+
+function drawRecordDetail(panel, node) {
+  detailHead(panel, 'Dokument', node.name, 'record');
+  panel.appendChild(el('div', { className: 'netzwerk__detail-meta' },
+    [node.title || '(ohne Titel)', node.date].filter(Boolean).join(' · ')));
+
+  const chips = el('div', { className: 'netzwerk__detail-chips' });
+  const actorIds = node.actorIds || [];
+  for (const id of actorIds.slice(0, CAP.actors)) {
+    const actor = _last.graph.byId.get(id) || projectionOf().byId.get(id);
+    if (!actor) continue;
+    const edge = (_last.graph.edgesByNode.get(id) || [])
+      .find(e => e.recordId === node.recordId);
+    const roles = edge && edge.roles.length ? edge.roles.join(', ') : 'ohne Rolle';
+    chips.appendChild(buildRoleChip({
+      prefix: roles, value: actor.name, onClick: () => actions.selectNode(actor),
     }));
   }
-  panel.appendChild(titleRow);
+  const rest = actorIds.length - CAP.actors;
+  if (rest > 0) chips.appendChild(moreChip(rest, 'Weitere Beteiligte dieses Dokuments'));
+  panel.appendChild(section(`Beteiligte · ${actorIds.length}`, chips));
 
-  const stats = _last.graph ? _last.graph.stats : { records: 0, eng: 0 };
-  const metaBits = [];
-  if (center.kategorie) metaBits.push(center.kategorie);
-  metaBits.push(`${stats.records} von ${stats.recordsBase} Dokument${stats.recordsBase === 1 ? '' : 'en'}`);
-  metaBits.push(`${stats.eng} raumzeitlich belegt`);
-  metaBits.push(`${neighbourCount} Nachbarn`);
-  panel.appendChild(el('div', { className: 'netzwerk__detail-meta' }, metaBits.join(' · ')));
+  panel.appendChild(bestandButton(() => navigateToView('bestand', { recordId: node.recordId })));
+}
 
-  // Datengedeckte Felder als Chips im Rolle-Praefix-Muster (design.md Regel 3).
-  const m = center.meta || {};
+function drawEdgeDetail(panel, graph, edge) {
+  const a = graph.byId.get(edge.a);
+  const b = graph.byId.get(edge.b);
+  detailHead(panel, 'Kante', `${a.name} · ${b.name}`);
+
+  if (edge.recordId) {
+    panel.appendChild(el('div', { className: 'netzwerk__detail-meta' },
+      edge.roles.length ? edge.roles.join(', ') : 'ohne Rolle'));
+    panel.appendChild(bestandButton(() => navigateToView('bestand', { recordId: edge.recordId })));
+    return;
+  }
+
+  panel.appendChild(el('div', { className: 'netzwerk__detail-meta' },
+    `${edge.weight} gemeinsame${edge.weight === 1 ? 's Dokument' : ' Dokumente'}`));
   const chips = el('div', { className: 'netzwerk__detail-chips' });
-  const chip = (prefix, value) => chips.appendChild(buildRoleChip({ prefix, value: String(value) }));
-  if (m.partie) chip('Partie', m.partie);
-  if (m.komponist) chip('Komponist', m.komponist);
-  if (m.sitz) chip('Sitz', m.sitz);
-  if (m.keyContact) chip('Kontakt', m.keyContact);
-  if (m.lifespan) chip('Leben', m.lifespan);
-  if (m.voiceType) chip('Stimme', m.voiceType);
-  for (const role of (m.roles || []).slice(0, 8)) chip(role, '');
-  if (chips.childNodes.length > 0) {
-    panel.appendChild(el('div', { className: 'netzwerk__detail-section' },
-      el('h4', { className: 'netzwerk__detail-subtitle' }, 'Angaben'), chips));
-  }
-
-  // Beweiskette: eine annotierte Beziehung steht in genau einem Dokument, also
-  // traegt der Chip dessen Signatur und fuehrt dorthin. Die frueheren
-  // Zaehl-Chips (Typ x N) nannten das Dokument nicht und liessen die Belegfrage
-  // offen, waehrend die Belegliste daneben die ganze Ko-Okkurrenz zeigt.
-  const relations = entry.relations || [];
-  const relationRecordIds = new Set(relations.map(r => r.recordId).filter(Boolean));
-  if (relations.length > 0) {
-    const byType = new Map();
-    for (const r of relations) {
-      if (!byType.has(r.type)) byType.set(r.type, []);
-      byType.get(r.type).push(r);
+  for (const [node, roles] of [[a, edge.rolesA], [b, edge.rolesB]]) {
+    for (const role of roles.slice(0, CAP.roles / 2)) {
+      chips.appendChild(buildRoleChip({ prefix: role, value: node.name }));
     }
-    const wrap = el('div', { className: 'netzwerk__detail-chips' });
-    for (const [type, rels] of byType) {
-      const label = AGRELON_LABELS[type] || String(type).replace(/^agrelon:/, '');
-      const sorted = rels
-        .map(rel => ({ rel, record: rel.recordId ? _store.records.get(rel.recordId) : null }))
-        .sort((a, b) => sigOf(a.record).localeCompare(sigOf(b.record), 'de'));
-      for (const { rel, record } of sorted) {
-        wrap.appendChild(buildRoleChip({
-          prefix: label,
-          value: record ? sigOf(record) : (rel.recordId || '—'),
-          cluster: 'beziehung',
-          tip: record
-            ? `${label} · ${record['rico:title'] || '(ohne Titel)'}${record['rico:date'] ? ', ' + record['rico:date'] : ''}`
-            : label,
-          onClick: record ? () => navigateToView('bestand', { recordId: record['@id'] }) : undefined,
-        }));
-      }
-    }
-    panel.appendChild(el('div', { className: 'netzwerk__detail-section' },
-      el('h4', { className: 'netzwerk__detail-subtitle' }, 'Beziehungen'), wrap));
   }
+  if (chips.childNodes.length > 0) panel.appendChild(section('Rollen', chips));
 
-  if (m.note) panel.appendChild(el('div', { className: 'netzwerk__detail-note' }, m.note));
-
-  if (FACET_FOR_NODE[center.type]) panel.appendChild(buildAddFacet(center));
-
-  // Belegliste: die annotierten Dokumente zuerst, markiert mit demselben
-  // geraden Strich, den die Legende der AgRelOn-Kante traegt. Ohne die Marke
-  // steht der annotierte Beleg ununterscheidbar in der Ko-Okkurrenz.
-  const records = [...(center.records || [])]
-    .map(id => _store.records.get(id))
-    .filter(Boolean)
-    .sort((a, b) => (relationRecordIds.has(b['@id']) ? 1 : 0) - (relationRecordIds.has(a['@id']) ? 1 : 0)
-      || String(a['rico:date'] || '').localeCompare(String(b['rico:date'] || '')));
-  if (records.length > 0) {
-    const list = el('ul', { className: 'netzwerk__record-list' });
-    for (const r of records) {
-      const annotated = relationRecordIds.has(r['@id']);
-      const mark = el('span', {
-        className: 'netzwerk__record-mark'
-          + (annotated ? ' nz-legend__line nz-legend__line--agrelon' : ''),
-        ...(annotated
-          ? { dataset: { tip: 'Beziehung hier annotiert (AgRelOn)' } }
-          : { 'aria-hidden': 'true' }),
-      });
-      list.appendChild(el('li', {
-        className: 'netzwerk__record',
-        onClick: (ev) => { ev.stopPropagation(); navigateToView('bestand', { recordId: r['@id'] }); },
+  const list = el('ul', { className: 'netzwerk__record-list' });
+  for (const id of edge.records.slice(0, CAP.neighbours)) {
+    const record = _store.records.get(id);
+    if (!record) continue;
+    list.appendChild(el('li', {
+      className: 'netzwerk__record', tabindex: '0', role: 'button',
+      onClick: () => navigateToView('bestand', { recordId: id }),
+      onKeyDown: (ev) => {
+        if (ev.key === 'Enter' || ev.key === ' ') {
+          ev.preventDefault();
+          navigateToView('bestand', { recordId: id });
+        }
       },
-        el('span', { className: 'netzwerk__record-sig' }, mark,
-          formatSignatur(r['rico:identifier']) || '—'),
-        el('span', { className: 'netzwerk__record-title' }, r['rico:title'] || '(ohne Titel)'),
-        el('span', { className: 'netzwerk__record-date' }, r['rico:date'] || '')));
-    }
-    panel.appendChild(el('div', { className: 'netzwerk__detail-section' },
-      el('h4', { className: 'netzwerk__detail-subtitle' }, 'Belege'), list));
-  }
-}
-
-/** Die Fokus-Entitaet als Facette uebernehmen; der Schnitt wandert damit in
- *  jede andere Ansicht mit. */
-function buildAddFacet(node) {
-  const key = FACET_FOR_NODE[node.type];
-  const active = facetValues(getFilter(), key).includes(node.name);
-  return el('button', {
-    className: 'netzwerk__addfacet', type: 'button',
-    onClick: () => {
-      const cur = facetValues(getFilter(), key);
-      setFilter({ [key]: active ? cur.filter(v => v !== node.name) : [...cur, node.name] });
     },
-  }, active ? '× Aus dem Filter nehmen' : '+ In den Filter aufnehmen');
+      el('span', { className: 'netzwerk__record-sig' },
+        formatSignatur(record['rico:identifier']) || '—'),
+      el('span', { className: 'netzwerk__record-date' }, record['rico:date'] || ''),
+      el('span', { className: 'netzwerk__record-title' }, record['rico:title'] || '(ohne Titel)')));
+  }
+  const rest = edge.records.length - CAP.neighbours;
+  if (rest > 0) {
+    list.appendChild(el('li', { className: 'netzwerk__record netzwerk__record--more' },
+      moreChip(rest, 'Im Bestand über beide Namen als Facette')));
+  }
+  panel.appendChild(section('Gemeinsame Dokumente', list));
+}
+
+function bestandButton(onClick) {
+  return el('button', {
+    className: 'netzwerk__bestand-btn', type: 'button', onClick,
+  }, 'Im Bestand zeigen');
 }
 
 // ---------------------------------------------------------------------------
-// Telemetrie
+// Telemetry
 // ---------------------------------------------------------------------------
 
-/** Facettenwerte kompakt fuer den Log-Stempel; '—' heisst Facette inaktiv. */
+/** Facet values for the log stamp; '—' means the facet is inactive. */
 function stampFacet(filter, key) {
   const values = facetValues(filter, key);
   return values.length ? values.join('+') : '—';
 }
 
-function stamp(graph, result, f) {
+/** Milliseconds, rounded, so the stamp stays readable. */
+const ms = (value) => Math.round(value);
+
+/** First draw after the data are ready, measured once; a later draw answers a
+ *  filter change and says nothing about the load. */
+let _firstDraw = null;
+
+function stamp(graph, result, f, timing) {
   const s = graph.stats;
-  const bt = s.byType || {};
-  const rings = s.ringCounts || { 1: 0, 2: 0 };
-  const truncN = Object.values(s.truncated || {}).reduce((a, b) => a + b, 0);
   const aktiv = FACETS.filter(k => facetValues(f, k).length > 0).length
     + (Array.isArray(f.zeitfenster) ? 1 : 0);
-  logStamp('netzwerk', [
-    ['fokus', s.focus || local.focus.name],
+  const total = performance.now() - timing.start;
+  if (_firstDraw === null) _firstDraw = performance.now() - _t0;
+  const parts = [
     ['facetten', aktiv],
     ['person', stampFacet(f, 'person')],
     ['ort', stampFacet(f, 'ort')],
@@ -501,19 +670,42 @@ function stamp(graph, result, f) {
     ['institution', stampFacet(f, 'institution')],
     ['stand', facetValues(f, 'stand').join('+') || 'alle'],
     ['zeit', Array.isArray(f.zeitfenster) ? f.zeitfenster.join('-') : 'alle'],
-    ['knoten', s.total],
-    ['k-person', bt.person], ['k-werk', bt.werk],
-    ['k-institution', bt.institution], ['k-ort', bt.ort],
-    ['ring1', rings[1]], ['ring2', rings[2]],
-    ['agrelon', s.agrelon],
+    ['modus', graph.mode],
+    ['knoten', s.nodes],
+    ['akteure', s.actors],
+    ['personen', s.persons], ['institutionen', s.institutions],
+    ['dokumentknoten', s.recordNodes],
+    ['kanten', s.edges],
+    ['einzelbelege', s.single],
+    ['beziehungen', s.withRelation],
     ['recordsWeit', result.weit],
     ['recordsEng', result.eng],
-    ['gekappt', truncN],
-  ]);
+    ['msLayout', ms(timing.layout)],
+    ['msZeichnen', ms(timing.paint)],
+    ['msGesamt', ms(total)],
+    ['msErstzeichnung', ms(_firstDraw)],
+  ];
+  logStamp('netzwerk', parts);
+  // The same stamp as an object, so the browser test reads the measurement
+  // instead of parsing the console line. Dev only, like every other stamp.
+  if (IS_DEV) {
+    window.m3gim = window.m3gim || {};
+    window.m3gim.netzwerkStamp = Object.fromEntries(parts);
+    // Geometry hook for the browser test: it asserts that the edge layer and
+    // the node layer stand on one transform instead of reading pixels.
+    window.m3gim.netzwerkDebug = (sample) => {
+      const geo = debugGeometry(sample === undefined ? 20 : sample);
+      return geo && { ...geo, selection: local.selection,
+                      stamp: window.m3gim.netzwerkStamp };
+    };
+  }
 }
 
-/** Aggregat fuer die Dev-Konsole (utils/dev.js). */
+/** Aggregate for the dev console (utils/dev.js). */
 export function netzwerkAggregate() {
   if (!_store) return null;
-  return buildGraph(_store, { focus: local.focus, types: local.types, topN: local.topN });
+  const result = recordsFor(_store, getFilter(), { base: baseIds(_store) });
+  return local.showRecords
+    ? buildTwoMode(_store, { records: result.ids })
+    : buildProjection(_store, { records: result.ids });
 }

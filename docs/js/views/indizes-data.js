@@ -1,9 +1,9 @@
 /**
  * Indizes — pure data layer.
  *
- * Entry list of one register, its sorting, the shared-cut intersection, the two
- * Normdaten filters and the Umfeld of an expanded entry. No DOM: indizes.js
- * adds icons, columns and cell renderers on top.
+ * Entry list of one register, its sorting, the shared-cut intersection, the
+ * name search and the Umfeld of an expanded entry. No DOM: indizes.js adds
+ * icons, columns and cell renderers on top.
  *
  * Since E-226 the view shows exactly one register at a time, so the former
  * cross-register facet cut is gone; what connects the registers now is the
@@ -14,6 +14,8 @@
 import { isMalaniuk } from './_netzwerk-geometry.js';
 import { buildEntities, buildOccurrences, hasGeo, countryByCity } from './karte-data.js';
 import { cityOf } from '../utils/format.js';
+import { yearOfId } from '../data/records-for.js';
+import { facetValues } from '../ui/filter-state.js';
 
 /**
  * @typedef {Object} GridEntry
@@ -26,6 +28,27 @@ import { cityOf } from '../utils/format.js';
 
 /** Register key -> content family (E-212), the shared symbol and colour set. */
 export const REGISTER_FAMILY = Object.freeze({
+  personen: 'person',
+  organisationen: 'institution',
+  orte: 'ort',
+  werke: 'werk',
+});
+
+/** Register key -> Beschriftung; Registerkopf und Tab-Menue teilen sie (E-230). */
+export const REGISTER_LABELS = Object.freeze({
+  personen: 'Personen',
+  organisationen: 'Organisationen',
+  orte: 'Orte',
+  werke: 'Werke',
+});
+
+/**
+ * Register key -> the entity type the rest of the application names it by. It
+ * is the facet key of the shared filter and, with the same words, the node type
+ * of the Netzwerk focus; the two coincide because both address the same four
+ * content families (E-212).
+ */
+export const REGISTER_ENTITY_TYPE = Object.freeze({
   personen: 'person',
   organisationen: 'institution',
   orte: 'ort',
@@ -142,24 +165,17 @@ export function cutCountOf(entry) {
 }
 
 /**
- * The Normdaten filters and the search over the register's own fields. The term
- * arrives lower-cased. `withWikidata` and `withoutWikidata` are the two poles of
- * one question and exclude each other; indizes.js keeps them apart at the
- * toggle, here the explicit branch keeps an inconsistent pair from silently
- * emptying the register.
+ * Die Suche ueber die eigenen Felder des Registers. Der Begriff kommt
+ * kleingeschrieben an. Die Normdaten-Schalter sind mit E-230 entfallen, die
+ * Wikidata-Verknuepfung steht als Marke an der Zeile statt als Schnitt.
  * @param {Array<GridEntry>} entries
  * @param {string} gridKey
- * @param {{q?: string, withWikidata?: boolean, withoutWikidata?: boolean}} state
+ * @param {{q?: string}} state
  */
-export function filterEntries(entries, gridKey, { q = '', withWikidata = false, withoutWikidata = false } = {}) {
-  let out = entries;
-  if (withWikidata) out = out.filter(e => hasWikidata(e));
-  else if (withoutWikidata) out = out.filter(e => !hasWikidata(e));
-  if (q) {
-    const search = GRID_SOURCES[gridKey].searchFields;
-    out = out.filter(e => search(e).toLowerCase().includes(q));
-  }
-  return out;
+export function filterEntries(entries, gridKey, { q = '' } = {}) {
+  if (!q) return entries;
+  const search = GRID_SOURCES[gridKey].searchFields;
+  return entries.filter(e => search(e).toLowerCase().includes(q));
 }
 
 /**
@@ -178,11 +194,6 @@ export function sortEntries(entries, mode) {
     out.sort((a, b) => cutCountOf(b) - cutCountOf(a) || a.name.localeCompare(b.name, 'de-DE'));
   }
   return out;
-}
-
-/** A reconciled entry carries a wd:-prefixed Q-id; anything else counts as none. */
-export function hasWikidata(entry) {
-  return Boolean(entry.wikidata) && String(entry.wikidata).startsWith('wd:');
 }
 
 /** Umfeld groups in reading order, with the label the view prints. */
@@ -324,4 +335,72 @@ export function workStageRoles(store) {
       .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name, 'de-DE')));
   }
   return rolesCache;
+}
+
+/**
+ * Der Schnitt, den der Sprung aus einem Registereintrag in den Bestand setzt:
+ * der geteilte Filter mit der Facette dieses Eintrags und ohne den Suchbegriff.
+ * Eine Quelle fuer beides, das href der Zeile und den Klick.
+ *
+ * Der Suchbegriff war das Mittel, den Eintrag zu finden, und kein Schnitt, den
+ * das Ziel behalten soll: im Bestand trifft er Signatur, Titel, Typ und Datum
+ * und laesst dort keine Zeile stehen (user-story audit 2026-09-04).
+ * @param {string} registerKey
+ * @param {Object} baseFilter   getFilter()-Ergebnis
+ * @param {string} name
+ * @returns {?Object} null, wenn das Register keine Facette hat
+ */
+export function bestandFilterFor(registerKey, baseFilter, name) {
+  const facet = REGISTER_ENTITY_TYPE[registerKey];
+  if (!facet || !name) return null;
+  const base = baseFilter || {};
+  return { ...base, search: '', [facet]: [...facetValues(base, facet), name] };
+}
+
+/**
+ * Zeitspanne der Belege eines Eintrags, das erste und das letzte datierte
+ * verknuepfte Dokument. Undatierte Belege fallen heraus, sie sagen ueber die
+ * Spanne nichts; ein Eintrag ohne ein einziges datiertes Dokument hat keine.
+ * @param {Object} store
+ * @param {{records: Set<string>}} entry
+ * @param {?Set<string>} [recordIds]  auf den Schnitt beschraenken
+ * @returns {?{from: number, to: number}}
+ */
+export function entryYearSpan(store, entry, recordIds = null) {
+  let from = null;
+  let to = null;
+  for (const id of entry.records) {
+    if (recordIds && !recordIds.has(id)) continue;
+    const year = yearOfId(store, id);
+    if (year == null) continue;
+    if (from == null || year < from) from = year;
+    if (to == null || year > to) to = year;
+  }
+  return from == null ? null : { from, to };
+}
+
+/**
+ * Die Rollen, in denen eine Entitaet auftritt, mit der Zahl der Dokumente, die
+ * sie in dieser Rolle fuehren. Die Rollen stehen als Vokabular am Store-Eintrag
+ * (loader, addEntityRole); gezaehlt wird im Schnitt, damit die Chips dieselbe
+ * Dokumentmenge meinen wie die Belegzahl der Zeile.
+ * @param {Object} store
+ * @param {string} registerKey
+ * @param {{name: string}} entry
+ * @param {?Set<string>} [recordIds]
+ * @returns {Array<{name: string, count: number}>}
+ */
+export function entryRoles(store, registerKey, entry, recordIds = null) {
+  const map = store && store[REGISTER_MAP[registerKey]];
+  const data = map && map.get(entry.name);
+  if (!data || !data.roleRecords) return [];
+  const out = [];
+  for (const [name, ids] of data.roleRecords) {
+    if (!name) continue;
+    let count = 0;
+    for (const id of ids) if (!recordIds || recordIds.has(id)) count += 1;
+    if (count > 0) out.push({ name, count });
+  }
+  out.sort((a, b) => b.count - a.count || a.name.localeCompare(b.name, 'de-DE'));
+  return out;
 }

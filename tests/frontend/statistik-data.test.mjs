@@ -21,7 +21,7 @@ import assert from 'node:assert/strict';
 
 import {
   aggregateDocTypes, aggregateEntities, aggregateAgentRoles,
-  aggregateStageRoles, aggregateComposers, aggregateCatalogueGaps,
+  aggregateStageRoles, aggregateComposers,
 } from '../../docs/js/views/statistik-data.js';
 
 function makeStore(records, concepts) {
@@ -141,44 +141,51 @@ describe('Entitaeten und Repertoire im Schnitt', () => {
   });
 });
 
-// --- Erschliessungsstand ---------------------------------------------------
+// ---------------------------------------------------------------------------
+// Die geteilte Farbskala der Rollen (F1: die Mobilitaetssichten sind fort)
+// ---------------------------------------------------------------------------
 
-test('aggregateCatalogueGaps rechnet ueber den Schnitt', () => {
-  const store = makeStore(RECORDS, CONCEPTS);
-  const gaps = aggregateCatalogueGaps(store, new Set(['r1', 'r4']));
-  assert.equal(gaps.total, 2);
-  assert.equal(gaps.axes.find((a) => a.id === 'typ').filled, 1);
-  assert.equal(gaps.axes.find((a) => a.id === 'typ').missing, 1);
-  assert.equal(gaps.none, 1, 'r4 traegt keine einzige Erschliessungsachse');
-});
+import { rankedRoleScale, REST_COLOR } from '../../docs/js/views/statistik-data.js';
+import * as statistikData from '../../docs/js/views/statistik-data.js';
 
-// --- Sicht am Knoten -------------------------------------------------------
+describe('rankedRoleScale', () => {
+  const entries = [
+    { key: 'a', label: 'absendung', count: 3 },
+    { key: 'b', label: 'aufführung', count: 9 },
+    { key: 'c', label: 'entstehung', count: 5 },
+    { key: 'd', label: 'gastspiel', count: 2 },
+    { key: 'e', label: 'premiere', count: 2 },
+    { key: 'f', label: 'probe', count: 1 },
+    { key: 'g', label: 'spielzeit', count: 1 },
+    { key: 'h', label: 'wohnort', count: 1 },
+  ];
 
-/**
- * Die Sicht steht am Annotationsknoten (`cluster`), abgeleitet aus der stabilen
- * Concept-Id. Die Rohform der Rolle taugt nicht als Schluessel:
- * `mobilityClusterFor('absendung')` findet nichts, weil die Tabelle auf
- * `m3gim-vocab:dispatch` schluesselt. Wer die Sicht aus der Rohform ableitet,
- * schiebt jede Korrespondenz-Annotation nach "Nicht klassifiziert".
- */
-import { sichtForRecord } from '../../docs/js/views/chronik-data.js';
+  test('die Rangfolge steht nach Haeufigkeit, bei Gleichstand alphabetisch', () => {
+    assert.deepEqual([...rankedRoleScale(entries).keys()],
+      ['b', 'c', 'a', 'd', 'e', 'f', 'g', 'h']);
+  });
 
-const ANNOTATIONS = [
-  { role: 'absendung', roleLabel: 'absendung', cluster: 'korrespondenz', date: '1959-10-28', recordId: 'r1' },
-  { role: 'aufführung', roleLabel: 'aufführung', cluster: 'performativ', date: '1951-07-30', recordId: 'r1' },
-  { role: 'erwähnt', roleLabel: 'erwähnt', cluster: null, date: '1872-04-01', recordId: 'r2' },
-];
+  test('die sechs haeufigsten Rollen tragen je eine der sechs Kategorienfarben', () => {
+    const scale = rankedRoleScale(entries);
+    const coloured = [...scale.values()].filter(e => e.color !== REST_COLOR);
+    assert.equal(coloured.length, 6, 'die Farbpalette der Tokens hat sechs Toene');
+    assert.deepEqual(coloured.map(e => e.color),
+      ['var(--cat-1)', 'var(--cat-2)', 'var(--cat-3)',
+        'var(--cat-4)', 'var(--cat-5)', 'var(--cat-6)']);
+    // Der lange Schwanz teilt sich den Grauton, statt eine Farbe zu wiederholen
+    // und damit zwei Rollen als dieselbe zu zeigen.
+    assert.deepEqual([...scale.values()].filter(e => e.color === REST_COLOR).map(e => e.key),
+      ['g', 'h']);
+  });
 
-test('sichtForRecord leitet die dominante Sicht aus der Sicht am Knoten ab', () => {
-  const store = {
-    recordToEvents: new Map([['r1', ['e0', 'e1']], ['r2', ['e2']]]),
-    mobilityEvents: new Map(ANNOTATIONS.map((a, i) => [`e${i}`, a])),
-  };
-  const r1 = sichtForRecord(store, 'r1');
-  assert.equal(r1.hasSte, true);
-  assert.equal(r1.divergent, true);
-  assert.deepEqual([...r1.sichten].sort(), ['korrespondenz', 'performativ']);
-  // Ein Record, dessen einzige Annotation ausdruecklich keine Sicht traegt,
-  // bleibt neutral statt eine Sicht zu erfinden.
-  assert.equal(sichtForRecord(store, 'r2').sicht, 'neutral');
+  test('die Anzeigeform wird grossgeschrieben, das Vokabular bleibt klein', () => {
+    assert.equal(rankedRoleScale(entries).get('b').label, 'Aufführung');
+  });
+
+  test('die Mobilitaetssichten sind aus der geteilten Datenschicht fort (F1)', () => {
+    // Sie waren hier die geteilte Quelle fuer Karte und Chronik; ein
+    // uebriggebliebener Export brauchte einen Verbraucher, den es nicht gibt.
+    assert.equal(statistikData.SICHTEN, undefined);
+    assert.equal(statistikData.SICHT_COLOR, undefined);
+  });
 });

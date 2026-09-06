@@ -22,7 +22,7 @@ import { facetValues } from './filter-state.js';
 
 /** Facetten mit Werteliste, in der Reihenfolge, in der sie in der URL stehen. */
 const LIST_KEYS = [
-  'docType', 'ort', 'person', 'werk', 'institution', 'sicht', 'stand',
+  'docType', 'ort', 'person', 'werk', 'institution', 'land', 'verknuepfung',
 ];
 
 /** Query-Schluessel des Zeitfensters; der State-Schluessel heisst zeitfenster. */
@@ -121,14 +121,42 @@ export function splitHash(hash) {
  * @param {string} tab
  * @param {?string} recordId
  * @param {Object} filter
+ * @param {string} [extra] view parameters standing beside the filter
  * @returns {string} mit fuehrender Raute
  */
-export function buildHash(tab, recordId, filter) {
+export function buildHash(tab, recordId, filter, extra) {
   let hash = '#' + tab;
   if (recordId) hash += '/' + encodeURIComponent(recordId);
-  const query = serializeFilter(filter);
+  const query = [serializeFilter(filter), extra || ''].filter(Boolean).join('&');
   if (query) hash += '?' + query;
   return hash;
+}
+
+/** Does the query key belong to the shared filter? */
+function isFilterKey(key) {
+  const stateKey = key === TYPE_KEY ? TYPE_STATE_KEY : key;
+  return LIST_KEYS.includes(stateKey) || key === YEAR_KEY || key === 'suche';
+}
+
+/**
+ * The part of a query the shared filter does not own, verbatim.
+ *
+ * The router rewrites the query on every filter change. Without carrying these
+ * pairs over, a view parameter beside the filter was lost as soon as the
+ * address named a cut as well, so `#netzwerk?ort=Bayreuth&knoten=…` reached the
+ * view without its node.
+ *
+ * @param {string} query  with or without a leading question mark
+ * @returns {string} empty when the query carries filter keys only
+ */
+export function viewParams(query) {
+  if (typeof query !== 'string') return '';
+  const raw = query.startsWith('?') ? query.slice(1) : query;
+  if (!raw) return '';
+  return raw.split('&').filter((pair) => {
+    const eq = pair.indexOf('=');
+    return eq > 0 && !isFilterKey(pair.slice(0, eq));
+  }).join('&');
 }
 
 /** Prozentkodierung aufloesen; eine kaputte Sequenz bleibt, wie sie steht. */

@@ -1,14 +1,17 @@
 /**
  * Reine Datenschicht der Mobilitäts-Chronik (kein DOM, kein d3).
- * Spiegelt den statistik-data.js-Split: die View orchestriert nur,
- * Sicht-Ableitung / Dekaden-Aggregation leben hier. Die Sekundär-Datierung
- * kommt seit dem zusammengeführten Modell aus `primaryYear()` der Datenschicht.
+ * Spiegelt den statistik-data.js-Split: die View orchestriert nur, die Achse
+ * der Datierungsrollen und die Dekaden-Aggregation leben hier. Der Zeitanker
+ * kommt aus `primaryYear()` der Datenschicht.
  */
 
 import { ensureArray } from '../utils/format.js';
+import { primaryYear } from '../data/loader.js';
+import { rankedRoleScale, REST_COLOR } from './statistik-data.js';
 
-// Geteilte Sichten-Konstanten weiterreichen, damit die View eine Quelle hat.
-export { SICHTEN, SICHT_COLOR } from './statistik-data.js';
+/** Key of the tail: every dating role past the six hues shares one segment.
+ *  A header of fourteen greys says less than one honest rest. */
+export const REST_KEY = 'weitere';
 
 /**
  * The place label of a record chip: the place of its first located annotation,
@@ -35,57 +38,77 @@ export function placeLabelFor(store, record) {
 }
 
 /**
- * Dominante Mobilitätssicht eines Records aus seinen verorteten Annotationen.
- * Form-ist-Signal: keine verortete Annotation → keine Sicht (Chip bleibt
- * monochrom); eine verortete Annotation mit sichtloser Rolle → 'neutral'
- * (Ereignis vorhanden, Sicht nicht erschlossen).
- * @returns {{sicht: string|null, hasSte: boolean, divergent: boolean, sichten: string[]}}
+ * The dating role of a Zeitanker: the key the Chronik counts and colours it
+ * under. Two datings with the same display form are one role, even where one
+ * sits at the object and the other at a Verknuepfung; the archival `rico:date`
+ * carries none and is therefore named after itself. An undated record has none.
+ * @param {?{year:?number, source:?string, label:?string}} anchor  from primaryYear
+ * @returns {?{key: string, label: string}}
  */
-export function sichtForRecord(store, rid) {
-  const eventIds = store.recordToEvents?.get(rid) || [];
-  if (eventIds.length === 0) {
-    return { sicht: null, hasSte: false, divergent: false, sichten: [] };
-  }
-  const counts = new Map();
-  for (const eid of eventIds) {
-    const ev = store.mobilityEvents.get(eid);
-    if (!ev) continue;
-    // Die Sicht steht am Annotationsknoten (aus der stabilen Concept-Id
-    // abgeleitet); die Rohform der Rolle taugt nicht als Schluessel.
-    const key = ev.cluster || 'neutral';
-    counts.set(key, (counts.get(key) || 0) + 1);
-  }
-  const real = [...counts.entries()].filter(([k]) => k !== 'neutral');
-  let sicht = null;
-  if (real.length > 0) {
-    real.sort((a, b) => b[1] - a[1]);
-    sicht = real[0][0];
-  } else if (counts.has('neutral')) {
-    sicht = 'neutral';
-  }
-  const distinctReal = real.map(([k]) => k);
-  return { sicht, hasSte: true, divergent: distinctReal.length > 1, sichten: distinctReal };
+export function datingRoleOf(anchor) {
+  if (!anchor || anchor.year == null || !anchor.source) return null;
+  const label = anchor.label || '';
+  return { key: label || anchor.source, label: label || 'Quellendatierung' };
 }
 
 /**
- * Dekaden×Sicht-Stapel über eine Record-Menge — record-basiert, spiegelt die
- * Chips (ein Record = ein Punkt = ein dominanter Sicht-Akzent). Lückendekaden
+ * The dating roles of a record set as a colour scale, the six most frequent
+ * with a hue of their own and the rest collapsed into one segment. Built over
+ * the base set and never over the cut, so a filter moves the sizes and not the
+ * colours.
+ * @param {Object} store
+ * @param {Array<Object>} records
+ * @returns {Map<string, {key:string, label:string, count:number, color:string}>}
+ */
+export function datingRoleScale(store, records) {
+  const tally = new Map();
+  for (const record of records || []) {
+    const role = datingRoleOf(primaryYear(store, record));
+    if (!role) continue;
+    let e = tally.get(role.key);
+    if (!e) { e = { key: role.key, label: role.label, count: 0 }; tally.set(role.key, e); }
+    e.count += 1;
+  }
+  const out = new Map();
+  let rest = 0;
+  for (const e of rankedRoleScale([...tally.values()]).values()) {
+    if (e.color === REST_COLOR) { rest += e.count; continue; }
+    out.set(e.key, e);
+  }
+  if (rest > 0) {
+    out.set(REST_KEY, { key: REST_KEY, label: 'Weitere Datierungen', count: rest, color: REST_COLOR });
+  }
+  return out;
+}
+
+/** The segment a Zeitanker falls into; everything past the hues collects under
+ *  REST_KEY. Null stays null: the undated record stands at the end of the axis
+ *  and in no segment. */
+export function datingRoleKey(anchor, scale) {
+  const role = datingRoleOf(anchor);
+  if (!role) return null;
+  return scale && scale.has(role.key) ? role.key : REST_KEY;
+}
+
+/**
+ * Dekaden×Datierungsrolle-Stapel über eine Record-Menge — record-basiert,
+ * spiegelt die Chips (ein Record = ein Punkt = ein Akzent). Lückendekaden
  * werden gefüllt, damit der Header eine durchgehende Achse behält.
- * @param {Array<{year: number|null, sicht: string}>} items
- * @returns {{rows: Array<{decade:number,total:number,bySicht:Object}>, dated:number, undated:number}}
+ * @param {Array<{year: number|null, role: ?string}>} items
+ * @returns {{rows: Array<{decade:number,total:number,byRole:Object}>, dated:number, undated:number}}
  */
 export function aggregateDecadeStacks(items) {
-  const buckets = new Map(); // decade -> Map<sichtKey, count>
+  const buckets = new Map(); // decade -> Map<roleKey, count>
   let dated = 0;
   let undated = 0;
   for (const it of items) {
-    const sicht = it.sicht || 'neutral';
+    const role = it.role || REST_KEY;
     if (it.year == null || !Number.isFinite(it.year)) { undated++; continue; }
     dated++;
     const decade = Math.floor(it.year / 10) * 10;
     if (!buckets.has(decade)) buckets.set(decade, new Map());
     const m = buckets.get(decade);
-    m.set(sicht, (m.get(sicht) || 0) + 1);
+    m.set(role, (m.get(role) || 0) + 1);
   }
   const rows = [];
   if (buckets.size > 0) {
@@ -93,10 +116,10 @@ export function aggregateDecadeStacks(items) {
     const max = Math.max(...buckets.keys());
     for (let d = min; d <= max; d += 10) {
       const m = buckets.get(d) || new Map();
-      const bySicht = {};
+      const byRole = {};
       let total = 0;
-      for (const [k, c] of m) { bySicht[k] = c; total += c; }
-      rows.push({ decade: d, total, bySicht });
+      for (const [k, c] of m) { byRole[k] = c; total += c; }
+      rows.push({ decade: d, total, byRole });
     }
   }
   return { rows, dated, undated };

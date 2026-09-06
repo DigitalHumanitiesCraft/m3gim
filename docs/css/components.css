@@ -1,5 +1,5 @@
-/* M3GIM shared primitives: badges, chips, legend swatch, empty state, spinner,
-   tooltip and the inline detail. The tab bar lives in css/tabs.css. */
+/* M3GIM shared primitives: badges, chips, legend swatch, empty state, load
+   status, tooltip and the inline detail. The tab bar lives in css/tabs.css. */
 
 /* Badges */
 .badge {
@@ -234,8 +234,13 @@
 .fam-mark--ort         { color: var(--chip-c-ort-text); }
 .fam-mark--werk        { color: var(--chip-c-werk-text); }
 
-/* Spinner */
-.spinner {
+/* Load status and load error
+   The region holding the fetch of the archive data: the turning ring while it
+   runs, the error box when it fails. It is the live region main.js writes into,
+   and it also centres a per-view render error inside its tab. The ring is the
+   whole loading message; the word for a screen reader stands visually hidden in
+   the markup, because standing explanatory text is anti-pattern (design rule 8). */
+.load-status {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -246,9 +251,9 @@
   color: var(--color-text-tertiary);
 }
 
-.spinner__ring {
-  width: 40px;
-  height: 40px;
+.load-status__ring {
+  inline-size: 40px;
+  block-size: 40px;
   border: 3px solid var(--surface-3);
   border-top-color: var(--accent);
   border-radius: 50%;
@@ -259,8 +264,54 @@
   to { transform: rotate(360deg); }
 }
 
-.spinner__text {
+/* Reduced motion: the ring stays a still mark instead of turning. */
+@media (prefers-reduced-motion: reduce) {
+  .load-status__ring {
+    animation: none;
+  }
+}
+
+.load-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  max-inline-size: 44ch;
+  padding: var(--space-6);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: var(--border-radius);
+  text-align: center;
+}
+
+.load-error__title {
+  font-size: var(--text-base);
+  font-weight: var(--weight-semibold);
+  color: var(--color-error);
+}
+
+/* The failing file stands here verbatim, so the detail keeps the reading tone
+   of a value rather than of a warning. */
+.load-error__detail {
   font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+.load-error__retry {
+  padding: var(--space-1-5) var(--space-4);
+  font-family: inherit;
+  font-size: var(--text-sm);
+  color: var(--color-text-inverse);
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.load-error__retry:hover {
+  background: var(--accent-dark);
+  border-color: var(--accent-dark);
 }
 
 /* Tooltip — CSS-only via data-tip attribute
@@ -292,9 +343,32 @@
   border-radius: var(--border-radius);
   box-shadow: var(--shadow-sm);
   pointer-events: none;
+  /* Hidden means out of layout, not opacity 0: an invisible nowrap box still
+     counts into the scrollable overflow of every scroll container and gave
+     the sidebar, the Bestand table and the register lists sideways scrollbars
+     with nothing visible past their edge (Projektleitung, 2026-09-04). The
+     fade comes back below where the browser can animate from display: none. */
+  display: none;
   opacity: 0;
-  transition: opacity 150ms ease;
   z-index: 200;
+}
+
+[data-tip]:hover::after,
+[data-tip]:focus-visible::after {
+  display: block;
+  opacity: 1;
+}
+
+@supports (transition-behavior: allow-discrete) {
+  [data-tip]::after {
+    transition: opacity 150ms ease, display 150ms allow-discrete;
+  }
+  @starting-style {
+    [data-tip]:hover::after,
+    [data-tip]:focus-visible::after {
+      opacity: 0;
+    }
+  }
 }
 
 /* Multiline tooltips (line breaks via \a in content).
@@ -308,13 +382,9 @@
   text-align: left;
 }
 
-[data-tip]:hover::after,
-[data-tip]:focus-visible::after {
-  opacity: 1;
-}
-
 /* Empty data-tip: no tooltip */
-[data-tip=""]::after {
+[data-tip=""]:hover::after,
+[data-tip=""]:focus-visible::after {
   display: none;
 }
 
@@ -346,12 +416,8 @@
    would run out of the viewport. The rules live here and not next to the footer
    in base.css: they match the [data-tip]::after rule of this block in
    specificity, and base.css is loaded first on every page, so a copy there
-   would lose the alignment again.
-
-   The cap is the root fix for the sideways page scroll: a hidden ::after is a
-   real nowrap box at opacity 0 and counts into the document width, and the
-   footer is the one place where no ancestor clips it (Projektleitung,
-   2026-09-04). */
+   would lose the alignment again. The cap keeps an open tooltip inside the
+   viewport, the one place where no ancestor clips it. */
 .app-footer [data-tip]::after {
   white-space: pre-line;
   width: max-content;
@@ -383,24 +449,82 @@
   border-inline-start: 3px solid var(--accent);
 }
 
-/* Head line: Signatur and Titel of the record, so the reference stays visible
-   while the reader scrolls inside a long detail (Projektleitung, 2026-09-04). */
+/* Signatur of the record, leading the meta bar as its first item; it inherits
+   the bar's size and colour, the mono face marks it as an identifier
+   (Projektleitung, 2026-09-05). */
 .inline-detail__head {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
   gap: var(--space-2);
-  margin-bottom: var(--space-2);
-  font-size: var(--text-xs);
-  color: var(--color-text-tertiary);
 }
 
 .inline-detail__head-sig {
   font-family: var(--font-mono);
 }
 
-/* Two equally sized icon buttons at the right end of the meta bar, so they
-   cost no row of their own (Projektleitung, 2026-09-04). */
+/* The record's own quality mark on the head line. The box carries no text, so
+   the line's baseline alignment would hang it below the words. */
+.inline-detail__head .quality-flag {
+  align-self: center;
+}
+
+/* Page control of a Folio: back, position, forward, sitting at the end of the
+   meta bar before the action button. The position is mono, because it names a
+   place in the sheet and not a measured quantity. */
+.inline-detail__page {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin-inline-start: auto;
+}
+
+/* The control ends the bar; where the action group follows, that group loses
+   the auto margin and the two stand together at the right edge. */
+.inline-detail__page + .inline-detail__actions {
+  margin-inline-start: var(--space-3);
+}
+
+.inline-detail__page-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 24px;
+  block-size: 24px;
+  padding: 0;
+  border: 1px solid var(--border-color-light);
+  border-radius: var(--border-radius);
+  background: var(--surface);
+  color: var(--color-text-secondary);
+  font-size: var(--text-base);
+  line-height: 1;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.inline-detail__page-btn:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--surface-2);
+}
+
+/* The end of the sheet: the button stays visible and says by its state that
+   there is nothing beyond it. */
+.inline-detail__page-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.inline-detail__page-pos {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-secondary);
+  padding-inline: var(--space-1);
+}
+
+/* The Korb button at the right end of the meta bar, so it costs no row of its
+   own (Projektleitung, 2026-09-04). */
 .inline-detail__actions {
   display: flex;
   align-items: center;
@@ -424,8 +548,6 @@
   flex-shrink: 0;
 }
 
-/* Both action buttons share one hover; only the Korb "active" state differs,
-   because that is a state of the data, not of the button kind. */
 .inline-detail__action-btn:hover {
   border-color: var(--accent);
   color: var(--accent);
@@ -544,26 +666,13 @@
   text-underline-offset: 2px;
 }
 
-/* Foot: bundled provenance and the collapsed Verwaltung, full width, quiet. */
+/* Foot: the collapsed Verwaltung, full width, quiet. */
 .inline-detail__foot {
   margin-top: var(--space-3);
   padding-top: var(--space-3);
   border-top: 1px solid var(--border-color-light);
   font-size: var(--text-xs);
   color: var(--color-text-tertiary);
-}
-
-.inline-detail__source {
-  font-family: var(--font-mono);
-  line-height: 1.6;
-}
-
-.inline-detail__source-label,
-.inline-detail__admin-label {
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  font-weight: var(--weight-semibold);
-  margin-right: var(--space-2);
 }
 
 .inline-detail__admin {
@@ -586,6 +695,10 @@
 
 .inline-detail__admin-label {
   flex: 0 0 10rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: var(--weight-semibold);
+  margin-right: var(--space-2);
   color: var(--color-text-tertiary);
 }
 

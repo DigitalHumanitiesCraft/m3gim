@@ -17,36 +17,46 @@ import {
   getFilter, setFilter, resetFilter, applyViewDefault, isFilterActive, deviatingKeys,
 } from '../../docs/js/ui/filter-state.js';
 
+// Der Erschliessungsstand war bis E-262 die Facette, an der dieser Mechanismus
+// haengt. Er ist aus dem Filter genommen, der Mechanismus bleibt; die Beispiele
+// laufen deshalb ueber den Dokumenttyp mit Werten des Datensatzes.
 describe('Nullpunkt und Ansichts-Voreinstellung', () => {
   beforeEach(() => resetFilter());
 
-  test('die Voreinstellung des Bestands weicht sichtbar vom Nullpunkt ab', () => {
-    applyViewDefault({ stand: ['abgeschlossen', 'begonnen'] });
-    assert.deepEqual(getFilter().stand, ['abgeschlossen', 'begonnen']);
+  test('eine Voreinstellung weicht sichtbar vom Nullpunkt ab', () => {
+    applyViewDefault({ docType: ['m3gim-vocab:program', 'm3gim-vocab:press'] });
+    assert.deepEqual(getFilter().docType, ['m3gim-vocab:program', 'm3gim-vocab:press']);
     assert.equal(isFilterActive(), true, 'sie traegt den Zuruecksetzen-Link');
-    assert.deepEqual(deviatingKeys(), ['stand'], 'und einen Chip');
+    assert.deepEqual(deviatingKeys(), ['docType'], 'und einen Chip');
   });
 
   test('Zuruecksetzen fuehrt auf die volle Grundmenge, nicht auf den Default', () => {
-    applyViewDefault({ stand: ['abgeschlossen', 'begonnen'] });
+    applyViewDefault({ docType: ['m3gim-vocab:program', 'm3gim-vocab:press'] });
     resetFilter();
-    assert.deepEqual(getFilter().stand, []);
+    assert.deepEqual(getFilter().docType, []);
     assert.equal(isFilterActive(), false);
   });
 
   test('die Ansicht oeffnet weiterhin mit ihrer Voreinstellung', () => {
-    applyViewDefault({ stand: ['abgeschlossen'] });
-    assert.deepEqual(getFilter().stand, ['abgeschlossen']);
+    applyViewDefault({ docType: ['m3gim-vocab:program'] });
+    assert.deepEqual(getFilter().docType, ['m3gim-vocab:program']);
     // Eine getroffene Wahl bleibt unberuehrt, sonst kippte der Tab-Wechsel sie.
-    setFilter({ stand: ['zurueckgestellt'] });
-    applyViewDefault({ stand: ['abgeschlossen'] });
-    assert.deepEqual(getFilter().stand, ['zurueckgestellt']);
+    setFilter({ docType: ['m3gim-vocab:contract'] });
+    applyViewDefault({ docType: ['m3gim-vocab:program'] });
+    assert.deepEqual(getFilter().docType, ['m3gim-vocab:contract']);
   });
 
-  test('das Wegnehmen des Chips zeigt alle Erschliessungsstaende', () => {
-    applyViewDefault({ stand: ['abgeschlossen', 'begonnen'] });
-    setFilter({ stand: [] });
+  test('das Wegnehmen des Chips zeigt wieder die Grundmenge', () => {
+    applyViewDefault({ docType: ['m3gim-vocab:program', 'm3gim-vocab:press'] });
+    setFilter({ docType: [] });
     assert.equal(isFilterActive(), false);
     assert.deepEqual(deviatingKeys(), []);
+  });
+
+  test('der Erschliessungsstand ist kein Filterschluessel mehr (E-262)', () => {
+    setFilter({ stand: ['abgeschlossen'] });
+    assert.equal('stand' in getFilter(), false,
+      'Der Bearbeitungsstand schneidet nichts mehr, er steht nur im Detail.');
+    assert.equal(isFilterActive(), false);
   });
 });

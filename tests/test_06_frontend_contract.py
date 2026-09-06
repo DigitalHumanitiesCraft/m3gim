@@ -14,7 +14,7 @@ from _helpers import ensure_list, iter_entities_with_id, relation_parties
 WD_ID_PATTERN = re.compile(r"^wd:Q\d+$")
 DATE_LIKE_PATTERN = re.compile(r"^\d{4}(-\d{2}){0,2}")
 ISO_DATE_PATTERN = re.compile(r"^\d{4}(-\d{2}(-\d{2})?)?$")
-# STE atDate may additionally carry a qualifier (data.md § Datumskonventionen): "Wien, ab 1956"
+# STE atDate may additionally carry a qualifier (data.md § Date notation of the source): "Wien, ab 1956"
 # becomes atDate="nach:1956" (E-102). extractYear in date-parser.js picks up
 # the year regardless of the prefix.
 ISO_OR_QUALIFIED_PATTERN = re.compile(r"^(circa:|vor:|nach:)?\d{4}(-\d{2}(-\d{2})?)?$")
@@ -135,7 +135,7 @@ def test_annotations_carry_a_value(graph):
     Fehlt der Ort, ist es eine reine Datierung; fehlt das Datum, eine reine
     Verortung. Ein Knoten ohne beides waere leer und haette keinen Gegenstand.
     Die Datierung parst als ISO-Wert, als ISO/ISO-Spanne oder mit einem
-    Qualifier (data.md § Datumskonventionen).
+    Qualifier (data.md § Date notation of the source).
     """
     nodes = [n for n in graph if n.get("@type") == "m3gim-ontology:Annotation"]
     offenders = []

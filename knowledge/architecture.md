@@ -1,13 +1,13 @@
 ---
-title: Architektur
+title: Architecture
 project:
   name: M³GIM
   repository: https://github.com/DigitalHumanitiesCraft/m3gim
 status: complete
-language: de
-version: 0.6
+language: en
+version: 0.7
 created: 2026-02-19
-updated: 2026-09-04
+updated: 2026-09-05
 authors: [Christopher Pollin]
 generated-with: Claude Code
 method:
@@ -21,499 +21,202 @@ topics: ["[[Pipeline Design]]", "[[JSON-LD]]", "[[Data Validation]]", "[[Static 
 related: [data, testing, journal, design, specification]
 ---
 
-# Architektur
+# Architecture
 
-> Dieses Dokument führt beide Architekturhälften von M³GIM. Teil [Pipeline](#pipeline) beschreibt Skriptverantwortung, Datenfluss, ENV-Overrides, Pipeline-Erweiterungen und Qualitäts-Baseline. Teil [Frontend](#frontend) beschreibt Laufzeitmodell, Modulstruktur, Store, Routing, Tab-Leiste, den geteilten Filter und die Ansichten. Der Datenfluss wird im Pipeline-Teil vollständig geführt und im Frontend-Teil nur an seiner Anschlussstelle aufgenommen. Designhaltung und Designsystem stehen in [design.md](design.md).
+The project has two halves that meet in one file. The pipeline reads the recording tables and writes `docs/data/m3gim.jsonld`, and the frontend is a static single-page application in `docs/` that loads exactly that file. Everything about how the application looks and behaves lives in [design.md](design.md), everything the model asserts in [data.md](data.md) and [data-model.md](data-model.md).
 
 ## Pipeline
 
-### Skriptverantwortung
+### Sources and their resolution
 
-| Script | Zweck | Input | Output |
+The source material lies git-tracked under `data/google-spreadsheet/`. The object table is read by `load_objekte` in `scripts/_common.py`, which prefers `M3GIM-Objekte.csv` and falls back to the workbook of the same name only when the CSV is absent, because the CSV preserves the recorded text while the workbook carries the spreadsheet's autoconversion in the date column. The four index tables for persons, organizations, places and works stay XLSX and go through `load_index`, whose header-shift correction covers three malformation classes of the export, a name column without a header, a leaked data value in the header row and an identifier column overwritten by a data value.
+
+The link table lives as one CSV per box under `verknuepfungen/`, together with the value list `Typ-Rolle.csv` (E-152). `resolve_verknuepfungen_source` in `scripts/transform.py` takes the directory when it holds at least one `Box_*.csv` and otherwise falls back to the workbook whose name matches `M3GIM-Verkn*pfungen*.xlsx`, so both spellings of the umlaut resolve. Provenance is identical in both cases, each row carries its sheet name and its one-based row number including the header line. `Typ-Rolle.csv` is not read as a link sheet but as the value list that `validate.py` cross-checks types and roles against. `explore.py`, `validate.py` and `audit-data.py` use the same multi-sheet loader as the transformation, so their findings cannot drift behind the transformed state (E-95).
+
+### The seven steps
+
+| Step | Script | Input | Output |
 |---|---|---|---|
-| `scripts/explore.py` | Datenexploration, Strukturdiagnostik. Liest die Verknüpfungen seit 2026-08-31 über denselben Loader wie Transformation und Validierung und deckt damit alle Blätter ab; vorher sah der Report nur das erste. | `$M3GIM_SHEETS_DIR` | `$M3GIM_REPORTS_DIR/exploration-report.md` |
-| `scripts/validate.py` | Validierung, Qualitaetschecks. Liest die Verknuepfungstabelle ueber denselben Multi-Sheet-Loader wie die Transformation (`load_verknuepfungen`, E-95) und deckt damit alle Box-Blaetter ab. Exitcode 1, sobald ERROR-Befunde im Report stehen, was dem Regelfall entspricht (siehe [CLAUDE.md § Kern-Commands](../CLAUDE.md)). | `$M3GIM_SHEETS_DIR` | `$M3GIM_REPORTS_DIR/validation-report.md` |
-| `scripts/transform.py` | Transformation nach JSON-LD (RiC-O + m3gim + agrelon) | `$M3GIM_SHEETS_DIR` | `$M3GIM_OUTPUT_DIR/m3gim.jsonld` |
-| `scripts/build-views.py` | Veroeffentlichung: kopiert das Ergebnis in die Frontend-Datenquelle (E-140) | `$M3GIM_OUTPUT_DIR/m3gim.jsonld` | `docs/data/m3gim.jsonld` |
-| `scripts/reconcile.py` | Wikidata-Reconciliation (Fuzzy-Matching, P31-Verifikation, Caching, Confidence-Level exact/fuzzy_high/fuzzy_low) | XLSX-Indizes | `data/output/wikidata-reconciliation.json` |
-| `scripts/enrich-wikidata.py` | Wikidata-Property-Enrichment (P106, P412, P569/570, P625, P1191 etc.). Filtert fuzzy_low ohne `manual_review: "approved"` aus (E-74). | wikidata-reconciliation.json | `data/output/wikidata-enrichment.json` |
-| `scripts/export-wikidata-csv.py` | Wikidata-CSVs fuer Google-Sheets-Import | wikidata-reconciliation.json | `data/output/wikidata-csvs/*.csv` |
-| `scripts/audit-data.py` | Alignment-Pruefung XLSX vs JSON-LD vs Views | XLSX + JSON-LD + Views | Konsolenreport |
-| `scripts/report-quality.py` | Datenqualitaets-Snapshot fuer Erschliessungsteam: Verknuepfungsrate, Bearbeitungsstand, WD-Coverage, Provenance-Coverage, Low-Confidence-Freigabeliste | m3gim.jsonld + wikidata-reconciliation.json | `data/reports/quality-snapshot.md` |
-| `scripts/propose-links.py` | Erschliessungsvorschlaege aus dem Abgleich der Objekttitel gegen die vier Indizes, in der Spaltenform der Verknuepfungstabelle. Das Skript schreibt weder Quelltabelle noch Datensatz, vergibt keine Rolle, weil die Rolle eine Aussage ueber die Beziehung ist und nicht im Titel steht, und meldet mehrdeutige Titelstellen, statt sie aufzuloesen (E-147). | XLSX/CSV-Quellen | `$M3GIM_REPORTS_DIR/link-proposals.md` |
-| `scripts/verify-manual-approvals.py` | Pflichtlauf nach manuellen Q-ID-Approvals: prueft `match: "manual"`-Eintraege gegen Live-Wikidata-Labels + Typ-Signal; Exitcode 1 bei Mismatch (E-78). Offline-Bypass via `SKIP_VERIFY_MANUAL=1`. | wikidata-reconciliation.json | Konsolenreport, Exitcode |
+| 1 | `explore.py` | source directory | `data/reports/exploration-report.md` |
+| 2 | `validate.py` | source directory | `data/reports/validation-report.md` |
+| 3 | `transform.py` | source directory, the two `wikidata-*.json`, `vocab/m3gim.ttl` | `data/output/m3gim.jsonld` |
+| 4 | `build-views.py` | `data/output/m3gim.jsonld` | `docs/data/m3gim.jsonld` |
+| 5 | `audit-data.py` | source, pipeline output, frontend copy | console report |
+| 6 | `report-quality.py` | dataset and reconciliation file | `data/reports/quality-snapshot.md` |
+| 7 | `build-model-page.py` | `vocab/m3gim.ttl`, dataset | `docs/datenmodell.html` |
 
-### ENV-Overrides
+Step 2 exits with code 1 as soon as the report carries ERROR findings, which is the expected state at the current data state, and step 5 reports the known source defects in the same way. Both have done their work once the report is written, the findings go to the cataloguing team through the handover list under `data/reports/`. Step 3 reads its role concepts, concept definitions and dating scopes out of the vocabulary rather than duplicating them (E-133), counts every path that discards a source row and prints the tally at the end of the run. Step 4 copies the result into the frontend data directory and skips the copy when the output directory is not the default, so a staging run cannot overwrite the published data source. Step 7 is deterministic by construction, no timestamps and no unordered sets, and `sync_shared_regions` in the same script replaces foot, info-page header and stylesheet version in all five HTML pages from its own templates while the page bodies stay handwritten (E-251).
 
-Die Pipeline-Skripte respektieren folgende Umgebungsvariablen für Ausnahmefälle (z.B. alternative Datenstände, Experimente):
+### Scripts outside the run
 
-| ENV | Default |
+| Script | Purpose |
 |---|---|
-| `M3GIM_SHEETS_DIR` | `data/google-spreadsheet` |
-| `M3GIM_OUTPUT_DIR` | `data/output` |
-| `M3GIM_REPORTS_DIR` | `data/reports` |
+| `reconcile.py` | Wikidata reconciliation of the four indexes, exact and alias matches before fuzzy matching, type filter per entity kind, composer check for works, confidence levels exact, alias, fuzzy_high and fuzzy_low. Writes `data/output/wikidata-reconciliation.json` |
+| `enrich-wikidata.py` | Wikidata properties for matched entities, occupation, voice type, life dates, coordinates, country, composer, genre, premiere date, foundation date. Passes fuzzy_low on only with `manual_review: "approved"` (E-74). Writes `data/output/wikidata-enrichment.json` |
+| `verify-manual-approvals.py` | Holds every `match: "manual"` entry against live Wikidata labels, aliases and description, exit code 1 on a mismatch (E-78). `SKIP_VERIFY_MANUAL=1` skips it offline |
+| `export-wikidata-csv.py` | Lookup CSVs from the reconciliation file for import into the spreadsheet |
+| `propose-links.py` | Link proposals from the object titles against the four indexes, in the column shape of the link table. Assigns no role and resolves no ambiguous title position (E-147). Writes `data/reports/link-proposals.md` |
+| `report-cataloguing.py` | The one address of the cataloguing team (E-272), thinly catalogued convolutes, the objects the Bearbeitungsstand lists as worked on while they carry no Verknüpfung, titles naming an unlinked place, link types the pipeline does not map, and the ERROR findings of the validation bundled by class with a pointer into the validation report. The orphan rule lives here as `worked_on_without_link`, and `tests/test_61_orphan_links.py` asks it. Writes `data/reports/cataloguing-report.md` |
+| `scout-coverage.py` | Read-only measurement of the data coverage of a place focus before a view is built on it |
+| `assemble-verknuepfungen.py` | Reassembles the per-box CSV exports into the workbook, for the fallback path of the loader |
+| `build-social-images.py` | Open Graph image and PNG favicons into `docs/img/` from the accent token. Needs Pillow, which no requirements file carries |
+| `backup.py` | Unchanged snapshot of a raw Drive export into the gitignored `data/backup/` |
+| `check-doc-split.py` | Content preservation when a knowledge document is split or merged |
 
-Die Overrides greifen bei allen sechs Skripten des vollständigen Laufs sowie bei `reconcile.py`. Sie werden seit dem 2026-09-03 an einer Stelle aufgelöst, in `scripts/_common.py`, und von dort importiert; zuvor lasen `audit-data.py` und `report-quality.py` Festpfade und auditierten damit bei gesetzter Variable einen anderen Datenstand als die Transformation (E-167).
+`reconcile.py` and `enrich-wikidata.py` need network access and run only when the Wikidata alignment is drawn again. Both result files are git-tracked and present in a normal clone.
 
-`transform.py` kennt zusätzlich `M3GIM_ALLOW_NO_WIKIDATA`. Fehlen `wikidata-reconciliation.json` oder `wikidata-enrichment.json` im Ausgabeverzeichnis, bricht der Lauf mit Exit 1 und einem Hinweis ab, statt einen entkernten Datensatz zu schreiben. Ein bewusster Lauf ohne Normdaten setzt die Variable auf `1`.
+### ENV overrides
 
-#### Quelllayout unter `$M3GIM_SHEETS_DIR`
+| Variable | Default | Honoured by |
+|---|---|---|
+| `M3GIM_SHEETS_DIR` | `data/google-spreadsheet` | `_common.py`, `explore.py`, `validate.py`, `transform.py`, and through `_common` also `audit-data.py` |
+| `M3GIM_OUTPUT_DIR` | `data/output` | `_common.py`, `transform.py`, `build-views.py`, and through `_common` also `audit-data.py` and `report-quality.py` |
+| `M3GIM_REPORTS_DIR` | `data/reports` | `_common.py`, `explore.py`, `validate.py`, and through `_common` also `report-quality.py` |
+| `M3GIM_JSONLD_PATH` | `$M3GIM_OUTPUT_DIR/m3gim.jsonld` | `build-views.py` |
+| `M3GIM_VOCAB_PATH` | `vocab/m3gim.ttl` | `transform.py` |
+| `M3GIM_ALLOW_NO_WIKIDATA` | unset | `transform.py` |
 
-```
-$M3GIM_SHEETS_DIR/
-├── M3GIM-Objekte.xlsx
-├── M3GIM-Personenindex.xlsx
-├── M3GIM-Organisationsindex.xlsx
-├── M3GIM-Ortsindex.xlsx
-├── M3GIM-Werkindex.xlsx
-└── verknuepfungen/
-    ├── Box_1.csv … Box_9.csv     # je Blatt eine Datei, Blattname der Provenienz ist "Box 1"
-    └── Typ-Rolle.csv             # Wertliste, keine Verknuepfungszeilen
-```
+The three path variables are resolved once in `scripts/_common.py` and imported from there. `audit-data.py` and `report-quality.py` used to read fixed paths and therefore audited the default data state while the transformation ran against another one (E-167). `explore.py`, `validate.py` and `transform.py` resolve the same variables in their own module scope with the same defaults.
 
-Die fünf Indextabellen und die Objekttabelle bleiben XLSX. Die Verknüpfungstabelle liegt seit der Lieferung vom 2026-08-31 als CSV-Ausfuhr je Blatt vor (E-152, [data.md](data.md) § Tabellenmodell, Quellformat), weil der XLSX-Export Datums-, Folio- und Bündelungsspalten in Zelltypen umwandelt und dabei Genauigkeit erfindet.
+### The Wikidata guard
 
-`load_verknuepfungen` in `scripts/transform.py` nimmt beide Quellen an. Der Aufrufer übergibt das Quellverzeichnis oder einen Pfad; existiert darin `verknuepfungen/` mit mindestens einer `Box_*.csv`, gewinnt das CSV-Verzeichnis, sonst greift der XLSX-Pfad mit dem bekannten Dateinamen. Die Provenienz ist in beiden Fällen dieselbe, `_xlsx_sheet` trägt den Blattnamen der Quelle und `_xlsx_row` die 1-basierte Zeile inklusive Kopfzeile. `Typ-Rolle.csv` wird nicht als Verknüpfungsblatt gelesen, sondern als Wertliste für die Kreuzprüfung in `validate.py`.
+`transform.py` reads `wikidata-reconciliation.json` and `wikidata-enrichment.json` from the output directory, that is from the zone it writes its own result into. If the directory is fresh or has been emptied, both files are missing, and the dataset then loses every enriched property, coordinates, life dates, occupations, voice types, composer and genre statements, together with the identifiers that only reconciliation adds. The frontend renders an empty Karte in that case because no node carries coordinates any more. The run therefore aborts with exit code 1 and a message naming the two files, unless `M3GIM_ALLOW_NO_WIKIDATA=1` marks the run as deliberate (E-167). Whoever works with an alternative output directory copies the two files there first.
 
-`build-views.py` kopiert `m3gim.jsonld` nur dann nach `docs/data/`, wenn `M3GIM_OUTPUT_DIR` auf den Default zeigt.
+### Generated and versioned outputs
 
-#### Geschlossene Falle, leeres Ausgabeverzeichnis kostete die Normdaten stillschweigend
+`data/output/` holds the dataset and the two Wikidata files, all three versioned so a normal clone can run and compare. `docs/data/` holds the published copy of the dataset and, beside it, the world geometry `geo/countries-110m.geo.json`, which no pipeline step produces. `m3gim.jsonld` is the only data source of the frontend, the pre-aggregated derivatives were removed with E-140. Under `data/reports/` three classes live side by side, the permanent curation evidence of the authority alignment, the finding registers of the operational error management, and the reports a run regenerates, of which the exploration, validation, link-proposal and cataloguing reports are gitignored.
 
-`transform.py` liest `wikidata-reconciliation.json` und `wikidata-enrichment.json` aus dem **Ausgabe**verzeichnis `$M3GIM_OUTPUT_DIR`, also aus derselben Zone, in die es sein eigenes Ergebnis schreibt. Beide Dateien sind git-getrackt und liegen im normalen Klon bereit. Zeigt `M3GIM_OUTPUT_DIR` auf ein frisches Verzeichnis, oder wird `data/output/` geleert, dann fehlen die beiden Dateien. Bis zum 2026-09-03 meldete der Lauf dafür zwei Hinweiszeilen, endete mit Exit 0 und schrieb einen vollständig aussehenden Datensatz; seither bricht er mit Exit 1 ab, sofern nicht `M3GIM_ALLOW_NO_WIKIDATA=1` gesetzt ist (E-167).
+Identical source data yield identical artefacts with two exceptions. `transform.py` writes the run date as `m3gim-ontology:exportDate`, and the generated Markdown reports carry their generation time in the head. A rerun from an unchanged source therefore shows exactly those lines in `git diff` and nothing else. `tests/test_10_determinismus.py` holds the property by running the transformation twice and removing the export date before the comparison.
 
-Dem Datensatz fehlen dann sämtliche Wikidata-Properties aus dem Enrichment, also Koordinaten, Lebensdaten, Berufe, Stimmfächer, Komponisten- und Genreangaben, dazu jene Q-IDs, die erst die Reconciliation ergänzt. Übrig bleiben allein die Q-IDs, die in den Index-XLSX selbst erfasst sind. Das Frontend rendert daraufhin eine leere Karte, weil `geo:lat` und `geo:long` nirgends mehr im Graph stehen. Der Verlust wäre im Ergebnis groß und im Protokoll leise, deshalb der Abbruch. Wer mit einem alternativen Ausgabeverzeichnis arbeitet, kopiert die beiden Dateien vorher dorthin.
+### What the transformation asserts
 
-#### Reihenfolge eines vollständigen Laufs
+The dataset carries records with their convolute hierarchy, `owl:sameAs` plus the enriched properties, `skos:Concept` nodes for the hierarchical document types, `m3gim-ontology:Annotation` as a top-level node for every dating and every located statement (E-100, E-136), `m3gim-ontology:Performance` with `m3gim-ontology:hasStageRole` and `m3gim-ontology:hasPerformer` for the stage parts of the source composites (E-96, E-98), `agrelon:*` relations between agents with the record URI as `agrelon:metadataProvenance`, financial detail annotations with `m3gim-ontology:monetaryAmount` and `m3gim-ontology:currency` (E-99), and `m3gim-ontology:xlsxSource` at every record and every nested entity as the technical source reference (E-73). Dating confidence is not serialized, confidence is not fabricated (E-106). `m3gim-ontology:dataQualityFlag` and `m3gim-ontology:processingNote` carry the signals of the annotation column and the cataloguing status (E-102). The structural normalizations of the loader, the header shifts, the field-wise index consolidation, the currency defaults, the role hygiene and the date normalization are catalogued with their source-fix proposals in [data.md](data.md) § Compensations in the pipeline.
 
-Explorieren, validieren, transformieren, Ansichten bauen, auditieren, Snapshot schreiben. Die Befehle mit ihren jeweiligen Ausgabezielen stehen in [CLAUDE.md § Kern-Commands](../CLAUDE.md). `reconcile.py` und `enrich-wikidata.py` stehen außerhalb dieses Laufs und werden nur beim Neuziehen des Wikidata-Abgleichs gebraucht.
-
-### Datenfluss
-
-1. **Export** aus Google Sheets nach `$M3GIM_SHEETS_DIR` (git-getrackt fuer Reproduzierbarkeit): Objekt- und Indextabellen als XLSX, die Verknuepfungstabelle als CSV je Blatt unter `verknuepfungen/` (E-152)
-2. **Exploration + Validierung** (`explore.py`, `validate.py`) → Reports
-   2b. **Reconciliation** (`reconcile.py`) → `wikidata-reconciliation.json` (Fuzzy-Matching, Confidence-Level exact/fuzzy_high/fuzzy_low)
-   2c. **Enrichment** (`enrich-wikidata.py`) → `wikidata-enrichment.json` (WD-Properties fuer gematchte Entitaeten)
-3. **Modelltransformation** (`transform.py`) → `$M3GIM_OUTPUT_DIR/m3gim.jsonld` mit:
-   - `owl:sameAs` + WD-Enrichment-Properties (fuzzy_low nur bei `manual_review: "approved"`, E-74)
-   - Skos:Concept-Knoten fuer hierarchische Dokumenttypen (data-model.md § Dokumenttypen-Vokabular)
-   - `m3gim-ontology:Annotation` als Top-Level Graph-Entities (data-model.md § Mobilitätsmodell)
-   - `agrelon:*`-Relationen fuer Agent-Agent-Beziehungen (data-model.md § AgRelOn-Integration)
-   - `agrelon:metadataProvenance` an AgRelOn-Relationen und STEs; Datierungsevidenz wird seit E-106 nicht mehr serialisiert (data-model.md § Meta-Statement-Modell)
-   - `m3gim-ontology:Annotation` mit `monetaryAmount`/`currency`/`detailRole` (data-model.md § Finanzschicht)
-   - `m3gim-ontology:xlsxSource` pro Record + Nested Entity (technische Quellreferenz auf Sheet + Zeile, data-model.md § Meta-Statement-Modell, E-73)
-4. **Bereitstellung** (`build-views.py`): kopiert im Default-Lauf `m3gim.jsonld` als alleinige Frontend-Datenquelle nach `docs/data/`.
-
-#### Reproduzierbarkeit
-
-Gleiche Quelldaten ergeben bitgleiche Artefakte, mit genau zwei Ausnahmen. `transform.py` schreibt das Exportdatum als `m3gim-ontology:exportDate` in `m3gim.jsonld`, `build-views.py` schreibt in jede erzeugte Ansicht ein Feld `generated`. Beide tragen den Zeitpunkt des Laufs, weshalb ein Rerun aus unverändertem Quellstand in `git diff` genau diese Zeilen zeigt und sonst nichts. Ein Diff, der darüber hinausgeht, ist eine echte Änderung an Daten oder Code. Der Determinismus-Test `tests/test_10_determinismus.py` (Marker `slow`) sichert die Eigenschaft ab, indem er `transform.py` zweimal laufen lässt und `m3gim-ontology:exportDate` vor dem Vergleich entfernt. Die generierten Markdown-Reports unter `data/reports/` tragen ihren Generierungszeitpunkt ebenfalls im Kopf.
-
-### Umgesetzte Pipeline-Erweiterungen (Phase 4)
-
-| Phase | Änderung in transform.py |
-|---|---|
-| 4.1 | `normalize_role()` strippt `:in`/`:innen` — Gender-neutrale Rollenbezeichner |
-| 4.2 | `DOKUMENTTYP_TO_DFT` hierarchisch erweitert + `build_dft_concepts()` emittiert skos:Concept-Knoten mit skos:broader |
-| 4.3 | Record-URI als `agrelon:metadataProvenance` an AgRelOn-Relationen und STEs. Datierungs-Konfidenz ist seit E-106 ganz entfernt (Konstante `EVIDENZ_TO_CONFIDENCE` gestrichen); Konfidenz wird nicht fabriziert. |
-| 4.4 | Komposit `ort, datum` erzeugt zusaetzlich `m3gim-ontology:Annotation`-Instanz mit `atPlace`, `atDate`, `eventRole` |
-| 4.6 | `parse_monetary_value()` zerlegt `AMOUNT, CURRENCY`; Finanz-DetailAnnotation haelt `monetaryAmount` (xsd:decimal), `currency`, `detailRole`. `FINANCE_CURRENCY_DEFAULTS` pro Signatur-Präfix greift, wenn die Quelle keine Währung liefert (für NIM_007 `S`). |
-| 4.7 | Jede Datierung wird ein `m3gim-ontology:Annotation`-Knoten mit `m3gim-ontology:atDate` und der erfassten Rolle, erreichbar ueber `m3gim-ontology:hasAnnotation` (E-136). `DATE_ONLY_ROLES` streicht die Rolle am Ortsteil eines Komposits `ort, datum`, weil eine Datumsrolle dort nichts aussagt; `is_iso_date()` trennt Freitext von ISO-Werten; `clean_date` normalisiert `YYYY-YYYY` → `YYYY/YYYY` |
-| 4.8 | `AGRELON_MAPPING` erzeugt `agrelon:HasEmployeeEmployer`/`HasCorrespondent`/`HasProfessionalContact`/`IsHasPatron`/`HasIsMember` je (typ, rolle); `m3gim-ontology:hasAgentRelation`-Array am Record |
-
-Noch offen:
-- Phase 4.9: Reifikation / `m3gim:Statement` — optional, spaet <!-- vocab-exempt: nennt ein vorgeschlagenes, nicht gebautes Muster -->
-
-### Erweiterungen fuer den neuen Datenstand (testgetrieben)
-
-Ein neuer Export erschliesst mehrere Konvolute tiefer und loest die freigegebene Modell-Erweiterung aus ([journal.md](journal.md) E-95 bis E-102). Die Umsetzung folgt dem TDD-Workflow ([testing.md](testing.md)): erst die rote Spec, dann der Code.
-
-Darauf aufbauend sichert eine Ontologie-Konformitaets-Welle (E-103 bis E-105) die Term-Korrektheit: `ric-rst:File`/`Fonds`, `agrelon:metadataProvenance`/`metadataConfidence`, `agrelon:IsHasPatron`, Person-Normdaten in `schema:`/`gndo:`, `m3gim-ontology:wdPremiereDate`, die Namespaces `documentaryFormTypes#`/`roles#` sowie der `test_26`-Lock. E-106 entfernt die Datierungs-Konfidenz ganz (`m3gim:dateEvidence`/`agrelon:metadataConfidence` an Datumsangaben werden nicht mehr serialisiert). <!-- vocab-exempt: nennt Terme der Konformitaetswelle E-103 bis E-105 unter ihren damaligen Namen -->
-
-#### Strukturelle Loader-Absorption (E-95)
-
-Die neue Export-Struktur erzeugt ohne Eingriff stillen Totalverlust bzw. einen Abbruch. Der Loader absorbiert das defensiv, statt die fehlerhaften Zeilen still fallen zu lassen.
-
-- Die Verknuepfungstabelle verteilt sich auf mehrere Box-Sheets; alle werden geladen und zusammengefuehrt, statt nur das erste. `validate.py` und `audit-data.py` benutzen denselben Loader; vorher lasen sie die Mappe mit `pd.read_excel` ohne Blattangabe, sahen also nur das erste Blatt, und ihre Befunde blieben hinter dem transformierten Stand zurück.
-- Die Signaturspalte traegt teils nur ein Leerzeichen als Kopf und ist luckig gefuellt; sie wird positionsbasiert erkannt und je Sheet forward-gefuellt.
-- Der Personenindex hat keinen sauberen Namensspaltenkopf; der Header-Shift greift jetzt auch fuer den Personenindex, sonst gehen alle Personen-Normdaten verloren.
-- Nicht-textuelle Spaltenkoepfe und Literal-`Folio`-Zellwerte werden abgefangen, statt die Folio-Erkennung abbrechen zu lassen.
-
-Diese Faelle sind nicht durchreichbar; die quellseitige Bereinigung steht in der Partner-Uebergabeliste [source-errors-handover-2026-09-01.md](../data/reports/source-errors-handover-2026-09-01.md).
-
-#### Schutzregeln der Index-Uebernahme (E-152)
-
-`build_index_lookup` schrieb je Namen einen Eintrag in Quellreihenfolge; bei gleichem Namen gewann die letzte Zeile vollstaendig, auch mit leeren Feldern gegen gefuellte. Die Lieferung vom 2026-08-31 fuehrt die Nachlassbildnerin zweimal im Personenindex, die zweite Zeile ohne Kennung und ohne Lebensdaten, womit die zentrale Person des Bestands ihre Wikidata-Kennung samt Anreicherung verlor.
-
-Die Uebernahme verdichtet jetzt feldweise. Identitaet ist die `m3gim_id`, ersatzweise der getrimmte Name; je Feld gewinnt der erste nicht leere Wert; ein gefuelltes Feld wird nie von einem leeren ueberschrieben; `assoziierte_person` sammelt alle Werte der Gruppe. Tragen zwei Zeilen derselben Identitaet in demselben Feld verschiedene nicht leere Werte, gewinnt der erste, und der Fall geht in den Validierungsreport; ein Flag am Knoten des Datensatzes entsteht nicht, weil der Konflikt im Bestand ausschliesslich die Anmerkungsspalte betrifft. Der Schluessel des Werkindex ist das Paar aus Titel und Komponist, weil `Requiem` und `Stabat mater` je drei verschiedene Werke bezeichnen; eine Verknuepfungszeile mit blossem Titel bleibt unaufgeloest und traegt `name-nicht-eindeutig`. Die Regel steht in [data.md](data.md) § Tabellenmodell unter Identitaet und Vorrang in den Indextabellen.
-
-#### Pruefschicht der CSV-Quelle (E-152)
-
-`validate.py` prueft die Verknuepfungszeilen zusaetzlich gegen die Formatregeln der Quelle und meldet jeden Befund mit Tabelle, Blatt und Zeile. Geprueft werden das Datumsformat gegen [data.md](data.md) § Datumskonventionen einschliesslich der Warnklasse fuer Zeitstempelmuster aus einer Autokonvertierung, das Muster der Buendelungskennung, das Folio-Muster mit der Bindestrichform als Befund, die Kreuzpruefung von `typ` und `rolle` gegen `Typ-Rolle.csv`, Zeilen mit `name` und ohne `typ` sowie Signaturstuempfe ohne Konvolutnummer. Kein Befund dieser Schicht veraendert Daten; jeder geht ueber die Partner-Uebergabeliste [source-errors-handover-2026-09-01.md](../data/reports/source-errors-handover-2026-09-01.md) an das Erschliessungsteam.
-
-#### Neue Modell-Features in transform.py
-
-| Bereich | Aenderung |
-|---|---|
-| Buehnenrollen (E-96) | `rolle, person`-Komposit wird dekomponiert und erzeugt eine n-aere `m3gim-ontology:Performance` mit `hasStageRole` (Slug-`@id`, `belongsToWork`) + gegen den Personenindex aufgeloestem `hasPerformer` |
-| Mobilitaet (E-97) | `MOBILITY_PLACE_ROLES` = {zielort, absendeort, abreiseort, empfangsort, vertragsort} erzeugen am `ort`-Zweig eine zusaetzliche datumslose `m3gim-ontology:Annotation` (kein `atDate`); die flache `rico:hasOrHadLocation` bleibt. `wohnort`/`vertragspartner` vertagt (keine Daten). |
-| Auffuehrungen (E-98) | `datum, werk`-Branch in `decompose_komposit_value`; `m3gim-ontology:Performance` mit `performanceOf` (nur aus Werkindex) + `auffuehrungsdatum`; `^\d{4}`-Guard filtert Komponist-statt-Werk-Zeilen |
-| Finanz (E-99) | `parse_monetary_value`-Umbau: nachgestellte Waehrung abtrennen, Doppelbetraege in zwei DetailAnnotations; neue Waehrungen + detailRoles als Originalcode; `contractStatus`/`realized` fuer „nicht eingehalten" |
-| Datum/Evidenz (E-100/E-102) | `m3gim-ontology:hasAnnotation` (inline `m3gim-ontology:Annotation`) fuer klammer-unsichere Datierungen; Datums-Routing (ISO / TimeSpan / DatedEvent / `nach:`); `erstelldatum` als typisierte Property |
-| Dokumentvokabular (E-101) | neue dft-Concepts (musikzeitschrift, briefumschlag, chronik, verzeichnis); `dokument`-Typ als `scopeAndContent`/Blank-Node statt Subject; `sammlung` ohne `skos:broader` |
-| Datenqualitaet (E-102) | `m3gim-ontology:dataQualityFlag` aus `anmerkung`-Signalen; `m3gim-ontology:processingNote` fuer den Bearbeitungsstand |
-
-### Nachzuege
-
-#### Koordinaten-Patch fuer SpatiotemporalEvents (E-76)
-
-`scripts/transform.py` injiziert Wikidata-Koordinaten jetzt auch in den `m3gim-ontology:atPlace`-Subteil eines `SpatiotemporalEvent`. Vorher hatten nur regulaere `rico:Place`-Entries `geo:lat`/`geo:long`; STE-Orte trugen nur den Namen und blieben auf der Karte unverortet. Zwei minimale Eingriffe: (a) `process_verknuepfungen()` loest den Ortsteil des `ort,datum`-Komposits gegen `indices["ort"]` auf und setzt `wikidata_id`, (b) `add_relations_to_records()` baut den Place-Entry mit gleichem Muster wie im Haupt-Loop und ruft `_inject_enrichment()`. TDD-Abdeckung in `tests/test_22_ste_coordinates.py` (Anker Zuerich Q72, Salzburg Q34713).
-
-#### ORTE-Rollen-Hygiene
-
-Bug: Im Komposit `ort,datum` wurde die Rolle (z. B. `erscheinungsdatum`) blind an beide Haelften vererbt — der `rico:Place` trug dadurch eine Datumsrolle, im UI erschien „Stuttgart (erscheinungsdatum)". Fix in `add_relations_to_records()`: wenn die Rolle in `DATUMSROLLE_TO_PROPERTY` liegt, wird `role` am Place-Entry geloescht. Nicht-Datumsrollen (`auffuehrungsort`, `wohnort`, `erscheinungsort`) bleiben. Regression-Test in `tests/test_23_role_hygiene.py`.
-
-#### Smart-P17 Claim-Selection (E-79)
-
-`enrich-wikidata.py` waehlt fuer Entity-Ref-Properties (P17, P19, P20, P276, P86) jetzt den „aktuellen" Claim via Helper `_pick_current_claim()`: (1) `rank == "preferred"`, (2) Claims ohne `P582`-Qualifier, (3) erster Non-deprecated-Claim. Loest Berlin Q64 → Deutschland (war „Mark Brandenburg" als chronologisch erster Claim). Ebenfalls: Label-Aufloesung laeuft jetzt auch ueber bereits gecachte Entitaeten (vorher blieben Q-IDs aus alten Cache-Laeufen als „Q39"-Strings stehen).
-
-#### Manuelle Q-ID-Approvals — Workflow (E-78)
-
-Manuelle Eintraege in `wikidata-reconciliation.json` (Shape siehe E-74) werden vor dem Commit gegen Live-Wikidata geprueft:
-
-```bash
-python scripts/verify-manual-approvals.py
-```
-
-Das Skript batch-fetcht Labels + Aliases + Descriptions und vergleicht mit dem `name`-Feld. Exitcode 1 bei Mismatch blockiert CI/Commit. Begruendung: ein Approval-Batch trug stumm falsche Q-IDs (Q2861 war Rostock statt Bayreuth, Q200491 war ein US-Videospiel-Publisher statt Iwano-Frankiwsk). Siehe auch [CLAUDE.md § Manuelle Wikidata-Approvals verifizieren](../CLAUDE.md).
-
-### Pipeline-seitige Normalisierungen
-
-Strukturelle Transformationen (keine Datenfehler-Kaschierung): Spalten-Lowercase nach `pd.read_excel`, Folio-Spalten-Heuristik, Bearbeitungsstand-Kanonisierung, Gender-Suffix-Strip in Rollen, Q-ID-Regex-Filter, Zeitspannen-Normalisierung `YYYY-YYYY` → `YYYY/YYYY`, Unterstrich als Komposit-Trenner (`Datum_Ort` aus dem Dropdown-Export), Hilfsblatt-Filter in `load_verknuepfungen` (Sheets ohne `typ`+`name`), `unprocessedIds`-Set im Store. Vollständiger Katalog mit Prinzip-Einordnung (Spec/Workaround/Policy/Dead), Source-Fix-Vorschlägen und Test-Ankern: **[data.md § Datenqualität](data.md)**.
-
-### Wikidata-Reconciliation
-
-`reconcile.py` implementiert mit:
-
-- **Fuzzy-Matching**: `thefuzz.token_set_ratio`, Confidence-Level exact (≥100), fuzzy_high (≥90), fuzzy_low (≥80)
-- P31-Verifikation (instance-of-Check gegen erwarteten Typ)
-- **Composer-aware Werk-Matching**: Compound-Query "Titel Komponist", P86-Bonus (+5 Score)
-- Caching fuer wiederholte Laeufe
-- MIN_NAME_LENGTH=3, CLI: `--min-confidence`, `--force`, `--type`
-- **Low-Confidence-Policy (E-74):** `fuzzy_low`-Matches werden im Output markiert, aber nur bei `manual_review: "approved"` an Enrichment + transform.py durchgereicht. Der Rest erscheint im Quality-Snapshot zur redaktionellen Freigabe.
-
-### Wikidata-Enrichment
-
-`enrich-wikidata.py` holt Properties aus der Wikidata API:
-
-- Personen: P106 (Beruf), P412 (Stimmfach), P19/P20 (Geburts-/Sterbeort), P569/P570 (Lebensdaten)
-- Orte: P625 (Koordinaten), P17 (Staat)
-- Werke: P86 (Komponist), P136 (Genre), P1191 (Urauffuehrungsdatum)
-- Orgs: P276 (Standort), P571 (Gruendungsdatum)
-- Output: `data/output/wikidata-enrichment.json`
-- `transform.py` injiziert Properties als `owl:sameAs` + `m3gim:`-Properties in JSON-LD
-- Frontend (loader.js) extrahiert Properties in Store → Indizes-Subtitles, Kosmos-UA-Distanz
-
-### CI/CD
-
-- Kein aktiver Workflow (`.github/workflows/build-views.yml` wegen Merge-Konflikten entfernt)
-- Pipeline wird lokal ausgefuehrt, Ergebnisse manuell committet
-- Reaktivierung moeglich wenn Dritte Daten updaten sollen
-
-### Dateien in docs/data/
-
-| Datei | Format | Status |
-|-------|--------|--------|
-| `m3gim.jsonld` | JSON-LD | **Alleinige primäre Datenquelle** für das Frontend. Enthält Records + SpatiotemporalEvents + SKOS-Concepts + AgRelOn-Relationen + Finanz-Details + technische Provenance. |
-
-### Datenstand
-
-Aktuelle Zahlen zum Bestand, Abdeckung, Verknüpfungsrate und Wikidata-Coverage stehen im **Quality-Snapshot** (`data/reports/quality-snapshot.md`). Der Snapshot wird bei jedem Pipeline-Lauf neu generiert und ist der Single Source of Truth für Zahlen gegenüber dem Erschließungsteam; knowledge-Dokumente halten keine laufenden Zählstände vor, weil die bei jedem Rerun veralten.
-
-Aktuelle Korpus-Struktur qualitativ: Teilnachlass UAKUG/NIM mit den Bestandsgruppen Hauptbestand, Plakate und Tonträger, feinerschlossen auf Folio-Ebene ist eine wachsende Auswahl der Konvolute. Welche das sind, steht im Quality-Snapshot. Frühere Stände liegen unter `data/_archive/` als Referenz.
-
-### Datenqualität
-
-Baseline und Handlungsbedarfe stehen gebündelt in **[data.md § Datenqualität](data.md)** (Workaround-Katalog mit Source-Fix-Vorschlägen) und im laufenden **[`data/reports/quality-snapshot.md`](../data/reports/quality-snapshot.md)** (Verknüpfungsrate, Bearbeitungsstand, Wikidata-Coverage pro Entitätstyp, Provenance-Coverage, Low-Confidence-Freigabeliste). Die Pipeline erzeugt den Snapshot bei jedem Lauf neu; sie ist die Single Source of Truth für Zahlen.
-
-### Modell-Weiterentwicklung
-
-- **Phase 6 (abgeschlossen):** `loader.js` hat Store-Maps `dftHierarchy`, `mobilityEvents`, `recordToEvents`, `agentRelations`, `finances` + typisierte Datumsfelder als Fallback in `indexByYear`. Siehe [Frontend](#frontend).
-- **Phase 7 (abgeschlossen):** Interface-Redesign nach [design.md](design.md). Der Funktionsumfang der Tabs steht in [specification.md](specification.md) § Funktionsumfang und Abgrenzung.
-- **Modell-Erweiterung neuer Datenstand (aktiv):** Loader-Fix und die Features aus E-95 bis E-102, testgetrieben umgesetzt (siehe oben). `m3gim-ontology:StageRole` als Entitaet ist Teil davon; ein dedizierter Rollenindex-XLSX (Spalten `m3gim_id`, `name`, `belongsToWork`, `voiceType`, `wikidata_id`) bleibt extern blockiert und wartet auf das Erschliessungsteam.
+There is no active CI workflow, the pipeline runs locally and the results are committed by hand.
 
 ## Frontend
 
-### Laufzeitmodell
+### Runtime and toolchain
 
-Die Erfassung liegt als git-getrackter Export unter `data/google-spreadsheet/` (E-06, E-40), die Pipeline erzeugt daraus `docs/data/m3gim.jsonld`, und die Präsentation ist eine statische Single-Page-Anwendung in `docs/`. Der gesamte Datensatz wird beim Start geladen (E-05). Danach arbeitet die Anwendung ohne weitere Netzanfrage, mit der einen Ausnahme der Ländergeometrie, die die Karte beim ersten Öffnen nachlädt.
+Vanilla JavaScript with ES modules, no build step (E-03), no framework (E-01), delivery over GitHub Pages. The whole dataset is loaded once at startup (E-05), after which the application makes no further request except the country geometry the Karte fetches when it first opens. D3 comes from a CDN (E-02) and carries two places, the projection and zoom of the Karte in `views/karte-map.js` and the edge drawing of the Netzwerk in `views/_netzwerk-canvas.js`. The bars of the Statistik are DOM primitives without a library.
 
-`main.js` ist der Einstieg. Es lädt `./data/m3gim.jsonld` über `loadArchive`, blendet den Ladezustand aus, richtet den Korb ein und startet den Router. Die Registry `TAB_RENDERERS` bildet jeden Tab-Key auf seine Renderfunktion ab. Ein Tab wird beim ersten Aktivieren einmal gerendert und danach von seiner eigenen Zeichenlogik aktualisiert, nur der Korb wird bei einer Änderung seines Inhalts komplett neu gerendert. Ein Renderfehler bleibt auf seinen Tab beschränkt und gibt ihn für einen neuen Versuch frei (E-51). Auf localhost lädt `main.js` zusätzlich `utils/dev.js` per dynamischem Import (E-50).
+`main.js` is the entry. It loads `./data/m3gim.jsonld` through `loadArchive`, sets up the Korb and the register menu, and starts the router. The registry `TAB_RENDERERS` maps every tab key onto its render function. A tab is rendered once when it is first activated and afterwards updated by its own drawing logic, only the Korb is fully redrawn when its content changes. A render error stays inside its tab and releases it for another attempt (E-51). On localhost `main.js` additionally imports `utils/dev.js` dynamically (E-50).
 
-### Toolchain
+### Module layout
 
-Vanilla JS mit ES6-Modulen, kein Build-Schritt (E-03), kein Framework (E-01), Auslieferung über GitHub Pages. D3 v7 kommt per CDN (E-02) und trägt zwei Stellen, die Projektion und das Zoomverhalten der Karte in `karte-map.js` und die Zeichnung des Netzwerk-Canvas in `_netzwerk-canvas.js`. Die Balken der Statistik sind DOM-Primitive ohne Bibliothek.
+Every view follows the same cut. The orchestrator holds the view-local state, builds the sidebar and draws. The data layer beside it is free of DOM and D3 and therefore checkable with Node unit tests, and where the drawing grows it lives in a module of its own.
 
-### Verzeichnisstruktur
-
-#### Top-Level
-
-- `docs/` trägt Frontend und ausgelieferte Daten.
-- `scripts/` trägt die Datenpipeline.
-- `data/` trägt Rohdaten, Reports und Pipeline-Output.
-- `knowledge/` trägt die kanonische Wissensbasis.
-- `tests/` trägt die Testsuite (siehe [testing.md](testing.md)).
-
-#### Frontend-Module
-
-Jede Ansicht ist nach demselben Schnitt gebaut. Der Orchestrator hält den view-lokalen Zustand, baut die Sidebar und zeichnet. Die Datenschicht daneben ist DOM- und d3-frei und deshalb mit Node-Unit-Tests prüfbar, und wo die Zeichnung umfangreich wird, liegt sie in einem eigenen Modul.
-
-| Pfad | Zweck |
-|------|-------|
-| `main.js` | Einstieg, `TAB_RENDERERS`-Registry, Lazy-Rendering je Tab, Error Boundaries, dynamischer Import der Diagnose |
-| `data/loader.js` | JSON-LD-Ladeschicht und Store-Aufbau in Durchläufen (E-72), dazu die Zugänge zu Datierungen und Verortungen, darunter `primaryYear` als einziger Zeitanker |
-| `data/records-for.js` | Filter zu Dokumentmenge, die einzige Auflösung im Frontend, mit `baseIds`, `recordsFor`, `facetInventory`, `docTypeGroups`, `facetCounts`, `yearBounds` und `yearOf`. Rein |
-| `data/constants.js` | `CONTENT_FAMILIES` und `familyOfBlock`, `ROLE_CLUSTER`, `ROLE_TO_SECTION`, `AGRELON_LABELS`, `EVENT_ROLE_TO_MOBILITY_CLUSTER` mit `mobilityClusterFor`, die Bezugsebenen der Datierung sowie Wikidata- und Korb-Symbol |
-| `ui/router.js` | Hash-Routing, Tab-Umschaltung, ARIA-Zustand, `navigateToView`, `navigateToIndex`, `applyArchivFilter`, `setIndexRegister`, der Katalog `INDEX_REGISTERS`, Legacy-Aliase. Die einzige Stelle, die in die Adresszeile schreibt |
-| `ui/tabs.js` | Tastaturmuster der Tab-Leiste, `nextTabIndex`, `setRovingTabindex`, `initTabKeyboard`. Kennt das Routing nicht, es liefert den gewählten Tab-Namen zurück |
-| `ui/sidebar.js` | Das eine Gerüst der linken Filterspalte, `createSidebar(store, opts)` und `viewShell`, dazu die Control-Fabriken und die Chip-Zeile `filterStrip` mit den ansichtslokalen Gruppen aus `localChips` (E-223) |
-| `ui/filter-state.js` | Der geteilte Filterzustand mit `getFilter`, `setFilter`, `addFacetValue`, `applyViewDefault`, `resetFilter`, `deviatingKeys` und `subscribe` |
-| `ui/filter-url.js` | Der Filter im URL-Hash, `serializeFilter`, `parseFilterQuery`, `splitHash`, `buildHash`. Rein |
-| `ui/filter-sync.js` | `applyZeitfenster`, die Faltung zwischen Jahresfenster und Zeitfenster-Facette und der Loop-Guard. Rein |
-| `ui/events.js` | Der Navigationskanal `m3gim:navigate` für den Sprung auf einen Datensatz, mit Nachspielen für noch nicht gerenderte Ansichten (E-53) |
-| `ui/basket.js` | Korb mit localStorage-Persistenz und Änderungs-Callback |
-| `ui/charts.js` | `buildHorizontalBars`, das eine Ranglisten-Primitiv der Statistik. Kennt den Bestand nicht |
-| `views/bestand.js` | Orchestrator der Bestandstabelle, mit Spalten, der Anwendung des geteilten Schnitts, dem Zeilenaufbau und dem Inline-Detail |
-| `views/bestand-data.js` | Reihenfolge und Badge-Entscheidung der Tabelle, dazu `familiesForRecord` als Grundlage der Erschließungsanzeige. Rein |
-| `views/bestand-rows.js` | Zellenbau, also Typ als Text und Konvolut-Badge, Erschließungsanzeige für Zeile und Kopf, Konvolut-Chips, Folio-Hinweis ohne Zeichen und Korb-Knopf mit `korbIcon` (E-174, E-177, E-217) |
-| `views/_bestand-filter.js` | Die geteilte Filter-Pipeline von Bestand und Chronik, `filterBySharedState`, die beiden Freitext-Prädikate und `widenFilterForRecord` als minimale Weitung des Schnitts auf einen angesprungenen Datensatz (E-219) |
-| `views/chronik.js` | Orchestrator des Jahres-Zeitstrahls samt Dekaden-Header und Record-Chips |
-| `views/chronik-data.js` | `sichtForRecord` und `aggregateDecadeStacks`, die Sichten-Konstanten kommen aus `statistik-data.js`. Rein |
-| `views/statistik.js` | Orchestrator, hält die Wahl der Ansicht und zeichnet genau eine über die volle Breite |
-| `views/statistik-data.js` | Die Aggregationen über die Dokumentmenge des Schnitts. Rein |
-| `views/statistik-sections.js` | Je Ansicht eine Sektion aus Ranglisten, mit dem Durchstich in den gefilterten Bestand, wo eine Facette existiert (E-144) |
-| `views/indizes.js` | Die eine Registerseite mit Registerwähler im Listenkopf, Sortierung und Normdaten-Schaltern in der Seitenleiste, aufklappbarem Eintrag samt Umfeld und den Sprüngen in Bestand, Netzwerk und Karte (E-226) |
-| `views/indizes-data.js` | Einträge je Register mit Memoisierung, Suche, Sortierung, die beiden Normdaten-Prädikate, `buildUmfeld` und `workStageRoles`. Rein |
-| `views/karte.js` | Orchestrator der Karte, mit Entitäts- und Landesschnitt, Detail-Region und dem Zusammenspiel mit dem geteilten Filter |
-| `views/karte-data.js` | Entitäten, Belege, Verortungsstufen, Länder-Aggregat und Sicht-Aufschlüsselung. Rein |
-| `views/karte-map.js` | Projektion, Basemap, Knoten, Zoom und Pan der Karte |
-| `views/karte-picker.js` | Die Entitätswahl als Sektions-Spezifikation für `createSidebar` |
-| `views/netzwerk.js` | Orchestrator des Graphen, mit Fokus, Knotentypen, Reglern, Detail-Spalte und Telemetrie |
-| `views/_netzwerk-geometry.js` | `buildGraph`, `computeLayout`, `computeCoOccurrence`, `focusRecords`, `derivePersonKategorie`, `labelGeometry` und die Typ- und Kategorie-Tabellen. Rein und deterministisch (E-93, E-94) |
-| `views/_netzwerk-canvas.js` | SVG-Zeichnung, Zoom-Knöpfe und Hover-Hervorhebung des Graphen |
-| `views/record-detail.js` | Das Detail eines Datensatzes über die volle Breite, `buildInlineDetail` und `buildRecordBlocks` als geteilte Quelle der funktionalen Blöcke |
-| `views/record-detail-data.js` | `partitionRecord` und `sourceSummary`, die DOM-freie Zerlegung eines Datensatzes. Rein |
-| `views/record-chips.js` | Die Chip-Fabriken je Blocktyp und `buildRoleChip` als universelles Daten-Atom |
-| `views/korb.js` | Korb-Cards aus denselben Blöcken, dazu CSV- und BibTeX-Export |
-| `utils/` | `dom.js` (Elementbau), `env.js` (`IS_DEV`, `logStamp`), `format.js` (Signaturen, Dokumenttypen, DFT-Baum, Gloss), `normalize.js` (Namensfaltung und Trefferbereiche der Autovervollständigung), `date-parser.js`, `provenance.js` (`extractXlsxSource`, E-91), `dev.js` (Diagnose) |
-
-#### Stylesheets
-
-`docs/css/variables.css` trägt die Tokens, jede andere Datei liest ausschließlich daraus. Die Tokens liegen in Schichten. Zuerst die Flächen und Linien mit `--surface`, den beiden warmen Stufen `--surface-2` (Creme) und `--surface-3` (Pergament) und den drei Linienstärken, dann der Akzent in vier Abstufungen, dann die warmen Textwerte und die beiden semantischen Farben für Fehler und Normdaten-Treffer. Der Kopfkommentar der Datei führt die Palettenregel, warme Fläche und kühler Akzent bleiben getrennt (E-186). Darunter die kategoriale Reihe `--cat-1` bis `--cat-6`, aus der Mobilitätssichten und Netzwerk-Kategorien ihre Werte beziehen, und die vier Inhaltsfamilien-Töne, die zugleich die Knotentypen des Netzwerks tragen. Zuletzt Typografie, Textgrößen, Abstände, Layoutmaße, Radien, Übergänge und Schatten. Der Alias-Block ist aufgelöst (E-202). Die beiden Gold-Aliasse fielen mit E-186, weil ein warmer Name auf dem blauen Akzent die verbotene Mischung war, und die sechs verbliebenen Altnamen `--color-kug-blau`, `--color-kug-blau-light`, `--color-kug-blau-dark`, `--color-paper`, `--color-cream` und `--color-parchment` sind in allen Stylesheets durch die Akzent- und Flächen-Tokens ersetzt und danach gelöscht. Zwei Namen für denselben Wert verstellen die Ablesbarkeit der Palettenregel.
-
-| Datei | Rolle |
+| Path | Purpose |
 |---|---|
-| `variables.css` | Design-Tokens, die einzige Quelle für jede andere Datei |
-| `base.css` | Reset, Typografie, Platzhalterregel aller Eingabefelder (E-188), Seitengerüst aus dem einzeiligen Markenband (`.topbar`, `--brand-band-height`, E-196), Inhalt und Fuß |
-| `components.css` | Geteilte Primitive, also Badges, Chips, Legendenzeile, Leerzustand, Spinner, Tooltip und Inline-Detail |
-| `tabs.css` | Die Tab-Leiste mit ihren drei Gruppen und der Haarlinie zwischen ihnen (E-160) |
-| `sidebar.css` | Gerüst und Controls der einen Filterspalte, `.vs-*` für Sektionen und Regler, `.fs-*` für Facetten und Vorschläge, dazu der Container am Hauptbereich |
-| `bestand.css`, `chronik.css`, `indizes.css`, `statistik.css`, `karte.css`, `netzwerk.css`, `korb.css` | Je ein Stylesheet pro Tab, benannt wie sein Tab-Key (E-159), mit ausschließlich ansichtseigenen Visuals |
-| `pages.css` | Die eigenständigen Infoseiten |
+| `main.js` | Entry, `TAB_RENDERERS`, lazy rendering per tab, error boundaries |
+| `data/loader.js` | JSON-LD loading and store construction in separate passes (E-72), plus the accessors for datings and locations, `primaryYear` among them |
+| `data/records-for.js` | The one resolution from store and filter to a result set, with `baseIds`, `recordsFor`, `facetInventory`, `docTypeGroups`, `facetCounts`, `yearBounds`, `yearOf`. Pure |
+| `data/constants.js` | `CONTENT_FAMILIES` and `familyOfBlock`, `AGRELON_LABELS`, `ANCHORING_SCOPES`, the mobility cluster mapping, and the shared glyphs |
+| `ui/router.js` | Hash routing, tab switching, ARIA state, `navigateToView`, `navigateToIndex`, `applyArchivFilter`, `setIndexRegister`, `INDEX_REGISTERS`, legacy aliases |
+| `ui/tabs.js` | Keyboard pattern of the tab bar, returns the chosen tab name and writes no hash |
+| `ui/register-menu.js` | The register menu at the Indizes tab, a second click or ArrowDown opens the four registers under it (E-230) |
+| `ui/sidebar.js` | The one scaffold of the filter column, `createSidebar` and `viewShell`, the composer of the parts beside it and the one import address of the views (E-250) |
+| `ui/sidebar-status.js`, `-facets.js`, `-options.js`, `-range.js`, `-strip.js`, `-controls.js` | Result line, shared facets and tree control, row forms, year range, chip strip, remaining control factories |
+| `ui/filter-state.js` | The shared filter state with `getFilter`, `setFilter`, `addFacetValue`, `applyViewDefault`, `resetFilter`, `deviatingKeys`, `subscribe` |
+| `ui/filter-url.js`, `ui/filter-sync.js` | The filter in the hash query and the folding between year window and time facet. Pure |
+| `ui/events.js` | The navigation channel `m3gim:navigate`, replayed for views not yet rendered (E-53) |
+| `ui/basket.js`, `ui/charts.js`, `ui/family-icons.js` | Korb with localStorage persistence, the horizontal bar primitive, the four family symbols |
+| `views/*` | Per view an orchestrator, a pure data layer and, where needed, a drawing module |
+| `utils/` | `dom.js`, `env.js` (`IS_DEV`, `logStamp`), `format.js` (signatures, document types, `cityOf`), `normalize.js`, `date-parser.js`, `provenance.js` (`extractXlsxSource`, E-91), `dev.js` |
 
-Der Umbruch für schmale Fenster hängt an einer Container Query statt an der Fensterbreite. `#main-content` eröffnet den Container `view-shell` über `container: view-shell / inline-size`, und die Ansichten fragen ihn mit `@container view-shell (width < 900px)` ab. Der Container sitzt am Elternelement, weil ein Element den Container nicht abfragen kann, den es selbst eröffnet, und weil der Spaltenwechsel des Gerüsts Teil der Antwort ist.
+The stylesheets follow the same split, `docs/css/variables.css` carries the tokens and one stylesheet per tab carries its own visuals. The token layers and the design rules behind them stand in [design.md](design.md).
 
-#### Info-Seiten (statisches HTML)
+The content pages `about.html`, `projekt.html`, `datenmodell.html` and `impressum.html` lie beside the application as standalone HTML and are reached by ordinary links, not by hash routing. Explanatory and legal content is a linkable page and never a modal overlay (E-26). `datenmodell.html` is generated and never written by hand.
 
-Unter 900 Pixel Containerbreite faltet sich die Filterspalte hinter einen Schalter, den `viewShell` als erstes Kind der Shell baut; unter 700 Pixel verliert die Bestandstabelle die Typspalte und die Zahlen der Entitätenspalte, die Chronik verengt ihre Jahresspalte. Der Druck zeigt jeden Konvolut offen, weil `bestand.js` auf `beforeprint` alle Köpfe öffnet und auf `afterprint` den Zustand zurückstellt; das Druck-Stylesheet nimmt Seitenleiste, Chip-Zeile und Korb-Spalte heraus.
+### Store and loader
 
-Die Content-Seiten `about.html`, `projekt.html`, `datenmodell.html` und `impressum.html` liegen als eigenständige HTML-Dateien neben der Anwendung und werden über normale Links erreicht, nicht über das Hash-Routing. `datenmodell.html` erzeugt `scripts/build-model-page.py` aus dem Vokabular und wird nie von Hand geschrieben. Alle fünf Seiten teilen denselben Head mit Canonical, Open Graph, Twitter Card, Manifest und Stylesheet-Links mit Versionsangabe, dazu strukturierte Daten nach schema.org als WebSite und, auf der Startseite, als Dataset; `docs/robots.txt` und `docs/sitemap.xml` führen sie, `tests/test_51_html_hygiene.py` prüft Struktur und Meta-Sets jeder Seite, `tests/test_49_footer.py` hält Fuß und Versionsangabe der Kopien gleich. Das Open-Graph-Bild und die PNG-Favicons in `docs/img/` schreibt `scripts/build-social-images.py`. Erklärende und rechtliche Inhalte stehen als verlinkbare Seiten und nie als modales Overlay über der Anwendung (E-26).
+`loadArchive` distinguishes a missing network connection, a missing file and a failed parse and reports each case with its own German text (E-52). `buildStore` builds the maps in separate passes (E-72), first the concepts so an annotation finds its dating scope while it is being built, then nodes, relations, the convolute hierarchy and finally the set of records without any link.
 
-### Routing
-
-Das Routing liegt in `ui/router.js` und ist die einzige Stelle, die in die Adresszeile schreibt.
-
-- Die Grammatik lautet `#<tab>[/<recordId>][?<query>]`. `splitHash` trennt zuerst den Query-Teil ab und zerlegt erst danach den Pfad an `/`, sodass ein bestehender Deep-Link auf einen Datensatz gültig bleibt. Geschrieben wird mit `replaceState`, damit ein Sliderschritt keinen History-Eintrag erzeugt. Bei den Indizes trägt der zweite Pfadteil kein Dokument, sondern das Register aus dem Katalog `INDEX_REGISTERS`, die Adresse lautet dort also `#indizes/personen` (E-226).
-- Der Katalog `TABS` führt `bestand`, `chronik`, `statistik`, `indizes`, `karte`, `netzwerk` und `korb`. Jeder registrierte Tab ist sichtbar, verborgene Tabs gibt es seit E-140 nicht mehr.
-- Drei Legacy-Aliase halten alte Adressen am Leben. `archiv` wird zu `bestand`, `mobilitaet` und `mobilitaets-atlas` werden zu `karte` (E-118), und `verknuepfungen` wird zu `netzwerk`, weil die Ansicht mit E-160 dort aufgegangen ist. Der Query-Teil überlebt die Umleitung, ein geteilter Link öffnet also denselben Befund. Das Instanzpräfix `m3gim:` aus der Zeit vor der Namensraum-Dreiteilung löst `resolveRecordId` auf `m3gim-data:` auf (E-138).
-- `parseHash` liest den Pfad vor dem Query. Die Filterübernahme dispatcht an die Abonnenten, und der Router schreibt aus dieser Subscription die Adresszeile zurück. Lief sie vor dem Pfad, trug der neue Hash den Datensatz des vorigen. Ein Hash ohne Datensatzteil löscht `state.selectedRecord`, sonst öffnete der vorige Datensatz im neuen Tab wieder (E-219). Der Query-Teil geht in den geteilten Filter, bevor die Ansichten rendern. Ein leerer Query löst den Filter nicht auf, er heißt „dieser Link nennt keinen Schnitt“ und nicht „kein Schnitt“.
-- `navigateToIndex(gridType, entityName)` springt in die Indizes, `navigateToView(tab, context)` in eine Ansicht mit Kontext, und `applyArchivFilter(facet, value)` schreibt einen Facettenwert in den geteilten Filter und wechselt in die Ansicht, die ihn zeigt. Jeder Record-Sprung aus einer Ansicht nimmt diesen Weg, kein Modul setzt `location.hash` selbst (E-208). Der Kontext trägt neben `recordId` auch `register` und `entry` für die Indizes, `focus` für das Netzwerk und `entity` für die Karte. Nur die Record-ID und das Register stehen in der Adresse, das Übrige reist als Detail des `m3gim:navigate`-Events und bleibt aus dem geteilten Filter heraus (E-226). `setIndexRegister(key)` setzt das Register aus der Ansicht heraus und schreibt es in die Adresse, `emitIndexRegister` meldet einen Registerwechsel aus der Adresszeile an die bereits gezeichnete Ansicht, die ein Tab nur beim ersten Aktivieren rendert.
-- Der Router abonniert den Filter selbst und schreibt jede Änderung als Query-Teil nach, statt sich von `main.js` rufen zu lassen.
-
-### Tab-Leiste
-
-Die Kopfleiste ist eine einzige Zeile, das Markenband in KUG-Blau, und trägt Marke, Tabs und Infolinks zugleich (E-196, löst den Tab-Zeilen-Teil von E-185 ab). `.topbar--app` nimmt dem Band den Zwischenraum und gibt `.topbar__lead` die Breite `calc(var(--view-sidebar-w) - var(--topbar-pad))`, sodass der erste Tab genau auf der linken Kante der Arbeitsfläche steht und mit der Tabelle darunter fluchtet. Die Tab-Leiste dehnt sich über die volle Bandhöhe, damit die Unterlinie des aktiven Tabs auf der Bandkante sitzt. `--top-bar-height` ist damit gleich `--brand-band-height` und bleibt der Wert, gegen den `sidebar.css` die Höhe des Gerüsts rechnet. Die Infoseiten tragen dasselbe Band ohne Tabs. Die Leiste steht in `docs/index.html` als `role="tablist"` mit den drei Gruppen Material, Perspektiven und Werkzeug (E-160). Die Gruppen-Container tragen `role="none"`, damit die Tabs im Barrierefreiheitsbaum direkte Kinder der Tabliste bleiben und die Gruppierung eine reine Leseordnung ist. Sichtbar getrennt werden die Gruppen durch Abstand und eine kurze senkrechte Haarlinie, weil eine Gruppenbeschriftung dauerhaft sichtbaren Erklärtext in die Navigation setzen würde.
-
-`ui/tabs.js` trägt das Tastaturverhalten des WAI-ARIA-Musters. Pfeiltasten laufen über alle Tabs in DOM-Reihenfolge und halten an keiner Gruppengrenze, `Home` und `End` springen an die Enden, und die Bewegung schließt sich zum Ring. Aktivierung folgt dem Fokus. `setRovingTabindex` hält genau einen Tab über die Tabulatortaste erreichbar, und der Router zieht diesen Index nach jedem Wechsel in DOM-Reihenfolge nach, die von der Reihenfolge in `TABS` abweicht. Das Modul liefert nur den gewählten Tab-Namen zurück, das Schreiben des Hash bleibt beim Router.
-
-### Store-Struktur (aus loader.js)
-
-`loadArchive` liest die Datei, unterscheidet fehlende Netzverbindung, fehlende Datei und fehlgeschlagenes Parsen und meldet jeden Fall mit eigenem deutschen Text (E-52). `buildStore` baut daraus die Maps in getrennten Durchläufen auf (E-72). Der erste Durchlauf indiziert die Begriffe, damit eine Annotation ihre Bezugsebene beim Bau schon findet, danach folgen Knoten, Beziehungen, die Konvolut-Hierarchie und zuletzt die Menge der Datensätze ohne jede Verknüpfung.
-
-```
-store = {
-  fonds, konvolute, records, allRecords, byYear, byDocType, bySignatur,
-  persons, organizations, locations, works, ensembles,
-  konvolutChildren, childToKonvolut, konvolutMeta, folioIds, unprocessedIds,
-  recordCount, konvolutCount, exportDate, qualityMeta,
-  dftHierarchy, conceptDefinitions, roleVocab, roleScope, roleRank,
-  annotations, recordToAnnotations, recordDatings,
-  mobilityEvents, recordToEvents,
-  agentRelations, finances,
-  stageRoles, performances, recordToPerformances,
-  eventsByRole, recordsByAgentRole,
-}
-```
-
-| Store-Map | Quelle im JSON-LD | Verwendung |
+| Store map | Source in the JSON-LD | Use |
 |---|---|---|
-| `dftHierarchy`, `conceptDefinitions` | `skos:Concept`-Knoten mit `skos:broader` und Definition | Dokumenttyp-Facette als Baum, Anzeigelabel, Gloss am Badge (E-143) |
-| `roleVocab`, `roleScope`, `roleRank` | Rollenbegriffe des Vokabulars mit Bezugsebene und Rang (E-150) | Anzeigeform einer Rolle und Auswahl des Zeitankers |
-| `annotations`, `recordToAnnotations`, `recordDatings` | `m3gim-ontology:Annotation` und `hasAnnotation` | Datierungen im Detail, Sicht-Facette, `primaryYear` |
-| `mobilityEvents`, `recordToEvents` | die verorteten Annotationen samt Koordinaten und Land | Karte, Sicht-Akzent der Chronik, Ort-und-Ereignis-Block des Details |
-| `agentRelations` | `m3gim-ontology:hasAgentRelation` am Datensatz | Beziehungsblock des Details, Beziehungsbadges der Indizes, Netzwerk |
-| `finances` | Detail-Annotationen mit `monetaryAmount`, `currency` und `detailRole` | Finanzblock von Detail und Korb |
-| `stageRoles`, `performances`, `recordToPerformances` | `StageRole`- und `Performance`-Knoten (E-96, E-98) | Werk- und Aufführungsblöcke des Details, Bühnenrollen der Statistik |
-| `eventsByRole`, `recordsByAgentRole`, `ensembles` | vorberechnete Facettenindizes | Achsen von `recordsFor`, damit ein Schnitt nicht über den Graph läuft |
-| `unprocessedIds` | Datensätze ohne jede Verknüpfung | Definition der Dokumentbasis (E-165) |
-| `konvolutMeta` | Aggregat je Konvolut aus Titel, Zeitspanne, Dokumenttyp- und Statuszählung | Gruppenkopf des Bestands |
+| `records`, `allRecords`, `bySignatur`, `byDocType`, `byYear` | the record nodes | base indexes of every view |
+| `konvolute`, `konvolutChildren`, `childToKonvolut`, `konvolutMeta`, `folioIds` | the convolute hierarchy | grouping and group head of the Bestand |
+| `persons`, `organizations`, `locations`, `works`, `ensembles` | the linked entities | registers, facets, Karte, Netzwerk |
+| `dftHierarchy`, `conceptDefinitions` | `skos:Concept` with `skos:broader` and definition | document type facet as a tree, label, gloss (E-143) |
+| `roleVocab`, `roleScope`, `roleRank` | role concepts with dating scope and rank (E-150) | display form of a role and choice of the time anchor |
+| `annotations`, `recordToAnnotations`, `recordDatings` | `m3gim-ontology:Annotation` and `m3gim-ontology:hasAnnotation` | datings in the detail, `primaryYear` |
+| `mobilityEvents`, `recordToEvents` | the located annotations with coordinates and country | Karte, accent of the Chronik, place block of the detail |
+| `agentRelations` | `m3gim-ontology:hasAgentRelation` | relation block of the detail, marks in the registers and the Netzwerk |
+| `finances` | detail annotations with amount, currency and role | finance block of detail and Korb |
+| `stageRoles`, `performances`, `recordToPerformances` | `m3gim-ontology:StageRole` and `m3gim-ontology:Performance` | work and performance blocks, stage parts in the Statistik |
+| `eventsByRole`, `recordsByAgentRole` | precomputed facet indexes | axes of `recordsFor`, so a cut does not walk the graph |
+| `unprocessedIds` | records without any link | definition of the document base (E-165) |
+| `@context`, `graph` | the shipped document itself | the Korb exports the selection as JSON-LD without refetching the file |
 
-Die Kontrakttests in [test_06_frontend_contract.py](../tests/test_06_frontend_contract.py) prüfen diese Annahmen aus den Daten heraus.
+Three maps flatten the raw JSON-LD into a lookup shape, `agentRelations`, `mobilityEvents` and `finances` carry for instance `objectName` instead of the nested `agrelon:hasObject`. Reading the JSON-LD keys there yields an empty result without an error. The JSDoc shapes stand above `buildStore()`, and the contract tests in `tests/test_06_frontend_contract.py` hold these assumptions out of the data.
 
-Ein Formatbruch ist zu beachten. `agentRelations`, `mobilityEvents` und `finances` überführen das rohe JSON-LD in ein flaches Lookup-Format, etwa `objectName` und `objectWikidata` statt des verschachtelten `agrelon:hasObject`. Wer stattdessen die JSON-LD-Schlüssel liest, bekommt still ein leeres Ergebnis, und genau das erzeugte einmal eine doppelt sichtbare Nachlassbildnerin im Detail. Die JSDoc-Shapes für `RelationEntry`, `Annotation`, `FinanceEntry` und `DftConcept` stehen oberhalb von `buildStore()`.
+`primaryYear(store, record)` is the single time anchor, and its precedence runs at content level (E-264). The function walks the datings of the record and takes the highest ranked one whose dating scope is anchoring, which are the two scopes object and attested, and `rico:date` of the object table carries only the fallback. Mentions, framing events and the contract status for an unfulfilled agreement never date a record. The result names the year, its source, the role it came from and that role's own date value, so a view can date a record at the day, mark a year that comes from a link instead of from the document's own dating, and cut Chronik and Karte at the same year.
 
-### Cross-View-Filter
+### Filter state and result set
 
-Ein einziger Filterzustand trägt alle Ansichten. Ein Schnitt nach Ort, Person, Werk, Institution, Dokumenttyp, Erschließungsstand, Sicht, Zeitfenster oder Freitext wirkt in jeder filterbaren Ansicht zugleich, statt in jedem Tab getrennt gesetzt zu werden. Bayreuth zwischen 1951 und 1953 ist damit ein Filterergebnis und keine eigene Ansicht.
+One filter state carries all views. A cut by place, person, work, institution, document type, cataloguing status, perspective, year window or free text holds in every filterable view at once. `ui/filter-state.js` keeps the object and offers `getFilter()`, `setFilter(patch)` and `subscribe(fn)`, and a change dispatches a `m3gim:filter` event on the same window channel `events.js` uses, fanning out to any number of subscribers. The state lives in the module, so a cut survives a tab change on its own.
 
-#### Der geteilte Zustand
+The facets are `ort`, `person`, `werk` and `institution` as name lists, `docType` as document type identifiers resolved down the hierarchy, `stand` as cataloguing status, `sicht` as mobility perspective, `zeitfenster` as a year pair and `search` as free text. Several values of one facet act as OR, different facets as AND (E-151). A facet `rolle` no longer exists, the kind of participation rides on the person facet through its role prefix (E-204). Ensemble, event role and currency are built as axes in `records-for.js` but are not part of the shared state.
 
-`ui/filter-state.js` hält das Objekt und bietet `getFilter()`, `setFilter(patch)` und `subscribe(fn)`. Eine Änderung dispatcht ein `m3gim:filter`-CustomEvent über denselben `window`-Kanal, den `events.js` benutzt. Anders als der tab-gebundene Navigationskanal fächert es an beliebig viele Abonnenten, und nur eine tatsächliche Änderung löst einen Dispatch aus. Der Zustand lebt im Modul, deshalb überlebt ein Schnitt jeden Tab-Wechsel ohne eigenes Zutun.
+The zero point is the empty selection, not a view default. `applyViewDefault(patch)` writes only into facets the user has not touched and is still exported, but no view calls it any more, so the application starts unfiltered (E-253). `deviatingKeys()` names the facets that differ from the zero point and drives the chips, and `resetFilter()` returns to the full base set. A default that hides documents has to be visible, otherwise the Bestand holds part of the holdings behind a filter the column does not name (E-170).
 
-| Facette | Wert-Typ | Quelle im Store | Leerwert |
-|---|---|---|---|
-| `ort` | Liste von Stadtnamen | `locations`, stadtkonsolidiert über `cityOf` (E-108) | `[]` |
-| `person` | Liste von Namen | `persons` | `[]` |
-| `werk` | Liste von Namen | `works` | `[]` |
-| `institution` | Liste von Namen | `organizations` | `[]` |
-| `docType` | Liste von Dokumenttyp-Kennungen | DFT-Hierarchie, Oberbegriffe über `expandDftFilter` | `[]` |
-| `stand` | Liste von Erschließungsständen | `m3gim-ontology:processingStatus` am Datensatz | `[]` |
-| `sicht` | Liste von Mobilitätssichten | `cluster` an der Annotation, ohne Sicht der Eimer `kontext` | `[]` |
-| `zeitfenster` | `[vonJahr, bisJahr]` | `primaryYear` je Datensatz | `null` |
-| `search` | Freitext | die Suchfelder der jeweiligen Ansicht | `''` |
+`recordsFor(store, filter, {base})` is the single resolution, and before it existed each view resolved its own facets so that two tabs showed different sets for the same filter. `baseIds(store)` is the document base of the whole application, every record with at least one link (E-165). A record without a link is neither greyed out nor filtered away, it does not exist for the interface, and the finding aid for the complete fonds remains the archive. `recordsFor` returns `ids` together with the counts `weit`, `eng` and `undatiert`, which are counted and never cut, so a view can name the difference without computing it. Undated records survive the year window (E-88), because the window is a section of the dated track and not an erasure of the undated. Beside it stand `facetInventory` with the selectable values, `docTypeGroups` with the document type as tree groups, `facetCounts` with the counts in the current cut, and `yearBounds` and `yearOf` as the single year axis and year resolution. A lexical gate in `tests/frontend/records-for.test.mjs` keeps the former per-view resolutions out.
 
-Mehrere Werte einer Facette wirken als ODER, verschiedene Facetten als UND (E-151). `facetValues(state, key)` bringt jeden Wert auf die Listenform, sodass eine schreibende Stelle weiterhin einen einzelnen String übergeben darf, und `addFacetValue` hängt an, statt zu ersetzen, sodass ein Klick auf einen Chip den Schnitt verengt (E-91). Eine Facette `rolle` gibt es seit E-204 nicht mehr, die Beteiligungsart trägt die Personenfacette über ihr Rollenpräfix, und die Ereignisrolle speist ausschließlich die Sicht-Facette. Ensemble, Ereignisrolle und Währung sind in `records-for.js` als Achsen gebaut, stehen aber nach der Entscheidung der Projektleitung vom 2026-08-31 nicht im geteilten Zustand, weil die Ensemble-Deckung zu dünn ist und die Finanzachse heute nur Vorhandensein und Währung trägt.
+### Router and deep links
 
-Einen Modus neben den Facetten gibt es nicht mehr. Der Umfang-Umschalter ist in die Facette Erschließungsstand übergegangen (E-162), und der Schärfegrad-Umschalter ist entfallen (E-163). Die Unterscheidung zwischen bloßer Nennung und raumzeitlichem Beleg wird weiterhin beziffert, aber nicht mehr geschnitten.
+`ui/router.js` is the only place that writes to the address bar (E-208). The grammar is `#<tab>[/<recordId>][?<query>]`, and `splitHash` separates the query before it splits the path, so an existing deep link to a record stays valid. Writing goes through `replaceState`, so a slider step creates no history entry. The catalogue `TABS` holds `bestand`, `chronik`, `statistik`, `indizes`, `karte`, `netzwerk` and `korb`, every registered tab is visible. At the Indizes the second path segment carries the register from `INDEX_REGISTERS` instead of a record, so the address reads `#indizes/personen` (E-226).
 
-#### Voreinstellung je Ansicht als Nullpunkt
+Four legacy aliases keep old addresses alive, `archiv` becomes `bestand`, `mobilitaet` and `mobilitaets-atlas` become `karte`, and `verknuepfungen` becomes `netzwerk`. The query part survives the redirect. `resolveRecordId` maps the instance prefix `m3gim:` from before the namespace split onto `m3gim-data:` (E-138). `parseHash` reads the path before the query, because the filter handover dispatches to the subscribers and the router writes the address back out of that subscription, which would otherwise carry the record of the previous hash. A hash without a record part clears the selected record (E-219).
 
-`applyViewDefault(patch)` setzt nur Facetten, die seit dem letzten Zurücksetzen unberührt sind, und lässt eine getroffene Wahl stehen. Zugleich merkt sich der Halter die Voreinstellung als Nullpunkt der Ansicht. Daran misst sich, was ein aktiver Filter ist. `deviatingKeys()` nennt die Facetten, die vom Nullpunkt abweichen, `isFilterActive()` fasst das zusammen, und `resetFilter()` setzt auf den Nullpunkt zurück statt auf leer. Der Bestand öffnet damit auf abgeschlossen und begonnen, ohne dass diese Vorbelegung als Chip erscheint oder als Filter zählt (E-166). Genutzt wird der Mechanismus heute allein vom Bestand.
+`navigateToIndex(gridType, entityName)`, `navigateToView(tab, context)` and `applyArchivFilter(facet, value)` are the ways into a view. Only the record id and the register stand in the address, the remaining context travels as the detail of the `m3gim:navigate` event and stays out of the shared filter (E-226). `setIndexRegister(key)` writes the register from the view, and the register menu at the tab reaches the already drawn page over the same channel.
 
-#### `recordsFor` als einzige Auflösung
+The filter is encoded with German keys, for instance `typ=correspondence&ort=Bayreuth,Wien&jahr=1951-1953`. The comma separates the values of a facet, a comma inside a value is percent-encoded, which is the normal case for the name form surname first. Empty values do not appear. The former key `docType` is still read so existing deep links hold (E-173). Beside the filter the query carries the parameters of a view, the selected Netzwerk node among them. `viewParams` in `ui/filter-url.js` returns every pair whose key is no filter key, and `updateHash` carries them through each rewrite while the tab stays the same and drops them with the view they belong to, so a hash naming both a cut and a node no longer loses the node (E-278). `tests/frontend/filter-url.test.mjs` and `router-hash.test.mjs` cover both directions of the grammar.
 
-Aus Store und Filter entsteht in `data/records-for.js` genau eine Dokumentmenge, an der jede Ansicht schneidet. Zuvor löste jede Ansicht ihre Facetten selbst auf, und zwei Tabs zeigten zum selben Filter verschiedene Mengen.
+### The one filter column
 
-`baseIds(store)` ist die Dokumentbasis der ganzen Anwendung, also jeder Datensatz mit mindestens einer Verknüpfung (E-165). Ein Datensatz ohne Verknüpfung wird nicht ausgegraut und nicht weggefiltert, er existiert für die Oberfläche nicht, und das Findmittel zum vollständigen Teilnachlass bleibt das Archiv. Der Erschließungsstand ist eine Facette auf dieser Basis und nicht ihre Definition, denn ein Datensatz kann verknüpft sein und keinen Stand tragen. Für diesen Fall führt die Facette den vierten Wert „ohne Angabe“. Ein Store ohne `unprocessedIds`, wie ihn eine Testfixture baut, legt alle Datensätze in die Basis, damit eine Fixture ihre Ausschlüsse ausdrücklich nennt.
+`createSidebar(store, opts)` builds a fixed order for every tab, the free text field whose placeholder the view supplies, the two-thumb year range, the shared facets with the document type first and the cataloguing status directly beneath it, then the view-specific sections and finally the legend. A view passes only the last two plus an optional search configuration, everything else comes from the scaffold and reads the shared state. The result line is not a block of its own, it is the root row of the document type tree (E-170). Exactly three rules divide the column.
 
-`recordsFor(store, filter, {base})` liefert `ids`, `weit`, `eng`, `undatiert` und `byFacet`. `weit` ist die Größe der Menge, `eng` ihre Teilmenge mit raumzeitlichem oder Aufführungsbeleg. Beide werden gezählt und nie geschnitten, sodass eine Ansicht die Differenz benennen kann, ohne sie selbst zu rechnen. Undatierte Datensätze überleben das Zeitfenster (E-88), denn das Fenster ist ein Ausschnitt der datierten Spur und kein Tilgen des Undatierten. Daneben stehen `facetInventory(store, key)` mit den wählbaren Werten und ihrer Belegzahl, `docTypeGroups(store)` mit dem Dokumenttyp als Baumgruppen, `facetCounts` mit den Belegzahlen im aktuellen Schnitt, `yearBounds` als einzige Jahresachse und `yearOf` als einzige Jahresauflösung über `primaryYear`. Ein lexikalischer Gate in `tests/frontend/records-for.test.mjs` hält die früheren Eigenauflösungen fern, kein Modul unter `docs/js/views/` darf eine Entitätsfacette noch selbst über `store.persons.get(` und Geschwister auflösen.
+`createSidebar` returns `element`, `strip`, `update()` and `destroy()`. The strip is the row of deviating values as removable chips with the reset link, which every view hangs above its canvas so a filter change cannot make the column jump, and which stays empty and without height while nothing deviates. Through `localChips` the strip additionally takes groups that only cut in one view, the entity and the country of the Karte, which answer the same reset without standing in the shared state (E-223). The column subscribes to the filter itself and reports every change, its own and a foreign one, as a single `onChange` call.
 
-#### Die eine Filterspalte
+The facets have three display forms because their value sets differ in kind. The document type stands as an open tree without a search field, a group is selectable itself and resolves to its leaves, and `impliedByGroup` marks a leaf under a chosen parent as implied instead of clickable. The cataloguing status is a closed, ordered value list. All others are open sets with title and input in one row, whose suggestions appear on focus, are operable with arrow keys, fold umlauts and diacritics and mark the matching part. The values come exclusively from `facetInventory` and therefore from the dataset, an editorial value list in code stays excluded (E-87), and a role term without a display form does not enter the inventory (E-143).
 
-`ui/sidebar.js` ist das Gerüst, das jede Ansicht trägt. `createSidebar(store, opts)` baut eine feste Spaltenreihenfolge (E-166).
+### Views
 
-1. Suche, ein Freitextfeld ohne Titel, dessen Platzhalter die Ansicht über `search` mitgibt; `search: false` lässt das Feld weg, wo es nichts filtert (E-169).
-2. Zeitraum als Regler mit zwei Griffen, die Jahreszahlen an den Enden der Schiene und ohne Zahlenfeld daneben. Ein zur vollen Spanne aufgezogener Regler faltet sich auf den Leerwert.
-3. Die geteilten Facetten in der Reihenfolge Dokumenttyp, Erschließungsstand, Person, Ort, Werk, Institution (E-184, E-204). Der Erschließungsstand steht als geschlossene Liste seiner vier Werte in der Zeilenform des Baums, `standSection` mit der Control-Art `optionList`; eine Facette Rolle gibt es nicht mehr, die Beteiligungsart trägt die Personenfacette über ihr Rollenpräfix (E-204). Der Dokumenttyp-Baum trägt als Wurzelzeile die Zahl der Dokumente des Schnitts, ohne Abweichung vom Nullpunkt als bloße Zahl und mit Abweichung als Anteil an der Grundmenge (E-170).
-4. Die ansichtseigenen Regler aus `sections`.
-5. Die Legende aus `legend`.
+The Bestand (`views/bestand.js`, `bestand-data.js`, `bestand-rows.js`, `_bestand-filter.js`) is the archival base view, a table in signature order with the columns signature, title, type, date, cataloguing and Korb, without sorting. Convolutes stand as permanent group heads with title, time span and their frequent document types, the column head and the open convolute head form a sticky band, and two levels fold, the convolute by the chevron of its head and the record row by its own chevron, which opens the inline detail. As soon as a facet, the free text or the year window cuts, `flattenForFilter` flattens the hierarchy and `pruneEmptyKonvolute` removes a head whose children all fell out of the cut. A record addressed by id always opens, and `widenFilterForRecord` widens the cut by exactly one value the record carries, every widening appearing as a chip (E-219). The entity column shows per content family the symbol from `ui/family-icons.js` with the number of distinct entities, the breakdown by name lies in the tooltip (E-212).
 
-Eine Ansicht übergibt allein die Punkte vier und fünf, dazu wahlweise `search`, `getCount` für den eigenen Zählstand und `yearSpan` für ihre Achse. Alles übrige kommt aus dem Gerüst und liest den geteilten Zustand. `createSidebar` liefert neben `element` auch `strip`, die Zeile der abweichenden Werte als entfernbare Konturchips mit dem Link zum Zurücksetzen, die jede Ansicht oben in ihre Arbeitsfläche hängt; sie ist leer und ohne Höhe, solange nichts vom Nullpunkt abweicht (E-172, E-182). Über `localChips` nimmt der Streifen zusätzlich Gruppen auf, die nur in einer Ansicht schneiden, die Entität und das Land der Karte und die Normdaten-Verengung der Indizes. Sie halten den Platzhalter fern und antworten auf dasselbe Zurücksetzen wie eine geteilte Facette, ohne im geteilten Zustand zu stehen (E-223). Ein Ansichts-Default ist gegenüber dem Nullpunkt eine Abweichung, erzeugt also einen Chip, und `resetFilter` führt auf den Nullpunkt (E-170). Genau drei Linien gliedern die Spalte, vor den Facetten, vor den Ansichtsreglern und vor der Legende. Die Spalte abonniert den Filter selbst und meldet jede Änderung, eigene wie fremde, als einen einzigen `onChange`-Aufruf, und `destroy()` meldet das Abonnement beim erneuten Rendern wieder ab.
+The record detail (`views/record-detail.js`, `record-detail-data.js`, `record-chips.js`) runs across the full width and is built from `buildRecordBlocks`, which also feeds the Korb, so both places show the same block logic. The blocks are production, contributors, work and repertoire, performances, place and event, dates named in the document, mentioned, further, relations and finances, each block title carrying the symbol of its content family. All chips come from `buildRoleChip` with a provenance pill and a Wikidata link, and the chip tooltip names every modelled data point of its node, source fields first and the enrichment introduced as such. A `rico:generalDescription` at a dating, performance, event or role appears as a quality marker with its wording (E-222).
 
-Die Facetten haben drei Darstellungsformen, weil ihre Wertemengen verschiedener Art sind. Der Dokumenttyp steht als offener Baum ohne Suchfeld, weil er klein und seine Gestalt die Information ist, eine Gruppe ist selbst wählbar und löst über `expandDftFilter` auf ihre Blätter auf. Im Baum trägt die gewählte Zeile Haken und Akzenttext ohne Füllung, die Füllung gehört Hover und Fokus und `--surface-3` dem Tastaturzeiger. Der Chevron ist ein eigenes Ziel über die Zeilenhöhe mit `aria-expanded` und Beschriftung, das den Klick der Zeile nicht auslöst. `impliedByGroup` markiert ein Blatt unter einem gewählten Oberbegriff mit gedämpftem Haken, nimmt ihm den Klick und setzt `aria-disabled`, `toggleGroup` verwirft beim Wählen des Oberbegriffs explizit gewählte Kinder (E-204), und `groupTip` bildet den Tooltip des Gruppenkopfs aus der Zahl direkt erfasster Dokumente, also der Subtree-Summe abzüglich ihrer Kinder (E-193). Alle übrigen sind offene Mengen mit dem Titel und dem Eingabefeld in einer Zeile (E-178); gewählte Werte stehen nur im `strip`, nicht als eigene Zeilen oder Zahl an der Facette (E-183). Die Vorschläge erscheinen erst bei Fokus, sind mit Pfeiltasten und Eingabetaste bedienbar, gleichen Umlaute und Diakritika aus, markieren den Trefferteil und zeigen eine bestehende Wahl mit `aria-selected` und Haken. Der Platzhalter des Eingabefelds ist die feste Aufforderung „<Facette> filtern…“, gebaut aus dem Facettentitel. Ihre Darstellung trägt die eine `::placeholder`-Regel in `base.css` (E-188). Die vier Entitätsfacetten tragen den Punkt ihrer Familie (E-171), und eine Facette ohne Werte im Inventar der Ansicht steht auf ihre Titelzeile eingeklappt. Die Belegzahlen beziehen sich auf den aktuellen Schnitt und sagen damit, was ein Wert stehen ließe.
+The Chronik (`views/chronik.js`, `chronik-data.js`) is a scrolling year timeline. Empty years stay visible because the gap structure shows the state of cataloguing and not the absence of activity (E-88), records that only carry a secondary dating are marked as such, and genuinely undated ones stand in a closing block. A left accent on the chip carries the dominant mobility perspective from `sichtForRecord`, and a decade header aggregates by perspective, where a click on a segment highlights exactly the chips that carry it.
 
-Die Werte kommen ausschließlich aus `facetInventory` und damit aus dem Datensatz, eine redaktionelle Werteliste im Code bleibt ausgeschlossen (E-87). Ein Rollenbegriff ohne Anzeigeform steht nicht im Inventar, weil ein Regler mit einer technischen Kennung nicht bedienbar ist (E-143).
+The Statistik (`views/statistik.js`, `statistik-data.js`, `statistik-sections.js`) shows the holdings in numbers, in five record-based views, document types, cataloguing status, repertoire, persons and institutions. Spatial and temporal aggregates lie in the Karte and the Chronik, the relation aggregate in the Netzwerk (E-160). Everything is drawn with `buildHorizontalBars`, a rank list shows its head and bundles the rest into a collecting row, and a row leads into the correspondingly filtered Bestand wherever a shared facet exists (E-144).
 
-Neben den Facetten stehen die Control-Fabriken `range` für das Jahresfenster, `slider` für einen Schwellenwert, `toggle` für einen Schalter, `search` für ein Freitextfeld mit optionaler Entprellung, `legend` für farbcodierte Filter-Chips, `staticLegend` für eine nicht interaktive Erklärzeile mit Farb- oder Klassenmarker und `custom` für eine Region, die die Ansicht selbst füllt und bei jedem `update()` neu zeichnet. `viewShell(sidebar, main)` ist das Grid aus Spalte und Arbeitsfläche.
+The Indizes (`views/indizes.js`, `indizes-data.js`) are register pages, exactly one of the four registers persons, organizations, places and works at a time. The register is chosen in the menu at the tab and stands in the path of the hash (E-226, E-230), the sorting by count or alphabet is a button pair in the head of the list. An entry is one row with name, the short enrichment marked as an addition, the count in the current cut and a Wikidata mark, and the expanded entry adds the roles, the recorded stage parts and the Umfeld. `buildUmfeld` collects the co-occurring entities grouped by content family, each chip leading into the other register, and the group carries the mark of an addition because co-occurrence means named in the same document and not appearing together (E-216). An entry hands over to the view that owns its level rather than becoming a third rendering of it (E-252), so name and count lead into the filtered Bestand, and the jumps into Netzwerk and Karte set the entity as focus.
 
-#### Der Schnitt in der URL
+The Karte (`views/karte.js`, `karte-data.js`, `karte-map.js`, `karte-picker.js`) is entity-centred. One entity is chosen, an organization, a person or a work (E-235), and the map shows the places of its records as nodes, one pie per place by mobility perspective and the node size by count in the year window. There are no connecting lines, the spatial distribution of an entity is the statement and not the path (E-126). The Karte applies the full shared filter, `occurrencesInCut` resolves the cut without the year window and the window then acts on the date of the evidence rather than the time anchor of the document (E-218). A record place carries no date of its own, so its evidence takes the time anchor of the record and is cut at the same year as in the Chronik (E-264). Undated evidence survives the window as everywhere and is shown as such, damped at the node and marked in the list (E-225). Places are drawn together from record places and located annotations and carry a location grade as a ring style, and a place the map cannot draw stands with its record count and its reason in the sidebar section `unlocatedPlaces` fills, instead of an invented point (E-280). The base map is local, ocean and graticule as SVG and the country geometry from `docs/data/geo/`, without a tile server and without a key.
 
-Die Kodierung lautet `typ=correspondence&ort=Bayreuth,Wien&person=Malaniuk%2C%20Ira&jahr=1951-1953&stand=abgeschlossen`. Alle Schlüssel sind deutsch, der Dokumenttyp steht als `typ`, der frühere Schlüssel `docType` wird weiter gelesen, damit bestehende Deep Links gelten (E-173). Das Komma trennt die Werte einer Facette, ein Komma im Wert wird prozentkodiert, was bei der Namensform Nachname, Vorname der Regelfall ist. Leerwerte erscheinen nicht, also weder eine leere Auswahl noch ein zur vollen Spanne gefaltetes Zeitfenster. Ein Schnitt ist damit zitierbar und überlebt den Reload. Der Smoke-Canary `filter:url-roundtrip` sichert beides, `tests/frontend/filter-url.test.mjs` und `router-hash.test.mjs` sichern die beiden Richtungen der Grammatik.
+The Netzwerk (`views/netzwerk.js`, `_netzwerk-geometry.js`, `_netzwerk-canvas.js`) stands in two forms of the same cut, the two-mode network of actors and linked records and the person projection the sidebar switch leaves behind. The creator of the fonds is no node, she stands on almost every document and would connect everything with everything. Graph building and layout are pure functions in the geometry module, the same ones that carry the GEXF export, the edges are drawn on a canvas and the nodes in SVG above it. `layoutGraph` holds its repulsion in a uniform grid of typed arrays and ends at measured rest rather than after a fixed number of steps, the iteration count being only the ceiling for a graph that never settles, and it reports steps, rest and last movement beside the positions (E-273). A click marks the neighbourhood without moving the layout, two steps at an actor of the two-mode network and one step everywhere else (E-276), and the selected node stands in the query part of the hash. The acceptance of the rebuild is open as assignment F2 of [handoff.md](handoff.md).
 
-### Ansichten
+The Korb (`views/korb.js`) is the cross-cutting selection list, held in localStorage and counted in the tab bar. A card shows the same functional blocks as the detail, and the export writes CSV with a UTF-8 BOM, BibTeX, GEXF, and the selection as a JSON-LD document with the context of the source. `recordEvidence` is the one place that gathers what every format then carries, the source cell of the record and, per data point, family, role, value and source cell (E-281). The CSV holds one column per family in the form „Rolle: Wert [Blatt Zeile]" beside the Zeitanker column, the BibTeX note takes the same statement, the GEXF writes sheet, row and data point as attributes at node and edge and merges two mentions into one edge only where they stand on the same source row, and the JSON-LD carries the provenance in the copied records.
 
-Sieben Tabs stehen in den drei Gruppen Material, Perspektiven und Werkzeug (E-160). Die Designhaltung hinter ihnen führt [design.md](design.md) § Tab-Architektur, die Anforderungen führt [specification.md](specification.md) § Epics und User Stories.
+### Development mode and error boundaries
 
-Vier Inhaltsfamilien ziehen sich durch Tabelle und Detail. `CONTENT_FAMILIES` in `data/constants.js` bildet die vier Entitätstypen Personen, Institutionen, Orte und Werke auf die Blöcke des Details ab (E-164), `familyOfBlock` liefert die Familie eines Blocks, und Blöcke ohne Familie, also genannte Daten und Finanzen, bleiben ohne Marker. Dieselbe Konstante speist die Erschließungsanzeige der Bestandstabelle, sodass die Legende aus der Nähe entsteht und nicht aus Text.
+`IS_DEV` in `utils/env.js` tests for localhost. Only there does `main.js` import `utils/dev.js`, so neither the module nor its dependencies enter the startup path in production (E-50). The module writes a store report on load and sets `window.m3gim` with the store and a set of inspection functions, among them `provenanceOf(recordId)`, which lists every source cell of a record including its nested nodes. `logStamp(view, parts)` sits beside it and not in the diagnostic module because every view calls it at the end of its render, and in production it is a no-op. `stamp_expectations` in `tests/frontend/smoke.py` requires the carrying keys per view.
 
-Jede Ansicht schreibt am Ende ihres Renderns einen Zustands-Stempel über `logStamp(view, parts)` aus `utils/env.js`. Auf der Produktion bleibt die Konsole stumm, lokal und im Browser-Smoke steht dort der gerenderte Schnitt mit fester Schlüsselreihenfolge. `stamp_expectations` in `tests/frontend/smoke.py` fordert je Ansicht die tragenden Schlüssel ein.
+`main.js` catches render errors per tab, synchronous and asynchronous, shows an error box built as DOM and releases the tab for another attempt (E-51).
 
-#### Bestand
+## Tests hook
 
-Die archivische Grundsicht ist eine Tabelle mit den Spalten Signatur, Titel, Typ, Datum, Erschließung und Korb. Die Tabelle hat keine Sortierung, sie steht in der Signaturfolge, die `getOrderedItems` mit `naturalSort` herstellt, und `buildHead` in `bestand.js` baut den Spaltenkopf als reine Beschriftungszeile (E-203). Der Spaltenkopf haftet oben, der geöffnete Konvolut-Kopf parkt um seine Höhe darunter; die feste Höhe steht als `--table-head-height` in `variables.css`, weil beide haftenden Schichten auf ihr aufsetzen (E-200). Beide bilden ein Band, in dem der geparkte Kopf die Trennlinie unten trägt, der Spaltenkopf gibt seine eigene ab, solange ein Kopf offen ist, und die zwei haftenden Lagen überlappen um ein Pixel, statt aneinanderzustoßen. Getönt ist allein der offene haftende Kopf, die Kopfzeile eines geschlossenen Konvoluts steht wie jede Zeile auf Weiß, und `--surface-2` trägt daneben nur `thead` und Hover (E-198). Konvolute stehen als dauerhafte Gruppenköpfe mit Titel, Zeitspanne und, eingeklappt, den häufigsten Dokumenttypen als Chips mit ihrer Zahl samt Sammelchip für den Rest. Einen Badge trägt der Kopf nicht, `buildDocTypeBadge` in `bestand-rows.js` gibt für ihn `null` zurück, und seine Typ-Zelle bleibt leer (E-197). `.badge--konvolut-struct` bleibt allein den eigenständigen Konvoluten und den noch nicht in Einzelobjekte aufgelösten Kindzeilen. Gesamtzahl, Erschließungsstand, Familienzahlen und der Hinweis auf das Aufklappen hängen an `.archiv-titel` in `bestand.js` (E-190, E-197). Beim ersten ungefilterten Laden ohne Suchbegriff, Direktlink oder eigene Klappentscheidung öffnet `shouldAutoOpenFirstKonvolut` in `bestand-data.js` das erste Konvolut (E-206). `scrollKonvolutUnderHead` setzt einen per Chevron geöffneten Kopf unter den Spaltenkopf und summiert dafür die `offsetParent`-Kette, weil ein haftender Kopf einen anderen `offsetParent` hat als eine statische Zeile (E-214). Geklappt wird auf zwei Ebenen, das Konvolut über den Chevron seines Kopfs und die Objektzeile über ihren eigenen eingerückten Chevron vor der Signatur, der ihr Inline-Detail öffnet und `aria-expanded` an der Zeile führt (E-158, E-217). Die Titelzelle einer Objektzeile trägt daneben kein Zeichen mehr, der Folio-Hinweis nennt den ersten Beteiligten ohne Familiensymbol, weil die Entitätenspalte derselben Zeile die Familien bereits führt (E-217). Sobald eine schneidende Facette, der Freitext oder das Zeitfenster greift, flacht `flattenForFilter` die Hierarchie ab, die Kindzeilen behalten ihre Kennzeichnung, damit sie ihren echten Dokumenttyp und nicht den Konvolut-Badge tragen, und ein Herkunftshinweis mit eigenem Außenabstand nennt das Konvolut. `pruneEmptyKonvolute` entfernt einen Kopf, dessen Kinder alle aus dem Schnitt gefallen sind. Ein per ID angesteuerter Datensatz öffnet immer: schließt ihn eine Facette aus, weitet `widenFilterForRecord` sie um genau einen Wert, den der Datensatz trägt, den seltensten, und das Zeitfenster auf sein Jahr, und jede Weitung erscheint als Chip. Eine Facette ohne Wert am Datensatz und ein ausschließender Freitext sind nicht weitbar und stehen als Warnung in der Konsole, statt still zu scheitern (E-219).
+What the suite guarantees, how the two layers of invariants and data mirror differ, and how a model extension is developed test first is described by [testing.md](testing.md). The parts that hold this document honest are the frontend contract tests out of the data, the determinism test, the vocabulary coverage gate and the Node unit tests of the pure data layers.
 
-Die Spalte Entitäten je Objektzeile zeigt je Inhaltsfamilie das Symbol aus `ui/family-icons.js`, das auch die Indizes-Köpfe tragen, in Familienfarbe mit der Zahl der verschiedenen Entitäten daneben und sonst als Kontur, die Aufschlüsselung mit Namen liegt im Tooltip (E-212, E-215). `familiesForRecord` in `bestand-data.js` leitet sie aus derselben `partitionRecord`-Zerlegung ab, die das Detail rendert. `annotateKonvolutHeadTips` zählt dieselben Familien über die im Schnitt sichtbaren Kinder und gibt die vier Zahlen an den Titel-Tooltip des Kopfs; eine eigene Familienanzeige trägt der Kopf nicht (E-190, E-197).
+## Related
 
-Die Bedienung liegt vollständig in der geteilten Spalte, die Ansicht bringt keine eigene Sektion mit. Ihre Voreinstellung sind die Erschließungsstände abgeschlossen und begonnen (E-162). Der Freitext sucht über Signatur, Titel, Dokumenttyp-Label und Datum. Über der Tabelle stehen weder Zählcaption noch Banner, die Zahlen führt die Ergebniszeile der Spalte (E-156). Die Chip-Zeile `filterStrip` zeigt ohne abweichenden Filter den stillen Platzhalter „kein Filter aktiv“ (E-215) und baut sonst je abweichender Facette eine Gruppe aus Facettenname und Wertchips, Zeitraum und Suche als eigene Gruppen, der Gruppenname trägt den Tooltip mit der Verknüpfungsregel (E-204), das Zurücksetzen am Ende trägt ein Kreispfeil-Zeichen.
-
-Das Detail läuft über die volle Breite (E-213). Es beginnt mit einer Kopfzeile aus Signatur und Titel des Records, gefolgt von der Metadatenzeile aus Typ, Datum, Sprache, Umfang und Erschließungsstand, an deren Ende die zwei gleich großen Schaltflächen für Korb und Schließen stehen, und der inhaltlichen Beschreibung aus `rico:scopeAndContent`. Darunter steht das Blockraster Produktion, Mitwirkende, Werk und Repertoire, Aufführungen, Ort und Ereignis, im Dokument genannte Daten, Erwähnt, Weitere, Beziehungen und Finanzen, jeder Blocktitel ohne Zahl und mit dem Familiensymbol seiner Inhaltsfamilie, Weitere und Finanzen ohne Symbol. Aufführungen stehen datumssortiert als Datumsliste unter ihrer Spielzeit, Bühnenrollen hängen am Werk, wo der Record genau ein Werk hat oder die Rolle dem `sungPart` gleicht, sonst als freie Chips; die Helfer dafür liegen in `record-detail-data.js` und `record-chips.js`. Den Fuß bilden die gebündelte Quellenangabe aus `sourceSummary` und die zuklappbaren Verwaltungsangaben. Alle Chips entstehen über `buildRoleChip` mit Provenance-Pille und Wikidata-Anschluss. Der Chip-Wert trägt im Tooltip jeden modellierten Datenpunkt seines Knotens in fester Ordnung, Quellfelder zuerst und danach die mit „ergänzt: aus Wikidata“ eingeleitete Anreicherung. Eine `rico:generalDescription` an Datierung, Aufführung, Ereignis oder Rolle erscheint als Qualitätsmarker mit ihrem Wortlaut (E-222). `buildRecordBlocks` speist zugleich den Korb, sodass beide Orte dieselbe Blocklogik zeigen.
-
-#### Chronik
-
-Ein scrollender Jahres-Zeitstrahl über die Lebensspanne, erweitert um vorhandene Ausreißer. Jedes Jahr rendert eine Zeile mit Label, dichteadaptivem Punkt und den Datensätzen als Chips, und leere Jahre bleiben sichtbar, weil die Lückenstruktur den Erschließungsstand zeigt und nicht die Abwesenheit von Aktivität (E-88). Ein linker Akzent am Chip trägt die dominante Mobilitätssicht aus `sichtForRecord`, ohne verortete Annotation bleibt der Chip ohne Akzent, und bei divergierenden Sichten trägt er einen Verlauf. Der Zeitanker ist `rico:date`. Fehlt er, nennt `primaryYear` die ranghöchste ankernde Datierung, und der Chip weist diese Sekundärherkunft sichtbar aus, statt sie mit dem Hauptdatum gleichzusetzen. Echt undatierte Datensätze stehen in einem eigenen Endblock mit einem Sicht-Ministapel als Kopf.
-
-Über dem Zeitstrahl steht ein Dekaden-Header nach Mobilitätssicht. Die Spurbreite einer Dekade ist proportional zur größten, und ein Klick auf ein Segment hebt genau die belegenden Chips hervor und dämpft den Rest, sodass kein Aggregat ohne Rückführung auf seine Einzelquellen steht. Ein Klick auf einen Chip öffnet den Datensatz im Bestand. Die Ansicht bringt keine eigene Sidebar-Sektion mit und schneidet über dieselbe Pipeline wie der Bestand, mit Signatur und Titel als Suchfeldern.
-
-#### Statistik
-
-Der Bestand in Zahlen, eine Zusammenschau dessen, was keine andere Perspektive trägt (E-160). Die Sidebar-Sektion der Ansicht ist eine Einfachauswahl über fünf Ansichten, die als neutrale Chips nebeneinanderstehen, nämlich Dokumenttypen, Erschließungsstand, Repertoire mit Werken, Bühnenrollen und Komponisten, Personen mit Rollen-Census sowie Institutionen. Räumliche und zeitliche Aggregate liegen in Karte und Chronik, das Beziehungsaggregat im Netzwerk, die Länder-Reichweite in der Karten-Sidebar.
-
-Gezeichnet wird ausschließlich mit `buildHorizontalBars` aus `ui/charts.js`, weil die Frage nach dem, was wie oft vorkommt, in einer Rangliste besser steht als in einem Chart. Eine Rangliste zeigt ihren Kopf und bündelt den Rest in einer Sammelzeile, deren Tooltip die Einzelwerte nennt. Wo eine Zeile eine geteilte Facette hat, führt sie in den so gefilterten Bestand (E-144), und Bühnenrollen, Komponisten, die Erschließungsachsen sowie die Zeile „ohne Typ“ tragen keine und bleiben statisch (E-207). Die Ansicht Erschließungsstand nennt neben jedem Balken die Gegenzahl der offenen Dokumente und schlüsselt nach Konvolut auf, weil erst die zweite Zahl sagt, wo Arbeit liegt. Jede Aggregation läuft auf der Dokumentmenge des geteilten Schnitts und kennt den Filter nicht.
-
-#### Indizes
-
-Eine Registerseite, gezeigt wird genau eines der vier Register Personen, Organisationen, Orte und Werke (E-226). Die Wahl steht als segmentierte Zeile im Kopf der Liste, vier Segmente mit Familiensymbol, das aktive in Familienfarbe mit der Zahl der Einträge im Schnitt, mit Roving Tabindex und Pfeiltasten (E-227), und im Pfad des Hash als `#indizes/<register>`. `setIndexRegister` schreibt sie, `renderIndizes` liest sie beim Aufbau aus `getState().indexRegister`, und ein Wechsel aus der Adresszeile erreicht die einmal gezeichnete Seite über den Navigationskanal. Gezeigt werden nur Einträge mit Belegen, weil ein Eintrag ohne Beleg keinen Einstieg bietet. Das Register ist eine Liste ohne Spaltenköpfe, ein Eintrag je Entität in einer Zeilenhöhe, mit Name, der kurzen Anreicherung in derselben Zeile als markierter Ergänzung (E-61, E-216), erster Beruf, Stimmfach und Lebensdaten bei Personen, Sitz bei Organisationen, Land bei Orten, Komponist bei Werken, rechts die Belegzahl im Schnitt und eine einfarbige Wikidata-Marke. Beziehungs- und Rollenchips, die kuratierte Partie und die aus den Belegen geschlossenen Bühnenrollen aus `workStageRoles` stehen im aufgeklappten Eintrag (E-227).
-
-Der geteilte Filter schneidet das Register auf die Einträge, die mindestens ein Dokument des Schnitts belegen, das geteilte Suchfeld sucht in den Namensfeldern des Registers. Die eigenen Sidebar-Sektionen sind die Sortierung nach Belegzahl oder Alphabet und die beiden einander ausschließenden Normdaten-Schalter, die ihre Zählwerte im Schnitt tragen. Die Normdaten-Verengung ist ansichtslokal, schneidet aber die Liste und steht deshalb über `localChips` als Chip im Filterstreifen (E-223), die Wikidata-Deckung nennt der Tooltip der Schalter. Einen register-übergreifenden Facettenschnitt gibt es nicht mehr. Was die Register verbindet, ist das Umfeld eines aufgeklappten Eintrags. `buildUmfeld` sammelt die im Schnitt ko-okkurrenten Entitäten nach Inhaltsfamilie gruppiert, jeder Chip führt über den Router in das andere Register zu dieser Entität, und die Gruppe trägt die Marke der Ergänzung, weil Ko-Okkurrenz „im selben Dokument genannt“ heißt und nicht „im selben Auftritt“ (E-216). Daneben führt der Eintrag die Belegliste mit Korb-Zugang, den Sprung in den gefilterten Bestand mit der Zahl, die der Bestand danach zeigt, und die Sprünge in Netzwerk und Karte mit der Entität als Fokus, letzteren nur bei Person und Organisation, weil die Karte nur diese als Entität kennt (E-126). Jeder Sprung räumt zuvor den Suchbegriff, der das Mittel war, den Eintrag zu finden, und im Ziel den gemeinten Eintrag wegschnitte. Die Zählwerte je Eintrag sind die Belegzahlen im Schnitt, der Gesamtbestand steht im Tooltip, damit Kopf, Zeile und Sidebar dieselbe Zahl nennen (E-227).
-
-#### Karte
-
-Eine entitätszentrierte Stummkarte. Man wählt in der Sidebar eine Organisation oder Person, und die Karte zeigt die Orte ihrer Dokumente als Knoten, je Ort ein Tortendiagramm nach Mobilitätssicht und die Knotengröße nach Belegzahl im Zeitfenster. Verbindungslinien gibt es nicht, die räumliche Verteilung einer Entität ist die Aussage und nicht der Weg (E-126). Die Voreinstellung ist die Nachlassbildnerin, ein Sprung aus den Indizes setzt stattdessen die genannte Entität.
-
-Die Karte wendet den vollen geteilten Filter an (E-218). `occurrencesInCut` in `karte-data.js` löst den Schnitt ohne das Zeitfenster über `recordsFor` auf und behält die Belege der so bestimmten Dokumente. Entitäts- und Landeswahl verengen diese Menge karten-lokal, das Zeitfenster wirkt danach am Datum des Belegs und nicht am Zeitanker des Dokuments. Punkte, Länderliste, Zählstand der Seitenleiste und die Belegliste eines Orts lesen dieselbe Menge. Entität und Land stehen über `localChips` als entfernbare Chips in den Gruppen „Entität“ und „Land“ des Filterstreifens, ohne dass der geteilte Zustand sie trägt (E-223). Undatierte Belege überleben das Zeitfenster wie überall (E-88), und die Karte zeigt den Unterschied. Der Punkt trägt den datierten Anteil als Fläche und den undatierten gedämpft, die Belegliste stellt datierte voran und schreibt Undatiertes als „o. D.“ in Absenzform, und ein Ort, dessen Belege im Fenster alle undatiert sind, steht in der gedämpften Stufe (E-225). Die Unterscheidung greift nur, solange das Fenster tatsächlich schneidet, bei voller Spanne ist ein undatierter Beleg schlicht ein Beleg.
-
-`karte-data.js` zieht die Orte aus den Dokumentorten und den verorteten Annotationen zusammen und vergibt Verortungsstufen. Gesichert, stadtgenau nach dem Hochrollen einer Adresse und weit mit Prüfhinweis erscheinen als Ringstil am Knoten mit eigener Legende, nicht verortbare Belege stehen als eingeklappte Liste statt als erfundener Kartenpunkt. Die Basemap ist lokal, mit Ozean und Gradnetz als SVG und der Ländergeometrie aus `docs/data/geo/countries-110m.geo.json`, ohne Kachelserver und ohne Schlüssel. Zoom und Pan laufen über `d3.zoom`.
-
-Eigene Sidebar-Sektionen sind die Entitätswahl im Facettenmuster mit genau einem Wert und die Länder-Reichweite als Liste mit Dokumentzahlen, deren Zeile den Landesschnitt der Karte schaltet (E-160, aus der Statistik übernommen). Die Reichweite zählt Dokumente mit Aufenthaltsbeleg, also die Ortsrollen der Sichten performativ und institutionell sowie Wohnort und Vertragsort, die `isStayRole` in `karte-data.js` benennt, während die Kartenpunkte weiter jede Rolle zeigen (E-224). Gezählt wird über die Belege des Ausschnitts ohne den Landesschnitt, damit die Liste beim Klick auf ein Land nicht auf diese eine Zeile zusammenfällt. Als Legende folgen der Farbschlüssel der Sichten, die Verortungsstufen und die Detail-Region, die die gewählte Entität, je gewähltem Ort die Sicht-Aufschlüsselung und die belegenden Dokumente zeigt. Ortswahl und Zeitfenster laufen über den geteilten Filter, ein Klick auf einen Knoten setzt also die Ortsfacette für alle Ansichten.
-
-#### Netzwerk
-
-Der heterogene Graph um eine Fokus-Entität über die Knotentypen Person, Werk, Institution und Ort. Mit E-160 sind die frühere Netzwerk- und die Verknüpfungen-Ansicht hier zusammengefallen. Steht die Nachlassbildnerin im Fokus und ist nur der Knotentyp Person eingeschaltet, ist das Bild das konzentrische Personennetz mit Ringen nach Evidenzstärke (E-93).
-
-Der Schnitt der Ansicht ist die Dokumentmenge des Fokus, geschnitten mit der Dokumentbasis und danach durch den geteilten Filter, sodass Zählstand und Bild dieselbe Grundmenge meinen wie in jeder anderen Ansicht. `buildGraph` nimmt diese Menge entgegen und baut sie nicht selbst. Je Knotentyp rendert der Graph die stärksten Nachbarn, und die Kappung steht als Bezifferung an der Toggle-Zeile des Typs, die neben dem Namen die Zahl der gezeigten und der vorhandenen Kandidaten nennt.
-
-Zwei Linienarten sind ausdrücklich unterschieden. Gerade Radialen zum Zentrum sind annotierte AgRelOn-Beziehungen, geschwungene Bänder zwischen Knoten sind Ko-Okkurrenz aus gemeinsamen Dokumenten, deren Schwelle ein Regler steuert. Jede Linie trägt einen Tooltip mit dem Grund der Verbindung. Positionen entstehen analytisch aus reinen Funktionen in `_netzwerk-geometry.js`, ohne Force-Simulation.
-
-Ein Klick auf einen Knoten macht ihn zum neuen Fokus, ein Sprung aus den Indizes setzt ihn über den Navigationskontext, auch bevor die Ansicht zum ersten Mal gezeichnet hat. Die Detail-Spalte rechts zeigt immer die Fokus-Entität mit Typ, Wikidata-Anschluss, einer Metazeile aus Kategorie, Dokumentzahl, raumzeitlich belegtem Anteil und Nachbarzahl, den datengedeckten Feldern als Chips, den Beziehungen, einer Schaltfläche zum Aufnehmen der Entität in den geteilten Filter und der Belegliste, aus der jeder Eintrag in den Bestand führt. Der Beziehungsblock trägt einen Chip je annotierter Beziehung, nach Typ gruppiert und mit der Signatur des belegenden Dokuments als Wert, weil eine annotierte Beziehung in genau einem Dokument steht. Die Belegliste stellt die annotierten Belege voran und markiert sie mit dem geraden Strich, den die Legende der AgRelOn-Kante führt (E-220). Eigene Sidebar-Sektionen sind die Fokuswahl, die Knotentypen, die beiden Regler für Knoten je Typ und Ko-Okkurrenz-Schwelle, die Personenkategorien als Filter-Chips und die Legende für Linienarten, Ringe und Wikidata-Marker. Kategorie-Ausblendung und Freitext dünnen das Bild aus, ohne die Zählung zu bewegen.
-
-#### Korb
-
-Die Querschnitts-Merkliste, gehalten im localStorage und über die Tab-Leiste beziffert. Ein Lesezeichen steht in jeder Bestandszeile, im Detail und im Indizes-Detail. Je Datensatz zeigt eine Card die Signatur als Deep-Link, Titel, Typ, Metazeile und dieselben funktionalen Blöcke wie das Detail, weil beide `buildRecordBlocks` konsumieren. Der Export liefert CSV mit UTF-8-BOM über Signatur, Titel, Typ, Datierung, Konvolut, Personen mit Rollen, Orte mit Ereignisdaten, Werke mit Komponist, Beziehungen und Finanzen sowie BibTeX mit dem Verfasser primär aus der Rolle und ersatzweise aus der Korrespondenzbeziehung.
-
-### DEV/Prod-Verhalten und Error Boundaries
-
-`IS_DEV` in `utils/env.js` prüft `localhost` und `127.0.0.1`. Nur dort lädt `main.js` das Diagnose-Modul `utils/dev.js` per dynamischem Import (E-50), sodass auf der Produktion weder der Code noch seine Abhängigkeiten in den Startpfad geraten. Das Modul schreibt beim Laden einen Store-Report mit Grundzahlen, Normdaten-Abdeckung je Register und Provenance-Deckung, beim erstmaligen Öffnen eines Tabs eine kurze Kennzahlzeile, und es setzt `window.m3gim` mit `store`, `inspect(recordId)`, `finances()`, `agentRelations()`, `mobilityEvents()`, `mobilityEventsWithGeo()`, `netzwerkAggregate()`, `dftTree()` und `provenanceOf(recordId)`. Der letzte listet alle XLSX-Quellen eines Datensatzes samt verschachtelter Knoten und ist das Gegenstück zum Provenance-Test der Suite.
-
-`logStamp` liegt daneben in `utils/env.js` und nicht im Diagnose-Modul, weil jede Ansicht es aufruft. Auf der Produktion ist es ein No-Op.
-
-`main.js` fängt Renderfehler je Tab ab, synchron wie asynchron, zeigt eine als DOM gebaute Fehlerbox statt Markup und gibt den Tab für einen neuen Versuch frei (E-51). Die Ladeschicht unterscheidet fehlende Netzverbindung, fehlende Datei und fehlgeschlagenes Parsen und meldet jeden Fall mit eigenem deutschen Text, statt einen Sammelfehler zu werfen oder still `null` zurückzugeben (E-52).
-
-### Schnittstellenvertrag
-
-| Thema | Kanonische Quelle |
-|-------|------------------|
-| Designhaltung und Designsystem | [design.md](design.md) |
-| Datenmodell, Ontologie, Vokabulare | [data.md](data.md), [data-model.md](data-model.md) |
-| Pipeline, Datenfluss, Qualitätsbaseline | [Pipeline](#pipeline) |
-| Testsuite, TDD-Workflow | [testing.md](testing.md) |
-| Architektur- und Modellentscheidungen | [journal.md](journal.md) |
-| Identität, Funktionsumfang, operativer Stand | [specification.md](specification.md) |
-| Forschungsrahmen und Use Cases | [research-framework.md](research-framework.md) |
+| Topic | Canonical source |
+|---|---|
+| Design stance and design system | [design.md](design.md) |
+| Source material and data quality | [data.md](data.md) |
+| Model, ontology, vocabularies | [data-model.md](data-model.md) |
+| Test suite and TDD workflow | [testing.md](testing.md) |
+| Architecture and model decisions | [journal.md](journal.md) |
+| Identity, scope and state of work | [specification.md](specification.md) |
+| Open handover points | [handoff.md](handoff.md) |
+| Research framework and use cases | [research-framework.md](research-framework.md) |

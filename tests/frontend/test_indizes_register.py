@@ -1,14 +1,16 @@
-"""Die Registerseite der Indizes im Browser (E-226, E-227).
+"""Die Registerseite der Indizes im Browser (E-226, E-227, E-230).
 
 Marker: @pytest.mark.frontend — laeuft nur mit ``pytest -m frontend`` und nur,
 wenn Playwright installiert ist.
 
 Geprueft wird, was sich ohne Browser nicht pruefen laesst: dass genau ein
-Register steht und im Kopf gewaehlt wird, dass die Liste keine Spaltenkoepfe
-mehr fuehrt und alle zugeklappten Eintraege dieselbe Hoehe haben, dass der
-Eintrag mit der Tastatur aufgeht, dass der Weg in den Bestand schon im href
-steht (Mittel- und Strg-Klick) und dass Registerwahl und Adresszeile dieselbe
-Sache sagen.
+Register steht und im Menue des Indizes-Tabs gewaehlt wird, dass die Kopfzeile
+der Liste das Register und die Sortierung fuehrt, dass die Liste keine
+Spaltenkoepfe mehr fuehrt und alle zugeklappten Eintraege dieselbe Hoehe haben,
+dass der Eintrag mit der Tastatur aufgeht, dass der Name die Zeile auf- und
+zuklappt statt die Ansicht zu wechseln, dass der Weg in den Bestand allein an
+der Dokumentpille haengt und schon in ihrem href steht (Mittel- und Strg-Klick,
+E-252) und dass Registerwahl und Adresszeile dieselbe Sache sagen.
 """
 
 import re
@@ -50,66 +52,235 @@ def test_ein_register_und_tastaturbedienung(page):
     grids = page.locator("#tab-indizes .idx-grid")
     assert grids.count() == 1, "Die Seite zeigt genau ein Register (E-226)."
     assert page.locator(
-        "#tab-indizes .idx-seg--on .idx-seg__label").inner_text() == "Personen"
+        "#tab-indizes .idx-head__label").inner_text() == "Personen"
 
-    # Die erste Zeile geht mit der Tastatur auf: der Name ist ein echtes
-    # Bedienelement, Enter klappt auf, Escape schliesst wieder.
-    name = page.locator("#tab-indizes .idx-item .idx-name").first
-    assert name.evaluate("el => el.tagName") == "BUTTON"
-    assert name.get_attribute("aria-expanded") == "false"
-    name.focus()
+    # Die Zeile selbst ist das Bedienelement des Chevrons (E-217, E-252): sie
+    # ist tastaturerreichbar, Enter klappt auf, Escape schliesst wieder. Der
+    # Name gehoert dazu und traegt kein zweites Ziel.
+    row = page.locator("#tab-indizes .idx-item").first
+    assert row.get_attribute("tabindex") == "0"
+    assert row.get_attribute("aria-expanded") == "false"
+    assert page.locator("#tab-indizes .idx-item .idx-chevron").count() > 0
+    row.focus()
     page.keyboard.press("Enter")
     page.wait_for_selector("#tab-indizes .idx-detail", timeout=5000)
-    open_name = page.locator("#tab-indizes .idx-item--expanded .idx-name").first
-    assert open_name.get_attribute("aria-expanded") == "true"
-    detail_id = open_name.get_attribute("aria-controls")
+    open_row = page.locator("#tab-indizes .idx-item--expanded").first
+    assert open_row.get_attribute("aria-expanded") == "true"
+    detail_id = open_row.get_attribute("aria-controls")
     assert detail_id and page.locator(f"#{detail_id}").count() == 1
 
     page.keyboard.press("Escape")
     page.wait_for_selector("#tab-indizes .idx-detail", state="detached", timeout=5000)
     assert page.evaluate(
-        "document.activeElement && document.activeElement.classList.contains('idx-name')"
-    ), "Escape laesst den Fokus auf dem Namen stehen."
+        "document.activeElement && document.activeElement.classList.contains('idx-item')"
+    ), "Escape laesst den Fokus auf der Zeile stehen."
 
     assert not page.console_errors, page.console_errors
 
 
 @pytest.mark.frontend
-def test_archivlink_traegt_die_facette_im_href(page):
+def test_der_name_klappt_auf_die_pille_fuehrt_in_den_bestand(page):
+    """Ein Element, eine Funktion (Projektleitung, 2026-09-05).
+
+    Der Name teilt die Funktion der Zeile und klappt den Eintrag auf; in den
+    Bestand fuehrt allein die Dokumentpille, die den Eintrag als Hub bedient
+    (E-252).
+    """
     _open(page, "#indizes/personen")
-    page.locator("#tab-indizes .idx-item .idx-name").first.click()
-    link = page.locator("#tab-indizes .idx-detail__show-all a").first
-    href = link.get_attribute("href")
+    row = page.locator("#tab-indizes .idx-item").first
+    name = row.locator(".idx-name")
+    pill = row.locator(".idx-doclink")
+
+    # Der Name traegt kein eigenes Ziel und keinen Tooltip, der eines behauptet.
+    assert name.get_attribute("href") is None
+    assert name.get_attribute("data-tip") is None
+    assert name.evaluate("e => e.tagName") == "SPAN"
+
     # Mittel- und Strg-Klick lesen nur das href; ohne die Facette darin
     # oeffnete sich der ungefilterte Bestand.
+    href = pill.get_attribute("href")
     assert href.startswith("#bestand"), href
     assert "person=" in href, href
+
+    # Die Belegzahl ist die Handlung der Zeile: Zeichen, Einheitswort, Pfeil.
+    label = pill.locator(".idx-doclink__label").inner_text().strip()
+    m = re.fullmatch(r"(\d+) Dokumente?", label)
+    assert m, label
+    erwartet = (f"Diese {m.group(1)} Dokument{'' if m.group(1) == '1' else 'e'} "
+                "im Bestand öffnen")
+    assert pill.get_attribute("data-tip") == erwartet
+    assert pill.get_attribute("aria-label") == erwartet
+    assert pill.locator(".idx-doclink__icon svg").count() == 1
+    assert pill.locator(".idx-doclink__arrow").inner_text().strip() == "→"
+    # Die nackte Zahl am rechten Rand ist entfallen.
+    assert page.locator("#tab-indizes .idx-item__count").count() == 0
+
+    # Der Netzwerksprung steht als erster der Sprungknoepfe; ob die Karte
+    # daneben steht, entscheidet der verortete Beleg (eigener Test).
+    net = row.locator(".idx-jump--row").first
+    assert net.get_attribute("data-tip").endswith("im Netzwerk öffnen")
+
+    # Der Klick auf den Namen klappt auf und laesst die Ansicht stehen.
+    name.click()
+    page.wait_for_selector("#tab-indizes .idx-detail", timeout=5000)
+    offen = page.locator("#tab-indizes .idx-item--expanded").first
+    assert offen.get_attribute("aria-expanded") == "true"
+    assert "#indizes" in page.url and "#bestand" not in page.url, page.url
+    # und derselbe Klick wieder zu.
+    offen.locator(".idx-name").click()
+    page.wait_for_selector("#tab-indizes .idx-detail", state="detached", timeout=5000)
+    assert page.locator("#tab-indizes .idx-item--expanded").count() == 0
+
+    # In den gefilterten Bestand fuehrt die Dokumentpille.
+    pill.click()
+    page.wait_for_timeout(400)
+    assert "#bestand" in page.url, page.url
+    assert "person=" in page.url, page.url
+    root = page.locator("#tab-bestand .vs-status__count").inner_text()
+    assert re.search(r"\d", root), root
+    assert not page.console_errors, page.console_errors
+
+
+@pytest.mark.frontend
+def test_der_eintrag_listet_keine_dokumente_mehr(page):
+    """Kein Dokumentenblock im aufgeklappten Eintrag (E-252)."""
+    _open(page, "#indizes/personen")
+    page.locator("#tab-indizes .idx-item").first.click()
+    page.wait_for_selector("#tab-indizes .idx-detail", timeout=5000)
+    for gone in (".idx-detail__records", ".idx-detail-record",
+                 ".idx-detail__show-all", ".idx-detail__header"):
+        assert page.locator(f"#tab-indizes {gone}").count() == 0, gone
+
+    # Das Umfeld bleibt als kurze Orientierung, hoechstens fuenf Chips je
+    # Familie; der Rest fuehrt ins Netzwerk statt sich an Ort und Stelle
+    # aufzublaettern.
+    groups = page.locator("#tab-indizes .idx-umfeld__group")
+    assert groups.count() > 0
+    for i in range(groups.count()):
+        chips = groups.nth(i).locator(
+            ".idx-umfeld__chips > *:not(.idx-umfeld__more)").count()
+        assert chips <= 5, f"Gruppe {i} zeigt {chips} Chips"
+    # Der Gruppentitel ist eine Ueberschrift, kein Link: keine Unterlinie.
+    labels = page.locator("#tab-indizes .idx-umfeld__label")
+    assert labels.count() > 0
+    for i in range(labels.count()):
+        el = labels.nth(i)
+        assert "mark-derived" not in (el.get_attribute("class") or "")
+        deco = el.evaluate(
+            "e => getComputedStyle(e).textDecorationLine")
+        assert deco == "none", deco
+
+    more = page.locator("#tab-indizes .idx-umfeld__more").first
+    if more.count() > 0:
+        assert "Netzwerk" in more.get_attribute("data-tip")
+        more.click()
+        page.wait_for_timeout(500)
+        assert page.locator(
+            '[data-tab="netzwerk"][aria-selected="true"]').count() == 1
+    assert not page.console_errors, page.console_errors
+
+
+@pytest.mark.frontend
+def test_jedes_register_zeigt_seine_rollen_und_seine_spanne(page):
+    """Rollenzeile aus der Verknuepfungsart, Zeitspanne in jeder Zeile (E-252)."""
+    # Person, Ort und Institution fuehren Rollen an ihren Verknuepfungen; das
+    # Werk fuehrt keine, dort faellt die Zeile weg statt leer zu stehen.
+    for register in ("personen", "orte", "organisationen"):
+        _open(page, f"#indizes/{register}")
+        page.locator("#tab-indizes .idx-item").first.click()
+        page.wait_for_selector("#tab-indizes .idx-detail", timeout=5000)
+        rollen = page.locator("#tab-indizes .idx-detail .idx-rollen .chip")
+        assert rollen.count() > 0, register
+        first = rollen.first
+        assert first.locator(".chip-rolle").inner_text().strip() != ""
+        assert re.fullmatch(r"\d+", first.locator(".chip-wert").inner_text().strip())
+
+    for register in ("personen", "organisationen", "orte", "werke"):
+        _open(page, f"#indizes/{register}")
+        spans = [t.strip() for t in page.eval_on_selector_all(
+            "#tab-indizes .idx-item__span", "els => els.map(e => e.textContent)")]
+        assert spans, register
+        gesetzt = [t for t in spans if t]
+        assert gesetzt, f"{register} zeigt keine einzige Zeitspanne"
+        for text in gesetzt[:10]:
+            assert re.fullmatch(r"\d{4}(–\d{4})?", text), (register, text)
+    assert not page.console_errors, page.console_errors
 
 
 @pytest.mark.frontend
 def test_registerwechsel_und_direkter_einstieg(page):
     _open(page, "#indizes/personen")
-    # Der Waehler steht im Kopf des Registers, nicht mehr in der Sidebar
-    # (E-227), und traegt das Tablist-Muster mit Roving Tabindex.
+    # Das Register wird seit E-230 im Menue des Indizes-Tabs gewaehlt, weder in
+    # der Sidebar noch in einer Kopfleiste der Arbeitsflaeche.
     assert page.locator(".view-sidebar .idx-register-choice").count() == 0
-    segs = page.locator("#tab-indizes .idx-chooser[role='tablist'] .idx-seg")
-    assert segs.count() == 4
-    assert [s.get_attribute("tabindex") for s in segs.all()] == ["0", "-1", "-1", "-1"]
-    assert segs.first.get_attribute("aria-controls") == "idx-register-list"
+    assert page.locator("#tab-indizes .idx-chooser").count() == 0
 
-    segs.nth(2).click()          # Orte
+    tab = page.locator("#btn-indizes")
+    assert tab.get_attribute("aria-haspopup") == "menu"
+    assert tab.get_attribute("aria-expanded") == "false"
+    menu = page.locator("#indizes-register-menu")
+    assert menu.get_attribute("role") == "menu"
+    items = menu.locator("[role='menuitemradio']")
+    assert items.count() == 4
+    assert [i.inner_text().strip() for i in items.all()] == [
+        "Personen", "Organisationen", "Orte", "Werke"]
+
+    # Der aktive Tab klappt das Menue auf, Escape schliesst es wieder.
+    tab.click()
+    page.wait_for_selector("#indizes-register-menu[role='menu']:not([hidden])",
+                           timeout=5000)
+    assert tab.get_attribute("aria-expanded") == "true"
+    assert items.nth(0).get_attribute("aria-checked") == "true"
+    page.keyboard.press("Escape")
+    assert menu.is_hidden()
+
+    tab.click()
+    page.wait_for_timeout(200)
+    items.nth(2).click()         # Orte
     page.wait_for_timeout(300)
+    assert menu.is_hidden(), "Die Wahl schliesst das Menue."
     assert "#indizes/orte" in page.url, page.url
-    assert page.locator(
-        "#tab-indizes .idx-seg--on .idx-seg__label").inner_text() == "Orte"
-    assert page.locator(
-        "#tab-indizes .idx-seg--on").get_attribute("aria-selected") == "true"
+    assert page.locator("#tab-indizes .idx-head__label").inner_text() == "Orte"
 
-    # Ein geteilter Link auf ein Register oeffnet dieses Register direkt.
+    # Ein geteilter Link auf ein Register oeffnet dieses Register direkt, und
+    # das Menue nennt es als gewaehlt.
     _open(page, "#indizes/werke")
-    assert page.locator(
-        "#tab-indizes .idx-seg--on .idx-seg__label").inner_text() == "Werke"
+    assert page.locator("#tab-indizes .idx-head__label").inner_text() == "Werke"
     assert page.locator("#tab-indizes .idx-grid").count() == 1
+    assert items.nth(3).get_attribute("aria-checked") == "true"
+    assert not page.console_errors, page.console_errors
+
+
+@pytest.mark.frontend
+def test_sortierung_steht_im_kopf_der_liste(page):
+    """Die Sortierung ordnet und schneidet nicht, sie steht ueber der Liste."""
+    _open(page, "#indizes/personen")
+    buttons = page.locator("#tab-indizes .idx-sort .idx-sort__btn")
+    assert buttons.count() == 2
+    # Seit 2026-09-05 tragen die beiden Knoepfe nur ihr Zeichen; der Name steht
+    # im aria-label und im Tooltip (Regel 8).
+    assert [b.inner_text().strip() for b in buttons.all()] == ["", ""]
+    assert [b.get_attribute("aria-label") for b in buttons.all()] == [
+        "Belegzahl", "Alphabetisch"]
+    assert [b.get_attribute("data-tip") for b in buttons.all()] == [
+        "Nach Belegzahl sortiert", "Alphabetisch sortiert"]
+    assert buttons.nth(0).get_attribute("aria-pressed") == "true"
+
+    def names():
+        return page.eval_on_selector_all(
+            "#tab-indizes .idx-item .idx-name", "els => els.map(e => e.textContent)")
+
+    by_count = names()
+    buttons.nth(1).click()
+    page.wait_for_timeout(200)
+    assert buttons.nth(1).get_attribute("aria-pressed") == "true"
+    assert buttons.nth(0).get_attribute("aria-pressed") == "false"
+    by_alpha = names()
+    assert by_alpha != by_count, "Der Wechsel ordnet die Liste um."
+    assert sorted(by_alpha) == sorted(by_count), "Die Sortierung schneidet nicht."
+
+    # Die Normdaten-Schalter sind mit E-230 entfallen.
+    assert "Wikidata" not in page.locator(".view-sidebar").inner_text()
     assert not page.console_errors, page.console_errors
 
 
@@ -127,9 +298,22 @@ def test_liste_ohne_spaltenkoepfe_und_mit_einer_zeilenhoehe(page):
     assert len(heights) > 20, "Ohne Eintraege prueft der Test nichts."
     assert len(set(heights)) == 1, f"Zugeklappte Eintraege verschiedener Hoehe: {sorted(set(heights))}"
 
-    # Die Kopfzahl nennt den Schnitt und den Gesamtstand des Registers.
-    count = page.locator("#tab-indizes .idx-seg--on .idx-seg__count").inner_text()
-    assert re.fullmatch(r"\d+ von \d+", count), count
+    # Sichtbar steht nur die Zahl des Schnitts, das Paar liegt im Tooltip
+    # (Projektleitung, 2026-09-05).
+    head_count = page.locator("#tab-indizes .idx-head__count")
+    assert re.fullmatch(r"\d+", head_count.inner_text()), head_count.inner_text()
+    assert re.fullmatch(r"\d+ Einträge mit verknüpften Dokumenten",
+                        head_count.get_attribute("data-tip")), head_count.get_attribute("data-tip")
+
+    # Im Schnitt nennt der Tooltip beide Zahlen, sichtbar bleibt die des Schnitts.
+    _open(page, "#indizes/personen?typ=biographical")
+    head_count = page.locator("#tab-indizes .idx-head__count")
+    shown = int(head_count.inner_text())
+    tip = head_count.get_attribute("data-tip")
+    m = re.fullmatch(
+        r"(\d+) von (\d+) Einträgen, die übrigen liegen außerhalb des Filters", tip)
+    assert m, tip
+    assert int(m.group(1)) == shown < int(m.group(2))
 
 
 @pytest.mark.frontend
@@ -139,11 +323,71 @@ def test_belegzahl_stimmt_mit_der_sidebar_ueberein(page):
     cut = int(re.search(
         r"(\d+)\s*$",
         page.locator(".vs-status__count .fs-option__count").inner_text().strip()).group(1))
-    counts = [int(t) for t in page.eval_on_selector_all(
-        "#tab-indizes .idx-item__count", "els => els.map(e => e.textContent)")]
+    counts = [int(re.match(r"\d+", t).group(0)) for t in page.eval_on_selector_all(
+        "#tab-indizes .idx-doclink__label", "els => els.map(e => e.textContent)")]
     assert counts, "Der Schnitt fuehrt Eintraege."
     assert max(counts) <= cut, (
         f"Ein Eintrag zaehlt {max(counts)} Dokumente in einem Schnitt von {cut}.")
-    tip = page.locator("#tab-indizes .idx-item__count").first.get_attribute("data-tip")
-    assert re.fullmatch(r"\d+ von \d+ Dokumenten", tip), tip
+    tip = page.locator("#tab-indizes .idx-doclink").first.get_attribute("data-tip")
+    assert re.fullmatch(r"Diese \d+ Dokumente? im Bestand öffnen", tip), tip
+    assert not page.console_errors, page.console_errors
+
+
+@pytest.mark.frontend
+def test_jedes_zeichen_traegt_seinen_tooltip(page):
+    """Regel 8: kein Zeichen ohne Tooltip, und keiner davon als natives title."""
+    _open(page, "#indizes/orte")
+    assert page.locator("#tab-indizes .idx-head__icon").get_attribute(
+        "data-tip") == "Register Orte"
+    for sel in (".idx-head__icon", ".idx-head__count", ".idx-sort__btn",
+                ".idx-doclink", ".idx-jump--row", ".idx-wd-link"):
+        marks = page.locator(f"#tab-indizes {sel}")
+        assert marks.count() > 0, sel
+        for mark in marks.all()[:5]:
+            assert mark.get_attribute("data-tip"), sel
+            assert mark.get_attribute("title") is None, sel
+
+    # Der Name ist Text, kein Zeichen: er sagt sich selbst und traegt deshalb
+    # keinen Tooltip, seit er auch kein zweites Ziel mehr hat.
+    for mark in page.locator("#tab-indizes .idx-name").all()[:5]:
+        assert mark.get_attribute("data-tip") is None
+        assert mark.get_attribute("title") is None
+
+    wd = page.locator("#tab-indizes .idx-wd-link").first
+    assert re.fullmatch(r"Wikidata Q\d+", wd.get_attribute("data-tip"))
+    assert wd.get_attribute("href").startswith("https://www.wikidata.org/entity/Q")
+    # Die Marke steht auf der Hoehe der Ziffern, nicht ueber der Zeile.
+    box = wd.locator("svg").bounding_box()
+    assert round(box["height"]) <= 10, box
+
+
+@pytest.mark.frontend
+def test_werke_bieten_den_sprung_auf_die_karte(page):
+    """Die Karte waehlt seit dem Werk-Knoten auch Werke als Entitaet."""
+    _open(page, "#indizes/werke")
+    # Beide Spruenge stehen seit dem 2026-09-05 in der Zeile; der aufgeklappte
+    # Eintrag traegt keine freischwebende Aktionszeile mehr.
+    assert page.locator("#tab-indizes .idx-detail__actions").count() == 0
+
+    def jumps(name):
+        row = page.locator("#tab-indizes .idx-item", has_text=name).first
+        return row.locator(".idx-jump--row").evaluate_all(
+            "els => els.map(e => e.getAttribute('aria-label'))")
+
+    assert jumps("Tristan und Isolde") == [
+        "Umgebung von Tristan und Isolde im Netzwerk öffnen",
+        "Tristan und Isolde auf der Karte öffnen",
+    ]
+
+    # Ein Werk ohne verorteten Beleg landete auf einer leeren Karte und bietet
+    # den Sprung deshalb nicht an.
+    assert jumps("La Gioconda") == [
+        "Umgebung von La Gioconda im Netzwerk öffnen"]
+
+    # Das Ortsregister bietet ihn nie, dort waere er der Ort auf sich selbst.
+    _open(page, "#indizes/orte")
+    labels = page.eval_on_selector_all(
+        "#tab-indizes .idx-jump--row",
+        "els => els.map(e => e.getAttribute('aria-label'))")
+    assert labels and all(l.endswith("im Netzwerk öffnen") for l in labels)
     assert not page.console_errors, page.console_errors

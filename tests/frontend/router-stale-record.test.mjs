@@ -1,8 +1,7 @@
 /**
- * Der Router schreibt keinen Datensatz in die Adresszeile, der nicht mehr im
- * Hash steht.
+ * Was die Filter-Subscription des Routers in die Adresszeile zurueckschreibt.
  *
- * Zwei stille Defekte, beide aus derselben Reihenfolge:
+ * Drei stille Defekte, alle aus derselben Reihenfolge:
  *
  *   * `parseHash` uebernahm den Query-Teil, bevor der Pfad gelesen war. Die
  *     Filteruebernahme dispatcht, der Router schreibt aus dieser Subscription
@@ -10,6 +9,9 @@
  *   * Ein Hash ohne Datensatzteil loeschte den vorigen Datensatz nicht, also
  *     oeffnete `applyState` ihn im neuen Tab wieder, und der Tab-Wechsel
  *     sprang zurueck in den Bestand.
+ *   * Dasselbe Zurueckschreiben baute den Query allein aus dem Filter und warf
+ *     damit jeden Ansichtsparameter daneben weg. Ein geteilter Link, der
+ *     Schnitt und Netzwerkknoten nannte, kam ohne den Knoten an.
  *
  * Anders als router-hash.test.mjs braucht diese Datei ein window, das
  * Ereignisse wirklich ausliefert: geprueft wird gerade die Rueckwirkung der
@@ -61,7 +63,7 @@ beforeEach(() => {
 describe('Datensatz und Adresszeile', () => {
   test('der Schnitt im neuen Hash schreibt nicht den alten Datensatz zurueck', () => {
     parse(`#bestand/${A}`);
-    parse(`#bestand/${B}?stand=abgeschlossen`);
+    parse(`#bestand/${B}?land=Deutschland`);
     assert.equal(getState().selectedRecord, B);
     // Der Hash kodiert den Doppelpunkt des Instanznamens.
     assert.ok(window.location.hash.includes(encodeURIComponent(B)),
@@ -71,20 +73,31 @@ describe('Datensatz und Adresszeile', () => {
   });
 
   test('ein Tab-Wechsel ohne Datensatzteil loescht den offenen Datensatz', () => {
-    parse(`#bestand/${A}?stand=abgeschlossen`);
+    parse(`#bestand/${A}?land=Deutschland`);
     assert.equal(getState().selectedRecord, A);
     parse('#netzwerk');
     assert.equal(getState().selectedRecord, null);
     assert.equal(getState().activeTab, 'netzwerk');
   });
 
+  test('der Ansichtsparameter ueberlebt die Filteruebernahme aus der URL', () => {
+    // Genau der gemeldete Fall: parseHash liest den Schnitt, die Subscription
+    // schreibt den Query neu — und zwar bevor die Ansicht den Knoten gelesen
+    // hat.
+    parse('#netzwerk?ort=Bayreuth&knoten=person%3AWagner%2C%20Wieland');
+    assert.ok(window.location.hash.includes('knoten=person%3AWagner%2C%20Wieland'),
+      `Adresszeile: ${window.location.hash}`);
+    assert.ok(window.location.hash.includes('ort=Bayreuth'),
+      `Adresszeile: ${window.location.hash}`);
+  });
+
   test('der Schnitt ueberlebt den Tab-Wechsel trotzdem', () => {
-    parse(`#bestand/${A}?stand=abgeschlossen`);
+    parse(`#bestand/${A}?land=Deutschland`);
     parse('#netzwerk');
     parse('#bestand');
     // Der leere Query heisst "dieser Link nennt keinen Schnitt"; er loest ihn
     // nicht auf (bestehende Regel aus router-hash.test.mjs).
-    assert.ok(window.location.hash.includes('stand=abgeschlossen')
+    assert.ok(window.location.hash.includes('land=Deutschland')
       || getState().activeTab === 'bestand');
   });
 });

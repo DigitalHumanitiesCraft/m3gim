@@ -122,7 +122,7 @@ ROLE_CONCEPTS = load_role_concepts(VOCAB_PATH)
 CONCEPT_META = load_concept_meta(VOCAB_PATH)
 ROLE_META = load_role_meta(VOCAB_PATH)
 
-# Mapping (typ, rolle) → AgRelOn class + property (data-model.md § AgRelOn-Integration, Mapping M³GIM-Rolle → AgRelOn, phase 4.8).
+# Mapping (typ, rolle) → AgRelOn class + property (data-model.md § AgRelOn, Mapping M³GIM-Rolle → AgRelOn, phase 4.8).
 # The pipeline emits an agrelon relation with provenance on the record in
 # addition to the plain agent relation.
 AGRELON_MAPPING = {
@@ -217,14 +217,14 @@ PENDING_CREATION_DATE = "_malformed_creation_date"
 
 # Mobility place roles (E-97): each produces a dateless m3gim-ontology:Annotation
 # (first-class mobility event for the mobility atlas). Vocabulary completeness
-# per data.md § Verknüpfungsmechanismus and data-model.md § Mobilitätsmodell — the current export uses zielort/absendeort/abreiseort;
+# per data.md § The link mechanism and data-model.md § Mobility perspectives — the current export uses zielort/absendeort/abreiseort;
 # empfangsort/vertragsort scaffold for a deeper export. wohnort is NOT a point
 # event (a state with validity) and is deliberately absent from this set.
 MOBILITY_PLACE_ROLES = {
     "zielort", "absendeort", "abreiseort", "empfangsort", "vertragsort",
 }
 
-# Contract status (data-model.md § Finanzschicht, E-99): the source marks an unfulfilled
+# Contract status (data-model.md § Financial layer, E-99): the source marks an unfulfilled
 # contract via the rolle column as "nicht eingehalten", propagated column-wide
 # across the whole contract block (e.g. NIM_023). This is NOT an event/place
 # role: a place or an ort,datum event cannot be "nicht eingehalten". We filter
@@ -303,7 +303,7 @@ DFT_BROADER = {
     "identityCard": "identityDocument",
 }
 # E-101: 'sammlung' and 'verzeichnis' deliberately stay without broader (the
-# is-a relation of sammlung to konvolut is not prejudged, data-model.md § Dokumenttypen-Vokabular).
+# is-a relation of sammlung to konvolut is not prejudged, data-model.md § Controlled vocabularies).
 
 # Readable German labels for skos:prefLabel of the document type concepts
 # (E-101). Replaces the frontend hand table DOKUMENTTYP_LABELS; values are
@@ -349,7 +349,7 @@ DFT_LABELS = {
 
 # Header-shift corrections and currency/Bearbeitungsstand defaults come from
 # _common.py (INDEX_HEADER_SHIFTS, FINANCE_CURRENCY_DEFAULTS,
-# normalize_bearbeitungsstand). See knowledge/data.md § Datenqualität.
+# normalize_bearbeitungsstand). See knowledge/data.md § Compensations in the pipeline.
 
 
 def normalize_str(value) -> str | None:
@@ -438,11 +438,9 @@ def build_role_concepts(nodes: list) -> list:
     for ident in sorted(used):
         meta = CONCEPT_META.get(ident, {})
         role_meta = ROLE_META.get(ident, {})
-        # A concept without a definition is still emitted once it carries a
-        # dating scope or rank: both are structural and needed, while the
-        # explanatory text may be absent (E-150).
-        if not meta.get("definition") and not role_meta:
-            continue
+        # Every used role gets a node, definition or not (E-254): the reference
+        # at the usage site is an IRI, so without the node the interface has
+        # only the identifier. Definition, scope and rank are optional on it.
         node = {
             "@id": ident,
             "@type": "skos:Concept",
@@ -467,7 +465,7 @@ def normalize_role(value) -> str | None:
 
     Strips :innen and :in (saenger:in -> saenger). A final 'in' without colon
     is not removed generally because it is ambiguous (interpret, ...);
-    extendable via a stem allowlist if needed. See data.md § Rollenvokabular.
+    extendable via a stem allowlist if needed. See data.md § Role values.
     """
     v = normalize_lower(value)
     if v is None:
@@ -491,7 +489,7 @@ def attach_role(target: dict, value) -> None:
     A value outside the vocabulary stays as a literal. This covers the
     contract status "nicht eingehalten", which sits in the role column and is
     explicitly not a role concept per the vocabulary; its modelling is open
-    with the cataloguing team (data-model.md § Finanzschicht).
+    with the cataloguing team (data-model.md § Financial layer).
     """
     if not value:
         return
@@ -518,7 +516,7 @@ _NO_DATE_PLACEHOLDER = re.compile(
 def clean_date(value) -> str | None:
     """Removes date artefacts (Excel 00:00:00) and normalizes spans.
 
-    YYYY-YYYY (a season) becomes YYYY/YYYY (ISO-8601 time span, data.md § Datumskonventionen).
+    YYYY-YYYY (a season) becomes YYYY/YYYY (ISO-8601 time span, data.md § Date notation of the source).
     Free-text values like 'Wien, ab 1956' stay unchanged — the pipeline filters
     them out by pattern match before they reach typed date properties.
     """
@@ -528,7 +526,7 @@ def clean_date(value) -> str | None:
     s = re.sub(r'\s+00:00:00$', '', s)
     if s == "":
         return None
-    # "No date" placeholders (data.md § Datumskonventionen): "ohne Datum"/"o. D." is NOT a date
+    # "No date" placeholders (data.md § Date notation of the source): "ohne Datum"/"o. D." is NOT a date
     # and must not land in rico:date (breaks the JSON-LD schema). Map to None.
     if _NO_DATE_PLACEHOLDER.match(s):
         return None
@@ -547,7 +545,7 @@ def is_iso_date(value) -> bool:
     return isinstance(value, str) and bool(ISO_DATE_PATTERN.match(value))
 
 
-# Date routing normalization (data.md § Datumskonventionen, E-102). Maps text notations to ISO
+# Date routing normalization (data.md § Date notation of the source, E-102). Maps text notations to ISO
 # representations before the annotation gets its value. Lossless: unrecognized
 # notations stay unchanged and carry the datierung-malformed flag instead.
 _RANGE_BIS = re.compile(r"^(.+?)\s+bis\s+(.+)$", re.IGNORECASE)
@@ -557,7 +555,7 @@ _FREITEXT_BEGINN = re.compile(
 
 
 def normalize_dating(value: str) -> str:
-    """Normalizes date notations per the routing table (data.md § Datumskonventionen).
+    """Normalizes date notations per the routing table (data.md § Date notation of the source).
 
     - "X bis Y" → ISO time span "X/Y" (only if both sides are ISO)
     - "ab/seit YYYY" → qualifier "nach:YYYY"
@@ -575,7 +573,7 @@ def normalize_dating(value: str) -> str:
     return s
 
 
-# Data quality flags from anmerkung signals (data-model.md § RiC-O-Kern und m3gim-Erweiterung, E-102). The
+# Data quality flags from anmerkung signals (data-model.md § Property families, E-102). The
 # vocabulary is derived from the actual anmerkung entries, not extrapolated
 # (guardrail 'verify foreign terms'): "Name nicht eindeutig auffindbar",
 # "Vorname fehlt"/"ohne Vornamen", "Rolle Unsicher: ..."/"(??)",
@@ -654,7 +652,7 @@ def _index_row_values(row: pd.Series, columns) -> dict:
 
 
 def build_index_lookup(df: pd.DataFrame) -> dict:
-    """Builds the lookup dictionary: name → {wikidata_id, ...} (data.md § Tabellenmodell).
+    """Builds the lookup dictionary: name → {wikidata_id, ...} (data.md § Identity and precedence in the index tables).
 
     The earlier version wrote one entry per name in source order; on equal
     names the last row won entirely. The 2026-08-31 delivery lists the fonds
@@ -820,7 +818,7 @@ def convert_objekt(row: pd.Series, folio_col: str = None,
     # (aus_dokument/erschlossen/extern) — no measured value, against the
     # guardrail "do not fabricate confidence". Nothing in frontend/report read
     # them. If dating evidence is needed later it returns as a categorical
-    # value, not a decimal. data-model.md § Meta-Statement-Modell.
+    # value, not a decimal. data-model.md § Meta-statements and provenance.
 
     dokumenttyp = normalize_lower(row.get('dokumenttyp'))
     if dokumenttyp:
@@ -867,6 +865,67 @@ def convert_objekt(row: pd.Series, folio_col: str = None,
         record["m3gim-ontology:digitizationStatus"] = scan_status
 
     return record
+
+
+# Folio of a page: sheet number plus at least one page level (13_1, 33_1_2).
+_PAGE_FOLIO = re.compile(r"^\d+(?:_\d+)+$")
+
+
+def _record_folio(record: dict) -> str | None:
+    """Folio half of a record identifier (Signatur + ' ' + Folio)."""
+    parts = str(record.get("rico:identifier") or "").split(" ", 1)
+    return parts[1] if len(parts) == 2 else None
+
+
+def _folio_sort_key(folio: str) -> tuple:
+    return tuple(int(part) for part in folio.split("_"))
+
+
+def _build_folio_page_hierarchy(records: list, konvolut_members: dict) -> None:
+    """Hangs the pages of a folio under one record of that folio.
+
+    The source records a page as its own object row with the folio 13_1, 13_2
+    and so on, so without the folio level the pages stand side by side and lose
+    the context of the whole document. The folio record is the level RiC-O
+    provides (data.md § Target model, decided and not built) and carries its pages in page order.
+
+    Where the source holds no object row for the folio itself, the record is
+    derived here and marked as derived. It stays without title and without date,
+    because taking either from a page would state about the folio what the
+    source states about one of its pages.
+    """
+    by_ident = {r["rico:identifier"]: r for r in records}
+    pages_of = {}
+
+    queue = [r for r in records if _PAGE_FOLIO.match(_record_folio(r) or "")]
+    while queue:
+        record = queue.pop(0)
+        signatur, folio = record["rico:identifier"].split(" ", 1)
+        parent_folio = folio.rsplit("_", 1)[0]
+        parent_ident = f"{signatur} {parent_folio}"
+        pages_of.setdefault(parent_ident, []).append(record)
+
+        if parent_ident in by_ident:
+            continue
+        parent = {
+            "@id": create_record_id(signatur, parent_folio),
+            "@type": "rico:Record",
+            "rico:identifier": parent_ident,
+            "m3gim-ontology:derivedFolioRecord": True,
+        }
+        records.append(parent)
+        by_ident[parent_ident] = parent
+        konvolut_members.setdefault(signatur, []).append(parent["@id"])
+        # A derived folio can itself be a page (33_1 under 33) and then needs
+        # its own parent.
+        if _PAGE_FOLIO.match(parent_folio):
+            queue.append(parent)
+
+    for parent_ident, pages in pages_of.items():
+        pages.sort(key=lambda r: _folio_sort_key(_record_folio(r)))
+        by_ident[parent_ident]["rico:hasOrHadPart"] = [
+            {"@id": r["@id"]} for r in pages
+        ]
 
 
 def build_konvolut_hierarchy(df: pd.DataFrame, folio_col: str = None,
@@ -930,6 +989,8 @@ def build_konvolut_hierarchy(df: pd.DataFrame, folio_col: str = None,
                 konvolut_members[sig] = []
             konvolut_members[sig].append(record["@id"])
 
+    _build_folio_page_hierarchy(records, konvolut_members)
+
     konvolute = []
     for sig, member_ids in konvolut_members.items():
         konvolut = {
@@ -941,7 +1002,7 @@ def build_konvolut_hierarchy(df: pd.DataFrame, folio_col: str = None,
         }
         konvolute.append(konvolut)
 
-    # Collision resolution (see knowledge/data.md § Datenqualität): if a Signatur has
+    # Collision resolution (see knowledge/data.md § Compensations in the pipeline): if a Signatur has
     # both a collection row (no Folio) and Folio rows, the collection record
     # shares its @id with the record set. The collection row gets a
     # _collection suffix and is attached to the Konvolut as meta member.
@@ -986,7 +1047,7 @@ def _mark_unresolved_aggregates(records: list, konvolute: list) -> None:
 
     A Hauptbestand record standing at top level without a Folio is no single
     document but a collective unit whose Folio cataloguing is still pending
-    (data.md § Konvolut- und Objektlogik). The frontend decided this from
+    (data.md § Convolutes, folios and record identity). The frontend decided this from
     signature character patterns until 2026-09-03; the Bestandsgruppe is a
     statement of the material and belongs in the dataset.
     """
@@ -1005,7 +1066,7 @@ def _mark_unresolved_aggregates(records: list, konvolute: list) -> None:
 
 # Fallback currency per Archivsignatur prefix lives in _common.py
 # (FINANCE_CURRENCY_DEFAULTS + default_currency_for). See knowledge/data.md
-# § Datenqualität for the editorial assumptions.
+# § Compensations in the pipeline for the editorial assumptions.
 
 
 # Numeric head of a raw finance value: leading digits with '.' (thousands)
@@ -1016,7 +1077,7 @@ _AMOUNT_HEAD = re.compile(r"^\s*([\d.,]+)")
 def _parse_amount_token(token: str) -> str | None:
     """Converts a raw numeric token to an xsd:decimal string.
 
-    Convention (data-model.md § Finanzschicht, European): '.' is the thousands separator,
+    Convention (data-model.md § Financial layer, European): '.' is the thousands separator,
     ',' the decimal separator. A trailing comma before the currency is already
     stripped here; a remaining ',NN' is a genuine decimal fraction.
     """
@@ -1053,7 +1114,7 @@ def _parse_single_monetary(segment: str) -> tuple[str | None, str | None]:
 def parse_monetary_values(name: str) -> list[tuple[str | None, str | None]]:
     """Splits a raw finance value into a list of (amount, currency).
 
-    Robust against the mixed notations in the source (data-model.md § Finanzschicht):
+    Robust against the mixed notations in the source (data-model.md § Financial layer):
       - 'AMOUNT, CURRENCY'     : '4000, Esc', '1.200, DM'  (comma+space separator)
       - 'AMOUNT,DEC, CURRENCY' : '631,50, Fr.'             (decimal comma THEN separator comma)
       - 'AMOUNT,DEC CURRENCY'  : '1500,00 DM', '200,00 Belgische Francs'
@@ -1072,7 +1133,7 @@ def parse_monetary_values(name: str) -> list[tuple[str | None, str | None]]:
     s = str(name).strip()
     if not s:
         return [(None, None)]
-    # Split double amounts at '/' (data-model.md § Finanzschicht): each part becomes its
+    # Split double amounts at '/' (data-model.md § Financial layer): each part becomes its
     # own entry with the same detailField. Only segments with a numeric head count.
     segments = [seg for seg in s.split("/") if seg.strip()]
     parsed = [_parse_single_monetary(seg) for seg in segments]
@@ -1133,7 +1194,7 @@ def decompose_komposit_value(name: str, typen: list[str]) -> dict[str, str]:
         else:
             # Free-text start after the comma ("Wien, ab 1956"): split at the
             # first comma and normalize the date ("ab 1956" → "nach:1956",
-            # data.md § Datumskonventionen). Adopt only if this yields an ISO value — otherwise
+            # data.md § Date notation of the source). Adopt only if this yields an ISO value — otherwise
             # no place leak into the date field (audit finding on E-102).
             m2 = re.match(r'^(.+?),\s*(.+)$', name)
             if m2:
@@ -1201,7 +1262,7 @@ def resolve_verknuepfungen_source(base: Path) -> Path:
 
     Since E-152 the source format is the per-sheet CSV export, because the
     XLSX export converts date, Folio and bundling columns into cell types and
-    fabricates precision in the process (data.md § Tabellenmodell source format). The CSV
+    fabricates precision in the process (data.md § Source format). The CSV
     directory wins; if absent, the previous XLSX path applies so an archived
     state remains readable. A directly passed file path is passed through
     unchanged.
@@ -1397,7 +1458,7 @@ def process_verknuepfungen(df: pd.DataFrame, indices: dict) -> dict:
 
         if typ is None:
             # Without a Typ the row has no target context; its name and role
-            # cannot be attached anywhere (data.md § Datenqualität).
+            # cannot be attached anywhere (data.md § Compensations in the pipeline).
             if name or rolle:
                 record_drop("Verknuepfungszeile ohne Typ",
                             _verk_location(df, row, idx))
@@ -1433,7 +1494,7 @@ def process_verknuepfungen(df: pd.DataFrame, indices: dict) -> dict:
         decomposed = decompose_komposit_value(name, typen) if len(typen) > 1 else {}
 
         # Komposit ort,datum: zusaetzlich eine Annotations-Relation emittieren
-        # (data.md § Verknüpfungsmechanismus, data-model.md § Mobilitätsmodell). Der Annotationsknoten wird in add_relations
+        # (data.md § The link mechanism, data-model.md § Mobility perspectives). Der Annotationsknoten wird in add_relations
         # als Top-Level-Entity gebaut.
         ortdatum_ste_emitted = False
         if 'ort' in typen and 'datum' in typen:
@@ -1529,7 +1590,7 @@ def process_verknuepfungen(df: pd.DataFrame, indices: dict) -> dict:
                 continue
             # ort,datum: der Datums-Teil ist bereits im Annotationsknoten
             # (atDate) repraesentiert — nicht zusaetzlich als eigene
-            # Datumsannotation emittieren (data.md § Verknüpfungsmechanismus: eine Repraesentation).
+            # Datumsannotation emittieren (data.md § The link mechanism: eine Repraesentation).
             # Der Orts-Teil bleibt als rico:hasOrHadLocation erhalten.
             if ortdatum_ste_emitted and t == 'datum':
                 continue
@@ -1550,9 +1611,14 @@ def process_verknuepfungen(df: pd.DataFrame, indices: dict) -> dict:
                 'ort': 'ort',
                 'werk': 'werk'
             }
-            if t in index_map and name:
+            if t in index_map and rel_name:
+                # The decomposed value is the key, not the raw cell: an
+                # "ort, datum" composite carries "Wien, 1957-09-07" there, which
+                # matches no index row, so the place half of every such row lost
+                # its identifier and with it its coordinates, while the
+                # annotation node of the same row carried them.
                 lookup = indices.get(index_map[t], {})
-                match = lookup.get(name.strip().lower())
+                match = lookup.get(rel_name.strip().lower())
                 if match and match.get("ambiguous"):
                     # Der Titel trifft mehrere Indexeintraege. Weder Q-ID noch
                     # Komponist duerfen gesetzt werden, weil beide dann von
@@ -1748,7 +1814,7 @@ def build_annotation(record: dict, seen: dict, place: dict | None = None,
 def _attach_index_fields(entry: dict, rel: dict, typ: str):
     """Haengt kuratierte Indexfelder (rel['_index']) als m3gim-ontology:-Properties an
     die Entitaet. Eigener Namespace, additiv zum Loader; getrennt vom
-    Verknuepfungs-anmerkung. data.md § Index-Durchreichung (M1).
+    Verknuepfungs-anmerkung. data-model.md § Property families.
 
     person: anmerkung -> indexNote (Beruf), lebensdaten -> lifespan.
     institution: ort -> headquarters, assoziierte_person -> keyContact, anmerkung -> indexNote.
@@ -1916,7 +1982,7 @@ def _rel_datum(ctx: _RelationContext, rel: dict, entry: dict, name: str) -> None
     if not date_val:
         record_drop("Datumszeile ohne verwertbaren Wert", _rel_location(rel))
         return
-    # Datums-Routing (data.md § Datumskonventionen, E-102): Textnotationen erst auf
+    # Datums-Routing (data.md § Date notation of the source, E-102): Textnotationen erst auf
     # ISO normalisieren ("X bis Y" → TimeSpan, "ab/seit X" → nach:).
     date_val = normalize_dating(date_val)
     rolle_key = (rel.get("rolle") or "").strip().lower()
@@ -1963,7 +2029,7 @@ def _rel_spatiotemporal(ctx: _RelationContext, rel: dict, entry: dict, name: str
     # (E-97) als Annotationsknoten mit Rueckverweis.
     # Vertragsstatus ("nicht eingehalten") ist keine Rolle,
     # sondern eine spaltenweit durchgereichte Vertragsmarkierung
-    # (data-model.md § Finanzschicht). Vor @id-Hash UND Rolle herausfiltern, damit
+    # (data-model.md § Financial layer). Vor @id-Hash UND Rolle herausfiltern, damit
     # beide konsistent bleiben (test_35 leitet die @id aus dem Output ab).
     ste_role = rel.get("rolle")
     if ste_role and ste_role.strip().lower() in CONTRACT_STATUS_ROLES:
@@ -1980,7 +2046,7 @@ def _rel_spatiotemporal(ctx: _RelationContext, rel: dict, entry: dict, name: str
             _inject_enrichment(place_entry, enrich)
     # Der Rueckverweis auf den Record ist Provenienz (der Record
     # dokumentiert die Annotation); rico:isAssociatedWithRecord
-    # existiert in RiC-O 1.1 nicht (E-103). data-model.md § Mobilitätsmodell.
+    # existiert in RiC-O 1.1 nicht (E-103). data-model.md § Mobility perspectives.
     ev = build_annotation(ctx.record, ctx.annotation_seen, place=place_entry,
                           date=rel.get("datum"), role=ste_role)
     if rel.get("anmerkung"):
@@ -2024,7 +2090,7 @@ def _rel_performance(ctx: _RelationContext, rel: dict, entry: dict, name: str) -
 
 
 def _rel_finanz(ctx: _RelationContext, rel: dict, entry: dict, name: str) -> None:
-    # Finanz-Informationen als Detailangabe (data-model.md § Finanzschicht).
+    # Finanz-Informationen als Detailangabe (data-model.md § Financial layer).
     # Doppelbetrag ('25, DM/45, DM') -> zwei Detailangaben mit
     # gleichem detailField (parse_monetary_values).
     feld = rel["typ"]
@@ -2171,7 +2237,14 @@ def add_relations_to_records(records: list, relations: dict,
 
             handler = RELATION_HANDLERS.get(t)
             if handler is None:
-                record_drop("Verknuepfung mit unbekanntem Typ", f"typ={t}")
+                # The type is captured but not modelled ("dokument",
+                # "aktivitaet"). It goes into the reason, so each such type
+                # gets its own tally line with Signatur and source row as
+                # samples instead of hiding behind one shared count; the full
+                # list is the failure message of test_66.
+                where = _rel_location(rel)
+                detail = f"{identifier} ({where})" if where else identifier
+                record_drop(f"Verknuepfung mit unbekanntem Typ '{t}'", detail)
                 continue
             handler(ctx, rel, entry, name)
 
@@ -2333,6 +2406,7 @@ def main():
 
     recon_count = 0
     recon_low_skipped = 0
+    recon_beyond_index = 0
     if recon_path.exists():
         with open(recon_path, "r", encoding="utf-8") as f:
             recon_data = json.load(f)
@@ -2346,13 +2420,27 @@ def main():
                 recon_low_skipped += 1
                 continue
             name_key = match["name"].strip().lower()
-            if name_key in indices[etype]:
-                entry = indices[etype][name_key]
-                if "wikidata_id" not in entry:
-                    entry["wikidata_id"] = match["qid"]
-                    recon_count += 1
+            entry = indices[etype].get(name_key)
+            if entry is None:
+                # Since E-255 the place branch of the reconciliation reads the
+                # place names of the Verknuepfungstabelle beside the place
+                # index, so a place match may have no index row to attach to.
+                # The lookup gains the entry instead of dropping the
+                # identifier, which cost exactly those places their coordinates
+                # and kept them off the Karte (AF-07). The other branches read
+                # the index alone; a match of theirs without an index row comes
+                # from an earlier index state and needs curation, not an
+                # automatic revival.
+                if etype != "ort":
+                    continue
+                entry = indices[etype][name_key] = {}
+                recon_beyond_index += 1
+            if "wikidata_id" not in entry:
+                entry["wikidata_id"] = match["qid"]
+                recon_count += 1
         print(f"\n  Reconciliation: {recon_count} Q-IDs ergaenzt aus {recon_path.name}"
-              f" ({recon_low_skipped} low-conf ignoriert)")
+              f" ({recon_low_skipped} low-conf ignoriert, "
+              f"{recon_beyond_index} ohne Indexzeile)")
     else:
         print(f"\n  Reconciliation: {recon_path.name} nicht vorhanden (uebersprungen)")
 
@@ -2366,7 +2454,7 @@ def main():
     else:
         print(f"  Enrichment: {enrichment_path.name} nicht vorhanden (uebersprungen)")
 
-    # Objekte laden, CSV bevorzugt (data.md § Tabellenmodell, Quellformat)
+    # Objekte laden, CSV bevorzugt (data.md § Tables and columns, § Source format)
     try:
         from _common import resolve_objekte_source
         objekte_path = resolve_objekte_source(SHEETS_DIR)
@@ -2480,7 +2568,7 @@ def main():
         if r["@id"] not in konvolut_member_ids:
             fonds["rico:hasOrHadPart"].append({"@id": r["@id"]})
 
-    # SKOS-Konzepte fuer verwendete Dokumenttypen (data-model.md § Dokumenttypen-Vokabular)
+    # SKOS-Konzepte fuer verwendete Dokumenttypen (data-model.md § Controlled vocabularies)
     dft_concepts = build_dft_concepts(records)
     role_concepts = build_role_concepts(
         [fonds] + konvolute + records + annotations + performances)

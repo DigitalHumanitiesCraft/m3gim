@@ -22,7 +22,7 @@ REPO_ROOT = Path(__file__).parent.parent
 WERTELISTE = REPO_ROOT / "data/google-spreadsheet/verknuepfungen/Typ-Rolle.csv"
 
 # Komposittypen sind vor dem Dropdown-Umbau mit Komma erfasst worden und
-# bleiben gueltige Quellwerte (data.md § Verknüpfungsmechanismus); die Werteliste fuehrt nur die
+# bleiben gueltige Quellwerte (data.md § The link mechanism); die Werteliste fuehrt nur die
 # Unterstrich-Schreibung der Finanztypen.
 KOMPOSIT_TYPEN = {
     "ort, datum", "datum, werk", "rolle, person",

@@ -13,7 +13,7 @@
 import { getDocTypeId, countLinks } from '../utils/format.js';
 import { primaryYear } from '../data/loader.js';
 import { CONTENT_FAMILIES } from '../data/constants.js';
-import { partitionRecord } from './record-detail-data.js';
+import { partitionRecord, folioPages, isFolioPage } from './record-detail-data.js';
 
 /** Display name of an entity node, whichever of the two carriers it uses. */
 function entityName(node) {
@@ -31,6 +31,32 @@ function distinctNames(names) {
   return seen.size;
 }
 
+/** The entity names one record carries, per family, as raw lists. */
+function familyNames(record, store) {
+  const p = partitionRecord(record, store);
+  return {
+    // Beziehungen count into person: a relation without a person is a
+    // per-mille case, and its own dot would carry almost no information.
+    // Finanzen count nowhere, they are a field group of the detail rather than
+    // an entity type.
+    person: [
+      ...p.bucket.produktion, ...p.bucket.mitwirkende,
+      ...p.bucket.erwaehnt, ...p.bucket.weitere,
+    ].map(entityName).concat(p.agentRelations.map(rel => rel.objectName)),
+    institution: p.bucket.institutionen.map(entityName),
+    // A Datierung without a place names no place, so eventDatings contribute
+    // nothing; the Performance node carries no place either, and is read here
+    // so it starts counting on its own once the model gives it one.
+    ort: [
+      ...p.events.map(e => e.place),
+      ...p.performances.map(perf => perf.place),
+      ...p.locations.map(entityName),
+    ],
+    // A Bühnenrolle is not a work, so performanceRoles count nothing.
+    werk: p.works.map(entityName),
+  };
+}
+
 /**
  * Content families of a record in CONTENT_FAMILIES order, from the same
  * partition the inline detail renders. DOM-free so the typed display of the
@@ -40,34 +66,97 @@ function distinctNames(names) {
  * 2026-09-04): a person named in two roles is one person, and a place carried
  * by an Ereignis and by `hasOrHadLocation` is one place. Otherwise the figure
  * beside the family icon answers "how often" where the reader asks "how many".
+ *
+ * A Folio without Verknuepfungen of its own counts over its pages instead, and
+ * distinct across them all: the pages are the documents behind the one row the
+ * Bestand shows for the sheet, and four empty icons would claim the sheet is
+ * uncatalogued while its pages are not. A Folio catalogued on its own keeps its
+ * own figures.
  * @param {object} record
  * @param {object} store
  * @returns {Array<{key: string, label: string, count: number}>}
  */
 export function familiesForRecord(record, store) {
-  const p = partitionRecord(record, store);
-  const counts = {
-    // Beziehungen count into person: a relation without a person is a
-    // per-mille case, and its own dot would carry almost no information.
-    // Finanzen count nowhere, they are a field group of the detail rather than
-    // an entity type.
-    person: distinctNames([
-      ...p.bucket.produktion, ...p.bucket.mitwirkende,
-      ...p.bucket.erwaehnt, ...p.bucket.weitere,
-    ].map(entityName).concat(p.agentRelations.map(rel => rel.objectName))),
-    institution: distinctNames(p.bucket.institutionen.map(entityName)),
-    // A Datierung without a place names no place, so eventDatings contribute
-    // nothing; the Performance node carries no place either, and is read here
-    // so it starts counting on its own once the model gives it one.
-    ort: distinctNames([
-      ...p.events.map(e => e.place),
-      ...p.performances.map(perf => perf.place),
-      ...p.locations.map(entityName),
-    ]),
-    // A Bühnenrolle is not a work, so performanceRoles count nothing.
-    werk: distinctNames(p.works.map(entityName)),
+  const pages = countLinks(record) === 0 ? folioPages(store, record) : [];
+  const sources = pages.length > 0 ? pages : [record];
+  const merged = { person: [], institution: [], ort: [], werk: [] };
+  for (const source of sources) {
+    const names = familyNames(source, store);
+    for (const key of Object.keys(merged)) merged[key].push(...names[key]);
+  }
+  return CONTENT_FAMILIES.map(f => ({
+    key: f.key, label: f.label, count: distinctNames(merged[f.key]),
+  }));
+}
+
+/**
+ * The documents a row stands for. A Folio row stands for its pages, every other
+ * row only for itself; the Folio record itself stays in the list, so a Folio
+ * catalogued on its own is not cut away by its pages. The cut of the Bestand
+ * runs over this list, which is why a Folio row survives exactly as long as one
+ * of its pages does (F8).
+ * @param {{record: object, pages?: Array<object>}} item
+ * @returns {Array<object>}
+ */
+export function rowRecords(item) {
+  return item.pages && item.pages.length > 0
+    ? [item.record, ...item.pages] : [item.record];
+}
+
+/** The Verknuepfungen a row stands for; a Folio row stands for its pages. */
+function itemLinks(item) {
+  const own = countLinks(item.record);
+  if (own > 0) return own;
+  return (item.pages || []).reduce((sum, page) => sum + countLinks(page), 0);
+}
+
+/** The one value a list of pages agrees on, null where they differ or none. */
+function commonValue(values) {
+  const first = values[0] || null;
+  if (!first) return null;
+  return values.every(v => v === first) ? first : null;
+}
+
+/**
+ * The years of a list of pages as one span, in the form the Konvolut head
+ * already uses. It is the fallback of the date cell where the pages are dated
+ * differently: an empty cell would then read as "o. D." and say the opposite of
+ * what the sheet holds. The years come from the Zeitanker of the data layer
+ * (contract A4), so the span means the same dating the pages themselves show.
+ * Null where no page carries a dating.
+ */
+function pagesSpan(store, pages) {
+  const years = pages.map(page => primaryYear(store, page).year).filter(Boolean);
+  if (years.length === 0) return null;
+  const min = Math.min(...years);
+  const max = Math.max(...years);
+  return min === max ? String(min) : `${min} – ${max}`;
+}
+
+/**
+ * Title, date and document type a Folio row takes from its pages where it
+ * carries none of its own. A Folio the pipeline derived (E-269,
+ * `derivedFolioRecord`) has neither, and a row answering "Nicht klassifiziert"
+ * and "o. D." would state the opposite of what its pages hold. Only a value all
+ * pages agree on is taken, so the row invents no distinction the material does
+ * not carry; the view marks everything taken this way as supplemented.
+ * The date is the exception: where the pages disagree, `dateSpan` carries their
+ * extent, because a sheet whose pages are dated is not undated.
+ * @returns {{title: ?string, date: ?string, dateSpan: ?string, docType: ?string}}
+ *   empty fields for a row without pages
+ */
+export function folioRowFacts(store, item) {
+  const pages = (item && item.pages) || [];
+  const record = item ? item.record : null;
+  if (pages.length === 0 || !record) {
+    return { title: null, date: null, dateSpan: null, docType: null };
+  }
+  return {
+    title: record['rico:title'] ? null : commonValue(pages.map(p => p['rico:title'])),
+    date: record['rico:date'] ? null : commonValue(pages.map(p => p['rico:date'])),
+    dateSpan: record['rico:date'] ? null : pagesSpan(store, pages),
+    docType: getDocTypeId(record) ? null : commonValue(pages.map(getDocTypeId)),
   };
-  return CONTENT_FAMILIES.map(f => ({ key: f.key, label: f.label, count: counts[f.key] }));
 }
 
 function naturalSort(a, b) {
@@ -78,9 +167,15 @@ function naturalSort(a, b) {
  * The rows of the table in archival order: Konvolut heads with their children
  * injected below them, standalone records interleaved by Signatur. Everything
  * the Bestand holds; the cut is the filter's business.
+ *
+ * The pages of a Folio are no rows of their own since B2. They travel on the
+ * `pages` list of their Folio row, which the detail pages through; a Konvolut
+ * that lists both its Folios and their pages as parts would otherwise show the
+ * same sheet twice, once whole and once page by page.
  * @param {object} store
- * @returns {Array<{record: object, isKonvolut?: boolean, isChild?: boolean,
- *   konvolutId?: string, visibleChildCount?: number, linkedChildCount?: number}>}
+ * @returns {Array<{record: object, pages: Array<object>, isKonvolut?: boolean,
+ *   isChild?: boolean, konvolutId?: string, visibleChildCount?: number,
+ *   totalChildCount?: number, linkedChildCount?: number, titleShared?: boolean}>}
  */
 export function getOrderedItems(store) {
   const items = [];
@@ -89,8 +184,10 @@ export function getOrderedItems(store) {
     for (const cid of children) childIds.add(cid);
   }
 
-  // Standalone records: everything that is not a child of a Konvolut.
-  const standalone = store.allRecords.filter(r => !childIds.has(r['@id']));
+  // Standalone records: everything that is neither a child of a Konvolut nor a
+  // page of a Folio.
+  const standalone = store.allRecords.filter(
+    r => !childIds.has(r['@id']) && !isFolioPage(store, r['@id']));
 
   // Merge standalone records + Konvolut RecordSets into one sorted list
   const topEntries = [];
@@ -109,23 +206,38 @@ export function getOrderedItems(store) {
   for (const entry of topEntries) {
     if (entry.type === 'konvolut') {
       const children = (store.konvolutChildren.get(entry.konvolutId) || [])
-        .filter(cid => !store.folioIds.has(cid))
+        .filter(cid => !store.folioIds.has(cid) && !isFolioPage(store, cid))
         .map(cid => store.records.get(cid))
         .filter(Boolean)
         .sort((a, b) => naturalSort(a['rico:identifier'] || '', b['rico:identifier'] || ''));
       if (children.length === 0) continue;  // nothing displayable left
+      // Which titles really stand twice in the table. Counted over the rows, not
+      // over the raw children: the pages of a Folio repeat its title and would
+      // make every Folio row look ambiguous (see getFolioHint).
+      const titleCounts = new Map();
+      for (const child of children) {
+        const title = child['rico:title'] || '';
+        if (title) titleCounts.set(title, (titleCounts.get(title) || 0) + 1);
+      }
+      const childItems = children.map(child => ({
+        record: child,
+        isChild: true,
+        konvolutId: entry.konvolutId,
+        pages: folioPages(store, child),
+        titleShared: (titleCounts.get(child['rico:title'] || '') || 0) > 1,
+      }));
       items.push({
         record: entry.record,
         isKonvolut: true,
         konvolutId: entry.konvolutId,
+        pages: [],
         visibleChildCount: children.length,
-        linkedChildCount: children.filter(c => countLinks(c) > 0).length,
+        totalChildCount: children.length,
+        linkedChildCount: childItems.filter(i => itemLinks(i) > 0).length,
       });
-      for (const child of children) {
-        items.push({ record: child, isChild: true, konvolutId: entry.konvolutId });
-      }
+      items.push(...childItems);
     } else {
-      items.push({ record: entry.record });
+      items.push({ record: entry.record, pages: folioPages(store, entry.record) });
     }
   }
 
@@ -145,7 +257,7 @@ export function pruneEmptyKonvolute(items) {
     if (!item.isChild) continue;
     const tally = kept.get(item.konvolutId) || { total: 0, linked: 0 };
     tally.total += 1;
-    if (countLinks(item.record) > 0) tally.linked += 1;
+    if (itemLinks(item) > 0) tally.linked += 1;
     kept.set(item.konvolutId, tally);
   }
   return items
@@ -172,7 +284,13 @@ export function pruneEmptyKonvolute(items) {
 export function isUndatedItem(item, store) {
   if (item.isKonvolut) return false;
   if (item.record['rico:date']) return false;
-  return store ? primaryYear(store, item.record).year == null : true;
+  // A Folio row shows the dating of its pages, so it is undated only when
+  // neither it nor one of its pages carries an anchor (folioRowFacts). Without
+  // a store only the carrier `rico:date` is readable, here as there.
+  const pages = item.pages || [];
+  if (!store) return !pages.some(page => page['rico:date']);
+  if (pages.some(page => primaryYear(store, page).year != null)) return false;
+  return primaryYear(store, item.record).year == null;
 }
 
 /** A top-level Hauptbestand record without Folio resolution is an archival

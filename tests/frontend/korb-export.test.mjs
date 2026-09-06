@@ -45,7 +45,7 @@ describe('BibTeX-Maskierung', () => {
     const bib = buildBibTeX([AMP_ID, UNDERSCORE_ID], store);
     assert.match(bib, /Diverse Programme \\& Kritiken/);
     assert.match(bib, /Foto\\_Zeitungskritik/);
-    assert.match(bib, /note {6}= \{UAKUG\/NIM\\_069\}/);
+    assert.match(bib, /note {6}= \{UAKUG\/NIM\\_069\. Quelle: Objekte Zeile \d+/);
   });
 
   test('kein unmaskiertes Sonderzeichen bleibt in einem Feldwert stehen', () => {
@@ -76,10 +76,17 @@ describe('BibTeX-Maskierung', () => {
   });
 });
 
+/** Index einer CSV-Spalte über ihr Label; die Kopfzeile führt dahinter den Formathinweis. */
+function column(rows, label) {
+  const index = rows[0].findIndex(head => head === label || head.startsWith(label + ' ('));
+  assert.notEqual(index, -1, `Spalte ${label} fehlt: ${rows[0].join(' | ')}`);
+  return index;
+}
+
 describe('CSV-Zeilen', () => {
   test('die Kopfzeile führt die Spalte Beziehungen', () => {
     const rows = buildCSVRows([CORRESPONDENCE_ID], store);
-    assert.equal(rows[0][8], 'Beziehungen');
+    assert.ok(column(rows, 'Beziehungen') >= 0);
     assert.equal(rows.length, 2);
   });
 
@@ -87,7 +94,8 @@ describe('CSV-Zeilen', () => {
     const rel = store.agentRelations.get(CORRESPONDENCE_ID)
       .find(r => r.type === 'agrelon:HasCorrespondent' && r.objectRoleLabel);
     assert.ok(rel, 'Fixture trägt keine Korrespondenz mit Rolle mehr');
-    const cell = buildCSVRows([CORRESPONDENCE_ID], store)[1][8];
+    const rows = buildCSVRows([CORRESPONDENCE_ID], store);
+    const cell = rows[1][column(rows, 'Beziehungen')];
     assert.ok(
       cell.includes(`Korrespondenz \u00b7 ${rel.objectRoleLabel}: ${rel.objectName}`),
       cell,
@@ -105,7 +113,9 @@ describe('CSV-Zeilen', () => {
       finances: new Map(),
       childToKonvolut: new Map(),
       konvolute: new Map(),
+      recordDatings: new Map(),
     };
-    assert.equal(buildCSVRows(['x'], fake)[1][8], 'Korrespondenz: Wagner, Wieland');
+    const rows = buildCSVRows(['x'], fake);
+    assert.equal(rows[1][column(rows, 'Beziehungen')], 'Korrespondenz: Wagner, Wieland');
   });
 });

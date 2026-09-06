@@ -19,27 +19,25 @@ import { facetValues } from '../ui/filter-state.js';
 import { recordsFor, facetInventory, yearOf, FACET_KEYS } from '../data/records-for.js';
 
 /** Facetten des geteilten Filters, die im Bestand/in der Chronik schneiden.
- *  finanzen und ereignis liegen im Store, werden hier aber nicht bedient. */
-const CUT_FACETS = ['docType', 'person', 'ort', 'werk', 'institution', 'sicht', 'stand']
-  .filter(k => FACET_KEYS.includes(k));
+ *  Die Liste stand hier als Zweitschrift und lief mit jeder neuen Facette aus
+ *  dem Tritt (Land, Verknuepfung); sie ist jetzt die Achsenliste selbst. Ein
+ *  Schluessel, den kein Bedienelement schreibt, traegt eine leere Wahl und
+ *  schneidet damit nichts. */
+const CUT_FACETS = FACET_KEYS;
 
 /** Ob mindestens eine schneidende Facette oder die Suche aktiv ist. Eine leere
- *  Liste heisst inaktiv. `stand` zaehlt hier nicht mit: der Erschliessungsstand
- *  schneidet Objekte, er loest die Konvolut-Hierarchie aber nicht auf, sonst
- *  laege die Startansicht des Bestands flach vor dem Betrachter. */
+ *  Liste heisst inaktiv. */
 export function isSharedFiltered(shared) {
   if (shared && (shared.search || '').trim()) return true;
   for (const key of CUT_FACETS) {
-    if (key === 'stand') continue;
     if (facetValues(shared, key).length > 0) return true;
   }
   return false;
 }
 
 /** Die Facetten, die ueber person/ort/werk/docType hinaus die Hierarchie
- *  abflachen (institution/sicht). Das Zeitfenster wirkt separat ueber
- *  applyZeitfenster. */
-const FLATTEN_FACETS = ['institution', 'sicht'];
+ *  abflachen. Das Zeitfenster wirkt separat ueber applyZeitfenster. */
+const FLATTEN_FACETS = ['institution'];
 
 /** Ob eine dieser Facetten gesetzt ist. Zaehlt fuer die Frage, ob die
  *  Hierarchie abzuflachen und der gefilterte Zaehler zu zeigen ist. */
@@ -109,9 +107,9 @@ export function filterBySharedState(store, items, shared, { getRecord, searchMat
  * Filter-Patch, der `recordId` in den geltenden Schnitt hereinholt.
  *
  * Ein Sprung, der einen Datensatz benennt, muss ihn zeigen. Trifft der Schnitt
- * ihn nicht, verengt er nicht, er verschweigt: die Stand-Voreinstellung des
- * Bestands laesst zurueckgestellte und Objekte ohne Angabe aus, und ein Deep
- * Link auf eines von ihnen oeffnete bis dahin nichts, ohne einen Hinweis
+ * ihn nicht, verengt er nicht, er verschweigt: ein gesetzter Erschliessungsstand
+ * laesst zurueckgestellte und Objekte ohne Angabe aus, und ein Deep Link auf
+ * eines von ihnen oeffnete bis dahin nichts, ohne einen Hinweis
  * (Projektleitung, 2026-09-04).
  *
  * Geweitet wird pro blockierender Facette und minimal, um genau einen Wert, den

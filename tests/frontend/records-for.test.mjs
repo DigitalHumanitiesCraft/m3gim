@@ -27,7 +27,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
 import {
-  recordsFor, facetInventory, yearBounds, yearOf, baseRecords,
+  recordsFor, facetInventory, yearBounds, yearOf, baseRecords, FACET_KEYS,
 } from '../../docs/js/data/records-for.js';
 import { storeFromShipped } from './_shipped.mjs';
 
@@ -40,17 +40,33 @@ function S(...ids) { return new Set(ids); }
  * Bayreuth), r3 (1960, Wien), r4 (undatiert, ohne Entitaet).
  */
 function makeStore() {
-  // Jeder Fixture-Record traegt einen Erschliessungsstand, damit die Facette
-  // etwas zu schneiden hat; die Dokumentbasis selbst haengt seit E-165 an der
-  // Verknuepfung, also an unprocessedIds.
-  const rec = (id, date) => (date
-    ? { '@id': id, 'rico:date': date, 'm3gim-ontology:processingStatus': 'abgeschlossen' }
-    : { '@id': id, 'm3gim-ontology:processingStatus': 'abgeschlossen' });
+  // Die Dokumentbasis haengt seit E-165 an der Verknuepfung, also an
+  // unprocessedIds. Die Verknuepfungsformen am Record sind die des echten
+  // Datensatzes, weil die Facette Verknuepfung sie an ihrer Gestalt erkennt.
+  const place = (name, role, land) => ({
+    name, '@type': 'rico:Place', role: { '@id': role },
+    ...(land ? { 'm3gim-ontology:country': land } : {}),
+  });
+  const rec = (id, date, extra) => ({
+    '@id': id, ...(date ? { 'rico:date': date } : {}), ...extra,
+  });
   const records = new Map([
-    ['r1', rec('r1', '1952-07-25')],
-    ['r2', rec('r2', '1953')],
-    ['r3', rec('r3', '1960')],
-    ['r4', rec('r4', null)],
+    ['r1', rec('r1', '1952-07-25', {
+      'rico:hasOrHadLocation': place('Bayreuth', 'm3gim-vocab:guestPerformance', 'Deutschland'),
+      'rico:hasOrHadSubject': { name: 'Tristan und Isolde',
+        '@type': 'm3gim-ontology:MusicalWork', role: { '@id': 'm3gim-vocab:performance' } },
+      'm3gim-ontology:hasAssociatedAgent': { name: 'Wagner, Wieland',
+        '@type': 'rico:Person', role: { '@id': 'm3gim-vocab:director' } },
+    })],
+    ['r2', rec('r2', '1953', {
+      'rico:hasOrHadLocation': place('Bayreuth', 'm3gim-vocab:mentioned', 'Deutschland'),
+      'm3gim-ontology:hasAssociatedAgent': { name: 'Bayreuther Festspiele',
+        '@type': 'rico:CorporateBody', role: { '@id': 'm3gim-vocab:organizer' } },
+    })],
+    ['r3', rec('r3', '1960', {
+      'rico:hasOrHadLocation': place('Wien', 'm3gim-vocab:dispatch', 'Österreich'),
+    })],
+    ['r4', rec('r4', null, {})],
   ]);
   return {
     records,
@@ -85,10 +101,15 @@ function makeStore() {
     recordToEvents: new Map([['r1', ['a1']]]),
     recordToPerformances: new Map(),
     finances: new Map(),
+    conceptDefinitions: new Map(),
     roleVocab: new Map([
       ['m3gim-vocab:singer', { id: 'm3gim-vocab:singer', label: 'sänger' }],
       ['m3gim-vocab:mentioned', { id: 'm3gim-vocab:mentioned', label: 'erwähnt' }],
       ['m3gim-vocab:performance', { id: 'm3gim-vocab:performance', label: 'aufführung' }],
+      ['m3gim-vocab:guestPerformance', { id: 'm3gim-vocab:guestPerformance', label: 'gastspiel' }],
+      ['m3gim-vocab:dispatch', { id: 'm3gim-vocab:dispatch', label: 'absendeort' }],
+      ['m3gim-vocab:director', { id: 'm3gim-vocab:director', label: 'regisseur' }],
+      ['m3gim-vocab:organizer', { id: 'm3gim-vocab:organizer', label: 'veranstalter' }],
     ]),
   };
 }
@@ -155,13 +176,14 @@ describe('recordsFor (eine Auflösung fuer alle Ansichten)', () => {
     ));
   });
 
-  test('der Erschliessungsstand schneidet ueber den Bearbeitungsstand', () => {
+  test('der Erschliessungsstand schneidet nicht mehr (E-262)', () => {
     const store = makeStore();
     store.records.get('r2')['m3gim-ontology:processingStatus'] = 'begonnen';
-    store.records.get('r3')['m3gim-ontology:processingStatus'] = 'zurueckgestellt';
-    assert.deepEqual(idsOf(recordsFor(store, { stand: ['abgeschlossen', 'begonnen'] })),
-      ['r1', 'r2', 'r4']);
-    assert.deepEqual(idsOf(recordsFor(store, { stand: ['zurueckgestellt'] })), ['r3']);
+    assert.deepEqual(idsOf(recordsFor(store, { stand: ['abgeschlossen'] })),
+      ['r1', 'r2', 'r3', 'r4'],
+      'Der Bearbeitungsstand ist keine Achse des Filters mehr.');
+    assert.ok(!FACET_KEYS.includes('stand'));
+    assert.deepEqual(facetInventory(store, 'stand'), []);
   });
 
   test('ein Record ohne Verknuepfung liegt ausserhalb jeder Dokumentmenge', () => {
@@ -177,15 +199,28 @@ describe('recordsFor (eine Auflösung fuer alle Ansichten)', () => {
     ));
   });
 
-  test('ein Record ohne Bearbeitungsstand bleibt in der Basis und erreichbar', () => {
-    // Sonst laege er in jedem Zaehlstand, waere aber ueber keine Checkbox der
-    // Facette zu erreichen.
+  test('Verknuepfungstyp und Rolle schneiden ueber dieselbe Achse', () => {
     const store = makeStore();
-    delete store.records.get('r3')['m3gim-ontology:processingStatus'];
-    assert.deepEqual(idsOf(recordsFor(store, {})), ['r1', 'r2', 'r3', 'r4']);
-    assert.deepEqual(idsOf(recordsFor(store, { stand: ['ohne-angabe'] })), ['r3']);
-    const inv = facetInventory(store, 'stand');
-    assert.equal(inv.find(e => e.value === 'ohne-angabe').label, 'ohne Angabe');
+    assert.deepEqual(idsOf(recordsFor(store, { verknuepfung: ['ort'] })),
+      ['r1', 'r2', 'r3'], 'Der Typ meint jede seiner Rollen.');
+    assert.deepEqual(idsOf(recordsFor(store,
+      { verknuepfung: ['ort:m3gim-vocab:guestPerformance'] })), ['r1']);
+    assert.deepEqual(idsOf(recordsFor(store,
+      { verknuepfung: ['ort:m3gim-vocab:guestPerformance', 'ort:m3gim-vocab:dispatch'] })),
+      ['r1', 'r3'], 'Zwei Rollen wirken als ODER wie in jeder Facette.');
+    assert.deepEqual(idsOf(recordsFor(store, { verknuepfung: ['institution'] })), ['r2']);
+    assert.deepEqual(idsOf(recordsFor(store, { verknuepfung: ['werk'] })), ['r1']);
+  });
+
+  test('das Land schneidet ueber die verorteten Orte, jede Rolle zaehlt', () => {
+    const store = makeStore();
+    assert.deepEqual(idsOf(recordsFor(store, { land: ['Deutschland'] })), ['r1', 'r2'], (
+      'r2 nennt Bayreuth nur, und die Nennung zaehlt mit: die Facette schliesst '
+      + 'keine Ortsrolle still aus.'
+    ));
+    assert.deepEqual(idsOf(recordsFor(store, { land: ['Österreich'] })), ['r3']);
+    assert.deepEqual(idsOf(recordsFor(store, { land: ['Deutschland', 'Österreich'] })),
+      ['r1', 'r2', 'r3']);
   });
 
   test('opts.base engt die Startmenge ein', () => {
@@ -200,14 +235,19 @@ describe('recordsFor (eine Auflösung fuer alle Ansichten)', () => {
     assert.equal(r.byFacet.person, undefined, 'inaktive Facetten erscheinen nicht');
   });
 
-  test('Ereignis, Institution, Ensemble und Sicht schneiden ueber ihre Indizes', () => {
+  test('Ereignis, Institution und Ensemble schneiden ueber ihre Indizes', () => {
     assert.deepEqual(idsOf(recordsFor(makeStore(), { ereignis: ['m3gim-vocab:performance'] })),
       ['r1']);
     assert.deepEqual(idsOf(recordsFor(makeStore(), { institution: ['Bayreuther Festspiele'] })),
       ['r2']);
     assert.deepEqual(idsOf(recordsFor(makeStore(), { ensemble: ['Der Festspielchor'] })),
       ['r2']);
-    assert.deepEqual(idsOf(recordsFor(makeStore(), { sicht: ['performativ'] })), ['r1']);
+  });
+
+  test('die Mobilitaetssicht ist keine Achse des Filters mehr', () => {
+    assert.ok(!FACET_KEYS.includes('sicht'));
+    assert.deepEqual(idsOf(recordsFor(makeStore(), { sicht: ['performativ'] })),
+      ['r1', 'r2', 'r3', 'r4'], 'Ein Schluessel ohne Achse schneidet nichts.');
   });
 });
 
@@ -256,12 +296,11 @@ describe('facetInventory', () => {
     assert.deepEqual(facetInventory(makeStore(), 'gibtsnicht'), []);
   });
 
-  test('der Erschliessungsstand traegt seine Anzeigeform und nur seine drei Werte', () => {
-    const store = makeStore();
-    store.records.get('r1')['m3gim-ontology:processingStatus'] = 'zurueckgestellt';
-    const inv = facetInventory(store, 'stand');
-    assert.equal(inv.find(e => e.value === 'zurueckgestellt').label, 'zurückgestellt');
-    assert.deepEqual(inv.map(e => e.value).sort(), ['abgeschlossen', 'zurueckgestellt']);
+  test('das Land traegt seinen Namen als Wert und als Anzeigeform', () => {
+    const inv = facetInventory(makeStore(), 'land');
+    assert.deepEqual(inv.map(e => [e.value, e.count]),
+      [['Deutschland', 2], ['Österreich', 1]]);
+    assert.ok(inv.every(e => e.label === e.value));
   });
 
   test('facetInventory sortiert absteigend und zaehlt groesser null', () => {
@@ -291,17 +330,16 @@ describe('recordsFor am ausgelieferten Datensatz', () => {
     assert.equal(recordsFor(store, {}).ids.size, erwartet.length);
   });
 
-  test('die Vorbelegung des Bestands liegt innerhalb der Basis', async () => {
-    // abgeschlossen + begonnen ist ein Schnitt auf der Basis, nicht die Basis:
-    // Objekte ohne Bearbeitungsstand bleiben erreichbar.
+  test('Land und Verknuepfung schneiden am ausgelieferten Datensatz', async () => {
     const store = await storeFromShipped();
     const basis = recordsFor(store, {}).ids.size;
-    const vorbelegt = recordsFor(store, { stand: ['abgeschlossen', 'begonnen'] }).ids.size;
-    const ohneAngabe = recordsFor(store, { stand: ['ohne-angabe'] }).ids.size;
-    assert.ok(vorbelegt > 0 && vorbelegt < basis);
-    assert.ok(ohneAngabe > 0, (
-      'Ohne Records ohne Bearbeitungsstand traegt die vierte Ankreuzzeile nichts '
-      + 'und gehoert entfernt.'
+    const de = recordsFor(store, { land: ['Deutschland'] }).ids.size;
+    assert.ok(de > 0 && de < basis, `Deutschland traegt ${de} von ${basis}`);
+    const orte = recordsFor(store, { verknuepfung: ['ort'] }).ids.size;
+    const gastspiel = recordsFor(store,
+      { verknuepfung: ['ort:m3gim-vocab:guestPerformance'] }).ids.size;
+    assert.ok(gastspiel > 0 && gastspiel < orte, (
+      'Die Rolle Gastspiel muss eine echte Teilmenge der Ortsverknuepfungen sein.'
     ));
   });
 

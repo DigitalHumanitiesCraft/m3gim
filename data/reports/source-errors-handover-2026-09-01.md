@@ -29,6 +29,17 @@ Reihenfolge nach Datei, damit ein Blatt am Stück durchgearbeitet werden kann. D
 
 Die Autokonvertierung der Datumsspalte betrifft in der Objekttabelle 156 Zellen. Grundlegend behoben ist sie erst, wenn die Spalte als Text erfasst oder die Objekttabelle wie die Verknüpfungen als CSV ausgeführt wird.
 
+### Jahreszahlen als Konvolut-Titel (2026-09-03)
+
+Drei Konvolute tragen als Titel nur eine Jahresangabe. Im Bestand steht das Datum damit zweimal in der Kopfzeile, einmal als Titel und einmal als Zeitspanne, und ein beschreibender Titel fehlt.
+
+| Fundstelle | Feld | Ist-Wert | Zu tun |
+|---|---|---|---|
+| Zeile 437, `UAKUG/NIM_134` Konvolutzeile | titel | `1949 - / 1950` bei entstehungsdatum `1949-01-01/1950-12-31` | Beschreibenden Titel nach dem Muster der übrigen Konvolute nachtragen |
+| Zeile 523, `UAKUG/NIM_135` Konvolutzeile | titel | `1951` bei entstehungsdatum `1950-01-01/1951-12-31` | wie vor |
+| Zeile 671, `UAKUG/NIM_136` Konvolutzeile | titel | `1952` bei entstehungsdatum `1951-01-01/1953-12-31` | wie vor |
+| Zeile 670, `UAKUG/NIM_135` Folio 20 | entstehungsdatum | `1991` an `Gondroms Festspielmagazin, hg. von Buchhandlung Gondrom Bayreuth 1991` | Prüfen, ob das Objekt in dieses Konvolut gehört oder das Jahr ein Tippfehler ist. Der Konvoluttitel nennt 1951, und die Kopfzeile des Bestands zieht die Spanne dadurch bis 1991 |
+
 ## Verknüpfungstabelle (CSV je Box)
 
 | Fundstelle | Feld | Ist-Wert | Zu tun |
@@ -36,7 +47,7 @@ Die Autokonvertierung der Datumsspalte betrifft in der Objekttabelle 156 Zellen.
 | Box 1, `UAKUG/NIM_007` Folio 20 | zielort | `Zürich` am Umschlag an die Deutsche Oper Berlin | Zielort prüfen, er widerspricht dem Titel |
 | Box 1, `UAKUG/NIM_007` Folio 16 | rolle | Sophokles trägt `Aufführung` | Sein Werk wurde aufgeführt, nicht er. Auf `Vorlage` oder `Verfasser` setzen |
 | Box 1, Signatur `UAKUG/NIM_11` | Signatur | 260 Zeilen mit zweistelliger Konvolutnummer `NIM_11` statt dreistellig `NIM_011` | Die Pipeline gleicht die Schreibung an und ordnet die Zeilen dem Konvolut `NIM_011` zu, es geht nichts verloren. Zur Einheitlichkeit die Signatur an der Quelle auf `UAKUG/NIM_011` korrigieren. Sollte inhaltlich ein anderes Konvolut gemeint sein, bitte melden, dann wäre die Angleichung falsch |
-| Box 1, `UAKUG/NIM_11` Folio 7 | Datum (Erstelldatum) | `1055-08-24` | Jahrhundertdreher, auf `1955-08-24` korrigieren |
+| Box 1, `UAKUG/NIM_11` Folio 7 (Zeile 3424) | Datum (Erstelldatum) | `1055-08-24` | Jahrhundertdreher, auf `1955-08-24` korrigieren. Der Wert steht im ausgelieferten Datensatz als `rico:creationDate` des Objekts und datiert es, sobald keine ranghoehere ankernde Datierung am Objekt steht |
 | Box 1, `UAKUG/NIM_11` Folio 7 | rolle | Ausgabe `15,00 DM` trägt `interpret:in` | Eine Finanzrolle eintragen, keine Personenrolle |
 | Box 1, `UAKUG/NIM_005` Folio 16 | Datum | `1951-02-29` | 1951 ist kein Schaltjahr, korrektes Datum eintragen |
 | Box 1, `UAKUG/NIM_005` Folio 21 | Datum | `1959-31-08` | Tag und Monat vertauscht, auf `1959-08-31` |
@@ -47,11 +58,11 @@ Die Autokonvertierung der Datumsspalte betrifft in der Objekttabelle 156 Zellen.
 | Box 1, `UAKUG/NIM_005` Folios 16 bis 28 und die Kopfzeile mit Folio `1-29`, Box 5, `UAKUG/NIM_136` | typ | In der neuen NIM_005-Erschließung 228 Zeilen mit Name und Rolle, aber ohne Typ, davon 226 Dokumentgattungen (überwiegend Bestätigung, Vertrag, Gastvertrag, Verpflichtungsschein, Programm, Dienstvertrag, Korrespondenz, Abschlussschein, Kontrakt). Ohne Typ fehlt der Zielkontext, die Zeilen erreichen den Datensatz nicht. In NIM_136 (Box 5) besteht der Befund fort | Typ ergänzen, bei den Dokumentgattungen den Typ `dokument`. In manchen Zeilen ist die Typangabe verrutscht, `Brief` auf Folio 16 (Zeile 1034) trägt den Wert `dokument` in der Anmerkungsspalte, andere Dokumentzeilen tragen fälschlich `person` als Typ. Typ in die Typspalte setzen |
 | Box 2, `UAKUG/NIM_016` Folio 13 | werk / anmerkung | Werk `Requiem`, Komponist `Mozart` nur in der Anmerkung | Komponist in eine auswertbare Spalte bringen, sonst bleibt der Titel mehrdeutig |
 | Box 5, `UAKUG/NIM_137` | Folio | `15-1` und `15-2` mit Bindestrich | Die Objekttabelle schreibt `15_1` und `15_2` mit Unterstrich. Vereinheitlichen, sonst treffen die Zeilen kein Objekt |
-| Box 1, `UAKUG/NIM_004` Folio 34, Zeile 867 | typ / name | Typ `ort, datum` mit Wert `06-09`, Rolle erscheinungsdatum, Anmerkung „ohne Jahr" | Der jahrlose Datumsrest steckt im Orts-Datums-Komposit und erscheint in der Anwendung als Ort „06-09". Zeile auf eine reine Datumszeile umstellen oder leeren, bis das Jahr geklärt ist |
+| Box 1, `UAKUG/NIM_004` Folio 34, Zeile 867 | typ / name | Typ `ort, datum` mit Wert `06-09`, Rolle erscheinungsdatum, Anmerkung „ohne Jahr" | Der jahrlose Datumsrest steckt im Orts-Datums-Komposit und erscheint in der Anwendung als Ort „06-09". Zeile auf eine reine Datumszeile umstellen oder leeren, bis das Jahr geklärt ist. Der Schwesterfall mit vollem Datum steht im Abschnitt unten |
 | Box 5, `UAKUG/NIM_137` Folios 15_1 und 15_2 | typ / rolle | Partien doppelt erfasst, einmal als Kompositzeile `rolle, Vorname Nachname Sänger*in` (etwa `Froh, Gerhard Stolze`), einmal als reine Rollenzeile (`Froh`) | Eine der beiden Erfassungsformen wählen. Die Doppelerfassung erzeugt in der Anwendung doppelte Rollen-Chips am selben Dokument |
 | mehrere Boxen | Beteiligungskennung | `1.1` statt `1.01` in 26 Zeilen | Zweistellig schreiben, sonst ist Beteiligung 01 nicht von 10 zu unterscheiden |
 | Verknüpfungstabelle | Name | `Teatro Colon` ohne Akzent | Der Index führt `Teatro Colón` mit Akzent. Schreibung angleichen, sonst greift die Normdaten-Verknüpfung nicht |
-| Verknüpfungstabelle | Ortsname | `bayreuth` (klein) und `Bayeuth` (Tippfehler) | Auf `Bayreuth` vereinheitlichen |
+| Verknüpfungstabelle | Ortsname | `bayreuth` (klein) und `Bayeuth` (Tippfehler, Box 5 Zeile 44 im Komposit `Bayeuth, 1951-08-04`) | Auf `Bayreuth` vereinheitlichen. `Bayeuth` steht heute als eigener Eintrag im Ortsregister der Anwendung |
 
 ### Werktitel in Kurzform, Dubletten im Werke-Register und fehlende Komponisten (2026-09-04)
 
@@ -80,6 +91,74 @@ Die Kurzformen häufen sich in der Erschließung von `UAKUG/NIM_005` (Box 1, Zei
 Ohne Entsprechung im Werkindex stehen daneben unter anderem `Figaro` (5 Dokumente), `IX. Beethoven` (5), `Don Carlos` (3), `Missa Solemnis` (3), `Titus` (3) sowie die Verschreibungen `Fallstaff`, `Lohegerin`, `Parisfal`, `Mozarts Requium`, `Howantschina` und `Bluebarts Castle` neben dem vorhandenen `Herzog Blaubart's Burg`.
 
 Die dauerhafte Abhilfe ist, die Werknennung in den Boxen über die Werkkennung `m3gim_id` des Werkindex führen statt über den ausgeschriebenen Titel, so wie es der Punkt zu Organisationen und Orten unter den strukturellen Format-Fixes vorsieht. Damit fallen alle Schreibvarianten zusammen und der Komponist kommt aus dem Index. Bis dahin sind die Kurzformen an der Quelle auf die Indexform zu ziehen, für die fünf verkürzten Indextitel ist zu entscheiden, welche Ansetzung gilt, und die im Index fehlenden Werke sind dort mit Komponist anzulegen. Wo die Kurzform bewusst den Wortlaut der Vorlage wiedergibt (die beiden `sic!`-Zeilen), gehört der Wortlaut in die Anmerkung und die Ansetzungsform in die Namensspalte.
+
+### Weitere Titeldubletten im Werke-Register (2026-09-05)
+
+Zwei Dubletten zeigt das Werke-Register der Anwendung unmittelbar, und bei der ersten liegt die Dublette bereits im Werkindex selbst.
+
+| Fundstelle | Feld | Ist-Wert | Zu tun |
+|---|---|---|---|
+| Werkindex Zeilen 27 und 48 | titel | `die Götterdämmerung` (W125) und `Götterdämmerung` (W40), beide Wagner, beide mit einer Waltraute-Partie | Dieselbe Oper zweimal im Index. Zusammenführen und eine Ansetzung festlegen, beide Zeilen tragen bisher keine Wikidata-Kennung |
+| Verknüpfungstabelle, `Götterdämmerung` in 13 Zeilen (Box 1 Zeilen 247, 738, 1195 und weitere in NIM_005) gegen `Die Götterdämmerung` in 4 Zeilen (Box 2 Zeilen 72 und 122, Box 5 Zeilen 15 und 407) | name | zwei Schreibungen, die auf zwei Registereinträge laufen | Auf die künftige Indexansetzung vereinheitlichen. Die Großschreibung `Die` trifft heute keine der beiden Indexzeilen |
+| Verknüpfungstabelle, `Herzog Blaubarts Burg` in 8 Zeilen (Box 1 Zeilen 746, 1132, 1316 und weitere, Box 5 Zeile 880) gegen `Herzog Blaubart's Burg` in 3 Zeilen (Box 2 Zeilen 379, 386, 395) | name | zwei Registereinträge für eine Oper, nur die Apostrophform trifft den Werkindex (Zeile 50, W42, Bartók) | Auf die Indexform `Herzog Blaubart's Burg` vereinheitlichen oder den Index auf die apostrophlose Ansetzung ziehen und die Zeilen entsprechend angleichen |
+
+### Adresse als Ort im Ortsregister (2026-09-05)
+
+Die Anwendung baut ihr Ortsregister aus den Ortsnamen der Verknüpfungstabelle. Eine Adresse steht dort deshalb als eigener Ort neben der Stadt, und die Belege verteilen sich auf zwei Einträge.
+
+| Fundstelle | Feld | Ist-Wert | Zu tun |
+|---|---|---|---|
+| Box 1, `UAKUG/NIM_004` Folios 1 und 30 sowie `UAKUG/NIM_007` Folios 9 und 10, Box 2, `UAKUG/NIM_016` mit fünfzehn Zeilen | name | `Zürich, Zürichbergstrasse 104` in 19 Zeilen vom Typ `ort`, in den Rollen zielort, absendeort, empfangsort und erwähnt | Ortsnamen auf `Zürich` setzen und die Adresse in die Anmerkungsspalte nehmen. Eine Adresse ist eine Angabe am Dokument und kein Eintrag des Ortsindex |
+
+### Rollen ohne Werkbezug und abweichende Partienschreibung (2026-09-04)
+
+Bei Objekten mit mehreren Werken stehen Werke und Bühnenrollen als zwei getrennte Zeilenläufe, sodass keine Rolle einem Werk zuzuordnen ist. `UAKUG/NIM_004` Folio 10 führt in Box 1 zwei Werke (Zeilen 247 und 248) und fünfundzwanzig Rollenzeilen (Zeilen 249 bis 273), deren Partien aus vier Opern stammen. `UAKUG/NIM_022` Folio 1_1 führt in Box 2 drei Werke (Zeilen 22 bis 24) und drei Rollen (Zeilen 25 bis 27). Die Rollenspalte nennt nur die Partie der Sängerin und nie die übrige Besetzung, und die Anwendung zeigt solche Rollen deshalb als Chips ohne Werk. Zu tun ist ein Werkbezug je Rollenzeile, etwa über die Beteiligungskennung `datenpunkt_id`, die dafür bereits vorgesehen ist.
+
+| Fundstelle | Feld | Ist-Wert | Zu tun |
+|---|---|---|---|
+| Box 2, `UAKUG/NIM_022` Folio 1_1, Zeile 25, gegen Werkindex Zeile 31 | name | Rollenzeile `Magdalena` zum Werk `Die Meistersinger von Nürnberg`, dessen Indexzeile die Partie `Magdalene` schreibt | Eine Schreibung wählen. Die Verarbeitung gleicht nicht unscharf ab, die Abweichung bleibt als zwei Partien stehen. Der Werkindex führt beide Formen selbst, Zeile 31 `Magdalene` und Zeile 80 `Magdalena` am Kurztitel `Meistersinger` |
+
+### Veranstaltung als Person geführt (2026-09-03)
+
+| Fundstelle | Feld | Ist-Wert | Zu tun |
+|---|---|---|---|
+| Box 1, `UAKUG/NIM_003` Folio 1_1, Zeile 2 | typ / name | Typ `person` für `Sommerkurse Deutsches Musikinstitut für Ausländer`, Rolle `adressat:in` | Der Akteur ist eine Veranstaltung. In den Organisationsindex überführen und den Typ auf `institution` setzen. Solange er im Personenindex steht, erscheint er im Bestand mit dem Personensymbol. Sobald das Modell eine Veranstaltung kennt, gehört er dorthin |
+
+### Verknüpfungszeilen mit dem Typ `Aktivität` (2026-09-03)
+
+Sechs Zeilen tragen den Typ `Aktivität`, den die Verarbeitung nicht abbildet. Sie erreichen den Datensatz nicht, und ihre Rollenspalte ist leer. Der Schwesterbefund zum Typ `dokument` steht bereits in der Tabelle oben.
+
+| Fundstelle | Feld | Ist-Wert | Zu tun |
+|---|---|---|---|
+| Box 2, `UAKUG/NIM_022` Folio 1_1 Zeile 20 und Folio 3 Zeile 39, `UAKUG/NIM_023` Folio 1_1 Zeile 50, Folio 2 Zeile 288, Folio 4 Zeile 116 und Folio 11 Zeile 210 | typ | `Aktivität` mit den Namen `Bayreuther Festspiele`, `Auftrittsreihe in Neapel`, `Bayreuther Festspiele 1953`, `Rundfunkaufnahme Radio Italiana Rom`, `Engagement Teatro di San Carlo` und `Engagement Theatre Municipale de Lausanne` | Zu entscheiden ist, ob der Typ in das Modell aufgenommen wird, was dem beschlossenen Bündelknoten für einen Auftritt entspräche, oder ob die Zeilen quellseitig auf einen bestehenden Typ umzustellen sind. Bis dahin gehen die sechs Angaben verloren |
+
+### Datum in der Ortsspalte (2026-09-05)
+
+Das Komposit `ort, datum` vererbt seinen Wert an beide Hälften. Steht in der Zeile nur ein Datum, entsteht daraus ein Ortsname, der wie ein Ort gefiltert und gezählt wird. Der jahrlose Fall auf Folio 34 steht bereits oben in der Tabelle, hier der zweite.
+
+| Fundstelle | Feld | Ist-Wert | Zu tun |
+|---|---|---|---|
+| Box 1, `UAKUG/NIM_004` Folio 15, Zeile 408 | typ / name | Typ `ort, datum` mit Wert `1956-11-21`, Rolle erscheinungsdatum | Die Annotation trägt im ausgelieferten Datensatz das Datum korrekt und daneben einen Ort namens `1956-11-21`. Zeile auf eine reine Datumszeile umstellen |
+
+### Spielstätten und Regionen als Ort erfasst (2026-09-05)
+
+Der Ortsindex führt Städte. Die Verknüpfungstabelle trägt daneben Spielstätten, Häuser und Regionen im Typ `ort`, und die Anwendung baut ihr Ortsregister aus dieser Spalte. Beide Klassen erscheinen dort deshalb als eigenständige Orte, keine von ihnen löst gegen den Ortsindex auf, und keine trägt Koordinaten, sodass sie auf der Karte in der Sektion „Ohne Kartenpunkt" stehen statt auf ihr. Die Belege verteilen sich zugleich auf zwei Einträge, einmal auf die Stadt und einmal auf das Haus. Der Befund entspricht dem Adressfall `Zürich, Zürichbergstrasse 104` weiter oben.
+
+| Fundstelle | Feld | Ist-Wert | Zu tun |
+|---|---|---|---|
+| Box 1, `UAKUG/NIM_007` Folio 1 (Zeile 2929) | typ / name | `Bayerische Staatsoper` als Typ `ort`, Rolle erwähnt | Als Institution erfassen und den Ort auf `München` setzen |
+| Box 1, `UAKUG/NIM_004` Folio 6 (Zeile 135) | typ / name | `Prinzregententheater` als Typ `ort`, Rolle auffuehrungsort | wie vor, Ort `München`. Box 7 Zeile 15 führt dasselbe Haus bereits in der Form `München, Prinzregententheater` |
+| Box 6, `UAKUG/NIM_142` Folio 28 (Zeile 392) | typ / name | `Theatre de la Monnaie` als Typ `ort`, Rolle Empfang | Als Institution erfassen und den Ort auf `Brüssel` setzen. Der Organisationsindex führt das Haus als `Theatre Royal de la Monnaie` |
+| Box 1, `UAKUG/NIM_007` Folio 8 (Zeilen 3013 bis 3019) | typ / name | `Palais Pallavicini`, `Palais Schwarzenberg`, `Palais Auersberg`, `Palais Palffy`, `Palais Lobkowitz`, `Palais Rasumofsky` und `Hofburg` als Typ `ort` | Sieben Wiener Spielstätten an einem Dokument. Als Veranstaltungsorte in der Anmerkung führen oder als Institution erfassen, den Ort auf `Wien` setzen |
+| Box 1, `UAKUG/NIM_004` Folio 9 (Zeile 205) | typ / name | `Italien` als Typ `ort`, Rolle auffuehrungsort | Ein Land ist kein Ort des Ortsindex. Die konkrete Stadt eintragen oder die Angabe in die Anmerkung nehmen |
+| Box 7, `UAKUG/NIM_016` Folio 2 (Zeilen 20 und 21) | typ / name | `Südfrankreich` und `Norditalien` als Typ `ort`, Rolle auffuehrungsort, Anmerkung „Erwähntes Sendegebiet der Radiosendung" | Regionen sind keine Orte des Ortsindex. Das Sendegebiet gehört in die Anmerkung, der Ort bleibt der Sendeort |
+| Box 1, `UAKUG/NIM_005` Folio 23 (Zeile 2155) | typ / name | `Vertrag` als Typ `ort`, Rolle vertragsort | Kein Ortsname. Zeile korrigieren oder leeren |
+
+### Schreibdublette Ottobeuern und Ottobeuren (2026-09-05)
+
+| Fundstelle | Feld | Ist-Wert | Zu tun |
+|---|---|---|---|
+| Box 1, `UAKUG/NIM_005` Folio 21 (Zeile 1911) und Box 2, `UAKUG/NIM_016` Folio 14 (Zeile 340) | Ortsname | `Ottobeuern` gegen `Ottobeuren` in Box 2 Zeilen 344 und 358 | Auf `Ottobeuren` vereinheitlichen, das ist die Form des Ortsindex. Die beiden Schreibungen stehen heute als zwei Einträge im Ortsregister, und `Ottobeuern` trägt weder Kennung noch Koordinaten |
 
 ## Personenindex (`M3GIM-Personenindex.xlsx`)
 
@@ -139,6 +218,14 @@ Die Genitiv-s-Namen der Zeilen 56, 80, 139, 212 und 276 stammen aus einer Tannh�
 | Zeilen zu W97, W113, W124 | titel / komponist | `Requiem` dreimal (Mozart, Hindemith, Verdi) | Kein Fehler an sich, aber eine Verknüpfung nur über den Titel ist nicht auflösbar. Komponist stets mitführen |
 | Zeilen zu W80, W120, W121 | titel / komponist | `Stabat mater` dreimal (ohne Angabe, Pergolesi, Rossini) | wie vor, dem titellosen Eintrag den Komponisten geben |
 | Zeilen zu W64, W73, W93 | komponist | leer, Anmerkung `Ukrainisches Lied` | Komponist ergänzen, sonst nicht identifizierbar |
+
+## Als bearbeitet geführte Objekte ohne Verknüpfung (2026-09-03)
+
+Die Verknüpfung ist die Dokumentbasis der Anwendung. Ein Objekt gilt als verknüpft, sobald es eine der fünf Eigenschaften trägt, die das Frontend zählt, also einen beteiligten Akteur, einen Ort, ein genanntes Thema, eine Anmerkung oder eine Aufführung. Ein Objekt ohne jede davon erscheint in keiner Ansicht, auch dann nicht, wenn sein Bearbeitungsstand `abgeschlossen` oder `begonnen` lautet, und die Erfassung behauptet damit einen Stand, den die Anwendung nicht zeigt.
+
+Die Liste dieser Objekte steht nicht hier, sondern entsteht bei jedem Lauf neu. `tests/test_61_orphan_links.py` führt sie in `test_worked_on_records_carry_a_verknuepfung`, dessen Fehlermeldung die Signaturen mit ihrem Bearbeitungsstand nennt. Sie ist so als Arbeitsliste lesbar und veraltet hier nicht. Der Aufruf ist `pytest tests/test_61_orphan_links.py -m data_quality`.
+
+Zu tun ist je Signatur eine von zwei Entscheidungen, entweder die Verknüpfungen nachtragen oder den Bearbeitungsstand auf `zurueckgestellt` zurücksetzen.
 
 ## Strukturelle Format-Fixes (einmalig, betreffen die Tabellenstruktur)
 

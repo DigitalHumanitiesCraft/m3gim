@@ -18,10 +18,10 @@
 
 import { primaryYear } from './loader.js';
 import { facetValues } from '../ui/filter-state.js';
-import { getDocTypeId, expandDftFilter, dftLabel, buildDftTree } from '../utils/format.js';
-
-/** The facet under which an event without mobility Sicht is listed. */
-const KONTEXT_SICHT = 'kontext';
+import {
+  getDocTypeId, expandDftFilter, dftLabel, buildDftTree, ensureArray, cityOf,
+  roleIdOf, roleToken,
+} from '../utils/format.js';
 
 /**
  * Ira Malaniuk's life span. It is the fallback of the year axis: a Bestand
@@ -51,39 +51,36 @@ const DIRECT_INDEXES = Object.freeze({
 /** All facets that cut a document set. */
 export const FACET_KEYS = Object.freeze([
   ...Object.keys(ENTITY_MAPS), ...Object.keys(DIRECT_INDEXES),
-  'docType', 'sicht', 'finanzen', 'stand',
+  'docType', 'finanzen', 'verknuepfung', 'land',
 ]);
 
-/** The Erschliessungsstand as the source writes it, in reading order. */
-const SOURCE_STAND = Object.freeze(['abgeschlossen', 'begonnen', 'zurueckgestellt']);
-
 /**
- * Value under which a base record without any Bearbeitungsstand stays
- * selectable. The base is the Verknuepfung and not the Bearbeitungsstand
- * (E-165), so such a record belongs to the Bestand while matching none of the
- * three source values; without this fourth value it would sit in the base and
- * answer to no checkbox.
+ * The link types of the Verknuepfungstabelle with their display form. The
+ * source column `typ` does not survive the pipeline, but every type
+ * left a shape of its own in the graph, so the axis is read off that shape
+ * instead of being guessed: an agent by its class, a subject by its class, a
+ * place by `rico:hasOrHadLocation`, a finance item by `hasDetail`, and an
+ * annotation by whether it carries a place (the ort half of the composite) or
+ * only a date.
  */
-const STAND_NONE = 'ohne-angabe';
+const LINK_TYPES = Object.freeze([
+  ['ort', 'Ort'], ['person', 'Person'], ['institution', 'Institution'],
+  ['werk', 'Werk'], ['datum', 'Datum'], ['ereignis', 'Ereignis'],
+  ['finanz', 'Finanzen'], ['ensemble', 'Ensemble'],
+]);
 
-/** The values of the Erschliessungsstand facet, in reading order. */
-export const STAND_VALUES = Object.freeze([...SOURCE_STAND, STAND_NONE]);
-
-/** Display forms of the Erschliessungsstand. The source writes the umlaut as
- *  `ue`; the label restores it, the value stays the raw source term. */
-const STAND_LABELS = Object.freeze({
-  abgeschlossen: 'abgeschlossen',
-  begonnen: 'begonnen',
-  zurueckgestellt: 'zurückgestellt',
-  [STAND_NONE]: 'ohne Angabe',
+/** Agent and subject classes to their link type. */
+const AGENT_LINK_TYPE = Object.freeze({
+  'rico:Person': 'person', 'rico:CorporateBody': 'institution', 'rico:Group': 'ensemble',
+});
+const SUBJECT_LINK_TYPE = Object.freeze({
+  'rico:Person': 'person', 'm3gim-ontology:MusicalWork': 'werk',
+  'm3gim-ontology:FramingEvent': 'ereignis',
 });
 
-/** What the Bestand preselects on first open (E-162): the two states that mean
- *  the object has been worked on. Removable like any other chip. */
-export const STAND_DEFAULT = Object.freeze(['abgeschlossen', 'begonnen']);
-
-/** Record property carrying the Erschliessungsstand. */
-const STATUS_PROP = 'm3gim-ontology:processingStatus';
+/** Separator between link type and role in a facet value of `verknuepfung`.
+ *  A role key carries colons of its own, so the split takes the first one. */
+const LINK_SEP = ':';
 
 const baseCache = new WeakMap();
 
@@ -92,8 +89,7 @@ const baseCache = new WeakMap();
  * Verknuepfung (E-165). A record without any is out of every view and out of
  * every count — it is neither cut away by a facet nor greyed out, it does not
  * exist for the interface, and the Findmittel to the whole Teilnachlass stays
- * the archive. The Bearbeitungsstand is a facet on this base, not its
- * definition: a record can be verknuepft without carrying one.
+ * the archive.
  *
  * A store without `unprocessedIds` (test fixtures) puts every record in the
  * base rather than none, so a fixture states its exclusions explicitly.
@@ -158,9 +154,9 @@ function buildFacetIndex(store, key) {
   const directName = DIRECT_INDEXES[key];
   if (directName) return store[directName] instanceof Map ? store[directName] : new Map();
   if (key === 'docType') return docTypeIndex(store);
-  if (key === 'sicht') return sichtIndex(store);
   if (key === 'finanzen') return waehrungIndex(store);
-  if (key === 'stand') return standIndex(store);
+  if (key === 'verknuepfung') return linkIndex(store);
+  if (key === 'land') return landIndex(store);
   return new Map();
 }
 
@@ -185,7 +181,6 @@ export function facetInventory(store, key) {
     if (count === 0) continue;
     const label = needsVocabLabel ? vocabLabel(store, value)
       : isDocType ? dftLabel(store, value)
-      : key === 'stand' ? (STAND_LABELS[value] || String(value))
       : String(value);
     if (!label) continue;
     // Vocabulary facets carry only terms with a real display form (E-143). A
@@ -233,6 +228,44 @@ export function docTypeGroups(store) {
 }
 
 /**
+ * Link-type inventory as tree groups: the type with its documents, below it the
+ * roles it was recorded in, each with its own count. Choosing the type means
+ * any role of that type, so the type value carries the union itself and needs
+ * no expansion in `recordsFor`.
+ *
+ * A role without a display form stays out (E-143), and so the count of a type
+ * can exceed the sum of its roles; a document with two roles of one type
+ * conversely counts in both of them. The section head names that rule, the rows
+ * carry no tooltip of their own.
+ * @param {Object} store
+ * @returns {Array<{value:string, label:string, count:number, tip:string,
+ *   children:Array<{value:string, label:string, count:number}>}>}
+ */
+export function linkGroups(store) {
+  const index = facetIndex(store, 'verknuepfung');
+  const base = baseIds(store);
+  const out = [];
+  for (const [key, label] of LINK_TYPES) {
+    const count = countIn(index.get(key), base);
+    if (count === 0) continue;
+    const prefix = key + LINK_SEP;
+    const children = [];
+    for (const [value, ids] of index) {
+      if (!value.startsWith(prefix)) continue;
+      const roleName = vocabLabel(store, value.slice(prefix.length));
+      if (!roleName) continue;
+      const n = countIn(ids, base);
+      if (n === 0) continue;
+      children.push({ value, label: roleName, count: n });
+    }
+    children.sort((a, b) => (b.count - a.count) || a.label.localeCompare(b.label, 'de'));
+    out.push({ value: key, label, count, children, tip: '' });
+  }
+  out.sort((a, b) => (b.count - a.count) || a.label.localeCompare(b.label, 'de'));
+  return out;
+}
+
+/**
  * The document set for a filter.
  *
  * @param {Object} store
@@ -256,9 +289,9 @@ export function recordsFor(store, filter, opts = {}) {
     const index = facetIndex(store, key);
     const union = new Set();
     for (const value of values) {
-      // Dokumenttyp: ein gewaehlter Wert kann ein Oberbegriff der DFT-Hierarchie
-      // sein; expandDftFilter loest ihn auf seine Blaetter auf (ODER), damit die
-      // Baumgruppen als gruppierte Vorschlaege funktionieren.
+      // Dokumenttyp: a chosen value can be a broader term of the DFT hierarchy;
+      // expandDftFilter resolves it to its leaves (OR), which is what makes the
+      // tree groups work as grouped suggestions.
       const leaves = key === 'docType' ? expandDftFilter(store, value) : new Set([value]);
       for (const leaf of leaves) {
         const hit = index.get(leaf);
@@ -359,9 +392,10 @@ function countIn(ids, base) {
 
 /**
  * Year of a record via the single Zeitanker of the data layer (contract A4).
- * `rico:date` first, else the highest-ranking anchoring Datierung; null when
- * undated. The one resolution, so a record without `rico:date` does not count
- * as dated in one view and undated in the next.
+ * The highest-ranking anchoring Datierung of the Verknuepfungen first, and the
+ * archival `rico:date` only as its fallback (primaryYear, F3); null when
+ * undated. The one resolution, so a record does not count as dated in one view
+ * and undated in the next.
  * @param {Object} store
  * @param {Object} record
  * @returns {?number}
@@ -376,8 +410,9 @@ export function yearOf(store, record) {
 
 /** Year of the record behind an @id. Memoised, because every cut walks its whole
  *  set for the Zeitfenster and the count of the undated (Projektleitung,
- *  2026-09-04). */
-function yearOfId(store, id) {
+ *  2026-09-04). Exported so the Indizes can read the Zeitspanne of an entry
+ *  over the same memo instead of resolving every Datierung a second time. */
+export function yearOfId(store, id) {
   if (!store) return null;
   let years = yearCache.get(store);
   if (!years) { years = new Map(); yearCache.set(store, years); }
@@ -389,24 +424,6 @@ function yearOfId(store, id) {
 }
 
 const yearCache = new WeakMap();
-
-/**
- * Erschliessungsstand → records (E-162). The Bearbeitungsstand of the source,
- * nothing derived; a record whose value is missing or unknown falls under
- * STAND_NONE, so the facet reaches every record of the base.
- */
-function standIndex(store) {
-  const out = new Map();
-  if (!store || !store.allRecords) return out;
-  for (const record of store.allRecords) {
-    const status = record[STATUS_PROP];
-    const value = SOURCE_STAND.includes(status) ? status : STAND_NONE;
-    let ids = out.get(value);
-    if (!ids) { ids = new Set(); out.set(value, ids); }
-    ids.add(record['@id']);
-  }
-  return out;
-}
 
 /**
  * Records with spatiotemporal or performance evidence. Counted, not cut; kept
@@ -446,23 +463,119 @@ function docTypeIndex(store) {
 }
 
 /**
- * Mobility Sicht → records. The Sicht sits as `cluster` on the annotation;
- * without a cluster the evidence falls into the Kontext bucket, as the map does.
+ * Link type and (type, role) → records, read off the graph shapes named at
+ * LINK_TYPES. Both levels live in one index, the type under its bare key and
+ * the role under `typ:rolle`, so a choice on either side resolves the same way.
  */
-function sichtIndex(store) {
+function linkIndex(store) {
   const out = new Map();
-  if (!store || !store.recordToAnnotations) return out;
-  for (const [recordId, annotationIds] of store.recordToAnnotations) {
-    for (const aid of annotationIds) {
-      const annotation = store.annotations.get(aid);
-      if (!annotation) continue;
-      const key = annotation.cluster || KONTEXT_SICHT;
-      let ids = out.get(key);
-      if (!ids) { ids = new Set(); out.set(key, ids); }
-      ids.add(recordId);
+  if (!store || !store.allRecords) return out;
+  const add = (typ, role, id) => {
+    if (!typ) return;
+    put(out, typ, id);
+    const roleKey = roleIdOf(role) || roleToken(role);
+    if (roleKey) put(out, typ + LINK_SEP + roleKey, id);
+  };
+  for (const record of store.allRecords) {
+    const id = record['@id'];
+    for (const agent of ensureArray(record['m3gim-ontology:hasAssociatedAgent'])) {
+      add(AGENT_LINK_TYPE[agent['@type']], agent.role, id);
+    }
+    for (const subject of ensureArray(record['rico:hasOrHadSubject'])) {
+      add(SUBJECT_LINK_TYPE[subject['@type']], subject.role, id);
+    }
+    for (const loc of ensureArray(record['rico:hasOrHadLocation'])) {
+      add('ort', loc.role, id);
+    }
+    for (const detail of ensureArray(record['m3gim-ontology:hasDetail'])) {
+      add('finanz', detail.role, id);
+    }
+    for (const annotation of annotationsOfRecord(store, record)) {
+      // The located annotation is the place half of the ort,datum composite,
+      // the bare one a date row: that is the split transform.py made.
+      add(annotation.place ? 'ort' : 'datum',
+        annotation.roleId || annotation.role, id);
     }
   }
   return out;
+}
+
+/** Every place link of the Bestand as [recordId, placeName, country|null]. */
+function placeRows(store) {
+  const rows = [];
+  if (!store || !store.allRecords) return rows;
+  for (const record of store.allRecords) {
+    const id = record['@id'];
+    for (const loc of ensureArray(record['rico:hasOrHadLocation'])) {
+      rows.push([id, loc.name || loc['skos:prefLabel'] || '',
+        loc['m3gim-ontology:country'] || null]);
+    }
+    for (const annotation of annotationsOfRecord(store, record)) {
+      if (annotation.place) rows.push([id, annotation.place, annotation.placeCountry]);
+    }
+  }
+  return rows;
+}
+
+/** City → country. The most frequent assignment wins, so a single deviating
+ *  mention does not move a city into another country. */
+function countryTally(rows) {
+  const tally = new Map();
+  for (const [, name, land] of rows) {
+    if (!name || !land) continue;
+    const key = cityOf(name).toLowerCase();
+    let counts = tally.get(key);
+    if (!counts) { counts = new Map(); tally.set(key, counts); }
+    counts.set(land, (counts.get(land) || 0) + 1);
+  }
+  const out = new Map();
+  for (const [key, counts] of tally) {
+    out.set(key, [...counts.entries()].sort((a, b) => b[1] - a[1])[0][0]);
+  }
+  return out;
+}
+
+/**
+ * City in lower case → country, from the geocoded places of the whole Bestand.
+ * The one resolution of that question: the Land facet counts over it, and the
+ * Orte register names the country of an entry from it.
+ * @param {Object} store
+ * @returns {Map<string, string>}
+ */
+export function countryByCity(store) {
+  return countryTally(placeRows(store));
+}
+
+/**
+ * Country → records. The country sits on the geocoded place and reaches the
+ * record over every place link, whatever its role: presence and mention count
+ * alike, and the head of the facet says so. An address-precise place inherits
+ * the country of its city, the roll-up the place index already performs.
+ */
+function landIndex(store) {
+  const out = new Map();
+  const rows = placeRows(store);
+  const cityLand = countryTally(rows);
+  for (const [id, name, land] of rows) {
+    const value = land || (name ? cityLand.get(cityOf(name).toLowerCase()) : null);
+    if (value) put(out, value, id);
+  }
+  return out;
+}
+
+/** Annotations of a record, tolerant of a fixture store that carries none.
+ *  The loader keeps `annotationsOf` to itself, so the walk stands here. */
+function annotationsOfRecord(store, record) {
+  const map = store.recordToAnnotations;
+  const ids = (map instanceof Map && map.get(record['@id'])) || [];
+  return ids.map(id => store.annotations.get(id)).filter(Boolean);
+}
+
+/** Append a record id under a value of a facet index. */
+function put(index, value, id) {
+  let ids = index.get(value);
+  if (!ids) { ids = new Set(); index.set(value, ids); }
+  ids.add(id);
 }
 
 /**
@@ -483,9 +596,14 @@ function waehrungIndex(store) {
   return out;
 }
 
-/** Display form of a role from the vocabulary; empty if the term has none. */
+/** Display form of a role from the vocabulary; empty if the term has none.
+ *  A role that occurs only at a work (repertoire, Wiederaufnahme,
+ *  Festvorstellung) never passes the role register of the loader, so the
+ *  concept node the dataset ships beside it carries the display form. */
 function vocabLabel(store, value) {
-  const entry = store && store.roleVocab ? store.roleVocab.get(value) : null;
-  const label = (entry && entry.label) || '';
+  if (!store) return '';
+  const entry = store.roleVocab ? store.roleVocab.get(value) : null;
+  const concept = store.conceptDefinitions ? store.conceptDefinitions.get(value) : null;
+  const label = (entry && entry.label) || (concept && concept.label) || '';
   return label ? label[0].toLocaleUpperCase('de-DE') + label.slice(1) : '';
 }

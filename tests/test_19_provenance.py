@@ -1,4 +1,4 @@
-"""Dating meta-contract (data-model.md § Meta-Statement-Modell, E-106 replaces the E-100/E-104 confidence).
+"""Dating meta-contract (data-model.md § Meta-statements and provenance, E-106 replaces the E-100/E-104 confidence).
 
 The dating evidence (datierungsevidenz column) is NOT serialized, neither as the
 old m3gim:dateEvidence nor as an invented agrelon:metadataConfidence decimal. The

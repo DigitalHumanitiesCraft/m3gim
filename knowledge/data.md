@@ -1,13 +1,13 @@
 ---
-title: "Datengrundlage"
+title: "Source Material"
 project:
   name: M³GIM
   repository: https://github.com/DigitalHumanitiesCraft/m3gim
 status: complete
-language: de
-version: 0.5
+language: en
+version: 0.6
 created: 2026-02-19
-updated: 2026-09-03
+updated: 2026-09-05
 authors: [Christopher Pollin]
 generated-with: Claude Code
 method:
@@ -26,455 +26,185 @@ knowledge-sources:
 related: [data-model, research-framework, architecture, journal, testing]
 ---
 
-# Datengrundlage
+# Source Material
 
-## Präambel
+This document is the spec-first anchor of the data model. It describes what the source material is, how the cataloguing team records it, and which properties of the source the pipeline compensates for. A change to the model is anchored here first, then in the vocabulary, then in a test, and last in the pipeline (E-133).
 
-Dieses Dokument ist der Spec-first-Anker des Datenmodells. Es beschreibt das Quellmaterial und seine Erfassung, das Schichtenmodell, den Verknüpfungsmechanismus, das Rollenvokabular, die Datumskonventionen und die Datenqualität, also welche Eigenheiten der Quelle die Pipeline kompensiert. Jede Modelländerung wird zuerst hier verankert, danach im Vokabular, im Test und in der Pipeline (E-133).
+The formal side, meaning classes, properties, controlled vocabularies and serialization, is in [data-model.md](data-model.md). The German recording convention of the archive team is in [`../data/recording-guide.md`](../data/recording-guide.md). The pipeline implementation is in [architecture.md](architecture.md), the research frame in [research-framework.md](research-framework.md), the project steering in [specification.md](specification.md). Running figures live in the quality snapshot under `data/reports/`, this document carries none.
 
-Adressiert sind Projektmitarbeitende und Folge-Erschließer:innen. Die formalen Klassen, Properties und die Serialisierung führt [data-model.md](data-model.md), dort steht auch die Namespace-Tabelle (§ RiC-O-Kern und m3gim-Erweiterung) und die Erfassungsanleitung des Archivteams (§ Erfassung). Die Pipeline-Implementierung steht in [architecture.md](architecture.md), der Forschungsrahmen in [research-framework.md](research-framework.md), die Projektsteuerung in [specification.md](specification.md) § Stand und nächste Schritte.
+## Sources and holdings groups
 
-Verweise auf Abschnitte dieses Dokuments und von [data-model.md](data-model.md) nennen den Abschnittstitel. Die früheren Abschnittsnummern aus der Zeit vor der Teilung der beiden Dokumente sind aufgelöst.
+The material is the UAKUG/NIM holdings at the archive of the University of Music and Performing Arts Graz, the partial estate of the mezzo-soprano the fonds stems from. It falls into three holdings groups, and the group is readable from the signature.
 
-## Schichtenmodell
+| Group | Signature form | Character |
+|---|---|---|
+| main holdings | `UAKUG/NIM_nnn` | letters, contracts, press, programmes, photographs, held as convolutes |
+| posters | `UAKUG/NIM/PL_nn` | individual items, note the slash before `PL` |
+| sound carriers | `UAKUG/NIM_TT_nn` | individual items, shellac discs and recordings |
 
-Das Modell ist in die fachlichen Schichten Kernmetadaten, Verknüpfungen und Erweiterung plus eine Querschnittsebene Meta gegliedert.
+The source period runs from 1919 to 2010. The earliest dating sits on a poster, the latest on an exhibition after the death of the creator of the fonds. A value outside that span is a source error and belongs on the handover list under `data/reports/`.
 
-**Schicht 1 (Kernmetadaten).** Archivsignatur, Titel, Datum, Dokumenttyp, Sprache, Umfang, Bearbeitungsstand. Direkt aus `rico:Record`-Properties bedient.
+Cataloguing is selective and unfinished. Title and document type are the best covered fields, creation date is middling, extent and language are thin, and only a growing selection of convolutes is opened down to the folio. Any analysis of this material carries that coverage with it. Which convolutes carry folios, and how far each field reaches, is in the quality snapshot.
 
-**Schicht 2 (Verknüpfungen).** Person, Ort, Institution, Werk, Bühnenrolle, Datum, Ereignis, Ensemble. Relationale Anreicherung der Records über die Verknüpfungstabelle.
+No independent scholarly literature on the creator of the fonds exists. The placement in the research context is in [research-framework.md](research-framework.md).
 
-**Schicht 3 (Erweiterung).** Finanzielle und vertragliche Detailangaben (Honorare, Provisionen, Währungsbeträge). Getragen von `m3gim-ontology:Annotation`.
+## Source format
 
-**Querschnittsebene (Meta).** Gültigkeitsperiode, Konfidenz und Provenienz jeder Aussage. Nach dem Muster von AgRelOn realisiert, wirksam für alle fachlichen Schichten ([data-model.md](data-model.md) § Meta-Statement-Modell).
+The authoritative source format is the CSV export of the spreadsheet. The reason is that the XLSX export converts date, folio and bundling columns into cell types and thereby invents precision the recording does not carry, a bare month becoming the first of that month and a year-less entry becoming a calendar date of the export year (E-152). The CSV export passes the recorded text through unchanged.
 
-## Tabellenmodell
+The link table lives as one CSV per sheet under `data/google-spreadsheet/verknuepfungen/`, one file per box plus the value list `Typ-Rolle.csv`. File names carry the sheet label with an underscore, `Box_1.csv` and so on, while the sheet name in the provenance keeps the spelling of the source, `Box 1`. The box numbers are not contiguous, because a sheet without a usable data row is not carried along. The object table is a CSV as well, `M3GIM-Objekte.csv`, beside the workbook. The loader prefers the CSV and falls back to the XLSX without it, whose date column then carries the autoconversion. The four index tables stay XLSX, because they hold no endangered column.
 
-| Tabelle | Funktion |
+`resolve_verknuepfungen_source` takes every `Box_*.csv` in that directory. Without the directory it falls back to the first file matching `M3GIM-Verkn*pfungen*.xlsx`, which covers both the `ü` and the `ue` spelling, and without either it raises `FileNotFoundError`.
+
+## Tables and columns
+
+Six tables carry the material. The object table holds the record metadata, the link table the relational enrichment, the four index tables the normalized entities of the four families.
+
+| Table | Columns as the source writes them |
 |---|---|
-| M3GIM-Objekte | Primäre Record-Metadaten (Schicht 1) |
-| M3GIM-Verknüpfungen | Kontext- und Entitätsrelationen (Schicht 2 + 3), seit 2026-08-31 als CSV-Ausfuhr je Blatt |
-| Personenindex | Personen-Normdaten (Name, Lebensdaten, Wikidata-ID) |
-| Organisationsindex | Organisations-Normdaten |
-| Ortsindex | Ortsdaten |
-| Werkindex | Werknachweise (Titel, Komponist, Wikidata-ID) |
+| object table | `archivsignatur`, `folio nr`, `titel`, `entstehungsdatum`, `datierungsevidenz`, `dokumenttyp`, `sprache`, `umfang`, `bearbeiter:in`, `erfassungsdatum`, `Bearbeitungsstand`, plus per-table completion flags |
+| link table | signature column with a blank header, `Folio`, `datenpunkt_id` or `data_id`, `typ`, `name`, `rolle`, `anmerkung` |
+| person index | `m3gim_id`, name, `wikidata_id`, `lebensdaten`, `anmerkung` |
+| organization index | `m3gim_id`, name, `wikidata_id`, `ort`, `assoziierte_person`, `anmerkung` |
+| place index | name, plus a column marking what was added during recording |
+| work index | `m3gim_id`, title, `wikidata_id`, composer, `rolle/stimme`, `anmerkung` |
 
-### Quellformat
+The bundling column of the link table carries two spellings, `datenpunkt_id` in some sheets and `data_id` in others. Both name the same value and the loader merges them. The signature column of the link table has a blank header and is filled only where the signature changes, so it is recognized by position and forward-filled per sheet.
 
-Das maßgebliche Quellformat ist die CSV-Ausfuhr, weil der XLSX-Export der Tabellenkalkulation Datums-, Folio- und Kennungsspalten in Zelltypen umwandelt und dabei Angaben erfindet, die die Erfassung nicht trägt (§ Datumskonventionen). Die CSV-Ausfuhr gibt den erfassten Text unverändert weiter.
+Several index sheets have lost their header row, meaning a data value stands where the column name belongs. The name columns of the person, place and work index and one identifier column of the organization index are affected. The pipeline recognizes those columns by position and pushes the leaked value back into the data.
 
-Die Verknüpfungstabelle liegt seit der Lieferung vom 2026-08-31 als CSV je Blatt unter `data/google-spreadsheet/verknuepfungen/`, eine Datei je Box und dazu die Wertliste `Typ-Rolle.csv` (E-152). Die Dateinamen tragen die Blattbezeichnung mit Unterstrich, `Box_1.csv` bis `Box_9.csv`, der Blattname der Provenienz bleibt die Schreibung der Quelle, also `Box 1`. Die Objekttabelle liegt seit der Lieferung vom 2026-09-01 ebenfalls als CSV vor, im Repository als `M3GIM-Objekte.csv` neben der Arbeitsmappe. Der Loader bevorzugt die CSV und fällt ohne sie auf die XLSX zurück, deren Datumsspalte dann die Autokonvertierung trägt. Die vier Indextabellen bleiben XLSX, weil sie keine gefährdeten Spalten führen.
+The folio column of the object table is called `folio nr` today and was called `folio` and an unnamed column before. The pipeline accepts all variants through a heuristic column detection with a regular expression fallback.
 
-Ein Blatt ohne auswertbare Datenzeile wird nicht mitgeführt. In der Lieferung vom 2026-08-31 sind das Box 3, Box 8 und Box 10, alle mit defekten Restzeilen, vermerkt in der [Partner-Übergabeliste](../data/reports/source-errors-handover-2026-09-01.md). Sie kommen mit dem Quell-Fix zurück.
+### Identity and precedence in the index tables
 
-### Identität und Vorrang in den Indextabellen
+An index may carry the same name more than once, partly as an accidental double entry and partly as genuine homonymy. Three deterministic rules govern the merge, and none of them resolves a case silently.
 
-Ein Index kann denselben Namen mehrfach führen, teils als versehentliche Doppelerfassung, teils als echte Homonymie. Die Übernahme folgt drei deterministischen Regeln, die keinen Fall stillschweigend auflösen.
+Identity comes from `m3gim_id` where a row carries one. Rows sharing an `m3gim_id` denote the same entity and are condensed. Without the identifier the trimmed name decides. Two rows with the same name and different identifiers are a name collision and not a duplicate.
 
-**Identität.** Führt eine Indexzeile eine `m3gim_id`, ist diese die Identität. Zeilen mit derselben `m3gim_id` bezeichnen dieselbe Entität und werden verdichtet. Fehlt die `m3gim_id`, entscheidet der getrimmte Name. Tragen zwei Zeilen denselben Namen und verschiedene `m3gim_id`, ist das eine Namenskollision und keine Dublette.
+Within one identity the first non-empty value in source order wins per field, and a filled field is never overwritten by an empty one. The associated person of the organization index is multi-valued and collects every value of the group. Where two rows of one identity carry different non-empty values in the same field, the first wins and the case enters the validation report with both values.
 
-**Verdichtung.** Innerhalb einer Identität gewinnt je Feld der erste nicht leere Wert in Quellreihenfolge. Ein gefülltes Feld wird nie von einem leeren überschrieben. `assoziierte_person` ist mehrwertig und sammelt alle Werte der Gruppe.
+In the work index the title alone is not an identity, because different works share it. The key is the pair of title and composer. A link row naming only a title and matching more than one index entry is not resolved. The work then appears with its title, without a composer, and with the quality flag for an ambiguous name, and the ambiguity enters the validation report.
 
-**Kollision.** Tragen zwei Zeilen derselben Identität in demselben Feld verschiedene nicht leere Werte, gewinnt der erste, und der Fall geht mit beiden Werten in den Validierungsreport. Ein Flag am Knoten des Datensatzes entsteht dabei nicht, weil der Konflikt im Bestand ausschließlich die Anmerkungsspalte betrifft und je Vorkommen denselben Knoten erneut träfe.
+### Convolutes, folios and record identity
 
-Im Werkindex ist der Titel allein keine Identität, weil verschiedene Werke ihn teilen. Der Schlüssel ist das Paar aus Titel und Komponist. Eine Verknüpfungszeile, die nur einen Titel nennt und auf mehr als einen Indexeintrag passt, wird nicht aufgelöst. Das Werk erscheint mit Titel, ohne Komponistenangabe und mit dem Flag `name-nicht-eindeutig`, und die Mehrdeutigkeit geht in den Validierungsreport.
+Record identity is the archival signature plus the optional folio, joined by a space. Convolutes are aggregating units serialized as `rico:RecordSet` with children on folio level as `rico:Record`. Links hang on the most granular level available. Where a collective row and its folio rows share one signature, the aggregate keeps a suffix on its identifier so the two do not collide.
 
-### Konvolut- und Objektlogik
+Part of the main holdings is not yet resolved into individual items. Such a record stands at top level without a folio, but it denotes a collective unit whose folio cataloguing is pending rather than a single document. The pipeline sets `m3gim-ontology:unresolvedAggregate` on those records. The property follows from the holdings group of the signature and not from the content of the row, so main-holdings convolute signatures carry it while posters, sound carriers and any record with a folio do not.
 
-Objektidentität wird durch `archivsignatur` plus optionales Folio gebildet. Konvolute sind aggregierende Einheiten (`rico:RecordSet`) mit Kindern auf Folio-Ebene (`rico:Record`). Verknüpfungen hängen an der granularsten verfügbaren Ebene.
+## Date notation of the source
 
-Ein Teil des Hauptbestands ist noch nicht in Einzelobjekte aufgelöst. Ein solcher Datensatz steht als `rico:Record` ohne Folio auf oberster Ebene, meint aber keine Einzelunterlage, sondern eine Sammeleinheit, deren Folioerschließung aussteht. Die Pipeline setzt an diesen Datensätzen `m3gim-ontology:unresolvedAggregate` auf `true`. Das Merkmal ergibt sich aus der Bestandsgruppe der Signatur, nicht aus dem Inhalt der Zeile: die Konvolutsignaturen des Hauptbestands (`UAKUG/NIM_nnn`) bezeichnen Sammeleinheiten, die Plakatsignaturen (`UAKUG/NIM/PL_nn`) und die Tonträgersignaturen (`UAKUG/NIM_TT_nn`) bezeichnen Einzelstücke und tragen das Merkmal nicht. Ein Datensatz mit Folio ist ein Einzelobjekt innerhalb eines Konvoluts und trägt es ebenfalls nicht.
+Dates are recorded as text in ISO 8601 with the granularity the source supports.
 
-Vor dem 2026-09-03 entschied das Frontend dieselbe Frage über Zeichenmuster der Signatur. Die Bestandsgruppe ist eine Aussage des Materials und gehört damit in den Datensatz, nicht in die Anzeigelogik.
-
-### Bestand und Abdeckung
-
-Teilnachlass UAKUG/NIM in den Bestandsgruppen Hauptbestand, Plakate und Tonträger. Feinerschlossen mit einzelnen Folio-Einträgen ist eine wachsende Auswahl der Konvolute. Die Verknüpfungstabelle trägt den Großteil der Schicht-2- und Schicht-3-Relationen. Nicht alle Objekte sind durchgängig erschlossen, Titel und Dokumenttyp sind am besten abgedeckt, Entstehungsdatum mittel, Umfangsangabe und Sprache dünn. Dieser Abdeckungsgrad ist bei jeder Auswertung mitzuführen. Alle laufenden Zählstände, welche Konvolute Folien tragen, Feldabdeckung und Verknüpfungsrate, stehen im Quality-Snapshot (`data/reports/quality-snapshot.md`) und werden bei jedem Pipeline-Lauf neu generiert. Dieses Dokument hält keine laufenden Zahlen vor.
-
-## Verknüpfungsmechanismus
-
-Die Zuordnung einer Verknüpfungszeile zu einem Indexeintrag erfolgt über String-Matching in der `name`-Spalte nach vorheriger Normalisierung. Das Feld `typ` steuert den Zielkontext.
-
-| typ | Zielkontext | Pipeline-Status |
+| Situation | Format | Example |
 |---|---|---|
-| person | Personenindex → `rico:Person` | implementiert |
-| institution | Organisationsindex → `rico:CorporateBody` | implementiert |
-| ort | Ortsindex → `rico:Place` | implementiert |
-| werk | Werkindex → `m3gim-ontology:MusicalWork` | implementiert |
-| rolle | Bühnenrollen → `m3gim-ontology:StageRole` | Rollenindex ausstehend |
-| datum | direkte Datumsproperty | implementiert |
-| ort, datum | Komposit → `m3gim-ontology:Annotation` | implementiert (E-96) |
-| datum, werk | Komposit → `m3gim-ontology:Performance` | implementiert (E-98) |
-| rolle, person | Komposit → `m3gim-ontology:Performance` (Bühnenrolle + Interpret:in) | implementiert (E-96) |
-| ort (Mobilitätsrolle) | → `rico:Place` + `m3gim-ontology:Annotation` (ohne Datum) | implementiert (E-97) |
-| ereignis | → `m3gim-ontology:FramingEvent` | implementiert |
-| ausgaben, währung | → `m3gim-ontology:Annotation` | implementiert |
-| einnahmen, währung | → `m3gim-ontology:Annotation` | implementiert |
-| summe, währung | → `m3gim-ontology:Annotation` | implementiert |
-| ensemble | direkte Kontextverarbeitung | niedrige Priorität |
+| complete | YYYY-MM-DD | 1958-04-18 |
+| month only | YYYY-MM | 1958-04 |
+| year only | YYYY | 1958 |
+| time span | YYYY-MM-DD/YYYY-MM-DD | 1958-08-10/1958-09-09 |
+| time span of years | YYYY/YYYY | 1945/1947 |
+| season in the source spelling | YYYY-YYYY | 1947-1952 |
 
-Seit dem Dropdown-Umbau der Erfassungstabelle (Juli 2026) erzwingen abhängige Dropdowns die Wertelisten für `typ` und `rolle` an der Quelle, dokumentiert im Blatt `Typ-Rolle`, das als eigene Datei `Typ-Rolle.csv` neben den Box-Dateien liegt. Google-Sheets-Dropdowns tragen kein Komma im Wert, weshalb ein Komposittyp im Export auch mit Unterstrich stehen kann. Belegt sind `einnahmen_währung`, `ausgaben_währung`, `summe_währung` und `ort_datum`. Die Pipeline akzeptiert den Unterstrich als gleichwertigen Komposit-Trenner.
+The season form with a hyphen is the spelling of the source, and `clean_date()` normalizes it onto the slash form without loss. Four qualifiers prefix a value, `circa:` for an approximate dating, `vor:` for a terminus ante quem, `nach:` for a terminus post quem, and an empty value for undated.
 
-Zwei Typwerte haben keinen Zielzweig in der Serialisierung und fallen heute still weg, `Aktivität` und `dokument`. Beide sind belegt, beide stehen als eigene Modellierungsrunde aus, und beide sind bis dahin in der [Partner-Übergabeliste](../data/reports/source-errors-handover-2026-09-01.md) und im [Datenfehler-Register](../data/reports/reconciliation-register.md) geführt.
+A value of the form `YYYY-MM-DD 00:00:00` is no longer an admissible source format. Where one arrives it proves an autoconversion, enters the validation report as a warning and is not taken over as a day-precise date. Month and day places without padding, as in `1956-5-13`, are a source error and enter the report as well. The pipeline does not pad them, because padding produces exactly the claim the move to the CSV source removed.
 
-### Dekomposition der Komposittypen
+The notation decides the representation. A complete or partial ISO date becomes a typed date property, a range becomes a time span value, a bracket or question-mark uncertainty such as `1957-[05-27?]` becomes an annotation node carrying a quality flag, and a free-text beginning such as `ab …` or `seit …` becomes the qualifier `nach:`.
 
-Jeder Komposittyp wird nach demselben Muster in eine Zielentität mit typisierten Properties aufgelöst. Die formale Fassung tragen das Vokabular und `decompose_komposit_typ()` in der Pipeline, diese Tabelle ist die Lesefassung.
+The object table carries a separate column for dating evidence with the values `aus_dokument`, `erschlossen`, `extern` and `unbekannt`. It is deliberately not serialized ([data-model.md](data-model.md) § Meta-statements and provenance).
 
-| Komposittyp | Zielklasse | Properties | Sonderregel |
-|---|---|---|---|
-| `ort, datum` | `m3gim-ontology:Annotation` | `atPlace`, `atDate` (ISO 8601 oder TimeSpan) | Mobilitätskern des Modells ([data-model.md](data-model.md) § Mobilitätsmodell) |
-| `datum, werk` | `m3gim-ontology:Performance` | `performanceOf` (Werk über Index), `atDate` | Werk-Ziel nur über den Index, nie roher String oder literale Q-ID. Zeilen ohne führendes Jahr in der Werthälfte (Komponist statt Werk) werden ausgefiltert und nur im Quality-Snapshot gezählt |
-| `rolle, person` | `m3gim-ontology:Performance` | `hasStageRole`, `hasPerformer` (Person über Index) | beide Schreibvarianten (`Rolle, Person` und `rolle, … Sänger*in`) gleichbehandelt |
-| `rolle` (standalone) | `m3gim-ontology:Performance` | nur `hasStageRole` | jede Bühnenrolle trägt dieselbe Entitätsstruktur, das frühere Attribut `m3gim:hasPerformanceRole` entfällt vollständig (E-96); StageRole-`@id` und Deduplizierung in [data-model.md](data-model.md) § RiC-O-Kern und m3gim-Erweiterung <!-- vocab-exempt: nennt das mit E-96 entfallene Attribut --> |
-| `ort` mit Mobilitätsrolle | `rico:Place` + `m3gim-ontology:Annotation` | `atPlace`, `role`, **kein** `atDate` | greift für `MOBILITY_PLACE_ROLES` (zielort, absendeort, abreiseort, empfangsort, vertragsort), ein Datum wird nicht geraten. `wohnort` ist ausgenommen und als Zustand mit Gültigkeitsperiode modelliert ([data-model.md](data-model.md) § Mobilitätsmodell) |
-| `ausgaben, währung` / `einnahmen, währung` / `summe, währung` | `m3gim-ontology:Annotation` | Betrag, Währung, Finanzrolle | Betragsparsing und Doppelbeträge in [data-model.md](data-model.md) § Finanzschicht |
+## The link mechanism
 
-### Auftrittsbündelung über `datenpunkt_id`
+One row of the link table carries one statement about one record. The `typ` column steers the target context, and the `name` column is matched against the index entries by string comparison after normalization. A row carrying a name and a role but no type is not modelled, because the type steers the target context and a type is not guessed, and the row enters the validation report with its source cell. A type proposal is produced separately after the pattern of `scripts/propose-links.py` (E-147).
 
-Eine Verknüpfungszeile trägt je eine Aussage, etwa eine Person, einen Ort, ein Werk, eine Partie oder einen Betrag. Beschreibt ein Dokument mehrere Auftritte, verteilen sich deren Aussagen flach über den Record, und welche Person, welche Partie, welcher Ort und welcher Betrag zu welchem Auftritt gehören, ist nicht mehr rekonstruierbar. Die Annotation ist dann dokumentzentriert, sie belegt „kommt im Dokument vor", nicht „wer hat was getan".
-
-Die Spalte `datenpunkt_id` hebt diese Bündelung auf eine eigene Ebene. Sie ist die Identität eines **Vorkommnisses** (`m3gim-ontology:Occurrence`, [data-model.md](data-model.md) § RiC-O-Kern und m3gim-Erweiterung), an dem die zusammengehörigen Aussagen eines Auftritts zusammenlaufen.
-
-- Eine **leere** `datenpunkt_id` ist der Default und bezeichnet die Dokument-Ebene. Hierher gehören Aussagen über das Dokument selbst (Verfasser, Adressat, Absendeort, Erstelldatum) sowie Aussagen, deren Auftritts-Zuordnung die Quelle nicht hergibt.
-- Eine **fortlaufende Nummer** bündelt alle Zeilen eines Auftritts innerhalb des Folios zu einer Occurrence.
-
-Die Pipeline gruppiert die Zeilen nach `(archivsignatur, folio, datenpunkt_id)` und erzeugt je Gruppe eine Occurrence. Die bestehenden Aspekt-Klassen werden zu ihren Facetten, die Annotation trägt Ort und Zeit, die Performance Werk und Partie, die Annotation den Betrag. Der Record bezeugt die Occurrence über `m3gim-ontology:attests`, statt sie zu enthalten, damit dieselbe Occurrence später aus mehreren Dokumenten belegt werden kann.
-
-Der Auftrittsmodus (Gastspiel, Tournee) gehört über `m3gim-ontology:mode` an die Occurrence, nicht als konkurrierender Rollenwert an die einzelne Orts-, Werk- oder Institutionszeile. Die Unterscheidung auswärts gegen am Haus folgt aus dem Vergleich von `m3gim-ontology:atPlace` mit dem Institutionssitz (`m3gim-ontology:headquarters`) und wird nicht eigens erfasst. Die Erfassungskonvention steht in [data-model.md](data-model.md) § Erfassung.
-
-Die Spalte trägt in einem Teil der Blätter den Namen `data_id` statt `datenpunkt_id`. Beide bezeichnen dieselbe Angabe, der Lesepfad führt sie zusammen. Seit E-127 ist diese Identität zweistufig verfeinert, die Erfassungsspalte heißt `aktivitaet_id`, eine Ganzzahl bündelt die Aktivität (Occurrence), eine zweistellige Dezimale `1.01` ff. die einzelne Beteiligung daran. Die einstufige `datenpunkt_id` bleibt als Lesepfad gültig, bis die Pipeline umgestellt ist. Das Beteiligungs- und Besetzungsmodell steht in [data-model.md](data-model.md) § RiC-O-Kern und m3gim-Erweiterung (Zielmodell v2).
-
-## Rollenvokabular
-
-Die Rollen sind nach Zieltyp gegliedert. Empirisch in den Daten belegte Rollen sind mit ●, bislang nur in der Handreichung spezifizierte Rollen mit ○ markiert. Neu im Modell, gegenüber der Vorversion, sind die mit ★ markierten Rollen.
-
-Alle Rollen sind nach Normalisierung geschlechtsneutral. Pipeline-Regel: `:in`, `:innen`, `in` werden aus Rollennamen entfernt (`sänger:in` → `sänger`, `dirigent:in` → `dirigent`).
-
-### Personenrollen
-
-Gliederung nach Handreichungslogik in archivalisch, künstlerisch und institutionell.
-
-**Archivalisch-inhaltlich**
-
-| Rolle | Status | Bemerkung |
-|---|---|---|
-| verfasser | ● | |
-| adressat | ● | |
-| absender | ★ | Ergänzung Korrespondenzrolle |
-| empfänger | ★ | Ergänzung Korrespondenzrolle |
-| unterzeichner | ● | |
-| abgebildet | ○ | in Fotografien und Plakaten |
-| agent | ● ★ | Karriereinfrastruktur |
-| vermittler | ● ★ | Karriereinfrastruktur |
-| auftraggeber | ● ★ | |
-| widmungsempfänger | ○ | |
-| erwähnt | ● | |
-
-**Künstlerisch**
-
-| Rolle | Status | Bemerkung |
-|---|---|---|
-| sänger | ● ★ | häufigste Personenrolle |
-| dirigent | ● ★ | |
-| regisseur | ● ★ | |
-| komponist | ● ★ | |
-| librettist | ● ★ | |
-| übersetzer | ● ★ | |
-| arrangeur | ● ★ | |
-| chorleiter | ● ★ | |
-| choreograph | ● ★ | |
-| bühnenbildner | ● ★ | |
-| kostümbildner | ● ★ | |
-| ausstatter | ● ★ | |
-| bühnenleiter | ● ★ | |
-| technische leitung | ● ★ | gegen nacktes „leitung" abzugrenzen, Klärungsbedarf |
-| beleuchter | ● ★ | Produktionscrew |
-| maskenbildner | ● ★ | Quelle führt Tippform „maskenbidner", wird durchgereicht |
-| repetitor | ● ★ | Produktionscrew |
-| regieassistent | ● ★ | Produktionscrew |
-| fotograf | ● ★ | Produktionscrew |
-| interpret | ● ★ | Oberbegriff, sofern Stimmfach/Funktion unklar |
-| protagonist | ● | Klärungsbedarf: möglicherweise Bühnenrolle, nicht Personenrolle |
-| leitung | ● ★ | nacktes „leitung" aus dem tieferen Export, gegen „technische leitung" abzugrenzen, Klärungsbedarf (Treffen 2026-06-23) |
-| publikum | ● ★ | im Publikum anwesende Person; Person-vs.-Subject-Zuordnung mit dem Erschließungsteam zu klären (Treffen 2026-06-23) |
-
-**Institutionell**
-
-| Rolle | Status | Bemerkung |
-|---|---|---|
-| vertragspartner | ● ★ | als AgRelOn-Relation, nicht als Personenrolle ([data-model.md](data-model.md) § AgRelOn-Integration) |
-| inhaber | ● ★ | |
-| herausgeber | ● ★ | auch bei Personen, nicht nur bei Institutionen |
-
-### Ortsrollen
-
-| Rolle | Status | Bemerkung |
-|---|---|---|
-| entstehungsort | ● | |
-| zielort | ● ★ | Reisemobilität; erzeugt ort-only `SpatiotemporalEvent` |
-| absendeort | ● ★ | Korrespondenz- und Reisemobilität; ort-only STE |
-| abreiseort | ● ★ | Reisemobilität; ort-only STE |
-| empfangsort | ● ★ | Korrespondenzmobilität; ort-only STE |
-| auffuehrungsort | ● | |
-| vertragsort | ● ★ | ort-only STE |
-| wohnort | ● ★ | Zustand mit Gültigkeitsperiode, kein Punktereignis ([data-model.md](data-model.md) § Mobilitätsmodell) |
-| erwähnt | ● | |
-
-Die mit *ort-only STE* markierten Rollen (`MOBILITY_PLACE_ROLES`) erzeugen neben der `rico:Place`-Referenz eine `m3gim-ontology:Annotation` ohne Datum (§ Verknüpfungsmechanismus). `wohnort` ist davon ausgenommen.
-
-### Institutionenrollen
-
-| Rolle | Status | Bemerkung |
-|---|---|---|
-| vertragspartner | ● ★ | AgRelOn `HasEmployeeEmployer` (Institution) bzw. `HasProfessionalContact` (Person), [data-model.md](data-model.md) § AgRelOn-Integration |
-| arbeitgeber | ● | AgRelOn-Mapping: `hasEmployer` |
-| veranstalter | ● | |
-| vermittler | ● | |
-| adressat | ○ | |
-| empfänger | ● ★ | |
-| absender | ● ★ | Korrespondenzrolle auch bei Institutionen, häufig bei Rundfunkanstalten |
-| verfasser | ● ★ | |
-| herausgeber | ● ★ | häufig bei Presse |
-| auffuehrungsort | ● ★ | Institution als Ort-Proxy |
-| ausbildungsstätte | ● ★ | biographisch relevant |
-| fluggesellschaft | ● ★ | diagnostisch für Flugreisen |
-| rahmenveranstaltung | ● ★ | |
-| erwähnt | ● | |
-
-### Ereignisrollen
-
-| Rolle | Status | Bemerkung |
-|---|---|---|
-| rahmenveranstaltung | ● | |
-| premiere | ○ | |
-| auftritt | ○ | |
-| probe | ○ | |
-| aufführung | ● ★ | |
-| festvorstellung | ● ★ | |
-| wiederaufnahme | ● ★ | |
-| generalprobe | ● ★ | erzeugt `probendatum` + `probenTyp` ([data-model.md](data-model.md) § RiC-O-Kern und m3gim-Erweiterung) |
-| aufnahme | ● ★ | Rundfunk-/Tonaufnahme, diskursive Mobilität |
-| empfang | ● ★ | auf Rahmenveranstaltung gemappt |
-| veranstalter | ● ★ | Institution veranstaltet Ereignis |
-| implizit | ○ | |
-| erwähnt | ● ★ | |
-
-### Werkrollen
-
-| Rolle | Status | Bemerkung |
-|---|---|---|
-| aufführung | ● ★ | |
-| auftritt | ● ★ | |
-| premiere | ● ★ | |
-| wiederaufnahme | ● ★ | |
-| festvorstellung | ● ★ | |
-| probe | ● ★ | |
-| repertoire | ● ★ | Werk als Bestandteil des Repertoires |
-| erwähnt | ● | |
-
-### Bühnenrollen (Typ `rolle`)
-
-Die Bühnenrolle ist eigenständige Entität, kein Attribut ([data-model.md](data-model.md) § RiC-O-Kern und m3gim-Erweiterung).
-
-| Rolle | Status | Bemerkung |
-|---|---|---|
-| aufführung | ● ★ | Rolle wurde in Aufführung gesungen |
-| auftritt | ● ★ | |
-| interpret | ● ★ | Verknüpfung Rolle zu Sänger:in |
-| probe | ● ★ | |
-| repertoire | ● ★ | |
-| erwähnt | ● ★ | |
-
-### Datumsrollen
-
-Datum ist als First-Class-Typ erfasst, Rollen typisieren den Datumsbezug.
-
-| Rolle | Status | Bemerkung |
-|---|---|---|
-| absendedatum | ● ★ | Korrespondenzmobilität |
-| empfangsdatum | ● ★ | Korrespondenzmobilität |
-| ausstellungsdatum | ● ★ | Verträge, Ausweise |
-| erscheinungsdatum | ● ★ | Presse, Publikationen |
-| abreisedatum | ● ★ | Reisemobilität |
-| auftritt | ● ★ | |
-| aufführung | ● ★ | |
-| probe | ● ★ | |
-| probenbeginn | ● ★ | |
-| premiere | ● ★ | |
-| ausstrahlung | ● ★ | Rundfunkaufnahmen |
-| spielzeit | ● ★ | institutionelle Bindung, TimeSpan |
-| überweisung | ● ★ | Finanzdatum |
-| erstelldatum | ● ★ | Entstehung eines Dokuments |
-| lohnbestätigung | ● ★ | Finanzdatum (Bestätigung der Vergütung) |
-| ratenzahlung | ○ | seit der Lieferung 2026-08-31 nicht mehr belegt, der Beleg trägt jetzt `spielzeit` |
-| unterschriftsdatum | ● ★ | Datierung der Unterzeichnung, Gegenstück zur Akteursrolle `unterzeichner` |
-| reisedatum | ● ★ | Reisemobilität ohne Richtungsangabe, gegen `abreisedatum` abzugrenzen |
-| aufnahmedatum | ● ★ | fällt mit der Werkrolle `aufnahme` auf einen Begriff zusammen, Ursprungswert in `derivedFromRole` |
-| gespräch | ● ★ | |
-| erwähnt | ● ★ | |
-
-### Bezugsebene und Rang einer Datierung
-
-Zwei Eigenschaften am Rollenbegriff sagen, was eine Datierung datiert und welche zählt, wenn ein Dokument mehrere trägt. Beide standen bis 2026-08-22 als Handtabelle im Frontend und wandern mit E-150 an den Begriff, damit Datensatz und Oberfläche dieselbe Aussage führen.
-
-`m3gim-ontology:datingScope` benennt die Bezugsebene. Sie ist ein Begriff des Schemas `m3gim-vocab:datingScopes` mit fünf Werten. `objectDating` datiert das Objekt selbst, `attestedDating` ein vom Objekt bezeugtes Ereignis, `mentionedDating` eine bloße Erwähnung, `framingDating` einen umfassenden Zeitraum, `unfulfilledDating` eine negierte Behauptung. Nur die ersten beiden dürfen ein Dokument datieren, die übrigen bleiben lesbar, ohne den Zeitanker zu setzen.
-
-`m3gim-ontology:datingRank` ist eine ganze Zahl und entscheidet die Reihenfolge, wenn ein Dokument mehrere ankernde Datierungen trägt. Der kleinere Wert hat Vorrang. Ein Rollenbegriff ohne Rang sortiert hinter jeden mit Rang, in Quellreihenfolge.
-
-Ein neu aufgenommener Rollenbegriff bekommt einen Rang am Ende der bestehenden Reihe. Die Reihenfolge der bereits vergebenen Ränge bleibt unverändert, weil eine Umsortierung eine Datierung verschiebt, die heute ankert. Eine Umsortierung ist eine eigene Entscheidung und keine Nebenwirkung einer Ergänzung.
-
-### Finanzrollen (Typ `ausgaben, währung` / `einnahmen, währung` / `summe, währung`)
-
-| Rolle | Status | Bemerkung |
-|---|---|---|
-| abendgage | ● ★ | Honorar pro Auftritt |
-| provision | ● ★ | Agentenvergütung |
-| gesamtvergütung | ● ★ | Umlaut bleibt erhalten, keine ASCII-Transliteration |
-| reisekosten | ● ★ | |
-| rundfunkhonorar | ○ | seit der Lieferung 2026-08-31 nicht mehr belegt, die Belege tragen jetzt `gesamtvergütung`; Quelle führte die Tippform „rundfunkshonorar" |
-| abspielhonorar | ● ★ | Vergütung für die Ausstrahlung einer vorhandenen Aufnahme, gegen `rundfunkhonorar` (Herstellung) abzugrenzen |
-| gage | ● ★ | Abendsumme über mehrere Partien, gegen `abendgage` (je Partie) abzugrenzen |
-| summe | ● ★ | die Rolle wiederholt das Detailfeld `summe`; als Begriff geführt, damit kein Literal in der Rollenproperty steht |
-| erwähnt | ● | |
-
-### Statusmarkierungen in der Rollenspalte
-
-Die Quelle nutzte die `rolle`-Spalte vereinzelt für einen Vertragsstatus statt für eine echte Rolle. Mit der Lieferung vom 2026-08-31 steht der Wert in der Anmerkungsspalte als `Vertrag nicht eingehalten` und die betroffenen Zeilen tragen eine echte Rolle. Der Rollenwert `nicht eingehalten` ist damit nicht mehr belegt. Die Modellierung als `m3gim-ontology:contractStatus` am Vorkommnis ist nicht mehr extern blockiert und steht als eigene Runde aus. Bis dahin wird ein solcher Wert im STE-Bau nicht als `m3gim-ontology:role` emittiert (`CONTRACT_STATUS_ROLES`).
-
-## Datumskonventionen
-
-### Formate
-
-| Situation | Format | Beispiel |
-|---|---|---|
-| Vollständig | YYYY-MM-DD | 1958-04-18 |
-| Nur Monat | YYYY-MM | 1958-04 |
-| Nur Jahr | YYYY | 1958 |
-| Zeitspanne | YYYY-MM-DD/YYYY-MM-DD | 1958-08-10/1958-09-09 |
-| Zeitspanne nur Jahre | YYYY/YYYY | 1945/1947 |
-| Spielzeit in der Quellschreibung | YYYY-YYYY | 1947-1952 |
-
-Die Spielzeitform mit Bindestrich ist die Schreibung der Quelle, `clean_date()` normalisiert sie verlustfrei auf `YYYY/YYYY`.
-
-### Quellformat und Autokonvertierung
-
-Die Datumswerte der Verknüpfungstabelle sind Text. Der XLSX-Export der Tabellenkalkulation liest sie als Kalenderwerte zurück und schreibt sie als Zeitstempel der Form `YYYY-MM-DD 00:00:00`. Dabei wird eine Monatsangabe auf den Monatsersten aufgefüllt und eine jahrlose Angabe zu einem Kalenderdatum des Exportjahres. Der Datensatz behauptete damit eine Genauigkeit, die die Quelle nicht trägt. Dasselbe trifft die Folio- und die Bündelungsspalte.
-
-Daraus folgt die Quellformat-Regel aus § Tabellenmodell, die Verknüpfungstabelle wird als CSV gelesen, nicht als XLSX. Ein Wert der Form `YYYY-MM-DD 00:00:00` ist kein zulässiges Quellformat mehr. Trifft er trotzdem ein, belegt er eine Autokonvertierung, er geht als Warnung in den Validierungsreport und wird nicht als tagesgenaues Datum übernommen.
-
-Nicht aufgefüllte Monats- und Tagesstellen (`1956-5-13`) sind ein Quellfehler und gehen als Befund in den Report. Die Pipeline füllt sie nicht auf, weil das Auffüllen genau die Behauptung erzeugt, die der Wechsel auf die CSV-Quelle beseitigt hat.
-
-### Qualifier
-
-| Qualifier | Bedeutung | Beispiel |
-|---|---|---|
-| `circa:` | ungefähre Datierung | circa:1958 |
-| `vor:` | Terminus ante quem | vor:1958 |
-| `nach:` | Terminus post quem | nach:1958 |
-| *leer* | undatiert | |
-
-### Datums-Routing
-
-Eine Datierung wird nach ihrer Notation auf eine der folgenden Repräsentationen geführt:
-
-| Notation | Repräsentation |
+| `typ` | Target |
 |---|---|
-| vollständiges oder partielles ISO-Datum | typisierte Datumsproperty ([data-model.md](data-model.md) § RiC-O-Kern und m3gim-Erweiterung) |
-| Bereich (`von … bis`, `YYYY/YYYY`) | TimeSpan-Wert |
-| Klammer-/Fragezeichen-Unsicherheit (`1957-[05-27?]`) | `m3gim-ontology:Annotation` mit `dateValue`/`dateRole` |
-| Freitext-Beginn (`ab …`, `seit …`) | Qualifier `nach:` |
+| `person` | person index, `rico:Person` |
+| `institution` | organization index, `rico:CorporateBody` |
+| `ensemble` | `rico:Group` |
+| `ort` | place index, `rico:Place` |
+| `werk` | work index, `m3gim-ontology:MusicalWork` |
+| `rolle` | `m3gim-ontology:StageRole` on a `m3gim-ontology:Performance` |
+| `datum` | annotation node with a date |
+| `ereignis` | `m3gim-ontology:FramingEvent` |
+| `ort, datum` | annotation node with place and date (E-96) |
+| `datum, werk` | performance with work and date (E-98) |
+| `rolle, person` | performance with stage part and performer (E-96) |
+| `ort` in a mobility place role | place reference plus a dateless annotation node (E-97) |
+| `ausgaben, währung`, `einnahmen, währung`, `summe, währung` | annotation node carrying a financial item |
 
-### Datierungsevidenz
+Two type values have no target branch and are dropped silently, `Aktivität` and `dokument`. Both occur in the source, both need a modelling round of their own, and both are carried on the handover list and in the [reconciliation register](../data/reports/reconciliation-register.md) until then. The handler for a type `detail` exists in the pipeline as the path for the third cataloguing layer, but no row of the source carries that type, so the path is unused.
 
-| Wert | Bedeutung |
-|---|---|
-| aus_dokument | Datum steht explizit im Dokument |
-| erschlossen | Datum aus Kontext abgeleitet |
-| extern | Datum aus anderer Quelle ermittelt |
-| unbekannt | keine Datierung möglich |
+Dependent dropdowns enforce the value lists for `typ` and `rolle` at the source. Since a Google Sheets dropdown value carries no comma, a composite type may appear with an underscore in the export, attested for `einnahmen_währung`, `ausgaben_währung`, `summe_währung` and `ort_datum`. The pipeline accepts the underscore as an equivalent composite separator.
 
-Datierungsevidenz wird im Meta-Statement-Modell als `agrelon:metadataProvenance`-Wert auf die Datumsproperty angewendet, nicht mehr als separate `m3gim:dateEvidence`-Property ([data-model.md](data-model.md) § Meta-Statement-Modell). <!-- vocab-exempt: nennt eine nicht uebernommene Property -->
+### Composite link types
 
-## Namenskonventionen und Ortsdubletten
+Every composite type resolves into a target entity with typed properties by the same pattern. The formal version is the vocabulary together with `decompose_komposit_typ()` in the pipeline.
 
-Die Normalisierungsregeln des Datenflusses stehen an ihren Heimatstellen, die Rollen-Normalisierung in § Rollenvokabular, die Komposit-Dekomposition in § Verknüpfungsmechanismus, die Datumsbereinigung in § Datumskonventionen, die Index-Kompensationen im Katalog in § Datenqualität. Hier stehen nur die Konventionen, die keine andere Heimat haben.
-
-### Namenskonventionen
-
-- **Personen.** Nachname, Vorname (`Malaniuk, Ira`). Adelstitel nachgestellt (`Karajan, Herbert von`).
-- **Orte.** Gebräuchlicher deutscher Name, historische Ortsnamen aus der Quelle (`Lemberg` statt `Lwiw`).
-- **Institutionen.** Offizielle Bezeichnung ohne Rechtsform (`Bayerische Staatsoper`).
-- **Werke.** Titel aus der Quelle, Komponist als Zusatzfeld.
-
-### Ortsdubletten
-
-Vor der Normalisierung zu vereinheitlichen:
-
-- `Stuttgart` und `Stuttgart ` (Trailing-Whitespace) → konsolidiert
-- `Zürich` und `Zürich, Zürichbergstrasse 104` → separater Ortseintrag für die Adresse, verknüpft via `skos:broader` zum Ort `Zürich`
-- Freitextmischungen wie `Wien, ab 1956` werden in `SpatiotemporalEvent`-Instanzen mit separaten `atPlace` und `atDate` überführt
-
-## Erfassungsstatus
-
-Parallel im Feld befindliche Systeme, zu vereinheitlichen auf das Handreichungssystem.
-
-| Quelle | Werte |
-|---|---|
-| Handreichung (Soll) | in_bearbeitung, schicht1_fertig, schicht2_fertig, abgeschlossen |
-| Pipeline (transform.py) | begonnen, abgeschlossen, zurueckgestellt |
-
-Empfehlung: Handreichungssystem durchsetzen. Die Werte bilden den Schichtfortschritt ab und erlauben eine Abdeckungsmessung pro Schicht. Die uneinheitlichen Schreibungen der Quelle mappt `normalize_bearbeitungsstand()` auf die kanonischen Pipeline-Werte (§ Datenqualität).
-
-## Datenqualität
-
-Es gilt das Prinzip *Documents as Source of Truth*. Die Erfassung ist die maßgebliche Quelle, der Pipeline-Code ist wegwerfbares Artefakt. Wo die Pipeline eine Quell-Eigenheit kompensiert, ist diese Kompensation eine Schuld, kein Feature. Sie wird sichtbar gehalten, damit klar bleibt, was quellseitig zu fixen ist und wo der Code dauerhaft defensiv bleiben muss. Die Code-Stellen liegen in `scripts/_common.py` und `scripts/transform.py`, die Test-Anker in der Testsuite.
-
-Die kompensierten Eigenheiten fallen in vier Kategorien. **Spec** sind strukturell unvermeidliche Format-Transformationen, die keinen Datenfehler kaschieren. **Workaround** kompensiert eine quellseitig fixbare Eigenheit und ist ein redaktioneller Hinweis ans Archiv-Team. **Policy** ist eine redaktionelle Entscheidung, die gilt, solange die Annahme trägt. **Dead** bezeichnet entfernte Kompensationen, die nur zur Historie geführt werden.
-
-| Eigenheit | Kategorie | Pipeline-Kompensation |
+| Composite | Target | Special rule |
 |---|---|---|
-| Index-Blätter ohne saubere Kopfzeile (erste Datenzeile als Header gelesen) | Workaround | `INDEX_HEADER_SHIFTS` schiebt die Zeile zurück ins DataFrame |
-| Finanzwerte ohne Währungssuffix in NIM_007 Folio 5_1 | Policy | `FINANCE_CURRENCY_DEFAULTS` setzt „S" (Schilling) |
-| Finanzwerte ohne Währungssuffix in NIM_011 Folio 5 (Brüssel-Gastspiel) | Policy | `FINANCE_CURRENCY_DEFAULTS` setzt „Belgische Francs" (Folio-9-Pendant + Vertragsort Brüssel); mit Erschließungsteam zu bestätigen |
-| Datums-Platzhalter „ohne Datum"/„o. D." in `entstehungsdatum` | Workaround | `clean_date()` bildet die Platzhalter auf `None` ab (kein Schein-`rico:date`) |
-| Malformter Datumswert ohne Jahr in `entstehungsdatum` | Workaround | nicht-ISO Wert läuft verlustfrei in `m3gim-ontology:hasAnnotation` (`dataQualityFlag` „datierung-malformed"), nicht in `rico:date`; Quell-Fix offen |
-| Vertragsstatus „nicht eingehalten" in der Rollenspalte | Workaround | `CONTRACT_STATUS_ROLES`, siehe § Rollenvokabular, Statusmarkierungen in der Rollenspalte |
-| Gemischte Finanz-Betragsnotation (Dezimalkomma vs. Komma-Währungstrenner, Tausenderpunkt, Doppelbetrag) | Workaround | `parse_monetary_values()` löst Betrag/Währung auf und splittet Doppelbeträge in zwei DetailAnnotations |
-| Bearbeitungsstand in uneinheitlicher Schreibung und Synonymen | Workaround | `normalize_bearbeitungsstand()`, siehe § Erfassungsstatus |
-| Datumsrolle wird im Komposit `ort, datum` an beide Hälften vererbt | Workaround | Role-Strip im Ort-Zweig für Datumsrollen |
-| Freitext-Datierungen (Ort plus Zeit gemischt) | Workaround | Rohwert wird durchgereicht und toleriert, nicht geblockt |
-| Gender-inklusive Rollennotation | Spec | `normalize_role()`, siehe § Rollenvokabular |
-| Ungültige Wikidata-Roh-Werte (Tippfehler, URLs) | Spec | nur Strings mit Muster `^Q\d+$` erhalten den `wd:`-Prefix |
-| wechselnder Spaltenname der Folio-Nummer | Workaround | heuristische Folio-Spalten-Erkennung plus Regex-Fallback |
-| nicht-textueller Spaltenkopf in der Objekttabelle | Workaround | Folio-Erkennung überspringt nicht-String-Köpfe statt abzubrechen |
-| Literal `Folio` als Folio-Zellwert | Workaround | Guard verhindert die kaputte Objekt-ID, Befund in den Report |
-| Verknüpfungstabelle über mehrere Box-Sheets verteilt | Workaround | alle Sheets werden geladen und zusammengeführt, statt nur das erste |
-| Signaturspalte mit Leerzeichen-Kopf, lückig gefüllt | Workaround | Spalte positionsbasiert erkannt und je Sheet forward-gefüllt |
-| Personenindex ohne sauberen Namensspaltenkopf | Workaround | Header-Shift auch für den Personenindex, sonst Totalverlust der Personen-Normdaten |
-| gleiche `archivsignatur` für Sammel-Zeile und Folio-Zeilen | Workaround | `build_konvolut_hierarchy()` vergibt `_sammlung`-Suffix auf der @id |
-| Muster-/Template-Zeile im Erfassungsblatt | Policy | Zeilen mit `archivsignatur = "beispiel"` werden übersprungen |
-| Komposit-Typ mit Unterstrich statt Komma | Spec | `decompose_komposit_typ()`, siehe § Verknüpfungsmechanismus |
-| versteckte Dropdown-Hilfsblätter im Verknüpfungs-Export | Spec | im XLSX-Pfad überspringt `load_verknuepfungen()` Sheets ohne `typ`- und `name`-Spalte; im CSV-Pfad entfällt der Fall |
-| Autokonvertierung von Datums-, Folio- und Bündelungsspalten im XLSX-Export | Workaround | Quellformat der Verknüpfungen ist die CSV-Ausfuhr je Blatt (E-152), siehe § Datumskonventionen |
-| Bündelungsspalte heißt je nach Blatt `datenpunkt_id` oder `data_id` | Workaround | `load_verknuepfungen()` führt beide Schreibungen zusammen, siehe § Verknüpfungsmechanismus |
-| mehrfach erfasster Name in einem Index | Workaround | feldweise Verdichtung nach Identität, siehe § Tabellenmodell; der Feldkonflikt geht in den Validierungsreport |
-| gleicher Werktitel bei verschiedenen Komponisten | Workaround | Werkindex-Schlüssel Titel plus Komponist, siehe § Tabellenmodell |
-| Indexkopfzelle mit einem Datenwert überschrieben | Workaround | Kennungsspalte positionsbasiert erkannt statt über den Kopfnamen; der geleakte Wert geht in den Report |
-| Verknüpfungszeile mit `name` und `rolle`, aber ohne `typ` | Workaround | Zeile wird nicht modelliert, weil der Typ den Zielkontext steuert und ein Typ nicht geraten wird; sie geht mit Fundstelle in den Validierungsreport. Ein Typ-Vorschlag entsteht getrennt nach dem Muster von `scripts/propose-links.py` (E-147) |
-| Partie doppelt geführt, einmal als blanke `rolle`-Zeile und einmal als Komposit `Rolle, Person` (Boxen 5 und 6) | Workaround | `_dedupe_stage_role_performances()` behält je Dokument und Partie den Eintrag mit `hasPerformer` und verwirft den blanken Zwilling, solange dieser weder Bemerkung noch Qualitätsflag trägt. Quellseitig fällt die blanke Rollenzeile weg, sobald die Besetzung erfasst ist (E-205) |
-| früherer ASCII-Fallback für den Verknüpfungen-Dateinamen | Dead | entfernt, Pipeline wirft jetzt `FileNotFoundError` |
+| `ort, datum` | annotation node with place and date | the mobility core of the model ([data-model.md](data-model.md) § Mobility perspectives) |
+| `datum, werk` | performance with work and date | the work is resolved through the index only, never as a raw string or a literal Q-identifier, and a row whose value half carries no leading year holds a composer rather than a work and is filtered out |
+| `rolle, person` | performance with stage part and performer | both source spellings of the type are treated alike |
+| `rolle` alone | performance with a stage part only | every stage part carries the same entity structure (E-96) |
+| `ort` in a mobility place role | place reference plus a dateless annotation node | the missing date is itself the statement, because the source gives none and none is guessed |
+| the three currency composites | annotation node carrying amount, currency and financial role | amount parsing and double amounts in [data-model.md](data-model.md) § Financial layer |
 
-Die konkreten, an das Erschließungsteam übergebenen Quellfehler mit Datei, Fundstelle und Feld stehen tagesaktuell und geprüft in der [Partner-Übergabeliste](../data/reports/source-errors-handover-2026-09-01.md). Die projektinterne Reconciliation- und Strukturschicht führt das [Datenfehler-Register](../data/reports/reconciliation-register.md). Vor Bearbeitung gegen den aktuellen Quality-Snapshot (`data/reports/quality-snapshot.md`) verifizieren.
+## Role values
 
-## Quellen
+`Typ-Rolle.csv` is the source of the role values. It lists, per link type, the roles the dropdown offers, and it is therefore the authoritative list of what may be recorded. The document does not repeat it. The concepts these values resolve onto, with their definitions and their German display labels, are in [`../vocab/m3gim.ttl`](../vocab/m3gim.ttl) and in the generated model page `docs/datenmodell.html`. Neither list is a superset of the other, because the value list carries values the vocabulary has not yet taken up and the vocabulary carries concepts specified ahead of the recording.
 
-Datengrundlage ist der Teilnachlass UAKUG/NIM am Universitätsarchiv der KUG Graz. Er gliedert sich in die folgenden Bestandsgruppen.
+Three normalizations run between the recorded value and the concept. Gender-inclusive notation is removed, so the suffixes `:in`, `:innen` and a trailing `in` fall away and every role is gender-neutral after normalization. Capitalization of the source is levelled. Where several recorded values merge onto one concept, the original value is kept in `m3gim-ontology:derivedFromRole`, without which the merge would be irreversible once the source is no longer consulted.
 
-- **Hauptbestand** NIM_001–NIM_200+ mit Briefen, Verträgen, Presseartikeln, Programmen und Fotos.
-- **Plakate** NIM/PL_01–PL_26.
-- **Tonträger** NIM/TT_01 mit Schellackplatten und Aufnahmen.
+Two values in the role column are not roles. The contract status `nicht eingehalten` marks an unfulfilled contract and is filtered out of the role property by `CONTRACT_STATUS_ROLES`, and a date role inherited by the place half of an `ort, datum` composite is stripped from the place, because it says nothing about the place.
 
-Der Quellenzeitraum reicht von 1919 bis 2010. Die früheste Datierung trägt ein Plakat, die späteste eine Ausstellung nach dem Tod der Nachlassbildnerin. Ein Wert außerhalb dieser Spanne ist ein Quellfehler und gehört auf die [Partner-Übergabeliste](../data/reports/source-errors-handover-2026-09-01.md). Welche Konvolute feinerschlossen sind, Bestandszahlen pro Gruppe und Abdeckungsgrade stehen im Quality-Snapshot (`data/reports/quality-snapshot.md`).
+The five mobility place roles are the one group the pipeline treats specially, as the German set `MOBILITY_PLACE_ROLES` in `scripts/transform.py`. Its members are `zielort`, `absendeort`, `abreiseort`, `empfangsort` and `vertragsort`. A residence is deliberately not among them, because it is a state with a validity period and not a point event.
 
-Zu Ira Malaniuk existiert keine eigenständige wissenschaftliche Literatur. Das Projekt leistet die ersten archivgestützten Erschließungsarbeiten. Die Einordnung in den Forschungskontext führt [research-framework.md](research-framework.md).
+### Dating scope and rank
+
+Two properties on the role concept say what a dating dates and which one counts when a document carries several. Both live on the concept in the vocabulary rather than in the interface, so dataset and application make the same statement (E-150).
+
+`m3gim-ontology:datingScope` names the level a dating refers to and draws from the scheme `m3gim-vocab:datingScopes`. Only a dating of the object itself and a dating of an event the object attests may date a document. A mentioned dating, a framing period and a dating of a negated claim stay readable without setting the time anchor.
+
+`m3gim-ontology:datingRank` is an integer deciding the order where a document carries several anchoring datings, the smaller value taking precedence. A role concept without a rank sorts behind every concept with one, in source order. A newly admitted role concept receives a rank at the end of the existing series, because resorting moves a dating that anchors today and is a decision of its own rather than a side effect.
+
+## Naming conventions and place duplicates
+
+Persons are set as surname, given name, with a nobiliary particle following the given name. Places carry the customary German name and keep the historical form of the source. Institutions carry the official designation without a legal form. Works carry the title of the source, with the composer as a separate field.
+
+Two kinds of place duplicate are consolidated before normalization. A trailing space produces a second entry of the same place and is trimmed away. A place given with a street address becomes its own place entry linked to the plain place by `skos:broader`. A free-text mixture of place and time in one cell is split into an annotation node carrying the place and the date separately.
+
+## Processing status
+
+Two value systems for the processing status run in parallel. The recording guide specifies `in_bearbeitung`, `schicht1_fertig`, `schicht2_fertig` and `abgeschlossen`, which mirror the layer progress and allow a coverage measurement per layer. The pipeline normalizes onto `begonnen`, `abgeschlossen` and `zurueckgestellt` through `normalize_bearbeitungsstand()`, which absorbs the inconsistent spellings and synonyms of the source. Which system holds is an open decision, and only its answer makes the degree of cataloguing measurable per layer.
+
+## Compensations in the pipeline
+
+The recording is the authoritative source. Where the pipeline compensates for a property of the source, that compensation is a debt and not a feature, and it is kept visible so it stays clear what is to be fixed at the source and where the code must remain defensive. The code sits in `scripts/_common.py` and `scripts/transform.py`, the concrete findings with file, location and field are in the handover list under `data/reports/`.
+
+The compensations fall into three categories. A specification compensation is a structurally unavoidable format transformation that hides no data error, meaning the underscore variant of a composite type, the removal of gender-inclusive role notation, the restriction of Wikidata raw values to the pattern of a Q-identifier, and the skipping of hidden dropdown helper sheets on the XLSX path.
+
+A workaround compensates for a property that is fixable at the source and is therefore an editorial note to the archive team. The structural cases are the lost header rows of the index sheets, the shifting column name and the non-textual header of the folio column, the literal `Folio` as a folio cell value, the link table spread over several box sheets, the sparsely filled signature column with a blank header, the shared signature of a collective row and its folio rows, the two spellings of the bundling column, the multiply recorded name in one index, the shared work title across composers, the mixed monetary notation including double amounts, the date placeholders and malformed datings in the creation date, the inconsistent spellings of the processing status, the date role inherited onto the place half of a composite, the contract status in the role column, the free-text datings that are passed through rather than blocked, the link row without a type, and the stage part recorded twice as a bare role row and as a composite, which `_dedupe_stage_role_performances()` falls onto the entry carrying the performer (E-205).
+
+A policy compensation is an editorial decision that holds as long as its assumption holds. Three exist, a template row whose signature reads `beispiel` is skipped, and two locations without a currency suffix receive a default currency bound to the signature prefix, one in schillings and one in Belgian francs, the latter still to be confirmed with the cataloguing team.
+
+## Target model, decided and not built
+
+The link mechanism above is document-centred. One row carries one statement, so where a document describes several appearances their statements spread flat across the record and it is no longer reconstructable which person, which stage part, which place and which amount belong to which appearance. The annotation then attests that something occurs in the document, not who did what.
+
+The decided answer is an occurrence as a bundling node one level above the aspect nodes, with the record attesting it rather than containing it, and a two-level recording identifier whose integer identifies the activity and whose two-digit decimal identifies the single participation in it (E-125, E-127, E-128). The appearance mode, meaning a guest performance or a tour, would sit on the occurrence rather than competing as a role value on the individual place, work or institution row. None of this exists in the vocabulary or in the dataset. The terms and their relations are in [data-model.md](data-model.md) § Target model v2.
+
+Two further points were decided with the partner feedback of 2026-09-05. The first is built. Pages of one folio, recorded as `1_1`, `1_2` and so on, stood as separate records and lost the context of the whole source, and they now hang under a record of their folio that carries them as parts, the level RiC-O provides, so that the interface can group them (E-269). The second is open. The year of a record is today taken first from the source dating of the object table and only then from the dates of the link table. The partners read the timeline at content level, meaning the events and appointments the source mentions, so the link dates take precedence and the source dating stays a data point of the record.
+
+## Recording
+
+The German recording convention of the archive team, meaning how the tables are filled, how titles are formed, how uncertainty is recorded and what the quality checklist asks, is in [`../data/recording-guide.md`](../data/recording-guide.md). It sits beside the source material rather than in this folder, because it addresses the cataloguing team.
+
+## Related
+
+- [data-model.md](data-model.md) — the formal model this material is mapped onto
+- [`../data/recording-guide.md`](../data/recording-guide.md) — the German recording convention of the archive team
+- [`../vocab/m3gim.ttl`](../vocab/m3gim.ttl) — the vocabulary with the concepts the role values resolve onto
+- [architecture.md](architecture.md) § Pipeline — how the dataset is produced
+- [testing.md](testing.md) — the invariants and the data mirror that hold this material
+- [journal.md](journal.md) — the decision register behind the E-numbers cited here
+- [`../data/reports/reconciliation-register.md`](../data/reports/reconciliation-register.md) — the register of authority-file and structural findings

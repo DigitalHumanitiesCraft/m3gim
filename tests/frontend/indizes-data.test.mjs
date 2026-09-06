@@ -1,12 +1,12 @@
 /**
- * Die Datenschicht der Indizes: Einträge, Suche, Normdaten-Filter und der
- * Schnitt auf die Dokumentmenge der Sidebar.
+ * Die Datenschicht der Indizes: Einträge, Suche und der Schnitt auf die
+ * Dokumentmenge der Sidebar.
  *
  * Die vier Register lesen aus je einer Store-Map und zeigen nur Einträge mit
- * belegten Dokumenten. Darüber liegen drei Schnitte: der geteilte Filter als
- * Dokumentmenge, der Wikidata-Schalter und die Freitextsuche über die Felder
- * des jeweiligen Registers. Umfeld, Sortierung und Bühnenrollen prüft
- * `indizes-register.test.mjs`.
+ * belegten Dokumenten. Darüber liegen zwei Schnitte: der geteilte Filter als
+ * Dokumentmenge und die Freitextsuche über die Felder des jeweiligen Registers.
+ * Die Normdaten-Schalter sind mit E-230 entfallen. Umfeld, Sortierung und
+ * Bühnenrollen prüft `indizes-register.test.mjs`.
  *
  * Die stillen Defekte, gegen die diese Datei steht:
  *
@@ -14,9 +14,6 @@
  *     ins Leere.
  *   * Der Schnitt auf die Dokumentmenge lässt Einträge stehen, die kein
  *     Dokument des Schnitts belegen.
- *   * Der Normdaten-Schalter zählt eine leere oder nicht aufgelöste Angabe als
- *     Wikidata-Treffer, und die Abdeckungsquote im Kopf des Registers wird zu
- *     hoch.
  *   * Die AgRelOn-Beziehungen aus Pass 2.5 des Loaders werden beim Bau der
  *     Einträge nicht durchgereicht; die Beziehungsbadges im Personen-Grid
  *     bleiben dann toter Code, ohne dass etwas fehlschlägt.
@@ -28,7 +25,7 @@ import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
 
 import {
-  getGridEntries, clearEntriesCache, entriesWithRecordsIn, filterEntries, hasWikidata,
+  getGridEntries, clearEntriesCache, entriesWithRecordsIn, filterEntries,
 } from '../../docs/js/views/indizes-data.js';
 import { storeFromShipped } from './_shipped.mjs';
 
@@ -109,32 +106,6 @@ describe('Freitextsuche', () => {
     clearEntriesCache();
     const all = getGridEntries(STORE, 'orte');
     assert.deepEqual(filterEntries(all, 'orte', { q: 'lissabon' }), []);
-  });
-});
-
-describe('Wikidata-Filter', () => {
-  test('nur aufgeloeste wd:-Q-Ids zaehlen', () => {
-    clearEntriesCache();
-    const persons = filterEntries(getGridEntries(STORE, 'personen'), 'personen', { withWikidata: true });
-    assert.deepEqual(namesOf(persons), ['Malaniuk, Ira', 'Karajan, Herbert von']);
-    const orgs = filterEntries(getGridEntries(STORE, 'organisationen'), 'organisationen', { withWikidata: true });
-    assert.deepEqual(namesOf(orgs), ['Bayreuther Festspiele'],
-      'Ein leerer String ist keine Normdaten-Verknuepfung.');
-  });
-
-  test('hasWikidata haelt die Regel an einer Stelle', () => {
-    assert.equal(hasWikidata({ wikidata: 'wd:Q84509' }), true);
-    assert.equal(hasWikidata({ wikidata: 'Q84509' }), false);
-    assert.equal(hasWikidata({ wikidata: '' }), false);
-    assert.equal(hasWikidata({ wikidata: null }), false);
-    assert.equal(hasWikidata({}), false);
-  });
-
-  test('Suche und Normdaten-Schalter greifen zusammen', () => {
-    clearEntriesCache();
-    const out = filterEntries(getGridEntries(STORE, 'personen'), 'personen',
-      { q: 'a', withWikidata: true });
-    assert.deepEqual(namesOf(out), ['Malaniuk, Ira', 'Karajan, Herbert von']);
   });
 });
 

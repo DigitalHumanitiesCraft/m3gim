@@ -14,9 +14,12 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
 
+import { readFile } from 'node:fs/promises';
 import {
   shouldAutoOpenFirstKonvolut, firstKonvolutId, getOrderedItems,
 } from '../../docs/js/views/bestand-data.js';
+import { baseIds, recordsFor } from '../../docs/js/data/records-for.js';
+import { getFilter, isFilterActive } from '../../docs/js/ui/filter-state.js';
 import { storeFromShipped } from './_shipped.mjs';
 
 describe('shouldAutoOpenFirstKonvolut', () => {
@@ -75,5 +78,33 @@ describe('Am ausgelieferten Datensatz', () => {
     const kinder = items.filter(item => item.isChild && item.konvolutId === first);
     assert.ok(kinder.length > 0,
       `das erste Konvolut ${first} zeigt ${kinder.length} Objektzeilen`);
+  });
+});
+
+describe('Ungefilterter Start (E-253)', () => {
+  test('keine Ansicht stellt den Erschliessungsstand vor', async () => {
+    const source = await readFile(
+      new URL('../../docs/js/views/bestand.js', import.meta.url), 'utf8');
+    assert.ok(!/applyViewDefault/.test(source),
+      'Der Bestand setzt wieder eine Voreinstellung; sie haelt einen Teil des '
+      + 'Bestands hinter einem Filter zurueck, den die Spalte nicht nennt.');
+    assert.ok(!/STAND_DEFAULT/.test(source));
+  });
+
+  test('der unberuehrte Filter zeigt die volle Grundmenge', async () => {
+    const store = await storeFromShipped();
+    // Der Filter-State ist frisch, solange keine Ansicht ihn angefasst hat; das
+    // ist genau der Zustand des ersten Ladens.
+    assert.equal(isFilterActive(), false, 'keine Facette weicht vom Nullpunkt ab');
+    assert.equal(recordsFor(store, getFilter()).ids.size, baseIds(store).size);
+  });
+
+  test('das erste Konvolut steht auf diesem Start offen', async () => {
+    const store = await storeFromShipped();
+    // Ohne Facette, ohne Suche, ohne Deep Link: E-206 gilt weiter.
+    assert.equal(shouldAutoOpenFirstKonvolut({
+      filtered: false, search: getFilter().search, deepLink: false, userToggled: false,
+    }), true);
+    assert.ok(firstKonvolutId(getOrderedItems(store)));
   });
 });
