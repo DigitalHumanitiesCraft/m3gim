@@ -621,6 +621,7 @@
   .netzwerk__board {
     flex-direction: column;
     height: auto;
+    min-height: 100%;
   }
 
   .netzwerk__main {

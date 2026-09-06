@@ -268,6 +268,8 @@ Cross-cutting principles that bind every model decision and are held by the test
 
 ## Sessions
 
+- **2026-09-06, milestone 4:** All 19 stories were mapped to technical evidence and material source limits in [plan.md](plan.md). Four browser research-path checks verify the literal seven-record Bayreuth/Tristan/1954 cut, source access, both actual network exports and the visible narrow graph. Independent review found the narrow board collapsing to a few pixels; a minimum height restores all 947 nodes within the plot. Root repeated the four browser and 33 network checks. First drawing meets the recorded target; the cold selection exceeds one frame and dense labels still require human visual assessment. Source-backed examples prepare all ten evaluation tasks without declaring scholarly acceptance.
+
 - **2026-09-06, milestone 3:** All six views now share document search and time selection, preserve the cut through navigation, expose ranking evidence and retain undated context. Independent review checked map safety, visible keyboard focus, data-state access, grouped source-date provenance, and actual basket downloads. Local fonts and D3 keep static delivery independent of runtime CDNs. Narrow views start with folded filters. Node checks pass 678/678 and the complete holdings verifier opens 187 records and 51 Folio pages with all expected source cells; source-material errors remain separately reported.
 
 

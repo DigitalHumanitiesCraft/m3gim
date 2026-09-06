@@ -18,173 +18,109 @@ related: [INDEX, specification, research-framework, data, data-model, architectu
 
 ## Purpose and authority
 
-This is the authorised implementation and acceptance plan for stabilising the existing application. It integrates the repository review and the subsequent story audit of 2026-09-06 against commit `e18dfa7`. Application code and source data were unchanged during those reviews. The plan records remaining work and its completion evidence; it does not declare the application accepted.
+The project lead authorised implementation of the reviewed stabilisation plan on 2026-09-06, one commit per completed milestone, independent follow-up reviews and consolidation of maintained knowledge into `knowledge/`. The subsequent instruction adds a project-wide test review before completion. This document records execution and evidence. [specification.md](specification.md) owns requirements and version definitions; [research-framework.md](research-framework.md) owns the research questions and evaluation tasks.
 
-[specification.md](specification.md) owns the requirements and the version definitions. [research-framework.md](research-framework.md) owns the research questions and the task set. [data.md](data.md) and [data-model.md](data-model.md) own source and model boundaries. The implementation instruction of 2026-09-06 authorises the scope and contract clarifications below, recorded as E-282. Scholarly acceptance remains a separate step. The inherited assignments in [handoff.md](handoff.md) supply context; their old status labels are not evidence of either a missing implementation or acceptance.
+The pilot investigates mobility and knowledge production through the partial fonds. Its research tool must preserve the chain from a recorded statement through the document and its views into a citable export. The stable scope is document-centred, with six analytical views and the Korb. Historical interpretation belongs to the researchers. Co-mention of a place, work and person cannot establish a common performance. Occurrence modelling remains a separate decided development that requires grouped source evidence.
 
-## Project goal and stable scope
-
-The pilot examines the mobility and knowledge production of the creator of the fonds through the archival material. Researchers need to investigate geographical reach, repertoire and stage parts, institutions, relationships and the circulation of music theatre knowledge. The application supplies recorded statements, their roles and their source evidence. Historical explanations of migration, aesthetic change or professionalisation require scholarly interpretation of that evidence.
-
-The methodological goal is to establish whether the recording, RiC-O modelling, vocabulary and static research interface support those investigations and can carry the follow-up study. A successful implementation preserves the source-to-record-to-view-to-export chain and makes the limits of the recorded material intelligible. The quality of that chain is the release criterion.
-
-The authorised stable scope is the existing document-centred research tool, including all six analytical views and the basket as the evidence export path. Preserve the vanilla ES-module frontend and the flat Python pipeline. The occurrence and participation model remains a separate, already decided model development whose implementation requires grouped source evidence. It must not be simulated by joining every place, date, work and person mentioned in one record.
-
-The existing version definitions remain binding. Technical readiness means that the machine and browser gates below pass. Version 0.9 additionally requires the project lead to complete the research tasks and accept their interpretation. Version 1.0 requires the project partners' acceptance of the same scope. Neither the test count nor an agent report establishes either acceptance.
+E-282 anchors the shared document search and record-time cut. Annotation dates remain visible as provenance; undated records remain identifiable context. Explicit filter URLs replace the previous cut, while queryless navigation preserves it. The map and network declare the evidence they can display within that cut. Task 10 uses cataloguing artefacts; tasks 1–9 use the application. Version 0.9 requires project-lead acceptance of the task results, and 1.0 requires partner acceptance. Agents can establish technical evidence and prepare those runs.
 
 ## Milestones and commit boundaries
 
-Each completed milestone receives one commit, with its verification recorded here. The final milestone belongs to human acceptance and cannot be completed by an agent.
-
 | Milestone | Completion criterion | State |
 |---|---|---|
-| M1 Research scope | Source-aware tasks and common search/time contract recorded in specification and research framework | Complete; E-282 |
-| M2 Reliable data processing | Failure paths preserve existing data; report counts reflect the model; relevant tests and determinism pass | Complete; failure-path review and isolated determinism passed |
-| M3 Consistent and usable views | Shared filters, map safety, evidence navigation and accessible static delivery verified | Complete; independent browser and Node checks |
-| M4 Complete research paths | All stories mapped to executed checks or named material limits; actual evidence exports verified | Pending |
-| M5 Consolidation and integrated verification | Unused code and superseded process documents resolved; full checks on one clean revision | Pending |
+| M1 Research scope | Source-aware tasks and common search/time contract | Complete, `1218a10` |
+| M2 Reliable data processing | Preservation under failure, accurate reports and deterministic output | Complete, `12383e4` |
+| M3 Consistent and usable views | Common filters, accessible evidence and local static assets | Complete, `8f94728`; narrow network follow-up in M4 |
+| M4 Complete research paths | All stories mapped to checks or material limits; actual evidence exports and visual follow-up | Complete; source and performance limits recorded below |
+| M4T Trustworthy tests | Independent audit of the whole test suite; correct assertions, meaningful missing coverage and warranted simplification | Active; added by project lead |
+| M5 Knowledge and integrated verification | Maintained knowledge consolidated; complete technical checks from one clean snapshot | Active |
 | M6 Scholarly acceptance | Project lead accepts task results for 0.9; partners accept them for 1.0 | Awaiting human task runs |
 
-## Milestone verification
+Each completed milestone receives one commit and a follow-up review of the achieved goal, implementation and knowledge. Publication and source editing are separate actions. No release or scholarly acceptance follows automatically from a passing suite.
 
-M1 was committed as `1218a10`. The follow-up review confirms that all 19 stories remain mapped and that task wording, view subsets and human acceptance have distinct meanings. No model extension or scholarly result was inferred.
+## Completed implementation and follow-up review
 
-M2 passed independent review after correcting four additional failure paths: missing input could report success, retryable failures with an old cached result could stop retrying, existing-QID checks could escape per-item handling, and a failed new backup could appear complete. The preservation and knowledge checks pass together (21 passed, one skipped); the agent's pipeline run had 546 passing invariants and four declared model xfails, and isolated determinism passed. Shared atomic file helpers are sufficient; no pipeline framework or packaging migration is required. Source errors remain cataloguing findings and have not been edited.
+M1 resolved the scope and task contradictions and retained all 19 stories. The version definitions were preserved. No historical result or model extension was inferred.
 
-M2 was committed as `12383e4`. M3's independent review corrected a map subset count presented as the shared document count, added visible keyboard focus and reset its accessible label, preserved undated document context, and made grouped performance-date provenance keyboard reachable. Statistics rankings now expose every counted record. All six views agree on the nonempty and empty search cuts, direct filter links replace earlier filters, and the app loads with third-party requests blocked. Narrow screens start with collapsed filters. Node checks pass 678/678; the smoke passes; map and actual basket download checks pass; all 187 records and 51 Folio pages open in the exhaustive verifier, including every expected source-cell combination for the 152 records with link-cell provenance. Source dates grouped under a season were checked in their individual date tooltips. The shared search and atomic files remain small common helpers; no frontend framework or wider structural rewrite is needed.
+M2 requires the object table, links and all four nonempty index inputs. Missing input fails explicitly. Reconciliation preserves prior results until replacement succeeds and retries transient failures, including previously cached failures. Low-confidence fuzzy exports require manual approval. Atomic file replacement and verified backup staging prevent incomplete output from replacing valid data. Quality reports count performance links and exclude derived Folio containers from source-cataloguing totals. Independent review found four further failure paths and closed them before commit. Preservation checks and isolated determinism passed. Small shared file helpers were sufficient; the flat pipeline remains.
 
-## Evidence from the reviewed revision
+M3 introduced shared search including linked entity names, atomic filter links and consistent document cuts in every view. Work/part ambiguity remains explicit. Role rankings expose every counted record. Map tooltips escape untrusted values, keyboard focus is visible, undated context is labelled, and its main count names the common cut. Grouped dates expose their individual source cells by keyboard. Stored basket IDs are validated, migrated and reconciled with loaded records. D3 and the existing fonts are shipped locally with licences, upstream URLs and checksums. Unused filter/search helpers and composer constants were removed with their obsolete tests.
 
-The initial review ran the complete Node suite successfully, the isolated determinism test successfully, and the Python invariants and optional browser suite with failures. The Python integrity failure depended on whether an ignored generated report already existed. Browser failures included obsolete expectations for collapsed holdings, a work now carrying location evidence, and the rebuilt network's diagnostic fields. The data mirror separately exposed known source defects. These are dated observations of the reviewed revision, not a permanent claim that the suites pass.
+The M3 checks passed 678 Node cases, the browser smoke, map and real basket download paths. The exhaustive holdings verifier opened all 187 basis records and 51 Folio pages, covering all expected source-cell combinations for 152 records with link-cell provenance. It distinguishes a missing source object from a rendering omission. The source dates of grouped season entries are inspected in their individual date tooltips. A later screenshot review exposed a blank narrow network despite its controls rendering; M4 treats that as a real follow-up finding rather than extending M3's success claim.
 
-Isolated reproductions confirmed loss of an existing reconciliation entry when its requested index was missing, a timeout cached permanently as an unmatched search, executable markup in a map role tooltip, URL filter merging, a legacy basket ID that counted without resolving, an empty map time slice displaying out-of-slice evidence, a validator crash on missing input, and two performance-only records omitted from the quality report's linked-record count.
+M4 closed the narrow network regression with a minimum board height. Independent measurement at 800 × 900 found every one of 947 node centres within the 760 × 529 plot; the new browser assertion checks every node's dimensions, visibility, opacity and containment. Root reran all four research-path browser checks and 33 network checks successfully. The literal seven-record T4 canary verifies rendered holdings, Folio grouping, filter navigation and an opened source pill. Real GEXF downloads match both network modes. All 19 stories now have technical evidence or a named source/model limit.
 
-The story audit adds a cross-view search defect. For the same shipped graph, the query `nim_004` selects 32 basis records through the holdings and chronicle search predicates, while the statistics input remains all 187 basis records. [records-for.js](../docs/js/data/records-for.js) omits search, [statistik.js](../docs/js/views/statistik.js) disables its search control, and [_bestand-filter.js](../docs/js/views/_bestand-filter.js) applies view-specific search. Network name search and register name search also need to be reconciled with the shared document-filter contract.
+Network measurements on local Windows Chromium at 1366 × 900 used 947 nodes (760 actors and 187 records) and 1,568 mention edges. First draw after data readiness took 109 ms, with layout about 67 ms and painting 35 ms. Hover handlers took 0.6–2.8 ms and warm selection handlers 2–3 ms. The first selection took 22–27 ms synchronously and 35–41 ms to the next frame. The cold-click one-frame target remains unmet in this environment. A simple class-update experiment produced no reliable improvement and was removed; no scheduling redesign is included in this increment.
 
-The audit found substantial implemented functionality. Folio grouping, role facets, source-date provenance, record-based statistics, register navigation, recorded-relation marks and evidence exports have executable checks. A browser smoke run observed map and network rendering, entity changes, country filtering, filter handover and reload, and data-state tooltips. A targeted browser check opened `NIM_007_5_1`, advanced from page one to page two of the Folio and observed the updated signature and URL with one detail row remaining open. These sampled paths leave the complete research tasks and human interpretation unaccepted.
-
-| View | Current evidence | Remaining stable-version check |
-|---|---|---|
-| Bestand | Detail and hierarchy tests; browser-observed source paths, data state and Folio paging | Correct the exhaustive DOM verifier; test grouped row membership, search, deep links and full source-value coverage. |
-| Indizes | Data and navigation tests; browser-observed register paths and data state | Verify work/part binding, variant discovery, evidence jumps and the meaning of the shared query. |
-| Netzwerk | Actor/mention/projection tests; browser-observed rendering and filter handover | Human distinction of relation and co-mention, intentional exclusions, complete task routes, current performance and visual acceptance. |
-| Chronik | Time-anchor and aggregation tests; browser smoke observed timeline and record jumps | Human reading of inherited dates, undated context and sparse sequences; common search and time contract. |
-| Karte | Geometry/evidence tests; browser-observed rendering and filters | Tooltip corrections, keyboard evidence access, accountable unlocated/undated items and the time contract. |
-| Statistik | Record-distinct aggregation tests; browser smoke observed section rendering | Shared search, evidence jumps from role rankings, readable denominators and the actual need for a further role section. |
-
-## Research acceptance corrections
-
-The following corrections were integrated into the task set under E-282 when the project lead authorised this plan. They make the acceptance instrument testable without adding claims the data cannot carry.
-
-- **Task 1, appearances in a period.** Require the researcher to name the place role where recorded and identify a missing role as a recording gap. Retained undated records must be identifiable as undated context. A record date alone does not establish a dated appearance at every place it mentions.
-- **Task 4, Bayreuth, 1954 and a work.** The correctly typed filter, `zeitfenster: [1954, 1954]`, returns seven records at the reviewed revision, including a review concerning Brussels. Shared document membership is the attested relation. For the stable scope, ask which persons and roles are recorded in documents mentioning the place and work within the selected document time slice, and have the researcher inspect one source to assess the connection. If the task must assert an actual performance with those participants at that place and time, occurrence modelling and source grouping become prerequisites for that task.
-- **Task 9, completeness across views.** Compare persons and institutions with the network and places with map points plus the unlocated-place list. The network deliberately omits the creator of the fonds. That exception must have an accessible explanation and remain available through the person facet. The check must allow a view's declared evidence subset while accounting for every omitted item.
-- **Task 10, correcting a source cell.** This is an inspection of the cataloguing reports and handover list. The acceptance instrument must explicitly include that artefact task alongside browser tasks 1–9.
-
-Two interface contracts are resolved for implementation under E-282. First, one shared text query currently has different meanings or no effect across views. Use one shared document search; view-local entity lookup must be identifiable as local navigation and must not silently reuse that filter key. Second, direct record-place links use the record's time anchor, while located annotations retain their own dates. The map currently filters those evidence items and the network filters records. Use the common document cut and account separately for each view's eligible evidence. Preserve annotation dates as evidence provenance. Undated retention is an existing rule, not automatically a defect to remove.
-
-The specification's statistics paragraph promises role rankings and a jump from every row, while the design limits statistics to four sections and the shared sidebar already offers role counts and filters. First test whether the existing arrangement fulfils the role story. Add a role section only if an unmet research task requires it. Missing evidence navigation from an existing stage-part or agent-role row is a concrete gap independently of that choice.
+Screenshots show the complete drawing area, distinct document squares and actor circles, irregular connected components and visible relation rings. Central label density remains high with some overlap. The overview screenshot alone cannot establish the readability of the second neighbourhood step; its structural classes and evidence routes are tested. These observations prepare human visual acceptance and preserve the performance limitation explicitly.
 
 ## Story coverage and acceptance
 
-The identifiers below address each bullet by its position within an epic of [specification.md](specification.md). For example, US2.3 is the third story in Epic 2. They are stable addresses for this plan, not new requirements. Every story still awaits scholarly acceptance. “Checked” below refers to tests or code/data inspection, and the browser scope is stated separately above.
+The story identifiers address bullets within each epic of [specification.md](specification.md). Every story still requires scholarly acceptance. Automated checks establish the stated technical behaviour; the source samples below prepare human interpretation.
 
-| Story | Research operation and relevant views | Evidence and remaining acceptance |
+| Story | Research operation | Technical evidence and material limit |
 |---|---|---|
-| US1.1 | Read place, role, date and record through Karte and Bestand | Paths implemented and partly browser-observed. Check a located and an unlocated place and their source cells. Distinguish an annotation's own date from the contextual record time anchor of a direct place link. Repair map tooltip defects. |
-| US1.2 | Restrict place evidence by role, country and time | Facets implemented and sampled in the browser. Verify the time contract, counts, unknown country coverage and URL reproducibility. |
-| US2.1 | Read a stage part with work, composer and evidence | Detail grouping checked. Compare a curated binding, a marked derivation and a multi-work record that stays unbound. |
-| US2.2 | Reach a work's composer, stage parts and records from Indizes | Register and evidence paths implemented. Verify that detail and register use the same binding rule and that a missing part is read as missing recording. |
-| US2.3 | Recognise separately recorded spelling variants | Separate entries retained. Demonstrate a search that makes both forms discoverable; do not introduce automatic identity or merging. Editorial variant links need supporting evidence if required. |
-| US3.1 | Inspect all recorded aspects together in Bestand | Partition and source-evidence checks exist. Compare the full recorded values with detail blocks and source cells. Explain the absence of occurrence binding. |
-| US3.2 | Follow a person or institution through places, works, times and records | Register hub, Karte and Netzwerk distribute this operation. Run the whole route with one preserved document cut; the network alone has no place or work nodes. |
-| US3.3 | Inspect recorded contractual conditions | Finance and place data are displayed; the contracting party is sparsely recorded. Select a source-backed example and preserve unknowns. This story remains marked as a proposal in the specification. |
-| US4.1 | Read and filter recorded roles with counts | Shared role tree is implemented and checked. Verify counts per distinct record, the eligible evidence of the map and the need for any additional ranking. |
-| US4.2 | Inspect contract and residence evidence over time | Chronik uses the declared anchor; residence coverage is thin. Demonstrate time provenance and distinguish a recording gap from historical absence. |
-| US5.1 | Inspect actors, their roles and attesting records | Network completeness and detail paths checked. Verify the intentional creator exclusion and compare roles against the record. |
-| US5.2 | Distinguish a recorded relation from co-mention | Relation marks, projection edges and evidence paths are implemented and checked. A human must identify both correctly and open their separate evidence. |
-| US5.3 | Explore an actor's surroundings within a time slice | Network and register routes implemented. Verify each relevant family across the appropriate views, including the treatment of undated records. |
-| US6.1 | Find records by document type | Hierarchical type facets and statistics checked. Compare displayed counts and drilldown IDs against the source-backed expected set. |
-| US6.2 | Combine type with work, place, person and time | Shared facet intersection checked. Repair search and URL drift; prove the same filter state and evidence set across navigation and reload. |
-| US7.1 | Return from a finding to record and source cell | Many individual paths checked. Exercise aggregate or graph edge → all attesting records → their data points and source cells. Existing non-interactive rankings need an evidence route; an aggregate has a set of sources. |
-| US7.2 | Recognise and follow Wikidata identity | Marks and links implemented. Check all four entity families, matched and unmatched cases; identity correctness remains a curation responsibility. |
-| US7.3 | Read coverage and data state | Data-state tooltips observed in the browser. Verify the denominator and explain the linked-record basis and each view's eligible subset. |
-| US7.4 | Collect and export evidence across views | Export builders checked. Repair stored-ID migration and test actual downloads, reload, membership and source evidence in all four formats. |
+| US1.1 | Read place, role, date and record | Map evidence/geometry tests, actual keyboard record jump, exhaustive record provenance. Source-backed sample T1. Location and date describe their recorded context. |
+| US1.2 | Restrict places by role, country and time | Shared facet and map-cut checks include empty and undated cases; unlocated places remain listed. Samples T2–T3. Missing coordinates limit drawing, and missing evidence limits historical completeness. |
+| US2.1 | Read stage part, work, composer and evidence | Grouping tests cover curated binding, marked single-work derivation and ambiguous multi-work records. T6 supplies both real-data cases. |
+| US2.2 | Reach a work's composer, parts and records | Register tests cover the common binding rule, document counts and evidence links; browser checks operate register rows and jumps. Absent recording remains absent. |
+| US2.3 | Discover recorded spelling variants | Register search and facet-inventory tests retain separate entries. No automatic identity merge occurs. Editorial identity remains a curation task. |
+| US3.1 | Inspect recorded aspects together | Record partition and source tests plus exhaustive browser detail verification. Multiple aspects remain co-mentioned until occurrence binding exists. |
+| US3.2 | Follow an actor through places, works and time | Register hubs and shared-filter tests cover transfer to appropriate views. Network nodes represent actors and documents; map points represent places. T4 and T9 prepare the combined reading. |
+| US3.3 | Inspect contractual conditions | Finance/model tests and contract sample NIM_023 5. Contracting-party and status recording is sparse; the story remains a proposal in the specification. |
+| US4.1 | Read roles and their counts | Distinct-record aggregation and facet tests, complete ranking drilldowns. Repeated mentions do not inflate record counts. Existing statistics sections support this operation. |
+| US4.2 | Inspect contract/residence evidence over time | Chronicle anchor/role tests and dated source examples T1/T8. Residence evidence is sparse; absence of a point cannot establish historical absence. |
+| US5.1 | Inspect actors, roles and evidence | Network completeness tests against shipped records and T9. Creator exclusion is explained and the person facet remains available. |
+| US5.2 | Distinguish relation from co-mention | Relation marks, graph evidence and separate projection tests. T5 identifies a source-backed comparison; successful human distinction is still unobserved. |
+| US5.3 | Explore an actor's surroundings over time | Neighbourhood and shared-cut tests retain undated context. Visual inspection and interaction measurement are recorded separately below. |
+| US6.1 | Find records by document type | Hierarchical facet and statistics tests compare distinct record sets. Browser smoke covers type filtering and source navigation. |
+| US6.2 | Combine type, work, place, person and time | Intersection tests and browser navigation/reload checks cover shared search and explicit URL replacement. T4 documents a seven-record sample and its interpretive limit. |
+| US7.1 | Return to record and source cell | Exhaustive holdings verification, Folio paging, grouped date keyboard access and ranking evidence lists. Aggregate evidence is a set of source-bearing records. |
+| US7.2 | Follow Wikidata identity | Loader/register tests cover identity attachment and missing matches; browser register checks inspect links. Historical identity correctness requires curation. |
+| US7.3 | Read coverage and data state | Six-view browser test checks the common count and accessible data-state label. Map eligibility is reported separately. Unlinked archival records lie outside the application basis. |
+| US7.4 | Collect and export evidence | Basket migration/reconciliation and all four format builders; actual CSV, BibTeX, JSON-LD and GEXF downloads preserve source evidence. Separate network downloads are checked in both projections. |
 
-## Implementation work and completion evidence
+## Source-backed task samples
 
-### Preserve input and output data
+These are agent-checked examples from the versioned data of 2026-09-06. Record identifiers below omit the common `m3gim-data:` prefix. They prepare tasks 1–10 in [research-framework.md](research-framework.md). Browser mechanisms have the coverage stated above. A researcher completing every task without help, interpreting its result and accepting the source limits remains unobserved.
 
-Files are [reconcile.py](../scripts/reconcile.py), [validate.py](../scripts/validate.py), [transform.py](../scripts/transform.py), [build-views.py](../scripts/build-views.py), [backup.py](../scripts/backup.py), [export-wikidata-csv.py](../scripts/export-wikidata-csv.py) and the shared pipeline helpers.
+| Task | Expected evidence | Interpretation to check in the human run |
+|---|---|---|
+| T1 | `NIM_023_5`, Wuppertal with performance-place role, Box 2 row 134; object row 257 dates the record 1953-04-26 | Read the place role and distinguish the record date from a bound performance date. |
+| T2 | `NIM_004_24`, guest-performance evidence for Bayreuth, Box 1 row 577, and Salzburg, row 578; `NIM_007_4`, Lisbon, row 2982 | Follow a place-role finding to its exact source and respect mixed mentions within a document. |
+| T3 | The lowest country counts tie at one record for Poland (`NIM_005_15`, Warsaw, Box 1 row 903), Denmark (`NIM_005_25`, Copenhagen, row 2485) and Serbia (`NIM_073_33_1_3`, Belgrade, Box 4 row 341) | Interpret counts as the selected evidence, including tied values and coverage. |
+| T4 | Bayreuth, Tristan und Isolde and `zeitfenster: [1954, 1954]` yield `NIM_004_18`, `NIM_005_17`, `NIM_011_3`, `NIM_011_5`, `NIM_011_6`, `NIM_142_22_4`, `NIM_142_27` | The set includes a Brussels review. Read persons and roles as statements in those documents and inspect their source connection. |
+| T5 | Recorded correspondence in `NIM_016_13`, Malaniuk–Rüger, Box 2 row 331, appears as a relation mark at visible Rüger. Fues (row 129) and Mahler (row 138) in `NIM_023_5` are visible co-mentioned actors without that recorded relation | Distinguish a relation mark from shared-document edges and account for creator exclusion. |
+| T6 | `NIM_022_1_1` names Meistersinger, Tristan and Rheingold in Box 2 rows 22–24; its three stage parts remain unbound. `NIM_139_104` has one Tristan work statement, Box 6 row 17, with nine performer/part statements | Identify source ambiguity and the explicitly marked single-work derivation. |
+| T7 | `NIM_007_5_1` advances from page one to page two; the signature and URL change and one detail stays open | Verify that the displayed page and its evidence remain citable. All 51 Folio pages were opened by the verifier. |
+| T8 | `NIM_007_11` has own date 1968-11-18 at object row 135 and content anchor 1959-09-05 from performance/rehearsal at Box 1 rows 3081/3087 | Read the anchor's origin instead of treating it as the document's own date. |
+| T9 | `NIM_023_5` carries Malaniuk as contracting party (Box 2 row 128), Fues as conductor (129), Mahler as composer (138), Herminghaus as signatory (140), institutions (135/136), Wuppertal (134) and Das Lied von der Erde (137) | Compare the appropriate view subsets, including the creator exception and places with/without coordinates. |
+| T10 | Object-table row 725 has Folio `11_62` but no archival signature; its intended record is absent from the graph | Reach the source finding through the cataloguing artefacts and identify the cell requiring editorial correction. |
 
-For a standard transformation require the object table, the link table and all four index workbooks for persons, organisations, places and works, using the existing CSV/XLSX fallback rules for objects and links. A deliberately reduced run needs an explicit mode and must not silently replace the full published dataset. Missing object input must exit with an input diagnostic without dereferencing `None`. Retain previous reconciliation entries until replacement is successful. Separate transient request failures from unmatched results and keep them eligible for retry. Apply the common approval policy to authority lookups, including the rule that a `fuzzy_low` match requires `manual_review: approved`. Write central JSON artefacts through a temporary file and atomic replacement. Complete and verify a replacement backup before retiring the old snapshot.
+## Test review and integrated verification
 
-Completion evidence is an isolated failure-path test for missing input, request failure, interrupted write and failed backup replacement. Existing authority results and publishable output remain intact in every failed run. A successful isolated transformation remains deterministic and publishes the intended dataset only.
+M4T reviews the whole suite with disjoint Sol-5.6 assignments for Python/pipeline and frontend tests. Correct wrong or vacuous assertions, explicit required-fixture handling, test-only duplicated logic and stale generated-file dependencies. Prefer behaviour checks and source-backed examples. Share expensive setup where isolation remains intact. Add tests only for meaningful missing guarantees, and preserve the distinction between implementation invariants and the data mirror. No blanket test renaming, framework change or numeric coverage target is required.
 
-### Establish one document-filter contract
+The clean candidate run must include Python invariants with isolated determinism, all Node tests and the browser suite. Playwright is mandatory for this verification even though local browserless runs may skip it. Browser console errors, execution exceptions and smoke warnings fail the gate. A successful DOM-presence assertion cannot substitute for visible drawing or an operable control. Network downloads are compared against the selected projection and record cut; user controls are exercised by visible clicks.
 
-Files are [records-for.js](../docs/js/data/records-for.js), [filter-state.js](../docs/js/ui/filter-state.js), [router.js](../docs/js/ui/router.js), the search consumers and their tests. Resolve the search and time contracts above before changing their semantics. Apply an explicit URL filter atomically; preserve the documented queryless navigation behaviour. Distinguish the document cut from entity lookup, selection, highlighting and the eligible evidence of a particular view.
+Network follow-up retains the former F2 criteria in [testing.md](testing.md) § Boundaries and [design.md](design.md) § Views. First draw, hover and selection measurements name environment and graph size. Visual review covers lattice avoidance, record-node size, relation marks, second-step neighbourhood, central labels and drawing-area use. Root integration rechecks substantive agent findings against actual files and executed checks.
 
-Completion evidence compares record ID sets for a small collection of source-backed cuts across all six views, including search, combined facets, empty results and undated evidence. Grouped Folio rows and aggregate bars must be compared through the records they represent, not by DOM row counts. Reload and direct links produce the same state. A local view selection cannot silently expand the document cut.
+M5 will record the clean snapshot, commands and observed results here after completion. Source-data failures remain separately visible and require an impact decision for release.
 
-### Correct view evidence and navigation
+## Source and model limits requiring acceptance
 
-Repair the map's HTML insertion and empty-window fallback. Give the map's essential interactions an accessible keyboard equivalent consistent with the existing one-tab-stop rule for drawings. Verify the one stage-part/work-binding rule across record detail and registers. Provide evidence navigation from the stage-part and agent-role rankings that currently stop at a static label. Make declared exclusions and derived bindings understandable through the existing tooltip and accessible-label system.
+The separate Python data mirror currently reports seven failing checks. They identify 400 link rows without matching records, object row 725 without a signature, 26 marked-as-worked records without links, invalid role/type values, named links without a type, and 32 links without a model mapping. The last group comprises 26 document links and six activity links. The browser source comparison also reports the missing object. These are source/model findings; the implementation work has not changed the historical recording.
 
-Completion evidence is a browser check of hostile text rendered as text, zero-evidence tooltips, keyboard selection and return, and each new evidence path. The research tasks test the interpretation of relationships, roles and dates separately. Network rendering, geometry, projection export and interaction measurements must use the current drawing contract. Report measured performance against [testing.md](testing.md) § Boundaries and visual criteria in [design.md](design.md) § Views on a named environment; do not infer a universal result from one run.
+Missing records and links limit completeness for tasks 1–6, 8 and 9. Invalid or missing roles/types constrain role, contract and document-type interpretation. Unmodelled activities include engagements and a radio recording in Box 2, so the current graph cannot be treated as a complete appearance history. The maintained [data.md](data.md) and the [source handover list](../data/reports/source-errors-handover-2026-09-01.md) own these findings. Acceptance must name the admitted limits or require source correction; a blanket “expected red” label is insufficient.
 
-### Preserve the collected research result
+Further limits remain the ambiguous work/part binding, sparse residence and contracting-party evidence, source dating qualifiers, unresolved identities and incomplete location coverage. The decided occurrence model, editorial identity decisions and partner-side recording changes remain outside this stabilisation increment. [specification.md](specification.md) § Open decisions is the single address for those decisions.
 
-Files are [basket.js](../docs/js/ui/basket.js), [korb.js](../docs/js/views/korb.js) and export tests. Validate stored arrays and IDs, migrate the legacy namespace and remove unavailable records from the effective selection. Test the actual CSV, BibTeX, JSON-LD and GEXF download paths in addition to their builders. For the separate network GEXF export, verify exactly which projection and active cut it represents.
+## Knowledge consolidation
 
-Completion evidence is a collected selection surviving reload with the same resolved records. Every downloaded file is parseable in its format and preserves the promised source references. CSV quoting, Unicode, file names and empty selections are exercised through the browser. Unknown records cannot leave a positive count with empty cards and exports.
+Maintained knowledge belongs in `knowledge/`, including the German partner recording guide. Root README and CLAUDE files remain entry and action documents. Pipeline usage is consolidated into the root command entry and [architecture.md](architecture.md); the duplicate scripts README and superseded process reports are removed after preserving their durable content. No new archive or parallel acceptance document is created.
 
-### Align quality reporting with the model
+Source diffs, manual-reconciliation provenance, decision identifiers, migration evidence and dated source analyses remain beside their data. They document a particular input or curation act. Current specifications, test boundaries and open decisions live in the maintained knowledge base. [handoff.md](handoff.md) retains only the unresolved external Vault handover; the Vault remains read-only from this repository session.
 
-Files are [report-quality.py](../scripts/report-quality.py), [report-cataloguing.py](../scripts/report-cataloguing.py) and shared helpers. Define the common meaning of a real catalogued record and a record carrying links; include performance evidence and exclude derived container records where the report measures source cataloguing. Keep genuinely different frontend and reporting denominators explicit rather than forcing all counts to one number.
+## Remaining acceptance
 
-Completion evidence covers the performance-only examples and derived Folio containers against the current graph. Every source row is either represented with provenance or accounted for in diagnostics. Review the known missing-object and unmodelled-link findings for their effect on each research task. A known data-mirror failure is admissible only with a named source finding, a stated impact and an accepted limit; marking the entire data-quality layer “expected red” is insufficient for release.
-
-### Make the verification run trustworthy
-
-Repair the generated-report exception, the obsolete holdings expectation and selectors, the work-location fixture assumption and the network stamp contract. Compare the holdings DOM after deliberate expansion and paging with the current display contract. Separate actual source defects from rendering defects. Make exceptions and unexpected console errors fail the release browser checks; a warning cannot establish that a required interaction passed.
-
-The release verification runs Python invariants, Node tests, isolated determinism and the required browser suite on the same revision and data state. The browser suite is required for that run even if it remains an optional local dependency. Test from a clean checkout without generated reports. Keep data-mirror findings separate and review their impact as above. A small number of complete research paths is more valuable than additional tests that only restate implementation details.
-
-### Secure static delivery and usable presentation
-
-Keep D3 and required fonts available locally or use the existing system-font fallback, preserving the no-build architecture. Verify the six views with external runtime requests blocked. Check the existing sidebar-height criterion, a narrower viewport, keyboard focus, tooltip reachability and empty/error states. The observed data-state date currently lives in a hover tooltip; expose it to keyboard and screen-reader users as well. Revisit network aesthetics against the recorded F2 findings using the actual data, rather than interpreting a passing geometry test as visual acceptance.
-
-Completion evidence is a functioning local static delivery without a runtime CDN, legible view controls and data-state information, and no inaccessible essential finding-to-record route. Hosting publication is a separate action after verification and acceptance.
-
-### Consolidate the maintained knowledge
-
-Update the factual state in [specification.md](specification.md), [architecture.md](architecture.md), [design.md](design.md), [testing.md](testing.md) and the date-precedence passage in [data.md](data.md). Resolve the task-set contradictions explicitly in [research-framework.md](research-framework.md). Reduce [handoff.md](handoff.md) to unresolved received points after their integration; implementation presence and missing acceptance must be recorded separately.
-
-The reviewed revision has no production consumer for `KOMPONISTEN_NAMEN` in [constants.js](../docs/js/data/constants.js), `isTouched` and `applyViewDefault` in [filter-state.js](../docs/js/ui/filter-state.js), or `makeSyncGuard` and `yearRangeToZeitfenster` in [filter-sync.js](../docs/js/ui/filter-sync.js). Repository-wide reference searches found only definitions, comments and tests. Confirm that this remains true at the implementation revision, then remove the unused mechanism together with its obsolete tests and comments. Investigate the old mobility-role fallback before deleting it. Consolidate superseded session plans and intermediate audits only after their lasting decisions and evidence have an existing canonical destination. Preserve source diffs, manual-reconciliation provenance and decision identifiers. Keep source description and formal model documentation separate.
-
-Completion evidence is a reviewable content diff, preserved reference targets and passing document-integrity checks. No new archive or parallel acceptance document is required. Results belong in their owning document and one concise journal entry.
-
-## Integration and agent use
-
-Resolve the acceptance and shared-filter contracts first, because their meaning determines correct tests and view changes. Pipeline data preservation can proceed independently of frontend work. Integrate changes to shared state, loader and vocabulary through one owner, then run the dependent view checks on the same integrated revision. Repair verification contracts alongside the corresponding change so that later work has a reliable result.
-
-Use three bounded Sol-5.6 review assignments for Bestand/Indizes, Chronik/Statistik and Netzwerk/Karte. Each must cite code or source evidence, identify the interaction actually executed and retain untested cases as open. Their comparisons are inputs to central verification. The review already demonstrated why this matters: an object-shaped time filter was ignored by the code and produced a wrong apparent result count, while the correct array-shaped filter yielded the real task sample.
-
-During implementation, parallelise only disjoint file sets. Shared filter changes should not be edited concurrently by several view agents. After integration, ask a reviewer who did not implement the change to repeat the affected research path. More agents are useful when a concrete independent question remains; six permanent view owners are unnecessary for this scope.
-
-## Release evidence still required
-
-For each of tasks 1–9 record the source-backed expected result, the actual browser route, the resulting record IDs and whether the researcher reached the exact evidence without assistance. For task 10 record the report finding and the source cell to correct. Include an ambiguous, undated or unlocated case where that is relevant to the task. Keep failed interpretation, missing data, unimplemented behaviour and unexecuted checks distinct.
-
-The project lead authorised the document-centred scope and task clarifications through the instruction to implement this plan. The observed research-task results still require project-lead and partner acceptance. Scholarly validation of authority matches, disputed source values and ambiguous stage-part bindings remains with the responsible researchers and cataloguing team.
-
-No version is released by this planning pass. Completion of the implementation work establishes a technically reviewable candidate; the human task runs establish acceptance under the existing 0.9 and 1.0 definitions.
-
-## Related
-
-- [specification.md](specification.md) for the authoritative stories and version definitions.
-- [research-framework.md](research-framework.md) for the research questions, personas and task set.
-- [testing.md](testing.md) for test responsibilities and their current boundaries.
-- [handoff.md](handoff.md) for inherited assignments and unresolved external inputs.
-- [journal.md](journal.md) for decisions and the record of this planning pass.
+After technical verification, the project lead runs tasks 1–10 with the recorded examples and current data state, records interpretation failures or accepted limits, and decides version 0.9. Partner acceptance establishes 1.0 under the existing definition. Publication, archiving and external communication do not follow from a local commit.
