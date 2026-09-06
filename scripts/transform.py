@@ -486,16 +486,12 @@ def normalize_role(value) -> str | None:
 def attach_role(target: dict, value) -> None:
     """Sets a node's role as a reference to its concept in the vocabulary.
 
-    The reference node carries the concept's skos:prefLabel so a consumer has
-    the display text without a lookup. If the recorded value maps to a
-    different concept in the vocabulary, it stays in
-    m3gim-ontology:derivedFromRole so the merge remains reversible. If the
-    source records no role, the node carries none.
+    The reference carries the concept's skos:prefLabel. An incoming alias that
+    differs from it stays in m3gim-ontology:derivedFromRole; earlier spelling
+    normalization remains traceable through the source cell. Missing roles stay
+    absent.
 
-    A value outside the vocabulary stays as a literal. This covers the
-    contract status "nicht eingehalten", which sits in the role column and is
-    explicitly not a role concept per the vocabulary; its modelling is open
-    with the cataloguing team (data-model.md § Financial layer).
+    An unmapped source value remains a literal so it stays available for review.
     """
     if not value:
         return

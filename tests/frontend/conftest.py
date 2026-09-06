@@ -11,6 +11,12 @@ BASE = Path(__file__).parent.parent.parent
 DOCS_DIR = BASE / "docs"
 
 
+class BrowserTestServer(socketserver.ThreadingTCPServer):
+    # Browser startup loads many independent ES modules concurrently.
+    request_queue_size = 128
+    daemon_threads = True
+
+
 @pytest.fixture(scope="session")
 def frontend_server():
     """Startet einen Thread-SimpleHTTPServer auf freiem Port, yieldet
@@ -21,8 +27,7 @@ def frontend_server():
             pass  # Request-Log wuerde den pytest-Output fluten
 
     handler_factory = lambda *a, **kw: QuietHandler(*a, directory=str(DOCS_DIR), **kw)
-    httpd = socketserver.ThreadingTCPServer(("127.0.0.1", 0), handler_factory)
-    httpd.daemon_threads = True
+    httpd = BrowserTestServer(("127.0.0.1", 0), handler_factory)
     thread = threading.Thread(target=httpd.serve_forever, daemon=True)
     thread.start()
     try:
@@ -48,10 +53,15 @@ def frontend_browser():
 def browser_context(frontend_browser):
     """Isolated context that fails on uncaught browser errors."""
     errors = []
+    failed_requests = []
     context = frontend_browser.new_context()
 
     def watch(page):
         page.on("pageerror", lambda error: errors.append(str(error)))
+        page.on(
+            "requestfailed",
+            lambda request: failed_requests.append(f"{request.url}: {request.failure}"),
+        )
         page.on(
             "console",
             lambda message: (
@@ -62,4 +72,4 @@ def browser_context(frontend_browser):
     context.on("page", watch)
     yield context
     context.close()
-    assert not errors, errors
+    assert not errors, {"browser_errors": errors, "failed_requests": failed_requests}

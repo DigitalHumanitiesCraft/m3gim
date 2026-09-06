@@ -82,7 +82,7 @@ def browser_contract(page) -> dict:
 
 
 def render_findings() -> tuple[dict, list[str]]:
-    from playwright.sync_api import sync_playwright
+    from playwright.sync_api import expect, sync_playwright
 
     findings = []
     with sync_playwright() as playwright:
@@ -120,20 +120,12 @@ def render_findings() -> tuple[dict, list[str]]:
         for expected in contract["records"]:
             page.evaluate("rid => { location.hash = '#bestand/' + encodeURIComponent(rid); }",
                           expected["id"])
-            # Let the hashchange handler finish before issuing the next deep
-            # link; Chromium can otherwise coalesce a rapid run of 187 hashes.
-            page.wait_for_timeout(30)
+            head = page.locator(".archiv-row--detail .inline-detail__head-sig")
             try:
-                page.wait_for_function(
-                    "identifier => document.querySelector("
-                    "'.archiv-row--detail .inline-detail__head-sig')?.textContent.trim() "
-                    "=== identifier",
-                    arg=expected["identifier"], timeout=5_000,
-                )
+                expect(head).to_have_text(expected["identifier"], timeout=5_000)
             except Exception as exc:
                 findings.append(f"Detail nicht erreichbar: {expected['id']} ({exc})")
                 continue
-            head = page.locator(".archiv-row--detail .inline-detail__head-sig")
             opened += 1
             shown = head.text_content().strip()
             if shown != expected["identifier"]:

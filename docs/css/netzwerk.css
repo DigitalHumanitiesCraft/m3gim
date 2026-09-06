@@ -624,6 +624,10 @@
     min-height: 100%;
   }
 
+  .netzwerk__stage {
+    min-height: 480px;
+  }
+
   .netzwerk__main {
     overflow-y: auto;
   }

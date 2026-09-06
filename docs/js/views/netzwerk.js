@@ -145,7 +145,7 @@ let _escapeBound = false;
 function onEscape(ev) {
   if (ev.key !== 'Escape' || !local.selection) return;
   if (!document.getElementById('netzwerk-detail')) return;
-  select(null);
+  clearSelection({ restoreFocus: !!document.activeElement?.closest('.netzwerk__detail') });
 }
 
 // ---------------------------------------------------------------------------
@@ -324,10 +324,22 @@ function select(selection) {
   writeSelectionToHash();
 }
 
+function clearSelection({ restoreFocus = false } = {}) {
+  if (!local.selection) return;
+  const selected = local.selection;
+  const target = restoreFocus
+    ? (selected.kind === 'node'
+      ? document.querySelector(`.netzwerk-node[data-id="${CSS.escape(selected.id)}"]`)
+      : document.querySelector('.netzwerk-node[tabindex="0"]'))
+    : null;
+  select(null);
+  if (target) target.focus();
+}
+
 const actions = {
   selectNode: (node) => select({ kind: 'node', id: node.id }),
   selectEdge: (edge) => select({ kind: 'edge', id: edge.id }),
-  clearSelection: () => { if (local.selection) select(null); },
+  clearSelection: () => clearSelection(),
 };
 
 function draw() {
@@ -418,7 +430,7 @@ function detailHead(panel, kicker, title, typeClass) {
     el('span', { className: 'netzwerk__detail-kind' }, kicker),
     el('button', {
       className: 'netzwerk__detail-close', type: 'button', 'aria-label': 'Schließen',
-      onClick: () => select(null),
+      onClick: () => clearSelection({ restoreFocus: true }),
     }, '×'));
   panel.appendChild(row);
   panel.appendChild(el('h3', { className: 'netzwerk__detail-title' }, title));

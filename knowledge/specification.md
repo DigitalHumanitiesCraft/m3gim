@@ -197,19 +197,18 @@ Statistik. The counting view provides ranked lists of document types, repertoire
 
 ## Open decisions
 
-This is the single address for decisions that are open. [journal.md](journal.md) carries the decisions that fell.
+This is the single address for decisions that are open. [journal.md](journal.md) carries the decisions that fell. The model extensions below concern further development and recording; the accepted document-centred stabilisation scope is defined above.
 
 ### Model and vocabulary
 
-- Gendered role labels. The Verknüpfungstabelle writes roles in the gendered form, the vocabulary labels them ungendered, and the partners expect the gendered form. The decision is whether the display labels in [`../vocab/m3gim.ttl`](../vocab/m3gim.ttl) take it, which would apply everywhere in one step.
-- Whether a relation whose target is the creator of the fonds is drawn as a relation target at all, and how finely the correspondence relation is kept. Relations pointing at her are suppressed today (E-129), and the choice of the AgRelOn role properties on symmetric relations follows from the same question.
+- Gendered role labels. Source forms include gendered labels, while E-63 normalises the colon suffixes and the vocabulary supplies the current display labels. The partners' requested display change remains an editorial decision. Exact original spelling remains recoverable through the source cell; colon-suffix normalisation precedes `derivedFromRole` handling.
+- Further correspondence modelling beyond the existing fonds-centred relation model. E-129 already decides the suppression of self-relations involving the creator, and E-149 defines symmetric correspondence with both participants and their recorded side roles. Any change to this scheme requires an explicit model revision.
 - `sammlung` against `konvolut`, meaning whether the two names separate a physical wrapper from a thematic compilation or denote the same thing. The vocabulary carries `collection` without a `skos:broader` on `konvolut` and an editorial note holding the question open.
-- The stage part in the vocabulary, which stands once as a `StageRole` entity and once as a literal at the work, while the person role `protagonist` names a stage part and belongs in the type `rolle`.
+- The formal binding of a `StageRole` entity to its work, its relationship with the stage-part literal retained from the work index, and a separate recording index supplying work identity and voice type. StageRole entities are already implemented. The two source rows classifying `protagonist` as a person remain an editorial type finding.
 - The occurrence implementation. The target model is decided (E-125, E-127, E-128), the pipeline grouping and the recording rollout are open, and until they exist the Netzwerk shows co-mention at the record and the binding of person, stage part and performance is missing from the dataset.
-- The contract status, whose properties left the vocabulary as never filled while the source now carries the state in its annotation column.
+- Formal contract status and realization fields. Current statements in the annotation column are already retained as `rico:generalDescription` and displayed at their data points. A structured status model remains pending clarification with the cataloguing team.
 - The inference rules from co-presence, meaning under which threshold of shared performances and which measure of temporal proximity a co-mention may become an annotated relation. No such rule exists, and none is applied.
-- The date qualifiers `circa:`, `vor:` and `nach:`, which are cut away in two places and evaluated nowhere, and the precision level of enriched date values, which stands only implicitly in the length of the value.
-- A separate index for `StageRole` from the cataloguing team, without which the stage role nodes carry a name and neither work binding nor voice type.
+- The interval meaning of qualified datings in the shared time filter. `circa:`, `vor:` and `nach:` are already preserved and displayed; the current filter uses their numeric year anchor. The current source export provides no such qualified value for a scholarly acceptance example. Wikidata time precision is implemented under E-132 and remains implicit in the value's length.
 - Whether the five movement types of [research-framework.md](research-framework.md) enter the model as a second mobility axis beside the five event perspectives, or whether both sets are merged.
 
 ### Interface and operation
