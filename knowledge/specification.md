@@ -53,7 +53,7 @@ Code is MIT, text and data are CC BY 4.0 unless the archive decides otherwise fo
 
 ## Goal and frame
 
-The application is a tool, not a narrative (E-156). It shows every recorded data point with the role the recording gives it, where it gives one, and with the source cell that carries it, it restricts the result set through the facets of the one sidebar, it leads from every statement back to the record, and it leaves the interpretation to the researcher. The data grow continuously. No view assumes a particular data state, every view names the data state it is built from, and gaps in the cataloguing stay visible instead of being smoothed by pipeline workarounds.
+The application is a tool, not a narrative (E-156). It shows every recorded data point with the role the recording gives it, where it gives one, and with access to the record that carries it, it restricts the result set through the facets of the one sidebar, it leads from every statement back to the record, and it leaves the interpretation to the researcher. The data grow continuously. No view assumes a particular data state, every view names the data state it is built from, and gaps in the cataloguing stay visible instead of being smoothed by pipeline workarounds.
 
 As a pilot study the project validates the method rather than the completeness of the fonds. It tests whether the material is workably catalogued with RiC-O 1.1, the m3gim extension and AgRelOn, whether the procedures scale, and whether the result carries the follow-up application.
 
@@ -64,7 +64,7 @@ The application is a static single-page application without a backend, delivered
 ### Functional
 
 - One result set, shared by all views and restricted through the facets of the one left sidebar.
-- Every data point visible with its role and its source cell, and a way back to the record that carries it.
+- Every data point visible with its role and a way back to the record that carries it. Technical source cells remain available in data and exports (E-285).
 - The four registers of persons, institutions, places and works as entry points, with the Wikidata identity where a match exists.
 - The Korb as a collection across views, with an export that carries source cells and links.
 - The data state of the dataset named in every view.
@@ -83,7 +83,7 @@ The requirements per research question are set out as epics and stories below an
 
 ## Epics and user stories
 
-The application is a tool, not a narrative (E-156). It shows every recorded data point with the role the recording gives it, where it gives one, and with the source cell that carries it, it lets the researcher restrict the result set by facets, and it leads from every statement back to the record. What a data point means, whether a contract place counts as a performance place or a co-mention as a collaboration, the researcher decides. The stories therefore ask for visibility, filtering and the way back to the source, never for an interpretation. The data grow continuously. No story assumes a particular data state, and every view names the data state it is built from.
+The application is a tool, not a narrative (E-156). It shows every recorded data point with the role the recording gives it, where it gives one, and with access to the record that carries it, it lets the researcher restrict the result set by facets, and it leads from every statement back to the record. What a data point means, whether a contract place counts as a performance place or a co-mention as a collaboration, the researcher decides. The stories therefore ask for visibility, filtering and the way back to the source, never for an interpretation. The data grow continuously. No story assumes a particular data state, and every view names the data state it is built from.
 
 The seven epics are the questions the project partners and the talk abstract put to the fonds. Their relation to the research questions is set out in [research-framework.md](research-framework.md). A story is fulfilled when the data points it names are visible, filterable and lead back to the record. The acceptance instrument is the task set in [research-framework.md](research-framework.md) § Evaluation. Where the dataset carries a dimension only in part, the story says so, and where the interface does not yet fulfil a story, § State names the gap.
 
@@ -104,7 +104,7 @@ The dataset carries stage part and work as separate entities and binds them only
 
 ### Epic 3. Where did she sing what, when, and for which house?
 
-- As a musicologist I want to read at one record every data point together, place, work, stage part, date, institution and participants, each with its role and its source cell, so that I decide myself what forms one appearance.
+- As a musicologist I want to read at one record every data point together, place, work, stage part, date, institution and participants, each with its role and attesting record, so that I decide myself what forms one appearance.
 - As a musicologist I want to choose an institution or a person and see the places, works, times and records connected with it.
 - As a musicologist I want to see fee, currency, contract place and contracting party at contracts, so that I can read the conditions of her work.
 
@@ -134,7 +134,7 @@ The dataset carries the document types with their vocabulary hierarchy, a few gr
 
 ### Epic 7. What is a statement based on?
 
-- As a researcher I want to reach the record from every data point in every view, with signature, title, convolute and source cell, so that I can cite it.
+- As a researcher I want to reach the record from every data point in every view, with signature, title and convolute, so that I can cite it. Exports retain the technical source cells.
 - As a researcher I want to see at every normalized person, institution, place and work whether it is matched to Wikidata, and go there.
 - As a researcher I want to see at every view on how many records of the current data state it rests, and the date of that data state.
 - As a researcher I want to collect records across views in the basket and export them with their evidence and links.
@@ -189,7 +189,7 @@ Karte. Every place of the result set as a point with its place role, its localiz
 
 Register pages. One register per page for persons, institutions, places and works, chosen in the menu of the Indizes tab and citable in the address. An entry carries name, enrichment, evidence count in the result set and the Wikidata mark, and the opened entry is the hub that hands over to the Bestand, to the Netzwerk and, from the works register, to the Karte. Enriched values are marked as enriched (E-216), and family colour and family symbol are the same in menu, list, Bestand marks and detail block titles (E-226, E-230).
 
-Record detail. Every recorded data point of the record with its role and its source cell, in functional blocks, opened over the full width, with a bundled source statement and collapsible administrative fields at the foot. On the Folio record the pipeline carries since E-269 the detail pages through the pages of a Folio without leaving the record.
+Record detail. Every recorded data point of the record with its role, in functional blocks, opened over the full width, with the record signature and collapsible administrative fields at the foot. Technical source cells remain in the dataset and exports (E-285). On the Folio record the pipeline carries since E-269 the detail pages through the pages of a Folio without leaving the record.
 
 Korb. Records collected by hand across views and exported as CSV, BibTeX, JSON-LD and GEXF (E-232). Every format carries the source cells of the data points and the Verknüpfungen of the record, so an export can be cited from without opening the application (E-281).
 
@@ -213,7 +213,6 @@ This is the single address for decisions that are open. [journal.md](journal.md)
 
 ### Interface and operation
 
-- The provenance pill, which names sheet, row and data point and triggers no click. The decision is whether a jump into the sheet is built or the pill stays a display.
 - The KUG logo in the footer, taken from the press area of the institution, whose use on the project page is to be confirmed with it.
 
 ### Repository

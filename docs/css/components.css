@@ -671,19 +671,17 @@
   padding-inline-start: var(--space-3);
 }
 
-/* Dates of one Spielzeit as a compact list inside a single chip; the Quellzeile
-   of each date sits in its own tooltip instead of in a pill per date. */
+/* Dates of one Spielzeit as a compact list inside a single chip. */
 .chip-dates {
   display: inline;
 }
 
-/* The Beleg of a single date sits in its tooltip; the row stays calm and shows
-   the affordance only under the pointer. */
-.chip-date {
+/* Quality notes of a single date stay available without adding another row. */
+.chip-date--annotated {
   cursor: help;
 }
 
-.chip-date:hover {
+.chip-date--annotated:hover {
   text-decoration: underline dotted;
   text-underline-offset: 2px;
 }
@@ -726,7 +724,7 @@
 
 /* Rolle-Prefix chip (E-75): one form for Finanzen, AgRelOn relations and
    spatiotemporal events, built from an uppercase role prefix, a semibold value
-   and optionally the provenance pill and the Wikidata badge.
+   and optionally a Wikidata badge.
    Chips are neutral since 2026-09-03: grey outline, near-black text, no family
    fill. The family colour lives at the Erschliessungsanzeige and at the block
    title alone. The .chip--c-<cluster> classes stay in the markup and all
@@ -758,42 +756,11 @@
   font-weight: var(--weight-semibold);
 }
 
-/* The value carries the modelled fields the chip does not print. It gets the
-   help cursor of the Provenienzpille and no underline: the dotted line is
-   reserved for a supplemented value (design rule 16). */
+/* The value carries the modelled fields the chip does not print. Its help
+   cursor has no underline; the dotted line is reserved for a supplemented
+   value (design rule 16). */
 .chip--role-pair .chip-wert[data-tip] {
   cursor: help;
-}
-
-.chip--role-pair .prov-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  font-family: var(--font-mono);
-  font-size: var(--text-2xs);
-  padding: 2px var(--space-1-5);
-  border-radius: 3px;
-  background: color-mix(in oklch, var(--color-text-primary) 6%, transparent);
-  color: var(--color-text-secondary);
-  letter-spacing: 0.02em;
-  cursor: help;
-  transition: background var(--transition-fast), color var(--transition-fast);
-}
-.chip--role-pair .prov-pill:hover {
-  background: color-mix(in oklch, var(--accent) 14%, transparent);
-  color: var(--accent);
-}
-.prov-pill__icon {
-  display: inline-flex;
-  align-items: center;
-  opacity: 0.7;
-}
-.prov-pill__icon svg {
-  width: 10px;
-  height: 10px;
-}
-.prov-pill__label {
-  user-select: all;
 }
 
 .chip--role-pair.chip--clickable { cursor: pointer; }

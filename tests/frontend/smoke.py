@@ -532,24 +532,24 @@ def main() -> int:
             dates = detail.locator(".chip-group .chip-date")
             n_dates = dates.count()
             first_date = dates.first.inner_text() if n_dates else ""
-            tip = dates.first.get_attribute("data-tip") if n_dates else ""
-            if n_dates == 14 and first_date.startswith("23.") and "Zeile" in (tip or ""):
+            empty_dates = [value for value in dates.all_inner_texts() if not value.strip()]
+            if n_dates == 14 and first_date.startswith("23.") and not empty_dates:
                 results.append(("OK", "anchor:NIM_022_1_1:spielzeit     ",
                                 "14 Auffuehrungen datumssortiert unter der Spielzeit"))
             else:
                 results.append(("FAIL", "anchor:NIM_022_1_1:spielzeit     ",
-                                f"daten={n_dates}, erstes={first_date!r}, tip={tip!r}"))
+                                f"daten={n_dates}, erstes={first_date!r}, leer={empty_dates}"))
 
             rheingold = detail.locator(".chip-group", has_text="Das Rheingold").first
             sub = rheingold.locator(".chip-group__sub").inner_text() if rheingold.count() else ""
-            role_pill = detail.locator(
-                ".chip-group__sub .chip .prov-pill").count()
-            if "Fricka" in sub and role_pill > 0:
+            role_chip = rheingold.locator(
+                ".chip-group__sub .chip--role-pair", has_text="Fricka").count()
+            if "Fricka" in sub and role_chip > 0:
                 results.append(("OK", "anchor:NIM_022_1_1:rolle-am-werk ",
-                                "Fricka unter Das Rheingold, mit Provenance-Pille"))
+                                "Fricka als Rollenwert unter Das Rheingold"))
             else:
                 results.append(("FAIL", "anchor:NIM_022_1_1:rolle-am-werk ",
-                                f"sub={sub[:60]!r}, pillen={role_pill}"))
+                                f"sub={sub[:60]!r}, rollenchips={role_chip}"))
         except Exception as e:
             results.append(("WARN", "anchor:NIM_022_1_1               ",
                             f"check uebersprungen: {e}"))

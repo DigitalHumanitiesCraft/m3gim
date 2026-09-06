@@ -546,7 +546,7 @@ function ortEnrichment(entry) {
   });
 }
 
-/** Der Komponist steht in der Quellzeile und traegt deshalb keine Marke. */
+/** The composer comes from the work index and needs no derivation mark. */
 function werkEnrichment(entry) {
   return enrichEl(entry.komponist, { derived: false, className: 'idx-komponist' });
 }
@@ -570,9 +570,6 @@ function buildRelationBadges(relations) {
     const count = rels.length;
     const first = rels[0];
     const tipParts = [`Beleg: ${first.recordId.replace(/^m3gim-data:/, '')}`];
-    if (first.xlsxSource && first.xlsxSource.row) {
-      tipParts.push(`Quelle: ${first.xlsxSource.sheet || 'XLSX'} Zeile ${first.xlsxSource.row}`);
-    }
     if (count > 1) tipParts.push(`${count} Belege gesamt`);
     const chip = el('span', {
       className: 'chip chip--role-pair chip--c-beziehung chip--clickable',

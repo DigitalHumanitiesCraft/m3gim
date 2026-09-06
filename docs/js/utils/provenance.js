@@ -3,7 +3,7 @@
  *
  * Every record and every nested entity (AgRelOn, annotation, finance item)
  * carries an `m3gim-ontology:xlsxSource` subobject with sheet, row and optional
- * data-point id. Store, inline detail and Korb read this provenance through the
+ * data-point id. Store and exports read this provenance through the
  * same function, so the format is defined in only one place.
  *
  * @param {Object|null|undefined} obj - JSON-LD entity with `m3gim-ontology:xlsxSource`

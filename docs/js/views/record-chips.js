@@ -2,7 +2,7 @@
  * Chip factories of the record detail.
  *
  * buildRoleChip is the one chip form of the application (role prefix, value,
- * provenance pill, Wikidata badge, data-quality marker); the per-section
+ * Wikidata badge, data-quality marker); the per-section
  * factories turn the parts of partitionRecord into finished chip elements.
  * record-detail.js, korb.js, karte.js and netzwerk.js consume them.
  */
@@ -13,7 +13,6 @@ import {
 } from '../utils/format.js';
 import { formatDate } from '../utils/date-parser.js';
 import { navigateToIndex, applyArchivFilter } from '../ui/router.js';
-import { extractXlsxSource } from '../utils/provenance.js';
 import { WIKIDATA_ICON_SVG, AGRELON_LABELS, roleClusterFor } from '../data/constants.js';
 import {
   groupRolesByWork, groupPerformanceDatings, sortDatingsByDate,
@@ -38,7 +37,6 @@ export function agentChipEls(store, entities) {
     prefix: roleLabel(store, entity.role) || 'AGENT',
     gloss: glossOf(store, roleIdOf(entity.role)),
     value: entityName(entity, entity['@id'] || '?'),
-    xlsxSource: extractXlsxSource(entity),
     wikidata: asWikidataId(entity['@id']),
     qualityFlag: entity['m3gim-ontology:dataQualityFlag'],
     details: nodeTipLines(entity),
@@ -81,7 +79,6 @@ function workChipEl(w, store) {
     gloss: glossOf(store, roleIdOf(w.role)),
     value: komponist ? `${name} (${komponist})` : name,
     cluster: framing ? 'ort' : 'rolle',
-    xlsxSource: extractXlsxSource(w),
     wikidata: asWikidataId(w['@id']),
     qualityFlag: w['m3gim-ontology:dataQualityFlag'],
     details: nodeTipLines(w),
@@ -100,7 +97,6 @@ function stageRoleChipEl(r) {
     prefix: 'ROLLE',
     value: parts.join(' · '),
     cluster: 'rolle',
-    xlsxSource: r.xlsxSource,
     qualityFlag: r.qualityFlag,
     note: r.description,
   });
@@ -125,7 +121,6 @@ export function performanceChipEls(performances) {
       prefix: 'AUFFÜHRUNG',
       value: parts.join(' · '),
       cluster: 'ort',
-      xlsxSource: p.xlsxSource,
       wikidata: p.workWikidata,
       qualityFlag: p.qualityFlag,
       note: p.description,
@@ -156,7 +151,6 @@ export function eventChipEls(store, events, locations, eventDatings) {
       gloss: glossOf(store, ev.roleId),
       value: `${ev.place || '?'} · ${dateDisplay}`,
       cluster: 'ort',
-      xlsxSource: ev.xlsxSource,
       wikidata: ev.placeWikidata,
       qualityFlag: ev.qualityFlag,
       note: ev.description,
@@ -180,7 +174,6 @@ export function eventChipEls(store, events, locations, eventDatings) {
       gloss: glossOf(store, roleIdOf(loc.role)),
       value: name,
       cluster: 'ort',
-      xlsxSource: extractXlsxSource(loc),
       wikidata: asWikidataId(loc['@id']),
       qualityFlag: loc['m3gim-ontology:dataQualityFlag'],
       details: nodeTipLines(loc),
@@ -206,8 +199,7 @@ function placeNodeOf(ev) {
 
 /**
  * One Spielzeit as a head line with its Auffuehrungsdaten as a compact date
- * row. Each date carries its Quellzeile in its own tooltip, so the row stays
- * one chip and the Beleg is not lost (E-90: one tooltip per hover).
+ * row. A date with a quality caveat carries that note in its own tooltip.
  */
 function seasonChipEl(store, { season, dates }) {
   const head = buildRoleChip({
@@ -215,7 +207,6 @@ function seasonChipEl(store, { season, dates }) {
     gloss: glossOf(store, season.roleId),
     value: dateText(season) || season.rawDate || '?',
     cluster: 'ort',
-    xlsxSource: season.xlsxSource,
     qualityFlag: season.qualityFlag,
     note: season.description,
   });
@@ -224,40 +215,20 @@ function seasonChipEl(store, { season, dates }) {
     if (i > 0) dateEls.push(' · ');
     // The date row is one chip, so a caveat on a single Auffuehrung has no own
     // marker and joins that date's tooltip.
-    const tip = [provTipText(d.xlsxSource), ...qualityTipLines(d.qualityFlag, d.description)]
-      .join('\n');
-    dateEls.push(el('span', {
-      className: 'chip-date',
-      tabindex: '0',
-      'aria-label': [dateText(d) || d.rawDate || '?', tip].join('. '),
-      dataset: { tip, tipWrap: '' },
-    }, dateText(d) || d.rawDate || '?'));
+    const tip = qualityTipLines(d.qualityFlag, d.description).join('\n');
+    const props = { className: `chip-date${tip ? ' chip-date--annotated' : ''}` };
+    if (tip) {
+      props.tabindex = '0';
+      props['aria-label'] = [dateText(d) || d.rawDate || '?', tip].join('. ');
+      props.dataset = { tip, tipWrap: '' };
+    }
+    dateEls.push(el('span', props, dateText(d) || d.rawDate || '?'));
   });
   const row = el('span', { className: 'chip chip--role-pair chip--c-ort' },
     el('span', { className: 'chip-rolle' }, (dates[0].roleLabel || 'AUFFÜHRUNG').toUpperCase()),
     el('span', { className: 'chip-wert chip-dates' }, ...dateEls),
   );
   return el('span', { className: 'chip-group' }, head, row);
-}
-
-/** Sheet, Zeile and Datenpunkt of an xlsxSource as tooltip text. */
-function provTipText(xlsxSource) {
-  if (!xlsxSource || !xlsxSource.row) return 'Quelle unbekannt';
-  const lines = [
-    xlsxSource.sheet ? `Quelle: ${xlsxSource.sheet}` : 'Quelle',
-    `Zeile ${xlsxSource.row}`,
-  ];
-  if (xlsxSource.datenpunkt) lines.push(`Datenpunkt ${xlsxSource.datenpunkt}`);
-  return lines.join('\n');
-}
-
-/** The same values as the tooltip, on one line, for the pill's aria-label. */
-function provLabelText(xlsxSource) {
-  const parts = [];
-  if (xlsxSource.sheet) parts.push(String(xlsxSource.sheet));
-  parts.push(`Zeile ${xlsxSource.row}`);
-  if (xlsxSource.datenpunkt) parts.push(`Datenpunkt ${xlsxSource.datenpunkt}`);
-  return `Provenienz: ${parts.join(', ')}`;
 }
 
 /** AgRelOn relations from store.agentRelations -> chips. */
@@ -275,7 +246,6 @@ export function relationChipEls(relations) {
       prefix: label,
       value: `${r.objectName || '?'}${validity}`,
       cluster: 'beziehung',
-      xlsxSource: r.xlsxSource,
       wikidata: r.objectWikidata,
       tip: r.objectName ? 'Als Filter setzen' : null,
       onClick: r.objectName ? chipClickFor('personen', r.objectName) : null,
@@ -292,7 +262,6 @@ export function financeChipEls(entries) {
     return buildRoleChip({
       prefix: e.field || 'FINANZ',
       value: valueParts.join(' '),
-      xlsxSource: e.xlsxSource,
     });
   });
 }
@@ -309,28 +278,24 @@ export function datingChipEls(store, datings) {
     gloss: glossOf(store, d.roleId),
     value: dateText(d) || d.rawDate || '?',
     cluster: 'datum',
-    xlsxSource: d.xlsxSource,
     qualityFlag: d.qualityFlag,
     note: d.description,
   }));
 }
-
-const PROV_ICON_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>';
 
 // Neutral info circle, not an alarm sign, for the data-quality marker. Exported
 // so the record detail draws the same mark; the legend arises from sameness.
 export const QUALITY_ICON_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>';
 
 /**
- * Role-prefix chip: uppercase mono prefix, serif value, optional provenance
- * pill and Wikidata badge. `cluster` selects the colour family via the CSS
+ * Role-prefix chip: uppercase mono prefix, serif value and optional Wikidata
+ * badge. `cluster` selects the colour family via the CSS
  * class .chip--c-<cluster>; it is derived from the prefix when not given.
  *
  * @param {Object} opts
  * @param {string} opts.prefix - role label, uppercased internally
  * @param {string} opts.value - primary value, e.g. "Bayreuth · 1951-07-30"
  * @param {string} [opts.cluster]
- * @param {Object} [opts.xlsxSource] - {sheet, row, datenpunkt}
  * @param {string} [opts.wikidata] - wd:Qxxx for the badge
  * @param {string} [opts.tip]
  * @param {Function} [opts.onClick]
@@ -339,21 +304,18 @@ export const QUALITY_ICON_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="cu
  * @param {string} [opts.note] - rico:generalDescription of the datapoint
  * @returns {HTMLElement}
  */
-export function buildRoleChip({ prefix, value, cluster, xlsxSource, wikidata, tip, onClick, compact, qualityFlag, gloss, details, note }) {
+export function buildRoleChip({ prefix, value, cluster, wikidata, tip, onClick, compact, qualityFlag, gloss, details, note }) {
   const prefixUpper = (prefix || '').toUpperCase();
   const cls = cluster || roleClusterFor(prefixUpper);
-  const hasProv = xlsxSource && xlsxSource.row;
   const hasWikidata = wikidata && String(wikidata).startsWith('wd:');
   const qualityLines = qualityTipLines(qualityFlag, note);
   const hasQuality = qualityLines.length > 0;
-  // The fields of the datapoint hang on the value, not on the chip: the pill,
-  // the badge and the marker are its siblings, so hovering any of them still
-  // shows exactly one tooltip (E-90). The role gloss (E-143) merges into that
-  // text instead of being dropped.
+  // The fields of the datapoint hang on the value. The role gloss (E-143)
+  // merges into that text instead of being dropped.
   const detailTip = [gloss, ...(details || [])].filter(Boolean).join('\n');
   // A chip tip only when no child carries its own, otherwise tooltips stack on
-  // hovering the pill or the Wikidata badge (E-90).
-  const childrenHaveTips = hasProv || hasWikidata || hasQuality || Boolean(detailTip);
+  // hovering the quality marker or the Wikidata badge.
+  const childrenHaveTips = hasWikidata || hasQuality || Boolean(detailTip);
 
   const chipProps = {
     className: `chip chip--role-pair chip--c-${cls}${onClick ? ' chip--clickable' : ''}${compact ? ' chip--compact' : ''}`,
@@ -381,21 +343,6 @@ export function buildRoleChip({ prefix, value, cluster, xlsxSource, wikidata, ti
     el('span', { className: 'chip-rolle' }, prefixUpper),
     el('span', valueProps, value || '—'),
   ];
-  if (hasProv) {
-    parts.push(el('span', {
-      className: 'prov-pill',
-      dataset: { tip: provTipText(xlsxSource), tipWrap: '' },
-      // The pill names the Quellzeile and does nothing else; the jump into
-      // sheet and row is still an open decision. Without stopping the bubble
-      // the click reached the chip's filter action and closed the detail
-      // (Projektleitung, 2026-09-04).
-      'aria-label': provLabelText(xlsxSource),
-      onClick: (e) => e.stopPropagation(),
-    },
-      el('span', { className: 'prov-pill__icon', html: PROV_ICON_SVG }),
-      el('span', { className: 'prov-pill__label' }, `Z.${xlsxSource.row}`),
-    ));
-  }
   if (hasWikidata) {
     parts.push(el('a', {
       className: 'badge badge--wikidata',

@@ -109,17 +109,52 @@ def test_narrow_views_start_with_accessible_collapsed_filters(
 
 
 @pytest.mark.frontend
-def test_grouped_performance_dates_expose_their_source_by_keyboard(
+def test_grouped_performance_dates_only_expose_recorded_caveats_by_keyboard(
     frontend_server, browser_context
 ):
+    """Exercise the rare date-caveat path in the isolated browser store."""
     page = browser_context.new_page()
     page.goto(
         frontend_server + "#bestand/m3gim-data%3ANIM_022_1_1", wait_until="networkidle"
     )
-    date = page.locator('.archiv-row--detail .chip-date[data-tip*="Zeile 6"]').first
-    date.wait_for()
-    date.focus()
-    assert date.evaluate("el => document.activeElement === el")
-    assert "Box 2" in date.get_attribute("aria-label")
-    assert "Zeile 6" in date.get_attribute("aria-label")
+    page.wait_for_selector(".archiv-row--detail .chip-date")
+    page.evaluate("""() => {
+        const datings = window.m3gim.store.recordDatings.get('m3gim-data:NIM_022_1_1');
+        const performance = datings.find(
+            dating => dating.roleId === 'm3gim-vocab:performance'
+        );
+        performance.description = 'Prüfhinweis zum einzelnen Aufführungsdatum';
+        location.hash = '#bestand/m3gim-data%3ANIM_023_5';
+    }""")
+    page.wait_for_url("**NIM_023_5")
+    expect(page.locator(".archiv-row--detail .inline-detail__head-sig")).to_have_text(
+        "UAKUG/NIM_023 5"
+    )
+    page.evaluate(
+        "location.hash = '#bestand/m3gim-data%3ANIM_022_1_1'"
+    )
+    page.wait_for_url("**NIM_022_1_1")
+    dates = page.locator(".archiv-row--detail .chip-date")
+    expect(dates).to_have_count(14)
+    annotated = page.locator(".archiv-row--detail .chip-date[data-tip]")
+    expect(annotated).to_have_count(1)
+    expect(annotated).to_have_attribute(
+        "data-tip", "Anmerkung: Prüfhinweis zum einzelnen Aufführungsdatum"
+    )
+    annotated.focus()
+    assert annotated.evaluate("el => document.activeElement === el")
+    expect(page.locator(".tooltip-portal")).to_be_visible()
+    expect(page.locator(".tooltip-portal")).to_have_text(
+        "Anmerkung: Prüfhinweis zum einzelnen Aufführungsdatum"
+    )
+    for index in range(dates.count()):
+        date = dates.nth(index)
+        tip = date.get_attribute("data-tip")
+        if tip:
+            assert "Datenqualität:" in tip or "Anmerkung:" in tip
+            date.focus()
+            assert date.evaluate("el => document.activeElement === el")
+        else:
+            assert date.get_attribute("tabindex") is None
+            assert date.get_attribute("aria-label") is None
     page.close()

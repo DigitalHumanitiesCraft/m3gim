@@ -35,17 +35,16 @@ def test_bestand_tooltip_is_one_unfragmented_overlay(frontend_server, browser_co
     assert box["width"] <= 280
     assert box["x"] >= 8 and box["x"] + box["width"] <= 1544 - 8
 
-    provenance = potsdam.locator("xpath=..").locator(".prov-pill")
-    provenance.hover()
-    expect(tooltip).to_contain_text("Zeile 4")
-    assert provenance.get_attribute("aria-describedby") == "app-tooltip"
+    wikidata = potsdam.locator("xpath=..").locator(".badge--wikidata")
+    wikidata.hover()
+    expect(tooltip).to_contain_text("Bei Wikidata ansehen")
+    assert wikidata.get_attribute("aria-describedby") == "app-tooltip"
     assert potsdam.get_attribute("aria-describedby") == "record-context"
 
     page.keyboard.press("Escape")
     expect(tooltip).to_be_hidden()
-    assert provenance.get_attribute("aria-describedby") is None
+    assert wikidata.get_attribute("aria-describedby") is None
 
-    wikidata = potsdam.locator("xpath=..").locator(".badge--wikidata")
     wikidata.focus()
     expect(tooltip).to_be_visible()
     assert wikidata.get_attribute("aria-describedby") == "app-tooltip"

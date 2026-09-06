@@ -72,9 +72,6 @@ def browser_contract(page) -> dict:
         for (const record of members) records.push({
           id: record['@id'], identifier: record['rico:identifier'] || '',
           rowId: item.record['@id'], paged: record['@id'] !== item.record['@id'],
-          sourceCells: (window.m3gim.provenanceOf(record['@id']) || [])
-            .filter(source => source.field !== 'record' && source.row)
-            .map(source => ({ sheet: source.sheet, row: source.row })),
         });
       }
       return { basisCount: basis.size, basisIds: [...basis], rows, records };
@@ -116,7 +113,7 @@ def render_findings() -> tuple[dict, list[str]]:
         findings.extend(f"Unerwartete Bestand-Zeile nach Expansion: {rid}"
                         for rid in sorted(actual_rows - expected_rows))
 
-        opened = paged = provenance_records = exact_source_records = 0
+        opened = paged = substantive_chips = dated_values = 0
         for expected in contract["records"]:
             page.evaluate("rid => { location.hash = '#bestand/' + encodeURIComponent(rid); }",
                           expected["id"])
@@ -135,32 +132,40 @@ def render_findings() -> tuple[dict, list[str]]:
             if active != expected["rowId"]:
                 findings.append(f"Falsche Gruppenzeile bei {expected['id']}: "
                                 f"{active!r} statt {expected['rowId']!r}")
-            if page.locator(".archiv-row--detail .inline-detail__chips").count() == 0:
+            detail = page.locator(".archiv-row--detail")
+            if detail.locator(".inline-detail__chips").count() == 0:
                 findings.append(f"Verlinkter Basisrecord ohne Detailwerte: {expected['id']}")
-            pills = page.locator(".archiv-row--detail .prov-pill")
-            provenance_records += int(pills.count() > 0)
-            labels = pills.evaluate_all(
-                "nodes => nodes.map(node => node.getAttribute('aria-label') || '')")
-            labels.extend(page.locator(
-                ".archiv-row--detail .chip-date[data-tip]"
-            ).evaluate_all(
-                "nodes => nodes.map(node => node.getAttribute('data-tip') || '')"
-            ))
-            expected_sources = expected["sourceCells"]
-            if expected_sources:
-                missing_sources = [source for source in expected_sources if not any(
-                    str(source["sheet"]) in label
-                    and f"Zeile {source['row']}" in label for label in labels
-                )]
-                if not missing_sources:
-                    exact_source_records += 1
-                else:
+            chips = detail.locator(".inline-detail__chips .chip--role-pair")
+            chip_parts = chips.evaluate_all("""nodes => nodes.map(node => ({
+              role: (node.querySelector('.chip-rolle')?.textContent || '').trim(),
+              value: (node.querySelector('.chip-wert')?.textContent || '').trim(),
+            }))""")
+            blank = [part for part in chip_parts if not part["role"] or not part["value"]]
+            if blank:
+                findings.append(
+                    f"Detailchip ohne Rolle oder Wert bei {expected['id']}: {blank!r}"
+                )
+            substantive_chips += len(chip_parts)
+            dates = detail.locator(".chip-date")
+            date_texts = dates.all_inner_texts()
+            if any(not value.strip() for value in date_texts):
+                findings.append(f"Leerer Datumswert bei {expected['id']}")
+            dated_values += len(date_texts)
+            if detail.locator(".prov-pill, .inline-detail__source").count():
+                findings.append(f"Veraltete Quellen-Debug-UI bei {expected['id']}")
+            if expected["id"] == "m3gim-data:NIM_023_5":
+                text = detail.inner_text()
+                canary = (
+                    "Malaniuk, Ira",
+                    "Wuppertal",
+                    "4.\u2009April 1953",
+                    "AUFFÜHRUNG",
+                )
+                missing = [value for value in canary if value not in text]
+                if missing:
                     findings.append(
-                        f"Erwartete Quellbelege fehlen im Detail {expected['id']}: "
-                        + ", ".join(
-                            f"{source['sheet']} Zeile {source['row']}"
-                            for source in missing_sources
-                        )
+                        "Quellgestützter Inhalts-Canary NIM_023_5 unvollständig: "
+                        + ", ".join(missing)
                     )
             if expected["paged"]:
                 paged += 1
@@ -173,8 +178,8 @@ def render_findings() -> tuple[dict, list[str]]:
             "expected_rows": len(contract["rows"]),
             "expanded_konvolute": len(header_ids), "opened_records": opened,
             "opened_folio_pages": paged,
-            "records_with_provenance_pill": provenance_records,
-            "records_with_exact_source_cell": exact_source_records}, findings
+            "rendered_role_value_chips": substantive_chips,
+            "rendered_grouped_dates": dated_values}, findings
 
 
 def write_report(mode: str, stats: dict, findings: list[str]) -> None:

@@ -20,7 +20,7 @@ TASK4_IDS = {
 
 
 @pytest.mark.frontend
-def test_task4_canary_preserves_literal_basis_and_source_evidence(
+def test_task4_canary_preserves_literal_basis_and_rendered_evidence(
     frontend_server, browser_context
 ):
     page = browser_context.new_page()
@@ -71,7 +71,13 @@ def test_task4_canary_preserves_literal_basis_and_source_evidence(
     first_id = sorted(TASK4_IDS)[0]
     first = page.locator(f'#bestand-tbody tr[data-record-row="{first_id}"]')
     first.click()
-    assert page.locator(".prov-pill[aria-label*='Zeile']").first.is_visible()
+    detail = page.locator(".archiv-row--detail")
+    assert detail.locator(".inline-detail__head-sig").inner_text() == "UAKUG/NIM_004 18"
+    chips = detail.locator(".chip--role-pair")
+    assert chips.count() > 0
+    assert all(value.strip() for value in chips.locator(".chip-rolle").all_inner_texts())
+    assert all(value.strip() for value in chips.locator(".chip-wert").all_inner_texts())
+    assert detail.locator(".prov-pill, .inline-detail__source").count() == 0
 
 
 @pytest.mark.frontend

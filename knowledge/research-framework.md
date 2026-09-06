@@ -173,7 +173,7 @@ The application answers seven questions. Each of them is an epic of [specificati
 | How did her knowledge travel? | FF3 |
 | What is a statement based on? | all four |
 
-The application is a tool. It shows every recorded data point with the role it carries and the source cell it comes from, it names what the holdings do not attest, and it leaves the interpretation to the researcher. It draws no conclusion about the case, because a statement about the subject belongs in a publication and not in an interface (E-156).
+The application is a tool. It shows every recorded data point with the role it carries and access to its attesting record, it names what the holdings do not attest, and it leaves the interpretation to the researcher. It draws no conclusion about the case, because a statement about the subject belongs in a publication and not in an interface (E-156).
 
 ## Evaluation
 

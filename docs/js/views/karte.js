@@ -374,7 +374,6 @@ function buildOccChip(o) {
   return buildRoleChip({
     prefix: o.roleLabel || (o.source === 'ste' ? 'EREIGNIS' : 'ORT'),
     value,
-    xlsxSource: o.xlsxSource,
     wikidata: o.placeWikidata,
     tip: o.recordId || '',
     // Through the router, so the hash keeps the shared filter (user-story
