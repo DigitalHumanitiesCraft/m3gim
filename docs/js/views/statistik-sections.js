@@ -1,14 +1,6 @@
 /**
- * Statistik — die Bauteile je Ansicht.
- *
- * Je Aggregat eine Sektion aus den Balken-Primitiven in ui/charts.js und den
- * Aggregationen aus statistik-data.js. Jede Sektion nimmt (store, ids) und
- * zaehlt im Schnitt; die Zahl im Titel ist damit die Zahl des Schnitts.
- *
- * Wo ein Aggregat eine geteilte Facette hat, fuehrt seine Zeile in den
- * gefilterten Bestand (E-144). Wo es keine hat (Buehnenrollen, Rollen der
- * Mitwirkenden, Komponisten, Erschliessungsachsen, die Sammelzeile "ohne Typ"),
- * bleibt die Zeile statisch, statt einen Filter zu setzen, den es nicht gibt.
+ * Statistics sections over the shared document cut.
+ * Rows navigate through a shared facet or expose their complete evidence set.
  */
 
 import { el } from '../utils/dom.js';
@@ -51,53 +43,59 @@ function subsection(parent, title) {
   return wrap;
 }
 
-/**
- * Ranking with a tail row, or a complete evidence drilldown for role rankings.
- */
+function showEvidence(region, store, row) {
+  region.replaceChildren();
+  region.appendChild(el('h5', { className: 'stat-evidence__title' },
+    `${row.label} · ${row.recordIds.length} Belege`));
+  const list = el('div', { className: 'stat-evidence__list' });
+  for (const id of row.recordIds) {
+    const record = store && store.records ? store.records.get(id) : null;
+    list.appendChild(el('button', {
+      className: 'stat-evidence__record', type: 'button',
+      dataset: { recordId: id },
+      onClick: () => navigateToView('bestand', { recordId: id }),
+    }, record
+      ? `${formatSignatur(record['rico:identifier'])} · ${record['rico:title'] || '(ohne Titel)'}`
+      : id));
+  }
+  region.appendChild(list);
+}
+
 function ranking(rows, { facet = null, evidence = false, store = null, color = () => KUG_BLUE } = {}) {
   const head = evidence ? rows : rows.slice(0, BAR_TOP);
-  const evidenceRegion = evidence
-    ? el('div', { className: 'stat-evidence', 'aria-live': 'polite' })
-    : null;
-  const showEvidence = (row) => {
-    if (!evidenceRegion) return;
-    evidenceRegion.replaceChildren();
-    evidenceRegion.appendChild(el('h5', { className: 'stat-evidence__title' },
-      `${row.label} · ${row.recordIds.length} Belege`));
-    const list = el('div', { className: 'stat-evidence__list' });
-    for (const id of row.recordIds) {
-      const record = store && store.records ? store.records.get(id) : null;
-      list.appendChild(el('button', {
-        className: 'stat-evidence__record', type: 'button',
-        onClick: () => navigateToView('bestand', { recordId: id }),
-      }, record
-        ? `${formatSignatur(record['rico:identifier'])} · ${record['rico:title'] || '(ohne Titel)'}`
-        : id));
-    }
-    evidenceRegion.appendChild(list);
+  const maxValue = rows.reduce((max, row) => Math.max(max, row.count), 0) || 1;
+  const detailRegion = el('div', { className: 'stat-evidence', 'aria-live': 'polite' });
+  const barFor = (row, i) => {
+    const hasEvidence = (row.evidence || evidence) && row.recordIds && row.recordIds.length;
+    return {
+      label: row.label,
+      value: row.count,
+      color: row.color || color(i, rows.length),
+      onClick: hasEvidence
+        ? () => showEvidence(detailRegion, store, row)
+        : facet ? () => applyArchivFilter(facet, row.value ?? row.label) : null,
+      tip: hasEvidence ? 'Belege anzeigen' : facet ? 'Im Bestand zeigen' : '',
+    };
   };
-  const bars = head.map((row, i) => ({
-    label: row.label,
-    value: row.count,
-    color: color(i, head.length),
-    onClick: facet
-      ? () => applyArchivFilter(facet, row.value ?? row.label)
-      : evidence && row.recordIds && row.recordIds.length
-        ? () => showEvidence(row)
-        : null,
-    tip: facet ? 'Im Bestand zeigen' : evidence ? 'Belege anzeigen' : '',
-  }));
   const tail = evidence ? [] : rows.slice(BAR_TOP);
+  const chart = buildHorizontalBars(head.map(barFor), { maxValue });
   if (tail.length) {
-    bars.push({
-      label: `Weitere (${tail.length})`,
-      value: tail.reduce((s, r) => s + r.count, 0),
-      color: 'var(--line-strong)',
-      tip: tail.slice(0, 20).map(r => `${r.label} (${r.count})`).join(' · '),
-    });
+    const more = el('button', {
+      className: 'stat-ranking__more', type: 'button', 'aria-expanded': 'false',
+      onClick: () => {
+        const expanded = more.getAttribute('aria-expanded') === 'true';
+        detailRegion.replaceChildren();
+        if (!expanded) {
+          detailRegion.appendChild(buildHorizontalBars(
+            tail.map((row, i) => barFor(row, i + BAR_TOP)), { maxValue }));
+        }
+        more.setAttribute('aria-expanded', String(!expanded));
+      },
+    }, `Weitere (${tail.length})`);
+    chart.appendChild(el('li', { className: 'stat-ranking__more-row' },
+      more));
   }
-  const chart = buildHorizontalBars(bars);
-  return evidenceRegion ? el('div', { className: 'stat-ranking' }, chart, evidenceRegion) : chart;
+  return el('div', { className: 'stat-ranking' }, chart, detailRegion);
 }
 
 // ---------------------------------------------------------------------------
@@ -111,34 +109,11 @@ export function buildDokumenttypen(store, ids) {
   const ohneTyp = docTypes.find(d => d.id === null);
 
   const wrap = subsection(node, `Typen (${typed.length})`);
-  const head = typed.slice(0, BAR_TOP);
-  const rows = head.map((d, i) => ({
-    label: d.label, value: d.count, color: blueShade(i, head.length),
-    onClick: () => applyArchivFilter('docType', d.id),
-    tip: 'Im Bestand zeigen',
+  const rows = typed.map(d => ({ ...d, value: d.id }));
+  if (ohneTyp) rows.push({ ...ohneTyp, evidence: true, color: 'var(--color-text-tertiary)' });
+  wrap.appendChild(ranking(rows, {
+    facet: 'docType', color: blueShade, store,
   }));
-  const tail = typed.slice(BAR_TOP);
-  if (tail.length) {
-    rows.push({
-      label: `Weitere (${tail.length})`,
-      value: tail.reduce((s, d) => s + d.count, 0),
-      color: 'var(--line-strong)',
-      tip: tail.slice(0, 20).map(d => `${d.label} (${d.count})`).join(' · '),
-    });
-  }
-  if (ohneTyp) {
-    // Statische Zeile, kein Sprung: der Dokumenttyp schneidet unter den Typen,
-    // die es gibt (docTypeIndex in records-for.js), ein Dokument ohne Typ traegt
-    // keinen Facettenwert und waere ueber keinen erreichbar. Der fruehere Sprung
-    // setzte einen Platzhalterwert, den recordsFor nicht kennt, und fuehrte
-    // damit in einen leeren Bestand (user-story audit 2026-09-03).
-    rows.push({
-      label: 'ohne Typ', value: ohneTyp.count, color: 'var(--color-text-tertiary)',
-      tip: 'Ohne klassifizierten Dokumenttyp — eine Erschließungslücke, '
-        + 'kein Filterwert',
-    });
-  }
-  wrap.appendChild(buildHorizontalBars(rows));
   return node;
 }
 
@@ -157,8 +132,7 @@ export function buildRepertoire(store, ids) {
 
   const rollen = aggregateStageRoles(store, ids);
   if (rollen.length) {
-    // Buehnenrollen haengen an der Auffuehrung, nicht am Record: sie tragen
-    // keine Facette und fuehren deshalb nicht in den Bestand.
+    // Stage roles have no record facet, so the row exposes its evidence set.
     subsection(node, `Bühnenrollen (${rollen.length})`)
       .appendChild(ranking(rollen, { evidence: true, store }));
   }
@@ -166,7 +140,7 @@ export function buildRepertoire(store, ids) {
   const komponisten = aggregateComposers(store, ids);
   if (komponisten.length) {
     subsection(node, `Komponisten (${komponisten.length})`)
-      .appendChild(ranking(komponisten));
+      .appendChild(ranking(komponisten, { evidence: true, store }));
   }
   return node;
 }
@@ -186,8 +160,7 @@ export function buildPersonen(store, ids) {
 
   const rollen = aggregateAgentRoles(store, ids);
   if (rollen.length) {
-    // Die Facette Rolle ist mit E-204 entfallen (sie filterte die Beteiligungs-
-    // art, nicht die Buehnenrolle); die Rangliste bleibt als Kennzahl stehen.
+    // Agent roles have no shared facet; each row exposes its evidence set.
     subsection(node, `Rollen (${rollen.length})`)
       .appendChild(ranking(rollen, { evidence: true, store }));
   }

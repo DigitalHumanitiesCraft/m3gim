@@ -28,7 +28,9 @@ function makeStore(records, concepts) {
   return {
     allRecords: records,
     recordDatings: new Map(),
-    dftHierarchy: new Map(concepts.map((c) => [c.id, { prefLabel: c.prefLabel }])),
+    dftHierarchy: new Map(concepts.map((c) => [c.id, {
+      prefLabel: c.prefLabel, children: c.children || [],
+    }])),
   };
 }
 
@@ -63,6 +65,8 @@ describe('Dokumenttypen', () => {
     const ohne = aggregateDocTypes(makeStore(RECORDS, CONCEPTS)).find((r) => r.id === null);
     assert.equal(ohne.label, 'ohne Typ');
     assert.equal(ohne.count, 1);
+    assert.deepEqual(ohne.recordIds, ['r4'],
+      'die Erschliessungsluecke bleibt ohne erfundenen Facettenwert erreichbar');
   });
 
   test('aggregateDocTypes zaehlt nur im Schnitt', () => {
@@ -70,6 +74,22 @@ describe('Dokumenttypen', () => {
     assert.equal(rows.find((r) => r.id === 'program').count, 1);
     assert.equal(rows.find((r) => r.id === null), undefined,
       'Der Record ohne Typ liegt ausserhalb des Schnitts und darf nicht zaehlen.');
+  });
+
+  test('Oberbegriffe zaehlen denselben distinkten Unterbaum wie ihre Facette', () => {
+    const concepts = [
+      { id: 'm3gim-vocab:correspondence', prefLabel: 'Korrespondenz',
+        children: ['m3gim-vocab:letter'] },
+      { id: 'm3gim-vocab:letter', prefLabel: 'Brief' },
+    ];
+    const records = [
+      { '@id': 'direct', 'rico:hasDocumentaryFormType': { '@id': 'm3gim-vocab:correspondence' } },
+      { '@id': 'child', 'rico:hasDocumentaryFormType': { '@id': 'm3gim-vocab:letter' } },
+    ];
+    const rows = aggregateDocTypes(makeStore(records, concepts));
+    const parent = rows.find(row => row.id === 'correspondence');
+    assert.equal(parent.count, 2);
+    assert.deepEqual(parent.recordIds.sort(), ['child', 'direct']);
   });
 });
 
@@ -141,6 +161,8 @@ describe('Entitaeten und Repertoire im Schnitt', () => {
     const rows = aggregateComposers(store, cut);
     assert.deepEqual(rows.map((r) => [r.label, r.count]),
       [['Wagner, Richard', 2], ['Bizet, Georges', 1]]);
+    assert.deepEqual(rows[0].recordIds.sort(), ['r1', 'r2'],
+      'die Komponistenzeile führt alle distinkt gezählten Dokumente');
   });
 });
 

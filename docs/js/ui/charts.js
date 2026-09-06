@@ -9,12 +9,11 @@
 import { el } from '../utils/dom.js';
 
 /**
- * Horizontale Bar-Liste. rows: [{label, value, href?, color?, onClick?,
- * countText?, tip?}]. Keine Prozent, kein Bearbeitungsstand-Vokabular.
+ * Horizontal bars. maxValue keeps separately rendered parts on one scale.
  */
-export function buildHorizontalBars(rows) {
+export function buildHorizontalBars(rows, { maxValue = null } = {}) {
   const list = el('ul', { className: 'stat-bars' });
-  const max = rows.reduce((m, r) => Math.max(m, r.value), 0) || 1;
+  const max = maxValue || rows.reduce((m, r) => Math.max(m, r.value), 0) || 1;
   for (const row of rows) {
     // The tooltip hangs on the row, not on the label: the label cell is an
     // ellipsis box with overflow hidden and would clip it. The label repeats

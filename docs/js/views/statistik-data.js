@@ -12,7 +12,7 @@
  * scale below stays here, because those two views read it from here.
  */
 
-import { getDocTypeId, dftLabel } from '../utils/format.js';
+import { getDocTypeId, dftLabel, expandDftFilter } from '../utils/format.js';
 
 // ---------------------------------------------------------------------------
 // Farbskala der Rollen — geteilt mit Karte und Chronik
@@ -83,20 +83,32 @@ const byCountDesc = (a, b) => (b.count - a.count) || a.label.localeCompare(b.lab
 // ---------------------------------------------------------------------------
 
 export function aggregateDocTypes(store, ids) {
-  const counts = new Map();
-  let ohneTyp = 0;
+  const direct = new Map();
+  const ohneTyp = new Set();
   for (const rec of cutRecords(store, ids)) {
     const id = getDocTypeId(rec);
-    if (!id) { ohneTyp++; continue; }
-    counts.set(id, (counts.get(id) || 0) + 1);
+    if (!id) { ohneTyp.add(rec['@id']); continue; }
+    let recordIds = direct.get(id);
+    if (!recordIds) { recordIds = new Set(); direct.set(id, recordIds); }
+    recordIds.add(rec['@id']);
+  }
+  const counts = new Map();
+  for (const id of direct.keys()) {
+    const recordIds = new Set();
+    for (const member of expandDftFilter(store, id)) {
+      for (const recordId of direct.get(member) || []) recordIds.add(recordId);
+    }
+    counts.set(id, recordIds);
   }
   const rows = [...counts.entries()]
     // dftLabel prefixes the short id before the lookup; a bare id never hits
     // store.dftHierarchy and would silently fall back to the technical key.
-    .map(([id, count]) => ({ id, count, label: dftLabel(store, id) }))
+    .map(([id, recordIds]) => ({
+      id, count: recordIds.size, label: dftLabel(store, id), recordIds: [...recordIds],
+    }))
     .sort((a, b) => b.count - a.count);
-  if (ohneTyp > 0) {
-    rows.push({ id: null, count: ohneTyp, label: 'ohne Typ' });
+  if (ohneTyp.size > 0) {
+    rows.push({ id: null, count: ohneTyp.size, label: 'ohne Typ', recordIds: [...ohneTyp] });
   }
   return rows;
 }
@@ -190,7 +202,7 @@ export function aggregateComposers(store, ids) {
     }
   }
   return [...perComposer.entries()]
-    .map(([label, set]) => ({ label, count: set.size }))
+    .map(([label, set]) => ({ label, count: set.size, recordIds: [...set] }))
     .filter(row => row.count > 0)
     .sort(byCountDesc);
 }

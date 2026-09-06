@@ -158,11 +158,8 @@ describe('Tooltip der Gruppenzeile', () => {
   });
 });
 
-describe('Die Sammelzeile "ohne Typ" der Statistik ist kein Sprung', () => {
-  // Ein Dokument ohne klassifizierten Typ steht in keinem Eintrag des
-  // docType-Index; kein Facettenwert holt es zurueck. Die Zeile darf deshalb
-  // keinen Filter setzen, sonst zeigt der Bestand nichts (user-story audit
-  // 2026-09-03).
+describe('Ohne Typ bleibt ohne erfundene Facette belegbar', () => {
+  // No type facet can select an untyped record; its evidence uses record IDs.
   function storeMitUngetyptem() {
     const store = makeStore();
     store.records.set('r5', { '@id': 'r5', 'm3gim-ontology:processingStatus': 'abgeschlossen' });
@@ -174,21 +171,13 @@ describe('Die Sammelzeile "ohne Typ" der Statistik ist kein Sprung', () => {
     const store = storeMitUngetyptem();
     const ohneTyp = aggregateDocTypes(store, baseIds(store)).find(row => row.id === null);
     assert.equal(ohneTyp.count, 1, 'die Zeile zaehlt den ungetypten Datensatz');
+    assert.deepEqual(ohneTyp.recordIds, ['r5'], 'die Belegliste erreicht genau diesen Datensatz');
     // Alle angebotenen Werte plus der frueher gesetzte Platzhalter.
     const werte = ['schriftgut', 'brief', 'rezension', 'plakat', '__none__', 'ohne-typ'];
     for (const wert of werte) {
       assert.ok(!recordsFor(store, { docType: [wert] }).ids.has('r5'),
         `docType=${wert} erreicht den ungetypten Datensatz nicht`);
     }
-  });
-
-  test('die Zeile traegt keinen Klick und keinen Platzhalter mehr', () => {
-    const src = readFileSync(new URL('../../docs/js/views/statistik-sections.js', import.meta.url), 'utf-8');
-    assert.ok(!src.includes('__none__'), 'der Platzhalter, den recordsFor nie kannte, ist weg');
-    const start = src.indexOf('if (ohneTyp)');
-    const block = src.slice(start, src.indexOf('return node', start));
-    assert.ok(!block.includes('onClick'), 'die Sammelzeile setzt keinen Filter');
-    assert.match(block, /\btip:/, 'sie sagt im Tooltip, warum sie nirgends hinfuehrt');
   });
 
   test('im ausgelieferten Datensatz erreicht kein Typwert die ungetypten Dokumente', async () => {

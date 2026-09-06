@@ -110,6 +110,66 @@
   white-space: nowrap;
 }
 
+.stat-ranking__more-row {
+  list-style: none;
+}
+
+.stat-ranking__more {
+  border: 0;
+  padding: 0;
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  text-decoration: underline dotted var(--accent-light);
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.stat-ranking__more:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.stat-evidence:empty {
+  display: none;
+}
+
+.stat-evidence {
+  margin-top: var(--space-3);
+}
+
+.stat-evidence__title {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+}
+
+.stat-evidence__list {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+.stat-evidence__record {
+  border: 0;
+  padding: 0;
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  font-size: var(--text-sm);
+  text-align: left;
+  text-decoration: underline dotted var(--accent-light);
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.stat-evidence__record:hover,
+.stat-ranking__more:hover {
+  color: var(--accent-dark);
+  text-decoration-style: solid;
+}
+
 /* The affordance underlines the word, not the grid cell: as a border it ran the
    full column width and read as a row rule (design rule 11). */
 .stat-bars__label--link {

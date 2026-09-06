@@ -134,6 +134,8 @@ The four basket builders and their actual browser downloads are checked as CSV, 
 
 Screenshots and DOM geometry answer different questions. The DOM and source queries establish text, counts and membership. Screenshots establish visual legibility and clipping. A contradiction requires investigation of dimensions, transforms and visibility before either observation is accepted.
 
+Statistics checks require the literal seven-document Task 4 set in the composer evidence list and the actual opened record detail. A ranking-tail test proves the target is absent before expansion, follows it afterwards and checks the common bar scale. Parent-type counts must agree with the existing hierarchical facet. For the missing-type case, a browser response fixture removes one known record's type while retaining its real data and routes; the test follows the displayed evidence to that record. A static assertion that the row had no click handler was retired because it prevented the required evidence path. These tests protect the meaning of the interaction without prescribing the renderer's source text.
+
 ## Boundaries
 
 Model invariants cannot establish the correctness of cataloguing decisions or historical identities. The source layer remains subject to editorial correction and scholarly review. The data mirror makes missing input evidence explicit without modifying it. Strict xfails retain their named source-fix signals.
