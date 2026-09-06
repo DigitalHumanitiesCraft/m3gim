@@ -102,6 +102,8 @@ The numbering has gaps and collisions. Numbers are stable identifiers rather tha
 
 Beside the numbered modules the directory holds `conftest.py` with the session-scoped fixtures and the path overrides described in [architecture.md](architecture.md) § ENV overrides, `_helpers.py` with the shared graph accessors, `fixtures/` with the baselines and the verified allowlist of external terms, `schemas/` with the JSON Schema, `tools/` with the snapshot diff and the holdings verification as command-line tools, and `frontend/` as described above.
 
+The source-diagnostics checks compare the validator's valid target keys with the actual transformed hierarchy, including synthetic intermediate Folio parents. Isolated boundary cases preserve null-value and literal-cell semantics, deterministic join repair and the distinction between missing source content and a valid Folio row. Calendar checks assert both accepted partial/season forms and rejected impossible dates. A diagnostic refactoring also needs a comparison with the former transformation output; two identical candidate runs establish determinism alone.
+
 ## Vocabulary gates
 
 The coverage checker `vocab/check-coverage.py` runs as a binding gate in the standard run. One test starts it as its own process and takes the checker output into the assertion, so a red run names the missing term. Running it as a separate process has three reasons. The script exports no callable check function, its file name carries a hyphen and is therefore not an importable module name, and the manual command from [`../CLAUDE.md`](../CLAUDE.md) and the gate use the same entry point and cannot drift apart.

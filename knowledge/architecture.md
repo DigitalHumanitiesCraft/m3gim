@@ -48,6 +48,8 @@ The link table lives as one CSV per box under `verknuepfungen/`, together with t
 
 Step 2 exits with code 1 as soon as the report carries ERROR findings, which is the expected state at the current data state, and step 5 reports the known source defects in the same way. Both have done their work once the report is written, the findings go to the cataloguing team through the handover list under `data/reports/`. Step 3 reads its role concepts, concept definitions and dating scopes out of the vocabulary rather than duplicating them (E-133), counts every path that discards a source row and prints the tally at the end of the run. Step 4 copies the result into the frontend data directory and skips the copy when the output directory is not the default, so a staging run cannot overwrite the published data source. Step 8 is deterministic by construction, no timestamps and no unordered sets, and `sync_shared_regions` in the same script replaces foot, info-page header and stylesheet version in all five HTML pages from its own templates while the page bodies stay handwritten (E-251).
 
+The source validator resolves E005 against the complete published record-key policy: source records, RecordSet parents and recursively derived Folio parents, with the same deterministic hyphen repair as transformation. Signature-only rows that transformation drops produce E016 and cannot satisfy a link target. Calendar validation checks complete dates and month values as well as their notation; an impossible link date produces E010 at its source cell. Small helpers in `_common.py` share these policies, while the source values remain unchanged.
+
 ### Scripts outside the run
 
 | Script | Purpose |

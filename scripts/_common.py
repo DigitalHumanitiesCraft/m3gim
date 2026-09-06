@@ -32,6 +32,84 @@ OUTPUT_DIR = Path(os.environ.get(
 REPORTS_DIR = Path(os.environ.get(
     "M3GIM_REPORTS_DIR", REPO_ROOT / "data" / "reports"))
 
+RECORD_CONTENT_FIELDS = (
+    "titel", "dokumenttyp", "entstehungsdatum", "Bearbeitungsstand",
+)
+PAGE_FOLIO = re.compile(r"^\d+(?:_\d+)+$")
+
+
+def has_source_value(value: object) -> bool:
+    """Return whether a source cell carries a non-null textual value."""
+    import pandas as pd  # lazy so _common stays importable without pandas
+
+    return bool(pd.notna(value) and str(value).strip())
+
+
+def has_record_content(row: object) -> bool:
+    """Match the fields that make a non-folio object row publishable."""
+    return any(has_source_value(row.get(field)) for field in RECORD_CONTENT_FIELDS)
+
+
+def find_object_folio_column(df: object) -> object | None:
+    """Find the folio column under the object-table fallback policy."""
+    for column in df.columns:
+        if not isinstance(column, str):
+            continue
+        name = column.lower()
+        if name not in {"folio", "folio nr", "folio_nr"} and "unnamed" not in name:
+            continue
+        sample = df[column].dropna().astype(str).head(5)
+        if any(
+            re.match(r"^\d+_\d+$", value.strip())
+            or value.strip().startswith("fol.")
+            for value in sample
+        ):
+            return column
+    return None
+
+
+def record_key(signature: object, folio: object = None) -> str:
+    """Build the record identifier used by object and link rows."""
+    signature_text = str(signature).strip()
+    if not has_source_value(folio):
+        return signature_text
+    folio_text = str(folio).strip()
+    return f"{signature_text} {folio_text}"
+
+
+def link_record_key(signature: object, folio: object = None) -> str:
+    """Build a link target key, ignoring the source's literal Folio marker."""
+    if has_source_value(folio) and str(folio).strip().lower() == "folio":
+        folio = None
+    return record_key(signature, folio)
+
+
+def publishable_signature(value: object) -> str | None:
+    """Return a signature unless the transform skips its row."""
+    if not has_source_value(value):
+        return None
+    signature = str(value).strip()
+    return None if signature.lower() == "beispiel" else signature
+
+
+def parent_folio(folio: object) -> str | None:
+    """Return the parent generated for a page-like folio."""
+    if not has_source_value(folio):
+        return None
+    text = str(folio).strip()
+    return text.rsplit("_", 1)[0] if PAGE_FOLIO.fullmatch(text) else None
+
+
+def resolve_record_key(key: str, known_keys: set[str]) -> str | None:
+    """Resolve a link key under the pipeline's deterministic folio repair."""
+    if key in known_keys:
+        return key
+    if "-" in key:
+        candidate = key.replace("-", "_")
+        if candidate in known_keys:
+            return candidate
+    return None
+
 
 def atomic_write_json(path: Path, data: object, *, indent: int = 2) -> None:
     """Serialize JSON completely before atomically replacing the destination."""

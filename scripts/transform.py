@@ -37,14 +37,19 @@ from _common import (
     build_xlsx_source,
     default_currency_for,
     extract_bearbeitungsnotiz,
+    find_object_folio_column,
+    has_record_content,
     is_approved_match,
     load_concept_meta,
     load_index as _load_index,
+    link_record_key,
     atomic_write_json,
     load_objekte,
     load_role_concepts,
     load_role_meta,
     normalize_bearbeitungsstand,
+    parent_folio,
+    resolve_record_key,
     strip_zero_date_padding,
     INDEX_HEADER_SHIFTS,
 )
@@ -868,10 +873,6 @@ def convert_objekt(row: pd.Series, folio_col: str = None,
     return record
 
 
-# Folio of a page: sheet number plus at least one page level (13_1, 33_1_2).
-_PAGE_FOLIO = re.compile(r"^\d+(?:_\d+)+$")
-
-
 def _record_folio(record: dict) -> str | None:
     """Folio half of a record identifier (Signatur + ' ' + Folio)."""
     parts = str(record.get("rico:identifier") or "").split(" ", 1)
@@ -898,29 +899,29 @@ def _build_folio_page_hierarchy(records: list, konvolut_members: dict) -> None:
     by_ident = {r["rico:identifier"]: r for r in records}
     pages_of = {}
 
-    queue = [r for r in records if _PAGE_FOLIO.match(_record_folio(r) or "")]
+    queue = [r for r in records if parent_folio(_record_folio(r)) is not None]
     while queue:
         record = queue.pop(0)
         signatur, folio = record["rico:identifier"].split(" ", 1)
-        parent_folio = folio.rsplit("_", 1)[0]
-        parent_ident = f"{signatur} {parent_folio}"
+        parent = parent_folio(folio)
+        parent_ident = f"{signatur} {parent}"
         pages_of.setdefault(parent_ident, []).append(record)
 
         if parent_ident in by_ident:
             continue
-        parent = {
-            "@id": create_record_id(signatur, parent_folio),
+        parent_record = {
+            "@id": create_record_id(signatur, parent),
             "@type": "rico:Record",
             "rico:identifier": parent_ident,
             "m3gim-ontology:derivedFolioRecord": True,
         }
-        records.append(parent)
-        by_ident[parent_ident] = parent
-        konvolut_members.setdefault(signatur, []).append(parent["@id"])
+        records.append(parent_record)
+        by_ident[parent_ident] = parent_record
+        konvolut_members.setdefault(signatur, []).append(parent_record["@id"])
         # A derived folio can itself be a page (33_1 under 33) and then needs
         # its own parent.
-        if _PAGE_FOLIO.match(parent_folio):
-            queue.append(parent)
+        if parent_folio(parent) is not None:
+            queue.append(parent_record)
 
     for parent_ident, pages in pages_of.items():
         pages.sort(key=lambda r: _folio_sort_key(_record_folio(r)))
@@ -973,10 +974,7 @@ def build_konvolut_hierarchy(df: pd.DataFrame, folio_col: str = None,
         # the same collection @id (source artefact, e.g. NIM_137). A row with
         # Folio or with title/type/date/status stays.
         if not folio:
-            _content_cols = ('titel', 'dokumenttyp', 'entstehungsdatum',
-                             'Bearbeitungsstand')
-            if not any(pd.notna(row.get(c)) and str(row.get(c)).strip()
-                       for c in _content_cols):
+            if not has_record_content(row):
                 record_drop("Objektzeile ohne Folio und ohne Inhalt",
                             f"{sig} Zeile {int(idx) + 2}")
                 continue
@@ -1444,17 +1442,11 @@ def process_verknuepfungen(df: pd.DataFrame, indices: dict) -> dict:
         folio = None
         for col in ['folio', 'Folio', 'Unnamed: 1']:
             if col in df.columns:
-                folio_raw = row.get(col)
-                if pd.notna(folio_raw) and str(folio_raw).strip():
-                    folio_val = str(folio_raw).strip()
-                    # Guard: vereinzelt steht die Kopfzeichenkette "Folio"
-                    # literal in einer Folio-Datenzelle — keine echte Folio.
-                    if folio_val.lower() != "folio":
-                        folio = folio_val
+                folio = row.get(col)
                 break
 
         # Objekt-ID: signatur + folio
-        objekt_id = f"{sig_str} {folio}" if folio else sig_str
+        objekt_id = link_record_key(sig_str, folio)
 
         typ = normalize_lower(row.get('typ'))
         name = normalize_str(row.get('name'))
@@ -2483,21 +2475,7 @@ def main():
     print(f"\nLade {objekte_path.name}...")
     df_objekte = load_objekte(SHEETS_DIR)
 
-    # Folio-Spalte erkennen
-    folio_col = None
-    for col in df_objekte.columns:
-        # Guard: nicht-textuelle Header (im Box-Export traegt Spalte 0
-        # statt "box_nr" den int 1) ueberspringen, statt an .lower() zu
-        # scheitern (E-95).
-        if not isinstance(col, str):
-            continue
-        col_lower = col.lower()
-        if col_lower in ['folio', 'folio nr', 'folio_nr'] or 'unnamed' in col_lower:
-            # Pruefen ob die Spalte Folio-artige Werte hat
-            sample = df_objekte[col].dropna().astype(str).head(5)
-            if any(re.match(r'^\d+_\d+$', s.strip()) or s.strip().startswith('fol.') for s in sample):
-                folio_col = col
-                break
+    folio_col = find_object_folio_column(df_objekte)
     if folio_col:
         print(f"  Folio-Spalte erkannt: '{folio_col}'")
 
@@ -2530,10 +2508,8 @@ def main():
     known_ids.update(k.get("rico:identifier") for k in konvolute)
     repaired = {}
     for objekt_id in list(relations.keys()):
-        if objekt_id in known_ids or "-" not in objekt_id:
-            continue
-        candidate = objekt_id.replace("-", "_")
-        if candidate in known_ids:
+        candidate = resolve_record_key(objekt_id, known_ids)
+        if candidate is not None and candidate != objekt_id:
             relations.setdefault(candidate, []).extend(relations.pop(objekt_id))
             repaired[objekt_id] = candidate
     for old, new in sorted(repaired.items()):

@@ -110,6 +110,8 @@ A value of the form `YYYY-MM-DD 00:00:00` is no longer an admissible source form
 
 The notation decides the representation. A complete or partial ISO date becomes a typed date property, a range becomes a time span value, a bracket or question-mark uncertainty such as `1957-[05-27?]` becomes an annotation node carrying a quality flag, and a free-text beginning such as `ab …` or `seit …` becomes the qualifier `nach:`.
 
+Complete dates must also be possible calendar dates, and month values must be in range. Regular validation reports violations at the source cell; it does not infer a corrected date. The three current impossible complete link dates remain editorial findings and retain their strict source-fix test.
+
 The object table carries a separate column for dating evidence with the values `aus_dokument`, `erschlossen`, `extern` and `unbekannt`. It is deliberately not serialized ([data-model.md](data-model.md) § Meta-statements and provenance).
 
 ## The link mechanism

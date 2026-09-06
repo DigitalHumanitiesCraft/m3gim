@@ -15,10 +15,20 @@ import sys
 import re
 import pandas as pd
 from pathlib import Path
-from datetime import datetime
+from datetime import date, datetime
 from dataclasses import dataclass
 
-from _common import load_index as _load_index
+from _common import (
+    find_object_folio_column,
+    has_record_content,
+    has_source_value,
+    link_record_key,
+    load_index as _load_index,
+    parent_folio,
+    record_key,
+    publishable_signature,
+    resolve_record_key,
+)
 from transform import (
     build_index_lookup,
     load_verknuepfungen,
@@ -94,17 +104,6 @@ KOMPOSIT_TYPEN = [
     "ausgaben,währung", "einnahmen,währung", "summe,währung"
 ]
 
-# Datumsformat-Pattern (ISO 8601 + Qualifier + Bereiche)
-DATE_PATTERN = re.compile(
-    r'^('
-    r'\d{4}(-\d{2}(-\d{2})?)?'           # YYYY oder YYYY-MM oder YYYY-MM-DD
-    r'(/\d{4}(-\d{2}(-\d{2})?)?)?'       # optionaler Bereich /YYYY...
-    r'|circa:\d{4}'                        # circa:YYYY
-    r'|vor:\d{4}'                          # vor:YYYY
-    r'|nach:\d{4}'                         # nach:YYYY
-    r')$'
-)
-
 # ---------------------------------------------------------------------------
 # Header-Shift-Korrekturen kommen aus _common.py (INDEX_HEADER_SHIFTS).
 
@@ -162,10 +161,32 @@ def validate_signatur(signatur: str) -> str | None:
 
 
 def validate_date(date_str: str) -> bool:
-    """Prueft ob Datum gueltig ist (nach Bereinigung)"""
+    """Validate source notation and real calendar components."""
     if date_str is None or date_str == "":
         return True
-    return bool(DATE_PATTERN.match(date_str))
+    if re.fullmatch(r"(?:circa|vor|nach):\d{4}", date_str):
+        return True
+    if re.fullmatch(r"\d{4}-\d{4}", date_str):
+        return True
+
+    parts = date_str.split("/")
+    if len(parts) > 2:
+        return False
+    for part in parts:
+        if re.fullmatch(r"\d{4}", part):
+            continue
+        if match := re.fullmatch(r"(\d{4})-(\d{2})", part):
+            if 1 <= int(match.group(2)) <= 12:
+                continue
+            return False
+        if re.fullmatch(r"\d{4}-\d{2}-\d{2}", part):
+            try:
+                date.fromisoformat(part)
+            except ValueError:
+                return False
+            continue
+        return False
+    return True
 
 
 def normalize_bearbeitungsstand(value: str) -> str | None:
@@ -336,11 +357,15 @@ def validate_verknuepfungen_source(df: pd.DataFrame,
                                  "Autokonvertierung der Tabellenkalkulation "
                                  "gelaufen und behauptet Tagesgenauigkeit"),
                     ))
-                elif not _SOURCE_DATE_OK.match(candidate):
+                elif (
+                    not _SOURCE_DATE_OK.match(candidate)
+                    or not validate_date(candidate)
+                ):
                     issues.append(ValidationIssue(
                         level="ERROR", code="E010", table="Verknuepfungen",
                         row=excel_row, sheet=sheet, field="name", value=candidate,
-                        message="Datumsnotation ausserhalb von data.md § Date notation of the source",
+                        message=("Datumsnotation oder Kalenderdatum ausserhalb "
+                                 "von data.md § Date notation of the source"),
                     ))
 
         # --- Buendelungskennung ---------------------------------------------
@@ -455,13 +480,7 @@ def validate_objekte(df: pd.DataFrame) -> list[ValidationIssue]:
     # Spalte 0 statt "box_nr" den int 1. Und dieselbe Namensliste wie
     # transform.py verwenden; ohne "folio nr" fand die Validierung die
     # Folio-Spalte nicht und meldete jede Folio eines Konvoluts als Duplikat.
-    folio_col = None
-    for col in df.columns:
-        if not isinstance(col, str):
-            continue
-        if col.lower() in ['folio', 'folio nr', 'folio_nr', 'unnamed: 2']:
-            folio_col = col
-            break
+    folio_col = find_object_folio_column(df)
 
     seen_ids = {}  # {objekt_id: first_row}
     for idx, row in df.iterrows():
@@ -503,6 +522,17 @@ def validate_objekte(df: pd.DataFrame) -> list[ValidationIssue]:
                 level="ERROR", code="E003", table="Objekte", row=excel_row,
                 field="archivsignatur", value="",
                 message="Pflichtfeld archivsignatur ist leer"
+            ))
+
+        folio_value = row.get(folio_col) if folio_col else None
+        if (publishable_signature(sig) is not None
+                and not has_source_value(folio_value)
+                and not has_record_content(row)):
+            issues.append(ValidationIssue(
+                level="ERROR", code="E016", table="Objekte", row=excel_row,
+                field="archivsignatur", value=str(sig).strip(),
+                message=("Zeile hat ausser der Signatur keinen Inhalt und "
+                         "wird nicht modelliert"),
             ))
 
         # Pflichtfeld titel
@@ -561,11 +591,32 @@ def validate_objekte(df: pd.DataFrame) -> list[ValidationIssue]:
     return issues
 
 
+def published_record_keys(df: pd.DataFrame) -> set[str]:
+    """Return keys for records and record sets the transform publishes."""
+    keys: set[str] = set()
+    folio_col = find_object_folio_column(df)
+    for _, row in df.iterrows():
+        signature = publishable_signature(row.get("archivsignatur"))
+        if signature is None:
+            continue
+        folio = row.get(folio_col) if folio_col else None
+        if has_source_value(folio):
+            keys.add(record_key(signature, folio))
+            keys.add(record_key(signature))
+            parent = parent_folio(folio)
+            while parent is not None:
+                keys.add(record_key(signature, parent))
+                parent = parent_folio(parent)
+        elif has_record_content(row):
+            keys.add(record_key(signature))
+    return keys
+
+
 # ---------------------------------------------------------------------------
 # Validierung: Verknuepfungen
 # ---------------------------------------------------------------------------
 
-def validate_verknuepfungen(df: pd.DataFrame, valid_signaturen: set,
+def validate_verknuepfungen(df: pd.DataFrame, valid_record_keys: set,
                              indices: dict) -> list[ValidationIssue]:
     """Validiert die Verknuepfungstabelle"""
     issues = []
@@ -582,14 +633,16 @@ def validate_verknuepfungen(df: pd.DataFrame, valid_signaturen: set,
         if pd.notna(sig) and str(sig).strip().lower() == "beispiel":
             continue
 
-        # Referentielle Integritaet: Signatur muss in Objekte existieren
+        # Referential integrity follows the transform's exact record-key policy.
         if pd.notna(sig) and str(sig).strip() != "":
             sig_str = str(sig).strip()
-            if sig_str not in valid_signaturen:
+            folio = row.get("folio") if "folio" in df.columns else None
+            key = link_record_key(sig_str, folio)
+            if resolve_record_key(key, valid_record_keys) is None:
                 issues.append(ValidationIssue(
                     level="ERROR", code="E005", table="Verknuepfungen", row=excel_row, sheet=sheet,
-                    field="archivsignatur", value=sig_str,
-                    message="Signatur existiert nicht in Objekte"
+                    field="archivsignatur/folio", value=key,
+                    message="Signatur und Folio bezeichnen kein Objekt"
                 ))
 
         # Typ-Vokabular (nach Normalisierung)
@@ -763,7 +816,7 @@ def main():
 
     all_issues = []
     stats = {}
-    valid_signaturen = set()
+    valid_record_keys = set()
 
     # Indizes laden (fuer Cross-Table-Checks)
     print("Lade Indizes...")
@@ -801,9 +854,7 @@ def main():
         df_objekte = load_objekte(SHEETS_DIR)
         stats['objekte'] = len(df_objekte)
         all_issues.extend(validate_objekte(df_objekte))
-        valid_signaturen.update(
-            df_objekte['archivsignatur'].dropna().astype(str).str.strip().tolist()
-        )
+        valid_record_keys.update(published_record_keys(df_objekte))
         print(f"  {len(df_objekte)} Objekte geladen")
 
     # Verknuepfungen laden und validieren. Quelle ist seit E-152 das
@@ -821,7 +872,7 @@ def main():
         print(f"Validiere {verk_path.name}...")
         df_verk = load_verknuepfungen(verk_path)
         stats['verknuepfungen'] = len(df_verk)
-        all_issues.extend(validate_verknuepfungen(df_verk, valid_signaturen, indices))
+        all_issues.extend(validate_verknuepfungen(df_verk, valid_record_keys, indices))
         all_issues.extend(
             validate_verknuepfungen_source(df_verk, load_typ_rolle(SHEETS_DIR))
         )
