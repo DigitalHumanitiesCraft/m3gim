@@ -40,8 +40,19 @@ def report_process(proc: subprocess.CompletedProcess) -> None:
 def settle_layout(page) -> None:
     """Wait until rendering and browser scroll anchoring have both finished."""
     page.evaluate(
-        """() => new Promise(resolve => requestAnimationFrame(
-            () => requestAnimationFrame(resolve)))"""
+        """() => new Promise(resolve => {
+            const main = document.querySelector('.archiv-main');
+            if (!main) { resolve(); return; }
+            let last = -1;
+            let stableFrames = 0;
+            const tick = () => {
+                if (main.scrollTop === last) stableFrames += 1;
+                else { last = main.scrollTop; stableFrames = 0; }
+                if (stableFrames >= 6) resolve();
+                else requestAnimationFrame(tick);
+            };
+            tick();
+        })"""
     )
 
 
@@ -49,6 +60,60 @@ def row_top(page, record_id: str) -> float:
     return page.locator(f'[data-record-row="{record_id}"]').evaluate(
         "element => element.getBoundingClientRect().top"
     )
+
+
+@pytest.mark.frontend
+@pytest.mark.parametrize("viewport", [(800, 900), (1366, 800), (2048, 1111)])
+@pytest.mark.parametrize("query", ["", "?suche=NIM_023"])
+def test_bestand_direct_record_starts_below_sticky_context(
+    frontend_server: str, browser_context, viewport: tuple[int, int], query: str
+) -> None:
+    from playwright.sync_api import expect
+
+    page = browser_context.new_page()
+    page.emulate_media(reduced_motion="reduce")
+    page.set_viewport_size({"width": viewport[0], "height": viewport[1]})
+    page.goto(
+        frontend_server + "#bestand/m3gim-data%3ANIM_023_10" + query,
+        wait_until="networkidle",
+    )
+    settle_layout(page)
+
+    parent = page.locator(
+        '[data-konvolut-header="m3gim-data:NIM_023"]'
+    )
+    record = page.locator('[data-record-row="m3gim-data:NIM_023_10"]')
+    detail = record.locator("xpath=following-sibling::tr[1]")
+    if query:
+        expect(parent).to_have_count(0)
+    else:
+        expect(parent).to_have_attribute("aria-expanded", "true")
+    expect(record).to_have_attribute("aria-expanded", "true")
+    expect(detail).to_have_class("archiv-row--detail")
+    expect(detail).to_be_visible()
+
+    geometry = page.evaluate(
+        """() => {
+            const main = document.querySelector('.archiv-main');
+            const column = main.querySelector('.archiv-table thead th');
+            const parent = main.querySelector(
+                '[data-konvolut-header="m3gim-data:NIM_023"]');
+            const record = main.querySelector(
+                '[data-record-row="m3gim-data:NIM_023_10"]');
+            return {
+                mainTop: main.getBoundingClientRect().top,
+                column: column.getBoundingClientRect().toJSON(),
+                parent: parent?.getBoundingClientRect().toJSON(),
+                record: record.getBoundingClientRect().toJSON(),
+            };
+        }"""
+    )
+    assert geometry["column"]["top"] >= geometry["mainTop"] - 1
+    context_bottom = geometry["column"]["bottom"]
+    if geometry["parent"]:
+        assert geometry["parent"]["top"] >= context_bottom - 2
+        context_bottom = geometry["parent"]["bottom"]
+    assert abs(geometry["record"]["top"] - context_bottom) <= 2
 
 
 @pytest.mark.frontend

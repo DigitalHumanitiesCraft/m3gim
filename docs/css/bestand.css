@@ -16,7 +16,7 @@
      Inline padding plus the cell padding equals the tab padding, so the column
      head text lines up with the active tab's icon above it; the right edge
      takes the band's padding so the table does not touch the scrollbar. */
-  padding: 0 var(--space-6) var(--space-3) var(--space-1);
+  padding: 0 var(--space-6) calc(var(--space-3) + var(--record-scroll-space, 0px)) var(--space-1);
   /* Die Arbeitsflaeche ist weiss; den Grauton traegt allein die Sidebar
      (design.md Regel 2). */
   background: var(--surface);

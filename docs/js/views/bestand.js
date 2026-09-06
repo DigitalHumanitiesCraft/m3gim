@@ -122,6 +122,7 @@ export function renderBestand(storeRef, containerEl) {
  * Re-render rows; reads the whole cut from the shared filter state.
  */
 function updateBestandView() {
+  mainEl()?.style.removeProperty('--record-scroll-space');
   const shared = getFilter();
   // Shared facets, the free text or the Zeitfenster flatten the hierarchy: they
   // cut children away, and an emptied Konvolut head must not stay behind. The
@@ -836,12 +837,26 @@ function expandRecord(recordId) {
   const konvolutId = konvolutIdOfRecord(store, recordId);
   if (konvolutId) openKonvolute.add(konvolutId);
   updateBestandView();
-  // Scroll to the expanded row
+  // Keep the addressed title and detail below both sticky header layers.
   requestAnimationFrame(() => {
-    const row = document.querySelector('.archiv-row--detail');
-    if (row) {
-      row.scrollIntoView({ behavior: scrollBehavior(), block: 'nearest' });
-    }
+    if (expandedRecord !== rowId) return;
+    const main = mainEl();
+    const row = recordRow(rowId);
+    if (!main || !row) return;
+    main.style.removeProperty('--record-scroll-space');
+    const parent = konvolutId ? headRow(konvolutId) : null;
+    const band = headBand(main) + (parent?.getBoundingClientRect().height || 0);
+    const top = Math.max(0, rowTopInScrollSpace(main, row) - band);
+    // A late record may need trailing space to reach the top on a tall screen.
+    const table = main.querySelector('.archiv-table');
+    const contentBottom = rowTopInScrollSpace(main, table) + table.offsetHeight
+      + parseFloat(getComputedStyle(main).paddingBottom);
+    const extra = Math.max(0, top + main.clientHeight - contentBottom);
+    main.style.setProperty('--record-scroll-space', `${Math.ceil(extra)}px`);
+    main.scrollTo({
+      top,
+      behavior: 'instant',
+    });
   });
 }
 
