@@ -280,6 +280,7 @@ export function drawGraph({ layout, view, selection, actions, zoomRefs }) {
   });
   background.on('mouseleave', () => hideTip());
 
+  paintLabels();
   applySelection(selection);
 }
 
@@ -295,8 +296,7 @@ export function applySelection(selection) {
   if (next.focus) touched.add(next.focus);
   const wasSel = !!(prev.focus || prev.edgeId);
   const isSel = !!(next.focus || next.edgeId);
-  // Entering or leaving a selection changes every node, because the ones
-  // outside the neighbourhood dim; inside one selection only the difference is.
+  // Entering or leaving a selection also changes the dimming of distant nodes.
   const ids = (wasSel !== isSel) ? _drawn.nodeEls.keys() : touched;
 
   for (const id of ids) {
@@ -313,7 +313,7 @@ export function applySelection(selection) {
   _drawn.marked = next;
   markHalo(prev.focus, next.focus);
   paintEdges();
-  paintLabels();
+  paintLabels(false);
 }
 
 /**
@@ -414,7 +414,7 @@ function markedFor(layout, selection, adjacency) {
   return mark;
 }
 
-function paintLabels() {
+function paintLabels(updateGeometry = true) {
   const { labels, marked, transform, layout } = _drawn;
   const showAll = transform.k >= LABEL_ZOOM;
   let named = null;
@@ -431,13 +431,15 @@ function paintLabels() {
       .slice(0, ALWAYS_LABELLED).map(n => n.id));
   }
   const scale = Math.max(0.4, transform.k);
-  labels
-    .style('font-size', (10 / scale).toFixed(2) + 'px')
-    // The halo is what keeps a name readable over a tangle of edges. Its width
-    // follows the zoom like the glyphs, otherwise it swallows the text.
-    .style('stroke-width', (3 / scale).toFixed(2) + 'px')
-    .attr('x', d => d.r + 3 / scale)
-    .classed('netzwerk-label--on', d => (showAll && !named) || (named ? named.has(d.id) : true));
+  if (updateGeometry) {
+    labels
+      .style('font-size', (10 / scale).toFixed(2) + 'px')
+      // The halo keeps a name readable over edges and follows the zoom.
+      .style('stroke-width', (3 / scale).toFixed(2) + 'px')
+      .attr('x', d => d.r + 3 / scale);
+  }
+  labels.classed('netzwerk-label--on',
+    d => (showAll && !named) || (named ? named.has(d.id) : true));
 }
 
 /** The `cap` heaviest of a set of node ids, or all of them below the cap. */

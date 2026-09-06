@@ -25,6 +25,7 @@ import {
   layoutGraph,
   graphToGEXF,
   neighboursOf,
+  neighboursOfActor,
   narrowGraph,
   nodeRadius,
   nodeId,
@@ -167,6 +168,23 @@ describe('Personenprojektion', () => {
     assert.equal(neighbours.length, hub.degree);
     for (let i = 1; i < neighbours.length; i++) {
       assert.ok(neighbours[i - 1].weight >= neighbours[i].weight);
+    }
+  });
+
+  test('Zwei-Modus-Nachbarn entsprechen der vollstaendigen Projektion', () => {
+    const cutIds = new Set([...allIds].filter(id => id.includes('NIM_004')));
+    const pairs = [
+      [twoMode, projection],
+      [buildTwoMode(store, { records: cutIds }), buildProjection(store, { records: cutIds })],
+    ];
+    for (const [source, projected] of pairs) {
+      for (const node of projected.nodes) {
+        const expected = neighboursOf(projected, node.id)
+          .map(n => [n.node.id, n.weight]);
+        const actual = neighboursOfActor(source, node.id)
+          .map(n => [n.node.id, n.weight]);
+        assert.deepEqual(actual, expected, node.id);
+      }
     }
   });
 

@@ -30,7 +30,7 @@ import { buildRoleChip } from './record-chips.js';
 import { AGRELON_LABELS, WIKIDATA_ICON_SVG } from '../data/constants.js';
 import {
   buildTwoMode, buildProjection, layoutGraph, graphToGEXF,
-  neighboursOf, nodeId, recordLabel, NODE_TYPE_META,
+  neighboursOfActor, nodeId, recordLabel, NODE_TYPE_META,
 } from './_netzwerk-geometry.js';
 import {
   renderCanvasSlot, renderZoomControls, drawGraph, applySelection, debugGeometry,
@@ -64,7 +64,7 @@ const local = {
   selection: null,   // { kind: 'node'|'edge', id }
 };
 
-let _last = { result: null, graph: null, projection: null };
+let _last = { result: null, graph: null };
 
 /** Time of the first renderNetzwerk, the start of the first-draw measurement. */
 let _t0 = 0;
@@ -330,19 +330,6 @@ const actions = {
   clearSelection: () => { if (local.selection) select(null); },
 };
 
-/**
- * The person-to-person projection of the current result set, built at the first
- * use and kept until the result set changes. With record nodes drawn it is only
- * the neighbour list of the detail column, so building it on every draw spent a
- * tenth of a second on a picture that does not show it.
- */
-function projectionOf() {
-  if (!_last.projection) {
-    _last.projection = buildProjection(_store, { records: _last.result.ids });
-  }
-  return _last.projection;
-}
-
 function draw() {
   const tStart = performance.now();
   const f = getFilter();
@@ -352,7 +339,7 @@ function draw() {
     : buildProjection(_store, { records: result.ids });
 
   const graph = full;
-  _last = { result, graph, projection: local.showRecords ? null : full };
+  _last = { result, graph };
 
   if (local.selection && !hasSelection(graph, local.selection)) local.selection = null;
 
@@ -523,7 +510,7 @@ function drawActorDetail(panel, node) {
 
   // The neighbours are the person-to-person projection, also while the
   // overview draws the record nodes: "who with whom" is the question here.
-  const neighbours = neighboursOf(projectionOf(), node.id);
+  const neighbours = neighboursOfActor(_last.graph, node.id);
   if (neighbours.length > 0) {
     const list = el('ul', { className: 'netzwerk__node-list' });
     for (const n of neighbours.slice(0, CAP.neighbours)) list.appendChild(nodeRow(n.node, n.weight));
@@ -550,7 +537,7 @@ function drawRecordDetail(panel, node) {
   const chips = el('div', { className: 'netzwerk__detail-chips' });
   const actorIds = node.actorIds || [];
   for (const id of actorIds.slice(0, CAP.actors)) {
-    const actor = _last.graph.byId.get(id) || projectionOf().byId.get(id);
+    const actor = _last.graph.byId.get(id);
     if (!actor) continue;
     const edge = (_last.graph.edgesByNode.get(id) || [])
       .find(e => e.recordId === node.recordId);

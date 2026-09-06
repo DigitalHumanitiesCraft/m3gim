@@ -348,6 +348,28 @@ export function neighboursOf(graph, id) {
   return out;
 }
 
+/** Actor neighbours derived directly from a two-mode graph. */
+export function neighboursOfActor(graph, id) {
+  if (graph.mode !== 'twomode') return neighboursOf(graph, id);
+  const weights = new Map();
+  for (const mention of graph.edgesByNode.get(id) || []) {
+    const recordId = mention.a === id ? mention.b : mention.a;
+    const record = graph.byId.get(recordId);
+    if (!record || record.kind !== 'record') continue;
+    for (const actorId of record.actorIds || []) {
+      if (actorId === id) continue;
+      weights.set(actorId, (weights.get(actorId) || 0) + 1);
+    }
+  }
+  const out = [];
+  for (const [actorId, weight] of weights) {
+    const node = graph.byId.get(actorId);
+    if (node) out.push({ node, edge: null, weight });
+  }
+  out.sort((a, b) => b.weight - a.weight || a.node.name.localeCompare(b.node.name, 'de'));
+  return out;
+}
+
 /** The graph reduced to the nodes whose name matches, with the edges between
  *  them. Cuts the picture, never the counts a node carries. */
 export function narrowGraph(graph, keepFn) {
