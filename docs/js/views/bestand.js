@@ -239,10 +239,11 @@ function buildHead() {
   return el('thead', {}, tr);
 }
 
-function renderRows(items) {
+function renderRows(items, anchorRecord = null) {
   currentItems = items;
   const tbody = document.getElementById('bestand-tbody');
   if (!tbody) return;
+  const anchorTop = anchorRecord ? recordRow(anchorRecord)?.getBoundingClientRect().top : null;
   clear(tbody);
 
   for (const item of items) {
@@ -494,6 +495,13 @@ function renderRows(items) {
     recordRow(pendingRowFocus)?.focus({ preventScroll: true });
     pendingRowFocus = null;
   }
+  // Closing a preceding detail changes the clicked row's position in the table.
+  // Keep that row at its reading position after the rebuild.
+  if (anchorTop != null) {
+    const row = recordRow(anchorRecord);
+    const main = mainEl();
+    if (row && main) main.scrollTop += row.getBoundingClientRect().top - anchorTop;
+  }
 }
 
 /** Display form of a vocabulary role label, which the vocabulary keeps in lower
@@ -717,7 +725,7 @@ function onTableKeydown(e) {
 /** Only when the same record is expanded does its second Korb control need to
  *  follow, which takes a full rebuild. */
 function onKorbToggled(recordId) {
-  if (expandedRecord === recordId) renderRows(currentItems);
+  if (expandedRecord === recordId) renderRows(currentItems, recordId);
 }
 
 /**
@@ -790,19 +798,16 @@ function toggleRecordInline(recordId) {
   expandedRecord = recordId;
   expandedPage = pageOfRow(item, recordId);
   pendingDetailFocus = true;
-  renderRows(currentItems);
-  // Only a Folio row writes its page into the address; every other row keeps
-  // the behaviour it had, where opening a detail is a reading state.
-  if (expandedPage) selectRecord(expandedPage);
+  renderRows(currentItems, recordId);
+  selectRecord(expandedPage || recordId);
 }
 
 function closeDetail(recordId) {
-  const wasPaged = expandedPage != null;
   expandedRecord = null;
   expandedPage = null;
   pendingRowFocus = recordId;
-  renderRows(currentItems);
-  if (wasPaged && getState().selectedRecord) selectRecord(null);
+  renderRows(currentItems, recordId);
+  if (getState().selectedRecord) selectRecord(null);
 }
 
 /** Programmatically expand a record's inline detail (used by cross-navigation). */

@@ -37,6 +37,20 @@ def report_process(proc: subprocess.CompletedProcess) -> None:
         print("STDERR:", proc.stderr, file=sys.stderr)
 
 
+def settle_layout(page) -> None:
+    """Wait until rendering and browser scroll anchoring have both finished."""
+    page.evaluate(
+        """() => new Promise(resolve => requestAnimationFrame(
+            () => requestAnimationFrame(resolve)))"""
+    )
+
+
+def row_top(page, record_id: str) -> float:
+    return page.locator(f'[data-record-row="{record_id}"]').evaluate(
+        "element => element.getBoundingClientRect().top"
+    )
+
+
 @pytest.mark.frontend
 def test_bestand_renders_every_linked_basis_record(frontend_server):
     proc = run_verifier(frontend_server, "render")
@@ -109,3 +123,74 @@ def test_bestand_title_can_be_copied_without_toggling(
     expect(row).to_have_attribute("aria-expanded", "true")
     page.keyboard.press("Escape")
     expect(row).to_have_attribute("aria-expanded", "false")
+
+
+@pytest.mark.frontend
+@pytest.mark.parametrize("activation", ["mouse", "keyboard"])
+@pytest.mark.parametrize("width", [1366, 800])
+def test_bestand_detail_toggle_keeps_activated_row_in_place(
+    frontend_server: str, browser_context, activation: str, width: int
+) -> None:
+    from playwright.sync_api import expect
+
+    page = browser_context.new_page()
+    page.set_viewport_size({"width": width, "height": 900})
+    page.goto(
+        frontend_server + "#bestand/m3gim-data%3ANIM_007_10",
+        wait_until="networkidle",
+    )
+    open_row = page.locator('[data-record-row="m3gim-data:NIM_007_10"]')
+    target_id = "m3gim-data:NIM_007_11"
+    target = page.locator(f'[data-record-row="{target_id}"]')
+    expect(open_row).to_have_attribute("aria-expanded", "true")
+    expect(target).to_be_visible()
+
+    target.evaluate(
+        "element => element.scrollIntoView({block: 'center', behavior: 'instant'})"
+    )
+    if activation == "keyboard":
+        target.focus()
+    settle_layout(page)
+    top_before = row_top(page, target_id)
+    if activation == "mouse":
+        target.locator(".archiv-signatur").click()
+    else:
+        page.keyboard.press("Enter")
+    expect(target).to_have_attribute("aria-expanded", "true")
+    expect(page).to_have_url(frontend_server + "#bestand/m3gim-data%3ANIM_007_11")
+    settle_layout(page)
+    assert abs(row_top(page, target_id) - top_before) <= 1
+
+    top_before_close = row_top(page, target_id)
+    if activation == "mouse":
+        target.locator(".archiv-signatur").click()
+    else:
+        page.keyboard.press("Escape")
+    expect(target).to_have_attribute("aria-expanded", "false")
+    expect(page).to_have_url(frontend_server + "#bestand")
+    settle_layout(page)
+    assert abs(row_top(page, target_id) - top_before_close) <= 1
+
+    lower_id = "m3gim-data:NIM_007_20"
+    lower = page.locator(f'[data-record-row="{lower_id}"]')
+    lower.evaluate(
+        "element => element.scrollIntoView({block: 'center', behavior: 'instant'})"
+    )
+    if activation == "keyboard":
+        lower.focus()
+    settle_layout(page)
+    lower_top_before = row_top(page, lower_id)
+    if activation == "mouse":
+        lower.locator(".archiv-signatur").click()
+    else:
+        page.keyboard.press("Enter")
+    expect(lower).to_have_attribute("aria-expanded", "true")
+    settle_layout(page)
+    assert abs(row_top(page, lower_id) - lower_top_before) <= 1
+    shared_url = page.url
+    page.reload(wait_until="networkidle")
+    expect(page).to_have_url(shared_url)
+    expect(lower).to_have_attribute("aria-expanded", "true")
+    expect(page.locator('[data-konvolut-header="m3gim-data:NIM_007"]')).to_have_attribute(
+        "aria-expanded", "true"
+    )
