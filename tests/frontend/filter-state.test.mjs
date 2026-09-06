@@ -59,3 +59,25 @@ describe('Nullpunkt und Filterersatz', () => {
     assert.equal(isFilterActive(), false);
   });
 });
+
+describe('Filterbenachrichtigung', () => {
+  test('jede Aenderung dispatcht einmal, ein No-op nie', () => {
+    const previousWindow = globalThis.window;
+    globalThis.window = new EventTarget();
+    try {
+      resetFilter();
+      let dispatches = 0;
+      const handler = () => { dispatches += 1; };
+      globalThis.window.addEventListener('m3gim:filter', handler);
+      setFilter({ ort: 'Bayreuth' });
+      setFilter({ ort: 'Bayreuth' });
+      setFilter({ person: 'Malaniuk, Ira' });
+      globalThis.window.removeEventListener('m3gim:filter', handler);
+      assert.equal(dispatches, 2);
+    } finally {
+      resetFilter();
+      if (previousWindow === undefined) delete globalThis.window;
+      else globalThis.window = previousWindow;
+    }
+  });
+});

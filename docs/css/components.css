@@ -94,13 +94,11 @@
    One inline box carrying a label and optionally a count and a remove button.
    The view-specific names share this base and keep only what genuinely differs:
    .vs-chip   sidebar legend toggle, full-width row with a colour swatch
-   .fs-chip   selected facet value, inverse text on KUG-Blau
-   .idx-facet-chip  cross-grid facet, wraps and carries a round close button */
+   .fs-chip   selected facet value, inverse text on KUG-Blau */
 
 .chip,
 .vs-chip,
-.fs-chip,
-.idx-facet-chip {
+.fs-chip {
   display: inline-flex;
   align-items: center;
   gap: var(--space-1);
@@ -126,18 +124,15 @@
    stays with the view, because it scales with the row the chip sits in. */
 .chip__count,
 .vs-chip__count,
-.fs-option__count,
-.fs-typerow__count,
-.idx-facet-chip__count {
+.fs-option__count {
   flex: none;
   font-variant-numeric: tabular-nums;
   color: var(--color-text-tertiary);
 }
 
-/* Remove slot: a glyph in the facet chip, a real button in the index chip. */
+/* Remove slot shared by chips and selected facets. */
 .chip__x,
-.fs-chip__x,
-.idx-facet-chip__close {
+.fs-chip__x {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -166,8 +161,7 @@
 
 .vs-chip__swatch,
 .vs-static__marker,
-.netzwerk__legend-dot,
-.fs-typerow__dot {
+.netzwerk__legend-dot {
   display: inline-block;
   flex: none;
   background: var(--swatch-color, transparent);

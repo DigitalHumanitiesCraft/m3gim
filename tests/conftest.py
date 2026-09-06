@@ -113,13 +113,6 @@ def xlsx_verknuepfungen(sheets_dir: Path) -> pd.DataFrame:
 
 
 @pytest.fixture(scope="session")
-def xlsx_personen(sheets_dir: Path) -> pd.DataFrame:
-    df = pd.read_excel(sheets_dir / "M3GIM-Personenindex.xlsx")
-    df.columns = [c.lower().strip() if isinstance(c, str) else c for c in df.columns]
-    return df
-
-
-@pytest.fixture(scope="session")
 def enrichment(enrichment_path: Path):
     if not enrichment_path.exists():
         return None

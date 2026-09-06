@@ -26,7 +26,6 @@ import {
   graphToGEXF,
   neighboursOf,
   neighboursOfActor,
-  narrowGraph,
   nodeRadius,
   nodeId,
   recordLabel,
@@ -195,14 +194,6 @@ describe('Personenprojektion', () => {
     for (const node of marked) assert.ok(node.relations.length > 0);
   });
 
-  test('die Namenssuche duennt das Bild aus, ohne die Zaehlung zu bewegen', () => {
-    const narrowed = narrowGraph(projection, n => n.name.startsWith('Wagner'));
-    assert.ok(narrowed.nodes.length > 0 && narrowed.nodes.length < projection.nodes.length);
-    assert.equal(narrowed.stats.records, projection.stats.records);
-    for (const edge of narrowed.edges) {
-      assert.ok(narrowed.byId.has(edge.a) && narrowed.byId.has(edge.b));
-    }
-  });
 });
 
 /** Flaeche, die zwei Kreise im Mittelpunktsabstand d teilen. */

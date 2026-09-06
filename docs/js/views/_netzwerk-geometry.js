@@ -370,23 +370,6 @@ export function neighboursOfActor(graph, id) {
   return out;
 }
 
-/** The graph reduced to the nodes whose name matches, with the edges between
- *  them. Cuts the picture, never the counts a node carries. */
-export function narrowGraph(graph, keepFn) {
-  const nodes = graph.nodes.filter(keepFn);
-  const keep = new Set(nodes.map(n => n.id));
-  const edges = graph.edges.filter(e => keep.has(e.a) && keep.has(e.b));
-  const byId = new Map(nodes.map(n => [n.id, n]));
-  const actors = nodes.filter(n => n.kind === 'actor');
-  return {
-    mode: graph.mode,
-    nodes, edges, byId,
-    edgesByNode: indexEdges(edges),
-    stats: { ...graph.stats, ...statsOf(new Set(), actors, nodes, edges),
-             records: graph.stats.records },
-  };
-}
-
 // ---------------------------------------------------------------------------
 // Layout
 // ---------------------------------------------------------------------------

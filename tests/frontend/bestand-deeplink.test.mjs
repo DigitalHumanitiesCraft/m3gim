@@ -15,9 +15,7 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { widenFilterForRecord, filterBySharedState }
-  from '../../docs/js/views/_bestand-filter.js';
-import { recordMatchesSearch } from '../../docs/js/data/records-for.js';
+import { widenFilterForRecord } from '../../docs/js/views/_bestand-filter.js';
 import { baseIds, recordsFor } from '../../docs/js/data/records-for.js';
 import { storeFromShipped } from './_shipped.mjs';
 
@@ -25,12 +23,7 @@ const store = await storeFromShipped();
 
 /** Ob der Datensatz unter diesem Schnitt eine Zeile bekaeme. */
 function visible(shared, recordId) {
-  const record = store.records.get(recordId);
-  const items = filterBySharedState(store, [{ record }], shared, {
-    getRecord: (it) => it.record,
-    searchMatch: (r, q) => recordMatchesSearch(store, r, q),
-  });
-  return items.length === 1;
+  return recordsFor(store, shared, { base: new Set([recordId]) }).ids.has(recordId);
 }
 
 /** Der gewaehlte Schnitt der Beispiele: die Dokumente mit einer

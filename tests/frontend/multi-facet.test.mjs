@@ -25,9 +25,8 @@ import {
   getFilter, setFilter, resetFilter, isFilterActive, facetValues,
   addFacetValue,
 } from '../../docs/js/ui/filter-state.js';
-import {
-  filterBySharedState, isSharedFiltered,
-} from '../../docs/js/views/_bestand-filter.js';
+import { isSharedFiltered } from '../../docs/js/views/_bestand-filter.js';
+import { recordsFor } from '../../docs/js/data/records-for.js';
 
 describe('Geteilter Filter haelt Listen', () => {
   beforeEach(() => resetFilter());
@@ -81,47 +80,46 @@ describe('ODER innerhalb einer Facette', () => {
     dftHierarchy: new Map(),
   };
   const items = ['r1', 'r2', 'r3', 'r4'].map(id => ({ '@id': id }));
-  const opts = { getRecord: (it) => it, searchMatch: () => true };
+  const cut = filter => recordsFor(store, filter, {
+    base: new Set(items.map(item => item['@id'])),
+  }).ids;
 
   test('zwei Personen vereinigen ihre Dokumente', () => {
-    const out = filterBySharedState(store, items, { person: ['A', 'B'] }, opts);
-    assert.deepEqual(out.map(i => i['@id']), ['r1', 'r2', 'r3'], (
+    const out = cut({ person: ['A', 'B'] });
+    assert.deepEqual([...out], ['r1', 'r2', 'r3'], (
       'Die Mehrfachauswahl schneidet statt zu vereinigen; zwei Werte ergaeben '
       + 'dann weniger als jeder einzelne.'
     ));
   });
 
   test('eine Person allein bleibt wie zuvor', () => {
-    const out = filterBySharedState(store, items, { person: ['B'] }, opts);
-    assert.deepEqual(out.map(i => i['@id']), ['r3']);
+    assert.deepEqual([...cut({ person: ['B'] })], ['r3']);
   });
 
   test('zwei verschiedene Facetten bleiben UND-verknuepft', () => {
-    const out = filterBySharedState(store, items,
-      { person: ['A', 'B'], ort: ['Graz'] }, opts);
-    assert.deepEqual(out.map(i => i['@id']), ['r1'], (
+    const out = cut({ person: ['A', 'B'], ort: ['Graz'] });
+    assert.deepEqual([...out], ['r1'], (
       'Das ODER gilt innerhalb einer Facette; zwischen Facetten bleibt es UND.'
     ));
   });
 
   test('ein unbekannter Wert entwertet die Facette nicht', () => {
-    const out = filterBySharedState(store, items, { person: ['B', 'Unbekannt'] }, opts);
-    assert.deepEqual(out.map(i => i['@id']), ['r3'], (
+    const out = cut({ person: ['B', 'Unbekannt'] });
+    assert.deepEqual([...out], ['r3'], (
       'Ein Wert ohne Entsprechung im Bestand darf nur sich selbst betreffen.'
     ));
   });
 
   test('nur unbekannte Werte ergeben eine leere Menge', () => {
-    const out = filterBySharedState(store, items, { person: ['Unbekannt'] }, opts);
-    assert.deepEqual(out.map(i => i['@id']), [], (
+    const out = cut({ person: ['Unbekannt'] });
+    assert.deepEqual([...out], [], (
       'Eine Facette, deren Werte nichts treffen, muss leer liefern statt alles '
       + 'durchzulassen.'
     ));
   });
 
   test('ein String aus einer Altstelle wirkt weiterhin', () => {
-    const out = filterBySharedState(store, items, { person: 'A' }, opts);
-    assert.deepEqual(out.map(i => i['@id']), ['r1', 'r2']);
+    assert.deepEqual([...cut({ person: 'A' })], ['r1', 'r2']);
   });
 });
 

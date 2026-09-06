@@ -1,15 +1,6 @@
 /**
- * Geteilte Filter-Pipeline fuer Bestand und Chronik.
- *
- * Beide Views wenden denselben geteilten Filter (filter-state.js) auf eine
- * Item-Liste an. Der einzige strukturelle Unterschied: Bestand filtert
- * gewrappte Items ({ record, ... }), Chronik nackte Records. Das loest
- * `getRecord` (Accessor). Die Such-Felder weichen ab (Bestand sucht zusaetzlich
- * in Typ-Label + Datum) -- daher das `searchMatch`-Praedikat als Parameter, mit
- * den zwei konkreten Implementierungen hier exportiert.
- *
- * `recordsFor` resolves document search and every facet. The wrapper helpers
- * remain for deep-link widening and legacy row-level tests.
+ * Display decisions for Bestand and Chronik, plus minimal deep-link widening.
+ * Document search, time and facets are resolved centrally by recordsFor.
  */
 
 import { facetValues } from '../ui/filter-state.js';
@@ -42,44 +33,6 @@ export function sharedFacetsActive(sharedFilter) {
     if (facetValues(sharedFilter, key).length > 0) return true;
   }
   return false;
-}
-
-/**
- * Wendet den geteilten Filter auf `items` an und gibt die gefilterte Liste
- * zurueck (nicht mutierend).
- *
- * @param {Object} store
- * @param {Array}  items   - Item-Liste (gewrappt oder nackte Records).
- * @param {Object} shared  - geteilter Filterzustand (getFilter()).
- * @param {Object} opts
- * @param {Function} opts.getRecord     - item -> JSON-LD-Record.
- * @param {Function} opts.searchMatch   - (record, qLower) -> boolean.
- */
-export function filterBySharedState(store, items, shared, { getRecord, searchMatch }) {
-  const s = shared || {};
-  let out = items;
-
-  const search = (s.search || '').trim();
-  if (search) {
-    const q = search.toLowerCase();
-    out = out.filter(it => searchMatch(getRecord(it), q));
-  }
-
-  // Alle schneidenden Facetten (inkl. Dokumenttyp mit DFT-Hierarchie) loest
-  // recordsFor auf. Nur die tatsaechlich gesetzten uebergeben, damit die eine
-  // Aufloesung greift, ohne dass hier eine zweite Filterwelt entsteht.
-  const facetFilter = {};
-  let anyFacet = false;
-  for (const key of CUT_FACETS) {
-    const vals = facetValues(s, key);
-    if (vals.length > 0) { facetFilter[key] = vals; anyFacet = true; }
-  }
-  if (anyFacet) {
-    const base = new Set(out.map(it => getRecord(it)['@id']));
-    const { ids } = recordsFor(store, facetFilter, { base });
-    out = out.filter(it => ids.has(getRecord(it)['@id']));
-  }
-  return out;
 }
 
 /**

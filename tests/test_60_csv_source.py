@@ -55,14 +55,6 @@ def _raw_rows() -> list[dict]:
     return rows
 
 
-def _norm_role(value) -> str:
-    text = (value or "").strip().lower()
-    for suffix in (":innen", ":in"):
-        if text.endswith(suffix):
-            return text[: -len(suffix)]
-    return text
-
-
 # ---------------------------------------------------------------------------
 # 1. Quelllayout
 # ---------------------------------------------------------------------------

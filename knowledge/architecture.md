@@ -125,7 +125,7 @@ Every view follows the same cut. The orchestrator holds the view-local state, bu
 | `ui/sidebar.js` | The one scaffold of the filter column, `createSidebar` and `viewShell`, the composer of the parts beside it and the one import address of the views (E-250) |
 | `ui/sidebar-status.js`, `-facets.js`, `-options.js`, `-range.js`, `-strip.js`, `-controls.js` | Result line, shared facets and tree control, row forms, year range, chip strip, remaining control factories |
 | `ui/filter-state.js` | The shared filter state with `getFilter`, `setFilter`, `replaceFilter`, `addFacetValue`, `resetFilter`, `deviatingKeys`, `subscribe` |
-| `ui/filter-url.js`, `ui/filter-sync.js` | The filter in the hash query and the folding between year window and time facet. Pure |
+| `ui/filter-url.js` | Parsing and serialising the shared filter and view parameters in the hash query. Pure |
 | `ui/events.js` | The navigation channel `m3gim:navigate`, replayed for views not yet rendered (E-53) |
 | `ui/basket.js`, `ui/charts.js`, `ui/family-icons.js` | Korb with localStorage persistence, the horizontal bar primitive, the four family symbols |
 | `views/*` | Per view an orchestrator, a pure data layer and, where needed, a drawing module |

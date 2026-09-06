@@ -24,9 +24,7 @@ import {
 import {
   getOrderedItems, familiesForRecord, folioRowFacts, rowRecords, isUndatedItem,
 } from '../../docs/js/views/bestand-data.js';
-import { filterBySharedState } from '../../docs/js/views/_bestand-filter.js';
-import { recordMatchesSearch } from '../../docs/js/data/records-for.js';
-import { baseIds } from '../../docs/js/data/records-for.js';
+import { baseIds, recordsFor } from '../../docs/js/data/records-for.js';
 import { countLinks } from '../../docs/js/utils/format.js';
 import { primaryYear } from '../../docs/js/data/loader.js';
 import { storeFromShipped } from './_shipped.mjs';
@@ -249,10 +247,10 @@ describe('Zeilenmodell des Bestands', () => {
       }
     }
     const cut = { person: ['Wagner, Wolfgang'] };
-    const passing = filterBySharedState(store, stands, cut, {
-      getRecord: (s) => s.record,
-      searchMatch: (record, q) => recordMatchesSearch(store, record, q),
-    });
+    const passingIds = recordsFor(store, cut, {
+      base: new Set(stands.map(s => s.record['@id'])),
+    }).ids;
+    const passing = stands.filter(s => passingIds.has(s.record['@id']));
     const rows = new Set(passing.map(s => s.item));
     assert.ok(rows.has(row), 'das Blatt faellt aus dem Schnitt seiner Seiten');
     assert.ok(passing.length >= 10, `nur ${passing.length} Treffer, der Test liefe leer`);
