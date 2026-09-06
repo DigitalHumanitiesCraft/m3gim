@@ -7,7 +7,7 @@ status: active
 language: en
 version: 0.5
 created: 2026-02-19
-updated: 2026-09-05
+updated: 2026-09-06
 authors: [Christopher Pollin]
 generated-with: Claude Code
 method:
@@ -249,6 +249,8 @@ One row per decision that holds today, with its date where the source names one,
 | E-280 | 2026-09-05 | The Karte names every place of the cut it cannot draw, in a sidebar section of its own whose title carries their number. A row gives the place with its record count, a ring mark whose tooltip separates a Wikidata match without coordinates from a name the alignment did not resolve, and the same jump into the documents that a map point carries. | A place without coordinates fell out of the picture without a word, and the earlier notice disappeared as soon as a place cut was active. Nothing is hidden silently, so the reason stands beside the view. | [design.md](design.md) § Views |
 | E-281 | 2026-09-05 | Every Korb export carries the evidence. `recordEvidence` in `views/korb.js` bundles the source cell of the record and, per data point, family, role, value and source cell. The CSV takes one column per family in the form „Rolle: Wert [Blatt Zeile]“ beside a column for the Zeitanker, the BibTeX note takes the same statement, the GEXF writes sheet, row and data point as attributes at node and edge, and the JSON-LD carries it in the copy of the records. A GEXF edge merges two mentions only where they stand on the same source row. | An export is meant to be citable without opening the application. Two mentions on two rows are two pieces of evidence, and merging them would lose one source cell. | [architecture.md](architecture.md) § Views |
 
+| E-282 | 2026-09-06 | Stabilise the document-centred tool with one shared document search and record-time cut; retain undated context and treat annotation dates as evidence. Clarify tasks 1, 4 and 9 accordingly and run task 10 against cataloguing artefacts. | The project lead authorised implementation of the improved plan and one commit per completed milestone. Document co-mention cannot establish an occurrence; technical verification and scholarly acceptance remain separate. | [specification.md](specification.md) § Stable research contract |
+
 ### Modelling guard rails
 
 Cross-cutting principles that bind every model decision and are held by the tests ([testing.md](testing.md)).
@@ -263,6 +265,10 @@ Cross-cutting principles that bind every model decision and are held by the test
 - Vocabulary coupling. Every new event role and role stands in the frontend and test vocabulary, otherwise the vocabulary tests break when it goes live.
 
 ## Sessions
+
+- **2026-09-06, milestone 1:** The project lead authorised the improved plan and milestone commits. The stable scope and shared search/time contract now stand in [specification.md](specification.md), the source-aware task wording in [research-framework.md](research-framework.md), and execution criteria in [plan.md](plan.md). Version acceptance remains with the project lead and partners. Sol-5.6 agents implement disjoint pipeline, shared-view and map/export changes; central integration owns commits.
+
+- Planning pass (2026-09-06, proposal): the repository review and three Sol-5.6 view audits against `e18dfa7` were integrated in [plan.md](plan.md). The plan covers every story, separates implementation evidence from human acceptance, and proposes a document-centred stable scope with explicit corrections to the research task set. Reproduced data-preservation, filtering, map, basket and reporting defects remain implementation work. Source-based counterexamples show that the combined place, year and work filter establishes co-mention rather than a bound appearance. Data-state tooltips and Folio paging were observed in the browser. Application code, research data and the version definitions were unchanged; the proposed scope clarifications remain for project leadership.
 
 Sessions 1 to 47 of February to April 2026 lie in the git history. The full narratives of all sessions listed here stand in [journal-archive.md](journal-archive.md) in their original wording.
 

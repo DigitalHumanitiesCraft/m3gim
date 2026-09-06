@@ -8,12 +8,12 @@ method:
   url: https://lisa.gerda-henkel-stiftung.de/digitale_geschichte_pollin
 status: active
 created: 2026-08-21
-updated: 2026-09-05
+updated: 2026-09-06
 language: en
 version: 0.6
 authors: [Christopher Pollin]
 generated-with: Claude Code
-related: [INDEX, journal, specification]
+related: [INDEX, journal, specification, plan]
 ---
 
 # Handoff
@@ -25,6 +25,8 @@ Two kinds of point live here. Assignments run inside the repository and are held
 Findings the cataloguing team fixes at the source do not stand here. They are collected in [`../data/reports/source-errors-handover-2026-09-01.md`](../data/reports/source-errors-handover-2026-09-01.md), the authority findings in [`../data/reports/reconciliation-register.md`](../data/reports/reconciliation-register.md). Decisions that wait on the project lead stand in [specification.md](specification.md) § Open decisions.
 
 ## Open assignments per lane
+
+The review and story audit of 2026-09-06 are integrated in the proposed [implementation plan](plan.md). It maps the inherited assignments below to present implementation evidence and remaining acceptance. Read that comparison before treating an old “Open” or “In progress” label as missing code. The planning pass does not close scholarly acceptance or external handovers.
 
 In parallel sessions each instance works in exactly one lane and touches only that lane's files. Every assignment ends with the invariant suite green, the JS unit tests green, and one journal line with an E number where it changes a decision. The publication boundary is the repository itself, nothing enters an external service.
 

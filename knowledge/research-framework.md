@@ -147,15 +147,15 @@ The application serves the researchers and the cataloguing team. It is a tool fo
 
 ### The musicologist, core persona
 
-A researcher of the KUG team working on the mobility and the knowledge production of female singers. She reads Malaniuk's movements, forms of appearance and networks as evidence for FF1 and FF4 and traces every finding back to the record that attests it. She needs the forms of appearance kept apart, guest performance against engagement against travel, a spatial and temporal overview, and a return path into the holdings from every statement. Her tasks are numbers one to five of the task set.
+A researcher of the KUG team working on the mobility and the knowledge production of female singers. She reads Malaniuk's movements, forms of appearance and networks as evidence for FF1 and FF4 and traces every finding back to the record that attests it. She needs the forms of appearance kept apart, guest performance against engagement against travel, a spatial and temporal overview, and a return path into the holdings from every statement. Her tasks are numbers one to seven of the task set.
 
 ### The modeller in the digital humanities
 
-A methodologist responsible for the modelling in RiC-O, the m3gim extension and AgRelOn, who tests the feasibility and the scaling stated above. She makes the degree of cataloguing, the gaps in the data and the load-bearing capacity of the model visible. She needs honest coverage indicators per axis, the cataloguing mirror and the provenance of every data point. Her tasks are numbers six to eight.
+A methodologist responsible for the modelling in RiC-O, the m3gim extension and AgRelOn, who tests the feasibility and the scaling stated above. She makes the degree of cataloguing, the gaps in the data and the load-bearing capacity of the model visible. She needs honest coverage indicators per axis, the cataloguing mirror and the provenance of every data point. Her tasks are numbers eight and nine.
 
 ### The cataloguing team
 
-The team of the university archive that fills and corrects the source tables. Its members need to see which fields are missing or inconsistent. They reach that state not through the interface but through the artefacts of the pipeline, the quality snapshot, the validation report and the link proposals under `data/reports/`, together with the handover list of source errors. Their tasks are numbers nine and ten.
+The team of the university archive that fills and corrects the source tables. Its members need to see which fields are missing or inconsistent. They reach that state not through the interface but through the artefacts of the pipeline, the quality snapshot, the validation report and the link proposals under `data/reports/`, together with the handover list of source errors. Their task is number ten.
 
 External re-use, including the planned FWF follow-up study, is out of scope for the pilot and gets no persona of its own.
 
@@ -181,14 +181,16 @@ The guiding question is whether the tool makes the research questions answerable
 
 ### Task set
 
-Each task succeeds or fails without an intermediate grade. The observation records whether it was solved, how many wrong paths arose, and where the person stalled. The project lead runs the set in the browser as the acceptance of version 0.9. Version 1.0 is the same state after the project partners have run the set and accepted the result.
+Each task succeeds or fails without an intermediate grade. The observation records whether it was solved, how many wrong paths arose, and where the person stalled. Tasks 1–9 run in the browser; task 10 uses the cataloguing report and source-error handover. The project lead accepts version 0.9 after completing this set. Version 1.0 is the same state after the project partners have run the set and accepted the result. Automated runs prepare evidence and do not replace either acceptance.
+
+The stable scope is document-centred (E-282). Shared filters select documents; places, persons, works and dates appearing together in that selection need not belong to one historical occurrence. Each task requires the researcher to inspect the source before asserting that connection. Missing and undated evidence remain explicit.
 
 For the musicologist
 
-1. Name the places at which an appearance between 1950 and 1955 is attested, and open the attesting document for one of them.
+1. Select documents whose time anchor falls between 1950 and 1955. Name their places and place roles where recorded, identify any missing role or retained undated context, and inspect one source to determine whether it attests an appearance.
 2. Show only the places that carry the role of a guest performance, and say which roles the other places carry.
 3. Name the countries in which the holdings attest places, and say which of them is attested most thinly.
-4. Show who is attested in Bayreuth in 1954 at Tristan und Isolde, with the role of each person, and open the document behind one of them.
+4. Select documents mentioning Bayreuth and Tristan und Isolde within the document time slice 1954. Name the persons and their recorded roles, open one source, and explain whether that source supports a shared performance or only separate mentions.
 5. Name a recorded relationship and the document that attests it, and distinguish it from a co-mention of the same two persons.
 6. Name three works of the repertoire, and say whether the holdings name a place or a stage part for one of them.
 7. Open a multi-page source and move through its pages without leaving the record.
@@ -196,7 +198,7 @@ For the musicologist
 For the modeller
 
 8. Find a document whose year on the timeline does not come from its own date of creation, and say which link date the year comes from.
-9. Take one record of the Bestand and confirm that every person and place of the record appears in the Netzwerk and on the Karte, or say why one does not.
+9. Take one record of the Bestand. Account for its persons and institutions in the Netzwerk and for its places on the Karte or in the unlocated-place list. Explain declared exclusions, including the creator of the fonds in the network, and return to the source for one item.
 
 For the cataloguing team
 

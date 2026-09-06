@@ -7,7 +7,7 @@ status: reviewed
 language: en
 version: 0.7
 created: 2026-06-17
-updated: 2026-09-05
+updated: 2026-09-06
 authors: [Christopher Pollin]
 generated-with: Claude Code
 method:
@@ -24,7 +24,7 @@ knowledge-sources:
     RiC-O: https://www.ica.org/standards/RiC/ontology
     AgRelOn: https://d-nb.info/standards/elementset/agrelon
 topics: ["[[Requirements]]", "[[User Stories]]", "[[Scope]]"]
-related: [research-framework, data, data-model, architecture, design, journal, testing, handoff]
+related: [research-framework, data, data-model, architecture, design, journal, testing, handoff, plan]
 ---
 
 # Specification
@@ -147,7 +147,15 @@ The cataloguing status is not a research subject. It stays as a data point in th
 
 ## Versions 0.9 and 1.0
 
-Version 0.9 is the state in which every story of § Epics and user stories is fulfilled in the interface as far as the dataset carries it, the data reach the interface completely and correctly, and the project lead has run the task set of [research-framework.md](research-framework.md) § Evaluation in the browser. Version 1.0 is the same state after the project partners have run the task set and accepted the result. Data keep growing between and after both versions without changing either definition.
+Version 0.9 is the state in which every story of § Epics and user stories is fulfilled in the interface as far as the dataset carries it, the data reach the interface completely and correctly, and the project lead has accepted the task set of [research-framework.md](research-framework.md) § Evaluation: tasks 1–9 in the browser and task 10 against the cataloguing artefacts. Version 1.0 is the same state after the project partners have run the task set and accepted the result. Data keep growing between and after both versions without changing either definition.
+
+## Stable research contract
+
+The implementation scope is the document-centred tool (E-282). Shared text search, facets and the time window select one set of linked source records across all six views. Text search uses the common document search fields, including signature, title and linked values. A view's entity chooser or graph selection refines its presentation within that set and does not redefine the shared query. An explicit filter URL replaces the previous filter; navigation without a filter query preserves it.
+
+The time window uses the primary record time anchor, with undated records retained as declared context. A map annotation keeps its own date as source evidence; it is not a second, silent time filter. Each view accounts for its eligible subset, such as located places or actors excluding the creator of the fonds. Grouped rows and aggregate counts refer back to the records they represent.
+
+Co-mention is the relation available before occurrence grouping is implemented. The task set therefore asks researchers to assess historical connections in the source. The planned occurrence model remains a separate extension. Role counts and filters belong to the shared sidebar; the existing four statistics sections provide evidence navigation from their rankings. A further statistics section requires a demonstrated unmet research task.
 
 ## Netzwerk view
 
@@ -219,6 +227,6 @@ This is the single address for decisions that are open. [journal.md](journal.md)
 
 Built are the pipeline from the source exports to `docs/data/m3gim.jsonld` with its validation, audit, quality snapshot and cataloguer report, the vocabulary with its coverage gate, and the application with the views described above, the shared sidebar, the Korb with its four export formats, and the two test layers, invariants and Datenspiegel. Every role used in the dataset leaves the pipeline as a SKOS concept with a label (E-254), and the pages of a Folio hang under a record of that Folio (E-269). Running figures are in the quality snapshot under [`../data/reports/quality-snapshot.md`](../data/reports/quality-snapshot.md).
 
-The way to version 0.9 is the set of assignments in [handoff.md](handoff.md) § Open assignments per lane. They carry the Netzwerk rebuild, the link types and roles as sidebar facets, the Chronik at content level, the visible data state, one rule binding stage part to work, the Korb export with its evidence, the Folio paging and the removal of the Erschließungsstand from sidebar and Statistik.
+The proposed integration of the code review and research-task audit into the route to version 0.9 is in [plan.md](plan.md). It maps every story to existing evidence and remaining acceptance, names the implementation corrections and identifies proposed task-set clarifications. The inherited assignments in [handoff.md](handoff.md) retain their context, but several old status labels lag behind implemented behaviour. The review observed data-state tooltips and Folio paging in the browser; neither observation establishes scholarly acceptance. The definitions of versions 0.9 and 1.0 above are unchanged by this planning pass.
 
 Not built is the target model of [data.md](data.md) § Target model, decided and not built. The occurrence as a bundling node above the aspect nodes is absent from vocabulary and dataset, and the interface therefore shows co-mention at the record where it would show one appearance. Source errors stand in the handover list [`../data/reports/source-errors-handover-2026-09-01.md`](../data/reports/source-errors-handover-2026-09-01.md), the Wikidata findings in the [`../data/reports/reconciliation-register.md`](../data/reports/reconciliation-register.md). Deferred are the Zenodo archiving and the EAD export as part of an operating model.

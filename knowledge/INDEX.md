@@ -13,12 +13,12 @@ template:
   alias: https://dhcraft.org/Promptotyping/#promptotyping-document-index
 status: active
 created: 2026-02-19
-updated: 2026-09-05
+updated: 2026-09-06
 language: en
 version: 0.6
 authors: [Christopher Pollin]
 generated-with: Claude Code
-related: [specification, data, data-model, research-framework, architecture, design, journal, journal-archive, testing, handoff]
+related: [specification, plan, data, data-model, research-framework, architecture, design, journal, journal-archive, testing, handoff]
 ---
 
 # M³GIM Knowledge Base
@@ -31,6 +31,7 @@ This page is the entry point into the knowledge base of the project. It orders t
 |---|---|---|---|
 | [INDEX.md](INDEX.md) | Navigation | What lies here, how is it read, which terms are constitutive? | with every change to the contents of the folder |
 | [specification.md](specification.md) | Charter and specification | What is the project, what is the application to achieve, and where does the work stand? | with a change to identity, requirements, scope or state of work |
+| [plan.md](plan.md) | Implementation plan | Which review findings and research-task gaps must be resolved for a stable candidate, and what evidence closes them? | with an accepted scope clarification, integrated change or new verification result |
 | [data.md](data.md) | Source material and spec-first anchor | What is the source material, how does the cataloguing team record it, and what is defective in it? | with a new data export or a changed recording |
 | [data-model.md](data-model.md) | Domain knowledge | How is the material formally modelled, and where does the model stop? | with a change to [`vocab/m3gim.ttl`](../vocab/m3gim.ttl), to the model or to the recording convention |
 | [research-framework.md](research-framework.md) | Domain knowledge | Which theory, research questions, personas and use cases carry the project? | when research questions, personas or use cases are sharpened |
@@ -58,6 +59,7 @@ The data findings live operationally under `data/reports/`. The errors that can 
 - Working with the generated dataset without knowing the pipeline: [data-model.md](data-model.md) → [`data/reports/reconciliation-register.md`](../data/reports/reconciliation-register.md).
 - Running or debugging the pipeline: [`../CLAUDE.md`](../CLAUDE.md) § Core commands → [architecture.md](architecture.md) § Pipeline → [testing.md](testing.md).
 - Adapting the frontend: [architecture.md](architecture.md) § Frontend → [design.md](design.md).
+- Stabilising the reviewed application: [specification.md](specification.md) → [plan.md](plan.md) → [research-framework.md](research-framework.md) § Evaluation. The plan distinguishes implemented behaviour, observed checks and human acceptance.
 - Recording data: [`data/recording-guide.md`](../data/recording-guide.md), which is German and addressed to the cataloguing team, then [data.md](data.md).
 - Entering from the research side: [research-framework.md](research-framework.md) → [specification.md](specification.md).
 
