@@ -479,11 +479,10 @@ def main() -> int:
             results.append(("WARN", "anchor:NIM_004_1                 ",
                             f"check uebersprungen: {e}"))
 
-        # --- Auftritt-Detail von NIM_022 1_1 (Projektleitung, 2026-09-04):
-        #     Signatur ohne Titel als erstes Element der Metazeile, kein
-        #     Schliessen-Knopf, keine Quellzeilen im Fuss, Blocktitel ohne Zahl,
-        #     Auffuehrungen unter ihrer Spielzeit, Buehnenrolle unter ihrem
-        #     Werk (Projektleitung, 2026-09-05). ---
+        # --- Performance detail of NIM_022 1_1: full signature and title in
+        #     the detail head, no close button or source rows, section titles
+        #     without counts, performances below their run, stage role below
+        #     its work (Projektleitung, 2026-09-04/05). ---
         try:
             page.goto(f"{BASE_URL}#bestand/m3gim-data:NIM_022_1_1",
                       wait_until="networkidle", timeout=10000)
@@ -491,28 +490,28 @@ def main() -> int:
             detail = page.locator(".inline-detail").first
             head = detail.locator(".inline-detail__head").first
             head_text = head.inner_text() if head.count() else ""
-            in_meta_head = detail.locator(
-                ".inline-detail__meta > .inline-detail__head").count()
-            if ("NIM_022 1_1" in head_text and "Bayreuther Festspiele" not in head_text
-                    and in_meta_head == 1):
+            in_header_head = detail.locator(
+                ".inline-detail__header > .inline-detail__head").count()
+            if ("NIM_022 1_1" in head_text and "Bayreuther Festspiele" in head_text
+                    and in_header_head == 1):
                 results.append(("OK", "anchor:NIM_022_1_1:kopfzeile     ",
-                                "Signatur ohne Titel, in der Metazeile"))
+                                "Signatur und vollständiger Titel im Detailkopf"))
             else:
                 results.append(("FAIL", "anchor:NIM_022_1_1:kopfzeile     ",
-                                f"Kopfzeile {head_text[:60]!r}, in-meta={in_meta_head}"))
+                                f"Kopfzeile {head_text[:60]!r}, in-header={in_header_head}"))
 
-            in_meta = detail.locator(".inline-detail__meta .inline-detail__actions"
-                                     " .inline-detail__action-btn").count()
+            in_controls = detail.locator(".inline-detail__controls > .inline-detail__actions"
+                                         " .inline-detail__action-btn").count()
             n_close = detail.locator(".inline-detail__close").count()
             n_source = detail.locator(".inline-detail__source").count()
             meta_text = detail.locator(".inline-detail__meta").first.inner_text()
-            if (in_meta == 1 and n_close == 0 and n_source == 0
+            if (in_controls == 1 and n_close == 0 and n_source == 0
                     and "ERSCHLIESSUNG" in meta_text.upper()):
                 results.append(("OK", "anchor:NIM_022_1_1:metazeile     ",
                                 "nur Korb-Aktion, kein Schliessen, keine Quellzeilen"))
             else:
                 results.append(("FAIL", "anchor:NIM_022_1_1:metazeile     ",
-                                f"aktionen={in_meta}, close={n_close}, quelle={n_source}, "
+                                f"aktionen={in_controls}, close={n_close}, quelle={n_source}, "
                                 f"meta={meta_text[:60]!r}"))
 
             titles = detail.locator(".inline-detail__section-title").all_inner_texts()

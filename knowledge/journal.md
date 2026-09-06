@@ -257,6 +257,8 @@ One row per decision that holds today, with its date where the source names one,
 
 | E-285 | 2026-09-06 | Remove technical sheet, row and data-point labels from the interface, including pills and tooltips. Keep archival signatures, record navigation, substantive caveats and source metadata in data and exports. | The project lead identified Z.137 and Box numbers as temporary debugging displays and requested their removal. This supersedes E-221 and closes its proposed sheet-jump decision. | [design.md](design.md) § Components |
 
+| E-286 | 2026-09-06 | Show full signature and complete title on the left of every record detail head, metadata on the right with left-aligned text and below on narrow screens. Keep paging and Korb separate. Update the individual title on Folio paging while preserving the collection title above. | The project lead found that the collection title concealed the recorded titles of its individual parts and approved this layout. This supersedes the title and head-layout parts of E-271. | [design.md](design.md) § Components |
+
 ### Modelling guard rails
 
 Cross-cutting principles that bind every model decision and are held by the tests ([testing.md](testing.md)).
@@ -271,6 +273,8 @@ Cross-cutting principles that bind every model decision and are held by the test
 - Vocabulary coupling. Every new event role and role stands in the frontend and test vocabulary, otherwise the vocabulary tests break when it goes live.
 
 ## Sessions
+
+- **2026-09-06, individual titles in the detail head:** The project lead confirmed finding the Folio paging control and reopening `NIM_007_5_4` from its address. All eight parts carry titles in the dataset, but the detail hid them behind the collection title. E-286 restores the individual title and groups identity separately from metadata. Implementation is delegated to a Sol 5.6 agent; verification is recorded in [plan.md](plan.md).
 
 - **2026-09-06, direct-link arrival in Bestand:** The project lead's screenshot showed `NIM_023_10` correctly open near the bottom of a tall viewport. Nearest-edge scrolling and insufficient remaining scroll range caused the placement. Direct arrival now aligns the title below the sticky heads, adds the required trailing space from the actual table geometry and completes without animation. A Sol 5.6 agent added arrival regressions; root extended them to filtered results. [plan.md](plan.md) records verification and the pending user retest.
 

@@ -471,10 +471,20 @@
   border-inline-start: 3px solid var(--accent);
 }
 
-/* Signatur of the record, leading the meta bar as its first item; it inherits
-   the bar's size and colour, the mono face marks it as an identifier
-   (Projektleitung, 2026-09-05). */
+/* The record identity and its compact facts form the detail header. */
+.inline-detail__header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-3) var(--space-6);
+  margin-bottom: var(--space-4);
+}
+
 .inline-detail__head {
+  min-width: 0;
+  outline: none;
+}
+
+.inline-detail__head-line {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
@@ -483,6 +493,18 @@
 
 .inline-detail__head-sig {
   font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+.inline-detail__head-title {
+  margin-top: var(--space-1);
+  color: var(--color-text-primary);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-semibold);
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+  user-select: text;
 }
 
 /* The record's own quality mark on the head line. The box carries no text, so
@@ -491,20 +513,12 @@
   align-self: center;
 }
 
-/* Page control of a Folio: back, position, forward, sitting at the end of the
-   meta bar before the action button. The position is mono, because it names a
-   place in the sheet and not a measured quantity. */
+/* Page control of a Folio: back, position, forward. The position is mono,
+   because it names a place in the sheet and not a measured quantity. */
 .inline-detail__page {
   display: inline-flex;
   align-items: center;
   gap: var(--space-1);
-  margin-inline-start: auto;
-}
-
-/* The control ends the bar; where the action group follows, that group loses
-   the auto margin and the two stand together at the right edge. */
-.inline-detail__page + .inline-detail__actions {
-  margin-inline-start: var(--space-3);
 }
 
 .inline-detail__page-btn {
@@ -545,13 +559,18 @@
   padding-inline: var(--space-1);
 }
 
-/* The Korb button at the right end of the meta bar, so it costs no row of its
-   own (Projektleitung, 2026-09-04). */
 .inline-detail__actions {
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  margin-inline-start: auto;
+}
+
+.inline-detail__controls {
+  grid-column: 2;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: var(--space-3);
 }
 
 .inline-detail__action-btn {
@@ -587,19 +606,18 @@
   color: var(--color-text-inverse);
 }
 
-/* Metadata head line: horizontal, full width, quietly set apart. */
+/* Compact facts stay aligned at the right edge on wide screens. */
 .inline-detail__meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2) var(--space-5);
-  margin-bottom: var(--space-4);
+  display: grid;
+  grid-template-columns: auto auto;
+  align-content: start;
+  gap: var(--space-1) var(--space-3);
   font-size: var(--text-sm);
+  text-align: left;
 }
 
 .inline-detail__meta-item {
-  display: inline-flex;
-  align-items: baseline;
-  gap: var(--space-2);
+  display: contents;
 }
 
 .inline-detail__meta-label {
@@ -614,7 +632,7 @@
   color: var(--color-text-primary);
 }
 
-/* rico:scopeAndContent as reading prose under the meta bar, held to a reading
+/* rico:scopeAndContent as reading prose under the header, held to a reading
    measure so it does not run the full table width. */
 .inline-detail__description {
   font-size: var(--text-sm);
@@ -811,6 +829,19 @@
 /* Touch target: the Wikidata link is a glyph inside a text line and needs the
    finger height it does not need under a pointer. */
 @media (max-width: 768px) {
+  .inline-detail__header {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .inline-detail__meta,
+  .inline-detail__controls {
+    grid-column: 1;
+  }
+
+  .inline-detail__controls {
+    justify-content: flex-start;
+  }
+
   .badge--wikidata {
     min-block-size: 24px;
     min-inline-size: 24px;

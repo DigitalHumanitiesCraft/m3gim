@@ -59,23 +59,22 @@ export function buildInlineDetail(record, store, paging = {}) {
     }),
   );
 
-  // Only the full Signatur, because the row above already carries the title and
-  // shows the folio alone, while this is the citable identifier. It leads the
-  // meta bar instead of taking a line of its own and is where the focus lands
-  // when the detail opens, programmatically focusable without entering the tab
-  // sequence (Projektleitung, 2026-09-05).
+  // Signatur and title identify the record currently on show. For a paged
+  // Folio both therefore change together when the reader turns the page. The
+  // head remains the programmatic focus target of the detail.
   const identifier = record['rico:identifier'];
+  const title = record['rico:title'] || '(ohne Titel)';
   const qualityLines = recordQualityTipLines(record);
-  const head = identifier || qualityLines.length
-    ? el('div', { className: 'inline-detail__head', tabindex: '-1' },
+  const head = el('div', { className: 'inline-detail__head', tabindex: '-1' },
+    el('div', { className: 'inline-detail__head-line' },
       identifier ? el('span', { className: 'inline-detail__head-sig' }, String(identifier)) : null,
       qualityLines.length ? qualityFlagMark(qualityLines) : null,
-    )
-    : null;
+    ),
+    el('div', { className: 'inline-detail__head-title' }, String(title)),
+  );
 
-  // Metadata as one narrow full-width bar; the administrative fields sit in the
-  // collapsible foot instead. Erschliessung is the Bearbeitungsstand of the
-  // record, not a status of the document (Projektleitung, 2026-09-04).
+  // Compact facts sit opposite the identity; administrative fields stay in the
+  // collapsible foot. Erschliessung is the Bearbeitungsstand of the record.
   const meta = [];
   const docType = formatDocType(record, store);
   if (docType) meta.push(['Typ', docType]);
@@ -87,11 +86,11 @@ export function buildInlineDetail(record, store, paging = {}) {
   if (extent) meta.push(['Umfang', typeof extent === 'string' ? extent : String(extent)]);
   const status = record['m3gim-ontology:processingStatus'];
   if (status) meta.push(['Erschließung', status]);
-  wrapper.appendChild(renderMetaBar(
+  wrapper.appendChild(renderDetailHeader(
     meta, actions, head, renderPaging(record, paging)));
 
   // rico:scopeAndContent is the record's own content description and reads as
-  // prose directly under the meta bar, not as a meta item. The data holds none
+  // prose directly under the header, not as a metadata item. The data holds none
   // yet, so this stays inert until the source carries it.
   const scope = record['rico:scopeAndContent'];
   if (scope) {
@@ -178,20 +177,22 @@ function renderSection(title, family, content) {
   );
 }
 
-/** Metadata as one narrow horizontal bar, the Signatur leading it, the page
- *  control after the fields and the action button at its right end. */
-function renderMetaBar(pairs, actions, head, paging) {
-  const bar = el('div', { className: 'inline-detail__meta' });
-  if (head) bar.appendChild(head);
+/** Record identity, compact metadata and controls as distinct header regions. */
+function renderDetailHeader(pairs, actions, head, paging) {
+  const header = el('div', { className: 'inline-detail__header' });
+  if (head) header.appendChild(head);
+  const meta = el('div', { className: 'inline-detail__meta' });
   for (const [label, value] of pairs) {
-    bar.appendChild(el('span', { className: 'inline-detail__meta-item' },
+    meta.appendChild(el('span', { className: 'inline-detail__meta-item' },
       el('span', { className: 'inline-detail__meta-label' }, label),
       el('span', { className: 'inline-detail__meta-value' }, String(value)),
     ));
   }
-  if (paging) bar.appendChild(paging);
-  if (actions) bar.appendChild(actions);
-  return bar;
+  if (pairs.length) header.appendChild(meta);
+  if (paging || actions) {
+    header.appendChild(el('div', { className: 'inline-detail__controls' }, paging, actions));
+  }
+  return header;
 }
 
 /**
@@ -234,7 +235,7 @@ function renderPaging(record, { pages, onPage }) {
 
 // Administrative fields, shown as label/value rows in the collapsible foot.
 // They document the Erschließungsstand, not the record's content, so they stay
-// out of the meta bar (processingStatus is the exception and stays there).
+// out of the header facts (processingStatus is the exception and stays there).
 const ADMIN_FIELDS = [
   ['m3gim-ontology:processingNote', 'Bearbeitungsnotiz'],
   ['m3gim-ontology:accessStatus', 'Zugang'],
