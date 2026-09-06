@@ -23,6 +23,7 @@ legitimately similar names.
 from __future__ import annotations
 
 import pytest
+from thefuzz import fuzz
 
 
 def _iter_works(graph: list) -> list:
@@ -51,12 +52,8 @@ def _iter_works(graph: list) -> list:
 )
 def test_komponisten_ohne_fuzzy_duplikate(graph):
     """No two composer raw strings may be fuzzy-similar (>= 92)."""
-    try:
-        from thefuzz import fuzz  # type: ignore
-    except ImportError:
-        pytest.skip("thefuzz nicht installiert.")
-
     names = sorted(set(_iter_works(graph)))
+    assert names, "Keine Komponistennamen im Graph; Fuzzy-Prüfung wäre leer"
     duplicates = []
     for i, a in enumerate(names):
         for b in names[i + 1 :]:

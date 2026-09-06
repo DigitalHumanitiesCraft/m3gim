@@ -20,10 +20,8 @@ import pytest
 
 REPO_ROOT = Path(__file__).parent.parent
 
-# transform.py liest die Wikidata-Normdaten aus seinem eigenen Ausgabe-
-# verzeichnis. Fehlen sie dort, laeuft es still ohne Anreicherung weiter
-# (architecture.md § ENV overrides), und der Vergleich liefe auf einem
-# verarmten Datensatz. Deshalb vorher hinueberkopieren.
+# The isolated output directory must contain both authority artefacts because
+# transform.py rejects an incomplete standard run before producing JSON-LD.
 NORMDATA_FILES = ("wikidata-reconciliation.json", "wikidata-enrichment.json")
 
 
@@ -38,8 +36,10 @@ def test_transform_deterministic(tmp_path):
     out_dir.mkdir()
     for name in NORMDATA_FILES:
         src = _source_output_dir() / name
-        if src.exists():
-            shutil.copy2(src, out_dir / name)
+        assert src.is_file(), (
+            f"Pflichtartefakt für den vollständigen Determinismuslauf fehlt: {src}"
+        )
+        shutil.copy2(src, out_dir / name)
 
     env = {**os.environ, "M3GIM_OUTPUT_DIR": str(out_dir)}
     target = out_dir / "m3gim.jsonld"

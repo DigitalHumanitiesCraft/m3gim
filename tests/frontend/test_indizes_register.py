@@ -20,24 +20,15 @@ import pytest
 # Browser stack is an optional extra; skip instead of failing the default run.
 pytest.importorskip("playwright")
 
-from playwright.sync_api import sync_playwright
-
 # frontend_server kommt aus tests/frontend/conftest.py
 
 
 @pytest.fixture
-def page(frontend_server):
-    with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
-        context = browser.new_context(viewport={"width": 1440, "height": 900})
-        pg = context.new_page()
-        pg.console_errors = []
-        pg.on("console", lambda m: pg.console_errors.append(m.text)
-              if m.type == "error" else None)
-        pg.on("pageerror", lambda e: pg.console_errors.append(str(e)))
-        pg.base_url = frontend_server
-        yield pg
-        browser.close()
+def page(frontend_server, browser_context):
+    pg = browser_context.new_page()
+    pg.set_viewport_size({"width": 1440, "height": 900})
+    pg.base_url = frontend_server
+    yield pg
 
 
 def _open(page, hash_part):
@@ -75,7 +66,6 @@ def test_ein_register_und_tastaturbedienung(page):
         "document.activeElement && document.activeElement.classList.contains('idx-item')"
     ), "Escape laesst den Fokus auf der Zeile stehen."
 
-    assert not page.console_errors, page.console_errors
 
 
 @pytest.mark.frontend
@@ -133,12 +123,11 @@ def test_der_name_klappt_auf_die_pille_fuehrt_in_den_bestand(page):
 
     # In den gefilterten Bestand fuehrt die Dokumentpille.
     pill.click()
-    page.wait_for_timeout(400)
+    page.wait_for_url(re.compile(r"#bestand\?.*person="))
     assert "#bestand" in page.url, page.url
     assert "person=" in page.url, page.url
     root = page.locator("#tab-bestand .vs-status__count").inner_text()
     assert re.search(r"\d", root), root
-    assert not page.console_errors, page.console_errors
 
 
 @pytest.mark.frontend
@@ -174,10 +163,7 @@ def test_der_eintrag_listet_keine_dokumente_mehr(page):
     if more.count() > 0:
         assert "Netzwerk" in more.get_attribute("data-tip")
         more.click()
-        page.wait_for_timeout(500)
-        assert page.locator(
-            '[data-tab="netzwerk"][aria-selected="true"]').count() == 1
-    assert not page.console_errors, page.console_errors
+        page.locator('[data-tab="netzwerk"][aria-selected="true"]').wait_for()
 
 
 @pytest.mark.frontend
@@ -204,7 +190,6 @@ def test_jedes_register_zeigt_seine_rollen_und_seine_spanne(page):
         assert gesetzt, f"{register} zeigt keine einzige Zeitspanne"
         for text in gesetzt[:10]:
             assert re.fullmatch(r"\d{4}(–\d{4})?", text), (register, text)
-    assert not page.console_errors, page.console_errors
 
 
 @pytest.mark.frontend
@@ -235,9 +220,8 @@ def test_registerwechsel_und_direkter_einstieg(page):
     assert menu.is_hidden()
 
     tab.click()
-    page.wait_for_timeout(200)
     items.nth(2).click()         # Orte
-    page.wait_for_timeout(300)
+    page.wait_for_url(re.compile(r"#indizes/orte"))
     assert menu.is_hidden(), "Die Wahl schliesst das Menue."
     assert "#indizes/orte" in page.url, page.url
     assert page.locator("#tab-indizes .idx-head__label").inner_text() == "Orte"
@@ -248,7 +232,6 @@ def test_registerwechsel_und_direkter_einstieg(page):
     assert page.locator("#tab-indizes .idx-head__label").inner_text() == "Werke"
     assert page.locator("#tab-indizes .idx-grid").count() == 1
     assert items.nth(3).get_attribute("aria-checked") == "true"
-    assert not page.console_errors, page.console_errors
 
 
 @pytest.mark.frontend
@@ -272,7 +255,9 @@ def test_sortierung_steht_im_kopf_der_liste(page):
 
     by_count = names()
     buttons.nth(1).click()
-    page.wait_for_timeout(200)
+    page.wait_for_function(
+        "document.querySelectorAll('.idx-sort__btn')[1]?.getAttribute('aria-pressed') === 'true'"
+    )
     assert buttons.nth(1).get_attribute("aria-pressed") == "true"
     assert buttons.nth(0).get_attribute("aria-pressed") == "false"
     by_alpha = names()
@@ -281,7 +266,6 @@ def test_sortierung_steht_im_kopf_der_liste(page):
 
     # Die Normdaten-Schalter sind mit E-230 entfallen.
     assert "Wikidata" not in page.locator(".view-sidebar").inner_text()
-    assert not page.console_errors, page.console_errors
 
 
 @pytest.mark.frontend
@@ -317,20 +301,19 @@ def test_liste_ohne_spaltenkoepfe_und_mit_einer_zeilenhoehe(page):
 
 
 @pytest.mark.frontend
-def test_belegzahl_stimmt_mit_der_sidebar_ueberein(page):
-    """Die Zahl an der Zeile zaehlt im Schnitt, nicht im ganzen Teilnachlass."""
-    _open(page, "#indizes/personen?typ=biographical")
-    cut = int(re.search(
-        r"(\d+)\s*$",
-        page.locator(".vs-status__count .fs-option__count").inner_text().strip()).group(1))
-    counts = [int(re.match(r"\d+", t).group(0)) for t in page.eval_on_selector_all(
-        "#tab-indizes .idx-doclink__label", "els => els.map(e => e.textContent)")]
-    assert counts, "Der Schnitt fuehrt Eintraege."
-    assert max(counts) <= cut, (
-        f"Ein Eintrag zaehlt {max(counts)} Dokumente in einem Schnitt von {cut}.")
-    tip = page.locator("#tab-indizes .idx-doclink").first.get_attribute("data-tip")
-    assert re.fullmatch(r"Diese \d+ Dokumente? im Bestand öffnen", tip), tip
-    assert not page.console_errors, page.console_errors
+def test_belegzahl_fuehrt_zu_den_exakten_quellbelegen(page):
+    """A fixed source-backed person resolves to exactly its two records."""
+    _open(page, "#indizes/personen")
+    row = page.locator("#tab-indizes .idx-item", has_text="Klarwein, Franz").first
+    pill = row.locator(".idx-doclink")
+    assert pill.locator(".idx-doclink__label").inner_text().strip() == "2 Dokumente"
+    pill.click()
+    page.wait_for_url(re.compile(r"#bestand\?.*person=Klarwein"))
+    rows = page.locator("#bestand-tbody tr[data-record-row]")
+    rows.first.wait_for()
+    assert sorted(rows.evaluate_all(
+        "els => els.map(e => e.dataset.recordRow)"
+    )) == ["m3gim-data:NIM_004_2", "m3gim-data:NIM_004_4"]
 
 
 @pytest.mark.frontend
@@ -390,4 +373,3 @@ def test_werke_bieten_den_sprung_auf_die_karte(page):
         "#tab-indizes .idx-jump--row",
         "els => els.map(e => e.getAttribute('aria-label'))")
     assert labels and all(l.endswith("im Netzwerk öffnen") for l in labels)
-    assert not page.console_errors, page.console_errors

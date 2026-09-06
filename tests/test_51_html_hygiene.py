@@ -239,11 +239,10 @@ def test_the_skip_link_is_the_first_focusable_element(page, parsed):
     assert "main-content" in parsed[page.name].ids, f"{page.name} ohne #main-content"
 
 
-@PARAM
-def test_tabs_and_panels_point_at_each_other(page, parsed):
-    p = parsed[page.name]
-    if not p.tabs:
-        pytest.skip("Seite ohne Tab-Leiste")
+def test_tabs_and_panels_point_at_each_other(parsed):
+    """The application page owns the tab interface; content pages do not."""
+    p = parsed["index.html"]
+    assert p.tabs, "index.html ohne Tab-Leiste"
     ids = set(p.ids)
     for tab in p.tabs:
         assert tab.get("aria-controls") in ids, f"Tab zeigt auf kein Panel: {tab}"

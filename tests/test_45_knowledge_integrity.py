@@ -221,66 +221,6 @@ def test_no_dead_document_references_in_code():
     )
 
 
-# Verweise der Form "<dokument>.md Paragraph 10" adressieren einen Abschnitt in einem
-# Wissensdokument. Wird der Abschnitt in ein anderes Dokument verschoben oder
-# umnummeriert, zeigt der Verweis auf einen Abschnitt, den es dort nicht gibt.
-# Der Dateiname existiert weiterhin, der vorige Test greift also nicht.
-# Die zusammengesetzte Form "Paragraph 4 und 7" nennt zwei Abschnitte in
-# einem Verweis. Ohne die Fortsetzung wird nur der erste geprueft, und der
-# zweite kann unbemerkt ins Leere zeigen.
-SECTION_REF = re.compile(
-    r"\b([a-z0-9][a-z0-9._-]*\.md)[)\]`]*\s*§+\s*(\d{1,2})"
-    r"((?:\s*(?:,|und|and|bis)\s*\d{1,2})*)",
-    re.I,
-)
-
-
-def _sections_by_document():
-    """Dateiname -> Menge der Abschnittsnummern, die das Dokument fuehrt."""
-    found = defaultdict(set)
-    for path in KNOWLEDGE.rglob("*.md"):
-        for line in path.read_text(encoding="utf-8").splitlines():
-            match = re.match(r"^#{2,3}\s+(\d{1,2})\.\s", line)
-            if match:
-                found[path.name].add(int(match.group(1)))
-    return found
-
-
-def test_section_references_resolve():
-    """Jeder Verweis auf einen nummerierten Abschnitt trifft ihn im genannten Dokument."""
-    sections = _sections_by_document()
-    if not sections:
-        pytest.skip("Kein Wissensdokument fuehrt nummerierte Abschnitte")
-    wrong = defaultdict(list)
-    roots = [REPO_ROOT / r for r in CODE_ROOTS] + [KNOWLEDGE]
-    files = [REPO_ROOT / f for f in CITATION_FILES if (REPO_ROOT / f).exists()]
-    for root in roots:
-        if root.exists():
-            files.extend(
-                p for p in root.rglob("*")
-                if p.is_file() and p.suffix in CODE_SUFFIXES | {".md"}
-            )
-    for path in sorted(set(files)):
-        try:
-            text = path.read_text(encoding="utf-8")
-        except (UnicodeDecodeError, OSError):
-            continue
-        for lineno, line in enumerate(text.splitlines(), start=1):
-            for doc, first, more in SECTION_REF.findall(line):
-                if doc not in sections:
-                    continue
-                numbers = [int(first)] + [int(n) for n in re.findall(r"\d{1,2}", more)]
-                for number in numbers:
-                    if number not in sections[doc]:
-                        wrong[f"{doc} § {number}"].append(
-                            f"{path.relative_to(REPO_ROOT)}:{lineno}"
-                        )
-    assert not wrong, (
-        "Abschnittsverweise, die im genannten Dokument nicht existieren: "
-        f"{ {k: v[:3] for k, v in sorted(wrong.items())} }"
-    )
-
-
 # Seit E-161 nennt ein Verweis Dokument und Abschnittstitel statt einer Nummer.
 # Der Titel steht im Fliesstext, deshalb faengt der Ausdruck den ganzen Rest der
 # Zeile und die Aufloesung entscheidet, welche Ueberschrift darin steckt. Die

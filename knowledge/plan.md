@@ -31,8 +31,8 @@ E-282 anchors the shared document search and record-time cut. Annotation dates r
 | M1 Research scope | Source-aware tasks and common search/time contract | Complete, `1218a10` |
 | M2 Reliable data processing | Preservation under failure, accurate reports and deterministic output | Complete, `12383e4` |
 | M3 Consistent and usable views | Common filters, accessible evidence and local static assets | Complete, `8f94728`; narrow network follow-up in M4 |
-| M4 Complete research paths | All stories mapped to checks or material limits; actual evidence exports and visual follow-up | Complete; source and performance limits recorded below |
-| M4T Trustworthy tests | Independent audit of the whole test suite; correct assertions, meaningful missing coverage and warranted simplification | Active; added by project lead |
+| M4 Complete research paths | All stories mapped to checks or material limits; actual evidence exports and visual follow-up | Complete, `e8ef22b`; source and performance limits recorded below |
+| M4T Trustworthy tests | Independent audit of the whole test suite; correct assertions, meaningful missing coverage and warranted simplification | Complete; independent audits and integrated checks |
 | M5 Knowledge and integrated verification | Maintained knowledge consolidated; complete technical checks from one clean snapshot | Active |
 | M6 Scholarly acceptance | Project lead accepts task results for 0.9; partners accept them for 1.0 | Awaiting human task runs |
 
@@ -100,6 +100,8 @@ These are agent-checked examples from the versioned data of 2026-09-06. Record i
 ## Test review and integrated verification
 
 M4T reviews the whole suite with disjoint Sol-5.6 assignments for Python/pipeline and frontend tests. Correct wrong or vacuous assertions, explicit required-fixture handling, test-only duplicated logic and stale generated-file dependencies. Prefer behaviour checks and source-backed examples. Share expensive setup where isolation remains intact. Add tests only for meaningful missing guarantees, and preserve the distinction between implementation invariants and the data mirror. No blanket test renaming, framework change or numeric coverage target is required.
+
+The completed audit changed six Python modules and the browser setup/consumer tests. Missing publication files, missing required authority inputs and completely absent model families now fail explicitly. The permanently skipped numbered-section scanner was removed, and the tab contract now targets the application page directly. Four strict source-fix xfails remain. Browser tests share Chromium while keeping isolated contexts and centrally failing on browser errors. Visible state predicates replace fixed waits in the changed paths. The register canary requires exactly the two source-backed Klarwein records and follows its visible document link. Root removed duplicate error collectors and normalised the touched fixture consumers. The final root runs passed 549 Python invariants including isolated determinism, four strict xfails, all 678 Node cases and all 22 changed browser cases. The broad smoke's remaining fixed waits and overlap are a bounded maintenance issue; wholesale replacement is unnecessary for this increment.
 
 The clean candidate run must include Python invariants with isolated determinism, all Node tests and the browser suite. Playwright is mandatory for this verification even though local browserless runs may skip it. Browser console errors, execution exceptions and smoke warnings fail the gate. A successful DOM-presence assertion cannot substitute for visible drawing or an operable control. Network downloads are compared against the selected projection and record cut; user controls are exercised by visible clicks.
 

@@ -42,6 +42,12 @@ def _graph(path: Path) -> list:
         return json.load(f)["@graph"]
 
 
+def _required_graph(path: Path, producer: str) -> list:
+    if not path.is_file():
+        raise FileNotFoundError(f"Pflichtartefakt fehlt: {path}. {producer} ausführen.")
+    return _graph(path)
+
+
 def _count_annotations(graph: list) -> int:
     n = 0
     for node in graph:
@@ -54,16 +60,17 @@ def _count_annotations(graph: list) -> int:
 
 @pytest.fixture(scope="module")
 def output_graph() -> list:
-    if not OUTPUT_JSONLD.exists():
-        pytest.skip(f"Kein Pipeline-Output: {OUTPUT_JSONLD}")
-    return _graph(OUTPUT_JSONLD)
+    return _required_graph(OUTPUT_JSONLD, "transform.py")
 
 
 @pytest.fixture(scope="module")
 def docs_graph() -> list:
-    if not DOCS_JSONLD.exists():
-        pytest.skip(f"Keine Frontend-Datenquelle: {DOCS_JSONLD}")
-    return _graph(DOCS_JSONLD)
+    return _required_graph(DOCS_JSONLD, "build-views.py")
+
+
+def test_missing_required_graph_is_a_failure(tmp_path):
+    with pytest.raises(FileNotFoundError, match="Pflichtartefakt fehlt"):
+        _required_graph(tmp_path / "missing.jsonld", "producer.py")
 
 
 def test_docs_data_graph_equals_output(output_graph, docs_graph):

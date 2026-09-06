@@ -9,19 +9,15 @@ from pathlib import Path
 import pytest
 
 pytest.importorskip("playwright")
-from playwright.sync_api import sync_playwright
 
 
 IDS = ["m3gim-data:NIM_069", "m3gim-data:NIM_004_24"]
 
 
 @pytest.fixture
-def page():
-    with sync_playwright() as playwright:
-        browser = playwright.chromium.launch(headless=True)
-        page = browser.new_page(accept_downloads=True)
-        yield page
-        browser.close()
+def page(browser_context):
+    page = browser_context.new_page()
+    yield page
 
 
 @pytest.mark.frontend
@@ -40,7 +36,10 @@ def test_basket_downloads_are_parseable(frontend_server, page):
         with page.expect_download() as pending:
             page.get_by_role("button", name=f"↓ {label}").click()
         download = pending.value
-        downloads[label] = (download.suggested_filename, Path(download.path()).read_bytes())
+        downloads[label] = (
+            download.suggested_filename,
+            Path(download.path()).read_bytes(),
+        )
 
     csv_name, csv_bytes = downloads["CSV"]
     assert csv_name == "m3gim-korb.csv"
@@ -72,7 +71,12 @@ def test_basket_downloads_are_parseable(frontend_server, page):
 def test_map_has_one_keyboard_operable_drawing(frontend_server, page):
     errors = []
     page.on("pageerror", lambda error: errors.append(str(error)))
-    page.on("console", lambda message: errors.append(message.text) if message.type == "error" else None)
+    page.on(
+        "console",
+        lambda message: (
+            errors.append(message.text) if message.type == "error" else None
+        ),
+    )
     page.goto(frontend_server, wait_until="networkidle")
     page.locator("#btn-karte").click()
     drawing = page.locator("#tab-karte svg.mob-map__svg")
@@ -87,25 +91,41 @@ def test_map_has_one_keyboard_operable_drawing(frontend_server, page):
     assert drawing.get_attribute("tabindex") == "0"
     assert page.locator("#tab-karte .mob-node[tabindex]").count() == 0
     focus_rings = page.locator("#tab-karte .mob-node__focus")
-    assert focus_rings.evaluate_all(
-        "nodes => nodes.filter(node => node.getAttribute('display') !== 'none').length"
-    ) == 0
+    assert (
+        focus_rings.evaluate_all(
+            "nodes => nodes.filter(node => node.getAttribute('display') !== 'none').length"
+        )
+        == 0
+    )
     drawing.focus()
     first_label = drawing.get_attribute("aria-label")
-    assert focus_rings.evaluate_all(
-        "nodes => nodes.filter(node => node.getAttribute('display') !== 'none').length"
-    ) == 1
+    assert (
+        focus_rings.evaluate_all(
+            "nodes => nodes.filter(node => node.getAttribute('display') !== 'none').length"
+        )
+        == 1
+    )
     drawing.press("ArrowRight")
     moved_label = drawing.get_attribute("aria-label")
     assert "Ort " in moved_label and moved_label != first_label
-    assert focus_rings.evaluate_all(
-        "nodes => nodes.filter(node => node.getAttribute('display') !== 'none').length"
-    ) == 1
+    assert (
+        focus_rings.evaluate_all(
+            "nodes => nodes.filter(node => node.getAttribute('display') !== 'none').length"
+        )
+        == 1
+    )
     drawing.press("Escape")
-    assert focus_rings.evaluate_all(
-        "nodes => nodes.filter(node => node.getAttribute('display') !== 'none').length"
-    ) == 0
-    assert not page.locator("#tab-karte .mob-tip").get_attribute("class").endswith("mob-tip--on")
+    assert (
+        focus_rings.evaluate_all(
+            "nodes => nodes.filter(node => node.getAttribute('display') !== 'none').length"
+        )
+        == 0
+    )
+    assert (
+        not page.locator("#tab-karte .mob-tip")
+        .get_attribute("class")
+        .endswith("mob-tip--on")
+    )
     drawing.focus()
     drawing.press("ArrowRight")
     drawing.press("Enter")
@@ -116,8 +136,11 @@ def test_map_has_one_keyboard_operable_drawing(frontend_server, page):
 def test_map_tooltip_escapes_roles_and_keeps_undated_context(frontend_server, page):
     page.route(
         "**/*",
-        lambda route: route.continue_()
-        if route.request.url.startswith(frontend_server) else route.abort(),
+        lambda route: (
+            route.continue_()
+            if route.request.url.startswith(frontend_server)
+            else route.abort()
+        ),
     )
     page.goto(frontend_server, wait_until="networkidle")
     page.locator("#btn-karte").click()
@@ -150,12 +173,16 @@ def test_map_tooltip_escapes_roles_and_keeps_undated_context(frontend_server, pa
           slices: node.querySelectorAll('.mob-node__pie path').length }))
           .find(entry => entry.undated > 0) || null"""
     )
-    assert undated is not None, "Der ausgelieferte Graph enthält keinen undatierten Ortskontext"
+    assert undated is not None, (
+        "Der ausgelieferte Graph enthält keinen undatierten Ortskontext"
+    )
     node = page.locator("#tab-karte .mob-node").nth(undated["index"])
     node.dispatch_event("mouseenter", {"clientX": 300, "clientY": 200})
     tooltip = page.locator("#tab-karte .mob-tip")
     assert f"{undated['undated']} aus undatierten Dokumenten" in tooltip.inner_text()
-    assert undated["slices"] > 0, "Undatierter Dokumentkontext verlor seine Rollenanteile"
+    assert undated["slices"] > 0, (
+        "Undatierter Dokumentkontext verlor seine Rollenanteile"
+    )
 
 
 @pytest.mark.frontend

@@ -242,8 +242,10 @@ def test_xlsx_source_coverage_nested_entities(records):
             elif len(missing_examples) < 5:
                 missing_examples.append((rec_id, "agentRelation", rel.get("@type")))
 
-    if total == 0:
-        pytest.skip("Keine nested entities im Output -- uebersprungen")
+    assert total > 0, (
+        "Keine Details oder Agentenrelationen im Output; die "
+        "Provenienzprüfung hätte keinen Gegenstand."
+    )
 
     coverage = with_source / total
     assert coverage >= 0.95, (
@@ -255,8 +257,9 @@ def test_xlsx_source_coverage_nested_entities(records):
 def test_xlsx_source_coverage_spatiotemporal_events(graph):
     """Soft: all top-level SpatiotemporalEvents carry xlsxSource."""
     events = [n for n in graph if n.get("@type") == "m3gim-ontology:Annotation"]
-    if not events:
-        pytest.skip("Keine SpatiotemporalEvents im Graph")
+    assert events, (
+        "Keine Annotationen im Graph; die Provenienzprüfung hätte keinen Gegenstand."
+    )
     missing = [e.get("@id") for e in events
                if not isinstance(e.get("m3gim-ontology:xlsxSource"), dict)]
     assert not missing, (
