@@ -7,6 +7,7 @@ import { el, clear } from './utils/dom.js';
 import { loadArchive } from './data/loader.js';
 import { initRouter, getState, navigateToView } from './ui/router.js';
 import { initRegisterMenu } from './ui/register-menu.js';
+import { initTooltips } from './ui/tooltip.js';
 import { initKorb, reconcileKorb, onKorbChange, getKorbCount } from './ui/basket.js';
 import { renderBestand, selectArchivRecord } from './views/bestand.js';
 import { renderChronik } from './views/chronik.js';
@@ -38,6 +39,7 @@ const TAB_RENDERERS = new Map([
 
 async function init() {
   try {
+    initTooltips();
     // Show loading state
     showLoading(true);
 

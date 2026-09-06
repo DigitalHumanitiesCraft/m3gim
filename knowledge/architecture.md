@@ -121,6 +121,7 @@ Every view follows the same cut. The orchestrator holds the view-local state, bu
 | `data/constants.js` | `CONTENT_FAMILIES` and `familyOfBlock`, `AGRELON_LABELS`, `ANCHORING_SCOPES`, the mobility cluster mapping, and the shared glyphs |
 | `ui/router.js` | Hash routing, tab switching, ARIA state, `navigateToView`, `navigateToIndex`, `applyArchivFilter`, `setIndexRegister`, `INDEX_REGISTERS`, legacy aliases |
 | `ui/tabs.js` | Keyboard pattern of the tab bar, returns the chosen tab name and writes no hash |
+| `ui/tooltip.js` | One fixed tooltip overlay for the application, outside CSS columns, with hover/focus handling, accessible description and viewport placement |
 | `ui/register-menu.js` | The register menu at the Indizes tab, a second click or ArrowDown opens the four registers under it (E-230) |
 | `ui/sidebar.js` | The one scaffold of the filter column, `createSidebar` and `viewShell`, the composer of the parts beside it and the one import address of the views (E-250) |
 | `ui/sidebar-status.js`, `-facets.js`, `-options.js`, `-range.js`, `-strip.js`, `-controls.js` | Result line, shared facets and tree control, row forms, year range, chip strip, remaining control factories |

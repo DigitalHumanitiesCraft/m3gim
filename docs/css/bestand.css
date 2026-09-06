@@ -42,6 +42,7 @@
 /* Table */
 
 .archiv-table {
+  --bestand-detail-inset: var(--space-3);
   width: 100%;
   border-collapse: collapse;
   /* Fixed layout keeps the expanded detail row (colspan over all columns)
@@ -166,7 +167,16 @@
 }
 
 .archiv-row--active td:first-child {
-  border-inline-start: 3px solid var(--accent);
+  position: relative;
+}
+
+.archiv-row--active td:first-child::before {
+  content: '';
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: var(--bestand-detail-inset);
+  inline-size: 3px;
+  background: var(--accent);
 }
 
 /* Row and detail row are one bracket, so the accent bar of the row and the one
@@ -189,6 +199,10 @@
    one for the same state. The row keeps the table hairline. */
 .archiv-row--detail td {
   padding: 0;
+}
+
+.archiv-row--detail .inline-detail {
+  margin-inline-start: var(--bestand-detail-inset);
 }
 
 /* Column Widths */
@@ -226,6 +240,15 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  cursor: text;
+  user-select: text;
+}
+
+.archiv-row--active .archiv-titel,
+.archiv-row--konvolut-open .archiv-titel {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  font-weight: var(--weight-semibold);
 }
 
 /* Stand-in for an inherited collective title. The title cell carries no icons
@@ -406,6 +429,10 @@
 
   .archiv-table td {
     padding-inline: var(--space-2);
+  }
+
+  .archiv-table {
+    --bestand-detail-inset: var(--space-2);
   }
 
   .archiv-table thead th {

@@ -40,7 +40,8 @@ E-282 anchors the shared document search and record-time cut. Annotation dates r
 | M5d Narrow network and knowledge follow-up | Keep the selected graph readable and its detail keyboard-reachable; reconcile stale open-model claims with the implemented behaviour | Complete, `a716f23`; independently reviewed and verified from a clean snapshot, including test-environment follow-up |
 | M5e Report and source-check corrections | Remove obsolete report instructions, diagnose object timestamps before cleanup, share status normalisation and repair document references | Complete, `36c8c58`; independently reviewed, 154 focused checks passed from a clean snapshot |
 | M5f Remove unused code and align tests | Retire obsolete JS/CSS and test helpers, preserve meaningful checks against production paths and name all basket exports | Complete; independent review and clean integrated verification passed |
-| M6 Scholarly acceptance | Project lead accepts task results for 0.9; partners accept them for 1.0 | Awaiting human task runs |
+| M6a First guided Bestand feedback | Correct reported tooltip fragmentation, title selection and detail alignment | Complete implementation; technical checks passed, user retest pending |
+| M6 Scholarly acceptance | Project lead accepts task results for 0.9; partners accept them for 1.0 | Guided Bestand walkthrough started; overall acceptance pending |
 
 Each completed milestone receives one commit and a follow-up review of the achieved goal, implementation and knowledge. Publication and source editing are separate actions. No release or scholarly acceptance follows automatically from a passing suite.
 
@@ -114,6 +115,14 @@ These are agent-checked examples from the versioned data of 2026-09-06. Record i
 | T8 | `NIM_007_11` has own date 1968-11-18 at object row 135 and content anchor 1959-09-05 from performance/rehearsal at Box 1 rows 3081/3087 | Read the anchor's origin instead of treating it as the document's own date. |
 | T9 | `NIM_023_5` carries Malaniuk as contracting party (Box 2 row 128), Fues as conductor (129), Mahler as composer (138), Herminghaus as signatory (140), institutions (135/136), Wuppertal (134) and Das Lied von der Erde (137) | Compare the appropriate view subsets, including the creator exception and places with/without coordinates. |
 | T10 | Object-table row 725 has Folio `11_62` but no archival signature; its intended record is absent from the graph | Reach the source finding through the cataloguing artefacts and identify the cell requiring editorial correction. |
+
+## Guided user walkthrough
+
+On 2026-09-06 the project lead reported finding `NIM_023_5` quickly by opening convolute `NIM_023` and folio 5, and could read the participants and Wuppertal's performance-place role. The screenshots display rehearsal start on 3 April 1953 and performance on 4 April; the spoken report's rehearsal date was corrected against the screenshot. The record's own date is 26 April. This is guided feedback on one record. Source-cell inspection, Folio paging and the remaining views still require user observation; tasks 1 and 9 are not yet accepted in full.
+
+The reported Potsdam tooltip at `NIM_003_1_1` was one CSS pseudo-element split by the detail's multicolumn layout. A fixed application overlay removes the fragmentation and follows the innermost hovered or focused source element. Titles now retain the complete text, expanded titles wrap with stronger weight, and selecting their text preserves the row state. Signature, chevron, other row surfaces and keyboard controls retain expansion. The active row and detail share an inset continuous accent bar. These changes form M6a; user retesting remains pending.
+
+Root verified 676 Node checks and 14 final focused browser/knowledge checks, including actual clipboard text at 1366 and 800 pixels, the nested Potsdam source tooltip and shared-view behaviour. The exhaustive holdings verifier, four research-path checks and broad browser smoke also passed during this increment. A rendered inspection at 1560 pixels confirmed semibold title emphasis and measured the row and detail bars at the same horizontal coordinate with no vertical gap. No pipeline or source changes were made. Overall version acceptance remains open.
 
 ## Test review and integrated verification
 

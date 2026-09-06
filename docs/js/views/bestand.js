@@ -325,11 +325,21 @@ function renderRows(items) {
             + (displayTitle.length > 80 ? `\n${displayTitle}` : ''), tipWrap: '' }
         : (displayTitle.length > 80
           ? { tip: displayTitle, tipWrap: '', tipPos: 'bottom-left' } : {}),
-    }, truncate(displayTitle, 80));
+    }, displayTitle);
 
-    const trProps = { className: rowClass };
+    const trProps = {
+      className: rowClass,
+      onClick: (event) => {
+        // Title text remains selectable without rebuilding the selected DOM.
+        if (event.target.closest('.archiv-titel')) return;
+        const selection = window.getSelection();
+        if (selection && !selection.isCollapsed
+          && selection.containsNode(event.currentTarget, true)) return;
+        if (item.isKonvolut) toggleKonvolut(item.konvolutId);
+        else toggleRecordInline(recordId);
+      },
+    };
     if (item.isKonvolut) {
-      trProps.onClick = () => toggleKonvolut(item.konvolutId);
       trProps['aria-expanded'] = String(isOpen);
       // Heads are the keyboard waypoints of the table: arrow keys walk them,
       // Enter and Space toggle, Escape closes (Projektleitung, 2026-09-04).
@@ -337,7 +347,6 @@ function renderRows(items) {
       // The datasets stay, the DOM verification tool reads the hierarchy from them.
       trProps.dataset = { konvolutHeader: item.konvolutId };
     } else {
-      trProps.onClick = () => toggleRecordInline(recordId);
       trProps['aria-expanded'] = String(expandedRecord === recordId);
       // An object row is a control like the head: the arrow walk reaches it,
       // Enter opens its detail. tabindex -1 keeps it out of the tab sequence,

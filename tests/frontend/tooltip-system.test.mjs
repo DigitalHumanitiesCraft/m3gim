@@ -23,6 +23,7 @@ import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { tooltipPosition } from '../../docs/js/ui/tooltip.js';
 
 const JS_ROOT = fileURLToPath(new URL('../../docs/js', import.meta.url));
 
@@ -95,6 +96,15 @@ export function nativeTitleUses(source) {
 }
 
 describe('Ein Tooltip-System: data-tip statt title', () => {
+  test('der Overlay-Tooltip bleibt am Viewportrand vollständig sichtbar', () => {
+    assert.deepEqual(
+      tooltipPosition(
+        { left: 5, right: 45, top: 3, bottom: 23, width: 40 },
+        { width: 280, height: 100 },
+        { width: 320, height: 240 }),
+      { left: 8, top: 29 });
+  });
+
   test('kein natives title-Attribut im ausgelieferten docs/js', () => {
     const hits = [];
     for (const file of jsFiles(JS_ROOT)) {
