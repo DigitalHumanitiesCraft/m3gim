@@ -7,7 +7,7 @@ status: complete
 language: en
 version: 0.5
 created: 2026-02-19
-updated: 2026-09-05
+updated: 2026-09-06
 authors: [Christopher Pollin]
 generated-with: Claude Code
 method:
@@ -225,12 +225,12 @@ Beside these the target model carries `m3gim-ontology:performedBy` for the parti
 
 ## Recording
 
-The German recording convention of the archive team is in [`../data/recording-guide.md`](../data/recording-guide.md). It sits beside the source material rather than in this folder, because it addresses the cataloguing team, and it is the target side of the data quality, whereas the compensations for what the recorded holdings actually look like are in [data.md](data.md) § Compensations in the pipeline.
+The German recording convention of the archive team is in [recording-guide.md](recording-guide.md). It remains German because it addresses the cataloguing team and is the target side of the data quality, whereas the compensations for what the recorded holdings actually look like are in [data.md](data.md) § Compensations in the pipeline.
 
 ## Related
 
 - [data.md](data.md) — the source material this model formalizes
-- [`../data/recording-guide.md`](../data/recording-guide.md) — the German recording convention of the archive team
+- [recording-guide.md](recording-guide.md) — the German recording convention of the archive team
 - [`../vocab/m3gim.ttl`](../vocab/m3gim.ttl) — the authoritative term list with an editorial note per term
 - [`../vocab/rename-map.json`](../vocab/rename-map.json) — the mapping of the earlier identifiers onto the current ones
 - [journal.md](journal.md) — the decision register behind the E-numbers cited here

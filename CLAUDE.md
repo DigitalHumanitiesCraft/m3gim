@@ -12,7 +12,7 @@ Read this file, then [`knowledge/INDEX.md`](knowledge/INDEX.md) as the entry int
 
 ## Lanes and delegation
 
-In parallel sessions each instance works in exactly one lane (Frontend, Backend, Knowledge) and touches only that lane's files. The project lead assigns the lane. Coordination runs in writing through [`knowledge/handoff.md`](knowledge/handoff.md), where an instance names its lane, lists the files it holds, enters handovers as their own points and removes what is done. Implementation work is delegated to Opus subagents, which run on disjoint file sets and carry the binding conventions below in their prompt.
+In parallel sessions each instance works in exactly one lane (Frontend, Backend, Knowledge) and touches only that lane's files. The project lead assigns the lane. Coordination runs in writing through [`knowledge/handoff.md`](knowledge/handoff.md), where an instance names its lane, lists the files it holds, enters handovers as their own points and removes what is done. Implementation work is delegated on disjoint file sets with the binding conventions below. Opus is the default model, subject to an explicit project-lead override; the authorised stabilisation work uses Sol 5.6 as recorded in knowledge/plan.md.
 
 ## Binding conventions (project lead, 2026-09-01)
 
@@ -20,7 +20,7 @@ In parallel sessions each instance works in exactly one lane (Frontend, Backend,
 - **No standing explanatory text in the UI.** Information rides on structure, symbols, icons and tooltips, text only where no other form carries it. Captions and breakdown lines belong in tooltips.
 - **All filters of all views in the one left sidebar.** No top filter bars.
 - **File names of generated files in English**, whatever language the content is in.
-- **Every Markdown document in `knowledge/` is English** (decision of the project lead of 2026-09-05, E-260). German project terms stay where the glossary in [`knowledge/INDEX.md`](knowledge/INDEX.md) defines them. The one declared exception is [`knowledge/journal-archive.md`](knowledge/journal-archive.md), which keeps the original German wording of the rows and narratives it took over. Outside `knowledge/` the recording guide [`data/recording-guide.md`](data/recording-guide.md) stays German, because it addresses the cataloguing team (E-267).
+- **Maintained project knowledge lives in `knowledge/`.** Its documents are English by default (E-260). German project terms stay where the glossary in [`knowledge/INDEX.md`](knowledge/INDEX.md) defines them. [`knowledge/journal-archive.md`](knowledge/journal-archive.md) preserves historical German wording. [`knowledge/recording-guide.md`](knowledge/recording-guide.md) remains German for the cataloguing team; its new location supersedes the location recorded by E-267.
 
 ## Spec hierarchy
 
@@ -66,7 +66,7 @@ pytest tests/                                     # including the determinism te
 node --test tests/frontend/*.test.mjs             # JS unit tests of the frontend
 ```
 
-The suite is two-layered. Invariants check model, pipeline and frontend contract and must be green. The Datenspiegel (`data_quality`) asserts the cleanliness of the source, is deliberately red while known source errors exist, and its failure messages are the finding list for the cataloguing team. Red in the Datenspiegel is expected, red in the invariants is a bug. The browser smoke test under `tests/frontend/` is optional and skips itself without Playwright, which stands in no requirements file. Install it with `pip install playwright` and `playwright install chromium`, then address it with `pytest -m frontend tests/frontend/`. With Playwright installed it also runs in the unmarked run, where it needs a local HTTP server against `docs/` ([`knowledge/testing.md`](knowledge/testing.md) § Frontend checks).
+The suite is two-layered. Invariants check model, pipeline and frontend contract and must be green. The Datenspiegel (`data_quality`) asserts the cleanliness of the source, is deliberately red while known source errors exist, and its failure messages are the finding list for the cataloguing team. Red in the Datenspiegel is expected, red in the invariants is a bug. The browser suite under `tests/frontend/` starts its local HTTP server and Chromium itself. Research-path tests share Chromium while keeping isolated contexts. Playwright is optional for routine local runs and required for candidate verification. Install `pip install playwright` and `playwright install chromium`, then run `pytest tests/frontend/ -m "frontend and not data_quality"`. See [`knowledge/testing.md`](knowledge/testing.md) § Frontend checks.
 
 ```bash
 python vocab/check-coverage.py                    # vocabulary coverage, read-only console report
@@ -116,7 +116,6 @@ data/
 ├── backup/               # backups of the source exports
 ├── migration/            # intermediate states of a source migration
 ├── _archive/             # historical states, the XLSX in it are unversioned
-└── recording-guide.md    # the German recording convention of the cataloguing team (E-267)
 ```
 
 Data flow, `data/google-spreadsheet/` to the pipeline to `data/output/m3gim.jsonld` to `docs/data/m3gim.jsonld` to the frontend loader. Pre-condensed derivatives were removed with E-140.

@@ -92,7 +92,7 @@ The seven epics are the questions the project partners and the talk abstract put
 - As a musicologist I want to see every place data point of the result set with the place role in which the place stands at the record, the date where one is recorded, and the record that carries it, so that I can describe her geographical range and cite every place.
 - As a musicologist I want to group places by country and by time and restrict the result set by place role, time and country, without any role being excluded silently, so that I can read her international reach and its shift over the decades on the data alone.
 
-The dataset carries the place with its role and the record. A date stands at the place only where the annotation carries both, and the country only where the place is geocoded. The place role facet and the shared country restriction are open in the interface, the country reach today stands in the map alone.
+The dataset carries the place with its role and the record. A date stands at the place where the annotation carries both, and country coverage depends on location enrichment. Place-role and country facets restrict the shared document cut. The Karte reports its eligible place evidence and lists places without drawable coordinates.
 
 ### Epic 2. Which stage parts did she sing?
 
@@ -115,7 +115,7 @@ The dataset carries every data point at record level with its source cell. A rol
 - As a musicologist I want to see the roles in which places and events are recorded, guest performance, performance, season, contract, residence, journey, dispatch and the others, each with its count in the result set, and restrict the result set by them.
 - As a musicologist I want to see contracts and residence data points in time, so that I can read her fixed ties to houses and places in sequence.
 
-The dataset carries the roles and the vocabulary defines each of them. The exported file omits the concept node of a role that carries no definition, so those roles reach the interface as a bare label. The count per role and the restriction by role are open in the interface, and the residence role is attested too thinly to carry a sequence. What a role means for mobility stays with the researcher.
+Every role used in the dataset is exported as a concept with a label (E-254). The shared link-type and role facet counts and filters its attesting documents. Residence evidence remains too sparse to establish a sequence. The researcher interprets what a recorded role means for mobility.
 
 ### Epic 5. With whom did she work?
 
@@ -139,7 +139,7 @@ The dataset carries the document types with their vocabulary hierarchy, a few gr
 - As a researcher I want to see at every view on how many records of the current data state it rests, and the date of that data state.
 - As a researcher I want to collect records across views in the basket and export them with their evidence and links.
 
-The dataset carries the source cell of every data point and, at a normalized entity, the Wikidata identity without a degree of certainty, because the match confidence stays in the reconciliation report and is deliberately not asserted at the entity (E-106). The uniform coverage line stands in every view, the visible data state date is open in the interface.
+The dataset carries the source cell of every data point and, at a normalized entity, the Wikidata identity without a degree of certainty, because the match confidence stays in the reconciliation report and is deliberately not asserted at the entity (E-106). The common coverage line exposes the data-state date through its tooltip and accessible label in all six views.
 
 ### What the epics leave out
 
@@ -193,7 +193,7 @@ Record detail. Every recorded data point of the record with its role and its sou
 
 Korb. Records collected by hand across views and exported as CSV, BibTeX, JSON-LD and GEXF (E-232). Every format carries the source cells of the data points and the Verknüpfungen of the record, so an export can be cited from without opening the application (E-281).
 
-Statistik. The counting view for the epics on stage parts, mobility roles and document types, meaning ranked lists of document types, repertoire, persons, institutions and roles with their counts in the result set, cut by the same shared filter as every other view, with a jump from a row into the Bestand filtered by that value.
+Statistik. The counting view provides ranked lists of document types, repertoire, persons and institutions with their counts in the result set, cut by the same shared filter as every other view, with a jump from a row into the Bestand filtered by that value.
 
 ## Open decisions
 
@@ -216,8 +216,6 @@ This is the single address for decisions that are open. [journal.md](journal.md)
 
 - The provenance pill, which names sheet, row and data point and triggers no click. The decision is whether a jump into the sheet is built or the pill stays a display.
 - The KUG logo in the footer, taken from the press area of the institution, whose use on the project page is to be confirmed with it.
-- The Korb, which stands outside the view scaffold without a sidebar, and the missing search field in Karte and Statistik.
-- The six frontend principles the Operational Orchestrator put up for acceptance on 2026-09-05, meaning explanation through structure and tooltip, one subject per view with the pair of numbers only in the root row, one sidebar for all views, filters that cut documents and nothing else, enrichment always visible as such, and user stories that name research goals. On a yes they enter [design.md](design.md) as rules of their own, and the point stands in [handoff.md](handoff.md) § To the project lead: the six frontend principles (2026-09-05).
 
 ### Repository
 
@@ -227,6 +225,6 @@ This is the single address for decisions that are open. [journal.md](journal.md)
 
 Built are the pipeline from the source exports to `docs/data/m3gim.jsonld` with its validation, audit, quality snapshot and cataloguer report, the vocabulary with its coverage gate, and the application with the views described above, the shared sidebar, the Korb with its four export formats, and the two test layers, invariants and Datenspiegel. Every role used in the dataset leaves the pipeline as a SKOS concept with a label (E-254), and the pages of a Folio hang under a record of that Folio (E-269). Running figures are in the quality snapshot under [`../data/reports/quality-snapshot.md`](../data/reports/quality-snapshot.md).
 
-The proposed integration of the code review and research-task audit into the route to version 0.9 is in [plan.md](plan.md). It maps every story to existing evidence and remaining acceptance, names the implementation corrections and identifies proposed task-set clarifications. The inherited assignments in [handoff.md](handoff.md) retain their context, but several old status labels lag behind implemented behaviour. The review observed data-state tooltips and Folio paging in the browser; neither observation establishes scholarly acceptance. The definitions of versions 0.9 and 1.0 above are unchanged by this planning pass.
+The authorised stabilisation work is complete through the technical milestones recorded in [plan.md](plan.md), each with its own commit. Pipeline preservation, the common view contract, source-backed research paths and evidence exports have been checked. Independent test review and knowledge consolidation are integrated. A clean snapshot passes 573 Python/browser checks and 678 Node tests, with four declared source-fix xfails and no skips. Eight source-data checks remain red. The plan maps all 19 stories to evidence and limits, including the slower first network selection and pending visual assessment. [handoff.md](handoff.md) holds only the unresolved external knowledge handover. Version 0.9 still requires project-lead acceptance of the research tasks and source limits, and 1.0 requires partner acceptance.
 
 Not built is the target model of [data.md](data.md) § Target model, decided and not built. The occurrence as a bundling node above the aspect nodes is absent from vocabulary and dataset, and the interface therefore shows co-mention at the record where it would show one appearance. Source errors stand in the handover list [`../data/reports/source-errors-handover-2026-09-01.md`](../data/reports/source-errors-handover-2026-09-01.md), the Wikidata findings in the [`../data/reports/reconciliation-register.md`](../data/reports/reconciliation-register.md). Deferred are the Zenodo archiving and the EAD export as part of an operating model.

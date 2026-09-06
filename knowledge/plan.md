@@ -32,8 +32,8 @@ E-282 anchors the shared document search and record-time cut. Annotation dates r
 | M2 Reliable data processing | Preservation under failure, accurate reports and deterministic output | Complete, `12383e4` |
 | M3 Consistent and usable views | Common filters, accessible evidence and local static assets | Complete, `8f94728`; narrow network follow-up in M4 |
 | M4 Complete research paths | All stories mapped to checks or material limits; actual evidence exports and visual follow-up | Complete, `e8ef22b`; source and performance limits recorded below |
-| M4T Trustworthy tests | Independent audit of the whole test suite; correct assertions, meaningful missing coverage and warranted simplification | Complete; independent audits and integrated checks |
-| M5 Knowledge and integrated verification | Maintained knowledge consolidated; complete technical checks from one clean snapshot | Active |
+| M4T Trustworthy tests | Independent audit of the whole test suite; correct assertions, meaningful missing coverage and warranted simplification | Complete, `ee28ced`; independent audits and integrated checks |
+| M5 Knowledge and integrated verification | Maintained knowledge consolidated; complete technical checks from one clean snapshot | Complete; clean snapshot and independent content review |
 | M6 Scholarly acceptance | Project lead accepts task results for 0.9; partners accept them for 1.0 | Awaiting human task runs |
 
 Each completed milestone receives one commit and a follow-up review of the achieved goal, implementation and knowledge. Publication and source editing are separate actions. No release or scholarly acceptance follows automatically from a passing suite.
@@ -107,7 +107,7 @@ The clean candidate run must include Python invariants with isolated determinism
 
 Network follow-up retains the former F2 criteria in [testing.md](testing.md) § Boundaries and [design.md](design.md) § Views. First draw, hover and selection measurements name environment and graph size. Visual review covers lattice avoidance, record-node size, relation marks, second-step neighbourhood, central labels and drawing-area use. Root integration rechecks substantive agent findings against actual files and executed checks.
 
-M5 will record the clean snapshot, commands and observed results here after completion. Source-data failures remain separately visible and require an impact decision for release.
+M5 verified Git tree `53b8f62c58f5a2e20961f0a36c60ae1e7c6aaea9` extracted into a fresh temporary directory, without ignored reports or inherited `M3GIM_*` overrides. The environment used Python 3.11.9 and Chromium 145.0.7632.6. `node --test tests/frontend/*.test.mjs` passed all 678 tests. `python -m pytest tests -m "not data_quality" -q` passed 573 checks, with eight source checks deselected, four strict source-fix xfails and no skips; this includes isolated determinism and the required browser checks. `python -m pytest tests -m data_quality -q` reported the eight named source failures described below. Subsequent changes only record these results, clarify documentation and correct the marker's explanatory text; executable code and source data remain identical to the verified tree. The final knowledge-integrity checks are repeated after write-back.
 
 ## Source and model limits requiring acceptance
 
@@ -122,6 +122,8 @@ Further limits remain the ambiguous work/part binding, sparse residence and cont
 Maintained knowledge belongs in `knowledge/`, including the German partner recording guide. Root README and CLAUDE files remain entry and action documents. Pipeline usage is consolidated into the root command entry and [architecture.md](architecture.md); the duplicate scripts README and superseded process reports are removed after preserving their durable content. No new archive or parallel acceptance document is created.
 
 Source diffs, manual-reconciliation provenance, decision identifiers, migration evidence and dated source analyses remain beside their data. They document a particular input or curation act. Current specifications, test boundaries and open decisions live in the maintained knowledge base. [handoff.md](handoff.md) retains only the unresolved external Vault handover; the Vault remains read-only from this repository session.
+
+Independent content review found no lost permanent model or acceptance constraint. It confirmed the retained role provenance, missing-role semantics, dating scope/rank/source order, primary anchor, source-cell paths and occurrence boundary. Both source-diff documents remain. Root corrected stale claims about implemented role/country filters, statistics sections, data-state access and browser setup. E-284 supersedes the recording guide's former location while preserving its German partner-facing text.
 
 ## Remaining acceptance
 

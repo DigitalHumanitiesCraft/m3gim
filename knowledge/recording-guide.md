@@ -5,23 +5,23 @@ project:
   repository: https://github.com/DigitalHumanitiesCraft/m3gim
 status: complete
 language: de
-version: 0.1
+version: 0.2
 created: 2026-09-05
-updated: 2026-09-05
+updated: 2026-09-06
 authors: [Christopher Pollin]
 generated-with: Claude Code
-related: [../knowledge/data.md, ../knowledge/data-model.md]
+related: [data.md, data-model.md]
 ---
 
 # Erfassungsrichtlinie
 
 ## Erfassung
 
-Diese Richtlinie trägt die Erfassungssicht des Erschließungsteams, also nach welchen Konventionen die Tabellenfelder befüllt werden und wie mit Unsicherheit umgegangen wird. Sie ist die Soll-Seite der Datenqualität. Wo der erfasste Bestand davon abweicht, ist im generierten Quality-Snapshot und in der Modell-Spezifikation dokumentiert. Das Material und das formale Modell führen [data.md](../knowledge/data.md) und [data-model.md](../knowledge/data-model.md).
+Diese Richtlinie trägt die Erfassungssicht des Erschließungsteams, also nach welchen Konventionen die Tabellenfelder befüllt werden und wie mit Unsicherheit umgegangen wird. Sie ist die Soll-Seite der Datenqualität. Wo der erfasste Bestand davon abweicht, ist im generierten Quality-Snapshot und in der Modell-Spezifikation dokumentiert. Das Material und das formale Modell führen [data.md](data.md) und [data-model.md](data-model.md).
 
-Die formalen Werttabellen, an die die Erfassung sich hält, stehen an ihrer maßgeblichen Stelle. Das Rollenvokabular führt [data.md](../knowledge/data.md) § Role values, die Datumsformate und Qualifier [data.md](../knowledge/data.md) § Date notation of the source, die Ansetzungs- und Namenskonventionen [data.md](../knowledge/data.md) § Naming conventions and place duplicates, die Werte der Datierungsevidenz [data-model.md](../knowledge/data-model.md) § Meta-statements and provenance. Diese Richtlinie verweist auf sie, statt sie zu wiederholen.
+Die formalen Werttabellen, an die die Erfassung sich hält, stehen an ihrer maßgeblichen Stelle. Das Rollenvokabular führt [data.md](data.md) § Role values, die Datumsformate und Qualifier [data.md](data.md) § Date notation of the source, die Ansetzungs- und Namenskonventionen [data.md](data.md) § Naming conventions and place duplicates, die Werte der Datierungsevidenz [data-model.md](data-model.md) § Meta-statements and provenance. Diese Richtlinie verweist auf sie, statt sie zu wiederholen.
 
-Die Verknüpfungserfassung ist auf das Long-Format mit zweistufiger `aktivitaet_id` umgestellt (Anleitung Stand 2026-06-25, E-127, verfeinert E-125). Spalten sind `archivsignatur`, `Folio`, `aktivitaet_id`, `typ`, `value`, `anmerkung`. Eine Ganzzahl identifiziert die Aktivität, eine zweistellige Dezimale `1.01` ff. die Beteiligung, `funktion` (kontrolliert) ist von `rolle` (gesungene Partie, frei) getrennt, Geld steht atomar mit eigener `währung`-Zeile, `aktivitaet` markiert die Art. Dieses Schema ist das v2-Ziel und gehört zum Zielmodell v2 in [data-model.md](../knowledge/data-model.md) § Target model v2. Die `aktivitaet_id`-Vergabe ist menschlicher Durchgang und im migrierten Stand bewusst leer. Bis die Pipeline umgestellt ist, gilt die im Folgenden beschriebene einstufige `datenpunkt_id`-Konvention als wirksame Erfassung. Der gereinigte Altbestand liegt als `data/migration/M3GIM-Verknuepfungen-v2.xlsx` mit Vokabular-Glossar und kuratiertem Beispiel-Blatt 7_29. Das Schichtenmodell, die Personenform und der Umgang mit Unsicherheit gelten für beide Stände unverändert.
+Die Verknüpfungserfassung ist auf das Long-Format mit zweistufiger `aktivitaet_id` umgestellt (Anleitung Stand 2026-06-25, E-127, verfeinert E-125). Spalten sind `archivsignatur`, `Folio`, `aktivitaet_id`, `typ`, `value`, `anmerkung`. Eine Ganzzahl identifiziert die Aktivität, eine zweistellige Dezimale `1.01` ff. die Beteiligung, `funktion` (kontrolliert) ist von `rolle` (gesungene Partie, frei) getrennt, Geld steht atomar mit eigener `währung`-Zeile, `aktivitaet` markiert die Art. Dieses Schema ist das v2-Ziel und gehört zum Zielmodell v2 in [data-model.md](data-model.md) § Target model v2. Die `aktivitaet_id`-Vergabe ist menschlicher Durchgang und im migrierten Stand bewusst leer. Bis die Pipeline umgestellt ist, gilt die im Folgenden beschriebene einstufige `datenpunkt_id`-Konvention als wirksame Erfassung. Der gereinigte Altbestand liegt als `data/migration/M3GIM-Verknuepfungen-v2.xlsx` mit Vokabular-Glossar und kuratiertem Beispiel-Blatt 7_29. Das Schichtenmodell, die Personenform und der Umgang mit Unsicherheit gelten für beide Stände unverändert.
 
 ### Schichtenmodell der Erfassung
 
@@ -52,7 +52,7 @@ Die Umfangsangabe nennt die Anzahl der Blätter. Als Seiten zählen die bedruckt
 
 ### Datumsangaben erfassen
 
-Datumsangaben folgen ISO 8601 in den in [data.md](../knowledge/data.md) § Date notation of the source festgelegten Granularitäten und Qualifiern. Ein undatiertes Objekt lässt das Datumsfeld leer. Ergänzend hält das Feld `datierungsevidenz` fest, woher die Datierung stammt, mit den Werten aus [data-model.md](../knowledge/data-model.md) § Meta-statements and provenance.
+Datumsangaben folgen ISO 8601 in den in [data.md](data.md) § Date notation of the source festgelegten Granularitäten und Qualifiern. Ein undatiertes Objekt lässt das Datumsfeld leer. Ergänzend hält das Feld `datierungsevidenz` fest, woher die Datierung stammt, mit den Werten aus [data-model.md](data-model.md) § Meta-statements and provenance.
 
 Die Zusammenführung von Datum und Evidenz zeigt sich an typischen Fällen.
 
@@ -66,7 +66,7 @@ Die Zusammenführung von Datum und Evidenz zeigt sich an typischen Fällen.
 
 ### Ansetzung von Namen und Titeln
 
-Die Ansetzungsformen für Personen, Orte, Institutionen und Werke folgen den Namenskonventionen in [data.md](../knowledge/data.md) § Naming conventions and place duplicates. Ergänzend gilt für die Erfassung Folgendes.
+Die Ansetzungsformen für Personen, Orte, Institutionen und Werke folgen den Namenskonventionen in [data.md](data.md) § Naming conventions and place duplicates. Ergänzend gilt für die Erfassung Folgendes.
 
 Bei Künstlernamen gegenüber bürgerlichen Namen wird der Name verwendet, unter dem die Person im Dokumentkontext auftritt, bei Unsicherheit der bekanntere als Ansetzungsform mit Vermerk der Varianten im Anmerkungsfeld. Die Reconciliation gegen Wikidata verknüpft die Namensvarianten später. Orte tragen den gebräuchlichen historischen Namen aus der Quelle, die Wikidata-Reconciliation liefert die Verknüpfung zum heutigen Namen.
 
@@ -91,13 +91,13 @@ Der Titel ist eine Beschreibung des Objekts, kein Zitat aus der Quelle, und wird
 
 Pro Verknüpfung wird eine Zeile in der Verknüpfungstabelle angelegt, mehrere Personen kommen nicht in eine Zeile. Eine Brief-Verknüpfung mit zwei Beteiligten ergibt also zwei Zeilen, eine je Person mit ihrer Rolle.
 
-Das Feld `typ` wird immer zuerst gewählt, es bestimmt, welche Rollen verfügbar sind. Rollennamen werden kleingeschrieben erfasst, Geschlechtssuffixe wie `:in` werden bei der Verarbeitung vereinheitlicht. Welche Rolle zu welchem Verknüpfungstyp gehört, führt das Rollenvokabular in [data.md](../knowledge/data.md) § Role values nach Zieltyp gegliedert.
+Das Feld `typ` wird immer zuerst gewählt, es bestimmt, welche Rollen verfügbar sind. Rollennamen werden kleingeschrieben erfasst, Geschlechtssuffixe wie `:in` werden bei der Verarbeitung vereinheitlicht. Welche Rolle zu welchem Verknüpfungstyp gehört, führt das Rollenvokabular in [data.md](data.md) § Role values nach Zieltyp gegliedert.
 
 Beim Werk steht `aufführung` für die eigenständige Aufführung eines Werkes und `gastspiel` für die in der Quelle ausdrücklich als Gastspiel bezeichnete Aufführung mit festem Ensemble. Eine Gruppe von mehr als zwei musizierenden Personen wird über den Typ `ensemble` erfasst. Eine Bühnenrolle wird zusammen mit ihrer interpretierenden Person geführt.
 
 #### Auftritte bündeln (`datenpunkt_id`)
 
-Beschreibt ein Dokument mehrere Auftritte, gehören seine Zeilen nicht alle gleichberechtigt zum Dokument, sondern je zu einem Auftritt. Die Spalte `datenpunkt_id` hält diese Zugehörigkeit fest, damit rekonstruierbar bleibt, wer was in welchem Auftritt getan hat, und nicht nur, dass etwas im Dokument vorkommt. Das Modell bildet jede so gebündelte Gruppe heute als eine Aufführung ab (`m3gim-ontology:Performance`, [data-model.md](../knowledge/data-model.md) § Anchoring in RiC-O), der eigene Vorkommnis-Term ist mit E-125 entschieden und noch nicht umgesetzt ([data-model.md](../knowledge/data-model.md) § Target model v2, [data.md](../knowledge/data.md) § The link mechanism). Diese einstufige Konvention ist die heute wirksame Erfassung, ihre Ablösung durch die zweistufige `aktivitaet_id` steht im Zielmodell v2.
+Beschreibt ein Dokument mehrere Auftritte, gehören seine Zeilen nicht alle gleichberechtigt zum Dokument, sondern je zu einem Auftritt. Die Spalte `datenpunkt_id` hält diese Zugehörigkeit fest, damit rekonstruierbar bleibt, wer was in welchem Auftritt getan hat, und nicht nur, dass etwas im Dokument vorkommt. Das Modell bildet jede so gebündelte Gruppe heute als eine Aufführung ab (`m3gim-ontology:Performance`, [data-model.md](data-model.md) § Anchoring in RiC-O), der eigene Vorkommnis-Term ist mit E-125 entschieden und noch nicht umgesetzt ([data-model.md](data-model.md) § Target model v2, [data.md](data.md) § The link mechanism). Diese einstufige Konvention ist die heute wirksame Erfassung, ihre Ablösung durch die zweistufige `aktivitaet_id` steht im Zielmodell v2.
 
 Die Konvention kennt die folgenden Werte.
 
@@ -139,7 +139,7 @@ Ereignisse werden direkt in der Verknüpfungstabelle erfasst, nicht in einem eig
 
 #### Details der dritten Schicht
 
-Bei vertiefter Erschließung trägt der Typ `detail` die Feinangaben. Der Feldname steht in der Spalte `name`, der Wert in der Spalte `rolle`. Einnahmen und Ausgaben werden aus der Perspektive von Ira Malaniuk gelesen, sie nimmt also ein oder gibt aus. Währungen werden mit ihrem Code erfasst, etwa S für Schilling oder Esc für den portugiesischen Escudo. Die vollständige Auflösung der Währungscodes steht in [data.md](../knowledge/data.md).
+Bei vertiefter Erschließung trägt der Typ `detail` die Feinangaben. Der Feldname steht in der Spalte `name`, der Wert in der Spalte `rolle`. Einnahmen und Ausgaben werden aus der Perspektive von Ira Malaniuk gelesen, sie nimmt also ein oder gibt aus. Währungen werden mit ihrem Code erfasst, etwa S für Schilling oder Esc für den portugiesischen Escudo. Die vollständige Auflösung der Währungscodes steht in [data.md](data.md).
 
 | archivsignatur | typ | name | rolle | anmerkung |
 |---|---|---|---|---|
@@ -172,7 +172,7 @@ Gleichnamige Entitäten werden über die Zusatzfelder unterschieden, also Lebens
 
 Ein leeres Feld bedeutet, dass die Angabe in dieser Quelle nicht ermittelbar ist, nicht dass sie vergessen wurde.
 
-Der Bearbeitungsfortschritt wird im Feld `erfassungsstatus` der Objekttabelle festgehalten. Die Werte dieser Erfassungsrichtlinie und ihr Verhältnis zum Pipeline-System stehen in [data.md](../knowledge/data.md) § Processing status.
+Der Bearbeitungsfortschritt wird im Feld `erfassungsstatus` der Objekttabelle festgehalten. Die Werte dieser Erfassungsrichtlinie und ihr Verhältnis zum Pipeline-System stehen in [data.md](data.md) § Processing status.
 
 Ein unsicheres Datum wird über die Qualifier `circa:`, `vor:` und `nach:` markiert. Eine unsichere Personenidentifikation wird mit dem ermittelten Namen erfasst, die Unsicherheit kommt in das Anmerkungsfeld.
 

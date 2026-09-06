@@ -18,7 +18,7 @@ language: en
 version: 0.6
 authors: [Christopher Pollin]
 generated-with: Claude Code
-related: [specification, plan, data, data-model, research-framework, architecture, design, journal, journal-archive, testing, handoff]
+related: [specification, plan, data, data-model, recording-guide, research-framework, architecture, design, journal, journal-archive, testing, handoff]
 ---
 
 # M³GIM Knowledge Base
@@ -34,6 +34,7 @@ This page is the entry point into the knowledge base of the project. It orders t
 | [plan.md](plan.md) | Implementation plan | Which review findings and research-task gaps must be resolved for a stable candidate, and what evidence closes them? | with an accepted scope clarification, integrated change or new verification result |
 | [data.md](data.md) | Source material and spec-first anchor | What is the source material, how does the cataloguing team record it, and what is defective in it? | with a new data export or a changed recording |
 | [data-model.md](data-model.md) | Domain knowledge | How is the material formally modelled, and where does the model stop? | with a change to [`vocab/m3gim.ttl`](../vocab/m3gim.ttl), to the model or to the recording convention |
+| [recording-guide.md](recording-guide.md) | Recording convention | How does the cataloguing team enter records, links, uncertainty and provenance? | with an agreed change to partner-side recording |
 | [research-framework.md](research-framework.md) | Domain knowledge | Which theory, research questions, personas and use cases carry the project? | when research questions, personas or use cases are sharpened |
 | [architecture.md](architecture.md) | Architecture | How does the data pipeline run, and how is the static SPA built? | with a change to `scripts/`, `docs/js/` or the data flow |
 | [design.md](design.md) | Design | How does the application look, and how does it behave? | with a change to the design stance or the design system |
@@ -60,14 +61,14 @@ The data findings live operationally under `data/reports/`. The errors that can 
 - Running or debugging the pipeline: [`../CLAUDE.md`](../CLAUDE.md) § Core commands → [architecture.md](architecture.md) § Pipeline → [testing.md](testing.md).
 - Adapting the frontend: [architecture.md](architecture.md) § Frontend → [design.md](design.md).
 - Stabilising the reviewed application: [specification.md](specification.md) → [plan.md](plan.md) → [research-framework.md](research-framework.md) § Evaluation. The plan distinguishes implemented behaviour, observed checks and human acceptance.
-- Recording data: [`data/recording-guide.md`](../data/recording-guide.md), which is German and addressed to the cataloguing team, then [data.md](data.md).
+- Recording data: [recording-guide.md](recording-guide.md), which is German and addressed to the cataloguing team, then [data.md](data.md).
 - Entering from the research side: [research-framework.md](research-framework.md) → [specification.md](specification.md).
 
 ## Conventions
 
 This knowledge base follows the convention for Promptotyping documents, which governs naming contract, frontmatter schema, routing heuristic and structural principles. The single carrier of a function bears the canonical name. Sections carry no numbers, and a reference names document and section title (E-161).
 
-Every Markdown document in `knowledge/` is English, a decision of the project leadership of 2026-09-05. German project terms stay where the glossary below defines them. File names are English. The string literals of the application, its interface and the finding texts of the data mirror are German, because their readers are the cataloguing team and the users of the application. Code comments are English. [journal-archive.md](journal-archive.md) is the one exception, it keeps the original German wording of the rows and narratives it took over and declares itself German (E-260, E-266).
+Markdown documents in `knowledge/` are English by default (E-260). German project terms stay where the glossary below defines them. File names are English. Interface strings and the finding texts of the data mirror are German. Code comments are English. [journal-archive.md](journal-archive.md) preserves historical German wording (E-266). [recording-guide.md](recording-guide.md) preserves the language agreed with the cataloguing team. Its move into the maintained knowledge base supersedes the storage location in E-267 without changing the partner-facing content.
 
 Model changes are anchored in [data.md](data.md) first, which is the spec-first guard rail (E-133). What is done moves out of the volatile section of [specification.md](specification.md) into [journal.md](journal.md), what belongs to the source into the handover list under `data/reports/`. Research notes and sources sensitive under data protection law are maintained in the Obsidian vault, the repository carries the distilled extract.
 

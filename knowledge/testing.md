@@ -7,7 +7,7 @@ status: complete
 language: en
 version: 0.6
 created: 2026-02-19
-updated: 2026-09-05
+updated: 2026-09-06
 authors: [Christopher Pollin]
 generated-with: Claude Code
 method:
@@ -27,7 +27,7 @@ related: [architecture, data, journal]
 
 ## Purpose
 
-The suite validates the output of the pipeline and the artefacts derived from it, not the pipeline code. It is the safety net for data updates and model changes. It guarantees that the dataset is structurally, semantically and referentially intact, that the published copy matches the generated one, that the formal vocabulary and the dataset cover each other, and that the frontend contract holds.
+The suite checks source-to-output preservation, model structure and references, publication freshness, pipeline failure paths and frontend behaviour. It combines source-backed expectations with isolated failure cases and actual browser interactions. Its guarantees extend to the assertions and environments exercised. Historical interpretation and acceptance remain with the researchers.
 
 Every test asserts one non-trivial invariant and can fail. Soft warnings belong in `validate.py`.
 
@@ -37,7 +37,7 @@ The suite separates two kinds of statement, because the holdings receive new del
 
 Invariants check model, pipeline, serialization and frontend contract, independent of the errors the source currently carries. They run as `pytest tests/ -m "not data_quality and not slow"` and must always be green. Red here means the project broke something.
 
-The data mirror carries the marker `data_quality` and asserts that the source is clean, for instance that every row of the link table meets a record. These tests are deliberately red while known source errors exist. Their failure messages carry each finding with its source cell and are the finding list handed to the cataloguing team through the handover list under `data/reports/`. They hold no hard-coded expectation list and turn green by themselves with a clean delivery, without anyone touching the test. They run as `pytest tests/ -m data_quality`. With Playwright installed, the DOM comparison of the holdings list belongs to this layer as well, so the assertion reaches into the rendered document.
+The data mirror carries the marker `data_quality` and asserts source cleanliness, for instance that every link row meets a record. Failure messages name source cells for the cataloguing team. These tests carry no hard-coded exception list and turn green with a clean delivery. Run them with `pytest tests/ -m data_quality`. The holdings verifier separates source resolution from rendered coverage; only its source-resolution check belongs to this layer. Missing rendered records are an implementation failure. Release acceptance must assess the named source findings and their impact as recorded in [plan.md](plan.md).
 
 The contract between the layers is the value list `Typ-Rolle.csv`. A recorded value outside the value list is a data mirror finding. A value that stands in the value list but is missing from the vocabulary is an invariant finding, because then the model lags behind.
 
@@ -62,11 +62,13 @@ The regression baselines in `tests/fixtures/baseline_counts.json` compare with a
 ## Author rules
 
 - Derive lower bounds at runtime from the source. A fixed number bound to the size of one export turns hard tests red against the previous data state.
-- A precondition that holds only for a new export is a skip, not an assert.
+- Skip only a genuinely optional or export-specific feature. Required source/publication files and model families must fail clearly when absent.
 - An unimplemented feature is a strict xfail, not a hard test.
 - Some invariants cannot be computed from the graph without a provenance marker written by the pipeline. The marker is then part of the feature.
 - A frontend vocabulary parser used in a coupling test strips comments, otherwise it counts commented-out entries as mapped.
-- Never guess a value. Fixtures and expected values come from the real dataset.
+- Use source-backed expected values for model and research semantics. Synthetic inputs cover pure functions and failures absent from the current corpus. Import production code under test; avoid duplicating its algorithm as an oracle.
+- An integration test may compare consumers with the common selector, but independent source-backed sets must establish that selector's meaning.
+- Browser assertions wait for an observable state and operate visible controls. DOM presence alone does not prove that a plot or control is visible.
 
 ## TDD workflow for model changes
 
@@ -93,8 +95,8 @@ The per-file list is the directory itself together with the module docstrings. T
 | 01 to 19 | The generated dataset against the source. Schema, string hygiene, roundtrip of object and link tables, referential integrity, frontend contract, Wikidata provenance and typing, regression baselines, determinism of the run, mobility, agent relations, finance, parse units, vocabulary coverage, the dating model and its meta contract. |
 | 20 to 39 | Model extensions and provenance. Source reference down to the cell, anchor records, coordinates, role hygiene, composer uniqueness, mobility clusters and events, term conformance against RiC-O and AgRelOn, stage parts and performances, quality flags, document vocabulary, freshness of the published copy, identifier stability, index completeness, the dropdown export, the confirmed modelling rules, calendar validity of the dates. |
 | 40 to 52 | Artefacts beside the dataset. Vocabulary gate in both directions, naming convention, the narrow Turtle reader of the pipeline, the generated model page, the read sites of the evaluation scripts, reconciliation and approval logic, integrity of the knowledge base, the sender side of correspondence, footer and markup hygiene of the delivered pages, link proposals, role positions of an agent relation, dating scope and rank. |
-| 60 to 65 | Source layer and data mirror. CSV read path and format of the link exports, source rows that never reach the dataset, recording against the value list, the unresolved aggregate, the run diagnostics of the transform step, duplicate stage parts. |
-| `tests/frontend/` | Node unit tests of the DOM-free frontend functions, plus the browser-bound pytest modules for the smoke run, the register page and the DOM comparison of the holdings list. |
+| 60 to 71 | Source layer, reports and preservation. CSV paths, orphan and unmodelled links, recording value lists, diagnostics, duplicate stage parts, report accounting and data preservation under failed input, requests, writes or backup replacement. |
+| `tests/frontend/` | Node unit tests of the DOM-free frontend functions, plus browser-bound pytest modules for the smoke run, stable shared-view contracts, register and holdings behaviour, map keyboard operation and basket downloads. |
 
 The numbering has gaps and collisions. Numbers are stable identifiers rather than a continuous index, so a retired module does not free its number, and three numbers carry two modules each. A reference by number alone is therefore ambiguous and has to name the file.
 
@@ -114,26 +116,28 @@ The knowledge base carries two citation systems that are addressed from code, te
 
 The integrity test is the barrier against that. It requires that every cited number has exactly one definition somewhere in `knowledge/`, without binding to a particular document, and that no number is defined twice. [journal.md](journal.md) counts as a definition address but not as a citation site, because its entries carry the identifiers of their time and a pull-through would falsify the record.
 
-Further checks run in the same module. Every relative Markdown link in `knowledge/` and in [`../CLAUDE.md`](../CLAUDE.md) points at an existing file. Every document name mentioned in code or fixture exists in the repository, with a small exception list for names that a script writes instead of citing, itself kept honest by a test. Every reference that names a section hits it in the named document, in the numbered form everywhere and in the titled form inside `knowledge/`, where the move to English replaced every German section title at once and left the file names intact. And every vocabulary name a knowledge document writes in backticks is declared in `vocab/m3gim.ttl` or carries the marker for a deliberate exemption, which covers a passage naming something retired or a decided target state. Historical documents are excluded, because their terms carry the names of their time.
+Further checks resolve relative Markdown links, cited document names and titled section references. Generated reports may be absent from a fresh checkout only when a verified producer accounts for them. The old numbered-section scanner was removed because the maintained knowledge uses titled sections. Every vocabulary name written in backticks must be declared or explicitly marked as a retired or target term. Historical documents retain the terms of their time.
 
 ## Frontend checks
 
-The DOM-free functions of the frontend are covered by Node unit tests under `tests/frontend/`, run with `node --test tests/frontend/*.test.mjs`, without npm install and without build tools. Each file stands against a named silent defect, that is an error that shows no symptom but yields a wrong or empty result. Two helper files carry the fixtures, one putting the real concept nodes of the dataset in front of synthetic fixtures so no second vocabulary table lives in test code, the other supplying the shipped graph and the store built from it through the real loader. Where a view mixes DOM and D3 calls directly into its drawing logic it is not checked this way, because the effort would exceed the value.
+Node tests exercise DOM-free frontend functions with `node --test tests/frontend/*.test.mjs`. Shared fixtures load the real concept vocabulary and shipped graph through the application loader. Source-backed cases establish filter, grouping and evidence semantics; synthetic fixtures isolate boundary cases. Module-by-module test coverage is visible in the test directory.
 
-The browser smoke run `tests/frontend/smoke.py` drives the application headless against a local HTTP server and is a canary rather than a full test. It walks the seven tabs of the router catalogue and asserts that the DOM does not render empty. It then checks the state stamp of each view against a required set of keys, which protects against a view rendering into nothing or a key falling out during a refactor. The holdings stamp names convolutes, records and the data state, and carries no sorting key since the table lost its sorting (E-203). The register page names the register, its entries, the total and the sorting, because the page shows exactly one register (E-226). The network stamp names focus, the facet keys, the data state and the node total, and of the per-type node counts only person and work are required. The remaining checks are canaries on the chronicle year grid and its aggregate resolution, the map after its asynchronous geometry load, the cross-view filter, the URL roundtrip, anchor titles and one fully expanded anchor record in the DOM, the convolute meta chips, the cataloguing-state facet, the scroll behaviour under the head, the empty filter strip, and duplicate identifiers in the graph.
+The browser suite starts a local server itself. Its session-scoped Chromium process serves isolated contexts, so storage and page state remain separate. Playwright is an optional dependency for routine browserless development and mandatory for candidate verification. Install it with `pip install playwright` and `playwright install chromium`, then run `pytest tests/frontend/ -m "frontend and not data_quality"`. An unavailable browser cannot establish technical readiness.
 
-Most of these checks catch every exception of their own execution and then report WARN instead of FAIL. Only a FAIL sets the exit code that the pytest wrapper evaluates, so a broken selector can let the run turn silently green. The map canary is a hard FAIL, because its stamp is written synchronously before the asynchronous draw and a silently empty map would otherwise pass. Whether the WARN checks should break the run is an open operator decision, and it decides whether the smoke run is a gate or a report.
+The smoke run visits the router views and checks drawing, state stamps, filters, URL roundtrips, source navigation and console errors. A WARN, FAIL, unexpected browser exception or console error fails its process. The network stamp uses its current graph and projection fields. Focused browser tests cover exact register behaviour, shared search and empty cuts, filter replacement, narrow sidebar controls, data-state accessibility, page headers, map keyboard operation and real downloads.
 
-The browser part is an optional extra. Playwright stands in no requirements file, so a default run in a browserless environment stays green through `pytest.importorskip`. With Playwright installed, the smoke test runs in the unmarked standard run as well, because `pytest.ini` does not exclude the marker.
+The holdings verifier opens every linked basis record through grouped rows and Folio pages. It checks row membership and the expected source-cell combinations through record provenance pills and individual grouped-date tooltips. Source resolution is reported separately. The 2026-09-06 run reached 187 records, 51 pages and all expected combinations for 152 records carrying link-cell provenance. The missing source object at row 725 remains a source finding.
 
-Method rule from the frontend inspection. Where a reading of a screenshot and a reading of the DOM contradict each other, the DOM holds. Numbers and labels come from a store query or from the DOM.
+The four basket builders and their actual browser downloads are checked as CSV, BibTeX, JSON-LD and GEXF, including stored-ID migration and evidence. Network downloads are compared with the selected projection and document cut in both modes. That builder comparison establishes integration; literal source-backed expected record sets establish research semantics independently. The narrow network check measures the drawing area and requires nodes inside it, closing the false-positive gap of checking only attached DOM nodes.
+
+Screenshots and DOM geometry answer different questions. The DOM and source queries establish text, counts and membership. Screenshots establish visual legibility and clipping. A contradiction requires investigation of dimensions, transforms and visibility before either observation is accepted.
 
 ## Boundaries
 
-Deliberately outside the suite are the internals of the pipeline beyond the parse functions held as unit tests, the content of the recording tables itself, which is editorial work carried by `explore.py` and `validate.py`, the frontend JavaScript inside pytest, and runtime performance, which is uncritical for a pipeline of this size.
+Model invariants cannot establish the correctness of cataloguing decisions or historical identities. The source layer remains subject to editorial correction and scholarly review. The data mirror makes missing input evidence explicit without modifying it. Strict xfails retain their named source-fix signals.
 
-One gap is documented rather than closed. All four builders of the basket in [`../docs/js/views/korb.js`](../docs/js/views/korb.js), the CSV rows, the BibTeX assembly, the JSON-LD document and the GEXF graph, are exported and covered by Node unit tests against the shipped dataset. What stays outside the suite are the four download wrappers around them, which are module-internal, and with them the CSV quoting as the wrapper applies it, the byte order mark and the file name of the download. An ad-hoc Playwright script clicked the four buttons and read the written files once, and that check is not part of any run. Closing the gap presupposes exporting the wrappers as well, which is an intervention in the frontend code and therefore stands here as a note.
+Network acceptance retains the concrete former F2 criteria. The unfiltered graph must contain every actor and mention of its linked records, with `UAKUG/NIM_023 5` as a source-backed canary. After data readiness its first unfiltered draw must complete in less than one second on the named acceptance environment; hover and click updates must complete within one animation frame. Visual acceptance covers lattice avoidance, record-node size, relation-mark readability, the second neighbourhood step, central label density and use of the drawing area. Measurements name the environment and graph size. A fast warm click cannot establish the cold-click criterion, and technical observations cannot establish human visual acceptance.
 
-The same holds for three checks of 2026-09-05 that ran as ad-hoc scripts in the browser rather than as tests, the folio paging of the record detail, the page head of the info pages, and the geometry and timing of the Netzwerk. A durable browser suite for the Netzwerk is planned, over completeness of the graph against the dataset, first draw and interaction timing, and the tasks of the task set. Until it exists, the numbers those scripts produced hold for the run that produced them and for nothing else.
+The full smoke still includes fixed waits and overlaps with focused browser tests. It remains a broad integration canary; gradual replacement should remove a check only once an equivalent behaviour check covers its failure mode. The stable-view consumer comparison uses the common selector and is complemented by independent source-backed cases. No framework migration or wholesale test renumbering is needed.
 
-What can come later is SHACL validation against RiC-O shapes, semantically sharper than the JSON Schema, and continuous integration, which the project does not run today.
+Performance measurements apply to the recorded environment. The suite does not establish universal device performance, full assistive-technology conformance, unaided completion of the research tasks or scholarly acceptance. The current verification and material limits live in [plan.md](plan.md). Possible future additions include SHACL validation and continuous integration, which the repository does not currently run.

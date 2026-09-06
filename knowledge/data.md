@@ -7,7 +7,7 @@ status: complete
 language: en
 version: 0.6
 created: 2026-02-19
-updated: 2026-09-05
+updated: 2026-09-06
 authors: [Christopher Pollin]
 generated-with: Claude Code
 method:
@@ -30,7 +30,7 @@ related: [data-model, research-framework, architecture, journal, testing]
 
 This document is the spec-first anchor of the data model. It describes what the source material is, how the cataloguing team records it, and which properties of the source the pipeline compensates for. A change to the model is anchored here first, then in the vocabulary, then in a test, and last in the pipeline (E-133).
 
-The formal side, meaning classes, properties, controlled vocabularies and serialization, is in [data-model.md](data-model.md). The German recording convention of the archive team is in [`../data/recording-guide.md`](../data/recording-guide.md). The pipeline implementation is in [architecture.md](architecture.md), the research frame in [research-framework.md](research-framework.md), the project steering in [specification.md](specification.md). Running figures live in the quality snapshot under `data/reports/`, this document carries none.
+The formal side, meaning classes, properties, controlled vocabularies and serialization, is in [data-model.md](data-model.md). The German recording convention of the archive team is in [recording-guide.md](recording-guide.md). The pipeline implementation is in [architecture.md](architecture.md), the research frame in [research-framework.md](research-framework.md), the project steering in [specification.md](specification.md). Running figures live in the quality snapshot under `data/reports/`, this document carries none.
 
 ## Sources and holdings groups
 
@@ -197,12 +197,12 @@ Two further points were decided with the partner feedback of 2026-09-05. The fir
 
 ## Recording
 
-The German recording convention of the archive team, meaning how the tables are filled, how titles are formed, how uncertainty is recorded and what the quality checklist asks, is in [`../data/recording-guide.md`](../data/recording-guide.md). It sits beside the source material rather than in this folder, because it addresses the cataloguing team.
+The German recording convention of the archive team, meaning how the tables are filled, how titles are formed, how uncertainty is recorded and what the quality checklist asks, is in [recording-guide.md](recording-guide.md). It remains German because it addresses the cataloguing team.
 
 ## Related
 
 - [data-model.md](data-model.md) — the formal model this material is mapped onto
-- [`../data/recording-guide.md`](../data/recording-guide.md) — the German recording convention of the archive team
+- [recording-guide.md](recording-guide.md) — the German recording convention of the archive team
 - [`../vocab/m3gim.ttl`](../vocab/m3gim.ttl) — the vocabulary with the concepts the role values resolve onto
 - [architecture.md](architecture.md) § Pipeline — how the dataset is produced
 - [testing.md](testing.md) — the invariants and the data mirror that hold this material

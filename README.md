@@ -14,8 +14,7 @@ m3gim/
 |   |-- output/              # pipeline output: m3gim.jsonld and the two wikidata-*.json
 |   |-- curated/             # curated hand work the pipeline reads
 |   |-- reports/             # curation evidence, quality snapshot, finding registers, generated reports
-|   `-- recording-guide.md   # the German recording convention of the cataloguing team
-|-- scripts/                 # the pipeline and the tools beside it, see scripts/README.md
+|-- scripts/                 # pipeline and related command-line tools
 |-- vocab/                   # m3gim.ttl, the formal project vocabulary, with its coverage checker
 |-- tests/                   # pytest suite, plus Node unit tests and the browser smoke run under tests/frontend/
 `-- docs/                    # GitHub Pages frontend, vanilla JS without a build step
@@ -25,7 +24,7 @@ m3gim/
 
 - Model, RiC-O 1.1 with the m3gim extension, AgRelOn for agent relations, SKOS for the controlled vocabularies
 - Pipeline, Python 3.11 or newer, with `pandas`, `openpyxl` and `thefuzz[speedup]`
-- Frontend, vanilla JavaScript as ES modules, D3 v7 from a CDN, no framework and no build tool
+- Frontend, vanilla JavaScript as ES modules, locally shipped D3 v7 and fonts, no framework and no build tool
 - Authority data, Wikidata identifiers through `reconcile.py` and `enrich-wikidata.py`
 - Hosting, GitHub Pages
 
@@ -58,7 +57,7 @@ python scripts/report-cataloguing.py # cataloguing worklist    -> data/reports/c
 python scripts/build-model-page.py   # vocabulary to the model page -> docs/datenmodell.html
 ```
 
-Outside the run stand `reconcile.py` and `enrich-wikidata.py`, which need network access and write the versioned `wikidata-*.json`, and the tools listed in [`scripts/README.md`](scripts/README.md).
+Outside the run stand the Wikidata alignment, export, proposal, backup and asset-building tools listed in [`knowledge/architecture.md`](knowledge/architecture.md) § Scripts outside the run.
 
 `M3GIM_SHEETS_DIR`, `M3GIM_OUTPUT_DIR` and `M3GIM_REPORTS_DIR` redirect source, output and report directory in every step, resolved once in `scripts/_common.py` and imported from there, so `audit-data.py`, `report-quality.py` and `report-cataloguing.py` see the same data state as the transformation. `build-views.py` also honours `M3GIM_JSONLD_PATH`, `transform.py` also `M3GIM_VOCAB_PATH` and `M3GIM_ALLOW_NO_WIKIDATA`.
 
@@ -80,7 +79,7 @@ python vocab/check-coverage.py                    # vocabulary coverage, read-on
 
 The suite has two layers. The invariants check model, pipeline and frontend contract and are green whenever the code is sound. The Datenspiegel asserts that the source is clean, is deliberately red while known source errors exist, and its failure messages are the finding list for the cataloguing team. Red in the Datenspiegel is expected, red in the invariants is a bug.
 
-The browser smoke run under `tests/frontend/` is an optional extra. Playwright stands in no requirements file, so without it the run skips itself and stays green. With `pip install playwright` and `playwright install chromium` it is addressed as `pytest -m frontend tests/frontend/`, and it then runs in the unmarked run as well, where it needs a local HTTP server against `docs/`. The details are in [`knowledge/testing.md`](knowledge/testing.md).
+The browser suite under `tests/frontend/` starts its HTTP server and Chromium itself, with isolated contexts for the research paths. Install `pip install playwright` and `playwright install chromium`, then run `pytest tests/frontend/ -m "frontend and not data_quality"`. Browserless local runs may skip this optional dependency; candidate verification requires it. The test responsibilities and limits are in [`knowledge/testing.md`](knowledge/testing.md).
 
 ## Data flow
 
@@ -90,7 +89,7 @@ The recording tables under `data/google-spreadsheet/` go through the pipeline in
 
 - Entry into the knowledge base, [`knowledge/INDEX.md`](knowledge/INDEX.md)
 - Project identity, requirements, epics and the state of the work, [`knowledge/specification.md`](knowledge/specification.md)
-- Source material, recording and known defects, [`knowledge/data.md`](knowledge/data.md), with the formal model in [`knowledge/data-model.md`](knowledge/data-model.md)
+- Source material and known defects, [`knowledge/data.md`](knowledge/data.md), with the formal model in [`knowledge/data-model.md`](knowledge/data-model.md) and the German partner-facing [`knowledge/recording-guide.md`](knowledge/recording-guide.md)
 - Pipeline and frontend reference, [`knowledge/architecture.md`](knowledge/architecture.md), the design system in [`knowledge/design.md`](knowledge/design.md)
 - Test strategy, [`knowledge/testing.md`](knowledge/testing.md)
 - Decisions and their reasons, [`knowledge/journal.md`](knowledge/journal.md), superseded material in [`knowledge/journal-archive.md`](knowledge/journal-archive.md)
