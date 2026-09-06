@@ -4,6 +4,7 @@ import sys
 from pathlib import Path
 
 import pandas as pd
+import pytest
 
 REPO_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(REPO_ROOT / "scripts"))
@@ -64,6 +65,76 @@ def test_complete_dates_must_be_real_calendar_dates():
 
     assert all(validate_date(value) for value in accepted)
     assert not any(validate_date(value) for value in rejected)
+
+
+@pytest.mark.parametrize("timestamp", (
+    "1958-04-18 00:00:00",
+    "1958-04-18T00:00:00",
+))
+def test_object_timestamp_gets_raw_source_row_warning(timestamp):
+    objects = pd.DataFrame([{
+        "archivsignatur": "UAKUG/NIM_005",
+        "folio nr": "1_2",
+        "titel": "Brief",
+        "entstehungsdatum": timestamp,
+    }], index=[5])
+
+    issues = validate_objekte(objects)
+    warnings = [issue for issue in issues if issue.code == "W010"]
+
+    assert len(warnings) == 1
+    assert warnings[0].value == timestamp
+    assert warnings[0].row == 7
+    assert not [issue for issue in issues if issue.code == "W002"]
+
+
+def test_valid_object_date_does_not_get_date_warning():
+    objects = pd.DataFrame([{
+        "archivsignatur": "UAKUG/NIM_005",
+        "folio nr": "1_2",
+        "titel": "Brief",
+        "entstehungsdatum": "1956-02-29",
+    }])
+
+    assert not [
+        issue for issue in validate_objekte(objects)
+        if issue.code in {"W002", "W010"}
+    ]
+
+
+@pytest.mark.parametrize("status", (
+    "begonnen (Ira Malaniuk betreffend)",
+    "Vollständig",
+    "zurückgestellt",
+))
+def test_normalized_processing_status_variants_are_valid(status):
+    objects = pd.DataFrame([{
+        "archivsignatur": "UAKUG/NIM_005",
+        "folio nr": "1_2",
+        "titel": "Brief",
+        "bearbeitungsstand": status,
+    }])
+
+    assert not [
+        issue for issue in validate_objekte(objects)
+        if issue.code == "E004" and issue.field == "bearbeitungsstand"
+    ]
+
+
+def test_unknown_processing_status_remains_an_error():
+    objects = pd.DataFrame([{
+        "archivsignatur": "UAKUG/NIM_005",
+        "folio nr": "1_2",
+        "titel": "Brief",
+        "bearbeitungsstand": "fast fertig",
+    }])
+
+    errors = [
+        issue for issue in validate_objekte(objects)
+        if issue.code == "E004" and issue.field == "bearbeitungsstand"
+    ]
+    assert len(errors) == 1
+    assert errors[0].value == "fast fertig"
 
 
 def test_impossible_complete_date_gets_source_cell_diagnostic():

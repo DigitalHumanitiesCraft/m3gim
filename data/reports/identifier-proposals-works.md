@@ -117,7 +117,7 @@ Daneben steht ein zweites, gleich häufiges Muster, die Verwechslung des Werks m
 
 Zu den fünf Zeilen ohne Ersatz. Für Schuberts „Nachtstück" D 672 und für Hindemiths „Die junge Magd" op. 23b führt Wikidata keine Entität; auffindbar ist jeweils nur die Textvorlage, und im Fall des Nachtstücks stammt die gefundene Vorlage zudem von einer anderen Dichterin als der von Schubert vertonte Mayrhofer-Text. Für „Stabat mater" ohne Komponistenangabe fehlt das entscheidende Unterscheidungsmerkmal zwischen den mindestens vier vorhandenen Vertonungen. Zu „Lied der Mignon" und „Regentropfen" siehe den Abschnitt zu den fachlichen Entscheidungen.
 
-Die drei Zeilen mit Quell-ID betreffen Identifikatoren, die im Werkindex selbst eingetragen sind. `reconcile.py` überspringt Zeilen mit vorhandener `wikidata_id`, deshalb hat sie nie eine Prüfung berührt. `Q190891` ist die zentrierte Fünfeckszahl, `Q729645` ein Album der Band Jimmy Eat World, `Q309823` das Konzept Open Science. Diese drei Werte gehören in das Register in `knowledge/data-errors.md` und zurück ans Erschließungsteam. Der vierte Quell-Identifikator, `Q723407` für Salome, ist geprüft und korrekt.
+Die drei Zeilen mit Quell-ID betreffen Identifikatoren, die im Werkindex selbst eingetragen sind. `reconcile.py` überspringt Zeilen mit vorhandener `wikidata_id`, deshalb hat sie nie eine Prüfung berührt. `Q190891` ist die zentrierte Fünfeckszahl, `Q729645` ein Album der Band Jimmy Eat World, `Q309823` das Konzept Open Science. Diese drei Werte gehören in die [Partner-Übergabeliste](source-errors-handover-2026-09-01.md) unter Werkindex und zurück ans Erschließungsteam. Der vierte Quell-Identifikator, `Q723407` für Salome, ist geprüft und korrekt.
 
 ## Bewusst offen gelassene Fälle
 

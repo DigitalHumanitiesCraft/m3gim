@@ -72,7 +72,7 @@ Markdown documents in `knowledge/` are English by default (E-260). German projec
 
 Model changes are anchored in [data.md](data.md) first, which is the spec-first guard rail (E-133). What is done moves out of the volatile section of [specification.md](specification.md) into [journal.md](journal.md), what belongs to the source into the handover list under `data/reports/`. Research notes and sources sensitive under data protection law are maintained in the Obsidian vault, the repository carries the distilled extract.
 
-The knowledge base was consolidated on 2026-07-19 and condensed further on 2026-09-01. The recording guideline was absorbed into [data-model.md](data-model.md), the two architecture documents became [architecture.md](architecture.md), the data error register moved to `data/reports/` as an operational pair of registers, and the decision register became part of [journal.md](journal.md) (E-155).
+The knowledge base was consolidated on 2026-07-19 and condensed further on 2026-09-01. The recording guideline was absorbed into [data-model.md](data-model.md), the two architecture documents became [architecture.md](architecture.md), the data error register moved to `data/reports/` as an operational pair of registers, and the decision register became part of [journal.md](journal.md) (E-155). The partner-facing guide now has its own address at [recording-guide.md](recording-guide.md), moved into the knowledge base under E-284.
 
 ## Glossary
 

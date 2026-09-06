@@ -4,7 +4,7 @@ Redaktioneller Durchgang vom 2026-08-22 über `data/output/wikidata-reconciliati
 
 Jede Kennung ist vor der Übernahme über `https://www.wikidata.org/wiki/Special:EntityData/<QID>.json` mit der Kennung `m3gim-research/1.0` abgerufen und an Label oder Alias, an der Entitätsklasse aus P31 und bei Personen zusätzlich an Beruf (P106, P412) und Lebensdaten (P569, P570) gegen die Behauptung des Vorschlagsdokuments geprüft worden. Bei Werken lief die Prüfung über den in P86 ausgewiesenen Komponisten, bei Orten über die Koordinate aus P625. Der Abruf hat in keinem Fall von der Behauptung abgewichen. Die Einträge der zweiten Etappe sind vor ihrer Übernahme ein zweites Mal frisch abgerufen worden.
 
-Alle geschriebenen Einträge der Liste `matched` tragen `match: "manual"`, `confidence: 100`, `manual_review: "approved"` und eine datierte Notiz mit dem Beleg. Gestrichene Einträge wandern in der im Bestand vorhandenen Form ohne Zusatzfelder nach `unmatched`; ihre Begründung steht in der Tabelle der ersten Etappe und im Register [`knowledge/data-errors.md`](../../knowledge/data-errors.md).
+Alle geschriebenen Einträge der Liste `matched` tragen `match: "manual"`, `confidence: 100`, `manual_review: "approved"` und eine datierte Notiz mit dem Beleg. Gestrichene Einträge wandern in der im Bestand vorhandenen Form ohne Zusatzfelder nach `unmatched`; ihre Begründung steht in der Tabelle der ersten Etappe und in der Sperrliste des [Reconciliation-Registers](reconciliation-register.md).
 
 ## Umfang
 

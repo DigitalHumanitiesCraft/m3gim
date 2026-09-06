@@ -9,7 +9,7 @@ Markdown report with:
   - Wikidata coverage per index plus the list of low-confidence matches
     for manual approval
   - Provenance coverage (xlsxSource, agrelon:metadataProvenance)
-  - External blockers (PL_07, NIM_11, header shifts)
+  - Links to the maintained source and reconciliation finding registers
 
 Usage:
     python scripts/report-quality.py
@@ -18,10 +18,12 @@ Output: data/reports/quality-snapshot.md
 """
 
 import json
+import os
 import sys
 from collections import Counter
 from datetime import datetime
 from pathlib import Path
+from urllib.parse import quote
 
 if sys.stdout.encoding != "utf-8":
     sys.stdout.reconfigure(encoding="utf-8")
@@ -33,6 +35,17 @@ BASE = REPO_ROOT
 JSONLD = OUTPUT_DIR / "m3gim.jsonld"
 RECON = OUTPUT_DIR / "wikidata-reconciliation.json"
 OUTPUT = REPORTS_DIR / "quality-snapshot.md"
+SOURCE_FINDINGS = BASE / "data" / "reports" / "source-errors-handover-2026-09-01.md"
+RECONCILIATION_REGISTER = BASE / "data" / "reports" / "reconciliation-register.md"
+
+
+def link_from_report(path: Path) -> str:
+    """Return a Markdown target relative to the configured report location."""
+    try:
+        target = Path(os.path.relpath(path, OUTPUT.parent)).as_posix()
+    except ValueError:
+        return path.resolve().as_uri()
+    return quote(target, safe="/")
 
 
 def load_jsonld():
@@ -272,18 +285,12 @@ def main():
                  f"**{nested_with_xlsx}/{nested_total}** ({nested_pct:.0%})")
     lines.append("")
 
-    lines.append("## Externe Blocker (zur Klärung mit Erschließungsteam)")
+    lines.append("## Kanonische Befundregister")
     lines.append("")
-    lines.append("1. **`UAKUG/NIM/PL_07` Duplikat** im Google Sheet bereinigen "
-                 "— aktuell xfail in `test_05_referential.py`.")
-    lines.append("2. **Verwaiste Signatur `UAKUG/NIM_11`**: tritt in Verknüpfungen "
-                 "auf, existiert aber nicht in `M3GIM-Objekte.xlsx`. "
-                 "Mögliche Interpretation: Tippfehler (`NIM_110` / `NIM_111`?) oder "
-                 "fehlende Objektzeile nachpflegen.")
-    lines.append("3. **Header-Shifts** in drei Indizes (Organisationen, Orte, Werke): "
-                 "Erste Datenzeile wird als Header gelesen. Pipeline kompensiert "
-                 "via `HEADER_SHIFTS`-Mapping in `scripts/transform.py` — sollte "
-                 "im Google Sheet gefixt werden, damit die Normalform sauber ist.")
+    lines.append("Die gepflegten Einzelbefunde stehen in den zuständigen Registern:")
+    lines.append("")
+    lines.append(f"- [Quellbefunde]({link_from_report(SOURCE_FINDINGS)})")
+    lines.append(f"- [Reconciliation-Register]({link_from_report(RECONCILIATION_REGISTER)})")
     lines.append("")
 
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)

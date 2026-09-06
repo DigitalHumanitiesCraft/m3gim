@@ -8,6 +8,7 @@ import subprocess
 import sys
 import urllib.error
 from pathlib import Path
+from urllib.parse import unquote
 
 import numpy as np
 import pandas as pd
@@ -311,3 +312,44 @@ def test_quality_counts_performance_and_cataloguing_excludes_derived_folio():
     }
     assert quality.count_links_on_record(performance_only) == 1
     assert cataloguing.worked_on_without_link([derived]) == []
+
+
+def test_quality_register_links_follow_overridden_report_directory(
+        tmp_path, monkeypatch):
+    quality = load_script("quality_link_under_test", "report-quality.py")
+    monkeypatch.setattr(
+        quality, "OUTPUT",
+        tmp_path / "report folder" / "quality-snapshot.md",
+    )
+
+    register_dir = tmp_path / "source registers"
+    register_dir.mkdir()
+    targets = (
+        register_dir / "source-errors-handover-2026-09-01.md",
+        register_dir / "reconciliation-register.md",
+    )
+    for target in targets:
+        target.write_text("# Register\n", encoding="utf-8")
+        link = quality.link_from_report(target)
+        assert "%20" in link
+        resolved = (quality.OUTPUT.parent / Path(unquote(link))).resolve()
+        assert resolved == target.resolve()
+        assert target.exists()
+
+
+def test_quality_register_link_uses_file_uri_across_drives(tmp_path, monkeypatch):
+    quality = load_script("quality_uri_under_test", "report-quality.py")
+    target = (
+        tmp_path / "source registers" /
+        "source-errors-handover-2026-09-01.md"
+    )
+    monkeypatch.setattr(
+        quality.os.path, "relpath",
+        lambda *args: (_ for _ in ()).throw(ValueError("different drives")),
+    )
+
+    link = quality.link_from_report(target)
+
+    assert link.startswith("file:///")
+    assert "%20" in link
+    assert unquote(link) == unquote(target.resolve().as_uri())

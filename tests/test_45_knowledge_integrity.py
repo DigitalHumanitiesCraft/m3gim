@@ -168,12 +168,12 @@ def test_no_number_defined_twice(registry):
 
 
 def test_relative_markdown_links_resolve():
-    """Jeder relative Link in knowledge/ und CLAUDE.md zeigt auf eine Datei."""
+    """Keep entry documents, maintained knowledge and curation evidence reachable."""
     broken = []
     targets = list(KNOWLEDGE.rglob("*.md"))
-    claude = REPO_ROOT / "CLAUDE.md"
-    if claude.exists():
-        targets.append(claude)
+    targets.extend((REPO_ROOT / "data" / "reports").rglob("*.md"))
+    targets.extend((REPO_ROOT / "data" / "migration").rglob("*.md"))
+    targets.extend(REPO_ROOT / name for name in ("CLAUDE.md", "README.md"))
     for path in sorted(targets):
         for lineno, line in enumerate(
             path.read_text(encoding="utf-8").splitlines(), start=1

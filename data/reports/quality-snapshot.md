@@ -1,6 +1,6 @@
 # M³GIM Quality-Snapshot
 
-_Laufzeit des Reports: 2026-09-06T10:34+02:00_
+_Laufzeit des Reports: 2026-09-06T18:17+02:00_
 
 Grundlage: `data/output/m3gim.jsonld` + `data/output/wikidata-reconciliation.json`.
 
@@ -80,9 +80,10 @@ _Keine Low-Confidence-Matches in diesem Lauf._
 - Records mit provenienz-belegten Ereignissen (`agrelon:metadataProvenance` auf Annotation/AgRelOn): **151/997** (15%)
 - Nested Entities (Details + AgRelOn) mit `xlsxSource`: **127/127** (100%)
 
-## Externe Blocker (zur Klärung mit Erschließungsteam)
+## Kanonische Befundregister
 
-1. **`UAKUG/NIM/PL_07` Duplikat** im Google Sheet bereinigen — aktuell xfail in `test_05_referential.py`.
-2. **Verwaiste Signatur `UAKUG/NIM_11`**: tritt in Verknüpfungen auf, existiert aber nicht in `M3GIM-Objekte.xlsx`. Mögliche Interpretation: Tippfehler (`NIM_110` / `NIM_111`?) oder fehlende Objektzeile nachpflegen.
-3. **Header-Shifts** in drei Indizes (Organisationen, Orte, Werke): Erste Datenzeile wird als Header gelesen. Pipeline kompensiert via `HEADER_SHIFTS`-Mapping in `scripts/transform.py` — sollte im Google Sheet gefixt werden, damit die Normalform sauber ist.
+Die gepflegten Einzelbefunde stehen in den zuständigen Registern:
+
+- [Quellbefunde](source-errors-handover-2026-09-01.md)
+- [Reconciliation-Register](reconciliation-register.md)
 

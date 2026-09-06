@@ -24,6 +24,7 @@ from _common import (
     has_source_value,
     link_record_key,
     load_index as _load_index,
+    normalize_bearbeitungsstand,
     parent_folio,
     record_key,
     publishable_signature,
@@ -93,6 +94,11 @@ VOCAB = {
         "datum", "detail", "ensemble", "ausgaben", "einnahmen", "summe"
     ]
 }
+
+VALID_PROCESSING_STATUSES = frozenset(
+    normalize_bearbeitungsstand(value)
+    for value in VOCAB["bearbeitungsstand"]
+)
 
 # Komposit-Typen die als gueltig akzeptiert werden
 KOMPOSIT_TYPEN = [
@@ -187,22 +193,6 @@ def validate_date(date_str: str) -> bool:
             continue
         return False
     return True
-
-
-def normalize_bearbeitungsstand(value: str) -> str | None:
-    """Normalisiert Bearbeitungsstand wie transform.py (fuzzy matching)."""
-    if value is None:
-        return None
-    bs = value.strip().lower()
-    if not bs:
-        return None
-    if 'vollst' in bs or bs == 'abgeschlossen' or bs.startswith('erledigt'):
-        return 'abgeschlossen'
-    elif bs.startswith('begonnen') or bs == 'in bearbeitung' or bs == 'offen':
-        return bs  # Originalwert behalten (ist im Vokabular)
-    elif 'ckgestellt' in bs or 'zurück' in bs:
-        return 'zurueckgestellt'
-    return None  # Unbekannter Wert -> E004
 
 
 def validate_vocab(value: str, vocab_name: str) -> bool:
@@ -555,11 +545,11 @@ def validate_objekte(df: pd.DataFrame) -> list[ValidationIssue]:
                     message=f"Ungueltiger Wert fuer {field}"
                 ))
 
-        # Bearbeitungsstand: fuzzy Normalisierung (spiegelt transform.py)
+        # Bearbeitungsstand: shared normalization followed by an explicit set.
         bs_raw = normalize_str(row.get('bearbeitungsstand'))
         if bs_raw is not None:
             bs_norm = normalize_bearbeitungsstand(bs_raw)
-            if bs_norm is None:
+            if bs_norm not in VALID_PROCESSING_STATUSES:
                 issues.append(ValidationIssue(
                     level="ERROR", code="E004", table="Objekte", row=excel_row,
                     field="bearbeitungsstand", value=str(row.get('bearbeitungsstand')),
@@ -579,9 +569,17 @@ def validate_objekte(df: pd.DataFrame) -> list[ValidationIssue]:
                     ))
                     break
 
-        # Datumsformat (nach Bereinigung)
-        date_val = clean_date(row.get('entstehungsdatum'))
-        if date_val is not None and not validate_date(date_val):
+        # Detect spreadsheet autoconversion before legacy cleanup removes it.
+        date_raw = row.get('entstehungsdatum')
+        date_text = str(date_raw).strip() if has_source_value(date_raw) else ""
+        if _TIMESTAMP_PATTERN.match(date_text):
+            issues.append(ValidationIssue(
+                level="WARNING", code="W010", table="Objekte", row=excel_row,
+                field="entstehungsdatum", value=date_text,
+                message=("Excel-Zeitstempel statt quellgetreuem ISO-Datum; "
+                         "Autokonvertierung pruefen")
+            ))
+        elif (date_val := clean_date(date_raw)) is not None and not validate_date(date_val):
             issues.append(ValidationIssue(
                 level="WARNING", code="W002", table="Objekte", row=excel_row,
                 field="entstehungsdatum", value=str(row.get('entstehungsdatum')),

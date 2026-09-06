@@ -13,12 +13,12 @@ language: de
 version: 0.1
 authors: [Christopher Pollin]
 generated-with: Claude Code
-related: [data-errors, data, pipeline-architecture]
+related: [reconciliation-register, data, pipeline-architecture]
 ---
 
 # Identifikator-Vorschläge Personen
 
-> Rechercheergebnis zu den Personen ohne Wikidata-Identifikator aus `data/output/wikidata-reconciliation.json` (Liste `unmatched`) und zu den dokumentierten Fehlzuordnungen aus [data-errors.md](../../knowledge/data-errors.md) unter AF-02. Vorschlagsdokument zur Freigabe, keine Datenänderung. Die Übernahme in die Indizes und der Pflichtlauf von `scripts/verify-manual-approvals.py` liegen beim Operator.
+> Rechercheergebnis zu den Personen ohne Wikidata-Identifikator aus `data/output/wikidata-reconciliation.json` (Liste `unmatched`) und zu den dokumentierten Fehlzuordnungen aus dem [Reconciliation-Register](reconciliation-register.md) unter AF-02. Vorschlagsdokument zur Freigabe, keine Datenänderung. Die Übernahme in die Indizes und der Pflichtlauf von `scripts/verify-manual-approvals.py` liegen beim Operator.
 
 ## Verfahren und Belegregel
 
