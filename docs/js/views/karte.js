@@ -27,11 +27,10 @@ import { cityOf } from '../utils/format.js';
 import { formatDate, extractYear } from '../utils/date-parser.js';
 import { logStamp } from '../utils/env.js';
 import { getFilter, setFilter, facetValues } from '../ui/filter-state.js';
-import { zeitfensterToYearRange } from '../ui/filter-sync.js';
 import { navigateToView } from '../ui/router.js';
 import { familyIcon } from '../ui/family-icons.js';
 import { onViewNavigate } from '../ui/events.js';
-import { yearBounds } from '../data/records-for.js';
+import { recordsFor, yearBounds } from '../data/records-for.js';
 import { REST_COLOR } from './statistik-data.js';
 import {
   buildEntities, buildOccurrences, placeRoleScale, hasGeo,
@@ -100,8 +99,6 @@ export function renderMobilitaet(store, container) {
 
   const state = {
     entity: null,          // gewaehlte Entitaet oder null (= alle)
-    yearFrom: span.min,
-    yearTo: span.max,
     selectedCities: [],
   };
 
@@ -123,14 +120,11 @@ export function renderMobilitaet(store, container) {
     redraw();
   };
 
-  // Pull the shared filter in: the whole cut as a Beleg set (cutOcc),
-  // zeitfenster -> year window, ort -> selectedCities. The place roles of the
-  // Verknuepfung facet act through cutOcc.
+  // Pull the shared document cut in as the eligible Beleg set. Search and the
+  // primary record time anchor are resolved once by recordsFor; annotation
+  // dates remain provenance and never create a second, narrower cut here.
   let cutOcc = new Set();
   function pullSharedIntoState(shared) {
-    const { yearFrom, yearTo } = zeitfensterToYearRange(shared.zeitfenster);
-    state.yearFrom = yearFrom == null ? span.min : Math.max(span.min, yearFrom);
-    state.yearTo = yearTo == null ? span.max : Math.min(span.max, yearTo);
     state.selectedCities = facetValues(shared, 'ort');
     cutOcc = new Set(occurrencesInCut(store, allOcc, shared));
   }
@@ -142,18 +136,9 @@ export function renderMobilitaet(store, container) {
   const inEntity = o => !state.entity || state.entity.records.has(o.recordId);
   // Was die Karte zeichnet: geteilter Schnitt und Entitaet zusammen.
   const inScope = o => inCut(o) && inEntity(o);
-  const inWindow = o => {
-    const y = extractYear(o.date);
-    return y == null || (y >= state.yearFrom && y <= state.yearTo);
-  };
-  // E-225: the split dated/undated is only a statement while a Zeitfenster
-  // actually cuts; at full span an undated Beleg is simply a Beleg.
-  const windowActive = () => state.yearFrom > span.min || state.yearTo < span.max;
 
-  // Die gezeichnete Beleg-Menge. Punkte, Zaehlstand und die Beleg-Liste eines
-  // Orts lesen dieselbe Menge; die Liste zeigte sonst Jahre ausserhalb des
-  // Zeitfensters, das die Punkte bereits anwenden (Frontend-Audit 2026-09-04).
-  const currentAll = () => allOcc.filter(inScope).filter(inWindow);
+  // Points, counts and evidence lists read the identical eligible set.
+  const currentAll = () => allOcc.filter(inScope);
 
   // The one way from a place to its Belege: the place enters the shared ort
   // facet, and the detail region answers with its documents. Map node and the
@@ -197,9 +182,9 @@ export function renderMobilitaet(store, container) {
   if (_sidebar) _sidebar.destroy();
   const sidebar = createSidebar(store, {
     yearSpan: span,
-    // recordsFor wertet den Freitext nicht aus; ein Feld ohne Wirkung bleibt weg.
-    search: false,
-    getCount: () => new Set(currentAll().map(o => o.recordId).filter(Boolean)).size,
+    search: { placeholder: 'Signatur, Titel, Typ oder Datum' },
+    getCount: () => recordsFor(store, getFilter()).ids.size,
+    getScopeDescription: () => `${new Set(currentAll().map(o => o.recordId).filter(Boolean)).size} Dokumente mit Ortsbelegen in dieser Kartenauswahl; Dokumente ohne Ortsbeleg bleiben Teil des gemeinsamen Schnitts.`,
     // Die view-eigenen Sektionen starten zugeklappt, damit die geteilten Filter
     // ohne Scrollen in der Spalte stehen; ihre Wahl steht im Streifen ueber den
     // Daten und geht dabei nicht verloren.
@@ -330,12 +315,14 @@ export function renderMobilitaet(store, container) {
   // Geometrie laden (gecacht), dann zeichnen
   loadCountries().then(countries => {
     const map = buildMap(mapCell, countries, withGeo, state, {
-      inEntity: inScope, inWindow, windowActive, roleScale,
+      isEligible: inScope, roleScale,
+      windowActive: () => Array.isArray(getFilter().zeitfenster),
       onSelectCity: toggleCity,
     });
     draw = map.draw;
     redraw();
-  }).catch(() => {
+  }).catch(error => {
+    console.error('Karte konnte nicht aufgebaut werden:', error);
     clear(mapCell);
     mapCell.appendChild(el('div', { className: 'mob-empty' },
       'Ländergeometrie konnte nicht geladen werden. Liste in der Sidebar nutzen.'));
@@ -376,8 +363,8 @@ function buildOccChip(o) {
     : o.placement === 'far' ? 'weit · prüfen'
     : o.placement === 'unlocatable' ? (o.placeWikidata ? 'Q-ID ohne Koordinaten' : 'ohne Koordinate')
     : null;
-  // E-225: an undated Beleg stays in the list and says so in the absence form
-  // (design rule 16), so the Zeitfenster does not silently pass it off as dated.
+  // The annotation date is evidence provenance; the shared time cut uses the
+  // primary record anchor and retains records without an anchor.
   const dated = o.date ? (formatDate(o.date) || o.date) : null;
   const tail = note ? ' · ' + note : '';
   const value = dated

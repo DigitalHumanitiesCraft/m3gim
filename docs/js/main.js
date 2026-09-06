@@ -7,7 +7,7 @@ import { el, clear } from './utils/dom.js';
 import { loadArchive } from './data/loader.js';
 import { initRouter, getState, navigateToView } from './ui/router.js';
 import { initRegisterMenu } from './ui/register-menu.js';
-import { initKorb, onKorbChange, getKorbCount } from './ui/basket.js';
+import { initKorb, reconcileKorb, onKorbChange, getKorbCount } from './ui/basket.js';
 import { renderBestand, selectArchivRecord } from './views/bestand.js';
 import { renderChronik } from './views/chronik.js';
 import { renderStatistik } from './views/statistik.js';
@@ -54,6 +54,7 @@ async function init() {
 
     // Initialize korb (before router)
     initKorb();
+    reconcileKorb(store.records);
     onKorbChange(() => updateKorbTabVisibility());
     updateKorbTabVisibility();
 

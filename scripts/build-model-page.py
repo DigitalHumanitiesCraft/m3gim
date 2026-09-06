@@ -1152,9 +1152,7 @@ _HEAD = """<!DOCTYPE html>
   <link rel="apple-touch-icon" sizes="180x180" href="img/apple-touch-icon.png">
   <link rel="manifest" href="site.webmanifest">
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap">
+  <link rel="stylesheet" href="vendor/fonts.css">
 
   <link rel="stylesheet" href="css/variables.css?v={v}">
   <link rel="stylesheet" href="css/base.css?v={v}">

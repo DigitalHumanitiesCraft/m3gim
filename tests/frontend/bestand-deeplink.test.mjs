@@ -15,8 +15,9 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { widenFilterForRecord, filterBySharedState, searchMatchBestand }
+import { widenFilterForRecord, filterBySharedState }
   from '../../docs/js/views/_bestand-filter.js';
+import { recordMatchesSearch } from '../../docs/js/data/records-for.js';
 import { baseIds, recordsFor } from '../../docs/js/data/records-for.js';
 import { storeFromShipped } from './_shipped.mjs';
 
@@ -27,7 +28,7 @@ function visible(shared, recordId) {
   const record = store.records.get(recordId);
   const items = filterBySharedState(store, [{ record }], shared, {
     getRecord: (it) => it.record,
-    searchMatch: (r, q) => searchMatchBestand(r, q, store),
+    searchMatch: (r, q) => recordMatchesSearch(store, r, q),
   });
   return items.length === 1;
 }

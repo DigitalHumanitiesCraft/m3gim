@@ -27,7 +27,7 @@ export function countLabel(n, m) {
  * count of the current cut, the four DFT groups as its children. A view without
  * the Dokumenttyp facet keeps the root row alone.
  */
-export function dokumenteSection(store, inventories, getCount, withTree) {
+export function dokumenteSection(store, inventories, getCount, withTree, getScopeDescription = null) {
   const total = () => baseIds(store).size;
   const stand = dataState(store);
   const count = () => {
@@ -38,7 +38,7 @@ export function dokumenteSection(store, inventories, getCount, withTree) {
     return recordsFor(store, getFilter()).ids.size;
   };
   const labelId = `vs-root-${++rootSeq}`;
-  const paint = region => paintRoot(region, labelId, total, count, stand);
+  const paint = region => paintRoot(region, labelId, total, count, stand, getScopeDescription?.());
 
   const spec = {
     className: 'vs-section--dokumente',
@@ -63,7 +63,7 @@ export function dokumenteSection(store, inventories, getCount, withTree) {
  * its own region and is written only when the number really changed, one
  * announcement per filter change (Projektleitung, 2026-09-04).
  */
-function announceCut(region, n, m) {
+function announceCut(region, n, m, stand) {
   let live = region.parentNode
     ? region.parentNode.querySelector('.vs-status__live') : null;
   if (!live) {
@@ -73,8 +73,9 @@ function announceCut(region, n, m) {
     });
     if (region.parentNode) region.parentNode.appendChild(live);
   }
-  const text = n < m ? `${n} von ${m} Dokumenten im Schnitt`
+  const cut = n < m ? `${n} von ${m} Dokumenten im Schnitt`
     : `${m} Dokumente, kein Filter aktiv`;
+  const text = [cut, stand].filter(Boolean).join('. ');
   if (live.textContent === text) return;
   clearTimeout(liveTimer);
   liveTimer = setTimeout(() => { live.textContent = text; }, 200);
@@ -87,17 +88,19 @@ function dataState(store) {
   return raw ? `Datenstand ${String(raw).slice(0, 10)}` : '';
 }
 
-function paintRoot(region, labelId, total, count, stand) {
+function paintRoot(region, labelId, total, count, stand, scope) {
   clear(region);
   const n = count();
   const m = total();
-  announceCut(region, n, m);
+  announceCut(region, n, m, stand);
   const cut = n < m ? `${n} von ${m} verknüpften Dokumenten im Schnitt`
     : 'Alle verknüpften Dokumente, kein Filter aktiv';
   region.appendChild(el('div', {
     className: 'fs-option fs-option--group vs-status__count',
+    tabIndex: 0,
+    'aria-label': ['Dokumente', cut, scope, stand].filter(Boolean).join('. '),
     dataset: {
-      tip: [cut, stand].filter(Boolean).join('\n'),
+      tip: [cut, scope, stand].filter(Boolean).join('\n'),
       tipWrap: '', tipPos: 'bottom-left',
     },
   },

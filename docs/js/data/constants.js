@@ -93,13 +93,6 @@ export const PERSONEN_NORMALISIERUNG = {
   'levinger. dr. henry w.': 'Levinger, Dr. Henry W.',
 };
 
-// Composer names to exclude from person matrix (they are composers, not network contacts)
-export const KOMPONISTEN_NAMEN = new Set([
-  'wagner', 'verdi', 'strauss', 'beethoven', 'mozart', 'brahms',
-  'schubert', 'wolf', 'gluck', 'händel', 'hindemith', 'bizet',
-  'tschaikowsky', 'mahler', 'barwinsky', 'puccini', 'weber',
-]);
-
 // =========================================================================
 // Wikidata Icon (simplified barcode logo, inline SVG)
 // =========================================================================

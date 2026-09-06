@@ -12,7 +12,8 @@
  */
 
 import { el } from '../utils/dom.js';
-import { applyArchivFilter } from '../ui/router.js';
+import { formatSignatur } from '../utils/format.js';
+import { applyArchivFilter, navigateToView } from '../ui/router.js';
 import { buildHorizontalBars } from '../ui/charts.js';
 import {
   aggregateDocTypes, aggregateEntities, aggregateAgentRoles,
@@ -51,19 +52,42 @@ function subsection(parent, title) {
 }
 
 /**
- * Rangliste mit Kopf und Sammelzeile fuer den Rest. `link` liefert je Zeile den
- * Facettenwert, mit dem sie in den Bestand fuehrt, oder null.
+ * Ranking with a tail row, or a complete evidence drilldown for role rankings.
  */
-function ranking(rows, { facet = null, color = () => KUG_BLUE } = {}) {
-  const head = rows.slice(0, BAR_TOP);
+function ranking(rows, { facet = null, evidence = false, store = null, color = () => KUG_BLUE } = {}) {
+  const head = evidence ? rows : rows.slice(0, BAR_TOP);
+  const evidenceRegion = evidence
+    ? el('div', { className: 'stat-evidence', 'aria-live': 'polite' })
+    : null;
+  const showEvidence = (row) => {
+    if (!evidenceRegion) return;
+    evidenceRegion.replaceChildren();
+    evidenceRegion.appendChild(el('h5', { className: 'stat-evidence__title' },
+      `${row.label} · ${row.recordIds.length} Belege`));
+    const list = el('div', { className: 'stat-evidence__list' });
+    for (const id of row.recordIds) {
+      const record = store && store.records ? store.records.get(id) : null;
+      list.appendChild(el('button', {
+        className: 'stat-evidence__record', type: 'button',
+        onClick: () => navigateToView('bestand', { recordId: id }),
+      }, record
+        ? `${formatSignatur(record['rico:identifier'])} · ${record['rico:title'] || '(ohne Titel)'}`
+        : id));
+    }
+    evidenceRegion.appendChild(list);
+  };
   const bars = head.map((row, i) => ({
     label: row.label,
     value: row.count,
     color: color(i, head.length),
-    onClick: facet ? () => applyArchivFilter(facet, row.value ?? row.label) : null,
-    tip: facet ? 'Im Bestand zeigen' : '',
+    onClick: facet
+      ? () => applyArchivFilter(facet, row.value ?? row.label)
+      : evidence && row.recordIds && row.recordIds.length
+        ? () => showEvidence(row)
+        : null,
+    tip: facet ? 'Im Bestand zeigen' : evidence ? 'Belege anzeigen' : '',
   }));
-  const tail = rows.slice(BAR_TOP);
+  const tail = evidence ? [] : rows.slice(BAR_TOP);
   if (tail.length) {
     bars.push({
       label: `Weitere (${tail.length})`,
@@ -72,7 +96,8 @@ function ranking(rows, { facet = null, color = () => KUG_BLUE } = {}) {
       tip: tail.slice(0, 20).map(r => `${r.label} (${r.count})`).join(' · '),
     });
   }
-  return buildHorizontalBars(bars);
+  const chart = buildHorizontalBars(bars);
+  return evidenceRegion ? el('div', { className: 'stat-ranking' }, chart, evidenceRegion) : chart;
 }
 
 // ---------------------------------------------------------------------------
@@ -135,7 +160,7 @@ export function buildRepertoire(store, ids) {
     // Buehnenrollen haengen an der Auffuehrung, nicht am Record: sie tragen
     // keine Facette und fuehren deshalb nicht in den Bestand.
     subsection(node, `Bühnenrollen (${rollen.length})`)
-      .appendChild(ranking(rollen));
+      .appendChild(ranking(rollen, { evidence: true, store }));
   }
 
   const komponisten = aggregateComposers(store, ids);
@@ -164,7 +189,7 @@ export function buildPersonen(store, ids) {
     // Die Facette Rolle ist mit E-204 entfallen (sie filterte die Beteiligungs-
     // art, nicht die Buehnenrolle); die Rangliste bleibt als Kennzahl stehen.
     subsection(node, `Rollen (${rollen.length})`)
-      .appendChild(ranking(rollen));
+      .appendChild(ranking(rollen, { evidence: true, store }));
   }
   return node;
 }

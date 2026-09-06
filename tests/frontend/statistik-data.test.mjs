@@ -125,11 +125,14 @@ describe('Entitaeten und Repertoire im Schnitt', () => {
     const rows = aggregateAgentRoles(entityStore(), cut);
     assert.deepEqual(rows.map((r) => [r.value, r.label, r.count]),
       [['m3gim-vocab:singer', 'sänger', 2]]);
+    assert.deepEqual(rows[0].recordIds.sort(), ['r1', 'r2'],
+      'die Rangzeile führt ihre konkreten Belege für den Drilldown');
   });
 
   test('aggregateStageRoles zaehlt Dokumente je Partie, nicht Auffuehrungen', () => {
     const rows = aggregateStageRoles(entityStore(), cut);
     assert.deepEqual(rows.map((r) => [r.label, r.count]), [['Brangäne', 2], ['Isolde', 1]]);
+    assert.deepEqual(rows[0].recordIds.sort(), ['r1', 'r2']);
   });
 
   test('aggregateComposers zaehlt ein Dokument mit zwei Werken desselben Komponisten einmal', () => {

@@ -48,10 +48,12 @@ function makeStore() {
     ...(land ? { 'm3gim-ontology:country': land } : {}),
   });
   const rec = (id, date, extra) => ({
-    '@id': id, ...(date ? { 'rico:date': date } : {}), ...extra,
+    '@id': id, 'rico:identifier': id.toUpperCase(),
+    ...(date ? { 'rico:date': date } : {}), ...extra,
   });
   const records = new Map([
     ['r1', rec('r1', '1952-07-25', {
+      'rico:title': 'Böhm dirigiert Tristan',
       'rico:hasOrHadLocation': place('Bayreuth', 'm3gim-vocab:guestPerformance', 'Deutschland'),
       'rico:hasOrHadSubject': { name: 'Tristan und Isolde',
         '@type': 'm3gim-ontology:MusicalWork', role: { '@id': 'm3gim-vocab:performance' } },
@@ -59,6 +61,7 @@ function makeStore() {
         '@type': 'rico:Person', role: { '@id': 'm3gim-vocab:director' } },
     })],
     ['r2', rec('r2', '1953', {
+      'rico:title': 'Festspielkorrespondenz',
       'rico:hasOrHadLocation': place('Bayreuth', 'm3gim-vocab:mentioned', 'Deutschland'),
       'm3gim-ontology:hasAssociatedAgent': { name: 'Bayreuther Festspiele',
         '@type': 'rico:CorporateBody', role: { '@id': 'm3gim-vocab:organizer' } },
@@ -141,6 +144,23 @@ describe('recordsFor (eine Auflösung fuer alle Ansichten)', () => {
   test('zwei Facetten wirken als UND', () => {
     const r = recordsFor(makeStore(), { ort: ['Bayreuth'], werk: ['Tristan und Isolde'] });
     assert.deepEqual(idsOf(r), ['r1']);
+  });
+
+  test('Suche und Facetten schneiden dieselbe Dokumentmenge', () => {
+    assert.deepEqual(idsOf(recordsFor(makeStore(), { search: 'bohm tristan' })), ['r1']);
+    assert.deepEqual(idsOf(recordsFor(makeStore(), {
+      search: 'festspiel', ort: ['Bayreuth'], zeitfenster: [1950, 1955],
+    })), ['r2']);
+  });
+
+  test('Suche erreicht Signatur und Datum', () => {
+    assert.deepEqual(idsOf(recordsFor(makeStore(), { search: 'R3' })), ['r3']);
+    assert.deepEqual(idsOf(recordsFor(makeStore(), { search: '1952-07' })), ['r1']);
+  });
+
+  test('Suche erreicht verknüpfte Entitätsnamen', () => {
+    assert.deepEqual(idsOf(recordsFor(makeStore(), { search: 'wieland wagner' })), ['r1', 'r2']);
+    assert.deepEqual(idsOf(recordsFor(makeStore(), { search: 'festspiele' })), ['r2']);
   });
 
   test('ein unbekannter Wert entwertet die Facette nicht', () => {
@@ -322,6 +342,11 @@ describe('facetInventory', () => {
 // --- Fixture-Strecke ------------------------------------------------------
 
 describe('recordsFor am ausgelieferten Datensatz', () => {
+  test('die gemeinsame Signatursuche liefert den bekannten Dokument-Cut', async () => {
+    const store = await storeFromShipped();
+    assert.equal(recordsFor(store, { search: 'nim_004' }).ids.size, 32);
+  });
+
   test('die Basis ist genau die Menge der verknuepften Objekte', async () => {
     const store = await storeFromShipped();
     const erwartet = store.allRecords.filter(r => !store.unprocessedIds.has(r['@id']));

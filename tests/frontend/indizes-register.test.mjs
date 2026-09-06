@@ -28,7 +28,7 @@ import assert from 'node:assert/strict';
 
 import {
   getGridEntries, clearEntriesCache, entriesWithRecordsIn, filterEntries, sortEntries,
-  buildUmfeld, workStageRoles, REGISTER_FAMILY, REGISTER_LABELS, REGISTER_KEYS, cutCountOf,
+  buildUmfeld, workStageRoles, ambiguousWorkStageRoles, REGISTER_FAMILY, REGISTER_LABELS, REGISTER_KEYS, cutCountOf,
   REGISTER_ENTITY_TYPE, bestandFilterFor, entryYearSpan, entryRoles,
 } from '../../docs/js/views/indizes-data.js';
 import { recordsFor, baseIds } from '../../docs/js/data/records-for.js';
@@ -192,23 +192,21 @@ describe('Umfeld', () => {
 });
 
 describe('Buehnenrollen je Werk', () => {
-  test('nur eindeutige Belege binden eine Rolle an ihr Werk', () => {
+  test('ein eindeutig genanntes Werk bindet alle Rollen seines Belegs', () => {
     const roles = workStageRoles(store);
     assert.ok(roles.size > 0, 'Ohne Treffer prueft der Test nichts.');
     const isolde = roles.get('Tristan und Isolde');
     assert.ok(isolde, 'Das belegteste Werk fuehrt seine Rolle.');
     assert.ok(isolde.some(r => r.name === 'Brangäne'),
       'Die Partie Malaniuks in Tristan und Isolde ist Brangäne.');
-    // Der weite Schluss (jedes Dokument mit genau einem Werk) schrieb Aida
-    // Partien aus anderen Opern zu; die enge Fassung darf das nicht tun.
     for (const [work, list] of roles) {
       assert.ok(list.length > 0, `${work} fuehrt eine leere Rollenliste.`);
       for (const role of list) {
         assert.ok(role.name && role.count >= 1);
       }
     }
-    assert.ok(!(roles.get('Aida') || []).some(r => r.name === 'Brangäne'),
-      'Eine Rolle aus einer anderen Oper darf nicht an Aida haengen.');
+    assert.ok((roles.get('Aida') || []).length > 1,
+      'ein Besetzungsbeleg mit einem Werk darf mehrere Bühnenrollen tragen');
   });
 
   test('die Rollen eines Werks sind nach Belegzahl sortiert', () => {
@@ -217,6 +215,15 @@ describe('Buehnenrollen je Werk', () => {
         assert.ok(list[i - 1].count >= list[i].count);
       }
     }
+  });
+
+  test('mehrdeutige Werk-Rollen-Belege bleiben ohne Zuordnung sichtbar', () => {
+    const ambiguous = ambiguousWorkStageRoles(store);
+    assert.ok([...ambiguous.values()].some((count) => count > 0));
+    assert.deepEqual(workStageRoles(store).get('Sinfonien, Nr. 9, op. 125 (d-Moll)'), [
+      { name: 'Alt Solo', count: 1 },
+      { name: 'Altsolo', count: 1 },
+    ], 'aufgezeichnete Schreibvarianten werden nicht still zusammengeführt');
   });
 
   test('die kuratierte Partie steht am Werk-Eintrag', () => {
@@ -239,11 +246,10 @@ describe('Der Eintrag als Knotenpunkt (E-252)', () => {
       ['person', 'institution', 'ort', 'werk']);
   });
 
-  test('der Sprung setzt die Facette des Registers und laesst die Suche fallen', () => {
+  test('der Sprung setzt die Facette und bewahrt den Dokument-Suchschnitt', () => {
     const filter = bestandFilterFor('orte', { ort: ['Wien'], search: 'bay' }, 'Bayreuth');
     assert.deepEqual(filter.ort, ['Wien', 'Bayreuth'], 'der Sprung verengt, er ersetzt nicht');
-    assert.equal(filter.search, '',
-      'der Suchbegriff war das Mittel, den Eintrag zu finden, kein Schnitt fuer den Bestand');
+    assert.equal(filter.search, 'bay');
     assert.equal(bestandFilterFor('gibt-es-nicht', {}, 'Bayreuth'), null);
     assert.equal(bestandFilterFor('orte', {}, ''), null);
   });

@@ -8,7 +8,7 @@
  * `datingsByScope` und `primaryYear`.
  *
  * Geprueft werden die vier Anforderungen aus
- * `data/reports/frontend-date-contract.md`:
+ * `knowledge/data-model.md`:
  *
  *   A1  Die Rolle liefert ihre Anzeigeform aus den Daten. Das mitgefuehrte
  *       `skos:prefLabel` am Verweisknoten ersetzt jede Hand-Map im Code.

@@ -34,11 +34,11 @@ import { logStamp } from '../utils/env.js';
 import { createSidebar, viewShell } from '../ui/sidebar.js';
 import { buildHash } from '../ui/filter-url.js';
 import { familyIcon } from '../ui/family-icons.js';
-import { getFilter, setFilter } from '../ui/filter-state.js';
+import { getFilter } from '../ui/filter-state.js';
 import { recordsFor, yearBounds } from '../data/records-for.js';
 import {
   getGridEntries, clearEntriesCache, entriesWithRecordsIn, filterEntries, sortEntries,
-  buildUmfeld, workStageRoles, karteSelectableNames, cutCountOf,
+  buildUmfeld, workStageRoles, ambiguousWorkStageRoles, karteSelectableNames, cutCountOf,
   bestandFilterFor, entryYearSpan, entryRoles,
   REGISTER_KEYS, REGISTER_LABELS, REGISTER_FAMILY, REGISTER_ENTITY_TYPE,
 } from './indizes-data.js';
@@ -169,13 +169,20 @@ export function renderIndizes(storeRef, containerEl) {
   sidebar = createSidebar(store, {
     yearSpan: yearBounds(store),
     getCount: () => cutSize,
-    onChange: () => { local.q = (getFilter().search || '').toLowerCase(); applyFacets(); },
-    search: { placeholder: 'Name' },
+    onChange: applyFacets,
+    search: { placeholder: 'Signatur, Titel, Typ oder Datum' },
+    sections: [{
+      title: 'Registersuche',
+      controls: [{
+        kind: 'search', ariaLabel: 'Aktuelles Register durchsuchen',
+        placeholder: 'Name im Register', value: () => local.q,
+        onChange: (value) => { local.q = value; local.expanded = null; redraw(); },
+      }],
+    }],
   });
 
   wrapper.insertBefore(sidebar.strip, wrapper.firstChild);
   container.appendChild(viewShell(sidebar.element, wrapper));
-  local.q = (getFilter().search || '').toLowerCase();
   renderRegister(wrapper);
   // Erst jetzt steht die Schnittzahl, die die Wurzelzeile der Spalte nennt.
   sidebar.update();
@@ -409,7 +416,6 @@ function buildItem(entry, config, isExpanded, detailId) {
           html: KARTE_GLYPH_SVG,
           onClick: (e) => {
             e.stopPropagation();
-            dropSearch();
             navigateToView('karte', { entity: entry.name });
           },
         })
@@ -429,7 +435,6 @@ function karteReady(name) {
 
 /** Diesen Eintrag als Fokus des Netzwerks oeffnen. */
 function openNetzwerkFocus(name) {
-  dropSearch();
   navigateToView('netzwerk', {
     focus: { type: REGISTER_ENTITY_TYPE[local.register], name },
   });
@@ -598,9 +603,10 @@ function buildRelationBadges(relations) {
 function buildStageRoleChips(entry) {
   // Die kuratierte Partie steht schon als Quellangabe; sie noch einmal als
   // abgeleitete Rolle zu zeigen, verdoppelt dieselbe Aussage.
-  const derived = (workStageRoles(store).get(entry.name) || [])
+  const derived = (workStageRoles(store, cutRecordIds).get(entry.name) || [])
     .filter(r => r.name !== entry.partie);
-  if (!entry.partie && derived.length === 0) return null;
+  const ambiguous = ambiguousWorkStageRoles(store, cutRecordIds).get(entry.name) || 0;
+  if (!entry.partie && derived.length === 0 && ambiguous === 0) return null;
   const wrap = el('div', { className: 'idx-relations idx-rollen' });
   if (entry.partie) {
     wrap.appendChild(el('span', { className: 'chip chip--role-pair chip--c-rolle' },
@@ -627,6 +633,17 @@ function buildStageRoleChips(entry) {
       dataset: { tip: `ergänzt: ${rest.map(r => r.name).join(', ')}`, tipWrap: '' },
     },
       el('span', { className: 'chip-wert' }, `+${rest.length} weitere`)));
+  }
+  if (ambiguous > 0) {
+    wrap.appendChild(el('span', {
+      className: 'chip chip--role-pair chip--c-rolle',
+      dataset: {
+        tip: `${ambiguous} Beleg${ambiguous === 1 ? '' : 'e'} nennen mehrere Werke oder Rollen; keine Partie wurde zugeordnet`,
+        tipWrap: '',
+      },
+    },
+      el('span', { className: 'chip-rolle' }, 'MEHRDEUTIG'),
+      el('span', { className: 'chip-wert' }, `× ${ambiguous}`)));
   }
   return wrap;
 }
@@ -669,10 +686,6 @@ function buildEntityRoleChips(entry) {
  * stillschweigend die Dokumentmenge der Entitaet. Dieselbe Ueberlegung wie beim
  * Sprung in den Bestand (user-story audit 2026-09-04).
  */
-function dropSearch() {
-  if ((getFilter().search || '') !== '') setFilter({ search: '' });
-}
-
 function renderExpanded(entry, detailId) {
   const children = [];
   // Beziehungs- und Rollen-Chips standen an der Zeile und gaben ihr eine
@@ -767,7 +780,6 @@ function umfeldChip(group, item) {
     },
     onClick: (e) => {
       e.stopPropagation();
-      dropSearch();
       navigateToView('indizes', { register: group.key, entry: item.name });
     },
   },
@@ -785,6 +797,5 @@ function umfeldChip(group, item) {
 function navigateToBestandFiltered(name) {
   const facet = REGISTER_ENTITY_TYPE[local.register];
   if (!facet) return;
-  dropSearch();
   applyArchivFilter(facet, name);
 }

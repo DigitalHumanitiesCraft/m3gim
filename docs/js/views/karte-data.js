@@ -162,7 +162,8 @@ export function buildOccurrences(store) {
     const key = `${o.recordId}|${cityOf(o.place).toLowerCase()}|${o.role || ''}|${o.date || ''}|${o.source}`;
     if (seen.has(key)) return;
     seen.add(key);
-    out.push(o);
+    const record = store.records?.get(o.recordId);
+    out.push({ ...o, recordYear: record ? primaryYear(store, record).year : null });
   };
 
   // Record-Orte (rico:hasOrHadLocation). Places carry no date of their own, so
@@ -243,9 +244,7 @@ export function buildOccurrences(store) {
  * @returns {Array<Occurrence>}
  */
 export function occurrencesInCut(store, occurrences, shared) {
-  const facets = { ...(shared || {}) };
-  delete facets.zeitfenster;
-  const { ids } = recordsFor(store, facets);
+  const { ids } = recordsFor(store, shared || {});
   const roles = placeRolesOf(shared);
   return (occurrences || []).filter(o => ids.has(o.recordId)
     && (roles === null || roles.has(o.roleId || o.role)));

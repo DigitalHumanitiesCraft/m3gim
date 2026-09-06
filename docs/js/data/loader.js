@@ -360,7 +360,7 @@ function buildStore(jsonld) {
 /*  a reference to a vocabulary term on the node and carries its display */
 /*  form, the Bezugsebene says what the Datierung refers to, and the    */
 /*  rank orders several against each other. Documented in                */
-/*  data/reports/frontend-date-contract.md, A1--A4.                     */
+/*  knowledge/data-model.md, Meta-statements and provenance.                     */
 /* ------------------------------------------------------------------ */
 
 /**

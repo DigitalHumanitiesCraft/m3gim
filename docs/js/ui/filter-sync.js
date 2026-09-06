@@ -3,10 +3,6 @@
  *
  * Die Views wenden den geteilten State auf ihre Item-Listen an, statt ihn zu
  * uebersetzen. Reine Funktionen, damit die Kopplung ohne DOM testbar bleibt.
- * Der Loop-Guard (makeSyncGuard) verhindert
- * die setFacet<->setFilter-Endlosschleife: schreibt ein View auf den geteilten
- * State, faecht subscribe an alle Views zurueck, inkl. den Schreiber selbst —
- * ohne Guard wuerde dessen Subscriber erneut setFilter rufen.
  */
 
 import { yearOf } from '../data/records-for.js';
@@ -40,18 +36,6 @@ export function applyZeitfenster(items, zeitfenster, getRecord, store) {
  * raeumt es im finally wieder ab (auch bei Ausnahme).
  * @returns {{isActive:()=>boolean, run:(fn:()=>void)=>void}}
  */
-export function makeSyncGuard() {
-  let syncing = false;
-  return {
-    isActive: () => syncing,
-    run(fn) {
-      if (syncing) return;
-      syncing = true;
-      try { fn(); } finally { syncing = false; }
-    },
-  };
-}
-
 /**
  * Geteiltes Zeitfenster -> {yearFrom, yearTo} eines Views mit eigener Spanne.
  * Leeres Fenster => null/null (unbeschraenkt). Werte werden nicht an die
@@ -74,9 +58,3 @@ export function zeitfensterToYearRange(zeitfenster) {
  * @param {{min:number, max:number}} span
  * @returns {[number,number]|null}
  */
-export function yearRangeToZeitfenster(yearFrom, yearTo, span) {
-  const von = (yearFrom == null) ? span.min : yearFrom;
-  const bis = (yearTo == null) ? span.max : yearTo;
-  if (von <= span.min && bis >= span.max) return null;
-  return [von, bis];
-}

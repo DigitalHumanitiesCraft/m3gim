@@ -1,5 +1,5 @@
 /**
- * Nullpunkt und Voreinstellung im geteilten Filter (docs/js/ui/filter-state.js).
+ * Nullpunkt und atomarer Ersatz im geteilten Filter.
  *
  * Lauf:
  *   node --test tests/frontend/filter-state.test.mjs
@@ -14,40 +14,39 @@ import { test, describe, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
 
 import {
-  getFilter, setFilter, resetFilter, applyViewDefault, isFilterActive, deviatingKeys,
+  getFilter, setFilter, replaceFilter, resetFilter, isFilterActive, deviatingKeys,
 } from '../../docs/js/ui/filter-state.js';
 
 // Der Erschliessungsstand war bis E-262 die Facette, an der dieser Mechanismus
 // haengt. Er ist aus dem Filter genommen, der Mechanismus bleibt; die Beispiele
 // laufen deshalb ueber den Dokumenttyp mit Werten des Datensatzes.
-describe('Nullpunkt und Ansichts-Voreinstellung', () => {
+describe('Nullpunkt und Filterersatz', () => {
   beforeEach(() => resetFilter());
 
-  test('eine Voreinstellung weicht sichtbar vom Nullpunkt ab', () => {
-    applyViewDefault({ docType: ['m3gim-vocab:program', 'm3gim-vocab:press'] });
+  test('eine Wahl weicht sichtbar vom Nullpunkt ab', () => {
+    setFilter({ docType: ['m3gim-vocab:program', 'm3gim-vocab:press'] });
     assert.deepEqual(getFilter().docType, ['m3gim-vocab:program', 'm3gim-vocab:press']);
     assert.equal(isFilterActive(), true, 'sie traegt den Zuruecksetzen-Link');
     assert.deepEqual(deviatingKeys(), ['docType'], 'und einen Chip');
   });
 
   test('Zuruecksetzen fuehrt auf die volle Grundmenge, nicht auf den Default', () => {
-    applyViewDefault({ docType: ['m3gim-vocab:program', 'm3gim-vocab:press'] });
+    setFilter({ docType: ['m3gim-vocab:program', 'm3gim-vocab:press'] });
     resetFilter();
     assert.deepEqual(getFilter().docType, []);
     assert.equal(isFilterActive(), false);
   });
 
-  test('die Ansicht oeffnet weiterhin mit ihrer Voreinstellung', () => {
-    applyViewDefault({ docType: ['m3gim-vocab:program'] });
-    assert.deepEqual(getFilter().docType, ['m3gim-vocab:program']);
-    // Eine getroffene Wahl bleibt unberuehrt, sonst kippte der Tab-Wechsel sie.
-    setFilter({ docType: ['m3gim-vocab:contract'] });
-    applyViewDefault({ docType: ['m3gim-vocab:program'] });
-    assert.deepEqual(getFilter().docType, ['m3gim-vocab:contract']);
+  test('atomarer Ersatz leert nicht genannte Facetten', () => {
+    setFilter({ docType: ['m3gim-vocab:program'], ort: ['Graz'], search: 'brief' });
+    replaceFilter({ ort: ['Wien'] });
+    assert.deepEqual(getFilter().ort, ['Wien']);
+    assert.deepEqual(getFilter().docType, []);
+    assert.equal(getFilter().search, '');
   });
 
   test('das Wegnehmen des Chips zeigt wieder die Grundmenge', () => {
-    applyViewDefault({ docType: ['m3gim-vocab:program', 'm3gim-vocab:press'] });
+    setFilter({ docType: ['m3gim-vocab:program', 'm3gim-vocab:press'] });
     setFilter({ docType: [] });
     assert.equal(isFilterActive(), false);
     assert.deepEqual(deviatingKeys(), []);

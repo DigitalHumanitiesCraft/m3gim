@@ -11,7 +11,7 @@
  * ohne diese Kodierung zerfiele jeder Personenname in zwei Werte.
  *
  * Leerwerte erscheinen nicht: eine leere Auswahl und ein gefaltetes Zeitfenster
- * (yearRangeToZeitfenster liefert dort null) bleiben aus der URL heraus, damit
+ * und ein inaktives Zeitfenster bleiben aus der URL heraus, damit
  * ein unveraenderter Regler keinen Filter behauptet.
  *
  * Reine Funktionen, kein DOM. Das Schreiben in die Adresszeile bleibt Sache
@@ -133,9 +133,18 @@ export function buildHash(tab, recordId, filter, extra) {
 }
 
 /** Does the query key belong to the shared filter? */
-function isFilterKey(key) {
+export function isFilterKey(key) {
   const stateKey = key === TYPE_KEY ? TYPE_STATE_KEY : key;
   return LIST_KEYS.includes(stateKey) || key === YEAR_KEY || key === 'suche';
+}
+
+/** Whether a query explicitly supplies shared filter state. */
+export function hasFilterQuery(query) {
+  const raw = String(query || '').replace(/^\?/, '');
+  return raw.split('&').some((pair) => {
+    const eq = pair.indexOf('=');
+    return eq > 0 && isFilterKey(pair.slice(0, eq));
+  });
 }
 
 /**

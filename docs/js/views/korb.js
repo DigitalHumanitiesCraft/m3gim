@@ -15,7 +15,9 @@ import { extractXlsxSource } from '../utils/provenance.js';
 import { primaryYear } from '../data/loader.js';
 import { AGRELON_LABELS, formatLanguage, korbIcon } from '../data/constants.js';
 import { buildRecordBlocks } from './record-detail.js';
-import { getKorbItems, removeFromKorb, clearKorb, onKorbChange } from '../ui/basket.js';
+import {
+  getKorbItems, removeFromKorb, clearKorb, onKorbChange, reconcileKorb,
+} from '../ui/basket.js';
 import { navigateToView } from '../ui/router.js';
 
 let store = null;
@@ -25,6 +27,7 @@ let unsubscribeKorbChange = null;
 export function renderKorb(storeRef, containerEl) {
   store = storeRef;
   container = containerEl;
+  reconcileKorb(store.records);
 
   // Unsubscribe first: renderKorb runs again on every basket change (main.js
   // re-renders the tab), so listeners would otherwise accumulate.
@@ -47,7 +50,7 @@ function renderList() {
     .filter(Boolean)
     .sort((a, b) => (a['rico:identifier'] || '').localeCompare(b['rico:identifier'] || '', 'de-DE', { numeric: true }));
 
-  if (ids.length === 0) {
+  if (records.length === 0) {
     wrapper.appendChild(renderEmpty());
   } else {
     const list = el('div', { className: 'korb-list' });

@@ -11,13 +11,12 @@ import { formatSignatur, formatChildSignatur, getDocTypeId, truncate, dftLabel, 
 import { formatDate } from '../utils/date-parser.js';
 import { primaryYear } from '../data/loader.js';
 import { buildInlineDetail } from './record-detail.js';
-import { filterBySharedState, isSharedFiltered, searchMatchBestand, sharedFacetsActive, widenFilterForRecord } from './_bestand-filter.js';
+import { isSharedFiltered, sharedFacetsActive, widenFilterForRecord } from './_bestand-filter.js';
 import { createSidebar, viewShell } from '../ui/sidebar.js';
 import { onViewNavigate } from '../ui/events.js';
 import { logStamp } from '../utils/env.js';
 import { getFilter, setFilter, addFacetValue, facetValues } from '../ui/filter-state.js';
-import { yearBounds, baseIds } from '../data/records-for.js';
-import { applyZeitfenster } from '../ui/filter-sync.js';
+import { yearBounds, recordsFor } from '../data/records-for.js';
 import { getState, selectRecord } from '../ui/router.js';
 import {
   getOrderedItems,
@@ -133,7 +132,7 @@ function updateBestandView() {
   // 2026-09-03). Der Schnitt liegt vor jedem Filter, damit ein abgewaehlter
   // Stand sie nicht doch wieder hereinholt; leergelaufene Konvolut-Koepfe
   // faellt pruneEmptyKonvolute weiter unten weg.
-  const base = baseIds(store);
+  const cut = recordsFor(store, shared).ids;
   let items = getOrderedItems(store);
 
   // When filtering, flatten: remove Konvolut headers, keep children flagged so
@@ -154,13 +153,7 @@ function updateBestandView() {
     if (item.isKonvolut) continue;
     for (const record of rowRecords(item)) stands.push({ record, item });
   }
-  let passing = stands.filter(s => base.has(s.record['@id']));
-  passing = filterBySharedState(store, passing, shared, {
-    getRecord: (s) => s.record,
-    searchMatch: (record, q) => searchMatchBestand(record, q, store),
-  });
-  // Zeitfenster acts on top as a plain item filter.
-  passing = applyZeitfenster(passing, shared.zeitfenster, (s) => s.record, store);
+  const passing = stands.filter(s => cut.has(s.record['@id']));
   const passingRows = new Set(passing.map(s => s.item));
   items = items.filter(item => item.isKonvolut || passingRows.has(item));
   if (!isFiltered) items = pruneEmptyKonvolute(items);

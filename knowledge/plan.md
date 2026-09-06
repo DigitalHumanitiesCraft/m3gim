@@ -40,7 +40,7 @@ Each completed milestone receives one commit, with its verification recorded her
 |---|---|---|
 | M1 Research scope | Source-aware tasks and common search/time contract recorded in specification and research framework | Complete; E-282 |
 | M2 Reliable data processing | Failure paths preserve existing data; report counts reflect the model; relevant tests and determinism pass | Complete; failure-path review and isolated determinism passed |
-| M3 Consistent and usable views | Shared filters, map safety, evidence navigation and accessible static delivery verified | In progress |
+| M3 Consistent and usable views | Shared filters, map safety, evidence navigation and accessible static delivery verified | Complete; independent browser and Node checks |
 | M4 Complete research paths | All stories mapped to executed checks or named material limits; actual evidence exports verified | Pending |
 | M5 Consolidation and integrated verification | Unused code and superseded process documents resolved; full checks on one clean revision | Pending |
 | M6 Scholarly acceptance | Project lead accepts task results for 0.9; partners accept them for 1.0 | Awaiting human task runs |
@@ -50,6 +50,8 @@ Each completed milestone receives one commit, with its verification recorded her
 M1 was committed as `1218a10`. The follow-up review confirms that all 19 stories remain mapped and that task wording, view subsets and human acceptance have distinct meanings. No model extension or scholarly result was inferred.
 
 M2 passed independent review after correcting four additional failure paths: missing input could report success, retryable failures with an old cached result could stop retrying, existing-QID checks could escape per-item handling, and a failed new backup could appear complete. The preservation and knowledge checks pass together (21 passed, one skipped); the agent's pipeline run had 546 passing invariants and four declared model xfails, and isolated determinism passed. Shared atomic file helpers are sufficient; no pipeline framework or packaging migration is required. Source errors remain cataloguing findings and have not been edited.
+
+M2 was committed as `12383e4`. M3's independent review corrected a map subset count presented as the shared document count, added visible keyboard focus and reset its accessible label, preserved undated document context, and made grouped performance-date provenance keyboard reachable. Statistics rankings now expose every counted record. All six views agree on the nonempty and empty search cuts, direct filter links replace earlier filters, and the app loads with third-party requests blocked. Narrow screens start with collapsed filters. Node checks pass 678/678; the smoke passes; map and actual basket download checks pass; all 187 records and 51 Folio pages open in the exhaustive verifier, including every expected source-cell combination for the 152 records with link-cell provenance. Source dates grouped under a season were checked in their individual date tooltips. The shared search and atomic files remain small common helpers; no frontend framework or wider structural rewrite is needed.
 
 ## Evidence from the reviewed revision
 
@@ -129,7 +131,7 @@ Completion evidence compares record ID sets for a small collection of source-bac
 
 Repair the map's HTML insertion and empty-window fallback. Give the map's essential interactions an accessible keyboard equivalent consistent with the existing one-tab-stop rule for drawings. Verify the one stage-part/work-binding rule across record detail and registers. Provide evidence navigation from the stage-part and agent-role rankings that currently stop at a static label. Make declared exclusions and derived bindings understandable through the existing tooltip and accessible-label system.
 
-Completion evidence is a browser check of hostile text rendered as text, zero-evidence tooltips, keyboard selection and return, and each new evidence path. The research tasks test the interpretation of relationships, roles and dates separately. Network rendering, geometry, projection export and interaction measurements must use the current drawing contract. Report measured performance against the existing F2 criteria on a named environment; do not infer a universal result from one run.
+Completion evidence is a browser check of hostile text rendered as text, zero-evidence tooltips, keyboard selection and return, and each new evidence path. The research tasks test the interpretation of relationships, roles and dates separately. Network rendering, geometry, projection export and interaction measurements must use the current drawing contract. Report measured performance against [testing.md](testing.md) § Boundaries and visual criteria in [design.md](design.md) § Views on a named environment; do not infer a universal result from one run.
 
 ### Preserve the collected research result
 

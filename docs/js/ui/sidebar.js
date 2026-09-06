@@ -67,16 +67,17 @@ export function viewShell(sidebarEl, mainEl) {
   // Under 900px container width the column folds behind this toggle; the
   // stylesheet hides the button above that width, so desktop pays nothing
   // (Projektleitung, 2026-09-04).
-  const shell = el('div', { className: 'view-shell' });
+  const shell = el('div', { className: 'view-shell view-shell--sidebar-collapsed' });
   const toggle = el('button', {
     className: 'view-shell__sidebar-toggle', type: 'button',
-    'aria-expanded': 'true', 'aria-label': 'Filter ein- oder ausblenden',
+    'aria-expanded': 'false', 'aria-label': 'Filter ein- oder ausblenden',
     onClick: () => {
       const collapsed = shell.classList.toggle('view-shell--sidebar-collapsed');
       toggle.setAttribute('aria-expanded', String(!collapsed));
     },
   });
   toggle.innerHTML = '<svg class="view-shell__sidebar-toggle-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg>';
+  toggle.appendChild(el('span', {}, 'Filter'));
   shell.append(toggle, sidebarEl, mainEl);
   return shell;
 }
@@ -105,6 +106,7 @@ export function createSidebar(store, {
   facets = SHARED_FACETS,
   yearSpan = { min: YEAR_MIN, max: YEAR_MAX },
   getCount = null,
+  getScopeDescription = null,
   search = true,
   sections = [],
   legend = [],
@@ -117,7 +119,7 @@ export function createSidebar(store, {
   // Dokumenttyp does not get a section of its own: its tree hangs under the
   // result line, which is the root row of the same tree.
   const facetSpecs = [
-    dokumenteSection(store, inventories, getCount, facets.includes('docType')),
+    dokumenteSection(store, inventories, getCount, facets.includes('docType'), getScopeDescription),
     ...facets.filter(key => key !== 'docType')
       .map(key => sharedFacetSection(store, key, inventories.get(key))),
   ];

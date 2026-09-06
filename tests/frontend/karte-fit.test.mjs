@@ -14,7 +14,7 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { fitTransform } from '../../docs/js/views/karte-map.js';
+import { fitTransform, nodeTooltipHtml } from '../../docs/js/views/karte-map.js';
 
 // Der Kartenbereich in der Groesse, die der Browser bei 1920x1080 misst
 // (gemessen im Playwright-Lauf: svg 1624 x 949, Rand 60).
@@ -69,5 +69,19 @@ describe('fitTransform', () => {
     const fit = fitTransform({ x0: 700, y0: 400, x1: 700, y1: 400 },
       { ...BOX, minSpan: 1 });
     assert.equal(fit.k, BOX.maxK);
+  });
+});
+
+describe('Karten-Tooltip', () => {
+  test('Orts- und Rollenwerte werden als Text behandelt', () => {
+    const html = nodeTooltipHtml({
+      city: '<img src=x onerror=alert(1)>', shown: 1,
+      firstYear: 1954, lastYear: 1954,
+      breakdown: [{ id: 'x', label: '<script>alert(1)</script>', count: 1,
+        color: 'var(--color-text-tertiary)' }],
+    });
+    assert.doesNotMatch(html, /<img|<script/);
+    assert.match(html, /&lt;img/);
+    assert.match(html, /&lt;script&gt;/);
   });
 });

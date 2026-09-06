@@ -15,15 +15,14 @@ import { formatSignatur, getDocTypeId, dftLabel } from '../utils/format.js';
 import { formatDate } from '../utils/date-parser.js';
 import { primaryYear } from '../data/loader.js';
 import { createSidebar, viewShell } from '../ui/sidebar.js';
-import { filterBySharedState, isSharedFiltered, searchMatchChronik, sharedFacetsActive } from './_bestand-filter.js';
+import { isSharedFiltered, sharedFacetsActive } from './_bestand-filter.js';
 import {
   aggregateDecadeStacks, placeLabelFor, datingRoleScale, datingRoleKey,
 } from './chronik-data.js';
 import { logStamp } from '../utils/env.js';
 import { selectRecord } from '../ui/router.js';
 import { getFilter } from '../ui/filter-state.js';
-import { yearBounds, baseRecords, YEAR_MIN, YEAR_MAX } from '../data/records-for.js';
-import { applyZeitfenster } from '../ui/filter-sync.js';
+import { yearBounds, recordsFor, baseRecords, YEAR_MIN, YEAR_MAX } from '../data/records-for.js';
 
 let store = null;
 let container = null;
@@ -58,7 +57,7 @@ export function renderChronik(storeRef, containerEl) {
   sidebar = createSidebar(store, {
     yearSpan: yearBounds(store),
     getCount: () => visibleRecords,
-    search: { placeholder: 'Signatur oder Titel' },
+    search: { placeholder: 'Signatur, Titel, Typ oder Datum' },
     onChange: () => updateChronikView(),
   });
   main.insertBefore(sidebar.strip, main.firstChild);
@@ -76,16 +75,8 @@ function updateChronikView() {
   // Der Zeitstrahl traegt die Grundmenge des Frontends, also jedes Dokument mit
   // Verknuepfung (E-165); was davon erscheint, entscheiden allein die Facetten
   // der geteilten Spalte.
-  let records = baseRecords(store);
-
-  // Alle schneidenden Facetten (inkl. Dokumenttyp) plus Freitext.
-  records = filterBySharedState(store, records, shared, {
-    getRecord: (r) => r,
-    searchMatch: searchMatchChronik,
-  });
-
-  // On-Top-Facette: das Zeitfenster. Records sind nackt.
-  records = applyZeitfenster(records, shared.zeitfenster, (r) => r, store);
+  const cut = recordsFor(store, shared).ids;
+  const records = store.allRecords.filter(record => cut.has(record['@id']));
   visibleRecords = records.length;
   if (sidebar) sidebar.update();
 

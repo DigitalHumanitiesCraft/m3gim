@@ -28,7 +28,7 @@ globalThis.localStorage = {
 
 const {
   initKorb, toggleKorb, removeFromKorb, isInKorb, getKorbItems, getKorbCount,
-  clearKorb, onKorbChange,
+  clearKorb, onKorbChange, reconcileKorb,
 } = await import('../../docs/js/ui/basket.js');
 
 const KEY = 'm3gim-korb';
@@ -50,46 +50,64 @@ describe('Hinzufuegen, Entfernen, Abfragen', () => {
   });
 
   test('derselbe Record liegt nur einmal im Korb', () => {
-    toggleKorb('a');
-    toggleKorb('b');
-    toggleKorb('b');
-    toggleKorb('b');
-    assert.deepEqual(getKorbItems(), ['a', 'b']);
+    toggleKorb('m3gim-data:a');
+    toggleKorb('m3gim-data:b');
+    toggleKorb('m3gim-data:b');
+    toggleKorb('m3gim-data:b');
+    assert.deepEqual(getKorbItems(), ['m3gim-data:a', 'm3gim-data:b']);
   });
 
   test('removeFromKorb nimmt gezielt heraus, ein Unbekanntes bleibt folgenlos', () => {
-    toggleKorb('a');
-    toggleKorb('b');
-    removeFromKorb('a');
-    assert.deepEqual(getKorbItems(), ['b']);
+    toggleKorb('m3gim-data:a');
+    toggleKorb('m3gim-data:b');
+    removeFromKorb('m3gim-data:a');
+    assert.deepEqual(getKorbItems(), ['m3gim-data:b']);
     removeFromKorb('nicht-drin');
-    assert.deepEqual(getKorbItems(), ['b']);
+    assert.deepEqual(getKorbItems(), ['m3gim-data:b']);
   });
 
   test('getKorbItems liefert eine Kopie, keine Sicht auf das interne Set', () => {
-    toggleKorb('a');
+    toggleKorb('m3gim-data:a');
     const items = getKorbItems();
     items.push('geschmuggelt');
-    assert.deepEqual(getKorbItems(), ['a']);
+    assert.deepEqual(getKorbItems(), ['m3gim-data:a']);
   });
 });
 
 describe('Persistenz im localStorage', () => {
   test('jeder Schreibvorgang spiegelt den vollen Stand', () => {
-    toggleKorb('a');
-    assert.deepEqual(persisted(), ['a']);
-    toggleKorb('b');
-    assert.deepEqual(persisted(), ['a', 'b']);
-    removeFromKorb('a');
-    assert.deepEqual(persisted(), ['b']);
+    toggleKorb('m3gim-data:a');
+    assert.deepEqual(persisted(), ['m3gim-data:a']);
+    toggleKorb('m3gim-data:b');
+    assert.deepEqual(persisted(), ['m3gim-data:a', 'm3gim-data:b']);
+    removeFromKorb('m3gim-data:a');
+    assert.deepEqual(persisted(), ['m3gim-data:b']);
     clearKorb();
     assert.deepEqual(persisted(), []);
   });
 
   test('initKorb liest den gespeicherten Stand ein', () => {
-    stored.set(KEY, JSON.stringify(['x', 'y']));
+    stored.set(KEY, JSON.stringify(['m3gim-data:x', 'm3gim:y']));
     initKorb();
-    assert.deepEqual(getKorbItems().sort(), ['x', 'y']);
+    assert.deepEqual(getKorbItems().sort(), ['m3gim-data:x', 'm3gim-data:y']);
+    assert.deepEqual(persisted().sort(), ['m3gim-data:x', 'm3gim-data:y']);
+  });
+
+  test('Nicht-Arrays und ungueltige IDs werden verworfen', () => {
+    stored.set(KEY, JSON.stringify({ id: 'm3gim-data:x' }));
+    initKorb();
+    assert.deepEqual(getKorbItems(), []);
+    stored.set(KEY, JSON.stringify(['m3gim-data:x', null, 3, 'https://example.org/x', '']));
+    initKorb();
+    assert.deepEqual(getKorbItems(), ['m3gim-data:x']);
+  });
+
+  test('nach dem Laden bleiben nur aufloesbare Records', () => {
+    stored.set(KEY, JSON.stringify(['m3gim-data:x', 'm3gim-data:gone']));
+    initKorb();
+    assert.equal(reconcileKorb(new Map([['m3gim-data:x', {}]])), true);
+    assert.deepEqual(getKorbItems(), ['m3gim-data:x']);
+    assert.deepEqual(persisted(), ['m3gim-data:x']);
   });
 
   test('ein kaputter Eintrag laesst die Anwendung starten', () => {
@@ -103,11 +121,11 @@ describe('Abonnenten', () => {
   test('jede Aenderung meldet sich, das Abmelden greift', () => {
     let calls = 0;
     const off = onKorbChange(() => { calls++; });
-    toggleKorb('a');
-    toggleKorb('a');
+    toggleKorb('m3gim-data:a');
+    toggleKorb('m3gim-data:a');
     assert.equal(calls, 2);
     off();
-    toggleKorb('a');
+    toggleKorb('m3gim-data:a');
     assert.equal(calls, 2, 'Ohne Abmeldung stapelt jedes Rendern des Korbs einen Listener.');
   });
 });

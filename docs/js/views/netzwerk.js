@@ -22,7 +22,6 @@
 
 import { el, clear } from '../utils/dom.js';
 import { formatSignatur } from '../utils/format.js';
-import { matchesQuery } from '../utils/normalize.js';
 import { logStamp, IS_DEV } from '../utils/env.js';
 import { navigateToView } from '../ui/router.js';
 import { splitHash } from '../ui/filter-url.js';
@@ -31,7 +30,7 @@ import { buildRoleChip } from './record-chips.js';
 import { AGRELON_LABELS, WIKIDATA_ICON_SVG } from '../data/constants.js';
 import {
   buildTwoMode, buildProjection, layoutGraph, graphToGEXF,
-  neighboursOf, narrowGraph, nodeId, recordLabel, NODE_TYPE_META,
+  neighboursOf, nodeId, recordLabel, NODE_TYPE_META,
 } from './_netzwerk-geometry.js';
 import {
   renderCanvasSlot, renderZoomControls, drawGraph, applySelection, debugGeometry,
@@ -40,13 +39,10 @@ import {
 import { createSidebar, viewShell } from '../ui/sidebar.js';
 import { onViewNavigate } from '../ui/events.js';
 import { recordsFor, baseIds, yearBounds, yearOfId } from '../data/records-for.js';
-import { getFilter, setFilter, facetValues } from '../ui/filter-state.js';
+import { getFilter, facetValues } from '../ui/filter-state.js';
 
 /** Facets the log stamp names one by one. */
 const FACETS = ['person', 'ort', 'werk', 'institution'];
-
-/** Node type → facet of the shared filter. */
-const FACET_FOR_NODE = { person: 'person', institution: 'institution' };
 
 /** Caps of the detail column, so it fits its area instead of scrolling (E-259).
  *  Measured against the tallest selection of the fonds, the hub with thirty-six
@@ -119,7 +115,7 @@ export function renderNetzwerk(store, container) {
   _sidebar = createSidebar(store, {
     yearSpan: yearBounds(store),
     getCount: () => (_last.result ? _last.result.ids.size : null),
-    search: { placeholder: 'Name' },
+    search: { placeholder: 'Signatur, Titel, Typ oder Datum' },
     sections: [knotenSection()],
     // A filter change answers a different question than the one the open
     // detail asked, so the selection goes with it.
@@ -166,7 +162,7 @@ let _coverage = null;
  */
 const LEGEND = [
   { mark: 'dot', kind: 'person', label: 'Person',
-    tip: 'Ein Akteur des Schnitts; die Größe ist die Zahl seiner Dokumente.' },
+    tip: 'Ein Akteur des Schnitts; die Größe ist die Zahl seiner Dokumente. Ira Malaniuk ist als Nachlassbildnerin ausgeblendet, weil ihre fast durchgehende Präsenz das Netz verbinden würde.' },
   { mark: 'dot', kind: 'institution', label: 'Institution',
     tip: 'Haus, Festival, Sender oder Ensemble, in derselben Lesart wie eine Person.' },
   { mark: 'dot', kind: 'record', label: 'Dokument',
@@ -347,18 +343,6 @@ function projectionOf() {
   return _last.projection;
 }
 
-/**
- * The free text thins out the picture without moving the count: it names
- * actors, not documents. A record whose actors all fell out therefore leaves
- * with them, otherwise it stood in the picture as an isolated square that
- * answers nothing.
- */
-function narrowByQuery(full, query) {
-  const named = narrowGraph(full, n => n.kind === 'record' || matchesQuery(n.name, query));
-  return narrowGraph(named,
-    n => n.kind !== 'record' || (named.edgesByNode.get(n.id) || []).length > 0);
-}
-
 function draw() {
   const tStart = performance.now();
   const f = getFilter();
@@ -367,8 +351,7 @@ function draw() {
     ? buildTwoMode(_store, { records: result.ids })
     : buildProjection(_store, { records: result.ids });
 
-  const query = (f.search || '').trim();
-  const graph = query ? narrowByQuery(full, query) : full;
+  const graph = full;
   _last = { result, graph, projection: local.showRecords ? null : full };
 
   if (local.selection && !hasSelection(graph, local.selection)) local.selection = null;
@@ -553,11 +536,10 @@ function drawActorDetail(panel, node) {
     panel.appendChild(section(`Nachbarn · ${neighbours.length}`, list));
   }
 
-  panel.appendChild(bestandButton(() => {
-    const key = FACET_FOR_NODE[node.type];
-    setFilter({ [key]: [node.name] });
-    navigateToView('bestand');
-  }));
+  const firstRecord = [...(node.records || [])].find((id) => _last.result.ids.has(id));
+  if (firstRecord) {
+    panel.appendChild(bestandButton(() => navigateToView('bestand', { recordId: firstRecord })));
+  }
 }
 
 function drawRecordDetail(panel, node) {

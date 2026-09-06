@@ -8,15 +8,12 @@
  * in Typ-Label + Datum) -- daher das `searchMatch`-Praedikat als Parameter, mit
  * den zwei konkreten Implementierungen hier exportiert.
  *
- * Seit dem Sidebar-Umbau wohnen Suche und Dokumenttyp im geteilten Filter. Die
- * Freitextsuche bleibt hier (view-eigenes Textmatch), Dokumenttyp und die
- * Entitaets-/geteilten Facetten loest recordsFor auf, die eine Stelle im
- * Frontend, an der Filter zur Dokumentmenge wird.
+ * `recordsFor` resolves document search and every facet. The wrapper helpers
+ * remain for deep-link widening and legacy row-level tests.
  */
 
-import { getDocTypeId, dftLabel } from '../utils/format.js';
 import { facetValues } from '../ui/filter-state.js';
-import { recordsFor, facetInventory, yearOf, FACET_KEYS } from '../data/records-for.js';
+import { recordsFor, recordMatchesSearch, facetInventory, yearOf, FACET_KEYS } from '../data/records-for.js';
 
 /** Facetten des geteilten Filters, die im Bestand/in der Chronik schneiden.
  *  Die Liste stand hier als Zweitschrift und lief mit jeder neuen Facette aus
@@ -35,8 +32,7 @@ export function isSharedFiltered(shared) {
   return false;
 }
 
-/** Die Facetten, die ueber person/ort/werk/docType hinaus die Hierarchie
- *  abflachen. Das Zeitfenster wirkt separat ueber applyZeitfenster. */
+/** Facets that flatten the Bestand hierarchy. */
 const FLATTEN_FACETS = ['institution'];
 
 /** Ob eine dieser Facetten gesetzt ist. Zaehlt fuer die Frage, ob die
@@ -46,23 +42,6 @@ export function sharedFacetsActive(sharedFilter) {
     if (facetValues(sharedFilter, key).length > 0) return true;
   }
   return false;
-}
-
-/** Bestand-Suche: Signatur, Titel, Typ-Label, Datum. Der Store liefert das
- *  Typ-Label (skos:prefLabel); ohne Store entfällt nur die Label-Teilsuche. */
-export function searchMatchBestand(record, q, store) {
-  const sig = (record['rico:identifier'] || '').toLowerCase();
-  const title = (record['rico:title'] || '').toLowerCase();
-  const typ = dftLabel(store, getDocTypeId(record)).toLowerCase();
-  const datum = (record['rico:date'] || '').toLowerCase();
-  return sig.includes(q) || title.includes(q) || typ.includes(q) || datum.includes(q);
-}
-
-/** Chronik-Suche: Signatur + Titel. */
-export function searchMatchChronik(record, q) {
-  const sig = (record['rico:identifier'] || '').toLowerCase();
-  const title = (record['rico:title'] || '').toLowerCase();
-  return sig.includes(q) || title.includes(q);
 }
 
 /**
@@ -162,7 +141,7 @@ export function widenFilterForRecord(store, recordId, shared) {
   // Die Freitextsuche laesst sich nicht weiten, ohne sie fallenzulassen; sie
   // wird gemeldet statt still uebergangen.
   const search = ((shared && shared.search) || '').trim();
-  if (search && record && !searchMatchBestand(record, search.toLowerCase(), store)) {
+  if (search && record && !recordMatchesSearch(store, record, search)) {
     blocked.push('search');
   }
 

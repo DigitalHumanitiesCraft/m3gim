@@ -18,6 +18,7 @@
 
 import { primaryYear } from './loader.js';
 import { facetValues } from '../ui/filter-state.js';
+import { matchesQuery } from '../utils/normalize.js';
 import {
   getDocTypeId, expandDftFilter, dftLabel, buildDftTree, ensureArray, cityOf,
   roleIdOf, roleToken,
@@ -303,6 +304,16 @@ export function recordsFor(store, filter, opts = {}) {
     ids = union;
   }
 
+  const query = String(f.search || '').trim();
+  if (query) {
+    const kept = new Set();
+    for (const id of ids) {
+      const record = store && store.records ? store.records.get(id) : null;
+      if (recordMatchesSearch(store, record, query)) kept.add(id);
+    }
+    ids = kept;
+  }
+
   let undatiert = 0;
   if (Array.isArray(f.zeitfenster)) {
     const [von, bis] = f.zeitfenster;
@@ -325,6 +336,42 @@ export function recordsFor(store, filter, opts = {}) {
   for (const id of ids) if (anchored.has(id)) eng += 1;
 
   return { ids, weit, eng, undatiert, byFacet };
+}
+
+/** Shared document search used by every view. */
+export function recordMatchesSearch(store, record, query) {
+  if (!record) return false;
+  const fields = [
+    record['rico:identifier'],
+    record['rico:title'],
+    dftLabel(store, getDocTypeId(record)),
+    record['rico:date'],
+    linkedSearchValues(store, record['@id']),
+  ];
+  return matchesQuery(fields.filter(Boolean).join(' '), query);
+}
+
+const searchValuesCache = new WeakMap();
+
+/** Linked entity names by record, built once for the immutable store. */
+function linkedSearchValues(store, recordId) {
+  if (!store || !recordId) return '';
+  let index = searchValuesCache.get(store);
+  if (!index) {
+    index = new Map();
+    const add = (id, value) => {
+      if (!id || !value) return;
+      if (!index.has(id)) index.set(id, []);
+      index.get(id).push(value);
+    };
+    for (const mapName of ['persons', 'organizations', 'locations', 'works', 'ensembles']) {
+      for (const [name, entry] of store[mapName] || []) {
+        for (const id of entry.records || []) add(id, name);
+      }
+    }
+    searchValuesCache.set(store, index);
+  }
+  return (index.get(recordId) || []).join(' ');
 }
 
 /**

@@ -205,23 +205,17 @@ describe('Platzhalter', () => {
   });
 
   test('die Ansichten nennen ihre durchsuchten Felder im Freitextfeld', () => {
-    const expected = {
-      'views/bestand.js': "search: { placeholder: 'Signatur, Titel, Typ oder Datum' },",
-      'views/chronik.js': "search: { placeholder: 'Signatur oder Titel' },",
-      'views/netzwerk.js': "search: { placeholder: 'Name' },",
-    };
-    for (const [file, line] of Object.entries(expected)) {
-      assert.ok(read(file).includes(line), `${file} setzt seinen Platzhalter`);
+    const line = "search: { placeholder: 'Signatur, Titel, Typ oder Datum' },";
+    for (const file of ['bestand', 'chronik', 'indizes', 'karte', 'netzwerk', 'statistik']) {
+      assert.ok(read(`views/${file}.js`).includes(line), `${file} setzt den Dokument-Suchtext`);
     }
   });
 
-  test('eine Ansicht ohne Textschnitt fuehrt kein Freitextfeld', () => {
-    // recordsFor wertet den Freitext nicht aus; Karte und Statistik haetten ein
-    // Feld ohne Wirkung.
-    for (const file of ['views/karte.js', 'views/statistik.js']) {
-      assert.ok(read(file).includes('search: false,'), `${file} laesst die Suche weg`);
-      assert.doesNotMatch(read(file), /getFilter\(\)\.search/);
-    }
+  test('die Registersuche bleibt ein lokales Feld', () => {
+    const src = read('views/indizes.js');
+    assert.match(src, /title: 'Registersuche'/);
+    assert.match(src, /value: \(\) => local\.q/);
+    assert.doesNotMatch(src, /local\.q = \(getFilter\(\)\.search/);
   });
 });
 

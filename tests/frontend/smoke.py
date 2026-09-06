@@ -179,13 +179,12 @@ def main() -> int:
             # es und seine Zahlen statt aller vier Registerschluessel.
             "indizes":    ["register", "eintraege", "gesamt", "sortierung"],
             "karte":      ["entitaeten", "orte", "belege", "unverortet", "jahre"],
-            # Das Netzwerk fuehrt seit E-160 Fokus, Knotentypen und beide
-            # Evidenzmasse in einem Stempel: die Knotenzahlen je Typ heissen
-            # k-<typ>, damit die Facettenschluessel frei bleiben.
-            "netzwerk":   ["fokus", "facetten", "person", "ort", "werk",
-                           "institution", "stand", "knoten",
-                           "k-person", "k-werk", "ring1", "ring2", "agrelon",
-                           "recordsWeit", "recordsEng"],
+            "netzwerk":   ["facetten", "person", "ort", "werk", "institution",
+                           "stand", "zeit", "modus", "knoten", "akteure",
+                           "personen", "institutionen", "dokumentknoten",
+                           "kanten", "einzelbelege", "beziehungen",
+                           "recordsWeit", "recordsEng", "msLayout",
+                           "msZeichnen", "msGesamt", "msErstzeichnung"],
             "korb":       ["eintraege", "aufgeloest", "events", "finanzen"],
         }
         for view, required in stamp_expectations.items():
@@ -695,7 +694,9 @@ def main() -> int:
         #     Zeile. Designregel 8 ist hier bewusst ausgesetzt (Projektleitung,
         #     2026-09-04): kein Chip, kein Knopf, eine ruhige Zeile. ---
         try:
-            page.locator('#tab-bestand .vs-status__reset').click()
+            reset = page.locator('#tab-bestand .vs-status__reset')
+            if reset.count():
+                reset.click()
             page.wait_for_timeout(500)
             hint = page.locator('#tab-bestand .filter-strip__empty')
             chips = page.locator('#tab-bestand .filter-strip .fs-chip').count()
@@ -756,6 +757,8 @@ def main() -> int:
             results.append(("WARN", "graph:duplicate-@id   ",
                             f"check uebersprungen: {e}"))
 
+        for error in global_errors:
+            results.append(("FAIL", "browser:console", error))
         browser.close()
 
     # --- Report ---
@@ -768,7 +771,7 @@ def main() -> int:
         print(f"  {icon} {status:4s} {label}  {msg}")
     print()
     print(f"Summary: {n_ok} OK, {n_warn} WARN, {n_fail} FAIL")
-    return 0 if n_fail == 0 else 1
+    return 0 if n_fail == 0 and n_warn == 0 else 1
 
 
 if __name__ == "__main__":

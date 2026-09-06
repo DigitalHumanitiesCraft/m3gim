@@ -228,6 +228,8 @@ function seasonChipEl(store, { season, dates }) {
       .join('\n');
     dateEls.push(el('span', {
       className: 'chip-date',
+      tabindex: '0',
+      'aria-label': [dateText(d) || d.rawDate || '?', tip].join('. '),
       dataset: { tip, tipWrap: '' },
     }, dateText(d) || d.rawDate || '?'));
   });

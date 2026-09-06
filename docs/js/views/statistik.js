@@ -73,8 +73,7 @@ export function renderStatistik(store, container) {
     // Der Schnitt steht schon aus rebuild(); ohne diesen Weg loeste ihn das
     // Geruest fuer seine Wurzelzeile ein zweites Mal auf.
     getCount: () => cutSize,
-    // recordsFor wertet den Freitext nicht aus; ein Feld ohne Wirkung bleibt weg.
-    search: false,
+    search: { placeholder: 'Signatur, Titel, Typ oder Datum' },
     sections: [{
       title: 'Ansicht',
       controls: [{

@@ -15,6 +15,7 @@ import { isMalaniuk } from './_netzwerk-geometry.js';
 import { buildEntities, buildOccurrences, hasGeo, countryByCity } from './karte-data.js';
 import { cityOf } from '../utils/format.js';
 import { yearOfId } from '../data/records-for.js';
+import { matchesQuery } from '../utils/normalize.js';
 import { facetValues } from '../ui/filter-state.js';
 
 /**
@@ -136,6 +137,7 @@ export function getGridEntries(store, gridKey) {
 export function clearEntriesCache() {
   entriesCache.clear();
   rolesCache = null;
+  ambiguousRolesCache = null;
   karteNamesCache = null;
 }
 
@@ -175,7 +177,7 @@ export function cutCountOf(entry) {
 export function filterEntries(entries, gridKey, { q = '' } = {}) {
   if (!q) return entries;
   const search = GRID_SOURCES[gridKey].searchFields;
-  return entries.filter(e => search(e).toLowerCase().includes(q));
+  return entries.filter(e => matchesQuery(search(e), q));
 }
 
 /**
@@ -292,22 +294,22 @@ export function karteSelectableNames(store) {
 
 // Memoised role index; cleared with the entry lists.
 let rolesCache = null;
+let ambiguousRolesCache = null;
 
 /**
  * Belegte Buehnenrollen je Werk. Die Aufführungsknoten des Datenstands tragen
  * entweder ein Werk oder eine Rolle, nie beides, weshalb kein Knoten die
- * Bindung hergibt. Sie wird deshalb ueber den Beleg geschlossen, und nur dort,
- * wo das Dokument genau ein Werk und genau eine Rolle nennt: bei mehreren
- * Rollen im selben Dokument, etwa einem Programmzettel, waere jede Zuordnung
- * geraten, und die weite Fassung schrieb Aida Partien aus anderen Opern zu.
+ * Bindung hergibt. Sie wird deshalb ueber den Beleg geschlossen, wenn das
+ * Dokument genau ein Werk nennt. Alle Rollen desselben Belegs gehören zu
+ * diesem Werk; bei mehreren Werken bleibt die Bindung mehrdeutig.
  * Das Ergebnis ist abgeleitet und traegt in der Ansicht die Marke aus Regel 16
  * (E-216).
  *
  * @param {Object} store
  * @returns {Map<string, Array<{name: string, count: number}>>} Werkname -> Rollen
  */
-export function workStageRoles(store) {
-  if (rolesCache) return rolesCache;
+export function workStageRoles(store, recordIds = null) {
+  if (!recordIds && rolesCache) return rolesCache;
   const byWork = new Map();
   const worksOfRecord = new Map();
   for (const [name, data] of store.works || []) {
@@ -317,24 +319,52 @@ export function workStageRoles(store) {
     }
   }
   for (const [recordId, performances] of store.recordToPerformances || []) {
+    if (recordIds instanceof Set && !recordIds.has(recordId)) continue;
     const roles = new Set();
     for (const perf of performances) for (const r of perf.stageRoles || []) roles.add(r);
-    if (roles.size !== 1) continue;
     const works = new Set(worksOfRecord.get(recordId) || []);
     for (const perf of performances) if (perf.work && perf.work.name) works.add(perf.work.name);
-    if (works.size !== 1) continue;
+    if (roles.size === 0 || works.size !== 1) continue;
     const work = [...works][0];
     if (!byWork.has(work)) byWork.set(work, new Map());
     const counts = byWork.get(work);
     for (const r of roles) counts.set(r, (counts.get(r) || 0) + 1);
   }
-  rolesCache = new Map();
+  const result = new Map();
   for (const [work, counts] of byWork) {
-    rolesCache.set(work, [...counts.entries()]
+    result.set(work, [...counts.entries()]
       .map(([name, count]) => ({ name, count }))
       .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name, 'de-DE')));
   }
-  return rolesCache;
+  if (!recordIds) rolesCache = result;
+  return result;
+}
+
+/** Ambiguous performance evidence is counted without assigning a role. */
+export function ambiguousWorkStageRoles(store, recordIds = null) {
+  if (!recordIds && ambiguousRolesCache) return ambiguousRolesCache;
+  const worksOfRecord = new Map();
+  for (const [name, data] of store.works || []) {
+    for (const id of data.records) {
+      if (!worksOfRecord.has(id)) worksOfRecord.set(id, new Set());
+      worksOfRecord.get(id).add(name);
+    }
+  }
+  const out = new Map();
+  for (const [recordId, performances] of store.recordToPerformances || []) {
+    if (recordIds instanceof Set && !recordIds.has(recordId)) continue;
+    const roles = new Set();
+    const works = new Set(worksOfRecord.get(recordId) || []);
+    for (const perf of performances) {
+      for (const role of perf.stageRoles || []) if (role) roles.add(role);
+      if (perf.work && perf.work.name) works.add(perf.work.name);
+    }
+    if (roles.size > 0 && works.size === 1) continue;
+    if (roles.size === 0 || works.size === 0) continue;
+    for (const work of works) out.set(work, (out.get(work) || 0) + 1);
+  }
+  if (!recordIds) ambiguousRolesCache = out;
+  return out;
 }
 
 /**
@@ -354,7 +384,7 @@ export function bestandFilterFor(registerKey, baseFilter, name) {
   const facet = REGISTER_ENTITY_TYPE[registerKey];
   if (!facet || !name) return null;
   const base = baseFilter || {};
-  return { ...base, search: '', [facet]: [...facetValues(base, facet), name] };
+  return { ...base, [facet]: [...facetValues(base, facet), name] };
 }
 
 /**

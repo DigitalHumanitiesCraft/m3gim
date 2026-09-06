@@ -204,7 +204,7 @@ describe('Welche Facetten die Spalte fuehrt', () => {
     const src = read('ui/sidebar-status.js');
     assert.match(src, /function dataState\(store\)/);
     assert.match(src, /`Datenstand \$\{String\(raw\)\.slice\(0, 10\)\}`/);
-    assert.match(src, /tip: \[cut, stand\]\.filter\(Boolean\)\.join\('\\n'\)/,
+    assert.match(src, /tip: \[cut, (?:scope, )?stand\]\.filter\(Boolean\)\.join\('\\n'\)/,
       'Der Datenstand haengt im Tooltip der Ergebniszeile, die jede Ansicht baut.');
   });
 });

@@ -140,7 +140,8 @@ export function aggregateAgentRoles(store, ids) {
     const entry = store.roleVocab ? store.roleVocab.get(value) : null;
     const label = (entry && entry.label) || '';
     if (!label) continue;
-    out.push({ value, label, count });
+    const idsInCut = [...recordIds].filter((id) => !(ids instanceof Set) || ids.has(id));
+    out.push({ value, label, count, recordIds: idsInCut });
   }
   return out.sort(byCountDesc);
 }
@@ -166,7 +167,7 @@ export function aggregateStageRoles(store, ids) {
     }
   }
   return [...perRole.entries()]
-    .map(([label, set]) => ({ label, count: set.size }))
+    .map(([label, set]) => ({ label, count: set.size, recordIds: [...set] }))
     .sort(byCountDesc);
 }
 

@@ -9,8 +9,8 @@
  * Sliderschritt keinen History-Eintrag erzeugt.
  */
 
-import { splitHash, buildHash, parseFilterQuery, viewParams } from './filter-url.js';
-import { getFilter, setFilter, addFacetValue, subscribe as subscribeFilter } from './filter-state.js';
+import { splitHash, buildHash, parseFilterQuery, viewParams, hasFilterQuery } from './filter-url.js';
+import { getFilter, replaceFilter, addFacetValue, subscribe as subscribeFilter } from './filter-state.js';
 import { initTabKeyboard, setRovingTabindex } from './tabs.js';
 
 // Vollstaendiger Katalog -- alle Tabs bleiben im TAB_RENDERERS registriert,
@@ -199,8 +199,7 @@ export function parseHash() {
  * Schnitt", und ein Tab-Wechsel darf den gesetzten Filter nicht wegwischen.
  */
 function applyFilterFromQuery(query) {
-  const patch = parseFilterQuery(query);
-  if (Object.keys(patch).length > 0) setFilter(patch);
+  if (hasFilterQuery(query)) replaceFilter(parseFilterQuery(query));
 }
 
 /** Setzt das Register der Indizes, schreibt es in die Adresszeile und meldet es

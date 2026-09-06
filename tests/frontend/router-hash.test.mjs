@@ -111,6 +111,15 @@ describe('Query-Teil', () => {
     parse('#karte');
     assert.deepEqual(getFilter().person, ['Malaniuk, Ira']);
   });
+
+  test('ein expliziter URL-Filter ersetzt den bisherigen Schnitt atomar', () => {
+    parse('#bestand?person=Malaniuk%2C%20Ira&jahr=1950-1960&suche=brief');
+    parse('#statistik?ort=Bayreuth');
+    assert.deepEqual(getFilter().ort, ['Bayreuth']);
+    assert.deepEqual(getFilter().person, []);
+    assert.equal(getFilter().zeitfenster, null);
+    assert.equal(getFilter().search, '');
+  });
 });
 
 describe('Ansichtsparameter im Query', () => {

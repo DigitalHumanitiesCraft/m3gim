@@ -23,7 +23,7 @@ import assert from 'node:assert/strict';
 
 import {
   getFilter, setFilter, resetFilter, isFilterActive, facetValues,
-  applyViewDefault, addFacetValue,
+  addFacetValue,
 } from '../../docs/js/ui/filter-state.js';
 import {
   filterBySharedState, isSharedFiltered,
@@ -164,39 +164,5 @@ describe('addFacetValue (Cross-Navigation verengt, ersetzt nicht)', () => {
     addFacetValue('gibtsnicht', 'x');
     assert.equal(getFilter().search, '');
     assert.equal(isFilterActive(), false);
-  });
-});
-
-describe('Voreinstellung je Ansicht', () => {
-  test('eine unberuehrte Facette nimmt den View-Default an', () => {
-    resetFilter();
-    applyViewDefault({ docType: ['m3gim-vocab:program'] });
-    assert.deepEqual(getFilter().docType, ['m3gim-vocab:program']);
-    // Die Voreinstellung ist keine Wahl des Nutzers; sonst koennte die
-    // naechste Ansicht ihren eigenen Default nicht mehr setzen.
-    applyViewDefault({ docType: ['m3gim-vocab:press'] });
-    assert.deepEqual(getFilter().docType, ['m3gim-vocab:press']);
-    resetFilter();
-  });
-
-  test('eine gewaehlte Facette ueberschreibt der View-Default nicht', () => {
-    resetFilter();
-    setFilter({ docType: ['m3gim-vocab:contract'] });
-    applyViewDefault({ docType: ['m3gim-vocab:program'] });
-    assert.deepEqual(getFilter().docType, ['m3gim-vocab:contract'], (
-      'Ein Tab-Wechsel darf die bewusst gesetzte Wahl nicht kippen.'
-    ));
-    resetFilter();
-  });
-
-  test('Zuruecksetzen loest den Vermerk wieder', () => {
-    resetFilter();
-    setFilter({ ort: ['Wien'] });
-    applyViewDefault({ ort: ['Graz'] });
-    assert.deepEqual(getFilter().ort, ['Wien'], 'gewaehlt schlaegt Default');
-    resetFilter();
-    applyViewDefault({ ort: ['Graz'] });
-    assert.deepEqual(getFilter().ort, ['Graz'], 'nach dem Reset greift der Default wieder');
-    resetFilter();
   });
 });

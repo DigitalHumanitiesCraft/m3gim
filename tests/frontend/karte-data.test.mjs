@@ -99,14 +99,12 @@ describe('occurrencesInCut', () => {
       ['Wien']);
   });
 
-  test('das Zeitfenster bleibt aus dem Schnitt heraus', () => {
-    // Die Karte schneidet die Zeit am Datum des Belegs, nicht am Zeitanker
-    // seines Dokuments; sonst fiele eine im Fenster datierte Annotation mit
-    // ihrem ausserhalb datierten Dokument weg.
+  test('das Zeitfenster schneidet einmal am primaeren Record-Zeitanker', () => {
     const store = makeStore();
     const occ = buildOccurrences(store);
-    assert.deepEqual(placesOf(occurrencesInCut(store, occ, { zeitfenster: [1900, 1901] })),
-      ['Bayreuth', 'Graz', 'Wien']);
+    assert.deepEqual(placesOf(occurrencesInCut(store, occ, { zeitfenster: [1952, 1953] })),
+      ['Bayreuth', 'Wien']);
+    assert.deepEqual(placesOf(occurrencesInCut(store, occ, { zeitfenster: [1900, 1901] })), []);
   });
 });
 
@@ -166,15 +164,10 @@ describe('occurrencesInCut mit gewaehlter Ortsrolle', () => {
 });
 
 // ---------------------------------------------------------------------------
-// E-225: datierte und undatierte Belege im Zeitfenster
+// Evidence-date ordering
 // ---------------------------------------------------------------------------
 
-describe('datiert und undatiert im Zeitfenster', () => {
-  const inWindow = (from, to) => o => {
-    const y = o.date ? Number(String(o.date).slice(0, 4)) : null;
-    return y == null || (y >= from && y <= to);
-  };
-  const dated = o => o.date != null;
+describe('Datierte und undatierte Belege', () => {
   const occ = [
     { place: 'Zürich', date: '1952', recordId: 'r1' },
     { place: 'Zürich', date: null, recordId: 'r2' },
@@ -182,22 +175,6 @@ describe('datiert und undatiert im Zeitfenster', () => {
     { place: 'Linz', date: null, recordId: 'r4' },
     { place: 'Linz', date: '1970', recordId: 'r5' },
   ];
-
-  test('das Fenster traegt die undatierten Belege mit (E-88), zaehlt sie aber getrennt', () => {
-    const win = occ.filter(inWindow(1950, 1955));
-    assert.equal(win.length, 4, 'die undatierten bleiben im Fenster');
-    assert.equal(win.filter(dated).length, 1);
-    assert.equal(win.filter(o => !dated(o)).length, 3);
-  });
-
-  test('ein Ort ohne datierten Beleg im Fenster ist gedaempft', () => {
-    const linz = occ.filter(o => o.place === 'Linz').filter(inWindow(1950, 1955));
-    assert.equal(linz.length, 1);
-    assert.equal(linz.filter(dated).length, 0, (
-      'Linz traegt im Fenster nur einen undatierten Beleg und darf deshalb '
-      + 'nicht als Aufenthalt hervorgehoben werden (E-225).'
-    ));
-  });
 
   test('die Beleg-Liste eines Orts stellt die datierten voran', () => {
     const order = sortOcc(occ.filter(o => o.place === 'Zürich')).map(o => o.recordId);

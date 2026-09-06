@@ -51,19 +51,7 @@ for (const key of Object.keys(EMPTY)) {
   state[key] = Array.isArray(EMPTY[key]) ? [] : EMPTY[key];
 }
 
-// Facetten, die seit dem letzten Zuruecksetzen gesetzt wurden. Der Vermerk
-// trennt "der Nutzer hat diese Facette bewusst gewaehlt" von "sie steht auf
-// ihrem Anfangswert" und traegt damit den Voreinstellungs-Mechanismus pro
-// Ansicht: ein View darf seinen Default nur auf eine unberuehrte Facette
-// legen, sonst ueberschriebe der Tab-Wechsel eine getroffene Wahl.
-const touched = new Set();
-
-// Der Nullpunkt ist die leere Wahl, nicht die Voreinstellung einer Ansicht
-// (Projektleitung, 2026-09-03): eine Voreinstellung, die Dokumente ausschliesst,
-// muss sichtbar sein, sonst haelt der Bestand einen Teil des Bestands hinter
-// einem Filter zurueck, den die Spalte nicht nennt. Sie traegt deshalb Chip und
-// Zuruecksetzen-Link wie jede andere Wahl, und Zuruecksetzen fuehrt auf die
-// volle Grundmenge.
+// The empty selection is the one baseline shared by every view.
 function baselineOf(key) {
   return LIST_FACETS.has(key) ? [] : EMPTY[key];
 }
@@ -114,7 +102,6 @@ export function setFilter(patch) {
   for (const key of Object.keys(patch)) {
     if (!(key in EMPTY)) continue;
     const next = LIST_FACETS.has(key) ? toList(patch[key]) : patch[key];
-    touched.add(key);
     if (!shallowEqual(state[key], next)) {
       state[key] = next;
       changed = true;
@@ -138,34 +125,14 @@ export function addFacetValue(key, value) {
   setFilter({ [key]: merged });
 }
 
-/** Has the user set this facet, as opposed to a view default (E-162)? */
-export function isTouched(key) {
-  return touched.has(key);
-}
-
-/**
- * Voreinstellung einer Ansicht. Setzt nur die Facetten, die der Nutzer noch
- * nicht angefasst hat, und laesst eine getroffene Wahl unberuehrt. Damit kann
- * jede Ansicht ihre Voreinstellung mitbringen, ohne den geteilten Schnitt zu
- * ueberschreiben. Sie zaehlt danach als gewoehnliche Wahl und ist als Chip
- * wegnehmbar. Seit E-253 bringt keine Ansicht mehr eine mit, die Anwendung
- * startet ungefiltert.
- * @param {Object} patch
- */
-export function applyViewDefault(patch) {
-  if (!patch || typeof patch !== 'object') return;
-  const fresh = {};
-  for (const key of Object.keys(patch)) {
-    if (!(key in EMPTY)) continue;
-    if (touched.has(key)) continue;
-    fresh[key] = patch[key];
+/** Replace the complete filter in one dispatch. */
+export function replaceFilter(next = {}) {
+  const patch = {};
+  for (const key of Object.keys(EMPTY)) {
+    const value = key in next ? next[key] : baselineOf(key);
+    patch[key] = Array.isArray(value) ? [...value] : value;
   }
-  if (Object.keys(fresh).length === 0) return;
-  setFilter(fresh);
-  // Die Voreinstellung ist keine Wahl des Nutzers; sonst bliebe sie nach einem
-  // Tab-Wechsel als "angefasst" stehen und der naechste View koennte seinen
-  // eigenen Default nicht mehr setzen.
-  for (const key of Object.keys(fresh)) touched.delete(key);
+  setFilter(patch);
 }
 
 /** Setzt alle Facetten auf den Nullpunkt zurueck, also auf die leere Wahl: nach
@@ -180,7 +147,6 @@ export function resetFilter() {
       changed = true;
     }
   }
-  touched.clear();
   if (changed) dispatch();
 }
 

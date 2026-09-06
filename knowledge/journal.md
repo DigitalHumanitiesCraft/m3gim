@@ -31,7 +31,7 @@ One row per decision that holds today, with its date where the source names one,
 | E | date | decision | reason | address |
 |---|---|---|---|---|
 | E-01 | | The frontend runs framework-free in vanilla JS. | | [architecture.md](architecture.md) § Runtime and toolchain |
-| E-02 | | D3.js v7 carries the visualisations and is loaded from a CDN. | | [architecture.md](architecture.md) § Runtime and toolchain |
+| E-02 | | D3.js v7 carries the visualisations. The original CDN delivery is superseded by local assets under E-283. | Local delivery preserves the running application without a third-party runtime request. | [architecture.md](architecture.md) § Runtime and toolchain |
 | E-03 | | No build tool, ES6 modules are served directly by GitHub Pages. | | [architecture.md](architecture.md) § Runtime and toolchain |
 | E-05 | | Offline-first, all data is loaded at start. | | [architecture.md](architecture.md) § Runtime and toolchain |
 | E-06 | | The recording tool is Google Sheets, the repository carries the exports. | | [architecture.md](architecture.md) § Runtime and toolchain |
@@ -251,6 +251,8 @@ One row per decision that holds today, with its date where the source names one,
 
 | E-282 | 2026-09-06 | Stabilise the document-centred tool with one shared document search and record-time cut; retain undated context and treat annotation dates as evidence. Clarify tasks 1, 4 and 9 accordingly and run task 10 against cataloguing artefacts. | The project lead authorised implementation of the improved plan and one commit per completed milestone. Document co-mention cannot establish an occurrence; technical verification and scholarly acceptance remain separate. | [specification.md](specification.md) § Stable research contract |
 
+| E-283 | 2026-09-06 | Deliver D3 7.9.0 and the existing fonts locally with upstream URLs, checksums and licences. Stabilise all six views under E-282, including accessible map and source evidence and complete ranking drilldowns. | Independent review reproduced inconsistent cuts and inaccessible evidence; local assets remove the external runtime dependency while preserving the no-build architecture. | [architecture.md](architecture.md) § Runtime and toolchain |
+
 ### Modelling guard rails
 
 Cross-cutting principles that bind every model decision and are held by the tests ([testing.md](testing.md)).
@@ -265,6 +267,9 @@ Cross-cutting principles that bind every model decision and are held by the test
 - Vocabulary coupling. Every new event role and role stands in the frontend and test vocabulary, otherwise the vocabulary tests break when it goes live.
 
 ## Sessions
+
+- **2026-09-06, milestone 3:** All six views now share document search and time selection, preserve the cut through navigation, expose ranking evidence and retain undated context. Independent review checked map safety, visible keyboard focus, data-state access, grouped source-date provenance, and actual basket downloads. Local fonts and D3 keep static delivery independent of runtime CDNs. Narrow views start with folded filters. Node checks pass 678/678 and the complete holdings verifier opens 187 records and 51 Folio pages with all expected source cells; source-material errors remain separately reported.
+
 
 - **2026-09-06, milestone 2:** Pipeline failure paths now preserve previous authority results, publication files and backups. Missing mandatory inputs fail explicitly; transient authority failures remain retryable and make the CLI fail. Reports account for performance links and derived Folios. Independent review corrected further failure paths before acceptance of this implementation increment. The preservation checks and isolated determinism pass; source curation and scholarly acceptance remain open.
 
