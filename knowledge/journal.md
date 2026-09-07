@@ -266,6 +266,8 @@ One row per decision that holds today, with its date where the source names one,
 
 | E-290 | 2026-09-07 | Combine named source/entity lanes with natural decade/year/month/day groups, one anchor per group and explicit folds for empty stretches. Replace generic dating bands with a separate editorial biographical context lane, sourced to the research framework and labelled by meaning. Keep original datings, complete evidence and the shared selection shell. | The project lead rejected the long empty scroll distances and dense marks of E-289, preferred the earlier lanes and approved the combined revision. Context phases express documented editorial framing; engagement and guest series do not establish continuous residence. This supersedes E-289 geometry while retaining its shared detail and legend, and narrows E-87 to allow this separately identified context layer. | [design.md](design.md), [architecture.md](architecture.md), [plan.md](plan.md) |
 
+| E-291 | 2026-09-07 | Refine the calendar lanes with a persistent current-period label, uniform content-measured group spacing, concise source-date summaries and the label In der Quelle genannt. Preserve original datings in details and distinguish recorded intervals and uncertainty from calendar coverage. | The project lead welcomed the combined view and authorised the screenshot refinements. Whole-corpus checks exposed overflow missed by a single dense-day example; the common height now accommodates all previews and the possible detail column before selection. This refines E-290 presentation while retaining its temporal and evidence contracts. | [design.md](design.md), [architecture.md](architecture.md), [plan.md](plan.md) |
+
 ### Modelling guard rails
 
 Cross-cutting principles that bind every model decision and are held by the tests ([testing.md](testing.md)).
@@ -280,6 +282,8 @@ Cross-cutting principles that bind every model decision and are held by the test
 - Vocabulary coupling. Every new event role and role stands in the frontend and test vocabulary, otherwise the vocabulary tests break when it goes live.
 
 ## Sessions
+
+- **2026-09-07, refine Chronik reading and density:** The approved screenshot revision keeps the current year in the sticky head, shortens date previews and clarifies source mentions. A separate pure summary helper preserves qualified dates and original evidence. Root replaced fixed group heights with uniform measurements after checking every calendar group across four scales and eight viewport widths; the possible detail column is included before selection. Independent review identified narrow-header overflow for long gaps, which was corrected. Browser regressions now check every group's bounds and unchanged geometry during selection. [plan.md](plan.md) records verification and pending user acceptance.
 
 - **2026-09-07, clarify the documentation after the Chronik revision:** The project lead requested more concrete entry and knowledge documents. README now separates local and published state, documents the actual smoke-server setup and distinguishes archival data from editorial context. CLAUDE carries the refactoring and cross-view verification rules; AGENTS remains the single routing entry. Architecture records the manual synchronization of biographical context with the research framework, and testing specifies dense-content geometry checks in every shared-component consumer. Seven knowledge-integrity checks passed. This documentation change leaves the implementation and its pending acceptance unchanged.
 

@@ -54,7 +54,7 @@ def test_source_statements_and_document_context_keep_their_dates(
     )
     expect(place).to_contain_text("Wuppertal")
     place.click()
-    expect(panel).to_contain_text("Im Dokument")
+    expect(panel).to_contain_text("In der Quelle genannt")
     expect(panel).to_contain_text("keinen gemeinsamen Auftritt oder Aufenthalt")
     panel.get_by_role("button", name="Schließen").click()
     expect(source).to_be_focused()
@@ -136,6 +136,25 @@ def test_original_range_remains_visible_in_the_calendar_source(
     expect(dates).to_contain_text("1925")
 
 
+def test_real_dense_source_uses_a_short_calendar_summary(
+    frontend_server, browser_context
+):
+    page = open_chronik(frontend_server, browser_context, "?suche=NIM_005%2025")
+    group = calendar_group(page, "years", "year-1963")
+    expect(group.locator(".chronik-source__dates")).to_have_text(
+        "25 Datierungen · Jänner–Dezember 1963"
+    )
+    source = group.locator(".chronik-source__link")
+    assert "chronik-source--statement" in source.get_attribute("class").split()
+    assert source.evaluate("el => getComputedStyle(el).borderLeftStyle") == "dotted"
+    source.click()
+    rows = visible_detail(page).locator(".chronik-group-row")
+    expect(rows).to_have_count(25)
+    dates = rows.evaluate_all("els => els.map(el => el.dataset.date)")
+    assert any(date.startswith("1963-01") for date in dates)
+    assert any(date.startswith("1963-12") for date in dates)
+
+
 def test_selection_does_not_move_calendar_group_or_scroll(
     frontend_server, browser_context
 ):
@@ -202,8 +221,10 @@ def test_calendar_lanes_remain_readable_at_supported_widths(
     page = open_chronik(frontend_server, browser_context)
     page.set_viewport_size({"width": width, "height": 900})
     group = calendar_group(page, "month", "day-1953-07-26")
-    box = group.bounding_box()
-    assert box["height"] >= (950 if width < 600 else 490)
+    heights = page.locator(".chronik-calendar-group").evaluate_all(
+        "els => els.map(el => Math.round(el.getBoundingClientRect().height * 100) / 100)"
+    )
+    assert len(set(heights)) == 1
     assert group.evaluate(
         "el => [...el.children].filter(child => getComputedStyle(child).display !== 'none')"
         ".every(child => child.getBoundingClientRect().right <= el.getBoundingClientRect().right + 1)"
@@ -223,6 +244,87 @@ def test_calendar_lanes_remain_readable_at_supported_widths(
     )
     assert not overflow, overflow
     assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
+
+
+@pytest.mark.parametrize("width", [390, 800, 1366])
+@pytest.mark.parametrize("scale", ["overview", "years"])
+def test_every_calendar_group_contains_all_lanes_before_and_after_selection(
+    frontend_server, browser_context, width, scale
+):
+    page = open_chronik(frontend_server, browser_context)
+    page.set_viewport_size({"width": width, "height": 900})
+    page.locator("#chronik-scale").select_option(scale)
+    groups = page.locator(".chronik-calendar-group")
+
+    def overflows():
+        return groups.evaluate_all(
+            "groups => groups.flatMap(group => [...group.children]"
+            ".filter(child => child.getClientRects().length)"
+            ".map(child => { const outer = group.getBoundingClientRect(); "
+            "const inner = child.getBoundingClientRect(); return {"
+            "group: group.dataset.key, child: child.className, "
+            "right: inner.right - outer.right, bottom: inner.bottom - outer.bottom}; })"
+            ".filter(item => item.right > 2 || item.bottom > 2))"
+        )
+
+    overflow = overflows()
+    assert not overflow, overflow
+    source = groups.locator(".chronik-source__link").first
+    source.scroll_into_view_if_needed()
+    positions_before = groups.evaluate_all(
+        "els => els.map(el => [el.dataset.key, el.style.top, el.style.height])"
+    )
+    scroll = page.locator(".chronik-scroll")
+    scroll_before = scroll.evaluate("el => el.scrollTop")
+    source.click()
+    expect(visible_detail(page)).to_be_visible()
+    assert groups.evaluate_all(
+        "els => els.map(el => [el.dataset.key, el.style.top, el.style.height])"
+    ) == positions_before
+    assert scroll.evaluate("el => el.scrollTop") == scroll_before
+    overflow = overflows()
+    assert not overflow, overflow
+
+
+def test_sticky_time_head_tracks_the_scrolled_calendar_year(
+    frontend_server, browser_context
+):
+    page = open_chronik(frontend_server, browser_context)
+    current = page.locator(".chronik-current-year")
+    expect(current).to_be_visible()
+    page.locator("#chronik-year-jump").select_option("1953")
+    expect(current).to_have_text("1953")
+    group = page.locator('.chronik-calendar-group[data-key="year-1963"]')
+    top = group.evaluate("el => parseFloat(el.style.top)")
+    page.locator(".chronik-scroll").evaluate("(el, y) => { el.scrollTop = y; }", top)
+    expect(current).to_have_text("1963")
+
+
+def test_long_gap_range_stays_inside_the_narrow_sticky_time_head(
+    frontend_server, browser_context
+):
+    page = open_chronik(frontend_server, browser_context)
+    page.set_viewport_size({"width": 390, "height": 900})
+    page.locator("#chronik-scale").select_option("years")
+    gap = page.locator(
+        '.chronik-gap[data-gap-from="1056"][data-gap-to="1871"]'
+    )
+    top = gap.evaluate("el => parseFloat(el.style.top)")
+    page.locator(".chronik-scroll").evaluate("(el, y) => { el.scrollTop = y; }", top)
+    current = page.locator(".chronik-current-year")
+    expect(current).to_have_text("1056–1871")
+    assert current.evaluate("el => getComputedStyle(el).whiteSpace === 'nowrap'")
+    bounds = current.evaluate(
+        "el => { const range = document.createRange(); range.selectNodeContents(el); "
+        "const text = range.getBoundingClientRect(); "
+        "const column = el.parentElement.getBoundingClientRect(); "
+        "const head = el.closest('.chronik-lane-head').getBoundingClientRect(); "
+        "return {textLeft: text.left, textRight: text.right, textBottom: text.bottom, "
+        "columnLeft: column.left, columnRight: column.right, headBottom: head.bottom}; }"
+    )
+    assert bounds["textLeft"] >= bounds["columnLeft"] - 1
+    assert bounds["textRight"] <= bounds["columnRight"] + 1
+    assert bounds["textBottom"] <= bounds["headBottom"] + 1
 
 
 def test_controls_reach_year_coarse_undated_and_context_entries(

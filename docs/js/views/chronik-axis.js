@@ -14,11 +14,13 @@ export function createChronikAxis({ rows, undated, renderLanes, openRows, openRo
   let layout;
   let disposed = false;
   let frame = 0;
-  let currentHeight = 500;
+  let currentHeight = 460;
+  let currentHostWidth = 0;
   const expandedGaps = new Set();
   const surface = el('div', { className: 'chronik-timeline' });
+  const currentYear = el('span', { className: 'chronik-current-year', 'aria-label': 'Aktueller Zeitabschnitt' });
   const head = el('div', { className: 'chronik-lane-head chronik-calendar-grid' },
-    el('span', {}, 'Zeit ↓'), el('span', { className: 'chronik-context-heading' }, 'Lebensabschnitte', el('small', {}, 'Redaktioneller Kontext')),
+    el('span', {}, 'Zeit ↓', currentYear), el('span', { className: 'chronik-context-heading' }, 'Lebensabschnitte', el('small', {}, 'Redaktioneller Kontext')),
     el('span', {}, 'Quellen'), ...['Orte', 'Personen', 'Werke', 'Institutionen'].map(label => el('span', { className: 'chronik-entity-heading' }, label)));
   const scroller = el('div', { className: 'chronik-scroll', tabindex: '0', 'aria-label': 'Chronik mit Kalendergruppen' }, head, surface);
   const yearSelect = el('select', { id: 'chronik-year-jump', 'aria-label': 'Zum Jahr springen',
@@ -62,12 +64,27 @@ export function createChronikAxis({ rows, undated, renderLanes, openRows, openRo
     if (target) navigate(target.start);
   }
 
+  function readingHeight() {
+    if (!scroller.isConnected) return currentHeight;
+    const hostWidth = scroller.parentElement.clientWidth;
+    const previousMaxWidth = scroller.style.maxWidth;
+    // Reserve the detail column during measurement so selection cannot move time anchors.
+    scroller.style.maxWidth = `${hostWidth >= 900 ? hostWidth - 300 : hostWidth}px`;
+    let required = 0;
+    for (const group of surface.querySelectorAll('.chronik-calendar-group')) {
+      const top = group.getBoundingClientRect().top;
+      for (const child of group.children) {
+        if (child.getClientRects().length) required = Math.max(required, child.getBoundingClientRect().bottom - top);
+      }
+    }
+    scroller.style.maxWidth = previousMaxWidth;
+    return Math.ceil((required + 24) / 8) * 8;
+  }
+
   function draw(anchor) {
-    const hostWidth = scroller.parentElement?.clientWidth || 1100;
-    currentHeight = hostWidth < 600 ? 960 : 500;
+    currentHostWidth = scroller.parentElement?.clientWidth || 0;
     layout = buildCalendarLayout(rows, { scale, rowHeight: currentHeight, expandedGaps });
     clear(surface);
-    surface.style.height = `${layout.height + HEADER}px`;
     surface.appendChild(el('div', { className: 'chronik-axis-line', 'aria-hidden': 'true' }));
     for (const group of layout.groups) {
       const node = el('section', { className: 'chronik-calendar-group chronik-calendar-grid',
@@ -80,6 +97,16 @@ export function createChronikAxis({ rows, undated, renderLanes, openRows, openRo
       node.style.height = `${group.height}px`;
       surface.appendChild(node);
     }
+    const measuredHeight = readingHeight();
+    if (measuredHeight !== currentHeight) {
+      currentHeight = measuredHeight;
+      layout = buildCalendarLayout(rows, { scale, rowHeight: currentHeight, expandedGaps });
+      [...surface.querySelectorAll('.chronik-calendar-group')].forEach((node, index) => {
+        node.style.top = `${layout.groups[index].y}px`;
+        node.style.height = `${layout.groups[index].height}px`;
+      });
+    }
+    surface.style.height = `${layout.height + HEADER}px`;
     drawContext();
     for (const gap of layout.segments.filter(segment => segment.kind === 'gap')) {
       const isExpanded = expandedGaps.has(gap.key);
@@ -143,6 +170,14 @@ export function createChronikAxis({ rows, undated, renderLanes, openRows, openRo
   function updateNavigation() {
     if (!layout || disposed) return;
     const year = calendarYear(layout.timeAt(scroller.scrollTop + 1));
+    const segment = layout.segments.find(item => item.y + item.height > scroller.scrollTop + 1) || layout.segments.at(-1);
+    const label = !segment ? '' : segment.kind === 'gap'
+      ? segment.fromYear === segment.toYear ? String(segment.fromYear) : `${segment.fromYear}–${segment.toYear}`
+      : scale === 'overview' ? segment.label : String(calendarYear(segment.start));
+    currentYear.textContent = label;
+    currentYear.classList.toggle('chronik-current-year--range', segment?.kind === 'gap');
+    currentYear.dataset.period = segment?.key || '';
+    currentYear.setAttribute('aria-label', `${segment?.kind === 'gap' ? 'Zeitlücke' : 'Aktueller Zeitabschnitt'} ${label}`);
     if ([...yearSelect.options].some(option => Number(option.value) === year)) yearSelect.value = String(year);
     previous.disabled = !layout.groups.some(group => group.y < scroller.scrollTop - 2);
     next.disabled = !layout.groups.some(group => group.y > scroller.scrollTop + 2);
@@ -152,8 +187,7 @@ export function createChronikAxis({ rows, undated, renderLanes, openRows, openRo
   });
   const observer = new ResizeObserver(() => {
     if (disposed || !scroller.isConnected) return;
-    const wantedHeight = scroller.parentElement.clientWidth < 600 ? 960 : 500;
-    if (wantedHeight !== currentHeight) draw(layout.timeAt(scroller.scrollTop));
+    if (scroller.parentElement.clientWidth !== currentHostWidth) draw(layout.timeAt(scroller.scrollTop));
   });
   observer.observe(scroller);
   draw();
