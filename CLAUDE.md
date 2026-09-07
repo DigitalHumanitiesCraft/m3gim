@@ -23,7 +23,16 @@ Communicate in compact, substantive German paragraphs. Ask only for a necessary 
 - The frontend is a static no-build ES-module application. Use existing modules, design tokens and local assets; preserve keyboard access and reduced-motion behaviour.
 - The shared sidebar owns filters. Other presentation and interaction contracts are maintained in [knowledge/design.md](knowledge/design.md). Draft alternatives in the plan do not overwrite the current design.
 - Preserve archival signatures, RDF identifiers, source evidence and uncertainty. A document co-mention does not establish an appearance, presence at a place or a journey.
+- Preserve the distinction between a document date, a dated statement, limited precision and a qualified boundary. A recorded range alone cannot establish continuous activity or a biographical phase. Editorial context follows the separate provenance contract in [knowledge/architecture.md](knowledge/architecture.md) § Frontend.
 - Update the responsible knowledge document after a coherent change and add a concise journal entry. Use Git for superseded wording; do not create routine session reports or another archive.
+
+## Frontend refactoring
+
+Read the current view contract in [knowledge/design.md](knowledge/design.md) before changing geometry or interaction. When the user revises that contract, update its responsible section after implementation. Mark superseded decisions in the journal; retain earlier test results as historical checkpoints without presenting them as current acceptance.
+
+Separate source projection, temporal geometry and group aggregation from DOM rendering where those responsibilities already have dedicated modules. Reuse shared UI components for common behaviour, with view-specific evidence and selection state supplied by each caller. Avoid copying the detail shell or adding a second filter path to implement a new view interaction.
+
+When a shared component changes, verify every existing consumer with real dense content, open and closed selection, and narrow and wide hosts. Check vertical and horizontal bounds, internal scrolling and keyboard return in addition to screenshots. [knowledge/testing.md](knowledge/testing.md) § Frontend checks owns the detailed criteria. A passing test count does not establish visual or scholarly acceptance.
 
 ## Spec hierarchy
 

@@ -2,7 +2,7 @@
 
 M³GIM is a digital humanities pilot study on the mobility and the knowledge production of a twentieth-century mezzo-soprano, built on the partial fonds UAKUG/NIM at the university archive of the University of Music and Performing Arts Graz. The cataloguing team records the material in tables, a Python pipeline transforms that recording into JSON-LD modelled in RiC-O 1.1 with the m3gim extension and AgRelOn, and a static single-page application on GitHub Pages makes every recorded data point traceable back to the record and the source cell that carries it. Promptotyping is the context and knowledge engineering method behind the repository, so the maintained knowledge base in `knowledge/` is the source of truth and the code is the derived artefact.
 
-The application runs at [dhcraft.org/m3gim](https://dhcraft.org/m3gim).
+The published application is available at [dhcraft.org/m3gim](https://dhcraft.org/m3gim). Local changes become available there only after publication. The [current plan](knowledge/plan.md) records the locally implemented state, verification and pending user acceptance.
 
 ## Structure
 
@@ -41,7 +41,7 @@ pip install -r requirements-test.txt
 python -m http.server 8000 --bind 127.0.0.1 --directory docs
 ```
 
-The shipped frontend is available at `http://localhost:8000/`. Viewing it needs no data regeneration. Use the pipeline below when source data or transformation code changes.
+Run the server command from the repository root, then open [the local application](http://127.0.0.1:8000/) or [the Chronik](http://127.0.0.1:8000/#chronik). Reload the browser after editing frontend files. Viewing it needs no data regeneration. Use the pipeline below when source data or transformation code changes.
 
 ### Pipeline
 
@@ -66,7 +66,7 @@ Three points mislead easily in a fresh clone.
 
 - `scripts/validate.py` exits 1 as soon as the validation report carries ERROR findings. At the current data state that is the expected outcome. The findings are source errors from the cataloguing and travel to the cataloguing team through [`data/reports/source-errors-handover-2026-09-01.md`](data/reports/source-errors-handover-2026-09-01.md) and the generated cataloguing report. `audit-data.py` follows the same convention.
 - The authority files `wikidata-reconciliation.json` and `wikidata-enrichment.json` are versioned in `data/output/` and are read by the transformation from the output directory. If one of them is missing there, `transform.py` aborts with exit 1, because the dataset would silently lose coordinates, life dates and occupations. A deliberate run without authority data needs `M3GIM_ALLOW_NO_WIKIDATA=1`. The guard is described in [`knowledge/architecture.md`](knowledge/architecture.md).
-- `docs/data/m3gim.jsonld` is the single data source of the frontend and is written only by `build-views.py`. Beside it `docs/data/geo/` carries the world geometry the Karte loads, which no pipeline step produces.
+- `docs/data/m3gim.jsonld` is the single archival data source of the frontend and is written only by `build-views.py`. Separately, `docs/data/geo/` carries the map geometry and the Chronik has explicitly editorial biographical context as described under Data flow below.
 
 ### Tests
 
@@ -82,9 +82,27 @@ The suite has two layers. The invariants check model, pipeline and frontend cont
 
 The browser suite under `tests/frontend/` starts its HTTP server and Chromium itself, with isolated contexts for the research paths. Install `pip install playwright` and `playwright install chromium`, then run `pytest tests/frontend/ -m "frontend and not data_quality"`. Browserless local runs may skip this optional dependency; candidate verification requires it. The test responsibilities and limits are in [`knowledge/testing.md`](knowledge/testing.md).
 
+Focused checks for Chronik and the shared detail component, and for documentation changes:
+
+```bash
+python -m pytest tests/frontend/test_chronik_lanes.py tests/frontend/test_network_selection.py -q
+python -m pytest tests/test_45_knowledge_integrity.py -q
+```
+
+The standalone smoke script requires a running server. To use the server on port 8000 from PowerShell:
+
+```powershell
+$env:M3GIM_SMOKE_URL = 'http://127.0.0.1:8000/'
+python tests/frontend/smoke.py
+```
+
+Other shells can set the same environment variable. Without it, the script uses port 8765. The smoke run fails on warnings as well as errors.
+
 ## Data flow
 
-The recording tables under `data/google-spreadsheet/` go through the pipeline into `data/output/m3gim.jsonld`, from there as a copy into `docs/data/m3gim.jsonld`, and from there into the loader of the application, which reads the whole dataset once at startup. There is no other data path and no pre-aggregated derivative.
+The recording tables under `data/google-spreadsheet/` go through the pipeline into `data/output/m3gim.jsonld`, from there as a copy into `docs/data/m3gim.jsonld`, and from there into the loader of the application, which reads the whole dataset once at startup. Views derive their groups from this archival dataset in the browser.
+
+The Chronik's selected editorial biographical phases derive from [`knowledge/research-framework.md`](knowledge/research-framework.md#biographical-stations) and are represented in [`docs/js/views/chronik-context.js`](docs/js/views/chronik-context.js). They carry an explicit editorial label and source link. This context layer contributes no archival records and does not participate in document filtering. Its maintenance contract is in [`knowledge/architecture.md`](knowledge/architecture.md#frontend).
 
 ## Documentation
 
