@@ -6,7 +6,7 @@ project:
 status: active
 language: en
 created: 2026-09-06
-updated: 2026-09-06
+updated: 2026-09-07
 authors: [Christopher Pollin]
 generated-with: Codex
 method:
@@ -18,9 +18,9 @@ related: [INDEX, specification, research-framework, data, data-model, architectu
 
 ## Current state and next action
 
-The application is implemented through M6e (`9b2d1da`). Targeted technical checks passed; guided user testing exposed the open interaction problems below. Version 0.9 has not been accepted. This plan owns current work and acceptance evidence, while [journal.md](journal.md) owns decision provenance. Earlier execution narratives and superseded test snapshots remain in Git at `9b2d1da:knowledge/plan.md`.
+The application includes the Chronik lane revision following M6e (`9b2d1da`). The project lead authorised implementation in the existing UI with the complete linked corpus after reviewing a wireframe. Technical evidence is recorded below; guided acceptance of the new Chronik is pending. Version 0.9 has not been accepted. This plan owns current work and acceptance evidence, while [journal.md](journal.md) owns decision provenance.
 
-**Next executable step:** correct institution-chip navigation so Nordwestdeutscher Rundfunk sets the institution facet and exposes its documents. Verify the shared chip's other consumers, update the knowledge and commit this bounded fix. Continue with the register findings. Evaluate the map proposal before replacing the current map.
+**Next executable step:** inspect the revised Chronik with the project lead using `NIM_023_5` and the dense 26 July 1953 group. Check whether the distinction between dated statements and document context, lane expansion and the shared record-time filter supports the research task. The institution-chip navigation fix and register findings remain open below. Evaluate the map proposal before replacing the current map.
 
 Sol 5.6 is the project lead's explicitly accepted subagent model for this work. The user authorised integration of the map discussion into the plan, without approving a final design or production replacement.
 
@@ -92,6 +92,7 @@ E-282 anchors the shared document search and record-time cut. Annotation dates r
 | M6c Stable row position and document addresses | Preserve the activated row's reading position and keep the URL aligned with the open record | Implemented, `967b7d6`; acceptance status above |
 | M6d Direct-link arrival | Place the addressed title below the sticky heads, including short filtered lists and tall screens | Implemented, `0830498`; acceptance status above |
 | M6e Individual document titles | Display full signature and title with a separate responsive metadata group; preserve paging and direct links | Implemented, `9b2d1da`; acceptance status above |
+| M6f Chronik lanes | Source-aware vertical chronology, actual corpus, dense groups and existing sidebar | Implemented locally; technical verification and guided acceptance below |
 | M6 Scholarly acceptance | Project lead accepts task results for 0.9; partners accept them for 1.0 | Bestand, Werkregister and Karte partly observed; overall acceptance pending |
 
 Each completed milestone receives one commit and a follow-up review of the achieved goal, implementation and knowledge. Publication and source editing are separate actions. No release or scholarly acceptance follows automatically from a passing suite.
@@ -111,7 +112,7 @@ The story identifiers address bullets within each epic of [specification.md](spe
 | US3.2 | Follow an actor through places, works and time | Register hubs and shared-filter tests cover transfer to appropriate views. Network nodes represent actors and documents; map points represent places. T4 and T9 prepare the combined reading. |
 | US3.3 | Inspect contractual conditions | Finance/model tests and contract sample NIM_023 5. Contracting-party and status recording is sparse; the story remains a proposal in the specification. |
 | US4.1 | Read roles and their counts | Distinct-record aggregation and facet tests, complete ranking drilldowns. Repeated mentions do not inflate record counts. Existing statistics sections support this operation. |
-| US4.2 | Inspect contract/residence evidence over time | Chronicle anchor/role tests and dated source examples T1/T8. Residence evidence is sparse; absence of a point cannot establish historical absence. |
+| US4.2 | Inspect contract/residence evidence over time | Chronicle statement/context tests, dated source examples T1/T8 and dense-group browser checks. Residence evidence is sparse; absence of a point cannot establish historical absence. |
 | US5.1 | Inspect actors, roles and evidence | Network completeness tests against shipped records and T9. Creator exclusion is explained and the person facet remains available. |
 | US5.2 | Distinguish relation from co-mention | Relation marks, graph evidence and separate projection tests. T5 identifies a source-backed comparison; successful human distinction is still unobserved. |
 | US5.3 | Explore an actor's surroundings over time | Neighbourhood and shared-cut tests retain undated context. Visual inspection and interaction measurement are recorded separately below. |
@@ -135,7 +136,7 @@ These are agent-checked examples from the versioned data of 2026-09-06. Record i
 | T5 | `NIM_016_13` names Malaniuk as addressee at Box 2 row 330 and Rüger as author at row 331, which also carries their recorded correspondence relation. The record detail exposes both persons, the relation and its source; the network marks visible Rüger | Distinguish the explicitly recorded relation from the co-mention of these same persons in the document, and account for creator exclusion in the network. |
 | T6 | `NIM_022_1_1` names Meistersinger, Tristan and Rheingold in Box 2 rows 22–24; its three stage parts remain unbound. `NIM_139_104` has one Tristan work statement, Box 6 row 17, with nine performer/part statements | Identify source ambiguity and the explicitly marked single-work derivation. |
 | T7 | `NIM_007_5_1` advances from page one to page two; the signature and URL change and one detail stays open | Verify that the displayed page and its evidence remain citable. All 51 Folio pages were opened by the verifier. |
-| T8 | `NIM_007_11` has own date 1968-11-18 at object row 135 and content anchor 1959-09-05 from performance/rehearsal at Box 1 rows 3081/3087 | Read the anchor's origin instead of treating it as the document's own date. |
+| T8 | `NIM_007_11` has own date 1968-11-18 at object row 135 and content anchor 1959-09-05 from performance/rehearsal at Box 1 rows 3081/3087 | Read the separate 1959 statement groups and 1968 document group, including the explicitly attested Zürich context. |
 | T9 | `NIM_023_5` carries Malaniuk as contracting party (Box 2 row 128), Fues as conductor (129), Mahler as composer (138), Herminghaus as signatory (140), institutions (135/136), Wuppertal (134) and Das Lied von der Erde (137) | Compare the appropriate view subsets, including the creator exception and places with/without coordinates. |
 | T10 | Object-table row 725 has Folio `11_62` but no archival signature; its intended record is absent from the graph | Reach the source finding through the cataloguing artefacts and identify the cell requiring editorial correction. |
 
@@ -149,7 +150,8 @@ These are agent-checked examples from the versioned data of 2026-09-06. Record i
 | Network selection, M5a | Five alternating Chromium 145 comparisons at 1366 × 900 with 947 nodes reduced median synchronous selection from 22.6 to 3.1 ms; next-frame time from 36.7 to 16.4 ms, unchanged detail; local measurement |
 | Source-label removal, M6b | Verifier opened 187 records and 51 Folio pages, checked 4,899 role/value chips and 25 grouped dates; four actual export checks preserved provenance |
 | Direct arrival, M6d | Six filtered/unfiltered cases at 800 × 900, 1366 × 800 and 2048 × 1111 aligned the target below sticky heads; manual scroll and title-copy checks remained green |
-| Latest application change, M6e | 676 Node checks, 22 existing browser cases and the corrected new header case passed; seven knowledge checks passed. Browser scope covers smoke, shared views, research paths, exhaustive Bestand display, page reload, selection and responsive geometry. Root inspected 2048, 800 and 600-pixel screenshots. This is targeted verification after M5f |
+| Chronik revision, M6f | 672 Node checks passed. Full pytest including browser and slow checks: 618 passed, 8 existing source-data failures, 4 expected source-fix xfails, no skips. This includes seven new Chronik browser cases plus shared-view, research-path, smoke and exhaustive Bestand checks. Root inspected the actual default and dense-day rendering at 1536 pixels and the narrow layout at 390 pixels. Independent review covered data separation, parts, undated locations and evidence completeness. Guided user acceptance is pending. |
+| Previous application change, M6e | 676 Node checks, 22 existing browser cases and the corrected new header case passed; seven knowledge checks passed. Browser scope covers smoke, shared views, research paths, exhaustive Bestand display, page reload, selection and responsive geometry. Root inspected 2048, 800 and 600-pixel screenshots. This is targeted verification after M5f |
 | Controlled knowledge close | Seven knowledge integrity checks passed, including AGENTS links and decision references; 19 stories, ten task examples and 18 Git references verified. Independent Sol 5.6 review checked routing, retained rules and draft/acceptance boundaries. No application tests were rerun for this documentation close |
 
 ## Session close and re-entry

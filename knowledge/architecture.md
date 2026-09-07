@@ -7,7 +7,7 @@ status: complete
 language: en
 version: 0.7
 created: 2026-02-19
-updated: 2026-09-06
+updated: 2026-09-07
 authors: [Christopher Pollin]
 generated-with: Claude Code
 method:
@@ -148,7 +148,7 @@ The content pages `about.html`, `projekt.html`, `datenmodell.html` and `impressu
 | `dftHierarchy`, `conceptDefinitions` | `skos:Concept` with `skos:broader` and definition | document type facet as a tree, label, gloss (E-143) |
 | `roleVocab`, `roleScope`, `roleRank` | role concepts with dating scope and rank (E-150) | display form of a role and choice of the time anchor |
 | `annotations`, `recordToAnnotations`, `recordDatings` | `m3gim-ontology:Annotation` and `m3gim-ontology:hasAnnotation` | datings in the detail, `primaryYear` |
-| `mobilityEvents`, `recordToEvents` | the located annotations with coordinates and country | Karte, accent of the Chronik, place block of the detail |
+| `mobilityEvents`, `recordToEvents` | the located annotations with coordinates and country | Karte, undated Chronik document context, place block of the detail |
 | `agentRelations` | `m3gim-ontology:hasAgentRelation` | relation block of the detail, marks in the registers and the Netzwerk |
 | `finances` | detail annotations with amount, currency and role | finance block of detail and Korb |
 | `stageRoles`, `performances`, `recordToPerformances` | `m3gim-ontology:StageRole` and `m3gim-ontology:Performance` | work and performance blocks, stage parts in the Statistik |
@@ -158,7 +158,7 @@ The content pages `about.html`, `projekt.html`, `datenmodell.html` and `impressu
 
 Three maps flatten the raw JSON-LD into a lookup shape, `agentRelations`, `mobilityEvents` and `finances` carry for instance `objectName` instead of the nested `agrelon:hasObject`. Reading the JSON-LD keys there yields an empty result without an error. The JSDoc shapes stand above `buildStore()`, and the contract tests in `tests/test_06_frontend_contract.py` hold these assumptions out of the data.
 
-`primaryYear(store, record)` is the single time anchor, and its precedence runs at content level (E-264). The function walks the datings of the record and takes the highest ranked one whose dating scope is anchoring, which are the two scopes object and attested, and `rico:date` of the object table carries only the fallback. Mentions, framing events and the contract status for an unfulfilled agreement never date a record. The result names the year, its source, the role it came from and that role's own date value, so a view can date a record at the day, mark a year that comes from a link instead of from the document's own dating, and cut Chronik and Karte at the same year.
+`primaryYear(store, record)` is the shared document time anchor, with content-level precedence (E-264, E-282). It selects the highest-ranked dating in the object or attested scope, with `rico:date` as fallback. Mentions, framing events and unfulfilled agreements never date the document cut. Its result carries year, source, role and original date. The shared filter, Bestand and exports retain this contract. The Chronik projects all dates of the selected documents through its own source-aware view model under E-287; its rows no longer reduce a document to this one anchor.
 
 ### Filter state and result set
 
@@ -194,7 +194,9 @@ The Bestand (`views/bestand.js`, `bestand-data.js`, `bestand-rows.js`, `_bestand
 
 The record detail (`views/record-detail.js`, `record-detail-data.js`, `record-chips.js`) runs across the full width and is built from `buildRecordBlocks`, which also feeds the Korb, so both places show the same block logic. The blocks are production, contributors, work and repertoire, performances, place and event, dates named in the document, mentioned, further, relations and finances, each block title carrying the symbol of its content family. All chips come from `buildRoleChip` with a Wikidata link where available. Their tooltips expose additional recorded content and identify enrichment as such. Technical sheet and row references are retained in the data and exports but omitted from the interface (E-285). A `rico:generalDescription` at a dating, performance, event or role appears as a quality marker with its wording (E-222).
 
-The Chronik (`views/chronik.js`, `chronik-data.js`) is a scrolling year timeline. Empty years stay visible because the gap structure shows the state of cataloguing and not the absence of activity (E-88), records that only carry a secondary dating are marked as such, and genuinely undated ones stand in a closing block. A left accent on the chip carries the dominant mobility perspective from `sichtForRecord`, and a decade header aggregates by perspective, where a click on a segment highlights exactly the chips that carry it.
+The Chronik (`views/chronik.js`, `chronik-timeline-data.js`) resolves the common document set through `recordsFor` and projects exactly those records into date groups. The pure `buildChronikTimeline(store, records)` returns dated rows and an optional undated group. Rows retain date precision, sort value, distinct source records and entity entries with their individual evidence. Raw performance identities and stage-part IDs survive projection; parts occupy `lanes.part`, separate from musical works. Undated located annotations retain their annotation ID, role, notes, original null date and source-cell provenance as document context. The renderer keeps the existing shell, expands dense lists locally and links evidence into Bestand. It replaces `chronik-data.js`, the single-anchor chips and the decade stacks.
+
+The linked-record basis counts all seven link-bearing properties, including `hasDetail` and `hasAgentRelation`. This includes the finance-only record `NIM_023_1_3` in all views. A source-backed regression checks its 8600 DM statement at Box 2 row 82. The corpus and pipeline outputs are unchanged by this view revision.
 
 The Statistik (`views/statistik.js`, `statistik-data.js`, `statistik-sections.js`) shows the holdings in four record-based sections: document types, repertoire, persons and institutions. Spatial and temporal aggregates lie in the Karte and the Chronik, the relation aggregate in the Netzwerk (E-160). A row leads into the correspondingly filtered Bestand wherever a shared facet exists (E-144). Document-type counts include the descendants selected by that facet, with each record counted once per category; parent and child counts overlap. Rows without a facet, including roles, composers and an absent document type, expose every counted record through a common evidence list. `Weitere` expands the remaining individual rows without asserting a combined document count. `buildHorizontalBars` keeps head and expanded rows on the same scale.
 

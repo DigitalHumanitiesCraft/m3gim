@@ -148,8 +148,10 @@ test('countLinks: summiert ueber alle Verknuepfungs-Felder', () => {
     'rico:hasOrHadSubject': [{}],
     'm3gim-ontology:hasAnnotation': [],
     'm3gim-ontology:hasPerformance': [{}, {}],
+    'm3gim-ontology:hasDetail': {},
+    'm3gim-ontology:hasAgentRelation': [{}, {}],
   };
-  assert.equal(countLinks(record), 6);
+  assert.equal(countLinks(record), 9);
   assert.equal(countLinks({}), 0);
 });
 

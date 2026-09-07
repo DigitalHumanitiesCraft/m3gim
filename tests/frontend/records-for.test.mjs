@@ -355,6 +355,22 @@ describe('recordsFor am ausgelieferten Datensatz', () => {
     assert.equal(recordsFor(store, {}).ids.size, erwartet.length);
   });
 
+  test('ein reiner Verguetungsbeleg gehoert zur ausgelieferten Basis', async () => {
+    const store = await storeFromShipped();
+    const id = 'm3gim-data:NIM_023_1_3';
+    const record = store.records.get(id);
+    assert.ok(record?.['m3gim-ontology:hasDetail'],
+      'Der Quellfall aus Box 2 Zeile 82 traegt keinen Detailbeleg mehr');
+    assert.equal(store.finances.get(id)?.[0]?.amount, 8600,
+      'Die Gesamtverguetung des Quellfalls hat sich geaendert');
+    assert.ok(baseRecords(store).some(item => item['@id'] === id),
+      'Der reine Finanzbeleg faellt als vermeintlich unerschlossen aus der Basis');
+    assert.ok(recordsFor(store, {}).ids.has(id),
+      'Der reine Finanzbeleg fehlt in der gemeinsamen Treffermenge');
+    assert.equal(baseRecords(store).length, 188,
+      'Frontendbasis und verlinkte Records des Qualitaetssnapshots driften auseinander');
+  });
+
   test('Land und Verknuepfung schneiden am ausgelieferten Datensatz', async () => {
     const store = await storeFromShipped();
     const basis = recordsFor(store, {}).ids.size;

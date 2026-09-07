@@ -49,11 +49,6 @@ const SITES = [
     tip: 'ergänzt: erster Beteiligter statt des ererbten Sammeltitels',
   },
   {
-    name: 'Chronik: Jahr aus einer sekundaeren Datierung',
-    file: 'js/views/chronik.js',
-    tip: 'ergänzt: Jahr aus ',
-  },
-  {
     name: 'Indizes: Untertitel aus der Wikidata-Anreicherung',
     file: 'js/views/indizes.js',
     tip: 'ergänzt: aus Wikidata',
@@ -101,9 +96,6 @@ describe('Marke des Ergaenzten', () => {
     const bestand = read('js/views/bestand.js');
     assert.ok(!bestand.includes('archiv-datum--derived'),
       'die eigene Datumsklasse ist durch mark-derived abgeloest');
-    const chronik = read('js/views/chronik.js');
-    assert.ok(!chronik.includes('chronik-point--secondary'),
-      'der gestrichelte Chip ist durch mark-derived abgeloest');
   });
 
   test('Abwesenheit bleibt Abwesenheit und wird nicht als ergaenzt markiert', () => {

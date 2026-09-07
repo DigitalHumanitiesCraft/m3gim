@@ -7,7 +7,7 @@ status: reviewed
 language: en
 version: 0.7
 created: 2026-06-17
-updated: 2026-09-06
+updated: 2026-09-07
 authors: [Christopher Pollin]
 generated-with: Claude Code
 method:
@@ -155,6 +155,8 @@ The implementation scope is the document-centred tool (E-282). Shared text searc
 
 The time window uses the primary record time anchor, with undated records retained as declared context. A map annotation keeps its own date as source evidence; it is not a second, silent time filter. Each view accounts for its eligible subset, such as located places or actors excluding the creator of the fonds. Grouped rows and aggregate counts refer back to the records they represent.
 
+The Chronik displays every recorded document and statement date within that shared document set (E-287). Its source and entity lanes retain document context, uncertainty, undated evidence and complete access to dense groups. Dated rows do not by themselves bind co-mentioned entities into an occurrence.
+
 Co-mention is the relation available before occurrence grouping is implemented. The task set therefore asks researchers to assess historical connections in the source. The planned occurrence model remains a separate extension. Role counts and filters belong to the shared sidebar; the existing four statistics sections provide evidence navigation from their rankings. A further statistics section requires a demonstrated unmet research task.
 
 ## Netzwerk view
@@ -165,7 +167,7 @@ Overview. Every actor of the result set, persons and institutions, and every rec
 
 Neighbourhood. A click on a node keeps the layout still, highlights the node and its neighbourhood, fades the rest and labels the highlighted nodes. At an actor of the two-mode network the neighbourhood runs two steps, the records of the actor and the actors standing at those records, the second step drawn paler, because the question is with whom she worked and not which sources name her. A record node and the projection mark one step (E-276). A recorded relation, which in the dataset always starts at the creator of the fonds, is not an edge but a mark at the node of the counterpart with a jump to the attesting record.
 
-Time. The year of a record follows the same rule as the Chronik, the link date before the source dating. Nodes whose records carry no year stay in the picture and are drawn faint.
+Time. The network uses the shared primary document time anchor: the highest-ranked anchoring link date precedes the source dating (E-264, E-282). Nodes whose records carry no year stay in the picture and are drawn faint.
 
 Detail column. The column is absent until a node or an edge is selected and the drawing uses the whole width beside the sidebar. Clicking a node keeps the layout still, highlights the node and its neighbourhood, opens the column with its kind, name, Wikidata mark, the roles with their record counts in the result set, the neighbours as a list with edge strength, the recorded relation with its evidence, and a jump into the Bestand with the node as filter, and writes the node into the address so the state is citable. Clicking an edge highlights both ends and lists the shared records with signature and title. A click on empty ground or Escape closes the column. The column does not scroll, longer lists jump to the Bestand.
 
@@ -183,7 +185,7 @@ All filters of all views stand in the one left sidebar, which never scrolls, and
 
 Bestand. The archival base view on the records in their Konvolut hierarchy and the provenance anchor of the application. It lists in signature order without a sorting control, because the Chronik carries the date and the facets carry the type (E-203). A Konvolut stands as a permanently visible group head that opens its Folios, a record opens its detail. Records without a Verknüpfung lie outside the application, their finding aid stays the archive (E-165). The view opens on the full base set (E-253).
 
-Chronik. The records on a scrolling year timeline, from a Chronik point into the record detail. The year of a record comes from the dates of the Verknüpfungstabelle first and from the source dating of the object table only as a fallback, because the partners read the timeline at content level, and a year that does not come from the document's own dating is marked at the chip (E-264).
+Chronik. A vertical sequence of date groups with sources, places, persons, works and institutions in aligned lanes (E-287). Document dates and dated statements remain separate; ordinary entity mentions and undated annotations retain their document context. Dense groups expand to every entry, parts remain distinct from works, and an entity opens its source evidence with a route into the record detail. The shared document cut applies before projection, so every date of each selected document remains available.
 
 Karte. Every place of the result set as a point with its place role, its localization certainty and the way to the attesting records, entity-centred through the choice of a person, an institution or a work. A place the map cannot draw stands in a sidebar section of its own with its record count, its reason and the same jump into the documents a map point carries, instead of vanishing (E-280). The country is a facet of the shared sidebar rather than a section of this view, and it counts records with evidence of presence (E-224).
 

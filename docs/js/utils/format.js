@@ -145,6 +145,8 @@ export function countLinks(record) {
   count += ensureArray(record['rico:hasOrHadSubject']).length;
   count += ensureArray(record['m3gim-ontology:hasAnnotation']).length;
   count += ensureArray(record['m3gim-ontology:hasPerformance']).length;
+  count += ensureArray(record['m3gim-ontology:hasDetail']).length;
+  count += ensureArray(record['m3gim-ontology:hasAgentRelation']).length;
   return count;
 }
 

@@ -173,7 +173,7 @@ describe('Welche Facetten die Spalte fuehrt', () => {
     // Die Sicht war Farb- und Aufschluesselungsachse von Karte, Chronik und
     // Statistik. Bleibt sie irgendwo stehen, zeigen zwei Ansichten dieselbe
     // Menge nach zwei verschiedenen Achsen.
-    for (const module of ['views/statistik-data.js', 'views/chronik-data.js',
+    for (const module of ['views/statistik-data.js', 'views/chronik-timeline-data.js',
       'views/chronik.js', 'views/karte-data.js', 'views/karte-map.js', 'views/karte.js']) {
       assert.doesNotMatch(read(module), /SICHTEN|SICHT_COLOR|sichtForRecord|breakdownByView/,
         `${module} nennt die Mobilitaetssicht noch.`);
@@ -213,7 +213,7 @@ describe('Der Baum der Verknuepfungen', () => {
   test('acht Typen mit ihren Rollen darunter, absteigend gezaehlt', () => {
     const groups = linkGroups(store);
     assert.deepEqual(groups.map(g => g.value),
-      ['person', 'institution', 'ort', 'datum', 'werk', 'ereignis', 'finanz', 'ensemble'],
+      ['person', 'institution', 'ort', 'datum', 'werk', 'finanz', 'ereignis', 'ensemble'],
       'Die acht Typen der Verknuepfungstabelle, der ergiebigste zuerst.');
     for (let i = 1; i < groups.length; i++) {
       assert.ok(groups[i - 1].count >= groups[i].count);

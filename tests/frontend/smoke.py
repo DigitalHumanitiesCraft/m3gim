@@ -172,8 +172,8 @@ def main() -> int:
         #     Regression) oder ein Key beim Refactor still wegfliegt.
         stamp_expectations = {
             "bestand":    ["konvolute", "records", "stand"],
-            "chronik":    ["records", "jahre-belegt", "datiert", "undatiert",
-                           "datierungsrollen", "spanne"],
+            "chronik":    ["records", "jahre-belegt", "datumsgruppen",
+                           "quellenbezuege", "ohne-dokumentdatum", "spanne"],
             "statistik":  ["records", "ansichten", "aktiv", "spanne"],
             # Seit E-226 zeigt die Seite genau ein Register; der Stempel nennt
             # es und seine Zahlen statt aller vier Registerschluessel.
@@ -190,84 +190,84 @@ def main() -> int:
         for view, required in stamp_expectations.items():
             results.append(expect_stamp(stamps, view, required))
 
-        # --- Canary Chronik: Scroll-Zeitstrahl (E-88) rendert Jahres-Zeilen
-        #     1919..2009 (+ Ausreisser), leere Jahre als Umriss-Dots, Records
-        #     als chronik-point-Chips. Klick auf Punkt = selectRecord -> springt
-        #     in Bestand und oeffnet Inline-Detail.
+        # --- Canary Chronik: dated rows expose their sources and entities.
         try:
             page.locator('[data-tab="chronik"]').first.click()
             page.wait_for_timeout(400)
-            year_count = page.locator('#tab-chronik .chronik-year').count()
-            empty_years = page.locator(
-                '#tab-chronik .chronik-year--empty'
-            ).count()
-            points_in_empty = page.locator(
-                '#tab-chronik .chronik-year--empty .chronik-point'
-            ).count()
-            # Erwartung: mindestens 91 Jahre (1919..2009), viele leer, keine
-            # Records in leeren Jahres-Zeilen (Form-ist-Signal-Prinzip).
-            if year_count >= 90 and empty_years >= 10 and points_in_empty == 0:
-                results.append(("OK", "chronik:year-grid          ",
-                                f"{year_count} Jahre, {empty_years} leer, 0 Punkte in leeren"))
+            date_rows = page.locator('#tab-chronik .chronik-date')
+            sources = page.locator('#tab-chronik .chronik-source__link')
+            entities = page.locator('#tab-chronik .chronik-entity')
+            if date_rows.count() > 0 and sources.count() > 0 and entities.count() > 0:
+                results.append(("OK", "chronik:timeline          ",
+                                f"{date_rows.count()} Datierungen, "
+                                f"{sources.count()} Quellen, {entities.count()} Entitaeten"))
             else:
-                results.append(("FAIL", "chronik:year-grid          ",
-                                f"Jahre={year_count}, leer={empty_years}, "
-                                f"Punkte-in-leer={points_in_empty}"))
+                results.append(("FAIL", "chronik:timeline          ",
+                                f"Datierungen={date_rows.count()}, Quellen={sources.count()}, "
+                                f"Entitaeten={entities.count()}"))
 
-            # Klick auf einen Chronik-Punkt: muss selectRecord triggern und
-            # in Bestand springen.
-            points = page.locator('#tab-chronik .chronik-point')
-            if points.count() > 0:
+            if sources.count() > 0:
                 errs_before = len(global_errors)
-                points.first.click()
+                sources.first.click()
                 page.wait_for_timeout(500)
                 detail_visible = page.locator('.inline-detail').count()
                 active_tab = page.locator('[data-tab][aria-selected="true"]').get_attribute('data-tab')
                 new_errs = expect_no_new_errors(global_errors, errs_before)
                 if detail_visible > 0 and active_tab == 'bestand' and not new_errs:
-                    results.append(("OK", "click:chronik-point        ",
+                    results.append(("OK", "click:chronik-source       ",
                                     "springt in Bestand + Inline-Detail, 0 Konsole"))
                 else:
-                    results.append(("FAIL", "click:chronik-point        ",
+                    results.append(("FAIL", "click:chronik-source       ",
                                     f"detail={detail_visible}, tab={active_tab}, errs={len(new_errs)}"))
                     for e in new_errs[:2]:
                         results.append(("  ", " " * 24, e[:120]))
             else:
-                results.append(("WARN", "click:chronik-point        ",
-                                "keine Punkte im Zeitstrahl gefunden"))
+                results.append(("FAIL", "click:chronik-source       ",
+                                "kein Quelldokument in der Chronik gefunden"))
         except Exception as e:
-            results.append(("WARN", "chronik:year-grid          ",
-                            f"check uebersprungen: {e}"))
+            results.append(("FAIL", "chronik:timeline          ", str(e)[:120]))
 
-        # --- Canary Chronik: Aggregat -> Quelle (E-124). Klick auf ein
-        #     Dekaden-Segment muss genau seine belegenden Chips
-        #     hervorheben (.chronik-point--hit) und den Rest daempfen
-        #     (.chronik-point--dim). Das ist der harte Schutz fuer die
-        #     Vorgabe "kein Aggregat ohne Aufloesung auf die Einzelquellen":
-        #     bleibt hit==0, ist der Stapelbalken eine unbelegte Zahl.
+        # --- Canary Chronik: entity and lane compression resolve to evidence.
         try:
             page.locator('[data-tab="chronik"]').first.click()
             page.wait_for_timeout(300)
-            segs = page.locator('#tab-chronik .chronik-decades__seg')
-            if segs.count() > 0:
+            entities = page.locator('#tab-chronik .chronik-entity')
+            if entities.count() > 0:
                 errs_before = len(global_errors)
-                segs.first.click()
-                page.wait_for_timeout(400)
-                hit = page.locator('#tab-chronik .chronik-point--hit').count()
-                dim = page.locator('#tab-chronik .chronik-point--dim').count()
+                entities.first.click()
+                page.wait_for_timeout(200)
+                evidence = page.locator('#tab-chronik .chronik-evidence')
+                evidence_sources = evidence.locator('.chronik-evidence__source')
                 new_errs = expect_no_new_errors(global_errors, errs_before)
-                if hit > 0 and dim > 0 and not new_errs:
-                    results.append(("OK", "chronik:aggregat-aufloesung",
-                                    f"Segment-Klick: {hit} Chips hervor, {dim} gedaempft, 0 Konsole"))
+                if evidence.count() == 1 and evidence_sources.count() > 0 and not new_errs:
+                    results.append(("OK", "chronik:entity-evidence   ",
+                                    f"{evidence_sources.count()} Beleglinks, 0 Konsole"))
                 else:
-                    results.append(("FAIL", "chronik:aggregat-aufloesung",
-                                    f"hit={hit}, dim={dim}, errs={len(new_errs)}"))
+                    results.append(("FAIL", "chronik:entity-evidence   ",
+                                    f"Panel={evidence.count()}, Belege={evidence_sources.count()}, "
+                                    f"errs={len(new_errs)}"))
             else:
-                results.append(("WARN", "chronik:aggregat-aufloesung",
-                                "kein Dekaden-Segment gefunden"))
+                results.append(("FAIL", "chronik:entity-evidence   ",
+                                "keine Entitaet in der Chronik gefunden"))
+
+            more = page.locator('#tab-chronik .chronik-more')
+            if more.count() > 0:
+                controlled = more.first.get_attribute('aria-controls')
+                before = page.locator(f'#{controlled} > li').count()
+                more.first.click()
+                after = page.locator(f'#{controlled} > li').count()
+                expanded = more.first.get_attribute('aria-expanded')
+                if after > before and expanded == 'true':
+                    results.append(("OK", "chronik:lane-more         ",
+                                    f"{before} auf {after} Eintraege erweitert"))
+                else:
+                    results.append(("FAIL", "chronik:lane-more         ",
+                                    f"vorher={before}, nachher={after}, expanded={expanded}"))
+            else:
+                results.append(("FAIL", "chronik:lane-more         ",
+                                "keine verdichtete Lane mit Mehr-Schalter gefunden"))
         except Exception as e:
-            results.append(("WARN", "chronik:aggregat-aufloesung",
-                            f"check uebersprungen: {e}"))
+            results.append(("FAIL", "chronik:entity-evidence   ", str(e)[:120]))
 
         # --- Canary Karte: entitaetszentrierte D3-geo-Karte zeichnet nach dem
         #     asynchronen Geometrie-Load Stadt-Knoten (KEINE Verbindungslinien
