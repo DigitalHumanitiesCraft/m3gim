@@ -74,10 +74,10 @@ The requirements per research question are set out as epics and stories below an
 ### Non-functional
 
 - No backend, no build chain, all data loaded at start, deliverable as static files.
-- `docs/data/m3gim.jsonld` is the single data source of the frontend, and no count is hard coded in the application.
+- `docs/data/m3gim.jsonld` is the single archival data source of the frontend, and no count is hard coded in the application. E-290 adds a separately identified editorial context layer from the research framework.
 - Reproducible, meaning versioned source exports and a pipeline that derives the same dataset from them.
 - Connectable to linked open data through RiC-O 1.1, AgRelOn, SKOS and Wikidata identifiers.
-- No editorial interpretation in the interface that is not derivable from the metadata.
+- Archival assertions must derive from the metadata. E-290 permits a separate, explicitly editorial and source-linked biographical context layer; it neither changes archival evidence nor participates in document filtering.
 - No pre-emptive performance optimization (E-25). A markedly larger fonds in a follow-up project would reassess this.
 - Interface strings and the finding texts of the Datenspiegel are German, code and the documents in `knowledge/` are English.
 
@@ -185,7 +185,7 @@ All filters of all views stand in the one left sidebar, which scrolls independen
 
 Bestand. The archival base view on the records in their Konvolut hierarchy and the provenance anchor of the application. It lists in signature order without a sorting control, because the Chronik carries the date and the facets carry the type (E-203). A Konvolut stands as a permanently visible group head that opens its Folios, a record opens its detail. Records without a Verknüpfung lie outside the application, their finding aid stays the archive (E-165). The view opens on the full base set (E-253).
 
-Chronik. A continuous scaled vertical axis places all recorded dates of the selected documents in time (E-287, E-289). Intervals span their temporal extent; year/month precision and qualified boundaries remain explicit. Densely spaced values aggregate their labels while retaining exact temporal marks and complete evidence access. Source and entity context remain distinct, with typed parts separate from works. Chronik and Netzwerk share a detail component that appears only on selection and adapts to narrow screens. The common document cut applies before projection; display navigation never filters away earlier statements, malformed values or undated context.
+Chronik. A vertical calendar chronology combines source and entity lanes, four calendar granularities and explicitly compressed empty stretches (E-287, E-290). Each occupied group has one anchor and named previews with complete evidence access. Original datings retain ranges, precision and qualifiers; finer scales keep coarser values accessible without fabricating exact dates. A distinct, source-linked editorial lane supplies labelled biographical context. Its bands preserve chronological extent across explicit folds and do not imply continuous presence. Source and entity context remain distinct, with typed parts separate from works. Chronik and Netzwerk share a detail component that appears only on selection and adapts to narrow screens. The common document cut applies before projection; display navigation never removes earlier statements, malformed values or undated context.
 
 Karte. Every place of the result set as a point with its place role, its localization certainty and the way to the attesting records, entity-centred through the choice of a person, an institution or a work. A place the map cannot draw stands in a sidebar section of its own with its record count, its reason and the same jump into the documents a map point carries, instead of vanishing (E-280). The country is a facet of the shared sidebar rather than a section of this view, and it counts records with evidence of presence (E-224).
 

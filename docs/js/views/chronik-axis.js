@@ -1,185 +1,171 @@
-/** A linear time surface: only labels aggregate, never the temporal coordinates. */
+/** Calendar lanes share a continuous rail with explicitly compressed gaps. */
 import { el, clear } from '../utils/dom.js';
-import { dateExtent, layoutEntries, ticksForWindow } from './chronik-time-layout.js';
+import { buildCalendarLayout } from './chronik-time-layout.js';
+import { CHRONIK_CONTEXT } from './chronik-context.js';
 
-const YEAR = 365.2425 * 86400000;
-const SCALES = { overview: ['Jahrzehnte', 24], years: ['Jahre', 260], year: ['Monate', 1800], month: ['Tage', 12000] };
-const BUCKET = 156;
-const PAD = 52;
-const anchorOf = extent => extent.qualifier === 'nach' ? extent.end : extent.start;
-const dateLabel = time => new Intl.DateTimeFormat('de-AT', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(time);
+const SCALES = { overview: 'Jahrzehnte', years: 'Jahre', year: 'Monate', month: 'Tage' };
+const CONTEXT_TYPES = { ausbildung: 'Ausbildung', engagement: 'Engagement', gastspiel: 'Gastspiele', lehre: 'Lehre' };
+const HEADER = 62;
+const calendarYear = time => new Date(time).getUTCFullYear();
+const contextId = phase => `${phase.category}-${phase.label}-${phase.from}`;
 
-export function createChronikAxis({ rows, undated, renderSummary, openRows, openRow, beforeNavigate }) {
-  const entries = rows.map(row => ({ row, extent: dateExtent(row.key) }));
-  const dated = entries.filter(entry => entry.extent);
-  const invalid = entries.filter(entry => !entry.extent).map(entry => entry.row);
-  const first = dated.length ? Math.min(...dated.map(entry => entry.extent.start)) : Date.UTC(1950, 0);
-  const last = dated.length ? Math.max(...dated.map(entry => Math.max(entry.extent.end, anchorOf(entry.extent) + 1))) : Date.UTC(1951, 0);
-  const start = Date.UTC(new Date(first).getUTCFullYear(), 0);
-  const end = Date.UTC(new Date(last - 1).getUTCFullYear() + 1, 0);
-  const frequency = new Map();
-  for (const { row } of dated) {
-    const count = row.sources.filter(source => source.kind === 'document').length;
-    if (count) frequency.set(row.year, (frequency.get(row.year) || 0) + count);
-  }
-  const preferredYear = [...frequency].sort((a, b) => b[1] - a[1])[0]?.[0] ?? new Date(first).getUTCFullYear();
+export function createChronikAxis({ rows, undated, renderLanes, openRows, openRow, openContext, beforeNavigate }) {
   let scale = 'years';
-  let px = SCALES[scale][1] / YEAR;
-  let frame = 0;
+  let layout;
   let disposed = false;
-  const surface = el('div', { className: 'chronik-timeline', 'aria-label': 'Chronologische Quellen und Entitäten' });
-  const ticks = el('div', { className: 'chronik-ticks', 'aria-hidden': 'true' });
-  const scroller = el('div', { className: 'chronik-scroll', tabindex: '0', 'aria-label': 'Zeitachse, nach unten durch die Zeit scrollen' }, surface);
-  const position = time => PAD + (time - start) * px;
-  const timeAt = y => start + (y - PAD) / px;
-  const center = () => timeAt(scroller.scrollTop + scroller.clientHeight / 2);
-  const yearSelect = el('select', { id: 'chronik-year-jump', 'aria-label': 'Zum Jahr springen', onChange: event => {
-    navigate(Date.UTC(Number(event.target.value), 0));
-  } }, ...Array.from({ length: new Date(end).getUTCFullYear() - new Date(start).getUTCFullYear() }, (_, offset) => {
-    const year = new Date(start).getUTCFullYear() + offset;
-    return el('option', { value: String(year) }, String(year));
-  }));
+  let frame = 0;
+  let currentHeight = 500;
+  const expandedGaps = new Set();
+  const surface = el('div', { className: 'chronik-timeline' });
+  const head = el('div', { className: 'chronik-lane-head chronik-calendar-grid' },
+    el('span', {}, 'Zeit ↓'), el('span', { className: 'chronik-context-heading' }, 'Lebensabschnitte', el('small', {}, 'Redaktioneller Kontext')),
+    el('span', {}, 'Quellen'), ...['Orte', 'Personen', 'Werke', 'Institutionen'].map(label => el('span', { className: 'chronik-entity-heading' }, label)));
+  const scroller = el('div', { className: 'chronik-scroll', tabindex: '0', 'aria-label': 'Chronik mit Kalendergruppen' }, head, surface);
+  const yearSelect = el('select', { id: 'chronik-year-jump', 'aria-label': 'Zum Jahr springen',
+    onChange: event => navigate(Date.UTC(Number(event.target.value), 0)),
+  });
   const scaleSelect = el('select', { id: 'chronik-scale', 'aria-label': 'Maßstab', onChange: event => {
-    const anchor = center();
+    const anchor = layout.timeAt(scroller.scrollTop);
     beforeNavigate();
     scale = event.target.value;
-    px = SCALES[scale][1] / YEAR;
-    draw();
-    scroller.scrollTop = position(anchor) - scroller.clientHeight / 2;
-    updateTicks();
-  } }, ...Object.entries(SCALES).map(([value, [label]]) => el('option', { value }, label)));
+    expandedGaps.clear();
+    draw(anchor);
+  } }, ...Object.entries(SCALES).map(([value, label]) => el('option', { value }, label)));
   scaleSelect.value = scale;
-  const previous = el('button', { type: 'button', 'aria-label': 'Zur vorherigen Datierung', onClick: () => step(-1) }, '↑');
-  const next = el('button', { type: 'button', 'aria-label': 'Zur nächsten Datierung', onClick: () => step(1) }, '↓');
+  const previous = el('button', { type: 'button', 'aria-label': 'Zur vorherigen Kalendergruppe', onClick: () => step(-1) }, '↑');
+  const next = el('button', { type: 'button', 'aria-label': 'Zur nächsten Kalendergruppe', onClick: () => step(1) }, '↓');
+  const coarseButton = el('button', { type: 'button', className: 'chronik-more chronik-coarse',
+    onClick: event => openRows(layout.coarseRows.map(item => item.row), event.currentTarget, 'Zeitangaben mit gröberer Datierung'),
+  });
+  const invalidButton = el('button', { type: 'button', className: 'chronik-more chronik-invalid',
+    onClick: event => openRows(layout.invalid, event.currentTarget, 'Datierung prüfen'),
+  });
   const controls = el('div', { className: 'chronik-navigation' },
     el('label', {}, 'Jahr', yearSelect), el('label', {}, 'Maßstab', scaleSelect),
-    el('div', { className: 'chronik-step', role: 'group', 'aria-label': 'Datumsgruppen durchgehen' }, previous, next));
-  const extra = el('div', { className: 'chronik-extra' });
-  let visibleRanges = [];
-  const rangesButton = el('button', { type: 'button', className: 'chronik-more chronik-visible-ranges',
-    onClick: event => openRows(visibleRanges, event.currentTarget, 'Datierungsbereiche im Ausschnitt'),
-  }, 'Datierungsbereiche');
-  extra.appendChild(rangesButton);
-  if (undated) extra.appendChild(el('button', { type: 'button', className: 'chronik-more chronik-undated',
-    onClick: event => openRow(undated, event.currentTarget),
-  }, `Ohne Datum · ${undated.sources.length}`));
-  if (invalid.length) extra.appendChild(el('button', { type: 'button', className: 'chronik-more chronik-invalid',
-    onClick: event => openRows(invalid, event.currentTarget, 'Datierung prüfen'),
-  }, `Datierung prüfen · ${invalid.length}`));
-  controls.appendChild(extra);
+    el('div', { className: 'chronik-step', role: 'group', 'aria-label': 'Kalendergruppen durchgehen' }, previous, next),
+    el('button', { type: 'button', className: 'chronik-more chronik-context-control',
+      onClick: event => openContext(CHRONIK_CONTEXT, event.currentTarget),
+    }, 'Lebensabschnitte'), coarseButton,
+    undated ? el('button', { type: 'button', className: 'chronik-more chronik-undated',
+      onClick: event => openRow(undated, event.currentTarget),
+    }, `Ohne Datum · ${undated.sources.length}`) : null, invalidButton);
 
   function navigate(time) {
     beforeNavigate();
-    scroller.scrollTop = Math.max(0, position(time) - PAD);
-    updateTicks();
+    scroller.scrollTop = layout.position(time);
+    updateNavigation();
   }
 
   function step(direction) {
-    const anchor = timeAt(scroller.scrollTop + PAD);
-    const candidates = dated.map(entry => anchorOf(entry.extent)).sort((a, b) => a - b);
-    const target = direction > 0 ? candidates.find(time => time > anchor + 86400000 / 2)
-      : candidates.findLast(time => time < anchor - 86400000 / 2);
-    if (target != null) navigate(target);
+    const target = direction > 0 ? layout.groups.find(group => group.y > scroller.scrollTop + 2)
+      : layout.groups.findLast(group => group.y < scroller.scrollTop - 2);
+    if (target) navigate(target.start);
   }
 
-  function draw() {
+  function draw(anchor) {
+    const hostWidth = scroller.parentElement?.clientWidth || 1100;
+    currentHeight = hostWidth < 600 ? 960 : 500;
+    layout = buildCalendarLayout(rows, { scale, rowHeight: currentHeight, expandedGaps });
     clear(surface);
-    const height = (end - start) * px;
-    surface.style.height = `${height + PAD * 2 + BUCKET}px`;
-    surface.dataset.start = String(start);
-    surface.dataset.pxPerDay = String(px * 86400000);
+    surface.style.height = `${layout.height + HEADER}px`;
     surface.appendChild(el('div', { className: 'chronik-axis-line', 'aria-hidden': 'true' }));
-    surface.appendChild(ticks);
-    const tracks = [];
-    const sorted = [...dated].sort((a, b) => a.extent.start - b.extent.start || b.extent.end - a.extent.end);
-    for (const { row, extent } of sorted) {
-      const y = position(anchorOf(extent));
-      const uncertain = extent.precision !== 'day' || extent.qualifier;
-      if (uncertain && !['vor', 'nach'].includes(extent.qualifier)) {
-        let track = tracks.findIndex(stop => stop <= extent.start);
-        if (track < 0) track = tracks.length;
-        tracks[track] = extent.end;
-        const bar = el('button', { type: 'button', tabindex: '-1', className: `chronik-range${extent.isRange ? ' chronik-range--interval' : ''}`,
-          dataset: { date: row.key, tip: `${row.dateLabel} · ${extent.isRange ? 'Genannter Zeitraum' : 'Datumsgenauigkeit'}` },
-          'aria-label': `${row.dateLabel} · ${extent.isRange ? 'Genannter Zeitraum' : 'Datumsgenauigkeit'}, Belege ansehen`,
-          onClick: event => openRow(row, event.currentTarget),
-        });
-        bar.style.top = `${y}px`;
-        bar.style.height = `${Math.max(2, (extent.end - extent.start) * px)}px`;
-        bar.style.setProperty('--track', String(track));
-        surface.appendChild(bar);
-      }
-      const kinds = [...new Set(row.sources.map(source => source.kind))];
-      for (const kind of kinds) {
-        const mark = el('button', { type: 'button', tabindex: '-1', className: `chronik-mark chronik-mark--${kind}${extent.qualifier ? ' chronik-mark--qualified' : ''}`,
-          dataset: { date: row.key, kind, tip: `${row.dateLabel} · ${kind === 'document' ? 'Dokumentdatum' : 'Datierte Aussage'}` },
-          'aria-label': `${row.dateLabel} · ${kind === 'document' ? 'Dokumentdatum' : 'Datierte Aussage'}, Belege ansehen`,
-          onClick: event => openRow(row, event.currentTarget),
-        });
-        mark.style.top = `${y}px`;
-        if (kinds.length > 1 && kind === 'statement') mark.classList.add('chronik-mark--paired');
-        if (extent.qualifier) mark.textContent = extent.qualifier === 'vor' ? '↑' : extent.qualifier === 'nach' ? '↓' : '~';
-        surface.appendChild(mark);
-      }
+    for (const group of layout.groups) {
+      const node = el('section', { className: 'chronik-calendar-group chronik-calendar-grid',
+        dataset: { key: group.key, year: String(group.year), start: String(group.start) }, 'aria-label': group.label,
+      }, el('div', { className: 'chronik-calendar-date' },
+        el('button', { type: 'button', className: 'chronik-calendar-anchor',
+          onClick: event => openRows(group.rows, event.currentTarget, group.label),
+        }, group.label)), el('div', { className: 'chronik-context-space', 'aria-hidden': 'true' }), ...renderLanes(group));
+      node.style.top = `${group.y}px`;
+      node.style.height = `${group.height}px`;
+      surface.appendChild(node);
     }
-    surface.style.setProperty('--track-step', `${Math.min(5, 38 / Math.max(1, tracks.length - 1))}px`);
-    const groups = layoutEntries(dated.map(({ row, extent }) => ({ row,
-      extent: { ...extent, start: anchorOf(extent), end: Math.max(extent.end, anchorOf(extent) + 1) },
-    })), { start, end, height, bucketHeight: BUCKET });
-    for (const group of groups) {
-      const top = PAD + (group.labelY ?? Math.floor(group.y / BUCKET) * BUCKET);
-      const card = el('section', { className: 'chronik-cluster', dataset: { groupKey: group.key },
-        'aria-label': group.rows.length === 1 ? group.rows[0].dateLabel : `${group.rows.length} Datumsgruppen`,
-      }, renderSummary(group.rows));
-      card.style.top = `${top}px`;
-      surface.appendChild(card);
-      const anchor = position(Math.min(...group.rows.map(row => anchorOf(dateExtent(row.key)))));
-      const line = el('div', { className: 'chronik-connector', 'aria-hidden': 'true' });
-      line.style.top = `${Math.min(anchor, top + 20)}px`;
-      line.style.height = `${Math.max(1, Math.abs(anchor - top - 20))}px`;
-      line.classList.toggle('chronik-connector--up', anchor > top + 20);
-      surface.appendChild(line);
+    drawContext();
+    for (const gap of layout.segments.filter(segment => segment.kind === 'gap')) {
+      const isExpanded = expandedGaps.has(gap.key);
+      const label = scale === 'year' || scale === 'month'
+        ? `${new Date(gap.start).toLocaleDateString('de-AT', { timeZone: 'UTC' })}–${new Date(gap.end - 1).toLocaleDateString('de-AT', { timeZone: 'UTC' })}`
+        : gap.fromYear === gap.toYear ? String(gap.fromYear) : `${gap.fromYear}–${gap.toYear}`;
+      const node = el('div', { className: 'chronik-gap', dataset: { gapKey: gap.key, gapFrom: String(gap.fromYear), gapTo: String(gap.toYear) } },
+        el('span', { className: 'chronik-gap__cut', 'aria-hidden': 'true' }, '⌁'),
+        el('button', { type: 'button', className: 'chronik-more', 'aria-expanded': String(isExpanded), onClick: event => {
+          beforeNavigate();
+          if (isExpanded) expandedGaps.delete(gap.key); else expandedGaps.add(gap.key);
+          draw(gap.start);
+          surface.querySelector(`[data-gap-key="${gap.key}"] button`)?.focus({ preventScroll: true });
+        } }, `${label} · ${isExpanded ? 'Zeitabschnitt zusammenziehen' : 'Zeitabschnitt verkürzt'}`));
+      node.style.top = `${gap.y}px`;
+      node.style.height = `${gap.height}px`;
+      surface.appendChild(node);
     }
-    if (!dated.length) surface.appendChild(el('p', { className: 'chronik-empty' },
-      undated ? 'Die ausgewählten Dokumente haben kein einordenbares Datum.' : 'Keine Datierungen in dieser Auswahl.'));
-    updateTicks();
+    if (!layout.groups.length) surface.appendChild(el('p', { className: 'chronik-empty' },
+      layout.coarseRows.length ? 'Die vorhandenen Zeitangaben sind gröber datiert. Wähle einen gröberen Maßstab oder öffne die Zeitangaben.'
+        : undated ? 'Die Quellen dieser Auswahl haben kein einordenbares Datum.' : 'Keine Datierungen in dieser Auswahl.'));
+    coarseButton.hidden = !layout.coarseRows.length;
+    coarseButton.textContent = `Gröbere Zeitangaben · ${layout.coarseRows.length}`;
+    invalidButton.hidden = !layout.invalid.length;
+    invalidButton.textContent = `Datierung prüfen · ${layout.invalid.length}`;
+    clear(yearSelect);
+    const years = [...new Set(layout.groups.map(group => calendarYear(group.start)).concat(layout.coarseRows.map(item => item.year)))].sort((a, b) => a - b);
+    for (const year of years) yearSelect.appendChild(el('option', { value: String(year) }, String(year)));
+    if (anchor != null) scroller.scrollTop = layout.position(anchor);
+    updateNavigation();
   }
 
-  function updateTicks() {
-    if (disposed) return;
-    clear(ticks);
-    const from = Math.max(start, timeAt(scroller.scrollTop - 80));
-    const to = Math.min(end, timeAt(scroller.scrollTop + (scroller.clientHeight || 700) + 80));
-    if (to > from) for (const tick of ticksForWindow(from, to, (to - from) * px)) {
-      const time = tick.time ?? tick.value;
-      const node = el('div', { className: `chronik-tick${tick.major ? ' chronik-tick--major' : ''}`, dataset: { year: String(new Date(time).getUTCFullYear()) } }, tick.label);
-      node.style.top = `${position(time)}px`;
-      ticks.appendChild(node);
+  function drawContext() {
+    if (!layout.segments.length) return;
+    const domainStart = layout.segments[0].start;
+    const domainEnd = layout.segments.at(-1).end;
+    const trackEnds = [];
+    const phases = [...CHRONIK_CONTEXT].sort((a, b) => Number(a.from) - Number(b.from));
+    for (const phase of phases) {
+      const start = Date.UTC(Number(phase.from), 0);
+      const end = Date.UTC(Number(phase.to) + 1, 0);
+      if (end <= domainStart || start >= domainEnd) continue;
+      let track = trackEnds.findIndex(stop => stop <= start);
+      if (track < 0) track = trackEnds.length;
+      trackEnds[track] = end;
+      const label = `${phase.label} · ${CONTEXT_TYPES[phase.category]} · ${phase.from}–${phase.to}`;
+      const clipped = start < domainStart || end > domainEnd;
+      const band = el('button', { type: 'button', className: 'chronik-context-band',
+        dataset: { contextId: contextId(phase), editorial: 'true', tip: `${label}. Redaktioneller Kontext aus dem Forschungsrahmen.${clipped ? ' Der Balken ist auf den sichtbaren Datenzeitraum begrenzt.' : ''}` },
+        'aria-label': `${label}, redaktionellen Kontext öffnen`,
+        onClick: event => openContext([phase], event.currentTarget),
+      }, el('span', { className: 'chronik-context-band__label' }, `${start < domainStart ? '↑ ' : ''}${label}${end > domainEnd ? ' ↓' : ''}`));
+      band.style.top = `${layout.position(start)}px`;
+      band.style.height = `${Math.max(4, layout.position(end) - layout.position(start))}px`;
+      band.style.setProperty('--track', String(track));
+      surface.appendChild(band);
     }
-    visibleRanges = dated.filter(({ extent }) =>
-      (extent.isRange || extent.precision !== 'day') && !['vor', 'nach'].includes(extent.qualifier)
-      && extent.start < timeAt(scroller.scrollTop + scroller.clientHeight)
-      && extent.end > timeAt(scroller.scrollTop)).map(entry => entry.row);
-    rangesButton.textContent = `Datierungsbereiche · ${visibleRanges.length}`;
-    rangesButton.disabled = !visibleRanges.length;
-    for (const group of surface.querySelectorAll('.chronik-cluster')) {
-      const inView = group.offsetTop + BUCKET >= scroller.scrollTop
-        && group.offsetTop <= scroller.scrollTop + scroller.clientHeight;
-      for (const button of group.querySelectorAll('button')) button.tabIndex = inView ? 0 : -1;
-    }
-    const visible = Math.max(start, Math.min(end - 1, timeAt(scroller.scrollTop + PAD + 1)));
-    yearSelect.value = String(new Date(visible).getUTCFullYear());
-    scroller.setAttribute('aria-description', `Ausschnitt ab ${dateLabel(visible)}. Maßstab: ${SCALES[scale][0]}.`);
-    previous.disabled = !dated.some(entry => anchorOf(entry.extent) < visible - 43200000);
-    next.disabled = !dated.some(entry => anchorOf(entry.extent) > visible + 43200000);
+    surface.style.setProperty('--tracks', String(Math.max(1, trackEnds.length)));
   }
 
+  function updateNavigation() {
+    if (!layout || disposed) return;
+    const year = calendarYear(layout.timeAt(scroller.scrollTop + 1));
+    if ([...yearSelect.options].some(option => Number(option.value) === year)) yearSelect.value = String(year);
+    previous.disabled = !layout.groups.some(group => group.y < scroller.scrollTop - 2);
+    next.disabled = !layout.groups.some(group => group.y > scroller.scrollTop + 2);
+  }
   scroller.addEventListener('scroll', () => {
-    if (!frame) frame = requestAnimationFrame(() => { frame = 0; updateTicks(); });
+    if (!frame) frame = requestAnimationFrame(() => { frame = 0; updateNavigation(); });
   });
-  const observer = new ResizeObserver(updateTicks);
+  const observer = new ResizeObserver(() => {
+    if (disposed || !scroller.isConnected) return;
+    const wantedHeight = scroller.parentElement.clientWidth < 600 ? 960 : 500;
+    if (wantedHeight !== currentHeight) draw(layout.timeAt(scroller.scrollTop));
+  });
   observer.observe(scroller);
   draw();
-  requestAnimationFrame(() => { if (!disposed) navigate(Date.UTC(preferredYear, 0)); });
+  requestAnimationFrame(() => {
+    if (disposed) return;
+    const documentYears = new Map();
+    for (const group of layout.groups) {
+      const year = calendarYear(group.start);
+      documentYears.set(year, (documentYears.get(year) || 0) + group.rows.reduce((sum, row) => sum + row.sources.filter(source => source.kind === 'document').length, 0));
+    }
+    const firstYear = [...documentYears].sort((a, b) => b[1] - a[1])[0]?.[0];
+    if (firstYear != null) navigate(Date.UTC(firstYear, 0));
+  });
   return { element: scroller, controls, destroy() { disposed = true; observer.disconnect(); cancelAnimationFrame(frame); } };
 }

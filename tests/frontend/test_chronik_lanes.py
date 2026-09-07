@@ -1,4 +1,4 @@
-"""Browser checks for the scaled chronology and its evidence details."""
+"""Browser checks for the calendar-group chronology and its evidence details."""
 
 from urllib.parse import unquote
 
@@ -15,7 +15,7 @@ def open_chronik(frontend_server, browser_context, query=""):
     page.set_viewport_size({"width": 1536, "height": 1000})
     page.emulate_media(reduced_motion="reduce")
     page.goto(frontend_server + "#chronik" + query)
-    page.locator(".chronik-mark").first.wait_for()
+    page.locator(".chronik-calendar-group").first.wait_for()
     return page
 
 
@@ -23,30 +23,32 @@ def visible_detail(page):
     return page.locator("#tab-chronik .selection-detail__panel:visible")
 
 
-def clickable_mark(page, date):
-    page.locator("#chronik-scale").select_option("month")
-    mark = page.locator(f'.chronik-mark[data-date="{date}"]').first
-    mark.scroll_into_view_if_needed()
-    return mark
+def calendar_group(page, scale, key):
+    page.locator("#chronik-scale").select_option(scale)
+    group = page.locator(f'.chronik-calendar-group[data-key="{key}"]')
+    group.scroll_into_view_if_needed()
+    return group
 
 
 def test_source_statements_and_document_context_keep_their_dates(
     frontend_server, browser_context
 ):
     page = open_chronik(frontend_server, browser_context, "?suche=NIM_023%205")
-    for day in ("1953-04-03", "1953-04-04"):
-        expect(page.locator(f'.chronik-mark--statement[data-date="{day}"]')).to_have_count(1)
-    expect(page.locator('.chronik-mark--document[data-date="1953-04-26"]')).to_have_count(1)
+    april_3 = calendar_group(page, "month", "day-1953-04-03")
+    april_4 = page.locator('.chronik-calendar-group[data-key="day-1953-04-04"]')
+    april_26 = page.locator('.chronik-calendar-group[data-key="day-1953-04-26"]')
+    expect(april_3.locator(".chronik-source--statement")).to_have_count(1)
+    expect(april_4.locator(".chronik-source--statement")).to_have_count(1)
+    expect(april_26.locator(".chronik-source--document")).to_have_count(1)
 
-    april_4 = clickable_mark(page, "1953-04-04")
-    april_4.click()
+    april_4.locator(".chronik-source__link").click()
     panel = visible_detail(page)
     expect(panel.locator(".chronik-evidence__note")).to_contain_text("1954")
     panel.get_by_role("button", name="Schließen").click()
-    expect(april_4).to_be_focused()
 
-    april_26 = clickable_mark(page, "1953-04-26")
-    april_26.click()
+    april_26.scroll_into_view_if_needed()
+    source = april_26.locator(".chronik-source__link")
+    source.click()
     place = panel.locator(
         '.chronik-source-entities .chronik-entity[data-entity-key^="ort:"]'
     )
@@ -55,53 +57,35 @@ def test_source_statements_and_document_context_keep_their_dates(
     expect(panel).to_contain_text("Im Dokument")
     expect(panel).to_contain_text("keinen gemeinsamen Auftritt oder Aufenthalt")
     panel.get_by_role("button", name="Schließen").click()
-    expect(april_26).to_be_focused()
+    expect(source).to_be_focused()
 
 
-def test_compact_summary_opens_all_grouped_dates_and_sources(
+def test_dense_day_shows_lane_previews_and_complete_detail_lists(
     frontend_server, browser_context
 ):
     page = open_chronik(frontend_server, browser_context)
-    group = page.locator(".chronik-summary__group").first
-    group.click()
-    panel = visible_detail(page)
-    rows = panel.locator(".chronik-group-row")
-    assert rows.count() > 0
-    assert all(rows.evaluate_all("els => els.map(el => Boolean(el.dataset.date))"))
-    expect(panel.locator(".chronik-source__link").first).to_be_visible()
-
-
-def test_dense_day_opens_complete_lists_without_expanding_the_axis(
-    frontend_server, browser_context
-):
-    page = open_chronik(frontend_server, browser_context)
-    mark = clickable_mark(page, "1953-07-26")
-    top_before = mark.get_attribute("style")
-    scroll = page.locator(".chronik-scroll")
-    scroll_before = scroll.evaluate("el => el.scrollTop")
-    mark.click()
-    panel = visible_detail(page)
-    row = panel.locator('.chronik-date[data-date="1953-07-26"]')
-    people = row.locator('[data-lane="person"]')
-    sources = row.locator('[data-lane="source"]')
-    expect(people.locator(".chronik-entity")).to_have_count(3)
+    group = calendar_group(page, "month", "day-1953-07-26")
+    people = group.locator('[data-lane="person"]')
+    sources = group.locator('[data-lane="source"]')
     expect(people).to_have_attribute("data-count", "46")
+    expect(people.locator(".chronik-entity")).to_have_count(3)
+    expect(sources).to_have_attribute("data-count", "6")
     expect(sources.locator(".chronik-source__link")).to_have_count(3)
-    assert mark.get_attribute("style") == top_before
-    assert scroll.evaluate("el => el.scrollTop") == scroll_before
 
     people.locator(".chronik-more").click()
-    expect(panel.locator(":scope .chronik-list .chronik-entity")).to_have_count(46)
-    panel.get_by_role("button", name="Zurück").click()
-    expect(panel.locator('[data-lane="person"] .chronik-entity')).to_have_count(3)
-    panel.locator('[data-lane="source"] .chronik-more').click()
-    expect(panel.locator(":scope .chronik-list .chronik-source__link")).to_have_count(6)
-    panel.get_by_role("button", name="Zurück").click()
+    panel = visible_detail(page)
+    expect(panel.locator(".chronik-list .chronik-entity")).to_have_count(46)
+    panel.get_by_role("button", name="Schließen").click()
+    expect(people.locator(".chronik-entity")).to_have_count(3)
 
-    parts = panel.locator("button.chronik-parts")
+    sources.locator(".chronik-more").click()
+    expect(panel.locator(".chronik-list .chronik-source__link")).to_have_count(6)
+    panel.get_by_role("button", name="Schließen").click()
+
+    parts = group.locator("button.chronik-parts")
     expect(parts).to_have_text("Partien · 26")
     parts.click()
-    part_entries = panel.locator(":scope .chronik-list .chronik-entity")
+    part_entries = panel.locator(".chronik-list .chronik-entity")
     expect(part_entries).to_have_count(26)
     assert all(
         key.startswith("part:")
@@ -109,52 +93,71 @@ def test_dense_day_opens_complete_lists_without_expanding_the_axis(
     )
 
 
-def test_scaled_positions_preserve_actual_time_distances(frontend_server, browser_context):
-    page = open_chronik(frontend_server, browser_context, "?suche=NIM_023%205")
-    marks = {
-        day: page.locator(f'.chronik-mark[data-date="{day}"]').first
-        for day in ("1953-04-03", "1953-04-04", "1953-04-26")
-    }
-    tops = {
-        day: float(mark.evaluate("el => parseFloat(el.style.top)"))
-        for day, mark in marks.items()
-    }
-    one_day = tops["1953-04-04"] - tops["1953-04-03"]
-    twenty_two_days = tops["1953-04-26"] - tops["1953-04-04"]
-    assert one_day > 0
-    assert twenty_two_days > one_day * 20
-
-    distance_before = tops["1953-04-26"] - tops["1953-04-03"]
-    page.locator("#chronik-scale").select_option("year")
-    distance_after = (
-        float(marks["1953-04-26"].evaluate("el => parseFloat(el.style.top)"))
-        - float(marks["1953-04-03"].evaluate("el => parseFloat(el.style.top)"))
-    )
-    assert distance_after > distance_before * 5
-
-
-def test_long_range_and_distant_year_keep_their_order(frontend_server, browser_context):
+@pytest.mark.parametrize(
+    ("scale", "key"),
+    [
+        ("overview", "decade-1950"),
+        ("years", "year-1953"),
+        ("year", "month-1953-07"),
+        ("month", "day-1953-07-26"),
+    ],
+)
+def test_scale_uses_natural_calendar_groups(frontend_server, browser_context, scale, key):
     page = open_chronik(frontend_server, browser_context)
-    old = page.locator('.chronik-range[data-date^="1876"]').first
-    recent = page.locator('.chronik-mark[data-date^="1953"]').first
-    expect(old).to_have_count(1)
-    expect(recent).to_have_count(1)
-    assert float(old.evaluate("el => parseFloat(el.style.top)")) < float(
-        recent.evaluate("el => parseFloat(el.style.top)")
-    )
-    assert page.locator(".chronik-timeline").evaluate(
-        "el => el.scrollHeight > el.parentElement.clientHeight * 10"
-    )
+    group = calendar_group(page, scale, key)
+    expect(group).to_be_attached()
+    expect(group.locator(".chronik-calendar-anchor")).to_have_count(1)
+    expect(group.locator('[data-lane="source"]')).to_be_attached()
+    expect(page.locator(".chronik-mark, .chronik-range")).to_have_count(0)
 
 
-def test_entity_evidence_opens_the_record(frontend_server, browser_context):
+def test_long_empty_period_is_a_short_explicit_gap(frontend_server, browser_context):
     page = open_chronik(frontend_server, browser_context)
-    clickable_mark(page, "1953-07-26").click()
+    page.locator("#chronik-scale").select_option("years")
+    gaps = page.locator(".chronik-gap")
+    expect(gaps.first).to_be_visible()
+    largest = gaps.evaluate_all(
+        "els => els.map(el => ({years: Number(el.dataset.gapTo) - "
+        "Number(el.dataset.gapFrom), height: el.getBoundingClientRect().height}))"
+        ".sort((a, b) => b.years - a.years)[0]"
+    )
+    assert largest["years"] > 100
+    assert largest["height"] <= 60
+    expect(gaps.first.locator("button")).to_have_attribute("aria-expanded", "false")
+
+
+def test_original_range_remains_visible_in_the_calendar_source(
+    frontend_server, browser_context
+):
+    page = open_chronik(frontend_server, browser_context, "?suche=NIM_005%202")
+    group = calendar_group(page, "years", "year-1924")
+    dates = group.locator(".chronik-source__dates")
+    expect(dates).to_contain_text("1924")
+    expect(dates).to_contain_text("1925")
+
+
+def test_selection_does_not_move_calendar_group_or_scroll(
+    frontend_server, browser_context
+):
+    page = open_chronik(frontend_server, browser_context)
+    group = calendar_group(page, "month", "day-1953-07-26")
+    source = group.locator(".chronik-source__link").first
+    scroll = page.locator(".chronik-scroll")
+    top_before = group.get_attribute("style")
+    scroll_before = scroll.evaluate("el => el.scrollTop")
+    source.click()
+    expect(visible_detail(page)).to_be_focused()
+    assert group.get_attribute("style") == top_before
+    assert scroll.evaluate("el => el.scrollTop") == scroll_before
+    visible_detail(page).press("Escape")
+    expect(source).to_be_focused()
+
+
+def test_source_evidence_opens_the_record(frontend_server, browser_context):
+    page = open_chronik(frontend_server, browser_context)
+    group = calendar_group(page, "month", "day-1953-07-26")
+    group.locator('[data-lane="ort"] .chronik-entity').first.click()
     panel = visible_detail(page)
-    place = panel.locator('[data-lane="ort"] .chronik-entity')
-    expect(place).to_contain_text("2 Belege")
-    place.click()
-    expect(panel.locator(".chronik-evidence__source")).to_have_count(2)
     source = panel.locator(".chronik-evidence__source").first
     record_id = source.get_attribute("data-record-id")
     source.click()
@@ -165,27 +168,64 @@ def test_entity_evidence_opens_the_record(frontend_server, browser_context):
     assert record_id in unquote(page.url)
 
 
-@pytest.mark.parametrize("width", [390, 800, 1366])
-def test_responsive_selection_uses_the_shared_detail(
-    frontend_server, browser_context, width
+def test_selected_source_marks_its_entities_in_the_calendar_lanes(
+    frontend_server, browser_context
 ):
     page = open_chronik(frontend_server, browser_context, "?suche=NIM_023%205")
-    page.set_viewport_size({"width": width, "height": 900})
-    trigger = clickable_mark(page, "1953-04-26")
-    trigger.click()
+    group = calendar_group(page, "month", "day-1953-04-26")
+    source = group.locator(".chronik-source__link")
+    source.click()
+    expect(source).to_have_attribute("aria-pressed", "true")
+    linked = group.locator(".chronik-entity.chronik-selected")
+    assert linked.count() > 0
+    assert all(linked.evaluate_all("els => els.map(el => el.getAttribute('aria-pressed') === 'true')"))
+    expect(linked.filter(has_text="Wuppertal").first).to_be_visible()
+    visible_detail(page).press("Escape")
+    expect(group.locator(".chronik-entity.chronik-selected")).to_have_count(0)
+
+
+def test_context_bands_are_explicit_editorial_context(frontend_server, browser_context):
+    page = open_chronik(frontend_server, browser_context)
+    bands = page.locator('.chronik-context-band[data-editorial="true"]')
+    expect(bands.first).to_be_visible()
+    assert all(bands.evaluate_all("els => els.map(el => Boolean(el.dataset.contextId))"))
+    bands.first.click()
     panel = visible_detail(page)
-    expect(panel).to_be_visible()
-    expect(panel).to_be_focused()
-    if width < 900:
-        expect(page.locator(".selection-detail__dialog[open]")).to_have_count(1)
-    else:
-        expect(page.locator(".selection-detail__slot:not([hidden])")).to_have_count(1)
-    panel.press("Escape")
-    expect(trigger).to_be_focused()
+    expect(panel).to_contain_text("Redaktioneller Kontext")
+    expect(panel.locator("a")).to_have_count(1)
+
+
+@pytest.mark.parametrize("width", [390, 800, 1366])
+def test_calendar_lanes_remain_readable_at_supported_widths(
+    frontend_server, browser_context, width
+):
+    page = open_chronik(frontend_server, browser_context)
+    page.set_viewport_size({"width": width, "height": 900})
+    group = calendar_group(page, "month", "day-1953-07-26")
+    box = group.bounding_box()
+    assert box["height"] >= (950 if width < 600 else 490)
+    assert group.evaluate(
+        "el => [...el.children].filter(child => getComputedStyle(child).display !== 'none')"
+        ".every(child => child.getBoundingClientRect().right <= el.getBoundingClientRect().right + 1)"
+    )
+    overflow = group.evaluate(
+        "el => [...el.children].filter(child => getComputedStyle(child).display !== 'none')"
+        ".map(child => ({name: child.className, overflow: child.getBoundingClientRect().bottom "
+        "- el.getBoundingClientRect().bottom})).filter(item => item.overflow > 2)"
+    )
+    assert not overflow, overflow
+    group.locator(".chronik-calendar-anchor").click()
+    expect(visible_detail(page)).to_be_visible()
+    overflow = group.evaluate(
+        "el => [...el.children].filter(child => getComputedStyle(child).display !== 'none')"
+        ".map(child => ({name: child.className, overflow: child.getBoundingClientRect().bottom "
+        "- el.getBoundingClientRect().bottom})).filter(item => item.overflow > 2)"
+    )
+    assert not overflow, overflow
     assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
 
 
-def test_year_jump_scale_controls_and_undated_evidence_are_reachable(
+def test_controls_reach_year_coarse_undated_and_context_entries(
     frontend_server, browser_context
 ):
     page = open_chronik(frontend_server, browser_context)
@@ -197,15 +237,20 @@ def test_year_jump_scale_controls_and_undated_evidence_are_reachable(
         "month",
     ]
     page.locator("#chronik-year-jump").select_option("1953")
-    expect(page.locator('.chronik-tick[data-year="1953"]').first).to_be_visible()
-    expect(page.locator('.chronik-mark[data-date^="1953"]').first).to_be_visible()
+    expect(page.locator('.chronik-calendar-group[data-year="1953"]').first).to_be_visible()
+    page.locator("#chronik-scale").select_option("month")
+    coarse = page.locator("button.chronik-coarse")
+    expect(coarse).to_be_visible()
+    coarse.click()
+    expect(visible_detail(page).locator(".chronik-group-row").first).to_be_visible()
+    visible_detail(page).press("Escape")
     undated = page.locator("button.chronik-undated")
     expect(undated).to_contain_text("Ohne Datum")
     undated.click()
     expect(visible_detail(page).locator(".chronik-source__link").first).to_be_visible()
 
 
-def test_legend_and_detail_column_have_stable_places(frontend_server, browser_context):
+def test_legend_and_shared_detail_keep_their_places(frontend_server, browser_context):
     page = open_chronik(frontend_server, browser_context)
     legend = page.locator(".chronik-legend")
     expect(legend).to_be_visible()
@@ -214,23 +259,3 @@ def test_legend_and_detail_column_have_stable_places(frontend_server, browser_co
     legend_box = legend.bounding_box()
     main_box = page.locator(".chronik-main").bounding_box()
     assert legend_box["x"] > main_box["x"] + main_box["width"] / 2
-
-
-def test_open_selection_moves_between_shared_slot_and_dialog_on_resize(
-    frontend_server, browser_context
-):
-    page = open_chronik(frontend_server, browser_context, "?suche=NIM_023%205")
-    trigger = clickable_mark(page, "1953-04-26")
-    trigger.click()
-    panel = visible_detail(page)
-    expect(page.locator(".selection-detail__slot:not([hidden])")).to_have_count(1)
-    expect(panel).to_be_focused()
-    page.set_viewport_size({"width": 800, "height": 900})
-    expect(page.locator(".selection-detail__dialog[open]")).to_have_count(1)
-    expect(panel).to_be_focused()
-    page.set_viewport_size({"width": 1536, "height": 1000})
-    expect(page.locator(".selection-detail__slot:not([hidden])")).to_have_count(1)
-    expect(panel).to_be_focused()
-    expect(page.locator(".selection-detail__dialog[open]")).to_have_count(0)
-    panel.press("Escape")
-    expect(trigger).to_be_focused()
