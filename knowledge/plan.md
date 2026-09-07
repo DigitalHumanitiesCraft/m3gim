@@ -61,6 +61,7 @@ Compare the draft and current map on the same sample. The reader must understand
 | Bestand fixes M6a–M6e | Tooltip, title selection and scroll defects were reported and fixes implemented | Targeted visual retest of the single tooltip, copying, stable opening and responsive detail head |
 | Werkregister (US2.2), Tristan und Isolde | Work and document evidence reached; composer recognised on the second look; actions, relations and hidden roles confused | Re-evaluate after register improvements; successful navigation is partial acceptance evidence |
 | Karte (T1/US1.1) | Screenshots show selected Wuppertal, legend and overlap problems; user proposes a mobility view | Document jump and place-role interpretation are not confirmed; evaluate the map draft on explicit evidence |
+| Chronik and register follow-up, 2026-09-07 | Chronik title, totals and introductory explanation removed as requested. Seven existing Chronik browser cases passed; actual Chronik/Register/Bestand/Statistik rendering compared. The project lead questions the second register search and proposes reusing the network detail panel. | Assess one search appropriate to the active view and a shared right detail panel; these follow-up changes are proposals, with timeline width and reading position to preserve |
 | Remaining views | Chronik, Netzwerk, Statistik, other registers and Korb/exports lack complete guided acceptance | Continue task examples below, including shared filters, document/event dates and actual downloads |
 
 ## Purpose and authority

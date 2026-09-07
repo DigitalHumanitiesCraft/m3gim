@@ -6,9 +6,6 @@
   font-size: var(--text-sm);
 }
 .chronik--combined { --chronik-columns: 96px minmax(190px, 1fr) minmax(0, 2fr); }
-.chronik-intro { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); flex-wrap: wrap; }
-.chronik-title { margin: 0; font-family: var(--font-title); font-size: var(--text-2xl); font-weight: var(--weight-semibold); }
-.chronik-scope { color: var(--color-text-secondary); margin: var(--space-1) 0 0; }
 .chronik-reading { font-size: var(--text-xs); color: var(--color-text-secondary); margin: var(--space-3) 0; line-height: var(--leading-normal); }
 .chronik-modes { display: flex; gap: var(--space-1); }
 .chronik-mode, .chronik-navigation select {
@@ -18,7 +15,7 @@
 .chronik-mode { cursor: pointer; }
 .chronik-mode[aria-pressed="true"] { color: var(--accent); border-color: var(--accent); }
 .chronik-sticky { position: sticky; top: 0; z-index: 3; background: var(--surface); }
-.chronik-navigation { display: flex; gap: var(--space-3); align-items: center; justify-content: space-between; padding: var(--space-2) 0; }
+.chronik-navigation { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; justify-content: space-between; padding: var(--space-2) 0; }
 .chronik-navigation span { font-size: var(--text-xs); color: var(--color-text-secondary); }
 .chronik-navigation select { max-width: 150px; }
 .chronik-grid { display: grid; grid-template-columns: var(--chronik-columns); column-gap: var(--space-4); }
@@ -95,7 +92,6 @@
 }
 @container chronik (width < 500px) {
   .chronik-timeline-container { --chronik-columns: 68px minmax(0, 1fr); padding-inline: var(--space-3); }
-  .chronik-intro { gap: var(--space-2); }
   .chronik-head > span:nth-child(n + 3), .chronik-navigation span { display: none; }
   .chronik-date__label { grid-row: 1 / span 5; }
   .chronik-lane--source { grid-row: auto; margin-bottom: var(--space-3); }

@@ -69,13 +69,6 @@ function updateChronikView() {
   }, el('option', { value: '' }, 'Zum Jahr …'),
   ...years.map(year => el('option', { value: year }, String(year))));
 
-  viewContainer.appendChild(el('div', { className: 'chronik-intro' },
-    el('div', {}, el('h2', { className: 'chronik-title' }, 'Chronik'),
-      el('p', { className: 'chronik-scope' },
-        `${rows.length} Datumsgruppen · ${records.length} Dokumente · Zeit verläuft nach unten ↓`)),
-    el('div', { className: 'chronik-modes', role: 'group', 'aria-label': 'Entitäten anordnen' }, ...modes)));
-  viewContainer.appendChild(el('p', { className: 'chronik-reading' },
-    'Dokumentdatum und datierte Aussagen stehen getrennt. „Im Dokument“ bezeichnet Nennungen im Kontext der Quelle.'));
   if (Array.isArray(shared.zeitfenster)) viewContainer.appendChild(el('p', { className: 'chronik-reading' },
     'Der Zeitfilter wählt Dokumente nach ihrem Zeitanker. Hier erscheinen alle ihre Datierungen, auch aus anderen Jahren.'));
   const head = el('div', { className: 'chronik-head chronik-grid' },
@@ -84,7 +77,8 @@ function updateChronikView() {
     ...(combined ? [] : Object.entries(FAMILIES).map(([family, label]) =>
       el('span', { className: `chronik-family chronik-family--${family}` }, familyIcon(family), label))));
   viewContainer.appendChild(el('div', { className: 'chronik-sticky' },
-    el('div', { className: 'chronik-navigation' }, jump, el('span', {}, 'Name wählen → Belege lesen')), head));
+    el('div', { className: 'chronik-navigation' }, jump, el('span', {}, 'Name wählen → Belege lesen'),
+      el('div', { className: 'chronik-modes', role: 'group', 'aria-label': 'Entitäten anordnen' }, ...modes)), head));
 
   const timeline = el('div', { className: 'chronik-timeline', 'aria-label': 'Chronologische Quellen und Entitäten' });
   let previousYear = null;
