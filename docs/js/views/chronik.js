@@ -1,5 +1,5 @@
 /** Dated statements and document context share a vertical time axis. */
-import { el, clear, scrollBehavior } from '../utils/dom.js';
+import { el, clear } from '../utils/dom.js';
 import { formatSignatur, getDocTypeId, dftLabel, ensureArray } from '../utils/format.js';
 import { createSidebar, viewShell } from '../ui/sidebar.js';
 import { familyIcon } from '../ui/family-icons.js';
@@ -8,35 +8,36 @@ import { getFilter } from '../ui/filter-state.js';
 import { yearBounds, recordsFor } from '../data/records-for.js';
 import { logStamp } from '../utils/env.js';
 import { buildChronikTimeline, dateMeta } from './chronik-timeline-data.js';
+import { createChronikAxis } from './chronik-axis.js';
+import { createSelectionDetail } from '../ui/selection-detail.js';
 
 const FAMILIES = { ort: 'Orte', person: 'Personen', werk: 'Werke', institution: 'Institutionen' };
+const SINGULAR = { ort: 'Ort', person: 'Person', werk: 'Werk', institution: 'Institution', part: 'Partie' };
 const PREVIEW_LIMIT = 3;
 let store;
 let sidebar;
 let viewContainer;
 let workspace;
-let detailSlot;
-let dialog;
-let resizeObserver;
+let details;
+let axis;
+let topbar;
 let visibleRecords = 0;
-let combined = false;
-let serial = 0;
 let activeEvidence = null;
 
 export function renderChronik(storeRef, container) {
-  closeEvidence(false);
-  resizeObserver?.disconnect();
+  axis?.destroy();
+  details?.destroy();
+  activeEvidence = null;
   store = storeRef;
   clear(container);
   const main = el('div', { className: 'view-main chronik-main' });
-  viewContainer = el('div', { className: 'chronik-timeline-container' });
-  const scroller = el('div', { className: 'chronik-scroll' }, viewContainer);
-  detailSlot = el('aside', { className: 'chronik-detail-slot', 'aria-label': 'Details und Belege' });
-  dialog = el('dialog', { className: 'chronik-dialog', 'aria-label': 'Details und Belege',
-    onCancel: event => { event.preventDefault(); closeEvidence(); },
-  });
-  workspace = el('div', { className: 'chronik-workspace' }, scroller, renderLegend(), detailSlot);
-  main.append(workspace, dialog);
+  topbar = el('div', { className: 'chronik-topbar' });
+  workspace = el('div', { className: 'chronik-workspace' });
+  main.append(topbar, workspace);
+  details = createSelectionDetail({ host: workspace, onClose: () => {
+    activeEvidence = null;
+    markSelection();
+  } });
   if (sidebar) sidebar.destroy();
   sidebar = createSidebar(store, {
     yearSpan: yearBounds(store), getCount: () => visibleRecords,
@@ -44,16 +45,11 @@ export function renderChronik(storeRef, container) {
   });
   main.insertBefore(sidebar.strip, main.firstChild);
   container.appendChild(viewShell(sidebar.element, main));
-  resizeObserver = new ResizeObserver(() => {
-    if (activeEvidence && workspace.clientWidth > 0) placePanel();
-  });
-  resizeObserver.observe(workspace);
   updateChronikView();
 }
 
 function renderLegend() {
-  const marks = [['document', 'Dokumentdatum'], ['statement', 'Datierte Aussage'],
-    ['point', 'Einzeldatum'], ['range', 'Zeitraum']];
+  const marks = [['document', 'Dokumentdatum'], ['statement', 'Datierte Aussage'], ['range', 'Datierungsbereich']];
   return el('aside', { className: 'chronik-legend', 'aria-label': 'Legende' },
     ...marks.map(([kind, label]) => el('span', { className: 'chronik-legend__item' },
       el('i', { className: `chronik-legend__mark chronik-legend__mark--${kind}`, 'aria-hidden': 'true' }), label)));
@@ -61,73 +57,82 @@ function renderLegend() {
 
 function updateChronikView() {
   closeEvidence(false);
-  serial = 0;
-  clear(viewContainer);
-  showEmptyDetail();
+  axis?.destroy();
+  axis?.element.remove();
   const shared = getFilter();
   const cut = recordsFor(store, shared).ids;
   const records = store.allRecords.filter(record => cut.has(record['@id']));
   visibleRecords = records.length;
   sidebar.update();
   const { rows, undated } = buildChronikTimeline(store, records);
+  axis = createChronikAxis({ rows, undated, renderSummary, openRows, openRow,
+    beforeNavigate: () => closeEvidence(false) });
+  viewContainer = axis.element;
+  workspace.prepend(viewContainer);
+  clear(topbar);
+  topbar.append(axis.controls, renderLegend());
+  if (Array.isArray(shared.zeitfenster)) axis.controls.dataset.tip =
+    'Der Zeitfilter wählt Dokumente nach ihrem Zeitanker. Die Achse zeigt alle Datierungen dieser Dokumente.';
   const years = [...new Set(rows.map(row => row.year).filter(year => year != null))];
-  viewContainer.classList.toggle('chronik--combined', combined);
-  const modes = [false, true].map(value => el('button', {
-    type: 'button', className: 'chronik-mode', 'aria-pressed': String(combined === value),
-    onClick: () => {
-      combined = value;
-      updateChronikView();
-      viewContainer.querySelector('.chronik-mode[aria-pressed="true"]').focus({ preventScroll: true });
-    },
-  }, value ? 'Alle Entitäten' : 'Getrennte Lanes'));
-  const jump = el('select', { id: 'chronik-year-jump', 'aria-label': 'Zum Jahr springen',
-    onChange: event => {
-      const target = viewContainer.querySelector('[data-year="' + event.target.value + '"]');
-      if (target) {
-        target.scrollIntoView({ block: 'start', behavior: scrollBehavior() });
-        target.focus({ preventScroll: true });
-      }
-    },
-  }, el('option', { value: '' }, 'Zum Jahr …'),
-  ...years.map(year => el('option', { value: year }, String(year))));
-  if (Array.isArray(shared.zeitfenster)) viewContainer.appendChild(el('p', { className: 'chronik-reading' },
-    'Der Zeitfilter wählt Dokumente nach ihrem Zeitanker. Hier erscheinen alle ihre Datierungen, auch aus anderen Jahren.'));
-  const head = el('div', { className: 'chronik-head chronik-grid' },
-    el('span', {}, 'Zeit ↓'), el('span', {}, 'Quellen'),
-    el('span', { className: 'chronik-head__entities' }, 'Entitäten'),
-    ...(combined ? [] : Object.entries(FAMILIES).map(([family, label]) =>
-      el('span', { className: `chronik-family chronik-family--${family}` }, familyIcon(family), label))));
-  viewContainer.appendChild(el('div', { className: 'chronik-sticky' },
-    el('div', { className: 'chronik-navigation' }, jump,
-      el('div', { className: 'chronik-modes', role: 'group', 'aria-label': 'Entitäten anordnen' }, ...modes)), head));
-
-  const timeline = el('div', { className: 'chronik-timeline', 'aria-label': 'Chronologische Quellen und Entitäten' });
-  let previousYear = null;
-  for (const row of rows) {
-    if (row.year !== previousYear) {
-      if (row.gapBefore) timeline.appendChild(el('div', {
-        className: 'chronik-gap', role: 'separator',
-        'aria-label': `Zeitsprung von ${row.gapBefore.from} bis ${row.gapBefore.to}`,
-        dataset: { gapFrom: row.gapBefore.from, gapTo: row.gapBefore.to },
-      }, el('span', { 'aria-hidden': 'true' }, '⋮')));
-      if (row.year != null) timeline.appendChild(el('h3', {
-        className: 'chronik-year', dataset: { year: String(row.year) }, tabindex: '-1',
-      }, String(row.year)));
-      previousYear = row.year;
-    }
-    timeline.appendChild(renderDateRow(row));
-  }
-  if (!rows.length && !undated) timeline.appendChild(el('p', { className: 'chronik-empty' },
-    'Keine Dokumente in dieser Auswahl. Passe die Filter links an.'));
-  if (undated) timeline.appendChild(el('section', { className: 'chronik-undated' },
-    el('h3', {}, `Ohne Dokumentdatum · ${undated.sources.length} Dokumente`), renderDateRow(undated)));
-  viewContainer.appendChild(timeline);
   logStamp('chronik', [
     ['records', records.length], ['jahre-belegt', years.length], ['datumsgruppen', rows.length],
     ['quellenbezuege', rows.reduce((sum, row) => sum + row.sources.length, 0)],
     ['ohne-dokumentdatum', undated ? undated.sources.length : 0],
     ['spanne', years.length ? `${years[0]}–${years.at(-1)}` : 'ohne Datum'],
   ]);
+}
+
+function renderSummary(rows) {
+  const allSources = rows.flatMap(row => row.sources);
+  const count = new Set(allSources.map(source => source.recordId)).size;
+  const source = allSources[0];
+  const row = rows[0];
+  const last = rows.at(-1);
+  const label = rows.length === 1 ? row.dateLabel
+    : `${row.dateLabel} … ${last.dateLabel}`;
+  const content = el('div', { className: 'chronik-summary' });
+  const heading = el('button', { type: 'button', className: 'chronik-summary__date',
+    onClick: event => rows.length === 1 ? openRow(row, event.currentTarget) : openRows(rows, event.currentTarget),
+  }, label);
+  const body = el('div', { className: 'chronik-summary__source' }, heading);
+  if (rows.length === 1 && allSources.length === 1) body.appendChild(renderSource(source, row));
+  else body.appendChild(el('button', { type: 'button', className: 'chronik-summary__group',
+    onClick: event => openRows(rows, event.currentTarget),
+  }, el('strong', {}, `${count} ${count === 1 ? 'Quelle' : 'Quellen'}`),
+  el('span', { className: 'chronik-summary__preview' }, store.records.get(source.recordId)?.['rico:title'] || recordLabel(source.recordId)),
+  el('span', { className: 'chronik-summary__hint' }, rows.length > 1 ? `${rows.length} Datumsgruppen →` : 'Belege ansehen →')));
+  content.appendChild(body);
+  const context = el('div', { className: 'chronik-summary__entities', 'aria-label': 'Verknüpfte Entitäten' });
+  for (const [family, title] of Object.entries({ ...FAMILIES, part: 'Partien' })) {
+    const entries = new Map();
+    for (const item of rows.flatMap(item => item.lanes[family] || [])) entries.set(item.key, item);
+    if (!entries.size) continue;
+    const countLabel = `${entries.size} ${entries.size === 1 ? SINGULAR[family] : title}`;
+    context.appendChild(el('button', { type: 'button', className: `chronik-context chronik-family--${family}`,
+      dataset: { entityKeys: JSON.stringify([...entries.keys()]) },
+      'aria-label': `${countLabel}, Belege ansehen`,
+      onClick: event => rows.length === 1
+        ? showList(row.lanes[family], title, entry => renderEntity(entry, row), row, event.currentTarget)
+        : openRows(rows, event.currentTarget, title, family),
+    }, familyIcon(family, { size: 14 }), countLabel));
+  }
+  content.appendChild(context);
+  return content;
+}
+
+function openRows(rows, trigger, title = 'Quellen und Datierungen', family = null) {
+  const content = el('div', { className: 'chronik-group-list' }, ...rows.map(row =>
+    el('section', { className: 'chronik-group-row', dataset: { date: row.key } },
+      el('h4', {}, row.dateLabel), family
+        ? el('ul', { className: 'chronik-list' }, ...row.lanes[family].map(entry => el('li', {}, renderEntity(entry, row))))
+        : el('ul', { className: 'chronik-list' }, ...row.sources.map(source => el('li', {}, renderSource(source, row)))),
+      family ? null : el('button', { type: 'button', className: 'chronik-more', onClick: event => openRow(row, event.currentTarget) }, 'Entitäten und Belege'))));
+  openPanel(title, `${rows.length} Datumsgruppen`, content, trigger);
+}
+
+function openRow(row, trigger) {
+  if (row.sources.length === 1) return showSource(row.sources[0], row, trigger);
+  openPanel('Quellen und Entitäten', row.dateLabel, renderDateRow(row), trigger);
 }
 
 function compactDate(row) {
@@ -152,9 +157,7 @@ function renderDateRow(row) {
     Number(b.kind === 'document') - Number(a.kind === 'document')
     || recordLabel(a.recordId).localeCompare(recordLabel(b.recordId), 'de', { numeric: true }));
   section.appendChild(renderLane(sources, 'Quellen', item => renderSource(item, row), 'source', row));
-  if (combined) section.appendChild(renderLane(Object.values(row.lanes).flat(), 'Entitäten',
-    entry => renderEntity(entry, row), 'all', row));
-  else for (const [family, label] of Object.entries(FAMILIES)) {
+  for (const [family, label] of Object.entries(FAMILIES)) {
     const lane = renderLane(row.lanes[family], label, entry => renderEntity(entry, row), family, row);
     if (family === 'werk' && row.lanes.part?.length) lane.appendChild(el('button', {
       type: 'button', className: 'chronik-parts chronik-more',
@@ -229,17 +232,11 @@ function renderEntity(entry, row) {
     `${role}${context}${entry.recordIds.length > 1 ? ' · ' + entry.recordIds.length + ' Belege' : ''}`));
 }
 
-function showEmptyDetail() {
-  if (!detailSlot) return;
-  clear(detailSlot);
-  detailSlot.appendChild(el('p', { className: 'chronik-detail-empty' },
-    'Eintrag auswählen, um Details und Belege zu sehen.'));
-}
-
 function markSelection() {
   const { key, sourceKey, trigger } = activeEvidence || {};
-  viewContainer.querySelectorAll('.chronik-entity, .chronik-source__link, .chronik-more').forEach(button => {
+  viewContainer?.querySelectorAll('.chronik-entity, .chronik-source__link, .chronik-more, .chronik-mark, .chronik-range, .chronik-context, .chronik-summary__date, .chronik-summary__group').forEach(button => {
     const selected = button === trigger || (key && button.dataset.entityKey === key)
+      || (key && button.dataset.entityKeys && JSON.parse(button.dataset.entityKeys).includes(key))
       || (sourceKey && button.dataset.sourceKey === sourceKey);
     button.classList.toggle('chronik-selected', !!selected);
     button.setAttribute('aria-pressed', String(!!selected));
@@ -247,56 +244,31 @@ function markSelection() {
 }
 
 function closeEvidence(restoreFocus = true) {
-  if (!activeEvidence) return;
-  const { trigger, panel } = activeEvidence;
   activeEvidence = null;
-  if (dialog.open) dialog.close();
-  panel.remove();
+  details?.close({ restoreFocus, notify: false });
   markSelection();
-  showEmptyDetail();
-  if (restoreFocus && trigger.isConnected) trigger.focus({ preventScroll: true });
 }
 
-function placePanel() {
-  const panel = activeEvidence.panel;
-  if (workspace.clientWidth < 900) {
-    if (panel.parentElement !== dialog) { dialog.appendChild(panel); showEmptyDetail(); }
-    if (!dialog.open) dialog.showModal();
-  } else {
-    const wasModal = dialog.open;
-    if (dialog.open) dialog.close();
-    if (panel.parentElement !== detailSlot) { clear(detailSlot); detailSlot.appendChild(panel); }
-    if (wasModal) panel.focus({ preventScroll: true });
-  }
+function displayPanel(state) {
+  const previous = state.previous;
+  details.open({ title: state.title, kicker: 'Chronik', subtitle: state.subtitle,
+    content: state.content, trigger: state.trigger,
+    back: previous ? () => {
+      activeEvidence = previous;
+      displayPanel(previous);
+      details.scrollElement.scrollTop = previous.scrollTop || 0;
+      state.nestedTrigger?.focus({ preventScroll: true });
+    } : null,
+  });
+  markSelection();
 }
 
 function openPanel(title, subtitle, content, trigger, { key, sourceKey } = {}) {
-  const previous = activeEvidence?.panel.contains(trigger) ? activeEvidence : null;
-  if (previous) previous.scrollTop = dialog.open ? dialog.scrollTop : detailSlot.scrollTop;
-  activeEvidence?.panel.remove();
-  const panelId = `chronik-evidence-${++serial}`;
-  const panel = el('div', { className: 'chronik-evidence', id: panelId, role: 'region',
-    'aria-labelledby': `${panelId}-title`, tabindex: '-1',
-    onKeydown: event => {
-      if (event.key === 'Escape') { event.stopPropagation(); event.preventDefault(); closeEvidence(); }
-    },
-  }, el('div', { className: 'chronik-evidence__actions' },
-    previous ? el('button', { type: 'button', className: 'chronik-more', onClick: () => {
-      activeEvidence.panel.remove();
-      activeEvidence = previous;
-      placePanel();
-      markSelection();
-      detailSlot.scrollTop = dialog.scrollTop = previous.scrollTop;
-      trigger.focus({ preventScroll: true });
-    } }, 'Zurück zur Liste') : null,
-    el('button', { type: 'button', className: 'chronik-evidence__close', onClick: () => closeEvidence() }, 'Schließen')),
-    el('h3', { id: `${panelId}-title` }, title),
-    el('p', { className: 'chronik-evidence__date' }, subtitle), content);
-  activeEvidence = { trigger: previous?.trigger || trigger, panel, key, sourceKey };
-  markSelection();
-  placePanel();
-  panel.focus({ preventScroll: true });
-  detailSlot.scrollTop = dialog.scrollTop = 0;
+  const previous = activeEvidence?.content.contains(trigger) ? activeEvidence : null;
+  if (previous) previous.scrollTop = details.scrollElement.scrollTop;
+  activeEvidence = { title, subtitle, content, key, sourceKey, previous,
+    trigger: previous?.trigger || trigger, nestedTrigger: previous ? trigger : null };
+  displayPanel(activeEvidence);
 }
 
 function showList(items, label, render, row, trigger) {
@@ -316,6 +288,11 @@ function showSource(source, row, trigger) {
   const type = record ? dftLabel(store, getDocTypeId(record)) : '';
   const content = el('div', {},
     el('p', { className: 'chronik-evidence__statement' }, statementLabel(source, row)),
+    row.precision.includes('range') ? el('p', { className: 'chronik-source__date-extent' },
+      'Der Balken zeigt den erfassten Datierungsbereich. Die Bedeutung des Zeitraums ergibt sich aus der Aussage im Beleg.')
+      : row.precision === 'year' || row.precision === 'month' ? el('p', { className: 'chronik-source__date-extent' },
+        row.precision === 'year' ? 'Die Datierung ist nur auf das Jahr genau. Die Schraffur zeigt diese zeitliche Unschärfe.'
+          : 'Die Datierung ist nur auf den Monat genau. Die Schraffur zeigt diese zeitliche Unschärfe.') : null,
     el('p', { className: 'chronik-evidence__date' },
       [type, recordDate(record) ? `Dokumentdatum: ${recordDate(record)}` : 'Ohne Dokumentdatum'].filter(Boolean).join(' · ')),
     source.kind === 'document' ? el('p', { className: 'chronik-evidence__statement' }, source.labels.join(' · ')) : null,

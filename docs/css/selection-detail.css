@@ -1,0 +1,36 @@
+.selection-detail__slot {
+  position: relative; flex: 0 0 0; min-width: 0; min-height: 0;
+  height: 100%; max-height: 100%; overflow: hidden;
+  border-inline-start: 0 solid var(--line);
+}
+.selection-detail-open > .selection-detail__slot { flex-basis: 300px; border-inline-start-width: 1px; }
+.selection-detail__dialog {
+  margin: auto;
+  width: min(520px, calc(100% - var(--space-8)));
+  max-height: calc(100dvh - var(--space-8));
+  padding: 0; color: var(--color-text-primary); background: var(--surface);
+  border: 1px solid var(--line-strong); border-radius: var(--border-radius);
+  box-shadow: var(--shadow-md); overflow: hidden;
+}
+.selection-detail__dialog::backdrop { background: color-mix(in srgb, var(--color-text-primary) 25%, transparent); }
+.selection-detail__panel {
+  height: 100%; max-height: inherit; box-sizing: border-box; padding: var(--space-4);
+  overflow-y: auto; overflow-wrap: anywhere; font-size: var(--text-sm);
+}
+.selection-detail__actions {
+  position: sticky; z-index: 1; top: 0;
+  display: flex; align-items: center; min-height: 24px; margin-bottom: var(--space-2);
+  background: var(--surface);
+}
+.selection-detail__back, .selection-detail__close {
+  padding: var(--space-1); font: inherit; color: var(--accent); background: none; border: 0; cursor: pointer;
+}
+.selection-detail__back { font-size: var(--text-xs); }
+.selection-detail__close { margin-inline-start: auto; font-size: var(--text-xl); line-height: 1; color: var(--color-text-tertiary); }
+.selection-detail__back:hover { text-decoration: underline; }
+.selection-detail__close:hover { color: var(--accent); }
+.selection-detail__kicker { margin-bottom: var(--space-1); font-size: var(--text-xs); letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-text-tertiary); }
+.selection-detail__title { margin: 0; font-size: var(--text-lg); line-height: var(--leading-normal); }
+.selection-detail__subtitle { margin: var(--space-1) 0 var(--space-4); font-size: var(--text-xs); line-height: var(--leading-normal); color: var(--color-text-secondary); }
+.selection-detail__content { min-width: 0; }
+@container view-shell (width < 900px) { .selection-detail__slot { display: none; } }

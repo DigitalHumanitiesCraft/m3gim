@@ -37,6 +37,7 @@ import {
   STAGE_WIDTH, STAGE_HEIGHT,
 } from './_netzwerk-canvas.js';
 import { createSidebar, viewShell } from '../ui/sidebar.js';
+import { createSelectionDetail } from '../ui/selection-detail.js';
 import { onViewNavigate } from '../ui/events.js';
 import { recordsFor, baseIds, yearBounds, yearOfId } from '../data/records-for.js';
 import { getFilter, facetValues } from '../ui/filter-state.js';
@@ -44,16 +45,12 @@ import { getFilter, facetValues } from '../ui/filter-state.js';
 /** Facets the log stamp names one by one. */
 const FACETS = ['person', 'ort', 'werk', 'institution'];
 
-/** Caps of the detail column, so it fits its area instead of scrolling (E-259).
- *  Measured against the tallest selection of the fonds, the hub with thirty-six
- *  documents, at the drawing height of a 900 pixel window. */
-const CAP = { roles: 6, relations: 3, neighbours: 7, actors: 8 };
-
 /** Query parameter carrying the selected node, so a finding is citable. */
 const SELECTION_PARAM = 'knoten';
 
 let _store = null;
 let _sidebar = null;
+let _detail = null;
 let _redraw = () => {};
 
 // View-local state. The two switches anchor the picture and cut no documents,
@@ -106,10 +103,19 @@ export function renderNetzwerk(store, container) {
 
   const stage = el('div', { className: 'netzwerk__stage' },
     renderZoomControls(_zoomRefs), exportButton(), renderCanvasSlot());
-  const detail = el('div', { className: 'netzwerk__detail-slot', id: 'netzwerk-detail' });
-  const board = el('div', { className: 'netzwerk__board' }, stage, detail);
+  const board = el('div', { className: 'netzwerk__board' }, stage);
   const main = el('div', { className: 'view-main view-main--stacked' },
     viewHead(), el('div', { className: 'netzwerk__main view-main__stage' }, board));
+  _detail?.destroy();
+  _detail = createSelectionDetail({
+    host: board,
+    onClose: () => {
+      if (!local.selection) return;
+      local.selection = null;
+      applySelection(null);
+      writeSelectionToHash();
+    },
+  });
 
   if (_sidebar) _sidebar.destroy();
   _sidebar = createSidebar(store, {
@@ -144,8 +150,8 @@ let _escapeBound = false;
 
 function onEscape(ev) {
   if (ev.key !== 'Escape' || !local.selection) return;
-  if (!document.getElementById('netzwerk-detail')) return;
-  clearSelection({ restoreFocus: !!document.activeElement?.closest('.netzwerk__detail') });
+  if (!_detail?.element) return;
+  clearSelection({ restoreFocus: !!document.activeElement?.closest('.selection-detail__panel') });
 }
 
 // ---------------------------------------------------------------------------
@@ -332,7 +338,10 @@ function clearSelection({ restoreFocus = false } = {}) {
       ? document.querySelector(`.netzwerk-node[data-id="${CSS.escape(selected.id)}"]`)
       : document.querySelector('.netzwerk-node[tabindex="0"]'))
     : null;
-  select(null);
+  local.selection = null;
+  applySelection(null);
+  _detail?.close({ restoreFocus: false, notify: false });
+  writeSelectionToHash();
   if (target) target.focus();
 }
 
@@ -398,56 +407,46 @@ function hasSelection(graph, selection) {
 // ---------------------------------------------------------------------------
 
 function drawDetail() {
-  const slot = document.getElementById('netzwerk-detail');
-  if (!slot) return;
-  clear(slot);
-  const board = slot.parentElement;
+  if (!_detail) return;
   if (!local.selection) {
-    if (board) board.classList.remove('netzwerk__board--detail');
+    _detail.close({ restoreFocus: false, notify: false });
     return;
   }
-  if (board) board.classList.add('netzwerk__board--detail');
-
-  const panel = el('aside', { className: 'netzwerk__detail', 'aria-label': 'Auswahl' });
-  slot.appendChild(panel);
 
   const graph = _last.graph;
   if (local.selection.kind === 'node' && graph.byId.has(local.selection.id)) {
     const node = graph.byId.get(local.selection.id);
-    if (node.kind === 'record') drawRecordDetail(panel, node);
-    else drawActorDetail(panel, node);
+    const content = el('div', { className: 'netzwerk__detail netzwerk__detail-content' });
+    if (node.kind === 'record') drawRecordDetail(content, node);
+    else drawActorDetail(content, node);
+    _detail.open({
+      kicker: node.kind === 'record' ? 'Dokument' : NODE_TYPE_META[node.type].label,
+      title: node.name,
+      subtitle: node.kind === 'record'
+        ? [node.title || '(ohne Titel)', node.date].filter(Boolean).join(' · ') : '',
+      content,
+      trigger: document.querySelector(`.netzwerk-node[data-id="${CSS.escape(node.id)}"]`),
+    });
     return;
   }
   const edge = graph.edges.find(e => e.id === local.selection.id);
-  if (edge) drawEdgeDetail(panel, graph, edge);
-}
-
-function detailHead(panel, kicker, title, typeClass) {
-  const row = el('div', {
-    className: 'netzwerk__detail-head'
-      + (typeClass ? ` netzwerk__detail-head--${typeClass}` : ''),
-  },
-    el('span', { className: 'netzwerk__detail-kind' }, kicker),
-    el('button', {
-      className: 'netzwerk__detail-close', type: 'button', 'aria-label': 'Schließen',
-      onClick: () => clearSelection({ restoreFocus: true }),
-    }, '×'));
-  panel.appendChild(row);
-  panel.appendChild(el('h3', { className: 'netzwerk__detail-title' }, title));
-  return row;
+  if (!edge) return;
+  const a = graph.byId.get(edge.a);
+  const b = graph.byId.get(edge.b);
+  const content = el('div', { className: 'netzwerk__detail netzwerk__detail-content' });
+  drawEdgeDetail(content, graph, edge);
+  _detail.open({
+    kicker: 'Kante', title: `${a.name} · ${b.name}`,
+    subtitle: edge.recordId ? (edge.roles.join(', ') || 'ohne Rolle')
+      : `${edge.weight} gemeinsame${edge.weight === 1 ? 's Dokument' : ' Dokumente'}`,
+    content,
+    trigger: document.querySelector('.netzwerk-node[tabindex="0"]'),
+  });
 }
 
 function section(title, body) {
   return el('div', { className: 'netzwerk__detail-section' },
     el('h4', { className: 'netzwerk__detail-subtitle' }, title), body);
-}
-
-/** „+N weitere" in the form the Indizes use. */
-function moreChip(count, tip) {
-  return el('span', {
-    className: 'chip chip--role-pair chip--c-neutral nz-more',
-    dataset: { tip, tipWrap: '' },
-  }, el('span', { className: 'chip-wert' }, `+${count} weitere`));
 }
 
 /** A neighbour as a row, with the family mark the register rows and the Bestand
@@ -470,16 +469,15 @@ function nodeRow(node, value) {
 }
 
 function drawActorDetail(panel, node) {
-  const head = detailHead(panel, NODE_TYPE_META[node.type].label, node.name, node.type);
   if (node.wikidata && String(node.wikidata).startsWith('wd:')) {
     const qid = String(node.wikidata).replace('wd:', '');
-    head.insertBefore(el('a', {
+    panel.appendChild(el('a', {
       className: 'badge badge--wikidata',
       href: `https://www.wikidata.org/entity/${qid}`,
       target: '_blank', rel: 'noopener noreferrer',
       dataset: { tip: `Bei Wikidata ansehen (${node.wikidata})` },
       html: WIKIDATA_ICON_SVG,
-    }), head.lastChild);
+    }));
   }
 
   if (node.roles.length > 0) {
@@ -487,18 +485,16 @@ function drawActorDetail(panel, node) {
     // The bare count, with its unit in the section title and in the tooltip: as
     // „18 Dokumente" every chip took a row of its own and the column ran past
     // the drawing beside it.
-    for (const { role, count } of node.roles.slice(0, CAP.roles)) {
+    for (const { role, count } of node.roles) {
       chips.appendChild(buildRoleChip({ prefix: role, value: String(count),
         tip: `${count} Dokument${count === 1 ? '' : 'e'} des Schnitts in dieser Rolle` }));
     }
-    const rest = node.roles.slice(CAP.roles);
-    if (rest.length > 0) chips.appendChild(moreChip(rest.length, rest.map(r => r.role).join(', ')));
     panel.appendChild(section(`Rollen · ${node.weight} Dokumente`, chips));
   }
 
   if (node.relations.length > 0) {
     const chips = el('div', { className: 'netzwerk__detail-chips' });
-    for (const rel of node.relations.slice(0, CAP.relations)) {
+    for (const rel of node.relations) {
       const record = rel.recordId ? _store.records.get(rel.recordId) : null;
       const label = AGRELON_LABELS[rel.type] || String(rel.type).replace(/^agrelon:/, '');
       // Signature plus document type and year, the same short form the node
@@ -515,8 +511,6 @@ function drawActorDetail(panel, node) {
         onClick: record ? () => navigateToView('bestand', { recordId: record['@id'] }) : undefined,
       }));
     }
-    const rest = node.relations.length - CAP.relations;
-    if (rest > 0) chips.appendChild(moreChip(rest, 'Weitere erfasste Beziehungen an dieser Person'));
     panel.appendChild(section('Erfasste Beziehung', chips));
   }
 
@@ -525,13 +519,7 @@ function drawActorDetail(panel, node) {
   const neighbours = neighboursOfActor(_last.graph, node.id);
   if (neighbours.length > 0) {
     const list = el('ul', { className: 'netzwerk__node-list' });
-    for (const n of neighbours.slice(0, CAP.neighbours)) list.appendChild(nodeRow(n.node, n.weight));
-    const rest = neighbours.length - CAP.neighbours;
-    if (rest > 0) {
-      list.appendChild(el('li', { className: 'netzwerk__node-row netzwerk__node-row--more' },
-        moreChip(rest, neighbours.slice(CAP.neighbours, CAP.neighbours + 20)
-          .map(n => n.node.name).join(', '))));
-    }
+    for (const n of neighbours) list.appendChild(nodeRow(n.node, n.weight));
     panel.appendChild(section(`Nachbarn · ${neighbours.length}`, list));
   }
 
@@ -542,13 +530,9 @@ function drawActorDetail(panel, node) {
 }
 
 function drawRecordDetail(panel, node) {
-  detailHead(panel, 'Dokument', node.name, 'record');
-  panel.appendChild(el('div', { className: 'netzwerk__detail-meta' },
-    [node.title || '(ohne Titel)', node.date].filter(Boolean).join(' · ')));
-
   const chips = el('div', { className: 'netzwerk__detail-chips' });
   const actorIds = node.actorIds || [];
-  for (const id of actorIds.slice(0, CAP.actors)) {
+  for (const id of actorIds) {
     const actor = _last.graph.byId.get(id);
     if (!actor) continue;
     const edge = (_last.graph.edgesByNode.get(id) || [])
@@ -558,8 +542,6 @@ function drawRecordDetail(panel, node) {
       prefix: roles, value: actor.name, onClick: () => actions.selectNode(actor),
     }));
   }
-  const rest = actorIds.length - CAP.actors;
-  if (rest > 0) chips.appendChild(moreChip(rest, 'Weitere Beteiligte dieses Dokuments'));
   panel.appendChild(section(`Beteiligte · ${actorIds.length}`, chips));
 
   panel.appendChild(bestandButton(() => navigateToView('bestand', { recordId: node.recordId })));
@@ -568,27 +550,22 @@ function drawRecordDetail(panel, node) {
 function drawEdgeDetail(panel, graph, edge) {
   const a = graph.byId.get(edge.a);
   const b = graph.byId.get(edge.b);
-  detailHead(panel, 'Kante', `${a.name} · ${b.name}`);
 
   if (edge.recordId) {
-    panel.appendChild(el('div', { className: 'netzwerk__detail-meta' },
-      edge.roles.length ? edge.roles.join(', ') : 'ohne Rolle'));
     panel.appendChild(bestandButton(() => navigateToView('bestand', { recordId: edge.recordId })));
     return;
   }
 
-  panel.appendChild(el('div', { className: 'netzwerk__detail-meta' },
-    `${edge.weight} gemeinsame${edge.weight === 1 ? 's Dokument' : ' Dokumente'}`));
   const chips = el('div', { className: 'netzwerk__detail-chips' });
   for (const [node, roles] of [[a, edge.rolesA], [b, edge.rolesB]]) {
-    for (const role of roles.slice(0, CAP.roles / 2)) {
+    for (const role of roles) {
       chips.appendChild(buildRoleChip({ prefix: role, value: node.name }));
     }
   }
   if (chips.childNodes.length > 0) panel.appendChild(section('Rollen', chips));
 
   const list = el('ul', { className: 'netzwerk__record-list' });
-  for (const id of edge.records.slice(0, CAP.neighbours)) {
+  for (const id of edge.records) {
     const record = _store.records.get(id);
     if (!record) continue;
     list.appendChild(el('li', {
@@ -605,11 +582,6 @@ function drawEdgeDetail(panel, graph, edge) {
         formatSignatur(record['rico:identifier']) || '—'),
       el('span', { className: 'netzwerk__record-date' }, record['rico:date'] || ''),
       el('span', { className: 'netzwerk__record-title' }, record['rico:title'] || '(ohne Titel)')));
-  }
-  const rest = edge.records.length - CAP.neighbours;
-  if (rest > 0) {
-    list.appendChild(el('li', { className: 'netzwerk__record netzwerk__record--more' },
-      moreChip(rest, 'Im Bestand über beide Namen als Facette')));
   }
   panel.appendChild(section('Gemeinsame Dokumente', list));
 }

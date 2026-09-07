@@ -190,29 +190,35 @@ def main() -> int:
         for view, required in stamp_expectations.items():
             results.append(expect_stamp(stamps, view, required))
 
-        # --- Canary Chronik: dated rows expose their sources and entities.
+        # --- Canary Chronik: the scaled axis opens sources through its detail.
         try:
             page.locator('[data-tab="chronik"]').first.click()
             page.wait_for_timeout(400)
-            date_rows = page.locator('#tab-chronik .chronik-date')
-            sources = page.locator('#tab-chronik .chronik-source__link')
-            entities = page.locator('#tab-chronik .chronik-entity')
-            if date_rows.count() > 0 and sources.count() > 0 and entities.count() > 0:
+            marks = page.locator('#tab-chronik .chronik-mark')
+            clusters = page.locator('#tab-chronik .chronik-cluster')
+            if marks.count() > 0 and clusters.count() > 0:
                 results.append(("OK", "chronik:timeline          ",
-                                f"{date_rows.count()} Datierungen, "
-                                f"{sources.count()} Quellen, {entities.count()} Entitaeten"))
+                                f"{marks.count()} Zeitmarken, "
+                                f"{clusters.count()} lesbare Gruppen"))
             else:
                 results.append(("FAIL", "chronik:timeline          ",
-                                f"Datierungen={date_rows.count()}, Quellen={sources.count()}, "
-                                f"Entitaeten={entities.count()}"))
+                                f"Marken={marks.count()}, Gruppen={clusters.count()}"))
 
-            if sources.count() > 0:
+            page.locator('#chronik-scale').select_option('month')
+            dense_mark = page.locator(
+                '#tab-chronik .chronik-mark[data-date="1953-07-26"]'
+            ).first
+            dense_mark.scroll_into_view_if_needed()
+            if dense_mark.count() > 0:
                 errs_before = len(global_errors)
-                sources.first.click()
+                dense_mark.click()
                 page.wait_for_timeout(200)
                 evidence = page.locator(
-                    '#tab-chronik .chronik-detail-slot .chronik-evidence'
+                    '#tab-chronik .selection-detail__panel:visible'
                 )
+                sources = evidence.locator('.chronik-source__link')
+                sources.first.click()
+                page.wait_for_timeout(200)
                 evidence_jump = evidence.locator('.chronik-evidence__source')
                 panel_visible = evidence.count()
                 if evidence_jump.count() > 0:
@@ -233,7 +239,7 @@ def main() -> int:
                         results.append(("  ", " " * 24, e[:120]))
             else:
                 results.append(("FAIL", "click:chronik-source       ",
-                                "kein Quelldokument in der Chronik gefunden"))
+                                "bekannte Zeitmarke 1953-07-26 fehlt"))
         except Exception as e:
             results.append(("FAIL", "chronik:timeline          ", str(e)[:120]))
 
@@ -241,12 +247,18 @@ def main() -> int:
         try:
             page.locator('[data-tab="chronik"]').first.click()
             page.wait_for_timeout(300)
-            entities = page.locator('#tab-chronik .chronik-entity')
+            page.locator('#chronik-scale').select_option('month')
+            dense_mark = page.locator(
+                '#tab-chronik .chronik-mark[data-date="1953-07-26"]'
+            ).first
+            dense_mark.scroll_into_view_if_needed()
+            dense_mark.click()
+            evidence = page.locator('#tab-chronik .selection-detail__panel:visible')
+            entities = evidence.locator('.chronik-entity')
             if entities.count() > 0:
                 errs_before = len(global_errors)
                 entities.first.click()
                 page.wait_for_timeout(200)
-                evidence = page.locator('#tab-chronik .chronik-evidence')
                 evidence_sources = evidence.locator('.chronik-evidence__source')
                 new_errs = expect_no_new_errors(global_errors, errs_before)
                 if evidence.count() == 1 and evidence_sources.count() > 0 and not new_errs:
@@ -260,23 +272,30 @@ def main() -> int:
                 results.append(("FAIL", "chronik:entity-evidence   ",
                                 "keine Entitaet in der Chronik gefunden"))
 
-            more = page.locator('#tab-chronik .chronik-more')
+            page.get_by_role('button', name='Zurück').click()
+            more = evidence.locator('.chronik-lane > .chronik-more')
             if more.count() > 0:
                 lane = more.first.locator('xpath=..')
+                lane_key = lane.get_attribute('data-lane')
                 before = lane.locator(':scope > .chronik-list > li').count()
                 more.first.click()
-                after_main = lane.locator(':scope > .chronik-list > li').count()
                 after_detail = page.locator(
-                    '#tab-chronik .chronik-detail-slot '
-                    '.chronik-evidence > .chronik-list > li'
+                    '#tab-chronik .selection-detail__panel:visible '
+                    '.selection-detail__content > .chronik-list > li'
                 ).count()
-                if after_main == before and after_detail > before:
+                evidence.get_by_role('button', name='Zurück').click()
+                after_return = evidence.locator(
+                    f'.chronik-lane[data-lane="{lane_key}"] '
+                    '> .chronik-list > li'
+                ).count()
+                if after_return == before and after_detail > before:
                     results.append(("OK", "chronik:lane-more         ",
                                     f"{before} in Lane, {after_detail} rechts vollstaendig"))
                 else:
                     results.append(("FAIL", "chronik:lane-more         ",
-                                    f"vorher={before}, Hauptlane={after_main}, "
+                                    f"vorher={before}, Rueckkehr={after_return}, "
                                     f"Detail={after_detail}"))
+                evidence.get_by_role('button', name='Schließen').click()
             else:
                 results.append(("FAIL", "chronik:lane-more         ",
                                 "keine verdichtete Lane mit Mehr-Schalter gefunden"))
