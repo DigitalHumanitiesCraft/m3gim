@@ -79,6 +79,21 @@ test('date-like source values never become places', () => {
   assert.deepEqual(row.lanes.ort.map(entry => entry.name), ['Graz']);
 });
 
+test('year breaks respect the ends of overlapping recorded ranges', () => {
+  const record = { '@id': 'm3gim-data:RANGES', 'rico:date': '1924/1925' };
+  const fake = { ...store, recordDatings: new Map([[record['@id'], [
+    { rawDate: '1929/1935', roleLabel: 'Zeitraum' },
+    { rawDate: '1930', roleLabel: 'erwähnt' },
+    { rawDate: '1934', roleLabel: 'erwähnt' },
+    { rawDate: '1940', roleLabel: 'erwähnt' },
+  ]]]), recordToPerformances: new Map(), agentRelations: new Map() };
+  const result = buildChronikTimeline(fake, [record]);
+  assert.equal(rowAt(result, '1924/1925').endYear, 1925);
+  assert.deepEqual(rowAt(result, '1929/1935').gapBefore, { from: 1925, to: 1929 });
+  assert.equal(rowAt(result, '1934').gapBefore, null, 'overlapping interval was treated as a gap');
+  assert.deepEqual(rowAt(result, '1940').gapBefore, { from: 1935, to: 1940 });
+});
+
 test('same named raw and identified agents merge without losing evidence', () => {
   const record = {
     '@id': 'm3gim-data:MERGE', '@type': 'rico:Record', 'rico:date': '1956',

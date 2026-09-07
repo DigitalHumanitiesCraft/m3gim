@@ -208,26 +208,9 @@ export function renderMobilitaet(store, container) {
         controls: [{ kind: 'custom', className: 'vs-legend', build: paintUnloc,
           update: paintUnloc }],
       },
-    ],
-    legend: [
       {
-        // The six most frequent place roles carry a hue, every rarer one
-        // shares the grey; their names stand in the node's tooltip.
-        title: 'Farbschlüssel',
-        controls: [{ kind: 'staticLegend', rows: legendRows(roleScale) }],
+        controls: [{ kind: 'custom', node: panelNode }],
       },
-      {
-        title: 'Verortung',
-        controls: [{
-          kind: 'staticLegend',
-          rows: [
-            { markerClass: 'mob-vmark mob-vmark--secured', label: 'gesichert (Ort/Stadt)' },
-            { markerClass: 'mob-vmark mob-vmark--city', label: 'stadtgenau (Adresse → Stadt)' },
-            { markerClass: 'mob-vmark mob-vmark--far', label: 'weit · prüfen' },
-          ],
-        }],
-      },
-      { controls: [{ kind: 'custom', node: panelNode }] },
     ],
     // The entity is the one narrowing the Karte still owns; it stands in the
     // strip like any facet and answers to the same reset (E-223).
@@ -319,6 +302,7 @@ export function renderMobilitaet(store, container) {
       windowActive: () => Array.isArray(getFilter().zeitfenster),
       onSelectCity: toggleCity,
     });
+    mapCell.appendChild(buildMapLegend(roleScale));
     draw = map.draw;
     redraw();
   }).catch(error => {
@@ -350,6 +334,37 @@ function legendRows(scale) {
   }
   if (rest > 0) rows.push({ color: REST_COLOR, label: `weitere (${rest})` });
   return rows;
+}
+
+/** The map's fixed key. It follows the shared view grammar: explanatory signs
+ * stand at the upper right of the work area, while filters stay in the left
+ * sidebar. */
+function buildMapLegend(roleScale) {
+  const legend = el('aside', {
+    className: 'mob-map__legend',
+    'aria-label': 'Zeichenerklärung',
+  });
+
+  const group = (title, rows) => el('section', { className: 'mob-map__legend-group' },
+    el('h2', { className: 'mob-map__legend-title' }, title),
+    el('ul', { className: 'mob-map__legend-list' }, ...rows.map(row => {
+      const marker = el('span', {
+        className: 'mob-map__legend-marker' + (row.markerClass ? ` ${row.markerClass}` : ''),
+        'aria-hidden': 'true',
+      });
+      if (row.color) marker.style.background = row.color;
+      return el('li', { className: 'mob-map__legend-row' }, marker,
+        el('span', {}, row.label));
+    })));
+
+  legend.append(
+    group('Farbschlüssel', legendRows(roleScale)),
+    group('Verortung', [
+      { markerClass: 'mob-vmark mob-vmark--secured', label: 'gesichert (Ort/Stadt)' },
+      { markerClass: 'mob-vmark mob-vmark--city', label: 'stadtgenau (Adresse → Stadt)' },
+      { markerClass: 'mob-vmark mob-vmark--far', label: 'weit · prüfen' },
+    ]));
+  return legend;
 }
 
 // ---------------------------------------------------------------------------

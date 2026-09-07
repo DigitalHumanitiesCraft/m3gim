@@ -209,16 +209,26 @@ def main() -> int:
             if sources.count() > 0:
                 errs_before = len(global_errors)
                 sources.first.click()
+                page.wait_for_timeout(200)
+                evidence = page.locator(
+                    '#tab-chronik .chronik-detail-slot .chronik-evidence'
+                )
+                evidence_jump = evidence.locator('.chronik-evidence__source')
+                panel_visible = evidence.count()
+                if evidence_jump.count() > 0:
+                    evidence_jump.first.click()
                 page.wait_for_timeout(500)
                 detail_visible = page.locator('.inline-detail').count()
                 active_tab = page.locator('[data-tab][aria-selected="true"]').get_attribute('data-tab')
                 new_errs = expect_no_new_errors(global_errors, errs_before)
-                if detail_visible > 0 and active_tab == 'bestand' and not new_errs:
+                if (panel_visible == 1 and detail_visible > 0
+                        and active_tab == 'bestand' and not new_errs):
                     results.append(("OK", "click:chronik-source       ",
-                                    "springt in Bestand + Inline-Detail, 0 Konsole"))
+                                    "oeffnet Belege und dann Bestand, 0 Konsole"))
                 else:
                     results.append(("FAIL", "click:chronik-source       ",
-                                    f"detail={detail_visible}, tab={active_tab}, errs={len(new_errs)}"))
+                                    f"panel={panel_visible}, detail={detail_visible}, "
+                                    f"tab={active_tab}, errs={len(new_errs)}"))
                     for e in new_errs[:2]:
                         results.append(("  ", " " * 24, e[:120]))
             else:
@@ -252,17 +262,21 @@ def main() -> int:
 
             more = page.locator('#tab-chronik .chronik-more')
             if more.count() > 0:
-                controlled = more.first.get_attribute('aria-controls')
-                before = page.locator(f'#{controlled} > li').count()
+                lane = more.first.locator('xpath=..')
+                before = lane.locator(':scope > .chronik-list > li').count()
                 more.first.click()
-                after = page.locator(f'#{controlled} > li').count()
-                expanded = more.first.get_attribute('aria-expanded')
-                if after > before and expanded == 'true':
+                after_main = lane.locator(':scope > .chronik-list > li').count()
+                after_detail = page.locator(
+                    '#tab-chronik .chronik-detail-slot '
+                    '.chronik-evidence > .chronik-list > li'
+                ).count()
+                if after_main == before and after_detail > before:
                     results.append(("OK", "chronik:lane-more         ",
-                                    f"{before} auf {after} Eintraege erweitert"))
+                                    f"{before} in Lane, {after_detail} rechts vollstaendig"))
                 else:
                     results.append(("FAIL", "chronik:lane-more         ",
-                                    f"vorher={before}, nachher={after}, expanded={expanded}"))
+                                    f"vorher={before}, Hauptlane={after_main}, "
+                                    f"Detail={after_detail}"))
             else:
                 results.append(("FAIL", "chronik:lane-more         ",
                                 "keine verdichtete Lane mit Mehr-Schalter gefunden"))

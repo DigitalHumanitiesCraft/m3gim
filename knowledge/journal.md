@@ -259,7 +259,9 @@ One row per decision that holds today, with its date where the source names one,
 
 | E-286 | 2026-09-06 | Show full signature and complete title on the left of every record detail head, metadata on the right with left-aligned text and below on narrow screens. Keep paging and Korb separate. Update the individual title on Folio paging while preserving the collection title above. | The project lead found that the collection title concealed the recorded titles of its individual parts and approved this layout. This supersedes the title and head-layout parts of E-271. | [design.md](design.md) § Components |
 
-| E-287 | 2026-09-07 | Rebuild the Chronik within the existing UI as a vertical source and entity chronology using the linked corpus. Separate document dates, dated statements and document context. Keep all filters in the shared sidebar; handle density with complete expandable groups and inline evidence. Parts remain distinct from works. | The project lead approved implementation after reviewing the wireframe and requested real data, existing UI and a solution for many entities on one day. Source co-mentions do not establish a common occurrence. This replaces the Chronik-display portions of E-88, E-124 and E-264. | [design.md](design.md) § Views |
+| E-287 | 2026-09-07 | Rebuild the Chronik within the existing UI as a vertical source and entity chronology using the linked corpus. Separate document dates, dated statements and document context. Keep all filters in the shared sidebar; handle density with complete expandable groups and inline evidence. E-288 supersedes this expansion and detail behaviour. Parts remain distinct from works. | The project lead approved implementation after reviewing the wireframe and requested real data, existing UI and a solution for many entities on one day. Source co-mentions do not establish a common occurrence. This replaces the Chronik-display portions of E-88, E-124 and E-264. | [design.md](design.md) § Views |
+
+| E-288 | 2026-09-07 | Reserve the Chronik detail column on wide screens, place complete lists and source/entity evidence there, and use a modal detail on narrow screens. Put legends at the upper right and keep Verknüpfung open. | The project lead requested implementation of the screenshot critique. Stable timeline geometry supports reading dense dates. This supersedes E-287 inline expansion and the Chronik-specific no-scroll detail rule. | [design.md](design.md) § Components and Views |
 
 ### Modelling guard rails
 
@@ -275,6 +277,8 @@ Cross-cutting principles that bind every model decision and are held by the test
 - Vocabulary coupling. Every new event role and role stands in the frontend and test vocabulary, otherwise the vocabulary tests break when it goes live.
 
 ## Sessions
+
+- **2026-09-07, stable Chronik details and legends:** The authorised revision replaces inline expansion with a reserved right detail column, complete lists and a responsive modal dialog. Source titles lead, notes and dating roles remain accessible, overlapping intervals inform axis breaks, the Verknüpfung section stays open, and the map legend moves to the upper right. Independent review and browser checks cover evidence, focus and responsive behaviour. During verification the project lead requested a deeper discussion of duration and a continuous scaled axis; that further geometric redesign remains open in [plan.md](plan.md).
 
 - **2026-09-07, reduce the Chronik head:** The project lead requested removal of the repeated Chronik title, date-group/document totals and introductory explanation. The navigation and arrangement controls now share one row. Seven existing Chronik browser cases and direct rendering checks passed. Further search and detail-panel questions remain proposals in [plan.md](plan.md).
 

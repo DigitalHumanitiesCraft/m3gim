@@ -53,9 +53,9 @@ export function countTip(hasSelection) {
     : 'Die Zahl nennt die Dokumente, die mit diesem Wert im Schnitt blieben.';
 }
 
-// Land and Verknuepfung fold at their title. Both are long, and seven open
-// sections would push the column past one screen — the reason E-240 already
-// folds the view-owned sections.
+// Land folds at its title because its closed value set can run long. The
+// Verknuepfung tree stays visible: its types and roles are a central research
+// axis and its own two-level caps keep the column bounded.
 const startsFolded = { collapsible: true, collapsed: () => true };
 
 /**
@@ -96,7 +96,6 @@ export function linkSection(store, inventory) {
       + 'meint jede seiner Rollen, und ein Dokument mit zwei Rollen desselben '
       + 'Typs zählt in beiden.\n' + countTip(selected().length > 0),
     titleActive: () => selected().length > 0,
-    ...startsFolded,
     controls: [{
       kind: 'facetTree', key: 'verknuepfung', options: () => entries,
       counts: () => facetCounts(store, getFilter(), 'verknuepfung', flatValues(entries)),

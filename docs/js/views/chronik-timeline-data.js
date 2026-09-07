@@ -7,7 +7,7 @@ import { extractXlsxSource } from '../utils/provenance.js';
 const FAMILIES = ['ort', 'person', 'werk', 'part', 'institution'];
 const QUALIFIER_LABEL = { circa: 'ca.', vor: 'vor', nach: 'nach' };
 
-function dateMeta(raw) {
+export function dateMeta(raw) {
   const text = raw == null ? null : String(raw).trim();
   if (!text) return { key: 'undated', dateLabel: 'Ohne Datum', year: null,
     precision: 'undated', sortKey: '9999-99-99|undated' };
@@ -34,7 +34,9 @@ function dateMeta(raw) {
   const display = precision.includes('malformed') ? value : (formatDate(value) || text);
   const dateLabel = qualifier ? `${QUALIFIER_LABEL[qualifier] || qualifier} ${display}` : display;
   const sortable = year == null ? '9998-99-99' : value.split('/')[0].padEnd(10, '-00');
-  return { key: text, dateLabel, year, precision, sortKey: `${sortable}|${text}` };
+  const endYear = precision.includes('malformed') ? year
+    : value.includes('/') ? dateMeta(value.split('/')[1]).year : year;
+  return { key: text, dateLabel, year, endYear, precision, sortKey: `${sortable}|${text}` };
 }
 
 function notesOf(node) {
@@ -243,5 +245,11 @@ export function buildChronikTimeline(store, records) {
   const undated = collector.rows.has('undated') ? clean(collector.rows.get('undated')) : null;
   const rows = [...collector.rows.values()].filter(row => row.key !== 'undated')
     .sort((a, b) => a.sortKey.localeCompare(b.sortKey)).map(clean);
+  let coveredThrough = null;
+  for (const row of rows) {
+    row.gapBefore = coveredThrough != null && row.year != null && row.year > coveredThrough + 1
+      ? { from: coveredThrough, to: row.year } : null;
+    if (row.year != null) coveredThrough = Math.max(coveredThrough ?? row.year, row.year, row.endYear ?? row.year);
+  }
   return { rows, undated };
 }

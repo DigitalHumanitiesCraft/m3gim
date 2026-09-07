@@ -189,15 +189,16 @@ describe('Welche Facetten die Spalte fuehrt', () => {
     }
   });
 
-  test('Land und Verknuepfung starten zugeklappt, die uebrigen offen', () => {
+  test('Land startet zugeklappt, Verknuepfung bleibt dauerhaft offen', () => {
     const src = read('ui/sidebar-facets.js');
     const folded = src.slice(src.indexOf('const startsFolded'));
     assert.match(folded.slice(0, 120), /collapsible: true, collapsed: \(\) => true/);
-    for (const section of ['function landSection', 'function linkSection']) {
-      const block = folded.slice(folded.indexOf(section));
-      assert.match(block.slice(0, 900), /\.\.\.startsFolded,/,
-        `${section} startet nicht zugeklappt und laesst die Spalte scrollen`);
-    }
+    const land = folded.slice(folded.indexOf('function landSection'));
+    assert.match(land.slice(0, 900), /\.\.\.startsFolded,/,
+      'Land startet nicht zugeklappt und laesst die Spalte scrollen');
+    const links = folded.slice(folded.indexOf('function linkSection'));
+    assert.doesNotMatch(links.slice(0, 900), /\.\.\.startsFolded,/,
+      'Verknuepfung muss als zentrale Forschungsachse sichtbar bleiben');
   });
 
   test('jede Ansicht nennt ihren Datenstand an derselben Stelle (F6)', () => {

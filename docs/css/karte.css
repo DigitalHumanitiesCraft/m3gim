@@ -30,6 +30,59 @@
 .mob-map__svg { width: 100%; height: 100%; display: block; background: var(--surface); }
 .mob-map__svg:active { cursor: grabbing; }
 
+/* The explanatory key occupies the same upper-right position as the network
+   legend. It belongs to the drawing; the left column remains a filter area. */
+.mob-map__legend {
+  position: absolute;
+  inset-block-start: var(--space-2);
+  inset-inline-end: var(--space-2);
+  z-index: 4;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+  max-inline-size: min(420px, calc(100% - var(--space-16)));
+  padding: var(--space-2) var(--space-3);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-sm);
+}
+
+.mob-map__legend-title {
+  margin: 0 0 var(--space-1);
+  font-family: var(--font-ui);
+  font-size: var(--text-2xs);
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-tertiary);
+}
+
+.mob-map__legend-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mob-map__legend-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1-5);
+  font-size: var(--text-2xs);
+  line-height: 1.35;
+  color: var(--color-text-secondary);
+}
+
+.mob-map__legend-marker {
+  inline-size: 12px;
+  block-size: 12px;
+  flex: none;
+  border-radius: 3px;
+}
+
 /* Basemap: the ocean is the SVG ground, the graticule is drawn locally on top. */
 .mob-graticule {
   fill: none;
@@ -227,6 +280,12 @@
 
 /* Touch targets in the sidebar's event region. */
 @media (max-width: 768px) {
+  .mob-map__legend {
+    grid-template-columns: 1fr;
+    max-inline-size: min(210px, calc(100% - var(--space-12)));
+    gap: var(--space-2);
+  }
+
   .mob-detail__clear {
     display: inline-flex;
     align-items: center;
