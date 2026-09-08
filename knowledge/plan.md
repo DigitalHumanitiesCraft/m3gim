@@ -18,9 +18,9 @@ related: [INDEX, specification, research-framework, data, data-model, architectu
 
 ## Current state and next action
 
-The local 2026-09-08 increment corrects institution filtering, makes register details complete and responsive, separates static values from actions, opens the register menu on the first click and synchronises stylesheet versions (E-293). It follows the knowledge cleanup under E-292. The Pages baseline last checked was `4df1be7`; this increment is local. Version 0.9 and guided acceptance remain open.
+The local 2026-09-08 increment replaces the map-led entry with Orte, a source-backed place list and optional geographic companion (E-294). It follows the register/navigation refactoring under E-293 and the knowledge cleanup under E-292. Source-row deduplication, separate statement/document dates and selection without filtering are implemented. The Pages baseline last checked was `4df1be7`; these increments are local. Version 0.9 and guided acceptance remain open.
 
-**Next executable step:** inspect the suspect single-work role bindings in the source-backed register example, then retest the work-register research path. Continue the guided Chronik review for scrolling orientation, dense groups, date summaries and source interpretation. The map proposal remains a draft.
+**Next executable step:** review Orte with Wuppertal (T1) and the Bayreuth place-role evidence (T2), including explicit filtering and the Chronik handover. The source-backed work/part binding and guided Chronik review remain open follow-ups.
 
 ## Open follow-up work
 
@@ -29,25 +29,16 @@ The local 2026-09-08 increment corrects institution filtering, makes register de
 | Register acceptance | The implementation now labels composers, separates actions and expands complete role/co-mention lists in the shared detail | A researcher reaches and interprets properties, derived roles, co-mentions and attesting documents without help |
 | Work/part binding | The existing single-work inference includes Amneris and Venus under Tristan und Isolde through `NIM_004_34`; its document-based derivation is now visible | Check the source-backed binding against its recorded context; preserve unattached and ambiguous roles |
 | Search alignment | The local register lookup and common document search remain separate controls | Evaluate one search appropriate to the active view while preserving the shared cut |
-| Map geometry | Legend moved to the upper right under M6g; pies still overlap and obscure labels | Evaluate placement with the map proposal below |
+| Orte acceptance | Place list, complete source details and optional point map replace the previous map proposal | Interpret statement dates, document anchors, roles and coverage; reach sources and distinguish selection from filtering |
 | Guided acceptance | Recent fixes need user retesting; remaining research paths have not been accepted | Record successful navigation, interpretation and remaining failures separately |
 
-## Map proposal for evaluation
+## Place evidence and remaining mobility scope
 
-**Draft, not implemented.** Explore a map of attested stations with a linked timeline for a selected person or work and period. Places would have fixed geographic positions. Selecting a station or connection would expose dates, roles and attesting documents. Reuse the network's selection, highlighting and evidence-panel interaction where it helps. Its actor/document graph cannot be projected directly onto the map because actors and records do not each have one justified coordinate.
+The project lead approved a place-evidence view on 2026-09-08 after examining the user stories and actual date/place coverage (E-294). The former station/trajectory draft is superseded. [specification.md](specification.md) owns the revised stories and [design.md](design.md) the implemented interaction.
 
-A line must identify its evidence meaning:
+The current frontend projection of the unchanged shipped JSON-LD retains 652 source-row place statements from 144 records, grouped under 91 city labels. Of these statements, 608 receive coordinates and 66 carry an explicitly combined place/date value. The 229 contract-place statements describe source rows, not a number of contracts or engagements. The old 776-entry extraction both counted mirrored graph paths twice and collapsed distinct source rows, so its counts are not a historical or source-row baseline. Source-key set equality is now checked exhaustively against the loaded source representations.
 
-- An explicitly recorded departure and destination may support a directed travel connection when both belong to the same journey and actor.
-- Two attested, dated stations may form a chronological sequence. The link does not establish the intervening route or exclude unrecorded stops.
-- Dispatch and reception may support correspondence when the source links the endpoints. A letter's movement does not establish the singer's movement.
-- Places named in one document establish document co-mention, distinct from travel and a bound appearance.
-
-First inspect one source-backed person/period sample and determine which lines can be justified before drawing them. Use the relevant annotation dates and preserve uncertainty, ranges, undated evidence and contradictions. A document's creation date is not an automatic date of presence. If the sample does not support connections, show separate attested stations. Missing coordinates remain visible. The work-centred variant needs the same check; a work and place in one record do not establish a performance there.
-
-The 2026-09-06 read-only measurement used the shipped JSON-LD through `loadArchive()` and `buildOccurrences()`: 776 deduplicated map evidence entries from 144 records, 101 raw place names, 93 names after `cityOf()` grouping, 61 grouped names with coordinates, and 365 entries with a nonempty date. These describe the extraction, not a verified count of visited cities or journeys. There are 282 contract-place entries and 113 mentions. Recompute after a data change. The decided occurrence bundling model remains a separate, unimplemented development.
-
-Compare the draft and current map on the same sample. The reader must understand every line, reach its evidence, distinguish chronology from travel, identify missing locations and operate it by keyboard. This evaluation decides between a replacement, a connection mode or a station-only view. Implementation of this proposal requires a design decision based on that evaluation.
+Historical stays, realized appearances and travel connections still need binding and scholarly source assessment. Departure and destination must belong to one journey and actor before a directed connection is warranted. Correspondence endpoints require the same source connection; chronological succession alone does not establish a route. The decided occurrence model remains unimplemented.
 
 ## Guided user walkthrough
 
@@ -57,7 +48,7 @@ Compare the draft and current map on the same sample. The reader must understand
 | Folio paging (T7), `NIM_007_5` | Control found, content change observed, page 4 reopened from its URL | This exact paging/address path is user-confirmed; retest the subsequently added individual title |
 | Bestand fixes M6a–M6e | Tooltip, title selection and scroll defects were reported and fixes implemented | Targeted visual retest of the single tooltip, copying, stable opening and responsive detail head |
 | Werkregister (US2.2), Tristan und Isolde | Work and document evidence reached; composer recognised on the second look; actions, relations and hidden roles confused | Re-evaluate after register improvements; successful navigation is partial acceptance evidence |
-| Karte (T1/US1.1) | Screenshots show selected Wuppertal, legend and overlap problems; user proposes a mobility view | Document jump and place-role interpretation are not confirmed; evaluate the map draft on explicit evidence |
+| Orte (T1/US1.1), 2026-09-08 | The project lead approved the evidence-led view after the read-only data assessment | Re-evaluate source interpretation, optional geography and explicit Chronik transfer after E-294; no user acceptance yet |
 | Chronik and register follow-up, 2026-09-07 | Chronik title, totals and introductory explanation removed as requested. Seven existing Chronik browser cases passed; actual Chronik/Register/Bestand/Statistik rendering compared. The project lead questions the second register search and proposes reusing the network detail panel. | Chronik right panel implemented under M6g. The register detail panel is implemented under E-293; one search appropriate to the active view remains a proposal |
 | Remaining views | Chronik, Netzwerk, Statistik, other registers and Korb/exports lack complete guided acceptance | Continue task examples below, including shared filters, document/event dates and actual downloads |
 
@@ -119,6 +110,7 @@ These are agent-checked examples from the versioned data of 2026-09-06. Record i
 | Checkpoint | Evidence and limit |
 |---|---|
 | Register/navigation increment, 2026-09-08 (E-293) | 701 Node checks passed. The full technical invariant run (`-m "not data_quality and not slow"`) passed 649 Python/browser checks with four strict source-fix xfails, nine deselections and no skips. Two subsequent relationship-evidence cases passed. Final targeted checks covered 40 cases including knowledge and stylesheet integrity; one local HTTP module-fetch failure required an isolated repeat, which passed. The earlier full non-slow run reconfirmed all eight source/model failures; its ninth failure was an obsolete tooltip-target assertion, corrected and verified against the new native action button. Register geometry was checked at 390, 800 and 1440 pixels. Dense Chronik, Netzwerk and register selections were opened, replaced, scrolled and closed at 390 and 1440 pixels with bounded content and keyboard return; actual screenshots also cover Bestand, Karte and Korb chips. Source tables, vocabulary and both JSON-LD copies are unchanged. Visual inspection is agent verification; guided and scholarly acceptance remain open. |
+| Orte increment, 2026-09-08 (E-294) | 697 Node checks passed. The final technical invariant run passed 659 Python/browser checks with four strict source-fix xfails, nine deselections and no skips. Targeted browser checks also verified the revised map keyboard and undated-context behaviour. Actual rendering was inspected at 390, 800 and 1440 pixels with open and closed detail; all 91 places remain accessible, dense lists scroll internally, keyboard focus returns and map zoom survives selection. Fitting all points places every marker centre inside the drawing. Source-key equality preserves all 652 place statements; source tables, vocabulary and both JSON-LD copies remain unchanged. Technical and visual verification is by the agent; scholarly and user acceptance remain open. |
 | Baseline before E-293, 2026-09-08, `4df1be7` | Node suite passed. Pytest with `-m "not slow"`: 635 passed, 9 failed, 4 xfailed, 1 deselected, no skips. Browser tests were executed. Eight failures expose source/model findings; `test_stylesheet_links_carry_the_asset_version[index.html]` exposes the inconsistent selection-detail CSS version. The slow determinism check was excluded. |
 | Chronik M6j, 2026-09-07 | 693 Node checks, 28 targeted Chronik/Netzwerk browser cases and seven knowledge checks passed. Smoke reported 37 OK. Geometry was checked for every group at 390, 800 and 1366 pixels before/after selection; additional visual inspection covered narrow and wide rendering. Guided visual and scholarly acceptance remain open. |
 | Last full run including slow checks, M6f | 618 Python/browser checks passed, eight source/model checks failed, four strict source-fix xfails, no skips. This is a historical checkpoint before subsequent Chronik changes. |

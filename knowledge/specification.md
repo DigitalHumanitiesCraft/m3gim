@@ -85,12 +85,12 @@ The stories operationalize the stable research contract below. They require visi
 
 The seven epics are the questions the project partners and the talk abstract put to the fonds. Their relation to the research questions is set out in [research-framework.md](research-framework.md). A story is fulfilled when the data points it names are visible, filterable and lead back to the record. The acceptance instrument is the task set in [research-framework.md](research-framework.md) § Evaluation. Where the dataset carries a dimension only in part, the story says so, and [plan.md](plan.md) records implementation gaps and acceptance evidence for each story.
 
-### Epic 1. Where did Malaniuk perform?
+### Epic 1. Which places does the estate attest?
 
-- As a musicologist I want to see every place data point of the result set with the place role in which the place stands at the record, the date where one is recorded, and the record that carries it, so that I can describe her geographical range and cite every place.
-- As a musicologist I want to group places by country and by time and restrict the result set by place role, time and country, without any role being excluded silently, so that I can read her international reach and its shift over the decades on the data alone.
+- As a musicologist I want to see every place data point of the result set with the place role in which the place stands at the record, the date explicitly attached to that place statement, and the attesting record, so that I can compare place references and cite their evidence. Document dates and the document time anchor remain separately labelled.
+- As a musicologist I want to group places by country and by time and restrict the result set by place role, time and country, without any role being excluded silently, so that I can compare the geographical distribution of indexed documents and inspect its dating and coverage limits.
 
-The dataset carries the place with its role and the record. A date stands at the place where the annotation carries both, and country coverage depends on location enrichment. Place-role and country facets restrict the shared document cut. The Karte reports its eligible place evidence and lists places without drawable coordinates.
+The dataset carries the place with its role and the record. A date stands at the place where the annotation carries both, and country coverage depends on location enrichment. Place-role and country facets restrict the shared document cut. The Orte view provides the primary place list and complete source evidence, with an optional geographic companion. Selection opens evidence without changing the shared filter; filtering and transfer to the Chronik are explicit actions. Place and role counts name distinct attesting documents. Multiple graph paths from one source row count as one place statement, while independent rows remain separate. A journey or realized appearance requires additional evidence binding and scholarly source assessment (E-294).
 
 ### Epic 2. Which stage parts did she sing?
 
@@ -173,7 +173,7 @@ All views use the shared document cut. The sidebar owns filters; selected detail
 |---|---|
 | Bestand | Browse linked archival records in signature and Konvolut order, inspect every recorded field and follow Folio pages. Unlinked records remain outside the application basis. |
 | Chronik | Compare recorded document and statement dates in source and entity lanes, preserving precision, qualifiers, undated evidence and access to dense groups. Separately sourced editorial bands provide biographical context. |
-| Karte | Inspect places, recorded place roles and localization certainty for selected entities. Places without drawable coordinates retain record access and an explanation. Place mentions do not establish travel or presence. |
+| Orte | Find places and recorded roles, inspect complete source evidence, compare geographical distribution through an optional map and open the selected place in the Chronik. Document dates and explicitly dated place statements remain separate. Places without coordinates remain in the list. Historical journeys and realized appearances require source assessment and occurrence binding. |
 | Register | Enter through persons, institutions, places or works, inspect enrichment and document evidence, and continue into the relevant analytical view. Curated, derived and ambiguous work/part bindings remain distinguishable. |
 | Netzwerk | Inspect actor/document co-mention and explicitly recorded relations under the contract above. |
 | Statistik | Compare distinct-record counts by document type, repertoire, person and institution, and inspect the records behind each ranking. |

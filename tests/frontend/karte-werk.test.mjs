@@ -20,9 +20,7 @@ import assert from 'node:assert/strict';
 
 import { buildEntities, buildOccurrences, hasGeo, ENTITY_FAMILY }
   from '../../docs/js/views/karte-data.js';
-import { entitySection } from '../../docs/js/views/karte-picker.js';
 import { karteSelectableNames } from '../../docs/js/views/indizes-data.js';
-import { familyIconSvg } from '../../docs/js/ui/family-icons.js';
 import { storeFromShipped } from './_shipped.mjs';
 
 const S = (...ids) => new Set(ids);
@@ -107,54 +105,6 @@ describe('buildEntities: Werk als dritte Familie', () => {
       .filter(o => w.records.has(o.recordId))
       .map(o => o.place).sort();
     assert.deepEqual(places, ['Bayreuth', 'Wien']);
-  });
-});
-
-describe('entitySection: die Wahl benennt die Familie', () => {
-  const state = { entity: null };
-  const entities = buildEntities(makeStore());
-  const spec = entitySection(entities, state, () => {});
-  const options = spec.controls[0].options();
-  const optionOf = id => options.find(o => o.value === id) || {};
-
-  // E-241: das Familiensymbol der Vorschlagszeile unterscheidet die drei
-  // Familien, das frühere Textpräfix ist entfallen.
-  test('die Beschriftung ist der blanke Name, ohne Präfix', () => {
-    assert.equal(optionOf('werk:Tristan und Isolde').label, 'Tristan und Isolde');
-    assert.equal(optionOf('person:Malaniuk, Ira').label, 'Malaniuk, Ira');
-    assert.equal(optionOf('org:Bayreuther Festspiele').label, 'Bayreuther Festspiele');
-    for (const o of options) assert.doesNotMatch(o.label, / · /);
-  });
-
-  test('jede Zeile trägt ihre Inhaltsfamilie als Symbol und als Wort', () => {
-    assert.equal(optionOf('werk:Tristan und Isolde').family, 'werk');
-    assert.equal(optionOf('person:Malaniuk, Ira').family, 'person');
-    assert.equal(optionOf('org:Bayreuther Festspiele').family, 'institution');
-    // Das Symbol ist aria-hidden, der Name der Zeile braucht das Wort.
-    assert.equal(optionOf('org:Bayreuther Festspiele').familyLabel, 'Organisation');
-    assert.equal(optionOf('person:Malaniuk, Ira').familyLabel, 'Person');
-    for (const o of options) {
-      assert.ok(familyIconSvg(o.family).startsWith('<svg '),
-        `keine Familie am Vorschlag ${o.value}`);
-    }
-  });
-
-  test('die Sektion startet zugeklappt, damit die geteilten Filter stehen bleiben', () => {
-    assert.equal(spec.collapsible, true);
-    assert.equal(spec.collapsed(), true);
-  });
-
-  test('die Wahl setzt genau eine Entität und meldet sie', () => {
-    let called = 0;
-    const s2 = { entity: null };
-    const sec = entitySection(entities, s2, () => { called++; });
-    sec.controls[0].onSelect(['werk:Das Rheingold']);
-    assert.equal(s2.entity.name, 'Das Rheingold');
-    assert.equal(s2.entity.kind, 'werk');
-    assert.equal(called, 1);
-    assert.deepEqual(sec.controls[0].selected(), ['werk:Das Rheingold']);
-    sec.controls[0].onSelect([]);
-    assert.equal(s2.entity, null);
   });
 });
 

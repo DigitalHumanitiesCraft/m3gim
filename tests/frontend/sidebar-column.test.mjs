@@ -121,7 +121,7 @@ describe('Filterstreifen ueber den Daten', () => {
       'views/netzwerk.js': 'main.insertBefore(_sidebar.strip, main.firstChild);',
       'views/statistik.js': 'main.insertBefore(sidebar.strip, main.firstChild);',
       'views/indizes.js': 'wrapper.insertBefore(sidebar.strip, wrapper.firstChild);',
-      'views/karte.js': "sidebar.strip, el('div', { className: 'view-main__stage' }, mapCell)",
+      'views/karte.js': "sidebar.strip, stage",
     };
     for (const [file, line] of Object.entries(mounts)) {
       assert.ok(read(file).includes(line), `${file} montiert den Streifen`);
@@ -351,14 +351,12 @@ describe('Ansichtslokale Chips im Streifen (E-223)', () => {
       'Zuruecksetzen loest auch die ansichtslokale Verengung.');
   });
 
-  test('die Karte gibt nur noch die Entitaet als lokale Gruppe hinein', () => {
+  test('die Ortssuche trägt einen entfernbaren lokalen Chip', () => {
     const src = read('views/karte.js');
-    const block = src.slice(src.indexOf('localChips: () =>'), src.indexOf('onChange: () =>'));
-    assert.match(block, /title: 'Entität',/);
-    assert.match(block, /onRemove: clearEntity/,
-      'Der Chip loest die Entitaet wie der Kopf der Detail-Region.');
-    assert.doesNotMatch(block, /title: 'Land',/,
-      'Das Land ist eine geteilte Facette und kein karteneigener Schnitt mehr.');
+    const block = src.slice(src.indexOf('localChips: () =>'), src.indexOf('onChange: redraw'));
+    assert.match(block, /title: 'Ortssuche'/);
+    assert.match(block, /onRemove:/);
+    assert.doesNotMatch(src, /entitySection/);
   });
 });
 
@@ -383,9 +381,7 @@ describe('Einheitliche Spalte über alle Ansichten (E-237 bis E-240)', () => {
     }
     // Die Karte lief bis E-239 über die Jahre ihrer verorteten Belege.
     const karte = read('views/karte.js');
-    const span = karte.slice(karte.indexOf('const span = {'), karte.indexOf('const state = {'));
-    assert.match(span, /\.\.\.yearBounds\(store\)/);
-    assert.match(span, /covered: \{/, 'Die belegten Jahre stehen als Band auf der Schiene.');
+    assert.match(karte, /yearSpan: yearBounds\(store\)/);
   });
 
   test('die view-eigenen Sektionen von Karte und Netzwerk starten zugeklappt', () => {
@@ -393,8 +389,6 @@ describe('Einheitliche Spalte über alle Ansichten (E-237 bis E-240)', () => {
     assert.match(netzwerk, /const startsCollapsed = \{ collapsible: true, collapsed: \(\) => true \};/);
     // Die eine view-eigene Sektion Knoten mit ihren zwei Schaltern (F2).
     assert.equal((netzwerk.match(/\.\.\.startsCollapsed,/g) || []).length, 1);
-    const picker = read('views/karte-picker.js');
-    assert.match(picker, /collapsible: true,\s+collapsed: \(\) => true,/);
     const karte = read('views/karte.js');
     assert.ok(!karte.includes('Länder-Reichweite'),
       'Die karteneigene Laenderliste ist in die geteilte Facette Land gewandert.');

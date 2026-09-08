@@ -13,7 +13,7 @@
 import { test, describe, before } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { buildOccurrences, hasGeo, unlocatedPlaces }
+import { buildOccurrences, hasGeo, groupPlaces }
   from '../../docs/js/views/karte-data.js';
 import { cityOf } from '../../docs/js/utils/format.js';
 import { storeFromShipped } from './_shipped.mjs';
@@ -28,11 +28,11 @@ before(async () => {
   occ = buildOccurrences(store);
 });
 
-describe('unlocatedPlaces am ausgelieferten Datensatz', () => {
+describe('Ortsliste ohne Kartenpunkt am ausgelieferten Datensatz', () => {
   test('gezeichnete und ausgewiesene Orte ergeben zusammen alle Orte der Karte', () => {
     const all = new Set(occ.map(o => key(o.place)));
     const drawn = new Set(occ.filter(hasGeo).map(o => key(o.place)));
-    const listed = new Set(unlocatedPlaces(occ).map(r => r.city.toLowerCase()));
+    const listed = new Set(groupPlaces(occ).filter(group => !group.located).map(r => r.city.toLowerCase()));
 
     // Minimum sizes, so the equality does not hold over empty sets. The list
     // gets no lower bound: it is meant to shrink as the reconciliation resolves
@@ -46,10 +46,10 @@ describe('unlocatedPlaces am ausgelieferten Datensatz', () => {
   });
 
   test('jede Zeile traegt eine Dokumentzahl und einen Ort, den die Ort-Facette kennt', () => {
-    const rows = unlocatedPlaces(occ);
+    const rows = groupPlaces(occ).filter(group => !group.located);
     assert.ok(rows.length > 0, 'der Test hat keinen Gegenstand mehr');
     for (const row of rows) {
-      assert.ok(row.records >= 1, `${row.city} ohne Dokument`);
+      assert.ok(row.records.size >= 1, `${row.city} ohne Dokument`);
       // The jump of the row writes the place into the shared ort facet. A place
       // absent there would lead the row into an empty result set.
       assert.ok(store.locations.has(row.city),
@@ -58,7 +58,7 @@ describe('unlocatedPlaces am ausgelieferten Datensatz', () => {
   });
 
   test('Aufgabe 9: jeder Ort der Prüfrecords ist gezeichnet oder ausgewiesen', () => {
-    const listed = new Set(unlocatedPlaces(occ).map(r => r.city.toLowerCase()));
+    const listed = new Set(groupPlaces(occ).filter(group => !group.located).map(r => r.city.toLowerCase()));
     const drawn = new Set(occ.filter(hasGeo).map(o => key(o.place)));
     // UAKUG/NIM_023 5 (Wuppertal, without coordinates) and a record of the
     // Wagner family carrying both situations at once, Muenchen located and the

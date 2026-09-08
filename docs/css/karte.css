@@ -1,294 +1,99 @@
-/* Karte tab (E-111). Only what is the map's own: the SVG, the node labels, the
-   tooltip and the event region in the sidebar. Shell, sections and filter
-   controls live in sidebar.css. */
-
+/* Place navigation and its optional map. */
 #tab-karte { padding: 0; }
-
-.mob-notice {
-  padding: var(--space-8);
-  color: var(--color-text-primary);
+.places-main { overflow: hidden; min-height: 0; }
+.places-stage { display: flex; flex: 1 1 0; overflow: hidden; }
+.places-workspace {
+  display: flex; flex-direction: column; flex: 1 1 0; min-width: 0; min-height: 0;
+  container: places-work / inline-size;
 }
-
-/* Empty-state primitive plus: a dashed frame, because this message replaces a
-   panel and would otherwise float without a boundary. */
-.mob-empty {
-  padding: var(--space-8);
-  background: var(--line-soft);
-  border: 1px dashed var(--border-color);
-  border-radius: var(--border-radius);
-  color: var(--color-text-secondary);
+.places-head {
+  display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-3);
+  padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--line);
 }
-
-/* The map fills the view's work area */
-
-.mob-map {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
+.places-heading { margin: 0 auto 0 0; font-size: var(--text-base); font-weight: var(--weight-semibold); }
+.places-sort, .places-search {
+  max-width: 100%; min-width: 0; box-sizing: border-box;
+  padding: var(--space-1) var(--space-2); border: 1px solid var(--line-strong);
+  border-radius: var(--border-radius); background: var(--surface);
+  color: var(--color-text-primary); font: inherit; font-size: var(--text-xs);
 }
-
-.mob-map__svg { width: 100%; height: 100%; display: block; background: var(--surface); }
+.places-search { width: 100%; min-height: 32px; }
+.places-action {
+  border: 0; background: none; padding: var(--space-1) 0;
+  color: var(--accent); cursor: pointer; font: inherit; font-size: var(--text-xs);
+  text-align: start; text-decoration: underline; text-underline-offset: 3px;
+}
+.places-body { display: flex; flex: 1 1 0; min-height: 0; min-width: 0; }
+.places-list { flex: 1 1 56%; min-width: 0; min-height: 0; overflow: auto; }
+.places-table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); table-layout: fixed; }
+.places-table th {
+  position: sticky; top: 0; z-index: 1; text-align: start; background: var(--surface-2);
+  font-size: var(--text-2xs); font-weight: var(--weight-semibold); color: var(--color-text-secondary);
+}
+.places-table th, .places-table td {
+  padding: var(--space-3); border-bottom: 1px solid var(--line); vertical-align: top;
+  overflow-wrap: anywhere;
+}
+.places-table th:first-child { width: 32%; }
+.places-table th:last-child { width: 82px; text-align: end; white-space: nowrap; }
+.places-table tr:has([aria-expanded="true"]) { box-shadow: inset 3px 0 var(--accent); }
+.places-table tbody tr:hover { background: var(--surface-3); }
+.places-name { color: var(--accent); font: inherit; font-weight: var(--weight-semibold);
+  text-align: start; padding: 0; background: none; border: 0; cursor: pointer; }
+.places-name:hover, .places-name[aria-expanded="true"] { text-decoration: underline; text-underline-offset: 3px; }
+.places-role { display: block; font-size: var(--text-xs); line-height: var(--leading-relaxed); color: var(--color-text-secondary); }
+.places-count { text-align: end; font-variant-numeric: tabular-nums; }
+.places-location-note { display: block; margin: var(--space-1) 0 0; font-size: var(--text-2xs); color: var(--color-text-tertiary); }
+.places-detail-actions { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-4); margin-bottom: var(--space-4); }
+.places-evidence { border-top: 1px solid var(--line); padding-block: var(--space-3); }
+.places-evidence h4 { margin: 0 0 var(--space-2); font-size: var(--text-sm); }
+.places-dates { margin: 0; font-size: var(--text-xs); }
+.places-dates dt { color: var(--color-text-tertiary); margin-top: var(--space-2); }
+.places-dates dd { margin: 0; font-variant-numeric: tabular-nums; }
+.places-absent { font-style: italic; color: var(--color-absent); }
+.places-source { display: flex; flex-direction: column; align-items: start; gap: var(--space-1);
+  background: none; border: 0; padding: var(--space-2) 0 0; width: 100%; font: inherit;
+  font-size: var(--text-xs); text-align: start; color: var(--accent); cursor: pointer; }
+.places-source:hover { text-decoration: underline; }
+.places-signature { font-family: var(--font-mono); }
+.places-original, .places-source-note { font-size: var(--text-xs); margin-block: var(--space-2); }
+.mob-map { position: relative; flex: 1 1 44%; min-width: 0; min-height: 0; overflow: hidden; border-left: 1px solid var(--line); }
+.mob-map[hidden] { display: none; }
+.mob-map__svg { display: block; width: 100%; height: 100%; background: var(--surface); }
 .mob-map__svg:active { cursor: grabbing; }
-
-/* The explanatory key occupies the same upper-right position as the network
-   legend. It belongs to the drawing; the left column remains a filter area. */
-.mob-map__legend {
-  position: absolute;
-  inset-block-start: var(--space-2);
-  inset-inline-end: var(--space-2);
-  z-index: 4;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--space-4);
-  max-inline-size: min(420px, calc(100% - var(--space-16)));
-  padding: var(--space-2) var(--space-3);
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--border-radius);
-  box-shadow: var(--shadow-sm);
-}
-
-.mob-map__legend-title {
-  margin: 0 0 var(--space-1);
-  font-family: var(--font-ui);
-  font-size: var(--text-2xs);
-  font-weight: var(--weight-semibold);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--color-text-tertiary);
-}
-
-.mob-map__legend-list {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.mob-map__legend-row {
-  display: flex;
-  align-items: center;
-  gap: var(--space-1-5);
-  font-size: var(--text-2xs);
-  line-height: 1.35;
-  color: var(--color-text-secondary);
-}
-
-.mob-map__legend-marker {
-  inline-size: 12px;
-  block-size: 12px;
-  flex: none;
-  border-radius: 3px;
-}
-
-/* Basemap: the ocean is the SVG ground, the graticule is drawn locally on top. */
-.mob-graticule {
-  fill: none;
-  stroke: var(--line-strong);
-  stroke-width: 0.5;
-  stroke-opacity: 0.4;
-}
-
-/* Zoom stack, top left of the map */
-.mob-zoomctl {
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  z-index: 4;
-}
-/* Shape and hover come from the .zoom-btn primitive in components.css. */
-
-.mob-map__loading {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--color-text-tertiary);
-  font-size: var(--text-sm);
-}
-
-.mob-node__label {
-  font-family: var(--font-ui);
-  font-size: 11px;
-  fill: var(--color-text-primary);
-  paint-order: stroke;
-  /* The halo takes the ground of the map itself, so a label stays legible over
-     a country outline without carrying a colour of its own. */
-  stroke: var(--surface);
-  stroke-width: 2.5px;
-  pointer-events: none;
-}
-
-/* Selected entity (sidebar) */
-
-.mob-entity__active {
-  display: flex;
-  /* The family icon sits next to the name, so the row centres instead of
-     sitting on the text baseline. */
-  align-items: center;
-  gap: var(--space-2);
-  flex-wrap: wrap;
-  padding-bottom: var(--space-2);
-}
-.mob-entity__active .fam-mark {
-  flex: none;
-}
-.mob-entity__activename {
-  font-size: var(--text-sm);
-  font-weight: var(--weight-semibold);
-  color: var(--accent);
-}
-
-/* Node tooltip: an HTML box over the SVG, because an SVG node carries no pseudo-element (E-36). */
-
-.mob-tip {
-  position: absolute;
-  z-index: 5;
-  pointer-events: none;
-  min-width: 90px;
-  max-width: 220px;
-  padding: var(--space-1-5) 9px;
-  background: var(--surface);
-  border: 1px solid var(--border-color);
-  border-radius: var(--border-radius);
-  box-shadow: var(--shadow-md);
-  font-size: var(--text-xs);
-  color: var(--color-text-primary);
-  line-height: 1.5;
-  opacity: 0;
-  transition: opacity var(--transition-fast);
-}
+.mob-land path { fill: var(--surface-3); stroke: var(--line-strong); stroke-width: 0.6; }
+.mob-node { cursor: pointer; }
+.mob-node__dot { fill: var(--chip-c-ort-text); stroke: var(--surface); stroke-width: 1.5; }
+.mob-node--selected .mob-node__dot { fill: var(--accent); stroke: var(--accent); stroke-width: 3; }
+.mob-node__focus { fill: none; stroke: var(--accent); stroke-width: 2; }
+.mob-node__label { font: 11px var(--font-ui); fill: var(--color-text-primary);
+  paint-order: stroke; stroke: var(--surface); stroke-width: 3px; pointer-events: none; }
+.mob-zoomctl { position: absolute; top: var(--space-2); left: var(--space-2);
+  display: flex; flex-direction: column; gap: var(--space-1); }
+.mob-map-status { position: absolute; bottom: var(--space-2); left: var(--space-2); right: var(--space-2);
+  pointer-events: none; width: fit-content; max-width: calc(100% - var(--space-4));
+  padding: var(--space-1); background: var(--surface); font-size: var(--text-2xs); color: var(--color-text-secondary); }
+.mob-map__loading, .mob-empty { margin: 0; padding: var(--space-4); color: var(--color-text-tertiary); font-size: var(--text-sm); }
+.mob-tip { position: absolute; z-index: 5; pointer-events: none; opacity: 0;
+  max-width: min(260px, calc(100% - var(--space-4))); box-sizing: border-box;
+  padding: var(--space-3); border: 1px solid var(--line-strong); border-radius: var(--border-radius);
+  background: var(--surface); box-shadow: var(--shadow-sm); font-size: var(--text-xs); }
 .mob-tip--on { opacity: 1; }
-.mob-tip strong {
-  display: block;
-  font-size: var(--text-sm);
+.mob-tip__row { display: block; margin-top: var(--space-1); }
+@container places-work (width < 760px) {
+  .places-body { flex-direction: column; }
+  .places-list { flex-basis: 60%; }
+  .mob-map { flex: 0 0 34%; min-height: 180px; border-left: 0; border-top: 1px solid var(--line); }
 }
-.mob-tip__row {
-  display: flex;
-  align-items: center;
-  gap: var(--space-1-5);
-  color: var(--color-text-secondary);
-}
-.mob-tip__sw { width: 9px; height: 9px; border-radius: 2px; flex: none; }
-.mob-tip__n {
-  margin-inline-start: auto;
-  padding-inline-start: 10px;
-  font-variant-numeric: tabular-nums;
-  font-size: var(--text-xs);
-  color: var(--color-text-tertiary);
-}
-.mob-tip__meta { color: var(--color-text-tertiary); font-style: italic; }
-/* Stacked proportion bar inside the tooltip */
-.mob-tip__bar {
-  display: flex;
-  height: 8px;
-  margin: 5px 0 6px;
-  border-radius: 4px;
-  overflow: hidden;
-  background: var(--surface-3);
-}
-.mob-tip__bar > span { display: block; height: 100%; }
-
-/* Event region in the sidebar */
-
-.mob-panel { display: flex; flex-direction: column; gap: var(--space-3); }
-.mob-panel__detail { display: flex; flex-direction: column; gap: var(--space-2); }
-
-.mob-detail__head {
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-3);
-}
-.mob-detail__title {
-  margin: 0;
-  font-size: var(--text-base);
-  font-weight: var(--weight-semibold);
-  color: var(--color-text-primary);
-}
-.mob-detail__clear {
-  background: none;
-  border: none;
-  color: var(--accent);
-  font-size: var(--text-xs);
-  cursor: pointer;
-  text-decoration: underline;
-}
-/* Absence, not a value: an undated Beleg keeps its place in the list and says
-   so in the one absence form of the application (E-225, design rule 16). */
-.mob-chip__undated {
-  font-style: italic;
-  color: var(--color-absent);
+@container places-work (width < 420px) {
+  .places-head { gap: var(--space-2); padding: var(--space-2); }
+  .places-heading { font-size: var(--text-sm); }
+  .places-table th, .places-table td { padding: var(--space-2); }
+  .places-table th:first-child { width: 29%; }
+  .places-table th:last-child { width: 66px; }
 }
 
-.mob-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-}
+.places-heading, .places-evidence h4 { font-family: var(--font-ui); }
+.places-more summary { cursor: pointer; font-size: var(--text-xs); color: var(--accent); margin-top: var(--space-1); }
 
-/* Click detail: the assignments as bar and rows, then the documents */
-
-.mob-detail__bar {
-  display: flex;
-  height: 12px;
-  border-radius: 6px;
-  overflow: hidden;
-  background: var(--surface-3);
-}
-.mob-detail__bar > span { display: block; height: 100%; }
-.mob-detail__rows { display: flex; flex-direction: column; gap: 3px; }
-.mob-detail__row {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  font-size: var(--text-xs);
-  color: var(--color-text-secondary);
-}
-.mob-detail__sw { width: 10px; height: 10px; border-radius: 2px; flex: none; }
-.mob-detail__rowlabel { flex: 1; }
-.mob-detail__rown { font-variant-numeric: tabular-nums; color: var(--color-text-tertiary); }
-.mob-detail__subhead {
-  font-family: var(--font-ui);
-  font-size: var(--text-xs);
-  font-weight: var(--weight-semibold);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--color-text-tertiary);
-  margin-top: var(--space-1);
-}
-
-/* Location legend: the ring styles for secured, city-level and wide. */
-.mob-vmark {
-  width: 13px; height: 13px; border-radius: 50%;
-  box-sizing: border-box; background: transparent;
-  flex: none;
-}
-.mob-vmark--secured { border: 1.5px solid var(--color-text-tertiary); background: var(--line-strong); }
-.mob-vmark--city { border: 1.5px dashed var(--line-strong); }
-.mob-vmark--far { border: 1.5px dashed var(--color-error); }
-/* No point on the map at all: an open, dotted ring. The Wikidata green says the
-   place is matched and only the coordinates are missing, grey that the
-   reconciliation found nothing (F4). */
-.mob-vmark--unloc { border: 1.5px dotted var(--color-text-tertiary); }
-.mob-vmark--unloc-qid { border-color: var(--color-match); }
-
-/* Touch targets in the sidebar's event region. */
-@media (max-width: 768px) {
-  .mob-map__legend {
-    grid-template-columns: 1fr;
-    max-inline-size: min(210px, calc(100% - var(--space-12)));
-    gap: var(--space-2);
-  }
-
-  .mob-detail__clear {
-    display: inline-flex;
-    align-items: center;
-    min-block-size: 24px;
-  }
-}
+.places-authority { display: inline-block; font-size: var(--text-2xs); margin-top: var(--space-1); color: var(--accent); }

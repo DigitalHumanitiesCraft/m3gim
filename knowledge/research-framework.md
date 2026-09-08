@@ -196,7 +196,7 @@ For the musicologist
 For the modeller
 
 8. Find a document whose year on the timeline does not come from its own date of creation, and say which link date the year comes from.
-9. Take one record of the Bestand. Account for its persons and institutions in the Netzwerk and for its places on the Karte or in the unlocated-place list. Explain declared exclusions, including the creator of the fonds in the network, and return to the source for one item.
+9. Take one record of the Bestand. Account for its persons and institutions in the Netzwerk and for its places in Orte, including entries without a map point. Distinguish the date of a place statement from its document date and document time anchor. Verify that opening place evidence leaves the common filter unchanged. Explain declared exclusions, including the creator of the fonds in the network, and return to the source for one item.
 
 For the cataloguing team
 

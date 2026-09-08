@@ -128,7 +128,11 @@ def test_map_has_one_keyboard_operable_drawing(frontend_server, page):
     )
     drawing.focus()
     drawing.press("ArrowRight")
+    original_hash = page.url
     drawing.press("Enter")
+    assert page.locator('.selection-detail__panel').is_visible()
+    assert page.url == original_hash
+    page.get_by_role('button', name='Nach diesem Ort filtern', exact=True).click()
     page.wait_for_function("() => location.hash.includes('ort=')")
 
 
@@ -170,7 +174,7 @@ def test_map_tooltip_escapes_roles_and_keeps_undated_context(frontend_server, pa
         """nodes => nodes.map((node, index) => ({ index,
           undated: node.__data__?.undated || 0,
           shown: node.__data__?.shown || 0,
-          slices: node.querySelectorAll('.mob-node__pie path').length }))
+          dots: node.querySelectorAll('.mob-node__dot').length }))
           .find(entry => entry.undated > 0) || null"""
     )
     assert undated is not None, (
@@ -180,8 +184,8 @@ def test_map_tooltip_escapes_roles_and_keeps_undated_context(frontend_server, pa
     node.dispatch_event("mouseenter", {"clientX": 300, "clientY": 200})
     tooltip = page.locator("#tab-karte .mob-tip")
     assert f"{undated['undated']} aus undatierten Dokumenten" in tooltip.inner_text()
-    assert undated["slices"] > 0, (
-        "Undatierter Dokumentkontext verlor seine Rollenanteile"
+    assert undated["dots"] == 1, (
+        "Undatierter Dokumentkontext verlor seinen Kartenpunkt"
     )
 
 
@@ -202,9 +206,10 @@ def test_map_occurrences_never_escape_shared_document_cut(frontend_server, page)
           ]);
           const cut = recordsFor(window.m3gim.store, getFilter()).ids;
           const drawn = [...document.querySelectorAll('#tab-karte .mob-node')]
-            .flatMap(node => (node.__data__?.occ || []).map(item => item.recordId));
-          return { cut: [...cut], outside: drawn.filter(id => !cut.has(id)) };
+            .flatMap(node => (node.__data__?.evidence || []).map(item => item.recordId));
+          return { cut: [...cut], drawn, outside: drawn.filter(id => !cut.has(id)) };
         }"""
     )
     assert len(verdict["cut"]) == 32
+    assert verdict["drawn"]
     assert verdict["outside"] == []

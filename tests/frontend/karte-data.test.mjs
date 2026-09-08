@@ -15,9 +15,7 @@ import assert from 'node:assert/strict';
 
 import {
   buildOccurrences, occurrencesInCut, placeRolesOf, sortOcc,
-  placeRoleScale, breakdownByRole, NO_ROLE,
 } from '../../docs/js/views/karte-data.js';
-import { REST_COLOR } from '../../docs/js/views/statistik-data.js';
 import { storeFromShipped } from './_shipped.mjs';
 
 function S(...ids) { return new Set(ids); }
@@ -200,62 +198,9 @@ describe('Zeitanker des Ortsbelegs am ausgelieferten Datensatz', () => {
       && o.source === 'loc');
     assert.ok(belege.length > 0, 'der Pruefrecord traegt keinen Ortsbeleg');
     for (const o of belege) {
-      assert.equal(String(o.date).slice(0, 4), '1959',
+      assert.equal(o.date, null);
+      assert.equal(String(o.recordDate).slice(0, 4), '1959',
         `${o.place} datiert auf ${o.date} statt auf den Anker 1959`);
     }
-  });
-});
-
-// ---------------------------------------------------------------------------
-// F1: der Knoten schluesselt nach Ortsrolle auf, nicht mehr nach Sicht
-// ---------------------------------------------------------------------------
-
-describe('placeRoleScale', () => {
-  test('die Rangfolge steht ueber dem ganzen Bestand, die sechs Farben vorne', async () => {
-    const store = await storeFromShipped();
-    const scale = placeRoleScale(buildOccurrences(store));
-    const coloured = [...scale.values()].filter(e => e.color !== REST_COLOR);
-    assert.equal(coloured.length, 6, 'die Tokens geben sechs Kategorienfarben her');
-    assert.equal(coloured[0].label, 'Vertragsort',
-      'die haeufigste Ortsrolle des ausgelieferten Datensatzes fuehrt die Skala an');
-    for (let i = 1; i < coloured.length; i++) {
-      assert.ok(coloured[i - 1].count >= coloured[i].count, 'die Skala ist nicht sortiert');
-    }
-    assert.equal(new Set(coloured.map(e => e.color)).size, 6,
-      'zwei Rollen in derselben Farbe waeren als dieselbe zu lesen');
-  });
-
-  test('ein Beleg ohne Rolle nimmt den Grauton, keine der sechs Farben', async () => {
-    // Abwesenheit ist keine Kategorie (Designregel 4).
-    const store = await storeFromShipped();
-    const scale = placeRoleScale(buildOccurrences(store));
-    const none = scale.get(NO_ROLE);
-    assert.ok(none && none.count > 0, 'der Test hat keinen Gegenstand');
-    assert.equal(none.color, REST_COLOR);
-    assert.equal(none.label, 'ohne Rolle');
-  });
-});
-
-describe('breakdownByRole', () => {
-  const occ = [
-    { roleId: 'm3gim-vocab:guestPerformance', roleLabel: 'gastspiel' },
-    { roleId: 'm3gim-vocab:guestPerformance', roleLabel: 'gastspiel' },
-    { roleId: 'm3gim-vocab:dispatch', roleLabel: 'absendung' },
-    { roleId: null, role: null, roleLabel: '' },
-  ];
-
-  test('jede Rolle behaelt ihre Zeile, auch jenseits der sechs Farben', () => {
-    // Aufgabe 2 fragt, welche Rollen die uebrigen Orte tragen; eine Rolle, die
-    // in einen Sammelposten faellt, waere dort nicht mehr zu benennen.
-    const scale = placeRoleScale(occ);
-    const rows = breakdownByRole(occ, scale);
-    assert.deepEqual(rows.map(r => [r.label, r.count]),
-      [['Gastspiel', 2], ['Absendung', 1], ['ohne Rolle', 1]]);
-  });
-
-  test('ohne Skala faellt jede Zeile auf den Grauton zurueck statt zu fehlen', () => {
-    const rows = breakdownByRole(occ, null);
-    assert.equal(rows.length, 3);
-    assert.ok(rows.every(r => r.color === REST_COLOR));
   });
 });

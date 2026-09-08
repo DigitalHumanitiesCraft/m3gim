@@ -267,8 +267,8 @@ function buildItem(entry, config) {
     }),
     local.register !== 'orte' && karteSelectableNames(store).has(entry.name) ? el('button', {
       className: 'idx-jump idx-jump--row', type: 'button',
-      dataset: { tip: `${entry.name} auf der Karte öffnen`, tipWrap: '' },
-      'aria-label': `${entry.name} auf der Karte öffnen`, html: KARTE_GLYPH_SVG,
+      dataset: { tip: `Ortsbelege zu ${entry.name} öffnen`, tipWrap: '' },
+      'aria-label': `Ortsbelege zu ${entry.name} öffnen`, html: KARTE_GLYPH_SVG,
       onClick: () => navigateFromRegister('karte', { entity: entry.name }),
     }) : null,
     el('span', { className: 'idx-item__wd' }, wikidataMark(entry))));

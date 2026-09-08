@@ -166,12 +166,13 @@ describe('B Bestand: Undatiert-Markierung haengt am Record-Datum', () => {
   });
 });
 
-describe('C Karte: Datum des Ortsbelegs haengt am Record-Datum', () => {
-  test('der Ortsbeleg erbt das Record-Datum', async () => {
+describe('C Orte: Dokumentdatum bleibt vom Ortsdatum getrennt', () => {
+  test('der Ortsbeleg behält das Record-Datum als Kontext', async () => {
     const store = await storeFrom(graphWithDate('1956-05-01'));
     const belege = buildOccurrences(store).filter(o => o.source === 'loc');
     assert.equal(belege.length, 1, 'Ortsbeleg nicht gebildet');
-    assert.equal(belege[0].date, '1956-05-01',
+    assert.equal(belege[0].date, null);
+    assert.equal(belege[0].recordDate, '1956-05-01',
       'Ortsbeleg traegt das Record-Datum nicht');
   });
 
@@ -184,7 +185,7 @@ describe('C Karte: Datum des Ortsbelegs haengt am Record-Datum', () => {
 
   test('Anker am Datenstand: Record-Belege tragen real ein Datum', async () => {
     const belege = buildOccurrences(await realStore()).filter(o => o.source === 'loc');
-    const datiert = belege.filter(o => o.date).length;
+    const datiert = belege.filter(o => o.recordDate).length;
     assert.ok(datiert >= 100, `nur ${datiert} datierte Record-Ortsbelege`);
   });
 });

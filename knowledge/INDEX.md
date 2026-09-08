@@ -81,7 +81,7 @@ Every knowledge document uses these English terms. The German column is the word
 | facet | Facette | A feature with discrete values by which the result set is restricted: person, place, work, institution, document type, role, time. |
 | chip | Chip | A selected facet value, shown as a removable element. |
 | basket | Korb | The records a researcher collects by hand across views, for export. |
-| view | Ansicht, Tab | One page of the application: holdings, registers, chronicle, map, network, statistics, basket. |
+| view | Ansicht, Tab | One page of the application: holdings, registers, chronicle, places, network, statistics, basket. |
 | holdings | Bestand | The view that lists the records in their archival order of convolutes and folios. |
 | register | Register, Index | The list of normalized entities of one family, with a page per family. |
 | family | Familie | One of the four entity kinds person, institution, place, work, each with a fixed colour and symbol. |

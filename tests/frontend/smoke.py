@@ -321,13 +321,7 @@ def main() -> int:
             # dem Sidebar-Umbau ueber dasselbe Facetten-Muster wie jeder Filter.
             # Die view-eigene Sektion startet zugeklappt (E-240); ihr Feld ist
             # erst nach dem Aufklappen bedienbar.
-            entity_head = page.locator('#tab-karte .vs-section',
-                                       has_text="Entität").locator(
-                '.vs-section__title--toggle').first
-            if entity_head.get_attribute("aria-expanded") == "false":
-                entity_head.click()
-                page.wait_for_timeout(200)
-            entity_facet = page.locator('#tab-karte .fs-facet[data-facet="entitaet"]')
+            entity_facet = page.locator('#tab-karte .fs-facet[data-facet="institution"]')
             entity_facet.locator('.fs-search').fill("Bayreuther Festspiele")
             page.wait_for_timeout(200)
             picker = entity_facet.locator('.fs-option').count()
@@ -345,7 +339,7 @@ def main() -> int:
                   and (nodes_entity is None or nodes_entity >= 1) and not new_errs)
             if ok:
                 results.append(("OK", "karte:render               ",
-                                f"{nodes_all} Knoten (Malaniuk), 0 Linien, {picker} Vorschlaege, "
+                                f"{nodes_all} Kartenpunkte, 0 Linien, {picker} Vorschlaege, "
                                 f"Bayreuther Festspiele -> {nodes_entity} Orte, {land} Laender"))
             else:
                 results.append(("FAIL", "karte:render               ",
