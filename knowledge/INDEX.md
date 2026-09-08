@@ -13,24 +13,24 @@ template:
   alias: https://dhcraft.org/Promptotyping/#promptotyping-document-index
 status: active
 created: 2026-02-19
-updated: 2026-09-06
+updated: 2026-09-08
 language: en
-version: 0.6
+version: 0.7
 authors: [Christopher Pollin]
-generated-with: Claude Code
+generated-with: Codex
 related: [specification, plan, data, data-model, recording-guide, research-framework, architecture, design, journal, journal-archive, testing, handoff]
 ---
 
 # M³GIM Knowledge Base
 
-This page is the entry point into the knowledge base of the project. It orders the documents by their Promptotyping function, names the storage zones of the repository, gives reading paths and defines the constitutive terms. The knowledge base is the source of truth, the code is the derived artefact. Running figures live in the generated quality snapshot under [`data/reports/quality-snapshot.md`](../data/reports/quality-snapshot.md).
+This page is the entry point into the knowledge base of the project. It orders the documents by their Promptotyping function, names the storage zones of the repository, gives reading paths and defines the constitutive terms. The maintained documents define the project contract; statements about implemented behaviour must be checked against the current code. Dataset figures carry their own timestamp in the [quality snapshot](../data/reports/quality-snapshot.md).
 
 ## Documents
 
 | Path | Function | Routing question | Update |
 |---|---|---|---|
 | [INDEX.md](INDEX.md) | Navigation | What lies here, how is it read, which terms are constitutive? | with every change to the contents of the folder |
-| [specification.md](specification.md) | Charter and specification | What is the project, what is the application to achieve, and where does the work stand? | with a change to identity, requirements, scope or state of work |
+| [specification.md](specification.md) | Charter and specification | What must the application achieve, and which decisions remain open? | with a change to identity, requirements or scope |
 | [plan.md](plan.md) | Implementation plan | What is next, what did users verify, and which improvements remain proposals? | with an accepted scope clarification, integrated change or new verification result |
 | [data.md](data.md) | Source material and spec-first anchor | What is the source material, how does the cataloguing team record it, and what is defective in it? | with a new data export or a changed recording |
 | [data-model.md](data-model.md) | Domain knowledge | How is the material formally modelled, and where does the model stop? | with a change to [`vocab/m3gim.ttl`](../vocab/m3gim.ttl), to the model or to the recording convention |
@@ -41,17 +41,17 @@ This page is the entry point into the knowledge base of the project. It orders t
 | [testing.md](testing.md) | Quality assurance | What is guaranteed, and how is it checked? | with a change to the test suite or the TDD workflow |
 | [handoff.md](handoff.md) | Handoff | Which checked handover points wait for integration or rejection? | when a point arrives or is processed |
 | [journal.md](journal.md) | Provenance | How did the project arrive here, and why was it decided this way? | after transitions that belong together, and with every decision in the decision register |
-| [journal-archive.md](journal-archive.md) | Provenance archive | Which decision was superseded or lapsed, and how did a session run in full? | preserved historical reference; use Git for newly superseded wording |
+| [journal-archive.md](journal-archive.md) | Provenance archive | Which earlier decision was superseded or lapsed? | retain existing decision references; use Git for superseded prose |
 
 The data findings live operationally under `data/reports/`. The errors that can be fixed at the source stand in the handover list [`source-errors-handover-2026-09-01.md`](../data/reports/source-errors-handover-2026-09-01.md), the Wikidata alignment in the [`reconciliation-register.md`](../data/reports/reconciliation-register.md).
 
 ## Storage zones
 
-- `knowledge/` carries the permanently maintained Promptotyping documents, including the process inbox [handoff.md](handoff.md). Root README, CLAUDE and AGENTS provide public and agent entry points. CLAUDE owns shared agent rules; AGENTS links to it.
-- `data/google-spreadsheet/` carries the source material taken over from the cataloguing team as versioned exports. The object table is `M3GIM-Objekte.csv`, with the workbook of the same name beside it as the fallback the loader uses only when the CSV is absent. The four index tables for persons, organizations, places and works stay XLSX. The link table lives as one CSV per box under `data/google-spreadsheet/verknuepfungen/`, named `Box_1.csv` and so on with non-contiguous numbers, together with the value list `Typ-Rolle.csv`.
-- `data/reports/` carries three classes. The curation evidence of the authority alignment is permanent, because `data/output/wikidata-reconciliation.json` cites it. The finding registers, meaning the handover list and the reconciliation register, are the operational error management. The quality snapshot generated by every pipeline run is the communication of the current state to third parties. The remaining generated reports are not versioned, a run produces them.
-- `data/output/` and `docs/data/` carry the reproducibly generated artefacts of the pipeline.
-- `vocab/` carries the formal project vocabulary as a Turtle file together with its coverage checker. [data-model.md](data-model.md) describes the model that the file formalizes.
+- `knowledge/` holds maintained project knowledge. Root README, CLAUDE and AGENTS provide entry points and working rules.
+- `data/google-spreadsheet/` holds versioned source exports; [data.md](data.md) owns their format and interpretation.
+- `data/reports/` holds permanent curation evidence and finding registers, plus generated reports. The quality snapshot describes its own dataset timestamp. Other generated reports are recreated by a run.
+- `data/output/` and `docs/data/` hold pipeline artefacts; [architecture.md](architecture.md) owns their production and delivery.
+- `vocab/` holds the formal vocabulary and coverage checker; [data-model.md](data-model.md) explains their semantics.
 
 ## Reading paths
 
@@ -66,13 +66,9 @@ The data findings live operationally under `data/reports/`. The errors that can 
 
 ## Conventions
 
-This knowledge base follows the convention for Promptotyping documents, which governs naming contract, frontmatter schema, routing heuristic and structural principles. The single carrier of a function bears the canonical name. Sections carry no numbers, and a reference names document and section title (E-161).
+Each document owns the routing question listed above. Current work and verification belong to [plan.md](plan.md), decisions and their reasons to [journal.md](journal.md), and source findings to the registers beside their data. Git preserves superseded prose. Decision identifiers remain addressable in the journal and its archive (E-292).
 
-Markdown documents in `knowledge/` are English by default (E-260). German project terms stay where the glossary below defines them. File names are English. Interface strings and the finding texts of the data mirror are German. Code comments are English. [journal-archive.md](journal-archive.md) preserves historical German wording (E-266). [recording-guide.md](recording-guide.md) preserves the language agreed with the cataloguing team. Its move into the maintained knowledge base supersedes the storage location in E-267 without changing the partner-facing content.
-
-Model changes are anchored in [data.md](data.md) first, which is the spec-first guard rail (E-133). What is done moves out of the volatile section of [specification.md](specification.md) into [journal.md](journal.md), what belongs to the source into the handover list under `data/reports/`. Research notes and sources sensitive under data protection law are maintained in the Obsidian vault, the repository carries the distilled extract.
-
-The knowledge base was consolidated on 2026-07-19 and condensed further on 2026-09-01. The recording guideline was absorbed into [data-model.md](data-model.md), the two architecture documents became [architecture.md](architecture.md), the data error register moved to `data/reports/` as an operational pair of registers, and the decision register became part of [journal.md](journal.md) (E-155). The partner-facing guide now has its own address at [recording-guide.md](recording-guide.md), moved into the knowledge base under E-284.
+Knowledge is English by default. The partner-facing [recording-guide.md](recording-guide.md) stays German. The glossary preserves project-specific German terms. [CLAUDE.md](../CLAUDE.md) owns language, source-first modelling and session rules. The Obsidian Vault holds personal research sources and receives external knowledge only from a genuine Vault session.
 
 ## Glossary
 

@@ -5,11 +5,11 @@ project:
   repository: https://github.com/DigitalHumanitiesCraft/m3gim
 status: reviewed
 language: en
-version: 0.5
+version: 0.6
 created: 2026-02-19
-updated: 2026-09-05
+updated: 2026-09-08
 authors: [Christopher Pollin]
-generated-with: Claude Code
+generated-with: Codex
 method:
   name: Promptotyping
   url: https://lisa.gerda-henkel-stiftung.de/digitale_geschichte_pollin
@@ -42,8 +42,6 @@ Two related projects exist, both confined to the early modern period.
 - MusMig, Katalinic, Zagreb
 
 M³GIM closes the gap to the twentieth century and tests a modelling based on RiC-O 1.1 for it, described in [data.md](data.md).
-
-The current station-map and timeline proposal in [plan.md](plan.md) is an exploratory response to guided user feedback. Its evidence rules distinguish travel, chronological stations, correspondence and document co-mention. The proposal adds no inferred historical journey and has not changed the accepted model or task definitions.
 
 ## Mobility types
 
@@ -78,7 +76,7 @@ The Ukrainian Austrian mezzo-soprano Ira Malaniuk (1919 to 2009) is the concrete
 | 1970 to 2000 | Graz | Professor of song interpretation at the KUG |
 | 2009 | Zirl (Tyrol) | Died |
 
-The Bayreuth span 1951 to 1958 comes from the secondary literature. The partial estate held at the university archive attests Bayreuth only for 1951 to 1953. The application therefore shows that span and marks 1954 to 1958 as a gap in the cataloguing rather than asserting the span of the literature.
+The Bayreuth span 1951 to 1958 comes from the project's secondary-literature synthesis and describes a guest-performance series. The current corpus also contains Bayreuth mentions in the 1954 document cut, documented by task sample T4 in [plan.md](plan.md). Those mentions require source-level interpretation and do not by themselves establish an appearance at Bayreuth in 1954. Coverage must be assessed for each period and source; the earlier blanket claim of a 1954 to 1958 cataloguing gap is unsupported. The Chronik carries the literature span as separately labelled editorial context.
 
 International guest appearances include the Teatro Colón in Buenos Aires, the Royal Opera House in London, the Scala in Milan, Lisbon and Paris.
 
@@ -96,7 +94,7 @@ Her repertoire centred on Wagner (Waltraute, Brangäne, Second Norn, Fricka), Ve
 4. National mobility, Austrian citizenship through marriage and a biographical continuity reaching back into the Habsburg monarchy.
 5. Lifestyle migration, the permanent relocation to Vienna and later to Zirl.
 
-There is no independent scholarly literature on Malaniuk. The project performs the first archive-based work on the partial estate, described in [data.md](data.md).
+The project proposal identifies a lack of independent scholarly work on Malaniuk and motivates an archive-based study of the partial estate described in [data.md](data.md). This is the proposal's research rationale; the knowledge base does not establish an up-to-date bibliographic completeness claim.
 
 ## Research questions
 
@@ -145,7 +143,7 @@ Research gaps
 
 ## Personas
 
-The application serves the researchers and the cataloguing team. It is a tool for finding things oneself, not a narrative (E-156).
+The personas distinguish research, model assessment and source correction.
 
 ### The musicologist, core persona
 
@@ -163,7 +161,7 @@ External re-use, including the planned FWF follow-up study, is out of scope for 
 
 ## Research epics
 
-The application answers seven questions. Each of them is an epic of [specification.md](specification.md) § Epics and user stories, where the user stories, the views and the delivered state are held.
+The seven epics in [specification.md](specification.md) connect the research questions to user stories. [plan.md](plan.md) records their implementation and acceptance evidence.
 
 | Question | Research questions |
 |---|---|
@@ -174,8 +172,6 @@ The application answers seven questions. Each of them is an epic of [specificati
 | With whom did she work? | FF1, FF3 |
 | How did her knowledge travel? | FF3 |
 | What is a statement based on? | all four |
-
-The application is a tool. It shows every recorded data point with the role it carries and access to its attesting record, it names what the holdings do not attest, and it leaves the interpretation to the researcher. It draws no conclusion about the case, because a statement about the subject belongs in a publication and not in an interface (E-156).
 
 ## Evaluation
 

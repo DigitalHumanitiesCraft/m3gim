@@ -5,11 +5,11 @@ project:
   repository: https://github.com/DigitalHumanitiesCraft/m3gim
 status: complete
 language: en
-version: 0.7
+version: 0.8
 created: 2026-02-19
-updated: 2026-09-07
+updated: 2026-09-08
 authors: [Christopher Pollin]
-generated-with: Claude Code
+generated-with: Codex
 method:
   name: Promptotyping
   url: https://lisa.gerda-henkel-stiftung.de/digitale_geschichte_pollin
@@ -25,7 +25,7 @@ related: [architecture, specification, research-framework, data-model, journal]
 
 ## Stance
 
-The interface is a research and cataloguing tool, not a dashboard and not a narrated exhibition (E-156). It shows the fonds the way an edition shows its sources, with visible provenance, an honest cataloguing state and a typography that suits reading. Gaps and duplicates stand as they lie in the source. The interface strings are German, the code and this document are English. Four rules govern every view.
+The interface supports research through readable source evidence, explicit coverage and stable navigation (E-156). Gaps and duplicates remain visible; the cataloguing team uses the separate pipeline reports for source correction. The interface strings are German, the code and this document are English. Four rules govern every view.
 
 1. Explanation comes from structure, symbols and tooltips. Standing explanatory text is the antipattern, counts live in the controls that carry them, captions and breakdowns live in tooltips. The tooltip is the preview, the detail column or the inline detail is the detail.
 2. All filters of all views live in the one left sidebar. There is no top filter bar and no view-local filter place, with bounded facet lists (E-240, E-259). The Verknüpfung section stays open. Chronik and Netzwerk use the same selection detail component; its independent scroll exposes complete evidence without moving the temporal anchors or recomputing the network layout (E-289).
@@ -54,7 +54,7 @@ Tooltips. The application renders `data-tip` in one fixed overlay attached to th
 
 Source references. The interface identifies evidence by archival record and signature. Technical sheet, row and data-point labels are absent from chips, grouped dates and register tooltips (E-285). Their provenance remains in the dataset, exports and cataloguing reports.
 
-Coverage line. Each view states at the view, not in the sidebar, how far its data reach the result set and on which data state, taking the export date of the dataset. It counts against the records of the fonds, never against itself.
+Coverage line. The Dokumenttyp root row in the shared sidebar states the selected record count against the linked application basis. Its accessible tooltip gives the export date and view scope. A view accounts separately for evidence it can display, such as places with coordinates. Whole-fonds counts and unlinked records belong to the quality snapshot; the interface count does not measure completeness of the fonds.
 
 Detail column. Chronik and Netzwerk share `ui/selection-detail.js` and its stylesheet (E-289). The component owns the heading, context label, optional subtitle and return action, close control, placement and focus. The view supplies its evidence content and selection semantics. Before selection the drawing uses the available width; a selection opens a 300-pixel right column only when the work area is at least 900 pixels wide. Narrower work areas use the same content in a native modal dialog. Evidence lists scroll within the panel and remain complete. Escape and the close control restore focus to the originating selection; nested Chronik evidence offers a return to its preceding list. The legend stays at the upper right independently. Selection changes horizontal space but preserves chronological y-coordinates and scroll position. Network selection preserves the existing node coordinates and zoom without another simulation.
 

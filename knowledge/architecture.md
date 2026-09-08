@@ -5,11 +5,11 @@ project:
   repository: https://github.com/DigitalHumanitiesCraft/m3gim
 status: complete
 language: en
-version: 0.7
+version: 0.8
 created: 2026-02-19
-updated: 2026-09-07
+updated: 2026-09-08
 authors: [Christopher Pollin]
-generated-with: Claude Code
+generated-with: Codex
 method:
   name: Promptotyping
   url: https://lisa.gerda-henkel-stiftung.de/digitale_geschichte_pollin
@@ -29,9 +29,12 @@ The project has two halves that meet in one file. The pipeline reads the recordi
 
 ### Sources and their resolution
 
-The source material lies git-tracked under `data/google-spreadsheet/`. The object table is read by `load_objekte` in `scripts/_common.py`, which prefers `M3GIM-Objekte.csv` and falls back to the workbook of the same name only when the CSV is absent, because the CSV preserves the recorded text while the workbook carries the spreadsheet's autoconversion in the date column. The four index tables for persons, organizations, places and works stay XLSX and go through `load_index`, whose header-shift correction covers three malformation classes of the export, a name column without a header, a leaked data value in the header row and an identifier column overwritten by a data value.
+[data.md](data.md) owns source formats, columns and recording defects. The loaders share the following resolution rules.
 
-The link table lives as one CSV per box under `verknuepfungen/`, together with the value list `Typ-Rolle.csv` (E-152). `resolve_verknuepfungen_source` in `scripts/transform.py` takes the directory when it holds at least one `Box_*.csv` and otherwise falls back to the workbook whose name matches `M3GIM-Verkn*pfungen*.xlsx`, so both spellings of the umlaut resolve. Provenance is identical in both cases, each row carries its sheet name and its one-based row number including the header line. `Typ-Rolle.csv` is not read as a link sheet but as the value list that `validate.py` cross-checks types and roles against. `explore.py`, `validate.py` and `audit-data.py` use the same multi-sheet loader as the transformation, so their findings cannot drift behind the transformed state (E-95).
+- `load_objekte` in `scripts/_common.py` prefers `M3GIM-Objekte.csv`; XLSX is the fallback when CSV is absent.
+- `load_index` reads the four XLSX indexes and repairs missing, shifted or overwritten headers before field-wise consolidation.
+- `resolve_verknuepfungen_source` in `scripts/transform.py` selects a directory containing `Box_*.csv`, otherwise a matching `M3GIM-Verkn*pfungen*.xlsx`. Both umlaut spellings resolve.
+- The shared multi-sheet loader preserves sheet names and one-based row numbers including the header. Exploration, validation, audit and transformation use it. `Typ-Rolle.csv` supplies validation values and is excluded from the link rows.
 
 ### The eight steps
 
@@ -50,6 +53,8 @@ Step 2 exits with code 1 as soon as the report carries ERROR findings, which is 
 
 The source validator resolves E005 against the complete published record-key policy: source records, RecordSet parents and recursively derived Folio parents, with the same deterministic hyphen repair as transformation. Signature-only rows that transformation drops produce E016 and cannot satisfy a link target. Calendar validation checks complete dates and month values as well as their notation; an impossible link date produces E010 at its source cell. Both source tables report midnight timestamp patterns as W010 before cleanup. Processing-status validation uses the shared `_common.py` normaliser and checks its result against the normalised accepted vocabulary, preserving E004 for unknown values. The legacy transformation limit for timestamps is documented in [data.md](data.md) § Date notation of the source.
 
+Step 7 is the cataloguing team's consolidated report (E-272). It covers thinly catalogued convolutes, worked-on objects without links, unlinked title places, unmapped link types and validation errors grouped by class. Its `worked_on_without_link` rule is shared with `tests/test_61_orphan_links.py`.
+
 The quality snapshot computes its figures from the dataset and reconciliation output and links to the maintained source and reconciliation finding registers. It contains no separately maintained list of editorial instructions. Register links resolve from the configured report directory, including isolated output locations.
 
 ### Scripts outside the run
@@ -61,7 +66,6 @@ The quality snapshot computes its figures from the dataset and reconciliation ou
 | `verify-manual-approvals.py` | Holds every `match: "manual"` entry against live Wikidata labels, aliases and description, exit code 1 on a mismatch (E-78). `SKIP_VERIFY_MANUAL=1` skips it offline |
 | `export-wikidata-csv.py` | Lookup CSVs from the reconciliation file for import into the spreadsheet |
 | `propose-links.py` | Link proposals from the object titles against the four indexes, in the column shape of the link table. Assigns no role and resolves no ambiguous title position (E-147). Writes `data/reports/link-proposals.md` |
-| `report-cataloguing.py` | The one address of the cataloguing team (E-272), thinly catalogued convolutes, the objects the Bearbeitungsstand lists as worked on while they carry no Verknüpfung, titles naming an unlinked place, link types the pipeline does not map, and the ERROR findings of the validation bundled by class with a pointer into the validation report. The orphan rule lives here as `worked_on_without_link`, and `tests/test_61_orphan_links.py` asks it. Writes `data/reports/cataloguing-report.md` |
 | `scout-coverage.py` | Read-only measurement of the data coverage of a place focus before a view is built on it |
 | `assemble-verknuepfungen.py` | Reassembles the per-box CSV exports into the workbook, for the fallback path of the loader |
 | `build-social-images.py` | Open Graph image and PNG favicons into `docs/img/` from the accent token. Needs Pillow, which no requirements file carries |
@@ -83,7 +87,7 @@ The standard transformation requires the object table, links and all four nonemp
 | `M3GIM_VOCAB_PATH` | `vocab/m3gim.ttl` | `transform.py` |
 | `M3GIM_ALLOW_NO_WIKIDATA` | unset | `transform.py` |
 
-The three path variables are resolved once in `scripts/_common.py` and imported from there. `audit-data.py` and `report-quality.py` used to read fixed paths and therefore audited the default data state while the transformation ran against another one (E-167). `explore.py`, `validate.py` and `transform.py` resolve the same variables in their own module scope with the same defaults.
+The three path variables are resolved once in `scripts/_common.py` and imported by consumers, including audit and quality reporting (E-167). `explore.py`, `validate.py` and `transform.py` resolve the same variables in their own module scope with the same defaults.
 
 ### The Wikidata guard
 
@@ -91,15 +95,17 @@ The three path variables are resolved once in `scripts/_common.py` and imported 
 
 ### Generated and versioned outputs
 
-`data/output/` holds the dataset and the two Wikidata files, all three versioned so a normal clone can run and compare. `docs/data/` holds the published copy of the dataset and, beside it, the world geometry `geo/countries-110m.geo.json`, which no pipeline step produces. `m3gim.jsonld` is the only data source of the frontend, the pre-aggregated derivatives were removed with E-140. Under `data/reports/` three classes live side by side, the permanent curation evidence of the authority alignment, the finding registers of the operational error management, and the reports a run regenerates, of which the exploration, validation, link-proposal and cataloguing reports are gitignored.
+`data/output/` holds the dataset and the two Wikidata files, all three versioned so a normal clone can run and compare. `docs/data/` holds the published copy of the dataset and, beside it, the world geometry `geo/countries-110m.geo.json`, which no pipeline step produces. `m3gim.jsonld` is the only archival data source of the frontend. Editorial biographical context has the separate maintenance contract below. Under `data/reports/` three classes live side by side, the permanent curation evidence of the authority alignment, the finding registers of the operational error management, and the reports a run regenerates, of which the exploration, validation, link-proposal and cataloguing reports are gitignored.
+
+Dataset and consuming frontend changes must be published as a compatible revision. An earlier staggered publication broke the frontend until its consumer changes arrived. Publication therefore verifies the shipped data copy and consumers together.
 
 Identical source data yield identical artefacts with two exceptions. `transform.py` writes the run date as `m3gim-ontology:exportDate`, and the generated Markdown reports carry their generation time in the head. A rerun from an unchanged source therefore shows exactly those lines in `git diff` and nothing else. `tests/test_10_determinismus.py` holds the property by running the transformation twice and removing the export date before the comparison.
 
 ### What the transformation asserts
 
-The dataset carries records with their convolute hierarchy, `owl:sameAs` plus the enriched properties, `skos:Concept` nodes for the hierarchical document types, `m3gim-ontology:Annotation` as a top-level node for every dating and every located statement (E-100, E-136), `m3gim-ontology:Performance` with `m3gim-ontology:hasStageRole` and `m3gim-ontology:hasPerformer` for the stage parts of the source composites (E-96, E-98), `agrelon:*` relations between agents with the record URI as `agrelon:metadataProvenance`, financial detail annotations with `m3gim-ontology:monetaryAmount` and `m3gim-ontology:currency` (E-99), and `m3gim-ontology:xlsxSource` at every record and every nested entity as the technical source reference (E-73). Dating confidence is not serialized, confidence is not fabricated (E-106). `m3gim-ontology:dataQualityFlag` and `m3gim-ontology:processingNote` carry the signals of the annotation column and the cataloguing status (E-102). The structural normalizations of the loader, the header shifts, the field-wise index consolidation, the currency defaults, the role hygiene and the date normalization are catalogued with their source-fix proposals in [data.md](data.md) § Compensations in the pipeline.
+[data-model.md](data-model.md) owns the emitted classes, relations, provenance and known RDF compromises. Transformation resolves source rows into that model, retaining source cells and uncertainty. It reads role definitions, labels and dating ranks from `vocab/m3gim.ttl`, counts omitted rows and reports unmapped types. Occurrence grouping remains absent.
 
-There is no active CI workflow, the pipeline runs locally and the results are committed by hand.
+[data.md](data.md) § Compensations in the pipeline records loader repairs, normalization and editorial defaults. There is no active CI workflow; pipeline execution and publication are local actions.
 
 ## Frontend
 
@@ -168,7 +174,7 @@ The shared list facets are `ort`, `person`, `werk`, `institution`, `docType`, `v
 
 The application starts with the empty selection (E-253). `deviatingKeys()` drives the active chips and `resetFilter()` restores the full basis. The unused touched/default mechanism has been removed. Shared search uses a cached normalized text per record, including document fields and linked entity names. The register's separate entity lookup is local navigation and preserves the shared document query.
 
-`recordsFor(store, filter, {base})` is the single resolution, and before it existed each view resolved its own facets so that two tabs showed different sets for the same filter. `baseIds(store)` is the document base of the whole application, every record with at least one link (E-165). A record without a link is neither greyed out nor filtered away, it does not exist for the interface, and the finding aid for the complete fonds remains the archive. `recordsFor` returns `ids` together with the counts `weit`, `eng` and `undatiert`, which are counted and never cut, so a view can name the difference without computing it. Undated records survive the year window (E-88), because the window is a section of the dated track and not an erasure of the undated. Beside it stand `facetInventory` with the selectable values, `docTypeGroups` with the document type as tree groups, `facetCounts` with the counts in the current cut, and `yearBounds` and `yearOf` as the single year axis and year resolution. A lexical gate in `tests/frontend/records-for.test.mjs` keeps the former per-view resolutions out.
+`recordsFor(store, filter, {base})` resolves the shared result set for every view. `baseIds(store)` is the document base of the whole application, every record with at least one of the seven link-bearing properties, including financial details and agent relations (E-165). A record without a link is neither greyed out nor filtered away, it does not exist for the interface, and the finding aid for the complete fonds remains the archive. `recordsFor` returns `ids` together with the counts `weit`, `eng` and `undatiert`, which are counted and never cut, so a view can name the difference without computing it. Undated records survive the year window (E-88), because the window is a section of the dated track and not an erasure of the undated. Beside it stand `facetInventory` with the selectable values, `docTypeGroups` with the document type as tree groups, `facetCounts` with the counts in the current cut, and `yearBounds` and `yearOf` as the single year axis and year resolution. A lexical gate in `tests/frontend/records-for.test.mjs` keeps the former per-view resolutions out.
 
 ### Router and deep links
 
@@ -190,7 +196,7 @@ The document type is a tree whose selected groups resolve to their leaves; `impl
 
 ### Views
 
-The Bestand (`views/bestand.js`, `bestand-data.js`, `bestand-rows.js`, `_bestand-filter.js`) is the archival base view, a table in signature order with the columns signature, title, type, date, cataloguing and Korb, without sorting. Convolutes stand as permanent group heads with title, time span and their frequent document types, the column head and the open convolute head form a sticky band, and two levels fold, the convolute by the chevron of its head and the record row by its own chevron, which opens the inline detail. As soon as a facet, the free text or the year window cuts, `flattenForFilter` flattens the hierarchy and `pruneEmptyKonvolute` removes a head whose children all fell out of the cut. A record addressed by id always opens, and `widenFilterForRecord` widens the cut by exactly one value the record carries, every widening appearing as a chip (E-219). The entity column shows per content family the symbol from `ui/family-icons.js` with the number of distinct entities, the breakdown by name lies in the tooltip (E-212).
+The Bestand modules (`views/bestand.js`, `bestand-data.js`, `bestand-rows.js`, `_bestand-filter.js`) separate rendering, projection, row construction and filter handling. [design.md](design.md) owns the table and folding contract. As soon as a facet, the free text or the year window cuts, `flattenForFilter` flattens the hierarchy and `pruneEmptyKonvolute` removes a head whose children all fell out of the cut. A record addressed by id always opens, and `widenFilterForRecord` widens the cut by exactly one value the record carries, every widening appearing as a chip (E-219). Entity counts deduplicate names per family; `ui/family-icons.js` supplies the common symbols (E-212).
 
 The record detail (`views/record-detail.js`, `record-detail-data.js`, `record-chips.js`) runs across the full width and is built from `buildRecordBlocks`, which also feeds the Korb, so both places show the same block logic. The blocks are production, contributors, work and repertoire, performances, place and event, dates named in the document, mentioned, further, relations and finances, each block title carrying the symbol of its content family. All chips come from `buildRoleChip` with a Wikidata link where available. Their tooltips expose additional recorded content and identify enrichment as such. Technical sheet and row references are retained in the data and exports but omitted from the interface (E-285). A `rico:generalDescription` at a dating, performance, event or role appears as a quality marker with its wording (E-222).
 
@@ -199,8 +205,6 @@ The Chronik resolves the common document set through `recordsFor` and projects e
 The editorial context has a manual synchronization boundary. Revise biographical facts in `knowledge/research-framework.md` first, then update `chronik-context.js` within the same authorised change. Each phase retains its explicit editorial status, category, year boundaries, description and source reference. Check the complete phase list against the cited research-framework section after an edit, including qualifications such as the Bayreuth estate/literature distinction. The module supplies presentation context only; it must not add RDF assertions, affect `recordsFor`, or substitute phase dates for archival evidence dates.
 
 `ui/selection-detail.js` and `css/selection-detail.css` own the shared Chronik/Netzwerk selection shell. `createSelectionDetail({host,onClose,onChange})` returns `open`, `close`, `destroy` and panel/scroll getters. Views supply title, context, subtitle, content, originating trigger and an optional back callback. The component creates a hidden slot, opens a 300-pixel column only on sufficiently wide hosts, and moves the same panel into a native dialog on narrower hosts. It owns Escape, focus restoration and resize placement. Chronik keeps nested list state and source-specific evidence; Netzwerk keeps graph selection and URL state. Both preserve the drawing's existing time/node coordinates during selection.
-
-The linked-record basis counts all seven link-bearing properties, including `hasDetail` and `hasAgentRelation`. This includes the finance-only record `NIM_023_1_3` in all views. A source-backed regression checks its 8600 DM statement at Box 2 row 82. The corpus and pipeline outputs are unchanged by this view revision.
 
 The Statistik (`views/statistik.js`, `statistik-data.js`, `statistik-sections.js`) shows the holdings in four record-based sections: document types, repertoire, persons and institutions. Spatial and temporal aggregates lie in the Karte and the Chronik, the relation aggregate in the Netzwerk (E-160). A row leads into the correspondingly filtered Bestand wherever a shared facet exists (E-144). Document-type counts include the descendants selected by that facet, with each record counted once per category; parent and child counts overlap. Rows without a facet, including roles, composers and an absent document type, expose every counted record through a common evidence list. `Weitere` expands the remaining individual rows without asserting a combined document count. `buildHorizontalBars` keeps head and expanded rows on the same scale.
 

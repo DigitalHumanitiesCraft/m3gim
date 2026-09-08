@@ -8,11 +8,11 @@ method:
   url: https://lisa.gerda-henkel-stiftung.de/digitale_geschichte_pollin
 status: active
 created: 2026-08-21
-updated: 2026-09-06
+updated: 2026-09-08
 language: en
-version: 0.6
+version: 0.7
 authors: [Christopher Pollin]
-generated-with: Claude Code
+generated-with: Codex
 related: [INDEX, journal, specification, plan]
 ---
 
@@ -23,10 +23,6 @@ This process inbox carries open points only. A point names its addressee, what i
 Open inputs await verification and integration here. Accepted future work lives in [plan.md](plan.md); completed changes and their grounds live in [journal.md](journal.md).
 
 Findings the cataloguing team fixes at the source do not stand here. They are collected in [`../data/reports/source-errors-handover-2026-09-01.md`](../data/reports/source-errors-handover-2026-09-01.md), the authority findings in [`../data/reports/reconciliation-register.md`](../data/reports/reconciliation-register.md). Decisions that wait on the project lead stand in [specification.md](specification.md) § Open decisions.
-
-## Repository work
-
-The current implementation, observed user feedback, map draft and next executable step are maintained in [plan.md](plan.md). This inbox carries no duplicate session handoff. A missing technical check remains a plan item until verified; scholarly acceptance remains with the project lead and project partners.
 
 ## Open handovers to the outside
 

@@ -112,7 +112,7 @@ The Chronik's selected editorial biographical phases derive from [`knowledge/res
 - Source material and known defects, [`knowledge/data.md`](knowledge/data.md), with the formal model in [`knowledge/data-model.md`](knowledge/data-model.md) and the German partner-facing [`knowledge/recording-guide.md`](knowledge/recording-guide.md)
 - Pipeline and frontend reference, [`knowledge/architecture.md`](knowledge/architecture.md), the design system in [`knowledge/design.md`](knowledge/design.md)
 - Test strategy, [`knowledge/testing.md`](knowledge/testing.md)
-- Decisions and their reasons, [`knowledge/journal.md`](knowledge/journal.md), superseded material in [`knowledge/journal-archive.md`](knowledge/journal-archive.md)
+- Decisions and their reasons, [`knowledge/journal.md`](knowledge/journal.md), earlier superseded decisions in [`knowledge/journal-archive.md`](knowledge/journal-archive.md); full session narratives remain in Git
 - Open handover points, [`knowledge/handoff.md`](knowledge/handoff.md)
 
 ## Licence

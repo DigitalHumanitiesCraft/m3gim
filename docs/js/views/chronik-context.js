@@ -70,7 +70,7 @@ export const CHRONIK_CONTEXT = [
     category: 'gastspiel',
     sourceLabel: SOURCE_LABEL,
     sourceHref: BIOGRAPHICAL_STATIONS,
-    description: 'Die Literaturspanne 1951–1958 bezeichnet eine Gastspielserie, keinen Daueraufenthalt. Der im Projekt erfasste Teilnachlass belegt Bayreuth derzeit nur für 1951–1953; 1954–1958 bleibt eine Erfassungslücke.',
+    description: 'Die Literaturspanne 1951–1958 beschreibt eine Gastspielserie. Einzelne Aufenthalte und Auftritte erfordern jeweils eigene Quellenbelege. Bayreuth-Nennungen im erfassten Bestand sind anhand ihres Dokument- und Datierungskontexts zu prüfen.',
   },
   {
     editorial: true,

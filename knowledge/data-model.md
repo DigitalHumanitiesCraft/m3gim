@@ -5,11 +5,11 @@ project:
   repository: https://github.com/DigitalHumanitiesCraft/m3gim
 status: complete
 language: en
-version: 0.5
+version: 0.6
 created: 2026-02-19
-updated: 2026-09-06
+updated: 2026-09-08
 authors: [Christopher Pollin]
-generated-with: Claude Code
+generated-with: Codex
 method:
   name: Promptotyping
   url: https://lisa.gerda-henkel-stiftung.de/digitale_geschichte_pollin
@@ -35,7 +35,7 @@ related: [data, architecture, journal, specification, research-framework, testin
 
 This document reads the formal model out of the vocabulary. It says which standards carry the model and why, how identifiers are assigned, how statements about statements are made, what shape the resulting graph has, what follows from that shape for anyone querying it, and where the model stops. The source material it formalizes is in [data.md](data.md).
 
-The authoritative term list is [`../vocab/m3gim.ttl`](../vocab/m3gim.ttl), with an editorial note on each term and its German display label. The generated reading view of that file is `docs/datenmodell.html`. Neither list is repeated here. A model change is anchored in [data.md](data.md) first, then in the vocabulary, then in a test, and last in the pipeline (E-133).
+The authoritative term list is [`../vocab/m3gim.ttl`](../vocab/m3gim.ttl), with an editorial note on each term and its German display label. The generated reading view of that file is `docs/datenmodell.html`. Neither list is repeated here. [CLAUDE.md](../CLAUDE.md) owns the source-first change sequence. Every external RiC-O or AgRelOn term must be verified against the official ICA-EGAD component lists or the German National Library RDF before admission (E-103, E-104). Naming plausibility is insufficient evidence for a term.
 
 ## Namespaces
 
@@ -77,7 +77,7 @@ The extension adds five classes, and the reason for each is a property of the ma
 
 A date row and a place row carrying the same role are not merged into one node (E-139). Merging would assert a togetherness the recording did not record, the derivation is left to the interface, and the source cell stays single-valued per node.
 
-`m3gim-ontology:Performance` is an event in which a work is realized and at the same time the reification node for the composites of stage part with performer and of date with work. `m3gim-ontology:FramingEvent` is the superordinate event within which single performances take place, a festival, a concert series or a season, and its name follows the English label of the term rather than describing a performance (E-139). `m3gim-ontology:MusicalWork` is identified through the work index. `m3gim-ontology:StageRole` makes the stage part a reusable entity rather than a string attribute, because parts recur across documents and years and are referenced as such.
+`m3gim-ontology:Performance` is the event class used by the current transformation for source composites of stage part with performer and of date with work. Each emitted node represents such a fragment; it does not establish a fully grouped, realized appearance. `m3gim-ontology:FramingEvent` is the superordinate event within which single performances take place, a festival, a concert series or a season, and its name follows the English label of the term rather than describing a performance (E-139). `m3gim-ontology:MusicalWork` is identified through the work index. `m3gim-ontology:StageRole` makes the stage part a reusable entity rather than a string attribute, because parts recur across documents and years and are referenced as such.
 
 ### Roles as one property
 
@@ -163,13 +163,13 @@ Financial entries all hang on the document in the generated dataset. Substantive
 
 ## Shape of the graph
 
-The graph is document-centred. Standing as independent top-level nodes with their own identifier are documents, archival units, performances, stage parts, the annotations referenced through the annotation property, and the documentary form type concepts attested in the holdings. Persons, institutions, places and works stand embedded in the document that names them. Where an entity is reconciled against Wikidata, the embedded node carries that identifier, otherwise only a name. The annotations come in two build forms, the referenced datings and locations as top-level nodes addressed by identifier, and the details reached through the detail property as embedded nodes without an identifier of their own.
+The graph is document-centred. Consumers must accept singleton objects and lists for multi-valued properties, including `hasAssociatedAgent` (E-31). Standing as independent top-level nodes with their own identifier are documents, archival units, performances, stage parts, the annotations referenced through the annotation property, and the documentary form type concepts attested in the holdings. Persons, institutions, places and works stand embedded in the document that names them. Where an entity is reconciled against Wikidata, the embedded node carries that identifier, otherwise only a name. The annotations come in two build forms, the referenced datings and locations as top-level nodes addressed by identifier, and the details reached through the detail property as embedded nodes without an identifier of their own.
 
 Records carry two levels of containment. A Konvolut is an archival unit whose parts are its folios, and a folio whose pages the source records as `1_1`, `1_2` and so on is itself a record that holds those pages through `rico:hasOrHadPart` in page order. The identifier of that folio record is the signature plus the folio without the page suffix. Where the source carries no object row for the folio itself, the pipeline derives the record and marks it with `m3gim-ontology:derivedFolioRecord`, which leaves it without title and without date, because either taken from a page would state about the folio what the source states about one page of it (E-269).
 
 Three consequences follow for anyone working with the data.
 
-A question about all documents concerning one person is answered over the name or the Wikidata identifier in the embedded node. There is no person node.
+A question about all documents concerning one person is answered over the name or the Wikidata identifier in the embedded node. There is no independent top-level person register in the graph; person nodes are embedded.
 
 Everything that holds only in the context of one document hangs on the embedded node, which concerns the role, the source cell and the quality flag.
 
@@ -181,21 +181,19 @@ A person or an institution mentioned in the content is serialized as a subject o
 
 ## Mobility perspectives
 
-Mobility is the central substantive question of the project, meaning where the creator of the fonds performed, where she was engaged, where she travelled, with whom she corresponded and where she was written about. The model supports the question through five perspectives realized as query patterns over the existing classes and roles. There are no classes for them, because they are different cuts through the same data.
+The five perspectives organize research queries over existing classes and roles. They add no classes and cannot supply the missing occurrence binding.
 
-Performative mobility asks where she performed and reads the annotation nodes whose role is a performance, a guest performance, a premiere, a revival or a gala performance, or alternatively the performances with a performer together with their place annotation and their date.
+| Perspective | Evidence to inspect | Interpretation limit |
+|---|---|---|
+| Performative | Performance, guest-performance, premiere, revival and gala roles; work/performer composites and dated place annotations | Separate fragments in one document need source assessment before they can describe the same appearance. |
+| Institutional | Season roles and employment relations with recorded or derived validity | A contract or season span does not establish uninterrupted presence or realized performances. |
+| Travel and correspondence | Correspondence relations, letter provenance, dispatch/receiving/departure dates and mobility place roles | A letter's endpoints do not establish the singer's journey. Actor, date and route require their own connection in the source. |
+| Biographical | Residence statements and their recorded temporal context | Sparse evidence cannot establish continuous residence between attestations. |
+| Discursive | Reviews, press items and critiques with creation places or publishing institutions | Publication geography can differ from the geography of the activity discussed. |
 
-Institutional mobility asks where she was engaged and reads the annotation nodes carrying the season role, supplemented by the employment relations with their validity period.
+The five specially handled mobility place roles produce dateless annotations when the source supplies only a place. This preserves the recorded role without inventing a date or proving a historical movement. [data.md](data.md) § Role values owns that implementation set.
 
-Travel and correspondence mobility asks where she was when and reads the correspondence relations with their provenance on letters, supplemented by the mobility place roles and by the datings for dispatch, receiving and departure.
-
-Biographical mobility asks after residences and reads the residence role with its time span over the AgRelOn validity period.
-
-Discursive mobility asks where she was written about and reads the records whose documentary form type is a review, a press item or a critique together with a place in the creation role, or a publishing institution with a place reference. The discursive space typically diverges from the performative one.
-
-The five mobility place roles attest a mobility event by themselves and produce a dateless annotation node beside the place reference. The missing date is itself the statement, because the source gives none and none is guessed. A residence is expressly not among them, being a state with a validity period rather than a point event.
-
-Every mobility analysis carries the current state of cataloguing with it. Only part of the convolutes is opened down to the folio, the rest stays on the level of the archival unit, and dates as well as titles are selectively present. The data therefore attest the state of the cataloguing, and an event without evidence in the opened part of the holdings does not appear in the dataset although it took place. Mobility maps are to be communicated as an interim state of the cataloguing and not as a reconstruction of the biography, and that survivorship bias must be marked in words at any visualization.
+The selected, unevenly catalogued partial estate limits every query. An absent event in the dataset establishes neither historical occurrence nor historical absence. Coverage and data state must remain accessible alongside the findings.
 
 ## Limits of the model
 
@@ -203,7 +201,7 @@ A performance falls apart into several nodes, because one arises per link row. W
 
 Stage parts are global and carry neither a work binding nor a voice type. Identically named parts of different works collapse, because deduplication runs over the name alone. Whether that holds is to be settled with the cataloguing team.
 
-The same part sits twice in the model, as a literal on the work from the work index and as an entity of its own, with no connection between the two.
+The same part occurs as a literal on the work index entry and as an independent entity without a formal connecting edge. The frontend retains the curated literal binding and may explicitly derive a binding from a record with exactly one work. Multi-work records remain ambiguous; these display rules do not repair the RDF model.
 
 The function of a participation, meaning singing, conducting or directing, is not expressed at the performer edge. It sits on the person node in the role property and therefore holds in the document context, unassigned to the performance.
 
@@ -215,7 +213,7 @@ The pipeline knows a second emission path over a link type for details in which 
 
 This section describes a state that is decided and not built. Its terms deliberately stand outside the vocabulary, listed in an editorial note of the ontology node, and their admission belongs in the implementation round so that specification and vocabulary move together.
 
-The recording identifier becomes two-level (E-127). An integer identifies the activity, a two-digit decimal identifies the single participation in it, the occurrence identifier comes from signature, folio and activity, and the participation identifier from occurrence and participation number. This replaces the one-level data point identifier, whose column is nearly never filled in the source, which is why the occurrence model built on it never takes effect.
+The recording identifier becomes two-level (E-127). An integer identifies the activity, a two-digit decimal identifies the single participation in it, the occurrence identifier comes from signature, folio and activity, and the participation identifier from occurrence and participation number. This replaces the sparsely filled one-level data point identifier. Occurrence grouping has not been implemented in the current pipeline.
 
 `m3gim-ontology:Occurrence` is the bundling node above the aspect nodes, grouping the annotation for place and time, the performance for work and part, the annotation for the amount, and the participating agents of one appearance. The name is deliberately wider than event, because not every occurrence is spatiotemporal, a contract being one that is not. The record attests it through `m3gim-ontology:attests` rather than containing it, which follows the CIDOC-CRM logic for a document attesting an activity and keeps the path to a cross-document appearance identity open. The class is a subclass of the CIDOC-CRM activity class beside the RiC-O event, and the RiC-O activity class stands ready as the closer alternative.
 

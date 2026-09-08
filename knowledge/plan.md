@@ -6,7 +6,7 @@ project:
 status: active
 language: en
 created: 2026-09-06
-updated: 2026-09-07
+updated: 2026-09-08
 authors: [Christopher Pollin]
 generated-with: Codex
 method:
@@ -18,16 +18,19 @@ related: [INDEX, specification, research-framework, data, data-model, architectu
 
 ## Current state and next action
 
-The Chronik combines source/entity lanes with natural calendar groups, compressed empty stretches and explicitly editorial biographical context bands (M6i). The project lead welcomed this direction and approved a further refinement (M6j): a persistent current year, uniform content-measured group spacing, concise dating previews and clearer source-mention labels. The shared Chronik/Netzwerk selection component and upper-right legend remain. Technical verification is recorded below; guided acceptance of the refinements remains pending. Version 0.9 has not been accepted.
+The application baseline inspected on 2026-09-08 is `4df1be7` (M6j, 2026-09-07), which matched the latest successful Pages build at that check. Chronik has source/entity lanes, natural calendar groups, compressed empty stretches, editorial context bands and a shared selection component with Netzwerk. Guided acceptance remains incomplete; version 0.9 has not been accepted.
 
-**Next executable step:** inspect the refined Chronik with the project lead: orientation while scrolling, dense calendar groups, summary-to-original-date navigation and source-mention interpretation. Register search unification, register details and the institution-chip fix remain separate open work.
+The 2026-09-08 status check found one technical failure in addition to eight source/model checks. The selection-detail stylesheet URL uses asset version `2026-09-07`, while the other stylesheets and the generator use `2026-09-05`. The institution-chip routing defect is also confirmed. Exact checks and limits are below.
 
-Sol 5.6 is the project lead's explicitly accepted subagent model for this work. The user authorised integration of the map discussion into the plan, without approving a final design or production replacement.
+**Next executable step:** restore consistent stylesheet versioning, then correct institution navigation and address the observed register problems. Continue the guided Chronik review for scrolling orientation, dense groups, date summaries and source interpretation. The map proposal below remains a draft.
+
+The 2026-09-08 knowledge cleanup corrects stale descriptions and consolidates responsibility across documents (E-292). It preserves the story/task evidence and unresolved external handovers. Its documentation verification is recorded below.
 
 ## Open follow-up work
 
 | Work | Observed problem or proposed result | Completion evidence |
 |---|---|---|
+| Stylesheet version consistency | The index selection-detail stylesheet uses a different version from the other links and generator; the invariant check fails | One consistent asset version across generated pages and index stylesheet links; the existing footer invariant passes |
 | Institution navigation | Shared chips route institutions through the person facet; Nordwestdeutscher Rundfunk yields an empty result | Correct facet and source-backed documents through mouse and keyboard activation |
 | Register entry and row | First Indizes click opens Personen; work, unlabelled composer, document action and two icons crowd the row | Proposed first-click register menu; work and labelled composer left, document and view actions right; user can explain each action |
 | Register detail | The stage-part remainder does not expand; neighbouring names leave their relation to the work unclear | Expandable remainder lists; separate work properties from document co-mentions; preserve derived and ambiguous part bindings |
@@ -50,7 +53,7 @@ First inspect one source-backed person/period sample and determine which lines c
 
 The 2026-09-06 read-only measurement used the shipped JSON-LD through `loadArchive()` and `buildOccurrences()`: 776 deduplicated map evidence entries from 144 records, 101 raw place names, 93 names after `cityOf()` grouping, 61 grouped names with coordinates, and 365 entries with a nonempty date. These describe the extraction, not a verified count of visited cities or journeys. There are 282 contract-place entries and 113 mentions. Recompute after a data change. The decided occurrence bundling model remains a separate, unimplemented development.
 
-Compare the draft and current map on the same sample. The reader must understand every line, reach its evidence, distinguish chronology from travel, identify missing locations and operate it by keyboard. This evaluation decides between a replacement, a connection mode or a station-only view. No map, data or vocabulary implementation is part of the session close.
+Compare the draft and current map on the same sample. The reader must understand every line, reach its evidence, distinguish chronology from travel, identify missing locations and operate it by keyboard. This evaluation decides between a replacement, a connection mode or a station-only view. Implementation of this proposal requires a design decision based on that evaluation.
 
 ## Guided user walkthrough
 
@@ -66,41 +69,11 @@ Compare the draft and current map on the same sample. The reader must understand
 
 ## Purpose and authority
 
-The project lead authorised implementation of the reviewed stabilisation plan on 2026-09-06, one commit per completed milestone, independent follow-up reviews and consolidation of maintained knowledge into `knowledge/`. The subsequent instruction adds a project-wide test review before completion. This document records execution and evidence. [specification.md](specification.md) owns requirements and version definitions; [research-framework.md](research-framework.md) owns the research questions and evaluation tasks.
-
-The pilot investigates mobility and knowledge production through the partial fonds. Its research tool must preserve the chain from a recorded statement through the document and its views into a citable export. The stable scope is document-centred, with six analytical views and the Korb. Historical interpretation belongs to the researchers. Co-mention of a place, work and person cannot establish a common performance. Occurrence modelling remains a separate decided development that requires grouped source evidence.
-
-E-282 anchors the shared document search and record-time cut. Annotation dates remain visible as provenance; undated records remain identifiable context. Explicit filter URLs replace the previous cut, while queryless navigation preserves it. The map and network declare the evidence they can display within that cut. Task 10 uses cataloguing artefacts; tasks 1–9 use the application. Version 0.9 requires project-lead acceptance of the task results, and 1.0 requires partner acceptance. Agents can establish technical evidence and prepare those runs.
+[CLAUDE.md](../CLAUDE.md) owns authorisation and working rules. [specification.md](specification.md) owns requirements, open decisions and version definitions; [research-framework.md](research-framework.md) owns evaluation tasks. This plan records active follow-up work, observed evidence and remaining acceptance.
 
 ## Milestones and commit boundaries
 
-| Milestone | Completion criterion | State |
-|---|---|---|
-| M1 Research scope | Source-aware tasks and common search/time contract | Complete, `1218a10` |
-| M2 Reliable data processing | Preservation under failure, accurate reports and deterministic output | Complete, `12383e4` |
-| M3 Consistent and usable views | Common filters, accessible evidence and local static assets | Complete, `8f94728`; narrow network follow-up in M4 |
-| M4 Complete research paths | All stories mapped to checks or material limits; actual evidence exports and visual follow-up | Complete, `e8ef22b`; source and performance limits recorded below |
-| M4T Trustworthy tests | Independent audit of the whole test suite; correct assertions, meaningful missing coverage and warranted simplification | Complete, `ee28ced`; independent audits and integrated checks |
-| M5 Knowledge and integrated verification | Maintained knowledge consolidated; complete technical checks from one clean snapshot | Complete, `e6e10a0`; clean snapshot and independent content review |
-| M5a Network interaction follow-up | Reduce the first selection cost with unchanged graph, evidence and keyboard behaviour; measure and independently review | Complete, `32bf5e1`; independent comparison and interaction checks |
-| M5b Source diagnostics follow-up | Regular validation reports exact Folio misses, impossible complete dates and rows dropped for missing content | Complete, `b2b6ffd`; source data and transformed graph remain unchanged |
-| M5c Evidence-path follow-up | Complete statistics evidence navigation and rehearse the task set against the recorded scope | Complete, `709912c`; independently reviewed and verified from a clean snapshot |
-| M5d Narrow network and knowledge follow-up | Keep the selected graph readable and its detail keyboard-reachable; reconcile stale open-model claims with the implemented behaviour | Complete, `a716f23`; independently reviewed and verified from a clean snapshot, including test-environment follow-up |
-| M5e Report and source-check corrections | Remove obsolete report instructions, diagnose object timestamps before cleanup, share status normalisation and repair document references | Complete, `36c8c58`; independently reviewed, 154 focused checks passed from a clean snapshot |
-| M5f Remove unused code and align tests | Retire obsolete JS/CSS and test helpers, preserve meaningful checks against production paths and name all basket exports | Implemented, `54b40be`; acceptance status above |
-| M6a First guided Bestand feedback | Correct reported tooltip fragmentation, title selection and detail alignment | Implemented, `c6c0530`; acceptance status above |
-| M6b Remove source-debugging labels | Remove technical sheet/row displays while preserving content, record navigation and export provenance | Implemented, `28f0865`; acceptance status above |
-| M6c Stable row position and document addresses | Preserve the activated row's reading position and keep the URL aligned with the open record | Implemented, `967b7d6`; acceptance status above |
-| M6d Direct-link arrival | Place the addressed title below the sticky heads, including short filtered lists and tall screens | Implemented, `0830498`; acceptance status above |
-| M6e Individual document titles | Display full signature and title with a separate responsive metadata group; preserve paging and direct links | Implemented, `9b2d1da`; acceptance status above |
-| M6f Chronik lanes | Source-aware vertical chronology, actual corpus, dense groups and existing sidebar | Implemented locally; technical verification and guided acceptance below |
-| M6g Stable Chronik details | Right detail column, complete side lists, fixed upper-right legends and open Verknüpfung section | Implemented; geometry and selection shell superseded by M6h |
-| M6h Continuous time and shared selection | Scaled uninterrupted axis, proportional ranges, density groups and shared Chronik/Netzwerk detail component | Historical checkpoint; geometry superseded by M6i after user feedback |
-| M6i Calendar lanes and editorial context | Named lanes, natural calendar groups, compressed gaps, source-linked biographical bands and stable shared details | Implemented; verification below, guided acceptance pending |
-| M6j Chronik reading and density | Persistent period label, uniform measured spacing, conservative dating summaries and explicit source mentions | Implemented; verification below, guided acceptance pending |
-| M6 Scholarly acceptance | Project lead accepts task results for 0.9; partners accept them for 1.0 | Bestand, Werkregister and Karte partly observed; overall acceptance pending |
-
-Each completed milestone receives one commit and a follow-up review of the achieved goal, implementation and knowledge. Publication and source editing are separate actions. No release or scholarly acceptance follows automatically from a passing suite.
+The stabilisation changes and Chronik iterations through M6j are recorded in [journal.md](journal.md) and Git. Completed implementation history is maintained there. The tables below retain the evidence needed for research acceptance; a completed technical change does not establish scholarly acceptance.
 
 ## Story coverage and acceptance
 
@@ -147,33 +120,24 @@ These are agent-checked examples from the versioned data of 2026-09-06. Record i
 
 ## Verification checkpoints
 
-[testing.md](testing.md) owns test responsibilities and commands. Historical execution narratives remain in Git and [journal.md](journal.md).
+[testing.md](testing.md) defines check responsibilities and acceptance limits. Counts below refer to their named revision and execution scope.
 
 | Checkpoint | Evidence and limit |
 |---|---|
-| Last full integrated baseline, M5f | Fresh tree `8e4b32ddffd90eabac094512dfed06aea839f227` passed 675 Node and 597 Python/browser checks, including isolated determinism and real exports; four strict source-fix xfails, no skips, eight source findings |
-| Network selection, M5a | Five alternating Chromium 145 comparisons at 1366 × 900 with 947 nodes reduced median synchronous selection from 22.6 to 3.1 ms; next-frame time from 36.7 to 16.4 ms, unchanged detail; local measurement |
-| Source-label removal, M6b | Verifier opened 187 records and 51 Folio pages, checked 4,899 role/value chips and 25 grouped dates; four actual export checks preserved provenance |
-| Direct arrival, M6d | Six filtered/unfiltered cases at 800 × 900, 1366 × 800 and 2048 × 1111 aligned the target below sticky heads; manual scroll and title-copy checks remained green |
-| Chronik reading and density, M6j | 693 Node checks, 28 targeted Chronik/Netzwerk browser cases and seven knowledge-integrity checks passed. Standalone smoke: 37 OK, no warnings or failures. New checks cover the sticky year, narrow-header gap labels, real date summaries, complete original dates and uniform group geometry. Every group's horizontal/vertical bounds are checked at 390, 800 and 1366 pixels in decade/year scales, before and after selection; all group positions, heights and scroll offsets stay unchanged during selection. Root additionally measured every group across four scales and eight viewport widths from 390 to 2101 pixels, and inspected wide, selected-detail and phone screenshots. Independent review checked temporal semantics, the measurement lifecycle and narrow-header fit. Source tables, generated datasets and vocabulary are unchanged. This establishes the targeted technical scope; guided visual and scholarly acceptance remain open. |
-| Calendar lanes and editorial context, M6i | 687 Node checks, 19 targeted Chronik/Netzwerk browser cases and seven knowledge-integrity checks passed. Standalone smoke against the local application: 37 OK, no warnings or failures. Tests cover natural calendar groups, compressed century gaps, original 1924/1925 dating, complete dense-day lists, source-linked entity highlighting, stable selection, and horizontal/vertical lane bounds at 390, 800 and 1366 pixels. Root inspected actual desktop, detail and mobile screenshots and reloaded the revised view in the user's in-app browser. Independent reviews checked date/source semantics, navigation, editorial provenance and knowledge consistency; identified dating, navigation and clipped-band labelling issues were corrected. Historical checkpoint; M6j refines spacing, labels and preview summaries. |
-| Continuous Chronik and shared selection, M6h | 678 Node checks, 14 targeted Chronik/Netzwerk browser cases and seven knowledge-integrity checks passed. Standalone smoke: 37 OK, no warnings or failures. Real-data browser cases cover dated statements, proportional ranges, four scales, the dense 26 July 1953 group (46 persons, six sources, 26 parts), evidence/back navigation, undated access, selection geometry and responsive focus. Root inspected Chronik/Network screenshots and checked label fit at 360, 390, 800 and 1366 pixels. A full-network detail initially enlarged the graph stage; the corrected layout preserves plot height at 1440, 1366 and 800 pixels and scrolls the full detail internally. Independent review checked source semantics, qualifier boundaries, keyboard routes and knowledge consistency. Source tables and generated data were unchanged; this is targeted frontend verification, with guided interpretation pending. |
-| Chronik details, M6g | Ten targeted Chronik browser cases pass, including dense lists, source navigation, keyboard return and dialog/desktop resizing. Two map browser checks pass. Root inspected 1536-pixel sparse/dense Chronik and 390-pixel dialog screenshots; independent review checked detail context and selection. All 673 Node checks and seven knowledge-integrity checks passed; no skips. The ten Chronik browser checks passed again after integration. Historical checkpoint; M6h implements the subsequent scaled geometry request. Guided acceptance remains open. |
-| Chronik revision, M6f | 672 Node checks passed. Full pytest including browser and slow checks: 618 passed, 8 existing source-data failures, 4 expected source-fix xfails, no skips. This includes seven new Chronik browser cases plus shared-view, research-path, smoke and exhaustive Bestand checks. Root inspected the actual default and dense-day rendering at 1536 pixels and the narrow layout at 390 pixels. Independent review covered data separation, parts, undated locations and evidence completeness. Guided user acceptance is pending. |
-| Previous application change, M6e | 676 Node checks, 22 existing browser cases and the corrected new header case passed; seven knowledge checks passed. Browser scope covers smoke, shared views, research paths, exhaustive Bestand display, page reload, selection and responsive geometry. Root inspected 2048, 800 and 600-pixel screenshots. This is targeted verification after M5f |
-| Controlled knowledge close | Seven knowledge integrity checks passed, including AGENTS links and decision references; 19 stories, ten task examples and 18 Git references verified. Independent Sol 5.6 review checked routing, retained rules and draft/acceptance boundaries. No application tests were rerun for this documentation close |
+| Current baseline, 2026-09-08, `4df1be7` | Node suite passed. Pytest with `-m "not slow"`: 635 passed, 9 failed, 4 xfailed, 1 deselected, no skips. Browser tests were executed. Eight failures expose source/model findings; `test_stylesheet_links_carry_the_asset_version[index.html]` exposes the inconsistent selection-detail CSS version. The slow determinism check was excluded. |
+| Chronik M6j, 2026-09-07 | 693 Node checks, 28 targeted Chronik/Netzwerk browser cases and seven knowledge checks passed. Smoke reported 37 OK. Geometry was checked for every group at 390, 800 and 1366 pixels before/after selection; additional visual inspection covered narrow and wide rendering. Guided visual and scholarly acceptance remain open. |
+| Last full run including slow checks, M6f | 618 Python/browser checks passed, eight source/model checks failed, four strict source-fix xfails, no skips. This is a historical checkpoint before subsequent Chronik changes. |
+| Knowledge cleanup, 2026-09-08 | Seven knowledge-integrity checks and the browser test for editorial Chronik context passed. A comparison with `4df1be7` confirmed all 291 existing decision definitions, the seven epic sections, 19 story rows, ten task examples, guided observations, research questions, talk text, evaluation and identifier exclusion lists were preserved. All eight editorial phases retain their identifiers, bounds and source links; only the Bayreuth description changed. `git diff --check` passed. Source tables, generated datasets and vocabulary are unchanged. |
+
+Earlier verification, including network selection measurements and exhaustive source-label/export checks, is retained as historical evidence in [journal.md](journal.md).
 
 ## Session close and re-entry
 
-Resume through the root action layer and this document's first section. The current implementation and verification checkpoint is M6j; Git identifies its local commit. Source tables, generated datasets and vocabulary remain unchanged by this UI refactoring. The existing pre-plan stash was left untouched; it is not a pending step and must not be applied automatically.
-
-The review server serves `docs/` at `http://localhost:8000/`. If unavailable, run `python -m http.server 8000 --bind 127.0.0.1 --directory docs` from the repository. Serving the shipped frontend needs no transformation run. Browser URLs are local review addresses; public RDF identifiers remain unchanged. Pushing, publishing and external communication are separate actions.
-
-Maintained knowledge stays in `knowledge/`. Root README, CLAUDE and AGENTS are entry/action documents. Source diffs, reconciliation provenance and dated curation evidence remain beside their data. The external Vault handover remains in [handoff.md](handoff.md). No new session-handoff document is required.
+Resume through [CLAUDE.md](../CLAUDE.md) and this document's first section. External knowledge awaiting integration remains in [handoff.md](handoff.md). Git preserves completed changes and superseded wording.
 
 ## Source and model limits requiring acceptance
 
-At the last integrated run, seven Python source checks and one browser source comparison failed, eight source checks in total. They identify 400 link rows without matching records, object row 725 without a signature, 26 marked-as-worked records without links, invalid role/type values, named links without a type, and 32 links without a model mapping. The last group comprises 26 document links and six activity links. The browser source comparison is the eighth check and also reports the missing object. These are source/model findings; the implementation work has not changed the historical recording.
+The 2026-09-08 run confirms seven Python source/model failures and one browser source comparison failure, eight in total. The separate stylesheet invariant failure is listed above. They identify 400 link rows without matching records, object row 725 without a signature, 26 marked-as-worked records without links, invalid role/type values, named links without a type, and 32 links without a model mapping. The last group comprises 26 document links and six activity links. The browser source comparison is the eighth check and also reports the missing object. The unmapped link types are a model/pipeline gap. The other findings concern source identity, completeness or controlled values. Their counts overlap and must not be added as a count of affected records.
 
 Missing records and links limit completeness for tasks 1–6, 8 and 9. Invalid or missing roles/types constrain role, contract and document-type interpretation. Unmodelled activities include engagements and a radio recording in Box 2, so the current graph cannot be treated as a complete appearance history. The maintained [data.md](data.md) and the [source handover list](../data/reports/source-errors-handover-2026-09-01.md) own these findings. Acceptance must name the admitted limits or require source correction; a blanket “expected red” label is insufficient.
 

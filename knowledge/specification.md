@@ -5,11 +5,11 @@ project:
   repository: https://github.com/DigitalHumanitiesCraft/m3gim
 status: reviewed
 language: en
-version: 0.7
+version: 0.8
 created: 2026-06-17
-updated: 2026-09-07
+updated: 2026-09-08
 authors: [Christopher Pollin]
-generated-with: Claude Code
+generated-with: Codex
 method:
   name: Promptotyping
   url: https://lisa.gerda-henkel-stiftung.de/digitale_geschichte_pollin
@@ -53,11 +53,9 @@ Code is MIT, text and data are CC BY 4.0 unless the archive decides otherwise fo
 
 ## Goal and frame
 
-The application is a tool, not a narrative (E-156). It shows every recorded data point with the role the recording gives it, where it gives one, and with access to the record that carries it, it restricts the result set through the facets of the one sidebar, it leads from every statement back to the record, and it leaves the interpretation to the researcher. The data grow continuously. No view assumes a particular data state, every view names the data state it is built from, and gaps in the cataloguing stay visible instead of being smoothed by pipeline workarounds.
+The application supports source-based research into mobility and knowledge production. Recorded statements remain traceable to their documents, with source roles, uncertainty and cataloguing gaps preserved. Researchers interpret the historical connections. The stable interaction and evidence contract is defined below.
 
-As a pilot study the project validates the method rather than the completeness of the fonds. It tests whether the material is workably catalogued with RiC-O 1.1, the m3gim extension and AgRelOn, whether the procedures scale, and whether the result carries the follow-up application.
-
-The application is a static single-page application without a backend, delivered over GitHub Pages. The reason is a project time interrupted by funding gaps, in which an application that runs offline first and stays reachable without server operation is more robust than a server-dependent one.
+The pilot evaluates whether RiC-O 1.1, the m3gim extension and AgRelOn support this material and a follow-up study. Completeness of the fonds is outside the pilot's claim. A static application on GitHub Pages keeps the result available without operating a backend across funding interruptions.
 
 ## Requirements
 
@@ -79,13 +77,13 @@ The requirements per research question are set out as epics and stories below an
 - Connectable to linked open data through RiC-O 1.1, AgRelOn, SKOS and Wikidata identifiers.
 - Archival assertions must derive from the metadata. E-290 permits a separate, explicitly editorial and source-linked biographical context layer; it neither changes archival evidence nor participates in document filtering.
 - No pre-emptive performance optimization (E-25). A markedly larger fonds in a follow-up project would reassess this.
-- Interface strings and the finding texts of the Datenspiegel are German, code and the documents in `knowledge/` are English.
+- Interface strings and Datenspiegel findings are German. Knowledge is English by default; the partner-facing recording guide stays German.
 
 ## Epics and user stories
 
-The application is a tool, not a narrative (E-156). It shows every recorded data point with the role the recording gives it, where it gives one, and with access to the record that carries it, it lets the researcher restrict the result set by facets, and it leads from every statement back to the record. What a data point means, whether a contract place counts as a performance place or a co-mention as a collaboration, the researcher decides. The stories therefore ask for visibility, filtering and the way back to the source, never for an interpretation. The data grow continuously. No story assumes a particular data state, and every view names the data state it is built from.
+The stories operationalize the stable research contract below. They require visible evidence, filtering and a path to the source across changing data states. Historical interpretation remains part of the human evaluation.
 
-The seven epics are the questions the project partners and the talk abstract put to the fonds. Their relation to the research questions is set out in [research-framework.md](research-framework.md). A story is fulfilled when the data points it names are visible, filterable and lead back to the record. The acceptance instrument is the task set in [research-framework.md](research-framework.md) § Evaluation. Where the dataset carries a dimension only in part, the story says so, and where the interface does not yet fulfil a story, § State names the gap.
+The seven epics are the questions the project partners and the talk abstract put to the fonds. Their relation to the research questions is set out in [research-framework.md](research-framework.md). A story is fulfilled when the data points it names are visible, filterable and lead back to the record. The acceptance instrument is the task set in [research-framework.md](research-framework.md) § Evaluation. Where the dataset carries a dimension only in part, the story says so, and [plan.md](plan.md) records implementation gaps and acceptance evidence for each story.
 
 ### Epic 1. Where did Malaniuk perform?
 
@@ -161,41 +159,27 @@ Co-mention is the relation available before occurrence grouping is implemented. 
 
 ## Netzwerk view
 
-The view stands in two forms of the same data, the overview and the neighbourhood after a click. It answers the question with whom the creator of the fonds worked, from the evidence of the fonds and nothing else. It draws the persons and institutions of the current result set and connects two of them where they stand at the same record. It leaves the creator of the fonds out of the picture, because she stands at nearly every record and would cover every structure. She stays selectable as a person facet.
+The network exposes document co-mention among persons and institutions in the shared result set. Its two-mode projection links actors to their attesting records. Its actor projection connects actors through shared records and counts distinct records as edge strength. Groups follow the model's institution classification. The creator of the fonds and her recorded variants are excluded from the drawing because their ubiquity obscures the other connections; the person facet still includes her.
 
-Overview. Every actor of the result set, persons and institutions, and every record that carries links is a node, and every mention is an edge, one to one with the Verknüpfungstabelle. Groups count as institutions, as the model treats them. The creator of the fonds is no node, and neither are her spelling variants in the source. A switch in the sidebar hides the record nodes, and hidden they leave the person to person projection, in which two actors are connected where they stand at the same record and the strength of the edge is the number of shared records. A second control fades the actors that carry a single record. There is no cap and no threshold that removes anything, and the picture of the whole fonds is dense on purpose, because the facets of the sidebar are the analysis and the picture is their result.
+Explicitly recorded relations remain distinguishable from co-mention and link to their evidence. Co-mention establishes neither collaboration nor a shared appearance. Undated records remain identifiable context under the common time cut. Both projections expose their complete eligible sets without a hidden threshold.
 
-Neighbourhood. A click on a node keeps the layout still, highlights the node and its neighbourhood, fades the rest and labels the highlighted nodes. At an actor of the two-mode network the neighbourhood runs two steps, the records of the actor and the actors standing at those records, the second step drawn paler, because the question is with whom she worked and not which sources name her. A record node and the projection mark one step (E-276). A recorded relation, which in the dataset always starts at the creator of the fonds, is not an edge but a mark at the node of the counterpart with a jump to the attesting record.
-
-Time. The network uses the shared primary document time anchor: the highest-ranked anchoring link date precedes the source dating (E-264, E-282). Nodes whose records carry no year stay in the picture and are drawn faint.
-
-Detail column. The column is absent until a node or an edge is selected and the drawing uses the whole width beside the sidebar. Clicking a node keeps the layout still, highlights the node and its neighbourhood, opens the column with its kind, name, Wikidata mark, the roles with their record counts in the result set, the neighbours as a list with edge strength, the recorded relation with its evidence, and a jump into the Bestand with the node as filter, and writes the node into the address so the state is citable. Clicking an edge highlights both ends and lists the shared records with signature and title. A click on empty ground or Escape closes the column. The shared selection component scrolls internally and exposes complete lists; source actions open Bestand (E-289).
-
-Tooltips. The tooltip is the preview, the column is the detail. A node shows name, kind and record count in the result set, an edge the two names and the shared record count, each view control what it does, the coverage line the date of the data state. No explanatory text stands in the drawing.
-
-Sidebar. Name, time window, document facets, person, place, work, institution, and the two view controls, the record nodes and the fading of actors with a single record. The sidebar scrolls independently when its controls exceed the available height. The coverage line stands at the view and names the visible records of the cut against all records of the fonds, with the records that carry a Verknüpfung and the date of the data state in its tooltip (E-277).
-
-Export. The GEXF export contains the projection the picture shows, nodes with kind and record count, edges with strength and roles, and the recorded relations as the node attributes `relations` and `relationRecords`, the relation with its label and the signatures of the attesting records (E-275).
-
-Technology. D3 as loaded, the force layout computed to rest before the first draw, nodes and interaction in SVG, edges on canvas with quadtree hit testing, and a highlight that touches only the affected elements. Colour stays quiet, the actors in one tone, the records as small squares in the accent, and the highlight is the only strong colour. No further library.
+Selection, layout, legends and detail behaviour belong to [design.md](design.md) § Views. Projection, rendering and GEXF serialization belong to [architecture.md](architecture.md) § Views.
 
 ## Views
 
-All filters of all views stand in the one left sidebar, which scrolls independently when needed, and no view carries a filter bar of its own. A detail column is absent until a selection exists, and the drawing or the list uses the full width beside the sidebar until then. The Erschließungsstand is no facet and no section of the Statistik. It stays as a statement in the record detail, because the cataloguing team reads the generated pipeline reports rather than the application (E-248).
+All views use the shared document cut. The sidebar owns filters; selected details expose the evidence behind an item. [design.md](design.md) owns their presentation and interaction.
 
-Bestand. The archival base view on the records in their Konvolut hierarchy and the provenance anchor of the application. It lists in signature order without a sorting control, because the Chronik carries the date and the facets carry the type (E-203). A Konvolut stands as a permanently visible group head that opens its Folios, a record opens its detail. Records without a Verknüpfung lie outside the application, their finding aid stays the archive (E-165). The view opens on the full base set (E-253).
+| View | Research operation and evidence |
+|---|---|
+| Bestand | Browse linked archival records in signature and Konvolut order, inspect every recorded field and follow Folio pages. Unlinked records remain outside the application basis. |
+| Chronik | Compare recorded document and statement dates in source and entity lanes, preserving precision, qualifiers, undated evidence and access to dense groups. Separately sourced editorial bands provide biographical context. |
+| Karte | Inspect places, recorded place roles and localization certainty for selected entities. Places without drawable coordinates retain record access and an explanation. Place mentions do not establish travel or presence. |
+| Register | Enter through persons, institutions, places or works, inspect enrichment and document evidence, and continue into the relevant analytical view. Curated, derived and ambiguous work/part bindings remain distinguishable. |
+| Netzwerk | Inspect actor/document co-mention and explicitly recorded relations under the contract above. |
+| Statistik | Compare distinct-record counts by document type, repertoire, person and institution, and inspect the records behind each ranking. |
+| Korb | Collect records across views and export CSV, BibTeX, JSON-LD or GEXF with source cells and links sufficient to trace the evidence. |
 
-Chronik. A vertical calendar chronology combines source and entity lanes, four calendar granularities and explicitly compressed empty stretches (E-287, E-290). Each occupied group has one anchor and named previews with complete evidence access. Original datings retain ranges, precision and qualifiers; finer scales keep coarser values accessible without fabricating exact dates. A distinct, source-linked editorial lane supplies labelled biographical context. Its bands preserve chronological extent across explicit folds and do not imply continuous presence. Source and entity context remain distinct, with typed parts separate from works. Chronik and Netzwerk share a detail component that appears only on selection and adapts to narrow screens. The common document cut applies before projection; display navigation never removes earlier statements, malformed values or undated context.
-
-Karte. Every place of the result set as a point with its place role, its localization certainty and the way to the attesting records, entity-centred through the choice of a person, an institution or a work. A place the map cannot draw stands in a sidebar section of its own with its record count, its reason and the same jump into the documents a map point carries, instead of vanishing (E-280). The country is a facet of the shared sidebar rather than a section of this view, and it counts records with evidence of presence (E-224).
-
-Register pages. One register per page for persons, institutions, places and works, chosen in the menu of the Indizes tab and citable in the address. An entry carries name, enrichment, evidence count in the result set and the Wikidata mark, and the opened entry is the hub that hands over to the Bestand, to the Netzwerk and, from the works register, to the Karte. Enriched values are marked as enriched (E-216), and family colour and family symbol are the same in menu, list, Bestand marks and detail block titles (E-226, E-230).
-
-Record detail. Every recorded data point of the record with its role, in functional blocks, opened over the full width, with the full record signature and title in its head, a separate metadata group and collapsible administrative fields at the foot. Folio paging updates the individual title together with the signature and metadata (E-286). Technical source cells remain in the dataset and exports (E-285). On the Folio record the pipeline carries since E-269 the detail pages through the pages of a Folio without leaving the record.
-
-Korb. Records collected by hand across views and exported as CSV, BibTeX, JSON-LD and GEXF (E-232). Every format carries the source cells of the data points and the Verknüpfungen of the record, so an export can be cited from without opening the application (E-281).
-
-Statistik. The counting view provides ranked lists of document types, repertoire, persons and institutions with their counts in the result set, cut by the same shared filter as every other view, with a jump from a row into the Bestand filtered by that value.
+Cataloguing status remains available in record details. Source correction uses the pipeline's cataloguing artefacts. The common coverage display names the selected records against the linked application basis and provides the data timestamp; it does not measure completeness of the entire fonds.
 
 ## Open decisions
 
@@ -211,6 +195,8 @@ This is the single address for decisions that are open. [journal.md](journal.md)
 - Formal contract status and realization fields. Current statements in the annotation column are already retained as `rico:generalDescription` and displayed at their data points. A structured status model remains pending clarification with the cataloguing team.
 - The inference rules from co-presence, meaning under which threshold of shared performances and which measure of temporal proximity a co-mention may become an annotated relation. No such rule exists, and none is applied.
 - The interval meaning of qualified datings in the shared time filter. `circa:`, `vor:` and `nach:` are already preserved and displayed; the current filter uses their numeric year anchor. The Chronik renders qualified boundaries independently of that filter contract, including the recorded `nach:1956` value. Wikidata time precision is implemented under E-132 and remains implicit in the value's length.
+- The RDF shape of annotations and embedded identities, RiC-O range alignment for language, extent and document type, and the placement of `dataPointId` provenance. [data-model.md](data-model.md) records the present compromises.
+- Currency defaults and their derivation, processing-status vocabulary, and the unused `detail` link convention require agreement with the cataloguing team before recording guidance or emission changes.
 - Whether the five movement types of [research-framework.md](research-framework.md) enter the model as a second mobility axis beside the five event perspectives, or whether both sets are merged.
 
 ### Interface and operation
@@ -223,8 +209,6 @@ This is the single address for decisions that are open. [journal.md](journal.md)
 
 ## State
 
-Built are the pipeline from the source exports to `docs/data/m3gim.jsonld` with its validation, audit, quality snapshot and cataloguer report, the vocabulary with its coverage gate, and the application with the views described above, the shared sidebar, the Korb with its four export formats, and the two test layers, invariants and Datenspiegel. Every role used in the dataset leaves the pipeline as a SKOS concept with a label (E-254), and the pages of a Folio hang under a record of that Folio (E-269). Running figures are in the quality snapshot under [`../data/reports/quality-snapshot.md`](../data/reports/quality-snapshot.md).
+Implemented are the eight-step source-to-JSON-LD pipeline, its validation and cataloguing reports, the formal vocabulary and coverage checks, and the static application described above. [plan.md](plan.md) owns the current implementation, defects, verification and human acceptance. Version acceptance follows the definitions above.
 
-The authorised stabilisation work is complete through the technical milestones recorded in [plan.md](plan.md), each with its own commit. Pipeline preservation, the common view contract, source-backed research paths and evidence exports have been checked. Follow-up review improved first network selection, source diagnostics and statistics evidence navigation, and corrected the agreement between document-type counts and filters. Independent test review and knowledge consolidation are integrated. The plan owns verification checkpoints and maps all 19 stories to evidence and material limits. Guided testing has confirmed a Folio paging/address path and exposed open institution navigation, register usability and map presentation problems. It also records a draft station-map/timeline investigation, which has not replaced the implemented map or established travel routes. Source-data findings and overall human acceptance remain open. [handoff.md](handoff.md) holds only the unresolved external knowledge handover. Version 0.9 still requires project-lead acceptance of the research tasks and source limits, and 1.0 requires partner acceptance.
-
-Not built is the target model of [data.md](data.md) § Target model, decided and not built. The occurrence as a bundling node above the aspect nodes is absent from vocabulary and dataset, and the interface therefore shows co-mention at the record where it would show one appearance. Source errors stand in the handover list [`../data/reports/source-errors-handover-2026-09-01.md`](../data/reports/source-errors-handover-2026-09-01.md), the Wikidata findings in the [`../data/reports/reconciliation-register.md`](../data/reports/reconciliation-register.md). Deferred are the Zenodo archiving and the EAD export as part of an operating model.
+Occurrence grouping remains unimplemented. Source findings are maintained in [data.md](data.md) and the [source handover list](../data/reports/source-errors-handover-2026-09-01.md); authority findings are maintained in the [reconciliation register](../data/reports/reconciliation-register.md). Zenodo archiving and EAD export remain deferred parts of an operating model.

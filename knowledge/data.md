@@ -5,11 +5,11 @@ project:
   repository: https://github.com/DigitalHumanitiesCraft/m3gim
 status: complete
 language: en
-version: 0.6
+version: 0.7
 created: 2026-02-19
-updated: 2026-09-06
+updated: 2026-09-08
 authors: [Christopher Pollin]
-generated-with: Claude Code
+generated-with: Codex
 method:
   name: Promptotyping
   url: https://lisa.gerda-henkel-stiftung.de/digitale_geschichte_pollin
@@ -30,7 +30,7 @@ related: [data-model, research-framework, architecture, journal, testing]
 
 This document is the spec-first anchor of the data model. It describes what the source material is, how the cataloguing team records it, and which properties of the source the pipeline compensates for. A change to the model is anchored here first, then in the vocabulary, then in a test, and last in the pipeline (E-133).
 
-The formal side, meaning classes, properties, controlled vocabularies and serialization, is in [data-model.md](data-model.md). The German recording convention of the archive team is in [recording-guide.md](recording-guide.md). The pipeline implementation is in [architecture.md](architecture.md), the research frame in [research-framework.md](research-framework.md), the project steering in [specification.md](specification.md). Running figures live in the quality snapshot under `data/reports/`, this document carries none.
+The formal side, meaning classes, properties, controlled vocabularies and serialization, is in [data-model.md](data-model.md). The German recording convention of the archive team is in [recording-guide.md](recording-guide.md). The pipeline implementation is in [architecture.md](architecture.md), the research frame in [research-framework.md](research-framework.md), the requirements in [specification.md](specification.md). Running figures live in the quality snapshot under `data/reports/`, this document carries none.
 
 ## Sources and holdings groups
 
@@ -45,8 +45,6 @@ The material is the UAKUG/NIM holdings at the archive of the University of Music
 The source period runs from 1919 to 2010. The earliest dating sits on a poster, the latest on an exhibition after the death of the creator of the fonds. A value outside that span is a source error and belongs on the handover list under `data/reports/`.
 
 Cataloguing is selective and unfinished. Title and document type are the best covered fields, creation date is middling, extent and language are thin, and only a growing selection of convolutes is opened down to the folio. Any analysis of this material carries that coverage with it. Which convolutes carry folios, and how far each field reaches, is in the quality snapshot.
-
-No independent scholarly literature on the creator of the fonds exists. The placement in the research context is in [research-framework.md](research-framework.md).
 
 ## Source format
 
@@ -134,7 +132,7 @@ One row of the link table carries one statement about one record. The `typ` colu
 | `ort` in a mobility place role | place reference plus a dateless annotation node (E-97) |
 | `ausgaben, währung`, `einnahmen, währung`, `summe, währung` | annotation node carrying a financial item |
 
-Two type values have no target branch and are dropped silently, `Aktivität` and `dokument`. Both occur in the source, both need a modelling round of their own, and both are carried on the handover list and in the [reconciliation register](../data/reports/reconciliation-register.md) until then. The handler for a type `detail` exists in the pipeline as the path for the third cataloguing layer, but no row of the source carries that type, so the path is unused.
+Two type values have no target branch, `Aktivität` and `dokument`. Their omitted rows are counted by transformation and reported by the cataloguing report (E-246). Both occur in the source, both need a modelling round of their own, and both are carried on the handover list and in the [reconciliation register](../data/reports/reconciliation-register.md) until then. The handler for a type `detail` exists in the pipeline as the path for the third cataloguing layer, but no row of the source carries that type, so the path is unused.
 
 Dependent dropdowns enforce the value lists for `typ` and `rolle` at the source. Since a Google Sheets dropdown value carries no comma, a composite type may appear with an underscore in the export, attested for `einnahmen_währung`, `ausgaben_währung`, `summe_währung` and `ort_datum`. The pipeline accepts the underscore as an equivalent composite separator.
 
@@ -167,7 +165,7 @@ Two properties on the role concept say what a dating dates and which one counts 
 
 `m3gim-ontology:datingScope` names the level a dating refers to and draws from the scheme `m3gim-vocab:datingScopes`. Only a dating of the object itself and a dating of an event the object attests may date a document. A mentioned dating, a framing period and a dating of a negated claim stay readable without setting the time anchor.
 
-`m3gim-ontology:datingRank` is an integer deciding the order where a document carries several anchoring datings, the smaller value taking precedence. A role concept without a rank sorts behind every concept with one, in source order. A newly admitted role concept receives a rank at the end of the existing series, because resorting moves a dating that anchors today and is a decision of its own rather than a side effect.
+`m3gim-ontology:datingRank` is an integer deciding the order where a document carries several anchoring datings, the smaller value taking precedence. A role concept without a rank sorts behind every concept with one, in source order. A newly admitted role concept receives a rank at the end of the existing series, because resorting changes established anchors. The frontend uses the highest-ranked anchoring link date first, with `rico:date` as fallback (E-264). All other source datings remain available as evidence.
 
 ## Naming conventions and place duplicates
 
@@ -181,7 +179,7 @@ Two value systems for the processing status run in parallel. The recording guide
 
 ## Compensations in the pipeline
 
-The recording is the authoritative source. Where the pipeline compensates for a property of the source, that compensation is a debt and not a feature, and it is kept visible so it stays clear what is to be fixed at the source and where the code must remain defensive. The code sits in `scripts/_common.py` and `scripts/transform.py`, the concrete findings with file, location and field are in the handover list under `data/reports/`.
+The recording is the authoritative source. The following categories distinguish required format conversion, source defects and editorial assumptions so each compensation can be assessed against its evidence. The code sits in `scripts/_common.py` and `scripts/transform.py`, the concrete findings with file, location and field are in the handover list under `data/reports/`.
 
 The compensations fall into three categories. A specification compensation is a structurally unavoidable format transformation that hides no data error, meaning the underscore variant of a composite type, the removal of gender-inclusive role notation, the restriction of Wikidata raw values to the pattern of a Q-identifier, and the skipping of hidden dropdown helper sheets on the XLSX path.
 
@@ -191,11 +189,9 @@ A policy compensation is an editorial decision that holds as long as its assumpt
 
 ## Target model, decided and not built
 
-The link mechanism above is document-centred. One row carries one statement, so where a document describes several appearances their statements spread flat across the record and it is no longer reconstructable which person, which stage part, which place and which amount belong to which appearance. The annotation then attests that something occurs in the document, not who did what.
+The current link table supplies document-level statements and composite fragments. It does not reliably bind all persons, parts, places and payments to an individual appearance. Existing `datenpunkt_id`/`data_id` values are retained as source metadata; transformation does not construct occurrences from them.
 
-The decided answer is an occurrence as a bundling node one level above the aspect nodes, with the record attesting it rather than containing it, and a two-level recording identifier whose integer identifies the activity and whose two-digit decimal identifies the single participation in it (E-125, E-127, E-128). The appearance mode, meaning a guest performance or a tour, would sit on the occurrence rather than competing as a role value on the individual place, work or institution row. None of this exists in the vocabulary or in the dataset. The terms and their relations are in [data-model.md](data-model.md) § Target model v2.
-
-Two further points were decided with the partner feedback of 2026-09-05. The first is built. Pages of one folio, recorded as `1_1`, `1_2` and so on, stood as separate records and lost the context of the whole source, and they now hang under a record of their folio that carries them as parts, the level RiC-O provides, so that the interface can group them (E-269). The second is open. The year of a record is today taken first from the source dating of the object table and only then from the dates of the link table. The partners read the timeline at content level, meaning the events and appointments the source mentions, so the link dates take precedence and the source dating stays a data point of the record.
+The decided two-level activity/participation identifier requires human source grouping and an adapted pipeline (E-125, E-127, E-128). The migration workbook remains preparatory material. [data-model.md](data-model.md) § Target model v2 owns the proposed terms and relations; [recording-guide.md](recording-guide.md) distinguishes that target from the active recording format.
 
 ## Recording
 

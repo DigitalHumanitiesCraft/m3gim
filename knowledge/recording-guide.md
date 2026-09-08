@@ -5,11 +5,11 @@ project:
   repository: https://github.com/DigitalHumanitiesCraft/m3gim
 status: complete
 language: de
-version: 0.2
+version: 0.3
 created: 2026-09-05
-updated: 2026-09-06
+updated: 2026-09-08
 authors: [Christopher Pollin]
-generated-with: Claude Code
+generated-with: Codex
 related: [data.md, data-model.md]
 ---
 
@@ -17,42 +17,40 @@ related: [data.md, data-model.md]
 
 ## Erfassung
 
-Diese Richtlinie trägt die Erfassungssicht des Erschließungsteams, also nach welchen Konventionen die Tabellenfelder befüllt werden und wie mit Unsicherheit umgegangen wird. Sie ist die Soll-Seite der Datenqualität. Wo der erfasste Bestand davon abweicht, ist im generierten Quality-Snapshot und in der Modell-Spezifikation dokumentiert. Das Material und das formale Modell führen [data.md](data.md) und [data-model.md](data-model.md).
+Diese Richtlinie beschreibt die Konventionen des Erschließungsteams für Tabellenfelder, Namen, Unsicherheit und Quellenbezug. [data.md](data.md) dokumentiert das tatsächlich eingelesene Material und seine Abweichungen; [data-model.md](data-model.md) beschreibt die formale Abbildung.
 
-Die formalen Werttabellen, an die die Erfassung sich hält, stehen an ihrer maßgeblichen Stelle. Das Rollenvokabular führt [data.md](data.md) § Role values, die Datumsformate und Qualifier [data.md](data.md) § Date notation of the source, die Ansetzungs- und Namenskonventionen [data.md](data.md) § Naming conventions and place duplicates, die Werte der Datierungsevidenz [data-model.md](data-model.md) § Meta-statements and provenance. Diese Richtlinie verweist auf sie, statt sie zu wiederholen.
+Maßgeblich sind die Rollenwerte und Datumsformen in [data.md](data.md), einschließlich der Werte für `datierungsevidenz`. Offene Änderungen an Erfassung und Modell stehen in [specification.md](specification.md) § Open decisions.
 
-Die Verknüpfungserfassung ist auf das Long-Format mit zweistufiger `aktivitaet_id` umgestellt (Anleitung Stand 2026-06-25, E-127, verfeinert E-125). Spalten sind `archivsignatur`, `Folio`, `aktivitaet_id`, `typ`, `value`, `anmerkung`. Eine Ganzzahl identifiziert die Aktivität, eine zweistellige Dezimale `1.01` ff. die Beteiligung, `funktion` (kontrolliert) ist von `rolle` (gesungene Partie, frei) getrennt, Geld steht atomar mit eigener `währung`-Zeile, `aktivitaet` markiert die Art. Dieses Schema ist das v2-Ziel und gehört zum Zielmodell v2 in [data-model.md](data-model.md) § Target model v2. Die `aktivitaet_id`-Vergabe ist menschlicher Durchgang und im migrierten Stand bewusst leer. Bis die Pipeline umgestellt ist, gilt die im Folgenden beschriebene einstufige `datenpunkt_id`-Konvention als wirksame Erfassung. Der gereinigte Altbestand liegt als `data/migration/M3GIM-Verknuepfungen-v2.xlsx` mit Vokabular-Glossar und kuratiertem Beispiel-Blatt 7_29. Das Schichtenmodell, die Personenform und der Umgang mit Unsicherheit gelten für beide Stände unverändert.
+Der aktive Import liest die bestehende Verknüpfungstabelle mit `typ`, `name`, `rolle`, `anmerkung` und der optionalen Spalte `datenpunkt_id` beziehungsweise `data_id`. Das Long-Format mit zweistufiger `aktivitaet_id` ist als Migration vorbereitet (E-125, E-127, E-128), wird jedoch noch nicht von der Pipeline verarbeitet. Der Stand in `data/migration/M3GIM-Verknuepfungen-v2.xlsx` enthält ein Vokabular-Glossar und das kuratierte Beispiel 7_29; die übrige Aktivitätszuordnung erfordert Quellenprüfung. Die formale Zielbeschreibung steht in [data-model.md](data-model.md) § Target model v2. Eine Umstellung der laufenden Erfassung ist damit noch nicht belegt.
 
 ### Schichtenmodell der Erfassung
 
-Die Erschließung läuft in den Schichten Daten erfassen, Quellen sprechen lassen und Interpretation, die aufeinander aufbauen und einzeln abgeschlossen werden können.
+Die Erschließung umfasst Kernmetadaten, inhaltliche Verknüpfungen und vertiefte Interpretation.
 
-**Schicht 1, Daten erfassen.** Die Kernmetadaten eines Objekts werden in der Objekttabelle eingetragen, neue Personen, Organisationen, Orte und Werke werden in den Indextabellen angelegt. Für diese Schicht sind Objekttabelle, Personenindex, Organisationsindex und Ortsindex maßgeblich.
+**Schicht 1, Daten erfassen.** Kernmetadaten werden in der Objekttabelle eingetragen. Neue Personen, Organisationen, Orte und Werke erhalten Einträge in den jeweiligen Indizes.
 
-**Schicht 2, die Quellen sprechen lassen.** Die inhaltlichen Verknüpfungen eines Objekts zu Personen, Orten, Institutionen, Ereignissen und Werken werden in der Verknüpfungstabelle erfasst. Für diese Schicht ist allein die Verknüpfungstabelle maßgeblich, auch der Empfangsort einer Korrespondenz wird hier und nicht im Ortsindex geführt.
+**Schicht 2, die Quellen sprechen lassen.** Die Verknüpfungstabelle hält Bezüge zu Personen, Orten, Institutionen, Ereignissen und Werken fest. Auch der Empfangsort einer Korrespondenz gehört hierher.
 
-**Schicht 3, Interpretation.** Bei vertiefter Erschließung werden Detailangaben wie Honorare, Nebenleistungen oder vertragliche Konditionen ergänzt, ebenfalls in der Verknüpfungstabelle über den Verknüpfungstyp `detail`.
+**Schicht 3, Interpretation.** Honorare, Nebenleistungen und vertragliche Konditionen werden mit ihrem Quellenbezug ergänzt. Die aktuell genutzten Finanztypen und die offene Alt-Konvention `detail` sind unten unterschieden.
 
-Copy-Paste aus der Quelle oder aus bestehenden Einträgen ist gegenüber dem Neutippen vorzuziehen, weil es weniger fehleranfällig ist. In jeder Zeile wird das Erfassungsdatum mitgeführt.
+Copy-Paste aus der Quelle oder aus bestehenden Einträgen reduziert Übertragungsfehler. In jeder Zeile wird das Erfassungsdatum mitgeführt.
 
 ### Erfassungs-Workflow
 
-Pro Objekt werden die folgenden Schritte in dieser Reihenfolge durchlaufen.
-
-1. **Objekt anlegen.** In der Objekttabelle eine neue Zeile anlegen, die Archivsignatur eintragen und alle Schicht-1-Felder ausfüllen. Wo Dropdowns vorhanden sind, werden sie genutzt, die Normalisierungsregeln dieser Richtlinie sind dabei einzuhalten.
-2. **Verknüpfungen erfassen.** In der Verknüpfungstabelle für dasselbe Objekt alle relevanten Personen, Orte, Institutionen, Ereignisse und Werke eintragen, pro Verknüpfung eine eigene Zeile. Werden dieselbe Person, derselbe Ort oder dasselbe Datum mehrfach genannt, wird der Bezug nur einmal erfasst, es sei denn die Rolle ändert sich.
-3. **Indizes pflegen.** Neue Personen, Organisationen, Orte oder Werke in der jeweiligen Indextabelle anlegen und die fortlaufende ID vergeben. Duplikate sind ausgeschlossen.
-4. **Status setzen.** In der Objekttabelle den Erfassungsstatus auf den erreichten Schichtfortschritt setzen.
+1. **Objekt anlegen.** Archivsignatur und Kernmetadaten eintragen; vorhandene Auswahllisten verwenden.
+2. **Verknüpfungen erfassen.** Für jede relevante Entität und ihre Rolle eine eigene Zeile anlegen. Verschiedene Aussagen oder Auftritte dürfen beim Zusammenfassen wiederholter Namen nicht verloren gehen.
+3. **Indizes pflegen.** Neue Entitäten mit einer freien ID anlegen und vorab auf vorhandene Einträge prüfen.
+4. **Status setzen.** Den erreichten Erschließungsstand dokumentieren. Das Verhältnis der Schichtwerte zum verwendeten Bearbeitungsstatus bleibt klärungsbedürftig, siehe [data.md](data.md) § Processing status.
 
 ### Konvolut, Folio und Umfang
 
-Die Objektidentität wird aus der Archivsignatur und der Folioangabe gebildet. Innerhalb eines Konvoluts wird das Folio von eins weg durchnummeriert, in der Vorlage mit Bleistift oben rechts. Mehrere zusammenhängende Seiten eines Blattes tragen einen Unterstrich, also 5_1, 5_2 und so fort, in der Folio-Spalte steht in diesem Fall weiterhin nur 5.
+Die Objektidentität entsteht aus Archivsignatur und Folioangabe. Folios werden innerhalb eines Konvoluts fortlaufend nummeriert, in der Vorlage mit Bleistift oben rechts. Der aktuelle Export führt getrennt erfasste Seiten mit Suffixen wie `5_1` und `5_2` auch in der Folio-Spalte. Die Pipeline ordnet sie dem übergeordneten Folio `5` zu (E-269). Objekt- und Verknüpfungstabelle müssen dieselbe Bezugsebene verwenden.
 
-Die Umfangsangabe nennt die Anzahl der Blätter. Als Seiten zählen die bedruckten Seiten, also Vorder- und Rückseiten getrennt.
+Die Umfangsangabe nennt die Anzahl der Blätter. Bedruckte Vorder- und Rückseiten zählen jeweils als Seiten.
 
 ### Datumsangaben erfassen
 
-Datumsangaben folgen ISO 8601 in den in [data.md](data.md) § Date notation of the source festgelegten Granularitäten und Qualifiern. Ein undatiertes Objekt lässt das Datumsfeld leer. Ergänzend hält das Feld `datierungsevidenz` fest, woher die Datierung stammt, mit den Werten aus [data-model.md](data-model.md) § Meta-statements and provenance.
+Datumsangaben folgen ISO 8601 in den in [data.md](data.md) § Date notation of the source festgelegten Granularitäten und Qualifiern. Ein undatiertes Objekt lässt das Datumsfeld leer. Ergänzend hält das Feld `datierungsevidenz` fest, woher die Datierung stammt, mit den Werten aus [data.md](data.md) § Date notation of the source.
 
 Die Zusammenführung von Datum und Evidenz zeigt sich an typischen Fällen.
 
@@ -68,11 +66,11 @@ Die Zusammenführung von Datum und Evidenz zeigt sich an typischen Fällen.
 
 Die Ansetzungsformen für Personen, Orte, Institutionen und Werke folgen den Namenskonventionen in [data.md](data.md) § Naming conventions and place duplicates. Ergänzend gilt für die Erfassung Folgendes.
 
-Bei Künstlernamen gegenüber bürgerlichen Namen wird der Name verwendet, unter dem die Person im Dokumentkontext auftritt, bei Unsicherheit der bekanntere als Ansetzungsform mit Vermerk der Varianten im Anmerkungsfeld. Die Reconciliation gegen Wikidata verknüpft die Namensvarianten später. Orte tragen den gebräuchlichen historischen Namen aus der Quelle, die Wikidata-Reconciliation liefert die Verknüpfung zum heutigen Namen.
+Bei Künstlernamen gegenüber bürgerlichen Namen wird der Name verwendet, unter dem die Person im Dokumentkontext auftritt, bei Unsicherheit der bekanntere als Ansetzungsform mit Vermerk der Varianten im Anmerkungsfeld. Der spätere Wikidata-Abgleich kann Namensvarianten zuordnen; mehrdeutige Identitäten benötigen redaktionelle Prüfung. Orte tragen den gebräuchlichen historischen Namen aus der Quelle, ein belegter Wikidata-Abgleich ergänzt die Identität, soweit eine passende Entität vorhanden ist.
 
 Straßennamen werden nur dann eingetragen, wenn es sich um Aufenthaltsorte oder Adressen von Ira Malaniuk handelt, und gehören zur zweiten Schicht. Ort und Adresse werden mit Komma und Leerzeichen getrennt, der Wortbestandteil Straße wird einheitlich mit Doppel-s geschrieben. Wurde der genaue Ort nicht der Quelle entnommen, sondern interpretiert oder ergänzt, wird das in der Spalte für bei der Erfassung Hinzugefügtes vermerkt.
 
-Werke werden mit ihrem Titel aus der Quelle erfasst, der Komponist wandert in das Anmerkungsfeld. Liegt ein Titel in mehreren Sprachen vor (etwa Orpheus und Eurydike), wird zunächst die Form aus der Quelle übernommen und später vereinheitlicht. Lieder ohne eindeutigen Titel tragen den Textanfang oder die gebräuchliche Bezeichnung. Gibt das Objekt über eine Spalte keinen Aufschluss, wird eine begründete Vermutung mit dem Zusatz von Signatur und Folio im Anmerkungsfeld festgehalten.
+Werke werden mit ihrem Titel aus der Quelle erfasst. In einer Verknüpfungszeile kann das Anmerkungsfeld den Komponisten erläutern. Der Werkindex führt dafür ein eigenes strukturiertes Feld, das der Normdatenabgleich verwendet. Liegt ein Titel in mehreren Sprachen vor (etwa Orpheus und Eurydike), wird zunächst die Form aus der Quelle übernommen und später vereinheitlicht. Lieder ohne eindeutigen Titel tragen den Textanfang oder die gebräuchliche Bezeichnung. Gibt das Objekt über eine Spalte keinen Aufschluss, wird eine begründete Vermutung mit dem Zusatz von Signatur und Folio im Anmerkungsfeld festgehalten.
 
 ### Titelbildung
 
@@ -97,37 +95,13 @@ Beim Werk steht `aufführung` für die eigenständige Aufführung eines Werkes u
 
 #### Auftritte bündeln (`datenpunkt_id`)
 
-Beschreibt ein Dokument mehrere Auftritte, gehören seine Zeilen nicht alle gleichberechtigt zum Dokument, sondern je zu einem Auftritt. Die Spalte `datenpunkt_id` hält diese Zugehörigkeit fest, damit rekonstruierbar bleibt, wer was in welchem Auftritt getan hat, und nicht nur, dass etwas im Dokument vorkommt. Das Modell bildet jede so gebündelte Gruppe heute als eine Aufführung ab (`m3gim-ontology:Performance`, [data-model.md](data-model.md) § Anchoring in RiC-O), der eigene Vorkommnis-Term ist mit E-125 entschieden und noch nicht umgesetzt ([data-model.md](data-model.md) § Target model v2, [data.md](data.md) § The link mechanism). Diese einstufige Konvention ist die heute wirksame Erfassung, ihre Ablösung durch die zweistufige `aktivitaet_id` steht im Zielmodell v2.
+Die optionale Spalte hält eine erfasste Gruppierungsabsicht fest. Ein leerer Wert lässt die Aussage auf Dokumentebene oder ihre Zuordnung offen; eine fortlaufende Nummer bezeichnet nach der bisherigen Konvention die Zeilen eines Auftritts. Die Pipeline bewahrt den Wert in den Quellenmetadaten. Sie baut daraus gegenwärtig keine gemeinsame Aufführung.
 
-Die Konvention kennt die folgenden Werte.
+Bei mehreren Auftritten in einem Dokument darf eine unklare Person-, Orts- oder Honorarzuordnung nicht geraten werden. Ein nicht zuordenbarer Dirigent bleibt auf Dokumentebene und erhält eine Erläuterung im Anmerkungsfeld. Die zweistufige Aktivitäts- und Beteiligungszuordnung des Zielmodells erfordert einen eigenen menschlichen Durchgang.
 
-- **Leer** ist der Default und meint die Dokument-Ebene. Hierher gehören die Angaben über das Dokument selbst, also Verfasser, Adressat, Absendeort und Erstelldatum, und ebenso jede Angabe, deren Auftritts-Zuordnung die Quelle nicht hergibt. Ein nicht eindeutig zuordenbarer Dirigent bleibt leer, statt geraten zu werden.
-- Eine **fortlaufende Nummer** ab `1` bündelt alle Zeilen eines Auftritts. Zwei Auftritte in einem Folio tragen `1` und `2`. Geteilte Angaben werden je Auftritt wiederholt, damit jeder Auftritt vollständig beschrieben ist.
+Die frühere Anleitung zu einer Spalte `modus` und zur automatischen Ableitung von Auswärtsauftritten beschreibt keine aktive Pipeline-Funktion. Auftrittsmodi gehören zum noch umzusetzenden Zielmodell. Die vorhandenen Rollenwerte werden durch diese Dokumentationskorrektur nicht geändert.
 
-Gastspiel und Tournee sind ein **Modus** des Auftritts, keine Rolle. Statt `gastspiel` an Ort, Werk und Institution zugleich zu hängen, wird der Ort als `auffuehrungsort`, das Werk als `aufführung` und die Institution als `veranstalter` geführt, und der Modus einmal pro Auftritt an der `aufführung`-Zeile in der Spalte `modus` notiert. Ob ein Auftritt auswärts oder am eigenen Haus stattfand, leitet die Pipeline aus dem Auftrittsort und dem Institutionssitz ab und muss nicht erfasst werden.
-
-Beispiel `UAKUG/NIM_011` Folio 5, ein Brief, der ein Tristan-Gastspiel der Bayreuther in Brüssel und Barcelona beschreibt, also zwei Auftritte.
-
-| datenpunkt_id | typ | name | rolle | modus | anmerkung |
-|---|---|---|---|---|---|
-| (leer) | person | Wagner, Wieland | verfasser | | |
-| (leer) | person | Malaniuk, Ira | adressat | | |
-| (leer) | datum | 1954-05-03 | erstelldatum | | |
-| (leer) | ort | Bayreuth | absendeort | | |
-| (leer) | person | Keilberth, Joseph | dirigent | | Stadt nicht auflösbar |
-| (leer) | person | Jochum, Eugen | dirigent | | Stadt nicht auflösbar |
-| 1 | ort | Brüssel | auffuehrungsort | | |
-| 1 | werk | Tristan und Isolde | aufführung | gastspiel | |
-| 1 | rolle | Brangäne | interpret | | Interpret Malaniuk |
-| 1 | institution | Bayreuther Festspiele | veranstalter | | |
-| 1 | summe, währung | 1200 | abendgage | | freie Bahnfahrt 2. Kl. Brüssel |
-| 2 | ort | Barcelona | auffuehrungsort | | |
-| 2 | werk | Tristan und Isolde | aufführung | gastspiel | |
-| 2 | rolle | Brangäne | interpret | | Interpret Malaniuk |
-| 2 | institution | Bayreuther Festspiele | veranstalter | | |
-| 2 | summe, währung | 1200 | abendgage | | freie Flugreise München-Barcelona-München |
-
-Wo eine Auswahlliste für eine Spalte gepflegt wird, gilt sie für die ganze Spalte, nicht nur für den Bereich, in dem sie angelegt wurde. Eine Validierung wird daher auf die ganze Spalte gelegt oder aus einem Bereich gespeist, damit ein neuer Listeneintrag auch in schon befüllten Zeilen greift. Bestehende Werte werden dabei markiert, nie überschrieben.
+Auswahllisten gelten für die gesamte betreffende Spalte. Neue Werte müssen auch für bereits befüllte Zeilen verfügbar sein; ungültige Altwerte werden zur Prüfung markiert und bleiben erhalten.
 
 #### Ereignisse
 
@@ -139,12 +113,9 @@ Ereignisse werden direkt in der Verknüpfungstabelle erfasst, nicht in einem eig
 
 #### Details der dritten Schicht
 
-Bei vertiefter Erschließung trägt der Typ `detail` die Feinangaben. Der Feldname steht in der Spalte `name`, der Wert in der Spalte `rolle`. Einnahmen und Ausgaben werden aus der Perspektive von Ira Malaniuk gelesen, sie nimmt also ein oder gibt aus. Währungen werden mit ihrem Code erfasst, etwa S für Schilling oder Esc für den portugiesischen Escudo. Die vollständige Auflösung der Währungscodes steht in [data.md](data.md).
+Der aktuelle Export führt Finanzangaben über `einnahmen, währung`, `ausgaben, währung` und `summe, währung` sowie ihre akzeptierten Unterstrichvarianten. Der Betrag und seine ursprüngliche Schreibweise bleiben nachvollziehbar. Einnahmen und Ausgaben beziehen sich auf Ira Malaniuk. Historische Währungsangaben werden quellentreu geführt; Parsing und bestehende Defaults beschreibt [data-model.md](data-model.md) § Financial layer.
 
-| archivsignatur | typ | name | rolle | anmerkung |
-|---|---|---|---|---|
-| UAKUG/NIM_028 | detail | honorar | 1.000 DM | Julius Cäsar |
-| UAKUG/NIM_028 | detail | nebenleistungen | Flugkosten Zürich-München | |
+Der früher vorgeschlagene Typ `detail` wird im aktuellen Export nicht verwendet. Sein verbliebener Pipeline-Zweig interpretiert Felder anders als die Finanz-Komposita. Diese Konvention muss vor einer Verwendung mit dem Erschließungsteam geklärt werden. Vertragsbemerkungen wie `Vertrag nicht eingehalten` bleiben im Anmerkungsfeld; strukturierter Vertragsstatus und Realisierung sind offene Modellfragen.
 
 ### Indizes pflegen
 
@@ -219,7 +190,7 @@ In der Verknüpfungstabelle:
 - alle relevanten Orte erfasst
 - alle relevanten Institutionen erfasst
 - Ereignisse mit Datum, sofern bekannt
-- Werke mit Komponist im Anmerkungsfeld
+- Werkbezug und gegebenenfalls Komponistenangabe nachvollziehbar; strukturiertes Komponistenfeld im Werkindex geprüft
 
 In den Indextabellen:
 
