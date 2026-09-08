@@ -14,7 +14,7 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { fitTransform, nodeTooltipHtml } from '../../docs/js/views/karte-map.js';
+import { fitTransform, regionalFocusScale, nodeTooltipHtml } from '../../docs/js/views/karte-map.js';
 
 // Der Kartenbereich in der Groesse, die der Browser bei 1920x1080 misst
 // (gemessen im Playwright-Lauf: svg 1624 x 949, Rand 60).
@@ -69,6 +69,14 @@ describe('fitTransform', () => {
     const fit = fitTransform({ x0: 700, y0: 400, x1: 700, y1: 400 },
       { ...BOX, minSpan: 1 });
     assert.equal(fit.k, BOX.maxK);
+  });
+});
+
+describe('regionalFocusScale', () => {
+  test('passt den Regionalausschnitt an schmale und breite Kartenflächen an', () => {
+    assert.equal(regionalFocusScale(390, 700), 700 / 38);
+    assert.equal(regionalFocusScale(800, 600), 800 / 48);
+    assert.equal(regionalFocusScale(1440, 900), 24);
   });
 });
 

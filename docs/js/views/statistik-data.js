@@ -567,7 +567,11 @@ export function aggregateMatrix(store, ids, pairId = 'doctype-work', { placeStat
       column: { family: pair.column, key: group.column.key, label: group.column.label },
     },
   }));
-  return { pair, cells, rows: uniqueObjects(cells.map(cell => cell.row), value => value.key),
+  const dimensions = [pair.row, pair.column].filter(dimension =>
+    !['agent', 'agentrole', 'counterpart'].includes(dimension)).map(dimension => ({
+    dimension, recordIds: [...dimensionIndex(store, records, dimension, placeStatements).keys()],
+  }));
+  return { pair, cells, dimensions, rows: uniqueObjects(cells.map(cell => cell.row), value => value.key),
     columns: uniqueObjects(cells.map(cell => cell.column), value => value.key), denominator: records.length };
 }
 

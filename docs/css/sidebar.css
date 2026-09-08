@@ -142,7 +142,8 @@
   cursor: help;
 }
 
-.vs-status__reset {
+.vs-status__reset,
+.filter-clear {
   display: inline-flex;
   align-items: center;
   gap: var(--space-1);
@@ -159,6 +160,15 @@
 .vs-status__reset > span { text-decoration: underline; }
 .vs-status__reset-icon { flex: 0 0 auto; }
 .vs-status__reset:hover { color: var(--accent); }
+
+.filter-clear {
+  padding: var(--space-1) var(--space-2);
+  color: var(--accent);
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--border-radius);
+}
+.filter-clear:hover { background: var(--surface-3); }
 
 /* Legend as filter (toggle chips) */
 
@@ -498,7 +508,8 @@
   .fs-chip,
   .vs-chip,
   .vs-toggle,
-  .vs-status__reset {
+  .vs-status__reset,
+  .filter-clear {
     min-block-size: 24px;
   }
 

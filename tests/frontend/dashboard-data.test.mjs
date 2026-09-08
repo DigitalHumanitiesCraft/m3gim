@@ -58,6 +58,13 @@ describe('Treemap partition', () => {
 });
 
 describe('Matrix evidence', () => {
+  test('dimension coverage retains documents with work even when its composer is missing', () => {
+    const data = store();
+    data.works.get('Walküre').komponist = null;
+    const matrix = aggregateMatrix(data, new Set(['r3', 'r4']), 'work-composer');
+    assert.deepEqual(matrix.dimensions.find(item => item.dimension === 'work').recordIds, ['r3']);
+    assert.deepEqual(matrix.dimensions.find(item => item.dimension === 'composer').recordIds, []);
+  });
   test('co-mention cells carry both witnesses without fabricating a joint source', () => {
     const matrix = aggregateMatrix(store(), new Set(['r1', 'r2']), 'doctype-work');
     const cell = matrix.cells.find(value => value.row.key === 'correspondence' && value.column.key === 'Tristan');

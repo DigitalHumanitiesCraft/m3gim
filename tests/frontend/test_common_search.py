@@ -22,14 +22,14 @@ def test_search_commit_undo_and_typed_collision(frontend_server: str, browser_co
     assert page.url == before
     search.press('Enter')
     expect(page.locator('#tab-bestand .vs-status__count .fs-option__count')).to_have_text('45 von 188')
-    page.get_by_role('button', name='Filter rückgängig', exact=True).click()
+    page.get_by_role('button', name='Letzte Filteränderung rückgängig', exact=True).click()
     search.fill('Zürich')
     page.get_by_role('option', name='Nach Ort Zürich filtern, 42 Dokumente', exact=True).click()
     expect(page.locator('#tab-bestand .vs-status__count .fs-option__count')).to_have_text('42 von 188')
-    page.get_by_role('button', name='Filter rückgängig', exact=True).click()
-    page.get_by_role('button', name='Filter wiederherstellen', exact=True).click()
+    page.get_by_role('button', name='Letzte Filteränderung rückgängig', exact=True).click()
+    page.get_by_role('button', name='Letzte Filteränderung wiederholen', exact=True).click()
     expect(page.locator('#tab-bestand .vs-status__count .fs-option__count')).to_have_text('42 von 188')
-    page.get_by_role('button', name='alle zurücksetzen', exact=True).click()
+    page.get_by_role('button', name='Alle Filter löschen', exact=True).click()
     search.fill('Bayreuth')
     expect(page.get_by_role('option', name='Nach Ort Bayreuth filtern, 49 Dokumente', exact=True)).to_be_visible()
     assert page.locator('.research-search__option[aria-label^="Nach Institution Bayreuth filtern,"]').count() == 1

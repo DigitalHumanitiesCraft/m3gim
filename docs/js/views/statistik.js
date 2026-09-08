@@ -13,6 +13,17 @@ import { createDashboardSelection } from './dashboard-selection.js';
 import { createDashboardPanel, normalizePanelConfig } from './dashboard-panel.js';
 
 const PARAMS = Object.freeze({ a: 'dash-panel-a', b: 'dash-panel-b', reference: 'dash-reference' });
+const PRESETS = Object.freeze([
+  { id: 'documents-works', label: 'Dokumenttypen + Werke',
+    a: { chart: 'treemap', config: { path: [] } },
+    b: { chart: 'matrix', config: { pair: 'doctype-work' } } },
+  { id: 'time-places', label: 'Zeit + Orte',
+    a: { chart: 'time', config: { grouping: 'year', range: null } },
+    b: { chart: 'map', config: {} } },
+  { id: 'place-roles-map', label: 'Ortsrollen + Karte',
+    a: { chart: 'sankey', config: { focus: null } },
+    b: { chart: 'map', config: {} } },
+]);
 let mounted = null;
 
 function readJson(params, key) {
@@ -24,6 +35,13 @@ function readJson(params, key) {
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
+}
+
+function matchesPreset(panelA, panelB, preset) {
+  const expectedA = normalizePanelConfig(preset.a, preset.a.chart);
+  const expectedB = normalizePanelConfig(preset.b, preset.b.chart);
+  return JSON.stringify(panelA) === JSON.stringify(expectedA)
+    && JSON.stringify(panelB) === JSON.stringify(expectedB);
 }
 
 function normalizeReference(store, value, fingerprint) {
@@ -48,8 +66,15 @@ export function renderStatistik(store, container) {
   const placeStatements = buildOccurrences(store);
   const span = yearBounds(store);
 
+  const presetStatus = el('span', { className: 'dashboard-presets__status', 'aria-live': 'polite' });
+  const presetButtons = PRESETS.map(preset => el('button', {
+    type: 'button', className: 'ui-action dashboard-presets__button', dataset: { preset: preset.id },
+    onClick: () => applyPreset(preset),
+  }, preset.label));
+  const presets = el('nav', { className: 'dashboard-presets', 'aria-label': 'Sinnvolle Ansichtspaare' },
+    el('span', { className: 'dashboard-presets__label' }, 'Ansichtspaare'), ...presetButtons, presetStatus);
   const panelsHost = el('div', { className: 'dashboard-panels' });
-  const workspace = el('div', { className: 'dashboard-workspace' }, panelsHost);
+  const workspace = el('div', { className: 'dashboard-workspace' }, presets, panelsHost);
   const dashboardHost = el('div', { className: 'dashboard-stage' }, workspace);
   const main = el('div', { className: 'view-main statistik-main' }, dashboardHost);
 
@@ -82,9 +107,32 @@ export function renderStatistik(store, container) {
   shared.onAdd = (aggregate, trigger) => selection.add(aggregate, trigger);
 
   panelA = createDashboardPanel({ id: 'a', host: panelsHost, initial: panelAState, context: shared,
-    onState(state) { panelAState = state; setViewParams({ [PARAMS.a]: JSON.stringify(state) }); } });
+    onState(state) {
+      panelAState = state; setViewParams({ [PARAMS.a]: JSON.stringify(state) }); updatePresetState();
+    } });
   panelB = createDashboardPanel({ id: 'b', host: panelsHost, initial: panelBState, context: shared,
-    onState(state) { panelBState = state; setViewParams({ [PARAMS.b]: JSON.stringify(state) }); } });
+    onState(state) {
+      panelBState = state; setViewParams({ [PARAMS.b]: JSON.stringify(state) }); updatePresetState();
+    } });
+
+  function updatePresetState() {
+    const active = PRESETS.find(preset => matchesPreset(panelAState, panelBState, preset));
+    for (const button of presetButtons) {
+      const selected = button.dataset.preset === active?.id;
+      button.setAttribute('aria-pressed', String(selected));
+    }
+    presetStatus.textContent = active ? `Aktiv: ${active.label}` : 'Freie Kombination';
+  }
+
+  function applyPreset(preset) {
+    panelAState = normalizePanelConfig(clone(preset.a), preset.a.chart);
+    panelBState = normalizePanelConfig(clone(preset.b), preset.b.chart);
+    setViewParams({
+      [PARAMS.a]: JSON.stringify(panelAState), [PARAMS.b]: JSON.stringify(panelBState),
+    });
+    panelA.setState(panelAState); panelB.setState(panelBState); updatePresetState();
+  }
+  updatePresetState();
 
   function drawPanels() {
     shared.cutIds = cut.ids;
@@ -107,7 +155,7 @@ export function renderStatistik(store, container) {
     panelAState = normalizePanelConfig(readJson(detail.viewParams, PARAMS.a), 'treemap');
     panelBState = normalizePanelConfig(readJson(detail.viewParams, PARAMS.b), 'matrix');
     reference = normalizeReference(store, readJson(detail.viewParams, PARAMS.reference), fingerprint);
-    panelA.setState(panelAState); panelB.setState(panelBState);
+    panelA.setState(panelAState); panelB.setState(panelBState); updatePresetState();
   });
 
   mounted = { destroy() { panelA.destroy(); panelB.destroy(); selection.destroy(); sidebar.destroy(); } };

@@ -715,7 +715,7 @@ def main() -> int:
         #     Zeile. Designregel 8 ist hier bewusst ausgesetzt (Projektleitung,
         #     2026-09-04): kein Chip, kein Knopf, eine ruhige Zeile. ---
         try:
-            reset = page.locator('#tab-bestand .vs-status__reset')
+            reset = page.get_by_role('button', name='Alle Filter löschen', exact=True)
             if reset.count():
                 reset.click()
             page.wait_for_timeout(500)

@@ -125,7 +125,7 @@ describe('Filterstreifen ueber den Daten', () => {
   test('der Streifen gruppiert je Facette und schliesst mit dem Link', () => {
     const src = read('ui/sidebar-strip.js');
     const strip = src.slice(src.indexOf('function filterStrip'),
-      src.indexOf('/** Circular arrow before the reset link'));
+      src.indexOf('function isImpliedLinkKind'));
     assert.match(strip, /if \(!isFilterActive\(\) && local\.length === 0\) \{\s*element\.appendChild\(emptyHint\(\)\);/,
       'neutral traegt er den Platzhalter statt einer leeren Zeile');
     assert.match(strip, /Object\.entries\(FACET_META\)/, 'Facettenreihenfolge');
@@ -133,8 +133,8 @@ describe('Filterstreifen ueber den Daten', () => {
       'Der Facettenname steht einmal vor seinen Werten.');
     assert.match(strip, /stripGroup\('Zeitraum',/);
     assert.match(strip, /stripGroup\('Suche',/);
-    assert.ok(strip.indexOf("'alle zurücksetzen'") > strip.lastIndexOf('removeChip('),
-      'Der Link steht hinter den Chips.');
+    assert.ok(strip.indexOf("'Filter löschen'") > strip.lastIndexOf('removeChip('),
+      'Der globale Löschbefehl steht hinter den Chips.');
   });
 
   test('der Platzhalter ist eine ruhige Zeile, kein Chip und kein Knopf', () => {
@@ -157,14 +157,15 @@ describe('Filterstreifen ueber den Daten', () => {
     assert.doesNotMatch(block, /background|border/, 'kein Chip-Aussehen');
   });
 
-  test('der Zuruecksetzen-Link traegt ein Zeichen und bleibt ein Textlink', () => {
+  test('globale Filteraktionen sind klar benannt und der Verlauf bleibt kompakt', () => {
     const src = read('ui/sidebar-strip.js');
-    assert.match(src, /const RESET_GLYPH = '<svg class="vs-status__reset-icon" width="14"/);
-    assert.match(src, /className: 'vs-status__reset'[\s\S]{0,220}html: RESET_GLYPH,/);
+    assert.match(src, /className: 'filter-clear'[\s\S]{0,220}'Alle Filter löschen'/);
+    assert.match(src, /'Letzte Filteränderung rückgängig'/);
+    assert.match(src, /'Letzte Filteränderung wiederholen'/);
     const css = readFileSync(new URL('../../docs/css/sidebar.css', import.meta.url), 'utf-8');
-    const block = css.slice(css.indexOf('.vs-status__reset {'), css.indexOf('.vs-status__reset:hover'));
-    assert.doesNotMatch(block, /background: var|border: 1px/, 'kein Knopf-Aussehen');
-    assert.match(css, /\.vs-status__reset > span \{ text-decoration: underline; \}/);
+    assert.match(css, /\.filter-clear \{/);
+    const searchCss = readFileSync(new URL('../../docs/css/search.css', import.meta.url), 'utf-8');
+    assert.match(searchCss, /\.filter-history__button \{[\s\S]*inline-size: 28px;/);
   });
 
   test('die Gruppentitel erklären weiterhin die Oder-/Und-Semantik', () => {
@@ -282,11 +283,11 @@ describe('Ansichtslokale Chips im Streifen (E-223)', () => {
     assert.match(src, /filterStrip\(inventories, localChips\)/);
     const stripSrc = read('ui/sidebar-strip.js');
     const strip = stripSrc.slice(stripSrc.indexOf('function filterStrip'),
-      stripSrc.indexOf('/** Circular arrow before the reset link'));
+      stripSrc.indexOf('function isImpliedLinkKind'));
     assert.ok(strip.indexOf('stripGroup(group.title') > strip.indexOf("stripGroup('Suche'"),
       'Die lokalen Gruppen stehen hinter Facetten, Zeitraum und Suche.');
-    assert.ok(strip.indexOf("'alle zurücksetzen'") > strip.indexOf('stripGroup(group.title'),
-      'Der Link bleibt am Ende.');
+    assert.ok(strip.indexOf("'Filter löschen'") > strip.indexOf('stripGroup(group.title'),
+      'Der globale Löschbefehl bleibt am Ende.');
     assert.match(strip, /for \(const g of local\) for \(const c of g\.chips\) c\.onRemove\(\)/,
       'Zuruecksetzen loest auch die ansichtslokale Verengung.');
   });

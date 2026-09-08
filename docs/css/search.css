@@ -80,11 +80,17 @@
 .filter-history {
   display: inline-flex;
   flex-wrap: wrap;
-  gap: var(--space-1);
+  gap: 2px;
   margin-inline-start: auto;
 }
 
-.filter-history__button { font-size: var(--text-2xs); }
+.filter-history__button {
+  inline-size: 28px;
+  block-size: 28px;
+  padding: 0;
+  font-size: var(--text-base);
+  line-height: 1;
+}
 .filter-history__button:disabled {
   color: var(--color-text-tertiary);
   cursor: default;

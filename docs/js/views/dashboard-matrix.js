@@ -1,6 +1,6 @@
 import { el, clear } from '../utils/dom.js';
 import { aggregateMatrix, MATRIX_PAIRS } from './statistik-data.js';
-import { appendAccessibleList, emptyState, selectionIntersects } from './dashboard-shared.js';
+import { appendAccessibleList, emptyState, selectionIntersects, unitLabel } from './dashboard-shared.js';
 
 const PAGE = 14;
 const DIMENSION_LABELS = Object.freeze({
@@ -8,6 +8,11 @@ const DIMENSION_LABELS = Object.freeze({
   stagepart: 'Bühnenrolle', person: 'Person', institution: 'Institution',
   place: 'Ort', country: 'Land', placerole: 'Ortsrolle', agent: 'Akteur', agentrole: 'Akteursrolle',
   counterpart: 'Gegenüber und Bindungsart',
+});
+const MISSING_LABELS = Object.freeze({
+  doctype: 'Dokumenttyp', time: 'Zeitangabe', work: 'Werkangabe', composer: 'Komponistenangabe',
+  stagepart: 'Bühnenrolle', person: 'Personenangabe', institution: 'Institutionsangabe',
+  place: 'Ortsangabe', country: 'Landesangabe', placerole: 'Ortsrolle',
 });
 
 function axisAggregate(cells, axis, value, denominator, pair) {
@@ -25,9 +30,12 @@ export function renderMatrix(host, context) {
   const pairId = context.config.pair || MATRIX_PAIRS[0].id;
   const data = aggregateMatrix(context.store, context.cutIds, pairId,
     { placeStatements: context.placeStatements });
+  const coverage = { dimensions: data.dimensions.map(item => ({
+    label: MISSING_LABELS[item.dimension], recordIds: item.recordIds,
+  })) };
   if (!data.cells.length) {
     emptyState(host, 'Für dieses Dimensionspaar liegen im aktuellen Schnitt keine belegten Zellen vor.');
-    return { aggregates: [], destroy() { clear(host); } };
+    return { aggregates: [], coverage, destroy() { clear(host); } };
   }
   if (context.config.swapped) {
     data.cells = data.cells.map(cell => ({ ...cell, row: cell.column, column: cell.row }));
@@ -51,21 +59,25 @@ export function renderMatrix(host, context) {
     ? a.label.localeCompare(b.label, 'de') : (totals.get(b.key) - totals.get(a.key)) || a.label.localeCompare(b.label, 'de');
   const rows = [...data.rows].sort(sorter(rowTotals));
   const columns = [...data.columns].sort(sorter(colTotals));
-  const page = Math.max(0, Number(context.config.page) || 0);
-  const columnPage = Math.max(0, Number(context.config.columnPage) || 0);
+  const page = Math.max(0, Math.min(Math.floor(Number(context.config.page) || 0), Math.ceil(rows.length / PAGE) - 1));
+  const columnPage = Math.max(0, Math.min(Math.floor(Number(context.config.columnPage) || 0), Math.ceil(columns.length / PAGE) - 1));
   const focusedRows = Array.isArray(context.config.rows) ? context.config.rows : [];
   const shownRows = focusedRows.length ? rows.filter(row => focusedRows.includes(row.key)) : rows.slice(page * PAGE, (page + 1) * PAGE);
   const focusedColumns = Array.isArray(context.config.columns) ? context.config.columns : [];
   const shownColumns = focusedColumns.length ? columns.filter(column => focusedColumns.includes(column.key))
     : columns.slice(columnPage * PAGE, (columnPage + 1) * PAGE);
+  const rowKeys = new Set(shownRows.map(row => row.key));
+  const columnKeys = new Set(shownColumns.map(column => column.key));
+  coverage.visibleRecordIds = [...new Set(data.cells.filter(cell => rowKeys.has(cell.row.key)
+    && columnKeys.has(cell.column.key)).flatMap(cell => cell.recordIds))];
   const measure = context.config.measure || 'count';
   const table = el('table', { className: 'dashboard-matrix' });
   const head = el('tr', {}, el('th', { scope: 'col' }, DIMENSION_LABELS[data.pair.row] || data.pair.row));
   shownColumns.forEach(column => {
     const aggregate = axisAggregate(data.cells, 'column', column, data.denominator, data.pair);
     const button = el('button', { type: 'button', className: 'dashboard-matrix__axis',
-      dataset: { tip: `${column.label}: ${aggregate.count} Dokumente`, tipWrap: '' },
-      'aria-label': `${column.label}: ${aggregate.count} Dokumente`, onClick: () => context.onSelect(aggregate, button) }, column.label);
+      dataset: { tip: `${column.label}: ${aggregate.count} ${unitLabel('documents', aggregate.count)}`, tipWrap: '' },
+      'aria-label': `${column.label}: ${aggregate.count} ${unitLabel('documents', aggregate.count)}`, onClick: () => context.onSelect(aggregate, button) }, column.label);
     button._dashboardAggregate = aggregate;
     head.appendChild(el('th', { scope: 'col' }, button,
       el('button', { type: 'button', className: 'dashboard-matrix__focus',
@@ -76,8 +88,8 @@ export function renderMatrix(host, context) {
   for (const row of shownRows) {
     const aggregate = axisAggregate(data.cells, 'row', row, data.denominator, data.pair);
     const axisButton = el('button', { type: 'button', className: 'dashboard-matrix__axis',
-      dataset: { tip: `${row.label}: ${aggregate.count} Dokumente`, tipWrap: '' },
-      'aria-label': `${row.label}: ${aggregate.count} Dokumente`, onClick: () => context.onSelect(aggregate, axisButton) }, row.label);
+      dataset: { tip: `${row.label}: ${aggregate.count} ${unitLabel('documents', aggregate.count)}`, tipWrap: '' },
+      'aria-label': `${row.label}: ${aggregate.count} ${unitLabel('documents', aggregate.count)}`, onClick: () => context.onSelect(aggregate, axisButton) }, row.label);
     axisButton._dashboardAggregate = aggregate;
     const tr = el('tr', {}, el('th', { scope: 'row' }, axisButton,
       el('button', { type: 'button', className: 'dashboard-matrix__focus',
@@ -118,5 +130,5 @@ export function renderMatrix(host, context) {
   const axes = [...rows.map(row => axisAggregate(data.cells, 'row', row, data.denominator, data.pair)),
     ...columns.map(column => axisAggregate(data.cells, 'column', column, data.denominator, data.pair))];
   appendAccessibleList(host, [...axes, ...data.cells], context);
-  return { aggregates: [...axes, ...data.cells], destroy() { clear(host); } };
+  return { aggregates: [...axes, ...data.cells], coverage, destroy() { clear(host); } };
 }

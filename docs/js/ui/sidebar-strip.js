@@ -64,19 +64,24 @@ export function filterStrip(inventories, localChips) {
       onClick: () => setFilter(buildFacetSelectionPatch(getFilter(), 'verknuepfung',
         facetValues(getFilter(), 'verknuepfung'))) }, 'Dokument-Ko-Erwähnung → Rolle an Entität binden'));
     element.appendChild(el('button', {
-      className: 'vs-status__reset', type: 'button',
+      className: 'filter-clear', type: 'button',
+      'aria-label': 'Alle Filter löschen',
+      dataset: { tip: 'Entfernt alle gemeinsamen und lokalen Filter.', tipPos: 'bottom-right' },
       onClick: () => { for (const g of local) for (const c of g.chips) c.onRemove(); resetFilter(); },
-      html: RESET_GLYPH,
-    }, el('span', {}, 'alle zurücksetzen')));
+    }, 'Filter löschen'));
     appendHistory();
   }
 
   function appendHistory() {
     const state = filterHistoryStatus();
     const undo = el('button', { type: 'button', className: 'filter-history__button',
-      onClick: undoFilter }, 'Filter rückgängig');
+      'aria-label': 'Letzte Filteränderung rückgängig',
+      dataset: { tip: 'Letzte Filteränderung rückgängig', tipPos: 'bottom-right' },
+      onClick: undoFilter }, '↶');
     const redo = el('button', { type: 'button', className: 'filter-history__button',
-      onClick: redoFilter }, 'Filter wiederherstellen');
+      'aria-label': 'Letzte Filteränderung wiederholen',
+      dataset: { tip: 'Letzte rückgängig gemachte Filteränderung wiederholen', tipPos: 'bottom-right' },
+      onClick: redoFilter }, '↷');
     undo.disabled = !state.canUndo;
     redo.disabled = !state.canRedo;
     element.append(el('span', { className: 'filter-history', role: 'group', 'aria-label': 'Filterverlauf' }, undo, redo));
@@ -107,14 +112,6 @@ function isImpliedLinkKind(filter, key, value) {
   return key === 'verknuepfung' && ['ort', 'person', 'institution', 'werk'].includes(value)
     && facetValues(filter, value).length > 0;
 }
-
-/** Circular arrow before the reset link, in the tone of the chips' close
- *  crosses: the link keeps its text, the glyph only makes it findable at the
- *  end of a long chip row. */
-const RESET_GLYPH = '<svg class="vs-status__reset-icon" width="14" height="14"'
-  + ' viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"'
-  + ' stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
-  + '<path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>';
 
 /**
  * The strip while no filter deviates from the default. Design rule 8 forbids

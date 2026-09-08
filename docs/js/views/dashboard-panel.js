@@ -3,7 +3,8 @@ import { getFilter } from '../ui/filter-state.js';
 import { facetInventory } from '../data/records-for.js';
 import { linkRoleInventory } from '../data/query-evidence.js';
 import { MATRIX_PAIRS, aggregateExportRows, idsForSet } from './statistik-data.js';
-import { downloadCsv, chartStatus } from './dashboard-shared.js';
+import { downloadCsv } from './dashboard-shared.js';
+import { createChartCoverage } from './dashboard-coverage.js';
 import { renderTreemap } from './dashboard-treemap.js';
 import { renderMatrix } from './dashboard-matrix.js';
 import { renderTime } from './dashboard-time.js';
@@ -47,31 +48,44 @@ function selectControl(label, value, values, onChange) {
   return select;
 }
 
+function menu(label, controls) {
+  const disclosure = el('details', { className: 'dashboard-panel-menu',
+    onKeydown: event => {
+      if (event.key !== 'Escape' || !disclosure.open) return;
+      event.preventDefault(); event.stopPropagation(); disclosure.open = false;
+      disclosure.querySelector('summary')?.focus({ preventScroll: true });
+    },
+  }, el('summary', { className: 'ui-action dashboard-panel-menu__trigger' }, label),
+  el('div', { className: 'dashboard-panel-menu__content' }, ...controls));
+  return disclosure;
+}
+
 function specificControls(panel, state, context) {
-  const controls = [];
+  const primary = [];
+  const display = [];
   const change = patch => panel.setConfig({ ...state.config, ...patch });
   if (state.chart === 'matrix') {
-    controls.push(selectControl('Dimensionspaar', state.config.pair, MATRIX_PAIRS,
+    primary.push(selectControl('Dimensionspaar', state.config.pair, MATRIX_PAIRS,
       pair => change({ pair, page: 0, columnPage: 0, rows: [], columns: [] })));
-    controls.push(selectControl('Matrixmaß', state.config.measure, [
+    primary.push(selectControl('Matrixmaß', state.config.measure, [
       { id: 'count', label: 'Anzahl' }, { id: 'row-share', label: 'Zeilenanteil' },
     ], measure => change({ measure })));
-    controls.push(selectControl('Matrixsortierung', state.config.sort, [
+    display.push(selectControl('Matrixsortierung', state.config.sort, [
       { id: 'count', label: 'Nach Anzahl' }, { id: 'label', label: 'Alphabetisch' },
     ], sort => change({ sort })));
-    controls.push(el('button', { type: 'button', className: 'ui-action dashboard-panel__action',
+    display.push(el('button', { type: 'button', className: 'ui-action dashboard-panel__action',
       onClick: () => change({ swapped: !state.config.swapped, page: 0, columnPage: 0, rows: [], columns: [] }) }, 'Achsen tauschen'));
   }
   if (state.chart === 'time') {
-    controls.push(selectControl('Zeitgruppierung', state.config.grouping, [
+    primary.push(selectControl('Zeitgruppierung', state.config.grouping, [
       { id: 'year', label: 'Jahr' }, { id: 'five', label: 'Fünf Jahre' }, { id: 'decade', label: 'Jahrzehnt' },
     ], grouping => change({ grouping, range: null })));
-    controls.push(selectControl('Zeitaufteilung', state.config.stack || 'none', [
+    primary.push(selectControl('Zeitaufteilung', state.config.stack || 'none', [
       { id: 'none', label: 'Gesamt' }, { id: 'doctype', label: 'Nach Dokumenttyp' },
     ], stack => change({ stack: stack === 'none' ? null : stack })));
   }
   if (state.chart === 'upset') {
-    controls.push(selectControl('Schnittmodus', state.config.mode, [
+    primary.push(selectControl('Schnittmodus', state.config.mode, [
       { id: 'inclusive', label: 'Inklusiv' }, { id: 'exclusive', label: 'Exklusiv' },
     ], mode => change({ mode })));
     const family = state.config.setFacet || 'werk';
@@ -80,7 +94,7 @@ function specificControls(panel, state, context) {
       { id: 'institution', label: 'Institutionen' }, { id: 'ort', label: 'Orte' },
       { id: 'docType', label: 'Dokumenttypen' }, { id: 'verknuepfung', label: 'Linkarten' },
     ], next => change({ setFacet: next }));
-    controls.push(familyControl);
+    primary.push(familyControl);
     let options = family === 'verknuepfung'
       ? linkRoleInventory(context.store, context.cutIds).map(item => ({
         name: item.value, label: `${item.type} · ${item.label}`, count: item.count,
@@ -101,34 +115,35 @@ function specificControls(panel, state, context) {
         change({ sets: [...sets, { facet: family, value: valueSelect.value, label }] });
       } }, 'Menge hinzufügen');
     addSet.disabled = options.length === 0;
-    controls.push(valueSelect, addSet);
-    for (const [index, item] of (state.config.sets || []).entries()) controls.push(el('button', {
+    primary.push(valueSelect, addSet);
+    for (const [index, item] of (state.config.sets || []).entries()) primary.push(el('button', {
       type: 'button', className: 'ui-action dashboard-panel__set-chip',
       'aria-label': `${item.label || item.value} aus den Mengen entfernen`,
       onClick: () => change({ sets: state.config.sets.filter((_, itemIndex) => itemIndex !== index) }),
     }, `${item.label || item.value} ×`));
   }
   if (state.chart === 'comparison') {
-    controls.push(selectControl('Vergleichsdimension', state.config.dimension, [
+    primary.push(selectControl('Vergleichsdimension', state.config.dimension, [
       { id: 'work', label: 'Werke' }, { id: 'composer', label: 'Komponisten' },
       { id: 'place', label: 'Orte' }, { id: 'institution', label: 'Institutionen' },
       { id: 'doctype', label: 'Dokumenttypen' },
     ], dimension => change({ dimension })));
-    controls.push(selectControl('Vergleichsmaß', state.config.measure, [
+    primary.push(selectControl('Vergleichsmaß', state.config.measure, [
       { id: 'count', label: 'Anzahl' }, { id: 'share', label: 'Anteil' },
     ], measure => change({ measure })));
-    controls.push(el('button', { type: 'button', className: 'ui-action dashboard-panel__action', onClick: context.pinReference },
+    primary.push(el('button', { type: 'button', className: 'ui-action dashboard-panel__action', onClick: context.pinReference },
       context.reference ? 'Referenz A ersetzen' : 'Aktuellen Schnitt als A merken'));
-    if (context.reference) controls.push(
+    if (context.reference) primary.push(
       el('button', { type: 'button', className: 'ui-action dashboard-panel__action', onClick: context.applyReference }, 'Referenz A als aktiven Filter setzen'),
       el('button', { type: 'button', className: 'ui-action dashboard-panel__action', onClick: context.clearReference }, 'Referenz A löschen'));
   }
-  return controls;
+  return { primary, display };
 }
 
 export function createDashboardPanel({ id, host, initial, context, onState }) {
   let state = normalizePanelConfig(initial, id === 'a' ? 'treemap' : 'matrix');
   let current = null;
+  let coverageStatus = null;
   const titleId = `dashboard-panel-${id}-title`;
   const section = el('section', { className: 'dashboard-panel', tabindex: '-1',
     'aria-labelledby': titleId, dataset: { panelId: id } });
@@ -139,6 +154,7 @@ export function createDashboardPanel({ id, host, initial, context, onState }) {
     setState(next) { state = normalizePanelConfig(next, id === 'a' ? 'treemap' : 'matrix'); draw(); },
     highlight(ids) {
       current?.highlight?.(ids);
+      coverageStatus?.highlight(ids);
       for (const node of section.querySelectorAll('.dashboard-mark, .dashboard-matrix__cell')) {
         const aggregate = node._dashboardAggregate;
         node.classList.toggle('dashboard-mark--highlighted', !!aggregate
@@ -161,21 +177,27 @@ export function createDashboardPanel({ id, host, initial, context, onState }) {
       state = normalizePanelConfig({ chart: next, config: DEFAULTS[next] }, next); onState(state); draw();
       section.querySelector('.dashboard-panel__select')?.focus({ preventScroll: true });
     }));
-    for (const control of specificControls(panel, state, context)) header.appendChild(control);
+    const controls = specificControls(panel, state, context);
+    for (const control of controls.primary) header.appendChild(control);
     header.appendChild(el('span', { className: 'dashboard-panel__unit' }, `Einheit: ${chart.unit}`));
     const reset = el('button', { type: 'button', className: 'ui-action dashboard-panel__action',
       onClick: () => { state = normalizePanelConfig({ chart: state.chart, config: DEFAULTS[state.chart] }, state.chart); onState(state); draw(); } }, 'Ansicht zurücksetzen');
-    header.appendChild(reset);
+    controls.display.push(reset);
+    header.appendChild(menu('Darstellung', controls.display));
     const body = el('div', { className: 'dashboard-panel__body' });
     section.append(header, body);
     current = chart.render(body, { ...context, config: state.config,
       highlightedIds: context.getHighlighted(), onConfig: patch => panel.setConfig({ ...state.config, ...patch }) });
     const aggregates = current.aggregates || [];
+    coverageStatus = createChartCoverage({ chart: state.chart, cutIds: context.cutIds,
+      aggregates, config: state.config, coverage: current.coverage });
     const exportButton = el('button', { type: 'button', className: 'ui-action dashboard-panel__action',
       onClick: () => downloadCsv(`m3gim-dashboard-panel-${id}.csv`,
         aggregateExportRows(aggregates, { filter: getFilter(), fingerprint: context.fingerprint })) }, 'Aggregat CSV');
-    exportButton.disabled = aggregates.length === 0; header.appendChild(exportButton);
-    body.prepend(chartStatus(`${aggregates.length} auswählbare Werte im aktuellen Schnitt.`));
+    exportButton.disabled = aggregates.length === 0;
+    header.appendChild(menu('Export', [exportButton]));
+    body.prepend(coverageStatus.element);
+    coverageStatus.highlight(context.getHighlighted());
   }
 
   draw();

@@ -91,7 +91,7 @@ def test_upset_shows_membership_and_applies_three_way_intersection(
     expect(page.locator(".dashboard-selection__records button")).to_have_count(106)
     page.get_by_role("button", name="Auswahl als Filter anwenden", exact=True).click()
     expect(page.locator("#tab-statistik .vs-status__count .fs-option__count")).to_have_text("106 von 188")
-    page.get_by_role("button", name="Filter rückgängig", exact=True).click()
+    page.get_by_role("button", name="Letzte Filteränderung rückgängig", exact=True).click()
     expect(page.locator("#tab-statistik .vs-status__count .fs-option__count")).to_have_text("188")
     assert page.evaluate("JSON.parse(localStorage.getItem('m3gim-korb') || '[]').length") == 0
     page.close()

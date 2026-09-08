@@ -18,15 +18,15 @@ related: [INDEX, specification, research-framework, data, data-model, architectu
 
 ## Current state and next action
 
-The approved search-clarity and progressive-detail revision is implemented locally (E-299), on top of the module-cache correction `fe593f1`. The common search visibly separates text actions from typed filters and labels the resulting chips. Orte opens a compact overview, then locally scoped sources and individual evidence on demand. Dashboard evidence, register co-mentions and network neighbours/sources start collapsed; the shared detail header stays reachable while scrolling. All source identities, date distinctions and filter semantics are retained.
+The delegated testing and optimisation increment is implemented locally (E-300), following E-299 (`39b70fc`) and the module-cache correction `fe593f1`. Orte now focuses a selected city more closely at a regional scale. The common strip distinguishes clearing filters from undo/redo. Dashboard view pairs remain freely configurable; secondary controls and exports open on demand. Coverage explains absent companion marks, and matrix headers and page bounds remain usable after filtering. Compact source disclosures retain all evidence and qualifications.
 
-The focused integrated browser run passes 102 cases and the JavaScript suite passes 721. The full invariant run passes 704 checks with four strict source-fix xfails and nine deselections; its sole failure was an obsolete search-action selector in the smoke script. After correcting that selector, the final 26-case run passes smoke, progressive-detail, place and knowledge checks. Independent browser review of search, Dashboard, registers and Netzwerk at 390 and 1440 pixels found no remaining concrete defects in the checked paths. Root also inspected actual Zürich overview/source screenshots at both widths. Source data, vocabulary and generated JSON-LD remain unchanged. The last checked Pages baseline remains `4df1be7`; this increment has not been published.
+The full invariant/browser run passes 714 checks, with four strict source-fix xfails and nine deselections; the JavaScript suite passes 725. Three agents implemented and independently reviewed disjoint areas. The unchanged-view audit passed 49 focused checks covering all registers, Bestand, Chronik, Netzwerk, real Korb downloads and information pages. Final independent filter/map/dashboard review passed 25 focused browser checks at 390, 800, 1440 and 2048 pixels. Root inspected the resulting screenshots and reloaded the running application successfully. Review findings on A-only comparison coverage and excessive saved matrix pages were corrected. Source data, vocabulary and generated JSON-LD remain unchanged. The last checked Pages baseline remains `4df1be7`; this increment has not been published.
 
-The previous HTML/CSS audit and populated-cache startup regression remain covered by their checkpoint below. Current JavaScript URLs and stylesheet versions are regenerated through the shared HTML synchronizer.
+The previous HTML/CSS audit and populated-cache startup regression remain covered. After the final matrix singular-label correction and knowledge update, another 25 focused dashboard and knowledge checks pass. The shared HTML synchronizer regenerates current JavaScript URLs and stylesheet versions; its standalone check and `git diff --check` pass.
 
-The project lead's positive screenshot feedback covers the preceding visual direction. The subsequent feedback identifies ambiguity between text and entity search and excessive initially visible detail. User acceptance of this correction, guided research tasks, scholarly interpretation and version 0.9 acceptance remain open.
+The project lead accepted the revised search test and requested closer map focus and clearer dashboard controls, then delegated the remaining technical checks and optimisations to agents. Those checks are complete within the recorded paths. Unassisted scholarly interpretation and version 0.9 acceptance remain separate from agent verification.
 
-**Next executable step:** compare Zürich text search (45 documents) with the typed place filter (42); inspect Zürich overview → Empfangnahme sources (13 documents) → individual evidence → overview; open and close dashboard/register/network disclosures. Check whether the reduced overview gives enough orientation and whether the next evidence action is apparent. Continue the paired-view tasks and T1–T10 below separately.
+**Next executable step:** use the updated local Orte and Dashboard views for research feedback. No technical retest by the project lead is required for this increment. Record any remaining interpretation or usability finding against the existing paired-view tasks and T1–T10; formal research acceptance remains open.
 
 ## Search, places and dashboard implementation
 
@@ -90,9 +90,9 @@ Root checks the reports against production files, source sets, actual rendering 
 |---|---|---|
 | Register acceptance | The implementation now labels composers, separates actions and expands complete role/co-mention lists in the shared detail | A researcher reaches and interprets properties, derived roles, co-mentions and attesting documents without help |
 | Work/part binding | The existing single-work inference includes Amneris and Venus under Tristan und Isolde through `NIM_004_34`; its document-based derivation is now visible | Check the source-backed binding against its recorded context; preserve unattached and ambiguous roles |
-| Search acceptance | One common typed search and bound entity/role controls are implemented | A1–A3 establish technical behaviour; a researcher must correctly distinguish draft, filter and open/focus actions |
+| Search interpretation | The project lead accepted the revised text/place search test; common controls and bound entity/role semantics passed agent checks | Broader research interpretation of role-bound and co-mentioned results remains part of A12 |
 | Orte and dashboard acceptance | The compact navigator and coordinated panels implement the approved direction | Focused A4–A11 checks passed; the combined regression result is recorded below. A12 and T1–T10 require guided research interpretation |
-| Guided acceptance | Recent fixes need user retesting; remaining research paths have not been accepted | Record successful navigation, interpretation and remaining failures separately |
+| Guided acceptance | Delegated technical verification is complete; remaining research paths have not received full human acceptance | Record successful research interpretation and remaining failures separately |
 
 ## Place evidence and remaining mobility scope
 
@@ -106,6 +106,7 @@ Historical stays, realized appearances and travel connections still need binding
 
 | Path | User observation | Remaining check |
 |---|---|---|
+| Search/map/dashboard follow-up, 2026-09-08 (E-300) | Search test accepted; closer city zoom and clearer reset/history/dashboard controls requested; subsequent testing and optimisation delegated to agents | Delegated browser and source checks completed; unassisted research interpretation remains separate |
 | Bestand, `NIM_023_5` (T1/T9) | Found quickly through the convolute; participants and Wuppertal's performance-place role were readable | Cross-view interpretation; distinguish record date 26 April 1953, rehearsal 3 April and performance 4 April; the spoken rehearsal date was corrected against the screenshot |
 | Folio paging (T7), `NIM_007_5` | Control found, content change observed, page 4 reopened from its URL | This exact paging/address path is user-confirmed; retest the subsequently added individual title |
 | Bestand fixes M6a–M6e | Tooltip, title selection and scroll defects were reported and fixes implemented | Targeted visual retest of the single tooltip, copying, stable opening and responsive detail head |

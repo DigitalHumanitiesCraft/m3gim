@@ -20,7 +20,7 @@ const WITNESS_KINDS = Object.freeze({
 
 function witnessKind(item) {
   return WITNESS_KINDS[item.kind] || WITNESS_KINDS[item.sourceRef?.kind]
-    || WITNESS_KINDS[item.dimension] || 'Dimensionsbeleg';
+    || WITNESS_KINDS[item.dimension] || 'Beleg';
 }
 
 function witnessText(store, item) {
@@ -50,8 +50,7 @@ function witnessList(store, items, emptyLabel) {
       el('button', { type: 'button', className: 'ui-action', onClick: () => navigateToView('bestand', {
         recordId: item.recordId, preserveFilter: true,
       }) }, record ? formatSignatur(record['rico:identifier']) : item.recordId),
-      el('span', { className: 'dashboard-selection__source-state' },
-        hasOriginal ? 'Originalstelle ist im Datenbeleg erhalten' : 'Originalstelle nicht erfasst')));
+      hasOriginal ? null : el('span', { className: 'dashboard-selection__source-state' }, 'Originalstelle nicht erfasst')));
   }
   return list;
 }
@@ -109,27 +108,25 @@ export function createDashboardSelection({ host, store, fingerprint, getQueryWit
       content.appendChild(chips);
     }
     content.appendChild(el('p', { className: 'dashboard-selection__evidence' },
-      `${merged.witnesses.length} Dimensionsbelege · ${merged.sourceRefs.length} Quellenstellen`));
+      `${merged.witnesses.length} ${merged.witnesses.length === 1 ? 'Beleg' : 'Belege'} · ${merged.sourceRefs.length} ${merged.sourceRefs.length === 1 ? 'Quellenstelle' : 'Quellenstellen'}`));
     const bindings = new Set(marks.map(mark => mark.dimensions?.binding));
     const associations = new Set(merged.witnesses.map(item => item.association));
     if (bindings.has('co-mention')) content.appendChild(el('p', { className: 'dashboard-note' },
       'Die ausgewählten Angaben stehen im selben Dokument. Ihr Zusammenhang bleibt quellenabhängig.'));
     if (bindings.has('derived') || associations.has('derived-single-work')) {
       content.appendChild(el('p', { className: 'dashboard-note' },
-        'Enthält abgeleitete Zuordnungen. Ihre Grundlage steht in den Dimensionsbelegen.'));
+        'Enthält abgeleitete Zuordnungen. Ihre Grundlage steht in den Belegen für diese Auswahl.'));
     }
     if (associations.has('unassigned')) content.appendChild(el('p', { className: 'dashboard-note' },
       'Enthält Bühnenrollen ohne gesicherte Werkzuordnung.'));
     const selectedIds = new Set(merged.recordIds);
     const queryWitnesses = (getQueryWitnesses?.() || []).filter(item => selectedIds.has(item.recordId));
     if (queryWitnesses.length) content.appendChild(detailDisclosure(
-      `Trefferbelege des gemeinsamen Filters (${queryWitnesses.length})`,
+      `Warum passen diese Dokumente zum Filter? (${queryWitnesses.length})`,
       witnessList(store, queryWitnesses, 'Keine Trefferbelege vorhanden.')));
-    else content.appendChild(el('p', { className: 'dashboard-note' },
-      'Keine aussagengebundenen Filterbelege für diese Auswahl.'));
     if (merged.witnesses.length) {
-      content.appendChild(detailDisclosure(`Dimensionsbelege der Markierung (${merged.witnesses.length})`,
-        witnessList(store, merged.witnesses, 'Keine Dimensionsbelege vorhanden.')));
+      content.appendChild(detailDisclosure(`Belege für diese Auswahl (${merged.witnesses.length})`,
+        witnessList(store, merged.witnesses, 'Keine Belege vorhanden.')));
     }
     const list = el('ul', { className: 'dashboard-selection__records' });
     for (const id of merged.recordIds) {
@@ -139,11 +136,14 @@ export function createDashboardSelection({ host, store, fingerprint, getQueryWit
       }) }, record ? `${formatSignatur(record['rico:identifier'])} · ${record['rico:title'] || '(ohne Titel)'}` : id);
       list.appendChild(el('li', {}, open));
     }
-    content.appendChild(detailDisclosure(`Quellen ansehen (${merged.recordIds.length} Dokumente)`, list));
+    const count = merged.recordIds.length;
+    const documents = `${count} ${unitLabel('documents', count)}`;
+    content.appendChild(detailDisclosure(`Quellen ansehen (${documents})`, list));
     const units = [...new Set(marks.map(mark => mark.unit || 'documents'))];
     detail.open({ title: marks.length === 1 ? marks[0].label : 'Kombinierte Belegauswahl',
       kicker: 'Dashboard-Belege',
-      subtitle: `${merged.recordIds.length} Dokumente; Einheit der Markierung: ${units.map(unit => unitLabel(unit, 2)).join(' / ')}`,
+      subtitle: units.length === 1 && units[0] === 'documents' ? documents
+        : `${documents} · Gezählt werden: ${units.map(unit => unitLabel(unit, 2)).join(' / ')}`,
       content, trigger: lastTrigger });
     onHighlight(new Set(merged.recordIds));
   }

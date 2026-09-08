@@ -139,6 +139,33 @@ def test_narrow_view_starts_with_collapsed_reachable_navigator(frontend_server, 
     expect(page.locator('.places-name')).to_have_count(91)
 
 
+@pytest.mark.parametrize('width', [390, 800, 1440, 2048])
+def test_zurich_uses_map_sized_regional_focus(frontend_server, browser_context, width):
+    page = browser_context.new_page()
+    page.set_viewport_size({"width": width, "height": 900})
+    page.goto(frontend_server + "#karte", wait_until="networkidle")
+    open_navigator(page)
+    page.get_by_role('button', name='Belege zu Zürich', exact=True).click()
+    expect(page.locator('.selection-detail__title')).to_have_text('Zürich')
+    page.wait_for_function("""() => {
+      const map = document.querySelector('.mob-map');
+      const svg = map?.querySelector('.mob-map__svg');
+      const mark = map?.querySelector('.mob-node--selected');
+      if (!svg || !mark) return false;
+      const transform = d3.zoomTransform(svg);
+      const [x, y] = transform.apply([mark.__data__.x, mark.__data__.y]);
+      const expected = Math.max(10, Math.min(24,
+        Math.max(map.clientWidth / 48, map.clientHeight / 38)));
+      return Math.abs(x - map.clientWidth / 2) < 2
+        && Math.abs(y - map.clientHeight / 2) < 2
+        && Math.abs(transform.k - expected) < 0.001;
+    }""")
+    assert page.evaluate("""() => {
+      const map = document.querySelector('.mob-map');
+      return d3.zoomTransform(map.querySelector('.mob-map__svg')).k;
+    }""") >= 10
+
+
 def test_zurich_selection_centres_after_detail_and_keeps_zoom(frontend_server, browser_context):
     page = browser_context.new_page()
     page.set_viewport_size({"width": 1440, "height": 1000})

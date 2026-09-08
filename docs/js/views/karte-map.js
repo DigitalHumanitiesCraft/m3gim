@@ -21,6 +21,11 @@ export function fitTransform(bounds, { width, height, pad, minSpan, maxK }) {
   return { k, tx: width / 2 - k * cx, ty: height / 2 - k * cy };
 }
 
+/** Scale a city selection to a regional frame using the space the map actually has. */
+export function regionalFocusScale(width, height) {
+  return Math.max(10, Math.min(24, Math.max(width / 48, height / 38)));
+}
+
 export function nodeTooltipHtml(node) {
   const roles = node.roles || node.breakdown || [];
   return `<strong>${escapeHtml(node.city)}</strong>`
@@ -105,7 +110,7 @@ export function buildMap(mapCell, countries, evidence, state, opts) {
     // Automatic selection may turn a world overview into a regional view, but
     // it keeps every already useful user zoom. The source only locates a place,
     // so selection never manufactures an address-scale zoom.
-    const k = Math.max(transform.k, 3);
+    const k = Math.max(transform.k, regionalFocusScale(width, height));
     svg.call(zoom.transform, d3.zoomIdentity
       .translate(width / 2 - k * node.x, height / 2 - k * node.y)
       .scale(k));
