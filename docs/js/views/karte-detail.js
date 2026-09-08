@@ -149,9 +149,9 @@ export function buildPlaceDetail(store, group, actions) {
   const content = el('div', { className: 'places-detail' });
   content.append(
     el('div', { className: 'places-detail-actions' },
-      el('button', { type: 'button', className: 'places-action', onClick: actions.filter },
+      el('button', { type: 'button', className: 'ui-action places-action', onClick: actions.filter },
         'Nach diesem Ort filtern'),
-      el('button', { type: 'button', className: 'places-action', onClick: actions.chronik },
+      el('button', { type: 'button', className: 'ui-action places-action', onClick: actions.chronik },
         'Ort in Chronik öffnen')),
     overview(group),
     ...evidenceSections(store, group, actions));

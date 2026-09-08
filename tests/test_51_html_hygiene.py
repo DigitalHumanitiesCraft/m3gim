@@ -251,6 +251,19 @@ def test_tabs_and_panels_point_at_each_other(parsed):
     assert len(p.tabs) == len(p.tabpanels), "Tabs und Panels sind nicht gleich viele"
 
 
+def test_application_fallback_and_skip_target_are_explicit():
+    html = (DOCS / "index.html").read_text(encoding="utf-8")
+    main = re.search(r'<main\s+([^>]*id="main-content"[^>]*)>', html)
+    assert main and 'tabindex="-1"' in main.group(1), "App-Main ist nach Sprunglink nicht fokussierbar"
+    loader = re.search(r'<div\s+class="load-status"\s+([^>]*)>', html)
+    assert loader and "hidden" in loader.group(1), "Ladeanzeige bleibt ohne JavaScript sichtbar"
+    noscript = re.search(r"<noscript>(.*?)</noscript>", html, re.DOTALL)
+    assert noscript and "JavaScript" in noscript.group(1)
+    assert 'href="projekt.html"' in noscript.group(1)
+    assert 'href="data/m3gim.jsonld"' in noscript.group(1)
+    assert 'type="module" src="js/start.js"' in html
+
+
 # ---------------------------------------------------------------------------
 # Kopfdaten
 # ---------------------------------------------------------------------------

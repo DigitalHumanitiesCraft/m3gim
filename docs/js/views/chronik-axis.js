@@ -23,10 +23,10 @@ export function createChronikAxis({ rows, undated, renderLanes, openRows, openRo
     el('span', {}, 'Zeit ↓', currentYear), el('span', { className: 'chronik-context-heading' }, 'Lebensabschnitte', el('small', {}, 'Redaktioneller Kontext')),
     el('span', {}, 'Quellen'), ...['Orte', 'Personen', 'Werke', 'Institutionen'].map(label => el('span', { className: 'chronik-entity-heading' }, label)));
   const scroller = el('div', { className: 'chronik-scroll', tabindex: '0', 'aria-label': 'Chronik mit Kalendergruppen' }, head, surface);
-  const yearSelect = el('select', { id: 'chronik-year-jump', 'aria-label': 'Zum Jahr springen',
+  const yearSelect = el('select', { className: 'ui-select', id: 'chronik-year-jump', 'aria-label': 'Zum Jahr springen',
     onChange: event => navigate(Date.UTC(Number(event.target.value), 0)),
   });
-  const scaleSelect = el('select', { id: 'chronik-scale', 'aria-label': 'Maßstab', onChange: event => {
+  const scaleSelect = el('select', { className: 'ui-select', id: 'chronik-scale', 'aria-label': 'Maßstab', onChange: event => {
     const anchor = layout.timeAt(scroller.scrollTop);
     beforeNavigate();
     scale = event.target.value;

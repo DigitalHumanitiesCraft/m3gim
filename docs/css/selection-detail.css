@@ -18,7 +18,7 @@
   overflow-y: auto; overflow-wrap: anywhere; font-size: var(--text-sm);
 }
 .selection-detail__actions {
-  position: sticky; z-index: 1; top: 0;
+  position: sticky; z-index: var(--z-sticky); top: 0;
   display: flex; align-items: center; min-height: 24px; margin-bottom: var(--space-2);
   background: var(--surface);
 }

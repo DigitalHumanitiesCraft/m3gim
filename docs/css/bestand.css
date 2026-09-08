@@ -35,10 +35,6 @@
 }
 .archiv-main .filter-strip:empty { display: flex; }
 
-/* The timeline container inherits the scrolling work area instead of opening
-   one of its own. */
-.archiv-main .chronik-timeline-container { overflow: visible; }
-
 /* Table */
 .archiv-outside-record { border: 1px solid var(--line-strong); margin: var(--space-3); padding: var(--space-3); }
 .archiv-outside-record__head { display: flex; flex-wrap: wrap; justify-content: space-between;
@@ -92,7 +88,7 @@
   /* One pixel under the thead so the two sticky layers overlap instead of
      abutting; an abutting edge reads as a slit (Projektleitung, 2026-09-04). */
   inset-block-start: calc(var(--table-head-height) - 1px);
-  z-index: 10;
+  z-index: var(--z-sticky-header);
   background: var(--surface-2);
 }
 
@@ -112,7 +108,7 @@
 .archiv-table thead th {
   position: sticky;
   top: 0;
-  z-index: 11;
+  z-index: var(--z-sticky-header-front);
   block-size: var(--table-head-height);
   padding: 0 var(--space-3);
   text-align: start;

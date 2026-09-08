@@ -344,7 +344,7 @@
      fade comes back below where the browser can animate from display: none. */
   display: none;
   opacity: 0;
-  z-index: 200;
+  z-index: var(--z-tooltip);
 }
 
 /* The app promotes data-tip into one fixed overlay. A fixed box lives outside
@@ -372,7 +372,7 @@
   border-radius: var(--border-radius);
   box-shadow: var(--shadow-sm);
   pointer-events: none;
-  z-index: 200;
+  z-index: var(--z-tooltip);
 }
 
 [data-tip]:hover::after,

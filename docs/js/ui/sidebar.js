@@ -8,14 +8,14 @@ import {
   facetInventory, docTypeGroups, linkGroups, YEAR_MIN, YEAR_MAX,
 } from '../data/records-for.js';
 import {
-  SHARED_FACETS, facetControl, facetTreeControl, optionListControl,
+  SHARED_FACETS, facetTreeControl, optionListControl,
   sharedFacetSection,
 } from './sidebar-facets.js';
 import { dokumenteSection } from './sidebar-status.js';
 import { filterStrip } from './sidebar-strip.js';
 import { rangeControl } from './sidebar-range.js';
 import {
-  legendControl, sliderControl, toggleControl, searchControl, staticLegendControl,
+  legendControl, sliderControl, toggleControl, staticLegendControl,
   customControl,
 } from './sidebar-controls.js';
 
@@ -147,11 +147,6 @@ function buildColumn(specs) {
     const sec = el('section', { className: 'vs-section' });
     if (spec.rule) sec.classList.add('vs-section--rule');
     if (spec.className) sec.classList.add(spec.className);
-    // An open facet is one row: the title names the axis, the input is the whole
-    // control. Stacking them cost a line per facet and the column ran long.
-    if ((spec.controls || []).some(c => c && c.kind === 'facet')) {
-      sec.classList.add('vs-section--inline');
-    }
 
     const body = el('div', { className: 'vs-section__body' });
     let head = null;
@@ -258,14 +253,12 @@ function zeitSection(span) {
 }
 
 const FACTORIES = {
-  facet: facetControl,
   facetTree: facetTreeControl,
   optionList: optionListControl,
   legend: legendControl,
   range: rangeControl,
   slider: sliderControl,
   toggle: toggleControl,
-  search: searchControl,
   staticLegend: staticLegendControl,
   custom: customControl,
 };

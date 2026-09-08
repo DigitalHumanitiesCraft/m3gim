@@ -102,12 +102,12 @@ export function renderMatrix(host, context) {
   table.appendChild(body);
   host.appendChild(el('div', { className: 'dashboard-matrix-wrap' }, table));
   const controls = el('div', { className: 'dashboard-local-focus' });
-  if (!focusedRows.length && page > 0) controls.appendChild(el('button', { type: 'button', onClick: () => context.onConfig({ page: page - 1 }) }, 'Vorige Zeilen'));
-  if (!focusedRows.length && (page + 1) * PAGE < rows.length) controls.appendChild(el('button', { type: 'button', onClick: () => context.onConfig({ page: page + 1 }) }, 'Weitere Zeilen'));
-  if (!focusedColumns.length && columnPage > 0) controls.appendChild(el('button', { type: 'button', onClick: () => context.onConfig({ columnPage: columnPage - 1 }) }, 'Vorige Spalten'));
-  if (!focusedColumns.length && (columnPage + 1) * PAGE < columns.length) controls.appendChild(el('button', { type: 'button', onClick: () => context.onConfig({ columnPage: columnPage + 1 }) }, 'Weitere Spalten'));
-  if (focusedRows.length) controls.appendChild(el('button', { type: 'button', onClick: () => context.onConfig({ rows: [] }) }, 'Alle Zeilen'));
-  if (focusedColumns.length) controls.appendChild(el('button', { type: 'button', onClick: () => context.onConfig({ columns: [] }) }, 'Alle Spalten'));
+  if (!focusedRows.length && page > 0) controls.appendChild(el('button', { type: 'button', className: 'ui-action', onClick: () => context.onConfig({ page: page - 1 }) }, 'Vorige Zeilen'));
+  if (!focusedRows.length && (page + 1) * PAGE < rows.length) controls.appendChild(el('button', { type: 'button', className: 'ui-action', onClick: () => context.onConfig({ page: page + 1 }) }, 'Weitere Zeilen'));
+  if (!focusedColumns.length && columnPage > 0) controls.appendChild(el('button', { type: 'button', className: 'ui-action', onClick: () => context.onConfig({ columnPage: columnPage - 1 }) }, 'Vorige Spalten'));
+  if (!focusedColumns.length && (columnPage + 1) * PAGE < columns.length) controls.appendChild(el('button', { type: 'button', className: 'ui-action', onClick: () => context.onConfig({ columnPage: columnPage + 1 }) }, 'Weitere Spalten'));
+  if (focusedRows.length) controls.appendChild(el('button', { type: 'button', className: 'ui-action', onClick: () => context.onConfig({ rows: [] }) }, 'Alle Zeilen'));
+  if (focusedColumns.length) controls.appendChild(el('button', { type: 'button', className: 'ui-action', onClick: () => context.onConfig({ columns: [] }) }, 'Alle Spalten'));
   if (controls.childNodes.length) host.appendChild(controls);
   const bindingNote = data.pair.binding === 'co-mention'
     ? 'Die Zellen verbinden getrennt belegte Dimensionen innerhalb desselben Dokuments.'

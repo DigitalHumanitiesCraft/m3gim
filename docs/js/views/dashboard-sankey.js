@@ -123,11 +123,11 @@ export function renderSankey(host, context) {
   });
   host.appendChild(el('div', { className: 'dashboard-drawing' }, svg));
   const controls = el('div', { className: 'dashboard-local-focus' });
-  if (focus) controls.appendChild(el('button', { type: 'button', onClick: () => context.onConfig({ focus: null }) }, 'Gesamten Fluss zeigen'));
+  if (focus) controls.appendChild(el('button', { type: 'button', className: 'ui-action', onClick: () => context.onConfig({ focus: null }) }, 'Gesamten Fluss zeigen'));
   else {
-    const select = el('select', { className: 'dashboard-panel__select', 'aria-label': 'Sankey-Zweig für lokalen Fokus' });
+    const select = el('select', { className: 'ui-select dashboard-panel__select', 'aria-label': 'Sankey-Zweig für lokalen Fokus' });
     for (const node of model.stages.flatMap(stage => stage.nodes)) select.appendChild(el('option', { value: node.key }, node.label));
-    controls.append(select, el('button', { type: 'button', onClick: () => context.onConfig({ focus: select.value }) }, 'Zweig lokal fokussieren'));
+    controls.append(select, el('button', { type: 'button', className: 'ui-action', onClick: () => context.onConfig({ focus: select.value }) }, 'Zweig lokal fokussieren'));
   }
   host.append(controls, el('p', { className: 'dashboard-note' },
     `${model.statementCount} konkrete Ortsaussagen in ${model.recordIds.length} Dokumenten. Die Bänder beschreiben Quellenbelege zwischen Dokumenttyp, Ortsrolle und Ort.`));

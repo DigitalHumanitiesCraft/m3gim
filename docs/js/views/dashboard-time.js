@@ -111,11 +111,11 @@ export function renderTime(host, context) {
     'Im grauen Streifen unter der Achse ziehen, um einen lokalen Zeitraum zu wählen.'));
   const validation = el('span', { className: 'dashboard-time-range__validation', role: 'status', 'aria-live': 'polite' });
   const rangeControls = el('div', { className: 'dashboard-time-range' },
-    el('label', {}, 'Von ', el('input', { type: 'number', value: range?.[0] ?? fullRange[0],
+    el('label', {}, 'Von ', el('input', { className: 'ui-input', type: 'number', value: range?.[0] ?? fullRange[0],
       min: fullRange[0], max: fullRange[1], dataset: { rangeFrom: '' } })),
-    el('label', {}, 'Bis ', el('input', { type: 'number', value: range?.[1] ?? fullRange[1],
+    el('label', {}, 'Bis ', el('input', { className: 'ui-input', type: 'number', value: range?.[1] ?? fullRange[1],
       min: fullRange[0], max: fullRange[1], dataset: { rangeTo: '' } })),
-    el('button', { type: 'button', onClick: event => {
+    el('button', { type: 'button', className: 'ui-action', onClick: event => {
       const wrapper = event.currentTarget.parentElement;
       const fromInput = wrapper.querySelector('[data-range-from]');
       const toInput = wrapper.querySelector('[data-range-to]');
@@ -135,8 +135,8 @@ export function renderTime(host, context) {
     } }, 'Lokal fokussieren'), validation);
   if (range) {
     rangeControls.append(
-      el('button', { type: 'button', onClick: () => setFilter({ zeitfenster: range }) }, 'Zeitfenster als Filter anwenden'),
-      el('button', { type: 'button', onClick: () => context.onConfig({ range: null }) }, 'Zur gesamten Zeitachse'));
+      el('button', { type: 'button', className: 'ui-action', onClick: () => setFilter({ zeitfenster: range }) }, 'Zeitfenster als Filter anwenden'),
+      el('button', { type: 'button', className: 'ui-action', onClick: () => context.onConfig({ range: null }) }, 'Zur gesamten Zeitachse'));
   }
   host.append(rangeControls, el('p', { className: 'dashboard-note' },
     staleRange ? 'Das gespeicherte lokale Zeitfenster liegt außerhalb des aktuellen Schnitts; die gesamte verfügbare Zeitachse wird gezeigt. ' : '',

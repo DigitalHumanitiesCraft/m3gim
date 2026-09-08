@@ -151,6 +151,20 @@
      directly below it (bestand.css). */
   --table-head-height: 36px;
 
+  /* Layer order. Local values stay inside their view stacking context; menus,
+     search results and tooltips rise above the work area in that order. */
+  --z-sticky: 1;
+  --z-local-raised: 2;
+  --z-local-overlay: 4;
+  --z-local-popover: 5;
+  --z-sticky-header: 10;
+  --z-sticky-header-front: 11;
+  --z-skip-link: 10;
+  --z-toolbar: 15;
+  --z-search-popup: 20;
+  --z-floating-menu: 60;
+  --z-tooltip: 200;
+
   /* Borders */
   --border-radius: 4px;
   --border-color: var(--line);

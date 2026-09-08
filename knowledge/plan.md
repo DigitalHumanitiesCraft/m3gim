@@ -18,9 +18,13 @@ related: [INDEX, specification, research-framework, data, data-model, architectu
 
 ## Current state and next action
 
-The approved search, Orte and Dashboard revision is implemented and technically verified (E-296), building on `284788b` and the independently reviewed plan `3264b73`. The final stable run passed 722 JavaScript checks and 684 Python/browser invariants, with four strict source-fix xfails, nine deselections and no skips. Independent reviewers checked source evidence, actual downloads and responsive interaction; all reproduced implementation findings were corrected. The project lead gave positive feedback on the shown screenshots. Source data, vocabulary and generated JSON-LD remain unchanged. The last checked Pages baseline remains `4df1be7`; this increment is local.
+The approved HTML/CSS audit is implemented (E-297) on top of the search, Orte and Dashboard revision `649f04a`. Shared page metadata and regions now have an independent synchronizer. CSS separates workspace geometry, search and common controls; unused search factories and styles are removed. The skip link preserves filtered addresses, dashboard panels expose their current names, matrix intersections have a visible contour, and short workspaces retain complete scroll access. Startup failures expose recovery, and navigation becomes operable only after initialization.
 
-**Next executable step:** use the running local Dashboard and Orte views for the paired-view tasks and T1–T10 below, recording navigation, interpretation and acceptance separately. Guided research tasks, scholarly interpretation and version 0.9 acceptance remain open.
+Independent review verified the affected interactions and all seven workspaces at 1440 × 600, 800 × 600 and 390 × 640 with filters open and closed. Additional visual inspection covered the wide dashboard and narrow map. The final stable run passed 720 JavaScript checks and 695 Python/browser invariants, with four strict source-fix xfails, nine deselections, no warnings and no skips. All nine added browser regressions passed, including a deliberately delayed startup and successful recovery from a blocked import. The site synchronizer also passed its read-only check without site-packages. Historical verification for `649f04a` remains in [journal.md](journal.md). Source data, vocabulary and generated JSON-LD remain unchanged. The last checked Pages baseline remains `4df1be7`; this increment is local.
+
+The project lead's positive screenshot feedback covers the preceding visual direction. Guided research tasks, scholarly interpretation and version 0.9 acceptance remain open.
+
+**Next executable step:** use the running local Dashboard and Orte views for the paired-view tasks and T1–T10 below, recording navigation, interpretation and acceptance separately.
 
 ## Search, places and dashboard implementation
 

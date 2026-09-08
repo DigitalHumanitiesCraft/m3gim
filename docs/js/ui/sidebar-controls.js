@@ -1,7 +1,7 @@
 /**
  * The remaining control factories of the filter column, which a view places
- * through `sections` and `legend`: legend chips, threshold slider, switch, free
- * text field, explanatory legend and the region a view fills itself. Each
+ * through `sections` and `legend`: legend chips, threshold slider, switch,
+ * explanatory legend and the region a view fills itself. Each
  * returns `{ node, update? }`; none knows the shared filter, the view connects
  * them through getters and callbacks.
  */
@@ -70,27 +70,6 @@ export function toggleControl({ label, value, onChange, tip = null }) {
   paint();
   function update() { input.checked = !!value(); paint(); }
   return { node, update };
-}
-
-/** Free-text search. `debounce` (ms) bundles onChange where a keystroke
- *  triggers an expensive rebuild; without it the field reports at once. */
-export function searchControl({ value, onChange, debounce = 0, labelledBy, ariaLabel, placeholder }) {
-  const attrs = { type: 'search', className: 'vs-search', value: value ? value() : '' };
-  if (labelledBy) attrs['aria-labelledby'] = labelledBy;
-  if (ariaLabel) attrs['aria-label'] = ariaLabel;
-  if (placeholder) attrs.placeholder = placeholder;
-  const input = el('input', attrs);
-  let timer = null;
-  input.addEventListener('input', () => {
-    if (!debounce) { onChange(input.value); return; }
-    if (timer) clearTimeout(timer);
-    const v = input.value;
-    timer = setTimeout(() => { timer = null; onChange(v); }, debounce);
-  });
-  function update() {
-    if (value && document.activeElement !== input) input.value = value();
-  }
-  return { node: input, update };
 }
 
 /** Non-interactive explanatory legend. A marker carries either a colour or a

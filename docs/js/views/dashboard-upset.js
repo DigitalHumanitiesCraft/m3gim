@@ -63,16 +63,16 @@ export function renderUpSet(host, context) {
   });
   host.appendChild(el('div', { className: 'dashboard-drawing' }, svg));
   if (!focus && model.intersections.length > 24) host.appendChild(el('button', {
-    type: 'button', className: 'dashboard-overview',
+    type: 'button', className: 'ui-action dashboard-overview',
     onClick: () => context.onConfig({ expanded: !context.config.expanded }),
   }, context.config.expanded ? 'Kompakte Übersicht' : `Alle ${model.intersections.length} Kombinationen`));
-  if (focus) host.appendChild(el('button', { type: 'button', className: 'dashboard-overview',
+  if (focus) host.appendChild(el('button', { type: 'button', className: 'ui-action dashboard-overview',
     onClick: () => context.onConfig({ focus: null }) }, 'Alle Kombinationen'));
   else {
     const focusControls = el('div', { className: 'dashboard-local-focus' });
-    const select = el('select', { className: 'dashboard-panel__select', 'aria-label': 'Mengenkombination für lokalen Fokus' });
+    const select = el('select', { className: 'ui-select dashboard-panel__select', 'aria-label': 'Mengenkombination für lokalen Fokus' });
     for (const item of model.intersections) select.appendChild(el('option', { value: item.key }, `${item.label} · ${item.count}`));
-    focusControls.append(select, el('button', { type: 'button', onClick: () => context.onConfig({ focus: select.value }) }, 'Kombination lokal fokussieren'));
+    focusControls.append(select, el('button', { type: 'button', className: 'ui-action', onClick: () => context.onConfig({ focus: select.value }) }, 'Kombination lokal fokussieren'));
     host.appendChild(focusControls);
   }
   host.appendChild(el('p', { className: 'dashboard-note' }, mode === 'exclusive'

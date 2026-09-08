@@ -223,7 +223,7 @@
 
 .tab-menu__panel {
   position: fixed;
-  z-index: 60;
+  z-index: var(--z-floating-menu);
   display: flex;
   flex-direction: column;
   padding: var(--space-1);

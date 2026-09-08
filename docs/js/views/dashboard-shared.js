@@ -52,10 +52,10 @@ export function appendAccessibleList(host, aggregates, callbacks) {
   details.appendChild(el('summary', {}, `Werte als Liste (${aggregates.length})`));
   const list = el('ul', { className: 'dashboard-values__list' });
   for (const aggregate of aggregates) {
-    const select = el('button', { type: 'button', className: 'dashboard-values__select',
+    const select = el('button', { type: 'button', className: 'ui-action dashboard-values__select',
       onClick: () => callbacks.onSelect(aggregate, select) },
     `${aggregate.label} · ${aggregate.count} ${unitLabel(aggregate.unit, aggregate.count)}`);
-    const add = el('button', { type: 'button', className: 'dashboard-values__add',
+    const add = el('button', { type: 'button', className: 'ui-action dashboard-values__add',
       'aria-label': `${aggregate.label} zur Belegauswahl hinzufügen`,
       onClick: () => callbacks.onAdd(aggregate, add) }, '+');
     list.appendChild(el('li', {}, select, add));

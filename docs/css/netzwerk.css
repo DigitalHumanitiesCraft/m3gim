@@ -165,7 +165,7 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
-  z-index: 4;
+  z-index: var(--z-local-overlay);
 }
 
 /* Shape and hover come from the .zoom-btn primitive in components.css; the
@@ -178,7 +178,7 @@
   position: absolute;
   top: var(--space-2);
   right: var(--space-2);
-  z-index: 4;
+  z-index: var(--z-local-overlay);
   padding: 3px var(--space-2);
   font-family: inherit;
   font-size: var(--text-xs);
@@ -368,7 +368,7 @@
 
 .netzwerk__tip {
   position: fixed;
-  z-index: 60;
+  z-index: var(--z-floating-menu);
   max-width: 280px;
   padding: var(--space-1-5) var(--space-2);
   font-size: var(--text-xs);

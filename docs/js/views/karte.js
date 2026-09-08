@@ -66,15 +66,15 @@ export function renderMobilitaet(store, container) {
   const navigator = el('section', { className: 'places-navigator', 'aria-label': 'Ortsnavigation' }, list);
   const mapCell = el('div', { className: 'mob-map' },
     el('div', { className: 'mob-map__loading' }, 'Karte wird geladen …'));
-  const mapToggle = el('button', { type: 'button', className: 'places-action',
+  const mapToggle = el('button', { type: 'button', className: 'ui-action places-action',
     'aria-pressed': 'true', onClick: () => {
       mapCell.hidden = !mapCell.hidden;
       mapToggle.setAttribute('aria-pressed', String(!mapCell.hidden));
       mapToggle.textContent = mapCell.hidden ? 'Karte anzeigen' : 'Karte ausblenden';
     } }, 'Karte ausblenden');
-  const navigatorToggle = el('button', { type: 'button', className: 'places-action places-navigator-toggle',
+  const navigatorToggle = el('button', { type: 'button', className: 'ui-action places-action places-navigator-toggle',
     'aria-expanded': 'true', onClick: () => setNavigatorCollapsed(!navigator.hidden) }, 'Ortsliste einklappen');
-  const sort = el('select', { className: 'places-sort', 'aria-label': 'Orte sortieren',
+  const sort = el('select', { className: 'ui-select places-sort', 'aria-label': 'Orte sortieren',
     onChange: event => { state.sort = event.target.value; paintList(); } },
     el('option', { value: 'count' }, 'Dokumentzahl'), el('option', { value: 'name' }, 'Alphabetisch'));
   const workspace = el('div', { className: 'places-workspace' },

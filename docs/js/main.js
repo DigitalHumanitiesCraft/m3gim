@@ -37,7 +37,7 @@ const TAB_RENDERERS = new Map([
   ['korb',               (s, c) => renderKorb(s, c)],
 ]);
 
-async function init() {
+export async function startApp() {
   try {
     initTooltips();
     // Show loading state
@@ -87,6 +87,7 @@ async function init() {
 
     // Render initial tab
     renderTab(getState().activeTab);
+    document.querySelector('.tab-bar').inert = false;
 
   } catch (err) {
     console.error('M³GIM init error:', err);
@@ -180,6 +181,3 @@ function updateKorbTabVisibility() {
     if (activeTab === 'korb') renderTab('korb');
   }
 }
-
-// Boot
-document.addEventListener('DOMContentLoaded', init);

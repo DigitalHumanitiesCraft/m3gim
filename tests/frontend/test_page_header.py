@@ -1,6 +1,6 @@
 """Eine Kopfleiste auf allen fuenf Seiten (Projektleitung, 2026-09-05).
 
-``scripts/build-model-page.py`` schreibt die Leiste aus einer Vorlage in
+``scripts/sync-site-html.py`` schreibt die Leiste aus einer Vorlage in
 ``docs/index.html`` und in die vier Infoseiten. ``tests/test_49_footer.py`` ist
 das Gate dagegen, dass dieser Lauf ausgeblieben ist; dieser Test steht daneben
 und liest nur die ausgelieferten Seiten. Er vergleicht sie untereinander und
@@ -53,7 +53,7 @@ INFO_LINK_RE = re.compile(r'<a href="([a-z]+\.html)"( aria-current="page")?>([^<
 
 # Die beiden Auspraegungen der Ansichtsnavigation, Unterschied 2.
 NAV_VARIANTS = {
-    APP_PAGE: ' role="tablist" aria-label="Hauptnavigation"',
+    APP_PAGE: ' role="tablist" aria-label="Hauptnavigation" inert',
     "info": ' aria-label="Ansichten"',
 }
 
@@ -162,7 +162,7 @@ def test_the_header_is_the_same_beyond_the_two_differences(page: str) -> None:
     """
     assert skeleton(header_of(page)) == skeleton(header_of(APP_PAGE)), (
         f"docs/{page}: Aufbau der Kopfleiste weicht von docs/{APP_PAGE} ab; "
-        f"python scripts/build-model-page.py stellt die Leiste her."
+        f"python scripts/sync-site-html.py stellt die Leiste her."
     )
 
 
@@ -208,7 +208,7 @@ def test_views_are_identical(page: str) -> None:
     """Dieselben Ansichten in derselben Folge, mit demselben Symbol und Wort."""
     assert views_of(header_of(page)) == views_of(header_of(APP_PAGE)), (
         f"docs/{page}: Ansichtsnavigation weicht von docs/{APP_PAGE} ab; "
-        f"python scripts/build-model-page.py stellt die Leiste her."
+        f"python scripts/sync-site-html.py stellt die Leiste her."
     )
 
 

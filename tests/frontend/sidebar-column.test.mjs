@@ -184,27 +184,8 @@ describe('Filterstreifen ueber den Daten', () => {
 });
 
 
-describe('Offene Facette als eine Zeile', () => {
-  test('jede Sektion mit Facettenfeld wird zur zweispaltigen Zeile', () => {
-    assert.match(read('ui/sidebar.js'),
-      /\(spec\.controls \|\| \[\]\)\.some\(c => c && c\.kind === 'facet'\)/,
-      'Auch die view-eigenen Facetten von Karte und Netzwerk nutzen dieselbe Zeile.');
-  });
-
-  test('die Facette zeigt gewaehlte Werte nicht nochmals unter dem Feld', () => {
-    const src = read('ui/sidebar-facets.js');
-    assert.match(src, /'fs-facet__field' \}, input, list\)/);
-    assert.match(src, /'fs-facet' \}, field\)/);
-    assert.doesNotMatch(src, /chosenWrap|chosenRow|fs-selected|fs-chosen/,
-      'Gewaehlte Werte bleiben allein in der Chip-Zeile ueber den Daten.');
-    const css = readFileSync(new URL('../../docs/css/sidebar.css', import.meta.url), 'utf-8');
-    // \r? because the working tree carries CRLF while the index stores LF; the
-    // assertion is about the rule, not about the checkout.
-    assert.match(css, /\.fs-facet__field \{\r?\n  position: relative;/);
-    assert.match(css, /grid-template-columns: 96px minmax\(0, 1fr\);/);
-  });
-
-  test('Titel bleibt ohne Zahl, die Vorschlagsliste zeigt die Wahl mit Haken', () => {
+describe('Facetten als geschlossene Wertelisten', () => {
+  test('Titel bleibt ohne Zahl, die Werteliste zeigt die Wahl mit Haken', () => {
     const src = read('ui/sidebar-facets.js');
     const section = src.slice(src.indexOf('function sharedFacetSection'),
       src.indexOf('/** Every selectable value'));
@@ -212,11 +193,9 @@ describe('Offene Facette als eine Zeile', () => {
     assert.doesNotMatch(section, /meta\.title.*selected|selected.*meta\.title/,
       'Die Zahl der Wahl darf nicht im Facettentitel wiederholt werden.');
 
-    const control = src.slice(src.indexOf('function facetControl'),
-      src.indexOf('function facetTreeControl'));
-    assert.doesNotMatch(control, /if \(chosen\.includes\(entry\.value\)\) continue/,
-      'Gewaehlte Werte bleiben in der Vorschlagsliste erreichbar.');
-    assert.match(control, /const on = chosen\.includes\(entry\.value\);/);
+    const control = src.slice(src.indexOf('function optionListControl'));
+    assert.match(control, /chosen\.includes\(entry\.value\)/,
+      'Gewaehlte Werte bleiben in der Liste erreichbar.');
     assert.match(read('ui/sidebar-options.js'), /className: 'fs-option__check'.*on \? '✓' : ''/s,
       'Die Optionszeile traegt einen eigenen Hakenplatz.');
   });
@@ -256,8 +235,6 @@ describe('Dokumenttyp-Baum', () => {
     assert.doesNotMatch(on, /background/,
       'Die gewaehlte Zeile traegt keine Fuellung, sonst ist sie von Hover nicht zu trennen.');
     assert.match(css, /\.fs-option:focus-visible \{\s+background: var\(--accent-soft\);/);
-    assert.match(css, /\.fs-option--active \{\s+background: var\(--surface-3\);/,
-      'Der Tastaturcursor bleibt von Hover unterscheidbar.');
     assert.match(css, /\.fs-option__check--implied \{\s+color: var\(--color-text-tertiary\);/);
 
     const src = read('ui/sidebar-options.js');

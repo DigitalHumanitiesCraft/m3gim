@@ -51,19 +51,19 @@ export function renderComparison(host, context) {
   host.appendChild(el('p', { className: 'dashboard-note' },
     `Referenz A: ${model.denominatorA} Dokumente. Auswahl B: ${model.denominatorB} Dokumente. Überschneidung: ${model.overlap.length}.`
       + (context.reference.stale ? ' Die Referenz wurde wegen eines geänderten Datenstands neu berechnet.' : '')));
-  if (focused) host.appendChild(el('button', { type: 'button', className: 'dashboard-overview',
+  if (focused) host.appendChild(el('button', { type: 'button', className: 'ui-action dashboard-overview',
     onClick: () => context.onConfig({ focus: null }) }, 'Alle Vergleichswerte'));
   else {
     const focusControls = el('div', { className: 'dashboard-local-focus' });
-    const select = el('select', { className: 'dashboard-panel__select', 'aria-label': 'Kategorie für lokalen Vergleichsfokus' });
+    const select = el('select', { className: 'ui-select dashboard-panel__select', 'aria-label': 'Kategorie für lokalen Vergleichsfokus' });
     for (const row of model.rows) select.appendChild(el('option', { value: row.key }, row.label));
-    focusControls.append(select, el('button', { type: 'button', onClick: () => context.onConfig({ focus: select.value }) }, 'Kategorie lokal fokussieren'));
+    focusControls.append(select, el('button', { type: 'button', className: 'ui-action', onClick: () => context.onConfig({ focus: select.value }) }, 'Kategorie lokal fokussieren'));
     host.appendChild(focusControls);
   }
   if (!context.config.expanded && model.rows.length > rows.length) host.appendChild(el('button', { type: 'button',
-    className: 'dashboard-overview', onClick: () => context.onConfig({ expanded: true }) }, `Alle ${model.rows.length} Werte`));
+    className: 'ui-action dashboard-overview', onClick: () => context.onConfig({ expanded: true }) }, `Alle ${model.rows.length} Werte`));
   if (context.config.expanded) host.appendChild(el('button', { type: 'button',
-    className: 'dashboard-overview', onClick: () => context.onConfig({ expanded: false }) }, 'Kompakte Übersicht'));
+    className: 'ui-action dashboard-overview', onClick: () => context.onConfig({ expanded: false }) }, 'Kompakte Übersicht'));
   const allAggregates = model.rows.flatMap(row => [row.selectionA, row.selectionB, row.selectionOverlap]);
   appendAccessibleList(host, allAggregates, context);
   return { aggregates: allAggregates, destroy() { clear(host); } };

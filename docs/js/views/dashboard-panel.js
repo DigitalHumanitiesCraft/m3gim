@@ -38,7 +38,7 @@ export function normalizePanelConfig(value, fallbackChart) {
 }
 
 function selectControl(label, value, values, onChange) {
-  const select = el('select', { className: 'dashboard-panel__select', 'aria-label': label,
+  const select = el('select', { className: 'ui-select dashboard-panel__select', 'aria-label': label,
     onChange: event => onChange(event.currentTarget.value) });
   for (const item of values) {
     const option = el('option', { value: item.id }, item.label);
@@ -59,7 +59,7 @@ function specificControls(panel, state, context) {
     controls.push(selectControl('Matrixsortierung', state.config.sort, [
       { id: 'count', label: 'Nach Anzahl' }, { id: 'label', label: 'Alphabetisch' },
     ], sort => change({ sort })));
-    controls.push(el('button', { type: 'button', className: 'dashboard-panel__action',
+    controls.push(el('button', { type: 'button', className: 'ui-action dashboard-panel__action',
       onClick: () => change({ swapped: !state.config.swapped, page: 0, columnPage: 0, rows: [], columns: [] }) }, 'Achsen tauschen'));
   }
   if (state.chart === 'time') {
@@ -91,10 +91,10 @@ function specificControls(panel, state, context) {
       }));
     options = options.filter(item => item.count);
     options.sort((a, b) => b.count - a.count || a.label.localeCompare(b.label, 'de'));
-    const valueSelect = el('select', { className: 'dashboard-panel__sets',
+    const valueSelect = el('select', { className: 'ui-select dashboard-panel__sets',
       'aria-label': 'Wert der neuen Mengenbedingung' });
     for (const item of options) valueSelect.appendChild(el('option', { value: item.name }, `${item.label} · ${item.count}`));
-    const addSet = el('button', { type: 'button', className: 'dashboard-panel__action', onClick: () => {
+    const addSet = el('button', { type: 'button', className: 'ui-action dashboard-panel__action', onClick: () => {
         const sets = state.config.sets || [];
         if (sets.length >= 5 || sets.some(item => item.facet === family && item.value === valueSelect.value)) return;
         const label = options.find(item => item.name === valueSelect.value)?.label || valueSelect.value;
@@ -103,7 +103,7 @@ function specificControls(panel, state, context) {
     addSet.disabled = options.length === 0;
     controls.push(valueSelect, addSet);
     for (const [index, item] of (state.config.sets || []).entries()) controls.push(el('button', {
-      type: 'button', className: 'dashboard-panel__set-chip',
+      type: 'button', className: 'ui-action dashboard-panel__set-chip',
       'aria-label': `${item.label || item.value} aus den Mengen entfernen`,
       onClick: () => change({ sets: state.config.sets.filter((_, itemIndex) => itemIndex !== index) }),
     }, `${item.label || item.value} ×`));
@@ -117,11 +117,11 @@ function specificControls(panel, state, context) {
     controls.push(selectControl('Vergleichsmaß', state.config.measure, [
       { id: 'count', label: 'Anzahl' }, { id: 'share', label: 'Anteil' },
     ], measure => change({ measure })));
-    controls.push(el('button', { type: 'button', className: 'dashboard-panel__action', onClick: context.pinReference },
+    controls.push(el('button', { type: 'button', className: 'ui-action dashboard-panel__action', onClick: context.pinReference },
       context.reference ? 'Referenz A ersetzen' : 'Aktuellen Schnitt als A merken'));
     if (context.reference) controls.push(
-      el('button', { type: 'button', className: 'dashboard-panel__action', onClick: context.applyReference }, 'Referenz A als aktiven Filter setzen'),
-      el('button', { type: 'button', className: 'dashboard-panel__action', onClick: context.clearReference }, 'Referenz A löschen'));
+      el('button', { type: 'button', className: 'ui-action dashboard-panel__action', onClick: context.applyReference }, 'Referenz A als aktiven Filter setzen'),
+      el('button', { type: 'button', className: 'ui-action dashboard-panel__action', onClick: context.clearReference }, 'Referenz A löschen'));
   }
   return controls;
 }
@@ -129,7 +129,9 @@ function specificControls(panel, state, context) {
 export function createDashboardPanel({ id, host, initial, context, onState }) {
   let state = normalizePanelConfig(initial, id === 'a' ? 'treemap' : 'matrix');
   let current = null;
-  const section = el('section', { className: 'dashboard-panel', tabindex: '-1', dataset: { panelId: id } });
+  const titleId = `dashboard-panel-${id}-title`;
+  const section = el('section', { className: 'dashboard-panel', tabindex: '-1',
+    'aria-labelledby': titleId, dataset: { panelId: id } });
   host.appendChild(section);
 
   const panel = {
@@ -153,13 +155,15 @@ export function createDashboardPanel({ id, host, initial, context, onState }) {
     current?.destroy(); clear(section);
     const chart = CHARTS.find(item => item.id === state.chart) || CHARTS[0];
     const header = el('header', { className: 'dashboard-panel__head' });
+    header.appendChild(el('h2', { id: titleId, className: 'visually-hidden' },
+      `Panel ${id.toUpperCase()}: ${chart.label}`));
     header.appendChild(selectControl(`Diagramm in Panel ${id.toUpperCase()}`, chart.id, CHARTS, next => {
       state = normalizePanelConfig({ chart: next, config: DEFAULTS[next] }, next); onState(state); draw();
       section.querySelector('.dashboard-panel__select')?.focus({ preventScroll: true });
     }));
     for (const control of specificControls(panel, state, context)) header.appendChild(control);
     header.appendChild(el('span', { className: 'dashboard-panel__unit' }, `Einheit: ${chart.unit}`));
-    const reset = el('button', { type: 'button', className: 'dashboard-panel__action',
+    const reset = el('button', { type: 'button', className: 'ui-action dashboard-panel__action',
       onClick: () => { state = normalizePanelConfig({ chart: state.chart, config: DEFAULTS[state.chart] }, state.chart); onState(state); draw(); } }, 'Ansicht zurücksetzen');
     header.appendChild(reset);
     const body = el('div', { className: 'dashboard-panel__body' });
@@ -167,7 +171,7 @@ export function createDashboardPanel({ id, host, initial, context, onState }) {
     current = chart.render(body, { ...context, config: state.config,
       highlightedIds: context.getHighlighted(), onConfig: patch => panel.setConfig({ ...state.config, ...patch }) });
     const aggregates = current.aggregates || [];
-    const exportButton = el('button', { type: 'button', className: 'dashboard-panel__action',
+    const exportButton = el('button', { type: 'button', className: 'ui-action dashboard-panel__action',
       onClick: () => downloadCsv(`m3gim-dashboard-panel-${id}.csv`,
         aggregateExportRows(aggregates, { filter: getFilter(), fingerprint: context.fingerprint })) }, 'Aggregat CSV');
     exportButton.disabled = aggregates.length === 0; header.appendChild(exportButton);

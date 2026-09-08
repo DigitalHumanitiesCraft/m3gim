@@ -41,6 +41,11 @@ from rdflib import Graph, URIRef
 from rdflib.collection import Collection
 from rdflib.namespace import DCTERMS, OWL, RDF, RDFS, SKOS
 
+try:
+    from scripts import _site_html as site_html
+except (ImportError, ModuleNotFoundError):
+    import _site_html as site_html
+
 REPO = Path(__file__).resolve().parent.parent
 DEFAULT_VOCAB = REPO / "vocab" / "m3gim.ttl"
 DEFAULT_DATA = REPO / "data" / "output" / "m3gim.jsonld"
@@ -901,398 +906,36 @@ def _indent(block: str, spaces: int) -> str:
     return "\n".join(pad + line if line else line for line in block.splitlines())
 
 
-# Bumped whenever a stylesheet changes, so GitHub Pages and browsers drop the
-# cached copy; sync_shared_regions writes it into every page.
-ASSET_VERSION = "2026-09-08c"
-
-# ---------------------------------------------------------------------------
-# Die Kopfleiste: eine Vorlage fuer alle Seiten
-# ---------------------------------------------------------------------------
-#
-# One bar on every page of the site (project lead, 2026-09-05). Brand, badge,
-# the seven views and the info links stand in the same place everywhere; only
-# the semantics of the view navigation differ, because a tablist needs the
-# panels it controls and an info page has none. The bar is therefore generated
-# from here into all five pages instead of written by hand per page.
-
-
-@dataclass(frozen=True)
-class Tab:
-    """One view of the application as it stands in the band."""
-
-    name: str
-    label: str
-    button_id: str
-    icon: str
-    tip: str = ""
-
-
-CURRENT = ' aria-current="page"'
-
-# The views in band order, grouped into Material, Perspektiven and Werkzeug
-# (E-160). The group wrappers carry role="none" so the tabs stay direct children
-# of the tablist in the accessibility tree; the grouping is a visual ordering,
-# not a level the screen reader has to walk through. The tray of the Korb tab
-# repeats korbIcon() in docs/js/data/constants.js, keep both identical.
-TAB_GROUPS: tuple[tuple[str, tuple[Tab, ...]], ...] = (
-    (
-        "material",
-        (
-            Tab(
-                "bestand", "Bestand", "btn-bestand",
-                '<rect width="20" height="5" x="2" y="3" rx="1"/>'
-                '<path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/><path d="M10 12h4"/>',
-            ),
-            Tab(
-                "indizes", "Indizes", "btn-indizes",
-                '<path d="M16 22h2a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v3"/>'
-                '<path d="M14 2v5h5"/><path d="M3 15h6"/><path d="M3 19h4"/><path d="M3 11h8"/>',
-            ),
-        ),
-    ),
-    (
-        "perspektiven",
-        (
-            Tab(
-                "chronik", "Chronik", "btn-chronik",
-                '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
-            ),
-            Tab(
-                "karte", "Orte", "btn-karte",
-                '<polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/>'
-                '<line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/>',
-            ),
-            Tab(
-                "netzwerk", "Netzwerk", "btn-netzwerk",
-                '<circle cx="5" cy="5" r="2"/><circle cx="19" cy="5" r="2"/>'
-                '<circle cx="19" cy="19" r="2"/><circle cx="5" cy="19" r="2"/>'
-                '<circle cx="12" cy="12" r="2"/><path d="M6.5 6.5 10.5 10.5"/>'
-                '<path d="M17.5 6.5 13.5 10.5"/><path d="M6.5 17.5 10.5 13.5"/>'
-                '<path d="M17.5 17.5 13.5 13.5"/>',
-            ),
-            Tab(
-                "statistik", "Dashboard", "btn-statistik",
-                '<line x1="18" y1="20" x2="18" y2="10"/>'
-                '<line x1="12" y1="20" x2="12" y2="4"/>'
-                '<line x1="6" y1="20" x2="6" y2="14"/>',
-            ),
-        ),
-    ),
-    (
-        "werkzeug",
-        (
-            Tab(
-                "korb", "Korb", "korb-tab-btn",
-                '<polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/>'
-                '<path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89'
-                'A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>',
-                "Ausgewählte Dokumente sammeln und als CSV, BibTeX, JSON-LD oder GEXF exportieren",
-            ),
-        ),
-    ),
-)
-
-INFO_LINKS = (
-    ("about.html", "Über"),
-    ("projekt.html", "Projekt"),
-    ("datenmodell.html", "Datenmodell"),
-)
-
-BRAND_SUBTITLE = "Teilnachlass Ira Malaniuk — UAKUG/NIM"
-
-# The view the application opens on; its tab is the one the live bar preselects.
-DEFAULT_TAB = "bestand"
-
-
-def _icon(paths: str) -> str:
-    return (
-        '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
-        'stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" '
-        f'focusable="false">{paths}</svg>'
-    )
-
-
-def _render_tab(tab: Tab, app: bool, pad: str) -> list[str]:
-    """One tab, as the live tablist button or as a link into the application.
-
-    Both variants carry the same classes and the same icon, so the band reads as
-    one bar. The button adds what only a live bar can honour: the panel it
-    controls, the roving tabindex, the register menu of the Indizes tab and the
-    Korb count. A link would promise those without being able to keep them.
-    """
-    tip = f' data-tip="{tab.tip}"' if tab.tip else ""
-    # The chevron stands on both variants: it says that registers sit behind the
-    # entry, which holds wherever the entry stands, and without it the five tabs
-    # after the Indizes would sit 20px apart between the two bars. Only the
-    # menu itself, its wrapper and its ARIA state belong to the live bar.
-    chevron = tab.name == "indizes"
-    menu = app and chevron
-    active = app and tab.name == DEFAULT_TAB
-    lines: list[str] = []
-    if menu:
-        lines.append(f'{pad}<div class="tab-menu" role="none">')
-        pad += "  "
-    inner = pad + "  "
-    if app:
-        classes = "tab-bar__tab tab-menu__trigger" if menu else "tab-bar__tab"
-        if active:
-            classes += " active"
-        extra = ' aria-haspopup="menu" aria-expanded="false"' if menu else ""
-        lines.append(
-            f'{pad}<button class="{classes}" id="{tab.button_id}" role="tab" '
-            f'aria-selected="{str(active).lower()}" aria-controls="tab-{tab.name}" '
-            f'tabindex="{0 if active else -1}" data-tab="{tab.name}"{tip}{extra}>'
-        )
-    else:
-        lines.append(f'{pad}<a class="tab-bar__tab" href="index.html#{tab.name}"{tip}>')
-    lines.append(inner + _icon(tab.icon))
-    label = f'<span class="tab-bar__label">{tab.label}</span>'
-    if chevron:
-        # Label and chevron sit in one wrapper so the chevron keeps its own tight
-        # gap instead of the wider gap between icon and label.
-        lines.append(f'{inner}<span class="tab-menu__name">')
-        lines.append(f"{inner}  {label}")
-        lines.append(
-            f'{inner}  <svg class="tab-menu__chevron" width="11" height="11" '
-            'viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" '
-            'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" '
-            'focusable="false"><path d="m6 9 6 6 6-6"/></svg>'
-        )
-        lines.append(f"{inner}</span>")
-    else:
-        lines.append(inner + label)
-    if app and tab.name == "korb":
-        lines.append(
-            f'{inner}<span class="tab-bar__badge" id="korb-badge" '
-            'aria-label="Anzahl Einträge im Korb">0</span>'
-        )
-    lines.append(f"{pad}</button>" if app else f"{pad}</a>")
-    if menu:
-        pad = pad[:-2]
-        lines.append(
-            f'{pad}  <div class="tab-menu__panel" id="indizes-register-menu" role="menu" '
-            'aria-label="Register" hidden></div>'
-        )
-        lines.append(f"{pad}</div>")
-    return lines
-
-
-def topbar_for(page_name: str) -> str:
-    """The one header of the site, carrying this page's own state.
-
-    ``index.html`` gets the live tab list, every other page the same views as
-    links into the application. The info links mark the page's own entry with
-    ``aria-current``; the application page and the Impressum stand in that list
-    with no entry of their own and therefore mark nothing.
-    """
-    app = page_name == "index.html"
-    lines = [
-        '<header class="topbar">',
-        '    <div class="topbar__lead">',
-        f'      <a class="topbar__brand" href="index.html" data-tip="{BRAND_SUBTITLE}">M³GIM</a>',
-        '      <a class="topbar__badge" href="projekt.html">Research Preview</a>',
-        "    </div>",
+# Shared site chrome is imported from the data-independent HTML module.
+HEAD = "\n".join(
+    [
+        "<!DOCTYPE html>",
+        '<html lang="de">',
+        site_html.head_for(DEFAULT_OUT.name),
+        '<body class="info-page">',
+        "",
+        '  <a class="skip-link" href="#main-content">Zum Inhalt springen</a>',
+        "",
+        f"  {site_html.topbar_for(DEFAULT_OUT.name)}",
+        "",
+        '  <main class="info-main" id="main-content">',
+        '    <article class="page page--model">',
         "",
     ]
-    if app:
-        lines.append('    <nav class="tab-bar" role="tablist" aria-label="Hauptnavigation">')
-    else:
-        lines.append('    <nav class="tab-bar" aria-label="Ansichten">')
-    for group, tabs in TAB_GROUPS:
-        lines.append(f'      <div class="tab-bar__group" role="none" data-group="{group}">')
-        for tab in tabs:
-            lines += _render_tab(tab, app, pad="        ")
-        lines.append("      </div>")
-    lines += [
-        "    </nav>",
-        "",
-        '    <nav class="topbar__info" aria-label="Informationsseiten">',
-    ]
-    for href, label in INFO_LINKS:
-        lines.append(f'      <a href="{href}"{CURRENT if href == page_name else ""}>{label}</a>')
-    lines += ["    </nav>", "  </header>"]
-    return "\n".join(lines)
-
-
-# The top bar and foot of these templates are the single source for the shared
-# regions of the hand-written pages under docs/; sync_shared_regions injects
-# them, tests/test_49_footer.py guards that the injection ran.
-# A plain string, not an f-string, because the structured data carries braces.
-_HEAD = """<!DOCTYPE html>
-<html lang="de">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Datenmodell · M³GIM</title>
-  <meta name="description" content="Klassen, Properties und kontrollierte Vokabulare der M³GIM-Erweiterung zu RiC-O 1.1, erzeugt aus dem Projektvokabular.">
-  <meta name="robots" content="index,follow">
-  <meta name="theme-color" content="#004A8F">
-  <link rel="canonical" href="https://digitalhumanitiescraft.github.io/m3gim/datenmodell.html">
-
-  <!-- Social cards: absolute URLs, because a scraper resolves nothing relative. -->
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="M³GIM">
-  <meta property="og:locale" content="de_AT">
-  <meta property="og:title" content="Datenmodell · M³GIM">
-  <meta property="og:description" content="Klassen, Properties und kontrollierte Vokabulare der M³GIM-Erweiterung zu RiC-O 1.1, erzeugt aus dem Projektvokabular.">
-  <meta property="og:url" content="https://digitalhumanitiescraft.github.io/m3gim/datenmodell.html">
-  <meta property="og:image" content="https://digitalhumanitiescraft.github.io/m3gim/img/og.png">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="M³GIM — Mapping Mobile Musicians">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Datenmodell · M³GIM">
-  <meta name="twitter:description" content="Klassen, Properties und kontrollierte Vokabulare der M³GIM-Erweiterung zu RiC-O 1.1, erzeugt aus dem Projektvokabular.">
-  <meta name="twitter:image" content="https://digitalhumanitiescraft.github.io/m3gim/img/og.png">
-
-  <!-- Favicon: inline SVG, so the page needs no external asset; the PNGs serve
-       the browsers and launchers that take no SVG. -->
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='10' fill='%231a1a1a'/%3E%3Ctext x='50%25' y='58%25' text-anchor='middle' font-family='Georgia,serif' font-size='36' font-weight='700' fill='%23f5f1e8'%3EM%3C/text%3E%3Ctext x='78%25' y='38%25' text-anchor='middle' font-family='Georgia,serif' font-size='18' font-weight='700' fill='%23c9a961'%3E3%3C/text%3E%3C/svg%3E">
-  <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="img/apple-touch-icon.png">
-  <link rel="manifest" href="site.webmanifest">
-
-  <link rel="stylesheet" href="vendor/fonts.css">
-
-  <link rel="stylesheet" href="css/variables.css?v={v}">
-  <link rel="stylesheet" href="css/base.css?v={v}">
-  <link rel="stylesheet" href="css/components.css?v={v}">
-  <link rel="stylesheet" href="css/pages.css?v={v}">
-  <link rel="stylesheet" href="css/tabs.css?v={v}">
-
-  <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@graph": [
-        {
-          "@type": "WebSite",
-          "@id": "https://digitalhumanitiescraft.github.io/m3gim/#website",
-          "name": "M³GIM",
-          "alternateName": "Mapping Mobile Musicians",
-          "url": "https://digitalhumanitiescraft.github.io/m3gim/",
-          "inLanguage": "de-AT",
-          "description": "Digitale Erschließung des Teilnachlasses Ira Malaniuk (UAKUG/NIM) am Universitätsarchiv der Kunstuniversität Graz.",
-          "publisher": {
-            "@type": "Organization",
-            "name": "Universität für Musik und darstellende Kunst Graz",
-            "alternateName": "KUG",
-            "url": "https://www.kug.ac.at"
-          }
-        },
-        {
-          "@type": "WebPage",
-          "@id": "https://digitalhumanitiescraft.github.io/m3gim/datenmodell.html#webpage",
-          "name": "Datenmodell",
-          "description": "Klassen, Properties und kontrollierte Vokabulare der M³GIM-Erweiterung zu RiC-O 1.1, erzeugt aus dem Projektvokabular.",
-          "url": "https://digitalhumanitiescraft.github.io/m3gim/datenmodell.html",
-          "inLanguage": "de",
-          "isPartOf": {
-            "@id": "https://digitalhumanitiescraft.github.io/m3gim/#website"
-          },
-          "license": "https://creativecommons.org/licenses/by/4.0/"
-        }
-      ]
-    }
-  </script>
-</head>
-<body class="info-page">
-
-  <a class="skip-link" href="#main-content">Zum Inhalt springen</a>
-
-  {topbar}
-
-  <main class="info-main" id="main-content">
-    <article class="page page--model">
-"""
-
-HEAD = _HEAD.replace("{v}", ASSET_VERSION).replace(
-    "{topbar}", topbar_for(DEFAULT_OUT.name)
 )
 
-FOOT = """
-    </article>
-  </main>
-
-  <footer class="app-footer">
-    <div class="app-footer__group">
-      <a class="app-footer__kug" href="https://www.kug.ac.at" target="_blank" rel="noopener" data-tip="Universität für Musik und darstellende Kunst Graz, Universitätsarchiv"><img class="app-footer__mark" src="img/kug-logo.svg" alt="" width="14" height="14">KUG Graz</a>
-      <a href="impressum.html">Impressum</a>
-    </div>
-    <div class="app-footer__group">
-      <a href="https://github.com/DigitalHumanitiesCraft/m3gim" target="_blank" rel="noopener" data-tip="Repository auf GitHub, Code unter MIT-Lizenz">Repository</a>
-      <a href="https://github.com/DigitalHumanitiesCraft/Promptotyping" target="_blank" rel="noopener" data-tip="Die Anwendung ist mit generativer KI nach der Promptotyping-Methode und Agentic Engineering entstanden">Promptotyping und Agentic Engineering</a>
-      <a class="app-footer__dhcraft" href="https://dhcraft.org" target="_blank" rel="noopener" data-tip="Digital Humanities Craft, Konzeption und technische Umsetzung"><img class="app-footer__mark" src="img/dhcraft-logo.svg" alt="" width="14" height="14">Technische Umsetzung DHCraft</a>
-      <a class="app-footer__cc" href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener" data-tip="Daten, Texte und Dokumentation unter Creative Commons Attribution 4.0"><img class="app-footer__mark" src="img/cc.svg" alt="" width="14" height="14"><img class="app-footer__mark" src="img/cc-by.svg" alt="" width="14" height="14">CC BY 4.0</a>
-    </div>
-  </footer>
-
-</body>
-</html>"""
-
-
-# ---------------------------------------------------------------------------
-# Shared regions of the hand-written pages
-# ---------------------------------------------------------------------------
-#
-# The pages under docs/ are hand-written and have no build step. Their top bar
-# and foot are nevertheless identical everywhere, so they are not written by
-# hand but injected from the templates above: only the region between the
-# markers is generated, the page body around it stays untouched.
-
-DOCS = REPO / "docs"
-
-FOOTER_OPEN = '<footer class="app-footer">'
-FOOTER_CLOSE = "</footer>"
-TOPBAR_OPEN = '<header class="topbar">'
-TOPBAR_CLOSE = "</header>"
-
-PAGES = ("index.html", "about.html", "projekt.html", "impressum.html", "datenmodell.html")
-
-STYLESHEET_RE = re.compile(r'(href="css/[^"?]+\.css)(?:\?v=[^"]*)?"')
-
-
-def extract_region(text: str, open_marker: str, close_marker: str, source: str) -> str:
-    start, end = _region_bounds(text, open_marker, close_marker, source)
-    return text[start:end]
-
-
-def _region_bounds(text: str, open_marker: str, close_marker: str, source: str) -> tuple[int, int]:
-    start = text.find(open_marker)
-    if start == -1:
-        raise ValueError(f"{source}: {open_marker} fehlt")
-    if text.find(open_marker, start + 1) != -1:
-        raise ValueError(f"{source}: {open_marker} steht mehrfach")
-    end = text.find(close_marker, start)
-    if end == -1:
-        raise ValueError(f"{source}: {close_marker} fehlt")
-    return start, end + len(close_marker)
-
-
-def _replace_region(
-    text: str, open_marker: str, close_marker: str, block: str, source: str
-) -> str:
-    start, end = _region_bounds(text, open_marker, close_marker, source)
-    return text[:start] + block + text[end:]
-
-
-def sync_shared_regions(docs: Path = DOCS) -> list[str]:
-    """Inject foot, top bar and asset version into the delivered pages.
-
-    Returns the names of the pages actually rewritten; a second run returns an
-    empty list.
-    """
-    footer = extract_region(FOOT, FOOTER_OPEN, FOOTER_CLOSE, "FOOT")
-    changed = []
-    for name in PAGES:
-        path = docs / name
-        original = path.read_text(encoding="utf-8")
-        text = _replace_region(original, FOOTER_OPEN, FOOTER_CLOSE, footer, name)
-        text = _replace_region(text, TOPBAR_OPEN, TOPBAR_CLOSE, topbar_for(name), name)
-        text = STYLESHEET_RE.sub(rf'\1?v={ASSET_VERSION}"', text)
-        if text != original:
-            path.write_text(text, encoding="utf-8", newline="\n")
-            changed.append(name)
-    return changed
+FOOT = "\n".join(
+    [
+        "",
+        "    </article>",
+        "  </main>",
+        "",
+        f"  {site_html.FOOTER}",
+        "",
+        "</body>",
+        "</html>",
+    ]
+)
 
 
 def main() -> int:
@@ -1310,7 +953,7 @@ def main() -> int:
         shown = args.out
     print(f"[OK] {shown} ({len(page):,} bytes)")
 
-    changed = sync_shared_regions()
+    changed = site_html.sync_site_html()
     print(f"[OK] gemeinsame Regionen: {', '.join(changed) if changed else 'unveraendert'}")
     return 0
 

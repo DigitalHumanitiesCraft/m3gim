@@ -1,0 +1,140 @@
+/* Shared research-view shell and toolbar placement. */
+
+/* The container sits on the parent because a container cannot query itself. */
+#main-content {
+  container: view-shell / inline-size;
+  min-height: 0;
+}
+
+.view-shell {
+  display: grid;
+  grid-template-columns: var(--view-sidebar-w) minmax(0, 1fr);
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.view-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-width: 0;
+  min-height: 0;
+  padding: var(--space-3) var(--space-6) var(--space-4);
+  overflow-y: auto;
+  background: var(--surface-2);
+  border-inline-end: 1px solid var(--line);
+}
+
+/* Sidebar tooltips stay within the 296px filter column. */
+.view-sidebar [data-tip]::after { max-width: 230px; }
+
+.view-main {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.view-shell__sidebar-toggle {
+  display: none;
+  align-items: center;
+  gap: var(--space-1-5);
+  grid-column: 1 / -1;
+  min-block-size: 32px;
+  padding: var(--space-1-5) var(--space-3);
+  color: var(--color-text-tertiary);
+  background: var(--surface-2);
+  border: none;
+  border-block-end: 1px solid var(--line);
+  font-family: inherit;
+  font-size: var(--text-2xs);
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.12em;
+  text-align: start;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.view-shell__sidebar-toggle:hover { color: var(--accent); }
+
+.view-shell__sidebar-toggle-icon {
+  flex: 0 0 auto;
+  transform: rotate(90deg);
+  transition: transform var(--transition-fast);
+}
+
+.view-shell--sidebar-collapsed .view-shell__sidebar-toggle-icon { transform: none; }
+
+.research-toolbar {
+  position: relative;
+  z-index: var(--z-toolbar);
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  flex: 0 0 auto;
+  gap: var(--space-1) var(--space-2);
+  min-width: 0;
+  padding: var(--space-2) var(--space-3);
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+}
+
+.research-toolbar > .view-shell__sidebar-toggle {
+  display: flex;
+  grid-column: auto;
+  min-height: 34px;
+  border: 1px solid var(--line);
+  border-radius: var(--border-radius);
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.view-main .research-toolbar > .filter-strip {
+  grid-column: 1 / -1;
+  min-block-size: 26px;
+  padding: var(--space-1) 0;
+}
+
+.view-shell--sidebar-collapsed { grid-template-columns: minmax(0, 1fr); }
+.view-shell--sidebar-collapsed > .view-sidebar { display: none; }
+
+/* Views whose drawing fills the remaining work area share this flex stage. */
+.view-main--stacked {
+  display: flex;
+  flex-direction: column;
+}
+
+.view-main__stage {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+}
+
+/* Below 900px the open filter and work area split the available height. Each
+   region scrolls internally, including on short landscape viewports. */
+@container view-shell (width < 900px) {
+  .view-shell {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .view-shell--sidebar-collapsed { grid-template-rows: minmax(0, 1fr); }
+
+  .view-sidebar {
+    grid-row: 1;
+    border-inline-end: none;
+    border-block-end: 1px solid var(--line);
+  }
+
+  .view-main {
+    grid-row: 2;
+    height: auto;
+  }
+
+  .view-shell--sidebar-collapsed > .view-main { grid-row: 1; }
+  .view-shell__sidebar-toggle { display: flex; }
+}

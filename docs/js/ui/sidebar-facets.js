@@ -1,7 +1,6 @@
 /**
  * The shared facets of the filter column: their display form, the sections
- * `sidebar.js` assembles from them, and the three control factories that make a
- * value set operable (open facet with suggestions, tree, closed row list).
+ * `sidebar.js` assembles from them, and the tree and row-list controls that make a value set operable.
  *
  * The count beside a value and the implied check of a child stand here together
  * with their tooltips, because both state the same rule: the count counts
@@ -9,7 +8,6 @@
  */
 
 import { el, clear } from '../utils/dom.js';
-import { matchesQuery } from '../utils/normalize.js';
 import { getFilter, setFilter, facetValues, facetSelectionValues, buildFacetSelectionPatch } from './filter-state.js';
 import { facetInventory, facetCounts } from '../data/records-for.js';
 import { optionRow, groupRow } from './sidebar-options.js';
@@ -35,11 +33,8 @@ export const SHARED_FACETS = Object.freeze([
   'docType', 'person', 'ort', 'land', 'werk', 'institution', 'verknuepfung',
 ]);
 
-/** Suggestions shown per open facet while the input has focus, and rows shown
- *  in the Dokumenttyp list before "mehr …". The column must fit one screen. */
+/** Rows shown before expanding the remaining facet values. */
 export const OPTION_LIMIT = 8;
-
-let listSeq = 0;
 
 /**
  * What the number next to a value means. It counts against the cut of all
@@ -105,17 +100,7 @@ export function linkSection(store, inventory) {
   };
 }
 
-/**
- * A shared facet as its own section: an open value set that only autocompletion
- * makes operable. Dokumenttyp is no section of its own, it hangs under the
- * result line.
- *
- * The title takes the accent colour while active. Selected values live only in
- * the chip strip above the data; repeating them or their count here would make
- * the same state compete in two places. A facet without any value in this
- * view's inventory collapses to its title line instead of showing an empty
- * control.
- */
+/** A collapsible facet list; selected values stay in the common filter strip. */
 export function sharedFacetSection(store, key, inventory) {
   if (key === 'land') return landSection(store, inventory);
   if (key === 'verknuepfung') return linkSection(store, inventory);
@@ -161,128 +146,13 @@ export function labelIn(entries, value) {
 }
 
 /**
- * Open value set: an input with suggestions below it. Selected values appear
- * only in the shared chip strip; the open list repeats them solely as checked
- * options so they can be toggled without creating a second persistent display.
- * Nothing is suggested before focus — the set is too large for a standing list
- * to say anything.
- *
- * `single` turns it into a chooser with exactly one selected value, which is
- * what the Karte needs for its Entität.
- */
-export function facetControl({
-  key, options, counts, selected, onSelect, single = false, labelledBy, limit = OPTION_LIMIT,
-  placeholder = '',
-}) {
-  const listId = `fs-list-${++listSeq}`;
-  const list = el('div', { className: 'fs-options', role: 'listbox', id: listId });
-  const inputAttrs = {
-    type: 'search', className: 'fs-search', role: 'combobox',
-    autocomplete: 'off', 'aria-autocomplete': 'list', 'aria-controls': listId,
-    'aria-expanded': 'false', placeholder,
-  };
-  if (labelledBy) inputAttrs['aria-labelledby'] = labelledBy;
-  const input = el('input', inputAttrs);
-  // The list is anchored to the field so it opens without affecting the
-  // surrounding facet rows.
-  const field = el('div', { className: 'fs-facet__field' }, input, list);
-  const node = el('div', { className: 'fs-facet' }, field);
-  if (key) node.dataset.facet = key;
-
-  let focused = false;
-  let active = -1;      // highlighted suggestion
-  let rows = [];        // { value, el } in list order
-
-  input.addEventListener('focus', () => { focused = true; active = -1; paint(); });
-  input.addEventListener('blur', () => { focused = false; paint(); });
-  input.addEventListener('input', () => { active = -1; paint(); });
-  input.addEventListener('keydown', onKeyDown);
-  // Swallowed so the input keeps focus while an option is toggled.
-  list.addEventListener('mousedown', (e) => e.preventDefault());
-
-  const write = (values) => { onSelect(single ? values.slice(-1) : values); paint(); };
-  const toggle = (value) => {
-    const chosen = selected() || [];
-    // The query is consumed by the choice; leaving it behind would make the
-    // freshly checked option look like the only available value.
-    input.value = '';
-    active = -1;
-    write(chosen.includes(value) ? chosen.filter(v => v !== value) : [...chosen, value]);
-  };
-
-  function onKeyDown(e) {
-    if (e.key === 'Escape') {
-      input.value = '';
-      active = -1;
-      focused = false;
-      paint();
-      input.blur();
-      e.preventDefault();
-      return;
-    }
-    if (rows.length === 0) return;
-    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
-      const step = e.key === 'ArrowDown' ? 1 : -1;
-      active = (active + step + rows.length + (active === -1 && step === -1 ? 1 : 0)) % rows.length;
-      paintActive();
-      e.preventDefault();
-      return;
-    }
-    if (e.key === 'Enter' && active >= 0) {
-      toggle(rows[active].value);
-      e.preventDefault();
-    }
-  }
-
-  function paintActive() {
-    rows.forEach((row, i) => row.el.classList.toggle('fs-option--active', i === active));
-    const row = rows[active];
-    input.setAttribute('aria-activedescendant', row ? row.el.id : '');
-    if (row) row.el.scrollIntoView({ block: 'nearest' });
-  }
-
-  function paint() {
-    const entries = options() || [];
-    const chosen = selected() || [];
-    const countOf = counts ? counts() : null;
-    const q = input.value.trim();
-
-    clear(list);
-    rows = [];
-    const open = focused || q.length > 0;
-    list.hidden = !open;
-    input.setAttribute('aria-expanded', String(open));
-    if (!open) { input.removeAttribute('aria-activedescendant'); return; }
-
-    for (const entry of entries) {
-      if (rows.length >= limit) break;
-      if (!matchesQuery(entry.label, q)) continue;
-      const n = countOf ? (countOf.get(entry.value) ?? 0) : entry.count;
-      const on = chosen.includes(entry.value);
-      if (countOf && n === 0 && !on) continue;
-      const row = optionRow(entry, q, n, on, () => toggle(entry.value), true);
-      rows.push({ value: entry.value, el: row });
-      list.appendChild(row);
-    }
-    if (rows.length === 0) list.appendChild(el('div', { className: 'fs-more' }, 'kein Treffer'));
-    if (active >= rows.length) active = rows.length - 1;
-    paintActive();
-  }
-
-  paint();
-  return { node, update: paint };
-}
-
-/**
  * The tree of a closed value set with two levels, Dokumenttyp and Verknüpfung.
  * It stands without a search field, because its shape is the information and
  * the chevrons reach every value. A group head is selectable when the broader
  * term carries records of its own; its chevron opens the leaves.
  *
  * Both levels cap at OPTION_LIMIT and fold the rest behind "mehr …", the groups
- * once for the whole tree and the leaves per open group. Without the second cap
- * the 36 roles of the Verknüpfungstyp Person alone made the column scroll,
- * which design rule 2 forbids.
+ * once for the whole tree and the leaves per open group.
  */
 export function facetTreeControl({ key, options, counts, selected, onSelect }) {
   const tree = el('div', { className: 'fs-tree' });

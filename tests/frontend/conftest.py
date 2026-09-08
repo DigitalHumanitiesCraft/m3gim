@@ -23,6 +23,9 @@ def frontend_server():
     die URL und raeumt sauber ab."""
 
     class QuietHandler(http.server.SimpleHTTPRequestHandler):
+        # Reuse connections across the many ES modules in each browser context.
+        protocol_version = "HTTP/1.1"
+
         def log_message(self, *args):
             pass  # Request-Log wuerde den pytest-Output fluten
 

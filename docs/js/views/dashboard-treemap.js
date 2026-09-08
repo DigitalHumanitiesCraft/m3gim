@@ -27,12 +27,12 @@ export function renderTreemap(host, context) {
   const path = Array.isArray(context.config.path) ? context.config.path : [];
   const focus = findNode(root, path);
   const crumbs = el('nav', { className: 'dashboard-breadcrumb', 'aria-label': 'Treemap-Pfad' });
-  const rootButton = el('button', { type: 'button', onClick: () => context.onConfig({ path: [] }) }, 'Alle Dokumenttypen');
+  const rootButton = el('button', { type: 'button', className: 'ui-action', onClick: () => context.onConfig({ path: [] }) }, 'Alle Dokumenttypen');
   crumbs.appendChild(rootButton);
   let current = root;
   path.forEach((key, index) => {
     current = (current.children || []).find(child => child.key === key) || current;
-    crumbs.append(' / ', el('button', { type: 'button',
+    crumbs.append(' / ', el('button', { type: 'button', className: 'ui-action',
       onClick: () => context.onConfig({ path: path.slice(0, index + 1) }) }, current.label));
   });
   host.appendChild(crumbs);
@@ -68,7 +68,7 @@ export function renderTreemap(host, context) {
     const branches = focus.children.filter(child => child.children?.length);
     if (branches.length) {
       const zooms = el('div', { className: 'dashboard-local-focus' }, 'Vertiefen: ');
-      for (const branch of branches) zooms.appendChild(el('button', { type: 'button',
+      for (const branch of branches) zooms.appendChild(el('button', { type: 'button', className: 'ui-action',
         onClick: () => context.onConfig({ path: [...path, branch.key] }) }, branch.label));
       host.appendChild(zooms);
     }

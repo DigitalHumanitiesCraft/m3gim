@@ -46,7 +46,7 @@ function witnessList(store, items, emptyLabel) {
     list.appendChild(el('li', {},
       el('span', { className: 'dashboard-selection__witness-kind' }, witnessKind(item)),
       el('span', {}, witnessText(store, item)),
-      el('button', { type: 'button', onClick: () => navigateToView('bestand', {
+      el('button', { type: 'button', className: 'ui-action', onClick: () => navigateToView('bestand', {
         recordId: item.recordId, preserveFilter: true,
       }) }, record ? formatSignatur(record['rico:identifier']) : item.recordId),
       el('span', { className: 'dashboard-selection__source-state' },
@@ -93,17 +93,17 @@ export function createDashboardSelection({ host, store, fingerprint, getQueryWit
     const content = el('div', { className: 'dashboard-selection' });
     const actions = el('div', { className: 'dashboard-selection__actions' });
     actions.append(
-      el('button', { type: 'button', onClick: applySelection }, 'Auswahl als Filter anwenden'),
-      el('button', { type: 'button', onClick: addToBasket }, 'Dokumente zum Korb hinzufügen'),
-      el('button', { type: 'button', onClick: downloadSelectionCsv }, 'Auswahl CSV'),
-      el('button', { type: 'button', onClick: () => downloadSelectionSources(merged) }, 'Quellen JSON'));
+      el('button', { type: 'button', className: 'ui-action', onClick: applySelection }, 'Auswahl als Filter anwenden'),
+      el('button', { type: 'button', className: 'ui-action', onClick: addToBasket }, 'Dokumente zum Korb hinzufügen'),
+      el('button', { type: 'button', className: 'ui-action', onClick: downloadSelectionCsv }, 'Auswahl CSV'),
+      el('button', { type: 'button', className: 'ui-action', onClick: () => downloadSelectionSources(merged) }, 'Quellen JSON'));
     content.appendChild(actions);
     if (marks.length > 1) {
       content.appendChild(el('p', { className: 'dashboard-selection__union' },
         `ODER-Auswahl aus ${marks.length} Markierungen; ${merged.recordIds.length} distinkte Dokumente.`));
       const chips = el('ul', { className: 'dashboard-selection__marks' });
       marks.forEach((mark, index) => chips.appendChild(el('li', {},
-        el('span', {}, mark.label), el('button', { type: 'button',
+        el('span', {}, mark.label), el('button', { type: 'button', className: 'ui-action',
           'aria-label': `${mark.label} aus der Auswahl entfernen`, onClick: () => remove(index) }, '×'))));
       content.appendChild(chips);
     }
@@ -122,7 +122,7 @@ export function createDashboardSelection({ host, store, fingerprint, getQueryWit
     const list = el('ul', { className: 'dashboard-selection__records' });
     for (const id of merged.recordIds) {
       const record = store.records.get(id);
-      const open = el('button', { type: 'button', dataset: { recordId: id }, onClick: () => navigateToView('bestand', {
+      const open = el('button', { type: 'button', className: 'ui-action', dataset: { recordId: id }, onClick: () => navigateToView('bestand', {
         recordId: id, preserveFilter: true,
       }) }, record ? `${formatSignatur(record['rico:identifier'])} · ${record['rico:title'] || '(ohne Titel)'}` : id);
       list.appendChild(el('li', {}, open));

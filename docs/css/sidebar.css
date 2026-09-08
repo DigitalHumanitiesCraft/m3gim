@@ -1,163 +1,5 @@
-/* The one view sidebar: shell, result line, Facetten and the declarative
-   controls, all built by docs/js/ui/sidebar.js.
-
-   .vs-* carries shell and controls, .fs-* the Facette with its chips and
-   suggestions. The result line is no block of its own any more, it is the root
-   row of the Dokumenttyp tree. View-specific visuals (map SVG, Netzwerk nodes)
-   stay in their own view file. Chip, legend and empty state come from
-   components.css as primitives; only the deviations stand here. Lines only
-   where spacing does not carry (design.md rule 11), so sidebar sections have
-   none. */
-
-/* Shell */
-
-/* The container sits on the parent, not on the shell: an element cannot query
-   the container it establishes itself, and the shell's own column switch is
-   part of the answer. #main-content holds nothing but view shells. */
-#main-content {
-  container: view-shell / inline-size;
-}
-
-.view-shell {
-  display: grid;
-  grid-template-columns: var(--view-sidebar-w) 1fr;
-  /* The top bar and the footer are fixed-height tokens; the shell fills the
-     rest so the column never slides under the footer. */
-  height: calc(100vh - var(--top-bar-height) - var(--footer-height));
-  min-height: 560px;
-}
-
-.view-sidebar {
-  /* The only tinted area of a view (design.md rule 2). */
-  background: var(--surface-2);
-  /* The weakest line vanished on a screen without a scrollbar, so the column no
-     longer read as its own area; one step up to --line (Projektleitung,
-     2026-09-04, raises the E-199 edge). */
-  border-inline-end: 1px solid var(--line);
-  /* Inline padding equals the band's outer padding, so the filters start on the
-     brand's left edge and the column mirrors the table's right edge. */
-  padding: var(--space-3) var(--space-6) var(--space-4);
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-  min-width: 0;
-}
-
-/* Inside the column a tooltip should fit the column, not the 280 px the
-   shared cap allows. A fixed cap, not a percentage: an inline facet title is
-   only about 96 px wide and a percentage would fold its tooltip into a column
-   a few characters wide. Every one of them is left-aligned, so the cap plus
-   the column padding stays inside the 271 px. */
-.view-sidebar [data-tip]::after {
-  max-width: 230px;
-}
-
-.view-main {
-  position: relative;
-  min-width: 0; /* grid overflow fix: the canvas may shrink */
-  /* White work area in every view; only the column is tinted. */
-  background: var(--surface);
-}
-
-/* Only the stacked layout below 900px shows it; beside the work area the
-   column is always open and a toggle would be a control without a purpose.
-   The button belongs to the shell, not to the column: it has to stay reachable
-   once the column is gone. */
-.view-shell__sidebar-toggle {
-  display: none;
-  align-items: center;
-  gap: var(--space-1-5);
-  grid-column: 1 / -1;
-  min-block-size: 32px;
-  padding: var(--space-1-5) var(--space-3);
-  background: var(--surface-2);
-  border: none;
-  border-block-end: 1px solid var(--line);
-  font-family: inherit;
-  font-size: var(--text-2xs);
-  font-weight: var(--weight-semibold);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--color-text-tertiary);
-  text-align: start;
-  cursor: pointer;
-}
-
-.view-shell__sidebar-toggle:hover { color: var(--accent); }
-
-.view-shell__sidebar-toggle-icon {
-  flex: 0 0 auto;
-  transition: transform var(--transition-fast);
-  transform: rotate(90deg);
-}
-
-.view-shell--sidebar-collapsed .view-shell__sidebar-toggle-icon {
-  transform: none;
-}
-
-.research-toolbar {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  align-items: start;
-  gap: var(--space-1) var(--space-2);
-  padding: var(--space-2) var(--space-3);
-  flex: 0 0 auto;
-  min-width: 0;
-  background: var(--surface);
-  border-bottom: 1px solid var(--line);
-  position: relative;
-  z-index: 15;
-}
-.research-toolbar > .view-shell__sidebar-toggle {
-  display: flex;
-  grid-column: auto;
-  border: 1px solid var(--line);
-  border-radius: var(--border-radius);
-  min-height: 34px;
-  letter-spacing: normal;
-  text-transform: none;
-}
-.view-main .research-toolbar > .filter-strip {
-  grid-column: 1 / -1;
-  min-block-size: 26px;
-  padding: var(--space-1) 0;
-}
-.view-shell--sidebar-collapsed { grid-template-columns: minmax(0, 1fr); }
-.view-shell--sidebar-collapsed > .view-sidebar { display: none; }
-.research-search { position: relative; min-width: 0; }
-.research-search__row { display: flex; gap: var(--space-1); }
-.research-search__input {
-  flex: 1; min-width: 0; min-height: 34px;
-  border: 1px solid var(--line-strong); border-radius: var(--border-radius);
-  background: var(--surface); color: var(--color-text-primary);
-  font: inherit; font-size: var(--text-xs); padding: var(--space-1-5) var(--space-2);
-}
-.research-search__submit, .research-search__more, .research-search__open, .filter-history__button {
-  border: 1px solid var(--line); border-radius: var(--border-radius);
-  padding: var(--space-1) var(--space-2); background: var(--surface);
-  color: var(--accent); font: inherit; font-size: var(--text-xs); cursor: pointer;
-}
-.research-search__popup {
-  position: absolute; inset-inline: 0; top: calc(100% + var(--space-1));
-  background: var(--surface); border: 1px solid var(--line-strong);
-  border-radius: var(--border-radius); box-shadow: var(--shadow-md);
-  padding: var(--space-2); z-index: 20;
-}
-.research-search__popup[hidden], .research-search__more[hidden], .research-search__open[hidden] { display: none; }
-.research-search__status { display: block; font-size: var(--text-2xs); color: var(--color-text-secondary); padding-bottom: var(--space-1); }
-.research-search__options { max-height: min(45vh, 400px); overflow-y: auto; overscroll-behavior: contain; }
-.research-search__option { display: grid; grid-template-columns: 85px minmax(0, 1fr) auto;
-  gap: var(--space-2); padding: var(--space-2); border-bottom: 1px solid var(--line-soft); cursor: pointer; }
-.research-search__option--active, .research-search__option:hover { background: var(--surface-3); }
-.research-search__family { font-size: var(--text-2xs); }
-.research-search__label { min-width: 0; overflow-wrap: anywhere; font-size: var(--text-xs); }
-.research-search__title { display: block; color: var(--color-text-secondary); font-size: var(--text-2xs); }
-.research-search__count { font-size: var(--text-xs); font-variant-numeric: tabular-nums; }
-.research-search__more, .research-search__open { margin-top: var(--space-2); }
-.filter-history { display: inline-flex; flex-wrap: wrap; gap: var(--space-1); margin-inline-start: auto; }
-.filter-history__button { font-size: var(--text-2xs); }
-.filter-history__button:disabled { color: var(--color-text-tertiary); cursor: default; opacity: .6; }
+/* Shared filter column. The shell and toolbar live in view-shell.css, the
+   common search in search.css, and reusable controls in controls.css. */
 
 /* Section */
 
@@ -167,9 +9,7 @@
   gap: var(--space-1);
 }
 
-/* The column carries exactly three lines: before the shared Facetten, before
-   the view's own sliders and before the legend (design.md rule 11). Inside a
-   block only spacing separates. */
+/* Rules separate shared facets, view controls and legends. */
 .vs-section--rule {
   border-top: 1px solid var(--line, var(--border-color-light));
   padding-top: var(--space-3);
@@ -199,24 +39,8 @@
   text-align: left;
 }
 
-/* The title is also the input's label and carries the count of the open
-   Facetten; active it takes the accent. */
+/* The heading identifies a facet with an active selection. */
 .vs-section__title--active { color: var(--accent); }
-
-/* An open Facette on one line: title left in a fixed column, wide enough for
-   the longest label ("Institution") in the title setting, the input fills the
-   rest. Zeitraum and the Dokumenttyp tree stay stacked. */
-.vs-section--inline {
-  display: grid;
-  grid-template-columns: 96px minmax(0, 1fr);
-  align-items: start;
-  column-gap: var(--space-2);
-}
-.vs-section--inline .vs-section__title {
-  padding: 0;
-  min-height: 26px;
-  align-items: center;
-}
 
 .vs-section__title--toggle { cursor: pointer; }
 .vs-section__chevron {
@@ -318,20 +142,6 @@
   cursor: help;
 }
 
-/* A stage that fills its area itself (Karte absolute, Netzwerk as a row of
-   graph and detail) needs a box of its own below the strip; otherwise it would
-   lie over or beside it. */
-.view-main--stacked {
-  display: flex;
-  flex-direction: column;
-}
-.view-main__stage {
-  position: relative;
-  flex: 1 1 auto;
-  min-height: 0;
-  min-width: 0;
-}
-
 .vs-status__reset {
   display: inline-flex;
   align-items: center;
@@ -425,8 +235,8 @@
   background: transparent; pointer-events: none;
   -webkit-appearance: none; appearance: none;
 }
-.vs-range__input--from { z-index: 2; }
-.vs-range__input--to { z-index: 1; }
+.vs-range__input--from { z-index: var(--z-local-raised); }
+.vs-range__input--to { z-index: var(--z-sticky); }
 .vs-range__input:focus { outline: none; }
 .vs-range__input::-webkit-slider-runnable-track { height: 22px; background: transparent; }
 .vs-range__input::-moz-range-track { height: 22px; background: transparent; }
@@ -475,18 +285,6 @@
 }
 .vs-toggle input { margin: 0; accent-color: var(--accent); }
 
-/* Search */
-
-.vs-search {
-  font-family: var(--font-ui);
-  font-size: var(--text-sm);
-  padding: var(--space-1-5) 10px;
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
-  width: 100%;
-  box-sizing: border-box;
-}
-
 /* Static explanatory legend */
 
 .vs-static {
@@ -518,38 +316,12 @@
 .vs-static__text strong { font-weight: var(--weight-semibold); color: var(--color-text-primary); }
 .vs-static__text em { font-style: italic; color: var(--color-text-secondary); }
 
-/* Facette: input with placeholder, suggestions with their record count,
-   selected values as removable chips. The section title stays the label. */
+/* Facet wrappers and selected values. */
 
 .fs-facet {
   display: flex;
   flex-direction: column;
   gap: 5px;
-}
-
-/* Anchor of the suggestion list: it hangs on the field, not on the Facette. */
-.fs-facet__field {
-  position: relative;
-  min-width: 0;
-}
-
-.fs-search {
-  width: 100%;
-  box-sizing: border-box;
-  padding: var(--space-1) 7px;
-  font-family: inherit;
-  font-size: var(--text-sm);
-  color: var(--color-text-primary);
-  background: var(--surface, var(--color-text-inverse));
-  border: 1px solid var(--border-color);
-  border-radius: var(--border-radius);
-  text-overflow: ellipsis;
-}
-
-.fs-search:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 1px;
-  border-color: var(--accent);
 }
 
 /* Active values use the shared selection grammar: accent contour, no fill. */
@@ -571,26 +343,6 @@
   font-size: var(--text-xs);
   opacity: 0.75;
 }
-
-/* Suggestions as a dropdown under the input, so a closed facet is one line. */
-.fs-options {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  z-index: 5;
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  max-height: 220px;
-  overflow-y: auto;
-  padding: 3px;
-  background: var(--surface, var(--color-text-inverse));
-  border: 1px solid var(--border-color);
-  border-radius: var(--border-radius);
-  box-shadow: var(--shadow-md);
-}
-.fs-options[hidden] { display: none; }
 
 .fs-option {
   display: flex;
@@ -615,12 +367,6 @@
 .fs-option:focus-visible {
   background: var(--accent-soft);
   border-color: var(--border-color-light);
-}
-
-/* Keyboard cursor of the autocomplete. */
-.fs-option--active {
-  background: var(--surface-3);
-  border-color: var(--accent);
 }
 
 .fs-option--on {
@@ -743,42 +489,6 @@
    of that group and not as the one of the group list. */
 .fs-more--child { margin-inline-start: 22px; }
 
-/* Breakpoint */
-
-/* Container query on the shell's parent instead of the former viewport media
-   queries: the sidebar stacks above the main area as soon as the shell itself
-   is narrower than the point where a 296px filter column stops paying for
-   itself. Views answer the same query in their own files (Indizes: grids to one
-   column, Netzwerk: detail panel from overlay to flow). */
-@container view-shell (width < 900px) {
-  .view-shell {
-    grid-template-columns: 1fr;
-    height: auto;
-    min-height: unset;
-  }
-
-  .view-sidebar {
-    border-inline-end: none;
-    border-block-end: 1px solid var(--line);
-    max-height: 50vh;
-  }
-
-  /* Collapsed: the filters fold away and the toggle stays as the way back. The
-     column is a top section here, so open it costs half the screen. */
-  .view-shell--sidebar-collapsed .view-sidebar {
-    display: none;
-  }
-
-  .view-shell__sidebar-toggle {
-    display: flex;
-  }
-
-  .view-main {
-    height: 70vh;
-    min-height: 480px;
-  }
-}
-
 /* Touch targets. Below this width the column is a top section on a touch
    screen, where a 15px reset link or a 22px chevron is not reliably hittable.
    It is a media query and not the shell container: the reason is the input
@@ -788,9 +498,7 @@
   .fs-chip,
   .vs-chip,
   .vs-toggle,
-  .vs-status__reset,
-  .fs-search,
-  .vs-search {
+  .vs-status__reset {
     min-block-size: 24px;
   }
 
