@@ -903,7 +903,7 @@ def _indent(block: str, spaces: int) -> str:
 
 # Bumped whenever a stylesheet changes, so GitHub Pages and browsers drop the
 # cached copy; sync_shared_regions writes it into every page.
-ASSET_VERSION = "2026-09-05"
+ASSET_VERSION = "2026-09-08"
 
 # ---------------------------------------------------------------------------
 # Die Kopfleiste: eine Vorlage fuer alle Seiten

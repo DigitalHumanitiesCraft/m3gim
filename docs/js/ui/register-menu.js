@@ -1,15 +1,4 @@
-/**
- * Das Registermenue am Indizes-Tab (E-230).
- *
- * Die Wahl des Registers verankert die Seite und schneidet nichts, gehoert also
- * weder in die Filterspalte noch in die Arbeitsflaeche. Sie haengt an dem
- * Bedienelement, das die Seite oeffnet, einem Klappknopf im Band: ein Klick auf
- * den inaktiven Knopf oeffnet die Indizes wie bisher, ein zweiter Klick oder
- * ArrowDown klappt die vier Register buendig darunter auf.
- *
- * Die Beschriftungen und Familien kommen aus der Datenschicht der Ansicht, damit
- * Menue und Registerkopf dieselben vier Namen fuehren.
- */
+/** Register selection is available on the first click of the Indizes tab. */
 
 import { el } from '../utils/dom.js';
 import { getState, setIndexRegister } from './router.js';
@@ -29,9 +18,6 @@ function checkMark() {
   return holder.firstElementChild;
 }
 
-/** Wirkt der naechste Klick auf den Tab als Menue? Nur, wenn er schon aktiv ist. */
-const tabIsActive = () => tab.classList.contains('active');
-
 export function initRegisterMenu() {
   tab = document.querySelector('[data-tab="indizes"]');
   panel = document.getElementById('indizes-register-menu');
@@ -50,15 +36,10 @@ export function initRegisterMenu() {
     ));
   }
 
-  // Laeuft vor dem Klickhandler des Routers, weil main.js diese Verdrahtung vor
-  // initRouter aufruft; der Zustand ist also noch der von vor dem Klick.
-  tab.addEventListener('click', () => {
-    if (tabIsActive()) toggle();
-    else close();
-  });
+  tab.addEventListener('click', toggle);
 
   tab.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowDown' && tabIsActive()) { e.preventDefault(); open(); }
+    if (e.key === 'ArrowDown') { e.preventDefault(); open(); }
     else if (e.key === 'Escape') close();
   });
 

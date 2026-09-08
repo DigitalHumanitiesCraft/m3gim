@@ -16,7 +16,7 @@ def test_bestand_tooltip_is_one_unfragmented_overlay(frontend_server, browser_co
     record_id = quote("m3gim-data:NIM_003_1_1", safe="")
     page.goto(frontend_server + f"#bestand/{record_id}", wait_until="networkidle")
 
-    potsdam = page.locator(".chip-wert", has_text="Potsdam")
+    potsdam = page.locator(".chip-action", has_text="Potsdam")
     potsdam.evaluate("element => element.setAttribute('aria-describedby', 'record-context')")
     potsdam.hover()
     tooltip = page.locator(".tooltip-portal")

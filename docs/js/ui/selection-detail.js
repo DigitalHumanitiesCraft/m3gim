@@ -21,6 +21,11 @@ export function createSelectionDetail({ host, onClose = () => {}, onChange = () 
 
   function place() {
     if (!panel || destroyed) return;
+    // A hidden view must not reopen its selection as a modal over another tab.
+    if (!host.getClientRects().length) {
+      if (dialog.open) dialog.close();
+      return;
+    }
     const focused = panel.contains(document.activeElement) ? document.activeElement : null;
     const nextMode = host.clientWidth < 900 ? 'dialog' : 'column';
     if (nextMode === 'dialog') {

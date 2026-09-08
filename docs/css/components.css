@@ -784,6 +784,29 @@
 .chip--role-pair.chip--clickable { cursor: pointer; }
 .chip--role-pair.chip--clickable:hover { filter: brightness(0.97); }
 
+/* The action and the external authority link are separate keyboard targets. */
+.chip-action {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-1-5);
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+.chip-action .chip-wert { text-decoration: underline; text-underline-offset: 2px; }
+.chip-action__icon { flex: none; align-self: center; line-height: 1; }
+.chip--role-pair > .badge--wikidata { flex: none; }
+
+.chip--role-pair:not(.chip--clickable) {
+  background: transparent;
+  border-color: transparent;
+}
+
 /* Compact variant for aggregate tables (Repertoire, Netzwerk) */
 .chip--role-pair.chip--compact {
   padding: 2px var(--space-1-5);

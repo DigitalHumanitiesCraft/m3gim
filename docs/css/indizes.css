@@ -1,43 +1,16 @@
-/* M3GIM Indizes: eine Registerseite (E-226), als Liste mit schmaler Kopfzeile;
-   das Register wird im Menue des Indizes-Tabs gewaehlt (E-227, E-230) */
-
-/* Tab container override: disable outer scroll so the register controls it */
-#tab-indizes.tab-content {
-  overflow: hidden;
-  padding: 0;
-}
-
-/* Work area right of the shared filter column (view-shell). */
+/* The register and its detail share the bounded work area. */
+#tab-indizes.tab-content { overflow: hidden; padding: 0; }
 .idx-page {
   padding: var(--space-3) var(--space-4);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
+  display: flex; flex-direction: column; overflow: hidden;
 }
-
-/* One register fills the remaining viewport. */
-.idx-stage {
-  display: flex;
-  flex: 1;
-  min-height: 0;
-  overflow: hidden;
-}
-
-/* Register card */
+.idx-stage { display: flex; flex: 1; min-height: 0; min-width: 0; overflow: hidden; }
 .idx-grid {
-  display: flex;
-  width: 100%;
-  flex-direction: column;
-  border: 1px solid var(--border-color-light);
-  border-radius: var(--border-radius);
-  background: var(--surface);
-  overflow: hidden;
-  min-height: 0;
+  display: flex; flex: 1; min-width: 0; min-height: 0; flex-direction: column;
+  border: 1px solid var(--border-color-light); border-radius: var(--border-radius);
+  background: var(--surface); overflow: hidden;
+  container: idx-grid / inline-size;
 }
-
-/* Kopfzeile der Liste (E-230): links das gezeichnete Register mit
-   Familiensymbol, Namen und der Zahl des Schnitts, rechts die Sortierung. Das
-   Register selbst wird im Menue des Indizes-Tabs gewaehlt. */
 .idx-head {
   display: flex;
   flex-shrink: 0;
@@ -65,8 +38,6 @@
   white-space: nowrap;
 }
 
-/* Die Familienfarbe faerbt den Registernamen; das Symbol traegt sie ohnehin
-   ueber .fam-mark. */
 .idx-head--person .idx-head__label      { color: var(--chip-c-person-text); }
 .idx-head--institution .idx-head__label { color: var(--chip-c-institution-text); }
 .idx-head--ort .idx-head__label         { color: var(--chip-c-ort-text); }
@@ -79,16 +50,12 @@
   white-space: nowrap;
 }
 
-/* Die Sortierung als Paar von Umschaltknoepfen. Die Wahl steht als Kontur in
-   Akzentfarbe, nicht als Flaeche (Regel 6). */
 .idx-sort {
   display: inline-flex;
   gap: var(--space-1);
   flex-shrink: 0;
 }
 
-/* Nur das Zeichen, kein Wort: die Ordnung sagt das Symbol, den Namen der
-   Tooltip und das aria-label (Regel 8, Projektleitung 2026-09-05). */
 .idx-sort__btn {
   display: inline-flex;
   align-items: center;
@@ -111,256 +78,101 @@
   border-color: var(--accent);
 }
 
-/* Liste statt Tabelle (E-227): keine Spaltenkoepfe, ein Eintrag eine Zeile
-   fester Hoehe. */
-.idx-list {
-  overflow-y: auto;
-  flex: 1;
-  min-height: 0;
-}
 
-/* Fuenf Spalten: Chevron, Name, die Mittelgruppe aus Anreicherung und den
-   beiden Aktionen, Zeitspanne, Wikidata-Marke. Die feste Hoehe ist der Punkt
-   der Zeile; was sie sprengt, steht im aufgeklappten Eintrag. */
+.idx-list { overflow-y: auto; flex: 1; min-height: 0; }
 .idx-item {
-  display: grid;
-  grid-template-columns: 1em minmax(0, auto) minmax(0, 1fr) 4.5rem 18px;
-  align-items: center;
-  gap: var(--space-2);
-  height: 28px;
-  padding: 0 var(--space-3);
-  border-bottom: 1px solid var(--line-soft);
-  overflow: hidden;
+  display: grid; grid-template-columns: minmax(0, 1fr) 4.5rem auto;
+  align-items: center; gap: var(--space-2); height: 48px;
+  padding: 0 var(--space-2); border-bottom: 1px solid var(--line-soft);
   cursor: pointer;
-  transition: background var(--transition-fast);
 }
-
 .idx-item:hover { background: var(--surface-3); }
 .idx-item--expanded { background: var(--surface-2); }
-
-/* Ein Zeichen, eine Bedeutung: der Chevron klappt auf, wie im Bestand
-   (Regel 17, E-217). */
+.idx-entry {
+  display: flex; align-items: center; gap: var(--space-2); min-width: 0;
+  min-height: 44px; padding: 0; border: 0; background: none;
+  font: inherit; color: inherit; text-align: start; cursor: pointer;
+}
 .idx-chevron {
-  display: inline-block;
-  color: var(--color-text-secondary);
+  display: inline-block; flex: 0 0 1em; color: var(--color-text-secondary);
   transition: transform var(--transition-fast);
 }
-
 .idx-chevron--open { transform: rotate(90deg); }
-
-/* Der Name ist das Hauptwort der Zeile und teilt deren Funktion: er klappt den
-   Eintrag auf, in den Bestand fuehrt die Dokumentpille (Projektleitung,
-   2026-09-05). Deshalb kein Linkbild, keine Akzentfarbe bei Hover. */
+.idx-item__identity { display: flex; flex-direction: column; min-width: 0; }
 .idx-name {
-  font-size: var(--text-xs);
-  font-weight: var(--weight-medium);
-  color: var(--color-text-primary);
-  line-height: 1.3;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  font-size: var(--text-xs); font-weight: var(--weight-medium);
+  color: var(--color-text-primary); line-height: 1.3;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
-
 .idx-enrich {
-  font-size: var(--text-xs);
-  color: var(--color-text-tertiary);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  min-width: 0;
+  font-size: var(--text-xs); color: var(--color-text-tertiary);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0;
 }
-
-.idx-komponist {
-  color: var(--color-text-secondary);
-  font-style: italic;
-}
-
-/* Anreicherung und Aktionen in einer Gruppe: die Dokumentpille steht direkt
-   hinter dem angereicherten Wert, nicht am rechten Rand (Projektleitung,
-   2026-09-05). Die Anreicherung gibt als einzige Platz ab. */
-.idx-item__mid {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  min-width: 0;
-}
-
-.idx-item__mid > .idx-enrich { flex: 0 1 auto; }
-.idx-item__mid > .idx-doclink,
-.idx-item__mid > .idx-jump { flex: none; }
-
-/* Die Belegzahl ist die Handlung der Zeile: sie oeffnet den Bestand, gefiltert
-   auf diesen Eintrag (E-252). Deshalb Pille mit Dokumentzeichen, Einheitswort
-   und Pfeil statt einer nackten Zahl am rechten Rand. */
+.idx-komponist { color: var(--color-text-secondary); }
+.idx-item__actions { display: flex; align-items: center; gap: var(--space-1); }
 a.idx-doclink {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-1);
-  padding: 0 var(--space-1-5);
-  height: 18px;
-  border: 1px solid var(--border-color-light);
-  border-radius: 9px;
-  background: var(--surface);
-  color: var(--color-text-secondary);
-  font-size: var(--text-2xs);
-  font-variant-numeric: tabular-nums;
-  text-decoration: none;
-  white-space: nowrap;
-  transition: color var(--transition-fast), border-color var(--transition-fast);
+  display: inline-flex; align-items: center; gap: var(--space-1);
+  padding: 0 var(--space-1-5); min-height: 24px;
+  border: 1px solid var(--border-color-light); border-radius: var(--border-radius);
+  background: var(--surface); color: var(--color-text-secondary);
+  font-size: var(--text-2xs); font-variant-numeric: tabular-nums;
+  text-decoration: none; white-space: nowrap;
 }
-
 a.idx-doclink:hover { color: var(--accent); border-color: var(--accent); }
-
 .idx-doclink__icon { display: inline-flex; line-height: 0; }
 .idx-doclink__arrow { line-height: 1; }
-
-/* Die Zeitspanne der Belege: erstes bis letztes datierte Dokument (E-252). */
 .idx-item__span {
-  font-size: var(--text-xs);
-  color: var(--color-text-tertiary);
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-  text-align: right;
+  font-size: var(--text-xs); color: var(--color-text-tertiary);
+  font-variant-numeric: tabular-nums; white-space: nowrap; text-align: right;
 }
-
-/* Die Wikidata-Spalte bleibt einfarbig: die Marke sagt vorhanden oder nicht,
-   und eine zweite Farbe stuende gegen Regel 2. */
-.idx-item__wd {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
+.idx-item__wd { display: flex; align-items: center; justify-content: center; width: 24px; }
 .idx-wd-link {
-  display: inline-flex;
-  color: var(--color-text-tertiary);
-  line-height: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 24px; height: 24px; color: var(--color-text-tertiary); line-height: 0;
 }
 .idx-wd-link:hover { color: var(--accent); }
-/* Die Balken laufen ueber die volle Kantenlaenge, deshalb wiegt die Marke bei
-   gleicher Groesse schwerer als die Zahl daneben; 10px stellt sie auf die
-   Hoehe der Ziffern (Projektleitung, 2026-09-05). */
 .idx-wd-link svg { width: 10px; height: 10px; }
-
-/* Beziehungs- und Rollen-Chips eroeffnen den aufgeklappten Eintrag (E-227);
-   an der Zeile gaben sie ihr eine eigene Hoehe. */
-.idx-detail__chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-1) var(--space-3);
-  margin-bottom: var(--space-2);
-}
-
-.idx-relations {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-1);
-}
-
-.idx-relations .chip--role-pair {
-  padding: 1px var(--space-1-5);
-  font-size: var(--text-2xs);
-  line-height: 1.3;
-}
-
-.idx-relations .chip-rolle {
-  font-size: 9px;
-}
-
-.idx-relations .chip-wert {
-  font-size: var(--text-2xs);
-}
-
-/* Expanded detail panel */
-.idx-detail {
-  padding: var(--space-2) var(--space-3);
-  background: var(--surface-3);
-}
-
-/* Die Sprungknoepfe der Zeile (Netzwerk, Karte). */
 .idx-jump {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  border-radius: var(--border-radius);
-  border: 1px solid var(--border-color-light);
-  background: var(--surface);
-  color: var(--color-text-secondary);
-  cursor: pointer;
-  transition: color var(--transition-fast), border-color var(--transition-fast);
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 24px; height: 24px; padding: 0;
+  border-radius: var(--border-radius); border: 1px solid var(--border-color-light);
+  background: var(--surface); color: var(--color-text-secondary); cursor: pointer;
 }
 .idx-jump:hover { color: var(--accent); border-color: var(--accent); }
-
-/* Netzwerk und Karte stehen seit dem 2026-09-05 als Aktionen in der Zeile,
-   nicht mehr freischwebend ueber dem aufgeklappten Eintrag; in der Zeilenhoehe
-   nehmen sie das Mass der Dokumentpille. */
-.idx-jump--row {
-  width: 18px;
-  height: 18px;
-  border-radius: 9px;
+.idx-jump--row svg { width: 12px; height: 12px; }
+@container idx-grid (width < 620px) {
+  .idx-item { grid-template-columns: minmax(0, 1fr) auto; }
+  .idx-item > .idx-item__span { display: none; }
+  .idx-doclink__unit { display: none; }
 }
-
-.idx-jump--row svg { width: 11px; height: 11px; }
-
-/* Umfeld: die ko-okkurrenten Entitaeten nach Familie gruppiert. Die Chips
-   bleiben neutral (Regel 2), die Familie sagt das farbige Symbol. */
-.idx-umfeld {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-  margin-bottom: var(--space-2);
+.idx-detail { min-width: 0; }
+.idx-detail__section + .idx-detail__section { margin-top: var(--space-4); }
+.idx-detail__heading {
+  margin: 0 0 var(--space-2); font-size: var(--text-xs); font-weight: var(--weight-semibold);
 }
-
-.idx-umfeld__group {
-  display: grid;
-  grid-template-columns: 110px 1fr;
-  gap: var(--space-2);
-  align-items: baseline;
+.idx-detail__properties { font-size: var(--text-xs); line-height: var(--leading-normal); }
+.idx-detail__properties .idx-enrich { white-space: normal; overflow-wrap: anywhere; }
+.idx-detail__properties > div { margin-top: var(--space-1); }
+.idx-relations, .idx-expandable, .idx-relation__records {
+  display: flex; flex-wrap: wrap; gap: var(--space-1); min-width: 0;
 }
-
+.idx-relation__records { margin-top: var(--space-1); }
+.idx-expandable__rest { display: contents; }
+.idx-expandable__rest[hidden] { display: none; }
+.idx-detail .chip { max-width: 100%; font-size: var(--text-xs); text-align: start; }
+.idx-detail .chip-wert { min-width: 0; overflow-wrap: anywhere; }
+.idx-detail .fam-mark { flex: none; }
+.idx-detail .chip--clickable .chip-wert { text-decoration: underline; text-underline-offset: 2px; }
+.idx-detail__note { margin: var(--space-1) 0 0; font-size: var(--text-xs); color: var(--color-text-secondary); }
+.idx-umfeld { display: flex; flex-direction: column; gap: var(--space-3); }
+.idx-umfeld__group { display: flex; flex-direction: column; gap: var(--space-1); }
 .idx-umfeld__label {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-1);
-  font-size: var(--text-2xs);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-weight: var(--weight-semibold);
-  color: var(--color-text-tertiary);
-  cursor: help;
+  display: inline-flex; align-items: center; gap: var(--space-1); margin: 0;
+  font-size: var(--text-2xs); text-transform: uppercase; letter-spacing: 0.05em;
+  font-weight: var(--weight-semibold); color: var(--color-text-tertiary); cursor: help;
 }
-
-.idx-umfeld__chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-1);
-}
-
-.idx-umfeld__mark {
-  display: inline-flex;
-  align-items: center;
-}
-
-.idx-umfeld .chip--role-pair {
-  padding: 1px var(--space-1-5);
-  font-size: var(--text-2xs);
-}
-
-/* Umfeld-Chips sind Knoepfe, damit die Tastatur sie erreicht; das Chip-Bild
-   bleibt, nur die Knopf-Vorgaben des Browsers fallen weg. */
-.idx-umfeld button.chip {
-  font-family: inherit;
-  line-height: 1.4;
-  text-align: start;
-}
-
-/* „+N weitere" fuehrt ins Netzwerk mit diesem Eintrag als Fokus (E-252); die
-   Zahl gehoert dem Rest der Gruppe. */
-.idx-umfeld__more {
-  color: var(--color-text-secondary);
-}
-.idx-umfeld__more:hover {
-  color: var(--accent);
+.idx-more, .idx-evidence, .idx-relation > summary {
+  padding: var(--space-1); border: 0; background: none; color: var(--accent);
+  font: inherit; font-size: var(--text-xs); text-align: start; cursor: pointer;
+  text-decoration: underline; text-underline-offset: 2px;
 }

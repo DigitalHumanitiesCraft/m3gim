@@ -12,26 +12,24 @@ import {
   entityName, asWikidataId, roleLabel, glossOf, roleIdOf,
 } from '../utils/format.js';
 import { formatDate } from '../utils/date-parser.js';
-import { navigateToIndex, applyArchivFilter } from '../ui/router.js';
+import { applyArchivFilter } from '../ui/router.js';
+import { REGISTER_ENTITY_TYPE, entityFacet } from '../data/entity-types.js';
 import { WIKIDATA_ICON_SVG, AGRELON_LABELS, roleClusterFor } from '../data/constants.js';
 import {
   groupRolesByWork, groupPerformanceDatings, sortDatingsByDate,
   nodeTipLines, qualityTipLines, workComposer,
 } from './record-detail-data.js';
 
-// Indizes grid -> sidebar filter facet (E-91). Grids without a facet
-// equivalent (organisationen) still navigate into the index.
-const GRID_TO_FACET = { personen: 'person', orte: 'location', werke: 'werk' };
-
-/** Chip click: set the shared facet filter where one exists, else go to the index. */
+/** Set the shared facet associated with a register. */
 function chipClickFor(gridType, name) {
-  if (!gridType || !name) return null;
-  const facet = GRID_TO_FACET[gridType];
-  if (facet) return () => applyArchivFilter(facet, name);
-  return () => navigateToIndex(gridType, name);
+  return facetClickFor(REGISTER_ENTITY_TYPE[gridType], name);
 }
 
-/** Agent subnodes -> role-prefix chips, clickable into the person facet. */
+function facetClickFor(facet, name) {
+  return facet && name ? () => applyArchivFilter(facet, name) : null;
+}
+
+/** Agent subnodes retain their recorded entity type when filtering. */
 export function agentChipEls(store, entities) {
   return entities.map(entity => buildRoleChip({
     prefix: roleLabel(store, entity.role) || 'AGENT',
@@ -40,8 +38,9 @@ export function agentChipEls(store, entities) {
     wikidata: asWikidataId(entity['@id']),
     qualityFlag: entity['m3gim-ontology:dataQualityFlag'],
     details: nodeTipLines(entity),
-    tip: 'Als Filter setzen',
-    onClick: chipClickFor('personen', entityName(entity, entity['@id'] || '?')),
+    tip: entityFacet(entity) ? 'Als Filter setzen' : null,
+    action: 'filter',
+    onClick: facetClickFor(entityFacet(entity), entityName(entity, entity['@id'] || '?')),
   }));
 }
 
@@ -82,8 +81,9 @@ function workChipEl(w, store) {
     wikidata: asWikidataId(w['@id']),
     qualityFlag: w['m3gim-ontology:dataQualityFlag'],
     details: nodeTipLines(w),
-    tip: 'Als Filter setzen',
-    onClick: chipClickFor('werke', name),
+    tip: entityFacet(w) ? 'Als Filter setzen' : null,
+    action: 'filter',
+    onClick: facetClickFor(entityFacet(w), name),
   });
 }
 
@@ -156,6 +156,7 @@ export function eventChipEls(store, events, locations, eventDatings) {
       note: ev.description,
       details: nodeTipLines(placeNodeOf(ev)),
       tip: ev.place ? 'Als Filter setzen' : null,
+      action: 'filter',
       onClick: ev.place ? chipClickFor('orte', ev.place) : null,
     }));
   }
@@ -178,6 +179,7 @@ export function eventChipEls(store, events, locations, eventDatings) {
       qualityFlag: loc['m3gim-ontology:dataQualityFlag'],
       details: nodeTipLines(loc),
       tip: 'Als Filter setzen',
+      action: 'filter',
       onClick: chipClickFor('orte', name),
     }));
   }
@@ -248,6 +250,7 @@ export function relationChipEls(relations) {
       cluster: 'beziehung',
       wikidata: r.objectWikidata,
       tip: r.objectName ? 'Als Filter setzen' : null,
+      action: 'filter',
       onClick: r.objectName ? chipClickFor('personen', r.objectName) : null,
     });
   });
@@ -299,12 +302,13 @@ export const QUALITY_ICON_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="cu
  * @param {string} [opts.wikidata] - wd:Qxxx for the badge
  * @param {string} [opts.tip]
  * @param {Function} [opts.onClick]
+ * @param {'filter'|'navigate'} [opts.action] - action symbol, independent of the authority link
  * @param {boolean} [opts.compact] - compact variant for aggregate tables
  * @param {string[]} [opts.details] - modelled fields the chip does not print
  * @param {string} [opts.note] - rico:generalDescription of the datapoint
  * @returns {HTMLElement}
  */
-export function buildRoleChip({ prefix, value, cluster, wikidata, tip, onClick, compact, qualityFlag, gloss, details, note }) {
+export function buildRoleChip({ prefix, value, cluster, wikidata, tip, onClick, action = 'navigate', compact, qualityFlag, gloss, details, note }) {
   const prefixUpper = (prefix || '').toUpperCase();
   const cls = cluster || roleClusterFor(prefixUpper);
   const hasWikidata = wikidata && String(wikidata).startsWith('wd:');
@@ -320,35 +324,32 @@ export function buildRoleChip({ prefix, value, cluster, wikidata, tip, onClick, 
   const chipProps = {
     className: `chip chip--role-pair chip--c-${cls}${onClick ? ' chip--clickable' : ''}${compact ? ' chip--compact' : ''}`,
   };
-  // Gloss of the role term (E-143), suppressed when the chip has its own tip.
-  if (gloss && !tip && !childrenHaveTips) chipProps.dataset = { tip: gloss, tipWrap: '' };
-  if (onClick) {
-    chipProps.onClick = (e) => { e.stopPropagation(); onClick(e); };
-    // A clickable chip is an operable control, so it takes the keyboard the
-    // same way every other row-shaped control of the application does.
-    chipProps.tabindex = '0';
-    chipProps.role = 'button';
-    chipProps.onKeyDown = (e) => {
-      if (e.key !== 'Enter' && e.key !== ' ') return;
-      e.preventDefault();
-      e.stopPropagation();
-      onClick(e);
-    };
-  }
-  if (tip && !childrenHaveTips) chipProps.dataset = { tip };
+  if (tip && !childrenHaveTips && !onClick) chipProps.dataset = { tip };
 
   const valueProps = { className: 'chip-wert' };
-  if (detailTip) valueProps.dataset = { tip: detailTip, tipWrap: '' };
-  const parts = [
+  if (detailTip && !onClick) valueProps.dataset = { tip: detailTip, tipWrap: '' };
+  const label = [
     el('span', { className: 'chip-rolle' }, prefixUpper),
     el('span', valueProps, value || '—'),
   ];
+  const parts = onClick ? [el('button', {
+    type: 'button', className: 'chip-action',
+    'aria-label': `${prefixUpper}: ${typeof value === 'string' ? value : value?.textContent || '—'} ${action === 'filter' ? 'als Filter setzen' : 'öffnen'}`,
+    dataset: { action, tip: [tip, detailTip].filter(Boolean).join('\n'), tipWrap: '' },
+    onClick: event => { event.stopPropagation(); onClick(event); },
+  }, ...label, el('span', {
+    className: 'chip-action__icon', 'aria-hidden': 'true',
+    html: action === 'filter'
+      ? '<svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h12L9 8v5l-2-1V8Z"/></svg>'
+      : '→',
+  }))] : label;
   if (hasWikidata) {
     parts.push(el('a', {
       className: 'badge badge--wikidata',
       href: `https://www.wikidata.org/entity/${String(wikidata).replace('wd:', '')}`,
       target: '_blank',
       rel: 'noopener noreferrer',
+      'aria-label': `Wikidata ${String(wikidata).replace('wd:', '')} in neuem Tab öffnen`,
       dataset: { tip: `Bei Wikidata ansehen (${wikidata})` },
       html: WIKIDATA_ICON_SVG,
       onClick: (e) => e.stopPropagation(),

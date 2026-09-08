@@ -45,25 +45,24 @@ def test_ein_register_und_tastaturbedienung(page):
     assert page.locator(
         "#tab-indizes .idx-head__label").inner_text() == "Personen"
 
-    # Die Zeile selbst ist das Bedienelement des Chevrons (E-217, E-252): sie
-    # ist tastaturerreichbar, Enter klappt auf, Escape schliesst wieder. Der
-    # Name gehoert dazu und traegt kein zweites Ziel.
+    # The native entry button owns detail selection; row links remain independent.
     row = page.locator("#tab-indizes .idx-item").first
-    assert row.get_attribute("tabindex") == "0"
-    assert row.get_attribute("aria-expanded") == "false"
+    entry = row.locator(".idx-entry")
+    assert entry.evaluate("el => el.tagName") == "BUTTON"
+    assert entry.get_attribute("aria-expanded") == "false"
     assert page.locator("#tab-indizes .idx-item .idx-chevron").count() > 0
-    row.focus()
+    entry.focus()
     page.keyboard.press("Enter")
     page.wait_for_selector("#tab-indizes .idx-detail", timeout=5000)
     open_row = page.locator("#tab-indizes .idx-item--expanded").first
-    assert open_row.get_attribute("aria-expanded") == "true"
-    detail_id = open_row.get_attribute("aria-controls")
+    assert open_row.locator(".idx-entry").get_attribute("aria-expanded") == "true"
+    detail_id = open_row.locator(".idx-entry").get_attribute("aria-controls")
     assert detail_id and page.locator(f"#{detail_id}").count() == 1
 
     page.keyboard.press("Escape")
     page.wait_for_selector("#tab-indizes .idx-detail", state="detached", timeout=5000)
     assert page.evaluate(
-        "document.activeElement && document.activeElement.classList.contains('idx-item')"
+        "document.activeElement && document.activeElement.classList.contains('idx-entry')"
     ), "Escape laesst den Fokus auf der Zeile stehen."
 
 
@@ -114,7 +113,7 @@ def test_der_name_klappt_auf_die_pille_fuehrt_in_den_bestand(page):
     name.click()
     page.wait_for_selector("#tab-indizes .idx-detail", timeout=5000)
     offen = page.locator("#tab-indizes .idx-item--expanded").first
-    assert offen.get_attribute("aria-expanded") == "true"
+    assert offen.locator(".idx-entry").get_attribute("aria-expanded") == "true"
     assert "#indizes" in page.url and "#bestand" not in page.url, page.url
     # und derselbe Klick wieder zu.
     offen.locator(".idx-name").click()
@@ -140,14 +139,12 @@ def test_der_eintrag_listet_keine_dokumente_mehr(page):
                  ".idx-detail__show-all", ".idx-detail__header"):
         assert page.locator(f"#tab-indizes {gone}").count() == 0, gone
 
-    # Das Umfeld bleibt als kurze Orientierung, hoechstens fuenf Chips je
-    # Familie; der Rest fuehrt ins Netzwerk statt sich an Ort und Stelle
-    # aufzublaettern.
+    # Each family initially shows five entries; its remainder expands in place.
     groups = page.locator("#tab-indizes .idx-umfeld__group")
     assert groups.count() > 0
     for i in range(groups.count()):
         chips = groups.nth(i).locator(
-            ".idx-umfeld__chips > *:not(.idx-umfeld__more)").count()
+            ".idx-umfeld__chips > .chip").count()
         assert chips <= 5, f"Gruppe {i} zeigt {chips} Chips"
     # Der Gruppentitel ist eine Ueberschrift, kein Link: keine Unterlinie.
     labels = page.locator("#tab-indizes .idx-umfeld__label")
@@ -161,9 +158,16 @@ def test_der_eintrag_listet_keine_dokumente_mehr(page):
 
     more = page.locator("#tab-indizes .idx-umfeld__more").first
     if more.count() > 0:
-        assert "Netzwerk" in more.get_attribute("data-tip")
+        original_url = page.url
+        remainder = page.locator("#" + more.get_attribute("aria-controls"))
+        assert not remainder.is_visible()
         more.click()
-        page.locator('[data-tab="netzwerk"][aria-selected="true"]').wait_for()
+        assert more.get_attribute("aria-expanded") == "true"
+        assert remainder.is_visible()
+        assert remainder.locator(".chip").count() > 0
+        assert page.url == original_url
+        more.click()
+        assert not remainder.is_visible()
 
 
 @pytest.mark.frontend

@@ -17,6 +17,8 @@ import { cityOf } from '../utils/format.js';
 import { yearOfId } from '../data/records-for.js';
 import { matchesQuery } from '../utils/normalize.js';
 import { facetValues } from '../ui/filter-state.js';
+import { REGISTER_ENTITY_TYPE } from '../data/entity-types.js';
+export { REGISTER_ENTITY_TYPE } from '../data/entity-types.js';
 
 /**
  * @typedef {Object} GridEntry
@@ -28,12 +30,7 @@ import { facetValues } from '../ui/filter-state.js';
  */
 
 /** Register key -> content family (E-212), the shared symbol and colour set. */
-export const REGISTER_FAMILY = Object.freeze({
-  personen: 'person',
-  organisationen: 'institution',
-  orte: 'ort',
-  werke: 'werk',
-});
+export const REGISTER_FAMILY = REGISTER_ENTITY_TYPE;
 
 /** Register key -> Beschriftung; Registerkopf und Tab-Menue teilen sie (E-230). */
 export const REGISTER_LABELS = Object.freeze({
@@ -41,19 +38,6 @@ export const REGISTER_LABELS = Object.freeze({
   organisationen: 'Organisationen',
   orte: 'Orte',
   werke: 'Werke',
-});
-
-/**
- * Register key -> the entity type the rest of the application names it by. It
- * is the facet key of the shared filter and, with the same words, the node type
- * of the Netzwerk focus; the two coincide because both address the same four
- * content families (E-212).
- */
-export const REGISTER_ENTITY_TYPE = Object.freeze({
-  personen: 'person',
-  organisationen: 'institution',
-  orte: 'ort',
-  werke: 'werk',
 });
 
 /** Register key -> store map holding its entries. */
