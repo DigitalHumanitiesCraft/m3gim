@@ -14,7 +14,7 @@ import { getFilter } from '../ui/filter-state.js';
 import { recordsFor, yearBounds } from '../data/records-for.js';
 import { buildRegisterDetail } from './indizes-detail.js';
 import {
-  getGridEntries, clearEntriesCache, entriesWithRecordsIn, filterEntries, sortEntries,
+  getGridEntries, clearEntriesCache, entriesWithRecordsIn, sortEntries,
   karteSelectableNames, cutCountOf, bestandFilterFor, entryYearSpan,
   REGISTER_KEYS, REGISTER_LABELS, REGISTER_FAMILY, REGISTER_ENTITY_TYPE,
 } from './indizes-data.js';
@@ -23,7 +23,7 @@ let store = null;
 let container = null;
 let sidebar = null;
 let selection = null;
-const local = { register: 'personen', sort: 'count', expanded: null, q: '' };
+const local = { register: 'personen', sort: 'count', expanded: null };
 let shownEntries = [];
 let shownConfig = null;
 let cutRecordIds = null;
@@ -50,7 +50,6 @@ const LIST_ID = 'idx-register-list';
 export function expandEntry(registerKey, entityName) {
   if (!REGISTERS[registerKey]) return;
   local.register = registerKey;
-  local.q = '';
   local.expanded = entityName;
   redraw();
   requestAnimationFrame(() => {
@@ -63,7 +62,6 @@ export function expandEntry(registerKey, entityName) {
 onViewNavigate('indizes', detail => {
   if (detail.register && REGISTERS[detail.register] && detail.register !== local.register) {
     local.register = detail.register;
-    local.q = '';
     local.expanded = null;
   }
   if (detail.entry != null) { expandEntry(local.register, detail.entry); return; }
@@ -89,13 +87,7 @@ export function renderIndizes(storeRef, containerEl) {
     yearSpan: yearBounds(store), getCount: () => cutSize,
     onChange: () => { local.expanded = null; redraw(); },
     search: { placeholder: 'Signatur, Titel, Typ oder Datum' },
-    sections: [{ title: 'Registersuche', controls: [{
-      kind: 'search', ariaLabel: 'Aktuelles Register durchsuchen',
-      placeholder: 'Name im Register', value: () => local.q,
-      onChange: value => { local.q = value; local.expanded = null; redraw(); },
-    }] }],
   });
-  wrapper.insertBefore(sidebar.strip, wrapper.firstChild);
   container.appendChild(viewShell(sidebar.element, wrapper));
   redraw();
 }
@@ -209,7 +201,7 @@ function renderRegister(wrapper) {
   const register = getGridEntries(store, local.register);
   cutRecordIds = recordsFor(store, getFilter()).ids;
   cutSize = cutRecordIds.size;
-  shownEntries = filterEntries(entriesWithRecordsIn(register, cutRecordIds), local.register, local);
+  shownEntries = entriesWithRecordsIn(register, cutRecordIds);
   shownConfig = config;
   const grid = el('div', { className: 'idx-grid' }, buildHead(config, shownEntries.length, register.length));
   const body = el('div', { className: 'idx-list', id: LIST_ID });
@@ -267,9 +259,11 @@ function buildItem(entry, config) {
     }),
     local.register !== 'orte' && karteSelectableNames(store).has(entry.name) ? el('button', {
       className: 'idx-jump idx-jump--row', type: 'button',
-      dataset: { tip: `Ortsbelege zu ${entry.name} öffnen`, tipWrap: '' },
-      'aria-label': `Ortsbelege zu ${entry.name} öffnen`, html: KARTE_GLYPH_SVG,
-      onClick: () => navigateFromRegister('karte', { entity: entry.name }),
+      dataset: { tip: `Nach ${entry.name} filtern und Karte öffnen`, tipWrap: '' },
+      'aria-label': `Nach ${entry.name} filtern und Karte öffnen`, html: KARTE_GLYPH_SVG,
+      onClick: () => navigateFromRegister('karte', {
+        entityName: entry.name, entityFamily: REGISTER_ENTITY_TYPE[local.register],
+      }),
     }) : null,
     el('span', { className: 'idx-item__wd' }, wikidataMark(entry))));
   return item;

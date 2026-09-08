@@ -26,7 +26,9 @@ const state = {
   activeTab: 'bestand',
   selectedRecord: null,
   indexRegister: INDEX_REGISTERS[0],
+  preserveRecordFilter: false,
 };
+const savedViewParams = new Map();
 
 let onTabChange = null;
 let onRecordSelect = null;
@@ -70,6 +72,7 @@ function switchTab(tab) {
   if (!ALL_VIEWS.includes(tab)) return;
   state.activeTab = tab;
   state.selectedRecord = null;
+  state.preserveRecordFilter = false;
   updateHash();
   applyState();
 }
@@ -97,6 +100,7 @@ export function navigateToView(tab, context = {}) {
   // window.location.hash themselves dropped the shared filter silently
   // (user-story audit 2026-09-03).
   state.selectedRecord = context.recordId ? resolveRecordId(context.recordId) : null;
+  state.preserveRecordFilter = Boolean(context.preserveFilter);
   // Ein Sprung in die Indizes nennt sein Register im Pfad; der Eintrag reist
   // als Navigationskontext und bleibt aus dem geteilten Filter heraus (E-226).
   if (tab === 'indizes' && INDEX_REGISTERS.includes(context.register)) {
@@ -136,6 +140,21 @@ export function getState() {
   return { ...state };
 }
 
+/** Patch presentation parameters through the router's sole address writer. */
+export function setViewParams(patch) {
+  const current = viewParams(splitHash(window.location.hash).query);
+  const params = new URLSearchParams(current);
+  for (const [key, value] of Object.entries(patch || {})) {
+    if (value == null || value === '') params.delete(key);
+    else params.set(key, String(value));
+  }
+  const extra = params.toString().replace(/\+/g, '%20');
+  savedViewParams.set(state.activeTab, extra);
+  const tail = state.activeTab === 'indizes' ? state.indexRegister : state.selectedRecord;
+  const hash = buildHash(state.activeTab, tail, getFilter(), extra);
+  if (window.location.hash !== hash) history.replaceState(null, '', hash);
+}
+
 // Instanzen trugen bis zur Namensraum-Dreiteilung (E-138) den Praefix
 // `m3gim:`. Geteilte Links und Bookmarks aus der Zeit davor nennen ihn weiter;
 // ohne Aufloesung oeffnet ein solcher Link die Anwendung und zeigt nichts an,
@@ -157,6 +176,7 @@ export function resolveRecordId(id) {
  */
 export function parseHash() {
   const { path, query } = splitHash(window.location.hash);
+  state.preserveRecordFilter = new URLSearchParams(query).get('quellansicht') === '1';
   // Der Pfad wird vor dem Query gelesen: die Filteruebernahme dispatcht an die
   // Subscriber, und der Router schreibt aus dieser Subscription die Adresszeile
   // zurueck. Lief sie vor dem Pfad, schrieb sie den Datensatz des vorigen Hash
@@ -199,7 +219,7 @@ export function parseHash() {
  * Schnitt", und ein Tab-Wechsel darf den gesetzten Filter nicht wegwischen.
  */
 function applyFilterFromQuery(query) {
-  if (hasFilterQuery(query)) replaceFilter(parseFilterQuery(query));
+  if (hasFilterQuery(query)) replaceFilter(parseFilterQuery(query), { history: false });
 }
 
 /** Setzt das Register der Indizes, schreibt es in die Adresszeile und meldet es
@@ -221,7 +241,6 @@ export function setIndexRegister(key) {
  */
 function emitViewParams() {
   const params = viewParams(splitHash(window.location.hash).query);
-  if (!params) return;
   window.dispatchEvent(new CustomEvent('m3gim:navigate', {
     detail: { tab: state.activeTab, viewParams: params },
   }));
@@ -245,7 +264,13 @@ function updateHash() {
   // drops it with the view it belongs to; without that, a hash naming both a
   // filter and a node lost the node before the view could read it.
   const { path, query } = splitHash(window.location.hash);
-  const extra = path.split('/')[0] === state.activeTab ? viewParams(query) : '';
+  const previousTab = path.split('/')[0];
+  savedViewParams.set(previousTab, viewParams(query));
+  let extra = previousTab === state.activeTab ? viewParams(query) : (savedViewParams.get(state.activeTab) || '');
+  const params = new URLSearchParams(extra);
+  if (state.activeTab === 'bestand' && state.selectedRecord && state.preserveRecordFilter) params.set('quellansicht', '1');
+  else params.delete('quellansicht');
+  extra = params.toString().replace(/\+/g, '%20');
   const newHash = buildHash(state.activeTab, tail, getFilter(), extra);
   if (window.location.hash !== newHash) {
     history.replaceState(null, '', newHash);
@@ -272,5 +297,6 @@ function applyState() {
   if (activeIndex >= 0) setRovingTabindex(buttons, activeIndex);
 
   if (onTabChange) onTabChange(state.activeTab);
+  window.dispatchEvent(new CustomEvent('m3gim:view-change', { detail: { tab: state.activeTab } }));
   if (state.selectedRecord && onRecordSelect) onRecordSelect(state.selectedRecord);
 }

@@ -28,7 +28,7 @@ m3gim/
 - Authority data, Wikidata identifiers through `reconcile.py` and `enrich-wikidata.py`
 - Hosting, GitHub Pages
 
-The tab bar carries three groups, Material with Bestand and the register pages of the Indizes, Perspektiven with Chronik, Orte, Netzwerk and Statistik, and Werkzeug with the Korb. The views and their rules are described in [`knowledge/specification.md`](knowledge/specification.md) and [`knowledge/design.md`](knowledge/design.md).
+The tab bar carries three groups, Material with Bestand and the register pages of the Indizes, Perspektiven with Chronik, Orte, Netzwerk and Dashboard, and Werkzeug with the Korb. The views and their rules are described in [`knowledge/specification.md`](knowledge/specification.md) and [`knowledge/design.md`](knowledge/design.md).
 
 Running figures on holdings, link rate and authority coverage live in the generated quality snapshot [`data/reports/quality-snapshot.md`](data/reports/quality-snapshot.md) and not in this file.
 

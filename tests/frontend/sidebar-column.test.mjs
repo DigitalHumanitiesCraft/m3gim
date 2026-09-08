@@ -103,7 +103,7 @@ describe('Land und Verknuepfung als geschlossene Facetten', () => {
       src.indexOf('export function flatValues'));
     assert.match(link, /kind: 'facetTree', key: 'verknuepfung'/,
       'Die Rollen haengen im Baumcontrol des Dokumenttyps.');
-    assert.match(link, /setFilter\(\{ verknuepfung: values \}\)/);
+    assert.match(link, /buildFacetSelectionPatch\(getFilter\(\), 'verknuepfung', values\)/);
   });
 
   test('kein Bauteil der Spalte kennt den Erschliessungsstand noch (E-262)', () => {
@@ -114,23 +114,10 @@ describe('Land und Verknuepfung als geschlossene Facetten', () => {
 });
 
 describe('Filterstreifen ueber den Daten', () => {
-  test('jede Ansicht haengt ihn oben in den Hauptbereich', () => {
-    const mounts = {
-      'views/bestand.js': 'main.insertBefore(sidebar.strip, main.firstChild);',
-      'views/chronik.js': 'main.insertBefore(sidebar.strip, main.firstChild);',
-      'views/netzwerk.js': 'main.insertBefore(_sidebar.strip, main.firstChild);',
-      'views/statistik.js': 'main.insertBefore(sidebar.strip, main.firstChild);',
-      'views/indizes.js': 'wrapper.insertBefore(sidebar.strip, wrapper.firstChild);',
-      'views/karte.js': "sidebar.strip, stage",
-    };
-    for (const [file, line] of Object.entries(mounts)) {
-      assert.ok(read(file).includes(line), `${file} montiert den Streifen`);
-    }
-  });
 
   test('leer nimmt er keinen Platz, und er traegt weder Grund noch Rahmen', () => {
     const css = readFileSync(new URL('../../docs/css/sidebar.css', import.meta.url), 'utf-8');
-    const block = css.slice(css.indexOf('.filter-strip {'), css.indexOf('.filter-strip:empty'));
+    const block = css.slice(css.indexOf('\n.filter-strip {'), css.indexOf('.filter-strip:empty'));
     assert.doesNotMatch(block, /background|border/);
     assert.match(css, /\.filter-strip:empty \{ display: none; \}/);
   });
@@ -157,7 +144,7 @@ describe('Filterstreifen ueber den Daten', () => {
     const hint = src.slice(src.indexOf('function emptyHint'), src.indexOf('const FILTER_GLYPH'));
     assert.match(hint, /className: 'filter-strip__empty'/);
     assert.match(hint, /'kein Filter aktiv'/);
-    assert.match(hint, /tip: 'Die Filter stehen in der linken Spalte\.'/,
+    assert.match(hint, /tip: 'Die gemeinsame Suche und die linke Filterspalte wählen Dokumente aus\.'/,
       'Der Hinweis auf die Spalte steht im Tooltip, nicht in der Zeile.');
     assert.ok(hint.includes("el('span'"), 'ein span, kein button');
     assert.ok(!hint.includes("el('button'"), 'der Platzhalter ist kein Bedienelement');
@@ -196,28 +183,6 @@ describe('Filterstreifen ueber den Daten', () => {
   });
 });
 
-describe('Platzhalter', () => {
-  test('das Facettenfeld traegt eine ruhige Aufforderung mit dem Facettennamen', () => {
-    const src = read('ui/sidebar-facets.js');
-    assert.match(src, /placeholder: `\$\{meta\.title\} filtern…`,/,
-      'Projektleitung 2026-09-03: "Person filtern…" statt des groessten Werts mit Zahl.');
-    assert.doesNotMatch(src, /placeholderFor/);
-  });
-
-  test('die Ansichten nennen ihre durchsuchten Felder im Freitextfeld', () => {
-    const line = "search: { placeholder: 'Signatur, Titel, Typ oder Datum' },";
-    for (const file of ['bestand', 'chronik', 'indizes', 'karte', 'netzwerk', 'statistik']) {
-      assert.ok(read(`views/${file}.js`).includes(line), `${file} setzt den Dokument-Suchtext`);
-    }
-  });
-
-  test('die Registersuche bleibt ein lokales Feld', () => {
-    const src = read('views/indizes.js');
-    assert.match(src, /title: 'Registersuche'/);
-    assert.match(src, /value: \(\) => local\.q/);
-    assert.doesNotMatch(src, /local\.q = \(getFilter\(\)\.search/);
-  });
-});
 
 describe('Offene Facette als eine Zeile', () => {
   test('jede Sektion mit Facettenfeld wird zur zweispaltigen Zeile', () => {
@@ -351,13 +316,6 @@ describe('Ansichtslokale Chips im Streifen (E-223)', () => {
       'Zuruecksetzen loest auch die ansichtslokale Verengung.');
   });
 
-  test('die Ortssuche trägt einen entfernbaren lokalen Chip', () => {
-    const src = read('views/karte.js');
-    const block = src.slice(src.indexOf('localChips: () =>'), src.indexOf('onChange: redraw'));
-    assert.match(block, /title: 'Ortssuche'/);
-    assert.match(block, /onRemove:/);
-    assert.doesNotMatch(src, /entitySection/);
-  });
 });
 
 describe('Einheitliche Spalte über alle Ansichten (E-237 bis E-240)', () => {

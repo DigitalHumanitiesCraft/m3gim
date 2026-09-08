@@ -10,7 +10,7 @@
 
 import { el, clear } from '../utils/dom.js';
 import { matchesQuery } from '../utils/normalize.js';
-import { getFilter, setFilter, facetValues } from './filter-state.js';
+import { getFilter, setFilter, facetValues, facetSelectionValues, buildFacetSelectionPatch } from './filter-state.js';
 import { facetInventory, facetCounts } from '../data/records-for.js';
 import { optionRow, groupRow } from './sidebar-options.js';
 
@@ -89,7 +89,7 @@ export function landSection(store, inventory) {
  */
 export function linkSection(store, inventory) {
   const entries = inventory || [];
-  const selected = () => facetValues(getFilter(), 'verknuepfung');
+  const selected = () => facetSelectionValues(getFilter(), 'verknuepfung');
   return {
     title: FACET_META.verknuepfung.title,
     tip: () => 'Die Typen der Verknüpfungstabelle, darunter ihre Rollen. Ein Typ '
@@ -100,7 +100,7 @@ export function linkSection(store, inventory) {
       kind: 'facetTree', key: 'verknuepfung', options: () => entries,
       counts: () => facetCounts(store, getFilter(), 'verknuepfung', flatValues(entries)),
       selected,
-      onSelect: (values) => setFilter({ verknuepfung: values }),
+      onSelect: (values) => setFilter(buildFacetSelectionPatch(getFilter(), 'verknuepfung', values)),
     }],
   };
 }
@@ -121,8 +121,7 @@ export function sharedFacetSection(store, key, inventory) {
   if (key === 'verknuepfung') return linkSection(store, inventory);
   const meta = FACET_META[key] || { title: key };
   const entries = inventory || [];
-  const empty = entries.length === 0;
-  const selected = () => facetValues(getFilter(), key);
+  const selected = () => facetSelectionValues(getFilter(), key);
   // Belegzahlen are relative to the current cut, so a value states what it
   // would leave standing, not how often it occurs somewhere in the Bestand.
   const counts = () => facetCounts(store, getFilter(), key, flatValues(entries));
@@ -133,12 +132,11 @@ export function sharedFacetSection(store, key, inventory) {
     tip: () => [meta.family ? `Symbol: Inhaltsfamilie ${meta.title}` : '',
       countTip(selected().length > 0)].filter(Boolean).join('\n'),
     titleActive: () => selected().length > 0,
-    collapsible: empty,
-    collapsed: () => empty,
+    collapsible: true,
+    collapsed: () => true,
     controls: [{
-      kind: 'facet', key, options: () => entries, counts, selected,
-      placeholder: `${meta.title} filtern…`,
-      onSelect: (values) => setFilter({ [key]: values }),
+      kind: 'optionList', key, options: () => entries, counts, selected, limit: OPTION_LIMIT,
+      onSelect: (values) => setFilter(buildFacetSelectionPatch(getFilter(), key, values)),
     }],
   };
 }
@@ -298,7 +296,11 @@ export function facetTreeControl({ key, options, counts, selected, onSelect }) {
 
   more.addEventListener('click', () => { expanded = !expanded; paint(); });
 
-  const write = (values) => { onSelect(values); paint(); };
+  const write = (values) => {
+    const focused = tree.contains(document.activeElement) ? document.activeElement.closest('[data-value]')?.dataset.value : null;
+    onSelect(values); paint();
+    if (focused != null) tree.querySelector(`[data-value="${CSS.escape(focused)}"]`)?.focus({ preventScroll: true });
+  };
   const toggle = (value) => {
     const chosen = selected() || [];
     write(chosen.includes(value) ? chosen.filter(v => v !== value) : [...chosen, value]);
@@ -319,13 +321,12 @@ export function facetTreeControl({ key, options, counts, selected, onSelect }) {
       // of its own: it counts as the sum of its children and selecting it
       // selects them, otherwise the whole group vanishes from the facet.
       const ownCount = countFor(entry);
-      const synthetic = ownCount === 0 && kids.length > 0;
+      const synthetic = entry.count === 0 && kids.length > 0;
       const groupCount = synthetic ? kids.reduce((n, c) => n + countFor(c), 0) : ownCount;
       const kidValues = kids.map(c => c.value);
       const groupOn = synthetic
         ? kidValues.length > 0 && kidValues.every(v => chosen.includes(v))
         : chosen.includes(entry.value);
-      if (groupCount === 0 && !groupOn) continue;
       if (!expanded && shown >= OPTION_LIMIT) { hidden += 1; continue; }
 
       const isOpen = opened.has(entry.value) || kids.some(c => chosen.includes(c.value));
@@ -355,8 +356,7 @@ export function facetTreeControl({ key, options, counts, selected, onSelect }) {
       if (!isOpen) continue;
       // A leaf with count zero that nobody chose is out of the cut and out of
       // the list, so the cap counts what is really there.
-      const leaves = kids.filter(child =>
-        countFor(child) > 0 || chosen.includes(child.value));
+      const leaves = kids;
       const full = shownInFull.has(entry.value);
       const visible = full ? leaves : leaves.slice(0, OPTION_LIMIT);
       for (const child of visible) {
@@ -395,15 +395,18 @@ export function facetTreeControl({ key, options, counts, selected, onSelect }) {
  * is the axis; a state that disappeared would read as one the Bestand does not
  * know.
  */
-export function optionListControl({ key, options, counts, selected, onSelect }) {
+export function optionListControl({ key, options, counts, selected, onSelect, limit = Infinity }) {
   const list = el('div', { className: 'fs-tree' });
   const node = el('div', { className: 'fs-facet fs-facet--tree' }, list);
   if (key) node.dataset.facet = key;
+  let shown = limit;
 
   const toggle = (value) => {
     const chosen = selected() || [];
+    const hadFocus = list.contains(document.activeElement);
     onSelect(chosen.includes(value) ? chosen.filter(v => v !== value) : [...chosen, value]);
     paint();
+    if (hadFocus) list.querySelector(`[data-value="${CSS.escape(value)}"]`)?.focus({ preventScroll: true });
   };
 
   function paint() {
@@ -411,11 +414,17 @@ export function optionListControl({ key, options, counts, selected, onSelect }) 
     const chosen = selected() || [];
     const countOf = counts ? counts() : null;
     clear(list);
-    for (const entry of entries) {
+    const ordered = [...entries].sort((a, b) => Number(chosen.includes(b.value)) - Number(chosen.includes(a.value)));
+    for (const entry of ordered.slice(0, shown)) {
       const n = countOf ? (countOf.get(entry.value) ?? 0) : entry.count;
-      list.appendChild(optionRow(entry, '', n, chosen.includes(entry.value),
-        () => toggle(entry.value), true));
+      const row = optionRow(entry, '', n, chosen.includes(entry.value), () => toggle(entry.value), true);
+      list.appendChild(row);
     }
+    if (ordered.length > shown) list.appendChild(el('button', { type: 'button',
+      className: 'fs-more fs-more--button', onClick: () => { shown += 50; paint(); } },
+    `Weitere anzeigen (${ordered.length - shown})`));
+    if (shown > limit) list.appendChild(el('button', { type: 'button',
+      className: 'fs-more fs-more--button', onClick: () => { shown = limit; paint(); } }, 'Weniger anzeigen'));
   }
 
   paint();

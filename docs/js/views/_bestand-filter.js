@@ -16,6 +16,7 @@ const CUT_FACETS = FACET_KEYS;
 /** Ob mindestens eine schneidende Facette oder die Suche aktiv ist. Eine leere
  *  Liste heisst inaktiv. */
 export function isSharedFiltered(shared) {
+  if (shared?.predicates?.length) return true;
   if (shared && (shared.search || '').trim()) return true;
   for (const key of CUT_FACETS) {
     if (facetValues(shared, key).length > 0) return true;
@@ -63,6 +64,10 @@ export function widenFilterForRecord(store, recordId, shared) {
   const blocked = [];
   if (!store || !recordId) return { patch, blocked };
   const base = new Set([recordId]);
+  if (shared?.predicates?.length
+      && !recordsFor(store, { predicates: shared.predicates }, { base }).ids.has(recordId)) {
+    blocked.push('predicates');
+  }
 
   for (const key of CUT_FACETS) {
     const values = facetValues(shared, key);

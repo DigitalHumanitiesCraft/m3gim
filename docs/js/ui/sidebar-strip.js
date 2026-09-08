@@ -7,7 +7,9 @@
 import { el, clear } from '../utils/dom.js';
 import {
   getFilter, setFilter, resetFilter, facetValues, isFilterActive, deviatingKeys,
+  undoFilter, redoFilter, filterHistoryStatus, removePredicate, buildFacetSelectionPatch,
 } from './filter-state.js';
+import { predicateLabel } from '../data/query-predicates.js';
 import { FACET_META, labelIn } from './sidebar-facets.js';
 
 /**
@@ -31,10 +33,15 @@ export function filterStrip(inventories, localChips) {
     const local = (localChips() || []).filter(g => g && g.chips && g.chips.length);
     if (!isFilterActive() && local.length === 0) {
       element.appendChild(emptyHint());
+      appendHistory();
       return;
     }
     const filter = getFilter();
     const deviating = new Set(deviatingKeys());
+    for (const predicate of filter.predicates || []) {
+      element.appendChild(stripGroup(predicate.type === 'invalid' ? 'Filter prüfen' : 'Bedingung',
+        [removeChip(displayPredicate(predicate), () => removePredicate(predicate))]));
+    }
     for (const [key, meta] of Object.entries(FACET_META)) {
       if (!deviating.has(key)) continue;
       const inventory = inventories.get(key) || [];
@@ -56,11 +63,48 @@ export function filterStrip(inventories, localChips) {
       element.appendChild(stripGroup(group.title,
         group.chips.map(c => removeChip(c.label, c.onRemove))));
     }
+    const bindable = facetValues(filter, 'verknuepfung').some(value => {
+      const family = value.split(':')[0];
+      return value.includes(':') && ['ort', 'person', 'institution'].includes(family)
+        && facetValues(filter, family).length;
+    });
+    if (bindable) element.appendChild(el('button', { type: 'button', className: 'vs-status__reset',
+      onClick: () => setFilter(buildFacetSelectionPatch(getFilter(), 'verknuepfung',
+        facetValues(getFilter(), 'verknuepfung'))) }, 'Dokument-Ko-Erwähnung → Rolle an Entität binden'));
     element.appendChild(el('button', {
       className: 'vs-status__reset', type: 'button',
       onClick: () => { for (const g of local) for (const c of g.chips) c.onRemove(); resetFilter(); },
       html: RESET_GLYPH,
     }, el('span', {}, 'alle zurücksetzen')));
+    appendHistory();
+  }
+
+  function appendHistory() {
+    const state = filterHistoryStatus();
+    const undo = el('button', { type: 'button', className: 'filter-history__button',
+      onClick: undoFilter }, 'Filter rückgängig');
+    const redo = el('button', { type: 'button', className: 'filter-history__button',
+      onClick: redoFilter }, 'Filter wiederherstellen');
+    undo.disabled = !state.canUndo;
+    redo.disabled = !state.canRedo;
+    element.append(el('span', { className: 'filter-history', role: 'group', 'aria-label': 'Filterverlauf' }, undo, redo));
+  }
+
+  function displayPredicate(predicate) {
+    if (predicate.type === 'entity-role') {
+      const roles = predicate.roles.map(role => labelIn(inventories.get('verknuepfung') || [], `${predicate.family}:${role}`));
+      return `${FACET_META[predicate.family]?.title || ''}: ${predicate.entities.join(' oder ')} · ${roles.join(' oder ')}`;
+    }
+    if (predicate.type === 'set-membership') {
+      const label = item => `${FACET_META[item.facet]?.title || item.facet}: ${labelIn(inventories.get(item.facet) || [], item.value)}`;
+      const included = predicate.include.map(label).join(' und ');
+      const excluded = predicate.exclude.map(label).join(', ');
+      return [included, excluded ? `ohne ${excluded}` : ''].filter(Boolean).join(' · ');
+    }
+    if (predicate.type === 'records' && predicate.ids.length === 1) {
+      return `Dokument ${predicate.ids[0].replace(/^m3gim-data:/, '')}`;
+    }
+    return predicateLabel(predicate);
   }
 
   update();
@@ -85,7 +129,7 @@ const RESET_GLYPH = '<svg class="vs-status__reset-icon" width="14" height="14"'
 function emptyHint() {
   return el('span', {
     className: 'filter-strip__empty',
-    dataset: { tip: 'Die Filter stehen in der linken Spalte.', tipWrap: '', tipPos: 'bottom-left' },
+    dataset: { tip: 'Die gemeinsame Suche und die linke Filterspalte wählen Dokumente aus.', tipWrap: '', tipPos: 'bottom-left' },
     html: FILTER_GLYPH,
   }, el('span', {}, 'kein Filter aktiv'));
 }

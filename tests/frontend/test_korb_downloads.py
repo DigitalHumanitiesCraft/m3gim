@@ -195,8 +195,9 @@ def test_map_occurrences_never_escape_shared_document_cut(frontend_server, page)
     page.locator("#btn-karte").click()
     drawing = page.locator("#tab-karte svg.mob-map__svg")
     drawing.wait_for(timeout=10_000)
-    search = page.locator("#tab-karte input.vs-search")
+    search = page.get_by_role('combobox', name='Suche', exact=True)
     search.fill("nim_004")
+    search.press('Enter')
     page.wait_for_timeout(150)
 
     verdict = page.evaluate(

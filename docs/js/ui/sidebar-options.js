@@ -59,11 +59,20 @@ export function optionRow(entry, query, count, on, onClick, checkable = false, i
       : null,
     fam,
     labelNode(entry.label, query),
-    el('span', { className: 'fs-option__count' }, count ? String(count) : ''));
+    el('span', { className: 'fs-option__count' }, count != null ? String(count) : ''));
   // The icon is aria-hidden, so the family has to reach the row's name in
   // words; the label alone would leave two identical names indistinguishable.
   if (entry.family && entry.familyLabel) {
     row.setAttribute('aria-label', `${entry.familyLabel}: ${entry.label}`);
+  }
+  row.dataset.value = entry.value;
+  if (checkable && onClick && !implied) {
+    row.tabIndex = 0;
+    row.addEventListener('keydown', event => {
+      if (event.target === row && (event.key === 'Enter' || event.key === ' ')) {
+        event.preventDefault(); onClick(event);
+      }
+    });
   }
   return row;
 }
@@ -86,6 +95,13 @@ export function groupRow(entry, count, on, isOpen, hasKids, onToggle, onOpen, ti
     chevron,
     labelNode(entry.label, ''),
     el('span', { className: 'fs-option__check', 'aria-hidden': 'true' }, on ? '✓' : ''),
-    el('span', { className: 'fs-option__count' }, count ? String(count) : ''));
+    el('span', { className: 'fs-option__count' }, count != null ? String(count) : ''));
+  row.tabIndex = 0;
+  row.dataset.value = entry.value;
+  row.addEventListener('keydown', event => {
+    if (event.target === row && (event.key === 'Enter' || event.key === ' ')) {
+      event.preventDefault(); onToggle(event);
+    }
+  });
   return row;
 }

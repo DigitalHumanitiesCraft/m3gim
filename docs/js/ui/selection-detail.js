@@ -94,6 +94,7 @@ export function createSelectionDetail({ host, onClose = () => {}, onChange = () 
   observer.observe(host);
   return {
     open, close,
+    setFocusTarget(trigger) { if (trigger) rootTrigger = trigger; },
     destroy() {
       if (destroyed) return;
       close({ restoreFocus: false, notify: false });

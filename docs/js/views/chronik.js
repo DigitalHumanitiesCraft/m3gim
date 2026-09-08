@@ -26,6 +26,7 @@ let visibleRecords = 0;
 let activeEvidence = null;
 
 export function renderChronik(storeRef, container) {
+  sidebar?.destroy();
   axis?.destroy();
   details?.destroy();
   activeEvidence = null;
@@ -44,7 +45,6 @@ export function renderChronik(storeRef, container) {
     yearSpan: yearBounds(store), getCount: () => visibleRecords,
     search: { placeholder: 'Signatur, Titel, Typ oder Datum' }, onChange: updateChronikView,
   });
-  main.insertBefore(sidebar.strip, main.firstChild);
   container.appendChild(viewShell(sidebar.element, main));
   updateChronikView();
 }

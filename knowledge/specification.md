@@ -149,13 +149,15 @@ Version 0.9 is the state in which every story of § Epics and user stories is fu
 
 ## Stable research contract
 
-The implementation scope is the document-centred tool (E-282). Shared text search, facets and the time window select one set of linked source records across all six views. Text search uses the common document search fields, including signature, title and linked values. A view's entity chooser or graph selection refines its presentation within that set and does not redefine the shared query. An explicit filter URL replaces the previous filter; navigation without a filter query preserves it.
+The implementation scope is the document-centred tool (E-282, E-296). One shared search, facets and the time window select linked source records across the research views. Typing previews suggestions; Enter commits free text and an active suggestion commits its original typed identity. Separate open/focus actions preserve the cut. Graph and chart selection exposes supporting evidence; applying it as a filter is explicit. An explicit filter URL replaces the previous filter; navigation without a filter query preserves it. Filter undo/redo is available across views.
 
 The time window uses the primary record time anchor, with undated records retained as declared context. A map annotation keeps its own date as source evidence; it is not a second, silent time filter. Each view accounts for its eligible subset, such as located places or actors excluding the creator of the fonds. Grouped rows and aggregate counts refer back to the records they represent.
 
 The Chronik displays every recorded document and statement date within that shared document set (E-287). Its source and entity lanes retain document context, uncertainty, undated evidence and complete access to dense groups. Dated rows do not by themselves bind co-mentioned entities into an occurrence.
 
-Co-mention is the relation available before occurrence grouping is implemented. The task set therefore asks researchers to assess historical connections in the source. The planned occurrence model remains a separate extension. Role counts and filters belong to the shared sidebar; the existing four statistics sections provide evidence navigation from their rankings. A further statistics section requires a demonstrated unmet research task.
+Document co-mention remains distinct from a source entry that binds an entity to its own recorded role. Typed entity/role predicates enforce that binding for persons, institutions and places. Existing unbound URLs retain co-occurrence semantics and offer deliberate conversion. Neither query establishes an occurrence or a journey. Every recorded role remains accessible, including a missing role or absent display label. The planned occurrence model remains a separate extension.
+
+The Dashboard supplies two independently configurable, coordinated views over the same cut. Treemap, matrix, time distribution, place-role Sankey, UpSet, A/B comparison and map address the research tasks in [plan.md](plan.md). Each aggregate states its counting unit and denominator and provides its complete supporting document set and dimension evidence. Mark selection coordinates the panels and opens one common detail. Comparison keeps reference A independently of the current cut B; extraction retains both the aggregate definition and its source provenance. No chart infers realized income, appearances or travel from co-mention.
 
 ## Netzwerk view
 
@@ -167,7 +169,7 @@ Selection, layout, legends and detail behaviour belong to [design.md](design.md)
 
 ## Views
 
-All views use the shared document cut. The sidebar owns filters; selected details expose the evidence behind an item. [design.md](design.md) owns their presentation and interaction.
+All research views use the shared document cut. The common toolbar and sidebar own query controls; selected details expose the evidence behind an item. [design.md](design.md) owns their presentation and interaction.
 
 | View | Research operation and evidence |
 |---|---|
@@ -176,7 +178,7 @@ All views use the shared document cut. The sidebar owns filters; selected detail
 | Orte | Find places and recorded roles, inspect complete source evidence, compare geographical distribution through an optional map and open the selected place in the Chronik. Document dates and explicitly dated place statements remain separate. Places without coordinates remain in the list. Historical journeys and realized appearances require source assessment and occurrence binding. |
 | Register | Enter through persons, institutions, places or works, inspect enrichment and document evidence, and continue into the relevant analytical view. Curated, derived and ambiguous work/part bindings remain distinguishable. |
 | Netzwerk | Inspect actor/document co-mention and explicitly recorded relations under the contract above. |
-| Statistik | Compare distinct-record counts by document type, repertoire, person and institution, and inspect the records behind each ranking. |
+| Dashboard | Coordinate two chosen visualizations, explore composition, co-mentions, temporal coverage, place-role evidence and set intersections, compare two document sets and extract the exact supporting evidence. The legacy `statistik` route remains valid. |
 | Korb | Collect records across views and export CSV, BibTeX, JSON-LD or GEXF with source cells and links sufficient to trace the evidence. |
 
 Cataloguing status remains available in record details. Source correction uses the pipeline's cataloguing artefacts. The common coverage display names the selected records against the linked application basis and provides the data timestamp; it does not measure completeness of the entire fonds.

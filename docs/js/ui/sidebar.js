@@ -1,45 +1,9 @@
-/**
- * The one sidebar of every view (design.md Regel 7, E-158).
- *
- * `createSidebar` builds a fixed order and every tab gets the same column
- * (Projektleitung, 2026-09-03):
- *
- *   (a) search      free text into the shared filter, no title, the view names
- *                   its searchable fields in the placeholder
- *   (b) Zeitraum    the two-thumb year window, its years at the ends of the rail
- *   (c) facets      the shared facets, Dokumenttyp first, the two folded ones
- *                   (Land, Verknüpfung) among them
- *   (d) sections    view-specific controls the view passes in
- *   (e) legend      view-specific legend sections
- *
- * The result line is not a block of its own: it is the root row of the
- * Dokumenttyp tree ("Dokumente · 161 von 187"). The active values and the reset
- * link live outside the column, in the strip `createSidebar` returns beside the
- * element: a filter change must not make the column jump.
- *
- * A view passes only (d), (e) and an optional search config; the rest comes
- * from the scaffold and reads `filter-state.js`. Exactly three rules exist in
- * the column, before (c), (d) and (e); inside a block only spacing separates
- * (design.md Regel 11).
- *
- * The view stays owner of its local state. Controls read it through getters and
- * report back through callbacks; afterwards the view redraws and calls
- * `update()`. Every filter change, whether from this column or from another
- * view, arrives as exactly one `onChange` call, so a click never triggers two
- * render passes. `destroy()` drops the subscription when a view rebuilds.
- *
- * viewShell(sidebarEl, mainEl) is the grid the sidebar and the canvas hang in.
- *
- * This file composes; the parts stand beside it and are assembled here:
- * `sidebar-status.js` (result line), `sidebar-facets.js` (shared facets and
- * their tree), `sidebar-options.js` (row forms), `sidebar-range.js` (year
- * rail), `sidebar-controls.js` (the remaining factories), `sidebar-strip.js`
- * (chip row). Views and tests keep importing through this file.
- */
+/** Shared filter column and search/strip host for all research views. */
 
 import { el } from '../utils/dom.js';
 import { familyIcon } from './family-icons.js';
-import { getFilter, setFilter, subscribe } from './filter-state.js';
+import { getFilter, setFilter, subscribe, buildFacetSelectionPatch } from './filter-state.js';
+import { createSearch } from './search.js';
 import {
   facetInventory, docTypeGroups, linkGroups, YEAR_MIN, YEAR_MAX,
 } from '../data/records-for.js';
@@ -63,14 +27,15 @@ export { coveredBand } from './sidebar-range.js';
 // Geruest + Builder
 // ---------------------------------------------------------------------------
 
+const sidebarHosts = new WeakMap();
+
 export function viewShell(sidebarEl, mainEl) {
-  // Under 900px container width the column folds behind this toggle; the
-  // stylesheet hides the button above that width, so desktop pays nothing
-  // (Projektleitung, 2026-09-04).
-  const shell = el('div', { className: 'view-shell view-shell--sidebar-collapsed' });
+  // Keep the same toggle reachable at every width; smaller hosts start folded.
+  const collapsedAtStart = !window.matchMedia('(min-width: 1200px)').matches;
+  const shell = el('div', { className: `view-shell${collapsedAtStart ? ' view-shell--sidebar-collapsed' : ''}` });
   const toggle = el('button', {
     className: 'view-shell__sidebar-toggle', type: 'button',
-    'aria-expanded': 'false', 'aria-label': 'Filter ein- oder ausblenden',
+    'aria-expanded': String(!collapsedAtStart), 'aria-label': 'Filter ein- oder ausblenden',
     onClick: () => {
       const collapsed = shell.classList.toggle('view-shell--sidebar-collapsed');
       toggle.setAttribute('aria-expanded', String(!collapsed));
@@ -78,7 +43,10 @@ export function viewShell(sidebarEl, mainEl) {
   });
   toggle.innerHTML = '<svg class="view-shell__sidebar-toggle-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg>';
   toggle.appendChild(el('span', {}, 'Filter'));
-  shell.append(toggle, sidebarEl, mainEl);
+  const toolbar = sidebarHosts.get(sidebarEl);
+  if (toolbar) { toolbar.prepend(toggle); mainEl.prepend(toolbar); }
+  else mainEl.prepend(toggle);
+  shell.append(sidebarEl, mainEl);
   return shell;
 }
 
@@ -125,7 +93,6 @@ export function createSidebar(store, {
   ];
 
   const specs = [
-    search === false ? null : searchSection(search && search.placeholder),
     zeitSection(yearSpan),
     ...facetSpecs.map((spec, i) => withRule(spec, i === 0)),
     ...withLeadingRule(sections),
@@ -134,6 +101,11 @@ export function createSidebar(store, {
 
   const built = buildColumn(specs);
   const strip = filterStrip(inventories, localChips);
+  const commonSearch = search === false ? null : createSearch(store, {
+    selectFacet: (key, values) => setFilter(buildFacetSelectionPatch(getFilter(), key, values)),
+  });
+  const toolbar = el('div', { className: 'research-toolbar' }, commonSearch?.element, strip.element);
+  sidebarHosts.set(built.element, toolbar);
 
   // A cut from another view must arrive here without the consumer thinking of
   // it; otherwise the column shows a state the shared filter no longer has.
@@ -142,8 +114,8 @@ export function createSidebar(store, {
   return {
     element: built.element,
     strip: strip.element,
-    update() { built.update(); strip.update(); },
-    destroy: unsubscribe,
+    update() { built.update(); strip.update(); commonSearch?.update(); },
+    destroy() { unsubscribe(); commonSearch?.destroy(); built.destroy(); sidebarHosts.delete(built.element); },
   };
 }
 
@@ -168,6 +140,7 @@ function withRule(spec, on) {
 function buildColumn(specs) {
   const aside = el('aside', { className: 'view-sidebar', 'aria-label': 'Filter' });
   const updaters = [];
+  const destroyers = [];
 
   for (const spec of specs) {
     if (!spec) continue;
@@ -239,9 +212,10 @@ function buildColumn(specs) {
       if (!control) continue;
       const make = FACTORIES[control.kind];
       if (!make) continue;
-      const { node, update } = make({ ...control, labelledBy: spec.titleId });
+      const { node, update, destroy } = make({ ...control, labelledBy: spec.titleId });
       if (node) body.appendChild(node);
       if (update) updaters.push(update);
+      if (destroy) destroyers.push(destroy);
     }
 
     paintHead();
@@ -254,30 +228,13 @@ function buildColumn(specs) {
     aside.appendChild(sec);
   }
 
-  return { element: aside, update() { for (const u of updaters) u(); } };
+  return { element: aside, update() { for (const u of updaters) u(); },
+    destroy() { for (const destroy of destroyers) destroy(); } };
 }
 
 // ---------------------------------------------------------------------------
 // (a) Suche, (b) Zeitraum
 // ---------------------------------------------------------------------------
-
-/** The free text sits above everything and carries no title; the placeholder
- *  names the fields the view actually searches (design.md Regel 8). */
-function searchSection(placeholder) {
-  return {
-    className: 'vs-section--search',
-    controls: [{
-      kind: 'search',
-      ariaLabel: 'Suche',
-      // Every keystroke resolves the whole cut and recounts every facet, so the
-      // input bundles them (Projektleitung, 2026-09-04).
-      debounce: 120,
-      placeholder: placeholder || '',
-      value: () => getFilter().search || '',
-      onChange: (v) => setFilter({ search: v }),
-    }],
-  };
-}
 
 function zeitSection(span) {
   const windowOf = () => {

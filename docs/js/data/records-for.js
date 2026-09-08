@@ -17,7 +17,13 @@
  */
 
 import { primaryYear } from './loader.js';
-import { facetValues } from '../ui/filter-state.js';
+import { evidenceResult, createWitness } from './evidence.js';
+import {
+  PREDICATE_TYPES, normalizePredicate, normalizePredicates, buildPredicateFacetPatch,
+} from './query-predicates.js';
+import {
+  MISSING_ROLE, boundEntityRoleWitnesses, facetMemberWitnesses, searchMatchWitnesses,
+} from './query-evidence.js';
 import { matchesQuery } from '../utils/normalize.js';
 import {
   getDocTypeId, expandDftFilter, dftLabel, buildDftTree, ensureArray, cityOf,
@@ -234,10 +240,10 @@ export function docTypeGroups(store) {
  * any role of that type, so the type value carries the union itself and needs
  * no expansion in `recordsFor`.
  *
- * A role without a display form stays out (E-143), and so the count of a type
- * can exceed the sum of its roles; a document with two roles of one type
- * conversely counts in both of them. The section head names that rule, the rows
- * carry no tooltip of their own.
+ * Every source entry remains operable. A missing role has an explicit
+ * presentation sentinel, and a role without a display form receives a visible
+ * fallback that preserves its raw key. A document with two roles of one type
+ * counts in both children and once at the parent.
  * @param {Object} store
  * @returns {Array<{value:string, label:string, count:number, tip:string,
  *   children:Array<{value:string, label:string, count:number}>}>}
@@ -253,8 +259,9 @@ export function linkGroups(store) {
     const children = [];
     for (const [value, ids] of index) {
       if (!value.startsWith(prefix)) continue;
-      const roleName = vocabLabel(store, value.slice(prefix.length));
-      if (!roleName) continue;
+      const role = value.slice(prefix.length);
+      const roleName = role === MISSING_ROLE ? 'Ohne erfasste Rolle'
+        : vocabLabel(store, role) || `Rolle ohne Bezeichnung (${role})`;
       const n = countIn(ids, base);
       if (n === 0) continue;
       children.push({ value, label: roleName, count: n });
@@ -273,7 +280,8 @@ export function linkGroups(store) {
  * @param {Object} filter                 getFilter() result
  * @param {{base?: Set<string>}} [opts]   start set, default all records
  * @returns {{ids: Set<string>, weit: number, eng: number,
- *            undatiert: number, byFacet: Object<string, number>}}
+ *   undatiert: number, byFacet: Object<string, number>, witnesses: Object[],
+ *   invalidPredicates: Object[], valid: boolean, evidence: Object}}
  *   `weit` is the size of the resulting set, `eng` the subset of it with
  *   spatiotemporal or performance evidence. The two are counted, never used to
  *   cut: the Schaerfegrad-Umschalter is gone (E-163), the difference stays a
@@ -282,6 +290,7 @@ export function linkGroups(store) {
 export function recordsFor(store, filter, opts = {}) {
   const f = filter || {};
   let ids = opts.base instanceof Set ? new Set(opts.base) : new Set(baseIds(store));
+  const matchingWitnesses = [];
 
   const byFacet = {};
   for (const key of FACET_KEYS) {
@@ -302,6 +311,9 @@ export function recordsFor(store, filter, opts = {}) {
     }
     byFacet[key] = union.size;
     ids = union;
+    for (const value of values) {
+      matchingWitnesses.push(...facetMemberWitnesses(store, key, value, ids));
+    }
   }
 
   const query = String(f.search || '').trim();
@@ -309,7 +321,10 @@ export function recordsFor(store, filter, opts = {}) {
     const kept = new Set();
     for (const id of ids) {
       const record = store && store.records ? store.records.get(id) : null;
-      if (recordMatchesSearch(store, record, query)) kept.add(id);
+      if (recordMatchesSearch(store, record, query)) {
+        kept.add(id);
+        matchingWitnesses.push(...searchMatchWitnesses(store, record, query));
+      }
     }
     ids = kept;
   }
@@ -330,12 +345,96 @@ export function recordsFor(store, filter, opts = {}) {
     for (const id of ids) if (yearOfId(store, id) == null) undatiert += 1;
   }
 
+  const invalidPredicates = [];
+  for (const predicate of normalizePredicates(f.predicates)) {
+    if (predicate.type === PREDICATE_TYPES.INVALID) {
+      invalidPredicates.push(predicate);
+      ids = new Set();
+      continue;
+    }
+    if (predicate.type === PREDICATE_TYPES.ENTITY_ROLE) {
+      const matching = boundEntityRoleWitnesses(store, predicate, ids);
+      const matchingIds = new Set(matching.map(witness => witness.recordId));
+      ids = new Set([...ids].filter(id => matchingIds.has(id)));
+      matchingWitnesses.push(...matching);
+      continue;
+    }
+    if (predicate.type === PREDICATE_TYPES.RECORDS) {
+      const base = baseIds(store);
+      const missing = predicate.ids.filter(id => !base.has(id));
+      if (missing.length > 0) {
+        invalidPredicates.push(normalizePredicate({
+          type: PREDICATE_TYPES.INVALID,
+          reason: `Unbekannte Dokument-ID: ${missing.join(', ')}`,
+          input: predicate,
+        }));
+        ids = new Set();
+        continue;
+      }
+      const selected = new Set(predicate.ids);
+      ids = new Set([...ids].filter(id => selected.has(id)));
+      for (const id of ids) {
+        const record = store?.records?.get(id);
+        matchingWitnesses.push(createWitness({
+          recordId: id, dimension: 'records', value: id, source: record,
+          nodeId: id, kind: 'record',
+        }));
+      }
+      continue;
+    }
+    if (predicate.type === PREDICATE_TYPES.SET_MEMBERSHIP) {
+      for (const member of predicate.include) {
+        const memberIds = idsForFacetMember(store, member.facet, member.value);
+        ids = new Set([...ids].filter(id => memberIds.has(id)));
+        matchingWitnesses.push(...facetMemberWitnesses(
+          store, member.facet, member.value, ids,
+        ));
+      }
+      for (const member of predicate.exclude) {
+        const memberIds = idsForFacetMember(store, member.facet, member.value);
+        ids = new Set([...ids].filter(id => !memberIds.has(id)));
+      }
+    }
+  }
+
+  undatiert = 0;
+  for (const id of ids) if (yearOfId(store, id) == null) undatiert += 1;
   const weit = ids.size;
   const anchored = engRecords(store);
   let eng = 0;
   for (const id of ids) if (anchored.has(id)) eng += 1;
 
-  return { ids, weit, eng, undatiert, byFacet };
+  const evidence = evidenceResult({
+    recordIds: ids,
+    contextRecordIds: ids,
+    witnesses: matchingWitnesses,
+    invalid: invalidPredicates,
+  });
+  return {
+    ids, weit, eng, undatiert, byFacet,
+    witnesses: evidence.witnesses,
+    invalidPredicates: evidence.invalidPredicates,
+    valid: evidence.valid,
+    evidence,
+  };
+}
+
+/** Values as a list without depending on the state module. */
+function facetValues(filterState, key) {
+  const value = filterState && filterState[key];
+  if (value == null || value === '') return [];
+  return Array.isArray(value) ? value.filter(item => item != null && item !== '') : [value];
+}
+
+/** Resolve one set-membership atom through the same indexes as basic facets. */
+function idsForFacetMember(store, facet, value) {
+  const index = facetIndex(store, facet);
+  const leaves = facet === 'docType' ? expandDftFilter(store, value) : [value];
+  const ids = new Set();
+  for (const leaf of leaves) {
+    for (const id of index.get(leaf) || []) ids.add(id);
+  }
+  return ids;
 }
 
 /** Shared document search used by every view. */
@@ -411,6 +510,30 @@ export function yearBounds(store) {
  * @returns {Map<string, number>}
  */
 export function facetCounts(store, filter, key, values) {
+  const predicates = normalizePredicates(filter?.predicates);
+  const structuredDimension = predicates.some(predicate => (
+    (predicate.type === PREDICATE_TYPES.ENTITY_ROLE
+      && (key === 'verknuepfung' || predicate.family === key))
+    || (predicate.type === PREDICATE_TYPES.SET_MEMBERSHIP
+      && [...predicate.include, ...predicate.exclude].some(member => member.facet === key))
+  ));
+  if (structuredDimension) {
+    const counts = new Map();
+    for (const value of values) {
+      const patch = buildPredicateFacetPatch(filter, key, [value]);
+      const candidate = { ...(filter || {}), ...patch };
+      candidate.predicates = normalizePredicates(candidate.predicates).flatMap(predicate => {
+        if (predicate.type !== PREDICATE_TYPES.SET_MEMBERSHIP) return [predicate];
+        const include = predicate.include.filter(member => member.facet !== key);
+        const exclude = predicate.exclude.filter(member => member.facet !== key);
+        if (include.length === 0 && exclude.length === 0) return [];
+        return [{ ...predicate, include, exclude }];
+      });
+      counts.set(value, recordsFor(store, candidate).ids.size);
+    }
+    return counts;
+  }
+
   const rest = { ...(filter || {}) };
   delete rest[key];
   const { ids } = recordsFor(store, rest);
@@ -513,6 +636,7 @@ function docTypeIndex(store) {
  * Link type and (type, role) → records, read off the graph shapes named at
  * LINK_TYPES. Both levels live in one index, the type under its bare key and
  * the role under `typ:rolle`, so a choice on either side resolves the same way.
+ * Entries without a role use the UI-only MISSING_ROLE sentinel.
  */
 function linkIndex(store) {
   const out = new Map();
@@ -520,8 +644,8 @@ function linkIndex(store) {
   const add = (typ, role, id) => {
     if (!typ) return;
     put(out, typ, id);
-    const roleKey = roleIdOf(role) || roleToken(role);
-    if (roleKey) put(out, typ + LINK_SEP + roleKey, id);
+    const roleKey = roleIdOf(role) || roleToken(role) || MISSING_ROLE;
+    put(out, typ + LINK_SEP + roleKey, id);
   };
   for (const record of store.allRecords) {
     const id = record['@id'];

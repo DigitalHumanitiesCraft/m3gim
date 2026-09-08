@@ -21,6 +21,10 @@
  */
 
 import { FACET_KEYS } from '../data/records-for.js';
+import {
+  BOUND_ENTITY_FAMILIES, PREDICATE_TYPES, normalizePredicates,
+  predicateKey, predicatesEqual, buildPredicateFacetPatch,
+} from '../data/query-predicates.js';
 
 // Facetten, die mehrere Werte zugleich tragen. Innerhalb einer Facette wirken
 // sie als ODER, zwischen Facetten bleibt es UND (E-151). Eine leere Liste
@@ -39,6 +43,7 @@ const EMPTY = Object.freeze({
   verknuepfung: [], // Verknuepfungstyp oder `typ:rolle` (linkIndex)
   zeitfenster: null, // [vonJahr, bisJahr] oder null = volle Spanne
   search: '',       // Freitext (Bestand/Chronik)
+  predicates: Object.freeze([]), // source-bound and exact typed selections
 });
 
 // Ensemble, Ereignisrolle und Waehrung sind in records-for.js als Achsen
@@ -48,8 +53,12 @@ const EMPTY = Object.freeze({
 
 const state = {};
 for (const key of Object.keys(EMPTY)) {
-  state[key] = Array.isArray(EMPTY[key]) ? [] : EMPTY[key];
+  state[key] = key === 'predicates' ? EMPTY.predicates
+    : Array.isArray(EMPTY[key]) ? [] : EMPTY[key];
 }
+
+const past = [];
+const future = [];
 
 // The empty selection is the one baseline shared by every view.
 function baselineOf(key) {
@@ -58,7 +67,7 @@ function baselineOf(key) {
 
 /** Facetten, die vom Nullpunkt abweichen — die Chips der Ergebniszeile. */
 export function deviatingKeys() {
-  return Object.keys(EMPTY).filter(key => !shallowEqual(state[key], baselineOf(key)));
+  return Object.keys(EMPTY).filter(key => !stateValueEqual(key, state[key], baselineOf(key)));
 }
 
 /**
@@ -89,6 +98,8 @@ const CHANNEL = 'm3gim:filter';
 export function getFilter() {
   const out = { ...state };
   for (const key of LIST_FACETS) out[key] = [...state[key]];
+  if (Array.isArray(state.zeitfenster)) out.zeitfenster = [...state.zeitfenster];
+  out.predicates = state.predicates;
   return out;
 }
 
@@ -96,18 +107,22 @@ export function getFilter() {
  * Merged einen Patch in den State und benachrichtigt alle Subscriber.
  * Nur tatsaechliche Aenderungen loesen einen Dispatch aus (idempotent).
  */
-export function setFilter(patch) {
+export function setFilter(patch, { history = true } = {}) {
   if (!patch || typeof patch !== 'object') return;
+  const before = snapshot();
   let changed = false;
   for (const key of Object.keys(patch)) {
     if (!(key in EMPTY)) continue;
-    const next = LIST_FACETS.has(key) ? toList(patch[key]) : patch[key];
-    if (!shallowEqual(state[key], next)) {
+    const next = normalizeStateValue(key, patch[key]);
+    if (!stateValueEqual(key, state[key], next)) {
       state[key] = next;
       changed = true;
     }
   }
-  if (changed) dispatch();
+  if (changed) {
+    if (history) remember(before);
+    dispatch();
+  }
 }
 
 /**
@@ -126,28 +141,82 @@ export function addFacetValue(key, value) {
 }
 
 /** Replace the complete filter in one dispatch. */
-export function replaceFilter(next = {}) {
+export function replaceFilter(next = {}, opts = {}) {
   const patch = {};
   for (const key of Object.keys(EMPTY)) {
     const value = key in next ? next[key] : baselineOf(key);
-    patch[key] = Array.isArray(value) ? [...value] : value;
+    patch[key] = key === 'predicates' ? value
+      : Array.isArray(value) ? [...value] : value;
   }
-  setFilter(patch);
+  setFilter(patch, opts);
 }
 
 /** Setzt alle Facetten auf den Nullpunkt zurueck, also auf die leere Wahl: nach
  *  dem Zuruecksetzen steht die volle Grundmenge, nicht der Ansichts-Default. */
-export function resetFilter() {
-  let changed = false;
-  for (const key of Object.keys(EMPTY)) {
-    const base = baselineOf(key);
-    const next = Array.isArray(base) ? [...base] : base;
-    if (!shallowEqual(state[key], next)) {
-      state[key] = next;
-      changed = true;
+export function resetFilter(opts = {}) {
+  replaceFilter({}, opts);
+}
+
+/** Remove one canonical predicate in one committed state transition. */
+export function removePredicate(predicate, opts = {}) {
+  const removeKey = predicateKey(predicate);
+  setFilter({
+    predicates: state.predicates.filter(item => predicateKey(item) !== removeKey),
+  }, opts);
+}
+
+/**
+ * Values shown selected by a facet control, including values held by a bound
+ * entity-role predicate instead of a legacy document-level co-mention.
+ */
+export function facetSelectionValues(filter, key) {
+  const values = facetValues(filter, key);
+  for (const predicate of normalizePredicates(filter?.predicates)) {
+    if (predicate.type !== PREDICATE_TYPES.ENTITY_ROLE) continue;
+    if (key === predicate.family) values.push(...predicate.entities);
+    if (key === 'verknuepfung') {
+      values.push(...predicate.roles.map(role => `${predicate.family}:${role}`));
     }
   }
-  if (changed) dispatch();
+  return [...new Set(values)];
+}
+
+/**
+ * Build an atomic patch for the common selector. When an entity family and
+ * one of its role values are both selected, their basic facets are replaced
+ * by one source-bound predicate. Existing legacy URL state keeps co-mention
+ * semantics until the user changes one of the involved controls through this
+ * helper.
+ */
+export function buildFacetSelectionPatch(filter, key, values) {
+  return buildPredicateFacetPatch(filter, key, values);
+}
+
+/** Replay the preceding committed filter state without adding a history step. */
+export function undoFilter() {
+  if (past.length === 0) return false;
+  const previous = past.pop();
+  future.push(snapshot());
+  applySnapshot(previous);
+  return true;
+}
+
+/** Replay the next committed filter state without adding a history step. */
+export function redoFilter() {
+  if (future.length === 0) return false;
+  const next = future.pop();
+  past.push(snapshot());
+  applySnapshot(next);
+  return true;
+}
+
+export function filterHistoryStatus() {
+  return Object.freeze({
+    canUndo: past.length > 0,
+    canRedo: future.length > 0,
+    undoDepth: past.length,
+    redoDepth: future.length,
+  });
 }
 
 /**
@@ -177,6 +246,35 @@ export function isFilterActive() {
 function dispatch() {
   if (typeof window === 'undefined') return;
   window.dispatchEvent(new CustomEvent(CHANNEL, { detail: getFilter() }));
+}
+
+function snapshot() {
+  return getFilter();
+}
+
+function remember(previous) {
+  past.push(previous);
+  future.length = 0;
+}
+
+function applySnapshot(value) {
+  for (const key of Object.keys(EMPTY)) {
+    const next = key in value ? value[key] : baselineOf(key);
+    state[key] = normalizeStateValue(key, next);
+  }
+  dispatch();
+}
+
+function stateValueEqual(key, left, right) {
+  if (key === 'predicates') return predicatesEqual(left, right);
+  return shallowEqual(left, right);
+}
+
+function normalizeStateValue(key, value) {
+  if (key === 'predicates') return normalizePredicates(value);
+  if (LIST_FACETS.has(key)) return toList(value);
+  if (key === 'zeitfenster' && Array.isArray(value)) return Object.freeze([...value]);
+  return value;
 }
 
 function shallowEqual(a, b) {

@@ -166,51 +166,11 @@ describe('Entitaeten und Repertoire im Schnitt', () => {
   });
 });
 
-// ---------------------------------------------------------------------------
-// Die geteilte Farbskala der Rollen (F1: die Mobilitaetssichten sind fort)
-// ---------------------------------------------------------------------------
-
-import { rankedRoleScale, REST_COLOR } from '../../docs/js/views/statistik-data.js';
 import * as statistikData from '../../docs/js/views/statistik-data.js';
 
-describe('rankedRoleScale', () => {
-  const entries = [
-    { key: 'a', label: 'absendung', count: 3 },
-    { key: 'b', label: 'aufführung', count: 9 },
-    { key: 'c', label: 'entstehung', count: 5 },
-    { key: 'd', label: 'gastspiel', count: 2 },
-    { key: 'e', label: 'premiere', count: 2 },
-    { key: 'f', label: 'probe', count: 1 },
-    { key: 'g', label: 'spielzeit', count: 1 },
-    { key: 'h', label: 'wohnort', count: 1 },
-  ];
-
-  test('die Rangfolge steht nach Haeufigkeit, bei Gleichstand alphabetisch', () => {
-    assert.deepEqual([...rankedRoleScale(entries).keys()],
-      ['b', 'c', 'a', 'd', 'e', 'f', 'g', 'h']);
-  });
-
-  test('die sechs haeufigsten Rollen tragen je eine der sechs Kategorienfarben', () => {
-    const scale = rankedRoleScale(entries);
-    const coloured = [...scale.values()].filter(e => e.color !== REST_COLOR);
-    assert.equal(coloured.length, 6, 'die Farbpalette der Tokens hat sechs Toene');
-    assert.deepEqual(coloured.map(e => e.color),
-      ['var(--cat-1)', 'var(--cat-2)', 'var(--cat-3)',
-        'var(--cat-4)', 'var(--cat-5)', 'var(--cat-6)']);
-    // Der lange Schwanz teilt sich den Grauton, statt eine Farbe zu wiederholen
-    // und damit zwei Rollen als dieselbe zu zeigen.
-    assert.deepEqual([...scale.values()].filter(e => e.color === REST_COLOR).map(e => e.key),
-      ['g', 'h']);
-  });
-
-  test('die Anzeigeform wird grossgeschrieben, das Vokabular bleibt klein', () => {
-    assert.equal(rankedRoleScale(entries).get('b').label, 'Aufführung');
-  });
-
-  test('die Mobilitaetssichten sind aus der geteilten Datenschicht fort (F1)', () => {
-    // Sie waren hier die geteilte Quelle fuer Karte und Chronik; ein
-    // uebriggebliebener Export brauchte einen Verbraucher, den es nicht gibt.
-    assert.equal(statistikData.SICHTEN, undefined);
-    assert.equal(statistikData.SICHT_COLOR, undefined);
-  });
+test('die abgelösten Mobilitäts- und Rollenfarbskalen sind nicht mehr Teil der Statistik', () => {
+  assert.equal(statistikData.SICHTEN, undefined);
+  assert.equal(statistikData.SICHT_COLOR, undefined);
+  assert.equal(statistikData.rankedRoleScale, undefined);
+  assert.equal(statistikData.REST_COLOR, undefined);
 });

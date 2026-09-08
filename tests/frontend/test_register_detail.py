@@ -94,11 +94,12 @@ def test_relationship_exposes_each_attesting_document_in_the_cut(
 def test_register_search_does_not_hide_a_co_mentioned_target(frontend_server, browser_context):
     page = browser_context.new_page()
     page.goto(frontend_server + "#indizes/werke?suche=NIM_004")
-    search = page.get_by_placeholder("Name im Register")
+    search = page.get_by_role("combobox", name="Suche", exact=True)
     search.fill("Tristan")
+    search.press("ArrowDown")
+    page.get_by_role("button", name="Registereintrag öffnen", exact=True).click()
     entry = page.get_by_role("button", name="Details zu Tristan und Isolde", exact=True)
     expect(entry).to_be_visible()
-    entry.click()
     chip = page.locator(".idx-umfeld__chips > button.chip").first
     name = chip.locator(".chip-wert").inner_text()
     chip.click()

@@ -126,7 +126,7 @@ def main() -> int:
             # Stempel erkennen: `[chronik] ...`, `[bestand] ...`, `[indizes] ...`
             if text.startswith("[") and "]" in text:
                 tag = text[1:text.index("]")]
-                if tag in ("chronik", "bestand", "indizes", "statistik",
+                if tag in ("chronik", "bestand", "indizes", "dashboard",
                            "karte", "netzwerk", "korb"):
                     stamps[tag] = text
 
@@ -154,8 +154,8 @@ def main() -> int:
                     f'#tab-{tab} .leaflet-marker-icon, '
                     f'#tab-{tab} circle, '
                     f'#tab-{tab} .chip, '
-                    f'#tab-{tab} .stat-section, '
-                    f'#tab-{tab} .statistik-chip'
+                    f'#tab-{tab} .dashboard-mark, '
+                    f'#tab-{tab} .dashboard-panel'
                 ).count()
                 new_errs = global_errors[errs_before:]
                 status = "OK" if not new_errs else "WARN"
@@ -174,7 +174,7 @@ def main() -> int:
             "bestand":    ["konvolute", "records", "stand"],
             "chronik":    ["records", "jahre-belegt", "datumsgruppen",
                            "quellenbezuege", "ohne-dokumentdatum", "spanne"],
-            "statistik":  ["records", "ansichten", "aktiv", "spanne"],
+            "dashboard":  ["records", "panels", "placeStatements", "fingerprint"],
             # Seit E-226 zeigt die Seite genau ein Register; der Stempel nennt
             # es und seine Zahlen statt aller vier Registerschluessel.
             "indizes":    ["register", "eintraege", "gesamt", "sortierung"],
@@ -321,12 +321,12 @@ def main() -> int:
             # dem Sidebar-Umbau ueber dasselbe Facetten-Muster wie jeder Filter.
             # Die view-eigene Sektion startet zugeklappt (E-240); ihr Feld ist
             # erst nach dem Aufklappen bedienbar.
-            entity_facet = page.locator('#tab-karte .fs-facet[data-facet="institution"]')
-            entity_facet.locator('.fs-search').fill("Bayreuther Festspiele")
+            page.get_by_role('combobox', name='Suche', exact=True).fill("Bayreuther Festspiele")
             page.wait_for_timeout(200)
-            picker = entity_facet.locator('.fs-option').count()
+            suggestions = page.locator('.research-search__option[aria-label^="Institution: Bayreuther Festspiele,"]')
+            picker = suggestions.count()
             nodes_entity = None
-            target = entity_facet.locator('.fs-option').first
+            target = suggestions.first
             if target.count() > 0:
                 target.click()
                 page.wait_for_timeout(400)
@@ -363,10 +363,9 @@ def main() -> int:
             page.locator('[data-tab="netzwerk"]').first.click()
             page.wait_for_timeout(500)
             errs_before = len(global_errors)
-            ort_facet = page.locator('#tab-netzwerk .fs-facet[data-facet="ort"]')
-            ort_facet.locator(".fs-search").fill("Bayreuth")
+            page.get_by_role('combobox', name='Suche', exact=True).fill("Bayreuth")
             page.wait_for_timeout(200)
-            ort_facet.get_by_text("Bayreuth", exact=True).first.click()
+            page.locator('.research-search__option[aria-label^="Ort: Bayreuth,"]').click()
             page.wait_for_timeout(500)
             vk_stamp = stamps.get('netzwerk', '')
             page.locator('[data-tab="bestand"]').first.click()
@@ -618,7 +617,7 @@ def main() -> int:
             gone = page.locator('#tab-bestand .vs-section',
                                 has_text="Erschließungsstand").count()
             facet = page.locator('#tab-bestand .vs-section',
-                                 has_text="Land").first
+                                 has=page.get_by_role('button', name='Land', exact=True))
             head = facet.locator('.vs-section__title--toggle')
             folded_start = head.get_attribute("aria-expanded") == "false"
             head.click()

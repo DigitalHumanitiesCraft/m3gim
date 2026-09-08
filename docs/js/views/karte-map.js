@@ -44,7 +44,7 @@ export function buildMap(mapCell, countries, evidence, state, opts) {
   const status = el('span', { className: 'mob-map-status', 'aria-live': 'polite' });
   mapCell.append(tip, status);
   let width = 320, height = 320, nodes = [], active = 0, frameKey = '';
-  let sized = false, lastSelection = '', keyboardActive = false;
+  let sized = false, keyboardActive = false;
   let transform = d3.zoomIdentity;
   const selected = node => state.selectedCities.some(city => city.toLowerCase() === node.key);
   const hideTip = () => tip.classList.remove('mob-tip--on');
@@ -97,6 +97,19 @@ export function buildMap(mapCell, countries, evidence, state, opts) {
       y0: Math.min(...nodes.map(n => n.y)), y1: Math.max(...nodes.map(n => n.y)) };
     const frame = fitTransform(bounds, { width, height, pad: 30, minSpan: 45, maxK: 12 });
     svg.call(zoom.transform, d3.zoomIdentity.translate(frame.tx, frame.ty).scale(frame.k));
+  }
+  function centerCity(city) {
+    const key = String(city || '').toLocaleLowerCase('de-DE');
+    const node = nodes.find(item => item.key === key);
+    if (!node || !width || !height) return false;
+    // Automatic selection may turn a world overview into a regional view, but
+    // it keeps every already useful user zoom. The source only locates a place,
+    // so selection never manufactures an address-scale zoom.
+    const k = Math.max(transform.k, 3);
+    svg.call(zoom.transform, d3.zoomIdentity
+      .translate(width / 2 - k * node.x, height / 2 - k * node.y)
+      .scale(k));
+    return true;
   }
   const controls = el('div', { className: 'mob-zoomctl' });
   for (const [text, label, click] of [
@@ -154,15 +167,6 @@ export function buildMap(mapCell, countries, evidence, state, opts) {
       : 'Karte. Keine verortbaren Belege in dieser Auswahl.');
     const nextKey = nodes.map(n => n.key).join('|');
     if (nextKey !== frameKey) { frameKey = nextKey; fit(); }
-    const selectionKey = state.selectedCities.join('|');
-    if (selectionKey !== lastSelection) {
-      lastSelection = selectionKey;
-      const node = nodes.find(selected);
-      if (node) {
-        const [x, y] = transform.apply([node.x, node.y]);
-        if (x < 12 || y < 12 || x > width - 12 || y > height - 12) svg.call(zoom.translateTo, node.x, node.y);
-      }
-    }
     mark();
   }
   const observer = new ResizeObserver(() => {
@@ -177,5 +181,14 @@ export function buildMap(mapCell, countries, evidence, state, opts) {
     mark();
   });
   observer.observe(mapCell);
-  return { draw, destroy() { observer.disconnect(); svg.on('.zoom', null); } };
+  return {
+    draw,
+    centerCity,
+    selectCity(city, { center = true } = {}) {
+      state.selectedCities = city ? [city] : [];
+      draw();
+      if (center) centerCity(city);
+    },
+    destroy() { observer.disconnect(); svg.on('.zoom', null); },
+  };
 }

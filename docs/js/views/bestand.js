@@ -36,6 +36,7 @@ let store = null;
 let container = null;
 let sidebar = null;
 let expandedRecord = null; // only one at a time
+let outsideRecord = null;
 /** The page of a Folio row the open detail shows. Null on every other row. It
  *  is no second selection: the row stays the Folio, only the detail turns
  *  (F8, Aufgabe 7 des Aufgabensatzes). */
@@ -84,6 +85,7 @@ let pendingRowFocus = null;
  * @param {HTMLElement} containerEl
  */
 export function renderBestand(storeRef, containerEl) {
+  sidebar?.destroy();
   store = storeRef;
   container = containerEl;
 
@@ -104,7 +106,6 @@ export function renderBestand(storeRef, containerEl) {
     search: { placeholder: 'Signatur, Titel, Typ oder Datum' },
     onChange: () => updateBestandView(),
   });
-  main.insertBefore(sidebar.strip, main.firstChild);
   container.appendChild(viewShell(sidebar.element, main));
   updateBestandView();
 
@@ -183,6 +184,7 @@ function updateBestandView() {
   }
 
   renderRows(items);
+  renderOutsideRecord(cut);
 
   visibleRecords = recordCount;
   if (sidebar) sidebar.update();
@@ -196,6 +198,23 @@ function updateBestandView() {
   ]);
 
   return recordCount;
+}
+
+function renderOutsideRecord(cut) {
+  const main = mainEl();
+  main?.querySelector('.archiv-outside-record')?.remove();
+  if (!outsideRecord || cut.has(outsideRecord)) { outsideRecord = null; return; }
+  const record = store.records.get(outsideRecord);
+  if (!main || !record) return;
+  const panel = el('section', { className: 'archiv-outside-record', 'aria-label': 'Quelle außerhalb des Filters' },
+    el('div', { className: 'archiv-outside-record__head' },
+      el('strong', {}, 'Quelle außerhalb des aktiven Filters'),
+      el('button', { type: 'button', onClick: () => {
+        outsideRecord = null; expandedRecord = null; expandedPage = null;
+        selectRecord(null); updateBestandView();
+      } }, 'Quellenansicht schließen')),
+    buildInlineDetail(record, store));
+  main.querySelector('.archiv-table')?.before(panel);
 }
 
 const COLUMNS = ['archiv-col-signatur', 'archiv-col-titel', 'archiv-col-typ',
@@ -819,6 +838,16 @@ function expandRecord(recordId) {
   // widening the cut and rebuilding the table again would move the page under
   // the reader on every step.
   const rowId = rowIdFor(recordId);
+  const cut = recordsFor(store, getFilter()).ids;
+  if (getState().preserveRecordFilter && !cut.has(recordId)) {
+    expandedRecord = null; expandedPage = null; outsideRecord = recordId;
+    updateBestandView();
+    const head = mainEl()?.querySelector('.archiv-outside-record .inline-detail__head');
+    head?.focus({ preventScroll: true });
+    mainEl()?.scrollTo({ top: 0 });
+    return;
+  }
+  outsideRecord = null;
   if (expandedRecord === rowId) { showPage(pageOfRow(
     currentItems.find(i => i.record['@id'] === rowId), recordId)); return; }
   expandedRecord = rowId;
@@ -827,11 +856,13 @@ function expandRecord(recordId) {
   // minimally instead of letting the row disappear without a word; every
   // widening shows up as a chip (Projektleitung, 2026-09-04).
   const { patch, blocked } = widenFilterForRecord(store, recordId, getFilter());
-  if (Object.keys(patch).length > 0) setFilter(patch);
   if (blocked.length > 0) {
-    console.warn('M³GIM: Datensatz', recordId,
-      'bleibt ausgeschlossen durch', blocked.join(', '));
+    expandedRecord = null; expandedPage = null; outsideRecord = recordId;
+    updateBestandView();
+    mainEl()?.scrollTo({ top: 0 });
+    return;
   }
+  if (Object.keys(patch).length > 0) setFilter(patch);
   // A deep link or a jump from another view must not land in a closed Konvolut,
   // so the head holding the record opens with it.
   const konvolutId = konvolutIdOfRecord(store, recordId);

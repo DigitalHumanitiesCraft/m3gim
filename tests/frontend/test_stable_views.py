@@ -33,9 +33,8 @@ def test_six_views_share_search_and_load_without_external_requests(
         page.evaluate(
             "q => { location.hash = '#bestand?suche=' + encodeURIComponent(q); }", query
         )
-        expect(page.locator('#tab-bestand input[type="search"]').first).to_have_value(
-            query
-        )
+        expect(page.locator('#tab-bestand .filter-strip')).to_contain_text(query)
+        expect(page.get_by_role('combobox', name='Suche', exact=True)).to_have_value('')
         expected = page.evaluate("""async () => {
                 const {recordsFor} = await import('./js/data/records-for.js');
                 const {getFilter} = await import('./js/ui/filter-state.js');
@@ -50,7 +49,8 @@ def test_six_views_share_search_and_load_without_external_requests(
                 re.compile(rf"^{len(expected)} von")
             )
             search = page.locator(f'#tab-{view} input[type="search"]').first
-            expect(search).to_have_value(query)
+            expect(search).to_have_value('')
+            expect(page.locator(f'#tab-{view} .filter-strip')).to_contain_text(query)
             assert "Datenstand" in count.get_attribute("aria-label"), view
             count.focus()
             assert count.evaluate("el => document.activeElement === el"), view
@@ -59,8 +59,9 @@ def test_six_views_share_search_and_load_without_external_requests(
         page.wait_for_selector("#tab-statistik .vs-status__count")
         assert (
             page.locator('#tab-statistik input[type="search"]').first.input_value()
-            == query
+            == ''
         )
+        expect(page.locator('#tab-statistik .filter-strip')).to_contain_text(query)
     assert not external, external
     page.close()
 

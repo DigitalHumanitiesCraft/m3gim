@@ -19,6 +19,9 @@
  */
 
 import { facetValues } from './filter-state.js';
+import {
+  normalizePredicates, parsePredicate, serializePredicate,
+} from '../data/query-predicates.js';
 
 /** Facetten mit Werteliste, in der Reihenfolge, in der sie in der URL stehen. */
 const LIST_KEYS = [
@@ -27,6 +30,7 @@ const LIST_KEYS = [
 
 /** Query-Schluessel des Zeitfensters; der State-Schluessel heisst zeitfenster. */
 const YEAR_KEY = 'jahr';
+const PREDICATE_KEY = 'praedikat';
 
 /**
  * The document type is serialized as `typ` so every query key is German; the
@@ -56,6 +60,9 @@ export function serializeFilter(filter) {
   }
   const search = (f.search || '').trim();
   if (search) parts.push(`suche=${encodeURIComponent(search)}`);
+  for (const predicate of normalizePredicates(f.predicates)) {
+    parts.push(`${PREDICATE_KEY}=${encodeURIComponent(serializePredicate(predicate))}`);
+  }
   return parts.join('&');
 }
 
@@ -97,8 +104,14 @@ export function parseFilterQuery(query) {
     if (key === 'suche') {
       const s = safeDecode(value).trim();
       if (s) patch.search = s;
+      continue;
+    }
+    if (key === PREDICATE_KEY) {
+      if (!patch.predicates) patch.predicates = [];
+      patch.predicates.push(parsePredicate(safeDecode(value)));
     }
   }
+  if (patch.predicates) patch.predicates = normalizePredicates(patch.predicates);
   return patch;
 }
 
@@ -135,7 +148,8 @@ export function buildHash(tab, recordId, filter, extra) {
 /** Does the query key belong to the shared filter? */
 export function isFilterKey(key) {
   const stateKey = key === TYPE_KEY ? TYPE_STATE_KEY : key;
-  return LIST_KEYS.includes(stateKey) || key === YEAR_KEY || key === 'suche';
+  return LIST_KEYS.includes(stateKey) || key === YEAR_KEY
+    || key === 'suche' || key === PREDICATE_KEY;
 }
 
 /** Whether a query explicitly supplies shared filter state. */

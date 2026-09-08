@@ -71,8 +71,17 @@ export function rangeControl({ min, max, from, to, onChange, covered = null }) {
     toLabel.textContent = b;
   }
 
-  fromR.addEventListener('input', () => { onChange(Math.min(parseInt(fromR.value, 10), to()), to()); sync(); });
-  toR.addEventListener('input', () => { onChange(from(), Math.max(parseInt(toR.value, 10), from())); sync(); });
+  fromR.addEventListener('input', () => {
+    fromR.value = String(Math.min(Number(fromR.value), Number(toR.value)));
+    fromLabel.textContent = fromR.value;
+  });
+  toR.addEventListener('input', () => {
+    toR.value = String(Math.max(Number(toR.value), Number(fromR.value)));
+    toLabel.textContent = toR.value;
+  });
+  const commit = () => { onChange(Number(fromR.value), Number(toR.value)); sync(); };
+  fromR.addEventListener('change', commit);
+  toR.addEventListener('change', commit);
 
   sync();
   return { node: wrap, update: sync };

@@ -1,107 +1,116 @@
-/**
- * Statistik — der Bestand in Zahlen (E-160).
- *
- * Vier record-basierte Ansichten ueber die Dokumentmenge des geteilten
- * Schnitts: Dokumenttypen, Repertoire, Personen, Institutionen. Die
- * Mobilitaets- und Beziehungsaggregate liegen seit E-160 in Karte, Chronik und
- * Netzwerk. Der Erschliessungsstand ist mit E-262 kein Forschungsgegenstand
- * und steht nur noch als Aussage im Datensatz-Detail; die Arbeitsliste des
- * Erschliessungsteams schreibt `scripts/report-cataloguing.py` (E-248).
- *
- * Die Sidebar ist das geteilte Geruest (ui/sidebar.js): Suche, Ergebniszeile,
- * Zeitraum und die geteilten Facetten schneiden, dazu als einzige eigene
- * Sektion die Wahl der Ansicht. Es gibt keinen ansichtseigenen Filterort mehr.
- *
- * Diese Datei ist reine View-Orchestrierung. Die Aggregationen liegen in
- * `statistik-data.js`, die Sektionen in `statistik-sections.js`, die
- * Balken-Primitive in `ui/charts.js`.
- */
-
+/** Two coordinated dashboard panels over the one shared document cut. */
 import { clear, el } from '../utils/dom.js';
 import { logStamp } from '../utils/env.js';
 import { createSidebar, viewShell } from '../ui/sidebar.js';
-import { getFilter } from '../ui/filter-state.js';
+import { getFilter, replaceFilter } from '../ui/filter-state.js';
 import { recordsFor, yearBounds } from '../data/records-for.js';
-import {
-  buildDokumenttypen, buildRepertoire, buildPersonen, buildInstitutionen,
-} from './statistik-sections.js';
+import { splitHash, viewParams } from '../ui/filter-url.js';
+import { setViewParams } from '../ui/router.js';
+import { onViewNavigate } from '../ui/events.js';
+import { buildOccurrences } from '../data/place-evidence.js';
+import { datasetFingerprint } from './statistik-data.js';
+import { createDashboardSelection } from './dashboard-selection.js';
+import { createDashboardPanel, normalizePanelConfig } from './dashboard-panel.js';
 
-// Die Ansichten in Lesereihenfolge; Single-Select, genau eine ist aktiv.
-const SECTIONS = [
-  { id: 'dokumenttypen', label: 'Dokumenttypen',      build: buildDokumenttypen },
-  { id: 'repertoire',    label: 'Repertoire',         build: buildRepertoire },
-  { id: 'personen',      label: 'Personen',           build: buildPersonen },
-  { id: 'institutionen', label: 'Institutionen',      build: buildInstitutionen },
-];
+const PARAMS = Object.freeze({ a: 'dash-panel-a', b: 'dash-panel-b', reference: 'dash-reference' });
+let mounted = null;
 
-const SECTION_BY_ID = new Map(SECTIONS.map(s => [s.id, s]));
+function readJson(params, key) {
+  try {
+    const raw = new URLSearchParams(params || '').get(key);
+    return raw ? JSON.parse(raw) : null;
+  } catch { return null; }
+}
 
-// Modulweit, damit ein zweites Render der Ansicht keinen zweiten Subscriber
-// stapelt.
-let _sidebar = null;
+function clone(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+
+function normalizeReference(store, value, fingerprint) {
+  if (!value || !value.filter || !Array.isArray(value.recordIds)) return null;
+  const result = recordsFor(store, value.filter);
+  const recordIds = [...result.ids].sort();
+  const stored = [...new Set(value.recordIds)].sort();
+  const stale = value.fingerprint !== fingerprint || JSON.stringify(recordIds) !== JSON.stringify(stored);
+  return { ...value, fingerprint, recordIds, stale,
+    changedFrom: stale ? (value.fingerprint || 'unbekannt') : value.changedFrom };
+}
 
 export function renderStatistik(store, container) {
-  clear(container);
-
+  mounted?.destroy(); clear(container);
+  const fingerprint = datasetFingerprint(store);
+  const currentParams = viewParams(splitHash(window.location.hash).query);
+  let panelAState = normalizePanelConfig(readJson(currentParams, PARAMS.a), 'treemap');
+  let panelBState = normalizePanelConfig(readJson(currentParams, PARAMS.b), 'matrix');
+  let reference = normalizeReference(store, readJson(currentParams, PARAMS.reference), fingerprint);
+  let cut = recordsFor(store, getFilter());
+  let highlighted = new Set();
+  const placeStatements = buildOccurrences(store);
   const span = yearBounds(store);
-  let active = SECTIONS[0].id;
-  // Vor dem ersten rebuild() null, dann faellt das Geruest auf seine eigene
-  // Rechnung zurueck statt eine Null zu zeigen.
-  let cutSize = null;
 
-  const stage = el('div', { className: 'statistik__stage' });
-  const main = el('div', { className: 'view-main statistik-main' }, stage);
+  const panelsHost = el('div', { className: 'dashboard-panels' });
+  const workspace = el('div', { className: 'dashboard-workspace' }, panelsHost);
+  const dashboardHost = el('div', { className: 'dashboard-stage' }, workspace);
+  const main = el('div', { className: 'view-main statistik-main' }, dashboardHost);
 
-  const activeDef = () => SECTION_BY_ID.get(active) || SECTIONS[0];
-
-  const rebuild = () => {
-    const { ids } = recordsFor(store, getFilter());
-    cutSize = ids.size;
-    clear(stage);
-    stage.appendChild(activeDef().build(store, ids));
+  let panelA = null, panelB = null;
+  const shared = {
+    store, cutIds: cut.ids, placeStatements, fingerprint,
+    getHighlighted: () => highlighted,
+    onSelect: null, onAdd: null,
+    get reference() { return reference; },
+    pinReference() {
+      reference = { filter: clone(getFilter()), recordIds: [...cut.ids].sort(), fingerprint,
+        label: `Schnitt mit ${cut.ids.size} Dokumenten` };
+      setViewParams({ [PARAMS.reference]: JSON.stringify(reference) });
+      drawPanels();
+    },
+    clearReference() {
+      reference = null; setViewParams({ [PARAMS.reference]: null }); drawPanels();
+    },
+    applyReference() {
+      if (reference?.filter) replaceFilter(clone(reference.filter));
+    },
   };
 
-  const switchView = (id) => {
-    if (id === active) return;
-    active = id;
-    sidebar.update();
-    rebuild();
-  };
+  const selection = createDashboardSelection({ host: dashboardHost, store, fingerprint,
+    getQueryWitnesses: () => cut.witnesses || cut.evidence?.witnesses || [],
+    getReference: () => reference,
+    onHighlight(ids) { highlighted = ids; panelA?.highlight(ids); panelB?.highlight(ids); } });
+  shared.retargetSelection = trigger => selection.retarget(trigger);
+  shared.onSelect = (aggregate, trigger) => selection.replace(aggregate, trigger);
+  shared.onAdd = (aggregate, trigger) => selection.add(aggregate, trigger);
+
+  panelA = createDashboardPanel({ id: 'a', host: panelsHost, initial: panelAState, context: shared,
+    onState(state) { panelAState = state; setViewParams({ [PARAMS.a]: JSON.stringify(state) }); } });
+  panelB = createDashboardPanel({ id: 'b', host: panelsHost, initial: panelBState, context: shared,
+    onState(state) { panelBState = state; setViewParams({ [PARAMS.b]: JSON.stringify(state) }); } });
+
+  function drawPanels() {
+    shared.cutIds = cut.ids;
+    panelA?.draw(); panelB?.draw();
+  }
 
   const sidebar = createSidebar(store, {
-    yearSpan: span,
-    // Der Schnitt steht schon aus rebuild(); ohne diesen Weg loeste ihn das
-    // Geruest fuer seine Wurzelzeile ein zweites Mal auf.
-    getCount: () => cutSize,
-    search: { placeholder: 'Signatur, Titel, Typ oder Datum' },
-    sections: [{
-      title: 'Ansicht',
-      controls: [{
-        kind: 'legend',
-        // Neutrale Swatch: die Ansicht-Chips tragen keine irrefuehrende Leitfarbe.
-        items: SECTIONS.map(s => ({
-          id: s.id, label: s.label, color: 'var(--color-text-tertiary)',
-        })),
-        isActive: (id) => id === active,
-        onToggle: (id) => switchView(id),
-      }],
-    }],
-    onChange: () => { rebuild(); sidebar.update(); },
+    yearSpan: span, getCount: () => cut.ids.size,
+    search: { placeholder: 'Signatur, Titel, Typ, Datum oder verknüpfte Entität' },
+    onChange() {
+      cut = recordsFor(store, getFilter());
+      selection.clear(); shared.cutIds = cut.ids; drawPanels(); sidebar.update();
+    },
   });
-
-  if (_sidebar) _sidebar.destroy();
-  _sidebar = sidebar;
-
-  main.insertBefore(sidebar.strip, main.firstChild);
   container.appendChild(viewShell(sidebar.element, main));
-  rebuild();
-  // Erst jetzt steht die Schnittzahl, die die Wurzelzeile der Spalte nennt.
   sidebar.update();
 
-  logStamp('statistik', [
-    ['records', cutSize],
-    ['ansichten', SECTIONS.length],
-    ['aktiv', active],
-    ['spanne', `${span.min}-${span.max}`],
-  ]);
+  onViewNavigate('statistik', detail => {
+    if (typeof detail.viewParams !== 'string') return;
+    panelAState = normalizePanelConfig(readJson(detail.viewParams, PARAMS.a), 'treemap');
+    panelBState = normalizePanelConfig(readJson(detail.viewParams, PARAMS.b), 'matrix');
+    reference = normalizeReference(store, readJson(detail.viewParams, PARAMS.reference), fingerprint);
+    panelA.setState(panelAState); panelB.setState(panelBState);
+  });
+
+  mounted = { destroy() { panelA.destroy(); panelB.destroy(); selection.destroy(); sidebar.destroy(); } };
+  logStamp('dashboard', [['records', cut.ids.size], ['panels', 2],
+    ['placeStatements', placeStatements.length], ['fingerprint', fingerprint]]);
 }

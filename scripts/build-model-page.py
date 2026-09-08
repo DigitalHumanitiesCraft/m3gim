@@ -903,7 +903,7 @@ def _indent(block: str, spaces: int) -> str:
 
 # Bumped whenever a stylesheet changes, so GitHub Pages and browsers drop the
 # cached copy; sync_shared_regions writes it into every page.
-ASSET_VERSION = "2026-09-08b"
+ASSET_VERSION = "2026-09-08c"
 
 # ---------------------------------------------------------------------------
 # Die Kopfleiste: eine Vorlage fuer alle Seiten
@@ -971,7 +971,7 @@ TAB_GROUPS: tuple[tuple[str, tuple[Tab, ...]], ...] = (
                 '<path d="M17.5 17.5 13.5 13.5"/>',
             ),
             Tab(
-                "statistik", "Statistik", "btn-statistik",
+                "statistik", "Dashboard", "btn-statistik",
                 '<line x1="18" y1="20" x2="18" y2="10"/>'
                 '<line x1="12" y1="20" x2="12" y2="4"/>'
                 '<line x1="6" y1="20" x2="6" y2="14"/>',

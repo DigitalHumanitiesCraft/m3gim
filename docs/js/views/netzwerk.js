@@ -96,6 +96,7 @@ function selectFromHash() {
 }
 
 export function renderNetzwerk(store, container) {
+  _sidebar?.destroy();
   _store = store;
   if (!_t0) _t0 = performance.now();
   clear(container);
@@ -127,7 +128,6 @@ export function renderNetzwerk(store, container) {
     // detail asked, so the selection goes with it.
     onChange: () => { local.selection = null; _redraw(); },
   });
-  main.insertBefore(_sidebar.strip, main.firstChild);
 
   container.appendChild(viewShell(_sidebar.element, main));
 
